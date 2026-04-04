@@ -36,8 +36,9 @@ is mathematically forced in protocols like sumcheck and FRI.
 - `Concurrent/` — structural concurrent source syntax, frontiers and residuals,
   structural frontier traces and true-concurrency refinements, dynamic
   `Process` / `Machine` / `Tree` frontends, generic process executions and
-  policies, per-party observation profiles, scheduler/control ownership, and
-  current local frontier views
+  policies, finite prefixes and infinite runs, observation extraction,
+  refinement, fairness, liveness, per-party observation profiles,
+  scheduler/control ownership, and current local frontier views
 - `TwoParty/` — sender/receiver roles, `withRoles`, `Counterpart`
 - `Reduction.lean` — prover, verifier, reduction
 - `Oracle/` — oracle decoration, path-dependent oracle access

@@ -4,9 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 import ArkLib.Interaction.Concurrent.Execution
+import ArkLib.Interaction.Concurrent.Fairness
 import ArkLib.Interaction.Concurrent.Interleaving
 import ArkLib.Interaction.Concurrent.Independence
+import ArkLib.Interaction.Concurrent.Liveness
+import ArkLib.Interaction.Concurrent.Observation
 import ArkLib.Interaction.Concurrent.Policy
+import ArkLib.Interaction.Concurrent.Refinement
+import ArkLib.Interaction.Concurrent.Run
 import ArkLib.Interaction.Concurrent.Tree
 
 /-!
@@ -369,6 +374,123 @@ example :
         Independent
           (Front.right (left := delivery) (Front.left (.move true)) : Front threeWay)
           (Front.right (left := delivery) (Front.right (.move false)))) = rfl := rfl
+
+section PhaseOneExamples
+
+/-- Node semantics for a tiny looping process:
+the adversary actively chooses the boolean step, Bob observes it, and Alice is
+hidden from it. -/
+def loopNode : NodeSemantics Party Bool where
+  controllers := fun _ => [.adv]
+  views
+    | .adv => .active
+    | .bob => .observe
+    | .alice => .hidden
+
+/-- A tiny one-state looping process used to exercise runs, tickets, fairness,
+and refinement. -/
+def loopProcess : Process Party :=
+  { Proc := PUnit
+    step := fun _ =>
+      { spec := .node Bool (fun _ => .done)
+        semantics := ⟨loopNode, fun _ => PUnit.unit⟩
+        next := fun _ => PUnit.unit } }
+
+/-- A ticketed view of `loopProcess` using the chosen boolean as the stable
+ticket. -/
+def loopTicketed : Process.Ticketed Party where
+  toProcess := loopProcess
+  Ticket := Bool
+  ticket := fun _ tr =>
+    match tr with
+    | ⟨b, _⟩ => b
+
+/-- A simple always-true infinite run of `loopProcess`. -/
+def trueRun : Process.Run loopProcess where
+  state _ := PUnit.unit
+  transcript _ := by
+    change Interaction.Spec.Transcript (.node Bool fun _ => .done)
+    exact ⟨true, PUnit.unit⟩
+  next_state _ := rfl
+
+example : Process.Run.initial trueRun = PUnit.unit := rfl
+
+example :
+    Process.Prefix.tickets loopTicketed.ticket (trueRun.take 3) = [true, true, true] := by
+  simp only [Process.Run.take_succ, Process.Run.take_zero, cast_eq, Process.Prefix.tickets]
+  simp [loopTicketed, trueRun, Process.Run.initial, Process.Run.head, Process.Run.tail]
+
+example :
+    (Observation.Process.Run.observationsUpTo Party.adv trueRun 2).length = 2 := rfl
+
+example :
+    (Observation.Process.Run.observationsUpTo Party.bob trueRun 2).length = 2 := rfl
+
+example :
+    Process.Ticketed.firedAt loopTicketed trueRun true 5 := by
+  simp [Process.Ticketed.firedAt, loopTicketed, trueRun]
+
+example :
+    Process.Ticketed.enabledAt loopTicketed trueRun true 7 := by
+  refine ⟨by
+    change Interaction.Spec.Transcript (.node Bool fun _ => .done)
+    exact ⟨true, PUnit.unit⟩, ?_⟩
+  simp [loopTicketed]
+
+example :
+    Process.Ticketed.WeakFairOn loopTicketed trueRun true := by
+  intro _
+  refine ⟨0, ?_⟩
+  simp [Process.Ticketed.firedAt, loopTicketed, trueRun]
+
+example :
+    Process.Ticketed.StrongFairOn loopTicketed trueRun true := by
+  intro _ N
+  refine ⟨N, Nat.le_refl _, ?_⟩
+  simp [Process.Ticketed.firedAt, loopTicketed, trueRun]
+
+/-- A trivial system wrapper around `loopProcess`. -/
+def loopSystem : Process.System Party where
+  toProcess := loopProcess
+  init _ := True
+  assumptions _ := True
+  safe _ := True
+  inv _ := True
+
+/-- The identity simulation on `loopSystem`, preserving the boolean ticket. -/
+def loopSim :
+    Refinement.ForwardSimulation loopSystem loopSystem
+      (Observation.Process.TranscriptRel.byTicket
+        loopTicketed.ticket loopTicketed.ticket) where
+  stateRel _ _ := True
+  init p hp := ⟨p, hp, trivial⟩
+  assumptions _ _ := trivial
+  step _
+    | ⟨b, tail⟩ => ⟨⟨b, tail⟩, rfl, trivial⟩
+  safe _ _ := trivial
+
+/-- The specification-side run obtained by matching `trueRun` through
+`loopSim`. -/
+noncomputable def loopMappedRun : Process.Run loopSystem.toProcess :=
+  loopSim.mapRun (pSpec := PUnit.unit) trueRun trivial
+
+example : loopMappedRun.state 4 = PUnit.unit := rfl
+
+example :
+    Observation.Process.TranscriptRel.byTicket loopTicketed.ticket loopTicketed.ticket
+      (trueRun.transcript 3) (loopMappedRun.transcript 3) := by
+  exact loopSim.match_mapRun (pSpec := PUnit.unit) trueRun trivial 3
+
+example : Process.System.Safe loopSystem loopMappedRun := by
+  intro _
+  trivial
+
+example :
+    Process.System.Satisfies loopSystem (fun _ => True) (Process.System.Safe loopSystem) := by
+  intro run _ _ _ n
+  trivial
+
+end PhaseOneExamples
 
 end Examples
 end Concurrent
