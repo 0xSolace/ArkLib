@@ -551,6 +551,18 @@ def sumCongr
     | .inl a => e₁.equivB a
     | .inr a => e₂.equivB a
 
+/--
+The forward packet translation of `sumCongr` is exactly the coproduct of the
+forward packet translations on each summand.
+-/
+@[simp]
+theorem toHom_sumCongr
+    {I₁ : Interface.{uA, uB}} {I₂ : Interface.{vA, uB}}
+    {J₁ : Interface.{wA, uB}} {J₂ : Interface.{wB, uB}}
+    (e₁ : Equiv I₁ J₁) (e₂ : Equiv I₂ J₂) :
+    (sumCongr e₁ e₂).toHom = Interface.Hom.sum e₁.toHom e₂.toHom := by
+  ext a <;> cases a <;> rfl
+
 /-- The empty interface is a left unit for disjoint sum. -/
 def emptySum
     (I : Interface.{uA, uB}) :
@@ -845,6 +857,19 @@ def tensorCongr
   onOut := Interface.Equiv.sumCongr e₁.onOut e₂.onOut
 
 /--
+The forward boundary adaptation of `tensorCongr` is exactly the tensor of the
+forward boundary adaptations on each factor.
+-/
+@[simp]
+theorem toHom_tensorCongr
+    {Δ₁ Δ₁' Δ₂ Δ₂' : PortBoundary}
+    (e₁ : Equiv Δ₁ Δ₁') (e₂ : Equiv Δ₂ Δ₂') :
+    (tensorCongr e₁ e₂).toHom = PortBoundary.Hom.tensor e₁.toHom e₂.toHom := by
+  apply PortBoundary.Hom.ext
+  · simp [tensorCongr, PortBoundary.Hom.tensor]
+  · simp [tensorCongr, PortBoundary.Hom.tensor]
+
+/--
 Swapping the direction of boundaries preserves equivalence.
 -/
 abbrev swapCongr
@@ -853,6 +878,18 @@ abbrev swapCongr
     Equiv (PortBoundary.swap Δ₁) (PortBoundary.swap Δ₂) where
   onIn := e.onOut.symm
   onOut := e.onIn.symm
+
+/--
+The forward boundary adaptation of `swapCongr` is exactly the swapped forward
+inverse boundary adaptation.
+-/
+@[simp]
+theorem toHom_swapCongr
+    {Δ₁ Δ₂ : PortBoundary}
+    (e : Equiv Δ₁ Δ₂) :
+    (swapCongr e).toHom = PortBoundary.Hom.swap e.invHom := by
+  rfl
+
 
 /-- The empty boundary is a left tensor unit. -/
 def tensorEmptyLeft

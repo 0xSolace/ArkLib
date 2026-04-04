@@ -390,6 +390,24 @@ theorem map_par
   IsLawfulPar.map_par f₁ f₂ W₁ W₂
 
 /--
+Parallel composition is natural with respect to boundary equivalences.
+
+This is the equivalence-guided companion to `map_par`: canonical reshaping of
+the left and right boundaries may be pushed inside `par`.
+-/
+theorem mapEquiv_par
+    [IsLawfulPar T]
+    {Δ₁ Δ₁' Δ₂ Δ₂' : PortBoundary.{uA, uB, uA, uB}}
+    (e₁ : PortBoundary.Equiv Δ₁ Δ₁')
+    (e₂ : PortBoundary.Equiv Δ₂ Δ₂')
+    (W₁ : T.Obj Δ₁)
+    (W₂ : T.Obj Δ₂) :
+    T.mapEquiv (PortBoundary.Equiv.tensorCongr e₁ e₂) (T.par W₁ W₂) =
+      T.par (T.mapEquiv e₁ W₁) (T.mapEquiv e₂ W₂) := by
+  simpa [OpenTheory.mapEquiv] using
+    map_par (T := T) e₁.toHom e₂.toHom W₁ W₂
+
+/--
 Partial wiring is natural with respect to boundary adaptation.
 -/
 theorem map_wire
@@ -410,6 +428,35 @@ theorem map_wire
   IsLawfulWire.map_wire f₁ f₂ W₁ W₂
 
 /--
+Partial wiring is natural with respect to boundary equivalences on the still
+exposed outer boundaries.
+
+As in `map_wire`, the shared middle boundary is held fixed in this first law
+layer. The point is that canonical reassociation or symmetry on the outer
+interfaces can already be pushed through `wire` without enlarging the
+primitive kernel of `OpenTheory`.
+-/
+theorem mapEquiv_wire
+    [IsLawfulWire T]
+    {Δ₁ Δ₁' Γ Δ₂ Δ₂' : PortBoundary.{uA, uB, uA, uB}}
+    (e₁ : PortBoundary.Equiv Δ₁ Δ₁')
+    (e₂ : PortBoundary.Equiv Δ₂ Δ₂')
+    (W₁ : T.Obj (PortBoundary.tensor Δ₁ Γ))
+    (W₂ : T.Obj (PortBoundary.tensor (PortBoundary.swap Γ) Δ₂)) :
+    T.mapEquiv (PortBoundary.Equiv.tensorCongr e₁ e₂) (T.wire W₁ W₂) =
+      T.wire
+        (T.mapEquiv
+          (PortBoundary.Equiv.tensorCongr e₁ (PortBoundary.Equiv.refl Γ))
+          W₁)
+        (T.mapEquiv
+          (PortBoundary.Equiv.tensorCongr
+          (PortBoundary.Equiv.refl (PortBoundary.swap Γ))
+            e₂)
+          W₂) := by
+  simpa [OpenTheory.mapEquiv] using
+    map_wire (T := T) e₁.toHom e₂.toHom W₁ W₂
+
+/--
 Plugging is natural with respect to boundary adaptation.
 -/
 theorem map_plug
@@ -421,6 +468,30 @@ theorem map_plug
     T.plug (T.map f W) K =
       T.plug W (T.map (PortBoundary.Hom.swap f) K) :=
   IsLawfulPlug.map_plug f W K
+
+/--
+Plugging is natural with respect to boundary equivalence.
+
+This is the boundary-equivalence form of `map_plug`: if the exposed side of
+the open system is reshaped by a canonical directed isomorphism, the same
+forward boundary adaptation can be pushed across the plug after swapping
+directions.
+
+The right-hand side is phrased with the swapped boundary `Hom` directly rather
+than wrapping it back into `mapEquiv`. That is intentional: once directions
+are reversed, the variance becomes clearer at the raw boundary-map level than
+through a second equivalence wrapper.
+-/
+theorem mapEquiv_plug
+    [IsLawfulPlug T]
+    {Δ₁ Δ₂ : PortBoundary.{uA, uB, uA, uB}}
+    (e : PortBoundary.Equiv Δ₁ Δ₂)
+    (W : T.Obj Δ₁)
+    (K : T.Obj (PortBoundary.swap Δ₂)) :
+    T.plug (T.mapEquiv e W) K =
+      T.plug W (T.map (PortBoundary.Hom.swap e.toHom) K) := by
+  simpa [OpenTheory.mapEquiv] using
+    map_plug (T := T) e.toHom W K
 
 end Laws
 
