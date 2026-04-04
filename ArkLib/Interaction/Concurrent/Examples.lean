@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 import ArkLib.Interaction.Concurrent.Execution
+import ArkLib.Interaction.Concurrent.Equivalence
 import ArkLib.Interaction.Concurrent.Fairness
 import ArkLib.Interaction.Concurrent.Interleaving
 import ArkLib.Interaction.Concurrent.Independence
@@ -491,6 +492,24 @@ def loopObsSimBob :
 noncomputable def loopObsMappedRunBob : Process.Run loopSystem.toProcess :=
   loopObsSimBob.mapRun (pSpec := PUnit.unit) trueRun trivial
 
+/-- The identity ticket bisimulation on `loopSystem`. -/
+def loopTicketBisim :
+    Refinement.Bisimulation loopSystem loopSystem
+      (Observation.Process.TranscriptRel.byTicket
+        loopTicketed.ticket loopTicketed.ticket)
+      (Observation.Process.TranscriptRel.byTicket
+        loopTicketed.ticket loopTicketed.ticket) where
+  forth := loopSim
+  back := loopSim
+
+/-- The identity observational bisimulation on `loopSystem` for Bob. -/
+def loopObsBisimBob :
+    Refinement.Bisimulation loopSystem loopSystem
+      (Observation.Process.TranscriptRel.byObservation Party.bob)
+      (Observation.Process.TranscriptRel.byObservation Party.bob) where
+  forth := loopObsSimBob
+  back := loopObsSimBob
+
 example : loopMappedRun.state 4 = PUnit.unit := rfl
 
 example :
@@ -531,6 +550,35 @@ example :
       (Observation.Process.TranscriptRel.byTicket loopTicketed.ticket loopTicketed.ticket)
       trueRun loopMappedRun := by
   exact loopSim.runRel_mapRun (pSpec := PUnit.unit) trueRun trivial
+
+example :
+    trueRun.ticketsUpTo loopTicketed.ticket 5 =
+      (loopTicketBisim.forth.mapRun trueRun (pSpec := PUnit.unit) trivial).ticketsUpTo
+        loopTicketed.ticket 5 := by
+  exact Equivalence.Ticket.ticketsUpTo_eq loopTicketBisim trueRun
+    (pRight := PUnit.unit) trivial 5
+
+example :
+    Observation.Process.Run.observationsUpTo Party.bob trueRun 4 =
+      Observation.Process.Run.observationsUpTo Party.bob
+        (loopObsBisimBob.forth.mapRun trueRun (pSpec := PUnit.unit) trivial) 4 := by
+  exact Equivalence.Observation.observationsUpTo_eq Party.bob loopObsBisimBob
+    trueRun (pRight := PUnit.unit) trivial 4
+
+example :
+    Process.System.Satisfies loopSystem (fun _ => True) (Process.System.Safe loopSystem) := by
+  exact
+    (Refinement.Bisimulation.safe_iff_of_satisfies loopTicketBisim
+      (fairLeft := fun _ => True) (fairRight := fun _ => True)
+      (hfairLeft := by
+        intro _ _ _ _
+        trivial)
+      (hfairRight := by
+        intro _ _ _ _
+        trivial)).mp
+      (by
+        intro run _ _ _ n
+        trivial)
 
 end PhaseOneExamples
 

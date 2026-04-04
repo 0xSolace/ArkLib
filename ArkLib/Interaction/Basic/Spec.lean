@@ -37,7 +37,8 @@ is mathematically forced in protocols like sumcheck and FRI.
   structural frontier traces and true-concurrency refinements, dynamic
   `Process` / `Machine` / `Tree` frontends, generic process executions and
   policies, finite prefixes and infinite runs, observation extraction,
-  refinement, fairness, liveness, per-party observation profiles,
+  refinement, bisimulation, packaged equivalence notions, fairness, liveness,
+  per-party observation profiles,
   scheduler/control ownership, and current local frontier views
 - `TwoParty/` — sender/receiver roles, `withRoles`, `Counterpart`
 - `Reduction.lean` — prover, verifier, reduction
