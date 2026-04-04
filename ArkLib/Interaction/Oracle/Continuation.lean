@@ -1319,8 +1319,9 @@ def comp {ι : Type} {oSpec : OracleSpec ι}
 the suffix continuation's simulated oracle output agrees with `outImpl` when run
 against `midImpl`, then routing the suffix simulator through the appended
 message context and then routing mid-oracle queries through the prefix reduction
-agrees with `outImpl`. -/
-private theorem simulate_compFlat {ι : Type} {oSpec : OracleSpec ι}
+agrees with `outImpl`. This is the low-level simulator-composition theorem used
+to lift concrete reified oracle outputs through sequential composition. -/
+theorem simulate_compFlat {ι : Type} {oSpec : OracleSpec ι}
     {StatementIn : Type} {ιₛᵢ : StatementIn → Type}
     {OStmtIn : (s : StatementIn) → ιₛᵢ s → Type}
     [∀ s i, OracleInterface (OStmtIn s i)]
