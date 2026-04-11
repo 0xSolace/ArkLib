@@ -90,6 +90,7 @@ import ArkLib.Interaction.Boundary.OracleSecurity
 import ArkLib.Interaction.Boundary.Reification
 import ArkLib.Interaction.Boundary.Security
 import ArkLib.Interaction.FiatShamir.Basic
+import ArkLib.Interaction.FiatShamir.DuplexSponge
 import ArkLib.Interaction.FiatShamir.Transform
 import ArkLib.Interaction.Oracle.Continuation
 import ArkLib.Interaction.Oracle.Core
