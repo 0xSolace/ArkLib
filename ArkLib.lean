@@ -54,6 +54,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
+import ArkLib.Data.CodingTheory.ProximityGap.MCAgens
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
