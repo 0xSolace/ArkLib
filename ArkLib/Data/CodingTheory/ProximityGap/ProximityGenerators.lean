@@ -112,7 +112,7 @@ def IsMCAGenerator {S : Type} [Nonempty S] [Fintype S] (G : Generator S ℓ F) (
 /-- Let `G : S →F^ℓ` and `G′: S′→F^ℓ` be two generators. Their tensor product is the generator
 `G ⊗ G′: S × S′→ F^ℓ ⊗F^ℓ′` defined by `(x,x′) ↦ G(x) ⊗ G′(x′)`.
 Definition 4.3 [BSGM25]. -/
-def TensorGenerator {ℓ' : Type} [Fintype ℓ'] (S : Set (ℓ → F)) (S' : Set (ℓ' → F))
+def TensorGenerator {ℓ' : Type} [Fintype ℓ'] (S S' : Type)
   (G : Generator S ℓ F) (G' : Generator S' ℓ' F) : (S × S') → TensorProduct F (ℓ → F) (ℓ' → F)
 | (x, x') => TensorProduct.tmul F (G x) (G' x')
 
