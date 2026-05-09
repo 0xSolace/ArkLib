@@ -775,6 +775,40 @@ private lemma mul_pow_mul_div_pow_succ_eq_top {K : Type} [Field K] {W T a : K}
   field_simp [hW]
   ring
 
+/-- Clearing denominators in `W^k · P(T/W)` as an explicit sum: if `P.natDegree ≤ k + 1`, then
+`W^k * eval₂ lift (T/W) P` decomposes into a low-degree polynomial sum plus a single
+`(P.coeff(k+1)/W) · T^(k+1)` term. The divisibility `W ∣ P.coeff(k+1)` is not needed here -
+the formula holds in `𝕃 H` directly via field division. -/
+lemma W_pow_mul_eval₂_div_eq_sum {F : Type} [Field F] {H : F[X][Y]}
+    [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    {P : F[X][Y]} {k : ℕ} (hP : P.natDegree ≤ k + 1) :
+    liftToFunctionField (H := H) H.leadingCoeff ^ k *
+      Polynomial.eval₂ liftToFunctionField
+        (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) P =
+      (∑ i ∈ Finset.range (k + 1),
+          liftToFunctionField (H := H) (P.coeff i) *
+            (functionFieldT (H := H) ^ i *
+              liftToFunctionField (H := H) H.leadingCoeff ^ (k - i))) +
+        (liftToFunctionField (H := H) (P.coeff (k + 1)) /
+            liftToFunctionField (H := H) H.leadingCoeff) *
+          functionFieldT (H := H) ^ (k + 1) := by
+  set W : 𝕃 H := liftToFunctionField (H := H) H.leadingCoeff with hW_def
+  set T : 𝕃 H := functionFieldT (H := H) with hT_def
+  have hW : W ≠ 0 := by
+    simpa [W] using (liftToFunctionField_leadingCoeff_ne_zero (H := H))
+  have hP_lt : P.natDegree < k + 2 := by omega
+  rw [Polynomial.eval₂_eq_sum_range' liftToFunctionField hP_lt (T / W)]
+  rw [Finset.mul_sum]
+  rw [show k + 2 = k + 1 + 1 by omega, Finset.sum_range_succ]
+  congr 1
+  · refine Finset.sum_congr rfl (fun i hi => ?_)
+    have hi_le : i ≤ k := by
+      have := Finset.mem_range.mp hi; omega
+    exact mul_pow_mul_div_pow_eq_lower (W := W) (T := T)
+      (a := liftToFunctionField (H := H) (P.coeff i)) hW hi_le
+  · exact mul_pow_mul_div_pow_succ_eq_top (W := W) (T := T)
+      (a := liftToFunctionField (H := H) (P.coeff (k + 1))) hW k
+
 /-- The bivariate variable maps to the function-field variable `T`. -/
 @[simp]
 lemma liftBivariate_X {H : F[X][Y]} :
@@ -1032,6 +1066,81 @@ lemma ξ_regular_of_natDegree_eq_two
   have hd : R.natDegree - 2 = 0 := by omega
   simpa [hd] using hpre.symm
 
+/-- Explicit polynomial representative for the regular element `ξ = W^(d-2) · ζ` of Claim A.2.
+For `2 ≤ R.natDegree`, this is the polynomial obtained by clearing the single denominator that
+appears in `W^(d-2) · ζ`; the divisibility `W ∣ R'(x₀, Z)_{d-1}` is captured implicitly by
+Euclidean division in `F[X]`. For `R.natDegree ≤ 1`, the derivative specialization is constant
+in `Y`, so we take it as the representative. -/
+noncomputable def ξ_pre (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) : F[X][Y] :=
+  let P : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) R.derivative
+  let d : ℕ := R.natDegree
+  let W : F[X] := H.leadingCoeff
+  if 2 ≤ d then
+    (∑ i ∈ Finset.range (d - 1),
+        Polynomial.C (P.coeff i * W ^ (d - 2 - i)) * Polynomial.X ^ i) +
+      Polynomial.C (P.coeff (d - 1) / W) * Polynomial.X ^ (d - 1)
+  else
+    P
+
+/-- The image of `⟦ξ_pre⟧` in the function field equals `W^(d-2) · ζ`, matching Claim A.2's
+algebraic identity. -/
+lemma embeddingOf𝒪Into𝕃_mk_ξ_pre (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) :
+    embeddingOf𝒪Into𝕃 H (Ideal.Quotient.mk _ (ξ_pre x₀ R H) : 𝒪 H) =
+      liftToFunctionField (H := H) H.leadingCoeff ^ (R.natDegree - 2) * ζ R x₀ H := by
+  rw [embeddingOf𝒪Into𝕃_mk]
+  by_cases hRle : R.natDegree ≤ 1
+  · -- d ≤ 1: ξ_pre = R'(x₀, Z), constant in Y; ζ is the lift of that constant.
+    rcases derivative_evalX_eq_C_of_natDegree_le_one x₀ R hRle with ⟨p, hp⟩
+    have hd2 : R.natDegree - 2 = 0 := by omega
+    have hbranch : ¬ 2 ≤ R.natDegree := by omega
+    have hξ_pre : ξ_pre x₀ R H = Polynomial.C p := by
+      simp [ξ_pre, hbranch, hp]
+    rw [hξ_pre, hd2, pow_zero, one_mul, liftBivariate_C]
+    change liftToFunctionField (H := H) p =
+      Polynomial.eval₂ liftToFunctionField
+        (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff)
+        (Bivariate.evalX (Polynomial.C x₀) R.derivative)
+    rw [hp, Polynomial.eval₂_C]
+  · have hd2 : 2 ≤ R.natDegree := by omega
+    set P : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) R.derivative with hP_def
+    set W_poly : F[X] := H.leadingCoeff with hW_poly_def
+    have hkk : R.natDegree - 1 = R.natDegree - 2 + 1 := by omega
+    have hP_le : P.natDegree ≤ R.natDegree - 2 + 1 := by
+      have h1 : P.natDegree ≤ R.derivative.natDegree := evalX_natDegree_le _ R.derivative
+      have h2 : R.derivative.natDegree ≤ R.natDegree - 1 := Polynomial.natDegree_derivative_le R
+      omega
+    have hdiv : W_poly ∣ P.coeff (R.natDegree - 2 + 1) := by
+      have h := leadingCoeff_dvd_evalX_derivative_coeff_pred (H := H) hHyp
+      rwa [hkk] at h
+    have hW_poly_ne : W_poly ≠ 0 :=
+      Polynomial.leadingCoeff_ne_zero.mpr
+        (Polynomial.ne_zero_of_natDegree_gt H_natDegree_pos.out)
+    have hW_ne : (liftToFunctionField (H := H) W_poly : 𝕃 H) ≠ 0 :=
+      liftToFunctionField_leadingCoeff_ne_zero (H := H)
+    have hξ_pre_eq : ξ_pre x₀ R H =
+        (∑ i ∈ Finset.range (R.natDegree - 2 + 1),
+            Polynomial.C (P.coeff i * W_poly ^ (R.natDegree - 2 - i)) * Polynomial.X ^ i) +
+          Polynomial.C (P.coeff (R.natDegree - 2 + 1) / W_poly) *
+            Polynomial.X ^ (R.natDegree - 2 + 1) := by
+      simp only [ξ_pre, hd2, ↓reduceIte, ← hP_def, ← hW_poly_def, hkk]
+    rw [hξ_pre_eq]
+    rw [show (ζ R x₀ H : 𝕃 H) =
+      Polynomial.eval₂ liftToFunctionField
+        (functionFieldT (H := H) / liftToFunctionField (H := H) W_poly) P from rfl]
+    rw [W_pow_mul_eval₂_div_eq_sum (H := H) (P := P) (k := R.natDegree - 2) hP_le]
+    have hlift_div :
+        liftToFunctionField (H := H) (P.coeff (R.natDegree - 2 + 1) / W_poly) =
+          liftToFunctionField (H := H) (P.coeff (R.natDegree - 2 + 1)) /
+            liftToFunctionField (H := H) W_poly := by
+      rw [eq_div_iff hW_ne, ← map_mul, mul_comm,
+          EuclideanDomain.mul_div_cancel' hW_poly_ne hdiv]
+    simp only [map_add, map_sum, map_mul, map_pow, liftBivariate_C, liftBivariate_X, hlift_div]
+    refine congr_arg₂ (· + ·) ?_ rfl
+    refine Finset.sum_congr rfl (fun i _ => ?_)
+    ring
+
 /-- There exist regular elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4
 of [BCIKS20]. -/
 lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
@@ -1039,40 +1148,25 @@ lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact
     ∃ pre : 𝒪 H,
     let d := R.natDegree
     let W : 𝕃 H := liftToFunctionField (H.leadingCoeff);
-    embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 2) * ζ R x₀ H := by
-  by_cases hRle : R.natDegree ≤ 1
-  · exact ξ_regular_of_natDegree_le_one x₀ R H hRle
-  by_cases hRtwo : R.natDegree = 2
-  · exact ξ_regular_of_natDegree_eq_two x₀ R H hHyp hRtwo
-  let P : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) R.derivative
-  let k : ℕ := R.natDegree - 2
-  have hP : P.natDegree ≤ k + 1 := by
-    calc
-      P.natDegree ≤ R.derivative.natDegree := evalX_natDegree_le (Polynomial.C x₀) R.derivative
-      _ ≤ R.natDegree - 1 := Polynomial.natDegree_derivative_le R
-      _ = k + 1 := by
-        dsimp [k]
-        omega
-  have hk_succ : k + 1 = R.natDegree - 1 := by
-    dsimp [k]
-    omega
-  have hdiv : H.leadingCoeff ∣ P.coeff (k + 1) := by
-    simpa [P, hk_succ] using leadingCoeff_dvd_evalX_derivative_coeff_pred hHyp
-  have hreg :
-      liftToFunctionField (H := H) H.leadingCoeff ^ k *
-        Polynomial.eval₂ liftToFunctionField
-          (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) P ∈
-        regularElms_set H :=
-    regularElms_set_mul_pow_eval₂_div_of_natDegree_le_succ_of_coeff_succ_dvd
-      (H := H) hP hdiv
-  rcases hreg with ⟨pre, hpre⟩
-  refine ⟨pre, ?_⟩
-  simpa [ζ, P, k] using hpre.symm
+    embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 2) * ζ R x₀ H :=
+  ⟨Ideal.Quotient.mk _ (ξ_pre x₀ R H),
+    by simpa using embeddingOf𝒪Into𝕃_mk_ξ_pre x₀ R H hHyp⟩
 
-/-- The elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4 of [BCIKS20]. -/
-def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
-    [H_natDegree_pos : Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H) : 𝒪 H :=
-  (ξ_regular x₀ R H hHyp).choose
+/-- The elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4 of [BCIKS20].
+The `Fact` and `Hypotheses` arguments are kept for API compatibility with downstream callers
+(`α`, `γ`); they are needed for the embedding equation in `embeddingOf𝒪Into𝕃_ξ`. -/
+noncomputable def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [_φ : Fact (Irreducible H)]
+    [_H_natDegree_pos : Fact (0 < H.natDegree)] (_hHyp : Hypotheses x₀ R H) : 𝒪 H :=
+  Ideal.Quotient.mk _ (ξ_pre x₀ R H)
+
+/-- The defining equation `embedding ξ = W^(d-2) · ζ`, the specialization of
+`embeddingOf𝒪Into𝕃_mk_ξ_pre` to `ξ`. -/
+lemma embeddingOf𝒪Into𝕃_ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) :
+    embeddingOf𝒪Into𝕃 H (ξ x₀ R H hHyp) =
+      liftToFunctionField (H := H) H.leadingCoeff ^ (R.natDegree - 2) * ζ R x₀ H :=
+  embeddingOf𝒪Into𝕃_mk_ξ_pre x₀ R H hHyp
 
 /-- The bound of the weight `Λ` of the elements `ζ` as stated in Claim A.2 of Appendix A.4
 of [BCIKS20]. -/
