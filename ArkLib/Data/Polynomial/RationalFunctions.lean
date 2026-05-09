@@ -873,6 +873,32 @@ lemma weight_Λ_C_mul_X_pow_mul_le {c : F[X]} {k : ℕ} {f H : F[X][Y]} {D b : �
   · rw [hcoeff_eq, if_neg hkn] at hcoeff_ne
     exact (hcoeff_ne rfl).elim
 
+/-- The `natDegree` of `H_tilde' H` matches that of `H` when `0 < H.natDegree`. -/
+lemma natDegree_H_tilde' {H : F[X][Y]} (hH : 0 < H.natDegree) :
+    (H_tilde' H).natDegree = H.natDegree := by
+  classical
+  rw [H_tilde', if_neg (Nat.ne_of_gt hH)]
+  have hsum_deg :
+      (∑ i ∈ Finset.range H.natDegree,
+          Polynomial.C (H.coeff i * H.coeff H.natDegree ^ (H.natDegree - 1 - i)) *
+            Polynomial.X ^ i : F[X][Y]).degree < (H.natDegree : WithBot ℕ) :=
+    (Polynomial.degree_sum_le _ _).trans_lt <|
+      (Finset.sup_lt_iff (WithBot.bot_lt_coe _)).mpr <| by
+        intro i hi
+        exact (Polynomial.degree_C_mul_X_pow_le i _).trans_lt
+          (WithBot.coe_lt_coe.mpr (Finset.mem_range.mp hi))
+  rw [show (Polynomial.X ^ H.natDegree +
+        ∑ i ∈ Finset.range H.natDegree,
+          Polynomial.C (H.coeff i * H.coeff H.natDegree ^ (H.natDegree - 1 - i)) *
+            Polynomial.X ^ i : F[X][Y]) =
+      (∑ i ∈ Finset.range H.natDegree,
+          Polynomial.C (H.coeff i * H.coeff H.natDegree ^ (H.natDegree - 1 - i)) *
+            Polynomial.X ^ i) + Polynomial.X ^ H.natDegree by ring]
+  have hX_deg : (Polynomial.X ^ H.natDegree : F[X][Y]).degree = (H.natDegree : WithBot ℕ) :=
+    Polynomial.degree_X_pow _
+  apply Polynomial.natDegree_eq_of_degree_eq_some
+  rw [Polynomial.degree_add_eq_right_of_degree_lt (hsum_deg.trans_eq hX_deg.symm), hX_deg]
+
 omit [IsDomain F] in
 /-- The `Λ`-weight of `H_tilde' H` is bounded by `d_H · m`, where `d_H = H.natDegree`. -/
 lemma weight_Λ_H_tilde'_le {H : F[X][Y]} {D : ℕ}
