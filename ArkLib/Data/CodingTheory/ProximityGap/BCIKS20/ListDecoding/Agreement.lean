@@ -28,7 +28,7 @@ open Bivariate in
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
   ∃ R H, R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose ∧
-    Irreducible H ∧ H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
+    Irreducible H ∧ 0 < H.natDegree ∧ H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
     #(@Set.toFinset _ { z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ |
         letI Pz := Pz z.2
         (Trivariate.eval_on_Z R z.1).eval Pz = 0 ∧
@@ -54,8 +54,8 @@ lemma irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : Irreducib
 /-- The factor `H` extracted from Claim 5.7 has positive degree in the `Y` variable, matching the
 Appendix A hypotheses needed for the function field construction. -/
 lemma natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
-    0 < (H k δ x₀ h_gs).natDegree := by
-  sorry
+    0 < (H k δ x₀ h_gs).natDegree :=
+  (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.2.1
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 from [BCIKS20].
