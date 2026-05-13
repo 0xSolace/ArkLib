@@ -41,18 +41,16 @@ lemma dotProduct_rightpad {R} [CommSemiring R]
 
 /-- A rectangular matrix `A` has a left pseudoinverse, if there exists a matrix `B` such that
 `B * A = 1`. -/
-def hasLeftPseudoInverse (A : Matrix ℓ ℓ' F) : Prop :=
-    ∃ B : Matrix ℓ' ℓ F, B * A = 1
+def HasLeftPseudoInverse (A : Matrix ℓ ℓ' F) : Prop := ∃ B : Matrix ℓ' ℓ F, B * A = 1
 
 /-- A matrix `B` is a left pseudoinverse of a matrix `A` if `B * A = 1`. -/
-def isLeftPseudoInverse (A : Matrix ℓ ℓ' F) (B : Matrix ℓ' ℓ F) : Prop :=
-    B * A = 1
+def IsLeftPseudoInverse (A : Matrix ℓ ℓ' F) (B : Matrix ℓ' ℓ F) : Prop := B * A = 1
 
 /-- For a matrix `A`, if the determinant of `A^T * A` is a unit, then `A^T * A * A^T` is a left
 pseudoinverse of `A`. Here `A^T` denotes the transpose of `A`. -/
 lemma leftPseudoInverse_transpose_mul_self (A : Matrix ℓ ℓ' F) (hA : IsUnit (A.transpose * A).det) :
-    isLeftPseudoInverse A ((A.transpose * A)⁻¹ * A.transpose) := by
-  unfold isLeftPseudoInverse
+    IsLeftPseudoInverse A ((A.transpose * A)⁻¹ * A.transpose) := by
+  unfold IsLeftPseudoInverse
   simp only [Matrix.mul_assoc]
   exact Matrix.nonsing_inv_mul _ hA
 

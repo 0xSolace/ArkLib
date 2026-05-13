@@ -57,11 +57,11 @@ is an MCA generator with the same error `ε_mca` as `G`.
 Lemma 4.1 [BSGM25]. -/
 lemma pseudoinverseGen [DecidableEq ℓ'] [Nonempty S] (G : Generator S ℓ F) (ε_mca : I → I)
   (LC : LinearCode ι F) (hGMCA : IsMCAGenerator G ε_mca LC)
-  (A : Matrix ℓ ℓ' F) (hA : hasLeftPseudoInverse A) :
+  (A : Matrix ℓ ℓ' F) (hA : HasLeftPseudoInverse A) :
     IsMCAGenerator (generatorByRightMul G A) ε_mca LC := by
   intro U γ
   have isMCA_generatorByRightMul_of_isMCA (x : S) :
-    IsMCA (generatorByRightMul G A) LC x U γ → IsMCA G LC x (matrixMulCodewords A U) γ := by
+IsMCA (generatorByRightMul G A) LC x U γ → IsMCA G LC x (matrixMulCodewords A U) γ := by
     obtain ⟨B, hB⟩ := hA
     rintro ⟨T, hT_card, hT_proj, j, hj⟩
     refine ⟨T, hT_card, ?_, ?_⟩
