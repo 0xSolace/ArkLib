@@ -469,6 +469,44 @@ theorem δ_ε_correlatedAgreementCurves_iff_epsCA_curves_le {k : ℕ}
     · rw [if_neg hjp] at h_term_le
       exact absurd h_pr (not_lt.mpr h_term_le)
 
+/-- **Probability union bound for finitely-indexed existentials.** For a `Fin t`-indexed
+family of predicates `f k : α → Prop`:
+
+  `Pr_{D}[∃ k, f k r] ≤ ∑ k : Fin t, Pr_{D}[f k r]`.
+
+Used in the proof of ABF26 Lemma 4.7. Local to this file; could be promoted to
+`ArkLib/Data/Probability/Instances.lean` if reused elsewhere. -/
+theorem Pr_exists_Fin_le_sum {α : Type} (D : PMF α) {t : ℕ} (f : Fin t → α → Prop) :
+    Pr_{ let r ← D }[ ∃ k, f k r ] ≤ ∑ k, Pr_{ let r ← D }[ f k r ] := by
+  classical
+  rw [prob_tsum_form_singleton]
+  have h_rhs : (∑ k : Fin t, Pr_{ let r ← D }[ f k r ]) =
+               ∑ k : Fin t, ∑' r, D r * (if f k r then (1 : ENNReal) else 0) := by
+    refine Finset.sum_congr rfl fun k _ => ?_
+    exact prob_tsum_form_singleton _ _
+  rw [h_rhs]
+  -- Swap finite sum with tsum (Fubini for ENNReal, where summability is automatic).
+  rw [← Summable.tsum_finsetSum (fun _ _ => ENNReal.summable)]
+  -- Pull D r out of the inner finite sum.
+  have h_mul : ∀ r, (∑ k : Fin t, D r * (if f k r then (1 : ENNReal) else 0)) =
+                    D r * (∑ k : Fin t, if f k r then (1 : ENNReal) else 0) :=
+    fun r => Finset.mul_sum _ _ _ |>.symm
+  rw [tsum_congr (fun r => h_mul r)]
+  -- Pointwise bound: `D r * I[∃ k, f k r] ≤ D r * ∑ k, I[f k r]`.
+  apply ENNReal.tsum_le_tsum
+  intro r
+  apply mul_le_mul_of_nonneg_left _ (zero_le _)
+  by_cases h : ∃ k, f k r
+  · rw [if_pos h]
+    obtain ⟨k₀, hk₀⟩ := h
+    calc (1 : ENNReal)
+        = if f k₀ r then 1 else 0 := by rw [if_pos hk₀]
+      _ ≤ ∑ k : Fin t, if f k r then (1 : ENNReal) else 0 :=
+          Finset.single_le_sum (f := fun k => if f k r then (1 : ENNReal) else 0)
+            (fun _ _ => zero_le _) (Finset.mem_univ k₀)
+  · rw [if_neg h]
+    exact zero_le _
+
 /-- **Bridge for affine spaces.** The predicate `δ_ε_correlatedAgreementAffineSpaces C δ ε`
 (from `Basic.lean`, threshold `ε`) is equivalent to `epsCA_affineSpaces C k δ δ ≤ ε`. Same
 proof recipe as the `AffineLines` and `Curves` bridges. -/
