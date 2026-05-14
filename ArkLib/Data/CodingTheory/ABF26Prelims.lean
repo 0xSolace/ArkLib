@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Algebra.Order.Floor.Defs
 import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Data.NNReal.Basic
+import ArkLib.Data.CodingTheory.Basic.RelativeDistance
 
 /-!
 # Preliminaries specific to ABF26
@@ -75,6 +76,20 @@ lemma restrictedRelHammingDist_self
     {ι : Type*} [DecidableEq ι] {α : Type*} [DecidableEq α]
     (T : Finset ι) (f : ι → α) : restrictedRelHammingDist T f f = 0 := by
   simp [restrictedRelHammingDist]
+
+/-- **Bridge to `Code.relHammingDist`.** When `T = Finset.univ`, the restricted relative
+Hamming distance coincides with ArkLib's existing `Code.relHammingDist` (cast to `ℝ≥0`).
+Lets downstream theorems convert freely between the paper's `Δ_T` (this file) and the
+existing `δᵣ(u, v)` notation in `Basic/RelativeDistance.lean`. -/
+lemma restrictedRelHammingDist_univ
+    {ι : Type*} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type*} [DecidableEq F] (f g : ι → F) :
+    restrictedRelHammingDist Finset.univ f g
+      = ((Code.relHammingDist f g : ℚ≥0) : ℝ≥0) := by
+  simp only [restrictedRelHammingDist, Code.relHammingDist, hammingDist,
+    Finset.card_univ]
+  push_cast
+  rfl
 
 /-- **ABF26 Definition 2.4.** Volume of the Hamming ball of relative radius `δ` over an
 alphabet of size `q` and block length `n`:

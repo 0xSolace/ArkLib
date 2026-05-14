@@ -154,7 +154,7 @@ Each axis below is a sweep across all files committed in this session.
 
 | New name | Existing peer | Status | Action |
 | --- | --- | --- | --- |
-| `CodingTheory.restrictedRelHammingDist` | `relHammingDist`, `relDistFromCode` in `Basic/RelativeDistance.lean` | ⏳ | Consider relocating to `Basic/RelativeDistance.lean`; add a one-line lemma `restrictedRelHammingDist Finset.univ f g = relHammingDist f g`. |
+| `CodingTheory.restrictedRelHammingDist` | `Code.relHammingDist`, `Code.relDistFromCode` in `Basic/RelativeDistance.lean` | 🔧 | Added `restrictedRelHammingDist_univ : restrictedRelHammingDist Finset.univ f g = (Code.relHammingDist f g : ℝ≥0)`. Lets downstream theorems convert freely between paper's `Δ_T` and existing `δᵣ(u, v)`. Bridge proved (not admitted). |
 | `CodingTheory.hammingBallVolume` | `hammingBall : Set` in `ListDecodability.lean` | ⏳ | Add bridge `hammingBallVolume q δ n = (hammingBall y ⌊δ·n⌋).toFinset.card`. Useful for L3.7's eventual proof anyway. |
 | `CodingTheory.qEntropy` | `Real.negMulLog`, Mathlib's binary-entropy lemmas | ⏳ | Confirm Mathlib has no q-ary entropy. If so, keep ours; if it grows one, alias. |
 | `JohnsonBound.Jcap` vs existing `J` (= paper's `J_q`) | `JohnsonBound.J` | ⏳ | Naming clash is documented in docstring. Option A: keep both with prominent docstring. Option B: rename existing `J` → `Jq`, then `J := Jcap` matches paper. Option B is a breaking change; defer decision. |
@@ -212,7 +212,7 @@ After each fix: `./scripts/validate.sh` must pass.
 
 Apply 2b actions in dependency order:
 
-1. **B1.** Add `restrictedRelHammingDist Finset.univ f g = relHammingDist f g` bridge.
+1. **B1.** ✅ Add `restrictedRelHammingDist Finset.univ f g = (Code.relHammingDist f g : ℝ≥0)` bridge.
 2. **B2.** Add `hammingBallVolume_eq_ncard_hammingBall` bridge.
 3. **B3.** Add `IsSubspaceDesign_iff_comprehension` (settles 2b row).
 4. **B4.** Add `extensionCode_eq_encoder_image` bridge.
