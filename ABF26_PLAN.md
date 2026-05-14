@@ -797,16 +797,23 @@ diff.
 
 - **Paper location**: §4.1 page 17, Remark 4.2.
 - **Statement**: For `β, β' ∈ [0, 1/n)`: `ε_ca(C, δ, δ+β) = ε_ca(C, δ, δ+β') = ε_ca(C, δ, δ)`.
-- **Status**: missing.
-- **Target Lean name**: `ProximityGap.epsCA_discretize`.
+- **Status**: ✅ present (closed by the R4.2 commit; level-set form
+  `epsCA_eq_of_floor_eq` proved).
+- **Target Lean name**: `ProximityGap.epsCA_eq_of_floor_eq` (general level-set form).
+  The paper's β-shift idiom is a corollary in the regime where `δ_int * n ∈ ℕ`.
 - **Target file**: same as D4.1.
 - **Direct dependencies (paper)**: D4.1.
 - **Reverse dependencies**: R4.10.
 - **Target PR**: Phase 1 PR 1.
 - **Sub-tasks**:
-  1. State.
-  2. Prove via `Δ(f,g) ∈ {0, 1/n, ..., 1}` granularity.
-  3. Update audit doc.
+  1. ✅ State.
+  2. ✅ Prove via `Δ(f,g) ∈ {0, 1/n, ..., 1}` granularity (via the existing
+    `relDistFromCode_le_iff_distFromCode_le` lemma in `Basic/RelativeDistance.lean`).
+  3. ✅ Update audit doc.
+- **Note on paper formulation**: the paper's exact wording (`ε_ca(C, δ, δ + β) = ε_ca(C, δ, δ)`
+  for `β ∈ [0, 1/n)`) holds when `δ * n ∈ ℕ` but can fail at non-aligned `δ`, because shifting
+  by `β` could cross a multiple-of-`1/n` boundary. The general level-set form proved here is
+  the mathematically correct version.
 
 #### ABF26-D4.3 — Mutual correlated agreement error `ε_mca(C, δ)`
 
@@ -1258,8 +1265,9 @@ convenience.
   `BCIKS20/ListDecoding/*`, `BCIKS20/WeightedAgreement.lean`, and
   `DG25/MainResults.lean`. Phase 2 PR list below is re-scoped accordingly.
 - **Phase 1 PR 1**: ✅ D2.8 (Lambda, commit `7c913b3b`), ✅ D4.1 (`d18627fd`),
-  ✅ D4.3 (`10245caf`), R4.2 pending, ✅ R4.4 (`d18627fd`),
+  ✅ D4.3 (`10245caf`), ✅ R4.2 (R4.2 finish commit), ✅ R4.4 (`d18627fd`),
   ✅ F4.5 (chain `c053b38d` → `71084417` → `bddcec81` → `1ec90bf1`).
+  **Phase 1 PR 1 complete.**
 - **Phase 1 PR 2**: L4.6, L4.7.
 - **Phase 1 PR 3**: bridging lemmas + WHIR re-expression (does not touch the
   3 non-conjectural sorries in `Whir/MutualCorrAgreement.lean`, which stay

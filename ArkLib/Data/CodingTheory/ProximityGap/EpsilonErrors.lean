@@ -292,6 +292,31 @@ theorem epsPG_le_epsCA_le_epsMCA (MC : Submodule F (ι → A)) (δ : ℝ≥0) :
     epsCA (F := F) (MC : Set (ι → A)) δ δ ≤ epsMCA (F := F) (MC : Set (ι → A)) δ :=
   ⟨epsPG_le_epsCA MC δ, epsCA_le_epsMCA MC δ⟩
 
+/-- **ABF26 Remark 4.2 (level-set form).** Because relative Hamming distance only takes
+values in `{0, 1/n, ..., 1}`, the predicate `jointProximity C u δ_int` (which is
+`δᵣ(⋈|u, C^⋈ 2) ≤ δ_int`) depends on `δ_int` only through `⌊δ_int · n⌋`. Hence `epsCA C δ_fld δ_int`
+is constant on every "level set" `[k/n, (k+1)/n)` of `δ_int`.
+
+The paper states this with a "shift by `β, β' ∈ [0, 1/n)`" idiom (`ε_ca(C, δ, δ + β) =
+ε_ca(C, δ, δ + β')`); that form follows from this lemma whenever the interval
+`[δ + min β β', δ + max β β']` does not cross a multiple of `1/n` — in particular when
+`δ` is itself such a multiple. -/
+theorem epsCA_eq_of_floor_eq (C : Set (ι → A)) (δ_fld δ_int δ_int' : ℝ≥0)
+    (h : Nat.floor (δ_int * Fintype.card ι) = Nat.floor (δ_int' * Fintype.card ι)) :
+    epsCA (F := F) C δ_fld δ_int = epsCA (F := F) C δ_fld δ_int' := by
+  unfold epsCA
+  apply iSup_congr
+  intro u
+  -- jointProximity is determined by `Δ₀ ≤ ⌊δ · n⌋` via `relDistFromCode_le_iff_distFromCode_le`,
+  -- so it agrees on `δ_int` and `δ_int'` whenever the floors agree.
+  have h_iff : jointProximity (C := C) (u := u) δ_int ↔
+               jointProximity (C := C) (u := u) δ_int' := by
+    unfold jointProximity
+    rw [relDistFromCode_le_iff_distFromCode_le, relDistFromCode_le_iff_distFromCode_le, h]
+  by_cases hjp : jointProximity (C := C) (u := u) δ_int
+  · rw [if_pos hjp, if_pos (h_iff.mp hjp)]
+  · rw [if_neg hjp, if_neg (mt h_iff.mpr hjp)]
+
 end
 
 end ProximityGap
