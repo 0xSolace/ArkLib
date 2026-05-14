@@ -60,7 +60,7 @@ trusted blindly.
 | D2.13 | `ReedSolomon.Interleaved.irsCode` | 🔧 | **Rounding documented.** Decision: keep unguarded `k / s` (Nat truncated division) in the definition so degenerate regimes type-check; downstream paper-quoting theorems (e.g. `dim(IRS) = k`) must add `s ∣ k` themselves. Docstring spells out the convention. |
 | D2.14 | `ReedSolomon.Folded.Admissible` | ⏳ | Paper uses unordered pairs `binom(L, 2)`; my version uses ordered `∀ α β ∈ L, α ≠ β`. The asymmetric formula `α · ω^i ≠ β` means ordered is *stronger* than what the paper said but presumably equivalent. Confirm. |
 | D2.15 | `ReedSolomon.Folded.frsCode` | 🔧 | **Aligned to `Polynomial.degreeLT`.** Changed `∃ p, p.degree < k ∧ …` to `∃ p ∈ Polynomial.degreeLT F k, …` matching `ReedSolomon.code`'s convention. The encoding `domain x * ω ^ j` matches the paper's `x · ω^j` (left-multiplication). |
-| D2.16 | `CodingTheory.IsSubspaceDesign` | ⚠ | `LinearMap.proj` formulation for `A_i` is technical; paper uses comprehension `{a ∈ A : a_i = 0^s}`. Add an equivalence lemma; pick one formulation as canonical. Also: paper requires `dim A ≤ r`, but `r ∈ ℕ` while `dim` lives in `ℕ∞` (here truncated to `Module.finrank` returning `ℕ`). Confirm infinite-dim ruled out. |
+| D2.16 | `CodingTheory.IsSubspaceDesign` | 🔧 | **Equivalence bridge added** (`ker_proj_eq_vanish_at`): `(ker(LinearMap.proj i) : Set _) = {a | a i = 0}`, proving the paper's comprehension form is exactly the kernel used in the definition. Outstanding concern (now isolated): paper's `dim A ≤ r` for `r : ℕ` rules out infinite-dim by construction; `Module.finrank` returns `0` for infinite-dim modules which makes the constraint vacuous there. Document if it bites downstream. |
 | L2.17 | `CodingTheory.subspaceDesign_tau_lower` | ⏳ | "rate `ρ`" in paper is implicit from `C`; my version uses `Module.finrank F C / Fintype.card ι` directly. Check this matches `LinearCode.rate` definition. |
 | T2.18 | `CodingTheory.frs_is_subspaceDesign_gk16` | 🔧 | **Off-by-one in τ profile fixed.** Changed `Finset.range s` → `Finset.Icc 1 s` so `r ∈ {1, …, s}` matches paper's `[s]`. Docstring updated to call out the one-based convention. |
 
@@ -159,7 +159,7 @@ Each axis below is a sweep across all files committed in this session.
 | `CodingTheory.qEntropy` | `Real.negMulLog`, Mathlib's binary-entropy lemmas | ⏳ | Confirm Mathlib has no q-ary entropy. If so, keep ours; if it grows one, alias. |
 | `JohnsonBound.Jcap` vs existing `J` (= paper's `J_q`) | `JohnsonBound.J` | ⏳ | Naming clash is documented in docstring. Option A: keep both with prominent docstring. Option B: rename existing `J` → `Jq`, then `J := Jcap` matches paper. Option B is a breaking change; defer decision. |
 | `CodingTheory.ExtensionFieldPresentation` | `Algebra B F`, `Module.Finite`, `Basis` (Mathlib) | ⏳ | Verify whether we can derive `(ψ, e, φ)` from `Algebra B F + FiniteDimensional B F + chooseBasis`. If yes, refactor to a thin wrapper, halving the structure size. |
-| `CodingTheory.IsSubspaceDesign` formulation | `LinearMap.proj` vs comprehension | ⚠ | Add `IsSubspaceDesign_iff_comprehension` equivalence. Pick canonical form based on which is easier to use in T3.4 / T4.13 proofs. |
+| `CodingTheory.IsSubspaceDesign` formulation | `LinearMap.proj` vs comprehension | 🔧 | Added `ker_proj_eq_vanish_at`: a `Set`-level equality showing `(ker (LinearMap.proj i) : Set _) = {a | a i = 0}`. Proves the paper's comprehension form is exactly the kernel used in the definition. Lemma proved (one-line `ext` + `simp`). |
 | `ReedSolomon.Interleaved.irsCode` | `interleavedCodeSet`, `^⋈` notation | ⏳ | One-liner; consider `abbrev` instead of `noncomputable def`. Or drop entirely and inline at call sites if not pulling weight. |
 | `ReedSolomon.Folded.frsCode` | `ReedSolomon.code` using `Polynomial.degreeLT` | ⚠ | My version uses `p.degree < k`; align to `Polynomial.degreeLT F k.map evalOnPoints`-style for consistency. |
 | `CodingTheory.extensionCode` | encoder-image vs set-of-codewords | ⚠ | Add equivalence lemma so callers can use either view interchangeably. |
@@ -214,7 +214,7 @@ Apply 2b actions in dependency order:
 
 1. **B1.** ✅ Add `restrictedRelHammingDist Finset.univ f g = (Code.relHammingDist f g : ℝ≥0)` bridge.
 2. **B2.** ✅ Add `hammingBallVolume_eq_ncard_hammingBall` bridge (tagged sorry).
-3. **B3.** Add `IsSubspaceDesign_iff_comprehension` (settles 2b row).
+3. **B3.** ✅ Add `ker_proj_eq_vanish_at` Set-level bridge (proved).
 4. **B4.** Add `extensionCode_eq_encoder_image` bridge.
 5. **B5.** (Optional, deferred) Refactor `ExtensionFieldPresentation` to thin Mathlib wrapper.
 

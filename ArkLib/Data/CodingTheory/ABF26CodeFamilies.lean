@@ -140,6 +140,21 @@ def IsSubspaceDesign {ι : Type} [Fintype ι]
         / Fintype.card ι ≤
       Module.finrank F A * τ r
 
+/-- **Bridge: kernel of the `i`-th projection equals the comprehension `{a | a i = 0}`.**
+
+The subspace `A_i := {a ∈ A : a_i = 0^s}` from the paper's `IsSubspaceDesign` definition
+is `A ⊓ ker(LinearMap.proj i)`. This lemma confirms the underlying set: a word
+`a : ι → Fin s → F` lies in `ker(proj i)` iff `a i = 0`. Combined with `Submodule.inf_*`
+this lets downstream proofs rewrite freely between the technical `ker(proj i)` form (used
+in the `IsSubspaceDesign` definition for type-class reasons) and the paper's
+comprehension form. -/
+lemma ker_proj_eq_vanish_at {ι : Type*} {F : Type*} [Semiring F] {s : ℕ} (i : ι) :
+    (LinearMap.ker (LinearMap.proj (R := F) (φ := fun _ : ι => Fin s → F) i)
+        : Set (ι → Fin s → F))
+      = {a | a i = 0} := by
+  ext a
+  simp [LinearMap.mem_ker, LinearMap.proj_apply]
+
 /-- **ABF26 Lemma 2.17 [GG25].** For any τ-subspace-design code of rate `ρ`, the
 profile `τ` is lower-bounded by `ρ - 1/n`:
 
