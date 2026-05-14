@@ -365,15 +365,15 @@ diff.
 - **Reverse dependencies**: D2.10, all of §3, D4.3, L6.6, L6.8.
 - **Target PR**: Phase 1 PR 1 (because D4.3 ε_mca uses `Lambda`).
 - **Sub-tasks**:
-  1. Define `Lambda_at`.
-  2. Define `Lambda` as a `ℕ∞`-valued max.
-  3. Prove monotonicity: `δ₁ ≤ δ₂ → Lambda C δ₁ ≤ Lambda C δ₂`.
-  4. Prove `Lambda C δ ≤ (C.toFinset).card`.
-  5. Prove `0 ≤ Lambda C δ`.
-  6. Add notation `scoped notation "Λ(" C ", " δ ")" => ListDecodable.Lambda C δ` and `"Λ(" C ", " δ ", " f ")"` for the point variant.
-  7. Update audit doc.
-- **Acceptance**: monotonicity and bound proved.
-- **Open questions**: `ℕ∞` vs `ℕ` for `Lambda` — `ℕ∞` is safer for non-finite codes but ArkLib's codes are typically finite. Recommend `ℕ∞` for consistency with `distFromCode`.
+  1. ✅ Define `Lambda_at` (commit `7c913b3b`).
+  2. ✅ Define `Lambda` as a `ℕ∞`-valued max (commit `7c913b3b`).
+  3. ✅ Prove monotonicity `δ₁ ≤ δ₂ → Lambda C δ₁ ≤ Lambda C δ₂` (`Lambda_mono`).
+  4. ✅ Prove `Lambda C δ ≤ (C.ncard : ℕ∞)` for finite `C` (`Lambda_le_ncard`).
+  5. N/A — `ℕ∞ ≥ 0` is automatic; no separate lemma needed.
+  6. Skipped per decision D2 (descriptive names only, no `Λ` macro).
+  7. ✅ Update audit doc.
+- **Acceptance**: monotonicity and bound proved. ✅ Met.
+- **Open questions**: `ℕ∞` vs `ℕ` for `Lambda` — **decided `ℕ∞`** for consistency with `distFromCode`; recorded in plan §6 D1.
 
 #### ABF26-L2.10 — Interleaved-code list-size bound
 
@@ -781,15 +781,15 @@ diff.
 - **Reverse dependencies**: R4.2, F4.5, L4.6, T4.8, T4.9, R4.10, T4.11, T4.16–T4.18, L4.19, T5.2, T5.3, T5.4, §6.
 - **Target PR**: Phase 1 PR 1.
 - **Sub-tasks**:
-  1. Create file.
-  2. Define `ProximityGap.epsCA` as the supremum over pairs of words of the joint probability.
-  3. Special-case alias `epsCA' C δ := epsCA C δ δ` (matches the paper's no-loss case).
-  4. Prove `epsCA C δ δ ≤ epsCA C δ δ'` for `δ ≤ δ'` (monotonicity in `δ_int`).
-  5. Prove `epsCA C δ_fld₁ δ_int ≤ epsCA C δ_fld₂ δ_int` for `δ_fld₁ ≤ δ_fld₂` (monotonicity in `δ_fld`).
-  6. Add bridging lemma: `δ_ε_correlatedAgreementAffineLines C δ ε ↔ epsCA C δ δ ≤ ε`.
-  7. Update audit doc.
-- **Acceptance**: definition + monotonicity + bridge.
-- **Open questions**: F-additive vs F-linear case — paper handles F-additive, ArkLib has both. Use F-additive parameter.
+  1. ✅ Create file `ProximityGap/EpsilonErrors.lean` (commit `d18627fd`).
+  2. ✅ Define `ProximityGap.epsCA` as the supremum over pairs of words of the joint probability.
+  3. ✅ Special-case alias `epsCA' C δ := epsCA C δ δ`.
+  4. **Pending**: prove `epsCA C δ_fld δ_int' ≤ epsCA C δ_fld δ_int` for `δ_int ≤ δ_int'` (**antitone** in `δ_int`; previous plan text gave the wrong direction).
+  5. **Pending**: prove `epsCA C δ_fld₁ δ_int ≤ epsCA C δ_fld₂ δ_int` for `δ_fld₁ ≤ δ_fld₂` (monotone in `δ_fld`).
+  6. **Pending**: add bridging lemma `δ_ε_correlatedAgreementAffineLines C δ ε ↔ epsCA C δ δ ≤ ε`.
+  7. ✅ Update audit doc.
+- **Acceptance**: definition + monotonicity + bridge. **Partial**: definition met; monotonicity and bridge still pending.
+- **Open questions**: F-additive vs F-linear case — paper handles F-additive, ArkLib has both. Used `Module F A` (which subsumes both via choice of `A`).
 
 #### ABF26-R4.2 — ε_ca discretization
 
@@ -817,11 +817,11 @@ diff.
 - **Reverse dependencies**: R4.4, F4.5, L4.6, L4.7, T4.8 (RS variant), T4.9.1, T4.11–T4.15, L6.6, L6.8, L6.10.
 - **Target PR**: Phase 1 PR 1.
 - **Sub-tasks**:
-  1. Define `epsMCA`.
-  2. Re-express existing `MutualCorrAgreement.hasMutualCorrAgreement` as `epsMCA ≤ errStar δ`.
-  3. Bridge lemma.
-  4. Update audit doc.
-- **Open questions**: Existential quantifier over `S` makes this a `sSup`/probability over sets — formalize carefully via `Finset.filter` plus a coordinate-wise predicate.
+  1. ✅ Define `epsMCA` plus helper preds `pairJointAgreesOn` and `mcaEvent` (commit `10245caf`). Existential over `S` is expressed directly as a `Prop` inside `Pr_{...}[...]`; `open Classical in` makes the resulting decidability work.
+  2. **Pending**: re-express `MutualCorrAgreement.hasMutualCorrAgreement` as a specialization of `epsMCA`.
+  3. **Pending**: bridge lemma `δ_ε_correlatedAgreement* ↔ epsMCA ≤ ε`.
+  4. ✅ Update audit doc.
+- **Open questions**: `mcaEvent` is currently `Fin 2`-only; generalization to `Fin ℓ` interleavings is future work. Helpers `pairJointAgreesOn`/`mcaEvent` are currently public — flag for later if they should be `private`.
 
 #### ABF26-R4.4 — No MCA-with-proximity-loss
 

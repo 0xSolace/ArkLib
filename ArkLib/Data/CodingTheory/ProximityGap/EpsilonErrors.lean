@@ -29,7 +29,38 @@ predicate-style API in [`Basic.lean`](Basic.lean); each predicate has a bridging
 
 The paper intentionally does **not** define a proximity-loss variant of `ε_mca` analogous to
 `ε_ca(C, δ_fld, δ_int)`. Per Remark 4.4 this remains to be thoroughly explored, so this file
-exposes only the no-loss `ε_mca(C, δ)` (added in a follow-up commit).
+exposes only the no-loss `ε_mca(C, δ)`.
+
+## Open follow-ups
+
+The following items from ABF26 Section 4 are tracked in `ABF26_PLAN.md` §7 and remain to be
+added on top of this file's definitions. Each is in scope for Phase 1 of the plan:
+
+- **Monotonicity / antitonicity of `epsCA`** (ABF26-D4.1 sub-tasks 4–5). `epsCA` is
+  *monotone* in `δ_fld` (larger fold-distance ⇒ more `γ` in the event) and **antitone**
+  in `δ_int` (larger interleaved-distance ⇒ stricter `Δ_joint > δ_int` condition).
+- **ABF26 Remark 4.2** — discretization: `epsCA C δ (δ + β) = epsCA C δ (δ + β')` for
+  `β, β' ∈ [0, 1/n)`. Follows from `Δ ∈ {0, 1/n, ..., 1}`.
+- **ABF26 Fact 4.5** — `ε_pg ≤ ε_ca ≤ ε_mca`. Requires defining `epsPG` first.
+- **ABF26 Lemma 4.6** — `ε_mca = ε_ca` below `δ_min(C)/2`. Proof leans on the helper
+  predicates `pairJointAgreesOn` and `mcaEvent` defined here.
+- **ABF26 Lemma 4.7** — `ε_mca(C^≡t, δ) ≤ t · ε_mca(C, δ)` via union bound.
+- **Bridging lemmas**: `δ_ε_correlatedAgreementAffineLines C δ ε ↔ epsCA C δ δ ≤ ε` (and
+  similar for `Curves`, `AffineSpaces`) connecting the predicate API in `Basic.lean` to the
+  numeric API here.
+
+## Design notes worth flagging
+
+- **`F` is implicit in `epsCA` but does not appear in its return type**, so callers that
+  invoke `epsCA` without an explicit pair `(f₁, f₂)` (e.g. inside `epsCA'`) need
+  `epsCA (F := F) C δ δ` to thread `F` through. If this becomes painful in proofs,
+  switching `epsCA` to take `F` as an explicit argument is a cheap refactor.
+- **`epsMCA` and `mcaEvent` are `Fin 2`-only** (the affine-line case). Paper Section 4
+  considers more general interleavings; generalizing to `Fin ℓ` is a future extension,
+  not required for F4.5 or L4.6.
+- **`pairJointAgreesOn` and `mcaEvent` are intentionally public**, exposed as named
+  anchors for the planned L4.6 proof and bridging lemmas. If they prove unhelpful in
+  practice they can be inlined / marked `private`.
 
 ## References
 
