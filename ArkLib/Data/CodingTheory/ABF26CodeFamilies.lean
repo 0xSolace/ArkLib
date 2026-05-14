@@ -78,12 +78,8 @@ the use site; we keep the definition itself unguarded so degenerate parameter re
 type-check uniformly. -/
 noncomputable def irsCode {ι : Type} [Fintype ι] [DecidableEq ι]
     {F : Type} [Field F] [DecidableEq F]
-    (domain : ι ↪ F) (k s : ℕ) : Submodule F (ι → Fin s → F) where
-  carrier := Code.interleavedCodeSet (κ := Fin s)
-    ((ReedSolomon.code domain (k / s) : Set (ι → F)))
-  add_mem' hU hV j := (ReedSolomon.code domain (k / s)).add_mem (hU j) (hV j)
-  zero_mem' _ := (ReedSolomon.code domain (k / s)).zero_mem
-  smul_mem' c _ hV j := (ReedSolomon.code domain (k / s)).smul_mem c (hV j)
+    (domain : ι ↪ F) (k s : ℕ) : Submodule F (ι → Fin s → F) :=
+  (ReedSolomon.code domain (k / s)) ^⋈ (Fin s)
 
 end Interleaved
 

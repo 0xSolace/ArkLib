@@ -274,6 +274,31 @@ Items surfaced by the ModuleCode-unification review:
 5. **E5.** ⏸ B5 deferred (see above) — Mathlib structural refactor of
    `ExtensionFieldPresentation`. Would unlock E4's proof.
 
+### Pass F: Round-3 integration with ArkLib conventions
+
+Audit + refactors driven by the question "what else can be unified with existing
+ArkLib defs / notations / conventions?":
+
+1. **F-A. `δᵣ C` / `minRelHammingDistCode`** — skipped. `δᵣ C` returns `ℚ≥0`; my
+   statements use `ℝ` for paper-faithful real bounds. Switching would *add* casts,
+   not remove them. Current `(Code.minDist C : ℝ) / Fintype.card ι` form stays.
+2. **F-B. `Code ι α` vs `Set (ι → α)`** — skipped. `Code` abbrev is local to
+   `ListDecodability.lean`; the rest of ArkLib (BCIKS20, ProximityGap.Basic, …)
+   uses `Set (ι → α)` directly. Switching mine would create new inconsistency.
+3. **F-C.** 🔧 `^⋈` notation for `irsCode` — refactored to
+   `(ReedSolomon.code domain (k / s)) ^⋈ (Fin s)` via `ModuleCode`'s
+   `CodeInterleavable` instance. `irsCode` is now a 1-line def.
+4. **F-D. `frsEvalOnPoints` from `evalOnPoints`** — skipped. The two encoders have
+   genuinely different return shapes (`ι → Fin s → F` vs `ι → F`); deriving one
+   from the other would require an artificial wrapper. Not a clean refactor.
+5. **F-E.** 🔧 `IsMDS` predicate added to `JohnsonBound/ABF26.lean`. `mds_johnson_lambda_le`
+   now takes `IsMDS C ρ` instead of the inlined Singleton-tight equation. Reusable
+   for any future MDS-conditional theorem.
+6. **F-F.** ✅ `closeCodewordsRel` → `Lambda_at` consistency: verified clean across
+   all new files. C3.5 refactor caught the only straggler.
+7. **F-G.** ✅ `Polynomial.degree < k` → `degreeLT F k` consistency: verified clean
+   across all new files.
+
 ### Final validation
 
 - `./scripts/validate.sh` full pass.
