@@ -776,7 +776,7 @@ diff.
 
 - **Paper location**: §4.1 page 17, Definition 4.1.
 - **Statement**: `ε_ca(C, δ_fld, δ_int) := max_{f₁,f₂ ∈ (F^s)^n} Pr_{γ ← F}[Δ(f₁ + γ·f₂, C) ≤ δ_fld ∧ Δ((f₁,f₂), C^≡2) > δ_int]`.
-- **Status**: ✅ present (closed by commit `d18627fd`; monotonicity in both arguments and the `AffineLines` bridge subsequently added in `cbb08f5c`, `39cd9a67`. `Curves` and `AffineSpaces` bridges remain as follow-ups).
+- **Status**: ✅ present (closed by commit `d18627fd`; subsequently extended with monotonicity in both arguments (`cbb08f5c`) and bridges to all three predicate-style API variants — `AffineLines` (`39cd9a67`), `Curves` (`3467a90b`), and `AffineSpaces` (this commit)).
 - **Target Lean name**: `ProximityGap.epsCA (C : Submodule F (ι → A)) (δ_fld δ_int : ℝ≥0) : ℝ≥0`.
 - **Target file**: new `ArkLib/Data/CodingTheory/ProximityGap/EpsilonErrors.lean`.
 - **Direct dependencies (paper)**: D2.3, D2.7.
@@ -788,9 +788,9 @@ diff.
   3. ✅ Special-case alias `epsCA' C δ := epsCA C δ δ`.
   4. ✅ `epsCA_antitone_δ_int`: `δ_int ≤ δ_int' → epsCA C δ_fld δ_int' ≤ epsCA C δ_fld δ_int`.
   5. ✅ `epsCA_mono_δ_fld`: `δ_fld ≤ δ_fld' → epsCA C δ_fld δ_int ≤ epsCA C δ_fld' δ_int`.
-  6. ✅ Bridges `δ_ε_correlatedAgreementAffineLines_iff_epsCA_le` and `δ_ε_correlatedAgreementCurves_iff_epsCA_curves_le`. **Pending**: same-shape bridge to `AffineSpaces` predicate.
+  6. ✅ Bridges to all three predicate variants: `δ_ε_correlatedAgreementAffineLines_iff_epsCA_le` (commit `39cd9a67`), `δ_ε_correlatedAgreementCurves_iff_epsCA_curves_le` (commit `3467a90b`), and `δ_ε_correlatedAgreementAffineSpaces_iff_epsCA_affineSpaces_le` (this commit).
   7. ✅ Update audit doc.
-- **Acceptance**: definition + monotonicity + bridge. **Met**: every sub-task closed except the `AffineSpaces` bridge variant.
+- **Acceptance**: definition + monotonicity + bridge. **Met** in full.
 - **Open questions**: F-additive vs F-linear case — paper handles F-additive, ArkLib has both. Used `Module F A` (which subsumes both via choice of `A`).
 
 #### ABF26-R4.2 — ε_ca discretization

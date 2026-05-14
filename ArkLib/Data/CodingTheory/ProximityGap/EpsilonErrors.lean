@@ -28,6 +28,8 @@ predicate-style API in [`Basic.lean`](Basic.lean); each predicate has a bridging
   `ε_ca(C, δ) := ε_ca(C, δ, δ)`.
 - `ProximityGap.epsCA_curves` — `Fin (k+1)`-stack variant: worst-case probability over
   polynomial curves `∑ i, r^i · f_i`. Generalises `epsCA` (the `k = 1` case).
+- `ProximityGap.epsCA_affineSpaces` — `Fin (k+1)`-stack variant: worst-case probability
+  over random points in the affine subspace `f₀ + span{f₁, ..., f_k}`.
 - `ProximityGap.epsMCA` — ABF26 Definition 4.3: mutual correlated agreement error.
 
 ## Note on MCA with proximity loss (ABF26 Remark 4.4)
@@ -152,6 +154,19 @@ noncomputable def epsCA_curves
   ⨆ u : WordStack A (Fin (k + 1)) ι,
     if jointProximity C (u := u) δ_int then (0 : ENNReal)
     else Pr_{let r ← $ᵖ F}[δᵣ(∑ i : Fin (k + 1), (r ^ (i : ℕ)) • u i, C) ≤ δ_fld]
+
+open Classical in
+/-- **ABF26 Definition 4.1, affine-spaces variant.** Worst-case probability over
+`(k+1)`-stacks `u = (f₀, ..., f_k)` and a uniformly random point `y` in the affine
+subspace `f₀ + span{f₁, ..., f_k}` (≡ `Affine.affineSubspaceAtOrigin (u 0) (Fin.tail u)`)
+that `y` is `δ_fld`-close to `C` while the stack is *not* `δ_int`-close to the interleaved
+code `C^⋈ (Fin (k+1))`. Parallels `epsCA` and `epsCA_curves`. -/
+noncomputable def epsCA_affineSpaces
+    (C : Set (ι → A)) (k : ℕ) (δ_fld δ_int : ℝ≥0) : ENNReal :=
+  ⨆ u : WordStack A (Fin (k + 1)) ι,
+    if jointProximity C (u := u) δ_int then (0 : ENNReal)
+    else Pr_{let y ← $ᵖ ↥(Affine.affineSubspaceAtOrigin (F := F) (u 0) (Fin.tail u))}[
+      δᵣ(y.1, C) ≤ δ_fld]
 
 /-- The pair `(u₀, u₁)` jointly agrees with two codewords of `C` on every position in `S`.
 Equivalent in spirit to `Δ_S((u₀, u₁), C^≡2) = 0` from the paper. -/
@@ -448,6 +463,33 @@ theorem δ_ε_correlatedAgreementCurves_iff_epsCA_curves_le {k : ℕ}
       exact h_not_ja (h_pred u h_gt)
   · intro h_eps u h_pr
     unfold epsCA_curves at h_eps
+    have h_term_le := iSup_le_iff.mp h_eps u
+    by_cases hjp : jointProximity (C := C) (u := u) δ
+    · rw [jointAgreement_iff_jointProximity]; exact hjp
+    · rw [if_neg hjp] at h_term_le
+      exact absurd h_pr (not_lt.mpr h_term_le)
+
+/-- **Bridge for affine spaces.** The predicate `δ_ε_correlatedAgreementAffineSpaces C δ ε`
+(from `Basic.lean`, threshold `ε`) is equivalent to `epsCA_affineSpaces C k δ δ ≤ ε`. Same
+proof recipe as the `AffineLines` and `Curves` bridges. -/
+theorem δ_ε_correlatedAgreementAffineSpaces_iff_epsCA_affineSpaces_le {k : ℕ}
+    (C : Set (ι → A)) (δ ε : ℝ≥0) :
+    δ_ε_correlatedAgreementAffineSpaces (F := F) (k := k) C δ ε ↔
+    epsCA_affineSpaces (F := F) C k δ δ ≤ (ε : ENNReal) := by
+  classical
+  constructor
+  · intro h_pred
+    refine iSup_le fun u => ?_
+    by_cases hjp : jointProximity (C := C) (u := u) δ
+    · rw [if_pos hjp]; exact zero_le _
+    · rw [if_neg hjp]
+      have h_not_ja : ¬ jointAgreement (C := C) (W := u) δ := by
+        rw [jointAgreement_iff_jointProximity]; exact hjp
+      by_contra h_gt
+      push Not at h_gt
+      exact h_not_ja (h_pred u h_gt)
+  · intro h_eps u h_pr
+    unfold epsCA_affineSpaces at h_eps
     have h_term_le := iSup_le_iff.mp h_eps u
     by_cases hjp : jointProximity (C := C) (u := u) δ
     · rw [jointAgreement_iff_jointProximity]; exact hjp
