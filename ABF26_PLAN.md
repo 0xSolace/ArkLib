@@ -1274,10 +1274,14 @@ convenience.
   ✅ D4.3 (`10245caf`), ✅ R4.2 (R4.2 finish commit), ✅ R4.4 (`d18627fd`),
   ✅ F4.5 (chain `c053b38d` → `71084417` → `bddcec81` → `1ec90bf1`).
   **Phase 1 PR 1 complete.**
-- **Phase 1 PR 2**: L4.6, L4.7.
-- **Phase 1 PR 3**: bridging lemmas + WHIR re-expression (does not touch the
-  3 non-conjectural sorries in `Whir/MutualCorrAgreement.lean`, which stay
-  during the interface migration).
+- **Phase 1 PR 2**: L4.6 (pending — requires the ACFY25 unique-decoding argument
+  in the `δ < δ_min(C)/2` regime), ✅ L4.7 (commit `32843e78`, built on the local
+  `Pr_exists_Fin_le_sum` helper `70d49126`).
+- **Phase 1 PR 3**: ✅ bridges for all three predicate variants — AffineLines
+  (`39cd9a67`), Curves (`3467a90b`), AffineSpaces (`f6a72e00`); ✅ monotonicity
+  (`cbb08f5c`); WHIR `hasMutualCorrAgreement` re-expression still pending
+  (does not touch the 3 non-conjectural sorries in
+  `Whir/MutualCorrAgreement.lean`, which stay during the interface migration).
 - **Phase 2 PR 1**: `BCIKS20/AffineLines/Main.lean` line-40 sorry
   (`RS_correlatedAgreement_affineLines` non-unique-decoding branch). Closes
   T4.9.1 to fully `present`.
