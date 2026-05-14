@@ -507,6 +507,101 @@ theorem Pr_exists_Fin_le_sum {α : Type} (D : PMF α) {t : ℕ} (f : Fin t → �
   · rw [if_neg h]
     exact zero_le _
 
+/-- Row-extraction: the `k`-th row of a `Fin t → A`-valued word, as an `A`-valued word. -/
+private def row_of {ι : Type} {A : Type} {t : ℕ}
+    (w : ι → (Fin t → A)) (k : Fin t) : ι → A :=
+  fun j => w j k
+
+/-- **ABF26 Lemma 4.7.** For any F-additive code `C` (here: a `Submodule F (ι → A)`) and
+`t : ℕ`: `ε_mca(C^≡t, δ) ≤ t · ε_mca(C, δ)`.
+
+Proof recipe:
+1. `mcaEvent` for the interleaved code at `γ` implies `∃ k`, `mcaEvent` for the `k`-th row
+   restriction (witness set `S` is shared; if every row admitted a joint codeword pair
+   on `S`, assembling them column-by-column would produce a joint codeword pair in
+   `C^⋈ (Fin t)` agreeing on `S`, contradicting the interleaved's "no joint pair" clause).
+2. `Pr_le_Pr_of_implies` lifts the per-`γ` implication to a probability bound.
+3. `Pr_exists_Fin_le_sum` (union bound) splits into a sum over rows.
+4. Each row's probability is bounded by `epsMCA C δ` via `le_iSup`.
+5. Sum-of-constants reduces to `t · epsMCA C δ`. -/
+theorem epsMCA_interleaved_le (C : Submodule F (ι → A)) (t : ℕ) (δ : ℝ≥0) :
+    epsMCA (F := F) (A := Fin t → A) ((C : Set (ι → A))^⋈ (Fin t)) δ ≤
+    (t : ENNReal) * epsMCA (F := F) (A := A) (C : Set (ι → A)) δ := by
+  classical
+  unfold epsMCA
+  apply iSup_le
+  intro u
+  -- Step 1: row-decomposition implication.
+  have h_imp : ∀ γ : F, mcaEvent ((C : Set (ι → A))^⋈ (Fin t)) δ (u 0) (u 1) γ →
+               ∃ k : Fin t,
+                 mcaEvent (C : Set (ι → A)) δ (row_of (u 0) k) (row_of (u 1) k) γ := by
+    intro γ h_int
+    obtain ⟨S, hS_card, ⟨w, hw_mem, hw_eq⟩, h_no_pair_int⟩ := h_int
+    by_contra h_all
+    push Not at h_all
+    -- For each k, ¬ mcaEvent C row k. Specialize at the inherited witness `S`,
+    -- noting that the size and line-agreement clauses hold for every row, so the
+    -- only way mcaEvent fails for row k is via a joint codeword pair on `S`.
+    have h_row_pair :
+        ∀ k : Fin t, ∃ v₀ ∈ (C : Set (ι → A)), ∃ v₁ ∈ (C : Set (ι → A)),
+                     ∀ j ∈ S, v₀ j = row_of (u 0) k j ∧ v₁ j = row_of (u 1) k j := by
+      intro k
+      have h_k := h_all k
+      -- h_k : ¬ ∃ S', size ∧ line-agree-on-S' ∧ ¬ pair-on-S'.
+      -- Specialize at S: ¬ (size_S ∧ line_S ∧ ¬ pair_S). With size_S and line_S
+      -- holding (inherited from interleaved), `¬ pair_S` must fail, i.e., pair_S holds.
+      have h_neg :
+          ¬ ((S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι ∧
+             (∃ w' ∈ (C : Set (ι → A)),
+                ∀ j ∈ S, w' j = row_of (u 0) k j + γ • row_of (u 1) k j) ∧
+             ¬ pairJointAgreesOn (C : Set (ι → A)) S (row_of (u 0) k) (row_of (u 1) k)) :=
+        fun h => h_k ⟨S, h.1, h.2.1, h.2.2⟩
+      -- size_S inherited from `hS_card`.
+      -- line_S: the row-k version of w is in C and agrees on S.
+      have h_size : (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι := hS_card
+      have h_line : ∃ w' ∈ (C : Set (ι → A)),
+                    ∀ j ∈ S, w' j = row_of (u 0) k j + γ • row_of (u 1) k j := by
+        refine ⟨row_of w k, hw_mem k, ?_⟩
+        intro j hj
+        have := hw_eq j hj
+        -- this : w j = u 0 j + γ • u 1 j (as (Fin t → A)). Apply at k.
+        have h_pt : w j k = (u 0 j + γ • u 1 j) k := congrArg (· k) this
+        -- `(u 0 j + γ • u 1 j) k = u 0 j k + γ • u 1 j k`, which unfolds to
+        -- `row_of (u 0) k j + γ • row_of (u 1) k j`.
+        simp only [row_of, Pi.add_apply, Pi.smul_apply] at h_pt ⊢
+        exact h_pt
+      -- So `¬ ¬ pair_S` must hold, i.e., `pair_S` holds (Classical: decidable).
+      have h_pair_or :
+          pairJointAgreesOn (C : Set (ι → A)) S (row_of (u 0) k) (row_of (u 1) k) := by
+        by_contra h_no_pair
+        exact h_neg ⟨h_size, h_line, h_no_pair⟩
+      obtain ⟨v₀, hv₀_mem, v₁, hv₁_mem, h_agree⟩ := h_pair_or
+      exact ⟨v₀, hv₀_mem, v₁, hv₁_mem, h_agree⟩
+    -- Assemble row-witnesses into a joint codeword pair in `C^⋈ (Fin t)`, contradicting
+    -- the interleaved's "no joint pair" clause.
+    apply h_no_pair_int
+    choose V₀_fn hV₀_mem V₁_fn hV₁_mem h_V_agree using h_row_pair
+    -- V₀_fn : Fin t → ι → A,  V₀_fn k j = row k's first witness at j
+    refine ⟨fun j k => V₀_fn k j, ?_, fun j k => V₁_fn k j, ?_, ?_⟩
+    · intro k; exact hV₀_mem k
+    · intro k; exact hV₁_mem k
+    · intro j hj
+      refine ⟨?_, ?_⟩
+      · funext k; exact (h_V_agree k j hj).1
+      · funext k; exact (h_V_agree k j hj).2
+  -- Step 2 + 3: chain through Pr_le_Pr_of_implies and the union bound.
+  refine le_trans (Pr_le_Pr_of_implies _ _ _ h_imp) ?_
+  refine le_trans (Pr_exists_Fin_le_sum _ _) ?_
+  -- Step 4: each summand ≤ epsMCA C δ.
+  refine le_trans (Finset.sum_le_sum (s := (Finset.univ : Finset (Fin t)))
+    (fun k _ => le_iSup
+      (fun v : WordStack A (Fin 2) ι =>
+        Pr_{let γ ← $ᵖ F}[mcaEvent (C : Set (ι → A)) δ (v 0) (v 1) γ])
+      (fun i j => row_of (u i) k j))) ?_
+  -- Step 5: sum-of-constants reduces to t * (epsMCA C δ).
+  rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin]
+  exact le_of_eq (nsmul_eq_mul _ _)
+
 /-- **Bridge for affine spaces.** The predicate `δ_ε_correlatedAgreementAffineSpaces C δ ε`
 (from `Basic.lean`, threshold `ε`) is equivalent to `epsCA_affineSpaces C k δ δ ≤ ε`. Same
 proof recipe as the `AffineLines` and `Curves` bridges. -/

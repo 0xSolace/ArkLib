@@ -880,16 +880,22 @@ diff.
 
 - **Paper location**: §4.1 page 18, Lemma 4.7.
 - **Statement**: `ε_mca(C^≡t, δ) ≤ t · ε_mca(C, δ)`.
-- **Status**: missing.
+- **Status**: ✅ present (closed by L4.7 commit; built on the local `Pr_exists_Fin_le_sum`
+  union-bound helper added in `70d49126`).
 - **Target Lean name**: `ProximityGap.epsMCA_interleaved_le`.
 - **Target file**: same as D4.1.
 - **Direct dependencies (paper)**: D4.3, D2.9.
 - **Reverse dependencies**: §6.3.1.
 - **Target PR**: Phase 1 PR 2.
 - **Sub-tasks**:
-  1. State.
-  2. Prove via union bound across rows.
-  3. Update audit doc.
+  1. ✅ State.
+  2. ✅ Prove via union bound across rows: row-decomposition of the interleaved
+    `mcaEvent` shows that if every row admitted a joint codeword pair on the same `S`,
+    assembling them column-by-column would contradict the interleaved's "no joint pair"
+    clause. `Pr_le_Pr_of_implies` then lifts to a probability bound, `Pr_exists_Fin_le_sum`
+    splits into a sum over rows, `le_iSup` bounds each summand, and `Finset.sum_const`
+    yields the `t ·` factor.
+  3. ✅ Update audit doc.
 
 #### ABF26-T4.8 — AHIV17 general-code unique-decoding bound
 
