@@ -6,6 +6,7 @@ Authors: Alexander Hicks
 
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ABF26Prelims
+import ArkLib.Data.CodingTheory.ABF26CodeFamilies
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
@@ -59,10 +60,15 @@ codes, and "sufficiently large `n`". We capture these uniformly as follows:
 - `rs_lambda_high_rate_jh01` — ABF26 T3.14 [JH01 Thm 2]: large-rate RS list-size
   separation.
 
+### Subspace-design upper bounds (§3.1)
+
+- `subspaceDesign_list_decoding_cz25` — ABF26 T3.4 [CZ25 Thm B.5]: τ-subspace-design
+  codes are list-decodable up to capacity.
+- `frs_list_decoding_capacity_cz25` — ABF26 C3.5 [CZ25 Cor 2.21]: folded RS codes
+  are list-decodable up to capacity (corollary of T3.4 via T2.18).
+
 ## Deferred statements
 
-- ABF26 T3.4 [CZ25] and C3.5 [CZ25 Cor 2.21] — blocked on the `IsSubspaceDesign` /
-  `FRS` predicates (same blockers as T4.13 / T4.14).
 - ABF26 T3.6 [AGL24 Thm 1.1] — random Reed-Solomon list decoding near capacity; blocked
   on a uniform distribution over size-`n` subsets of `F` (same blocker as T4.15).
 - ABF26 T3.15 [CW07] — algorithmic hardness barrier (discrete-log reduction). Out of
@@ -276,5 +282,51 @@ theorem rs_lambda_high_rate_jh01
   sorry -- ABF26-T3.14; external admit [JH01 Thm 2].
 
 end ReedSolomonBounds
+
+section SubspaceDesignUpperBounds
+
+/-- **ABF26 Theorem 3.4 [CZ25 Theorem B.5].** τ-subspace-design codes are list-decodable
+up to capacity. Let `C : F^k → (F^s)^n` be a τ-subspace-design code. For every `η > 0`:
+
+  `|Λ(C, 1 - τ(1/η) - η)| ≤ (1 - τ(1/η)) / η`
+
+Combined with `IsSubspaceDesign` (ABF26 D2.16) and `subspaceDesign_tau_lower`
+(L2.17), this gives a list-decoding bound up to capacity for any subspace-design code.
+Admitted as an external result. -/
+theorem subspaceDesign_list_decoding_cz25
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (_h : IsSubspaceDesign s τ C)
+    (η : ℝ) (_hη_pos : 0 < η) :
+    (Lambda ((C : Set (ι → Fin s → F)))
+        (1 - τ (Nat.floor (1 / η)) - η) : ENNReal) ≤
+      ENNReal.ofReal ((1 - τ (Nat.floor (1 / η))) / η) := by
+  sorry -- ABF26-T3.4; external admit [CZ25 Thm B.5].
+
+/-- **ABF26 Corollary 3.5 [CZ25 Corollary 2.21].** Folded Reed-Solomon codes are
+list-decodable up to capacity. Let `C := FRS[F, L, k, s, ω]` be a folded RS code of
+rate `ρ`. For any `η > 0` with `1/η < s`:
+
+  `|Λ(C, 1 - ρ·s/(s - 1/η + 1) - η)| ≤ (s·(1-ρ) + 1 - 1/η) / (η·(s + 1 - 1/η))`
+
+When `η ≥ √(3/s)`, the bound simplifies to `|Λ(C, 1 - ρ - η)| ≤ 1/η`. Derives from
+T3.4 + T2.18 (FRS is τ-subspace-design). Admitted as an external result. -/
+theorem frs_list_decoding_capacity_cz25
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (_hs_pos : 0 < s)
+    (η : ℝ) (_hη_pos : 0 < η) (_hη_lt_s : 1 / η < s) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
+    let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
+    ∀ y : ι → Fin s → F,
+      ((closeCodewordsRel (ReedSolomon.Folded.frsCode domain k s ω) y δ).ncard : ℝ) ≤
+        bound := by
+  sorry -- ABF26-C3.5; external admit [CZ25 Cor 2.21].
+
+end SubspaceDesignUpperBounds
 
 end CodingTheory

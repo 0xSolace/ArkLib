@@ -7,6 +7,7 @@ Authors: Alexander Hicks
 import ArkLib.Data.CodingTheory.ProximityGap.EpsilonErrors
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ABF26Prelims
+import ArkLib.Data.CodingTheory.ABF26CodeFamilies
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -59,12 +60,15 @@ exceeds 1 (in which case `ENNReal.ofReal` either truncates to `0` or stays in `[
 - `linear_epsCA_ge_sampling_dg25` — ABF26 Lemma 4.19 [DG25 Thm 2.5]: `ε_ca(C, δ)`
   is bounded below by `((q-1)/q) · Pr_{u}[Δ(u, C) ≤ δ]`.
 
+### Subspace-design / FRS MCA up to capacity (§4.2.2)
+
+- `subspaceDesign_epsMCA_gg25` — ABF26 T4.13 [GG25 Cor 4.9]: τ-subspace-design code
+  has explicit `ε_mca` bound at `1 - τ(t+1) - 3/(2t)`.
+- `frs_epsMCA_capacity_gg25` — ABF26 T4.14 [GG25 Cor 4.10]: folded RS up to capacity
+  has `ε_mca(C, 1 - ρ - η) ≤ O(n/(η|F|) + 1/(η³|F|))`.
+
 ## Deferred statements
 
-- ABF26 Theorem 4.13 [GG25 Cor 4.9] (τ-subspace-design ⇒ MCA up to capacity) —
-  blocked on the missing `IsSubspaceDesign` predicate.
-- ABF26 Theorem 4.14 [GG25 Cor 4.10] (folded RS MCA up to capacity) — blocked on the
-  missing `FRS` (folded Reed-Solomon) code family.
 - ABF26 Theorem 4.15 [GG25 Thm 5.15] (random RS MCA up to capacity) — blocked on a
   uniform distribution over size-`n` subsets of `F`.
 
@@ -260,5 +264,51 @@ theorem linear_epsCA_ge_sampling_dg25
   sorry -- ABF26-L4.19; external admit [DG25 Thm 2.5].
 
 end Sampling
+
+section SubspaceDesignFRS
+
+/-- **ABF26 Theorem 4.13 [GG25 Corollary 4.9].** τ-subspace-design codes have MCA bounds.
+Let `C : F^k → (F^s)^n` be a τ-subspace-design code. For every `t ∈ ℕ`:
+
+  `ε_mca(C, 1 - τ(t+1) - 3/(2t)) ≤ (t·n + 4·t²) / |F|`
+
+Combined with `IsSubspaceDesign` (D2.16) and `subspaceDesign_tau_lower` (L2.17), this
+gives MCA up to capacity for subspace-design codes. Admitted as an external result. -/
+theorem subspaceDesign_epsMCA_gg25
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (_h : IsSubspaceDesign s τ C)
+    (t : ℕ) (_ht : 0 < t) :
+    epsMCA (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F)))
+        ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
+      ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F) := by
+  sorry -- ABF26-T4.13; external admit [GG25 Cor 4.9].
+
+/-- **ABF26 Theorem 4.14 [GG25 Corollary 4.10].** Folded Reed-Solomon codes have MCA
+up to capacity. Let `η ∈ (0, 1)` and `C := FRS[F, L, k, s, ω]` be a folded RS code
+with `s > 16/η²`. Then:
+
+  `ε_mca(C, 1 - ρ - η) ≤ 2n/(η·|F|) + 24/(η³·|F|)`
+
+A corollary of T4.13 via T2.18 (FRS is τ-subspace-design). Admitted as an external
+result. -/
+theorem frs_epsMCA_capacity_gg25
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (_hη_pos : 0 < η) (_hη_lt : η < 1)
+    (_hs_gt : (s : ℝ) > 16 / η ^ 2) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    ∃ C : Submodule F (ι → Fin s → F),
+      (C : Set (ι → Fin s → F)) = ReedSolomon.Folded.frsCode domain k s ω ∧
+      epsMCA (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F)))
+          ((1 - ρ - η).toNNReal) ≤
+        ENNReal.ofReal (2 * n / (η * Fintype.card F)
+          + 24 / (η ^ 3 * Fintype.card F)) := by
+  sorry -- ABF26-T4.14; external admit [GG25 Cor 4.10].
+
+end SubspaceDesignFRS
 
 end CodingTheory
