@@ -117,10 +117,10 @@ migration and the still-open non-unique-decoding branch:
 
 | ABF26 ID | Paper item | Status | Lean refs | Lean target | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `D4.1` | `ε_ca(C,δ_fld,δ_int)` | present-but-different | `δ_ε_correlatedAgreementAffineLines`, `δ_ε_correlatedAgreementCurves`, `δ_ε_correlatedAgreementAffineSpaces` in [ProximityGap/Basic.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/Basic.lean) | `ProximityGap.epsCA` in `ProximityGap/EpsilonErrors.lean` (new) | Predicate API present; numeric error not. Plan Phase 1 PR 1. |
+| `D4.1` | `ε_ca(C,δ_fld,δ_int)` | present | `ProximityGap.epsCA`, `ProximityGap.epsCA'` (no-loss alias) in [EpsilonErrors.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/EpsilonErrors.lean); coexisting predicate API `δ_ε_correlatedAgreement*` in [Basic.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/Basic.lean) | existing | Definition closed; monotonicity in `δ_fld`/`δ_int` and the bridging lemma to `δ_ε_correlatedAgreementAffineLines` are follow-up Phase 1 commits. |
 | `R4.2` | ε_ca discretization | missing | related distance granularity in [Distance.lean](../../../ArkLib/Data/CodingTheory/Basic/Distance.lean) | `ProximityGap.epsCA_discretize` | Sub-corollary of D4.1. |
 | `D4.3` | `ε_mca(C,δ)` | missing (at code-theory layer) | WHIR-specific `hasMutualCorrAgreement` in [Whir/MutualCorrAgreement.lean](../../../ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean) | `ProximityGap.epsMCA` in `ProximityGap/EpsilonErrors.lean` (new) | Existing WHIR notion is at proximity-generator level; needs re-expression as specialization of `epsMCA`. |
-| `R4.4` | MCA with proximity loss intentionally undefined | missing | none | file docstring in `EpsilonErrors.lean` | Documentation only. |
+| `R4.4` | MCA with proximity loss intentionally undefined | present | file docstring in [EpsilonErrors.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/EpsilonErrors.lean) | docstring | Documentation only; documented in the "Note on MCA with proximity loss" subsection of the file docstring. |
 | `F4.5` | `ε_pg ≤ ε_ca ≤ ε_mca` | missing | none | `ProximityGap.epsPG_le_epsCA_le_epsMCA` | Sanity-check theorem for new interface. |
 | `L4.6` | `ε_mca = ε_ca` below `δ_min/2` | missing | none | `ProximityGap.epsMCA_eq_epsCA_below_udr` | ACFY25 Lemma 4.10; proof short. |
 | `L4.7` | `ε_mca(C^≡t,δ) ≤ t·ε_mca(C,δ)` | missing | none | `ProximityGap.epsMCA_interleaved_le` | Union bound. |
