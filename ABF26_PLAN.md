@@ -274,10 +274,10 @@ diff.
 
 - **Paper location**: §2.2 page 7, Definition 2.2.
 - **Statement**: `H_q(x) = x·log_q(q-1) − x·log_q(x) − (1−x)·log_q(1−x)`.
-- **Status**: missing.
-- **Existing in ArkLib**: none.
-- **Target Lean name**: `CodingTheory.qEntropy (q : ℕ) (x : ℝ) : ℝ` with `H_q` notation in scope `ABF26`.
-- **Target file**: new `ArkLib/Data/CodingTheory/Prelims/Entropy.lean`.
+- **Status**: ✅ present (closed by ABF26Prelims commit).
+- **Existing in ArkLib**: `CodingTheory.qEntropy` in `ArkLib/Data/CodingTheory/ABF26Prelims.lean`.
+- **Target Lean name**: `CodingTheory.qEntropy (q : ℕ) (x : ℝ) : ℝ`.
+- **Target file**: `ArkLib/Data/CodingTheory/ABF26Prelims.lean` (consolidated single file; was originally planned as `Prelims/Entropy.lean` but consolidated for simplicity).
 - **Direct dependencies (paper)**: none.
 - **Direct dependencies (ArkLib infra)**: `Real.log`, `Real.logb`.
 - **Reverse dependencies**: C3.8, T3.11, T4.17.
@@ -296,44 +296,46 @@ diff.
 
 - **Paper location**: §2.2 page 7, Definition 2.3.
 - **Statement**: `Δ_T(f,g) = Pr_{i ← T}[f(i) ≠ g(i)]`.
-- **Status**: present-but-different.
-- **Existing in ArkLib**: `Δ₀`, `δᵣ`, `distFromCode`, `relDistFromCode` in `ArkLib/Data/CodingTheory/Basic/Distance.lean`. None restrict to a subset `T`.
-- **Target Lean name**: `Code.restrictedRelHammingDist (T : Finset ι) (f g : ι → F) : ℝ≥0`.
-- **Target file**: `ArkLib/Data/CodingTheory/Basic/Distance.lean` (append).
+- **Status**: ✅ present (closed by ABF26Prelims commit; minimal core only).
+- **Existing in ArkLib**: `CodingTheory.restrictedRelHammingDist` in `ArkLib/Data/CodingTheory/ABF26Prelims.lean`.
+- **Target Lean name**: `CodingTheory.restrictedRelHammingDist (T : Finset ι) (f g : ι → α) : ℝ≥0`.
+- **Target file**: `ArkLib/Data/CodingTheory/ABF26Prelims.lean` (consolidated; pulled out of `Basic/Distance.lean` so the file stays focused on whole-domain distances).
 - **Direct dependencies (paper)**: none.
-- **Direct dependencies (ArkLib infra)**: existing `relDistFromCode` patterns.
+- **Direct dependencies (ArkLib infra)**: `NNReal`, `Finset.filter`.
 - **Reverse dependencies**: D4.1 (CA uses `Δ_S` over a set), D4.20 (line-decoding uses `Δ_S`), L6.6, L6.8 (deferred).
-- **Target PR**: Phase 9 PR 2.
+- **Target PR**: Phase 9 PR 2 ✅ committed.
 - **Sub-tasks**:
-  1. Define `restrictedRelHammingDist T f g := (Finset.filter (fun i => f i ≠ g i) T).card / T.card`.
-  2. Prove `restrictedRelHammingDist Finset.univ f g = relDistFromCode_pairwise f g`.
-  3. Define `restrictedRelHammingDist_set T f C : ℝ≥0 := min over c ∈ C`.
-  4. Prove monotonicity in `T`: `T₁ ⊆ T₂ → ...`.
-  5. Add notation `notation "Δ[" T "](" f ", " g ")" => restrictedRelHammingDist T f g`.
-  6. Update audit doc row.
-- **Acceptance**: examples compile.
-- **Open questions**: does ArkLib already have a `Δ₀` indexed-by-Finset variant? Grep before defining.
+  1. ✅ Define `restrictedRelHammingDist T f g := (Finset.filter (fun i => f i ≠ g i) T).card / T.card`.
+  2. ⏳ Prove `restrictedRelHammingDist Finset.univ f g = relDistFromCode_pairwise f g` (deferred — only needed when a downstream proof requires the bridge).
+  3. ⏳ Define `restrictedRelHammingDist_set T f C : ℝ≥0 := min over c ∈ C` (deferred — set variant needed for D4.1 use site).
+  4. ⏳ Prove monotonicity in `T`: `T₁ ⊆ T₂ → ...` (deferred — add when downstream needs it).
+  5. ⏳ Add notation `Δ[T](f, g)` (deferred — wait for use sites to confirm desired shape).
+  6. ✅ Update audit doc row.
+  7. ✅ `@[simp] restrictedRelHammingDist_self : Δ_T(f, f) = 0`.
+- **Acceptance**: ✅ core def + self-zero simp lemma compile; downstream bridges deferred to dependent items.
+- **Open questions**: ✅ resolved — ArkLib has no Finset-indexed variant, so a fresh def is the correct path.
 
 #### ABF26-D2.4 — Hamming-ball volume `Vol_q(δ, n)`
 
 - **Paper location**: §2.2 page 8, Definition 2.4.
 - **Statement**: `Vol_q(δ, n) = ∑_{i=0}^{⌊δn⌋} binom(n,i)·(q-1)^i`.
-- **Status**: present-but-different.
-- **Existing in ArkLib**: `hammingBall`, `relHammingBall` as sets in `ArkLib/Data/CodingTheory/ListDecodability.lean`. No cardinality function.
-- **Target Lean name**: `CodingTheory.hammingBallVolume (q : ℕ) (δ : ℝ≥0) (n : ℕ) : ℕ`.
-- **Target file**: new `ArkLib/Data/CodingTheory/Prelims/Volume.lean`.
+- **Status**: ✅ present (closed by ABF26Prelims commit; bridge to existing `hammingBall` deferred).
+- **Existing in ArkLib**: `CodingTheory.hammingBallVolume` in `ArkLib/Data/CodingTheory/ABF26Prelims.lean`; `hammingBall`, `relHammingBall` as sets in `ArkLib/Data/CodingTheory/ListDecodability.lean`.
+- **Target Lean name**: `CodingTheory.hammingBallVolume (q : ℕ) (δ : ℝ) (n : ℕ) : ℕ` (noncomputable due to `Nat.floor` on `ℝ`; `δ : ℝ` rather than `ℝ≥0` so the floor uses the standard Mathlib API directly).
+- **Target file**: `ArkLib/Data/CodingTheory/ABF26Prelims.lean` (consolidated; was originally planned as `Prelims/Volume.lean`).
 - **Direct dependencies (paper)**: D2.3 (uses Hamming distance).
-- **Direct dependencies (ArkLib infra)**: `Nat.choose`, existing `hammingBall`.
+- **Direct dependencies (ArkLib infra)**: `Nat.choose`, `Nat.floor`.
 - **Reverse dependencies**: L3.7, C3.8.
-- **Target PR**: Phase 9 PR 1.
+- **Target PR**: Phase 9 PR 1 ✅ committed.
 - **Sub-tasks**:
-  1. Create file.
-  2. Define `hammingBallVolume q δ n := ∑ i ∈ Finset.range (⌊δ * n⌋₊ + 1), Nat.choose n i * (q - 1)^i`.
-  3. Prove `hammingBallVolume q δ n = (hammingBall y (⌊δ * n⌋₊)).toFinset.card` for any `y : Fin n → Fin q`. This is the cardinality bridge.
-  4. Prove `Vol_q(δ, n) ≈ q^(n(ρ-1+H_q(δ)))` lower bound (paper alludes to MS77).
-  5. Update audit doc.
-- **Acceptance**: cardinality bridge proved without `sorry`.
-- **Open questions**: which underlying representation of the Hamming ball is ArkLib's canonical one (Σ^n or `Fin n → Σ`)?
+  1. ✅ Create file (consolidated into `ABF26Prelims.lean`).
+  2. ✅ Define `hammingBallVolume q δ n := ∑ i ∈ Finset.range (⌊δ * n⌋₊ + 1), Nat.choose n i * (q - 1)^i`.
+  3. ⏳ Prove `hammingBallVolume q δ n = (hammingBall y (⌊δ * n⌋₊)).toFinset.card` for any `y : Fin n → Fin q` (cardinality bridge — deferred; not yet needed by an active downstream proof).
+  4. ⏳ Prove `Vol_q(δ, n) ≈ q^(n(ρ-1+H_q(δ)))` lower bound (deferred; needed for L3.7 / C3.8).
+  5. ✅ Update audit doc.
+  6. ✅ `@[simp] hammingBallVolume_zero_radius : Vol_q(0, n) = 1`.
+- **Acceptance**: ✅ core def + boundary simp lemma compile; bridge and entropy lower bound deferred to L3.7 / C3.8.
+- **Open questions**: resolved — using `ι → α` representation for inputs (matches existing `hammingBall` shape); the explicit cardinality bridge can be proved when L3.7 needs it.
 
 #### ABF26-D2.5 — ECC with `δ_min`, rate `ρ`
 
