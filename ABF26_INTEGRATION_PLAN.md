@@ -395,6 +395,30 @@ From the ProofSystem survey, the highest-leverage integration targets are:
 Recommend four phases. Each phase is a self-contained set of commits and
 should leave validation green at every step.
 
+### Execution status (as of 2026-05-15)
+
+- **Phase 1 — ✅ DONE.** Style & convention alignment (commits `b7dc0e08`,
+  `5a19b29a`).
+- **Phase 2 — ✅ DONE.** File moves split into 2a/2b/2c (commits `b66d50c6`,
+  `bc57d712`, `8579e3d1`, `56a7a94a`, `0eb52857`).
+- **Phase 3 — ✅ DONE** (bridges) **+ partial proof discharge.** Both bridges
+  added (commit `bf18164b`); the Set/Finset card sub-sorry in
+  `hammingBallVolume_eq_ncard_hammingBall` discharged (`13f02444`);
+  `IsMDS_iff_singleton_bound_tight` fully proven;
+  `minDist_div_card_eq_minRelHammingDistCode` tagged-sorry pending (Fintype
+  diamond — see `Basic/RelativeDistance.lean` sorry comment for the
+  characterisation-lemma path forward).
+- **Phase 4 — ✅ DONE.** All three touchpoints (MutualCorrAgreement,
+  Stir/ProximityGap, Folding/RBRSoundness) addressed; predicate-level and
+  probability-level WHIR↔ABF26 MCA bridges added and proved (`32d12508`,
+  `aaf85825`).
+- **Bonus: `dim_irsCode` proof discharge** (`3b0cfc99`) — closed one of the
+  in-tree sorries previously tracked under Pass E1 of the polish plan.
+- **Phase 5 — deferred.** §6 toy problem; multi-session effort.
+- **Phase 6 — partial.** Two remaining in-tree sorries documented with proof
+  outlines: `card_filter_hammingDist_eq` (combinatorial) and the Fintype-diamond
+  one above. External admits (T3.2, C3.3, L2.17, T2.18, etc.) remain by design.
+
 ### Phase 1 — Style & convention alignment (low risk)
 
 1. Document the theorem-naming pattern in a new
@@ -474,8 +498,8 @@ and `ABF26_PLAN.md` per item.
 
 ## 6. What to do for the PR
 
-The current branch has 61 commits, all clean and validating. Three
-realistic shapes for the PR:
+The current branch has 78+ commits (61 statement-layer + Phase 1–4 integration +
+proof discharges), all clean and validating. Three realistic shapes for the PR:
 
 ### Option A — push as-is, draft PR
 
