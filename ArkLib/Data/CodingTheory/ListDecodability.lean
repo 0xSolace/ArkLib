@@ -70,7 +70,7 @@ new maximised form used by Section 4's `ε_mca` (ABF26 Definition 4.3) and Secti
 list-decoding bounds.
 
 The basic algebra here (monotonicity, codeword-set bound) covers what is needed to state
-`ε_mca` in `ProximityGap/EpsilonErrors.lean`. The full theory of `Lambda` — Johnson bound
+`ε_mca` in `ProximityGap.Errors.lean`. The full theory of `Lambda` — Johnson bound
 restatement, the interleaved-code list-size bound (ABF26 Lemma 2.10), generalized Singleton,
 volume-based lower bounds — is the subject of ABF26 §3 and is tracked under Phase 4 of
 `ABF26_PLAN.md`.

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Hicks
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.EpsilonErrors
+import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Analysis.SpecialFunctions.Pow.Real

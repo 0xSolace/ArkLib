@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Hicks
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.EpsilonErrors
+import ArkLib.Data.CodingTheory.ProximityGap.Errors
 
 /-!
 # Line decoding (ABF26 §4.4)
@@ -65,7 +65,7 @@ In formula:
 The hypothesis pins each `U γ` inside `C`; ABF26 writes this as `U : F → C` but Lean is
 cleaner with a function into the ambient space plus a side condition. The probabilities
 are read in `ENNReal`, matching the convention in
-[`ProximityGap.EpsilonErrors`](ProximityGap/EpsilonErrors.lean). -/
+[`ProximityGap.Errors`](ProximityGap.Errors.lean). -/
 def LineDecodable (C : Set (ι → A)) (δ : ℝ≥0) (a b : ℝ≥0) : Prop :=
   ∀ f₁ f₂ : ι → A, ∀ U : F → ι → A, (∀ γ : F, U γ ∈ C) →
     (a : ENNReal) / (Fintype.card F : ENNReal)
