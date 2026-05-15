@@ -7,7 +7,7 @@ Authors: Alexander Hicks
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
-import ArkLib.Data.CodingTheory.ABF26CodeFamilies
+import ArkLib.Data.CodingTheory.SubspaceDesign
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 

@@ -8,7 +8,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
-import ArkLib.Data.CodingTheory.ABF26CodeFamilies
+import ArkLib.Data.CodingTheory.SubspaceDesign
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
