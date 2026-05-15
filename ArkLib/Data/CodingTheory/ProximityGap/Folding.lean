@@ -18,6 +18,9 @@ import ArkLib.Data.Polynomial.Indicator
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import ArkLib.ToMathlib.Polynomial.NatDegreeOfSum
 
+import CompPoly.Univariate.Lagrange
+import CompPoly.Univariate.ToPoly.Impl
+
 /-! This file contains all the definition needed to state
   and prove the lemma 4.9 from [ACFY24] as well as the proof of it.
 
@@ -877,4 +880,52 @@ theorem folding_preserves_distance
     simpa using lt_of_lt_of_le δ_lt.1 contradiction 
     
 end
+end ProximityGap
+
+namespace ProximityGap
+
+open Code ReedSolomon
+
+variable {F : Type} [Field F] [DecidableEq F]
+variable {n : ℕ}
+
+/-- Computable version of `foldWordAux`: a `CPolynomial F` of degree `< k` such that its
+evaluation at `domain i` equals `f i` for each `i` with `domain i ^ k = x`. Built on CompPoly's
+computable Lagrange interpolation. -/
+def cpolyFoldWordAux (domain : SmoothCosetFftDomain n F)
+    (f : Word F (Fin (2 ^ n))) (k : ℕ) (x : F) : CompPoly.CPolynomial F :=
+  CompPoly.CPolynomial.CLagrange.interpolate {i | domain i ^ k = x}
+    (fun i => domain i) f
+
+/-- Bridge lemma: pushing `cpolyFoldWordAux` through `toPoly` recovers `foldWordAux`. -/
+@[simp]
+lemma cpolyFoldWordAux_toPoly (domain : SmoothCosetFftDomain n F)
+    (f : Word F (Fin (2 ^ n))) (k : ℕ) (x : F) :
+    (cpolyFoldWordAux domain f k x).toPoly = foldWordAux domain f k x := by
+  unfold cpolyFoldWordAux foldWordAux
+  exact CompPoly.CPolynomial.CLagrange.cinterpolate_eq_interpolate
+
+section
+variable {domain : SmoothCosetFftDomain n F} {f : Word F (Fin (2 ^ n))}
+variable {k : ℕ} {x : F}
+
+/-- The natDegree of `cpolyFoldWordAux` is less than `k`. -/
+lemma cpolyFoldWordAux_natDegree [NeZero k] :
+    (cpolyFoldWordAux domain f k x).natDegree < k := by
+  rw [CompPoly.CPolynomial.natDegree_toPoly, cpolyFoldWordAux_toPoly]
+  exact foldWordAux_natDegree
+
+/-- Computable version of `foldWordAuxCoeff`. -/
+private def cpolyFoldWordAuxCoeff (domain : SmoothCosetFftDomain n F)
+    (f : Word F (Fin (2 ^ n))) (k : ℕ) (i : Fin k) (x : F) : F :=
+  (cpolyFoldWordAux domain f k x).coeff i
+
+/-- Value equality: `cpolyFoldWordAuxCoeff` agrees with `foldWordAuxCoeff`. -/
+private lemma cpolyFoldWordAuxCoeff_eq_foldWordAuxCoeff {i : Fin k} :
+    cpolyFoldWordAuxCoeff domain f k i x = foldWordAuxCoeff domain f k i x := by
+  unfold cpolyFoldWordAuxCoeff foldWordAuxCoeff
+  rw [CompPoly.CPolynomial.coeff_toPoly, cpolyFoldWordAux_toPoly]
+
+end
+
 end ProximityGap
