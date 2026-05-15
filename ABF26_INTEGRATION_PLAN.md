@@ -401,13 +401,14 @@ should leave validation green at every step.
   `5a19b29a`).
 - **Phase 2 — ✅ DONE.** File moves split into 2a/2b/2c (commits `b66d50c6`,
   `bc57d712`, `8579e3d1`, `56a7a94a`, `0eb52857`).
-- **Phase 3 — ✅ DONE** (bridges) **+ partial proof discharge.** Both bridges
-  added (commit `bf18164b`); the Set/Finset card sub-sorry in
+- **Phase 3 — ✅ DONE** (bridges) **+ proof discharges.** Both bridges added
+  (commit `bf18164b`); the Set/Finset card sub-sorry in
   `hammingBallVolume_eq_ncard_hammingBall` discharged (`13f02444`);
   `IsMDS_iff_singleton_bound_tight` fully proven;
-  `minDist_div_card_eq_minRelHammingDistCode` tagged-sorry pending (Fintype
-  diamond — see `Basic/RelativeDistance.lean` sorry comment for the
-  characterisation-lemma path forward).
+  `minDist_div_card_eq_minRelHammingDistCode` fully proven via a
+  `Set.Finite.toFinset` refactor of `minRelHammingDistCode` (commit
+  `3f344a00`), which dodges the previous `Fintype.ofFinite` instance
+  diamond.
 - **Phase 4 — ✅ DONE.** All three touchpoints (MutualCorrAgreement,
   Stir/ProximityGap, Folding/RBRSoundness) addressed; predicate-level and
   probability-level WHIR↔ABF26 MCA bridges added and proved (`32d12508`,
