@@ -186,6 +186,7 @@ import ArkLib.ProofSystem.Sumcheck.Impl.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.General
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
 import ArkLib.ProofSystem.ToyProblem.Definitions
+import ArkLib.ProofSystem.ToyProblem.Impl.IRS
 import ArkLib.ProofSystem.ToyProblem.SoundnessBounds
 import ArkLib.ProofSystem.ToyProblem.Spec.General
 import ArkLib.ProofSystem.ToyProblem.Spec.SimplifiedIOR
