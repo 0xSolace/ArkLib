@@ -287,8 +287,19 @@ def check_file(path: Path) -> list[Finding]:
             "`sorry` without a tagging comment (e.g., `-- ABF26-...`, "
             "`-- external admit [Citation]`, `-- tagged sorry`)"))
 
-    # Public-declaration docstring + citation checks.
+    # Public-declaration docstring + citation checks. Track block-
+    # comment depth so we don't count `def` lines inside docstring
+    # code blocks as real declarations (a `def queryG` example in a
+    # `/-- … -/` docstring's `````lean ... `````block is prose, not
+    # code).
+    block_depth_decl = 0
     for i, line in enumerate(lines):
+        opens_all = line.count("/-")
+        closes_all = line.count("-/")
+        was_in_block_decl = block_depth_decl > 0
+        block_depth_decl = max(0, block_depth_decl + opens_all - closes_all)
+        if was_in_block_decl:
+            continue
         m = PUBLIC_DECL.match(line)
         if not m:
             continue
