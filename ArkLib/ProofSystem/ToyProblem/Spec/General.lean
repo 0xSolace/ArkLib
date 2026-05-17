@@ -77,7 +77,7 @@ positions. -/
 @[reducible]
 def OracleStatement (ι F : Type) : Fin 2 → Type := fun _ ↦ ι → F
 
-instance [Inhabited F] : ∀ i, OracleInterface (OracleStatement ι F i) :=
+instance : ∀ i, OracleInterface (OracleStatement ι F i) :=
   fun _ ↦ inferInstance
 
 /-- Honest witness: the underlying messages `M₁, M₂ : Fin k → F` whose
@@ -112,14 +112,23 @@ def pSpec : ProtocolSpec 3 :=
   ⟨!v[.V_to_P, .P_to_V, .V_to_P],
    !v[F, Fin k → F, Fin t → ι]⟩
 
-instance [Inhabited F] [Inhabited ι] :
-    ∀ j, OracleInterface ((pSpec (ι := ι) (F := F) k t).Message j)
+instance : ∀ j, OracleInterface ((pSpec (ι := ι) (F := F) k t).Message j)
   | ⟨0, h⟩ => nomatch h
   | ⟨1, _⟩ => OracleInterface.instDefault
   | ⟨2, h⟩ => nomatch h
 
 instance : ∀ j, OracleInterface ((pSpec (ι := ι) (F := F) k t).Challenge j) :=
   ProtocolSpec.challengeOracleInterface
+
+/-- The challenges of the toy-problem `pSpec` are `SampleableType` when
+the underlying field `F` and the codeword index `ι` are. This is needed
+to instantiate the (round-by-round) knowledge-soundness games, which
+sample challenges from the protocol's challenge spaces. -/
+instance [SampleableType F] [SampleableType ι] :
+    ∀ j, SampleableType ((pSpec (ι := ι) (F := F) k t).Challenge j)
+  | ⟨0, _⟩ => (inferInstance : SampleableType F)
+  | ⟨1, h⟩ => nomatch h
+  | ⟨2, _⟩ => (inferInstance : SampleableType (Fin t → ι))
 
 /-- The §6.1 decision predicate, factored out so completeness proofs and
 the verifier object share the same statement.
@@ -250,6 +259,87 @@ def reduction (encode : (Fin k → F) → (ι → F)) :
   prover := prover (ι := ι) (F := F) (k := k) (t := t)
   verifier := verifier (k := k) (t := t) encode
 
+/-! ### Oracle-flavour prover, verifier, reduction
+
+These are the `OracleProver` / `OracleVerifier` / `OracleReduction`
+flavours of the same protocol, exposing `(f₁, f₂)` as oracle inputs
+rather than bundling them into `StmtIn`. They match FRI/Sumcheck's
+exact idiom and are necessary to make the *query complexity* of the
+verifier explicit (`2t + 1` queries per execution: one for `g`, two
+per spot-check).
+
+The honest-completeness, knowledge-soundness, and round-by-round
+knowledge-soundness lemmas below are stated against this oracle-flavour
+reduction, since that's the form ArkLib's
+`Verifier.knowledgeSoundness` / `Verifier.rbrKnowledgeSoundness`
+machinery is designed for.
+-/
+
+/-- Same as `prover` but exposed at the `OracleProver` signature. The
+underlying `Prover` is identical (after the `OracleProver` type-alias
+unfolds to a `Prover` on bundled in/out types). The output is the
+trivial `(((), nofun), ())` since the IOR has no output oracle
+statements (`OutputOracleStatement : Fin 0 → Type`). -/
+def oracleProver :
+    OracleProver []ₒ
+      (Statement (F := F) k) (OracleStatement ι F) (Witness (F := F) k)
+      OutputStatement OutputOracleStatement OutputWitness
+      (pSpec (ι := ι) (F := F) k t) where
+  PrvState
+  | ⟨0, _⟩ =>
+      (Statement (F := F) k × (∀ i, OracleStatement ι F i)) × Witness (F := F) k
+  | _ =>
+      F × (Statement (F := F) k × (∀ i, OracleStatement ι F i)) × Witness (F := F) k
+
+  input := id
+
+  receiveChallenge
+  | ⟨0, _⟩ => fun st ↦ pure <| fun (γ : F) ↦ (γ, st)
+  | ⟨1, h⟩ => nomatch h
+  | ⟨2, _⟩ => fun ⟨γ, st⟩ ↦ pure <| fun (_ : Fin t → ι) ↦ (γ, st)
+
+  sendMessage
+  | ⟨0, h⟩ => nomatch h
+  | ⟨1, _⟩ => fun ⟨γ, ⟨stmt, oStmt⟩, M⟩ ↦
+      pure ((fun j ↦ M 0 j + γ * M 1 j), (γ, ⟨stmt, oStmt⟩, M))
+  | ⟨2, h⟩ => nomatch h
+
+  output := fun _ ↦ pure (((), nofun), ())
+
+/-- Oracle verifier for Construction 6.2. Body deferred to a follow-up
+commit: this lands the API surface (`embed` empty, `hEq` trivial, since
+the IOR has no output oracle statements) so that downstream
+`OracleReduction`-using code can target it now.
+
+The intended `verify` body queries the prover's message `g` once and the
+two oracle codewords `f₁, f₂` at each of the `t` spot-check positions
+(query complexity: `2t + 1`), then runs the §6.1 decision via `accepts`.
+That body involves `OracleSpec.query` + `liftM` plumbing across the
+combined spec `oSpec + [OStmtIn]ₒ + [pSpec.Message]ₒ`; see
+`Fri/Spec/SingleRound.lean :: queryVerifier` for the established
+template (in particular the local `queryCodeword` / `getConst`
+helpers). -/
+def oracleVerifier (_encode : (Fin k → F) → (ι → F)) :
+    OracleVerifier []ₒ
+      (Statement (F := F) k) (OracleStatement ι F)
+      OutputStatement OutputOracleStatement
+      (pSpec (ι := ι) (F := F) k t) where
+  verify := fun _ _ ↦ do
+    -- ABF26 C6.2; query body deferred to follow-up. Cf. FRI queryVerifier.
+    pure ()
+  embed := ⟨fun i ↦ i.elim0, fun a _ _ ↦ a.elim0⟩
+  hEq := fun i ↦ i.elim0
+
+/-- Honest oracle reduction for Construction 6.2: the
+`OracleProver` / `OracleVerifier` pair packaged as `OracleReduction`. -/
+def oracleReduction (encode : (Fin k → F) → (ι → F)) :
+    OracleReduction []ₒ
+      (Statement (F := F) k) (OracleStatement ι F) (Witness (F := F) k)
+      OutputStatement OutputOracleStatement OutputWitness
+      (pSpec (ι := ι) (F := F) k t) where
+  prover := oracleProver (ι := ι) (F := F) (k := k) (t := t)
+  verifier := oracleVerifier (k := k) (t := t) encode
+
 omit [Fintype ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- Honest completeness for ABF26 Construction 6.2, point form: if
 `((v, μ₁, μ₂), (f₁, f₂))` lies in `inputRelation` with the underlying
@@ -276,6 +366,7 @@ theorem accepts_of_inputRelation {k t : ℕ}
   -- side, linearity of `encode` on the spot-check side).
   sorry
 
+omit [DecidableEq ι] [Fintype F] in
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
 
 For any `δ ∈ (0, δ_min(C))`, the toy-problem IOR has knowledge
@@ -283,16 +374,32 @@ soundness against the relaxed relation `R̃_{C,δ}^2` with error
 
   `max { ε_mca(C, δ) + |Λ(C^{≡2}, δ)| / |F|, (1 − δ)^t }`.
 
+Stated against ArkLib's `Verifier.knowledgeSoundness` (cf.
+`OracleReduction/Security/Basic.lean :: Verifier.knowledgeSoundness`).
+The "input relation" in API terms is our `outputRelation` (= the
+relaxed relation `R̃_{C,δ}^2`, what the extractor extracts to); the
+"output relation" is `Set.univ` since the IOR's output is the trivial
+`Unit`.
+
 The proof exhibits an extractor that (i) erasure-decodes `(f₁, f₂)`
 against the largest agreement set, (ii) outputs the recovered messages,
 and (iii) bounds the failure event by the union of the MCA failure and
 the list-decoding cardinality bound (cf. Remark 6.7).
 
-Placeholder pending the full prover/verifier/`OracleReduction` triple. -/
-theorem protocol62_knowledgeSound : True := by
-  -- ABF26-L6.6; awaits OracleReduction wiring. The full statement is
-  -- `OracleVerifier.knowledgeSoundness init impl (inputRelation k C)
-  --  (outputRelation k C δ) (max ε_mca …)`.
+Tagged sorry. -/
+theorem protocol62_knowledgeSound
+    [SampleableType F] [SampleableType ι]
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) → (ι → F))
+    (_hδ_pos : 0 < δ) :
+    ∃ knowledgeError : ℝ≥0,
+      (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
+        init impl (outputRelation k C δ)
+        (Set.univ : Set (OutputStatement × OutputWitness)) knowledgeError := by
+  -- ABF26-L6.6; the intended `knowledgeError` is
+  -- `max (epsMCA C δ + Lambda (interleavedCodeSet C) δ / |F|) ((1-δ)^t)`.
   sorry
 
 /-- **Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on
@@ -303,6 +410,7 @@ decomposes as `u = u₁ + γ·u₂` for some
 provides exactly this decomposition with probability `≥ 1 − ε_mca`. -/
 def remark67 : Unit := ()
 
+omit [DecidableEq ι] [Fintype F] in
 /-- **Lemma 6.8 of [ABF26]** (round-by-round knowledge soundness of
 Construction 6.2).
 
@@ -315,10 +423,21 @@ errors
   * `(1 − δ)^t` after the spot-check round.
 
 The `KnowledgeStateFunction` tracks the largest current agreement set;
-the extractor erasure-decodes against it. Placeholder pending the
-protocol object. -/
-theorem protocol62_rbrKnowledgeSound : True := by
-  -- ABF26-L6.8; awaits OracleReduction + KnowledgeStateFunction wiring.
+the extractor erasure-decodes against it. Tagged sorry. -/
+theorem protocol62_rbrKnowledgeSound
+    [SampleableType F] [SampleableType ι]
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) → (ι → F))
+    (_hδ_pos : 0 < δ) :
+    ∃ rbrKnowledgeError : (pSpec (ι := ι) (F := F) k t).ChallengeIdx → ℝ≥0,
+      (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
+        init impl (outputRelation k C δ)
+        (Set.univ : Set (OutputStatement × OutputWitness)) rbrKnowledgeError := by
+  -- ABF26-L6.8; the intended rbrKnowledgeError function is
+  --   ⟨0, _⟩ ↦ epsMCA C δ + Lambda (interleavedCodeSet C) δ / |F|
+  --   ⟨2, _⟩ ↦ (1-δ)^t
   sorry
 
 end Spec
