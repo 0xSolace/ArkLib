@@ -359,3 +359,34 @@ Per the no-duplication rule: this is an *improve/generalise safely*
 move (zero external consumers of `ExtensionFieldPresentation` —
 verified via grep — so the struct-shape change is local), not a
 parallel implementation.
+
+## [2026-05-20] phase 2 | extensionCode_smul_mem closed
+
+Closed the F-scalar closure of `extensionCode` (paper D2.20's F-linearity
+claim) following the Algebra/Basis refactor of the prior commit. Proof
+structure:
+
+1. **Pointwise identity** via `Basis.sum_equivFun (v i)`:
+   `P.coord j (α * v i) = ∑ m, P.coord m (v i) * P.coord j (α * P.basis m)`
+   (chain: substitute the basis-expansion of `v i`, distribute via
+   `Finset.mul_sum`, push `α *` past `•` with `mul_smul_comm`, then apply
+   `B`-linearity of `P.coord j` via `map_sum`/`map_smul`).
+2. **Function-level identity**:
+   `(fun i ↦ P.coord j (α * v i)) =
+     ∑ m, (P.coord j (α * P.basis m)) • (fun i ↦ P.coord m (v i))`.
+3. **Membership conclusion** via `Finset.sum_induction`:
+   each summand is in `C_B` by `hsmul`; finite sum lies in `C_B` by
+   iterated `hadd`. Base case `0 ∈ C_B` derived from `hsmul 0 (hv m₀)`
+   for `m₀ : Fin P.e` (non-vacuous since `e ≥ 1` in this branch); the
+   `e = 0` branch is dispatched via `Fin.elim0 (h_e_zero ▸ j)`.
+
+Net effect: D2.20 promoted from `present-but-incomplete` to `present`.
+Coverage **32/10/10/3** (+1 present, −1 present-but-incomplete).
+
+Together with the prior D2.19 refactor, this is the no-duplication rule
+fully landed for the extension-code item: ArkLib's
+`ExtensionFieldPresentation` is now a thin wrapper over `[Algebra B F]` +
+`Basis (Fin e) B F`, all paper D2.20 closure laws follow from Mathlib's
+`Algebra` / `Basis` machinery, and the F-scalar closure proof — which
+pre-refactor would have required introducing structure-constant fields
+— is a 30-line basis-expansion chain.

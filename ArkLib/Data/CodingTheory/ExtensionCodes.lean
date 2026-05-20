@@ -205,34 +205,59 @@ lemma extensionCode_smul_mem
     {B F : Type} [Field B] [Field F] [Algebra B F]
     (P : ExtensionFieldPresentation B F)
     {C_B : Set (ι → B)}
-    (_hadd : ∀ {a b : ι → B}, a ∈ C_B → b ∈ C_B → a + b ∈ C_B)
-    (_hsmul : ∀ (b : B) {a : ι → B}, a ∈ C_B → b • a ∈ C_B)
-    (α : F) {v : ι → F} (_hv : v ∈ extensionCode P C_B) :
+    (hadd : ∀ {a b : ι → B}, a ∈ C_B → b ∈ C_B → a + b ∈ C_B)
+    (hsmul : ∀ (b : B) {a : ι → B}, a ∈ C_B → b • a ∈ C_B)
+    (α : F) {v : ι → F} (hv : v ∈ extensionCode P C_B) :
     (fun i ↦ α * v i) ∈ extensionCode P C_B := by
-  -- ABF26-D2.20 F-scalar closure.
-  --
-  -- Now mechanical (post-`Algebra B F`+`Basis` refactor): the structure exposes
-  -- `P.basis : Basis (Fin P.e) B F` directly, so the proof is the standard
-  -- basis-expansion / B-linear-combination argument:
-  --
-  --   1. `v i = ∑ m, P.coord m (v i) • P.basis m` (via `Basis.sum_equivFun`).
-  --   2. `α * v i = ∑ m, P.coord m (v i) • (α * P.basis m)` (distribute;
-  --      `mul_smul_comm` to push the `•` past `α *`).
-  --   3. `P.coord j (α * v i) = ∑ m, P.coord m (v i) * P.coord j (α * P.basis m)`
-  --      by `B`-linearity of `P.coord j`.
-  --   4. Pointwise: `(fun i ↦ P.coord j (α * v i)) =
-  --      ∑ m, P.coord j (α * P.basis m) • (fun i ↦ P.coord m (v i))`.
-  --   5. Each `(fun i ↦ P.coord m (v i)) ∈ C_B` by `hv`; the `B`-linear sum
-  --      lies in `C_B` by iterated `hadd + hsmul` (`Finset.sum_induction`).
-  --      `0 ∈ C_B` follows from `hsmul 0 (hv m₀)` for any `m₀ : Fin P.e` in
-  --      the non-degenerate `e ≥ 1` case; the `e = 0` case is vacuous because
-  --      `∀ j : Fin 0, …` is trivially true.
-  --
-  -- The pre-refactor blocker — "needs F-algebra structure constants γ" — is
-  -- gone: those are now `P.coord j (α * P.basis m)`, directly computable from
-  -- the basis. What remains is a routine `Finset.sum` shuffling exercise;
-  -- closing the sorry is mechanical follow-up.
-  sorry
+  intro j
+  -- Pointwise identity:
+  --   coord j (α * v i) = ∑ m, coord m (v i) * coord j (α * basis m)
+  have h_pt : ∀ i,
+      P.coord j (α * v i) =
+        ∑ m : Fin P.e, P.coord m (v i) * P.coord j (α * P.basis m) := by
+    intro i
+    have h_vi : v i = ∑ m : Fin P.e, P.coord m (v i) • P.basis m :=
+      (P.basis.sum_equivFun (v i)).symm
+    calc P.coord j (α * v i)
+        = P.coord j (α * ∑ m : Fin P.e, P.coord m (v i) • P.basis m) := by
+            rw [← h_vi]
+      _ = P.coord j (∑ m : Fin P.e, α * (P.coord m (v i) • P.basis m)) := by
+            rw [Finset.mul_sum]
+      _ = P.coord j (∑ m : Fin P.e, P.coord m (v i) • (α * P.basis m)) := by
+            congr 1
+            exact Finset.sum_congr rfl fun m _ ↦ mul_smul_comm _ _ _
+      _ = ∑ m : Fin P.e, P.coord m (v i) * P.coord j (α * P.basis m) := by
+            rw [map_sum]
+            exact Finset.sum_congr rfl fun m _ ↦ by
+              rw [map_smul, smul_eq_mul]
+  -- Pointwise function equality:
+  --   (fun i ↦ coord j (α * v i)) =
+  --     ∑ m, (coord j (α * basis m)) • (fun i ↦ coord m (v i))
+  have h_fun : (fun i ↦ P.coord j (α * v i)) =
+      ∑ m : Fin P.e,
+        (P.coord j (α * P.basis m)) • (fun i ↦ P.coord m (v i)) := by
+    funext i
+    rw [h_pt i, Finset.sum_apply]
+    exact Finset.sum_congr rfl fun m _ ↦ by
+      simp [Pi.smul_apply, smul_eq_mul, mul_comm]
+  rw [h_fun]
+  -- Show the B-linear combination of (fun i ↦ coord m (v i)) ∈ C_B lies in C_B.
+  -- Each summand is in C_B by `hsmul`; iterate via `Finset.sum_induction`.
+  -- The empty-sum (e = 0) base needs `0 ∈ C_B`; we get it from `hsmul 0 (hv m₀)`
+  -- if `e ≥ 1`, and vacuously otherwise (the goal `∀ j : Fin 0, …` is empty).
+  by_cases h_e_zero : P.e = 0
+  · -- e = 0 case: the goal is vacuous since `j : Fin 0` doesn't exist.
+    exact Fin.elim0 (h_e_zero ▸ j)
+  · -- e ≥ 1 case: derive `0 ∈ C_B`, then iterate.
+    have h_pos : 0 < P.e := Nat.pos_of_ne_zero h_e_zero
+    let m₀ : Fin P.e := ⟨0, h_pos⟩
+    have h_zero_mem : (0 : ι → B) ∈ C_B := by
+      have h := hsmul 0 (hv m₀)
+      simpa using h
+    refine Finset.sum_induction _ (· ∈ C_B) (fun a b ha hb ↦ hadd ha hb)
+      h_zero_mem ?_
+    intros m _
+    exact hsmul _ (hv m)
 
 /-- **ABF26 Lemma 2.21 [BCFW25 Lemma D.3].** List size of an extension code equals the
 list size of the corresponding interleaved base code. Let `C_B : B^k → B^n` be a
