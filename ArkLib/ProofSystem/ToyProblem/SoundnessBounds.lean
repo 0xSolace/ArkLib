@@ -86,14 +86,44 @@ The protocol-level reading: the soundness error of the simplified IOR
 `T'[C, t]` (Construction 6.9, `ToyProblem.SimplifiedIOR.reduction`) is
 at least `|Λ(C^{≡2}, δ)| / (|F| + |Λ(C^{≡2}, δ)| - 1)`.
 
-The proof uses Claim B.1 of the paper (collision bound for random
-functions; available in ArkLib as
-`Probability.exists_large_image_of_pairwise_collision_bound`) to find a
-`v ∈ F^k` along which many of the colliding-pair images of the
-list-decoding "list" are distinct, then converts this to a winning
-challenge set of large cardinality.
+## Proof recipe (ABF26 §6.4.1, with B.1 now machine-checked)
 
-Admitted as an external result (proved in ABF26 §6.4.1). -/
+The bound `N · F / (F + N − 1)` (writing `N := |Λ(C^{≡2}, δ)|`,
+`F := |F|`) is exactly the conclusion of Claim B.1 specialised to
+`|S| = N`, `|T| = F`, `ε = 1/F`:
+```
+N / (1 + (N − 1) · (1/F)) = N · F / (F + N − 1)
+```
+so the proof skeleton is:
+
+1. **Build the list.** Enumerate `Λ(C^{≡2}, δ)` as `λ : Fin N → ι → F × ι → F`,
+   pairs `(W₀(λ), W₁(λ))` of `δ`-close codewords in `C` (paper writes
+   `(v_0(λ), v_1(λ))`). Pick any `v ∈ F^k` and define the "evaluation"
+   function `φ_v : Fin N → F × F` by `λ ↦ (⟨W₀(λ), v⟩, ⟨W₁(λ), v⟩) — μ`-pair shape.
+
+2. **Pairwise collision bound.** For `λ ≠ λ'` with `(W₀(λ), W₁(λ)) ≠
+   (W₀(λ'), W₁(λ'))`, the linear functional `⟨·, v⟩` collides on the
+   distinct difference vector with probability `1/F` over a uniform
+   `v ←$ F^k`. This is the in-tree predicate
+   `Pr_{ let v ←$ᵖ (Fin k → F) }[(decide (φ_v λ = φ_v λ') : Prop)] ≤ 1/F`.
+   Unfold via [`ProbabilityTheory.Pr_decide_eq_tsum_indicator`] from
+   [`Probability/Notation.lean`](../../Data/Probability/Notation.lean).
+
+3. **Apply B.1.** Feed steps 1 + 2 into
+   [`Probability.exists_large_image_of_pairwise_collision_bound`]
+   (`ArkLib/Data/Probability/Combinatorial.lean`) to obtain a
+   `v* ∈ F^k` whose induced `φ_{v*}` has image size at least
+   `N · F / (F + N − 1)` in `F × F`.
+
+4. **Convert to winning set.** Each distinct `(μ₁, μ₂) ∈ image φ_{v*}`
+   corresponds to a `γ ∈ winningSet` via the list-decoding bijection
+   (paper §6.4.1 — `μ_i = ⟨W_i(λ), v*⟩` for some `λ`, and the constraint
+   `μ_new = μ₁ + γ · μ₂` admits a unique `γ` per such pair under the
+   `|F| > binom(N, 2)` regime). The witness `(v*, μ₁, μ₂, f₁ := W₀,
+   f₂ := W₁)` for some chosen `λ₀ ∈ Λ` exits the proof.
+
+Admitted as an external result (proved in ABF26 §6.4.1); steps 2-3 are
+now in scope thanks to B.1's closure (2026-05-20). -/
 theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
     (C : Set (ι → F)) (δ : ℝ≥0) (_hδ_pos : (0 : ℝ≥0) < δ) (_hδ_lt : δ < 1)
     (_hF : (Fintype.card F : ℝ) >
