@@ -274,11 +274,17 @@ than mathematical. These drive Phase 1 of `ABF26_PLAN.md`.
    are now sorry-free thanks to PRs #385, #463, and commit `6389c0e`
    (the last was pushed directly to `main` with no associated PR number).
 
-5. **Several code families used centrally by the paper are absent.**
-   Folded Reed-Solomon (D2.14, D2.15), univariate multiplicity codes (A.7),
-   subspace-design codes (D2.16, L2.17, T2.18), and extension-field codes
-   (D2.19, D2.20, L2.21) are not yet represented directly in ArkLib.
-   Plan Phase 3 adds them.
+5. ~~**Several code families used centrally by the paper are absent.**~~
+   *(Resolved 2026-05.)* All four families are now present in-tree, each
+   reachable from a `present` or `present-but-incomplete` row above:
+   Folded Reed-Solomon (D2.14, D2.15) in
+   [`ReedSolomon/Folded.lean`](../../../ArkLib/Data/CodingTheory/ReedSolomon/Folded.lean);
+   univariate multiplicity codes (A.7) in
+   [`ReedSolomon/Multiplicity.lean`](../../../ArkLib/Data/CodingTheory/ReedSolomon/Multiplicity.lean);
+   subspace-design codes (D2.16, L2.17, T2.18) in
+   [`SubspaceDesign.lean`](../../../ArkLib/Data/CodingTheory/SubspaceDesign.lean);
+   and extension-field codes (D2.19, D2.20, L2.21) in
+   [`ExtensionCodes.lean`](../../../ArkLib/Data/CodingTheory/ExtensionCodes.lean).
 
 ## Forward roadmap
 

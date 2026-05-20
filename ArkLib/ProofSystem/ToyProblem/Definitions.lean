@@ -22,11 +22,11 @@ This file is the code-theoretic foundation:
   `R_C^ℓ` over a code `C` and constraint shape `ℓ`.
 * `ToyProblem.relaxedRelation` — Definition 6.3, the `δ`-relaxed version
   used as the soundness target.
-* `ToyProblem.SupportsErasureCorrection` — Definition 6.4, the erasure-
-  correction predicate for a code with a stated correction-time budget.
-  Re-exported from `CodingTheory.SupportsErasureCorrection` in
+* Definition 6.4 (erasure-correction predicate) is realised directly by
+  `CodingTheory.SupportsErasureCorrection` in
   [`ArkLib/Data/CodingTheory/Erasure.lean`](../../Data/CodingTheory/Erasure.lean)
-  (the predicate is generic across proof systems).
+  (the predicate is generic across proof systems; use the in-tree name
+  directly rather than a paper-shape wrapper).
 * `ToyProblem.winningSet` — Definition 6.11, the set of "winning"
   challenges `γ` for the simplified IOR attack of §6.4.
 
@@ -96,14 +96,9 @@ def relaxedRelation {k ℓ : ℕ} (C : Set (ι → F)) (δ : ℝ≥0)
       ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
         ∀ i, ∀ j ∈ S, W i j = Wstar i j
 
-/-- **Definition 6.4 of [ABF26]** (erasure-correction predicate) —
-re-export of the generic `CodingTheory.SupportsErasureCorrection` (see
-[`ArkLib/Data/CodingTheory/Erasure.lean`](../../Data/CodingTheory/Erasure.lean)).
-Exposed under the `ToyProblem` namespace so existing references to
-`ToyProblem.SupportsErasureCorrection` continue to resolve. -/
-@[reducible] def SupportsErasureCorrection [DecidableEq F]
-    (C : Set (ι → F)) (ecor : ℕ) : Prop :=
-  CodingTheory.SupportsErasureCorrection C ecor
+-- Paper Definition 6.4 (erasure-correction predicate) is realised by
+-- `CodingTheory.SupportsErasureCorrection` directly; use that name (no
+-- paper-shape alias wrapper — see Definitions.lean module docstring).
 
 /-- **Definition 6.11 of [ABF26]** (winning set `Ω^{f_1, f_2}_{v, μ_1, μ_2}`).
 

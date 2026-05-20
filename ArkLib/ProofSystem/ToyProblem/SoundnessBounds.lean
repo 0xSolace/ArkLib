@@ -57,9 +57,9 @@ omit [Fintype F] in
 /-- **Lemma 6.5 of [ABF26]** (= [GRS12]).
 
 Every `F`-additive code `C : F^k → (F^s)^n` supports erasure correction
-(in the sense of `SupportsErasureCorrection`) with correction time
-`O((s · n)^3)`. Equivalently: the predicate
-`SupportsErasureCorrection C ecor` holds for some
+(in the sense of `CodingTheory.SupportsErasureCorrection`) with correction
+time `O((s · n)^3)`. Equivalently: the predicate
+`CodingTheory.SupportsErasureCorrection C ecor` holds for some
 `ecor ≤ K · (s · n)^3`. We state the more permissive
 "some `ecor` works" form here; pinning down the constant `K` requires
 modelling the encoder concretely.
@@ -67,7 +67,7 @@ modelling the encoder concretely.
 Admitted as an external result. -/
 theorem additive_code_supports_erasure_correction_grs12
     (C : Set (ι → F)) :
-    ∃ ecor : ℕ, SupportsErasureCorrection C ecor := by
+    ∃ ecor : ℕ, CodingTheory.SupportsErasureCorrection C ecor := by
   -- ABF26-L6.5; external admit [GRS12]. Polynomial-time erasure-correction
   -- algorithm via Gaussian elimination on the parity-check matrix of any
   -- additive code (cf. Guruswami-Rudra-Sudan, *Essential Coding Theory*).
