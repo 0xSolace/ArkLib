@@ -82,14 +82,24 @@ SYMBOL_BLACKLIST = frozenset({
 # outside these paths are silently skipped (they're Mathlib/lib refs).
 OUR_PATH_PREFIXES = ("ArkLib/",)
 
-# Declaration kinds we recognise in Lean source.
+# Declaration kinds we recognise in Lean source. `alias` is included so
+# that paper-shaped re-exports like `alias formalDerivative := Polynomial.derivative`
+# get picked up as a declaration of the LHS name.
 DECL_KINDS = (
-    "theorem", "lemma", "def", "abbrev", "structure", "inductive",
+    "theorem", "lemma", "def", "abbrev", "alias", "structure", "inductive",
     "instance", "class", "noncomputable def", "noncomputable abbrev",
 )
 DECL_RE_TEMPLATE = (
-    r"\b(?:theorem|lemma|def|abbrev|structure|inductive|instance|class)\s+"
+    r"\b(?:theorem|lemma|def|abbrev|alias|structure|inductive|instance|class)\s+"
     r"(?:[A-Za-z_][\w.]*\.)?{sym}(?![A-Za-z0-9_'])"
+)
+
+# Mathlib-namespaced symbol prefixes; symbols starting with any of these
+# are silently skipped (they live in upstream `.lake/packages/mathlib`,
+# not in ArkLib, so the file-vs-symbol search would always miss).
+MATHLIB_PREFIXES = (
+    "Polynomial.", "MvPolynomial.", "Finset.", "Multiset.", "Mathlib.",
+    "Set.Finite.", "Std.", "Function.", "LinearMap.", "Submodule.",
 )
 
 
@@ -135,7 +145,10 @@ def parse_audit_table(path: Path):
         if not line.startswith("|"):
             in_table = False
             continue
-        if any(key in line for key in HEADER_KEYS):
+        # Header detection requires *all* canonical header keys on the line;
+        # earlier `any(...)` triggered on body prose containing the word
+        # "Status" (or "Paper item"), corrupting the table parse.
+        if all(key in line for key in HEADER_KEYS):
             in_table = True
             continue
         if SEP_RE.match(line):
@@ -246,22 +259,32 @@ def verify_row(row: Row):
     # Strip parentheticals that describe paper notation rather than Lean
     # declarations: `(= paper `X`)`, `(paper's `X`)`, `(which matches paper `X`)`,
     # `(see [...] `X`)`, `(known as `X` in [PaperKey])`.
+    # The `(?![./\w]*\.lean\))` look-ahead skips Markdown link targets like
+    # `(../../../ArkLib/.../PaperAliases.lean)` — without it, a file path
+    # containing "Paper" would be matched and the link silently dropped,
+    # making the doc-vs-code drift checker miss declarations referenced via
+    # such links.
     paper_ctx = re.compile(
-        r"\([^)]*\b(?:paper|spec|notation|alias for|aka|known as|denoted|see\s+\[)"
+        r"\((?![./\w]*\.lean\))[^)]*"
+        r"\b(?:paper|spec|notation|alias for|aka|known as|denoted|see\s+\[)"
         r"[^)]*\)",
         flags=re.IGNORECASE,
     )
     refs_text = paper_ctx.sub("", row.lean_refs_cell)
     target_text = paper_ctx.sub("", row.lean_target)
+    def _accept(s: str) -> bool:
+        if s in SYMBOL_BLACKLIST:
+            return False
+        return not any(s.startswith(p) for p in MATHLIB_PREFIXES)
     refs_syms = []
     for s in SYMBOL_RE.findall(refs_text):
-        if s in SYMBOL_BLACKLIST:
+        if not _accept(s):
             continue
         if s not in refs_syms:
             refs_syms.append(s)
     target_syms = []
     for s in SYMBOL_RE.findall(target_text):
-        if s in SYMBOL_BLACKLIST:
+        if not _accept(s):
             continue
         if s not in target_syms and s not in refs_syms:
             target_syms.append(s)

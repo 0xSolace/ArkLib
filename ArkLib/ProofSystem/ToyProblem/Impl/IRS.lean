@@ -29,7 +29,10 @@ where `domain : Fin n ↪ F` is a smooth multiplicative coset of size
 * `reductionIRS` — non-oracle C6.2 IRS instantiation.
 * `oracleReductionIRS` — oracle-flavour C6.2 IRS instantiation.
 * `simplifiedReductionIRS` — non-oracle C6.9 IRS instantiation.
-* `simplifiedOracleReductionIRS` — oracle-flavour C6.9 IRS instantiation.
+
+C6.9 does not have an oracle flavour: the framework's
+`OracleVerifier.embed` cannot express the combined output oracle
+`f_new := f₁ + γ·f₂`. See `Spec/SimplifiedIOR.lean` for details.
 
 Concrete soundness-error analysis (§6.3.1's parameter computation,
 Tables 2–3 of the paper) lives in a separate downstream file; this
@@ -90,18 +93,6 @@ noncomputable def oracleReductionIRS :
       (ToyProblem.Spec.pSpec (ι := Fin n) (F := F) k t) :=
   ToyProblem.Spec.oracleReduction (ι := Fin n) (F := F) (k := k) (t := t)
     (fun msg ↦ ReedSolomon.encode msg domain)
-
-/-- Oracle-flavour C6.9 IRS instantiation. -/
-noncomputable def simplifiedOracleReductionIRS :
-    OracleReduction []ₒ
-      (ToyProblem.Spec.Statement (F := F) k)
-      (ToyProblem.Spec.OracleStatement (Fin n) F)
-      (ToyProblem.Spec.Witness (F := F) k)
-      (ToyProblem.SimplifiedIOR.OutputStatement (F := F) k)
-      (ToyProblem.SimplifiedIOR.OutputOracleStatement (Fin n) F)
-      (ToyProblem.SimplifiedIOR.OutputWitness (F := F) k)
-      (ToyProblem.SimplifiedIOR.pSpec (F := F)) :=
-  ToyProblem.SimplifiedIOR.oracleReduction (ι := Fin n) (F := F) (k := k)
 
 end Impl.IRS
 

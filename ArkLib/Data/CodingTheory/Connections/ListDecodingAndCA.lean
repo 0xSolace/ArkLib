@@ -83,11 +83,19 @@ The conclusion's proximity radius `1 - √(1 - δ + η)` is the "Johnson lift" o
 regime via Corollary 3.3; for random RS codes (which list-decode to capacity by
 Theorem 3.6) it implies MCA for random RS up to the Johnson bound.
 
-**Implicit hypothesis `η ≤ δ`.** For the conclusion's proximity radius
-`1 - √(1 - δ + η)` to be a valid relative distance in `[0, 1]` we need
-`1 - δ + η ≤ 1`, i.e. `η ≤ δ`. The paper's `δ, η ∈ (0, 1)` regime does not force
-this; without it `(1 - √…).toNNReal` would silently truncate to `0` and the
-statement would collapse. We add `η ≤ δ` explicitly to match the paper's intent.
+**Paper divergence — added hypothesis `η ≤ δ`.** Paper T5.1 only
+requires `δ, η ∈ (0, 1)`. We strengthen this to `η ≤ δ` so that the
+conclusion's proximity radius `1 - √(1 - δ + η)` stays in `[0, 1]`
+(without it, `(1 - √…).toNNReal` silently truncates to `0` and the
+statement becomes vacuous — almost certainly not the paper's intent in
+the `η > δ` regime, which is the "list-decoding capacity overshoot"
+case the paper itself doesn't analyse). The added hypothesis matches
+the way every existing application of the bound uses it.
+
+If a downstream caller genuinely needs the `0 < η < 1` regime without
+the `η ≤ δ` bound, the right move is to add a paper-faithful variant
+of this theorem with the truncation made explicit (and the bound made
+vacuous), rather than dropping the hypothesis here.
 
 Admitted as an external result. -/
 theorem linear_listSize_to_epsMCA_gcxk25

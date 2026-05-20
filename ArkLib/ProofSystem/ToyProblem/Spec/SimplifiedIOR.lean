@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Hicks
 -/
 
-import ArkLib.OracleReduction.Security.RoundByRound
+import ArkLib.OracleReduction.Security.Basic
 import ArkLib.ProofSystem.ToyProblem.Spec.General
 
 /-!
@@ -53,9 +53,14 @@ open OracleSpec OracleComp ProtocolSpec
 open scoped NNReal
 open ToyProblem.Spec (Statement OracleStatement Witness)
 
-variable {ι F : Type} [Fintype ι] [DecidableEq ι] [Field F] [Fintype F]
-         [DecidableEq F]
+/-! ### Output types and the output relation
 
+These need only `[Fintype ι]` (for `relaxedRelation`'s `Fintype.card ι`
+call) and `[Field F]`. The heavier `[DecidableEq ι] [Fintype F]
+[DecidableEq F]` instances come in below for the protocol-object
+definitions. -/
+
+variable {ι F : Type} [Fintype ι] [Field F]
 variable (k : ℕ)
 
 /-- Output statement for C6.9: the new `(v, μ_new)` pair. The
@@ -72,6 +77,26 @@ def OutputOracleStatement (ι F : Type) : Fin 1 → Type := fun _ ↦ ι → F
 /-- Output witness for C6.9: the combined message `M_new := M₁ + γ·M₂`. -/
 @[reducible]
 def OutputWitness : Type := Fin k → F
+
+/-- The 1-arity relaxed relation `R̃¹_{C,δ}` — the output relation of
+Construction 6.9.
+
+Bundles the post-step instance `((v, μ_new), f_new)` together with the
+post-step witness `M_new` and asserts that `(v, μ_new, f_new)` is
+`δ`-close to a valid `relation`-instance for the 1-codeword setting.
+
+Type-aligned with `OutputStatement × (∀ i, OutputOracleStatement ι F i)
+× OutputWitness`, i.e. directly consumable by the L6.10 knowledge-
+soundness statement against `verifier.knowledgeSoundness`. -/
+def outputRelation (C : Set (ι → F)) (δ : ℝ≥0) :
+    Set ((OutputStatement (F := F) k × (∀ i, OutputOracleStatement ι F i)) ×
+      OutputWitness (F := F) k) :=
+  fun input ↦
+    ToyProblem.relaxedRelation (k := k) (ℓ := 1) C δ input.1.1.1
+      ![input.1.1.2] (fun _ ↦ input.1.2 0)
+
+section Protocol
+variable [DecidableEq ι] [Fintype F] [DecidableEq F]
 
 /-- Protocol specification for Construction 6.9: a single
 `V → P` round sending the combination randomness `γ : F`. -/
@@ -144,79 +169,28 @@ def reduction :
   prover := prover (ι := ι) (F := F) (k := k)
   verifier := verifier (k := k)
 
-/-! ### Oracle-flavour prover, verifier, reduction
+/-! ### Why there is no `OracleReduction` flavour for Construction 6.9
 
-Parallel to the C6.2 oracle flavour in `Spec/General.lean`, exposing
-the codewords `(f₁, f₂)` as separate oracle inputs (rather than
-bundled into `StmtIn`). Same `OracleProver` / `OracleVerifier` /
-`OracleReduction` idiom as FRI's `foldOracleReduction`. -/
+C6.9 maps the input oracle pair `(f₁, f₂)` to a **combined** output
+oracle `f_new := f₁ + γ·f₂`. ArkLib's current `OracleVerifier`
+framework (`ArkLib/OracleReduction/Basic.lean :: OracleVerifier`) only
+allows the output oracle family to be a *subset* of the input oracles
+plus prover messages, specified via the `embed : ιₛₒ ↪ ιₛᵢ ⊕
+pSpec.MessageIdx` field. Concretely, `OracleVerifier.toVerifier`
+reads `OStmtOut i` *verbatim* from `embed`, not from the `verify`
+body's `OracleComp`.
 
-/-- OracleProver for Construction 6.9. Identical to `prover` modulo
-bundling the output statement with the (singleton) output oracle. -/
-def oracleProver :
-    OracleProver []ₒ
-      (Statement (F := F) k) (OracleStatement ι F) (Witness (F := F) k)
-      (OutputStatement (F := F) k) (OutputOracleStatement ι F) (OutputWitness (F := F) k)
-      (pSpec (F := F)) where
-  PrvState
-  | ⟨0, _⟩ =>
-      (Statement (F := F) k × (∀ i, OracleStatement ι F i)) × Witness (F := F) k
-  | _ =>
-      F × (Statement (F := F) k × (∀ i, OracleStatement ι F i)) × Witness (F := F) k
+There is therefore no way, within the current framework, to declare
+an output oracle whose contents are a `γ`-dependent linear combination
+of the inputs. A `simOStmt`-based refactor is sketched in
+[`OracleReduction/Basic.lean`](../../OracleReduction/Basic.lean) at
+lines 278 and 293; once that lands, a C6.9 oracle flavour can be
+added back here.
 
-  input := id
-
-  receiveChallenge
-  | ⟨0, _⟩ => fun st ↦ pure <| fun (γ : F) ↦ (γ, st)
-
-  sendMessage
-  | ⟨0, h⟩ => nomatch h
-
-  output := fun ⟨γ, ⟨stmt, oStmt⟩, M⟩ ↦ pure <|
-    ⟨⟨(stmt.1, stmt.2.1 + γ * stmt.2.2),
-       fun _ ↦ fun j ↦ oStmt 0 j + γ * oStmt 1 j⟩,
-      fun j ↦ M 0 j + γ * M 1 j⟩
-
-/-- OracleVerifier for Construction 6.9.
-
-Unlike C6.2, this verifier has *no `guard`*: it simply produces the
-new statement `(v, μ₁ + γ·μ₂)`. The combined-codeword output
-`f_new := f₁ + γ·f₂` is *embedded* via `OracleVerifier.embed` — the
-output oracle (a single index `0 : Fin 1`) is mapped back through
-the `embed` field, telling the framework that `OutputOracleStatement 0`
-should be computed from the input oracle statements and (vacuously) the
-prover messages.
-
-The `embed`'s codomain `ιₛᵢ ⊕ pSpec.MessageIdx` allows pointing the
-output oracle at one of `OStmtIn 0`, `OStmtIn 1`, or the (empty)
-message set. Since `f_new` is a *combination* `f₁ + γ·f₂`, the embed
-can only really point at one of them — the actual `f_new` is materialised
-by `OracleVerifier.toVerifier` via the `simOracle` machinery (which
-runs the oracle queries through the verify body's `OracleComp`).
-
-For a strictly faithful encoding we'd need a more elaborate `simOStmt`
-field (currently commented out in `OracleReduction/Basic.lean`); for
-now we point at `OStmtIn 0` as a placeholder — the non-oracle
-`reduction` already captures the full semantics. -/
-def oracleVerifier :
-    OracleVerifier []ₒ
-      (Statement (F := F) k) (OracleStatement ι F)
-      (OutputStatement (F := F) k) (OutputOracleStatement ι F)
-      (pSpec (F := F)) where
-  verify := fun stmt challenges ↦ do
-    let γ : F := challenges ⟨⟨0, by decide⟩, by rfl⟩
-    pure (stmt.1, stmt.2.1 + γ * stmt.2.2)
-  embed := ⟨fun _ ↦ Sum.inl 0, fun a b _ ↦ Subsingleton.elim a b⟩
-  hEq := fun _ ↦ rfl
-
-/-- Honest oracle reduction for Construction 6.9. -/
-def oracleReduction :
-    OracleReduction []ₒ
-      (Statement (F := F) k) (OracleStatement ι F) (Witness (F := F) k)
-      (OutputStatement (F := F) k) (OutputOracleStatement ι F) (OutputWitness (F := F) k)
-      (pSpec (F := F)) where
-  prover := oracleProver (ι := ι) (F := F) (k := k)
-  verifier := oracleVerifier (ι := ι) (F := F) (k := k)
+Until then, the bundled-input non-oracle `reduction` above captures
+the full protocol semantics; downstream IRS instantiations
+(`ToyProblem/Impl/IRS.lean :: simplifiedReductionIRS`) consume it
+directly. -/
 
 omit [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- **Lemma 6.10 of [ABF26]** (knowledge soundness of Construction 6.9).
@@ -243,11 +217,13 @@ theorem simplifiedIOR_knowledgeSound
         (WitOut := OutputWitness (F := F) k)
         init impl
         (ToyProblem.Spec.outputRelation k C δ)
-        (ToyProblem.Spec.outputRelation₁ (ι := ι) (F := F) k C δ)
+        (outputRelation (ι := ι) (F := F) k C δ)
         knowledgeError := by
   -- ABF26-L6.10; the intended `knowledgeError` is
   -- `epsMCA C δ + Lambda (interleavedCodeSet C) δ / |F|`.
   sorry
+
+end Protocol
 
 end SimplifiedIOR
 

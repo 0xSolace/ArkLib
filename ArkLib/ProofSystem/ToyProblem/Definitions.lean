@@ -5,6 +5,7 @@ Authors: Alexander Hicks
 -/
 
 import ArkLib.Data.CodingTheory.Basic.Distance
+import ArkLib.Data.CodingTheory.Erasure
 import ArkLib.Data.CodingTheory.InterleavedCode
 
 /-!
@@ -23,6 +24,9 @@ This file is the code-theoretic foundation:
   used as the soundness target.
 * `ToyProblem.SupportsErasureCorrection` — Definition 6.4, the erasure-
   correction predicate for a code with a stated correction-time budget.
+  Re-exported from `CodingTheory.SupportsErasureCorrection` in
+  [`ArkLib/Data/CodingTheory/Erasure.lean`](../../Data/CodingTheory/Erasure.lean)
+  (the predicate is generic across proof systems).
 * `ToyProblem.winningSet` — Definition 6.11, the set of "winning"
   challenges `γ` for the simplified IOR attack of §6.4.
 
@@ -92,23 +96,14 @@ def relaxedRelation {k ℓ : ℕ} (C : Set (ι → F)) (δ : ℝ≥0)
       ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
         ∀ i, ∀ j ∈ S, W i j = Wstar i j
 
-/-- **Definition 6.4 of [ABF26]** (erasure-correction predicate).
-
-A code `C ⊆ (ι → F)` supports **erasure correction with correction
-time `ecor`** if there exists a deterministic algorithm `E_C` that, on
-any input `f : ι → Option F` with strictly fewer than `δ_min(C) · |ι|`
-erasures (`f i = none`), and provided there is a (necessarily unique)
-codeword `u ∈ C` agreeing with `f` off the erasures, recovers that `u`.
-We do not encode the running-time bound `ecor` operationally here — the
-parameter is carried in the predicate for use by downstream complexity
-bookkeeping (cf. Lemma 6.5). -/
-def SupportsErasureCorrection [DecidableEq F]
-    (C : Set (ι → F)) (_ecor : ℕ) : Prop :=
-  ∃ E : (ι → Option F) → Option (ι → F),
-    ∀ (f : ι → Option F),
-      (∀ u ∈ C, (∀ i, f i = some (u i) ∨ f i = none) →
-        ((Finset.univ.filter (fun i ↦ f i = none)).card < Code.minDist C →
-          E f = some u))
+/-- **Definition 6.4 of [ABF26]** (erasure-correction predicate) —
+re-export of the generic `CodingTheory.SupportsErasureCorrection` (see
+[`ArkLib/Data/CodingTheory/Erasure.lean`](../../Data/CodingTheory/Erasure.lean)).
+Exposed under the `ToyProblem` namespace so existing references to
+`ToyProblem.SupportsErasureCorrection` continue to resolve. -/
+@[reducible] def SupportsErasureCorrection [DecidableEq F]
+    (C : Set (ι → F)) (ecor : ℕ) : Prop :=
+  CodingTheory.SupportsErasureCorrection C ecor
 
 /-- **Definition 6.11 of [ABF26]** (winning set `Ω^{f_1, f_2}_{v, μ_1, μ_2}`).
 

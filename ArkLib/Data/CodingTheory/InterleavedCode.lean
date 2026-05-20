@@ -830,7 +830,7 @@ is fixed, the list size of `C^{≡m}` grows as a *polynomial in*
 list-decoding analyses and §6.3.
 
 External admit — paper-cited [GGR11]. -/
-theorem lambda_le {ι F : Type} [Fintype ι] [Field F] [DecidableEq F]
+theorem lambda_le_ggr11 {ι F : Type} [Fintype ι] [Field F] [DecidableEq F]
     (C : Set (ι → F)) (δ : ℝ) (m : ℕ) (_hm : 1 ≤ m)
     (_hδ_lb : 0 ≤ δ)
     (_hδ_ub : δ < (Code.minDist C : ℝ) / Fintype.card ι) :

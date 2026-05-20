@@ -26,3 +26,4 @@ ArkLib/ProofSystem/ToyProblem/SoundnessBounds.lean
 ArkLib/ProofSystem/ToyProblem/Spec/General.lean
 ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean
 ArkLib/ProofSystem/ToyProblem/Impl/IRS.lean
+ArkLib/Data/CodingTheory/Erasure.lean

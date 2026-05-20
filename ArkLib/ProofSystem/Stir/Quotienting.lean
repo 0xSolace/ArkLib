@@ -48,7 +48,17 @@ noncomputable def polyQuotient (S : Finset F) (fPoly : F[X]) : F[X] :=
 
 /-- We define the set disagreementSet(f,ι,S,Ans) as the set of all points x ∈ ι that lie in S
 such that the Ans' disagrees with f, we have
-disagreementSet := { x ∈ ι ∩ S ∧ AnsPoly x ≠ f x }. -/
+disagreementSet := { x ∈ ι ∩ S ∧ AnsPoly x ≠ f x }.
+
+Quotienting-specific shape — *not* a direct specialisation of
+`Code.disagreementCols` (which compares two `ι → R` words pointwise).
+Here the comparison is between `f x` and the *polynomial extension*
+`(ansPoly S Ans).eval x` of a finite assignment `Ans : S → F`, and is
+restricted to `x` whose image lies in the answer-set `S`. The
+canonical-base relationship is therefore: it is the
+`Code.disagreementCols`-like disagreement of `(f, ansPoly ∘ eval)`
+restricted to the preimage of `S` and then `image`d through
+`Subtype.val`. -/
 noncomputable def disagreementSet (f : ι → F) (S : Finset F) (Ans : S → F) : Finset F :=
   Set.toFinset ({x : ι | x.val ∈ S ∧ (ansPoly S Ans).eval x.val ≠ f x}.image Subtype.val)
 

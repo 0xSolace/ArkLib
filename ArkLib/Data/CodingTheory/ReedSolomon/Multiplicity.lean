@@ -28,9 +28,17 @@ Then
   `                     ∀ x ∈ L, f(x) = (f̂^{(0)}(x), …, f̂^{(s-1)}(x)) }`.
 
 For `s = 1`, this degenerates to the plain Reed-Solomon code
-`RS[F, L, k]`. For general `s`, encoding requires `char(F) ≥ k` so the
-derivative-of-monomial coefficients `(a_i · i)` do not vanish below
-degree `k`.
+`RS[F, L, k]` (see `mem_umCode_one_iff_mem_rsCode`).
+
+**Characteristic condition.** For `s ≥ 2`, the paper's A.7 requires
+`char(F) ≥ k` so that the derivative-of-monomial coefficients
+`(a_i · i)` do not vanish below degree `k` (without this, multiple
+distinct polynomials of degree `< k` can fold to the same multiplicity
+codeword, and the dimension claim collapses). The bare encoder
+`umEvalOnPoints` is well-typed in any `CommRing F` — we keep the
+hypothesis as a downstream caller's responsibility rather than baking
+it into the definition, since the `s = 1` collapse lemma below works
+unconditionally.
 
 ## Layout
 
@@ -40,8 +48,8 @@ degree `k`.
 
 Sanity lemmas:
 
-* `umCode_one_eq_rsCode` — `UM[F, L, k, 1]` collapses to `RS[F, L, k]`
-  (modulo the `Fin 1 → F` ≃ `F` reshaping).
+* `mem_umCode_one_iff_mem_rsCode` — `UM[F, L, k, 1]` collapses to
+  `RS[F, L, k]` (modulo the `Fin 1 → F` ≃ `F` reshaping).
 
 ## References
 
@@ -92,5 +100,38 @@ noncomputable def umCode (domain : ι ↪ F) (k s : ℕ) :
   (Polynomial.degreeLT F k).map (umEvalOnPoints domain s)
 
 end Multiplicity
+
+/-- **Sanity check: `UM[F, L, k, 1]` ↔ `RS[F, L, k]`.** With `s = 1`,
+the only fold index is `0 : Fin 1`, and `Polynomial.derivative^[0]` is
+the identity, so each multiplicity codeword reduces to a plain RS
+codeword. Stated as an iff between memberships (the LHS lives in
+`ι → Fin 1 → F`, the RHS in `ι → F`, avoiding the cross-type equality
+issue).
+
+Stated outside the `Multiplicity` namespace's `[CommRing F]` section to
+sidestep the `Polynomial`-Semiring instance clash between `CommRing.to…`
+and `Field.to…`: when both are in scope, the `umCode`-side polynomial
+type is incommensurate with the `ReedSolomon.code`-side one. -/
+lemma Multiplicity.mem_umCode_one_iff_mem_rsCode
+    {ι : Type*} {F : Type*} [Field F]
+    (domain : ι ↪ F) (k : ℕ) (f : ι → Fin 1 → F) :
+    f ∈ Multiplicity.umCode domain k 1 ↔
+      (fun i ↦ f i 0) ∈ ReedSolomon.code domain k := by
+  simp only [Multiplicity.umCode, Multiplicity.umEvalOnPoints,
+    ReedSolomon.code, ReedSolomon.evalOnPoints,
+    Submodule.mem_map, LinearMap.coe_mk, AddHom.coe_mk]
+  constructor
+  · rintro ⟨p, hp, hf⟩
+    refine ⟨p, hp, ?_⟩
+    funext i
+    have := congrFun (congrFun hf i) (0 : Fin 1)
+    simpa using this
+  · rintro ⟨p, hp, hp_eval⟩
+    refine ⟨p, hp, ?_⟩
+    funext i j
+    have hj : j = 0 := Subsingleton.elim _ _
+    subst hj
+    have := congrFun hp_eval i
+    simpa using this
 
 end ReedSolomon

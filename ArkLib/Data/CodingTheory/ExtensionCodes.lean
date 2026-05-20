@@ -127,24 +127,28 @@ vector `v : ι → F` by
   `              (∀ j : Fin e, (fun i ↦ c_B i j) ∈ C_B)`
 
 i.e. each of the `e` coordinate-projections of `v` lies in `C_B`. We express the
-codeword set; the underlying `Submodule F (ι → F)` structure follows by closure of
-`C_B` under linear combinations, but we keep the `Set`-level definition for direct
-comparison with the paper's encoder shape.
+codeword set as a `Set`-level definition for direct comparison with the paper's
+encoder shape.
 
-**Closure properties.** With `B`-linearity certified by `ExtensionFieldPresentation`'s
-`φ_add` / `φ_smul_psi` fields, we get:
+**Closure properties (B-side only).** With `B`-linearity certified by
+`ExtensionFieldPresentation`'s `φ_add` / `φ_smul_psi` fields, we get:
 
 - `extensionCode_add_mem` — closure under addition (provided `C_B` is closed under
   addition).
 - `extensionCode_psi_smul_mem` — closure under the `ψ`-induced `B`-scalar action
   (provided `C_B` is closed under `B`-scalar multiplication).
 
-These together make `extensionCode P C_B` a `B`-submodule-style subset of `ι → F` when
-`C_B` is `B`-linear. **Full F-Submodule promotion** (i.e. closure under arbitrary
-F-scalar multiplication, not just the `ψ(b)·x` action) requires a basis expansion of
-F-multiplication over the `φ`-basis — gated on `[Algebra B F] + [Module.Finite B F] +
-Basis B F` from Mathlib. Deferred as a polish follow-up; the bridge lemmas below
-provide the structural skeleton. -/
+These together make `extensionCode P C_B` a **B-submodule**-style subset of `ι → F`
+when `C_B` is `B`-linear.
+
+**Full F-Submodule promotion is not yet established.** Closure under arbitrary
+F-scalar multiplication (`α : F`, not just `ψ(b) : F` for `b : B`) requires a basis
+expansion of F-multiplication over the `φ`-basis — gated on
+`[Algebra B F] + [Module.Finite B F] + Basis B F` from Mathlib. The skeleton lemma
+`extensionCode_smul_mem` below carries this as a tagged sorry; until it is closed,
+treat `extensionCode P C_B` as a `B`-closed subset of `ι → F`, not an F-submodule.
+The paper's D2.20 claim that `C_F` is F-linear is therefore only **partially**
+formalised at present. -/
 def extensionCode {ι : Type} [Fintype ι]
     {B F : Type} [Field B] [Field F]
     (P : ExtensionFieldPresentation B F)
@@ -211,12 +215,15 @@ lemma extensionCode_psi_smul_mem
   rw [hpt]
   exact h
 
-/-- **F-scalar closure of `extensionCode`** — full F-Submodule completion.
+/-- **F-scalar closure of `extensionCode`** — promised by paper's D2.20, not yet
+formalised here.
 
-When `C_B` is `B`-linear, `extensionCode P C_B` is `F`-linear (the paper's D2.20
-claim). Together with `extensionCode_add_mem`, this lemma promotes
-`extensionCode P C_B` to a `Submodule F (ι → F)` and closes the F-linearity gap that
-was flagged in the post-refactor review.
+The paper's D2.20 asserts that `C_F : F^k → F^n` is F-linear when `C_B` is B-linear,
+so `extensionCode P C_B` should be a `Submodule F (ι → F)`. Together with
+`extensionCode_add_mem`, this lemma would promote `extensionCode P C_B` to a full
+F-Submodule. **Status: tagged sorry.** Until closed, only the B-side closure laws
+(`extensionCode_add_mem`, `extensionCode_psi_smul_mem`) are available; treat
+`extensionCode P C_B` as a B-closed subset of `ι → F`.
 
 **Proof strategy** (admitted as a tagged sorry; the proof requires structure constants
 not currently exposed by `ExtensionFieldPresentation`).

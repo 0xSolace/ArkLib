@@ -61,9 +61,14 @@ namespace Spec
 open OracleSpec OracleComp ProtocolSpec
 open scoped NNReal
 
-variable {ι F : Type} [Fintype ι] [DecidableEq ι] [Field F] [Fintype F]
-         [DecidableEq F]
+/-! ### Type-level definitions and relations
 
+The relations need `[Fintype ι]` (for `relaxedRelation`'s
+`Fintype.card ι` call) and `[Field F]` (for the `→ₗ[F]` encoder). The
+heavier `[DecidableEq ι] [Fintype F] [DecidableEq F]` instances come
+in below for the protocol-object definitions. -/
+
+variable {ι F : Type} [Fintype ι] [Field F]
 variable (k t : ℕ)
 
 /-- Input (explicit) statement of Construction 6.2: the linear-constraint
@@ -147,7 +152,6 @@ def accepts (encode : (Fin k → F) → (ι → F))
   (∑ j, g j * stmt.1 j = stmt.2.1 + γ * stmt.2.2) ∧
   ∀ j : Fin t, encode g (xs j) = f 0 (xs j) + γ * f 1 (xs j)
 
-omit [Fintype ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- The IOR-shaped input relation derived from `ToyProblem.relation`
 (Definition 6.1).
 
@@ -160,7 +164,6 @@ def inputRelation (C : Set (ι → F)) :
     ToyProblem.relation (k := k) (ℓ := 2) C input.1.1.1
       ![input.1.1.2.1, input.1.1.2.2] input.1.2
 
-omit [Fintype ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- The IOR-shaped *relaxed* output relation derived from
 `ToyProblem.relaxedRelation` (Definition 6.3). The soundness statement
 of L6.6 is with respect to this relation: the verifier's "accept"
@@ -172,19 +175,11 @@ def outputRelation (C : Set (ι → F)) (δ : ℝ≥0) :
     ToyProblem.relaxedRelation (k := k) (ℓ := 2) C δ input.1.1.1
       ![input.1.1.2.1, input.1.1.2.2] input.1.2
 
-omit [Fintype ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
-/-- The 1-arity relaxed relation `R̃¹_{C,δ}`, used as the *output*
-relation of Construction 6.9 (`Spec/SimplifiedIOR.lean`). Identical to
-`outputRelation` but with `ℓ = 1` and a single oracle codeword + single
-constraint value `μ` instead of the pair `(μ₁, μ₂)`.
-
-The C6.9 reduction `R̃²_{C,δ} → R̃¹_{C,δ}` is stated against this
-relation; we expose it here so the two protocol files can share it. -/
-def outputRelation₁ (C : Set (ι → F)) (δ : ℝ≥0) :
-    Set ((((Fin k → F) × F) × (∀ _ : Fin 1, ι → F)) × (Fin k → F)) :=
-  fun input ↦
-    ToyProblem.relaxedRelation (k := k) (ℓ := 1) C δ input.1.1.1
-      ![input.1.1.2] (fun _ ↦ input.1.2 0)
+-- The 1-arity relaxed relation `R̃¹_{C,δ}` lives in
+-- `Spec/SimplifiedIOR.lean :: outputRelation` (the C6.9 output relation).
+-- We expose it from the simplified-IOR file rather than here so its
+-- type signature aligns with `SimplifiedIOR.OutputStatement` /
+-- `OutputOracleStatement` / `OutputWitness` rather than re-bundling.
 
 /-! ### Honest prover, verifier, and reduction
 
@@ -198,6 +193,9 @@ This is sound — it's the same shape produced by
 `OracleReduction.toReduction` — and avoids the `embed` / `hEq`
 plumbing. An `OracleProver` / `OracleVerifier` flavour is a follow-up.
 -/
+
+section Protocol
+variable [DecidableEq ι] [Fintype F] [DecidableEq F]
 
 /-- Honest prover for Construction 6.2. After receiving the combination
 randomness `γ`, the prover sends `g := M 0 + γ · M 1` (point-wise on
@@ -414,6 +412,38 @@ theorem accepts_of_inputRelation {k t : ℕ}
     rw [hg_eq, map_add, map_smul, hf 0, hf 1]
     simp [Pi.add_apply, Pi.smul_apply, smul_eq_mul]
 
+/-- **Honest completeness for Construction 6.2** (protocol-level form).
+
+The honest oracle reduction is perfectly complete from `inputRelation k C`
+to the trivial output relation `Set.univ`. The load-bearing fact is
+`accepts_of_inputRelation` above: under any verifier challenges, the
+honest prover's message `g = M₀ + γ M₁` makes `accepts` hold, so the
+verifier's `if accepts then pure () else failure` never fails.
+
+**Status: tagged sorry.** The point-form proof (`accepts_of_inputRelation`)
+is closed; lifting it through `OracleReduction.toReduction`'s
+probabilistic-computation plumbing is the routine-but-laborious step
+that this stub signposts. The matching FRI/Sumcheck completeness
+theorems are similarly not yet shipped in ArkLib at the
+`Spec/SingleRound.lean` level (cf. Binius's `FRIBinius/General.lean`
+for the only fully-discharged protocol-level completeness in-tree). -/
+theorem oracleReduction_perfectCompleteness
+    [SampleableType F] [SampleableType ι]
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    (C : Set (ι → F)) (encode : (Fin k → F) →ₗ[F] (ι → F))
+    (_h_encode_mem : ∀ m, (encode m : ι → F) ∈ C) :
+    (oracleReduction (ι := ι) (F := F) (k := k) (t := t)
+        (encode : (Fin k → F) → (ι → F))).perfectCompleteness
+      init impl
+      (inputRelation k C)
+      (Set.univ : Set (((OutputStatement × ∀ i, OutputOracleStatement i)) ×
+        OutputWitness)) := by
+  -- ABF26-C6.2 completeness; reduces to `accepts_of_inputRelation` after
+  -- unfolding `OracleReduction.perfectCompleteness` through `toReduction`
+  -- and discharging the per-challenge probability bookkeeping.
+  sorry
+
 omit [DecidableEq ι] [Fintype F] in
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
 
@@ -424,10 +454,16 @@ soundness against the relaxed relation `R̃_{C,δ}^2` with error
 
 Stated against ArkLib's `Verifier.knowledgeSoundness` (cf.
 `OracleReduction/Security/Basic.lean :: Verifier.knowledgeSoundness`).
-The "input relation" in API terms is our `outputRelation` (= the
-relaxed relation `R̃_{C,δ}^2`, what the extractor extracts to); the
-"output relation" is `Set.univ` since the IOR's output is the trivial
-`Unit`.
+
+**Naming convention — paper vs API.** The ArkLib API's
+`Verifier.knowledgeSoundness` takes `(relIn, relOut)` where `relIn`
+is the relation the extracted witness satisfies and `relOut` is the
+relation the verifier's output must satisfy. In this file `relIn` is
+*our* `outputRelation` (paper's `R̃²_{C,δ}`, what the extractor
+extracts to) and `relOut` is `Set.univ` (paper's C6.2 has trivial
+output `Unit`). The name `outputRelation` reflects the **paper's**
+"this is the protocol's output relation" perspective; do not be misled
+by the API parameter named `relIn`.
 
 The proof exhibits an extractor that (i) erasure-decodes `(f₁, f₂)`
 against the largest agreement set, (ii) outputs the recovered messages,
@@ -487,6 +523,8 @@ theorem protocol62_rbrKnowledgeSound
   --   ⟨0, _⟩ ↦ epsMCA C δ + Lambda (interleavedCodeSet C) δ / |F|
   --   ⟨2, _⟩ ↦ (1-δ)^t
   sorry
+
+end Protocol
 
 end Spec
 
