@@ -167,31 +167,31 @@ such that for any distinct `x, y ∈ S`, the probability that a sample
 Then there exists some `φ` in the support of `Φ` whose image has cardinality
 at least `|S| / (1 + (|S| − 1) · ε)`.
 
-## Proof outline (from [ABF26] Appendix B)
+## Proof sketch (contradiction-form, avoids Jensen)
 
-Let `C_φ := { (x, y) ∈ Sym2 S : x ≠ y ∧ φ x = φ y }` be the set of distinct
-colliding pairs under `φ`.
+Let `N := |S|`, `δ := 1 + (N − 1) · ε`, `K := N / δ`. The proof tracks three
+in-line steps; the inelegance-saving idea is to negate the goal and exploit
+linearity of expectation instead of integrating a convex function.
 
-1. **Expected number of collisions.** By linearity of expectation,
-   `E_{φ ← Φ}[|C_φ|] = Σ_{(x,y) ∈ Sym2 S, x ≠ y} Pr[φ x = φ y]
-                     ≤ (|S| choose 2) · ε`.
+**Step A (pointwise Cauchy–Schwarz; [`cauchy_schwarz_fiber`]).** For every
+`φ : S → T`, the fiber decomposition `Σ μ ∈ image φ, |φ⁻¹(μ)| = |S|` combined
+with `sq_sum_le_card_mul_sum_sq` (Chebyshev for `f = g`) and
+[`sum_fiber_sq_eq`] gives `N² ≤ |image φ| · (N + numCollsOrdered φ)`.
 
-2. **Counting collisions via fibers.** For every fixed `φ`,
-   `|S| = Σ_{μ ∈ φ(S)} |φ⁻¹(μ)|` and each `μ ∈ φ(S)` contributes
-   `(|φ⁻¹(μ)| choose 2)` colliding pairs, so
-   `|C_φ| = ½(Σ_μ |φ⁻¹(μ)|² − |S|)`.
+**Step B (linearity of expectation).** Each `numCollsOrdered φ` is a sum of
+`(φ p.1 = φ p.2)`-indicators over ordered off-diagonal pairs `P`. Swapping
+the outer PMF `tsum` with the inner `Finset.sum` via
+`Summable.tsum_finsetSum` and using the hypothesis `Pr_{φ ← Φ}[φ x = φ y] ≤ ε`
+(unfolded via [`Pr_decide_eq_tsum_indicator`]) gives
+`∑' φ, Φ φ · (numCollsOrdered φ : ENNReal) ≤ N · (N − 1) · ε`.
 
-3. **Cauchy–Schwarz on fibers.**
-   `(Σ_μ |φ⁻¹(μ)|)² ≤ (Σ_μ 1²) · (Σ_μ |φ⁻¹(μ)|²) = |φ(S)| · Σ_μ |φ⁻¹(μ)|²`,
-   hence `|φ(S)| · (2 |C_φ| + |S|) ≥ |S|²` and thus
-   `|φ(S)| ≥ |S|² / (2 |C_φ| + |S|)`. Captured by `cauchy_schwarz_fiber`.
-
-4. **Contradiction-form.** Rather than Jensen on convex `x ↦ |S|²/(2x+|S|)`,
-   we negate the goal and derive `numCollsOrdered > |S|·(|S|−1)·ε` for every
-   `φ ∈ support`, then sum to contradict the hypothesis.
-
-5. **Existence by averaging.** Some `φ` in the support of `Φ` achieves at
-   least the expectation, hence the claimed bound. -/
+**Step C (contradiction by strict averaging).** Assume for contradiction
+`∀ φ ∈ Φ.support, |image φ| < K`. Step A then forces, for each such φ,
+`numCollsOrdered φ > N · (N − 1) · ε` (via `mul_lt_of_lt_div` and ENNReal
+cross-multiplication: `A · δ < N` combined with `N² ≤ A · (N + C)` together
+with the negation `C ≤ N(N−1)ε` produces `N² < N²`). Strict averaging via
+`ENNReal.tsum_lt_tsum` at any `φ₀ ∈ Φ.support` lifts the per-φ strict bound
+to `N · (N − 1) · ε < ∑' φ, Φ φ · numCollsOrdered φ`, contradicting Step B. -/
 theorem exists_large_image_of_pairwise_collision_bound
     {S T : Type} [Fintype S] [DecidableEq T]
     (Φ : PMF (S → T)) (ε : ENNReal)
