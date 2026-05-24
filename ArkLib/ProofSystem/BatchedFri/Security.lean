@@ -356,8 +356,7 @@ noncomputable def εC
 
 private abbrev fullChallengeProtocol (t l : ℕ) (ω : SmoothCosetFftDomain n 𝔽) :=
   (BatchedFri.Spec.BatchingRound.batchSpec 𝔽 t) ++ₚ
-    (Spec.pSpecFold k (ω := ω) s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ
-      Spec.QueryRound.pSpec l (ω := ω))
+    (Spec.pSpecFold k (ω := ω) s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ Spec.QueryRound.pSpec l (ω := ω))
 
 noncomputable instance {t l : ℕ} {ω : SmoothCosetFftDomain n 𝔽} :
     ∀ j,
@@ -619,8 +618,7 @@ noncomputable instance {t l : ℕ} {ω : SmoothCosetFftDomain n 𝔽} :
 --         (OracleComp
 --           ([]ₒ +
 --             [(BatchedFri.Spec.BatchingRound.batchSpec 𝔽 t ++ₚ
---                   (Spec.pSpecFold k s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ
---                     Spec.QueryRound.pSpec l)).Challenge]ₒ)))
+--                   (Spec.pSpecFold k s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ Spec.QueryRound.pSpec l)).Challenge]ₒ)))
 --
 noncomputable instance {t l : ℕ} {ω : SmoothCosetFftDomain n 𝔽} :
     HasEvalSPMF

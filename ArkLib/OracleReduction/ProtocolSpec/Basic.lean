@@ -656,7 +656,6 @@ instance challengeOracleInterface {pSpec : ProtocolSpec n} :
     toOC.impl := fun _ => do read }
 
 -- dtumad: Longer term I think you want this, but need to change `[_]ₒ` stuff for that
-@[reducible]
 def challengeOracleInterface' {pSpec : ProtocolSpec n} :
     OracleInterface (∀ i, pSpec.Challenge i) where
   Query := pSpec.ChallengeIdx
