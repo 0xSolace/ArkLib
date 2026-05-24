@@ -103,7 +103,7 @@ theorem reduction_completeness --(h : init.neverFails)
       (Prod.fst <$> (pure (some ((default, (mapStmt stmtIn, mapWit stmtIn witIn)),
         mapStmt stmtIn)) : StateT σ ProbComp _).run s) at hx
     rw [StateT.run_pure] at hx
-    simp [map_pure, support_pure] at hx
+    simp only [map_pure, support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
     cases hx
     exact ⟨(hRel stmtIn witIn).mp hIn, rfl⟩
 
@@ -121,14 +121,14 @@ variable {mapWitInv : StmtIn → WitOut → WitIn}
 @[simp]
 lemma support_liftM (m : Type _ → Type _) [Monad m] [HasEvalSet m]
     {α} (mx : m α) : support (liftM mx : OptionT m α) = support mx := by
-  simp [support_def, HasEvalSet.toSet, OptionT.mapM']
+  simp [support_def, HasEvalSet.toSet]
   sorry
 
 @[simp]
 lemma support_mk (m : Type _ → Type _) [Monad m] [HasEvalSet m]
     {α} (mx : m (Option α)) :
     support (OptionT.mk mx) = {x | some x ∈ support mx} := by
-  simp [support_def, HasEvalSet.toSet, OptionT.mapM']
+  simp [support_def, HasEvalSet.toSet]
   sorry
 
 /-- The knowledge state function for the `ReduceClaim` reduction. -/

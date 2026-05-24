@@ -271,7 +271,8 @@ section Instances
 /-- There is only one protocol specification with 0 messages (the empty one) -/
 instance : Unique (ProtocolSpec 0) where
   default := empty
-  uniq := fun ⟨_, _⟩ => by simp; constructor <;> (funext i; exact Fin.elim0 i)
+  uniq := fun ⟨_, _⟩ => by
+    simp only [mk.injEq]; constructor <;> (funext i; exact Fin.elim0 i)
 
 -- Note these strange instance syntheses. This is necessary to avoid diamonds later on when
 -- going to sequential composition.
@@ -655,6 +656,7 @@ instance challengeOracleInterface {pSpec : ProtocolSpec n} :
     toOC.impl := fun _ => do read }
 
 -- dtumad: Longer term I think you want this, but need to change `[_]ₒ` stuff for that
+@[reducible]
 def challengeOracleInterface' {pSpec : ProtocolSpec n} :
     OracleInterface (∀ i, pSpec.Challenge i) where
   Query := pSpec.ChallengeIdx
@@ -709,7 +711,8 @@ the input statement (i.e. we can always transform a given reduction into one whe
 random salt). -/
 @[inline, reducible]
 def srChallengeOracle (Statement : Type) {n : ℕ} (pSpec : ProtocolSpec n) :
-    OracleSpec (((i : pSpec.ChallengeIdx) × (challengeOracleInterfaceSR Statement pSpec i).Query)) :=
+    OracleSpec
+      (((i : pSpec.ChallengeIdx) × (challengeOracleInterfaceSR Statement pSpec i).Query)) :=
   [pSpec.Challenge]ₒ'(challengeOracleInterfaceSR Statement pSpec)
 
 alias fsChallengeOracle := srChallengeOracle

@@ -200,8 +200,9 @@ def stateFunction [Inhabited OStatement] : (oracleVerifier oSpec OStatement).Sta
   toFun_full := fun ⟨stmt, oStmt⟩ tr h => by
     sorry
     -- simp_all only [Fin.reduceLast, Fin.isValue, OStmtIn, Nat.reduceAdd, Fin.coe_ofNat_eq_mod,
-    --   Nat.reduceMod, Fin.zero_eta, StmtOut, OStmtOut, StmtIn, StateT.run'_eq, Set.language, WitOut,
-    --   relOut, Set.mem_image, Set.mem_setOf_eq, Prod.exists, exists_const, exists_eq_right,
+    --   Nat.reduceMod, Fin.zero_eta, StmtOut, OStmtOut, StmtIn, StateT.run'_eq, Set.language,
+    --   WitOut, relOut, Set.mem_image, Set.mem_setOf_eq, Prod.exists, exists_const,
+    --   exists_eq_right,
     --   probEvent_eq_zero_iff, support_bind, support_map, Set.mem_iUnion, exists_and_right,
     --   exists_prop, forall_exists_index, and_imp, Prod.forall]
     -- intro a b s hs s' hSupp
@@ -294,8 +295,9 @@ end RandomQuery
 --   Random query where we throw away the second oracle, and replace with the response:
 --   - The input relation is `{ ⟨⟨_, 𝒪⟩, _⟩ | 𝒪 0 = 𝒪 1 }`.
 --   - The output relation is `{ ⟨⟨q, r⟩, 𝒪⟩, _⟩ | oracle (𝒪 0) q = r }`.
---   - The (oracle) verifier sends a single random query `q` to the prover, queries the oracle `𝒪 1` at
---     `q` to get response `r`, returns `(q, r)` as the output statement, and drop `𝒪 1` from the
+--   - The (oracle) verifier sends a single random query `q` to the prover, queries the oracle
+--     `𝒪 1` at `q` to get response `r`, returns `(q, r)` as the output statement, and drop `𝒪 1`
+--     from the
 --     output oracle statement.
 
 --   This is just the concatenation of `RandomQuery` and `ReduceClaim`.
@@ -315,8 +317,8 @@ end RandomQuery
 --   oracles 0 = oracles 1
 
 -- /--
--- The final relation states that the first oracle `oStmt ()` agrees with the response `r` at the query
--- `q`.
+-- The final relation states that the first oracle `oStmt ()` agrees with the response `r` at the
+-- query `q`.
 -- -/
 -- @[reducible, simp]
 -- def relOut : (StmtOut OStatement × ∀ i, OStmtOut OStatement i) → WitOut → Prop :=
