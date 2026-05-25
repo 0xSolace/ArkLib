@@ -68,15 +68,15 @@ variable {domain : SmoothCosetFftDomain n F} {f : Word F (Fin (2 ^ n))}
 variable {k : ℕ} {x : F}
 
 omit [DecidableEq F] in
-private lemma a_tiny_bit_of_glory_aux
+private lemma even_add_odd_eq_of_2_ne_0
   (x y z : F) (hz : z ≠ 0) (hchar : (2 : F) ≠ 0) :
   x = (x + y) / 2 + (x - y) / (2 * z) * z := by grind
 
 omit [DecidableEq F] in
-private lemma a_tiny_bit_of_glory
+private lemma even_add_odd_eq_of_not_charp_2
   (x y z : F) (hz : z ≠ 0) (hchar : ¬CharP F 2) :
   x = (x + y) / 2 + (x - y) / (2 * z) * z := 
-  a_tiny_bit_of_glory_aux _ _ _ hz <| fun contra ↦ hchar <|
+  even_add_odd_eq_of_2_ne_0 _ _ _ hz <| fun contra ↦ hchar <|
     ringChar.of_eq (CharP.ringChar_of_prime_eq_zero Nat.prime_two contra)
 
 lemma foldWordAux_of_k_2
@@ -143,13 +143,13 @@ lemma foldWordAux_of_k_2
   · intro x hx
     have hx : (x = domain j ∧ y.1 = domain j) ∨ 
               (x = domain j' ∧ y.1 = -domain j') := by aesop 
-    have hj := a_tiny_bit_of_glory (f j) (f j') (domain j) (by simp)
+    have hj := even_add_odd_eq_of_not_charp_2 (f j) (f j') (domain j) (by simp)
       (CosetFftDomain.subdomain_implies_char_ne_2 domain)
-    have hj' := a_tiny_bit_of_glory (f j') (f j) (domain j') (by simp)
+    have hj' := even_add_odd_eq_of_not_charp_2 (f j') (f j) (domain j') (by simp)
       (CosetFftDomain.subdomain_implies_char_ne_2 domain)
     rcases hx with ⟨rfl, hy⟩ | ⟨rfl, hy⟩
     · rw [Lagrange.eval_interpolate_at_node _ CosetFftDomain.injOn (by simp),
-          hy ]
+          hy]
       conv_lhs => rw [hj]
       simp
     · rw [Lagrange.eval_interpolate_at_node _ CosetFftDomain.injOn (by simp), hy]
