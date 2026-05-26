@@ -14,65 +14,67 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
 
 import ArkLib.Data.CodingTheory.ReedSolomon.Domain.FftDomain.Mem
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.Ops
 
 namespace ReedSolomon
 
 variable {ι : Type} [AddCommGroup ι]
 variable {F : Type} [Field F]
 
-namespace FftDomain
+namespace FftDomainClass
 
-variable {ω : FftDomain ι F} {i j : ι}
+variable {D : Type} [FunLike D ι F] [FftDomainClass D ι F]
+variable {ω : D} {i j : ι}
 
 @[simp]
-lemma apply_zero_eq_one {ω : FftDomain ι F} :
-  ω 0 = 1 := by
-  simp [eval_fft_domain_eq_eval_coset_fft_domain,
-        CosetFftDomain.apply_zero,
-        ω.cosetGenerator_one]
+lemma apply_zero_eq_one :
+  ω 0 = 1 := generator_eq_one _
 
 lemma apply_add_eq_mul :
   ω (i + j) = ω i * ω j := by
-  simp 
-    [eval_fft_domain_eq_eval_coset_fft_domain, 
-      CosetFftDomain.apply_add_eq_inv_mul_mul,
-      ω.cosetGenerator_one]
+  simp [CosetFftDomainClass.map_add]
 
 lemma mul_mem_of_mem
   {x₁ x₂ : F} (hx₁ : x₁ ∈ ω) (hx₂ : x₂ ∈ ω) :
   x₁ * x₂ ∈ ω := by 
-  rw [mem_iff_exists] at *
+  rw [CosetFftDomainClass.mem_def] at *
   obtain ⟨⟨i₁, hi₁⟩, ⟨i₂, hi₂⟩⟩ := hx₁, hx₂
-  exists (i₁ * i₂)
-  aesop
+  exists (i₁ + i₂)
+  aesop (add simp [apply_add_eq_mul])
 
 @[simp]
 lemma apply_neg_eq_inv : 
   ω (-i) = (ω i)⁻¹ := by
   have h_def : ω (-i) * ω i = 1 := by
-    rw [←FftDomain.apply_add_eq_mul]
+    rw [←apply_add_eq_mul]
     aesop
   exact eq_inv_of_mul_eq_one_left h_def
 
-lemma domain_sub_eq_div_domain {ω : FftDomain ι F}
-  {i₁ i₂ : ι} :
-  ω (i₁ - i₂) = ω i₁ / ω i₂ := by
+lemma domain_sub_eq_div_domain :
+  ω (i - j) = ω i / ω j := by
   rw
     [sub_eq_add_neg,
       div_eq_mul_inv,
-      FftDomain.apply_add_eq_mul,
-      FftDomain.apply_neg_eq_inv]
+      apply_add_eq_mul,
+      apply_neg_eq_inv]
+
+lemma apply_nsmul {k : ℕ} :
+  ω (k • i) = (ω i) ^ k := by
+  induction k with
+  | zero => simp [pow_zero]
+  | succ k ih => rw [succ_nsmul, apply_add_eq_mul, ih, pow_succ]
 
 section Smooth
 
+variable {n : ℕ}
+variable {D : Type} [FunLike D (Fin (2 ^ n)) F] [FftDomainClass D (Fin (2 ^ n)) F]
+variable {ω : D}
+
 @[simp]
-lemma neg_one_mem_domain {n} [nz : NeZero n] {ω : SmoothFftDomain n F} :
+lemma neg_one_mem_domain [nz : NeZero n] :
   -1 ∈ ω := by
   have hn : n ≠ 0 := NeZero.ne _
   -- Let's denote this element as `k = 2^(i-1) : Fin (2^i)`.
-  set k : Fin (2 ^ n) := ⟨2 ^ (n - 1), by
-    exact pow_lt_pow_right₀ (by decide) (by omega)⟩
+  set k : Fin (2 ^ n) := ⟨2 ^ (n - 1), pow_lt_pow_right₀ (by decide) (by omega)⟩
   generalize_proofs at *
   have h_order : (ω k) ^ 2 = 1 := by
     have hk_order : (ω k) ^ 2 = (ω (k + k)) := by aesop (add simp [sq, apply_add_eq_mul])
@@ -91,7 +93,7 @@ lemma neg_one_mem_domain {n} [nz : NeZero n] {ω : SmoothFftDomain n F} :
     have h_ne_one : (ω k) ≠ ω 0 := by
       exact fun h ↦
         absurd
-          (ω.injective h)
+          (CosetFftDomainClass.injective _ h)
           (ne_of_gt <| Nat.lt_of_le_of_lt (Nat.zero_le _) <| pow_pos (by omega) _)
     generalize_proofs at *
     (
@@ -99,8 +101,54 @@ lemma neg_one_mem_domain {n} [nz : NeZero n] {ω : SmoothFftDomain n F} :
   generalize_proofs at *
   (exact ⟨k, Or.resolve_left (sq_eq_one_iff.mp h_order) h_ne_one⟩))
 
+private lemma val_eq_nsmul_one {n : ℕ} (i : Fin (2 ^ n)) : 
+  i = i.val • (1 : Fin (2 ^ n)) := by
+  simp only [Fin.ext_iff]
+  convert Nat.mod_eq_of_lt i.2 using 1
+  · rw [Nat.mod_eq_of_lt i.2]
+  · convert Nat.mod_eq_of_lt i.2 using 1
+    erw [Fin.val_mk]
+    induction i.val <;> simp_all +decide [nsmulRec]
+    simp_all +decide [Fin.val_add]
+
+lemma apply_eq_pow_of_generator (i : Fin (2 ^ n)) :
+  ω i = (ω 1) ^ i.val := by
+  conv_lhs => rw [val_eq_nsmul_one i]
+  simp [FftDomainClass.apply_nsmul]
+
+theorem eq_iff_generators_eq {ω₁ ω₂ : D} :
+  ω₁ = ω₂ ↔ ω₁ 1 = ω₂ 1 := by
+  constructor <;> (intro h; try rw [h])
+  ext i
+  aesop (add safe [(by rw [apply_eq_pow_of_generator i])])
+
+lemma domain_implies_char_ne_2 [NeZero n] (ω : D) :
+  ¬CharP F 2 := fun hchar ↦ by 
+  have hn : n ≠ 0 := NeZero.ne _
+  set k : Fin (2 ^ n) := ⟨2 ^ (n - 1), pow_lt_pow_right₀ (by decide) (by omega)⟩
+  have hk_ne_zero : k ≠ 0 := by simp [Fin.ext_iff, k]
+  have h_ne_val : ω k ≠ ω 0 := fun h => hk_ne_zero (CosetFftDomainClass.injective ω h)
+  have h_ne_one : ω k ≠ 1 := by rwa [apply_zero_eq_one] at h_ne_val
+  have h_kk : k + k = 0 := by
+    ext
+    simp only [Fin.val_add, Fin.coe_ofNat_eq_mod, Nat.zero_mod, k]
+    rcases n with _ | n <;> simp_all
+    ring_nf
+    simp 
+  have h_sq : (ω k) ^ 2 = 1 := by
+    rw [sq, ←apply_add_eq_mul, h_kk, apply_zero_eq_one]
+  have h_eq : ω k = 1 ∨ ω k = -1 := sq_eq_one_iff.mp h_sq
+  have h_neg_eq_pos : (-1 : F) = 1 := by
+    have : (2 : F) = 0 := CharP.cast_eq_zero F 2
+    conv_rhs =>
+      rw [show (1 : F) = 2 - 1 by norm_num, this]
+    simp
+  rcases h_eq with h | h
+  · exact h_ne_one h
+  · exact h_ne_one (by rwa [h_neg_eq_pos] at h)
+
 end Smooth
 
-end FftDomain
+end FftDomainClass
 
 end ReedSolomon

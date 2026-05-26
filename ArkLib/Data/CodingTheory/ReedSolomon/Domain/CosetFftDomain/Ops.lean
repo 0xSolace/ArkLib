@@ -14,6 +14,8 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
 
 import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.Mem
+import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.ToFftDomain
+import ArkLib.Data.CodingTheory.ReedSolomon.Domain.FftDomain.Ops
 
 namespace ReedSolomon
 
@@ -58,5 +60,36 @@ lemma apply_sub_eq_mul_div :
     (add safe (by field_simp))
 
 end CosetFftDomain
+
+namespace CosetFftDomainClass
+
+section Smooth
+
+variable {n : ℕ}
+variable {D : Type} [FunLike D (Fin (2 ^ n)) F] [CosetFftDomainClass D (Fin (2 ^ n)) F]
+variable {ω : D} {x : F}
+
+omit [DecidableEq F] in
+theorem neg_mem_domain_of_mem [nz : NeZero n] (h : x ∈ ω) :
+  -x ∈ ω := by
+  rw [show -x = (-1) * x by simp]
+  exact CosetFftDomainClass.mul_mem_of_mem_toFftDomain_of_mem (by simp) h
+
+omit [DecidableEq F] in
+@[simp]
+lemma neg_mem_domain_iff_mem [nz : NeZero n] :
+  -x ∈ ω ↔ x ∈ ω := by
+  constructor <;> intro h
+  · rw [show x = -(-x) by simp] 
+    exact neg_mem_domain_of_mem h
+  · exact neg_mem_domain_of_mem h
+
+omit [DecidableEq F] in
+lemma domain_implies_char_ne_2 [NeZero n] (ω : D) :
+  ¬CharP F 2 := FftDomainClass.domain_implies_char_ne_2 (toFftDomain ω)
+  
+end Smooth
+
+end CosetFftDomainClass
 
 end ReedSolomon

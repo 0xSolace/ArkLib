@@ -28,9 +28,6 @@ instance {D : Type}
 
 namespace CosetFftDomain
 
-def toFinset (ω : CosetFftDomain ι F) : Finset F :=
-  Finset.image ω Finset.univ
-
 instance
     {ι : Type} [AddCommGroup ι] [Fintype ι] [DecidableEq ι]
     {F : Type} [Field F] [DecidableEq F] :
@@ -40,12 +37,12 @@ instance
 end CosetFftDomain
 
 instance {ω : CosetFftDomain ι F} : Inhabited ω.toFinset where
-  default := ⟨ω 0, by simp [CosetFftDomain.toFinset]⟩
+  default := ⟨ω 0, by simp [CosetFftDomainClass.toFinset]⟩
 
 instance {ω : CosetFftDomain ι F} : Inhabited ω where
-  default := ⟨ω 0, by simp [CosetFftDomain.toFinset]⟩
+  default := ⟨ω 0, by simp [CosetFftDomainClass.toFinset]⟩
 
-namespace CosetFftDomain
+namespace CosetFftDomainClass
 
 variable {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F] {ω : D}
 variable {x : F}
@@ -58,7 +55,35 @@ omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma mem_self {i : ι} :
   ω i ∈ ω := by simp [mem_def]
 
-end CosetFftDomain
+omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+@[simp]
+lemma mem_toCosetFftDomain_iff_mem :
+  x ∈ toCosetFftDomain ω ↔ x ∈ ω := by
+  aesop (add simp 
+          [mkSubgroupUnit, 
+            mem_def, 
+            toCosetFftDomain,
+            CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
+
+omit [DecidableEq ι] in
+@[simp]
+lemma mem_toFinset_iff_mem :
+  x ∈ toFinset ω ↔ x ∈ ω := by aesop (add simp [toFinset, mem_def])
+
+omit [DecidableEq ι] in
+@[simp high]
+lemma mem_toFinset_self {i : ι} :
+  ω i ∈ toFinset ω := by simp
+
+omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+@[simp]
+lemma not_zero_mem :
+  0 ∉ ω := fun contra ↦ by
+  rw [mem_def] at contra
+  obtain ⟨i, contra⟩ := contra
+  exact CosetFftDomainClass.ne_zero ω i (by simp_all)
+
+end CosetFftDomainClass
 
 namespace CosetFftDomain
 
@@ -72,17 +97,17 @@ lemma mem_iff_exists_mul :
 omit [DecidableEq ι] in
 lemma mem_toFinset_iff_exists_mul : 
   x ∈ ω.toFinset ↔ ∃ i, x = ω.cosetGenerator * ω.subgroupDomain i := by
-  aesop (add simp [toFinset])
+  aesop (add simp [CosetFftDomainClass.toFinset])
 
 omit [DecidableEq ι] in
 @[simp]
 lemma mem_toFinset_iff_mem :
-  x ∈ ω.toFinset ↔ x ∈ ω := by simp [mem_toFinset_iff_exists_mul, mem_iff_exists_mul]
+  x ∈ ω.toFinset ↔ x ∈ ω := CosetFftDomainClass.mem_toFinset_iff_mem 
 
 omit [DecidableEq ι] in
 @[simp high]
 lemma mem_toFinset_self {i : ι} :
-  ω i ∈ ω.toFinset := by simp [mem_toFinset_iff_mem]
+  ω i ∈ ω.toFinset := CosetFftDomainClass.mem_toFinset_self
 
 end CosetFftDomain
 

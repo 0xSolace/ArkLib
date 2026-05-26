@@ -102,13 +102,18 @@ lemma injective {ω : FftDomain ι F} :
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma injOn {ω : FftDomain ι F} {s : Set ι} :
-  Set.InjOn ω s := fun _ _ _ _ h ↦ injective h
+  Set.InjOn ω s := fun _ _ _ _ h ↦ ω.injective h
 
 end FftDomain
-
 
 abbrev SmoothFftDomain (n : ℕ) (F : Type) [Field F] : Type :=
   FftDomain (Fin (2 ^ n)) F
 
+namespace FftDomain
+
+abbrev toFinset (ω : FftDomain ι F) : Finset F := 
+  CosetFftDomainClass.toFinset ω
+
+end FftDomain
 
 end ReedSolomon

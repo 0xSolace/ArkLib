@@ -113,9 +113,9 @@ instance : CosetFftDomainClass (CosetFftDomain ι F) ι F where
     aesop 
       (add simp [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
 
-namespace CosetFftDomain 
+namespace CosetFftDomainClass
 
-private def mkSubgroupUnit {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
+def mkSubgroupUnit {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
     (ω : D) (i : ι) : Fˣ where
   val := (ω 0)⁻¹ * ω i
   inv := ω 0 * (ω i)⁻¹
@@ -169,15 +169,16 @@ def toCosetFftDomain {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
 omit [DecidableEq ι] [DecidableEq F] [Fintype ι] in
 lemma toCosetFftDomain_of_CosetFftDomain {ω : CosetFftDomain ι F} :
   toCosetFftDomain ω = ω := by
-  simp only [toCosetFftDomain, eq_iff_gen_and_domains_eq]
+  simp only [toCosetFftDomain, CosetFftDomain.eq_iff_gen_and_domains_eq]
   constructor 
   · have h : (0 : ι) = (Multiplicative.ofAdd 0 : Multiplicative ι) := by rfl
-    aesop (add simp [eval_coset_fft_domain_eq_eval_generator_mul_domain])
+    aesop (add simp [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
   · have h : (0 : ι) = (Multiplicative.ofAdd 0 : Multiplicative ι) := by rfl 
     ext i
-    aesop (add simp [eval_coset_fft_domain_eq_eval_generator_mul_domain, mkSubgroupUnit])
+    aesop 
+      (add simp [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain, mkSubgroupUnit])
 
-end CosetFftDomain
+end CosetFftDomainClass
 
 instance {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F] : 
   CoeOut D (ι ↪ F) where
@@ -208,5 +209,27 @@ end CosetFftDomain
 
 abbrev SmoothCosetFftDomain (n : ℕ) (F : Type) [Field F] : Type :=
   CosetFftDomain (Fin (2 ^ n)) F
+
+namespace CosetFftDomainClass 
+def toFinset {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
+  (ω : D) : Finset F := Finset.image ω Finset.univ
+
+omit [DecidableEq ι] in
+@[simp]
+lemma card_toFinset {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
+  {ω : D} :
+  Finset.card (CosetFftDomainClass.toFinset ω) = Fintype.card ι := by
+  aesop 
+    (add simp [CosetFftDomainClass.toFinset, Finset.card_image_of_injective,
+                CosetFftDomainClass.injective])
+
+end CosetFftDomainClass
+
+namespace CosetFftDomain
+
+abbrev toFinset (ω : CosetFftDomain ι F) : Finset F := 
+  CosetFftDomainClass.toFinset ω
+ 
+end CosetFftDomain
 
 end ReedSolomon

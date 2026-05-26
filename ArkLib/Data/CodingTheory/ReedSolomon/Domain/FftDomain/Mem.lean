@@ -21,6 +21,17 @@ namespace ReedSolomon
 variable {ι : Type} [Fintype ι] [AddCommGroup ι] [DecidableEq ι]
 variable {F : Type} [Field F] [DecidableEq F]
 
+namespace FftDomainClass 
+
+variable {D : Type} [FunLike D ι F] [FftDomainClass D ι F]
+variable {ω : D}
+
+omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+@[simp]
+lemma one_mem : 1 ∈ ω := ⟨0, FftDomainClass.generator_eq_one ω⟩
+
+end FftDomainClass
+
 namespace FftDomain
 
 open CosetFftDomain
@@ -40,22 +51,16 @@ lemma mem_iff_mem_toCosetFftDomain :
 omit [DecidableEq ι] in
 lemma mem_toFinset_iff_exists : 
   x ∈ ω.toFinset ↔ ∃ i, x = ω.subgroupDomain i := by
-  rw [CosetFftDomain.mem_toFinset_iff_exists_mul, 
-      ω.cosetGenerator_one]
+  rw [CosetFftDomainClass.mem_toFinset_iff_mem, 
+      CosetFftDomainClass.mem_def]
   aesop 
 
 omit [DecidableEq ι] in
 @[simp]
 lemma mem_toFinset_iff_mem :
   x ∈ ω.toFinset ↔ x ∈ ω := by 
-  rw [CosetFftDomain.mem_toFinset_iff_mem,
+  rw [CosetFftDomainClass.mem_toFinset_iff_mem,
       mem_iff_mem_toCosetFftDomain]
-
-omit [DecidableEq ι] in
-@[simp high]
-lemma mem_toFinset_self {i : ι} :
-  ω i ∈ ω.toFinset := by 
-  simp [CosetFftDomain.mem_toFinset_iff_mem, ←mem_iff_mem_toCosetFftDomain]
 
 end FftDomain
 
