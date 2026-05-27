@@ -133,7 +133,7 @@ def sumcheckFoldExtractorLens : Extractor.Lens
 -- The lifted oracle verifier
 def sumcheckFoldOracleVerifier :=
   (BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).liftContext
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).liftContext
       (lens := sumcheckFoldStmtLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
 
 -- The lifted oracle reduction
@@ -328,7 +328,7 @@ theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness [Fintype L] :
           (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) (Fin.last ℓ')
       )
       (verifier := sumcheckFoldOracleVerifier κ L K β ℓ ℓ' 𝓡 ϑ
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑))
       (init := init)
       (impl := impl)
       (rbrKnowledgeError := BinaryBasefold.CoreInteraction.sumcheckFoldKnowledgeError
@@ -615,7 +615,7 @@ def coreInteractionOracleVerifier :=
     (pSpec₁ := BinaryBasefold.pSpecSumcheckFold K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
     (pSpec₂ := pSpecFinalSumcheckStep (L:=L))
     (V₁ := sumcheckFoldOracleVerifier κ L K β ℓ ℓ' 𝓡 ϑ
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑))
     (V₂ := finalSumcheckVerifier κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l)
 
 /-- The final oracle reduction that composes sumcheckFold with finalSumcheckStep -/
@@ -677,7 +677,7 @@ def coreInteractionOracleRbrKnowledgeError (j : (BinaryBasefold.pSpecCoreInterac
 /-- Round-by-round knowledge soundness for the core interaction oracle verifier -/
 theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness :
     (coreInteractionOracleVerifier κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate
-      h_l).rbrKnowledgeSoundness init impl
+      h_l (𝓑 := 𝓑)).rbrKnowledgeSoundness init impl
       (OStmtIn := BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
       (OStmtOut := BinaryBasefold.OracleStatement K β
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
@@ -704,7 +704,7 @@ theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness :
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) (Fin.last ℓ'))
     (rel₃ := finalSumcheckRelOut K β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
     (V₁ := sumcheckFoldOracleVerifier κ L K β ℓ ℓ' 𝓡 ϑ
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑))
     (V₂ := finalSumcheckVerifier κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l)
     (Oₛ₃:=by exact fun i ↦ by exact OracleInterface.instDefault)
     (rbrKnowledgeError₁ := BinaryBasefold.CoreInteraction.sumcheckFoldKnowledgeError

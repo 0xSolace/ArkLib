@@ -86,7 +86,7 @@ def batchingCoreVerifier :=
     (OStmt₃ := BinaryBasefold.OracleStatement K β
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
     (V₂:= FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier κ L K
-      β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l)
+      β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l (𝓑 := 𝓑))
 
 def batchingCoreReduction :=
   OracleReduction.append (oSpec:=[]ₒ)
@@ -122,7 +122,7 @@ noncomputable def fullOracleVerifier :
     (OStmt₃ := fun _ : Empty => Unit)
     (pSpec₁ := batchingCorePspec κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate)
     (pSpec₂ := BinaryBasefold.pSpecQuery K β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (V₁ := batchingCoreVerifier κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l)
+    (V₁ := batchingCoreVerifier κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l (𝓑 := 𝓑))
     (V₂ := QueryPhase.queryOracleVerifier K β γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ))
 

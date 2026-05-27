@@ -53,10 +53,29 @@ section SumcheckOperations
 abbrev MultilinearPoly (L : Type) [CommSemiring L] (ℓ : ℕ) := L⦃≤ 1⦄[X Fin ℓ]
 abbrev MultiquadraticPoly (L : Type) [CommSemiring L] (ℓ : ℕ) := L⦃≤ 2⦄[X Fin ℓ]
 
-/-- We treat the multiplier poly as a blackbox for protocol abstraction.
-For example, in Binary Basefold it's `eqTilde(r₀, .., r_{ℓ-1}, X₀, .., X_{ℓ-1})` -/
-structure SumcheckMultiplierParam (L : Type) [CommRing L] (ℓ : ℕ) (Context : Type := Unit) where
-  multpoly : (ctx: Context) → MultilinearPoly L ℓ
+/-- Parameters describing how the round polynomial `H` is built from the witness `t`:
+`H = P · Q(t)`, where `P` is a public multilinear multiplier and `Q` is a public univariate
+*combinator* applied to the (multilinear) witness. The round polynomial then has degree
+`≤ degCombinator + 1` in each variable.
+
+No instantiation is privileged: every consumer specifies its own `combinator`, `degCombinator`,
+and degree proof. The plain degree-2 case `H = P · t` (Binary Basefold, ring-switching) takes
+`combinator := X`, `degCombinator := 1`; Hachi's range/smallness check uses `Q := ∏ⱼ (X − j)` of
+degree `2b`, giving a degree-`(2b+1)` round polynomial.
+
+For example, in Binary Basefold `multpoly` is `eqTilde(r₀, .., r_{ℓ-1}, X₀, .., X_{ℓ-1})`. -/
+structure SumcheckMultiplierParam (L : Type) [CommRing L] (ℓ : ℕ) (Context : Type) where
+  /-- Public multilinear multiplier `P`. -/
+  multpoly : (ctx : Context) → MultilinearPoly L ℓ
+  /-- Public univariate combinator `Q`, applied to the witness: `H = P · Q(t)`.
+  The identity-like `X` recovers the plain degree-2 case `H = P · t`. -/
+  combinator : (ctx : Context) → Polynomial L
+  /-- Uniform degree bound on `combinator`; the round polynomial is degree `≤ degCombinator + 1`. -/
+  degCombinator : ℕ
+  /-- `combinator` respects its degree bound. For the `combinator := X`, `degCombinator := 1`
+  case, discharge with `Polynomial.natDegree_X_le` (which needs only `Semiring`, so it holds even
+  over a trivial ring — unlike `natDegree_X`, which needs `Nontrivial`). -/
+  combinator_natDegree_le : ∀ ctx, (combinator ctx).natDegree ≤ degCombinator
 
 -- The variable block matches the original `Binius.BinaryBasefold.Basic`'s line-19 block
 -- (`ℓ` explicit + `[NeZero ℓ]` instance) so that positional callers like
@@ -80,6 +99,29 @@ def computeInitialSumcheckPoly (t : MultilinearPoly L ℓ)
         degreeOf_mul_le i m.val t.val
       _ ≤ 2 := by omega
   ⟩
+
+/-- The general round polynomial `H = P · Q(t)`, where `P = param.multpoly ctx` is the public
+multilinear multiplier and `Q = param.combinator ctx` is the public univariate combinator applied
+to the multilinear witness `t`. Its degree in each variable is `≤ param.degCombinator + 1`.
+
+Specializes to `computeInitialSumcheckPoly t (param.multpoly ctx)` when `combinator = X`. -/
+def computeRoundPoly {Context : Type} (param : SumcheckMultiplierParam L ℓ Context)
+    (ctx : Context) (t : MultilinearPoly L ℓ) : L⦃≤ param.degCombinator + 1⦄[X Fin ℓ] :=
+  ⟨(param.multpoly ctx).val * Polynomial.aeval t.val (param.combinator ctx), by
+    rw [MvPolynomial.mem_restrictDegree_iff_degreeOf_le]
+    intro i
+    have hP : degreeOf i (param.multpoly ctx).val ≤ 1 :=
+      degreeOf_le_iff.mpr fun term a ↦ (param.multpoly ctx).property a i
+    have ht : degreeOf i t.val ≤ 1 :=
+      degreeOf_le_iff.mpr fun term a ↦ t.property a i
+    calc degreeOf i ((param.multpoly ctx).val * Polynomial.aeval t.val (param.combinator ctx))
+        ≤ degreeOf i (param.multpoly ctx).val
+            + degreeOf i (Polynomial.aeval t.val (param.combinator ctx)) := degreeOf_mul_le i _ _
+      _ ≤ 1 + (param.combinator ctx).natDegree := by
+          gcongr
+          exact MvPolynomial.degreeOf_aeval_le i (param.combinator ctx) t.val ht
+      _ ≤ 1 + param.degCombinator := by gcongr; exact param.combinator_natDegree_le ctx
+      _ = param.degCombinator + 1 := by ring⟩
 
 /-- `Hᵢ(Xᵢ, ..., X_{ℓ-1}) = ∑ ω ∈ 𝓑ᵢ, H₀(ω₀, …, ω_{i-1}, Xᵢ, …, X_{ℓ-1}) (where H₀=h)` -/
 def projectToMidSumcheckPoly (t : MultilinearPoly L ℓ)
@@ -149,14 +191,18 @@ section Witness
 
 /-- Witness for the structured sumcheck at round `i`:
 - `t'` — the original multilinear polynomial (the "data" being committed); same across rounds.
-- `H`  — the projected round polynomial `H_i(X_i, …, X_{ℓ-1})`, equal to the multiquadratic
-  product `m · t'` with the first `i` variables fixed to the verifier's previous challenges.
+- `H`  — the projected round polynomial `H_i(X_i, …, X_{ℓ-1})` of degree `≤ d`, equal to the
+  round polynomial `P · Q(t')` with the first `i` variables fixed to the verifier's previous
+  challenges.
 
-Lifted from `Binius.RingSwitching.SumcheckWitness`. Generic in shape; PR 2b's per-round
-prover/verifier consume this witness uniformly across all structured-sumcheck instantiations. -/
-structure SumcheckWitness (L : Type) [CommSemiring L] (ℓ : ℕ) (i : Fin (ℓ + 1)) where
+The degree bound `d` is explicit (no privileged instantiation): the `H = P · t'` case passes
+`d := 2`, Hachi's degree-`(2b+1)` smallness check passes `d := 2b+1`.
+
+Generic in shape; the per-round prover/verifier consume this witness uniformly across all
+structured-sumcheck instantiations. -/
+structure SumcheckWitness (L : Type) [CommSemiring L] (ℓ : ℕ) (i : Fin (ℓ + 1)) (d : ℕ) where
   t' : MultilinearPoly L ℓ
-  H : L⦃≤ 2⦄[X Fin (ℓ - i)]
+  H : L⦃≤ d⦄[X Fin (ℓ - i)]
 
 end Witness
 

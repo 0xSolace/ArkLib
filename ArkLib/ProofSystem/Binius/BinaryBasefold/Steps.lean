@@ -160,8 +160,9 @@ noncomputable def foldOracleVerifier (i : Fin ℓ) :
     let h_i : L⦃≤ 2⦄[X] ← query (spec := [(pSpecFold (L := L)).Message]ₒ)
       ⟨⟨0, rfl⟩, ()⟩
 
-    -- Check sumcheck : s_i ?= h_i(0) + h_i(1)
-    let sumcheck_check := h_i.val.eval 0 + h_i.val.eval 1 = stmtIn.sumcheck_target
+    -- Check sumcheck : s_i ?= h_i(𝓑 0) + h_i(𝓑 1), i.e. ∑_{y ∈ univ.map 𝓑} h_i(y)
+    -- (matching how the prover sums the round poly over `univ.map 𝓑`, not literal `0`/`1`).
+    let sumcheck_check := h_i.val.eval (𝓑 0) + h_i.val.eval (𝓑 1) = stmtIn.sumcheck_target
     unless sumcheck_check do
       -- Return a dummy statement indicating failure
       let dummyStmt : Statement (L := L) Context i.succ := {
@@ -207,7 +208,7 @@ noncomputable def foldOracleReduction (i : Fin ℓ) :
     (WitOut := Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
     (pSpec := pSpecFold (L := L)) where
   prover := foldOracleProver 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i
-  verifier := foldOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
+  verifier := foldOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i
 
 variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
   {n : ℕ} {deg : ℕ} {m : ℕ} {D : Fin m ↪ R}
@@ -317,7 +318,7 @@ def foldKStateProp {i : Fin ℓ} (m : Fin (2 + 1))
       (stmt := stmt) (wit := witMid) (oStmt := oStmt)
       (localChecks :=
         let h_i := get_Hᵢ (m := ⟨1, h1⟩) (tr := tr) (hm := by simp only [le_refl])
-        let explicitVCheck := h_i.val.eval 0 + h_i.val.eval 1 = stmt.sumcheck_target
+        let explicitVCheck := h_i.val.eval (𝓑 0) + h_i.val.eval (𝓑 1) = stmt.sumcheck_target
         let localizedRoundPolyCheck := h_i = h_star
         explicitVCheck ∧ localizedRoundPolyCheck
       )
@@ -340,7 +341,8 @@ def foldKStateProp {i : Fin ℓ} (m : Fin (2 + 1))
 
 /-- Knowledge state function (KState) for single round -/
 def foldKnowledgeStateFunction (i : Fin ℓ) :
-    (foldOracleVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).KnowledgeStateFunction init impl
+    (foldOracleVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i).KnowledgeStateFunction
+      init impl
       (relIn := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (𝓑 := 𝓑) i.castSucc)
       (relOut := foldStepRelOut (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -371,7 +373,8 @@ def foldKnowledgeStateFunction (i : Fin ℓ) :
 
 /-- RBR knowledge soundness for a single round oracle verifier -/
 theorem foldOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ) :
-    (foldOracleVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).rbrKnowledgeSoundness init impl
+    (foldOracleVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i).rbrKnowledgeSoundness
+      init impl
       (relIn := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (𝓑 := 𝓑) i.castSucc)
       (relOut := foldStepRelOut (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)

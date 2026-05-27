@@ -216,12 +216,14 @@ structure RingSwitchingBaseContext extends (SumcheckBaseContext L ℓ) where
   s_hat : TensorAlgebra K L  -- ŝ
   r_batching : Fin κ → L     -- r''
 
--- `SumcheckWitness` was lifted to `ArkLib.ProofSystem.Sumcheck.Structured` (the data
--- shape is generic; only the per-round prover/verifier in `SumcheckPhase.lean`
--- consume it). Re-exported under `Binius.RingSwitching` for backwards compatibility.
--- The packed polynomial `t'` and round polynomial `H = m · t'` (after fixing previous
--- challenges) live in the same structure.
-export Sumcheck.Structured (SumcheckWitness)
+-- `SumcheckWitness` was lifted to `ArkLib.ProofSystem.Sumcheck.Structured` (the data shape is
+-- generic and degree-neutral; only the per-round prover/verifier in `SumcheckPhase.lean` consume
+-- it). Binius ring-switching is the degree-2 case `H = m · t'`, so this Binius-local abbrev pins
+-- `d := 2`. Other instantiations (e.g. Hachi at `d := 2b+1`) pin their own degree — no
+-- instantiation is privileged by a default on the generic type. The packed polynomial `t'` and
+-- round polynomial `H` (after fixing previous challenges) live in the same structure.
+abbrev SumcheckWitness (L : Type) [CommSemiring L] (ℓ : ℕ) (i : Fin (ℓ + 1)) :=
+  Sumcheck.Structured.SumcheckWitness L ℓ i 2
 
 section MLIOPCS
 -- Define the specific Stmt/Wit types Π' expects.
@@ -372,6 +374,10 @@ def RingSwitching_SumcheckMultParam :
     compute_A_MLE κ L K β ℓ' (original_r_eval_suffix :=
       getEvaluationPointSuffix κ L ℓ ℓ' h_l (r := ctx.t_eval_point))
       (r''_batching := ctx.r_batching)
+  -- Ring-switching is the plain degree-2 case `H = P · t'`: combinator `Q := X`, degree 1.
+  combinator := fun _ => Polynomial.X
+  degCombinator := 1
+  combinator_natDegree_le := by intro _; exact Polynomial.natDegree_X_le
 }
 
 /-- Step 5 (V): Compute `s₀ := Σ_{u ∈ {0,1}^κ} eqTilde(u, r'') ⋅ ŝ_u`,

@@ -792,7 +792,11 @@ def BBF_eq_multiplier (r : Fin ℓ → L) : MultilinearPoly L ℓ :=
   ⟨MvPolynomial.eqPolynomial r, by simp only [eqPolynomial_mem_restrictDegree]⟩
 
 def BBF_SumcheckMultiplierParam : SumcheckMultiplierParam L ℓ (SumcheckBaseContext L ℓ) :=
-  { multpoly := fun ctx => BBF_eq_multiplier ctx.t_eval_point }
+  { multpoly := fun ctx => BBF_eq_multiplier ctx.t_eval_point
+    -- Binary Basefold is the plain degree-2 case `H = P · t`: combinator `Q := X`, degree 1.
+    combinator := fun _ => Polynomial.X
+    degCombinator := 1
+    combinator_natDegree_le := by intro _; exact Polynomial.natDegree_X_le }
 
 /-- This condition ensures that the folding witness `f` is properly generated from `t` -/
 def getMidCodewords {i : Fin (ℓ + 1)} (t : L⦃≤ 1⦄[X Fin ℓ]) -- original polynomial t

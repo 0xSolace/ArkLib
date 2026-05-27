@@ -34,10 +34,11 @@ def pSpecBatching : ProtocolSpec 2 :=
   ⟨![Direction.P_to_V, Direction.V_to_P],
    ![TensorAlgebra K L, Fin κ → L]⟩
 
--- `pSpecSumcheckRound` was lifted to `ArkLib.ProofSystem.Sumcheck.Structured.SingleRound`
--- (it's reachable here via `import` chain through `Binius.RingSwitching.Prelude`).
--- Re-exported under `Binius.RingSwitching` so existing references resolve unchanged.
-export Sumcheck.Structured (pSpecSumcheckRound)
+-- `pSpecSumcheckRound` was lifted to `ArkLib.ProofSystem.Sumcheck.Structured.SingleRound` as a
+-- degree-neutral spec. Binius ring-switching is the degree-2 case, so this Binius-local abbrev
+-- pins `d := 2` — no instantiation is privileged by a default on the generic spec.
+abbrev pSpecSumcheckRound (L : Type) [Semiring L] : ProtocolSpec 2 :=
+  Sumcheck.Structured.pSpecSumcheckRound L 2
 
 def pSpecSumcheckLoop := ProtocolSpec.seqCompose (fun (_: Fin ℓ') => pSpecSumcheckRound L)
 

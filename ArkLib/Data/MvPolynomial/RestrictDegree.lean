@@ -86,7 +86,7 @@ private lemma rename_equiv_mem_restrictDegree {R : Type*} [CommSemiring R]
       Finsupp.single_eq_of_ne (hm x (by aesop))
   aesop
 
-variable {L : Type*} [CommRing L] (ℓ : ℕ)
+variable {L : Type*} [CommSemiring L] (ℓ : ℕ)
 
 /-- Fixes the first `v` variables of a `ℓ`-variate multivariate polynomial.
 `t` -> `H_i` derivation
@@ -133,5 +133,24 @@ theorem fixFirstVariablesOfMQP_degreeLE {deg : ℕ} (v : Fin (ℓ + 1)) {challen
   -- h_Hgrouped_degreeLE
   let res : term i ≤ deg := h_mem_support_max_deg_LE term h_term_in_Hgrouped_support i
   exact res
+
+/-- For a multilinear `t` (each variable has `degreeOf ≤ 1`), substituting `t` into a univariate
+`Q : L[X]` via `Polynomial.aeval` yields a multivariate polynomial whose degree in each variable is
+bounded by `Q.natDegree`. Used by the structured sumcheck to bound the degree of `Q(witness)` in
+the round polynomial `H = P · Q(t)`. -/
+theorem degreeOf_aeval_le {L : Type*} [CommSemiring L] {σ : Type*} (i : σ)
+    (Q : Polynomial L) (t : MvPolynomial σ L) (ht : degreeOf i t ≤ 1) :
+    degreeOf i (Polynomial.aeval t Q) ≤ Q.natDegree := by
+  rw [Polynomial.aeval_def, Polynomial.eval₂_eq_sum, Polynomial.sum]
+  refine le_trans (degreeOf_sum_le i Q.support _) ?_
+  refine Finset.sup_le fun e he => ?_
+  calc degreeOf i (algebraMap L (MvPolynomial σ L) (Q.coeff e) * t ^ e)
+      ≤ degreeOf i (algebraMap L (MvPolynomial σ L) (Q.coeff e)) + degreeOf i (t ^ e) :=
+        degreeOf_mul_le i _ _
+    _ = degreeOf i (t ^ e) := by rw [MvPolynomial.algebraMap_eq, degreeOf_C, zero_add]
+    _ ≤ e * degreeOf i t := degreeOf_pow_le i t e
+    _ ≤ e * 1 := by gcongr
+    _ = e := mul_one e
+    _ ≤ Q.natDegree := Polynomial.le_natDegree_of_mem_supp e he
 
 end MvPolynomial

@@ -44,14 +44,14 @@ def batchingCoreVerifier :=
   OracleVerifier.append (oSpec:=[]ₒ)
     (V₁:= BatchingPhase.oracleVerifier κ L K β ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
     (pSpec₁:=pSpecBatching κ L K)
-    (V₂:=SumcheckPhase.coreInteractionOracleVerifier κ L K β ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
+    (V₂:=SumcheckPhase.coreInteractionOracleVerifier (𝓑 := 𝓑) κ L K β ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
     (pSpec₂:=pSpecCoreInteraction L ℓ')
 
 /-- The oracle verifier for the full Binary Basefold protocol -/
 @[reducible]
 def fullOracleVerifier :=
   OracleVerifier.append (oSpec:=[]ₒ)
-    (V₁:=batchingCoreVerifier κ L K β ℓ ℓ' h_l mlIOPCS)
+    (V₁:=batchingCoreVerifier (𝓑 := 𝓑) κ L K β ℓ ℓ' h_l mlIOPCS)
     (pSpec₁:=pSpecLargeFieldReduction κ L K ℓ')
     (V₂:=mlIOPCS.oracleReduction.verifier)
     (pSpec₂:=mlIOPCS.pSpec)
@@ -144,7 +144,7 @@ variable [SampleableType L]
 /-- Round-by-round knowledge soundness for the full ring-switching oracle verifier -/
 theorem fullOracleVerifier_rbrKnowledgeSoundness {𝓑 : Fin 2 ↪ L} :
   OracleVerifier.rbrKnowledgeSoundness
-    (verifier := fullOracleVerifier κ L K β ℓ ℓ' h_l mlIOPCS)
+    (verifier := fullOracleVerifier (𝓑 := 𝓑) κ L K β ℓ ℓ' h_l mlIOPCS)
     (init := init)
     (impl := impl)
     (relIn := fullInputRelation κ L K β ℓ ℓ' h_l mlIOPCS)
@@ -157,7 +157,7 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness {𝓑 : Fin 2 ↪ L} :
     (rel₂:=sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn 0)
     (rel₃:=mlIOPCS.toRelInput)
     (V₁:=BatchingPhase.oracleVerifier κ L K β ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
-    (V₂:=SumcheckPhase.coreInteractionOracleVerifier κ L K β ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
+    (V₂:=SumcheckPhase.coreInteractionOracleVerifier (𝓑 := 𝓑) κ L K β ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
     (rbrKnowledgeError₁:=BatchingPhase.batchingRBRKnowledgeError κ L K)
     (rbrKnowledgeError₂:=SumcheckPhase.coreInteractionRbrKnowledgeError L ℓ')
     (h₁:=BatchingPhase.batchingOracleVerifier_rbrKnowledgeSoundness κ L K β ℓ
@@ -170,7 +170,7 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness {𝓑 : Fin 2 ↪ L} :
     (rel₁:=fullInputRelation κ L K β ℓ ℓ' h_l mlIOPCS)
     (rel₂:=mlIOPCS.toRelInput)
     (rel₃:=fullOutputRelation)
-    (V₁:=batchingCoreVerifier κ L K β ℓ ℓ' h_l mlIOPCS)
+    (V₁:=batchingCoreVerifier (𝓑 := 𝓑) κ L K β ℓ ℓ' h_l mlIOPCS)
     (V₂:=mlIOPCS.oracleReduction.verifier)
     (Oₛ₃:=by exact fun i ↦ OracleInterface.instDefault)
     (rbrKnowledgeError₁:=batchingCoreRbrKnowledgeError κ L K ℓ')
