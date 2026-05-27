@@ -178,7 +178,36 @@ lemma foldWordAux_of_k_2
   }) CosetFftDomain.injOn
   · intro x hx
     have hx : (x = domain j ∧ y.1 = domain j) ∨ 
-              (x = domain j' ∧ y.1 = -domain j') := by sorry 
+              (x = domain j' ∧ y.1 = -domain j') := by 
+      simp only [mem_insert, mem_singleton] at hx
+      rcases hx with rfl | rfl
+      · left
+        simp only [and_self, j] 
+        conv_lhs =>
+          rw [←Log.logD_right_of_exists (x := ↑y) 
+              (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
+              (by {
+              obtain ⟨y, hy⟩ := y
+              simp only [CosetFftDomainClass.mem_toFinset_iff_mem,
+                CosetFftDomainClass.mem_def] at hy
+              aesop (add simp [CosetFftDomainClass.mem_def]) })]
+        rfl
+      · right 
+        simp only [j'] 
+        have := Log.logD_right_of_exists (x := -↑y) 
+          (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
+          (by {
+            obtain ⟨y, hy⟩ := y
+            simp only [CosetFftDomainClass.mem_toFinset_iff_mem] at hy
+            rw [←CosetFftDomainClass.neg_mem_domain_iff_mem] at hy
+            simp only [CosetFftDomainClass.mem_def] at hy
+            aesop (add simp [CosetFftDomainClass.mem_def]) })
+        conv_lhs =>
+          lhs
+          rw [←this]
+        constructor
+        · simp 
+        · aesop 
     have hj := even_add_odd_eq_of_not_charp_2 (f j) (f j') (domain j) (by simp)
       (CosetFftDomainClass.domain_implies_char_ne_2 domain)
     have hj' := even_add_odd_eq_of_not_charp_2 (f j') (f j) (domain j') (by simp)
