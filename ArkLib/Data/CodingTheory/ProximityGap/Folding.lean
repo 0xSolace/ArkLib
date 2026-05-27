@@ -103,8 +103,51 @@ lemma foldWordAux_of_k_2
       (x := (CosetFftDomain.subdomain domain 1) i)
       (by simp) (by simp [y])
     have hpre : Finset.preimage {y.1, -y.1} domain (by simp) = {j, j'} := by 
-      aesop (add unsafe (by apply CosetFftDomain.injective (ω := domain))) 
-      sorry
+      simp [Finset.preimage, Set.preimage]
+      ext u
+      constructor <;> intro hu
+      · simp_all
+        rcases hu with hu | hu
+        · left
+          simp [j]
+          rw [←hu]
+          conv_lhs =>
+            rw [←Log.logD_left (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
+                (i := u)]
+          simp
+        · right
+          simp [j']
+          rw [←hu]
+          conv_lhs =>
+            rw [←Log.logD_left (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
+                (i := u)]
+          simp
+      · simp at *
+        rcases hu with rfl | rfl
+        · left
+          simp [j]
+          have := Log.logD_right_of_exists (x := ↑y) 
+            (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
+            (by {
+              obtain ⟨y, hy⟩ := y
+              simp only [CosetFftDomainClass.mem_toFinset_iff_mem,
+                CosetFftDomainClass.mem_def] at hy
+              aesop (add simp [CosetFftDomainClass.mem_def]) })
+          conv_rhs =>
+            rw [←this]
+          rfl
+        · right 
+          have := Log.logD_right_of_exists (x := -↑y) 
+            (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
+            (by {
+              obtain ⟨y, hy⟩ := y
+              simp only [CosetFftDomainClass.mem_toFinset_iff_mem] at hy
+              rw [←CosetFftDomainClass.neg_mem_domain_iff_mem] at hy
+              simp only [CosetFftDomainClass.mem_def] at hy
+              aesop (add simp [CosetFftDomainClass.mem_def]) })
+          conv_rhs =>
+            rw [←this]
+          rfl
     ext u 
     simp only [mem_filter, mem_univ, true_and, ←hpre, ←h, Nat.sub_zero, mem_preimage,
        iff_and_self]
