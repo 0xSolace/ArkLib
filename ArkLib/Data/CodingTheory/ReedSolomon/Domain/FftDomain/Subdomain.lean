@@ -56,13 +56,63 @@ end FftDomainClass
 
 namespace CosetFftDomainClass
 
-lemma mem_subdomain_of_mem_subdomain_of_mem_fft_subdomain {n : ℕ}
-  {D : Type} [FunLike D (Fin (2 ^ n)) F] [CosetFftDomainClass D (Fin (2 ^ n)) F]
-  {ω : D} {i j : ℕ} (hji : j ≤ i) (hn : i ≤ n)
+variable {n : ℕ}
+variable {D : Type} [FunLike D (Fin (2 ^ n)) F] [CosetFftDomainClass D (Fin (2 ^ n)) F]
+variable {ω : D}
+
+lemma subdomain_toFftDomain_comm {i : ℕ} :
+  (subdomain ω i).toFftDomain = FftDomainClass.subdomain (toFftDomain ω) i := by
+  ext u
+  rw [eval_toFftDomain] 
+  conv_rhs =>
+    simp [FftDomainClass.subdomain]
+  rw [eval_toFftDomain] 
+  conv_rhs =>
+    rw [CosetFftDomain.map_0_eq_coset_generator]
+  rw [subdomain_generator_pow_generator]
+  simp only [FftDomainClass.apply_zero_eq_one, one_pow, inv_one, one_mul]
+  conv_rhs =>
+    simp [subdomain]
+    rw [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain]
+    simp [CosetFftDomainClass.subdomain_embed, mkSubgroupUnit]
+  by_cases h : n ≤ i
+  · obtain ⟨u, hu⟩ := u
+    have : n - i = 0 := by omega
+    simp [this] at hu
+    aesop
+  · simp only [h, ↓reduceDIte]
+    rw [CosetFftDomainClass.eval_toFftDomain]
+    conv_lhs =>
+      rhs
+      simp only [
+        subdomain, mkSubgroupUnit, 
+        CosetFftDomainClass.subdomain_embed, 
+        ge_iff_le, inv_pow, 
+        CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain, 
+        h, ↓reduceDIte, MonoidHom.coe_mk, OneHom.coe_mk]
+    rw [CosetFftDomain.map_0_eq_coset_generator,
+        CosetFftDomainClass.subdomain_generator_pow_generator]
+    simp
+
+lemma mem_subdomain_of_mem_subdomain_of_mem_fft_subdomain
+   {i j : ℕ} (hji : j ≤ i)
   {a b : F}
-  (ha : a ∈ subdomain ω i)
-  (hb : b ∈ FftDomainClass.subdomain (toFftDomain ω) j) :
-  a * b ∈ subdomain ω i := by sorry
+  (ha : a ∈ subdomain ω j)
+  (hb : b ∈ FftDomainClass.subdomain (toFftDomain ω) i) :
+  a * b ∈ subdomain ω j := by 
+  aesop 
+    (add simp [subdomain_toFftDomain_comm])
+    (add unsafe [FftDomainClass.mem_subdomain_of_mem_subdomain_of_le,
+                  mul_mem_of_mem_of_mem_toFftDomain])
+
+lemma mem_subdomain_of_mem_fft_subdomain_of_mem_subdomain
+  {i j : ℕ} (hji : j ≤ i)
+  {a b : F}
+  (ha : a ∈ FftDomainClass.subdomain (toFftDomain ω) i)
+  (hb : b ∈ subdomain ω j) :
+  a * b ∈ subdomain ω j := by 
+  rw [mul_comm]
+  exact mem_subdomain_of_mem_subdomain_of_mem_fft_subdomain hji hb ha
 
 
 end CosetFftDomainClass
