@@ -224,6 +224,20 @@ theorem pow_mem_of_mem {i j : ℕ} (hsum : j + i ≤ n) (h : x ∈ subdomain ω 
     (Mathlib.Tactic.CancelDenoms.derive_trans₂ 
       rfl (congrArg Units.val (congrArg (mkSubgroupUnit ω) h_eq)) rfl)
 
+omit [DecidableEq F] in
+lemma pow_mem_subdomain_of_mem_subdomain_0 {i : ℕ} (hi : i ≤ n)
+  (h : x ∈ subdomain ω 0) :
+  x ^ 2 ^ i ∈ subdomain ω i := by
+  have key := pow_mem_of_mem (i := i) (j := 0) (h := h) (by omega)
+  rw [mem_subdomain_of_eq_vals (j := 0 + i) (by simp)]
+  exact key
+
+lemma pow_mem_subdomain_of_mem_subdomain_0_toFinset {i : ℕ} (hi : i ≤ n)
+  (h : x ∈ (subdomain ω 0).toFinset) :
+  x ^ (2 ^ i) ∈ (subdomain ω i).toFinset := by
+  rw [mem_toFinset_iff_mem]
+  exact pow_mem_subdomain_of_mem_subdomain_0 hi (by simpa using h)
+
 private lemma subdomain_embed_of_le (i j : ℕ) (h : j ≤ i)
   (k : Fin (2 ^ (n - i))) :
   ∃ (l : Fin (2 ^ (n - j))), 

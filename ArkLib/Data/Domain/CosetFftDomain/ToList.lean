@@ -36,16 +36,23 @@ end CosetFftDomainClass
 
 namespace CosetFftDomain 
 
-noncomputable abbrev toList (ω : CosetFftDomain ι F) : List ω.toFinset :=
-  CosetFftDomainClass.toList ω
+/-- Convert a coset FFT domain into a list of all its members
+  with proofs the members belong to the FFT domain.
+
+  Computable for FFT domains indexed by `Fin m`, by enumerating via `List.finRange m`. -/
+def toList {m : ℕ} [NeZero m] (ω : CosetFftDomain (Fin m) F) : List (ω.toFinset) :=
+  (List.finRange m).map fun i ↦ ⟨ω i, by simp⟩
 
 end CosetFftDomain
 
 namespace FftDomain
 
-noncomputable abbrev toList (ω : FftDomain ι F) : List ω.toFinset :=
-  CosetFftDomainClass.toList ω
+/-- Convert a FFT domain into a list of all its members
+  with proofs the members belong to the FFT domain.
 
+  Computable for FFT domains indexed by `Fin m`, by enumerating via `List.finRange m`. -/
+def toList {m : ℕ} [NeZero m] (ω : FftDomain (Fin m) F) : List (ω.toFinset) :=
+  (List.finRange m).map fun i ↦ ⟨ω i, by simp⟩
 end FftDomain
 
 end Domain

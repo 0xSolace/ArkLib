@@ -211,10 +211,12 @@ lemma map_0_eq_coset_generator {ω : CosetFftDomain ι F} :
         show (0 : ι) = (1 : Multiplicative ι) by rfl]
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+@[simp]
 lemma injective {ω : CosetFftDomain ι F} :
   Injective ω := CosetFftDomainClass.injective _
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+@[simp]
 lemma injOn {ω : CosetFftDomain ι F} {s : Set ι} :
   Set.InjOn ω s := fun _ _ _ _ h ↦ injective h
 
