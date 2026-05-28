@@ -5,6 +5,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 
 import ArkLib.Data.MvPolynomial.Degrees
+import ArkLib.Data.MvPolynomial.RestrictDegreeVar
 
 /-!
 # Operations preserving `MvPolynomial.restrictDegree`
@@ -22,29 +23,6 @@ import them without depending on `Binius.BinaryBasefold.*`.
 namespace MvPolynomial
 
 open Finset
-
-private lemma sumToIter_monomial_aux {R : Type*} [CommSemiring R]
-    {S₁ S₂ : Type*}
-    (m : (S₁ ⊕ S₂) →₀ ℕ) (c : R) :
-    MvPolynomial.sumToIter R S₁ S₂ (MvPolynomial.monomial m c) =
-      MvPolynomial.monomial (m.comapDomain Sum.inl Sum.inl_injective.injOn)
-        (MvPolynomial.monomial (m.comapDomain Sum.inr Sum.inr_injective.injOn) c) := by
-  simp +decide only [MvPolynomial.sumToIter, MvPolynomial.eval₂Hom_monomial]
-  simp +decide [Finsupp.prod, Finsupp.comapDomain]
-  convert congr_arg₂ (· * ·) rfl ?_ using 1
-  rotate_left
-  exact ∏ x ∈ m.support,
-    Sum.rec (fun a => MvPolynomial.X a)
-      (fun b => MvPolynomial.C (MvPolynomial.X b)) x ^ m x
-  · rfl
-  · simp +decide [MvPolynomial.monomial_eq, Finset.prod_ite]
-    simp +decide [mul_assoc, Finsupp.prod]
-    rw [← Finset.prod_filter_mul_prod_filter_not m.support (fun x => x.isRight)]
-    congr! 2
-    · exact Finset.prod_bij (fun x hx => Sum.inr x) (by aesop) (by aesop)
-        (by aesop) (by aesop)
-    · exact Finset.prod_bij (fun x hx => Sum.inl x) (by aesop) (by aesop)
-        (by aesop) (by aesop)
 
 private lemma sumAlgEquiv_mem_restrictDegree {R : Type*} [CommSemiring R]
     {S₁ S₂ : Type*}
@@ -88,9 +66,11 @@ private lemma rename_equiv_mem_restrictDegree {R : Type*} [CommSemiring R]
 
 variable {L : Type*} [CommSemiring L] (ℓ : ℕ)
 
-/-- Fixes the first `v` variables of a `ℓ`-variate multivariate polynomial.
-`t` -> `H_i` derivation
--/
+/-- Fixes the **last** `v` variables of a `ℓ`-variate multivariate polynomial (the prior docstring
+said "first" — `finSumFinEquiv (m := ℓ-v) (n := v).symm` puts the *survivors* on `Sum.inl` =
+the first `ℓ-v` indices and the *fixed* side on `Sum.inr` = the last `v`). Used by the structured
+sumcheck via `fixFirstVariablesOfMQP_degreeLE` / the prismalinear analog
+`fixFirstVariablesOfMQP_degreeVarLE`. -/
 noncomputable def fixFirstVariablesOfMQP (v : Fin (ℓ + 1))
   (H : MvPolynomial (Fin ℓ) L) (challenges : Fin v → L) : MvPolynomial (Fin (ℓ - v)) L :=
   have h_l_eq : ℓ = (ℓ - v) + v := by rw [Nat.add_comm]; exact (Nat.add_sub_of_le v.is_le).symm
@@ -133,6 +113,47 @@ theorem fixFirstVariablesOfMQP_degreeLE {deg : ℕ} (v : Fin (ℓ + 1)) {challen
   -- h_Hgrouped_degreeLE
   let res : term i ≤ deg := h_mem_support_max_deg_LE term h_term_in_Hgrouped_support i
   exact res
+
+/-- Prismalinear version of `fixFirstVariablesOfMQP_degreeLE`: if the original polynomial respects
+a per-variable degree bound `b : Fin ℓ → ℕ`, then fixing the last `v` variables to scalars produces
+a polynomial whose surviving `Fin (ℓ-v)` variables respect `b` restricted to their original indices
+(via `Fin.castLE (Nat.sub_le ℓ v) : Fin (ℓ-v) ↪ Fin ℓ`). This is the prismalinear analog needed for
+SWIRL-style sumchecks where the multiplier has degree `|D|-1` in the skip coord and `≤ 1` in the
+remaining Boolean coords. -/
+theorem fixFirstVariablesOfMQP_degreeVarLE
+    {b : Fin ℓ → ℕ} (v : Fin (ℓ + 1)) {challenges : Fin v → L}
+    {poly : MvPolynomial (Fin ℓ) L}
+    (hp : poly ∈ restrictDegreeVar (Fin ℓ) L b) :
+    fixFirstVariablesOfMQP ℓ v poly challenges ∈
+      restrictDegreeVar (Fin (ℓ - v)) L (b ∘ Fin.castLE (Nat.sub_le ℓ v)) := by
+  rw [MvPolynomial.mem_restrictDegreeVar]
+  unfold fixFirstVariablesOfMQP
+  dsimp only
+  intro term h_term_in_support i
+  have h_l_eq : ℓ = (ℓ - v) + v := (Nat.sub_add_cancel v.is_le).symm
+  set finEquiv := finSumFinEquiv (m := ℓ - v) (n := v).symm
+  set e : Fin ℓ ≃ Fin (ℓ - v) ⊕ Fin v := (finCongr h_l_eq).trans finEquiv with he
+  set H_sum := MvPolynomial.rename (f := e) poly
+  set H_grouped : L[X Fin ↑v][X Fin (ℓ - ↑v)] := (sumAlgEquiv L (Fin (ℓ - v)) (Fin v)) H_sum
+  set eval_map : L[X Fin ↑v] →+* L := (eval challenges : MvPolynomial (Fin v) L →+* L)
+  have h_Hgrouped_degreeVarLE :
+      H_grouped ∈ restrictDegreeVar (Fin (ℓ - v)) (L[X Fin ↑v]) ((b ∘ e.symm) ∘ Sum.inl) :=
+    sumAlgEquiv_mem_restrictDegreeVar H_sum
+      (rename_equiv_mem_restrictDegreeVar e poly hp)
+  have h_term_in_Hgrouped_support : term ∈ H_grouped.support := by
+    have h_support_map_subset : ((MvPolynomial.map eval_map) H_grouped).support
+      ⊆ H_grouped.support := MvPolynomial.support_map_subset _ _
+    exact h_support_map_subset h_term_in_support
+  have h_bound : term i ≤ (b ∘ e.symm) (Sum.inl i) :=
+    (MvPolynomial.mem_restrictDegreeVar H_grouped).mp h_Hgrouped_degreeVarLE
+      term h_term_in_Hgrouped_support i
+  -- Bound-equality: (b ∘ e.symm) (Sum.inl i) = b (Fin.castLE (Nat.sub_le ℓ v) i)
+  have h_eq : e.symm (Sum.inl i) = Fin.castLE (Nat.sub_le ℓ v) i := by
+    apply Fin.ext
+    simp [he, finEquiv]
+  change term i ≤ b (Fin.castLE (Nat.sub_le ℓ v) i)
+  rw [← h_eq]
+  exact h_bound
 
 /-- For a multilinear `t` (each variable has `degreeOf ≤ 1`), substituting `t` into a univariate
 `Q : L[X]` via `Polynomial.aeval` yields a multivariate polynomial whose degree in each variable is

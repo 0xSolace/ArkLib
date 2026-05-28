@@ -609,11 +609,9 @@ def dummyLastWitness :
   f := fun _ => 0
 }
 
-/-- The initial statement for the commitment phase contains the evaluation claim s = t(r) -/
-structure InitialStatement where
-  -- Original evaluation claim: s = t(r)
-  t_eval_point : Fin ℓ → L -- r = (r_0, ..., r_{ℓ-1}) => shared input
-  original_claim : L -- s = t(r) => the original claim to verify
+-- `InitialStatement` was orphaned by the `RingSwitching/` extraction (its sole consumer,
+-- `RingSwitching.MLPEvalStatement`, now defines the same 2-field shape locally).
+-- Removed as part of the post-extraction cleanup.
 
 open Classical in
 def snoc_oracle {i : Fin ℓ}
