@@ -50,6 +50,12 @@ function that maps a seed `x` in a set `S` to a coefficient vector in `F^ℓ`.
 Definition 3.10 [BCGM25]. -/
 abbrev Generator (S ℓ F : Type) : Type := S → (ℓ → F)
 
+abbrev AffineLineGenerator (F : Type) [Field F] : Generator F (Fin 2) F :=
+  fun x => ![1, x]
+
+abbrev AffineSpaceGenerator (F : Type) [Field F] (ℓ : ℕ) : Generator (Fin ℓ → F) (Fin (ℓ + 1)) F :=
+  fun x => Fin.cons 1 x
+
 /-- A generator `G` is zero-evading with a zero-evading error `ε_ze` if the probability of obtaining
 a zero output from a non-zero vector is bounded above by `ε_ze`.
 Definition 3.11 [BCGM25]. -/
@@ -103,13 +109,19 @@ def IsMCAGenerator {S : Type} [Nonempty S] [Fintype S] (G : Generator S ℓ F) (
 /-- Let `G : S →F^ℓ` and `G′: S′→F^ℓ` be two generators. Their tensor product is the generator
 `G ⊗ G′: S × S′→ F^ℓ ⊗F^ℓ′` defined by `(x,x′) ↦ G(x) ⊗ G′(x′)`.
 Definition 4.3 [BCGM25]. -/
-def TensorGenerator {ℓ' : Type} [Fintype ℓ'] (S S' : Type)
-  (G : Generator S ℓ F) (G' : Generator S' ℓ' F) : (S × S') → TensorProduct F (ℓ → F) (ℓ' → F)
+def TensorGenerator {ℓ' : Type} [Fintype ℓ'] {S S' : Type}
+  (G : Generator S ℓ F) (G' : Generator S' ℓ' F) :
+  (S × S') → TensorProduct F (ℓ → F) (ℓ' → F)
 | (x, x') => TensorProduct.tmul F (G x) (G' x')
+
+def TensorGenerator_Explicit {ℓ' : Type} [Fintype ℓ'] {S S' : Type}
+    (G : Generator S ℓ F) (G' : Generator S' ℓ' F) :
+    Generator (S × S') (ℓ × ℓ') F
+  | (x, x'), (i, j) => G x i * G' x' j
 
 end CoreDefinitions
 
-namespace PolyGenIsZeroEvading
+namespace PolynomialGenerator
 
 open NNReal ENNReal unitInterval MvPolynomial LinearCombination CoreDefinitions
 open scoped ProbabilityTheory ENNReal NNReal BigOperators
@@ -183,6 +195,6 @@ theorem poly_gen_is_zero_evading
                 Finset.le_sup (f := fun j => (P j |> MvPolynomial.totalDegree)) (Finset.mem_univ j)
   · exact minSeedCard_pos S
 
-end PolyGenIsZeroEvading
+end PolynomialGenerator
 
 end
