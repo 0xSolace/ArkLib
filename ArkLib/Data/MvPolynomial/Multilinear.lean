@@ -266,6 +266,22 @@ def MLEEquiv : R⦃≤ 1⦄[X σ] ≃ ((σ → Fin 2) → R) where
 def MLEEquivFin {n : ℕ} : R⦃≤ 1⦄[X (Fin n)] ≃ (Fin (2 ^ n) → R) :=
   Equiv.trans MLEEquiv (Equiv.piCongr finFunctionFinEquiv (fun _ => Equiv.refl _))
 
+def even {n : ℕ} [Field R] [NeZero n] (p : R⦃≤ 1⦄[X (Fin n)]) : 
+  R⦃≤ 1⦄[X (Fin n)] := 
+    ⟨(p.1.aeval (fun i ↦ if i = 0 then 1 else (MvPolynomial.X i : R[X (Fin n)])) + 
+      p.1.aeval (fun i ↦
+        if i = 0 then -1 else MvPolynomial.X i)) * C (2⁻¹), sorry⟩ 
+
+def odd {n : ℕ} [Field R] [NeZero n] (p : R⦃≤ 1⦄[X (Fin n)]) : 
+  R⦃≤ 1⦄[X (Fin n)] := 
+    ⟨(p.1.aeval (fun i ↦ if i = 0 then 1 else (MvPolynomial.X i : R[X (Fin n)])) - 
+      p.1.aeval (fun i ↦
+        if i = 0 then -1 else MvPolynomial.X i)) * C (2⁻¹), sorry⟩ 
+ 
+
+lemma even_and_odd_formula {n : ℕ} [Field R] [NeZero n] {p : R⦃≤ 1⦄[X (Fin n)]} :
+  (even p).1 + (MvPolynomial.X 0) * (odd p).1 = p.1 := by sorry
+
 end MvPolynomial
 
 end

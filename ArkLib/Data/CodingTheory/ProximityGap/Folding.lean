@@ -292,7 +292,7 @@ private lemma roots_in_domain_card_eq_if_x_in_domain
         (add safe [(by rw [mem_subdomain_0_iff_mem])])
     )
     (fun _ _ _ _ h ↦ CosetFftDomain.injective h)
-    (fun b ↦ by
+    (by
       have := @mem_subdomain_0_iff_mem
       aesop (add simp [CosetFftDomainClass.mem_def]))
 
