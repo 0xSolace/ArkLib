@@ -6,6 +6,8 @@ Authors: Alexander Hicks
 
 import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ProofSystem.ToyProblem.Definitions
+import ArkLib.Data.CodingTheory.ListDecodability
+import ArkLib.Data.CodingTheory.ProximityGap.Errors
 
 /-!
 # Toy problem oracle reduction (ABF26 Construction 6.2)
@@ -26,11 +28,13 @@ ArkLib's `OracleReduction` framework, following the conventions used by
 * `accepts` — the §6.1 decision predicate (extracted for use by the
   verifier and by completeness proofs).
 
-The actual `prover` / `verifier` / `oracleReduction` triple and the
+The `prover` / `verifier` / `oracleReduction` triple is complete. The
 soundness lemmas `protocol62_knowledgeSound` (L6.6) and
-`protocol62_rbrKnowledgeSound` (L6.8) are placeholders pending careful
-threading of the `OptionT (OracleComp …)` machinery; tagged-sorries
-mark them. The IOR scaffolding is exactly what is needed downstream.
+`protocol62_rbrKnowledgeSound` (L6.8) carry the **concrete** paper error
+terms (`max (ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|) ((1-δ)^t)` and the
+per-round split); only their *proofs* are admitted as tagged-sorries,
+pending careful threading of the `OptionT (OracleComp …)` extractor
+machinery. The IOR scaffolding is exactly what is needed downstream.
 
 ## Protocol description
 
@@ -59,7 +63,8 @@ namespace ToyProblem
 namespace Spec
 
 open OracleSpec OracleComp ProtocolSpec
-open scoped NNReal
+open Code InterleavedCode ListDecodable ProximityGap
+open scoped NNReal ENNReal
 
 /-! ### Type-level definitions and relations
 
@@ -420,13 +425,13 @@ to the trivial output relation `Set.univ`. The load-bearing fact is
 honest prover's message `g = M₀ + γ M₁` makes `accepts` hold, so the
 verifier's `if accepts then pure () else failure` never fails.
 
-**Status: tagged sorry.** The point-form proof (`accepts_of_inputRelation`)
-is closed; lifting it through `OracleReduction.toReduction`'s
-probabilistic-computation plumbing is the routine-but-laborious step
-that this stub signposts. The matching FRI/Sumcheck completeness
-theorems are similarly not yet shipped in ArkLib at the
-`Spec/SingleRound.lean` level (cf. Binius's `FRIBinius/General.lean`
-for the only fully-discharged protocol-level completeness in-tree). -/
+**Status: statement complete, proof admitted (tagged sorry).** The
+point-form fact (`accepts_of_inputRelation`) is closed; lifting it
+through `OracleReduction.toReduction`'s probabilistic-computation
+plumbing is the remaining step. The intended proof route is the
+per-round `OracleReduction.append_perfectCompleteness` composition used
+by `Sumcheck/Spec/SingleRound.lean :: oracleReduction_perfectCompleteness`
+(whose own proof is likewise still admitted at the leaf rounds). -/
 theorem oracleReduction_perfectCompleteness
     [SampleableType F] [SampleableType ι]
     {σ : Type} (init : ProbComp σ)
@@ -444,7 +449,6 @@ theorem oracleReduction_perfectCompleteness
   -- and discharging the per-challenge probability bookkeeping.
   sorry
 
-omit [DecidableEq ι] [Fintype F] in
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
 
 For any `δ ∈ (0, δ_min(C))`, the toy-problem IOR has knowledge
@@ -478,12 +482,15 @@ theorem protocol62_knowledgeSound
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ) :
-    ∃ knowledgeError : ℝ≥0,
       (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
         init impl (outputRelation k C δ)
-        (Set.univ : Set (OutputStatement × OutputWitness)) knowledgeError := by
-  -- ABF26-L6.6; the intended `knowledgeError` is
-  -- `max (epsMCA C δ + Lambda (interleavedCodeSet C) δ / |F|) ((1-δ)^t)`.
+        (Set.univ : Set (OutputStatement × OutputWitness))
+        (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
+                ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+                  / (Fintype.card F : ℝ≥0))
+             ((1 - δ) ^ t)) := by
+  -- ABF26-L6.6; external admit [ABF26 Lemma 6.6]. The knowledge error is the
+  -- concrete paper bound `max (ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|) ((1-δ)^t)`.
   sorry
 
 /-- **Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on
@@ -494,7 +501,6 @@ decomposes as `u = u₁ + γ·u₂` for some
 provides exactly this decomposition with probability `≥ 1 − ε_mca`. -/
 def remark67 : Unit := ()
 
-omit [DecidableEq ι] [Fintype F] in
 /-- **Lemma 6.8 of [ABF26]** (round-by-round knowledge soundness of
 Construction 6.2).
 
@@ -515,13 +521,18 @@ theorem protocol62_rbrKnowledgeSound
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ) :
-    ∃ rbrKnowledgeError : (pSpec (ι := ι) (F := F) k t).ChallengeIdx → ℝ≥0,
       (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
         init impl (outputRelation k C δ)
-        (Set.univ : Set (OutputStatement × OutputWitness)) rbrKnowledgeError := by
-  -- ABF26-L6.8; the intended rbrKnowledgeError function is
-  --   ⟨0, _⟩ ↦ epsMCA C δ + Lambda (interleavedCodeSet C) δ / |F|
-  --   ⟨2, _⟩ ↦ (1-δ)^t
+        (Set.univ : Set (OutputStatement × OutputWitness))
+        (fun i ↦
+          -- round 0 (combination randomness γ): MCA + list-decoding term;
+          -- round 2 (spot checks): `(1-δ)^t`.
+          if i.1 = 0 then
+            (epsMCA (F := F) (A := F) C δ).toNNReal +
+              ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+                / (Fintype.card F : ℝ≥0)
+          else (1 - δ) ^ t) := by
+  -- ABF26-L6.8; external admit [ABF26 Lemma 6.8].
   sorry
 
 end Protocol

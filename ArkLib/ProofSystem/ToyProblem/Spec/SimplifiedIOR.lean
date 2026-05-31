@@ -50,7 +50,8 @@ namespace ToyProblem
 namespace SimplifiedIOR
 
 open OracleSpec OracleComp ProtocolSpec
-open scoped NNReal
+open Code InterleavedCode ListDecodable ProximityGap
+open scoped NNReal ENNReal
 open ToyProblem.Spec (Statement OracleStatement Witness)
 
 /-! ### Output types and the output relation
@@ -192,7 +193,6 @@ the full protocol semantics; downstream IRS instantiations
 (`ToyProblem/Impl/IRS.lean :: simplifiedReductionIRS`) consume it
 directly. -/
 
-omit [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- **Lemma 6.10 of [ABF26]** (knowledge soundness of Construction 6.9).
 
 For any `δ ∈ (0, δ_min(C))`, the simplified IOR has knowledge soundness
@@ -212,15 +212,16 @@ theorem simplifiedIOR_knowledgeSound
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
     (_hδ_pos : 0 < δ) :
-    ∃ knowledgeError : ℝ≥0,
       (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
         (WitOut := OutputWitness (F := F) k)
         init impl
         (ToyProblem.Spec.outputRelation k C δ)
         (outputRelation (ι := ι) (F := F) k C δ)
-        knowledgeError := by
-  -- ABF26-L6.10; the intended `knowledgeError` is
-  -- `epsMCA C δ + Lambda (interleavedCodeSet C) δ / |F|`.
+        ((epsMCA (F := F) (A := F) C δ).toNNReal +
+          ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+            / (Fintype.card F : ℝ≥0)) := by
+  -- ABF26-L6.10; external admit [ABF26 Lemma 6.10]. Knowledge error
+  -- `ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|` (no `(1-δ)^t` term: C6.9 has no spot-check round).
   sorry
 
 end Protocol
