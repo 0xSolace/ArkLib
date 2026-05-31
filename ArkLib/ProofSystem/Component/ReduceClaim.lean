@@ -307,8 +307,26 @@ def oracleKnowledgeStateFunction (hRel : ∀ stmtIn oStmtIn witOut,
   toFun_next := fun m => Fin.elim0 m
   toFun_full := fun ⟨stmtIn, oStmtIn⟩ _ witOut => by
     intro h
-    simp_all [Verifier.run, oracleVerifier, OracleVerifier.toVerifier]
-    sorry
+    simp only [Verifier.run, oracleVerifier, OracleVerifier.toVerifier] at h
+    change ((stmtIn, oStmtIn), mapWitInv (stmtIn, oStmtIn) witOut) ∈ relIn
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, hrel⟩ := h
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    -- The oracle verifier deterministically returns the pair
+    -- `(mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)`, so the simulated run is definitionally
+    -- `pure (some ...)` and positive probability forces `x` to equal that pair.
+    have hxc : some x ∈ support ((simulateQ impl
+        (pure (some (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)) :
+          OracleComp oSpec (Option (StmtOut × (∀ i, OStmtOut i))))).run' s) := hx
+    rw [simulateQ_pure] at hxc
+    change some x ∈ support (Prod.fst <$> (pure
+      (some (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)) : StateT σ ProbComp _).run s) at hxc
+    rw [StateT.run_pure] at hxc
+    simp only [map_pure, support_pure, Set.mem_singleton_iff] at hxc
+    cases (Option.some.inj hxc)
+    exact hRel stmtIn oStmtIn witOut hrel
 
 /-- The `ReduceClaim` oracle reduction satisfies perfect round-by-round knowledge soundness.
 
