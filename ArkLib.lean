@@ -100,6 +100,7 @@ import ArkLib.Data.Matrix.Sparse
 import ArkLib.Data.Matrix.Vandermonde
 import ArkLib.Data.Misc.Basic
 import ArkLib.Data.MvPolynomial.Degrees
+import ArkLib.Data.MvPolynomial.EvenAndOdd
 import ArkLib.Data.MvPolynomial.Interpolation
 import ArkLib.Data.MvPolynomial.LinearMvExtension
 import ArkLib.Data.MvPolynomial.Multilinear
