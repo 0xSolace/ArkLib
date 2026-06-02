@@ -294,8 +294,9 @@ lemma aeval_shift_mem_restrictDegree
 
 noncomputable def even_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(even p).1.aeval 
-    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), 
-      aeval_shift_mem_restrictDegree (even p).1 (even p).2⟩
+    (fun i ↦ if h : i = 0 then 0 else X (σ := Fin (n - 1)) ⟨i.val - 1, by omega⟩), 
+      by exact aeval_shift_mem_restrictDegree (even p).1 (even p).2
+  ⟩
 
 noncomputable def odd_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(odd p).1.aeval 
