@@ -15,11 +15,7 @@ namespace MvPolynomial
 
 open BigOperators Fintype Finset
 
-universe u
-
-variable {σ : Type*} {R : Type*}
-
-variable [Field R]
+variable {R : Type} [Field R]
 variable {n : ℕ} [NeZero n]
 variable {p : MvPolynomial (Fin n) R}
 
@@ -55,7 +51,7 @@ private lemma substPlus_mem_restrictDegree
   rw [map_sum]
 
 private lemma substMinus_mem_restrictDegree
-  {p : MvPolynomial (Fin n) R} (hp : p ∈ restrictDegree (Fin n) R 1) :
+  (hp : p ∈ restrictDegree (Fin n) R 1) :
   substMinus p ∈ restrictDegree (Fin n) R 1 := by
   have := substPlus_mem_restrictDegree hp
   unfold substPlus substMinus at *
@@ -106,7 +102,7 @@ private lemma substMinus_mem_restrictDegree
 
 omit [NeZero n] in
 private lemma mul_C_mem_restrictDegree
-  {p : MvPolynomial (Fin n) R} (hp : p ∈ restrictDegree (Fin n) R 1)
+  (hp : p ∈ restrictDegree (Fin n) R 1)
   (c : R) : p * C c ∈ restrictDegree (Fin n) R 1 := by
   convert Submodule.smul_mem _ c hp using 1
   rw [mul_comm, MvPolynomial.C_mul']
@@ -298,11 +294,13 @@ lemma aeval_shift_mem_restrictDegree
 
 noncomputable def even_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(even p).1.aeval 
-    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), sorry⟩
+    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), 
+      aeval_shift_mem_restrictDegree (even p).1 (even p).2⟩
 
 noncomputable def odd_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(odd p).1.aeval 
-    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), sorry⟩
+    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), 
+      aeval_shift_mem_restrictDegree (odd p).1 (odd p).2⟩
 
 lemma even_and_odd_formula'
   (hchar : ¬CharP R 2)
