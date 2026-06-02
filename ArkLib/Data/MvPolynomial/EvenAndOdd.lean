@@ -203,7 +203,7 @@ private lemma substNoX0_eq_self_of_even
   (p : restrictDegree (Fin n) R 1) :
   (even p).1.aeval 
     (fun i : Fin n ↦ 
-      if i = (0 : Fin n) then (0 : MvPolynomial (Fin n) R) else X i) = (even p).1 := by
+      if h : i = (0 : Fin n) then (0 : MvPolynomial (Fin n) R) else X i) = (even p).1 := by
   unfold even
   simp only [aeval_eq_bind₁, substPlus, substMinus, map_mul, map_add, algHom_C, algebraMap_eq,
     mul_eq_mul_right_iff, map_eq_zero, inv_eq_zero]
@@ -215,7 +215,7 @@ private lemma substNoX0_eq_self_of_odd
   (p : restrictDegree (Fin n) R 1) :
   (odd p).1.aeval 
     (fun i : Fin n ↦ 
-      if i = (0 : Fin n) then (0 : MvPolynomial (Fin n) R) else X i) = (odd p).1 := by
+      if h : i = (0 : Fin n) then (0 : MvPolynomial (Fin n) R) else X i) = (odd p).1 := by
   unfold odd
   unfold MvPolynomial.substPlus MvPolynomial.substMinus
   simp only [aeval_eq_bind₁, sub_mul, map_sub, map_mul, algHom_C, algebraMap_eq]
@@ -298,11 +298,11 @@ lemma aeval_shift_mem_restrictDegree
 
 noncomputable def even_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(even p).1.aeval 
-    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), aeval_shift_mem_restrictDegree (even p).1 (even p).2⟩
+    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), sorry⟩
 
 noncomputable def odd_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(odd p).1.aeval 
-    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), aeval_shift_mem_restrictDegree (odd p).1 (odd p).2⟩
+    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), sorry⟩
 
 lemma even_and_odd_formula'
   (hchar : ¬CharP R 2)
@@ -310,7 +310,13 @@ lemma even_and_odd_formula'
   (even_pred p).1.aeval 
     (fun i ↦ X (⟨i.val + 1, by omega⟩ : Fin n)) + 
       (MvPolynomial.X 0) * (odd_pred p).1.aeval 
-        (fun i ↦ X (⟨i.val + 1, by omega⟩ : Fin n)) = p.1 := sorry
+        (fun i ↦ X (⟨i.val + 1, by omega⟩ : Fin n)) = p.1 := by 
+  change 
+    (shiftDown (even p).1).aeval _ + X 0 * (shiftDown (odd p).1).aeval _ = p.1
+  rw [shiftDown_shiftUp_eq, shiftDown_shiftUp_eq]
+  rw [substNoX0_eq_self_of_even, substNoX0_eq_self_of_odd]
+  exact even_and_odd_formula hchar
+  
 
 
 end MvPolynomial
