@@ -203,7 +203,7 @@ private lemma substNoX0_eq_self_of_even
   (p : restrictDegree (Fin n) R 1) :
   (even p).1.aeval 
     (fun i : Fin n ↦ 
-      if h : i = (0 : Fin n) then (0 : MvPolynomial (Fin n) R) else X i) = (even p).1 := by
+      if _ : i = (0 : Fin n) then (0 : MvPolynomial (Fin n) R) else X i) = (even p).1 := by
   unfold even
   simp only [aeval_eq_bind₁, substPlus, substMinus, map_mul, map_add, algHom_C, algebraMap_eq,
     mul_eq_mul_right_iff, map_eq_zero, inv_eq_zero]
@@ -215,7 +215,7 @@ private lemma substNoX0_eq_self_of_odd
   (p : restrictDegree (Fin n) R 1) :
   (odd p).1.aeval 
     (fun i : Fin n ↦ 
-      if h : i = (0 : Fin n) then (0 : MvPolynomial (Fin n) R) else X i) = (odd p).1 := by
+      if _ : i = (0 : Fin n) then (0 : MvPolynomial (Fin n) R) else X i) = (odd p).1 := by
   unfold odd
   unfold MvPolynomial.substPlus MvPolynomial.substMinus
   simp only [aeval_eq_bind₁, sub_mul, map_sub, map_mul, algHom_C, algebraMap_eq]
@@ -316,7 +316,6 @@ lemma even_and_odd_formula'
   rw [shiftDown_shiftUp_eq, shiftDown_shiftUp_eq]
   rw [substNoX0_eq_self_of_even, substNoX0_eq_self_of_odd]
   exact even_and_odd_formula hchar
-  
 
 
 end MvPolynomial
