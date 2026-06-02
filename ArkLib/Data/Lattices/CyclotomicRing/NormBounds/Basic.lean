@@ -82,14 +82,73 @@ def Rq.l2NormSq (a : Rq Φ) : ℕ :=
 def Rq.l1Norm (a : Rq Φ) : ℕ :=
   ∑ k ∈ Finset.range Φ.φ.natDegree, (a.1.coeff k).valMinAbs.natAbs
 
+/-- Centered `ℓ∞` norm of a ring element: `maxₖ |cₖ|` over the centered representatives
+of its coefficients (over the degree range of the modulus). -/
+def Rq.lInftyNorm (a : Rq Φ) : ℕ :=
+  (Finset.range Φ.φ.natDegree).sup (fun k => (a.1.coeff k).valMinAbs.natAbs)
+
 /-- Centered squared-`ℓ₂` norm of a vector: the sum of entrywise norms. -/
 def vecL2NormSq {cols : ℕ} (z : PolyVec (Rq Φ) cols) : ℕ :=
   ∑ i : Fin cols, Rq.l2NormSq Φ (z i)
+
+/-- Centered `ℓ∞` norm of a vector: the largest entrywise `ℓ∞` norm. -/
+def vecLInftyNorm {cols : ℕ} (z : PolyVec (Rq Φ) cols) : ℕ :=
+  (Finset.univ : Finset (Fin cols)).sup (fun i => Rq.lInftyNorm Φ (z i))
+
+omit [NeZero q] in
+/-- The underlying polynomial of `1 : Rq Φ` is the constant `1` (no reduction occurs, as
+`deg 1 = 0 < deg φ`). -/
+theorem Rq.one_val (h : 1 ≤ Φ.φ.natDegree) : (1 : Rq Φ).1 = 1 := by
+  change Φ.reduce 1 = 1
+  apply Φ.reduce_eq_self_of_degree_lt
+  rw [CompPoly.CPolynomial.toPoly_one, Polynomial.degree_one]
+  have hnd : 0 < Φ.φ.toPoly.natDegree := by
+    rw [← CompPoly.CPolynomial.natDegree_toPoly]; omega
+  exact Polynomial.natDegree_pos_iff_degree_pos.mp hnd
+
+omit [NeZero q] in
+/-- The centered `ℓ₁` norm of `1 : Rq Φ` is `1` (when `1 ≤ deg φ`): the trivial challenge `c = 1`
+used by the honest committer is nonzero and `ℓ₁`-short. -/
+theorem Rq.l1Norm_one (h : 1 ≤ Φ.φ.natDegree) : Rq.l1Norm Φ (1 : Rq Φ) = 1 := by
+  have hq2 : 2 ≤ q := (Fact.out (p := Nat.Prime q)).two_le
+  unfold Rq.l1Norm
+  rw [Finset.sum_eq_single (0 : ℕ)]
+  · rw [Rq.one_val Φ h, CompPoly.CPolynomial.coeff_one, if_pos rfl,
+      show (1 : ZMod q) = ((1 : ℕ) : ZMod q) by norm_cast,
+      ZMod.valMinAbs_natCast_of_le_half (by omega)]
+    norm_num
+  · intro k _ hk
+    rw [Rq.one_val Φ h, CompPoly.CPolynomial.coeff_one, if_neg hk]
+    simp
+  · intro h0
+    exact absurd (Finset.mem_range.mpr (by omega)) h0
+
+omit [NeZero q] [IsCyclotomic Φ] in
+/-- The `ℓ∞` norm of a flattened block vector is bounded by `γ` as soon as every block is: the
+`ℓ∞` norm of `flattenBlocks` is the supremum of the per-block `ℓ∞` norms. -/
+theorem vecLInftyNorm_flattenBlocks_le {blocks width : Nat} {γ : ℕ}
+    (xs : PolyVec (PolyVec (Rq Φ) width) blocks)
+    (h : ∀ i, vecLInftyNorm Φ (xs i) ≤ γ) :
+    vecLInftyNorm Φ (PolyVec.flattenBlocks xs) ≤ γ := by
+  unfold vecLInftyNorm
+  refine Finset.sup_le (fun j _ => ?_)
+  simp only [PolyVec.flattenBlocks]
+  calc Rq.lInftyNorm Φ
+          (xs (finProdFinEquiv.symm j).1 (finProdFinEquiv.symm j).2)
+      ≤ (Finset.univ : Finset (Fin width)).sup
+          (fun j' => Rq.lInftyNorm Φ (xs (finProdFinEquiv.symm j).1 j')) :=
+        Finset.le_sup (f := fun j' => Rq.lInftyNorm Φ (xs (finProdFinEquiv.symm j).1 j'))
+          (Finset.mem_univ _)
+    _ ≤ γ := h _
 
 /-! ## The growth-bound expressions -/
 
 /-- The squared-`ℓ₂` bound for a difference of two vectors within `boundSq`: `4·boundSq`. -/
 def subL2NormSqBound (boundSq : ℕ) : ℕ := 4 * boundSq
+
+/-- The `ℓ∞` bound for a difference of two vectors within `bound`: `2·bound` (the `ℓ∞`
+triangle inequality, no squaring). -/
+def subLInftyNormBound (bound : ℕ) : ℕ := 2 * bound
 
 /-- Squared-`ℓ₂` growth bound for scaling an already-scaled vector by a further scalar of
 bounded `ℓ₁` norm: `κ² · β²`. -/
@@ -128,6 +187,44 @@ theorem sub_l2NormSq_le {cols : ℕ} (v w : PolyVec (Rq Φ) cols) {boundSq : ℕ
     simp only [Pi.sub_apply]
     exact Rq.l2NormSq_sub_le Φ (v i) (w i)
   unfold subL2NormSqBound
+  omega
+
+/-! ## The `ℓ∞` subtraction bound (proven) -/
+
+/-- Per-element `ℓ∞` triangle inequality: `‖a - b‖∞ ≤ ‖a‖∞ + ‖b‖∞`. -/
+theorem Rq.lInftyNorm_sub_le (a b : Rq Φ) :
+    Rq.lInftyNorm Φ (a - b) ≤ Rq.lInftyNorm Φ a + Rq.lInftyNorm Φ b := by
+  unfold Rq.lInftyNorm
+  refine Finset.sup_le (fun k hk => ?_)
+  have hcoeff : (a - b).1.coeff k = a.1.coeff k - b.1.coeff k := by
+    rw [Rq.sub_val, CompPoly.CPolynomial.coeff_sub]
+  rw [hcoeff]
+  calc (a.1.coeff k - b.1.coeff k).valMinAbs.natAbs
+      ≤ (a.1.coeff k).valMinAbs.natAbs + (b.1.coeff k).valMinAbs.natAbs :=
+        valMinAbs_sub_natAbs_le _ _
+    _ ≤ (Finset.range Φ.φ.natDegree).sup (fun k => (a.1.coeff k).valMinAbs.natAbs)
+          + (Finset.range Φ.φ.natDegree).sup (fun k => (b.1.coeff k).valMinAbs.natAbs) :=
+        add_le_add
+          (Finset.le_sup (f := fun k => (a.1.coeff k).valMinAbs.natAbs) hk)
+          (Finset.le_sup (f := fun k => (b.1.coeff k).valMinAbs.natAbs) hk)
+
+/-- **`ℓ∞` subtraction bound.** The `ℓ∞` norm of a difference of two vectors, each within
+`bound`, is within `subLInftyNormBound bound = 2·bound`. -/
+theorem sub_lInftyNorm_le {cols : ℕ} (v w : PolyVec (Rq Φ) cols) {bound : ℕ}
+    (hv : vecLInftyNorm Φ v ≤ bound) (hw : vecLInftyNorm Φ w ≤ bound) :
+    vecLInftyNorm Φ (v - w) ≤ subLInftyNormBound bound := by
+  have hstep : vecLInftyNorm Φ (v - w) ≤ vecLInftyNorm Φ v + vecLInftyNorm Φ w := by
+    unfold vecLInftyNorm
+    refine Finset.sup_le (fun i _ => ?_)
+    simp only [Pi.sub_apply]
+    calc Rq.lInftyNorm Φ (v i - w i)
+        ≤ Rq.lInftyNorm Φ (v i) + Rq.lInftyNorm Φ (w i) := Rq.lInftyNorm_sub_le Φ _ _
+      _ ≤ (Finset.univ : Finset (Fin cols)).sup (fun i => Rq.lInftyNorm Φ (v i))
+            + (Finset.univ : Finset (Fin cols)).sup (fun i => Rq.lInftyNorm Φ (w i)) :=
+          add_le_add
+            (Finset.le_sup (f := fun i => Rq.lInftyNorm Φ (v i)) (Finset.mem_univ i))
+            (Finset.le_sup (f := fun i => Rq.lInftyNorm Φ (w i)) (Finset.mem_univ i))
+  unfold subLInftyNormBound
   omega
 
 end ArkLib.Lattices.CyclotomicModulus

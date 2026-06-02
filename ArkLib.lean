@@ -1,5 +1,6 @@
 import ArkLib.AGM.Basic
 import ArkLib.CommitmentScheme.Ajtai.Gadget
+import ArkLib.CommitmentScheme.Ajtai.GadgetNorms
 import ArkLib.CommitmentScheme.Ajtai.InnerOuter
 import ArkLib.CommitmentScheme.Ajtai.InnerOuter.Arithmetic
 import ArkLib.CommitmentScheme.Ajtai.InnerOuter.Correctness
