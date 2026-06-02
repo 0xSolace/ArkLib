@@ -21,7 +21,7 @@ which lets the Module-SIS shortness predicate be instantiated concretely (see
 `Ajtai.Simple.Security`). The foundational fact is the minimality of the centered
 representative (`valMinAbs_natAbs_le`).
 
-The two *deep* inputs to the weak-binding argument live in sibling files:
+There are two more complicated norm-lemmas in sibling files:
 * `NormBounds.MicciancioYoung` — the product bound `scalarVecMul_mul_l2NormSq_le`;
 * `NormBounds.LyubashevskySeiler` — short-element invertibility `isUnit_of_l1Norm_le`.
 

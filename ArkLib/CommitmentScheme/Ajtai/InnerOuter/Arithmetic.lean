@@ -9,8 +9,8 @@ import ArkLib.Data.Lattices.CyclotomicRing.NormBounds
 # The Inner-Outer Commitment/Hachi Ring `Z_q[X] / (X^{2^α} + 1)`
 
 This file fixes the cyclotomic ring over which the **inner-outer Ajtai commitment** operates.
-That commitment — the Greyhound [NS24] / Hachi [NOZ26] construction, in the LaBRADOR line of
-lattice-based proof systems — works specifically over the power-of-two cyclotomic ring
+That commitment — the Greyhound [NS24] / Hachi [NOZ26] construction — works specifically over
+the power-of-two cyclotomic ring
 
 `R_q := Z_q[X] / (X^{2^α} + 1)`,
 
@@ -37,6 +37,7 @@ the `powTwoCyclotomic`-stated deep lemmas apply to `HachiRing q α` directly.
 ## Notation
 
 * `𝓡⟦q, α⟧` (scoped, in `ArkLib.Lattices.Ajtai.InnerOuter`) — the ring `HachiRing q α`.
+* `𝓜(q, α)` (scoped, in `ArkLib.Lattices.Ajtai.InnerOuter`) — the modulus `hachiModulus q α`.
 
 ## References
 
@@ -60,8 +61,6 @@ the `powTwoCyclotomic`-stated deep lemmas (`isUnit_of_l1Norm_le`,
 `scalarVecMul_mul_l2NormSq_le`) apply to it transparently. -/
 @[reducible] def hachiModulus : CyclotomicModulus (ZMod q) := powTwoCyclotomic α
 
--- Function-application brackets: the modulus is a single polynomial (a value), unlike the ring
--- `𝓡⟦q, α⟧`, which is a structure denoted with `⟦ ⟧`.
 @[inherit_doc] scoped notation:max "𝓜(" q ", " α ")" => hachiModulus q α
 
 /-- The **inner-outer commitment ring** `R_q = Z_q[X] / (X^{2^α} + 1)`, the degree-`2^α`

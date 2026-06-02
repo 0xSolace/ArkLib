@@ -19,8 +19,7 @@ has absolute value `≤ b - 1` (under `b - 1 ≤ q/2`, so the residue does not w
 is bookkeeping over the gadget's coefficient layout (`Rq.ofFinCoeff_coeff`).
 
 This file bridges the gadget algebra (`CommitmentScheme.Ajtai.Gadget`) and the centered norms
-(`Data.Lattices.CyclotomicRing.NormBounds`); it lives at the `CommitmentScheme` layer because the
-norm library in `Data/` must not depend on it.
+(`Data.Lattices.CyclotomicRing.NormBounds`).
 
 ## References
 

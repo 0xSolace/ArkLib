@@ -12,11 +12,7 @@ import VCVio
 The simple non-hiding Ajtai [Ajt96] commitment over the computable cyclotomic ring `Rq Φ`:
 the commitment to a message vector `s` under a public matrix `A` is the matrix–vector
 product `A *ᵥ s`. An opening carries no auxiliary data; verification recomputes the
-product (and, in the bundled `CommitmentScheme`, additionally checks the short-vector
-predicate `isShort` required by the binding reduction to Module-SIS).
-
-Adapted from VCV-io's `LatticeCrypto.Ajtai.Simple.Scheme`, with the bundled
-`NegacyclicRing` carrier replaced by the CompPoly-based `Rq Φ`.
+product and, in the bundled `CommitmentScheme`, checks the short-vector predicate `isShort`.
 
 ## References
 

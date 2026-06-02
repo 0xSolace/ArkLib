@@ -8,7 +8,7 @@ import ArkLib.Data.Lattices.CyclotomicRing.NormBounds.Basic
 /-!
 # The Micciancio/Young Product Norm-Growth Bound
 
-The honest Young/Micciancio inequality `‖(c·d)·v‖₂² ≤ ‖d‖₁² · ‖c·v‖₂²` over the power-of-two
+The Young/Micciancio inequality `‖(c·d)·v‖₂² ≤ ‖d‖₁² · ‖c·v‖₂²` over the power-of-two
 negacyclic convolution (`φ = X^{2^α} + 1`, `powTwoCyclotomic α`) with centered
 representatives: scaling an already-`c`-scaled vector by a further ring element `d` of
 bounded centered `ℓ₁` norm grows the squared `ℓ₂` norm by at most `κ²`.
@@ -19,11 +19,10 @@ coefficient vector, which holds for the cyclic/negacyclic rings `X^n ∓ 1` of [
 *fails* for a general cyclotomic `Φ_m` (e.g. in `ℤ[X]/(X²+X+1)`, `‖X·X‖₂ = √2 > ‖X‖₁·‖X‖₂`).
 Phrasing this for an arbitrary `Φ` would therefore be unsound.
 
-This is one of the two *deep* analytic inputs to the Greyhound [NS24] / Hachi [NOZ26]
-weak-binding argument (discrete Cauchy–Schwarz over the negacyclic convolution, together with
-minimality of the centered representative; the product norm inequality `‖fg‖ ≤ ‖f‖₁·‖g‖` is
-[Mic07, Lemma 2]). Its proof is currently deferred (`sorry`), exactly as in VCV-io's
-`LatticeCrypto.Ring.NormBounds`.
+This is one of the two unproven lemmas for the Greyhound [NS24] / Hachi [NOZ26]
+weak-binding argument. The paper proof is in [Mic07, Lemma 2]: discrete Cauchy–Schwarz over
+the negacyclic convolution, together with minimality of the centered representative, gives the
+product norm inequality `‖fg‖ ≤ ‖f‖₁·‖g‖`.
 
 ## References
 

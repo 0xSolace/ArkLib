@@ -25,8 +25,6 @@ law) and realized concretely over `ZMod q` by `zmodDigitDecomposition`. The asso
 `gadgetDecompose` is then lawful (`gadgetDecompose_lawful`), replacing the earlier
 units-place placeholder.
 
-Adapted from VCV-io's `LatticeCrypto.Ajtai.Gadget`.
-
 ## References
 
 * [Nguyen, N. K., and Seiler, G., *Greyhound: Fast Polynomial Commitments from Lattices*][NS24]
@@ -170,6 +168,7 @@ theorem coeff_eq_zero_of_natDegree_le (a : Rq Φ) {k : ℕ} (hk : Φ.φ.natDegre
         exact Polynomial.degree_eq_natDegree (IsCyclotomic.monic (Φ := Φ)).ne_zero
     _ ≤ (k : WithBot ℕ) := by exact_mod_cast hk
 
+omit [DecidableEq R] in
 /-- The constant `constRq Φ c` has underlying polynomial `C c` (no reduction occurs, as
 `deg (C c) = 0 < deg φ`). -/
 theorem constRq_val (h1 : 1 ≤ Φ.φ.natDegree) (c : R) :
@@ -183,6 +182,7 @@ theorem constRq_val (h1 : 1 ≤ Φ.φ.natDegree) (c : R) :
     exact_mod_cast (h1 : 0 < Φ.φ.natDegree)
   exact lt_of_le_of_lt Polynomial.degree_C_le hpos
 
+omit [DecidableEq R] in
 /-- Multiplying by the constant `constRq Φ c` scales coefficients by `c`. -/
 theorem constRq_mul_coeff (h1 : 1 ≤ Φ.φ.natDegree) (c : R) (x : Rq Φ) (k : ℕ) :
     (constRq Φ c * x).1.coeff k = c * x.1.coeff k := by

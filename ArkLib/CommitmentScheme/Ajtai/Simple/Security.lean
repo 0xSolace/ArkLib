@@ -20,8 +20,6 @@ fact `sub_l2NormSq_le` discharges the subtraction closure internally. A general 
 an abstract shortness predicate with an explicit closure hypothesis is kept as
 `bindingAdvantage_le_moduleSIS_of_shortClosure`.
 
-Adapted from VCV-io's `LatticeCrypto.Ajtai.Simple.Security`.
-
 ## References
 
 * [Ajtai, M., *Generating Hard Instances of Lattice Problems*][Ajt96]
@@ -64,7 +62,7 @@ theorem bindingAdvantage_le_moduleSIS_of_shortClosure {rows cols : Nat}
   unfold bindingAdvantage CommitmentScheme.bindingExp ModuleSIS.advantage
     SIS.advantage SIS.experiment ModuleSIS.problem bindingAdvToModuleSIS
     commitmentScheme ModuleSIS.relation
-  simp only [bind_pure_comp, bind_assoc, pure_bind, Functor.map_map]
+  simp only [bind_pure_comp, Functor.map_map]
   refine probOutput_bind_mono fun A _ => ?_
   refine probOutput_bind_mono fun ⟨c, s₁, o₁, s₂, o₂⟩ _ => ?_
   refine probOutput_pure_bool_le _ _ (fun hwin => ?_)

@@ -54,8 +54,6 @@ The bundled `commitmentScheme` therefore verifies an opening against a claimed m
 checking `derivedMessage opening.toDecomp = m` (replacing the old explicit message-gadget check)
 together with `verify_weak`.
 
-Adapted from VCV-io's `LatticeCrypto.Ajtai.InnerOuter.Scheme`.
-
 ## References
 
 * [Lyubashevsky, V., and Seiler, G., *Short, Invertible Elements in Partially Splitting

@@ -91,7 +91,7 @@ namespace CyclotomicModulus
 
 variable {R : Type*} [Field R] [BEq R] [LawfulBEq R]
 
-/-- The power-of-two ("Hachi") cyclotomic modulus `φ = X^{2^α} + 1`, the
+/-- The power-of-two cyclotomic modulus `φ = X^{2^α} + 1`, the
 cyclotomic polynomial of conductor `2^{α+1}`. This is the ring of integers of
 the `2^{α+1}`-th cyclotomic field, used as `R_q := Z_q[X] / (X^d + 1)` with
 `d = 2^α` throughout lattice-based proof systems. Computable: the operations
@@ -100,7 +100,7 @@ def powTwoCyclotomic (α : ℕ) : CyclotomicModulus R where
   φ := CPolynomial.X ^ (2 ^ α) + 1
   conductor := 2 ^ (α + 1)
 
-/-- The Hachi modulus `X^{2^α} + 1` is the `2^{α+1}`-th cyclotomic polynomial. -/
+/-- The modulus `X^{2^α} + 1` is the `2^{α+1}`-th cyclotomic polynomial. -/
 instance powTwoCyclotomic_isCyclotomic (α : ℕ) :
     IsCyclotomic (powTwoCyclotomic (R := R) α) where
   monic := by

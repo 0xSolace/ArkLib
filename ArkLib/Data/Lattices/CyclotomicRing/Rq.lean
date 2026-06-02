@@ -19,9 +19,7 @@ This file fixes that by defining `Φ.Rq`, the subtype of **canonical reduced
 representatives** `{ p : CPolynomial R // Φ.reduce p = p }`, and equipping it with a
 genuine **computable `CommRing`** structure transported from the semantic quotient
 along the injective ring map `a ↦ quotientHom a.val` (the CompPoly analogue of VCV-io's
-`instCommRingPoly`). Because `Rq` is now an honest `CommRing`, downstream Module-SIS /
-Ajtai algebra (`Matrix.mulVec_sub`, scalar-action injectivity, …) are ordinary Mathlib
-facts rather than a bespoke ring-algebra layer.
+`instCommRingPoly`).
 
 ## Main definitions
 

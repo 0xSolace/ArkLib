@@ -22,12 +22,12 @@ general cyclotomic `Φ_m` of power-of-two *degree* (e.g. `Φ₁₅`, `Φ₁₂`)
 condition and the `√q` bound are simply wrong, so phrasing the lemma for an arbitrary
 `Φ` with `deg φ = 2^α` would be unsound.
 
-This is the second *deep* input to the Greyhound [NS24] / Hachi [NOZ26] weak-binding argument
-— a genuine piece of algebraic number theory (factorization of `X^{2^α}+1 mod q` into two
-factors, the maximal ideals realized as ideal lattices of determinant `q^{2^{α-1}}`, and a
-minimum-distance lower bound via the cyclotomic embedding). None of this is available in
-Mathlib in directly usable form, so the result is deferred (`sorry`), exactly as in VCV-io's
-`LatticeCrypto.Ring.ShortInvertible`.
+This is one of the two unproven lemmas for the Greyhound [NS24] / Hachi [NOZ26]
+weak-binding argument. The proof is a genuine piece of algebraic number theory
+(factorization of `X^{2^α}+1 mod q` into two factors, the maximal ideals realized as ideal
+lattices of determinant `q^{2^{α-1}}`, and a minimum-distance lower bound via the cyclotomic
+embedding). None of this is available in Mathlib in directly usable form, so the result is
+deferred (`sorry`) for now.
 
 ## References
 

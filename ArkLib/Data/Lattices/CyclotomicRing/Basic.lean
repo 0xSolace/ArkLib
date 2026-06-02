@@ -19,14 +19,14 @@ It is split into two layers, bridged by a single ring homomorphism:
   Mathlib quotient `Polynomial R ⧸ (φ)`. It inherits `CommRing` for free and is
   the genuine cyclotomic ring `R[X] / (Φ_m)` (`cyclotomicRing_eq`).
 * **Computable layer**: ring elements are `CPolynomial R`, reduced modulo `φ`
-  via CompPoly's `modByMonic` (`Φ.reduce`); multiplication is reduce-after-mul.
+  via CompPoly's `modByMonic` (`Φ.reduce`); multiplication is reduce-after-mul
+  for now.
 
 The bridge `Φ.quotientHom : CPolynomial R →+* Φ.CyclotomicRing` is the
 composite of CompPoly's `toPoly` ring isomorphism with `Ideal.Quotient.mk`.
 Because both are ring homomorphisms, soundness of every computable operation is
-just `map_add` / `map_mul` / … — no per-operation soundness axiom is needed
-(contrast `LatticeCrypto.NegacyclicRingSemantics`, which carries five hand-proven
-`_sound` fields). The only extra fact is `quotientHom_reduce`: reduction modulo
+just `map_add` / `map_mul` / … — no per-operation soundness axiom is needed.
+The only extra fact is `quotientHom_reduce`: reduction modulo
 `φ` is invisible in the quotient.
 
 ## Main definitions
@@ -66,9 +66,13 @@ theorem cyclotomicRing_eq [IsCyclotomic Φ] :
 implemented by CompPoly's `modByMonic`. -/
 def reduce (p : CPolynomial R) : CPolynomial R := p.modByMonic Φ.φ
 
--- TODO add proper NTT multiplication here, not just reduce-after-CPolynomial-mul.
 /-- Computable multiplication in the cyclotomic ring: multiply in `CPolynomial R`,
-then reduce modulo `φ`. -/
+then reduce modulo `φ`.
+
+TODO add proper NTT multiplication here, not just reduce-after-CPolynomial-mul
+(or prove equivalence to the NTT-based definition once we have the NTT).
+Can we adapt CompPoly NTT for this?
+-/
 def mul (a b : CPolynomial R) : CPolynomial R := Φ.reduce (a * b)
 
 /-- The soundness bridge: send a computable polynomial to the semantic

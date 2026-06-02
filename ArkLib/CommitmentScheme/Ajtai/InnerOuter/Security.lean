@@ -19,7 +19,7 @@ checks the outer commitment.
 The *definitions* (opening, verifier, experiment, advantage, reductions) are polymorphic in
 the cyclotomic modulus `Φ`. The *security statements*, however, are pinned to the power-of-two
 cyclotomic modulus `Φ = powTwoCyclotomic α` (`φ = X^{2^α} + 1`), abbreviated `𝓜(q, α)`,
-because they invoke the two deep inputs that only hold there: accepted challenges are
+because they invoke the two lemmas that only hold there: accepted challenges are
 genuinely invertible via the Lyubashevsky–Seiler [LS18] result (`isUnit_of_l1Norm_le`), and
 scaled messages stay short via the Micciancio/Young product bound
 (`scalarVecMul_mul_l2NormSq_le`). The reductions therefore carry the remaining [LS18]
@@ -28,8 +28,6 @@ hypotheses: `q ≡ 5 (mod 8)` and `κ² < q`.
 `outputToModuleSIS_valid` is the cryptographic heart: a winning pair of distinct weak
 openings yields a valid inner *or* outer Module-SIS witness. `advantage_le_moduleSIS` wraps
 it probabilistically.
-
-Adapted from VCV-io's `LatticeCrypto.Ajtai.InnerOuter.Security`.
 
 ## References
 
@@ -365,7 +363,36 @@ variable
   [SampleableType (Simple.PublicParams Φ innerRows (messageRows * messageDigits))]
   [SampleableType (Simple.PublicParams Φ outerRows (blocks * (innerRows * innerDigits)))]
 
-/-- The Hachi/Greyhound weak-binding experiment. -/
+/-- The Hachi/Greyhound weak-binding experiment.
+
+## Ordinary vs. weak binding
+
+*Ordinary (exact) binding* asks the adversary to produce one commitment `u` together with two
+verifying openings to **different messages**. The opening it would carry here is just the
+decomposition data `(sᵢ, t̂ᵢ)ᵢ`.
+
+*Weak (relaxed) binding* — what this experiment formalizes — relaxes that in one place: each
+opening additionally carries a per-block **challenge** `cᵢ` (see `Opening`), and `verify_weak`
+bounds the **scaled** message `‖cᵢ·sᵢ‖₂² ≤ βSq` rather than `sᵢ` itself, while requiring `cᵢ`
+to be nonzero and `ℓ₁`-short (hence invertible by [LS18]). The adversary wins
+(`openingsDiffer`) as soon as the two openings differ in their **messages** `(sᵢ)`. The
+extracted witness is therefore not `s₁ᵢ - s₂ᵢ` but the *cross-scaled* difference
+`(c₁ᵢ·c₂ᵢ)·s₁ᵢ - (c₂ᵢ·c₁ᵢ)·s₂ᵢ` (`scaledMessage`): a witness short only **up to the slack of
+the challenge product**, controlled by the Micciancio/Young bound (`innerShort`).
+
+## Why the weak notion is needed here
+
+The challenge `cᵢ` is not chosen by the committer — it is the verifier's challenge in the
+evaluation/opening protocol, recovered only during knowledge extraction (`commitmentScheme`
+pairs an honest opening with the trivial `cᵢ = 1`, the special case where `verify_weak`
+collapses to the ordinary honest check: `1` is invertible, `‖1‖₁ = 1`, `‖1·sᵢ‖ = ‖sᵢ‖`).
+Special-soundness extraction over a splitting cyclotomic ring cannot recover a clean opening;
+it only recovers one up to multiplication by an invertible challenge difference. So exact
+binding is *not* what the protocol delivers, and reducing it directly to Module-SIS is not
+possible. Weak binding captures exactly the guarantee extraction does provide, and it still
+reduces to Module-SIS precisely because over `𝓜(q, α)` the challenge stays invertible ([LS18])
+and the scaled witness stays short ([MY], the Micciancio/Young product bound) — the two facts
+pinning the security statements to the power-of-two modulus (see the module docstring). -/
 def experiment (base : ZMod q) (βSq γ κ : Nat)
     (adv : Adversary Φ innerRows messageRows messageDigits outerRows blocks innerDigits) :
     ProbComp Bool := do

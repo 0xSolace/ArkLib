@@ -10,8 +10,8 @@ import ArkLib.CommitmentScheme.Ajtai.InnerOuter.Security
 # Inner-Outer Ajtai Commitment
 
 Re-exports the Greyhound [NS24] / Hachi [NOZ26] inner-outer Ajtai commitment scheme, its
-perfect correctness (for lawful gadget decompositions), and its weak-binding reduction to
-Module-SIS, over the cyclotomic ring `Rq Φ`.
+perfect correctness, and its weak-binding reduction to Module-SIS, over the cyclotomic ring
+`Rq Φ`.
 
 ## References
 

@@ -13,8 +13,6 @@ import ArkLib.CommitmentScheme.Ajtai.GadgetNorms
 Perfect correctness for lawful gadget decompositions: if the message and inner gadget
 decompositions invert their gadget matrices, an honest commitment always verifies.
 
-Adapted from VCV-io's `LatticeCrypto.Ajtai.InnerOuter.Correctness`.
-
 ## References
 
 * [Nguyen, N. K., and Seiler, G., *Greyhound: Fast Polynomial Commitments from Lattices*][NS24]
