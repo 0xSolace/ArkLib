@@ -19,12 +19,11 @@ open scoped NNReal
 open Sumcheck.Structured
 
 variable (κ : ℕ) [NeZero κ]
-variable (L : Type) [Field L] [Fintype L] [DecidableEq L]
+variable (L : Type) [CommRing L] [Fintype L] [DecidableEq L]
   [SampleableType L]
-variable (K : Type) [Field K] [Fintype K] [DecidableEq K]
+variable (K : Type) [CommRing K] [Fintype K] [DecidableEq K]
 variable [Algebra K L]
-variable (β : Fin κ → L) [hβ_lin_indep : Fact (LinearIndependent K β)]
-variable (h_dim : Module.finrank K L = κ)
+variable (P : RingSwitchingProfile K L κ)
 variable (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
 variable (h_l : ℓ = ℓ' + κ)
 variable (mlIOPCS : MLIOPCS L ℓ')
@@ -34,7 +33,7 @@ section Pspec
 @[reducible]
 def pSpecBatching : ProtocolSpec 2 :=
   ⟨![Direction.P_to_V, Direction.V_to_P],
-   ![TensorAlgebra K L, Fin κ → L]⟩
+   ![P.A, Fin κ → L]⟩
 
 -- `pSpecSumcheckRound` was lifted to `ArkLib.ProofSystem.Sumcheck.Structured.SingleRound` as a
 -- degree-neutral spec. Binius ring-switching is the degree-2 case, so this Binius-local abbrev
@@ -50,17 +49,18 @@ def pSpecFinalSumcheck : ProtocolSpec 1 := ⟨![Direction.P_to_V], ![L]⟩
 def pSpecCoreInteraction := (pSpecSumcheckLoop L ℓ') ++ₚ (pSpecFinalSumcheck L)
 
 @[reducible]
-def pSpecLargeFieldReduction := (pSpecBatching κ L K) ++ₚ (pSpecCoreInteraction (L:=L) (ℓ':=ℓ'))
+def pSpecLargeFieldReduction :=
+  (pSpecBatching κ L K P) ++ₚ (pSpecCoreInteraction (L:=L) (ℓ':=ℓ'))
 
 @[reducible]
-def fullPspec := (pSpecLargeFieldReduction κ (L:=L) (K:=K) (ℓ':=ℓ')) ++ₚ (mlIOPCS.pSpec)
+def fullPspec := (pSpecLargeFieldReduction κ (L:=L) (K:=K) P (ℓ':=ℓ')) ++ₚ (mlIOPCS.pSpec)
 
 /-! ## Oracle Interface instances for Messages-/
 
-instance : OracleInterface (TensorAlgebra K L) := OracleInterface.instDefault
+instance : OracleInterface P.A := OracleInterface.instDefault
 instance : OracleInterface (Fin κ → L) := OracleInterface.instDefault
 
-instance : ∀ j, OracleInterface ((pSpecBatching κ L K).Message j)
+instance : ∀ j, OracleInterface ((pSpecBatching κ L K P).Message j)
   | ⟨0, _⟩ => OracleInterface.instDefault -- ŝ ∈ A
   | ⟨1, _⟩ => OracleInterface.instDefault -- r'' ∈ L^κ
 
@@ -77,17 +77,18 @@ instance : ∀ i, OracleInterface ((pSpecFinalSumcheck (L:=L)).Message i)
 instance : ∀ i, OracleInterface ((pSpecCoreInteraction (L:=L) (ℓ':=ℓ')).Message i) :=
   instOracleInterfaceMessageAppend
 
-instance : ∀ i, OracleInterface ((pSpecLargeFieldReduction κ (L:=L) (K:=K) (ℓ':=ℓ')).Message i) :=
+instance : ∀ i, OracleInterface
+    ((pSpecLargeFieldReduction κ (L:=L) (K:=K) P (ℓ':=ℓ')).Message i) :=
   instOracleInterfaceMessageAppend
 
 instance : ∀ i, OracleInterface (mlIOPCS.pSpec.Message i) := fun i => mlIOPCS.Oₘ i
 
-instance : ∀ i, OracleInterface ((fullPspec κ (L:=L) (K:=K) (ℓ':=ℓ') mlIOPCS).Message i) :=
+instance : ∀ i, OracleInterface ((fullPspec κ (L:=L) (K:=K) P (ℓ':=ℓ') mlIOPCS).Message i) :=
   instOracleInterfaceMessageAppend
 
 /-! ## SampleableType instances -/
 
-instance : ∀ j, SampleableType ((pSpecBatching κ L K).Challenge j)
+instance : ∀ j, SampleableType ((pSpecBatching κ L K P).Challenge j)
   | ⟨0, h0⟩ => by nomatch h0
   | ⟨1, _⟩ => by
     simp only [Challenge, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one]
@@ -106,12 +107,13 @@ instance : ∀ i, SampleableType ((pSpecFinalSumcheck (L:=L)).Challenge i)
 instance : ∀ i, SampleableType ((pSpecCoreInteraction (L:=L) (ℓ':=ℓ')).Challenge i) :=
   instSampleableTypeChallengeAppend
 
-instance : ∀ i, SampleableType ((pSpecLargeFieldReduction κ (L:=L) (K:=K) (ℓ':=ℓ')).Challenge i) :=
+instance : ∀ i, SampleableType
+    ((pSpecLargeFieldReduction κ (L:=L) (K:=K) P (ℓ':=ℓ')).Challenge i) :=
   instSampleableTypeChallengeAppend
 
 instance : ∀ i, SampleableType (mlIOPCS.pSpec.Challenge i) := mlIOPCS.O_challenges
 
-instance : ∀ i, SampleableType ((fullPspec κ (L:=L) (K:=K) (ℓ':=ℓ') mlIOPCS).Challenge i) :=
+instance : ∀ i, SampleableType ((fullPspec κ (L:=L) (K:=K) P (ℓ':=ℓ') mlIOPCS).Challenge i) :=
   instSampleableTypeChallengeAppend
 
 end Pspec

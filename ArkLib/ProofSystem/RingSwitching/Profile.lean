@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Hicks
 -/
 
-import ArkLib.ProofSystem.RingSwitching.Prelude
+import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Fintype.Pi
 
 /-!
 # Ring-Switching Profile
@@ -20,6 +23,10 @@ It is stated over `CommRing` (not `Field`): Hachi's carrier `L = R_q` is not a f
 `Field`-only steps (Schwartz–Zippel over `|L|`) stay at the soundness use-sites in the
 ring-switching files, not here.
 
+This file holds only the abstract structure (no Binius dependency), so `Prelude.lean` can import it
+and parameterize the protocol over it; the Binius instance `binaryTowerProfile` lives in
+`Prelude.lean`, after the tensor-algebra definitions it is built from.
+
 ## Fields and their two instantiations
 
 | field | Binius (DP24) | Hachi (ePrint 2026/156) |
@@ -32,27 +39,24 @@ ring-switching files, not here.
 
 The only structural difference — Hachi has no separate tensor object (`A = L`, `φ₀ = id`,
 `φ₁ = σ₋₁`) while Binius has `A = L ⊗_K L` — is absorbed by `A`, `φ₀`, `φ₁` being explicit fields.
-The eq̃/trace inner-product law (DP24 §2.5 / Hachi Theorem 2) is deferred: it is added when the
-protocol code is rewired through the profile (it is the property the step-2/5/9 checks rely on).
+The eq̃/trace inner-product law (DP24 §2.5 / Hachi Theorem 2) is an *instance-internal* lemma used by
+each instance's own soundness proofs (Binius RBR / Hachi CWSS), not a field of this data structure.
 -/
-
-noncomputable section
 
 namespace RingSwitching
 
 open Module
-open scoped TensorProduct
 
 /-- The packing-layer data a ring-switching reduction abstracts over. `L` is free of rank `2^κ`
 over the small ring `B` (via `basis`); `A` is the pack/trace carrier where the folded element `ŝ`
 lives (and which the batching phase sends on the wire). See the module docstring for the Binius and
 Hachi instantiations of each field. -/
-structure RingSwitchingProfile (B L : Type) (κ : ℕ)
+structure RingSwitchingProfile (B L : Type*) (κ : ℕ)
     [CommRing B] [CommRing L] [Algebra B L] where
   /-- rank-`2^κ` `B`-basis of `L`. -/
   basis : Basis (Fin κ → Fin 2) B L
   /-- pack/trace carrier; Binius `L ⊗[K] L`, Hachi `R_q` (`= L`). The batching wire type. -/
-  A : Type
+  A : Type*
   [commRingA : CommRing A]
   [algLA : Algebra L A]
   /-- column embedding `L → A`; Binius `α ↦ α ⊗ 1`, Hachi `id`. -/
@@ -60,37 +64,23 @@ structure RingSwitchingProfile (B L : Type) (κ : ℕ)
   /-- row embedding `L → A`; Binius `α ↦ 1 ⊗ α`, Hachi the automorphism `σ₋₁`. -/
   φ₁ : L →+* A
   /-- The `2^κ` `L`-valued "row" coordinates of an `A`-element (Binius: `β.baseChange L`-coords of
-  `ŝ ∈ L ⊗_K L`; used in step 5 / `compute_s0`). The precise algebraic law relating it to `φ₀`/`φ₁`
-  and `A`'s multiplication is deferred — see the module docstring and `decomposeColumns`. -/
+  `ŝ ∈ L ⊗_K L`; used in step 5 / `compute_s0`). The algebraic law relating it to `φ₀`/`φ₁` and
+  `A`'s multiplication is an instance-internal lemma (used in soundness proofs), not a field here. -/
   decomposeRows : A → (Fin κ → Fin 2) → L
   /-- The `2^κ` `L`-valued "column" coordinates of an `A`-element (Binius: `baseChangeRight`-coords;
   used in step 2 / `performCheckOriginalEvaluation`). NOTE: in the Binius instance this uses the
-  *right* `L`-module structure on `A`, distinct from `algLA` (the left/`φ₀` action) — when the
-  connecting law is added (Step 3) the profile will need to carry that right-side structure too. -/
+  *right* `L`-module structure on `A`, distinct from `algLA` (the left/`φ₀` action). -/
   decomposeColumns : A → (Fin κ → Fin 2) → L
+  /-- **Row reconstruction law** (the eq̃/trace structural identity, DP24 §2.5 / Hachi Theorem 2):
+  every `A`-element is recovered from its row coordinates via the `φ₀`-image of those coordinates
+  weighted by the `φ₁`-image of the basis. This is the algebraic law tying `decomposeRows` to
+  `φ₀`/`φ₁`/`basis`; it is what the batching/sumcheck completeness and soundness proofs depend on,
+  and what rules out degenerate profiles (e.g. `decomposeRows ≡ 0`). For Binius (`A = L ⊗_K L`) it is
+  `Basis.sum_repr` for `β.baseChange L`; for Hachi it is Theorem 2. -/
+  decomposeRows_spec : ∀ z : A, z = ∑ u, φ₀ (decomposeRows z u) * φ₁ (basis u)
+  /-- **Column reconstruction law**: the right/`φ₁`-action dual of `decomposeRows_spec`. -/
+  decomposeColumns_spec : ∀ z : A, z = ∑ v, φ₁ (decomposeColumns z v) * φ₀ (basis v)
 
 attribute [instance] RingSwitchingProfile.commRingA RingSwitchingProfile.algLA
 
-/-- The Binius (binary-tower) instantiation of `RingSwitchingProfile`, built from the existing
-tensor-algebra definitions in `Prelude.lean`. This is the compile-level validation that the profile
-shape fits the real Binius data: `A := L ⊗[K] L`, embeddings `φ₀ = · ⊗ 1` / `φ₁ = 1 ⊗ ·`, and the
-decompositions are the `K`-basis coordinates via the left/right `L`-module structures.
-
-Marked `@[reducible]` so that, once the protocol code is rewired through the profile, references to
-`(binaryTowerProfile …).A` unfold to `L ⊗[K] L` at reducible transparency — preserving the existing
-`rfl`/instance-driven Binius proofs (and the byte-identical `#print axioms`). -/
-@[reducible] def binaryTowerProfile (κ : ℕ) [NeZero κ] (K L : Type)
-    [Field K] [Field L] [Algebra K L] (β : Basis (Fin κ → Fin 2) K L) :
-    RingSwitchingProfile K L κ where
-  basis := β
-  A := TensorAlgebra K L
-  commRingA := inferInstanceAs (CommRing (L ⊗[K] L))
-  algLA := Algebra.TensorProduct.leftAlgebra
-  φ₀ := φ₀ L K
-  φ₁ := φ₁ L K
-  decomposeRows := fun s => decompose_tensor_algebra_rows (L := L) (K := K) (β := β) s
-  decomposeColumns := fun s => decompose_tensor_algebra_columns (L := L) (K := K) (β := β) s
-
 end RingSwitching
-
-end
