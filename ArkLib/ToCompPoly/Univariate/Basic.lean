@@ -285,6 +285,7 @@ def coeffHom (k : ℕ) : CPolynomial R →+ R where
   map_zero' := coeff_zero k
   map_add' p q := coeff_add p q k
 
+omit [DecidableEq R] in
 @[simp] theorem coeffHom_apply (k : ℕ) (p : CPolynomial R) : coeffHom k p = p.coeff k := rfl
 
 /-- The polynomial with prescribed finite coefficient function: `Σ_{k<N} cₖ Xᵏ`. -/
@@ -300,12 +301,14 @@ def ofFinCoeff (N : ℕ) (c : ℕ → R) : CPolynomial R :=
   rw [Finset.sum_ite_eq (range N) j (fun k => c k)]
   simp
 
+omit [DecidableEq R] [Nontrivial R] in
 /-- `toPoly` of a constant is the Mathlib constant. -/
 theorem toPoly_C (c : R) : (C c).toPoly = Polynomial.C c := by
   ext i
   rw [show (C c).toPoly = (C c).val.toPoly from rfl, Raw.coeff_toPoly, Polynomial.coeff_C]
   exact coeff_C c i
 
+omit [Nontrivial R] in
 /-- `toPoly` of a monomial is the Mathlib monomial. -/
 theorem toPoly_monomial (n : ℕ) (c : R) :
     (monomial n c).toPoly = Polynomial.monomial n c := by
@@ -315,6 +318,7 @@ theorem toPoly_monomial (n : ℕ) (c : R) :
     coeff_monomial, Polynomial.coeff_monomial]
   exact if_congr eq_comm rfl rfl
 
+omit [Nontrivial R] in
 /-- The polynomial built from `N` coefficients has degree below `N`. -/
 theorem degree_toPoly_ofFinCoeff_lt (N : ℕ) (c : ℕ → R) :
     (ofFinCoeff N c).toPoly.degree < (N : WithBot ℕ) := by

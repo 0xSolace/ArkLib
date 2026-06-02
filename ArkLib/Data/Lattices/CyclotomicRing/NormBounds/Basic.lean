@@ -42,7 +42,7 @@ variable {q : ℕ} [NeZero q]
 
 /-- The centered representative `valMinAbs` has the least absolute value among all
 integer representatives of a residue class. -/
-theorem valMinAbs_natAbs_le {a : ZMod q} {m : ℤ} (h : (m : ZMod q) = a) :
+theorem valMinAbs_natAbs_le {a : ZMod q} (m : ℤ) (h : (m : ZMod q) = a) :
     a.valMinAbs.natAbs ≤ m.natAbs := by
   have hmem := ZMod.valMinAbs_mem_Ioc a
   rw [Set.mem_Ioc] at hmem
@@ -66,7 +66,7 @@ theorem valMinAbs_sub_natAbs_le (a b : ZMod q) :
     (a - b).valMinAbs.natAbs ≤ a.valMinAbs.natAbs + b.valMinAbs.natAbs := by
   have h : ((a.valMinAbs - b.valMinAbs : ℤ) : ZMod q) = a - b := by
     rw [Int.cast_sub, ZMod.coe_valMinAbs, ZMod.coe_valMinAbs]
-  exact le_trans (valMinAbs_natAbs_le h) (Int.natAbs_sub_le _ _)
+  exact le_trans (valMinAbs_natAbs_le _ h) (Int.natAbs_sub_le _ _)
 
 variable [Fact (Nat.Prime q)] [BEq (ZMod q)] [LawfulBEq (ZMod q)]
   (Φ : CyclotomicModulus (ZMod q)) [IsCyclotomic Φ]
