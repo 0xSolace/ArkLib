@@ -54,7 +54,7 @@ private lemma substPlus_mem_restrictDegree
   convert Submodule.sum_mem _ h_monomial using 1
   rw [map_sum]
 
-private lemma substMinus_mem_restrictDegree 
+private lemma substMinus_mem_restrictDegree
   {p : MvPolynomial (Fin n) R} (hp : p ∈ restrictDegree (Fin n) R 1) :
   substMinus p ∈ restrictDegree (Fin n) R 1 := by
   have := substPlus_mem_restrictDegree hp
@@ -76,123 +76,233 @@ private lemma substMinus_mem_restrictDegree
       simp_all only [degreeOf_C, zero_add]
       apply le_trans (MvPolynomial.degreeOf_prod_le _ _ _) _
       rw [Finset.sum_eq_add_sum_diff_singleton i _ (by aesop)]
-      rw [Finset.sum_equiv (t := m.support \ {i}) (Equiv.refl _) (by simp) (g := fun x ↦ 0) (by {
-      intro j hj 
-      split_ifs with hjeq0
-      · subst hjeq0
-        simp
-        have : m 0 = 1 := by grind
-        simp [this]
-      · rw [MvPolynomial.degreeOf_pow_le]
-  })]
+      rw [Finset.sum_equiv 
+            (t := m.support \ {i}) 
+            (Equiv.refl _) 
+            (by simp) 
+            (g := fun x ↦ 0) 
+            (fun j hj ↦ by
+              split_ifs with hjeq0
+              · have : m 0 = 1 := by grind
+                aesop
+              · have : i ≠ j := by aesop
+                exact Nat.eq_zero_of_le_zero <| 
+                  le_trans (MvPolynomial.degreeOf_pow_le _ _ _) <| by
+                  simp [MvPolynomial.degreeOf_X, this])]
+      split_ifs
+      · by_cases hm0 : m 0 = 0 
+        · aesop
+        · have : m 0 = 1 := by grind
+          aesop
+      · simp only [sum_const_zero, add_zero] 
+        apply le_trans (MvPolynomial.degreeOf_pow_le _ _ _)
+        simp [MvPolynomial.degreeOf, h_deg]
+    rw [MvPolynomial.as_sum p, map_sum]
+    exact le_trans 
+      (MvPolynomial.degreeOf_sum_le _ _ _) 
+      (Finset.sup_le fun m hm => h_subst m hm)
+  aesop 
+    (add simp [MvPolynomial.degreeOf_eq_sup, mem_restrictDegree, mem_support_iff])
 
+omit [NeZero n] in
+private lemma mul_C_mem_restrictDegree
+  {p : MvPolynomial (Fin n) R} (hp : p ∈ restrictDegree (Fin n) R 1)
+  (c : R) : p * C c ∈ restrictDegree (Fin n) R 1 := by
+  convert Submodule.smul_mem _ c hp using 1
+  rw [mul_comm, MvPolynomial.C_mul']
 
-      simp [degreeOf]
-      refine' le_trans ( Finset.sum_le_sum fun j hj => _ ) _;
-      use fun j => if j = i then m i else 0;
-      · split_ifs  
-        · simp_all only [Finsupp.mem_support_iff, ne_eq, degreeOf_eq_sup,
-          Finset.sup_le_iff, mem_support_iff];
-          interval_cases m 0 <;> simp_all +decide [ MvPolynomial.coeff_one ];
-        · cases Nat.even_or_odd ( m 0 ) <;> simp_all +decide; all_goals simp +decide [ MvPolynomial.coeff_one ];
-        · simp_all +decide [ MvPolynomial.degreeOf_eq_sup ];
-          simp +decide [ MvPolynomial.coeff_X_pow ];
-        · simp_all +decide [ MvPolynomial.degreeOf_eq_sup ];
-          rw [show 0 = ⊥ by rfl, Finset.sup_eq_bot_iff] 
-          aesop (add simp [MvPolynomial.coeff_X_pow])          
-      · aesop;
-    rw [ MvPolynomial.as_sum p ];
-    rw [ map_sum ];
-    exact le_trans ( MvPolynomial.degreeOf_sum_le _ _ _ ) ( Finset.sup_le fun m hm => h_subst m hm );
-  simp_all +decide [ MvPolynomial.mem_restrictDegree ];
-    intro s hs i; specialize h_subst i; rw [ MvPolynomial.degreeOf_eq_sup ] at h_subst; simp_all +decide [ Finset.sup_le_iff ] ;
-
-private lemma mul_C_mem_restrictDegree {n : ℕ} [CommRing R]
-    {p : MvPolynomial (Fin n) R} (hp : p ∈ restrictDegree (Fin n) R 1)
-    (c : R) : p * C c ∈ restrictDegree (Fin n) R 1 := by
-      convert Submodule.smul_mem _ c hp using 1;
-      rw [ mul_comm, MvPolynomial.C_mul' ]
-
-private lemma even_mem {n : ℕ} [Field R] [NeZero n] (p : R⦃≤ 1⦄[X (Fin n)]) :
-    (substPlus p.1 + substMinus p.1) * C (2⁻¹) ∈ restrictDegree (Fin n) R 1 :=
+private lemma even_mem (p : R⦃≤ 1⦄[X (Fin n)]) :
+  (substPlus p.1 + substMinus p.1) * C (2⁻¹) ∈ restrictDegree (Fin n) R 1 :=
   mul_C_mem_restrictDegree ((restrictDegree (Fin n) R 1).add_mem
     (substPlus_mem_restrictDegree p.2) (substMinus_mem_restrictDegree p.2)) _
 
-private lemma odd_mem {n : ℕ} [Field R] [NeZero n] (p : R⦃≤ 1⦄[X (Fin n)]) :
-    (substPlus p.1 - substMinus p.1) * C (2⁻¹) ∈ restrictDegree (Fin n) R 1 :=
+private lemma odd_mem (p : R⦃≤ 1⦄[X (Fin n)]) :
+  (substPlus p.1 - substMinus p.1) * C (2⁻¹) ∈ restrictDegree (Fin n) R 1 :=
   mul_C_mem_restrictDegree ((restrictDegree (Fin n) R 1).sub_mem
     (substPlus_mem_restrictDegree p.2) (substMinus_mem_restrictDegree p.2)) _
 
-noncomputable def even {n : ℕ} [Field R] [NeZero n] (p : R⦃≤ 1⦄[X (Fin n)]) :
+noncomputable def even (p : R⦃≤ 1⦄[X (Fin n)]) :
   R⦃≤ 1⦄[X (Fin n)] :=
     ⟨(substPlus p.1 + substMinus p.1) * C (2⁻¹), even_mem p⟩
 
-noncomputable def odd {n : ℕ} [Field R] [NeZero n] (p : R⦃≤ 1⦄[X (Fin n)]) :
+noncomputable def odd (p : R⦃≤ 1⦄[X (Fin n)]) :
   R⦃≤ 1⦄[X (Fin n)] :=
     ⟨(substPlus p.1 - substMinus p.1) * C (2⁻¹), odd_mem p⟩
 
-private lemma formula_for_monomial {n : ℕ} [NeZero n] [Field R] 
+private lemma formula_for_monomial
   (h2ne0 : (2 : R) ≠ 0)
   (m : Fin n →₀ ℕ) (c : R) (hm : ∀ i, m i ≤ 1) :
   (substPlus (monomial m c) + substMinus (monomial m c)) * C (2⁻¹) +
   X 0 * ((substPlus (monomial m c) - substMinus (monomial m c)) * C (2⁻¹)) = monomial m c := by
-  -- Consider two cases: $m_0 = 0$ and $m_0 = 1$.
-  by_cases h0 : m 0 = 0;
-  · have h_subst : substPlus (MvPolynomial.monomial m c) = MvPolynomial.monomial m c ∧ substMinus (MvPolynomial.monomial m c) = MvPolynomial.monomial m c := by
-      simp +decide [ substPlus, substMinus, h0 ];
-      simp +decide [ MvPolynomial.bind₁_monomial, h0 ];
-      simp +decide [ MvPolynomial.monomial_eq, Finset.prod_ite, Finset.filter_ne', Finset.filter_eq', h0 ];
-    simp [h_subst];
-    rw [ ← two_smul R, smul_mul_assoc ];
-    rw [ ← MvPolynomial.C_mul' ] ; ring ;
-    rw [ mul_right_comm, ← MvPolynomial.C_mul, mul_inv_cancel₀ h2ne0, MvPolynomial.C_1, one_mul ];
+  by_cases h0 : m 0 = 0
+  · have h_subst : 
+      substPlus (MvPolynomial.monomial m c) = 
+        MvPolynomial.monomial m c ∧ 
+          substMinus (MvPolynomial.monomial m c) = MvPolynomial.monomial m c := by
+      simp [substPlus, substMinus, MvPolynomial.bind₁_monomial]
+      simp [MvPolynomial.monomial_eq, Finset.prod_ite, Finset.filter_ne', Finset.filter_eq', h0]
+    simp only [h_subst, sub_self, zero_mul, mul_zero, add_zero]
+    rw [←two_smul R, smul_mul_assoc, ←MvPolynomial.C_mul'] 
+    ring_nf
+    rw [mul_right_comm, ←MvPolynomial.C_mul, mul_inv_cancel₀ h2ne0, MvPolynomial.C_1, one_mul]
   · have h_monomial : monomial m c = C c * X 0 * ∏ i ∈ m.support \ {0}, X i ^ (m i) := by
       rw [MvPolynomial.monomial_eq]
-      simp +decide [ mul_assoc, Finsupp.prod] 
+      simp only [Finsupp.prod, prod_X_pow_eq_monomial, mul_assoc, mul_eq_mul_left_iff, map_eq_zero] 
+      have hsup : 0 ∈ m.support := by simp [h0]
       have : (X 0 : R[X (Fin n)]) = X 0 ^ (m 0) := by simp [show m 0 = 1 by grind]
       rw [this,
           ←Finset.prod_eq_mul_prod_diff_singleton (s := m.support) 0 
-            (f := fun i ↦ X i ^ m i) (by {
-        intro hmem
-        have : 0 ∈ m.support := by simp [h0]
-        aesop
-      })] 
-      exact Or.inl <| by simp +decide
-    -- Now substitute this into the expression.
-    simp [h_monomial, substPlus, substMinus] at *; (
-    simp +decide [ Finset.prod_ite, Finset.filter_ne', Finset.filter_eq', h0 ] ; ring;
-    simp +decide [ mul_assoc, ← mul_add ];
-    erw [ ← map_mul, inv_mul_cancel₀ ] <;> norm_num [ NeZero.ne ]); -- Use `substPlus` and `substMinus` definitions.
+            (f := fun i ↦ X i ^ m i) (by aesop)] 
+      aesop 
+    aesop 
+      (add simp [
+        substPlus, substMinus,
+        Finset.prod_ite, Finset.filter_ne', Finset.filter_eq',
+        mul_assoc, inv_mul_cancel₀])
+      (add unsafe [(by ring_nf), (by erw [←map_mul])])
 
 private lemma formula_generic
   (h2ne0 : (2 : R) ≠ 0)
   (p : MvPolynomial (Fin n) R) (hp : p ∈ restrictDegree (Fin n) R 1) :
   (substPlus p + substMinus p) * C (2⁻¹) +
   X 0 * ((substPlus p - substMinus p) * C (2⁻¹)) = p := by
-  have h_expand : ∀ m ∈ p.support, (substPlus (monomial m (p.coeff m)) + substMinus (monomial m (p.coeff m))) * C (2⁻¹) + X 0 * ((substPlus (monomial m (p.coeff m)) - substMinus (monomial m (p.coeff m))) * C (2⁻¹)) = monomial m (p.coeff m) := by
-    intro m hm
-    apply formula_for_monomial h2ne0
-    exact fun i => by rw [ mem_restrictDegree ] at hp; exact hp m hm i;
-  rw [ MvPolynomial.as_sum p ];
-  convert Finset.sum_congr rfl h_expand using 1;
-  simp +decide [ Finset.sum_add_distrib, Finset.mul_sum _ _ _, mul_add, mul_comm, substPlus, substMinus ];
-  conv_lhs => rw [ MvPolynomial.as_sum p ];
-  simp +decide only [map_sum, Finset.mul_sum _ _ _];
-  simp +decide only [mul_sub, Finset.mul_sum _ _ _, Finset.sum_sub_distrib]
+  have h_expand : 
+    ∀ m ∈ p.support, 
+      (substPlus (monomial m (p.coeff m)) + 
+        substMinus (monomial m (p.coeff m))) * C (2⁻¹) + 
+          X 0 * ((substPlus (monomial m (p.coeff m)) - 
+          substMinus (monomial m (p.coeff m))) * C (2⁻¹)) = monomial m (p.coeff m) := 
+   by aesop 
+        (add unsafe [formula_for_monomial]) 
+        (add simp [mem_restrictDegree])
+  rw [MvPolynomial.as_sum p]
+  convert Finset.sum_congr rfl h_expand using 1
+  simp only [substPlus, aeval_eq_bind₁, support_sum_monomial_coeff, substMinus, mul_comm, mul_add,
+    sum_add_distrib]
+  conv_lhs => rw [MvPolynomial.as_sum p]
+  simp only [map_sum]
+  simp [mul_sub, Finset.mul_sum]
 
-lemma even_and_odd_formula   
+lemma even_and_odd_formula
   (hchar : ¬CharP R 2)
   {p : R⦃≤ 1⦄[X (Fin n)]} :
   (even p).1 + (MvPolynomial.X 0) * (odd p).1 = p.1 := formula_generic 
     (by aesop (add simp [CharP.charP_iff_prime_eq_zero, Nat.prime_two])) p.1 p.2
 
+private noncomputable def shiftDown (q : MvPolynomial (Fin n) R) : MvPolynomial (Fin (n - 1)) R :=
+  q.aeval (fun i ↦ if h : i = (0 : Fin n) then 0 else X ⟨i.val - 1, by omega⟩)  
+
+private lemma shiftDown_shiftUp_eq (q : MvPolynomial (Fin n) R) :
+  (shiftDown q).aeval 
+    (fun i : Fin (n - 1) ↦ (X (⟨i.val + 1, by omega⟩ : Fin n) : MvPolynomial (Fin n) R)) =
+    q.aeval (fun i ↦ if h : i = (0 : Fin n) then 0 else X i) := by
+  unfold MvPolynomial.shiftDown
+  grind +suggestions
+
+private lemma substNoX0_eq_self_of_even
+  (p : restrictDegree (Fin n) R 1) :
+  (even p).1.aeval 
+    (fun i : Fin n ↦ 
+      if i = (0 : Fin n) then (0 : MvPolynomial (Fin n) R) else X i) = (even p).1 := by
+  unfold even
+  simp only [aeval_eq_bind₁, substPlus, substMinus, map_mul, map_add, algHom_C, algebraMap_eq,
+    mul_eq_mul_right_iff, map_eq_zero, inv_eq_zero]
+  left
+  congr! 1
+  all_goals induction p.val using MvPolynomial.induction_on <;> aesop
+
+private lemma substNoX0_eq_self_of_odd
+  (p : restrictDegree (Fin n) R 1) :
+  (odd p).1.aeval 
+    (fun i : Fin n ↦ 
+      if i = (0 : Fin n) then (0 : MvPolynomial (Fin n) R) else X i) = (odd p).1 := by
+  unfold odd
+  unfold MvPolynomial.substPlus MvPolynomial.substMinus
+  simp only [aeval_eq_bind₁, sub_mul, map_sub, map_mul, algHom_C, algebraMap_eq]
+  congr! 2
+  all_goals induction p.val using MvPolynomial.induction_on <;> aesop
+
+-- For the case m 0 ≠ 0: the product contains a zero factor
+private lemma aeval_shift_monomial_zero_case {n : ℕ} [NeZero n]
+  (m : Fin n →₀ ℕ) (c : R) (hm : ∀ i, m i ≤ 1) (h0 : m 0 ≠ 0) :
+  (monomial m c).aeval (fun i : Fin n ↦ if h : i = (0 : Fin n)
+    then (0 : MvPolynomial (Fin (n - 1)) R)
+    else X ⟨i.val - 1, by omega⟩) = 0 := by
+  change bind₁ _ (monomial m c) = 0
+  rw [bind₁_monomial]
+  have h01 : m 0 = 1 := Nat.le_antisymm (hm 0) (Nat.pos_of_ne_zero h0)
+  have h0s : (0 : Fin n) ∈ m.support := by simp [Finsupp.mem_support_iff, h0]
+  apply mul_eq_zero_of_right
+  apply Finset.prod_eq_zero h0s
+  simp [h01]
+
+/-
+For the case m 0 = 0: the result is a shifted monomial
+-/
+private lemma aeval_shift_monomial_nonzero_case
+  (m : Fin n →₀ ℕ) (c : R) (hm : ∀ i, m i ≤ 1) (h0 : m 0 = 0) :
+  (monomial m c).aeval (fun i : Fin n ↦ if h : i = (0 : Fin n)
+      then (0 : MvPolynomial (Fin (n - 1)) R)
+      else X ⟨i.val - 1, by omega⟩) ∈ restrictDegree (Fin (n - 1)) R 1 := by
+  rw [MvPolynomial.mem_restrictDegree]
+  intro s hs i
+  contrapose! hs
+  simp_all only [aeval_eq_bind₁, monomial_eq, Finsupp.prod_pow, map_mul, algHom_C, algebraMap_eq,
+    map_prod, map_pow, bind₁_X_right, dite_pow, pow_zero, mem_support_iff, coeff_C_mul, ne_eq,
+    mul_eq_zero, not_or, not_and, not_not]
+  have h_coeff : 
+    coeff s (∏ x : Fin n, 
+      if h : x = 0 
+      then 1 
+      else (MvPolynomial.X ⟨↑x - 1, by omega⟩ : MvPolynomial (Fin (n - 1)) R) ^ m x) = 0 := by
+    have h_coeff : 
+      ∀ (t : Fin n → ℕ), 
+        (∏ x : Fin n, 
+          if h : x = 0 
+          then 1 
+          else (MvPolynomial.X ⟨↑x - 1, by omega⟩ : MvPolynomial (Fin (n - 1)) R) ^ t x) = 
+            MvPolynomial.monomial 
+              (∑ x : Fin n, if h : x = 0 then 0 else Finsupp.single ⟨↑x - 1, by omega⟩ (t x)) 1 := 
+      by
+      intro t
+      induction (Finset.univ : Finset (Fin n)) using Finset.induction 
+        <;> aesop 
+              (add simp [Finset.prod_insert, MvPolynomial.monomial_mul,
+                          MvPolynomial.X_pow_eq_monomial]) 
+    simp_all only [coeff_monomial, ite_eq_right_iff, one_ne_zero, imp_false, ne_eq]
+    intro h
+    replace h := congr_arg (fun f ↦ f i) h
+    simp_all only [sum_apply']
+    rw 
+      [Finset.sum_eq_single ⟨i + 1, by grind⟩] at h
+      <;> aesop (add safe (by grind)) 
+  exact fun _ => h_coeff
+
+lemma aeval_shift_monomial_mem {n : ℕ} [NeZero n]
+    (m : Fin n →₀ ℕ) (c : R) (hm : ∀ i, m i ≤ 1) :
+    (monomial m c).aeval (fun i : Fin n ↦ if h : i = (0 : Fin n)
+      then (0 : MvPolynomial (Fin (n - 1)) R)
+      else X ⟨i.val - 1, by omega⟩) ∈ restrictDegree (Fin (n - 1)) R 1 := by
+  by_cases h0 : m 0 = 0
+  · exact aeval_shift_monomial_nonzero_case m c hm h0
+  · rw [aeval_shift_monomial_zero_case m c hm h0]; exact zero_mem _
+
+lemma aeval_shift_mem_restrictDegree
+  (q : MvPolynomial (Fin n) R) (hq : q ∈ restrictDegree (Fin n) R 1) :
+  q.aeval (fun i ↦ if h : i = (0 : Fin n) then (0 : MvPolynomial (Fin (n - 1)) R)
+    else X ⟨i.val - 1, by omega⟩) ∈ restrictDegree (Fin (n - 1)) R 1 := by
+  rw [MvPolynomial.as_sum q, map_sum]
+  apply Submodule.sum_mem
+  intro m hm
+  exact aeval_shift_monomial_mem m (q.coeff m) (fun i => (mem_restrictDegree _ q 1).mp hq m hm i)
+
 noncomputable def even_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(even p).1.aeval 
-    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), by sorry⟩
+    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), aeval_shift_mem_restrictDegree (even p).1 (even p).2⟩
 
 noncomputable def odd_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(odd p).1.aeval 
-    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), by sorry⟩
+    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), aeval_shift_mem_restrictDegree (odd p).1 (odd p).2⟩
 
 lemma even_and_odd_formula'
   (hchar : ¬CharP R 2)
