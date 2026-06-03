@@ -285,6 +285,13 @@ such that for every Reed-Solomon code `RS[F, L, k]` of rate `ρ := k/|L|` and ev
 `δ < 1 - ρ`, `ε_mca(C, δ) ≤ (1/|F|) · |L|^{c₁} / (ρ^{c₂} · η^{c₃})` with `η := 1 - ρ - δ`.
 The constants are existentially quantified *over all RS codes*, matching the paper.
 
+**Positive-rate hypothesis `0 < k`.** The bound has `ρ^{c₂}` in a denominator, so it is
+only meaningful for positive rate `ρ = k/|L| > 0`; the prize regime `ρ ∈ {1/2,…,1/16}` is
+positive anyway. We make this explicit (cf. the explicit denominator-positivity hypotheses
+in `CapacityBounds`): without it the `k = 0` case would, under real division's `x/0 = 0`
+convention, collapse the right-hand side to `0` and assert `ε_mca ≤ 0` (a degenerate
+*strengthening*, not the intended trivially-true `+∞`).
+
 **Source status (verified 2026-06-03).** In the current `[ABF26]` `.tex` source this
 conjecture lives inside an `\ignore{…}` block (around line 2030), i.e. it is a *draft*
 statement not rendered in the compiled paper. The term-by-term content here is faithful to
@@ -294,6 +301,7 @@ def mcaConjecture : Prop :=
     ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
       {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
       (domain : ιC ↪ FC) (k : ℕ) (δ : ℝ≥0),
+      0 < k →
       (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC →
       epsMCA (F := FC) (A := FC) ((ReedSolomon.code domain k : Set (ιC → FC))) δ ≤
         ENNReal.ofReal
@@ -309,6 +317,7 @@ theorem nonempty_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
       ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
         {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
         (domain : ιC ↪ FC) (k : ℕ) (ε_star δ : ℝ≥0),
+        0 < k →
         (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
         ENNReal.ofReal
             (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
@@ -316,8 +325,8 @@ theorem nonempty_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
         Nonempty (MCALowerWitness (ReedSolomon.code domain k : Set (ιC → FC)) ε_star) := by
   obtain ⟨c₁, c₂, c₃, hbound⟩ := h
   refine ⟨c₁, c₂, c₃, ?_⟩
-  intro ιC _ _ _ FC _ _ _ domain k ε_star δ hδ hδ1 hle
-  exact ⟨⟨δ, hδ1, le_trans (hbound domain k δ hδ) hle⟩⟩
+  intro ιC _ _ _ FC _ _ _ domain k ε_star δ hk hδ hδ1 hle
+  exact ⟨⟨δ, hδ1, le_trans (hbound domain k δ hk hδ) hle⟩⟩
 
 /-! ## Witness-carrying resolutions for the Grand List Decoding Challenge
 
