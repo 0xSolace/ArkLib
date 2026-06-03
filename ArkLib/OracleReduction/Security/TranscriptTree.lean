@@ -55,7 +55,7 @@ which the kernel forbids.
 
 Note: The challenge arity is determined by the round index, not the path. So path-dependent
 branching (e.g. "branch into 2 if the first challenge is `0`, branch into 3 if it's `1`") is not
-curretnly not supported. This may be generalized in the future, but keeps the current design simple
+currently supported. This may be generalized in the future, but keeps the current design simple
 enough to follow the CWSS paper proofs.
 -/
 inductive ChallengeTree (pSpec : ProtocolSpec n) (arity : pSpec.ChallengeIdx → ℕ) :

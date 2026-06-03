@@ -1,5 +1,5 @@
 {
-  "count": 43,
+  "count": 46,
   "entries": {
     "ACFY24": {
       "authors": [
@@ -71,6 +71,29 @@
       "url": "",
       "venue": "Annual International Conference on the Theory and Applications of Cryptographic Techniques",
       "year": "2025"
+    },
+    "AFK22": {
+      "authors": [
+        "Attema, Thomas",
+        "Fehr, Serge",
+        "Kloo{\\ss}, Michael"
+      ],
+      "authors_text": "Attema, Thomas and Fehr, Serge and Kloo{\\ss}, Michael",
+      "doi": "",
+      "entry_type": "inproceedings",
+      "fields": {
+        "author": "Attema, Thomas and Fehr, Serge and Kloo{\\ss}, Michael",
+        "booktitle": "Theory of Cryptography Conference (TCC)",
+        "organization": "Springer",
+        "title": "Fiat-Shamir Transformation of Multi-Round Interactive Proofs",
+        "url": "https://eprint.iacr.org/2021/1377",
+        "year": "2022"
+      },
+      "key": "AFK22",
+      "title": "Fiat-Shamir Transformation of Multi-Round Interactive Proofs",
+      "url": "https://eprint.iacr.org/2021/1377",
+      "venue": "Theory of Cryptography Conference (TCC)",
+      "year": "2022"
     },
     "AHIV22": {
       "authors": [
@@ -450,6 +473,33 @@
       "venue": "Advances in Cryptology \u2013 EUROCRYPT 2025: 44th Annual International Conference on the Theory and Applications of Cryptographic Techniques, Madrid, Spain, May 4\u20138, 2025, Proceedings, Part IV",
       "year": "2025"
     },
+    "FMN24": {
+      "authors": [
+        "Fenzi, Giacomo",
+        "Moghaddas, Hossein",
+        "Nguyen, Ngoc Khanh"
+      ],
+      "authors_text": "Fenzi, Giacomo and Moghaddas, Hossein and Nguyen, Ngoc Khanh",
+      "doi": "10.1007/s00145-024-09511-8",
+      "entry_type": "article",
+      "fields": {
+        "author": "Fenzi, Giacomo and Moghaddas, Hossein and Nguyen, Ngoc Khanh",
+        "doi": "10.1007/s00145-024-09511-8",
+        "journal": "Journal of Cryptology",
+        "number": "3",
+        "pages": "31",
+        "publisher": "Springer",
+        "title": "Lattice-Based Polynomial Commitments: Towards Asymptotic and Concrete Efficiency",
+        "url": "https://eprint.iacr.org/2023/846",
+        "volume": "37",
+        "year": "2024"
+      },
+      "key": "FMN24",
+      "title": "Lattice-Based Polynomial Commitments: Towards Asymptotic and Concrete Efficiency",
+      "url": "https://eprint.iacr.org/2023/846",
+      "venue": "Journal of Cryptology",
+      "year": "2024"
+    },
     "FP97": {
       "authors": [
         "Fan, J.L.",
@@ -761,6 +811,28 @@
       "url": "",
       "venue": "Advances in Cryptology--EUROCRYPT 2020: 39th Annual International Conference on the Theory and Applications of Cryptographic Techniques, Zagreb, Croatia, May 10--14, 2020, Proceedings, Part I 39",
       "year": "2020"
+    },
+    "NOZ26": {
+      "authors": [
+        "Nguyen, Ngoc Khanh",
+        "O'Rourke, George",
+        "Zhang, Jiapeng"
+      ],
+      "authors_text": "Nguyen, Ngoc Khanh and O'Rourke, George and Zhang, Jiapeng",
+      "doi": "",
+      "entry_type": "misc",
+      "fields": {
+        "author": "Nguyen, Ngoc Khanh and O'Rourke, George and Zhang, Jiapeng",
+        "howpublished": "Cryptology ePrint Archive, Paper 2026/156",
+        "title": "Hachi: Efficient Lattice-Based Multilinear Polynomial Commitments over Extension Fields",
+        "url": "https://eprint.iacr.org/2026/156",
+        "year": "2026"
+      },
+      "key": "NOZ26",
+      "title": "Hachi: Efficient Lattice-Based Multilinear Polynomial Commitments over Extension Fields",
+      "url": "https://eprint.iacr.org/2026/156",
+      "venue": "",
+      "year": "2026"
     },
     "PS94": {
       "authors": [

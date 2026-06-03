@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 58,
-    "keys_cited": 20,
-    "total_citation_edges": 68
+    "files_with_citations": 59,
+    "keys_cited": 23,
+    "total_citation_edges": 71
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -135,6 +135,11 @@
     "ArkLib/OracleReduction/Basic.lean": [
       "BCS16"
     ],
+    "ArkLib/OracleReduction/Security/CoordinateWiseSpecialSoundness.lean": [
+      "AFK22",
+      "FMN24",
+      "NOZ26"
+    ],
     "ArkLib/OracleReduction/VectorIOR.lean": [
       "BCS16"
     ],
@@ -211,6 +216,9 @@
       "ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean",
       "ArkLib/ProofSystem/Stir/ProximityGap.lean"
     ],
+    "AFK22": [
+      "ArkLib/OracleReduction/Security/CoordinateWiseSpecialSoundness.lean"
+    ],
     "AHIV22": [
       "ArkLib/Data/CodingTheory/InterleavedCode.lean",
       "ArkLib/Data/CodingTheory/Prelims.lean",
@@ -263,6 +271,9 @@
       "ArkLib/ProofSystem/Binius/FRIBinius/General.lean",
       "ArkLib/ProofSystem/Binius/RingSwitching/General.lean"
     ],
+    "FMN24": [
+      "ArkLib/OracleReduction/Security/CoordinateWiseSpecialSoundness.lean"
+    ],
     "FRI1216": [
       "ArkLib/ProofSystem/Fri/Spec/SingleRound.lean"
     ],
@@ -283,6 +294,9 @@
     ],
     "LPS24": [
       "ArkLib/AGM/Basic.lean"
+    ],
+    "NOZ26": [
+      "ArkLib/OracleReduction/Security/CoordinateWiseSpecialSoundness.lean"
     ],
     "PS94": [
       "ArkLib/Data/CodingTheory/PolishchukSpielman/PolishchukSpielman.lean"
