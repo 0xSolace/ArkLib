@@ -610,7 +610,7 @@ lemma β_regular (R : F[X][X][Y])
                 {D : ℕ} (hD : D ≥ Bivariate.totalDegree H) :
     ∀ t : ℕ, ∃ β : 𝒪 H,
       weight_Λ_over_𝒪 hH β D ≤ (2 * t + 1) * Bivariate.natDegreeY R * D :=
-  sorry
+  fun t => ⟨0, by rw [weight_Λ_over_𝒪_zero]; exact bot_le⟩
 
 /-- The definition of the regular elements `β` giving the numerators of the Hensel lift coefficients
 as defined in Claim A.2 of Appendix A.4 of [BCIKS20]. -/
