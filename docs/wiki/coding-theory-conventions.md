@@ -161,15 +161,14 @@ Most tagged sorries map 1-to-1 to a row in
 exceptions are sub-sorries inside bridge lemmas (e.g. the partial proof of
 `hammingBallVolume_eq_ncard_hammingBall` decomposes into
 `card_filter_hammingDist_eq` and a small Set/Finset conversion). These are
-tracked in `ABF26_POLISH_PLAN.md` instead.
+tracked in the local working notes instead.
 
 Reviewers should expect the `ABF26-X.Y` tag in the comment to match an audit-doc
 row.
 
-## File and namespace layout (target after Phase 2 of the integration plan)
+## File and namespace layout
 
-See [`../kb/ABF26_INTEGRATION_PLAN.md`](../kb/ABF26_INTEGRATION_PLAN.md) §3 for
-the full proposed tree. Briefly:
+The ABF26 material follows this namespace layout:
 
 - `CodingTheory.*` for non-RS-specific definitions and predicates
   (`qEntropy`, `IsSubspaceDesign`, `IsMDS`, `LineDecodable`,

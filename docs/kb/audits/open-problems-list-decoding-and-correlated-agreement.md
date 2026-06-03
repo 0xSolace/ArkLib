@@ -5,17 +5,10 @@ Agreement* (Arnon, Boneh, Fenzi; April 8, 2026). Lists the paper's named
 formal items and records whether each one is currently present in ArkLib,
 missing, or present in a materially different form.
 
-This audit is the **status snapshot**. Forward-looking work lives in two
-places:
-
-- High-level end-goal levels + phased roadmap:
-  [`../queries/abf26-pr-roadmap.md`](../queries/abf26-pr-roadmap.md).
-- Per-item implementation scaffolding:
-  [`../ABF26_PLAN.md`](../ABF26_PLAN.md) (large; the
-  authoritative per-item plan).
-
-Backward-looking review findings + per-finding resolution log:
-[`../queries/abf26-review-2026-05.md`](../queries/abf26-review-2026-05.md).
+This audit is the **status snapshot** — the canonical paper-to-Lean map. The
+forward-looking phased plan and review logs are kept as local working notes
+(out of the PR by design); this document records only what is present in the
+tree.
 
 Every per-item PR is expected to update this audit row in the same
 commit.
@@ -29,7 +22,7 @@ short name `ABF26`.
 - **Paper**: ABF26 — *Open Problems in List Decoding and Correlated Agreement*, April 8, 2026
 - **Paper SHA-256** (of `ABF26.pdf` at audit time): `e543ec6a4f3312b4383000e72e5aa23862e79cc9770ce21db2c48db679581de3`
 - **Last verified against commit**: `05a010e3` (2026-05-14)
-- **Audit owner**: Phase 0 of [`ABF26_PLAN.md`](../ABF26_PLAN.md)
+- **Audit owner**: ABF26 formalization (PR #505)
 
 ## Status Legend
 
@@ -46,17 +39,17 @@ short name `ABF26`.
 
 - Rows follow the theorem-like items extracted from the PDF, plus named
   facts and remarks when they materially affect the comparison.
-- The **ABF26 ID** column matches the `ABF26-*` identifiers used throughout
-  [`../ABF26_PLAN.md`](../ABF26_PLAN.md) (e.g. `D2.13`, `T4.13`,
+- The **ABF26 ID** column matches the `ABF26-*` identifiers used in the
+  tagged-`sorry` comments throughout the Lean sources (e.g. `D2.13`, `T4.13`,
   `L4.6`).
-- The **Lean target** column gives the canonical declaration name we will
-  use once the plan lands. For `present` rows this is the existing name;
-  for other rows it is the proposed name locked in by the plan.
+- The **Lean target** column gives the canonical declaration name. For
+  `present` rows this is the existing name; for other rows it is the proposed
+  name.
 - The **Lean refs** column lists existing declarations and the files
   containing them.
 - "External" Lean target rows reference results the paper itself states
-  without proof; per the plan they will be admitted with tagged `sorry`s.
-  See the conjecture/external-result ledger in `ABF26_PLAN.md` §6.
+  without proof; they are admitted with tagged `sorry`s carrying the
+  `-- ABF26-X.Y; external admit [Citation]` convention.
 
 ## Drift since last audit
 
@@ -144,7 +137,7 @@ documenting the WHIR↔ABF26 MCA asymmetry recorded in commit `d01117c8`).
 | `T3.12` | RS superpoly over extensions | stated (external admit) | [ListDecoding/Bounds.lean](../../../ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean) | `CodingTheory.rs_lambda_superpoly_extension_bkr06` | BKR06 Cor 2.2; tagged sorry. "Infinitely many q" captured as `∃ qs : ℕ → ℕ, StrictMono qs ∧ ...`. |
 | `T3.13` | RS large list over prime fields | stated (external admit) | [ListDecoding/Bounds.lean](../../../ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean) | `CodingTheory.rs_lambda_large_prime_ghsz02` | GHSZ02 Cor 20; tagged sorry. |
 | `T3.14` | Large-rate RS lower bound | stated (external admit) | [ListDecoding/Bounds.lean](../../../ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean) | `CodingTheory.rs_lambda_high_rate_jh01` | JH01 Thm 2; tagged sorry. |
-| `T3.15` | CW07 hardness barrier | out of scope | none | `CodingTheory.rs_dlog_barrier` (external; not stated) | Algorithmic hardness (discrete-log reduction); per `ABF26_PLAN.md` §7 D2 we formalise combinatorial statements only. |
+| `T3.15` | CW07 hardness barrier | out of scope | none | `CodingTheory.rs_dlog_barrier` (external; not stated) | Algorithmic hardness (discrete-log reduction); we formalise combinatorial statements only. |
 
 ## Section 4 — Correlated Agreement Conjectures
 
@@ -155,7 +148,7 @@ documenting the WHIR↔ABF26 MCA asymmetry recorded in commit `d01117c8`).
 | `D4.3` | `ε_mca(C,δ)` | present | `ProximityGap.epsMCA`, helper preds `ProximityGap.pairJointAgreesOn`, `ProximityGap.mcaEvent` in [ProximityGap/Errors.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean); WHIR-specific `hasMutualCorrAgreement` still in [Whir/MutualCorrAgreement.lean](../../../ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean) | existing | Code-theory MCA definition closed. The WHIR `hasMutualCorrAgreement` re-expression as a specialization of `epsMCA` is a follow-up commit. |
 | `R4.4` | MCA with proximity loss intentionally undefined | present | file docstring in [ProximityGap/Errors.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean) | docstring | Documentation only; documented in the "Note on MCA with proximity loss" subsection of the file docstring. |
 | `F4.5` | `ε_pg ≤ ε_ca ≤ ε_mca` | present | `ProximityGap.epsPG`, `ProximityGap.epsPG_le_epsCA`, `ProximityGap.epsCA_le_epsMCA`, `ProximityGap.epsPG_le_epsCA_le_epsMCA`, plus helper `ProximityGap.jointProximity_imp_line_close` in [ProximityGap/Errors.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean) | existing | Closed in stages; proved for `Submodule F (ι → A)`. |
-| `L4.6` | `ε_mca = ε_ca` below `δ_min/2` | present-but-incomplete | `ProximityGap.epsMCA_eq_epsCA_below_udr` in [ProximityGap/Errors.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean) (admitted) | existing | Stated with a tagged external `sorry` referring to ACFY25 Lemma 4.10. Proof is non-trivial — not the obvious `δ < δ_min/2` uniqueness, but a dominance argument over `u`. Tracked in `ABF26_PLAN.md` §6 conjecture ledger. |
+| `L4.6` | `ε_mca = ε_ca` below `δ_min/2` | present-but-incomplete | `ProximityGap.epsMCA_eq_epsCA_below_udr` in [ProximityGap/Errors.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean) (admitted) | existing | Stated with a tagged external `sorry` referring to ACFY25 Lemma 4.10. Proof is non-trivial — not the obvious `δ < δ_min/2` uniqueness, but a dominance argument over `u`. Tracked in the local conjecture ledger. |
 | `L4.7` | `ε_mca(C^≡t,δ) ≤ t·ε_mca(C,δ)` | present | `ProximityGap.epsMCA_interleaved_le` plus local helper `ProximityGap.Pr_exists_Fin_le_sum` (union-bound for finitely-indexed existentials) in [ProximityGap/Errors.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean) | existing | Proved via row-decomposition of the interleaved `mcaEvent` plus the `Pr_exists_Fin_le_sum` union bound. |
 | `T4.8` | AHIV17 general-code unique-decoding | present-but-different | [`ProximityGap/AHIV22.lean`](../../../ArkLib/Data/CodingTheory/ProximityGap/AHIV22.lean) (sorry-free as of `05a010e3`) | `ABF26.ahiv17_epsCA_bound` (ε-wrapping of existing AHIV22 result) | Previously `present-but-incomplete`; PR #385 closed all sorries. Awaiting Phase 1 ε-interface to restate. |
 | `T4.9.1` | RS unique-decoding Item 1 (BCIKS20 Thm 1.4) | present-but-incomplete | [`BCIKS20/AffineLines/UniqueDecoding.lean`](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/UniqueDecoding.lean), [`AffineLines/Main.lean`](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/Main.lean) | `ABF26.rs_epsMCA_uniqueDecoding` | `AffineLines/Main.lean:40` has one `sorry` in the non-unique-decoding branch of `RS_correlatedAgreement_affineLines`. New supporting file [JointAgreement.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/JointAgreement.lean) provides bivariate existence machinery for closing this. |
@@ -226,7 +219,7 @@ framework gaps being closed. Plan Phase 8 holds these.
 ## Existing Inconsistencies
 
 The largest mismatches between the paper and ArkLib are structural rather
-than mathematical. These drive Phase 1 of `ABF26_PLAN.md`.
+than mathematical. These drive the grand-challenge instantiation phase.
 
 1. **Correlated agreement is formalized as predicates, not error functions.**
    ArkLib currently exposes `δ_ε_correlatedAgreement...` predicates in
@@ -288,16 +281,9 @@ than mathematical. These drive Phase 1 of `ABF26_PLAN.md`.
 
 ## Forward roadmap
 
-The previous version of this document contained a six-phase roadmap. That
-roadmap has been migrated and substantially expanded in
-[`../ABF26_PLAN.md`](../ABF26_PLAN.md), which now contains:
-
-- a nine-phase ordering with prerequisites,
-- per-PR scopes,
-- a per-item ledger with sub-tasks, dependencies, acceptance criteria, and
-  open questions, and
-- a conjecture/external-result ledger covering the 18 items the paper
-  itself states without full proof.
-
-Future updates to status, scope, or sequencing belong in `ABF26_PLAN.md`.
-This audit doc is updated row-by-row as PRs land.
+The phased completion plan (grand-challenge instantiation framework, the
+toy-protocol bits-of-security leaderboard, the §6 proofs, the concrete
+parametrization tables, and the integration cleanups) and the per-finding
+review logs are maintained as local working notes, kept out of the PR by
+design. This audit doc is the in-tree status snapshot and is updated
+row-by-row as PRs land.

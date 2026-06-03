@@ -10,11 +10,10 @@ cd "$REPO_ROOT"
 run_lint=0
 run_docs=0
 run_site=0
-run_abf26=0
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/validate.sh [--lint] [--docs] [--site] [--abf26]
+Usage: ./scripts/validate.sh [--lint] [--docs] [--site]
 
 Default checks:
   - lake build
@@ -28,10 +27,6 @@ Optional checks:
   --lint   Run ./scripts/lint-style.sh
   --docs   Run DISABLE_EQUATIONS=1 lake build ArkLib:docs
   --site   Run ./scripts/build-web.sh (implies --docs)
-  --abf26  Run ABF26 harness checks (./scripts/abf26/):
-             coverage.py — paper-to-Lean drift against audit doc
-             lint.py     — owned-file style/convention checks
-           Useful on branches that touch ABF26 work.
 EOF
 }
 
@@ -46,9 +41,6 @@ for arg in "$@"; do
     --site)
       run_docs=1
       run_site=1
-      ;;
-    --abf26)
-      run_abf26=1
       ;;
     -h|--help)
       usage
@@ -107,15 +99,6 @@ if (( run_site )); then
   echo ""
   echo "# Building website and blueprint outputs"
   ./scripts/build-web.sh
-fi
-
-if (( run_abf26 )); then
-  echo ""
-  echo "# Checking ABF26 paper-to-Lean coverage"
-  python3 ./scripts/abf26/coverage.py
-  echo ""
-  echo "# Running ABF26 owned-file lint"
-  python3 ./scripts/abf26/lint.py --no-warn
 fi
 
 echo ""
