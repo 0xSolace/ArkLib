@@ -178,9 +178,45 @@ so the proof skeleton is:
    `|F| > binom(N, 2)` regime). The witness `(v*, μ₁, μ₂, f₁ := W₀,
    f₂ := W₁)` for some chosen `λ₀ ∈ Λ` exits the proof.
 
-Tagged sorry (`paper-proof-owed` — ABF26's OWN result, proved in §6.4.1);
-steps 2-3 are now in scope thanks to B.1's closure (2026-05-20), so this is
-in-tree provable. -/
+## Audit revision (2026-06): the residual is NOT "step 4 only"
+
+A prior disposition claimed steps 1–3 were "in scope" and only the step-4
+bijection remained. Probing the actual definitions shows THREE open
+sub-problems beyond B.1, each substantial and without an in-tree helper:
+
+  * **Step 1 (iSup maximizer extraction).** `Lambda C δ = ⨆ f, (close…).ncard`
+    is `ℕ∞`-valued. The outer `iSup` over `f : ι → F` is over a FINITE type
+    (good — the max is attained), but there is no `Lambda`-attainment lemma
+    and the `ℕ∞`/`.toNat` bookkeeping (including the `Lambda = ⊤` branch,
+    where `.toNat = 0` makes the bound trivial) is unwritten. Enumerating
+    `Λ(C^{≡2}, δ)` as `λ : Fin N → …` then needs `Set.Finite.toFinset` +
+    an explicit `Fin N` indexing of the maximizing list.
+
+  * **Step 2 (collision probability) is OPEN.** The needed bound
+    `Pr_{v ←$ F^k}[⟨W₀(λ)−W₀(λ'),v⟩ = 0 ∧ ⟨W₁(λ)−W₁(λ'),v⟩ = 0] ≤ 1/F`
+    for distinct codeword pairs is a linear-functional non-degeneracy fact
+    (a nonzero linear form vanishes on a `1/|F|` fraction of `F^k`). There
+    is NO in-tree lemma for this; only the generic
+    `Pr_decide_eq_tsum_indicator` unfolder exists. It is a real
+    finite-field linear-algebra argument (kernel of a nonzero functional has
+    index `|F|`).
+
+  * **Step 4 (`relation` linear-encode existential) — undocumented wall.**
+    `winningSet`/`relaxedRelation (ℓ=1)` requires `relation C v μ Wstar`,
+    which existentially demands `Wstar = encode(M)` for an `F`-LINEAR
+    `encode : (Fin k → F) →ₗ[F] (ι → F)` with `image ⊆ C` — STRICTLY
+    STRONGER than `Wstar ∈ C`. The list-decoding codewords `W_i(λ) ∈ C` do
+    NOT, for an arbitrary `Set` `C`, come with such a linear encoder, so
+    "γ winning ⟸ image point" does not close without a linearity/encoder
+    hypothesis on `C` (the paper takes `C` as the image of an explicit
+    additive encoder; the Lean `Set`-form `relation` faithfully encodes that
+    but does not let an arbitrary close codeword satisfy it). This is a
+    statement-level gap, not just proof effort.
+
+Tagged sorry (`paper-proof-owed` — ABF26's OWN result, proved in §6.4.1).
+B.1 (step 3) is closed, but steps 1, 2, 4 above are each open; step 4 in
+particular needs a linear-code/encoder hypothesis added to the statement
+(or a `relation`-from-membership bridge lemma) before it is provable. -/
 theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
     (C : Set (ι → F)) (δ : ℝ≥0) (_hδ_pos : (0 : ℝ≥0) < δ) (_hδ_lt : δ < 1)
     (_hF : (Fintype.card F : ℝ) >
@@ -211,11 +247,31 @@ Proof sketch: take `f_1, f_2` maximising the CA error; then
 `ε_ca · |F|`, and `S` is contained in the winning set
 `Ω^{f_1,f_2}_{0^k, 0, 0}` of Definition 6.11.
 
-Tagged sorry (`paper-proof-owed` — ABF26's OWN result, proved in §6.4.2;
-in-tree provable, no external dependency). The bound is in
-terms of `ε_ca` (correlated agreement) rather than `ε_mca` (mutual
-correlated agreement); the latter would be qualitatively stronger but no
-attack reaching `ε_mca > ε_ca` is currently known (Remark 6.14). -/
+## Audit revision (2026-06): two open sub-problems
+
+The "short elementary proof" framing understates the work. `epsCA C δ δ =
+⨆ u : WordStack F (Fin 2) ι, if jointProximity … then 0 else Pr_{γ}[…]`.
+
+  * **Maximizer extraction.** The `⨆` is over `WordStack F (Fin 2) ι =
+    Fin 2 → ι → F`, which IS finite (so the max is attained — good), but no
+    attainment helper exists; one must build it via `Finset.exists_max_image`
+    / `iSup_eq` over the finite type, plus handle the `if jointProximity`
+    branch (where the maximizer's value is `0`, making the bound trivial).
+
+  * **`S ⊆ winningSet` faces the same `relation` linear-encode wall as L6.12
+    (step 4 above).** At `v = μ₁ = μ₂ = 0`, membership `γ ∈ winningSet C δ
+    0 0 0 f₁ f₂` requires `relaxedRelation (ℓ=1) C δ 0 0 (f₁+γf₂)`, i.e.
+    `∃ Wstar, relation C 0 0 Wstar ∧ (f₁+γf₂) δ-close to Wstar`. From
+    `δᵣ(f₁+γf₂, C) ≤ δ` we get a close codeword `c ∈ C`, but `relation`
+    additionally demands `c = encode(M)` for an `F`-LINEAR `encode` with
+    `image ⊆ C` — not derivable from `c ∈ C` for an arbitrary `Set` `C`.
+    Closing this needs a linear-code/encoder hypothesis on `C` (or a
+    `relation`-from-membership bridge), the same statement-level gap as L6.12.
+
+Tagged sorry (`paper-proof-owed` — ABF26's OWN result, proved in §6.4.2).
+The bound is in terms of `ε_ca` (correlated agreement) rather than `ε_mca`
+(mutual correlated agreement); the latter would be qualitatively stronger
+but no attack reaching `ε_mca > ε_ca` is currently known (Remark 6.14). -/
 theorem simplified_iop_soundness_ca_lb {k : ℕ}
     (C : Set (ι → F)) (δ : ℝ≥0) (_hδ_pos : (0 : ℝ≥0) < δ) (_hδ_lt : δ < 1) :
     ∃ (v : Fin k → F) (μ₁ μ₂ : F) (f₁ f₂ : ι → F),
