@@ -144,6 +144,29 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
   unfold OracleReduction.perfectCompleteness
   intro stmtIn witIn h_relIn
   simp only
+  -- BLOCKER (variable-convention defect in the shared structured round machinery; counterexample-
+  -- backed). The two round-transition lemmas this proof needs are now in-file in their TRUE forms:
+  --   • (a) `RingSwitching.fixFirstVariablesOfMQP_projectToMid_step` (Prelude) — the projected
+  --     round polynomial advances `i.castSucc → i.succ` with the challenge folded in as
+  --     `Fin.cons r' challenges` (NOT `Fin.snoc challenges r'`, which is false — see its note).
+  --   • (b) `getSumcheckRoundPoly_eval_eq_sum_cons` (above) — `getSumcheckRoundPoly H` at `r'`
+  --     sums `H` over the next cube with the round variable (variable 0) fixed to `r'`.
+  -- They do NOT close this theorem, because the honest output violates the OUTPUT relation under the
+  -- protocol's *as-written* conventions:
+  --   1. `getRoundProverFinalOutput` / `roundOracleVerifier` accumulate `stmt.challenges` via
+  --      `Fin.snoc stmtIn.challenges r'`, but `witnessStructuralInvariant i.succ` then requires
+  --      `witOut.H = projectToMidSumcheckPoly … i.succ (Fin.snoc challenges r')`. With the relIn
+  --      invariant `witIn.H = projectToMid … i.castSucc challenges` and the honest advance
+  --      `witOut.H = fixFirstVariablesOfMQP … witIn.H {r'}`, this reduces to the SNOC form of (a),
+  --      which is FALSE (counterexample in (a)'s note: ZMod 7, ℓ=3, i=1, X0+2X1+4X2, ![5], 3).
+  --   2. `getSumcheckRoundPoly` marginalises variable 0 while the witness advance
+  --      `fixFirstVariablesOfMQP … {r'}` fixes the LAST variable; for an asymmetric round polynomial
+  --      these are different marginals (counterexample in (b)'s note), so the new
+  --      `sumcheck_target = h_i.eval r'` is not the `∑`-consistency value for `witOut.H`.
+  -- HONEST RESOLUTION (out of scope here — shared-code change consumed by other instantiations):
+  -- align `Sumcheck.Structured.SingleRound` so the round polynomial and the witness advance use the
+  -- same round variable and challenges accumulate via `Fin.cons` (matching (a)/(b)). Once aligned,
+  -- (a) and (b) close this theorem directly. Left as a WIP `sorry` to keep the build green.
   sorry
 
 open scoped NNReal
