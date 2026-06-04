@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 282 files, 5192 declarations
+- `ArkLib` — 282 files, 5215 declarations
 
 ## Same short-name across multiple files (143 groups)
 
@@ -328,13 +328,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def coreInteractionOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:610](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L610) — The final oracle reduction that composes sumcheckFold with finalSumcheckStep
 - `def Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:630](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L630) — The final oracle reduction that composes sumcheckFold with finalSumcheckStep
-- `def RingSwitching.SumcheckPhase.coreInteractionOracleReduction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:523](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L523) — Large-field reduction: Sumcheck seqCompose, then append FinalSum
+- `def RingSwitching.SumcheckPhase.coreInteractionOracleReduction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:546](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L546) — Large-field reduction: Sumcheck seqCompose, then append FinalSum
 
 ### `coreInteractionOracleVerifier` (3 declarations, 3 files)
 
 - `def coreInteractionOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:595](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L595) — The final oracle verifier that composes sumcheckFold with finalSumcheckStep
 - `def Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:612](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L612) — The final oracle verifier that composes sumcheckFold with finalSumcheckStep
-- `def RingSwitching.SumcheckPhase.coreInteractionOracleVerifier` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:514](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L514) — Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum
+- `def RingSwitching.SumcheckPhase.coreInteractionOracleVerifier` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:537](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L537) — Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum
 
 ### `finalSumcheckKStateProp` (3 declarations, 3 files)
 
@@ -346,7 +346,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean:1039](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean#L1039) — The knowledge state function for the final sumcheck step
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:569](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L569) — The knowledge state function for the final sumcheck step
-- `def RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:449](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L449) — The knowledge state function for the final sumcheck step
+- `def RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:456](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L456) — The knowledge state function for the final sumcheck step
 
 ### `finalSumcheckOracleReduction` (3 declarations, 3 files)
 
@@ -364,7 +364,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean:1059](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean#L1059) — Round-by-round knowledge soundness for the final sumcheck step
 - `theorem Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:590](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L590) — Round-by-round knowledge soundness for the final sumcheck step
-- `theorem RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:468](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L468) — Round-by-round knowledge soundness for the final sumcheck step
+- `theorem RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:491](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L491) — Round-by-round knowledge soundness for the final sumcheck step
 
 ### `finalSumcheckProver` (3 declarations, 3 files)
 
@@ -722,7 +722,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `fullOracleVerifier_rbrKnowledgeSoundness` (2 declarations, 2 files)
 
 - `theorem Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:150](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L150) — Round-by-round knowledge soundness for the full Binary Basefold oracle verifier
-- `theorem RingSwitching.FullRingSwitching.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/General.lean:145](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L145) — Round-by-round knowledge soundness for the full ring-switching oracle verifier
+- `theorem RingSwitching.FullRingSwitching.fullOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/General.lean:148](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L148) — Round-by-round knowledge soundness for the full ring-switching oracle verifier. `IsDomain K` (with t
 
 ### `fullPspec` (2 declarations, 2 files)
 
@@ -782,12 +782,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `liftContext_rbr_knowledgeSoundness` (2 declarations, 2 files)
 
 - `theorem OracleVerifier.liftContext_rbr_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:186](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L186) — (no docstring)
-- `theorem Verifier.liftContext_rbr_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:755](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L755) — (no docstring)
+- `theorem Verifier.liftContext_rbr_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:1028](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L1028) — (no docstring)
 
 ### `liftContext_rbr_soundness` (2 declarations, 2 files)
 
 - `theorem OracleVerifier.liftContext_rbr_soundness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:172](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L172) — (no docstring)
-- `theorem Verifier.liftContext_rbr_soundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:720](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L720) — (no docstring)
+- `theorem Verifier.liftContext_rbr_soundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:993](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L993) — (no docstring)
 
 ### `liftContext_soundness` (2 declarations, 2 files)
 
@@ -949,7 +949,7 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean:1039](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean#L1039) vs `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:569](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L569)
     - a: The knowledge state function for the final sumcheck step
     - b: The knowledge state function for the final sumcheck step
-- **1.00** `Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean:1039](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean#L1039) vs `RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:449](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L449)
+- **1.00** `Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean:1039](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean#L1039) vs `RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:456](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L456)
     - a: The knowledge state function for the final sumcheck step
     - b: The knowledge state function for the final sumcheck step
 - **1.00** `Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean:934](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean#L934) vs `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:450](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L450)
@@ -967,7 +967,7 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean:1059](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean#L1059) vs `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:590](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L590)
     - a: Round-by-round knowledge soundness for the final sumcheck step
     - b: Round-by-round knowledge soundness for the final sumcheck step
-- **1.00** `Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean:1059](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean#L1059) vs `RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:468](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L468)
+- **1.00** `Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean:1059](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean#L1059) vs `RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:491](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L491)
     - a: Round-by-round knowledge soundness for the final sumcheck step
     - b: Round-by-round knowledge soundness for the final sumcheck step
 - **1.00** `Binius.BinaryBasefold.CoreInteraction.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean:975](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean#L975) vs `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:495](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L495)
@@ -1018,7 +1018,7 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:484](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L484) vs `RingSwitching.SumcheckPhase.finalSumcheckRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:396](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L396)
     - a: RBR knowledge error for the final sumcheck step
     - b: RBR knowledge error for the final sumcheck step
-- **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:569](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L569) vs `RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:449](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L449)
+- **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:569](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L569) vs `RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:456](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L456)
     - a: The knowledge state function for the final sumcheck step
     - b: The knowledge state function for the final sumcheck step
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:450](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L450) vs `RingSwitching.SumcheckPhase.finalSumcheckOracleReduction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:367](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L367)
@@ -1027,7 +1027,7 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:466](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L466) vs `RingSwitching.SumcheckPhase.finalSumcheckOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:381](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L381)
     - a: Perfect completeness for the final sumcheck step
     - b: Perfect completeness for the final sumcheck step
-- **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:590](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L590) vs `RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:468](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L468)
+- **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:590](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L590) vs `RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:491](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L491)
     - a: Round-by-round knowledge soundness for the final sumcheck step
     - b: Round-by-round knowledge soundness for the final sumcheck step
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:495](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L495) vs `RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:399](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L399)

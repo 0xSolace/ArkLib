@@ -11316,16 +11316,25 @@
         {
           "doc": "Equation 5.12 from [BCIKS20]. NOTE (statement repair): the original formulation of this lemma was *vacuous*. Because `\u2227` binds tighter than the bounded quantifier `\u2200 _ \u2208 _,`, the entire payload \u2014 separability of each `R\u1d62`, irreducibility of each `R\u1d62`, and the factorization equation `Q = C \u00b7 \u220f (R\u1d62.comp X\u1da0)^e\u1d62` \u2014 was trapped inside the `\u2200 e\u1d62 \u2208 e, \u2026` (and the nested `\u2200 R\u1d62 \u2208 R, \u2026`) binders. The statement was then satisfiable by the empty witnesses `C = \u2026, R = [], f = [], e = []` (all three length equalities collapse to `0 = 0` and `\u2200 e\u1d62 \u2208 [], \u2026` is vacuously true), carrying no mathematical content",
           "kind": "lemma",
-          "line": 40,
+          "line": 72,
           "name": "ProximityGap.irreducible_factorization_of_gs_solution",
           "namespace": "ProximityGap",
           "short_name": "irreducible_factorization_of_gs_solution",
           "signature": "lemma irreducible_factorization_of_gs_solution"
         },
         {
+          "doc": "*Cartesian cross-term blowup* witnessing the indexing defect in the factorization conjunct of `irreducible_factorization_of_gs_solution` (= [BCIKS20, Eq. 5.12] as currently formalized). For two distinct factors `a, b` the *intended* Eq-5.12 witnesses `R = [a, b]`, `f = [1, 1]`, `e = [1, 2]` (which should encode `a\u00b9 \u00b7 b\u00b2`) instead make the displayed triple product over the three `toFinset`s evaluate to `a\u00b3 \u00b7 b\u00b3`: each factor is raised to `\u2211 (e\u1d62 \u2208 {1,2}) = 3` and is copied across `f.toFinset = {1}`. Hence the Cartesian-product form cannot represent a factorization with non-uniform multiplicities",
+          "kind": "lemma",
+          "line": 95,
+          "name": "ProximityGap.eq512_cartesian_product_blowup",
+          "namespace": "ProximityGap",
+          "short_name": "eq512_cartesian_product_blowup",
+          "signature": "lemma eq512_cartesian_product_blowup (a b : F[Z][X][Y]) (hab : a \u2260 b) :"
+        },
+        {
           "doc": "Claim 5.6 of [BCIKS20].",
           "kind": "lemma",
-          "line": 56,
+          "line": 116,
           "name": "ProximityGap.discr_of_irred_components_nonzero",
           "namespace": "ProximityGap",
           "short_name": "discr_of_irred_components_nonzero",
@@ -11334,7 +11343,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 61,
+          "line": 121,
           "name": "ProximityGap.pg_Rset",
           "namespace": "ProximityGap",
           "short_name": "pg_Rset",
@@ -11343,7 +11352,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 65,
+          "line": 125,
           "name": "ProximityGap.pg_Rset_irreducible",
           "namespace": "ProximityGap",
           "short_name": "pg_Rset_irreducible",
@@ -11352,16 +11361,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 70,
-          "name": "ProximityGap._anon_class_70",
+          "line": 130,
+          "name": "ProximityGap._anon_class_130",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_70",
+          "short_name": "_anon_class_130",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 78,
+          "line": 138,
           "name": "ProximityGap.pg_candidatePairs",
           "namespace": "ProximityGap",
           "short_name": "pg_candidatePairs",
@@ -11370,7 +11379,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 88,
+          "line": 148,
           "name": "ProximityGap.pg_natDegree_pos_of_mem_normalizedFactors_of_separable",
           "namespace": "ProximityGap",
           "short_name": "pg_natDegree_pos_of_mem_normalizedFactors_of_separable",
@@ -11379,7 +11388,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 113,
+          "line": 173,
           "name": "ProximityGap.pg_candidatePairs_snd_natDegree_pos",
           "namespace": "ProximityGap",
           "short_name": "pg_candidatePairs_snd_natDegree_pos",
@@ -11388,16 +11397,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 123,
-          "name": "ProximityGap._anon_class_123",
+          "line": 183,
+          "name": "ProximityGap._anon_class_183",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_123",
+          "short_name": "_anon_class_183",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 135,
+          "line": 195,
           "name": "ProximityGap.pg_card_normalizedFactors_toFinset_le_natDegree",
           "namespace": "ProximityGap",
           "short_name": "pg_card_normalizedFactors_toFinset_le_natDegree",
@@ -11406,16 +11415,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 137,
-          "name": "ProximityGap._anon_class_137",
+          "line": 197,
+          "name": "ProximityGap._anon_class_197",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_137",
+          "short_name": "_anon_class_197",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 180,
+          "line": 240,
           "name": "ProximityGap.pg_evalX_eq_map_evalRingHom",
           "namespace": "ProximityGap",
           "short_name": "pg_evalX_eq_map_evalRingHom",
@@ -11424,16 +11433,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 182,
-          "name": "ProximityGap._anon_class_182",
+          "line": 242,
+          "name": "ProximityGap._anon_class_242",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_182",
+          "short_name": "_anon_class_242",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 188,
+          "line": 248,
           "name": "ProximityGap.pg_eval_on_Z",
           "namespace": "ProximityGap",
           "short_name": "pg_eval_on_Z",
@@ -11442,7 +11451,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 192,
+          "line": 252,
           "name": "ProximityGap.pg_exists_H_of_R_eval_zero",
           "namespace": "ProximityGap",
           "short_name": "pg_exists_H_of_R_eval_zero",
@@ -11451,16 +11460,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 202,
-          "name": "ProximityGap._anon_class_202",
+          "line": 262,
+          "name": "ProximityGap._anon_class_262",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_202",
+          "short_name": "_anon_class_262",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 303,
+          "line": 363,
           "name": "ProximityGap.pg_exists_R_of_Q_eval_zero",
           "namespace": "ProximityGap",
           "short_name": "pg_exists_R_of_Q_eval_zero",
@@ -11469,16 +11478,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 311,
-          "name": "ProximityGap._anon_class_311",
+          "line": 371,
+          "name": "ProximityGap._anon_class_371",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_311",
+          "short_name": "_anon_class_371",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 356,
+          "line": 416,
           "name": "ProximityGap.pg_exists_pair_for_z",
           "namespace": "ProximityGap",
           "short_name": "pg_exists_pair_for_z",
@@ -11487,16 +11496,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 370,
-          "name": "ProximityGap._anon_class_370",
+          "line": 430,
+          "name": "ProximityGap._anon_class_430",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_370",
+          "short_name": "_anon_class_430",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 425,
+          "line": 485,
           "name": "ProximityGap.pg_natDegree_evalX_le_natDegreeY",
           "namespace": "ProximityGap",
           "short_name": "pg_natDegree_evalX_le_natDegreeY",
@@ -11505,16 +11514,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 427,
-          "name": "ProximityGap._anon_class_427",
+          "line": 487,
+          "name": "ProximityGap._anon_class_487",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_427",
+          "short_name": "_anon_class_487",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 438,
+          "line": 498,
           "name": "ProximityGap.pg_sum_natDegreeY_Rset_le_natDegreeY_Q",
           "namespace": "ProximityGap",
           "short_name": "pg_sum_natDegreeY_Rset_le_natDegreeY_Q",
@@ -11523,16 +11532,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 442,
-          "name": "ProximityGap._anon_class_442",
+          "line": 502,
+          "name": "ProximityGap._anon_class_502",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_442",
+          "short_name": "_anon_class_502",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 491,
+          "line": 551,
           "name": "ProximityGap.pg_card_candidatePairs_le_natDegreeY",
           "namespace": "ProximityGap",
           "short_name": "pg_card_candidatePairs_le_natDegreeY",
@@ -11541,10 +11550,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 498,
-          "name": "ProximityGap._anon_class_498",
+          "line": 558,
+          "name": "ProximityGap._anon_class_558",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_498",
+          "short_name": "_anon_class_558",
           "signature": "class classical"
         }
       ]
@@ -12407,9 +12416,72 @@
           "signature": "class classical"
         },
         {
-          "doc": "Claim 5.4 from [BCIKS20]. It essentially claims that there exists a solution to the Guruswami-Sudan constraints above. NOTE: As currently formalized this lemma is **false** for `n = 0` or `k = 0` (see `modified_guruswami_unsat_of_n_zero` / `modified_guruswami_unsat_of_k_zero`): the degree bound `D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  The statement below therefore carries the proven-necessary side conditions `0 < n` and `0 < k` (the paper's non-degenerate regime is `k + 1 \u2264 n`, `1 \u2264 m`; the eventual dimension-counting proof \u2014 the trivariate analogue of `G",
+          "doc": "The `(1,k)`-weighted degree of the box-assembled `Q` is at most `Dpg`.",
           "kind": "lemma",
-          "line": 1025,
+          "line": 1016,
+          "name": "ProximityGap.natWeightedDegree_gsQ_1k_le",
+          "namespace": "ProximityGap",
+          "short_name": "natWeightedDegree_gsQ_1k_le",
+          "signature": "lemma natWeightedDegree_gsQ_1k_le {n m k : \u2115} (hk : 0 < k) (c : (gsBox n m k) \u2192 F) :"
+        },
+        {
+          "doc": "The `X`-degree of the box-assembled `Q` is at most `Dpg`.",
+          "kind": "lemma",
+          "line": 1024,
+          "name": "ProximityGap.degreeX_gsQ_le",
+          "namespace": "ProximityGap",
+          "short_name": "degreeX_gsQ_le",
+          "signature": "lemma degreeX_gsQ_le {n m k : \u2115} (hk : 0 < k) (c : (gsBox n m k) \u2192 F) :"
+        },
+        {
+          "doc": "`k \u00b7 (Y-degree of the box-assembled `Q`) \u2264 Dpg` (the `Y`-degree is `\u2264 Dpg/k`).",
+          "kind": "lemma",
+          "line": 1033,
+          "name": "ProximityGap.k_mul_natDegreeY_gsQ_le",
+          "namespace": "ProximityGap",
+          "short_name": "k_mul_natDegreeY_gsQ_le",
+          "signature": "lemma k_mul_natDegreeY_gsQ_le {n m k : \u2115} (hk : 0 < k) (c : (gsBox n m k) \u2192 F) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1035,
+          "name": "ProximityGap._anon_class_1035",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1035",
+          "signature": "class classical"
+        },
+        {
+          "doc": "A `Finset \u2115` all of whose elements are `\u2264 B` has `(max).getD 0 \u2264 B`.  This is the `Option.getD`-wrapped form of `Finset.max_le_iff`, matching the shape of `D_YZ`.",
+          "kind": "lemma",
+          "line": 1056,
+          "name": "ProximityGap.finset_max_getD_le",
+          "namespace": "ProximityGap",
+          "short_name": "finset_max_getD_le",
+          "signature": "lemma finset_max_getD_le {s : Finset \u2115} {B : \u2115} (h : \u2200 x \u2208 s, x \u2264 B) :"
+        },
+        {
+          "doc": "**`D_YZ` upper bound.**  If `Q` has `Y`-degree `\u2264 d` and every bivariate coefficient has `Z`-degree `\u2264 e` (`ZdegLE Q e`), then `D_YZ Q \u2264 d + e`. `D_YZ Q = max\u2c7c max\u2096 (j + Zdeg(coeff of `X^j Y^k`))`; the outer `j` is a `Y`-degree `\u2264 d` and every `Z`-degree term is `\u2264 e`, so each summand is `\u2264 d + e`.",
+          "kind": "lemma",
+          "line": 1070,
+          "name": "ProximityGap.D_YZ_le_of_ZdegLE",
+          "namespace": "ProximityGap",
+          "short_name": "D_YZ_le_of_ZdegLE",
+          "signature": "lemma D_YZ_le_of_ZdegLE {Q : F[Z][X][Y]} {d e : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1073,
+          "name": "ProximityGap._anon_class_1073",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1073",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Claim 5.4 from [BCIKS20]. It essentially claims that there exists a solution to the Guruswami-Sudan constraints above. NOTE: As currently formalized this lemma is **false** for `n = 0` or `k = 0` (see `modified_guruswami_unsat_of_n_zero` / `modified_guruswami_unsat_of_k_zero`): the degree bound `D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  The statement below therefore carries the proven-necessary side conditions `0 < n` and `0 < k` (the paper's non-degenerate regime is `k + 1 \u2264 n`, `1 \u2264 m`). It also carries two **regime side conditions** on the construction p",
+          "kind": "lemma",
+          "line": 1122,
           "name": "ProximityGap.modified_guruswami_has_a_solution",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_has_a_solution",
@@ -12417,17 +12489,26 @@
         },
         {
           "doc": "",
-          "kind": "instance",
-          "line": 1035,
-          "name": "ProximityGap._anon_instance_1035",
+          "kind": "class",
+          "line": 1128,
+          "name": "ProximityGap._anon_class_1128",
           "namespace": "ProximityGap",
-          "short_name": "_anon_instance_1035",
+          "short_name": "_anon_class_1128",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 1173,
+          "name": "ProximityGap._anon_instance_1173",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_instance_1173",
           "signature": "instance noncomputable instance {\u03b1 : Type} (s : Set \u03b1) [inst : Finite s] : Fintype s := Fintype.ofFinite _"
         },
         {
           "doc": "The set `S` (equation 5.2 of [BCIKS20]).",
           "kind": "def",
-          "line": 1038,
+          "line": 1176,
           "name": "ProximityGap.coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity",
@@ -12436,7 +12517,7 @@
         {
           "doc": "There exists a `\u03b4`-close polynomial `P_z` for each `z` from the set `S`.",
           "kind": "lemma",
-          "line": 1045,
+          "line": 1183,
           "name": "ProximityGap.exists_Pz_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "exists_Pz_of_coeffs_of_close_proximity",
@@ -12445,7 +12526,7 @@
         {
           "doc": "The `\u03b4`-close polynomial `Pz` for each `z` from the set `S` (`coeffs_of_close_proximity`).",
           "kind": "def",
-          "line": 1064,
+          "line": 1202,
           "name": "ProximityGap.Pz",
           "namespace": "ProximityGap",
           "short_name": "Pz",
@@ -12454,7 +12535,7 @@
         {
           "doc": "Proposition 5.5 from [BCIKS20]. There exists a subset `S'` of the set `S` and a bivariate polynomial `P(X, Z)` that matches `Pz` on that set.",
           "kind": "lemma",
-          "line": 1072,
+          "line": 1210,
           "name": "ProximityGap.exists_a_set_and_a_matching_polynomial",
           "namespace": "ProximityGap",
           "short_name": "exists_a_set_and_a_matching_polynomial",
@@ -12463,7 +12544,7 @@
         {
           "doc": "The subset `S'` extracted from Proprosition 5.5 [BCIKS20].",
           "kind": "def",
-          "line": 1082,
+          "line": 1220,
           "name": "ProximityGap.matching_set",
           "namespace": "ProximityGap",
           "short_name": "matching_set",
@@ -12472,7 +12553,7 @@
         {
           "doc": "`S'` is indeed a subset of `S`",
           "kind": "lemma",
-          "line": 1088,
+          "line": 1226,
           "name": "ProximityGap.matching_set_is_a_sub_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "matching_set_is_a_sub_of_coeffs_of_close_proximity",
@@ -25226,7 +25307,7 @@
         {
           "doc": "Construction of the monisized polynomial `H_tilde` in Appendix A.1 of [BCIKS20]. Note: Here `H \u2208 F[X][Y]` translates to `H \u2208 F[Z][Y]` in [BCIKS20] and H_tilde in `Polynomial (RatFunc F)` translates to `H_tilde \u2208 F(Z)[T]` in [BCIKS20].",
           "kind": "def",
-          "line": 47,
+          "line": 50,
           "name": "BCIKS20AppendixA.H_tilde",
           "namespace": "BCIKS20AppendixA",
           "short_name": "H_tilde",
@@ -25235,7 +25316,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 59,
+          "line": 62,
           "name": "BCIKS20AppendixA.univPolyHom_injective",
           "namespace": "BCIKS20AppendixA",
           "short_name": "univPolyHom_injective",
@@ -25244,7 +25325,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 63,
+          "line": 66,
           "name": "BCIKS20AppendixA.irreducible_comp_C_mul_X_iff",
           "namespace": "BCIKS20AppendixA",
           "short_name": "irreducible_comp_C_mul_X_iff",
@@ -25253,7 +25334,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 73,
+          "line": 76,
           "name": "BCIKS20AppendixA.irreducible_map_univPolyHom_of_irreducible",
           "namespace": "BCIKS20AppendixA",
           "short_name": "irreducible_map_univPolyHom_of_irreducible",
@@ -25262,7 +25343,7 @@
         {
           "doc": "Corrected irreducibility statement for `H_tilde`: the paper assumes positive `Y`-degree. Without this hypothesis, a constant irreducible in `F[Z][Y]` can become a unit in `F(Z)[T]`.",
           "kind": "lemma",
-          "line": 84,
+          "line": 87,
           "name": "BCIKS20AppendixA.irreducibleHTildeOfIrreducible_of_natDegree_pos",
           "namespace": "BCIKS20AppendixA",
           "short_name": "irreducibleHTildeOfIrreducible_of_natDegree_pos",
@@ -25271,16 +25352,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 88,
-          "name": "BCIKS20AppendixA._anon_class_88",
+          "line": 91,
+          "name": "BCIKS20AppendixA._anon_class_91",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_88",
+          "short_name": "_anon_class_91",
           "signature": "class classical"
         },
         {
           "doc": "The monisized version `H_tilde` is irreducible if the original polynomial `H` is irreducible and has positive degree in `Y`, as assumed in Appendix A.1 of [BCIKS20].",
           "kind": "lemma",
-          "line": 140,
+          "line": 143,
           "name": "BCIKS20AppendixA.irreducibleHTildeOfIrreducible",
           "namespace": "BCIKS20AppendixA",
           "short_name": "irreducibleHTildeOfIrreducible",
@@ -25289,16 +25370,16 @@
         {
           "doc": "The function field `\ud835\udd43 ` from Appendix A.1 of [BCIKS20].",
           "kind": "abbrev",
-          "line": 146,
-          "name": "BCIKS20AppendixA._anon_abbrev_146",
+          "line": 149,
+          "name": "BCIKS20AppendixA._anon_abbrev_149",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_abbrev_146",
+          "short_name": "_anon_abbrev_149",
           "signature": "abbrev abbrev \ud835\udd43 (H : F[X][Y]) : Type :="
         },
         {
           "doc": "The function field `\ud835\udd43 ` is indeed a field if and only if the generator of the ideal we quotient by is an irreducible polynomial.",
           "kind": "lemma",
-          "line": 151,
+          "line": 154,
           "name": "BCIKS20AppendixA.isField_of_irreducible_of_natDegree_pos",
           "namespace": "BCIKS20AppendixA",
           "short_name": "isField_of_irreducible_of_natDegree_pos",
@@ -25307,7 +25388,7 @@
         {
           "doc": "The function field `\ud835\udd43 ` is indeed a field when the generator of the ideal we quotient by is irreducible and has positive degree in `Y`.",
           "kind": "lemma",
-          "line": 163,
+          "line": 166,
           "name": "BCIKS20AppendixA.isField_of_irreducible",
           "namespace": "BCIKS20AppendixA",
           "short_name": "isField_of_irreducible",
@@ -25316,16 +25397,16 @@
         {
           "doc": "The function field `\ud835\udd43` as defined above is a field.",
           "kind": "instance",
-          "line": 175,
-          "name": "BCIKS20AppendixA._anon_instance_175",
+          "line": 178,
+          "name": "BCIKS20AppendixA._anon_instance_178",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_instance_175",
+          "short_name": "_anon_instance_178",
           "signature": "instance noncomputable instance {F : Type} [Field F] {H : F[X][Y]} [hHdeg : Fact (0 < H.natDegree)]"
         },
         {
           "doc": "The monisized polynomial `H_tilde` is in fact an element of `F[X][Y]`.",
           "kind": "def",
-          "line": 180,
+          "line": 183,
           "name": "BCIKS20AppendixA.H_tilde'",
           "namespace": "BCIKS20AppendixA",
           "short_name": "H_tilde'",
@@ -25334,7 +25415,7 @@
         {
           "doc": "If `H` has positive degree in `Y`, then `H_tilde' H` is monic.",
           "kind": "lemma",
-          "line": 192,
+          "line": 195,
           "name": "BCIKS20AppendixA.H_tilde'_monic",
           "namespace": "BCIKS20AppendixA",
           "short_name": "H_tilde'_monic",
@@ -25343,16 +25424,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 194,
-          "name": "BCIKS20AppendixA._anon_class_194",
+          "line": 197,
+          "name": "BCIKS20AppendixA._anon_class_197",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_194",
+          "short_name": "_anon_class_197",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 203,
+          "line": 206,
           "name": "BCIKS20AppendixA.monicize_term",
           "namespace": "BCIKS20AppendixA",
           "short_name": "monicize_term",
@@ -25361,7 +25442,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 234,
+          "line": 237,
           "name": "BCIKS20AppendixA.monicize_leading_term",
           "namespace": "BCIKS20AppendixA",
           "short_name": "monicize_leading_term",
@@ -25370,7 +25451,7 @@
         {
           "doc": "The polynomial `H_tilde'` agrees with the monicization `H_tilde` after embedding into `Polynomial (RatFunc F)`.",
           "kind": "lemma",
-          "line": 266,
+          "line": 269,
           "name": "BCIKS20AppendixA.H_tilde_equiv_H_tilde'",
           "namespace": "BCIKS20AppendixA",
           "short_name": "H_tilde_equiv_H_tilde'",
@@ -25379,16 +25460,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 267,
-          "name": "BCIKS20AppendixA._anon_class_267",
+          "line": 270,
+          "name": "BCIKS20AppendixA._anon_class_270",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_267",
+          "short_name": "_anon_class_270",
           "signature": "class classical"
         },
         {
           "doc": "The integral monicized polynomial `H_tilde'` is irreducible whenever `H` is irreducible and has positive degree in `Y`.",
           "kind": "lemma",
-          "line": 357,
+          "line": 360,
           "name": "BCIKS20AppendixA.irreducibleHTilde'OfIrreducible",
           "namespace": "BCIKS20AppendixA",
           "short_name": "irreducibleHTilde'OfIrreducible",
@@ -25397,25 +25478,25 @@
         {
           "doc": "The ring of regular elements `\ud835\udcaa` from Appendix A.1 of [BCIKS20].",
           "kind": "abbrev",
-          "line": 369,
-          "name": "BCIKS20AppendixA._anon_abbrev_369",
+          "line": 372,
+          "name": "BCIKS20AppendixA._anon_abbrev_372",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_abbrev_369",
+          "short_name": "_anon_abbrev_372",
           "signature": "abbrev abbrev \ud835\udcaa (H : F[X][Y]) : Type :="
         },
         {
           "doc": "The ring of regular elements field `\ud835\udcaa` is a indeed a ring.",
           "kind": "instance",
-          "line": 373,
-          "name": "BCIKS20AppendixA._anon_instance_373",
+          "line": 376,
+          "name": "BCIKS20AppendixA._anon_instance_376",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_instance_373",
+          "short_name": "_anon_instance_376",
           "signature": "instance noncomputable instance {H : F[X][Y]} : Ring (\ud835\udcaa H) :="
         },
         {
           "doc": "The ring homomorphism defining the embedding of `\ud835\udcaa` into `\ud835\udd43`.",
           "kind": "def",
-          "line": 377,
+          "line": 380,
           "name": "BCIKS20AppendixA.embeddingOf\ud835\udcaaInto\ud835\udd43",
           "namespace": "BCIKS20AppendixA",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43",
@@ -25424,7 +25505,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 393,
+          "line": 396,
           "name": "BCIKS20AppendixA.H_tilde'_dvd_of_map_dvd_H_tilde",
           "namespace": "BCIKS20AppendixA",
           "short_name": "H_tilde'_dvd_of_map_dvd_H_tilde",
@@ -25433,7 +25514,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 424,
+          "line": 427,
           "name": "BCIKS20AppendixA.mem_span_H_tilde'_of_bivPolyHom_mem_span_H_tilde",
           "namespace": "BCIKS20AppendixA",
           "short_name": "mem_span_H_tilde'_of_bivPolyHom_mem_span_H_tilde",
@@ -25442,7 +25523,7 @@
         {
           "doc": "The regular quotient embeds injectively into the function-field quotient when `H` has positive degree in `Y`.",
           "kind": "lemma",
-          "line": 434,
+          "line": 437,
           "name": "BCIKS20AppendixA.embeddingOf\ud835\udcaaInto\ud835\udd43_injective",
           "namespace": "BCIKS20AppendixA",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_injective",
@@ -25451,7 +25532,7 @@
         {
           "doc": "The set of regular elements inside `\ud835\udd43 H`, i.e. the set of elements of `\ud835\udd43 H` that in fact lie in `\ud835\udcaa H`.",
           "kind": "def",
-          "line": 445,
+          "line": 448,
           "name": "BCIKS20AppendixA.regularElms_set",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set",
@@ -25460,7 +25541,7 @@
         {
           "doc": "The regular elements inside `\ud835\udd43 H`, i.e. the elements of `\ud835\udd43 H` that in fact lie in `\ud835\udcaa H` as Type.",
           "kind": "def",
-          "line": 450,
+          "line": 453,
           "name": "BCIKS20AppendixA.regularElms",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms",
@@ -25469,7 +25550,7 @@
         {
           "doc": "Zero is regular.",
           "kind": "lemma",
-          "line": 455,
+          "line": 458,
           "name": "BCIKS20AppendixA.regularElms_set_zero",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_zero",
@@ -25478,7 +25559,7 @@
         {
           "doc": "One is regular.",
           "kind": "lemma",
-          "line": 460,
+          "line": 463,
           "name": "BCIKS20AppendixA.regularElms_set_one",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_one",
@@ -25487,7 +25568,7 @@
         {
           "doc": "The regular elements are closed under addition.",
           "kind": "lemma",
-          "line": 464,
+          "line": 467,
           "name": "BCIKS20AppendixA.regularElms_set_add",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_add",
@@ -25496,7 +25577,7 @@
         {
           "doc": "The regular elements are closed under negation.",
           "kind": "lemma",
-          "line": 472,
+          "line": 475,
           "name": "BCIKS20AppendixA.regularElms_set_neg",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_neg",
@@ -25505,7 +25586,7 @@
         {
           "doc": "The regular elements are closed under subtraction.",
           "kind": "lemma",
-          "line": 478,
+          "line": 481,
           "name": "BCIKS20AppendixA.regularElms_set_sub",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_sub",
@@ -25514,7 +25595,7 @@
         {
           "doc": "The regular elements are closed under multiplication.",
           "kind": "lemma",
-          "line": 484,
+          "line": 487,
           "name": "BCIKS20AppendixA.regularElms_set_mul",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_mul",
@@ -25523,7 +25604,7 @@
         {
           "doc": "The regular elements are closed under natural powers.",
           "kind": "lemma",
-          "line": 492,
+          "line": 495,
           "name": "BCIKS20AppendixA.regularElms_set_pow",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_pow",
@@ -25532,7 +25613,7 @@
         {
           "doc": "The regular elements are closed under finite sums.",
           "kind": "lemma",
-          "line": 500,
+          "line": 503,
           "name": "BCIKS20AppendixA.regularElms_set_sum",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_sum",
@@ -25541,16 +25622,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 503,
-          "name": "BCIKS20AppendixA._anon_class_503",
+          "line": 506,
+          "name": "BCIKS20AppendixA._anon_class_506",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_503",
+          "short_name": "_anon_class_506",
           "signature": "class classical"
         },
         {
           "doc": "Given an element `z \u2208 F`, `t_z \u2208 F` is a rational root of a bivariate polynomial if the pair `(z, t_z)` is a root of the bivariate polynomial.",
           "kind": "def",
-          "line": 516,
+          "line": 519,
           "name": "BCIKS20AppendixA.rationalRoot",
           "namespace": "BCIKS20AppendixA",
           "short_name": "rationalRoot",
@@ -25559,25 +25640,25 @@
         {
           "doc": "The rational substitution `\u03c0_z` from Appendix A.3 defined on the whole ring of bivariate polynomials.",
           "kind": "def",
-          "line": 521,
-          "name": "BCIKS20AppendixA._anon_def_521",
+          "line": 524,
+          "name": "BCIKS20AppendixA._anon_def_524",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_def_521",
+          "short_name": "_anon_def_524",
           "signature": "def noncomputable def \u03c0_z_lift {H : F[X][Y]} (z : F) (root : rationalRoot (H_tilde' H) z) :"
         },
         {
           "doc": "The rational substitution `\u03c0_z` from Appendix A.3 of [BCIKS20] is a well-defined map on the quotient ring `\ud835\udcaa`.",
           "kind": "def",
-          "line": 526,
-          "name": "BCIKS20AppendixA._anon_def_526",
+          "line": 529,
+          "name": "BCIKS20AppendixA._anon_def_529",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_def_526",
+          "short_name": "_anon_def_529",
           "signature": "def noncomputable def \u03c0_z {H : F[X][Y]} (z : F) (root : rationalRoot (H_tilde' H) z) : \ud835\udcaa H \u2192+* F :="
         },
         {
           "doc": "The canonical representative of an element of `F[X][Y]` inside the ring of regular elements `\ud835\udcaa`, defined when `H` has positive degree in `Y`.",
           "kind": "def",
-          "line": 537,
+          "line": 540,
           "name": "BCIKS20AppendixA.canonicalRepOf\ud835\udcaa",
           "namespace": "BCIKS20AppendixA",
           "short_name": "canonicalRepOf\ud835\udcaa",
@@ -25586,7 +25667,7 @@
         {
           "doc": "The canonical representative has degree strictly smaller than the defining relation.",
           "kind": "lemma",
-          "line": 542,
+          "line": 545,
           "name": "BCIKS20AppendixA.canonicalRepOf\ud835\udcaa_degree_lt",
           "namespace": "BCIKS20AppendixA",
           "short_name": "canonicalRepOf\ud835\udcaa_degree_lt",
@@ -25595,7 +25676,7 @@
         {
           "doc": "The canonical representative has natural degree bounded by the defining relation.",
           "kind": "lemma",
-          "line": 548,
+          "line": 551,
           "name": "BCIKS20AppendixA.canonicalRepOf\ud835\udcaa_natDegree_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "canonicalRepOf\ud835\udcaa_natDegree_le",
@@ -25604,7 +25685,7 @@
         {
           "doc": "The canonical representative maps back to the original quotient element of `\ud835\udcaa`.",
           "kind": "lemma",
-          "line": 555,
+          "line": 558,
           "name": "BCIKS20AppendixA.mk_canonicalRepOf\ud835\udcaa",
           "namespace": "BCIKS20AppendixA",
           "short_name": "mk_canonicalRepOf\ud835\udcaa",
@@ -25613,7 +25694,7 @@
         {
           "doc": "Canonical representatives of quotient constructors are computed by `modByMonic`.",
           "kind": "lemma",
-          "line": 577,
+          "line": 580,
           "name": "BCIKS20AppendixA.canonicalRepOf\ud835\udcaa_mk",
           "namespace": "BCIKS20AppendixA",
           "short_name": "canonicalRepOf\ud835\udcaa_mk",
@@ -25622,7 +25703,7 @@
         {
           "doc": "The canonical representative of zero is zero.",
           "kind": "lemma",
-          "line": 591,
+          "line": 594,
           "name": "BCIKS20AppendixA.canonicalRepOf\ud835\udcaa_zero",
           "namespace": "BCIKS20AppendixA",
           "short_name": "canonicalRepOf\ud835\udcaa_zero",
@@ -25631,7 +25712,7 @@
         {
           "doc": "A polynomial whose degree is already below the relation is its own canonical representative.",
           "kind": "lemma",
-          "line": 596,
+          "line": 599,
           "name": "BCIKS20AppendixA.canonicalRepOf\ud835\udcaa_mk_eq_self_of_degree_lt",
           "namespace": "BCIKS20AppendixA",
           "short_name": "canonicalRepOf\ud835\udcaa_mk_eq_self_of_degree_lt",
@@ -25640,7 +25721,7 @@
         {
           "doc": "`\u039b` is a weight function on the ring of bivariate polynomials `F[X][Y]`. The weight of a polynomial is the maximal weight of all monomials appearing in it with non-zero coefficients. The weight of the zero polynomial is `\u2212\u221e`. Requires `D \u2265 Bivariate.totalDegree H` to match definition in [BCIKS20].",
           "kind": "def",
-          "line": 606,
+          "line": 609,
           "name": "BCIKS20AppendixA.weight_\u039b",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b",
@@ -25649,7 +25730,7 @@
         {
           "doc": "The zero polynomial has bottom `\u039b`-weight.",
           "kind": "lemma",
-          "line": 615,
+          "line": 618,
           "name": "BCIKS20AppendixA.weight_\u039b_zero",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_zero",
@@ -25658,7 +25739,7 @@
         {
           "doc": "The weight function `\u039b` on the ring of regular elements `\ud835\udcaa` is defined as the weight their canonical representatives in `F[X][Y]`.",
           "kind": "def",
-          "line": 621,
+          "line": 624,
           "name": "BCIKS20AppendixA.weight_\u039b_over_\ud835\udcaa",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_over_\ud835\udcaa",
@@ -25667,7 +25748,7 @@
         {
           "doc": "The `\ud835\udcaa`-weight of zero is bottom.",
           "kind": "lemma",
-          "line": 626,
+          "line": 629,
           "name": "BCIKS20AppendixA.weight_\u039b_over_\ud835\udcaa_zero",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_over_\ud835\udcaa_zero",
@@ -25676,7 +25757,7 @@
         {
           "doc": "The `\ud835\udcaa`-weight of a quotient constructor is computed on its canonical remainder.",
           "kind": "lemma",
-          "line": 631,
+          "line": 634,
           "name": "BCIKS20AppendixA.weight_\u039b_over_\ud835\udcaa_mk",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_over_\ud835\udcaa_mk",
@@ -25685,7 +25766,7 @@
         {
           "doc": "If a representative is already reduced, its `\ud835\udcaa`-weight is its polynomial `\u039b`-weight.",
           "kind": "lemma",
-          "line": 638,
+          "line": 641,
           "name": "BCIKS20AppendixA.weight_\u039b_over_\ud835\udcaa_mk_eq_self_of_degree_lt",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_over_\ud835\udcaa_mk_eq_self_of_degree_lt",
@@ -25694,7 +25775,7 @@
         {
           "doc": "A monomial `n` in `f`'s support contributes a lower bound on `\u039b(f)`.",
           "kind": "lemma",
-          "line": 651,
+          "line": 654,
           "name": "BCIKS20AppendixA.le_weight_\u039b_of_mem_support",
           "namespace": "BCIKS20AppendixA",
           "short_name": "le_weight_\u039b_of_mem_support",
@@ -25703,16 +25784,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 654,
-          "name": "BCIKS20AppendixA._anon_class_654",
+          "line": 657,
+          "name": "BCIKS20AppendixA._anon_class_657",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_654",
+          "short_name": "_anon_class_657",
           "signature": "class classical"
         },
         {
           "doc": "Characterization: `\u039b(f) \u2264 b` iff every monomial in `f`'s support contributes at most `b`.",
           "kind": "lemma",
-          "line": 660,
+          "line": 663,
           "name": "BCIKS20AppendixA.weight_\u039b_le_iff",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_le_iff",
@@ -25721,16 +25802,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 664,
-          "name": "BCIKS20AppendixA._anon_class_664",
+          "line": 667,
+          "name": "BCIKS20AppendixA._anon_class_667",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_664",
+          "short_name": "_anon_class_667",
           "signature": "class classical"
         },
         {
           "doc": "`\u039b(C c) \u2264 c.natDegree`.",
           "kind": "lemma",
-          "line": 672,
+          "line": 675,
           "name": "BCIKS20AppendixA.weight_\u039b_C_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_C_le",
@@ -25739,16 +25820,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 674,
-          "name": "BCIKS20AppendixA._anon_class_674",
+          "line": 677,
+          "name": "BCIKS20AppendixA._anon_class_677",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_674",
+          "short_name": "_anon_class_677",
           "signature": "class classical"
         },
         {
           "doc": "`\u039b(Y^k) \u2264 k \u00b7 m`.",
           "kind": "lemma",
-          "line": 685,
+          "line": 688,
           "name": "BCIKS20AppendixA.weight_\u039b_X_pow_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_X_pow_le",
@@ -25757,16 +25838,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 688,
-          "name": "BCIKS20AppendixA._anon_class_688",
+          "line": 691,
+          "name": "BCIKS20AppendixA._anon_class_691",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_688",
+          "short_name": "_anon_class_691",
           "signature": "class classical"
         },
         {
           "doc": "`\u039b(C c \u00b7 Y^k) \u2264 k \u00b7 m + c.natDegree`.",
           "kind": "lemma",
-          "line": 699,
+          "line": 702,
           "name": "BCIKS20AppendixA.weight_\u039b_C_mul_X_pow_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_C_mul_X_pow_le",
@@ -25775,16 +25856,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 702,
-          "name": "BCIKS20AppendixA._anon_class_702",
+          "line": 705,
+          "name": "BCIKS20AppendixA._anon_class_705",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_702",
+          "short_name": "_anon_class_705",
           "signature": "class classical"
         },
         {
           "doc": "The `\u039b`-weight is invariant under negation.",
           "kind": "lemma",
-          "line": 715,
+          "line": 718,
           "name": "BCIKS20AppendixA.weight_\u039b_neg",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_neg",
@@ -25793,16 +25874,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 716,
-          "name": "BCIKS20AppendixA._anon_class_716",
+          "line": 719,
+          "name": "BCIKS20AppendixA._anon_class_719",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_716",
+          "short_name": "_anon_class_719",
           "signature": "class classical"
         },
         {
           "doc": "`\u039b(f + g) \u2264 max(\u039b(f), \u039b(g))`.",
           "kind": "lemma",
-          "line": 723,
+          "line": 726,
           "name": "BCIKS20AppendixA.weight_\u039b_add_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_add_le",
@@ -25811,16 +25892,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 725,
-          "name": "BCIKS20AppendixA._anon_class_725",
+          "line": 728,
+          "name": "BCIKS20AppendixA._anon_class_728",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_725",
+          "short_name": "_anon_class_728",
           "signature": "class classical"
         },
         {
           "doc": "`\u039b(f \u2212 g) \u2264 max(\u039b(f), \u039b(g))`.",
           "kind": "lemma",
-          "line": 777,
+          "line": 780,
           "name": "BCIKS20AppendixA.weight_\u039b_sub_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_sub_le",
@@ -25829,7 +25910,7 @@
         {
           "doc": "`\u039b` of a finite sum is bounded by the max of the summands' weights.",
           "kind": "lemma",
-          "line": 783,
+          "line": 786,
           "name": "BCIKS20AppendixA.weight_\u039b_sum_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_sum_le",
@@ -25838,16 +25919,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 785,
-          "name": "BCIKS20AppendixA._anon_class_785",
+          "line": 788,
+          "name": "BCIKS20AppendixA._anon_class_788",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_785",
+          "short_name": "_anon_class_788",
           "signature": "class classical"
         },
         {
           "doc": "For a monomial `n` in the support of `f * g`, there is a splitting `n = i + j` with both coefficients nonzero and `((f * g).coeff n).natDegree \u2264 (f.coeff i).natDegree + (g.coeff j).natDegree`.",
           "kind": "lemma",
-          "line": 795,
+          "line": 798,
           "name": "BCIKS20AppendixA.exists_split_natDegree_coeff_mul_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "exists_split_natDegree_coeff_mul_le",
@@ -25856,16 +25937,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 799,
-          "name": "BCIKS20AppendixA._anon_class_799",
+          "line": 802,
+          "name": "BCIKS20AppendixA._anon_class_802",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_799",
+          "short_name": "_anon_class_802",
           "signature": "class classical"
         },
         {
           "doc": "Sub-multiplicativity of the bivariate `\u039b`-weight: `\u039b(f \u00b7 g) \u2264 \u039b(f) + \u039b(g)`. The per-`Y`-power weight `m` is additive across the product, and coefficient `natDegree`s are sub-additive.",
           "kind": "lemma",
-          "line": 837,
+          "line": 840,
           "name": "BCIKS20AppendixA.weight_\u039b_mul_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_mul_le",
@@ -25874,16 +25955,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 839,
-          "name": "BCIKS20AppendixA._anon_class_839",
+          "line": 842,
+          "name": "BCIKS20AppendixA._anon_class_842",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_839",
+          "short_name": "_anon_class_842",
           "signature": "class classical"
         },
         {
           "doc": "Bound on the `X`-degree of a coefficient of `H` from a `totalDegree` bound.",
           "kind": "lemma",
-          "line": 861,
+          "line": 864,
           "name": "BCIKS20AppendixA.natDegree_coeff_le_of_totalDegree_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "natDegree_coeff_le_of_totalDegree_le",
@@ -25892,16 +25973,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 864,
-          "name": "BCIKS20AppendixA._anon_class_864",
+          "line": 867,
+          "name": "BCIKS20AppendixA._anon_class_867",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_864",
+          "short_name": "_anon_class_867",
           "signature": "class classical"
         },
         {
           "doc": "Sub-additivity for `C c \u00b7 Y^k \u00b7 f`: given `\u039b(f) \u2264 b`, multiplying by `C c \u00b7 Y^k` adds `k \u00b7 m + c.natDegree` to the weight.",
           "kind": "lemma",
-          "line": 874,
+          "line": 877,
           "name": "BCIKS20AppendixA.weight_\u039b_C_mul_X_pow_mul_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_C_mul_X_pow_mul_le",
@@ -25910,16 +25991,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 879,
-          "name": "BCIKS20AppendixA._anon_class_879",
+          "line": 882,
+          "name": "BCIKS20AppendixA._anon_class_882",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_879",
+          "short_name": "_anon_class_882",
           "signature": "class classical"
         },
         {
           "doc": "The `natDegree` of `H_tilde' H` matches that of `H` when `0 < H.natDegree`.",
           "kind": "lemma",
-          "line": 929,
+          "line": 932,
           "name": "BCIKS20AppendixA.natDegree_H_tilde'",
           "namespace": "BCIKS20AppendixA",
           "short_name": "natDegree_H_tilde'",
@@ -25928,16 +26009,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 931,
-          "name": "BCIKS20AppendixA._anon_class_931",
+          "line": 934,
+          "name": "BCIKS20AppendixA._anon_class_934",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_931",
+          "short_name": "_anon_class_934",
           "signature": "class classical"
         },
         {
           "doc": "The `\u039b`-weight of `H_tilde' H` is bounded by `d_H \u00b7 m`, where `d_H = H.natDegree`.",
           "kind": "lemma",
-          "line": 955,
+          "line": 958,
           "name": "BCIKS20AppendixA.weight_\u039b_H_tilde'_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_H_tilde'_le",
@@ -25946,16 +26027,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 959,
-          "name": "BCIKS20AppendixA._anon_class_959",
+          "line": 962,
+          "name": "BCIKS20AppendixA._anon_class_962",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_959",
+          "short_name": "_anon_class_962",
           "signature": "class classical"
         },
         {
           "doc": "One reduction step in `modByMonic` does not increase `\u039b`-weight: subtracting `C(p.leadingCoeff) \u00b7 Y^(p.natDegree - d_H) \u00b7 H_tilde' H` from `p` keeps the weight bounded by `\u039b(p)`.",
           "kind": "lemma",
-          "line": 1027,
+          "line": 1030,
           "name": "BCIKS20AppendixA.weight_\u039b_sub_leadingCoeff_mul_H_tilde'_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_sub_leadingCoeff_mul_H_tilde'_le",
@@ -25964,16 +26045,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1033,
-          "name": "BCIKS20AppendixA._anon_class_1033",
+          "line": 1036,
+          "name": "BCIKS20AppendixA._anon_class_1036",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_1033",
+          "short_name": "_anon_class_1036",
           "signature": "class classical"
         },
         {
           "doc": "Complete reduction modulo `H_tilde' H` never increases the `\u039b`-weight (Appendix A.2 of [BCIKS20]): `\u039b(p %\u2098 H_tilde' H) \u2264 \u039b(p)`. Proved by well-founded recursion mirroring the `modByMonic` reduction, using `weight_\u039b_sub_leadingCoeff_mul_H_tilde'_le` for the single step.",
           "kind": "lemma",
-          "line": 1059,
+          "line": 1062,
           "name": "BCIKS20AppendixA.weight_\u039b_modByMonic_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_modByMonic_le",
@@ -25982,16 +26063,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1063,
-          "name": "BCIKS20AppendixA._anon_class_1063",
+          "line": 1066,
+          "name": "BCIKS20AppendixA._anon_class_1066",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_1063",
+          "short_name": "_anon_class_1066",
           "signature": "class classical"
         },
         {
           "doc": "Any polynomial representative bounds the `\ud835\udcaa`-weight of the element it represents: if `\u27e6r\u27e7 = a` then `weight_\u039b_over_\ud835\udcaa hH a D \u2264 weight_\u039b r H D`. This combines the canonical-representative identity with `weight_\u039b_modByMonic_le`, and is the workhorse for bounding weights of regular elements by any convenient (non-reduced) representative.",
           "kind": "lemma",
-          "line": 1114,
+          "line": 1117,
           "name": "BCIKS20AppendixA.weight_\u039b_over_\ud835\udcaa_le_of_mk_eq",
           "namespace": "BCIKS20AppendixA",
           "short_name": "weight_\u039b_over_\ud835\udcaa_le_of_mk_eq",
@@ -26000,7 +26081,7 @@
         {
           "doc": "The set `S_\u03b2` from the statement of Lemma A.1 in Appendix A of [BCIKS20]. Note: Here `F[X][Y]` is `F[Z][T]`.",
           "kind": "def",
-          "line": 1123,
+          "line": 1126,
           "name": "BCIKS20AppendixA.S_\u03b2",
           "namespace": "BCIKS20AppendixA",
           "short_name": "S_\u03b2",
@@ -26009,16 +26090,16 @@
         {
           "doc": "Applying the specialization `\u03c0_z` to a quotient constructor evaluates the representative at the point `(z, t_z)`.",
           "kind": "lemma",
-          "line": 1132,
-          "name": "BCIKS20AppendixA._anon_lemma_1132",
+          "line": 1135,
+          "name": "BCIKS20AppendixA._anon_lemma_1135",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_lemma_1132",
+          "short_name": "_anon_lemma_1135",
           "signature": "lemma lemma \u03c0_z_mk {H : F[X][Y]} (z : F) (root : rationalRoot (H_tilde' H) z) (p : F[X][Y]) :"
         },
         {
           "doc": "The bivariate polynomial `p` evaluated at `(z, y)` agrees with the univariate specialization `p.map (evalRingHom z)` evaluated at `y`.",
           "kind": "lemma",
-          "line": 1140,
+          "line": 1143,
           "name": "BCIKS20AppendixA.evalEval_eq_eval_map",
           "namespace": "BCIKS20AppendixA",
           "short_name": "evalEval_eq_eval_map",
@@ -26027,7 +26108,7 @@
         {
           "doc": "The monicized polynomial `H_tilde H` is monic, as the image of the monic `H_tilde' H`.",
           "kind": "lemma",
-          "line": 1145,
+          "line": 1148,
           "name": "BCIKS20AppendixA.H_tilde_monic",
           "namespace": "BCIKS20AppendixA",
           "short_name": "H_tilde_monic",
@@ -26036,7 +26117,7 @@
         {
           "doc": "The resultant (in `Y`) of the canonical representative of a nonzero regular element `\u03b2` and the defining relation `H_tilde' H` is a nonzero element of `F[X]`. This is the algebraic heart of the \"not coprime forces `\u03b2 = 0`\" step: since `H_tilde H` is irreducible over `F(X)` and the representative has strictly smaller `Y`-degree, they are coprime, so the resultant is nonzero.",
           "kind": "lemma",
-          "line": 1153,
+          "line": 1156,
           "name": "BCIKS20AppendixA.resultant_canonicalRep_H_tilde'_ne_zero",
           "namespace": "BCIKS20AppendixA",
           "short_name": "resultant_canonicalRep_H_tilde'_ne_zero",
@@ -26045,16 +26126,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1156,
-          "name": "BCIKS20AppendixA._anon_class_1156",
+          "line": 1159,
+          "name": "BCIKS20AppendixA._anon_class_1159",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_1156",
+          "short_name": "_anon_class_1159",
           "signature": "class classical"
         },
         {
           "doc": "Padded resultant vanishing from a shared root: if `b` is monic of degree `d`, `a` has degree `\u2264 d`, and `a`, `b` have a common root, then the (degree-`d`) resultant `resultant a b d d` is `0`.",
           "kind": "lemma",
-          "line": 1244,
+          "line": 1247,
           "name": "BCIKS20AppendixA.resultant_eq_zero_of_common_root",
           "namespace": "BCIKS20AppendixA",
           "short_name": "resultant_eq_zero_of_common_root",
@@ -26063,7 +26144,7 @@
         {
           "doc": "Every specialization point in `S_\u03b2` is a root of the resultant `Res_Y(r, H\u0303')` viewed as a univariate polynomial in `Z = X`: the common rational root `t_z` is a shared root of the two `Z = z` specializations.",
           "kind": "lemma",
-          "line": 1273,
+          "line": 1276,
           "name": "BCIKS20AppendixA.eval_resultant_eq_zero_of_mem_S_\u03b2",
           "namespace": "BCIKS20AppendixA",
           "short_name": "eval_resultant_eq_zero_of_mem_S_\u03b2",
@@ -26072,16 +26153,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1277,
-          "name": "BCIKS20AppendixA._anon_class_1277",
+          "line": 1280,
+          "name": "BCIKS20AppendixA._anon_class_1280",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_1277",
+          "short_name": "_anon_class_1280",
           "signature": "class classical"
         },
         {
           "doc": "A nonzero polynomial has at most `natDegree`-many roots, as a `Set.ncard` bound.",
           "kind": "lemma",
-          "line": 1329,
+          "line": 1332,
           "name": "BCIKS20AppendixA.ncard_setOf_isRoot_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "ncard_setOf_isRoot_le",
@@ -26090,16 +26171,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1331,
-          "name": "BCIKS20AppendixA._anon_class_1331",
+          "line": 1334,
+          "name": "BCIKS20AppendixA._anon_class_1334",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_1331",
+          "short_name": "_anon_class_1334",
           "signature": "class classical"
         },
         {
           "doc": "A `Finset.sup` of `WithBot.some` values over a nonempty finset is itself `some`.",
           "kind": "lemma",
-          "line": 1341,
+          "line": 1344,
           "name": "BCIKS20AppendixA.sup_some_eq_some",
           "namespace": "BCIKS20AppendixA",
           "short_name": "sup_some_eq_some",
@@ -26108,16 +26189,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1343,
-          "name": "BCIKS20AppendixA._anon_class_1343",
+          "line": 1346,
+          "name": "BCIKS20AppendixA._anon_class_1346",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_1343",
+          "short_name": "_anon_class_1346",
           "signature": "class classical"
         },
         {
           "doc": "For a nonzero bivariate polynomial `r`, its `\u039b`-weight is a finite value `W`, and every coefficient obeys the weighted bound `k \u00b7 \u03ba + (r.coeff k).natDegree \u2264 W` (where `\u03ba = D + 1 - d_H`). We package both facts together.",
           "kind": "lemma",
-          "line": 1355,
+          "line": 1358,
           "name": "BCIKS20AppendixA.exists_weight_bound",
           "namespace": "BCIKS20AppendixA",
           "short_name": "exists_weight_bound",
@@ -26126,16 +26207,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1359,
-          "name": "BCIKS20AppendixA._anon_class_1359",
+          "line": 1362,
+          "name": "BCIKS20AppendixA._anon_class_1362",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_1359",
+          "short_name": "_anon_class_1362",
           "signature": "class classical"
         },
         {
           "doc": "`\u2211_{k<2d} k = d\u00b2 + 2\u00b7\u2211_{k<d} k`. The key index identity underlying the exact cancellation in the weighted Sylvester-determinant degree count.",
           "kind": "lemma",
-          "line": 1379,
+          "line": 1382,
           "name": "BCIKS20AppendixA.range_two_mul_sum",
           "namespace": "BCIKS20AppendixA",
           "short_name": "range_two_mul_sum",
@@ -26144,7 +26225,7 @@
         {
           "doc": "**Weighted Sylvester-determinant degree count (combinatorial core).** Given per-column additive weighted-degree bounds on the entries of a `(d+d)\u00d7(d+d)` matrix permutation term -- the left `d` columns (\"`H\u0303'` columns\") capped at `d\u00b7\u03ba + j\u00b7\u03ba` and the right `d` columns (\"`r` columns\") capped at `W + j\u00b7\u03ba` -- the total degree of any permutation term is at most `d\u00b7W`. The exact cancellation of the weight terms `\u03ba` is `\u2211(\u03c3 i) = \u2211 i` together with `\u2211_{k<2d} = d\u00b2 + 2\u2211_{k<d}`.",
           "kind": "lemma",
-          "line": 1393,
+          "line": 1396,
           "name": "BCIKS20AppendixA.sum_entry_natDegree_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "sum_entry_natDegree_le",
@@ -26153,7 +26234,7 @@
         {
           "doc": "Reduce a determinant `natDegree` bound to a uniform bound on every permutation term.",
           "kind": "lemma",
-          "line": 1423,
+          "line": 1426,
           "name": "BCIKS20AppendixA.natDegree_det_le_of_forall_perm",
           "namespace": "BCIKS20AppendixA",
           "short_name": "natDegree_det_le_of_forall_perm",
@@ -26162,7 +26243,7 @@
         {
           "doc": "The H\u0303'-coefficient weighted bound (Claim A.2 packaging), valid on the support.",
           "kind": "lemma",
-          "line": 1440,
+          "line": 1443,
           "name": "BCIKS20AppendixA.natDegree_H_tilde'_coeff_weighted_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "natDegree_H_tilde'_coeff_weighted_le",
@@ -26171,16 +26252,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1445,
-          "name": "BCIKS20AppendixA._anon_class_1445",
+          "line": 1448,
+          "name": "BCIKS20AppendixA._anon_class_1448",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_1445",
+          "short_name": "_anon_class_1448",
           "signature": "class classical"
         },
         {
           "doc": "**Lemma A.1** of [BCIKS20], Appendix A.3 (resultant / specialization-point counting). The `Z`-degree bound on the resultant `Res_Y(r, H\u0303')` of the canonical representative `r` of the regular element `\u03b2` and the defining relation `H\u0303'`. This is the analytic heart of the lemma: a weighted-degree count on the Sylvester determinant. The proof bounds the `Z`-degree of the Sylvester determinant `Res_Y(r, H\u0303') = det (sylvester r H\u0303' d d)` by a weighted-degree count over permutations (`sum_entry_natDegree_le`): for each permutation either the term vanishes, or every entry is a nonzero coefficient whos",
           "kind": "lemma",
-          "line": 1465,
+          "line": 1468,
           "name": "BCIKS20AppendixA.natDegree_resultant_canonicalRep_le",
           "namespace": "BCIKS20AppendixA",
           "short_name": "natDegree_resultant_canonicalRep_le",
@@ -26189,16 +26270,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1470,
-          "name": "BCIKS20AppendixA._anon_class_1470",
+          "line": 1473,
+          "name": "BCIKS20AppendixA._anon_class_1473",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_1470",
+          "short_name": "_anon_class_1473",
           "signature": "class classical"
         },
         {
           "doc": "The statement of Lemma A.1 in Appendix A.3 of [BCIKS20].",
           "kind": "lemma",
-          "line": 1560,
+          "line": 1563,
           "name": "BCIKS20AppendixA.Lemma_A_1",
           "namespace": "BCIKS20AppendixA",
           "short_name": "Lemma_A_1",
@@ -26207,16 +26288,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1565,
-          "name": "BCIKS20AppendixA._anon_class_1565",
+          "line": 1568,
+          "name": "BCIKS20AppendixA._anon_class_1568",
           "namespace": "BCIKS20AppendixA",
-          "short_name": "_anon_class_1565",
+          "short_name": "_anon_class_1568",
           "signature": "class classical"
         },
         {
           "doc": "The embeddining of the coefficients of a bivarite polynomial into the bivariate polynomial ring with rational coefficients.",
           "kind": "def",
-          "line": 1600,
+          "line": 1603,
           "name": "BCIKS20AppendixA.coeffAsRatFunc",
           "namespace": "BCIKS20AppendixA",
           "short_name": "coeffAsRatFunc",
@@ -26225,7 +26306,7 @@
         {
           "doc": "The embeddining of the coefficients of a bivarite polynomial into the function field `\ud835\udd43`.",
           "kind": "def",
-          "line": 1604,
+          "line": 1607,
           "name": "BCIKS20AppendixA.liftToFunctionField",
           "namespace": "BCIKS20AppendixA",
           "short_name": "liftToFunctionField",
@@ -26234,7 +26315,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1607,
+          "line": 1610,
           "name": "BCIKS20AppendixA.liftBivariate",
           "namespace": "BCIKS20AppendixA",
           "short_name": "liftBivariate",
@@ -26243,7 +26324,7 @@
         {
           "doc": "The image of the polynomial variable `T` in the function field `\ud835\udd43 H`.",
           "kind": "def",
-          "line": 1611,
+          "line": 1614,
           "name": "BCIKS20AppendixA.functionFieldT",
           "namespace": "BCIKS20AppendixA",
           "short_name": "functionFieldT",
@@ -26252,7 +26333,7 @@
         {
           "doc": "Quotient constructors in `\ud835\udcaa` embed by applying the bivariate lift.",
           "kind": "lemma",
-          "line": 1616,
+          "line": 1619,
           "name": "BCIKS20AppendixA.embeddingOf\ud835\udcaaInto\ud835\udd43_mk",
           "namespace": "BCIKS20AppendixA",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_mk",
@@ -26261,7 +26342,7 @@
         {
           "doc": "Every bivariate polynomial representative gives a regular element of the function field.",
           "kind": "lemma",
-          "line": 1622,
+          "line": 1625,
           "name": "BCIKS20AppendixA.regular_liftBivariate",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regular_liftBivariate",
@@ -26270,7 +26351,7 @@
         {
           "doc": "Bivariate-polynomial images are regular elements of the function field.",
           "kind": "lemma",
-          "line": 1627,
+          "line": 1630,
           "name": "BCIKS20AppendixA.regularElms_set_liftBivariate",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_liftBivariate",
@@ -26279,7 +26360,7 @@
         {
           "doc": "Coefficients embedded into `\ud835\udd43` are regular elements.",
           "kind": "lemma",
-          "line": 1633,
+          "line": 1636,
           "name": "BCIKS20AppendixA.regular_liftToFunctionField",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regular_liftToFunctionField",
@@ -26288,7 +26369,7 @@
         {
           "doc": "Coefficient-polynomial images are regular elements of the function field.",
           "kind": "lemma",
-          "line": 1638,
+          "line": 1641,
           "name": "BCIKS20AppendixA.regularElms_set_liftToFunctionField",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_liftToFunctionField",
@@ -26297,7 +26378,7 @@
         {
           "doc": "Nonzero coefficient polynomials remain nonzero after embedding into the function field.",
           "kind": "lemma",
-          "line": 1643,
+          "line": 1646,
           "name": "BCIKS20AppendixA.liftToFunctionField_ne_zero",
           "namespace": "BCIKS20AppendixA",
           "short_name": "liftToFunctionField_ne_zero",
@@ -26306,7 +26387,7 @@
         {
           "doc": "The leading coefficient `W` of a positive-`Y`-degree `H` is nonzero in the function field.",
           "kind": "lemma",
-          "line": 1664,
+          "line": 1667,
           "name": "BCIKS20AppendixA.liftToFunctionField_leadingCoeff_ne_zero",
           "namespace": "BCIKS20AppendixA",
           "short_name": "liftToFunctionField_leadingCoeff_ne_zero",
@@ -26315,7 +26396,7 @@
         {
           "doc": "The coefficient embedding into the function field is the bivariate lift of the constant.",
           "kind": "lemma",
-          "line": 1671,
+          "line": 1674,
           "name": "BCIKS20AppendixA.coeffAsRatFunc_eq_C",
           "namespace": "BCIKS20AppendixA",
           "short_name": "coeffAsRatFunc_eq_C",
@@ -26324,7 +26405,7 @@
         {
           "doc": "The image of the rational substitution `X / W` under the quotient map is `T / W`.",
           "kind": "lemma",
-          "line": 1677,
+          "line": 1680,
           "name": "BCIKS20AppendixA.mk_X_div_eq_functionFieldT_div_W",
           "namespace": "BCIKS20AppendixA",
           "short_name": "mk_X_div_eq_functionFieldT_div_W",
@@ -26333,7 +26414,7 @@
         {
           "doc": "The element `\u03b1\u2080 = T / W` is a root of `H` in the function field: evaluating `H` at `T / W` via the coefficient embedding gives `0`. This is the algebraic heart of the Hensel lift in Appendix A.4 of [BCIKS20]: `H\u0303` is the monicization of `H` at the root `\u03b1\u2080`, and `H\u0303(T) = 0` in `\ud835\udd43`.",
           "kind": "lemma",
-          "line": 1706,
+          "line": 1709,
           "name": "BCIKS20AppendixA.eval\u2082_liftToFunctionField_div_leadingCoeff_H_eq_zero",
           "namespace": "BCIKS20AppendixA",
           "short_name": "eval\u2082_liftToFunctionField_div_leadingCoeff_H_eq_zero",
@@ -26342,7 +26423,7 @@
         {
           "doc": "If `q \u2223 p` in `F[X]`, then `p / q` is regular after embedding into `\ud835\udd43`.",
           "kind": "lemma",
-          "line": 1768,
+          "line": 1771,
           "name": "BCIKS20AppendixA.regularElms_set_liftToFunctionField_div_of_dvd",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_liftToFunctionField_div_of_dvd",
@@ -26351,7 +26432,7 @@
         {
           "doc": "If `W = H.leadingCoeff` divides `p`, then `p / W` is regular after embedding into `\ud835\udd43`.",
           "kind": "lemma",
-          "line": 1783,
+          "line": 1786,
           "name": "BCIKS20AppendixA.regularElms_set_liftToFunctionField_div_leadingCoeff_of_dvd",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_liftToFunctionField_div_leadingCoeff_of_dvd",
@@ -26360,7 +26441,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1793,
+          "line": 1796,
           "name": "BCIKS20AppendixA.mul_pow_mul_div_pow_eq_lower",
           "namespace": "BCIKS20AppendixA",
           "short_name": "mul_pow_mul_div_pow_eq_lower",
@@ -26369,7 +26450,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1807,
+          "line": 1810,
           "name": "BCIKS20AppendixA.mul_pow_mul_div_pow_succ_eq_top",
           "namespace": "BCIKS20AppendixA",
           "short_name": "mul_pow_mul_div_pow_succ_eq_top",
@@ -26378,7 +26459,7 @@
         {
           "doc": "Clearing denominators in `W^k \u00b7 P(T/W)` as an explicit sum: if `P.natDegree \u2264 k + 1`, then `W^k * eval\u2082 lift (T/W) P` decomposes into a low-degree polynomial sum plus a single `(P.coeff(k+1)/W) \u00b7 T^(k+1)` term. The divisibility `W \u2223 P.coeff(k+1)` is not needed here - the formula holds in `\ud835\udd43 H` directly via field division.",
           "kind": "lemma",
-          "line": 1818,
+          "line": 1821,
           "name": "BCIKS20AppendixA.W_pow_mul_eval\u2082_div_eq_sum",
           "namespace": "BCIKS20AppendixA",
           "short_name": "W_pow_mul_eval\u2082_div_eq_sum",
@@ -26387,7 +26468,7 @@
         {
           "doc": "The bivariate variable maps to the function-field variable `T`.",
           "kind": "lemma",
-          "line": 1850,
+          "line": 1853,
           "name": "BCIKS20AppendixA.liftBivariate_X",
           "namespace": "BCIKS20AppendixA",
           "short_name": "liftBivariate_X",
@@ -26396,7 +26477,7 @@
         {
           "doc": "The function-field variable `T` is regular.",
           "kind": "lemma",
-          "line": 1855,
+          "line": 1858,
           "name": "BCIKS20AppendixA.regularElms_set_functionFieldT",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_functionFieldT",
@@ -26405,7 +26486,7 @@
         {
           "doc": "A linear polynomial evaluated at `T / W` is regular when its linear coefficient is divisible by `W = H.leadingCoeff`.",
           "kind": "lemma",
-          "line": 1861,
+          "line": 1864,
           "name": "BCIKS20AppendixA.regularElms_set_eval\u2082_linear_of_coeff_one_dvd",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_eval\u2082_linear_of_coeff_one_dvd",
@@ -26414,7 +26495,7 @@
         {
           "doc": "Clearing denominators in `P(T / W)`: if `P` has degree at most `k + 1` and its top coefficient is divisible by `W = H.leadingCoeff`, then `W^k * P(T/W)` is regular.",
           "kind": "lemma",
-          "line": 1885,
+          "line": 1888,
           "name": "BCIKS20AppendixA.regularElms_set_mul_pow_eval\u2082_div_of_natDegree_le_succ_of_coeff_succ_dvd",
           "namespace": "BCIKS20AppendixA",
           "short_name": "regularElms_set_mul_pow_eval\u2082_div_of_natDegree_le_succ_of_coeff_succ_dvd",
@@ -26423,7 +26504,7 @@
         {
           "doc": "Constant bivariate polynomials map through the coefficient embedding.",
           "kind": "lemma",
-          "line": 1927,
+          "line": 1930,
           "name": "BCIKS20AppendixA.liftBivariate_C",
           "namespace": "BCIKS20AppendixA",
           "short_name": "liftBivariate_C",
@@ -26432,7 +26513,7 @@
         {
           "doc": "The embeddining of the scalars into the function field `\ud835\udd43`.",
           "kind": "def",
-          "line": 1932,
+          "line": 1935,
           "name": "BCIKS20AppendixA.fieldTo\ud835\udd43",
           "namespace": "BCIKS20AppendixA",
           "short_name": "fieldTo\ud835\udd43",
@@ -26441,7 +26522,7 @@
         {
           "doc": "Constructing power series over the function field `\ud835\udd43 H` out of a polynomial.",
           "kind": "def",
-          "line": 1936,
+          "line": 1939,
           "name": "BCIKS20AppendixA.polyToPowerSeries\ud835\udd43",
           "namespace": "BCIKS20AppendixA",
           "short_name": "polyToPowerSeries\ud835\udd43",
@@ -26450,7 +26531,7 @@
         {
           "doc": "The algebraic hypotheses for Claim A.2 from Appendix A.4 of [BCIKS20], after specializing `R` at `X = x\u2080`.",
           "kind": "structure",
-          "line": 1953,
+          "line": 1956,
           "name": "BCIKS20AppendixA.ClaimA2.Hypotheses",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "Hypotheses",
@@ -26459,7 +26540,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1957,
+          "line": 1960,
           "name": "BCIKS20AppendixA.ClaimA2.evalX_natDegree_le",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "evalX_natDegree_le",
@@ -26468,7 +26549,7 @@
         {
           "doc": "The leading coefficient `W` of `H` divides the leading coefficient of `R(x\u2080,Y,Z)`.",
           "kind": "lemma",
-          "line": 1965,
+          "line": 1968,
           "name": "BCIKS20AppendixA.ClaimA2.leadingCoeff_dvd_evalX_leadingCoeff",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "leadingCoeff_dvd_evalX_leadingCoeff",
@@ -26477,7 +26558,7 @@
         {
           "doc": "The leading coefficient `W` of `H` divides the coefficient of `Y ^ R.natDegree` in `R(x\u2080,Y,Z)`. If specialization lowers the `Y`-degree, that coefficient is zero.",
           "kind": "lemma",
-          "line": 1976,
+          "line": 1979,
           "name": "BCIKS20AppendixA.ClaimA2.leadingCoeff_dvd_evalX_coeff_natDegree",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "leadingCoeff_dvd_evalX_coeff_natDegree",
@@ -26486,7 +26567,7 @@
         {
           "doc": "The leading coefficient `W` of `H` divides the top possible coefficient of `\u2202R/\u2202Y(x\u2080,Y,Z)`. This is the coefficient that remains after multiplying `\u03b6` by `W^(d-2)`.",
           "kind": "lemma",
-          "line": 1989,
+          "line": 1992,
           "name": "BCIKS20AppendixA.ClaimA2.leadingCoeff_dvd_evalX_derivative_coeff_pred",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "leadingCoeff_dvd_evalX_derivative_coeff_pred",
@@ -26495,16 +26576,16 @@
         {
           "doc": "The definition of `\u03b6` given in Appendix A.4 of [BCIKS20].",
           "kind": "def",
-          "line": 2022,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2022",
+          "line": 2025,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2025",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_2022",
+          "short_name": "_anon_def_2025",
           "signature": "def def \u03b6 (R : F[X][X][Y]) (x\u2080 : F) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]"
         },
         {
           "doc": "The `X`-specialization commutes with the `Y`-derivative.",
           "kind": "lemma",
-          "line": 2030,
+          "line": 2033,
           "name": "BCIKS20AppendixA.ClaimA2.evalX_derivative_comm",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "evalX_derivative_comm",
@@ -26513,7 +26594,7 @@
         {
           "doc": "The coefficient of `Y^n` in `\u2202R/\u2202Y(x\u2080,Z)` is `(n+1) \u00b7 (R(x\u2080,Z)).coeff (n+1)`, so its `X`-degree is bounded by `D - (n+1)` when `D` bounds the total degree of `R(x\u2080,Z)`.",
           "kind": "lemma",
-          "line": 2037,
+          "line": 2040,
           "name": "BCIKS20AppendixA.ClaimA2.natDegree_evalX_derivative_coeff_le",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "natDegree_evalX_derivative_coeff_le",
@@ -26522,25 +26603,25 @@
         {
           "doc": "The product-rule factorization of `\u03b6` at the root `\u03b1\u2080 = T/W`: writing `Q = R(x\u2080,\u00b7) = H \u00b7 g` with `g` the cofactor of the factor `H`, the Y-derivative product rule evaluated at `\u03b1\u2080` gives `\u03b6 = H'_Y(\u03b1\u2080) \u00b7 g(\u03b1\u2080)`, since the `H(\u03b1\u2080) \u00b7 g'_Y(\u03b1\u2080)` term vanishes (`H(\u03b1\u2080) = 0`). This is the structural identity of Claim A.2 in Appendix A.4 of [BCIKS20].",
           "kind": "lemma",
-          "line": 2057,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2057",
+          "line": 2060,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2060",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_2057",
+          "short_name": "_anon_lemma_2060",
           "signature": "lemma lemma \u03b6_eq_eval\u03b1\u2080_derivative_mul (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
         },
         {
           "doc": "If the derivative specialization is constant in the function-field variable, then `\u03b6` is regular.",
           "kind": "lemma",
-          "line": 2081,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2081",
+          "line": 2084,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2084",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_2081",
+          "short_name": "_anon_lemma_2084",
           "signature": "lemma lemma \u03b6_regular_of_derivative_evalX_eq_C (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
         },
         {
           "doc": "If `R` has `Y`-degree at most one, then the specialized derivative is constant.",
           "kind": "lemma",
-          "line": 2090,
+          "line": 2093,
           "name": "BCIKS20AppendixA.ClaimA2.derivative_evalX_eq_C_of_natDegree_le_one",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "derivative_evalX_eq_C_of_natDegree_le_one",
@@ -26549,43 +26630,43 @@
         {
           "doc": "In the constant-derivative, low-`Y`-degree case, the `\u03be` regularity witness is explicit.",
           "kind": "lemma",
-          "line": 2104,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2104",
+          "line": 2107,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2107",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_2104",
+          "short_name": "_anon_lemma_2107",
           "signature": "lemma lemma \u03be_regular_of_derivative_evalX_eq_C_of_natDegree_le_one"
         },
         {
           "doc": "If `R` has `Y`-degree at most one, the regularity statement for `\u03be` follows from the constant-derivative case.",
           "kind": "lemma",
-          "line": 2120,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2120",
+          "line": 2123,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2123",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_2120",
+          "short_name": "_anon_lemma_2123",
           "signature": "lemma lemma \u03be_regular_of_natDegree_le_one"
         },
         {
           "doc": "In the quadratic case, `\u03be = \u03b6` is regular by clearing the single denominator with the divisibility of the top derivative coefficient.",
           "kind": "lemma",
-          "line": 2132,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2132",
+          "line": 2135,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2135",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_2132",
+          "short_name": "_anon_lemma_2135",
           "signature": "lemma lemma \u03be_regular_of_natDegree_eq_two"
         },
         {
           "doc": "Explicit polynomial representative for the regular element `\u03be = W^(d-2) \u00b7 \u03b6` of Claim A.2. For `2 \u2264 R.natDegree`, this is the polynomial obtained by clearing the single denominator that appears in `W^(d-2) \u00b7 \u03b6`; the divisibility `W \u2223 R'(x\u2080, Z)_{d-1}` is captured implicitly by Euclidean division in `F[X]`. For `R.natDegree \u2264 1`, the derivative specialization is constant in `Y`, so we take it as the representative.",
           "kind": "def",
-          "line": 2160,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2160",
+          "line": 2163,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2163",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_2160",
+          "short_name": "_anon_def_2163",
           "signature": "def noncomputable def \u03be_pre (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) : F[X][Y] :="
         },
         {
           "doc": "The image of `\u27e6\u03be_pre\u27e7` in the function field equals `W^(d-2) \u00b7 \u03b6`, matching Claim A.2's algebraic identity.",
           "kind": "lemma",
-          "line": 2173,
+          "line": 2176,
           "name": "BCIKS20AppendixA.ClaimA2.embeddingOf\ud835\udcaaInto\ud835\udd43_mk_\u03be_pre",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_mk_\u03be_pre",
@@ -26594,25 +26675,25 @@
         {
           "doc": "There exist regular elements `\u03be = W(Z)^(d-2) * \u03b6` as defined in Claim A.2 of Appendix A.4 of [BCIKS20].",
           "kind": "lemma",
-          "line": 2232,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2232",
+          "line": 2235,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2235",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_2232",
+          "short_name": "_anon_lemma_2235",
           "signature": "lemma lemma \u03be_regular (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]"
         },
         {
           "doc": "The elements `\u03be = W(Z)^(d-2) * \u03b6` as defined in Claim A.2 of Appendix A.4 of [BCIKS20]. The `Fact` and `Hypotheses` arguments are kept for API compatibility with downstream callers (`\u03b1`, `\u03b3`); they are needed for the embedding equation in `embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be`.",
           "kind": "def",
-          "line": 2244,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2244",
+          "line": 2247,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2247",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_2244",
+          "short_name": "_anon_def_2247",
           "signature": "def noncomputable def \u03be (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) [_\u03c6 : Fact (Irreducible H)]"
         },
         {
           "doc": "The defining equation `embedding \u03be = W^(d-2) \u00b7 \u03b6`, the specialization of `embeddingOf\ud835\udcaaInto\ud835\udd43_mk_\u03be_pre` to `\u03be`.",
           "kind": "lemma",
-          "line": 2250,
+          "line": 2253,
           "name": "BCIKS20AppendixA.ClaimA2.embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be",
@@ -26621,7 +26702,7 @@
         {
           "doc": "For `i < H.natDegree`, the `i`-th coefficient of `H_tilde' H` is `H.coeff i * H.leadingCoeff ^ (d_H - 1 - i)`.",
           "kind": "lemma",
-          "line": 2264,
+          "line": 2267,
           "name": "BCIKS20AppendixA.ClaimA2.H_tilde'_coeff_of_lt",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "H_tilde'_coeff_of_lt",
@@ -26630,16 +26711,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 2267,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2267",
+          "line": 2270,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2270",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_class_2267",
+          "short_name": "_anon_class_2270",
           "signature": "class classical"
         },
         {
           "doc": "For `i < H.natDegree`, the `natDegree` of the `i`-th coefficient of `H_tilde' H` is bounded by `(totalDegree H - i) + (d_H - 1 - i) \u00b7 natDegree W`, where `W = H.leadingCoeff`.",
           "kind": "lemma",
-          "line": 2285,
+          "line": 2288,
           "name": "BCIKS20AppendixA.ClaimA2.natDegree_H_tilde'_coeff_le",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "natDegree_H_tilde'_coeff_le",
@@ -26648,7 +26729,7 @@
         {
           "doc": "The specialized polynomial `Q = R(x\u2080, \u00b7)` is nonzero, since it is separable (and `0` is not separable: `derivative 0 = 0` is not coprime to `0` in a nontrivial ring).",
           "kind": "lemma",
-          "line": 2300,
+          "line": 2303,
           "name": "BCIKS20AppendixA.ClaimA2.evalX_ne_zero_of_hypotheses",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "evalX_ne_zero_of_hypotheses",
@@ -26657,43 +26738,43 @@
         {
           "doc": "In the `2 \u2264 d` regime, the explicit coefficients of `\u03be_pre`. For `i < d - 1` the coefficient is `P.coeff i * W^(d-2-i)`; at `i = d - 1` it is `P.coeff (d-1) / W`; for `i \u2265 d` it vanishes. Here `P = R'(x\u2080, \u00b7)` and `W = H.leadingCoeff`.",
           "kind": "lemma",
-          "line": 2313,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2313",
+          "line": 2316,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2316",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_2313",
+          "short_name": "_anon_lemma_2316",
           "signature": "lemma lemma \u03be_pre_coeff_of_lt {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]} (hd : 2 \u2264 R.natDegree) {i : \u2115}"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 2318,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2318",
+          "line": 2321,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2321",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_class_2318",
+          "short_name": "_anon_class_2321",
           "signature": "class classical"
         },
         {
           "doc": "The top coefficient of `\u03be_pre` (at index `d - 1`) in the `2 \u2264 d` regime.",
           "kind": "lemma",
-          "line": 2336,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2336",
+          "line": 2339,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2339",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_2336",
+          "short_name": "_anon_lemma_2339",
           "signature": "lemma lemma \u03be_pre_coeff_top {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]} (hd : 2 \u2264 R.natDegree) :"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 2340,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2340",
+          "line": 2343,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2343",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_class_2340",
+          "short_name": "_anon_class_2343",
           "signature": "class classical"
         },
         {
           "doc": "In the `2 \u2264 d` regime, `\u03be_pre` has `Y`-degree at most `d - 1`.",
           "kind": "lemma",
-          "line": 2355,
+          "line": 2358,
           "name": "BCIKS20AppendixA.ClaimA2.natDegree_\u03be_pre_le",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "natDegree_\u03be_pre_le",
@@ -26702,16 +26783,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 2357,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2357",
+          "line": 2360,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2360",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_class_2357",
+          "short_name": "_anon_class_2360",
           "signature": "class classical"
         },
         {
           "doc": "The cofactor degree bound that powers `weight_\u03be_bound`'s tight top-coefficient analysis: writing `Q = R(x\u2080,\u00b7) = H \u00b7 g`, the `Y`-leading coefficient of `\u03be_pre` (after clearing the single denominator `W`) has `X`-degree bounded by the `X`-degree of `g`'s `Y`-leading coefficient. Concretely `\u03be_pre.coeff (d-1) = d \u00b7 g.coeff (d - d_H)` up to the `Y^d` coefficient of `Q`, so its `X`-degree is at most `(g.coeff (d - d_H)).natDegree`.",
           "kind": "lemma",
-          "line": 2379,
+          "line": 2382,
           "name": "BCIKS20AppendixA.ClaimA2.natDegree_\u03be_pre_coeff_top_le",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "natDegree_\u03be_pre_coeff_top_le",
@@ -26720,16 +26801,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 2385,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2385",
+          "line": 2388,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2388",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_class_2385",
+          "short_name": "_anon_class_2388",
           "signature": "class classical"
         },
         {
           "doc": "In the degenerate regime `d_H = d` (cofactor `g` constant in `Y`), separability of `Q = R(x\u2080,\u00b7)` forces the cofactor's constant term to be a unit of `F[X]`, so the `Y`-leading coefficient of `\u03be_pre` is itself a constant (`natDegree` zero). This is the structural fact that keeps the tight `d_H = d` case of `weight_\u03be_bound` within budget.",
           "kind": "lemma",
-          "line": 2439,
+          "line": 2442,
           "name": "BCIKS20AppendixA.ClaimA2.natDegree_\u03be_pre_coeff_top_eq_zero_of_natDegree_eq",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "natDegree_\u03be_pre_coeff_top_eq_zero_of_natDegree_eq",
@@ -26738,25 +26819,25 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 2445,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2445",
+          "line": 2448,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2448",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_class_2445",
+          "short_name": "_anon_class_2448",
           "signature": "class classical"
         },
         {
           "doc": "The per-monomial budget bound for the lower coefficients of `\u03be_pre` (indices `< d - 1`): `n \u00b7 m + (\u03be_pre.coeff n).natDegree \u2264 (d - 1) \u00b7 m`, where `m = D + 1 - d_H`. The margin is `d - d_H \u2265 0`, which holds because `H \u2223 R(x\u2080,\u00b7)` forces `d_H \u2264 d`.",
           "kind": "lemma",
-          "line": 2479,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2479",
+          "line": 2482,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2482",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_2479",
+          "short_name": "_anon_lemma_2482",
           "signature": "lemma lemma \u03be_pre_lower_budget {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]} {D : \u2115}"
         },
         {
           "doc": "The pure-arithmetic core of `sub_term_budget`: with `w \u2264 D - d_H`, `t_H + t_g \u2264 D`, `w + d_H \u2264 t_H` (the leading-coefficient degree bound), `i < d_H`, `d_H < d` and `n = i + (d-1-d_H)`, one has `n\u00b7m + ((t_g - (d-d_H)) + ((t_H - i) + (d_H-1-i)\u00b7w)) \u2264 (d-1)\u00b7m` for `m = D + 1 - d_H`. The margin is `d - d_H \u2265 1`.",
           "kind": "lemma",
-          "line": 2532,
+          "line": 2535,
           "name": "BCIKS20AppendixA.ClaimA2.numeric_sub_budget",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "numeric_sub_budget",
@@ -26765,7 +26846,7 @@
         {
           "doc": "The per-monomial budget bound for the subtracted correction term `C(lc)\u00b7X^(d-1-d_H)\u00b7H_tilde' H` of the `weight_\u03be_bound` representative (`lc = \u03be_pre.coeff (d-1)`). For each `n < d - 1`, `n \u00b7 m + (sub.coeff n).natDegree \u2264 (d - 1) \u00b7 m`. The cofactor identity (`natDegree lc \u2264 natDegree (g.coeff (d - d_H))`) is what keeps the cross terms in budget.",
           "kind": "lemma",
-          "line": 2562,
+          "line": 2565,
           "name": "BCIKS20AppendixA.ClaimA2.sub_term_budget",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "sub_term_budget",
@@ -26774,16 +26855,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 2574,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2574",
+          "line": 2577,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2577",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_class_2574",
+          "short_name": "_anon_class_2577",
           "signature": "class classical"
         },
         {
           "doc": "The bound of the weight `\u039b` of the elements `\u03b6` as stated in Claim A.2 of Appendix A.4 of [BCIKS20]. The hypothesis `2 \u2264 natDegreeY R` is required: the paper's `\u03be = W^(d-2)\u00b7\u03b6` lives in the regime `d \u2265 2`, and the statement is false at `d = 1` (e.g. `H = C(Z)\u00b7Y + 1` with `R(x\u2080,\u00b7) = H` gives `\u03be_pre = C(Z)` of weight `1`, while the claimed budget is `0`; `Nat` truncated subtraction silently extends `W^(d-2)` to `d < 2` where the bound fails).",
           "kind": "lemma",
-          "line": 2637,
+          "line": 2640,
           "name": "BCIKS20AppendixA.ClaimA2.weight_\u03be_bound",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "weight_\u03be_bound",
@@ -26792,64 +26873,64 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 2643,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2643",
+          "line": 2646,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2646",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_class_2643",
+          "short_name": "_anon_class_2646",
           "signature": "class classical"
         },
         {
           "doc": "There exist regular elements `\u03b2` with a weight bound as given in Claim A.2 of Appendix A.4 of [BCIKS20].",
           "kind": "lemma",
-          "line": 2784,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2784",
+          "line": 2787,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2787",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_2784",
+          "short_name": "_anon_lemma_2787",
           "signature": "lemma lemma \u03b2_regular (R : F[X][X][Y])"
         },
         {
           "doc": "The definition of the regular elements `\u03b2` giving the numerators of the Hensel lift coefficients as defined in Claim A.2 of Appendix A.4 of [BCIKS20].",
           "kind": "def",
-          "line": 2795,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2795",
+          "line": 2798,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2798",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_2795",
+          "short_name": "_anon_def_2798",
           "signature": "def def \u03b2 (R : F[X][X][Y]) (t : \u2115) : \ud835\udcaa H :="
         },
         {
           "doc": "The Hensel lift coefficients `\u03b1` are of the form as given in Claim A.2 of Appendix A.4 of [BCIKS20].",
           "kind": "def",
-          "line": 2803,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2803",
+          "line": 2806,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2806",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_2803",
+          "short_name": "_anon_def_2806",
           "signature": "def def \u03b1 (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) [\u03c6 : Fact (Irreducible H)]"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 2809,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2809",
+          "line": 2812,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2812",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_2809",
+          "short_name": "_anon_def_2812",
           "signature": "def def \u03b1' (x\u2080 : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)"
         },
         {
           "doc": "The power series `\u03b3 = \u2211 \u03b1^t (X - x\u2080)^t \u2208 \ud835\udd43 [[X - x\u2080]]` as defined in Appendix A.4 of [BCIKS20].",
           "kind": "def",
-          "line": 2815,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2815",
+          "line": 2818,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2818",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_2815",
+          "short_name": "_anon_def_2818",
           "signature": "def def \u03b3 (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) [\u03c6 : Fact (Irreducible H)]"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 2825,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2825",
+          "line": 2828,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2828",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_2825",
+          "short_name": "_anon_def_2828",
           "signature": "def def \u03b3' (x\u2080 : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)"
         }
       ]
@@ -31247,7 +31328,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 720,
+          "line": 993,
           "name": "Verifier.liftContext_rbr_soundness",
           "namespace": "Verifier",
           "short_name": "liftContext_rbr_soundness",
@@ -31256,7 +31337,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 755,
+          "line": 1028,
           "name": "Verifier.liftContext_rbr_knowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "liftContext_rbr_knowledgeSoundness",
@@ -31265,7 +31346,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 787,
+          "line": 1060,
           "name": "OuterStmtIn_Test",
           "namespace": "",
           "short_name": "OuterStmtIn_Test",
@@ -31274,7 +31355,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 788,
+          "line": 1061,
           "name": "InnerStmtIn_Test",
           "namespace": "",
           "short_name": "InnerStmtIn_Test",
@@ -31283,7 +31364,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 791,
+          "line": 1064,
           "name": "outerRelIn_Test",
           "namespace": "",
           "short_name": "outerRelIn_Test",
@@ -31292,7 +31373,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 794,
+          "line": 1067,
           "name": "innerRelIn_Test",
           "namespace": "",
           "short_name": "innerRelIn_Test",
@@ -31301,7 +31382,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 797,
+          "line": 1070,
           "name": "OuterStmtOut_Test",
           "namespace": "",
           "short_name": "OuterStmtOut_Test",
@@ -31310,7 +31391,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 798,
+          "line": 1071,
           "name": "InnerStmtOut_Test",
           "namespace": "",
           "short_name": "InnerStmtOut_Test",
@@ -31319,7 +31400,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 801,
+          "line": 1074,
           "name": "outerRelOut_Test",
           "namespace": "",
           "short_name": "outerRelOut_Test",
@@ -31328,7 +31409,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 804,
+          "line": 1077,
           "name": "innerRelOut_Test",
           "namespace": "",
           "short_name": "innerRelOut_Test",
@@ -31337,7 +31418,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 808,
+          "line": 1081,
           "name": "testStmtLens",
           "namespace": "",
           "short_name": "testStmtLens",
@@ -31346,7 +31427,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 813,
+          "line": 1086,
           "name": "testLens",
           "namespace": "",
           "short_name": "testLens",
@@ -31355,7 +31436,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 819,
+          "line": 1092,
           "name": "testLensE",
           "namespace": "",
           "short_name": "testLensE",
@@ -31364,7 +31445,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 824,
+          "line": 1097,
           "name": "instTestLensComplete",
           "namespace": "",
           "short_name": "instTestLensComplete",
@@ -31373,7 +31454,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 834,
+          "line": 1107,
           "name": "instTestLensKnowledgeSound",
           "namespace": "",
           "short_name": "instTestLensKnowledgeSound",
@@ -42258,7 +42339,7 @@
         {
           "doc": "Knowledge state function for the batching phase.",
           "kind": "def",
-          "line": 291,
+          "line": 302,
           "name": "RingSwitching.BatchingPhase.batchingKnowledgeStateFunction",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingKnowledgeStateFunction",
@@ -42267,20 +42348,20 @@
         {
           "doc": "Perfect completeness for the batching phase oracle reduction.",
           "kind": "theorem",
-          "line": 337,
+          "line": 379,
           "name": "RingSwitching.BatchingPhase.batchingReduction_perfectCompleteness",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingReduction_perfectCompleteness",
           "signature": "theorem batchingReduction_perfectCompleteness :"
         },
         {
-          "doc": "RBR knowledge soundness for the batching phase oracle verifier.",
+          "doc": "RBR knowledge soundness for the batching phase oracle verifier. `IsDomain K` (alongside the existing `IsDomain L`) is required by the round-0 knowledge-state conjunct's DP24 capstone; it holds in every real instantiation (e.g. `binaryTowerProfile` builds from a field `K`).",
           "kind": "theorem",
-          "line": 349,
+          "line": 404,
           "name": "RingSwitching.BatchingPhase.batchingOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingOracleVerifier_rbrKnowledgeSoundness",
-          "signature": "theorem batchingOracleVerifier_rbrKnowledgeSoundness [IsDomain L] :"
+          "signature": "theorem batchingOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :"
         }
       ]
     },
@@ -42386,13 +42467,13 @@
           "signature": "def fullRbrKnowledgeError (i : (fullPspec \u03ba L K P \u2113' mlIOPCS).ChallengeIdx) : \u211d\u22650"
         },
         {
-          "doc": "Round-by-round knowledge soundness for the full ring-switching oracle verifier",
+          "doc": "Round-by-round knowledge soundness for the full ring-switching oracle verifier. `IsDomain K` (with the existing `IsDomain L`) is inherited from the batching phase's knowledge soundness, where it backs the DP24 row-extraction capstone; it holds in every real instantiation (`binaryTowerProfile` builds from a field `K`).",
           "kind": "theorem",
-          "line": 145,
+          "line": 148,
           "name": "RingSwitching.FullRingSwitching.fullOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.FullRingSwitching",
           "short_name": "fullOracleVerifier_rbrKnowledgeSoundness",
-          "signature": "theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] :"
+          "signature": "theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :"
         }
       ]
     },
@@ -42714,9 +42795,36 @@
           "signature": "def binaryTowerProfile (\u03ba : \u2115) [NeZero \u03ba] (K L : Type)"
         },
         {
+          "doc": "Row coordinates of `0` vanish: a profile-level consequence of `decomposeRows_add` (apply it to `z = w = 0` and cancel).",
+          "kind": "lemma",
+          "line": 530,
+          "name": "RingSwitching.RingSwitchingProfile.decomposeRows_zero",
+          "namespace": "RingSwitching",
+          "short_name": "RingSwitchingProfile.decomposeRows_zero",
+          "signature": "lemma RingSwitchingProfile.decomposeRows_zero (u : Fin \u03ba \u2192 Fin 2) :"
+        },
+        {
+          "doc": "Row coordinates are additive over finite sums: induction from the binary additivity law `decomposeRows_add` (with `decomposeRows_zero` as the base case).",
+          "kind": "lemma",
+          "line": 541,
+          "name": "RingSwitching.RingSwitchingProfile.decomposeRows_finsetSum",
+          "namespace": "RingSwitching",
+          "short_name": "RingSwitchingProfile.decomposeRows_finsetSum",
+          "signature": "lemma RingSwitchingProfile.decomposeRows_finsetSum {\u03b9 : Type*} [DecidableEq \u03b9] (s : Finset \u03b9)"
+        },
+        {
+          "doc": "`Fintype` corollary of `decomposeRows_finsetSum` for sums over `univ`.",
+          "kind": "lemma",
+          "line": 550,
+          "name": "RingSwitching.RingSwitchingProfile.decomposeRows_sum",
+          "namespace": "RingSwitching",
+          "short_name": "RingSwitchingProfile.decomposeRows_sum",
+          "signature": "lemma RingSwitchingProfile.decomposeRows_sum {\u03b9 : Type*} [Fintype \u03b9] [DecidableEq \u03b9]"
+        },
+        {
           "doc": "A single `eqPolynomial` factor, evaluated through the mixed embedding `eval\u2082 \u03c6\u2081 (\u03c6\u2080 \u2218 g)` at a Boolean coefficient, collapses to the column embedding `\u03c6\u2080`, because `\u03c6\u2080` and `\u03c6\u2081` agree on the Boolean literals `{0, 1}`.",
           "kind": "lemma",
-          "line": 538,
+          "line": 594,
           "name": "RingSwitching.singleEq_collapse",
           "namespace": "RingSwitching",
           "short_name": "singleEq_collapse",
@@ -42725,25 +42833,16 @@
         {
           "doc": "The full `eqPolynomial` collapses through the mixed embedding to `\u03c6\u2080` of its ordinary evaluation, by multiplying the `singleEq_collapse` factors.",
           "kind": "lemma",
-          "line": 555,
+          "line": 611,
           "name": "RingSwitching.eqPoly_collapse",
           "namespace": "RingSwitching",
           "short_name": "eqPoly_collapse",
           "signature": "lemma eqPoly_collapse {\u2113_suf : \u2115} (g : Fin \u2113_suf \u2192 L\u2080) (w : Fin \u2113_suf \u2192 Fin 2) :"
         },
         {
-          "doc": "**DP24 packing expansion.** The prover's tensor `\u015d := \u03c6\u2081(t')(\u03c6\u2080(r_\u03ba), \u2026, \u03c6\u2080(r_{\u2113-1}))` expands over the suffix hypercube as `\u015d = \u03a3_{w \u2208 {0,1}^\u2113'} \u03c6\u2080(eq\u0303(w, r_suffix)) \u00b7 \u03c6\u2081(t'(w))`, i.e. `\u03a3_w eq\u0303(r_suffix, w) \u2297 t'(w)`.",
-          "kind": "lemma",
-          "line": 570,
-          "name": "RingSwitching.embedded_MLP_eval_eq_sum",
-          "namespace": "RingSwitching",
-          "short_name": "embedded_MLP_eval_eq_sum",
-          "signature": "lemma embedded_MLP_eval_eq_sum (\u03b2 : Module.Basis (Fin \u03ba\u2080 \u2192 Fin 2) K\u2080 L\u2080)"
-        },
-        {
           "doc": "`decompose_tensor_algebra_rows` is additive over finite sums of tensors.",
           "kind": "lemma",
-          "line": 600,
+          "line": 624,
           "name": "RingSwitching.decompose_rows_sum",
           "namespace": "RingSwitching",
           "short_name": "decompose_rows_sum",
@@ -42752,7 +42851,7 @@
         {
           "doc": "Row decomposition of a separated tensor `\u03c6\u2080(a) \u00b7 \u03c6\u2081(b) = a \u2297 b`: the `u`-th row component represents the *right* (`\u03c6\u2081`) factor `b`, scaled by `a`.",
           "kind": "lemma",
-          "line": 610,
+          "line": 634,
           "name": "RingSwitching.decompose_rows_\u03c6\u2080\u03c6\u2081",
           "namespace": "RingSwitching",
           "short_name": "decompose_rows_\u03c6\u2080\u03c6\u2081",
@@ -42761,25 +42860,16 @@
         {
           "doc": "The basis coordinate of a packed evaluation recovers the small-field coefficient: `\u03b2.repr (t'(w)) u = t(u, w)`, where `t' = packMLE \u03b2 t`.",
           "kind": "lemma",
-          "line": 623,
+          "line": 647,
           "name": "RingSwitching.packMLE_repr_eval",
           "namespace": "RingSwitching",
           "short_name": "packMLE_repr_eval",
           "signature": "lemma packMLE_repr_eval (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113'] (h_l : \u2113 = \u2113' + \u03ba\u2080)"
         },
         {
-          "doc": "**Row recovery of `t`-evaluations.** The row components of the prover's tensor `\u015d = embedded_MLP_eval (packMLE \u03b2 t) r` carry the suffix-`eq`-weighted evaluations of `t`: `(decompose_rows \u015d)_u = \u03a3_{w \u2208 {0,1}^\u2113'} t(u, w) \u00b7 eq\u0303(w, r_suffix)`. This is the load-bearing identity for reconstructing `t(r)` from `\u015d`. It uses the *row* decomposition (which represents the `t'`/`\u03c6\u2081` factor); the verifier's `performCheckOriginalEvaluation` instead uses the *column* decomposition \u2014 see the module note above.",
-          "kind": "lemma",
-          "line": 646,
-          "name": "RingSwitching.decompose_rows_packMLE",
-          "namespace": "RingSwitching",
-          "short_name": "decompose_rows_packMLE",
-          "signature": "lemma decompose_rows_packMLE (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113'] (h_l : \u2113 = \u2113' + \u03ba\u2080)"
-        },
-        {
           "doc": "`eqTilde` written as a product over coordinates of the symmetric Boolean factor.",
           "kind": "lemma",
-          "line": 665,
+          "line": 664,
           "name": "RingSwitching.eqTilde_prod",
           "namespace": "RingSwitching",
           "short_name": "eqTilde_prod",
@@ -42788,7 +42878,7 @@
         {
           "doc": "A product over `Fin (\u2113' + \u03ba\u2080)` of a function defined by the \u03ba/\u2113'-dichotomy splits as the product of the \u03ba-prefix and \u2113'-suffix products.",
           "kind": "lemma",
-          "line": 676,
+          "line": 675,
           "name": "RingSwitching.prod_concat_split",
           "namespace": "RingSwitching",
           "short_name": "prod_concat_split",
@@ -42797,7 +42887,7 @@
         {
           "doc": "`eqTilde` of concatenated Boolean / point data factors along the \u03ba/\u2113' split: `eqTilde (concat fp fs) (concat gp gs) = eqTilde fp gp * eqTilde fs gs`.",
           "kind": "lemma",
-          "line": 713,
+          "line": 712,
           "name": "RingSwitching.eqTilde_concat_split",
           "namespace": "RingSwitching",
           "short_name": "eqTilde_concat_split",
@@ -42806,7 +42896,7 @@
         {
           "doc": "`aeval` of `eqPolynomial` at a Boolean coefficient vector lands in `L\u2080` as `eqTilde`.",
           "kind": "lemma",
-          "line": 730,
+          "line": 729,
           "name": "RingSwitching.aeval_eqPolynomial_zeroOne",
           "namespace": "RingSwitching",
           "short_name": "aeval_eqPolynomial_zeroOne",
@@ -42815,7 +42905,7 @@
         {
           "doc": "**MLE evaluation identity (through the algebra map).** For a multilinear `t` over `K\u2080`, its `L\u2080`-evaluation at `r` equals the suffix-`eq`-weighted sum of its Boolean evaluations: `aeval r t = \u2211_{b \u2208 {0,1}^\u2113} algebraMap(t(b)) \u00b7 eq\u0303(b, r)`.",
           "kind": "lemma",
-          "line": 747,
+          "line": 746,
           "name": "RingSwitching.aeval_eq_sum_eqTilde",
           "namespace": "RingSwitching",
           "short_name": "aeval_eq_sum_eqTilde",
@@ -42824,16 +42914,88 @@
         {
           "doc": "The \u03ba-then-\u2113' hypercube concatenation `concatBit v w i = v i` for `i < \u03ba`, `= w (i - \u03ba)` otherwise \u2014 matching `packMLE` / `decompose_rows_packMLE`. Packaged as an `Equiv`.",
           "kind": "def",
-          "line": 762,
+          "line": 761,
           "name": "RingSwitching.hypercubeSplitEquiv",
           "namespace": "RingSwitching",
           "short_name": "hypercubeSplitEquiv",
           "signature": "def hypercubeSplitEquiv (\u2113 \u2113' : \u2115) (h_l : \u2113 = \u2113' + \u03ba\u2080) :"
         },
         {
+          "doc": "Generic `singleEq_collapse`: a single `eqPolynomial` factor evaluated through the mixed embedding `eval\u2082 P.\u03c6\u2081 (P.\u03c6\u2080 \u2218 g)` at a Boolean coefficient collapses to `P.\u03c6\u2080` of its ordinary evaluation, since `P.\u03c6\u2080` and `P.\u03c6\u2081` agree on the Boolean literals `{0, 1}` (both are ring homs).",
+          "kind": "lemma",
+          "line": 797,
+          "name": "RingSwitching.singleEq_collapse'",
+          "namespace": "RingSwitching",
+          "short_name": "singleEq_collapse'",
+          "signature": "lemma singleEq_collapse' {\u2113_suf : \u2115} (g : Fin \u2113_suf \u2192 L\u2080) (w : Fin \u2113_suf \u2192 Fin 2)"
+        },
+        {
+          "doc": "Generic `eqPoly_collapse`: the full `eqPolynomial` collapses through the mixed embedding to `P.\u03c6\u2080` of its ordinary evaluation, by multiplying the `singleEq_collapse'` factors.",
+          "kind": "lemma",
+          "line": 814,
+          "name": "RingSwitching.eqPoly_collapse'",
+          "namespace": "RingSwitching",
+          "short_name": "eqPoly_collapse'",
+          "signature": "lemma eqPoly_collapse' {\u2113_suf : \u2115} (g : Fin \u2113_suf \u2192 L\u2080) (w : Fin \u2113_suf \u2192 Fin 2) :"
+        },
+        {
+          "doc": "**Generic DP24 packing expansion** over an abstract `P`. The prover's tensor `\u015d := P.\u03c6\u2081(t')(P.\u03c6\u2080(r_\u03ba), \u2026, P.\u03c6\u2080(r_{\u2113-1}))` expands over the suffix hypercube as `\u015d = \u03a3_{w \u2208 {0,1}^\u2113'} P.\u03c6\u2080(eq\u0303(w, r_suffix)) \u00b7 P.\u03c6\u2081(t'(w))`.",
+          "kind": "lemma",
+          "line": 829,
+          "name": "RingSwitching.embedded_MLP_eval_eq_sum'",
+          "namespace": "RingSwitching",
+          "short_name": "embedded_MLP_eval_eq_sum'",
+          "signature": "lemma embedded_MLP_eval_eq_sum' (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113'] (h_l : \u2113 = \u2113' + \u03ba\u2080)"
+        },
+        {
+          "doc": "**Generic row recovery of `t`-evaluations** over an abstract `P` whose basis is `P.basis`. The row components of `\u015d = embedded_MLP_eval (packMLE P.basis t) r` carry the suffix-`eq`-weighted evaluations of `t`. Routes through `embedded_MLP_eval_eq_sum'`, the generic row additivity `P.decomposeRows_sum`, the atomic extraction law `P.decomposeRows_\u03c6\u2080_mul_\u03c6\u2081`, and the profile-independent `packMLE_repr_eval`.",
+          "kind": "lemma",
+          "line": 862,
+          "name": "RingSwitching.decompose_rows_packMLE'",
+          "namespace": "RingSwitching",
+          "short_name": "decompose_rows_packMLE'",
+          "signature": "lemma decompose_rows_packMLE' (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113'] (h_l : \u2113 = \u2113' + \u03ba\u2080)"
+        },
+        {
+          "doc": "**Generic DP24 ring-switching capstone (sum form)** over an abstract `P`. The verifier's row-decomposition check sum, applied to the honest tensor `\u015d = embedded_MLP_eval (packMLE P.basis t) r`, reconstructs exactly `t(r) = aeval r t`.",
+          "kind": "lemma",
+          "line": 882,
+          "name": "RingSwitching.check_rows_sum_eq_aeval'",
+          "namespace": "RingSwitching",
+          "short_name": "check_rows_sum_eq_aeval'",
+          "signature": "lemma check_rows_sum_eq_aeval' (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113'] (h_l : \u2113 = \u2113' + \u03ba\u2080)"
+        },
+        {
+          "doc": "**Generic DP24 ring-switching capstone (decision form)** over an abstract `P`. The verifier's Step-2 check on the honest tensor `\u015d = embedded_MLP_eval (packMLE P.basis t) r` accepts exactly when the original claim equals `t(r) = aeval r t`. This is the soundness/completeness pivot consumed by the batching phase for an arbitrary profile.",
+          "kind": "lemma",
+          "line": 936,
+          "name": "RingSwitching.performCheckOriginalEvaluation_packMLE_iff'",
+          "namespace": "RingSwitching",
+          "short_name": "performCheckOriginalEvaluation_packMLE_iff'",
+          "signature": "lemma performCheckOriginalEvaluation_packMLE_iff' (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113']"
+        },
+        {
+          "doc": "**DP24 packing expansion.** The prover's tensor `\u015d := \u03c6\u2081(t')(\u03c6\u2080(r_\u03ba), \u2026, \u03c6\u2080(r_{\u2113-1}))` expands over the suffix hypercube as `\u015d = \u03a3_{w \u2208 {0,1}^\u2113'} \u03c6\u2080(eq\u0303(w, r_suffix)) \u00b7 \u03c6\u2081(t'(w))`, i.e. `\u03a3_w eq\u0303(r_suffix, w) \u2297 t'(w)`.",
+          "kind": "lemma",
+          "line": 966,
+          "name": "RingSwitching.embedded_MLP_eval_eq_sum",
+          "namespace": "RingSwitching",
+          "short_name": "embedded_MLP_eval_eq_sum",
+          "signature": "lemma embedded_MLP_eval_eq_sum (\u03b2 : Module.Basis (Fin \u03ba\u2080 \u2192 Fin 2) K\u2080 L\u2080)"
+        },
+        {
+          "doc": "**Row recovery of `t`-evaluations.** The row components of the prover's tensor `\u015d = embedded_MLP_eval (packMLE \u03b2 t) r` carry the suffix-`eq`-weighted evaluations of `t`: `(decompose_rows \u015d)_u = \u03a3_{w \u2208 {0,1}^\u2113'} t(u, w) \u00b7 eq\u0303(w, r_suffix)`. This is the load-bearing identity for reconstructing `t(r)` from `\u015d`. It uses the *row* decomposition (which represents the `t'`/`\u03c6\u2081` factor); the verifier's `performCheckOriginalEvaluation` instead uses the *column* decomposition \u2014 see the module note above.",
+          "kind": "lemma",
+          "line": 1002,
+          "name": "RingSwitching.decompose_rows_packMLE",
+          "namespace": "RingSwitching",
+          "short_name": "decompose_rows_packMLE",
+          "signature": "lemma decompose_rows_packMLE (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113'] (h_l : \u2113 = \u2113' + \u03ba\u2080)"
+        },
+        {
           "doc": "**DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to the prover's honest tensor `\u015d = embedded_MLP_eval (packMLE \u03b2 t) r`, reconstructs exactly `t(r) = aeval r t`: `\u2211_v eq\u0303(v, r_prefix) \u00b7 (rows \u015d)_v = aeval r t`.",
           "kind": "lemma",
-          "line": 786,
+          "line": 1023,
           "name": "RingSwitching.check_rows_sum_eq_aeval",
           "namespace": "RingSwitching",
           "short_name": "check_rows_sum_eq_aeval",
@@ -42842,11 +43004,56 @@
         {
           "doc": "**DP24 ring-switching capstone (decision form).** The verifier's Step-2 check on the prover's honest tensor `\u015d = embedded_MLP_eval (packMLE \u03b2 t) r` accepts exactly when the original claim equals `t(r) = aeval r t`. This is the soundness/completeness pivot for the batching phase.",
           "kind": "lemma",
-          "line": 843,
+          "line": 1080,
           "name": "RingSwitching.performCheckOriginalEvaluation_packMLE_iff",
           "namespace": "RingSwitching",
           "short_name": "performCheckOriginalEvaluation_packMLE_iff",
           "signature": "lemma performCheckOriginalEvaluation_packMLE_iff (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113']"
+        },
+        {
+          "doc": "**Sumcheck hypercube sum depends on the evaluation domain `\ud835\udcd1`.** The single-variable sumcheck consistency sum of the linear polynomial `X 0` over the 2-element domain `{\ud835\udcd1 0, \ud835\udcd1 1}` equals `\ud835\udcd1 0 + \ud835\udcd1 1`.",
+          "kind": "lemma",
+          "line": 1125,
+          "name": "RingSwitching.sumcheckSum_X0_eq",
+          "namespace": "RingSwitching",
+          "short_name": "sumcheckSum_X0_eq",
+          "signature": "lemma sumcheckSum_X0_eq (\ud835\udcd1 : Fin 2 \u21aa L\u2080) :"
+        },
+        {
+          "doc": "**No `\ud835\udcd1`-free target satisfies sumcheck consistency for all domains `\ud835\udcd1`.** If a single value `c` (independent of `\ud835\udcd1`) equals the sumcheck consistency sum of `X 0` for two embeddings `\ud835\udcd1\u2081`, `\ud835\udcd1\u2082`, then `\ud835\udcd1\u2081 0 + \ud835\udcd1\u2081 1 = \ud835\udcd1\u2082 0 + \ud835\udcd1\u2082 1`. Contrapositive: whenever two domains have different element sums (e.g. `{0,1}` vs `{0,\u03c9}` in `GF(4)`, where `1 \u2260 \u03c9`), no `\ud835\udcd1`-free target can be consistent with both. Since `compute_s0` does not depend on `\ud835\udcd1`, this obstructs `sumcheckConsistencyProp (compute_s0 \u2026) H` for a free `\ud835\udcd1`.",
+          "kind": "lemma",
+          "line": 1144,
+          "name": "RingSwitching.sumcheckTarget_domain_indep",
+          "namespace": "RingSwitching",
+          "short_name": "sumcheckTarget_domain_indep",
+          "signature": "lemma sumcheckTarget_domain_indep (c : L\u2080) (\ud835\udcd1\u2081 \ud835\udcd1\u2082 : Fin 2 \u21aa L\u2080)"
+        },
+        {
+          "doc": "The Boolean hypercube embedding `(Fin k \u2192 Fin 2) \u21aa (Fin k \u2192 L\u2080)` induced by a 2-element domain embedding `\ud835\udcd1`, sending `b \u21a6 (j \u21a6 \ud835\udcd1 (b j))`.",
+          "kind": "def",
+          "line": 1165,
+          "name": "RingSwitching.boolHypercubeEmb",
+          "namespace": "RingSwitching",
+          "short_name": "boolHypercubeEmb",
+          "signature": "def boolHypercubeEmb (\ud835\udcd1 : Fin 2 \u21aa L\u2080) (k : \u2115) : (Fin k \u2192 Fin 2) \u21aa (Fin k \u2192 L\u2080) where"
+        },
+        {
+          "doc": "**`\ud835\udcd1`-domain hypercube sum reindexes to the Boolean hypercube.** For any `\ud835\udcd1 : Fin 2 \u21aa L\u2080`, summing `f` over the `k`-fold product domain `{\ud835\udcd1 0, \ud835\udcd1 1}^k` equals summing `f \u2218 (\ud835\udcd1 \u2218 \u00b7)` over the Boolean hypercube `Fin k \u2192 Fin 2`. (No pinning required \u2014 `\ud835\udcd1` only needs to be an embedding.)",
+          "kind": "lemma",
+          "line": 1173,
+          "name": "RingSwitching.boolHypercube_sum_eq",
+          "namespace": "RingSwitching",
+          "short_name": "boolHypercube_sum_eq",
+          "signature": "lemma boolHypercube_sum_eq (\ud835\udcd1 : Fin 2 \u21aa L\u2080) {k : \u2115} {M : Type*} [AddCommMonoid M]"
+        },
+        {
+          "doc": "**Pinned-`\ud835\udcd1` Boolean-domain sumcheck sum.** When `\ud835\udcd1` is pinned to the Boolean embedding (`\ud835\udcd1 c = if c = 1 then 1 else 0`, i.e. `\ud835\udcd1 0 = 0`, `\ud835\udcd1 1 = 1`), the `\ud835\udcd1`-domain hypercube sum equals the canonical sum over `Fin k \u2192 Fin 2` with the Boolean-literal evaluation point `j \u21a6 (if b j = 1 then 1 else 0)`. This is the `\ud835\udcd1`-free right-hand side of `sumcheckConsistencyProp` in the regime DP24 instantiates.",
+          "kind": "lemma",
+          "line": 1193,
+          "name": "RingSwitching.boolHypercube_sum_pinned",
+          "namespace": "RingSwitching",
+          "short_name": "boolHypercube_sum_pinned",
+          "signature": "lemma boolHypercube_sum_pinned (\ud835\udcd1 : Fin 2 \u21aa L\u2080)"
         }
       ]
     },
@@ -43250,7 +43457,7 @@
         {
           "doc": "The knowledge state function for the final sumcheck step",
           "kind": "def",
-          "line": 449,
+          "line": 456,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckKnowledgeStateFunction",
@@ -43259,7 +43466,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the final sumcheck step",
           "kind": "theorem",
-          "line": 468,
+          "line": 491,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
@@ -43268,7 +43475,7 @@
         {
           "doc": "Composed oracle verifier for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 488,
+          "line": 511,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleVerifier",
@@ -43277,7 +43484,7 @@
         {
           "doc": "Composed oracle reduction for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 497,
+          "line": 520,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleReduction",
@@ -43286,7 +43493,7 @@
         {
           "doc": "Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 514,
+          "line": 537,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleVerifier",
@@ -43295,7 +43502,7 @@
         {
           "doc": "Large-field reduction: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 523,
+          "line": 546,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleReduction",
@@ -43304,7 +43511,7 @@
         {
           "doc": "Perfect completeness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 537,
+          "line": 560,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_perfectCompleteness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_perfectCompleteness",
@@ -43313,7 +43520,7 @@
         {
           "doc": "standard sumcheck error",
           "kind": "def",
-          "line": 564,
+          "line": 587,
           "name": "RingSwitching.SumcheckPhase.coreInteractionRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionRbrKnowledgeError",
@@ -43322,7 +43529,7 @@
         {
           "doc": "RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 570,
+          "line": 593,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_rbrKnowledgeSoundness",
@@ -47847,7 +48054,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5192,
+      "declarations": 5215,
       "files": 282
     }
   }
