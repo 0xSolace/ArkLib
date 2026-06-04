@@ -442,8 +442,15 @@ def finalSumcheckKStateProp {m : Fin (1 + 1)} (tr : Transcript m (pSpecFinalSumc
       stmt.sumcheck_target = eq_tilde_eval * c
 
     let final_eval : Prop := witMid.t'.val.eval stmt.challenges = c
-    sumcheckFinalLocalCheck ∧ final_eval
-    ∧ aOStmtIn.initialCompatibility ⟨witMid.t', oStmt⟩
+    -- The KState at the last index carries the *full* `masterKStateProp` (structural invariant +
+    -- sumcheck consistency + initial compatibility) on top of the round-local checks. This is what
+    -- makes `toFun_next` (recovering the index-0 `masterKStateProp` from the index-1 KState with the
+    -- same `witMid`) provable: the index-0 prop requires `witnessStructuralInvariant` and
+    -- `sumcheckConsistencyProp`, which would be unrecoverable from the bare local checks alone.
+    RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
+      (stmtIdx := Fin.last ℓ')
+      (stmt := stmt) (oStmt := oStmt) (wit := witMid)
+      (localChecks := sumcheckFinalLocalCheck ∧ final_eval)
 
 /-- The knowledge state function for the final sumcheck step -/
 noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
@@ -460,8 +467,24 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
     simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, Fin.val_last, cast_eq,
       Set.mem_setOf_eq, finalSumcheckKStateProp, masterKStateProp, true_and]
   toFun_next := fun m hDir stmt tr msg witMid h => by
-    sorry
+    obtain ⟨stmt, oStmt⟩ := stmt
+    fin_cases m
+    -- `m.succ = ⟨1, _⟩` (the last index): `h` is the full `masterKStateProp` with the round-local
+    -- checks. `m.castSucc = ⟨0, _⟩`: the goal is the same `masterKStateProp` with
+    -- `localChecks := True`. `extractMid` returns `witMid` unchanged, so we drop the local checks.
+    simp only [finalSumcheckKStateProp, masterKStateProp, true_and] at h ⊢
+    exact ⟨h.2.1, h.2.2.1, h.2.2.2⟩
   toFun_full := fun stmt tr witOut h => by
+    -- BLOCKED: this is a probabilistic-extraction obligation. From `h` (the verifier outputs an
+    -- output statement in `toRelInput` with positive probability) one must recover the algebraic
+    -- KState at the last index. Two sub-obligations make it heavy:
+    --   (1) the `simulateQ`/`OptionT`/`Verifier.run` support extraction (mirrors the ~100-line
+    --       `Sumcheck.Spec.SingleRound.Simple.reduction_perfectCompleteness`), and
+    --   (2) `sumcheckConsistencyProp` at `Fin.last ℓ'` reduces to the deep DP24 identity
+    --       `(multpoly · t')(challenges) = compute_final_eq_value · t'(challenges)`
+    --       (i.e. `A_MLE` evaluated at the challenges equals the final eq value), an algebraic
+    --       lemma that belongs to the Prelude algebra layer (owned by a sibling agent) and is not
+    --       a local unfolding. Deferred per the heavy-machinery / cross-file-lemma walls.
     sorry
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/
