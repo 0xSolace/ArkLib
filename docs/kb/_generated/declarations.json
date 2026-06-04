@@ -13660,7 +13660,7 @@
         {
           "doc": "The joint disagreement set of the pairs `(u\u2080, u\u2081)` and `(p\u2080, p\u2081)`.",
           "kind": "def",
-          "line": 35,
+          "line": 41,
           "name": "BCKHS25.jointDisagreement",
           "namespace": "BCKHS25",
           "short_name": "jointDisagreement",
@@ -13669,7 +13669,7 @@
         {
           "doc": "At a joint-disagreement point, at most one `z` can reconcile the line combinations: the difference is an affine-in-`z` expression with not all coefficients zero.",
           "kind": "lemma",
-          "line": 41,
+          "line": 47,
           "name": "BCKHS25.card_reconciling_le_one",
           "namespace": "BCKHS25",
           "short_name": "card_reconciling_le_one",
@@ -13678,16 +13678,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 44,
-          "name": "BCKHS25._anon_class_44",
+          "line": 50,
+          "name": "BCKHS25._anon_class_50",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_44",
+          "short_name": "_anon_class_50",
           "signature": "class classical"
         },
         {
           "doc": "**[BCKHS25] Lemma 2.4 (collinear proximates), product form.** If `\u0394(u\u2080 + z\u00b7u\u2081, p\u2080 + z\u00b7p\u2081) \u2264 e` for every `z` in a set `Z` with `|Z| \u2265 2`, then the joint disagreement count `d` satisfies `(|Z| \u2212 1) \u00b7 d \u2264 |Z| \u00b7 e` (equivalently `d \u2264 |Z|/(|Z|\u22121) \u00b7 e`).",
           "kind": "theorem",
-          "line": 70,
+          "line": 76,
           "name": "BCKHS25.card_jointDisagreement_mul_le",
           "namespace": "BCKHS25",
           "short_name": "card_jointDisagreement_mul_le",
@@ -13696,10 +13696,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 75,
-          "name": "BCKHS25._anon_class_75",
+          "line": 81,
+          "name": "BCKHS25._anon_class_81",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_75",
+          "short_name": "_anon_class_81",
           "signature": "class classical"
         }
       ]
