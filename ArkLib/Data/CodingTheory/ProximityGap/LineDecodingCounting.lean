@@ -67,7 +67,10 @@ theorem double_coverage_counterexample :
   · exact Nat.le_refl 1
   · decide
   · decide
-  · intro γ _; decide
+  · intro γ _
+    -- `S γ = {1,2}` is constant in `γ`; beta-reduce before `decide` (no free `γ` remains).
+    simp only
+    decide
   · decide
 
 end CodingTheory.ProximityGap.LineDecodingCounting
