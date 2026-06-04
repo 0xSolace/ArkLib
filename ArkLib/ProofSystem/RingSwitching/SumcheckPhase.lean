@@ -353,10 +353,24 @@ noncomputable def finalSumcheckVerifier :
         original_claim := 0,
       }
 
-    -- Return the final sumcheck statement with the constant
+    -- Statement/protocol repair (defect #11): the *forwarded* MLP-evaluation claim is `t'(r') = s'`,
+    -- so `original_claim := s'` (with `t_eval_point := r' = challenges`). The eq-scaled value
+    -- `eq_tilde_eval * s'` is the verifier's *check* against `sumcheck_target` (step 9, the `unless`
+    -- above), NOT the claim it hands to the large-field MLP-eval sub-protocol.
+    --
+    -- Derivation. The output relation `relOut = aOStmtIn.toRelInput` (`Prelude.toRelInput`/
+    -- `MLPEvalRelation`) demands `stmtOut.original_claim = witOut.t.eval stmtOut.t_eval_point`. The
+    -- honest prover sets `witOut.t := witIn.t'` and `t_eval_point := challenges`, and by definition
+    -- `s' = witIn.t'.eval challenges`. Hence `relOut` holds *iff* `original_claim = s'`; emitting
+    -- `eq_tilde_eval * s'` would require `eq_tilde_eval = 1` (false in general — `eq_tilde_eval`
+    -- depends on `r, r', r''`), making both `(stmtOut, witOut) ∈ relOut` *and* the prior code's
+    -- `prvStmtOut = stmtOut` (the prover already emits `s'`) unsatisfiable. Downstream
+    -- `General.lean` consumes exactly this `mlIOPCS.toRelInput`, so `s'` is the contract-correct
+    -- forwarded claim. This is the verifier-side of the #8/#10 family of soundness/protocol repairs;
+    -- it aligns the verifier's deterministic output to the (already-correct) prover output `s'`.
     let stmtOut : MLPEvalStatement L ℓ' := {
       t_eval_point := stmtIn.challenges
-      original_claim := eq_tilde_eval * s'
+      original_claim := s'
     }
     pure stmtOut
 
