@@ -833,6 +833,43 @@ theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos_core {k deg : 
     (by intro i x; simp [u'])
     hja'
 
+omit [DecidableEq ι] in
+/-- Positive-`k` Curves-local assembly bridge in the exact threshold form
+produced by the probability calculation in `correlatedAgreement_affine_curves`.
+-/
+theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_prob_threshold_core
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    {u : Fin (k + 1) → ι → F}
+    (hx :
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal))
+    (hsmall :
+      (k : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hlarge :
+      ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  have hbounds :=
+    goodCoeffsCurve_card_bounds_of_prob_threshold
+      (deg := deg) (domain := domain) (δ := δ) u hx hsmall hlarge
+  exact goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos_core
+    (deg := deg) (domain := domain) (δ := δ) hk hbounds.1 hbounds.2 hcoeffPoly
+
 end CoreResults
 
 section BCIKS20ProximityGapSection6
