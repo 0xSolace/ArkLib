@@ -382,8 +382,7 @@ private lemma coeff_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
   · simp
   · intro b _ hb
     have hne : (((⟨j, hjza⟩ : Fin za)) : ℕ) ≠ ((b : Fin za) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-    simp only [Fin.val_mk] at hne ⊢
-    simp [hne, hne.symm]
+    simp [hne.symm]
   · intro habs
     exact absurd (Finset.mem_univ _) habs
 
@@ -397,8 +396,7 @@ private lemma coeff_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
   · simp
   · intro b _ hb
     have hne : (((⟨j, hjzb⟩ : Fin zb)) : ℕ) ≠ ((b : Fin zb) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-    simp only [Fin.val_mk] at hne ⊢
-    simp [hne, hne.symm]
+    simp [hne.symm]
   · intro habs
     exact absurd (Finset.mem_univ _) habs
 
@@ -409,7 +407,7 @@ private lemma coeff_toPolyA_eq_zero {da za db zb : ℕ} (v : BWIdx da za db zb �
   simp only [toPolyA, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
   refine Finset.sum_eq_zero fun b _ => ?_
   have hne : (j : ℕ) ≠ ((b : Fin za) : ℕ) := fun heq => hjza (heq ▸ b.isLt)
-  simp [hne, hne.symm]
+  simp [hne.symm]
 
 private lemma coeff_toPolyB_eq_zero {da za db zb : ℕ} (v : BWIdx da za db zb → F)
     {j : ℕ} (hjzb : ¬ j < zb) : (toPolyB v).coeff j = 0 := by
@@ -417,7 +415,7 @@ private lemma coeff_toPolyB_eq_zero {da za db zb : ℕ} (v : BWIdx da za db zb �
   simp only [toPolyB, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
   refine Finset.sum_eq_zero fun b _ => ?_
   have hne : (j : ℕ) ≠ ((b : Fin zb) : ℕ) := fun heq => hjzb (heq ▸ b.isLt)
-  simp [hne, hne.symm]
+  simp [hne.symm]
 
 /-- Each in-range coefficient has X-degree < da (power-sum shape). -/
 private lemma natDegree_coeff_toPolyA_lt {da za db zb : ℕ} (hda : 0 < da)
