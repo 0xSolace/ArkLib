@@ -857,6 +857,35 @@ lemma approximate_solution_is_exact_solution_coeffs
     := by sorry
 
 open BCIKS20AppendixA.ClaimA2 in
+/-- Side-condition-explicit form of Claim 5.8'.  Once the Appendix-A argument
+has supplied vanishing of all coefficients of `γ'` in degrees `≥ k`, the
+published truncation statement is immediate. -/
+lemma approximate_solution_is_exact_solution_coeffs'_of_gamma_coeff_zero
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hzero : ∀ t ≥ k,
+      PowerSeries.coeff t
+        (γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+          (claimA2_hypotheses k h_gs)) =
+        (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))) :
+    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+        (claimA2_hypotheses k h_gs) =
+        PowerSeries.mk (fun t =>
+          if t ≥ k
+          then (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))
+          else PowerSeries.coeff t
+            (γ'
+              x₀
+              (R k (x₀ := x₀) (δ := δ) h_gs)
+              (irreducible_H k h_gs)
+              (natDegree_H_pos k h_gs)
+              (claimA2_hypotheses k h_gs))) := by
+  exact powerSeries_eq_truncate_of_coeff_zero_ge
+    (γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+      (claimA2_hypotheses k h_gs))
+    hzero
+
+open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 from [BCIKS20].
 States that the approximate solution is actually a solution.
 This version is in terms of polynomials.

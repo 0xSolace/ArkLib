@@ -1568,6 +1568,49 @@ theorem correlatedAgreement_affine_curves_of_list_decoding_obligations {k : ℕ}
             (deg := deg) (domain := domain) (δ := δ) hJ))
 
 omit [DecidableEq ι] in
+/-- Final curve theorem assuming the strict Johnson branch supplies the
+pointwise evaluation-polynomial dependence produced by the §5 list-decoding
+machinery. This discharges all threshold arithmetic and coefficient assembly in
+the strict branch; the only remaining non-strict obligation is the closed
+square-root boundary. -/
+theorem correlatedAgreement_affine_curves_of_strict_eval_polys_and_boundary {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictEval : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+              (P z).eval ∘ domain) ≤ δ) →
+          ∃ E : ι → Polynomial F,
+            (∀ x, (E x).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ x, (P z).eval (domain x) = (E x).eval z)
+    (hBoundary : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ¬δ < 1 - ReedSolomon.sqrtRate deg domain →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_list_decoding_obligations
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_ hBoundary
+  intro hk u hprob hJ hsqrt
+  exact RS_jointAgreement_of_prob_gt_strict_johnson_and_eval_polys
+    (deg := deg) (domain := domain) (δ := δ) hk u hprob hJ hsqrt
+    (hStrictEval hk u hprob hJ hsqrt)
+
+omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
 
 Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter
