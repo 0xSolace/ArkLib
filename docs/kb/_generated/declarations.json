@@ -25656,66 +25656,237 @@
           "signature": "lemma embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
         },
         {
-          "doc": "The bound of the weight `\u039b` of the elements `\u03b6` as stated in Claim A.2 of Appendix A.4 of [BCIKS20]. The hypothesis `2 \u2264 natDegreeY R` is required: the paper's `\u03be = W^(d-2)\u00b7\u03b6` lives in the regime `d \u2265 2`, and the statement is false at `d = 1` (e.g. `H = C(Z)\u00b7Y + 1` with `R(x\u2080,\u00b7) = H` gives `\u03be_pre = C(Z)` of weight `1`, while the claimed budget is `0`; `Nat` truncated subtraction silently extends `W^(d-2)` to `d < 2` where the bound fails).",
+          "doc": "For `i < H.natDegree`, the `i`-th coefficient of `H_tilde' H` is `H.coeff i * H.leadingCoeff ^ (d_H - 1 - i)`.",
           "kind": "lemma",
           "line": 1798,
+          "name": "BCIKS20AppendixA.ClaimA2.H_tilde'_coeff_of_lt",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "H_tilde'_coeff_of_lt",
+          "signature": "lemma H_tilde'_coeff_of_lt {H : F[X][Y]} (hH : 0 < H.natDegree) {i : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1801,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_1801",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "_anon_class_1801",
+          "signature": "class classical"
+        },
+        {
+          "doc": "For `i < H.natDegree`, the `natDegree` of the `i`-th coefficient of `H_tilde' H` is bounded by `(totalDegree H - i) + (d_H - 1 - i) \u00b7 natDegree W`, where `W = H.leadingCoeff`.",
+          "kind": "lemma",
+          "line": 1819,
+          "name": "BCIKS20AppendixA.ClaimA2.natDegree_H_tilde'_coeff_le",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "natDegree_H_tilde'_coeff_le",
+          "signature": "lemma natDegree_H_tilde'_coeff_le {H : F[X][Y]} (hH : 0 < H.natDegree) {i : \u2115}"
+        },
+        {
+          "doc": "The specialized polynomial `Q = R(x\u2080, \u00b7)` is nonzero, since it is separable (and `0` is not separable: `derivative 0 = 0` is not coprime to `0` in a nontrivial ring).",
+          "kind": "lemma",
+          "line": 1834,
+          "name": "BCIKS20AppendixA.ClaimA2.evalX_ne_zero_of_hypotheses",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "evalX_ne_zero_of_hypotheses",
+          "signature": "lemma evalX_ne_zero_of_hypotheses {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]}"
+        },
+        {
+          "doc": "In the `2 \u2264 d` regime, the explicit coefficients of `\u03be_pre`. For `i < d - 1` the coefficient is `P.coeff i * W^(d-2-i)`; at `i = d - 1` it is `P.coeff (d-1) / W`; for `i \u2265 d` it vanishes. Here `P = R'(x\u2080, \u00b7)` and `W = H.leadingCoeff`.",
+          "kind": "lemma",
+          "line": 1847,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1847",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "_anon_lemma_1847",
+          "signature": "lemma lemma \u03be_pre_coeff_of_lt {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]} (hd : 2 \u2264 R.natDegree) {i : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1852,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_1852",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "_anon_class_1852",
+          "signature": "class classical"
+        },
+        {
+          "doc": "The top coefficient of `\u03be_pre` (at index `d - 1`) in the `2 \u2264 d` regime.",
+          "kind": "lemma",
+          "line": 1870,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1870",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "_anon_lemma_1870",
+          "signature": "lemma lemma \u03be_pre_coeff_top {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]} (hd : 2 \u2264 R.natDegree) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1874,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_1874",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "_anon_class_1874",
+          "signature": "class classical"
+        },
+        {
+          "doc": "In the `2 \u2264 d` regime, `\u03be_pre` has `Y`-degree at most `d - 1`.",
+          "kind": "lemma",
+          "line": 1889,
+          "name": "BCIKS20AppendixA.ClaimA2.natDegree_\u03be_pre_le",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "natDegree_\u03be_pre_le",
+          "signature": "lemma natDegree_\u03be_pre_le {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]} (hd : 2 \u2264 R.natDegree) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1891,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_1891",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "_anon_class_1891",
+          "signature": "class classical"
+        },
+        {
+          "doc": "The cofactor degree bound that powers `weight_\u03be_bound`'s tight top-coefficient analysis: writing `Q = R(x\u2080,\u00b7) = H \u00b7 g`, the `Y`-leading coefficient of `\u03be_pre` (after clearing the single denominator `W`) has `X`-degree bounded by the `X`-degree of `g`'s `Y`-leading coefficient. Concretely `\u03be_pre.coeff (d-1) = d \u00b7 g.coeff (d - d_H)` up to the `Y^d` coefficient of `Q`, so its `X`-degree is at most `(g.coeff (d - d_H)).natDegree`.",
+          "kind": "lemma",
+          "line": 1913,
+          "name": "BCIKS20AppendixA.ClaimA2.natDegree_\u03be_pre_coeff_top_le",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "natDegree_\u03be_pre_coeff_top_le",
+          "signature": "lemma natDegree_\u03be_pre_coeff_top_le {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1919,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_1919",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "_anon_class_1919",
+          "signature": "class classical"
+        },
+        {
+          "doc": "In the degenerate regime `d_H = d` (cofactor `g` constant in `Y`), separability of `Q = R(x\u2080,\u00b7)` forces the cofactor's constant term to be a unit of `F[X]`, so the `Y`-leading coefficient of `\u03be_pre` is itself a constant (`natDegree` zero). This is the structural fact that keeps the tight `d_H = d` case of `weight_\u03be_bound` within budget.",
+          "kind": "lemma",
+          "line": 1973,
+          "name": "BCIKS20AppendixA.ClaimA2.natDegree_\u03be_pre_coeff_top_eq_zero_of_natDegree_eq",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "natDegree_\u03be_pre_coeff_top_eq_zero_of_natDegree_eq",
+          "signature": "lemma natDegree_\u03be_pre_coeff_top_eq_zero_of_natDegree_eq {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1979,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_1979",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "_anon_class_1979",
+          "signature": "class classical"
+        },
+        {
+          "doc": "The per-monomial budget bound for the lower coefficients of `\u03be_pre` (indices `< d - 1`): `n \u00b7 m + (\u03be_pre.coeff n).natDegree \u2264 (d - 1) \u00b7 m`, where `m = D + 1 - d_H`. The margin is `d - d_H \u2265 0`, which holds because `H \u2223 R(x\u2080,\u00b7)` forces `d_H \u2264 d`.",
+          "kind": "lemma",
+          "line": 2013,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2013",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "_anon_lemma_2013",
+          "signature": "lemma lemma \u03be_pre_lower_budget {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]} {D : \u2115}"
+        },
+        {
+          "doc": "The pure-arithmetic core of `sub_term_budget`: with `w \u2264 D - d_H`, `t_H + t_g \u2264 D`, `w + d_H \u2264 t_H` (the leading-coefficient degree bound), `i < d_H`, `d_H < d` and `n = i + (d-1-d_H)`, one has `n\u00b7m + ((t_g - (d-d_H)) + ((t_H - i) + (d_H-1-i)\u00b7w)) \u2264 (d-1)\u00b7m` for `m = D + 1 - d_H`. The margin is `d - d_H \u2265 1`.",
+          "kind": "lemma",
+          "line": 2066,
+          "name": "BCIKS20AppendixA.ClaimA2.numeric_sub_budget",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "numeric_sub_budget",
+          "signature": "lemma numeric_sub_budget (D d dH i n w tH tg : \u2115)"
+        },
+        {
+          "doc": "The per-monomial budget bound for the subtracted correction term `C(lc)\u00b7X^(d-1-d_H)\u00b7H_tilde' H` of the `weight_\u03be_bound` representative (`lc = \u03be_pre.coeff (d-1)`). For each `n < d - 1`, `n \u00b7 m + (sub.coeff n).natDegree \u2264 (d - 1) \u00b7 m`. The cofactor identity (`natDegree lc \u2264 natDegree (g.coeff (d - d_H))`) is what keeps the cross terms in budget.",
+          "kind": "lemma",
+          "line": 2096,
+          "name": "BCIKS20AppendixA.ClaimA2.sub_term_budget",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "sub_term_budget",
+          "signature": "lemma sub_term_budget {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 2108,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2108",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "_anon_class_2108",
+          "signature": "class classical"
+        },
+        {
+          "doc": "The bound of the weight `\u039b` of the elements `\u03b6` as stated in Claim A.2 of Appendix A.4 of [BCIKS20]. The hypothesis `2 \u2264 natDegreeY R` is required: the paper's `\u03be = W^(d-2)\u00b7\u03b6` lives in the regime `d \u2265 2`, and the statement is false at `d = 1` (e.g. `H = C(Z)\u00b7Y + 1` with `R(x\u2080,\u00b7) = H` gives `\u03be_pre = C(Z)` of weight `1`, while the claimed budget is `0`; `Nat` truncated subtraction silently extends `W^(d-2)` to `d < 2` where the bound fails).",
+          "kind": "lemma",
+          "line": 2171,
           "name": "BCIKS20AppendixA.ClaimA2.weight_\u03be_bound",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "weight_\u03be_bound",
           "signature": "lemma weight_\u03be_bound (x\u2080 : F) (hH : 0 < H.natDegree) (hHyp : Hypotheses x\u2080 R H)"
         },
         {
+          "doc": "",
+          "kind": "class",
+          "line": 2177,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_class_2177",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "_anon_class_2177",
+          "signature": "class classical"
+        },
+        {
           "doc": "There exist regular elements `\u03b2` with a weight bound as given in Claim A.2 of Appendix A.4 of [BCIKS20].",
           "kind": "lemma",
-          "line": 1808,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1808",
+          "line": 2318,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_2318",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_1808",
+          "short_name": "_anon_lemma_2318",
           "signature": "lemma lemma \u03b2_regular (R : F[X][X][Y])"
         },
         {
           "doc": "The definition of the regular elements `\u03b2` giving the numerators of the Hensel lift coefficients as defined in Claim A.2 of Appendix A.4 of [BCIKS20].",
           "kind": "def",
-          "line": 1819,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1819",
+          "line": 2329,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2329",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1819",
+          "short_name": "_anon_def_2329",
           "signature": "def def \u03b2 (R : F[X][X][Y]) (t : \u2115) : \ud835\udcaa H :="
         },
         {
           "doc": "The Hensel lift coefficients `\u03b1` are of the form as given in Claim A.2 of Appendix A.4 of [BCIKS20].",
           "kind": "def",
-          "line": 1827,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1827",
+          "line": 2337,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2337",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1827",
+          "short_name": "_anon_def_2337",
           "signature": "def def \u03b1 (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) [\u03c6 : Fact (Irreducible H)]"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 1833,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1833",
+          "line": 2343,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2343",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1833",
+          "short_name": "_anon_def_2343",
           "signature": "def def \u03b1' (x\u2080 : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)"
         },
         {
           "doc": "The power series `\u03b3 = \u2211 \u03b1^t (X - x\u2080)^t \u2208 \ud835\udd43 [[X - x\u2080]]` as defined in Appendix A.4 of [BCIKS20].",
           "kind": "def",
-          "line": 1839,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1839",
+          "line": 2349,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2349",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1839",
+          "short_name": "_anon_def_2349",
           "signature": "def def \u03b3 (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) [\u03c6 : Fact (Irreducible H)]"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 1849,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1849",
+          "line": 2359,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_2359",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1849",
+          "short_name": "_anon_def_2359",
           "signature": "def def \u03b3' (x\u2080 : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)"
         }
       ]
@@ -46641,7 +46812,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5058,
+      "declarations": 5077,
       "files": 282
     }
   }
