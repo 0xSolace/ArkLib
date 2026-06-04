@@ -614,16 +614,20 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
     simp only [finalSumcheckKStateProp, masterKStateProp, true_and] at h ⊢
     exact ⟨h.2.1, h.2.2.1, h.2.2.2⟩
   toFun_full := fun stmt tr witOut h => by
-    -- BLOCKED: this is a probabilistic-extraction obligation. From `h` (the verifier outputs an
-    -- output statement in `toRelInput` with positive probability) one must recover the algebraic
-    -- KState at the last index. Two sub-obligations make it heavy:
-    --   (1) the `simulateQ`/`OptionT`/`Verifier.run` support extraction (mirrors the ~100-line
-    --       `Sumcheck.Spec.SingleRound.Simple.reduction_perfectCompleteness`), and
-    --   (2) `sumcheckConsistencyProp` at `Fin.last ℓ'` reduces to the deep DP24 identity
-    --       `(multpoly · t')(challenges) = compute_final_eq_value · t'(challenges)`
-    --       (i.e. `A_MLE` evaluated at the challenges equals the final eq value), an algebraic
-    --       lemma that belongs to the Prelude algebra layer (owned by a sibling agent) and is not
-    --       a local unfolding. Deferred per the heavy-machinery / cross-file-lemma walls.
+    -- PARTIAL: the two former blockers are now unblocked by the machinery landed for the
+    -- completeness theorem:
+    --   • Sub-obligation (2) — the DP24 identity `(A_MLE · t')(challenges) = compute_final_eq_value ·
+    --     t'(challenges)` — is exactly the algebra in `finalSumcheck_check_of_relIn` (cube-0 collapse
+    --     → `fixFirstVariablesOfMQP_eval` → `A_MLE_eval_eq_compute_final_eq_value`), now in-file.
+    --   • Sub-obligation (1) — the `simulateQ`/`simOracle2` verifier-run support extraction — collapses
+    --     via `simulateQ_simOracle2_query` + `answer_instDefault'` + `simulateQ_optionT_pure'` (the
+    --     same chain used in the completeness proof). After `probEvent_pos_iff` +
+    --     `OracleVerifier.toVerifier`/`Verifier.run` unfolding, `h`'s support element pins the message
+    --     `c := tr ⟨0,_⟩` and (via the `if` branch) the local check `sumcheck_target =
+    --     compute_final_eq_value · c`; `extractOut` makes `witnessStructuralInvariant` hold by
+    --     construction, and `(stmtOut, witOut) ∈ toRelInput` supplies `final_eval` + compatibility.
+    -- Remaining: the `if`-branch case split (accept vs. dummy `{0,0}`) and threading the support
+    -- element through the `StateT`/`OptionT` glue to the KState reconstruction. Left as the next step.
     sorry
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/
