@@ -11552,9 +11552,63 @@
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean": {
       "declarations": [
         {
+          "doc": "",
+          "kind": "lemma",
+          "line": 34,
+          "name": "ProximityGap.triv_comp_add_C_eq_zero_iff",
+          "namespace": "ProximityGap",
+          "short_name": "triv_comp_add_C_eq_zero_iff",
+          "signature": "lemma triv_comp_add_C_eq_zero_iff (p : S[X]) (a : S) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 42,
+          "name": "ProximityGap.triv_compRingHom_addC_injective",
+          "namespace": "ProximityGap",
+          "short_name": "triv_compRingHom_addC_injective",
+          "signature": "lemma triv_compRingHom_addC_injective (a : S) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 48,
+          "name": "ProximityGap.triv_rm0_none_imp_zero",
+          "namespace": "ProximityGap",
+          "short_name": "triv_rm0_none_imp_zero",
+          "signature": "lemma triv_rm0_none_imp_zero (g : S[X][Y]) (hg : rootMultiplicity\u2080 g = none) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 78,
+          "name": "ProximityGap.triv_shift_eq_zero_iff",
+          "namespace": "ProximityGap",
+          "short_name": "triv_shift_eq_zero_iff",
+          "signature": "lemma triv_shift_eq_zero_iff (f : S[X][Y]) (x y : S) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 85,
+          "name": "ProximityGap.triv_rm0_some_witness",
+          "namespace": "ProximityGap",
+          "short_name": "triv_rm0_some_witness",
+          "signature": "lemma triv_rm0_some_witness (g : S[X][Y]) (val : \u2115)"
+        },
+        {
+          "doc": "Order-`m` vanishing from shifted-coefficient vanishing, over an integral-domain coefficient ring `S`.  This is the `[CommRing S] [IsDomain S]` port of the field-only `GuruswamiSudan.rootMultiplicity_ge_of_shift_zero`, needed for the trivariate setting `S = F[Z]`.",
+          "kind": "lemma",
+          "line": 103,
+          "name": "ProximityGap.triv_rootMultiplicity_ge_of_shift_zero",
+          "namespace": "ProximityGap",
+          "short_name": "triv_rootMultiplicity_ge_of_shift_zero",
+          "signature": "lemma triv_rootMultiplicity_ge_of_shift_zero {f : S[X][Y]} {x y : S}"
+        },
+        {
           "doc": "The degree bound (a.k.a. `D_X`) for instantiation of Guruswami-Sudan in Lemma 5.3 of [BCIKS20]. `D_X(m) = (m + 1/2)\u221arhon.`",
           "kind": "def",
-          "line": 31,
+          "line": 132,
           "name": "ProximityGap.D_X",
           "namespace": "ProximityGap",
           "short_name": "D_X",
@@ -11563,7 +11617,7 @@
         {
           "doc": "The first part of Lemma 5.3 from [BCIKS20]. Given `D_X` (`proximity_gap_degree_bound`) and `\u03b4\u2080` (`proximity_gap_johnson`), a solution to Guruswami-Sudan system exists.",
           "kind": "lemma",
-          "line": 37,
+          "line": 138,
           "name": "ProximityGap.guruswami_sudan_for_proximity_gap_existence",
           "namespace": "ProximityGap",
           "short_name": "guruswami_sudan_for_proximity_gap_existence",
@@ -11572,7 +11626,7 @@
         {
           "doc": "The second part of Lemma 5.3 from [BCIKS20]. For any solution `Q` of the Guruswami-Sudan system, and for any polynomial `P \u2208 RS[n, k, rho]` such that `\u03b4\u1d63(w, P) \u2264 \u03b4\u2080(rho, m)`, we have that `Y - P(X)` divides `Q(X, Y)` in the polynomial ring `F[X][Y]`. Note that in `F[X][Y]`, the term `X` actually refers to the outer variable, `Y`.",
           "kind": "lemma",
-          "line": 49,
+          "line": 150,
           "name": "ProximityGap.guruswami_sudan_for_proximity_gap_property",
           "namespace": "ProximityGap",
           "short_name": "guruswami_sudan_for_proximity_gap_property",
@@ -11581,7 +11635,7 @@
         {
           "doc": "The Guruswami-Sudan condition as it is stated in [BCIKS20].",
           "kind": "structure",
-          "line": 62,
+          "line": 163,
           "name": "ProximityGap.ModifiedGuruswami",
           "namespace": "ProximityGap",
           "short_name": "ModifiedGuruswami",
@@ -11590,7 +11644,7 @@
         {
           "doc": "The `X`-degree of the trivariate constant `1` is `0`.",
           "kind": "lemma",
-          "line": 97,
+          "line": 198,
           "name": "ProximityGap.degreeX_one_triv",
           "namespace": "ProximityGap",
           "short_name": "degreeX_one_triv",
@@ -11599,7 +11653,7 @@
         {
           "doc": "The `Y`-degree of the trivariate constant `1` is `0`.",
           "kind": "lemma",
-          "line": 109,
+          "line": 210,
           "name": "ProximityGap.natDegreeY_one_triv",
           "namespace": "ProximityGap",
           "short_name": "natDegreeY_one_triv",
@@ -11608,7 +11662,7 @@
         {
           "doc": "The `(u, v)`-weighted degree of the trivariate constant `1` is `0`.",
           "kind": "lemma",
-          "line": 115,
+          "line": 216,
           "name": "ProximityGap.natWeightedDegree_one_triv",
           "namespace": "ProximityGap",
           "short_name": "natWeightedDegree_one_triv",
@@ -11617,7 +11671,7 @@
         {
           "doc": "The root multiplicity of the trivariate constant `1` at any point `(x, y)` is `0`. Here the coefficient ring is `F[Z] = Polynomial (Polynomial F)`.",
           "kind": "lemma",
-          "line": 129,
+          "line": 230,
           "name": "ProximityGap.rootMultiplicity_one_triv",
           "namespace": "ProximityGap",
           "short_name": "rootMultiplicity_one_triv",
@@ -11626,7 +11680,7 @@
         {
           "doc": "For `n = 0`, no `Q` can satisfy `ModifiedGuruswami`: the `X`-degree bound `D_X \u03c1 0 m = 0` forces `(degreeX Q : \u211d) < 0`, which is impossible.",
           "kind": "lemma",
-          "line": 163,
+          "line": 264,
           "name": "ProximityGap.modified_guruswami_unsat_of_n_zero",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_unsat_of_n_zero",
@@ -11635,16 +11689,70 @@
         {
           "doc": "For `k = 0`, no `Q` can satisfy `ModifiedGuruswami`: the `Y`-degree bound `D_X \u03c1 n m / 0 = 0` forces `(D_Y Q : \u211d) < 0`, which is impossible.",
           "kind": "lemma",
-          "line": 173,
+          "line": 274,
           "name": "ProximityGap.modified_guruswami_unsat_of_k_zero",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_unsat_of_k_zero",
           "signature": "lemma modified_guruswami_unsat_of_k_zero {m n : \u2115} {\u03c9s : Fin n \u21aa F} {Q : F[Z][X][Y]}"
         },
         {
+          "doc": "The trivariate monomial `X^i Y^j Z^t` as an element of `F[Z][X][Y]`.",
+          "kind": "def",
+          "line": 287,
+          "name": "ProximityGap.triMonomial",
+          "namespace": "ProximityGap",
+          "short_name": "triMonomial",
+          "signature": "def triMonomial (i j t : \u2115) : F[Z][X][Y] :="
+        },
+        {
+          "doc": "The trivariate monomial `X^i Y^j Z^t` is nonzero.",
+          "kind": "lemma",
+          "line": 292,
+          "name": "ProximityGap.triMonomial_ne_zero",
+          "namespace": "ProximityGap",
+          "short_name": "triMonomial_ne_zero",
+          "signature": "lemma triMonomial_ne_zero (i j t : \u2115) : triMonomial (F := F) i j t \u2260 0 := by"
+        },
+        {
+          "doc": "`degreeX (X^i Y^j Z^t) = i`.",
+          "kind": "lemma",
+          "line": 297,
+          "name": "ProximityGap.degreeX_triMonomial",
+          "namespace": "ProximityGap",
+          "short_name": "degreeX_triMonomial",
+          "signature": "lemma degreeX_triMonomial (i j t : \u2115) : degreeX (triMonomial (F := F) i j t) = i := by"
+        },
+        {
+          "doc": "`natDegreeY (X^i Y^j Z^t) = j`.",
+          "kind": "lemma",
+          "line": 305,
+          "name": "ProximityGap.natDegreeY_triMonomial",
+          "namespace": "ProximityGap",
+          "short_name": "natDegreeY_triMonomial",
+          "signature": "lemma natDegreeY_triMonomial (i j t : \u2115) : natDegreeY (triMonomial (F := F) i j t) = j := by"
+        },
+        {
+          "doc": "`natWeightedDegree (X^i Y^j Z^t) u v = u*i + v*j`.",
+          "kind": "lemma",
+          "line": 312,
+          "name": "ProximityGap.natWeightedDegree_triMonomial",
+          "namespace": "ProximityGap",
+          "short_name": "natWeightedDegree_triMonomial",
+          "signature": "lemma natWeightedDegree_triMonomial (i j t u v : \u2115) :"
+        },
+        {
+          "doc": "The `D_YZ` measure (as defined in `Trivariate.lean`) of a monomial `X^i Y^j Z^t` with `i \u2260 j` equals just the `Y`-degree index `j`. This records a property of the *current* `D_YZ` definition: it computes `max over j_Y of (j_Y + max over k_X of (Bivariate.coeff Q j_Y k_X).natDegree)`, and since `Bivariate.coeff Q a b = (Q.coeff b).coeff a` (the first argument is the inner `X`-index), the inner contribution vanishes for a single monomial unless `i = j`.  In particular the `Z`-degree `t` is not captured, which makes the `Q_D_YZ` bound of `ModifiedGuruswami` easy to satisfy.",
+          "kind": "lemma",
+          "line": 328,
+          "name": "ProximityGap.D_YZ_triMonomial_of_ne",
+          "namespace": "ProximityGap",
+          "short_name": "D_YZ_triMonomial_of_ne",
+          "signature": "lemma D_YZ_triMonomial_of_ne (i j t : \u2115) (hij : i \u2260 j) :"
+        },
+        {
           "doc": "Claim 5.4 from [BCIKS20]. It essentially claims that there exists a solution to the Guruswami-Sudan constraints above. NOTE: As currently formalized this lemma is **false** for `n = 0` or `k = 0` (see `modified_guruswami_unsat_of_n_zero` / `modified_guruswami_unsat_of_k_zero`): the degree bound `D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  The statement below therefore carries the proven-necessary side conditions `0 < n` and `0 < k` (the paper's non-degenerate regime is `k + 1 \u2264 n`, `1 \u2264 m`; the eventual dimension-counting proof \u2014 the trivariate analogue of `G",
           "kind": "lemma",
-          "line": 192,
+          "line": 358,
           "name": "ProximityGap.modified_guruswami_has_a_solution",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_has_a_solution",
@@ -11653,16 +11761,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 202,
-          "name": "ProximityGap._anon_instance_202",
+          "line": 368,
+          "name": "ProximityGap._anon_instance_368",
           "namespace": "ProximityGap",
-          "short_name": "_anon_instance_202",
+          "short_name": "_anon_instance_368",
           "signature": "instance noncomputable instance {\u03b1 : Type} (s : Set \u03b1) [inst : Finite s] : Fintype s := Fintype.ofFinite _"
         },
         {
           "doc": "The set `S` (equation 5.2 of [BCIKS20]).",
           "kind": "def",
-          "line": 205,
+          "line": 371,
           "name": "ProximityGap.coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity",
@@ -11671,7 +11779,7 @@
         {
           "doc": "There exists a `\u03b4`-close polynomial `P_z` for each `z` from the set `S`.",
           "kind": "lemma",
-          "line": 212,
+          "line": 378,
           "name": "ProximityGap.exists_Pz_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "exists_Pz_of_coeffs_of_close_proximity",
@@ -11680,7 +11788,7 @@
         {
           "doc": "The `\u03b4`-close polynomial `Pz` for each `z` from the set `S` (`coeffs_of_close_proximity`).",
           "kind": "def",
-          "line": 231,
+          "line": 397,
           "name": "ProximityGap.Pz",
           "namespace": "ProximityGap",
           "short_name": "Pz",
@@ -11689,7 +11797,7 @@
         {
           "doc": "Proposition 5.5 from [BCIKS20]. There exists a subset `S'` of the set `S` and a bivariate polynomial `P(X, Z)` that matches `Pz` on that set.",
           "kind": "lemma",
-          "line": 239,
+          "line": 405,
           "name": "ProximityGap.exists_a_set_and_a_matching_polynomial",
           "namespace": "ProximityGap",
           "short_name": "exists_a_set_and_a_matching_polynomial",
@@ -11698,7 +11806,7 @@
         {
           "doc": "The subset `S'` extracted from Proprosition 5.5 [BCIKS20].",
           "kind": "def",
-          "line": 249,
+          "line": 415,
           "name": "ProximityGap.matching_set",
           "namespace": "ProximityGap",
           "short_name": "matching_set",
@@ -11707,7 +11815,7 @@
         {
           "doc": "`S'` is indeed a subset of `S`",
           "kind": "lemma",
-          "line": 255,
+          "line": 421,
           "name": "ProximityGap.matching_set_is_a_sub_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "matching_set_is_a_sub_of_coeffs_of_close_proximity",
@@ -41812,6 +41920,78 @@
           "namespace": "RingSwitching",
           "short_name": "decompose_rows_packMLE",
           "signature": "lemma decompose_rows_packMLE (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113'] (h_l : \u2113 = \u2113' + \u03ba\u2080)"
+        },
+        {
+          "doc": "`eqTilde` written as a product over coordinates of the symmetric Boolean factor.",
+          "kind": "lemma",
+          "line": 665,
+          "name": "RingSwitching.eqTilde_prod",
+          "namespace": "RingSwitching",
+          "short_name": "eqTilde_prod",
+          "signature": "lemma eqTilde_prod {\u2113_ : \u2115} (r r' : Fin \u2113_ \u2192 L\u2080) :"
+        },
+        {
+          "doc": "A product over `Fin (\u2113' + \u03ba\u2080)` of a function defined by the \u03ba/\u2113'-dichotomy splits as the product of the \u03ba-prefix and \u2113'-suffix products.",
+          "kind": "lemma",
+          "line": 676,
+          "name": "RingSwitching.prod_concat_split",
+          "namespace": "RingSwitching",
+          "short_name": "prod_concat_split",
+          "signature": "lemma prod_concat_split {M : Type*} [CommMonoid M] (\u2113' : \u2115)"
+        },
+        {
+          "doc": "`eqTilde` of concatenated Boolean / point data factors along the \u03ba/\u2113' split: `eqTilde (concat fp fs) (concat gp gs) = eqTilde fp gp * eqTilde fs gs`.",
+          "kind": "lemma",
+          "line": 713,
+          "name": "RingSwitching.eqTilde_concat_split",
+          "namespace": "RingSwitching",
+          "short_name": "eqTilde_concat_split",
+          "signature": "lemma eqTilde_concat_split (\u2113' : \u2115)"
+        },
+        {
+          "doc": "`aeval` of `eqPolynomial` at a Boolean coefficient vector lands in `L\u2080` as `eqTilde`.",
+          "kind": "lemma",
+          "line": 730,
+          "name": "RingSwitching.aeval_eqPolynomial_zeroOne",
+          "namespace": "RingSwitching",
+          "short_name": "aeval_eqPolynomial_zeroOne",
+          "signature": "lemma aeval_eqPolynomial_zeroOne {\u2113_ : \u2115} (x : Fin \u2113_ \u2192 Fin 2) (r : Fin \u2113_ \u2192 L\u2080) :"
+        },
+        {
+          "doc": "**MLE evaluation identity (through the algebra map).** For a multilinear `t` over `K\u2080`, its `L\u2080`-evaluation at `r` equals the suffix-`eq`-weighted sum of its Boolean evaluations: `aeval r t = \u2211_{b \u2208 {0,1}^\u2113} algebraMap(t(b)) \u00b7 eq\u0303(b, r)`.",
+          "kind": "lemma",
+          "line": 747,
+          "name": "RingSwitching.aeval_eq_sum_eqTilde",
+          "namespace": "RingSwitching",
+          "short_name": "aeval_eq_sum_eqTilde",
+          "signature": "lemma aeval_eq_sum_eqTilde {\u2113_ : \u2115} (t : MultilinearPoly K\u2080 \u2113_) (r : Fin \u2113_ \u2192 L\u2080) :"
+        },
+        {
+          "doc": "The \u03ba-then-\u2113' hypercube concatenation `concatBit v w i = v i` for `i < \u03ba`, `= w (i - \u03ba)` otherwise \u2014 matching `packMLE` / `decompose_rows_packMLE`. Packaged as an `Equiv`.",
+          "kind": "def",
+          "line": 762,
+          "name": "RingSwitching.hypercubeSplitEquiv",
+          "namespace": "RingSwitching",
+          "short_name": "hypercubeSplitEquiv",
+          "signature": "def hypercubeSplitEquiv (\u2113 \u2113' : \u2115) (h_l : \u2113 = \u2113' + \u03ba\u2080) :"
+        },
+        {
+          "doc": "**DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to the prover's honest tensor `\u015d = embedded_MLP_eval (packMLE \u03b2 t) r`, reconstructs exactly `t(r) = aeval r t`: `\u2211_v eq\u0303(v, r_prefix) \u00b7 (rows \u015d)_v = aeval r t`.",
+          "kind": "lemma",
+          "line": 786,
+          "name": "RingSwitching.check_rows_sum_eq_aeval",
+          "namespace": "RingSwitching",
+          "short_name": "check_rows_sum_eq_aeval",
+          "signature": "lemma check_rows_sum_eq_aeval (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113'] (h_l : \u2113 = \u2113' + \u03ba\u2080)"
+        },
+        {
+          "doc": "**DP24 ring-switching capstone (decision form).** The verifier's Step-2 check on the prover's honest tensor `\u015d = embedded_MLP_eval (packMLE \u03b2 t) r` accepts exactly when the original claim equals `t(r) = aeval r t`. This is the soundness/completeness pivot for the batching phase.",
+          "kind": "lemma",
+          "line": 843,
+          "name": "RingSwitching.performCheckOriginalEvaluation_packMLE_iff",
+          "namespace": "RingSwitching",
+          "short_name": "performCheckOriginalEvaluation_packMLE_iff",
+          "signature": "lemma performCheckOriginalEvaluation_packMLE_iff (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113']"
         }
       ]
     },
@@ -46812,7 +46992,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5077,
+      "declarations": 5097,
       "files": 282
     }
   }
