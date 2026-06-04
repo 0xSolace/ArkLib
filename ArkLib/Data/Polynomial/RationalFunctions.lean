@@ -31,7 +31,7 @@ We define the notions of Appendix A of [BCIKS20].
 
 -/
 
-set_option linter.style.longFile 2500
+set_option linter.style.longFile 2700
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal
 
@@ -1237,6 +1237,87 @@ lemma resultant_canonicalRep_H_tilde'_ne_zero {H : F[X][Y]} [Fact (Irreducible H
       rw [← hpad]; exact hzero
     exact (mul_eq_zero.1 hzero').resolve_left hsign
   exact this
+
+/-- Padded resultant vanishing from a shared root: if `b` is monic of degree `d`, `a` has degree
+`≤ d`, and `a`, `b` have a common root, then the (degree-`d`) resultant `resultant a b d d`
+is `0`. -/
+lemma resultant_eq_zero_of_common_root {K : Type} [Field K] {a b : K[X]} {t : K} {d : ℕ}
+    (hb : b.Monic) (hbd : b.natDegree = d) (had : a.natDegree ≤ d)
+    (hat : a.IsRoot t) (hbt : b.IsRoot t) :
+    Polynomial.resultant a b d d = 0 := by
+  -- `a, b` are not coprime: both divisible by the non-unit `X - C t`.
+  have hb_ne : b ≠ 0 := hb.ne_zero
+  have hdvd_a : (Polynomial.X - Polynomial.C t) ∣ a := Polynomial.dvd_iff_isRoot.2 hat
+  have hdvd_b : (Polynomial.X - Polynomial.C t) ∣ b := Polynomial.dvd_iff_isRoot.2 hbt
+  have hncop : ¬ IsCoprime a b := fun hco => by
+    have := hco.isUnit_of_dvd' hdvd_a hdvd_b
+    exact (Polynomial.not_isUnit_X_sub_C t) this
+  -- Natural-degree resultant is `0` over the field.
+  have hnat : Polynomial.resultant a b = 0 :=
+    Polynomial.resultant_eq_zero_iff.2 ⟨Or.inr hb_ne, hncop⟩
+  -- Pad both arguments up to `d` and conclude (`b.coeff d = 1`, `a.coeff (natDeg a)` may be killed
+  -- — but the natural resultant is already `0`).
+  -- Pad the second argument from `natDegree b = d` (no padding) and the first from `natDegree a`.
+  have hpad_a := Polynomial.resultant_add_left_deg a b a.natDegree b.natDegree
+    (d - a.natDegree) (le_refl a.natDegree)
+  -- Normalise `b.natDegree` to `d` everywhere, then collapse the padded `LHS` exponent.
+  rw [hbd, show a.natDegree + (d - a.natDegree) = d by omega] at hpad_a
+  -- `hpad_a : resultant a b d d = (unit) * resultant a b a.natDegree d`.
+  -- The last factor equals the natural-degree resultant `a.resultant b` (since `natDegree b = d`).
+  rw [hpad_a, show Polynomial.resultant a b a.natDegree d
+        = Polynomial.resultant a b a.natDegree b.natDegree by rw [hbd], hnat, mul_zero]
+
+/-- Every specialization point in `S_β` is a root of the resultant `Res_Y(r, H̃')` viewed as a
+univariate polynomial in `Z = X`: the common rational root `t_z` is a shared root of the two
+`Z = z` specializations. -/
+lemma eval_resultant_eq_zero_of_mem_S_β {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H)
+    {z : F} (hz : z ∈ S_β β) :
+    (Polynomial.resultant (canonicalRepOf𝒪 hH β) (H_tilde' H) H.natDegree H.natDegree).eval z
+      = 0 := by
+  classical
+  set r := canonicalRepOf𝒪 hH β with hr_def
+  obtain ⟨root, hroot⟩ := hz
+  set t := root.1 with ht_def
+  -- `β = ⟦r⟧`, so `π_z z root β = evalEval z t r`.
+  have hβ_eq : β = Ideal.Quotient.mk (Ideal.span {H_tilde' H}) r := (mk_canonicalRepOf𝒪 hH β).symm
+  have hr_root : Polynomial.evalEval z t r = 0 := by
+    have := hroot
+    rw [hβ_eq, π_z_mk] at this
+    exact this
+  -- `t` is a rational root of `H_tilde' H`.
+  have hHt_root : Polynomial.evalEval z t (H_tilde' H) = 0 := root.2
+  -- Specialize at `Z = z`: the two univariate polynomials share the root `t`.
+  set a : F[X] := r.map (Polynomial.evalRingHom z) with ha_def
+  set b : F[X] := (H_tilde' H).map (Polynomial.evalRingHom z) with hb_def
+  have hat : a.IsRoot t := by
+    rw [ha_def, Polynomial.IsRoot, ← evalEval_eq_eval_map]; exact hr_root
+  have hbt : b.IsRoot t := by
+    rw [hb_def, Polynomial.IsRoot, ← evalEval_eq_eval_map]; exact hHt_root
+  -- `b` is monic of degree `d`, `a` has degree `≤ d`.
+  have hb_monic : b.Monic := (H_tilde'_monic H hH).map _
+  have hbd : b.natDegree = H.natDegree := by
+    rw [hb_def, (H_tilde'_monic H hH).natDegree_map (Polynomial.evalRingHom z),
+        natDegree_H_tilde' hH]
+  have had : a.natDegree ≤ H.natDegree := by
+    have h1 : a.natDegree ≤ r.natDegree := by
+      rw [ha_def]; exact Polynomial.natDegree_map_le
+    have h2 : r.natDegree ≤ (H_tilde' H).natDegree := by
+      rw [hr_def]; exact canonicalRepOf𝒪_natDegree_le hH β
+    rw [natDegree_H_tilde' hH] at h2
+    omega
+  -- The specialized resultant vanishes (common root `t`); transport back via `resultant_map_map`.
+  have hspec :
+      Polynomial.resultant a b H.natDegree H.natDegree = 0 :=
+    resultant_eq_zero_of_common_root hb_monic hbd had hat hbt
+  have hmap_res :
+      Polynomial.resultant a b H.natDegree H.natDegree
+        = (Polynomial.evalRingHom z) (Polynomial.resultant r (H_tilde' H)
+            H.natDegree H.natDegree) := by
+    rw [ha_def, hb_def]
+    exact Polynomial.resultant_map_map r (H_tilde' H) H.natDegree H.natDegree
+      (Polynomial.evalRingHom z)
+  rw [hmap_res] at hspec
+  simpa [Polynomial.coe_evalRingHom] using hspec
 
 end LemmaA1
 
