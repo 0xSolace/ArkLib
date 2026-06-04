@@ -36,8 +36,10 @@ This lemma is the *positive half* of the verified obstruction recorded on
 `exists_factors_with_large_common_root_set` below: every fact the proof needs
 (`pg_exists_pair_for_z`, `pg_card_candidatePairs_le_natDegreeY`, the per-`z` factor/`H`
 extraction) is phrased for `pg_eval_on_Z`, and `pg_eval_on_Z = (·.map (mapRingHom (evalRingHom z)))`
-holds definitionally — whereas the *same body* wrapped in `Trivariate.eval_on_Z` (which the Claim-5.7
-statement uses) is `opaque` and hence provably inaccessible: not `eval_on_Z 0 z = 0`, not additivity,
+holds definitionally — whereas the *same body* wrapped in `Trivariate.eval_on_Z` (which the
+  Claim-5.7
+statement uses) is `opaque` and hence provably inaccessible: not `eval_on_Z 0 z = 0`, not
+  additivity,
 and not `eval_on_Z p z = pg_eval_on_Z p z` is derivable (all fail with "made no progress" / `rfl`
 failure, since `opaque` blocks delta-reduction). -/
 lemma c57_pg_eval_on_Z_body (p : F[Z][X][Y]) (z : F) :
@@ -130,7 +132,8 @@ There are two independent blockers; the first is fatal on its own.
   (`Trivariate.lean`) is declared `opaque`, so **no** property of `eval_on_Z R z.1` is derivable:
   one cannot prove `eval_on_Z 0 z = 0`, nor additivity, nor `eval_on_Z p z = pg_eval_on_Z p z`
   (the last fails `rfl` *despite identical definitional bodies* — `opaque` blocks delta-reduction).
-  Consequently the membership predicate of `S'` can be established for **no** `z`, so `#S'` cannot be
+  Consequently the membership predicate of `S'` can be established for **no** `z`, so `#S'`
+    cannot be
   bounded below.  Meanwhile every proven ingredient of the argument
   (`pg_exists_pair_for_z`, `pg_card_candidatePairs_le_natDegreeY`,
   `pg_card_normalizedFactors_toFinset_le_natDegree`) is phrased for the accessible twin
@@ -143,7 +146,8 @@ There are two independent blockers; the first is fatal on its own.
 * *Missing GS-multiplicity → close-codeword-graph vanishing (Gap B — residual).*  Even after the
   Gap-A repair, the pigeonhole needs, for each `z ∈ S`, the vanishing
   `(pg_eval_on_Z Q z.1).eval (Pz z.2) = 0` — the formal content of "`Q` vanishes on the graphs of
-  the `δ`-close codewords", obtained from the `ModifiedGuruswami` multiplicity field `Q_multiplicity`
+  the `δ`-close codewords", obtained from the `ModifiedGuruswami` multiplicity field
+    `Q_multiplicity`
   together with the `Pz`-matching data of Proposition 5.5.  No lemma in `Guruswami.lean` /
   `Extraction.lean` connects `Q_multiplicity` (an order-`≥ m` root-multiplicity over `F[Z]` at the
   curve points `(C ωᵢ, C(u₀ᵢ) + X·C(u₁ᵢ))`) to this evaluation-zero fact, and the upstream
