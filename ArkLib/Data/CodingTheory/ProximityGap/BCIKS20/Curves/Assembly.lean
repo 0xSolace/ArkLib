@@ -79,7 +79,7 @@ theorem decoded_family_coefficients_of_coeff_polys {l deg : ℕ} [NeZero deg]
                   (by
                     intro b hb hbj
                     have hjb : j ≠ b := fun h => hbj h.symm
-                    dsimp
+                    change (Polynomial.C ((B b).coeff (i : ℕ)) * Polynomial.X ^ b).coeff j = 0
                     rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow]
                     simp [hjb])
         _ = (B j).coeff (i : ℕ) := by
