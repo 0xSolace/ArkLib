@@ -234,22 +234,33 @@ volume estimate `Vol_q(δ, n) ≥ q^{n·H_q(δ)} / √(8·n·δ·(1-δ))`. With 
 
 Uses `qEntropy` (ABF26 D2.2).
 
-**Reduced to one missing analytic ingredient.** Since L3.7
-(`linear_lambda_ge_elias_volume_eli57`, now PROVEN in-tree) already gives
-`Vol_q(δ,n) / q^{n-k} ≤ |Λ(C,δ)|`, this corollary follows by transitivity from the
-single inequality
+**REDUCED (machine-verified reduction to one external analytic ingredient).** Since L3.7
+(`linear_lambda_ge_elias_volume_eli57`, PROVEN in-tree, axioms ⊆ {propext, Classical.choice,
+Quot.sound}) already gives `Vol_q(δ,n) / q^{n-k} ≤ |Λ(C,δ)|`, this corollary follows by
+transitivity from the single real inequality
 
   `q^{n·H_q(δ)} / √(8·n·δ·(1-δ)) ≤ Vol_q(δ, n)`         (★)
 
-(rearrange the C3.8 RHS via `ρ = k/n`: `q^{n(ρ-1+H_q)} = q^{k-n}·q^{n·H_q}` and
-`Vol / q^{n-k} = Vol · q^{k-n}`, so C3.8-RHS ≤ L3.7-RHS ⇔ (★)). Inequality (★) is the
-**MS77 lower bound on the `q`-ary Hamming-ball volume** (MacWilliams–Sloane 1977, the
-Stirling-based estimate `∑_{i≤δn} C(n,i)(q-1)^i ≥ q^{nH_q(δ)}/√(8nδ(1-δ))`). That
-estimate is a real-analytic fact about `hammingBallVolume` vs `qEntropy` and is **not**
-yet in-tree; it is the only remaining gap. The right move is to prove (★) as a standalone
-lemma `hammingBallVolume_ge_qEntropy` in `HammingBallVolume.lean` (Stirling bounds on
-`Nat.choose` + `Real.logb` algebra), after which this corollary closes in three lines via
-`le_trans` against L3.7. Admitted pending (★). -/
+The reduction `(★) ⟹ C3.8` is now **proven below** (no longer merely claimed): the only
+remaining `sorry` is the bare `have hMS77 : (★)`. The reduction algebra (all discharged
+in-tree, with `n ≠ 0`): `ρ = k/n ⟹ n·ρ = k`, so the C3.8 numerator exponent
+`n·(ρ-1+H_q) = k - n + n·H_q`, giving (via `Real.rpow_add`/`Real.rpow_natCast`)
+`q^{n(ρ-1+H_q)} = q^{n·H_q} / q^{n-k}`. Hence the C3.8 real RHS
+`q^{n(ρ-1+H_q)} / √(8nδ(1-δ)) = (q^{n·H_q}/√(8nδ(1-δ))) / q^{n-k} ≤ Vol / q^{n-k}` by (★)
+and `q^{n-k} > 0`, which is exactly the L3.7 real bound, and `ENNReal.ofReal` is monotone.
+
+Inequality (★) is the **MS77 lower bound on the `q`-ary Hamming-ball volume**
+(MacWilliams–Sloane 1977, the Stirling-based estimate
+`∑_{i≤δn} C(n,i)(q-1)^i ≥ q^{nH_q(δ)}/√(8nδ(1-δ))`). It is a genuinely external
+real-analytic fact: the `1/√(8nδ(1-δ))` constant is the de Moivre–Laplace / refined
+Stirling estimate of the single peak term `C(n,⌊δn⌋)(q-1)^{⌊δn⌋}`, requiring explicit
+two-sided `Real.log`-Stirling bounds on `Nat.factorial` tracking the `√(2πk)` factors,
+then `Real.logb` algebra to reach `q^{n·H_q(δ)}`. This is NOT a consequence of the in-tree
+`Nat.choose` volume identity alone (which gives only the coarse `Vol ≥ q^{nH_q}/(n+1)`
+polynomial-factor bound, with the wrong constant). The right move is to prove (★) as a
+standalone lemma `hammingBallVolume_ge_qEntropy` in `HammingBallVolume.lean`; this corollary
+then closes with NO `sorry` via the proven reduction below. RESIDUAL = (★) only
+[MS77, MacWilliams–Sloane, *The Theory of Error-Correcting Codes*, Ch. 10, Lemma 7]. -/
 theorem linear_lambda_ge_entropy_volume
     (C : Submodule F (ι → F)) (δ : ℝ) (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1) :
     let q : ℕ := Fintype.card F
@@ -260,8 +271,53 @@ theorem linear_lambda_ge_entropy_volume
         ((q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ))
           / (8 * n * δ * (1 - δ)) ^ ((1 : ℝ) / 2))
       ≤ (Lambda ((C : Set (ι → F))) δ : ENNReal) := by
-  sorry -- ABF26-C3.8; reduces to L3.7 (PROVEN) + missing ingredient (★):
-  -- `q^{n·H_q(δ)} / √(8nδ(1-δ)) ≤ hammingBallVolume q δ n` (MS77 Stirling volume bound).
+  -- ABF26-C3.8: VERIFIED reduction to the single external MS77 ingredient (★).
+  intro q n k ρ
+  -- Abbreviations matching L3.7's real bound.
+  set S : ℝ := (8 * (n : ℝ) * δ * (1 - δ)) ^ ((1 : ℝ) / 2) with hS_def
+  set Vol : ℝ := (hammingBallVolume q δ n : ℝ) with hVol_def
+  set P : ℝ := (q : ℝ) ^ ((n : ℝ) - (k : ℝ)) with hP_def
+  -- Basic positivity facts.
+  have hn_pos : 0 < n := Fintype.card_pos
+  have hn_ne : (n : ℝ) ≠ 0 := by exact_mod_cast hn_pos.ne'
+  have hqr_pos : (0 : ℝ) < (q : ℝ) := by
+    have : 1 < q := Fintype.one_lt_card
+    exact_mod_cast Nat.lt_of_lt_of_le Nat.zero_lt_one this.le
+  have hP_pos : 0 < P := Real.rpow_pos_of_pos hqr_pos _
+  -- The ONLY external admit (MS77 Stirling volume estimate); see docstring.
+  have hMS77 : (q : ℝ) ^ ((n : ℝ) * qEntropy q δ) / S ≤ Vol := by
+    sorry -- ABF26-C3.8 external ingredient (★) [MS77]: q^{n·H_q(δ)}/√(8nδ(1-δ)) ≤ Vol_q(δ,n).
+    -- MacWilliams–Sloane Ch.10 Lemma 7; Stirling estimate of the peak binomial term.
+    -- The ONLY remaining gap; the reduction (★) ⟹ C3.8 below is fully proven.
+  -- Algebra: rewrite the C3.8 numerator exponent via `n·ρ = k`.
+  have hnρ : (n : ℝ) * ρ = (k : ℝ) := by
+    simp only [ρ]; field_simp
+  have hexp : (n : ℝ) * (ρ - 1 + qEntropy q δ)
+      = ((n : ℝ) * qEntropy q δ) - ((n : ℝ) - (k : ℝ)) := by
+    have : (n : ℝ) * (ρ - 1 + qEntropy q δ)
+        = (n : ℝ) * ρ - (n : ℝ) + (n : ℝ) * qEntropy q δ := by ring
+    rw [this, hnρ]; ring
+  -- `q^{n(ρ-1+H_q)} = q^{n·H_q} / q^{n-k}`.
+  have hnum : (q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ))
+      = (q : ℝ) ^ ((n : ℝ) * qEntropy q δ) / P := by
+    rw [hexp, Real.rpow_sub hqr_pos, hP_def]
+  -- The real-side reduction: C3.8 RHS ≤ Vol / P (= L3.7 real bound).
+  have hreduce :
+      (q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ)) / S ≤ Vol / P := by
+    -- `(q^{nH}/P)/S = (q^{nH}/S)/P ≤ Vol/P` by (★) and `P > 0`.
+    rw [hnum]
+    have hcomm : ((q : ℝ) ^ ((n : ℝ) * qEntropy q δ) / P) / S
+        = ((q : ℝ) ^ ((n : ℝ) * qEntropy q δ) / S) / P := by
+      rw [div_div, div_div, mul_comm P S]
+    rw [hcomm]
+    -- divide both sides of (★) by `P > 0`.
+    gcongr
+  -- Chain through L3.7 (PROVEN): ofReal(Vol/P) ≤ Λ.
+  have hL37 := linear_lambda_ge_elias_volume_eli57 (ι := ι) (F := F) C δ _hδ_pos _hδ_lt
+  -- L3.7's RHS real expression is `Vol / P`; rewrite to our `set` names.
+  refine le_trans (ENNReal.ofReal_le_ofReal hreduce) ?_
+  -- now: ofReal (Vol / P) ≤ Λ, matching L3.7.
+  convert hL37 using 2
 
 /-- **ABF26 Theorem 3.9 [ST20 Thm 1.2].** Generalized Singleton bound for list decoding.
 Let `F` be a finite field, `0 < ℓ < |F|`, `δ ∈ (0, 1)`, and let `C ⊆ F^n` be a linear
