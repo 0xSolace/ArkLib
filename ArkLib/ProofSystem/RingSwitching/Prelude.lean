@@ -333,12 +333,20 @@ def embedded_MLP_eval (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) :
   let φ₀_mapped_r: Fin ℓ' → P.A := fun i => P.φ₀ (r_suffix i)
   φ₁_mapped_t'.val.eval φ₀_mapped_r
 
-/-- Step 2 (V): Check 1: s ?= Σ_{v ∈ {0,1}^κ} eqTilde(v, r_{0..κ-1}) ⋅ ŝ_v. -/
+/-- Step 2 (V): Check 1: s ?= Σ_{v ∈ {0,1}^κ} eqTilde(v, r_{0..κ-1}) ⋅ ŝ_v.
+
+Note (soundness fix): the decomposition here must read the **row** components of `ŝ`
+(`P.decomposeRows`), which carry the `φ₁`/`t'` tensor factor: by
+`decompose_rows_packMLE`, `(rows ŝ)_u = Σ_w t(u,w)·eq̃(w, r_suffix)`, so the
+`eq̃(·, r_prefix)`-weighted sum reconstructs `t(r)`. The previous version used
+the column decomposition, which extracts the `φ₀`/`eq` factor instead
+(`(columns (a ⊗ b))_v = β.repr a v • b`); with it the check does **not** imply
+`s = t(r)` (failing term at `κ = 1`, `t(0,w) = 1`, `t(1,w) = 0`). -/
 def performCheckOriginalEvaluation (s : L) (r : Fin ℓ → L) (s_hat : P.A) : Bool :=
   let r_prefix : Fin κ → L := fun i => r ⟨i.val, by omega⟩
   let check_sum := Finset.sum Finset.univ fun (v : Fin κ → Fin 2) =>
     let v_as_L : Fin κ → L := fun i => if (v i == 1) then 1 else 0
-    (eqTilde v_as_L r_prefix) * (P.decomposeColumns s_hat v)
+    (eqTilde v_as_L r_prefix) * (P.decomposeRows s_hat v)
   decide (s = check_sum)
 
 /-- Step 4a: For each `w ∈ {0,1}^{ℓ'}`, P decompose `eq̃(r_κ, ..., r_{ℓ-1}, w_0, ..., w_{ℓ'-1})`
