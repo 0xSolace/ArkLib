@@ -539,7 +539,8 @@ noncomputable def triConstraintMap (box : Finset (ℕ × ℕ × ℕ)) (m zMax : 
 We instantiate the linear system with a concrete box of `(i, j, t)` triples and a `Z`-budget large
 enough that the number of unknowns strictly exceeds the number of constraints.  The `(i, j)` part is
 the bivariate Guruswami–Sudan box `weigthBoundIndices (k+1) Dpg` (so its size is the proven
-`numVars (k+1) Dpg`); the `Z`-index `t` ranges over `0 … zCap`.  Choosing `zCap = (#constraints)·Dpg`
+`numVars (k+1) Dpg`); the `Z`-index `t` ranges over `0 … zCap`.  Choosing `zCap =
+(#constraints)·Dpg`
 makes the strict bivariate gap `numVars > numConstraints` dominate the extra `Z`-degree the shift
 introduces, giving `#box > #constraints`. -/
 
@@ -552,7 +553,8 @@ cannot overturn the strict bivariate counting gap. -/
 noncomputable def gsZCap (n m k : ℕ) : ℕ := GuruswamiSudan.numConstraints n m * gsDpg n m k
 
 /-- The number of `Z`-coefficients the constraints can occupy: the box `Z`-budget plus the maximal
-`Y`-degree `≤ Dpg` (the shift `Y ← Y + (u₀ + Z·u₁)` raises the `Z`-degree by at most the `Y`-degree).
+`Y`-degree `≤ Dpg` (the shift `Y ← Y + (u₀ + Z·u₁)` raises the `Z`-degree by at most the
+`Y`-degree).
 -/
 noncomputable def gsZMax (n m k : ℕ) : ℕ := gsZCap n m k + gsDpg n m k
 
