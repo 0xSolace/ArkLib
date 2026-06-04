@@ -182,7 +182,7 @@ lemma coeff_evalX_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
 
 /-- Coefficient recovery: the packaged polynomials are injective images of the
 coefficient vector. -/
-private lemma coeff_coeff_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+lemma coeff_coeff_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
     (i : Fin da) (j : Fin za) :
     ((toPolyA v).coeff (j : ℕ)).coeff (i : ℕ) = v (Sum.inl (i, j)) := by
   classical
@@ -206,7 +206,7 @@ private lemma coeff_coeff_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb →
   · intro habs
     exact absurd (Finset.mem_univ _) habs
 
-private lemma coeff_coeff_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+lemma coeff_coeff_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
     (i : Fin db) (j : Fin zb) :
     ((toPolyB v).coeff (j : ℕ)).coeff (i : ℕ) = v (Sum.inr (i, j)) := by
   classical
@@ -232,7 +232,7 @@ private lemma coeff_coeff_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb →
 /-- The kernel rows are exactly the Y-coefficients of the Berlekamp–Welch
 identity: if `mulVec (BWMatrix' …) v = 0` then at every domain point
 `B(ω_x, Y) = (u₀ x + u₁ x · Y) · A(ω_x, Y)`. -/
-private lemma identity_of_mulVec_eq_zero {da za db zb : ℕ} (hzb : zb = za + 1)
+lemma identity_of_mulVec_eq_zero {da za db zb : ℕ} (hzb : zb = za + 1)
     (domain : ι ↪ F) (u₀ u₁ : ι → F) (v : BWIdx da za db zb → F)
     (hker : Matrix.mulVec (BWMatrix' da za db zb domain u₀ u₁) v = 0) (x : ι) :
     evalX (domain x) (toPolyB v)
@@ -370,5 +370,167 @@ private lemma identity_of_mulVec_eq_zero {da za db zb : ℕ} (hzb : zb = za + 1)
     have hj1 : ¬(j - 1 < za) := by omega
     rw [dif_neg hj1]
     ring
+
+/-- The Y-coefficients of `toPolyA` in explicit sum form (in-range). -/
+private lemma coeff_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+    {j : ℕ} (hjza : j < za) :
+    (toPolyA v).coeff j
+      = ∑ i : Fin da, Polynomial.C (v (Sum.inl (i, ⟨j, hjza⟩))) * Polynomial.X ^ (i : ℕ) := by
+  classical
+  simp only [toPolyA, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
+  rw [Finset.sum_eq_single (⟨j, hjza⟩ : Fin za)]
+  · simp
+  · intro b _ hb
+    have hne : (((⟨j, hjza⟩ : Fin za)) : ℕ) ≠ ((b : Fin za) : ℕ) := fun heq => hb (Fin.ext heq.symm)
+    simp only [Fin.val_mk] at hne ⊢
+    simp [hne, hne.symm]
+  · intro habs
+    exact absurd (Finset.mem_univ _) habs
+
+private lemma coeff_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+    {j : ℕ} (hjzb : j < zb) :
+    (toPolyB v).coeff j
+      = ∑ i : Fin db, Polynomial.C (v (Sum.inr (i, ⟨j, hjzb⟩))) * Polynomial.X ^ (i : ℕ) := by
+  classical
+  simp only [toPolyB, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
+  rw [Finset.sum_eq_single (⟨j, hjzb⟩ : Fin zb)]
+  · simp
+  · intro b _ hb
+    have hne : (((⟨j, hjzb⟩ : Fin zb)) : ℕ) ≠ ((b : Fin zb) : ℕ) := fun heq => hb (Fin.ext heq.symm)
+    simp only [Fin.val_mk] at hne ⊢
+    simp [hne, hne.symm]
+  · intro habs
+    exact absurd (Finset.mem_univ _) habs
+
+/-- Out-of-range Y-coefficients vanish. -/
+private lemma coeff_toPolyA_eq_zero {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+    {j : ℕ} (hjza : ¬ j < za) : (toPolyA v).coeff j = 0 := by
+  classical
+  simp only [toPolyA, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
+  refine Finset.sum_eq_zero fun b _ => ?_
+  have hne : (j : ℕ) ≠ ((b : Fin za) : ℕ) := fun heq => hjza (heq ▸ b.isLt)
+  simp [hne, hne.symm]
+
+private lemma coeff_toPolyB_eq_zero {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+    {j : ℕ} (hjzb : ¬ j < zb) : (toPolyB v).coeff j = 0 := by
+  classical
+  simp only [toPolyB, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
+  refine Finset.sum_eq_zero fun b _ => ?_
+  have hne : (j : ℕ) ≠ ((b : Fin zb) : ℕ) := fun heq => hjzb (heq ▸ b.isLt)
+  simp [hne, hne.symm]
+
+/-- Each in-range coefficient has X-degree < da (power-sum shape). -/
+private lemma natDegree_coeff_toPolyA_lt {da za db zb : ℕ} (hda : 0 < da)
+    (v : BWIdx da za db zb → F) (j : ℕ) :
+    ((toPolyA v).coeff j).natDegree < da := by
+  classical
+  by_cases hjza : j < za
+  · rw [coeff_toPolyA v hjza]
+    refine lt_of_le_of_lt (Polynomial.natDegree_sum_le_of_forall_le _ _ fun i _ => ?_)
+      (Nat.sub_lt hda Nat.one_pos)
+    refine le_trans Polynomial.natDegree_mul_le ?_
+    simp only [Polynomial.natDegree_C, Polynomial.natDegree_pow, Polynomial.natDegree_X,
+      mul_one, Nat.zero_add]
+    omega
+  · rw [coeff_toPolyA_eq_zero v hjza]
+    simpa using hda
+
+private lemma natDegree_coeff_toPolyB_lt {da za db zb : ℕ} (hdb : 0 < db)
+    (v : BWIdx da za db zb → F) (j : ℕ) :
+    ((toPolyB v).coeff j).natDegree < db := by
+  classical
+  by_cases hjzb : j < zb
+  · rw [coeff_toPolyB v hjzb]
+    refine lt_of_le_of_lt (Polynomial.natDegree_sum_le_of_forall_le _ _ fun i _ => ?_)
+      (Nat.sub_lt hdb Nat.one_pos)
+    refine le_trans Polynomial.natDegree_mul_le ?_
+    simp only [Polynomial.natDegree_C, Polynomial.natDegree_pow, Polynomial.natDegree_X,
+      mul_one, Nat.zero_add]
+    omega
+  · rw [coeff_toPolyB_eq_zero v hjzb]
+    simpa using hdb
+
+/-- X-degree bounds for the packaged polynomials. -/
+lemma degreeX_toPolyA_lt {da za db zb : ℕ} (hda : 0 < da)
+    (v : BWIdx da za db zb → F) : degreeX (toPolyA v) < da := by
+  classical
+  rw [degreeX, Finset.sup_lt_iff (by exact_mod_cast hda)]
+  intro j _
+  exact natDegree_coeff_toPolyA_lt hda v j
+
+lemma degreeX_toPolyB_lt {da za db zb : ℕ} (hdb : 0 < db)
+    (v : BWIdx da za db zb → F) : degreeX (toPolyB v) < db := by
+  classical
+  rw [degreeX, Finset.sup_lt_iff (by exact_mod_cast hdb)]
+  intro j _
+  exact natDegree_coeff_toPolyB_lt hdb v j
+
+/-- Y-degree bounds. -/
+lemma natDegreeY_toPolyA_lt {da za db zb : ℕ} (hza : 0 < za)
+    (v : BWIdx da za db zb → F) : natDegreeY (toPolyA v) < za := by
+  classical
+  rw [natDegreeY, toPolyA]
+  refine lt_of_le_of_lt (Polynomial.natDegree_sum_le_of_forall_le _ _ fun j _ => ?_)
+    (Nat.sub_lt hza Nat.one_pos)
+  refine le_trans (Polynomial.natDegree_monomial_le _) ?_
+  omega
+
+lemma natDegreeY_toPolyB_lt {da za db zb : ℕ} (hzb : 0 < zb)
+    (v : BWIdx da za db zb → F) : natDegreeY (toPolyB v) < zb := by
+  classical
+  rw [natDegreeY, toPolyB]
+  refine lt_of_le_of_lt (Polynomial.natDegree_sum_le_of_forall_le _ _ fun j _ => ?_)
+    (Nat.sub_lt hzb Nat.one_pos)
+  refine le_trans (Polynomial.natDegree_monomial_le _) ?_
+  omega
+
+/-- **[BCKHS25] Lemma 2.1 (assembled).** With more unknowns than constraints,
+there is a Berlekamp–Welch pair `(A, B)` for the line word: `A ≠ 0`, both with
+the stated degree bounds, satisfying `B(ω_x, Y) = (u₀ x + u₁ x·Y)·A(ω_x, Y)`
+at every domain point. -/
+theorem exists_BW_pair (da za db zb : ℕ) (hzb : zb = za + 1)
+    (hda : 0 < da) (hdb : 0 < db) (hza : 0 < za)
+    (domain : ι ↪ F) (u₀ u₁ : ι → F)
+    (hcount : Fintype.card ι * zb < da * za + db * zb)
+    (hdbn : db ≤ Fintype.card ι) :
+    ∃ A B : F[X][Y], A ≠ 0 ∧
+      degreeX A < da ∧ natDegreeY A < za ∧
+      degreeX B < db ∧ natDegreeY B < zb ∧
+      ∀ x : ι, evalX (domain x) B
+        = (Polynomial.C (u₀ x) + Polynomial.C (u₁ x) * Polynomial.X)
+            * evalX (domain x) A := by
+  classical
+  obtain ⟨v, hv0, hker⟩ := exists_ne_zero_BWvec da za db zb hzb domain u₀ u₁ hcount
+  refine ⟨toPolyA v, toPolyB v, ?_, degreeX_toPolyA_lt hda v, natDegreeY_toPolyA_lt hza v,
+    degreeX_toPolyB_lt hdb v, natDegreeY_toPolyB_lt (by omega) v,
+    fun x => identity_of_mulVec_eq_zero hzb domain u₀ u₁ v hker x⟩
+  -- A ≠ 0: otherwise B vanishes at every domain point, hence B = 0, hence v = 0
+  intro hA0
+  apply hv0
+  -- B vanishes at all domain points
+  have hBvanish : ∀ a ∈ Finset.univ.image domain, evalX a (toPolyB v) = 0 := by
+    intro a ha
+    rcases Finset.mem_image.mp ha with ⟨x, -, rfl⟩
+    rw [identity_of_mulVec_eq_zero hzb domain u₀ u₁ v hker x, hA0]
+    have h0 : evalX (domain x) (0 : F[X][Y]) = 0 := by
+      rw [evalX_eq_map]
+      simp
+    rw [h0, mul_zero]
+  have hcard : degreeX (toPolyB v) < (Finset.univ.image domain).card := by
+    rw [Finset.card_image_of_injective _ domain.injective, Finset.card_univ]
+    exact lt_of_lt_of_le (degreeX_toPolyB_lt hdb v) hdbn
+  have hB0 : toPolyB v = 0 :=
+    eq_zero_of_degreeX_lt_card_of_evalX_eq_zero hcard hBvanish
+  -- both blocks of v vanish
+  funext idx
+  match idx with
+  | Sum.inl (i, j) =>
+      have := coeff_coeff_toPolyA v i j
+      rw [hA0] at this
+      simpa using this.symm
+  | Sum.inr (i, j) =>
+      have := coeff_coeff_toPolyB v i j
+      rw [hB0] at this
+      simpa using this.symm
 
 end BCKHS25
