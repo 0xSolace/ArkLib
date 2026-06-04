@@ -31,7 +31,7 @@ We define the notions of Appendix A of [BCIKS20].
 
 -/
 
-set_option linter.style.longFile 2700
+set_option linter.style.longFile 2900
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal
 
@@ -1373,6 +1373,51 @@ private lemma exists_weight_bound {r H : F[X][Y]} {D : ℕ} (hr : r ≠ 0) :
         : WithBot ℕ)) hk
   rw [hW] at hle
   exact WithBot.coe_le_coe.1 hle
+
+/-- `∑_{k<2d} k = d² + 2·∑_{k<d} k`. The key index identity underlying the exact cancellation in the
+weighted Sylvester-determinant degree count. -/
+private lemma range_two_mul_sum (d : ℕ) :
+    ∑ k ∈ Finset.range (2 * d), k = d ^ 2 + 2 * ∑ k ∈ Finset.range d, k := by
+  induction d with
+  | zero => simp
+  | succ n ih =>
+    rw [show 2 * (n + 1) = (2 * n) + 1 + 1 by ring,
+        Finset.sum_range_succ, Finset.sum_range_succ, ih, Finset.sum_range_succ]
+    ring
+
+/-- **Weighted Sylvester-determinant degree count (combinatorial core).** Given per-column
+additive weighted-degree bounds on the entries of a `(d+d)×(d+d)` matrix permutation term -- the
+left `d` columns ("`H̃'` columns") capped at `d·κ + j·κ` and the right `d` columns ("`r` columns")
+capped at `W + j·κ` -- the total degree of any permutation term is at most `d·W`. The exact
+cancellation of the weight terms `κ` is `∑(σ i) = ∑ i` together with `∑_{k<2d} = d² + 2∑_{k<d}`. -/
+private lemma sum_entry_natDegree_le (d κ W : ℕ) (σ : Equiv.Perm (Fin (d + d)))
+    (e : Fin (d + d) → ℕ)
+    (hleft : ∀ j : Fin d,
+      e (Fin.castAdd d j) + (σ (Fin.castAdd d j)).val * κ ≤ d * κ + (j : ℕ) * κ)
+    (hright : ∀ j : Fin d,
+      e (Fin.natAdd d j) + (σ (Fin.natAdd d j)).val * κ ≤ W + (j : ℕ) * κ) :
+    ∑ i, e i ≤ d * W := by
+  have hL : ∑ j : Fin d, (e (Fin.castAdd d j) + (σ (Fin.castAdd d j)).val * κ)
+      ≤ ∑ j : Fin d, (d * κ + (j : ℕ) * κ) := Finset.sum_le_sum (fun j _ => hleft j)
+  have hR : ∑ j : Fin d, (e (Fin.natAdd d j) + (σ (Fin.natAdd d j)).val * κ)
+      ≤ ∑ j : Fin d, (W + (j : ℕ) * κ) := Finset.sum_le_sum (fun j _ => hright j)
+  have hadd := Nat.add_le_add hL hR
+  have hLHS : (∑ j : Fin d, (e (Fin.castAdd d j) + (σ (Fin.castAdd d j)).val * κ))
+            + (∑ j : Fin d, (e (Fin.natAdd d j) + (σ (Fin.natAdd d j)).val * κ))
+      = (∑ i, e i) + (∑ i : Fin (d + d), (σ i).val) * κ := by
+    rw [← Fin.sum_univ_add (fun i => e i + (σ i).val * κ), Finset.sum_add_distrib, Finset.sum_mul]
+  have hperm : (∑ i : Fin (d + d), (σ i).val) = ∑ i : Fin (d + d), (i.val) :=
+    Equiv.sum_comp σ (fun i => (i : ℕ))
+  have hRHS : (∑ j : Fin d, (d * κ + (j : ℕ) * κ)) + (∑ j : Fin d, (W + (j : ℕ) * κ))
+      = d * (d * κ) + d * W + 2 * ((∑ j : Fin d, (j : ℕ)) * κ) := by
+    rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.sum_mul, ← Finset.sum_mul]
+    simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, smul_eq_mul]
+    ring
+  have hsum2d : (∑ i : Fin (d + d), (i.val)) = d ^ 2 + 2 * (∑ j : Fin d, (j : ℕ)) := by
+    rw [Fin.sum_univ_eq_sum_range (fun k => k) (d + d), Fin.sum_univ_eq_sum_range (fun k => k) d,
+        show d + d = 2 * d by ring, range_two_mul_sum]
+  rw [hLHS, hperm, hRHS, hsum2d] at hadd
+  nlinarith [hadd]
 
 /-- **Lemma A.1** of [BCIKS20], Appendix A.3 (resultant / specialization-point counting).
 
