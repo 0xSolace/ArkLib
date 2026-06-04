@@ -11415,7 +11415,7 @@
         {
           "doc": "Claim 5.6 of [BCIKS20].",
           "kind": "lemma",
-          "line": 334,
+          "line": 335,
           "name": "ProximityGap.discr_of_irred_components_nonzero",
           "namespace": "ProximityGap",
           "short_name": "discr_of_irred_components_nonzero",
@@ -11424,7 +11424,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 339,
+          "line": 340,
           "name": "ProximityGap.pg_Rset",
           "namespace": "ProximityGap",
           "short_name": "pg_Rset",
@@ -11433,7 +11433,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 343,
+          "line": 344,
           "name": "ProximityGap.pg_Rset_irreducible",
           "namespace": "ProximityGap",
           "short_name": "pg_Rset_irreducible",
@@ -11442,16 +11442,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 348,
-          "name": "ProximityGap._anon_class_348",
+          "line": 349,
+          "name": "ProximityGap._anon_class_349",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_348",
+          "short_name": "_anon_class_349",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 356,
+          "line": 357,
           "name": "ProximityGap.pg_candidatePairs",
           "namespace": "ProximityGap",
           "short_name": "pg_candidatePairs",
@@ -11460,7 +11460,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 366,
+          "line": 367,
           "name": "ProximityGap.pg_natDegree_pos_of_mem_normalizedFactors_of_separable",
           "namespace": "ProximityGap",
           "short_name": "pg_natDegree_pos_of_mem_normalizedFactors_of_separable",
@@ -11469,7 +11469,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 391,
+          "line": 392,
           "name": "ProximityGap.pg_candidatePairs_snd_natDegree_pos",
           "namespace": "ProximityGap",
           "short_name": "pg_candidatePairs_snd_natDegree_pos",
@@ -11478,16 +11478,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 401,
-          "name": "ProximityGap._anon_class_401",
+          "line": 402,
+          "name": "ProximityGap._anon_class_402",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_401",
+          "short_name": "_anon_class_402",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 413,
+          "line": 414,
           "name": "ProximityGap.pg_card_normalizedFactors_toFinset_le_natDegree",
           "namespace": "ProximityGap",
           "short_name": "pg_card_normalizedFactors_toFinset_le_natDegree",
@@ -11496,16 +11496,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 415,
-          "name": "ProximityGap._anon_class_415",
+          "line": 416,
+          "name": "ProximityGap._anon_class_416",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_415",
+          "short_name": "_anon_class_416",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 458,
+          "line": 459,
           "name": "ProximityGap.pg_evalX_eq_map_evalRingHom",
           "namespace": "ProximityGap",
           "short_name": "pg_evalX_eq_map_evalRingHom",
@@ -11514,16 +11514,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 460,
-          "name": "ProximityGap._anon_class_460",
+          "line": 461,
+          "name": "ProximityGap._anon_class_461",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_460",
+          "short_name": "_anon_class_461",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 466,
+          "line": 467,
           "name": "ProximityGap.pg_eval_on_Z",
           "namespace": "ProximityGap",
           "short_name": "pg_eval_on_Z",
@@ -11532,7 +11532,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 470,
+          "line": 471,
           "name": "ProximityGap.pg_exists_H_of_R_eval_zero",
           "namespace": "ProximityGap",
           "short_name": "pg_exists_H_of_R_eval_zero",
@@ -11541,16 +11541,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 480,
-          "name": "ProximityGap._anon_class_480",
+          "line": 481,
+          "name": "ProximityGap._anon_class_481",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_480",
+          "short_name": "_anon_class_481",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 581,
+          "line": 582,
           "name": "ProximityGap.pg_exists_R_of_Q_eval_zero",
           "namespace": "ProximityGap",
           "short_name": "pg_exists_R_of_Q_eval_zero",
@@ -11559,16 +11559,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 589,
-          "name": "ProximityGap._anon_class_589",
+          "line": 590,
+          "name": "ProximityGap._anon_class_590",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_589",
+          "short_name": "_anon_class_590",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 634,
+          "line": 635,
           "name": "ProximityGap.pg_exists_pair_for_z",
           "namespace": "ProximityGap",
           "short_name": "pg_exists_pair_for_z",
@@ -11577,16 +11577,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 648,
-          "name": "ProximityGap._anon_class_648",
+          "line": 649,
+          "name": "ProximityGap._anon_class_649",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_648",
+          "short_name": "_anon_class_649",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 703,
+          "line": 704,
           "name": "ProximityGap.pg_natDegree_evalX_le_natDegreeY",
           "namespace": "ProximityGap",
           "short_name": "pg_natDegree_evalX_le_natDegreeY",
@@ -11595,16 +11595,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 705,
-          "name": "ProximityGap._anon_class_705",
+          "line": 706,
+          "name": "ProximityGap._anon_class_706",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_705",
+          "short_name": "_anon_class_706",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 716,
+          "line": 717,
           "name": "ProximityGap.pg_sum_natDegreeY_Rset_le_natDegreeY_Q",
           "namespace": "ProximityGap",
           "short_name": "pg_sum_natDegreeY_Rset_le_natDegreeY_Q",
@@ -11613,16 +11613,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 720,
-          "name": "ProximityGap._anon_class_720",
+          "line": 721,
+          "name": "ProximityGap._anon_class_721",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_720",
+          "short_name": "_anon_class_721",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 769,
+          "line": 770,
           "name": "ProximityGap.pg_card_candidatePairs_le_natDegreeY",
           "namespace": "ProximityGap",
           "short_name": "pg_card_candidatePairs_le_natDegreeY",
@@ -11631,10 +11631,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 776,
-          "name": "ProximityGap._anon_class_776",
+          "line": 777,
+          "name": "ProximityGap._anon_class_777",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_776",
+          "short_name": "_anon_class_777",
           "signature": "class classical"
         }
       ]
