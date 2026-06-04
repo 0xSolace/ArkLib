@@ -528,7 +528,31 @@ theorem commitOracleReduction_perfectCompleteness (i : Fin ℓ)
       (init := init)
       (impl := impl) := by
   unfold OracleReduction.perfectCompleteness
+  rw [Reduction.perfectCompleteness, Reduction.completeness]
   intro stmtIn witIn h_relIn
+  simp only [ENNReal.coe_zero, tsub_zero]
+  obtain ⟨stmtIn, oStmtIn⟩ := stmtIn
+  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  -- WALL (commit snoc-preservation, same boundary obstruction as the relay step).
+  -- The commit protocol is a single prover→verifier message (`pSpecCommit` is `ProverOnly`); the
+  -- honest run is deterministic: the prover sends `witIn.f` as the new committed oracle and the
+  -- verifier (`verify := pure stmtIn`) returns `stmtIn` and reconstructs the output oracle family
+  -- `oStmtOut = snoc_oracle oStmtIn witIn.f` from `embed`/`hEq`.  After the (mechanical) run-collapse
+  -- via `Reduction.run_of_prover_first` + `simulateQ_pure`, the residual obligation is
+  --   ((stmtIn, snoc_oracle oStmtIn witIn.f), witIn) ∈ roundRelation i.succ
+  --     = masterKStateProp i.succ i.succ (snoc_oracle oStmtIn witIn.f) witIn,
+  -- to be derived from the input relation
+  --   h_relIn : ((stmtIn, oStmtIn), witIn) ∈ foldStepRelOut i
+  --           = masterKStateProp i.succ i.castSucc oStmtIn witIn.
+  -- This is the COMMIT ANALOGUE of `oracleWitnessConsistency_relay_preserved` /
+  -- `nonDoomedFoldingProp_relay_preserved` (transport from oracleIdx `i.castSucc` to `i.succ`
+  -- across the snoc), and it is OPEN for the same reason: `masterKStateProp` is
+  -- `badEventExistsProp ∨ oracleWitnessConsistency`, and while the `oracleWitnessConsistency`
+  -- disjunct transports across the snoc, the `badEventExistsProp` disjunct hits the
+  -- `j*ϑ+ϑ ≤ stmtIdx` boundary of `foldingBadEventAtBlock` (Basic.lean:845): the new boundary block
+  -- at `stmtIdx = i+1` carries the actual `foldingBadEvent` predicate that is vacuously `True` at
+  -- `stmtIdx = i`.  Under `hCR` (`ϑ ∣ (i+1)`) this boundary is precisely where the two are
+  -- inequivalent.  No `badEventExistsProp`-snoc-preservation lemma exists; faking would be rejected.
   sorry
 
 open scoped NNReal
@@ -603,7 +627,29 @@ def commitKState (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
     intro kState_next
     fin_cases m
     simpa [commitKStateProp] using kState_next.1
-  toFun_full := fun (stmtIn, oStmtIn) tr witOut=> by
+  toFun_full := fun (stmtIn, oStmtIn) tr witOut => by
+    -- WALL (commit-analogue snoc-preservation + witness/message consistency).
+    -- The commit verifier's run collapses deterministically (`verify := pure stmtIn`, no queries):
+    -- it outputs `(stmtIn, oStmtOut)` where `oStmtOut` is the `embed`/`hEq`-determined family,
+    -- which reindexes `oStmtIn` on the first `toOutCodewordsCount … i.castSucc` slots and places
+    -- the prover's committed message `tr.messages ⟨0,_⟩` in the final (new) slot (this is exactly
+    -- `snoc_oracle oStmtIn (tr.messages …)`).  Hence
+    --   hrel : ((stmtIn, oStmtOut), witOut) ∈ roundRelation i.succ
+    --        = masterKStateProp i.succ i.succ (snoc_oracle oStmtIn (tr.messages …)) witOut.
+    -- The goal `commitKStateProp i 1 stmtIn witOut oStmtIn` is the CONJUNCTION of
+    --   (A) masterKStateProp i.succ i.castSucc oStmtIn witOut            (smaller oracle family), and
+    --   (B) masterKStateProp i.succ i.succ (snoc_oracle oStmtIn witOut.f) witOut,
+    -- where (B) uses `getCommitProverFinalOutput`'s oStmtOut = `snoc_oracle oStmtIn witOut.f`.
+    -- TWO genuine obstructions, neither provable from `hrel` alone:
+    --  1. (A) needs a *commit snoc-restriction* lemma: `masterKStateProp … i.succ (snoc …)` ⟹
+    --     `masterKStateProp … i.castSucc oStmtIn`.  No such lemma exists (the analogue of
+    --     `oracleWitnessConsistency_relay_preserved` for the commit snoc is unproven; the bad-event
+    --     disjunct again hits the `j*ϑ+ϑ ≤ stmtIdx` boundary).
+    --  2. (B) compares `snoc_oracle oStmtIn (tr.messages …)` (in `hrel`) against
+    --     `snoc_oracle oStmtIn witOut.f` (in the goal).  For an ARBITRARY soundness transcript `tr`
+    --     and extracted `witOut` there is NO guarantee `tr.messages ⟨0,_⟩ = witOut.f`; the
+    --     witness/committed-message consistency that makes these equal is not available here.
+    -- Both are open framework lemmas; faking would be adversarially rejected.
     sorry
 
 /-- RBR knowledge soundness for a single round oracle verifier -/
@@ -711,9 +757,79 @@ theorem relayOracleReduction_perfectCompleteness (i : Fin ℓ)
       (init := init)
       (impl := impl) := by
   unfold OracleReduction.perfectCompleteness
+  rw [Reduction.perfectCompleteness, Reduction.completeness]
   intro stmtIn witIn h_relIn
-  simp only
-  sorry
+  simp only [ENNReal.coe_zero, tsub_zero]
+  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  obtain ⟨stmtIn, oStmtIn⟩ := stmtIn
+  -- The relay reduction's run collapses to a deterministic `pure`: the prover only relabels
+  -- the oracle statement (`mapOStmtOutRelayStep`) and the verifier returns `stmtIn` unchanged.
+  have hrun : (relayOracleReduction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR).toReduction.run
+        (stmtIn, oStmtIn) witIn =
+      pure (((default, ((stmtIn,
+        mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn), witIn)),
+        (stmtIn, mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn))) := by
+    simp only [OracleReduction.toReduction, Reduction.run, Prover.run, Prover.runToRound,
+      relayOracleReduction, relayOracleProver, OracleVerifier.toVerifier, Verifier.run,
+      relayOracleVerifier]
+    rfl
+  rw [hrun]
+  set out := ((stmtIn, mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn))
+    with hout
+  refine ⟨?_, ?_⟩
+  · -- Failure probability is zero.
+    rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp only [probFailure_eq_zero, zero_add]
+    apply probOutput_eq_zero_of_not_mem_support
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _
+    change none ∈ _root_.support
+      (StateT.run' (simulateQ _ (pure (some (((default, (out, witIn)), out))) :
+        OracleComp _ _)) s) → False
+    rw [simulateQ_pure]
+    change none ∈ _root_.support
+      (Prod.fst <$> (pure (some (((default, (out, witIn)), out))) :
+        StateT σ ProbComp _).run s) → False
+    rw [StateT.run_pure]; simp [map_pure]
+  · -- Every successful output satisfies the relation.
+    intro x hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    change some x ∈ _root_.support
+      (StateT.run' (simulateQ _ (pure (some (((default, (out, witIn)), out))) :
+        OracleComp _ _)) s) at hx
+    rw [simulateQ_pure] at hx
+    change some x ∈ _root_.support
+      (Prod.fst <$> (pure (some (((default, (out, witIn)), out))) :
+        StateT σ ProbComp _).run s) at hx
+    rw [StateT.run_pure] at hx
+    simp only [map_pure, support_pure, Set.mem_singleton_iff] at hx
+    cases hx
+    refine ⟨?_, rfl⟩
+    -- `(stmtIn, mapOStmtOutRelayStep ... oStmtIn, witIn) ∈ roundRelation i.succ` is
+    -- definitionally `relayKStateProp ... = masterKStateProp ... on the mapped oStmt`.
+    simp only [roundRelation, roundRelationProp, Set.mem_setOf_eq]
+    have hKey := oracleWitnessConsistency_relay_preserved (mp := mp) 𝔽q β i
+      hNCR stmtIn witIn oStmtIn
+    simp only [foldStepRelOut, foldStepRelOutProp, Set.mem_setOf_eq] at h_relIn
+    unfold masterKStateProp at h_relIn ⊢
+    simp only [Fin.val_succ, Fin.coe_castSucc, true_and] at h_relIn ⊢
+    -- After `rw [← hKey]` the `oracleWitnessConsistency` disjunct of the goal (at oracleIdx
+    -- `i.succ`, on the relay-mapped oracle) is rewritten back to the relIn one (at oracleIdx
+    -- `i.castSucc`, on `oStmtIn`), matching `h_relIn` exactly. The ONLY residual mismatch is the
+    -- `badEventExistsProp` disjunct:
+    --   h_relIn : badEventExistsProp i.castSucc i.castSucc oStmtIn (Fin.take ↑i …)        ∨ …
+    --   ⊢       : badEventExistsProp i.succ    i.succ    (mapped) (Fin.take (↑i+1) …)      ∨ …
+    -- These are NOT definitionally equal: `foldingBadEventAtBlock` is guarded by
+    -- `j*ϑ+ϑ ≤ stmtIdx` (Basic.lean:845), with `stmtIdx = i` on the left and `i+1` on the right.
+    -- A boundary block with `j*ϑ+ϑ = i+1` is the vacuous `True` on the left but the actual
+    -- `foldingBadEvent` predicate on the right; under `hNCR` this boundary is hit exactly when
+    -- `ϑ ∣ (i+1)`, forcing `i+1 = ℓ`. This is precisely the open bad-event disjunct of
+    -- `nonDoomedFoldingProp_relay_preserved` (Basic.lean:980): a `badEventExistsProp_relay_preserved`
+    -- lemma is required and is genuinely unproven (boundary fold/bad-event interplay, not reindexing).
+    rw [← hKey]
+    sorry
 
 def relayKnowledgeError (m : pSpecRelay.ChallengeIdx) : ℝ≥0 :=
   match m with

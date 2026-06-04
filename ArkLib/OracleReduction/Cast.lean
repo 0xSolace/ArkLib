@@ -189,7 +189,72 @@ variable (hOₘ : ∀ i, Oₘ₁ i = dcast (Message.cast_idx hSpec) (Oₘ₂ (i.
 @[simp]
 theorem cast_toVerifier (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁) :
     (OracleVerifier.cast hn hSpec hOₘ V).toVerifier = Verifier.cast hn hSpec V.toVerifier := by
-  sorry
+  subst hn
+  -- Reduce `pSpec₂` to `pSpec₁` *cleanly* (replacing `pSpec₁.cast rfl` by `pSpec₁`), so that the
+  -- transcript and challenge types below are syntactically over `pSpec₁`.
+  simp only [ProtocolSpec.cast_id, id_eq] at hSpec
+  subst pSpec₂
+  -- After the cast collapses, the two message oracle interfaces coincide; `hOₘ` says exactly this
+  -- (the index/type casts are identities), so we may identify `Oₘ₂` with `Oₘ₁`.
+  have hOeq : Oₘ₂ = Oₘ₁ := by
+    funext i
+    rw [hOₘ i]
+    rfl
+  subst hOeq
+  simp only [OracleVerifier.cast, OracleVerifier.toVerifier, Verifier.cast]
+  congr 1
+  funext x transcript
+  -- Both casts of the transcript are (propositionally) the identity; rewrite them away so that
+  -- the two `simulateQ` arguments (and the two `simOracle2` message families) coincide.
+  have ht : (dcast₂ (Eq.refl n₁) (by rfl) transcript : pSpec₁.FullTranscript) = transcript :=
+    congrFun FullTranscript.cast_id transcript
+  have hc : (dcast₂ (Eq.refl n₁) (by rfl) transcript.challenges : pSpec₁.Challenges)
+      = transcript.challenges := funext (congrFun rfl)
+  simp only [ht, hc]
+  -- Split the `do`-block into its head computation and its continuation.
+  congr 1
+  · -- Head: the inner `simulateQ impl` is absorbed into the outer `simulateQ simOracle2`,
+    -- proven by induction on the underlying verifier computation.
+    generalize V.verify x.1 transcript.challenges = Y
+    induction Y using OracleComp.inductionOn with
+    | pure a => simp
+    | query_bind q r ih =>
+      simp only [simulateQ_bind, simulateQ_query, map_bind]
+      refine congrArg₂ Bind.bind ?_ (funext fun a => ih a)
+      -- per-query absorption: `simulateQ simOracle2 (impl q) = simOracle2 q`
+      rcases q with t | t | t
+      · simp
+      · simp
+      · -- `castMessageImpl` re-routes the message query through the (identity) index cast.
+        obtain ⟨i, q⟩ := t
+        -- `MessageIdx.cast _ _ i` is definitionally `i`, so after evaluating the inner `simulateQ`
+        -- (which routes the message query) the two sides agree definitionally.
+        simp only [castMessageImpl, castMessageQuery, map_eq_bind_pure_comp, simulateQ_bind,
+          simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query, simulateQ_pure,
+          Function.comp, id_eq, bind_pure]
+        rw [simulateQ_spec_query]
+        simp
+  · -- Continuation: the two builders of `oStmtOut` agree.  The casting embedding
+    -- `V.embed.trans (sumMap (Equiv.refl _) (MessageIdx.cast _ _))` is `V.embed` (both the
+    -- `Equiv.refl` map and `MessageIdx.cast _ _` are identities), so the `match`es coincide.
+    -- We first rewrite `MessageIdx.cast _ _` to `id`, then case on the *bare* `V.embed i`
+    -- (rather than the composite discriminant) to keep the dependent `match` motive well-formed.
+    funext stmtOut
+    refine congrArg (fun f => pure (stmtOut, f)) ?_
+    funext i
+    -- The casting embedding is exactly `V.embed`: both the `Equiv.refl` map and `MessageIdx.cast`
+    -- are identities, so `V.embed.trans (sumMap (Equiv.refl _) (MessageIdx.cast _ _)) = V.embed`.
+    -- Rewriting this makes both `match`es dispatch on the same scrutinee.
+    have hembed : (V.embed.trans ((Equiv.refl ιₛᵢ).toEmbedding.sumMap
+        ⟨MessageIdx.cast (Eq.refl n₁) (by rfl),
+          MessageIdx.cast_injective (Eq.refl n₁) (by rfl)⟩)) = V.embed := by
+      ext k
+      simp only [Function.Embedding.trans_apply, Function.Embedding.coe_sumMap,
+        Equiv.coe_toEmbedding, Equiv.refl_apply, Function.Embedding.coeFn_mk]
+      rw [show (MessageIdx.cast (Eq.refl n₁) (by rfl) : pSpec₁.MessageIdx → _) = id from
+        MessageIdx.cast_id]
+      cases V.embed k <;> simp
+    simp only [hembed]
 
 end OracleVerifier
 
