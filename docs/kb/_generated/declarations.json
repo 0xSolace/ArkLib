@@ -13768,6 +13768,60 @@
           "namespace": "BCKHS25",
           "short_name": "_anon_class_100",
           "signature": "class classical"
+        },
+        {
+          "doc": "Package the `A`-block of a coefficient vector as a bivariate polynomial.",
+          "kind": "def",
+          "line": 109,
+          "name": "BCKHS25.toPolyA",
+          "namespace": "BCKHS25",
+          "short_name": "toPolyA",
+          "signature": "def toPolyA {da za db zb : \u2115} (v : BWIdx da za db zb \u2192 F) : F[X][Y] :="
+        },
+        {
+          "doc": "Package the `B`-block of a coefficient vector as a bivariate polynomial.",
+          "kind": "def",
+          "line": 114,
+          "name": "BCKHS25.toPolyB",
+          "namespace": "BCKHS25",
+          "short_name": "toPolyB",
+          "signature": "def toPolyB {da za db zb : \u2115} (v : BWIdx da za db zb \u2192 F) : F[X][Y] :="
+        },
+        {
+          "doc": "The `Y`-coefficients of the packaged polynomial, evaluated in `X`: inside the index range it is the coefficient-weighted power sum; beyond it, zero.",
+          "kind": "lemma",
+          "line": 120,
+          "name": "BCKHS25.coeff_evalX_toPolyB",
+          "namespace": "BCKHS25",
+          "short_name": "coeff_evalX_toPolyB",
+          "signature": "lemma coeff_evalX_toPolyB {da za db zb : \u2115} (v : BWIdx da za db zb \u2192 F)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 124,
+          "name": "BCKHS25._anon_class_124",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_124",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Same for the `A`-block.",
+          "kind": "lemma",
+          "line": 152,
+          "name": "BCKHS25.coeff_evalX_toPolyA",
+          "namespace": "BCKHS25",
+          "short_name": "coeff_evalX_toPolyA",
+          "signature": "lemma coeff_evalX_toPolyA {da za db zb : \u2115} (v : BWIdx da za db zb \u2192 F)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 156,
+          "name": "BCKHS25._anon_class_156",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_156",
+          "signature": "class classical"
         }
       ]
     },
@@ -49775,7 +49829,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5404,
+      "declarations": 5410,
       "files": 287
     }
   }
