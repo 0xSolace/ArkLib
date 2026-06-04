@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 289 files, 5504 declarations
+- `ArkLib` — 288 files, 5501 declarations
 
-## Same short-name across multiple files (152 groups)
+## Same short-name across multiple files (149 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -714,25 +714,10 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def CheckClaim.extractor` [ArkLib/ProofSystem/Component/CheckClaim.lean:120](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L120) — The round-by-round extractor for the `CheckClaim` reduction. Trivial since the witness is `Unit`.
 - `def ReduceClaim.extractor` [ArkLib/ProofSystem/Component/ReduceClaim.lean:112](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L112) — The round-by-round extractor for the `ReduceClaim` (oracle) reduction. Requires a mapping `mapWitInv
 
-### `finSumFinEquiv_symm_dite` (2 declarations, 2 files)
-
-- `theorem RingSwitching.finSumFinEquiv_symm_dite` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1529](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1529) — Value-form of `finSumFinEquiv.symm`: classify the index by whether its value is `< m`.
-- `theorem ScratchRS.finSumFinEquiv_symm_dite` [ArkLib/ProofSystem/RingSwitching/Scratch.lean:14](../../../ArkLib/ProofSystem/RingSwitching/Scratch.lean#L14) — (no docstring)
-
 ### `finalSumcheckKnowledgeError` (2 declarations, 2 files)
 
 - `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean:969](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps.lean#L969) — RBR knowledge error for the final sumcheck step
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:610](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L610) — RBR knowledge error for the final sumcheck step
-
-### `fixVars_eq_bind₁` (2 declarations, 2 files)
-
-- `theorem RingSwitching.fixVars_eq_bind₁` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1543](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1543) — Characterization of `fixFirstVariablesOfMQP` as a `bind₁` partial substitution: it sends the survivi
-- `theorem ScratchRS.fixVars_eq_bind₁` [ArkLib/ProofSystem/RingSwitching/Scratch.lean:27](../../../ArkLib/ProofSystem/RingSwitching/Scratch.lean#L27) — (no docstring)
-
-### `fixVars_step` (2 declarations, 2 files)
-
-- `theorem RingSwitching.fixVars_step` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1583](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1583) — **Round-transition for `fixFirstVariablesOfMQP` (cons form).** Fixing the last `v` variables of `pol
-- `theorem ScratchRS.fixVars_step` [ArkLib/ProofSystem/RingSwitching/Scratch.lean:64](../../../ArkLib/ProofSystem/RingSwitching/Scratch.lean#L64) — (no docstring)
 
 ### `foldOracleReduction` (2 declarations, 2 files)
 

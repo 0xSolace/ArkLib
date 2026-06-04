@@ -45326,37 +45326,6 @@
         }
       ]
     },
-    "ArkLib/ProofSystem/RingSwitching/Scratch.lean": {
-      "declarations": [
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 14,
-          "name": "ScratchRS.finSumFinEquiv_symm_dite",
-          "namespace": "ScratchRS",
-          "short_name": "finSumFinEquiv_symm_dite",
-          "signature": "theorem finSumFinEquiv_symm_dite {m n : \u2115} (x : Fin (m + n)) :"
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 27,
-          "name": "ScratchRS.fixVars_eq_bind\u2081",
-          "namespace": "ScratchRS",
-          "short_name": "fixVars_eq_bind\u2081",
-          "signature": "theorem fixVars_eq_bind\u2081 (\u2113 : \u2115) (v : Fin (\u2113 + 1)) (poly : MvPolynomial (Fin \u2113) L)"
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 64,
-          "name": "ScratchRS.fixVars_step",
-          "namespace": "ScratchRS",
-          "short_name": "fixVars_step",
-          "signature": "theorem fixVars_step (\u2113 : \u2115) (poly : MvPolynomial (Fin \u2113) L) (v : Fin (\u2113 + 1))"
-        }
-      ]
-    },
     "ArkLib/ProofSystem/RingSwitching/Spec.lean": {
       "declarations": [
         {
@@ -50683,8 +50652,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5504,
-      "files": 289
+      "declarations": 5501,
+      "files": 288
     }
   }
 }
