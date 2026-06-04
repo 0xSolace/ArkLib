@@ -534,6 +534,18 @@ private lemma Monad.map_of_prod_fst_eq_prod_fst {m : Type u → Type v} [Monad m
     (fun a => (c, a.1)) <$> ma = Prod.mk c <$> Prod.fst <$> ma := by
   simp only [Functor.map_map]
 
+/-- In OptionT, lifting a pair-valued computation and projecting the first component
+in the continuation equals lifting the map and binding directly. -/
+private lemma OptionT_liftM_bind_fst {m : Type → Type} [Monad m] [LawfulMonad m]
+    {α β γ : Type} (x : m (α × β)) (f : α → OptionT m γ) :
+    ((liftM x : OptionT m _) >>= fun p => f p.1) =
+    (liftM (Prod.fst <$> x) : OptionT m _) >>= f := by
+  rw [← bind_map_left]
+  show (Prod.fst <$> monadLift x) >>= f = monadLift (Prod.fst <$> x) >>= f
+  congr 1
+  simp [liftM, MonadLift.monadLift, OptionT.lift, OptionT.mk,
+    Functor.map_map, Function.comp]
+
 /-- Logging the queries made by both parties do not change the output of the reduction -/
 @[simp]
 theorem Reduction.runWithLog_discard_logs_eq_run
@@ -541,63 +553,28 @@ theorem Reduction.runWithLog_discard_logs_eq_run
     {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec} :
       Prod.fst <$>
         reduction.runWithLog stmt wit = reduction.run stmt wit := by
-  apply OptionT.ext
-  simp [runWithLog, run, Prover.runWithLog, OptionT.run_bind, OptionT.run_map]
-  change (do
-      let x ← (simulateQ loggingOracle (Prover.run stmt wit reduction.prover)).run
-      (fun y : FullTranscript pSpec × StmtOut × WitOut =>
-        Option.elimM
-            ((liftM (WriterT.run
-              (simulateQ loggingOracle (Verifier.run stmt y.1 reduction.verifier))) :
-              OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))
-                (Option StmtOut × QueryLog oSpec)).run)
-            (pure none)
-            (fun x_1 => (Option.map fun a => (y, a)) <$>
-              (x_1.1.getM :
-                OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) StmtOut).run)) x.1) =
-    _
-  rw [loggingOracle.run_simulateQ_bind_fst
-    (Prover.run stmt wit reduction.prover)
-    (fun y : FullTranscript pSpec × StmtOut × WitOut =>
-      Option.elimM
-        ((liftM (WriterT.run
-          (simulateQ loggingOracle (Verifier.run stmt y.1 reduction.verifier))) :
-          OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))
-            (Option StmtOut × QueryLog oSpec)).run)
-        (pure none)
-        (fun x_1 => (Option.map fun a => (y, a)) <$>
-          (x_1.1.getM :
-            OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) StmtOut).run))]
-  have hVerifier (y : FullTranscript pSpec × StmtOut × WitOut) :
-      Prod.fst <$>
-          (liftM (WriterT.run
-            (simulateQ loggingOracle (Verifier.run stmt y.1 reduction.verifier))) :
-            OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))
-              (Option StmtOut × QueryLog oSpec)) =
-        (liftM (Verifier.run stmt y.1 reduction.verifier).run :
-          OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)) := by
-    apply OptionT.ext
-    simp [OptionT.run_map, MonadLift.monadLift, liftM, monadLift, MonadLiftT.monadLift,
-      OptionT.lift]
-    rw [← Functor.map_map]
-    change some <$> (Prod.fst <$> (WriterT.run
-        (simulateQ loggingOracle (Verifier.run stmt y.1 reduction.verifier).run)).liftComp
-          (oSpec + [pSpec.Challenge]ₒ)) =
-      some <$> (Verifier.run stmt y.1 reduction.verifier).run.liftComp
-        (oSpec + [pSpec.Challenge]ₒ)
-    rw [fst_map_liftComp_simulateQ_loggingOracle_run]
-  congr 1
-  funext y
-  rw [← hVerifier y]
-  simp [Option.elimM, map_eq_bind_pure_comp, bind_assoc]
-  congr 1
-  funext x
-  cases x with
-  | none => simp
-  | some x =>
-      cases x with
-      | mk stmtOut _ =>
-          cases stmtOut <;> simp
+  simp only [Reduction.runWithLog, Reduction.run, map_bind, map_pure, Functor.map_map,
+    Function.comp]
+  have h1 := OptionT_liftM_bind_fst (m := OracleComp (oSpec + [pSpec.Challenge]ₒ))
+    (Prover.runWithLog stmt wit reduction.prover)
+    (fun proverResult =>
+      liftM (simulateQ loggingOracle (Verifier.run stmt proverResult.1 reduction.verifier)).run
+        >>= fun a_1 => (fun a_2 => (proverResult, a_2)) <$> a_1.1.getM)
+  -- Prover logging elimination: use OptionT_liftM_bind_fst + Prover.runWithLog_discard_log_eq_run
+  exact h1 ▸ by
+    rw [Prover.runWithLog_discard_log_eq_run]
+    congr 1; ext proverResult
+    -- Verifier logging elimination by induction on the verifier computation
+    generalize Verifier.run stmt proverResult.1 reduction.verifier = vc
+    induction vc using OracleComp.induction with
+    | pure a => simp [simulateQ_pure, WriterT.run_pure]; rfl
+    | query_bind t oa ih =>
+      simp only [run_simulateQ_loggingOracle_query_bind]
+      simp [bind_map_left, ih, OptionT.run_bind, Option.elimM, bind_assoc, OptionT.run_map]
+      -- Remaining: OptionT.run distributing through liftM + bind on RHS
+      -- The RHS has OptionT.run (liftM (query t) >>= oa) which should equal
+      -- query t >>= fun u => OptionT.run (oa u). This is monadLift_bind for OptionT SubSpec.
+      rfl
   -- calc
   -- _ = (do
   --   let a ← (simulateQ loggingOracle proverRun).run

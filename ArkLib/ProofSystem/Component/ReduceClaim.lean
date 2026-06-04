@@ -103,7 +103,7 @@ theorem reduction_completeness --(h : init.neverFails)
       (Prod.fst <$> (pure (some ((default, (mapStmt stmtIn, mapWit stmtIn witIn)),
         mapStmt stmtIn)) : StateT σ ProbComp _).run s) at hx
     rw [StateT.run_pure] at hx
-    simp [map_pure, support_pure] at hx
+    simp only [map_pure, support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
     cases hx
     exact ⟨(hRel stmtIn witIn).mp hIn, rfl⟩
 

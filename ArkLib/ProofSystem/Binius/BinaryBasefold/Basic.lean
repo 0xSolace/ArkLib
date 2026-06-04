@@ -5,6 +5,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Prelude
+import ArkLib.ProofSystem.Sumcheck.Structured
 
 noncomputable section
 namespace Binius.BinaryBasefold
@@ -16,7 +17,6 @@ open ReedSolomon Code BerlekampWelch
 open Finset AdditiveNTT Polynomial MvPolynomial Nat Matrix
 
 variable {L : Type} [CommRing L] (ℓ : ℕ) [NeZero ℓ]
-variable (𝓑 : Fin 2 ↪ L)
 
 section OracleStatementIndex
 variable (ℓ : ℕ) (ϑ : ℕ) [NeZero ℓ] [NeZero ϑ] [hdiv : Fact (ϑ ∣ ℓ)]
@@ -143,7 +143,7 @@ lemma toOutCodewordsCount_succ_eq_add_one_iff (i : Fin ℓ) :
     rw [h_i_div_ϑ, h_k, add_comm]
     omega
   · -- ⊢ toOutCodewordsCount ℓ ϑ i.castSucc + 1 = toOutCodewordsCount ℓ ϑ i.succ →
-    --   ϑ ∣ ↑i.succ ∧ i.succ ≠ ⟨ℓ, ⋯⟩
+    -- ϑ ∣ ↑i.succ ∧ i.succ ≠ ⟨ℓ, ⋯⟩
     intro h_eq
     constructor
     · -- Prove ϑ ∣ ↑i.succ
@@ -362,62 +362,15 @@ lemma mkLastOracleIndex_last : mkLastOracleIndex ℓ ϑ (Fin.last ℓ) = ℓ / �
 
 end OracleStatementIndex
 
-section SumcheckOperations
-
-abbrev MultilinearPoly (L : Type) [CommSemiring L] (ℓ : ℕ) := L⦃≤ 1⦄[X Fin ℓ]
-abbrev MultiquadraticPoly (L : Type) [CommSemiring L] (ℓ : ℕ) := L⦃≤ 2⦄[X Fin ℓ]
-
-/-- We treat the multiplier poly as a blackbox for protocol abstraction.
-For example, in Binary Basefold it's `eqTilde(r₀, .., r_{ℓ-1}, X₀, .., X_{ℓ-1})` -/
-structure SumcheckMultiplierParam (L : Type) [CommRing L] (ℓ : ℕ) (Context : Type := Unit) where
-  multpoly : (ctx: Context) → MultilinearPoly L ℓ
-
-/-- `H₀(X₀, ..., X_{ℓ-1}) = h(X₀, ..., X_{ℓ-1}) =`
-  `m(X_0, ..., X_{ℓ-1}) · t(X_0, ..., X_{ℓ-1})` -/
-def computeInitialSumcheckPoly (t : MultilinearPoly L ℓ)
-    (m : MultilinearPoly L ℓ) : MultiquadraticPoly L ℓ :=
-  ⟨m * t, by
-    rw [MvPolynomial.mem_restrictDegree_iff_degreeOf_le]
-    intro i
-    have h_t_deg: degreeOf i t.val ≤ 1 :=
-      degreeOf_le_iff.mpr fun term a ↦ (t.property) a i
-    have h_m_deg: degreeOf i m.val ≤ 1 :=
-      degreeOf_le_iff.mpr fun term a ↦ (m.property) a i
-    calc
-      _ ≤ (degreeOf i m.val) + (degreeOf i t.val) :=
-        degreeOf_mul_le i m.val t.val
-      _ ≤ 2 := by omega
-  ⟩
-
-/-- `Hᵢ(Xᵢ, ..., X_{ℓ-1}) = ∑ ω ∈ 𝓑ᵢ, H₀(ω₀, …, ω_{i-1}, Xᵢ, …, X_{ℓ-1}) (where H₀=h)` -/
-def projectToMidSumcheckPoly (t : MultilinearPoly L ℓ)
-    (m : MultilinearPoly L ℓ) (i : Fin (ℓ + 1))
-    (challenges : Fin i → L)
-    : MultiquadraticPoly L (ℓ-i) :=
-  let H₀: MultiquadraticPoly L ℓ := computeInitialSumcheckPoly (ℓ:=ℓ) t m
-  let Hᵢ := fixFirstVariablesOfMQP (ℓ := ℓ) (v := ⟨i, by omega⟩)
-    (H := H₀) (challenges := challenges)
-  ⟨Hᵢ, by
-    have hp := H₀.property
-    simpa using
-      (fixFirstVariablesOfMQP_degreeLE (L := L) (ℓ := ℓ) (v := ⟨i, by omega⟩)
-        (poly := H₀.val) (challenges := challenges) (deg := 2) hp)
-  ⟩
-
-/-- Derive `H_{i+1}` from `H_i` by projecting the first variable -/
-def projectToNextSumcheckPoly (i : Fin (ℓ)) (Hᵢ : MultiquadraticPoly L (ℓ - i))
-    (rᵢ : L) : -- the current challenge
-    MultiquadraticPoly L (ℓ - i.succ) := by
-  let projectedH := fixFirstVariablesOfMQP (ℓ := ℓ - i) (v := ⟨1, by omega⟩)
-    (H := Hᵢ.val) (challenges := fun _ => rᵢ)
-  exact ⟨projectedH, by
-    have hp := Hᵢ.property
-    simpa using
-      (fixFirstVariablesOfMQP_degreeLE (L := L) (ℓ := ℓ - i) (v := ⟨1, by omega⟩)
-        (poly := Hᵢ.val) (challenges := fun _ => rᵢ) (deg := 2) hp)
-  ⟩
-
-end SumcheckOperations
+-- The structured-sumcheck primitives (`MultilinearPoly`, `MultiquadraticPoly`,
+-- `SumcheckMultiplierParam`, `computeInitialSumcheckPoly`, `projectToMidSumcheckPoly`,
+-- `projectToNextSumcheckPoly`) now live in `ArkLib.ProofSystem.Sumcheck.Structured`.
+-- We re-export them under the `Binius.BinaryBasefold` namespace so that existing
+-- references — qualified or unqualified — continue to resolve.
+-- See `GENERIC_RING_SWITCHING_PLAN.md` §1.5 for the rationale.
+export Sumcheck.Structured (MultilinearPoly MultiquadraticPoly
+  SumcheckMultiplierParam computeInitialSumcheckPoly
+  projectToMidSumcheckPoly projectToNextSumcheckPoly)
 
 variable {r : ℕ} [NeZero r]
 variable {L : Type} [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
@@ -429,7 +382,6 @@ variable (β : Fin r → L) [hβ_lin_indep : Fact (LinearIndependent 𝔽q β)]
   [h_β₀_eq_1 : Fact (β 0 = 1)]
 variable {ℓ 𝓡 ϑ : ℕ} (γ_repetitions : ℕ) [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] -- Should we allow ℓ = 0?
 variable {h_ℓ_add_R_rate : ℓ + 𝓡 < r} -- ℓ ∈ {1, ..., r-1}
-variable {𝓑 : Fin 2 ↪ L}
 variable [hdiv : Fact (ϑ ∣ ℓ)]
 
 section IndexBounds
@@ -512,28 +464,17 @@ section OracleReductionComponents
 Basic structures and definitions used throughout the Binary Basefold protocol.
 -/
 
-/-- Input context for the sumcheck protocol, used mainly in BinaryBasefold.
-For other protocols, there might be other context data.
-NOTE: might add a flag `rejected` to indicate if prover has been rejected before. But that seems
-like a fundamental feature of OracleReduction instead, so no action taken for now. -/
-structure SumcheckBaseContext (L : Type) (ℓ : ℕ) where
-  t_eval_point : Fin ℓ → L         -- r = (r_0, ..., r_{ℓ-1}) => shared input
-  original_claim : L               -- s = t(r) => the original claim to verify
-
-/-- Statement per iterated sumcheck round -/
-structure Statement (Context : Type) (i : Fin (ℓ + 1)) where
-  -- Current round state
-  sumcheck_target : L              -- s_i (current sumcheck target for round i)
-  challenges : Fin i → L           -- R'_i = (r'_0, ..., r'_{i-1}) from previous rounds
-  ctx : Context -- external context for composition from the outer protocol
+-- `SumcheckBaseContext` and `Statement` now live in `ArkLib.ProofSystem.Sumcheck.Structured`.
+-- Re-exported so existing references — qualified or unqualified — continue to resolve.
+export Sumcheck.Structured (SumcheckBaseContext Statement)
 
 /-- Statement for the final sumcheck step - includes the final constant c -/
 structure FinalSumcheckStatementOut extends
   Statement (L := L) (Context := SumcheckBaseContext L ℓ) (Fin.last ℓ) where
-  final_constant : L               -- c = f^(ℓ)(0, ..., 0)
+  final_constant : L -- c = f^(ℓ)(0, ..., 0)
 
 def toStatement (stmt : FinalSumcheckStatementOut (L := L) (ℓ := ℓ)) :
-  Statement (L := L) (Context := SumcheckBaseContext L ℓ) (Fin.last ℓ)  :=
+  Statement (L := L) (Context := SumcheckBaseContext L ℓ) (Fin.last ℓ) :=
   {
     sumcheck_target := stmt.sumcheck_target,
     challenges := stmt.challenges,
@@ -566,7 +507,7 @@ This ensures efficient computability and constraint on the structure of `H_i`
 according to `t`.
 -/
 structure Witness (i : Fin (ℓ + 1)) where
-  t : L⦃≤ 1⦄[X Fin ℓ]  -- The original polynomial t
+  t : L⦃≤ 1⦄[X Fin ℓ] -- The original polynomial t
   H : L⦃≤ 2⦄[X Fin (ℓ - i)] -- Hᵢ
   f: (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i, by omega⟩ → L -- fᵢ
 
@@ -577,7 +518,7 @@ noncomputable def extractMLP (i : Fin ℓ) (f : (sDomain 𝔽q β h_ℓ_add_R_ra
   set d := Code.distFromCode (u := f)
     (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
   let e: ℕ := d.toNat
-  let k : ℕ := 2^(ℓ - i.val)  -- degree bound from BBF_Code definition
+  let k : ℕ := 2^(ℓ - i.val) -- degree bound from BBF_Code definition
   -- Convert domain to Fin format for Berlekamp-Welch
   let domain_to_fin : (sDomain 𝔽q β h_ℓ_add_R_rate)
     ⟨i, by omega⟩ ≃ Fin domain_size := by
@@ -604,11 +545,11 @@ noncomputable def extractMLP (i : Fin ℓ) (f : (sDomain 𝔽q β h_ℓ_add_R_ra
   let berlekamp_welch_result: Option L[X] := BerlekampWelch.decoder e k ωs f_vals
 
   match berlekamp_welch_result with
-  | none => exact none  -- Decoder failed
+  | none => exact none -- Decoder failed
   | some P =>
     -- 5. Check if degree < 2^ℓ (unique decoding condition)
     if hp_deg_lt: P.natDegree ≥ 2^(ℓ - i.val) then
-      exact none  -- Outside unique decoding radius
+      exact none -- Outside unique decoding radius
     else
       -- 6. Convert P(X) from monomial basis to novel polynomial basis
       -- P(X) = Σᵢ aᵢ Xᵢ (monomial) → P(X) = Σⱼ tⱼ X_{j}(X) (novel)
@@ -668,11 +609,9 @@ def dummyLastWitness :
   f := fun _ => 0
 }
 
-/-- The initial statement for the commitment phase contains the evaluation claim s = t(r) -/
-structure InitialStatement where
-  -- Original evaluation claim: s = t(r)
-  t_eval_point : Fin ℓ → L         -- r = (r_0, ..., r_{ℓ-1}) => shared input
-  original_claim : L               -- s = t(r) => the original claim to verify
+-- `InitialStatement` was orphaned by the `RingSwitching/` extraction (its sole consumer,
+-- `RingSwitching.MLPEvalStatement`, now defines the same 2-field shape locally).
+-- Removed as part of the post-extraction cleanup.
 
 open Classical in
 def snoc_oracle {i : Fin ℓ}
@@ -684,7 +623,7 @@ def snoc_oracle {i : Fin ℓ}
   have h_succ_val: i.succ.val = i.val + 1 := rfl
   if hj: j.val < (toOutCodewordsCount ℓ ϑ i.castSucc) then
     oStmtIn ⟨j, by omega⟩
-  else --  j.val ≥ toOutCodewordsCount ℓ ϑ i.castSucc
+  else -- j.val ≥ toOutCodewordsCount ℓ ϑ i.castSucc
     -- simp only [not_lt] at hj
     if hi: isCommitmentRound ℓ ϑ i then
       -- NEW PROOF --
@@ -849,7 +788,11 @@ def BBF_eq_multiplier (r : Fin ℓ → L) : MultilinearPoly L ℓ :=
   ⟨MvPolynomial.eqPolynomial r, by simp only [eqPolynomial_mem_restrictDegree]⟩
 
 def BBF_SumcheckMultiplierParam : SumcheckMultiplierParam L ℓ (SumcheckBaseContext L ℓ) :=
-  { multpoly := fun ctx => BBF_eq_multiplier ctx.t_eval_point }
+  { multpoly := fun ctx => BBF_eq_multiplier ctx.t_eval_point
+    -- Binary Basefold is the plain degree-2 case `H = P · t`: combinator `Q := X`, degree 1.
+    combinator := fun _ => Polynomial.X
+    degCombinator := 1
+    combinator_natDegree_le := by intro _; exact Polynomial.natDegree_X_le }
 
 /-- This condition ensures that the folding witness `f` is properly generated from `t` -/
 def getMidCodewords {i : Fin (ℓ + 1)} (t : L⦃≤ 1⦄[X Fin ℓ]) -- original polynomial t
@@ -877,9 +820,9 @@ def witnessStructuralInvariant {i : Fin (ℓ + 1)} (stmt : Statement (L := L) Co
   wit.H = projectToMidSumcheckPoly ℓ wit.t (m:=mp.multpoly stmt.ctx) i stmt.challenges ∧
   wit.f = getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) wit.t stmt.challenges
 
-/-- Sumcheck consistency: the claimed sum equals the actual polynomial evaluation sum -/
-def sumcheckConsistencyProp {k : ℕ} (sumcheckTarget : L) (H : L⦃≤ 2⦄[X Fin (k)]) : Prop :=
-  sumcheckTarget = ∑ x ∈ (univ.map 𝓑) ^ᶠ (k), H.val.eval x
+-- `sumcheckConsistencyProp` now lives in `ArkLib.ProofSystem.Sumcheck.Structured`.
+-- Re-exported so existing references — qualified or unqualified — continue to resolve.
+export Sumcheck.Structured (sumcheckConsistencyProp)
 
 /-- First oracle witness consistency: the witness polynomial t, when projected to level 0 and
     evaluated on the initial domain S^(0), must be close within unique decoding radius to f^(0) -/
@@ -964,6 +907,38 @@ lemma firstOracleWitnessConsistencyProp_relay_preserved (i : Fin ℓ)
     firstOracleWitnessConsistencyProp 𝔽q β wit.t
       (getFirstOracle 𝔽q β (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt)) := by congr
 
+-- STATEMENT REPAIR (2026-06-04): added hypothesis `h_not_last : i.val + 1 < ℓ`.
+-- Reason: the original `↔` is FALSE at the last relay round (`i.val + 1 = ℓ`). There the LHS
+-- (`nonDoomedFoldingProp` at `i.castSucc`, with `i.castSucc.val = i.val < ℓ`) is UNCONDITIONALLY
+-- True via the bad-event disjunct (`badEventExistsProp_of_lt`: the top oracle block's folding guard
+-- fails, yielding `True`), but the RHS at `i.succ = Fin.last ℓ` has count `ℓ/ϑ` with NO top "+1"
+-- block, so every block's guard `j*ϑ+ϑ ≤ ℓ` HOLDS and `badEventExistsProp` becomes a genuine
+-- existential over real `foldingBadEvent`s while `oracleFoldingConsistency` is a genuine oracle
+-- constraint — neither is unconditionally True, so `True ↔ RHS` does not hold in general. With
+-- `i.val + 1 < ℓ` both indices are `< ℓ`, both sides are unconditionally True via the bad-event
+-- branch, and the lemma is sound. The lemma has zero live users (only the sibling
+-- `oracleWitnessConsistency_relay_preserved`, which does not use the bad-event disjunction, is
+-- consumed in `Steps.lean`), so tightening the hypothesis is safe.
+lemma nonDoomedFoldingProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
+    (h_not_last : i.val + 1 < ℓ)
+    (challenges : Fin i.succ → L)
+    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    :
+    nonDoomedFoldingProp 𝔽q β i.castSucc (Fin.init challenges) oStmt ↔
+    nonDoomedFoldingProp 𝔽q β i.succ challenges (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
+  -- Both sides reduce to `True` via their bad-event disjunct, since both statement indices are `< ℓ`.
+  constructor
+  · intro _
+    refine Or.inr ?_
+    exact badEventExistsProp_of_lt 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.succ)
+      (oStmt := mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) (challenges := challenges)
+      (h_lt := by simp only [Fin.val_succ]; omega) (h_eq := rfl)
+  · intro _
+    refine Or.inr ?_
+    exact badEventExistsProp_of_lt 𝔽q β (stmtIdx := i.castSucc) (oracleIdx := i.castSucc)
+      (oStmt := oStmt) (challenges := Fin.init challenges)
+      (h_lt := by simp only [Fin.coe_castSucc]; omega) (h_eq := rfl)
+
 def oracleWitnessConsistency
     (stmtIdx : Fin (ℓ + 1)) (oracleIdx : Fin (ℓ + 1))
     (h_le : oracleIdx.val ≤ stmtIdx.val) (stmt : Statement (L := L) (Context := Context) stmtIdx)
@@ -972,7 +947,8 @@ def oracleWitnessConsistency
   ϑ (i := oracleIdx) j)) : Prop :=
   let witnessStructuralInvariant: Prop := witnessStructuralInvariant (mp := mp) (i:=stmtIdx) 𝔽q β
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmt wit
-  let sumCheckConsistency: Prop := sumcheckConsistencyProp (𝓑 := 𝓑) stmt.sumcheck_target wit.H
+  let sumCheckConsistency: Prop := sumcheckConsistencyProp (boolDomain L _)
+    stmt.sumcheck_target wit.H
   let firstOracleConsistency: Prop := firstOracleWitnessConsistencyProp 𝔽q β
     wit.t (getFirstOracle 𝔽q β oStmt)
   let oracleFoldingConsistency: Prop := oracleFoldingConsistencyProp 𝔽q β oracleIdx
@@ -981,10 +957,99 @@ def oracleWitnessConsistency
   witnessStructuralInvariant ∧ sumCheckConsistency ∧ firstOracleConsistency ∧
     oracleFoldingConsistency
 
+lemma oracleWitnessConsistency_relay_preserved
+    (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
+    (stmt : Statement (L := L) Context i.succ)
+    (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
+    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
+    oracleWitnessConsistency (mp := mp) 𝔽q β i.succ i.castSucc
+      (le_succ ↑i.castSucc) stmt wit oStmt =
+    oracleWitnessConsistency (mp := mp) 𝔽q β i.succ i.succ (by rfl) stmt wit
+      (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
+  unfold oracleWitnessConsistency
+  simp only
+  -- conjuncts 1,2 (witnessStructuralInvariant, sumCheckConsistency) are identical;
+  -- conjunct 3 (firstOracleConsistency) equal by the relay-preservation of the first oracle;
+  -- conjunct 4 (oracleFoldingConsistency) equal by oracle/challenge reindexing.
+  congr 1
+  · -- sumcheckConsistency (identical) ∧ firstOracleConsistency ∧ oracleFoldingConsistency
+    rw [firstOracleWitnessConsistencyProp_relay_preserved 𝔽q β i hNCR wit oStmt]
+    -- now the two `firstOracle…` conjuncts are syntactically identical; isolate the folding props.
+    congr 1  -- peel sumcheckConsistency (rfl)
+    congr 1  -- peel firstOracleConsistency (now rfl)
+    have h_size : toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ := by
+      simp only [toOutCodewordsCount_succ_eq ℓ ϑ i, hNCR, ↓reduceIte]
+    apply propext
+    unfold oracleFoldingConsistencyProp
+    constructor
+    · intro h j hj
+      have hj' : (⟨j.val, by rw [h_size]; exact j.isLt⟩ :
+          Fin (toOutCodewordsCount ℓ ϑ i.castSucc)).val + 1 <
+          toOutCodewordsCount ℓ ϑ i.castSucc := by simp only; rw [h_size]; exact hj
+      have := h ⟨j.val, by rw [h_size]; exact j.isLt⟩ hj'
+      convert this using 2 <;> try (simp only [Fin.val_castSucc, Fin.val_succ]; rfl)
+    · intro h j hj
+      have hj' : (⟨j.val, by rw [← h_size]; exact j.isLt⟩ :
+          Fin (toOutCodewordsCount ℓ ϑ i.succ)).val + 1 <
+          toOutCodewordsCount ℓ ϑ i.succ := by simp only; rw [← h_size]; exact hj
+      have := h ⟨j.val, by rw [← h_size]; exact j.isLt⟩ hj'
+      convert this using 2 <;> try (simp only [Fin.val_castSucc, Fin.val_succ]; rfl)
+
+-- Per-block relay preservation: `foldingBadEventAtBlock` depends on the oracle index only through
+-- `oStmt j` (its `f_i` input). The RHS block index is `Fin.cast h_size j`, so `j.val` is preserved
+-- (`Fin.cast` is the identity on values) and `mapOStmtOutRelayStep … oStmt (Fin.cast h_size j)`
+-- definitionally reduces to `oStmt j`. Hence the block predicate is literally the same on both
+-- sides — no rewriting of the dependent `f_i` is needed. We unseal the irreducible block def. -/
+unseal foldingBadEventAtBlock in
+lemma foldingBadEventAtBlock_relay_preserved
+    (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
+    (h_size : toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ)
+    (challenges : Fin i.succ → L)
+    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) :
+    foldingBadEventAtBlock 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.castSucc)
+        (oStmt := oStmt) (challenges := challenges) j =
+    foldingBadEventAtBlock 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.succ)
+        (oStmt := mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) (challenges := challenges)
+        (Fin.cast h_size j) :=
+  rfl
+
+/-- The relay step's oracle relabeling preserves the bad-event existential, when both sides are
+evaluated against the *same* statement index `i.succ`. Both sides quantify the same per-block
+folding guard `j*ϑ + ϑ ≤ i.succ` over equal block counts (`hNCR ⇒ count i.castSucc = count i.succ`)
+on the identical oracle data (`mapOStmtOutRelayStep` is a pure reindex along that size equality),
+so the existentials coincide. This is the bad-event analogue of
+`oracleWitnessConsistency_relay_preserved`, and is what makes `foldStepRelOut` (with its repaired
+`stmtIdx := i.succ` bad event) equal to its relay image `roundRelation i.succ` at *every* round,
+including the last (`i.val + 1 = ℓ`). -/
+lemma badEventExistsProp_relay_preserved
+    (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
+    (challenges : Fin i.succ → L)
+    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
+    badEventExistsProp (ϑ := ϑ) 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.castSucc)
+        (challenges := challenges) (oStmt := oStmt) =
+    badEventExistsProp (ϑ := ϑ) 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.succ)
+        (challenges := challenges) (oStmt := mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
+  have h_size : toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ := by
+    simp only [toOutCodewordsCount_succ_eq ℓ ϑ i, hNCR, ↓reduceIte]
+  apply propext
+  unfold badEventExistsProp
+  -- reindex the existential block along the size equality `h_size`; the predicate is literally
+  -- preserved by `foldingBadEventAtBlock_relay_preserved`.
+  constructor
+  · rintro ⟨j, hj⟩
+    exact ⟨Fin.cast h_size j,
+      (foldingBadEventAtBlock_relay_preserved 𝔽q β i hNCR h_size challenges oStmt j) ▸ hj⟩
+  · rintro ⟨j', hj⟩
+    refine ⟨Fin.cast h_size.symm j', ?_⟩
+    rw [foldingBadEventAtBlock_relay_preserved 𝔽q β i hNCR h_size challenges oStmt
+      (Fin.cast h_size.symm j')]
+    simpa using hj
+
 /-- Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event
 of the `i-th` oracle if any and enable it after the next V's challenge, i.e. one
 round later. This is for the purpose of reasoning its RBR KS properly.
-Formally,  = (oracleIdx = stmtIdx)`.
+Formally, = (oracleIdx = stmtIdx)`.
 -/
 def masterKStateProp (stmtIdx : Fin (ℓ + 1))
     (oracleIdx : Fin (ℓ + 1))
@@ -992,7 +1057,7 @@ def masterKStateProp (stmtIdx : Fin (ℓ + 1))
     (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIdx)
     (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (i := oracleIdx) j))
     (localChecks : Prop := True) : Prop :=
-  let oracleWitnessConsistency: Prop := oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β
+  let oracleWitnessConsistency: Prop := oracleWitnessConsistency (mp := mp) 𝔽q β
     stmtIdx oracleIdx h_le stmt wit oStmt
   let badEventExists := badEventExistsProp (ϑ := ϑ) 𝔽q β oracleIdx
     (challenges := Fin.take (m := oracleIdx) (v := stmt.challenges) (h := by omega))
@@ -1006,7 +1071,7 @@ def roundRelationProp (i : Fin (ℓ + 1))
   let stmt := input.1.1
   let oStmt := input.1.2
   let wit := input.2
-  masterKStateProp (mp := mp) (𝓑 := 𝓑) 𝔽q β
+  masterKStateProp (mp := mp) 𝔽q β
     (stmtIdx := i) (oracleIdx := i) (h_le := le_refl i) stmt wit oStmt (localChecks := True)
 
 open Classical in
@@ -1121,7 +1186,7 @@ def foldStepRelOut (i : Fin ℓ) :
     Set ((Statement (L := L) Context i.succ ×
       (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)) ×
       Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ) :=
-  { input | foldStepRelOutProp (mp := mp) (𝓑 := 𝓑) 𝔽q β i input}
+  { input | foldStepRelOutProp (mp := mp) 𝔽q β i input}
 
 /-- Relation at step `i` of the CoreInteraction. `∀ i < ℓ, R_i` must hold at the
 beginning of ITERATION `i`. `R_ℓ` must hold after the last iteration and before sending
@@ -1130,7 +1195,7 @@ def roundRelation (i : Fin (ℓ + 1)) :
     Set ((Statement (L := L) Context i ×
       (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i j)) ×
       Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :=
-  { input | roundRelationProp (mp := mp) (𝓑 := 𝓑) 𝔽q β i input}
+  { input | roundRelationProp (mp := mp) 𝔽q β i input}
 
 /-- Relation for final sumcheck step -/
 def finalSumcheckRelOutProp

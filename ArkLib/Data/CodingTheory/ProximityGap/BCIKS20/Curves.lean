@@ -8,10 +8,16 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.UniqueDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
+import ArkLib.Data.CodingTheory.DivergenceOfSets
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.ToMathlib.Polynomial.EvalExt
 
 namespace ProximityGap
+
+-- Decidability instances are threaded through the sections for the §6 machinery;
+-- several statement-level bricks do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
 
 open NNReal Finset Function ProbabilityTheory
 open scoped BigOperators LinearCode ProbabilityTheory ENNReal
@@ -109,6 +115,112 @@ lemma goodCoeffsCurve_card_bounds_of_prob_threshold {k deg : ℕ}
   constructor
   · exact finset_card_gt_of_natCast_le_ennreal_lt hsmall hx
   · exact finset_card_ge_of_pred_natCast_le_ennreal_lt hlarge hx
+
+omit [DecidableEq ι] [DecidableEq F] in
+/-- The easy threshold side condition follows from the standard lower bound
+`|ι| / |F| ≤ errorBound`. -/
+lemma prob_threshold_small_of_errorBound_ge_const {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (_hk : 0 < k)
+    (hε :
+      (Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+        errorBound δ deg domain) :
+    (k : ENNReal) ≤
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+        (Fintype.card F : ENNReal) := by
+  have hq0 : (Fintype.card F : ℝ≥0) ≠ 0 := by
+    simp [Fintype.card_ne_zero]
+  have hq0E : (Fintype.card F : ENNReal) ≠ 0 := by
+    exact_mod_cast hq0
+  have hqtop : (Fintype.card F : ENNReal) ≠ ∞ := ENNReal.coe_ne_top
+  have hεE :
+      (((Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0) : ℝ≥0) :
+          ENNReal) ≤ (errorBound δ deg domain : ENNReal) := by
+    exact_mod_cast hε
+  have hn_le :
+      (Fintype.card ι : ENNReal) ≤
+        (errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal) := by
+    calc
+      (Fintype.card ι : ENNReal)
+          = (((Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0) : ℝ≥0) :
+              ENNReal) * (Fintype.card F : ENNReal) := by
+            simp [ENNReal.coe_div hq0, ENNReal.div_mul_cancel hq0E hqtop]
+      _ ≤ (errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal) :=
+            mul_le_mul_left hεE _
+  have hone_le_n : (1 : ENNReal) ≤ (Fintype.card ι : ENNReal) := by
+    exact_mod_cast (Nat.succ_le_of_lt (Fintype.card_pos (α := ι)))
+  calc
+    (k : ENNReal) = (k : ENNReal) * 1 := by simp
+    _ ≤ (k : ENNReal) * (Fintype.card ι : ENNReal) := by
+      exact mul_le_mul_right hone_le_n _
+    _ ≤ (k : ENNReal) *
+          ((errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal)) := by
+      exact mul_le_mul_right hn_le _
+    _ = ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) := by
+      rw [mul_assoc]
+
+omit [DecidableEq ι] [DecidableEq F] in
+/-- Strict Johnson-radius hypotheses imply the easy threshold side condition. -/
+lemma prob_threshold_small_of_strict_johnson {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (hk : 0 < k)
+    (hdeg : 0 < deg)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain) :
+    (k : ENNReal) ≤
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+        (Fintype.card F : ENNReal) := by
+  exact prob_threshold_small_of_errorBound_ge_const (deg := deg) (domain := domain)
+    (δ := δ) hk (DivergenceOfSets.errorBound_ge_const (deg := deg) (domain := domain) hdeg hδ)
+
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] in
+/-- The large threshold side condition follows from the stronger lower bound
+`(|ι| + 1) / |F| ≤ errorBound`. -/
+lemma prob_threshold_large_of_errorBound_ge_succ_const {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (hε :
+      ((Fintype.card ι + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+        errorBound δ deg domain) :
+    ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+        (Fintype.card F : ENNReal) := by
+  have hq0 : (Fintype.card F : ℝ≥0) ≠ 0 := by
+    simp [Fintype.card_ne_zero]
+  have hq0E : (Fintype.card F : ENNReal) ≠ 0 := by
+    exact_mod_cast hq0
+  have hqtop : (Fintype.card F : ENNReal) ≠ ∞ := ENNReal.coe_ne_top
+  have hεE :
+      ((((Fintype.card ι + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) : ℝ≥0) :
+          ENNReal) ≤ (errorBound δ deg domain : ENNReal) := by
+    exact_mod_cast hε
+  have hn_le :
+      ((Fintype.card ι + 1 : ℕ) : ENNReal) ≤
+        (errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal) := by
+    calc
+      ((Fintype.card ι + 1 : ℕ) : ENNReal)
+          = ((((Fintype.card ι + 1 : ℕ) : ℝ≥0) /
+              (Fintype.card F : ℝ≥0) : ℝ≥0) : ENNReal) *
+              (Fintype.card F : ENNReal) := by
+            simp [ENNReal.coe_div hq0, ENNReal.div_mul_cancel hq0E hqtop]
+      _ ≤ (errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal) :=
+            mul_le_mul_left hεE _
+  have hpred :
+      ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+        (k : ENNReal) * ((Fintype.card ι + 1 : ℕ) : ENNReal) := by
+    have hnat : ((Fintype.card ι + 1) * k : ℕ) - 1 ≤
+        k * (Fintype.card ι + 1) := by
+      simpa [Nat.mul_comm] using
+        (Nat.sub_le (k * (Fintype.card ι + 1)) 1)
+    exact_mod_cast hnat
+  calc
+    ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal)
+        ≤ (k : ENNReal) * ((Fintype.card ι + 1 : ℕ) : ENNReal) := hpred
+    _ ≤ (k : ENNReal) *
+          ((errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal)) := by
+      exact mul_le_mul_right hn_le _
+    _ = ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) := by
+      rw [mul_assoc]
 
 omit [DecidableEq ι] [Fintype F] in
 /-- Integral-weight list agreement on a sufficiently large set of curve parameters
@@ -880,6 +992,269 @@ theorem RS_jointAgreement_of_prob_gt_and_coeff_polys
     (deg := deg) (domain := domain) (δ := δ) hk hS_card hsmall hlarge hcoeffPoly
 
 omit [DecidableEq ι] in
+/-- List-branch front door with the probability-threshold lower bounds stated
+as lower bounds on `errorBound` itself. This removes the ENNReal/cardinality
+arithmetic from the final list-decoding call. -/
+theorem RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{let z ← $ᵖ F}[
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hεsmall :
+      (Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+        errorBound δ deg domain)
+    (hεlarge :
+      ((Fintype.card ι + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+        errorBound δ deg domain)
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  exact RS_jointAgreement_of_prob_gt_and_coeff_polys
+    (deg := deg) (domain := domain) (δ := δ) hk u hprob
+    (prob_threshold_small_of_errorBound_ge_const
+      (deg := deg) (domain := domain) (δ := δ) hk hεsmall)
+    (prob_threshold_large_of_errorBound_ge_succ_const
+      (deg := deg) (domain := domain) (δ := δ) hεlarge)
+    hcoeffPoly
+
+omit [DecidableEq ι] [DecidableEq F] in
+/-- In the strict Johnson branch, the Johnson expression defining
+`errorBound` is large enough for the successor threshold
+`(|ι| + 1) / |F|`. This is the threshold used by the coefficient-polynomial
+assembly bridge. -/
+theorem errorBound_ge_succ_const_of_strict_johnson {deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0} [NeZero deg]
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain) :
+    ((Fintype.card ι + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+      errorBound δ deg domain := by
+  classical
+  let hdeg : 0 < deg := Nat.pos_of_neZero deg
+  set r : ℝ≥0 := (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0) with hr
+  have hδ' : δ < 1 - r.sqrt := by
+    simpa [ReedSolomon.sqrtRate, ← hr] using hδ
+  have hJ' : (1 - r) / 2 < δ := by
+    simpa [hr] using hJ
+  have hnotUD : ¬δ ≤ (1 - r) / 2 := not_le_of_gt hJ'
+  have hmem2 : (1 - r) / 2 < δ ∧ δ < 1 - r.sqrt := ⟨hJ', hδ'⟩
+  simp only [errorBound, ← hr, Set.mem_Icc, zero_le, hnotUD, and_false,
+    ↓reduceIte, Set.mem_Ioo, hmem2, and_self, coe_pow, NNReal.coe_natCast,
+    coe_min, NNReal.coe_div, Real.coe_sqrt, NNReal.coe_ofNat, ge_iff_le]
+  change (↑(Fintype.card ι + 1) / ↑(Fintype.card F) : ℝ) ≤
+    (↑deg ^ 2 : ℝ) /
+      ((2 * min (↑(1 - sqrt r - δ) : ℝ) (Real.sqrt (r : ℝ) / 20)) ^ 7 *
+        (Fintype.card F : ℝ))
+  have hqpos : (0 : ℝ) < (Fintype.card F : ℝ) := by
+    exact_mod_cast (Fintype.card_pos : 0 < Fintype.card F)
+  have hqne : (Fintype.card F : ℝ) ≠ 0 := ne_of_gt hqpos
+  field_simp [hqne]
+  set m : ℝ := min (↑(1 - sqrt r - δ) : ℝ) (Real.sqrt (r : ℝ) / 20) with hm
+  simp only [ge_iff_le]
+  have hm_le : m ≤ Real.sqrt (r : ℝ) / 20 := by
+    simp [hm]
+  have hm_nonneg : 0 ≤ m := by
+    have h1 : (0 : ℝ) ≤ (↑(1 - sqrt r - δ) : ℝ) := by
+      exact_mod_cast (show (0 : ℝ≥0) ≤ (1 - sqrt r - δ) from zero_le _)
+    have h2 : (0 : ℝ) ≤ Real.sqrt (r : ℝ) / 20 := by
+      have : (0 : ℝ) ≤ Real.sqrt (r : ℝ) := Real.sqrt_nonneg _
+      nlinarith
+    have : (0 : ℝ) ≤ min (↑(1 - sqrt r - δ) : ℝ) (Real.sqrt (r : ℝ) / 20) :=
+      le_min h1 h2
+    simpa [hm] using this
+  have hr_le_one : r ≤ 1 := by
+    have h := DivergenceOfSets.reedSolomon_rate_le_one (deg := deg) (domain := domain)
+    have : (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0) ≤ 1 := by
+      exact_mod_cast h
+    simpa [hr] using this
+  have h_sqrt_le_one : Real.sqrt (r : ℝ) ≤ 1 := by
+    have : (r : ℝ) ≤ (1 : ℝ) := by
+      exact_mod_cast hr_le_one
+    have := Real.sqrt_le_sqrt this
+    simpa using this
+  have h2m_le_one : 2 * m ≤ 1 := by
+    have h2m_le_sqrt10 : 2 * m ≤ Real.sqrt (r : ℝ) / 10 := by
+      have : 2 * m ≤ 2 * (Real.sqrt (r : ℝ) / 20) := by
+        gcongr
+      nlinarith
+    have hsqrt10_le_one : Real.sqrt (r : ℝ) / 10 ≤ 1 := by
+      have : Real.sqrt (r : ℝ) / 10 ≤ 1 / 10 := by
+        nlinarith [h_sqrt_le_one]
+      linarith
+    exact h2m_le_sqrt10.trans hsqrt10_le_one
+  have h2m_nonneg : 0 ≤ 2 * m := by nlinarith [hm_nonneg]
+  have hpow7_le_pow2 : (2 * m) ^ 7 ≤ (2 * m) ^ 2 := by
+    exact pow_le_pow_of_le_one h2m_nonneg h2m_le_one (by decide : (2 : ℕ) ≤ 7)
+  have hpow2_le : (2 * m) ^ 2 ≤ (Real.sqrt (r : ℝ) / 10) ^ 2 := by
+    have hle : 2 * m ≤ Real.sqrt (r : ℝ) / 10 := by
+      have : 2 * m ≤ 2 * (Real.sqrt (r : ℝ) / 20) := by
+        gcongr
+      nlinarith
+    have hsqrt10_nonneg : 0 ≤ Real.sqrt (r : ℝ) / 10 := by
+      have : 0 ≤ Real.sqrt (r : ℝ) := Real.sqrt_nonneg _
+      nlinarith
+    have habs : |2 * m| ≤ |Real.sqrt (r : ℝ) / 10| := by
+      have ha : 0 ≤ 2 * m := h2m_nonneg
+      have hb : 0 ≤ Real.sqrt (r : ℝ) / 10 := hsqrt10_nonneg
+      simpa [abs_of_nonneg ha, abs_of_nonneg hb] using hle
+    have := (sq_le_sq).2 habs
+    simpa using this
+  have hsqrt_sq : (Real.sqrt (r : ℝ) / 10) ^ 2 = (r : ℝ) / 100 := by
+    simpa using (DivergenceOfSets.real_sqrt_div_10_pow_two (r := r))
+  have h2m_pow7_le : (2 * m) ^ 7 ≤ (r : ℝ) / 100 := by
+    calc
+      (2 * m) ^ 7 ≤ (2 * m) ^ 2 := hpow7_le_pow2
+      _ ≤ (Real.sqrt (r : ℝ) / 10) ^ 2 := hpow2_le
+      _ = (r : ℝ) / 100 := hsqrt_sq
+  have hr_pos : (0 : ℝ) < (r : ℝ) := by
+    have hrate_posQ : (0 : ℚ≥0) < LinearCode.rate (ReedSolomon.code domain deg) :=
+      DivergenceOfSets.reedSolomon_rate_pos (deg := deg) (domain := domain) hdeg
+    have hrate_pos :
+        (0 : ℝ≥0) < (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0) := by
+      exact_mod_cast hrate_posQ
+    have : (0 : ℝ≥0) < r := by
+      simpa [hr] using hrate_pos
+    exact_mod_cast this
+  have hm_pos : 0 < m := by
+    have hA_nnreal : (0 : ℝ≥0) < (1 - sqrt r - δ) := tsub_pos_of_lt hδ'
+    have hA : (0 : ℝ) < (↑(1 - sqrt r - δ) : ℝ) := by exact_mod_cast hA_nnreal
+    have hB : (0 : ℝ) < Real.sqrt (r : ℝ) / 20 := by
+      have hsqrt_pos : (0 : ℝ) < Real.sqrt (r : ℝ) := (Real.sqrt_pos).2 hr_pos
+      nlinarith
+    have : 0 < min (↑(1 - sqrt r - δ) : ℝ) (Real.sqrt (r : ℝ) / 20) :=
+      lt_min hA hB
+    simpa [hm] using this
+  have hm7_pos : 0 < m ^ 7 := by
+    simpa using (pow_pos hm_pos 7)
+  have hmul_goal : (↑(Fintype.card ι + 1) * 2 ^ 7) * m ^ 7 ≤ (↑deg ^ 2 : ℝ) := by
+    have h2pow_mul : (2 : ℝ) ^ 7 * m ^ 7 ≤ (r : ℝ) / 100 := by
+      simpa [mul_pow, mul_assoc, mul_left_comm, mul_comm] using h2m_pow7_le
+    have hcard_nonneg : 0 ≤ (↑(Fintype.card ι + 1) : ℝ) := by
+      exact_mod_cast (Nat.zero_le (Fintype.card ι + 1))
+    have hstep1 : (↑(Fintype.card ι + 1) : ℝ) * ((2 : ℝ) ^ 7 * m ^ 7) ≤
+        (↑(Fintype.card ι + 1) : ℝ) * ((r : ℝ) / 100) := by
+      exact mul_le_mul_of_nonneg_left h2pow_mul hcard_nonneg
+    have hrmul_nnreal : (Fintype.card ι : ℝ≥0) * r ≤ (deg : ℝ≥0) := by
+      simpa [hr] using
+        (DivergenceOfSets.reedSolomon_rate_mul_card_le_deg (deg := deg) (domain := domain))
+    have hrmul : (↑(Fintype.card ι) : ℝ) * (r : ℝ) ≤ (deg : ℝ) := by
+      exact_mod_cast hrmul_nnreal
+    have hr_le_one_real : (r : ℝ) ≤ 1 := by
+      exact_mod_cast hr_le_one
+    have hsucc_r : (↑(Fintype.card ι + 1) : ℝ) * (r : ℝ) ≤ (deg : ℝ) + 1 := by
+      norm_num [Nat.cast_add]
+      nlinarith
+    have hsucc_div : (↑(Fintype.card ι + 1) : ℝ) * ((r : ℝ) / 100) ≤
+        ((deg : ℝ) + 1) / 100 := by
+      nlinarith [hsucc_r]
+    have hdeg_sq : ((deg : ℝ) + 1) / 100 ≤ (↑deg ^ 2 : ℝ) := by
+      have hdeg1_nat : 1 ≤ deg := Nat.one_le_of_lt hdeg
+      have hdeg1 : (1 : ℝ) ≤ (deg : ℝ) := by
+        exact_mod_cast hdeg1_nat
+      nlinarith
+    have hfinal : (↑(Fintype.card ι + 1) : ℝ) * ((2 : ℝ) ^ 7 * m ^ 7) ≤
+        (↑deg ^ 2 : ℝ) :=
+      hstep1.trans (hsucc_div.trans hdeg_sq)
+    simpa [mul_assoc, mul_left_comm, mul_comm] using hfinal
+  have : (↑(Fintype.card ι + 1) * 2 ^ 7 : ℝ) ≤ (↑deg ^ 2 : ℝ) / m ^ 7 := by
+    exact (le_div_iff₀ hm7_pos).2 (by
+      simpa [mul_assoc] using hmul_goal)
+  simpa [mul_assoc] using this
+
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] in
+/-- In the Johnson-side branch, failure of the strict Johnson upper bound puts
+`errorBound` in its fallback branch. This isolates the only boundary case not
+covered by the strict list-decoding front door. -/
+theorem errorBound_eq_zero_of_johnson_not_lt_sqrt {deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
+    (hnot : ¬δ < 1 - ReedSolomon.sqrtRate deg domain) :
+    errorBound δ deg domain = 0 := by
+  classical
+  have hnotUD :
+      ¬δ ≤ (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 :=
+    not_le_of_gt hJ
+  have hnotJ :
+      ¬((1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ ∧
+        δ < 1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0).sqrt) := by
+    intro h
+    exact hnot (by simpa [ReedSolomon.sqrtRate] using h.2)
+  simp [errorBound, Set.mem_Icc, Set.mem_Ioo, hnotUD, hnotJ]
+
+omit [DecidableEq ι] in
+/-- Strict Johnson-range front door with the standard `|ι| / |F|`
+lower bound discharged from `errorBound_ge_const` and the stronger successor
+threshold discharged from the Johnson expression for `errorBound`. The remaining
+hypothesis is exactly the §5 coefficient-polynomial extraction witness. -/
+theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{let z ← $ᵖ F}[
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  exact RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds
+    (deg := deg) (domain := domain) (δ := δ) hk u hprob
+    (DivergenceOfSets.errorBound_ge_const (deg := deg) (domain := domain)
+      (Nat.pos_of_neZero deg) hδ)
+    (errorBound_ge_succ_const_of_strict_johnson (deg := deg) (domain := domain)
+      hJ hδ)
+    hcoeffPoly
+
+omit [DecidableEq ι] [Fintype F] in
+/-- For Reed-Solomon codes, the rate-half radius is the relative unique-decoding
+radius in the non-full-code case, and is `0` in the full-code case. This lets
+the final curve theorem route the closed `errorBound` branch through the
+unique-decoding proof even when it is phrased using the rate expression. -/
+lemma RS_le_relativeUniqueDecodingRadius_of_le_rate_half {deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2) :
+    δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code domain deg) := by
+  classical
+  by_cases hdeg : deg ≤ Fintype.card ι
+  · have hrate_eq : (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0) =
+        (deg : ℝ≥0) / (Fintype.card ι : ℝ≥0) := by
+      have hdim := ReedSolomon.dim_eq_deg_of_le' (α := domain) (n := deg) hdeg
+      simp [LinearCode.rate, hdim, LinearCode.length]
+    rw [ReedSolomon.relativeUniqueDecodingRadius_RS_eq' (α := domain) (n := deg) hdeg]
+    simpa [hrate_eq] using hδ
+  · push Not at hdeg
+    have hrate_eq : (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0) = 1 := by
+      rw [ReedSolomon.rateOfLinearCode_eq_min_div]
+      have hcard_ne : (Fintype.card ι : ℚ≥0) ≠ 0 := by
+        exact_mod_cast (Fintype.card_ne_zero (α := ι))
+      have hmin : min deg (Fintype.card ι) = Fintype.card ι := by omega
+      simp [hmin, hcard_ne]
+    have hδ0 : δ ≤ 0 := by
+      simpa [hrate_eq] using hδ
+    exact le_trans hδ0 (zero_le _)
+
+omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
 
 Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter
@@ -905,10 +1280,18 @@ theorem correlatedAgreement_affine_curves {k : ℕ}
     · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain).
       unfold δ_ε_correlatedAgreementCurves
       intro u hprob
-      -- The final call is `RS_jointAgreement_of_prob_gt_and_coeff_polys`;
-      -- the remaining list-decoding work is to supply its two threshold lower
-      -- bounds and coefficient-polynomial extraction witness.
-      sorry
+      by_cases hJ :
+          (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ
+      · -- The final call is `RS_jointAgreement_of_prob_gt_and_coeff_polys`;
+        -- the remaining list-decoding work is to supply its two threshold lower
+        -- bounds and coefficient-polynomial extraction witness.
+        sorry
+      · -- Closed rate-half branch: for Reed-Solomon codes this is still inside
+        -- the relative unique-decoding radius, contradicting the outer split.
+        push Not at hJ
+        exact False.elim (hUDR
+          (RS_le_relativeUniqueDecodingRadius_of_le_rate_half
+            (deg := deg) (domain := domain) (δ := δ) hJ))
 
 end CoreResults
 
@@ -946,8 +1329,8 @@ private lemma polynomialCurveEval_coord_eq_of_agree {n l : ℕ} {F : Type} [Fiel
       Curve.polynomialCurveEval, Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
     exact Finset.sum_congr rfl fun i _ => mul_comm _ _
   have hdeg : ∀ (a : Fin l → Fin n → F),
-      (∑ i : Fin l, Polynomial.C (a i x) * Polynomial.X ^ (i : ℕ)).degree
-        < ((l : ℕ) : WithBot ℕ) := by
+      (∑ i : Fin l, Polynomial.C (a i x) * Polynomial.X ^ (i : ℕ)).degree < ((l : ℕ) : WithBot ℕ)
+        := by
     intro a
     apply lt_of_le_of_lt (Polynomial.degree_sum_le _ _)
     rw [Finset.sup_lt_iff (by exact_mod_cast WithBot.bot_lt_coe l)]

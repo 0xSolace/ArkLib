@@ -56,17 +56,17 @@ def RoundByRoundOneShot
   for `relIn`, then the extracted input witness at the prefix round `m.castSucc` on `tr` is also
   valid for `relIn`.
 
-  Planned refinement: strengthen this to account for verifier query logs as well. -/
+  This is the round-by-round (transcript-prefix) monotonicity that the conversion
+  `KnowledgeStateFunctionOneShot.toKnowledgeStateFunction` requires: the general round-by-round
+  knowledge state function processes rounds in decreasing order `n → 0`, extracting the input
+  witness from each round's transcript, and its `toFun_next` obligation is exactly that validity at
+  round `m.succ` descends to validity at round `m.castSucc`. -/
 class RoundByRoundOneShot.IsMonotone (E : RoundByRoundOneShot oSpec StmtIn WitIn pSpec)
     (relIn : Set (StmtIn × WitIn)) where
-  is_monotone : ∀ roundIdx stmtIn transcript,
-    ∀ proveQueryLog₁ proveQueryLog₂ : oSpec.QueryLog,
-    -- ∀ verifyQueryLog₁ verifyQueryLog₂ : oSpec.QueryLog,
-    proveQueryLog₁.Sublist proveQueryLog₂ →
-    -- verifyQueryLog₁.Sublist verifyQueryLog₂ →
-    -- This monotonicity condition is stated on the prover query log.
-    (stmtIn, E roundIdx stmtIn transcript proveQueryLog₁) ∈ relIn →
-      (stmtIn, E roundIdx stmtIn transcript proveQueryLog₂) ∈ relIn
+  is_monotone : ∀ (m : Fin n) (stmtIn : StmtIn) (tr : Transcript m.castSucc pSpec)
+      (msg : pSpec.Type m),
+    (stmtIn, E m.succ stmtIn (tr.concat msg) default) ∈ relIn →
+      (stmtIn, E m.castSucc stmtIn tr default) ∈ relIn
 
 /-- A **round-by-round extractor** is a tuple of algorithms that iteratively extracts the input
   witness from the output witness, through a series of intermediate witnesses
@@ -546,98 +546,6 @@ theorem exists_challenge_flip_of_full {langIn : Set StmtIn} {langOut : Set StmtO
   rw [← take_succ_eq_concat tr i.1]
   exact hsucc
 
-/-- **Verifier-tail drop for the soundness game (state-aware).**  Dropping the verifier-verdict +
-`getM` `Option.elimM` tail of `Reduction.run` (which can fail / return `none`) from the simulated
-soundness game can only *raise* a transcript-prefix-reading flip event whose value is `False` on
-failure: every successful verifier verdict `(pr, vOut)` has the same transcript `pr.1` as the
-prover-result projection `h pr := (pr, pr.2.1)`, so the `hcont` hypothesis of
-`probEvent_simulateQ_run'_optionBind_trailing_le` holds with equality.  After the drop the event runs
-over `some <$> prover.run`, i.e. the prover-run transcript marginal — the soundness game with the
-verifier collapsed away. -/
-theorem probEvent_run_drop_verifier_le
-    {langIn : Set StmtIn} {langOut : Set StmtOut}
-    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
-    (sf : verifier.StateFunction init impl langIn langOut)
-    (i : pSpec.ChallengeIdx) (stmtIn : StmtIn)
-    {WitIn' WitOut' : Type} (witIn' : WitIn')
-    (prover : Prover oSpec StmtIn WitIn' StmtOut WitOut' pSpec) (s : σ)
-    (P : ((FullTranscript pSpec × StmtOut × WitOut') × StmtOut) → Prop)
-    (hP : ∀ x : (FullTranscript pSpec × StmtOut × WitOut') × StmtOut,
-      P x = (¬ sf.toFun i.1.castSucc stmtIn (x.1.1.take i.1.castSucc.val i.1.castSucc.is_le) ∧
-        sf.toFun i.1.succ stmtIn
-          (Transcript.concat (x.1.1 i.1) (x.1.1.take i.1.castSucc.val i.1.castSucc.is_le)))) :
-    Pr[fun o => o.elim False P |
-        (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
-          ((Reduction.mk prover verifier).run stmtIn witIn').run).run' s]
-      ≤ Pr[fun o => o.elim False (fun pr : FullTranscript pSpec × StmtOut × WitOut' =>
-            P (pr, pr.2.1)) |
-          (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
-            ((liftM (prover.run stmtIn witIn') :
-              OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) _).run)).run' s] := by
-  -- Rewrite `Reduction.run.run` into the `(liftM prover.run).run >>= elimM verifier-tail` shape.
-  set contTail : (FullTranscript pSpec × StmtOut × WitOut') →
-      OracleComp (oSpec + [pSpec.Challenge]ₒ)
-        (Option ((FullTranscript pSpec × StmtOut × WitOut') × StmtOut)) :=
-    fun x =>
-      (liftM ((verifier.run stmtIn x.1).run) :
-          OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run >>= fun outer2 =>
-        outer2.elim (pure none) (fun x_1 =>
-          (Option.getM x_1 :
-              OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) StmtOut).run >>= fun outer3 =>
-            outer3.elim (pure none) (fun x_2 => pure (some (x, x_2))))
-    with hcontTail
-  have hform : ((Reduction.mk prover verifier).run stmtIn witIn').run
-      = (liftM (prover.run stmtIn witIn') :
-            OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) _).run >>= fun oa =>
-          Option.elimM (pure oa) (pure none) contTail := by
-    rw [hcontTail]
-    unfold Reduction.run
-    simp only [OptionT.run_bind, Option.elimM, OptionT.run_pure, pure_bind]
-  rw [hform]
-  -- Apply the general `Option`-continuation failure-monotone drop with `h pr := (pr, pr.2.1)`.
-  refine le_of_le_of_eq
-    (probEvent_simulateQ_run'_optionBind_trailing_le
-      (impl.addLift challengeQueryImpl) s
-      ((liftM (prover.run stmtIn witIn') :
-        OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) _).run)
-      contTail (fun pr => (pr, pr.2.1)) P ?_) ?_
-  · -- `hcont`: any verifier-tail success `some (pr, vOut)` reads the same transcript as `(pr, pr.2.1)`.
-    intro pr b hb b' hb_eq hPb'
-    subst hb_eq
-    -- `P` reads only `b'.1.1`; both `b'` and `(pr, pr.2.1)` have first-component `pr`.
-    rw [hP] at hPb' ⊢
-    -- Extract that `b'.1 = pr` from the verifier-tail support.
-    have hb1 : b'.1 = pr := by
-      rw [hcontTail, mem_support_bind_iff] at hb
-      obtain ⟨outer2, _, hb⟩ := hb
-      cases outer2 with
-      | none => simp at hb
-      | some x_1 =>
-          simp only [Option.elim_some, mem_support_bind_iff] at hb
-          obtain ⟨outer3, _, hb⟩ := hb
-          cases outer3 with
-          | none => simp at hb
-          | some x_2 =>
-              simp only [Option.elim_some, mem_support_pure_iff, Option.some.injEq] at hb
-              exact congrArg Prod.fst hb
-    rw [hb1] at hPb'
-    exact hPb'
-  · -- After the drop, the event `o ↦ o.elim False P` over the `Option.map (fun pr => (pr, pr.2.1))`-
-    -- projected prover run equals the prover-projection event `o ↦ o.elim False (P ∘ ⟨pr,pr.2.1⟩)`.
-    rw [show ((liftM (prover.run stmtIn witIn') :
-              OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) _).run >>= fun oa =>
-            (pure (Option.map (fun pr => (pr, pr.2.1)) oa) :
-              OracleComp (oSpec + [pSpec.Challenge]ₒ) _))
-        = (Option.map (fun pr => (pr, pr.2.1)) <$>
-            (liftM (prover.run stmtIn witIn') :
-              OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) _).run) from by
-          rw [map_eq_bind_pure_comp]; rfl,
-      simulateQ_map, StateT.run'_map_comm, probEvent_map]
-    refine probEvent_ext (fun o _ => ?_)
-    cases o with
-    | none => rfl
-    | some pr => rfl
-
 end StateFunction
 
 /-- A knowledge state function for a verifier, with respect to input relation `relIn`, output
@@ -726,6 +634,68 @@ structure KnowledgeStateFunctionOneShot
     in the output language -/
   toFun_full : ∀ stmt tr, ¬ toFun (.last n) stmt tr →
     Pr[(· ∈ langOut) | OptionT.mk do (simulateQ impl (verifier.run stmt tr)).run' (← init)] = 0
+
+/-- A state function & a one-shot round-by-round extractor gives rise to a knowledge state function
+  where the intermediate witness types are all equal to the input witness type -/
+def KnowledgeStateFunctionOneShot.toKnowledgeStateFunction
+    {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
+    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
+    (stF : KnowledgeStateFunctionOneShot init impl relIn.language relOut.language verifier)
+    (oneShotE : Extractor.RoundByRoundOneShot oSpec StmtIn WitIn pSpec)
+    [hMono : oneShotE.IsMonotone relIn] :
+    verifier.KnowledgeStateFunction init impl relIn relOut oneShotE.toRoundByRound where
+  toFun := fun m stmtIn tr witIn => if m = 0 then (stmtIn, witIn) ∈ relIn else
+    stF.toFun m stmtIn tr ∨ (stmtIn, oneShotE m stmtIn tr default) ∈ relIn
+  toFun_empty := fun stmtIn witIn => by
+    have := stF.toFun_empty stmtIn
+    simp_all
+  -- STATEMENT REPAIR (2026-06-04): closed both `toFun_next` field sorries (Blocker-C).
+  -- The proof now requires the `[oneShotE.IsMonotone relIn]` instance (added above), whose real
+  -- content — round-prefix monotonicity of relation-extraction — is exactly the descent
+  -- `(stmtIn, oneShotE m.succ stmtIn (tr.concat msg) default) ∈ relIn`
+  --   → `(stmtIn, oneShotE m.castSucc stmtIn tr default) ∈ relIn`.
+  -- With the unified `extractMid := E m.castSucc stmtIn (Fin.init tr) default` (see
+  -- `toRoundByRound`), the round-0 and round-`>0` cases collapse to this single bridge: the left
+  -- disjunct (`stF.toFun`) descends by `stF.toFun_next`, the right disjunct by `IsMonotone`; at
+  -- round 0 the left disjunct is impossible because `stF.toFun 0 stmtIn default` is `False`.
+  toFun_next := fun m hDir stmtIn tr msg witIn h => by
+    simp only [Fin.succ_ne_zero, reduceIte] at h
+    have stF_next := stF.toFun_next m hDir stmtIn tr msg
+    have hmono := hMono.is_monotone m stmtIn tr msg
+    simp only [Extractor.RoundByRoundOneShot.toRoundByRound, Transcript.concat, Fin.init_snoc]
+    by_cases hm : m.castSucc = 0
+    · rw [if_pos hm]
+      rcases h with hstF | hrel
+      · exfalso
+        -- At round 0 the `stF.toFun` disjunct is impossible: generalize the index to expose the
+        -- `Transcript 0` subsingleton, then `stF.toFun 0 stmtIn default` is `False` by `toFun_empty`.
+        have h0 : ¬ stF.toFun m.castSucc stmtIn tr := by
+          have key : ∀ (k : Fin (n + 1)), k = 0 → ∀ (t : Transcript k pSpec),
+              ¬ stF.toFun k stmtIn t := by
+            intro k hk t; subst hk
+            have ht : t = default := Subsingleton.elim _ _
+            rw [ht]; exact stF.toFun_empty stmtIn
+          exact key m.castSucc hm tr
+        exact (stF_next h0) hstF
+      · exact hmono hrel
+    · rw [if_neg hm]
+      rcases h with hstF | hrel
+      · exact Or.inl (by by_contra hc; exact (stF_next hc) hstF)
+      · exact Or.inr (hmono hrel)
+  toFun_full := fun stmtIn tr witOut h => by
+    have := stF.toFun_full stmtIn tr
+    contrapose! this
+    simp_all
+    by_cases hn : n = 0
+    · subst hn
+      simp_all
+      have hpSpec : pSpec = !p[] := by ext i <;> exact Fin.elim0 i
+      subst hpSpec
+      have hTr : tr = default := by ext i; exact Fin.elim0 i
+      subst hTr
+      have := stF.toFun_empty stmtIn
+      grind
+    · grind
 
 /-- Coercion to the underlying function of a state function -/
 instance {langIn : Set StmtIn} {langOut : Set StmtOut}
