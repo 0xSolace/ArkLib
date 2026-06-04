@@ -1257,6 +1257,17 @@ theorem iterated_fold_eq_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_steps 
       r_challenges ⟨y, by exact Submodule.coe_mem y⟩) =
     localized_fold_eval 𝔽q β i (steps := steps) (h_i_add_steps := h_i_add_steps) f
       r_challenges (y := ⟨y, by exact Submodule.coe_mem y⟩) := by
+  -- PROOF PLAN (decomposition complete; reusable bricks all proven above):
+  -- Induct on `steps`. Base case: both sides reduce to `f y` (dfoldl_zero on the LHS;
+  -- the 1×1 identity matrix and `challengeTensorProduct 0 = [1]` on the RHS).
+  -- Succ case (`steps = n+1`): peel the last fold via `iterated_fold_succ_last`, rewrite the
+  -- inner `iterated_fold n` to `localized_fold_eval n` by the IH (pointwise at the two
+  -- single-step preimages of `y`), then apply `localized_fold_eval_succ` (the RHS recursion).
+  -- `localized_fold_eval_succ` is assembled from `localized_fold_eval_eq_sum`,
+  -- `challengeTensorProduct_succ_get`, `foldMatrixNat_succ_apply`,
+  -- `qMap_total_fiber_succ_peel_last`, `sum_fin_pow_succ_split{,_low}`, and `fold`'s closed form.
+  -- All three "peels" (tensor / matrix / fiber) and both bit-splits are proven; the final
+  -- step is the `Finset.sum` algebra matching the split double-sum to `fold`'s two-term form.
   sorry
 
 omit [CharP L 2] [NeZero ℓ] in
