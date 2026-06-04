@@ -13876,6 +13876,60 @@
           "namespace": "BCKHS25",
           "short_name": "_anon_class_156",
           "signature": "class classical"
+        },
+        {
+          "doc": "Coefficient recovery: the packaged polynomials are injective images of the coefficient vector.",
+          "kind": "lemma",
+          "line": 185,
+          "name": "BCKHS25.coeff_coeff_toPolyA",
+          "namespace": "BCKHS25",
+          "short_name": "coeff_coeff_toPolyA",
+          "signature": "lemma coeff_coeff_toPolyA {da za db zb : \u2115} (v : BWIdx da za db zb \u2192 F)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 188,
+          "name": "BCKHS25._anon_class_188",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_188",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 209,
+          "name": "BCKHS25.coeff_coeff_toPolyB",
+          "namespace": "BCKHS25",
+          "short_name": "coeff_coeff_toPolyB",
+          "signature": "lemma coeff_coeff_toPolyB {da za db zb : \u2115} (v : BWIdx da za db zb \u2192 F)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 212,
+          "name": "BCKHS25._anon_class_212",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_212",
+          "signature": "class classical"
+        },
+        {
+          "doc": "The kernel rows are exactly the Y-coefficients of the Berlekamp\u2013Welch identity: if `mulVec (BWMatrix' \u2026) v = 0` then at every domain point `B(\u03c9_x, Y) = (u\u2080 x + u\u2081 x \u00b7 Y) \u00b7 A(\u03c9_x, Y)`.",
+          "kind": "lemma",
+          "line": 235,
+          "name": "BCKHS25.identity_of_mulVec_eq_zero",
+          "namespace": "BCKHS25",
+          "short_name": "identity_of_mulVec_eq_zero",
+          "signature": "lemma identity_of_mulVec_eq_zero {da za db zb : \u2115} (hzb : zb = za + 1)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 241,
+          "name": "BCKHS25._anon_class_241",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_241",
+          "signature": "class classical"
         }
       ]
     },
@@ -49937,7 +49991,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5422,
+      "declarations": 5428,
       "files": 287
     }
   }
