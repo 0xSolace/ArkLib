@@ -13952,7 +13952,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 390,
+          "line": 389,
           "name": "BCKHS25.coeff_toPolyB",
           "namespace": "BCKHS25",
           "short_name": "coeff_toPolyB",
@@ -13961,16 +13961,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 394,
-          "name": "BCKHS25._anon_class_394",
+          "line": 393,
+          "name": "BCKHS25._anon_class_393",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_394",
+          "short_name": "_anon_class_393",
           "signature": "class classical"
         },
         {
           "doc": "Out-of-range Y-coefficients vanish.",
           "kind": "lemma",
-          "line": 406,
+          "line": 404,
           "name": "BCKHS25.coeff_toPolyA_eq_zero",
           "namespace": "BCKHS25",
           "short_name": "coeff_toPolyA_eq_zero",
@@ -13979,16 +13979,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 408,
-          "name": "BCKHS25._anon_class_408",
+          "line": 406,
+          "name": "BCKHS25._anon_class_406",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_408",
+          "short_name": "_anon_class_406",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 414,
+          "line": 412,
           "name": "BCKHS25.coeff_toPolyB_eq_zero",
           "namespace": "BCKHS25",
           "short_name": "coeff_toPolyB_eq_zero",
@@ -13997,16 +13997,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 416,
-          "name": "BCKHS25._anon_class_416",
+          "line": 414,
+          "name": "BCKHS25._anon_class_414",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_416",
+          "short_name": "_anon_class_414",
           "signature": "class classical"
         },
         {
           "doc": "Each in-range coefficient has X-degree < da (power-sum shape).",
           "kind": "lemma",
-          "line": 423,
+          "line": 421,
           "name": "BCKHS25.natDegree_coeff_toPolyA_lt",
           "namespace": "BCKHS25",
           "short_name": "natDegree_coeff_toPolyA_lt",
@@ -14015,16 +14015,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 426,
-          "name": "BCKHS25._anon_class_426",
+          "line": 424,
+          "name": "BCKHS25._anon_class_424",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_426",
+          "short_name": "_anon_class_424",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 438,
+          "line": 436,
           "name": "BCKHS25.natDegree_coeff_toPolyB_lt",
           "namespace": "BCKHS25",
           "short_name": "natDegree_coeff_toPolyB_lt",
@@ -14033,16 +14033,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 441,
-          "name": "BCKHS25._anon_class_441",
+          "line": 439,
+          "name": "BCKHS25._anon_class_439",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_441",
+          "short_name": "_anon_class_439",
           "signature": "class classical"
         },
         {
           "doc": "X-degree bounds for the packaged polynomials.",
           "kind": "lemma",
-          "line": 454,
+          "line": 452,
           "name": "BCKHS25.degreeX_toPolyA_lt",
           "namespace": "BCKHS25",
           "short_name": "degreeX_toPolyA_lt",
@@ -14051,16 +14051,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 456,
-          "name": "BCKHS25._anon_class_456",
+          "line": 454,
+          "name": "BCKHS25._anon_class_454",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_456",
+          "short_name": "_anon_class_454",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 461,
+          "line": 459,
           "name": "BCKHS25.degreeX_toPolyB_lt",
           "namespace": "BCKHS25",
           "short_name": "degreeX_toPolyB_lt",
@@ -14069,16 +14069,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 463,
-          "name": "BCKHS25._anon_class_463",
+          "line": 461,
+          "name": "BCKHS25._anon_class_461",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_463",
+          "short_name": "_anon_class_461",
           "signature": "class classical"
         },
         {
           "doc": "Y-degree bounds.",
           "kind": "lemma",
-          "line": 469,
+          "line": 467,
           "name": "BCKHS25.natDegreeY_toPolyA_lt",
           "namespace": "BCKHS25",
           "short_name": "natDegreeY_toPolyA_lt",
@@ -14087,16 +14087,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 471,
-          "name": "BCKHS25._anon_class_471",
+          "line": 469,
+          "name": "BCKHS25._anon_class_469",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_471",
+          "short_name": "_anon_class_469",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 478,
+          "line": 476,
           "name": "BCKHS25.natDegreeY_toPolyB_lt",
           "namespace": "BCKHS25",
           "short_name": "natDegreeY_toPolyB_lt",
@@ -14105,16 +14105,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 480,
-          "name": "BCKHS25._anon_class_480",
+          "line": 478,
+          "name": "BCKHS25._anon_class_478",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_480",
+          "short_name": "_anon_class_478",
           "signature": "class classical"
         },
         {
           "doc": "**[BCKHS25] Lemma 2.1 (assembled).** With more unknowns than constraints, there is a Berlekamp\u2013Welch pair `(A, B)` for the line word: `A \u2260 0`, both with the stated degree bounds, satisfying `B(\u03c9_x, Y) = (u\u2080 x + u\u2081 x\u00b7Y)\u00b7A(\u03c9_x, Y)` at every domain point.",
           "kind": "theorem",
-          "line": 491,
+          "line": 489,
           "name": "BCKHS25.exists_BW_pair",
           "namespace": "BCKHS25",
           "short_name": "exists_BW_pair",
@@ -14123,10 +14123,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 502,
-          "name": "BCKHS25._anon_class_502",
+          "line": 500,
+          "name": "BCKHS25._anon_class_500",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_502",
+          "short_name": "_anon_class_500",
           "signature": "class classical"
         }
       ]
