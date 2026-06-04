@@ -245,6 +245,83 @@ theorem probEvent_exists_le_sum {m : Type → Type*} [Monad m] [HasEvalSPMF m] {
   have := probEvent_exists_mem_le_sum mx p Finset.univ
   simpa using this
 
+omit [∀ i, SampleableType (pSpec.Challenge i)] init impl in
+/-- **Union bound via implication.**  Combines `probEvent_mono` with `probEvent_exists_le_sum`: if
+on the support of `mx` the target event `q` implies that *some* index satisfies its per-index event
+`p i`, then the probability of `q` is bounded by the total sum of per-index probabilities.
+
+This is the reusable shape consumed by `rbrSoundness → soundness`: the target event (the verifier
+accepts a bad statement) implies, on the support, that the round-by-round state function flips at
+*some* challenge round (the combinatorial first-crossing core), and the per-round flip probabilities
+are exactly `rbrSoundnessError i`. -/
+theorem probEvent_le_sum_of_imp_exists {m : Type → Type*} [Monad m] [HasEvalSPMF m] {α : Type}
+    {κ : Type} [Fintype κ] [DecidableEq κ] (mx : m α) (q : α → Prop) (p : κ → α → Prop)
+    (himp : ∀ x ∈ support mx, q x → ∃ i, p i x) :
+    Pr[q | mx] ≤ ∑ i : κ, Pr[fun x => p i x | mx] := by
+  refine le_trans (probEvent_mono ?_) (probEvent_exists_le_sum mx p)
+  exact himp
+
+omit [∀ i, SampleableType (pSpec.Challenge i)] init impl in
+/-- **Prefix step of a full transcript.**  Restating `Fin.take_succ_eq_snoc` in `Transcript`/
+`FullTranscript` language: the round-`j.succ` prefix of a full transcript is the round-`j.castSucc`
+prefix with the round-`j` entry concatenated.  This is the geometric ingredient that lets the
+combinatorial first-crossing argument (over transcript prefixes of the *realized* full run) feed the
+round-by-round soundness game, which speaks about `transcript.concat challenge`. -/
+theorem take_succ_eq_concat {pSpec : ProtocolSpec n} (tr : pSpec.FullTranscript) (j : Fin n) :
+    (tr.take j.succ.val j.succ.is_le : Transcript j.succ pSpec)
+      = Transcript.concat (tr j) (tr.take j.castSucc.val j.castSucc.is_le) := by
+  have hlt : j.val < n := j.isLt
+  have hsnoc := Fin.take_succ_eq_snoc j.val hlt tr
+  -- `Transcript.concat (tr j) T = Fin.snoc T (tr j)`, and `j.succ.val = j.val.succ`,
+  -- `j.castSucc.val = j.val`.
+  simp only [FullTranscript.take, Transcript.concat, Fin.val_succ, Fin.val_castSucc]
+  rw [hsnoc]
+  rfl
+
+omit [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- **State-function first-crossing on the realized transcript.**  Specialization of
+`exists_challenge_flip_of_false_zero_true_last` to a `StateFunction`: if the input statement is *not*
+in `langIn` (so the state function is `false` on the empty round-`0` prefix) and the state function
+is `true` on the *full* transcript `tr` (round `last n`), then there is a challenge round `i` at
+which the state function flips on prefixes of `tr` — in the exact `(prefix, prefix.concat (tr i))`
+shape consumed by the round-by-round soundness game.
+
+The `toFun_next` field of `StateFunction` supplies the no-flip-at-prover-rounds hypothesis, and
+`toFun_empty` together with `stmtIn ∉ langIn` supplies the `false`-at-`0` base; this lemma bundles
+both with the pure pigeonhole core and the prefix-step geometry `take_succ_eq_concat`. -/
+theorem exists_challenge_flip_of_full {langIn : Set StmtIn} {langOut : Set StmtOut}
+    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
+    (sf : verifier.StateFunction init impl langIn langOut)
+    (stmtIn : StmtIn) (hStmtIn : stmtIn ∉ langIn) (tr : pSpec.FullTranscript)
+    (hlast : sf.toFun (Fin.last n) stmtIn (tr.take (Fin.last n).val (Fin.last n).is_le)) :
+    ∃ i : pSpec.ChallengeIdx,
+      ¬ sf.toFun i.1.castSucc stmtIn (tr.take i.1.castSucc.val i.1.castSucc.is_le) ∧
+        sf.toFun i.1.succ stmtIn
+          (Transcript.concat (tr i.1) (tr.take i.1.castSucc.val i.1.castSucc.is_le)) := by
+  classical
+  -- The Prop-valued sequence: state function on the round-`k` prefix of the realized transcript.
+  set P : Fin (n + 1) → Prop :=
+    fun k => sf.toFun k stmtIn (tr.take k.val k.is_le) with hP
+  have h0 : ¬ P 0 := by
+    -- At round 0 the prefix is the empty transcript and `toFun 0 = (· ∈ langIn)`.
+    have hempty : (tr.take (0 : Fin (n + 1)).val (0 : Fin (n + 1)).is_le)
+        = (default : Transcript 0 pSpec) := Subsingleton.elim _ _
+    simp only [hP, hempty]
+    exact fun h => hStmtIn ((sf.toFun_empty stmtIn).mpr h)
+  have hlast' : P (Fin.last n) := hlast
+  -- No flip at prover-to-verifier rounds, supplied by `toFun_next`.
+  have hPtoV : ∀ j : Fin n, pSpec.dir j = .P_to_V → ¬ P j.castSucc → ¬ P j.succ := by
+    intro j hdir hcast
+    have hnext := sf.toFun_next j hdir stmtIn (tr.take j.castSucc.val j.castSucc.is_le) hcast (tr j)
+    simp only [hP]
+    rw [take_succ_eq_concat tr j]
+    exact hnext
+  obtain ⟨i, hcast, hsucc⟩ :=
+    exists_challenge_flip_of_false_zero_true_last P h0 hlast' hPtoV
+  refine ⟨i, hcast, ?_⟩
+  rw [← take_succ_eq_concat tr i.1]
+  exact hsucc
+
 end StateFunction
 
 /-- A knowledge state function for a verifier, with respect to input relation `relIn`, output
