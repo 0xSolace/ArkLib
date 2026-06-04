@@ -44,6 +44,79 @@ lemma c57_pg_eval_on_Z_body (p : F[Z][X][Y]) (z : F) :
     pg_eval_on_Z (F := F) p z = p.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) :=
   rfl
 
+/-! ### GAP ANALYSIS for the §5 list-decoding agreement claims (5.7 – 5.11)
+
+This file's six claims sit on top of three still-open §5 ingredients that no lemma currently
+supplies. The gaps below were determined by a complete dependency audit; each is a *precise*
+missing fact (not a proof-engineering hurdle), so the claims are documented as blocked rather
+than discharged with `sorry`-laundering. No statement is weakened.
+
+* **Missing ingredient A — "`S` is large".** There is *no* hypothesis or lemma giving a lower
+  bound on `#(coeffs_of_close_proximity k ωs δ u₀ u₁)`. In [BCIKS20, §5] the inequality
+  `#S / D_Y(Q) > 2·D_Y(Q)²·D_X·D_YZ(Q)` is a *standing hypothesis* of the proximity-gap regime
+  (the "many close codewords" assumption), not a consequence of `ModifiedGuruswami`. It is
+  directly the second conjunct of Claim 5.7 and is `R,H`-independent, hence unprovable from the
+  current hypotheses. See `exists_factors_with_large_common_root_set`.
+
+* **Missing ingredient B — "`Q` vanishes at every close `z`".** No proven fact asserts
+  `(Trivariate.eval_on_Z Q z).eval (Pz …) = 0` for `z ∈ coeffs_of_close_proximity`. This is
+  [BCIKS20, Lemma 5.3] (GS divisibility `(Y − Pz) ∣ Q`) lifted to the `Z`-curve. In
+  `Extraction.lean` it appears only as the *antecedent* `→` of `pg_exists_R_of_Q_eval_zero` /
+  `pg_exists_pair_for_z`, never as a standalone lemma. Without it the pigeonhole giving the
+  first conjunct of Claim 5.7 cannot reach `#S / D_Y(Q)` (it only reaches
+  `#(vanishing z) / D_Y(Q)`).
+
+* **Missing ingredient C — the Appendix-A ↔ §5 bridge.** `RationalFunctions.lean` contains the
+  vanishing criterion `Lemma_A_1` (`#(S_β β) > Λ(β)·dₕ ⟹ embeddingOf𝒪Into𝕃 β = 0`) and the
+  forward inclusion `eval_resultant_eq_zero_of_mem_S_β`, but **no** lemma relating the
+  Appendix-A objects (`α`, `γ`, `β`, `S_β`, `π_z`) to the §5 geometric data
+  (`Pz`, `matching_set`, the word `w(x,z) = u₀ x + z·u₁ x`, `ωs`). Concretely, the converse
+  direction "a geometric matching point `z` lies in `S_β (β R t)` (i.e. `π_z (β R t) = 0`)" is
+  absent. This bridge is the entire substance of the proofs of Claims 5.8–5.11.
+
+* **Missing ingredient D — `β`/`α`/`γ` are *under-specified* (root cause for 5.8/5.8'/5.9).**
+  In `RationalFunctions.lean`, `β R t := (β_regular …).choose`, and `β_regular` asserts only the
+  *existence* of a regular element satisfying the weight *upper* bound `Λ(β) ≤ (2t+1)·d_R·D`; it
+  is realized with the trivial witness `β = 0` (`fun _ => ⟨0, by simp⟩`). Thus `β R t` is *some*
+  opaque `.choose` element constrained only by that upper bound — it does **not** encode the
+  recursive Hensel-lift numerator of [BCIKS20, Appendix A.4], and carries no functional relation
+  to `R`, `x₀`, or the lift recursion. Consequently `α' … t = embeddingOf𝒪Into𝕃 _ (β R t) / _`
+  is **underdetermined**: its value at `t ≥ k` is *not fixed* by the definitions (it depends on
+  the opaque `.choose`), so Claim 5.8 (`α' … t = 0`) is neither provable *nor* refutable from the
+  current `β` — it is true only under the intended (not-yet-formalized) Hensel construction.
+  Even granting ingredient C, the `S_β`-largeness argument cannot be invoked because the `β` it
+  must apply to is not the Hensel numerator. Closing 5.8/5.8'/5.9 therefore requires first
+  *replacing* `β_regular`'s trivial realization with the genuine recursive Hensel-lift definition
+  (the `β`-construction of Appendix A.4) so that `β R t` is a *function of* the lift data, not an
+  arbitrary weight-bounded witness.
+
+**Per-claim disposition.**
+- 5.7 (`exists_factors_with_large_common_root_set`): blocked on A (final conjunct, unprovable as
+  stated — needs an added `#S` lower-bound hypothesis) and B (first conjunct pigeonhole). The
+  `R, H, Irreducible, natDegree, dvd, Separable` conjuncts are supplied by `Extraction.lean`'s
+  `pg_*` toolbox + Claim 5.6, but the two cardinality conjuncts are not.
+- 5.8 (`approximate_solution_is_exact_solution_coeffs`): reduces cleanly to
+  `embeddingOf𝒪Into𝕃 _ (β (R …) t) = 0` (since `α' … t = embeddingOf𝒪Into𝕃 _ (β …) / _`, so
+  `zero_div`), which is exactly `Lemma_A_1`'s conclusion — but `Lemma_A_1`'s hypothesis
+  `#(S_β (β … t)) > Λ·dₕ` has no supplier (ingredient C). Deeper still (ingredient D), `β R t`
+  is an opaque weight-bounded `.choose` rather than the Hensel numerator, so `α' … t` is
+  *underdetermined* and `α' … t = 0` is neither provable nor refutable from the current `β`.
+- 5.8' (`…_coeffs'`): would follow from 5.8 by `PowerSeries.subst` bookkeeping on `γ = subst …
+  (mk α)`, but 5.8 is itself blocked, so 5.8' cannot stand alone.
+- 5.9 (`solution_gamma_is_linear_in_Z`): consumes 5.8' (truncation of `γ` to degree `< k`,
+  combined with the `degreeX P ≤ 1` output of Prop 5.5); blocked transitively.
+- 5.10 (`solution_gamma_matches_word_if_subset_large`): its hypothesis `hx` bounds
+  `(matching_set_at_x …).card`, but converting that into the `S_β`-largeness that `Lemma_A_1`
+  consumes is exactly ingredient C; blocked.
+- 5.11 (`exists_points_with_large_matching_subset`): double-counting over the matching set,
+  which is `.choose` of the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`);
+  blocked on that upstream `sorry` plus ingredient C.
+
+Closing any of these honestly requires first landing (i) an `#S` lower-bound hypothesis on
+`ModifiedGuruswami` (or on Claim 5.7), (ii) the Lemma-5.3 `Z`-curve divisibility bridge, and
+(iii) the Appendix-A ↔ §5 specialization bridge `matching point ⟹ π_z (β R t) = 0`. None are
+present in the current tree. -/
+
 open Trivariate in
 open Bivariate in
 /-- Claim 5.7 of [BCIKS20].
@@ -82,6 +155,20 @@ There are two independent blockers; the first is fatal on its own.
 Given Gap A alone makes `#S'` unbounded-below for the `opaque` predicate, the conjunction is
 unprovable; the `sorry` is retained.  The binder structure
 `∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the downstream extractors stay well-typed. -/
+
+GAP (blocked — see the §5 GAP ANALYSIS block above). The conjuncts producing `R`, `H`, its
+irreducibility, positive degree, the divisibility `H ∣ R(x₀,·)` and separability of `R(x₀,·)`
+are all supplied by `Extraction.lean` (`irreducible_factorization_of_gs_solution`, Claim 5.6
+`discr_of_irred_components_nonzero`, and the `pg_candidatePairs` toolbox). The two remaining
+cardinality conjuncts are *not* provable from `ModifiedGuruswami`:
+* the matching lower bound `≥ #S / D_Y(Q)` needs missing ingredient B (Lemma 5.3 `Z`-curve
+  divisibility: every `z ∈ S` makes `eval_on_Z Q z` vanish at `Pz`), to feed the
+  `pg_card_candidatePairs_le_natDegreeY` pigeonhole with all of `S` rather than only the
+  vanishing `z`;
+* the numeric bound `#S / D_Y(Q) > 2·D_Y(Q)²·D_X·D_YZ(Q)` is `R,H`-independent and has no
+  supplier — it is the proximity-gap regime's standing "`S` is large" hypothesis (ingredient A),
+  so Claim 5.7 is **unprovable as currently stated** and would need an added `#S` lower-bound
+  hypothesis. -/
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
   ∃ R H, R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose ∧
@@ -141,7 +228,14 @@ lemma claimA2_hypotheses (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
 open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 from [BCIKS20].
 States that the approximate solution is actually a solution. This version of the claim is stated in
-terms of coefficients. -/
+terms of coefficients.
+
+GAP (blocked — see the §5 GAP ANALYSIS block above). `α' x₀ R … t = embeddingOf𝒪Into𝕃 _ (β R t)
+/ (W^(t+1) · ξ-emb^(2t-1))`, so the goal reduces by `zero_div` to `embeddingOf𝒪Into𝕃 _ (β R t)
+= 0`, which is the conclusion of `Lemma_A_1`. But `Lemma_A_1`'s hypothesis `#(S_β (β R t)) >
+Λ(β R t)·dₕ` has no supplier (missing ingredient C), and more fundamentally `β R t` is an opaque
+weight-bounded `.choose`, not the recursive Hensel numerator (missing ingredient D), so the
+conclusion is underdetermined by the current definitions. -/
 lemma approximate_solution_is_exact_solution_coeffs
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
@@ -161,7 +255,11 @@ open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 from [BCIKS20].
 States that the approximate solution is actually a solution.
 This version is in terms of polynomials.
--/
+
+GAP (blocked — see the §5 GAP ANALYSIS block above). Equivalent to `coeff t γ' = 0` for `t ≥ k`.
+Would follow from the coefficient form (`approximate_solution_is_exact_solution_coeffs`) by
+`PowerSeries.subst` bookkeeping on `γ = subst (mk shift) (mk α)`, but that form is itself blocked
+(ingredients C, D), so this cannot stand alone. -/
 lemma approximate_solution_is_exact_solution_coeffs'
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
@@ -182,7 +280,12 @@ lemma approximate_solution_is_exact_solution_coeffs'
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.9 from [BCIKS20].
-States that the solution `γ` is linear in the variable `Z`. -/
+States that the solution `γ` is linear in the variable `Z`.
+
+GAP (blocked — see the §5 GAP ANALYSIS block above). Consumes Claim 5.8' (the degree-`< k`
+truncation of `γ`) together with the `Bivariate.degreeX P ≤ 1` output of Proposition 5.5 to read
+off the linear representative `v₀ + Z·v₁`. Blocked transitively on 5.8' (ingredients C, D) and on
+the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`, `Guruswami.lean`). -/
 lemma solution_gamma_is_linear_in_Z
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
@@ -232,7 +335,13 @@ noncomputable def matching_set_at_x
 
 /-- Claim 5.10 of [BCIKS20].
 Needed to prove Claim 5.9. This claim states that `γ(x) = w(x,Z)` if the cardinality `|S'_x|` is big
-enough. -/
+enough.
+
+GAP (blocked — see the §5 GAP ANALYSIS block above). The hypothesis `hx` bounds
+`(matching_set_at_x …).card` from below, and the conclusion is the §5 polynomial identity
+`P(ωs x) = C(u₀ x) + u₁ x · X`. Bridging the geometric matching-set bound to the `S_β`-largeness
+that `Lemma_A_1` consumes (so that the relevant Hensel coefficient vanishes) is exactly missing
+ingredient C; the underlying `β` under-specification (ingredient D) also applies. -/
 lemma solution_gamma_matches_word_if_subset_large
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
@@ -251,7 +360,11 @@ lemma solution_gamma_matches_word_if_subset_large
 
 /-- Claim 5.11 from [BCIKS20].
 There exists a set of points `{x₀,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in
-Claim 5.10. -/
+Claim 5.10.
+
+GAP (blocked — see the §5 GAP ANALYSIS block above). A double-counting argument over the matching
+set, which is `.choose` of the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`,
+`Guruswami.lean`); the per-point cardinality bound additionally relies on missing ingredient C. -/
 lemma exists_points_with_large_matching_subset
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
