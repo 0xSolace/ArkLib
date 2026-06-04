@@ -363,10 +363,27 @@ def oracleReduction.sendClaim : OracleReduction oSpec (StmtIn R) (OStmtIn R deg)
   -- refine SendClaim.oracleReduction oSpec (StmtIn R) (OStmtIn R deg) ?_
   -- (SendClaim.oracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit)
 
+/-- The `CheckClaim` predicate for sum-check: query the *claimed* polynomial `q` (oracle index
+`inr ()`) at every evaluation point in `univ.map D`, sum the responses, and check that the sum
+equals the target `a` (read via `ReaderT`). This is the `∑_{x ∈ D} q.eval x = a` check. -/
+def checkClaim.pred :
+    ReaderT (StmtAfterCheckClaim R) (OracleComp [OStmtAfterCheckClaim R deg]ₒ) Prop :=
+  ReaderT.mk fun target => do
+    let sum ← (((univ.map D).toList).foldlM
+      (fun (acc : R) x => do
+        let resp ← (OracleComp.lift <| OracleSpec.query
+          (spec := [OStmtAfterCheckClaim R deg]ₒ)
+          (show [OStmtAfterCheckClaim R deg]ₒ.Domain from ⟨Sum.inr (), x⟩) :
+          OracleComp [OStmtAfterCheckClaim R deg]ₒ R)
+        pure (acc + resp))
+      (0 : R))
+    pure (sum = target)
+
 def oracleReduction.checkClaim : OracleReduction oSpec
     (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) Unit
     (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg) Unit !p[] :=
-  sorry
+  CheckClaim.oracleReduction oSpec (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg)
+    (checkClaim.pred R deg D)
 
 def oracleReduction.randomQuery : OracleReduction oSpec
     (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg) Unit
@@ -403,7 +420,7 @@ def oracleReduction.reduceClaim : OracleReduction oSpec
 def oracleReduction : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit
     (StmtOut R) (OStmtOut R deg) Unit (pSpec R deg) :=
   ((oracleReduction.sendClaim R deg oSpec)
-  |>.append (oracleReduction.checkClaim R deg oSpec)
+  |>.append (oracleReduction.checkClaim R deg D oSpec)
   |>.append (oracleReduction.randomQuery R deg oSpec)
   |>.append (oracleReduction.reduceClaim R deg oSpec))
 
@@ -413,24 +430,24 @@ variable [SampleableType R]
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
 theorem oracleReduction_perfectCompleteness :
-    (oracleReduction R deg oSpec).perfectCompleteness init impl
+    (oracleReduction R deg D oSpec).perfectCompleteness init impl
       (inputRelation R deg D) (outputRelation R deg) := by
   simp [oracleReduction]
   refine OracleReduction.append_perfectCompleteness
     (rel₂ := relationAfterRandomQuery R deg)
     ((((oracleReduction.sendClaim R deg oSpec).append
-        (oracleReduction.checkClaim R deg oSpec)).append
+        (oracleReduction.checkClaim R deg D oSpec)).append
         (oracleReduction.randomQuery R deg oSpec)))
     (oracleReduction.reduceClaim R deg oSpec) ?_ ?_
   · refine OracleReduction.append_perfectCompleteness
       (rel₂ := relationAfterCheckClaim R deg)
       ((oracleReduction.sendClaim R deg oSpec).append
-        (oracleReduction.checkClaim R deg oSpec))
+        (oracleReduction.checkClaim R deg D oSpec))
       (oracleReduction.randomQuery R deg oSpec) ?_ ?_
     · refine OracleReduction.append_perfectCompleteness
         (rel₂ := relationAfterSendClaim R deg D)
         (oracleReduction.sendClaim R deg oSpec)
-        (oracleReduction.checkClaim R deg oSpec) ?_ ?_
+        (oracleReduction.checkClaim R deg D oSpec) ?_ ?_
       · sorry
       · sorry
     · sorry
@@ -438,7 +455,7 @@ theorem oracleReduction_perfectCompleteness :
     sorry
 
 theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
-    (oracleReduction R deg oSpec).verifier.rbrKnowledgeSoundness init impl
+    (oracleReduction R deg D oSpec).verifier.rbrKnowledgeSoundness init impl
       (inputRelation R deg D) (outputRelation R deg)
         (fun _ => (deg : ℝ≥0) / (Fintype.card R)) := by
   sorry
