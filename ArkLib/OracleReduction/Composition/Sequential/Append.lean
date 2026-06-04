@@ -269,7 +269,60 @@ namespace Verifier
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
 
-/-- The sequential composition of two state functions. -/
+/-- **Doomed-ness crosses the language.** For a *deterministic* first verifier `V₁ = pure ∘ verify`
+with a reachable initial state (`∃ s, s ∈ support init`), if its state function `S₁` is false on a
+full transcript, then the intermediate statement `verify stmt tr` lies *outside* `lang₂`.
+
+This is the bridge that makes the un-conjoined composite state function work: it converts the
+probabilistic `S₁.toFun_full` (`Pr[… ∈ lang₂ | …] = 0`) into the pointwise membership fact needed to
+fire `S₂.toFun_empty` at the phase crossing. -/
+private theorem StateFunction.verify_not_mem_lang_of_toFun_full_neg
+    {V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁}
+    (S₁ : V₁.StateFunction init impl lang₁ lang₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
+    (hInit : ∃ s, s ∈ support init)
+    (stmt : Stmt₁) (tr : pSpec₁.FullTranscript)
+    (hNeg : ¬ S₁ (Fin.last m) stmt tr) :
+    verify stmt tr ∉ lang₂ := by
+  have hPr := S₁.toFun_full stmt tr hNeg
+  rw [probEvent_eq_zero_iff] at hPr
+  -- `V₁.run stmt tr = pure (verify stmt tr)`, so `verify stmt tr` is a reachable output; the
+  -- `Pr = 0` hypothesis then forbids it from lying in `lang₂`.
+  obtain ⟨s, hs⟩ := hInit
+  refine hPr (verify stmt tr) ?_
+  rw [OptionT.mem_support_iff]
+  simp only [OptionT.run_mk, support_bind, Set.mem_iUnion]
+  refine ⟨s, hs, ?_⟩
+  have hrun : (V₁.run stmt tr) = (pure (verify stmt tr) : OptionT (OracleComp oSpec) Stmt₂) := by
+    subst hVerify; rfl
+  rw [hrun]
+  change some (verify stmt tr) ∈ _root_.support
+    (StateT.run' (simulateQ impl (pure (some (verify stmt tr)) :
+      OracleComp oSpec (Option Stmt₂))) s)
+  rw [simulateQ_pure]
+  change some (verify stmt tr) ∈ _root_.support
+    (Prod.fst <$> (pure (some (verify stmt tr)) : StateT σ ProbComp _).run s)
+  rw [StateT.run_pure]
+  simp [map_pure]
+
+/-- The sequential composition of two state functions.
+
+STATEMENT REPAIR (2026-06-04): the composite `toFun` now uses the standard "doomed" semantics —
+for rounds `> m` it is the *un-conjoined* second state function `S₂ (k-m)` on the phase-2 prefix
+(applied to `verify stmt₁ tr.fst`), NOT `S₁(last) ∧ S₂(k-m)`. The prior conjunction-based form made
+`toFun_full` FALSE: in the `S₁`-false / `S₂`-true case, `S₂(last)` may legitimately hold on an
+out-of-language input via a lucky challenge (rbr soundness bounds this only probabilistically), so
+the demanded `Pr = 0` was unobtainable. With the un-conjoined form the doomed-ness propagates
+*through the language*: `¬ S₁(last) ⇒` (by `S₁.toFun_full`, the verifier being deterministic)
+`verify … ∉ lang₂ ⇒` (by `S₂.toFun_empty`) `¬ S₂ 0`, which `S₂.toFun_next` then carries forward —
+so the crossing `toFun_next` at `k = m` holds and `toFun_full` reduces to `S₂.toFun_full`.
+
+STATEMENT REPAIR (2026-06-04): added `hInit : ∃ s, s ∈ support init`. The crossing inversion of
+`S₁.toFun_full` (a statement about `Pr[… | … (← init)] = 0`) into the pointwise fact
+`verify stmt₁ tr.fst ∉ lang₂` requires at least one reachable initial state `s ∈ support init`;
+otherwise the support is empty and the `Pr = 0` hypothesis is vacuous. This is a mild, standard
+non-failing-setup assumption (every concrete `init` used downstream samples successfully). -/
 def StateFunction.append
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
@@ -277,17 +330,18 @@ def StateFunction.append
     (S₂ : V₂.StateFunction init impl lang₂ lang₃)
     -- Assume the first verifier is deterministic for now
     (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
-    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩) :
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
+    (hInit : ∃ s, s ∈ support init) :
       (V₁.append V₂).StateFunction init impl lang₁ lang₃ where
   toFun := fun roundIdx stmt₁ transcript =>
     if h : roundIdx.val ≤ m then
     -- If the round index falls in the first protocol, then we simply invokes the first state fn
       S₁ ⟨roundIdx, by omega⟩ stmt₁ (by simpa [h] using transcript.fst)
     else
-    -- If the round index falls in the second protocol, then we returns the conjunction of
-    -- the first state fn on the first protocol's transcript, and the second state fn on the
-    -- remaining transcript.
-      S₁ ⟨m, by omega⟩ stmt₁ (by simp at h; simpa [min_eq_right_of_lt h] using transcript.fst) ∧
+    -- If the round index falls in the second protocol, then we return the second state fn on the
+    -- remaining transcript, applied to the intermediate statement `verify stmt₁ tr.fst`. We do
+    -- NOT conjoin `S₁(last)`: doomed-ness is carried by `verify … ∉ lang₂` through the language
+    -- (see the statement-repair note above), which is exactly what makes `toFun_full` true.
       S₂ ⟨roundIdx - m, by omega⟩ (verify stmt₁
         (by simp at h; simpa [min_eq_right_of_lt h] using transcript.fst))
         (by simpa [h] using transcript.snd)
@@ -405,95 +459,245 @@ def StateFunction.append
           refine HEq.trans (cast_heq _ _) ?_
           congr 1
           ext; simp only [Fin.val_castLT]; omega
-      rintro ⟨hS1, hS2⟩
-      by_cases hrm : (roundIdx : ℕ) ≤ m
-      · -- roundIdx = m: hPrev is the first-segment state fn, contradicted by hS1
-        rw [dif_pos hrm] at hPrev
-        apply hPrev
-        have hrm' : (roundIdx : ℕ) = m := by omega
-        convert hS1 using 2
-        exact HEq.trans (cast_heq _ _) (HEq.trans hfstHeq.symm (cast_heq _ _).symm)
-      · -- roundIdx > m: derive both conjuncts and contradict hPrev's `else` branch
-        rw [dif_neg hrm] at hPrev
-        apply hPrev
-        refine ⟨?_, ?_⟩
-        · -- S₁ conjunct: same as hS1 up to the unchanged first-segment transcript
-          convert hS1 using 2
-          exact eq_of_heq (HEq.trans (cast_heq _ _) (HEq.trans hfstHeq.symm (cast_heq _ _).symm))
-        · -- S₂ conjunct: from hS2 via toFun_next contrapositive on the second segment
-          have hmlt : m < (roundIdx : ℕ) := by omega
-          have hfstCast :
-              (by simpa [min_eq_right_of_lt (show m < (roundIdx : ℕ) + 1 from by omega)]
-                  using (Transcript.concat msg tr).fst : pSpec₁.Transcript ⟨m, by omega⟩)
-              = (by simpa [min_eq_right_of_lt hmlt]
-                  using tr.fst : pSpec₁.Transcript ⟨m, by omega⟩) :=
-            eq_of_heq (HEq.trans (cast_heq _ _) (HEq.trans hfstHeq (cast_heq _ _).symm))
-          -- the second-segment direction at this round
-          have hDir₂ : pSpec₂.dir ⟨(roundIdx : ℕ) - m, by omega⟩ = .P_to_V := by
-            have h2 := hDir
-            rw [show ((pSpec₁.dir ++ᵛ pSpec₂.dir) roundIdx)
-                  = pSpec₂.dir ⟨(roundIdx : ℕ) - m, by omega⟩
-                from by rw [Fin.vappend_right_of_not_lt _ _ _ (by omega : ¬ (roundIdx : ℕ) < m)]] at h2
-            exact h2
-          -- the message transported into the second segment's type
-          have hmsgty₂ : (pSpec₁ ++ₚ pSpec₂).Type roundIdx
-              = pSpec₂.Type ⟨(roundIdx : ℕ) - m, by omega⟩ := by
-            show Fin.vappend pSpec₁.Type pSpec₂.Type roundIdx = _
-            rw [Fin.vappend_right_of_not_lt _ _ _ (by omega : ¬ (roundIdx : ℕ) < m)]
-          -- apply toFun_next contrapositive: from hS2 (at succ) get the state fn at castSucc
-          apply Classical.byContradiction
-          intro hnot
-          have key := S₂.toFun_next ⟨(roundIdx : ℕ) - m, by omega⟩ hDir₂ _ tr.snd hnot
-            (cast hmsgty₂ msg)
-          -- key : ¬ S₂.toFun (succ) (verify ... tr.fst) (tr.snd.concat msg₂)
-          apply key
-          convert hS2 using 2
-          all_goals
-            try exact hfstCast.symm
-          all_goals
-            try (simp only [Fin.val_succ]; omega)
-          -- remaining: (tr.snd).concat msg₂  ≍  (concat msg tr).snd
-          -- the second-segment snd gains exactly the new message via snoc
-          have hsndcard : ((roundIdx : ℕ) - m) + 1 = ((roundIdx : Fin (m + n)).succ : ℕ) - m := by
-            simp only [Fin.val_succ]; omega
-          apply Function.hfunext
-          · congr 1
-          · intro a a' haa'
-            -- a : Fin ((roundIdx - m) + 1),  a' : Fin (roundIdx.succ - m)
-            have haa : (a : ℕ) = (a' : ℕ) := by
-              have := Fin.heq_ext_iff hsndcard |>.mp haa'
-              omega
-            simp only [Transcript.concat]
-            -- evaluate both snocs / snd by casing on the position
-            obtain ⟨av, hav_lt⟩ := a
-            simp only [Fin.val_mk] at haa hav_lt ⊢
-            -- unfold the right `snd` (over the snoc'd transcript)
-            unfold Transcript.snd
-            rw [dif_neg (show ¬ (roundIdx : Fin (m + n)).succ ≤ m from by
-                  simp only [Fin.val_succ]; omega),
-                dif_neg (show ¬ (roundIdx : Fin (m + n)).castSucc ≤ m from by
+      -- The succ-round (`> m`) goal is the second state function on the phase-2 prefix. We will show
+      -- `¬ S₂ ((roundIdx - m).succ) (verify stmt₁ tr.fst) (tr.snd.concat msg₂)` (the "clean" form,
+      -- where `msg₂` is `msg` transported into the second segment's type), then transport it to the
+      -- actual goal via the unchanged first-segment `fst` and the snoc'd `snd`.
+      intro hS2
+      -- the second-segment direction at this round
+      have hDir₂ : pSpec₂.dir ⟨(roundIdx : ℕ) - m, by omega⟩ = .P_to_V := by
+        have h2 := hDir
+        rw [show ((pSpec₁.dir ++ᵛ pSpec₂.dir) roundIdx)
+              = pSpec₂.dir ⟨(roundIdx : ℕ) - m, by omega⟩
+            from by rw [Fin.vappend_right_of_not_lt _ _ _ (by omega : ¬ (roundIdx : ℕ) < m)]] at h2
+        exact h2
+      -- the message transported into the second segment's type
+      have hmsgty₂ : (pSpec₁ ++ₚ pSpec₂).Type roundIdx
+          = pSpec₂.Type ⟨(roundIdx : ℕ) - m, by omega⟩ := by
+        show Fin.vappend pSpec₁.Type pSpec₂.Type roundIdx = _
+        rw [Fin.vappend_right_of_not_lt _ _ _ (by omega : ¬ (roundIdx : ℕ) < m)]
+      -- The phase-1 prefix as a genuine full transcript (its domain is all `m` rounds since
+      -- `roundIdx ≥ m`). All the `verify stmt₁ …` arguments below are this same transcript.
+      have hmin : min (roundIdx : ℕ) m = m := by omega
+      let trFst : pSpec₁.FullTranscript :=
+        (by simpa [hmin] using tr.fst : pSpec₁.FullTranscript)
+      have htrFst_heq : (trFst : pSpec₁.FullTranscript) ≍ tr.fst := cast_heq _ _
+      -- The "clean" second-segment falsity: `¬ S₂ ((roundIdx - m).succ) (verify … trFst) (tr.snd ∘ msg₂)`.
+      -- Two sources, depending on whether this is the phase crossing (`roundIdx = m`) or strictly
+      -- inside the second phase (`roundIdx > m`).
+      have hClean : ¬ S₂ (⟨(roundIdx : ℕ) - m, by omega⟩ : Fin n).succ
+          (verify stmt₁ trFst) (Transcript.concat (cast hmsgty₂ msg) tr.snd) := by
+        by_cases hrm : (roundIdx : ℕ) ≤ m
+        · -- phase crossing `roundIdx = m`: `hPrev` is `¬ S₁ (last)`; push doomed-ness through lang₂.
+          rw [dif_pos hrm] at hPrev
+          have hrm' : (roundIdx : ℕ) = m := by omega
+          have hn1 : 0 < n := by
+            -- the succ round `roundIdx + 1` lies in `Fin (m + n)`, and `roundIdx + 1 > m`
+            have := (roundIdx : Fin (m + n)).isLt; omega
+          -- `¬ S₁ (last m) stmt₁ trFst`  (re-index `hPrev`'s `⟨roundIdx, _⟩` as `Fin.last m`)
+          have hS1neg : ¬ S₁ (Fin.last m) stmt₁ trFst := by
+            intro hc; apply hPrev
+            convert hc using 2 <;>
+              first
+                | (ext; simp only [Fin.val_castSucc, Fin.val_last, Fin.val_mk]; omega)
+                | exact HEq.trans (cast_heq _ _) htrFst_heq.symm
+          -- `verify stmt₁ trFst ∉ lang₂`
+          have hNotMem := StateFunction.verify_not_mem_lang_of_toFun_full_neg
+            init impl S₁ verify hVerify hInit _ _ hS1neg
+          -- hence `¬ S₂ 0 (verify …) default`
+          have hS20 : ¬ S₂ (0 : Fin (n + 1)) (verify stmt₁ trFst) default :=
+            fun hc => hNotMem ((S₂.toFun_empty _).mpr hc)
+          -- The message transported into `pSpec₂.Type ⟨0, _⟩` (the first phase-2 round's type).
+          have hmsgty0 : (pSpec₁ ++ₚ pSpec₂).Type roundIdx
+              = pSpec₂.Type (⟨0, hn1⟩ : Fin n) := by
+            rw [hmsgty₂]; congr 1; ext; simp only [Fin.val_mk]; omega
+          -- the empty phase-2 prefix at round `⟨0,_⟩.castSucc` (its domain is `Fin 0`)
+          have hcs0 : (⟨0, hn1⟩ : Fin n).castSucc = (0 : Fin (n + 1)) := by ext; simp
+          let empty2 : pSpec₂.Transcript (⟨0, hn1⟩ : Fin n).castSucc := fun i => i.elim0
+          -- `S₂.toFun_next` at round `⟨0, _⟩` turns `¬ S₂ 0` into `¬ S₂ 1` after concatenating `msg₂`.
+          have hcross : ¬ S₂ (⟨0, hn1⟩ : Fin n).succ (verify stmt₁ trFst)
+              (Transcript.concat (cast hmsgty0 msg) empty2) := by
+            refine S₂.toFun_next (⟨0, hn1⟩ : Fin n) ?_ _ empty2 ?_ (cast hmsgty0 msg)
+            · -- direction at round `0` (= direction at round `roundIdx - m`)
+              have : (⟨0, hn1⟩ : Fin n) = ⟨(roundIdx : ℕ) - m, by omega⟩ := by
+                ext; simp only [Fin.val_mk]; omega
+              rw [this]; exact hDir₂
+            · -- `¬ S₂ (0.castSucc) empty2`, where `0.castSucc = (0 : Fin (n+1))` and `empty2 = default`
+              intro hc; apply hS20
+              convert hc using 2 <;>
+                first
+                  | exact hcs0.symm
+                  | (apply Function.hfunext (by congr 1; exact hcs0); intro a _ _; exact a.elim0)
+          -- Transport `hcross` to the `⟨roundIdx - m, _⟩.succ` index (numerically equal to `0.succ`).
+          intro hgoal; apply hcross
+          convert hgoal using 2 <;>
+            first
+              | (ext; simp only [Fin.val_succ, Fin.val_mk]; omega)
+              | exact HEq.trans (cast_heq _ _) (cast_heq _ _).symm
+              | -- `empty2 ≍ tr.snd`  (both empty, domain `Fin 0`)
+                (apply Function.hfunext ?_ ?_ <;>
+                  first
+                    | (congr 1; simp only [Fin.val_castSucc, Fin.val_mk]; omega)
+                    | (intro a a' _;
+                       exact absurd a.isLt (by simp only [empty2, Fin.val_castSucc, Fin.val_mk]; omega)))
+        · -- strictly inside the second phase: `hPrev` is `¬ S₂ (roundIdx - m)`; one `toFun_next` step.
+          rw [dif_neg hrm] at hPrev
+          -- re-index `hPrev`'s `⟨roundIdx - m, _⟩` as the `castSucc` of `⟨roundIdx - m, _⟩ : Fin n`
+          have hPrev' : ¬ S₂ (⟨(roundIdx : ℕ) - m, by omega⟩ : Fin n).castSucc
+              (verify stmt₁ trFst) tr.snd := by
+            intro hc; apply hPrev
+            -- `hPrev`'s verify-argument is `tr.fst` massaged; it agrees with `trFst`
+            convert hc using 2 <;>
+              first
+                | (ext; simp only [Fin.val_castSucc, Fin.val_mk]; omega)
+                | exact HEq.trans (cast_heq _ _) htrFst_heq.symm
+          exact S₂.toFun_next ⟨(roundIdx : ℕ) - m, by omega⟩ hDir₂ _ tr.snd hPrev' (cast hmsgty₂ msg)
+      -- Transport `hClean` to the actual goal `hS2` (fst unchanged, snd gains the new message).
+      -- Rewrite `hClean`'s `⟨roundIdx - m, _⟩.succ` index to the goal's `⟨roundIdx.succ - m, _⟩` form.
+      have hsuccIdx : (⟨(roundIdx : ℕ) - m, by omega⟩ : Fin n).succ
+          = ⟨((roundIdx : Fin (m + n)).succ : ℕ) - m, by simp only [Fin.val_succ]; omega⟩ := by
+        ext; simp only [Fin.val_succ, Fin.val_mk]; omega
+      apply hClean
+      convert hS2 using 2
+      · -- index of the goal's S₂ matches `(roundIdx - m).succ`
+        simp only [Fin.val_succ, Fin.val_mk]; omega
+      · -- `verify` on the unchanged `fst`: `trFst ≍ (concat msg tr).fst`
+        congr 1
+        exact eq_of_heq (HEq.trans htrFst_heq (HEq.trans hfstHeq.symm (cast_heq _ _).symm))
+      · -- `tr.snd.concat msg₂ ≍ (concat msg tr).snd`
+        have hsndcard : ((roundIdx : ℕ) - m) + 1 = ((roundIdx : Fin (m + n)).succ : ℕ) - m := by
+          simp only [Fin.val_succ]; omega
+        apply Function.hfunext
+        · congr 1
+        · intro a a' haa'
+          have haa : (a : ℕ) = (a' : ℕ) := by
+            have := Fin.heq_ext_iff hsndcard |>.mp haa'
+            omega
+          simp only [Transcript.concat]
+          obtain ⟨av, hav_lt⟩ := a
+          simp only [Fin.val_mk] at haa hav_lt ⊢
+          -- the RHS `(concat msg tr).snd` always lands in the `else` branch (its index `> m`)
+          rw [show (Transcript.concat msg tr).snd (⟨(a' : ℕ), a'.isLt⟩ : Fin _)
+                = (Transcript.concat msg tr).snd a' from by congr]
+          unfold Transcript.snd
+          rw [dif_neg (show ¬ (roundIdx : Fin (m + n)).succ ≤ m from by
+                simp only [Fin.val_succ]; omega)]
+          -- the LHS `Fin.snoc (tr.snd) msg₂`: split on whether `av` is the last position
+          simp only [Fin.snoc, Fin.val_mk]
+          by_cases hlast : av = (roundIdx : ℕ) - m
+          · rw [dif_neg (show ¬ av < (roundIdx : ℕ) - m from by omega),
+                dif_neg (show ¬ m + (a' : ℕ) < (roundIdx : ℕ) from by omega)]
+            -- both sides are `msg` (the new message), up to casts
+            refine HEq.trans (cast_heq _ _) ?_
+            refine HEq.trans (cast_heq _ _) ?_
+            exact HEq.trans (cast_heq _ _).symm (cast_heq _ _).symm
+          · -- earlier position: both read the original `tr.snd` at the same underlying index
+            have hlt2 : av < (roundIdx : ℕ) - m := by omega
+            -- LHS: the inner `tr.snd` was already unfolded; its `if` is on `roundIdx.castSucc ≤ m`
+            rw [dif_pos (show av < (roundIdx : ℕ) - m from hlt2)]
+            rw [dif_neg (show ¬ (roundIdx : Fin (m + n)).castSucc ≤ m from by
                   simp only [Fin.val_castSucc]; omega)]
-            simp only [Fin.snoc, Fin.val_mk]
-            by_cases hlast : av = (roundIdx : ℕ) - m
-            · -- last position: snoc gives msg; snd reads the snoc'd entry at index roundIdx
-              rw [dif_neg (show ¬ av < (roundIdx : ℕ) - m from by omega),
-                  dif_neg (show ¬ m + (a' : ℕ) < (roundIdx : ℕ) from by omega)]
-              refine HEq.trans (cast_heq _ _) ?_
-              refine HEq.trans ?_ (cast_heq _ _).symm
-              refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
-              rfl
-            · -- earlier position: snoc gives tr.snd value; snd reads tr at index m+av
-              have hlt2 : av < (roundIdx : ℕ) - m := by omega
-              rw [dif_pos (show av < (roundIdx : ℕ) - m from hlt2),
-                  dif_pos (show m + (a' : ℕ) < (roundIdx : ℕ) from by omega)]
-              refine HEq.trans (cast_heq _ _) ?_
-              refine HEq.trans ?_ (cast_heq _ _).symm
-              refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
-              congr 1
-              ext
-              simp only [Fin.val_castLT]
-              omega
-  toFun_full := sorry
+            rw [dif_pos (show m + (a' : ℕ) < (roundIdx : ℕ) from by omega)]
+            refine HEq.trans (cast_heq _ _) ?_
+            refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+            congr 1
+            ext
+            simp only [Fin.val_castLT]
+            omega
+  toFun_full := by
+    -- `toFun (last)` on the appended protocol is `S₂ (last)` on the phase-2 transcript (since
+    -- `m + n > m`, the `≤ m` branch never fires for the last round when `n > 0`; when `n = 0` the
+    -- last round is `m`, the `≤ m` branch fires, and the goal reduces to `S₁.toFun_full`).
+    intro stmt₁ tr hNeg
+    -- For a *full* transcript `tr : Transcript (last (m+n))`, the partial-transcript `Transcript.fst`
+    -- / `Transcript.snd` coincide (over `HEq`) with the full-transcript `FullTranscript.fst`/`.snd`.
+    have hmincard : min ((Fin.last (m + n) : Fin (m + n + 1)) : ℕ) m = m := by
+      simp only [Fin.val_last]; omega
+    have hsndcard : ((Fin.last (m + n) : Fin (m + n + 1)) : ℕ) - m = n := by
+      simp only [Fin.val_last]; omega
+    have htFstHeq : ∀ (T : (pSpec₁ ++ₚ pSpec₂).FullTranscript),
+        (Transcript.fst (k := Fin.last (m + n)) T) ≍ FullTranscript.fst T := by
+      intro T
+      apply Function.hfunext (congrArg Fin hmincard)
+      intro a a' ha
+      have hval : (a : ℕ) = (a' : ℕ) := by
+        have := Fin.heq_ext_iff hmincard |>.mp ha; omega
+      simp only [Transcript.fst, FullTranscript.fst]
+      refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+      congr 1; apply Fin.ext; simp only [Fin.coe_castAdd]; omega
+    have htSndHeq : ∀ (T : (pSpec₁ ++ₚ pSpec₂).FullTranscript),
+        (Transcript.snd (k := Fin.last (m + n)) T) ≍ FullTranscript.snd T := by
+      intro T
+      apply Function.hfunext (congrArg Fin hsndcard)
+      intro a a' ha
+      have hval : (a : ℕ) = (a' : ℕ) := by
+        have := Fin.heq_ext_iff hsndcard |>.mp ha; omega
+      simp only [Transcript.snd, FullTranscript.snd]
+      rw [dif_neg (show ¬ (Fin.last (m + n)) ≤ m from by simp only [Fin.val_last]; omega)]
+      refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+      congr 1; apply Fin.ext; simp only [Fin.coe_natAdd]; omega
+    by_cases hn : n = 0
+    · -- degenerate: empty second protocol. `toFun (last) = S₁ (last)`, and the appended verifier's
+      -- output language is `lang₃`; since `n = 0`, `lang₂`-membership of `verify …` is `lang₃` via
+      -- `S₂` being over the empty protocol. We reduce directly to `S₁.toFun_full` composed with the
+      -- (trivial, `n = 0`) second verifier run.
+      subst hn
+      -- last round index is `m ≤ m`, so `toFun (last) = S₁ ⟨m,_⟩`
+      rw [dif_pos (show ((Fin.last (m + 0)) : ℕ) ≤ m from by simp)] at hNeg
+      -- `¬ S₁ (last m) stmt₁ (tr.fst as full)`, hence `verify stmt₁ tr.fst ∉ lang₂`
+      set trFst : pSpec₁.FullTranscript := (FullTranscript.fst tr : pSpec₁.FullTranscript) with htrFst
+      have hS1neg : ¬ S₁ (Fin.last m) stmt₁ trFst := by
+        intro hc; apply hNeg
+        convert hc using 2 <;>
+          first
+            | (ext; simp only [Fin.val_last, Fin.val_mk]; omega)
+            | (congr 1; exact eq_of_heq (HEq.trans (cast_heq _ _) (htFstHeq tr)))
+      have hNotMem := StateFunction.verify_not_mem_lang_of_toFun_full_neg
+        init impl S₁ verify hVerify hInit _ _ hS1neg
+      -- with `n = 0`, the second protocol is empty: `last 0 = 0`, and `S₂.toFun_empty` ties
+      -- `S₂ 0 (verify …) default` to `verify … ∈ lang₂`; doomed-ness gives `¬ S₂ (last 0)`.
+      have hS2neg : ¬ S₂ (Fin.last 0) (verify stmt₁ trFst) (FullTranscript.snd tr) := by
+        intro hc; apply hNotMem
+        refine (S₂.toFun_empty _).mpr ?_
+        convert hc using 2 <;>
+          first
+            | (apply Fin.ext; simp)
+            | (funext i; exact i.elim0)
+      have hPr := S₂.toFun_full (verify stmt₁ trFst) (FullTranscript.snd tr) hS2neg
+      -- the appended run collapses to `V₂.run (verify …) tr.snd` (the deterministic `V₁` `pure`-binds)
+      have hrun : (V₁.append V₂).run stmt₁ tr
+          = V₂.run (verify stmt₁ trFst) (FullTranscript.snd tr) := by
+        subst hVerify
+        show (do return ← V₂.verify (← (pure (verify stmt₁ trFst))) (FullTranscript.snd tr)) = _
+        rw [pure_bind]
+        simp only [Verifier.run, bind_pure]
+      rw [hrun]; exact hPr
+    · -- `n > 0`: last round index `m + n > m`, so `toFun (last) = S₂ (last) (verify …) tr.snd`.
+      rw [dif_neg (show ¬ ((Fin.last (m + n)) : ℕ) ≤ m from by simp only [Fin.val_last]; omega)]
+        at hNeg
+      -- re-index `hNeg`'s `⟨last - m, _⟩` as `Fin.last n`, swapping the partial-transcript fst/snd
+      -- for the genuine `FullTranscript.fst`/`.snd` (they agree on a full transcript).
+      have hNeg' : ¬ S₂ (Fin.last n)
+          (verify stmt₁ (FullTranscript.fst tr)) (FullTranscript.snd tr) := by
+        intro hc; apply hNeg
+        convert hc using 2 <;>
+          first
+            | (simp only [Fin.val_last, Fin.val_mk]; omega)
+            | -- `verify` on the two notions of phase-1 prefix agree
+              (congr 1; exact eq_of_heq (HEq.trans (cast_heq _ _) (htFstHeq tr)))
+            | -- the two notions of phase-2 suffix agree
+              exact htSndHeq tr
+      -- apply `S₂.toFun_full` and identify the appended verifier's run with `V₂`'s
+      have hPr := S₂.toFun_full (verify stmt₁ (FullTranscript.fst tr)) (FullTranscript.snd tr) hNeg'
+      -- `(V₁.append V₂).run stmt₁ tr = V₂.run (verify stmt₁ tr.fst) tr.snd`:
+      -- the appended verifier runs `V₁` (deterministic `pure`) then `V₂`; the `pure` bind collapses.
+      have hrun : (V₁.append V₂).run stmt₁ tr
+          = V₂.run (verify stmt₁ (FullTranscript.fst tr)) (FullTranscript.snd tr) := by
+        subst hVerify
+        show (do return ← V₂.verify (← (pure (verify stmt₁ (FullTranscript.fst tr)))) _) = _
+        rw [pure_bind]
+        simp only [Verifier.run, bind_pure]
+      rw [hrun]; exact hPr
 
 end Verifier
 
