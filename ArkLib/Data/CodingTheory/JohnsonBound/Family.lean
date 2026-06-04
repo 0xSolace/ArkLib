@@ -263,6 +263,30 @@ theorem averageDist_le_plotkin
   unfold d
   simpa [Nat.cast_sum] using hplot
 
+/-- A violated finite `Lambda` bound produces a concrete point-list whose average
+distance is controlled by the q-ary Plotkin bound.
+
+This is the contradiction-entry bridge for `johnson_bound_lambda_le_ell`: after
+assuming `ℓ < Lambda C δ`, one can work with the finite close-list around a
+specific received word. -/
+theorem exists_closeList_gt_and_averageDistOn_le_plotkin_of_natCast_lt_Lambda
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ}
+    (hℓ : 1 ≤ ℓ) (hq : 0 < Fintype.card α)
+    (hΛ : (ℓ : ℕ∞) < ListDecodable.Lambda C δ) :
+    ∃ f : ι → α,
+      ℓ < (ListDecodable.closeCodewordsRelFinset C f δ).card ∧
+        ((averageDistOn (ListDecodable.closeCodewordsRelFinset C f δ) : ℚ) : ℝ) ≤
+          ((ListDecodable.closeCodewordsRelFinset C f δ).card : ℝ) /
+              (((ListDecodable.closeCodewordsRelFinset C f δ).card : ℝ) - 1) *
+            (Fintype.card ι : ℝ) *
+              (1 - 1 / (Fintype.card α : ℝ)) := by
+  rcases ListDecodable.exists_closeFinset_card_gt_of_natCast_lt_Lambda hΛ with ⟨f, hf⟩
+  refine ⟨f, hf, ?_⟩
+  exact averageDistOn_le_plotkin (ListDecodable.closeCodewordsRelFinset C f δ)
+    (by omega) hq
+
 end JohnsonBound
 
 namespace CodingTheory

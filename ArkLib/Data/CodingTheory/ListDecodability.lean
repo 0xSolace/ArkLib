@@ -129,6 +129,59 @@ lemma Lambda_le_of_forall_ncard_le {C : Code ι F} {δ : ℝ} {ℓ : ℕ∞}
   unfold Lambda
   exact iSup_le h
 
+/-- Finset wrapper for the point list `Λ(C, δ, f)` when the ambient word space is finite. -/
+noncomputable def closeCodewordsRelFinset [Fintype F]
+    (C : Code ι F) (f : ι → F) (δ : ℝ) : Finset (ι → F) :=
+  by
+    classical
+    exact Finset.univ.filter fun c => c ∈ closeCodewordsRel C f δ
+
+/-- Membership in the finite point list agrees with the Set-based definition. -/
+lemma mem_closeCodewordsRelFinset [Fintype F] {C : Code ι F} {f c : ι → F} {δ : ℝ} :
+    c ∈ closeCodewordsRelFinset C f δ ↔ c ∈ closeCodewordsRel C f δ := by
+  classical
+  simp [closeCodewordsRelFinset]
+
+/-- The finite point-list cardinality agrees with the Set `ncard`. -/
+lemma card_closeCodewordsRelFinset_eq_ncard [Fintype F] {C : Code ι F}
+    (f : ι → F) (δ : ℝ) :
+    (closeCodewordsRelFinset C f δ).card = (closeCodewordsRel C f δ).ncard := by
+  classical
+  rw [← Set.ncard_coe_finset (closeCodewordsRelFinset C f δ)]
+  congr 1
+  ext c
+  simp [mem_closeCodewordsRelFinset]
+
+/-- Finset-cardinality variant of `Lambda_le_natCast_of_forall_ncard_le`. -/
+lemma Lambda_le_natCast_of_forall_closeFinset_card_le [Fintype F]
+    {C : Code ι F} {δ : ℝ} {ℓ : ℕ}
+    (h : ∀ f : ι → F, (closeCodewordsRelFinset C f δ).card ≤ ℓ) :
+    Lambda C δ ≤ (ℓ : ℕ∞) := by
+  apply Lambda_le_natCast_of_forall_ncard_le
+  intro f
+  rw [← card_closeCodewordsRelFinset_eq_ncard]
+  exact h f
+
+/-- If the maximised list size exceeds `ℓ`, some received word has a finite
+point-list with more than `ℓ` codewords. -/
+lemma exists_closeFinset_card_gt_of_natCast_lt_Lambda [Fintype F]
+    {C : Code ι F} {δ : ℝ} {ℓ : ℕ}
+    (h : (ℓ : ℕ∞) < Lambda C δ) :
+    ∃ f : ι → F, ℓ < (closeCodewordsRelFinset C f δ).card := by
+  unfold Lambda at h
+  rw [lt_iSup_iff] at h
+  rcases h with ⟨f, hf⟩
+  refine ⟨f, ?_⟩
+  rw [card_closeCodewordsRelFinset_eq_ncard]
+  exact_mod_cast hf
+
+/-- Contrapositive packaging helper for `Lambda ≤ ℓ`. -/
+lemma exists_closeFinset_card_gt_of_not_Lambda_le_natCast [Fintype F]
+    {C : Code ι F} {δ : ℝ} {ℓ : ℕ}
+    (h : ¬ Lambda C δ ≤ (ℓ : ℕ∞)) :
+    ∃ f : ι → F, ℓ < (closeCodewordsRelFinset C f δ).card := by
+  exact exists_closeFinset_card_gt_of_natCast_lt_Lambda (not_le.mp h)
+
 end Lambda
 
 end ListDecodable
