@@ -286,34 +286,51 @@ theorem oracleVerifier_rbrKnowledgeSoundness [Nonempty (Query OStatement)]
   subst i
   dsimp at oracles
   simp [Prover.runWithLogToRound, Prover.runToRound, rbrExtractor, knowledgeStateFunction]
-  sorry
-  -- unfold SimOracle.append
-  -- simp [challengeQueryImpl]
-  -- classical
-  -- simp only [probEvent_bind_eq_tsum]
-  -- simp [ProtocolSpec.Transcript.concat, Fin.snoc, default]
-  -- unfold Function.comp
-  -- dsimp
-  -- calc
-  -- _ ≤ ((Finset.card
-  --   {x | ¬oracles 0 = oracles 1 ∧ answer (oracles 0) x = answer (oracles 1) x} : ENNReal) /
-  --       (Fintype.card (Query OStatement))) := by
-  --   rw [ENNReal.tsum_mul_right]
-  --   grw [OracleComp.tsum_probOutput_le_one]
-  --   simp
-  -- _ ≤ (((d : ℝ≥0) / (Fintype.card (Query OStatement)))) := by
-  --   gcongr
-  --   simp
-  --   by_cases hOracles : oracles 0 = oracles 1
-  --   · simp [hOracles]
-  --   · simp [hOracles]
-  --     exact hDist (oracles 0) (oracles 1) hOracles
-  -- _ = _ := by
-  --   refine (ENNReal.toNNReal_eq_toNNReal_iff' ?_ ?_).mp ?_
-  --   · simp; intro h'; apply ENNReal.div_eq_top.mp at h'; simp at h'
-  --   · simp; intro h'; apply ENNReal.div_eq_top.mp at h'; simp at h'
-  --   · simp
-
+  erw [simulateQ_bind]
+  simp only [MonadLift.monadLift, liftM, monadLift, MonadLiftT.monadLift]
+  simp only [pure_bind, bind_assoc, map_pure, StateT.run'_eq, StateT.run_bind, map_bind]
+  erw [simulateQ_pure]
+  simp only [loggingOracle, simulateQ_pure, WriterT.run_pure, pure_bind, map_pure,
+    StateT.run_pure, StateT.run_bind, QueryImpl.simulateQ_add_liftComp_right]
+  erw [simulateQ_bind, QueryImpl.simulateQ_add_liftComp_right]
+  erw [simulateQ_spec_query]
+  simp only [QueryImpl.liftTarget_apply, challengeQueryImpl, StateT.run_bind, map_bind, pure_bind]
+  classical
+  rw [probEvent_bind_eq_tsum]
+  refine le_trans (ENNReal.tsum_le_tsum
+    (g := fun s => Pr[= s | init] * ((d : ENNReal) / (Fintype.card (Query OStatement) : ENNReal)))
+    fun s => mul_le_mul' le_rfl ?_) ?_
+  · rw [probEvent_bind_eq_tsum]
+    have hc2 : ∀ (x : Query OStatement × σ),
+        ((fun y => y.1) <$> (simulateQ
+            (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+              (challengeQueryImpl (pSpec := pSpec OStatement)))
+            (pure (default, x.1, ∅))).run x.2)
+        = (pure (default, x.1, ∅) :
+            ProbComp (Transcript 0 (pSpec OStatement) × Query OStatement ×
+              (oSpec + [(pSpec OStatement).Challenge]ₒ'challengeOracleInterface).QueryLog)) := by
+      intro x
+      erw [simulateQ_pure]
+      rw [StateT.run_pure, map_pure]
+    apply le_trans (le_of_eq (tsum_congr fun x =>
+      congrArg (fun mz => _ * probEvent mz _) (hc2 x)))
+    rw [← probEvent_bind_eq_tsum]
+    erw [StateT.run_lift]
+    simp only [bind_assoc, pure_bind]
+    show (probEvent ((fun x => (default, x, ∅)) <$> ($ᵗ _)) _) ≤ _
+    rw [probEvent_map]
+    simp only [Function.comp_def, ProtocolSpec.Transcript.concat, Fin.snoc]
+    rw [probEvent_uniformSample]
+    rcases Classical.em (oracles 0 = oracles 1) with h01 | h01
+    · simp [h01]
+    · refine ENNReal.div_le_div_right ?_ _
+      refine le_trans (Nat.cast_le.mpr (Finset.card_le_card ?_))
+        (Nat.cast_le.mpr (hDist (oracles 0) (oracles 1) h01))
+      intro q hq
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hq ⊢
+      simpa using hq.2
+  · rw [ENNReal.tsum_mul_right]
+    exact le_trans (mul_le_mul' tsum_probOutput_le_one le_rfl) (by rw [one_mul])
 end RandomQuery
 
 -- namespace RandomQueryAndReduceClaim
