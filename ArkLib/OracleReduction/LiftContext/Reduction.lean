@@ -1094,11 +1094,31 @@ theorem liftContext_rbr_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited I
       (V.liftContext stmtLens).rbrKnowledgeSoundness init impl outerRelIn outerRelOut
         rbrKnowledgeError := by
   unfold rbrKnowledgeSoundness at h ⊢
-  obtain ⟨stF, E, h⟩ := h
-  simp at h ⊢
-  -- refine ⟨stF.liftContext (lens := lens.toStatement.Lens)
-  --   (lensSound := lensKnowledgeSound.toSound),
-  --         ?_, ?_⟩
+  obtain ⟨_WitMid, _E, _kSF, _h⟩ := h
+  -- DESIGN GAP (left as `sorry`): completing this lift requires API that does not yet exist.
+  --
+  -- To discharge the outer `rbrKnowledgeSoundness` we must supply an outer round-by-round
+  -- extractor `E' : Extractor.RoundByRound oSpec OuterStmtIn OuterWitIn OuterWitOut pSpec WitMid'`
+  -- with `E'.eqIn : WitMid' 0 = OuterWitIn`, together with an outer `KnowledgeStateFunction` over
+  -- `outerRelIn`/`outerRelOut`.  The inner extractor `E` only gives `E.eqIn : WitMid 0 = InnerWitIn`,
+  -- so `Extractor.RoundByRound.liftContext` (which reuses the *same* `WitMid` and demands
+  -- `WitMid 0 = OuterWitIn`) cannot be applied unless `InnerWitIn = OuterWitIn`.
+  --
+  -- A genuine lift would reindex `WitMid'` so that `WitMid' 0 = OuterWitIn`, but the round-0
+  -- boundary of `extractMid : (m : Fin n) → StmtIn → Transcript m.succ → WitMid' m.succ →
+  -- WitMid' m.castSucc` would then need to turn an inner round-1 witness into an `OuterWitIn`
+  -- with only `(stmtIn, transcript)` in scope.  The witness inverse lens
+  -- `witLens.lift : OuterStmtIn × OuterWitOut → InnerWitIn → OuterWitIn` requires an
+  -- `OuterWitOut`, which is unavailable at the `extractMid` boundary — there is no API to lift
+  -- `InnerWitIn → OuterWitIn` without an output witness.  Moreover `KnowledgeStateFunction.toFun_empty`
+  -- needs an `iff` relating `outerRelIn`-membership to the inner state, but
+  -- `Extractor.Lens.IsKnowledgeSound` only exposes the one-directional `lift_knowledgeSound`
+  -- (inner→outer for the *input* witness) and `proj_knowledgeSound` (outer→inner for the *output*),
+  -- never an `outerRelIn → innerRelIn` direction.
+  --
+  -- Closing this needs new core API (a round-0-boundary witness lens producing `OuterWitIn`
+  -- without an `OuterWitOut`, a `KnowledgeStateFunction.liftContext`, and a strengthened
+  -- lens-soundness class), which is out of scope for a sorry fill.
   sorry
 
 end Verifier
