@@ -10,6 +10,8 @@ import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.SubspaceDesign
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.FieldTheory.Finiteness
+import Mathlib.Algebra.Order.Floor.Extended
 
 /-!
 # List-decoding bounds from ABF26 §3
@@ -133,17 +135,16 @@ theorem linear_lambda_ge_elias_volume_eli57
     intro f c
     simp only [closeCodewordsRel, relHammingBall, Set.mem_setOf_eq, SetLike.mem_coe]
     refine and_congr_right (fun _ => ?_)
-    have hcoe : ((Code.relHammingDist f c : ℚ≥0) : ℝ)
-        = (hammingDist f c : ℝ) / (n : ℝ) := by
-      simp only [Code.relHammingDist, NNRat.cast_div, NNRat.cast_natCast]
-    rw [hcoe, div_le_iff₀ (by exact_mod_cast hn_pos : (0 : ℝ) < (n : ℝ)), hr_def,
-      Nat.le_floor_iff (by positivity)]
+    simp only [Code.relHammingDist, NNRat.cast_div, NNRat.cast_natCast]
+    rw [div_le_iff₀ (by exact_mod_cast hn_pos : (0 : ℝ) < (Fintype.card ι : ℝ)), hr_def,
+      ← hn_def]
+    exact (Nat.le_floor_iff (mul_nonneg hδ_nonneg (Nat.cast_nonneg n))).symm
   -- Rewrite each maximised-list term as a `Finset.card`.
   have hncard : ∀ f : ι → F,
       (closeCodewordsRel (↑C : Set (ι → F)) f δ).ncard
         = (Finset.univ.filter (fun c => c ∈ C ∧ hammingDist f c ≤ r)).card := by
     intro f
-    rw [← Set.ncard_coe_Finset]
+    rw [← Set.ncard_coe_finset]
     congr 1
     ext c
     simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
@@ -161,17 +162,19 @@ theorem linear_lambda_ge_elias_volume_eli57
       by_cases hc : c ∈ C
       · simp only [hc, true_and, if_true]
         rw [← Finset.card_filter, hammingBallVolume_eq_ncard_hammingBall δ c,
-          ← Set.ncard_coe_Finset]
+          ← Set.ncard_coe_finset]
         congr 1
         ext f
         simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq,
           ListDecodable.hammingBall]
         rw [hammingDist_comm]
+        simp only [hr_def, ← hn_def]
       · simp only [hc, false_and, if_false, Finset.sum_const_zero]
     rw [Finset.sum_congr rfl (fun c _ => hinner c), ← Finset.sum_filter, Finset.sum_const,
       smul_eq_mul]
     have hcardC : (Finset.univ.filter (fun c => c ∈ C)).card = q ^ k := by
-      rw [← Fintype.card_subtype]
+      haveI : Fintype (↥C) := Fintype.ofFinite _
+      rw [← Fintype.card_subtype (fun c : ι → F => c ∈ C)]
       exact Module.card_eq_pow_finrank (K := F) (V := ↥C)
     rw [hcardC]
   -- Argmax word and the averaging inequality ∑ ≤ |F^n| · max.
@@ -207,19 +210,18 @@ theorem linear_lambda_ge_elias_volume_eli57
       exact_mod_cast hnat
     rw [hpow] at h1
     have h2 : (q : ℝ) ^ k * (hammingBallVolume q δ n : ℝ)
-        ≤ (q : ℝ) ^ k * ((s₀ : ℝ) * P) := by rw [← mul_assoc]; linarith [h1]
-    have := le_of_mul_le_mul_left h2 hqk_pos
-    linarith [this]
+        ≤ (q : ℝ) ^ k * ((s₀ : ℝ) * P) := by
+      have heq : (q : ℝ) ^ k * ((s₀ : ℝ) * P) = (q : ℝ) ^ k * P * (s₀ : ℝ) := by ring
+      rw [heq]; exact h1
+    exact le_of_mul_le_mul_left h2 hqk_pos
   -- Lift to `ℝ≥0∞`: the maximised list at `f₀` already realises the bound.
-  show ENNReal.ofReal _ ≤ (Lambda (↑C : Set (ι → F)) δ : ENNReal)
-  rw [Lambda, ENat.toENNReal_iSup]
+  simp only [Lambda, ENat.toENNReal_iSup]
   refine le_iSup_of_le f₀ ?_
   rw [hncard f₀, ← hs₀_def]
-  calc ENNReal.ofReal ((hammingBallVolume q δ n : ℝ) / P)
-      ≤ ENNReal.ofReal (s₀ : ℝ) := ENNReal.ofReal_le_ofReal hM_le
-    _ = ((s₀ : ℕ∞) : ENNReal) := by
-        rw [ENNReal.ofReal_natCast]; simp
-    _ = ((s₀ : ℕ) : ENNReal) := by simp
+  have hcast : ENat.toENNReal ((s₀ : ℕ) : ℕ∞) = ENNReal.ofReal (s₀ : ℝ) := by
+    rw [ENNReal.ofReal_natCast]; simp
+  rw [hcast]
+  exact ENNReal.ofReal_le_ofReal hM_le
 
 /-- **ABF26 Corollary 3.8.** Volume-based lower bound on list size, using the MS77
 volume estimate `Vol_q(δ, n) ≥ q^{n·(ρ-1+H_q(δ))} / √(8·n·δ·(1-δ))`. With `ρ := k/n`:
