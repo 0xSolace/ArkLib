@@ -355,7 +355,9 @@ theorem take_drop_addCases' (m : ℕ) (h : m ≤ n) (v : (i : Fin n) → α i) :
   · simp
   · have : i.val - m + m = i.val := by omega
     rw! [this]
-    sorry
+    have : m + (i.val - m) = i.val := by omega
+    rw! [this]
+    rfl
 
 /-- The concatenation of the first `m` elements and the last `n - m` elements of a tuple is the
 same as the original tuple. -/
