@@ -159,9 +159,31 @@ theorem rbrSoundness_implies_soundness (langIn : Set StmtIn) (langOut : Set Stmt
     rw [hgame, Verifier.StateFunction.probEvent_optionT_mk_eq_elim, OptionT.run_mk]
     -- (B.2) Both games thread `init` identically; reduce to a per-state `ProbComp` bound.
     refine Verifier.StateFunction.probEvent_bind_mono_heteroEvent (fun s hs => ?_)
-    -- Per-state goal (fixed `s ∈ support init`): soundness-game flip prob ≤ rbr-game flip prob,
-    -- discharged by the failure-monotone keystone transport.
-    exact Reduction.probEvent_run_run'_flip_le_rbr sf i stmtIn prover s
+    -- REMAINING FRONTIER (per-state probabilistic plumbing assembly; all ingredients banked).
+    -- Goal (fixed `s ∈ support init`):
+    --   Pr[fun o => o.elim False (P i) | (simulateQ pImpl (reduction.run stmtIn witIn').run).run' s]
+    --     ≤ Pr[rbr-flip i | (simulateQ pImpl (runToRound i.castSucc >>= getChallenge …)).run' s]
+    -- where `P i x = ¬ sf (i.castSucc) (x.1.1.take i.castSucc) ∧
+    --                  sf (i.succ) ((x.1.1.take i.castSucc).concat (x.1.1 i))` reads ONLY the
+    -- round-`i.succ` transcript prefix.  The assembly chains the banked, axiom-clean lemmas:
+    --   1. `Prover.runToRound_eq_bind_continueFromTo` (k := i.succ): expose `runToRound i.succ` as a
+    --      `>>=`-prefix of `Prover.run`/`Reduction.run`; `Prover.take_continueFromTo` shows the
+    --      round-`i.succ` prefix of the realized transcript equals `runToRound i.succ`'s transcript,
+    --      so the flip event `P i` reads only that prefix (rewrite via `probEvent_ext` on support).
+    --   2. `Verifier.StateFunction.probEvent_simulateQ_run'_elimM_trailing_le` (verifier verdict +
+    --      `getM` `Option.elimM` tail of `Reduction.run`) and
+    --      `Verifier.StateFunction.probEvent_simulateQ_run'_bind_trailing_le` (the `prover.output`
+    --      and the later-round `continueFromTo` `OracleComp` tail): drop each trailing step — every
+    --      one only adds failure mass, raising the prefix-event probability (the event is `False` on
+    --      `none`/failure, the failure-monotone `≤` direction).
+    --   3. `Prover.fst_map_runToRound_succ_challenge`: rewrite the surviving `runToRound i.succ`
+    --      transcript marginal into the rbr game's `runToRound i.castSucc >>= getChallenge` shape,
+    --      dropping the trailing `receiveChallenge` by one more `…_bind_trailing_le`, matching the
+    --      rbr flip event exactly (`take_succ_eq_concat` aligns `concat`).
+    -- This is pure `OptionT`/`StateT`/`simulateQ`-lift bookkeeping with NO remaining
+    -- probabilistic/combinatorial content; obligation (A) (the state-threading half) is fully closed
+    -- above under the `hPres` state-preservation repair.
+    sorry
 
 /-- Round-by-round knowledge soundness with error `rbrKnowledgeError` implies round-by-round
 soundness with the same error `rbrKnowledgeError`. -/

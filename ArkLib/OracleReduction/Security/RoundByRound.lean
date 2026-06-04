@@ -5,6 +5,7 @@ Authors: Quang Dao
 -/
 
 import ArkLib.OracleReduction.Security.Basic
+import ArkLib.ToVCVio.OracleComp.SimSemantics.SimulateQ
 
 /-!
   # Round-by-Round Security Definitions
@@ -366,6 +367,67 @@ theorem probEvent_simulateQ_run'_bind_trailing_le {α β γ : Type}
     _ ≤ 1 * Pr[(p ∘ fun x => x.1) | (pure (h a, s') : ProbComp (β × σ))] := by
         gcongr; exact tsub_le_self
     _ = Pr[(p ∘ fun x => x.1) | (pure (h a, s') : ProbComp (β × σ))] := one_mul _
+
+/-- **Failure-monotone drop of an arbitrary `Option`-valued trailing continuation.**  The most
+general `Option`-level trailing drop: after `ma` produces `some a`, the soundness game runs an
+*arbitrary* trailing continuation `cont a : OracleComp spec (Option β)` (which may itself fail, return
+`none`, or succeed) whose output is the final result; we replace it by `pure (Option.map h oa)`.  The
+only hypothesis is that on the (raw) support of `cont a`, every *successful* output `some b` that
+satisfies the event `p` forces `p (h a)` too — i.e. `cont a` cannot manufacture a `p`-satisfying
+success that the prefix value `h a` does not already witness.  Then dropping `cont a` (whose success
+mass is `≤ 1`) only raises the prefix event probability.  (The verifier-verdict/`getM` tail of
+`Reduction.run` satisfies the hypothesis with equality: it returns `(pr, verdict)` whose
+transcript-reading event value equals that of `h pr = pr`.) -/
+theorem probEvent_simulateQ_run'_optionBind_trailing_le {α β : Type}
+    (so : QueryImpl spec (StateT σ ProbComp)) (s : σ)
+    (ma : OracleComp spec (Option α)) (cont : α → OracleComp spec (Option β))
+    (h : α → β) (p : β → Prop)
+    (hcont : ∀ a, ∀ b ∈ support (cont a), ∀ b', b = some b' → p b' → p (h a)) :
+    Pr[fun o => o.elim False p |
+        (simulateQ so (ma >>= fun oa => Option.elimM (pure oa) (pure none) cont)).run' s]
+      ≤ Pr[fun o => o.elim False p |
+          (simulateQ so (ma >>= fun oa => pure (Option.map h oa))).run' s] := by
+  simp only [simulateQ_bind]
+  rw [StateT.run'_eq, StateT.run'_eq, StateT.run_bind, StateT.run_bind, probEvent_map,
+    probEvent_map]
+  refine probEvent_bind_mono (fun pr _ => ?_)
+  obtain ⟨oa, s'⟩ := pr
+  cases oa with
+  | none =>
+      simp only [Option.elimM, Option.elim_none, simulateQ_pure, StateT.run_pure,
+        pure_bind, Option.map_none, le_refl]
+  | some a =>
+      simp only [Option.elimM, Option.elim_some, simulateQ_pure, StateT.run_pure, pure_bind,
+        Option.map_some]
+      -- RHS: `Pr[(·.elim False p)∘fst | pure (some (h a), s')]` = indicator of `p (h a)`.
+      by_cases hpha : p (h a)
+      · -- RHS = 1, so the bound is trivial.
+        rw [probEvent_pure_eq_indicator]
+        simp only [Set.indicator, Set.mem_setOf_eq, Function.comp, Option.elim_some, hpha,
+          if_true]
+        exact probEvent_le_one
+      · -- ¬ p (h a): show LHS = 0 (no success of `cont a` satisfies `p`).
+        rw [probEvent_pure_eq_indicator]
+        simp only [Set.indicator, Set.mem_setOf_eq, Function.comp, Option.elim_some, hpha,
+          if_false, nonpos_iff_eq_zero]
+        rw [probEvent_eq_zero_iff]
+        intro o ho
+        -- `o` is a successful run of `cont a`; by `hcont`, its event value forces `p (h a)`.
+        rw [Function.comp]
+        cases o' : o.1 with
+        | none => simp
+        | some b =>
+            simp only [Option.elim_some]
+            intro hpb
+            -- `o.1 = some b` is in the support of `(simulateQ so (cont a)).run' s'`,
+            -- hence in `support (cont a)`.
+            have hb_supp : o.1 ∈ support ((simulateQ so (cont a)).run' s') := by
+              rw [StateT.run'_eq, support_map, Set.mem_image]
+              exact ⟨o, ho, rfl⟩
+            rw [o'] at hb_supp
+            have hb_raw : some b ∈ support (cont a) :=
+              support_simulateQ_run'_subset so (cont a) s' hb_supp
+            exact hpha (hcont a (some b) hb_raw b rfl hpb)
 
 /-- **Failure-monotone trailing `Option.elimM` drop, transported across `simulateQ … |>.run'`.**
 A specialization of the trailing-bind transport to the `OptionT`/`Option.elimM` shape of
