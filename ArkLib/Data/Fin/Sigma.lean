@@ -328,13 +328,6 @@ theorem fflatten_two_eq_append {A : Sort u} {F : A → Sort v} {n : Fin 2 → �
     fflatten v = fappend (F := F) (v 0) (v 1) := rfl
 
 @[simp]
-theorem fflatten_splitSum {A : Sort u} {F : A → Sort v} {m : ℕ} {n : Fin m → ℕ}
-    {α : (i : Fin (vsum n)) → A}
-    (v : (k : Fin (vsum n)) → F (α k)) (k : Fin (vsum n)) :
-    fflatten (fun i j => v (embedSum i j)) k = cast (by simp) (v k) := by
-  sorry
-
-@[simp]
 theorem fflatten_embedSum {A : Sort u} {F : A → Sort v} {m : ℕ} {n : Fin m → ℕ}
     {α : (i : Fin m) → (j : Fin (n i)) → A}
     (v : (i : Fin m) → (j : Fin (n i)) → F (α i j)) (i : Fin m) (j : Fin (n i)) :
@@ -353,6 +346,14 @@ theorem fflatten_embedSum {A : Sort u} {F : A → Sort v} {m : ℕ} {n : Fin m �
       rw [ih (fun i => v i.succ) i j]
       exact cast_eq_iff_heq.mpr <|
         HEq.trans (cast_heq _ (v i.succ j)) (cast_heq _ (v i.succ j)).symm
+
+@[simp]
+theorem fflatten_splitSum {A : Sort u} {F : A → Sort v} {m : ℕ} {n : Fin m → ℕ}
+    {α : (i : Fin (vsum n)) → A}
+    (v : (k : Fin (vsum n)) → F (α k)) (k : Fin (vsum n)) :
+    fflatten (fun i j => v (embedSum i j)) k = cast (by simp) (v k) := by
+  rw [← embedSum_splitSum k]
+  exact fflatten_embedSum (fun i j => v (embedSum i j)) (splitSum k).1 (splitSum k).2
 
 /-- Functorial flatten with two arguments: flattens two nested heterogeneous tuple
 `(i : Fin m) → (j : Fin (n i)) → F (α i j)` into a single heterogeneous tuple with type
@@ -396,14 +397,6 @@ theorem fflatten₂_two_eq_append {A : Sort u} {B : Sort v} {F : A → B → Sor
     fflatten₂ v = fappend₂ (F := F) (v 0) (v 1) := rfl
 
 @[simp]
-theorem fflatten₂_splitSum {A : Sort u} {B : Sort v} {F : A → B → Sort w} {m : ℕ} {n : Fin m → ℕ}
-    {α : (i : Fin m) → (j : Fin (n i)) → A}
-    {β : (i : Fin m) → (j : Fin (n i)) → B}
-    (v : (k : Fin (vsum n)) → F (vflatten α k) (vflatten β k)) (k : Fin (vsum n)) :
-    fflatten₂ (fun i j => v (embedSum i j)) k = cast (by simp) (v k) := by
-  sorry
-
-@[simp]
 theorem fflatten₂_embedSum {A : Sort u} {B : Sort v} {F : A → B → Sort w} {m : ℕ} {n : Fin m → ℕ}
     {α : (i : Fin m) → (j : Fin (n i)) → A}
     {β : (i : Fin m) → (j : Fin (n i)) → B}
@@ -423,6 +416,15 @@ theorem fflatten₂_embedSum {A : Sort u} {B : Sort v} {F : A → B → Sort w} 
       rw [ih (fun i => v i.succ) i j]
       exact cast_eq_iff_heq.mpr <|
         HEq.trans (cast_heq _ (v i.succ j)) (cast_heq _ (v i.succ j)).symm
+
+@[simp]
+theorem fflatten₂_splitSum {A : Sort u} {B : Sort v} {F : A → B → Sort w} {m : ℕ} {n : Fin m → ℕ}
+    {α : (i : Fin m) → (j : Fin (n i)) → A}
+    {β : (i : Fin m) → (j : Fin (n i)) → B}
+    (v : (k : Fin (vsum n)) → F (vflatten α k) (vflatten β k)) (k : Fin (vsum n)) :
+    fflatten₂ (fun i j => v (embedSum i j)) k = cast (by simp) (v k) := by
+  rw [← embedSum_splitSum k]
+  exact fflatten₂_embedSum (fun i j => v (embedSum i j)) (splitSum k).1 (splitSum k).2
 
 /-- Heterogeneous flatten: flattens a nested heterogeneous tuple
 `(i : Fin m) → (j : Fin (n i)) → α i j` into a single heterogeneous tuple with type
