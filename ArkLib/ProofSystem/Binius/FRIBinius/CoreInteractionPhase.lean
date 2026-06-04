@@ -82,7 +82,35 @@ def biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
           rw [smul_eq_mul]
     decomposeColumns_spec := by
       intro z
-      sorry
+      letI rightAlgebra : Algebra L (L ⊗[K] L) := Algebra.TensorProduct.rightAlgebra
+      letI rightModule : Module L (L ⊗[K] L) := rightAlgebra.toModule
+      let b := Basis.baseChangeRight (b := βH) (Right := L)
+      let smulR : L → (L ⊗[K] L) → (L ⊗[K] L) :=
+        fun a x => @SMul.smul L (L ⊗[K] L) rightModule.toSMul a x
+      calc
+        z = ∑ v, smulR (b.repr z v) (b v) := by
+          change z = ∑ v, @SMul.smul L (L ⊗[K] L) rightModule.toSMul
+            (b.repr z v) (b v)
+          exact (b.sum_repr z).symm
+        _ = ∑ v, RingSwitching.φ₁ L K
+              (RingSwitching.decompose_tensor_algebra_columns
+                (L := L) (K := K) (β := βH) z v)
+            * RingSwitching.φ₀ L K (βH v) := by
+          apply Finset.sum_congr rfl
+          intro v _
+          unfold smulR
+          unfold RingSwitching.decompose_tensor_algebra_columns RingSwitching.φ₀ RingSwitching.φ₁
+          rw [Basis.baseChangeRight_apply]
+          simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+            Algebra.TensorProduct.tmul_mul_tmul, one_mul]
+          rw [show @SMul.smul L (L ⊗[K] L) rightModule.toSMul ((b.repr z) v)
+              (βH v ⊗ₜ[K] (1 : L)) =
+                algebraMap L (L ⊗[K] L) ((b.repr z) v) * (βH v ⊗ₜ[K] (1 : L))
+              from rfl]
+          rw [show algebraMap L (L ⊗[K] L) =
+              (Algebra.TensorProduct.includeRight : L →ₐ[K] L ⊗[K] L).toRingHom by rfl]
+          simp [Algebra.TensorProduct.includeRight_apply, Algebra.TensorProduct.tmul_mul_tmul]
+          rfl
     decomposeRows_add := by
       intro z w u
       unfold RingSwitching.decompose_tensor_algebra_rows
