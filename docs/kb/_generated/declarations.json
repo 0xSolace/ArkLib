@@ -11308,7 +11308,7 @@
         {
           "doc": "The set of curve parameters `z : F` at which the degree-`k` parameterized curve through `u 0, \u2026, u k` is `\u03b4`-close to the Reed\u2013Solomon code. Curves analogue of `RS_goodCoeffs` (the line case is `k = 1`).",
           "kind": "def",
-          "line": 33,
+          "line": 39,
           "name": "ProximityGap.RS_goodCoeffsCurve",
           "namespace": "ProximityGap",
           "short_name": "RS_goodCoeffsCurve",
@@ -11317,7 +11317,7 @@
         {
           "doc": "At every good curve parameter there is a codeword polynomial within the floor-`\u03b4` Hamming radius. Curves analogue of `RS_exists_Pz_of_mem_goodCoeffs`.",
           "kind": "theorem",
-          "line": 43,
+          "line": 49,
           "name": "ProximityGap.RS_exists_Pz_of_mem_goodCoeffsCurve",
           "namespace": "ProximityGap",
           "short_name": "RS_exists_Pz_of_mem_goodCoeffsCurve",
@@ -11326,16 +11326,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 49,
-          "name": "ProximityGap._anon_class_49",
+          "line": 55,
+          "name": "ProximityGap._anon_class_55",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_49",
+          "short_name": "_anon_class_55",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 74,
+          "line": 80,
           "name": "ProximityGap.RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve",
           "namespace": "ProximityGap",
           "short_name": "RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve",
@@ -11344,16 +11344,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 86,
-          "name": "ProximityGap._anon_class_86",
+          "line": 92,
+          "name": "ProximityGap._anon_class_92",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_86",
+          "short_name": "_anon_class_92",
           "signature": "class classical"
         },
         {
           "doc": "Evaluation commutes with the BW matrix construction for arbitrary polynomial words (generic form of `BW_homMatrix_map_evalRingHom`).",
           "kind": "theorem",
-          "line": 214,
+          "line": 220,
           "name": "ProximityGap.BW_homMatrix_map_evalRingHom_poly",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix_map_evalRingHom_poly",
@@ -11362,7 +11362,7 @@
         {
           "doc": "Curves analogue of `RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffs_card_gt` ([BCIKS20] \u00a76.1): with more than `k \u00b7 n` good curve parameters, every square minor of the BW matrix over the degree-`k` polynomial words vanishes identically \u2014 the minors have degree \u2264 `k * (e + 1) \u2264 k \u00b7 n < |S|` and vanish at every good parameter.",
           "kind": "theorem",
-          "line": 230,
+          "line": 236,
           "name": "ProximityGap.RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt",
           "namespace": "ProximityGap",
           "short_name": "RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt",
@@ -11371,10 +11371,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 247,
-          "name": "ProximityGap._anon_class_247",
+          "line": 253,
+          "name": "ProximityGap._anon_class_253",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_247",
+          "short_name": "_anon_class_253",
           "signature": "class classical"
         }
       ]
