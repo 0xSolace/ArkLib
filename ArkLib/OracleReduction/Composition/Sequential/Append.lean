@@ -718,16 +718,10 @@ lemma OracleVerifier.append_toVerifier
     [coh : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) (Oₛ₂ := Oₛ₂) V₁] :
       (OracleVerifier.append V₁ V₂).toVerifier =
         Verifier.append V₁.toVerifier V₂.toVerifier := by
-  apply Verifier.ext
-  funext ⟨stmt, oStmt⟩ tr
-  simp only [OracleVerifier.append, OracleVerifier.toVerifier, Verifier.append,
-    OracleVerifier.Append.verify]
-  -- Push the outer `simulateQ (simOracle2 oStmt tr.messages)` through the inner `OptionT`-bind, then
-  -- fuse each leg with its router via `simulateQ_compose` + the two leg lemmas.
-  simp only [bind_pure_comp, simulateQ_optionT_bind, ← QueryImpl.simulateQ_compose,
-    OracleVerifier.Append.simOracle2_comp_router₁ (pSpec₂ := pSpec₂),
-    OracleVerifier.Append.simOracle2_comp_router₂]
-  trace_state
+  -- The two-stage `simulateQ` fusion (push the outer `simulateQ (simOracle2 …)` through the inner
+  -- `OptionT`-bind, then fuse each leg with its router via `simulateQ_compose`) is staged but
+  -- incomplete; the per-leg `simOracle2_comp_router₁/₂` fusion lemmas need further dependent-cast
+  -- surgery through `instAppend_inl/inr_heq` + `AppendCoherent.hCoh`. Frontier documented at L417.
   sorry
 
 /-- Sequential composition of oracle reductions is just the sequential composition of the oracle
