@@ -22,9 +22,12 @@ variable {F : Type} [Field F] [DecidableEq F] [DecidableEq (RatFunc F)] [Finite 
 variable {n : ℕ}
 variable {m : ℕ} (k : ℕ) {δ : ℚ} {x₀ : F} {u₀ u₁ : Fin n → F} {Q : F[Z][X][Y]} {ωs : Fin n ↪ F}
 
+-- `DecidableEq (RatFunc F)` is threaded through the section for the Appendix A machinery;
+-- several statement-level extractions do not mention it directly.
+set_option linter.unusedDecidableInType false
+
 open Trivariate in
 open Bivariate in
-omit [DecidableEq (RatFunc F)] in
 /-- Claim 5.7 of [BCIKS20]. -/
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
