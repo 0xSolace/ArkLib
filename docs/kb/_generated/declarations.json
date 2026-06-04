@@ -11654,6 +11654,24 @@
           "namespace": "ProximityGap",
           "short_name": "_anon_class_46",
           "signature": "class classical"
+        },
+        {
+          "doc": "The `k = 0` corner of curves correlated agreement: a degree-0 \"curve\" is the constant word `u 0`, so any positive probability of closeness gives the plain closeness fact, and joint agreement follows from unique decoding.",
+          "kind": "theorem",
+          "line": 75,
+          "name": "ProximityGap.RS_correlatedAgreement_curves_k_zero",
+          "namespace": "ProximityGap",
+          "short_name": "RS_correlatedAgreement_curves_k_zero",
+          "signature": "theorem RS_correlatedAgreement_curves_k_zero {deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 81,
+          "name": "ProximityGap._anon_class_81",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_81",
+          "signature": "class classical"
         }
       ]
     },
@@ -49542,7 +49560,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5379,
+      "declarations": 5381,
       "files": 285
     }
   }
