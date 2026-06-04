@@ -727,6 +727,14 @@ class GenMutualCorrParams [Fintype F] (S : Finset ι) (φ : ι ↪ F) (k : ℕ) 
 -/
 
 -- NOTE: need to align this better with the inductive way this is shown via the other lemmas below.
+-- DISPOSITION (2026-06-04): open — gated on the MCA chain. This probabilistic list-decoding
+-- equivalence is the `k`-fold composite of the single-step base lemmas below
+-- (`folding_preserves_listdecoding_base`/`_bound`, L4.21/4.22), whose `errStar` accounting is in
+-- turn supplied by `MutualCorrAgreement.hasMutualCorrAgreement` via `params.h`. Until the MCA
+-- bounds (`mca_rsc`/`mca_linearCode`, themselves open — see their dispositions) are available, the
+-- per-round error budget summed here cannot be discharged. The deterministic structural
+-- ingredient (`fold_f_g`/`fold_f_g_poly`, the fold tracks a degree-halving polynomial) is proven
+-- above; what remains is the probabilistic list-set equality, not a folding-algebra fact.
 theorem folding_listdecoding_if_genMutualCorrAgreement
   [Fintype F] {S : Finset ι} {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ] {k m : ℕ}
   {S' : Finset (indexPowT S φ 0)} {φ' : (indexPowT S φ 0) ↪ F}
@@ -777,7 +785,15 @@ theorem folding_listdecoding_if_genMutualCorrAgreement
   `errStar` accounting comes from MCA bounds (ABF26 Def 4.3 `epsMCA`). The underlying
   list-size bound for FRS specializes ABF26 T3.4 (`subspaceDesign_list_decoding_cz25`
   in `ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean`) via the folded-RS
-  τ-subspace-design property (T2.18). -/
+  τ-subspace-design property (T2.18).
+
+  DISPOSITION (2026-06-04): open — this is the genuine probabilistic core (failure probability of
+  the *reverse* list-set inclusion over `α ←$ᵖ F`), bounded by `errStar C' 2 δ`. Its proof needs
+  the MCA error bound (`mca_rsc`, open) plus the FRS list-size/subspace-design accounting; it is not
+  a consequence of the deterministic fold-algebra lemmas (`fold_f_g`/`fold_f_g_poly`, proven). Note
+  `folding_preserves_listdecoding_base_ne_subset` below is already proven *conditionally* on this
+  lemma (it derives the `¬⊆` bound from the `≠` bound by monotonicity), so closing this base lemma
+  immediately discharges that corollary too. -/
 lemma folding_preserves_listdecoding_base
   [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
   [Fintype ι] [DecidableEq ι] [Smooth φ] {δ : ℝ≥0}
@@ -812,7 +828,17 @@ lemma folding_preserves_listdecoding_base
   half (L4.21) bounds the failure probability of the *reverse* inclusion; this lemma
   asserts the *forward* inclusion always holds. No direct ABF26 paper counterpart —
   this is the "easy half" of folded-code list-decoding (corresponds to ABF26's "every
-  folded image of a δ-close codeword is δ-close", a structural fact). -/
+  folded image of a δ-close codeword is δ-close", a structural fact).
+
+  DISPOSITION (2026-06-04): open — deterministic, but blocked on two missing pieces, not the MCA
+  chain. (1) "`fold_k u α` is a codeword of `C'`" is exactly `fold_f_g`, which (see its documented
+  STATEMENT REPAIR above) is only provable once the *per-level* embedding/negation/nonzero family
+  `(φ_all, hneg, hx0, h2)` is supplied — this lemma's signature carries only the loose two-level
+  `(φ_0, φ_1)` and an abstract `Neg`, so `fold_f_g` does not apply as-is and the same repair is
+  needed here. (2) The block-relative-distance contraction under folding
+  (`Δᵣ(1,…,fold f) ≤ Δᵣ(0,…,f)`) is a new distance lemma not yet in the tree. Closing it is a fresh
+  multi-part formalization (repaired-`fold_f_g` + a block-distance contraction), not a port of the
+  proven fold-algebra assets. -/
 lemma folding_preserves_listdecoding_bound
   {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ]
   {δ : ℝ≥0} {f : (indexPowT S φ 0) → F}
