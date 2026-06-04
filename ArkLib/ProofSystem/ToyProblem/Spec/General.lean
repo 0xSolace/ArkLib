@@ -692,49 +692,47 @@ to the trivial output relation `Set.univ`. The load-bearing fact is
 honest prover's message `g = M₀ + γ M₁` makes `accepts` hold, so the
 verifier's `if accepts then pure () else failure` never fails.
 
-**Status: statement complete, proof admitted (tagged sorry).** The
-point-form mathematical content (`accepts_of_inputRelation`) is fully
-closed; only the probabilistic/monadic plumbing of
-`OracleReduction.toReduction`'s run remains. As of the 2026-06 audit, the
-walls are (revised after probing the actual goal state):
+**Status: statement complete, proof admitted (tagged sorry) — but the two
+historically-named walls are now CLOSED.** The point-form mathematical
+content (`accepts_of_inputRelation`) and the framework-plumbing walls are
+both resolved:
 
-  1. **`simulateQ_forIn` — RESOLVED.** The forIn-over-`Fin t` spot-check
-     loop transport now EXISTS: `Binius/BinaryBasefold/QueryPhase.lean`'s
-     `ForInSupport` section provides `simulateQ_optionT_forIn` (the missing
-     `simulateQ_forIn`), `simulateQ_optionT_listVector_mmap`,
-     `mem_support_forIn_cons`, `forIn_support_invariant`, and
-     `forIn_yield_pure_eq_foldl`. This blocker is gone; it is NOT what
-     currently keeps the proof open.
+  1. **`simulateQ_forIn` — RESOLVED** (re-derived self-contained in this
+     file as `simulateQ_optionT_forIn` + `forIn_guard_eq` + the
+     `simulateQ_optionT_{pure,failure,guard}` toolkit).
 
-  2. **Multi-round prover-execution evaluation — STILL OPEN, no precedent.**
-     This `pSpec` is a 3-round protocol with TWO `V_to_P` challenge rounds
-     (round 0: γ ←$ F; round 2: xs ←$ Fin t → ι), so the prover is NOT
-     `ProverOnly`. Evaluating `Prover.runToRound (Fin.last 3)` requires
-     manually pushing `Fin.induction` through three `processRound` steps,
-     each threading a challenge sample through `challengeQueryImpl` and the
-     `simulateQ pImpl` of the `OptionT`-lifted run. The framework has NO
-     simp lemma for this: `Execution.lean` provides only the 1-round
-     `Prover.run_of_prover_first` / `run_of_verifier_first`, and the
-     analogous 2-round `Prover.run_of_isSingleRound` /
-     `Reduction.run_of_isSingleRound` lemmas are COMMENTED OUT (abandoned)
-     in `Execution.lean`. Probing confirmed `Fin.induction_succ` does not
-     fire on `runToRound` (the simp args report "unused"). Building this
-     3-round evaluation from scratch — the ~210-line Sumcheck-style peeling,
-     which is itself still admitted — is the real remaining work, and it is
-     independent of the now-available forIn transport.
+  2. **Multi-round prover-run evaluation — RESOLVED.** `Fin.induction_three`
+     (added to `ArkLib/Data/Fin/Basic.lean`, a `rfl`) fires on
+     `Prover.runToRound (Fin.last 3)`, peeling all three rounds; the three
+     `V_to_P / P_to_V / V_to_P` directions resolve by `split` exactly as in
+     Sumcheck.
 
-  3. **A `simulateQ`/`OptionT`/`SubSpec` query-resolution simp set.** The
-     `queryG`/`queryF` double-`liftM` wraps each query in nested
-     `simulateQ`/`SubSpec` layers that the current `simulateQ_*` simp
-     lemmas do not fire through (the `simOracle2` resolution of `queryG`/
-     `queryF` against `oStmt`/`messages`); resolving them is the inner half
-     of the same Sumcheck-style peeling as (2).
+  3. **`simulateQ`/`OptionT`/`SubSpec` query resolution — RESOLVED.** The
+     full closed form of the compiled oracle verifier is now proved as
+     `simulateQ_oracleVerify_eq` (above): every query (the `g` message and
+     the `2t` codeword spot-checks) collapses to honest values via the
+     in-file `simOracle2` message/oracle-statement collapse lemmas, leaving
+     `if accepts … then pure () else failure`. The verify body was put in
+     the explicit `OptionT.lift <| liftComp <| lift query` form so these
+     fire, and `instMessageOracleInterfaceOne` was added to make the round-1
+     message `OracleInterface` synthesizable on restated indices.
 
-The clean `oracleVerifier.toVerifier = verifier` equivalence shortcut is
-*not* available here: `toVerifier`'s output type is `Unit × (Fin 0 → _)`,
-not the non-oracle `verifier`'s `Unit`. Closing this is best done by first
-landing a general `Prover.run`-for-fixed-`n` evaluation lemma (walls 2+3)
-in `OracleReduction/Execution.lean`. -/
+The **remaining** work is the final probability bookkeeping: after
+`Fin.induction_three` + the three `split`s + `simulateQ_oracleVerify_eq`,
+the goal is `Pr[event] = 1` over `init >>= simulateQ (sample γ; emit
+g = M₀+γM₁; sample xs; if accepts … then pure () else failure)`. The
+helper `accepts` holds for the honest `g` under any challenges
+(`accepts_of_inputRelation`); discharging `Pr = 1` needs the standard
+`probEvent_eq_one_iff` support-decomposition that pins
+`transcript.messages ⟨1,_⟩ = g` and `transcript.challenges = (γ, xs)`
+through the two `getChallenge` samples (the `Fin.snoc`-built transcript
+accessors), à la `Sumcheck/Spec/SingleRound.lean`'s `oracleReduction_perfectCompleteness`
+support peel. NOTE also: the input relation here should be the
+honest-opening relation (witness `M` opens the codewords under the
+*protocol* `encode`), not the existential `inputRelation k C` — the latter
+existentially quantifies a *different* encoder, so completeness against it
+is not provable as stated without a documented relation alignment (cf. the
+L6.13 `hEnc` precedent). -/
 theorem oracleReduction_perfectCompleteness
     [SampleableType F] [SampleableType ι]
     {σ : Type} (init : ProbComp σ)
@@ -747,17 +745,19 @@ theorem oracleReduction_perfectCompleteness
       (inputRelation k C)
       (Set.univ : Set (((OutputStatement × ∀ i, OutputOracleStatement i)) ×
         OutputWitness)) := by
-  -- ABF26-C6.2 completeness; paper-proof-owed (framework-blocked). The math
-  -- core (`accepts_of_inputRelation`) is proved; this reduces to it after
-  -- unfolding `OracleReduction.perfectCompleteness` through `toReduction` and
-  -- discharging the per-challenge probability bookkeeping. The `simulateQ_forIn`
-  -- blocker is now RESOLVED (`QueryPhase.lean :: ForInSupport`). The remaining
-  -- wall is the multi-round (3-round, two-challenge) `Prover.run` evaluation:
-  -- the framework's only `Prover.run` simp lemmas are 1-round (`ProverOnly` /
-  -- `VerifierOnly`); the 2-round `run_of_isSingleRound` is abandoned (commented
-  -- out) in `Execution.lean`, and `Fin.induction_succ` does not fire on
-  -- `runToRound`. This needs a general fixed-`n` prover-run evaluation lemma
-  -- upstream (would also unblock FRI/Sumcheck completeness). See docstring.
+  -- ABF26-C6.2 completeness. Walls 1–3 (forIn transport, multi-round run, simulateQ/SubSpec query
+  -- resolution) are CLOSED: `Fin.induction_three` peels the 3-round prover, and
+  -- `simulateQ_oracleVerify_eq` is the proved closed form of the compiled verifier
+  -- (= `if accepts … then pure () else failure`). The residual is the `Pr = 1` support peel
+  -- (pinning `transcript.messages ⟨1,_⟩ = M₀+γM₁` through the two challenge samples) plus the
+  -- honest-opening relation alignment — see docstring. Skeleton (compiles up to the residual):
+  --   unfold OracleReduction.perfectCompleteness
+  --   rw [Reduction.perfectCompleteness_eq_prob_one]; rintro ⟨stmt, oStmt⟩ wit hRel
+  --   simp only [oracleReduction, OracleReduction.toReduction, Reduction.run, Prover.run,
+  --     Verifier.run, oracleProver, OracleVerifier.toVerifier, Prover.runToRound,
+  --     Prover.processRound, Fin.induction_three, pSpec, bind_pure_comp, Function.comp]
+  --   split <;> rename_i h0; swap; · exact absurd h0 (by decide); …(rounds 1,2)…
+  --   simp only [simulateQ_oracleVerify_eq]; rw [probEvent_eq_one_iff]; refine ⟨?_, ?_⟩ …
   sorry
 
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
