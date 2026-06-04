@@ -65,6 +65,51 @@ lemma goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt {k deg : ℕ}
     simpa [ENNReal.coe_div hq0, ENNReal.coe_natCast] using hlt
   exact ENNReal.mul_lt_of_lt_div hlt'
 
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] [DecidableEq F] in
+private lemma finset_card_gt_of_natCast_le_ennreal_lt {α : Type} {S : Finset α}
+    {m : ℕ} {x : ENNReal}
+    (hm : (m : ENNReal) ≤ x) (hx : x < (S.card : ENNReal)) :
+    S.card > m := by
+  exact Nat.cast_lt.mp (lt_of_le_of_lt hm hx)
+
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] [DecidableEq F] in
+private lemma finset_card_ge_of_pred_natCast_le_ennreal_lt {α : Type} {S : Finset α}
+    {m : ℕ} {x : ENNReal}
+    (hm : ((m - 1 : ℕ) : ENNReal) ≤ x) (hx : x < (S.card : ENNReal)) :
+    S.card ≥ m := by
+  rcases m with _ | m
+  · exact Nat.zero_le S.card
+  · have hm' : (m : ENNReal) ≤ x := by
+      simpa using hm
+    exact Nat.succ_le_of_lt (finset_card_gt_of_natCast_le_ennreal_lt hm' hx)
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- Convert the exact ENNReal threshold obtained from the probability
+calculation into the two natural cardinality bounds used by the curve assembly
+bridges. -/
+lemma goodCoeffsCurve_card_bounds_of_prob_threshold {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hx :
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal))
+    (hsmall :
+      (k : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hlarge :
+      ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal)) :
+    (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k ∧
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * k := by
+  constructor
+  · exact finset_card_gt_of_natCast_le_ennreal_lt hsmall hx
+  · exact finset_card_ge_of_pred_natCast_le_ennreal_lt hlarge hx
+
 omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
 
