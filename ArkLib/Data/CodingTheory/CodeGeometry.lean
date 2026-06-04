@@ -93,4 +93,88 @@ theorem sum_sum_codeInner_nonneg {L : ℕ} (c : Fin L → ι → α) :
   rw [hswap]
   exact Finset.sum_nonneg fun p _ => sq_nonneg _
 
+/-- **Shifted PSD.** The Gram-sum of the center-shifted embeddings
+`y_i = x_{c i} − β·x_g` is nonnegative — the form of the Plotkin inequality
+actually used in Johnson list-size arguments. -/
+theorem sum_sum_shiftInner_nonneg {L : ℕ} (c : Fin L → ι → α) (g : ι → α) (β : ℝ) :
+    0 ≤ ∑ i, ∑ j, (codeInner (c i) (c j)
+      - β * codeInner (c i) g - β * codeInner (c j) g
+      + β ^ 2 * codeInner g g) := by
+  classical
+  have hswap : (∑ i, ∑ j, (codeInner (c i) (c j)
+      - β * codeInner (c i) g - β * codeInner (c j) g
+      + β ^ 2 * codeInner g g))
+      = ∑ p : ι × α, (∑ i, (emb (c i) p - β * emb g p)) ^ 2 := by
+    calc (∑ i, ∑ j, (codeInner (c i) (c j)
+        - β * codeInner (c i) g - β * codeInner (c j) g
+        + β ^ 2 * codeInner g g))
+        = ∑ i, ∑ j, ∑ p : ι × α,
+            (emb (c i) p - β * emb g p) * (emb (c j) p - β * emb g p) := by
+          refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => ?_
+          simp only [codeInner, Finset.mul_sum, ← Finset.sum_sub_distrib,
+            ← Finset.sum_add_distrib]
+          refine Finset.sum_congr rfl fun p _ => ?_
+          ring
+      _ = ∑ i, ∑ p : ι × α, ∑ j,
+            (emb (c i) p - β * emb g p) * (emb (c j) p - β * emb g p) := by
+          refine Finset.sum_congr rfl fun i _ => ?_
+          exact Finset.sum_comm
+      _ = ∑ p : ι × α, ∑ i, ∑ j,
+            (emb (c i) p - β * emb g p) * (emb (c j) p - β * emb g p) :=
+          Finset.sum_comm
+      _ = ∑ p : ι × α, (∑ i, (emb (c i) p - β * emb g p)) ^ 2 := by
+          refine Finset.sum_congr rfl fun p _ => ?_
+          rw [sq, Finset.sum_mul_sum]
+  rw [hswap]
+  exact Finset.sum_nonneg fun p _ => sq_nonneg _
+
+/-- **Abstract Gram counting.** If a symmetric-style Gram-sum is nonnegative,
+the diagonal entries are at most `Dd`, and the off-diagonal entries are at most
+`Do < 0`, then the family size obeys `(L−1)·(−Do) ≤ Dd` — the quadratic-in-`L`
+cap of the Johnson list-size bound. -/
+theorem card_le_of_gram_bounds {L : ℕ} (hL : 0 < L) (S : Fin L → Fin L → ℝ)
+    {Dd Do : ℝ} (hpsd : 0 ≤ ∑ i, ∑ j, S i j)
+    (hdiag : ∀ i, S i i ≤ Dd)
+    (hoff : ∀ i j, i ≠ j → S i j ≤ Do) (hDo : Do < 0) :
+    ((L : ℝ) - 1) * (-Do) ≤ Dd := by
+  classical
+  -- pick any i₀ and bound its row? No: use the full-sum bound.
+  -- Σᵢⱼ S i j = Σᵢ S i i + Σᵢ Σ_{j≠i} S i j ≤ L·Dd + L(L−1)·Do
+  have hdiag_sum : (∑ i, S i i) ≤ (L : ℝ) * Dd := by
+    calc (∑ i, S i i) ≤ ∑ _i : Fin L, Dd := Finset.sum_le_sum fun i _ => hdiag i
+      _ = (L : ℝ) * Dd := by rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+            nsmul_eq_mul]
+  have hoff_sum : (∑ i, ∑ j ∈ Finset.univ.erase i, S i j)
+      ≤ (L : ℝ) * ((L : ℝ) - 1) * Do := by
+    have hrow : ∀ i : Fin L, (∑ j ∈ Finset.univ.erase i, S i j) ≤ ((L : ℝ) - 1) * Do := by
+      intro i
+      have hcard : (Finset.univ.erase i).card = L - 1 := by
+        rw [Finset.card_erase_of_mem (Finset.mem_univ i), Finset.card_univ, Fintype.card_fin]
+      calc (∑ j ∈ Finset.univ.erase i, S i j)
+          ≤ ∑ _j ∈ Finset.univ.erase i, Do :=
+            Finset.sum_le_sum fun j hj => hoff i j (Finset.ne_of_mem_erase hj).symm
+        _ = ((L : ℝ) - 1) * Do := by
+            rw [Finset.sum_const, hcard, nsmul_eq_mul]
+            congr 1
+            have : (1 : ℕ) ≤ L := hL
+            push_cast [Nat.cast_sub this]
+            ring
+    calc (∑ i, ∑ j ∈ Finset.univ.erase i, S i j)
+        ≤ ∑ _i : Fin L, ((L : ℝ) - 1) * Do := Finset.sum_le_sum fun i _ => hrow i
+      _ = (L : ℝ) * (((L : ℝ) - 1) * Do) := by
+          rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
+      _ = (L : ℝ) * ((L : ℝ) - 1) * Do := by ring
+  have hdecomp : (∑ i, ∑ j, S i j)
+      = (∑ i, S i i) + ∑ i, ∑ j ∈ Finset.univ.erase i, S i j := by
+    rw [← Finset.sum_add_distrib]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    rw [← Finset.add_sum_erase Finset.univ (S i) (Finset.mem_univ i)]
+  have hfull : (0 : ℝ) ≤ (L : ℝ) * Dd + (L : ℝ) * ((L : ℝ) - 1) * Do := by
+    calc (0 : ℝ) ≤ ∑ i, ∑ j, S i j := hpsd
+      _ = (∑ i, S i i) + ∑ i, ∑ j ∈ Finset.univ.erase i, S i j := hdecomp
+      _ ≤ (L : ℝ) * Dd + (L : ℝ) * ((L : ℝ) - 1) * Do := add_le_add hdiag_sum hoff_sum
+  -- rearrange: L(L−1)(−Do) ≤ L·Dd, divide by L > 0
+  have hLpos : (0 : ℝ) < (L : ℝ) := by exact_mod_cast hL
+  nlinarith [hfull, hLpos]
+
 end CodeGeometry
