@@ -14177,7 +14177,7 @@
         {
           "doc": "**[BCKHS25] Claim 2.3 (joint proximate).** If every `z \u2208 S` admits a degree-`k` proximate within Hamming distance `e` of the line combination, and `S` is large enough relative to the Polishchuk\u2013Spielman ratio, then there is a JOINT pair `(p\u2080, p\u2081)` of degree-`k` polynomials agreeing with `(u\u2080, u\u2081)` outside at most `e + h` points.",
           "kind": "theorem",
-          "line": 636,
+          "line": 637,
           "name": "BCKHS25.exists_joint_proximate",
           "namespace": "BCKHS25",
           "short_name": "exists_joint_proximate",
@@ -14186,10 +14186,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 648,
-          "name": "BCKHS25._anon_class_648",
+          "line": 649,
+          "name": "BCKHS25._anon_class_649",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_648",
+          "short_name": "_anon_class_649",
           "signature": "class classical"
         }
       ]
