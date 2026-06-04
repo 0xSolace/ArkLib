@@ -1222,6 +1222,103 @@ lemma liftToFunctionField_leadingCoeff_ne_zero {F : Type} [Field F] {H : F[X][Y]
   exact liftToFunctionField_ne_zero
     (Polynomial.leadingCoeff_ne_zero.mpr (Polynomial.ne_zero_of_natDegree_gt H_natDegree_pos.out))
 
+/-- The coefficient embedding into the function field is the bivariate lift of the constant. -/
+lemma coeffAsRatFunc_eq_C {F : Type} [Field F] (c : F[X]) :
+    coeffAsRatFunc c = Polynomial.C (univPolyHom (F := F) c) := by
+  simp only [coeffAsRatFunc, RingHom.comp_apply, ToRatFunc.bivPolyHom,
+    Polynomial.coe_mapRingHom, Polynomial.map_C]
+
+/-- The image of the rational substitution `X / W` under the quotient map is `T / W`. -/
+lemma mk_X_div_eq_functionFieldT_div_W {F : Type} [Field F] {H : F[X][Y]}
+    [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)] :
+    (Ideal.Quotient.mk (Ideal.span {H_tilde H})
+        (Polynomial.X / Polynomial.C (univPolyHom (F := F) H.leadingCoeff))) =
+      functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff := by
+  have hW_ne : liftToFunctionField (H := H) H.leadingCoeff ≠ 0 :=
+    liftToFunctionField_leadingCoeff_ne_zero (H := H)
+  set W_rat : Polynomial (RatFunc F) :=
+    Polynomial.C (univPolyHom (F := F) H.leadingCoeff) with hW_rat_def
+  have hmk_W : Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat =
+      liftToFunctionField (H := H) H.leadingCoeff := by
+    rw [hW_rat_def, ← coeffAsRatFunc_eq_C]; rfl
+  have hmk_X : Ideal.Quotient.mk (Ideal.span {H_tilde H}) (Polynomial.X : Polynomial (RatFunc F)) =
+      functionFieldT (H := H) := rfl
+  have ha_ne : univPolyHom (F := F) H.leadingCoeff ≠ 0 := by
+    intro h
+    exact (Polynomial.leadingCoeff_ne_zero.mpr
+      (Polynomial.ne_zero_of_natDegree_gt H_natDegree_pos.out))
+      (univPolyHom_injective (F := F) (by simpa using h))
+  -- In `(RatFunc F)[X]`, division by the constant `W_rat = C a` is `X * C a⁻¹`.
+  have hmul : (Polynomial.X / W_rat) * W_rat = (Polynomial.X : Polynomial (RatFunc F)) := by
+    rw [hW_rat_def, Polynomial.div_C, mul_assoc, ← Polynomial.C_mul,
+      inv_mul_cancel₀ ha_ne, Polynomial.C_1, mul_one]
+  rw [eq_div_iff hW_ne, ← hmk_W, ← map_mul, hmul, hmk_X]
+
+/-- The element `α₀ = T / W` is a root of `H` in the function field: evaluating `H` at `T / W`
+via the coefficient embedding gives `0`. This is the algebraic heart of the Hensel lift in
+Appendix A.4 of [BCIKS20]: `H̃` is the monicization of `H` at the root `α₀`, and `H̃(T) = 0`
+in `𝕃`. -/
+lemma eval₂_liftToFunctionField_div_leadingCoeff_H_eq_zero {F : Type} [Field F] {H : F[X][Y]}
+    [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)] :
+    Polynomial.eval₂ liftToFunctionField
+        (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H = 0 := by
+  let W_rat : Polynomial (RatFunc F) := Polynomial.C (univPolyHom (F := F) H.leadingCoeff)
+  -- `H_tilde H = W_rat^(d-1) * eval₂ (C∘univ) (X / W_rat) H`.
+  have hHt : H_tilde H =
+      W_rat ^ (H.natDegree - 1) *
+        Polynomial.eval₂ (RingHom.comp Polynomial.C (univPolyHom (F := F))) (Polynomial.X / W_rat)
+          H := rfl
+  -- `mk (H_tilde H) = 0` since the generator lies in the ideal.
+  have hmk_zero : Ideal.Quotient.mk (Ideal.span {H_tilde H}) (H_tilde H) = 0 :=
+    Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.mem_span_singleton_self _)
+  -- Push `mk` through the eval₂ via `hom_eval₂`.
+  have hcomp_eq :
+      RingHom.comp (Ideal.Quotient.mk (Ideal.span {H_tilde H}))
+          (RingHom.comp Polynomial.C (univPolyHom (F := F))) =
+        (liftToFunctionField (H := H) : F[X] →+* 𝕃 H) := by
+    refine RingHom.ext (fun c => ?_)
+    simp only [RingHom.comp_apply]
+    rw [show (Polynomial.C (univPolyHom (F := F) c)) = coeffAsRatFunc c from
+      (coeffAsRatFunc_eq_C c).symm]
+    rfl
+  have hpush :
+      Ideal.Quotient.mk (Ideal.span {H_tilde H})
+          (Polynomial.eval₂ (RingHom.comp Polynomial.C (univPolyHom (F := F)))
+            (Polynomial.X / W_rat) H) =
+        Polynomial.eval₂ liftToFunctionField
+          (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H := by
+    rw [Polynomial.hom_eval₂, hcomp_eq, mk_X_div_eq_functionFieldT_div_W (H := H)]
+  -- `mk (W_rat) = W ≠ 0`, so the eval₂ factor must vanish.
+  have hmk_W_ne : Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat ≠ 0 := by
+    show Ideal.Quotient.mk (Ideal.span {H_tilde H})
+        (Polynomial.C (univPolyHom (F := F) H.leadingCoeff)) ≠ 0
+    rw [show Polynomial.C (univPolyHom (F := F) H.leadingCoeff) =
+        coeffAsRatFunc H.leadingCoeff from (coeffAsRatFunc_eq_C _).symm]
+    exact liftToFunctionField_leadingCoeff_ne_zero (H := H)
+  have hmk_factored : Ideal.Quotient.mk (Ideal.span {H_tilde H}) (H_tilde H) =
+      Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat ^ (H.natDegree - 1) *
+        Polynomial.eval₂ liftToFunctionField
+          (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H := by
+    calc Ideal.Quotient.mk (Ideal.span {H_tilde H}) (H_tilde H)
+        = Ideal.Quotient.mk (Ideal.span {H_tilde H})
+            (W_rat ^ (H.natDegree - 1) *
+              Polynomial.eval₂ (RingHom.comp Polynomial.C (univPolyHom (F := F)))
+                (Polynomial.X / W_rat) H) :=
+          congrArg (Ideal.Quotient.mk (Ideal.span {H_tilde H})) hHt
+      _ = Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat ^ (H.natDegree - 1) *
+            Polynomial.eval₂ liftToFunctionField
+              (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H := by
+          rw [map_mul, map_pow, hpush]
+  have hzero_factored :
+      (0 : 𝕃 H) =
+        Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat ^ (H.natDegree - 1) *
+          Polynomial.eval₂ liftToFunctionField
+            (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H :=
+    hmk_zero.symm.trans hmk_factored
+  have hpow_ne : Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat ^ (H.natDegree - 1) ≠ 0 :=
+    pow_ne_zero _ hmk_W_ne
+  exact (mul_eq_zero.mp hzero_factored.symm).resolve_left hpow_ne
+
 /-- If `q ∣ p` in `F[X]`, then `p / q` is regular after embedding into `𝕃`. -/
 lemma regularElms_set_liftToFunctionField_div_of_dvd {F : Type} [Field F] {H : F[X][Y]}
     [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
