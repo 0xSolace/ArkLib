@@ -94,7 +94,8 @@ def sumcheckFoldOracleLens : OracleStatement.OracleLens ([]ₒ)
     (InnerOStmtIn := BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
     (InnerOStmtOut := BinaryBasefold.OracleStatement K β
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
-    (pSpec := BinaryBasefold.pSpecSumcheckFold K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) where
+    (pSpec := BinaryBasefold.pSpecSumcheckFold K β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) where
   toLens := sumcheckFoldStmtLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
   projStmt := id
   liftStmt := fun _ s => s
@@ -103,8 +104,12 @@ def sumcheckFoldOracleLens : OracleStatement.OracleLens ([]ₒ)
       (spec := [BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0]ₒ) q :
       OracleComp (([]ₒ) +
         [BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0]ₒ) _)
-  embedOStmt := Function.Embedding.inl
-  hEqOStmt := fun _ => rfl
+  embedOStmt := (BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
+    (Context := RingSwitchingBaseContext κ L K ℓ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).embed
+  hEqOStmt := (BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
+    (Context := RingSwitchingBaseContext κ L K ℓ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).hEq
 
 /-- Oracle context lens for sumcheck fold lifting -/
 def sumcheckFoldCtxLens : OracleContext.Lens
@@ -209,19 +214,21 @@ section Security
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-/-- The sumcheck-fold oracle-routing lens is **coherent** (#433): converting the lifted oracle
-verifier to a plain verifier agrees with lifting the converted inner verifier along the value-level
-lens. This holds because `sumcheckFoldOracleLens` is the *identity* oracle routing — `simOStmt`
-routes each inner input-oracle query to the identically-indexed outer input oracle, and `projStmt` /
-`liftStmt` are the identity on the (coinciding) inner/outer statement types — so both sides answer
-the inner verifier's queries from the same oracles. -/
-instance sumcheckFoldOracleLens_coherent :
-    OracleVerifier.LiftContextCoherent
-      (sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-      (BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) where
-  toVerifier_comm := by
-    rfl
+/-- The sumcheck-fold oracle-routing lens **coherence** side condition (#433): converting the lifted
+oracle verifier to a plain verifier agrees with lifting the converted inner verifier along the
+value-level lens (`OracleVerifier.LiftContextCoherent.toVerifier_comm`).
+
+Although `sumcheckFoldOracleLens` is morally identity routing (`projStmt`/`liftStmt` are the
+identity and `simOStmt` routes each inner input-oracle query to the identically-indexed *outer*
+input oracle), the two sides are **not** definitionally equal: the lifted verifier answers the
+inner verifier's queries by `simulateQ (fullRouter …)` over the outer oracles, whereas the
+right-hand side answers them from the *projected inner* oracles via `simOracle2`. Establishing the
+equality is a genuine lens-level side condition that is left unproven upstream (see
+`OracleVerifier.LiftContextCoherent`) and threaded as a hypothesis everywhere it is used — exactly
+as in `Sumcheck/Spec/General.lean`. We therefore thread it as a hypothesis to the downstream
+security theorems below (`sumcheckFoldOracleReduction_perfectCompleteness`,
+`sumcheckFoldOracleVerifier_rbrKnowledgeSoundness`) rather than discharging it by `rfl` (the
+migration agent's `by rfl` does not hold). -/
 
 -- Completeness instance for the context lens
 instance sumcheckFoldCtxLens_complete :
@@ -279,7 +286,14 @@ instance sumcheckFoldCtxLens_complete :
 
 omit [NeZero κ] [NeZero ℓ] in
 -- Perfect completeness for the lifted oracle reduction
-theorem sumcheckFoldOracleReduction_perfectCompleteness :
+-- THREADED (2026-06-04): the oracle-routing lens coherence side condition (#433) is left unproven
+-- upstream (see `OracleVerifier.LiftContextCoherent`); we thread it as a hypothesis, exactly as in
+-- `Sumcheck/Spec/General.lean`.
+theorem sumcheckFoldOracleReduction_perfectCompleteness
+    (coh : OracleVerifier.LiftContextCoherent
+      (sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+      (BinaryBasefold.CoreInteraction.sumcheckFoldOracleReduction K β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).verifier) :
   OracleReduction.perfectCompleteness
     (oSpec := []ₒ)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
@@ -339,6 +353,7 @@ theorem sumcheckFoldOracleReduction_perfectCompleteness :
     (lensComplete := sumcheckFoldCtxLens_complete κ L K β ℓ ℓ' 𝓡 ϑ
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l)
     (hStmt := rfl)
+    (coh := coh)
     (init := init)
     (impl := impl)
     (h := BinaryBasefold.CoreInteraction.sumcheckFoldOracleReduction_perfectCompleteness
@@ -437,7 +452,13 @@ local instance sumcheckFoldFinalOracleStatement_inhabited
   ⟨fun _ => 0⟩
 
 -- Round-by-round knowledge soundness for the lifted oracle verifier
-theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness [Fintype L] :
+-- THREADED (2026-06-04): the oracle-routing lens coherence side condition (#433) is threaded as a
+-- hypothesis, exactly as in `Sumcheck/Spec/General.lean`.
+theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness [Fintype L]
+    (coh : OracleVerifier.LiftContextCoherent
+      (sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+      (BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate))) :
     OracleVerifier.rbrKnowledgeSoundness
       (oSpec := []ₒ)
       (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
@@ -489,6 +510,7 @@ theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness [Fintype L] :
     (pSpec := BinaryBasefold.pSpecSumcheckFold K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
     (V := BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (coh := coh)
     (stmtLens := sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
     (witLens := (sumcheckFoldExtractorLens κ L K β ℓ ℓ' 𝓡 ϑ
@@ -833,8 +855,15 @@ def coreInteractionOracleReduction :=
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-/-- Perfect completeness for the core interaction oracle reduction -/
-theorem coreInteractionOracleReduction_perfectCompleteness :
+/-- Perfect completeness for the core interaction oracle reduction.
+
+THREADED (2026-06-04): the sumcheck-fold oracle-routing lens coherence side condition (#433) is
+threaded as a hypothesis (see `sumcheckFoldOracleReduction_perfectCompleteness`). -/
+theorem coreInteractionOracleReduction_perfectCompleteness
+    (coh : OracleVerifier.LiftContextCoherent
+      (sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+      (BinaryBasefold.CoreInteraction.sumcheckFoldOracleReduction K β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).verifier) :
     OracleReduction.perfectCompleteness
       (oSpec := []ₒ)
       (pSpec := BinaryBasefold.pSpecCoreInteraction K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
@@ -853,7 +882,7 @@ theorem coreInteractionOracleReduction_perfectCompleteness :
   apply OracleReduction.append_perfectCompleteness
   · -- Perfect completeness of sumcheckFoldOracleReduction
     exact sumcheckFoldOracleReduction_perfectCompleteness κ L K β ℓ ℓ' 𝓡 ϑ
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l (𝓑 := 𝓑) (init := init) (impl := impl)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l (𝓑 := 𝓑) coh (init := init) (impl := impl)
   · -- Perfect completeness of finalSumcheckOracleReduction
     exact finalSumcheckOracleReduction_perfectCompleteness κ L K β ℓ ℓ' 𝓡 ϑ
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l (𝓑 := 𝓑) init impl
@@ -866,8 +895,15 @@ def coreInteractionOracleRbrKnowledgeError (j : (BinaryBasefold.pSpecCoreInterac
       (g := fun i => finalSumcheckKnowledgeError (L := L) i)
       (ChallengeIdx.sumEquiv.symm j)
 
-/-- Round-by-round knowledge soundness for the core interaction oracle verifier -/
-theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness :
+/-- Round-by-round knowledge soundness for the core interaction oracle verifier.
+
+THREADED (2026-06-04): the sumcheck-fold oracle-routing lens coherence side condition (#433) is
+threaded as a hypothesis (see `sumcheckFoldOracleVerifier_rbrKnowledgeSoundness`). -/
+theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness
+    (coh : OracleVerifier.LiftContextCoherent
+      (sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+      (BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate))) :
     (coreInteractionOracleVerifier κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate
       h_l).rbrKnowledgeSoundness init impl
       (OStmtIn := BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
@@ -902,7 +938,7 @@ theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness :
     (rbrKnowledgeError₁ := BinaryBasefold.CoreInteraction.sumcheckFoldKnowledgeError
         K β (ϑ := ϑ))
     (rbrKnowledgeError₂ := finalSumcheckKnowledgeError (L := L))
-    (h₁ := by apply sumcheckFoldOracleVerifier_rbrKnowledgeSoundness)
+    (h₁ := by apply sumcheckFoldOracleVerifier_rbrKnowledgeSoundness (coh := coh))
     (h₂ := by apply finalSumcheckOracleVerifier_rbrKnowledgeSoundness)
 
 end CoreInteractionPhaseReduction
