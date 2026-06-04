@@ -30284,7 +30284,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 712,
+          "line": 720,
           "name": "Verifier.liftContext_rbr_soundness",
           "namespace": "Verifier",
           "short_name": "liftContext_rbr_soundness",
@@ -30293,7 +30293,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 747,
+          "line": 755,
           "name": "Verifier.liftContext_rbr_knowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "liftContext_rbr_knowledgeSoundness",
@@ -30302,7 +30302,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 779,
+          "line": 787,
           "name": "OuterStmtIn_Test",
           "namespace": "",
           "short_name": "OuterStmtIn_Test",
@@ -30311,7 +30311,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 780,
+          "line": 788,
           "name": "InnerStmtIn_Test",
           "namespace": "",
           "short_name": "InnerStmtIn_Test",
@@ -30320,7 +30320,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 783,
+          "line": 791,
           "name": "outerRelIn_Test",
           "namespace": "",
           "short_name": "outerRelIn_Test",
@@ -30329,7 +30329,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 786,
+          "line": 794,
           "name": "innerRelIn_Test",
           "namespace": "",
           "short_name": "innerRelIn_Test",
@@ -30338,7 +30338,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 789,
+          "line": 797,
           "name": "OuterStmtOut_Test",
           "namespace": "",
           "short_name": "OuterStmtOut_Test",
@@ -30347,7 +30347,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 790,
+          "line": 798,
           "name": "InnerStmtOut_Test",
           "namespace": "",
           "short_name": "InnerStmtOut_Test",
@@ -30356,7 +30356,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 793,
+          "line": 801,
           "name": "outerRelOut_Test",
           "namespace": "",
           "short_name": "outerRelOut_Test",
@@ -30365,7 +30365,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 796,
+          "line": 804,
           "name": "innerRelOut_Test",
           "namespace": "",
           "short_name": "innerRelOut_Test",
@@ -30374,7 +30374,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 800,
+          "line": 808,
           "name": "testStmtLens",
           "namespace": "",
           "short_name": "testStmtLens",
@@ -30383,7 +30383,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 805,
+          "line": 813,
           "name": "testLens",
           "namespace": "",
           "short_name": "testLens",
@@ -30392,7 +30392,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 811,
+          "line": 819,
           "name": "testLensE",
           "namespace": "",
           "short_name": "testLensE",
@@ -30401,7 +30401,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 816,
+          "line": 824,
           "name": "instTestLensComplete",
           "namespace": "",
           "short_name": "instTestLensComplete",
@@ -30410,7 +30410,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 826,
+          "line": 834,
           "name": "instTestLensKnowledgeSound",
           "namespace": "",
           "short_name": "instTestLensKnowledgeSound",

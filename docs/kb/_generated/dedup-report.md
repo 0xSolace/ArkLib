@@ -782,12 +782,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `liftContext_rbr_knowledgeSoundness` (2 declarations, 2 files)
 
 - `theorem OracleVerifier.liftContext_rbr_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:186](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L186) — (no docstring)
-- `theorem Verifier.liftContext_rbr_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:747](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L747) — (no docstring)
+- `theorem Verifier.liftContext_rbr_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:755](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L755) — (no docstring)
 
 ### `liftContext_rbr_soundness` (2 declarations, 2 files)
 
 - `theorem OracleVerifier.liftContext_rbr_soundness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:172](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L172) — (no docstring)
-- `theorem Verifier.liftContext_rbr_soundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:712](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L712) — (no docstring)
+- `theorem Verifier.liftContext_rbr_soundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:720](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L720) — (no docstring)
 
 ### `liftContext_soundness` (2 declarations, 2 files)
 
