@@ -169,6 +169,48 @@ lemma eq512_strong_separable_unsat
   have hunit : IsUnit (Polynomial.X : F[X]) := hsq _ hYY
   exact (Polynomial.prime_X (R := F)).not_unit hunit
 
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Separable contraction over the fraction field* — the field-side core of the proof of
+`irreducible_factorization_of_gs_solution` (= [BCIKS20, Eq. 5.12]).
+
+For every positive-`Y`-degree irreducible factor `g : F[Z][X][Y]` of a `ModifiedGuruswami`
+solution `Q`, its image over the fraction field `K := FractionRing (F[Z][X]) = F(Z,X)` admits a
+*separable contraction*: there is a separable `sK : K[Y]` and an exponent `m` with
+`expand K (q^m) sK = g.map (algebraMap …)`, where `q` is the exponential characteristic.
+Equivalently (`expand_eq_comp_X_pow`), `sK.comp (Y^(q^m))` equals the `K`-image of `g`.
+
+This is the step that genuinely needs a *field*: it composes the exponential-characteristic
+transfer `F → F(Z,X)` (`expChar_of_injective_algebraMap` along the injective fraction-field map —
+no obstruction, contrary to the earlier OBSTRUCTION note), Gauss's lemma for irreducibility over
+the fraction field (`IsPrimitive.irreducible_iff_irreducible_map_fraction_map`, the idiom of
+`RationalFunctions.lean`), and Mathlib's separable contraction over a field
+(`Irreducible.hasSeparableContraction`). The remaining open content of Eq. 5.12 is the *descent*
+of this `K`-side contraction back to a primitive separable factor over `F[Z][X]` (a Gauss /
+`integerNormalization` content argument with no direct Mathlib transfer lemma), plus the
+multiplicity bookkeeping that assembles the factors into the zipped `(R, f, e)` lists. -/
+lemma eq512_separable_contraction_over_fraction_field
+    (g : F[Z][X][Y]) (hg : Irreducible g) (hdeg : g.natDegree ≠ 0) :
+    ∃ (sK : Polynomial (FractionRing (F[Z][X]))) (m : ℕ),
+      sK.Separable ∧
+      Polynomial.expand (FractionRing (F[Z][X]))
+          (ringExpChar F ^ m) sK
+        = g.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X]))) := by
+  classical
+  set K := FractionRing (F[Z][X])
+  set q := ringExpChar F with hq
+  haveI hF : ExpChar F q := ringExpChar.expChar F
+  -- exponential characteristic transfers along the injective fraction-field embedding.
+  haveI : ExpChar K q :=
+    expChar_of_injective_algebraMap (IsFractionRing.injective (F[Z][X]) K) q
+  -- a positive-degree irreducible in the UFD-polynomial ring is primitive.
+  have hgprim : g.IsPrimitive := hg.isPrimitive hdeg
+  -- Gauss: irreducibility transfers to the fraction field.
+  have hgK_irr : Irreducible (g.map (algebraMap (F[Z][X]) K)) :=
+    (hgprim.irreducible_iff_irreducible_map_fraction_map).mp hg
+  -- separable contraction of an irreducible over the field `K`.
+  obtain ⟨sK, hsep, m, hexp⟩ := hgK_irr.hasSeparableContraction q
+  exact ⟨sK, m, hsep, hexp⟩
+
 omit [DecidableEq (RatFunc F)] in
 /-- Claim 5.6 of [BCIKS20]. -/
 lemma discr_of_irred_components_nonzero (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
