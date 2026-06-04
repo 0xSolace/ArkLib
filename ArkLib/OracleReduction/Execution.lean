@@ -854,6 +854,35 @@ theorem runToRound_eq_bind_continueFromTo
 -- (RoundByRound.lean).  The missing connective is the `simulateQ`/`run'`/`init`-transport of the
 -- failure-monotone step, i.e. a `probEvent_simulateQ_run'_bind_trailing_le` analogue for an
 -- *arbitrary* (not distribution-preserving) `impl`.
+--
+-- ASSEMBLY UPDATE (2026-06-04, obligation A).  The *support-implication* half of
+-- `rbrSoundness_implies_soundness` (frontier obligation (A): an accepting soundness-game support
+-- point flips the state function at some challenge round) was assembled down to a SINGLE residual
+-- obligation, which exposed a genuine **state-threading mismatch in the theorem as stated** (for an
+-- *arbitrary stateful* `impl`):
+--   • `Reduction.support_run_verdict` (above) was proven (axiom-clean): an accepting soundness-game
+--     support point `some x ∈ support ((simulateQ pImpl (reduction.run …).run).run' s)` has its
+--     verifier verdict `x.2 ∈ support ((simulateQ impl (verifier.run … x.1.1)).run' s')` for the
+--     POST-PROVER state `s'` (the simulation state *after* the prover has run from the init sample
+--     `s ∈ support init`).
+--   • `StateFunction.toFun_full`'s contrapositive yields `Pr[· ∈ langOut | OptionT.mk do
+--     (simulateQ impl (verifier.run … x.1.1)).run' (← init)] = 0`, i.e. NO verifier verdict
+--     reachable from a FRESH `init` sample is in `langOut`.
+--   • Closing (A) therefore reduces *exactly* to `s' ∈ support init` — but `s'` is the
+--     post-prover state, which is NOT in `support init` whenever the (malicious) prover queries the
+--     shared oracle `oSpec` (handled by `impl`, which mutates the `σ` state).  Only the challenge
+--     oracle (`challengeQueryImpl : QueryImpl _ ProbComp`) leaves `σ` untouched.
+-- Consequently `rbrSoundness_implies_soundness` is unprovable as stated for an arbitrary stateful
+-- `impl`: a prover that steers the oracle state to make the verifier accept a bad statement from a
+-- non-`init`-reachable state breaks soundness while round-by-round soundness (whose `toFun_full` is
+-- a fresh-`init` statement) still holds.  The theorem closes once either (i) `toFun_full` is
+-- strengthened to quantify over all starting states, or (ii) `impl` is constrained so the prover
+-- simulation preserves `support init` (e.g. `σ` a subsingleton / stateless `impl`, or a
+-- distribution-preserving challenge-only `impl` — cf. `probEvent_simulateQ_run'_eq`).  This is a
+-- STATEMENT-level finding, recorded for the orchestrator; it is NOT closable by further plumbing.
+-- Obligation (B) (the per-round bound `Pr[p i | game] ≤ rbrSoundnessError i`) does NOT have this
+-- gap: both the soundness game and the rbr game thread `init` through the prover identically, so the
+-- failure-monotone keystone transport (the spine above) applies per shared state `s`.
 
 end Prover
 

@@ -121,11 +121,26 @@ theorem rbrSoundness_implies_soundness (langIn : Set StmtIn) (langOut : Set Stmt
   --                  sf i.succ stmtIn ((x.1.1.take i.castSucc).concat (x.1.1 i))`
   --       (prefix-only, via `take_succ_eq_concat`).  The support-implication `himp` is
   --       `exists_challenge_flip_of_full`, whose `hlast` hypothesis (`sf (last n) stmtIn tr`) is
-  --       supplied by the contrapositive of `sf.toFun_full` (an accepting support point cannot have
-  --       `¬ sf (last n)`, else `Pr[accept] = 0`); `¬ sf 0` comes from `stmtIn ∉ langIn` via
-  --       `toFun_empty`.  This step needs the `OptionT ProbComp` / `run'` plumbing that ties a
-  --       support point's transcript `x.1.1` to its verifier verdict `x.2` (same plumbing as
-  --       `toFun_full`'s own statement).
+  --       supplied by the contrapositive of `sf.toFun_full`; `¬ sf 0` comes from `stmtIn ∉ langIn`
+  --       via `toFun_empty`.  The `OptionT ProbComp`/`run'` plumbing that ties a support point's
+  --       transcript `x.1.1` to its verifier verdict `x.2` is now banked as
+  --       `Reduction.support_run_verdict` (Execution.lean, axiom-clean).
+  --
+  --       ⚠ STATEMENT BLOCKER (2026-06-04).  Wiring (A) through `support_run_verdict` +
+  --       `toFun_full`'s contrapositive reduces (A) to the SINGLE residual goal `s' ∈ support init`,
+  --       where `s'` is the POST-PROVER simulation state and `init` is the (abstract) start
+  --       distribution.  This is FALSE in general: a malicious prover that queries the shared oracle
+  --       `oSpec` (routed through the stateful `impl`) advances the `σ`-state, so the verifier in the
+  --       soundness game runs from a state outside `support init`, whereas `toFun_full` only forbids
+  --       acceptance from a FRESH `init` sample.  Hence `rbrSoundness_implies_soundness` is NOT
+  --       provable as stated for an arbitrary stateful `impl` (counterexample: `σ = Bool`,
+  --       `init = pure false`, an `impl` whose prover-query flips the state to a verifier-accepting
+  --       value while `sf (last n)` is identically false — rbr-sound with error 0, yet unsound).  It
+  --       closes once `toFun_full` is strengthened to all starting states, or `impl` is restricted so
+  --       prover simulation preserves `support init` (subsingleton `σ` / stateless or
+  --       distribution-preserving `impl`; cf. `probEvent_simulateQ_run'_eq`).  See the expanded
+  --       ASSEMBLY UPDATE in Execution.lean's FRONTIER NOTE.  This is a STATEMENT-level finding for
+  --       the orchestrator, NOT closable by further plumbing.
   --   (B) Per-round bound — for each fixed `i`, show
   --       `Pr[p i | soundness game] ≤ Pr[rbr event i | rbr game i] ≤ rbrSoundnessError i (= hsf i)`.
   --       Rewrite the soundness game's `Prover.run` by the keystone to
@@ -137,8 +152,13 @@ theorem rbrSoundness_implies_soundness (langIn : Set StmtIn) (langOut : Set Stmt
   --       `Prover.fst_map_runToRound_succ_challenge` into the rbr game's
   --       `runToRound i.castSucc >>= getChallenge` shape (its trailing `receiveChallenge` dropped by
   --       the same failure-monotone step), matching `hsf i` exactly.
-  -- Both (A) and (B) are pure VCVio `probEvent`/`OptionT`/`run'`/`init`-threading; the
-  -- combinatorial backbone and the keystone they rest on are fully banked.
+  --       (B) does NOT suffer the (A) state mismatch: both the soundness game and the rbr game
+  --       thread `init` through the prover identically, so the per-`s` failure-monotone keystone
+  --       transport applies over the shared `init`.  (B) is therefore the legitimately-closable half,
+  --       blocked here only because (A) blocks the overall `sorry` regardless.
+  -- The combinatorial backbone, the keystone, and the verifier-verdict support bridge
+  -- (`Reduction.support_run_verdict`) are fully banked; the remaining obstruction is the (A)
+  -- statement-level state-threading gap above.
   sorry
 
 /-- Round-by-round knowledge soundness with error `rbrKnowledgeError` implies round-by-round
