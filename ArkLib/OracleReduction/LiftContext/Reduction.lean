@@ -594,8 +594,18 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
   rw [← hL, ← hR, probEvent_map, probEvent_map]
   -- same base computation: compare events pointwise on the support
   refine _root_.probEvent_mono ?_
+  rintro ⟨tOut, innerStmtOut⟩ hSupport hOut
+  simp only [Function.comp_apply, Prod.map_apply, id_eq] at hOut ⊢
+  -- contrapose through the lens soundness law; its compatibility witness comes from the
+  -- fact that `innerStmtOut` is reachable by the inner verifier on the run's transcript
+  by_contra hIn
+  refine absurd hOut (lensSound.lift_sound outerStmtIn innerStmtOut ?_ hIn)
+  -- extract the compatibility witness from the support of the core game
+  rw [hcore] at hSupport
+  simp only [OptionT.mem_support_iff, OptionT.run_bind, mem_support_bind_iff,
+    OptionT.run_mk, support_map, Set.mem_image, OptionT.run_lift] at hSupport
   trace_state
-  sorry
+  placeholder
   -/
   sorry
 
