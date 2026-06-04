@@ -323,10 +323,11 @@ noncomputable def batchingKnowledgeStateFunction :
       --   `performCheckOriginalEvaluation original_claim r
       --      (embedded_MLP_eval (packMLE β witMid.t) r) = true`,
       -- which the capstone turns into exactly `original_claim = aeval r witMid.t`.
-      have hcheck := hSuccTrue.2.2.1
-      rw [← hSuccTrue.2.1, hSuccTrue.1] at hcheck
-      exact (performCheckOriginalEvaluation_packMLE_iff ℓ ℓ' h_l β
-        stmtIn.1.original_claim witMid.t stmtIn.1.t_eval_point).mp hcheck
+      -- PORTING NOTE: the worker's closure applies the DP24 capstone
+      -- `performCheckOriginalEvaluation_packMLE_iff`, proven for the concrete
+      -- `binaryTowerProfile`. This file's `P` is an abstract `RingSwitchingProfile`;
+      -- the generic version should route through `P.decomposeRows_spec`.
+      sorry
     | ⟨1, h⟩ => nomatch h
   toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by sorry
 
