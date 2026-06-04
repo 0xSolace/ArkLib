@@ -172,6 +172,17 @@ def OracleVerifier.addSalt (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStm
   verify := fun stmtIn challenges =>
     V.verify stmtIn (fun i => cast (addSalt_Challenge i) (challenges i))
   embed := V.embed
+  -- DESIGN OBSTRUCTION (re-verified 2026-06, machine-checked): this `sorry` is *unsatisfiable as
+  -- stated*, not merely unproved.  The salted spec changes prover messages to carry the salt:
+  -- `(pSpec.addSalt Salt).Message j = pSpec.Message j × Salt j` (see `addSalt_Message`).  Reusing
+  -- `embed := V.embed`, the `hEq` obligation at an output index `i` with `V.embed i = .inr j`
+  -- demands `OStmtOut i = (pSpec.addSalt Salt).Message j = pSpec.Message j × Salt j`, whereas the
+  -- only datum available, `V.hEq i`, gives `OStmtOut i = pSpec.Message j`.  These disagree whenever
+  -- `Salt j` is nontrivial (e.g. `Salt j = Bool` forces `Bool = Bool × Bool`, false by cardinality).
+  -- So no term inhabits this field with the current design; closing it honestly requires reworking
+  -- the def (e.g. an `OStmtOut`-on-salted-messages mapping that pairs in the salt, or restricting
+  -- `embed` to the `.inl` input-oracle arms).  Left open intentionally; there are zero consumers of
+  -- `OracleVerifier.addSalt` in-tree, so the `sorry` is contained to this definition.
   hEq := sorry
 
 /-- Transform a reduction for a protocol specification `pSpec` into a reduction for the salted
