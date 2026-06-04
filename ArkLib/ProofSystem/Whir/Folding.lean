@@ -168,21 +168,186 @@ lemma foldf_eq_foldNth_eval {S : Finset ι} {φ : ι ↪ F} {k : ℕ} [Neg (inde
   rw [foldNth_two_eval p x α hx0 h2]
   field_simp
 
-/-- Claim 4.15 part 1
-  Let `f : ι → F`, `α ∈ Fᵏ` is the folding randomness, and let `g : (ι^(2ᵏ) → F) = fold_k(f,α)`
-  for k ≤ m, `f ∈ RS[F,ι,m]` then we have `g ∈ RS[F,ι^(2ᵏ),(m-k)]`
--/
+/-- Degree bookkeeping for one fold step: if `d < 2^(M+1)` then `d / 2 < 2^M`.
+This is the `2^(m-j) → 2^(m-j-1)` degree halving (`foldNth 2` halves the degree bound). -/
+lemma half_lt_pow_of_lt_pow_succ {d M : ℕ} (hd : d < 2 ^ (M + 1)) : d / 2 < 2 ^ M := by
+  have h2 : 2 ^ (M + 1) = 2 ^ M * 2 := by rw [pow_succ]
+  rw [h2] at hd
+  omega
+
+omit [Pow ι ℕ] in
+/-- **Single fold step → membership** (the inductive heart of Claim 4.15 part 1).
+
+Let `f : smoothCode φ_j (M+1)` with decoded univariate polynomial `p := decodeLT f`
+(degree `< 2^(M+1)`). Then the function obtained by folding `f` once,
+`g z := foldf S φ z f.val α`, lies in `smoothCode φ_{j+1} M`, with witness polynomial
+`foldNth 2 p α` (degree `≤ (2^(M+1)-1)/2 < 2^M`).
+
+Hypotheses make explicit the smooth-domain structure the loose `indexPowT` setup omits
+(mirroring the documented repairs on the `BlockRelDistance.lean` sibling lemmas):
+* `hφj  : ∀ x, φ_j x = x.val` and `hφj1 : ∀ z, φ_{j+1} z = z.val`
+  pin the per-round embeddings to the canonical subtype inclusion;
+* `hneg : ∀ z, (-(extract_x S φ j z)).val = -((extract_x S φ j z).val)`
+  is the field-negation law for the abstract `Neg` (no such law is derivable in-file);
+* `hx0  : ∀ z, (extract_x S φ j z).val ≠ 0` (smooth domains avoid `0`);
+* `h2   : (2 : F) ≠ 0` (odd characteristic).
+
+Proof: the witness is `q := foldNth 2 p α`. Its degree halves
+(`foldNth_natDegree_le` + `half_lt_pow_of_lt_pow_succ`), and pointwise
+`g z = foldf … = (foldNth 2 p α).eval z.val = q.eval (φ_{j+1} z)` by `foldf_eq_foldNth_eval`
+(after rewriting `f.val x = p.eval (φ_j x) = p.eval x.val`). Membership then follows from
+`mem_code_of_polynomial_of_natDegree_lt_of_eval`. -/
+lemma foldf_step_mem_smoothCode
+    {S : Finset ι} {φ : ι ↪ F} {j M : ℕ}
+    {φ_j : (indexPowT S φ j) ↪ F} {φ_j1 : (indexPowT S φ (j + 1)) ↪ F}
+    [Fintype (indexPowT S φ j)] [DecidableEq (indexPowT S φ j)] [Smooth φ_j]
+    [Fintype (indexPowT S φ (j + 1))] [DecidableEq (indexPowT S φ (j + 1))]
+    [Smooth φ_j1] [Neg (indexPowT S φ j)]
+    (f : smoothCode φ_j (M + 1)) (α : F)
+    (hφj : ∀ x : indexPowT S φ j, φ_j x = x.val)
+    (hφj1 : ∀ z : indexPowT S φ (j + 1), φ_j1 z = z.val)
+    (hneg : ∀ z : indexPowT S φ (j + 1),
+      (-(extract_x S φ j z)).val = -((extract_x S φ j z).val))
+    (hx0 : ∀ z : indexPowT S φ (j + 1), (extract_x S φ j z).val ≠ 0)
+    (h2 : (2 : F) ≠ 0) :
+    (fun z : indexPowT S φ (j + 1) => foldf S φ z (f : indexPowT S φ j → F) α)
+      ∈ smoothCode φ_j1 M := by
+  classical
+  -- Decoded univariate polynomial of `f` and its degree bound.
+  set p : F[X] := (decodeLT (f : smoothCode φ_j (M + 1)) : Polynomial F) with hp
+  have hp_deg : p.natDegree < 2 ^ (M + 1) := by
+    have hmem := (decodeLT (f : smoothCode φ_j (M + 1))).2
+    rw [Polynomial.mem_degreeLT] at hmem
+    by_cases h0 : p = 0
+    · rw [h0, Polynomial.natDegree_zero]; positivity
+    · exact (Polynomial.natDegree_lt_iff_degree_lt h0).mpr hmem
+  -- `f`'s value at `x` is `p.eval x.val` (decode roundtrip + canonical embedding).
+  have hf_val : ∀ x : indexPowT S φ j, (f : indexPowT S φ j → F) x = p.eval x.val := by
+    intro x
+    have hroundtrip : p.eval (φ_j x) = (f : indexPowT S φ j → F) x :=
+      Lagrange.eval_interpolate_at_node (f : indexPowT S φ j → F)
+        (φ_j.injective.injOn) (Finset.mem_univ x)
+    rw [← hroundtrip, hφj x]
+  -- Witness polynomial: the univariate fold.
+  set q : F[X] := foldNth 2 p α with hq
+  -- Degree halving: `q.natDegree < 2^M`.
+  have hq_deg : q.natDegree < 2 ^ M := by
+    have hle : q.natDegree ≤ p.natDegree / 2 := by
+      rw [hq]; exact foldNth_natDegree_le p α
+    exact lt_of_le_of_lt hle (half_lt_pow_of_lt_pow_succ hp_deg)
+  -- Pointwise: folded value equals `q.eval (φ_{j+1} z)`.
+  have heval : ∀ z : indexPowT S φ (j + 1),
+      foldf S φ z (f : indexPowT S φ j → F) α = q.eval (φ_j1 z) := by
+    intro z
+    have hfeq : (f : indexPowT S φ j → F)
+        = fun x : indexPowT S φ j => p.eval x.val := by
+      funext x; exact hf_val x
+    rw [hfeq]
+    rw [foldf_eq_foldNth_eval z p α (hneg z) (hx0 z) h2, hφj1 z, hq]
+  -- Membership via the degree-bounded evaluation criterion.
+  exact ReedSolomon.mem_code_of_polynomial_of_natDegree_lt_of_eval q hq_deg heval
+
+omit [Pow ι ℕ] in
+/-- The `k`-fold tower membership, proven by induction on `k`, peeling the outermost fold
+(level `k → k+1`, challenge `αs 0`) via `foldf_step_mem_smoothCode` and recursing into the
+inner `fold_k_core … k (αs ∘ Fin.succ)` over `indexPowT S φ k`.
+
+This is the engine behind `fold_f_g`. It threads, over **every** level `j ≤ k`, the
+canonical-inclusion / negation / nonzero structure that the smooth-domain setting supplies but
+the file's loose `indexPowT` data does not (see `foldf_step_mem_smoothCode`). The intermediate
+levels `0 < j < k` are exactly why the original `fold_f_g`, carrying embeddings only for `j = 0`
+and `j = k`, is not provable as literally stated — the induction needs the whole family. -/
+lemma fold_f_g_core
+    {S : Finset ι} {φ : ι ↪ F} {m : ℕ}
+    (φ_all : ∀ j : ℕ, (indexPowT S φ j) ↪ F)
+    [instFin : ∀ j : ℕ, Fintype (indexPowT S φ j)]
+    [instDec : ∀ j : ℕ, DecidableEq (indexPowT S φ j)]
+    [instSmooth : ∀ j : ℕ, Smooth (φ_all j)]
+    [∀ j : ℕ, Neg (indexPowT S φ j)]
+    (hφ : ∀ j : ℕ, ∀ x : indexPowT S φ j, φ_all j x = x.val)
+    (hneg : ∀ j : ℕ, ∀ z : indexPowT S φ (j + 1),
+      (-(extract_x S φ j z)).val = -((extract_x S φ j z).val))
+    (hx0 : ∀ j : ℕ, ∀ z : indexPowT S φ (j + 1), (extract_x S φ j z).val ≠ 0)
+    (h2 : (2 : F) ≠ 0)
+    (f : smoothCode (φ_all 0) m) :
+    ∀ (k : ℕ) (αs : Fin k → F) (_hk : k ≤ m),
+      fold_k_core (f : indexPowT S φ 0 → F) k αs ∈ smoothCode (φ_all k) (m - k) := by
+  intro k
+  induction k with
+  | zero =>
+    intro αs _hk
+    -- `fold_k_core … 0 αs = f.val`; `m - 0 = m`.
+    simp only [fold_k_core, Nat.sub_zero]
+    exact f.2
+  | succ k ih =>
+    intro αs hk
+    -- Peel the outermost fold: `fold_k_core … (k+1) αs = foldf … (fold_k_core … k (αs∘succ)) (αs 0)`.
+    have hk' : k ≤ m := Nat.le_of_succ_le hk
+    -- Inner fold is a smooth codeword over level `k` of degree bound `m - k`.
+    have hinner : fold_k_core (f : indexPowT S φ 0 → F) k (fun i => αs (Fin.succ i))
+        ∈ smoothCode (φ_all k) (m - k) := ih (fun i => αs (Fin.succ i)) hk'
+    -- `m - k = (m - (k+1)) + 1`, the `M + 1` shape the step lemma needs.
+    have hM : m - k = (m - (k + 1)) + 1 := by omega
+    -- Repackage the inner codeword at the `(M+1)` index expected by the step lemma.
+    set fk : smoothCode (φ_all k) ((m - (k + 1)) + 1) :=
+      ⟨fold_k_core (f : indexPowT S φ 0 → F) k (fun i => αs (Fin.succ i)), by
+        rw [← hM]; exact hinner⟩ with hfk
+    -- Apply the single fold step at level `j := k`, `M := m - (k+1)`.
+    have hstep := foldf_step_mem_smoothCode
+      (φ_j := φ_all k) (φ_j1 := φ_all (k + 1)) fk (αs 0)
+      (hφ k) (hφ (k + 1)) (hneg k) (hx0 k) h2
+    -- Identify the folded function with `fold_k_core … (k+1) αs`.
+    have hfun : (fun z : indexPowT S φ (k + 1) =>
+        foldf S φ z (fk : indexPowT S φ k → F) (αs 0))
+        = fold_k_core (f : indexPowT S φ 0 → F) (k + 1) αs := by
+      funext z
+      simp only [fold_k_core, hfk]
+    -- The target degree index `m - (k+1)` matches.
+    rw [hfun] at hstep
+    exact hstep
+
+omit [Pow ι ℕ] in
+/-- Claim 4.15 part 1 (statement repair, 2026-06-04).
+
+  Let `f ∈ RS[F, ι, m]`, `α ∈ Fᵏ` the folding randomness, `g = fold_k(f, α)`; for `k ≤ m`,
+  `g ∈ RS[F, ι^(2ᵏ), m - k]`.
+
+  ## STATEMENT REPAIR (2026-06-04)
+
+  As literally written the lemma is **not provable**: it carries evaluation embeddings only for
+  the two extreme levels (`φ_0` at level `0`, `φ_k` at level `k`), but the `k`-fold tower passes
+  through every intermediate level `0 < j < k`, and `foldf` at each level queries the abstract
+  `Neg (indexPowT S φ j)` instance — for which the file provides **no** law connecting `(-x).val`
+  to `-(x.val)`, and no constraint pinning `φ_j` to the canonical inclusion `x ↦ x.val`. Both
+  `g = 0` and `g ≠ 0` codewords are then consistent with the loose data, so membership in the
+  specific code `smoothCode φ_k (m-k)` cannot be forced. This mirrors the documented repairs on
+  the sibling lemmas in `BlockRelDistance.lean` (`relHammingDist_le_blockRelDistance` etc.), which
+  thread `hφ' : ∀ x, φ' x = x.val` and 2-adic structure as explicit hypotheses for the same reason.
+
+  Repair: replace the two loose embeddings with a per-level family `φ_all` and supply, for every
+  level, the canonical-inclusion law `hφ`, the field-negation law `hneg`, the nonzero-root law
+  `hx0`, and `(2 : F) ≠ 0`. The proof is then the clean induction `fold_f_g_core`. -/
 lemma fold_f_g
-  {S : Finset ι} {φ : ι ↪ F} {k m : ℕ}
-  {φ_0 : (indexPowT S φ 0) ↪ F} {φ_k : (indexPowT S φ k) ↪ F}
-  [Fintype (indexPowT S φ 0)] [Smooth φ_0]
-  [Fintype (indexPowT S φ k)] [Smooth φ_k]
-  [∀ i : ℕ, Neg (indexPowT S φ i)]
-  (αs : Fin k → F) (hk : k ≤ m)
-  (f : smoothCode φ_0 m) :
-  let f_fun := (f : (indexPowT S φ 0) → F)
-  let g := fold_k f_fun αs hk
-  g ∈ smoothCode φ_k (m - k) := by sorry
+    {S : Finset ι} {φ : ι ↪ F} {k m : ℕ}
+    (φ_all : ∀ j : ℕ, (indexPowT S φ j) ↪ F)
+    [∀ j : ℕ, Fintype (indexPowT S φ j)]
+    [∀ j : ℕ, DecidableEq (indexPowT S φ j)]
+    [∀ j : ℕ, Smooth (φ_all j)]
+    [∀ j : ℕ, Neg (indexPowT S φ j)]
+    (hφ : ∀ j : ℕ, ∀ x : indexPowT S φ j, φ_all j x = x.val)
+    (hneg : ∀ j : ℕ, ∀ z : indexPowT S φ (j + 1),
+      (-(extract_x S φ j z)).val = -((extract_x S φ j z).val))
+    (hx0 : ∀ j : ℕ, ∀ z : indexPowT S φ (j + 1), (extract_x S φ j z).val ≠ 0)
+    (h2 : (2 : F) ≠ 0)
+    (αs : Fin k → F) (hk : k ≤ m)
+    (f : smoothCode (φ_all 0) m) :
+    let f_fun := (f : (indexPowT S φ 0) → F)
+    let g := fold_k f_fun αs hk
+    g ∈ smoothCode (φ_all k) (m - k) := by
+  intro f_fun g
+  show fold_k (f : indexPowT S φ 0 → F) αs hk ∈ smoothCode (φ_all k) (m - k)
+  unfold fold_k
+  exact fold_f_g_core φ_all hφ hneg hx0 h2 f k αs hk
 
 /-- Claim 4.5 part 2
   If fPoly be the multilinear extension of f, then we have
