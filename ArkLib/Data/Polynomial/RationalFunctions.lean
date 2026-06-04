@@ -646,7 +646,6 @@ Algebraic identities for the bivariate `Λ`-weight from Appendix A.2 of [BCIKS20
 `m := D + 1 − natDegreeY H` is the per-Y-power contribution; constants in `F[X]` contribute their
 `natDegree`. -/
 
-omit [IsDomain F] in
 /-- A monomial `n` in `f`'s support contributes a lower bound on `Λ(f)`. -/
 lemma le_weight_Λ_of_mem_support {f H : F[X][Y]} {D : ℕ} {n : ℕ} (hn : n ∈ f.support) :
     (WithBot.some (n * (D + 1 - Bivariate.natDegreeY H) + (f.coeff n).natDegree) :
@@ -656,7 +655,6 @@ lemma le_weight_Λ_of_mem_support {f H : F[X][Y]} {D : ℕ} {n : ℕ} (hn : n �
     (WithBot.some (deg * (D + 1 - Bivariate.natDegreeY H) + (f.coeff deg).natDegree) :
       WithBot ℕ)) hn
 
-omit [IsDomain F] in
 /-- Characterization: `Λ(f) ≤ b` iff every monomial in `f`'s support contributes at most `b`. -/
 lemma weight_Λ_le_iff {f H : F[X][Y]} {D b : ℕ} :
     weight_Λ f H D ≤ (WithBot.some b : WithBot ℕ) ↔
@@ -669,7 +667,6 @@ lemma weight_Λ_le_iff {f H : F[X][Y]} {D b : ℕ} :
   · refine Finset.sup_le (fun n hn => ?_)
     exact_mod_cast (h n hn)
 
-omit [IsDomain F] in
 /-- `Λ(C c) ≤ c.natDegree`. -/
 lemma weight_Λ_C_le (H : F[X][Y]) (D : ℕ) (c : F[X]) :
     weight_Λ (Polynomial.C c) H D ≤ (WithBot.some c.natDegree : WithBot ℕ) := by
@@ -683,7 +680,6 @@ lemma weight_Λ_C_le (H : F[X][Y]) (D : ℕ) (c : F[X]) :
   subst hn0
   simp [Polynomial.coeff_C]
 
-omit [IsDomain F] in
 /-- `Λ(Y^k) ≤ k · m`. -/
 lemma weight_Λ_X_pow_le (H : F[X][Y]) (D k : ℕ) :
     weight_Λ ((Polynomial.X : F[X][Y]) ^ k) H D ≤
@@ -698,7 +694,6 @@ lemma weight_Λ_X_pow_le (H : F[X][Y]) (D k : ℕ) :
   subst hnk
   simp [Polynomial.coeff_X_pow]
 
-omit [IsDomain F] in
 /-- `Λ(C c · Y^k) ≤ k · m + c.natDegree`. -/
 lemma weight_Λ_C_mul_X_pow_le (H : F[X][Y]) (D : ℕ) (c : F[X]) (k : ℕ) :
     weight_Λ (Polynomial.C c * Polynomial.X ^ k) H D ≤
@@ -714,7 +709,6 @@ lemma weight_Λ_C_mul_X_pow_le (H : F[X][Y]) (D : ℕ) (c : F[X]) (k : ℕ) :
   subst hnk
   simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow]
 
-omit [IsDomain F] in
 /-- The `Λ`-weight is invariant under negation. -/
 @[simp]
 lemma weight_Λ_neg (f H : F[X][Y]) (D : ℕ) : weight_Λ (-f) H D = weight_Λ f H D := by
@@ -724,7 +718,6 @@ lemma weight_Λ_neg (f H : F[X][Y]) (D : ℕ) : weight_Λ (-f) H D = weight_Λ f
   refine Finset.sup_congr rfl (fun n _ => ?_)
   simp [Polynomial.coeff_neg]
 
-omit [IsDomain F] in
 /-- `Λ(f + g) ≤ max(Λ(f), Λ(g))`. -/
 lemma weight_Λ_add_le (f g H : F[X][Y]) (D : ℕ) :
     weight_Λ (f + g) H D ≤ max (weight_Λ f H D) (weight_Λ g H D) := by
@@ -779,14 +772,12 @@ lemma weight_Λ_add_le (f g H : F[X][Y]) (D : ℕ) :
           _ ≤ weight_Λ f H D := le_weight_Λ_of_mem_support hnf
           _ ≤ max (weight_Λ f H D) (weight_Λ g H D) := le_max_left _ _
 
-omit [IsDomain F] in
 /-- `Λ(f − g) ≤ max(Λ(f), Λ(g))`. -/
 lemma weight_Λ_sub_le (f g H : F[X][Y]) (D : ℕ) :
     weight_Λ (f - g) H D ≤ max (weight_Λ f H D) (weight_Λ g H D) := by
   rw [sub_eq_add_neg]
   exact (weight_Λ_add_le f (-g) H D).trans_eq (by rw [weight_Λ_neg])
 
-omit [IsDomain F] in
 /-- `Λ` of a finite sum is bounded by the max of the summands' weights. -/
 lemma weight_Λ_sum_le {ι : Type} (s : Finset ι) (f : ι → F[X][Y]) (H : F[X][Y]) (D : ℕ) :
     weight_Λ (∑ i ∈ s, f i) H D ≤ s.sup (fun i => weight_Λ (f i) H D) := by
@@ -797,7 +788,6 @@ lemma weight_Λ_sum_le {ι : Type} (s : Finset ι) (f : ι → F[X][Y]) (H : F[X
       rw [Finset.sum_insert ha, Finset.sup_insert]
       exact (weight_Λ_add_le _ _ _ _).trans (max_le_max le_rfl ih)
 
-omit [IsDomain F] in
 /-- Bound on the `X`-degree of a coefficient of `H` from a `totalDegree` bound. -/
 lemma natDegree_coeff_le_of_totalDegree_le (f : F[X][Y]) {D : ℕ}
     (hD : Bivariate.totalDegree f ≤ D) (i : ℕ) :
@@ -810,7 +800,6 @@ lemma natDegree_coeff_le_of_totalDegree_le (f : F[X][Y]) {D : ℕ}
       Bivariate.coeff_totalDegree_le f hi_in
     omega
 
-omit [IsDomain F] in
 /-- Sub-additivity for `C c · Y^k · f`: given `Λ(f) ≤ b`, multiplying by `C c · Y^k` adds
 `k · m + c.natDegree` to the weight. -/
 lemma weight_Λ_C_mul_X_pow_mul_le {c : F[X]} {k : ℕ} {f H : F[X][Y]} {D b : ℕ}
@@ -893,7 +882,6 @@ lemma natDegree_H_tilde' {H : F[X][Y]} (hH : 0 < H.natDegree) :
   apply Polynomial.natDegree_eq_of_degree_eq_some
   rw [Polynomial.degree_add_eq_right_of_degree_lt (hsum_deg.trans_eq hX_deg.symm), hX_deg]
 
-omit [IsDomain F] in
 /-- The `Λ`-weight of `H_tilde' H` is bounded by `d_H · m`, where `d_H = H.natDegree`. -/
 lemma weight_Λ_H_tilde'_le {H : F[X][Y]} {D : ℕ}
     (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) :
@@ -964,7 +952,6 @@ lemma weight_Λ_H_tilde'_le {H : F[X][Y]} {D : ℕ}
       ring
     omega
 
-omit [IsDomain F] in
 /-- One reduction step in `modByMonic` does not increase `Λ`-weight: subtracting
 `C(p.leadingCoeff) · Y^(p.natDegree - d_H) · H_tilde' H` from `p` keeps the weight bounded by
 `Λ(p)`. -/

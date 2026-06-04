@@ -63,6 +63,12 @@ lemma natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
     0 < (H k δ x₀ h_gs).natDegree :=
   (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.2.1
 
+/-- The `Fact` form of `natDegree_H_pos`, for downstream declarations that take the
+positivity as an instance. -/
+instance fact_natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+    Fact (0 < (H k δ x₀ h_gs).natDegree) :=
+  ⟨natDegree_H_pos k h_gs⟩
+
 /-- The extracted `H` divides `R(x₀, Y, Z)`, as required for the Hensel setup in Claim A.2. -/
 lemma H_dvd_evalX_R (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
     H k δ x₀ h_gs ∣ Bivariate.evalX (Polynomial.C x₀) (R k δ x₀ h_gs) :=
