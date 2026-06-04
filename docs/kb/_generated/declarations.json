@@ -45099,9 +45099,9 @@
     "ArkLib/ProofSystem/Stir/ProximityGap.lean": {
       "declarations": [
         {
-          "doc": "",
+          "doc": "Theorem 4.1[BCIKS20] from [ACFY24stir] Let `C = RS[F, \u03b9, degree]` be a ReedSolomon code with rate `degree / |\u03b9|` and let Bstar(\u03c1) = \u221a\u03c1. For all `\u03b4 \u2208 (0, 1 - Bstar(\u03c1))`, `f\u2081,...,f\u2098 : \u03b9 \u2192 F`, if `Pr_{r \u2190 F} [ \u03b4\u1d63(r\u2c7c * f\u2c7c, C) \u2264 \u03b4] > err'(degree, \u03c1, \u03b4, m)` then \u2203 S \u2286 \u03b9, |S| \u2265 (1 - \u03b4) * |\u03b9| and \u2200 i : m, \u2203 u : C, u(S) = f\u1d62(S) STATUS (audit 2026-06-04, branch arklib-sorry-fixes). Open proof. Two independent, machine-checked blockers \u2014 this is a documented statement-vs-source mismatch, not a closure: 1. STATEMENT DEFECT (free `GenFun`). As written, `GenFun : F \u2192 Fin m \u2192 F` is universally quantified wit",
           "kind": "lemma",
-          "line": 82,
+          "line": 65,
           "name": "STIR.proximity_gap",
           "namespace": "STIR",
           "short_name": "proximity_gap",
