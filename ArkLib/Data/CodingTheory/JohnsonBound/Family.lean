@@ -309,21 +309,22 @@ requires the *q-ary Plotkin average-distance upper bound*
 
 i.e. the convex *dual* of the in-tree `almost_johnson` (which lower-bounds
 `∑_α C₂(K_i(α))`; the Plotkin step instead lower-bounds `∑_α K_i(α)² ≥ M²/q` by
-Cauchy–Schwarz / power-mean, giving an *upper* bound on the average distance). The tree
-currently has only `min_dist_le_d` (`δ_min ≤ d_avg`) and `johnson_d_le_n` (`d_avg ≤ n`),
-neither of which suffices. Combining this Plotkin bound with `johnson_bound_lemma`
-discharges T3.2 at `Jqℓ`. This is a self-contained ~150–250-line development over the
-existing `K B i α` column-count machinery in [`JohnsonBound/Lemmas.lean`](Lemmas.lean)
-and is the only nontrivial gap; see the four skeletons in the inline comment below.
+Cauchy–Schwarz / power-mean, giving an *upper* bound on the average distance).
+The Plotkin piece is now in-tree as `indexed_averageDist_le_plotkin`,
+`averageDistOn_le_plotkin`, and the `Fin n` specialization `averageDist_le_plotkin`.
+Combining this bound with the remaining Johnson-radius algebra and a pointwise list
+construction is the next step toward T3.2.
 
-**Two further mechanical gaps** (independent of the math wall above):
+**Remaining mechanical gaps**:
 - *Alphabet*: this statement is over a bare alphabet `α` (`Fintype + DecidableEq`, no
   `Field`), but every in-tree Johnson lemma — including `johnson_bound_alphabet_free` —
-  carries `[Field F]`. Either redo the column-count core over `DecidableEq α`, or weaken
-  this statement to `[Field α]`.
-- *Index type*: the in-tree apparatus (`e B v`, `d B`, the ball) is over `Fin n → F`;
-  this statement is over `ι → α`. A `Fintype.equivFin ι` transport of `hammingDist`/`e`/`d`
-  is needed (mechanical but not free).
+  carries `[Field F]`. The Plotkin bridge itself is alphabet-generic, but the older
+  `johnson_bound_lemma` route is field-shaped.
+- *List packaging*: a pointwise finite-list bound must be constructed for
+  `closeCodewordsRel C f (Jqℓ q ℓ δ_min)` and then passed through
+  `ListDecodable.Lambda_le_natCast_of_forall_ncard_le`.
+- *Radius algebra*: the final `Jqℓ` inequality still has to be expressed in the exact
+  rational/real shape consumed by the Johnson proof skeleton.
 
 Tracked in `docs/kb/ABF26_PLAN.md` and the audit log.
 
@@ -350,8 +351,9 @@ theorem johnson_bound_lambda_le_ell
   -- SKELETON 2 (raw `johnson_bound_lemma` + Plotkin — the CORRECT route).
   --   From `johnson_bound_lemma`: `M·Denom ≤ frac·d_avg/n`, holds unconditionally.
   --   Need: q-ary Plotkin `d_avg ≤ frac·n·M/(M-1)` ⇒ substitute and solve for M.
-  --   BLOCKED: the Plotkin bound is ABSENT in-tree (the convex dual of `almost_johnson`;
-  --   would lower-bound `∑_α K_i(α)² ≥ M²/q`, opposite to `le_sum_sum_choose_K`).
+  --   STATUS: the Plotkin bound is now in-tree (`averageDistOn_le_plotkin` /
+  --   `averageDist_le_plotkin`). Remaining work is the algebraic substitution into the
+  --   Johnson skeleton and the `closeCodewordsRel`/`Lambda` packaging.
   --
   -- SKELETON 3 (`johnson_bound_alphabet_free` ⇒ `q·d·n`).
   --   `johnson_bound_alphabet_free` gives `(B ∩ ball e).card ≤ q·d·n` under
@@ -367,7 +369,7 @@ theorem johnson_bound_lambda_le_ell
   --   This is the formal restatement of the factor inversion: the in-tree bound is
   --   strictly inside the paper's radius, and Lambda is monotone INCREASING in radius.
   --
-  -- All four bottom out at the missing q-ary Plotkin bound. Tagged sorry / external admit.
+  -- Tagged sorry until the Johnson-radius algebra and list-packaging layer land.
   sorry
 
 /-- **ABF26 Corollary 3.3.** MDS coarse Johnson corollary. For every MDS code `C` with
@@ -398,11 +400,10 @@ theorem mds_johnson_lambda_le
   --      `δ_min = 1 - ρ + 1/n`, hence `Jcap δ_min = 1 - √ρ + O(1/n)` matches the
   --      `1 - √ρ - η` radius once `η` absorbs the `1/n` correction.
   --   2. The asymptotic (q,ℓ → ∞) `Jcap` form of T3.2: `Lambda C δ ≤ 1/(2·(Jcap δ - δ))`.
-  -- BLOCKED: step 2 IS T3.2 in its asymptotic specialisation; it inherits T3.2's wall —
-  -- the q-ary Plotkin average-distance upper bound `d_avg ≤ frac·n·M/(M-1)` (see
-  -- `johnson_bound_lambda_le_ell` docstring). No additional MDS-specific obstruction:
-  -- once T3.2 lands at `Jqℓ`/`Jcap`, C3.3 is pure algebra on the Singleton equation.
-  -- Tagged sorry until the Plotkin bound is developed.
+  -- BLOCKED: step 2 IS T3.2 in its asymptotic specialisation. The q-ary Plotkin
+  -- average-distance upper bound is now available, so the remaining obstruction is
+  -- the T3.2 Johnson-radius/list-packaging proof plus pure algebra on the Singleton
+  -- equation. Tagged sorry until T3.2 lands at `Jqℓ`/`Jcap`.
   sorry
 
 end CodingTheory

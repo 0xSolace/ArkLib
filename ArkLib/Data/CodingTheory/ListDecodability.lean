@@ -114,6 +114,21 @@ lemma Lambda_le_ncard {C : Code ι F} (δ : ℝ) (hC : C.Finite) :
   refine iSup_le fun f => ?_
   exact_mod_cast ncard_closeCodewordsRel_le_ncard δ f hC
 
+/-- Pointwise finite list-size bounds package into the maximised `Lambda` bound. -/
+lemma Lambda_le_natCast_of_forall_ncard_le {C : Code ι F} {δ : ℝ} {ℓ : ℕ}
+    (h : ∀ f : ι → F, (closeCodewordsRel C f δ).ncard ≤ ℓ) :
+    Lambda C δ ≤ (ℓ : ℕ∞) := by
+  unfold Lambda
+  refine iSup_le fun f => ?_
+  exact_mod_cast h f
+
+/-- ENat-valued variant of `Lambda_le_natCast_of_forall_ncard_le`. -/
+lemma Lambda_le_of_forall_ncard_le {C : Code ι F} {δ : ℝ} {ℓ : ℕ∞}
+    (h : ∀ f : ι → F, ((closeCodewordsRel C f δ).ncard : ℕ∞) ≤ ℓ) :
+    Lambda C δ ≤ ℓ := by
+  unfold Lambda
+  exact iSup_le h
+
 end Lambda
 
 end ListDecodable
