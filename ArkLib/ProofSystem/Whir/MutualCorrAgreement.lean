@@ -245,11 +245,18 @@ theorem mca_johnson_bound_CONJECTURE
   for FRI/STIR/WHIR. See `research/formal/arklib-proof-research-2026-06.md` and
   eprint.iacr.org/2025/2046.
 -/
-theorem mca_capacity_bound_CONJECTURE
+/- **Statement repair (2026-06-04):** restated `theorem … := by sorry` → `def … : Prop`.
+Rationale: per the STATUS note above, this up-to-capacity claim is DISPROVEN in the
+literature, so the former `sorry` was permanently undischargeable — a `theorem` shape
+mis-advertises it as a pending proof obligation. As a named `Prop` it remains the
+faithful record of the (refuted) conjecture, usable in hypothetical reasoning.
+Blast radius: zero (no in-tree consumers; grep-verified). The provable replacement
+remains `mca_johnson_bound_CONJECTURE` above. -/
+def mca_capacity_bound_CONJECTURE
   (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
-  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) :
+  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) : Prop :=
   let Gen := RSGenerator.genRSC parℓ_type φ m exp
-  let : Fintype Gen.parℓ := Gen.hℓ
+  let _ : Fintype Gen.parℓ := Gen.hℓ
   haveI := Gen.Gen_nonempty
   ∃ (c₁ c₂ : ℕ),
     ∀ (f : Gen.parℓ → ι → F) (η : ℝ) (_hη : 0 < η) (δ : ℝ≥0)
@@ -259,7 +266,6 @@ theorem mca_capacity_bound_CONJECTURE
           (((Fintype.card parℓ_type - 1) : ℝ)^c₂ * ((2^m) : ℝ)^c₂) /
           (η^c₁ * Gen.rate^(c₁+c₂) * (Fintype.card F))
         )
-  := by sorry
 
 section
 
