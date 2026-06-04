@@ -85,7 +85,7 @@ lemma mu_set_uniformWeight_eq_card_div (S : Finset ι) :
   rw [Finset.sum_const]
   simp [nsmul_eq_mul, div_eq_inv_mul]
 
-omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
+omit [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] in
 lemma agree_uniformWeight_eq_card_div (a b : ι → F) :
     WeightedAgreement.agree (uniformWeight (ι := ι)) a b =
       ((Finset.univ.filter (fun i => a i = b i)).card : ℝ) /
@@ -112,7 +112,7 @@ lemma card_ge_of_uniform_mu_set_ge {S : Finset ι} {δ : ℝ≥0}
   rw [NNReal.coe_mul]
   exact hreal
 
-omit [DecidableEq ι] [Fintype F] in
+omit [DecidableEq ι] [Field F] [Fintype F] in
 lemma agree_uniformWeight_ge_one_sub_of_relDist_le {a b : ι → F} {δ : ℝ≥0}
     (hδ : δᵣ(a, b) ≤ δ) :
     WeightedAgreement.agree (uniformWeight (ι := ι)) a b ≥ ((1 - δ : ℝ≥0) : ℝ) := by
