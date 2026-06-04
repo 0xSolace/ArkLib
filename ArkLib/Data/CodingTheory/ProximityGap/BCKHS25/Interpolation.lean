@@ -627,8 +627,8 @@ section PSApplication
 variable {F : Type} [Field F] [DecidableEq F]
 variable {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
 
--- The Polishchuk–Spielman composition elaborates a large bivariate factorization term.
 set_option maxHeartbeats 3200000 in
+-- The Polishchuk–Spielman composition elaborates a large bivariate factorization term.
 /-- **[BCKHS25] Claim 2.3 (joint proximate).** If every `z ∈ S` admits a
 degree-`k` proximate within Hamming distance `e` of the line combination, and
 `S` is large enough relative to the Polishchuk–Spielman ratio, then there is a
