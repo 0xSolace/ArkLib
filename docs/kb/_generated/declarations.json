@@ -43344,9 +43344,36 @@
           "signature": "lemma RingSwitchingProfile.decomposeRows_sum {\u03b9 : Type*} [Fintype \u03b9] [DecidableEq \u03b9]"
         },
         {
+          "doc": "Column coordinates of `0` vanish: the column dual of `decomposeRows_zero`, from `decomposeColumns_add` by cancellation.",
+          "kind": "lemma",
+          "line": 574,
+          "name": "RingSwitching.RingSwitchingProfile.decomposeColumns_zero",
+          "namespace": "RingSwitching",
+          "short_name": "RingSwitchingProfile.decomposeColumns_zero",
+          "signature": "lemma RingSwitchingProfile.decomposeColumns_zero (v : Fin \u03ba \u2192 Fin 2) :"
+        },
+        {
+          "doc": "Column coordinates are additive over finite sums: the column dual of `decomposeRows_finsetSum`, by induction from `decomposeColumns_add` (with `decomposeColumns_zero` as base case).",
+          "kind": "lemma",
+          "line": 583,
+          "name": "RingSwitching.RingSwitchingProfile.decomposeColumns_finsetSum",
+          "namespace": "RingSwitching",
+          "short_name": "RingSwitchingProfile.decomposeColumns_finsetSum",
+          "signature": "lemma RingSwitchingProfile.decomposeColumns_finsetSum {\u03b9 : Type*} [DecidableEq \u03b9] (s : Finset \u03b9)"
+        },
+        {
+          "doc": "`Fintype` corollary of `decomposeColumns_finsetSum` for sums over `univ`.",
+          "kind": "lemma",
+          "line": 592,
+          "name": "RingSwitching.RingSwitchingProfile.decomposeColumns_sum",
+          "namespace": "RingSwitching",
+          "short_name": "RingSwitchingProfile.decomposeColumns_sum",
+          "signature": "lemma RingSwitchingProfile.decomposeColumns_sum {\u03b9 : Type*} [Fintype \u03b9] [DecidableEq \u03b9]"
+        },
+        {
           "doc": "A single `eqPolynomial` factor, evaluated through the mixed embedding `eval\u2082 \u03c6\u2081 (\u03c6\u2080 \u2218 g)` at a Boolean coefficient, collapses to the column embedding `\u03c6\u2080`, because `\u03c6\u2080` and `\u03c6\u2081` agree on the Boolean literals `{0, 1}`.",
           "kind": "lemma",
-          "line": 611,
+          "line": 636,
           "name": "RingSwitching.singleEq_collapse",
           "namespace": "RingSwitching",
           "short_name": "singleEq_collapse",
@@ -43355,7 +43382,7 @@
         {
           "doc": "The full `eqPolynomial` collapses through the mixed embedding to `\u03c6\u2080` of its ordinary evaluation, by multiplying the `singleEq_collapse` factors.",
           "kind": "lemma",
-          "line": 628,
+          "line": 653,
           "name": "RingSwitching.eqPoly_collapse",
           "namespace": "RingSwitching",
           "short_name": "eqPoly_collapse",
@@ -43364,7 +43391,7 @@
         {
           "doc": "`decompose_tensor_algebra_rows` is additive over finite sums of tensors.",
           "kind": "lemma",
-          "line": 641,
+          "line": 666,
           "name": "RingSwitching.decompose_rows_sum",
           "namespace": "RingSwitching",
           "short_name": "decompose_rows_sum",
@@ -43373,7 +43400,7 @@
         {
           "doc": "Row decomposition of a separated tensor `\u03c6\u2080(a) \u00b7 \u03c6\u2081(b) = a \u2297 b`: the `u`-th row component represents the *right* (`\u03c6\u2081`) factor `b`, scaled by `a`.",
           "kind": "lemma",
-          "line": 651,
+          "line": 676,
           "name": "RingSwitching.decompose_rows_\u03c6\u2080\u03c6\u2081",
           "namespace": "RingSwitching",
           "short_name": "decompose_rows_\u03c6\u2080\u03c6\u2081",
@@ -43382,7 +43409,7 @@
         {
           "doc": "The basis coordinate of a packed evaluation recovers the small-field coefficient: `\u03b2.repr (t'(w)) u = t(u, w)`, where `t' = packMLE \u03b2 t`.",
           "kind": "lemma",
-          "line": 664,
+          "line": 689,
           "name": "RingSwitching.packMLE_repr_eval",
           "namespace": "RingSwitching",
           "short_name": "packMLE_repr_eval",
@@ -43391,7 +43418,7 @@
         {
           "doc": "`eqTilde` written as a product over coordinates of the symmetric Boolean factor.",
           "kind": "lemma",
-          "line": 681,
+          "line": 706,
           "name": "RingSwitching.eqTilde_prod",
           "namespace": "RingSwitching",
           "short_name": "eqTilde_prod",
@@ -43400,7 +43427,7 @@
         {
           "doc": "A product over `Fin (\u2113' + \u03ba\u2080)` of a function defined by the \u03ba/\u2113'-dichotomy splits as the product of the \u03ba-prefix and \u2113'-suffix products.",
           "kind": "lemma",
-          "line": 692,
+          "line": 717,
           "name": "RingSwitching.prod_concat_split",
           "namespace": "RingSwitching",
           "short_name": "prod_concat_split",
@@ -43409,7 +43436,7 @@
         {
           "doc": "`eqTilde` of concatenated Boolean / point data factors along the \u03ba/\u2113' split: `eqTilde (concat fp fs) (concat gp gs) = eqTilde fp gp * eqTilde fs gs`.",
           "kind": "lemma",
-          "line": 729,
+          "line": 754,
           "name": "RingSwitching.eqTilde_concat_split",
           "namespace": "RingSwitching",
           "short_name": "eqTilde_concat_split",
@@ -43418,7 +43445,7 @@
         {
           "doc": "`aeval` of `eqPolynomial` at a Boolean coefficient vector lands in `L\u2080` as `eqTilde`.",
           "kind": "lemma",
-          "line": 746,
+          "line": 771,
           "name": "RingSwitching.aeval_eqPolynomial_zeroOne",
           "namespace": "RingSwitching",
           "short_name": "aeval_eqPolynomial_zeroOne",
@@ -43427,7 +43454,7 @@
         {
           "doc": "**MLE evaluation identity (through the algebra map).** For a multilinear `t` over `K\u2080`, its `L\u2080`-evaluation at `r` equals the suffix-`eq`-weighted sum of its Boolean evaluations: `aeval r t = \u2211_{b \u2208 {0,1}^\u2113} algebraMap(t(b)) \u00b7 eq\u0303(b, r)`.",
           "kind": "lemma",
-          "line": 763,
+          "line": 788,
           "name": "RingSwitching.aeval_eq_sum_eqTilde",
           "namespace": "RingSwitching",
           "short_name": "aeval_eq_sum_eqTilde",
@@ -43436,7 +43463,7 @@
         {
           "doc": "The \u03ba-then-\u2113' hypercube concatenation `concatBit v w i = v i` for `i < \u03ba`, `= w (i - \u03ba)` otherwise \u2014 matching `packMLE` / `decompose_rows_packMLE`. Packaged as an `Equiv`.",
           "kind": "def",
-          "line": 778,
+          "line": 803,
           "name": "RingSwitching.hypercubeSplitEquiv",
           "namespace": "RingSwitching",
           "short_name": "hypercubeSplitEquiv",
@@ -43445,7 +43472,7 @@
         {
           "doc": "Generic `singleEq_collapse`: a single `eqPolynomial` factor evaluated through the mixed embedding `eval\u2082 P.\u03c6\u2081 (P.\u03c6\u2080 \u2218 g)` at a Boolean coefficient collapses to `P.\u03c6\u2080` of its ordinary evaluation, since `P.\u03c6\u2080` and `P.\u03c6\u2081` agree on the Boolean literals `{0, 1}` (both are ring homs).",
           "kind": "lemma",
-          "line": 814,
+          "line": 839,
           "name": "RingSwitching.singleEq_collapse'",
           "namespace": "RingSwitching",
           "short_name": "singleEq_collapse'",
@@ -43454,7 +43481,7 @@
         {
           "doc": "Generic `eqPoly_collapse`: the full `eqPolynomial` collapses through the mixed embedding to `P.\u03c6\u2080` of its ordinary evaluation, by multiplying the `singleEq_collapse'` factors.",
           "kind": "lemma",
-          "line": 831,
+          "line": 856,
           "name": "RingSwitching.eqPoly_collapse'",
           "namespace": "RingSwitching",
           "short_name": "eqPoly_collapse'",
@@ -43463,7 +43490,7 @@
         {
           "doc": "**Generic DP24 packing expansion** over an abstract `P`. The prover's tensor `\u015d := P.\u03c6\u2081(t')(P.\u03c6\u2080(r_\u03ba), \u2026, P.\u03c6\u2080(r_{\u2113-1}))` expands over the suffix hypercube as `\u015d = \u03a3_{w \u2208 {0,1}^\u2113'} P.\u03c6\u2080(eq\u0303(w, r_suffix)) \u00b7 P.\u03c6\u2081(t'(w))`.",
           "kind": "lemma",
-          "line": 846,
+          "line": 871,
           "name": "RingSwitching.embedded_MLP_eval_eq_sum'",
           "namespace": "RingSwitching",
           "short_name": "embedded_MLP_eval_eq_sum'",
@@ -43472,7 +43499,7 @@
         {
           "doc": "**Generic row recovery of `t`-evaluations** over an abstract `P` whose basis is `P.basis`. The row components of `\u015d = embedded_MLP_eval (packMLE P.basis t) r` carry the suffix-`eq`-weighted evaluations of `t`. Routes through `embedded_MLP_eval_eq_sum'`, the generic row additivity `P.decomposeRows_sum`, the atomic extraction law `P.decomposeRows_\u03c6\u2080_mul_\u03c6\u2081`, and the profile-independent `packMLE_repr_eval`.",
           "kind": "lemma",
-          "line": 879,
+          "line": 904,
           "name": "RingSwitching.decompose_rows_packMLE'",
           "namespace": "RingSwitching",
           "short_name": "decompose_rows_packMLE'",
@@ -43481,7 +43508,7 @@
         {
           "doc": "**Generic DP24 ring-switching capstone (sum form)** over an abstract `P`. The verifier's row-decomposition check sum, applied to the honest tensor `\u015d = embedded_MLP_eval (packMLE P.basis t) r`, reconstructs exactly `t(r) = aeval r t`.",
           "kind": "lemma",
-          "line": 899,
+          "line": 924,
           "name": "RingSwitching.check_rows_sum_eq_aeval'",
           "namespace": "RingSwitching",
           "short_name": "check_rows_sum_eq_aeval'",
@@ -43490,7 +43517,7 @@
         {
           "doc": "**Generic DP24 ring-switching capstone (decision form)** over an abstract `P`. The verifier's Step-2 check on the honest tensor `\u015d = embedded_MLP_eval (packMLE P.basis t) r` accepts exactly when the original claim equals `t(r) = aeval r t`. This is the soundness/completeness pivot consumed by the batching phase for an arbitrary profile.",
           "kind": "lemma",
-          "line": 953,
+          "line": 978,
           "name": "RingSwitching.performCheckOriginalEvaluation_packMLE_iff'",
           "namespace": "RingSwitching",
           "short_name": "performCheckOriginalEvaluation_packMLE_iff'",
@@ -43499,7 +43526,7 @@
         {
           "doc": "**MLE evaluation as an `eq\u0303`-weighted hypercube sum.** Evaluating the multilinear extension `MLE f` at an arbitrary (not necessarily Boolean) point `r` equals the `eq\u0303`-weighted sum of the hypercube values `f x`, with weight `eq\u0303(x, r)`. This is the standard multilinear-extension evaluation formula, here phrased with the Boolean-literal embedding `x \u21a6 (if x = 1 then 1 else 0)` used throughout the ring-switching algebra layer.",
           "kind": "lemma",
-          "line": 985,
+          "line": 1010,
           "name": "RingSwitching.MLE_eval_eq_sum_eqTilde",
           "namespace": "RingSwitching",
           "short_name": "MLE_eval_eq_sum_eqTilde",
@@ -43508,16 +43535,34 @@
         {
           "doc": "**`\u03c6\u2080/\u03c6\u2081`-tensor expansion of an eq-tensor.** The mixed eq-tensor `eq\u0303(\u03c6\u2080 \u2218 g, \u03c6\u2081 \u2218 h) \u2208 P.A` expands over the Boolean hypercube as `\u2211_w \u03c6\u2080(eq\u0303(w, g)) \u00b7 \u03c6\u2081(eq\u0303(w, h))`. Proven by collapsing each `eqPolynomial` factor through the `eval\u2082 \u03c6\u2081 (\u03c6\u2080 \u2218 \u00b7)` mixed embedding (the same Boolean-literal-agreement argument as `embedded_MLP_eval_eq_sum'`, instantiated with the multilinear `eqPolynomial h`).",
           "kind": "lemma",
-          "line": 1006,
+          "line": 1031,
           "name": "RingSwitching.eqTilde_tensor_expand",
           "namespace": "RingSwitching",
           "short_name": "eqTilde_tensor_expand",
           "signature": "lemma eqTilde_tensor_expand {\u2113_ : \u2115} (g h : Fin \u2113_ \u2192 L\u2080) :"
         },
         {
+          "doc": "**`eqTilde` symmetry.** `eq\u0303(r, r') = eq\u0303(r', r)`: a direct corollary of `eqPolynomial_symm` (`eval r' (eqPolynomial r) = eval r (eqPolynomial r')`).",
+          "kind": "lemma",
+          "line": 1077,
+          "name": "RingSwitching.eqTilde_comm",
+          "namespace": "RingSwitching",
+          "short_name": "eqTilde_comm",
+          "signature": "lemma eqTilde_comm {\u2113_ : \u2115} (r r' : Fin \u2113_ \u2192 L\u2080) : eqTilde r r' = eqTilde r' r := by"
+        },
+        {
+          "doc": "**DP24 \u00a72.5 `A_MLE` final-evaluation identity (defect #10, column form).** The multilinear extension `A_MLE` of `compute_A_func` \u2014 the sumcheck multiplier `(RingSwitching_SumcheckMultParam \u2026).multpoly` \u2014 evaluated at the (arbitrary, non-Boolean) sumcheck challenges equals the verifier's `compute_final_eq_value`, which reads the **column** components of the final eq-tensor `e := eq\u0303(\u03c6\u2080 \u2218 r_suffix, \u03c6\u2081 \u2218 challenges)`. Term-by-term derivation: the LHS expands by `MLE_eval_eq_sum_eqTilde` into a sum over the Boolean hypercube of `eq\u0303(x, challenges) \u00b7 A_func(x)`, with `A_func(x) = \u2211_u \u03b2.repr(eq\u0303(suf",
+          "kind": "lemma",
+          "line": 1097,
+          "name": "RingSwitching.A_MLE_eval_eq_compute_final_eq_value",
+          "namespace": "RingSwitching",
+          "short_name": "A_MLE_eval_eq_compute_final_eq_value",
+          "signature": "lemma A_MLE_eval_eq_compute_final_eq_value (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113']"
+        },
+        {
           "doc": "**DP24 packing expansion.** The prover's tensor `\u015d := \u03c6\u2081(t')(\u03c6\u2080(r_\u03ba), \u2026, \u03c6\u2080(r_{\u2113-1}))` expands over the suffix hypercube as `\u015d = \u03a3_{w \u2208 {0,1}^\u2113'} \u03c6\u2080(eq\u0303(w, r_suffix)) \u00b7 \u03c6\u2081(t'(w))`, i.e. `\u03a3_w eq\u0303(r_suffix, w) \u2297 t'(w)`.",
           "kind": "lemma",
-          "line": 1067,
+          "line": 1148,
           "name": "RingSwitching.embedded_MLP_eval_eq_sum",
           "namespace": "RingSwitching",
           "short_name": "embedded_MLP_eval_eq_sum",
@@ -43526,7 +43571,7 @@
         {
           "doc": "**Row recovery of `t`-evaluations.** The row components of the prover's tensor `\u015d = embedded_MLP_eval (packMLE \u03b2 t) r` carry the suffix-`eq`-weighted evaluations of `t`: `(decompose_rows \u015d)_u = \u03a3_{w \u2208 {0,1}^\u2113'} t(u, w) \u00b7 eq\u0303(w, r_suffix)`. This is the load-bearing identity for reconstructing `t(r)` from `\u015d`. It uses the *row* decomposition (which represents the `t'`/`\u03c6\u2081` factor); the verifier's `performCheckOriginalEvaluation` instead uses the *column* decomposition \u2014 see the module note above.",
           "kind": "lemma",
-          "line": 1103,
+          "line": 1184,
           "name": "RingSwitching.decompose_rows_packMLE",
           "namespace": "RingSwitching",
           "short_name": "decompose_rows_packMLE",
@@ -43535,7 +43580,7 @@
         {
           "doc": "**DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to the prover's honest tensor `\u015d = embedded_MLP_eval (packMLE \u03b2 t) r`, reconstructs exactly `t(r) = aeval r t`: `\u2211_v eq\u0303(v, r_prefix) \u00b7 (rows \u015d)_v = aeval r t`.",
           "kind": "lemma",
-          "line": 1124,
+          "line": 1205,
           "name": "RingSwitching.check_rows_sum_eq_aeval",
           "namespace": "RingSwitching",
           "short_name": "check_rows_sum_eq_aeval",
@@ -43544,7 +43589,7 @@
         {
           "doc": "**DP24 ring-switching capstone (decision form).** The verifier's Step-2 check on the prover's honest tensor `\u015d = embedded_MLP_eval (packMLE \u03b2 t) r` accepts exactly when the original claim equals `t(r) = aeval r t`. This is the soundness/completeness pivot for the batching phase.",
           "kind": "lemma",
-          "line": 1181,
+          "line": 1262,
           "name": "RingSwitching.performCheckOriginalEvaluation_packMLE_iff",
           "namespace": "RingSwitching",
           "short_name": "performCheckOriginalEvaluation_packMLE_iff",
@@ -43553,7 +43598,7 @@
         {
           "doc": "**Sumcheck hypercube sum depends on the evaluation domain `\ud835\udcd1`.** The single-variable sumcheck consistency sum of the linear polynomial `X 0` over the 2-element domain `{\ud835\udcd1 0, \ud835\udcd1 1}` equals `\ud835\udcd1 0 + \ud835\udcd1 1`.",
           "kind": "lemma",
-          "line": 1226,
+          "line": 1307,
           "name": "RingSwitching.sumcheckSum_X0_eq",
           "namespace": "RingSwitching",
           "short_name": "sumcheckSum_X0_eq",
@@ -43562,7 +43607,7 @@
         {
           "doc": "**No `\ud835\udcd1`-free target satisfies sumcheck consistency for all domains `\ud835\udcd1`.** If a single value `c` (independent of `\ud835\udcd1`) equals the sumcheck consistency sum of `X 0` for two embeddings `\ud835\udcd1\u2081`, `\ud835\udcd1\u2082`, then `\ud835\udcd1\u2081 0 + \ud835\udcd1\u2081 1 = \ud835\udcd1\u2082 0 + \ud835\udcd1\u2082 1`. Contrapositive: whenever two domains have different element sums (e.g. `{0,1}` vs `{0,\u03c9}` in `GF(4)`, where `1 \u2260 \u03c9`), no `\ud835\udcd1`-free target can be consistent with both. Since `compute_s0` does not depend on `\ud835\udcd1`, this obstructs `sumcheckConsistencyProp (compute_s0 \u2026) H` for a free `\ud835\udcd1`.",
           "kind": "lemma",
-          "line": 1245,
+          "line": 1326,
           "name": "RingSwitching.sumcheckTarget_domain_indep",
           "namespace": "RingSwitching",
           "short_name": "sumcheckTarget_domain_indep",
@@ -43571,7 +43616,7 @@
         {
           "doc": "The Boolean hypercube embedding `(Fin k \u2192 Fin 2) \u21aa (Fin k \u2192 L\u2080)` induced by a 2-element domain embedding `\ud835\udcd1`, sending `b \u21a6 (j \u21a6 \ud835\udcd1 (b j))`.",
           "kind": "def",
-          "line": 1266,
+          "line": 1347,
           "name": "RingSwitching.boolHypercubeEmb",
           "namespace": "RingSwitching",
           "short_name": "boolHypercubeEmb",
@@ -43580,7 +43625,7 @@
         {
           "doc": "**`\ud835\udcd1`-domain hypercube sum reindexes to the Boolean hypercube.** For any `\ud835\udcd1 : Fin 2 \u21aa L\u2080`, summing `f` over the `k`-fold product domain `{\ud835\udcd1 0, \ud835\udcd1 1}^k` equals summing `f \u2218 (\ud835\udcd1 \u2218 \u00b7)` over the Boolean hypercube `Fin k \u2192 Fin 2`. (No pinning required \u2014 `\ud835\udcd1` only needs to be an embedding.)",
           "kind": "lemma",
-          "line": 1274,
+          "line": 1355,
           "name": "RingSwitching.boolHypercube_sum_eq",
           "namespace": "RingSwitching",
           "short_name": "boolHypercube_sum_eq",
@@ -43589,7 +43634,7 @@
         {
           "doc": "**Pinned-`\ud835\udcd1` Boolean-domain sumcheck sum.** When `\ud835\udcd1` is pinned to the Boolean embedding (`\ud835\udcd1 c = if c = 1 then 1 else 0`, i.e. `\ud835\udcd1 0 = 0`, `\ud835\udcd1 1 = 1`), the `\ud835\udcd1`-domain hypercube sum equals the canonical sum over `Fin k \u2192 Fin 2` with the Boolean-literal evaluation point `j \u21a6 (if b j = 1 then 1 else 0)`. This is the `\ud835\udcd1`-free right-hand side of `sumcheckConsistencyProp` in the regime DP24 instantiates.",
           "kind": "lemma",
-          "line": 1294,
+          "line": 1375,
           "name": "RingSwitching.boolHypercube_sum_pinned",
           "namespace": "RingSwitching",
           "short_name": "boolHypercube_sum_pinned",
@@ -43598,7 +43643,7 @@
         {
           "doc": "**`simOracle2` message-query collapse (`OracleComp` form).** Simulating, via `simOracle2 oSpec t\u2081 t\u2082`, the lift into the combined spec `oSpec + ([T\u2081]\u2092 + [T\u2082]\u2092)` of a single query `qm` to the *right* (message) oracle family `[T\u2082]\u2092` collapses to `pure` of that oracle's `answer`, with all queries routed to `t\u2082`.",
           "kind": "lemma",
-          "line": 1331,
+          "line": 1412,
           "name": "RingSwitching.simulateQ_simOracle2_messageQuery",
           "namespace": "RingSwitching",
           "short_name": "simulateQ_simOracle2_messageQuery",
@@ -43607,11 +43652,29 @@
         {
           "doc": "**`simOracle2` message-query collapse (`OptionT`-`query` form).** The same reduction as `simulateQ_simOracle2_messageQuery`, phrased for the `query`/`monadLift` form that appears verbatim in an `OracleVerifier.verify` body (a query in `OptionT (OracleComp (oSpec + ([T\u2081]\u2092 + [T\u2082]\u2092)))`). This is the form consumed by the verifier-run collapse in message-querying `toFun_full` proofs.",
           "kind": "lemma",
-          "line": 1353,
+          "line": 1434,
           "name": "RingSwitching.simulateQ_simOracle2_query",
           "namespace": "RingSwitching",
           "short_name": "simulateQ_simOracle2_query",
           "signature": "lemma simulateQ_simOracle2_query {\u03b9 : Type} {oSpec : OracleSpec \u03b9}"
+        },
+        {
+          "doc": "**`sumAlgEquiv` evaluation.** Evaluating the curried polynomial `sumAlgEquiv p` by `eval x` on the outer (`S\u2081`) variables and `eval challenges` on the inner (`S\u2082`) coefficient ring equals evaluating `p` directly at the combined point `Sum.elim x challenges`. Proven by `induction_on`, using `sumToIter` (`= sumAlgEquiv` by `rfl`) on the generators.",
+          "kind": "theorem",
+          "line": 1463,
+          "name": "RingSwitching.sumAlgEquiv_eval\u2082",
+          "namespace": "RingSwitching",
+          "short_name": "sumAlgEquiv_eval\u2082",
+          "signature": "theorem sumAlgEquiv_eval\u2082 {L : Type} [CommRing L] {S\u2081 S\u2082 : Type} [Fintype S\u2081]"
+        },
+        {
+          "doc": "**`fixFirstVariablesOfMQP` evaluation.** Evaluating the polynomial obtained by fixing the last `v` variables of `poly` to `challenges` (then `eval x` on the survivors) equals evaluating `poly` directly at the recombined point (survivors from `x`, fixed coords from `challenges`, via the same `finCongr`/`finSumFinEquiv` reindexing used in `fixFirstVariablesOfMQP`).",
+          "kind": "theorem",
+          "line": 1486,
+          "name": "RingSwitching.fixFirstVariablesOfMQP_eval",
+          "namespace": "RingSwitching",
+          "short_name": "fixFirstVariablesOfMQP_eval",
+          "signature": "theorem fixFirstVariablesOfMQP_eval {L : Type} [CommRing L] (\u2113 : \u2115) (v : Fin (\u2113+1))"
         }
       ]
     },
@@ -43970,7 +44033,7 @@
         {
           "doc": "The oracle reduction for the final sumcheck step",
           "kind": "def",
-          "line": 367,
+          "line": 381,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleReduction",
@@ -43979,7 +44042,7 @@
         {
           "doc": "Perfect completeness for the final sumcheck step",
           "kind": "theorem",
-          "line": 381,
+          "line": 395,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleReduction_perfectCompleteness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleReduction_perfectCompleteness",
@@ -43988,7 +44051,7 @@
         {
           "doc": "RBR knowledge error for the final sumcheck step",
           "kind": "def",
-          "line": 396,
+          "line": 452,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckRbrKnowledgeError",
@@ -43997,7 +44060,7 @@
         {
           "doc": "The round-by-round extractor for the final sumcheck step",
           "kind": "def",
-          "line": 399,
+          "line": 455,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckRbrExtractor",
@@ -44006,7 +44069,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 419,
+          "line": 475,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckKStateProp",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckKStateProp",
@@ -44015,7 +44078,7 @@
         {
           "doc": "The knowledge state function for the final sumcheck step",
           "kind": "def",
-          "line": 456,
+          "line": 512,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckKnowledgeStateFunction",
@@ -44024,7 +44087,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the final sumcheck step",
           "kind": "theorem",
-          "line": 491,
+          "line": 547,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
@@ -44033,7 +44096,7 @@
         {
           "doc": "Composed oracle verifier for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 511,
+          "line": 567,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleVerifier",
@@ -44042,7 +44105,7 @@
         {
           "doc": "Composed oracle reduction for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 520,
+          "line": 576,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleReduction",
@@ -44051,7 +44114,7 @@
         {
           "doc": "Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 537,
+          "line": 593,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleVerifier",
@@ -44060,7 +44123,7 @@
         {
           "doc": "Large-field reduction: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 546,
+          "line": 602,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleReduction",
@@ -44069,7 +44132,7 @@
         {
           "doc": "Perfect completeness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 560,
+          "line": 616,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_perfectCompleteness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_perfectCompleteness",
@@ -44078,7 +44141,7 @@
         {
           "doc": "Per-round knowledge error for the iterated sumcheck rounds.",
           "kind": "def",
-          "line": 587,
+          "line": 643,
           "name": "RingSwitching.SumcheckPhase.iteratedSumcheckRoundKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "iteratedSumcheckRoundKnowledgeError",
@@ -44087,7 +44150,7 @@
         {
           "doc": "standard sumcheck error",
           "kind": "def",
-          "line": 590,
+          "line": 646,
           "name": "RingSwitching.SumcheckPhase.coreInteractionRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionRbrKnowledgeError",
@@ -44096,7 +44159,7 @@
         {
           "doc": "RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 601,
+          "line": 657,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_rbrKnowledgeSoundness",
@@ -48630,7 +48693,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5279,
+      "declarations": 5286,
       "files": 282
     }
   }
