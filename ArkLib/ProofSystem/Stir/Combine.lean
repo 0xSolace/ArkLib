@@ -736,8 +736,6 @@ theorem combine_theorem
         simp only [pow_zero, one_mul] at hv
         exact hv
 
-set_option maxHeartbeats 0 in
--- The proof repeats the flattened combine argument and needs the same budget as `combine_theorem`.
 open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
 /-- Unconditional UDR-restricted variant of `combine_theorem` ([STIR] Lemma 4.13):
 with `δ` below the unique-decoding radius, the conclusion holds with NO dependence
