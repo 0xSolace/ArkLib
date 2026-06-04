@@ -261,6 +261,72 @@ theorem probEvent_le_sum_of_imp_exists {m : Type → Type*} [Monad m] [HasEvalSP
   refine le_trans (probEvent_mono ?_) (probEvent_exists_le_sum mx p)
   exact himp
 
+/-- **Failure-monotone trailing bind.**  Appending a (possibly-failing) computation `gb x` *before*
+returning a value `h x` that does not depend on `gb x`'s output can only *decrease* the probability
+of any event: the trailing computation contributes only extra failure mass.
+
+This is the reusable probabilistic core of the `rbrSoundness → soundness` marginal bridge: the full
+prover run threads the trailing `receiveChallenge`/`sendMessage`/`output` and verifier steps, which
+the round-by-round game omits; since the per-round flip event depends only on the transcript prefix
+(already determined before those steps), dropping them can only raise the event probability —
+turning the marginal relation into the `≤` direction needed to chain to `rbrSoundnessError`. -/
+theorem probEvent_bind_trailing_le {m : Type → Type*} [Monad m] [LawfulMonad m] [HasEvalSPMF m]
+    {α β γ : Type} (mx : m α) (gb : α → m γ) (h : α → β) (p : β → Prop) :
+    Pr[p | mx >>= fun x => gb x >>= fun _ => pure (h x)] ≤ Pr[p | mx >>= fun x => pure (h x)] := by
+  refine probEvent_bind_mono (fun x _ => ?_)
+  rw [probEvent_bind_const]
+  calc (1 - Pr[⊥ | gb x]) * Pr[p | (pure (h x) : m β)]
+      ≤ 1 * Pr[p | (pure (h x) : m β)] := by
+        gcongr; exact tsub_le_self
+    _ = Pr[p | (pure (h x) : m β)] := one_mul _
+
+section StateTTransport
+
+variable {ι : Type} {spec : OracleSpec ι} {σ : Type}
+
+/-- **State-aware failure-monotone trailing bind, transported across `simulateQ … |>.run'`.**
+For an *arbitrary* stateful query implementation `so : QueryImpl spec (StateT σ ProbComp)` and start
+state `s`, running `simulateQ so` on a computation that, after producing `a`, executes a trailing
+(possibly-failing) `gb a` and then returns `h a`, has event probability at most that of the
+computation that skips the trailing step.  The trailing `gb a` threads the simulation state and can
+only add failure mass, which only lowers the event probability.
+
+This is the missing connective of the `rbrSoundness → soundness` marginal bridge: it lets the
+trailing `receiveChallenge`/`sendMessage`/`output`/verifier steps of the full run be dropped (one
+`probEvent ≤` at a time) while keeping the same arbitrary `impl`/state thread that both the soundness
+game and the round-by-round game share. -/
+theorem probEvent_simulateQ_run'_bind_trailing_le {α β γ : Type}
+    (so : QueryImpl spec (StateT σ ProbComp)) (s : σ)
+    (mx : OracleComp spec α) (gb : α → OracleComp spec γ) (h : α → β) (p : β → Prop) :
+    Pr[p | (simulateQ so (mx >>= fun a => gb a >>= fun _ => (pure (h a) : OracleComp spec β))).run' s]
+      ≤ Pr[p | (simulateQ so (mx >>= fun a => (pure (h a) : OracleComp spec β))).run' s] := by
+  simp only [simulateQ_bind]
+  rw [StateT.run'_eq, StateT.run'_eq, StateT.run_bind, StateT.run_bind]
+  rw [probEvent_map, probEvent_map]
+  refine probEvent_bind_mono (fun pr _ => ?_)
+  obtain ⟨a, s'⟩ := pr
+  simp only [simulateQ_pure, StateT.run_pure, StateT.run_bind]
+  -- Goal: `Pr[p∘fst | gb-run >>= fun q => pure (h a, q.2)] ≤ Pr[p∘fst | pure (h a, s')]`.
+  -- The event `(p∘fst)(h a, q.2) = p (h a)` does not depend on `q`, so the trailing `gb`-run only
+  -- adds failure mass: apply `probEvent_bind_of_const` and drop the `(1 - Pr[⊥]) ≤ 1` factor.
+  have hconst : Pr[(p ∘ fun x => x.1) | (simulateQ so (gb a)).run s' >>=
+        fun q => (pure (h a, q.2) : ProbComp (β × σ))]
+      = (1 - Pr[⊥ | (simulateQ so (gb a)).run s'])
+        * Pr[(p ∘ fun x => x.1) | (pure (h a, s') : ProbComp (β × σ))] :=
+    probEvent_bind_of_const _ (fun q _ => by
+      rw [probEvent_pure_eq_indicator, probEvent_pure_eq_indicator]
+      simp only [Set.indicator, Set.mem_setOf_eq, Function.comp, Function.const]
+      rfl)
+  calc Pr[(p ∘ fun x => x.1) | (simulateQ so (gb a)).run s' >>=
+          fun q => (pure (h a, q.2) : ProbComp (β × σ))]
+      = (1 - Pr[⊥ | (simulateQ so (gb a)).run s'])
+          * Pr[(p ∘ fun x => x.1) | (pure (h a, s') : ProbComp (β × σ))] := hconst
+    _ ≤ 1 * Pr[(p ∘ fun x => x.1) | (pure (h a, s') : ProbComp (β × σ))] := by
+        gcongr; exact tsub_le_self
+    _ = Pr[(p ∘ fun x => x.1) | (pure (h a, s') : ProbComp (β × σ))] := one_mul _
+
+end StateTTransport
+
 omit [∀ i, SampleableType (pSpec.Challenge i)] init impl in
 /-- **Prefix step of a full transcript.**  Restating `Fin.take_succ_eq_snoc` in `Transcript`/
 `FullTranscript` language: the round-`j.succ` prefix of a full transcript is the round-`j.castSucc`

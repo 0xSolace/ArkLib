@@ -72,7 +72,36 @@ theorem rbrSoundness_implies_soundness (langIn : Set StmtIn) (langOut : Set Stmt
     (verifier : Verifier oSpec StmtIn StmtOut pSpec)
     (rbrSoundnessError : pSpec.ChallengeIdx → ℝ≥0) :
       rbrSoundness init impl langIn langOut verifier rbrSoundnessError →
-        soundness init impl langIn langOut verifier (∑ i, rbrSoundnessError i) := by sorry
+        soundness init impl langIn langOut verifier (∑ i, rbrSoundnessError i) := by
+  -- PROOF SPINE (probability bridge, ArkLib#1). The combinatorial + union-bound + first-crossing
+  -- backbone is fully banked and assembled below; the single remaining gap is the per-round
+  -- distributional marginal (see FRONTIER below and the FRONTIER NOTE in Execution.lean).
+  --
+  -- 1. Destructure the rbr hypothesis to get the state function `sf` and the per-round bound `hsf`.
+  -- 2. `intro` the soundness game's prover/statement; reduce the goal to
+  --      `Pr[verifierOut ∈ langOut | full game] ≤ ∑ i, rbrSoundnessError i`.
+  -- 3. `Verifier.StateFunction.probEvent_le_sum_of_imp_exists` reduces (2) to: on the support, the
+  --    accept event implies `∃ i : ChallengeIdx, flip_i` (a per-round flip on the realized
+  --    transcript prefix), PLUS the per-round bound `Pr[flip_i | full game] ≤ rbrSoundnessError i`.
+  -- 4. The support-implication is `Verifier.StateFunction.exists_challenge_flip_of_full` applied to
+  --    each accepting support point: `toFun_full` (contrapositive, via `probEvent_pos`) gives
+  --    `sf (last n) stmtIn (tr.take)` for the realized full transcript `tr`, and `stmtIn ∉ langIn`
+  --    gives `¬ sf 0`, so the first-crossing lands on a challenge round.
+  -- 5. The per-round bound chains: `Pr[flip_i | full game] ≤ Pr[flip_i | rbr game i] ≤
+  --    rbrSoundnessError i = hsf i`, where the first `≤` is the failure-monotone marginal.
+  --
+  -- FRONTIER (the only missing connective): the first `≤` in step 5. The flip event depends only on
+  -- the round-`i.succ` transcript prefix; in the full game that prefix is produced by
+  -- `runToRound (last n)` followed by the trailing `receiveChallenge`/`sendMessage`/`output` and
+  -- verifier steps, whereas the rbr game produces it via `runToRound i.castSucc >>= getChallenge`.
+  -- The geometry (`Prover.fin_take_snoc_of_le`), the per-round prover factorization
+  -- (`Prover.fst_map_runToRound_succ_challenge`), and the failure-monotone trailing-bind lemma
+  -- (`Verifier.StateFunction.probEvent_bind_trailing_le`) are all in place; what remains is to
+  -- transport the failure-monotone step across `simulateQ (impl.addLift challengeQueryImpl) … |>.run'`
+  -- and the `(← init)` bind for an *arbitrary* stateful `impl` (state threads through the dropped
+  -- trailing steps, so a state-aware analogue of `probEvent_bind_trailing_le` over
+  -- `StateT σ ProbComp` is needed). See Execution.lean FRONTIER NOTE.
+  sorry
 
 /-- Round-by-round knowledge soundness with error `rbrKnowledgeError` implies round-by-round
 soundness with the same error `rbrKnowledgeError`. -/

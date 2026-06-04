@@ -612,6 +612,59 @@ theorem fst_map_runToRound_succ_challenge (i : pSpec.ChallengeIdx)
   rw [runToRound_succ, processRound_challenge]
   simp only [map_bind, map_pure]
 
+/-! ### Prover-run transcript-prefix consistency (keystone marginal bridge)
+
+The round-by-round soundness game speaks about the round-`i.succ` transcript produced by
+`runToRound i.succ`, while the soundness game runs the prover to completion (`runToRound (last n)`).
+The geometric lemma below records the *value*-level fact that processing a later round only `snoc`s a
+new entry onto the transcript and never alters earlier ones, so taking a round-`m` prefix discards
+the appended entry.  (Note: this does NOT lift to a distributional equality between the full-run
+prefix marginal and `runToRound m`, because the intervening `sendMessage`/`receiveChallenge` steps
+can fail — only the failure-monotone `≤` direction holds; see the FRONTIER NOTE below.) -/
+
+/-- **`Fin.take` of a `snoc` below the cut.**  Taking the first `m ≤ k` entries of `Fin.snoc T msg`
+(a tuple of length `k + 1`) discards the appended `msg` and equals taking the first `m` entries of
+`T`.  The geometric core of transcript-prefix preservation under `processRound`. -/
+theorem fin_take_snoc_of_le {k m : ℕ} (hm : m ≤ k) {α : Fin (k + 1) → Sort*}
+    (T : (i : Fin k) → α i.castSucc) (msg : α (Fin.last k)) :
+    Fin.take m (by omega) (Fin.snoc T msg) = Fin.take m hm (fun i => T i) := by
+  rw [← Fin.take_init m hm (Fin.snoc T msg), Fin.init_snoc]
+
+-- FRONTIER NOTE (rbrSoundness → soundness, probability bridge; ArkLib#1).
+--
+-- The remaining gap is the *per-round distributional marginal* relating the full prover run's
+-- round-`i.succ` transcript prefix to the round-by-round game's `runToRound i.castSucc`-then-fresh-
+-- challenge form.  An earlier attempt formulated this as a *computation equality*
+--   `(fun x => Fin.take m x.1) <$> runToRound j = (fun x => x.1) <$> runToRound ⟨m,_⟩`  (for m ≤ j),
+-- proved by induction peeling one `processRound` at a time.  That equality is FALSE: at a P_to_V
+-- (message) round `processRound` runs `prover.sendMessage`, and at a V_to_P (challenge) round it
+-- runs `prover.receiveChallenge`, both of which return an `OracleComp oSpec _` that *can fail*.
+-- Taking the round-`m` transcript prefix (with `m ≤ j.val`) discards the newly appended entry — see
+-- the (kept, correct) geometric lemma `fin_take_snoc_of_le` above — but the failure mass of those
+-- trailing steps remains.  Hence only the *failure-monotone* `≤` direction holds, not `=`.
+--
+-- The correct statement is therefore a `probEvent` inequality, threaded through
+-- `simulateQ (impl.addLift challengeQueryImpl) … |>.run' (← init)`:
+--   Pr[ p (Fin.take i.succ.val tr) | full run ] ≤ Pr[ p | rbr game i ]
+-- whose proof spine is:
+--   (1) peel rounds `i.succ … last n` off `runToRound (last n)` as trailing binds whose outputs do
+--       not affect the round-`i.succ` prefix (geometry: `fin_take_snoc_of_le`), then drop them via
+--       the failure-monotone trailing-bind lemma
+--       `Verifier.StateFunction.probEvent_bind_trailing_le` (in RoundByRound.lean) — each dropped
+--       step can only raise the event probability;
+--   (2) the verifier phase and `prover.output` of `Reduction.run` are likewise trailing binds whose
+--       failure only raises the prefix-event probability (same lemma);
+--   (3) `fst_map_runToRound_succ_challenge` (above) rewrites the surviving `runToRound i.succ`
+--       prefix into the rbr game's `runToRound i.castSucc >>= getChallenge` shape (the trailing
+--       `receiveChallenge` there is dropped by the same failure-monotone step).
+-- All three steps must be transported across `simulateQ … |>.run'` and the `(← init)` bind; the
+-- `impl`/`init` thread identically through both games, so they are carried as an opaque common
+-- prefix.  The reusable ingredients now in place: `fin_take_snoc_of_le` (here),
+-- `probEvent_bind_trailing_le`, `exists_challenge_flip_of_full`, `probEvent_le_sum_of_imp_exists`
+-- (RoundByRound.lean).  The missing connective is the `simulateQ`/`run'`/`init`-transport of the
+-- failure-monotone step, i.e. a `probEvent_simulateQ_run'_bind_trailing_le` analogue for an
+-- *arbitrary* (not distribution-preserving) `impl`.
+
 end Prover
 
 end Execution
