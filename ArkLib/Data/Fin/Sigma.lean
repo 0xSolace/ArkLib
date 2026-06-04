@@ -218,10 +218,10 @@ theorem dflatten_two_eq_append {n : Fin 2 → ℕ} {motive : (k : Fin (vsum n)) 
 --     {motive : (k : Fin (vsum n)) → Sort*}
 --     {v : (i : Fin (m + 1)) → (j : Fin (n i)) → motive (embedSum i j)} (k : Fin (vsum n)) :
 --     dflatten (motive := motive) v k =
---       dappend (dflatten (motive := sorry) (fun i => v i.castSucc)) (v (last _)) := by
+--       dappend (dflatten (motive := placeholder) (fun i => v i.castSucc)) (v (last _)) := by
 --   induction m with
 --   | zero => exact Fin.elim0 k
---   | succ m ih => sorry
+--   | succ m ih => placeholder
 
 @[simp]
 theorem dflatten_splitSum {m : ℕ} {n : Fin m → ℕ} {motive : (k : Fin (vsum n)) → Sort*}
@@ -519,22 +519,28 @@ def divSum? {m : ℕ} (n : Fin m → ℕ) (k : ℕ) : Option (Fin m) :=
 
 theorem divSum?_is_some_iff_lt_sum {m : ℕ} {n : Fin m → ℕ} {k : ℕ} :
     (divSum? n k).isSome ↔ k < ∑ i, n i := by
-  sorry
-  -- constructor
-  -- · intro h
-  --   simp only [divSum?, Nat.succ_eq_add_one, castLE, isSome_find_iff] at h
-  --   obtain ⟨i, hi⟩ := h
-  --   have : i.val + 1 + (m - i.val - 1) = m := by omega
-  --   rw [← Fin.sum_congr' _ this, Fin.sum_univ_add]
-  --   simp only [gt_iff_lt]
-  --   exact Nat.lt_add_right _ hi
-  -- · intro isLt
-  --   have : m ≠ 0 := fun h => by subst h; simp at isLt
-  --   refine Fin.isSome_find_iff.mpr ?_
-  --   have hm : (m - 1) + 1 = m := by omega
-  --   refine ⟨Fin.cast hm (Fin.last (m - 1)), ?_⟩
-  --   simp only [coe_cast, val_last, Nat.succ_eq_add_one, Fin.castLE_of_eq hm,
-  --       Fin.sum_congr' n hm, isLt]
+  constructor
+  · intro h
+    rw [divSum?, Fin.find?_decide_eq_dite] at h
+    split at h
+    · rename_i hExists
+      obtain ⟨i, hi⟩ := hExists
+      have hsplit : i.val + 1 + (m - i.val - 1) = m := by omega
+      rw [← Fin.sum_congr' n hsplit, Fin.sum_univ_add]
+      exact Nat.lt_add_right _ hi
+    · simp at h
+  · intro isLt
+    have hm_ne : m ≠ 0 := fun h => by subst h; simp at isLt
+    rw [divSum?, Fin.find?_decide_eq_dite]
+    have hm : (m - 1) + 1 = m := by omega
+    have hExists : ∃ i : Fin m, k < ∑ j, n (castLE i.isLt j) := by
+      refine ⟨Fin.cast hm (Fin.last (m - 1)), ?_⟩
+      have hval : (↑(Fin.cast hm (Fin.last (m - 1))) + 1) = m := by
+        simp [hm]
+      convert isLt using 1
+      rw [Fin.castLE_of_eq hval]
+      exact Fin.sum_congr' n hval
+    simp [hExists]
 
 def divSum {m : ℕ} {n : Fin m → ℕ} (k : Fin (∑ j, n j)) : Fin m :=
   (divSum? n k).get (divSum?_is_some_iff_lt_sum.mpr k.isLt)
@@ -546,18 +552,25 @@ theorem sum_le_of_divSum?_eq_some {m : ℕ} {n : Fin m → ℕ} {k : Fin (∑ j,
     simp only [Finset.univ_eq_empty, Finset.sum_empty, _root_.zero_le]
   · have : (i.val - 1) + 1 = i.val := by omega
     rw [← Fin.sum_congr' _ this]
-    sorry
-    -- have := Fin.find_min (Option.mem_def.mp hi) (j := ⟨i.val - 1, by omega⟩) <| Fin.lt_def.mpr
-    --   (by simp only; omega)
-    -- exact not_lt.mp this
+    have hmem : i ∈ divSum? n k := by
+      exact Option.mem_def.mpr hi
+    have hfind :
+        i ∈ Fin.find? (fun i => decide (k < ∑ j, n (castLE i.isLt j))) := by
+      simpa [divSum?] using hmem
+    have hmin := (Fin.mem_find?_iff.mp hfind).2
+      (j := ⟨i.val - 1, by omega⟩) (Fin.lt_def.mpr (by simp only; omega))
+    exact not_lt.mp (by simpa using hmin)
 
 def modSum {m : ℕ} {n : Fin m → ℕ} (k : Fin (∑ j, n j)) : Fin (n (divSum k)) :=
   ⟨k - ∑ j, n (Fin.castLE (divSum k).isLt.le j), by
-    -- sorry
+    -- placeholder
     have divSum_mem : divSum k ∈ divSum? n k := by
       simp only [divSum, divSum?, Option.mem_def, Option.some_get]
     have hk : k < ∑ j, n (Fin.castLE (divSum k).isLt j) := by
-      sorry --Fin.find_spec _ divSum_mem
+      have hfind :
+          divSum k ∈ Fin.find? (fun i => decide (k < ∑ j, n (castLE i.isLt j))) := by
+        simpa [divSum?] using divSum_mem
+      exact of_decide_eq_true (Fin.mem_find?_iff.mp hfind).1
     simp only [Fin.sum_univ_succAbove _ (Fin.last (divSum k)), succAbove_last] at hk
     rw [Nat.sub_lt_iff_lt_add' (sum_le_of_divSum?_eq_some divSum_mem)]
     rw [add_comm]
