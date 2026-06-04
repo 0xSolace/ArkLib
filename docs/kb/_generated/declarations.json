@@ -11554,7 +11554,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 34,
+          "line": 40,
           "name": "ProximityGap.triv_comp_add_C_eq_zero_iff",
           "namespace": "ProximityGap",
           "short_name": "triv_comp_add_C_eq_zero_iff",
@@ -11563,7 +11563,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 42,
+          "line": 48,
           "name": "ProximityGap.triv_compRingHom_addC_injective",
           "namespace": "ProximityGap",
           "short_name": "triv_compRingHom_addC_injective",
@@ -11572,7 +11572,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 48,
+          "line": 55,
           "name": "ProximityGap.triv_rm0_none_imp_zero",
           "namespace": "ProximityGap",
           "short_name": "triv_rm0_none_imp_zero",
@@ -11581,7 +11581,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 78,
+          "line": 85,
           "name": "ProximityGap.triv_shift_eq_zero_iff",
           "namespace": "ProximityGap",
           "short_name": "triv_shift_eq_zero_iff",
@@ -11590,7 +11590,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 85,
+          "line": 92,
           "name": "ProximityGap.triv_rm0_some_witness",
           "namespace": "ProximityGap",
           "short_name": "triv_rm0_some_witness",
@@ -11599,7 +11599,7 @@
         {
           "doc": "Order-`m` vanishing from shifted-coefficient vanishing, over an integral-domain coefficient ring `S`.  This is the `[CommRing S] [IsDomain S]` port of the field-only `GuruswamiSudan.rootMultiplicity_ge_of_shift_zero`, needed for the trivariate setting `S = F[Z]`.",
           "kind": "lemma",
-          "line": 103,
+          "line": 110,
           "name": "ProximityGap.triv_rootMultiplicity_ge_of_shift_zero",
           "namespace": "ProximityGap",
           "short_name": "triv_rootMultiplicity_ge_of_shift_zero",
@@ -11608,7 +11608,7 @@
         {
           "doc": "The degree bound (a.k.a. `D_X`) for instantiation of Guruswami-Sudan in Lemma 5.3 of [BCIKS20]. `D_X(m) = (m + 1/2)\u221arhon.`",
           "kind": "def",
-          "line": 132,
+          "line": 139,
           "name": "ProximityGap.D_X",
           "namespace": "ProximityGap",
           "short_name": "D_X",
@@ -11617,7 +11617,7 @@
         {
           "doc": "The first part of Lemma 5.3 from [BCIKS20]. Given `D_X` (`proximity_gap_degree_bound`) and `\u03b4\u2080` (`proximity_gap_johnson`), a solution to Guruswami-Sudan system exists.",
           "kind": "lemma",
-          "line": 138,
+          "line": 145,
           "name": "ProximityGap.guruswami_sudan_for_proximity_gap_existence",
           "namespace": "ProximityGap",
           "short_name": "guruswami_sudan_for_proximity_gap_existence",
@@ -11626,7 +11626,7 @@
         {
           "doc": "The second part of Lemma 5.3 from [BCIKS20]. For any solution `Q` of the Guruswami-Sudan system, and for any polynomial `P \u2208 RS[n, k, rho]` such that `\u03b4\u1d63(w, P) \u2264 \u03b4\u2080(rho, m)`, we have that `Y - P(X)` divides `Q(X, Y)` in the polynomial ring `F[X][Y]`. Note that in `F[X][Y]`, the term `X` actually refers to the outer variable, `Y`.",
           "kind": "lemma",
-          "line": 150,
+          "line": 157,
           "name": "ProximityGap.guruswami_sudan_for_proximity_gap_property",
           "namespace": "ProximityGap",
           "short_name": "guruswami_sudan_for_proximity_gap_property",
@@ -11635,7 +11635,7 @@
         {
           "doc": "The Guruswami-Sudan condition as it is stated in [BCIKS20].",
           "kind": "structure",
-          "line": 163,
+          "line": 170,
           "name": "ProximityGap.ModifiedGuruswami",
           "namespace": "ProximityGap",
           "short_name": "ModifiedGuruswami",
@@ -11644,7 +11644,7 @@
         {
           "doc": "The `X`-degree of the trivariate constant `1` is `0`.",
           "kind": "lemma",
-          "line": 198,
+          "line": 205,
           "name": "ProximityGap.degreeX_one_triv",
           "namespace": "ProximityGap",
           "short_name": "degreeX_one_triv",
@@ -11653,7 +11653,7 @@
         {
           "doc": "The `Y`-degree of the trivariate constant `1` is `0`.",
           "kind": "lemma",
-          "line": 210,
+          "line": 217,
           "name": "ProximityGap.natDegreeY_one_triv",
           "namespace": "ProximityGap",
           "short_name": "natDegreeY_one_triv",
@@ -11662,7 +11662,7 @@
         {
           "doc": "The `(u, v)`-weighted degree of the trivariate constant `1` is `0`.",
           "kind": "lemma",
-          "line": 216,
+          "line": 223,
           "name": "ProximityGap.natWeightedDegree_one_triv",
           "namespace": "ProximityGap",
           "short_name": "natWeightedDegree_one_triv",
@@ -11671,7 +11671,7 @@
         {
           "doc": "The root multiplicity of the trivariate constant `1` at any point `(x, y)` is `0`. Here the coefficient ring is `F[Z] = Polynomial (Polynomial F)`.",
           "kind": "lemma",
-          "line": 230,
+          "line": 237,
           "name": "ProximityGap.rootMultiplicity_one_triv",
           "namespace": "ProximityGap",
           "short_name": "rootMultiplicity_one_triv",
@@ -11680,7 +11680,7 @@
         {
           "doc": "For `n = 0`, no `Q` can satisfy `ModifiedGuruswami`: the `X`-degree bound `D_X \u03c1 0 m = 0` forces `(degreeX Q : \u211d) < 0`, which is impossible.",
           "kind": "lemma",
-          "line": 264,
+          "line": 271,
           "name": "ProximityGap.modified_guruswami_unsat_of_n_zero",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_unsat_of_n_zero",
@@ -11689,7 +11689,7 @@
         {
           "doc": "For `k = 0`, no `Q` can satisfy `ModifiedGuruswami`: the `Y`-degree bound `D_X \u03c1 n m / 0 = 0` forces `(D_Y Q : \u211d) < 0`, which is impossible.",
           "kind": "lemma",
-          "line": 274,
+          "line": 281,
           "name": "ProximityGap.modified_guruswami_unsat_of_k_zero",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_unsat_of_k_zero",
@@ -11698,7 +11698,7 @@
         {
           "doc": "The trivariate monomial `X^i Y^j Z^t` as an element of `F[Z][X][Y]`.",
           "kind": "def",
-          "line": 287,
+          "line": 294,
           "name": "ProximityGap.triMonomial",
           "namespace": "ProximityGap",
           "short_name": "triMonomial",
@@ -11707,7 +11707,7 @@
         {
           "doc": "The trivariate monomial `X^i Y^j Z^t` is nonzero.",
           "kind": "lemma",
-          "line": 292,
+          "line": 299,
           "name": "ProximityGap.triMonomial_ne_zero",
           "namespace": "ProximityGap",
           "short_name": "triMonomial_ne_zero",
@@ -11716,7 +11716,7 @@
         {
           "doc": "`degreeX (X^i Y^j Z^t) = i`.",
           "kind": "lemma",
-          "line": 297,
+          "line": 304,
           "name": "ProximityGap.degreeX_triMonomial",
           "namespace": "ProximityGap",
           "short_name": "degreeX_triMonomial",
@@ -11725,7 +11725,7 @@
         {
           "doc": "`natDegreeY (X^i Y^j Z^t) = j`.",
           "kind": "lemma",
-          "line": 305,
+          "line": 312,
           "name": "ProximityGap.natDegreeY_triMonomial",
           "namespace": "ProximityGap",
           "short_name": "natDegreeY_triMonomial",
@@ -11734,7 +11734,7 @@
         {
           "doc": "`natWeightedDegree (X^i Y^j Z^t) u v = u*i + v*j`.",
           "kind": "lemma",
-          "line": 312,
+          "line": 319,
           "name": "ProximityGap.natWeightedDegree_triMonomial",
           "namespace": "ProximityGap",
           "short_name": "natWeightedDegree_triMonomial",
@@ -11743,7 +11743,7 @@
         {
           "doc": "The `D_YZ` measure (as defined in `Trivariate.lean`) of a monomial `X^i Y^j Z^t` with `i \u2260 j` equals just the `Y`-degree index `j`. This records a property of the *current* `D_YZ` definition: it computes `max over j_Y of (j_Y + max over k_X of (Bivariate.coeff Q j_Y k_X).natDegree)`, and since `Bivariate.coeff Q a b = (Q.coeff b).coeff a` (the first argument is the inner `X`-index), the inner contribution vanishes for a single monomial unless `i = j`.  In particular the `Z`-degree `t` is not captured, which makes the `Q_D_YZ` bound of `ModifiedGuruswami` easy to satisfy.",
           "kind": "lemma",
-          "line": 328,
+          "line": 335,
           "name": "ProximityGap.D_YZ_triMonomial_of_ne",
           "namespace": "ProximityGap",
           "short_name": "D_YZ_triMonomial_of_ne",
@@ -11752,7 +11752,7 @@
         {
           "doc": "Claim 5.4 from [BCIKS20]. It essentially claims that there exists a solution to the Guruswami-Sudan constraints above. NOTE: As currently formalized this lemma is **false** for `n = 0` or `k = 0` (see `modified_guruswami_unsat_of_n_zero` / `modified_guruswami_unsat_of_k_zero`): the degree bound `D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  The statement below therefore carries the proven-necessary side conditions `0 < n` and `0 < k` (the paper's non-degenerate regime is `k + 1 \u2264 n`, `1 \u2264 m`; the eventual dimension-counting proof \u2014 the trivariate analogue of `G",
           "kind": "lemma",
-          "line": 358,
+          "line": 365,
           "name": "ProximityGap.modified_guruswami_has_a_solution",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_has_a_solution",
@@ -11761,16 +11761,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 368,
-          "name": "ProximityGap._anon_instance_368",
+          "line": 375,
+          "name": "ProximityGap._anon_instance_375",
           "namespace": "ProximityGap",
-          "short_name": "_anon_instance_368",
+          "short_name": "_anon_instance_375",
           "signature": "instance noncomputable instance {\u03b1 : Type} (s : Set \u03b1) [inst : Finite s] : Fintype s := Fintype.ofFinite _"
         },
         {
           "doc": "The set `S` (equation 5.2 of [BCIKS20]).",
           "kind": "def",
-          "line": 371,
+          "line": 378,
           "name": "ProximityGap.coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity",
@@ -11779,7 +11779,7 @@
         {
           "doc": "There exists a `\u03b4`-close polynomial `P_z` for each `z` from the set `S`.",
           "kind": "lemma",
-          "line": 378,
+          "line": 385,
           "name": "ProximityGap.exists_Pz_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "exists_Pz_of_coeffs_of_close_proximity",
@@ -11788,7 +11788,7 @@
         {
           "doc": "The `\u03b4`-close polynomial `Pz` for each `z` from the set `S` (`coeffs_of_close_proximity`).",
           "kind": "def",
-          "line": 397,
+          "line": 404,
           "name": "ProximityGap.Pz",
           "namespace": "ProximityGap",
           "short_name": "Pz",
@@ -11797,7 +11797,7 @@
         {
           "doc": "Proposition 5.5 from [BCIKS20]. There exists a subset `S'` of the set `S` and a bivariate polynomial `P(X, Z)` that matches `Pz` on that set.",
           "kind": "lemma",
-          "line": 405,
+          "line": 412,
           "name": "ProximityGap.exists_a_set_and_a_matching_polynomial",
           "namespace": "ProximityGap",
           "short_name": "exists_a_set_and_a_matching_polynomial",
@@ -11806,7 +11806,7 @@
         {
           "doc": "The subset `S'` extracted from Proprosition 5.5 [BCIKS20].",
           "kind": "def",
-          "line": 415,
+          "line": 422,
           "name": "ProximityGap.matching_set",
           "namespace": "ProximityGap",
           "short_name": "matching_set",
@@ -11815,7 +11815,7 @@
         {
           "doc": "`S'` is indeed a subset of `S`",
           "kind": "lemma",
-          "line": 421,
+          "line": 428,
           "name": "ProximityGap.matching_set_is_a_sub_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "matching_set_is_a_sub_of_coeffs_of_close_proximity",
