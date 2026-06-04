@@ -74,7 +74,7 @@ constant word `u 0`, so any positive probability of closeness gives the plain
 closeness fact, and joint agreement follows from unique decoding. -/
 theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     [NeZero deg]
-    (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
+    (_hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
       (C := ReedSolomon.code domain deg)) :
     δ_ε_correlatedAgreementCurves (k := 0) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
@@ -94,7 +94,7 @@ theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ
       omega
     obtain ⟨z, hz⟩ := hne
     have hz' := hz
-    simp only [RS_goodCoeffsCurve, hconst z, Finset.filter_const] at hz'
+    simp only [RS_goodCoeffsCurve] at hz'
     by_contra hp
     simp [hp] at hz' 
   -- unique-decode and collect the agreement set
@@ -118,7 +118,7 @@ theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ
     intro j hj
     have := (hT_agree j).1 hj
     have ht0 : t = 0 := Fin.fin_one_eq_zero t
-    simp [ht0, Finset.mem_filter]
+    subst ht0; simp only [Finset.mem_filter, Finset.mem_univ, true_and]
     exact this.symm
 
 
