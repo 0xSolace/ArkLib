@@ -11672,6 +11672,24 @@
           "namespace": "ProximityGap",
           "short_name": "_anon_class_81",
           "signature": "class classical"
+        },
+        {
+          "doc": "The relative unique decoding radius of a Reed\u2013Solomon code is strictly below the Johnson-type bound `1 \u2212 \u221a\u03c1` whenever it is positive: `(1\u2212\u03c1)/2 < 1\u2212\u221a\u03c1` for `\u03c1 < 1`, by AM\u2013GM (`2\u221a\u03c1 < 1 + \u03c1` strictly since `\u221a\u03c1 < 1`). Merges the unique-decoding hypothesis into the [BCIKS20] full-range hypothesis.",
+          "kind": "lemma",
+          "line": 131,
+          "name": "ProximityGap.relativeUniqueDecodingRadius_lt_one_sub_sqrtRate",
+          "namespace": "ProximityGap",
+          "short_name": "relativeUniqueDecodingRadius_lt_one_sub_sqrtRate",
+          "signature": "lemma relativeUniqueDecodingRadius_lt_one_sub_sqrtRate"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 139,
+          "name": "ProximityGap._anon_class_139",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_139",
+          "signature": "class classical"
         }
       ]
     },
@@ -49569,7 +49587,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5382,
+      "declarations": 5384,
       "files": 285
     }
   }
