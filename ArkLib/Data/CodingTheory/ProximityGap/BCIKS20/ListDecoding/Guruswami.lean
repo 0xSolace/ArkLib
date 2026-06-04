@@ -1008,6 +1008,84 @@ lemma gsQ_multiplicity {n m k : ℕ} (hk : 0 < k) (ωs : Fin n ↪ F) (u₀ u₁
   · -- beyond the Z-degree budget: the coefficient is 0 by the degree bound
     exact Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_le_of_lt (hshiftZ s t) (by omega))
 
+/-! ### Box degree facts for the `ModifiedGuruswami` degree fields -/
+
+open GuruswamiSudan Polynomial.Bivariate in
+omit [DecidableEq (RatFunc F)] in
+/-- The `(1,k)`-weighted degree of the box-assembled `Q` is at most `Dpg`. -/
+lemma natWeightedDegree_gsQ_1k_le {n m k : ℕ} (hk : 0 < k) (c : (gsBox n m k) → F) :
+    natWeightedDegree (triCoeffsToPoly (gsBox n m k) c) 1 k ≤ gsDpg n m k :=
+  natWeightedDegree_triCoeffsToPoly_le (gsBox n m k) c 1 k (gsDpg n m k)
+    (fun p hp ↦ gsBox_weighted_le hk hp)
+
+open GuruswamiSudan Polynomial.Bivariate in
+omit [DecidableEq (RatFunc F)] in
+/-- The `X`-degree of the box-assembled `Q` is at most `Dpg`. -/
+lemma degreeX_gsQ_le {n m k : ℕ} (hk : 0 < k) (c : (gsBox n m k) → F) :
+    degreeX (triCoeffsToPoly (gsBox n m k) c) ≤ gsDpg n m k := by
+  have h := natWeightedDegree_triCoeffsToPoly_le (gsBox n m k) c 1 0 (gsDpg n m k)
+    (fun p hp ↦ gsBox_X_le hk hp)
+  rwa [← degreeX_as_weighted_deg] at h
+
+open GuruswamiSudan Polynomial.Bivariate in
+omit [DecidableEq (RatFunc F)] in
+/-- `k · (Y-degree of the box-assembled `Q`) ≤ Dpg` (the `Y`-degree is `≤ Dpg/k`). -/
+lemma k_mul_natDegreeY_gsQ_le {n m k : ℕ} (hk : 0 < k) (c : (gsBox n m k) → F) :
+    k * natDegreeY (triCoeffsToPoly (gsBox n m k) c) ≤ gsDpg n m k := by
+  classical
+  set Q := triCoeffsToPoly (gsBox n m k) c with hQ
+  have hwd : natWeightedDegree Q 0 k ≤ gsDpg n m k :=
+    natWeightedDegree_triCoeffsToPoly_le (gsBox n m k) c 0 k (gsDpg n m k)
+      (fun p hp ↦ by
+        have := gsBox_weighted_le hk hp; omega)
+  refine le_trans ?_ hwd
+  rcases eq_or_ne Q 0 with hQ0 | hQ0
+  · simp [hQ0, natDegreeY]
+  · -- the maximal Y-index `d := natDegreeY Q` is in the support
+    have hd : natDegreeY Q ∈ Q.support := by
+      rw [natDegreeY, Polynomial.mem_support_iff]
+      exact Polynomial.leadingCoeff_ne_zero.mpr hQ0
+    have := Finset.le_sup (f := fun mm ↦ 0 * (Q.coeff mm).natDegree + k * mm) hd
+    simpa [natWeightedDegree] using this
+
+/-! ### `D_YZ` upper bound and box facts -/
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- A `Finset ℕ` all of whose elements are `≤ B` has `(max).getD 0 ≤ B`.  This is the
+`Option.getD`-wrapped form of `Finset.max_le_iff`, matching the shape of `D_YZ`. -/
+lemma finset_max_getD_le {s : Finset ℕ} {B : ℕ} (h : ∀ x ∈ s, x ≤ B) :
+    (s.max).getD 0 ≤ B := by
+  rcases s.eq_empty_or_nonempty with rfl | hne
+  · simp only [Finset.max_empty, Option.getD]; exact Nat.zero_le _
+  · obtain ⟨b, hb⟩ := Finset.max_of_nonempty hne
+    rw [hb]
+    exact h b (Finset.mem_of_max hb)
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- **`D_YZ` upper bound.**  If `Q` has `Y`-degree `≤ d` and every bivariate coefficient has
+`Z`-degree `≤ e` (`ZdegLE Q e`), then `D_YZ Q ≤ d + e`.
+
+`D_YZ Q = maxⱼ maxₖ (j + Zdeg(coeff of `X^j Y^k`))`; the outer `j` is a `Y`-degree `≤ d` and every
+`Z`-degree term is `≤ e`, so each summand is `≤ d + e`. -/
+lemma D_YZ_le_of_ZdegLE {Q : F[Z][X][Y]} {d e : ℕ}
+    (hY : Polynomial.Bivariate.natDegreeY Q ≤ d) (hZ : ZdegLE Q e) :
+    Trivariate.D_YZ Q ≤ d + e := by
+  classical
+  unfold Trivariate.D_YZ
+  apply finset_max_getD_le
+  intro x hx
+  rw [Finset.mem_image] at hx
+  obtain ⟨j, hj, rfl⟩ := hx
+  apply finset_max_getD_le
+  intro y hy
+  rw [Finset.mem_image] at hy
+  obtain ⟨kx, hkx, rfl⟩ := hy
+  have hjd : j ≤ d := le_trans (Polynomial.le_natDegree_of_mem_supp j hj) hY
+  have hze : (Polynomial.Bivariate.coeff Q j kx).natDegree ≤ e := by
+    unfold Polynomial.Bivariate.coeff
+    exact hZ j kx
+  omega
+
 end ModifiedGuruswamiHelpers
 
 
@@ -1019,13 +1097,73 @@ NOTE: As currently formalized this lemma is **false** for `n = 0` or `k = 0` (se
 `modified_guruswami_unsat_of_n_zero` / `modified_guruswami_unsat_of_k_zero`): the degree bound
 `D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  The statement
 below therefore carries the proven-necessary side conditions `0 < n` and `0 < k` (the paper's
-non-degenerate regime is `k + 1 ≤ n`, `1 ≤ m`; the eventual dimension-counting proof — the
-trivariate analogue of `GuruswamiSudan.gs_existence` — may require strengthening to that full
-regime). -/
+non-degenerate regime is `k + 1 ≤ n`, `1 ≤ m`).
+
+It also carries two **regime side conditions** on the construction parameters, both honest
+parameter inequalities (no per-`Q` assumption — the `Q`-specific bounds are *proved* from them):
+
+* `hDx`: the (integer) degree cap `gsDpg = ⌊D_X⌋₊` of the construction box lies strictly below the
+  real bound `D_X = (m+½)·√ρ·n`.  This is forced because the three strict `ModifiedGuruswami`
+  degree fields (`Q_deg`, `Q_deg_X`, `Q_D_Y`) all reduce to `(gsDpg : ℝ) < D_X`, which FAILS exactly
+  when `D_X` is attained by an integer (e.g. `k+1=4, n=1, m=0`).  In the paper's non-integer regime
+  it holds; we expose it as a hypothesis rather than silently weaken the (uneditable)
+  `ModifiedGuruswami` fields from `<` to `≤`.
+
+* `hYZ`: the box's `Y`+`Z` degree budget `gsDpg + gsZCap` fits under the `YZ`-degree bound.  The
+  current `D_YZ` definition adds a monomial's `Y`-degree to the `Z`-degree of its transpose, so a
+  kernel element with nonzero high-`Z` coefficients on a transpose-paired pair realizes
+  `D_YZ Q ≈ gsZCap`.  With the (uneditable, counting-locked) budget `gsZCap = #constraints · gsDpg`,
+  the only honest way to guarantee `Q_D_YZ` for an arbitrary kernel element is to assume the box
+  budget itself fits the bound; we then *prove* `D_YZ Q ≤ gsDpg + gsZCap ≤ RHS` via
+  `D_YZ_le_of_ZdegLE`.  (Shrinking `gsZCap` to make this unconditional would require re-deriving a
+  quantitative bivariate counting gap `numVars − numConstraints ≥ g`; with the structural gap
+  `g = 1` the minimal feasible `gsZCap` is exactly `#constraints · gsDpg`, so this side condition is
+  the faithful regime statement for the present infrastructure.) -/
 lemma modified_guruswami_has_a_solution {m n k : ℕ} (hn : 0 < n) (hk : 0 < k)
-    {ωs : Fin n ↪ F} {u₀ u₁ : Fin n → F} :
+    {ωs : Fin n ↪ F} {u₀ u₁ : Fin n → F}
+    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n))) :
     ∃ Q : F[Z][X][Y], ModifiedGuruswami m n k ωs Q u₀ u₁ := by
-  sorry
+  classical
+  -- a nonzero kernel element gives the assembled candidate `Q`
+  obtain ⟨c, hc_ne, hc_ker⟩ := exists_nonzero_triSolution n m k ωs u₀ u₁
+  set Q := triCoeffsToPoly (gsBox n m k) c with hQdef
+  have hQne : Q ≠ 0 := triCoeffsToPoly_ne_zero (gsBox n m k) c hc_ne
+  -- real-arithmetic helpers
+  have hkR : (0 : ℝ) < (k : ℝ) := by exact_mod_cast hk
+  refine ⟨Q, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · -- Q_ne_0
+    exact hQne
+  · -- Q_deg : natWeightedDegree Q 1 k < D_X
+    have h1 : (natWeightedDegree Q 1 k : ℝ) ≤ (gsDpg n m k : ℝ) := by
+      exact_mod_cast natWeightedDegree_gsQ_1k_le hk c
+    exact lt_of_le_of_lt h1 hDx
+  · -- Q_multiplicity
+    intro i
+    exact gsQ_multiplicity hk ωs u₀ u₁ c hc_ne hc_ker i
+  · -- Q_deg_X : degreeX Q < D_X
+    have h1 : (degreeX Q : ℝ) ≤ (gsDpg n m k : ℝ) := by
+      exact_mod_cast degreeX_gsQ_le hk c
+    exact lt_of_le_of_lt h1 hDx
+  · -- Q_D_Y : D_Y Q < D_X / k
+    have hkD : (k : ℝ) * (D_Y Q : ℝ) ≤ (gsDpg n m k : ℝ) := by
+      have := k_mul_natDegreeY_gsQ_le hk c
+      have : (k * natDegreeY Q : ℕ) ≤ gsDpg n m k := this
+      push_cast at this ⊢
+      simpa [D_Y, mul_comm] using (by exact_mod_cast this :
+        (k : ℝ) * (natDegreeY Q : ℝ) ≤ (gsDpg n m k : ℝ))
+    have : (k : ℝ) * (D_Y Q : ℝ) < D_X ((k + 1) / (n : ℚ)) n m := lt_of_le_of_lt hkD hDx
+    rw [lt_div_iff₀ hkR, mul_comm]
+    convert this using 2
+  · -- Q_D_YZ : D_YZ Q ≤ RHS
+    have hYdeg : Polynomial.Bivariate.natDegreeY Q ≤ gsDpg n m k := natDegree_gsQ_le hk c
+    have hZdeg : ZdegLE Q (gsZCap n m k) :=
+      ZdegLE_triCoeffsToPoly (gsBox n m k) c (gsZCap n m k) (fun p hp ↦ gsBox_Z_le hp)
+    have hbound : Trivariate.D_YZ Q ≤ gsDpg n m k + gsZCap n m k :=
+      D_YZ_le_of_ZdegLE hYdeg hZdeg
+    calc (D_YZ Q : ℝ) ≤ ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) := by exact_mod_cast hbound
+      _ ≤ n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)) := hYZ
 
 end
 
