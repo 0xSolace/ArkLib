@@ -90,7 +90,8 @@ theorem RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve
   set e : ℕ := Nat.floor (δ * Fintype.card ι) with he
   -- Get the close polynomial `Pz`
   obtain ⟨Pz, hPzdeg, hdist⟩ :=
-    RS_exists_Pz_of_mem_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) (δ := δ) u (z := z) hz
+    RS_exists_Pz_of_mem_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) (δ := δ) u (z :=
+      z) hz
   have hdist' : Δ₀(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, Pz.eval ∘ domain) ≤ e := by
     simpa [he] using hdist
   -- Extract a small set of disagreement coordinates
