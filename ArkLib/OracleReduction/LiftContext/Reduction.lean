@@ -371,8 +371,25 @@ theorem liftContext_runWithLog
         return ⟨⟨⟨fullTranscript, lens.lift (outerStmtIn, outerWitIn) innerCtxOut⟩,
                 lens.stmt.lift outerStmtIn verInnerStmtOut⟩, queryLog⟩ := by
   unfold runWithLog
-  simp [liftContext, Prover.liftContext_runWithLog, Verifier.liftContext, Verifier.run]
-  sorry
+  simp only [liftContext, Prover.liftContext_runWithLog, Verifier.liftContext, Verifier.run,
+    Function.uncurry, liftM_map, map_bind, bind_map_left, bind_pure_comp]
+  refine bind_congr fun a => ?_
+  -- The lifted verifier post-composes the inner verify with `lens.stmt.lift`; this is an
+  -- `OptionT`-level map, definitionally an `Option.map` at the `OracleComp` level.  Push it
+  -- through `simulateQ loggingOracle` and `WriterT.run`, then fold it into the final result map.
+  conv_lhs =>
+    rw [show (lens.stmt.lift outerStmtIn <$> R.verifier.verify (lens.stmt.proj outerStmtIn) a.1.1
+          : OptionT (OracleComp oSpec) OuterStmtOut)
+        = (Option.map (lens.stmt.lift outerStmtIn) <$>
+            R.verifier.verify (lens.stmt.proj outerStmtIn) a.1.1
+          : OracleComp oSpec (Option OuterStmtOut)) from OptionT.run_map _ _]
+  rw [simulateQ_map, WriterT.run_map]
+  simp only [liftM_map, Functor.map_map, Statement.Lens.proj]
+  rw [bind_map_left]
+  refine bind_congr fun b => ?_
+  cases h : b.1 with
+  | none => simp only [Option.map_none, Option.getM_none, h, map_failure]
+  | some v => simp only [Option.map_some, Option.getM_some, h, map_pure]
 
 end Reduction
 
