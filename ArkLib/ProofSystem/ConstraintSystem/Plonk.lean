@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 import CompPoly.Data.MvPolynomial.Notation
+import Mathlib.GroupTheory.Perm.List
 
 /-! # The Plonk relation
 
@@ -141,8 +142,14 @@ def partition (cs : ConstraintSystem 𝓡 numWires numGates) :
       else if j.1 = 1 then (cs j.2).b = i else (cs j.2).c = i)
     (Finset.univ : Finset (Fin 3 × Fin numGates)))
 
-/-- The permutation corresponding to the partition induced by a constraint system. -/
-def perm (cs : ConstraintSystem 𝓡 numWires numGates) : Equiv.Perm (Fin (3 * numGates)) := sorry
+/-- The permutation corresponding to the partition induced by a constraint system: the
+canonical copy-constraint permutation `σ` from the Plonk paper, whose cycle decomposition is
+exactly the partition — each class `T_i` (the positions sharing wire `i`) is cyclically
+rotated (in sorted order). Classes of size ≤ 1 contribute the identity. Since distinct
+classes are disjoint, the product's order is immaterial; we multiply along `finRange`. -/
+def perm (cs : ConstraintSystem 𝓡 numWires numGates) : Equiv.Perm (Fin (3 * numGates)) :=
+  ((List.finRange numWires).map
+    (fun i => ((partition cs i).sort (· ≤ ·)).formPerm)).prod
 
 /-- A constraint system is prepared for `ℓ` public inputs, for some `ℓ ≤ numGates, numWires`,
   if for all `i ∈ [ℓ]`, the `i`-th gate constrains the `i`-th wire to be some public value. -/
