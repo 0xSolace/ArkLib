@@ -11523,6 +11523,100 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/JointAgreement.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 34,
+          "name": "ProximityGap.RS_exists_bivariate_AB_of_goodCoeffsCurve_card_gt",
+          "namespace": "ProximityGap",
+          "short_name": "RS_exists_bivariate_AB_of_goodCoeffsCurve_card_gt",
+          "signature": "theorem RS_exists_bivariate_AB_of_goodCoeffsCurve_card_gt"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 51,
+          "name": "ProximityGap._anon_class_51",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_51",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 74,
+          "name": "ProximityGap._anon_class_74",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_74",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 82,
+          "name": "ProximityGap._anon_class_82",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_82",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 90,
+          "name": "ProximityGap._anon_class_90",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_90",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 99,
+          "name": "ProximityGap._anon_class_99",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_99",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 141,
+          "name": "ProximityGap._anon_class_141",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_141",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 168,
+          "name": "ProximityGap._anon_class_168",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_168",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 210,
+          "name": "ProximityGap._anon_class_210",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_210",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 215,
+          "name": "ProximityGap._anon_class_215",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_215",
+          "signature": "class classical"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ErrorBound.lean": {
       "declarations": [
         {
@@ -49408,8 +49502,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5365,
-      "files": 283
+      "declarations": 5375,
+      "files": 284
     }
   }
 }
