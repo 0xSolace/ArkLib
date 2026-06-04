@@ -967,6 +967,56 @@ theorem oracleReduction_perfectCompleteness :
 -- MESSAGE oracle; the closed form here would map over `msgs`. Unused in this tree
 -- (completeness routes through `oracleReduction_eq_reduction` + `reduction_perfectCompleteness`).
 
+/-- Bridge: the vector `D`-evaluation sum equals the `Finset` sum over `univ.map D`. -/
+private lemma vector_finRange_map_sum_eq (g : Fin m → R) :
+    ((Vector.finRange m).map g).sum = ∑ i : Fin m, g i := by
+  rw [← Vector.sum_toList, Vector.toList_map, Fin.sum_univ_def]
+  have h : (Vector.finRange m).toList = List.finRange m := by
+    simp only [Vector.finRange, Array.finRange, Vector.toList_ofFn]
+    exact List.ofFn_id m
+  rw [h]
+
+/-- Trivial round-by-round extractor (all witnesses are `Unit`). -/
+private def simpleRbrExtractor : Extractor.RoundByRound oSpec
+    (StmtIn R × (∀ i, OStmtIn R deg i)) Unit Unit (pSpec R deg) (fun _ => Unit) where
+  eqIn := rfl
+  extractMid := fun _ _ _ _ => ()
+  extractOut := fun _ _ _ => ()
+
+variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+
+/-- The transcript-independent knowledge state function for the oracle verifier: its guard
+checks the ORACLE's `D`-sum, which is precisely the input relation. -/
+private def simpleKnowledgeStateFunction :
+    ((oracleVerifier R deg D oSpec).toVerifier).KnowledgeStateFunction init impl
+      (inputRelation R deg D) (outputRelation R deg)
+      (simpleRbrExtractor R deg oSpec) where
+  toFun := fun _ stmtIn _ _ => (stmtIn, ()) ∈ inputRelation R deg D
+  toFun_empty := fun stmtIn witMid => Iff.rfl
+  toFun_next := fun _ _ _ _ _ _ h => h
+  toFun_full := fun ⟨target, oStmt⟩ tr witOut h => by
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, _hrel⟩ := h
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    simp only [OracleVerifier.toVerifier, Verifier.run] at hx
+    rw [simulateQ_oracleVerify_eq R deg D oSpec] at hx
+    by_cases hP : ((Vector.finRange m).map
+        (fun i => (oStmt ()).val.eval (D i))).sum = target
+    · -- guard passed: that IS the input relation, modulo the sum bridge
+      rw [vector_finRange_map_sum_eq] at hP
+      simp only [inputRelation, Set.mem_setOf_eq, Finset.sum_map]
+      exact hP
+    · -- guard failed: the computation is `pure none`, contradicting `some x` membership
+      rw [if_neg hP] at hx
+      have hx' : (some x : Option (StmtOut R × ((i : Unit) → OStmtOut R deg i))) ∈
+          _root_.support ((simulateQ impl (pure none :
+            OracleComp oSpec (Option (StmtOut R × ((i : Unit) → OStmtOut R deg i))))).run' s) :=
+        hx
+      rw [simulateQ_pure] at hx'
+      simp at hx'
+
 /-- Round-by-round knowledge soundness for the verifier -/
 theorem verifier_rbrKnowledgeSoundness [Fintype R] :
     (verifier R deg D oSpec).rbrKnowledgeSoundness init impl
@@ -977,7 +1027,13 @@ theorem verifier_rbrKnowledgeSoundness [Fintype R] :
 theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
     (oracleVerifier R deg D oSpec).rbrKnowledgeSoundness init impl
     (inputRelation R deg D) (outputRelation R deg) (fun _ => (deg : ℝ≥0) / (Fintype.card R)) := by
-  sorry
+  unfold OracleVerifier.rbrKnowledgeSoundness Verifier.rbrKnowledgeSoundness
+  refine ⟨fun _ => Unit, simpleRbrExtractor R deg oSpec,
+    simpleKnowledgeStateFunction R deg D oSpec, ?_⟩
+  intro stmtIn witIn rbrP i
+  refine le_trans (le_of_eq (probEvent_eq_zero ?_)) (zero_le _)
+  rintro ⟨tr, chal, log⟩ - ⟨w, hn, hy⟩
+  exact hn hy
 
 -- Note: break down the oracle reduction into a series of oracle reductions as stated above
 
