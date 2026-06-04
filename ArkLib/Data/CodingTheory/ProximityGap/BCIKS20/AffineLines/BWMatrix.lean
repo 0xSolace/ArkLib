@@ -9,7 +9,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ReedSolomon
 
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 1700
 
 namespace ProximityGap
 
