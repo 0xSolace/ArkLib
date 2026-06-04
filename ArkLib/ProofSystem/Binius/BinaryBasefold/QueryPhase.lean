@@ -41,6 +41,166 @@ variable [hdiv : Fact (ϑ ∣ ℓ)]
 open scoped NNReal
 
 /-!
+## Generic `forIn`-loop support theory  (candidate for upstreaming to VCVio)
+
+The verifier `verify` body below is a doubly-nested `List.forIn` with early-exit
+`unless … do return false` branches. Computing the `support` of such a loop requires pushing
+`support` through `forIn`, for which neither VCVio, Mathlib, nor ArkLib provides a lemma
+(`simulateQ_bind` does not apply — `forIn` is a recursor, not a `bind`; and the only existing
+bridge `List.forIn_mprod_yield_eq_foldlM` is yield-only, rejecting the early-exit).
+
+The transport layer here is built on the core unfolding equations `List.forIn_nil` /
+`List.forIn_cons` (already in Lean core) together with the generic `support_bind` /
+`mem_support_bind_iff` / `support_pure` API (available for any `HasEvalSet m`). The two workhorses
+are:
+
+* `mem_support_forIn_cons` — a clean membership characterization for the cons-step support, and
+* `forIn_support_invariant` — an induction-free invariant rule: a predicate preserved by every
+  per-element step (over the body's support) holds of every value in the loop's support.
+
+A third lemma, `forIn_yield_pure_eq_foldl`, collapses an all-`yield` `pure`-bodied loop to a `pure`
+of a left fold; this is the shape an early-return loop takes once every check is known to pass
+(the `do`-notation early-return desugaring threads an `Option`-flagged accumulator, and under
+"all checks pass" the body never emits a `done`, so the loop reduces to a deterministic fold).
+
+These lemmas are protocol-agnostic (any `HasEvalSet` monad — in particular the `OptionT (OracleComp
+…)` of an `OracleVerifier.verify` body and its `simulateQ`-image) and are candidates for upstreaming
+to VCVio's loop/distribution theory.
+-/
+namespace ForInSupport
+
+variable {m : Type → Type} [Monad m] [LawfulMonad m] [HasEvalSet m] {α γ : Type}
+
+omit [LawfulMonad m] in
+/-- Membership characterization of the support of `forIn (a :: l) init f`: a value `x` is reachable
+iff there is a first-step `step` in the body's support such that, on `done b`, `x = b`, and on
+`yield b`, `x` is reachable from the tail loop started at `b`. -/
+theorem mem_support_forIn_cons (a : α) (l : List α) (init : γ)
+    (f : α → γ → m (ForInStep γ)) (x : γ) :
+    x ∈ support (forIn (a :: l) init f) ↔
+      ∃ step ∈ support (f a init),
+        (match step with
+          | .done b => x = b
+          | .yield b => x ∈ support (forIn l b f)) := by
+  rw [List.forIn_cons, mem_support_bind_iff]
+  constructor
+  · rintro ⟨step, hstep, hx⟩
+    refine ⟨step, hstep, ?_⟩
+    cases step with
+    | done b => rw [mem_support_pure_iff] at hx; exact hx
+    | yield b => exact hx
+  · rintro ⟨step, hstep, hx⟩
+    refine ⟨step, hstep, ?_⟩
+    cases step with
+    | done b => rw [mem_support_pure_iff]; exact hx
+    | yield b => exact hx
+
+omit [LawfulMonad m] in
+/-- **Invariant rule for `forIn`-loop support.** If `Inv` holds of the initial accumulator and is
+preserved by every per-element step (over the support of the body), then `Inv` holds of every value
+in the support of the whole loop. This is the structural workhorse for transporting per-iteration
+facts (e.g. "this consistency check passed") out of the support of a loop-based verifier run. -/
+theorem forIn_support_invariant (Inv : γ → Prop) (l : List α)
+    (f : α → γ → m (ForInStep γ))
+    (hstep : ∀ a ∈ l, ∀ b, Inv b → ∀ step ∈ support (f a b), Inv step.value) :
+    ∀ init, Inv init → ∀ x ∈ support (forIn l init f), Inv x := by
+  induction l with
+  | nil =>
+    intro init hinit x hx
+    rw [List.forIn_nil, mem_support_pure_iff] at hx
+    exact hx ▸ hinit
+  | cons a l ih =>
+    intro init hinit x hx
+    rw [mem_support_forIn_cons] at hx
+    obtain ⟨step, hstepmem, hx⟩ := hx
+    have hInvStep : Inv step.value := hstep a (List.mem_cons_self) init hinit step hstepmem
+    cases step with
+    | done b => simp only at hx; exact hx ▸ hInvStep
+    | yield b =>
+      simp only at hx
+      exact ih (fun a' ha' => hstep a' (List.mem_cons_of_mem _ ha')) b hInvStep x hx
+
+omit [HasEvalSet m] in
+/-- **All-`yield` collapse.** A loop whose body always `pure`s a `yield` with new state `g a b`
+collapses to a deterministic `pure` of the left fold of `g` over the list. This is the value an
+early-return loop assumes once every check is known to pass: the `done` branches are never taken,
+so the whole loop is a pure fold (used to evaluate the honest verifier run for completeness). -/
+theorem forIn_yield_pure_eq_foldl (l : List α) (g : α → γ → γ) :
+    ∀ init : γ,
+      (forIn l init (fun a b => (pure (ForInStep.yield (g a b)) : m (ForInStep γ))))
+        = pure (l.foldl (fun b a => g a b) init) := by
+  induction l with
+  | nil => intro init; rw [List.forIn_nil]; rfl
+  | cons a l ih =>
+    intro init
+    rw [List.forIn_cons]
+    simp only [pure_bind]
+    rw [ih (g a init)]
+    rfl
+
+/-! ### `simulateQ`-transport for `forIn` (OptionT (OracleComp …)) -/
+
+variable {ι : Type} {spec : OracleSpec ι} {n : Type → Type} [Monad n] [LawfulMonad n]
+
+/-- `simulateQ` commutes with `OptionT.pure`. -/
+theorem simulateQ_optionT_pure (impl : QueryImpl spec n) (b : γ) :
+    simulateQ impl (pure b : OptionT (OracleComp spec) γ) = (pure b : OptionT n γ) := by
+  rw [show (pure b : OptionT (OracleComp spec) γ) = OptionT.lift (pure b)
+        from (OptionT.lift_pure b).symm]
+  rw [simulateQ_optionT_lift, simulateQ_pure, OptionT.lift_pure]
+
+/-- `simulateQ` commutes with `forIn` over a list in the `OptionT (OracleComp …)` monad: simulating a
+loop equals the loop whose body is the simulated body (packaged as `g` with `hg : g = simulateQ ∘ f`,
+which sidesteps the elaboration ambiguity between the base- and `OptionT`-lifted `simulateQ`). This is
+the structural bridge that lets the `simulateQ`-image of a loop-based `OracleVerifier.verify` body be
+analyzed with the support lemmas above — it is exactly the missing `simulateQ_forIn`. -/
+theorem simulateQ_optionT_forIn (impl : QueryImpl spec n)
+    (l : List α) (f : α → γ → OptionT (OracleComp spec) (ForInStep γ))
+    (g : α → γ → OptionT n (ForInStep γ))
+    (hg : ∀ a b, g a b = simulateQ impl (f a b)) :
+    ∀ init : γ,
+      simulateQ impl (forIn l init f : OptionT (OracleComp spec) γ)
+        = (forIn l init g : OptionT n γ) := by
+  induction l with
+  | nil =>
+    intro init
+    rw [List.forIn_nil, List.forIn_nil, simulateQ_optionT_pure]
+  | cons a l ih =>
+    intro init
+    rw [List.forIn_cons, List.forIn_cons, simulateQ_optionT_bind, hg]
+    refine bind_congr ?_
+    intro step
+    cases step with
+    | done b => exact simulateQ_optionT_pure impl b
+    | yield b => exact ih b
+
+/-- `simulateQ` commutes with `List.Vector.mmap` in the `OptionT (OracleComp …)` monad: simulating a
+vector-`mmap` of oracle queries equals the `mmap` of the simulated query body. This is the missing
+`simulateQ_listVector_mmap`; it collapses the inner `(List.Vector.ofFn id).mmap` of the verifier's
+fiber-query gathering loop through `simulateQ`, complementing `simulateQ_optionT_forIn`. -/
+theorem simulateQ_optionT_listVector_mmap (impl : QueryImpl spec n)
+    (f : α → OptionT (OracleComp spec) γ) (g : α → OptionT n γ)
+    (hg : ∀ a, g a = simulateQ impl (f a)) :
+    ∀ {N : ℕ} (v : List.Vector α N),
+      simulateQ impl (List.Vector.mmap f v : OptionT (OracleComp spec) (List.Vector γ N))
+        = (List.Vector.mmap g v : OptionT n (List.Vector γ N)) := by
+  intro N v
+  induction v using List.Vector.inductionOn with
+  | nil =>
+    rw [List.Vector.mmap_nil, List.Vector.mmap_nil, simulateQ_optionT_pure]
+  | cons ih =>
+    rename_i a tail
+    rw [List.Vector.mmap_cons, List.Vector.mmap_cons, simulateQ_optionT_bind, hg]
+    refine bind_congr ?_
+    intro h'
+    rw [simulateQ_optionT_bind, ih]
+    refine bind_congr ?_
+    intro t'
+    rw [simulateQ_optionT_pure]
+
+end ForInSupport
+
+/-!
 ## Common Proximity Check Helpers
 
 These functions extract the shared logic between `queryOracleVerifier`
@@ -247,11 +407,25 @@ noncomputable def queryOracleVerifier :
             sDomainToFin 𝔽q β h_ℓ_add_R_rate ⟨i + ϑ, by omega⟩ (by
                 apply Nat.lt_add_of_pos_right_of_le; simp only; omega) next_suffix_of_v
 
-        /- Create the list of fiber points of `next_suffix_of_v` in `S^(i)`, which have the
+        /- Create the fiber points of `next_suffix_of_v` in `S^(i)`, which have the
         form `(u_0, ..., u_{ϑ-1}, v_{i+v}, ..., v_{ℓ+R-1})`, which are actually result of the
         fiber mapping: `(q^(i+ϑ-1) ∘ ... ∘ q^(i))⁻¹({(v_{i+ϑ}, ..., v_{ℓ+R-1})})`,
-        by querying the oracle `f^(i)` on all fiber points using queryCodeword helper. -/
-        let f_i_on_fiber ← (List.finRange (2^ϑ)).mapM (fun (u : Fin (2^ϑ)) => do
+        by querying the oracle `f^(i)` on all `2^ϑ` fiber points using queryCodeword helper.
+
+        DESIGN NOTE (length-carrying restructure): the fiber evaluations are gathered into a
+        `List.Vector L (2^ϑ)` via `List.Vector.mmap` rather than into a plain `List L` via
+        `List.mapM`. The previous list-based form forced a downstream obligation
+        `f_i_on_fiber.length = 2 ^ ϑ` to justify the `Fin (2^ϑ)`-indexed accesses below; but
+        under the monadic bind `f_i_on_fiber` is a lambda-bound free variable, so that length
+        equation would have to hold for ALL lists of the binder's type and is therefore
+        unprovable (and this toolchain has neither a `List.length_mapM` lemma nor VCVio's
+        `mem_support_vector_mapM` helper). Carrying the length in the type via
+        `List.Vector` makes the obligation vanish: `List.Vector.get : Fin (2^ϑ) → L` is total,
+        so both consumers below index without any side proof. Semantics are unchanged — the same
+        `2^ϑ` oracle queries are issued, in the same order (`(List.Vector.ofFn id).mmap` visits
+        `u = 0, 1, ..., 2^ϑ-1`), with the same per-index query body, and `(ofFn id).get u = u`. -/
+        let f_i_on_fiber : List.Vector L (2^ϑ) ←
+          (List.Vector.ofFn (n := 2^ϑ) (id : Fin (2^ϑ) → Fin (2^ϑ))).mmap (fun (u : Fin (2^ϑ)) => do
           let x: Fin (2 ^ (ℓ + 𝓡 - i)) := by
             let fiber_point_num_repr := Nat.joinBits (low := u) (high := next_suffix_of_v_fin)
             simp at fiber_point_num_repr
@@ -338,6 +512,18 @@ theorem queryOracleProof_perfectCompleteness {σ : Type}
     (impl := impl) := by
   unfold OracleProof.perfectCompleteness
   intro stmtIn witIn h_relIn
+  -- RESIDUAL (protocol-specific honest-acceptance, NOT a missing primitive). Perfect completeness
+  -- asks for `Pr[honest run accepts] = 1`. The forIn-with-early-exit support/transport theory that
+  -- this once needed NOW EXISTS in the `ForInSupport` section above: `simulateQ_optionT_forIn`
+  -- pushes `simulateQ` through the doubly-nested `forIn`, `simulateQ_optionT_listVector_mmap`
+  -- collapses the inner `2^ϑ`-query `List.Vector.mmap`, and `forIn_yield_pure_eq_foldl` collapses an
+  -- all-pass (all-`yield`) loop to a deterministic `pure` of a fold. What remains is genuinely
+  -- protocol-specific and research-tier: one must prove the HONEST RUN's per-iteration checks all
+  -- pass — i.e. `c_cur = f^(i)(v_i,…)` at every fold level and `c_cur = c` at the end — from
+  -- `finalSumcheckRelOut` (= `finalNonDoomedFoldingProp`). That is the BaseFold fold/oracle
+  -- correctness argument (`localized_fold_matrix_form` equals the next-level codeword value on the
+  -- honest oracles), not loop plumbing; only once it is in hand does `forIn_yield_pure_eq_foldl`
+  -- finish the `= 1` via the no-early-exit collapse. Out of scope for this file's loop-theory remit.
   sorry
 
 open scoped NNReal
@@ -399,6 +585,36 @@ noncomputable def queryKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
   toFun_next := fun m hDir stmt tr msg witMid h => by
     fin_cases m; simp [pSpecQuery] at hDir
   toFun_full := fun stmt tr witOut h => by
+    -- Mechanical reduction (verified to reach the wedge below): unfold the positive-probability
+    -- hypothesis to a membership in the support of the simulated verifier run.
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, hrel⟩ := h
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    simp only [OracleVerifier.toVerifier, Verifier.run, StateT.run'_eq,
+      support_map, Set.mem_image, Prod.exists] at hx
+    obtain ⟨a, b, hx, hab⟩ := hx
+    -- Expose the loop structure: `simp [queryOracleVerifier, simulateQ_optionT_bind]` rewrites the
+    -- `simulateQ (simOracle2 …) (verify …)` into the explicit DOUBLY-NESTED `forIn` over
+    -- `MProd (Option Bool) _` accumulators (the `do`-notation early-return desugaring), with the inner
+    -- `(List.Vector.ofFn id).mmap` of `2^ϑ` oracle queries and the `unless … do return false` exits
+    -- rendered as `ForInStep.yield ⟨none, …⟩` / `ForInStep.done ⟨some false, …⟩`.
+    simp only [queryOracleVerifier, simulateQ_optionT_bind] at hx
+    -- RESIDUAL (protocol-specific verifier-run collapse, NOT a missing primitive). The
+    -- `forIn`-with-early-exit support/transport theory this once lacked NOW EXISTS in the
+    -- `ForInSupport` section above: `simulateQ_optionT_forIn` pushes `simulateQ` through the nested
+    -- `forIn` (it IS the missing `simulateQ_forIn`), `simulateQ_optionT_listVector_mmap` collapses the
+    -- inner query `mmap`, `mem_support_forIn_cons` / `forIn_support_invariant` characterize the loop
+    -- support, and the per-query collapse `Prelude.simulateQ_simOracle2_query` turns each simulated
+    -- query into `pure (answer (oStmt …) point)`. What remains is the protocol-specific
+    -- `queryOracleVerifier_verify_collapse`: thread `simulateQ` through both loops + the `mmap`, run
+    -- `forIn_support_invariant` with the no-early-exit invariant `(MProd.fst = none)` to learn that
+    -- EVERY per-iteration `unless c_cur = f_i_val` (and the final `unless c_cur = c`) check held, then
+    -- align the loop's `f_i_on_fiber`/`c_cur`/`c_next` (`localized_fold_matrix_form`,
+    -- `extractMiddleFinMask`, `next_suffix_of_v` with their `Fin`/`Nat.joinBits` casts) with the goal
+    -- `proximityChecksSpec`'s identically-shaped terms. That alignment is heavy index/cast bookkeeping
+    -- specific to BaseFold, not loop plumbing; it is the remaining work and is left documented here.
     sorry
 
 /-- Round-by-round knowledge soundness for the oracle verifier (query phase) -/
@@ -413,6 +629,17 @@ theorem queryOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type} (init 
   use queryRbrExtractor 𝔽q β (ϑ:=ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
   use queryKnowledgeStateFunction 𝔽q β (ϑ:=ϑ) γ_repetitions init impl
   intro stmtIn witIn prover j
+  -- RESIDUAL (research-tier; the loop-support primitive is no longer the blocker). The dominant
+  -- obstruction is intrinsic: the target error `(1/2 + 2^-(𝓡+1))^γ` is the proximity-gap bound, whose
+  -- proof needs the Binius/BaseFold list-decoding proximity argument (per-repetition soundness
+  -- `1/2 + 2^-(𝓡+1)`, independence across the `γ` repetitions) — genuine research-tier content not
+  -- yet formalized in this development. The structural step (bounding the probability the
+  -- `forIn`-loop verifier accepts a state failing `queryKStateProp`) now HAS its loop-support
+  -- machinery available — the `ForInSupport` section above (`simulateQ_optionT_forIn`,
+  -- `simulateQ_optionT_listVector_mmap`, `forIn_support_invariant`, …) supplies exactly the
+  -- `simulateQ_forIn` / `support_forIn` transport that was previously missing — but it bottoms out in
+  -- the same proximity bound. Not closable in this single file under the honest-proof constraints
+  -- (no axioms, no weakening of the bound, no assume-the-conclusion).
   sorry
 
 end FinalQueryRoundIOR

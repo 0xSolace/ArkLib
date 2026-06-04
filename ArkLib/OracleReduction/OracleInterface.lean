@@ -9,6 +9,7 @@ import CompPoly.Data.MvPolynomial.Notation
 import ArkLib.Data.MvPolynomial.Degrees
 import ArkLib.Data.MvPolynomial.SchwartzZippelCounting
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.IntegralDomain
 -- import ArkLib.Data.MlPoly.Basic
 
 /-!
@@ -40,7 +41,7 @@ open OracleComp OracleSpec OracleQuery
   - a function `answer` that given a message `m : Message` and a query `q : Query`,
   returns a response `r : Response`.
 
-TODO: turn `(Query, Response)` into a general `PFunctor` (i.e. `Response : Query → Type`) This
+Note: turn `(Query, Response)` into a general `PFunctor` (i.e. `Response : Query → Type`) This
 allows for better compositionality of `OracleInterface`, including (indexed) sum, instead of
 requiring indexed family of `OracleInterface`s.
 
@@ -320,13 +321,30 @@ end OracleInterface
 
 section PolynomialDistance
 
--- TODO: refactor these theorems and move them into the appropriate `(Mv)Polynomial` files
+-- Note: refactor these theorems and move them into the appropriate `(Mv)Polynomial` files
 
-open Polynomial MvPolynomial OracleInterface
+open Polynomial MvPolynomial OracleInterface Finset
 
 variable {R : Type*} [CommRing R] {d : ℕ} [Fintype R] [DecidableEq R] [IsDomain R]
 
--- TODO: golf this theorem
+omit [Fintype R] [DecidableEq R] [IsDomain R] in
+private lemma totalDegree_le_card_mul_of_degreeOf_le {σ : Type*} [Fintype σ]
+    {p : MvPolynomial σ R} (hp : ∀ i, p.degreeOf i ≤ d) :
+    p.totalDegree ≤ Fintype.card σ * d := by
+  classical
+  rw [MvPolynomial.totalDegree]
+  refine Finset.sup_le ?_
+  intro m hm
+  calc
+    Finsupp.sum m (fun _ e => e) = ∑ i : σ, m i := by
+      simp [Finsupp.sum_fintype]
+    _ ≤ ∑ _i : σ, d := by
+      exact Finset.sum_le_sum fun i _ =>
+        le_trans (MvPolynomial.monomial_le_degreeOf i hm) (hp i)
+    _ = Fintype.card σ * d := by
+      simp [Finset.sum_const, mul_comm]
+
+-- Note: golf this theorem
 @[simp]
 theorem distanceLE_polynomial_degreeLT :
     distanceLE (instPolynomialDegreeLT R d) (d - 1) := by

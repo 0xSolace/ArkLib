@@ -531,6 +531,35 @@ private lemma Reduction.run_mk_verifier_id {WitIn WitOut : Type}
     monadLift_bind, Function.comp_apply, monadLift_pure,
     pure_bind, Option.getM, map_eq_bind_pure_comp]
 
+omit init impl in
+/-- Lifting an `OracleComp` into `OptionT` commutes with `Functor.map`. -/
+private lemma liftM_oc_map_optionT {spec : OracleSpec ι} {X Y : Type}
+    (oa : OracleComp spec X) (g : X → Y) :
+    (liftM (g <$> oa) : OptionT (OracleComp spec) Y)
+      = g <$> (liftM oa : OptionT (OracleComp spec) X) := by
+  apply OptionT.ext; rw [OptionT.run_map]
+  show some <$> (g <$> oa) = Option.map g <$> (some <$> oa)
+  rw [Functor.map_map, Functor.map_map]; rfl
+
+omit init impl in
+/-- Running, with query logging, the reduction obtained from an arbitrary prover and the identity
+  verifier: the verifier's output statement is always the input statement, the verifier makes no
+  queries, and the prover's run (with its log) is otherwise unchanged. -/
+private lemma Reduction.runWithLog_mk_verifier_id {WitIn WitOut : Type}
+    (prover : Prover oSpec StmtIn WitIn StmtIn WitOut !p[])
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    (Reduction.mk prover Verifier.id).runWithLog stmtIn witIn =
+      (fun pr => ((pr.1, stmtIn), pr.2, ([] : oSpec.QueryLog)))
+        <$> prover.runWithLog stmtIn witIn := by
+  have hver : ∀ t : (!p[]).FullTranscript,
+      (simulateQ loggingOracle
+        (Verifier.run stmtIn t (Verifier.id : Verifier oSpec StmtIn StmtIn !p[]))).run
+        = pure (some stmtIn, ([] : oSpec.QueryLog)) := fun _ => rfl
+  unfold Reduction.runWithLog
+  simp only [hver, OptionT.run_lift, liftM_pure, pure_bind, Option.getM, map_pure,
+    bind_pure_comp]
+  rw [liftM_oc_map_optionT]
+
 /-- The identity / trivial verifier is perfectly sound. -/
 @[simp]
 theorem Verifier.id_soundness {lang : Set StmtIn} :

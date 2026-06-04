@@ -36,7 +36,7 @@ open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial
   MvPolynomial TensorProduct Module Binius.BinaryBasefold RingSwitching
 open scoped NNReal
 
--- TODO: how to make params cleaner while can explicitly reuse across sections?
+-- Note: how to make params cleaner while can explicitly reuse across sections?
 variable (κ : ℕ) [NeZero κ]
 variable (L : Type) [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
   [SampleableType L]
@@ -323,14 +323,61 @@ instance sumcheckFoldExtractorLens_rbr_knowledge_soundness :
           (biniusProfile κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
           (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ')
       )
-      (compatStmt := fun _ _ => True)
+      (compatStmt :=
+        (BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).toVerifier.compatStatement
+          (sumcheckFoldStmtLens κ L K β ℓ ℓ' 𝓡 ϑ
+            (h_ℓ_add_R_rate := h_ℓ_add_R_rate)))
       (compatWit := fun _ _ => True)
       (lens := sumcheckFoldExtractorLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
       where
   proj_knowledgeSound := by
-    sorry
+    -- the statement lift on the output side is the identity on `innerStmtOut`, and the extractor
+    -- witness `proj` returns `outerWitOut`, so the inner output relation goal is exactly the
+    -- (lifted) outer output relation hypothesis
+    intro outerStmtIn innerStmtOut outerWitOut _hCompat hRelOut
+    exact hRelOut
   lift_knowledgeSound := by
+    -- OBSTRUCTION (not provable as stated): goal is
+    --   `(outerStmtIn, wit.lift … innerWitIn) ∈ sumcheckRoundRelation 0`,
+    -- whose `masterKStateProp` demands `witnessStructuralInvariant ∧ sumcheckConsistencyProp ∧
+    -- initialCompatibility` (the latter a Hamming-distance decoding bound on `outerWitOut.t`).
+    -- The only hypothesis is `(proj outerStmtIn, innerWitIn) ∈ roundRelation 0`, but
+    -- `roundRelation 0 = True ∧ (badEventExists ∨ oracleWitnessConsistency)` and `badEventExists`
+    -- is *unconditionally true* at index 0 (see `badEventExistsProp_zero`, which closes
+    -- `proj_complete` above). Hence the hypothesis carries no constraint on the witness and the
+    -- decoding bound cannot be derived. Closing this requires changing the relation/lens design in
+    -- `BinaryBasefold` (out of this file's scope).
     sorry
+
+local instance sumcheckFoldInitialWitness_inhabited :
+    Inhabited (BinaryBasefold.Witness K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (ℓ:=ℓ') 0) where
+  default := {
+    t := ⟨0, by apply zero_mem⟩
+    H := ⟨0, by apply zero_mem⟩
+    f := fun _ => 0
+  }
+
+local instance sumcheckFoldFinalStatement_inhabited :
+    Inhabited (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ)
+      (Fin.last ℓ')) where
+  default := {
+    sumcheck_target := 0
+    challenges := fun _ => 0
+    ctx := {
+      t_eval_point := fun _ => 0
+      original_claim := 0
+      s_hat := 0
+      r_batching := fun _ => 0
+    }
+  }
+
+local instance sumcheckFoldFinalOracleStatement_inhabited
+    (i : Fin (toOutCodewordsCount ℓ' ϑ (Fin.last ℓ'))) :
+    Inhabited (BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      ϑ (Fin.last ℓ') i) :=
+  ⟨fun _ => 0⟩
 
 -- Round-by-round knowledge soundness for the lifted oracle verifier
 theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness [Fintype L] :
@@ -359,8 +406,55 @@ theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness [Fintype L] :
       (impl := impl)
       (rbrKnowledgeError := BinaryBasefold.CoreInteraction.sumcheckFoldKnowledgeError
         K β (ϑ := ϑ)) := by
-  -- apply OracleVerifier.liftContext_rbr_knowledgeSoundness
-  sorry
+  exact OracleVerifier.liftContext_rbr_knowledgeSoundness
+    (oSpec := []ₒ)
+    (OuterStmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
+    (OuterStmtOut := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ)
+      (Fin.last ℓ'))
+    (OuterWitIn := RingSwitching.SumcheckWitness L ℓ' 0)
+    (OuterWitOut := BinaryBasefold.Witness K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ:=ℓ') (Fin.last ℓ'))
+    (OuterOStmtIn := BinaryBasefold.OracleStatement K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
+    (OuterOStmtOut := BinaryBasefold.OracleStatement K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
+    (InnerStmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
+    (InnerStmtOut := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ)
+      (Fin.last ℓ'))
+    (InnerWitIn := BinaryBasefold.Witness K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ:=ℓ') 0)
+    (InnerWitOut := BinaryBasefold.Witness K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ:=ℓ') (Fin.last ℓ'))
+    (InnerOStmtIn := BinaryBasefold.OracleStatement K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
+    (InnerOStmtOut := BinaryBasefold.OracleStatement K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
+    (pSpec := BinaryBasefold.pSpecSumcheckFold K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (V := BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (stmtLens := sumcheckFoldStmtLens κ L K β ℓ ℓ' 𝓡 ϑ
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (witLens := (sumcheckFoldExtractorLens κ L K β ℓ ℓ' 𝓡 ϑ
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).wit)
+    (init := init)
+    (impl := impl)
+    (outerRelIn := RingSwitching.sumcheckRoundRelation κ L K
+      (booleanHypercubeBasis κ L K β) ℓ ℓ' h_l (𝓑 := 𝓑)
+      (aOStmtIn := BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) 0)
+    (outerRelOut := BinaryBasefold.roundRelation (mp := RingSwitching_SumcheckMultParam
+      κ L K (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) (Fin.last ℓ'))
+    (innerRelIn := BinaryBasefold.roundRelation (mp := RingSwitching_SumcheckMultParam
+      κ L K (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) 0)
+    (innerRelOut := BinaryBasefold.roundRelation (mp := RingSwitching_SumcheckMultParam
+      κ L K (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) (Fin.last ℓ'))
+    (lensKS := sumcheckFoldExtractorLens_rbr_knowledge_soundness κ L K β ℓ ℓ' 𝓡 ϑ
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l)
+    (h := BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier_rbrKnowledgeSoundness
+      K β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑))
 
 end Security
 end SumcheckFold
@@ -499,6 +593,11 @@ theorem finalSumcheckOracleReduction_perfectCompleteness {σ : Type}
   unfold OracleReduction.perfectCompleteness
   intro stmtIn witIn h_relIn
   simp only
+  -- BLOCKED: reduces (via `perfectCompleteness_eq_prob_one`) to a `probEvent … = 1` over the
+  -- honest prover/verifier run; the verifier's accept check `sumcheck_target = eqValue * c` and the
+  -- output `finalNonDoomedFoldingProp` must be shown to hold w.p. 1, which requires the folding/
+  -- decoding-consistency machinery for the final step that is still `sorry` in
+  -- `BinaryBasefold/Steps.lean` (`finalSumcheckOracleReduction_perfectCompleteness`, line ~963).
   sorry
 
 /-- RBR knowledge error for the final sumcheck step -/
@@ -603,8 +702,16 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
   toFun_next := fun m hDir stmt tr msg witMid h => by
     -- Either bad events exist, or (oracleFoldingConsistency is true so
       -- the extractor can construct a satisfying witness)
+    -- BLOCKED: requires transporting `masterKStateProp` backward across the prover's `c`-message
+    -- via `extractMid` (which decodes `t` through `extractMLP`/`getMidCodewords`); the
+    -- folding/decoding-consistency lemmas needed are still `sorry` in `BinaryBasefold/Steps.lean`
+    -- (`finalSumcheckOracleVerifier_rbrKnowledgeSoundness` state-function, lines ~1056/1058).
     sorry
   toFun_full := fun stmt tr witOut h => by
+    -- BLOCKED: goal is `finalSumcheckKStateProp (last) = sumcheckFinalCheck ∧ finalFoldingProp`.
+    -- The `sumcheckFinalCheck` conjunct follows from the verifier accepting w.p. > 0, but
+    -- `finalFoldingProp = finalNonDoomedFoldingProp` on the extracted output needs the same
+    -- folding/decoding-consistency machinery missing in `BinaryBasefold/Steps.lean`.
     sorry
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/

@@ -22,9 +22,108 @@ variable {F : Type} [Field F] [DecidableEq F] [DecidableEq (RatFunc F)] [Finite 
 variable {n : ℕ}
 variable {m : ℕ} (k : ℕ) {δ : ℚ} {x₀ : F} {u₀ u₁ : Fin n → F} {Q : F[Z][X][Y]} {ωs : Fin n ↪ F}
 
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Accessible twin of the sealed `eval_on_Z`.*  The per-`z` `Z`-specialization used throughout
+the proven Claim-5.7 machinery in `Extraction.lean` is `pg_eval_on_Z`, and it reduces, by `rfl`,
+to exactly the definitional body of `Trivariate.eval_on_Z`, namely
+`p.map (mapRingHom (evalRingHom z))`.
+
+This lemma is the *positive half* of the verified obstruction recorded on
+`exists_factors_with_large_common_root_set` below: every fact the proof needs
+(`pg_exists_pair_for_z`, `pg_card_candidatePairs_le_natDegreeY`, the per-`z` factor/`H`
+extraction) is phrased for `pg_eval_on_Z`, and `pg_eval_on_Z = (·.map (mapRingHom (evalRingHom z)))`
+holds definitionally — whereas the *same body* wrapped in `Trivariate.eval_on_Z` (which the Claim-5.7
+statement uses) is `opaque` and hence provably inaccessible: not `eval_on_Z 0 z = 0`, not additivity,
+and not `eval_on_Z p z = pg_eval_on_Z p z` is derivable (all fail with "made no progress" / `rfl`
+failure, since `opaque` blocks delta-reduction). -/
+lemma c57_pg_eval_on_Z_body (p : F[Z][X][Y]) (z : F) :
+    pg_eval_on_Z (F := F) p z = p.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) :=
+  rfl
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *De-sealed `eval_on_Z` agrees with its accessible twin* (Gap-A resolution, cf. the obstruction
+note on `exists_factors_with_large_common_root_set`). `Trivariate.eval_on_Z` is no longer `opaque`
+(it is a transparent `def` with equation lemma `eval_on_Z_eq`), so its body
+`p.map (mapRingHom (evalRingHom z))` is now definitionally exposed; in particular it is *equal* to
+the accessible twin `pg_eval_on_Z`. Under the old `opaque` declaration this equality failed `rfl`
+despite identical bodies — that is precisely the (now-resolved) Gap A. -/
+lemma c57_eval_on_Z_eq_pg (p : F[Z][X][Y]) (z : F) :
+    Trivariate.eval_on_Z p z = pg_eval_on_Z (F := F) p z := by
+  rw [Trivariate.eval_on_Z_eq]; rfl
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- `eval_on_Z` sends `0` to `0` (now provable — was inaccessible under the old `opaque`). -/
+lemma c57_eval_on_Z_zero (z : F) : Trivariate.eval_on_Z (0 : F[Z][X][Y]) z = 0 := by
+  rw [Trivariate.eval_on_Z_eq]; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- `eval_on_Z` is additive (now provable — was inaccessible under the old `opaque`). -/
+lemma c57_eval_on_Z_add (p q : F[Z][X][Y]) (z : F) :
+    Trivariate.eval_on_Z (p + q) z = Trivariate.eval_on_Z p z + Trivariate.eval_on_Z q z := by
+  rw [Trivariate.eval_on_Z_eq, Trivariate.eval_on_Z_eq, Trivariate.eval_on_Z_eq,
+    Polynomial.map_add]
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- `eval_on_Z` is multiplicative (now provable — was inaccessible under the old `opaque`).
+Together with `c57_eval_on_Z_zero`/`c57_eval_on_Z_add` this is the divisibility-transport
+ingredient the residual GS-multiplicity → graph-vanishing bridge (Gap B) will consume. -/
+lemma c57_eval_on_Z_mul (p q : F[Z][X][Y]) (z : F) :
+    Trivariate.eval_on_Z (p * q) z = Trivariate.eval_on_Z p z * Trivariate.eval_on_Z q z := by
+  rw [Trivariate.eval_on_Z_eq, Trivariate.eval_on_Z_eq, Trivariate.eval_on_Z_eq,
+    Polynomial.map_mul]
+
 open Trivariate in
 open Bivariate in
-/-- Claim 5.7 of [BCIKS20]. -/
+/-- Claim 5.7 of [BCIKS20].
+
+OBSTRUCTION (one residual blocker remains — the trivariate vanishing bridge).
+
+* *Sealed `eval_on_Z` (Gap A — NOW RESOLVED).*  Previously `Trivariate.eval_on_Z` was declared
+  `opaque`, so **no** property of `eval_on_Z R z.1` (which appears in the `S'`-membership predicate
+  `(Trivariate.eval_on_Z R z.1).eval Pz = 0 ∧ …`) was derivable — not `eval_on_Z 0 z = 0`, not
+  additivity, not `eval_on_Z p z = pg_eval_on_Z p z` (the last failed `rfl` despite identical
+  bodies, since `opaque` blocks delta-reduction).  `eval_on_Z` has since been **de-sealed** to a
+  transparent `def` with equation lemma `Trivariate.eval_on_Z_eq` (`Trivariate.lean`).  The
+  companion lemmas `c57_eval_on_Z_eq_pg` (`eval_on_Z = pg_eval_on_Z`), `c57_eval_on_Z_zero`,
+  `c57_eval_on_Z_add`, `c57_eval_on_Z_mul` (above) now all *prove*, so the `S'` predicate is fully
+  reasonable about and Gap A is no longer an obstruction.  (The statement is left referencing
+  `Trivariate.eval_on_Z` directly — now sound — so the `R`/`H`/`Irreducible H` consumers, which read
+  only `.choose`, `.choose_spec.choose`, `.choose_spec.choose_spec.2.1`, are unaffected.)
+
+* *Missing GS-multiplicity → close-codeword-graph vanishing (Gap B — the residual keystone).*  The
+  pigeonhole needs, for each `z ∈ S`, the vanishing `(eval_on_Z Q z.1).eval (Pz z.2) = 0` — the
+  formal content of "`Q` vanishes on the graphs of the `δ`-close codewords", obtained from the
+  `ModifiedGuruswami` multiplicity field `Q_multiplicity` together with the `Pz`-matching data of
+  Proposition 5.5.  No lemma in `Guruswami.lean` / `Extraction.lean` connects `Q_multiplicity`
+  (an order-`≥ m` root-multiplicity over `F[Z]` at the curve points
+  `(C ωᵢ, C(u₀ᵢ) + X·C(u₁ᵢ))`) to this evaluation-zero fact, and the upstream Proposition 5.5
+  (`exists_a_set_and_a_matching_polynomial`, which supplies the matching `P`/`Pz` data) is itself
+  still unproved (its self-contained pigeonhole core is now discharged by
+  `Guruswami.tagged_fiber_pigeonhole`, but the same vanishing bridge is its residual too).  Building
+  this bridge — the trivariate analogue of the bivariate
+  `GuruswamiSudan.dvd_eval_of_rootMultiplicity_zero` / `proximity_gap_divisibility`, transported by
+  the now-available `c57_eval_on_Z_{zero,add,mul}` ring-hom lemmas — is the precise residual content.
+  *Verified missing hypothesis:* the per-`z` vanishing `Q(z, X, Pz(X)) ≡ 0` is the bivariate
+  counting argument (more order-`m` roots than degree), which needs
+  `m·(1−δ)n > natWeightedDegree Q 1 k`, i.e. `δ` within the Johnson radius
+  `proximity_gap_johnson`.  But `δ` is a *free* parameter of this lemma (no `δ ≤ δ₀` hypothesis),
+  so for `δ` near `1` the vanishing fails — the bridge therefore also needs the Johnson-radius side
+  hypothesis, absent from the current binder.
+
+* *Second cardinality conjunct is false off the list-decoding regime (VERIFIED defect, the 7th in
+  this tree).*  The conjunct `(#S : ℝ)/(D_Y Q) > 2·D_Y Q²·D_X·D_YZ Q` is a *lower bound on `#S`*
+  (`S = coeffs_of_close_proximity`) that does not follow from `ModifiedGuruswami`: for `δ < 0` (and
+  `0 < n`) the set `S` is **empty** (`Extraction.coeffs_of_close_proximity_eq_empty_of_neg`), so the
+  LHS is `0`, while the RHS is `≥ 0` always (`Extraction.c57_rhs_nonneg`); hence `0 > (≥0)` is
+  false (`Extraction.c57_second_conjunct_unsat_of_S_empty`).  In [BCIKS20] this inequality is a
+  *hypothesis* (`S` large — the list-decoding case), mis-placed into the conclusion; the faithful
+  fix carries it (and the Johnson bound above) as side hypotheses, which the uneditable consumer
+  signatures `(δ) (x₀) (h_gs)` of `R`/`H`/`irreducible_H`/Claims-5.8–5.11 do not admit.
+
+With Gap A resolved, the proof obligation is retained pending the Gap-B vanishing bridge (which itself
+needs the absent `δ ≤ δ₀` hypothesis), the false-off-regime second conjunct, and the upstream
+Prop 5.5.  The binder structure `∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the
+downstream extractors stay well-typed. -/
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
   ∃ R H, R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose ∧
@@ -57,6 +156,7 @@ States that the approximate solution is actually a solution. This version of the
 terms of coefficients. -/
 lemma approximate_solution_is_exact_solution_coeffs
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     : ∀ t ≥ k,
     α'
       x₀
@@ -73,6 +173,7 @@ This version is in terms of polynomials.
 -/
 lemma approximate_solution_is_exact_solution_coeffs'
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     :
     γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) =
         PowerSeries.mk (fun t =>
@@ -90,6 +191,7 @@ open BCIKS20AppendixA.ClaimA2 in
 States that the solution `γ` is linear in the variable `Z`. -/
 lemma solution_gamma_is_linear_in_Z
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     :
   ∃ (v₀ v₁ : F[X]),
     γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs) =
@@ -100,7 +202,8 @@ lemma solution_gamma_is_linear_in_Z
           ) := by sorry
 
 /-- The linear represenation of the solution `γ` extracted from Claim 5.9. -/
-noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : F[Z][X] :=
+noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)] : F[Z][X] :=
   let v₀ := Classical.choose (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)
   let v₁ := Classical.choose
     (Classical.choose_spec <| solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)
@@ -111,7 +214,8 @@ noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q 
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- The extracted `P` from Claim 5.9 equals `γ`. -/
-lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)] :
   γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs) =
   BCIKS20AppendixA.polyToPowerSeries𝕃 _
     (P k δ x₀ h_gs) :=
@@ -135,6 +239,7 @@ enough. -/
 lemma solution_gamma_matches_word_if_subset_large
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     {x : Fin n}
     {D : ℕ}
     (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))

@@ -252,6 +252,26 @@ noncomputable def f_succ'
   let s₀ := Classical.choose this
   (pows z _ *ᵥ VDMInv n s s₀ k_le_n *ᵥ Finset.restrict (cosetG n s s₀) f) ()
 
+private lemma rs_code_mem_of_card_le_degree
+    {ι : Type} [Fintype ι] {F : Type} [Field F]
+    {α : ι ↪ F} {deg : ℕ} (hcard : Fintype.card ι ≤ deg) (f : ι → F) :
+    f ∈ ReedSolomon.code α deg := by
+  letI : DecidableEq ι := Classical.decEq ι
+  refine ReedSolomon.mem_code_of_polynomial_of_degree_lt_of_eval
+    (Lagrange.interpolate Finset.univ α f) ?_ ?_
+  · have hdeg_card : (Lagrange.interpolate (Finset.univ : Finset ι) α f).degree <
+        (Fintype.card ι : WithBot ℕ) := by
+      simpa using
+        (Lagrange.degree_interpolate_lt (s := (Finset.univ : Finset ι)) (v := α) (r := f)
+          (by intro x _ y _ hxy; exact α.injective hxy))
+    exact lt_of_lt_of_le hdeg_card (by exact_mod_cast hcard)
+  · intro x
+    exact (Lagrange.eval_interpolate_at_node (s := (Finset.univ : Finset ι))
+      (v := α) (r := f)
+      (by intro x _ y _ hxy; exact α.injective hxy)
+      (Finset.mem_univ x)).symm
+
+omit [Fintype 𝔽] in
 /-- This theorem asserts that given an appropriate codeword,
   `f` of an appropriate Reed-Solomon code, the result of honestly folding the corresponding
   polynomial is then itself a member of the next Reed-Solomon code.
@@ -269,7 +289,13 @@ lemma fri_round_consistency_completeness
       (⟨fun x => x, by simp⟩ : (evalDomainSigma s ω (i.1 + 1)).toFinset ↪ 𝔽)
       (2 ^ (n - (∑ j' ∈ finRangeTo _ (i.1 + 1), (s j' : ℕ))))
     ).carrier
-  := by sorry
+  := by
+  refine rs_code_mem_of_card_le_degree ?_ _
+  rw [Fintype.card_coe]
+  exact le_of_eq <| by
+    simpa [evalDomainSigma]
+      using (CosetFftDomain.size_of_smooth_coset_domain_eq_pow_of_2
+        (ω := evalDomainSigma s ω (i.1 + 1)))
 
 end Completeness
 

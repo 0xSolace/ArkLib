@@ -186,7 +186,8 @@ theorem rtake_append_right (T : FullTranscript pSpec₁) (T' : FullTranscript pS
   simp [rtake, Fin.rtake, append, Fin.cast, FullTranscript.cast, Transcript.cast]
   have : ⟨m + n - n + i.val, by omega⟩ = Fin.natAdd m i := by ext; simp
   rw! (castMode := .all) [this, Fin.happend_right]
-  sorry
+  apply eq_of_heq
+  refine HEq.trans (eqRec_heq _ _) (HEq.trans (cast_heq _ _) (cast_heq _ _).symm)
 
 /-- The first half of a transcript for a concatenated protocol -/
 def fst (T : FullTranscript (pSpec₁ ++ₚ pSpec₂)) : FullTranscript pSpec₁ :=
@@ -469,8 +470,13 @@ def seqComposeChallengeEquiv {m : ℕ} {n : Fin m → ℕ} (pSpec : ∀ i, Proto
   toFun := fun ⟨i, j⟩ => sigmaChallengeIdxToSeqCompose i j
   invFun := seqComposeChallengeIdxToSigma
   left_inv := by
-    intro ⟨_, _⟩; simp [seqComposeChallengeIdxToSigma, sigmaChallengeIdxToSeqCompose]
-    sorry
+    rintro ⟨i, ⟨j, hj⟩⟩
+    simp only [seqComposeChallengeIdxToSigma, sigmaChallengeIdxToSeqCompose]
+    have h := Fin.splitSum_embedSum (n := n) i j
+    have hf : (i.embedSum j).splitSum.fst = i := congrArg Sigma.fst h
+    refine Sigma.ext hf ?_
+    rw [Subtype.heq_iff_coe_heq (by rw [hf]) (by rw [hf])]
+    exact (Sigma.ext_iff.mp h).2
   right_inv := by intro; simp [seqComposeChallengeIdxToSigma, sigmaChallengeIdxToSeqCompose]
 
 def sigmaMessageIdxToSeqCompose {m : ℕ} {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
@@ -493,8 +499,13 @@ def seqComposeMessageEquiv {m : ℕ} {n : Fin m → ℕ} {pSpec : ∀ i, Protoco
   toFun := fun ⟨i, msgIdx⟩ => sigmaMessageIdxToSeqCompose i msgIdx
   invFun := seqComposeMessageIdxToSigma
   left_inv := by
-    intro ⟨i, ⟨j, h⟩⟩ ; simp [seqComposeMessageIdxToSigma, sigmaMessageIdxToSeqCompose]
-    sorry
+    rintro ⟨i, ⟨j, hj⟩⟩
+    simp only [seqComposeMessageIdxToSigma, sigmaMessageIdxToSeqCompose]
+    have h := Fin.splitSum_embedSum (n := n) i j
+    have hf : (i.embedSum j).splitSum.fst = i := congrArg Sigma.fst h
+    refine Sigma.ext hf ?_
+    rw [Subtype.heq_iff_coe_heq (by rw [hf]) (by rw [hf])]
+    exact (Sigma.ext_iff.mp h).2
   right_inv := by intro; simp [seqComposeMessageIdxToSigma, sigmaMessageIdxToSeqCompose]
 
 instance {m : ℕ} {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}

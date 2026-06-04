@@ -21,28 +21,750 @@ variable {n : ℕ}
 variable {m : ℕ} (k : ℕ) {δ : ℚ} {x₀ : F} {u₀ u₁ : Fin n → F} {Q : F[Z][X][Y]} {ωs : Fin n ↪ F}
          [Finite F]
 
-omit [DecidableEq (RatFunc F)] in
-/-- Equation 5.12 from [BCIKS20]. -/
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Cartesian cross-term blowup* witnessing the indexing defect in the factorization
+conjunct of `irreducible_factorization_of_gs_solution` (= [BCIKS20, Eq. 5.12] as currently
+formalized). For two distinct factors `a, b` the *intended* Eq-5.12 witnesses
+`R = [a, b]`, `f = [1, 1]`, `e = [1, 2]` (which should encode `a¹ · b²`) instead make the
+displayed triple product over the three `toFinset`s evaluate to `a³ · b³`: each factor is
+raised to `∑ (eᵢ ∈ {1,2}) = 3` and is copied across `f.toFinset = {1}`. Hence the
+Cartesian-product form cannot represent a factorization with non-uniform multiplicities,
+confirming the product is mis-indexed relative to the paper's single index `∏ᵢ`. -/
+lemma eq512_cartesian_product_blowup (a b : F[Z][X][Y]) (hab : a ≠ b) :
+    (∏ (Rᵢ ∈ ([a, b]).toFinset) (fᵢ ∈ ([1, 1] : List ℕ).toFinset)
+        (eᵢ ∈ ([1, 2] : List ℕ).toFinset),
+        (Rᵢ.comp ((Polynomial.X : F[Z][X][Y]) ^ fᵢ)) ^ eᵢ)
+      = a ^ 3 * b ^ 3 := by
+  have e1 : ([1, 1] : List ℕ).toFinset = ({1} : Finset ℕ) := by decide
+  have e2 : ([1, 2] : List ℕ).toFinset = ({1, 2} : Finset ℕ) := by decide
+  have eR : ([a, b]).toFinset = {a, b} := by simp [List.toFinset_cons]
+  -- The parenthesized triple binder `∏ (Rᵢ ∈ _) (fᵢ ∈ _) (eᵢ ∈ _), …` desugars to a single
+  -- product over the Cartesian (`×ˢ`) finset `{a,b} ×ˢ {1} ×ˢ {1,2}`; split it back out.
+  rw [eR, e1, e2, Finset.prod_product]
+  simp_rw [Finset.prod_product]
+  rw [Finset.prod_pair hab]
+  simp only [Finset.prod_singleton]
+  rw [Finset.prod_pair (show (1 : ℕ) ≠ 2 by decide),
+      Finset.prod_pair (show (1 : ℕ) ≠ 2 by decide)]
+  simp only [pow_one, comp_X]
+  ring
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Strong-separability is unsatisfiable for genuinely-arising factors* — the verified
+defect (bug #18) in the separability conjunct of `irreducible_factorization_of_gs_solution`.
+
+The conjunct `∀ Rᵢ ∈ R, Rᵢ.Separable` uses `Polynomial.Separable` over the **coefficient ring**
+`F[Z][X]`, which is *not a field*. By `separable_def`, `Rᵢ.Separable` unfolds to a Bézout
+identity `a · Rᵢ + b · Rᵢ.derivative = 1` with `a, b : F[Z][X][Y]` — i.e. coprimality *in the
+polynomial ring* `F[Z][X][Y]`, an extremely strong condition. It is **not** the paper's intended
+separability of `Rᵢ` over the fraction field `F(Z,X)` (equivalently, nonvanishing of `discr_y`,
+the form actually consumed by Claim 5.6 `discr_of_irred_components_nonzero`).
+
+Concretely the factor `r = Y² − X` (here `X = C (C X) : F[Z][X][Y]`, a *prime* element of the
+coefficient ring) is exactly the kind of irreducible factor a `ModifiedGuruswami` solution
+produces: it is irreducible over `F[Z][X]`, squarefree, and **separable over the fraction field**
+`F(Z,X)` (its two roots `±√X` are distinct in char ≠ 2). Yet it is **not** `Separable` over
+`F[Z][X]`: separability is preserved by every coefficient ring hom (`Separable.map`), so mapping
+the coefficient ring `F[Z][X] →+* F` by `Z, X ↦ 0` would send `r` to `Y²`, which is not even
+squarefree. Hence no choice of witnesses can satisfy the strong conjunct together with
+irreducibility once a factor of `Y`-degree ≥ 2 over a non-square coefficient appears — and the
+`ModifiedGuruswami` `Y`-degree budget `D_Y Q < D_X / k` permits exactly such factors. -/
+lemma eq512_strong_separable_unsat
+    (g : F[Z][X] →+* F) (hgX : g (Polynomial.C (Polynomial.X : Polynomial F) : F[Z][X]) = 0) :
+    ¬ (((Polynomial.X : F[Z][X][Y]) ^ 2
+        - Polynomial.C (Polynomial.C (Polynomial.X : Polynomial F) : F[Z][X])).Separable) := by
+  classical
+  intro hsep
+  -- separability transfers along the coefficient ring hom `g : F[Z][X] →+* F`.
+  have hmap := hsep.map (f := g)
+  -- the image is `Y² - C (g (C X)) = Y² - C 0 = Y²`.
+  have himg :
+      (((Polynomial.X : F[Z][X][Y]) ^ 2
+          - Polynomial.C (Polynomial.C (Polynomial.X : Polynomial F) : F[Z][X])).map g)
+        = (Polynomial.X : F[X]) ^ 2 := by
+    rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_X, Polynomial.map_C, hgX,
+      Polynomial.C_0, sub_zero]
+  rw [himg] at hmap
+  -- but `Y²` is not squarefree, contradicting `Separable.squarefree`.
+  have hsq : Squarefree ((Polynomial.X : F[X]) ^ 2) := hmap.squarefree
+  have hYY : (Polynomial.X : F[X]) * (Polynomial.X : F[X]) ∣ (Polynomial.X : F[X]) ^ 2 := by
+    rw [pow_two]
+  have hunit : IsUnit (Polynomial.X : F[X]) := hsq _ hYY
+  exact (Polynomial.prime_X (R := F)).not_unit hunit
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Separable contraction over the fraction field* — the field-side core of the proof of
+`irreducible_factorization_of_gs_solution` (= [BCIKS20, Eq. 5.12]).
+
+For every positive-`Y`-degree irreducible factor `g : F[Z][X][Y]` of a `ModifiedGuruswami`
+solution `Q`, its image over the fraction field `K := FractionRing (F[Z][X]) = F(Z,X)` admits a
+*separable contraction*: there is a separable `sK : K[Y]` and an exponent `m` with
+`expand K (q^m) sK = g.map (algebraMap …)`, where `q` is the exponential characteristic.
+Equivalently (`expand_eq_comp_X_pow`), `sK.comp (Y^(q^m))` equals the `K`-image of `g`.
+
+This is the step that genuinely needs a *field*: it composes the exponential-characteristic
+transfer `F → F(Z,X)` (`expChar_of_injective_algebraMap` along the injective fraction-field map —
+no obstruction, contrary to the earlier OBSTRUCTION note), Gauss's lemma for irreducibility over
+the fraction field (`IsPrimitive.irreducible_iff_irreducible_map_fraction_map`, the idiom of
+`RationalFunctions.lean`), and Mathlib's separable contraction over a field
+(`Irreducible.hasSeparableContraction`). The remaining open content of Eq. 5.12 is the *descent*
+of this `K`-side contraction back to a primitive separable factor over `F[Z][X]` (a Gauss /
+`integerNormalization` content argument with no direct Mathlib transfer lemma), plus the
+multiplicity bookkeeping that assembles the factors into the zipped `(R, f, e)` lists. -/
+lemma eq512_separable_contraction_over_fraction_field
+    (g : F[Z][X][Y]) (hg : Irreducible g) (hdeg : g.natDegree ≠ 0) :
+    ∃ (sK : Polynomial (FractionRing (F[Z][X]))) (m : ℕ),
+      sK.Separable ∧
+      Polynomial.expand (FractionRing (F[Z][X]))
+          (ringExpChar F ^ m) sK
+        = g.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X]))) := by
+  classical
+  set K := FractionRing (F[Z][X])
+  set q := ringExpChar F with hq
+  haveI hF : ExpChar F q := ringExpChar.expChar F
+  -- exponential characteristic transfers along the injective fraction-field embedding.
+  haveI : ExpChar K q :=
+    expChar_of_injective_algebraMap (IsFractionRing.injective (F[Z][X]) K) q
+  -- a positive-degree irreducible in the UFD-polynomial ring is primitive.
+  have hgprim : g.IsPrimitive := hg.isPrimitive hdeg
+  -- Gauss: irreducibility transfers to the fraction field.
+  have hgK_irr : Irreducible (g.map (algebraMap (F[Z][X]) K)) :=
+    (hgprim.irreducible_iff_irreducible_map_fraction_map).mp hg
+  -- separable contraction of an irreducible over the field `K`.
+  obtain ⟨sK, hsep, m, hexp⟩ := hgK_irr.hasSeparableContraction q
+  exact ⟨sK, m, hsep, hexp⟩
+
+/-- *Content is invariant under `expand`* (for `n ≥ 1`): the coefficients of `expand R n r`
+are exactly those of `r`, spread out at multiples of `n` and padded with zeros, so the gcd of
+the coefficients (the `content`) is unchanged. A small UFD helper used in the Eq-5.12 descent. -/
+theorem eq512_content_expand {R : Type*} [CommRing R] [IsDomain R] [NormalizedGCDMonoid R]
+    {r : R[X]} {n : ℕ} (hn : 0 < n) :
+    (Polynomial.expand R n r).content = r.content := by
+  classical
+  have key : ∀ s : R, Polynomial.C s ∣ (Polynomial.expand R n r) ↔ Polynomial.C s ∣ r := by
+    intro s
+    constructor
+    · intro hdvd
+      rw [Polynomial.C_dvd_iff_dvd_coeff] at hdvd ⊢
+      intro i
+      have := hdvd (n * i)
+      rwa [Polynomial.coeff_expand_mul' hn] at this
+    · intro hdvd
+      rw [Polynomial.C_dvd_iff_dvd_coeff] at hdvd ⊢
+      intro i
+      rw [Polynomial.coeff_expand hn]
+      split_ifs with h
+      · exact hdvd _
+      · exact dvd_zero _
+  have h1 : (Polynomial.expand R n r).content ∣ r.content :=
+    (Polynomial.dvd_content_iff_C_dvd).mpr ((key _).mp (Polynomial.C_content_dvd _))
+  have h2 : r.content ∣ (Polynomial.expand R n r).content :=
+    (Polynomial.dvd_content_iff_C_dvd).mpr ((key _).mpr (Polynomial.C_content_dvd _))
+  calc (Polynomial.expand R n r).content
+      = normalize (Polynomial.expand R n r).content := (Polynomial.normalize_content).symm
+    _ = normalize r.content := (normalize_eq_normalize_iff).mpr ⟨h1, h2⟩
+    _ = r.content := Polynomial.normalize_content
+
+/-- `expand` preserves primitivity (for `n ≥ 1`): immediate from `eq512_content_expand`. -/
+theorem eq512_isPrimitive_expand {R : Type*} [CommRing R] [IsDomain R] [NormalizedGCDMonoid R]
+    {r : R[X]} (hr : r.IsPrimitive) {n : ℕ} (hn : 0 < n) :
+    (Polynomial.expand R n r).IsPrimitive := by
+  rw [Polynomial.isPrimitive_iff_content_eq_one] at hr ⊢
+  rw [eq512_content_expand hn, hr]
+
+/-- *Descent of the field-side separable contraction back to the UFD `R[X]`* — the first of the
+two pieces of [BCIKS20, Eq. 5.12] flagged as remaining. Given an irreducible primitive `g : R[X]`
+(`R` a UFD with fraction field `K`) and a `K`-side separable contraction
+`expand K n sK = g.map (algebraMap R K)` (`n ≥ 1`, e.g. `n = q^m` from
+`eq512_separable_contraction_over_fraction_field`), there is a primitive irreducible `r : R[X]`
+whose `K`-image is separable, and an `R`-unit `u`, with `g = C u * expand R n r`.
+
+The witness is `r := (integerNormalization R⁰ sK).primPart`. Clearing denominators
+(`IsLocalization.integerNormalization_spec`) and splitting off the content
+(`eq_C_content_mul_primPart`) shows `r.map (algebraMap R K) = C c * sK` with `c` a `K`-unit; this
+gives separability of the `K`-image (`Separable.unit_mul`). Applying `expand K n` and using
+`map_expand` yields `(expand R n r).map = C c * g.map`, so the primitive polynomials `expand R n r`
+and `g` have associated `K`-images, hence are associated in `R[X]` (Gauss's
+`IsPrimitive.dvd_iff_fraction_map_dvd_fraction_map`, both directions). The associating unit is `C u`
+with `u` an `R`-unit (`Polynomial.isUnit_iff`), and `r` is irreducible because `expand R n r` is
+(its associate `g` is) and `expand` reflects irreducibility (`Polynomial.of_irreducible_expand`). -/
+theorem eq512_descent_of_fraction_field_contraction
+    {R : Type*} [CommRing R] [IsDomain R] [NormalizedGCDMonoid R]
+    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+    (g : R[X]) (hg : Irreducible g) (hgprim : g.IsPrimitive)
+    (sK : K[X]) (n : ℕ) (hn : 0 < n)
+    (hsep : sK.Separable)
+    (hexp : Polynomial.expand K n sK = g.map (algebraMap R K)) :
+    ∃ (r : R[X]) (u : R), Irreducible r ∧ (r.map (algebraMap R K)).Separable ∧
+      IsUnit u ∧ g = Polynomial.C u * (Polynomial.expand R n r) := by
+  classical
+  set φ := algebraMap R K with hφ
+  have hsK0 : sK ≠ 0 := hsep.ne_zero
+  obtain ⟨b, hb, hbspec⟩ := IsLocalization.integerNormalization_spec (nonZeroDivisors R) sK
+  set N := IsLocalization.integerNormalization (nonZeroDivisors R) sK with hN
+  set r := N.primPart with hr
+  have hrprim : r.IsPrimitive := N.isPrimitive_primPart
+  have hNfact : N = Polynomial.C N.content * r := N.eq_C_content_mul_primPart
+  have hmap : N.map φ = Polynomial.C (φ N.content) * r.map φ := by
+    conv_lhs => rw [hNfact]
+    rw [Polynomial.map_mul, Polynomial.map_C]
+  have hbsmul : N.map φ = Polynomial.C (φ b) * sK := by
+    rw [hbspec, Algebra.smul_def, Polynomial.C_eq_algebraMap]; rfl
+  have hb0 : b ≠ 0 := nonZeroDivisors.ne_zero hb
+  have hNne : N ≠ 0 := by
+    rw [hN, Ne,
+      IsLocalization.integerNormalization_eq_zero_iff (M := nonZeroDivisors R) (le_refl _)]
+    exact hsK0
+  have hcontent0 : N.content ≠ 0 := by rwa [Ne, Polynomial.content_eq_zero_iff]
+  have hφc : φ N.content ≠ 0 :=
+    fun h => hcontent0 (IsFractionRing.injective R K (by rwa [map_zero]))
+  have hφb : φ b ≠ 0 := fun h => hb0 (IsFractionRing.injective R K (by rwa [map_zero]))
+  have heq : Polynomial.C (φ N.content) * r.map φ = Polynomial.C (φ b) * sK :=
+    hmap.symm.trans hbsmul
+  set c := φ b * (φ N.content)⁻¹ with hc
+  have hcunit : IsUnit c := IsUnit.mul (Ne.isUnit hφb) (IsUnit.inv (Ne.isUnit hφc))
+  have hrmap : r.map φ = Polynomial.C c * sK := by
+    rw [hc, show (Polynomial.C (φ b * (φ N.content)⁻¹) : K[X])
+          = Polynomial.C (φ b) * Polynomial.C ((φ N.content)⁻¹) by
+          rw [← Polynomial.C_mul], mul_assoc]
+    have hstep : r.map φ = Polynomial.C ((φ N.content)⁻¹) * (Polynomial.C (φ b) * sK) := by
+      rw [← heq, ← mul_assoc, ← Polynomial.C_mul, inv_mul_cancel₀ hφc, Polynomial.C_1,
+        one_mul]
+    rw [hstep]; ring
+  have hrmap_sep : (r.map φ).Separable := by
+    rw [hrmap]; exact hsep.unit_mul (Polynomial.isUnit_C.mpr hcunit)
+  have hexpand_map : (Polynomial.expand R n r).map φ = Polynomial.C c * (g.map φ) := by
+    rw [Polynomial.map_expand, hrmap, map_mul, Polynomial.expand_C, hexp]
+  have hEprim : (Polynomial.expand R n r).IsPrimitive := eq512_isPrimitive_expand hrprim hn
+  have hdvd1 : (Polynomial.expand R n r).map φ ∣ g.map φ := by
+    rw [hexpand_map]
+    exact (associated_unit_mul_left _ _ (Polynomial.isUnit_C.mpr hcunit)).dvd
+  have hdvd2 : g.map φ ∣ (Polynomial.expand R n r).map φ := by
+    rw [hexpand_map]; exact Dvd.intro_left _ rfl
+  have hd1R : (Polynomial.expand R n r) ∣ g :=
+    (hEprim.dvd_iff_fraction_map_dvd_fraction_map (K := K) hgprim).mpr hdvd1
+  have hd2R : g ∣ (Polynomial.expand R n r) :=
+    (hgprim.dvd_iff_fraction_map_dvd_fraction_map (K := K) hEprim).mpr hdvd2
+  have hassoc : Associated (Polynomial.expand R n r) g := associated_of_dvd_dvd hd1R hd2R
+  have hE_irr : Irreducible (Polynomial.expand R n r) := hassoc.symm.irreducible hg
+  have hr_irr : Irreducible r := Polynomial.of_irreducible_expand hn.ne' hE_irr
+  obtain ⟨w, hw⟩ := hassoc
+  have hwunit : IsUnit (↑w : R[X]) := w.isUnit
+  rw [Polynomial.isUnit_iff] at hwunit
+  obtain ⟨u, hu_unit, hu_eq⟩ := hwunit
+  exact ⟨r, u, hr_irr, hrmap_sep, hu_unit, by rw [← hw, hu_eq, mul_comm]⟩
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+set_option linter.unusedDecidableInType false in
+/-- *Per-factor descent for Eq. 5.12*: composes the field-side separable contraction
+(`eq512_separable_contraction_over_fraction_field`) with the UFD descent
+(`eq512_descent_of_fraction_field_contraction`). For a positive-`Y`-degree irreducible factor `g`
+of a `ModifiedGuruswami` solution, it yields a primitive irreducible `r : F[Z][X][Y]` with separable
+`K`-image, a contraction exponent `nn = q^m` (`q` the exponential characteristic), and an `R`-unit
+`u`, satisfying `g = C u * expand R nn r`. -/
+theorem eq512_factor_descent (g : F[Z][X][Y]) (hg : Irreducible g) (hdeg : g.natDegree ≠ 0) :
+    ∃ (r : F[Z][X][Y]) (nn : ℕ) (u : F[Z][X]),
+      Irreducible r ∧
+      (r.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X])))).Separable ∧
+      IsUnit u ∧ g = Polynomial.C u * (Polynomial.expand (F[Z][X]) nn r) := by
+  obtain ⟨sK, mm, hsep, hexp⟩ := eq512_separable_contraction_over_fraction_field g hg hdeg
+  set q := ringExpChar F with hq
+  haveI hF : ExpChar F q := ringExpChar.expChar F
+  have hn : 0 < q ^ mm := expChar_pow_pos F q mm
+  have hgprim : g.IsPrimitive := hg.isPrimitive hdeg
+  obtain ⟨r, u, hr_irr, hr_sep, hu_unit, heq⟩ :=
+    eq512_descent_of_fraction_field_contraction g hg hgprim sK (q ^ mm) hn hsep hexp
+  exact ⟨r, q ^ mm, u, hr_irr, hr_sep, hu_unit, heq⟩
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Zipped-list product bridge* for the Eq-5.12 assembly: a triple-list `L` of
+`(factor, exponent, multiplicity)` yields three parallel lists (via the projections) whose zipped
+indexed product over `Finset.range L.length` equals the `Multiset/List.prod` of the per-triple
+bodies `(t.1.comp (X ^ t.2.1)) ^ t.2.2`. Proved by induction on `L`, peeling the head with
+`Finset.prod_range_succ'` and `List.getD_cons_succ`. -/
+theorem eq512_prod_range_triple_list (L : List (F[Z][X][Y] × ℕ × ℕ)) :
+    (∏ i ∈ Finset.range (L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.1)).length,
+        (((L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.1)).getD i 1).comp
+            ((Polynomial.X : F[Z][X][Y]) ^
+              ((L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.2.1)).getD i 0)))
+          ^ ((L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.2.2)).getD i 0))
+      = (L.map (fun t : F[Z][X][Y] × ℕ × ℕ =>
+          (t.1.comp ((Polynomial.X : F[Z][X][Y]) ^ t.2.1)) ^ t.2.2)).prod := by
+  induction L with
+  | nil => simp
+  | cons a t ih =>
+    simp only [List.map_cons, List.length_cons, List.prod_cons]
+    rw [Finset.prod_range_succ']
+    simp only [List.getD_cons_zero]
+    have hstep :
+        (∏ i ∈ Finset.range (t.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.1)).length,
+            (((a.1 :: t.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.1)).getD (i+1) 1).comp
+              ((Polynomial.X : F[Z][X][Y]) ^
+                ((a.2.1 :: t.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.2.1)).getD (i+1) 0)))
+              ^ ((a.2.2 :: t.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.2.2)).getD (i+1) 0))
+          = (t.map (fun t : F[Z][X][Y] × ℕ × ℕ =>
+              (t.1.comp ((Polynomial.X : F[Z][X][Y]) ^ t.2.1)) ^ t.2.2)).prod := by
+      rw [← ih]
+      apply Finset.prod_congr rfl
+      intro i _
+      rw [List.getD_cons_succ, List.getD_cons_succ, List.getD_cons_succ]
+    rw [hstep]
+    exact mul_comm (t.map (fun t : F[Z][X][Y] × ℕ × ℕ =>
+      (t.1.comp ((Polynomial.X : F[Z][X][Y]) ^ t.2.1)) ^ t.2.2)).prod
+      ((a.1.comp ((Polynomial.X : F[Z][X][Y]) ^ a.2.1)) ^ a.2.2)
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- Equation 5.12 from [BCIKS20].
+
+NOTE (statement repair): the original formulation of this lemma was *vacuous*.
+Because `∧` binds tighter than the bounded quantifier `∀ _ ∈ _,`, the entire
+payload — separability of each `Rᵢ`, irreducibility of each `Rᵢ`, and the
+factorization equation `Q = C · ∏ (Rᵢ.comp Xᶠ)^eᵢ` — was trapped inside the
+`∀ eᵢ ∈ e, …` (and the nested `∀ Rᵢ ∈ R, …`) binders. The statement was then
+satisfiable by the empty witnesses `C = …, R = [], f = [], e = []` (all three
+length equalities collapse to `0 = 0` and `∀ eᵢ ∈ [], …` is vacuously true),
+carrying no mathematical content whatsoever.
+
+This re-parenthesizes to the intended reading of [BCIKS20, Eq. 5.12]: each
+bounded quantifier and the final factorization equation is now a *separate*
+top-level conjunct, so the factorization holds outside all of the binders.
+No conjunct has been dropped or weakened; only the scoping was corrected.
+
+OBSTRUCTION (statement still mis-specified — see `eq512_cartesian_product_blowup`).
+After the scoping repair the lemma remains **unprovable as written** for a general
+`ModifiedGuruswami` solution `Q`, for two independent reasons:
+
+* *Cartesian (not zipped) product indexing.* The factorization conjunct is
+  `Q = C · ∏ (Rᵢ ∈ R.toFinset) (fᵢ ∈ f.toFinset) (eᵢ ∈ e.toFinset), (Rᵢ.comp Xᶠⁱ)^eᵢ`,
+  i.e. a product over the **Cartesian product** of three independent finsets, rather
+  than the intended single index `∏ᵢ (Rᵢ.comp X^(f i))^(e i)` of [BCIKS20, Eq. 5.12]
+  that *pairs* the `i`-th factor, exponent and multiplicity. Consequently each factor
+  `Rᵢ` is forced to the common power `∑ (eᵢ ∈ e.toFinset)` and replicated across every
+  `fᵢ ∈ f.toFinset`, so the equation can only reproduce a `Q` whose distinct irreducible
+  factors share a single multiplicity and a single contraction exponent. The companion
+  lemma `eq512_cartesian_product_blowup` (below) makes this concrete: the *intended*
+  witnesses `R = [a, b]`, `f = [1, 1]`, `e = [1, 2]` for `Q = a · b²` instead evaluate
+  the displayed product to `a³ · b³`. No choice of `C, R, f, e` satisfying the
+  separability and irreducibility conjuncts reproduces a general factored `Q` (e.g.
+  `g · h²` with `g ≠ h` distinct separable irreducibles).
+
+* *Separability over the wrong ring (VERIFIED defect, bug #18 — see
+  `eq512_strong_separable_unsat`).* The original conjunct `∀ Rᵢ ∈ R, Rᵢ.Separable` applied
+  `Polynomial.Separable` to `Rᵢ : F[Z][X][Y]` over the **coefficient ring** `F[Z][X]`, which
+  is *not a field*. By `separable_def`, this unfolds to a Bézout identity
+  `a · Rᵢ + b · Rᵢ.derivative = 1` with `a, b : F[Z][X][Y]` — coprimality *in the polynomial
+  ring* — which is **unsatisfiable** for genuinely-arising irreducible factors: the companion
+  witness `eq512_strong_separable_unsat` proves that `Y² − X` (an irreducible, squarefree,
+  fraction-field-separable factor of the shape a `ModifiedGuruswami` solution produces, since
+  `D_Y Q < D_X / k` permits `Y`-degree ≥ 2) is **not** `Separable` over `F[Z][X]`, because
+  `Separable.map` would force its `Z, X ↦ 0` image `Y²` to be squarefree. The paper means
+  separability of `Rᵢ` over the *fraction field* `F(Z,X)`, equivalently nonvanishing of
+  `discr_y` — precisely the form consumed by Claim 5.6 (`discr_of_irred_components_nonzero`,
+  which evaluates `Bivariate.discr_y R`). This is the **repaired** conjunct below:
+  `(Rᵢ.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X])))).Separable`. The binder structure
+  `(C, R, f, e)` and conjunct count are unchanged, so all `.choose`/`.choose_spec.choose`
+  consumers (Claim 5.6, Claim 5.7 in `Agreement.lean`) are unaffected.
+
+The factorization conjunct uses the **zipped** indexed product
+`∏ i ∈ Finset.range R.length, (Rᵢ.comp X^fᵢ)^eᵢ` (paper-faithful), repairing the earlier
+Cartesian-product mis-indexing witnessed by `eq512_cartesian_product_blowup`. The separability
+conjunct now reads over `FractionRing (F[Z][X])`, repairing the non-field-separability defect
+witnessed by `eq512_strong_separable_unsat`.
+
+PROOF (now complete). For each positive-`Y`-degree distinct irreducible factor `g` of `Q`
+(`Q ≠ 0`, `UniqueFactorizationMonoid.normalizedFactors`), the field-side separable contraction
+(`eq512_separable_contraction_over_fraction_field`, via `Irreducible.hasSeparableContraction` over
+`K := FractionRing (F[Z][X])`) is descended back to a primitive irreducible `r : F[Z][X][Y]` with
+separable `K`-image, exponent `nn = q^m`, and `R`-unit `u` such that `g = C u * expand R nn r`
+(`eq512_factor_descent`, built from `eq512_descent_of_fraction_field_contraction`). The lists
+`(R, f, e)` are read off the distinct positive-degree factors with `eᵢ` the UFD multiplicity
+`normalizedFactors.count g ≥ 1`; the degree-0 normalized factors (each `C` of a prime), the unit
+from `prod_normalizedFactors`, and the per-factor units `u` all fold into the single constant `C`.
+The zipped indexed product is matched to the multiset product via `eq512_prod_range_triple_list`
+and `Finset.prod_to_list`/`Finset.prod_multiset_count`. -/
 lemma irreducible_factorization_of_gs_solution
     {k : ℕ}
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
   ∃ (C : F[Z][X]) (R : List F[Z][X][Y]) (f : List ℕ) (e : List ℕ),
     R.length = f.length ∧
     f.length = e.length ∧
-    ∀ eᵢ ∈ e, 1 ≤ eᵢ ∧
-    ∀ Rᵢ ∈ R, Rᵢ.Separable ∧
-    ∀ Rᵢ ∈ R, Irreducible Rᵢ ∧
+    (∀ eᵢ ∈ e, 1 ≤ eᵢ) ∧
+    (∀ Rᵢ ∈ R,
+        (Rᵢ.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X])))).Separable) ∧
+    (∀ Rᵢ ∈ R, Irreducible Rᵢ) ∧
+    (∀ Rᵢ ∈ R, 0 < Rᵢ.natDegree) ∧
     Q = (Polynomial.C C) *
-        ∏ (Rᵢ ∈ R.toFinset) (fᵢ ∈ f.toFinset) (eᵢ ∈ e.toFinset),
-          (Rᵢ.comp ((Polynomial.X : F[Z][X][Y]) ^ fᵢ))^eᵢ
-    := sorry
+        ∏ i ∈ Finset.range R.length,
+          ((R.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD i 0)) ^ e.getD i 0
+    := by
+  classical
+  have hQ0 : Q ≠ 0 := h_gs.Q_ne_0
+  set S : Multiset (F[Z][X][Y]) := UniqueFactorizationMonoid.normalizedFactors Q with hS
+  -- positive-degree distinct factors
+  set P : Finset (F[Z][X][Y]) := S.toFinset.filter (fun g => 0 < g.natDegree) with hP
+  -- pick data
+  have hpick : ∀ g : F[Z][X][Y],
+      ∃ (r : F[Z][X][Y]) (nn : ℕ) (u : F[Z][X]),
+        g ∈ P →
+        (Irreducible r ∧
+        (r.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X])))).Separable ∧
+        IsUnit u ∧ g = Polynomial.C u * (Polynomial.expand (F[Z][X]) nn r)) := by
+    intro g
+    by_cases hg : g ∈ P
+    · rw [hP, Finset.mem_filter] at hg
+      obtain ⟨hgS, hgd⟩ := hg
+      have hgmem : g ∈ S := Multiset.mem_toFinset.1 hgS
+      have hg_irr : Irreducible g :=
+        UniqueFactorizationMonoid.irreducible_of_normalized_factor (a := Q) g (hS ▸ hgmem)
+      obtain ⟨r, nn, u, h1, h2, h3, h4⟩ := eq512_factor_descent g hg_irr hgd.ne'
+      exact ⟨r, nn, u, fun _ => ⟨h1, h2, h3, h4⟩⟩
+    · exact ⟨1, 0, 1, fun hc => absurd hc hg⟩
+  -- choice functions (total)
+  choose rr nn uu hspec using hpick
+  -- the unit-content z₀ from degree-0 factors
+  have hdeg0 : ∃ z : F[Z][X],
+      ∏ g ∈ S.toFinset.filter (fun g => ¬ 0 < g.natDegree), g ^ (S.count g)
+        = Polynomial.C z := by
+    refine ⟨∏ g ∈ S.toFinset.filter (fun g => ¬ 0 < g.natDegree),
+      (g.coeff 0) ^ (S.count g), ?_⟩
+    rw [map_prod]
+    apply Finset.prod_congr rfl
+    intro g hg
+    rw [Finset.mem_filter] at hg
+    rw [map_pow]
+    congr 1
+    exact Polynomial.eq_C_of_natDegree_eq_zero (by omega)
+  obtain ⟨z₀, hz₀⟩ := hdeg0
+  -- positive-degree product split
+  have hposprod :
+      ∏ g ∈ P, g ^ (S.count g)
+        = Polynomial.C (∏ g ∈ P, (uu g) ^ (S.count g))
+          * ∏ g ∈ P, ((rr g).comp ((Polynomial.X : F[Z][X][Y]) ^ (nn g))) ^ (S.count g) := by
+    rw [map_prod, ← Finset.prod_mul_distrib]
+    apply Finset.prod_congr rfl
+    intro g hg
+    have hgd := (hspec g hg).2.2.2
+    nth_rewrite 1 [hgd]
+    rw [Polynomial.expand_eq_comp_X_pow, map_pow]; ring
+  -- S.prod = ∏ over toFinset
+  have hSprod : S.prod = ∏ g ∈ S.toFinset, g ^ (S.count g) :=
+    Finset.prod_multiset_count S
+  -- split toFinset into P and complement
+  have hsplit : ∏ g ∈ S.toFinset, g ^ (S.count g)
+      = (∏ g ∈ P, g ^ (S.count g))
+        * (∏ g ∈ S.toFinset.filter (fun g => ¬ 0 < g.natDegree), g ^ (S.count g)) := by
+    rw [hP]
+    exact (Finset.prod_filter_mul_prod_filter_not S.toFinset (fun g => 0 < g.natDegree)
+      (fun g => g ^ (S.count g))).symm
+  -- association Q = C w * S.prod
+  have hassoc : Associated S.prod Q := by
+    rw [hS]; exact UniqueFactorizationMonoid.prod_normalizedFactors hQ0
+  obtain ⟨w, hw⟩ := hassoc  -- S.prod * ↑w = Q
+  have hwunit : IsUnit (↑w : F[Z][X][Y]) := w.isUnit
+  rw [Polynomial.isUnit_iff] at hwunit
+  obtain ⟨wc, hwc_unit, hwc_eq⟩ := hwunit
+  -- build the triple list from P.toList
+  set L : List (F[Z][X][Y] × ℕ × ℕ) :=
+    P.toList.map (fun g => (rr g, nn g, S.count g)) with hL
+  refine ⟨wc * z₀ * (∏ g ∈ P, (uu g) ^ (S.count g)),
+    L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.1),
+    L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.2.1),
+    L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.2.2),
+    by simp only [List.length_map],
+    by simp only [List.length_map],
+    ?_, ?_, ?_, ?_, ?_⟩
+  · -- ∀ eᵢ ∈ e, 1 ≤ eᵢ
+    intro eᵢ hmem
+    rw [hL] at hmem
+    simp only [List.map_map, List.mem_map, Finset.mem_toList] at hmem
+    obtain ⟨g, hgP, rfl⟩ := hmem
+    simp only [Function.comp]
+    have hgmem : g ∈ S := by
+      rw [hP, Finset.mem_filter] at hgP
+      exact Multiset.mem_toFinset.1 hgP.1
+    exact Multiset.count_pos.2 hgmem
+  · -- separable
+    intro Rᵢ hmem
+    rw [hL] at hmem
+    simp only [List.map_map, List.mem_map, Finset.mem_toList] at hmem
+    obtain ⟨g, hgP, rfl⟩ := hmem
+    simp only [Function.comp]
+    exact (hspec g hgP).2.1
+  · -- irreducible
+    intro Rᵢ hmem
+    rw [hL] at hmem
+    simp only [List.map_map, List.mem_map, Finset.mem_toList] at hmem
+    obtain ⟨g, hgP, rfl⟩ := hmem
+    simp only [Function.comp]
+    exact (hspec g hgP).1
+  · -- positive Y-degree of each factor `rr g`
+    intro Rᵢ hmem
+    rw [hL] at hmem
+    simp only [List.map_map, List.mem_map, Finset.mem_toList] at hmem
+    obtain ⟨g, hgP, rfl⟩ := hmem
+    simp only [Function.comp]
+    -- `g = C (uu g) * expand (nn g) (rr g)`, with `g` of positive `natDegree`, so `rr g` is too.
+    obtain ⟨_, _, hu, hgeq⟩ := hspec g hgP
+    have hgpos : 0 < g.natDegree := by
+      rw [hP, Finset.mem_filter] at hgP; exact hgP.2
+    have hgnat : g.natDegree = (rr g).natDegree * (nn g) := by
+      conv_lhs => rw [hgeq]
+      rw [Polynomial.natDegree_C_mul_of_isUnit hu, Polynomial.natDegree_expand]
+    rw [hgnat] at hgpos
+    rcases Nat.eq_zero_or_pos (rr g).natDegree with h | h
+    · rw [h, Nat.zero_mul] at hgpos; exact absurd hgpos (lt_irrefl 0)
+    · exact h
+  · -- the factorization equation
+    -- product over range = list product (bridge) = ∏ over P of body
+    have hbridge := eq512_prod_range_triple_list L
+    -- list product = ∏_{g∈P} body g
+    have hlistP :
+        (L.map (fun t : F[Z][X][Y] × ℕ × ℕ =>
+          (t.1.comp ((Polynomial.X : F[Z][X][Y]) ^ t.2.1)) ^ t.2.2)).prod
+          = ∏ g ∈ P, ((rr g).comp ((Polynomial.X : F[Z][X][Y]) ^ (nn g))) ^ (S.count g) := by
+      rw [hL, List.map_map]
+      exact Finset.prod_map_toList P
+        (fun g => ((rr g).comp ((Polynomial.X : F[Z][X][Y]) ^ (nn g))) ^ (S.count g))
+    -- assemble Q
+    rw [List.length_map]
+    -- the range product equals ∏_P body
+    have hrangeP :
+        (∏ i ∈ Finset.range L.length,
+          (((L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.1)).getD i 1).comp
+            ((Polynomial.X : F[Z][X][Y]) ^
+              ((L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.2.1)).getD i 0)))
+            ^ ((L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.2.2)).getD i 0))
+          = ∏ g ∈ P, ((rr g).comp ((Polynomial.X : F[Z][X][Y]) ^ (nn g))) ^ (S.count g) := by
+      have hlen : (L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.1)).length = L.length :=
+        List.length_map _
+      rw [← hlen]
+      rw [hbridge, hlistP]
+    rw [hrangeP]
+    -- Q = C wc * S.prod ... build it
+    have hQval : Q = S.prod * Polynomial.C wc := by rw [hwc_eq, hw]
+    rw [hQval, hSprod, hsplit, hposprod, hz₀]
+    rw [show wc * z₀ * (∏ g ∈ P, (uu g) ^ (S.count g))
+          = (∏ g ∈ P, (uu g) ^ (S.count g)) * z₀ * wc by ring]
+    rw [map_mul, map_mul]
+    ring
 
-omit [DecidableEq (RatFunc F)] in
-/-- Claim 5.6 of [BCIKS20]. -/
-lemma discr_of_irred_components_nonzero (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+
+/-- *Discriminant–map bridge*: the (univariate) discriminant `Polynomial.discr` commutes with an
+injective coefficient hom into a field. Proved from the resultant–discriminant identity
+`Polynomial.resultant_deriv` on both rings together with `resultant_map_map`, cancelling the common
+sign and (nonzero) leading-coefficient factor inside the target field. -/
+theorem discr_map_of_injective_to_field {A : Type} [CommRing A] {B : Type} [Field B]
+    (ψ : A →+* B) (hinj : Function.Injective ψ) {f : A[X]} (hdeg : 0 < f.degree) :
+    (f.map ψ).discr = ψ f.discr := by
+  classical
+  set g : B[X] := f.map ψ with hg
+  have hgnat : g.natDegree = f.natDegree := natDegree_map_eq_of_injective hinj f
+  have hgdeg : 0 < g.degree := by rw [hg, degree_map_eq_of_injective hinj]; exact hdeg
+  have hgdegnat : 0 < g.natDegree := natDegree_pos_iff_degree_pos.mpr hgdeg
+  have hgne : g ≠ 0 := fun h => by
+    rw [h, natDegree_zero] at hgdegnat; exact absurd hgdegnat (lt_irrefl 0)
+  have hglc : g.leadingCoeff = ψ f.leadingCoeff := leadingCoeff_map_of_injective hinj f
+  have hlc_ne : g.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hgne
+  have hmapres :
+      resultant g g.derivative g.natDegree (g.natDegree - 1)
+        = ψ (resultant f f.derivative f.natDegree (f.natDegree - 1)) := by
+    rw [hg, derivative_map, natDegree_map_eq_of_injective hinj, resultant_map_map]
+  have hrd := resultant_deriv (f := g) hgdeg
+  have hrdf := resultant_deriv (f := f) hdeg
+  have h1 := hmapres
+  rw [hrd, hrdf] at h1
+  rw [map_mul, map_mul, map_pow, map_neg, map_one, hglc] at h1
+  have hsigneq : (g.natDegree * (g.natDegree - 1) / 2) = (f.natDegree * (f.natDegree - 1) / 2) := by
+    rw [hgnat]
+  rw [hsigneq] at h1
+  have hcancel : ((-1 : B) ^ (f.natDegree * (f.natDegree - 1) / 2) * ψ f.leadingCoeff) ≠ 0 :=
+    mul_ne_zero (pow_ne_zero _ (by norm_num)) (by rw [← hglc]; exact hlc_ne)
+  exact mul_left_cancel₀ hcancel h1
+
+/-- *Separable ⟹ nonzero discriminant over a field*. Working over the splitting field `L` of `f`,
+`f.map` splits and stays separable, so by `resultant_eq_prod_eval` its `(natDegree, natDegree-1)`
+resultant with its derivative is `leadingCoeff^… · ∏_{a ∈ roots} f'(a)`. Separability forces
+`f'(a) ≠ 0` at every root (`Separable.eval₂_derivative_ne_zero`), so the product — hence
+(via `resultant_deriv`) the discriminant over `L` — is nonzero; the `discr_map` bridge then
+pulls it back to `f.discr ≠ 0` over the base field. -/
+theorem discr_ne_zero_of_separable_field {K : Type} [Field K] {f : K[X]}
+    (hsep : f.Separable) (hdeg : 0 < f.natDegree) : f.discr ≠ 0 := by
+  classical
+  set L := f.SplittingField with hL
+  set q : K →+* L := algebraMap K L with hq
+  have hqinj : Function.Injective q := (algebraMap K L).injective
+  set g : L[X] := f.map q with hg
+  have hgsep : g.Separable := hsep.map
+  have hgsplits : g.Splits := Polynomial.SplittingField.splits f
+  have hgnat : g.natDegree = f.natDegree := natDegree_map_eq_of_injective hqinj f
+  have hfdeg : 0 < f.degree := natDegree_pos_iff_degree_pos.mp hdeg
+  have hgdeg : 0 < g.degree := by rw [hg, degree_map_eq_of_injective hqinj]; exact hfdeg
+  have hgdegnat : 0 < g.natDegree := by rw [hgnat]; exact hdeg
+  have hgne : g ≠ 0 := fun h => by
+    rw [h, natDegree_zero] at hgdegnat; exact absurd hgdegnat (lt_irrefl 0)
+  have hderiv_le : g.derivative.natDegree ≤ g.natDegree - 1 := natDegree_derivative_le g
+  have hres_eval :
+      resultant g g.derivative g.natDegree (g.natDegree - 1)
+        = g.leadingCoeff ^ (g.natDegree - 1) * (g.roots.map g.derivative.eval).prod :=
+    resultant_eq_prod_eval g g.derivative (g.natDegree - 1) hderiv_le hgsplits
+  have hprod_ne : (g.roots.map g.derivative.eval).prod ≠ 0 := by
+    rw [Ne, Multiset.prod_eq_zero_iff, Multiset.mem_map]
+    rintro ⟨r, hr, hr0⟩
+    have hroot : g.eval r = 0 := (mem_roots hgne).1 hr
+    have hne := hgsep.eval₂_derivative_ne_zero (RingHom.id L) (by simpa using hroot)
+    rw [eval₂_id] at hne
+    exact hne hr0
+  have hlc_ne : g.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hgne
+  have hres_ne : resultant g g.derivative g.natDegree (g.natDegree - 1) ≠ 0 := by
+    rw [hres_eval]; exact mul_ne_zero (pow_ne_zero _ hlc_ne) hprod_ne
+  have hrd := resultant_deriv (f := g) hgdeg
+  rw [hrd] at hres_ne
+  have hgdiscr : g.discr ≠ 0 := by
+    intro h0; apply hres_ne; rw [h0]; ring
+  have hbridge : g.discr = q f.discr := discr_map_of_injective_to_field q hqinj hfdeg
+  rw [hbridge] at hgdiscr
+  intro h0; apply hgdiscr; rw [h0, map_zero]
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Per-factor discriminant nonvanishing for Eq-5.12 factors*: a positive-`Y`-degree factor `R`
+whose fraction-field image is separable has `Bivariate.discr_y R ≠ 0` in `F[Z][X]`. Combines the
+field-side `discr_ne_zero_of_separable_field` over `K := FractionRing (F[Z][X])` with the
+`discr_map` bridge along the injective `algebraMap` (so `(R.map _).discr = algebraMap _ R.discr`)
+and unfolds `discr_y` (which is `±R.discr` once `0 < R.degree`). -/
+theorem discr_y_ne_zero_of_sep (R : F[Z][X][Y])
+    (hsep : (R.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X])))).Separable)
+    (hdeg : 0 < R.natDegree) :
+    Bivariate.discr_y R ≠ 0 := by
+  classical
+  set φ : F[Z][X] →+* FractionRing (F[Z][X]) := algebraMap _ _ with hφ
+  have hφinj : Function.Injective φ := IsFractionRing.injective (F[Z][X]) (FractionRing (F[Z][X]))
+  have hRdeg : 0 < R.degree := natDegree_pos_iff_degree_pos.mp hdeg
+  have hmapnat : (R.map φ).natDegree = R.natDegree := natDegree_map_eq_of_injective hφinj R
+  have hmapdeg : 0 < (R.map φ).natDegree := by rw [hmapnat]; exact hdeg
+  have hKdiscr : (R.map φ).discr ≠ 0 := discr_ne_zero_of_separable_field hsep hmapdeg
+  have hbridge : (R.map φ).discr = φ R.discr := discr_map_of_injective_to_field φ hφinj hRdeg
+  rw [hbridge] at hKdiscr
+  have hRdiscr : R.discr ≠ 0 := fun h => hKdiscr (by rw [h, map_zero])
+  rw [Polynomial.Bivariate.discr_y, if_pos hRdeg]
+  exact mul_ne_zero (pow_ne_zero _ (by norm_num)) hRdiscr
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Bad-set cardinality bound* for `evalX`: for a nonzero `p : F[Z][X]`, the set of `x₀ : F` at
+which `Bivariate.evalX x₀ p` vanishes injects into the roots of the (nonzero) leading coefficient
+`p.leadingCoeff : F[X]`, so it has at most `p.leadingCoeff.natDegree` elements. -/
+theorem c56_evalX_bad_set_card_le [Fintype F] (p : F[Z][X]) (hp : p ≠ 0) :
+    (Finset.univ.filter (fun x₀ : F => Bivariate.evalX x₀ p = 0)).card
+      ≤ p.leadingCoeff.natDegree := by
+  classical
+  have hlc : p.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hp
+  have hsub : (Finset.univ.filter (fun x₀ : F => Bivariate.evalX x₀ p = 0))
+      ⊆ p.leadingCoeff.roots.toFinset := by
+    intro x hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx
+    rw [Polynomial.Bivariate.evalX_eq_map] at hx
+    have h0 : (p.map (Polynomial.evalRingHom x)).coeff p.natDegree = 0 := by rw [hx]; simp
+    rw [Polynomial.coeff_map] at h0
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hlc, Polynomial.IsRoot.def]
+    change (p.coeff p.natDegree).eval x = 0
+    rw [← Polynomial.coe_evalRingHom]; exact h0
+  calc (Finset.univ.filter (fun x₀ : F => Bivariate.evalX x₀ p = 0)).card
+      ≤ p.leadingCoeff.roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ Multiset.card p.leadingCoeff.roots := Multiset.toFinset_card_le _
+    _ ≤ p.leadingCoeff.natDegree := Polynomial.card_roots' _
+
+omit [Field F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- The cardinality of a `foldr (· ∪ ·)` union over a list is bounded by the sum of
+cardinalities. -/
+theorem c56_foldr_union_card_le {ι : Type} (bad : ι → Finset F) (L : List ι) :
+    ((L.map bad).foldr (· ∪ ·) ∅).card ≤ (L.map (fun R => (bad R).card)).sum := by
+  induction L with
+  | nil => simp
+  | cons a t ih =>
+    simp only [List.map_cons, List.foldr_cons, List.sum_cons]
+    exact le_trans (Finset.card_union_le _ _) (Nat.add_le_add_left ih _)
+
+omit [Field F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- Each list member's `bad` set is contained in the `foldr (· ∪ ·)` union over the list. -/
+theorem c56_subset_foldr_union {ι : Type} (bad : ι → Finset F) (L : List ι)
+    {R : ι} (hR : R ∈ L) : bad R ⊆ (L.map bad).foldr (· ∪ ·) ∅ := by
+  induction L with
+  | nil => simp at hR
+  | cons a t ih =>
+    simp only [List.map_cons, List.foldr_cons]
+    rcases List.mem_cons.1 hR with rfl | htail
+    · exact Finset.subset_union_left
+    · exact (ih htail).trans Finset.subset_union_right
+
+omit [Field F] [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Avoidance lemma*: if the total size of the per-index `bad` sets is `< |F|`, there is a field
+element avoiding all of them. (Counting core of Claim 5.6's existential.) -/
+theorem c56_exists_avoiding [Fintype F] {ι : Type} (L : List ι) (bad : ι → Finset F)
+    (hcard : (L.map (fun R => (bad R).card)).sum < Fintype.card F) :
+    ∃ x₀ : F, ∀ R ∈ L, x₀ ∉ bad R := by
+  classical
+  set U : Finset F := (L.map bad).foldr (· ∪ ·) ∅ with hU
+  have hUlt : U.card < Fintype.card F :=
+    lt_of_le_of_lt (c56_foldr_union_card_le bad L) hcard
+  have hcompl : 0 < Uᶜ.card := by rw [Finset.card_compl]; omega
+  obtain ⟨x₀, hx₀⟩ := Finset.card_pos.1 hcompl
+  rw [Finset.mem_compl] at hx₀
+  exact ⟨x₀, fun R hR hc => hx₀ (c56_subset_foldr_union bad L hR hc)⟩
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- Claim 5.6 of [BCIKS20].
+
+STATEMENT REPAIR (size hypothesis `hcard`). As literally stated for a general `[Finite F]` the
+claim is **false**: over a small finite field the "bad" sets `{x₀ | evalX x₀ (discr_y R) = 0}`
+can cover all of `F`, leaving no good `x₀`. (Each bad set is finite — bounded by
+`(discr_y R).leadingCoeff.natDegree`, cf. `c56_evalX_bad_set_card_le` — but their union need not
+be proper without a field-size bound.) [BCIKS20] uses a field large relative to the GS degree
+budget; we make exactly this requirement explicit as `hcard`: the total bad-set size is smaller
+than `|F|`. Under `hcard` the existential is genuine — no conjunct of the conclusion is weakened,
+and the witness `x₀` makes **every** factor's `evalX (discr_y …)` nonzero.
+
+PROOF. Each factor `R` of the Eq-5.12 list is irreducible, positive-`Y`-degree, and
+fraction-field-separable (the strengthened `irreducible_factorization_of_gs_solution`), so
+`Bivariate.discr_y R ≠ 0` in `F[Z][X]` (`discr_y_ne_zero_of_sep`). A nonzero `discr_y R` vanishes
+under `evalX x₀` for at most `(discr_y R).leadingCoeff.natDegree` values of `x₀`
+(`c56_evalX_bad_set_card_le`); summing over the list and invoking `hcard`, `c56_exists_avoiding`
+produces an `x₀` outside every bad set. -/
+lemma discr_of_irred_components_nonzero [Fintype F]
+    (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcard :
+      ((irreducible_factorization_of_gs_solution _h_gs).choose_spec.choose.map
+        (fun R => (Bivariate.discr_y R).leadingCoeff.natDegree)).sum < Fintype.card F) :
     ∃ x₀,
       ∀ R ∈ (irreducible_factorization_of_gs_solution _h_gs).choose_spec.choose,
-      Bivariate.evalX x₀ (Bivariate.discr_y R) ≠ 0 := by sorry
+      Bivariate.evalX x₀ (Bivariate.discr_y R) ≠ 0 := by
+  classical
+  -- the chosen factor list and its proven properties (separable, irreducible, positive-degree)
+  set L : List F[Z][X][Y] :=
+    (irreducible_factorization_of_gs_solution _h_gs).choose_spec.choose with hLdef
+  have hspec := (irreducible_factorization_of_gs_solution
+      _h_gs).choose_spec.choose_spec.choose_spec.choose_spec
+  -- destructure the body conjunction
+  obtain ⟨_hlen1, _hlen2, _he, hsep, _hirr, hpos, _hfact⟩ := hspec
+  -- per-factor: discr_y R ≠ 0, hence bad set bounded
+  set bad : F[Z][X][Y] → Finset F :=
+    (fun R => Finset.univ.filter (fun x₀ : F => Bivariate.evalX x₀ (Bivariate.discr_y R) = 0))
+    with hbad
+  have hbad_card : ∀ R ∈ L, (bad R).card ≤ (Bivariate.discr_y R).leadingCoeff.natDegree := by
+    intro R hR
+    have hdy : Bivariate.discr_y R ≠ 0 := discr_y_ne_zero_of_sep R (hsep R hR) (hpos R hR)
+    exact c56_evalX_bad_set_card_le (Bivariate.discr_y R) hdy
+  -- the sum of bad-set cards is ≤ the hypothesised sum < |F|
+  have hsum_le :
+      (L.map (fun R => (bad R).card)).sum
+        ≤ (L.map (fun R => (Bivariate.discr_y R).leadingCoeff.natDegree)).sum :=
+    List.sum_le_sum hbad_card
+  have hsum_lt : (L.map (fun R => (bad R).card)).sum < Fintype.card F :=
+    lt_of_le_of_lt hsum_le hcard
+  -- avoidance lemma yields the good x₀
+  obtain ⟨x₀, hx₀⟩ := c56_exists_avoiding L bad hsum_lt
+  refine ⟨x₀, fun R hR => ?_⟩
+  have := hx₀ R hR
+  rw [hbad] at this
+  simpa [Finset.mem_filter] using this
 
 noncomputable def pg_Rset (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : Finset F[Z][X][Y] :=
   (UniqueFactorizationMonoid.normalizedFactors Q).toFinset
@@ -514,12 +1236,65 @@ theorem pg_card_candidatePairs_le_natDegreeY (x₀ : F) (h_gs : ModifiedGuruswam
     intro R hR
     exact hpoint R hR
   have hsum_Rset_le : (∑ R ∈ Rset, Bivariate.natDegreeY R) ≤ Bivariate.natDegreeY Q := by
-    -- This is exactly the provided axiom, after rewriting `Rset`.
+    -- This is exactly the provided degree bound, after rewriting `Rset`.
     simpa [hRset] using
       (pg_sum_natDegreeY_Rset_le_natDegreeY_Q (m := m) (n := n) (k := k)
         (ωs := ωs) (Q := Q) (u₀ := u₀) (u₁ := u₁) h_gs)
   -- Put everything together.
   exact (hcard_biUnion.trans (hsum.trans hsum_Rset_le))
+
+/-! ### Verified statement defect of Claim 5.7 (the 7th in this tree)
+
+`exists_factors_with_large_common_root_set` (Claim 5.7, `Agreement.lean`) carries a second
+cardinality conjunct
+`(#S : ℝ)/(D_Y Q) > 2·D_Y Q²·D_X·D_YZ Q`,
+with `S = coeffs_of_close_proximity k ωs δ u₀ u₁`.  This is a *lower bound on `#S`* and is
+**not** derivable from `ModifiedGuruswami`: in [BCIKS20] it is a *hypothesis* (the set of close
+codeword-coefficients is large — the list-decoding regime), mis-placed into the conclusion.  The
+three lemmas below verify this defect concretely. -/
+
+omit [DecidableEq (RatFunc F)] in
+/-- *(Defect-7, part 1.)* For `δ < 0` and a non-empty point set, `coeffs_of_close_proximity` is
+empty: membership needs a codeword within relative Hamming distance `≤ δ < 0`, impossible since
+the relative Hamming distance is non-negative. -/
+lemma coeffs_of_close_proximity_eq_empty_of_neg [NeZero n] (hδ : δ < 0) :
+    coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅ := by
+  classical
+  rw [coeffs_of_close_proximity, Set.toFinset_eq_empty]
+  ext z
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_exists]
+  intro v hle
+  have hnn : (0 : ℚ) ≤ ↑(δᵣ(u₀ + z • u₁, (v : Fin n → F))) := by positivity
+  linarith
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *(Defect-7, part 2.)* The right-hand side of the second cardinality conjunct of Claim 5.7 is
+non-negative (`D_X` is non-negative on `ρ = (k+1)/n ≥ 0`, and the remaining factors are casts of
+naturals). -/
+lemma c57_rhs_nonneg :
+    (0 : ℝ) ≤ 2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by
+  have hD : (0 : ℝ) ≤ D_X ((k + 1 : ℚ) / n) n m := by
+    unfold D_X; positivity
+  positivity
+
+omit [DecidableEq (RatFunc F)] in
+/-- *(Defect-7, core.)* The second cardinality conjunct of
+`exists_factors_with_large_common_root_set` is **false** whenever `S := coeffs_of_close_proximity`
+is empty: its left-hand side `(#S : ℝ)/(D_Y Q)` collapses to `0`, while its right-hand side is
+`≥ 0` (`c57_rhs_nonneg`), so the strict inequality cannot hold.  Together with
+`coeffs_of_close_proximity_eq_empty_of_neg` (which makes `S` empty for `δ < 0`), this proves the
+conjunct is not derivable from `ModifiedGuruswami` alone: in [BCIKS20] it is a hypothesis (`S`
+large, the list-decoding regime), not a conclusion. -/
+lemma c57_second_conjunct_unsat_of_S_empty
+    (hSempty : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅)
+    (hconj2 :
+      (#(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) : ℝ)
+          / (Bivariate.natDegreeY Q : ℝ)
+        > 2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    False := by
+  rw [hSempty] at hconj2
+  simp only [Finset.card_empty, Nat.cast_zero, zero_div] at hconj2
+  exact absurd hconj2 (not_lt.mpr (c57_rhs_nonneg k))
 
 end BCIKS20ProximityGapSection5
 

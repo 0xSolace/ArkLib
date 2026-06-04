@@ -119,11 +119,17 @@ def Extractor.RoundByRound.liftContext
     {WitMid : Fin (n + 1) → Type}
     (lens : Extractor.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut
                           OuterWitIn OuterWitOut InnerWitIn InnerWitOut)
+    (hEqIn : WitMid 0 = OuterWitIn)
     (E : Extractor.RoundByRound oSpec InnerStmtIn InnerWitIn InnerWitOut pSpec WitMid) :
       Extractor.RoundByRound oSpec OuterStmtIn OuterWitIn OuterWitOut pSpec WitMid :=
-  sorry
-  -- fun roundIdx outerStmtIn fullTranscript proveQueryLog =>
-  --   rbrLensInv.liftWit (E roundIdx (lens.projStmt outerStmtIn) fullTranscript proveQueryLog)
+  {
+    eqIn := hEqIn
+    extractMid := fun m outerStmtIn tr witMid =>
+      E.extractMid m (lens.stmt.proj outerStmtIn) tr witMid
+    extractOut := fun outerStmtIn tr outerWitOut =>
+      E.extractOut (lens.stmt.proj outerStmtIn) tr
+        (lens.wit.proj (outerStmtIn, outerWitOut))
+  }
 
 /-- Compatibility relation between the outer input statement and the inner output statement,
 relative to a verifier.
@@ -179,27 +185,25 @@ def Verifier.StateFunction.liftContext
     (innerLangIn : Set InnerStmtIn) (innerLangOut : Set InnerStmtOut)
     [lensSound : lens.IsSound outerLangIn outerLangOut innerLangIn innerLangOut
       (V.compatStatement lens)]
-    (stF : V.StateFunction init impl innerLangIn innerLangOut) :
+    (stF : V.StateFunction init impl innerLangIn innerLangOut)
+    (proj_state : ∀ outerStmtIn,
+      outerStmtIn ∈ outerLangIn ↔ lens.proj outerStmtIn ∈ innerLangIn)
+    (lift_state : ∀ outerStmtIn transcript,
+      ¬ stF.toFun (.last n) (lens.proj outerStmtIn) transcript →
+      Pr[(· ∈ outerLangOut) |
+        OptionT.mk (do
+          let s ← init
+          (simulateQ impl ((V.liftContext lens).run outerStmtIn transcript)).run' s)] = 0) :
       (V.liftContext lens).StateFunction init impl outerLangIn outerLangOut
 where
   toFun := fun m outerStmtIn transcript =>
     stF m (lens.proj outerStmtIn) transcript
   toFun_empty := fun stmt => by
-    have := stF.toFun_empty (lens.proj stmt)
-    sorry
-    -- stF.toFun_empty (lens.proj stmt) (lensSound.proj_sound stmt hStmt)
+    exact (proj_state stmt).trans (stF.toFun_empty (lens.proj stmt))
   toFun_next := fun m hDir outerStmtIn transcript hStmt msg =>
     stF.toFun_next m hDir (lens.proj outerStmtIn) transcript hStmt msg
   toFun_full := fun outerStmtIn transcript hStmt => by
-    have h := stF.toFun_full (lens.proj outerStmtIn) transcript hStmt
-    simp [Verifier.run, Verifier.liftContext] at h ⊢
-    stop
-    intro outerStmtOut s hs innerStmtOut s' h' hLens
-    have := lensSound.lift_sound outerStmtIn innerStmtOut
-    sorry
-    -- apply lensSound.lift_sound
-    -- · simp [compatStatement]; exact ⟨transcript, hSupport⟩
-    -- · exact h innerStmtOut hSupport
+    exact lift_state outerStmtIn transcript hStmt
 
 section Theorems
 
@@ -668,8 +672,281 @@ theorem liftContext_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited Inner
   refine le_trans ?_ hR
   -- Massage the two `probEvent`s so that they have the same base computation `oa`?
   simp [h_innerP_runWithLog]
-  -- apply probEvent_mono ?_
-  sorry
+  -- Reuse the soundness-proof machinery: collapse getM plumbing and push the two
+  -- lens-lifts (statement lift inside the logged verify; witness lift on the extractor)
+  -- out of their simulation layers so both games become uniform value-maps of one core.
+  have hGetMRun : ∀ {α : Type} (o : Option α),
+      (Option.getM (m := OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))) o).run = pure o := by
+    intro _ o; cases o <;> rfl
+  have hElimM_map : ∀ {m : Type → Type} [Monad m] [LawfulMonad m] {α β γ : Type}
+      (x : m (Option α)) (g : α → β) (y : m γ) (f : β → m γ),
+      Option.elimM (Option.map g <$> x) y f = Option.elimM x y (f ∘ g) := by
+    intro m _ _ α β γ x g y f
+    simp only [Option.elimM, bind_map_left]
+    exact bind_congr fun o => by cases o <;> rfl
+  -- OptionT-functor maps ARE Option.map at the OracleComp carrier
+  have hOptCarrier : ∀ {A B : Type} (f : A → B) (v : OptionT (OracleComp oSpec) A),
+      (f <$> v : OptionT (OracleComp oSpec) B)
+        = (Option.map f <$> (v : OracleComp oSpec (Option A)) : OracleComp oSpec (Option B)) := by
+    intro A B f v
+    apply OptionT.ext
+    rw [OptionT.run_map]
+    rfl
+  -- cross-spec OptionT-lift commutes with carrier value-maps
+  have hLiftMMap : ∀ {A B : Type} (g : A → B) (y : OracleComp oSpec A),
+      ((liftM (g <$> y) : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) B)).run
+        = Option.map g <$>
+            ((liftM y : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) A)).run := by
+    intro A B g y
+    have h1 : ∀ {C : Type} (z : OracleComp oSpec C),
+        ((liftM z : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) C)).run
+          = some <$> (z.liftComp (oSpec + [pSpec.Challenge]ₒ)) := by
+      intro C z
+      show simulateQ _ ((OptionT.lift z).run) = _
+      rw [show ((OptionT.lift z : OptionT (OracleComp oSpec) C).run) = some <$> z from rfl]
+      rw [simulateQ_map]; rfl
+    rw [h1, h1, OracleComp.liftComp_def, simulateQ_map, ← OracleComp.liftComp_def,
+      Functor.map_map, Functor.map_map]
+    rfl
+  have hWriterRunMap : ∀ {A B : Type} (f : A → B)
+      (w : WriterT (QueryLog oSpec) (OracleComp oSpec) A),
+      (f <$> w).run = (Prod.map f id) <$> w.run := fun _ _ => rfl
+  -- carrier-level (run-less) variants for after `OptionT.run` unfolding
+  have hLiftMMap' : ∀ {A B : Type} (g : A → B) (y : OracleComp oSpec A),
+      ((liftM (g <$> y) : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) B)
+        : OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option B))
+        = Option.map g <$>
+            ((liftM y : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) A)
+              : OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option A)) := by
+    intro A B g y
+    exact hLiftMMap g y
+  have hGetMCarrier : ∀ {A : Type} (o : Option A),
+      (Option.getM (m := OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))) o
+        : OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option A)) = pure o := by
+    intro _ o; cases o <;> rfl
+  simp only [hOptCarrier, simulateQ_map, hWriterRunMap, hLiftMMap, hLiftMMap', OptionT.run,
+    OptionT.run_map, StateT.run_map, Functor.map_map, hElimM_map, hGetMRun, hGetMCarrier,
+    simulateQ_pure, map_pure, Function.comp_def, Option.map_map, Prod.map_fst,
+    Prod.map_snd, Prod.map_apply]
+  -- fuse the nested elimM chains (inner continuation is pure-valued) into single elims
+  have hElimMComp : ∀ {m : Type → Type} [Monad m] [LawfulMonad m] {α β γ : Type}
+      (x : m (Option α)) (h : α → Option β) (g : β → m (Option γ)),
+      Option.elimM (Option.elimM x (pure none) (fun a => pure (h a))) (pure none) g
+        = Option.elimM x (pure none) (fun a => (h a).elim (pure none) g) := by
+    intro m _ _ α β γ x h g
+    simp only [Option.elimM, bind_assoc]
+    exact bind_congr fun o => by cases o <;> simp
+  simp only [hElimMComp]
+  -- collapse (Option.map h o).elim and hoist uniform maps out of elim/elimM
+  have hElimMap2 : ∀ {α β γ : Type} (o : Option α) (h : α → β) (n : γ) (g : β → γ),
+      (Option.map h o).elim n g = o.elim n (fun a => g (h a)) := by
+    intro _ _ _ o _ _ _; cases o <;> rfl
+  simp only [hElimMap2]
+  -- factor the two leaf maps through the common (wo, vI, eW)-triple and hoist the
+  -- uniform parts out of the elim/elimM layers
+  have hLleaf : ∀ (wo : OuterWitOut) (vI : InnerStmtOut) (z : Option InnerWitIn),
+      Option.map (fun w => (outerStmtIn, witLens.lift (outerStmtIn, wo) w,
+          stmtLens.lift outerStmtIn vI, wo)) z
+        = Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+            (outerStmtIn, witLens.lift (outerStmtIn, c.1) c.2.2,
+              stmtLens.lift outerStmtIn c.2.1, c.1))
+            (Option.map (fun w => (wo, vI, w)) z) := by
+    intro wo vI z; cases z <;> rfl
+  have hRleaf : ∀ (wo : OuterWitOut) (vI : InnerStmtOut) (z : Option InnerWitIn),
+      Option.map (fun w => (stmtLens.proj outerStmtIn, w, vI,
+          witLens.proj (outerStmtIn, wo))) z
+        = Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+            (stmtLens.proj outerStmtIn, c.2.2, c.2.1, witLens.proj (outerStmtIn, c.1)))
+            (Option.map (fun w => (wo, vI, w)) z) := by
+    intro wo vI z; cases z <;> rfl
+  have hElimOptMap : ∀ {α β γ : Type} {m : Type → Type} [Monad m] [LawfulMonad m]
+      (o : Option α) (k : α → m (Option β)) (G : β → γ),
+      o.elim (pure none) (fun v => Option.map G <$> k v)
+        = Option.map G <$> o.elim (pure none) k := by
+    intro _ _ _ m _ _ o k G; cases o <;> simp
+  have hElimMMapOut : ∀ {α β γ : Type} {m : Type → Type} [Monad m] [LawfulMonad m]
+      (src : m (Option α)) (k : α → m (Option β)) (G : β → γ),
+      Option.elimM src (pure none) (fun a => Option.map G <$> k a)
+        = Option.map G <$> Option.elimM src (pure none) k := by
+    intro _ _ _ m _ _ src k G
+    simp only [Option.elimM, map_bind]
+    exact bind_congr fun o => by cases o <;> simp
+  have hSplitL : ∀ {m : Type → Type} [Monad m] [LawfulMonad m]
+      (wo : OuterWitOut) (vI : InnerStmtOut) (x : m (Option InnerWitIn)),
+      ((fun a => Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+          (outerStmtIn, witLens.lift (outerStmtIn, c.1) c.2.2,
+            stmtLens.lift outerStmtIn c.2.1, c.1))
+          (Option.map (fun w => (wo, vI, w)) a)) <$> x)
+        = Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+            (outerStmtIn, witLens.lift (outerStmtIn, c.1) c.2.2,
+              stmtLens.lift outerStmtIn c.2.1, c.1)) <$>
+            ((fun a => Option.map (fun w => (wo, vI, w)) a) <$> x) := by
+    intro m _ _ wo vI x
+    rw [Functor.map_map]
+  have hSplitR : ∀ {m : Type → Type} [Monad m] [LawfulMonad m]
+      (wo : OuterWitOut) (vI : InnerStmtOut) (x : m (Option InnerWitIn)),
+      ((fun a => Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+          (stmtLens.proj outerStmtIn, c.2.2, c.2.1,
+            witLens.proj (outerStmtIn, c.1)))
+          (Option.map (fun w => (wo, vI, w)) a)) <$> x)
+        = Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+            (stmtLens.proj outerStmtIn, c.2.2, c.2.1,
+              witLens.proj (outerStmtIn, c.1))) <$>
+            ((fun a => Option.map (fun w => (wo, vI, w)) a) <$> x) := by
+    intro m _ _ wo vI x
+    rw [Functor.map_map]
+  have hElimOptMapL : ∀ {α : Type} {m : Type → Type} [Monad m] [LawfulMonad m]
+      (o : Option α) (k : α → m (Option (OuterWitOut × InnerStmtOut × InnerWitIn))),
+      o.elim (pure none) (fun v => Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+          (outerStmtIn, witLens.lift (outerStmtIn, c.1) c.2.2,
+            stmtLens.lift outerStmtIn c.2.1, c.1)) <$> k v)
+        = Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+          (outerStmtIn, witLens.lift (outerStmtIn, c.1) c.2.2,
+            stmtLens.lift outerStmtIn c.2.1, c.1)) <$> o.elim (pure none) k := by
+    intro _ m _ _ o k; cases o <;> simp
+  have hElimOptMapR : ∀ {α : Type} {m : Type → Type} [Monad m] [LawfulMonad m]
+      (o : Option α) (k : α → m (Option (OuterWitOut × InnerStmtOut × InnerWitIn))),
+      o.elim (pure none) (fun v => Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+          (stmtLens.proj outerStmtIn, c.2.2, c.2.1,
+            witLens.proj (outerStmtIn, c.1))) <$> k v)
+        = Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+          (stmtLens.proj outerStmtIn, c.2.2, c.2.1,
+            witLens.proj (outerStmtIn, c.1))) <$> o.elim (pure none) k := by
+    intro _ m _ _ o k; cases o <;> simp
+  have hElimMMapOutL : ∀ {α : Type} {m : Type → Type} [Monad m] [LawfulMonad m]
+      (src : m (Option α)) (k : α → m (Option (OuterWitOut × InnerStmtOut × InnerWitIn))),
+      Option.elimM src (pure none) (fun a => Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+          (outerStmtIn, witLens.lift (outerStmtIn, c.1) c.2.2,
+            stmtLens.lift outerStmtIn c.2.1, c.1)) <$> k a)
+        = Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+          (outerStmtIn, witLens.lift (outerStmtIn, c.1) c.2.2,
+            stmtLens.lift outerStmtIn c.2.1, c.1)) <$> Option.elimM src (pure none) k := by
+    intro _ m _ _ src k
+    simp only [Option.elimM, map_bind]
+    exact bind_congr fun o => by cases o <;> simp
+  have hElimMMapOutR : ∀ {α : Type} {m : Type → Type} [Monad m] [LawfulMonad m]
+      (src : m (Option α)) (k : α → m (Option (OuterWitOut × InnerStmtOut × InnerWitIn))),
+      Option.elimM src (pure none) (fun a => Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+          (stmtLens.proj outerStmtIn, c.2.2, c.2.1,
+            witLens.proj (outerStmtIn, c.1))) <$> k a)
+        = Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+          (stmtLens.proj outerStmtIn, c.2.2, c.2.1,
+            witLens.proj (outerStmtIn, c.1))) <$> Option.elimM src (pure none) k := by
+    intro _ m _ _ src k
+    simp only [Option.elimM, map_bind]
+    exact bind_congr fun o => by cases o <;> simp
+  simp only [hLleaf, hRleaf]
+  simp only [hSplitL, hSplitR]
+  simp only [hElimOptMapL, hElimOptMapR]
+  simp only [hElimMMapOutL, hElimMMapOutR]
+  simp only [StateT.run_map, Functor.map_map]
+  -- point-free split for the R-side leaf (it appears as Option.map BUILDER <$> EC)
+  have hRsplit2 : ∀ {m : Type → Type} [Monad m] [LawfulMonad m]
+      (wo : OuterWitOut) (vI : InnerStmtOut) (x : m (Option InnerWitIn)),
+      ((Option.map fun w => (stmtLens.proj outerStmtIn, w, vI,
+          witLens.proj (outerStmtIn, wo))) <$> x)
+        = Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+            (stmtLens.proj outerStmtIn, c.2.2, c.2.1, witLens.proj (outerStmtIn, c.1))) <$>
+            ((fun a => Option.map (fun w => (wo, vI, w)) a) <$> x) := by
+    intro m _ _ wo vI x
+    rw [Functor.map_map]
+    exact congrArg (· <$> x) (funext fun o => by cases o <;> rfl)
+  simp only [hRsplit2]
+  simp only [hElimOptMapR]
+  simp only [hElimMMapOutR]
+  simp only [StateT.run_map, Functor.map_map, id_eq]
+  set kcore : OptionT ProbComp (OuterWitOut × InnerStmtOut × InnerWitIn) :=
+    ((liftM init : OptionT ProbComp σ) >>= fun x0 => (liftM ((simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) (Prover.runWithLog outerStmtIn outerWitIn outerP)).run x0) : OptionT ProbComp _) >>= fun x => OptionT.mk ((fun p => p.1) <$> (Option.elimM (simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) ((liftM ((simulateQ loggingOracle (V.verify (stmtLens.proj outerStmtIn) x.1.1.1)).run) : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option InnerStmtOut × oSpec.QueryLog)) : OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option (Option InnerStmtOut × oSpec.QueryLog)))) (pure none) (fun aa => aa.1.elim (pure none) (fun vv => (fun a' => Option.map (fun w => (x.1.1.2.2, vv, w)) a') <$> simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) (simulateQ ((fun t => liftM (OracleSpec.query t)) : QueryImpl oSpec (OracleComp (oSpec + [pSpec.Challenge]ₒ))) (E (stmtLens.proj outerStmtIn) (witLens.proj (outerStmtIn, x.1.1.2.2)) x.1.1.1 x.1.2.fst aa.2))))).run x.2)) with hkcore
+  have hL : ((fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+        (outerStmtIn, witLens.lift (outerStmtIn, c.1) c.2.2,
+          stmtLens.lift outerStmtIn c.2.1, c.1)) <$> kcore) = ((liftM init : OptionT ProbComp σ) >>= fun x0 => (liftM ((simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) (Prover.runWithLog outerStmtIn outerWitIn outerP)).run x0) : OptionT ProbComp _) >>= fun x => OptionT.mk ((fun p => Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+        (outerStmtIn, witLens.lift (outerStmtIn, c.1) c.2.2,
+          stmtLens.lift outerStmtIn c.2.1, c.1)) p.1) <$> (Option.elimM (simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) ((liftM ((simulateQ loggingOracle (V.verify (stmtLens.proj outerStmtIn) x.1.1.1)).run) : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option InnerStmtOut × oSpec.QueryLog)) : OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option (Option InnerStmtOut × oSpec.QueryLog)))) (pure none) (fun aa => aa.1.elim (pure none) (fun vv => (fun a' => Option.map (fun w => (x.1.1.2.2, vv, w)) a') <$> simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) (simulateQ ((fun t => liftM (OracleSpec.query t)) : QueryImpl oSpec (OracleComp (oSpec + [pSpec.Challenge]ₒ))) (E (stmtLens.proj outerStmtIn) (witLens.proj (outerStmtIn, x.1.1.2.2)) x.1.1.1 x.1.2.fst aa.2))))).run x.2)) := by
+    rw [hkcore]
+    simp only [map_bind]
+    refine bind_congr fun x0 => bind_congr fun x => ?_
+    apply OptionT.ext
+    simp only [OptionT.run_map, OptionT.run_mk, Functor.map_map]
+  have hR : ((fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+        (stmtLens.proj outerStmtIn, c.2.2, c.2.1, witLens.proj (outerStmtIn, c.1))) <$> kcore) = ((liftM init : OptionT ProbComp σ) >>= fun x0 => (liftM ((simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) (Prover.runWithLog outerStmtIn outerWitIn outerP)).run x0) : OptionT ProbComp _) >>= fun a => OptionT.mk ((fun p => Option.map (fun c : OuterWitOut × InnerStmtOut × InnerWitIn =>
+        (stmtLens.proj outerStmtIn, c.2.2, c.2.1, witLens.proj (outerStmtIn, c.1))) p.1) <$> (Option.elimM (simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) ((liftM ((simulateQ loggingOracle (V.verify (stmtLens.proj outerStmtIn) a.1.1.1)).run) : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option InnerStmtOut × oSpec.QueryLog)) : OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option (Option InnerStmtOut × oSpec.QueryLog)))) (pure none) (fun aa => aa.1.elim (pure none) (fun vv => (fun a' => Option.map (fun w => (a.1.1.2.2, vv, w)) a') <$> simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) (simulateQ ((fun t => liftM (OracleSpec.query t)) : QueryImpl oSpec (OracleComp (oSpec + [pSpec.Challenge]ₒ))) (E (stmtLens.proj outerStmtIn) (witLens.proj (outerStmtIn, a.1.1.2.2)) a.1.1.1 a.1.2.fst aa.2))))).run a.2)) := by
+    rw [hkcore]
+    simp only [map_bind]
+    refine bind_congr fun x0 => bind_congr fun x => ?_
+    apply OptionT.ext
+    simp only [OptionT.run_map, OptionT.run_mk, Functor.map_map]
+  rw [← hL, ← hR, probEvent_map, probEvent_map]
+  refine _root_.probEvent_mono ?_
+  rintro ⟨wo, vI, eW⟩ hSupport ⟨hL1, hL2⟩
+  simp only [Function.comp_apply] at hL1 hL2 ⊢
+  have hCompat : Verifier.compatStatement stmtLens V outerStmtIn vI := by
+    rw [hkcore] at hSupport
+    simp only [Option.elimM, mem_support_bind_iff, StateT.run_bind, support_map,
+      Set.mem_image, Prod.exists, OptionT.run_mk] at hSupport
+    obtain ⟨x0, hx0, tr, so, woP, plog, st, hProv, hLast⟩ := hSupport
+    simp only [OptionT.mem_support_iff, OptionT.run_mk, support_map, Set.mem_image,
+      mem_support_bind_iff, Prod.exists] at hLast
+    obtain ⟨av, bv, ⟨a1, b1, hVer, hElim⟩, hEq⟩ := hLast
+    subst hEq
+    -- the elim chain forces a1 = some (some vI, vlog)
+    rcases a1 with _ | pr
+    · simp at hElim
+    obtain ⟨p1, p2⟩ := pr
+    rcases p1 with _ | vv
+    · simp at hElim
+    simp only [Option.elim_some] at hElim
+    -- the leaf map pins vv = vI
+    simp only [StateT.run_map, support_map, Set.mem_image, Prod.exists] at hElim
+    obtain ⟨aE, bE, _hE, hPairEq⟩ := hElim
+    rw [Prod.mk.injEq] at hPairEq
+    obtain ⟨hMapEq, _⟩ := hPairEq
+    rcases aE with _ | w0
+    · simp at hMapEq
+    simp only [Option.map_some, Option.some_inj, Prod.mk.injEq] at hMapEq
+    obtain ⟨_, hvv, _⟩ := hMapEq
+    subst hvv
+    -- strip: StateT-run' projection, simulateQ, cross-spec lift, logging fst
+    refine ⟨tr, ?_⟩
+    have h1 : some (some vv, p2) ∈ support
+        ((simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+          ((liftM ((simulateQ loggingOracle (V.verify (stmtLens.proj outerStmtIn) tr)).run)
+            : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))
+              (Option InnerStmtOut × oSpec.QueryLog))
+            : OracleComp (oSpec + [pSpec.Challenge]ₒ)
+              (Option (Option InnerStmtOut × oSpec.QueryLog)))).run' st) := by
+      simp only [StateT.run'_eq, support_map, Set.mem_image]
+      exact ⟨_, hVer, rfl⟩
+    have h2 := mem_support_simulateQ_run'_subset _ _ _ _ h1
+    have h3 : (((liftM ((simulateQ loggingOracle (V.verify (stmtLens.proj outerStmtIn) tr)).run)
+        : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))
+          (Option InnerStmtOut × oSpec.QueryLog)))
+        : OracleComp (oSpec + [pSpec.Challenge]ₒ)
+          (Option (Option InnerStmtOut × oSpec.QueryLog)))
+        = some <$> (OracleComp.liftComp
+            ((simulateQ loggingOracle (V.verify (stmtLens.proj outerStmtIn) tr)).run)
+            (oSpec + [pSpec.Challenge]ₒ)) := by
+      show simulateQ _ ((OptionT.lift _).run) = _
+      rw [show ((OptionT.lift (monadLift ((simulateQ loggingOracle
+          (V.verify (stmtLens.proj outerStmtIn) tr)).run))).run :
+          OracleComp oSpec (Option (Option InnerStmtOut × oSpec.QueryLog)))
+        = some <$> ((simulateQ loggingOracle
+            (V.verify (stmtLens.proj outerStmtIn) tr)).run) from rfl]
+      rw [simulateQ_map]; rfl
+    rw [h3, support_map] at h2
+    obtain ⟨y, hy, hyEq⟩ := h2
+    obtain rfl : y = (some vv, p2) := by simpa using hyEq
+    have h4 := OracleComp.mem_support_of_mem_support_liftComp
+      (superSpec := oSpec + [pSpec.Challenge]ₒ) _ _ hy
+    -- project the logging run to the verifier's own support
+    have h5 : some vv ∈ support (Prod.fst <$>
+        (simulateQ loggingOracle (V.verify (stmtLens.proj outerStmtIn) tr)).run) := by
+      simp only [support_map, Set.mem_image]
+      exact ⟨_, h4, rfl⟩
+    rw [loggingOracle.fst_map_run_simulateQ] at h5
+    rw [Verifier.run, OptionT.mem_support_iff]
+    exact h5
+  refine ⟨fun hInner => hL1 ?_, lensKS.proj_knowledgeSound outerStmtIn vI wo hCompat hL2⟩
+  exact lensKS.lift_knowledgeSound outerStmtIn wo eW True.intro hInner
 
 /-
   Lifting the reduction preserves round-by-round soundness, assuming the lens satisfies its
@@ -681,7 +958,7 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
     {rbrSoundnessError : pSpec.ChallengeIdx → ℝ≥0}
     {lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut}
     (V : Verifier oSpec InnerStmtIn InnerStmtOut pSpec)
-    -- TODO: figure out the right compatibility relation for the IsSound condition
+    -- NOTE: figure out the right compatibility relation for the IsSound condition
     [lensSound : lens.IsSound outerLangIn outerLangOut innerLangIn innerLangOut
       (V.compatStatement lens)]
     (h : V.rbrSoundness init impl innerLangIn innerLangOut rbrSoundnessError) :
@@ -689,9 +966,55 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
   unfold rbrSoundness at h ⊢
   obtain ⟨stF, h⟩ := h
   simp at h ⊢
-  refine ⟨stF.liftContext lens (lensSound := lensSound), ?_⟩
+  refine ⟨by
+    refine {
+      toFun := fun m outerStmtIn transcript =>
+        stF m (lens.proj outerStmtIn) transcript ∨ outerStmtIn ∈ outerLangIn
+      toFun_empty := fun outerStmtIn => by
+        constructor
+        · exact Or.inr
+        · intro hState
+          rcases hState with hInnerState | hOuterStmtIn
+          · by_contra hOuterStmtIn
+            exact lensSound.proj_sound outerStmtIn hOuterStmtIn
+              ((stF.toFun_empty (lens.proj outerStmtIn)).mpr hInnerState)
+          · exact hOuterStmtIn
+      toFun_next := fun m hDir outerStmtIn transcript hState msg => by
+        simp only [not_or] at hState ⊢
+        exact ⟨stF.toFun_next m hDir (lens.proj outerStmtIn) transcript hState.1 msg,
+          hState.2⟩
+      toFun_full := fun outerStmtIn transcript hState => by
+        simp only [not_or] at hState
+        let innerGame : OptionT ProbComp InnerStmtOut := OptionT.mk do
+          (simulateQ impl (V.run (lens.proj outerStmtIn) transcript).run).run' (← init)
+        let outerGame : OptionT ProbComp OuterStmtOut := OptionT.mk do
+          (simulateQ impl ((V.liftContext lens).run outerStmtIn transcript).run).run' (← init)
+        have hInnerZero := stF.toFun_full (lens.proj outerStmtIn) transcript hState.1
+        rw [probEvent_eq_zero_iff] at hInnerZero
+        change Pr[(· ∈ outerLangOut) | outerGame] = 0
+        rw [OptionT.probEvent_eq_of_run_map_eq outerGame innerGame
+          (lens.lift outerStmtIn) (· ∈ outerLangOut)]
+        · rw [probEvent_eq_zero_iff]
+          intro innerStmtOut hInnerSupport hOuterStmtOut
+          refine lensSound.lift_sound outerStmtIn innerStmtOut ?_
+            (hInnerZero innerStmtOut hInnerSupport) hOuterStmtOut
+          refine ⟨transcript, ?_⟩
+          rw [Verifier.run, OptionT.mem_support_iff]
+          rw [OptionT.mem_support_iff] at hInnerSupport
+          simp only [innerGame, OptionT.run_mk, mem_support_bind_iff] at hInnerSupport
+          obtain ⟨s, _hs, hSim⟩ := hInnerSupport
+          exact mem_support_simulateQ_run'_subset impl s
+            (V.run (lens.proj outerStmtIn) transcript).run (some innerStmtOut) hSim
+        · have hRunMap :
+              ((V.liftContext lens).run outerStmtIn transcript).run =
+                Option.map (lens.lift outerStmtIn) <$>
+                  (V.run (lens.proj outerStmtIn) transcript).run := by
+            simp [Verifier.liftContext, Verifier.run, OptionT.run_map]
+          simp only [innerGame, outerGame, OptionT.run_mk, hRunMap, simulateQ_map,
+            StateT.run'_eq, StateT.run_map, map_bind, Functor.map_map, ← map_bind]
+    }, ?_⟩
   intro outerStmtIn hOuterStmtIn WitIn WitOut witIn outerP roundIdx hDir
-  have innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec := {
+  let innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec := {
     PrvState := outerP.PrvState
     input := fun _ => outerP.input (outerStmtIn, witIn)
     sendMessage := outerP.sendMessage
@@ -702,8 +1025,19 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
   }
   have h' := h (lens.proj outerStmtIn) (lensSound.proj_sound _ hOuterStmtIn)
     WitIn WitOut witIn innerP roundIdx hDir
-  refine le_trans ?_ h'
-  sorry
+  refine le_trans (le_of_eq ?_) h'
+  -- The rbr-soundness game only invokes the prover's `runToRound` (never the verifier or the
+  -- prover's `output`), and `innerP` shares `input`/`sendMessage`/`receiveChallenge` with
+  -- `outerP`, so the two games are the *same* `ProbComp`.  The outer state function is
+  -- `stF (lens.proj ·) · ∨ · ∈ outerLangIn`; since `outerStmtIn ∉ outerLangIn`, the right
+  -- disjunct is false and the predicates coincide pointwise.
+  have hRTR : ∀ (i : Fin (n + 1)),
+      Prover.runToRound i (lens.proj outerStmtIn) witIn innerP
+        = Prover.runToRound i outerStmtIn witIn outerP := fun _ => rfl
+  simp only [hRTR]
+  refine probEvent_ext fun x _ => ?_
+  obtain ⟨transcript, challenge⟩ := x
+  simp only [hOuterStmtIn, or_false]
 
 /-
   Lifting the reduction preserves round-by-round knowledge soundness, assuming the lens
@@ -722,11 +1056,31 @@ theorem liftContext_rbr_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited I
       (V.liftContext stmtLens).rbrKnowledgeSoundness init impl outerRelIn outerRelOut
         rbrKnowledgeError := by
   unfold rbrKnowledgeSoundness at h ⊢
-  obtain ⟨stF, E, h⟩ := h
-  simp at h ⊢
-  -- refine ⟨stF.liftContext (lens := lens.toStatement.Lens)
-  --   (lensSound := lensKnowledgeSound.toSound),
-  --         ?_, ?_⟩
+  obtain ⟨_WitMid, _E, _kSF, _h⟩ := h
+  -- DESIGN GAP (left as `sorry`): completing this lift requires API that does not yet exist.
+  --
+  -- To discharge the outer `rbrKnowledgeSoundness` we must supply an outer round-by-round
+  -- extractor `E' : Extractor.RoundByRound oSpec OuterStmtIn OuterWitIn OuterWitOut pSpec WitMid'`
+  -- with `E'.eqIn : WitMid' 0 = OuterWitIn`, together with an outer `KnowledgeStateFunction` over
+  -- `outerRelIn`/`outerRelOut`.  The inner extractor `E` only gives `E.eqIn : WitMid 0 = InnerWitIn`,
+  -- so `Extractor.RoundByRound.liftContext` (which reuses the *same* `WitMid` and demands
+  -- `WitMid 0 = OuterWitIn`) cannot be applied unless `InnerWitIn = OuterWitIn`.
+  --
+  -- A genuine lift would reindex `WitMid'` so that `WitMid' 0 = OuterWitIn`, but the round-0
+  -- boundary of `extractMid : (m : Fin n) → StmtIn → Transcript m.succ → WitMid' m.succ →
+  -- WitMid' m.castSucc` would then need to turn an inner round-1 witness into an `OuterWitIn`
+  -- with only `(stmtIn, transcript)` in scope.  The witness inverse lens
+  -- `witLens.lift : OuterStmtIn × OuterWitOut → InnerWitIn → OuterWitIn` requires an
+  -- `OuterWitOut`, which is unavailable at the `extractMid` boundary — there is no API to lift
+  -- `InnerWitIn → OuterWitIn` without an output witness.  Moreover `KnowledgeStateFunction.toFun_empty`
+  -- needs an `iff` relating `outerRelIn`-membership to the inner state, but
+  -- `Extractor.Lens.IsKnowledgeSound` only exposes the one-directional `lift_knowledgeSound`
+  -- (inner→outer for the *input* witness) and `proj_knowledgeSound` (outer→inner for the *output*),
+  -- never an `outerRelIn → innerRelIn` direction.
+  --
+  -- Closing this needs new core API (a round-0-boundary witness lens producing `OuterWitIn`
+  -- without an `OuterWitOut`, a `KnowledgeStateFunction.liftContext`, and a strengthened
+  -- lens-soundness class), which is out of scope for a sorry fill.
   sorry
 
 end Verifier

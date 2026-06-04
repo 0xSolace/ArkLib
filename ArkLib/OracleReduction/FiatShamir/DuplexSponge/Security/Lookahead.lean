@@ -127,7 +127,7 @@ noncomputable def lookAhead (fwdPermTrace : QueryLog (forwardPermutationOracle (
     have : seqFamily.val.toList.length = 1 := by aesop
     -- Get the only element of the finset (TODO: find better way)
     let seq := seqFamily.val.toList[0]
-    let seqRateSegment := seq.inputState.map (fun s => s.rateSegment)
+    let knownRateUnits : List U := (seq.inputState.map (fun s => s.rateSegment.toList)).flatten
     -- Sample units to fill the encoded challenge length, then return
     let sampledUnits ←
       (Vector.ofFn (fun _ : Fin (challengeSize i) => ())).mapM fun _ =>

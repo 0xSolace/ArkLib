@@ -254,7 +254,8 @@ def RoundByRound.append
     dsimp [Fin.append, Fin.addCases, Fin.tail, Fin.castLT, Fin.cast] at h ⊢
     by_cases hi : idx < m
     · simp [hi] at h
-      sorry
+      have hiSucc : (idx : ℕ) < m + 1 := by omega
+      simpa [hiSucc] using E₁.extractMid ⟨idx, hi⟩ stmt₁ (by simpa [hi] using tr.fst) h
     -- do casing
     sorry
   extractOut := fun stmt₁ tr wit₃ => by

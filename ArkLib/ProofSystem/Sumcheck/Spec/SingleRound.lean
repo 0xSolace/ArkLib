@@ -154,7 +154,7 @@ instance : IsSingleRound (pSpec R deg) where
 
 -- Don't know why instance synthesis requires restating these instances
 -- Doesn't seem like instance synthesis can infer the instances for the appends
--- TODO: may need to tweak synthesis?
+-- Note: may need to tweak synthesis?
 
 instance instOI₁ : ∀ i, OracleInterface ((⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ ++ₚ !p[]).Message i) :=
   instOracleInterfaceMessageAppend
@@ -176,6 +176,90 @@ instance instST₂ [SampleableType R] : ∀ i, SampleableType
 instance instSampleableTypeChallengePSpec [SampleableType R] :
     ∀ i, SampleableType ((pSpec R deg).Challenge i) :=
   instSampleableTypeChallengeAppend
+
+/-- `simulateQ` of a query lifted from the middle summand of `spec₀ + (spec₁ + spec₂)`
+is the implementation applied at the routed index. -/
+private lemma simulateQ_double_lift_query {ι₀ ι₁ ι₂ : Type} {spec₀ : OracleSpec ι₀}
+    {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂} {m' : Type → Type} [Monad m']
+    [LawfulMonad m'] (impl : QueryImpl (spec₀ + (spec₁ + spec₂)) m') (t : spec₁.Domain) :
+    simulateQ impl
+      (liftM (spec₁.query t) : OracleComp (spec₀ + (spec₁ + spec₂)) (spec₁.Range t)) =
+      impl (Sum.inr (Sum.inl t)) := by
+  change simulateQ impl (liftM ((spec₀ + (spec₁ + spec₂)).query (Sum.inr (Sum.inl t)))) = _
+  rw [simulateQ_spec_query]
+
+section VectorMapMTools
+
+universe uM
+
+/-- `Vector.mapM` over a pushed vector factors as mapM of the prefix, then the last element.
+(Extracted from the proof of `Vector.support_mapM_index`.) -/
+private lemma vector_mapM_push {m : Type → Type uM} [Monad m] [LawfulMonad m]
+    {α β : Type} {L : ℕ} (xs : Vector β L) (x : β) (f : β → m α) :
+    (xs.push x).mapM f =
+      (xs.mapM f >>= (fun ys => f x >>= fun last => pure (ys.push last))) := by
+  have hsingle : (#v[x]).mapM f = (fun last => #v[last]) <$> f x := by
+    apply Vector.map_toArray_inj.mp
+    simp
+  rw [← Vector.append_singleton, Vector.mapM_append, hsingle]
+  simp only [map_eq_bind_pure_comp, bind_assoc, Function.comp, pure_bind]
+  rfl
+
+/-- `Vector.mapM` on the empty vector is `pure`. -/
+private lemma vector_mapM_empty {m : Type → Type uM} [Monad m] [LawfulMonad m]
+    {α β : Type} (f : β → m α) :
+    ((#v[] : Vector β 0).mapM f) = pure #v[] := by
+  apply Vector.map_toArray_inj.mp
+  simp
+
+/-- `simulateQ` (into `OracleComp`) commutes with `Vector.mapM` of `OptionT` computations.
+The `OptionT` ascriptions are load-bearing: without them `mapM` elaborates at the carrier. -/
+private lemma simulateQ_optionT_vector_mapM {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁}
+    {spec₂ : OracleSpec ι₂} (impl : QueryImpl spec₁ (OracleComp spec₂))
+    {α β : Type} {L : ℕ} (xs : Vector β L) (f : β → OptionT (OracleComp spec₁) α) :
+    simulateQ impl (xs.mapM f : OptionT (OracleComp spec₁) (Vector α L)) =
+      (xs.mapM (fun b => (simulateQ impl (f b) : OptionT (OracleComp spec₂) α)) :
+        OptionT (OracleComp spec₂) (Vector α L)) := by
+  induction L with
+  | zero =>
+    obtain rfl : xs = #v[] := by
+      apply Vector.ext
+      intro i h
+      omega
+    rw [vector_mapM_empty, vector_mapM_empty]
+    erw [simulateQ_pure]
+    rfl
+  | succ L ih =>
+    obtain ⟨xs0, x, rfl⟩ := Vector.exists_push (xs := xs)
+    rw [vector_mapM_push, vector_mapM_push]
+    rw [simulateQ_optionT_bind]
+    rw [ih]
+    refine bind_congr fun ys => ?_
+    rw [simulateQ_optionT_bind]
+    refine bind_congr fun last => ?_
+    show simulateQ impl (pure (ys.push last) : OptionT (OracleComp spec₁) _)
+      = (pure (ys.push last) : OptionT (OracleComp spec₂) _)
+    erw [simulateQ_pure]
+    rfl
+
+/-- `Vector.mapM` of pure computations collapses to `pure` of the map. -/
+private lemma vector_mapM_pure_comp {m : Type → Type uM} [Monad m] [LawfulMonad m]
+    {α β : Type} {L : ℕ} (xs : Vector β L) (g : β → α) :
+    xs.mapM (fun b => (pure (g b) : m α)) = pure (xs.map g) := by
+  induction L with
+  | zero =>
+    obtain rfl : xs = #v[] := by
+      apply Vector.ext
+      intro i h
+      omega
+    rw [vector_mapM_empty]
+    simp
+  | succ L ih =>
+    obtain ⟨xs0, x, rfl⟩ := Vector.exists_push (xs := xs)
+    rw [vector_mapM_push, ih]
+    simp
+
+end VectorMapMTools
 
 namespace Simpler
 
@@ -421,6 +505,53 @@ instance t {ι₁ ι₂ ι₃}
   {spec₃ : OracleSpec ι₃} : MonadLiftT (OracleQuery spec₂)
   (OracleQuery (spec₁ + (spec₂ + spec₃))) := by
   infer_instance
+
+set_option maxHeartbeats 1000000 in
+/-- The honest simple prover threads its input polynomial unchanged: any output statement in the
+support of its run has output oracle statement equal to the input polynomial, and new target equal
+to that polynomial evaluated at the sampled challenge. -/
+private lemma prover_run_output (stmt : StmtIn R × (∀ i, OStmtIn R deg i))
+    (out : (pSpec R deg).FullTranscript × (StmtOut R × ((i : Unit) → OStmtOut R deg i)) × Unit)
+    (hout : out ∈ support ((prover R deg oSpec).run stmt ())) :
+    out.2.1.2 () = stmt.2 () ∧
+      out.2.1.1.1 = Polynomial.eval out.2.1.1.2 (stmt.2 ()).val := by
+  simp only [prover, Prover.run, Prover.runToRound, Fin.induction_two, Prover.processRound,
+    pSpec, bind_pure_comp] at hout
+  -- Resolve round 0 direction (P_to_V): the match reduces to the P_to_V branch
+  split at hout <;> rename_i hDir0
+  · exact absurd hDir0 (by decide)
+  -- Resolve round 1 direction (V_to_P)
+  split at hout <;> rename_i hDir1
+  swap
+  · exact absurd hDir1 (by decide)
+  -- Collapse all `pure`/`liftM`/`map` glue so only the challenge sampling remains a genuine bind
+  simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
+    Functor.map_map, Function.comp_def, map_map] at hout
+  -- Peel the outer bind: `out` is the (pure) prover output as a function of the round result
+  -- `challenge`; `hchal` records that `challenge` arises from the two-round computation.
+  rw [mem_support_bind_iff] at hout
+  obtain ⟨challenge, hchal, hout⟩ := hout
+  -- Peel the round-0 (send poly) bind inside `hchal` to learn `challenge.2.1 = stmt.2 ()`
+  erw [support_bind] at hchal
+  rw [Set.mem_iUnion] at hchal
+  obtain ⟨r0, hchal⟩ := hchal
+  rw [Set.mem_iUnion] at hchal
+  obtain ⟨hr0, hchal⟩ := hchal
+  -- Round 0: `r0 = (concat (stmt.2 ()) default, stmt.2 ())`, so `r0.2 = stmt.2 ()`
+  erw [support_map, support_pure] at hr0
+  simp only [Set.image_singleton, Set.mem_singleton_iff] at hr0
+  subst hr0
+  -- Round 1: `challenge = (concat sampled r0.1, r0.2, sampled)`, so `challenge.2.1 = stmt.2 ()`
+  erw [support_map] at hchal
+  rw [Set.mem_image] at hchal
+  obtain ⟨c, _hc, rfl⟩ := hchal
+  -- Resolve the outer pure to determine `out`
+  erw [support_map] at hout
+  rw [Set.mem_image] at hout
+  obtain ⟨w, hw, rfl⟩ := hout
+  simp only [liftM_pure, support_pure, Set.mem_singleton_iff] at hw
+  subst hw
+  exact ⟨rfl, rfl⟩
 
 open Function in
 def oracleVerifier : OracleVerifier oSpec (StmtIn R) (OStmtIn R deg) (StmtOut R) (OStmtOut R deg)
@@ -758,13 +889,208 @@ theorem reduction_perfectCompleteness :
       constructor <;> simp
 
 
+/-- Closed form of the simulated oracle-verifier `verify`: the inner `simOracle2`
+simulation collapses to a guard on the ORACLE's `D`-sum followed by the oracle's
+evaluation at the challenge. -/
+private lemma simulateQ_oracleVerify_eq
+    (target : StmtIn R) (oStmt : ∀ i, OStmtIn R deg i)
+    (chal : ∀ i, (pSpec R deg).Challenge i)
+    (msgs : ∀ i, (pSpec R deg).Message i) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+      ((oracleVerifier R deg D oSpec).verify target chal) =
+    (if ((Vector.finRange m).map (fun i => (oStmt ()).val.eval (D i))).sum = target
+      then (pure ((oStmt ()).val.eval (chal default), chal default) :
+        OptionT (OracleComp oSpec) (StmtOut R))
+      else failure) := by
+  have hcomp : ∀ x : R, (simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+      (OptionT.lift ((OracleComp.lift (OracleSpec.query
+        (spec := [OStmtIn R deg]ₒ) ⟨(), x⟩)).liftComp
+        (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ)))) :
+      OptionT (OracleComp oSpec) R) = pure ((oStmt ()).val.eval x) := by
+    intro x
+    erw [simulateQ_optionT_lift]
+    erw [simulateQ_double_lift_query]
+    rfl
+  unfold oracleVerifier
+  dsimp only
+  rw [simulateQ_optionT_bind]
+  rw [simulateQ_optionT_vector_mapM]
+  have hfun : (fun b : Fin m => (simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+        ((OptionT.lift ((OracleComp.lift (OracleSpec.query
+            (spec := [OStmtIn R deg]ₒ) ⟨(), D b⟩)).liftComp
+          (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ)))) :
+            OptionT (OracleComp (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ))) R) :
+        OptionT (OracleComp oSpec) R))
+      = (fun b : Fin m => (pure ((oStmt ()).val.eval (D b)) : OptionT (OracleComp oSpec) R)) :=
+    by funext b; exact hcomp (D b)
+  rw [hfun]
+  rw [vector_mapM_pure_comp, pure_bind]
+  by_cases hP : ((Vector.finRange m).map (fun i => (oStmt ()).val.eval (D i))).sum = target
+  · simp only [guard, if_pos hP, pure_bind]
+    rw [simulateQ_optionT_bind]
+    erw [hcomp]
+    erw [pure_bind]
+    erw [simulateQ_pure]
+    rfl
+  · simp only [guard, if_neg hP]
+    refine OptionT.ext ?_
+    show simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+        (pure none : OracleComp (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ))
+          (Option (StmtOut R))) = _
+    erw [simulateQ_pure]
+    rfl
+
+/-- Bridge: the vector `D`-evaluation sum equals the `Finset` sum over `univ.map D`. -/
+private lemma vector_finRange_map_sum_eq (g : Fin m → R) :
+    ((Vector.finRange m).map g).sum = ∑ i : Fin m, g i := by
+  rw [← Vector.sum_toList, Vector.toList_map, Fin.sum_univ_def]
+  have h : (Vector.finRange m).toList = List.finRange m := by
+    simp only [Vector.finRange, Array.finRange, Vector.toList_ofFn]
+    exact List.ofFn_id m
+  rw [h]
+
+/-- Bridge (early copy for the completeness proof below; see also
+`vector_finRange_map_sum_eq`): the vector `D`-evaluation sum equals the `Fin` sum. -/
+private lemma vector_finRange_map_sum_eq' (g : Fin m → R) :
+    ((Vector.finRange m).map g).sum = ∑ i : Fin m, g i := by
+  rw [← Vector.sum_toList, Vector.toList_map, Fin.sum_univ_def]
+  have h : (Vector.finRange m).toList = List.finRange m := by
+    simp only [Vector.finRange, Array.finRange, Vector.toList_ofFn]
+    exact List.ofFn_id m
+  rw [h]
+
 /-- Perfect completeness for the oracle reduction -/
 theorem oracleReduction_perfectCompleteness :
     (oracleReduction R deg D oSpec).perfectCompleteness init impl
       (inputRelation R deg D) (outputRelation R deg) := by
+  -- Direct proof (no detour through the false `oracleReduction_eq_reduction`, Finding 13b):
+  -- the oracle verifier collapses to a guard on the ORACLE's D-sum, which holds by `hValid`.
   unfold OracleReduction.perfectCompleteness
-  rw [oracleReduction_eq_reduction]
-  exact reduction_perfectCompleteness R deg D oSpec
+  simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+  intro ⟨target, oStmt⟩ () hValid
+  simp only [inputRelation, Set.mem_setOf_eq] at hValid
+  have hValid' : ((Vector.finRange m).map (fun i => (oStmt ()).val.eval (D i))).sum = target := by
+    rw [vector_finRange_map_sum_eq']
+    simpa [Finset.sum_map] using hValid
+  simp only [oracleReduction, OracleReduction.toReduction, Reduction.run, Prover.run,
+    Verifier.run, prover, OracleVerifier.toVerifier,
+    Prover.runToRound, Prover.processRound, Fin.induction_two, pSpec,
+    bind_pure_comp, Function.comp]
+  split <;> rename_i hDir0
+  · exact absurd hDir0 (by decide)
+  try simp only [pure_bind, map_pure, Functor.map_map, Function.comp, bind_pure_comp]
+  split <;> rename_i hDir1
+  swap
+  · exact absurd hDir1 (by decide)
+  simp only [simulateQ_oracleVerify_eq R deg D oSpec, hValid', eq_self_iff_true, if_true]
+  simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
+    Functor.map_map, Function.comp_def, map_map, OptionT.run_pure, Option.getM,
+    Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
+  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  refine ⟨?_, ?_⟩
+  all_goals
+    have hOC : ∀ {ι' : Type} {spec' : OracleSpec ι'} {α γ : Type} (g : α → γ)
+        (X : OracleComp spec' α),
+        ((g <$> (liftM X : OptionT (OracleComp spec') α)) : OptionT (OracleComp spec') γ)
+          = OptionT.mk ((some ∘ g) <$> X) := by
+      intro ι' spec' α γ g X
+      refine OptionT.ext ?_
+      rw [OptionT.run_map]
+      show Option.map g <$> (some <$> X) = _
+      simp [Functor.map_map, Function.comp_def]
+  · -- No failure: the computation is a `some`-producing map over the challenge sample.
+    rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp only [probFailure_eq_zero, zero_add]
+    apply probOutput_eq_zero_of_not_mem_support
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _ hmem
+    rw [hOC] at hmem
+    simp only [StateT.run'_eq, support_map, Set.mem_image] at hmem
+    obtain ⟨⟨v, s'⟩, hmem, hv⟩ := hmem
+    erw [simulateQ_map] at hmem
+    rw [StateT.run_map] at hmem
+    simp only [support_map, Set.mem_image] at hmem
+    obtain ⟨⟨w, s''⟩, hw, heq⟩ := hmem
+    obtain ⟨rfl, rfl⟩ := Prod.mk.inj heq
+    simp [Function.comp_def] at hv
+  · -- Event: holds for every sampled challenge by construction.
+    intro x hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    rw [hOC] at hx
+    simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
+    obtain ⟨⟨v, s'⟩, hx, hv⟩ := hx
+    erw [simulateQ_map] at hx
+    rw [StateT.run_map] at hx
+    simp only [support_map, Set.mem_image] at hx
+    obtain ⟨⟨w, s''⟩, hw, heq⟩ := hx
+    obtain ⟨rfl, rfl⟩ := Prod.mk.inj heq
+    simp only [Function.comp_def, Option.some.injEq] at hv
+    subst hv
+    refine ⟨?_, ?_⟩
+    · simp only [outputRelation, Set.mem_setOf_eq]
+      rfl
+    · -- pin the prover result's structure from hw
+      erw [simulateQ_bind] at hw
+      rw [StateT.run_bind] at hw
+      rw [mem_support_bind_iff] at hw
+      obtain ⟨⟨g1, sg⟩, hg1, hw⟩ := hw
+      rcases g1 with ⟨tr1, polyLE, chal⟩
+      simp only [liftM_pure, map_pure] at hw
+      erw [simulateQ_pure] at hw
+      rw [StateT.run_pure] at hw
+      simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hw
+      obtain ⟨⟨rfl, rfl⟩, -⟩ := hw
+      -- peel hg1: the challenge sample pins the transcript (glue already collapsed)
+      erw [simulateQ_map] at hg1
+      rw [StateT.run_map] at hg1
+      simp only [support_map, Set.mem_image] at hg1
+      obtain ⟨⟨c, sc⟩, -, heqc⟩ := hg1
+      simp only [Prod.mk.injEq] at heqc
+      obtain ⟨⟨rfl, rfl, rfl⟩, rfl⟩ := heqc
+      rfl
+
+/-- Trivial round-by-round extractor (all witnesses are `Unit`). -/
+private def simpleRbrExtractor : Extractor.RoundByRound oSpec
+    (StmtIn R × (∀ i, OStmtIn R deg i)) Unit Unit (pSpec R deg) (fun _ => Unit) where
+  eqIn := rfl
+  extractMid := fun _ _ _ _ => ()
+  extractOut := fun _ _ _ => ()
+
+variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+
+/-- The transcript-independent knowledge state function for the oracle verifier: its guard
+checks the ORACLE's `D`-sum, which is precisely the input relation. -/
+private def simpleKnowledgeStateFunction :
+    ((oracleVerifier R deg D oSpec).toVerifier).KnowledgeStateFunction init impl
+      (inputRelation R deg D) (outputRelation R deg)
+      (simpleRbrExtractor R deg oSpec) where
+  toFun := fun _ stmtIn _ _ => (stmtIn, ()) ∈ inputRelation R deg D
+  toFun_empty := fun stmtIn witMid => Iff.rfl
+  toFun_next := fun _ _ _ _ _ _ h => h
+  toFun_full := fun ⟨target, oStmt⟩ tr witOut h => by
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, _hrel⟩ := h
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    simp only [OracleVerifier.toVerifier, Verifier.run] at hx
+    rw [simulateQ_oracleVerify_eq R deg D oSpec] at hx
+    by_cases hP : ((Vector.finRange m).map
+        (fun i => (oStmt ()).val.eval (D i))).sum = target
+    · -- guard passed: that IS the input relation, modulo the sum bridge
+      rw [vector_finRange_map_sum_eq] at hP
+      simp only [inputRelation, Set.mem_setOf_eq, Finset.sum_map]
+      exact hP
+    · -- guard failed: the computation is `pure none`, contradicting `some x` membership
+      rw [if_neg hP] at hx
+      have hx' : (some x : Option (StmtOut R × ((i : Unit) → OStmtOut R deg i))) ∈
+          _root_.support ((simulateQ impl (pure none :
+            OracleComp oSpec (Option (StmtOut R × ((i : Unit) → OStmtOut R deg i))))).run' s) :=
+        hx
+      rw [simulateQ_pure] at hx'
+      simp at hx'
 
 /-- Round-by-round knowledge soundness for the verifier -/
 theorem verifier_rbrKnowledgeSoundness [Fintype R] :
@@ -780,7 +1106,7 @@ theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
   rw [oracleVerifier_eq_verifier]
   exact verifier_rbrKnowledgeSoundness R deg D oSpec
 
--- TODO: break down the oracle reduction into a series of oracle reductions as stated above
+-- Note: break down the oracle reduction into a series of oracle reductions as stated above
 
 end Simple
 
@@ -886,6 +1212,178 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
 
 -- Showing that the lenses satisfy the completeness and rbr knowledge soundness conditions
 
+/-- Keystone `Fin`-plumbing identity for the sum-check round split: inserting `a` at position `i`
+into `append c y ∘ cast` agrees with appending the cons-extended tuple `cons a y` to `c`. -/
+private lemma append_cons_eq_insertNth {n' : ℕ} {α : Type} (i : Fin (n' + 1)) (a : α)
+    (c : Fin (i : ℕ) → α) (y : Fin (n' - i) → α)
+    (hc1 : n' + 1 = (i : ℕ) + ((n' + 1) - i))
+    (hc2 : n' = (i : ℕ) + (n' - i))
+    (hc3 : (n' + 1) - (i : ℕ) = (n' - i) + 1) :
+    (Fin.append c (Fin.cons a y ∘ Fin.cast hc3) ∘ Fin.cast hc1 : Fin (n' + 1) → α)
+      = i.insertNth a (Fin.append c y ∘ Fin.cast hc2) := by
+  rw [Fin.eq_insertNth_iff]
+  refine ⟨?_, ?_⟩
+  · simp only [Function.comp_apply]
+    have : (Fin.cast hc1 i : Fin ((i : ℕ) + ((n' + 1) - i)))
+        = Fin.natAdd (i : ℕ) ⟨0, by omega⟩ := by
+      apply Fin.ext; simp
+    rw [this, Fin.append_right]
+    simp
+  · ext j
+    simp only [Fin.removeNth_apply, Function.comp_apply]
+    rcases lt_or_ge (j : ℕ) (i : ℕ) with hlt | hge
+    · have hsa : i.succAbove j = j.castSucc :=
+        Fin.succAbove_of_castSucc_lt _ _ (by simp [Fin.lt_def, hlt])
+      rw [hsa]
+      have hL : (Fin.cast hc1 j.castSucc : Fin ((i : ℕ) + ((n' + 1) - i)))
+          = Fin.castAdd _ (⟨(j : ℕ), hlt⟩ : Fin (i : ℕ)) := by apply Fin.ext; simp
+      have hR : (Fin.cast hc2 j : Fin ((i : ℕ) + (n' - i)))
+          = Fin.castAdd _ (⟨(j : ℕ), hlt⟩ : Fin (i : ℕ)) := by apply Fin.ext; simp
+      rw [hL, hR, Fin.append_left, Fin.append_left]
+    · have hsa : i.succAbove j = j.succ :=
+        Fin.succAbove_of_le_castSucc _ _ (by simp [Fin.le_def, hge])
+      rw [hsa]
+      have hL : (Fin.cast hc1 j.succ : Fin ((i : ℕ) + ((n' + 1) - i)))
+          = Fin.natAdd (i : ℕ) (⟨(j : ℕ) - (i : ℕ) + 1, by omega⟩ : Fin ((n' + 1) - i)) := by
+        apply Fin.ext; simp; omega
+      have hR : (Fin.cast hc2 j : Fin ((i : ℕ) + (n' - i)))
+          = Fin.natAdd (i : ℕ) (⟨(j : ℕ) - (i : ℕ), by omega⟩ : Fin (n' - i)) := by
+        apply Fin.ext; simp; omega
+      rw [hL, hR, Fin.append_right, Fin.append_right, Function.comp_apply]
+      have : (Fin.cast hc3 ⟨(j : ℕ) - (i : ℕ) + 1, by omega⟩ : Fin ((n' - i) + 1))
+          = Fin.succ (⟨(j : ℕ) - (i : ℕ), by omega⟩ : Fin (n' - i)) := by
+        apply Fin.ext; simp
+      rw [this, Fin.cons_succ]
+
+/-- The sum-check round split: the `(n'+1-i)`-fold sum factors as a sum over the first coordinate
+of a sum over the remaining `(n'-i)` coordinates, with the inserted-variable evaluation. -/
+private lemma sumcheck_round_split {n' : ℕ} {m' : ℕ} (D' : Fin m' ↪ R) (i : Fin (n' + 1))
+    (c : Fin (i : ℕ) → R) (p : MvPolynomial (Fin (n' + 1)) R)
+    (hc1 : n' + 1 = (i : ℕ) + ((n' + 1) - i))
+    (hc2 : n' = (i : ℕ) + (n' - i))
+    (hc3 : (n' + 1) - (i : ℕ) = (n' - i) + 1) :
+    (∑ a : Fin m', ∑ y ∈ (univ.map D') ^ᶠ (n' - i),
+        MvPolynomial.eval (i.insertNth (D' a) (Fin.append c y ∘ Fin.cast hc2)) p)
+      = ∑ z ∈ (univ.map D') ^ᶠ ((n' + 1) - i),
+          MvPolynomial.eval (Fin.append c z ∘ Fin.cast hc1) p := by
+  rw [show (∑ a : Fin m', ∑ y ∈ (univ.map D') ^ᶠ (n' - i),
+        MvPolynomial.eval (i.insertNth (D' a) (Fin.append c y ∘ Fin.cast hc2)) p)
+      = ∑ a ∈ (univ.map D'), ∑ y ∈ (univ.map D') ^ᶠ (n' - i),
+        MvPolynomial.eval (i.insertNth a (Fin.append c y ∘ Fin.cast hc2)) p from by
+    rw [Finset.sum_map]]
+  rw [← Finset.sum_product']
+  refine Finset.sum_bij'
+    (i := fun ay _ => (Fin.cons ay.1 ay.2 : Fin ((n' - i) + 1) → R) ∘ Fin.cast hc3)
+    (j := fun z _ => (z (Fin.cast hc3.symm 0),
+        fun k => z (Fin.cast hc3.symm k.succ)))
+    ?_ ?_ ?_ ?_ ?_
+  · rintro ⟨a, y⟩ hay
+    rw [Finset.mem_product] at hay
+    simp only [Fintype.mem_piFinset] at hay ⊢
+    intro k
+    simp only [Function.comp_apply]
+    rcases Fin.eq_zero_or_eq_succ (Fin.cast hc3 k) with hk | ⟨k'', hk⟩
+    · rw [hk, Fin.cons_zero]; exact hay.1
+    · rw [hk, Fin.cons_succ]; exact hay.2 k''
+  · intro z hz
+    simp only [Fintype.mem_piFinset] at hz
+    rw [Finset.mem_product]
+    exact ⟨hz _, by simp only [Fintype.mem_piFinset]; intro k; exact hz _⟩
+  · rintro ⟨a, y⟩ hay
+    simp only [Function.comp_apply, Fin.cast_cast, Fin.cast_eq_self, Fin.cons_zero, Fin.cons_succ]
+  · intro z hz
+    funext w
+    simp only [Function.comp_apply]
+    rcases Fin.eq_zero_or_eq_succ (Fin.cast hc3 w) with hk | ⟨w'', hk⟩
+    · rw [hk, Fin.cons_zero]
+      congr 1
+      apply Fin.ext
+      have hval : (Fin.cast hc3 w : Fin ((n' - i) + 1)).val = (0 : Fin ((n' - i) + 1)).val := by
+        rw [hk]
+      simp only [Fin.val_cast, Fin.val_zero] at hval ⊢
+      omega
+    · rw [hk, Fin.cons_succ]
+      congr 1
+      apply Fin.ext
+      have hval : (Fin.cast hc3 w : Fin ((n' - i) + 1)).val = w''.succ.val := by rw [hk]
+      simp only [Fin.val_cast, Fin.val_succ] at hval ⊢
+      omega
+  · rintro ⟨a, y⟩ hay
+    rw [append_cons_eq_insertNth i a c y hc1 hc2 hc3]
+
+/-- Lift-side round identity: the `(n'+1-(i+1))`-fold sum of the polynomial with the new
+challenge `a` appended via `Fin.snoc` equals the round polynomial (partial evaluation leaving
+variable `i` intact) evaluated at `a`. This is the completeness core of the round update. -/
+private lemma sumcheck_round_eval_snoc {n' : ℕ} {m' : ℕ} (D' : Fin m' ↪ R) (i : Fin (n' + 1))
+    (c : Fin (i : ℕ) → R) (a : R) (p : MvPolynomial (Fin (n' + 1)) R)
+    (h₁ : n' + 1 = ((i : ℕ) + 1) + (n' + 1 - ((i : ℕ) + 1)))
+    (h₂ : n' = (i : ℕ) + (n' - (i : ℕ))) :
+    ∑ z ∈ (univ.map D') ^ᶠ (n' + 1 - ((i : ℕ) + 1)),
+        MvPolynomial.eval (Fin.append (Fin.snoc c a) z ∘ Fin.cast h₁) p
+      = Polynomial.eval a (∑ y ∈ (univ.map D') ^ᶠ (n' - (i : ℕ)),
+          Polynomial.map (MvPolynomial.eval (Fin.append c y ∘ Fin.cast h₂))
+            (MvPolynomial.finSuccEquivNth R i p)) := by
+  have hidx : n' + 1 - ((i : ℕ) + 1) = n' - (i : ℕ) := by omega
+  rw [Polynomial.eval_finset_sum]
+  refine Finset.sum_nbij' (i := fun z => z ∘ Fin.cast hidx.symm)
+    (j := fun y => y ∘ Fin.cast hidx) ?_ ?_ ?_ ?_ ?_
+  · intro z hz
+    simp only [Fintype.mem_piFinset] at hz ⊢
+    exact fun k => hz _
+  · intro y hy
+    simp only [Fintype.mem_piFinset] at hy ⊢
+    exact fun k => hy _
+  · intro z _
+    funext k
+    exact congrArg z (Fin.ext rfl)
+  · intro y _
+    funext k
+    exact congrArg y (Fin.ext rfl)
+  · intro z _
+    dsimp only
+    rw [← MvPolynomial.eval_eq_eval_mv_eval_finSuccEquivNth]
+    refine congrArg (fun v => MvPolynomial.eval v p) ?_
+    funext j
+    by_cases hji : j = i
+    · subst hji
+      simp only [Function.comp_apply, Fin.insertNth_apply_same]
+      have hcast : Fin.cast h₁ j
+          = Fin.castAdd (n' + 1 - ((j : ℕ) + 1)) (Fin.last (j : ℕ)) := by
+        apply Fin.ext; simp
+      rw [hcast, Fin.append_left, Fin.snoc_last]
+    · obtain ⟨k, rfl⟩ := Fin.exists_succAbove_eq hji
+      simp only [Function.comp_apply, Fin.insertNth_apply_succAbove]
+      rcases le_or_gt i k.castSucc with hk | hk
+      · rw [Fin.succAbove_of_le_castSucc _ _ hk]
+        have hkv : (i : ℕ) ≤ (k : ℕ) := hk
+        have hL : Fin.cast h₁ k.succ
+            = Fin.natAdd ((i : ℕ) + 1)
+                (⟨(k : ℕ) - (i : ℕ), by omega⟩ : Fin (n' + 1 - ((i : ℕ) + 1))) := by
+          apply Fin.ext; simp; omega
+        have hR : Fin.cast h₂ k
+            = Fin.natAdd (i : ℕ)
+                (⟨(k : ℕ) - (i : ℕ), by omega⟩ : Fin (n' - (i : ℕ))) := by
+          apply Fin.ext; simp; omega
+        rw [hL, Fin.append_right, hR, Fin.append_right]
+        simp only [Function.comp_apply]
+        congr 1
+      · rw [Fin.succAbove_of_castSucc_lt _ _ hk]
+        have hkv : (k : ℕ) < (i : ℕ) := hk
+        have hL : Fin.cast h₁ k.castSucc
+            = Fin.castAdd (n' + 1 - ((i : ℕ) + 1))
+                (⟨(k : ℕ), by omega⟩ : Fin ((i : ℕ) + 1)) := by
+          apply Fin.ext; simp
+        have hR : Fin.cast h₂ k
+            = Fin.castAdd (n' - (i : ℕ)) (⟨(k : ℕ), hkv⟩ : Fin (i : ℕ)) := by
+          apply Fin.ext; simp
+        rw [hL, Fin.append_left, hR, Fin.append_left]
+        have hsnoc : (⟨(k : ℕ), by omega⟩ : Fin ((i : ℕ) + 1))
+            = (⟨(k : ℕ), hkv⟩ : Fin (i : ℕ)).castSucc := by
+          apply Fin.ext; simp
+        rw [hsnoc, Fin.snoc_castSucc]
+
+
+
 instance oCtxLens_complete :
     (oCtxLens R n deg D i).toContext.IsComplete
       (relationRound R n deg D i.castSucc) (Simple.inputRelation R deg D)
@@ -903,20 +1401,117 @@ where
       simp [← hRelIn]
       simp_rw [Polynomial.eval_finset_sum]
       simp_rw [← eval_eq_eval_mv_eval_finSuccEquivNth]
-      -- Remaining: ∑ a ∈ D, ∑ y ∈ D^(n-i), eval (insertNth i a (append c y ∘ cast)) p
-      --          = ∑ z ∈ D^(n+1-i), eval (append c z ∘ cast) p
-      -- Needs: (1) insertNth i a (append c y ∘ cast) = append c (cons a y) ∘ cast
-      --        (2) piFinset cons decomposition for D^(n+1-i) ↔ D × D^(n-i)
-      sorry
+      -- Round split: ∑ a ∈ D, ∑ y ∈ D^(n-i), eval (insertNth i a (append c y ∘ cast)) p
+      --            = ∑ z ∈ D^(n+1-i), eval (append c z ∘ cast) p
+      exact sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)
   lift_complete := by
-    simp [relationRound]
-    unfold compatContext oStmtLens
-    -- simp
-    -- induction n with
-    -- | zero => exact Fin.elim0 i
-    -- | succ n ih =>
-    --   simp
-    sorry
+    induction n with
+    | zero => exact Fin.elim0 i
+    | succ n' _ih =>
+    rintro ⟨⟨target, challenges⟩, oStmt⟩ _ ⟨⟨newTarget, chal⟩, oStmt'⟩ _ hCompat hRelIn hRelOut'
+    simp only [Simple.outputRelation, Set.mem_setOf_eq] at hRelOut'
+    -- From `hCompat`: the inner output context is the honest reduction's prover output.
+    -- (No detour through the false `oracleReduction_eq_reduction`: the compiled reduction's
+    -- prover is literally `Simple.prover`, and only the prover side is used below.)
+    rw [Reduction.compatContext] at hCompat
+    simp only [OracleReduction.toReduction, Simple.oracleReduction,
+      Set.mem_image, Function.comp_apply] at hCompat
+    obtain ⟨out, hout, heq⟩ := hCompat
+    -- The reduction run's first component is the prover run; extract it.
+    simp only [Reduction.run, OptionT.run_bind, Option.elimM] at hout
+    rw [mem_support_bind_iff] at hout
+    obtain ⟨proverResOpt, hprover, _hout⟩ := hout
+    -- `out.1 = proverResOpt`, and `heq` pins `out.1.2`, so `proverResOpt.2.1 = ((newTarget, chal), oStmt')`
+    have hout1 : out.1 = proverResOpt := by
+      simp only [support_bind, Set.mem_iUnion] at _hout
+      obtain ⟨_, _, _hout⟩ := _hout
+      obtain ⟨_, _, _hout⟩ := _hout
+      rw [support_pure, Set.mem_singleton_iff] at _hout
+      exact congrArg Prod.fst _hout
+    rw [hout1] at heq
+    -- Characterize the prover output via `prover_run_output`.
+    have hprover' : proverResOpt ∈
+        support ((Simple.prover R deg oSpec).run
+          (Statement.Lens.proj (oCtxLens R (n' + 1) deg D i).stmt
+            ({ target := target, challenges := challenges }, oStmt)) ()) := by
+      rw [OptionT.support_liftM] at hprover
+      simpa using hprover
+    have hpo := Simple.prover_run_output R deg oSpec _ proverResOpt hprover'
+    -- `heq : proverResOpt.2 = (((newTarget, chal), oStmt'), innerWitOut)`
+    obtain ⟨hpoO, hpoT⟩ := hpo
+    rw [heq] at hpoO hpoT
+    -- Now `hpoT : newTarget = eval chal roundPoly`; assemble the round update.
+    dsimp only at hpoT ⊢
+    dsimp only [Statement.Lens.proj, Statement.Lens.lift, OracleContext.Lens.toContext,
+      oCtxLens, oStmtLens, Witness.Lens.trivial] at hpoT ⊢
+    simp only [relationRound, Set.mem_setOf_eq]
+    rw [hpoT]
+    exact sumcheck_round_eval_snoc D i challenges chal _ (by omega) (by omega)
+
+/-- Variant of `oCtxLens_complete` for the PLAIN `Simple.reduction`'s compatibility
+relation (used by the lifted completeness without the false `oracleReduction_eq_reduction`). -/
+instance oCtxLens_complete' :
+    (oCtxLens R n deg D i).toContext.IsComplete
+      (relationRound R n deg D i.castSucc) (Simple.inputRelation R deg D)
+      (relationRound R n deg D i.succ) (Simple.outputRelation R deg)
+      ((Simple.reduction R deg D oSpec).compatContext
+        (oCtxLens R n deg D i).toContext)
+where
+  proj_complete := by
+    simp [relationRound, Simple.inputRelation]
+    unfold oStmtLens
+    induction n with
+    | zero => exact Fin.elim0 i
+    | succ n ih =>
+      intro stmt oStmt hRelIn
+      simp [← hRelIn]
+      simp_rw [Polynomial.eval_finset_sum]
+      simp_rw [← eval_eq_eval_mv_eval_finSuccEquivNth]
+      -- Round split: ∑ a ∈ D, ∑ y ∈ D^(n-i), eval (insertNth i a (append c y ∘ cast)) p
+      --            = ∑ z ∈ D^(n+1-i), eval (append c z ∘ cast) p
+      exact sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)
+  lift_complete := by
+    induction n with
+    | zero => exact Fin.elim0 i
+    | succ n' _ih =>
+    rintro ⟨⟨target, challenges⟩, oStmt⟩ _ ⟨⟨newTarget, chal⟩, oStmt'⟩ _ hCompat hRelIn hRelOut'
+    simp only [Simple.outputRelation, Set.mem_setOf_eq] at hRelOut'
+    -- From `hCompat`: the inner output context is the honest reduction's prover output.
+    -- Plain-reduction compat variant: the prover is literally `Simple.prover`,
+    -- and only the prover side is used below.
+    rw [Reduction.compatContext] at hCompat
+    simp only [Simple.reduction, Set.mem_image, Function.comp_apply] at hCompat
+    obtain ⟨out, hout, heq⟩ := hCompat
+    -- The reduction run's first component is the prover run; extract it.
+    simp only [Reduction.run, OptionT.run_bind, Option.elimM] at hout
+    rw [mem_support_bind_iff] at hout
+    obtain ⟨proverResOpt, hprover, _hout⟩ := hout
+    -- `out.1 = proverResOpt`, and `heq` pins `out.1.2`, so `proverResOpt.2.1 = ((newTarget, chal), oStmt')`
+    have hout1 : out.1 = proverResOpt := by
+      simp only [support_bind, Set.mem_iUnion] at _hout
+      obtain ⟨_, _, _hout⟩ := _hout
+      obtain ⟨_, _, _hout⟩ := _hout
+      rw [support_pure, Set.mem_singleton_iff] at _hout
+      exact congrArg Prod.fst _hout
+    rw [hout1] at heq
+    -- Characterize the prover output via `prover_run_output`.
+    have hprover' : proverResOpt ∈
+        support ((Simple.prover R deg oSpec).run
+          (Statement.Lens.proj (oCtxLens R (n' + 1) deg D i).stmt
+            ({ target := target, challenges := challenges }, oStmt)) ()) := by
+      rw [OptionT.support_liftM] at hprover
+      simpa using hprover
+    have hpo := Simple.prover_run_output R deg oSpec _ proverResOpt hprover'
+    -- `heq : proverResOpt.2 = (((newTarget, chal), oStmt'), innerWitOut)`
+    obtain ⟨hpoO, hpoT⟩ := hpo
+    rw [heq] at hpoO hpoT
+    -- Now `hpoT : newTarget = eval chal roundPoly`; assemble the round update.
+    dsimp only at hpoT ⊢
+    dsimp only [Statement.Lens.proj, Statement.Lens.lift, OracleContext.Lens.toContext,
+      oCtxLens, oStmtLens, Witness.Lens.trivial] at hpoT ⊢
+    simp only [relationRound, Set.mem_setOf_eq]
+    rw [hpoT]
+    exact sumcheck_round_eval_snoc D i challenges chal _ (by omega) (by omega)
 
 instance extractorLens_rbr_knowledge_soundness :
     Extractor.Lens.IsKnowledgeSound
@@ -926,9 +1521,43 @@ instance extractorLens_rbr_knowledge_soundness :
       (fun _ _ => True)
       ⟨oStmtLens R n deg D i, Witness.InvLens.trivial⟩ where
   proj_knowledgeSound := by
-    -- simp [relationRound, Simple.outputRelation, Verifier.compatStatement,
-    --   Simple.oracleVerifier_eq_verifier, Simple.verifier, Verifier.run]
-    sorry
+    rintro ⟨⟨target, challenges⟩, oStmt⟩ ⟨⟨newTarget, chal⟩, oStmt'⟩ _ hCompat _hLift
+    simp only [Verifier.compatStatement] at hCompat
+    obtain ⟨tr, htr⟩ := hCompat
+    simp [Verifier.run, OracleVerifier.toVerifier, Simple.oracleVerifier,
+      OracleInterface.simOracle2, Statement.Lens.proj, guard] at htr
+    obtain ⟨htr1, htr2⟩ := htr
+    -- peel the three binds at the OptionT level (its support-bind law avoids Option splits)
+    erw [simulateQ_optionT_bind] at htr1
+    rw [mem_support_bind_iff] at htr1
+    obtain ⟨evals, hEvals, htr1⟩ := htr1
+    erw [simulateQ_optionT_bind] at htr1
+    rw [mem_support_bind_iff] at htr1
+    obtain ⟨u, hGuard, htr1⟩ := htr1
+    erw [simulateQ_optionT_bind] at htr1
+    rw [mem_support_bind_iff] at htr1
+    obtain ⟨nTval, hQuery, htr1⟩ := htr1
+    -- final pure pins (newTarget, chal) = (nTval, tr.challenges default)
+    erw [simulateQ_pure, mem_support_pure_iff] at htr1
+    rw [Prod.mk.injEq] at htr1
+    obtain ⟨rfl, rfl⟩ := htr1
+    -- the query collapses through the simOracle0 to the oracle's evaluation
+    erw [simulateQ_optionT_lift] at hQuery
+    rw [OptionT.support_lift] at hQuery
+    erw [simulateQ_double_lift_query] at hQuery
+    simp only [QueryImpl.add_apply_inr, QueryImpl.add_apply_inl,
+      QueryImpl.liftTarget_apply] at hQuery
+    -- the output oracle is the projected round polynomial
+    have hO : oStmt' () = ((oStmtLens R n deg D i).toFunA
+        ({ target := target, challenges := challenges }, oStmt)).2 () := by
+      rw [← htr2]
+      rfl
+    simp only [Simple.outputRelation, Set.mem_setOf_eq, hO]
+    simp only [QueryImpl.add, OracleInterface.simOracle0] at hQuery
+    simp at hQuery
+    trace_state
+    exact hQuery.symm
+
   lift_knowledgeSound := by
     simp [relationRound, Simple.inputRelation, Statement.Lens.proj]
     unfold oStmtLens
@@ -937,8 +1566,10 @@ instance extractorLens_rbr_knowledge_soundness :
     | succ n ih =>
       intro stmt oStmt hRelIn
       simp at hRelIn ⊢
-      -- Now it's a statement about polynomials
-      sorry
+      rw [← hRelIn]
+      simp_rw [Polynomial.eval_finset_sum]
+      simp_rw [← MvPolynomial.eval_eq_eval_mv_eval_finSuccEquivNth]
+      exact (sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)).symm
 
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -948,7 +1579,7 @@ theorem reduction_perfectCompleteness :
     (relationRound R n deg D i.castSucc) (relationRound R n deg D i.succ) :=
   Reduction.liftContext_perfectCompleteness
     (lens := (oCtxLens R n deg D i).toContext)
-    (lensComplete := by simp; sorry)
+    (lensComplete := inferInstance)
     (Simple.reduction_perfectCompleteness R deg D oSpec)
 
 local instance : Inhabited R := ⟨0⟩

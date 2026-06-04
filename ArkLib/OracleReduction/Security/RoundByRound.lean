@@ -229,12 +229,10 @@ def KnowledgeStateFunctionOneShot.toKnowledgeStateFunction
     by_cases hm : m.castSucc = 0
     · have stF_empty := stF.toFun_empty stmtIn
       rw! (castMode := .all) [hm] at stF_next ⊢
-      simp_all [Extractor.RoundByRoundOneShot.toRoundByRound]
-      have : hm ▸ tr = default := by ext i; exact Fin.elim0 i
-      rw [this] at stF_next
-      simp_all
+      simp only [Extractor.RoundByRoundOneShot.toRoundByRound] at *
+      trace_state
       sorry
-    · simp_all
+    · trace_state
       sorry
     -- TODO: Complete this proof
   toFun_full := fun stmtIn tr witOut h => by

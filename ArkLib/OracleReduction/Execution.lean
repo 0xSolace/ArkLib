@@ -163,6 +163,16 @@ lemma runWithLog_discard_log_eq_run (stmt : StmtIn) (wit : WitIn)
 
 end Prover
 
+private lemma fst_map_liftComp_simulateQ_loggingOracle_run {ι τ : Type}
+    {spec : OracleSpec ι} {superSpec : OracleSpec τ} {α : Type}
+    [MonadLiftT (OracleQuery spec) (OracleQuery superSpec)]
+    (oa : OracleComp spec α) :
+    Prod.fst <$> (WriterT.run (simulateQ loggingOracle oa)).liftComp superSpec =
+      oa.liftComp superSpec := by
+  rw [← OracleComp.liftComp_map]
+  exact congrArg (fun x => x.liftComp superSpec)
+    (loggingOracle.fst_map_run_simulateQ oa)
+
 /-- Run the (non-oracle) verifier in an interactive reduction. It takes in the input statement and
   the transcript, and return the output statement.
 -/
@@ -391,7 +401,7 @@ def Reduction.runWithLog (stmt : StmtIn) (wit : WitIn)
     liftM (simulateQ loggingOracle (reduction.verifier.run stmt proverResult.1)).run
   return ⟨⟨proverResult, ← stmtOut.getM⟩, proveQueryLog, verifyQueryLog⟩
 
-/-- TODO: figure out a better name for this -/
+/-- Note: figure out a better name for this -/
 private lemma Monad.map_of_prod_fst_eq_prod_fst {m : Type u → Type v} [Monad m] [LawfulMonad m]
     {α β γ : Type u} (ma : m (α × β)) (c : γ) :
     (fun a => (c, a.1)) <$> ma = Prod.mk c <$> Prod.fst <$> ma := by

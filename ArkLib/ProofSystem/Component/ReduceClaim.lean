@@ -201,6 +201,17 @@ def oracleVerifier : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut !p[] w
   embed := .trans embedIdx .inl
   hEq := by intro i; simp [hEq]
 
+/-- Running the (oracle) verifier of the `ReduceClaim` oracle reduction deterministically returns
+  the mapped statement and oracle statements. -/
+theorem oracleVerifier_toVerifier_run (stmtIn : StmtIn) (oStmtIn : ∀ i, OStmtIn i)
+    (tr : (!p[] : ProtocolSpec 0).FullTranscript) :
+    (oracleVerifier oSpec mapStmt embedIdx hEq).toVerifier.run ⟨stmtIn, oStmtIn⟩ tr =
+      (pure (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn) : OptionT (OracleComp oSpec) _) := by
+  simp only [Verifier.run, OracleVerifier.toVerifier, oracleVerifier]
+  erw [simulateQ_pure]
+  simp only [Function.Embedding.trans_apply, Function.Embedding.inl_apply]
+  rfl
+
 /-- The oracle reduction for the `ReduceClaim` oracle reduction. -/
 def oracleReduction : OracleReduction oSpec
     StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut !p[] where
@@ -218,7 +229,7 @@ variable {oSpec} {mapStmt} {mapWit} {embedIdx} {hEq}
   returns the mapped output, the verifier deterministically computes `mapStmt`, and the
   positive-probability output is exactly the mapped element which lies in `relOut` by `hRel`. -/
 @[simp]
-theorem oracleReduction_completeness --(h : init.neverFails)
+theorem oracleReduction_completeness
     (hRel : ∀ stmtIn oStmtIn witIn,
       ((stmtIn, oStmtIn), witIn) ∈ relIn →
       ((mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn), mapWit stmtIn witIn) ∈ relOut) :
@@ -305,7 +316,9 @@ def oracleKnowledgeStateFunction (hRel : ∀ stmtIn oStmtIn witOut,
   toFun | ⟨0, _⟩ => fun ⟨stmtIn, oStmtIn⟩ _ witIn => ⟨⟨stmtIn, oStmtIn⟩, witIn⟩ ∈ relIn
   toFun_empty := fun stmtIn witIn => by simp
   toFun_next := fun m => Fin.elim0 m
-  toFun_full := fun ⟨stmtIn, oStmtIn⟩ _ witOut => by
+  toFun_full := fun ⟨stmtIn, oStmtIn⟩ tr witOut => by
+    -- Bind `h` via `intro` (not as a lambda parameter) to avoid an expensive `isDefEq` check
+    -- against the heavy `verifier.run` field type.
     intro h
     simp only [Verifier.run, oracleVerifier, OracleVerifier.toVerifier] at h
     change ((stmtIn, oStmtIn), mapWitInv (stmtIn, oStmtIn) witOut) ∈ relIn

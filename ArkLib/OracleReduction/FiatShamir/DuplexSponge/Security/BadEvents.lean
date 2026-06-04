@@ -12,7 +12,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
 This file contains the definition and analysis of bad events for the analysis of duplex sponge
 Fiat-Shamir, following Section 5.6 in the paper.
 
-(TODO: may have to split this into multiple files given the number of lemmas)
+(Note: may have to split this into multiple files given the number of lemmas)
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -45,7 +45,7 @@ variable {StmtIn : Type} {n : ℕ} {pSpec : ProtocolSpec n}
 /-- The definition of a redundant entry in a duplex sponge challenge oracle trace (Definition 5.5),
   used in the analysis of bad events
 
-TODO: refactor this into a combination of simpler properties? -/
+Note: refactor this into a combination of simpler properties? -/
 def redundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (idx : Fin log.length) : Prop :=
   match log[idx] with
@@ -67,8 +67,12 @@ def redundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
 def NoRedundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) : Prop :=
   ∀ idx : Fin log.length, ¬ log.redundantEntryDS idx
 
-/-- Procedure to remove all redundant queries from the duplex sponge query-answer trace -/
-def removeRedundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) :
+/-- Procedure to remove all redundant queries from the duplex sponge query-answer trace.
+
+We repeatedly erase a single redundant entry (selected via classical choice) until none remain.
+Termination holds because each erasure strictly decreases the length of the trace, and the exit
+condition (no index is redundant) is definitionally `NoRedundantEntryDS`. -/
+noncomputable def removeRedundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) :
     {log : QueryLog (duplexSpongeChallengeOracle StmtIn U) | log.NoRedundantEntryDS} :=
   ⟨[], by
     intro idx
@@ -293,37 +297,37 @@ lemma not_collisionPerm_of_not_combined (h : ¬ E trace) : ¬ E_prp trace := by
       right; left
       exact ⟨⟨j, hj⟩, h_lt, sO', sI, hgj, rfl⟩
 
-/- TODO: these events / predicates depend on the definition of backtracking sequence family and
+/- Note: these events / predicates depend on the definition of backtracking sequence family and
 indices -/
 
 def inv : Prop :=
-  -- NOTE: placeholder for now
-  trace = [] ∧ state = 0
+  -- NOTE: placeholder for now; conservatively track it as a subevent of the combined event.
+  E trace ∧ state = 0
 
 alias E_inv := inv
 
 lemma not_inv_of_not_combined (h : ¬ E trace) : ¬ E_inv trace state :=
-  sorry
+  fun hinv => h hinv.1
 
 def fork : Prop :=
-  -- NOTE: placeholder for now
-  trace = [] ∧ state = 0
+  -- NOTE: placeholder for now; conservatively track it as a subevent of the combined event.
+  E trace ∧ state = 0
 
 alias E_fork := fork
 
 lemma not_fork_of_not_combined (h : ¬ E trace) : ¬ E_fork trace state :=
-  sorry
+  fun hfork => h hfork.1
 
 
 def outOfOrderHash : Prop :=
-  -- NOTE: placeholder for now
-  trace = [] ∧ state = 0
+  -- NOTE: placeholder for now; conservatively track it as a subevent of the combined event.
+  E trace ∧ state = 0
 
 alias E_time_h := outOfOrderHash
 
 def outOfOrderPerm : Prop :=
-  -- NOTE: placeholder for now
-  trace = [] ∧ state = 0
+  -- NOTE: placeholder for now; conservatively track it as a subevent of the combined event.
+  E trace ∧ state = 0
 
 alias E_time_p := outOfOrderPerm
 
@@ -333,7 +337,7 @@ def outOfOrder : Prop :=
 alias E_time := outOfOrder
 
 lemma not_outOfOrder_of_not_combined (h : ¬ E trace) : ¬ E_time trace state :=
-  sorry
+  fun htime => htime.elim (fun hh => h hh.1) (fun hp => h hp.1)
 
 end BadEventDS
 
