@@ -1016,7 +1016,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma natWeightedDegree_gsQ_1k_le {n m k : ℕ} (hk : 0 < k) (c : (gsBox n m k) → F) :
     natWeightedDegree (triCoeffsToPoly (gsBox n m k) c) 1 k ≤ gsDpg n m k :=
   natWeightedDegree_triCoeffsToPoly_le (gsBox n m k) c 1 k (gsDpg n m k)
-    (fun p hp ↦ gsBox_weighted_le hk hp)
+    (fun _p hp ↦ gsBox_weighted_le hk hp)
 
 open GuruswamiSudan Polynomial.Bivariate in
 omit [DecidableEq (RatFunc F)] in
@@ -1119,7 +1119,7 @@ parameter inequalities (no per-`Q` assumption — the `Q`-specific bounds are *p
   quantitative bivariate counting gap `numVars − numConstraints ≥ g`; with the structural gap
   `g = 1` the minimal feasible `gsZCap` is exactly `#constraints · gsDpg`, so this side condition is
   the faithful regime statement for the present infrastructure.) -/
-lemma modified_guruswami_has_a_solution {m n k : ℕ} (hn : 0 < n) (hk : 0 < k)
+lemma modified_guruswami_has_a_solution {m n k : ℕ} (_hn : 0 < n) (hk : 0 < k)
     {ωs : Fin n ↪ F} {u₀ u₁ : Fin n → F}
     (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
     (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
