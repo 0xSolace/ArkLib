@@ -41,9 +41,7 @@ section
 
 variable {F : Type} [Field F]
 
-/-- Construction of the monisized polynomial `H_tilde` in Appendix A.1 of [BCIKS20].
-Note: Here `H ∈ F[X][Y]` translates to `H ∈ F[Z][Y]` in [BCIKS20] and H_tilde in
-`Polynomial (RatFunc F)` translates to `H_tilde ∈ F(Z)[T]` in [BCIKS20]. -/
+/-- Construction of the monisized polynomial `H_tilde` in Appendix A.1 of [BCIKS20]. -/
 noncomputable def H_tilde (H : F[X][Y]) : Polynomial (RatFunc F) :=
   let hᵢ (i : ℕ) := H.coeff i
   let d := H.natDegree
@@ -52,14 +50,7 @@ noncomputable def H_tilde (H : F[X][Y]) : Polynomial (RatFunc F) :=
   let H' := Polynomial.eval₂ (RingHom.comp Polynomial.C univPolyHom) S H
   W ^ (d - 1) * H'
 
-/-- The monisized version H_tilde is irreducible if the original polynomial H is irreducible.
-
-Statement repairs (both necessary; documented for upstream):
-* `hH : 0 < H.natDegree` — for degree-0 irreducible `H = C h`, `H_tilde H` is a nonzero
-  degree-zero in `(RatFunc F)[X]`, i.e. a unit, hence not irreducible.
-* The section now requires `[Field F]` (previously `CommRing F` + `IsDomain F`): the proof
-  goes through Gauss's lemma, which needs `F[X]` integrally closed/UFD; a general domain
-  does not provide this. All use sites (BCIKS20 §5) are over fields. -/
+/-- The monisized version `H_tilde` is irreducible if the original polynomial `H` is. -/
 lemma irreducibleHTildeOfIrreducible {H : Polynomial (Polynomial F)} (hH : 0 < H.natDegree) :
     (Irreducible H → Irreducible (H_tilde H)) := by
   intro hirr
@@ -168,7 +159,8 @@ lemma evalEval_H_tilde' (H : F[X][Y]) (hH : 0 < H.natDegree) (z y : F) :
     rw [show Polynomial.eval (Polynomial.C y) H =
         ∑ i ∈ Finset.range (H.natDegree + 1), H.coeff i * (Polynomial.C y) ^ i by
       exact Polynomial.eval_eq_sum_range (x := Polynomial.C y)]
-    simp only [Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_C]
+    simp only [Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_pow,
+      Polynomial.eval_C]
   rw [H_tilde', if_neg (by simpa [hd] using hdne)]
   simp only [Polynomial.evalEval_add, Polynomial.evalEval_pow, Polynomial.evalEval_X,
     Polynomial.evalEval_finset_sum, Polynomial.evalEval_mul, Polynomial.evalEval_C,
