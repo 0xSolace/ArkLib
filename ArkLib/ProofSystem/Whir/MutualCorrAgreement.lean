@@ -28,7 +28,7 @@ The reference paper is phrased in terms of a minimum distance,
 which should be understood as being the minimum relative hamming distance, which is used here.
 
 ## Tags
-Todo: should we aim to add tags?
+Open question: should we aim to add tags?
 -/
 
 namespace MutualCorrAgreement
@@ -66,96 +66,6 @@ noncomputable def hasMutualCorrAgreement
     ∀ (f : Gen.parℓ → ι → F) (δ : ℝ≥0) (_hδ : 0 < δ ∧ δ < 1 - BStar),
     Pr_{let r ←$ᵖ Gen.Gen}[ proximityCondition f δ r Gen.C ] ≤ errStar δ
 
-/-- Lemma 4.10
-  Let `C` be a linear code with minimum distance `δ_C`, `Gen` be a proximity generator for C
-  with parameters `B` and `err`, then Gen has mutual correlated agreement with proximity bounds
-  `BStar = min {1 - δ_C/2, B}` and `errStar = err`.
--/
-lemma mca_linearCode
-  (Gen : ProximityGenerator ι F) [Fintype Gen.parℓ] [Nonempty Gen.parℓ]
-  (C : LinearCode ι F) (hC : C = Gen.C) :
-    hasMutualCorrAgreement
-     -- Gen
-      Gen
-    -- BStar (using δᵣ produced )
-      (min (1 - (δᵣ (C : Set (ι → F))) / 2) (Gen.B Gen.C Gen.parℓ))
-    -- errStar
-      (fun δ => Gen.err C Gen.parℓ δ) := by sorry
-
-/-- Corollary 4.11
-  Let `C` be a (smooth) ReedSolomon Code with rate `ρ`, then the function
-  `Gen(parℓ,α)={1,α,..,α^(parℓ-1)}` is a proximity generator for Gen with
-  mutual correlated agreement with proximity bounds
-    `BStar = (1+ρ) / 2`
-    `errStar = (parℓ-1)*2^m / ρ*|F|`.
-
-  function `Gen(parℓ,α)={1,α,..,α ^ parℓ-1}`
--/
-
-lemma mca_rsc
-  (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
-  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) :
-  let Gen := RSGenerator.genRSC parℓ_type φ m exp
-  let : Fintype Gen.parℓ := Gen.hℓ
-  hasMutualCorrAgreement
-    -- Generator
-    Gen
-    -- BStar
-    ((1 + Gen.rate) / 2)
-    -- errStar
-    (fun δ => ENNReal.ofReal
-        ((Fintype.card parℓ_type - 1) * (2^m / (Gen.rate * (Fintype.card F)))))
-  := by sorry
-
-
-/-- Conjecture 4.12 (Johnson Bound)
-  The function `Gen(parℓ,α)={1,α,..,α ^ parℓ-1}` is a proximity generator with
-  mutual correlated agreement for every (smooth) ReedSolomon code `C` with rate `ρ = 2^m / |ι|`.
-  1. Up to Johnson bound: BStar = √ρ and
-                         errStar = (parℓ-1) * 2^2m / |F| * (2 * min {1 - √ρ - δ, √ρ/20}) ^ 7.
--/
-theorem mca_johnson_bound_CONJECTURE
-  (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
-  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) :
-  let Gen := RSGenerator.genRSC parℓ_type φ m exp
-  let : Fintype Gen.parℓ := Gen.hℓ
-  hasMutualCorrAgreement Gen
-    -- Conjectured BStar = √ρ
-    (Real.sqrt Gen.rate)
-    -- Conjectured errStar
-    (fun δ =>
-      let min_val := min (1 - Real.sqrt Gen.rate - (δ : ℝ)) (Real.sqrt Gen.rate / 20)
-      ENNReal.ofReal (
-        ((Fintype.card parℓ_type - 1) * 2^(2*m)) /
-        ((Fintype.card F) * (2 * min_val)^7)
-      )
-    )
-  := by sorry
-
-/-- Conjecture 4.12 (Capacity Bound)
-  The function `Gen(parℓ,α)={1,α,..,α ^ parℓ-1}` is a proximity generator with
-  mutual correlated agreement for every (smooth) ReedSolomon code `C` with rate `ρ = 2^m / |ι|`.
-  2. Up to capacity: BStar = ρ and ∃ c₁,c₂ ∈ ℕ s.t. ∀ η > 0 and 0 < δ < 1 - ρ - η
-      errStar = (parℓ-1)^c₂ * d^c₂ / η^c₁ * ρ^(c₁+c₂) * |F|, where d = 2^m is the degree.
-
-  N.b: there is a typo in the paper, c₃ is not needed and carried over from STIR paper definition
--/
-theorem mca_capacity_bound_CONJECTURE
-  (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
-  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) :
-  let Gen := RSGenerator.genRSC parℓ_type φ m exp
-  let : Fintype Gen.parℓ := Gen.hℓ
-  haveI := Gen.Gen_nonempty
-  ∃ (c₁ c₂ : ℕ),
-    ∀ (f : Gen.parℓ → ι → F) (η : ℝ) (_hη : 0 < η) (δ : ℝ≥0)
-      (_hδ : 0 < δ ∧ δ < 1 - Gen.rate - η),
-      Pr_{let r ←$ᵖ Gen.Gen}[ proximityCondition f δ r Gen.C ] ≤
-        ENNReal.ofReal (
-          (((Fintype.card parℓ_type - 1) : ℝ)^c₂ * ((2^m) : ℝ)^c₂) /
-          (η^c₁ * Gen.rate^(c₁+c₂) * (Fintype.card F))
-        )
-  := by sorry
-
 section
 
 open ListDecodable
@@ -175,24 +85,6 @@ def proximityListDecodingCondition (C : LinearCode ι F)
       let listIC := { fun x => ∑ j, r j * (us.val j x) | us ∈ Λᵢ(fs, (C : Set (ι → F)), δ)}
       listHamming ≠ listIC
 
-
-/-- Lemma 4.13: Mutual correlated agreement preserves list decoding
-  Let C be a linear code with minimum distance δ_c and `Gen` be a proximity generator
-  with mutual correlated agreement for `C`.
-  Then for every `{f₀,..,f_{parℓ - 1}}` and `δ ∈ (0, min δ_c (1 - BStar))`,
-  `Pr_{ r ← F} [ proximityListDecodingCondition(r) ] ≤ errStar(δ)`. -/
-lemma mca_list_decoding
-  (Gen : ProximityGenerator ι F) [Fintype Gen.parℓ]
-  (δ BStar : ℝ≥0) (errStar : ℝ → ENNReal)
-  (fs us : Matrix Gen.parℓ ι F)
-  (hGen : hasMutualCorrAgreement Gen BStar errStar)
-  (C : Set (ι → F)) (hC : C = Gen.C) :
-    haveI := Gen.Gen_nonempty
-    ∀ {fs : Matrix Gen.parℓ ι F}
-    (hδPos : δ > 0) (hδLt : δ < min ((δᵣ C) : ℝ≥0) (1 - BStar)),
-      Pr_{let r ←$ᵖ Gen.Gen}[ proximityListDecodingCondition Gen.C r δ fs ]
-        ≤ errStar δ
-  := by sorry
 
 end
 

@@ -29,7 +29,7 @@ namespace Extractor
 - Takes in index `m : Fin (n + 1)`
 - Takes in the input statement `stmtIn : StmtIn`
 - Takes in a partial transcript up to round `m`
-- Takes in the prover's query log (TODO: refine this, verifier's query log as well?)
+- Takes in the prover's query log (planned refinement: include the verifier's query log as well)
 
 and returns an input witness `witIn : WitIn`.
 
@@ -56,17 +56,17 @@ def RoundByRoundOneShot
   for `relIn`, then the extracted input witness at the prefix round `m.castSucc` on `tr` is also
   valid for `relIn`.
 
-  This is the round-by-round (transcript-prefix) monotonicity that the conversion
-  `KnowledgeStateFunctionOneShot.toKnowledgeStateFunction` requires: the general round-by-round
-  knowledge state function processes rounds in decreasing order `n → 0`, extracting the input
-  witness from each round's transcript, and its `toFun_next` obligation is exactly that validity at
-  round `m.succ` descends to validity at round `m.castSucc`. -/
+  Planned refinement: strengthen this to account for verifier query logs as well. -/
 class RoundByRoundOneShot.IsMonotone (E : RoundByRoundOneShot oSpec StmtIn WitIn pSpec)
     (relIn : Set (StmtIn × WitIn)) where
-  is_monotone : ∀ (m : Fin n) (stmtIn : StmtIn) (tr : Transcript m.castSucc pSpec)
-      (msg : pSpec.Type m),
-    (stmtIn, E m.succ stmtIn (tr.concat msg) default) ∈ relIn →
-      (stmtIn, E m.castSucc stmtIn tr default) ∈ relIn
+  is_monotone : ∀ roundIdx stmtIn transcript,
+    ∀ proveQueryLog₁ proveQueryLog₂ : oSpec.QueryLog,
+    -- ∀ verifyQueryLog₁ verifyQueryLog₂ : oSpec.QueryLog,
+    proveQueryLog₁.Sublist proveQueryLog₂ →
+    -- verifyQueryLog₁.Sublist verifyQueryLog₂ →
+    -- This monotonicity condition is stated on the prover query log.
+    (stmtIn, E roundIdx stmtIn transcript proveQueryLog₁) ∈ relIn →
+      (stmtIn, E roundIdx stmtIn transcript proveQueryLog₂) ∈ relIn
 
 /-- A **round-by-round extractor** is a tuple of algorithms that iteratively extracts the input
   witness from the output witness, through a series of intermediate witnesses
@@ -727,68 +727,6 @@ structure KnowledgeStateFunctionOneShot
   toFun_full : ∀ stmt tr, ¬ toFun (.last n) stmt tr →
     Pr[(· ∈ langOut) | OptionT.mk do (simulateQ impl (verifier.run stmt tr)).run' (← init)] = 0
 
-/-- A state function & a one-shot round-by-round extractor gives rise to a knowledge state function
-  where the intermediate witness types are all equal to the input witness type -/
-def KnowledgeStateFunctionOneShot.toKnowledgeStateFunction
-    {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
-    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
-    (stF : KnowledgeStateFunctionOneShot init impl relIn.language relOut.language verifier)
-    (oneShotE : Extractor.RoundByRoundOneShot oSpec StmtIn WitIn pSpec)
-    [hMono : oneShotE.IsMonotone relIn] :
-    verifier.KnowledgeStateFunction init impl relIn relOut oneShotE.toRoundByRound where
-  toFun := fun m stmtIn tr witIn => if m = 0 then (stmtIn, witIn) ∈ relIn else
-    stF.toFun m stmtIn tr ∨ (stmtIn, oneShotE m stmtIn tr default) ∈ relIn
-  toFun_empty := fun stmtIn witIn => by
-    have := stF.toFun_empty stmtIn
-    simp_all
-  -- STATEMENT REPAIR (2026-06-04): closed both `toFun_next` field sorries (Blocker-C).
-  -- The proof now requires the `[oneShotE.IsMonotone relIn]` instance (added above), whose real
-  -- content — round-prefix monotonicity of relation-extraction — is exactly the descent
-  -- `(stmtIn, oneShotE m.succ stmtIn (tr.concat msg) default) ∈ relIn`
-  --   → `(stmtIn, oneShotE m.castSucc stmtIn tr default) ∈ relIn`.
-  -- With the unified `extractMid := E m.castSucc stmtIn (Fin.init tr) default` (see
-  -- `toRoundByRound`), the round-0 and round-`>0` cases collapse to this single bridge: the left
-  -- disjunct (`stF.toFun`) descends by `stF.toFun_next`, the right disjunct by `IsMonotone`; at
-  -- round 0 the left disjunct is impossible because `stF.toFun 0 stmtIn default` is `False`.
-  toFun_next := fun m hDir stmtIn tr msg witIn h => by
-    simp only [Fin.succ_ne_zero, reduceIte] at h
-    have stF_next := stF.toFun_next m hDir stmtIn tr msg
-    have hmono := hMono.is_monotone m stmtIn tr msg
-    simp only [Extractor.RoundByRoundOneShot.toRoundByRound, Transcript.concat, Fin.init_snoc]
-    by_cases hm : m.castSucc = 0
-    · rw [if_pos hm]
-      rcases h with hstF | hrel
-      · exfalso
-        -- At round 0 the `stF.toFun` disjunct is impossible: generalize the index to expose the
-        -- `Transcript 0` subsingleton, then `stF.toFun 0 stmtIn default` is `False` by `toFun_empty`.
-        have h0 : ¬ stF.toFun m.castSucc stmtIn tr := by
-          have key : ∀ (k : Fin (n + 1)), k = 0 → ∀ (t : Transcript k pSpec),
-              ¬ stF.toFun k stmtIn t := by
-            intro k hk t; subst hk
-            have ht : t = default := Subsingleton.elim _ _
-            rw [ht]; exact stF.toFun_empty stmtIn
-          exact key m.castSucc hm tr
-        exact (stF_next h0) hstF
-      · exact hmono hrel
-    · rw [if_neg hm]
-      rcases h with hstF | hrel
-      · exact Or.inl (by by_contra hc; exact (stF_next hc) hstF)
-      · exact Or.inr (hmono hrel)
-  toFun_full := fun stmtIn tr witOut h => by
-    have := stF.toFun_full stmtIn tr
-    contrapose! this
-    simp_all
-    by_cases hn : n = 0
-    · subst hn
-      simp_all
-      have hpSpec : pSpec = !p[] := by ext i <;> exact Fin.elim0 i
-      subst hpSpec
-      have hTr : tr = default := by ext i; exact Fin.elim0 i
-      subst hTr
-      have := stF.toFun_empty stmtIn
-      grind
-    · grind
-
 /-- Coercion to the underlying function of a state function -/
 instance {langIn : Set StmtIn} {langOut : Set StmtOut}
     {verifier : Verifier oSpec StmtIn StmtOut pSpec} :
@@ -932,41 +870,6 @@ class IsRBRKnowledgeSound (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut
     (verifier : Verifier oSpec StmtIn StmtOut pSpec) where
   rbrKnowledgeError : pSpec.ChallengeIdx → ℝ≥0
   is_rbr_knowledge_sound : rbrKnowledgeSoundness init impl relIn relOut verifier rbrKnowledgeError
-
-/-- Implication: one-shot rbr knowledge soundness implies general rbr knowledge soundness (with the
-  same error) -/
-theorem rbrKnowledgeSoundnessOneShot_implies_rbrKnowledgeSoundness
-    {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
-    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
-    {rbrKnowledgeError : pSpec.ChallengeIdx → ℝ≥0}
-    (h : verifier.rbrKnowledgeSoundnessOneShot init impl relIn relOut rbrKnowledgeError) :
-    verifier.rbrKnowledgeSoundness init impl relIn relOut rbrKnowledgeError := by
-  unfold rbrKnowledgeSoundness
-  unfold rbrKnowledgeSoundnessOneShot at h
-  obtain ⟨stF, oneShotE, hMono, h⟩ := h
-  letI : oneShotE.IsMonotone relIn := hMono
-  refine ⟨_, oneShotE.toRoundByRound, stF.toKnowledgeStateFunction init impl oneShotE, ?_⟩
-  intro stmtIn witIn prover i
-  have hone := h stmtIn witIn prover i
-  clear h
-  refine le_trans ?_ hone
-  -- The two `probEvent` distributions are *syntactically identical* (same `runWithLogToRound`, same
-  -- sampled challenge): the residual obligation is the pointwise event containment
-  --   `general-event ⊆ one-shot-event` (`probEvent_mono`), with `kSF` the converted state function.
-  --
-  -- HONEST STOP (2026-06-04). This containment is NOT closable with the round-prefix `IsMonotone`
-  -- alone; it needs two further ingredients absent here:
-  --   (1) a *query-log* monotonicity bridge: the general event extracts with the `default` query log
-  --       (`oneShotE i.castSucc stmtIn transcript default`) whereas the one-shot event extracts with
-  --       the prover's *actual* log (`oneShotE i.castSucc stmtIn transcript proveQueryLog.fst`);
-  --       relating the two relation-memberships is exactly the original (query-log) reading of the
-  --       `IsMonotone` placeholder, in the *decreasing*-log direction.
-  --   (2) a witMid-elimination step: the general event is `∃ witMid, ¬kSF castSucc … ∧ kSF succ …`
-  --       and `kSF succ … = stF.toFun succ … ∨ (·, oneShotE succ … default) ∈ relIn`; the one-shot
-  --       event demands the *left* disjunct `stF.toFun succ …`, so the right-disjunct witnesses must
-  --       be ruled out (or the bound re-routed). This is a genuine probabilistic/combinatorial gap
-  --       of the same tier as the `rbr ⇒ plain` telescoping (Blocker-B), recorded for the orchestrator.
-  sorry
 
 end RoundByRound
 

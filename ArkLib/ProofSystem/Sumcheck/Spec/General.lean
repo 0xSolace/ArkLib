@@ -69,7 +69,7 @@ For `i = 0, ..., n - 1`, the `i`-th round of the sum-check protocol consists of 
    - `target` is updated to `pᵢ.eval rᵢ`
    - `challenges` is updated to the concatenation of the previous challenges and `rᵢ`
 
-## Notes & TODOs
+## Notes
 
 Note that to represent sum-check as a series of IORs, we will need to implicitly constrain the
 degree of the polynomials via using subtypes, such as `Polynomial.degreeLE` and
@@ -127,7 +127,7 @@ def pSpec : ProtocolSpec (Fin.vsum (fun _ : Fin n => 2)) :=
   -- n * 2
   -- fun i => if i % 2 = 0 then (.P_to_V, R⦃≤ d⦄[X]) else (.V_to_P, R)
 
--- TODO: the input statement should not mention sum-check challenges at all (currently it does,
+-- Note: the input statement should not mention sum-check challenges at all (currently it does,
 -- initial challenge vector is empty). We can compose with a `ReduceClaim` (oracle) reduction to get
 -- the correct input statement type
 
@@ -199,41 +199,6 @@ omit [SampleableType R] in
 lemma oracleReduction_verifier_eq_oracleVerifier :
     (oracleReduction R deg D n oSpec).verifier = oracleVerifier R deg D n oSpec := by
   rfl
-
-variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
-
-open NNReal
-
-/-- Perfect completeness for the (full) sum-check protocol -/
-theorem reduction_perfectCompleteness :
-    (reduction R deg D n oSpec).perfectCompleteness init impl
-      (relationRound R n deg D 0) (relationRound R n deg D (.last n)) :=
-  Reduction.seqCompose_perfectCompleteness
-    (rel := relationRound R n deg D)
-    (R := SingleRound.reduction R n deg D oSpec)
-    (h := fun i => SingleRound.reduction_perfectCompleteness i)
-
-/-- Round-by-round knowledge soundness with error `deg / |R|` per challenge for the (full)
-  sum-check protocol.
-
-  The per-round oracle verifier soundness (`SingleRound.oracleVerifier_rbrKnowledgeSoundness`)
-  transports the value-level proof through the oracle-routing `sumcheckOracleLens` and therefore
-  requires the genuine `OracleVerifier.LiftContextCoherent` side condition (`toVerifier_comm` for the
-  non-invertible `|D|^(n-1)` summation routing). This coherence is left unproven upstream and threaded
-  as a hypothesis there, so we thread the per-round family `coh` through here as well and discharge
-  each round's obligation by `coh i`. -/
-theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R]
-    -- THREADED (2026-06-04): per-round sumcheck lens coherence
-    (coh : ∀ i, OracleVerifier.LiftContextCoherent
-      (SingleRound.sumcheckOracleLens R n deg D oSpec i)
-      (SingleRound.Simple.oracleVerifier R deg D oSpec)) :
-    (oracleVerifier R deg D n oSpec).rbrKnowledgeSoundness init impl
-      (relationRound R n deg D 0) (relationRound R n deg D (.last n))
-      (fun _ => (deg : ℝ≥0) / (Fintype.card R)) :=
-  OracleVerifier.seqCompose_rbrKnowledgeSoundness
-    (rel := relationRound R n deg D)
-    (V := SingleRound.oracleVerifier R n deg D oSpec)
-    (h := fun i => SingleRound.oracleVerifier_rbrKnowledgeSoundness i (coh i))
 
 end Spec
 

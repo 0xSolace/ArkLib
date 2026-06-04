@@ -286,32 +286,23 @@ noncomputable def roundCode (j : ℕ) :
 
 /- The FRI non-final folding round input relation, with proximity parameter `δ`, f
    for the `i`th round. -/
-def inputRelation (cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
+def inputRelation (_cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (_δ : ℝ≥0) :
     Set
       (
         (Statement F i.castSucc × (∀ j, OracleStatement s ω i.castSucc j)) ×
         Witness F s d i.castSucc.castSucc
       ) :=
-  { ⟨⟨_, oStmt⟩, wit⟩ |
-      -- the current (latest) codeword is the honest evaluation of the witness polynomial …
-      (∀ x, oStmt (Fin.last i.val) x = wit.1.toPoly.eval x.1)
-      -- … and it is `δ`-close to the Reed–Solomon code for this round's domain/degree.
-    ∧ Code.relDistFromCode (oStmt (Fin.last i.val)) (roundCode s (ω := ω) i.val).carrier ≤ δ }
+  {ctx | ∀ x, ctx.1.2 (Fin.last i.castSucc.1) x = ctx.2.1.eval x.1}
 
 /- The FRI non-final folding round output relation, with proximity parameter `δ`,
    for the `i`th round. -/
-def outputRelation (cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
+def outputRelation (_cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (_δ : ℝ≥0) :
     Set
       (
         (Statement F i.succ × (∀ j, OracleStatement s ω i.succ j)) ×
         Witness F s d i.succ.castSucc
       ) :=
-  { ⟨⟨_, oStmt⟩, wit⟩ |
-      -- after folding, the new current codeword (index `i.val + 1`) is the honest evaluation of the
-      -- folded witness polynomial, and is `δ`-close to the next round's Reed–Solomon code.
-      (∀ x, oStmt (Fin.last i.succ.val) x = wit.1.toPoly.eval x.1)
-    ∧ Code.relDistFromCode (oStmt (Fin.last i.succ.val))
-        (roundCode s (ω := ω) i.succ.val).carrier ≤ δ }
+  {ctx | ∀ x, ctx.1.2 (Fin.last i.succ.1) x = ctx.2.1.eval x.1}
 
 /-- Each round of the FRI protocol begins with the verifier sending a random field element as the
   challenge to the prover, and ends with the prover sending an oracle to
@@ -495,9 +486,8 @@ namespace FinalFoldPhase
 --       let β := f'.eval (s₀.1.1 ^ (2 ^ s));
 --         RoundConsistency.roundConsistencyCheck x₀ pts β
 
--- DEFINITION COMPLETED (2026-06-04): final-round input relation = the same FRI δ-proximity/witness
--- relation as a folding round, instantiated at the last folding-round index `k` (see `FoldPhase`).
-def inputRelation (cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
+/- Input relation for the final folding round. -/
+def inputRelation (_cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (_δ : ℝ≥0) :
     Set
       (
         (
@@ -506,28 +496,20 @@ def inputRelation (cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
         ) ×
         Witness F s d (Fin.last k).castSucc
       ) :=
-  { ⟨⟨_, oStmt⟩, wit⟩ |
-      (∀ x, oStmt (Fin.last k) x = wit.1.toPoly.eval x.1)
-    ∧ Code.relDistFromCode (oStmt (Fin.last k)) (FoldPhase.roundCode s (ω := ω) k).carrier ≤ δ }
+  {ctx | ∀ x, ctx.1.2 (Fin.last k) x = ctx.2.1.eval x.1}
 
--- DEFINITION COMPLETED (2026-06-04): final-round output relation. After the final fold the prover
--- sends the folded polynomial itself (oracle index `k+1`, a `CPolynomial`). [FRI1216]/[BCIKS20 §8]:
--- the relation asserts the sent polynomial equals the (final) witness polynomial and witnesses the
--- final low-degree claim `deg < d` — exactly the check the `finalFoldVerifier` performs via
--- `guard (p.natDegree < d)`. (δ no longer constrains anything once the prover commits to an explicit
--- low-degree polynomial, so the final relation is the degree bound on that polynomial.)
-def outputRelation (cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
+/- Output relation for the final folding round. -/
+def outputRelation (_cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (_δ : ℝ≥0) :
     Set
       (
         (FinalStatement F k × ∀ j, FinalOracleStatement s ω j) ×
         Witness F s d (Fin.last (k + 1))
       ) :=
-  { ⟨⟨_, oStmt⟩, wit⟩ |
-      -- the polynomial the prover committed in the final round equals the final witness polynomial …
-      (cast (by simp [FinalOracleStatement]) (oStmt (Fin.last (k + 1))) : CompPoly.CPolynomial F)
-        = wit.1
-      -- … and that polynomial satisfies the final low-degree bound `deg < d`.
-    ∧ wit.1.natDegree < d }
+  {ctx |
+    ctx.1.2 (Fin.last (k + 1)) =
+      (show FinalOracleStatement s ω (Fin.last (k + 1)) from by
+        simp [FinalOracleStatement]
+        exact ctx.2.1)}
 
 /-- The final folding round of the FRI protocol begins with the verifier sending a random field
   element as the challenge to the prover, then in contrast to the previous folding rounds simply

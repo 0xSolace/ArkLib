@@ -65,41 +65,50 @@ lemma goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt {k deg : ℕ}
     simpa [ENNReal.coe_div hq0, ENNReal.coe_natCast] using hlt
   exact ENNReal.mul_lt_of_lt_div hlt'
 
-omit [DecidableEq ι] in
-/-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] [DecidableEq F] in
+private lemma finset_card_gt_of_natCast_le_ennreal_lt {α : Type} {S : Finset α}
+    {m : ℕ} {x : ENNReal}
+    (hm : (m : ENNReal) ≤ x) (hx : x < (S.card : ENNReal)) :
+    S.card > m := by
+  exact Nat.cast_lt.mp (lt_of_le_of_lt hm hx)
 
-Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter
-pair `(δ, ε)` and a curve passing through words `u₀, ..., uκ`, such that
-the probability that a random point on the curve is `δ`-close to the Reed-Solomon code
-is at most `ε`. Then, the words `u₀, ..., uκ` have correlated agreement. -/
-theorem correlatedAgreement_affine_curves {k : ℕ}
-    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
-    -- `deg = 0` makes the statement false: `errorBound`'s Johnson
-    -- branch vacates the threshold at deg = 0; counterexample in upstream-issues.md).
-    [NeZero deg]
-    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
-    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
-      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
-  classical
-  rcases Nat.eq_zero_or_pos k with hk0 | hkpos
-  · subst hk0
-    exact RS_correlatedAgreement_curves_k_zero (deg := deg) (domain := domain) (δ := δ)
-  · by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
-        (C := ReedSolomon.code domain deg)
-    · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).
-      exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
-    · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain).
-      unfold δ_ε_correlatedAgreementCurves
-      intro u hprob
-      have hS_card :
-          ((k : ℝ≥0∞) * (errorBound δ deg domain : ℝ≥0∞)) *
-              (Fintype.card F : ℝ≥0∞) <
-            ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
-              ℝ≥0∞) := by
-        simpa [ENNReal.coe_mul, ENNReal.coe_natCast] using
-          goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt
-            (u := u) (η := (k : ℝ≥0) * errorBound δ deg domain) hprob
-      sorry
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] [DecidableEq F] in
+private lemma finset_card_ge_of_pred_natCast_le_ennreal_lt {α : Type} {S : Finset α}
+    {m : ℕ} {x : ENNReal}
+    (hm : ((m - 1 : ℕ) : ENNReal) ≤ x) (hx : x < (S.card : ENNReal)) :
+    S.card ≥ m := by
+  rcases m with _ | m
+  · exact Nat.zero_le S.card
+  · have hm' : (m : ENNReal) ≤ x := by
+      simpa using hm
+    exact Nat.succ_le_of_lt (finset_card_gt_of_natCast_le_ennreal_lt hm' hx)
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- Convert the exact ENNReal threshold obtained from the probability
+calculation into the two natural cardinality bounds used by the curve assembly
+bridges. -/
+lemma goodCoeffsCurve_card_bounds_of_prob_threshold {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hx :
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal))
+    (hsmall :
+      (k : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hlarge :
+      ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal)) :
+    (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k ∧
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * k := by
+  constructor
+  · exact finset_card_gt_of_natCast_le_ennreal_lt hsmall hx
+  · exact finset_card_ge_of_pred_natCast_le_ennreal_lt hlarge hx
 
 omit [DecidableEq ι] [Fintype F] in
 /-- Integral-weight list agreement on a sufficiently large set of curve parameters
@@ -524,6 +533,382 @@ theorem subset_goodCoeffsCurve_coefficient_assembly_implies_jointAgreement {l de
     hS'_card hS'_card₁ hS'
     (decoded_family_coefficients_has_assembly
       (deg := deg) (domain := domain) (δ := δ) (u := u) A hAdeg hcoeff)
+
+omit [Fintype F] in
+private lemma coeff_zero_of_natDegree_lt {p : Polynomial F} {d j : ℕ}
+    (hp : p.natDegree < d) (hj : d ≤ j) :
+    p.coeff j = 0 := by
+  by_cases hp0 : p = 0
+  · simp [hp0]
+  · exact Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le hp hj)
+
+omit [Fintype F] in
+/-- Coefficientwise low-degree dependence on `z` assembles a decoded family as
+`P z = ∑ i, z^i A_i`. This Curves-local copy keeps the bridge available to the
+top curve theorem without importing `Curves.Assembly`, which would create a
+cycle. -/
+theorem decoded_family_coefficients_of_coeff_polys_core {l deg : ℕ} [NeZero deg]
+    {S' : Finset F} {P : F → Polynomial F}
+    (B : ℕ → Polynomial F)
+    (hBdeg : ∀ j < deg, (B j).natDegree < l + 2)
+    (hPdeg : ∀ z ∈ S', (P z).natDegree < deg)
+    (hcoeff : ∀ z ∈ S', ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    ∃ A : Fin (l + 2) → Polynomial F,
+      (∀ i, (A i).natDegree < deg) ∧
+        ∀ z ∈ S',
+          P z = ∑ i : Fin (l + 2), Polynomial.C (z ^ (i : ℕ)) * A i := by
+  classical
+  let A : Fin (l + 2) → Polynomial F := fun i =>
+    ∑ j ∈ Finset.range deg, Polynomial.C ((B j).coeff (i : ℕ)) * Polynomial.X ^ j
+  have hAdeg : ∀ i, (A i).natDegree < deg := by
+    intro i
+    have hdegpos : 0 < deg := Nat.pos_of_neZero deg
+    refine lt_of_le_of_lt ?_ (Nat.pred_lt (Nat.ne_of_gt hdegpos))
+    refine Polynomial.natDegree_sum_le_of_forall_le
+      (s := Finset.range deg)
+      (f := fun j => Polynomial.C ((B j).coeff (i : ℕ)) * Polynomial.X ^ j)
+      (n := deg - 1) ?_
+    intro j hj
+    exact (Polynomial.natDegree_C_mul_X_pow_le ((B j).coeff (i : ℕ)) j).trans
+      (Nat.le_pred_of_lt (Finset.mem_range.mp hj))
+  refine ⟨A, hAdeg, ?_⟩
+  intro z hz
+  ext j
+  by_cases hj : j < deg
+  · rw [hcoeff z hz j hj]
+    have hBsum : (B j).eval z =
+        ∑ i : Fin (l + 2), (B j).coeff (i : ℕ) * z ^ (i : ℕ) := by
+      have hnat := hBdeg j hj
+      rw [Polynomial.eval_eq_sum_range' hnat]
+      rw [← Fin.sum_univ_eq_sum_range (fun i => (B j).coeff i * z ^ i)]
+    rw [hBsum, Polynomial.finset_sum_coeff]
+    refine Finset.sum_congr rfl ?_
+    intro i _
+    rw [Polynomial.coeff_C_mul]
+    have hcoeffX : (A i).coeff j = (B j).coeff (i : ℕ) := by
+      change (∑ x ∈ Finset.range deg,
+        Polynomial.C ((B x).coeff (i : ℕ)) * Polynomial.X ^ x).coeff j =
+          (B j).coeff (i : ℕ)
+      rw [Polynomial.finset_sum_coeff]
+      calc
+        (∑ x ∈ Finset.range deg,
+            (Polynomial.C ((B x).coeff (i : ℕ)) * Polynomial.X ^ x).coeff j)
+            = (Polynomial.C ((B j).coeff (i : ℕ)) * Polynomial.X ^ j).coeff j := by
+                exact Finset.sum_eq_single_of_mem
+                  (s := Finset.range deg)
+                  (f := fun x =>
+                    (Polynomial.C ((B x).coeff (i : ℕ)) * Polynomial.X ^ x).coeff j)
+                  j (Finset.mem_range.mpr hj)
+                  (by
+                    intro b hb hbj
+                    have hjb : j ≠ b := fun h => hbj h.symm
+                    change (Polynomial.C ((B b).coeff (i : ℕ)) * Polynomial.X ^ b).coeff j = 0
+                    rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow]
+                    simp [hjb])
+        _ = (B j).coeff (i : ℕ) := by
+          simp [Polynomial.coeff_C_mul]
+    simp [hcoeffX, mul_comm]
+  · have hjge : deg ≤ j := Nat.le_of_not_gt hj
+    have hPj : (P z).coeff j = 0 := coeff_zero_of_natDegree_lt (hPdeg z hz) hjge
+    rw [hPj, Polynomial.finset_sum_coeff]
+    symm
+    refine Finset.sum_eq_zero ?_
+    intro i _
+    have hAj : (A i).coeff j = 0 := coeff_zero_of_natDegree_lt (hAdeg i) hjge
+    rw [Polynomial.coeff_C_mul, hAj, mul_zero]
+
+omit [DecidableEq ι] in
+/-- Curves-local coefficient-polynomial bridge. It is the same consumer shape as
+the assembly file, but lives in this module so the main curve theorem can use
+it without an import cycle. -/
+theorem subset_goodCoeffsCurve_coeff_polys_implies_jointAgreement_core {l deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    {u : Fin (l + 2) → ι → F}
+    {S' : Finset F}
+    (hS'_card : S'.card > l + 1)
+    (hS'_card₁ : S'.card ≥ (Fintype.card ι + 1) * (l + 1))
+    (hS' : ∀ z ∈ S',
+      z ∈ RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ)
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ S',
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (l + 2), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < l + 2) ∧
+            ∀ z ∈ S', ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  refine subset_goodCoeffsCurve_assembled_implies_jointAgreement
+    (deg := deg) (domain := domain) (δ := δ) (u := u)
+    hS'_card hS'_card₁ hS' ?_
+  intro P hdecoded
+  obtain ⟨B, hBdeg, hcoeff⟩ := hcoeffPoly P hdecoded
+  obtain ⟨A, hAdeg, hPcoeff⟩ :=
+    decoded_family_coefficients_of_coeff_polys_core
+      (l := l) (deg := deg) (S' := S') (P := P) B
+      hBdeg (fun z hz => (hdecoded z hz).1) hcoeff
+  exact decoded_family_coefficients_assemble_codeword_curve
+    (deg := deg) (domain := domain) P A hAdeg hPcoeff
+
+omit [DecidableEq ι] in
+/-- Full-good-set specialization of the Curves-local coefficient-polynomial
+bridge. -/
+theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_core {l deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    {u : Fin (l + 2) → ι → F}
+    (hS_card :
+      (RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ).card >
+        l + 1)
+    (hS_card₁ :
+      (RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * (l + 1))
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (l + 2), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < l + 2) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  exact subset_goodCoeffsCurve_coeff_polys_implies_jointAgreement_core
+    (deg := deg) (domain := domain) (δ := δ) (u := u)
+    (S' := RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ)
+    hS_card hS_card₁ (fun z hz => hz) hcoeffPoly
+
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
+/-- Reindex a finite sum of curve coefficient words. -/
+theorem curve_sum_reindex_equiv_core {κ κ' : Type} [Fintype κ] [Fintype κ']
+    (e : κ ≃ κ') (z : F) (u : κ' → ι → F) (pow : κ' → ℕ) :
+    (∑ t : κ, (z ^ pow (e t)) • u (e t)) =
+      ∑ t' : κ', (z ^ pow t') • u t' := by
+  simpa using (Equiv.sum_comp e (fun t' : κ' => (z ^ pow t') • u t'))
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- `RS_goodCoeffsCurve` is unchanged by a definitional reindexing of its
+`Fin (k + 1)` coefficient words. -/
+theorem RS_goodCoeffsCurve_finCongr_core {k k' deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (h : k + 1 = k' + 1) (u : WordStack F (Fin (k' + 1)) ι) :
+    RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain)
+        (fun i => u (finCongr h i)) δ =
+      RS_goodCoeffsCurve (k := k') (deg := deg) (domain := domain) u δ := by
+  classical
+  ext z
+  have hsum :
+      (∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u (finCongr h t)) =
+        ∑ t' : Fin (k' + 1), (z ^ (t' : ℕ)) • u t' := by
+    simpa using
+      (curve_sum_reindex_equiv_core (F := F) (ι := ι) (e := finCongr h) z u
+        (fun t' : Fin (k' + 1) => (t' : ℕ)))
+  simp only [RS_goodCoeffsCurve, Finset.mem_filter, Finset.mem_univ, true_and]
+  rw [hsum]
+
+omit [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] in
+/-- `jointAgreement` is invariant under reindexing the coefficient words by an
+equivalence. -/
+theorem jointAgreement_reindex_equiv_core {κ κ' : Type}
+    {C : Set (ι → F)} {δ : ℝ≥0}
+    {W : κ → ι → F} {W' : κ' → ι → F}
+    (e : κ ≃ κ')
+    (hW : ∀ i x, W' (e i) x = W i x)
+    (h : jointAgreement (C := C) (δ := δ) (W := W')) :
+    jointAgreement (C := C) (δ := δ) (W := W) := by
+  classical
+  obtain ⟨S, hS_card, v', hv'⟩ := h
+  refine ⟨S, hS_card, fun i => v' (e i), ?_⟩
+  intro i
+  constructor
+  · exact (hv' (e i)).1
+  · intro x hx
+    have hx' := (hv' (e i)).2 hx
+    rw [Finset.mem_filter] at hx' ⊢
+    exact ⟨hx'.1, by simpa [hW i x] using hx'.2⟩
+
+omit [DecidableEq ι] in
+/-- Positive-`k` Curves-local coefficient-polynomial bridge. -/
+theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos_core {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    {u : Fin (k + 1) → ι → F}
+    (hS_card :
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k)
+    (hS_card₁ :
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * k)
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  let l : ℕ := k - 1
+  have hlk : l + 1 = k := by omega
+  have hlen : l + 2 = k + 1 := by omega
+  let u' : Fin (l + 2) → ι → F := fun i => u (finCongr hlen i)
+  have hgood_eq :
+      RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u' δ =
+        RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ := by
+    simpa [u', hlk] using
+      (RS_goodCoeffsCurve_finCongr_core (F := F) (ι := ι)
+        (k := l + 1) (k' := k) (deg := deg) (domain := domain) (δ := δ)
+        (by omega : (l + 1) + 1 = k + 1) u)
+  have hja' :
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u') := by
+    refine goodCoeffsCurve_coeff_polys_implies_jointAgreement_core
+      (deg := deg) (domain := domain) (δ := δ) (u := u')
+      ?_ ?_ ?_
+    · simpa [hgood_eq, hlk] using hS_card
+    · simpa [hgood_eq, hlk] using hS_card₁
+    · intro P hdecoded
+      have hdecoded_orig :
+          ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+            (P z).natDegree < deg ∧
+              δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                (P z).eval ∘ domain) ≤ δ := by
+        intro z hz
+        have hz' :
+            z ∈ RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u' δ := by
+          simpa [hgood_eq] using hz
+        have hsum :
+            (∑ t : Fin (l + 2), (z ^ (t : ℕ)) • u' t) =
+              ∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t := by
+          simpa [u'] using
+            (curve_sum_reindex_equiv_core (F := F) (ι := ι) (e := finCongr hlen) z u
+              (fun t : Fin (k + 1) => (t : ℕ)))
+        exact ⟨(hdecoded z hz').1, by simpa [hsum] using (hdecoded z hz').2⟩
+      obtain ⟨B, hBdeg, hcoeff⟩ := hcoeffPoly P hdecoded_orig
+      · refine ⟨B, ?_, ?_⟩
+        · intro j hj
+          simpa [hlen] using hBdeg j hj
+        · intro z hz j hj
+          exact hcoeff z (by simpa [hgood_eq] using hz) j hj
+  exact jointAgreement_reindex_equiv_core
+    (F := F) (ι := ι) (C := ReedSolomon.code domain deg) (δ := δ)
+    (W := u) (W' := u') (e := (finCongr hlen).symm)
+    (by intro i x; simp [u'])
+    hja'
+
+omit [DecidableEq ι] in
+/-- Positive-`k` Curves-local assembly bridge in the exact threshold form
+produced by the probability calculation in `correlatedAgreement_affine_curves`.
+-/
+theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_prob_threshold_core
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    {u : Fin (k + 1) → ι → F}
+    (hx :
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal))
+    (hsmall :
+      (k : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hlarge :
+      ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  have hbounds :=
+    goodCoeffsCurve_card_bounds_of_prob_threshold
+      (deg := deg) (domain := domain) (δ := δ) u hx hsmall hlarge
+  exact goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos_core
+    (deg := deg) (domain := domain) (δ := δ) hk hbounds.1 hbounds.2 hcoeffPoly
+
+omit [DecidableEq ι] in
+/-- List-branch front door after the probability calculation.
+
+This packages the exact remaining outputs needed from the list-decoding part of
+the argument: two lower bounds on the probability threshold and the
+coefficient-polynomial extraction witness. -/
+theorem RS_jointAgreement_of_prob_gt_and_coeff_polys
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{let z ← $ᵖ F}[
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hsmall :
+      (k : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hlarge :
+      ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  have hS_card :
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal) := by
+    simpa [ENNReal.coe_mul, ENNReal.coe_natCast] using
+      goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt
+        (u := u) (η := (k : ℝ≥0) * errorBound δ deg domain) hprob
+  exact goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_prob_threshold_core
+    (deg := deg) (domain := domain) (δ := δ) hk hS_card hsmall hlarge hcoeffPoly
+
+omit [DecidableEq ι] in
+/-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
+
+Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter
+pair `(δ, ε)` and a curve passing through words `u₀, ..., uκ`, such that
+the probability that a random point on the curve is `δ`-close to the Reed-Solomon code
+is at most `ε`. Then, the words `u₀, ..., uκ` have correlated agreement. -/
+theorem correlatedAgreement_affine_curves {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    -- `deg = 0` makes the statement false: `errorBound`'s Johnson
+    -- branch vacates the threshold at deg = 0; counterexample in upstream-issues.md).
+    [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  rcases Nat.eq_zero_or_pos k with hk0 | hkpos
+  · subst hk0
+    exact RS_correlatedAgreement_curves_k_zero (deg := deg) (domain := domain) (δ := δ)
+  · by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+        (C := ReedSolomon.code domain deg)
+    · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).
+      exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
+    · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain).
+      unfold δ_ε_correlatedAgreementCurves
+      intro u hprob
+      -- The final call is `RS_jointAgreement_of_prob_gt_and_coeff_polys`;
+      -- the remaining list-decoding work is to supply its two threshold lower
+      -- bounds and coefficient-polynomial extraction witness.
+      sorry
 
 end CoreResults
 

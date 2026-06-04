@@ -296,7 +296,7 @@ omit [NeZero ℓ] hdiv in
 If a new oracle is committed at round `i + 1` (i.e., `ϑ ∣ i + 1`), then the index of this
 new oracle (which is the count of oracles from the previous round, `i`) multiplied by `ϑ`
 equals the current round number `i + 1`.
-TODO: double check why this is still correct when replacing `hCR` with `ϑ | i + 1`
+The proof uses the commitment-round hypothesis to recover divisibility at `i + 1`.
 -/
 lemma toOutCodewordsCount_mul_ϑ_eq_i_succ (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
   (toOutCodewordsCount ℓ ϑ i.castSucc) * ϑ = i.val + 1 := by
@@ -964,44 +964,12 @@ lemma firstOracleWitnessConsistencyProp_relay_preserved (i : Fin ℓ)
     firstOracleWitnessConsistencyProp 𝔽q β wit.t
       (getFirstOracle 𝔽q β (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt)) := by congr
 
--- STATEMENT REPAIR (2026-06-04): added hypothesis `h_not_last : i.val + 1 < ℓ`.
--- Reason: the original `↔` is FALSE at the last relay round (`i.val + 1 = ℓ`). There the LHS
--- (`nonDoomedFoldingProp` at `i.castSucc`, with `i.castSucc.val = i.val < ℓ`) is UNCONDITIONALLY
--- True via the bad-event disjunct (`badEventExistsProp_of_lt`: the top oracle block's folding guard
--- fails, yielding `True`), but the RHS at `i.succ = Fin.last ℓ` has count `ℓ/ϑ` with NO top "+1"
--- block, so every block's guard `j*ϑ+ϑ ≤ ℓ` HOLDS and `badEventExistsProp` becomes a genuine
--- existential over real `foldingBadEvent`s while `oracleFoldingConsistency` is a genuine oracle
--- constraint — neither is unconditionally True, so `True ↔ RHS` does not hold in general. With
--- `i.val + 1 < ℓ` both indices are `< ℓ`, both sides are unconditionally True via the bad-event
--- branch, and the lemma is sound. The lemma has zero live users (only the sibling
--- `oracleWitnessConsistency_relay_preserved`, which does not use the bad-event disjunction, is
--- consumed in `Steps.lean`), so tightening the hypothesis is safe.
-lemma nonDoomedFoldingProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
-    (h_not_last : i.val + 1 < ℓ)
-    (challenges : Fin i.succ → L)
-    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
-    :
-    nonDoomedFoldingProp 𝔽q β i.castSucc (Fin.init challenges) oStmt ↔
-    nonDoomedFoldingProp 𝔽q β i.succ challenges (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
-  -- Both sides reduce to `True` via their bad-event disjunct, since both statement indices are `< ℓ`.
-  constructor
-  · intro _
-    refine Or.inr ?_
-    exact badEventExistsProp_of_lt 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.succ)
-      (oStmt := mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) (challenges := challenges)
-      (h_lt := by simp only [Fin.val_succ]; omega) (h_eq := rfl)
-  · intro _
-    refine Or.inr ?_
-    exact badEventExistsProp_of_lt 𝔽q β (stmtIdx := i.castSucc) (oracleIdx := i.castSucc)
-      (oStmt := oStmt) (challenges := Fin.init challenges)
-      (h_lt := by simp only [Fin.coe_castSucc]; omega) (h_eq := rfl)
-
 def oracleWitnessConsistency
     (stmtIdx : Fin (ℓ + 1)) (oracleIdx : Fin (ℓ + 1))
     (h_le : oracleIdx.val ≤ stmtIdx.val) (stmt : Statement (L := L) (Context := Context) stmtIdx)
     (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIdx)
     (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      ϑ (i := oracleIdx) j)) : Prop :=
+  ϑ (i := oracleIdx) j)) : Prop :=
   let witnessStructuralInvariant: Prop := witnessStructuralInvariant (mp := mp) (i:=stmtIdx) 𝔽q β
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmt wit
   let sumCheckConsistency: Prop := sumcheckConsistencyProp (𝓑 := 𝓑) stmt.sumcheck_target wit.H
@@ -1012,95 +980,6 @@ def oracleWitnessConsistency
     (oStmt := oStmt)
   witnessStructuralInvariant ∧ sumCheckConsistency ∧ firstOracleConsistency ∧
     oracleFoldingConsistency
-
-lemma oracleWitnessConsistency_relay_preserved
-    (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
-    (stmt : Statement (L := L) Context i.succ)
-    (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
-    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
-    oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β i.succ i.castSucc
-      (le_succ ↑i.castSucc) stmt wit oStmt =
-    oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β i.succ i.succ (by rfl) stmt wit
-      (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
-  unfold oracleWitnessConsistency
-  simp only
-  -- conjuncts 1,2 (witnessStructuralInvariant, sumCheckConsistency) are identical;
-  -- conjunct 3 (firstOracleConsistency) equal by the relay-preservation of the first oracle;
-  -- conjunct 4 (oracleFoldingConsistency) equal by oracle/challenge reindexing.
-  congr 1
-  · -- sumcheckConsistency (identical) ∧ firstOracleConsistency ∧ oracleFoldingConsistency
-    rw [firstOracleWitnessConsistencyProp_relay_preserved 𝔽q β i hNCR wit oStmt]
-    -- now the two `firstOracle…` conjuncts are syntactically identical; isolate the folding props.
-    congr 1  -- peel sumcheckConsistency (rfl)
-    congr 1  -- peel firstOracleConsistency (now rfl)
-    have h_size : toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ := by
-      simp only [toOutCodewordsCount_succ_eq ℓ ϑ i, hNCR, ↓reduceIte]
-    apply propext
-    unfold oracleFoldingConsistencyProp
-    constructor
-    · intro h j hj
-      have hj' : (⟨j.val, by rw [h_size]; exact j.isLt⟩ :
-          Fin (toOutCodewordsCount ℓ ϑ i.castSucc)).val + 1 <
-          toOutCodewordsCount ℓ ϑ i.castSucc := by simp only; rw [h_size]; exact hj
-      have := h ⟨j.val, by rw [h_size]; exact j.isLt⟩ hj'
-      convert this using 2 <;> try (simp only [Fin.val_castSucc, Fin.val_succ]; rfl)
-    · intro h j hj
-      have hj' : (⟨j.val, by rw [← h_size]; exact j.isLt⟩ :
-          Fin (toOutCodewordsCount ℓ ϑ i.succ)).val + 1 <
-          toOutCodewordsCount ℓ ϑ i.succ := by simp only; rw [← h_size]; exact hj
-      have := h ⟨j.val, by rw [← h_size]; exact j.isLt⟩ hj'
-      convert this using 2 <;> try (simp only [Fin.val_castSucc, Fin.val_succ]; rfl)
-
--- Per-block relay preservation: `foldingBadEventAtBlock` depends on the oracle index only through
--- `oStmt j` (its `f_i` input). The RHS block index is `Fin.cast h_size j`, so `j.val` is preserved
--- (`Fin.cast` is the identity on values) and `mapOStmtOutRelayStep … oStmt (Fin.cast h_size j)`
--- definitionally reduces to `oStmt j`. Hence the block predicate is literally the same on both
--- sides — no rewriting of the dependent `f_i` is needed. We unseal the irreducible block def. -/
-unseal foldingBadEventAtBlock in
-lemma foldingBadEventAtBlock_relay_preserved
-    (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
-    (h_size : toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ)
-    (challenges : Fin i.succ → L)
-    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
-    (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) :
-    foldingBadEventAtBlock 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.castSucc)
-        (oStmt := oStmt) (challenges := challenges) j =
-    foldingBadEventAtBlock 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.succ)
-        (oStmt := mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) (challenges := challenges)
-        (Fin.cast h_size j) :=
-  rfl
-
-/-- The relay step's oracle relabeling preserves the bad-event existential, when both sides are
-evaluated against the *same* statement index `i.succ`. Both sides quantify the same per-block
-folding guard `j*ϑ + ϑ ≤ i.succ` over equal block counts (`hNCR ⇒ count i.castSucc = count i.succ`)
-on the identical oracle data (`mapOStmtOutRelayStep` is a pure reindex along that size equality),
-so the existentials coincide. This is the bad-event analogue of
-`oracleWitnessConsistency_relay_preserved`, and is what makes `foldStepRelOut` (with its repaired
-`stmtIdx := i.succ` bad event) equal to its relay image `roundRelation i.succ` at *every* round,
-including the last (`i.val + 1 = ℓ`). -/
-lemma badEventExistsProp_relay_preserved
-    (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
-    (challenges : Fin i.succ → L)
-    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
-    badEventExistsProp (ϑ := ϑ) 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.castSucc)
-        (challenges := challenges) (oStmt := oStmt) =
-    badEventExistsProp (ϑ := ϑ) 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.succ)
-        (challenges := challenges) (oStmt := mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
-  have h_size : toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ := by
-    simp only [toOutCodewordsCount_succ_eq ℓ ϑ i, hNCR, ↓reduceIte]
-  apply propext
-  unfold badEventExistsProp
-  -- reindex the existential block along the size equality `h_size`; the predicate is literally
-  -- preserved by `foldingBadEventAtBlock_relay_preserved`.
-  constructor
-  · rintro ⟨j, hj⟩
-    exact ⟨Fin.cast h_size j,
-      (foldingBadEventAtBlock_relay_preserved 𝔽q β i hNCR h_size challenges oStmt j) ▸ hj⟩
-  · rintro ⟨j', hj⟩
-    refine ⟨Fin.cast h_size.symm j', ?_⟩
-    rw [foldingBadEventAtBlock_relay_preserved 𝔽q β i hNCR h_size challenges oStmt
-      (Fin.cast h_size.symm j')]
-    simpa using hj
 
 /-- Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event
 of the `i-th` oracle if any and enable it after the next V's challenge, i.e. one

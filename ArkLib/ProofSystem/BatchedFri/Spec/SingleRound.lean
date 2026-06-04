@@ -66,7 +66,7 @@ def inputRelation :
         (Unit × (∀ j, OracleStatement m ω j)) ×
         Witness F s d m
       ) :=
-  { ⟨⟨_, oStmt⟩, wit⟩ | ∀ j x, oStmt j x = (wit j).1.toPoly.eval x.1 }
+  {ctx | ∀ j x, ctx.1.2 j x = (ctx.2 j).1.eval x.1}
 
 -- DEFINITION COMPLETED (2026-06-04): batching-round output relation. After the verifier sends the
 -- random batching coefficients, the protocol hands off to the FRI round-0 reduction on the single
@@ -82,7 +82,7 @@ def outputRelation :
         (∀ j, Fri.Spec.OracleStatement s ω (0 : Fin (k + 1)) j)) ×
         Fri.Spec.Witness F s d (0 : Fin (k + 2))
       ) :=
-  { ⟨⟨_, oStmt⟩, wit⟩ | ∀ x, oStmt 0 x = wit.1.toPoly.eval x.1 }
+  {ctx | ∀ x, ctx.1.2 0 x = ctx.2.1.eval x.1}
 
 /-- The verifier send `m` field elements to batch the `m + 1` batched polynomials,
     the prover then returns the putative codeword corresponding to the batched polynomial -/

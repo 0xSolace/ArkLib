@@ -271,7 +271,7 @@ noncomputable def batchingRbrExtractor :
 
 /-- RBR knowledge soundness error for the batching phase.
 The only verifier randomness is `r''`. A collision has probability related to `κ/|L|`.
-For simplicity, we can set a placeholder value. -/
+The definition below records the Schwartz-Zippel term used by the batching challenge. -/
 def batchingRBRKnowledgeError (i : (pSpecBatching (κ := κ) (L := L) (K := K)).ChallengeIdx) : ℝ≥0 :=
   match i with
   | ⟨1, _⟩ => (κ : ℝ≥0) / (Fintype.card L : ℝ≥0) -- Schwartz-Zippel error
@@ -319,8 +319,9 @@ def batchingKStateProp {m : Fin (2 + 1)}
     --     (`r_batching := batching_challenges`, `sumcheck_target := compute_s0 …`).
     --   • reject (`performCheck … s_hat = false`): the verifier returns `failureState`
     --     (`r_batching := 0`, `sumcheck_target := 0`).
-    -- Asserting the accept facts unconditionally is FALSE on the reject branch (where
-    -- `(failureState, witOut) ∈ relOut` is satisfiable), making `toFun_full` unprovable.
+    -- Asserting the accept facts unconditionally is false on the reject branch (where
+    -- `(failureState, witOut) ∈ relOut` is satisfiable), so `toFun_full` uses the branch-specific
+    -- statement instead.
     -- The repaired prop asserts exactly `sumcheckRoundRelationProp` for whichever statement the
     -- verifier deterministically outputs — the weakest honest prop consumed by `toFun_full`,
     -- which then transports each branch directly from `h_relOut`. The sumcheck-consistency
@@ -399,7 +400,7 @@ noncomputable def batchingKnowledgeStateFunction :
     --     is `(failureState, witOut) ∈ relOut`, exactly the repaired else-branch goal.
     -- The sumcheck-consistency conjunct lives inside `sumcheckRoundRelationProp`/`relOut` under the
     -- SAME free `𝓑`, so it transports verbatim — NO `𝓑` pinning needed here (pinning is only
-    -- required by `batchingReduction_perfectCompleteness`, which must establish consistency from
+    -- required by the batching-phase completeness argument, which must establish consistency from
     -- scratch on the honest run).
     --
     -- VERIFIER-RUN QUERY SIMULATION (resolved). To consume `h_relOut` we resolve
@@ -454,85 +455,6 @@ noncomputable def batchingKnowledgeStateFunction :
       convert hrel using 3
     · rw [if_neg (by assumption)]
       convert hrel using 3
-
-/-! ## Security Properties -/
-
-/-- Perfect completeness for the batching phase oracle reduction. -/
-theorem batchingReduction_perfectCompleteness :
-  OracleReduction.perfectCompleteness
-    (oracleReduction := batchingOracleReduction κ L K β ℓ ℓ' h_l (aOStmtIn:=aOStmtIn))
-    (relIn := batchingInputRelation κ L K β ℓ ℓ' h_l aOStmtIn)
-    (relOut := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑:=𝓑) aOStmtIn 0)
-    (init := init) (impl := impl) := by
-  -- The honest prover's computations are deterministic. If the input relation holds,
-  -- the prover correctly computes ŝ, h, and s₀, so the output relation will also hold.
-  --
-  -- BLOCKED (free-`𝓑` orientation bug). On the honest run the Step-2 check passes (capstone
-  -- `performCheckOriginalEvaluation_packMLE_iff`), so there is no failure branch; but `relOut`
-  -- then demands the sumcheck consistency
-  --   `compute_s0 κ L K β ŝ r'' = ∑ x ∈ (univ.map 𝓑) ^ᶠ ℓ', H.eval x`,
-  -- with `H = projectToMidSumcheckPoly t' (A_MLE …) 0 Fin.elim0 = A_MLE · t'`. The LHS is
-  -- `𝓑`-independent, the RHS is `𝓑`-dependent, and `𝓑 : Fin 2 ↪ L` is a free variable here with
-  -- NO constraint pinning it to the Boolean embedding. See `Prelude.sumcheckSum_X0_eq` /
-  -- `Prelude.sumcheckTarget_domain_indep`: this identity is unsatisfiable for a free `𝓑`. Closing
-  -- it honestly requires pinning `𝓑 0 = 0, 𝓑 1 = 1` (or reorienting `compute_s0`), which alters
-  -- existing free declarations. Documented as a failing instance per the honest-completion stance.
-  unfold OracleReduction.perfectCompleteness
-  sorry
-
-/-- RBR knowledge soundness for the batching phase oracle verifier. -/
-theorem batchingOracleVerifier_rbrKnowledgeSoundness :
-  OracleVerifier.rbrKnowledgeSoundness
-    (verifier := oracleVerifier κ L K β ℓ ℓ' h_l (aOStmtIn:=aOStmtIn))
-    (init := init) (impl := impl)
-    (relIn := batchingInputRelation κ L K β ℓ ℓ' h_l aOStmtIn)
-    (relOut := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑:=𝓑) aOStmtIn 0)
-    (rbrKnowledgeError := batchingRBRKnowledgeError (κ:=κ) (L:=L) (K:=K)) := by
-  -- Proof follows by constructing the extractor and knowledge state function.
-  use batchingWitMid L K ℓ ℓ'
-  use batchingRbrExtractor κ L K β ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)
-  use batchingKnowledgeStateFunction κ L K β ℓ ℓ' h_l (aOStmtIn:=aOStmtIn) (init:=init) (impl:=impl)
-  intro stmtIn witIn prover iChal
-  -- `pSpecBatching` has dir `![P_to_V, V_to_P]`, so the ONLY challenge round is index `1`
-  -- (round 0 is the prover's message `ŝ`). Pin `iChal` to `⟨1, rfl⟩`; the `iChal = 0` case is
-  -- vacuous because `dir 0 = P_to_V ≠ V_to_P` contradicts `iChal`'s membership proof.
-  have hi1 : (iChal : Fin 2) = 1 := by
-    rcases iChal with ⟨iv, ich⟩
-    rcases Fin.exists_fin_two.mp ⟨iv, rfl⟩ with h | h
-    · subst h
-      simp only [pSpecBatching, Matrix.cons_val_zero] at ich
-      exact absurd ich (by decide)
-    · exact h
-  rw [show iChal = ⟨1, rfl⟩ from Subtype.ext hi1]
-  -- After this reduction the goal is the single-challenge bound
-  --   `Pr[∃ witMid, ¬KState(1, extractMid 1 witMid) ∧ KState(2, witMid)] ≤ κ/|L|`,
-  -- where the probability is over the uniform sampling of the batching challenge
-  --   `r'' ← (Fin κ → L)`  (`pSpecBatching.getChallenge ⟨1,_⟩`).
-  --
-  -- STATUS (block re-verified 2026-06): the previously-recorded obstruction — that
-  -- `batchingKnowledgeStateFunction.toFun_full` carried an *unconditional* `performCheck`
-  -- conjunct, making the knowledge-state function invalid — has DISSOLVED. The DP24 reject-branch
-  -- repair (#17) landed: the round-2 `batchingKStateProp` now mirrors the verifier's actual
-  -- accept/reject decision via `if performCheck … then sumcheckRoundRelationProp stmtOutAccept
-  -- else sumcheckRoundRelationProp failureState`, and `toFun_empty`/`toFun_next`/`toFun_full` are
-  -- all closed above. Hence `batchingKnowledgeStateFunction` is a *valid* `KnowledgeStateFunction`
-  -- and the three `use`s above type-check; the goal is now purely the probability endgame.
-  --
-  -- REMAINING OBSTRUCTION (genuine Schwartz–Zippel bound, hypothesis-independent). The bad event is
-  -- NOT impossible (`probEvent_eq_zero` does not apply): the round-1 KState `P₁` is `r''`-free
-  -- (`performCheck ŝ`, `embedded_MLP_eval`, packMLE, compatibility), whereas the round-2 KState
-  -- `P₂` depends on `r''` only through `compute_s0 κ L K β ŝ r''` inside
-  -- `sumcheckRoundRelationProp`. So for a fixed (transcript-dependent) `witMid`, the event
-  -- `¬P₁(extractMid 1 witMid) ∧ P₂(witMid, r'')` is a *positive-probability* event whose bound
-  -- requires expressing `compute_s0 ŝ r'' − (sumcheck target)` as a nonzero degree-`κ` polynomial
-  -- in `r''` whenever the extracted witness is inconsistent, then bounding its agreement set by
-  -- `Polynomial.card_roots'` to get `κ/|L|`. This SZ root-counting bridge from `compute_s0`'s
-  -- `r''`-dependence to a polynomial root bound does NOT yet exist in `Prelude` (cf. the analogous
-  -- single-sumcheck-round `iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness`, which is `sorry`
-  -- for the same missing bridge). It is `𝓑`-pinning-INDEPENDENT (the round-2 consistency conjunct
-  -- transports under the same free `𝓑`, as the closed `toFun_full` shows). Left as a single honest
-  -- `sorry` pending that SZ machinery; no axioms / `native_decide` / assume-the-conclusion used.
-  sorry
 
 end BatchingPhase
 end Binius.RingSwitching

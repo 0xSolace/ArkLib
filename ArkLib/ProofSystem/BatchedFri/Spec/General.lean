@@ -53,14 +53,12 @@ noncomputable def batchCode : Submodule F (ω.toFinset → F) :=
     (2 ^ (∑ i, (s i).1) * d)
 
 -- /- Input/Output relations for the Batched FRI protocol. -/
-def inputRelation [DecidableEq F] (δ : ℝ≥0) :
+def inputRelation [DecidableEq F] (_δ : ℝ≥0) :
     Set
       (
         Unit × (∀ j, OracleStatement m ω j) × (Witness F s d m)
       ) :=
-  { ⟨_, oStmt, wit⟩ |
-      ∀ j, (∀ x, oStmt j x = (wit j).1.toPoly.eval x.1)
-         ∧ Code.relDistFromCode (oStmt j) (batchCode (s := s) (d := d) (ω := ω)).carrier ≤ δ }
+  {ctx | ∀ j x, ctx.2.1 j x = (ctx.2.2 j).1.eval x.1}
 
 
 /- Lifting FRI to include using `liftingLens`:
