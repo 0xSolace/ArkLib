@@ -422,10 +422,28 @@ lemma square_roots_explicit {i : ℕ} (hi : i < n) {y : F}
   · have hy_mem : y ∈ subdomain ω i := sq_root_mem_subdomain hi hx hy
     simp_all [Finset.subset_iff]
 
-/- lemma evalDomain_sq_root [NeZero n] {p : Polynomial F} : -/
-/-   ReedSolomon.evalOnPoints (ω : Fin (2 ^ n) ↪ F) (p.comp (Polynomial.X ^ 2)) = -/
-/-     ReedSolomon.evalOnPoints (subdomain ω 1 : Fin (2 ^ (n - 1)) ↪ F) p := by -/
-/-     sorry -/
+lemma evalDomain_sq_root [NeZero n] {p : Polynomial F} :
+  ReedSolomon.evalOnPoints (ω : Fin (2 ^ n) ↪ F) (p.comp (Polynomial.X ^ 2)) =
+    (ReedSolomon.evalOnPoints (subdomain ω 1 : Fin (2 ^ (n - 1)) ↪ F) p) ∘
+      (CosetFftDomainClass.subdomain_embed_inverse 1) := by
+  ext u
+  simp 
+    [ReedSolomon.evalOnPoints]
+  congr
+  simp [subdomain, CosetFftDomainClass.subdomain_embed_inverse]
+  rw [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain]
+  simp [mkSubgroupUnit, CosetFftDomainClass.subdomain_embed]
+  split_ifs with hn
+  · rcases n with _ | n
+    · aesop
+    · have {a b c : F} (hb : b ≠ 0) : a = b * c ↔ b⁻¹ * a = c := by aesop
+      obtain rfl | rfl : u = 0 ∨ u = 1 := by grind
+      all_goals
+        aesop 
+          (add simp [sq])
+          (add unsafe (by rw [←mul_assoc, ←CosetFftDomainClass.map_add]))
+  · sorry
+        
 
 end CosetFftDomainClass
 
