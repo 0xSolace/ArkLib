@@ -499,18 +499,45 @@ theorem batchingOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
   use batchingRbrExtractor κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)
   use batchingKnowledgeStateFunction κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn) (init:=init) (impl:=impl)
   intro stmtIn witIn prover iChal
-  -- `KState 1 = (t' = packMLE t) ∧ (ŝ := φ₁(t')(φ₀(r_κ), ..., φ₀(r_{ℓ-1})))`
-    -- `∧ (s ?= Σ_{v ∈ {0,1}^κ} eqTilde(v, r_{0..κ-1}) ⋅ ŝ_v.`
-  -- `KState 2 = (s ?= Σ_{v ∈ {0,1}^κ} eqTilde(v, r_{0..κ-1}) ⋅ ŝ_v) ∧`
-    -- `h = projectSumcheckPoly t' 0 r r' ∧ s_0 = Σ_{w ∈ {0,1}^{ℓ'}} h(w)`
-  -- ⊢ `Pr[KState(2, witMidSucc) ∧ ¬KState(1, extractMid(iChal, witMidSucc))] ≤ (κ/|L|)`
+  -- `pSpecBatching` has dir `![P_to_V, V_to_P]`, so the ONLY challenge round is index `1`
+  -- (round 0 is the prover's message `ŝ`). Pin `iChal` to `⟨1, rfl⟩`; the `iChal = 0` case is
+  -- vacuous because `dir 0 = P_to_V ≠ V_to_P` contradicts `iChal`'s membership proof.
+  have hi1 : (iChal : Fin 2) = 1 := by
+    rcases iChal with ⟨iv, ich⟩
+    rcases Fin.exists_fin_two.mp ⟨iv, rfl⟩ with h | h
+    · subst h
+      simp only [pSpecBatching, Matrix.cons_val_zero] at ich
+      exact absurd ich (by decide)
+    · exact h
+  rw [show iChal = ⟨1, rfl⟩ from Subtype.ext hi1]
+  -- After this reduction the goal is the single-challenge bound
+  --   `Pr[∃ witMid, ¬KState(1, extractMid 1 witMid) ∧ KState(2, witMid)] ≤ κ/|L|`,
+  -- where the probability is over the uniform sampling of the batching challenge
+  --   `r'' ← (Fin κ → L)`  (`pSpecBatching.getChallenge ⟨1,_⟩`).
   --
-  -- BLOCKED downstream of `batchingKnowledgeStateFunction.toFun_full` (see its in-file note): the
-  -- round-2 knowledge-state function carries an unconditional `performCheck` conjunct that the
-  -- verifier's reject branch (`failureState`) cannot satisfy, so the knowledge state function is not
-  -- a valid `KnowledgeStateFunction`. The bound itself is the Schwartz–Zippel `κ/|L|` collision
-  -- error, but it can only be established once the round-2 KState / `failureState` orientation is
-  -- fixed. Documented as a failing instance per the honest-completion stance.
+  -- STATUS (block re-verified 2026-06): the previously-recorded obstruction — that
+  -- `batchingKnowledgeStateFunction.toFun_full` carried an *unconditional* `performCheck`
+  -- conjunct, making the knowledge-state function invalid — has DISSOLVED. The DP24 reject-branch
+  -- repair (#17) landed: the round-2 `batchingKStateProp` now mirrors the verifier's actual
+  -- accept/reject decision via `if performCheck … then sumcheckRoundRelationProp stmtOutAccept
+  -- else sumcheckRoundRelationProp failureState`, and `toFun_empty`/`toFun_next`/`toFun_full` are
+  -- all closed above. Hence `batchingKnowledgeStateFunction` is a *valid* `KnowledgeStateFunction`
+  -- and the three `use`s above type-check; the goal is now purely the probability endgame.
+  --
+  -- REMAINING OBSTRUCTION (genuine Schwartz–Zippel bound, hypothesis-independent). The bad event is
+  -- NOT impossible (`probEvent_eq_zero` does not apply): the round-1 KState `P₁` is `r''`-free
+  -- (`performCheck ŝ`, `embedded_MLP_eval`, packMLE, compatibility), whereas the round-2 KState
+  -- `P₂` depends on `r''` only through `compute_s0 κ L K β ŝ r''` inside
+  -- `sumcheckRoundRelationProp`. So for a fixed (transcript-dependent) `witMid`, the event
+  -- `¬P₁(extractMid 1 witMid) ∧ P₂(witMid, r'')` is a *positive-probability* event whose bound
+  -- requires expressing `compute_s0 ŝ r'' − (sumcheck target)` as a nonzero degree-`κ` polynomial
+  -- in `r''` whenever the extracted witness is inconsistent, then bounding its agreement set by
+  -- `Polynomial.card_roots'` to get `κ/|L|`. This SZ root-counting bridge from `compute_s0`'s
+  -- `r''`-dependence to a polynomial root bound does NOT yet exist in `Prelude` (cf. the analogous
+  -- single-sumcheck-round `iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness`, which is `sorry`
+  -- for the same missing bridge). It is `𝓑`-pinning-INDEPENDENT (the round-2 consistency conjunct
+  -- transports under the same free `𝓑`, as the closed `toFun_full` shows). Left as a single honest
+  -- `sorry` pending that SZ machinery; no axioms / `native_decide` / assume-the-conclusion used.
   sorry
 
 end BatchingPhase
