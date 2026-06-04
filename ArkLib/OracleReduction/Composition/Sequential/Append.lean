@@ -466,6 +466,127 @@ private lemma simOracle2_comp_router₁ :
     rw [emitMessageInl, simulateQ_simOracle2_emitMessageQuery]
     rfl
 
+/-- The source *value* routed through `s : ιₛ₁ ⊕ pSpec₁.MessageIdx`: `oStmt k` for `.inl k`, the
+appended `pSpec₁`-message `msgs (inl k)` (cast to `pSpec₁.Message k`) for `.inr k`. Has type
+`srcType s`, matching `srcInst s`. -/
+def srcValueAt (s : ιₛ₁ ⊕ pSpec₁.MessageIdx) :
+    srcType (OStmt₁ := OStmt₁) (pSpec₁ := pSpec₁) s :=
+  match s with
+    | Sum.inl k => oStmt k
+    | Sum.inr k => _root_.cast (Message_inl (pSpec₂ := pSpec₂) k) (msgs (MessageIdx.inl k))
+
+/-- The source value selected by `V₁.embed i` (`srcValueAt` at `V₁.embed i`), of type
+`OStmt₂Src V₁ i`. -/
+def srcValue (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁) (i : ιₛ₂) :
+    OStmt₂Src (Oₛ₁ := Oₛ₁) V₁ i :=
+  srcValueAt (OStmt₁ := OStmt₁) (pSpec₂ := pSpec₂) oStmt msgs (V₁.embed i)
+
+/-- The output oracle statements `V₁.toVerifier` assembles from input oracle statements `oStmt` and
+appended messages `msgs`: `OStmt₂ i` is the `embed`-selected source value, cast back along the type
+equality `V₁.hEq i` (re-expressed as `hEq_eq_OStmt₂Src`). This is exactly the `oStmtOut` family in
+`OracleVerifier.toVerifier`. -/
+def assembledOStmt₂ (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (i : ιₛ₂) : OStmt₂ i :=
+  (hEq_eq_OStmt₂Src (Oₛ₁ := Oₛ₁) V₁ i).symm ▸ srcValue (Oₛ₁ := Oₛ₁) oStmt msgs V₁ i
+
+/-- Answering an `emitSrcQuery s q` through `simOracle2 oSpec oStmt msgs` produces the answer of the
+source interface `srcInst s` on the source value `srcValueAt s` — stated generically over the routing
+index `s` (so the `match` on `s` reduces per constructor, no dependent-`▸` surgery). -/
+private lemma simulateQ_simOracle2_emitSrcQuery
+    (s : ιₛ₁ ⊕ pSpec₁.MessageIdx)
+    (q : (srcInst (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) s).Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+        (emitSrcQuery (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) (OStmt₁ := OStmt₁) s q) =
+      (pure ((srcInst (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) s).answer
+        (srcValueAt (OStmt₁ := OStmt₁) (pSpec₂ := pSpec₂) oStmt msgs s) q) :
+          OracleComp oSpec ((srcInst (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) s).Response q)) := by
+  rcases s with k | k
+  · -- `inl k`: an input-oracle-statement query, answered directly by `simOracle0 OStmt₁ oStmt`.
+    simp only [emitSrcQuery, srcInst, srcValueAt, simulateQ_spec_query]
+    rfl
+  · -- `inr k`: a `pSpec₁`-message query, routed via `emitMessageInl`; reuse the message helper.
+    show simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+        (emitMessageInl (oSpec := oSpec) (OStmt₁ := OStmt₁) (pSpec₂ := pSpec₂) k q) = _
+    rw [emitMessageInl, simulateQ_simOracle2_emitMessageQuery]
+    rfl
+
+/-- Answering an `emitOStmt₂SrcQuery V₁ i q` through `simOracle2 oSpec oStmt msgs` produces the answer
+of the source interface `instOStmt₂Src V₁ i` on the source value selected by `V₁.embed i`. Instance of
+`simulateQ_simOracle2_emitSrcQuery` at `s := V₁.embed i`. -/
+private lemma simulateQ_simOracle2_emitOStmt₂SrcQuery
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (i : ιₛ₂) (q : (instOStmt₂Src (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) V₁ i).Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+        (emitOStmt₂SrcQuery (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) V₁ i q) =
+      (pure ((instOStmt₂Src (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) V₁ i).answer
+        (srcValue (Oₛ₁ := Oₛ₁) oStmt msgs V₁ i) q) :
+          OracleComp oSpec ((instOStmt₂Src (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) V₁ i).Response q)) :=
+  simulateQ_simOracle2_emitSrcQuery oStmt msgs (V₁.embed i) q
+
+/-- `OracleInterface.answer` is heterogeneously congruent: if the interfaces agree (`O ≍ O'`), the
+messages agree (`a ≍ a'`), and the queries agree (`q ≍ q'`), then the answers agree. -/
+private theorem answer_heq_of_heq {T T' : Type} {O : OracleInterface T} {O' : OracleInterface T'}
+    {a : T} {a' : T'} {q : O.Query} {q' : O'.Query}
+    (hT : T = T') (hO : HEq O O') (ha : HEq a a') (hq : HEq q q') :
+    HEq (O.answer a q) (O'.answer a' q') := by
+  subst hT; cases (eq_of_heq hO); cases (eq_of_heq ha); cases (eq_of_heq hq); rfl
+
+/-- **`emitOStmt₂Query` evaluation.** Answering `emitOStmt₂Query V₁ i q` through
+`simOracle2 oSpec oStmt msgs` produces `(Oₛ₂ i).answer (assembledOStmt₂ V₁ i) q`. The
+`AppendCoherent.hCoh i` instance-coherence (`Oₛ₂ i ≍ instOStmt₂Src V₁ i`) is exactly what bridges the
+appended-context answer with `V₁`'s output-oracle-statement answer. -/
+private lemma simulateQ_simOracle2_emitOStmt₂Query
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) (Oₛ₂ := Oₛ₂) V₁]
+    (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs) (emitOStmt₂Query V₁ i q) =
+      (pure ((Oₛ₂ i).answer (assembledOStmt₂ (Oₛ₁ := Oₛ₁) oStmt msgs V₁ i) q) :
+        OracleComp oSpec ((Oₛ₂ i).Response q)) := by
+  -- Unfold `emitOStmt₂Query`'s `do`-block, collapse the inner `simulateQ` via the src-query lemma,
+  -- then identify the casts by `HEq`-congruence of `answer` along the coherences.
+  have hO : HEq (Oₛ₂ i) (instOStmt₂Src (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) V₁ i) := coh.hCoh i
+  have hT : OStmt₂ i = OStmt₂Src (Oₛ₁ := Oₛ₁) V₁ i := hEq_eq_OStmt₂Src V₁ i
+  simp only [emitOStmt₂Query, simulateQ_bind, simulateQ_simOracle2_emitOStmt₂SrcQuery,
+    simulateQ_pure, pure_bind]
+  congr 1
+  -- the casted response equals `(Oₛ₂ i).answer (assembledOStmt₂ …) q` up to `HEq`/proof-irrelevance
+  apply eq_of_heq
+  refine HEq.trans (cast_heq _ _) ?_
+  symm
+  refine answer_heq_of_heq hT hO ?_ ?_
+  · -- `assembledOStmt₂ V₁ i ≍ srcValue V₁ i`: the former is the latter cast back along `hT`
+    simp only [assembledOStmt₂, eqRec_eq_cast]
+    exact cast_heq _ _
+  · -- `q ≍ q'`: `q'` is `q` cast along the query-type equality
+    exact (cast_heq _ _).symm
+
+/-- **V₂-leg fusion.** Composing the appended-context answering oracle `simOracle2 oSpec oStmt msgs`
+with `router₂ V₁` collapses to `V₂`'s own answering oracle, where the input oracle statements are the
+output oracle statements `V₁.toVerifier` assembles (`assembledOStmt₂`) and the messages are the
+`pSpec₂`-restricted `msgs ∘ MessageIdx.inr`. The `OStmt₂` branch is the load-bearing one (routed via
+`emitOStmt₂Query`, bridged by `AppendCoherent.hCoh`); the `inr`-message branch uses `instAppend_inr`. -/
+private lemma simOracle2_comp_router₂
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) (Oₛ₂ := Oₛ₂) V₁] :
+    (OracleInterface.simOracle2 oSpec oStmt msgs ∘ₛ
+        router₂ (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) (pSpec₂ := pSpec₂) V₁) =
+      OracleInterface.simOracle2 (T₁ := OStmt₂) (T₂ := pSpec₂.Message) oSpec
+        (assembledOStmt₂ (Oₛ₁ := Oₛ₁) oStmt msgs V₁)
+        (fun i => Message_inr (pSpec₁ := pSpec₁) i ▸ msgs (MessageIdx.inr i)) := by
+  funext q
+  rcases q with t | ⟨i, q⟩ | ⟨i, q⟩
+  · rfl
+  · -- `OStmt₂` branch: routed via `emitOStmt₂Query`, answered against `assembledOStmt₂` by the
+    -- coherence-bridge lemma.
+    show simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs) (emitOStmt₂Query V₁ i q) = _
+    rw [simulateQ_simOracle2_emitOStmt₂Query]
+    rfl
+  · -- `inr`-message branch: `emitMessageInr` answers via the appended message oracle at `inr i`.
+    show simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+        (emitMessageInr (oSpec := oSpec) (OStmt₁ := OStmt₁) (pSpec₁ := pSpec₁) i q) = _
+    rw [emitMessageInr, simulateQ_simOracle2_emitMessageQuery]
+    rfl
+
 end OracleVerifier.Append
 
 open Function Embedding in
