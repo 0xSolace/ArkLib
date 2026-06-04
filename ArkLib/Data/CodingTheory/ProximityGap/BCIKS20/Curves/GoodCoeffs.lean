@@ -755,6 +755,83 @@ theorem card_RS_goodCoeffsCurve_gt_of_prob_gt_kn_div_q
   -- identify the filtered finset with `RS_goodCoeffs`
   simpa [RS_goodCoeffsCurve, P, gt_iff_lt] using hcard_nat
 
+open scoped BigOperators in
+open Polynomial in
+open Matrix in
+omit [Nonempty ι] [Fintype F] [DecidableEq F] in
+theorem RS_a_ne_zero_of_BW_homMatrix_mulVec_eq_zero_curve {k deg : ℕ} {domain : ι ↪ F} {e : ℕ}
+    (u : WordStack F (Fin (k + 1)) ι)
+    {a : Fin (e + 1) → F[X]} {b : Fin (e + deg) → F[X]}
+    (hdeg : e + deg ≤ Fintype.card ι)
+    (happend : Fin.append a b ≠ 0)
+    (hMul :
+      Matrix.mulVec
+          (BW_homMatrix (ι := ι) e deg
+            (fun i => (Polynomial.C (domain i) : F[X]))
+            (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
+          (Fin.append a b) = 0) :
+    a ≠ 0 := by
+  intro ha0
+  -- Pointwise equality derived from the mulVec hypothesis
+  have hEq :
+      ∀ i : ι,
+        (∑ t : Fin (e + 1), a t * (Polynomial.C (domain i) : F[X]) ^ t.1) *
+            (∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)) =
+          ∑ s : Fin (e + deg), b s * (Polynomial.C (domain i) : F[X]) ^ s.1 :=
+    (BW_homMatrix_mulVec_eq_zero_iff (ι := ι) (R := F[X]) e deg
+          (fun i => (Polynomial.C (domain i) : F[X]))
+          (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ))
+          a b).1 hMul
+  have hVand :
+      ∀ i : ι,
+        (∑ s : Fin (e + deg), b s * (Polynomial.C (domain i) : F[X]) ^ s.1) = 0 := by
+    intro i
+    -- With a = 0, the left sum is 0, so the RHS must be 0.
+    have hi := (hEq i).symm
+    simpa [ha0] using hi
+  have hb0 : b = 0 :=
+    RS_vandermonde_coeffs_eq_zero (ι := ι) (F := F) (m := e + deg) (domain := domain) hdeg b hVand
+  have happend0 : Fin.append a b = 0 := by
+    ext i
+    cases i using Fin.addCases <;> simp [ha0, hb0]
+  exact happend happend0
+open Polynomial in
+/-- Curves analogue of `RS_exists_kernelVec_BW_homMatrix_of_goodCoeffs_card_gt`:
+the global kernel vector repackaged with `a ≠ 0`. -/
+theorem RS_exists_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F) (C := ReedSolomon.code domain deg))
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card
+      > k * Fintype.card ι) :
+    let e : ℕ := Nat.floor (δ * Fintype.card ι)
+    ∃ a : Fin (e + 1) → F[X],
+      ∃ b : Fin (e + deg) → F[X],
+        a ≠ 0 ∧
+          (∀ t, (a t).natDegree ≤ k * e) ∧
+            (∀ s, (b s).natDegree ≤ k * (e + 1)) ∧
+              Matrix.mulVec
+                  (BW_homMatrix (ι := ι) e deg
+                    (fun i => (Polynomial.C (domain i) : F[X]))
+                    (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
+                  (Fin.append a b) = 0 := by
+  classical
+  dsimp
+  have h :=
+    RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt
+      (k := k) (deg := deg) (domain := domain) (δ := δ) (u := u) hdeg hδ hS
+  dsimp at h
+  rcases h with ⟨a, b, happend, ha_deg, hb_deg, hMul⟩
+  have hdeg' : Nat.floor (δ * Fintype.card ι) + deg ≤ Fintype.card ι :=
+    RS_floor_mul_card_ι_add_deg_le_card_ι_of_le_relUDR
+      (deg := deg) (domain := domain) (δ := δ) (hdeg := hdeg) (hδ := hδ)
+  have ha0 : a ≠ 0 :=
+    RS_a_ne_zero_of_BW_homMatrix_mulVec_eq_zero_curve
+      (k := k) (deg := deg) (domain := domain) (e := Nat.floor (δ * Fintype.card ι))
+      (u := u) (a := a) (b := b) hdeg' happend hMul
+  exact ⟨a, b, ha0, ha_deg, hb_deg, hMul⟩
+
 end CoreResults
 
 end ProximityGap
