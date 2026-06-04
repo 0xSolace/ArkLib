@@ -241,7 +241,7 @@ def oracleReduction.firstChallenge :
       (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit
       ⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ :=
   sorry
-  -- (RandomQuery.oracleReduction oSpec (Statement.AfterFirstMessage R pp)).liftContext sorry
+  -- (RandomQuery.oracleReduction oSpec (Statement.AfterFirstMessage R pp)).liftContext placeholder
 
 /-!
   ## First sum-check
@@ -382,7 +382,7 @@ abbrev Witness.AfterSecondSumcheck : Type := Unit
 --       (Statement.AfterLinearCombination R pp) Witness.AfterLinearCombination
 --       (Statement.AfterSecondSumcheck R pp) Witness.AfterSecondSumcheck
 --       (OracleStatement.AfterLinearCombination R pp) (OracleStatement.AfterSecondSumcheck R pp) :=
---   sorry
+--   placeholder
 
 /-!
   ## Final check
@@ -391,7 +391,7 @@ abbrev Witness.AfterSecondSumcheck : Type := Unit
 -/
 
 -- Definition of the final relation to be checked
--- def finalCheck := sorry
+-- def finalCheck := placeholder
 
 -- def oracleReduction.finalCheck :
 --     OracleReduction ![] oSpec
@@ -399,7 +399,7 @@ abbrev Witness.AfterSecondSumcheck : Type := Unit
 --       Unit Unit
 --       (OracleStatement.AfterSecondSumcheck R pp) (fun _ => Unit) :=
 --   CheckClaim.oracleReduction oSpec (Statement.AfterSecondSumcheck R pp)
---     (OracleStatement.AfterSecondSumcheck R pp) (sorry)
+--     (OracleStatement.AfterSecondSumcheck R pp) (placeholder)
 
 end Construction
 

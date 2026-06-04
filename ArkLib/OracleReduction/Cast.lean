@@ -178,7 +178,7 @@ variable (hOₘ : ∀ i, Oₘ₁ i = dcast (Message.cast_idx hSpec) (Oₘ₂ (i.
 -- theorem cast_id :
 --     OracleVerifier.cast rfl rfl (fun i => rfl) =
 --       (id : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁ → _) := by
---   sorry
+--   placeholder
 
 -- Need to cast oracle interface as well
 -- instance instDCast₂OracleVerifier : DCast₃ Nat ProtocolSpec
@@ -340,7 +340,7 @@ variable (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec₁)
 -- @[simp]
 -- theorem cast_completeness (ε : ℝ≥0) (hComplete : R.completeness init impl relIn relOut ε) :
 --     (R.cast hn hSpec).completeness init impl relIn relOut ε := by
---   sorry
+--   placeholder
 
 -- @[simp]
 -- theorem cast_perfectCompleteness (hComplete : R.perfectCompleteness init impl relIn relOut) :

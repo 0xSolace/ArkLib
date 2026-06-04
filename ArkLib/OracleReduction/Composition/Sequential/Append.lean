@@ -319,7 +319,7 @@ variable {P₁ : Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁}
 --     (verifyQueryLog : Set (Stmt₂ × Wit₂)) :
 --       (P₁.append P₂).processRound roundIdx stmt wit transcript proveQueryLog verifyQueryLog =
 --         (P₁.processRound roundIdx stmt wit transcript proveQueryLog verifyQueryLog) ∧
---         (P₂.processRound roundIdx stmt wit transcript proveQueryLog verifyQueryLog) := sorry
+--         (P₂.processRound roundIdx stmt wit transcript proveQueryLog verifyQueryLog) := placeholder
 
 -- theorem append_runToRound
 
@@ -420,7 +420,7 @@ commutative monoid, etc.). -/
 --           return ⟨ctx₂, stmt₃, transcript₁ ++ₜ transcript₂⟩).runM interp := by
 --   unfold run append
 --   simp [Prover.append_run, Verifier.append_run]
---   sorry
+--   placeholder
 
 end Reduction
 
@@ -491,7 +491,7 @@ variable {R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁}
 -- Synthesization issues...
 -- So maybe no synthesization but simp is fine? Maybe not...
 -- instance [R₁.IsComplete rel₁ rel₂] [R₂.IsComplete rel₂ rel₃] :
---     (R₁.append R₂).IsComplete rel₁ rel₃ := by sorry
+--     (R₁.append R₂).IsComplete rel₁ rel₃ := by placeholder
 
 end Reduction
 

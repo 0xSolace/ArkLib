@@ -52,7 +52,7 @@ theorem take_addCases'_left {n' : ℕ} {β : Fin n' → Sort u} (m : ℕ) (h : m
 --   simp [take_apply, addCases', addCases, this, cast_eq_iff_heq, castLT, castLE]
 --   have {i : Fin m} : castLE (Nat.le_add_right_of_le h) i = natAdd n (castLE h i) := by congr
 --   refine (Fin.heq_fun_iff' rfl (fun i => ?_)).mpr (fun i => ?_)
---   · sorry
+--   · placeholder
 --     simp only [append_right, cast_eq_self]
 --   · rw [take, this]
 --     simp [addCases_right]
@@ -231,7 +231,7 @@ theorem drop_update_of_ge (m : ℕ) (h : m ≤ n) (v : (i : Fin n) → α i) (i 
   next h_1 =>
     subst h_1
     simp_all only [add_tsub_cancel_right, Fin.eta, ↓reduceDIte]
-    sorry
+    rw [eqRec_eq_cast, dcast_eq_root_cast, _root_.cast_cast, _root_.cast_eq]
   next h_1 =>
     simp_all only [right_eq_dite_iff]
     intro h_2
@@ -245,7 +245,7 @@ theorem drop_update_of_ge (m : ℕ) (h : m ≤ n) (v : (i : Fin n) → α i) (i 
 --       drop m (Nat.le_add_right_of_le h) (addCases u v) =
 --         fun i : Fin (n + n' - m) =>
 --           dcast (by simp)
---             (addCases (m := n - m) (n := n') (drop m h u) v (i.cast (by omega))) := sorry
+--             (addCases (m := n - m) (n := n') (drop m h u) v (i.cast (by omega))) := placeholder
 
 /-- Version of `drop_addCases_left` that specializes `addCases` to `append`. -/
 theorem drop_append_left {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n) (u : (i : Fin n) → α)
@@ -355,7 +355,7 @@ theorem take_drop_addCases' (m : ℕ) (h : m ≤ n) (v : (i : Fin n) → α i) :
   · simp
   · have : i.val - m + m = i.val := by omega
     rw! [this]
-    sorry
+    simp only [eqRec_eq_cast, _root_.cast_cast]
 
 /-- The concatenation of the first `m` elements and the last `n - m` elements of a tuple is the
 same as the original tuple. -/

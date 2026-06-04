@@ -41,7 +41,7 @@ def pSpec : ProtocolSpec 1 := ⟨!v[.P_to_V], !v[Witness]⟩
 instance : ∀ i, VCVCompatible ((pSpec Witness).Challenge i) | ⟨0, h⟩ => nomatch h
 
 instance : ProverOnly (pSpec Witness) where
-  prover_first' := rfl
+  prover_first' := by simp
 
 @[inline, specialize]
 def prover : Prover oSpec Statement Witness (Statement × Witness) Unit (pSpec Witness) where
@@ -70,7 +70,16 @@ variable {Statement} {Witness}
 def toRelOut : Set ((Statement × Witness) × Unit) :=
   Prod.fst ⁻¹' relIn
 
-set_option maxHeartbeats 800000 in
+/-- Running the `SendWitness` reduction deterministically sends the witness and returns the
+  unchanged statement-witness pair. -/
+theorem reduction_run (stmtIn : Statement) (witIn : Witness) :
+    (reduction oSpec Statement Witness).run stmtIn witIn =
+      (pure ((fun i => match i with | ⟨0, _⟩ => witIn, (stmtIn, witIn), ()),
+        (stmtIn, witIn)) : OptionT (OracleComp _) _) := by
+  rw [Reduction.run_of_prover_first]
+  simp only [reduction, prover, verifier, id_eq]
+  rfl
+
 open Classical in
 /-- The `SendWitness` reduction satisfies perfect completeness. -/
 @[simp]
@@ -78,33 +87,19 @@ theorem reduction_completeness :
     (reduction oSpec Statement Witness).perfectCompleteness init impl relIn (toRelOut relIn) := by
   simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
   intro stmtIn witIn hIn
-  have hrun : (reduction oSpec Statement Witness).run stmtIn witIn =
-      (pure (⟨fun | ⟨0, _⟩ => witIn, (stmtIn, witIn), ()⟩, (stmtIn, witIn)) :
-        OptionT (OracleComp _) _) := by
-    rw [Reduction.run_of_prover_first]
-    simp [reduction, prover, verifier]
-    rfl
-  simp only [hrun]
+  rw [reduction_run]
+  simp only [OptionT.run_pure, simulateQ_pure, StateT.run'_eq, StateT.run_pure, map_pure]
   rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
   · rw [OptionT.probFailure_eq, OptionT.run_mk]
-    simp only [probFailure_eq_zero, zero_add]
-    apply probOutput_eq_zero_of_not_mem_support
-    simp only [support_bind, Set.mem_iUnion, not_exists]
-    intro s _
-    erw [simulateQ_pure]
-    rw [StateT.run'_eq, StateT.run_pure]
-    simp [map_pure, support_pure]
-    tauto
+    simp
   · intro x hx
-    rw [OptionT.mem_support_iff] at hx
-    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    rw [OptionT.mem_support_iff, OptionT.run_mk] at hx
+    simp only [support_bind, support_pure, Set.mem_iUnion, Set.mem_singleton_iff] at hx
     obtain ⟨s, _, hx⟩ := hx
-    erw [simulateQ_pure] at hx
-    rw [StateT.run'_eq, StateT.run_pure] at hx
-    simp only [map_pure, support_pure, Set.mem_singleton_iff] at hx
     cases hx
-    exact ⟨hIn, rfl⟩
+    refine ⟨?_, rfl⟩
+    simpa [toRelOut] using hIn
 
 theorem reduction_rbr_knowledge_soundness : True := trivial
 
@@ -186,7 +181,7 @@ def oracleProver : OracleProver oSpec
 --     (oracleProver oSpec Statement OStatement Witness).run ⟨stmt, oStmt⟩ wit =
 --       pure ((stmt, Sum.rec oStmt wit), (), fun i => wit (FinEnum.equiv.symm i)) := by
 --   simp [Prover.run, Prover.runToRound, Prover.processRound, oracleProver]
---   sorry
+--   placeholder
 
 -- /-- The `SendWitness` oracle reduction satisfies perfect completeness. -/
 -- @[simp]
@@ -197,9 +192,9 @@ def oracleProver : OracleProver oSpec
 --     OracleVerifier.toVerifier]
 --   intro stmt oStmt wit hRelIn
 --   unfold Reduction.run
---   sorry
+--   placeholder
 
--- theorem oracleReduction_rbr_knowledge_soundness : True := sorry
+-- theorem oracleReduction_rbr_knowledge_soundness : True := placeholder
 
 end OracleReduction
 
@@ -274,11 +269,17 @@ theorem oracleVerifier_toVerifier_run {stmt : Statement} {oStmt : ∀ i, OStatem
     {tr : (oraclePSpec Witness).FullTranscript} :
     (oracleVerifier oSpec Statement OStatement Witness).toVerifier.run ⟨stmt, oStmt⟩ tr =
       pure ⟨stmt, Sum.rec oStmt (fun i => match i with | 0 => tr 0)⟩ := by
-  simp [Verifier.run, OracleVerifier.toVerifier, oracleVerifier]
-  sorry
-  -- stop
-  -- ext i; rcases i <;> simp
-  -- split; simp
+  simp only [Verifier.run, OracleVerifier.toVerifier, oracleVerifier]
+  erw [simulateQ_pure, pure_bind]
+  congr 1
+  refine Prod.ext rfl ?_
+  funext i
+  rcases i with j | j
+  · simp only [Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inl,
+      Embedding.refl_apply]
+  · fin_cases j
+    simp only [Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inr]
+    rfl
 
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
   (oRelIn : Set ((Statement × (∀ i, OStatement i)) × Witness))
@@ -294,20 +295,36 @@ def toORelOut :
 theorem oracleReduction_completeness (h : NeverFail init) :
     (oracleReduction oSpec Statement OStatement Witness).perfectCompleteness init impl oRelIn
     (toORelOut oRelIn) := by
-  sorry
-  -- TODO: clean up this proof
-  -- simp only [OracleReduction.perfectCompleteness, oraclePSpec, toORelOut, Fin.isValue,
-  --   OracleReduction.toReduction, MessageIdx, Reduction.perfectCompleteness_eq_prob_one,
-  --   ChallengeIdx, StateT.run'_eq, Set.mem_setOf_eq, probEvent_eq_one_iff, probFailure_eq_zero_iff,
-  --   neverFails_bind_iff, neverFails_map_iff, support_bind, support_map, Set.mem_iUnion,
-  --   Set.mem_image, Prod.exists, exists_and_right, exists_eq_right, exists_prop, forall_exists_index,
-  --   and_imp, Prod.forall, Prod.mk.injEq]
-  -- simp_rw [h, Reduction.run, oracleReduction, oracleVerifier_toVerifier_run, oracleProver_run]
-  -- simp only [ChallengeIdx, oraclePSpec, id_eq, liftM_eq_liftComp,
-  --   liftComp_pure, bind_pure_comp, map_pure, simulateQ_pure, StateT.run_pure,
-  --   neverFails_pure, implies_true, and_self, support_pure, Set.mem_singleton_iff, Prod.mk.injEq,
-  --   and_true, Fin.isValue, and_imp, forall_const, true_and]
-  -- aesop
+  simp only [OracleReduction.perfectCompleteness, Reduction.perfectCompleteness,
+    Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+  intro ⟨stmt, oStmt⟩ wit hIn
+  have _inst : ProverOnly (oraclePSpec Witness) := { prover_first' := by simp }
+  simp only [OracleReduction.toReduction, oracleReduction]
+  rw [Reduction.run_of_prover_first]
+  simp only [oracleProver, id_eq, liftM_pure, pure_bind, bind_pure_comp,
+    OracleVerifier.toVerifier, oracleVerifier]
+  erw [simulateQ_pure]
+  simp only [StateT.run'_eq, StateT.run_pure, map_pure]
+  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  refine ⟨?_, ?_⟩
+  · rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp
+  · intro x hx
+    rw [OptionT.mem_support_iff, OptionT.run_mk] at hx
+    simp only [support_bind, support_pure, Set.mem_iUnion, Set.mem_singleton_iff] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    cases hx
+    refine ⟨?_, ?_⟩
+    · simp only [toORelOut, Set.mem_setOf_eq]
+      convert hIn using 2
+    · refine Prod.ext rfl ?_
+      funext i
+      rcases i with j | j
+      · simp only [Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inl,
+          Embedding.refl_apply]
+      · fin_cases j
+        simp only [Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inr]
+        rfl
 
 theorem oracleReduction_rbr_knowledge_soundness : True := trivial
 

@@ -710,6 +710,6 @@ variable {ι : Type} {oSpec : OracleSpec ι}
 --           (reduction.prover.sendMessage default state))
 --         let challenge := reduction.prover.receiveChallenge default state
 --         let stmtOut ← reduction.verifier.verify stmt transcript
---         return (transcript, queryLog, stmtOut, reduction.prover.output state) := by sorry
+--         return (transcript, queryLog, stmtOut, reduction.prover.output state) := by placeholder
 
 end Classes

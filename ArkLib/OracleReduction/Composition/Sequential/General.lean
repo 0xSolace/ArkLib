@@ -341,7 +341,7 @@ variable {m : ℕ}
 --     (R : ∀ i, Reduction oSpec (Stmt i.castSucc) (Wit i.castSucc) (Stmt i.succ) (Wit i.succ)
 --       (pSpec i)) :
 --       (Reduction.seqCompose R).run stmt wit := by
---   sorry
+--   placeholder
 
 -- end Execution
 

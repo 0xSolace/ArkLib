@@ -884,6 +884,105 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
 
 -- Showing that the lenses satisfy the completeness and rbr knowledge soundness conditions
 
+/-- Keystone `Fin`-plumbing identity for the sum-check round split: inserting `a` at position `i`
+into `append c y ∘ cast` agrees with appending the cons-extended tuple `cons a y` to `c`. -/
+private lemma append_cons_eq_insertNth {n' : ℕ} {α : Type} (i : Fin (n' + 1)) (a : α)
+    (c : Fin (i : ℕ) → α) (y : Fin (n' - i) → α)
+    (hc1 : n' + 1 = (i : ℕ) + ((n' + 1) - i))
+    (hc2 : n' = (i : ℕ) + (n' - i))
+    (hc3 : (n' + 1) - (i : ℕ) = (n' - i) + 1) :
+    (Fin.append c (Fin.cons a y ∘ Fin.cast hc3) ∘ Fin.cast hc1 : Fin (n' + 1) → α)
+      = i.insertNth a (Fin.append c y ∘ Fin.cast hc2) := by
+  rw [Fin.eq_insertNth_iff]
+  refine ⟨?_, ?_⟩
+  · simp only [Function.comp_apply]
+    have : (Fin.cast hc1 i : Fin ((i : ℕ) + ((n' + 1) - i)))
+        = Fin.natAdd (i : ℕ) ⟨0, by omega⟩ := by
+      apply Fin.ext; simp
+    rw [this, Fin.append_right]
+    simp
+  · ext j
+    simp only [Fin.removeNth_apply, Function.comp_apply]
+    rcases lt_or_ge (j : ℕ) (i : ℕ) with hlt | hge
+    · have hsa : i.succAbove j = j.castSucc :=
+        Fin.succAbove_of_castSucc_lt _ _ (by simp [Fin.lt_def, hlt])
+      rw [hsa]
+      have hL : (Fin.cast hc1 j.castSucc : Fin ((i : ℕ) + ((n' + 1) - i)))
+          = Fin.castAdd _ (⟨(j : ℕ), hlt⟩ : Fin (i : ℕ)) := by apply Fin.ext; simp
+      have hR : (Fin.cast hc2 j : Fin ((i : ℕ) + (n' - i)))
+          = Fin.castAdd _ (⟨(j : ℕ), hlt⟩ : Fin (i : ℕ)) := by apply Fin.ext; simp
+      rw [hL, hR, Fin.append_left, Fin.append_left]
+    · have hsa : i.succAbove j = j.succ :=
+        Fin.succAbove_of_le_castSucc _ _ (by simp [Fin.le_def, hge])
+      rw [hsa]
+      have hL : (Fin.cast hc1 j.succ : Fin ((i : ℕ) + ((n' + 1) - i)))
+          = Fin.natAdd (i : ℕ) (⟨(j : ℕ) - (i : ℕ) + 1, by omega⟩ : Fin ((n' + 1) - i)) := by
+        apply Fin.ext; simp; omega
+      have hR : (Fin.cast hc2 j : Fin ((i : ℕ) + (n' - i)))
+          = Fin.natAdd (i : ℕ) (⟨(j : ℕ) - (i : ℕ), by omega⟩ : Fin (n' - i)) := by
+        apply Fin.ext; simp; omega
+      rw [hL, hR, Fin.append_right, Fin.append_right, Function.comp_apply]
+      have : (Fin.cast hc3 ⟨(j : ℕ) - (i : ℕ) + 1, by omega⟩ : Fin ((n' - i) + 1))
+          = Fin.succ (⟨(j : ℕ) - (i : ℕ), by omega⟩ : Fin (n' - i)) := by
+        apply Fin.ext; simp
+      rw [this, Fin.cons_succ]
+
+/-- The sum-check round split: the `(n'+1-i)`-fold sum factors as a sum over the first coordinate
+of a sum over the remaining `(n'-i)` coordinates, with the inserted-variable evaluation. -/
+private lemma sumcheck_round_split {n' : ℕ} {m' : ℕ} (D' : Fin m' ↪ R) (i : Fin (n' + 1))
+    (c : Fin (i : ℕ) → R) (p : MvPolynomial (Fin (n' + 1)) R)
+    (hc1 : n' + 1 = (i : ℕ) + ((n' + 1) - i))
+    (hc2 : n' = (i : ℕ) + (n' - i))
+    (hc3 : (n' + 1) - (i : ℕ) = (n' - i) + 1) :
+    (∑ a : Fin m', ∑ y ∈ (univ.map D') ^ᶠ (n' - i),
+        MvPolynomial.eval (i.insertNth (D' a) (Fin.append c y ∘ Fin.cast hc2)) p)
+      = ∑ z ∈ (univ.map D') ^ᶠ ((n' + 1) - i),
+          MvPolynomial.eval (Fin.append c z ∘ Fin.cast hc1) p := by
+  rw [show (∑ a : Fin m', ∑ y ∈ (univ.map D') ^ᶠ (n' - i),
+        MvPolynomial.eval (i.insertNth (D' a) (Fin.append c y ∘ Fin.cast hc2)) p)
+      = ∑ a ∈ (univ.map D'), ∑ y ∈ (univ.map D') ^ᶠ (n' - i),
+        MvPolynomial.eval (i.insertNth a (Fin.append c y ∘ Fin.cast hc2)) p from by
+    rw [Finset.sum_map]]
+  rw [← Finset.sum_product']
+  refine Finset.sum_bij'
+    (i := fun ay _ => (Fin.cons ay.1 ay.2 : Fin ((n' - i) + 1) → R) ∘ Fin.cast hc3)
+    (j := fun z _ => (z (Fin.cast hc3.symm 0),
+        fun k => z (Fin.cast hc3.symm k.succ)))
+    ?_ ?_ ?_ ?_ ?_
+  · rintro ⟨a, y⟩ hay
+    rw [Finset.mem_product] at hay
+    simp only [Fintype.mem_piFinset] at hay ⊢
+    intro k
+    simp only [Function.comp_apply]
+    rcases Fin.eq_zero_or_eq_succ (Fin.cast hc3 k) with hk | ⟨k'', hk⟩
+    · rw [hk, Fin.cons_zero]; exact hay.1
+    · rw [hk, Fin.cons_succ]; exact hay.2 k''
+  · intro z hz
+    simp only [Fintype.mem_piFinset] at hz
+    rw [Finset.mem_product]
+    exact ⟨hz _, by simp only [Fintype.mem_piFinset]; intro k; exact hz _⟩
+  · rintro ⟨a, y⟩ hay
+    simp only [Function.comp_apply, Fin.cast_cast, Fin.cast_eq_self, Fin.cons_zero, Fin.cons_succ]
+  · intro z hz
+    funext w
+    simp only [Function.comp_apply]
+    rcases Fin.eq_zero_or_eq_succ (Fin.cast hc3 w) with hk | ⟨w'', hk⟩
+    · rw [hk, Fin.cons_zero]
+      congr 1
+      apply Fin.ext
+      have hval : (Fin.cast hc3 w : Fin ((n' - i) + 1)).val = (0 : Fin ((n' - i) + 1)).val := by
+        rw [hk]
+      simp only [Fin.val_cast, Fin.val_zero] at hval ⊢
+      omega
+    · rw [hk, Fin.cons_succ]
+      congr 1
+      apply Fin.ext
+      have hval : (Fin.cast hc3 w : Fin ((n' - i) + 1)).val = w''.succ.val := by rw [hk]
+      simp only [Fin.val_cast, Fin.val_succ] at hval ⊢
+      omega
+  · rintro ⟨a, y⟩ hay
+    rw [append_cons_eq_insertNth i a c y hc1 hc2 hc3]
+
 instance oCtxLens_complete :
     (oCtxLens R n deg D i).toContext.IsComplete
       (relationRound R n deg D i.castSucc) (Simple.inputRelation R deg D)
@@ -901,11 +1000,9 @@ where
       simp [← hRelIn]
       simp_rw [Polynomial.eval_finset_sum]
       simp_rw [← eval_eq_eval_mv_eval_finSuccEquivNth]
-      -- Remaining: ∑ a ∈ D, ∑ y ∈ D^(n-i), eval (insertNth i a (append c y ∘ cast)) p
-      --          = ∑ z ∈ D^(n+1-i), eval (append c z ∘ cast) p
-      -- Needs: (1) insertNth i a (append c y ∘ cast) = append c (cons a y) ∘ cast
-      --        (2) piFinset cons decomposition for D^(n+1-i) ↔ D × D^(n-i)
-      sorry
+      -- Round split: ∑ a ∈ D, ∑ y ∈ D^(n-i), eval (insertNth i a (append c y ∘ cast)) p
+      --            = ∑ z ∈ D^(n+1-i), eval (append c z ∘ cast) p
+      exact sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)
   lift_complete := by
     simp [relationRound]
     unfold compatContext oStmtLens

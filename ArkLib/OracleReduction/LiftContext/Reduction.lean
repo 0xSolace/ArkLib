@@ -6,6 +6,7 @@ Authors: Quang Dao
 
 import ArkLib.OracleReduction.LiftContext.Lens
 import ArkLib.OracleReduction.Security.RoundByRound
+import ArkLib.ToVCVio.EvalDist.Instances.OptionT
 -- import ArkLib.OracleReduction.Security.StateRestoration
 
 /-!
@@ -203,6 +204,52 @@ section Theorems
 
 /- Theorems about liftContext interacting with reduction execution and security properties -/
 
+/-- Stateful simulation can only restrict the set of reachable outcomes: any value in the support
+  of `(simulateQ so oa).run' s` is already in the support of `oa`.
+
+  This holds for an arbitrary stateful oracle implementation `so` (even one that changes the
+  target oracle spec), since `simulateQ` threads the computation along the original control flow,
+  and `query t` has full support over its range. -/
+theorem mem_support_simulateQ_run'_subset
+    {ι ι' : Type} {spec : OracleSpec ι} {spec' : OracleSpec ι'} {σ' : Type} {τ : Type}
+    (so : QueryImpl spec (StateT σ' (OracleComp spec')))
+    (s : σ') (oa : OracleComp spec τ) (x : τ)
+    (hx : x ∈ support ((simulateQ so oa).run' s)) : x ∈ support oa := by
+  revert s
+  induction oa using OracleComp.inductionOn with
+  | pure y =>
+      intro s hx
+      simp only [simulateQ_pure, StateT.run'_eq, StateT.run_pure, support_map,
+        support_pure, Set.image_singleton, Set.mem_singleton_iff] at hx
+      simp [hx]
+  | query_bind t mx ih =>
+      intro s hx
+      rw [simulateQ_bind, simulateQ_query] at hx
+      simp only [OracleQuery.cont_query, id_map, OracleQuery.input_query,
+        StateT.run'_eq, StateT.run_bind, support_map, support_bind, Set.mem_image,
+        Set.mem_iUnion] at hx
+      obtain ⟨⟨v, p⟩, ⟨⟨u, s'⟩, _, hmem⟩, hxv⟩ := hx
+      simp only at hxv
+      have hxmx : x ∈ support (mx u) := by
+        apply ih u s'
+        simp only [StateT.run'_eq, support_map, Set.mem_image]
+        exact ⟨⟨v, p⟩, hmem, hxv⟩
+      simp only [support_bind, support_query, Set.mem_iUnion]
+      exact ⟨u, by simp, hxmx⟩
+
+/-- Folding an output post-map `g` over an `OptionT ProbComp` computation of the form
+  `OptionT.mk ((fun p => Option.map g p.1) <$> base)` into the event predicate: its `probEvent`
+  of `P` equals the `probEvent` of `P ∘ g` over the unmapped `OptionT.mk ((fun p => p.1) <$> base)`.
+
+  Used to relate the lifted reduction run (which post-composes the inner run with the output lens
+  map) to the inner run. -/
+theorem probEvent_optionT_mk_map_fst_map {α β γ : Type}
+    (base : ProbComp (Option α × γ)) (g : α → β) (P : β → Prop) :
+    Pr[P | (OptionT.mk ((fun p => Option.map g p.1) <$> base) : OptionT ProbComp β)] =
+      Pr[P ∘ g | (OptionT.mk ((fun p => p.1) <$> base) : OptionT ProbComp α)] :=
+  OptionT.probEvent_eq_of_run_map_eq _ _ g P
+    (by simp only [OptionT.run_map, OptionT.run_mk, Functor.map_map, Function.comp_apply])
+
 namespace Prover
 
 /- Breaking down the intertwining of liftContext and prover execution -/
@@ -224,7 +271,8 @@ theorem liftContext_processRound
   simp only [bind_pure_comp]
   congr 1; funext ⟨tr, ps, outerStmtIn', outerWitIn'⟩
   simp only [pure_bind]
-  split <;> simp [Functor.map_map, liftM_map, map_bind]
+  split <;> simp [Functor.map_map, Function.comp, liftM_map, map_bind,
+    bind_assoc, pure_bind, bind_map_left, bind_pure_comp]
 
 
 theorem liftContext_runToRound
@@ -309,7 +357,7 @@ theorem liftContext_run
   unfold run
   simp [liftContext, Prover.liftContext_run, Verifier.liftContext, Verifier.run, Function.uncurry]
   congr 1; funext ⟨_, _⟩; congr 1; funext a_1
-  simp
+  simp [Functor.map_map, Function.comp]
   cases a_1 <;> simp [Option.getM, map_pure]
 
 theorem liftContext_runWithLog
@@ -323,8 +371,25 @@ theorem liftContext_runWithLog
         return ⟨⟨⟨fullTranscript, lens.lift (outerStmtIn, outerWitIn) innerCtxOut⟩,
                 lens.stmt.lift outerStmtIn verInnerStmtOut⟩, queryLog⟩ := by
   unfold runWithLog
-  simp [liftContext, Prover.liftContext_runWithLog, Verifier.liftContext, Verifier.run]
-  sorry
+  simp only [liftContext, Prover.liftContext_runWithLog, Verifier.liftContext, Verifier.run,
+    Function.uncurry, liftM_map, map_bind, bind_map_left, bind_pure_comp]
+  refine bind_congr fun a => ?_
+  -- The lifted verifier post-composes the inner verify with `lens.stmt.lift`; this is an
+  -- `OptionT`-level map, definitionally an `Option.map` at the `OracleComp` level.  Push it
+  -- through `simulateQ loggingOracle` and `WriterT.run`, then fold it into the final result map.
+  conv_lhs =>
+    rw [show (lens.stmt.lift outerStmtIn <$> R.verifier.verify (lens.stmt.proj outerStmtIn) a.1.1
+          : OptionT (OracleComp oSpec) OuterStmtOut)
+        = (Option.map (lens.stmt.lift outerStmtIn) <$>
+            R.verifier.verify (lens.stmt.proj outerStmtIn) a.1.1
+          : OracleComp oSpec (Option OuterStmtOut)) from OptionT.run_map _ _]
+  rw [simulateQ_map, WriterT.run_map]
+  simp only [liftM_map, Functor.map_map, Statement.Lens.proj]
+  rw [bind_map_left]
+  refine bind_congr fun b => ?_
+  cases h : b.1 with
+  | none => simp only [Option.map_none, Option.getM_none, h, map_failure]
+  | some v => simp only [Option.map_some, Option.getM_some, h, map_pure]
 
 end Reduction
 
@@ -355,20 +420,36 @@ theorem liftContext_completeness
     (lensComplete.proj_complete _ _ hRelIn)
   rw [Reduction.liftContext_run]
   refine le_trans hR ?_
-  simp
-  sorry
-  -- refine probEvent_mono ?_
-  -- intro ⟨innerContextOut, a, b⟩ hSupport ⟨hRelOut, hRelOut'⟩
-  -- have : innerContextOut ∈
-  --     Prod.fst <$>
-  --       (R.run (lens.stmt.proj outerStmtIn)
-  -- (lens.wit.proj (outerStmtIn, outerWitIn))).support := by
-  --   simp
-  --   exact ⟨a, b, hSupport⟩
-  -- simp_all
-  -- rw [← hRelOut'] at hRelOut ⊢
-  -- refine lensComplete.lift_complete _ _ _ _ ?_ hRelIn hRelOut
-  -- simp [compatContext]; exact this
+  -- Normalise both computations to maps of the common `init`-then-simulate base computation.
+  -- The LHS is then `Pr[P_inner | (fun p => p.1) <$> base]` and the RHS is
+  -- `Pr[P_outer | (fun p => Option.map f p.1) <$> base]`, where `f` is the output lens map.
+  simp only [Function.uncurry, Context.Lens.proj, bind_pure_comp, OptionT.run_map, simulateQ_map,
+    StateT.run'_eq, StateT.run_map, map_bind, Functor.map_map, ← map_bind]
+  -- Fold the output lens map `f` into the RHS predicate.
+  rw [probEvent_optionT_mk_map_fst_map]
+  -- Both `probEvent`s are now over the same computation; reduce to a support-aware pointwise
+  -- implication and discharge it with the lens completeness law.
+  refine _root_.probEvent_mono ?_
+  rintro ⟨⟨innerTr, innerStmtPrv, innerWit⟩, innerStmtVer⟩ hSupport ⟨hRelOut, hVer⟩
+  -- `hVer : innerStmtPrv = innerStmtVer`: the prover & verifier output statements agree.
+  simp only [Function.comp_apply] at hVer ⊢
+  subst hVer
+  refine ⟨?_, rfl⟩
+  -- Goal: the lifted output context satisfies `outerRelOut`.  Apply the lens completeness law.
+  refine lensComplete.lift_complete outerStmtIn outerWitIn innerStmtPrv innerWit ?_ hRelIn hRelOut
+  -- Compatibility witness: the inner output context is reachable by the inner reduction run.
+  simp only [OptionT.mem_support_iff, OptionT.run_mk, mem_support_bind_iff, support_map,
+    Set.mem_image] at hSupport
+  obtain ⟨x, ⟨s, _hs, hmem⟩, hx1⟩ := hSupport
+  have hsub := mem_support_simulateQ_run'_subset (impl.addLift challengeQueryImpl) s
+    (Reduction.run (lens.stmt.proj outerStmtIn)
+      (lens.wit.proj (outerStmtIn, outerWitIn)) R).run x.1
+    (by simp only [StateT.run'_eq, support_map, Set.mem_image]; exact ⟨x, hmem, rfl⟩)
+  rw [hx1] at hsub
+  rw [Reduction.compatContext]
+  simp only [Set.mem_image, Function.comp_apply]
+  refine ⟨((innerTr, innerStmtPrv, innerWit), innerStmtPrv), ?_, rfl⟩
+  rwa [← OptionT.mem_support_iff] at hsub
 
 theorem liftContext_perfectCompleteness
     (h : R.perfectCompleteness init impl innerRelIn innerRelOut) :
@@ -406,10 +487,7 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
   unfold soundness Reduction.run at h ⊢
   -- Note: there is no distinction between `Outer` and `Inner` here
   intro WitIn WitOut outerWitIn outerP outerStmtIn hOuterStmtIn
-  simp only [ChallengeIdx, Challenge, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
-    bind_pure_comp, OptionT.run_bind, OptionT.run_monadLift, monadLift_self, OptionT.run_map,
-    Option.elimM_map, Option.elim_some, simulateQ_bind, simulateQ_option_elimM, simulateQ_pure,
-    simulateQ_map, StateT.run'_eq, StateT.run_bind, map_bind, OptionT.mk_bind] at h ⊢
+  simp at h ⊢
   have innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec := {
     PrvState := outerP.PrvState
     input := fun _ => outerP.input (outerStmtIn, outerWitIn)
@@ -501,10 +579,7 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
       (V.liftContext lens).rbrSoundness init impl outerLangIn outerLangOut rbrSoundnessError := by
   unfold rbrSoundness at h ⊢
   obtain ⟨stF, h⟩ := h
-  simp only [ChallengeIdx, Challenge, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
-    HasQuery.instOfMonadLift_query, liftComp_eq_liftM, bind_pure_comp, simulateQ_bind,
-    simulateQ_map, StateT.run'_eq, StateT.run_bind, StateT.run_map, map_bind, Functor.map_map,
-    Subtype.forall] at h ⊢
+  simp at h ⊢
   refine ⟨stF.liftContext lens (lensSound := lensSound), ?_⟩
   intro outerStmtIn hOuterStmtIn WitIn WitOut witIn outerP roundIdx hDir
   have innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec := {

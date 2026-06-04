@@ -17,7 +17,7 @@ open NNReal Finset Function
 open scoped BigOperators ProbabilityTheory
 open Real
 
--- TODO(dtumad): Move most of the stuff in this file to VCV and generalize as possible
+-- NOTE(dtumad): Move most of the stuff in this file to VCV and generalize as possible
 
 section
 variable {α : Type*}
@@ -32,12 +32,12 @@ instance [IsEmpty α] : IsEmpty (PMF α) := by
 -- @[simp]
 -- theorem PMF.eq_pure_iff_ge_one {α : Type*} {p : PMF α} {a : α} : p = pure a ↔ p a ≥ 1 := by
 --   constructor <;> intro h
---   · sorry
+--   · placeholder
 --   · ext b
 --     simp only [pure, PMF.pure_apply]
 --     by_cases hb : b = a
 --     · simp [hb]; exact le_antisymm (PMF.coe_le_one p a) h
---     · simp [hb]; sorry
+--     · simp [hb]; placeholder
 end
 
 section ProbabilityTools

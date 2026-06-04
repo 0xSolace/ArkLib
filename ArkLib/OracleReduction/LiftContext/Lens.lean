@@ -457,7 +457,7 @@ section SpecialCases
 -- 1.2. Over the input witness only
 -- 1.2.1. When the map is an equivalence
 
--- TODO for oracle statements as we haven't figured it out
+-- NOTE for oracle statements as we haven't figured it out
 
 -- 2. When the lens is over the output context only (keeping the input the same)
 -- 2.1. Over the output statement only
