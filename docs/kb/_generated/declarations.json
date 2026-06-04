@@ -39446,9 +39446,18 @@
           "signature": "def reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut !p[] where"
         },
         {
+          "doc": "A `some`-valued `ProbComp` under `OptionT.mk` is `OptionT.lift` of the underlying computation: the no-interaction run never fails (the prover and verifier only `liftM` total `OracleComp oSpec` maps, never `failure`), so its `Reduction.run` distribution is the `OptionT.lift` of a plain `ProbComp`. Used to peel the `OptionT` wrapper in `reduction_completeness`.",
+          "kind": "theorem",
+          "line": 73,
+          "name": "NoInteraction.optionT_mk_some_map_eq_lift",
+          "namespace": "NoInteraction",
+          "short_name": "optionT_mk_some_map_eq_lift",
+          "signature": "theorem optionT_mk_some_map_eq_lift {\u03b1 : Type} (x : ProbComp \u03b1) :"
+        },
+        {
           "doc": "Completeness of a no-interaction reduction. **Faithfulness of the hypothesis `hRel`.** `Reduction.run` (`Execution.lean`) runs the prover and the verifier as two *independent* sub-computations: the prover evaluates `combineMap mapStmt mapWit` (one call each to `mapStmt` and `mapWit`), while the verifier *separately* evaluates `mapStmt` again on the same input statement. The completeness event (`Reduction.completeness`, `Security/Basic.lean`) then demands not only `(stmtOut, witOut) \u2208 relOut` but also that the prover's and the verifier's output statements *agree* (`prvStmtOut = stmtOut`). When ",
           "kind": "theorem",
-          "line": 84,
+          "line": 93,
           "name": "NoInteraction.reduction_completeness",
           "namespace": "NoInteraction",
           "short_name": "reduction_completeness",
@@ -48765,7 +48774,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5294,
+      "declarations": 5295,
       "files": 282
     }
   }
