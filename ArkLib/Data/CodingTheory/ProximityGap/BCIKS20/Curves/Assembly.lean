@@ -112,6 +112,26 @@ theorem curve_sum_reindex_equiv {κ κ' : Type} [Fintype κ] [Fintype κ']
       ∑ t' : κ', (z ^ pow t') • u t' := by
   simpa using (Equiv.sum_comp e (fun t' : κ' => (z ^ pow t') • u t'))
 
+omit [Nonempty ι] [DecidableEq ι] in
+/-- `RS_goodCoeffsCurve` is unchanged by a definitional reindexing of its
+`Fin (k + 1)` coefficient words. -/
+theorem RS_goodCoeffsCurve_finCongr {k k' deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (h : k + 1 = k' + 1) (u : WordStack F (Fin (k' + 1)) ι) :
+    RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain)
+        (fun i => u (finCongr h i)) δ =
+      RS_goodCoeffsCurve (k := k') (deg := deg) (domain := domain) u δ := by
+  classical
+  ext z
+  have hsum :
+      (∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u (finCongr h t)) =
+        ∑ t' : Fin (k' + 1), (z ^ (t' : ℕ)) • u t' := by
+    simpa using
+      (curve_sum_reindex_equiv (F := F) (ι := ι) (e := finCongr h) z u
+        (fun t' : Fin (k' + 1) => (t' : ℕ)))
+  simp only [RS_goodCoeffsCurve, Finset.mem_filter, Finset.mem_univ, true_and]
+  rw [hsum]
+
 omit [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] in
 /-- `jointAgreement` is invariant under reindexing the coefficient words by an
 equivalence. This packages the casts needed when a curve helper is stated with
