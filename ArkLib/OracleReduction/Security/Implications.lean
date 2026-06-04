@@ -156,7 +156,7 @@ theorem rbrSoundness_implies_soundness (langIn : Set StmtIn) (langOut : Set Stmt
     refine le_trans ?_ hi
     -- (B.1) Characterize the `OptionT` flip event as a *success-conjunction* on the underlying run:
     -- the flip must hold on a genuine (non-failing) verifier accept (failure does not count).
-    rw [hgame, Verifier.StateFunction.probEvent_optionT_mk_eq_elim, OptionT.run_mk]
+    rw [hgame, Verifier.StateFunction.probEvent_optionT_mk_eq_elim]
     -- (B.2) Both games thread `init` identically; reduce to a per-state `ProbComp` bound.
     refine Verifier.StateFunction.probEvent_bind_mono_heteroEvent (fun s hs => ?_)
     -- REMAINING FRONTIER (per-state probabilistic plumbing assembly; all ingredients banked).

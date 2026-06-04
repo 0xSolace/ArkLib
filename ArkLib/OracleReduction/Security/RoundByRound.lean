@@ -546,6 +546,98 @@ theorem exists_challenge_flip_of_full {langIn : Set StmtIn} {langOut : Set StmtO
   rw [← take_succ_eq_concat tr i.1]
   exact hsucc
 
+/-- **Verifier-tail drop for the soundness game (state-aware).**  Dropping the verifier-verdict +
+`getM` `Option.elimM` tail of `Reduction.run` (which can fail / return `none`) from the simulated
+soundness game can only *raise* a transcript-prefix-reading flip event whose value is `False` on
+failure: every successful verifier verdict `(pr, vOut)` has the same transcript `pr.1` as the
+prover-result projection `h pr := (pr, pr.2.1)`, so the `hcont` hypothesis of
+`probEvent_simulateQ_run'_optionBind_trailing_le` holds with equality.  After the drop the event runs
+over `some <$> prover.run`, i.e. the prover-run transcript marginal — the soundness game with the
+verifier collapsed away. -/
+theorem probEvent_run_drop_verifier_le
+    {langIn : Set StmtIn} {langOut : Set StmtOut}
+    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
+    (sf : verifier.StateFunction init impl langIn langOut)
+    (i : pSpec.ChallengeIdx) (stmtIn : StmtIn)
+    {WitIn' WitOut' : Type} (witIn' : WitIn')
+    (prover : Prover oSpec StmtIn WitIn' StmtOut WitOut' pSpec) (s : σ)
+    (P : ((FullTranscript pSpec × StmtOut × WitOut') × StmtOut) → Prop)
+    (hP : ∀ x : (FullTranscript pSpec × StmtOut × WitOut') × StmtOut,
+      P x = (¬ sf.toFun i.1.castSucc stmtIn (x.1.1.take i.1.castSucc.val i.1.castSucc.is_le) ∧
+        sf.toFun i.1.succ stmtIn
+          (Transcript.concat (x.1.1 i.1) (x.1.1.take i.1.castSucc.val i.1.castSucc.is_le)))) :
+    Pr[fun o => o.elim False P |
+        (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+          ((Reduction.mk prover verifier).run stmtIn witIn').run).run' s]
+      ≤ Pr[fun o => o.elim False (fun pr : FullTranscript pSpec × StmtOut × WitOut' =>
+            P (pr, pr.2.1)) |
+          (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+            ((liftM (prover.run stmtIn witIn') :
+              OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) _).run)).run' s] := by
+  -- Rewrite `Reduction.run.run` into the `(liftM prover.run).run >>= elimM verifier-tail` shape.
+  set contTail : (FullTranscript pSpec × StmtOut × WitOut') →
+      OracleComp (oSpec + [pSpec.Challenge]ₒ)
+        (Option ((FullTranscript pSpec × StmtOut × WitOut') × StmtOut)) :=
+    fun x =>
+      (liftM ((verifier.run stmtIn x.1).run) :
+          OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run >>= fun outer2 =>
+        outer2.elim (pure none) (fun x_1 =>
+          (Option.getM x_1 :
+              OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) StmtOut).run >>= fun outer3 =>
+            outer3.elim (pure none) (fun x_2 => pure (some (x, x_2))))
+    with hcontTail
+  have hform : ((Reduction.mk prover verifier).run stmtIn witIn').run
+      = (liftM (prover.run stmtIn witIn') :
+            OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) _).run >>= fun oa =>
+          Option.elimM (pure oa) (pure none) contTail := by
+    rw [hcontTail]
+    unfold Reduction.run
+    simp only [OptionT.run_bind, Option.elimM, OptionT.run_pure, pure_bind]
+  rw [hform]
+  -- Apply the general `Option`-continuation failure-monotone drop with `h pr := (pr, pr.2.1)`.
+  refine le_of_le_of_eq
+    (probEvent_simulateQ_run'_optionBind_trailing_le
+      (impl.addLift challengeQueryImpl) s
+      ((liftM (prover.run stmtIn witIn') :
+        OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) _).run)
+      contTail (fun pr => (pr, pr.2.1)) P ?_) ?_
+  · -- `hcont`: any verifier-tail success `some (pr, vOut)` reads the same transcript as `(pr, pr.2.1)`.
+    intro pr b hb b' hb_eq hPb'
+    subst hb_eq
+    -- `P` reads only `b'.1.1`; both `b'` and `(pr, pr.2.1)` have first-component `pr`.
+    rw [hP] at hPb' ⊢
+    -- Extract that `b'.1 = pr` from the verifier-tail support.
+    have hb1 : b'.1 = pr := by
+      rw [hcontTail, mem_support_bind_iff] at hb
+      obtain ⟨outer2, _, hb⟩ := hb
+      cases outer2 with
+      | none => simp at hb
+      | some x_1 =>
+          simp only [Option.elim_some, mem_support_bind_iff] at hb
+          obtain ⟨outer3, _, hb⟩ := hb
+          cases outer3 with
+          | none => simp at hb
+          | some x_2 =>
+              simp only [Option.elim_some, mem_support_pure_iff, Option.some.injEq] at hb
+              exact congrArg Prod.fst hb
+    rw [hb1] at hPb'
+    exact hPb'
+  · -- After the drop, the event `o ↦ o.elim False P` over the `Option.map (fun pr => (pr, pr.2.1))`-
+    -- projected prover run equals the prover-projection event `o ↦ o.elim False (P ∘ ⟨pr,pr.2.1⟩)`.
+    rw [show ((liftM (prover.run stmtIn witIn') :
+              OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) _).run >>= fun oa =>
+            (pure (Option.map (fun pr => (pr, pr.2.1)) oa) :
+              OracleComp (oSpec + [pSpec.Challenge]ₒ) _))
+        = (Option.map (fun pr => (pr, pr.2.1)) <$>
+            (liftM (prover.run stmtIn witIn') :
+              OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) _).run) from by
+          rw [map_eq_bind_pure_comp]; rfl,
+      simulateQ_map, StateT.run'_map_comm, probEvent_map]
+    refine probEvent_ext (fun o _ => ?_)
+    cases o with
+    | none => rfl
+    | some pr => rfl
+
 end StateFunction
 
 /-- A knowledge state function for a verifier, with respect to input relation `relIn`, output
