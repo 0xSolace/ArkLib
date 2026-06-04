@@ -9,7 +9,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ReedSolomon
 
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 2000
 
 -- Decidability/Fintype instances are threaded through the sections; several
 -- statement-level engine lemmas do not mention them directly.
