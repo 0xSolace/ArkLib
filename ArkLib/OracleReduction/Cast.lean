@@ -229,8 +229,9 @@ theorem cast_toVerifier (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOu
         obtain ⟨i, q⟩ := t
         -- `MessageIdx.cast _ _ i` is definitionally `i`, so after evaluating the inner `simulateQ`
         -- (which routes the message query) the two sides agree definitionally.
-        simp only [castMessageImpl, castMessageQuery]
-        simp [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query]
+        simp only [castMessageImpl, castMessageQuery, OracleQuery.input_query,
+          OracleQuery.cont_query, id_map, simulateQ_map]
+        exact simulateQ_spec_query _ _
   · -- Continuation: the two builders of `oStmtOut` agree.  The casting embedding
     -- `V.embed.trans (sumMap (Equiv.refl _) (MessageIdx.cast _ _))` is `V.embed` (both the
     -- `Equiv.refl` map and `MessageIdx.cast _ _` are identities), so the `match`es coincide.
@@ -251,7 +252,15 @@ theorem cast_toVerifier (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOu
       rw [show (MessageIdx.cast (Eq.refl n₁) (by rfl) : pSpec₁.MessageIdx → _) = id from
         MessageIdx.cast_id]
       cases V.embed k <;> simp
-    simp only [hembed]
+    have key : (V.embed.trans ((Equiv.refl ιₛᵢ).toEmbedding.sumMap
+        ⟨MessageIdx.cast (Eq.refl n₁) (by rfl),
+          MessageIdx.cast_injective (Eq.refl n₁) (by rfl)⟩)) i = V.embed i :=
+      congrFun (congrArg DFunLike.coe hembed) i
+    split <;> rename_i h₁ <;> rw [key] at h₁ <;> split <;> rename_i h₂ <;>
+      rw [h₁] at h₂ <;> cases h₂ <;>
+      -- diagonal cases: the index now matches on both sides; the `▸`-transports differ only in
+      -- proof-irrelevant equality witnesses, so the two values coincide.
+      simp only [eqRec_eq_cast, cast_cast, cast_eq]
 
 end OracleVerifier
 
