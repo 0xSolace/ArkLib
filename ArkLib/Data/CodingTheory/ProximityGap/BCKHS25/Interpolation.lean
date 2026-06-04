@@ -593,7 +593,7 @@ lemma evalY_eq_proximate_mul {k e h : ℕ}
   have hAgr_card : k + e + h + 1 ≤ Agr.card := by
     have hsplit : Agr.card + (Finset.univ.filter
         (fun x => p.eval (domain x) ≠ u₀ x + u₁ x * z)).card = Fintype.card ι := by
-      rw [hAgr, Finset.filter_card_add_filter_neg_card_eq_card]
+      rw [hAgr, Finset.card_filter_add_card_filter_not]
       · simp
     omega
   -- both sides have degree < k + e + h + 1 and agree on the embedded agreement set
