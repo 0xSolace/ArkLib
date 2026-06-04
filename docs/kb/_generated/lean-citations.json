@@ -153,6 +153,9 @@
     "ArkLib/ProofSystem/Fri/Spec/SingleRound.lean": [
       "FRI1216"
     ],
+    "ArkLib/ProofSystem/Fri/Spec/Soundness.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/ProofSystem/Plonk/Basic.lean": [
       "GWZC19"
     ],
@@ -245,6 +248,7 @@
       "ArkLib/Data/Polynomial/RationalFunctions.lean",
       "ArkLib/Data/Polynomial/Trivariate.lean",
       "ArkLib/ProofSystem/BatchedFri/Security.lean",
+      "ArkLib/ProofSystem/Fri/Spec/Soundness.lean",
       "ArkLib/ProofSystem/Stir/ProximityGap.lean",
       "ArkLib/ProofSystem/Whir/ProximityGen.lean"
     ],
