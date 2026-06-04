@@ -39,15 +39,15 @@ theorem correlatedAgreement_affine_curves {k : ℕ}
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
   classical
-  by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
-      (C := ReedSolomon.code domain deg)
-  · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).
-    rcases Nat.eq_zero_or_pos k with hk0 | hkpos
-    · subst hk0
-      exact RS_correlatedAgreement_curves_k_zero hUDR
-    · exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
-  · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain).
-    sorry
+  rcases Nat.eq_zero_or_pos k with hk0 | hkpos
+  · subst hk0
+    exact RS_correlatedAgreement_curves_k_zero (deg := deg) (domain := domain) (δ := δ)
+  · by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+        (C := ReedSolomon.code domain deg)
+    · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).
+      exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
+    · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain).
+      sorry
 
 omit [DecidableEq ι] [Fintype F] in
 /-- Integral-weight list agreement on a sufficiently large set of curve parameters

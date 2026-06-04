@@ -832,7 +832,7 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
           (ε := ProximityGap.errorBound δ dstar φ) := by
         rcases Nat.eq_zero_or_pos (total_terms dstar degs - 1) with hk0 | hkpos
         · exact hk0 ▸ ProximityGap.RS_correlatedAgreement_curves_k_zero (deg := dstar)
-            (domain := φ) (δ := δ) hδUDR
+            (domain := φ) (δ := δ)
         · exact ProximityGap.RS_correlatedAgreement_curves_uniqueDecodingRegime
             (deg := dstar) (domain := φ) (δ := δ) hkpos hδUDR
       simp only [ProximityGap.δ_ε_correlatedAgreementCurves] at proximity_gap
