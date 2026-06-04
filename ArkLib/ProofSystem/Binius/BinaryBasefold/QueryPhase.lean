@@ -41,6 +41,106 @@ variable [hdiv : Fact (ϑ ∣ ℓ)]
 open scoped NNReal
 
 /-!
+## Generic `forIn`-loop support theory  (candidate for upstreaming to VCVio)
+
+The verifier `verify` body below is a doubly-nested `List.forIn` with early-exit
+`unless … do return false` branches. Computing the `support` of such a loop requires pushing
+`support` through `forIn`, for which neither VCVio, Mathlib, nor ArkLib provides a lemma
+(`simulateQ_bind` does not apply — `forIn` is a recursor, not a `bind`; and the only existing
+bridge `List.forIn_mprod_yield_eq_foldlM` is yield-only, rejecting the early-exit).
+
+The transport layer here is built on the core unfolding equations `List.forIn_nil` /
+`List.forIn_cons` (already in Lean core) together with the generic `support_bind` /
+`mem_support_bind_iff` / `support_pure` API (available for any `HasEvalSet m`). The two workhorses
+are:
+
+* `mem_support_forIn_cons` — a clean membership characterization for the cons-step support, and
+* `forIn_support_invariant` — an induction-free invariant rule: a predicate preserved by every
+  per-element step (over the body's support) holds of every value in the loop's support.
+
+A third lemma, `forIn_yield_pure_eq_foldl`, collapses an all-`yield` `pure`-bodied loop to a `pure`
+of a left fold; this is the shape an early-return loop takes once every check is known to pass
+(the `do`-notation early-return desugaring threads an `Option`-flagged accumulator, and under
+"all checks pass" the body never emits a `done`, so the loop reduces to a deterministic fold).
+
+These lemmas are protocol-agnostic (any `HasEvalSet` monad — in particular the `OptionT (OracleComp
+…)` of an `OracleVerifier.verify` body and its `simulateQ`-image) and are candidates for upstreaming
+to VCVio's loop/distribution theory.
+-/
+namespace ForInSupport
+
+variable {m : Type → Type} [Monad m] [LawfulMonad m] [HasEvalSet m] {α γ : Type}
+
+omit [LawfulMonad m] in
+/-- Membership characterization of the support of `forIn (a :: l) init f`: a value `x` is reachable
+iff there is a first-step `step` in the body's support such that, on `done b`, `x = b`, and on
+`yield b`, `x` is reachable from the tail loop started at `b`. -/
+theorem mem_support_forIn_cons (a : α) (l : List α) (init : γ)
+    (f : α → γ → m (ForInStep γ)) (x : γ) :
+    x ∈ support (forIn (a :: l) init f) ↔
+      ∃ step ∈ support (f a init),
+        (match step with
+          | .done b => x = b
+          | .yield b => x ∈ support (forIn l b f)) := by
+  rw [List.forIn_cons, mem_support_bind_iff]
+  constructor
+  · rintro ⟨step, hstep, hx⟩
+    refine ⟨step, hstep, ?_⟩
+    cases step with
+    | done b => rw [mem_support_pure_iff] at hx; exact hx
+    | yield b => exact hx
+  · rintro ⟨step, hstep, hx⟩
+    refine ⟨step, hstep, ?_⟩
+    cases step with
+    | done b => rw [mem_support_pure_iff]; exact hx
+    | yield b => exact hx
+
+omit [LawfulMonad m] in
+/-- **Invariant rule for `forIn`-loop support.** If `Inv` holds of the initial accumulator and is
+preserved by every per-element step (over the support of the body), then `Inv` holds of every value
+in the support of the whole loop. This is the structural workhorse for transporting per-iteration
+facts (e.g. "this consistency check passed") out of the support of a loop-based verifier run. -/
+theorem forIn_support_invariant (Inv : γ → Prop) (l : List α)
+    (f : α → γ → m (ForInStep γ))
+    (hstep : ∀ a ∈ l, ∀ b, Inv b → ∀ step ∈ support (f a b), Inv step.value) :
+    ∀ init, Inv init → ∀ x ∈ support (forIn l init f), Inv x := by
+  induction l with
+  | nil =>
+    intro init hinit x hx
+    rw [List.forIn_nil, mem_support_pure_iff] at hx
+    exact hx ▸ hinit
+  | cons a l ih =>
+    intro init hinit x hx
+    rw [mem_support_forIn_cons] at hx
+    obtain ⟨step, hstepmem, hx⟩ := hx
+    have hInvStep : Inv step.value := hstep a (List.mem_cons_self) init hinit step hstepmem
+    cases step with
+    | done b => simp only at hx; exact hx ▸ hInvStep
+    | yield b =>
+      simp only at hx
+      exact ih (fun a' ha' => hstep a' (List.mem_cons_of_mem _ ha')) b hInvStep x hx
+
+omit [HasEvalSet m] in
+/-- **All-`yield` collapse.** A loop whose body always `pure`s a `yield` with new state `g a b`
+collapses to a deterministic `pure` of the left fold of `g` over the list. This is the value an
+early-return loop assumes once every check is known to pass: the `done` branches are never taken,
+so the whole loop is a pure fold (used to evaluate the honest verifier run for completeness). -/
+theorem forIn_yield_pure_eq_foldl (l : List α) (g : α → γ → γ) :
+    ∀ init : γ,
+      (forIn l init (fun a b => (pure (ForInStep.yield (g a b)) : m (ForInStep γ))))
+        = pure (l.foldl (fun b a => g a b) init) := by
+  induction l with
+  | nil => intro init; rw [List.forIn_nil]; rfl
+  | cons a l ih =>
+    intro init
+    rw [List.forIn_cons]
+    simp only [pure_bind]
+    rw [ih (g a init)]
+    rfl
+
+end ForInSupport
+
+/-!
 ## Common Proximity Check Helpers
 
 These functions extract the shared logic between `queryOracleVerifier`
