@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 282 files, 5215 declarations
+- `ArkLib` — 282 files, 5219 declarations
 
 ## Same short-name across multiple files (143 groups)
 
@@ -33,7 +33,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ReduceClaim.oracleVerifier` [ArkLib/ProofSystem/Component/ReduceClaim.lean:198](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L198) — The oracle verifier for the `ReduceClaim` oracle reduction.
 - `def SendClaim.oracleVerifier` [ArkLib/ProofSystem/Component/SendClaim.lean:63](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L63) — The verifier checks that the relationship `rel oldStmt newStmt` holds. It has access to the original
 - `def SendSingleWitness.oracleVerifier` [ArkLib/ProofSystem/Component/SendWitness.lean:237](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L237) — The oracle verifier for the `SendSingleWitness` oracle reduction. The verifier receives the input st
-- `def RingSwitching.BatchingPhase.oracleVerifier` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:138](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L138) — (no docstring)
+- `def RingSwitching.BatchingPhase.oracleVerifier` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:143](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L143) — (no docstring)
 - `def Sumcheck.Spec.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:158](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L158) — The oracle verifier for the (full) sum-check protocol
 - `def Sumcheck.Spec.SingleRound.Simple.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:426](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L426) — (no docstring)
 - `def Sumcheck.Spec.SingleRound.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:909](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L909) — The oracle verifier for the `i`-th round of the sum-check protocol
@@ -102,7 +102,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def SendClaim.oracleProver` [ArkLib/ProofSystem/Component/SendClaim.lean:36](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L36) — The prover takes in the old oracle statement as input, and sends it as the protocol message.
 - `def SendWitness.oracleProver` [ArkLib/ProofSystem/Component/SendWitness.lean:133](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L133) — The oracle prover for the `SendWitness` oracle reduction. For each round `i : Fin (FinEnum.card ιw)`
 - `def SendSingleWitness.oracleProver` [ArkLib/ProofSystem/Component/SendWitness.lean:221](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L221) — The oracle prover for the `SendSingleWitness` oracle reduction. The prover sends the witness `wit` t
-- `def RingSwitching.BatchingPhase.oracleProver` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:90](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L90) — (no docstring)
+- `def RingSwitching.BatchingPhase.oracleProver` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:95](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L95) — (no docstring)
 - `def ToyProblem.Spec.oracleProver` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:300](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L300) — Same as `prover` but exposed at the `OracleProver` signature. The underlying `Prover` is identical (
 
 ### `prover` (9 declarations, 8 files)

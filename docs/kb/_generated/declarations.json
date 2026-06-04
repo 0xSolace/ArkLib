@@ -42238,9 +42238,18 @@
     "ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean": {
       "declarations": [
         {
+          "doc": "The default oracle interface (`OracleInterface.instDefault`, used by the ring-switching message oracles in `Spec.lean`) answers its only (unit) query with the message itself.",
+          "kind": "lemma",
+          "line": 54,
+          "name": "RingSwitching.BatchingPhase.answer_instDefault",
+          "namespace": "RingSwitching.BatchingPhase",
+          "short_name": "answer_instDefault",
+          "signature": "lemma answer_instDefault {M : Type _} (m : M) (q : Unit) :"
+        },
+        {
           "doc": "A dummy state returned by the verifier upon failure of Check 1.",
           "kind": "def",
-          "line": 68,
+          "line": 73,
           "name": "RingSwitching.BatchingPhase.failureState",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "failureState",
@@ -42249,7 +42258,7 @@
         {
           "doc": "The state maintained by the prover throughout the batching phase.",
           "kind": "def",
-          "line": 83,
+          "line": 88,
           "name": "RingSwitching.BatchingPhase.PrvState",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "PrvState",
@@ -42258,7 +42267,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 90,
+          "line": 95,
           "name": "RingSwitching.BatchingPhase.oracleProver",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "oracleProver",
@@ -42267,16 +42276,25 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 138,
+          "line": 143,
           "name": "RingSwitching.BatchingPhase.oracleVerifier",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "oracleVerifier",
           "signature": "def oracleVerifier :"
         },
         {
+          "doc": "The inner oracle verifier body, simulated through `simOracle2`, collapses to the deterministic `if performCheck \u2026 then stmtOutAccept else failureState`.",
+          "kind": "lemma",
+          "line": 187,
+          "name": "RingSwitching.BatchingPhase.oracleVerifier_verify_collapse",
+          "namespace": "RingSwitching.BatchingPhase",
+          "short_name": "oracleVerifier_verify_collapse",
+          "signature": "lemma oracleVerifier_verify_collapse"
+        },
+        {
           "doc": "The Oracle Reduction for the Batching Phase.",
           "kind": "def",
-          "line": 178,
+          "line": 226,
           "name": "RingSwitching.BatchingPhase.batchingOracleReduction",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingOracleReduction",
@@ -42285,7 +42303,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 191,
+          "line": 239,
           "name": "RingSwitching.BatchingPhase.batchingInputRelationProp",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingInputRelationProp",
@@ -42294,7 +42312,7 @@
         {
           "doc": "Input relation: the witness `t` and `t'` are consistent, and `t` satisfies the original claim.",
           "kind": "def",
-          "line": 198,
+          "line": 246,
           "name": "RingSwitching.BatchingPhase.batchingInputRelation",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingInputRelation",
@@ -42303,7 +42321,7 @@
         {
           "doc": "Intermediate witness types for RBR knowledge soundness.",
           "kind": "def",
-          "line": 203,
+          "line": 251,
           "name": "RingSwitching.BatchingPhase.batchingWitMid",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingWitMid",
@@ -42312,7 +42330,7 @@
         {
           "doc": "RBR extractor for the batching phase.",
           "kind": "def",
-          "line": 209,
+          "line": 257,
           "name": "RingSwitching.BatchingPhase.batchingRbrExtractor",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingRbrExtractor",
@@ -42321,7 +42339,7 @@
         {
           "doc": "RBR knowledge soundness error for the batching phase. The only verifier randomness is `r''`. A collision has probability related to `\u03ba/|L|`. For simplicity, we can set a placeholder value.",
           "kind": "def",
-          "line": 227,
+          "line": 275,
           "name": "RingSwitching.BatchingPhase.batchingRBRKnowledgeError",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingRBRKnowledgeError",
@@ -42330,7 +42348,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 232,
+          "line": 280,
           "name": "RingSwitching.BatchingPhase.batchingKStateProp",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingKStateProp",
@@ -42339,7 +42357,7 @@
         {
           "doc": "Knowledge state function for the batching phase.",
           "kind": "def",
-          "line": 302,
+          "line": 350,
           "name": "RingSwitching.BatchingPhase.batchingKnowledgeStateFunction",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingKnowledgeStateFunction",
@@ -42348,7 +42366,7 @@
         {
           "doc": "Perfect completeness for the batching phase oracle reduction.",
           "kind": "theorem",
-          "line": 379,
+          "line": 465,
           "name": "RingSwitching.BatchingPhase.batchingReduction_perfectCompleteness",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingReduction_perfectCompleteness",
@@ -42357,7 +42375,7 @@
         {
           "doc": "RBR knowledge soundness for the batching phase oracle verifier. `IsDomain K` (alongside the existing `IsDomain L`) is required by the round-0 knowledge-state conjunct's DP24 capstone; it holds in every real instantiation (e.g. `binaryTowerProfile` builds from a field `K`).",
           "kind": "theorem",
-          "line": 404,
+          "line": 490,
           "name": "RingSwitching.BatchingPhase.batchingOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingOracleVerifier_rbrKnowledgeSoundness",
@@ -43054,6 +43072,24 @@
           "namespace": "RingSwitching",
           "short_name": "boolHypercube_sum_pinned",
           "signature": "lemma boolHypercube_sum_pinned (\ud835\udcd1 : Fin 2 \u21aa L\u2080)"
+        },
+        {
+          "doc": "**`simOracle2` message-query collapse (`OracleComp` form).** Simulating, via `simOracle2 oSpec t\u2081 t\u2082`, the lift into the combined spec `oSpec + ([T\u2081]\u2092 + [T\u2082]\u2092)` of a single query `qm` to the *right* (message) oracle family `[T\u2082]\u2092` collapses to `pure` of that oracle's `answer`, with all queries routed to `t\u2082`.",
+          "kind": "lemma",
+          "line": 1230,
+          "name": "RingSwitching.simulateQ_simOracle2_messageQuery",
+          "namespace": "RingSwitching",
+          "short_name": "simulateQ_simOracle2_messageQuery",
+          "signature": "lemma simulateQ_simOracle2_messageQuery {\u03b9 : Type} {oSpec : OracleSpec \u03b9}"
+        },
+        {
+          "doc": "**`simOracle2` message-query collapse (`OptionT`-`query` form).** The same reduction as `simulateQ_simOracle2_messageQuery`, phrased for the `query`/`monadLift` form that appears verbatim in an `OracleVerifier.verify` body (a query in `OptionT (OracleComp (oSpec + ([T\u2081]\u2092 + [T\u2082]\u2092)))`). This is the form consumed by the verifier-run collapse in message-querying `toFun_full` proofs.",
+          "kind": "lemma",
+          "line": 1252,
+          "name": "RingSwitching.simulateQ_simOracle2_query",
+          "namespace": "RingSwitching",
+          "short_name": "simulateQ_simOracle2_query",
+          "signature": "lemma simulateQ_simOracle2_query {\u03b9 : Type} {oSpec : OracleSpec \u03b9}"
         }
       ]
     },
@@ -48054,7 +48090,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5215,
+      "declarations": 5219,
       "files": 282
     }
   }
