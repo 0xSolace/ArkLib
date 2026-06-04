@@ -805,8 +805,8 @@ lemma weight_Λ_sum_le {ι : Type} (s : Finset ι) (f : ι → F[X][Y]) (H : F[X
 
 omit [IsDomain F] in
 /-- For a monomial `n` in the support of `f * g`, there is a splitting `n = i + j` with both
-coefficients nonzero and `((f * g).coeff n).natDegree ≤ (f.coeff i).natDegree + (g.coeff j).natDegree`.
--/
+coefficients nonzero and `((f * g).coeff n).natDegree ≤ (f.coeff i).natDegree +
+(g.coeff j).natDegree`. -/
 lemma exists_split_natDegree_coeff_mul_le {f g : F[X][Y]} {n : ℕ}
     (hn : n ∈ (f * g).support) :
     ∃ i j : ℕ, i + j = n ∧ f.coeff i ≠ 0 ∧ g.coeff j ≠ 0 ∧
@@ -1290,7 +1290,7 @@ lemma eval₂_liftToFunctionField_div_leadingCoeff_H_eq_zero {F : Type} [Field F
     rw [Polynomial.hom_eval₂, hcomp_eq, mk_X_div_eq_functionFieldT_div_W (H := H)]
   -- `mk (W_rat) = W ≠ 0`, so the eval₂ factor must vanish.
   have hmk_W_ne : Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat ≠ 0 := by
-    show Ideal.Quotient.mk (Ideal.span {H_tilde H})
+    change Ideal.Quotient.mk (Ideal.span {H_tilde H})
         (Polynomial.C (univPolyHom (F := F) H.leadingCoeff)) ≠ 0
     rw [show Polynomial.C (univPolyHom (F := F) H.leadingCoeff) =
         coeffAsRatFunc H.leadingCoeff from (coeffAsRatFunc_eq_C _).symm]
