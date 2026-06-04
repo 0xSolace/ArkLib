@@ -1171,7 +1171,7 @@ omit [DecidableEq ι] in
 lower bound discharged from `errorBound_ge_const` and the stronger successor
 threshold discharged from the Johnson expression for `errorBound`. The remaining
 hypothesis is exactly the §5 coefficient-polynomial extraction witness. -/
-theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_succ_bound_and_coeff_polys
+theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
     (hk : 0 < k)
     (u : WordStack F (Fin (k + 1)) ι)
