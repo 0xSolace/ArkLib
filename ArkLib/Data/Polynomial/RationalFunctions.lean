@@ -1419,17 +1419,142 @@ private lemma sum_entry_natDegree_le (d κ W : ℕ) (σ : Equiv.Perm (Fin (d + d
   rw [hLHS, hperm, hRHS, hsum2d] at hadd
   nlinarith [hadd]
 
+/-- Reduce a determinant `natDegree` bound to a uniform bound on every permutation term. -/
+private lemma natDegree_det_le_of_forall_perm {K : Type} [CommRing K] {n : ℕ}
+    (M : Matrix (Fin n) (Fin n) K[X]) (B : ℕ)
+    (hσ : ∀ σ : Equiv.Perm (Fin n), (∏ i, M (σ i) i).natDegree ≤ B) :
+    M.det.natDegree ≤ B := by
+  rw [Matrix.det_apply]
+  refine (Polynomial.natDegree_sum_le _ _).trans ?_
+  rw [Finset.fold_max_le]
+  refine ⟨Nat.zero_le _, fun σ _ => ?_⟩
+  simp only [Function.comp_apply]
+  calc (Equiv.Perm.sign σ • ∏ i, M (σ i) i).natDegree
+      = (∏ i, M (σ i) i).natDegree := by
+        rcases Int.units_eq_one_or (Equiv.Perm.sign σ) with h | h
+        · rw [h, one_smul]
+        · rw [h]; simp [Units.neg_smul]
+    _ ≤ B := hσ σ
+
+/-- The H̃'-coefficient weighted bound (Claim A.2 packaging), valid on the support. -/
+private lemma natDegree_H_tilde'_coeff_weighted_le {H : F[X][Y]} {D : ℕ}
+    (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) {k : ℕ}
+    (hk : (H_tilde' H).coeff k ≠ 0) :
+    ((H_tilde' H).coeff k).natDegree + k * (D + 1 - Bivariate.natDegreeY H)
+      ≤ H.natDegree * (D + 1 - Bivariate.natDegreeY H) := by
+  classical
+  have hksupp : k ∈ (H_tilde' H).support := Polynomial.mem_support_iff.2 hk
+  have hle : (WithBot.some (k * (D + 1 - Bivariate.natDegreeY H)
+        + ((H_tilde' H).coeff k).natDegree) : WithBot ℕ)
+      ≤ weight_Λ (H_tilde' H) H D := by
+    unfold weight_Λ
+    exact Finset.le_sup (f := fun deg =>
+      (WithBot.some (deg * (D + 1 - Bivariate.natDegreeY H)
+        + ((H_tilde' H).coeff deg).natDegree) : WithBot ℕ)) hksupp
+  have := WithBot.coe_le_coe.1 (le_trans hle (weight_Λ_H_tilde'_le hD hH))
+  omega
+
 /-- **Lemma A.1** of [BCIKS20], Appendix A.3 (resultant / specialization-point counting).
 
 The `Z`-degree bound on the resultant `Res_Y(r, H̃')` of the canonical representative `r` of the
 regular element `β` and the defining relation `H̃'`. This is the analytic heart of the lemma: a
-weighted-degree count on the Sylvester determinant. -/
+weighted-degree count on the Sylvester determinant. The proof bounds the `Z`-degree of the
+Sylvester determinant `Res_Y(r, H̃') = det (sylvester r H̃' d d)` by a weighted-degree count over
+permutations (`sum_entry_natDegree_le`): for each permutation either the term vanishes, or every
+entry is a nonzero coefficient whose `Λ`-weight obeys the Claim A.2 bounds. -/
 lemma natDegree_resultant_canonicalRep_le {H : F[X][Y]} {D : ℕ}
     (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) {β : 𝒪 H} (hβ : β ≠ 0) :
     (↑(Polynomial.resultant (canonicalRepOf𝒪 hH β) (H_tilde' H) H.natDegree H.natDegree).natDegree
         : WithBot ℕ)
       ≤ weight_Λ_over_𝒪 hH β D * H.natDegree := by
-  sorry
+  classical
+  set r := canonicalRepOf𝒪 hH β with hr_def
+  set κ := D + 1 - Bivariate.natDegreeY H with hκ_def
+  -- `r ≠ 0`.
+  have hr_ne : r ≠ 0 := by
+    intro h0
+    apply hβ
+    have := mk_canonicalRepOf𝒪 hH β
+    rw [hr_def] at h0
+    rw [h0] at this
+    simpa using this.symm
+  -- Extract the finite weight `W` and the per-coefficient bound for `r`.
+  obtain ⟨W, hWeq, hWbound⟩ := exists_weight_bound (H := H) (D := D) hr_ne
+  -- Per-coefficient weighted bounds for the Sylvester entries.
+  have hg : ∀ k, (H_tilde' H).coeff k ≠ 0 →
+      ((H_tilde' H).coeff k).natDegree + k * κ ≤ H.natDegree * κ := by
+    intro k hk; exact natDegree_H_tilde'_coeff_weighted_le hD hH hk
+  have hr : ∀ k, r.coeff k ≠ 0 → (r.coeff k).natDegree + k * κ ≤ W := by
+    intro k hk
+    have := hWbound k (Polynomial.mem_support_iff.2 hk)
+    rw [hκ_def]; omega
+  -- The resultant is the Sylvester determinant; bound its `natDegree` by `d · W`.
+  have hdet : (Polynomial.resultant r (H_tilde' H) H.natDegree H.natDegree).natDegree
+      ≤ H.natDegree * W := by
+    rw [Polynomial.resultant]
+    refine natDegree_det_le_of_forall_perm _ _ (fun σ => ?_)
+    -- Per-permutation bound via the combinatorial core.
+    by_cases hzero : ∃ i, Polynomial.sylvester r (H_tilde' H) H.natDegree H.natDegree (σ i) i = 0
+    · obtain ⟨i, hi⟩ := hzero
+      have : (∏ i, Polynomial.sylvester r (H_tilde' H) H.natDegree H.natDegree (σ i) i) = 0 :=
+        Finset.prod_eq_zero (Finset.mem_univ i) hi
+      rw [this, Polynomial.natDegree_zero]; exact Nat.zero_le _
+    · simp only [not_exists] at hzero
+      -- All entries nonzero: bound `natDegree (∏) ≤ ∑ natDegree` and apply the weighted core.
+      refine (Polynomial.natDegree_prod_le _ _).trans ?_
+      refine sum_entry_natDegree_le H.natDegree κ W σ
+        (fun i => (Polynomial.sylvester r (H_tilde' H)
+          H.natDegree H.natDegree (σ i) i).natDegree) ?_ ?_
+      · -- left columns: `H̃'` coefficients.
+        intro j
+        have hentry :
+            Polynomial.sylvester r (H_tilde' H) H.natDegree H.natDegree
+                (σ (Fin.castAdd H.natDegree j)) (Fin.castAdd H.natDegree j)
+              = (if ((σ (Fin.castAdd H.natDegree j) : Fin _) : ℕ)
+                    ∈ Set.Icc (j : ℕ) ((j : ℕ) + H.natDegree)
+                  then (H_tilde' H).coeff
+                    (((σ (Fin.castAdd H.natDegree j) : Fin _) : ℕ) - (j : ℕ)) else 0) := by
+          simp only [Polynomial.sylvester, Matrix.of_apply, Fin.addCases_left]
+        have hne := hzero (Fin.castAdd H.natDegree j)
+        simp only [hentry] at hne ⊢
+        split_ifs at hne ⊢ with hicc
+        · set s := ((σ (Fin.castAdd H.natDegree j) : Fin _) : ℕ)
+          have hjs : (j : ℕ) ≤ s := hicc.1
+          have hgk := hg (s - (j : ℕ)) hne
+          have hsplit : (s - (j : ℕ)) * κ + (j : ℕ) * κ = s * κ := by
+            rw [← add_mul]; congr 1; omega
+          omega
+        · exact absurd rfl hne
+      · -- right columns: `r` coefficients.
+        intro j
+        have hentry :
+            Polynomial.sylvester r (H_tilde' H) H.natDegree H.natDegree
+                (σ (Fin.natAdd H.natDegree j)) (Fin.natAdd H.natDegree j)
+              = (if ((σ (Fin.natAdd H.natDegree j) : Fin _) : ℕ)
+                    ∈ Set.Icc (j : ℕ) ((j : ℕ) + H.natDegree)
+                  then r.coeff
+                    (((σ (Fin.natAdd H.natDegree j) : Fin _) : ℕ) - (j : ℕ)) else 0) := by
+          simp only [Polynomial.sylvester, Matrix.of_apply, Fin.addCases_right]
+        have hne := hzero (Fin.natAdd H.natDegree j)
+        simp only [hentry] at hne ⊢
+        split_ifs at hne ⊢ with hicc
+        · set s := ((σ (Fin.natAdd H.natDegree j) : Fin _) : ℕ)
+          have hjs : (j : ℕ) ≤ s := hicc.1
+          have hrk := hr (s - (j : ℕ)) hne
+          have hsplit : (s - (j : ℕ)) * κ + (j : ℕ) * κ = s * κ := by
+            rw [← add_mul]; congr 1; omega
+          omega
+        · exact absurd rfl hne
+  -- Lift the `ℕ` bound to the `WithBot ℕ` statement.
+  have hweight_eq : weight_Λ_over_𝒪 hH β D = (W : WithBot ℕ) := by
+    rw [weight_Λ_over_𝒪, ← hr_def, hWeq]
+  rw [hweight_eq]
+  rw [show ((W : WithBot ℕ) * (H.natDegree : WithBot ℕ)) = ((W * H.natDegree : ℕ) : WithBot ℕ) by
+    push_cast; ring]
+  refine WithBot.coe_le_coe.2 ?_
+  calc (Polynomial.resultant r (H_tilde' H) H.natDegree H.natDegree).natDegree
+      ≤ H.natDegree * W := hdet
+    _ = W * H.natDegree := by ring
 
 /-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20]. -/
 lemma Lemma_A_1 {H : F[X][Y]} [hHirreducible : Fact (Irreducible H)]
