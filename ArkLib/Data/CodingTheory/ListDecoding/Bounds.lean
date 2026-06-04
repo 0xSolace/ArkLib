@@ -228,11 +228,28 @@ theorem linear_lambda_ge_elias_volume_eli57
   exact ENNReal.ofReal_le_ofReal hM_le
 
 /-- **ABF26 Corollary 3.8.** Volume-based lower bound on list size, using the MS77
-volume estimate `Vol_q(δ, n) ≥ q^{n·(ρ-1+H_q(δ))} / √(8·n·δ·(1-δ))`. With `ρ := k/n`:
+volume estimate `Vol_q(δ, n) ≥ q^{n·H_q(δ)} / √(8·n·δ·(1-δ))`. With `ρ := k/n`:
 
   `|Λ(C, δ)| ≥ q^{n·(ρ - 1 + H_q(δ))} / √(8·n·δ·(1-δ))`
 
-Uses `qEntropy` (ABF26 D2.2). Admitted as an external result. -/
+Uses `qEntropy` (ABF26 D2.2).
+
+**Reduced to one missing analytic ingredient.** Since L3.7
+(`linear_lambda_ge_elias_volume_eli57`, now PROVEN in-tree) already gives
+`Vol_q(δ,n) / q^{n-k} ≤ |Λ(C,δ)|`, this corollary follows by transitivity from the
+single inequality
+
+  `q^{n·H_q(δ)} / √(8·n·δ·(1-δ)) ≤ Vol_q(δ, n)`         (★)
+
+(rearrange the C3.8 RHS via `ρ = k/n`: `q^{n(ρ-1+H_q)} = q^{k-n}·q^{n·H_q}` and
+`Vol / q^{n-k} = Vol · q^{k-n}`, so C3.8-RHS ≤ L3.7-RHS ⇔ (★)). Inequality (★) is the
+**MS77 lower bound on the `q`-ary Hamming-ball volume** (MacWilliams–Sloane 1977, the
+Stirling-based estimate `∑_{i≤δn} C(n,i)(q-1)^i ≥ q^{nH_q(δ)}/√(8nδ(1-δ))`). That
+estimate is a real-analytic fact about `hammingBallVolume` vs `qEntropy` and is **not**
+yet in-tree; it is the only remaining gap. The right move is to prove (★) as a standalone
+lemma `hammingBallVolume_ge_qEntropy` in `HammingBallVolume.lean` (Stirling bounds on
+`Nat.choose` + `Real.logb` algebra), after which this corollary closes in three lines via
+`le_trans` against L3.7. Admitted pending (★). -/
 theorem linear_lambda_ge_entropy_volume
     (C : Submodule F (ι → F)) (δ : ℝ) (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1) :
     let q : ℕ := Fintype.card F
@@ -243,7 +260,8 @@ theorem linear_lambda_ge_entropy_volume
         ((q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ))
           / (8 * n * δ * (1 - δ)) ^ ((1 : ℝ) / 2))
       ≤ (Lambda ((C : Set (ι → F))) δ : ENNReal) := by
-  sorry -- ABF26-C3.8; external admit, uses MS77 volume estimate.
+  sorry -- ABF26-C3.8; reduces to L3.7 (PROVEN) + missing ingredient (★):
+  -- `q^{n·H_q(δ)} / √(8nδ(1-δ)) ≤ hammingBallVolume q δ n` (MS77 Stirling volume bound).
 
 /-- **ABF26 Theorem 3.9 [ST20 Thm 1.2].** Generalized Singleton bound for list decoding.
 Let `F` be a finite field, `0 < ℓ < |F|`, `δ ∈ (0, 1)`, and let `C ⊆ F^n` be a linear
