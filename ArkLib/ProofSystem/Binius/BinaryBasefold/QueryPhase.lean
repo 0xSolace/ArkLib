@@ -138,6 +138,85 @@ theorem forIn_yield_pure_eq_foldl (l : List α) (g : α → γ → γ) :
     rw [ih (g a init)]
     rfl
 
+/-! ### `StateT.run`-evaluated `forIn` support theory  (`OptionT (StateT σ ProbComp)`)
+
+The verifier `verify` body, once its oracle queries are collapsed by `simulateQ`, is a doubly-nested
+`forIn` over the transformer stack `OptionT (StateT σ ProbComp)`. The generic
+`forIn_support_invariant` above is stated for any `[HasEvalSet m]`, but `HasEvalSet (StateT σ ProbComp)`
+is **not** available (probability `support` lives at the `ProbComp` level, reached only after
+`StateT.run … s`). So the loop's support must be analyzed *after* evaluating the `StateT` at the
+initial state `s`. The two lemmas below supply exactly that transport: they push `StateT.run` through
+a `forIn` cons-step (landing at the `ProbComp` level, where `support` and `mem_support_bind_iff`
+apply) and lift it to an induction-free invariant rule. This is the missing
+`StateT.run`-through-`forIn` bridge that lets a per-iteration fact (e.g. "no early `done` exit") be
+transported out of the support of the loop-based, `simulateQ`-collapsed verifier run. -/
+
+/-- **`StateT.run`-evaluated `forIn` cons-step membership.** Membership in the support of the
+`StateT.run … s`-evaluation of `forIn (a :: l) init f` (an `OptionT (StateT σ ProbComp)` loop)
+decomposes into a first-step outcome `p` in the support of `StateT.run (f a init) st`, followed by the
+remaining loop run on `p`'s `yield`/`done`/`none` branch. Proved by reducing the `OptionT`/`StateT`
+bind to a `ProbComp`-level bind (`List.forIn_cons` + the monad-instance unfolds) and applying
+`mem_support_bind_iff`. -/
+theorem stateT_run_forIn_cons_mem {σ' δ ε : Type} (a : ε) (l : List ε) (init : δ)
+    (f : ε → δ → OptionT (StateT σ' ProbComp) (ForInStep δ)) (st : σ') (x : Option δ × σ') :
+    x ∈ support (StateT.run (forIn (a :: l) init f : OptionT (StateT σ' ProbComp) δ) st) ↔
+      ∃ p ∈ support (StateT.run (f a init) st),
+        x ∈ support
+          (match p.1 with
+            | some (ForInStep.done b) => StateT.run (pure b : OptionT (StateT σ' ProbComp) δ) p.2
+            | some (ForInStep.yield b) =>
+                StateT.run (forIn l b f : OptionT (StateT σ' ProbComp) δ) p.2
+            | none => (pure (none, p.2) : ProbComp (Option δ × σ'))) := by
+  rw [List.forIn_cons]
+  simp only [bind, OptionT.bind, OptionT.mk, StateT.bind, StateT.run]
+  erw [mem_support_bind_iff]
+  apply exists_congr; intro p
+  apply and_congr_right; intro _
+  rcases p with ⟨op, sp⟩
+  rcases op with _ | step
+  · rfl
+  · rcases step with b | b <;> rfl
+
+/-- **Invariant rule for the `StateT.run`-evaluated `forIn`-loop support.** If `Inv` holds of the
+initial accumulator and is preserved by every per-element body step (over the support of the
+`StateT.run`-evaluated body, looking at the `yield`/`done` outcome's accumulator), then `Inv` holds of
+every successful (`some`-tagged) accumulator value in the support of the whole evaluated loop. This is
+the `OptionT (StateT σ ProbComp)` analogue of `forIn_support_invariant`, usable on the
+`simulateQ`-collapsed verifier run where `support` is only available post-`StateT.run`. -/
+theorem stateT_run_forIn_support_invariant {σ' δ ε : Type}
+    (Inv : δ → Prop) (l : List ε)
+    (f : ε → δ → OptionT (StateT σ' ProbComp) (ForInStep δ))
+    (hstep : ∀ a ∈ l, ∀ b, Inv b → ∀ st step st',
+        (some step, st') ∈ support (StateT.run (f a b) st) → Inv step.value) :
+    ∀ init, Inv init → ∀ st x s',
+      (some x, s') ∈ support (StateT.run (forIn l init f : OptionT (StateT σ' ProbComp) δ) st) →
+      Inv x := by
+  induction l with
+  | nil =>
+    intro init hinit st x s' hx
+    rw [List.forIn_nil] at hx
+    simp only [show (pure init : OptionT (StateT σ' ProbComp) δ)
+      = OptionT.lift (pure init) from rfl] at hx
+    obtain ⟨rfl, -⟩ := hx
+    exact hinit
+  | cons a l ih =>
+    intro init hinit st x s' hx
+    rw [stateT_run_forIn_cons_mem] at hx
+    obtain ⟨⟨op, sp⟩, hp, hx⟩ := hx
+    have hInvStep : ∀ step, op = some step → Inv step.value := fun step hstep_eq =>
+      hstep a (List.mem_cons_self) init hinit st step sp (by rw [← hstep_eq]; exact hp)
+    rcases op with _ | step
+    · simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hx
+      obtain ⟨hxnone, -⟩ := hx
+      exact absurd hxnone (by simp)
+    · have hInv : Inv step.value := hInvStep step rfl
+      rcases step with b | b
+      · simp only [show (pure b : OptionT (StateT σ' ProbComp) δ)
+          = OptionT.lift (pure b) from rfl] at hx
+        obtain ⟨rfl, -⟩ := hx
+        exact hInv
+      · exact ih (fun a' ha' => hstep a' (List.mem_cons_of_mem _ ha')) b hInv sp x s' hx
+
 /-! ### `simulateQ`-transport for `forIn` (OptionT (OracleComp …)) -/
 
 variable {ι : Type} {spec : OracleSpec ι} {n : Type → Type} [Monad n] [LawfulMonad n]
@@ -716,30 +795,198 @@ noncomputable def queryKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
     --                                   | some a => .done ⟨some a,()⟩)));
     --         simulateQ impl (simulateQ (simOracle2 …)
     --           (match r.fst with | none => pure true | some a => pure a))) s)
-    -- THREE remaining steps, each substantial and INDEPENDENT of any query/loop-plumbing primitive
-    -- (those now all exist and fire — see the verified `simp` above):
-    --  (1) MATCH/STATE-T PUSH. The two residual `simulateQ impl (simulateQ (simOracle2 …) (match
-    --      acc.fst with …))` continuations are query-free (every branch is `pure`), but the inner
-    --      `simulateQ` still wraps an `Option`-matcher whose generated form does not unify with the
-    --      generic `Option.rec`/literal-`match` push lemmas (the verifier-body matcher is a distinct,
-    --      content-addressed matcher); pushing `simulateQ` through it, then collapsing
-    --      `simulateQ impl/simOracle2 (pure …) = pure …`, makes the loop body fully `pure`, so
-    --      `StateT.run (pure-everywhere forIn) s` has SINGLETON support `{(some computedVal, s)}`.
-    --      With `hab : a = some x` and `hx_eq : x = (true, _)`, this forces the loop's final
-    --      `match r.fst` to take the `none` branch, i.e. `r.fst = none` (no early exit).
-    --  (2) NO-EARLY-EXIT INVARIANT. Run `ForInSupport.forIn_support_invariant` (or the deterministic
-    --      `Id`-monad analogue, since the loop is now pure) with `Inv acc := acc.fst = none`: any
-    --      failed `unless` writes `done ⟨some false, _⟩` (fst = `some`), so `r.fst = none` forces
-    --      EVERY per-iteration `unless c_cur = f_i_val` and the final `unless c_cur = c` to have held.
-    --  (3) CAST ALIGNMENT (the heavy, BaseFold-specific remainder). Match the loop's `f_i_on_fiber`/
-    --      `c_cur`/`c_next` (`localized_fold_matrix_form`, `extractMiddleFinMask`, `next_suffix_of_v`,
-    --      with their `Fin`/`Nat.joinBits` casts) against the identically-shaped `proximityChecksSpec`
-    --      terms, reconciling the ONE-ITERATION SHIFT (verifier checks level `i` at the START of
-    --      iteration `i+ϑ`). Lemma 4.9 `iterated_fold_eq_matrix_form` + `localized_fold_eval_succ`/
-    --      `_zero` + `foldMatrixNat_succ_apply` (now proven in BinaryBasefold/Prelude) supply the
-    --      fold-semantics facts. This index/cast bookkeeping is the genuine remaining work; the query
-    --      and loop-transport plumbing it builds on is now compiled and in hand (above).
-    sorry
+    -- VERIFIED ADVANCE (landed): peel the outer `OptionT (StateT σ ProbComp)` functor map to an
+    -- `OptionT` bind, exposing `hx` as membership in the support of the `StateT.run … s`-evaluation of
+    -- `outerLoop >>= finalContinuation`. (`StateT.run_map` does NOT fire here: the map is the OptionT
+    -- functor map, not a `StateT`-level map — confirmed by `pp.explicit`.)
+    rw [show (∀ {X Y} (f : X → Y) (x : OptionT (StateT σ ProbComp) X),
+          f <$> x = x >>= (pure ∘ f)) from fun f x => map_eq_pure_bind f x] at hx
+    -- SHARPENED RESIDUAL (corrected: the prior note claimed the loop-support machinery for steps 1-2
+    -- was "in hand"; it was NOT — `ForInSupport.forIn_support_invariant` needs `[HasEvalSet m]` for the
+    -- loop monad, but `HasEvalSet (StateT σ ProbComp)` does NOT exist, so it does not apply to this
+    -- `OptionT (StateT σ ProbComp)` loop as-is. The genuinely missing primitive — a
+    -- `StateT.run`-evaluated `forIn` support transport, landing the loop at the `ProbComp` level where
+    -- `support` IS defined — is now PROVEN above: `ForInSupport.stateT_run_forIn_cons_mem` (cons-step
+    -- membership via `List.forIn_cons` + the monad-instance unfolds + `mem_support_bind_iff`) and
+    -- `ForInSupport.stateT_run_forIn_support_invariant` (the induction-free `Inv`-rule, the
+    -- `OptionT (StateT σ ProbComp)` analogue of `forIn_support_invariant`). The remaining work, now
+    -- resting on a REAL primitive rather than a missing one:
+    --  (1) OUTER NO-EARLY-EXIT. Split `hx` at the outer `>>= finalContinuation` (one `StateT.run`/
+    --      `OptionT`-bind step), exposing the outer-loop result `r : MProd (Option Bool) PUnit` in
+    --      `support (StateT.run outerLoop s')`. Apply `stateT_run_forIn_support_invariant` with
+    --      `Inv acc := acc.fst = none`; the per-rep step obligation (the inner `match acc.fst`
+    --      continuation only ever writes `done ⟨some false,_⟩` on a FAILED check and `yield ⟨none,_⟩`
+    --      otherwise) discharges by `cases acc.fst` (which ι-reduces the content-addressed verifier
+    --      matcher `queryOracleVerifier.match_1`, after which each branch is a `pure` collapsed by
+    --      `simulateQ_optionT_pure`). With `hab/hx_eq` forcing `r = some (true,_)`, conclude
+    --      `r.fst = none`, so every per-rep `unless` and the final `unless c_cur = c` held.
+    --  (2) PER-REP INNER INVARIANT. Same `stateT_run_forIn_support_invariant` on the inner
+    --      `forIn (finRange (ℓ/ϑ))` loop, `Inv c := c.fst = none`, transports each fold-level
+    --      consistency check `c_cur = f^(i)(v_i,…)` out of the inner support.
+    --  (3) CAST ALIGNMENT (the heavy, BaseFold-specific remainder, unchanged). Match the loop's
+    --      `f_i_on_fiber`/`c_cur`/`c_next` (`localized_fold_matrix_form`, `extractMiddleFinMask`,
+    --      `next_suffix_of_v`, with their `Fin`/`Nat.joinBits` casts) against the identically-shaped
+    --      `proximityChecksSpec` terms, reconciling the ONE-ITERATION SHIFT (verifier checks level `i`
+    --      at the START of iteration `i+ϑ`). Lemma 4.9 `iterated_fold_eq_matrix_form` +
+    --      `localized_fold_eval_succ`/`_zero` + `foldMatrixNat_succ_apply` (proven in Prelude) supply
+    --      the fold-semantics facts. This index/cast bookkeeping is the genuine remaining content.
+    have peel : ∀ {W Y : Type} (mx : OptionT (StateT σ ProbComp) W)
+        (g : W → OptionT (StateT σ ProbComp) Y) (st : σ)
+        (z : Option Y × σ),
+        z ∈ support (StateT.run (mx >>= g : OptionT (StateT σ ProbComp) Y) st) ↔
+          ∃ p ∈ support (StateT.run mx st),
+            z ∈ support
+              (match p.1 with
+                | some bv => StateT.run (g bv) p.2
+                | none => (pure (none, p.2) : ProbComp (Option Y × σ))) := by
+      intro W Y mx g st z
+      simp only [bind, OptionT.bind, OptionT.mk, StateT.bind, StateT.run]
+      erw [mem_support_bind_iff]
+      apply exists_congr; intro p
+      apply and_congr_right; intro _
+      rcases p with ⟨op, sp⟩
+      rcases op with _ | bv <;> rfl
+    have peel_map : ∀ {X Y : Type} (mx : OptionT (StateT σ ProbComp) X)
+        (K : X → Y) (st : σ) (z : Option Y × σ),
+        z ∈ support (StateT.run (mx >>= (pure ∘ K) : OptionT (StateT σ ProbComp) Y) st) ↔
+          ∃ p ∈ support (StateT.run mx st), z = (Option.map K p.1, p.2) := by
+      intro X Y mx K st z
+      simp only [bind, OptionT.bind, OptionT.mk, StateT.bind, StateT.run, Function.comp_apply]
+      erw [mem_support_bind_iff]
+      apply exists_congr; intro p
+      apply and_congr_right; intro _
+      obtain ⟨op, sp⟩ := p
+      cases op with
+      | none =>
+        show z ∈ _root_.support (pure ((none, sp) : Option Y × σ)) ↔ _
+        simp only [support_pure, Set.mem_singleton_iff, Option.map_none]
+      | some bv =>
+        show z ∈ _root_.support (pure ((some (K bv), sp) : Option Y × σ)) ↔ _
+        simp only [support_pure, Set.mem_singleton_iff, Option.map_some]
+    have runpure : ∀ {X : Type} (w : X) (st : σ) (z : Option X × σ),
+        z ∈ support (StateT.run (pure w : OptionT (StateT σ ProbComp) X) st) ↔
+          z = (some w, st) := by
+      intro X w st z
+      show z ∈ _root_.support (pure ((some w, st) : Option X × σ)) ↔ _
+      simp only [support_pure, Set.mem_singleton_iff]
+    rw [peel_map] at hx
+    obtain ⟨p, hp, hx⟩ := hx
+    subst hx_eq
+    rw [hab] at hx
+    have hp_true : p.1 = some true := by
+      have h1 := congrArg (fun w => Option.map Prod.fst w.1) hx
+      simp only [Option.map_map, Function.comp_def, Option.map_some, Option.map_id_fun',
+        id_eq] at h1
+      exact h1.symm
+    rw [peel] at hp
+    obtain ⟨q, hq, hp⟩ := hp
+    obtain ⟨q1, q2⟩ := q
+    -- Apply the outer invariant to hq IN PLACE (body unifies from hq's type).
+    rcases hq1 : q1 with _ | rv
+    · simp only [hq1, support_pure, Set.mem_singleton_iff] at hp
+      rw [hp] at hp_true; simp at hp_true
+    · have hrv_ne : rv.fst ≠ some true := by
+        revert hq
+        rw [hq1]
+        intro hq
+        refine ForInSupport.stateT_run_forIn_support_invariant
+          (fun acc => acc.fst ≠ some true) _ _ ?step _ (by simp) _ _ _ hq
+        intro rep _ b hb st step st' hstepmem
+        -- OUTER step obligation: peel the inner loop + post-inner matcher, get step.value.
+        rw [peel] at hstepmem
+        obtain ⟨ai, hai, hstepmem⟩ := hstepmem
+        obtain ⟨ai1, ai2⟩ := ai
+        -- Post-inner matcher: `step` is determined by `ai1` (the inner OptionT result).
+        rcases hai1 : ai1 with _ | ic
+        · -- inner produced `none` ⟹ post-inner tail is `pure (none, ai2)`
+          simp only [hai1, support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hstepmem
+          exact absurd hstepmem.1 (by simp)
+        · -- inner produced `some ic`; get the inner early-exit flag fact.
+          have hic : ic.fst ≠ some true := by
+            revert hai
+            rw [hai1]
+            intro hai
+            refine ForInSupport.stateT_run_forIn_support_invariant
+              (fun acc : MProd (Option Bool) L => acc.fst ≠ some true)
+              _ _ ?innerstep _ (by simp) _ _ _ hai
+            intro k _ c hc st2 stp st2' hmem2
+            rw [peel] at hmem2
+            obtain ⟨fibp, hfib, hmem2⟩ := hmem2
+            obtain ⟨fib1, fib2⟩ := fibp
+            rcases hfib1 : fib1 with _ | fib
+            · simp only [hfib1, support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hmem2
+              exact absurd hmem2.1 (by simp)
+            · simp only [hfib1] at hmem2
+              split at hmem2
+              · split at hmem2
+                · rw [runpure, Prod.mk.injEq, Option.some.injEq] at hmem2
+                  obtain ⟨hstp, -⟩ := hmem2; subst hstp; simp
+                · rw [runpure, Prod.mk.injEq, Option.some.injEq] at hmem2
+                  obtain ⟨hstp, -⟩ := hmem2; subst hstp; simp
+              · rw [runpure, Prod.mk.injEq, Option.some.injEq] at hmem2
+                obtain ⟨hstp, -⟩ := hmem2; subst hstp; simp
+
+          rw [hai1] at hstepmem
+          obtain ⟨ic1, ic2⟩ := ic
+          rcases hicf : ic1 with _ | a
+          · simp only [hicf] at hstepmem
+            split at hstepmem
+            · simp only [ForInSupport.simulateQ_optionT_pure, runpure, Prod.mk.injEq,
+                Option.some.injEq] at hstepmem
+              obtain ⟨hs, -⟩ := hstepmem; subst hs; simp
+            · simp only [ForInSupport.simulateQ_optionT_pure, runpure, Prod.mk.injEq,
+                Option.some.injEq] at hstepmem
+              obtain ⟨hs, -⟩ := hstepmem; subst hs; simp
+          · simp only [hicf, ForInSupport.simulateQ_optionT_pure, runpure, Prod.mk.injEq,
+              Option.some.injEq] at hstepmem
+            obtain ⟨hs, -⟩ := hstepmem; subst hs
+            simp only [ForInStep.value]
+            intro hcontra
+            rw [hicf] at hic
+            exact hic hcontra
+
+      -- With `hrv_ne` in hand: collapse the post-loop matcher and close the false-accept arm.
+      simp only [hq1] at hp
+      rcases hrv : rv.fst with _ | c
+      · -- ACCEPT PATH: `rv.fst = none`. The outer loop completed all γ reps with NO early
+        -- `done` exit, so EVERY per-rep `unless c_cur = …` and the final `unless c_cur = c`
+        -- held. `hp : p ∈ support (StateT.run (pure true) q2)` (consistent with `hp_true`).
+        simp only [hrv, ForInSupport.simulateQ_optionT_pure, runpure] at hp
+        -- ════════════════════════════════════════════════════════════════════════════
+        -- SHARPENED RESIDUAL — the genuine remaining content: BaseFold cast alignment.
+        -- Steps 1–3 are DONE: the verifier run is peeled to the outer-loop result, the
+        -- accept Bool pins it to `some true`, the content-addressed matcher has FALLEN
+        -- (via `simulateQ_optionT_pure`), and BOTH the outer and inner `forIn` invariants
+        -- (`stateT_run_forIn_support_invariant`, `Inv acc := acc.fst ≠ some true`) are
+        -- applied & discharged, establishing `rv.fst = none` (no early exit) — i.e. every
+        -- per-(rep, fold-level) consistency check passed.
+        --
+        -- What remains is to convert "no early `done` exit" into `proximityChecksSpec`:
+        -- re-enter the inner `forIn (finRange (ℓ/ϑ))` per rep with the SAME inner invariant
+        -- specialized to surface, at each level `k`, the passed check `c_cur = f^(k·ϑ)(…)`,
+        -- then RECONCILE the loop's `localized_fold_matrix_form` / `extractMiddleFinMask` /
+        -- `extractNextSuffixFromChallenge` terms (with their `Fin` / `Nat.joinBits` casts
+        -- and the ONE-ITERATION SHIFT: the verifier checks level `i` at the START of
+        -- iteration `i+ϑ`) against the identically-shaped `proximityChecksSpec`
+        -- `consistency_check`. Lemma 4.9 `iterated_fold_eq_matrix_form` +
+        -- `localized_fold_eval_succ`/`_zero` + `foldMatrixNat_succ_apply` (all proven in
+        -- Prelude) supply the fold semantics; this index/cast bookkeeping is the genuine
+        -- remaining BaseFold-specific content. The loop body itself cannot be restated by
+        -- hand — `simulateQ (simOracle2 …)`'s message-family `OracleInterface` is not
+        -- synthesizable out of context (the elaboration ambiguity the in-file
+        -- `simulateQ_optionT_*` lemmas sidestep) — so this final extraction must thread the
+        -- inner invariant through `hq`'s body IN PLACE, as the invariant applications above
+        -- already do.
+        sorry
+      · -- FALSE-ACCEPT PATH ruled out: `rv.fst = some c` forces (via `hp` + `hp_true`)
+        -- `c = true`, i.e. `rv.fst = some true`, contradicting the outer invariant `hrv_ne`.
+        exfalso
+        simp only [hrv, ForInSupport.simulateQ_optionT_pure, runpure] at hp
+        rw [hp] at hp_true
+        simp only [Option.some.injEq] at hp_true
+        exact hrv_ne (by rw [hrv, hp_true])
+
+
 
 /-- Round-by-round knowledge soundness for the oracle verifier (query phase) -/
 theorem queryOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type} (init : ProbComp σ)
@@ -759,9 +1006,11 @@ theorem queryOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type} (init 
   -- `1/2 + 2^-(𝓡+1)`, independence across the `γ` repetitions) — genuine research-tier content not
   -- yet formalized in this development. The structural step (bounding the probability the
   -- `forIn`-loop verifier accepts a state failing `queryKStateProp`) now HAS its loop-support
-  -- machinery available — the `ForInSupport` section above (`simulateQ_optionT_forIn`,
-  -- `simulateQ_optionT_listVector_mmap`, `forIn_support_invariant`, …) supplies exactly the
-  -- `simulateQ_forIn` / `support_forIn` transport that was previously missing — but it bottoms out in
+  -- machinery available — the `ForInSupport` section above supplies both the `simulateQ`-transport
+  -- (`simulateQ_optionT_forIn`, `simulateQ_optionT_listVector_mmap`) AND the
+  -- `StateT.run`-evaluated loop-support transport (`stateT_run_forIn_cons_mem`,
+  -- `stateT_run_forIn_support_invariant`) that `forIn_support_invariant` could NOT provide for this
+  -- `OptionT (StateT σ ProbComp)` loop (no `HasEvalSet (StateT σ ProbComp)`) — but it bottoms out in
   -- the same proximity bound. Not closable in this single file under the honest-proof constraints
   -- (no axioms, no weakening of the bound, no assume-the-conclusion).
   sorry

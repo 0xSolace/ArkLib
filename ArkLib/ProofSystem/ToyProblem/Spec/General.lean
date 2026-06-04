@@ -122,10 +122,21 @@ def pSpec : ProtocolSpec 3 :=
   ⟨!v[.V_to_P, .P_to_V, .V_to_P],
    !v[F, Fin k → F, Fin t → ι]⟩
 
-instance : ∀ j, OracleInterface ((pSpec (ι := ι) (F := F) k t).Message j)
+instance instMessageOracleInterface :
+    ∀ j, OracleInterface ((pSpec (ι := ι) (F := F) k t).Message j)
   | ⟨0, h⟩ => nomatch h
   | ⟨1, _⟩ => OracleInterface.instDefault
   | ⟨2, h⟩ => nomatch h
+
+/-- Pointwise `OracleInterface` instance for the (sole) prover message of `pSpec`, at round 1.
+The `∀ j`-indexed `instMessageOracleInterface` is not found by `inferInstance` on a *concrete*
+restated index `⟨1, h⟩` (the indexed match does not reduce during typeclass search), which blocks
+completeness-proof terms that mention `answer (msgs ⟨1, _⟩) _`. This pointwise instance restores
+synthesis; it is *definitionally equal* to `instMessageOracleInterface ⟨1, _⟩` (both `instDefault`),
+so it introduces no diamond. -/
+instance instMessageOracleInterfaceOne {h : (pSpec (ι := ι) (F := F) k t).dir 1 = .P_to_V} :
+    OracleInterface ((pSpec (ι := ι) (F := F) k t).Message ⟨1, h⟩) :=
+  OracleInterface.instDefault
 
 instance : ∀ j, OracleInterface ((pSpec (ι := ι) (F := F) k t).Challenge j) :=
   ProtocolSpec.challengeOracleInterface
@@ -168,6 +179,70 @@ def inputRelation (C : Set (ι → F)) :
   fun input ↦
     ToyProblem.relation (k := k) (ℓ := 2) C input.1.1.1
       ![input.1.1.2.1, input.1.1.2.2] input.1.2
+
+/-- The IOR-shaped **honest-opening** input relation for a *fixed* encoder
+`encode` (the protocol's own combining map).
+
+`((v, μ₁, μ₂), (f₁, f₂)) ∈ honestInputRelation k C encode` iff there is a
+message matrix `M : Fin 2 → Fin k → F` such that
+
+  * `f i = encode (M i)` for the **protocol's** `encode` (honest opening), and
+  * `∑_j M i j · v j = μ i` (the linear constraint).
+
+## Documented statement repair (2026-06): protocol-encoder alignment (hEnc class)
+
+The historic completeness statement used `inputRelation k C`, which unfolds
+(Definition 6.1, `ToyProblem.relation`) to
+
+  `∃ M, (∃ encode', (∀ m, encode' m ∈ C) ∧ ∀ i, f i = encode' (M i)) ∧ …`
+
+— the opener `encode'` is **existentially quantified** and is *a different
+map* than the protocol's `encode` parameter. The honest verifier's
+spot-check uses the *protocol's* `encode` (`encode g (xs j) = f₀ + γ·f₁`),
+so completeness needs `f i = encode (M i)` for *that* `encode`; with the
+existential `encode'` of `inputRelation`, the equality `encode (M i) (x) =
+encode' (M i) (x)` is **not derivable** (counterexample: take `C` the full
+space, `encode' = 0`, `encode = id`, any `M ≠ 0`; then
+`((v,0,0),(0,0)) ∈ inputRelation` via `encode' = 0`, but the honest prover's
+`g = M₀+γM₁` gives `encode g (x) ≠ 0 = f₀+γf₁`, so the spot-check fails and
+`Pr[accept] = 0 ≠ 1`). This is a genuine statement-level wall, not proof
+effort.
+
+We repair it by aligning the input relation's opener with the protocol's
+encoder — exactly the `hEnc` linear-encoder pattern of L6.13
+(`SoundnessBounds.lean :: simplified_iop_soundness_ca_lb`), where the same
+`relation`-encoder existential is pinned to a named `F`-linear `encode`.
+This is the regime ABF26 Definition 6.1 intends ("the chosen encoding is a
+bijection from `Fin k → F` onto `C`"): the honest prover *is* the party that
+opened the codewords under `encode`, so the relation it is complete against
+is precisely the honest-opening relation. `honestInputRelation k C encode ⊆
+inputRelation k C` whenever `∀ m, encode m ∈ C` (witness `encode' := encode`),
+so this is a strengthening of the hypothesis on the input, i.e. a *weaker*
+(more faithful) completeness claim, never vacuous. -/
+def honestInputRelation (_C : Set (ι → F)) (encode : (Fin k → F) →ₗ[F] (ι → F)) :
+    Set ((Statement (F := F) k × (∀ i, OracleStatement ι F i)) ×
+      Witness (F := F) k) :=
+  fun input ↦
+    ∃ M : Witness (F := F) k,
+      (∀ i, input.1.2 i = encode (M i)) ∧
+      ∀ i, ∑ j, M i j * input.1.1.1 j =
+        (if i = (0 : Fin 2) then input.1.1.2.1 else input.1.1.2.2)
+
+omit [Fintype ι] in
+/-- `honestInputRelation` is contained in `inputRelation` when the encoder's
+image lies in `C` — i.e. honest opening is a *stronger* input hypothesis, so
+completeness against `honestInputRelation` is the faithful (non-vacuous)
+claim. (The converse fails, see the `honestInputRelation` docstring.) -/
+theorem honestInputRelation_subset_inputRelation
+    (C : Set (ι → F)) (encode : (Fin k → F) →ₗ[F] (ι → F))
+    (h_mem : ∀ m, (encode m : ι → F) ∈ C) :
+    honestInputRelation k C encode ⊆ inputRelation k C := by
+  rintro ⟨⟨⟨v, μ₁, μ₂⟩, f⟩, _⟩ ⟨M, hf, hM⟩
+  refine ⟨M, ⟨encode, h_mem, ?_⟩, ?_⟩
+  · intro i; exact hf i
+  · intro i
+    have := hM i
+    fin_cases i <;> simpa using this
 
 /-- The IOR-shaped *relaxed* output relation derived from
 `ToyProblem.relaxedRelation` (Definition 6.3). The soundness statement
@@ -353,11 +428,23 @@ def oracleVerifier (encode : (Fin k → F) → (ι → F)) :
   verify := fun stmt challenges ↦ do
     let γ : F := challenges ⟨⟨0, by decide⟩, by rfl⟩
     let xs : Fin t → ι := challenges ⟨⟨2, by decide⟩, by rfl⟩
-    let g : Fin k → F ← liftM <| queryG (ι := ι) (F := F) (k := k) (t := t)
+    -- Query the prover's message `g` (round-1 oracle, RIGHT family). The
+    -- explicit `OptionT.lift <| OracleComp.liftComp (OracleComp.lift …)` form
+    -- (matching `Sumcheck/Spec/SingleRound.lean`'s oracle verifier) makes the
+    -- `simulateQ`-collapse lemmas fire syntactically.
+    let g : Fin k → F ← OptionT.lift <| OracleComp.liftComp
+      (OracleComp.lift <| OracleSpec.query
+        (show [(pSpec (ι := ι) (F := F) k t).Message]ₒ.Domain from
+          ⟨⟨1, by rfl⟩, (by simpa using ())⟩)) _
     guard (∑ j, g j * stmt.1 j = stmt.2.1 + γ * stmt.2.2)
     for j in (List.finRange t) do
-      let f₀ : F ← liftM <| queryF (ι := ι) (F := F) 0 (xs j)
-      let f₁ : F ← liftM <| queryF (ι := ι) (F := F) 1 (xs j)
+      -- Query the two codewords (oracle statements, LEFT family).
+      let f₀ : F ← OptionT.lift <| OracleComp.liftComp
+        (OracleComp.lift <| OracleSpec.query
+          (show [OracleStatement ι F]ₒ.Domain from ⟨0, (by simpa using xs j)⟩)) _
+      let f₁ : F ← OptionT.lift <| OracleComp.liftComp
+        (OracleComp.lift <| OracleSpec.query
+          (show [OracleStatement ι F]ₒ.Domain from ⟨1, (by simpa using xs j)⟩)) _
       guard (encode g (xs j) = f₀ + γ * f₁)
     pure ()
   embed := ⟨fun i ↦ i.elim0, fun a _ _ ↦ a.elim0⟩
@@ -372,6 +459,250 @@ def oracleReduction (encode : (Fin k → F) → (ι → F)) :
       (pSpec (ι := ι) (F := F) k t) where
   prover := oracleProver (ι := ι) (F := F) (k := k) (t := t)
   verifier := oracleVerifier (k := k) (t := t) encode
+
+/-! ### `simulateQ`-collapse toolkit for the compiled oracle verifier
+
+The honest-completeness proof needs a *closed form* for the `simulateQ`-image of the compiled
+oracle verifier (`oracleVerifier.toVerifier`), i.e. the verifier run with its message- and
+oracle-statement queries resolved against the honest prover messages / input codewords. The
+collapse follows the same `simulateQ`-pushing recipe as
+`Sumcheck/Spec/SingleRound.lean :: simulateQ_oracleVerify_eq`, generalised here to a verifier whose
+spot-check phase is a `forIn` loop over `Fin t` (so we additionally need an
+`OptionT`-`forIn`/`guard` transport, à la `Binius/BinaryBasefold/QueryPhase.lean :: ForInSupport`,
+re-derived in-file to keep `ToyProblem` self-contained). -/
+
+/-- `answer` of the default oracle interface is the identity (the message itself). -/
+@[simp] lemma answer_instDefault {M : Type _} (m : M) (q : Unit) :
+    @OracleInterface.answer M OracleInterface.instDefault m q = m := rfl
+
+section SimulateQTransport
+variable {ι' : Type} {spec : OracleSpec ι'} {m : Type → Type} [Monad m] [LawfulMonad m]
+variable {α β : Type}
+
+/-- `simulateQ` commutes with `OptionT.pure`. -/
+theorem simulateQ_optionT_pure (impl : QueryImpl spec m) (b : β) :
+    simulateQ impl (pure b : OptionT (OracleComp spec) β) = (pure b : OptionT m β) := by
+  rw [show (pure b : OptionT (OracleComp spec) β) = OptionT.lift (pure b)
+        from (OptionT.lift_pure b).symm]
+  rw [simulateQ_optionT_lift, simulateQ_pure, OptionT.lift_pure]
+
+/-- `simulateQ` commutes with `OptionT` `failure`. -/
+theorem simulateQ_optionT_failure (impl : QueryImpl spec m) :
+    simulateQ impl (failure : OptionT (OracleComp spec) β) = (failure : OptionT m β) := by
+  rw [OracleComp.failure_def]
+  apply OptionT.ext
+  simp only [OptionT.run_mk, simulateQ_pure, OptionT.fail]
+  rfl
+
+/-- `simulateQ` of a query-free `guard` is the (target-monad) `if`. -/
+theorem simulateQ_optionT_guard (impl : QueryImpl spec m) (P : Prop) [Decidable P] :
+    simulateQ impl (guard P : OptionT (OracleComp spec) PUnit)
+      = (if P then pure PUnit.unit else failure : OptionT m PUnit) := by
+  rw [guard_eq]
+  by_cases hP : P
+  · rw [if_pos hP, if_pos hP, simulateQ_optionT_pure]
+  · rw [if_neg hP, if_neg hP, simulateQ_optionT_failure]
+
+/-- `simulateQ` commutes with `forIn` over a list in `OptionT (OracleComp …)`: the simulated loop
+equals the loop with the simulated body. The missing `simulateQ_forIn` for the `OptionT` stack. -/
+theorem simulateQ_optionT_forIn (impl : QueryImpl spec m)
+    (l : List α) (f : α → β → OptionT (OracleComp spec) (ForInStep β))
+    (g : α → β → OptionT m (ForInStep β))
+    (hg : ∀ a b, g a b = simulateQ impl (f a b)) :
+    ∀ init : β,
+      simulateQ impl (forIn l init f : OptionT (OracleComp spec) β)
+        = (forIn l init g : OptionT m β) := by
+  induction l with
+  | nil =>
+    intro init
+    rw [List.forIn_nil, List.forIn_nil, simulateQ_optionT_pure]
+  | cons a l ih =>
+    intro init
+    rw [List.forIn_cons, List.forIn_cons, simulateQ_optionT_bind, hg]
+    refine bind_congr ?_
+    intro step
+    cases step with
+    | done b => exact simulateQ_optionT_pure impl b
+    | yield b => exact ih b
+
+/-- A `forIn` over a list whose body is `guard (Q a)` then `yield ()` collapses to
+`if (∀ a ∈ l, Q a) then pure () else failure`: the spot-check loop accepts iff every per-element
+guard passes. -/
+theorem forIn_guard_eq (l : List α) (Q : α → Prop) [∀ a, Decidable (Q a)]
+    (body : α → PUnit → OptionT (OracleComp spec) (ForInStep PUnit))
+    (hbody : ∀ a u, body a u = (guard (Q a) >>= fun _ => pure (ForInStep.yield PUnit.unit))) :
+    (forIn l PUnit.unit body : OptionT (OracleComp spec) PUnit)
+      = (if (∀ a ∈ l, Q a) then pure PUnit.unit else failure) := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    rw [List.forIn_cons, hbody]
+    by_cases hQa : Q a
+    · rw [guard_eq, if_pos hQa]
+      simp only [pure_bind]
+      rw [ih]
+      by_cases hrest : (∀ b ∈ l, Q b)
+      · rw [if_pos hrest, if_pos]
+        intro b hb
+        rcases List.mem_cons.mp hb with h | h
+        · exact h ▸ hQa
+        · exact hrest b h
+      · rw [if_neg hrest, if_neg (fun hall =>
+          hrest (fun b hb => hall b (List.mem_cons_of_mem a hb)))]
+    · rw [guard_eq, if_neg hQa,
+        if_neg (fun hall => hQa (hall a (List.mem_cons_self)))]
+      simp [failure_bind]
+
+end SimulateQTransport
+
+section SimOracle2Query
+open OracleInterface
+variable {ιₒ : Type} {oSpec : OracleSpec ιₒ}
+  {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+  {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+
+/-- `simOracle2` message-query collapse (`OracleComp` form), RIGHT (message) family. -/
+lemma simulateQ_simOracle2_messageQuery (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i)
+    (qm : ([T₂]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _)
+      = (pure (OracleInterface.answer (t₂ qm.1) qm.2) : OracleComp oSpec _) := by
+  change simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM ((oSpec + ([T₁]ₒ + [T₂]ₒ)).query (Sum.inr (Sum.inr qm)))) = _
+  rw [simulateQ_spec_query]
+  simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inr,
+    QueryImpl.liftTarget_apply]
+  change liftM (OracleInterface.simOracle0 T₂ t₂ qm) = _
+  simp only [OracleInterface.simOracle0]
+  rfl
+
+/-- `simOracle2` oracle-statement-query collapse (`OracleComp` form), LEFT (oracle) family. -/
+lemma simulateQ_simOracle2_leftQuery_oc (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i)
+    (qm : ([T₁]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM (([T₁]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _)
+      = (pure (OracleInterface.answer (t₁ qm.1) qm.2) : OracleComp oSpec _) := by
+  change simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM ((oSpec + ([T₁]ₒ + [T₂]ₒ)).query (Sum.inr (Sum.inl qm)))) = _
+  rw [simulateQ_spec_query]
+  simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inr,
+    QueryImpl.liftTarget_apply]
+  change liftM (OracleInterface.simOracle0 T₁ t₁ qm) = _
+  simp only [OracleInterface.simOracle0]
+  rfl
+
+/-- Verify-body message-query collapse: the `OptionT.lift <| liftComp <| lift query` form that
+appears verbatim in `oracleVerifier.verify`, simulated via `simOracle2`, collapses to `pure` of the
+message `answer`. -/
+lemma simulateQ_simOracle2_messageQuery_optionT (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i)
+    (qm : ([T₂]ₒ).Domain) :
+    (simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (OptionT.lift (OracleComp.liftComp (OracleComp.lift (OracleSpec.query qm))
+        (oSpec + ([T₁]ₒ + [T₂]ₒ))))
+      : OptionT (OracleComp oSpec) _)
+      = (pure (OracleInterface.answer (t₂ qm.1) qm.2) : OptionT (OracleComp oSpec) _) := by
+  erw [simulateQ_optionT_lift]
+  rw [OracleComp.liftComp_query]
+  simp only [OracleQuery.input_query, OracleQuery.cont_query, id_map]
+  rw [simulateQ_simOracle2_messageQuery]
+  rfl
+
+/-- Verify-body oracle-statement-query collapse (LEFT family). -/
+lemma simulateQ_simOracle2_leftQuery_optionT (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i)
+    (qm : ([T₁]ₒ).Domain) :
+    (simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (OptionT.lift (OracleComp.liftComp (OracleComp.lift (OracleSpec.query qm))
+        (oSpec + ([T₁]ₒ + [T₂]ₒ))))
+      : OptionT (OracleComp oSpec) _)
+      = (pure (OracleInterface.answer (t₁ qm.1) qm.2) : OptionT (OracleComp oSpec) _) := by
+  erw [simulateQ_optionT_lift]
+  rw [OracleComp.liftComp_query]
+  simp only [OracleQuery.input_query, OracleQuery.cont_query, id_map]
+  rw [simulateQ_simOracle2_leftQuery_oc]
+  rfl
+
+end SimOracle2Query
+
+set_option maxHeartbeats 2000000 in
+/-- **Closed form of the compiled toy-problem oracle verifier.** Simulating
+`oracleVerifier.verify` against the honest input codewords `oStmt` and prover messages `msgs`
+(via `OracleInterface.simOracle2`) collapses every query — the message query for `g` and the
+`2t` spot-check codeword queries — to the corresponding honest values, leaving a query-free
+`OptionT` computation that is exactly `if accepts … then pure () else failure`.
+
+This is the load-bearing lemma for honest completeness: composed with `accepts_of_inputRelation`
+it shows the compiled verifier never fails on an honest transcript. -/
+theorem simulateQ_oracleVerify_eq (encode : (Fin k → F) → (ι → F))
+    (stmt : Statement (F := F) k) (oStmt : ∀ i, OracleStatement ι F i)
+    (chal : ∀ i, (pSpec (ι := ι) (F := F) k t).Challenge i)
+    (msgs : ∀ i, (pSpec (ι := ι) (F := F) k t).Message i) :
+    simulateQ (OracleInterface.simOracle2 ([]ₒ) oStmt msgs)
+      ((oracleVerifier (ι := ι) (F := F) (k := k) (t := t) encode).verify stmt chal)
+      = (if accepts (k := k) (t := t) encode stmt oStmt
+            (chal ⟨⟨0, by decide⟩, by rfl⟩) (msgs ⟨1, by rfl⟩) (chal ⟨⟨2, by decide⟩, by rfl⟩)
+          then (pure () : OptionT (OracleComp []ₒ) Unit) else failure) := by
+  unfold oracleVerifier
+  dsimp only
+  rw [simulateQ_optionT_bind]
+  erw [simulateQ_simOracle2_messageQuery_optionT (T₁ := OracleStatement ι F)
+    (T₂ := (pSpec (ι := ι) (F := F) k t).Message) (oSpec := []ₒ) oStmt msgs ⟨⟨1, by rfl⟩, id ()⟩]
+  dsimp only [Sigma.fst, Sigma.snd]
+  erw [pure_bind]
+  rw [simulateQ_optionT_bind, simulateQ_optionT_guard, simulateQ_optionT_bind]
+  rw [simulateQ_optionT_forIn (impl := OracleInterface.simOracle2 ([]ₒ) oStmt msgs)
+    (g := fun (j : Fin t) (_ : PUnit) =>
+      (do let γ : F := chal ⟨⟨0, by decide⟩, by rfl⟩
+          let xs : Fin t → ι := chal ⟨⟨2, by decide⟩, by rfl⟩
+          let g₀ : Fin k → F := OracleInterface.answer (msgs ⟨1, by rfl⟩) (id ())
+          let _ ← (pure (oStmt 0 (xs j)) : OptionT (OracleComp []ₒ) F)
+          let _ ← (pure (oStmt 1 (xs j)) : OptionT (OracleComp []ₒ) F)
+          guard (encode g₀ (xs j) = oStmt 0 (xs j) + γ * oStmt 1 (xs j))
+          pure (ForInStep.yield PUnit.unit)))]
+  swap
+  · -- forIn body collapse: the f₀, f₁ codeword queries collapse to `pure (oStmt …)`.
+    intro j _
+    symm
+    rw [simulateQ_optionT_bind]
+    erw [simulateQ_simOracle2_leftQuery_optionT (T₁ := OracleStatement ι F)
+      (T₂ := (pSpec (ι := ι) (F := F) k t).Message) (oSpec := []ₒ) oStmt msgs
+      (⟨0, chal ⟨⟨2, by decide⟩, by rfl⟩ j⟩ : [OracleStatement ι F]ₒ.Domain)]
+    dsimp only [Sigma.fst, Sigma.snd]
+    erw [pure_bind]
+    rw [simulateQ_optionT_bind]
+    erw [simulateQ_simOracle2_leftQuery_optionT (T₁ := OracleStatement ι F)
+      (T₂ := (pSpec (ι := ι) (F := F) k t).Message) (oSpec := []ₒ) oStmt msgs
+      (⟨1, chal ⟨⟨2, by decide⟩, by rfl⟩ j⟩ : [OracleStatement ι F]ₒ.Domain)]
+    dsimp only [Sigma.fst, Sigma.snd]
+    erw [pure_bind]
+    rw [simulateQ_optionT_bind, simulateQ_optionT_guard, simulateQ_optionT_pure]
+    rfl
+  -- The loop body reduces (pure-binds) to `guard Q_j >>= yield`; collapse via `forIn_guard_eq`.
+  rw [forIn_guard_eq (l := List.finRange t)
+      (Q := fun j =>
+        let γ : F := chal ⟨⟨0, by decide⟩, by rfl⟩
+        let xs : Fin t → ι := chal ⟨⟨2, by decide⟩, by rfl⟩
+        let g₀ : Fin k → F := OracleInterface.answer (msgs ⟨1, by rfl⟩) (id ())
+        encode g₀ (xs j) = oStmt 0 (xs j) + γ * oStmt 1 (xs j))]
+  · -- Combine the linear-constraint `if` and the spot-check `if` into `if accepts`.
+    set γ : F := chal ⟨⟨0, by decide⟩, by rfl⟩ with hγ
+    set xs : Fin t → ι := chal ⟨⟨2, by decide⟩, by rfl⟩ with hxs
+    simp only [answer_instDefault, simulateQ_optionT_pure]
+    set g₀ : Fin k → F := msgs ⟨1, by rfl⟩ with hg₀
+    have hQ : (∀ a ∈ List.finRange t,
+          encode g₀ (xs a) = oStmt 0 (xs a) + γ * oStmt 1 (xs a))
+        ↔ (∀ j : Fin t, encode g₀ (xs j) = oStmt 0 (xs j) + γ * oStmt 1 (xs j)) :=
+      ⟨fun h j => h j (List.mem_finRange j), fun h a _ => h a⟩
+    simp only [hQ]
+    unfold accepts
+    by_cases hlin : (∑ j, g₀ j * stmt.1 j = stmt.2.1 + γ * stmt.2.2)
+    · rw [if_pos hlin]
+      by_cases hsc : ∀ j : Fin t,
+          encode g₀ (xs j) = oStmt 0 (xs j) + γ * oStmt 1 (xs j)
+      · rw [if_pos hsc, if_pos (And.intro hlin hsc), pure_bind, pure_bind]
+      · rw [if_neg hsc, if_neg (fun h => hsc h.2), pure_bind, failure_bind]
+    · rw [if_neg hlin, failure_bind, if_neg (fun h => hlin h.1)]
+  · intro j u
+    simp only [pure_bind]
 
 omit [Fintype ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- Honest completeness for ABF26 Construction 6.2, point form: if
@@ -425,49 +756,47 @@ to the trivial output relation `Set.univ`. The load-bearing fact is
 honest prover's message `g = M₀ + γ M₁` makes `accepts` hold, so the
 verifier's `if accepts then pure () else failure` never fails.
 
-**Status: statement complete, proof admitted (tagged sorry).** The
-point-form mathematical content (`accepts_of_inputRelation`) is fully
-closed; only the probabilistic/monadic plumbing of
-`OracleReduction.toReduction`'s run remains. As of the 2026-06 audit, the
-walls are (revised after probing the actual goal state):
+**Status: statement complete, proof admitted (tagged sorry) — but the two
+historically-named walls are now CLOSED.** The point-form mathematical
+content (`accepts_of_inputRelation`) and the framework-plumbing walls are
+both resolved:
 
-  1. **`simulateQ_forIn` — RESOLVED.** The forIn-over-`Fin t` spot-check
-     loop transport now EXISTS: `Binius/BinaryBasefold/QueryPhase.lean`'s
-     `ForInSupport` section provides `simulateQ_optionT_forIn` (the missing
-     `simulateQ_forIn`), `simulateQ_optionT_listVector_mmap`,
-     `mem_support_forIn_cons`, `forIn_support_invariant`, and
-     `forIn_yield_pure_eq_foldl`. This blocker is gone; it is NOT what
-     currently keeps the proof open.
+  1. **`simulateQ_forIn` — RESOLVED** (re-derived self-contained in this
+     file as `simulateQ_optionT_forIn` + `forIn_guard_eq` + the
+     `simulateQ_optionT_{pure,failure,guard}` toolkit).
 
-  2. **Multi-round prover-execution evaluation — STILL OPEN, no precedent.**
-     This `pSpec` is a 3-round protocol with TWO `V_to_P` challenge rounds
-     (round 0: γ ←$ F; round 2: xs ←$ Fin t → ι), so the prover is NOT
-     `ProverOnly`. Evaluating `Prover.runToRound (Fin.last 3)` requires
-     manually pushing `Fin.induction` through three `processRound` steps,
-     each threading a challenge sample through `challengeQueryImpl` and the
-     `simulateQ pImpl` of the `OptionT`-lifted run. The framework has NO
-     simp lemma for this: `Execution.lean` provides only the 1-round
-     `Prover.run_of_prover_first` / `run_of_verifier_first`, and the
-     analogous 2-round `Prover.run_of_isSingleRound` /
-     `Reduction.run_of_isSingleRound` lemmas are COMMENTED OUT (abandoned)
-     in `Execution.lean`. Probing confirmed `Fin.induction_succ` does not
-     fire on `runToRound` (the simp args report "unused"). Building this
-     3-round evaluation from scratch — the ~210-line Sumcheck-style peeling,
-     which is itself still admitted — is the real remaining work, and it is
-     independent of the now-available forIn transport.
+  2. **Multi-round prover-run evaluation — RESOLVED.** `Fin.induction_three`
+     (added to `ArkLib/Data/Fin/Basic.lean`, a `rfl`) fires on
+     `Prover.runToRound (Fin.last 3)`, peeling all three rounds; the three
+     `V_to_P / P_to_V / V_to_P` directions resolve by `split` exactly as in
+     Sumcheck.
 
-  3. **A `simulateQ`/`OptionT`/`SubSpec` query-resolution simp set.** The
-     `queryG`/`queryF` double-`liftM` wraps each query in nested
-     `simulateQ`/`SubSpec` layers that the current `simulateQ_*` simp
-     lemmas do not fire through (the `simOracle2` resolution of `queryG`/
-     `queryF` against `oStmt`/`messages`); resolving them is the inner half
-     of the same Sumcheck-style peeling as (2).
+  3. **`simulateQ`/`OptionT`/`SubSpec` query resolution — RESOLVED.** The
+     full closed form of the compiled oracle verifier is now proved as
+     `simulateQ_oracleVerify_eq` (above): every query (the `g` message and
+     the `2t` codeword spot-checks) collapses to honest values via the
+     in-file `simOracle2` message/oracle-statement collapse lemmas, leaving
+     `if accepts … then pure () else failure`. The verify body was put in
+     the explicit `OptionT.lift <| liftComp <| lift query` form so these
+     fire, and `instMessageOracleInterfaceOne` was added to make the round-1
+     message `OracleInterface` synthesizable on restated indices.
 
-The clean `oracleVerifier.toVerifier = verifier` equivalence shortcut is
-*not* available here: `toVerifier`'s output type is `Unit × (Fin 0 → _)`,
-not the non-oracle `verifier`'s `Unit`. Closing this is best done by first
-landing a general `Prover.run`-for-fixed-`n` evaluation lemma (walls 2+3)
-in `OracleReduction/Execution.lean`. -/
+The **remaining** work is the final probability bookkeeping: after
+`Fin.induction_three` + the three `split`s + `simulateQ_oracleVerify_eq`,
+the goal is `Pr[event] = 1` over `init >>= simulateQ (sample γ; emit
+g = M₀+γM₁; sample xs; if accepts … then pure () else failure)`. The
+helper `accepts` holds for the honest `g` under any challenges
+(`accepts_of_inputRelation`); discharging `Pr = 1` needs the standard
+`probEvent_eq_one_iff` support-decomposition that pins
+`transcript.messages ⟨1,_⟩ = g` and `transcript.challenges = (γ, xs)`
+through the two `getChallenge` samples (the `Fin.snoc`-built transcript
+accessors), à la `Sumcheck/Spec/SingleRound.lean`'s `oracleReduction_perfectCompleteness`
+support peel. NOTE also: the input relation here should be the
+honest-opening relation (witness `M` opens the codewords under the
+*protocol* `encode`), not the existential `inputRelation k C` — the latter
+existentially quantifies a *different* encoder, so completeness against it
+is not provable as stated without a documented relation alignment (cf. the
+L6.13 `hEnc` precedent). -/
 theorem oracleReduction_perfectCompleteness
     [SampleableType F] [SampleableType ι]
     {σ : Type} (init : ProbComp σ)
@@ -477,21 +806,89 @@ theorem oracleReduction_perfectCompleteness
     (oracleReduction (ι := ι) (F := F) (k := k) (t := t)
         (encode : (Fin k → F) → (ι → F))).perfectCompleteness
       init impl
-      (inputRelation k C)
+      -- Statement repair (hEnc class, L6.13 precedent): the honest-opening
+      -- relation for the *protocol's* encoder, not the existential-encoder
+      -- `inputRelation k C` (whose opener is a DIFFERENT map — completeness
+      -- against it is false, see `honestInputRelation` docstring counterexample).
+      -- `honestInputRelation k C encode ⊆ inputRelation k C` under
+      -- `_h_encode_mem`, so this is the faithful (non-vacuous) claim.
+      (honestInputRelation k C encode)
       (Set.univ : Set (((OutputStatement × ∀ i, OutputOracleStatement i)) ×
         OutputWitness)) := by
-  -- ABF26-C6.2 completeness; paper-proof-owed (framework-blocked). The math
-  -- core (`accepts_of_inputRelation`) is proved; this reduces to it after
-  -- unfolding `OracleReduction.perfectCompleteness` through `toReduction` and
-  -- discharging the per-challenge probability bookkeeping. The `simulateQ_forIn`
-  -- blocker is now RESOLVED (`QueryPhase.lean :: ForInSupport`). The remaining
-  -- wall is the multi-round (3-round, two-challenge) `Prover.run` evaluation:
-  -- the framework's only `Prover.run` simp lemmas are 1-round (`ProverOnly` /
-  -- `VerifierOnly`); the 2-round `run_of_isSingleRound` is abandoned (commented
-  -- out) in `Execution.lean`, and `Fin.induction_succ` does not fire on
-  -- `runToRound`. This needs a general fixed-`n` prover-run evaluation lemma
-  -- upstream (would also unblock FRI/Sumcheck completeness). See docstring.
-  sorry
+  -- ABF26-C6.2 completeness. The compiled verifier collapses (via `simulateQ_oracleVerify_eq`)
+  -- to `if accepts … then pure () else failure`; `accepts_of_inputRelation` shows the `accepts`
+  -- guard holds for the honest message `g = M₀+γM₁` under ANY challenges, so the residual
+  -- `Pr = 1` is discharged by the support peel (à la Sumcheck `Simple`'s completeness).
+  classical
+  unfold OracleReduction.perfectCompleteness
+  rw [Reduction.perfectCompleteness_eq_prob_one]
+  rintro ⟨stmt, oStmt⟩ wit hRel
+  obtain ⟨M, hf, hM⟩ := hRel
+  -- The §6.1 decision predicate holds for the honest `g` under every challenge pair.
+  have hAcc : ∀ (γ : F) (xs : Fin t → ι),
+      accepts (k := k) (t := t) (encode := (encode : (Fin k → F) → (ι → F)))
+        stmt oStmt γ (fun j ↦ M 0 j + γ * M 1 j) xs :=
+    fun γ xs => accepts_of_inputRelation (encode := encode) stmt M hM oStmt hf γ xs
+  simp only [oracleReduction, OracleReduction.toReduction, Reduction.run, Prover.run,
+    Verifier.run, oracleProver, OracleVerifier.toVerifier,
+    Prover.runToRound, Prover.processRound, Fin.induction_three, pSpec,
+    bind_pure_comp, Function.comp]
+  -- Peel the three prover rounds: V→P (γ), P→V (g), V→P (xs).
+  split <;> rename_i hDir0
+  swap
+  · exact absurd hDir0 (by decide)
+  try simp only [pure_bind, map_pure, Functor.map_map, Function.comp, bind_pure_comp]
+  split <;> rename_i hDir1
+  · exact absurd hDir1 (by decide)
+  try simp only [pure_bind, map_pure, Functor.map_map, Function.comp, bind_pure_comp]
+  split <;> rename_i hDir2
+  swap
+  · exact absurd hDir2 (by decide)
+  -- The verifier body is now the compiled `simulateQ`; collapse it to `if accepts …`.
+  simp only [simulateQ_oracleVerify_eq]
+  simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
+    Functor.map_map, Function.comp_def, OptionT.run_pure, Option.getM,
+    Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
+  -- The honest `accepts` guard never short-circuits: under ANY challenges, the honest
+  -- prover's message `g = M₀+γM₁` satisfies `accepts` (`hAcc`). We pin the `if accepts …`
+  -- to `pure ()` by a definitional rewrite of the transcript accessors that feed it.
+  rw [probEvent_eq_one_iff]
+  -- After the collapse the verifier branch is `if accepts … (proverResult.1.messages ⟨1,_⟩) …`.
+  -- The honest prover writes `proverResult.1.messages ⟨1,_⟩ = fun j ↦ M 0 j + γ · M 1 j`
+  -- (round-1 `Transcript.concat` of the honest message) and the two challenge accessors are
+  -- the sampled `γ, xs`. Reduce the accessors so the `if` condition matches `hAcc`.
+  have hIf : ∀ (γc : F) (xsc : Fin t → ι),
+      (if accepts (k := k) (t := t) (encode := (encode : (Fin k → F) → (ι → F)))
+            stmt oStmt γc (fun j ↦ M 0 j + γc * M 1 j) xsc
+        then (pure () : OptionT (OracleComp []ₒ) Unit) else failure) = pure () :=
+    fun γc xsc => if_pos (hAcc γc xsc)
+  refine ⟨?_, ?_⟩
+  · -- No failure: peel the challenge / message samples; the `if` collapses to `pure ()`.
+    rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp only [probFailure_eq_zero, zero_add]
+    apply probOutput_eq_zero_of_not_mem_support
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _ hmem
+    -- Peel outer `init >>= …` then the prover-run / verifier binds, resolving each
+    -- `getChallenge` sample, until the verifier `if accepts …` (which is `pure ()` by `hIf`).
+    simp only [StateT.run'_eq, support_map, Set.mem_image] at hmem
+    obtain ⟨⟨_, s'⟩, hmem, rfl⟩ := hmem
+    erw [simulateQ_bind] at hmem
+    erw [StateT.run_bind] at hmem
+    rw [mem_support_bind_iff] at hmem
+    obtain ⟨⟨x, s''⟩, hx, hs⟩ := hmem
+    -- Peel the prover-run `liftM (g <$> body)`: it is `OptionT.lift`, so `x = some (g result)`.
+    rw [simulateQ_optionT_lift] at hx
+    erw [simulateQ_map] at hx
+    rw [OptionT.run_mk, StateT.run_map] at hx
+    simp only [support_map, Set.mem_image] at hx
+    obtain ⟨⟨tr, sₜ⟩, htr, hxeq⟩ := hx
+    obtain ⟨rfl, rfl⟩ := Prod.mk.inj hxeq
+    trace_state
+    sorry
+  · -- Event holds: same peel; the output statement matches and `accepts` fires.
+    intro x hx
+    sorry
 
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
 
