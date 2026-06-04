@@ -20901,9 +20901,153 @@
     "ArkLib/Data/Lattices/CyclotomicRing/NormBounds/MicciancioYoung.lean": {
       "declarations": [
         {
-          "doc": "**Micciancio/Young product bound.** Over the power-of-two cyclotomic modulus `powTwoCyclotomic \u03b1` (`\u03c6 = X^{2^\u03b1}+1`), scaling an already-`c`-scaled vector by a further ring element `d` of bounded centered `\u2113\u2081` norm grows the squared `\u2113\u2082` norm by at most `\u03ba\u00b2` (the honest Young/Micciancio inequality `\u2016(c\u00b7d)\u00b7v\u2016\u2082\u00b2 \u2264 \u2016d\u2016\u2081\u00b2 \u00b7 \u2016c\u00b7v\u2016\u2082\u00b2` over the negacyclic convolution with centered representatives; discrete Cauchy\u2013Schwarz, deferred).",
+          "doc": "The Mathlib polynomial underlying the power-of-two modulus is `X^{2^\u03b1} + 1`.",
           "kind": "theorem",
-          "line": 50,
+          "line": 57,
+          "name": "ArkLib.Lattices.CyclotomicModulus.powTwo_toPoly",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "powTwo_toPoly",
+          "signature": "theorem powTwo_toPoly :"
+        },
+        {
+          "doc": "The Mathlib degree of the power-of-two modulus is `2^\u03b1`.",
+          "kind": "theorem",
+          "line": 65,
+          "name": "ArkLib.Lattices.CyclotomicModulus.powTwo_toPoly_natDegree",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "powTwo_toPoly_natDegree",
+          "signature": "theorem powTwo_toPoly_natDegree : (\u03a6).\u03c6.toPoly.natDegree = 2 ^ \u03b1 := by"
+        },
+        {
+          "doc": "The `CPolynomial` degree of the modulus is `2^\u03b1`; this is the index range of the centered norms.",
+          "kind": "theorem",
+          "line": 71,
+          "name": "ArkLib.Lattices.CyclotomicModulus.powTwo_natDegree",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "powTwo_natDegree",
+          "signature": "theorem powTwo_natDegree : (\u03a6).\u03c6.natDegree = 2 ^ \u03b1 := by"
+        },
+        {
+          "doc": "A reduced representative has all coefficients beyond `2^\u03b1` equal to zero.",
+          "kind": "theorem",
+          "line": 76,
+          "name": "ArkLib.Lattices.CyclotomicModulus.coeff_toPoly_eq_zero_of_le",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "coeff_toPoly_eq_zero_of_le",
+          "signature": "theorem coeff_toPoly_eq_zero_of_le {a : Rq \u03a6} {i : \u2115} (hi : 2 ^ \u03b1 \u2264 i) :"
+        },
+        {
+          "doc": "A reduced representative has Mathlib degree strictly below `2^\u03b1`.",
+          "kind": "theorem",
+          "line": 85,
+          "name": "ArkLib.Lattices.CyclotomicModulus.natDegree_toPoly_lt",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "natDegree_toPoly_lt",
+          "signature": "theorem natDegree_toPoly_lt (a : Rq \u03a6) : a.1.toPoly.natDegree < 2 ^ \u03b1 := by"
+        },
+        {
+          "doc": "The integer-cast of a centered representative recovers the coefficient in `ZMod q`.",
+          "kind": "theorem",
+          "line": 94,
+          "name": "ArkLib.Lattices.CyclotomicModulus.intCast_valMinAbs_coeff",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "intCast_valMinAbs_coeff",
+          "signature": "theorem intCast_valMinAbs_coeff (a : Rq \u03a6) (i : \u2115) :"
+        },
+        {
+          "doc": "Coefficient identity for reduction modulo the monic binomial `X^n + 1` over any commutative ring: for a polynomial `f` of degree `< 2n` and `k < n`, the negacyclic wraparound `X^{n+k} \u2261 -X^k` collapses the two contributing degrees into a signed difference `(f %\u2098 (X^n+1)).coeff k = f.coeff k \u2212 f.coeff (n+k)`.",
+          "kind": "theorem",
+          "line": 102,
+          "name": "ArkLib.Lattices.CyclotomicModulus.coeff_modByMonic_X_pow_add_one",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "coeff_modByMonic_X_pow_add_one",
+          "signature": "theorem coeff_modByMonic_X_pow_add_one {S : Type*} [CommRing S] [Nontrivial S] {n : \u2115}"
+        },
+        {
+          "doc": "The negacyclic index permutation `i \u21a6 (n + k \u2212 i) mod n` on `range n`. For fixed `k < n` it is an involution, hence a bijection of `range (2^\u03b1)`; absolute values are preserved under it, which is the [Mic07] double-counting that turns the per-coefficient Cauchy\u2013Schwarz into the global product bound.",
+          "kind": "def",
+          "line": 142,
+          "name": "ArkLib.Lattices.CyclotomicModulus.negIdx",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "negIdx",
+          "signature": "def negIdx (n k i : \u2115) : \u2115 := (n + k - i) % n"
+        },
+        {
+          "doc": "For `k < n` and `i < n`, the negacyclic index lands in `range n`.",
+          "kind": "theorem",
+          "line": 146,
+          "name": "ArkLib.Lattices.CyclotomicModulus.negIdx_lt",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "negIdx_lt",
+          "signature": "theorem negIdx_lt {n k i : \u2115} (hn : 0 < n) : negIdx n k i < n := Nat.mod_lt _ hn"
+        },
+        {
+          "doc": "The negacyclic index is `k \u2212 i` when `i \u2264 k`.",
+          "kind": "theorem",
+          "line": 150,
+          "name": "ArkLib.Lattices.CyclotomicModulus.negIdx_of_le",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "negIdx_of_le",
+          "signature": "theorem negIdx_of_le {n k i : \u2115} (hk : k < n) (hik : i \u2264 k) : negIdx n k i = k - i := by"
+        },
+        {
+          "doc": "The negacyclic index is `n + k \u2212 i` when `k < i < n`.",
+          "kind": "theorem",
+          "line": 157,
+          "name": "ArkLib.Lattices.CyclotomicModulus.negIdx_of_gt",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "negIdx_of_gt",
+          "signature": "theorem negIdx_of_gt {n k i : \u2115} (hi : i < n) (hik : k < i) : negIdx n k i = n + k - i := by"
+        },
+        {
+          "doc": "The negacyclic index map is an involution on `range n` (for fixed `k < n`).",
+          "kind": "theorem",
+          "line": 163,
+          "name": "ArkLib.Lattices.CyclotomicModulus.negIdx_negIdx",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "negIdx_negIdx",
+          "signature": "theorem negIdx_negIdx {n k i : \u2115} (hk : k < n) (hi : i < n) :"
+        },
+        {
+          "doc": "Summing over `range n` is invariant under the negacyclic index permutation.",
+          "kind": "theorem",
+          "line": 171,
+          "name": "ArkLib.Lattices.CyclotomicModulus.sum_negIdx_eq",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "sum_negIdx_eq",
+          "signature": "theorem sum_negIdx_eq {\u03b2 : Type*} [AddCommMonoid \u03b2] {n k : \u2115} (hk : k < n) (F : \u2115 \u2192 \u03b2) :"
+        },
+        {
+          "doc": "Summing over `range n` in the *index argument* `k` of the negacyclic map is also permutation-invariant: `k \u21a6 (n + k \u2212 i) mod n` is the rotation by `n \u2212 i`, a bijection of `range n`, with inverse `k \u21a6 (k + i) mod n`. This is the second leg of the [Mic07] double-counting.",
+          "kind": "theorem",
+          "line": 185,
+          "name": "ArkLib.Lattices.CyclotomicModulus.sum_negIdx_eq_k",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "sum_negIdx_eq_k",
+          "signature": "theorem sum_negIdx_eq_k {\u03b2 : Type*} [AddCommMonoid \u03b2] {n i : \u2115} (hi : i < n) (F : \u2115 \u2192 \u03b2) :"
+        },
+        {
+          "doc": "**Per-coefficient Mic07 bound.** The centered absolute value of the `k`-th product coefficient is dominated by the negacyclic convolution of the centered absolute values: `|\uff08d\u00b7w)_k| \u2264 \u03a3_{i<2^\u03b1} |d_i|\u00b7|w_{\u03c3(k,i)}|`, where `\u03c3` is the negacyclic index map.",
+          "kind": "theorem",
+          "line": 220,
+          "name": "ArkLib.Lattices.CyclotomicModulus.mul_coeff_valMinAbs_le",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "mul_coeff_valMinAbs_le",
+          "signature": "theorem mul_coeff_valMinAbs_le (d w : Rq \u03a6) {k : \u2115} (hk : k < 2 ^ \u03b1) :"
+        },
+        {
+          "doc": "**Per-element Mic07 product norm bound.** The squared `\u2113\u2082` norm of a ring product is bounded by `\u2016d\u2016\u2081\u00b2\u00b7\u2016w\u2016\u2082\u00b2`: the discrete Cauchy\u2013Schwarz over the negacyclic convolution, double-counted with the [Mic07] permutation `\u03a3_k |w_{\u03c3(k,i)}|\u00b2 = \u2016w\u2016\u2082\u00b2`.",
+          "kind": "theorem",
+          "line": 311,
+          "name": "ArkLib.Lattices.CyclotomicModulus.Rq.l2NormSq_mul_le",
+          "namespace": "ArkLib.Lattices.CyclotomicModulus",
+          "short_name": "Rq.l2NormSq_mul_le",
+          "signature": "theorem Rq.l2NormSq_mul_le (d w : Rq \u03a6) :"
+        },
+        {
+          "doc": "**Micciancio/Young product bound.** Over the power-of-two cyclotomic modulus `powTwoCyclotomic \u03b1` (`\u03c6 = X^{2^\u03b1}+1`), scaling an already-`c`-scaled vector by a further ring element `d` of bounded centered `\u2113\u2081` norm grows the squared `\u2113\u2082` norm by at most `\u03ba\u00b2` (the honest Young/Micciancio inequality `\u2016(c\u00b7d)\u00b7v\u2016\u2082\u00b2 \u2264 \u2016d\u2016\u2081\u00b2 \u00b7 \u2016c\u00b7v\u2016\u2082\u00b2` over the negacyclic convolution with centered representatives, proved by discrete Cauchy\u2013Schwarz in `Rq.l2NormSq_mul_le`).",
+          "kind": "theorem",
+          "line": 385,
           "name": "ArkLib.Lattices.CyclotomicModulus.scalarVecMul_mul_l2NormSq_le",
           "namespace": "ArkLib.Lattices.CyclotomicModulus",
           "short_name": "scalarVecMul_mul_l2NormSq_le",
@@ -45975,7 +46119,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 4984,
+      "declarations": 5000,
       "files": 282
     }
   }
