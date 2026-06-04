@@ -720,28 +720,28 @@ lemma fri_query_soundness
   let ρ_sqrt :=
     ReedSolomon.sqrtRate
       (2 ^ n)
-      (⟨fun x => x, by simp⟩ : ω.subdomainNatReversed 0 ↪ 𝔽)
+      (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)
   have hsqrt : ρ_sqrt = 1 := by
-    have hcard : Fintype.card (ω.subdomainNatReversed 0) = 2 ^ n := by
+    have hcard : Fintype.card (ω.subdomain 0) = 2 ^ n := by
       rw [Fintype.card_coe]
-      exact CosetFftDomain.size_of_smooth_coset_domain_eq_pow_of_2
-        (ω := ω.subdomainNatReversed 0)
+      exact Domain.size_of_smooth_coset_domain_eq_pow_of_2
+        (ω := ω.subdomain 0)
     have hrate :
         LinearCode.rate
             (ReedSolomon.code
-              (⟨fun x : ω.subdomainNatReversed 0 => x, by simp⟩ :
-                ω.subdomainNatReversed 0 ↪ 𝔽)
+              (⟨fun x : ω.subdomain 0 => x, by simp⟩ :
+                ω.subdomain 0 ↪ 𝔽)
               (2 ^ n)) = 1 := by
       have hle :
-          2 ^ n ≤ Fintype.card (ω.subdomainNatReversed 0) := by omega
+          2 ^ n ≤ Fintype.card (ω.subdomain 0) := by omega
       rw [ReedSolomon.rateOfLinearCode_eq_div'
-        (α := (⟨fun x : ω.subdomainNatReversed 0 => x, by simp⟩ :
-          ω.subdomainNatReversed 0 ↪ 𝔽)) hle]
+        (α := (⟨fun x : ω.subdomain 0 => x, by simp⟩ :
+          ω.subdomain 0 ↪ 𝔽)) hle]
       rw [hcard]
       norm_num
     change ReedSolomon.sqrtRate
       (2 ^ n)
-      (⟨fun x => x, by simp⟩ : ω.subdomainNatReversed 0 ↪ 𝔽) = 1
+      (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) = 1
     rw [ReedSolomon.sqrtRate, hrate]
     norm_num
   let α0 : ℝ≥0∞ :=
@@ -757,7 +757,7 @@ lemma fri_query_soundness
     rw [← ENNReal.ofReal_one]
     exact ENNReal.ofReal_le_ofReal hmax_ge_one
   let εQ (x : Fin t → 𝔽) (z : Fin (k + 1) → 𝔽) :=
-    Pr_{let samp ←$ᵖ (ω.subdomainNatReversed 0)}[
+    Pr_{let samp ←$ᵖ (ω.subdomain 0)}[
       Pr[
         fun _ => True |
         (
@@ -900,7 +900,7 @@ lemma fri_soundness
           (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) = 1 := by
     have hcard : Fintype.card ω = 2 ^ n := by
       rw [Fintype.card_coe]
-      exact CosetFftDomain.size_of_smooth_coset_domain_eq_pow_of_2 (ω := ω)
+      exact Domain.size_of_smooth_coset_domain_eq_pow_of_2 (ω := ω)
     have hrate :
         LinearCode.rate
             (ReedSolomon.code (⟨fun x : ω => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)) = 1 := by
