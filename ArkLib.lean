@@ -193,6 +193,7 @@ import ArkLib.ProofSystem.Fri.Spec.General
 import ArkLib.ProofSystem.Fri.Spec.SingleRound
 import ArkLib.ProofSystem.Fri.Spec.Soundness
 import ArkLib.ProofSystem.Plonk.Basic
+import ArkLib.ProofSystem.Plonk.PermutationCheck
 import ArkLib.ProofSystem.RingSwitching.BatchingPhase
 import ArkLib.ProofSystem.RingSwitching.General
 import ArkLib.ProofSystem.RingSwitching.Prelude

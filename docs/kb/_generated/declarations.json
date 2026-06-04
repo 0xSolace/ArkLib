@@ -35131,8 +35131,17 @@
         },
         {
           "doc": "",
+          "kind": "instance",
+          "line": 43,
+          "name": "SendWitness._anon_instance_43",
+          "namespace": "SendWitness",
+          "short_name": "_anon_instance_43",
+          "signature": "instance instance : ProverOnly (pSpec Witness) where"
+        },
+        {
+          "doc": "",
           "kind": "def",
-          "line": 44,
+          "line": 47,
           "name": "SendWitness.prover",
           "namespace": "SendWitness",
           "short_name": "prover",
@@ -35141,7 +35150,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 54,
+          "line": 57,
           "name": "SendWitness.verifier",
           "namespace": "SendWitness",
           "short_name": "verifier",
@@ -35150,7 +35159,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 58,
+          "line": 61,
           "name": "SendWitness.reduction",
           "namespace": "SendWitness",
           "short_name": "reduction",
@@ -35159,7 +35168,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 67,
+          "line": 70,
           "name": "SendWitness.toRelOut",
           "namespace": "SendWitness",
           "short_name": "toRelOut",
@@ -35168,7 +35177,7 @@
         {
           "doc": "The `SendWitness` reduction satisfies perfect completeness.",
           "kind": "theorem",
-          "line": 73,
+          "line": 77,
           "name": "SendWitness.reduction_completeness",
           "namespace": "SendWitness",
           "short_name": "reduction_completeness",
@@ -35177,7 +35186,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 79,
+          "line": 109,
           "name": "SendWitness.reduction_rbr_knowledge_soundness",
           "namespace": "SendWitness",
           "short_name": "reduction_rbr_knowledge_soundness",
@@ -35186,7 +35195,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 93,
+          "line": 123,
           "name": "SendWitness.oraclePSpec",
           "namespace": "SendWitness",
           "short_name": "oraclePSpec",
@@ -35195,7 +35204,7 @@
         {
           "doc": "The oracle prover for the `SendWitness` oracle reduction. For each round `i : Fin (FinEnum.card \u03b9w)`, the prover sends the witness `wit (FinEnum.equiv.symm i)` to the verifier.",
           "kind": "def",
-          "line": 108,
+          "line": 138,
           "name": "SendWitness.oracleProver",
           "namespace": "SendWitness",
           "short_name": "oracleProver",
@@ -35204,7 +35213,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 189,
+          "line": 219,
           "name": "SendSingleWitness.oraclePSpec",
           "namespace": "SendSingleWitness",
           "short_name": "oraclePSpec",
@@ -35213,7 +35222,7 @@
         {
           "doc": "The oracle prover for the `SendSingleWitness` oracle reduction. The prover sends the witness `wit` to the verifier as the only oracle message.",
           "kind": "def",
-          "line": 196,
+          "line": 226,
           "name": "SendSingleWitness.oracleProver",
           "namespace": "SendSingleWitness",
           "short_name": "oracleProver",
@@ -35222,7 +35231,7 @@
         {
           "doc": "The oracle verifier for the `SendSingleWitness` oracle reduction. The verifier receives the input statement `stmt` and returns it, and also specifying the oracle message as the output oracle statement.",
           "kind": "def",
-          "line": 212,
+          "line": 242,
           "name": "SendSingleWitness.oracleVerifier",
           "namespace": "SendSingleWitness",
           "short_name": "oracleVerifier",
@@ -35231,7 +35240,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 225,
+          "line": 255,
           "name": "SendSingleWitness.oracleReduction",
           "namespace": "SendSingleWitness",
           "short_name": "oracleReduction",
@@ -35240,7 +35249,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 235,
+          "line": 265,
           "name": "SendSingleWitness.oracleProver_run",
           "namespace": "SendSingleWitness",
           "short_name": "oracleProver_run",
@@ -35249,7 +35258,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 243,
+          "line": 273,
           "name": "SendSingleWitness.oracleVerifier_toVerifier_run",
           "namespace": "SendSingleWitness",
           "short_name": "oracleVerifier_toVerifier_run",
@@ -35258,7 +35267,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 257,
+          "line": 287,
           "name": "SendSingleWitness.toORelOut",
           "namespace": "SendSingleWitness",
           "short_name": "toORelOut",
@@ -35267,7 +35276,7 @@
         {
           "doc": "The `SendSingleWitness` oracle reduction satisfies perfect completeness.",
           "kind": "theorem",
-          "line": 264,
+          "line": 294,
           "name": "SendSingleWitness.oracleReduction_completeness",
           "namespace": "SendSingleWitness",
           "short_name": "oracleReduction_completeness",
@@ -35276,7 +35285,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 282,
+          "line": 312,
           "name": "SendSingleWitness.oracleReduction_rbr_knowledge_soundness",
           "namespace": "SendSingleWitness",
           "short_name": "oracleReduction_rbr_knowledge_soundness",
@@ -35441,16 +35450,16 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 11,
-          "name": "_anon_def_11",
+          "line": 12,
+          "name": "_anon_def_12",
           "namespace": "",
-          "short_name": "_anon_def_11",
+          "short_name": "_anon_def_12",
           "signature": "def define what it means for the constraint system to be satisfied. This forms the core relation of"
         },
         {
           "doc": "A wire assignment for a single gate of the Plonk constraint system, parametrized by `numWires : \u2115`, consists of three indices `a, b, c` that specifies the location of the left, right and output wires for that gate.",
           "kind": "structure",
-          "line": 19,
+          "line": 20,
           "name": "Plonk.WireIndices",
           "namespace": "Plonk",
           "short_name": "WireIndices",
@@ -35459,7 +35468,7 @@
         {
           "doc": "A selector for a Plonk constraint system is a set of coefficients that determine the gate type",
           "kind": "structure",
-          "line": 30,
+          "line": 31,
           "name": "Plonk.Selector",
           "namespace": "Plonk",
           "short_name": "Selector",
@@ -35468,7 +35477,7 @@
         {
           "doc": "A single gate of the Plonk constraint system, which consists of a selector and a wire index assignment.",
           "kind": "structure",
-          "line": 45,
+          "line": 46,
           "name": "Plonk.Gate",
           "namespace": "Plonk",
           "short_name": "Gate",
@@ -35477,7 +35486,7 @@
         {
           "doc": "Evaluate a gate on a given input vector.",
           "kind": "def",
-          "line": 53,
+          "line": 54,
           "name": "Plonk.Gate.eval",
           "namespace": "Plonk.Gate",
           "short_name": "eval",
@@ -35486,7 +35495,7 @@
         {
           "doc": "A gate accepts an input vector `x` if its evaluation at `x` is zero.",
           "kind": "def",
-          "line": 57,
+          "line": 58,
           "name": "Plonk.Gate.accepts",
           "namespace": "Plonk.Gate",
           "short_name": "accepts",
@@ -35495,7 +35504,7 @@
         {
           "doc": "An addition gate constrains `x(c) = x(a) + x(b)`",
           "kind": "def",
-          "line": 63,
+          "line": 64,
           "name": "Plonk.Gate.add",
           "namespace": "Plonk.Gate",
           "short_name": "add",
@@ -35504,7 +35513,7 @@
         {
           "doc": "A multiplication gate constrains `x(c) = x(a) * x(b)`",
           "kind": "def",
-          "line": 67,
+          "line": 68,
           "name": "Plonk.Gate.mul",
           "namespace": "Plonk.Gate",
           "short_name": "mul",
@@ -35513,7 +35522,7 @@
         {
           "doc": "A booleanity gate constrains `x(j) * (x(j) - 1) = 0`, implying `x(j) \u2208 {0,1}`.",
           "kind": "def",
-          "line": 71,
+          "line": 72,
           "name": "Plonk.Gate.bool",
           "namespace": "Plonk.Gate",
           "short_name": "bool",
@@ -35522,7 +35531,7 @@
         {
           "doc": "An equality gate constrains `x(i) = c` for some public value `c`.",
           "kind": "def",
-          "line": 75,
+          "line": 76,
           "name": "Plonk.Gate.eq",
           "namespace": "Plonk.Gate",
           "short_name": "eq",
@@ -35531,7 +35540,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 83,
+          "line": 84,
           "name": "Plonk.Gate.add_accepts_iff",
           "namespace": "Plonk.Gate",
           "short_name": "add_accepts_iff",
@@ -35540,7 +35549,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 87,
+          "line": 88,
           "name": "Plonk.Gate.mul_accepts_iff",
           "namespace": "Plonk.Gate",
           "short_name": "mul_accepts_iff",
@@ -35549,7 +35558,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 91,
+          "line": 92,
           "name": "Plonk.Gate.bool_accepts_iff",
           "namespace": "Plonk.Gate",
           "short_name": "bool_accepts_iff",
@@ -35558,7 +35567,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 97,
+          "line": 98,
           "name": "Plonk.Gate.bool_accepts_iff_of_domain",
           "namespace": "Plonk.Gate",
           "short_name": "bool_accepts_iff_of_domain",
@@ -35567,7 +35576,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 102,
+          "line": 103,
           "name": "Plonk.Gate.eq_accepts",
           "namespace": "Plonk.Gate",
           "short_name": "eq_accepts",
@@ -35576,7 +35585,7 @@
         {
           "doc": "A Plonk constraint system is a vector of `numGates` gates, each parametrized by the underlying ring `\ud835\udce1` and `numWires`, the number of wires.",
           "kind": "def",
-          "line": 111,
+          "line": 112,
           "name": "Plonk.ConstraintSystem",
           "namespace": "Plonk",
           "short_name": "ConstraintSystem",
@@ -35585,7 +35594,7 @@
         {
           "doc": "A constraint system accepts an input vector `x` if all of its gates accept `x`.",
           "kind": "def",
-          "line": 124,
+          "line": 125,
           "name": "Plonk.ConstraintSystem.accepts",
           "namespace": "Plonk.ConstraintSystem",
           "short_name": "accepts",
@@ -35594,34 +35603,52 @@
         {
           "doc": "The partition induced by a constraint system as defined in the Plonk paper. For `i \u2208 [numWires]`, let `T_i \u2286 [3*numGates]` be the set of indices `j` such that `V_j = i`, where `V` is the flattened vector of all wire indices `(a,b,c)` from all gates. This creates a partition of `[3 * numGates]` based on which gates use each wire index.",
           "kind": "def",
-          "line": 133,
+          "line": 134,
           "name": "Plonk.ConstraintSystem.partition",
           "namespace": "Plonk.ConstraintSystem",
           "short_name": "partition",
           "signature": "def partition (cs : ConstraintSystem \ud835\udce1 numWires numGates) :"
         },
         {
-          "doc": "The permutation corresponding to the partition induced by a constraint system.",
+          "doc": "The permutation corresponding to the partition induced by a constraint system. For each wire index `i`, the positions in `Fin (3 * numGates)` referencing wire `i` form a partition block. The permutation cycles through each block (sorted by position), ensuring that copy constraints can be enforced: all positions in the same block must carry the same wire value.",
           "kind": "def",
-          "line": 145,
+          "line": 150,
           "name": "Plonk.ConstraintSystem.perm",
           "namespace": "Plonk.ConstraintSystem",
           "short_name": "perm",
-          "signature": "def perm (cs : ConstraintSystem \ud835\udce1 numWires numGates) : Equiv.Perm (Fin (3 * numGates)) := sorry"
+          "signature": "def perm (cs : ConstraintSystem \ud835\udce1 numWires numGates) : Equiv.Perm (Fin (3 * numGates)) :="
         },
         {
           "doc": "A constraint system is prepared for `\u2113` public inputs, for some `\u2113 \u2264 numGates, numWires`, if for all `i \u2208 [\u2113]`, the `i`-th gate constrains the `i`-th wire to be some public value.",
           "kind": "def",
-          "line": 149,
+          "line": 156,
           "name": "Plonk.ConstraintSystem.isPreparedFor",
           "namespace": "Plonk.ConstraintSystem",
           "short_name": "isPreparedFor",
           "signature": "def isPreparedFor (\u2113 : \u2115) (h\u2113 : \u2113 \u2264 numGates) (h\u2113' : \u2113 \u2264 numWires)"
         },
         {
+          "doc": "Copy constraints are satisfied when the wire assignment is constant on orbits of the permutation: every position that references the same wire carries the same value.",
+          "kind": "def",
+          "line": 168,
+          "name": "Plonk.CopyConstraintsSatisfied",
+          "namespace": "Plonk",
+          "short_name": "CopyConstraintsSatisfied",
+          "signature": "def CopyConstraintsSatisfied (f : Fin n \u2192 \ud835\udce1) (\u03c3 : Equiv.Perm (Fin n)) : Prop :="
+        },
+        {
+          "doc": "The grand product identity: when copy constraints hold, the product with permuted indices equals the product with identity indices. This is the completeness direction of the Plonk permutation argument \u2014 the honest prover's accumulator telescopes to 1.",
+          "kind": "theorem",
+          "line": 174,
+          "name": "Plonk.prod_eq_of_copyConstraints",
+          "namespace": "Plonk",
+          "short_name": "prod_eq_of_copyConstraints",
+          "signature": "theorem prod_eq_of_copyConstraints (f g : Fin n \u2192 \ud835\udce1) (\u03c3 : Equiv.Perm (Fin n)) (\u03b2 \u03b3 : \ud835\udce1)"
+        },
+        {
           "doc": "To define a relation based on the constraint system, we extend it with: - A natural number `\u2113 \u2264 m` representing the number of public inputs - A subset `\u2110 \u2282 [m]` of \"public inputs\" (assumed to be `{1,...,\u2113}` without loss of generality)",
           "kind": "def",
-          "line": 161,
+          "line": 189,
           "name": "Plonk.relation",
           "namespace": "Plonk",
           "short_name": "relation",
@@ -36298,7 +36325,228 @@
       ]
     },
     "ArkLib/ProofSystem/Plonk/Basic.lean": {
-      "declarations": []
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 48,
+          "name": "Plonk.gateCheckPSpec",
+          "namespace": "Plonk",
+          "short_name": "gateCheckPSpec",
+          "signature": "def gateCheckPSpec : ProtocolSpec 1 :="
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 51,
+          "name": "Plonk._anon_instance_51",
+          "namespace": "Plonk",
+          "short_name": "_anon_instance_51",
+          "signature": "instance instance : \u2200 i, VCVCompatible ((gateCheckPSpec \ud835\udce1 numWires).Challenge i)"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 54,
+          "name": "Plonk._anon_instance_54",
+          "namespace": "Plonk",
+          "short_name": "_anon_instance_54",
+          "signature": "instance instance : \u2200 i, SampleableType ((gateCheckPSpec \ud835\udce1 numWires).Challenge i)"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 57,
+          "name": "Plonk._anon_instance_57",
+          "namespace": "Plonk",
+          "short_name": "_anon_instance_57",
+          "signature": "instance instance : ProverOnly (gateCheckPSpec \ud835\udce1 numWires) where"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 63,
+          "name": "Plonk.gateCheckProver",
+          "namespace": "Plonk",
+          "short_name": "gateCheckProver",
+          "signature": "def gateCheckProver :"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 78,
+          "name": "Plonk.acceptsDecidable",
+          "namespace": "Plonk",
+          "short_name": "acceptsDecidable",
+          "signature": "instance acceptsDecidable (cs : ConstraintSystem \ud835\udce1 numWires numGates) (w : Fin numWires \u2192 \ud835\udce1) :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 83,
+          "name": "Plonk.gateCheckVerifier",
+          "namespace": "Plonk",
+          "short_name": "gateCheckVerifier",
+          "signature": "def gateCheckVerifier :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 94,
+          "name": "Plonk.gateCheckReduction",
+          "namespace": "Plonk",
+          "short_name": "gateCheckReduction",
+          "signature": "def gateCheckReduction :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 103,
+          "name": "Plonk.gateCheckRelIn",
+          "namespace": "Plonk",
+          "short_name": "gateCheckRelIn",
+          "signature": "def gateCheckRelIn :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 108,
+          "name": "Plonk.gateCheckRelOut",
+          "namespace": "Plonk",
+          "short_name": "gateCheckRelOut",
+          "signature": "def gateCheckRelOut :"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 116,
+          "name": "Plonk.gateCheck_perfectCompleteness",
+          "namespace": "Plonk",
+          "short_name": "gateCheck_perfectCompleteness",
+          "signature": "theorem gateCheck_perfectCompleteness :"
+        }
+      ]
+    },
+    "ArkLib/ProofSystem/Plonk/PermutationCheck.lean": {
+      "declarations": [
+        {
+          "doc": "Maps a position in `Fin (3 * numGates)` to the wire index it references. Position `(k, g)` via `finProdFinEquiv` references wire `a`/`b`/`c` of gate `g`.",
+          "kind": "def",
+          "line": 47,
+          "name": "Plonk.wireOfPosition",
+          "namespace": "Plonk",
+          "short_name": "wireOfPosition",
+          "signature": "def wireOfPosition (cs : ConstraintSystem \ud835\udce1 numWires numGates)"
+        },
+        {
+          "doc": "Extends a wire assignment to the full position domain using the constraint system's wire routing: position `j` gets value `w (wireOfPosition cs j)`.",
+          "kind": "def",
+          "line": 56,
+          "name": "Plonk.extendWireAssignment",
+          "namespace": "Plonk",
+          "short_name": "extendWireAssignment",
+          "signature": "def extendWireAssignment (cs : ConstraintSystem \ud835\udce1 numWires numGates)"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 67,
+          "name": "Plonk.permCheckPSpec",
+          "namespace": "Plonk",
+          "short_name": "permCheckPSpec",
+          "signature": "def permCheckPSpec : ProtocolSpec 1 :="
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 70,
+          "name": "Plonk._anon_instance_70",
+          "namespace": "Plonk",
+          "short_name": "_anon_instance_70",
+          "signature": "instance instance : \u2200 i, VCVCompatible ((permCheckPSpec \ud835\udce1 numGates).Challenge i)"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 73,
+          "name": "Plonk._anon_instance_73",
+          "namespace": "Plonk",
+          "short_name": "_anon_instance_73",
+          "signature": "instance instance : \u2200 i, SampleableType ((permCheckPSpec \ud835\udce1 numGates).Challenge i)"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 76,
+          "name": "Plonk._anon_instance_76",
+          "namespace": "Plonk",
+          "short_name": "_anon_instance_76",
+          "signature": "instance instance : ProverOnly (permCheckPSpec \ud835\udce1 numGates) where"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 82,
+          "name": "Plonk.permCheckProver",
+          "namespace": "Plonk",
+          "short_name": "permCheckProver",
+          "signature": "def permCheckProver :"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 97,
+          "name": "Plonk.copyConstraintsDecidable",
+          "namespace": "Plonk",
+          "short_name": "copyConstraintsDecidable",
+          "signature": "instance copyConstraintsDecidable (f : Fin (3 * numGates) \u2192 \ud835\udce1)"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 103,
+          "name": "Plonk.permCheckVerifier",
+          "namespace": "Plonk",
+          "short_name": "permCheckVerifier",
+          "signature": "def permCheckVerifier :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 114,
+          "name": "Plonk.permCheckReduction",
+          "namespace": "Plonk",
+          "short_name": "permCheckReduction",
+          "signature": "def permCheckReduction :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 123,
+          "name": "Plonk.permCheckRelIn",
+          "namespace": "Plonk",
+          "short_name": "permCheckRelIn",
+          "signature": "def permCheckRelIn :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 128,
+          "name": "Plonk.permCheckRelOut",
+          "namespace": "Plonk",
+          "short_name": "permCheckRelOut",
+          "signature": "def permCheckRelOut :"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 137,
+          "name": "Plonk.permCheck_perfectCompleteness",
+          "namespace": "Plonk",
+          "short_name": "permCheck_perfectCompleteness",
+          "signature": "theorem permCheck_perfectCompleteness :"
+        }
+      ]
     },
     "ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean": {
       "declarations": [
@@ -40516,8 +40764,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 4398,
-      "files": 236
+      "declarations": 4425,
+      "files": 237
     }
   }
 }
