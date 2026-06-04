@@ -385,10 +385,44 @@ def oracleReduction.checkClaim : OracleReduction oSpec
   CheckClaim.oracleReduction oSpec (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg)
     (checkClaim.pred R deg D)
 
+/-- The protocol spec for `randomQuery`: the verifier sends a single random challenge `q : R`. -/
+@[reducible]
+def randomQuery.pSpec : ProtocolSpec 1 := ⟨!v[.V_to_P], !v[R]⟩
+
+instance : VerifierOnly (randomQuery.pSpec R) where
+  verifier_first' := by simp [randomQuery.pSpec]
+
+/-- The oracle prover for `randomQuery`. It carries the two oracles `(p, q)` (indexed by
+`Unit ⊕ Unit`), receives the verifier's random challenge, and outputs the challenge as the new
+statement while keeping both oracles. Direct construction (mirrors `RandomQuery.oracleProver`,
+adapted to the `Unit ⊕ Unit` oracle index and the carried-`R` input statement). -/
+def randomQuery.oracleProver : OracleProver oSpec
+    (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg) Unit
+    (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) Unit (randomQuery.pSpec R) where
+  PrvState
+  | 0 => ∀ _ : Unit ⊕ Unit, R⦃≤ deg⦄[X]
+  | 1 => (∀ _ : Unit ⊕ Unit, R⦃≤ deg⦄[X]) × R
+  input := fun x => x.1.2
+  sendMessage | ⟨0, h⟩ => nomatch h
+  receiveChallenge | ⟨0, _⟩ => fun oracles => pure fun q => (oracles, q)
+  output := fun (oracles, q) => pure ((q, oracles), ())
+
+/-- The oracle verifier for `randomQuery`: it returns the random challenge as the new statement and
+performs no oracle checks, keeping both input oracles (`embed := Sum.inl`). -/
+def randomQuery.oracleVerifier : OracleVerifier oSpec
+    (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg)
+    (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) (randomQuery.pSpec R) where
+  verify := fun _ chal => do
+    let q : R := chal ⟨0, rfl⟩
+    pure q
+  embed := Function.Embedding.inl
+  hEq := by intro i; rfl
+
 def oracleReduction.randomQuery : OracleReduction oSpec
     (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg) Unit
-    (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) Unit ⟨!v[.V_to_P], !v[R]⟩ :=
-  sorry
+    (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) Unit ⟨!v[.V_to_P], !v[R]⟩ where
+  prover := randomQuery.oracleProver R deg oSpec
+  verifier := randomQuery.oracleVerifier R deg oSpec
 
 /-- The oracle-aware statement map for `reduceClaim`: the verifier reads the *claimed* polynomial
 `q` (oracle index `inr ()`) at the challenge `chal`, returning the new context statement
