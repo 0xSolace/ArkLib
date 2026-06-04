@@ -46750,7 +46750,7 @@
         {
           "doc": "**Lemma 6.12 of [ABF26]** (list-decoding lower bound on the simplified IOR). Coding-theory form: if `|F| > binomial(|\u039b(C^{\u22612}, \u03b4)|, 2)`, then there exist witnesses `(v, \u03bc_1, \u03bc_2, f_1, f_2)` with `(f_1, f_2)` lying outside the relaxed relation `R\u0303_{C,\u03b4}^2`, for which the winning challenge set `\u03a9^{f_1,f_2}_{v,\u03bc_1,\u03bc_2}` (Definition 6.11) has at least `|\u039b(C^{\u22612}, \u03b4)| \u00b7 |F| / (|F| + |\u039b(C^{\u22612}, \u03b4)| - 1)` elements. The protocol-level reading: the soundness error of the simplified IOR `T'[C, t]` (Construction 6.9, `ToyProblem.SimplifiedIOR.reduction`) is at least `|\u039b(C^{\u22612}, \u03b4)| / (|F| + |\u039b(C^{\u22612}, \u03b4)",
           "kind": "theorem",
-          "line": 184,
+          "line": 220,
           "name": "ToyProblem.simplified_iop_soundness_listDecoding_lb",
           "namespace": "ToyProblem",
           "short_name": "simplified_iop_soundness_listDecoding_lb",
@@ -46759,7 +46759,7 @@
         {
           "doc": "**Lemma 6.13 of [ABF26]** (correlated-agreement lower bound on the simplified IOR). Coding-theory form: there exist `(v, \u03bc_1, \u03bc_2, f_1, f_2)` with `(f_1, f_2)` outside the relaxed relation `R\u0303_{C,\u03b4}^2` whose winning challenge set has size at least `\u03b5_ca(C, \u03b4) \u00b7 |F|`. Protocol-level reading: the soundness error of the simplified IOR `T'[C, t]` (Construction 6.9) is at least `\u03b5_ca(C, \u03b4)`. Proof sketch: take `f_1, f_2` maximising the CA error; then `f_1 + \u03b3\u00b7f_2` is `\u03b4`-close to `C` precisely on a set `S` of size `\u03b5_ca \u00b7 |F|`, and `S` is contained in the winning set `\u03a9^{f_1,f_2}_{0^k, 0, 0}` of De",
           "kind": "theorem",
-          "line": 219,
+          "line": 275,
           "name": "ToyProblem.simplified_iop_soundness_ca_lb",
           "namespace": "ToyProblem",
           "short_name": "simplified_iop_soundness_ca_lb",
@@ -46988,7 +46988,7 @@
         {
           "doc": "**Honest completeness for Construction 6.2** (protocol-level form). The honest oracle reduction is perfectly complete from `inputRelation k C` to the trivial output relation `Set.univ`. The load-bearing fact is `accepts_of_inputRelation` above: under any verifier challenges, the honest prover's message `g = M\u2080 + \u03b3 M\u2081` makes `accepts` hold, so the verifier's `if accepts then pure () else failure` never fails. **Status: statement complete, proof admitted (tagged sorry).** The point-form mathematical content (`accepts_of_inputRelation`) is fully closed; only the probabilistic/monadic plumbing of ",
           "kind": "theorem",
-          "line": 453,
+          "line": 471,
           "name": "ToyProblem.Spec.oracleReduction_perfectCompleteness",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -46997,7 +46997,7 @@
         {
           "doc": "**Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2). For any `\u03b4 \u2208 (0, \u03b4_min(C))`, the toy-problem IOR has knowledge soundness against the relaxed relation `R\u0303_{C,\u03b4}^2` with error `max { \u03b5_mca(C, \u03b4) + |\u039b(C^{\u22612}, \u03b4)| / |F|, (1 \u2212 \u03b4)^t }`. Stated against ArkLib's `Verifier.knowledgeSoundness` (cf. `OracleReduction/Security/Basic.lean :: Verifier.knowledgeSoundness`). **Naming convention \u2014 paper vs API.** The ArkLib API's `Verifier.knowledgeSoundness` takes `(relIn, relOut)` where `relIn` is the relation the extracted witness satisfies and `relOut` is the relation the verifier's outp",
           "kind": "theorem",
-          "line": 500,
+          "line": 522,
           "name": "ToyProblem.Spec.protocol62_knowledgeSound",
           "namespace": "ToyProblem.Spec",
           "short_name": "protocol62_knowledgeSound",
@@ -47006,7 +47006,7 @@
         {
           "doc": "**Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on **mutual** correlated agreement (MCA). With only correlated agreement (CA), one cannot prove every codeword `u \u2208 \u039b(C, f\u2081 + \u03b3\u00b7f\u2082, \u03b4)` decomposes as `u = u\u2081 + \u03b3\u00b7u\u2082` for some `(u\u2081, u\u2082) \u2208 \u039b(C^{\u22612}, (f\u2081, f\u2082), \u03b4)`, so the extractor would fail. MCA provides exactly this decomposition with probability `\u2265 1 \u2212 \u03b5_mca`.",
           "kind": "def",
-          "line": 529,
+          "line": 551,
           "name": "ToyProblem.Spec.remark67",
           "namespace": "ToyProblem.Spec",
           "short_name": "remark67",
@@ -47015,7 +47015,7 @@
         {
           "doc": "**Lemma 6.8 of [ABF26]** (round-by-round knowledge soundness of Construction 6.2). For any `\u03b4 \u2208 (0, \u03b4_min(C))`, the IOR has round-by-round knowledge soundness (paper Definition A.5 \u2261 ArkLib's `Verifier.rbrKnowledgeSoundness`) against `R\u0303_{C,\u03b4}^2`, with per-round errors * `\u03b5_mca(C, \u03b4) + |\u039b(C^{\u22612}, \u03b4)| / |F|` after the \u03b3 round, * `(1 \u2212 \u03b4)^t` after the spot-check round. The `KnowledgeStateFunction` tracks the largest current agreement set; the extractor erasure-decodes against it. Tagged sorry.",
           "kind": "theorem",
-          "line": 544,
+          "line": 566,
           "name": "ToyProblem.Spec.protocol62_rbrKnowledgeSound",
           "namespace": "ToyProblem.Spec",
           "short_name": "protocol62_rbrKnowledgeSound",
