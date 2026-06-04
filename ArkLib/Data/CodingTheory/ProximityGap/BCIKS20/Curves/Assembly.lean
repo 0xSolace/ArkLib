@@ -103,7 +103,7 @@ section CurveAssemblyBridge
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
-omit [Nonempty ι] in
+omit [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] in
 /-- `jointAgreement` is invariant under reindexing the coefficient words by an
 equivalence. This packages the casts needed when a curve helper is stated with
 an index type definitionally different from the caller's `Fin (k + 1)`. -/
