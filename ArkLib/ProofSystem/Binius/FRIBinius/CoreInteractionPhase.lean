@@ -144,6 +144,27 @@ def sumcheckFoldOracleReduction :=
 
 -- Security properties for the lifted oracle reduction
 
+omit [NeZero κ] [NeZero ℓ] [CharP L 2] [SampleableType L] in
+unseal BinaryBasefold.foldingBadEventAtBlock in
+/-- At round index `0` there is a single oracle and the per-block "bad folding event" check is
+vacuously `True` (the guard `j * ϑ + ϑ ≤ 0` is false since `ϑ > 0`), so the master
+"bad event exists" disjunct holds unconditionally at the initial state. This is what lets the
+sumcheck-fold context lens preserve the (RingSwitching → BinaryBasefold) input relation. -/
+theorem badEventExistsProp_zero
+    (oStmt : ∀ j, BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0 j)
+    (challenges : Fin (0 : Fin (ℓ' + 1)) → L) :
+    BinaryBasefold.badEventExistsProp K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (stmtIdx := 0) (oracleIdx := 0) (oStmt := oStmt) (challenges := challenges) := by
+  refine ⟨⟨0, ?_⟩, ?_⟩
+  · letI := BinaryBasefold.instNeZeroNatToOutCodewordsCount ℓ' ϑ 0
+    exact Nat.pos_of_neZero _
+  · unfold BinaryBasefold.foldingBadEventAtBlock
+    rw [dif_neg]
+    · trivial
+    · have hϑ : (0 : ℕ) < ϑ := Nat.pos_of_neZero ϑ
+      simp only [Fin.val_zero, zero_mul, zero_add]
+      omega
+
 section Security
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
@@ -192,9 +213,15 @@ instance sumcheckFoldCtxLens_complete :
         (sumcheckFoldCtxLens κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l).toContext originalReduction
     ) where
   proj_complete := fun stmtIn oStmtIn hRelIn => by
-    sorry
+    -- inner `roundRelation 0 = True ∧ (badEventExists ∨ oracleWitnessConsistency)`; the
+    -- `badEventExists` disjunct is vacuously satisfiable at the initial state (`badEventExistsProp_zero`)
+    refine ⟨trivial, Or.inl ?_⟩
+    exact badEventExistsProp_zero (oStmt := _) (challenges := _)
   lift_complete := fun outerStmtIn outerWitIn innerStmtOut innerWitOut compat => by
-    sorry
+    -- the statement/witness lift on the output side is the identity on the inner output, so the
+    -- outer output relation goal is definitionally the inner output relation hypothesis
+    intro _hOuterIn hInnerOut
+    exact hInnerOut
 
 omit [NeZero κ] [NeZero ℓ] in
 -- Perfect completeness for the lifted oracle reduction
@@ -306,8 +333,22 @@ instance sumcheckFoldExtractorLens_rbr_knowledge_soundness :
       (lens := sumcheckFoldExtractorLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
       where
   proj_knowledgeSound := by
-    sorry
+    -- the statement lift on the output side is the identity on `innerStmtOut`, and the extractor
+    -- witness `proj` returns `outerWitOut`, so the inner output relation goal is exactly the
+    -- (lifted) outer output relation hypothesis
+    intro outerStmtIn innerStmtOut outerWitOut _hCompat hRelOut
+    exact hRelOut
   lift_knowledgeSound := by
+    -- OBSTRUCTION (not provable as stated): goal is
+    --   `(outerStmtIn, wit.lift … innerWitIn) ∈ sumcheckRoundRelation 0`,
+    -- whose `masterKStateProp` demands `witnessStructuralInvariant ∧ sumcheckConsistencyProp ∧
+    -- initialCompatibility` (the latter a Hamming-distance decoding bound on `outerWitOut.t`).
+    -- The only hypothesis is `(proj outerStmtIn, innerWitIn) ∈ roundRelation 0`, but
+    -- `roundRelation 0 = True ∧ (badEventExists ∨ oracleWitnessConsistency)` and `badEventExists`
+    -- is *unconditionally true* at index 0 (see `badEventExistsProp_zero`, which closes
+    -- `proj_complete` above). Hence the hypothesis carries no constraint on the witness and the
+    -- decoding bound cannot be derived. Closing this requires changing the relation/lens design in
+    -- `BinaryBasefold` (out of this file's scope).
     sorry
 
 local instance sumcheckFoldInitialWitness_inhabited :
@@ -553,6 +594,11 @@ theorem finalSumcheckOracleReduction_perfectCompleteness {σ : Type}
   unfold OracleReduction.perfectCompleteness
   intro stmtIn witIn h_relIn
   simp only
+  -- BLOCKED: reduces (via `perfectCompleteness_eq_prob_one`) to a `probEvent … = 1` over the
+  -- honest prover/verifier run; the verifier's accept check `sumcheck_target = eqValue * c` and the
+  -- output `finalNonDoomedFoldingProp` must be shown to hold w.p. 1, which requires the folding/
+  -- decoding-consistency machinery for the final step that is still `sorry` in
+  -- `BinaryBasefold/Steps.lean` (`finalSumcheckOracleReduction_perfectCompleteness`, line ~963).
   sorry
 
 /-- RBR knowledge error for the final sumcheck step -/
@@ -657,8 +703,16 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
   toFun_next := fun m hDir stmt tr msg witMid h => by
     -- Either bad events exist, or (oracleFoldingConsistency is true so
       -- the extractor can construct a satisfying witness)
+    -- BLOCKED: requires transporting `masterKStateProp` backward across the prover's `c`-message
+    -- via `extractMid` (which decodes `t` through `extractMLP`/`getMidCodewords`); the
+    -- folding/decoding-consistency lemmas needed are still `sorry` in `BinaryBasefold/Steps.lean`
+    -- (`finalSumcheckOracleVerifier_rbrKnowledgeSoundness` state-function, lines ~1056/1058).
     sorry
   toFun_full := fun stmt tr witOut h => by
+    -- BLOCKED: goal is `finalSumcheckKStateProp (last) = sumcheckFinalCheck ∧ finalFoldingProp`.
+    -- The `sumcheckFinalCheck` conjunct follows from the verifier accepting w.p. > 0, but
+    -- `finalFoldingProp = finalNonDoomedFoldingProp` on the extracted output needs the same
+    -- folding/decoding-consistency machinery missing in `BinaryBasefold/Steps.lean`.
     sorry
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/
