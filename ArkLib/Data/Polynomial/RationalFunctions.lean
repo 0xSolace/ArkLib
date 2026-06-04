@@ -1789,8 +1789,14 @@ lemma embeddingOf𝒪Into𝕃_ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
   embeddingOf𝒪Into𝕃_mk_ξ_pre x₀ R H hHyp
 
 /-- The bound of the weight `Λ` of the elements `ζ` as stated in Claim A.2 of Appendix A.4
-of [BCIKS20]. -/
+of [BCIKS20].
+
+The hypothesis `2 ≤ natDegreeY R` is required: the paper's `ξ = W^(d-2)·ζ` lives in the
+regime `d ≥ 2`, and the statement is false at `d = 1` (e.g. `H = C(Z)·Y + 1` with
+`R(x₀,·) = H` gives `ξ_pre = C(Z)` of weight `1`, while the claimed budget is `0`;
+`Nat` truncated subtraction silently extends `W^(d-2)` to `d < 2` where the bound fails). -/
 lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) (hHyp : Hypotheses x₀ R H)
+    (hd : 2 ≤ Bivariate.natDegreeY R)
     {D : ℕ} (hD_H : D ≥ Bivariate.totalDegree H)
     (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R)) :
     weight_Λ_over_𝒪 hH (ξ x₀ R H hHyp) D ≤
