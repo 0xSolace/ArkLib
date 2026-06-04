@@ -308,7 +308,7 @@ def StateFunction.append
     · -- first segment: roundIdx.succ ≤ m, both branches are `then`
       have hsucc : (roundIdx : ℕ) + 1 ≤ m := hlt
       have hcs : (roundIdx : ℕ) ≤ m := le_of_lt hlt
-      simp only [Fin.val_succ, Fin.coe_castSucc] at *
+      simp only [Fin.val_succ, Fin.val_castSucc] at *
       rw [dif_pos hsucc] at *
       rw [dif_pos hcs] at hPrev
       have hDir₁ : pSpec₁.dir ⟨roundIdx, hlt⟩ = .P_to_V := by
@@ -359,7 +359,8 @@ def StateFunction.append
             -- goal: tr (⟨av,_⟩.castLT _) ≍ castP.mp (Transcript.fst tr) (a'.castLT _)
             -- strip the function cast `castP.mp` and unfold `Transcript.fst`
             have hmincard : min (roundIdx : ℕ) m = (roundIdx : ℕ) := by omega
-            have hFstHeq : (by simpa [hcs] using tr.fst : pSpec₁.Transcript ⟨roundIdx, by omega⟩)
+            have hFstHeq : (by simpa [hcs] using tr.fst :
+                  pSpec₁.Transcript ⟨roundIdx, Nat.lt_succ_of_lt hlt⟩)
                 ≍ Transcript.fst tr := cast_heq _ _
             refine HEq.trans ?_ (dcongr_heq (f₁ := Transcript.fst tr)
               (a₁ := (⟨av, by omega⟩ : Fin (min (roundIdx : ℕ) m)))
@@ -377,9 +378,9 @@ def StateFunction.append
             refine HEq.trans ?_ (cast_heq _ _).symm
             congr 1
     · -- second segment: roundIdx ≥ m
-      push_neg at hlt
+      rw [not_lt] at hlt
       have hnsucc : ¬ ((roundIdx : ℕ) + 1 ≤ m) := by omega
-      simp only [Fin.val_succ, Fin.coe_castSucc] at *
+      simp only [Fin.val_succ, Fin.val_castSucc] at *
       rw [dif_neg hnsucc] at *
       -- the first-segment part of the transcript is unchanged by concatenating a 2nd-segment round
       -- the first-segment fst is unchanged by concatenating a 2nd-segment round (HEq form)
@@ -387,7 +388,7 @@ def StateFunction.append
         have hmr : m ≤ (roundIdx : ℕ) := hlt
         have hcard : min ((roundIdx : Fin (m + n)).succ : ℕ) m
             = min ((roundIdx : Fin (m + n)).castSucc : ℕ) m := by
-          simp only [Fin.val_succ, Fin.coe_castSucc]; omega
+          simp only [Fin.val_succ, Fin.val_castSucc]; omega
         -- (concat msg tr).fst ≍ tr.fst   (over their min-indexed domains)
         apply Function.hfunext
         · congr 1
@@ -453,7 +454,7 @@ def StateFunction.append
           all_goals
             try exact hfstCast.symm
           all_goals
-            try (simp only [Fin.val_succ, Fin.val_mk]; omega)
+            try (simp only [Fin.val_succ]; omega)
           -- remaining: (tr.snd).concat msg₂  ≍  (concat msg tr).snd
           -- the second-segment snd gains exactly the new message via snoc
           have hsndcard : ((roundIdx : ℕ) - m) + 1 = ((roundIdx : Fin (m + n)).succ : ℕ) - m := by
@@ -472,9 +473,9 @@ def StateFunction.append
             -- unfold the right `snd` (over the snoc'd transcript)
             unfold Transcript.snd
             rw [dif_neg (show ¬ (roundIdx : Fin (m + n)).succ ≤ m from by
-                  simp only [Fin.le_def, Fin.val_succ]; omega),
+                  simp only [Fin.val_succ]; omega),
                 dif_neg (show ¬ (roundIdx : Fin (m + n)).castSucc ≤ m from by
-                  simp only [Fin.le_def, Fin.coe_castSucc]; omega)]
+                  simp only [Fin.val_castSucc]; omega)]
             simp only [Fin.snoc, Fin.val_mk]
             by_cases hlast : av = (roundIdx : ℕ) - m
             · -- last position: snoc gives msg; snd reads the snoc'd entry at index roundIdx
