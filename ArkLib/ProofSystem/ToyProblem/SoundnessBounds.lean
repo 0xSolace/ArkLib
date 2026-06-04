@@ -33,16 +33,25 @@ Items in this file:
    — Lemma 6.13 [ABF26]: correlated-agreement-based lower bound on the
    soundness error of `T'[C, t]`.
 
-All three are tagged sorries, but of two distinct kinds:
+Current status:
 
 * **L6.5** is `external admit [GRS25]` — a classical result imported from
-  another work; admitting it is acceptable for a survey formalization.
-* **L6.12 and L6.13** are `paper-proof-owed` — ABF26's OWN results, proved
-  in full in §6.4.1/§6.4.2. They are **in-tree provable now** (L6.12's key
-  lemma Claim B.1 is already closed); the sorries are unfinished work, not
-  external dependencies. They are stated in coding-theory form (direct
-  cardinality bounds on `winningSet`); their protocol-level reading bounds
-  the soundness of `ToyProblem.SimplifiedIOR.reduction` from below.
+  another work; PROVEN here in existence form (the polynomial-time content
+  is the inert numeric parameter; the unique close-codeword decoder is
+  unconditional).
+* **L6.13 is PROVEN** (`simplified_iop_soundness_ca_lb`), under a documented
+  statement repair: the `F`-linear encoder hypothesis `hEnc` on `C` (exactly
+  the regime `relation`/`relaxedRelation` already demand). See its docstring.
+* **L6.12 is partially closed** — its three prerequisite lemmas (finite-iSup
+  attainment, the §6.4.1 Step-2 collision bound `linearForm_collision_prob`,
+  and Claim B.1 `exists_large_image_of_pairwise_collision_bound`) are all
+  proven; the residual sorry is the §6.4.1 Step-4 winning-set construction
+  (list-of-pairs image → single-instance winning challenges), which is the
+  genuine protocol-attack combinatorics. See its docstring.
+
+L6.12/L6.13 are stated in coding-theory form (direct cardinality bounds on
+`winningSet`); their protocol-level reading bounds the soundness of
+`ToyProblem.SimplifiedIOR.reduction` from below.
 
 ## References
 
@@ -263,45 +272,44 @@ so the proof skeleton is:
    `|F| > binom(N, 2)` regime). The witness `(v*, μ₁, μ₂, f₁ := W₀,
    f₂ := W₁)` for some chosen `λ₀ ∈ Λ` exits the proof.
 
-## Audit revision (2026-06): the residual is NOT "step 4 only"
+## Status (2026-06): steps 1–3 helpers now in tree; step 4 is the residual
 
-A prior disposition claimed steps 1–3 were "in scope" and only the step-4
-bijection remained. Probing the actual definitions shows THREE open
-sub-problems beyond B.1, each substantial and without an in-tree helper:
+Of the four steps, three now have machine-checked support and only the
+step-4 winning-set construction remains:
 
-  * **Step 1 (iSup maximizer extraction).** `Lambda C δ = ⨆ f, (close…).ncard`
-    is `ℕ∞`-valued. The outer `iSup` over `f : ι → F` is over a FINITE type
-    (good — the max is attained), but there is no `Lambda`-attainment lemma
-    and the `ℕ∞`/`.toNat` bookkeeping (including the `Lambda = ⊤` branch,
-    where `.toNat = 0` makes the bound trivial) is unwritten. Enumerating
-    `Λ(C^{≡2}, δ)` as `λ : Fin N → …` then needs `Set.Finite.toFinset` +
-    an explicit `Fin N` indexing of the maximizing list.
+  * **Step 1 (iSup maximizer extraction) — helper PROVEN.** `Lambda C δ =
+    ⨆ f, (close…).ncard` is `ℕ∞`-valued over the finite type `f : ι → F`;
+    the generic attainment lemma `finite_iSup_eq_apply` (above) extracts the
+    maximiser. The residual `ℕ∞`/`.toNat` bookkeeping (the `Lambda = ⊤`
+    branch makes `.toNat = 0`, trivialising the bound) and the `Fin N`
+    indexing via `Set.Finite.toFinset` are routine on top of it.
 
-  * **Step 2 (collision probability) is OPEN.** The needed bound
-    `Pr_{v ←$ F^k}[⟨W₀(λ)−W₀(λ'),v⟩ = 0 ∧ ⟨W₁(λ)−W₁(λ'),v⟩ = 0] ≤ 1/F`
-    for distinct codeword pairs is a linear-functional non-degeneracy fact
-    (a nonzero linear form vanishes on a `1/|F|` fraction of `F^k`). There
-    is NO in-tree lemma for this; only the generic
-    `Pr_decide_eq_tsum_indicator` unfolder exists. It is a real
-    finite-field linear-algebra argument (kernel of a nonzero functional has
-    index `|F|`).
+  * **Step 2 (collision probability) — PROVEN** as `linearForm_collision_prob`
+    (above): for nonzero `w`, `Pr_{v ←$ F^k}[∑ j, w j v j = 0] = 1/|F|`, via
+    surjective-additive-hom fiber equinumerosity. For a distinct codeword
+    pair, at least one of the two difference vectors `W₀(λ)−W₀(λ')`,
+    `W₁(λ)−W₁(λ')` is nonzero, so the joint-collision probability is bounded
+    by this single-functional `1/|F|`.
 
-  * **Step 4 (`relation` linear-encode existential) — undocumented wall.**
-    `winningSet`/`relaxedRelation (ℓ=1)` requires `relation C v μ Wstar`,
-    which existentially demands `Wstar = encode(M)` for an `F`-LINEAR
-    `encode : (Fin k → F) →ₗ[F] (ι → F)` with `image ⊆ C` — STRICTLY
-    STRONGER than `Wstar ∈ C`. The list-decoding codewords `W_i(λ) ∈ C` do
-    NOT, for an arbitrary `Set` `C`, come with such a linear encoder, so
-    "γ winning ⟸ image point" does not close without a linearity/encoder
-    hypothesis on `C` (the paper takes `C` as the image of an explicit
-    additive encoder; the Lean `Set`-form `relation` faithfully encodes that
-    but does not let an arbitrary close codeword satisfy it). This is a
-    statement-level gap, not just proof effort.
+  * **Step 3 (Claim B.1) — PROVEN** as
+    `Probability.exists_large_image_of_pairwise_collision_bound`.
 
-Tagged sorry (`paper-proof-owed` — ABF26's OWN result, proved in §6.4.1).
-B.1 (step 3) is closed, but steps 1, 2, 4 above are each open; step 4 in
-particular needs a linear-code/encoder hypothesis added to the statement
-(or a `relation`-from-membership bridge lemma) before it is provable. -/
+  * **Step 4 (winning-set construction) — RESIDUAL.** Even with the
+    linear-encoder hypothesis (cf. `simplified_iop_soundness_ca_lb`, which
+    closes the analogous `relation`-from-membership wall via `hEnc`), the
+    L6.12 conclusion bounds a *single* `winningSet C δ v* μ₁ μ₂ f₁ f₂` over
+    challenges `γ ∈ F`, whereas B.1 produces a large *image set* of pairs
+    `(μ₁(λ), μ₂(λ)) ∈ F × F` indexed by the codeword list. Bridging the two
+    is the genuine §6.4.1 attack combinatorics: from the list one must build
+    a concrete attack instance and an injection from image pairs into winning
+    challenges (`μ_new = μ₁ + γ·μ₂` solved for a unique `γ` per pair under
+    `|F| > binom(N, 2)`). This is a multi-step protocol-attack development,
+    not a mechanical application of B.1, and is left for follow-up.
+
+Tagged sorry (`paper-proof-owed`, step 4 only) — ABF26's OWN result
+(§6.4.1). Steps 1–3 are realised by in-tree lemmas; the residual is the
+list→challenge winning-set injection, which additionally needs the
+`hEnc` linear-encoder hypothesis (as in `simplified_iop_soundness_ca_lb`). -/
 theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
     (C : Set (ι → F)) (δ : ℝ≥0) (_hδ_pos : (0 : ℝ≥0) < δ) (_hδ_lt : δ < 1)
     (_hF : (Fintype.card F : ℝ) >
