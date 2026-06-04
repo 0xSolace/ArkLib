@@ -422,28 +422,24 @@ lemma square_roots_explicit {i : ℕ} (hi : i < n) {y : F}
   · have hy_mem : y ∈ subdomain ω i := sq_root_mem_subdomain hi hx hy
     simp_all [Finset.subset_iff]
 
-lemma evalDomain_sq_root [NeZero n] {p : Polynomial F} :
+def sqFoldMap (u : Fin (2 ^ n)) : Fin (2 ^ (n - 1)) :=
+  ⟨u.val % 2 ^ (n - 1), Nat.mod_lt _ (Nat.two_pow_pos _)⟩
+
+lemma evalOnPoints_sq_eq_evalOnPoints_subdomain [NeZero n] {p : Polynomial F} :
   ReedSolomon.evalOnPoints (ω : Fin (2 ^ n) ↪ F) (p.comp (Polynomial.X ^ 2)) =
     (ReedSolomon.evalOnPoints (subdomain ω 1 : Fin (2 ^ (n - 1)) ↪ F) p) ∘
-      (CosetFftDomainClass.subdomain_embed_inverse 1) := by
+      sqFoldMap := by
   ext u
-  simp 
-    [ReedSolomon.evalOnPoints]
-  congr
-  simp [subdomain, CosetFftDomainClass.subdomain_embed_inverse]
-  rw [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain]
-  simp [mkSubgroupUnit, CosetFftDomainClass.subdomain_embed]
-  split_ifs with hn
-  · rcases n with _ | n
-    · aesop
-    · have {a b c : F} (hb : b ≠ 0) : a = b * c ↔ b⁻¹ * a = c := by aesop
-      obtain rfl | rfl : u = 0 ∨ u = 1 := by grind
-      all_goals
-        aesop 
-          (add simp [sq])
-          (add unsafe (by rw [←mul_assoc, ←CosetFftDomainClass.map_add]))
-  · sorry
-        
+  simp [ReedSolomon.evalOnPoints, subdomain]
+  congr 1
+  convert congr_arg ( fun x => ω 0 * ω x ) ( show u + u = CosetFftDomainClass.subdomain_embed 1 ( Multiplicative.toAdd ( sqFoldMap u ) ) from ?_ ) using 1;
+  · grind +splitIndPred;
+  · convert congr_arg ( fun x => ω 0 ^ 2 * x ) ( show ( ω 0 ) ⁻¹ * ω ( CosetFftDomainClass.subdomain_embed 1 ( Multiplicative.toAdd ( sqFoldMap u ) ) ) = ω ( CosetFftDomainClass.subdomain_embed 1 ( Multiplicative.toAdd ( sqFoldMap u ) ) ) / ω 0 from by ring ) using 1 ; ring;
+    simp +decide [ sq, mul_assoc, mul_comm, show ω 0 ≠ 0 from ( ‹CosetFftDomainClass D ( Fin ( 2 ^ n ) ) F›.ne_zero ω 0 ) ];
+  · rcases n with ( _ | n ) <;> simp_all +decide [ Fin.add_def, Nat.pow_succ' ];
+    simp +decide [ ← two_mul, CosetFftDomainClass.subdomain_embed, sqFoldMap ];
+    split_ifs <;> simp_all +decide [ Nat.mul_mod_mul_left ];
+    rfl        
 
 end CosetFftDomainClass
 
