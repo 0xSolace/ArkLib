@@ -145,6 +145,94 @@ theorem indexed_averageDist_le_plotkin
           (1 - 1 / (Fintype.card α : ℝ)) := by
           simp [C0, mul_assoc]
 
+/-- Rewrites the indexed off-diagonal ordered-pair sum as a product-filter sum. -/
+private lemma offdiag_sum_eq_product {M : ℕ} (f : Fin M → Fin M → ℝ) :
+    (∑ i : Fin M, ∑ j ∈ (Finset.univ : Finset (Fin M)).erase i, f i j) =
+      ∑ p ∈ (Finset.univ : Finset (Fin M × Fin M)) with p.1 ≠ p.2, f p.1 p.2 := by
+  rw [Finset.sum_filter]
+  rw [← Finset.univ_product_univ]
+  rw [Finset.sum_product]
+  refine Finset.sum_congr rfl ?_
+  intro i _
+  rw [show (∑ y : Fin M, if (i, y).1 ≠ (i, y).2 then f (i, y).1 (i, y).2 else 0) =
+      ∑ y : Fin M, if i ≠ y then f i y else 0 by rfl]
+  rw [← Finset.sum_erase (s := (Finset.univ : Finset (Fin M))) (a := i)
+      (f := fun y => if i ≠ y then f i y else 0) (by simp)]
+  refine Finset.sum_congr rfl ?_
+  intro y hy
+  have hyne : i ≠ y := (Finset.mem_erase.mp hy).1.symm
+  simp [hyne]
+
+/-- Transports an indexed off-diagonal sum along `Finset.equivFin`. -/
+private lemma offdiag_sum_equivFin
+    {n : ℕ} {α : Type} [DecidableEq α] (B : Finset (Fin n → α)) :
+    (∑ i : Fin B.card, ∑ j ∈ (Finset.univ : Finset (Fin B.card)).erase i,
+      (hammingDist ((Finset.equivFin B).symm i).1 ((Finset.equivFin B).symm j).1 : ℝ)) =
+    ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, (hammingDist x.1 x.2 : ℝ) := by
+  rw [offdiag_sum_eq_product]
+  let e : Fin B.card ≃ B := (Finset.equivFin B).symm
+  let s : Finset (Fin B.card × Fin B.card) :=
+    (Finset.univ : Finset (Fin B.card × Fin B.card)).filter (fun p => p.1 ≠ p.2)
+  let t : Finset ((Fin n → α) × (Fin n → α)) := (B ×ˢ B).filter (fun x => x.1 ≠ x.2)
+  change (∑ p ∈ s, (hammingDist (e p.1).1 (e p.2).1 : ℝ)) =
+    ∑ x ∈ t, (hammingDist x.1 x.2 : ℝ)
+  refine Finset.sum_bij (fun p _hp => ((e p.1).1, (e p.2).1)) ?_ ?_ ?_ ?_
+  · intro p hp
+    simp only [t, mem_filter, mem_product]
+    have hpne : p.1 ≠ p.2 := (Finset.mem_filter.mp hp).2
+    refine ⟨⟨(e p.1).2, (e p.2).2⟩, ?_⟩
+    intro hval
+    apply hpne
+    exact e.injective (Subtype.ext hval)
+  · intro p _hp q _hq h
+    simp only [Prod.mk.injEq] at h
+    cases p with
+    | mk p₁ p₂ =>
+      cases q with
+      | mk q₁ q₂ =>
+        simp only at h
+        have h₁ : p₁ = q₁ := e.injective (Subtype.ext h.1)
+        have h₂ : p₂ = q₂ := e.injective (Subtype.ext h.2)
+        simp [h₁, h₂]
+  · intro x hx
+    simp only [t, mem_filter, mem_product] at hx
+    let a : B := ⟨x.1, hx.1.1⟩
+    let b : B := ⟨x.2, hx.1.2⟩
+    refine ⟨(e.symm a, e.symm b), ?_, ?_⟩
+    · simp only [s, mem_filter, mem_univ, true_and]
+      intro hidx
+      apply hx.2
+      have hsub : a = b := e.symm.injective hidx
+      exact congrArg Subtype.val hsub
+    · simp [e, a, b]
+  · intro p _hp
+    rfl
+
+/-- Finset form of the q-ary Plotkin average-distance upper bound for
+`JohnsonBound.d`.
+
+This is the theorem needed to connect the simplex PSD development in
+`CodeGeometry` to the existing Johnson-bound average-distance notation. -/
+theorem averageDist_le_plotkin
+    {n : ℕ} {α : Type} [Fintype α] [DecidableEq α]
+    (B : Finset (Fin n → α)) (hB : 2 ≤ B.card) (hq : 0 < Fintype.card α) :
+    ((d B : ℚ) : ℝ) ≤
+      (B.card : ℝ) / ((B.card : ℝ) - 1) * (n : ℝ) *
+        (1 - 1 / (Fintype.card α : ℝ)) := by
+  let e : Fin B.card ≃ B := (Finset.equivFin B).symm
+  let c : Fin B.card → Fin n → α := fun i => (e i).1
+  have hM : 1 < B.card := by omega
+  have hplot := indexed_averageDist_le_plotkin (ι := Fin n) (α := α)
+    (M := B.card) c hM hq
+  have hsum :
+      (∑ i : Fin B.card, ∑ j ∈ (Finset.univ : Finset (Fin B.card)).erase i,
+        (hammingDist (c i) (c j) : ℝ)) =
+      ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, (hammingDist x.1 x.2 : ℝ) := by
+    simpa [c, e] using offdiag_sum_equivFin B
+  rw [hsum] at hplot
+  unfold d
+  simpa [Nat.cast_sum] using hplot
+
 end JohnsonBound
 
 namespace CodingTheory
