@@ -490,6 +490,34 @@ def oracleReduction.reduceClaim : OracleReduction oSpec
     (mapWit := fun _ _ => ())
     (embedIdx := Function.Embedding.inl) (hEq := by simp)
 
+/-- Coherence between the verifier's oracle map `reduceClaim.mapStmtO` (which queries the claimed
+polynomial `q` at the challenge) and the prover's pure spec `reduceClaim.mapStmtO_spec` (which
+evaluates `q` directly): simulating the single oracle query against the concrete oracle data returns
+exactly `(q.eval chal, chal)`. -/
+theorem reduceClaim_mapCoherent :
+    ReduceClaim.MapCoherent (oSpec := oSpec)
+      (reduceClaim.mapStmtO R deg oSpec) (reduceClaim.mapStmtO_spec R deg) := by
+  intro chal oStmt msgs
+  simp only [reduceClaim.mapStmtO, reduceClaim.mapStmtO_spec]
+  -- The single query `⟨inr (), chal⟩` to `[OStmt]ₒ` routes through `simOracle2` to
+  -- `answer (oStmt (inr ())) chal = (oStmt (inr ())).1.eval chal`.
+  have hq : (OracleComp.lift (OracleSpec.query
+        (spec := [OStmtAfterRandomQuery R deg]ₒ)
+        (show [OStmtAfterRandomQuery R deg]ₒ.Domain from ⟨Sum.inr (), chal⟩)) :
+      OracleComp (oSpec + ([OStmtAfterRandomQuery R deg]ₒ
+        + [(!p[] : ProtocolSpec 0).Message]ₒ)) R)
+      = (liftM (OracleSpec.query
+          (spec := oSpec + ([OStmtAfterRandomQuery R deg]ₒ
+            + [(!p[] : ProtocolSpec 0).Message]ₒ))
+          (Sum.inr (Sum.inl ⟨Sum.inr (), chal⟩))) :
+        OracleComp _ R) := rfl
+  rw [hq, simulateQ_query_bind]
+  simp only [OracleInterface.simOracle2, QueryImpl.addLift_def,
+    QueryImpl.add_apply_inr, QueryImpl.add_apply_inl,
+    QueryImpl.liftTarget_apply, OracleInterface.simOracle0, OracleQuery.cont_query,
+    OracleQuery.input_query, monadLift_pure, pure_bind, simulateQ_pure]
+  rfl
+
 def oracleReduction : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit
     (StmtOut R) (OStmtOut R deg) Unit (pSpec R deg) :=
   ((oracleReduction.sendClaim R deg oSpec)
@@ -525,7 +553,19 @@ theorem oracleReduction_perfectCompleteness :
       · sorry
     · sorry
   · -- `reduceClaim` is the oracle-aware variant; use `oracleReductionO_completeness`.
-    sorry
+    refine ReduceClaim.oracleReductionO_completeness
+      (mapStmtO := reduceClaim.mapStmtO R deg oSpec)
+      (mapStmtO_spec := reduceClaim.mapStmtO_spec R deg)
+      (relIn := relationAfterRandomQuery R deg) (relOut := outputRelation R deg)
+      (reduceClaim_mapCoherent R deg oSpec) ?_
+    -- Relation pull-back: `relationAfterRandomQuery` ⟹ `outputRelation` under the mapped statement.
+    rintro chal oStmt ⟨⟩ hIn
+    simp only [relationAfterRandomQuery, Set.mem_setOf_eq] at hIn
+    simp only [outputRelation, ReduceClaim.mapOStmt, reduceClaim.mapStmtO_spec, Set.mem_setOf_eq]
+    -- The output oracle at `()` is the input oracle at `inl ()` (= `p`); the new target is
+    -- `q.eval chal`. The `relationAfterRandomQuery` says `q.eval chal = p.eval chal`.
+    simp only [Function.Embedding.inl_apply]
+    exact hIn.symm
 
 theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
     (oracleReduction R deg D oSpec).verifier.rbrKnowledgeSoundness init impl
