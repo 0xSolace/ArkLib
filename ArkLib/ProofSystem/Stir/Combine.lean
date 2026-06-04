@@ -11,6 +11,7 @@ import Mathlib.Tactic.LinearCombination'
 
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.UniqueDecoding
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.Probability.Notation
 import ArkLib.ProofSystem.Stir.ProximityBound
@@ -549,7 +550,10 @@ open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
       Pr_{r ← F} [δᵣ(Combine(dstar,r,(f₁,degs₁),...,(fₘ,degsₘ)))]
                    > err' (dstar, ρ, δ, m * (dstar + 1) - ∑ i degsᵢ) -/
 theorem combine_theorem
-    {φ : ι ↪ F} {dstar m : ℕ}
+  {φ : ι ↪ F} {dstar m : ℕ}
+  -- Finding 17 cascade: the keystone is false at dstar = 0, so this consumer
+  -- inherits the nondegeneracy hypothesis (see upstream-issues.md).
+  [NeZero dstar]
   (fs : Fin m → ι → F) (degs : Fin m → ℕ) (hdegs : ∀ i, degs i ≤ dstar)
   (δ : ℝ≥0) (hδPos : δ > 0)
   (hδLt : δ < (min (1 - (ReedSolomon.sqrtRate dstar φ))
@@ -575,15 +579,22 @@ theorem combine_theorem
   · generalize htotal: totalTerms dstar degs = total
     rw [Fintype.card_eq_zero_iff, not_isEmpty_iff] at hempty
     rcases total with _ | total
-    · rcases m with _ | m
-      · aesop
-          (add simp [totalTerms, blockSize])
-          (add safe (by exists Finset.univ))
-      · aesop (add simp [totalTerms, blockSize])
-    · have proximity_gap :=
-        @ProximityGap.correlatedAgreement_affine_curves ι _ _ F _ _ _
-          (totalTerms dstar degs - 1) dstar φ δ (le_of_lt <| by
-            aesop (add simp [lt_min_iff, ReedSolomon.sqrtRate]))
+    · simp [totalTerms, blockSize] at htotal 
+      rcases m with _ | m
+      · simp
+        exists Finset.univ
+        simp
+      · specialize htotal 0
+        simp at htotal
+    · have proximity_gap := 
+        ProximityGap.correlatedAgreement_affine_curves (ι := ι) (F := F)
+          (k := totalTerms dstar degs - 1) (deg := dstar) (domain := φ) (δ := δ) (by {
+            rw [lt_min_iff] at hδLt
+            rcases hδLt with ⟨h, _⟩
+            simp only [ReedSolomon.sqrtRate]
+            apply le_of_lt
+            assumption
+          })
       simp only [ProximityGap.δ_ε_correlatedAgreementCurves] at proximity_gap
       specialize proximity_gap
           (fun l (x : ι) ↦ (
@@ -720,5 +731,268 @@ theorem combine_theorem
         have hv := hv.2 x hx
         simp only [pow_zero, one_mul] at hv
         exact hv
+
+
+open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
+/-- Unconditional UDR-restricted variant of `combine_theorem` ([STIR] Lemma 4.13):
+with `δ` below the unique-decoding radius, the conclusion holds with NO dependence
+on the sorried full-range keystone — it cites the PROVEN
+`RS_correlatedAgreement_curves_uniqueDecodingRegime` / `…_k_zero` instead. -/
+theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
+  {φ : ι ↪ F} {dstar m : ℕ} [NeZero dstar]
+  (fs : Fin m → ι → F) (degs : Fin m → ℕ) (hdegs : ∀ i, degs i ≤ dstar)
+  (δ : ℝ≥0) (hδPos : δ > 0)
+  (hδLt : δ < (min (1 - (ReedSolomon.sqrtRate dstar φ))
+                   (1 - (rate (code φ dstar)) - 1 / Fintype.card ι)))
+  (hδUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+    (C := ReedSolomon.code φ dstar))
+  (hProb : Pr_{ let r ← $ᵖ F}[δᵣ((combine φ dstar r fs degs), (code φ dstar)) ≤ δ] >
+    (m * (dstar + 1) - ∑ i, degs i - 1) * ProximityGap.errorBound δ dstar φ) :
+    ∃ S : Finset ι, S.card ≥ (1 - δ) * (Fintype.card ι) ∧
+      ∃ v : Fin m → ι → F, ∀ i, v i ∈ (code φ (degs i)) ∧ S ⊆ Finset.filter (fun j => v i j = fs i j) Finset.univ
+    := by
+  by_cases hempty : Fintype.card ι = 0
+  · exists ∅ 
+    simp [hempty]
+    rw [Fintype.card_eq_zero_iff] at hempty
+    exists (fun i j => False.elim <| hempty.1 j)
+    intro i
+    simp [code]
+    exists 0
+    simp
+    ext j
+    exact (False.elim <| hempty.1 j)
+  · generalize htotal: totalTerms dstar degs = total 
+    replace hempty : Nonempty ι := inferInstance
+    rcases total with _ | total
+    · simp [totalTerms, blockSize] at htotal 
+      rcases m with _ | m
+      · simp
+        exists Finset.univ
+        simp
+      · specialize htotal 0
+        simp at htotal
+    · have proximity_gap : ProximityGap.δ_ε_correlatedAgreementCurves
+          (k := totalTerms dstar degs - 1) (A := F) (F := F) (ι := ι)
+          (C := ReedSolomon.code φ dstar) (δ := δ)
+          (ε := ProximityGap.errorBound δ dstar φ) := by
+        rcases Nat.eq_zero_or_pos (totalTerms dstar degs - 1) with hk0 | hkpos
+        · exact hk0 ▸ ProximityGap.RS_correlatedAgreement_curves_k_zero (deg := dstar)
+            (domain := φ) (δ := δ) hδUDR
+        · exact ProximityGap.RS_correlatedAgreement_curves_uniqueDecodingRegime
+            (deg := dstar) (domain := φ) (δ := δ) hkpos hδUDR
+      simp only [ProximityGap.δ_ε_correlatedAgreementCurves] at proximity_gap
+
+      specialize proximity_gap 
+          (fun l (x : ι) ↦ (
+            let i : WithBot (Fin m) := Finset.max (univ.filter (fun j ↦ blockStart dstar degs j ≤ l))
+            i.elim (0 : F) fun i ↦
+              let k := l - blockStart dstar degs i
+              fs i x * (φ x) ^ k                     
+          ))
+          (by {
+            simp only [bind_pure_comp, Functor.map, PMF.bind_apply,
+              PMF.uniformOfFintype_apply, 
+              tsum_fintype] at hProb
+            simp only [Function.comp_apply, PMF.pure_apply, eq_iff_iff, true_iff, mul_ite, mul_one,
+              mul_zero, gt_iff_lt] at hProb
+            conv at hProb =>
+              rhs
+              rhs
+              ext x
+              rw [combine_eq_flat_final φ dstar x]
+            simp only [bind_pure_comp, Functor.map, PMF.bind_apply,
+              PMF.uniformOfFintype_apply, 
+              tsum_fintype] 
+            simp only [Function.comp_apply, PMF.pure_apply, eq_iff_iff, true_iff, mul_ite, mul_one,
+              mul_zero, gt_iff_lt]
+            apply lt_of_le_of_lt
+              (b := ((↑m : ENNReal) * (↑dstar + 1) - ↑(∑ i, degs i) - 1) * ↑(ProximityGap.errorBound δ dstar φ))
+            · apply mul_le_mul_left 
+              rw [htotal]
+              simp
+              rw [mul_add]
+              simp
+              have h :
+                (↑m : ENNReal) * ↑dstar
+                  = ∑ x : Fin m, ↑dstar := by
+                  simp
+              rw [h]
+              have h :
+                (↑m : ENNReal) = ∑ x : Fin m, 1 := by simp
+              rw [h]
+              rw [←Finset.sum_add_distrib]
+              have h :
+                ∑ x : Fin m, ((↑dstar : ENNReal) + 1) - ∑ x, ↑(degs x) 
+                  = ↑(∑ x : Fin m, (dstar + 1)) - ↑(∑ x, degs x) := by
+                  simp
+                  rw [mul_add]
+                  simp
+              rw [h, ←ENNReal.natCast_sub, ←Finset.sum_tsub_distrib _ (by {
+                intro x _
+                exact le_trans (hdegs x) (by omega)
+              })]
+              conv =>
+                rhs
+                lhs
+                rhs
+                rhs
+                ext x
+                rw [Nat.sub_add_comm (hdegs x)]
+              have h : ∑ x, (dstar - degs x + 1) = total + 1 := by
+                rw [←htotal]
+                simp [totalTerms, blockSize]
+              rw [h]
+              simp
+            · apply lt_of_lt_of_le hProb
+              apply le_of_eq
+              congr
+              ext x
+              congr <;> try (rw [htotal]; omega)
+              refine (Fin.heq_fun_iff ?_).mpr ?_
+              · rw [htotal]
+                omega
+              · intro i 
+                simp
+      })
+      simp [jointAgreement] at proximity_gap
+      have proximity_gap :
+        ∃ S : Finset ι, 
+          ↑(#S) ≥ (1 - δ) * ↑(Fintype.card ι)
+            ∧ ∃ v : Π i : Fin m, (Fin (blockSize dstar degs i) → Polynomial F),
+                ∀ i j, (v i j).degree < dstar ∧ 
+                  ∀ x ∈ S, (v i j).eval (φ x) = (φ x) ^ j.val * (fs i x) := by
+          rcases proximity_gap with ⟨S, ⟨hcard, hagr⟩⟩
+          exists S
+          apply And.intro <;> try assumption
+          rcases hagr with ⟨v, hagr⟩  
+          simp [code] at hagr
+          rw [forall_and] at hagr
+          rcases hagr with ⟨hagr1, hagr2⟩ 
+          let vaux (i : Fin m) (j : Fin (blockSize dstar degs i)) 
+          : Fin (totalTerms dstar degs - 1 + 1)
+          :=
+            ⟨blockStart dstar degs i + j.val,
+            by {
+            rw [htotal]
+            simp only [add_tsub_cancel_right]
+            rw [←htotal]
+            simp [blockStart, totalTerms, blockSize]
+            rcases i with ⟨i, hi⟩ 
+            rcases j with ⟨j, hj⟩ 
+            simp
+            apply lt_of_lt_of_le
+            apply Nat.add_lt_add_left (m := dstar - degs ⟨i, hi⟩ + 1) 
+              (by {
+                simp [blockSize] at hj
+                omega
+              })
+            rw [Finset.sum_equiv 
+              (t := Finset.erase {x : Fin _ | x ≤ ⟨i, hi⟩} ⟨i, hi⟩) 
+              (g := fun x => (dstar - degs x + 1))
+              (Equiv.refl _)
+              (by {
+                intro x
+                rcases x with ⟨x, hx⟩
+                simp
+                omega
+              })
+              (by {
+                intro k hk
+                simp
+              })
+            ]
+            rw [Finset.sum_erase_add]
+            apply Finset.sum_le_sum_of_subset <;> try simp
+            simp 
+          }⟩ 
+          simp [Polynomial.degreeLT, evalOnPoints] at hagr1
+          exists (fun i j => Classical.choose 
+            (hagr1 (vaux i j)))
+          intro i j
+          simp
+          have h_spec := Classical.choose_spec (hagr1 (vaux i j))
+          apply And.intro
+          · rw [Polynomial.degree_lt_iff_coeff_zero]
+            intro m hm
+            rcases h_spec with ⟨h_spec, _⟩ 
+            specialize h_spec m hm
+            rw [h_spec]
+          · intro x hx
+            rcases h_spec with ⟨_, h_spec⟩ 
+            have h_spec := congrFun h_spec x
+            rw [h_spec]
+            specialize hagr2 (vaux i j) hx
+            simp at hagr2
+            rw [hagr2]
+            rw [block_idx_eq_max]
+            simp [Option.elim]
+            simp [vaux]
+            rw [mul_comm]
+      rcases proximity_gap with ⟨S, ⟨hS_card, ⟨v, hv⟩⟩⟩ 
+      have exists_agreement_set_of_combine :=
+        fun i j => exists_agreement_set_of_combine (φ := φ) (fs := fs) (hdegs := hdegs)
+          (hδLt := hδLt)
+          (hS_card := by simp at hS_card; exact hS_card) (v := v)
+          (hv_deg := by
+            intro i j
+            specialize hv i j
+            tauto)
+          (hv_eval := by
+            intro i j x hx
+            specialize hv i j
+            rcases hv with ⟨_, hv⟩
+            specialize hv x hx
+            rw [hv])
+          i j
+      exists S
+      apply And.intro hS_card
+      have hf : ∀ i, 0 < blockSize dstar degs i := by simp [blockSize]
+      exists (fun i => evalOnPoints φ <| v i (⟨0, hf i⟩))
+      intro i
+      simp
+      apply And.intro
+      · simp [evalOnPoints, code]
+        exists (v i ⟨0, hf i⟩)
+        simp
+        simp [Polynomial.degreeLT]
+        intro j hj
+        specialize exists_agreement_set_of_combine i ⟨0, hf i⟩
+        simp at exists_agreement_set_of_combine
+        rw [Polynomial.degree_lt_iff_coeff_zero] at exists_agreement_set_of_combine
+        exact (exists_agreement_set_of_combine _ hj)
+      · intro x hx
+        simp [evalOnPoints]
+        specialize (hv i ⟨0, hf i⟩)
+        have hv := hv.2 x hx
+        simp at hv
+        exact hv
+
+
+open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
+/-- Clean single-hypothesis form of `combine_theorem_uniqueDecodingRegime`:
+below the unique-decoding radius, the `1 − √ρ` bound follows from the
+regime-nesting comparison (`relativeUniqueDecodingRadius_lt_one_sub_sqrtRate`),
+so only the UDR bound and the rate-margin bound need to be assumed. -/
+theorem combine_theorem_uniqueDecodingRegime' [Nonempty ι]
+  {φ : ι ↪ F} {dstar m : ℕ} [NeZero dstar]
+  (hcard : dstar ≤ Fintype.card ι)
+  (fs : Fin m → ι → F) (degs : Fin m → ℕ) (hdegs : ∀ i, degs i ≤ dstar)
+  (δ : ℝ≥0) (hδPos : δ > 0)
+  (hδUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+    (C := ReedSolomon.code φ dstar))
+  (hδ2 : δ < 1 - (rate (code φ dstar)) - 1 / Fintype.card ι)
+  (hProb : Pr_{ let r ← $ᵖ F}[δᵣ((combine φ dstar r fs degs), (code φ dstar)) ≤ δ] >
+    (m * (dstar + 1) - ∑ i, degs i - 1) * ProximityGap.errorBound δ dstar φ) :
+    ∃ S : Finset ι, S.card ≥ (1 - δ) * (Fintype.card ι) ∧
+      ∃ v : Fin m → ι → F, ∀ i, v i ∈ (code φ (degs i)) ∧
+        S ⊆ Finset.filter (fun j => v i j = fs i j) Finset.univ := by
+  have hpos : 0 < Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code φ dstar) := lt_of_lt_of_le hδPos hδUDR
+  have h1 : δ < 1 - ReedSolomon.sqrtRate dstar φ :=
+    lt_of_le_of_lt hδUDR
+      (ProximityGap.relativeUniqueDecodingRadius_lt_one_sub_sqrtRate hcard hpos)
+  exact combine_theorem_uniqueDecodingRegime fs degs hdegs δ hδPos
+    (lt_min h1 hδ2) hδUDR hProb
 
 end Combine

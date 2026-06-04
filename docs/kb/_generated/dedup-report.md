@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 282 files, 5322 declarations
+- `ArkLib` — 285 files, 5390 declarations
 
 ## Same short-name across multiple files (143 groups)
 
@@ -193,7 +193,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `disagreementSet` (4 declarations, 4 files)
 
 - `def disagreementSet` [ArkLib/Data/CodingTheory/ProximityGap/DG25/MainResults.lean:63](../../../ArkLib/Data/CodingTheory/ProximityGap/DG25/MainResults.lean#L63) — The set D = Δ^{2m}(U, V), columns where U₀≠V₀ or U₁≠V₁. Specialisation of the canonical `Code.disagr
-- `def Binius.BinaryBasefold.disagreementSet` [ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean:1272](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean#L1272) — Disagreement set Δ : The set of points where two functions disagree. For functions f^(i+ϑ) and g^(i+
+- `def Binius.BinaryBasefold.disagreementSet` [ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean:1781](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean#L1781) — Disagreement set Δ : The set of points where two functions disagree. For functions f^(i+ϑ) and g^(i+
 - `def Quotienting.disagreementSet` [ArkLib/ProofSystem/Stir/Quotienting.lean:109](../../../ArkLib/ProofSystem/Stir/Quotienting.lean#L109) — We define the set disagreementSet(f,ι,S,Ans) as the set of all points x ∈ ι that lie in S such that 
 - `def BlockRelDistance.disagreementSet` [ArkLib/ProofSystem/Whir/BlockRelDistance.lean:104](../../../ArkLib/ProofSystem/Whir/BlockRelDistance.lean#L104) — Let C be a smooth ReedSolomon code `C = RS[F, ι^(2ⁱ), φ', m]` and `f,g : ι^(2ⁱ) → F`, then the (i,k)
 
@@ -836,12 +836,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `queryCodeword` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.QueryPhase.queryCodeword` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:305](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L305) — Oracle query helper: query a committed codeword at a given domain point. Restricted to codeword indi
+- `def Binius.BinaryBasefold.QueryPhase.queryCodeword` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:360](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L360) — Oracle query helper: query a committed codeword at a given domain point. Restricted to codeword indi
 - `def Fri.Spec.QueryRound.queryCodeword` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:820](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L820) — (no docstring)
 
 ### `queryOracleReduction` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.QueryPhase.queryOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:474](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L474) — The oracle reduction for the final query phase.
+- `def Binius.BinaryBasefold.QueryPhase.queryOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:552](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L552) — The oracle reduction for the final query phase.
 - `def Fri.Spec.QueryRound.queryOracleReduction` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:938](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L938) — (no docstring)
 
 ### `reduction_verifier_eq_verifier` (2 declarations, 2 files)

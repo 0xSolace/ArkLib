@@ -9777,7 +9777,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 25,
+          "line": 31,
           "name": "ProximityGap.BW_homMatrix",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix",
@@ -9786,7 +9786,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 35,
+          "line": 41,
           "name": "ProximityGap.BW_homMatrix_entry_natDegree_eq_zero_of_ge",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix_entry_natDegree_eq_zero_of_ge",
@@ -9795,16 +9795,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 40,
-          "name": "ProximityGap._anon_class_40",
+          "line": 46,
+          "name": "ProximityGap._anon_class_46",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_40",
+          "short_name": "_anon_class_46",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 49,
+          "line": 55,
           "name": "ProximityGap.BW_homMatrix_entry_natDegree_eq_zero_of_ge_comm",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix_entry_natDegree_eq_zero_of_ge_comm",
@@ -9813,7 +9813,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 66,
+          "line": 72,
           "name": "ProximityGap.BW_homMatrix_entry_natDegree_le_one",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix_entry_natDegree_le_one",
@@ -9822,16 +9822,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 71,
-          "name": "ProximityGap._anon_class_71",
+          "line": 77,
+          "name": "ProximityGap._anon_class_77",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_71",
+          "short_name": "_anon_class_77",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 107,
+          "line": 113,
           "name": "ProximityGap.BW_homMatrix_map_evalRingHom",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix_map_evalRingHom",
@@ -9840,7 +9840,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 122,
+          "line": 128,
           "name": "ProximityGap.BW_homMatrix_mulVec_eq_zero_iff",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix_mulVec_eq_zero_iff",
@@ -9849,16 +9849,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 129,
-          "name": "ProximityGap._anon_class_129",
+          "line": 135,
+          "name": "ProximityGap._anon_class_135",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_129",
+          "short_name": "_anon_class_135",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 190,
+          "line": 196,
           "name": "ProximityGap.Fin_sum_ite_lt_e_add_one",
           "namespace": "ProximityGap",
           "short_name": "Fin_sum_ite_lt_e_add_one",
@@ -9867,16 +9867,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 192,
-          "name": "ProximityGap._anon_class_192",
+          "line": 198,
+          "name": "ProximityGap._anon_class_198",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_192",
+          "short_name": "_anon_class_198",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 204,
+          "line": 210,
           "name": "ProximityGap.BW_homMatrix_det_submatrix_natDegree_le_e_add_one",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix_det_submatrix_natDegree_le_e_add_one",
@@ -9885,16 +9885,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 213,
-          "name": "ProximityGap._anon_class_213",
+          "line": 219,
+          "name": "ProximityGap._anon_class_219",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_213",
+          "short_name": "_anon_class_219",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 300,
+          "line": 306,
           "name": "ProximityGap.BW_homMatrix_det_updateCol_natDegree_le_of_ge",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix_det_updateCol_natDegree_le_of_ge",
@@ -9903,34 +9903,34 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 313,
-          "name": "ProximityGap._anon_class_313",
+          "line": 319,
+          "name": "ProximityGap._anon_class_319",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_313",
+          "short_name": "_anon_class_319",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 354,
-          "name": "ProximityGap._anon_class_354",
+          "line": 360,
+          "name": "ProximityGap._anon_class_360",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_354",
+          "short_name": "_anon_class_360",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 406,
-          "name": "ProximityGap._anon_class_406",
+          "line": 412,
+          "name": "ProximityGap._anon_class_412",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_406",
+          "short_name": "_anon_class_412",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 427,
+          "line": 433,
           "name": "ProximityGap.Fin_sum_ite_lt_and_ne_eq_e",
           "namespace": "ProximityGap",
           "short_name": "Fin_sum_ite_lt_and_ne_eq_e",
@@ -9939,16 +9939,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 429,
-          "name": "ProximityGap._anon_class_429",
+          "line": 435,
+          "name": "ProximityGap._anon_class_435",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_429",
+          "short_name": "_anon_class_435",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 454,
+          "line": 460,
           "name": "ProximityGap.BW_homMatrix_det_updateCol_natDegree_le_of_lt",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix_det_updateCol_natDegree_le_of_lt",
@@ -9957,34 +9957,34 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 467,
-          "name": "ProximityGap._anon_class_467",
+          "line": 473,
+          "name": "ProximityGap._anon_class_473",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_467",
+          "short_name": "_anon_class_473",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 540,
-          "name": "ProximityGap._anon_class_540",
+          "line": 546,
+          "name": "ProximityGap._anon_class_546",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_540",
+          "short_name": "_anon_class_546",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 549,
-          "name": "ProximityGap._anon_class_549",
+          "line": 555,
+          "name": "ProximityGap._anon_class_555",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_549",
+          "short_name": "_anon_class_555",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 562,
+          "line": 568,
           "name": "ProximityGap.RS_BW_bound_of_le_relUDR",
           "namespace": "ProximityGap",
           "short_name": "RS_BW_bound_of_le_relUDR",
@@ -9993,16 +9993,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 566,
-          "name": "ProximityGap._anon_class_566",
+          "line": 572,
+          "name": "ProximityGap._anon_class_572",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_566",
+          "short_name": "_anon_class_572",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 603,
+          "line": 609,
           "name": "ProximityGap.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
           "namespace": "ProximityGap",
           "short_name": "RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
@@ -10011,7 +10011,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 615,
+          "line": 621,
           "name": "ProximityGap.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
           "namespace": "ProximityGap",
           "short_name": "RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
@@ -10020,7 +10020,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 627,
+          "line": 633,
           "name": "ProximityGap.RS_det_submatrix_eq_zero_of_det_eq_zero",
           "namespace": "ProximityGap",
           "short_name": "RS_det_submatrix_eq_zero_of_det_eq_zero",
@@ -10029,16 +10029,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 632,
-          "name": "ProximityGap._anon_class_632",
+          "line": 638,
+          "name": "ProximityGap._anon_class_638",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_632",
+          "short_name": "_anon_class_638",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 660,
+          "line": 666,
           "name": "ProximityGap.RS_exists_nonzero_kernelVec_of_det_eq_zero",
           "namespace": "ProximityGap",
           "short_name": "RS_exists_nonzero_kernelVec_of_det_eq_zero",
@@ -10047,16 +10047,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 664,
-          "name": "ProximityGap._anon_class_664",
+          "line": 670,
+          "name": "ProximityGap._anon_class_670",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_664",
+          "short_name": "_anon_class_670",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 670,
+          "line": 676,
           "name": "ProximityGap.RS_floor_mul_card_\u03b9_add_deg_le_card_\u03b9_of_le_relUDR",
           "namespace": "ProximityGap",
           "short_name": "RS_floor_mul_card_\u03b9_add_deg_le_card_\u03b9_of_le_relUDR",
@@ -10065,7 +10065,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 679,
+          "line": 685,
           "name": "ProximityGap.RS_floor_mul_card_\u03b9_add_one_le_card_\u03b9_of_le_relUDR",
           "namespace": "ProximityGap",
           "short_name": "RS_floor_mul_card_\u03b9_add_one_le_card_\u03b9_of_le_relUDR",
@@ -10074,16 +10074,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 684,
-          "name": "ProximityGap._anon_class_684",
+          "line": 690,
+          "name": "ProximityGap._anon_class_690",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_684",
+          "short_name": "_anon_class_690",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 708,
+          "line": 714,
           "name": "ProximityGap.RS_isUnit_det_vandermonde_C_of_injective",
           "namespace": "ProximityGap",
           "short_name": "RS_isUnit_det_vandermonde_C_of_injective",
@@ -10092,16 +10092,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 711,
-          "name": "ProximityGap._anon_class_711",
+          "line": 717,
+          "name": "ProximityGap._anon_class_717",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_711",
+          "short_name": "_anon_class_717",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 739,
+          "line": 745,
           "name": "ProximityGap.RS_mulVec_adjugate_col_eq_det",
           "namespace": "ProximityGap",
           "short_name": "RS_mulVec_adjugate_col_eq_det",
@@ -10110,16 +10110,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 743,
-          "name": "ProximityGap._anon_class_743",
+          "line": 749,
+          "name": "ProximityGap._anon_class_749",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_743",
+          "short_name": "_anon_class_749",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 757,
+          "line": 763,
           "name": "ProximityGap.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
           "namespace": "ProximityGap",
           "short_name": "RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
@@ -10128,16 +10128,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 760,
-          "name": "ProximityGap._anon_class_760",
+          "line": 766,
+          "name": "ProximityGap._anon_class_766",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_760",
+          "short_name": "_anon_class_766",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 772,
+          "line": 778,
           "name": "ProximityGap.RS_mulVec_append_castAdd_natAdd",
           "namespace": "ProximityGap",
           "short_name": "RS_mulVec_append_castAdd_natAdd",
@@ -10146,16 +10146,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 777,
-          "name": "ProximityGap._anon_class_777",
+          "line": 783,
+          "name": "ProximityGap._anon_class_783",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_777",
+          "short_name": "_anon_class_783",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 786,
+          "line": 792,
           "name": "ProximityGap.RS_natDegree_det_le_of_entry_natDegree_le_one",
           "namespace": "ProximityGap",
           "short_name": "RS_natDegree_det_le_of_entry_natDegree_le_one",
@@ -10164,16 +10164,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 789,
-          "name": "ProximityGap._anon_class_789",
+          "line": 795,
+          "name": "ProximityGap._anon_class_795",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_789",
+          "short_name": "_anon_class_795",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 829,
+          "line": 835,
           "name": "ProximityGap.RS_natDegree_inv_neg_vandermonde_C_eq_zero",
           "namespace": "ProximityGap",
           "short_name": "RS_natDegree_inv_neg_vandermonde_C_eq_zero",
@@ -10182,16 +10182,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 835,
-          "name": "ProximityGap._anon_class_835",
+          "line": 841,
+          "name": "ProximityGap._anon_class_841",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_835",
+          "short_name": "_anon_class_841",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 865,
+          "line": 871,
           "name": "ProximityGap.RS_vandermonde_coeffs_eq_zero",
           "namespace": "ProximityGap",
           "short_name": "RS_vandermonde_coeffs_eq_zero",
@@ -10200,16 +10200,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 870,
-          "name": "ProximityGap._anon_class_870",
+          "line": 876,
+          "name": "ProximityGap._anon_class_876",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_870",
+          "short_name": "_anon_class_876",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 896,
+          "line": 902,
           "name": "ProximityGap.RS_a_ne_zero_of_BW_homMatrix_mulVec_eq_zero",
           "namespace": "ProximityGap",
           "short_name": "RS_a_ne_zero_of_BW_homMatrix_mulVec_eq_zero",
@@ -10218,7 +10218,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 935,
+          "line": 941,
           "name": "ProximityGap.adjugate_updateRow_same_col",
           "namespace": "ProximityGap",
           "short_name": "adjugate_updateRow_same_col",
@@ -10227,7 +10227,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 942,
+          "line": 948,
           "name": "ProximityGap.det_updateRow_eq_sum_mul_adjugate_col",
           "namespace": "ProximityGap",
           "short_name": "det_updateRow_eq_sum_mul_adjugate_col",
@@ -10236,16 +10236,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 945,
-          "name": "ProximityGap._anon_class_945",
+          "line": 951,
+          "name": "ProximityGap._anon_class_951",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_945",
+          "short_name": "_anon_class_951",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 955,
+          "line": 961,
           "name": "ProximityGap.RS_exists_nonzero_kernelVec_of_det_eq_zero_natDegree_le_one",
           "namespace": "ProximityGap",
           "short_name": "RS_exists_nonzero_kernelVec_of_det_eq_zero_natDegree_le_one",
@@ -10254,25 +10254,25 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 961,
-          "name": "ProximityGap._anon_class_961",
+          "line": 967,
+          "name": "ProximityGap._anon_class_967",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_961",
+          "short_name": "_anon_class_967",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 1102,
-          "name": "ProximityGap._anon_class_1102",
+          "line": 1108,
+          "name": "ProximityGap._anon_class_1108",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1102",
+          "short_name": "_anon_class_1108",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1171,
+          "line": 1177,
           "name": "ProximityGap.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
           "namespace": "ProximityGap",
           "short_name": "RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
@@ -10281,16 +10281,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1178,
-          "name": "ProximityGap._anon_class_1178",
+          "line": 1184,
+          "name": "ProximityGap._anon_class_1184",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1178",
+          "short_name": "_anon_class_1184",
           "signature": "class classical"
         },
         {
           "doc": "Degree-`d` generalization of `BW_homMatrix_entry_natDegree_le_one` (the curves case of [BCIKS20] \u00a76.1: matrix entries are polynomials of `z`-degree at most `k` instead of affine). Entries of the Berlekamp\u2013Welch matrix built over `F[X]`-constants `\u03c9s` and arbitrary words `g` of degree \u2264 `d` have degree \u2264 `d`. The line case is `d = 1`, `g i = C (f0 i) + X * C (f1 i)`.",
           "kind": "theorem",
-          "line": 1392,
+          "line": 1398,
           "name": "ProximityGap.BW_homMatrix_entry_natDegree_le_of_natDegree_le",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix_entry_natDegree_le_of_natDegree_le",
@@ -10299,16 +10299,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1396,
-          "name": "ProximityGap._anon_class_1396",
+          "line": 1402,
+          "name": "ProximityGap._anon_class_1402",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1396",
+          "short_name": "_anon_class_1402",
           "signature": "class classical"
         },
         {
           "doc": "Degree-`d` generalization of `RS_natDegree_det_le_of_entry_natDegree_le_one` (the curves case of [BCIKS20] \u00a76.1): the determinant of an `n \u00d7 n` matrix of polynomials with entries of degree \u2264 `d` has degree \u2264 `d * n`. The line case is `d = 1`.",
           "kind": "theorem",
-          "line": 1421,
+          "line": 1427,
           "name": "ProximityGap.RS_natDegree_det_le_of_entry_natDegree_le",
           "namespace": "ProximityGap",
           "short_name": "RS_natDegree_det_le_of_entry_natDegree_le",
@@ -10317,16 +10317,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1425,
-          "name": "ProximityGap._anon_class_1425",
+          "line": 1431,
+          "name": "ProximityGap._anon_class_1431",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1425",
+          "short_name": "_anon_class_1431",
           "signature": "class classical"
         },
         {
           "doc": "Degree-`d` generalization of `BW_homMatrix_det_submatrix_natDegree_le_e_add_one` (the curves case of [BCIKS20] \u00a76.1): minors of the BW matrix over words of degree \u2264 `d` have degree \u2264 `d * (e + 1)` \u2014 only the `e + 1` evaluation columns carry degree. The line case is `d = 1`.",
           "kind": "theorem",
-          "line": 1457,
+          "line": 1463,
           "name": "ProximityGap.BW_homMatrix_det_submatrix_natDegree_le_of_natDegree_le",
           "namespace": "ProximityGap",
           "short_name": "BW_homMatrix_det_submatrix_natDegree_le_of_natDegree_le",
@@ -10335,10 +10335,100 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1464,
-          "name": "ProximityGap._anon_class_1464",
+          "line": 1470,
+          "name": "ProximityGap._anon_class_1470",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1464",
+          "short_name": "_anon_class_1470",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Branch-precise entry degree bound for the BW matrix over degree-\u2264`d` words: evaluation columns (index < e+1) have degree \u2264 `d`, constraint columns are constants.",
+          "kind": "theorem",
+          "line": 1526,
+          "name": "ProximityGap.BW_homMatrix_entry_natDegree_le_of_branch",
+          "namespace": "ProximityGap",
+          "short_name": "BW_homMatrix_entry_natDegree_le_of_branch",
+          "signature": "theorem BW_homMatrix_entry_natDegree_le_of_branch {F : Type} [Field F]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1531,
+          "name": "ProximityGap._anon_class_1531",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1531",
+          "signature": "class classical"
+        },
+        {
+          "doc": "General per-column degree accounting for determinants (subsumes the fixed `d`/`d\u00b7n` bounds): if every entry of column `j` has degree \u2264 `b j`, the determinant has degree \u2264 `\u2211 j, b j`. This is the single abstraction behind all the [BCIKS20] \u00a74/\u00a76.1 minor-degree bounds.",
+          "kind": "theorem",
+          "line": 1553,
+          "name": "ProximityGap.natDegree_det_le_sum_col_bounds",
+          "namespace": "ProximityGap",
+          "short_name": "natDegree_det_le_sum_col_bounds",
+          "signature": "theorem natDegree_det_le_sum_col_bounds {F : Type} [Field F] (n : \u2115)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1557,
+          "name": "ProximityGap._anon_class_1557",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1557",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Degree-`d` generalization of `BW_homMatrix_det_updateCol_natDegree_le_of_ge`: replacing a CONSTRAINT column (index \u2265 e+1) of a BW minor over degree-\u2264`d` words by a constant unit column keeps the determinant degree \u2264 `d * (e + 1)`.",
+          "kind": "theorem",
+          "line": 1576,
+          "name": "ProximityGap.BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_ge",
+          "namespace": "ProximityGap",
+          "short_name": "BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_ge",
+          "signature": "theorem BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_ge {F : Type} [Field F]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1585,
+          "name": "ProximityGap._anon_class_1585",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1585",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Degree-`d` generalization of `BW_homMatrix_det_updateCol_natDegree_le_of_lt`: replacing an EVALUATION column (index < e+1) of a BW minor over degree-\u2264`d` words by a constant unit column drops the determinant degree to \u2264 `d * e`.",
+          "kind": "theorem",
+          "line": 1613,
+          "name": "ProximityGap.BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_lt",
+          "namespace": "ProximityGap",
+          "short_name": "BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_lt",
+          "signature": "theorem BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_lt {F : Type} [Field F]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1622,
+          "name": "ProximityGap._anon_class_1622",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1622",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 1653,
+          "name": "ProximityGap.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le",
+          "namespace": "ProximityGap",
+          "short_name": "RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le",
+          "signature": "theorem RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le (e d : \u2115)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1660,
+          "name": "ProximityGap._anon_class_1660",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1660",
           "signature": "class classical"
         }
       ]
@@ -11133,16 +11223,25 @@
         {
           "doc": "Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20]. Take a Reed-Solomon code of length `\u03b9` and degree `deg`, a proximity-error parameter pair `(\u03b4, \u03b5)` and a curve passing through words `u\u2080, ..., u\u03ba`, such that the probability that a random point on the curve is `\u03b4`-close to the Reed-Solomon code is at most `\u03b5`. Then, the words `u\u2080, ..., u\u03ba` have correlated agreement.",
           "kind": "theorem",
-          "line": 36,
+          "line": 37,
           "name": "ProximityGap.correlatedAgreement_affine_curves",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_curves",
           "signature": "theorem correlatedAgreement_affine_curves {k : \u2115}"
         },
         {
+          "doc": "",
+          "kind": "class",
+          "line": 45,
+          "name": "ProximityGap._anon_class_45",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_45",
+          "signature": "class classical"
+        },
+        {
           "doc": "The parameters for which the curve points are `\u03b4`-close to a set `V` (typically, a linear code). This is the set `S` from the proximity gap paper.",
           "kind": "def",
-          "line": 52,
+          "line": 66,
           "name": "ProximityGap.coeffs_of_close_proximity_curve",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_curve",
@@ -11151,7 +11250,7 @@
         {
           "doc": "Propagation brick for the \u00a76.1 argument: two polynomial curves of degree `< l` that agree in coordinate `x` on at least `l` parameter values agree in that coordinate everywhere.",
           "kind": "lemma",
-          "line": 61,
+          "line": 75,
           "name": "ProximityGap.polynomialCurveEval_coord_eq_of_agree",
           "namespace": "ProximityGap",
           "short_name": "polynomialCurveEval_coord_eq_of_agree",
@@ -11160,7 +11259,7 @@
         {
           "doc": "Counting brick for the \u00a76.1 argument (generic double counting): if every `z \u2208 S` has a bad-set of size at most `m`, then the number of coordinates that are bad for at least `t` elements of `S` is bounded: `t \u00b7 #poor \u2264 m \u00b7 #S`.",
           "kind": "lemma",
-          "line": 96,
+          "line": 110,
           "name": "ProximityGap.card_heavyCoords_mul_le",
           "namespace": "ProximityGap",
           "short_name": "card_heavyCoords_mul_le",
@@ -11169,16 +11268,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 102,
-          "name": "ProximityGap._anon_class_102",
+          "line": 116,
+          "name": "ProximityGap._anon_class_116",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_102",
+          "short_name": "_anon_class_116",
           "signature": "class classical"
         },
         {
           "doc": "Interpolation brick for the \u00a76.1 argument: through any `l` distinct parameter values and arbitrary target vectors there is a polynomial curve of degree `< l`.",
           "kind": "lemma",
-          "line": 134,
+          "line": 148,
           "name": "ProximityGap.exists_polynomialCurve_through",
           "namespace": "ProximityGap",
           "short_name": "exists_polynomialCurve_through",
@@ -11187,47 +11286,392 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 140,
-          "name": "ProximityGap._anon_class_140",
+          "line": 154,
+          "name": "ProximityGap._anon_class_154",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_140",
+          "short_name": "_anon_class_154",
           "signature": "class classical"
         },
         {
           "doc": "Unique decoding brick for the \u00a76.1 argument: two codewords of a code with minimum distance `d` that are both within distance summing below `d` of a common word are equal (triangle inequality).",
           "kind": "lemma",
-          "line": 169,
+          "line": 183,
           "name": "ProximityGap.eq_of_both_close_lt_minDist",
           "namespace": "ProximityGap",
           "short_name": "eq_of_both_close_lt_minDist",
           "signature": "lemma eq_of_both_close_lt_minDist {n : \u2115} {F : Type} [DecidableEq F]"
-        },
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/GoodCoeffs.lean": {
+      "declarations": [
         {
-          "doc": "If the set of points `\u03b4`-close to the code `V` has at least `n * l + 1` points, then there exists a curve defined by vectors `v` from `V` such that the points of `curve u` and `curve v` are `\u03b4`-close with the same parameters. Moreover, `u` and `v` differ at at most `\u03b4 * n` positions.",
-          "kind": "theorem",
-          "line": 183,
-          "name": "ProximityGap.large_agreement_set_on_curve_implies_correlated_agreement",
-          "namespace": "ProximityGap",
-          "short_name": "large_agreement_set_on_curve_implies_correlated_agreement",
-          "signature": "theorem large_agreement_set_on_curve_implies_correlated_agreement {l : \u2115}"
-        },
-        {
-          "doc": "The distance bound from [BCIKS20].",
+          "doc": "The set of curve parameters `z : F` at which the degree-`k` parameterized curve through `u 0, \u2026, u k` is `\u03b4`-close to the Reed\u2013Solomon code. Curves analogue of `RS_goodCoeffs` (the line case is `k = 1`).",
           "kind": "def",
-          "line": 206,
-          "name": "ProximityGap._anon_def_206",
+          "line": 39,
+          "name": "ProximityGap.RS_goodCoeffsCurve",
           "namespace": "ProximityGap",
-          "short_name": "_anon_def_206",
-          "signature": "def noncomputable def \u03b4\u2080 (rho : \u211a) (m : \u2115) : \u211d :="
+          "short_name": "RS_goodCoeffsCurve",
+          "signature": "def RS_goodCoeffsCurve {k deg : \u2115} {domain : \u03b9 \u21aa F}"
         },
         {
-          "doc": "If the set of points on the curve defined by `u` close to `V` has at least `((1 + 1 / (2 * m)) ^ 7 * m ^ 7) / (3 * (Real.rpow rho (3 / 2 : \u211a))) * n ^ 2 * l + 1` points, then there exist vectors `v` from `V` that are `(1 - \u03b4) * n` close to `u`.",
+          "doc": "At every good curve parameter there is a codeword polynomial within the floor-`\u03b4` Hamming radius. Curves analogue of `RS_exists_Pz_of_mem_goodCoeffs`.",
           "kind": "theorem",
-          "line": 212,
-          "name": "ProximityGap.large_agreement_set_on_curve_implies_correlated_agreement'",
+          "line": 49,
+          "name": "ProximityGap.RS_exists_Pz_of_mem_goodCoeffsCurve",
           "namespace": "ProximityGap",
-          "short_name": "large_agreement_set_on_curve_implies_correlated_agreement'",
-          "signature": "theorem large_agreement_set_on_curve_implies_correlated_agreement' {l : \u2115}"
+          "short_name": "RS_exists_Pz_of_mem_goodCoeffsCurve",
+          "signature": "theorem RS_exists_Pz_of_mem_goodCoeffsCurve {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 55,
+          "name": "ProximityGap._anon_class_55",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_55",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 80,
+          "name": "ProximityGap.RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve",
+          "namespace": "ProximityGap",
+          "short_name": "RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve",
+          "signature": "theorem RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 92,
+          "name": "ProximityGap._anon_class_92",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_92",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Evaluation commutes with the BW matrix construction for arbitrary polynomial words (generic form of `BW_homMatrix_map_evalRingHom`).",
+          "kind": "theorem",
+          "line": 220,
+          "name": "ProximityGap.BW_homMatrix_map_evalRingHom_poly",
+          "namespace": "ProximityGap",
+          "short_name": "BW_homMatrix_map_evalRingHom_poly",
+          "signature": "theorem BW_homMatrix_map_evalRingHom_poly {e k : \u2115} (\u03c9s : \u03b9 \u2192 F) (g : \u03b9 \u2192 F[X]) (z : F) :"
+        },
+        {
+          "doc": "Curves analogue of `RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffs_card_gt` ([BCIKS20] \u00a76.1): with more than `k \u00b7 n` good curve parameters, every square minor of the BW matrix over the degree-`k` polynomial words vanishes identically \u2014 the minors have degree \u2264 `k * (e + 1) \u2264 k \u00b7 n < |S|` and vanish at every good parameter.",
+          "kind": "theorem",
+          "line": 236,
+          "name": "ProximityGap.RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt",
+          "namespace": "ProximityGap",
+          "short_name": "RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt",
+          "signature": "theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 253,
+          "name": "ProximityGap._anon_class_253",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_253",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 349,
+          "name": "ProximityGap.RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun",
+          "namespace": "ProximityGap",
+          "short_name": "RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun",
+          "signature": "theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 366,
+          "name": "ProximityGap._anon_class_366",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_366",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 413,
+          "name": "ProximityGap.RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt",
+          "namespace": "ProximityGap",
+          "short_name": "RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt",
+          "signature": "theorem RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 431,
+          "name": "ProximityGap._anon_class_431",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_431",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 451,
+          "name": "ProximityGap._anon_class_451",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_451",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 559,
+          "name": "ProximityGap._anon_class_559",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_559",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 577,
+          "name": "ProximityGap._anon_class_577",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_577",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 621,
+          "name": "ProximityGap._anon_class_621",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_621",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 677,
+          "name": "ProximityGap.card_RS_goodCoeffsCurve_gt_of_prob_gt_kn_div_q",
+          "namespace": "ProximityGap",
+          "short_name": "card_RS_goodCoeffsCurve_gt_of_prob_gt_kn_div_q",
+          "signature": "theorem card_RS_goodCoeffsCurve_gt_of_prob_gt_kn_div_q"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 685,
+          "name": "ProximityGap._anon_class_685",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_685",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 693,
+          "name": "ProximityGap._anon_class_693",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_693",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 762,
+          "name": "ProximityGap.RS_a_ne_zero_of_BW_homMatrix_mulVec_eq_zero_curve",
+          "namespace": "ProximityGap",
+          "short_name": "RS_a_ne_zero_of_BW_homMatrix_mulVec_eq_zero_curve",
+          "signature": "theorem RS_a_ne_zero_of_BW_homMatrix_mulVec_eq_zero_curve {k deg : \u2115} {domain : \u03b9 \u21aa F} {e : \u2115}"
+        },
+        {
+          "doc": "Curves analogue of `RS_exists_kernelVec_BW_homMatrix_of_goodCoeffs_card_gt`: the global kernel vector repackaged with `a \u2260 0`.",
+          "kind": "theorem",
+          "line": 801,
+          "name": "ProximityGap.RS_exists_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt",
+          "namespace": "ProximityGap",
+          "short_name": "RS_exists_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt",
+          "signature": "theorem RS_exists_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 819,
+          "name": "ProximityGap._anon_class_819",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_819",
+          "signature": "class classical"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/JointAgreement.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 40,
+          "name": "ProximityGap.RS_exists_bivariate_AB_of_goodCoeffsCurve_card_gt",
+          "namespace": "ProximityGap",
+          "short_name": "RS_exists_bivariate_AB_of_goodCoeffsCurve_card_gt",
+          "signature": "theorem RS_exists_bivariate_AB_of_goodCoeffsCurve_card_gt"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 58,
+          "name": "ProximityGap._anon_class_58",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_58",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 82,
+          "name": "ProximityGap._anon_class_82",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_82",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 90,
+          "name": "ProximityGap._anon_class_90",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_90",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 98,
+          "name": "ProximityGap._anon_class_98",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_98",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 107,
+          "name": "ProximityGap._anon_class_107",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_107",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 149,
+          "name": "ProximityGap._anon_class_149",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_149",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 176,
+          "name": "ProximityGap._anon_class_176",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_176",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 218,
+          "name": "ProximityGap._anon_class_218",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_218",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 223,
+          "name": "ProximityGap._anon_class_223",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_223",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 247,
+          "name": "ProximityGap.RS_jointAgreement_of_goodCoeffsCurve_card_gt",
+          "namespace": "ProximityGap",
+          "short_name": "RS_jointAgreement_of_goodCoeffsCurve_card_gt",
+          "signature": "theorem RS_jointAgreement_of_goodCoeffsCurve_card_gt {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 255,
+          "name": "ProximityGap._anon_class_255",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_255",
+          "signature": "class classical"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/UniqueDecoding.lean": {
+      "declarations": [
+        {
+          "doc": "**Correlated agreement for low-degree parameterized curves, unique-decoding regime** ([BCIKS20] Theorem 6.1 / the UDR case of Theorem 1.5): curves analogue of `RS_correlatedAgreement_affineLines_uniqueDecodingRegime`.",
+          "kind": "theorem",
+          "line": 40,
+          "name": "ProximityGap.RS_correlatedAgreement_curves_uniqueDecodingRegime",
+          "namespace": "ProximityGap",
+          "short_name": "RS_correlatedAgreement_curves_uniqueDecodingRegime",
+          "signature": "theorem RS_correlatedAgreement_curves_uniqueDecodingRegime {k deg : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 46,
+          "name": "ProximityGap._anon_class_46",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_46",
+          "signature": "class classical"
+        },
+        {
+          "doc": "The `k = 0` corner of curves correlated agreement: a degree-0 \"curve\" is the constant word `u 0`, so any positive probability of closeness gives the plain closeness fact, and joint agreement follows from unique decoding.",
+          "kind": "theorem",
+          "line": 75,
+          "name": "ProximityGap.RS_correlatedAgreement_curves_k_zero",
+          "namespace": "ProximityGap",
+          "short_name": "RS_correlatedAgreement_curves_k_zero",
+          "signature": "theorem RS_correlatedAgreement_curves_k_zero {deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 81,
+          "name": "ProximityGap._anon_class_81",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_81",
+          "signature": "class classical"
+        },
+        {
+          "doc": "The relative unique decoding radius of a Reed\u2013Solomon code is strictly below the Johnson-type bound `1 \u2212 \u221a\u03c1` whenever it is positive: `(1\u2212\u03c1)/2 < 1\u2212\u221a\u03c1` for `\u03c1 < 1`, by AM\u2013GM (`2\u221a\u03c1 < 1 + \u03c1` strictly since `\u221a\u03c1 < 1`). Merges the unique-decoding hypothesis into the [BCIKS20] full-range hypothesis.",
+          "kind": "lemma",
+          "line": 131,
+          "name": "ProximityGap.relativeUniqueDecodingRadius_lt_one_sub_sqrtRate",
+          "namespace": "ProximityGap",
+          "short_name": "relativeUniqueDecodingRadius_lt_one_sub_sqrtRate",
+          "signature": "lemma relativeUniqueDecodingRadius_lt_one_sub_sqrtRate"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 139,
+          "name": "ProximityGap._anon_class_139",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_139",
+          "signature": "class classical"
         }
       ]
     },
@@ -34736,7 +35180,7 @@
         {
           "doc": "Transform a reduction for a protocol specification `pSpec` into a reduction for the salted protocol specification `pSpec.addSalt Salt`. Require additional computation of the salt for each prover's round.",
           "kind": "def",
-          "line": 180,
+          "line": 191,
           "name": "Reduction.addSalt",
           "namespace": "",
           "short_name": "Reduction.addSalt",
@@ -34745,7 +35189,7 @@
         {
           "doc": "Transform an oracle reduction for a protocol specification `pSpec` into an oracle reduction for the salted protocol specification `pSpec.addSalt Salt`. Require additional computation of the salt for each prover's round.",
           "kind": "def",
-          "line": 190,
+          "line": 201,
           "name": "OracleReduction.addSalt",
           "namespace": "",
           "short_name": "OracleReduction.addSalt",
@@ -37664,9 +38108,45 @@
           "signature": "theorem iterated_fold_succ_last (i : Fin \u2113) (n : \u2115)"
         },
         {
+          "doc": "Generic peel of the **last** fold step from `iterated_fold`, for a general start index `i : Fin r` (the `Fin \u2113`-restricted `iterated_fold_succ_last` is the `Fin \u2113` specialization). Folding `n + 1` steps equals one single-step `fold` (at level `i + n`, with the last challenge `r_challenges (last n)`) applied to the `n`-step iterated fold over the truncated challenges. This is the structural `Fin.dfoldl_succ_last` peel.",
+          "kind": "theorem",
+          "line": 911,
+          "name": "Binius.BinaryBasefold.iterated_fold_succ_last_gen",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "iterated_fold_succ_last_gen",
+          "signature": "theorem iterated_fold_succ_last_gen (i : Fin r) (n : \u2115)"
+        },
+        {
+          "doc": "Congruence for `fold` across a propositional start-index equality: aligning the two applications by `Fin.ext`/`Subtype.ext` (proof-irrelevant `Fin`/membership components).",
+          "kind": "theorem",
+          "line": 936,
+          "name": "Binius.BinaryBasefold.fold_congr",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "fold_congr",
+          "signature": "theorem fold_congr (i\u2081 i\u2082 : Fin r) (hidx : i\u2081.val = i\u2082.val)"
+        },
+        {
+          "doc": "Apply a `cast` of an `sDomain`-indexed function to a point at the (equal-`.val`) other index: the cast on the function type is absorbed into lifting the argument's underlying value.",
+          "kind": "theorem",
+          "line": 961,
+          "name": "Binius.BinaryBasefold.sDomain_fn_cast_apply",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "sDomain_fn_cast_apply",
+          "signature": "theorem sDomain_fn_cast_apply (a b : \u2115) (ha : a < r) (hb : b < r) (h : a = b)"
+        },
+        {
+          "doc": "Cast-free core of `iterated_fold_transitivity`: both folds land in the **same** index type `\u27e8i + s\u2081 + s\u2082, _\u27e9`, compared pointwise at a `y` whose underlying value matches. The `Fin.dfoldl` append/split law, by induction on the second segment `s2`.",
+          "kind": "lemma",
+          "line": 979,
+          "name": "Binius.BinaryBasefold.iterated_fold_transitivity_castfree",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "iterated_fold_transitivity_castfree",
+          "signature": "lemma iterated_fold_transitivity_castfree"
+        },
+        {
           "doc": "Transitivity of iterated_fold : folding for `steps\u2081` and then for `steps\u2082` equals folding for `steps\u2081 + steps\u2082` with concatenated challenges.",
           "kind": "lemma",
-          "line": 908,
+          "line": 1081,
           "name": "Binius.BinaryBasefold.iterated_fold_transitivity",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "iterated_fold_transitivity",
@@ -37675,16 +38155,61 @@
         {
           "doc": "Tensor product of challenge vectors : for a local fold length `steps`, \u2a02_{j=0}^{steps-1}(1-r_j, r_j).",
           "kind": "def",
-          "line": 943,
+          "line": 1132,
           "name": "Binius.BinaryBasefold.challengeTensorProduct",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "challengeTensorProduct",
           "signature": "def challengeTensorProduct (steps : \u2115) (r_challenges : Fin steps \u2192 L) : Vector L (2 ^ steps) :="
         },
         {
+          "doc": "The inner `Nat.rec` accumulator of `challengeTensorProduct` (for nonzero outer `steps`), exposed as a structural recursion so we can reason about it compositionally.",
+          "kind": "def",
+          "line": 1162,
+          "name": "Binius.BinaryBasefold.ctpAux",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "ctpAux",
+          "signature": "def ctpAux (m : \u2115) (r_challenges : Fin m \u2192 L) : (k : \u2115) \u2192 k \u2264 m \u2192 Vector L (2 ^ k)"
+        },
+        {
+          "doc": "The raw inner `Nat.rec` accumulator equals the named `ctpAux`, at every level `k \u2264 m`.",
+          "kind": "theorem",
+          "line": 1173,
+          "name": "Binius.BinaryBasefold.natRec_ctp_eq_ctpAux",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "natRec_ctp_eq_ctpAux",
+          "signature": "theorem natRec_ctp_eq_ctpAux (m : \u2115) (r_challenges : Fin m \u2192 L) :"
+        },
+        {
+          "doc": "`challengeTensorProduct` (nonzero `steps`) is exactly its named inner recursion.",
+          "kind": "theorem",
+          "line": 1203,
+          "name": "Binius.BinaryBasefold.challengeTensorProduct_eq_ctpAux",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "challengeTensorProduct_eq_ctpAux",
+          "signature": "theorem challengeTensorProduct_eq_ctpAux (m : \u2115) (hm : m \u2260 0) (r_challenges : Fin m \u2192 L) :"
+        },
+        {
+          "doc": "`ctpAux` get only depends on the challenges at indices `< k`.",
+          "kind": "theorem",
+          "line": 1211,
+          "name": "Binius.BinaryBasefold.ctpAux_congr",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "ctpAux_congr",
+          "signature": "theorem ctpAux_congr (m m' : \u2115) (r' : Fin m \u2192 L) (r'' : Fin m' \u2192 L) :"
+        },
+        {
+          "doc": "Tensor product recursion (entry form): low bit selects last challenge, high bits index the `n`-step tensor over truncated challenges.",
+          "kind": "theorem",
+          "line": 1233,
+          "name": "Binius.BinaryBasefold.challengeTensorProduct_succ_get",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "challengeTensorProduct_succ_get",
+          "signature": "theorem challengeTensorProduct_succ_get (n : \u2115) (r_challenges : Fin (n + 1) \u2192 L)"
+        },
+        {
           "doc": "Evaluation vector [f^(i)(x_0) ... f^(i)(x_{2 ^ steps-1})]^T",
           "kind": "def",
-          "line": 972,
+          "line": 1262,
           "name": "Binius.BinaryBasefold.fiberEvaluationMapping",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberEvaluationMapping",
@@ -37693,7 +38218,7 @@
         {
           "doc": "Matrix-vector multiplication form of iterated fold : For a local `steps > 0`, `\u2200 i \u2208 {0, ..., l-steps}`, `y \u2208 S^(i+steps)`, `fold(f^(i), r_0, ..., r_{steps-1})(y) = [\u2a02_{j=0}^{steps-1}(1-r_j, r_j)] \u2022 M_y` `\u2022 [f^(i)(x_0) ... f^(i)(x_{2 ^ steps-1})]^T`, where the right-hand vector's values `(x_0, ..., x_{2 ^ steps-1})` represent the fiber `(q^(i+steps-1) \u2218 ... \u2218 q^(i))\u207b\u00b9({y}) \u2282 S^(i)`.",
           "kind": "def",
-          "line": 992,
+          "line": 1282,
           "name": "Binius.BinaryBasefold.localized_fold_matrix_form",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "localized_fold_matrix_form",
@@ -37702,16 +38227,70 @@
         {
           "doc": "Wrapper of `localized_fold_matrix_form` with `fiber_eval_mapping` being specified explicitly.",
           "kind": "def",
-          "line": 1009,
+          "line": 1299,
           "name": "Binius.BinaryBasefold.localized_fold_eval",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "localized_fold_eval",
           "signature": "def localized_fold_eval (i : Fin \u2113) (steps : \u2115) (h_i_add_steps : i + steps \u2264 \u2113)"
         },
         {
+          "doc": "Split a sum over `Fin (2^(n+1))` into the high bit `c \u2208 Fin 2` and the low `n` bits `b \u2208 Fin (2^n)`, where `idx = c * 2^n + b`.",
+          "kind": "theorem",
+          "line": 1313,
+          "name": "Binius.BinaryBasefold.sum_fin_pow_succ_split",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "sum_fin_pow_succ_split",
+          "signature": "theorem sum_fin_pow_succ_split {M : Type*} [AddCommMonoid M] (n : \u2115)"
+        },
+        {
+          "doc": "`localized_fold_eval` as an explicit double sum over the challenge tensor and fold matrix.",
+          "kind": "theorem",
+          "line": 1358,
+          "name": "Binius.BinaryBasefold.localized_fold_eval_eq_sum",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "localized_fold_eval_eq_sum",
+          "signature": "theorem localized_fold_eval_eq_sum (i : Fin \u2113) (steps : \u2115) (h_i_add_steps : i.val + steps \u2264 \u2113)"
+        },
+        {
+          "doc": "Split a sum over `Fin (2^(n+1))` into the low bit `lo \u2208 Fin 2` and the high `n` bits `hi \u2208 Fin (2^n)`, where `idx = lo + 2 * hi`.",
+          "kind": "theorem",
+          "line": 1380,
+          "name": "Binius.BinaryBasefold.sum_fin_pow_succ_split_low",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "sum_fin_pow_succ_split_low",
+          "signature": "theorem sum_fin_pow_succ_split_low {M : Type*} [AddCommMonoid M] (n : \u2115)"
+        },
+        {
+          "doc": "One-step recursion of `foldMatrixNat` at an entry.",
+          "kind": "theorem",
+          "line": 1420,
+          "name": "Binius.BinaryBasefold.foldMatrixNat_succ_apply",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "foldMatrixNat_succ_apply",
+          "signature": "theorem foldMatrixNat_succ_apply (i : Fin r) (n : \u2115) (h : i.val + (n + 1) < \u2113 + \ud835\udce1)"
+        },
+        {
+          "doc": "RHS recursion of `localized_fold_eval`: the `(n+1)`-step localized fold evaluation at `y` equals one single-step `fold` (at level `i + n`, last challenge `r_challenges (last n)`) applied to the `n`-step localized fold evaluation over the truncated challenges.",
+          "kind": "theorem",
+          "line": 1442,
+          "name": "Binius.BinaryBasefold.localized_fold_eval_succ",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "localized_fold_eval_succ",
+          "signature": "theorem localized_fold_eval_succ (i : Fin \u2113) (n : \u2115) (h_i_add_steps : i.val + (n + 1) \u2264 \u2113)"
+        },
+        {
+          "doc": "Base case of the localized fold evaluation: zero steps is just `f` at `y`.",
+          "kind": "theorem",
+          "line": 1493,
+          "name": "Binius.BinaryBasefold.localized_fold_eval_zero",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "localized_fold_eval_zero",
+          "signature": "theorem localized_fold_eval_zero (i : Fin \u2113) (h_i_add_steps : i.val + 0 \u2264 \u2113)"
+        },
+        {
           "doc": "**Lemma 4.9.** The iterated fold equals the localized fold evaluation via matmul form",
           "kind": "theorem",
-          "line": 1022,
+          "line": 1520,
           "name": "Binius.BinaryBasefold.iterated_fold_eq_matrix_form",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "iterated_fold_eq_matrix_form",
@@ -37720,7 +38299,7 @@
         {
           "doc": "Lemma 4.13 : if f\u207d\u2071\u207e is evaluation of P\u207d\u2071\u207e(X) over S\u207d\u2071\u207e, then fold(f\u207d\u2071\u207e, r_chal) is evaluation of P\u207d\u2071\u207a\u00b9\u207e(X) over S\u207d\u2071\u207a\u00b9\u207e. At level `i = \u2113`, we have P\u207d\u02e1\u207e =",
           "kind": "theorem",
-          "line": 1039,
+          "line": 1548,
           "name": "Binius.BinaryBasefold.fold_advances_evaluation_poly",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fold_advances_evaluation_poly",
@@ -37729,7 +38308,7 @@
         {
           "doc": "Given a point `v \u2208 S^(0)`, extract the middle `steps` bits `{v_i, ..., v_{i+steps-1}}` as a `Fin (2 ^ steps)`.",
           "kind": "def",
-          "line": 1226,
+          "line": 1735,
           "name": "Binius.BinaryBasefold.extractMiddleFinMask",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "extractMiddleFinMask",
@@ -37738,7 +38317,7 @@
         {
           "doc": "The Reed-Solomon code C^(i) for round i in Binary Basefold. For each i \u2208 {0, steps, ..., \u2113}, C(i) is the Reed-Solomon code RS_{L, S\u207d\u2071\u207e}[2^{\u2113+R-i}, 2^{\u2113-i}].",
           "kind": "def",
-          "line": 1252,
+          "line": 1761,
           "name": "Binius.BinaryBasefold.BBF_Code",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_Code",
@@ -37747,7 +38326,7 @@
         {
           "doc": "The (minimum) distance d_i of the code C^(i) : `d\u1d62 := 2^(\u2113 + R - i) - 2^(\u2113 - i) + 1`",
           "kind": "def",
-          "line": 1261,
+          "line": 1770,
           "name": "Binius.BinaryBasefold.BBF_CodeDistance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_CodeDistance",
@@ -37756,7 +38335,7 @@
         {
           "doc": "Disagreement set \u0394 : The set of points where two functions disagree. For functions f^(i+\u03d1) and g^(i+\u03d1), this is {y \u2208 S^(i+\u03d1) | f^(i+\u03d1)(y) \u2260 g^(i+\u03d1)(y)}. `Set`-valued analogue of the canonical `Code.disagreementCols` (in `ArkLib/Data/CodingTheory/Basic/Distance.lean`): used here because the underlying `sDomain` need not be `Fintype` / `DecidableEq` at every call site. When both instances are available, the two coincide modulo `Set.toFinset`.",
           "kind": "def",
-          "line": 1272,
+          "line": 1781,
           "name": "Binius.BinaryBasefold.disagreementSet",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "disagreementSet",
@@ -37765,7 +38344,7 @@
         {
           "doc": "Fiber-wise disagreement set \u0394^(i) : The set of points y \u2208 S^(i+\u03d1) for which functions f^(i) and g^(i) are not identical when restricted to the entire fiber of points in S\u207d\u2071\u207e that maps to y.",
           "kind": "def",
-          "line": 1281,
+          "line": 1790,
           "name": "Binius.BinaryBasefold.fiberwiseDisagreementSet",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseDisagreementSet",
@@ -37774,7 +38353,7 @@
         {
           "doc": "Fiber-wise distance d^(i) : The minimum size of the fiber-wise disagreement set between f^(i) and any codeword in C^(i).",
           "kind": "def",
-          "line": 1292,
+          "line": 1801,
           "name": "Binius.BinaryBasefold.fiberwiseDistance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseDistance",
@@ -37783,7 +38362,7 @@
         {
           "doc": "Fiberwise closeness : f^(i) is fiberwise close to C^(i) if 2 * d^(i)(f^(i), C^(i)) < d_{i+steps}",
           "kind": "def",
-          "line": 1303,
+          "line": 1812,
           "name": "Binius.BinaryBasefold.fiberwiseClose",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseClose",
@@ -37792,7 +38371,7 @@
         {
           "doc": "Hamming closeness : f is close to C in Hamming distance if 2 * d(f, C) < d_i",
           "kind": "def",
-          "line": 1311,
+          "line": 1820,
           "name": "Binius.BinaryBasefold.hammingClose",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "hammingClose",
@@ -37801,7 +38380,7 @@
         {
           "doc": "Unique closest codeword : If a function f^(i) is within the unique decoding radius of the code C^(i), then this gives the unique closest codeword using Berlekamp-Welch decoder.",
           "kind": "def",
-          "line": 1321,
+          "line": 1830,
           "name": "Binius.BinaryBasefold.uniqueClosestCodeword",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "uniqueClosestCodeword",
@@ -37810,7 +38389,7 @@
         {
           "doc": "if `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d_{\u1d62\u208asteps} / 2` (fiberwise distance), then `d(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d\u1d62/2` (regular code distance)",
           "kind": "theorem",
-          "line": 1495,
+          "line": 2004,
           "name": "Binius.BinaryBasefold.fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius",
@@ -37819,7 +38398,7 @@
         {
           "doc": "Compliance condition (Definition 4.17) : For an index `i` that is a multiple of `steps`, the oracle `f_i` is compliant if it's close to the code fiber-wise, the next oracle `f_i_plus_steps` is close to its code, and their unique closest codewords are consistent with folding.",
           "kind": "def",
-          "line": 1711,
+          "line": 2220,
           "name": "Binius.BinaryBasefold.isCompliant",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "isCompliant",
@@ -37828,7 +38407,7 @@
         {
           "doc": "Farness implies non-compliance. If `f_i` is far from its code `C_i`, it cannot be compliant. This follows directly from the contrapositive of `fiberwise_dist_lt_imp_dist_lt`.",
           "kind": "lemma",
-          "line": 1744,
+          "line": 2253,
           "name": "Binius.BinaryBasefold.farness_implies_non_compliance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "farness_implies_non_compliance",
@@ -37837,7 +38416,7 @@
         {
           "doc": "Bad event for folding (Definition 4.19) : This event captures two scenarios where the random folding challenges undermine the protocol's soundness checks. For `i \u2208 {0, ..., \u2113 - steps}`, - In case `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d\u1d62\u208asteps / 2` : `\u0394\u207d\u2071\u207e(f\u207d\u2071\u207e, f\u0304\u207d\u2071\u207e) \u2284 \u0394(fold(f\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'), fold(f\u0304\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'))` - In case `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) \u2265 d\u1d62\u208asteps / 2` : `d(fold(f\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'), C\u207d\u2071\u207asteps\u207e) < d\u1d62\u208asteps / 2`",
           "kind": "def",
-          "line": 1773,
+          "line": 2282,
           "name": "Binius.BinaryBasefold.foldingBadEvent",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldingBadEvent",
@@ -37902,9 +38481,27 @@
           "signature": "theorem simulateQ_optionT_listVector_mmap (impl : QueryImpl spec n)"
         },
         {
+          "doc": "**`simOracle2` oracle-statement-query collapse (`OracleComp` form).** Simulating, via `simOracle2 oSpec t\u2081 t\u2082`, the lift into the combined spec `oSpec + ([T\u2081]\u2092 + [T\u2082]\u2092)` of a single query to the *left* (oracle-statement) family `[T\u2081]\u2092` collapses to `pure` of that oracle's `answer`, with all queries routed to `t\u2081`.",
+          "kind": "lemma",
+          "line": 223,
+          "name": "Binius.BinaryBasefold.QueryPhase.ForInSupport.simulateQ_simOracle2_leftQuery_oc",
+          "namespace": "Binius.BinaryBasefold.QueryPhase.ForInSupport",
+          "short_name": "simulateQ_simOracle2_leftQuery_oc",
+          "signature": "lemma simulateQ_simOracle2_leftQuery_oc (t\u2081 : \u2200 i, T\u2081 i) (t\u2082 : \u2200 i, T\u2082 i)"
+        },
+        {
+          "doc": "**`simOracle2` oracle-statement-query collapse (`OptionT`-`query` form).** The same reduction as `simulateQ_simOracle2_leftQuery_oc`, phrased for the `query`/`monadLift` form that appears in an `OracleVerifier.verify` body that queries an oracle statement. This is the left-family counterpart of `RingSwitching.Prelude.simulateQ_simOracle2_query`, consumed by the query-phase verifier-run collapse.",
+          "kind": "lemma",
+          "line": 243,
+          "name": "Binius.BinaryBasefold.QueryPhase.ForInSupport.simulateQ_simOracle2_leftQuery",
+          "namespace": "Binius.BinaryBasefold.QueryPhase.ForInSupport",
+          "short_name": "simulateQ_simOracle2_leftQuery",
+          "signature": "lemma simulateQ_simOracle2_leftQuery (t\u2081 : \u2200 i, T\u2081 i) (t\u2082 : \u2200 i, T\u2082 i)"
+        },
+        {
           "doc": "Extract suffix (v_{i+\u03d1}, ..., v_{\u2113+R-1}) from challenge v for proximity testing",
           "kind": "def",
-          "line": 212,
+          "line": 267,
           "name": "Binius.BinaryBasefold.QueryPhase.extractNextSuffixFromChallenge",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "extractNextSuffixFromChallenge",
@@ -37913,7 +38510,7 @@
         {
           "doc": "This proposition declaratively captures the iterative logic of the verifier. For each repetition and each folding step, it asserts that the folded value of the function from level `i` must equal the value of the function from the oracle of the next level `i+\u03d1`.",
           "kind": "def",
-          "line": 224,
+          "line": 279,
           "name": "Binius.BinaryBasefold.QueryPhase.proximityChecksSpec",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "proximityChecksSpec",
@@ -37922,7 +38519,7 @@
         {
           "doc": "RBR knowledge error for the query phase. Proximity testing error rate: `(1/2 + 1/(2 * 2^\ud835\udce1))^\u03b3`",
           "kind": "def",
-          "line": 299,
+          "line": 354,
           "name": "Binius.BinaryBasefold.QueryPhase.queryRbrKnowledgeError",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryRbrKnowledgeError",
@@ -37931,16 +38528,25 @@
         {
           "doc": "Oracle query helper: query a committed codeword at a given domain point. Restricted to codeword indices where the oracle range is L.",
           "kind": "def",
-          "line": 305,
+          "line": 360,
           "name": "Binius.BinaryBasefold.QueryPhase.queryCodeword",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryCodeword",
           "signature": "def queryCodeword (j : Fin (toOutCodewordsCount \u2113 \u03d1 (Fin.last \u2113)))"
         },
         {
+          "doc": "**Per-query collapse for the query phase.** Simulating a single `queryCodeword` oracle-statement query under `simOracle2 []\u2092 oStmt msgs` returns `OptionT.lift (pure \u2026)` of the oracle statement evaluated at the query point. This holds definitionally: `queryCodeword jj point` is `query (spec := [OracleStatement \u2026]\u2092) \u27e8\u27e8jj, _\u27e9, point\u27e9`, and `simOracle2`'s left-family (oracle-statement) routing of `inr (inl \u2026)` computes to `answer (oStmt jj) point = oStmt jj point`. This is the load-bearing per-query primitive for collapsing the query-phase verifier run; each `List.Vector.mmap` query body in `query",
+          "kind": "lemma",
+          "line": 382,
+          "name": "Binius.BinaryBasefold.QueryPhase.queryCodeword_collapse",
+          "namespace": "Binius.BinaryBasefold.QueryPhase",
+          "short_name": "queryCodeword_collapse",
+          "signature": "lemma queryCodeword_collapse"
+        },
+        {
           "doc": "The oracle prover for the final query phase (equivalent to regular prover).",
           "kind": "def",
-          "line": 326,
+          "line": 404,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleProver",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleProver",
@@ -37949,7 +38555,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 353,
+          "line": 431,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleVerifier",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleVerifier",
@@ -37958,7 +38564,7 @@
         {
           "doc": "The oracle reduction for the final query phase.",
           "kind": "def",
-          "line": 474,
+          "line": 552,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleReduction",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleReduction",
@@ -37967,7 +38573,7 @@
         {
           "doc": "The final query round as an `OracleProof` (since it outputs Bool and no oracle statements).",
           "kind": "def",
-          "line": 489,
+          "line": 567,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleProof",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleProof",
@@ -37976,7 +38582,7 @@
         {
           "doc": "Perfect completeness for the final query round (using the oracle queryProof).",
           "kind": "theorem",
-          "line": 499,
+          "line": 577,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleProof_perfectCompleteness",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleProof_perfectCompleteness",
@@ -37985,7 +38591,7 @@
         {
           "doc": "The round-by-round extractor for the query phase. Since f^(0) is always available, we can invoke the extractMLP function directly.",
           "kind": "def",
-          "line": 528,
+          "line": 606,
           "name": "Binius.BinaryBasefold.QueryPhase.queryRbrExtractor",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryRbrExtractor",
@@ -37994,7 +38600,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 540,
+          "line": 618,
           "name": "Binius.BinaryBasefold.QueryPhase.queryKStateProp",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryKStateProp",
@@ -38003,7 +38609,7 @@
         {
           "doc": "The knowledge state function for the query phase",
           "kind": "def",
-          "line": 569,
+          "line": 647,
           "name": "Binius.BinaryBasefold.QueryPhase.queryKnowledgeStateFunction",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryKnowledgeStateFunction",
@@ -38012,7 +38618,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the oracle verifier (query phase)",
           "kind": "theorem",
-          "line": 616,
+          "line": 745,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleVerifier_rbrKnowledgeSoundness",
@@ -44716,7 +45322,7 @@
         {
           "doc": "Fact 4.10 Geometric series formula in a field, for a unit `r : F`.",
           "kind": "lemma",
-          "line": 37,
+          "line": 38,
           "name": "Combine.geometric_sum_units",
           "namespace": "Combine",
           "short_name": "geometric_sum_units",
@@ -44725,7 +45331,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 48,
+          "line": 49,
           "name": "Combine.ri",
           "namespace": "Combine",
           "short_name": "ri",
@@ -44734,7 +45340,7 @@
         {
           "doc": "Definition 4.11.1 Combine(d*, r, (f_0, d_0), \u2026, (f_{m-1}, d_{m-1}))(x) := sum_{i < m} r_i * f_i(x) * ( sum_{l < (d* - d_i + 1)} (r * \u03c6(x))^l )",
           "kind": "def",
-          "line": 55,
+          "line": 56,
           "name": "Combine.combine",
           "namespace": "Combine",
           "short_name": "combine",
@@ -44743,7 +45349,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 61,
+          "line": 62,
           "name": "Combine.combine_dstar_zero",
           "namespace": "Combine",
           "short_name": "combine_dstar_zero",
@@ -44752,7 +45358,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 66,
+          "line": 67,
           "name": "Combine.geom_sum_cases",
           "namespace": "Combine",
           "short_name": "geom_sum_cases",
@@ -44761,7 +45367,7 @@
         {
           "doc": "Definition 4.11.2 Combine(d*, r, (f_0, d_0), \u2026, (f_{m-1}, d_{m-1}))(x) := if (r * \u03c6(x)) = 1 then sum_{i < m} r_i * f_i(x) * (dstar - degree + 1) else sum_{i < m} r_i * f_i(x) * (1 - r * \u03c6(x)^(dstar - degree + 1)) / (1 - r * \u03c6(x))",
           "kind": "lemma",
-          "line": 79,
+          "line": 80,
           "name": "Combine.combine_eq_cases",
           "namespace": "Combine",
           "short_name": "combine_eq_cases",
@@ -44770,7 +45376,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 99,
+          "line": 100,
           "name": "Combine.blockSize",
           "namespace": "Combine",
           "short_name": "blockSize",
@@ -44779,7 +45385,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 100,
+          "line": 101,
           "name": "Combine.blockStart",
           "namespace": "Combine",
           "short_name": "blockStart",
@@ -44788,7 +45394,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 102,
+          "line": 103,
           "name": "Combine.totalTerms",
           "namespace": "Combine",
           "short_name": "totalTerms",
@@ -44797,7 +45403,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 104,
+          "line": 105,
           "name": "Combine.blockStart_monotone",
           "namespace": "Combine",
           "short_name": "blockStart_monotone",
@@ -44806,7 +45412,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 112,
+          "line": 113,
           "name": "Combine.blockStart_zero",
           "namespace": "Combine",
           "short_name": "blockStart_zero",
@@ -44815,7 +45421,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 116,
+          "line": 117,
           "name": "Combine.blockStart_filter_nonempty",
           "namespace": "Combine",
           "short_name": "blockStart_filter_nonempty",
@@ -44824,7 +45430,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 122,
+          "line": 123,
           "name": "Combine.block_idx_eq_max",
           "namespace": "Combine",
           "short_name": "block_idx_eq_max",
@@ -44833,7 +45439,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 149,
+          "line": 150,
           "name": "Combine.combine_eq_flat",
           "namespace": "Combine",
           "short_name": "combine_eq_flat",
@@ -44842,7 +45448,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 303,
+          "line": 304,
           "name": "Combine.combine_eq_flat_aux1",
           "namespace": "Combine",
           "short_name": "combine_eq_flat_aux1",
@@ -44851,7 +45457,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 323,
+          "line": 324,
           "name": "Combine.combine_eq_flat_aux2",
           "namespace": "Combine",
           "short_name": "combine_eq_flat_aux2",
@@ -44860,7 +45466,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 337,
+          "line": 338,
           "name": "Combine.combine_eq_flat_aux3",
           "namespace": "Combine",
           "short_name": "combine_eq_flat_aux3",
@@ -44869,7 +45475,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 381,
+          "line": 382,
           "name": "Combine.combine_eq_flat_final",
           "namespace": "Combine",
           "short_name": "combine_eq_flat_final",
@@ -44878,7 +45484,7 @@
         {
           "doc": "Definition 4.12.1 DegCor(d*, r, f, degree)(x) := f(x) * ( sum_{ l < d* - d + 1 } (r * \u03c6(x))^l )",
           "kind": "def",
-          "line": 404,
+          "line": 405,
           "name": "Combine.degCor",
           "namespace": "Combine",
           "short_name": "degCor",
@@ -44887,7 +45493,7 @@
         {
           "doc": "Definition 4.12.2 DegCor(d*, r, f, d)(x) := f(x) * conditionalExp(x)",
           "kind": "lemma",
-          "line": 410,
+          "line": 411,
           "name": "Combine.degreeCor_eq",
           "namespace": "Combine",
           "short_name": "degreeCor_eq",
@@ -44896,7 +45502,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 425,
+          "line": 426,
           "name": "Combine.rate_add_inv_card_lt_one_sub_delta",
           "namespace": "Combine",
           "short_name": "rate_add_inv_card_lt_one_sub_delta",
@@ -44905,7 +45511,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 436,
+          "line": 437,
           "name": "Combine.succ_lt_one_sub_delta_mul_card",
           "namespace": "Combine",
           "short_name": "succ_lt_one_sub_delta_mul_card",
@@ -44914,7 +45520,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 449,
+          "line": 450,
           "name": "Combine.exists_agreement_set_of_combine",
           "namespace": "Combine",
           "short_name": "exists_agreement_set_of_combine",
@@ -44923,11 +45529,29 @@
         {
           "doc": "Lemma 4.13 Let `dstar` be the target degree, `f\u2081,...,f_{m-1} : \u03b9 \u2192 F`, `0 < degs\u2081,...,degs_{m-1} < dstar` be degrees and `\u03b4 \u2208 (0, min{(1-BStar(\u03c1)), (1-\u03c1-1/|\u03b9|)})` be a distance parameter, then Pr_{r \u2190 F} [\u03b4\u1d63(Combine(dstar,r,(f\u2081,degs\u2081),...,(f\u2098,degs\u2098)))] > err' (dstar, \u03c1, \u03b4, m * (dstar + 1) - \u2211 i degs\u1d62)",
           "kind": "theorem",
-          "line": 551,
+          "line": 552,
           "name": "Combine.combine_theorem",
           "namespace": "Combine",
           "short_name": "combine_theorem",
           "signature": "theorem combine_theorem"
+        },
+        {
+          "doc": "Unconditional UDR-restricted variant of `combine_theorem` ([STIR] Lemma 4.13): with `\u03b4` below the unique-decoding radius, the conclusion holds with NO dependence on the sorried full-range keystone \u2014 it cites the PROVEN `RS_correlatedAgreement_curves_uniqueDecodingRegime` / `\u2026_k_zero` instead.",
+          "kind": "theorem",
+          "line": 741,
+          "name": "Combine.combine_theorem_uniqueDecodingRegime",
+          "namespace": "Combine",
+          "short_name": "combine_theorem_uniqueDecodingRegime",
+          "signature": "theorem combine_theorem_uniqueDecodingRegime [Nonempty \u03b9]"
+        },
+        {
+          "doc": "Clean single-hypothesis form of `combine_theorem_uniqueDecodingRegime`: below the unique-decoding radius, the `1 \u2212 \u221a\u03c1` bound follows from the regime-nesting comparison (`relativeUniqueDecodingRadius_lt_one_sub_sqrtRate`), so only the UDR bound and the rate-margin bound need to be assumed.",
+          "kind": "theorem",
+          "line": 977,
+          "name": "Combine.combine_theorem_uniqueDecodingRegime'",
+          "namespace": "Combine",
+          "short_name": "combine_theorem_uniqueDecodingRegime'",
+          "signature": "theorem combine_theorem_uniqueDecodingRegime' [Nonempty \u03b9]"
         }
       ]
     },
@@ -49017,8 +49641,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5322,
-      "files": 282
+      "declarations": 5390,
+      "files": 285
     }
   }
 }

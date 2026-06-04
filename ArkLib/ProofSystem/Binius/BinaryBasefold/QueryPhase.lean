@@ -198,6 +198,61 @@ theorem simulateQ_optionT_listVector_mmap (impl : QueryImpl spec n)
     intro t'
     rw [simulateQ_optionT_pure]
 
+/-! ### `simOracle2` oracle-statement (left-family) query collapse
+
+The query-phase `OracleVerifier.verify` body queries the *oracle statements* (via `queryCodeword`),
+i.e. the LEFT family `[T₁]ₒ` of the combined spec `oSpec + ([T₁]ₒ + [T₂]ₒ)` that `toVerifier` feeds
+to `simulateQ (OracleInterface.simOracle2 oSpec oStmt messages)`. The RingSwitching
+`Prelude.simulateQ_simOracle2_query` only collapses a *message* (right-family) query, so it does not
+apply here; we replicate the left-family analogue in-file rather than importing
+`RingSwitching.Prelude` (that would make `BinaryBasefold` depend on `RingSwitching`, an inappropriate
+cross-protocol import). These are protocol-agnostic and are candidates for upstreaming to
+`OracleReduction/OracleInterface.lean` (which owns `simOracle2`). -/
+section SimOracle2LeftQuery
+
+open OracleInterface
+
+variable {ι : Type} {oSpec : OracleSpec ι}
+  {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+  {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+
+/-- **`simOracle2` oracle-statement-query collapse (`OracleComp` form).** Simulating, via
+`simOracle2 oSpec t₁ t₂`, the lift into the combined spec `oSpec + ([T₁]ₒ + [T₂]ₒ)` of a single
+query to the *left* (oracle-statement) family `[T₁]ₒ` collapses to `pure` of that oracle's `answer`,
+with all queries routed to `t₁`. -/
+lemma simulateQ_simOracle2_leftQuery_oc (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i)
+    (qm : ([T₁]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM (([T₁]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _)
+      = (pure (OracleInterface.answer (t₁ qm.1) qm.2) : OracleComp oSpec _) := by
+  change simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM ((oSpec + ([T₁]ₒ + [T₂]ₒ)).query (Sum.inr (Sum.inl qm)))) = _
+  rw [simulateQ_spec_query]
+  -- `simOracle2` routes `inr (inl …)` to `(simOracle0 T₁ t₁).liftTarget`, i.e. `answer (t₁ …)`.
+  simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inr,
+    QueryImpl.liftTarget_apply]
+  change liftM (OracleInterface.simOracle0 T₁ t₁ qm) = _
+  simp only [OracleInterface.simOracle0]
+  rfl
+
+/-- **`simOracle2` oracle-statement-query collapse (`OptionT`-`query` form).** The same reduction as
+`simulateQ_simOracle2_leftQuery_oc`, phrased for the `query`/`monadLift` form that appears in an
+`OracleVerifier.verify` body that queries an oracle statement. This is the left-family counterpart of
+`RingSwitching.Prelude.simulateQ_simOracle2_query`, consumed by the query-phase verifier-run
+collapse. -/
+lemma simulateQ_simOracle2_leftQuery (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i)
+    (qm : ([T₁]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (query (spec := [T₁]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+      = (OptionT.lift (pure (OracleInterface.answer (t₁ qm.1) qm.2))
+          : OptionT (OracleComp oSpec) _) := by
+  rw [show (query (spec := [T₁]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+        = OptionT.lift (liftM (([T₁]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _) from rfl]
+  rw [simulateQ_optionT_lift, simulateQ_simOracle2_leftQuery_oc]
+  rfl
+
+end SimOracle2LeftQuery
+
 end ForInSupport
 
 /-!
@@ -315,6 +370,29 @@ def queryCodeword (j : Fin (toOutCodewordsCount ℓ ϑ (Fin.last ℓ)))
             (show
                 [OracleStatement 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ)]ₒ.Domain from
               ⟨⟨j, by omega⟩, point⟩)
+
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] hdiv in
+/-- **Per-query collapse for the query phase.** Simulating a single `queryCodeword`
+oracle-statement query under `simOracle2 []ₒ oStmt msgs` returns `OptionT.lift (pure …)` of the
+oracle statement evaluated at the query point. This holds definitionally: `queryCodeword jj point`
+is `query (spec := [OracleStatement …]ₒ) ⟨⟨jj, _⟩, point⟩`, and `simOracle2`'s left-family
+(oracle-statement) routing of `inr (inl …)` computes to `answer (oStmt jj) point = oStmt jj point`.
+This is the load-bearing per-query primitive for collapsing the query-phase verifier run; each
+`List.Vector.mmap` query body in `queryOracleVerifier.verify` reduces through it. -/
+lemma queryCodeword_collapse
+    (oStmt : ∀ j, OracleStatement 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
+    (msgs : ∀ j, (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Message j)
+    (jj : Fin (toOutCodewordsCount ℓ ϑ (Fin.last ℓ)))
+    (point : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨jj.val * ϑ, by
+        calc jj.val * ϑ < ℓ := toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ (Fin.last ℓ) jj
+          _ < r := by omega⟩) :
+    simulateQ (OracleInterface.simOracle2 ([]ₒ) oStmt msgs)
+      (liftM (queryCodeword 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) jj point)
+        : OptionT (OracleComp ([]ₒ
+            + ([OracleStatement 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ)]ₒ
+              + [(pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).Message]ₒ))) L)
+      = (OptionT.lift (pure (oStmt jj point)) : OptionT (OracleComp ([]ₒ)) L) := by
+  rfl
 
 section FinalQueryRoundIOR
 
@@ -596,20 +674,71 @@ noncomputable def queryKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
     -- `(List.Vector.ofFn id).mmap` of `2^ϑ` oracle queries and the `unless … do return false` exits
     -- rendered as `ForInStep.yield ⟨none, …⟩` / `ForInStep.done ⟨some false, …⟩`.
     simp only [queryOracleVerifier, simulateQ_optionT_bind] at hx
-    -- RESIDUAL (protocol-specific verifier-run collapse, NOT a missing primitive). The
-    -- `forIn`-with-early-exit support/transport theory this once lacked NOW EXISTS in the
-    -- `ForInSupport` section above: `simulateQ_optionT_forIn` pushes `simulateQ` through the nested
-    -- `forIn` (it IS the missing `simulateQ_forIn`), `simulateQ_optionT_listVector_mmap` collapses the
-    -- inner query `mmap`, `mem_support_forIn_cons` / `forIn_support_invariant` characterize the loop
-    -- support, and the per-query collapse `Prelude.simulateQ_simOracle2_query` turns each simulated
-    -- query into `pure (answer (oStmt …) point)`. What remains is the protocol-specific
-    -- `queryOracleVerifier_verify_collapse`: thread `simulateQ` through both loops + the `mmap`, run
-    -- `forIn_support_invariant` with the no-early-exit invariant `(MProd.fst = none)` to learn that
-    -- EVERY per-iteration `unless c_cur = f_i_val` (and the final `unless c_cur = c`) check held, then
-    -- align the loop's `f_i_on_fiber`/`c_cur`/`c_next` (`localized_fold_matrix_form`,
-    -- `extractMiddleFinMask`, `next_suffix_of_v` with their `Fin`/`Nat.joinBits` casts) with the goal
-    -- `proximityChecksSpec`'s identically-shaped terms. That alignment is heavy index/cast bookkeeping
-    -- specific to BaseFold, not loop plumbing; it is the remaining work and is left documented here.
+    -- GOAL REDUCTION (verified to land): the accept witness `hrel` collapses to `x = (true, _)`, the
+    -- last-round extractor is the identity on `()`, and `queryKStateProp` at `m = .last 1` (value `1`,
+    -- so the `m.val = 0` `dite` is false) is exactly `proximityChecksSpec` on the round-1 challenges.
+    obtain ⟨stmt1, oStmt⟩ := stmt
+    rw [acceptRejectOracleRel] at hrel
+    simp only [Set.mem_singleton_iff, Prod.mk.injEq] at hrel
+    obtain ⟨hx_eq, -⟩ := hrel
+    simp only [queryRbrExtractor]
+    unfold queryKStateProp
+    simp only [Fin.val_last, one_ne_zero, ↓reduceDIte]
+    -- ⊢ proximityChecksSpec 𝔽q β γ_repetitions
+    --     ((Transcript.equivMessagesChallenges tr).2 ⟨⟨0,_⟩,_⟩) oStmt
+    --     stmt1.challenges stmt1.final_constant
+    --
+    -- VERIFIED VERIFIER-RUN QUERY COLLAPSE (this whole `simp only` block compiles): push both
+    -- `simulateQ` layers through the doubly-nested `forIn` and the inner `2^ϑ`-query
+    -- `List.Vector.mmap`, collapsing EVERY oracle-statement query to `pure (oStmt …)` via the
+    -- in-file `queryCodeword_collapse` (a `rfl`). After this, `hx` is membership in the support of a
+    -- fully QUERY-FREE doubly-nested `forIn` over `StateT σ ProbComp`'s `OptionT` (no `unifSpec`
+    -- sampling, no `[]ₒ`/oracle-statement queries remain inside the loop bodies).
+    simp only [ForInSupport.simulateQ_optionT_forIn,
+      ForInSupport.simulateQ_optionT_listVector_mmap,
+      simulateQ_optionT_bind, ForInSupport.simulateQ_optionT_pure,
+      queryCodeword_collapse, simulateQ_optionT_lift, simulateQ_pure,
+      apply_ite, bind_pure_comp, map_pure, pure_bind] at hx
+    -- SHARPENED RESIDUAL (query plumbing DONE; what remains is transformer-stack support + the
+    -- no-early-exit invariant + the BaseFold cast alignment — NOT any missing query/loop primitive).
+    -- After the collapse above, `hx` reads (schematically):
+    --   (a, b) ∈ support (StateT.run ((·, oStmtOut) <$>
+    --     (do let r ← forIn (finRange γ) ⟨none,()⟩ (fun rep acc =>
+    --            do let r' ← forIn (finRange (ℓ/ϑ)) ⟨none,0⟩ (fun k c =>
+    --                 do let fib ← (ofFn id).mmap (fun u => OptionT.lift (pure (oStmt ⟨k,_⟩ …)));
+    --                    if k*ϑ>0 then (if c.snd = fib.get (extractMiddleFinMask …)
+    --                                   then pure (.yield ⟨none, localized_fold_matrix_form … fib.get⟩)
+    --                                   else pure (.done ⟨some false, c.snd⟩))
+    --                    else pure (.yield ⟨none, localized_fold_matrix_form … fib.get⟩));
+    --               simulateQ impl (simulateQ (simOracle2 …)
+    --                 (match r'.fst with | none => if r'.snd = final_constant then .yield ⟨none,()⟩
+    --                                              else .done ⟨some false,()⟩
+    --                                   | some a => .done ⟨some a,()⟩)));
+    --         simulateQ impl (simulateQ (simOracle2 …)
+    --           (match r.fst with | none => pure true | some a => pure a))) s)
+    -- THREE remaining steps, each substantial and INDEPENDENT of any query/loop-plumbing primitive
+    -- (those now all exist and fire — see the verified `simp` above):
+    --  (1) MATCH/STATE-T PUSH. The two residual `simulateQ impl (simulateQ (simOracle2 …) (match
+    --      acc.fst with …))` continuations are query-free (every branch is `pure`), but the inner
+    --      `simulateQ` still wraps an `Option`-matcher whose generated form does not unify with the
+    --      generic `Option.rec`/literal-`match` push lemmas (the verifier-body matcher is a distinct,
+    --      content-addressed matcher); pushing `simulateQ` through it, then collapsing
+    --      `simulateQ impl/simOracle2 (pure …) = pure …`, makes the loop body fully `pure`, so
+    --      `StateT.run (pure-everywhere forIn) s` has SINGLETON support `{(some computedVal, s)}`.
+    --      With `hab : a = some x` and `hx_eq : x = (true, _)`, this forces the loop's final
+    --      `match r.fst` to take the `none` branch, i.e. `r.fst = none` (no early exit).
+    --  (2) NO-EARLY-EXIT INVARIANT. Run `ForInSupport.forIn_support_invariant` (or the deterministic
+    --      `Id`-monad analogue, since the loop is now pure) with `Inv acc := acc.fst = none`: any
+    --      failed `unless` writes `done ⟨some false, _⟩` (fst = `some`), so `r.fst = none` forces
+    --      EVERY per-iteration `unless c_cur = f_i_val` and the final `unless c_cur = c` to have held.
+    --  (3) CAST ALIGNMENT (the heavy, BaseFold-specific remainder). Match the loop's `f_i_on_fiber`/
+    --      `c_cur`/`c_next` (`localized_fold_matrix_form`, `extractMiddleFinMask`, `next_suffix_of_v`,
+    --      with their `Fin`/`Nat.joinBits` casts) against the identically-shaped `proximityChecksSpec`
+    --      terms, reconciling the ONE-ITERATION SHIFT (verifier checks level `i` at the START of
+    --      iteration `i+ϑ`). Lemma 4.9 `iterated_fold_eq_matrix_form` + `localized_fold_eval_succ`/
+    --      `_zero` + `foldMatrixNat_succ_apply` (now proven in BinaryBasefold/Prelude) supply the
+    --      fold-semantics facts. This index/cast bookkeeping is the genuine remaining work; the query
+    --      and loop-transport plumbing it builds on is now compiled and in hand (above).
     sorry
 
 /-- Round-by-round knowledge soundness for the oracle verifier (query phase) -/
