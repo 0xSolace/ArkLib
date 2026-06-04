@@ -1025,6 +1025,19 @@ theorem finalSumcheckOracleReduction_perfectCompleteness {σ : Type}
   unfold OracleReduction.perfectCompleteness
   intro stmtIn witIn h_relIn
   simp only
+  -- HONEST STOP (residual — deep missing algebra, same class as the sibling
+  -- `RingSwitching.…finalSumcheck…_perfectCompleteness`'s `finalSumcheck_check_of_relIn`):
+  -- the honest run is deterministic (`pSpecFinalSumcheckStep` = one P→V message, no challenge); the
+  -- prover sends `c := witIn.f ⟨0,_⟩ = f^(ℓ)(0)` and the verifier checks
+  --   `stmtIn.sumcheck_target = eqTilde r r' * c`  (the `if` guard).
+  -- Discharging the guard requires the algebraic chain
+  --   relIn (roundRelation = masterKStateProp at `Fin.last ℓ`)  ⟹  sumcheck_target = eqTilde · c,
+  -- i.e. a `finalSumcheck_check_of_relIn`-analog tying `sumcheckConsistencyProp` + the
+  -- `witnessStructuralInvariant` (`wit.f = getMidCodewords … t`, `wit.H = projectToMidSumcheckPoly`)
+  -- to `f^(ℓ)(0) = t(r')` and the final `H_ℓ`-collapse `s_ℓ = eqTilde(r,r') · t(r')`. No such lemma
+  -- exists in-tree for BinaryBasefold (only the RingSwitching variant has the DP24 cube-0 algebra),
+  -- and relIn may hold via the bad-event disjunct alone (no `owc`), under which the honest `c` need
+  -- not pass the guard — so even the deterministic-run collapse cannot close without this algebra.
   sorry
 
 /-- RBR knowledge error for the final sumcheck step -/
@@ -1102,6 +1115,66 @@ def finalSumcheckKStateProp {m : Fin (1 + 1)} (tr : Transcript m (pSpecFinalSumc
 
     sumcheckFinalCheck ∧ finalFoldingProp -- local checks ∧ (oracleConsitency ∨ badEventExists)
 
+/-! ### Local `simulateQ`/`simOracle2` message-query collapse toolkit
+
+`Steps.lean` does not import the `RingSwitching` tree (where the analogous helpers live), so the
+three small `simulateQ` collapse lemmas needed by `finalSumcheckKnowledgeStateFunction.toFun_full`
+are replicated here from core VCVio primitives (`simulateQ_spec_query`, `simulateQ_optionT_lift`,
+`simulateQ_pure`). They are protocol-agnostic. -/
+section SimulateQCollapse
+
+open OracleInterface in
+/-- The `OracleInterface.simOracle2` collapse for a message (right-family) query, `OracleComp`
+form: simulating a query to the prover-message oracle answers with the message itself. -/
+private lemma simulateQ_simOracle2_messageQuery {ι : Type} {oSpec : OracleSpec ι}
+    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _)
+      = (pure (OracleInterface.answer (t₂ qm.1) qm.2) : OracleComp oSpec _) := by
+  change simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM ((oSpec + ([T₁]ₒ + [T₂]ₒ)).query (Sum.inr (Sum.inr qm)))) = _
+  rw [simulateQ_spec_query]
+  simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inr,
+    QueryImpl.liftTarget_apply]
+  change liftM (OracleInterface.simOracle0 T₂ t₂ qm) = _
+  simp only [OracleInterface.simOracle0]
+  rfl
+
+open OracleInterface in
+/-- `OptionT`/`query` form of `simulateQ_simOracle2_messageQuery`: the form appearing verbatim in an
+`OracleVerifier.verify` body. -/
+private lemma simulateQ_simOracle2_query {ι : Type} {oSpec : OracleSpec ι}
+    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+      = (OptionT.lift (pure (OracleInterface.answer (t₂ qm.1) qm.2))
+          : OptionT (OracleComp oSpec) _) := by
+  rw [show (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+        = OptionT.lift (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _) from rfl]
+  rw [simulateQ_optionT_lift, simulateQ_simOracle2_messageQuery]
+  rfl
+
+/-- The `instDefault` oracle answer is the message itself (`answer m () = m`). -/
+@[simp] private lemma answer_instDefault' {M : Type} (m : M) (q : Unit) :
+    @OracleInterface.answer M OracleInterface.instDefault m q = m := rfl
+
+/-- `simulateQ` commutes with `OptionT.pure`, for any target monad `n` (in particular
+`StateT σ ProbComp`, which the outer `impl` simulation maps into). -/
+@[simp] private theorem simulateQ_optionT_pure' {ιₐ : Type} {specₐ : OracleSpec ιₐ}
+    {n : Type → Type} [Monad n] [LawfulMonad n] {γ : Type}
+    (impl : QueryImpl specₐ n) (b : γ) :
+    simulateQ impl (pure b : OptionT (OracleComp specₐ) γ)
+      = (pure b : OptionT n γ) := by
+  rw [show (pure b : OptionT (OracleComp specₐ) γ) = OptionT.lift (pure b)
+        from (OptionT.lift_pure b).symm]
+  rw [simulateQ_optionT_lift, simulateQ_pure, OptionT.lift_pure]
+
+end SimulateQCollapse
+
 /-- The knowledge state function for the final sumcheck step -/
 noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
@@ -1118,8 +1191,60 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
   toFun_next := fun m hDir stmt tr msg witMid h => by
     -- Either bad events exist, or (oracleFoldingConsistency is true so
       -- the extractor can construct a satisfying witness)
-    sorry
+    obtain ⟨stmt, oStmt⟩ := stmt
+    fin_cases m
+    -- `m.succ = ⟨1, _⟩`: `h` is `finalSumcheckKStateProp 1 = sumcheckFinalCheck ∧ finalFoldingProp`.
+    -- `m.castSucc = ⟨0, _⟩`: goal is `finalSumcheckKStateProp 0 =
+    --   masterKStateProp (stmtIdx := oracleIdx := Fin.last ℓ) (localChecks := True)
+    --   = True ∧ (badEventExists ∨ oracleWitnessConsistency)`.
+    simp only [finalSumcheckKStateProp, masterKStateProp, true_and] at h ⊢
+    obtain ⟨_hSumcheckCheck, hFold⟩ := h
+    -- `hFold : finalNonDoomedFoldingProp · = oracleFoldingConsistency ∨ foldingBadEventExists`.
+    -- The `foldingBadEventExists` disjunct is exactly the `badEventExists` of the index-0
+    -- `masterKStateProp` (oracleIdx := Fin.last ℓ, challenges = stmt.challenges, modulo
+    -- `Fin.take_eq_self`).
+    rcases hFold with hOFC | hBad
+    · -- `oracleFoldingConsistency` branch: deriving `badEventExists ∨ oracleWitnessConsistency`
+      -- requires extraction soundness for the m=0 `extractMid` witness (`witnessStructuralInvariant`,
+      -- `sumcheckConsistency`, `firstOracleConsistency`), which is not available in-tree.
+      sorry
+    · -- `foldingBadEventExists` branch: route into `badEventExists` directly.
+      refine Or.inl ?_
+      simpa only [finalNonDoomedFoldingProp, Fin.take_eq_self] using hBad
   toFun_full := fun stmt tr witOut h => by
+    obtain ⟨stmt, oStmt⟩ := stmt
+    -- (1) PLUMBING (mechanical, lands): unfold the positive-probability hypothesis to a support
+    -- membership of the simulated verifier run, then collapse the single message-oracle query
+    -- (`c := tr ⟨0,_⟩`) via `simulateQ_simOracle2_query` + `answer_instDefault'`.
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, hrel⟩ := h
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    simp only [Verifier.run, OracleVerifier.toVerifier, finalSumcheckVerifier] at hx
+    -- Collapse the simOracle2 layer through the OptionT binds and the single message query.
+    simp only [simulateQ_optionT_bind, simulateQ_simOracle2_query, OptionT.lift_pure, pure_bind,
+      answer_instDefault', FullTranscript.messages, apply_ite, simulateQ_optionT_pure'] at hx
+    -- After this, `hx` (verified via `pp.all`) reads:
+    --   ∃ x₁ ∈ support (StateT.run ((fun a => (a, oStmtOut)) <$>
+    --     (do let a ← simulateQ impl (pure (tr ⟨0,_⟩));   -- the message value `c`
+    --         if stmt.sumcheck_target = eqTilde stmt.ctx.t_eval_point stmt.challenges * a
+    --         then pure { …, final_constant := a }        -- accept: stmtOut carries `c`
+    --         else pure { 0,0,0,0 })) s), x₁.1 = some x
+    -- HONEST STOP (residual #1 — `simulateQ`/cast unpacking explodes): the inner
+    -- `simulateQ impl (pure (tr ⟨0,_⟩))` resists every `simulateQ_pure`/`simulateQ_optionT_pure'`
+    -- rewrite because the message term `tr ⟨0,_⟩` is wrapped in the opaque `pSpecFinalSumcheckStep`
+    -- message-index cast machinery (`OracleSpec.Range`/`Sigma (MessageIdx …)`), the same
+    -- "BaseFold cast alignment" wall noted in `QueryPhase.queryKnowledgeStateFunction.toFun_full`.
+    -- HONEST STOP (residual #2 — genuine math obstruction in the reject branch): even with the
+    -- plumbing finished, the `else` (reject) branch outputs the dummy `stmtOut = {0,0,0,0}`. From
+    -- `hrel : (dummy, ()) ∈ finalSumcheckRelOut` one cannot reconstruct the goal's
+    -- `finalSumcheckKStateProp 1` on the *real* `stmt`, since its `sumcheckFinalCheck`
+    -- (`stmt.sumcheck_target = eqTilde · * c`) is exactly the verifier check that FAILED in this
+    -- branch. Closing it requires proving the dummy `{0,0,0,0}` is not in `finalSumcheckRelOut`
+    -- (i.e. `¬ finalNonDoomedFoldingProp ({0,0,0,0}, oStmt)`), which is NOT true in general (zero
+    -- challenges can trigger the bad-event disjunct). This is the same unsolved `if`-branch case
+    -- split flagged in the sibling `RingSwitching.…finalSumcheck…toFun_full` (left open there too).
     sorry
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/
