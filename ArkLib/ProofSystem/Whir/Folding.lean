@@ -6,6 +6,7 @@ Authors: Poulami Das, Miguel Quaresma (Least Authority), Alexander Hicks
 
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.MvPolynomial.LinearMvExtension
+import ArkLib.Data.Polynomial.SplitFold
 import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement
 
@@ -105,10 +106,67 @@ noncomputable def fold_k_set
 section FoldingLemmas
 
 open MutualCorrAgreement Generator LinearMvExtension ListDecodable
-     NNReal ReedSolomon ProbabilityTheory
+     NNReal ReedSolomon ProbabilityTheory Polynomial
 
 variable {F : Type} [Field F] [DecidableEq F]
          {ι : Type} [Pow ι ℕ]
+
+/-! ### Fold bridge to univariate `foldNth`
+
+The functions `extract_x`/`foldf` implement the WHIR 2-to-1 even/odd fold over the
+`indexPowT` square-root tower. The lemmas below bridge them to the axiom-clean univariate
+algebra of `Polynomial.foldNth 2` (`SplitFold.lean`), so that a folded smooth codeword can be
+tracked through `decodeLT`/`mVdecode`.
+
+The `Neg (indexPowT S φ k)` instance carried by `foldf` is, in this file's loose setting,
+an **abstract** typeclass parameter with no law connecting `(-x).val` to `-(x.val)` in `F`
+(`git grep` confirms no `Neg` instance and no negation law for `indexPowT` anywhere in ArkLib).
+The bridge therefore takes that law (`hneg`) as an explicit hypothesis, exactly mirroring the
+documented statement repairs on the sibling lemmas in `BlockRelDistance.lean`
+(`relHammingDist_le_blockRelDistance` etc.), which thread `hφ' : ∀ x, φ' x = x.val` and the
+2-adic cardinality relation as hypotheses because the file's `indexPowT` data does not pin them.
+-/
+
+omit [DecidableEq F] [Pow ι ℕ] in
+/-- The square-root relation realized by `extract_x`: the value of `y ∈ indexPowT S φ (k+1)`
+is the square of the value of its extracted root `extract_x S φ k y ∈ indexPowT S φ k`.
+Direct from `extract_x`'s definition (`z = (φ x)^(2^k)`) and `Classical.choose_spec`
+(`y.val = (φ x)^(2^(k+1))`), since `(2^(k+1)) = 2^k * 2`. -/
+lemma extract_x_val_sq {S : Finset ι} {φ : ι ↪ F} (k : ℕ) (y : indexPowT S φ (k + 1)) :
+    y.val = ((extract_x S φ k y).val) ^ 2 := by
+  have hspec := Classical.choose_spec y.property
+  -- `hspec.2 : y.val = (φ (choose ..)) ^ (2 ^ (k+1))`
+  show y.val = ((φ (Classical.choose y.property)) ^ (2 ^ k)) ^ 2
+  rw [← pow_mul, ← pow_succ]
+  exact hspec.2
+
+omit [DecidableEq F] [Pow ι ℕ] in
+/-- **Fold bridge** (core algebraic identity). For a univariate polynomial `p` and the
+"decoded" function `g x := p.eval x.val`, the WHIR fold value `foldf S φ y g α` coincides
+with the univariate fold `(foldNth 2 p α).eval y.val`.
+
+Hypotheses (all forced by the smooth-domain setting but not by the file's loose `indexPowT`):
+* `hneg`: the abstract negation agrees with field negation on the extracted root,
+  `(-(extract_x S φ k y)).val = -((extract_x S φ k y)).val`;
+* `hx0`: the extracted root is nonzero in `F` (smooth domains avoid `0`);
+* `h2`: `(2 : F) ≠ 0` (the field has odd characteristic, as for FRI/WHIR).
+
+Proof: rewrite `g` at the two query points via `hneg`, apply `foldNth_two_eval` at
+`x := (extract_x ..).val` (using `extract_x_val_sq` for `y.val = x^2`), and check the two
+algebraic forms agree by `field_simp`. -/
+lemma foldf_eq_foldNth_eval {S : Finset ι} {φ : ι ↪ F} {k : ℕ} [Neg (indexPowT S φ k)]
+    (y : indexPowT S φ (k + 1)) (p : F[X]) (α : F)
+    (hneg : (-(extract_x S φ k y)).val = -((extract_x S φ k y).val))
+    (hx0 : (extract_x S φ k y).val ≠ 0) (h2 : (2 : F) ≠ 0) :
+    foldf S φ y (fun x : indexPowT S φ k => p.eval x.val) α
+      = (foldNth 2 p α).eval y.val := by
+  set x : F := (extract_x S φ k y).val with hx
+  unfold foldf
+  simp only []
+  rw [hneg]
+  rw [extract_x_val_sq k y, ← hx]
+  rw [foldNth_two_eval p x α hx0 h2]
+  field_simp
 
 /-- Claim 4.15 part 1
   Let `f : ι → F`, `α ∈ Fᵏ` is the folding randomness, and let `g : (ι^(2ᵏ) → F) = fold_k(f,α)`

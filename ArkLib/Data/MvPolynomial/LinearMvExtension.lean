@@ -102,6 +102,55 @@ def partialEval {k : ℕ} (f : MvPolynomial (Fin m) F) (α : Fin k → F) (h : k
       X j'
   eval₂ C φ f
 
+/-- The assignment realized by evaluating a `partialEval`'d polynomial at `β`: the first `k`
+coordinates come from the substituted vector `α`, the remaining `m - k` from `β` (reindexed).
+This is the explicit `Fin m → F` point that `partialEval_eval` collapses to. -/
+def partialEvalAssignment {k : ℕ} (α : Fin k → F) (β : Fin (m - k) → F) (h : k ≤ m) :
+    Fin m → F :=
+  fun i => if h' : i.val < k then α ⟨i.val, h'⟩ else β ⟨i.val - k, by omega⟩
+
+/-- Master evaluation lemma for `partialEval`: evaluating the partially-evaluated polynomial
+at a residual point `β : Fin (m - k) → F` equals evaluating the original polynomial at the
+combined assignment that uses `α` on the first `k` coordinates and `β` on the rest.
+
+This is the workhorse that bridges `partialEval` to pointwise evaluation; every other
+`partialEval` characterization in this file is derived from it. Proven by `eval_eval₂`:
+`eval β (eval₂ C φ f) = eval₂ ((eval β).comp C) (fun i => eval β (φ i)) f`, where
+`(eval β).comp C = RingHom.id` and `eval β (φ i)` is exactly the combined assignment. -/
+lemma partialEval_eval {k : ℕ} (f : MvPolynomial (Fin m) F) (α : Fin k → F)
+    (β : Fin (m - k) → F) (h : k ≤ m) :
+    MvPolynomial.eval β (partialEval f α h)
+      = MvPolynomial.eval (partialEvalAssignment α β h) f := by
+  unfold partialEval
+  rw [eval_eval₂]
+  have hC : ((MvPolynomial.eval β).comp (C : F →+* MvPolynomial (Fin (m - k)) F))
+      = RingHom.id F := by
+    ext a; simp
+  rw [hC, eval₂_id]
+  have hfun : (fun s : Fin m => MvPolynomial.eval β
+        (if h' : s.val < k then C (α ⟨s.val, h'⟩)
+         else X (⟨s.val - k, by omega⟩ : Fin (m - k))))
+      = partialEvalAssignment α β h := by
+    funext i
+    unfold partialEvalAssignment
+    by_cases h' : i.val < k <;> simp [h']
+  rw [hfun]
+
+/-- `partialEval` at the empty challenge vector (`k = 0`) is the identity on evaluations:
+since no variable is substituted, the residual assignment is `β` itself reindexed.
+Here `partialEvalAssignment α β (h : 0 ≤ m)` reindexes `β : Fin (m - 0) → F` to `Fin m → F`. -/
+lemma partialEval_eval_zero {f : MvPolynomial (Fin m) F} (α : Fin 0 → F)
+    (β : Fin (m - 0) → F) (h : 0 ≤ m) :
+    MvPolynomial.eval β (partialEval f α h)
+      = MvPolynomial.eval (fun i : Fin m => β ⟨i.val, by omega⟩) f := by
+  rw [partialEval_eval]
+  have hfun : partialEvalAssignment α β h
+      = (fun i : Fin m => β ⟨i.val, by omega⟩) := by
+    funext i
+    simp only [partialEvalAssignment, Nat.not_lt_zero, dif_neg, not_false_eq_true,
+      Nat.sub_zero]
+  rw [hfun]
+
 /-- The Semiring morphism that maps m-variate polynomials onto univariate
     polynomials by evaluating them at `(X^(2⁰), ... , X^(2ᵐ⁻¹))`, i.e. sending
     `aₑ X₀^σ(0) ⬝ ⋯ ⬝ Xₘ₋₁^σ(m-1) →  aₑ (X^(2⁰))^σ(0) ⬝ ⋯ ⬝ (X^(2ᵐ⁻¹))^σ(m-1)`
