@@ -15968,11 +15968,20 @@
         {
           "doc": "**ABF26 Theorem 4.21 [GG25 Thm 3.5].** If `C` is `(\u03b4, a, n+1)`-line-decodable, then its mutual correlated agreement error is bounded by `a / |F|`: `LineDecodable (F := F) C \u03b4 a (n+1) \u2192 \u03b5_mca(C, \u03b4) \u2264 a / |F|` where `n = |\u03b9|`. The proof in [GG25] proceeds by taking the line-decoder's witness pair `(u\u2081, u\u2082)` and showing that the `\u0394_S = 0` witness set of the MCA event must coincide with the `\u03b3`-set on which `U \u03b3 = u\u2081 + \u03b3 \u2022 u\u2082`, which has measure `\u2265 (n+1)/|F|`. Because that pair has at most `n` exceptional positions on every fold, the alignment lifts to a joint-pair witness, contradicting the `\u00ac pa",
           "kind": "theorem",
-          "line": 102,
+          "line": 122,
           "name": "CodingTheory.lineDecodable_imp_epsMCA_le",
           "namespace": "CodingTheory",
           "short_name": "lineDecodable_imp_epsMCA_le",
           "signature": "theorem lineDecodable_imp_epsMCA_le"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 128,
+          "name": "CodingTheory._anon_class_128",
+          "namespace": "CodingTheory",
+          "short_name": "_anon_class_128",
+          "signature": "class classical"
         }
       ]
     },
@@ -48498,7 +48507,7 @@
         {
           "doc": "**Lemma 6.12 of [ABF26]** (list-decoding lower bound on the simplified IOR). Coding-theory form: if `|F| > binomial(|\u039b(C^{\u22612}, \u03b4)|, 2)`, then there exist witnesses `(v, \u03bc_1, \u03bc_2, f_1, f_2)` with `(f_1, f_2)` lying outside the relaxed relation `R\u0303_{C,\u03b4}^2`, for which the winning challenge set `\u03a9^{f_1,f_2}_{v,\u03bc_1,\u03bc_2}` (Definition 6.11) has at least `|\u039b(C^{\u22612}, \u03b4)| \u00b7 |F| / (|F| + |\u039b(C^{\u22612}, \u03b4)| - 1)` elements. The protocol-level reading: the soundness error of the simplified IOR `T'[C, t]` (Construction 6.9, `ToyProblem.SimplifiedIOR.reduction`) is at least `|\u039b(C^{\u22612}, \u03b4)| / (|F| + |\u039b(C^{\u22612}, \u03b4)",
           "kind": "theorem",
-          "line": 314,
+          "line": 335,
           "name": "ToyProblem.simplified_iop_soundness_listDecoding_lb",
           "namespace": "ToyProblem",
           "short_name": "simplified_iop_soundness_listDecoding_lb",
@@ -48507,7 +48516,7 @@
         {
           "doc": "**Lemma 6.13 of [ABF26]** (correlated-agreement lower bound on the simplified IOR). Coding-theory form: there exist `(v, \u03bc_1, \u03bc_2, f_1, f_2)` with `(f_1, f_2)` outside the relaxed relation `R\u0303_{C,\u03b4}^2` whose winning challenge set has size at least `\u03b5_ca(C, \u03b4) \u00b7 |F|`. Protocol-level reading: the soundness error of the simplified IOR `T'[C, t]` (Construction 6.9) is at least `\u03b5_ca(C, \u03b4)`. Proof sketch: take `f_1, f_2` maximising the CA error; then `f_1 + \u03b3\u00b7f_2` is `\u03b4`-close to `C` precisely on a set `S` of size `\u03b5_ca \u00b7 |F|`, and `S` is contained in the winning set `\u03a9^{f_1,f_2}_{0^k, 0, 0}` of De",
           "kind": "theorem",
-          "line": 372,
+          "line": 391,
           "name": "ToyProblem.simplified_iop_soundness_ca_lb",
           "namespace": "ToyProblem",
           "short_name": "simplified_iop_soundness_ca_lb",
@@ -48516,10 +48525,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 381,
-          "name": "ToyProblem._anon_class_381",
+          "line": 400,
+          "name": "ToyProblem._anon_class_400",
           "namespace": "ToyProblem",
-          "short_name": "_anon_class_381",
+          "short_name": "_anon_class_400",
           "signature": "class classical"
         }
       ]
@@ -50459,7 +50468,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5480,
+      "declarations": 5481,
       "files": 287
     }
   }
