@@ -357,11 +357,50 @@ def outputRelation :
 
 variable {ι : Type} (oSpec : OracleSpec ι)
 
+/-- The oracle prover for `sendClaim`. It reads the honest oracle polynomial `p` (index `()`), sends
+it as the protocol message, and outputs the carried target together with both oracles `(p, q)`
+(indexed by `Unit ⊕ Unit`, with `q` the just-sent message). Direct construction (mirrors
+`SendClaim.oracleProver`, adapted to the carried-`R` statement). -/
+def sendClaim.oracleProver : OracleProver oSpec
+    (StmtIn R) (OStmtIn R deg) Unit
+    (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) Unit ⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ where
+  PrvState
+  | 0 => StmtIn R × R⦃≤ deg⦄[X]
+  | 1 => StmtIn R × R⦃≤ deg⦄[X]
+  input := fun ⟨⟨target, oStmt⟩, _⟩ => (target, oStmt ())
+  sendMessage | ⟨0, _⟩ => fun ⟨target, p⟩ => pure (p, (target, p))
+  receiveChallenge | ⟨0, h⟩ => nomatch h
+  output := fun ⟨target, p⟩ => pure
+    ((target, fun x => match x with | .inl _ => p | .inr _ => p), ())
+
+/-- The oracle verifier for `sendClaim`: it carries the input target `a` as the output statement and
+performs no oracle checks. The output oracles are the input oracle `p` (index `inl ()`, `embed` to
+`Sum.inl ()`) and the prover's message `q` (index `inr ()`, `embed` to `Sum.inr ⟨0, _⟩`). -/
+def sendClaim.oracleVerifier : OracleVerifier oSpec
+    (StmtIn R) (OStmtIn R deg)
+    (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) ⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ where
+  verify := fun target _ => pure target
+  embed := {
+    toFun := fun
+      | .inl _ => .inl ()
+      | .inr _ => .inr ⟨0, by simp⟩
+    inj' := by
+      intro a b h
+      match a, b with
+      | .inl _, .inl _ => rfl
+      | .inl _, .inr _ => simp at h
+      | .inr _, .inl _ => simp at h
+      | .inr _, .inr _ => rfl }
+  hEq := by
+    intro i
+    match i with
+    | .inl _ => rfl
+    | .inr _ => rfl
+
 def oracleReduction.sendClaim : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit
-    (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) Unit ⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ := sorry
-  -- by
-  -- refine SendClaim.oracleReduction oSpec (StmtIn R) (OStmtIn R deg) ?_
-  -- (SendClaim.oracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit)
+    (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) Unit ⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ where
+  prover := sendClaim.oracleProver R deg oSpec
+  verifier := sendClaim.oracleVerifier R deg oSpec
 
 /-- The `CheckClaim` predicate for sum-check: query the *claimed* polynomial `q` (oracle index
 `inr ()`) at every evaluation point in `univ.map D`, sum the responses, and check that the sum
