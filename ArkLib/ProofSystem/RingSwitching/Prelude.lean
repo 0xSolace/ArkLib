@@ -788,7 +788,8 @@ lemma check_rows_sum_eq_aeval (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l :
     (∑ v : Fin κ₀ → Fin 2,
         eqTilde (fun i => (if v i == 1 then (1 : L₀) else 0)) (fun i => r ⟨i.val, by omega⟩)
           * decompose_tensor_algebra_rows (L := L₀) (K := K₀) (β := β)
-              (embedded_MLP_eval κ₀ L₀ K₀ ℓ ℓ' h_l (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) v)
+              (embedded_MLP_eval κ₀ L₀ K₀ (binaryTowerProfile κ₀ K₀ L₀ β) ℓ ℓ' h_l
+                (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) v)
       = (MvPolynomial.aeval r) t.val := by
   subst h_l
   rw [aeval_eq_sum_eqTilde]
@@ -842,8 +843,9 @@ equals `t(r) = aeval r t`. This is the soundness/completeness pivot for the batc
 lemma performCheckOriginalEvaluation_packMLE_iff (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
     (h_l : ℓ = ℓ' + κ₀) (β : Basis (Fin κ₀ → Fin 2) K₀ L₀) (s : L₀)
     (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀) :
-    performCheckOriginalEvaluation κ₀ L₀ K₀ β ℓ ℓ' h_l s r
-        (embedded_MLP_eval κ₀ L₀ K₀ ℓ ℓ' h_l (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) = true
+    performCheckOriginalEvaluation κ₀ L₀ K₀ (binaryTowerProfile κ₀ K₀ L₀ β) ℓ ℓ' h_l s r
+        (embedded_MLP_eval κ₀ L₀ K₀ (binaryTowerProfile κ₀ K₀ L₀ β) ℓ ℓ' h_l
+          (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) = true
       ↔ s = (MvPolynomial.aeval r) t.val := by
   unfold performCheckOriginalEvaluation
   simp only [decide_eq_true_eq]
