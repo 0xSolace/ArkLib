@@ -11376,6 +11376,24 @@
           "namespace": "ProximityGap",
           "short_name": "_anon_class_253",
           "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 349,
+          "name": "ProximityGap.RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun",
+          "namespace": "ProximityGap",
+          "short_name": "RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun",
+          "signature": "theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 365,
+          "name": "ProximityGap._anon_class_365",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_365",
+          "signature": "class classical"
         }
       ]
     },
@@ -49237,7 +49255,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5346,
+      "declarations": 5348,
       "files": 283
     }
   }
