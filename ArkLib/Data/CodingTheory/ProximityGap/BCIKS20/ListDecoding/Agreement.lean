@@ -24,6 +24,7 @@ variable {m : ℕ} (k : ℕ) {δ : ℚ} {x₀ : F} {u₀ u₁ : Fin n → F} {Q 
 
 open Trivariate in
 open Bivariate in
+omit [DecidableEq (RatFunc F)] in
 /-- Claim 5.7 of [BCIKS20]. -/
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
