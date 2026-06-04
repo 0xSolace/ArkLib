@@ -205,3 +205,4 @@ import ArkLib.ToMathlib.List.Basic
 import ArkLib.ToMathlib.Polynomial.DegreeLT
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import ArkLib.ToMathlib.Polynomial.NatDegreeOfSum
+import ArkLib.ToVCVio.SimulateQ

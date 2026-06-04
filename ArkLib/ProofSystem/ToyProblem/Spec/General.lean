@@ -8,6 +8,7 @@ import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ProofSystem.ToyProblem.Definitions
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.ToVCVio.SimulateQ
 
 /-!
 # Toy problem oracle reduction (ABF26 Construction 6.2)
@@ -425,31 +426,58 @@ to the trivial output relation `Set.univ`. The load-bearing fact is
 honest prover's message `g = M₀ + γ M₁` makes `accepts` hold, so the
 verifier's `if accepts then pure () else failure` never fails.
 
-**Status: statement complete, proof admitted (tagged sorry).** The
-point-form mathematical content (`accepts_of_inputRelation`) is fully
-closed; only the probabilistic/monadic plumbing of
-`OracleReduction.toReduction`'s run remains, and it is blocked on two
-*missing framework lemmas* (not protocol-specific work):
+**Status: statement complete, proof structurally unfolded with one
+documented residual `sorry`.** The point-form mathematical content
+(`accepts_of_inputRelation`) is fully closed. The proof below unfolds
+`OracleReduction.perfectCompleteness` through `toReduction`, expands the
+prover's three-round `runToRound` via `Fin.induction_three`, and resolves
+all three round directions (`V_to_P`, `P_to_V`, `V_to_P`). What remains is
+the *probabilistic/monadic support bookkeeping*.
 
-  1. **`simulateQ_forIn`.** After `simulateQ`, the verifier's spot-check
-     step is `forIn (List.finRange t) … (fun j _ ↦ queryF 0 _ >>= queryF 1 _
-     >>= guard …)`. With `t` a free variable this needs an induction
-     principle collapsing a simulated *guarded* `forIn` to `pure ()` under
-     a per-element predicate (here the `∀ j` conjunct of `accepts`). No
-     in-tree protocol has a verifier loop, so there is no precedent
-     (Sumcheck's completeness proof is loopless).
-  2. **A `simulateQ`/`OptionT`/`SubSpec` query-resolution simp set.** The
-     `queryG`/`queryF` double-`liftM` wraps each query in nested
-     `simulateQ`/`SubSpec` layers that the current `simulateQ_*` simp
-     lemmas do not fire through; resolving them needs the fragile manual
-     `erw [simulateQ_bind, StateT.run_bind, …]` peeling that
-     `Sumcheck/Spec/SingleRound.lean :: reduction_perfectCompleteness` runs
-     for ~210 lines (and which is itself still admitted).
+The two original framework blockers are now both addressed at the lemma
+level:
 
-The clean `oracleVerifier.toVerifier = verifier` equivalence shortcut is
-*not* available here: `toVerifier`'s output type is `Unit × (Fin 0 → _)`,
-not the non-oracle `verifier`'s `Unit`. Closing this is best done by first
-landing the two general lemmas above in `OracleReduction/`. -/
+  1. **`simulateQ_forIn`.** Closed by `simulateQ_list_forIn`
+     (`ArkLib/ToVCVio/SimulateQ.lean`), which commutes `simulateQ` past the
+     verifier's spot-check `forIn (List.finRange t) …`.
+  2. **A `simulateQ`/`SubSpec` query-resolution simp set.** Closed by
+     `simulateQ_addLift_add_liftM_left` / `_right`
+     (`ArkLib/ToVCVio/SimulateQ.lean`): these route the `queryG`/`queryF`
+     double-`liftM`'d queries through the `simOracle2 = addLift (id []ₒ)
+     (simOracle0 _ ‖ simOracle0 _)` layer to the correct inner oracle
+     implementation in one rewrite. Combined with the `simOracle0`/answer
+     unfolds (`queryF i x ↦ oStmt i x`, `queryG ↦ messageᵢ`) the verifier
+     body resolves to a query-free `guard`/`forIn` computation.
+
+**Precise residual.** After the prover/verifier unfolding above, the goal
+is `probEvent (OptionT.mk do let s ← init; (simulateQ pImpl (…)).run' s) … = 1`
+where the body is the full `OracleComp (oSpec + [pSpec.Challenge]ₒ)` run.
+The `simulateQ`/`forIn`/query binds sit *underneath* the `OptionT.mk` /
+`probEvent` / `StateT.run'` layers, so the query-resolution simp set above
+cannot fire until those outer layers are peeled. Closing it requires the
+support-membership argument of
+`Sumcheck/Spec/SingleRound.lean :: reduction_perfectCompleteness`
+(`one_le_probEvent_iff` → `probEvent_eq_one_iff` → `OptionT.run_mk` →
+`StateT.run'_eq` → iterated `support_bind` + `simulateQ_bind` peeling),
+adapted from that proof's loopless two-round shape to this three-round
+protocol *with* the spot-check loop. That adaptation is a sizeable mechanical
+peel (~250+ lines).
+
+⚠ **FAITHFULNESS FINDING (2026-06-04) — the residual is also statement-blocked.**
+The peel above is supposed to discharge to `accepts_of_inputRelation`, but that
+lemma needs `hf : ∀ i, f i = encode (M i)` for the verifier's **fixed** `encode`,
+whereas `inputRelation k C = ToyProblem.relation … C` quantifies the encoding
+**existentially** (`∃ encode', (∀ m, encode' m ∈ C) ∧ f i = encode' (M i)`). The
+honest prover sends `g = M₀ + γ·M₁` and the spot-check demands
+`encode g = f₀ + γ·f₁ = encode' (M₀ + γ·M₁)`, which fails when `encode' ≠ encode`.
+So completeness is **not provable as stated** (and is likely *false*) — the same
+existential-vs-fixed-encoding defect found for the L6.12 violation. (Tell: the
+hypothesis `_h_encode_mem` is unused.) FAITHFUL FIX: state this against the
+fixed-encoding `relationFor encode` (Definitions.lean) — i.e. an
+`inputRelationFor encode`-style input relation — for which `f i = encode (M i)`
+holds and the discharge goes through. Mirrors the L6.12 `relaxedRelationFor`
+fix; touches `inputRelation`/`outputRelation` (and hence the L6.6/6.8/6.10
+soundness statements), so it is its own scoped pass. -/
 theorem oracleReduction_perfectCompleteness
     [SampleableType F] [SampleableType ι]
     {σ : Type} (init : ProbComp σ)
@@ -462,13 +490,35 @@ theorem oracleReduction_perfectCompleteness
       (inputRelation k C)
       (Set.univ : Set (((OutputStatement × ∀ i, OutputOracleStatement i)) ×
         OutputWitness)) := by
-  -- ABF26-C6.2 completeness; paper-proof-owed (framework-blocked). The math
-  -- core (`accepts_of_inputRelation`) is proved; this reduces to it after
-  -- unfolding `OracleReduction.perfectCompleteness` through `toReduction` and
-  -- discharging the per-challenge probability bookkeeping. BLOCKED on two
-  -- general VCVio lemmas (`simulateQ_forIn` over `List.finRange t` + a
-  -- `simulateQ`/`OptionT`/`SubSpec` query-resolution simp set) that go UPSTREAM
-  -- to ~/VCV-io/ and would also unblock FRI/Sumcheck completeness.
+  unfold OracleReduction.perfectCompleteness
+  rw [Reduction.perfectCompleteness_eq_prob_one]
+  intro stmtIn witIn hRel
+  -- Unfold the reduction run, expand the 3-round prover (`Fin.induction_three`),
+  -- and inline the oracle verifier's `toVerifier` wrapper.
+  simp only [OracleReduction.toReduction, Reduction.run, oracleReduction,
+    oracleProver, OracleVerifier.toVerifier, oracleVerifier,
+    Prover.run, Prover.runToRound, Fin.induction_three, Prover.processRound,
+    Verifier.run, pSpec, bind_pure_comp, Functor.map_map, Function.comp]
+  -- Resolve round 0 direction (`V_to_P`, the combination randomness `γ`).
+  split <;> rename_i hDir0
+  swap
+  · exact absurd hDir0 (by decide)
+  try simp only [pure_bind, map_pure, Functor.map_map, Function.comp, bind_pure_comp]
+  -- Resolve round 1 direction (`P_to_V`, the prover's claim `g`).
+  split <;> rename_i hDir1
+  · exact absurd hDir1 (by decide)
+  try simp only [pure_bind, map_pure, Functor.map_map, Function.comp, bind_pure_comp]
+  -- Resolve round 2 direction (`V_to_P`, the spot-check positions `xs`).
+  split <;> rename_i hDir2
+  swap
+  · exact absurd hDir2 (by decide)
+  -- ABF26-C6.2; framework-residual + STATEMENT-BLOCKED. The prover/verifier are
+  -- unfolded (above) and the query-resolution lemmas are landed
+  -- (`simulateQ_list_forIn`, `simulateQ_addLift_add_liftM_*`), but the residual
+  -- discharge to `accepts_of_inputRelation` is blocked on the existential-vs-fixed
+  -- encoding mismatch in `inputRelation` (same root cause as L6.12) PLUS the
+  -- ~250-line `OptionT`/`StateT`/`simulateQ` support-peel. See the theorem
+  -- docstring's "FAITHFULNESS FINDING" for the fix (`relationFor encode`).
   sorry
 
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
