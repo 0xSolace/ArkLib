@@ -11407,16 +11407,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 365,
-          "name": "ProximityGap._anon_class_365",
+          "line": 366,
+          "name": "ProximityGap._anon_class_366",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_365",
+          "short_name": "_anon_class_366",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 412,
+          "line": 413,
           "name": "ProximityGap.RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt",
           "namespace": "ProximityGap",
           "short_name": "RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt",
@@ -11425,52 +11425,52 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 429,
-          "name": "ProximityGap._anon_class_429",
+          "line": 431,
+          "name": "ProximityGap._anon_class_431",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_429",
+          "short_name": "_anon_class_431",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 449,
-          "name": "ProximityGap._anon_class_449",
+          "line": 451,
+          "name": "ProximityGap._anon_class_451",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_449",
+          "short_name": "_anon_class_451",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 556,
-          "name": "ProximityGap._anon_class_556",
+          "line": 559,
+          "name": "ProximityGap._anon_class_559",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_556",
+          "short_name": "_anon_class_559",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 574,
-          "name": "ProximityGap._anon_class_574",
+          "line": 577,
+          "name": "ProximityGap._anon_class_577",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_574",
+          "short_name": "_anon_class_577",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 618,
-          "name": "ProximityGap._anon_class_618",
+          "line": 621,
+          "name": "ProximityGap._anon_class_621",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_618",
+          "short_name": "_anon_class_621",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 674,
+          "line": 677,
           "name": "ProximityGap.card_RS_goodCoeffsCurve_gt_of_prob_gt_kn_div_q",
           "namespace": "ProximityGap",
           "short_name": "card_RS_goodCoeffsCurve_gt_of_prob_gt_kn_div_q",
@@ -11479,19 +11479,19 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 680,
-          "name": "ProximityGap._anon_class_680",
+          "line": 685,
+          "name": "ProximityGap._anon_class_685",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_680",
+          "short_name": "_anon_class_685",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 688,
-          "name": "ProximityGap._anon_class_688",
+          "line": 693,
+          "name": "ProximityGap._anon_class_693",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_688",
+          "short_name": "_anon_class_693",
           "signature": "class classical"
         }
       ]
