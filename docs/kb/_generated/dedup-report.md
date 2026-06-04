@@ -697,7 +697,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `decoder` (2 declarations, 2 files)
 
 - `def BerlekampWelch.decoder` [ArkLib/Data/CodingTheory/BerlekampWelch/BerlekampWelch.lean:52](../../../ArkLib/Data/CodingTheory/BerlekampWelch/BerlekampWelch.lean#L52) — Berlekamp-Welch decoder for Reed-Solomon codes. Given received codeword evaluations with potential e
-- `def GuruswamiSudan.decoder` [ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean:98](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean#L98) — Guruswami-Sudan decoder.  Returns all roots of the GS interpolation polynomial whose evaluation is w
+- `opaque GuruswamiSudan.decoder` [ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean:75](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean#L75) — Specification-level Guruswami-Sudan decoder.
 
 ### `domain_implies_char_ne_2` (2 declarations, 2 files)
 
@@ -736,12 +736,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `guruswami_sudan_for_proximity_gap_existence` (2 declarations, 2 files)
 
-- `lemma GuruswamiSudan.guruswami_sudan_for_proximity_gap_existence` [ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean:889](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean#L889) — Constructive witness extraction for the Guruswami–Sudan system. When the computable `hasWitnessC` ch
+- `lemma GuruswamiSudan.guruswami_sudan_for_proximity_gap_existence` [ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean:741](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean#L741) — Constructive witness extraction for the Guruswami–Sudan system. When the computable `hasWitnessC` ch
 - `lemma ProximityGap.guruswami_sudan_for_proximity_gap_existence` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean:189](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean#L189) — The first part of Lemma 5.3 from [BCIKS20]. Given `D_X` (`proximity_gap_degree_bound`) and `δ₀` (`pr
 
 ### `guruswami_sudan_for_proximity_gap_property` (2 declarations, 2 files)
 
-- `lemma GuruswamiSudan.guruswami_sudan_for_proximity_gap_property` [ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean:928](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean#L928) — Constructive witness property for the Guruswami–Sudan system. When `m > 0` and the codeword polynomi
+- `lemma GuruswamiSudan.guruswami_sudan_for_proximity_gap_property` [ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean:780](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean#L780) — Constructive witness property for the Guruswami–Sudan system. When `m > 0` and the codeword polynomi
 - `lemma ProximityGap.guruswami_sudan_for_proximity_gap_property` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean:201](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean#L201) — The second part of Lemma 5.3 from [BCIKS20]. For any solution `Q` of the Guruswami-Sudan system, and
 
 ### `hint` (2 declarations, 2 files)
@@ -796,7 +796,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `masterKStateProp` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1018](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1018) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
+- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1041](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1041) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
 - `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:442](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L442) — (no docstring)
 
 ### `ofFinCoeff` (2 declarations, 2 files)

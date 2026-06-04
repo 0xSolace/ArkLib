@@ -5551,18 +5551,9 @@
           "signature": "def gs_johnson (k n m : \u2115) : \u211d :="
         },
         {
-          "doc": "The GS degree bound with m=1 divided by (k-1) is less than F when |F| \u2265 5 and the RS code is non-degenerate (k+1 \u2264 n \u2264 F).",
-          "kind": "lemma",
-          "line": 51,
-          "name": "gs_degree_bound_div_lt",
-          "namespace": "",
-          "short_name": "gs_degree_bound_div_lt",
-          "signature": "lemma gs_degree_bound_div_lt {k n F : \u2115} (hk : 2 \u2264 k) (hn : n \u2264 F) (hF : 5 \u2264 F)"
-        },
-        {
           "doc": "The monomial X^i Y^j as a bivariate polynomial.",
           "kind": "def",
-          "line": 87,
+          "line": 52,
           "name": "GuruswamiSudan.monomial",
           "namespace": "GuruswamiSudan",
           "short_name": "monomial",
@@ -5571,7 +5562,7 @@
         {
           "doc": "Given a nonnegative integer `D`, it is the set of indices `(i,j)` such that `i + (k - 1) * j \u2264 D`.",
           "kind": "def",
-          "line": 94,
+          "line": 59,
           "name": "GuruswamiSudan.weigthBoundIndices",
           "namespace": "GuruswamiSudan",
           "short_name": "weigthBoundIndices",
@@ -5580,7 +5571,7 @@
         {
           "doc": "The number of variables in the Guruswami-Sudan linear system.",
           "kind": "def",
-          "line": 98,
+          "line": 63,
           "name": "GuruswamiSudan.numVars",
           "namespace": "GuruswamiSudan",
           "short_name": "numVars",
@@ -5589,7 +5580,7 @@
         {
           "doc": "The number of variables is the sum over j of the number of valid i's.",
           "kind": "lemma",
-          "line": 101,
+          "line": 66,
           "name": "GuruswamiSudan.card_weigthBoundIndices_eq_sum",
           "namespace": "GuruswamiSudan",
           "short_name": "card_weigthBoundIndices_eq_sum",
@@ -5598,7 +5589,7 @@
         {
           "doc": "Closed form for the number of variables when k > 1.",
           "kind": "lemma",
-          "line": 136,
+          "line": 101,
           "name": "GuruswamiSudan.numVars_eq_of_gt_one",
           "namespace": "GuruswamiSudan",
           "short_name": "numVars_eq_of_gt_one",
@@ -5607,7 +5598,7 @@
         {
           "doc": "The number of variables is (D+1)^2 when k \u2264 1.",
           "kind": "lemma",
-          "line": 172,
+          "line": 137,
           "name": "GuruswamiSudan.numVars_eq_sq",
           "namespace": "GuruswamiSudan",
           "short_name": "numVars_eq_sq",
@@ -5616,7 +5607,7 @@
         {
           "doc": "A tighter lower bound for the number of variables when k > 1 : 2(k-1) * numVars \u2265 D(D+2).",
           "kind": "lemma",
-          "line": 182,
+          "line": 147,
           "name": "GuruswamiSudan.numVars_lower_bound_tight",
           "namespace": "GuruswamiSudan",
           "short_name": "numVars_lower_bound_tight",
@@ -5625,7 +5616,7 @@
         {
           "doc": "Given a positive integer `m`, the set of derivative indices `(s,t)` such that `s + t < m`.",
           "kind": "def",
-          "line": 208,
+          "line": 173,
           "name": "GuruswamiSudan.constraintIndices",
           "namespace": "GuruswamiSudan",
           "short_name": "constraintIndices",
@@ -5634,7 +5625,7 @@
         {
           "doc": "The number of constraints in the Guruswami-Sudan linear system.",
           "kind": "def",
-          "line": 212,
+          "line": 177,
           "name": "GuruswamiSudan.numConstraints",
           "namespace": "GuruswamiSudan",
           "short_name": "numConstraints",
@@ -5643,7 +5634,7 @@
         {
           "doc": "The indices of constraints are `m * (m + 1) / 2`.",
           "kind": "lemma",
-          "line": 215,
+          "line": 180,
           "name": "GuruswamiSudan.card_constraintIndices",
           "namespace": "GuruswamiSudan",
           "short_name": "card_constraintIndices",
@@ -5652,7 +5643,7 @@
         {
           "doc": "Lower bound for the square of (D+1). Specifically, (D+1)^2 > (m+1/2)^2 * (k+1) * n.",
           "kind": "lemma",
-          "line": 237,
+          "line": 202,
           "name": "GuruswamiSudan.proximity_gap_degree_bound_sq_gt",
           "namespace": "GuruswamiSudan",
           "short_name": "proximity_gap_degree_bound_sq_gt",
@@ -5661,7 +5652,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 255,
+          "line": 220,
           "name": "GuruswamiSudan.numVars_gt_numConstraints_of_gt_one",
           "namespace": "GuruswamiSudan",
           "short_name": "numVars_gt_numConstraints_of_gt_one",
@@ -5670,7 +5661,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 281,
+          "line": 246,
           "name": "GuruswamiSudan.numVars_gt_numConstraints",
           "namespace": "GuruswamiSudan",
           "short_name": "numVars_gt_numConstraints",
@@ -5679,7 +5670,7 @@
         {
           "doc": "The linear map from the space of coefficients to polynomials.",
           "kind": "def",
-          "line": 347,
+          "line": 312,
           "name": "GuruswamiSudan.coeffsToPoly",
           "namespace": "GuruswamiSudan",
           "short_name": "coeffsToPoly",
@@ -5688,7 +5679,7 @@
         {
           "doc": "The linear map evaluating the (s,t)-th derivative coefficient at (x,y).",
           "kind": "def",
-          "line": 352,
+          "line": 317,
           "name": "GuruswamiSudan.evalConstraint",
           "namespace": "GuruswamiSudan",
           "short_name": "evalConstraint",
@@ -5697,7 +5688,7 @@
         {
           "doc": "The linear map representing the system of linear equations.",
           "kind": "def",
-          "line": 358,
+          "line": 323,
           "name": "GuruswamiSudan.constraintMap",
           "namespace": "GuruswamiSudan",
           "short_name": "constraintMap",
@@ -5706,7 +5697,7 @@
         {
           "doc": "There exists a non-zero polynomial satisfying the conditions.",
           "kind": "lemma",
-          "line": 365,
+          "line": 330,
           "name": "GuruswamiSudan.exists_nonzero_solution",
           "namespace": "GuruswamiSudan",
           "short_name": "exists_nonzero_solution",
@@ -5715,7 +5706,7 @@
         {
           "doc": "Generalized existence: non-zero kernel element for arbitrary degree bound D, given numVars k D > numConstraints n m.",
           "kind": "lemma",
-          "line": 386,
+          "line": 351,
           "name": "GuruswamiSudan.exists_nonzero_solution_gen",
           "namespace": "GuruswamiSudan",
           "short_name": "exists_nonzero_solution_gen",
@@ -5724,7 +5715,7 @@
         {
           "doc": "The polynomial solution constructed from the non-zero kernel element.",
           "kind": "def",
-          "line": 405,
+          "line": 370,
           "name": "GuruswamiSudan.polySol",
           "namespace": "GuruswamiSudan",
           "short_name": "polySol",
@@ -5733,7 +5724,7 @@
         {
           "doc": "Polynomial solution with rate-corrected degree bound (\u03c1 = k/n).",
           "kind": "def",
-          "line": 410,
+          "line": 375,
           "name": "GuruswamiSudan.gs_polySol",
           "namespace": "GuruswamiSudan",
           "short_name": "gs_polySol",
@@ -5742,7 +5733,7 @@
         {
           "doc": "The coefficient of X^i Y^j in a linear combination of monomials is the coefficient of the combination.",
           "kind": "lemma",
-          "line": 421,
+          "line": 386,
           "name": "GuruswamiSudan.coeff_linearCombination_monomial",
           "namespace": "GuruswamiSudan",
           "short_name": "coeff_linearCombination_monomial",
@@ -5751,7 +5742,7 @@
         {
           "doc": "The monomials are linearly independent.",
           "kind": "lemma",
-          "line": 433,
+          "line": 398,
           "name": "GuruswamiSudan.linearIndependent_monomials",
           "namespace": "GuruswamiSudan",
           "short_name": "linearIndependent_monomials",
@@ -5760,7 +5751,7 @@
         {
           "doc": "The solved polynomial is non-zero.",
           "kind": "lemma",
-          "line": 443,
+          "line": 408,
           "name": "GuruswamiSudan.polySol_ne_zero",
           "namespace": "GuruswamiSudan",
           "short_name": "polySol_ne_zero",
@@ -5769,7 +5760,7 @@
         {
           "doc": "The weighted degree of a monomial X^i Y^j is u*i + v*j.",
           "kind": "lemma",
-          "line": 460,
+          "line": 425,
           "name": "GuruswamiSudan.natWeightedDegree_monomial",
           "namespace": "GuruswamiSudan",
           "short_name": "natWeightedDegree_monomial",
@@ -5778,16 +5769,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 462,
-          "name": "GuruswamiSudan._anon_class_462",
+          "line": 427,
+          "name": "GuruswamiSudan._anon_class_427",
           "namespace": "GuruswamiSudan",
-          "short_name": "_anon_class_462",
+          "short_name": "_anon_class_427",
           "signature": "class classical"
         },
         {
           "doc": "The weighted degree of a monomial X^i Y^j is u*i + v*j.",
           "kind": "lemma",
-          "line": 474,
+          "line": 439,
           "name": "GuruswamiSudan.natWeightedDegree_monomial_eq",
           "namespace": "GuruswamiSudan",
           "short_name": "natWeightedDegree_monomial_eq",
@@ -5796,7 +5787,7 @@
         {
           "doc": "The weighted degree of a sum is at most the maximum of the weighted degrees.",
           "kind": "lemma",
-          "line": 479,
+          "line": 444,
           "name": "GuruswamiSudan.natWeightedDegree_add_le",
           "namespace": "GuruswamiSudan",
           "short_name": "natWeightedDegree_add_le",
@@ -5805,7 +5796,7 @@
         {
           "doc": "The weighted degree of a sum is bounded by the supremum of the weighted degrees.",
           "kind": "lemma",
-          "line": 503,
+          "line": 468,
           "name": "GuruswamiSudan.natWeightedDegree_sum_le",
           "namespace": "GuruswamiSudan",
           "short_name": "natWeightedDegree_sum_le",
@@ -5814,16 +5805,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 505,
-          "name": "GuruswamiSudan._anon_class_505",
+          "line": 470,
+          "name": "GuruswamiSudan._anon_class_470",
           "namespace": "GuruswamiSudan",
-          "short_name": "_anon_class_505",
+          "short_name": "_anon_class_470",
           "signature": "class classical"
         },
         {
           "doc": "The weighted degree of a scalar multiple is at most the weighted degree of the polynomial.",
           "kind": "lemma",
-          "line": 517,
+          "line": 482,
           "name": "GuruswamiSudan.natWeightedDegree_smul_le",
           "namespace": "GuruswamiSudan",
           "short_name": "natWeightedDegree_smul_le",
@@ -5832,7 +5823,7 @@
         {
           "doc": "The weighted degree of the polynomial constructed from coefficients is bounded by D.",
           "kind": "lemma",
-          "line": 528,
+          "line": 493,
           "name": "GuruswamiSudan.natWeightedDegree_coeffsToPoly_le",
           "namespace": "GuruswamiSudan",
           "short_name": "natWeightedDegree_coeffsToPoly_le",
@@ -5841,7 +5832,7 @@
         {
           "doc": "The solved polynomial has weighted degree at most the proximity gap degree bound.",
           "kind": "lemma",
-          "line": 552,
+          "line": 517,
           "name": "GuruswamiSudan.polySol_weightedDegree_le",
           "namespace": "GuruswamiSudan",
           "short_name": "polySol_weightedDegree_le",
@@ -5850,7 +5841,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 560,
+          "line": 525,
           "name": "GuruswamiSudan.natDegree_le_of_natWeightedDegree",
           "namespace": "GuruswamiSudan",
           "short_name": "natDegree_le_of_natWeightedDegree",
@@ -5859,7 +5850,7 @@
         {
           "doc": "If constraints vanish up to order m \u2265 1, the polynomial vanishes at the point.",
           "kind": "lemma",
-          "line": 580,
+          "line": 545,
           "name": "GuruswamiSudan.eval_eq_zero_of_constraint_zero",
           "namespace": "GuruswamiSudan",
           "short_name": "eval_eq_zero_of_constraint_zero",
@@ -5868,7 +5859,7 @@
         {
           "doc": "The solved polynomial vanishes at the interpolation points if m \u2260 0.",
           "kind": "lemma",
-          "line": 586,
+          "line": 551,
           "name": "GuruswamiSudan.polySol_roots",
           "namespace": "GuruswamiSudan",
           "short_name": "polySol_roots",
@@ -5877,7 +5868,7 @@
         {
           "doc": "If `m` is the minimum of a list `l`, then `m \u2264 a` for any `a \u2208 l`.",
           "kind": "lemma",
-          "line": 598,
+          "line": 563,
           "name": "GuruswamiSudan.list_min_le_of_mem",
           "namespace": "GuruswamiSudan",
           "short_name": "list_min_le_of_mem",
@@ -5886,7 +5877,7 @@
         {
           "doc": "If the `(s, t)`-coefficient of `shift Q x y` is non-zero, then the root multiplicity of `Q` at `(x, y)` is at most `s + t`.",
           "kind": "lemma",
-          "line": 604,
+          "line": 569,
           "name": "GuruswamiSudan.rootMultiplicity_le_of_coeff_ne_zero",
           "namespace": "GuruswamiSudan",
           "short_name": "rootMultiplicity_le_of_coeff_ne_zero",
@@ -5895,7 +5886,7 @@
         {
           "doc": "Shifting a polynomial by (x, y) results in the zero polynomial if and only if the original polynomial was zero.",
           "kind": "lemma",
-          "line": 643,
+          "line": 608,
           "name": "GuruswamiSudan.shift_eq_zero_iff",
           "namespace": "GuruswamiSudan",
           "short_name": "shift_eq_zero_iff",
@@ -5904,7 +5895,7 @@
         {
           "doc": "If the shifted polynomial has no non-zero coefficients of total degree less than m, then the root multiplicity is at least m.",
           "kind": "lemma",
-          "line": 657,
+          "line": 622,
           "name": "GuruswamiSudan.rootMultiplicity_ge_of_shift_zero",
           "namespace": "GuruswamiSudan",
           "short_name": "rootMultiplicity_ge_of_shift_zero",
@@ -5913,7 +5904,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 720,
+          "line": 685,
           "name": "GuruswamiSudan.polySol_multiplicity",
           "namespace": "GuruswamiSudan",
           "short_name": "polySol_multiplicity",
@@ -5922,7 +5913,7 @@
         {
           "doc": "The degree of Q(X, P(X)) is bounded by the (1, k-1)-weighted degree of Q, provided deg(P) \u2264 k - 1.",
           "kind": "lemma",
-          "line": 740,
+          "line": 705,
           "name": "GuruswamiSudan.degree_eval_le_weightedDegree",
           "namespace": "GuruswamiSudan",
           "short_name": "degree_eval_le_weightedDegree",
@@ -5931,7 +5922,7 @@
         {
           "doc": "If Q has high multiplicity at (0,0) (meaning all coefficients c_{i,j} with i+j < m are zero) and P(0)=0, then Q(X, P(X)) is divisible by X^m.",
           "kind": "lemma",
-          "line": 757,
+          "line": 722,
           "name": "GuruswamiSudan.dvd_eval_of_rootMultiplicity_zero",
           "namespace": "GuruswamiSudan",
           "short_name": "dvd_eval_of_rootMultiplicity_zero",
@@ -5940,16 +5931,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 772,
-          "name": "GuruswamiSudan._anon_class_772",
+          "line": 737,
+          "name": "GuruswamiSudan._anon_class_737",
           "namespace": "GuruswamiSudan",
-          "short_name": "_anon_class_772",
+          "short_name": "_anon_class_737",
           "signature": "class classical"
         },
         {
           "doc": "Evaluating the shifted bivariate polynomial at the shifted univariate polynomial is equivalent to shifting the result of the evaluation.",
           "kind": "lemma",
-          "line": 779,
+          "line": 744,
           "name": "GuruswamiSudan.eval_shifted_eq_shifted_eval",
           "namespace": "GuruswamiSudan",
           "short_name": "eval_shifted_eq_shifted_eval",
@@ -5958,7 +5949,7 @@
         {
           "doc": "If Q vanishes to order m at (x, P(x)), then Q(X, P(X)) vanishes to order m at x.",
           "kind": "def",
-          "line": 786,
+          "line": 751,
           "name": "GuruswamiSudan.HasOrderAt",
           "namespace": "GuruswamiSudan",
           "short_name": "HasOrderAt",
@@ -5967,7 +5958,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 789,
+          "line": 754,
           "name": "GuruswamiSudan.orderAt_eval_ge",
           "namespace": "GuruswamiSudan",
           "short_name": "orderAt_eval_ge",
@@ -5976,16 +5967,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 795,
-          "name": "GuruswamiSudan._anon_class_795",
+          "line": 760,
+          "name": "GuruswamiSudan._anon_class_760",
           "namespace": "GuruswamiSudan",
-          "short_name": "_anon_class_795",
+          "short_name": "_anon_class_760",
           "signature": "class classical"
         },
         {
           "doc": "If a polynomial R has roots at points indexed by A with multiplicity at least m, and its degree is strictly less than m * |A|, then R must be the zero polynomial.",
           "kind": "lemma",
-          "line": 812,
+          "line": 777,
           "name": "GuruswamiSudan.roots_le_degree_of_deg_lt_roots",
           "namespace": "GuruswamiSudan",
           "short_name": "roots_le_degree_of_deg_lt_roots",
@@ -5994,16 +5985,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 815,
-          "name": "GuruswamiSudan._anon_class_815",
+          "line": 780,
+          "name": "GuruswamiSudan._anon_class_780",
           "namespace": "GuruswamiSudan",
-          "short_name": "_anon_class_815",
+          "short_name": "_anon_class_780",
           "signature": "class classical"
         },
         {
           "doc": "If a polynomial `q` has degree less than `n`, then interpolating its values at `n` points recovers `q`.",
           "kind": "lemma",
-          "line": 834,
+          "line": 799,
           "name": "GuruswamiSudan.interpolate_eq_of_degree_lt",
           "namespace": "GuruswamiSudan",
           "short_name": "interpolate_eq_of_degree_lt",
@@ -6012,16 +6003,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 836,
-          "name": "GuruswamiSudan._anon_class_836",
+          "line": 801,
+          "name": "GuruswamiSudan._anon_class_801",
           "namespace": "GuruswamiSudan",
-          "short_name": "_anon_class_836",
+          "short_name": "_anon_class_801",
           "signature": "class classical"
         },
         {
           "doc": "The polynomial corresponding to a codeword has degree at most k-1.",
           "kind": "lemma",
-          "line": 854,
+          "line": 819,
           "name": "GuruswamiSudan.codewordToPoly_degree_le",
           "namespace": "GuruswamiSudan",
           "short_name": "codewordToPoly_degree_le",
@@ -6030,7 +6021,7 @@
         {
           "doc": "The degree bound is strictly less than `m` times the number of agreement points, provided the distance is within the Johnson radius.",
           "kind": "lemma",
-          "line": 869,
+          "line": 834,
           "name": "GuruswamiSudan.sufficient_multiplicity_bound",
           "namespace": "GuruswamiSudan",
           "short_name": "sufficient_multiplicity_bound",
@@ -6039,7 +6030,7 @@
         {
           "doc": "If $Q$ satisfies the weighted degree bound and vanishes to order $m$ at each point $(\\omega_i, f_i)$, and if $P$ is a codeword close enough to $f$, then $Y - P(X)$ divides $Q(X,Y)$.",
           "kind": "theorem",
-          "line": 884,
+          "line": 849,
           "name": "GuruswamiSudan.dvd_property",
           "namespace": "GuruswamiSudan",
           "short_name": "dvd_property",
@@ -6048,7 +6039,7 @@
         {
           "doc": "Lower bound: (gs_degree_bound + 1)^2 > (m+1/2)^2 * k * n.",
           "kind": "lemma",
-          "line": 959,
+          "line": 924,
           "name": "GuruswamiSudan.gs_degree_bound_sq_gt",
           "namespace": "GuruswamiSudan",
           "short_name": "gs_degree_bound_sq_gt",
@@ -6057,7 +6048,7 @@
         {
           "doc": "numVars with gs_degree_bound exceeds numConstraints (for k > 1).",
           "kind": "lemma",
-          "line": 977,
+          "line": 942,
           "name": "GuruswamiSudan.gs_numVars_gt_numConstraints_of_gt_one",
           "namespace": "GuruswamiSudan",
           "short_name": "gs_numVars_gt_numConstraints_of_gt_one",
@@ -6066,7 +6057,7 @@
         {
           "doc": "The degree bound with \u03c1 = k/n is strictly less than m times the number of agreement points, provided the distance is within the rate-corrected Johnson radius gs_johnson.",
           "kind": "lemma",
-          "line": 1006,
+          "line": 971,
           "name": "GuruswamiSudan.gs_sufficient_multiplicity_bound",
           "namespace": "GuruswamiSudan",
           "short_name": "gs_sufficient_multiplicity_bound",
@@ -6075,7 +6066,7 @@
         {
           "doc": "Divisibility via the rate-corrected GS system. Uses gs_degree_bound (\u03c1=k/n) and gs_johnson instead of the conservative proximity_gap versions.",
           "kind": "theorem",
-          "line": 1020,
+          "line": 985,
           "name": "GuruswamiSudan.gs_dvd_property",
           "namespace": "GuruswamiSudan",
           "short_name": "gs_dvd_property",
@@ -6086,7 +6077,7 @@
     "ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean": {
       "declarations": [
         {
-          "doc": "Guruswami\u2013Sudan conditions for the polynomial searched by the specification decoder. These conditions characterize the existence of a nonzero bivariate polynomial `Q(X,Y)` that vanishes with sufficiently high multiplicity at all interpolation points `(\u03c9s i, f i)`. As in the Berlekamp-Welch case, this can be shown to be equivalent to solving a system of linear equations. Here: * `D : \u2115` \u2014 the degree bound for `Q` under the weighted degree measure. * `\u03c9s : Fin n \u21aa F` \u2014 the domain of evaluation, i.e. the interpolation points. * `f : Fin n \u2192 F` \u2014 the received word. * `Q : F[X][Y]` \u2014 the candidate ",
+          "doc": "Guruswami\u2013Sudan conditions for the polynomial searched by the specification decoder. These conditions characterize a nonzero bivariate polynomial `Q(X,Y)` with bounded weighted degree that vanishes with sufficiently high multiplicity at all interpolation points `(\u03c9s i, f i)`. As in the Berlekamp\u2013Welch case, finding such a polynomial can be shown to be equivalent to solving a system of linear equations. Here: * `D : \u2115` \u2014 the degree bound for `Q` under the weighted degree measure. * `\u03c9s : Fin n \u21aa F` \u2014 the domain of evaluation, i.e. the interpolation points. * `f : Fin n \u2192 F` \u2014 the received word.",
           "kind": "structure",
           "line": 64,
           "name": "GuruswamiSudan.Conditions",
@@ -6095,36 +6086,45 @@
           "signature": "structure Conditions (D : \u2115) (\u03c9s : Fin n \u21aa F) (f : Fin n \u2192 F) (Q : F[X][Y]) where"
         },
         {
-          "doc": "Guruswami-Sudan decoder.  Returns all roots of the GS interpolation polynomial whose evaluation is within Hamming distance $e$ of `f`.",
-          "kind": "def",
-          "line": 98,
+          "doc": "Specification-level Guruswami-Sudan decoder.",
+          "kind": "opaque",
+          "line": 75,
           "name": "GuruswamiSudan.decoder",
           "namespace": "GuruswamiSudan",
           "short_name": "decoder",
-          "signature": "def decoder (k _r _D e : \u2115) (\u03c9s : Fin n \u21aa F) (f : Fin n \u2192 F) :"
+          "signature": "opaque decoder (k r D e : \u2115) (\u03c9s : Fin n \u21aa F) (f : Fin n \u2192 F) : List F[X] := sorry"
         },
         {
-          "doc": "Each decoded polynomial is $e$-close to the received word.",
+          "doc": "Each decoded codeword has to be `e`-close to the received message.",
           "kind": "theorem",
-          "line": 106,
-          "name": "GuruswamiSudan.dist_le_of_mem_decoder",
+          "line": 78,
+          "name": "GuruswamiSudan.decoder_mem_impl_dist",
           "namespace": "GuruswamiSudan",
-          "short_name": "dist_le_of_mem_decoder",
-          "signature": "theorem dist_le_of_mem_decoder"
+          "short_name": "decoder_mem_impl_dist",
+          "signature": "theorem decoder_mem_impl_dist"
         },
         {
-          "doc": "If a polynomial of degree $< k$ is $e$-close to the received word, it appears in the decoder output.",
+          "doc": "Alias for the specification decoder distance guarantee.",
           "kind": "theorem",
-          "line": 122,
-          "name": "GuruswamiSudan.mem_decoder_of_dist",
+          "line": 89,
+          "name": "GuruswamiSudan.decoder_output_dist_le",
           "namespace": "GuruswamiSudan",
-          "short_name": "mem_decoder_of_dist",
-          "signature": "theorem mem_decoder_of_dist"
+          "short_name": "decoder_output_dist_le",
+          "signature": "theorem decoder_output_dist_le"
+        },
+        {
+          "doc": "If a codeword is `e`-close to the received message, it appears in the decoder output.",
+          "kind": "theorem",
+          "line": 100,
+          "name": "GuruswamiSudan.decoder_dist_impl_mem",
+          "namespace": "GuruswamiSudan",
+          "short_name": "decoder_dist_impl_mem",
+          "signature": "theorem decoder_dist_impl_mem"
         },
         {
           "doc": "Recover a polynomial from its first `k` coefficients when its degree is below `k`.",
           "kind": "lemma",
-          "line": 263,
+          "line": 111,
           "name": "GuruswamiSudan.polynomial_of_coeffs_coeffs_of_polynomial_of_degree_lt",
           "namespace": "GuruswamiSudan",
           "short_name": "polynomial_of_coeffs_coeffs_of_polynomial_of_degree_lt",
@@ -6133,7 +6133,7 @@
         {
           "doc": "The finset of all polynomials `p : F[X]` with `p.degree < k`, viewed as elements of `F[X]`. Constructed computably by enumerating coefficient vectors `Fin k \u2192 F`. Note that this always includes `0`, since `(0 : F[X]).degree = \u22a5 < (k : WithBot \u2115)`.",
           "kind": "def",
-          "line": 278,
+          "line": 126,
           "name": "GuruswamiSudan.polynomialsDegreeLt",
           "namespace": "GuruswamiSudan",
           "short_name": "polynomialsDegreeLt",
@@ -6142,7 +6142,7 @@
         {
           "doc": "Membership characterization for `polynomialsDegreeLt`.",
           "kind": "lemma",
-          "line": 284,
+          "line": 132,
           "name": "GuruswamiSudan.mem_polynomials_degree_lt",
           "namespace": "GuruswamiSudan",
           "short_name": "mem_polynomials_degree_lt",
@@ -6151,7 +6151,7 @@
         {
           "doc": "General Lagrange interpolation over arbitrary evaluation points, computed using CompPoly's `CPolynomial.Raw` arithmetic. Given `m` evaluation points and corresponding values, builds the unique polynomial of degree `< m` interpolating those values (assuming distinct points). Fully computable: avoids classical choice operators, nonconstructive root APIs, and noncomputable terms.",
           "kind": "def",
-          "line": 314,
+          "line": 162,
           "name": "GuruswamiSudan.lagrangeInterpolateRaw",
           "namespace": "GuruswamiSudan",
           "short_name": "lagrangeInterpolateRaw",
@@ -6160,7 +6160,7 @@
         {
           "doc": "Convert a `CPolynomial.Raw` to `Polynomial F` by extracting the first `bound` coefficients. Fully computable; the result always has `degree < bound`.",
           "kind": "def",
-          "line": 330,
+          "line": 178,
           "name": "GuruswamiSudan.rawToPolyBounded",
           "namespace": "GuruswamiSudan",
           "short_name": "rawToPolyBounded",
@@ -6169,7 +6169,7 @@
         {
           "doc": "Build an interpolation candidate from the first `min k n` evaluation points. Returns `none` when `k = 0` (no meaningful interpolation). The result, when `some`, has `degree < k` by construction of `rawToPolyBounded`.",
           "kind": "def",
-          "line": 336,
+          "line": 184,
           "name": "GuruswamiSudan.compPolyCandidate",
           "namespace": "GuruswamiSudan",
           "short_name": "compPolyCandidate",
@@ -6178,7 +6178,7 @@
         {
           "doc": "The `Finset` of CompPoly interpolation candidates that pass the degree and distance check. Always a subset of `{p | p.degree < k \u2227 \u0394\u2080(f, p.eval \u2218 \u03c9s) \u2264 e}`.",
           "kind": "def",
-          "line": 350,
+          "line": 198,
           "name": "GuruswamiSudan.compPolyCandidateSet",
           "namespace": "GuruswamiSudan",
           "short_name": "compPolyCandidateSet",
@@ -6187,7 +6187,7 @@
         {
           "doc": "Every element of `compPolyCandidateSet` satisfies the degree and distance bounds.",
           "kind": "lemma",
-          "line": 358,
+          "line": 206,
           "name": "GuruswamiSudan.mem_comp_poly_candidate_set_imp",
           "namespace": "GuruswamiSudan",
           "short_name": "mem_comp_poly_candidate_set_imp",
@@ -6196,7 +6196,7 @@
         {
           "doc": "Evaluate a bounded coefficient vector at `(x, y)` as `\u2211 c\u1d62\u2c7c x^i y^j` over indices satisfying `i + (k - 1) * j \u2264 D`.",
           "kind": "def",
-          "line": 386,
+          "line": 234,
           "name": "GuruswamiSudan.evalCoeffVecAt",
           "namespace": "GuruswamiSudan",
           "short_name": "evalCoeffVecAt",
@@ -6205,7 +6205,7 @@
         {
           "doc": "Evaluate the `(a, b)`-Hasse derivative of a bivariate polynomial (given as a bounded coefficient vector `c`) at the point `(x, y)`. The Hasse derivative `D^{(a,b)} Q` of `Q = \u2211 c\u1d62\u2c7c X^i Y^j` is `\u2211_{i \u2265 a, j \u2265 b} C(i,a) C(j,b) c\u1d62\u2c7c X^{i-a} Y^{j-b}`. This computes `D^{(a,b)} Q (x, y) = \u2211 C(i,a) C(j,b) c\u1d62\u2c7c x^{i-a} y^{j-b}` over indices in the weighted-degree region `i + (k-1)\u00b7j \u2264 D`.",
           "kind": "def",
-          "line": 402,
+          "line": 250,
           "name": "GuruswamiSudan.hasseDerivEvalAt",
           "namespace": "GuruswamiSudan",
           "short_name": "hasseDerivEvalAt",
@@ -6214,7 +6214,7 @@
         {
           "doc": "Check that all Hasse derivatives of order `< r` vanish at `(x, y)`. This is the computable form of the multiplicity-`r` condition: `(X - x, Y - y)^r | Q` iff `D^{(a,b)} Q(x,y) = 0` for all `a + b < r`.",
           "kind": "def",
-          "line": 414,
+          "line": 262,
           "name": "GuruswamiSudan.hasseMultiplicityCheck",
           "namespace": "GuruswamiSudan",
           "short_name": "hasseMultiplicityCheck",
@@ -6223,7 +6223,7 @@
         {
           "doc": "The `(0,0)`-Hasse derivative is ordinary evaluation: `Nat.choose i 0 = 1`, `Nat.choose j 0 = 1`, and shifting by zero leaves exponents unchanged, so `hasseDerivEvalAt k D 0 0 c x y = evalCoeffVecAt k D c x y`.",
           "kind": "lemma",
-          "line": 424,
+          "line": 272,
           "name": "GuruswamiSudan.hasseDerivEvalAt_zero_zero",
           "namespace": "GuruswamiSudan",
           "short_name": "hasseDerivEvalAt_zero_zero",
@@ -6232,7 +6232,7 @@
         {
           "doc": "If the multiplicity check passes, every individual Hasse derivative of order `< r` vanishes. This is the core unwinding of `hasseMultiplicityCheck`.",
           "kind": "lemma",
-          "line": 433,
+          "line": 281,
           "name": "GuruswamiSudan.hasseMultiplicityCheck_imp_deriv_zero",
           "namespace": "GuruswamiSudan",
           "short_name": "hasseMultiplicityCheck_imp_deriv_zero",
@@ -6241,7 +6241,7 @@
         {
           "doc": "When `r > 0`, the multiplicity check implies pointwise evaluation vanishes: `Q(x, y) = 0`. This is the `(a, b) = (0, 0)` specialization, combined with `hasseDerivEvalAt_zero_zero`.",
           "kind": "lemma",
-          "line": 446,
+          "line": 294,
           "name": "GuruswamiSudan.hasseMultiplicityCheck_imp_eval_zero",
           "namespace": "GuruswamiSudan",
           "short_name": "hasseMultiplicityCheck_imp_eval_zero",
@@ -6250,7 +6250,7 @@
         {
           "doc": "Decidable sound-first witness predicate on bounded coefficient vectors: nonzero on the weighted region and full multiplicity vanishing at each interpolation point (all Hasse derivatives of order `< r` vanish). When `r = 0`, only the nonzero condition is checked; when `r \u2265 1`, the Hasse derivative conditions imply (in particular) that `Q(\u03c9\u1d62, f\u1d62) = 0` for each `i`.",
           "kind": "def",
-          "line": 460,
+          "line": 308,
           "name": "GuruswamiSudan.isWitnessC",
           "namespace": "GuruswamiSudan",
           "short_name": "isWitnessC",
@@ -6259,43 +6259,43 @@
         {
           "doc": "When `r > 0` and the witness predicate `isWitnessC` holds, the bivariate polynomial represented by `c` vanishes at every interpolation point `(\u03c9s i, f i)`. This connects the computable Hasse-derivative multiplicity filter to the classical pointwise root condition `Q(\u03c9\u1d62, f\u1d62) = 0` that the GS witness branch relies on.",
           "kind": "lemma",
-          "line": 475,
-          "name": "GuruswamiSudan.isWitnessC_imp_eval_zero_at_points",
+          "line": 323,
+          "name": "GuruswamiSudan.is_witness_c_imp_eval_zero_at_points",
           "namespace": "GuruswamiSudan",
-          "short_name": "isWitnessC_imp_eval_zero_at_points",
-          "signature": "lemma isWitnessC_imp_eval_zero_at_points {k D r : \u2115}"
+          "short_name": "is_witness_c_imp_eval_zero_at_points",
+          "signature": "lemma is_witness_c_imp_eval_zero_at_points {k D r : \u2115}"
         },
         {
           "doc": "Extract the nonzero-coefficient condition from `isWitnessC`: there exists at least one index pair `(i, j)` in the weighted-degree region `i + (k-1)\u00b7j \u2264 D` where `c(i,j) \u2260 0`.",
           "kind": "lemma",
-          "line": 487,
-          "name": "GuruswamiSudan.isWitnessC_nonzero",
+          "line": 335,
+          "name": "GuruswamiSudan.is_witness_c_nonzero",
           "namespace": "GuruswamiSudan",
-          "short_name": "isWitnessC_nonzero",
-          "signature": "lemma isWitnessC_nonzero {k D r : \u2115} {\u03c9s : Fin n \u21aa F} {f : Fin n \u2192 F}"
+          "short_name": "is_witness_c_nonzero",
+          "signature": "lemma is_witness_c_nonzero {k D r : \u2115} {\u03c9s : Fin n \u21aa F} {f : Fin n \u2192 F}"
         },
         {
           "doc": "Extract the per-point multiplicity check from `isWitnessC`: `hasseMultiplicityCheck` passes at every interpolation point `(\u03c9s i, f i)`.",
           "kind": "lemma",
-          "line": 500,
-          "name": "GuruswamiSudan.isWitnessC_multiplicity_at",
+          "line": 348,
+          "name": "GuruswamiSudan.is_witness_c_multiplicity_at",
           "namespace": "GuruswamiSudan",
-          "short_name": "isWitnessC_multiplicity_at",
-          "signature": "lemma isWitnessC_multiplicity_at {k D r : \u2115} {\u03c9s : Fin n \u21aa F} {f : Fin n \u2192 F}"
+          "short_name": "is_witness_c_multiplicity_at",
+          "signature": "lemma is_witness_c_multiplicity_at {k D r : \u2115} {\u03c9s : Fin n \u21aa F} {f : Fin n \u2192 F}"
         },
         {
-          "doc": "When `isWitnessC` holds, every Hasse derivative of order `< r` vanishes at every interpolation point. This combines `isWitnessC_multiplicity_at` with `hasseMultiplicityCheck_imp_deriv_zero`.",
+          "doc": "When `isWitnessC` holds, every Hasse derivative of order `< r` vanishes at every interpolation point. This combines `is_witness_c_multiplicity_at` with `hasseMultiplicityCheck_imp_deriv_zero`.",
           "kind": "lemma",
-          "line": 512,
-          "name": "GuruswamiSudan.isWitnessC_hasse_deriv_vanishes",
+          "line": 360,
+          "name": "GuruswamiSudan.is_witness_c_hasse_deriv_vanishes",
           "namespace": "GuruswamiSudan",
-          "short_name": "isWitnessC_hasse_deriv_vanishes",
-          "signature": "lemma isWitnessC_hasse_deriv_vanishes {k D r a b : \u2115}"
+          "short_name": "is_witness_c_hasse_deriv_vanishes",
+          "signature": "lemma is_witness_c_hasse_deriv_vanishes {k D r a b : \u2115}"
         },
         {
           "doc": "Number of unknown coefficients in the bounded witness grid `(D + 1) \u00d7 (D + 1)`.",
           "kind": "def",
-          "line": 520,
+          "line": 368,
           "name": "GuruswamiSudan.witnessVarCount",
           "namespace": "GuruswamiSudan",
           "short_name": "witnessVarCount",
@@ -6304,7 +6304,7 @@
         {
           "doc": "Decode a linearized witness variable index into the corresponding coefficient pair `(i, j)`.",
           "kind": "def",
-          "line": 523,
+          "line": 371,
           "name": "GuruswamiSudan.witnessVarToPair",
           "namespace": "GuruswamiSudan",
           "short_name": "witnessVarToPair",
@@ -6313,7 +6313,7 @@
         {
           "doc": "Encode a coefficient pair `(i, j)` into the linearized witness variable index.",
           "kind": "def",
-          "line": 533,
+          "line": 381,
           "name": "GuruswamiSudan.witnessPairToVar",
           "namespace": "GuruswamiSudan",
           "short_name": "witnessPairToVar",
@@ -6322,7 +6322,7 @@
         {
           "doc": "Convert a linear solver output vector into a coefficient function `c(i,j)`.",
           "kind": "def",
-          "line": 548,
+          "line": 396,
           "name": "GuruswamiSudan.witnessSolToCoeffVec",
           "namespace": "GuruswamiSudan",
           "short_name": "witnessSolToCoeffVec",
@@ -6331,7 +6331,7 @@
         {
           "doc": "Number of interpolation-equation rows per evaluation point (`(r+1)^2`, with inactive rows).",
           "kind": "def",
-          "line": 553,
+          "line": 401,
           "name": "GuruswamiSudan.gsDerivBlockSize",
           "namespace": "GuruswamiSudan",
           "short_name": "gsDerivBlockSize",
@@ -6340,7 +6340,7 @@
         {
           "doc": "Total number of derivative rows before appending normalization.",
           "kind": "def",
-          "line": 556,
+          "line": 404,
           "name": "GuruswamiSudan.gsDerivRowCount",
           "namespace": "GuruswamiSudan",
           "short_name": "gsDerivRowCount",
@@ -6349,7 +6349,7 @@
         {
           "doc": "Total row count for the linearized GS system (derivatives + one normalization row).",
           "kind": "def",
-          "line": 559,
+          "line": 407,
           "name": "GuruswamiSudan.gsLinearRowCount",
           "namespace": "GuruswamiSudan",
           "short_name": "gsLinearRowCount",
@@ -6358,7 +6358,7 @@
         {
           "doc": "One coefficient entry of the linearized GS interpolation matrix.",
           "kind": "def",
-          "line": 562,
+          "line": 410,
           "name": "GuruswamiSudan.gsLinearMatrixEntry",
           "namespace": "GuruswamiSudan",
           "short_name": "gsLinearMatrixEntry",
@@ -6367,7 +6367,7 @@
         {
           "doc": "Linearized GS interpolation matrix with an appended normalization row.",
           "kind": "def",
-          "line": 583,
+          "line": 431,
           "name": "GuruswamiSudan.gsLinearMatrix",
           "namespace": "GuruswamiSudan",
           "short_name": "gsLinearMatrix",
@@ -6376,7 +6376,7 @@
         {
           "doc": "RHS vector for the linearized GS system (`0` for interpolation rows, `1` for normalization).",
           "kind": "def",
-          "line": 589,
+          "line": 437,
           "name": "GuruswamiSudan.gsLinearRhs",
           "namespace": "GuruswamiSudan",
           "short_name": "gsLinearRhs",
@@ -6385,7 +6385,7 @@
         {
           "doc": "Solve the linearized GS system with one normalized coefficient target.",
           "kind": "def",
-          "line": 593,
+          "line": 441,
           "name": "GuruswamiSudan.solveGsWitnessAtTarget",
           "namespace": "GuruswamiSudan",
           "short_name": "solveGsWitnessAtTarget",
@@ -6394,25 +6394,25 @@
         {
           "doc": "Candidate normalization targets in the weighted-degree region.",
           "kind": "def",
-          "line": 603,
+          "line": 451,
           "name": "GuruswamiSudan.witnessTargets",
           "namespace": "GuruswamiSudan",
           "short_name": "witnessTargets",
           "signature": "def witnessTargets (k D : \u2115) : List (Fin (witnessVarCount D)) :="
         },
         {
-          "doc": "Constructive witness search: solve the linearized GS system over all normalization targets.",
+          "doc": "Witness search: solve the linearized GS system over all normalization targets.",
           "kind": "def",
-          "line": 609,
+          "line": 457,
           "name": "GuruswamiSudan.computeGsWitness",
           "namespace": "GuruswamiSudan",
           "short_name": "computeGsWitness",
           "signature": "def computeGsWitness (k D r : \u2115) (\u03c9s : Fin n \u21aa F) (f : Fin n \u2192 F) :"
         },
         {
-          "doc": "Constructive witness-availability check computed from `computeGsWitness`.",
+          "doc": "Witness-availability check computed from `computeGsWitness`.",
           "kind": "def",
-          "line": 614,
+          "line": 462,
           "name": "GuruswamiSudan.hasWitnessC",
           "namespace": "GuruswamiSudan",
           "short_name": "hasWitnessC",
@@ -6421,7 +6421,7 @@
         {
           "doc": "`hasWitnessC = true` iff `computeGsWitness` returns an explicit witness package.",
           "kind": "lemma",
-          "line": 618,
+          "line": 466,
           "name": "GuruswamiSudan.hasWitnessC_eq_true_iff_exists_output",
           "namespace": "GuruswamiSudan",
           "short_name": "hasWitnessC_eq_true_iff_exists_output",
@@ -6430,7 +6430,7 @@
         {
           "doc": "Convert a Mathlib polynomial to a `CPolynomial.Raw` by extracting coefficients up to a given degree bound.",
           "kind": "def",
-          "line": 639,
+          "line": 488,
           "name": "GuruswamiSudan.polyToRaw",
           "namespace": "GuruswamiSudan",
           "short_name": "polyToRaw",
@@ -6439,7 +6439,7 @@
         {
           "doc": "Evaluate `Q(X, p(X))` where `Q` is given as a bounded coefficient vector `c : Fin (D+1) \u00d7 Fin (D+1) \u2192 F` and `p` is given as a `CPolynomial.Raw`. Computes `\u2211_{i + (k-1)\u00b7j \u2264 D} c\u1d62\u2c7c \u00b7 X^i \u00b7 p(X)^j` in `CPolynomial.Raw F`. The result is zero iff `p` is a Y-root of the bivariate polynomial `Q`.",
           "kind": "def",
-          "line": 647,
+          "line": 496,
           "name": "GuruswamiSudan.evalQAtPRaw",
           "namespace": "GuruswamiSudan",
           "short_name": "evalQAtPRaw",
@@ -6448,7 +6448,7 @@
         {
           "doc": "Check whether `Q(X, p(X)) = 0` by evaluating via CompPoly and testing all coefficients. Returns `true` when `p` is a Y-root of `Q`.",
           "kind": "def",
-          "line": 668,
+          "line": 517,
           "name": "GuruswamiSudan.isQRootRaw",
           "namespace": "GuruswamiSudan",
           "short_name": "isQRootRaw",
@@ -6457,79 +6457,79 @@
         {
           "doc": "Characterization of `isQRootRaw`: it holds iff every element of the result array `evalQAtPRaw k D c pRaw` equals zero. This is a direct consequence of `Array.all` semantics and `BEq` on `F` being faithful (from `DecidableEq F`).",
           "kind": "lemma",
-          "line": 677,
-          "name": "GuruswamiSudan.isQRootRaw_iff_all_coeff_zero",
+          "line": 526,
+          "name": "GuruswamiSudan.is_q_root_raw_iff_all_coeff_zero",
           "namespace": "GuruswamiSudan",
-          "short_name": "isQRootRaw_iff_all_coeff_zero",
-          "signature": "lemma isQRootRaw_iff_all_coeff_zero {k D : \u2115}"
+          "short_name": "is_q_root_raw_iff_all_coeff_zero",
+          "signature": "lemma is_q_root_raw_iff_all_coeff_zero {k D : \u2115}"
         },
         {
-          "doc": "Candidate polynomials validated against a finite constructive witness search with Hasse-derivative multiplicity checking and CompPoly-based Q-root extraction. The filter first computes one concrete witness `Q` (as coefficient vector `c`) using `computeGsWitness`. Then for each degree-`< k` candidate `p`, it verifies: 1. `Q(X, p(X)) = 0` (Y-root extraction), and 2. The Hamming distance `\u0394\u2080(f, p \u2218 \u03c9s) \u2264 e`.",
+          "doc": "Candidate polynomials validated against a finite witness search with Hasse-derivative multiplicity checking and CompPoly-based Q-root extraction. The filter first computes one concrete witness `Q` (as coefficient vector `c`) using `computeGsWitness`. Then for each degree-`< k` candidate `p`, it verifies: 1. `Q(X, p(X)) = 0` (Y-root extraction), and 2. The Hamming distance `\u0394\u2080(f, p \u2218 \u03c9s) \u2264 e`.",
           "kind": "def",
-          "line": 701,
+          "line": 550,
           "name": "GuruswamiSudan.witnessCandidateSet",
           "namespace": "GuruswamiSudan",
           "short_name": "witnessCandidateSet",
-          "signature": "def witnessCandidateSet [Fintype F] (k r D e : \u2115) (\u03c9s : Fin n \u21aa F)"
+          "signature": "def witnessCandidateSet [Fintype F] (k r D e : \u2115)"
         },
         {
           "doc": "Every element of `witnessCandidateSet` has degree `< k` and distance `\u2264 e`.",
           "kind": "lemma",
-          "line": 711,
+          "line": 560,
           "name": "GuruswamiSudan.mem_witness_candidate_set_imp",
           "namespace": "GuruswamiSudan",
           "short_name": "mem_witness_candidate_set_imp",
           "signature": "lemma mem_witness_candidate_set_imp [Fintype F] {k r D e : \u2115} {\u03c9s : Fin n \u21aa F}"
         },
         {
-          "doc": "Strengthened witness soundness: when `r > 0`, every candidate in `witnessCandidateSet` is backed by a witness whose Hasse-derivative multiplicity conditions imply pointwise root vanishing at every interpolation point. Concretely, there exists a coefficient vector `c` satisfying: * `isWitnessC` (nonzero in the weighted-degree region and full multiplicity vanishing), and * `Q(X, p(X)) = 0` via CompPoly root extraction, and * `evalCoeffVecAt k D c (\u03c9s i) (f i) = 0` for every `i : Fin n`. The last property is derived from `isWitnessC_imp_eval_zero_at_points`.",
+          "doc": "Strengthened witness soundness: when `r > 0`, every candidate in `witnessCandidateSet` is backed by a witness whose Hasse-derivative multiplicity conditions imply pointwise root vanishing at every interpolation point. Concretely, there exists a coefficient vector `c` satisfying: * `isWitnessC` (nonzero in the weighted-degree region and full multiplicity vanishing), and * `Q(X, p(X)) = 0` via CompPoly root extraction, and * `evalCoeffVecAt k D c (\u03c9s i) (f i) = 0` for every `i : Fin n`. The last property is derived from `is_witness_c_imp_eval_zero_at_points`.",
           "kind": "lemma",
-          "line": 731,
+          "line": 580,
           "name": "GuruswamiSudan.witness_candidate_set_witness_vanishes",
           "namespace": "GuruswamiSudan",
           "short_name": "witness_candidate_set_witness_vanishes",
           "signature": "lemma witness_candidate_set_witness_vanishes [Fintype F] {k r D e : \u2115}"
         },
         {
-          "doc": "Constructive decoder candidate set inspired by Guruswami\u2013Sudan. **Definition.** The computable decoder returns the union of: * a CompPoly interpolation fast-path candidate set, and * a GS witness-filtered set computed from a constructive linear-system witness search. The implementation combines two candidate sources: 1. **CompPoly Lagrange candidate** (`compPolyCandidateSet`): A fast-path candidate constructed via CompPoly's computable Lagrange interpolation from the first `min k n` evaluation points. Included only if it passes degree and distance checks. 2. **GS witness-filtered candidates** ",
+          "doc": "Decoder candidate set inspired by Guruswami\u2013Sudan. **Definition.** The decoder returns the union of: * a CompPoly interpolation fast-path candidate set, and * a GS witness-filtered set computed from a linear-system witness search. The implementation combines two candidate sources: 1. **CompPoly Lagrange candidate** (`compPolyCandidateSet`): A fast-path candidate constructed via CompPoly's computable Lagrange interpolation from the first `min k n` evaluation points. Included only if it passes degree and distance checks. 2. **GS witness-filtered candidates** (`witnessCandidateSet`): A concrete w",
           "kind": "def",
-          "line": 770,
-          "name": "GuruswamiSudan.computableDecoder",
+          "line": 620,
+          "name": "GuruswamiSudan.decoderCandidateSet",
           "namespace": "GuruswamiSudan",
-          "short_name": "computableDecoder",
-          "signature": "def computableDecoder [Fintype F] (k r D e : \u2115) (\u03c9s : Fin n \u21aa F)"
+          "short_name": "decoderCandidateSet",
+          "signature": "def decoderCandidateSet [Fintype F] (k r D e : \u2115) (\u03c9s : Fin n \u21aa F)"
         },
         {
-          "doc": "Computable decoder soundness: every output polynomial has degree `< k` and distance `\u2264 e`.",
+          "doc": "Decoder soundness: every output polynomial has degree `< k` and distance `\u2264 e`.",
           "kind": "lemma",
-          "line": 776,
-          "name": "GuruswamiSudan.mem_computableDecoder_imp",
+          "line": 626,
+          "name": "GuruswamiSudan.mem_decoderCandidateSet_imp",
           "namespace": "GuruswamiSudan",
-          "short_name": "mem_computableDecoder_imp",
-          "signature": "lemma mem_computableDecoder_imp [Fintype F] {k r D e : \u2115} {\u03c9s : Fin n \u21aa F}"
+          "short_name": "mem_decoderCandidateSet_imp",
+          "signature": "lemma mem_decoderCandidateSet_imp [Fintype F] {k r D e : \u2115} {\u03c9s : Fin n \u21aa F}"
         },
         {
-          "doc": "Each computably decoded codeword is within `e` Hamming distance of the received message.",
+          "doc": "Each decoded codeword is within `e` Hamming distance of the received message.",
           "kind": "theorem",
-          "line": 785,
-          "name": "GuruswamiSudan.computableDecoder_mem_impl_dist",
+          "line": 635,
+          "name": "GuruswamiSudan.decoderCandidateSet_mem_impl_dist",
           "namespace": "GuruswamiSudan",
-          "short_name": "computableDecoder_mem_impl_dist",
-          "signature": "theorem computableDecoder_mem_impl_dist"
+          "short_name": "decoderCandidateSet_mem_impl_dist",
+          "signature": "theorem decoderCandidateSet_mem_impl_dist"
         },
         {
-          "doc": "Alias for the computable decoder distance guarantee.",
+          "doc": "Alias for the candidate-set distance guarantee.",
           "kind": "theorem",
-          "line": 796,
-          "name": "GuruswamiSudan.computableDecoder_output_dist_le",
+          "line": 647,
+          "name": "GuruswamiSudan.decoderCandidateSet_output_dist_le",
           "namespace": "GuruswamiSudan",
-          "short_name": "computableDecoder_output_dist_le",
-          "signature": "theorem computableDecoder_output_dist_le"
+          "short_name": "decoderCandidateSet_output_dist_le",
+          "signature": "theorem decoderCandidateSet_output_dist_le"
         },
         {
           "doc": "Alias to the `Basic` module degree bound used in lemma 5.3 of [BCIKS20].",
           "kind": "def",
-          "line": 807,
+          "line": 659,
           "name": "GuruswamiSudan.proximityGapDegreeBound",
           "namespace": "GuruswamiSudan",
           "short_name": "proximityGapDegreeBound",
@@ -6538,7 +6538,7 @@
         {
           "doc": "Alias to the `Basic` module relative Johnson-radius term.",
           "kind": "def",
-          "line": 811,
+          "line": 663,
           "name": "GuruswamiSudan.proximityGapDelta0",
           "namespace": "GuruswamiSudan",
           "short_name": "proximityGapDelta0",
@@ -6547,7 +6547,7 @@
         {
           "doc": "Absolute Johnson bound radius as an error-count: `\u230a n * \u03b4\u2080(\u03c1, m) \u230b`, where `\u03b4\u2080` is `proximityGapDelta0`.",
           "kind": "def",
-          "line": 816,
+          "line": 668,
           "name": "GuruswamiSudan.proximityGapJohnson",
           "namespace": "GuruswamiSudan",
           "short_name": "proximityGapJohnson",
@@ -6556,7 +6556,7 @@
         {
           "doc": "Construct a Mathlib bivariate polynomial `Q \u2208 F[X][Y]` from a bounded coefficient vector `c : Fin (D+1) \u00d7 Fin (D+1) \u2192 F`, restricting to the weighted-degree region `i + (k-1)\u00b7j \u2264 D`.  Indices outside this region are treated as zero.",
           "kind": "def",
-          "line": 833,
+          "line": 685,
           "name": "GuruswamiSudan.coeffVecToBivariate",
           "namespace": "GuruswamiSudan",
           "short_name": "coeffVecToBivariate",
@@ -6565,25 +6565,25 @@
         {
           "doc": "Coefficient extraction for `coeffVecToBivariate`: the `(i, j)`-coefficient of the bivariate polynomial equals `c(i, j)` when `(i, j)` is in the weighted-degree region.",
           "kind": "lemma",
-          "line": 843,
+          "line": 695,
           "name": "GuruswamiSudan.coeff_vec_to_bivariate_coeff",
           "namespace": "GuruswamiSudan",
           "short_name": "coeff_vec_to_bivariate_coeff",
           "signature": "lemma coeff_vec_to_bivariate_coeff (k D : \u2115)"
         },
         {
-          "doc": "A witness satisfying `isWitnessC` produces a nonzero Mathlib bivariate polynomial via `coeffVecToBivariate`. This follows from `isWitnessC_nonzero`: there is at least one nonzero coefficient in the weighted-degree region.",
+          "doc": "A witness satisfying `isWitnessC` produces a nonzero Mathlib bivariate polynomial via `coeffVecToBivariate`. This follows from `is_witness_c_nonzero`: there is at least one nonzero coefficient in the weighted-degree region.",
           "kind": "lemma",
-          "line": 863,
-          "name": "GuruswamiSudan.coeff_vec_to_bivariate_ne_zero_of_isWitnessC",
+          "line": 715,
+          "name": "GuruswamiSudan.coeff_vec_to_bivariate_ne_zero_of_is_witness_c",
           "namespace": "GuruswamiSudan",
-          "short_name": "coeff_vec_to_bivariate_ne_zero_of_isWitnessC",
-          "signature": "lemma coeff_vec_to_bivariate_ne_zero_of_isWitnessC"
+          "short_name": "coeff_vec_to_bivariate_ne_zero_of_is_witness_c",
+          "signature": "lemma coeff_vec_to_bivariate_ne_zero_of_is_witness_c"
         },
         {
-          "doc": "Constructive witness extraction for the Guruswami\u2013Sudan system. When the computable `hasWitnessC` check returns `true`, we can extract a concrete coefficient vector `c` satisfying `isWitnessC`. Additionally, when `m > 0`, the witness satisfies: * Nonzero coefficient in the weighted-degree region (`isWitnessC_nonzero`). * All Hasse derivatives of order `< m` vanish at every interpolation point (`isWitnessC_hasse_deriv_vanishes`). * Pointwise evaluation vanishing at every interpolation point (`isWitnessC_imp_eval_zero_at_points`). * The corresponding Mathlib bivariate polynomial is nonzero (`coe",
+          "doc": "Constructive witness extraction for the Guruswami\u2013Sudan system. When the computable `hasWitnessC` check returns `true`, we can extract a concrete coefficient vector `c` satisfying `isWitnessC`. Additionally, when `m > 0`, the witness satisfies: * Nonzero coefficient in the weighted-degree region (`is_witness_c_nonzero`). * All Hasse derivatives of order `< m` vanish at every interpolation point (`is_witness_c_hasse_deriv_vanishes`). * Pointwise evaluation vanishing at every interpolation point (`is_witness_c_imp_eval_zero_at_points`). * The corresponding Mathlib bivariate polynomial is nonzero",
           "kind": "lemma",
-          "line": 889,
+          "line": 741,
           "name": "GuruswamiSudan.guruswami_sudan_for_proximity_gap_existence",
           "namespace": "GuruswamiSudan",
           "short_name": "guruswami_sudan_for_proximity_gap_existence",
@@ -6592,7 +6592,7 @@
         {
           "doc": "Strengthened existence: when the witness check passes and `m > 0`, the extracted witness additionally satisfies pointwise evaluation vanishing at every interpolation point, and the corresponding bivariate polynomial is nonzero. This is a computable strengthening of `guruswami_sudan_for_proximity_gap_existence`, not a full paper-level quantifier match for lemma 5.3 in [BCIKS20].",
           "kind": "lemma",
-          "line": 907,
+          "line": 759,
           "name": "GuruswamiSudan.guruswami_sudan_for_proximity_gap_existence_strong",
           "namespace": "GuruswamiSudan",
           "short_name": "guruswami_sudan_for_proximity_gap_existence_strong",
@@ -6601,25 +6601,25 @@
         {
           "doc": "Constructive witness property for the Guruswami\u2013Sudan system. When `m > 0` and the codeword polynomial `ReedSolomon.codewordToPoly p` appears in `witnessCandidateSet`, we can extract a witness coefficient vector `c` satisfying: * `isWitnessC` (nonzero + full multiplicity vanishing), * `Q(X, p(X)) = 0` via CompPoly root extraction, and * pointwise evaluation vanishing `evalCoeffVecAt k D c (\u03c9s i) (f i) = 0` at every interpolation point.",
           "kind": "lemma",
-          "line": 928,
+          "line": 780,
           "name": "GuruswamiSudan.guruswami_sudan_for_proximity_gap_property",
           "namespace": "GuruswamiSudan",
           "short_name": "guruswami_sudan_for_proximity_gap_property",
           "signature": "lemma guruswami_sudan_for_proximity_gap_property [Fintype F] {k m : \u2115} {\u03c9s : Fin n \u21aa F}"
         },
         {
-          "doc": "Strengthened proximity gap property: additionally asserts that the Q-root extraction result has all coefficients zero (via `isQRootRaw_iff_all_coeff_zero`), and the corresponding bivariate polynomial is nonzero. This lemma is conditional on membership in `witnessCandidateSet`; it should be read as a constructive bridge lemma rather than a direct restatement of lemma 5.3 in [BCIKS20].",
+          "doc": "Strengthened proximity gap property: additionally asserts that the Q-root extraction result has all coefficients zero (via `is_q_root_raw_iff_all_coeff_zero`), and the corresponding bivariate polynomial is nonzero. This lemma is conditional on membership in `witnessCandidateSet`; it should be read as a constructive bridge lemma rather than a direct restatement of lemma 5.3 in [BCIKS20].",
           "kind": "lemma",
-          "line": 951,
+          "line": 803,
           "name": "GuruswamiSudan.guruswami_sudan_for_proximity_gap_property_strong",
           "namespace": "GuruswamiSudan",
           "short_name": "guruswami_sudan_for_proximity_gap_property_strong",
-          "signature": "lemma guruswami_sudan_for_proximity_gap_property_strong [Fintype F] {k m : \u2115} {\u03c9s : Fin n \u21aa F}"
+          "signature": "lemma guruswami_sudan_for_proximity_gap_property_strong [Fintype F] {k m : \u2115}"
         },
         {
           "doc": "Existence of a classical Guruswami-Sudan witness polynomial.",
           "kind": "theorem",
-          "line": 975,
+          "line": 827,
           "name": "GuruswamiSudan.proximity_gap_existence",
           "namespace": "GuruswamiSudan",
           "short_name": "proximity_gap_existence",
@@ -6628,7 +6628,7 @@
         {
           "doc": "Classical divisibility consequence for Guruswami-Sudan witnesses.",
           "kind": "theorem",
-          "line": 982,
+          "line": 833,
           "name": "GuruswamiSudan.proximity_gap_divisibility",
           "namespace": "GuruswamiSudan",
           "short_name": "proximity_gap_divisibility",
@@ -6637,7 +6637,7 @@
         {
           "doc": "GS existence with rate-corrected degree bound (\u03c1 = k/n). Requires k > 1 for the counting argument and m \u2265 1 for multiplicity.",
           "kind": "theorem",
-          "line": 993,
+          "line": 842,
           "name": "GuruswamiSudan.gs_existence",
           "namespace": "GuruswamiSudan",
           "short_name": "gs_existence",
@@ -6646,7 +6646,7 @@
         {
           "doc": "GS divisibility with rate-corrected Johnson radius (\u03c1 = k/n).",
           "kind": "theorem",
-          "line": 1041,
+          "line": 890,
           "name": "GuruswamiSudan.gs_divisibility",
           "namespace": "GuruswamiSudan",
           "short_name": "gs_divisibility",
@@ -11057,7 +11057,7 @@
         {
           "doc": "Theorem 1.7 (Correlated agreement over affine spaces) in [BCIKS20]. Take a Reed-Solomon code of length `\u03b9` and degree `deg`, a proximity-error parameter pair `(\u03b4, \u03b5)` and an affine space with origin `u\u2080` and affine generating set `u\u2081, ..., u\u03ba` such that the probability a random point in the affine space is `\u03b4`-close to the Reed-Solomon code is greater than `\u03b5`. Then the words `u\u2080, ..., u\u03ba` have correlated agreement. Note that we have `k + 2` vectors to form the affine space. This an intricacy needed us to be able to isolate the affine origin from the affine span and to form a generating set of",
           "kind": "theorem",
-          "line": 2096,
+          "line": 2106,
           "name": "ProximityGap.correlatedAgreement_affine_spaces",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_spaces",
@@ -11066,10 +11066,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 2106,
-          "name": "ProximityGap._anon_class_2106",
+          "line": 2116,
+          "name": "ProximityGap._anon_class_2116",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_2106",
+          "short_name": "_anon_class_2116",
           "signature": "class classical"
         }
       ]
@@ -36880,7 +36880,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 966,
+          "line": 982,
           "name": "Binius.BinaryBasefold.oracleWitnessConsistency",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleWitnessConsistency",
@@ -36889,7 +36889,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 984,
+          "line": 1000,
           "name": "Binius.BinaryBasefold.oracleWitnessConsistency_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleWitnessConsistency_relay_preserved",
@@ -36898,7 +36898,7 @@
         {
           "doc": "Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if any and enable it after the next V's challenge, i.e. one round later. This is for the purpose of reasoning its RBR KS properly. Formally, = (oracleIdx = stmtIdx)`.",
           "kind": "def",
-          "line": 1018,
+          "line": 1041,
           "name": "Binius.BinaryBasefold.masterKStateProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "masterKStateProp",
@@ -36907,7 +36907,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1031,
+          "line": 1054,
           "name": "Binius.BinaryBasefold.roundRelationProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "roundRelationProp",
@@ -36916,7 +36916,7 @@
         {
           "doc": "A modified version of roundRelationProp (i+1)",
           "kind": "def",
-          "line": 1042,
+          "line": 1065,
           "name": "Binius.BinaryBasefold.foldStepRelOutProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldStepRelOutProp",
@@ -36925,7 +36925,7 @@
         {
           "doc": "This is a special case of nonDoomedFoldingProp for `i = \u2113`, where we support the consistency between the last oracle `\u2113 - \u03d1` and the final constant `c`",
           "kind": "def",
-          "line": 1055,
+          "line": 1078,
           "name": "Binius.BinaryBasefold.finalNonDoomedFoldingProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalNonDoomedFoldingProp",
@@ -36934,7 +36934,7 @@
         {
           "doc": "Input relation for round i: R_i must hold at the beginning of round i",
           "kind": "def",
-          "line": 1104,
+          "line": 1127,
           "name": "Binius.BinaryBasefold.foldStepRelOut",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldStepRelOut",
@@ -36943,7 +36943,7 @@
         {
           "doc": "Relation at step `i` of the CoreInteraction. `\u2200 i < \u2113, R_i` must hold at the beginning of ITERATION `i`. `R_\u2113` must hold after the last iteration and before sending the final constant.",
           "kind": "def",
-          "line": 1113,
+          "line": 1136,
           "name": "Binius.BinaryBasefold.roundRelation",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "roundRelation",
@@ -36952,7 +36952,7 @@
         {
           "doc": "Relation for final sumcheck step",
           "kind": "def",
-          "line": 1120,
+          "line": 1143,
           "name": "Binius.BinaryBasefold.finalSumcheckRelOutProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalSumcheckRelOutProp",
@@ -36961,7 +36961,7 @@
         {
           "doc": "Final sumcheck relation",
           "kind": "def",
-          "line": 1130,
+          "line": 1153,
           "name": "Binius.BinaryBasefold.finalSumcheckRelOut",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalSumcheckRelOut",
