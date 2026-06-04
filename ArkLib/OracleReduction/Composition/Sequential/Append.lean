@@ -240,11 +240,29 @@ def Straightline.append (E₁ : Extractor.Straightline oSpec Stmt₁ Wit₁ Wit�
     let wit₁ ← E₁ stmt₁ wit₂ transcript.fst proveQueryLog verifyQueryLog
     return wit₁
 
-/-- The round-by-round extractor for the sequential composition of two (oracle) reductions -/
+/-- The round-by-round extractor for the sequential composition of two (oracle) reductions.
+
+STATEMENT REPAIR (2026-06-04): added a deterministic intermediate-statement function
+`verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂` (mirroring `StateFunction.append`). The second
+extractor `E₂` operates on the *intermediate* statement `Stmt₂`, which a round-by-round extractor
+over the composed protocol must reconstruct from `Stmt₁` and the phase-1 transcript; the appended
+extractor has no other way to obtain it. (No downstream consumer references this def yet, so the
+signature is free.)
+
+Construction (the extractor processes rounds in *decreasing* order `n+m → … → 0`):
+- rounds `idx < m` (entirely in phase 1): defer to `E₁.extractMid`;
+- the crossing round `idx = m` (`WitMid₂ 1 → WitMid₁ (last m)`): peel one phase-2 round with
+  `E₂.extractMid 0` to land in `WitMid₂ 0 = Wit₂` (via `E₂.eqIn`), then cross into phase 1 with
+  `E₁.extractOut` on the intermediate statement `verify stmt₁ tr.fst`;
+- rounds `idx > m` (entirely in phase 2): defer to `E₂.extractMid (idx - m)` on `verify stmt₁ tr.fst`;
+- `extractOut` (final witness → `WitMid (last)`): for `n > 0` defer to `E₂.extractOut`; for `n = 0`
+  the protocol is all phase 1, so cross immediately with `E₁.extractOut` after the trivial
+  `E₂.extractOut`/`eqIn` round-trip at the empty phase 2. -/
 def RoundByRound.append
     {WitMid₁ : Fin (m + 1) → Type} {WitMid₂ : Fin (n + 1) → Type}
     (E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁)
-    (E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂) :
+    (E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂) :
       Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₃ (pSpec₁ ++ₚ pSpec₂)
         (Fin.append (m := m + 1) WitMid₁ (Fin.tail WitMid₂) ∘ Fin.cast (by omega)) where
   eqIn := by
@@ -256,11 +274,68 @@ def RoundByRound.append
     · simp [hi] at h
       have hiSucc : (idx : ℕ) < m + 1 := by omega
       simpa [hiSucc] using E₁.extractMid ⟨idx, hi⟩ stmt₁ (by simpa [hi] using tr.fst) h
-    -- do casing
-    sorry
+    · -- `idx ≥ m`.  The combined `WitMid` lands in the `WitMid₂` (phase-2) leg.
+      have hmle : m ≤ (idx : ℕ) := by omega
+      -- output type `WitMid_combined idx.castSucc`: `WitMid₁ m` if `idx = m`, else `WitMid₂ (idx-m)`
+      by_cases hidx : (idx : ℕ) = m
+      · -- crossing `idx = m`: input `WitMid₂ 1`, output `WitMid₁ (last m)`.
+        -- the combined input witness `h` reduces to `WitMid₂ 1` (its index `idx+1 ≥ m+1`)
+        have h1 : WitMid₂ (⟨0, by omega⟩ : Fin n).succ := by
+          have : (⟨(idx : ℕ) + 1 - (m + 1) + 1, by omega⟩ : Fin (n + 1))
+              = (⟨0, by omega⟩ : Fin n).succ := by ext; simp only [Fin.val_succ]; omega
+          rw [← this]
+          simpa [show ¬ (idx : ℕ) + 1 < m + 1 from by omega] using h
+        -- peel one phase-2 round to `WitMid₂ 0`, then cross via `E₁.extractOut`
+        have hwit₂ : WitMid₂ (⟨0, by omega⟩ : Fin n).castSucc :=
+          E₂.extractMid ⟨0, by omega⟩
+            (verify stmt₁ (by simpa [show min ((idx : ℕ) + 1) m = m from by omega] using tr.fst))
+            (by simpa [hidx] using tr.snd) h1
+        have hcs0eq : WitMid₂ (⟨0, by omega⟩ : Fin n).castSucc = Wit₂ := by
+          rw [show (⟨0, by omega⟩ : Fin n).castSucc = (0 : Fin (n + 1)) from by ext; simp]
+          exact E₂.eqIn
+        have hwit₂' : Wit₂ := cast hcs0eq hwit₂
+        have hout : WitMid₁ (Fin.last m) :=
+          E₁.extractOut stmt₁
+            (by simpa [show min ((idx : ℕ) + 1) m = m from by omega] using tr.fst) hwit₂'
+        -- the output slot is `WitMid₁ m` (`idx < m+1` since `idx = m`)
+        rw [dif_pos (show (idx : ℕ) < m + 1 from by omega)]
+        exact cast (congrArg WitMid₁ (Fin.ext (by
+          first | omega | (simp only [Fin.val_last]; omega)))) hout
+      · -- `idx > m`: entirely in phase 2; defer to `E₂.extractMid (idx - m)`.
+        have hmlt : m < (idx : ℕ) := by omega
+        -- input `h : WitMid₂ ((idx-m)+1)`, output `WitMid₂ (idx-m)`
+        have hin : WitMid₂ (⟨(idx : ℕ) - m, by omega⟩ : Fin n).succ := by
+          have : (⟨(idx : ℕ) + 1 - (m + 1) + 1, by omega⟩ : Fin (n + 1))
+              = (⟨(idx : ℕ) - m, by omega⟩ : Fin n).succ := by
+            ext; simp only [Fin.val_succ]; omega
+          rw [← this]
+          simpa [show ¬ (idx : ℕ) + 1 < m + 1 from by omega] using h
+        have hout : WitMid₂ (⟨(idx : ℕ) - m, by omega⟩ : Fin n).castSucc :=
+          E₂.extractMid ⟨(idx : ℕ) - m, by omega⟩
+            (verify stmt₁ (by simpa [show min ((idx : ℕ) + 1) m = m from by omega] using tr.fst))
+            (by simpa [show (idx : ℕ) - m + 1 = (idx : ℕ).succ - m from by omega] using tr.snd) hin
+        -- output slot is the phase-2 leg `WitMid₂ (idx - m)` (`¬ idx < m+1`)
+        rw [dif_neg (show ¬ (idx : ℕ) < m + 1 from by omega)]
+        refine cast ?_ hout
+        simp only [eqRec_eq_cast, cast_cast]
+        exact congrArg WitMid₂ (Fin.ext (by simp only [Fin.val_castSucc]; omega))
   extractOut := fun stmt₁ tr wit₃ => by
     dsimp [Fin.append, Fin.addCases, Fin.tail, Fin.castLT, Fin.cast]
-    sorry
+    by_cases hn : n = 0
+    · -- empty phase 2: `WitMid_combined (last) = WitMid₁ (last m)`; cross via `E₁.extractOut`.
+      subst hn
+      -- round-trip `wit₃` through the (trivial) `E₂` and into phase 1
+      have hwit₂ : Wit₂ := cast E₂.eqIn (E₂.extractOut (verify stmt₁ tr.fst) tr.snd wit₃)
+      have hout : WitMid₁ (Fin.last m) := E₁.extractOut stmt₁ tr.fst hwit₂
+      rw [dif_pos (show m + 0 < m + 1 from by omega)]
+      exact cast (congrArg WitMid₁ (Fin.ext (by
+        first | omega | (simp only [Fin.val_last]; omega)))) hout
+    · -- `n > 0`: `WitMid_combined (last) = WitMid₂ (last n)`; defer to `E₂.extractOut`.
+      have hout : WitMid₂ (Fin.last n) := E₂.extractOut (verify stmt₁ tr.fst) tr.snd wit₃
+      rw [dif_neg (show ¬ m + n < m + 1 from by omega)]
+      refine cast ?_ hout
+      simp only [eqRec_eq_cast, cast_cast]
+      exact congrArg WitMid₂ (Fin.ext (by simp only [Fin.val_succ, Fin.val_last]; omega))
 
 end Extractor
 
@@ -389,11 +464,11 @@ def StateFunction.append
           -- goal: Fin.snoc tr msg ⟨a.val,_⟩ ≍ Fin.snoc (castP tr.fst) (cast msg) a'
           -- replace the implicit index proof on the LHS by an explicit one
           obtain ⟨av, hav_lt⟩ := a
-          simp only [Fin.val_mk, Fin.val_succ] at hav hav_lt ⊢
+          simp only [Fin.val_succ] at hav hav_lt ⊢
           rw [show min ((roundIdx : ℕ) + 1) m = (roundIdx : ℕ) + 1 from by omega] at hav_lt
           have ha'_lt : (a' : ℕ) < (roundIdx : ℕ) + 1 := by
             have := a'.isLt; simpa [Fin.val_succ] using this
-          simp only [Fin.snoc, Fin.val_mk]
+          simp only [Fin.snoc]
           have hav' : (a' : ℕ) = av := hav.symm
           by_cases hlast : av = roundIdx
           · -- last position: both snocs yield the message
@@ -449,12 +524,12 @@ def StateFunction.append
             omega
           simp only [Transcript.concat, Transcript.fst]
           obtain ⟨av, hav_lt⟩ := a
-          simp only [Fin.val_mk, Fin.val_succ] at hav hav_lt ⊢
+          simp only [Fin.val_succ] at hav hav_lt ⊢
           rw [show min ((roundIdx : ℕ) + 1) m = m from by omega] at hav_lt
           refine HEq.trans (cast_heq _ _) ?_
           refine HEq.trans ?_ (cast_heq _ _).symm
           -- Fin.snoc tr msg ⟨av,_⟩ ≍ tr ⟨av,_⟩  since av < m ≤ roundIdx
-          simp only [Fin.snoc, Fin.val_mk]
+          simp only [Fin.snoc]
           rw [dif_pos (show av < roundIdx from by omega)]
           refine HEq.trans (cast_heq _ _) ?_
           congr 1
@@ -499,7 +574,7 @@ def StateFunction.append
             intro hc; apply hPrev
             convert hc using 2 <;>
               first
-                | (ext; simp only [Fin.val_castSucc, Fin.val_last, Fin.val_mk]; omega)
+                | (ext; simp only [Fin.val_castSucc, Fin.val_last]; omega)
                 | exact HEq.trans (cast_heq _ _) htrFst_heq.symm
           -- `verify stmt₁ trFst ∉ lang₂`
           have hNotMem := StateFunction.verify_not_mem_lang_of_toFun_full_neg
@@ -532,14 +607,14 @@ def StateFunction.append
           intro hgoal; apply hcross
           convert hgoal using 2 <;>
             first
-              | (ext; simp only [Fin.val_succ, Fin.val_mk]; omega)
+              | (ext; simp only [Fin.val_succ]; omega)
               | exact HEq.trans (cast_heq _ _) (cast_heq _ _).symm
               | -- `empty2 ≍ tr.snd`  (both empty, domain `Fin 0`)
                 (apply Function.hfunext ?_ ?_ <;>
                   first
-                    | (congr 1; simp only [Fin.val_castSucc, Fin.val_mk]; omega)
+                    | (congr 1; simp only [Fin.val_castSucc]; omega)
                     | (intro a a' _;
-                       exact absurd a.isLt (by simp only [empty2, Fin.val_castSucc, Fin.val_mk]; omega)))
+                       exact absurd a.isLt (by simp only [empty2, Fin.val_castSucc]; omega)))
         · -- strictly inside the second phase: `hPrev` is `¬ S₂ (roundIdx - m)`; one `toFun_next` step.
           rw [dif_neg hrm] at hPrev
           -- re-index `hPrev`'s `⟨roundIdx - m, _⟩` as the `castSucc` of `⟨roundIdx - m, _⟩ : Fin n`
@@ -549,18 +624,18 @@ def StateFunction.append
             -- `hPrev`'s verify-argument is `tr.fst` massaged; it agrees with `trFst`
             convert hc using 2 <;>
               first
-                | (ext; simp only [Fin.val_castSucc, Fin.val_mk]; omega)
+                | (ext; simp only [Fin.val_castSucc]; omega)
                 | exact HEq.trans (cast_heq _ _) htrFst_heq.symm
           exact S₂.toFun_next ⟨(roundIdx : ℕ) - m, by omega⟩ hDir₂ _ tr.snd hPrev' (cast hmsgty₂ msg)
       -- Transport `hClean` to the actual goal `hS2` (fst unchanged, snd gains the new message).
       -- Rewrite `hClean`'s `⟨roundIdx - m, _⟩.succ` index to the goal's `⟨roundIdx.succ - m, _⟩` form.
       have hsuccIdx : (⟨(roundIdx : ℕ) - m, by omega⟩ : Fin n).succ
           = ⟨((roundIdx : Fin (m + n)).succ : ℕ) - m, by simp only [Fin.val_succ]; omega⟩ := by
-        ext; simp only [Fin.val_succ, Fin.val_mk]; omega
+        ext; simp only [Fin.val_succ]; omega
       apply hClean
       convert hS2 using 2
       · -- index of the goal's S₂ matches `(roundIdx - m).succ`
-        simp only [Fin.val_succ, Fin.val_mk]; omega
+        simp only [Fin.val_succ]; omega
       · -- `verify` on the unchanged `fst`: `trFst ≍ (concat msg tr).fst`
         congr 1
         exact eq_of_heq (HEq.trans htrFst_heq (HEq.trans hfstHeq.symm (cast_heq _ _).symm))
@@ -583,7 +658,7 @@ def StateFunction.append
           rw [dif_neg (show ¬ (roundIdx : Fin (m + n)).succ ≤ m from by
                 simp only [Fin.val_succ]; omega)]
           -- the LHS `Fin.snoc (tr.snd) msg₂`: split on whether `av` is the last position
-          simp only [Fin.snoc, Fin.val_mk]
+          simp only [Fin.snoc]
           by_cases hlast : av = (roundIdx : ℕ) - m
           · rw [dif_neg (show ¬ av < (roundIdx : ℕ) - m from by omega),
                 dif_neg (show ¬ m + (a' : ℕ) < (roundIdx : ℕ) from by omega)]
@@ -650,7 +725,7 @@ def StateFunction.append
         intro hc; apply hNeg
         convert hc using 2 <;>
           first
-            | (ext; simp only [Fin.val_last, Fin.val_mk]; omega)
+            | (ext; simp only [Fin.val_last]; omega)
             | (congr 1; exact eq_of_heq (HEq.trans (cast_heq _ _) (htFstHeq tr)))
       have hNotMem := StateFunction.verify_not_mem_lang_of_toFun_full_neg
         init impl S₁ verify hVerify hInit _ _ hS1neg
@@ -682,7 +757,7 @@ def StateFunction.append
         intro hc; apply hNeg
         convert hc using 2 <;>
           first
-            | (simp only [Fin.val_last, Fin.val_mk]; omega)
+            | (simp only [Fin.val_last]; omega)
             | -- `verify` on the two notions of phase-1 prefix agree
               (congr 1; exact eq_of_heq (HEq.trans (cast_heq _ _) (htFstHeq tr)))
             | -- the two notions of phase-2 suffix agree
