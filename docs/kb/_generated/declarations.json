@@ -31472,7 +31472,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1028,
+          "line": 1084,
           "name": "Verifier.liftContext_rbr_knowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "liftContext_rbr_knowledgeSoundness",
@@ -31481,7 +31481,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1060,
+          "line": 1136,
           "name": "OuterStmtIn_Test",
           "namespace": "",
           "short_name": "OuterStmtIn_Test",
@@ -31490,7 +31490,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1061,
+          "line": 1137,
           "name": "InnerStmtIn_Test",
           "namespace": "",
           "short_name": "InnerStmtIn_Test",
@@ -31499,7 +31499,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1064,
+          "line": 1140,
           "name": "outerRelIn_Test",
           "namespace": "",
           "short_name": "outerRelIn_Test",
@@ -31508,7 +31508,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1067,
+          "line": 1143,
           "name": "innerRelIn_Test",
           "namespace": "",
           "short_name": "innerRelIn_Test",
@@ -31517,7 +31517,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1070,
+          "line": 1146,
           "name": "OuterStmtOut_Test",
           "namespace": "",
           "short_name": "OuterStmtOut_Test",
@@ -31526,7 +31526,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1071,
+          "line": 1147,
           "name": "InnerStmtOut_Test",
           "namespace": "",
           "short_name": "InnerStmtOut_Test",
@@ -31535,7 +31535,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1074,
+          "line": 1150,
           "name": "outerRelOut_Test",
           "namespace": "",
           "short_name": "outerRelOut_Test",
@@ -31544,7 +31544,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1077,
+          "line": 1153,
           "name": "innerRelOut_Test",
           "namespace": "",
           "short_name": "innerRelOut_Test",
@@ -31553,7 +31553,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1081,
+          "line": 1157,
           "name": "testStmtLens",
           "namespace": "",
           "short_name": "testStmtLens",
@@ -31562,7 +31562,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1086,
+          "line": 1162,
           "name": "testLens",
           "namespace": "",
           "short_name": "testLens",
@@ -31571,7 +31571,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1092,
+          "line": 1168,
           "name": "testLensE",
           "namespace": "",
           "short_name": "testLensE",
@@ -31580,7 +31580,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1097,
+          "line": 1173,
           "name": "instTestLensComplete",
           "namespace": "",
           "short_name": "instTestLensComplete",
@@ -31589,7 +31589,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1107,
+          "line": 1183,
           "name": "instTestLensKnowledgeSound",
           "namespace": "",
           "short_name": "instTestLensKnowledgeSound",
@@ -37481,7 +37481,7 @@
         {
           "doc": "The round-by-round extractor for the query phase. Since f^(0) is always available, we can invoke the extractMLP function directly.",
           "kind": "def",
-          "line": 356,
+          "line": 367,
           "name": "Binius.BinaryBasefold.QueryPhase.queryRbrExtractor",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryRbrExtractor",
@@ -37490,7 +37490,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 368,
+          "line": 379,
           "name": "Binius.BinaryBasefold.QueryPhase.queryKStateProp",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryKStateProp",
@@ -37499,7 +37499,7 @@
         {
           "doc": "The knowledge state function for the query phase",
           "kind": "def",
-          "line": 397,
+          "line": 408,
           "name": "Binius.BinaryBasefold.QueryPhase.queryKnowledgeStateFunction",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryKnowledgeStateFunction",
@@ -37508,7 +37508,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the oracle verifier (query phase)",
           "kind": "theorem",
-          "line": 414,
+          "line": 450,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleVerifier_rbrKnowledgeSoundness",
@@ -38482,8 +38482,26 @@
         },
         {
           "doc": "",
+          "kind": "def",
+          "line": 321,
+          "name": "Binius.FRIBinius.CoreInteractionPhase._anon_def_321",
+          "namespace": "Binius.FRIBinius.CoreInteractionPhase",
+          "short_name": "_anon_def_321",
+          "signature": "def default := {"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 330,
+          "name": "Binius.FRIBinius.CoreInteractionPhase._anon_def_330",
+          "namespace": "Binius.FRIBinius.CoreInteractionPhase",
+          "short_name": "_anon_def_330",
+          "signature": "def default := {"
+        },
+        {
+          "doc": "",
           "kind": "theorem",
-          "line": 315,
+          "line": 348,
           "name": "Binius.FRIBinius.CoreInteractionPhase.sumcheckFoldOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "sumcheckFoldOracleVerifier_rbrKnowledgeSoundness",
@@ -38492,7 +38510,7 @@
         {
           "doc": "The prover for the final sumcheck step",
           "kind": "def",
-          "line": 353,
+          "line": 433,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckProver",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckProver",
@@ -38501,7 +38519,7 @@
         {
           "doc": "The verifier for the final sumcheck step",
           "kind": "def",
-          "line": 397,
+          "line": 477,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckVerifier",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckVerifier",
@@ -38510,7 +38528,7 @@
         {
           "doc": "The oracle reduction for the final sumcheck step",
           "kind": "def",
-          "line": 450,
+          "line": 530,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleReduction",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckOracleReduction",
@@ -38519,7 +38537,7 @@
         {
           "doc": "Perfect completeness for the final sumcheck step",
           "kind": "theorem",
-          "line": 466,
+          "line": 546,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleReduction_perfectCompleteness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckOracleReduction_perfectCompleteness",
@@ -38528,7 +38546,7 @@
         {
           "doc": "RBR knowledge error for the final sumcheck step",
           "kind": "def",
-          "line": 484,
+          "line": 564,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeError",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckKnowledgeError",
@@ -38537,7 +38555,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 489,
+          "line": 569,
           "name": "Binius.FRIBinius.CoreInteractionPhase.FinalSumcheckWit",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "FinalSumcheckWit",
@@ -38546,7 +38564,7 @@
         {
           "doc": "The round-by-round extractor for the final sumcheck step",
           "kind": "def",
-          "line": 495,
+          "line": 575,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckRbrExtractor",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckRbrExtractor",
@@ -38555,7 +38573,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 527,
+          "line": 607,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKStateProp",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckKStateProp",
@@ -38564,7 +38582,7 @@
         {
           "doc": "The knowledge state function for the final sumcheck step",
           "kind": "def",
-          "line": 569,
+          "line": 649,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeStateFunction",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckKnowledgeStateFunction",
@@ -38573,7 +38591,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the final sumcheck step",
           "kind": "theorem",
-          "line": 590,
+          "line": 670,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
@@ -38582,7 +38600,7 @@
         {
           "doc": "The final oracle verifier that composes sumcheckFold with finalSumcheckStep",
           "kind": "def",
-          "line": 612,
+          "line": 692,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleVerifier",
@@ -38591,7 +38609,7 @@
         {
           "doc": "The final oracle reduction that composes sumcheckFold with finalSumcheckStep",
           "kind": "def",
-          "line": 630,
+          "line": 710,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleReduction",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleReduction",
@@ -38600,7 +38618,7 @@
         {
           "doc": "Perfect completeness for the core interaction oracle reduction",
           "kind": "theorem",
-          "line": 652,
+          "line": 732,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleReduction_perfectCompleteness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleReduction_perfectCompleteness",
@@ -38609,7 +38627,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 676,
+          "line": 756,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleRbrKnowledgeError",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleRbrKnowledgeError",
@@ -38618,7 +38636,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the core interaction oracle verifier",
           "kind": "theorem",
-          "line": 685,
+          "line": 765,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleVerifier_rbrKnowledgeSoundness",
@@ -48261,7 +48279,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5238,
+      "declarations": 5240,
       "files": 282
     }
   }
