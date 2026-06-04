@@ -249,7 +249,7 @@ theorem decoded_polynomial_family_on_codeword_curve_implies_jointAgreement {l : 
     (u := u) (deg := deg) (domain := domain) (δ := δ) (v := v)
     hv hS'_card hS'_card₁ P hPcurve (fun z hz => (hdecoded z hz).2)
 
-omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- The two curve notations used in the Curves files agree pointwise. -/
 lemma polynomialCurveEval_eq_sum_smul {k : ℕ} (u : Fin (k + 1) → ι → F) (z : F) :
     (fun x => Curve.polynomialCurveEval (F := F) (A := F) u z x) =
@@ -376,7 +376,7 @@ theorem decoded_family_coefficients_assemble_codeword_curve {l deg : ℕ}
     simp [v, Curve.polynomialCurveEval, Polynomial.eval_finset_sum,
       Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
 
-omit [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
 /-- Named form of the list-decoding assembly output expected by
 `subset_goodCoeffsCurve_assembled_implies_jointAgreement`.
 
