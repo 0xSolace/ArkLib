@@ -687,7 +687,83 @@ lemma exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_cond
       hx0 hsep hS_nonempty A hA hcount hlarge
   refine ⟨R, H, hR, hRirr, hHirr, hHdeg, hHdvd, hRsep, hcard, hlarge', ?_⟩
   intro e D hHpos he hD hcard'
-  sorry
+  haveI : Fact (Irreducible H) := ⟨hHirr⟩
+  refine H_tilde'_dvd_clearDenomY_of_large_candidate_fiber_card
+    (F := F) (n := n) (k := k) (δ := δ) (ωs := ωs) (u₀ := u₀) (u₁ := u₁)
+    x₀ hHpos he hD ?_
+  convert hcard' using 1
+  apply congrArg (fun n : ℕ => (n : WithBot ℕ))
+  apply congrArg Finset.card
+  ext z
+  simp
+
+lemma exists_pg_factors_with_large_common_root_set_setToFinset_of_graph_conditions
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    ∃ R H,
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs ∧
+      Irreducible R ∧
+      Irreducible H ∧
+      0 < H.natDegree ∧
+      H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
+      (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
+      #(@Set.toFinset _
+        { z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ |
+          (Trivariate.eval_on_Z R z.1).eval
+              (Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2) = 0 ∧
+            (Bivariate.evalX z.1 H).eval
+              ((Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval x₀)
+              = 0 }
+        (@Fintype.ofFinite _ Subtype.finite))
+        ≥ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) ∧
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by
+  classical
+  obtain ⟨R, H, hR, hRirr, hHirr, hHdeg, hHdvd, hRsep, hcard, hlarge'⟩ :=
+    exists_pg_factors_with_large_common_root_set_of_graph_conditions
+      (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+      hx0 hsep hS_nonempty A hA hcount hlarge
+  refine ⟨R, H, hR, hRirr, hHirr, hHdeg, hHdvd, hRsep, ?_, hlarge'⟩
+  have hcard_set :
+      #(@Set.toFinset _
+        { z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ |
+          (Trivariate.eval_on_Z R z.1).eval
+              (Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2) = 0 ∧
+            (Bivariate.evalX z.1 H).eval
+              ((Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval x₀)
+              = 0 }
+        (@Fintype.ofFinite _ Subtype.finite))
+        ≥ #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) /
+          Bivariate.natDegreeY Q := by
+    convert hcard using 3
+    ext z
+    simp
+  have hdomain_card :
+      #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) =
+        #(coeffs_of_close_proximity k ωs δ u₀ u₁) := by
+    simp
+  simpa [hdomain_card] using hcard_set
 
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
