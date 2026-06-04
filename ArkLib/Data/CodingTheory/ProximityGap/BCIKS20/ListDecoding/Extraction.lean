@@ -1304,7 +1304,8 @@ lemma c57_rhs_nonneg :
   positivity
 
 omit [DecidableEq (RatFunc F)] in
-/-- *(Defect-7, core.)* The second cardinality conjunct of `exists_factors_with_large_common_root_set`
+/-- *(Defect-7, core.)* The second cardinality conjunct of
+  `exists_factors_with_large_common_root_set`
 is **false** whenever `S := coeffs_of_close_proximity` is empty: its left-hand side
 `(#S : ℝ)/(D_Y Q)` collapses to `0`, while its right-hand side is `≥ 0` (`c57_rhs_nonneg`), so the
 strict inequality cannot hold.  Together with `coeffs_of_close_proximity_eq_empty_of_neg` (which
