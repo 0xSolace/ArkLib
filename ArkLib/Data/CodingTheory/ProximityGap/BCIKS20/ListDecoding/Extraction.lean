@@ -96,9 +96,7 @@ lemma eq512_separable_contraction_over_fraction_field
   obtain ⟨sK, hsep, m, hexp⟩ := hgK_irr.hasSeparableContraction q
   exact ⟨sK, m, hsep, hexp⟩
 
-/-- *Content is invariant under `expand`* (for `n ≥ 1`): the coefficients of `expand R n r`
-are exactly those of `r`, spread out at multiples of `n` and padded with zeros, so the gcd of
-the coefficients (the `content`) is unchanged. A small UFD helper used in the Eq-5.12 descent. -/
+/-- Content is invariant under `expand` for `n ≥ 1`. -/
 theorem eq512_content_expand {R : Type*} [CommRing R] [IsDomain R] [NormalizedGCDMonoid R]
     {r : R[X]} {n : ℕ} (hn : 0 < n) :
     (Polynomial.expand R n r).content = r.content := by
@@ -127,29 +125,14 @@ theorem eq512_content_expand {R : Type*} [CommRing R] [IsDomain R] [NormalizedGC
     _ = normalize r.content := (normalize_eq_normalize_iff).mpr ⟨h1, h2⟩
     _ = r.content := Polynomial.normalize_content
 
-/-- `expand` preserves primitivity (for `n ≥ 1`): immediate from `eq512_content_expand`. -/
+/-- `expand` preserves primitivity for `n ≥ 1`. -/
 theorem eq512_isPrimitive_expand {R : Type*} [CommRing R] [IsDomain R] [NormalizedGCDMonoid R]
     {r : R[X]} (hr : r.IsPrimitive) {n : ℕ} (hn : 0 < n) :
     (Polynomial.expand R n r).IsPrimitive := by
   rw [Polynomial.isPrimitive_iff_content_eq_one] at hr ⊢
   rw [eq512_content_expand hn, hr]
 
-/-- *Descent of the field-side separable contraction back to the UFD `R[X]`* — the first of the
-two pieces of [BCIKS20, Eq. 5.12] flagged as remaining. Given an irreducible primitive `g : R[X]`
-(`R` a UFD with fraction field `K`) and a `K`-side separable contraction
-`expand K n sK = g.map (algebraMap R K)` (`n ≥ 1`, e.g. `n = q^m` from
-`eq512_separable_contraction_over_fraction_field`), there is a primitive irreducible `r : R[X]`
-whose `K`-image is separable, and an `R`-unit `u`, with `g = C u * expand R n r`.
-
-The witness is `r := (integerNormalization R⁰ sK).primPart`. Clearing denominators
-(`IsLocalization.integerNormalization_spec`) and splitting off the content
-(`eq_C_content_mul_primPart`) shows `r.map (algebraMap R K) = C c * sK` with `c` a `K`-unit; this
-gives separability of the `K`-image (`Separable.unit_mul`). Applying `expand K n` and using
-`map_expand` yields `(expand R n r).map = C c * g.map`, so the primitive polynomials `expand R n r`
-and `g` have associated `K`-images, hence are associated in `R[X]` (Gauss's
-`IsPrimitive.dvd_iff_fraction_map_dvd_fraction_map`, both directions). The associating unit is `C u`
-with `u` an `R`-unit (`Polynomial.isUnit_iff`), and `r` is irreducible because `expand R n r` is
-(its associate `g` is) and `expand` reflects irreducibility (`Polynomial.of_irreducible_expand`). -/
+/-- Descent of a field-side separable contraction back to the UFD `R[X]`. -/
 theorem eq512_descent_of_fraction_field_contraction
     {R : Type*} [CommRing R] [IsDomain R] [NormalizedGCDMonoid R]
     {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
@@ -218,12 +201,7 @@ theorem eq512_descent_of_fraction_field_contraction
 
 omit [DecidableEq (RatFunc F)] [Finite F] in
 set_option linter.unusedDecidableInType false in
-/-- *Per-factor descent for Eq. 5.12*: composes the field-side separable contraction
-(`eq512_separable_contraction_over_fraction_field`) with the UFD descent
-(`eq512_descent_of_fraction_field_contraction`). For a positive-`Y`-degree irreducible factor `g`
-of a `ModifiedGuruswami` solution, it yields a primitive irreducible `r : F[Z][X][Y]` with separable
-`K`-image, a contraction exponent `nn = q^m` (`q` the exponential characteristic), and an `R`-unit
-`u`, satisfying `g = C u * expand R nn r`. -/
+/-- Per-factor descent for Eq. 5.12. -/
 theorem eq512_factor_descent (g : F[Z][X][Y]) (hg : Irreducible g) (hdeg : g.natDegree ≠ 0) :
     ∃ (r : F[Z][X][Y]) (nn : ℕ) (u : F[Z][X]),
       Irreducible r ∧
@@ -1463,6 +1441,23 @@ theorem H_tilde'_dvd_of_embedding_mk_eq_zero
   have hmem : P ∈ Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H} := by
     exact Ideal.Quotient.eq_zero_iff_mem.mp (by simpa [β] using hβzero)
   simpa [Ideal.mem_span_singleton] using hmem
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+theorem H_tilde'_dvd_of_large_common_roots
+    {H P : F[X][Y]} [Fact (Irreducible H)]
+    (hH : 0 < H.natDegree) (D : ℕ) (hD : D ≥ Bivariate.totalDegree H)
+    {T : Finset F}
+    (hroot : ∀ z ∈ T, ∃ t : F,
+      Polynomial.evalEval z t (_root_.BCIKS20AppendixA.H_tilde' H) = 0 ∧
+        Polynomial.evalEval z t P = 0)
+    (hcard :
+      (T.card : WithBot ℕ) >
+        _root_.BCIKS20AppendixA.weight_Λ_over_𝒪 hH
+          (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P :
+            _root_.BCIKS20AppendixA.𝒪 H) D * (H.natDegree : WithBot ℕ)) :
+    _root_.BCIKS20AppendixA.H_tilde' H ∣ P := by
+  exact H_tilde'_dvd_of_embedding_mk_eq_zero hH
+    (common_roots_force_lift_zero hH D hD hroot hcard)
 omit [DecidableEq (RatFunc F)] in
 lemma coeffs_of_close_proximity_eq_empty_of_neg [NeZero n] (hδ : δ < 0) :
     coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅ := by
