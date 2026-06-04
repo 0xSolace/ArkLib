@@ -119,7 +119,7 @@ ENNReal comparison against `S.card` only directly yields a strict natural
 inequality. -/
 theorem finset_card_ge_of_pred_natCast_le_ennreal_lt {α : Type} {S : Finset α}
     {m : ℕ} {x : ENNReal}
-    (hm : (m - 1 : ENNReal) ≤ x) (hx : x < (S.card : ENNReal)) :
+    (hm : ((m - 1 : ℕ) : ENNReal) ≤ x) (hx : x < (S.card : ENNReal)) :
     S.card ≥ m := by
   rcases m with _ | m
   · exact Nat.zero_le S.card
@@ -138,8 +138,8 @@ theorem goodCoeffsCurve_card_bounds_of_ennreal_threshold {l deg : ℕ}
       x <
         ((RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ).card :
           ENNReal))
-    (hsmall : (l + 1 : ENNReal) ≤ x)
-    (hlarge : ((Fintype.card ι + 1) * (l + 1) - 1 : ENNReal) ≤ x) :
+    (hsmall : ((l + 1 : ℕ) : ENNReal) ≤ x)
+    (hlarge : ((((Fintype.card ι + 1) * (l + 1) : ℕ) - 1 : ℕ) : ENNReal) ≤ x) :
     (RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ).card >
         l + 1 ∧
       (RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ).card ≥
