@@ -1221,6 +1221,17 @@ where
       exact sumcheck_round_split_point D i challenges chal _
         (by omega) (by omega) (by omega)
 
+/-- `simulateQ` of a query lifted from the middle summand of `spec₀ + (spec₁ + spec₂)`
+is the implementation applied at the routed index. -/
+private lemma simulateQ_double_lift_query {ι₀ ι₁ ι₂ : Type} {spec₀ : OracleSpec ι₀}
+    {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂} {m' : Type → Type} [Monad m']
+    [LawfulMonad m'] (impl : QueryImpl (spec₀ + (spec₁ + spec₂)) m') (t : spec₁.Domain) :
+    simulateQ impl
+      (liftM (spec₁.query t) : OracleComp (spec₀ + (spec₁ + spec₂)) (spec₁.Range t)) =
+      impl (Sum.inr (Sum.inl t)) := by
+  change simulateQ impl (liftM ((spec₀ + (spec₁ + spec₂)).query (Sum.inr (Sum.inl t)))) = _
+  rw [simulateQ_spec_query]
+
 instance extractorLens_rbr_knowledge_soundness :
     Extractor.Lens.IsKnowledgeSound
       (relationRound R n deg D i.castSucc) (Simple.inputRelation R deg D)
@@ -1230,13 +1241,42 @@ instance extractorLens_rbr_knowledge_soundness :
       ⟨oStmtLens R n deg D i, Witness.InvLens.trivial⟩ where
   proj_knowledgeSound := by
     rintro ⟨⟨target, challenges⟩, oStmt⟩ ⟨⟨newTarget, chal⟩, oStmt'⟩ _ hCompat _hLift
-    simp only [Verifier.compatStatement, Simple.oracleVerifier_eq_verifier] at hCompat
+    simp only [Verifier.compatStatement] at hCompat
     obtain ⟨tr, htr⟩ := hCompat
-    simp [Verifier.run, Simple.verifier, Statement.Lens.proj] at htr
-    obtain ⟨-, ⟨hEval, hChal⟩, hOracle⟩ := htr
-    subst hChal
-    subst hOracle
-    simpa [Simple.outputRelation] using hEval
+    simp [Verifier.run, OracleVerifier.toVerifier, Simple.oracleVerifier,
+      OracleInterface.simOracle2, Statement.Lens.proj, guard] at htr
+    obtain ⟨htr1, htr2⟩ := htr
+    -- peel the three binds at the OptionT level (its support-bind law avoids Option splits)
+    erw [simulateQ_optionT_bind] at htr1
+    rw [mem_support_bind_iff] at htr1
+    obtain ⟨evals, hEvals, htr1⟩ := htr1
+    erw [simulateQ_optionT_bind] at htr1
+    rw [mem_support_bind_iff] at htr1
+    obtain ⟨u, hGuard, htr1⟩ := htr1
+    erw [simulateQ_optionT_bind] at htr1
+    rw [mem_support_bind_iff] at htr1
+    obtain ⟨nTval, hQuery, htr1⟩ := htr1
+    -- final pure pins (newTarget, chal) = (nTval, tr.challenges default)
+    erw [simulateQ_pure, mem_support_pure_iff] at htr1
+    rw [Prod.mk.injEq] at htr1
+    obtain ⟨rfl, rfl⟩ := htr1
+    -- the query collapses through the simOracle0 to the oracle's evaluation
+    erw [simulateQ_optionT_lift] at hQuery
+    rw [OptionT.support_lift] at hQuery
+    erw [simulateQ_double_lift_query] at hQuery
+    simp only [QueryImpl.add_apply_inr, QueryImpl.add_apply_inl,
+      QueryImpl.liftTarget_apply] at hQuery
+    -- the output oracle is the projected round polynomial
+    have hO : oStmt' () = ((oStmtLens R n deg D i).toFunA
+        ({ target := target, challenges := challenges }, oStmt)).2 () := by
+      rw [← htr2]
+      rfl
+    simp only [Simple.outputRelation, Set.mem_setOf_eq, hO]
+    simp only [QueryImpl.add, OracleInterface.simOracle0] at hQuery
+    simp at hQuery
+    trace_state
+    exact hQuery.symm
+
   lift_knowledgeSound := by
     simp [relationRound, Simple.inputRelation, Statement.Lens.proj]
     unfold oStmtLens
