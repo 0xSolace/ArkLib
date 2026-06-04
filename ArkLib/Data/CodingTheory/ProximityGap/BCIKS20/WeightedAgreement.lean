@@ -525,7 +525,7 @@ lemma sufficiently_large_list_agreement_on_curve_implies_correlated_agreement
     -- Apply Lemma 7.5 with the grid value β (as an ℝ≥0).
     have hβ_eq : (β.toNNReal : ℝ) = β := Real.coe_toNNReal β hβ_nonneg
     have h75 := list_agreement_on_curve_implies_correlated_agreement_bound
-      (k := k) (u := u) (deg := deg) (domain := domain) (μ := μ) (α := β.toNNReal)
+      (_k := k) (u := u) (deg := deg) (domain := domain) (μ := μ) (α := β.toNNReal)
       hv (S' := S') hS'_card
       (by
         intro z hz
