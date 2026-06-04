@@ -38778,9 +38778,18 @@
           "signature": "def sumcheckFoldOracleReduction :="
         },
         {
+          "doc": "At round index `0` there is a single oracle and the per-block \"bad folding event\" check is vacuously `True` (the guard `j * \u03d1 + \u03d1 \u2264 0` is false since `\u03d1 > 0`), so the master \"bad event exists\" disjunct holds unconditionally at the initial state. This is what lets the sumcheck-fold context lens preserve the (RingSwitching \u2192 BinaryBasefold) input relation.",
+          "kind": "theorem",
+          "line": 158,
+          "name": "Binius.FRIBinius.CoreInteractionPhase.badEventExistsProp_zero",
+          "namespace": "Binius.FRIBinius.CoreInteractionPhase",
+          "short_name": "badEventExistsProp_zero",
+          "signature": "theorem badEventExistsProp_zero"
+        },
+        {
           "doc": "",
           "kind": "instance",
-          "line": 157,
+          "line": 178,
           "name": "Binius.FRIBinius.CoreInteractionPhase.sumcheckFoldCtxLens_complete",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "sumcheckFoldCtxLens_complete",
@@ -38789,7 +38798,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 206,
+          "line": 233,
           "name": "Binius.FRIBinius.CoreInteractionPhase.sumcheckFoldOracleReduction_perfectCompleteness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "sumcheckFoldOracleReduction_perfectCompleteness",
@@ -38798,7 +38807,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 270,
+          "line": 297,
           "name": "Binius.FRIBinius.CoreInteractionPhase.sumcheckFoldExtractorLens_rbr_knowledge_soundness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "sumcheckFoldExtractorLens_rbr_knowledge_soundness",
@@ -38807,25 +38816,25 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 321,
-          "name": "Binius.FRIBinius.CoreInteractionPhase._anon_def_321",
+          "line": 362,
+          "name": "Binius.FRIBinius.CoreInteractionPhase._anon_def_362",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
-          "short_name": "_anon_def_321",
+          "short_name": "_anon_def_362",
           "signature": "def default := {"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 330,
-          "name": "Binius.FRIBinius.CoreInteractionPhase._anon_def_330",
+          "line": 371,
+          "name": "Binius.FRIBinius.CoreInteractionPhase._anon_def_371",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
-          "short_name": "_anon_def_330",
+          "short_name": "_anon_def_371",
           "signature": "def default := {"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 348,
+          "line": 389,
           "name": "Binius.FRIBinius.CoreInteractionPhase.sumcheckFoldOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "sumcheckFoldOracleVerifier_rbrKnowledgeSoundness",
@@ -38834,7 +38843,7 @@
         {
           "doc": "The prover for the final sumcheck step",
           "kind": "def",
-          "line": 433,
+          "line": 474,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckProver",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckProver",
@@ -38843,7 +38852,7 @@
         {
           "doc": "The verifier for the final sumcheck step",
           "kind": "def",
-          "line": 477,
+          "line": 518,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckVerifier",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckVerifier",
@@ -38852,7 +38861,7 @@
         {
           "doc": "The oracle reduction for the final sumcheck step",
           "kind": "def",
-          "line": 530,
+          "line": 571,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleReduction",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckOracleReduction",
@@ -38861,7 +38870,7 @@
         {
           "doc": "Perfect completeness for the final sumcheck step",
           "kind": "theorem",
-          "line": 546,
+          "line": 587,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleReduction_perfectCompleteness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckOracleReduction_perfectCompleteness",
@@ -38870,7 +38879,7 @@
         {
           "doc": "RBR knowledge error for the final sumcheck step",
           "kind": "def",
-          "line": 564,
+          "line": 610,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeError",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckKnowledgeError",
@@ -38879,7 +38888,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 569,
+          "line": 615,
           "name": "Binius.FRIBinius.CoreInteractionPhase.FinalSumcheckWit",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "FinalSumcheckWit",
@@ -38888,7 +38897,7 @@
         {
           "doc": "The round-by-round extractor for the final sumcheck step",
           "kind": "def",
-          "line": 575,
+          "line": 621,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckRbrExtractor",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckRbrExtractor",
@@ -38897,7 +38906,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 607,
+          "line": 653,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKStateProp",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckKStateProp",
@@ -38906,7 +38915,7 @@
         {
           "doc": "The knowledge state function for the final sumcheck step",
           "kind": "def",
-          "line": 649,
+          "line": 695,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeStateFunction",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckKnowledgeStateFunction",
@@ -38915,7 +38924,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the final sumcheck step",
           "kind": "theorem",
-          "line": 670,
+          "line": 724,
           "name": "Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
@@ -38924,7 +38933,7 @@
         {
           "doc": "The final oracle verifier that composes sumcheckFold with finalSumcheckStep",
           "kind": "def",
-          "line": 692,
+          "line": 746,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleVerifier",
@@ -38933,7 +38942,7 @@
         {
           "doc": "The final oracle reduction that composes sumcheckFold with finalSumcheckStep",
           "kind": "def",
-          "line": 710,
+          "line": 764,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleReduction",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleReduction",
@@ -38942,7 +38951,7 @@
         {
           "doc": "Perfect completeness for the core interaction oracle reduction",
           "kind": "theorem",
-          "line": 732,
+          "line": 786,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleReduction_perfectCompleteness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleReduction_perfectCompleteness",
@@ -38951,7 +38960,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 756,
+          "line": 810,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleRbrKnowledgeError",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleRbrKnowledgeError",
@@ -38960,7 +38969,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the core interaction oracle verifier",
           "kind": "theorem",
-          "line": 765,
+          "line": 819,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleVerifier_rbrKnowledgeSoundness",
@@ -45955,9 +45964,18 @@
           "signature": "instance t {\u03b9\u2081 \u03b9\u2082 \u03b9\u2083}"
         },
         {
+          "doc": "The honest simple prover threads its input polynomial unchanged: any output statement in the support of its run has output oracle statement equal to the input polynomial, and new target equal to that polynomial evaluated at the sampled challenge.",
+          "kind": "lemma",
+          "line": 429,
+          "name": "Sumcheck.Spec.SingleRound.Simple.prover_run_output",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "prover_run_output",
+          "signature": "lemma prover_run_output (stmt : StmtIn R \u00d7 (\u2200 i, OStmtIn R deg i))"
+        },
+        {
           "doc": "",
           "kind": "def",
-          "line": 426,
+          "line": 473,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleVerifier",
@@ -45966,7 +45984,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 445,
+          "line": 492,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleReduction",
@@ -45975,7 +45993,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 464,
+          "line": 511,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier_eq_verifier",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleVerifier_eq_verifier",
@@ -45984,7 +46002,7 @@
         {
           "doc": "The oracle reduction is equivalent to the non-oracle reduction",
           "kind": "theorem",
-          "line": 538,
+          "line": 585,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction_eq_reduction",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleReduction_eq_reduction",
@@ -45993,7 +46011,7 @@
         {
           "doc": "Perfect completeness for the (non-oracle) reduction",
           "kind": "theorem",
-          "line": 546,
+          "line": 593,
           "name": "Sumcheck.Spec.SingleRound.Simple.reduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "reduction_perfectCompleteness",
@@ -46002,7 +46020,7 @@
         {
           "doc": "Any successful run of the simple single-round reduction has the prover's output oracle statement equal to the input polynomial, and its output target equal to that polynomial evaluated at the challenge. This captures the honest prover's behavior: it forwards the input polynomial and reports its evaluation at the verifier's challenge.",
           "kind": "theorem",
-          "line": 767,
+          "line": 814,
           "name": "Sumcheck.Spec.SingleRound.Simple.reduction_run_prover_output",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "reduction_run_prover_output",
@@ -46011,7 +46029,7 @@
         {
           "doc": "Perfect completeness for the oracle reduction",
           "kind": "theorem",
-          "line": 826,
+          "line": 873,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -46020,7 +46038,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the verifier",
           "kind": "theorem",
-          "line": 834,
+          "line": 881,
           "name": "Sumcheck.Spec.SingleRound.Simple.verifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "verifier_rbrKnowledgeSoundness",
@@ -46029,7 +46047,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the oracle verifier",
           "kind": "theorem",
-          "line": 840,
+          "line": 887,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleVerifier_rbrKnowledgeSoundness",
@@ -46038,7 +46056,7 @@
         {
           "doc": "Auxiliary lemma for proving that the polynomial sent by the honest prover is of degree at most `deg`",
           "kind": "theorem",
-          "line": 851,
+          "line": 898,
           "name": "Sumcheck.Spec.SingleRound.sumcheck_roundPoly_degreeLE",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "sumcheck_roundPoly_degreeLE",
@@ -46047,7 +46065,7 @@
         {
           "doc": "The oracle statement lens that connect the simple to the full single-round sum-check protocol For `n = 0`, since `poly : R[X Fin 0]` is just a constant, we need to embed it as a constant poly. For other `n := n + 1`, we proceed with the sum `\u2211 x \u2208 D ^ (n - i), poly \u2e28challenges, X, x\u2e29`",
           "kind": "def",
-          "line": 867,
+          "line": 914,
           "name": "Sumcheck.Spec.SingleRound.oStmtLens",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oStmtLens",
@@ -46056,7 +46074,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 885,
+          "line": 932,
           "name": "Sumcheck.Spec.SingleRound.oCtxLens",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oCtxLens",
@@ -46065,7 +46083,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 894,
+          "line": 941,
           "name": "Sumcheck.Spec.SingleRound.extractorLens",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "extractorLens",
@@ -46074,7 +46092,7 @@
         {
           "doc": "The verifier for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 906,
+          "line": 953,
           "name": "Sumcheck.Spec.SingleRound.verifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "verifier",
@@ -46083,7 +46101,7 @@
         {
           "doc": "The oracle verifier for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 912,
+          "line": 959,
           "name": "Sumcheck.Spec.SingleRound.oracleVerifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleVerifier",
@@ -46092,7 +46110,7 @@
         {
           "doc": "The sum-check reduction for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 917,
+          "line": 964,
           "name": "Sumcheck.Spec.SingleRound.reduction",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction",
@@ -46101,7 +46119,7 @@
         {
           "doc": "The sum-check oracle reduction for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 923,
+          "line": 970,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction",
@@ -46110,7 +46128,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 930,
+          "line": 977,
           "name": "Sumcheck.Spec.SingleRound.reduction_verifier_eq_verifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction_verifier_eq_verifier",
@@ -46119,7 +46137,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 936,
+          "line": 983,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction_verifier_eq_verifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction_verifier_eq_verifier",
@@ -46128,7 +46146,7 @@
         {
           "doc": "Keystone `Fin`-plumbing identity for the sum-check round split: inserting `a` at position `i` into `append c y \u2218 cast` agrees with appending the cons-extended tuple `cons a y` to `c`.",
           "kind": "lemma",
-          "line": 953,
+          "line": 1000,
           "name": "Sumcheck.Spec.SingleRound.append_cons_eq_insertNth",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "append_cons_eq_insertNth",
@@ -46137,7 +46155,7 @@
         {
           "doc": "The sum-check round split: the `(n'+1-i)`-fold sum factors as a sum over the first coordinate of a sum over the remaining `(n'-i)` coordinates, with the inserted-variable evaluation.",
           "kind": "lemma",
-          "line": 996,
+          "line": 1043,
           "name": "Sumcheck.Spec.SingleRound.sumcheck_round_split",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "sumcheck_round_split",
@@ -46146,7 +46164,7 @@
         {
           "doc": "Pointwise `Fin`-plumbing identity for the single-point round split: appending `a` via `snoc` to `c` and then `w` agrees with inserting `a` at position `i` into `append c w'`.",
           "kind": "lemma",
-          "line": 1052,
+          "line": 1099,
           "name": "Sumcheck.Spec.SingleRound.append_snoc_eq_insertNth",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "append_snoc_eq_insertNth",
@@ -46155,7 +46173,7 @@
         {
           "doc": "The single-point sum-check round split: specializing the inserted variable at a fixed value `a` (rather than summing over the domain). The `(n'+1-i.succ)`-fold sum with `a` snoc-appended to `c` agrees with the `(n'-i)`-fold sum that inserts `a` at position `i`. This realizes the round-i claim update used in the lens completeness `lift`.",
           "kind": "lemma",
-          "line": 1093,
+          "line": 1140,
           "name": "Sumcheck.Spec.SingleRound.sumcheck_round_split_point",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "sumcheck_round_split_point",
@@ -46164,7 +46182,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1115,
+          "line": 1162,
           "name": "Sumcheck.Spec.SingleRound.oCtxLens_complete",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oCtxLens_complete",
@@ -46173,7 +46191,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1177,
+          "line": 1224,
           "name": "Sumcheck.Spec.SingleRound.extractorLens_rbr_knowledge_soundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "extractorLens_rbr_knowledge_soundness",
@@ -46182,7 +46200,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1202,
+          "line": 1249,
           "name": "Sumcheck.Spec.SingleRound.reduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction_perfectCompleteness",
@@ -46191,7 +46209,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1210,
+          "line": 1257,
           "name": "Sumcheck.Spec.SingleRound.verifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "verifier_rbrKnowledgeSoundness",
@@ -46200,7 +46218,7 @@
         {
           "doc": "Completeness theorem for single-round of sum-check, obtained by transporting the completeness proof for the simplified version",
           "kind": "theorem",
-          "line": 1220,
+          "line": 1267,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -46209,7 +46227,7 @@
         {
           "doc": "Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by transporting the knowledge soundness proof for the simplified version",
           "kind": "theorem",
-          "line": 1233,
+          "line": 1280,
           "name": "Sumcheck.Spec.SingleRound.oracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleVerifier_rbrKnowledgeSoundness",
@@ -46218,7 +46236,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1293,
+          "line": 1340,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverState",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverState",
@@ -46227,7 +46245,7 @@
         {
           "doc": "Prover input for the `i`-th round of the sum-check protocol, where `i < n`",
           "kind": "def",
-          "line": 1300,
+          "line": 1347,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverInput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverInput",
@@ -46236,7 +46254,7 @@
         {
           "doc": "Prover interaction for the `i`-th round of the sum-check protocol, where `i < n`.",
           "kind": "def",
-          "line": 1306,
+          "line": 1353,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverRound",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverRound",
@@ -46245,7 +46263,7 @@
         {
           "doc": "Since there is no witness, the prover's output for each round `i < n` of the sum-check protocol is trivial",
           "kind": "def",
-          "line": 1331,
+          "line": 1378,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverOutput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverOutput",
@@ -46254,7 +46272,7 @@
         {
           "doc": "The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-defined for `n > 0`, since when `n = 0` there is no protocol.",
           "kind": "def",
-          "line": 1338,
+          "line": 1385,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.prover",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "prover",
@@ -46263,7 +46281,7 @@
         {
           "doc": "The (non-oracle) verifier of the sum-check protocol for the `i`-th round, where `i < n + 1`",
           "kind": "def",
-          "line": 1348,
+          "line": 1395,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.verifier",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "verifier",
@@ -48693,7 +48711,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5286,
+      "declarations": 5288,
       "files": 282
     }
   }
