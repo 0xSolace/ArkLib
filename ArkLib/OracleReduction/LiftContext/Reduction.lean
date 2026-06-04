@@ -224,8 +224,7 @@ theorem liftContext_processRound
   simp only [bind_pure_comp]
   congr 1; funext ⟨tr, ps, outerStmtIn', outerWitIn'⟩
   simp only [pure_bind]
-  split <;> simp [Functor.map_map, Function.comp, liftM_map, map_bind,
-    bind_assoc, pure_bind, bind_map_left, bind_pure_comp]
+  split <;> simp [Functor.map_map, liftM_map, map_bind]
 
 
 theorem liftContext_runToRound
@@ -310,7 +309,7 @@ theorem liftContext_run
   unfold run
   simp [liftContext, Prover.liftContext_run, Verifier.liftContext, Verifier.run, Function.uncurry]
   congr 1; funext ⟨_, _⟩; congr 1; funext a_1
-  simp [Functor.map_map, Function.comp]
+  simp
   cases a_1 <;> simp [Option.getM, map_pure]
 
 theorem liftContext_runWithLog
@@ -407,7 +406,10 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
   unfold soundness Reduction.run at h ⊢
   -- Note: there is no distinction between `Outer` and `Inner` here
   intro WitIn WitOut outerWitIn outerP outerStmtIn hOuterStmtIn
-  simp at h ⊢
+  simp only [ChallengeIdx, Challenge, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
+    bind_pure_comp, OptionT.run_bind, OptionT.run_monadLift, monadLift_self, OptionT.run_map,
+    Option.elimM_map, Option.elim_some, simulateQ_bind, simulateQ_option_elimM, simulateQ_pure,
+    simulateQ_map, StateT.run'_eq, StateT.run_bind, map_bind, OptionT.mk_bind] at h ⊢
   have innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec := {
     PrvState := outerP.PrvState
     input := fun _ => outerP.input (outerStmtIn, outerWitIn)
@@ -499,7 +501,10 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
       (V.liftContext lens).rbrSoundness init impl outerLangIn outerLangOut rbrSoundnessError := by
   unfold rbrSoundness at h ⊢
   obtain ⟨stF, h⟩ := h
-  simp at h ⊢
+  simp only [ChallengeIdx, Challenge, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
+    HasQuery.instOfMonadLift_query, liftComp_eq_liftM, bind_pure_comp, simulateQ_bind,
+    simulateQ_map, StateT.run'_eq, StateT.run_bind, StateT.run_map, map_bind, Functor.map_map,
+    Subtype.forall] at h ⊢
   refine ⟨stF.liftContext lens (lensSound := lensSound), ?_⟩
   intro outerStmtIn hOuterStmtIn WitIn WitOut witIn outerP roundIdx hDir
   have innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec := {

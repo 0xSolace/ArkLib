@@ -67,7 +67,7 @@ def cosetEnum (s₀ : evalDomainSigma s ω i) (k_le_n : ∑ j', (s j').1 ≤ n)
             apply (swap <| Nat.le_trans) k_le_n
             omega
           rcases j with ⟨j, h⟩
-          simp only [Nat.succ_eq_add_one, Fin.ofNat_eq_cast, Fin.val_natCast]
+          simp only []
           have : n - (n - (s i).1) = (s i).1 := by
             apply Nat.sub_sub_self
             exact Nat.le_of_lt_succ s_i_lim
@@ -133,22 +133,20 @@ noncomputable def fin_equiv_coset (s₀ : evalDomainSigma s ω ↑i)
   unfold Function.Bijective
   apply And.intro
   · intros a b h
-    simp only [Nat.succ_eq_add_one, finRangeTo.eq_1, Fin.ofNat_eq_cast, Fin.val_natCast,
-      Set.mem_setOf_eq, FftDomain.subdomainNatReversed, FftDomain.subdomainNat, Subtype.mk.injEq,
+    simp only [finRangeTo.eq_1, FftDomain.subdomainNatReversed, Subtype.mk.injEq,
       mul_eq_mul_left_iff] at h
     rcases h with h | h
     · have h := FftDomain.injective h
       aesop
     · rcases s₀ with ⟨s₀, hs₀⟩
       subst h
-      simp only [Nat.succ_eq_add_one, finRangeTo.eq_1, Fin.ofNat_eq_cast, Fin.val_natCast,
-        evalDomainSigma, CosetFftDomain.subdomainNatReversed, CosetFftDomain.subdomainNat] at hs₀
-      rw [CosetFftDomain.mem_coset_finset_iff_mem_coset_domain] at hs₀ 
+      simp only [finRangeTo.eq_1,
+        evalDomainSigma, CosetFftDomain.subdomainNatReversed] at hs₀
+      rw [CosetFftDomain.mem_coset_finset_iff_mem_coset_domain] at hs₀
       have hs₀ := CosetFftDomain.zero_is_not_in_domain hs₀
       simp at hs₀
   · rintro ⟨⟨y, h'⟩, h⟩
     simp only [FftDomain.subdomainNatReversed,
-      FftDomain.subdomainNat,
       finRangeTo.eq_1, Subtype.mk.injEq]
     simp only [cosetG, k_le_n, ↓reduceDIte] at h
     obtain ⟨a, -, ha⟩ := Finset.mem_image.mp h
@@ -176,18 +174,18 @@ def invertibleDomain (s₀ : evalDomainSigma s ω ↑i) : Invertible (VDM n s s�
       intros contra
       apply this
       rw [sub_eq_zero, cosetEnum, cosetEnum] at contra
-      simp only [Nat.succ_eq_add_one, finRangeTo, Fin.ofNat_eq_cast, Fin.val_natCast,
-        Set.mem_setOf_eq, mul_eq_mul_left_iff] at contra
+      simp only [finRangeTo,
+        mul_eq_mul_left_iff] at contra
       rcases contra with contra | contra
-      · simp only [FftDomain.subdomainNatReversed, FftDomain.subdomainNat] at contra
+      · simp only [FftDomain.subdomainNatReversed] at contra
         have h := FftDomain.injective contra
         simp only [Fin.mk.injEq] at h
         ext
         exact (symm h)
       · rcases s₀ with ⟨s₀, hs₀⟩
         subst contra
-        simp only [Nat.succ_eq_add_one, finRangeTo.eq_1, Fin.ofNat_eq_cast, Fin.val_natCast,
-          evalDomainSigma, CosetFftDomain.subdomainNatReversed, CosetFftDomain.subdomainNat] at hs₀
+        simp only [finRangeTo.eq_1,
+          evalDomainSigma, CosetFftDomain.subdomainNatReversed] at hs₀
         rw [CosetFftDomain.mem_coset_finset_iff_mem_coset_domain] at hs₀
         have hs₀ := CosetFftDomain.zero_is_not_in_domain hs₀
         simp at hs₀
@@ -223,8 +221,8 @@ noncomputable def f_succ'
     ∃ s₀ : (ω.subdomainNatReversed (∑ j' ∈ finRangeTo _ (i.1), (s j').1)).toFinset,
       s₀.1 ^ (2 ^ (s i).1) = s₀'.1 := by
     rcases s₀' with ⟨s₀', hs₀'⟩
-    simp only [Fin.val_natCast]
-    simp only [evalDomainSigma] at hs₀' 
+    simp only []
+    simp only [evalDomainSigma] at hs₀'
     rw [CosetFftDomain.mem_coset_finset_iff_mem_coset_domain] at hs₀'
     rw [CosetFftDomain.subdomainNatReversed_mem_of_eq 
       (ω := ω)
@@ -774,7 +772,8 @@ lemma fri_soundness
           OracleReduction.run () f ()
             ⟨
               prov,
-              (BatchedFri.Spec.batchedFRIreduction (ω := ω) (n := n) k s d domain_size_cond l t).verifier
+              (BatchedFri.Spec.batchedFRIreduction (ω := ω) (n := n) k s d domain_size_cond l t)
+                .verifier
             ⟩
         ] > εC 𝔽 n s m ρ_sqrt + α ^ l) →
       Code.jointAgreement

@@ -69,11 +69,17 @@ variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ Pro
 theorem reduction_completeness {ε : ℝ≥0} [DecidablePred (· ∈ relOut)]
     [DecidableEq StmtOut]
     (hRel : ∀ stmtIn witIn, (stmtIn, witIn) ∈ relIn →
-      Pr[fun ⟨stmtOut, witOut⟩ => (stmtOut, witOut) ∈ relOut | do
+      Pr[ fun ⟨stmtOut, witOut⟩ => (stmtOut, witOut) ∈ relOut | do
         (simulateQ impl <| combineMap mapStmt mapWit ⟨stmtIn, witIn⟩).run' (← init)] ≥ 1 - ε) :
     Reduction.completeness init impl relIn relOut (reduction mapStmt mapWit) ε := by
-  simp [Reduction.completeness, Reduction.run, Verifier.run, prover, Prover.run,
-    - tsub_le_iff_right]
+  simp only [Reduction.completeness, ChallengeIdx, Challenge, QueryImpl.addLift_def,
+    QueryImpl.liftTarget_self, Reduction.run, Prover.run, Fin.reduceLast, prover, Nat.reduceAdd,
+    Fin.isValue, MessageIdx, Message, Prover.runToRound_zero_of_prover_first, id_eq, liftM_bind,
+    bind_pure_comp, liftM_map, map_bind, Functor.map_map, pure_bind, monadLift_liftM_OptionT,
+    Verifier.run, OptionT.run_monadLift, monadLift_self, bind_map_left, Option.getM_some, map_pure,
+    bind_assoc, OptionT.run_bind, OracleSpec.ProgrammingPolicy.empty_apply, OptionT.run_map,
+    simulateQ_option_elimM, simulateQ_pure, simulateQ_map, StateT.run'_eq, OptionT.mk_bind,
+    ge_iff_le]
   intro stmtIn witIn hStmtIn
   refine ge_trans ?_ (hRel stmtIn witIn hStmtIn)
   sorry

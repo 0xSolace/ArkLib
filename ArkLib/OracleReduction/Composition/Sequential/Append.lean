@@ -58,7 +58,9 @@ def Prover.append (P₁ : Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
 
   /- The combined prover's input function is the first prover's input function, except for when the
   first protocol is empty, in which case it is the second prover's input function -/
-  input := fun ctxIn => by simp; exact P₁.input ctxIn
+  input := fun ctxIn => by
+    simp only [Function.comp_apply, Fin.cast_zero]
+    exact P₁.input ctxIn
 
   /- The combined prover sends messages according to the round index `i` as follows:
   - if `i < m`, then it sends the message & updates the state as the first prover
@@ -92,8 +94,8 @@ def Prover.append (P₁ : Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
       Fin.cast, Fin.castLT, Fin.succ, Fin.castSucc] at hDir state ⊢
     by_cases hi : i < m
     · haveI : i < m + 1 := by omega
-      simp [hi, Fin.vappend_left_of_lt] at hDir ⊢
-      simp [this] at state
+      simp only [hi, Fin.vappend_left_of_lt, dif_pos (show ↑i + 1 < m + 1 by omega)] at hDir ⊢
+      simp only [this, dif_pos] at state
       exact P₁.receiveChallenge ⟨⟨i, hi⟩, hDir⟩ state
     · by_cases hi' : i = m
       · simp [hi', Fin.vappend_right_of_not_lt] at hDir state ⊢
@@ -114,13 +116,14 @@ def Prover.append (P₁ : Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
   output := fun state => by
     dsimp [Fin.append, Fin.addCases, Fin.tail, Fin.cast, Fin.last, Fin.subNat] at state
     by_cases hn : n = 0
-    · simp [hn] at state
+    · simp only [hn, Nat.add_zero, dif_pos (show m < m + 1 from lt_add_one m)] at state
       exact (do
         let ctxIn₂ ← P₁.output state
         letI state₂ := P₂.input ctxIn₂
         P₂.output (dcast (by simp [hn]) state₂))
     · haveI : m + n - (m + 1) + 1 = n := by omega
-      simp [hn] at state
+      simp only [Order.lt_add_one_iff, add_le_iff_nonpos_right, nonpos_iff_eq_zero, hn, ↓reduceDIte,
+        eq_rec_constant] at state
       exact P₂.output (dcast (by simp [this, Fin.last]) state)
 
 /-- Composition of verifiers. Return the conjunction of the decisions of the two verifiers. -/
@@ -246,7 +249,7 @@ def RoundByRound.append
       Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₃ (pSpec₁ ++ₚ pSpec₂)
         (Fin.append (m := m + 1) WitMid₁ (Fin.tail WitMid₂) ∘ Fin.cast (by omega)) where
   eqIn := by
-    simp [Fin.append, Fin.addCases, Fin.castLT]
+    simp only [Function.comp_apply, Fin.cast_zero]
     exact E₁.eqIn
   extractMid := fun idx stmt₁ tr h => by
     dsimp [Fin.append, Fin.addCases, Fin.tail, Fin.castLT, Fin.cast] at h ⊢
