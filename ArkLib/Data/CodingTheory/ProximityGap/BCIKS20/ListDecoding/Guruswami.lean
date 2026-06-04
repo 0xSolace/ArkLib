@@ -12,6 +12,12 @@ import ArkLib.Data.Polynomial.Trivariate
 
 namespace ProximityGap
 
+-- Decidability/Fintype instances are threaded through the sections for the §5 machinery;
+-- several statement-level lemmas do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 open NNReal Finset Function ProbabilityTheory Code
 open scoped BigOperators LinearCode
 
