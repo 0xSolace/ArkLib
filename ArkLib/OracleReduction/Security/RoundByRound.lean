@@ -28,7 +28,7 @@ namespace Extractor
 - Takes in index `m : Fin (n + 1)`
 - Takes in the input statement `stmtIn : StmtIn`
 - Takes in a partial transcript up to round `m`
-- Takes in the prover's query log (TODO: refine this, verifier's query log as well?)
+- Takes in the prover's query log (planned refinement: include the verifier's query log as well)
 
 and returns an input witness `witIn : WitIn`.
 

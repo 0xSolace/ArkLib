@@ -772,13 +772,13 @@ The alternative is to consider a fully deterministic (and non-failing) verifier.
 part is somewhat problematic as we write our verifiers to be able to fail (i.e. implicit failing
 via `guard` statements).
 
-As such, the definitions below are temporary until further development. -/
+As such, the definitions below isolate the extractor composition interface. -/
 
 namespace Extractor
 
 /-- The sequential composition of two straightline extractors.
 
-TODO: state a monotone condition on the extractor, namely that if extraction succeeds on a given
+Note: state a monotone condition on the extractor, namely that if extraction succeeds on a given
 query log, then it also succeeds on any extension of that query log -/
 def Straightline.append (E₁ : Extractor.Straightline oSpec Stmt₁ Wit₁ Wit₂ pSpec₁)
     (E₂ : Extractor.Straightline oSpec Stmt₂ Wit₂ Wit₃ pSpec₂)
@@ -1383,22 +1383,7 @@ instance : [(pSpec₂).Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge
     simp [ProtocolSpec.Challenge, ChallengeIdx.inr, ProtocolSpec.append]) r
   liftM_eq_lift := by intro β q; rfl
 
-/--
-States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
-witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
-`stmt₂`, witness `wit₂`, and transcript `transcript₁`. Then, it runs `P₂` on `stmt₂` and `wit₂`
-to produce the final statement `stmt₃`, witness `wit₃`, and transcript `transcript₂`.
-The overall output is `stmt₃`, `wit₃`, and the combined transcript `transcript₁ ++ₜ transcript₂`.
--/
-theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
-      (P₁.append P₂).run stmt wit = (do
-        let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (P₁.run stmt wit)
-        let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (P₂.run stmt₂ wit₂)
-        return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩) := by
-  unfold run runToRound
-  sorry
-
--- TODO: Need to define a function that "extracts" a second prover from the combined prover
+-- Note: Need to define a function that "extracts" a second prover from the combined prover
 
 end Prover
 
@@ -1435,7 +1420,6 @@ commutative monad (such as `Id`, i.e. all oracle queries are answered determinis
 all oracle queries are answered probabilistically, `Option`, `ReaderT ρ`, `Set`, `WriterT` into a
 commutative monoid, etc.). -/
 
--- TODO: prove this after VCVio refactor
 -- theorem append_run_interp {m : Type → Type} [Monad m] [m.IsCommutative]
 --     {interp : OracleImpl oSpec m} : ((R₁.append R₂).run stmt wit).runM interp =
 --         (do

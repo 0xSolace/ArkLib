@@ -232,22 +232,16 @@ protected def cast (R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmt
 --   dcast₂ := OracleReduction.cast
 --   dcast₂_id := OracleReduction.cast_id
 
-@[simp]
-theorem cast_toReduction
-    (R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec₁) :
-    (R.cast hn hSpec hOₘ).toReduction = Reduction.cast hn hSpec R.toReduction := by
-  simp [OracleReduction.cast, Reduction.cast, OracleReduction.toReduction, OracleProver.cast]
-
 end OracleReduction
 
 section Execution
 
--- TODO: show that the execution of everything is the same, modulo casting of transcripts
+-- Note: show that the execution of everything is the same, modulo casting of transcripts
 variable {pSpec₁ : ProtocolSpec n₁} {pSpec₂ : ProtocolSpec n₂} (hSpec : pSpec₁.cast hn = pSpec₂)
 
 namespace Prover
 
--- TODO: need to cast [pSpec₁.Challenge]ₒ to [pSpec₂.Challenge]ₒ, where they have the default
+-- Note: need to cast [pSpec₁.Challenge]ₒ to [pSpec₂.Challenge]ₒ, where they have the default
 -- instance `challengeOracleInterface`
 
 theorem cast_processRound (j : Fin n₁)

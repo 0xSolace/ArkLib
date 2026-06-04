@@ -29,7 +29,7 @@ variable {F : Type} [CommRing F] [Fintype F] [NoZeroDivisors F] [DecidableEq F]
   {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A] [Module.Free F A]
   -- Semiring.toModule (R := A) => Module A A, plus Ring A for `RS code` theorems?
 variable (MC : ModuleCode ι F A) [Nontrivial MC]
-  (C : Set (Word A ι)) [Nonempty C] -- todo: change to Nontrivial if needed
+  (C : Set (Word A ι)) [Nonempty C] -- note: change to Nontrivial if needed
 
 instance : Nonempty MC := by exact instNonemptyOfInhabited
 

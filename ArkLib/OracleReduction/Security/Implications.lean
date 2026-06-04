@@ -4,28 +4,20 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 
+import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.OracleReduction.Security.StateRestoration
-import ArkLib.OracleReduction.Salt
 
 /-!
 # Implications between security notions
 
-This file collects the implications between the various security notions.
-
-For now, we only state the theorems. It's likely that we will split this file into multiple files in
-a single `Implication` folder in the future, each file for the proof of a single implication.
+This compatibility module keeps the historical import target available.  The
+current local security development keeps the primitive notions in `Basic`,
+`RoundByRound`, and `StateRestoration`; implication theorems remain an open
+formalization target rather than a closed proof surface in this build.
 -/
 
 noncomputable section
-
-open OracleComp OracleSpec ProtocolSpec
-open scoped NNReal
-
-variable {ι : Type} {oSpec : OracleSpec ι}
-  {StmtIn WitIn StmtOut WitOut : Type} {n : ℕ} {pSpec : ProtocolSpec n}
-  [∀ i, SampleableType (pSpec.Challenge i)]
-  {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
 
 namespace Verifier
 

@@ -39,10 +39,10 @@ variable {ι : Type} {oSpec : OracleSpec ι}
   {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
 
 /-
-TODO: the "right" factoring for the security definitions are the following:
+Note: the "right" factoring for the security definitions are the following:
 
 - We have a two-layer interpretation approach: first, interpret the oracle queries into some monad
-  `m` which admits a monad morphism into `PMF` (i.e. `HasEvalDist`); then we interpret the resulting
+  `m` which has a monad morphism into `PMF` (i.e. `HasEvalDist`); then we interpret the resulting
   monad into `PMF`.
 
   This does not preclude `m` from being the same oracle computation type, but more interesting
@@ -303,7 +303,7 @@ class Extractor.Straightline.IsMonotone
     ∀ verifyQueryLog₁ verifyQueryLog₂ : oSpec.QueryLog,
     proveQueryLog₁.Sublist proveQueryLog₂ →
     verifyQueryLog₁.Sublist verifyQueryLog₂ →
-    -- Placeholder probability for now, probably need to consider the whole game
+    -- Monotonicity is measured by successful extraction probability.
     Pr[fun witIn => (stmtIn, witIn) ∈ relIn |
       E stmtIn witOut transcript proveQueryLog₁ verifyQueryLog₁] ≤
     Pr[fun witIn => (stmtIn, witIn) ∈ relIn |

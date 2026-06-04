@@ -50,8 +50,8 @@ lemma eq512_cartesian_product_blowup (a b : F[Z][X][Y]) (hab : a ≠ b) :
   ring
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
-/-- *Strong-separability is unsatisfiable for genuinely-arising factors* — the verified
-defect (bug #18) in the separability conjunct of `irreducible_factorization_of_gs_solution`.
+/-- *Strong-separability is unsatisfiable for genuinely-arising factors* — the separability
+conjunct of `irreducible_factorization_of_gs_solution` is stronger than the paper statement.
 
 The conjunct `∀ Rᵢ ∈ R, Rᵢ.Separable` uses `Polynomial.Separable` over the **coefficient ring**
 `F[Z][X]`, which is *not a field*. By `separable_def`, `Rᵢ.Separable` unfolds to a Bézout
@@ -97,14 +97,14 @@ omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 `irreducible_factorization_of_gs_solution` (= [BCIKS20, Eq. 5.12]).
 
 For every positive-`Y`-degree irreducible factor `g : F[Z][X][Y]` of a `ModifiedGuruswami`
-solution `Q`, its image over the fraction field `K := FractionRing (F[Z][X]) = F(Z,X)` admits a
+solution `Q`, its image over the fraction field `K := FractionRing (F[Z][X]) = F(Z,X)` has a
 *separable contraction*: there is a separable `sK : K[Y]` and an exponent `m` with
 `expand K (q^m) sK = g.map (algebraMap …)`, where `q` is the exponential characteristic.
 Equivalently (`expand_eq_comp_X_pow`), `sK.comp (Y^(q^m))` equals the `K`-image of `g`.
 
 This is the step that genuinely needs a *field*: it composes the exponential-characteristic
-transfer `F → F(Z,X)` (`expChar_of_injective_algebraMap` along the injective fraction-field map —
-no obstruction, contrary to the earlier OBSTRUCTION note), Gauss's lemma for irreducibility over
+transfer `F → F(Z,X)` (`expChar_of_injective_algebraMap` along the injective fraction-field map),
+Gauss's lemma for irreducibility over
 the fraction field (`IsPrimitive.irreducible_iff_irreducible_map_fraction_map`, the idiom of
 `RationalFunctions.lean`), and Mathlib's separable contraction over a field
 (`Irreducible.hasSeparableContraction`). The remaining open content of Eq. 5.12 is the *descent*
@@ -330,8 +330,8 @@ bounded quantifier and the final factorization equation is now a *separate*
 top-level conjunct, so the factorization holds outside all of the binders.
 No conjunct has been dropped or weakened; only the scoping was corrected.
 
-OBSTRUCTION (statement still mis-specified — see `eq512_cartesian_product_blowup`).
-After the scoping repair the lemma remains **unprovable as written** for a general
+The statement still uses a specification stronger than the intended paper statement; see
+`eq512_cartesian_product_blowup`. After the scoping repair the lemma does not follow for a general
 `ModifiedGuruswami` solution `Q`, for two independent reasons:
 
 * *Cartesian (not zipped) product indexing.* The factorization conjunct is
@@ -348,7 +348,7 @@ After the scoping repair the lemma remains **unprovable as written** for a gener
   separability and irreducibility conjuncts reproduces a general factored `Q` (e.g.
   `g · h²` with `g ≠ h` distinct separable irreducibles).
 
-* *Separability over the wrong ring (VERIFIED defect, bug #18 — see
+* *Separability over the wrong ring (see
   `eq512_strong_separable_unsat`).* The original conjunct `∀ Rᵢ ∈ R, Rᵢ.Separable` applied
   `Polynomial.Separable` to `Rᵢ : F[Z][X][Y]` over the **coefficient ring** `F[Z][X]`, which
   is *not a field*. By `separable_def`, this unfolds to a Bézout identity
@@ -1243,7 +1243,7 @@ theorem pg_card_candidatePairs_le_natDegreeY (x₀ : F) (h_gs : ModifiedGuruswam
   -- Put everything together.
   exact (hcard_biUnion.trans (hsum.trans hsum_Rset_le))
 
-/-! ### Verified statement defect of Claim 5.7 (the 7th in this tree)
+/-! ### Statement Analysis for Claim 5.7
 
 `exists_factors_with_large_common_root_set` (Claim 5.7, `Agreement.lean`) carries a second
 cardinality conjunct

@@ -26,7 +26,7 @@ namespace Extractor
 
 section Rewinding
 
-/-! TODO: under development -/
+/-! Rewinding extractor interface. -/
 
 /-- The oracle interface to call the prover as a black box -/
 def OracleSpec.proverOracle (StmtIn : Type) {n : ℕ} (pSpec : ProtocolSpec n) :

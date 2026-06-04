@@ -188,6 +188,17 @@ private lemma simulateQ_double_lift_query {ι₀ ι₁ ι₂ : Type} {spec₀ : 
   change simulateQ impl (liftM ((spec₀ + (spec₁ + spec₂)).query (Sum.inr (Sum.inl t)))) = _
   rw [simulateQ_spec_query]
 
+/-- `simulateQ` of a query lifted from the right summand of `spec₀ + (spec₁ + spec₂)`
+is the implementation applied at the routed index. -/
+private lemma simulateQ_double_right_lift_query {ι₀ ι₁ ι₂ : Type} {spec₀ : OracleSpec ι₀}
+    {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂} {m' : Type → Type} [Monad m']
+    [LawfulMonad m'] (impl : QueryImpl (spec₀ + (spec₁ + spec₂)) m') (t : spec₂.Domain) :
+    simulateQ impl
+      (liftM (spec₂.query t) : OracleComp (spec₀ + (spec₁ + spec₂)) (spec₂.Range t)) =
+      impl (Sum.inr (Sum.inr t)) := by
+  change simulateQ impl (liftM ((spec₀ + (spec₁ + spec₂)).query (Sum.inr (Sum.inr t)))) = _
+  rw [simulateQ_spec_query]
+
 section VectorMapMTools
 
 universe uM
@@ -1119,8 +1130,8 @@ private lemma vector_finRange_map_sum_eq' (g : Fin m → R) :
 theorem oracleReduction_perfectCompleteness :
     (oracleReduction R deg D oSpec).perfectCompleteness init impl
       (inputRelation R deg D) (outputRelation R deg) := by
-  -- Direct proof (no detour through the false `oracleReduction_eq_reduction`, Finding 13b):
-  -- the oracle verifier collapses to a guard on the ORACLE's D-sum, which holds by `hValid`.
+  -- Direct proof (no detour through `oracleReduction_eq_reduction`): the oracle verifier
+  -- collapses to a guard on the ORACLE's D-sum, which holds by `hValid`.
   unfold OracleReduction.perfectCompleteness
   simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
   intro ⟨target, oStmt⟩ () hValid
@@ -1187,7 +1198,7 @@ theorem oracleReduction_perfectCompleteness :
     refine ⟨?_, ?_⟩
     · simp only [outputRelation, Set.mem_setOf_eq]
       rfl
-    · -- pin the prover result's structure from hw
+    · -- Pin the prover result's structure from `hw`.
       erw [simulateQ_bind] at hw
       rw [StateT.run_bind] at hw
       rw [mem_support_bind_iff] at hw
@@ -1198,7 +1209,7 @@ theorem oracleReduction_perfectCompleteness :
       rw [StateT.run_pure] at hw
       simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hw
       obtain ⟨⟨rfl, rfl⟩, -⟩ := hw
-      -- peel hg1: the challenge sample pins the transcript (glue already collapsed)
+      -- Peel `hg1`: the challenge sample pins the transcript.
       erw [simulateQ_map] at hg1
       rw [StateT.run_map] at hg1
       simp only [support_map, Set.mem_image] at hg1
@@ -1226,6 +1237,8 @@ private def simpleKnowledgeStateFunction :
   toFun_empty := fun stmtIn witMid => Iff.rfl
   toFun_next := fun _ _ _ _ _ _ h => h
   toFun_full := fun ⟨target, oStmt⟩ tr witOut h => by
+    show (⟨target, oStmt⟩, ()) ∈ inputRelation R deg D
+    by_contra hInput
     rw [gt_iff_lt, probEvent_pos_iff] at h
     obtain ⟨x, hx, _hrel⟩ := h
     rw [OptionT.mem_support_iff] at hx
@@ -1780,7 +1793,6 @@ instance extractorLens_rbr_knowledge_soundness :
     simp only [Simple.outputRelation, Set.mem_setOf_eq, hO]
     simp only [QueryImpl.add, OracleInterface.simOracle0] at hQuery
     simp at hQuery
-    trace_state
     exact hQuery.symm
 
   lift_knowledgeSound := by

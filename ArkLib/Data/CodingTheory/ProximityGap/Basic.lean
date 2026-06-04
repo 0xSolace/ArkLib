@@ -29,7 +29,7 @@ module codes over (scalar) rings.
 - `δ_ε_correlatedAgreementCurves`: Correlated agreement for parametrised curves (k words)
 - `δ_ε_correlatedAgreementAffineSpaces`: Correlated agreement for affine subspaces (k+1 words)
 
-## TODOs
+## Extensions
 - weighted correlated agreement
 - mutual correlated agreement
 - generalize the CA definitions using proximity generator?

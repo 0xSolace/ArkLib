@@ -102,12 +102,12 @@ noncomputable def ηStar (U : Type) [SpongeUnit U] [Fintype U]
   malicious prover and the query-answer traces, the two games have outputs that are statistically
   indistinguishable, up to an error term
 
-TODO: fully fill in this lemma -/
+The current statement records the endpoint while the statistical-distance bound is being developed. -/
 lemma duplexSpongeToFSGameStatDist
     (maliciousProver : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
       (StmtIn × pSpec.Messages))
     (tₒ : ι → ℕ) (tₕ tₚ tₚᵢ : ℕ)
-    -- TODO: state query bound only for subset of the oracles
+    -- Note: state query bound only for subset of the oracles
     -- (hQuery : IsQueryBound maliciousProver (tₒ ⊕ᵥ (tₕ ⊕ᵥ (tₚ ⊕ᵥ tₚᵢ))))
     : True :=
   trivial

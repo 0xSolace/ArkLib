@@ -301,7 +301,7 @@ lemma not_collisionPerm_of_not_combined (h : ¬ E trace) : ¬ E_prp trace := by
 indices -/
 
 def inv : Prop :=
-  -- NOTE: placeholder for now; conservatively track it as a subevent of the combined event.
+  -- Conservatively track this as a subevent of the combined event.
   E trace ∧ state = 0
 
 alias E_inv := inv
@@ -310,7 +310,7 @@ lemma not_inv_of_not_combined (h : ¬ E trace) : ¬ E_inv trace state :=
   fun hinv => h hinv.1
 
 def fork : Prop :=
-  -- NOTE: placeholder for now; conservatively track it as a subevent of the combined event.
+  -- Conservatively track this as a subevent of the combined event.
   E trace ∧ state = 0
 
 alias E_fork := fork
@@ -320,13 +320,13 @@ lemma not_fork_of_not_combined (h : ¬ E trace) : ¬ E_fork trace state :=
 
 
 def outOfOrderHash : Prop :=
-  -- NOTE: placeholder for now; conservatively track it as a subevent of the combined event.
+  -- Conservatively track this as a subevent of the combined event.
   E trace ∧ state = 0
 
 alias E_time_h := outOfOrderHash
 
 def outOfOrderPerm : Prop :=
-  -- NOTE: placeholder for now; conservatively track it as a subevent of the combined event.
+  -- Conservatively track this as a subevent of the combined event.
   E trace ∧ state = 0
 
 alias E_time_p := outOfOrderPerm

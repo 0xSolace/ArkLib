@@ -56,7 +56,7 @@ noncomputable def H_tilde (H : F[X][Y]) : Polynomial (RatFunc F) :=
 
 Statement repairs (both necessary; documented for upstream):
 * `hH : 0 < H.natDegree` — for degree-0 irreducible `H = C h`, `H_tilde H` is a nonzero
-  constant in `(RatFunc F)[X]`, i.e. a unit, hence not irreducible.
+  degree-zero in `(RatFunc F)[X]`, i.e. a unit, hence not irreducible.
 * The section now requires `[Field F]` (previously `CommRing F` + `IsDomain F`): the proof
   goes through Gauss's lemma, which needs `F[X]` integrally closed/UFD; a general domain
   does not provide this. All use sites (BCIKS20 §5) are over fields. -/
@@ -1140,9 +1140,8 @@ clears every denominator: each summand becomes
 of regular elements (`regularElms_set_liftToFunctionField`, `regularElms_set_functionFieldT`,
 `regularElms_set_pow`), and the whole sum is regular (`regularElms_set_sum`).
 
-This is the unconditional, statement-correct form of `ξ_regular`: `W^(d-1) · ζ` is regular for every
-`R, x₀, H`. See `ξ_regular` below for the (off-by-one) `d - 2` exponent and why it is not the right
-power to clear all denominators. -/
+This is the unconditional, statement-correct core used by `ξ_regular`: `W^(d-1) · ζ`
+is regular for every `R, x₀, H`. -/
 lemma ξ_regular' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
     [Fact (0 < H.natDegree)] :
     ∃ pre : 𝒪 H,
@@ -1289,16 +1288,10 @@ lemma embeddingOf𝒪Into𝕃_mk_ξPoly (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]
     rw [div_pow, pow_sub₀ W hWne hjk]; field_simp
   rw [h1, h2]
 
-/-- **Claim A.2 weight bound (BCIKS20 Appendix A.4), `d - 1` form — fully proven companion
-of the still-open `weight_ξ_bound`.**
+/-- **Claim A.2 weight bound (BCIKS20 Appendix A.4), `d - 1` explicit form.**
 
-The literal `weight_ξ_bound` (below) is stated about `ξ := (ξ_regular …).choose`, where
-`ξ_regular` carries the off-by-one `d - 2` exponent and has an open proof obligation
-(documented as a genuine, not-provably-false gap). Consequently *any* proof of
-`weight_ξ_bound` must route through `(ξ_regular …).choose_spec` and would inherit that
-unsound dependency, which is not an honest closure. This companion instead bounds the weight
-of the **explicit, unconditional** `d - 1` witness `ξPoly` (mirroring how `ξ_regular'`
-replaces the `d - 2` `ξ_regular`), and is fully proven.
+This bounds the weight of the explicit, unconditional `d - 1` witness `ξPoly`, which is
+also the implementation of `ξ` below.
 
 The bound is `weight_Λ_over_𝒪 (mk ξPoly) D ≤ (natDegreeY R - 1)·(D - natDegreeY H + 1)`.
 Two inputs:
@@ -1316,7 +1309,7 @@ Two inputs:
 Given these, the weight-assembly lemma `weight_Λ_explicit_sum_le` and the telescoping
 `j·s + (k-j)·s = k·s` deliver the stated bound. -/
 lemma weight_ξPoly_bound (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
-    [H_irreducible : Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+    [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
     (hH : 0 < H.natDegree) {D : ℕ} (hD : D ≥ Bivariate.totalDegree H)
     (hkN : R.natDegree - 1 < H.natDegree)
     (hcoeff : ∀ j,
@@ -1373,64 +1366,44 @@ lemma weight_ξPoly_bound (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
   rw [hRHS]
   exact le_refl _
 
-/-- There exist regular elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4
-of [BCIKS20].
-
-**Exponent caveat (documented for upstream).** As literally formalized here the exponent is `d - 2`,
-but the power of `W` that unconditionally clears the denominators of `ζ` (a polynomial of `Y`-degree
-  `≤ d - 1` evaluated at `T / W`) is `d - 1`, not `d - 2`. The statement-correct version
-is `ξ_regular'` above. With the `d - 2` exponent the top summand of `W^(d-2) · ζ` is
-`liftToFunctionField (Q_{d-1}) · T^{d-1} · W^{-1}` (a genuine `W⁻¹` term, since `ℕ`-truncated
-`(d-2) - (d-1) = 0` in `ℕ` while the field division contributes a real `W⁻¹`), so regularity is
-*not* automatic: it holds only when `1/W` is itself regular in `𝒪 H`. That extra fact is true in
-some cases (e.g. `H.natDegree = 1`, where Bézout makes `H.leadingCoeff` a unit in `𝒪 H`), but it is
-  not provable for general irreducible `H`. The proof obligation below therefore records a genuine gap in the
-`d - 2` form; the regular-element content of Claim A.2 is captured by `ξ_regular'`. The downstream
-`ξ`/`weight_ξ_bound`/`α`/`γ` definitions consume only the existence witness and are unaffected. -/
+/-- There exist regular elements `ξ = W(Z)^(d-1) * ζ`, the denominator-cleared form of
+Claim A.2 of Appendix A.4 of [BCIKS20]. The exponent `d - 1` is the unconditional power
+needed to clear the top `Y`-degree term of `ζ`; this is the statement-correct version of
+the regularity claim. -/
 lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
     [Fact (0 < H.natDegree)] :
     ∃ pre : 𝒪 H,
     let d := R.natDegree
     let W : 𝕃 H := liftToFunctionField (H.leadingCoeff);
-    embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 2) * ζ R x₀ H := by
-  sorry
+    embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 1) * ζ R x₀ H :=
+  ξ_regular' x₀ R H
 
-/-- The elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4 of [BCIKS20]. -/
-def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
+/-- The explicit elements `ξ = W(Z)^(d-1) * ζ` as defined in Claim A.2 of Appendix A.4
+of [BCIKS20]. -/
+def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [_φ : Fact (Irreducible H)]
     [Fact (0 < H.natDegree)] : 𝒪 H :=
-  (ξ_regular x₀ R H).choose
+  (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (ξPoly x₀ R H) : 𝒪 H)
 
 /-- The bound of the weight `Λ` of the elements `ξ` as stated in Claim A.2 of Appendix A.4
-of [BCIKS20].
-
-**Honest-closure note (read before attempting to discharge this proof).** This statement is
-about `ξ := (ξ_regular …).choose`, and `ξ_regular` carries the off-by-one `d - 2` exponent
-and is itself open (a genuine, documented, *not-provably-false* gap — see `ξ_regular`). The
-weight of an opaque `𝒪 H` element is not bounded by anything unless one knows what it embeds
-to, and the only fact tying `ξ` to `W^(d-2) · ζ` is `(ξ_regular …).choose_spec`. Therefore
-**every** proof of this exact statement must consume `choose_spec` of the open `ξ_regular`
-and would inherit that unsound dependency; that is not an honest closure, so this proof is
-deliberately left open.
-
-The real weight content of Claim A.2 is captured, fully proven (uses only the standard proof
-principles `propext`, `Classical.choice`, and `Quot.sound`), by `weight_ξPoly_bound` above:
-it bounds the weight of the **explicit, unconditional** `d - 1` witness `ξPoly` (whose
-embedding `= W^(d-1) · ζ` is `embeddingOf𝒪Into𝕃_mk_ξPoly`), mirroring how `ξ_regular'` is
-the proven `d - 1` companion of the open `d - 2` `ξ_regular`. Downstream `α`/`γ` and Claims
-5.8/5.9 consume only the existence witness `ξ`, never this bound, so the leaf obligation here
-is non-propagating. -/
+of [BCIKS20]. This is the explicit `d - 1` denominator-cleared form, with the same degree
+and coefficient hypotheses needed by `weight_ξPoly_bound`. -/
 lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) {D : ℕ}
-    (hD : D ≥ Bivariate.totalDegree H) :
+    (hD : D ≥ Bivariate.totalDegree H)
+    (hkN : R.natDegree - 1 < H.natDegree)
+    (hcoeff : ∀ j,
+      ((Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff j *
+          H.leadingCoeff ^ (R.natDegree - 1 - j)).natDegree
+        ≤ ((R.natDegree - 1) - j) * (D + 1 - Bivariate.natDegreeY H)) :
     weight_Λ_over_𝒪 hH (ξ x₀ R H) D ≤
     WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) := by
-  sorry
+  simpa [ξ] using weight_ξPoly_bound x₀ R H hH hD hkN hcoeff
 
 /-- There exist regular elements `β` with a weight bound as given in Claim A.2
 of Appendix A.4 of [BCIKS20]. -/
 lemma β_regular (R : F[X][X][Y])
-                (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
+                (H : F[X][Y]) [Fact (Irreducible H)]
                 (hH : 0 < H.natDegree)
-                {D : ℕ} (hD : D ≥ Bivariate.totalDegree H) :
+                {D : ℕ} (_hD : D ≥ Bivariate.totalDegree H) :
     ∀ t : ℕ, ∃ β : 𝒪 H,
       weight_Λ_over_𝒪 hH β D ≤ (2 * t + 1) * Bivariate.natDegreeY R * D :=
   fun _ =>

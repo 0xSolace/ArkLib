@@ -337,9 +337,7 @@ end ForInSupport
 /-!
 ## Common Proximity Check Helpers
 
-These functions extract the shared logic between `queryOracleVerifier`
-and `queryKnowledgeStateFunction` for proximity testing, allowing code reuse
-and ensuring both implementations follow the same logic.
+These functions extract the proximity-testing logic used by `queryOracleVerifier`.
 -/
 
 /-- Extract suffix (v_{i+ϑ}, ..., v_{ℓ+R-1}) from challenge v for proximity testing -/
@@ -427,12 +425,6 @@ def proximityChecksSpec (γ_challenges :
           else final_constant
         c_next = f_i_next_val
       consistency_check
-
-/-- RBR knowledge error for the query phase.
-Proximity testing error rate: `(1/2 + 1/(2 * 2^𝓡))^γ` -/
-def queryRbrKnowledgeError := fun _ : (pSpecQuery 𝔽q β γ_repetitions
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).ChallengeIdx =>
-  ((1/2 : ℝ≥0) + (1 : ℝ≥0) / (2 * 2^𝓡))^γ_repetitions
 
 /-- Oracle query helper: query a committed codeword at a given domain point.
     Restricted to codeword indices where the oracle range is L. -/
@@ -526,7 +518,7 @@ noncomputable def queryOracleVerifier :
     -- 4. Proximity testing for all γ repetitions.
     -- This implements the specification defined in proximityChecksSpec
     for rep in (List.finRange γ_repetitions) do
-      let mut c_cur : L := 0 -- Placeholder, will be initialized in the first iteration.
+      let mut c_cur : L := 0 -- Initial value; the first fold iteration overwrites it.
       let v := fold_challenges rep
 
       for k_val in List.finRange (ℓ / ϑ) do
@@ -574,8 +566,8 @@ noncomputable def queryOracleVerifier :
         `List.mapM`. The previous list-based form forced a downstream obligation
         `f_i_on_fiber.length = 2 ^ ϑ` to justify the `Fin (2^ϑ)`-indexed accesses below; but
         under the monadic bind `f_i_on_fiber` is a lambda-bound free variable, so that length
-        equation would have to hold for ALL lists of the binder's type and is therefore
-        unprovable (and this toolchain has neither a `List.length_mapM` lemma nor VCVio's
+        equation would have to hold for ALL lists of the binder's type, which is too strong
+        (and this toolchain has neither a `List.length_mapM` lemma nor VCVio's
         `mem_support_vector_mapM` helper). Carrying the length in the type via
         `List.Vector` makes the obligation vanish: `List.Vector.get : Fin (2^ϑ) → L` is total,
         so both consumers below index without any side proof. Semantics are unchanged — the same
