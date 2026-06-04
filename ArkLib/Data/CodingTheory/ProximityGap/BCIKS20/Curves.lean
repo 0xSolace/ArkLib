@@ -111,7 +111,7 @@ lemma goodCoeffsCurve_card_bounds_of_prob_threshold {k deg : ℕ}
   · exact finset_card_gt_of_natCast_le_ennreal_lt hsmall hx
   · exact finset_card_ge_of_pred_natCast_le_ennreal_lt hlarge hx
 
-omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] in
+omit [DecidableEq ι] [DecidableEq F] in
 /-- The easy threshold side condition follows from the standard lower bound
 `|ι| / |F| ≤ errorBound`. -/
 lemma prob_threshold_small_of_errorBound_ge_const {k deg : ℕ}
