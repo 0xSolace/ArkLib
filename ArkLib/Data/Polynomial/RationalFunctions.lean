@@ -30,7 +30,7 @@ We define the notions of Appendix A of [BCIKS20].
 
 -/
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2100
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal
 
@@ -1787,6 +1787,110 @@ lemma embeddingOf𝒪Into𝕃_ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     embeddingOf𝒪Into𝕃 H (ξ x₀ R H hHyp) =
       liftToFunctionField (H := H) H.leadingCoeff ^ (R.natDegree - 2) * ζ R x₀ H :=
   embeddingOf𝒪Into𝕃_mk_ξ_pre x₀ R H hHyp
+
+/-! ### Coefficient structure for `weight_ξ_bound`
+
+Helper lemmas establishing the explicit coefficients of `H_tilde' H` and `ξ_pre`, used in the
+proof of `weight_ξ_bound`. -/
+
+/-- For `i < H.natDegree`, the `i`-th coefficient of `H_tilde' H` is
+`H.coeff i * H.leadingCoeff ^ (d_H - 1 - i)`. -/
+lemma H_tilde'_coeff_of_lt {H : F[X][Y]} (hH : 0 < H.natDegree) {i : ℕ}
+    (hi : i < H.natDegree) :
+    (H_tilde' H).coeff i = H.coeff i * H.leadingCoeff ^ (H.natDegree - 1 - i) := by
+  classical
+  rw [H_tilde', if_neg (Nat.ne_of_gt hH)]
+  rw [Polynomial.coeff_add]
+  have hXpow : (Polynomial.X ^ H.natDegree : F[X][Y]).coeff i = 0 := by
+    rw [Polynomial.coeff_X_pow]
+    rw [if_neg (by omega)]
+  rw [hXpow, zero_add]
+  rw [Polynomial.finset_sum_coeff]
+  rw [Finset.sum_eq_single i]
+  · rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_pos rfl, mul_one]
+    rfl
+  · intro b _ hb
+    rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_neg (Ne.symm hb), mul_zero]
+  · intro hi_mem
+    exact absurd (Finset.mem_range.mpr hi) hi_mem
+
+/-- For `i < H.natDegree`, the `natDegree` of the `i`-th coefficient of `H_tilde' H` is bounded by
+`(D - i) + (d_H - 1 - i) · natDegree W`, where `W = H.leadingCoeff`. -/
+lemma natDegree_H_tilde'_coeff_le {H : F[X][Y]} {D : ℕ}
+    (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) {i : ℕ}
+    (hi : i < H.natDegree) :
+    ((H_tilde' H).coeff i).natDegree ≤
+      (D - i) + (H.natDegree - 1 - i) * (H.leadingCoeff).natDegree := by
+  rw [H_tilde'_coeff_of_lt hH hi]
+  calc (H.coeff i * H.leadingCoeff ^ (H.natDegree - 1 - i)).natDegree
+      ≤ (H.coeff i).natDegree + (H.leadingCoeff ^ (H.natDegree - 1 - i)).natDegree :=
+        Polynomial.natDegree_mul_le
+    _ ≤ (D - i) + (H.natDegree - 1 - i) * (H.leadingCoeff).natDegree := by
+        refine Nat.add_le_add (natDegree_coeff_le_of_totalDegree_le H hD i) ?_
+        exact Polynomial.natDegree_pow_le
+
+/-- In the `2 ≤ d` regime, the explicit coefficients of `ξ_pre`. For `i < d - 1` the coefficient
+is `P.coeff i * W^(d-2-i)`; at `i = d - 1` it is `P.coeff (d-1) / W`; for `i ≥ d` it vanishes. Here
+`P = R'(x₀, ·)` and `W = H.leadingCoeff`. -/
+lemma ξ_pre_coeff_of_lt {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]} (hd : 2 ≤ R.natDegree) {i : ℕ}
+    (hi : i < R.natDegree - 1) :
+    (ξ_pre x₀ R H).coeff i =
+      (Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff i *
+        H.leadingCoeff ^ (R.natDegree - 2 - i) := by
+  classical
+  rw [ξ_pre]
+  simp only [hd, ↓reduceIte]
+  rw [Polynomial.coeff_add]
+  have htop : (Polynomial.C
+      ((Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff (R.natDegree - 1) /
+        H.leadingCoeff) * Polynomial.X ^ (R.natDegree - 1) : F[X][Y]).coeff i = 0 := by
+    rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_neg (by omega), mul_zero]
+  rw [htop, add_zero]
+  rw [Polynomial.finset_sum_coeff]
+  rw [Finset.sum_eq_single i]
+  · rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_pos rfl, mul_one]
+  · intro b _ hb
+    rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_neg (Ne.symm hb), mul_zero]
+  · intro hi_mem
+    exact absurd (Finset.mem_range.mpr hi) hi_mem
+
+/-- The top coefficient of `ξ_pre` (at index `d - 1`) in the `2 ≤ d` regime. -/
+lemma ξ_pre_coeff_top {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]} (hd : 2 ≤ R.natDegree) :
+    (ξ_pre x₀ R H).coeff (R.natDegree - 1) =
+      (Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff (R.natDegree - 1) /
+        H.leadingCoeff := by
+  classical
+  rw [ξ_pre]
+  simp only [hd, ↓reduceIte]
+  rw [Polynomial.coeff_add]
+  have hsum : (∑ i ∈ Finset.range (R.natDegree - 1),
+      Polynomial.C ((Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff i *
+        H.leadingCoeff ^ (R.natDegree - 2 - i)) * Polynomial.X ^ i :
+        F[X][Y]).coeff (R.natDegree - 1) = 0 := by
+    rw [Polynomial.finset_sum_coeff]
+    refine Finset.sum_eq_zero (fun b hb => ?_)
+    rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_neg (by
+      have := Finset.mem_range.mp hb; omega), mul_zero]
+  rw [hsum, zero_add, Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_pos rfl, mul_one]
+
+/-- In the `2 ≤ d` regime, `ξ_pre` has `Y`-degree at most `d - 1`. -/
+lemma natDegree_ξ_pre_le {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]} (hd : 2 ≤ R.natDegree) :
+    (ξ_pre x₀ R H).natDegree ≤ R.natDegree - 1 := by
+  classical
+  rw [Polynomial.natDegree_le_iff_coeff_eq_zero]
+  intro n hn
+  by_cases hn1 : n = R.natDegree - 1
+  · subst hn1; omega
+  · by_cases hn_lt : n < R.natDegree - 1
+    · omega
+    · -- n > R.natDegree - 1 and n ≠ R.natDegree - 1: coeff vanishes
+      rw [ξ_pre]
+      simp only [hd, ↓reduceIte]
+      rw [Polynomial.coeff_add, Polynomial.finset_sum_coeff]
+      rw [Finset.sum_eq_zero (fun b hb => ?_), zero_add,
+          Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_neg (by omega), mul_zero]
+      rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow,
+          if_neg (by have := Finset.mem_range.mp hb; omega), mul_zero]
 
 /-- The bound of the weight `Λ` of the elements `ζ` as stated in Claim A.2 of Appendix A.4
 of [BCIKS20].
