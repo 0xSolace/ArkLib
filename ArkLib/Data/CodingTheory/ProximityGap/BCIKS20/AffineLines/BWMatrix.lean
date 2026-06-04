@@ -1399,7 +1399,7 @@ theorem BW_homMatrix_entry_natDegree_le_of_natDegree_le {F : Type} [Field F]
           Polynomial.natDegree_mul_le
       _ ≤ d + 0 := by
           refine Nat.add_le_add (hd i) ?_
-          simpa using Polynomial.natDegree_pow_le_of_le j.1
+          exact Polynomial.natDegree_pow_le_of_le j.1
             (le_of_eq (Polynomial.natDegree_C (ωs i)))
       _ = d := Nat.add_zero d
   · -- constraint block: -C(ωs i)^(j-(e+1)) — degree 0
