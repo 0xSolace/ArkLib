@@ -149,6 +149,25 @@ def sumcheckFoldOracleReduction :=
 
 -- Security properties for the lifted oracle reduction
 
+omit [NeZero κ] [NeZero ℓ] [CharP L 2] [SampleableType L] in
+unseal BinaryBasefold.foldingBadEventAtBlock in
+/-- At round index `0` there is a single oracle and the per-block bad folding event check is
+vacuously true, so the initial bad-event disjunct holds. -/
+theorem badEventExistsProp_zero
+    (oStmt : ∀ j, BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0 j)
+    (challenges : Fin (0 : Fin (ℓ' + 1)) → L) :
+    BinaryBasefold.badEventExistsProp K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (stmtIdx := 0) (oracleIdx := 0) (oStmt := oStmt) (challenges := challenges) := by
+  refine ⟨⟨0, ?_⟩, ?_⟩
+  · letI := BinaryBasefold.instNeZeroNatToOutCodewordsCount ℓ' ϑ 0
+    exact Nat.pos_of_neZero _
+  · unfold BinaryBasefold.foldingBadEventAtBlock
+    rw [dif_neg]
+    · trivial
+    · have hϑ : (0 : ℕ) < ϑ := Nat.pos_of_neZero ϑ
+      simp only [Fin.val_zero, zero_mul, zero_add]
+      omega
+
 section Security
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
@@ -197,9 +216,11 @@ instance sumcheckFoldCtxLens_complete :
         (sumcheckFoldCtxLens κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l).toContext originalReduction
     ) where
   proj_complete := fun stmtIn oStmtIn hRelIn => by
-    sorry
+    refine ⟨trivial, Or.inl ?_⟩
+    exact badEventExistsProp_zero (oStmt := _) (challenges := _)
   lift_complete := fun outerStmtIn outerWitIn innerStmtOut innerWitOut compat => by
-    sorry
+    intro _hOuterIn hInnerOut
+    exact hInnerOut
 
 omit [NeZero ℓ] in
 -- Perfect completeness for the lifted oracle reduction
@@ -599,7 +620,7 @@ theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type
   use finalSumcheckRbrExtractor κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l
   use finalSumcheckKnowledgeStateFunction κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l init impl
   intro stmtIn witIn prover j
-  sorry
+  exact absurd j.2 (by simp [pSpecFinalSumcheckStep])
 
 end FinalSumcheckStep
 

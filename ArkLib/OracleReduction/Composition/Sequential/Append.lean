@@ -151,7 +151,9 @@ def OracleVerifier.append (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ 
       OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₃ OStmt₃ (pSpec₁ ++ₚ pSpec₂) where
   verify := fun stmt challenges => by
     -- First, invoke the first oracle verifier, handling queries as necessary
-    have := V₁.verify stmt (fun chal => sorry)
+    have := V₁.verify stmt (fun chal => cast (by
+      simp [ProtocolSpec.Challenge, ChallengeIdx.inl, ProtocolSpec.append])
+      (challenges (ChallengeIdx.inl chal)))
     simp at this
     -- Then, invoke the second oracle verifier, handling queries as necessary
     -- Return the final output statement

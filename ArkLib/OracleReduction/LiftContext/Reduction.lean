@@ -6,6 +6,8 @@ Authors: Quang Dao
 
 import ArkLib.OracleReduction.LiftContext.Lens
 import ArkLib.OracleReduction.Security.RoundByRound
+import ArkLib.ToVCVio.EvalDist.Instances.OptionT
+import ArkLib.ToVCVio.OracleComp.Coercions.SubSpec
 -- import ArkLib.OracleReduction.Security.StateRestoration
 
 /-!
@@ -203,6 +205,43 @@ section Theorems
 
 /- Theorems about liftContext interacting with reduction execution and security properties -/
 
+/-- Stateful simulation can only restrict the set of reachable outcomes: any value in the support
+  of `(simulateQ so oa).run' s` is already in the support of `oa`. -/
+theorem mem_support_simulateQ_run'_subset
+    {ι ι' : Type} {spec : OracleSpec ι} {spec' : OracleSpec ι'} {σ' : Type} {τ : Type}
+    (so : QueryImpl spec (StateT σ' (OracleComp spec')))
+    (s : σ') (oa : OracleComp spec τ) (x : τ)
+    (hx : x ∈ support ((simulateQ so oa).run' s)) : x ∈ support oa := by
+  revert s
+  induction oa using OracleComp.inductionOn with
+  | pure y =>
+      intro s hx
+      simp only [simulateQ_pure, StateT.run'_eq, StateT.run_pure, support_map,
+        support_pure, Set.image_singleton, Set.mem_singleton_iff] at hx
+      simp [hx]
+  | query_bind t mx ih =>
+      intro s hx
+      rw [simulateQ_bind, simulateQ_query] at hx
+      simp only [OracleQuery.cont_query, id_map, OracleQuery.input_query,
+        StateT.run'_eq, StateT.run_bind, support_map, support_bind, Set.mem_image,
+        Set.mem_iUnion] at hx
+      obtain ⟨⟨v, p⟩, ⟨⟨u, s'⟩, _, hmem⟩, hxv⟩ := hx
+      simp only at hxv
+      have hxmx : x ∈ support (mx u) := by
+        apply ih u s'
+        simp only [StateT.run'_eq, support_map, Set.mem_image]
+        exact ⟨⟨v, p⟩, hmem, hxv⟩
+      simp only [support_bind, support_query, Set.mem_iUnion]
+      exact ⟨u, by simp, hxmx⟩
+
+/-- Fold an output post-map over an `OptionT ProbComp` computation into the event predicate. -/
+theorem probEvent_optionT_mk_map_fst_map {α β γ : Type}
+    (base : ProbComp (Option α × γ)) (g : α → β) (P : β → Prop) :
+    Pr[P | (OptionT.mk ((fun p => Option.map g p.1) <$> base) : OptionT ProbComp β)] =
+      Pr[P ∘ g | (OptionT.mk ((fun p => p.1) <$> base) : OptionT ProbComp α)] :=
+  OptionT.probEvent_eq_of_run_map_eq _ _ g P
+    (by simp only [OptionT.run_map, OptionT.run_mk, Functor.map_map, Function.comp_apply])
+
 namespace Prover
 
 /- Breaking down the intertwining of liftContext and prover execution -/
@@ -324,8 +363,22 @@ theorem liftContext_runWithLog
         return ⟨⟨⟨fullTranscript, lens.lift (outerStmtIn, outerWitIn) innerCtxOut⟩,
                 lens.stmt.lift outerStmtIn verInnerStmtOut⟩, queryLog⟩ := by
   unfold runWithLog
-  simp [liftContext, Prover.liftContext_runWithLog, Verifier.liftContext, Verifier.run]
-  sorry
+  simp only [liftContext, Prover.liftContext_runWithLog, Verifier.liftContext, Verifier.run,
+    Function.uncurry, liftM_map, map_bind, bind_map_left, bind_pure_comp]
+  refine bind_congr fun a => ?_
+  conv_lhs =>
+    rw [show (lens.stmt.lift outerStmtIn <$> R.verifier.verify (lens.stmt.proj outerStmtIn) a.1.1
+          : OptionT (OracleComp oSpec) OuterStmtOut)
+        = (Option.map (lens.stmt.lift outerStmtIn) <$>
+            R.verifier.verify (lens.stmt.proj outerStmtIn) a.1.1
+          : OracleComp oSpec (Option OuterStmtOut)) from OptionT.run_map _ _]
+  rw [simulateQ_map, WriterT.run_map]
+  simp only [liftM_map, Functor.map_map, Statement.Lens.proj]
+  rw [bind_map_left]
+  refine bind_congr fun b => ?_
+  cases h : b.1 with
+  | none => simp only [Option.map_none, Option.getM_none, h, map_failure]
+  | some v => simp only [Option.map_some, Option.getM_some, h, map_pure]
 
 end Reduction
 
@@ -356,20 +409,28 @@ theorem liftContext_completeness
     (lensComplete.proj_complete _ _ hRelIn)
   rw [Reduction.liftContext_run]
   refine le_trans hR ?_
-  simp
-  sorry
-  -- refine probEvent_mono ?_
-  -- intro ⟨innerContextOut, a, b⟩ hSupport ⟨hRelOut, hRelOut'⟩
-  -- have : innerContextOut ∈
-  --     Prod.fst <$>
-  --       (R.run (lens.stmt.proj outerStmtIn)
-  -- (lens.wit.proj (outerStmtIn, outerWitIn))).support := by
-  --   simp
-  --   exact ⟨a, b, hSupport⟩
-  -- simp_all
-  -- rw [← hRelOut'] at hRelOut ⊢
-  -- refine lensComplete.lift_complete _ _ _ _ ?_ hRelIn hRelOut
-  -- simp [compatContext]; exact this
+  simp only [Function.uncurry, Context.Lens.proj, bind_pure_comp, OptionT.run_map, simulateQ_map,
+    StateT.run'_eq, StateT.run_map, map_bind, Functor.map_map, ← map_bind]
+  rw [probEvent_optionT_mk_map_fst_map]
+  refine _root_.probEvent_mono ?_
+  rintro ⟨⟨innerTr, innerStmtPrv, innerWit⟩, innerStmtVer⟩ hSupport ⟨hRelOut, hVer⟩
+  simp only [Function.comp_apply] at hVer ⊢
+  subst hVer
+  refine ⟨?_, rfl⟩
+  refine lensComplete.lift_complete outerStmtIn outerWitIn innerStmtPrv innerWit ?_
+    hRelIn hRelOut
+  simp only [OptionT.mem_support_iff, OptionT.run_mk, mem_support_bind_iff, support_map,
+    Set.mem_image] at hSupport
+  obtain ⟨x, ⟨s, _hs, hmem⟩, hx1⟩ := hSupport
+  have hsub := mem_support_simulateQ_run'_subset (impl.addLift challengeQueryImpl) s
+    (Reduction.run (lens.stmt.proj outerStmtIn)
+      (lens.wit.proj (outerStmtIn, outerWitIn)) R).run x.1
+    (by simp only [StateT.run'_eq, support_map, Set.mem_image]; exact ⟨x, hmem, rfl⟩)
+  rw [hx1] at hsub
+  rw [Reduction.compatContext]
+  simp only [Set.mem_image, Function.comp_apply]
+  refine ⟨((innerTr, innerStmtPrv, innerWit), innerStmtPrv), ?_, rfl⟩
+  rwa [← OptionT.mem_support_iff] at hsub
 
 theorem liftContext_perfectCompleteness
     (h : R.perfectCompleteness init impl innerRelIn innerRelOut) :
@@ -391,6 +452,37 @@ end Reduction
 
 namespace Verifier
 
+/-- The inner malicious prover obtained from an outer prover by fixing the outer input
+context and forgetting the output statement. -/
+private def _fixContext [Inhabited InnerStmtOut]
+    {WitIn WitOut : Type}
+    (outerP : Prover oSpec OuterStmtIn WitIn OuterStmtOut WitOut pSpec)
+    (outerStmtIn : OuterStmtIn) (outerWitIn : WitIn) :
+      Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec where
+  PrvState := outerP.PrvState
+  input := fun _ => outerP.input (outerStmtIn, outerWitIn)
+  sendMessage := outerP.sendMessage
+  receiveChallenge := outerP.receiveChallenge
+  output := fun state => do
+    let ⟨_, outerWitOut⟩ ← outerP.output state
+    return ⟨default, outerWitOut⟩
+
+/-- The fixed-context inner prover's run is the outer prover's run with the output
+statement forgotten. -/
+private lemma _fixContext_run [Inhabited InnerStmtOut]
+    {WitIn WitOut : Type}
+    (outerP : Prover oSpec OuterStmtIn WitIn OuterStmtOut WitOut pSpec)
+    (outerStmtIn : OuterStmtIn) (outerWitIn : WitIn) (innerStmtIn : InnerStmtIn) :
+      Prover.run innerStmtIn outerWitIn
+          (_fixContext (InnerStmtOut := InnerStmtOut) outerP outerStmtIn outerWitIn) =
+        (fun x => ⟨x.1, default, x.2.2⟩) <$> Prover.run outerStmtIn outerWitIn outerP := by
+  have hRTR : ∀ i, Prover.runToRound i innerStmtIn outerWitIn
+      (_fixContext (InnerStmtOut := InnerStmtOut) outerP outerStmtIn outerWitIn) =
+        Prover.runToRound i outerStmtIn outerWitIn outerP := fun _ => rfl
+  simp only [Prover.run, hRTR, _fixContext, map_bind, bind_pure_comp, Functor.map_map,
+    liftM_map]
+  rfl
+
 /-- Lifting the reduction preserves soundness, assuming the lens satisfies its soundness
   conditions -/
 theorem liftContext_soundness [Inhabited InnerStmtOut]
@@ -399,7 +491,6 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
     {soundnessError : ℝ≥0}
     {lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut}
     (V : Verifier oSpec InnerStmtIn InnerStmtOut pSpec)
-    -- TODO: figure out the right compatibility relation for the IsSound condition
     [lensSound : lens.IsSound outerLangIn outerLangOut innerLangIn innerLangOut
       (V.compatStatement lens)]
     (h : V.soundness init impl innerLangIn innerLangOut soundnessError) :
@@ -408,24 +499,114 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
   -- Note: there is no distinction between `Outer` and `Inner` here
   intro WitIn WitOut outerWitIn outerP outerStmtIn hOuterStmtIn
   simp at h ⊢
-  have innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec := {
-    PrvState := outerP.PrvState
-    input := fun _ => outerP.input (outerStmtIn, outerWitIn)
-    sendMessage := outerP.sendMessage
-    receiveChallenge := outerP.receiveChallenge
-    output := fun state => do
-      let ⟨outerStmtOut, outerWitOut⟩ ← outerP.output state
-      return ⟨default, outerWitOut⟩
-  }
-  have : lens.proj outerStmtIn ∉ innerLangIn := by
-    apply lensSound.proj_sound
-    exact hOuterStmtIn
-  have hSound := h WitIn WitOut outerWitIn innerP (lens.proj outerStmtIn) this
+  have hProj : lens.proj outerStmtIn ∉ innerLangIn :=
+    lensSound.proj_sound _ hOuterStmtIn
+  have hSound := h WitIn WitOut outerWitIn
+    (_fixContext (InnerStmtOut := InnerStmtOut) outerP outerStmtIn outerWitIn)
+    (lens.proj outerStmtIn) hProj
   refine le_trans ?_ hSound
-  simp [Verifier.liftContext, Verifier.run]
-  -- Need to massage the two `probEvent`s so that they have the same base computation `oa`
-  -- Then apply `lensSound.lift_sound`?
-  sorry
+  rw [_fixContext_run]
+  simp only [Verifier.liftContext, Verifier.run, Function.uncurry, bind_pure_comp,
+    OptionT.run_map, simulateQ_map, StateT.run'_eq, StateT.run_map, map_bind,
+    Functor.map_map, liftM_map, ← map_bind]
+  have hGetMRun : ∀ {α : Type} (o : Option α),
+      (Option.getM (m := OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))) o).run = pure o := by
+    intro _ o; cases o <;> rfl
+  have hElimM_map : ∀ {m : Type → Type} [Monad m] [LawfulMonad m] {α β γ : Type}
+      (x : m (Option α)) (g : α → β) (y : m γ) (f : β → m γ),
+      Option.elimM (Option.map g <$> x) y f = Option.elimM x y (f ∘ g) := by
+    intro m _ _ α β γ x g y f
+    simp only [Option.elimM, bind_map_left]
+    exact bind_congr fun o => by cases o <;> rfl
+  simp only [hGetMRun, hElimM_map, simulateQ_pure, Function.comp_def, Option.map_map]
+  simp only [map_pure, bind_map_left]
+  have hMapElim : ∀ {α β γ : Type} {m : Type → Type} [Monad m] [LawfulMonad m]
+      (src : m (Option α)) (g : β → γ) (h : α → Option β),
+      Option.elimM src (pure none) (fun a => pure (Option.map g (h a))) =
+        (Option.map g) <$> Option.elimM src (pure none) (fun a => pure (h a)) := by
+    intro α β γ m _ _ src g h
+    simp only [Option.elimM, map_bind]
+    exact bind_congr fun o => by cases o <;> simp
+  have hLval : ∀ (t : pSpec.FullTranscript × OuterStmtOut × WitOut) (z : Option InnerStmtOut),
+      Option.map (Prod.mk t) (Option.map (lens.lift outerStmtIn) z) =
+        Option.map (Prod.map id (lens.lift outerStmtIn)) (Option.map (Prod.mk t) z) := by
+    intro t z; cases z <;> rfl
+  have hRval : ∀ (t : pSpec.FullTranscript × OuterStmtOut × WitOut) (z : Option InnerStmtOut),
+      Option.map (Prod.mk (t.1, (default : InnerStmtOut), t.2.2)) z =
+        Option.map (Prod.map (fun t' : pSpec.FullTranscript × OuterStmtOut × WitOut =>
+          (t'.1, (default : InnerStmtOut), t'.2.2)) id) (Option.map (Prod.mk t) z) := by
+    intro t z; cases z <;> rfl
+  simp only [hLval, hRval, hMapElim, StateT.run_map, Functor.map_map]
+  set core : OptionT ProbComp
+      ((pSpec.FullTranscript × OuterStmtOut × WitOut) × InnerStmtOut) :=
+    ((liftM init : OptionT ProbComp σ) >>= fun x0 => (liftM ((simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) (Prover.run outerStmtIn outerWitIn outerP)).run x0) : OptionT ProbComp _) >>= fun x => OptionT.mk ((fun a => Option.map (Prod.mk x.1) a.1) <$> (Option.elimM (simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) ((liftM ((V.verify (lens.proj outerStmtIn) x.1.1).run) : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option InnerStmtOut)).run)) (pure none) (fun a => pure a)).run x.2)) with hcore
+  have hL : (Prod.map id (lens.lift outerStmtIn) <$> core :
+      OptionT ProbComp ((pSpec.FullTranscript × OuterStmtOut × WitOut) × OuterStmtOut))
+      = ((liftM init : OptionT ProbComp σ) >>= fun x0 => (liftM ((simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) (Prover.run outerStmtIn outerWitIn outerP)).run x0) : OptionT ProbComp _) >>= fun x => OptionT.mk ((fun a => Option.map (Prod.map id (lens.lift outerStmtIn)) (Option.map (Prod.mk x.1) a.1)) <$> (Option.elimM (simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) ((liftM ((V.verify (lens.proj outerStmtIn) x.1.1).run) : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option InnerStmtOut)).run)) (pure none) (fun a => pure a)).run x.2)) := by
+    rw [hcore]
+    simp only [map_bind]
+    refine bind_congr fun x0 => bind_congr fun x => ?_
+    apply OptionT.ext
+    simp only [OptionT.run_map, OptionT.run_mk, Functor.map_map]
+  have hR : ((Prod.map (fun t' : pSpec.FullTranscript × OuterStmtOut × WitOut =>
+        (t'.1, (default : InnerStmtOut), t'.2.2)) id) <$> core :
+      OptionT ProbComp ((pSpec.FullTranscript × InnerStmtOut × WitOut) × InnerStmtOut))
+      = ((liftM init : OptionT ProbComp σ) >>= fun x0 => (liftM ((simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) (Prover.run outerStmtIn outerWitIn outerP)).run x0) : OptionT ProbComp _) >>= fun a => OptionT.mk ((fun a_1 => Option.map (Prod.map (fun t' : pSpec.FullTranscript × OuterStmtOut × WitOut => (t'.1, (default : InnerStmtOut), t'.2.2)) id) (Option.map (Prod.mk a.1) a_1.1)) <$> (Option.elimM (simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl) ((liftM ((V.verify (lens.proj outerStmtIn) a.1.1).run) : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option InnerStmtOut)).run)) (pure none) (fun a => pure a)).run a.2)) := by
+    rw [hcore]
+    simp only [map_bind]
+    refine bind_congr fun x0 => bind_congr fun x => ?_
+    apply OptionT.ext
+    simp only [OptionT.run_map, OptionT.run_mk, Functor.map_map]
+  rw [← hL, ← hR, probEvent_map, probEvent_map]
+  refine _root_.probEvent_mono ?_
+  rintro ⟨tOut, innerStmtOut⟩ hSupport hOut
+  simp only [Function.comp_apply, Prod.map_apply, id_eq] at hOut ⊢
+  by_contra hIn
+  refine absurd hOut (lensSound.lift_sound outerStmtIn innerStmtOut ?_ hIn)
+  rw [hcore] at hSupport
+  simp only [Option.elimM, mem_support_bind_iff, StateT.run_bind, support_map,
+    Set.mem_image, Prod.exists, OptionT.run_lift, OptionT.run_mk] at hSupport
+  obtain ⟨x0, hx0, tr, so, wo, st, hProv, hLast⟩ := hSupport
+  simp only [OptionT.mem_support_iff, OptionT.run_mk, support_map, Set.mem_image,
+    mem_support_bind_iff, Prod.exists] at hLast
+  obtain ⟨a, b, ⟨a1, b1, hVerSup, hElim⟩, hMapEq⟩ := hLast
+  rcases a with _ | v
+  · simp at hMapEq
+  simp only [Option.map_some, Option.some_inj, Prod.mk.injEq] at hMapEq
+  obtain ⟨hTr, hV⟩ := hMapEq
+  subst hV
+  rcases a1 with _ | w
+  · simp at hElim
+  · simp only [Option.elim_some] at hElim
+    have hw : some v = w ∧ b = b1 := by
+      simpa using hElim
+    obtain ⟨rfl, rfl⟩ := hw.symm.imp Eq.symm Eq.symm
+    have h1 : some (some v) ∈
+        support ((simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+          challengeQueryImpl) ((liftM ((V.verify (lens.proj outerStmtIn) tr).run) :
+            OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option InnerStmtOut)).run)).run' st) := by
+      simp only [StateT.run'_eq, support_map, Set.mem_image]
+      exact ⟨_, hVerSup, rfl⟩
+    have h2 := mem_support_simulateQ_run'_subset _ _ _ _ h1
+    refine ⟨tr, ?_⟩
+    rw [Verifier.run]
+    rw [OptionT.mem_support_iff]
+    refine OracleComp.mem_support_of_mem_support_liftComp
+      (superSpec := oSpec + [pSpec.Challenge]ₒ) _ _ ?_
+    have h3 : ((liftM ((V.verify (lens.proj outerStmtIn) tr).run) :
+        OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option InnerStmtOut)).run)
+        = some <$> (OracleComp.liftComp ((V.verify (lens.proj outerStmtIn) tr).run)
+            (oSpec + [pSpec.Challenge]ₒ)) := by
+      show simulateQ _ ((OptionT.lift ((V.verify (lens.proj outerStmtIn) tr).run)).run) = _
+      rw [show ((OptionT.lift ((V.verify (lens.proj outerStmtIn) tr).run) :
+        OptionT (OracleComp oSpec) (Option InnerStmtOut)).run)
+        = some <$> ((V.verify (lens.proj outerStmtIn) tr).run) from rfl]
+      rw [simulateQ_map]
+      rfl
+    rw [h3, support_map] at h2
+    obtain ⟨y, hy, hEq⟩ := h2
+    obtain rfl : y = some v := by simpa using hEq
+    exact hy
 
 /-
   Lifting the reduction preserves knowledge soundness, assuming the lens satisfies its knowledge
@@ -475,7 +656,15 @@ theorem liftContext_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited Inner
       = do
         let ⟨⟨transcript, ⟨_, outerWitOut⟩⟩, rest⟩ ← outerP.runWithLog outerStmtIn outerWitIn
         return ⟨⟨transcript, ⟨default, witLens.proj (outerStmtIn, outerWitOut)⟩⟩, rest⟩ := by
-    sorry
+    have hRTR : ∀ i, Prover.runToRound i innerStmtIn innerWitIn innerP
+        = Prover.runToRound i outerStmtIn outerWitIn outerP := fun _ => rfl
+    have hRun : innerP.run innerStmtIn innerWitIn
+        = (fun p => ⟨p.1, default, witLens.proj (outerStmtIn, p.2.2)⟩) <$>
+            outerP.run outerStmtIn outerWitIn := by
+      simp only [Prover.run, hRTR]
+      simp only [innerP, map_bind, bind_pure_comp, Functor.map_map, liftM_map]
+    simp only [Prover.runWithLog, hRun, simulateQ_map, bind_pure_comp]
+    rfl
   refine le_trans ?_ hR
   -- Massage the two `probEvent`s so that they have the same base computation `oa`?
   simp [h_innerP_runWithLog]
