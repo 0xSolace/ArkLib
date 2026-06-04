@@ -11710,9 +11710,27 @@
           "signature": "class classical"
         },
         {
+          "doc": "**Formal BCIKS20 Theorem 1.2, unique-decoding regime, witness-extraction form** \u2014 the machine-verified UDR rung of the proximity-prize ladder (cf. research dossier). This is the witness-extraction specialization of the proximity gap, pinned to the monomial / power generator `r \u21a6 (i \u21a6 r\u2071)` (curve `\u2211\u1d62 r\u2071 \u2022 f\u1d62`), in the unique-decoding regime `\u03b4 \u2264 relativeUniqueDecodingRadius`. If a random point on the degree-`k` curve through `f\u2080, \u2026, f_k` is `\u03b4`-close to the Reed\u2013Solomon code with probability exceeding `k \u00b7 errorBound`, then there is a large coordinate set `S` (`|S| \u2265 (1\u2212\u03b4)\u00b7n`) on which every `f",
+          "kind": "theorem",
+          "line": 146,
+          "name": "ProximityGap.proximity_gap_uniqueDecodingRegime",
+          "namespace": "ProximityGap",
+          "short_name": "proximity_gap_uniqueDecodingRegime",
+          "signature": "theorem proximity_gap_uniqueDecodingRegime {k deg : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 160,
+          "name": "ProximityGap._anon_class_160",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_160",
+          "signature": "class classical"
+        },
+        {
           "doc": "The relative unique decoding radius of a Reed\u2013Solomon code is strictly below the Johnson-type bound `1 \u2212 \u221a\u03c1` whenever it is positive: `(1\u2212\u03c1)/2 < 1\u2212\u221a\u03c1` for `\u03c1 < 1`, by AM\u2013GM (`2\u221a\u03c1 < 1 + \u03c1` strictly since `\u221a\u03c1 < 1`). Merges the unique-decoding hypothesis into the [BCIKS20] full-range hypothesis.",
           "kind": "lemma",
-          "line": 131,
+          "line": 188,
           "name": "ProximityGap.relativeUniqueDecodingRadius_lt_one_sub_sqrtRate",
           "namespace": "ProximityGap",
           "short_name": "relativeUniqueDecodingRadius_lt_one_sub_sqrtRate",
@@ -11721,10 +11739,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 139,
-          "name": "ProximityGap._anon_class_139",
+          "line": 196,
+          "name": "ProximityGap._anon_class_196",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_139",
+          "short_name": "_anon_class_196",
           "signature": "class classical"
         }
       ]
@@ -50378,7 +50396,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5471,
+      "declarations": 5473,
       "files": 287
     }
   }
