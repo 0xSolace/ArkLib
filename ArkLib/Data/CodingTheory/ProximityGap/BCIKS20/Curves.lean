@@ -72,6 +72,32 @@ lemma goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt {k deg : ℕ}
     simpa [ENNReal.coe_div hq0, ENNReal.coe_natCast] using hlt
   exact ENNReal.mul_lt_of_lt_div hlt'
 
+omit [Nonempty ι] [DecidableEq ι] in
+/-- If a random point on the parameter curve is close with positive
+probability, then the set of good coefficients is nonempty. This is the exact
+cardinality information available in the closed Johnson boundary where
+`errorBound = 0`. -/
+lemma goodCoeffsCurve_card_pos_of_prob_gt_zero {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] > (0 : ENNReal)) :
+    0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card := by
+  classical
+  have hx := goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt
+    (k := k) (deg := deg) (domain := domain) (δ := δ) (η := 0) u hprob
+  have hcard_pos :
+      (0 : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal) := by
+    simpa using hx
+  by_contra hcard
+  have hzero :
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card = 0 :=
+    Nat.eq_zero_of_not_pos hcard
+  simp [hzero] at hcard_pos
+
 omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] [DecidableEq F] in
 private lemma finset_card_gt_of_natCast_le_ennreal_lt {α : Type} {S : Finset α}
     {m : ℕ} {x : ENNReal}
@@ -210,8 +236,7 @@ lemma prob_threshold_large_of_errorBound_ge_succ_const {k deg : ℕ}
         (k : ENNReal) * ((Fintype.card ι + 1 : ℕ) : ENNReal) := by
     have hnat : ((Fintype.card ι + 1) * k : ℕ) - 1 ≤
         k * (Fintype.card ι + 1) := by
-      simpa [Nat.mul_comm] using
-        (Nat.sub_le (k * (Fintype.card ι + 1)) 1)
+      simp [Nat.mul_comm]
     exact_mod_cast hnat
   calc
     ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal)
@@ -1328,6 +1353,33 @@ theorem errorBound_eq_zero_of_johnson_not_lt_sqrt {deg : ℕ} {domain : ι ↪ F
     intro h
     exact hnot (by simpa [ReedSolomon.sqrtRate] using h.2)
   simp [errorBound, Set.mem_Icc, Set.mem_Ioo, hnotUD, hnotJ]
+
+omit [DecidableEq ι] in
+/-- In the closed Johnson boundary, the curve-theorem probability hypothesis
+only implies that there is at least one good coefficient. The stronger
+cardinality lower bounds used by the list-decoding assembly are supplied only
+in the strict Johnson branch. -/
+theorem goodCoeffsCurve_card_pos_of_prob_gt_johnson_boundary
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
+    (hnot : ¬δ < 1 - ReedSolomon.sqrtRate deg domain) :
+    0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card := by
+  classical
+  have hε0 : errorBound δ deg domain = 0 :=
+    errorBound_eq_zero_of_johnson_not_lt_sqrt (deg := deg) (domain := domain) hJ hnot
+  have hprob0 :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] > (0 : ENNReal) := by
+    simpa [hε0] using hprob
+  exact goodCoeffsCurve_card_pos_of_prob_gt_zero
+    (deg := deg) (domain := domain) (δ := δ) u hprob0
 
 omit [DecidableEq ι] in
 /-- Strict Johnson-range front door with the standard `|ι| / |F|`
