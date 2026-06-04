@@ -11493,6 +11493,33 @@
           "namespace": "ProximityGap",
           "short_name": "_anon_class_693",
           "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 762,
+          "name": "ProximityGap.RS_a_ne_zero_of_BW_homMatrix_mulVec_eq_zero_curve",
+          "namespace": "ProximityGap",
+          "short_name": "RS_a_ne_zero_of_BW_homMatrix_mulVec_eq_zero_curve",
+          "signature": "theorem RS_a_ne_zero_of_BW_homMatrix_mulVec_eq_zero_curve {k deg : \u2115} {domain : \u03b9 \u21aa F} {e : \u2115}"
+        },
+        {
+          "doc": "Curves analogue of `RS_exists_kernelVec_BW_homMatrix_of_goodCoeffs_card_gt`: the global kernel vector repackaged with `a \u2260 0`.",
+          "kind": "theorem",
+          "line": 801,
+          "name": "ProximityGap.RS_exists_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt",
+          "namespace": "ProximityGap",
+          "short_name": "RS_exists_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt",
+          "signature": "theorem RS_exists_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 819,
+          "name": "ProximityGap._anon_class_819",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_819",
+          "signature": "class classical"
         }
       ]
     },
@@ -49381,7 +49408,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5362,
+      "declarations": 5365,
       "files": 283
     }
   }
