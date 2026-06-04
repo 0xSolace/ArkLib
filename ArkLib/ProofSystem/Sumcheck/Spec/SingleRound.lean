@@ -1113,16 +1113,72 @@ def extractorLens (i : Fin n) : Extractor.Lens
 
 variable {ι : Type} (oSpec : OracleSpec ι) [DecidableEq R] [SampleableType R]
 
+/-- The full `Fin n`-evaluation point that the virtual oracle-routing lens `simOStmt` uses to answer
+an inner univariate evaluation query at `pt`, summing the outer multivariate polynomial over the
+remaining coordinates.
+
+We insert the queried point `pt` at coordinate `i` and fill the other `n - 1` coordinates with the
+prior `challenges` (for the `j < i` slots) and the summation index `y` (for the rest). This mirrors
+the `∑ x ∈ (univ.map D) ^ᶠ (n - i), poly ⸨X ⦃i⦄, challenges, x⸩` shape of `oStmtLens.toFunA`, so the
+routing answers the inner univariate query exactly by the value `toFunA` would expose. -/
+def sumPoint (i : Fin n) (pt : R) (stmtIn : StatementRound R n i.castSucc)
+    (y : Fin (n - 1) → R) : Fin n → R :=
+  let h : n = n - 1 + 1 := by have := i.isLt; omega
+  ((Fin.cast h i).insertNth pt
+    (fun k => if hk : (k : ℕ) < (i : ℕ) then stmtIn.challenges ⟨k, by simpa using hk⟩ else y k))
+    ∘ Fin.cast h
+
+/-- The concrete sum-check **oracle-routing lens** instantiating the new `OracleStatement.OracleLens`
+API (#433). The value layer reuses the existing value-level lens `oStmtLens` verbatim (so all the
+soundness / completeness machinery still applies via `toLens`). The routing data is:
+
+- `projStmt`/`liftStmt`: the non-oracle projection (drop to the round `target`) and lift (snoc the new
+  challenge onto the running challenge vector), matching `oStmtLens.toFunB`'s statement shape.
+- `simOStmt`: answers each inner univariate evaluation query `⟨(), pt⟩` against the *outer*
+  multivariate oracle by `∑ y ∈ (univ.map D) ^ᶠ (n - 1), outerPoly.eval (sumPoint i pt stmtIn y)` —
+  the virtual `|D|^(n-1)`-fold summation, reading the prior `challenges` from the outer statement via
+  `ReaderT`.
+- `embedOStmt`/`hEqOStmt`: the single output oracle is the (unchanged) input oracle, so we draw it
+  from the input side (`.inl`) with definitional type coherence. -/
+noncomputable def sumcheckOracleLens (i : Fin n) :
+    OracleStatement.OracleLens oSpec
+      (StatementRound R n i.castSucc) (StatementRound R n i.succ)
+      (Simple.StmtIn R) (Simple.StmtOut R)
+      (OracleStatement R n deg) (OracleStatement R n deg)
+      (Simple.OStmtIn R deg) (Simple.OStmtOut R deg)
+      (pSpec R deg) where
+  toLens := oStmtLens R n deg D i
+  projStmt := fun stmtIn => stmtIn.target
+  liftStmt := fun outerStmtIn innerStmtOut =>
+    { target := innerStmtOut.1, challenges := Fin.snoc outerStmtIn.challenges innerStmtOut.2 }
+  simOStmt := fun q =>
+    match q with
+    | ⟨(), pt⟩ => ReaderT.mk fun stmtIn =>
+      (((univ.map D) ^ᶠ (n - 1)).toList).foldlM
+        (fun (acc : R) y => do
+          let resp ← (OracleComp.lift <| OracleSpec.query
+            (spec := [OracleStatement R n deg]ₒ)
+            (show [OracleStatement R n deg]ₒ.Domain from ⟨(), sumPoint R n i pt stmtIn y⟩) :
+            OracleComp (oSpec + [OracleStatement R n deg]ₒ) R)
+          pure (acc + resp))
+        (0 : R)
+  embedOStmt := Function.Embedding.inl
+  hEqOStmt := fun _ => rfl
+
 /-- The verifier for the `i`-th round of the sum-check protocol -/
 def verifier (i : Fin n) : Verifier oSpec
     (StatementRound R n i.castSucc × (∀ i, OracleStatement R n deg i))
     (StatementRound R n i.succ × (∀ i, OracleStatement R n deg i)) (pSpec R deg) :=
   (Simple.verifier R deg D oSpec).liftContext (oStmtLens R n deg D i)
 
-/-- The oracle verifier for the `i`-th round of the sum-check protocol -/
+/-- The oracle verifier for the `i`-th round of the sum-check protocol.
+
+Migrated to the new `OracleStatement.OracleLens` API (#433): the oracle-routing lens
+`sumcheckOracleLens` supplies the `simOStmt`/`embedOStmt` data that the value-level `oStmtLens`
+cannot express. -/
 def oracleVerifier (i : Fin n) : OracleVerifier oSpec (StatementRound R n i.castSucc)
     (OracleStatement R n deg) (StatementRound R n i.succ) (OracleStatement R n deg) (pSpec R deg) :=
-  (Simple.oracleVerifier R deg D oSpec).liftContext (oStmtLens R n deg D i)
+  (Simple.oracleVerifier R deg D oSpec).liftContext (sumcheckOracleLens R n deg D oSpec i)
 
 /-- The sum-check reduction for the `i`-th round of the sum-check protocol -/
 def reduction (i : Fin n) : Reduction oSpec
@@ -1130,11 +1186,16 @@ def reduction (i : Fin n) : Reduction oSpec
     ((StatementRound R n i.succ) × (∀ i, OracleStatement R n deg i)) Unit (pSpec R deg) :=
   (Simple.reduction R deg D oSpec).liftContext (oCtxLens R n deg D i).toContext
 
-/-- The sum-check oracle reduction for the `i`-th round of the sum-check protocol -/
+/-- The sum-check oracle reduction for the `i`-th round of the sum-check protocol.
+
+Migrated to the new `OracleReduction.liftContext` signature (#433), which takes the separate
+oracle-routing `stmtLens := sumcheckOracleLens` (carrying `simOStmt`/`embedOStmt`) alongside the
+value-level context lens. -/
 def oracleReduction (i : Fin n) : OracleReduction oSpec
     (StatementRound R n i.castSucc) (OracleStatement R n deg) Unit
     (StatementRound R n i.succ) (OracleStatement R n deg) Unit (pSpec R deg) :=
   (Simple.oracleReduction R deg D oSpec).liftContext (oCtxLens R n deg D i)
+    (sumcheckOracleLens R n deg D oSpec i)
 
 omit [SampleableType R] in
 @[simp]
@@ -1542,28 +1603,49 @@ theorem reduction_perfectCompleteness :
 -- See docs/kb/audits/gh-issues-campaign-2026-06-04.md, section "Statements found FALSE".
 
 /-- Completeness theorem for single-round of sum-check, obtained by transporting the completeness
-proof for the simplified version -/
-theorem oracleReduction_perfectCompleteness :
+proof for the simplified version.
+
+Migrated to the new `OracleStatement.OracleLens` API (#433): `OracleReduction.liftContext` now takes
+the oracle-routing `sumcheckOracleLens` and `liftContext_perfectCompleteness` requires the
+`LiftContextCoherent` side condition relating the routing to the value-level lens (`toVerifier_comm`,
+a genuine lens-coherence obligation for the non-invertible `|D|^(n-1)` summation routing — see
+`OracleVerifier.LiftContextCoherent`). We thread it through as a hypothesis, exactly as the upstream
+`liftContext_perfectCompleteness` does. The `hStmt` coherence (`stmtLens.toLens = lens.stmt`) holds
+by `rfl` because `sumcheckOracleLens.toLens` and `(oCtxLens …).stmt` are both `oStmtLens …`. -/
+theorem oracleReduction_perfectCompleteness
+    (coh : OracleVerifier.LiftContextCoherent (sumcheckOracleLens R n deg D oSpec i)
+      (Simple.oracleVerifier R deg D oSpec)) :
     (oracleReduction R n deg D oSpec i).perfectCompleteness init impl
       (relationRound R n deg D i.castSucc) (relationRound R n deg D i.succ) :=
   OracleReduction.liftContext_perfectCompleteness
     (lens := oCtxLens R n deg D i)
+    (stmtLens := sumcheckOracleLens R n deg D oSpec i)
     (lensComplete := oCtxLens_complete i)
+    (coh := coh)
+    (hStmt := rfl)
     (Simple.oracleReduction_perfectCompleteness R deg D oSpec)
 
 
 local instance : Inhabited R := ⟨0⟩
 
 /-- Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by
-  transporting the knowledge soundness proof for the simplified version -/
-theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
+  transporting the knowledge soundness proof for the simplified version.
+
+Migrated to the new `OracleStatement.OracleLens` API (#433): `liftContext_rbr_knowledgeSoundness`
+now takes the oracle-routing `stmtLens := sumcheckOracleLens` (with the value-level soundness stated
+on its `toLens = oStmtLens`) and the `LiftContextCoherent` side condition (`toVerifier_comm`). We
+thread coherence as a hypothesis, exactly as the upstream lemma does. -/
+theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R]
+    (coh : OracleVerifier.LiftContextCoherent (sumcheckOracleLens R n deg D oSpec i)
+      (Simple.oracleVerifier R deg D oSpec)) :
     (oracleVerifier R n deg D oSpec i).rbrKnowledgeSoundness init impl
     (relationRound R n deg D i.castSucc) (relationRound R n deg D i.succ)
     (fun _ => (deg : ℝ≥0) / Fintype.card R) :=
   OracleVerifier.liftContext_rbr_knowledgeSoundness
-    (stmtLens := oStmtLens R n deg D i)
+    (stmtLens := sumcheckOracleLens R n deg D oSpec i)
     (witLens := Witness.InvLens.trivial)
     (Simple.oracleVerifier R deg D oSpec)
+    (coh := coh)
     (lensKS := extractorLens_rbr_knowledge_soundness i)
     (Simple.oracleVerifier_rbrKnowledgeSoundness R deg D oSpec)
 
