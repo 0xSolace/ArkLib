@@ -25377,27 +25377,36 @@
           "signature": "lemma evalX_derivative_comm (x\u2080 : F) (p : F[X][X][Y]) :"
         },
         {
+          "doc": "The coefficient of `Y^n` in `\u2202R/\u2202Y(x\u2080,Z)` is `(n+1) \u00b7 (R(x\u2080,Z)).coeff (n+1)`, so its `X`-degree is bounded by `D - (n+1)` when `D` bounds the total degree of `R(x\u2080,Z)`.",
+          "kind": "lemma",
+          "line": 1571,
+          "name": "BCIKS20AppendixA.ClaimA2.natDegree_evalX_derivative_coeff_le",
+          "namespace": "BCIKS20AppendixA.ClaimA2",
+          "short_name": "natDegree_evalX_derivative_coeff_le",
+          "signature": "lemma natDegree_evalX_derivative_coeff_le {x\u2080 : F} {R : F[X][X][Y]} {D : \u2115}"
+        },
+        {
           "doc": "The product-rule factorization of `\u03b6` at the root `\u03b1\u2080 = T/W`: writing `Q = R(x\u2080,\u00b7) = H \u00b7 g` with `g` the cofactor of the factor `H`, the Y-derivative product rule evaluated at `\u03b1\u2080` gives `\u03b6 = H'_Y(\u03b1\u2080) \u00b7 g(\u03b1\u2080)`, since the `H(\u03b1\u2080) \u00b7 g'_Y(\u03b1\u2080)` term vanishes (`H(\u03b1\u2080) = 0`). This is the structural identity of Claim A.2 in Appendix A.4 of [BCIKS20].",
           "kind": "lemma",
-          "line": 1573,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1573",
+          "line": 1591,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1591",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_1573",
+          "short_name": "_anon_lemma_1591",
           "signature": "lemma lemma \u03b6_eq_eval\u03b1\u2080_derivative_mul (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
         },
         {
           "doc": "If the derivative specialization is constant in the function-field variable, then `\u03b6` is regular.",
           "kind": "lemma",
-          "line": 1597,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1597",
+          "line": 1615,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1615",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_1597",
+          "short_name": "_anon_lemma_1615",
           "signature": "lemma lemma \u03b6_regular_of_derivative_evalX_eq_C (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
         },
         {
           "doc": "If `R` has `Y`-degree at most one, then the specialized derivative is constant.",
           "kind": "lemma",
-          "line": 1606,
+          "line": 1624,
           "name": "BCIKS20AppendixA.ClaimA2.derivative_evalX_eq_C_of_natDegree_le_one",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "derivative_evalX_eq_C_of_natDegree_le_one",
@@ -25406,43 +25415,43 @@
         {
           "doc": "In the constant-derivative, low-`Y`-degree case, the `\u03be` regularity witness is explicit.",
           "kind": "lemma",
-          "line": 1620,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1620",
+          "line": 1638,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1638",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_1620",
+          "short_name": "_anon_lemma_1638",
           "signature": "lemma lemma \u03be_regular_of_derivative_evalX_eq_C_of_natDegree_le_one"
         },
         {
           "doc": "If `R` has `Y`-degree at most one, the regularity statement for `\u03be` follows from the constant-derivative case.",
           "kind": "lemma",
-          "line": 1636,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1636",
+          "line": 1654,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1654",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_1636",
+          "short_name": "_anon_lemma_1654",
           "signature": "lemma lemma \u03be_regular_of_natDegree_le_one"
         },
         {
           "doc": "In the quadratic case, `\u03be = \u03b6` is regular by clearing the single denominator with the divisibility of the top derivative coefficient.",
           "kind": "lemma",
-          "line": 1648,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1648",
+          "line": 1666,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1666",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_1648",
+          "short_name": "_anon_lemma_1666",
           "signature": "lemma lemma \u03be_regular_of_natDegree_eq_two"
         },
         {
           "doc": "Explicit polynomial representative for the regular element `\u03be = W^(d-2) \u00b7 \u03b6` of Claim A.2. For `2 \u2264 R.natDegree`, this is the polynomial obtained by clearing the single denominator that appears in `W^(d-2) \u00b7 \u03b6`; the divisibility `W \u2223 R'(x\u2080, Z)_{d-1}` is captured implicitly by Euclidean division in `F[X]`. For `R.natDegree \u2264 1`, the derivative specialization is constant in `Y`, so we take it as the representative.",
           "kind": "def",
-          "line": 1676,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1676",
+          "line": 1694,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1694",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1676",
+          "short_name": "_anon_def_1694",
           "signature": "def noncomputable def \u03be_pre (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) : F[X][Y] :="
         },
         {
           "doc": "The image of `\u27e6\u03be_pre\u27e7` in the function field equals `W^(d-2) \u00b7 \u03b6`, matching Claim A.2's algebraic identity.",
           "kind": "lemma",
-          "line": 1689,
+          "line": 1707,
           "name": "BCIKS20AppendixA.ClaimA2.embeddingOf\ud835\udcaaInto\ud835\udd43_mk_\u03be_pre",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_mk_\u03be_pre",
@@ -25451,34 +25460,34 @@
         {
           "doc": "There exist regular elements `\u03be = W(Z)^(d-2) * \u03b6` as defined in Claim A.2 of Appendix A.4 of [BCIKS20].",
           "kind": "lemma",
-          "line": 1748,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1748",
+          "line": 1766,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1766",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_1748",
+          "short_name": "_anon_lemma_1766",
           "signature": "lemma lemma \u03be_regular (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]"
         },
         {
           "doc": "The elements `\u03be = W(Z)^(d-2) * \u03b6` as defined in Claim A.2 of Appendix A.4 of [BCIKS20]. The `Fact` and `Hypotheses` arguments are kept for API compatibility with downstream callers (`\u03b1`, `\u03b3`); they are needed for the embedding equation in `embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be`.",
           "kind": "def",
-          "line": 1760,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1760",
+          "line": 1778,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1778",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1760",
+          "short_name": "_anon_def_1778",
           "signature": "def noncomputable def \u03be (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) [_\u03c6 : Fact (Irreducible H)]"
         },
         {
           "doc": "The defining equation `embedding \u03be = W^(d-2) \u00b7 \u03b6`, the specialization of `embeddingOf\ud835\udcaaInto\ud835\udd43_mk_\u03be_pre` to `\u03be`.",
           "kind": "lemma",
-          "line": 1766,
+          "line": 1784,
           "name": "BCIKS20AppendixA.ClaimA2.embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be",
           "signature": "lemma embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
         },
         {
-          "doc": "The bound of the weight `\u039b` of the elements `\u03b6` as stated in Claim A.2 of Appendix A.4 of [BCIKS20].",
+          "doc": "The bound of the weight `\u039b` of the elements `\u03b6` as stated in Claim A.2 of Appendix A.4 of [BCIKS20]. The hypothesis `2 \u2264 natDegreeY R` is required: the paper's `\u03be = W^(d-2)\u00b7\u03b6` lives in the regime `d \u2265 2`, and the statement is false at `d = 1` (e.g. `H = C(Z)\u00b7Y + 1` with `R(x\u2080,\u00b7) = H` gives `\u03be_pre = C(Z)` of weight `1`, while the claimed budget is `0`; `Nat` truncated subtraction silently extends `W^(d-2)` to `d < 2` where the bound fails).",
           "kind": "lemma",
-          "line": 1775,
+          "line": 1798,
           "name": "BCIKS20AppendixA.ClaimA2.weight_\u03be_bound",
           "namespace": "BCIKS20AppendixA.ClaimA2",
           "short_name": "weight_\u03be_bound",
@@ -25487,55 +25496,55 @@
         {
           "doc": "There exist regular elements `\u03b2` with a weight bound as given in Claim A.2 of Appendix A.4 of [BCIKS20].",
           "kind": "lemma",
-          "line": 1784,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1784",
+          "line": 1808,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_lemma_1808",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_lemma_1784",
+          "short_name": "_anon_lemma_1808",
           "signature": "lemma lemma \u03b2_regular (R : F[X][X][Y])"
         },
         {
           "doc": "The definition of the regular elements `\u03b2` giving the numerators of the Hensel lift coefficients as defined in Claim A.2 of Appendix A.4 of [BCIKS20].",
           "kind": "def",
-          "line": 1795,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1795",
+          "line": 1819,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1819",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1795",
+          "short_name": "_anon_def_1819",
           "signature": "def def \u03b2 (R : F[X][X][Y]) (t : \u2115) : \ud835\udcaa H :="
         },
         {
           "doc": "The Hensel lift coefficients `\u03b1` are of the form as given in Claim A.2 of Appendix A.4 of [BCIKS20].",
           "kind": "def",
-          "line": 1803,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1803",
+          "line": 1827,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1827",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1803",
+          "short_name": "_anon_def_1827",
           "signature": "def def \u03b1 (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) [\u03c6 : Fact (Irreducible H)]"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 1809,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1809",
+          "line": 1833,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1833",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1809",
+          "short_name": "_anon_def_1833",
           "signature": "def def \u03b1' (x\u2080 : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)"
         },
         {
           "doc": "The power series `\u03b3 = \u2211 \u03b1^t (X - x\u2080)^t \u2208 \ud835\udd43 [[X - x\u2080]]` as defined in Appendix A.4 of [BCIKS20].",
           "kind": "def",
-          "line": 1815,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1815",
+          "line": 1839,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1839",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1815",
+          "short_name": "_anon_def_1839",
           "signature": "def def \u03b3 (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y]) [\u03c6 : Fact (Irreducible H)]"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 1825,
-          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1825",
+          "line": 1849,
+          "name": "BCIKS20AppendixA.ClaimA2._anon_def_1849",
           "namespace": "BCIKS20AppendixA.ClaimA2",
-          "short_name": "_anon_def_1825",
+          "short_name": "_anon_def_1849",
           "signature": "def def \u03b3' (x\u2080 : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)"
         }
       ]
@@ -43714,9 +43723,18 @@
           "signature": "theorem reduction_perfectCompleteness :"
         },
         {
+          "doc": "Any successful run of the simple single-round reduction has the prover's output oracle statement equal to the input polynomial, and its output target equal to that polynomial evaluated at the challenge. This captures the honest prover's behavior: it forwards the input polynomial and reports its evaluation at the verifier's challenge.",
+          "kind": "theorem",
+          "line": 764,
+          "name": "Sumcheck.Spec.SingleRound.Simple.reduction_run_prover_output",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "reduction_run_prover_output",
+          "signature": "theorem reduction_run_prover_output (target : R) (oStmt : \u2200 i, OStmtIn R deg i)"
+        },
+        {
           "doc": "Perfect completeness for the oracle reduction",
           "kind": "theorem",
-          "line": 762,
+          "line": 823,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -43725,7 +43743,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the verifier",
           "kind": "theorem",
-          "line": 770,
+          "line": 831,
           "name": "Sumcheck.Spec.SingleRound.Simple.verifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "verifier_rbrKnowledgeSoundness",
@@ -43734,7 +43752,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the oracle verifier",
           "kind": "theorem",
-          "line": 776,
+          "line": 837,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleVerifier_rbrKnowledgeSoundness",
@@ -43743,7 +43761,7 @@
         {
           "doc": "Auxiliary lemma for proving that the polynomial sent by the honest prover is of degree at most `deg`",
           "kind": "theorem",
-          "line": 787,
+          "line": 848,
           "name": "Sumcheck.Spec.SingleRound.sumcheck_roundPoly_degreeLE",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "sumcheck_roundPoly_degreeLE",
@@ -43752,7 +43770,7 @@
         {
           "doc": "The oracle statement lens that connect the simple to the full single-round sum-check protocol For `n = 0`, since `poly : R[X Fin 0]` is just a constant, we need to embed it as a constant poly. For other `n := n + 1`, we proceed with the sum `\u2211 x \u2208 D ^ (n - i), poly \u2e28challenges, X, x\u2e29`",
           "kind": "def",
-          "line": 803,
+          "line": 864,
           "name": "Sumcheck.Spec.SingleRound.oStmtLens",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oStmtLens",
@@ -43761,7 +43779,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 821,
+          "line": 882,
           "name": "Sumcheck.Spec.SingleRound.oCtxLens",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oCtxLens",
@@ -43770,7 +43788,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 830,
+          "line": 891,
           "name": "Sumcheck.Spec.SingleRound.extractorLens",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "extractorLens",
@@ -43779,7 +43797,7 @@
         {
           "doc": "The verifier for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 842,
+          "line": 903,
           "name": "Sumcheck.Spec.SingleRound.verifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "verifier",
@@ -43788,7 +43806,7 @@
         {
           "doc": "The oracle verifier for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 848,
+          "line": 909,
           "name": "Sumcheck.Spec.SingleRound.oracleVerifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleVerifier",
@@ -43797,7 +43815,7 @@
         {
           "doc": "The sum-check reduction for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 853,
+          "line": 914,
           "name": "Sumcheck.Spec.SingleRound.reduction",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction",
@@ -43806,7 +43824,7 @@
         {
           "doc": "The sum-check oracle reduction for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 859,
+          "line": 920,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction",
@@ -43815,7 +43833,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 866,
+          "line": 927,
           "name": "Sumcheck.Spec.SingleRound.reduction_verifier_eq_verifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction_verifier_eq_verifier",
@@ -43824,7 +43842,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 872,
+          "line": 933,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction_verifier_eq_verifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction_verifier_eq_verifier",
@@ -43833,7 +43851,7 @@
         {
           "doc": "Keystone `Fin`-plumbing identity for the sum-check round split: inserting `a` at position `i` into `append c y \u2218 cast` agrees with appending the cons-extended tuple `cons a y` to `c`.",
           "kind": "lemma",
-          "line": 889,
+          "line": 950,
           "name": "Sumcheck.Spec.SingleRound.append_cons_eq_insertNth",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "append_cons_eq_insertNth",
@@ -43842,16 +43860,34 @@
         {
           "doc": "The sum-check round split: the `(n'+1-i)`-fold sum factors as a sum over the first coordinate of a sum over the remaining `(n'-i)` coordinates, with the inserted-variable evaluation.",
           "kind": "lemma",
-          "line": 932,
+          "line": 993,
           "name": "Sumcheck.Spec.SingleRound.sumcheck_round_split",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "sumcheck_round_split",
           "signature": "lemma sumcheck_round_split {n' : \u2115} {m' : \u2115} (D' : Fin m' \u21aa R) (i : Fin (n' + 1))"
         },
         {
+          "doc": "Pointwise `Fin`-plumbing identity for the single-point round split: appending `a` via `snoc` to `c` and then `w` agrees with inserting `a` at position `i` into `append c w'`.",
+          "kind": "lemma",
+          "line": 1049,
+          "name": "Sumcheck.Spec.SingleRound.append_snoc_eq_insertNth",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "append_snoc_eq_insertNth",
+          "signature": "lemma append_snoc_eq_insertNth {n' : \u2115} {\u03b1 : Type} (i : Fin (n' + 1)) (a : \u03b1)"
+        },
+        {
+          "doc": "The single-point sum-check round split: specializing the inserted variable at a fixed value `a` (rather than summing over the domain). The `(n'+1-i.succ)`-fold sum with `a` snoc-appended to `c` agrees with the `(n'-i)`-fold sum that inserts `a` at position `i`. This realizes the round-i claim update used in the lens completeness `lift`.",
+          "kind": "lemma",
+          "line": 1090,
+          "name": "Sumcheck.Spec.SingleRound.sumcheck_round_split_point",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "sumcheck_round_split_point",
+          "signature": "lemma sumcheck_round_split_point {n' : \u2115} {m' : \u2115} (D' : Fin m' \u21aa R) (i : Fin (n' + 1))"
+        },
+        {
           "doc": "",
           "kind": "instance",
-          "line": 986,
+          "line": 1112,
           "name": "Sumcheck.Spec.SingleRound.oCtxLens_complete",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oCtxLens_complete",
@@ -43860,7 +43896,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1016,
+          "line": 1174,
           "name": "Sumcheck.Spec.SingleRound.extractorLens_rbr_knowledge_soundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "extractorLens_rbr_knowledge_soundness",
@@ -43869,7 +43905,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1041,
+          "line": 1199,
           "name": "Sumcheck.Spec.SingleRound.reduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction_perfectCompleteness",
@@ -43878,7 +43914,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1049,
+          "line": 1207,
           "name": "Sumcheck.Spec.SingleRound.verifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "verifier_rbrKnowledgeSoundness",
@@ -43887,7 +43923,7 @@
         {
           "doc": "Completeness theorem for single-round of sum-check, obtained by transporting the completeness proof for the simplified version",
           "kind": "theorem",
-          "line": 1059,
+          "line": 1217,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -43896,7 +43932,7 @@
         {
           "doc": "Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by transporting the knowledge soundness proof for the simplified version",
           "kind": "theorem",
-          "line": 1072,
+          "line": 1230,
           "name": "Sumcheck.Spec.SingleRound.oracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleVerifier_rbrKnowledgeSoundness",
@@ -43905,7 +43941,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1132,
+          "line": 1290,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverState",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverState",
@@ -43914,7 +43950,7 @@
         {
           "doc": "Prover input for the `i`-th round of the sum-check protocol, where `i < n`",
           "kind": "def",
-          "line": 1139,
+          "line": 1297,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverInput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverInput",
@@ -43923,7 +43959,7 @@
         {
           "doc": "Prover interaction for the `i`-th round of the sum-check protocol, where `i < n`.",
           "kind": "def",
-          "line": 1145,
+          "line": 1303,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverRound",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverRound",
@@ -43932,7 +43968,7 @@
         {
           "doc": "Since there is no witness, the prover's output for each round `i < n` of the sum-check protocol is trivial",
           "kind": "def",
-          "line": 1170,
+          "line": 1328,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverOutput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverOutput",
@@ -43941,7 +43977,7 @@
         {
           "doc": "The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-defined for `n > 0`, since when `n = 0` there is no protocol.",
           "kind": "def",
-          "line": 1177,
+          "line": 1335,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.prover",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "prover",
@@ -43950,7 +43986,7 @@
         {
           "doc": "The (non-oracle) verifier of the sum-check protocol for the `i`-th round, where `i < n + 1`",
           "kind": "def",
-          "line": 1187,
+          "line": 1345,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.verifier",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "verifier",
@@ -46362,7 +46398,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5027,
+      "declarations": 5031,
       "files": 282
     }
   }
