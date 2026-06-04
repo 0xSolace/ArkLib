@@ -864,10 +864,15 @@ private lemma sumcheck_round_split {n' : ℕ} {m' : ℕ} (D' : Fin m' ↪ R) (i 
     (hc1 : n' + 1 = (i : ℕ) + ((n' + 1) - i))
     (hc2 : n' = (i : ℕ) + (n' - i))
     (hc3 : (n' + 1) - (i : ℕ) = (n' - i) + 1) :
-    (∑ a ∈ (univ.map D'), ∑ y ∈ (univ.map D') ^ᶠ (n' - i),
-        MvPolynomial.eval (i.insertNth a (Fin.append c y ∘ Fin.cast hc2)) p)
+    (∑ a : Fin m', ∑ y ∈ (univ.map D') ^ᶠ (n' - i),
+        MvPolynomial.eval (i.insertNth (D' a) (Fin.append c y ∘ Fin.cast hc2)) p)
       = ∑ z ∈ (univ.map D') ^ᶠ ((n' + 1) - i),
           MvPolynomial.eval (Fin.append c z ∘ Fin.cast hc1) p := by
+  rw [show (∑ a : Fin m', ∑ y ∈ (univ.map D') ^ᶠ (n' - i),
+        MvPolynomial.eval (i.insertNth (D' a) (Fin.append c y ∘ Fin.cast hc2)) p)
+      = ∑ a ∈ (univ.map D'), ∑ y ∈ (univ.map D') ^ᶠ (n' - i),
+        MvPolynomial.eval (i.insertNth a (Fin.append c y ∘ Fin.cast hc2)) p from by
+    rw [Finset.sum_map]]
   rw [← Finset.sum_product']
   refine Finset.sum_bij'
     (i := fun ay _ => (Fin.cons ay.1 ay.2 : Fin ((n' - i) + 1) → R) ∘ Fin.cast hc3)
@@ -927,7 +932,7 @@ where
       simp_rw [← eval_eq_eval_mv_eval_finSuccEquivNth]
       -- Round split: ∑ a ∈ D, ∑ y ∈ D^(n-i), eval (insertNth i a (append c y ∘ cast)) p
       --            = ∑ z ∈ D^(n+1-i), eval (append c z ∘ cast) p
-      exact sumcheck_round_split D i _ _ _ _ _
+      exact sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)
   lift_complete := by
     simp [relationRound]
     unfold compatContext oStmtLens
