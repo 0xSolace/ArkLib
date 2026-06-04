@@ -660,7 +660,8 @@ lemma ZdegLE_sum {ι : Type*} (s : Finset ι) (g : ι → F[Z][X][Y]) (d : ℕ)
   | empty => simpa using ZdegLE_zero d
   | insert a s ha ih =>
       rw [Finset.sum_insert ha]
-      exact (h a (Finset.mem_insert_self a s)).add (ih (fun i hi ↦ h i (Finset.mem_insert_of_mem hi)))
+      exact (h a (Finset.mem_insert_self a s)).add (ih (fun i hi ↦ h i (Finset.mem_insert_of_mem
+        hi)))
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] in
 lemma ZdegLE.mul {f g : F[Z][X][Y]} {d e : ℕ} (hf : ZdegLE f d) (hg : ZdegLE g e) :
