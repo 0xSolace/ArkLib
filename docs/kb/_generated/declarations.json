@@ -10304,6 +10304,42 @@
           "namespace": "ProximityGap",
           "short_name": "_anon_class_1393",
           "signature": "class classical"
+        },
+        {
+          "doc": "Degree-`d` generalization of `RS_natDegree_det_le_of_entry_natDegree_le_one` (the curves case of [BCIKS20] \u00a76.1): the determinant of an `n \u00d7 n` matrix of polynomials with entries of degree \u2264 `d` has degree \u2264 `d * n`. The line case is `d = 1`.",
+          "kind": "theorem",
+          "line": 1418,
+          "name": "ProximityGap.RS_natDegree_det_le_of_entry_natDegree_le",
+          "namespace": "ProximityGap",
+          "short_name": "RS_natDegree_det_le_of_entry_natDegree_le",
+          "signature": "theorem RS_natDegree_det_le_of_entry_natDegree_le (n d : \u2115)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1422,
+          "name": "ProximityGap._anon_class_1422",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1422",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Degree-`d` generalization of `BW_homMatrix_det_submatrix_natDegree_le_e_add_one` (the curves case of [BCIKS20] \u00a76.1): minors of the BW matrix over words of degree \u2264 `d` have degree \u2264 `d * (e + 1)` \u2014 only the `e + 1` evaluation columns carry degree. The line case is `d = 1`.",
+          "kind": "theorem",
+          "line": 1454,
+          "name": "ProximityGap.BW_homMatrix_det_submatrix_natDegree_le_of_natDegree_le",
+          "namespace": "ProximityGap",
+          "short_name": "BW_homMatrix_det_submatrix_natDegree_le_of_natDegree_le",
+          "signature": "theorem BW_homMatrix_det_submatrix_natDegree_le_of_natDegree_le {F : Type} [Field F]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1461,
+          "name": "ProximityGap._anon_class_1461",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1461",
+          "signature": "class classical"
         }
       ]
     },
@@ -48981,7 +49017,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5318,
+      "declarations": 5322,
       "files": 282
     }
   }
