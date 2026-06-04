@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 
-import VCVio
+import VCVio.OracleComp.SimSemantics.Append
 import ArkLib.Data.GroupTheory.PrimeOrder
 import ArkLib.Data.Classes.Serde
 
@@ -160,9 +160,21 @@ variable {ι : Type} [DecidableEq ι] {G : Type} [Group G] [DecidableEq G]
     (α : Type)
 
 /-- Running the adversary on a given table, returning the list of group elements it is supposed to
-  output, and the non-group-element result. -/
-def run (adversary : Adversary ι G p bitLength α) (table : GroupValTable ι G) : List G × α :=
-  sorry
+  output and the non-group-element result, if all oracle queries succeed. -/
+def run (adversary : Adversary ι G p bitLength α) (table : GroupValTable ι G) :
+    Option (List G × α) :=
+  let impl :
+        QueryImpl (GroupOpOracle ι + GroupExpOracle ι p +
+          GroupEqOracle ι + GroupEncodeOracle ι bitLength)
+          (StateT (GroupValTable ι G) Option) :=
+      implGroupOpOracle (ι := ι) (G := G) +
+        implGroupExpOracle (ι := ι) (G := G) (p := p) +
+        implGroupEqOracle (ι := ι) (G := G) +
+        implGroupEncodeOracle (ι := ι) (G := G) (bitLength := bitLength)
+  match StateT.run (simulateQ impl (adversary table)) table with
+  | some ((handles, output), finalTable) =>
+      some (List.filterMap (fun i => finalTable i) handles, output)
+  | none => none
 
 end Adversary
 
