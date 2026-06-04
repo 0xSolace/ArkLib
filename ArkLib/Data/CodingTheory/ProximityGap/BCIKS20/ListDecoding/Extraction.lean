@@ -1248,8 +1248,8 @@ theorem pg_card_candidatePairs_le_natDegreeY (x₀ : F) (h_gs : ModifiedGuruswam
 `exists_factors_with_large_common_root_set` (Claim 5.7, `Agreement.lean`) carries a second
 cardinality conjunct
 `(#S : ℝ)/(D_Y Q) > 2·D_Y Q²·D_X·D_YZ Q`,
-with `S = coeffs_of_close_proximity k ωs δ u₀ u₁`.  This is a *lower bound on `#S`* and is **not**
-derivable from `ModifiedGuruswami`: in [BCIKS20] it is a *hypothesis* (the set of close
+with `S = coeffs_of_close_proximity k ωs δ u₀ u₁`.  This is a *lower bound on `#S`* and is
+**not** derivable from `ModifiedGuruswami`: in [BCIKS20] it is a *hypothesis* (the set of close
 codeword-coefficients is large — the list-decoding regime), mis-placed into the conclusion.  The
 three lemmas below verify this defect concretely. -/
 
