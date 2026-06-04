@@ -563,12 +563,76 @@ theorem sumcheckFoldOracleReduction_perfectCompleteness :
 
 def NBlockMessages := 2 * (ϑ - 1) + 3
 
+/-- Per-challenge RBR knowledge error for the composed sumcheck-fold protocol: challenge `j`
+(at offset `j % NBlockMessages` inside block `j / NBlockMessages`) is the verifier challenge of
+fold round `(j / NBlockMessages) · ϑ + (j % NBlockMessages) / 2`, whose error is
+`foldKnowledgeError` at that round.
+
+STATEMENT REPAIR (index off-by-one): the previous form added `+ 1` to the in-block fold index
+`(j % NBlockMessages) / 2`.  That (a) overflows `Fin ℓ` exactly at the last challenge of the last
+block (`j = (ℓ/ϑ − 1)·(2ϑ+1) + (2ϑ−1)` maps to `(ℓ/ϑ)·ϑ = ℓ`, since `ϑ ∣ ℓ`), making the bound
+unprovable as stated, and (b) misroutes `foldKnowledgeError`'s bad-event term: that term fires
+when `ϑ ∣ (i + 1)`, i.e. at the *commit-round* challenge `i = b·ϑ + (ϑ−1)` (block offset `2ϑ−1`),
+which is the image of the un-shifted map — with the `+ 1` the commit challenge would land on
+`(b+1)·ϑ` where the term does not fire. -/
 def sumcheckFoldKnowledgeError := fun j : (pSpecSumcheckFold 𝔽q β (ϑ:=ϑ)
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).ChallengeIdx =>
     if hj: (j.val % NBlockMessages (ϑ:=ϑ)) % 2 = 1 then
       foldKnowledgeError 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        ⟨j / NBlockMessages (ϑ:=ϑ) * ϑ + ((j % NBlockMessages (ϑ:=ϑ)) / 2 + 1), by
-          sorry⟩ ⟨1, rfl⟩
+        ⟨j / NBlockMessages (ϑ:=ϑ) * ϑ + (j % NBlockMessages (ϑ:=ϑ)) / 2, by
+          -- The composed spec has `(ℓ/ϑ − 1)` non-last blocks of `NBlockMessages = 2ϑ+1`
+          -- messages plus a last block of `2ϑ`, so `j < (ℓ/ϑ − 1)·(2ϑ+1) + 2ϑ`; with
+          -- `ϑ ∣ ℓ` the mapped fold-round index `b·ϑ + offset/2` is `< ℓ`.
+          obtain ⟨⟨jv, hjv⟩, hdir⟩ := j
+          show jv / NBlockMessages (ϑ:=ϑ) * ϑ + jv % NBlockMessages (ϑ:=ϑ) / 2 < ℓ
+          simp only [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ,
+            Fintype.card_fin, smul_eq_mul] at hjv
+          -- hjv : jv < (ℓ / ϑ - 1) * ((ϑ - 1) * 2 + 3) + ϑ * 2
+          have hϑ : 0 < ϑ := Nat.pos_of_neZero ϑ
+          obtain ⟨c, hc⟩ : ϑ ∣ ℓ := hdiv.out
+          have hℓpos : 0 < ℓ := Nat.pos_of_neZero ℓ
+          have hc1 : 1 ≤ c := by
+            rcases Nat.eq_zero_or_pos c with h0 | h
+            · subst h0; omega
+            · exact h
+          have hQc : ℓ / ϑ = c := by rw [hc, Nat.mul_div_cancel_left _ hϑ]
+          have hBeq : (ϑ - 1) * 2 + 3 = 2 * ϑ + 1 := by omega
+          have hB : NBlockMessages (ϑ := ϑ) = 2 * ϑ + 1 := by unfold NBlockMessages; omega
+          rw [hQc, hBeq] at hjv
+          rw [hB]
+          -- hjv : jv < (c - 1) * (2 * ϑ + 1) + ϑ * 2
+          -- ⊢ jv / (2 * ϑ + 1) * ϑ + jv % (2 * ϑ + 1) / 2 < ℓ
+          have hBpos : 0 < 2 * ϑ + 1 := by omega
+          have hdam := Nat.div_add_mod jv (2 * ϑ + 1)
+          have hmlt : jv % (2 * ϑ + 1) < 2 * ϑ + 1 := Nat.mod_lt _ hBpos
+          have hsplit : (c - 1) * (2 * ϑ + 1) + (2 * ϑ + 1) = c * (2 * ϑ + 1) := by
+            rw [Nat.sub_one_mul,
+              Nat.sub_add_cancel (Nat.le_mul_of_pos_left _ (by omega : 0 < c))]
+          have hlt : jv < c * (2 * ϑ + 1) := by omega
+          have hble : jv / (2 * ϑ + 1) ≤ c - 1 := by
+            have hdlt : jv / (2 * ϑ + 1) < c := (Nat.div_lt_iff_lt_mul hBpos).mpr hlt
+            omega
+          rcases Nat.lt_or_ge (jv / (2 * ϑ + 1)) (c - 1) with hblt | hbge
+          · -- non-last block: `b + 2 ≤ c` ⇒ `b·ϑ + 2ϑ ≤ c·ϑ = ℓ`, and `offset/2 ≤ ϑ < 2ϑ`.
+            have hkey : jv / (2 * ϑ + 1) * ϑ + 2 * ϑ ≤ ℓ := by
+              have hmul := Nat.mul_le_mul_right ϑ
+                (by omega : jv / (2 * ϑ + 1) + 2 ≤ c)
+              rw [Nat.add_mul] at hmul
+              calc jv / (2 * ϑ + 1) * ϑ + 2 * ϑ ≤ c * ϑ := hmul
+                _ = ℓ := by rw [Nat.mul_comm, ← hc]
+            generalize jv / (2 * ϑ + 1) * ϑ = P at hkey ⊢
+            omega
+          · -- last block: `b = c − 1`, so `offset < 2ϑ` and the index is `≤ ℓ − 1`.
+            have hbeq : jv / (2 * ϑ + 1) = c - 1 := le_antisymm hble hbge
+            rw [hbeq, Nat.mul_comm (2 * ϑ + 1) (c - 1)] at hdam
+            -- hdam : (c-1) * (2ϑ+1) + jv % (2ϑ+1) = jv — same product atom as hjv
+            have hslt : jv % (2 * ϑ + 1) < 2 * ϑ := by omega
+            have hCm1 : (c - 1) * ϑ = ℓ - ϑ := by
+              rw [Nat.sub_one_mul, Nat.mul_comm, ← hc]
+            have hϑℓ : ϑ ≤ ℓ := by
+              rw [hc]; exact Nat.le_mul_of_pos_right _ (by omega : 0 < c)
+            rw [hbeq, hCm1]
+            omega⟩ ⟨1, rfl⟩
     else 0 -- this case never happens
 
 /-- Round-by-round knowledge soundness for the sumcheck fold oracle verifier -/

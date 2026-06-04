@@ -8,6 +8,8 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.Polynomial.RationalFunctions
 
+set_option linter.style.longFile 1700
+
 namespace ProximityGap
 
 open Polynomial Polynomial.Bivariate NNReal Finset Function ProbabilityTheory Code Trivariate
@@ -1415,8 +1417,8 @@ theorem common_roots_force_lift_zero
       (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P :
         _root_.BCIKS20AppendixA.𝒪 H) = 0 := by
   classical
-  let β : _root_.BCIKS20AppendixA.𝒪 H :=
-    Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P
+  set β : _root_.BCIKS20AppendixA.𝒪 H :=
+    Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P with hβ_def
   have hsub : (T : Set F) ⊆ _root_.BCIKS20AppendixA.S_β β := by
     simpa [β] using (common_roots_subset_S_β_mk (H := H) (P := P) (T := T) hroot)
   -- The merge left this theorem referencing an `elimPoly`/`embedding↔canonicalRep`

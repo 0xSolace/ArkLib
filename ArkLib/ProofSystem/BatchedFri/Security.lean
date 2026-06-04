@@ -877,13 +877,13 @@ lemma fri_soundness
     let α : ℝ≥0 := (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
     (∃ prov : OracleProver (WitOut := Unit) ..,
         Pr[fun _ => True |
-          OracleReduction.run () f ()
-            ⟨
-              prov,
-              (BatchedFri.Spec.batchedFRIreduction
-                (ω := ω) (n := n) k s d domain_size_cond l t).verifier
-            ⟩
-        ] > εC 𝔽 n s m ρ_sqrt + α ^ l) →
+            OracleReduction.run () f ()
+              ⟨
+                prov,
+                (BatchedFri.Spec.batchedFRIreduction
+                  (ω := ω) (n := n) k s d l t).verifier
+              ⟩
+          ] > εC 𝔽 n s m ρ_sqrt + α ^ l) →
       Code.jointAgreement
         (F := 𝔽)
         (κ := Fin t.succ)

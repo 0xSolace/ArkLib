@@ -159,6 +159,228 @@ lemma c57_eval_on_Z_mul (p q : F[Z][X][Y]) (z : F) :
   rw [Trivariate.eval_on_Z_eq, Trivariate.eval_on_Z_eq, Trivariate.eval_on_Z_eq,
     Polynomial.map_mul]
 
+/-! ### Gap B — the trivariate graph-vanishing keystone (NOW RESOLVED)
+
+The residual "Gap B" obstruction flagged on `exists_factors_with_large_common_root_set` and on
+`exists_a_set_and_a_matching_polynomial` was: *no lemma connects `ModifiedGuruswami.Q_multiplicity`
+(order-`≥ m` root multiplicity of `Q : F[Z][X][Y]` over the coefficient ring `F[Z]` at each curve
+point `(C ωᵢ, C u₀ᵢ + X · C u₁ᵢ)`) to the per-`z` evaluation-zero fact `(eval_on_Z Q z).eval Pz =
+0`* — i.e. "`Q` vanishes on the graph `(X, Pz(X))` of the `δ`-close codeword indexed by `z`".
+
+The lemmas below **supply that bridge**, fully proven (`#print axioms` = `propext`,
+`Classical.choice`, `Quot.sound` only).  The argument is the trivariate analogue of the bivariate
+GS divisibility chain (`GuruswamiSudan.orderAt_eval_ge` / `roots_le_degree_of_deg_lt_roots`):
+
+1. **Multiplicity transport `F[Z] → F`** (`gapB_transport_mult`).  Applying the coefficient ring
+   hom `φ = evalRingHom z : F[Z] → F` (`Z ↦ z`) commutes with both `Bivariate.shift` and
+   `Bivariate.coeff` (`gapB_shift_map`, `gapB_coeff_map_biv`).  Hence the order-`m` vanishing of the
+   shifted coefficients of `Q` at `(C ωᵢ, C u₀ᵢ + X·C u₁ᵢ)` (extracted from `Q_multiplicity` via the
+   integral-domain criterion `gapB_shift_coeff_zero_of_mult_ge_dom`) transports to order-`m`
+   vanishing of `eval_on_Z Q z = Q.map (mapRingHom φ)` at the *image* point
+   `(φ(C ωᵢ), φ(C u₀ᵢ + X·C u₁ᵢ)) = (ωᵢ, u₀ᵢ + z·u₁ᵢ) = (ωᵢ, (u₀ + z•u₁) i)` — exactly the word
+   `w(·, z)`.  This is the field-side input `GuruswamiSudan.rootMultiplicity_ge_of_shift_zero`.
+
+2. **Field-side graph vanishing** (`gapB_vanish_of_orderM_and_count`).  With `Q_z := eval_on_Z Q z`
+   carrying order-`m` roots at `(ωᵢ, w_i)` for `i` in the agreement set `A`, `Q_z(X, Pz(X))` has a
+   root of order `≥ m` at each `ωᵢ` with `i ∈ A` (`GuruswamiSudan.orderAt_eval_ge`); a polynomial of
+   degree `< m·#A` with that many roots is `0` (`roots_le_degree_of_deg_lt_roots`).  The degree
+   bound `(Q_z.eval Pz).natDegree ≤ natWeightedDegree Q_z 1 k` is `degree_eval_le_weightedDegree`
+   (`Pz.natDegree ≤ k`).
+
+The strict counting inequality `natWeightedDegree (eval_on_Z Q z) 1 k < m·#A` is the
+*Johnson-radius* condition — `δ` within the list-decoding radius so that `#A ≥ (1−δ)n` is large
+relative to the degree bound.  It is passed as an explicit hypothesis of the keystone:
+`exists_factors_with_large_common_root_set` does **not** carry a `δ ≤ δ₀` binder (its `δ` is free),
+which is precisely why that top-level claim still cannot be closed without statement repair (see its
+docstring).  The keystone is the faithful, reusable form of the bridge: feed it the Johnson side
+condition and it discharges the graph vanishing. -/
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- `Bivariate.shift` commutes with `map (mapRingHom φ)` (under `φ` on the base point). -/
+private theorem gapB_shift_map {S T : Type} [CommRing S] [CommRing T]
+    (φ : S →+* T) (f : S[X][Y]) (x y : S) :
+    Polynomial.Bivariate.shift (f.map (Polynomial.mapRingHom φ)) (φ x) (φ y)
+      = (Polynomial.Bivariate.shift f x y).map (Polynomial.mapRingHom φ) := by
+  unfold Polynomial.Bivariate.shift
+  rw [Polynomial.map_map]
+  have hcomp : (f.map (Polynomial.mapRingHom φ)).comp
+        (Polynomial.X + Polynomial.C (Polynomial.C (φ y)))
+      = (f.comp (Polynomial.X + Polynomial.C (Polynomial.C y))).map (Polynomial.mapRingHom φ) := by
+    rw [Polynomial.map_comp]; congr 1; simp [Polynomial.mapRingHom]
+  rw [hcomp, Polynomial.map_map]
+  congr 1
+  ext p
+  · simp [Polynomial.mapRingHom, Polynomial.compRingHom]
+  · simp [Polynomial.mapRingHom, Polynomial.compRingHom]
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- `Bivariate.coeff` commutes with `map (mapRingHom φ)`. -/
+private theorem gapB_coeff_map_biv {S T : Type} [CommRing S] [CommRing T]
+    (φ : S →+* T) (f : S[X][Y]) (i j : ℕ) :
+    Polynomial.Bivariate.coeff (f.map (Polynomial.mapRingHom φ)) i j
+      = φ (Polynomial.Bivariate.coeff f i j) := by
+  unfold Polynomial.Bivariate.coeff
+  simp [Polynomial.coeff_map, Polynomial.mapRingHom]
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- Over an integral-domain coefficient ring, `rootMultiplicity ≥ M` forces every shifted
+coefficient of total degree `< M` to vanish.  (The "easy" direction of the multiplicity criterion,
+ported off the field-only `GuruswamiSudan.rootMultiplicity_le_of_coeff_ne_zero` so it applies to the
+trivariate setting `S = F[Z]`.) -/
+private theorem gapB_shift_coeff_zero_of_mult_ge_dom {S : Type} [CommRing S] [IsDomain S]
+    [DecidableEq S] (f : S[X][Y]) (x y : S) (M : ℕ)
+    (hmult : (M : Option ℕ) ≤ Bivariate.rootMultiplicity f x y) :
+    ∀ s t, s + t < M → Polynomial.Bivariate.coeff (Bivariate.shift f x y) s t = 0 := by
+  intro s t hst
+  by_contra hc
+  set g := Bivariate.shift f x y with hg
+  have hle : Bivariate.rootMultiplicity₀ g ≤ some (s + t) := by
+    unfold Bivariate.rootMultiplicity₀
+    cases hwd : Bivariate.weightedDegree g 1 1 with
+    | none => exact absurd hwd (Bivariate.weightedDegree_ne_none _ _ _)
+    | some deg =>
+      simp only
+      have hst_le : s ≤ deg ∧ t ≤ deg := by
+        have hb : 1 * (g.coeff t).natDegree + 1 * t ≤ Bivariate.natWeightedDegree g 1 1 := by
+          refine Finset.le_sup (f := fun mm => 1 * (g.coeff mm).natDegree + 1 * mm)
+            (Polynomial.mem_support_iff.mpr ?_)
+          intro h0; apply hc; rw [Bivariate.coeff, h0]; simp
+        have hsd : 1 * (g.coeff t).natDegree + 1 * t ≥ s + t := by
+          have : s ≤ (g.coeff t).natDegree := by
+            apply Polynomial.le_natDegree_of_ne_zero
+            intro h0; apply hc; rwa [Bivariate.coeff]
+          omega
+        have hwd_nat : Bivariate.natWeightedDegree g 1 1 = deg := by
+          rw [Bivariate.weightedDegree_eq_natWeightedDegree] at hwd; exact Option.some.inj hwd
+        rw [hwd_nat] at hb; omega
+      set L := List.filterMap
+          (fun (p : ℕ × ℕ) ↦ if Polynomial.Bivariate.coeff g p.1 p.2 = 0 then none
+            else some (p.1 + p.2))
+          (List.product (List.range deg.succ) (List.range deg.succ)) with hL
+      have hmem : (s + t) ∈ L := by
+        rw [hL, List.mem_filterMap]
+        refine ⟨(s, t), ?_, ?_⟩
+        · rw [List.product, List.mem_flatMap]
+          exact ⟨s, List.mem_range.mpr (Nat.lt_succ_of_le hst_le.1),
+            List.mem_map.mpr ⟨t, List.mem_range.mpr (Nat.lt_succ_of_le hst_le.2), rfl⟩⟩
+        · simp [hc]
+      have hmin := List.min?_getD_le_of_mem (k := s + t) hmem
+      cases hmm : L.min? with
+      | none =>
+          have : L = [] := List.min?_eq_none_iff.mp hmm
+          rw [this] at hmem; simp at hmem
+      | some v =>
+          rw [hmm] at hmin
+          simp only [Option.getD_some] at hmin
+          exact Option.some_le_some.mpr hmin
+  have hmult' : (M : Option ℕ) ≤ Bivariate.rootMultiplicity₀ g := by
+    rw [Bivariate.rootMultiplicity] at hmult; exact hmult
+  cases hrm : Bivariate.rootMultiplicity₀ g with
+  | none => rw [hrm] at hmult'; simp at hmult'
+  | some v =>
+      rw [hrm] at hmult' hle
+      simp only [Option.some_le_some] at hmult' hle
+      omega
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Multiplicity transport `F[Z] → F`.*  The order-`≥ M` root multiplicity of `Q : F[Z][X][Y]`
+(over `F[Z]`) at the curve point `(C ω, C u0 + X · C u1)` transports, under the specialization
+`Z ↦ z`, to order-`≥ M` multiplicity of `eval_on_Z Q z` at the image point `(ω, u0 + z·u1)`. -/
+private theorem gapB_transport_mult [DecidableEq (Polynomial F)]
+    (Qt : F[Z][X][Y]) (z ω u0 u1 : F) (M : ℕ)
+    (hQz_ne : Qt.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) ≠ 0)
+    (hm : (M : Option ℕ) ≤ Polynomial.Bivariate.rootMultiplicity Qt
+            (Polynomial.C ω) (Polynomial.C u0 + Polynomial.X * Polynomial.C u1)) :
+    (M : Option ℕ) ≤ Polynomial.Bivariate.rootMultiplicity
+        (Qt.map (Polynomial.mapRingHom (Polynomial.evalRingHom z))) ω (u0 + z * u1) := by
+  set φ := Polynomial.evalRingHom z with hφ
+  set x : Polynomial F := Polynomial.C ω with hx
+  set y : Polynomial F := Polynomial.C u0 + Polynomial.X * Polynomial.C u1 with hy
+  have hφx : φ x = ω := by rw [hφ, hx, coe_evalRingHom, eval_C]
+  have hφy : φ y = u0 + z * u1 := by
+    rw [hφ, hy, map_add, map_mul, coe_evalRingHom, eval_C, eval_X, eval_C, mul_comm]
+  have hvanQ := gapB_shift_coeff_zero_of_mult_ge_dom Qt x y M hm
+  have hvanQz : ∀ s t, s + t < M →
+      ((Bivariate.shift (Qt.map (Polynomial.mapRingHom φ)) ω (u0 + z * u1)).coeff t).coeff s = 0 := by
+    intro s t hst
+    have : Polynomial.Bivariate.coeff
+        (Bivariate.shift (Qt.map (Polynomial.mapRingHom φ)) (φ x) (φ y)) s t = 0 := by
+      rw [gapB_shift_map, gapB_coeff_map_biv, hvanQ s t hst, map_zero]
+    rwa [hφx, hφy, Bivariate.coeff] at this
+  exact GuruswamiSudan.rootMultiplicity_ge_of_shift_zero hQz_ne hvanQz
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Field-side graph vanishing from order-`M` roots + a strict degree/agreement count.*  If a
+bivariate `Q_z : F[X][Y]` has order-`≥ M` roots at `(ωᵢ, wᵢ)` for `i` in an agreement set `A` where
+`wᵢ = P(ωᵢ)`, and `deg (Q_z.eval P) < M·#A`, then `Q_z.eval P = 0`.  This is the trivariate-friendly
+re-packaging of the interior of `GuruswamiSudan.dvd_property`. -/
+private theorem gapB_vanish_of_orderM_and_count
+    (ωs : Fin n ↪ F) (Qz : F[X][Y]) (P : F[X]) (w : Fin n → F) (M D : ℕ) (A : Finset (Fin n))
+    (hroots : ∀ i ∈ A, (M : Option ℕ) ≤ Bivariate.rootMultiplicity Qz (ωs i) (w i))
+    (hmatch : ∀ i ∈ A, w i = P.eval (ωs i))
+    (hdeg : (Qz.eval P).natDegree ≤ D)
+    (hcount : D < M * A.card) :
+    Qz.eval P = 0 := by
+  by_contra hne
+  have hRoot : ∀ i ∈ A, M ≤ (Qz.eval P).rootMultiplicity (ωs i) := by
+    intro i hi
+    have hO : GuruswamiSudan.HasOrderAt Qz (ωs i) (w i) M := by
+      intro s t hst
+      exact gapB_shift_coeff_zero_of_mult_ge_dom Qz (ωs i) (w i) M (hroots i hi) s t hst
+    have := GuruswamiSudan.orderAt_eval_ge Qz P (ωs i) M (by rw [hmatch i hi] at hO; exact hO)
+    rcases this with h | h
+    · exact absurd h hne
+    · exact h
+  exact hne (GuruswamiSudan.roots_le_degree_of_deg_lt_roots (ωs := ωs) (Qz.eval P) M A hRoot
+    (lt_of_le_of_lt hdeg hcount))
+
+omit [DecidableEq (RatFunc F)] in
+/-- **Gap-B keystone: the trivariate graph-vanishing bridge** ([BCIKS20] §5, the residual keystone
+of Claim 5.7 / Prop 5.5).  Given a `ModifiedGuruswami` solution `Q`, a coefficient `z` in the
+close-proximity set `S` with its `δ`-close codeword polynomial `Pz`, the nonvanishing of the
+specialization `eval_on_Z Q z`, an agreement set `A` on which the word `w(·, z) = u₀ + z•u₁` matches
+`Pz ∘ ωs`, and the *Johnson-radius* counting hypothesis `natWeightedDegree (eval_on_Z Q z) 1 k <
+m·#A`, the polynomial `Q` vanishes on the graph of the close codeword:
+`(eval_on_Z Q z).eval Pz = 0`.
+
+This is the fact previously declared missing on `exists_factors_with_large_common_root_set`
+("Missing GS-multiplicity → close-codeword-graph vanishing (Gap B)") and on
+`exists_a_set_and_a_matching_polynomial` ("the binding of each `z ∈ S` to a factor requires the
+vanishing `(eval_on_Z Q z).eval Pz = 0`").  It is derived honestly from
+`ModifiedGuruswami.Q_multiplicity` via the transport + field-side counting lemmas above; the
+Johnson-radius side condition is made explicit because the consumer claims do not carry a `δ ≤ δ₀`
+binder (their `δ` is free), so it cannot be discharged internally — see the obstruction docstrings.
+`#print axioms` = `propext, Classical.choice, Quot.sound` only. -/
+theorem Q_vanishes_on_close_codeword_graph [DecidableEq (Polynomial F)]
+    (k : ℕ) {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁)
+    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
+    (A : Finset (Fin n))
+    (hA : ∀ i ∈ A, (u₀ + z • u₁) i = (Pz hS).eval (ωs i))
+    (hcount : Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k < m * A.card) :
+    (Trivariate.eval_on_Z Q z).eval (Pz hS) = 0 := by
+  set Qz := Trivariate.eval_on_Z Q z with hQz
+  set P := Pz hS with hP
+  have hroots : ∀ i ∈ A, (m : Option ℕ) ≤
+      Bivariate.rootMultiplicity Qz (ωs i) ((u₀ + z • u₁) i) := by
+    intro i hi
+    have hmi0 := h_gs.Q_multiplicity i
+    have hmi : (m : Option ℕ) ≤ Bivariate.rootMultiplicity Q
+        (Polynomial.C (ωs i)) (Polynomial.C (u₀ i) + Polynomial.X * Polynomial.C (u₁ i)) := by
+      convert ge_iff_le.mp hmi0 using 2
+    have hne' : Q.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) ≠ 0 := hQz_ne
+    have htr := gapB_transport_mult Q z (ωs i) (u₀ i) (u₁ i) m hne' hmi
+    have hpt : (u₀ + z • u₁) i = u₀ i + z * u₁ i := by
+      simp [Pi.add_apply, Pi.smul_apply, smul_eq_mul]
+    rw [hpt, hQz]; exact htr
+  have hdeg : (Qz.eval P).natDegree ≤ Bivariate.natWeightedDegree Qz 1 k := by
+    have hPdeg : P.natDegree ≤ (k + 1) - 1 := by
+      simpa using (exists_Pz_of_coeffs_of_close_proximity (n := n) (k := k) hS).choose_spec.1
+    simpa using GuruswamiSudan.degree_eval_le_weightedDegree Qz P (k + 1) hPdeg
+  have := gapB_vanish_of_orderM_and_count ωs Qz P (u₀ + z • u₁) m
+    (Bivariate.natWeightedDegree Qz 1 k) A hroots hA hdeg hcount
+  rw [hQz, hP] at this ⊢; exact this
+
 open Trivariate in
 open Bivariate in
 /-- Claim 5.7 of [BCIKS20].
@@ -177,26 +399,23 @@ OBSTRUCTION (one residual blocker remains — the trivariate vanishing bridge).
   `Trivariate.eval_on_Z` directly — now sound — so the `R`/`H`/`Irreducible H` consumers, which read
   only `.choose`, `.choose_spec.choose`, `.choose_spec.choose_spec.2.1`, are unaffected.)
 
-* *Missing GS-multiplicity → close-codeword-graph vanishing (Gap B — the residual keystone).*  The
-  pigeonhole needs, for each `z ∈ S`, the vanishing `(eval_on_Z Q z.1).eval (Pz z.2) = 0` — the
-  formal content of "`Q` vanishes on the graphs of the `δ`-close codewords", obtained from the
-  `ModifiedGuruswami` multiplicity field `Q_multiplicity` together with the `Pz`-matching data of
-  Proposition 5.5.  No lemma in `Guruswami.lean` / `Extraction.lean` connects `Q_multiplicity`
-  (an order-`≥ m` root-multiplicity over `F[Z]` at the curve points
-  `(C ωᵢ, C(u₀ᵢ) + X·C(u₁ᵢ))`) to this evaluation-zero fact, and the upstream Proposition 5.5
-  (`exists_a_set_and_a_matching_polynomial`, which supplies the matching `P`/`Pz` data) is itself
-  still unproved (its self-contained pigeonhole core is now discharged by
-  `Guruswami.tagged_fiber_pigeonhole`, but the same vanishing bridge is its residual too).  Building
-  this bridge — the trivariate analogue of the bivariate
-  `GuruswamiSudan.dvd_eval_of_rootMultiplicity_zero` / `proximity_gap_divisibility`, transported by
-  the now-available `c57_eval_on_Z_{zero,add,mul}` ring-hom lemmas — is the precise residual
-    content.
-  *Verified missing hypothesis:* the per-`z` vanishing `Q(z, X, Pz(X)) ≡ 0` is the bivariate
-  counting argument (more order-`m` roots than degree), which needs
-  `m·(1−δ)n > natWeightedDegree Q 1 k`, i.e. `δ` within the Johnson radius
-  `proximity_gap_johnson`.  But `δ` is a *free* parameter of this lemma (no `δ ≤ δ₀` hypothesis),
-  so for `δ` near `1` the vanishing fails — the bridge therefore also needs the Johnson-radius side
-  hypothesis, absent from the current binder.
+* *GS-multiplicity → close-codeword-graph vanishing (Gap B — NOW RESOLVED).*  The pigeonhole needs,
+  for each `z ∈ S`, the vanishing `(eval_on_Z Q z.1).eval (Pz z.2) = 0` — the formal content of "`Q`
+  vanishes on the graphs of the `δ`-close codewords", obtained from the `ModifiedGuruswami`
+  multiplicity field `Q_multiplicity` together with the `Pz`-matching data of Proposition 5.5.  This
+  bridge is now **supplied and fully proven** by `Q_vanishes_on_close_codeword_graph` (above): the
+  trivariate analogue of the bivariate `GuruswamiSudan.orderAt_eval_ge` /
+  `roots_le_degree_of_deg_lt_roots` chain, transporting the order-`≥ m` root multiplicity of `Q`
+  over `F[Z]` at `(C ωᵢ, C(u₀ᵢ) + X·C(u₁ᵢ))` under `Z ↦ z` (`gapB_transport_mult`) to order-`≥ m`
+  vanishing of `eval_on_Z Q z` at the word point `(ωᵢ, (u₀ + z•u₁) i)`, then a degree-vs-roots count
+  (`gapB_vanish_of_orderM_and_count`).  `#print axioms` is clean.
+  *Verified residual side hypothesis (NOT in this binder):* the count requires the strict inequality
+  `m·#A > natWeightedDegree (eval_on_Z Q z) 1 k` (with `#A ≥ (1−δ)n` the agreement count), i.e. `δ`
+  within the Johnson radius `proximity_gap_johnson`.  `δ` is a *free* parameter of this Claim-5.7
+  lemma (no `δ ≤ δ₀` hypothesis), so for `δ` near `1` the vanishing genuinely fails; the keystone
+  therefore takes that Johnson/count condition as an *explicit hypothesis*.  Closing Claim 5.7 from
+  the keystone is thus blocked only on adding the absent `δ ≤ δ₀` binder — a statement repair the
+  uneditable downstream consumers forbid (see the second-conjunct note below).
 
 * *Second cardinality conjunct is false off the list-decoding regime (VERIFIED defect, the 7th in
   this tree).*  The conjunct `(#S : ℝ)/(D_Y Q) > 2·D_Y Q²·D_X·D_YZ Q` is a *lower bound on `#S`*
@@ -370,18 +589,16 @@ lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
 `z ∈ S = coeffs_of_close_proximity` that are bound to the common irreducible factor pair `(R, H)`
 selected by the Claim-5.7 pigeonhole.
 
-REPAIR NOTE (pre-existing breakage, restored from wave-3 commit 9e8fb10b). `matching_set`,
+REPAIR NOTE (pre-existing breakage). `matching_set`,
 `matching_set_is_a_sub_of_coeffs_of_close_proximity`, and the upstream Prop 5.5
 `exists_a_set_and_a_matching_polynomial` were *referenced* by `matching_set_at_x` and by the §5 GAP
 docstrings but never **defined** anywhere in the tree, so this file — and the entire BCIKS20 §5
 downstream including `correlatedAgreement_affine_curves` — failed to compile with
-`Unknown identifier matching_set`. (This breakage was masked behind the Extraction.lean failure that
-this branch fixes separately; surfacing it once Extraction compiled.) We supply the missing
-definition here.
+`Unknown identifier matching_set`.  We supply the missing definition here.
 
 Faithfulness: in [BCIKS20] `S' ⊆ S` is the fiber bound to the chosen `(R, H)`.  Pinning that fiber
 formally would force `matching_set` to carry the Claim-5.7 `.choose` data `R k δ x₀ h_gs` (hence an
-extra `x₀` parameter the call site `matching_set k ωs δ u₀ u₁ h_gs` does not pass).  We
+extra `x₀` parameter the uneditable call site `matching_set k ωs δ u₀ u₁ h_gs` does not pass).  We
 therefore define `S' := S` (the maximal subset) — an honest *over-approximation* of the paper's `S'`.
 This only ever **weakens** the cardinality hypotheses of the still-`sorry` Claims 5.10/5.11 (a larger
 `S'` makes `|S'_x|` larger, so their hypotheses are easier, not vacuous), and the inclusion

@@ -122,7 +122,9 @@ theorem linear_lambda_ge_elias_volume_eli57
           / (Fintype.card F : ℝ) ^
               ((Fintype.card ι : ℝ) - Module.finrank F C))
       ≤ (Lambda ((C : Set (ι → F))) δ : ENNReal) := by
-  classical
+  -- Provide `c ∈ C` decidability WITHOUT a global `classical` (which would create a
+  -- `Decidable`-instance diamond on `hammingDist`, breaking term/goal unification).
+  haveI : DecidablePred (fun c : ι → F => c ∈ C) := fun c => Classical.dec _
   set q : ℕ := Fintype.card F with hq_def
   set n : ℕ := Fintype.card ι with hn_def
   set k : ℕ := Module.finrank F C with hk_def
@@ -139,6 +141,8 @@ theorem linear_lambda_ge_elias_volume_eli57
     rw [div_le_iff₀ (by exact_mod_cast hn_pos : (0 : ℝ) < (Fintype.card ι : ℝ)), hr_def,
       ← hn_def]
     rw [Nat.le_floor_iff (mul_nonneg hδ_nonneg (Nat.cast_nonneg n))]
+    -- The two `hammingDist` occurrences differ only by a (subsingleton) `Decidable`
+    -- instance — `relHammingDist`'s unfolds with a different one than the statement's.
     congr!
   -- Rewrite each maximised-list term as a `Finset.card`.
   have hncard : ∀ f : ι → F,
@@ -226,16 +230,28 @@ theorem linear_lambda_ge_elias_volume_eli57
   exact ENNReal.ofReal_le_ofReal hM_le
 
 /-- **ABF26 Corollary 3.8.** Volume-based lower bound on list size, using the MS77
-volume estimate `Vol_q(δ, n) ≥ q^{n·(ρ-1+H_q(δ))} / √(8·n·δ·(1-δ))`. With `ρ := k/n`:
+volume estimate `Vol_q(δ, n) ≥ q^{n·H_q(δ)} / √(8·n·δ·(1-δ))`. With `ρ := k/n`:
 
   `|Λ(C, δ)| ≥ q^{n·(ρ - 1 + H_q(δ))} / √(8·n·δ·(1-δ))`
 
-Uses `qEntropy` (ABF26 D2.2). Admitted as an external result.
+Uses `qEntropy` (ABF26 D2.2).
 
-**STATUS: NEEDS_CLASSICAL.** Proving this needs the classical MS77 (MacWilliams-Sloane)
-entropy volume estimate and the surrounding list-decoding machinery, none of which is in
-mathlib (no Reed-Solomon / list-decoding / volume-bound API upstream). Ground-up
-formalization task, not a port. See `research/formal/arklib-proof-research-2026-06.md`. -/
+**Reduced to one missing analytic ingredient.** Since L3.7
+(`linear_lambda_ge_elias_volume_eli57`, now PROVEN in-tree) already gives
+`Vol_q(δ,n) / q^{n-k} ≤ |Λ(C,δ)|`, this corollary follows by transitivity from the
+single inequality
+
+  `q^{n·H_q(δ)} / √(8·n·δ·(1-δ)) ≤ Vol_q(δ, n)`         (★)
+
+(rearrange the C3.8 RHS via `ρ = k/n`: `q^{n(ρ-1+H_q)} = q^{k-n}·q^{n·H_q}` and
+`Vol / q^{n-k} = Vol · q^{k-n}`, so C3.8-RHS ≤ L3.7-RHS ⇔ (★)). Inequality (★) is the
+**MS77 lower bound on the `q`-ary Hamming-ball volume** (MacWilliams–Sloane 1977, the
+Stirling-based estimate `∑_{i≤δn} C(n,i)(q-1)^i ≥ q^{nH_q(δ)}/√(8nδ(1-δ))`). That
+estimate is a real-analytic fact about `hammingBallVolume` vs `qEntropy` and is **not**
+yet in-tree; it is the only remaining gap. The right move is to prove (★) as a standalone
+lemma `hammingBallVolume_ge_qEntropy` in `HammingBallVolume.lean` (Stirling bounds on
+`Nat.choose` + `Real.logb` algebra), after which this corollary closes in three lines via
+`le_trans` against L3.7. Admitted pending (★). -/
 theorem linear_lambda_ge_entropy_volume
     (C : Submodule F (ι → F)) (δ : ℝ) (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1) :
     let q : ℕ := Fintype.card F
@@ -246,7 +262,8 @@ theorem linear_lambda_ge_entropy_volume
         ((q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ))
           / (8 * n * δ * (1 - δ)) ^ ((1 : ℝ) / 2))
       ≤ (Lambda ((C : Set (ι → F))) δ : ENNReal) := by
-  sorry -- ABF26-C3.8; external admit, uses MS77 volume estimate.
+  sorry -- ABF26-C3.8; reduces to L3.7 (PROVEN) + missing ingredient (★):
+  -- `q^{n·H_q(δ)} / √(8nδ(1-δ)) ≤ hammingBallVolume q δ n` (MS77 Stirling volume bound).
 
 /-- **ABF26 Theorem 3.9 [ST20 Thm 1.2].** Generalized Singleton bound for list decoding.
 Let `F` be a finite field, `0 < ℓ < |F|`, `δ ∈ (0, 1)`, and let `C ⊆ F^n` be a linear
@@ -270,6 +287,11 @@ theorem linear_C_le_generalized_singleton_st20
           ((Fintype.card ι : ℝ)
             - (Nat.floor (((ℓ : ℝ) + 1) / ℓ * δ * Fintype.card ι) : ℝ)) := by
   sorry -- ABF26-T3.9; external admit [ST20 Thm 1.2].
+  -- Missing ingredient: ST20's generalized Singleton bound for list decoding. Bounds |C| by
+  -- |F|^{n-⌊(ℓ+1)/ℓ·δ·n⌋} from |Λ(C,δ)|≤ℓ via a dimension/puncturing argument: the list-size
+  -- hypothesis forces a large "free coordinate" set on which C projects injectively. Needs the
+  -- ST20 puncturing/shortening dimension lemma (not in-tree; LinearCode.lean has finrank but
+  -- not the list-size⇒puncture-dimension bound). Genuinely external.
 
 end LowerBounds_General
 
@@ -312,6 +334,11 @@ theorem large_alphabet_barrier_bdg24_agl23
             Lambda ((C : Set (ι → F))) ((ℓ : ℝ) / (ℓ + 1) * (1 - ρ - η)) ≤ (ℓ : ℕ∞) →
             (Fintype.card F : ℝ) ≥ (2 : ℝ) ^ (α / η) := by
   sorry -- ABF26-T3.10; external admit [BDG24, AGL23].
+  -- Missing ingredient: BDG24/AGL23's large-alphabet barrier. Shows codes attaining the
+  -- generalized Singleton bound up to η-slack need |F|≥2^{α/η}. The proof is a probabilistic
+  -- /pigeonhole lower bound on |F| from the list-decodability hypothesis at the near-optimal
+  -- radius ℓ/(ℓ+1)(1-ρ-η); needs the BDG24 alphabet-size lower bound (absent). The ∃α and ∃n₀
+  -- threshold binders also require a non-vacuous constant from that argument. Genuinely external.
 
 end LargeAlphabetBarrier
 
@@ -355,6 +382,12 @@ theorem random_linear_lambda_lower_glmrsw22
               (Lambda ((C : Set (ι → F))) δ : ENNReal) >
                 ((Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε) : ℕ) : ENNReal) := by
   sorry -- ABF26-T3.11; external admit [GLMRSW22 Thm 4.1].
+  -- Missing ingredient: GLMRSW22's random-linear-code list-size lower bound. Needs a
+  -- probabilistic-existence argument: a random rate-ρ linear code has |Λ(C,δ)| >
+  -- ⌊H_q(δ)/(1-H_q(δ)-ρ)-ε⌋ with probability 1-q^{-Ω(n)}. ArkLib has no probability
+  -- distribution over linear codes, so the witness-code existential cannot be discharged
+  -- without first formalising the GLMRSW22 first-moment count over random generator matrices.
+  -- Genuinely external (also blocked on the random-code measure).
 
 end RandomLinear
 
@@ -392,6 +425,11 @@ theorem rs_lambda_superpoly_extension_bkr06
             ((closeCodewordsRel ((C : Set (ι → F))) w δ).ncard : ℝ) ≥
               (q : ℝ) ^ ((α - β ^ 2) * Real.log q) := by
   sorry -- ABF26-T3.12; external admit [BKR06 Cor 2.2].
+  -- Missing ingredient: BKR06's superpolynomial RS list-size CONSTRUCTION over extension
+  -- fields. Must exhibit, for infinitely many prime powers q, an RS code RS[F_q,F_q,⌊q^α⌋]
+  -- and a word w with ≥ q^{(α-β²)log q} close codewords. The construction uses BKR06's
+  -- subfield/trace structure; ExtensionCodes.lean L2.21 transports list sizes but does not
+  -- manufacture the BKR06 large-list word. LOWER bound — genuinely external.
 
 /-- **ABF26 Theorem 3.13 [GHSZ02 Cor 20].** Reed-Solomon large list-size over prime
 fields. Fix `0 < α, β < 1`. For all sufficiently large primes `p`, there exists
@@ -419,6 +457,10 @@ theorem rs_lambda_large_prime_ghsz02
             ((closeCodewordsRel ((C : Set (ι → F))) w δ).ncard : ℝ) >
               c * (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) := by
   sorry -- ABF26-T3.13; external admit [GHSZ02 Cor 20].
+  -- Missing ingredient: GHSZ02's large RS list-size CONSTRUCTION over prime fields. Must
+  -- exhibit, for all large primes p, an RS[F_p,F_p,⌊p^α⌋] and word w with > Ω(p^{p^α·β/2})
+  -- close codewords. GHSZ02 builds the bad word from a high-multiplicity polynomial family;
+  -- not in-tree. LOWER bound — genuinely external.
 
 /-- **ABF26 Theorem 3.14 [JH01 Thm 2].** Large-rate Reed-Solomon lower bound. Fix an
 integer `j ≥ 2`. For infinitely many prime powers `q` with `q ≡ 1 (mod j+1)`, there
@@ -457,6 +499,11 @@ theorem rs_lambda_high_rate_jh01
             Set.ncard ((C : Set (ι → F))) = j + 1 ∧
             (j : ℕ∞) < (closeCodewordsRel ((C : Set (ι → F))) w (1 / (j + 1 : ℝ))).ncard := by
   sorry -- ABF26-T3.14; external admit [JH01 Thm 2].
+  -- Missing ingredient: JH01's high-rate RS list-size separation CONSTRUCTION. For q≡1 mod
+  -- (j+1), must exhibit RS[F_q,L,k] with |C|=j+1 and a word w with >j close codewords at
+  -- radius 1/(j+1). JH01 builds w from a (j+1)-th-root-of-unity coset structure (the q≡1 mod
+  -- (j+1) hypothesis); pinning (k,q) to make |C|=j+1 exact is part of the construction. Not
+  -- in-tree. LOWER bound — genuinely external.
 
 end ReedSolomonBounds
 
@@ -489,6 +536,11 @@ theorem subspaceDesign_list_decoding_cz25
         (1 - τ (Nat.floor (1 / η)) - η) : ENNReal) ≤
       ENNReal.ofReal ((1 - τ (Nat.floor (1 / η))) / η) := by
   sorry -- ABF26-T3.4; external admit [CZ25 Thm B.5].
+  -- Missing ingredient: CZ25 Thm B.5's subspace-design list-decoding-up-to-capacity bound.
+  -- |Λ(C,1-τ(1/η)-η)|≤(1-τ(1/η))/η follows from IsSubspaceDesign (in-tree D2.16) PLUS CZ25's
+  -- design→list-size analysis (a dimension-counting bound on the close-codeword subspace),
+  -- which rests on L2.17 (subspaceDesign_tau_lower — STILL an external admit). Blocked
+  -- transitively on L2.17 + the CZ25 design→Λ conversion (absent). Genuinely external.
 
 /-- **ABF26 Corollary 3.5 [CZ25 Corollary 2.21].** Folded Reed-Solomon codes are
 list-decodable up to capacity. Let `C := FRS[F, L, k, s, ω]` be a folded RS code of
@@ -521,6 +573,10 @@ theorem frs_list_decoding_capacity_cz25
         ENNReal) ≤
       ENNReal.ofReal bound := by
   sorry -- ABF26-C3.5; external admit [CZ25 Cor 2.21].
+  -- Missing ingredient: this is a COROLLARY of T3.4 via T2.18 (frs_is_subspaceDesign_gk16:
+  -- FRS is τ-subspace-design). Once T3.4 and T2.18 are proven, C3.5 closes by instantiating
+  -- T3.4 at the FRS τ(r)=sρ/(s-r+1) and simplifying with 1/η<s. Blocked on T3.4 (above) +
+  -- T2.18 (external admit in SubspaceDesign.lean). No independent external content.
 
 end SubspaceDesignUpperBounds
 
