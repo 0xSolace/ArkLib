@@ -1337,6 +1337,43 @@ private lemma ncard_setOf_isRoot_le {K : Type} [Field K] {R : K[X]} (hR : R ≠ 
     _ ≤ Multiset.card R.roots := R.roots.toFinset_card_le
     _ ≤ R.natDegree := Polynomial.card_roots' R
 
+/-- A `Finset.sup` of `WithBot.some` values over a nonempty finset is itself `some`. -/
+private lemma sup_some_eq_some {ι : Type} {s : Finset ι} (hs : s.Nonempty) (g : ι → ℕ) :
+    ∃ W : ℕ, (s.sup fun i => (WithBot.some (g i) : WithBot ℕ)) = (W : WithBot ℕ) := by
+  classical
+  induction s using Finset.induction with
+  | empty => exact absurd hs (by simp)
+  | insert a t ha ih =>
+    rcases t.eq_empty_or_nonempty with rfl | ht
+    · exact ⟨g a, by simp only [Finset.sup_insert, Finset.sup_empty]; rfl⟩
+    · obtain ⟨W, hW⟩ := ih ht
+      exact ⟨max (g a) W, by rw [Finset.sup_insert, hW]; rfl⟩
+
+/-- For a nonzero bivariate polynomial `r`, its `Λ`-weight is a finite value `W`, and every
+coefficient obeys the weighted bound `k · κ + (r.coeff k).natDegree ≤ W` (where `κ = D + 1 - d_H`).
+We package both facts together. -/
+private lemma exists_weight_bound {r H : F[X][Y]} {D : ℕ} (hr : r ≠ 0) :
+    ∃ W : ℕ, weight_Λ r H D = (W : WithBot ℕ) ∧
+      ∀ k, k ∈ r.support →
+        k * (D + 1 - Bivariate.natDegreeY H) + (r.coeff k).natDegree ≤ W := by
+  classical
+  have hsupp : r.support.Nonempty := by
+    rw [Finset.nonempty_iff_ne_empty]
+    exact fun h => hr (Polynomial.support_eq_empty.1 h)
+  obtain ⟨W, hW⟩ := sup_some_eq_some hsupp
+    (fun deg => deg * (D + 1 - Bivariate.natDegreeY H) + (r.coeff deg).natDegree)
+  refine ⟨W, hW, fun k hk => ?_⟩
+  have hle : (WithBot.some
+        (k * (D + 1 - Bivariate.natDegreeY H) + (r.coeff k).natDegree) : WithBot ℕ)
+      ≤ (r.support.sup fun deg =>
+          (WithBot.some (deg * (D + 1 - Bivariate.natDegreeY H) + (r.coeff deg).natDegree)
+            : WithBot ℕ)) :=
+    Finset.le_sup (f := fun deg =>
+      (WithBot.some (deg * (D + 1 - Bivariate.natDegreeY H) + (r.coeff deg).natDegree)
+        : WithBot ℕ)) hk
+  rw [hW] at hle
+  exact WithBot.coe_le_coe.1 hle
+
 /-- **Lemma A.1** of [BCIKS20], Appendix A.3 (resultant / specialization-point counting).
 
 The `Z`-degree bound on the resultant `Res_Y(r, H̃')` of the canonical representative `r` of the
