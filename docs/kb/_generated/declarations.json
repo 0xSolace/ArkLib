@@ -11079,7 +11079,7 @@
         {
           "doc": "Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20]. Take a Reed-Solomon code of length `\u03b9` and degree `deg`, a proximity-error parameter pair `(\u03b4, \u03b5)` and a curve passing through words `u\u2080, ..., u\u03ba`, such that the probability that a random point on the curve is `\u03b4`-close to the Reed-Solomon code is at most `\u03b5`. Then, the words `u\u2080, ..., u\u03ba` have correlated agreement.",
           "kind": "theorem",
-          "line": 31,
+          "line": 36,
           "name": "ProximityGap.correlatedAgreement_affine_curves",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_curves",
@@ -11088,7 +11088,7 @@
         {
           "doc": "The parameters for which the curve points are `\u03b4`-close to a set `V` (typically, a linear code). This is the set `S` from the proximity gap paper.",
           "kind": "def",
-          "line": 47,
+          "line": 52,
           "name": "ProximityGap.coeffs_of_close_proximity_curve",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_curve",
@@ -11097,7 +11097,7 @@
         {
           "doc": "Propagation brick for the \u00a76.1 argument: two polynomial curves of degree `< l` that agree in coordinate `x` on at least `l` parameter values agree in that coordinate everywhere.",
           "kind": "lemma",
-          "line": 56,
+          "line": 61,
           "name": "ProximityGap.polynomialCurveEval_coord_eq_of_agree",
           "namespace": "ProximityGap",
           "short_name": "polynomialCurveEval_coord_eq_of_agree",
@@ -11106,7 +11106,7 @@
         {
           "doc": "Unique decoding brick for the \u00a76.1 argument: two codewords of a code with minimum distance `d` that are both within distance summing below `d` of a common word are equal (triangle inequality).",
           "kind": "lemma",
-          "line": 91,
+          "line": 96,
           "name": "ProximityGap.eq_of_both_close_lt_minDist",
           "namespace": "ProximityGap",
           "short_name": "eq_of_both_close_lt_minDist",
@@ -11115,7 +11115,7 @@
         {
           "doc": "If the set of points `\u03b4`-close to the code `V` has at least `n * l + 1` points, then there exists a curve defined by vectors `v` from `V` such that the points of `curve u` and `curve v` are `\u03b4`-close with the same parameters. Moreover, `u` and `v` differ at at most `\u03b4 * n` positions.",
           "kind": "theorem",
-          "line": 105,
+          "line": 110,
           "name": "ProximityGap.large_agreement_set_on_curve_implies_correlated_agreement",
           "namespace": "ProximityGap",
           "short_name": "large_agreement_set_on_curve_implies_correlated_agreement",
@@ -11124,16 +11124,16 @@
         {
           "doc": "The distance bound from [BCIKS20].",
           "kind": "def",
-          "line": 125,
-          "name": "ProximityGap._anon_def_125",
+          "line": 130,
+          "name": "ProximityGap._anon_def_130",
           "namespace": "ProximityGap",
-          "short_name": "_anon_def_125",
+          "short_name": "_anon_def_130",
           "signature": "def noncomputable def \u03b4\u2080 (rho : \u211a) (m : \u2115) : \u211d :="
         },
         {
           "doc": "If the set of points on the curve defined by `u` close to `V` has at least `((1 + 1 / (2 * m)) ^ 7 * m ^ 7) / (3 * (Real.rpow rho (3 / 2 : \u211a))) * n ^ 2 * l + 1` points, then there exist vectors `v` from `V` that are `(1 - \u03b4) * n` close to `u`.",
           "kind": "theorem",
-          "line": 131,
+          "line": 136,
           "name": "ProximityGap.large_agreement_set_on_curve_implies_correlated_agreement'",
           "namespace": "ProximityGap",
           "short_name": "large_agreement_set_on_curve_implies_correlated_agreement'",
