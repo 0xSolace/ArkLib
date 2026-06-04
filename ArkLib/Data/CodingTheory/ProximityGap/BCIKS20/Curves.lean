@@ -49,6 +49,19 @@ noncomputable def coeffs_of_close_proximity_curve {l : ℕ}
     infer_instance
   @Set.toFinset _ { z | δᵣ(Curve.polynomialCurveEval (F := F) (A := F) u z, V) ≤ δ } this
 
+/-- Unique decoding brick for the §6.1 argument: two codewords of a code with
+minimum distance `d` that are both within distance summing below `d` of a common
+word are equal (triangle inequality). -/
+private lemma eq_of_both_close_lt_minDist {n : ℕ} {F : Type} [DecidableEq F]
+    {V : Finset (Fin n → F)} {d : ℕ}
+    (hV : ∀ w ∈ V, ∀ w' ∈ V, w ≠ w' → d ≤ Δ₀(w, w'))
+    {w₁ w₂ f : Fin n → F} (h₁ : w₁ ∈ V) (h₂ : w₂ ∈ V)
+    (hsum : Δ₀(w₁, f) + Δ₀(f, w₂) < d) :
+    w₁ = w₂ := by
+  by_contra hne
+  have htri : Δ₀(w₁, w₂) ≤ Δ₀(w₁, f) + Δ₀(f, w₂) := hammingDist_triangle w₁ f w₂
+  exact absurd (le_trans (hV w₁ h₁ w₂ h₂ hne) htri) (not_le.mpr hsum)
+
 /-- If the set of points `δ`-close to the code `V` has at least `n * l + 1` points, then
 there exists a curve defined by vectors `v` from `V` such that the points of `curve u`
 and `curve v` are `δ`-close with the same parameters. Moreover, `u` and `v` differ at
