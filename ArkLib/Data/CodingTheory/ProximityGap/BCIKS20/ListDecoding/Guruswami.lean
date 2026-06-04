@@ -1203,6 +1203,25 @@ lemma exists_Pz_of_coeffs_of_close_proximity
 noncomputable def Pz {k : ℕ} {z : F} (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁) : F[X] :=
   (exists_Pz_of_coeffs_of_close_proximity (n := n) (k := k) hS).choose
 
+omit [DecidableEq (RatFunc F)] in
+/-- The chosen close polynomial `Pz` has degree at most `k`. -/
+lemma Pz_natDegree_le {k : ℕ} {z : F}
+    (hS : z ∈ coeffs_of_close_proximity (k := k) ωs δ u₀ u₁) :
+    (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) hS).natDegree
+      ≤ k := by
+  exact (Classical.choose_spec
+    (exists_Pz_of_coeffs_of_close_proximity (n := n) (k := k) hS)).1
+
+omit [DecidableEq (RatFunc F)] in
+/-- The chosen close polynomial `Pz` is `δ`-close to the corresponding line word. -/
+lemma Pz_relDist_le {k : ℕ} {z : F}
+    (hS : z ∈ coeffs_of_close_proximity (k := k) ωs δ u₀ u₁) :
+    δᵣ(u₀ + z • u₁,
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) hS).eval
+          ∘ ωs) ≤ δ := by
+  exact (Classical.choose_spec
+    (exists_Pz_of_coeffs_of_close_proximity (n := n) (k := k) hS)).2
+
 /-- *Tagged-fiber pigeonhole* (self-contained combinatorial core of [BCIKS20] Prop 5.5).
 
 If every element of a finite index set `S : Finset ι` carries a `tag x` lying in a finite tag
@@ -1227,4 +1246,3 @@ lemma tagged_fiber_pigeonhole {ι τ : Type} [DecidableEq τ] (S : Finset ι) (t
 end BCIKS20ProximityGapSection5
 
 end ProximityGap
-

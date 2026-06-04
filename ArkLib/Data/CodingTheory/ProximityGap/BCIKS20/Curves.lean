@@ -250,7 +250,7 @@ theorem decoded_polynomial_family_on_codeword_curve_implies_jointAgreement {l : 
     (u := u) (deg := deg) (domain := domain) (δ := δ) (v := v)
     hv hS'_card hS'_card₁ P hPcurve (fun z hz => (hdecoded z hz).2)
 
-omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- The two curve notations used in the Curves files agree pointwise. -/
 lemma polynomialCurveEval_eq_sum_smul {k : ℕ} (u : Fin (k + 1) → ι → F) (z : F) :
     (fun x => Curve.polynomialCurveEval (F := F) (A := F) u z x) =
