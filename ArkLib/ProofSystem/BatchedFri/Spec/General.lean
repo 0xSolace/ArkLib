@@ -37,6 +37,21 @@ variable (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n)
 variable (l m : ℕ)
 variable {ω : ReedSolomon.SmoothCosetFftDomain n F}
 
+-- DEFINITION COMPLETED (2026-06-04): whole-protocol batched-FRI input relation. The protocol input
+-- is a batch of `m + 1` purported codewords on the full evaluation domain `ω`, each committed to a
+-- low-degree witness polynomial (degree `< 2 ^ (∑ s) * d`). Following [BCIKS20 §8]/[FRI1216] this is
+-- the batched proximity relation: each oracle is the honest evaluation of its witness polynomial AND
+-- is within relative Hamming distance `δ` of the Reed–Solomon code on `ω` of degree `2 ^ (∑ s) * d`
+-- (`δᵣ(fⱼ, RS) ≤ δ`). The witness/agreement half is exactly `BatchingRound.inputRelation`; the δ-
+-- proximity half is the soundness target the batching+FRI reduction tests.
+
+/-- The full-domain Reed–Solomon code on `ω` of degree `2 ^ (∑ s) * d`, the batched FRI degree bound;
+  uses the `Subtype.val` embedding of `ω.toFinset` into `F`. -/
+noncomputable def batchCode : Submodule F (ω.toFinset → F) :=
+  ReedSolomon.code
+    (⟨fun x => x.1, fun _ _ h => Subtype.ext h⟩ : ω.toFinset ↪ F)
+    (2 ^ (∑ i, (s i).1) * d)
+
 -- /- Input/Output relations for the Batched FRI protocol. -/
 def inputRelation [DecidableEq F] (_δ : ℝ≥0) :
     Set

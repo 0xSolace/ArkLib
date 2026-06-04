@@ -893,6 +893,35 @@ def badEventExistsProp
   ∃ j, foldingBadEventAtBlock 𝔽q β (stmtIdx := stmtIdx) (oracleIdx := oracleIdx)
     (oStmt := oStmt) (challenges := challenges) j
 
+/-- When `stmtIdx.val < ℓ`, the highest available oracle block `j = stmtIdx/ϑ` has
+`j*ϑ + ϑ > stmtIdx`, so its per-block bad-folding guard fails and `foldingBadEventAtBlock`
+returns `True`. Hence `badEventExistsProp` (an existential over blocks) holds unconditionally:
+the most-recently-sent oracle has not yet been folded past the current statement index, so the
+"bad event" disjunct is vacuously available. This is the structural reason a relay/fold round in
+the interior of the protocol is always non-doomed via the bad-event branch. -/
+lemma badEventExistsProp_of_lt (stmtIdx : Fin (ℓ + 1)) (oracleIdx : Fin (ℓ + 1))
+    (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (i := oracleIdx) j))
+    (challenges : Fin stmtIdx → L) (h_lt : stmtIdx.val < ℓ) (h_eq : oracleIdx.val = stmtIdx.val) :
+    badEventExistsProp 𝔽q β (stmtIdx := stmtIdx) (oracleIdx := oracleIdx)
+      (oStmt := oStmt) (challenges := challenges) := by
+  have hϑ : 0 < ϑ := pos_of_neZero ϑ
+  refine ⟨⟨stmtIdx.val / ϑ, ?_⟩, ?_⟩
+  · -- `stmtIdx/ϑ < toOutCodewordsCount oracleIdx`
+    unfold toOutCodewordsCount
+    rw [h_eq]
+    simp only [h_lt, ↓reduceIte]; omega
+  · unfold foldingBadEventAtBlock
+    split
+    · -- guard holds: `stmtIdx/ϑ * ϑ + ϑ ≤ stmtIdx` is impossible since `stmtIdx/ϑ*ϑ > stmtIdx - ϑ`
+      rename_i hj
+      exfalso
+      have hdm := Nat.div_add_mod stmtIdx.val ϑ
+      have hm := Nat.mod_lt stmtIdx.val hϑ
+      rw [Nat.mul_comm] at hdm
+      simp only [Fin.val_mk] at hj
+      omega
+    · trivial
+
 -- then simplify the top-level def to use the helper
 def nonDoomedFoldingProp (i : Fin (ℓ + 1)) (challenges : Fin i → L)
     (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i j)
@@ -912,15 +941,37 @@ lemma firstOracleWitnessConsistencyProp_relay_preserved (i : Fin ℓ)
     firstOracleWitnessConsistencyProp 𝔽q β wit.t
       (getFirstOracle 𝔽q β (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt)) := by congr
 
+-- STATEMENT REPAIR (2026-06-04): added hypothesis `h_not_last : i.val + 1 < ℓ`.
+-- Reason: the original `↔` is FALSE at the last relay round (`i.val + 1 = ℓ`). There the LHS
+-- (`nonDoomedFoldingProp` at `i.castSucc`, with `i.castSucc.val = i.val < ℓ`) is UNCONDITIONALLY
+-- True via the bad-event disjunct (`badEventExistsProp_of_lt`: the top oracle block's folding guard
+-- fails, yielding `True`), but the RHS at `i.succ = Fin.last ℓ` has count `ℓ/ϑ` with NO top "+1"
+-- block, so every block's guard `j*ϑ+ϑ ≤ ℓ` HOLDS and `badEventExistsProp` becomes a genuine
+-- existential over real `foldingBadEvent`s while `oracleFoldingConsistency` is a genuine oracle
+-- constraint — neither is unconditionally True, so `True ↔ RHS` does not hold in general. With
+-- `i.val + 1 < ℓ` both indices are `< ℓ`, both sides are unconditionally True via the bad-event
+-- branch, and the lemma is sound. The lemma has zero live users (only the sibling
+-- `oracleWitnessConsistency_relay_preserved`, which does not use the bad-event disjunction, is
+-- consumed in `Steps.lean`), so tightening the hypothesis is safe.
 lemma nonDoomedFoldingProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
+    (h_not_last : i.val + 1 < ℓ)
     (challenges : Fin i.succ → L)
     (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
     :
     nonDoomedFoldingProp 𝔽q β i.castSucc (Fin.init challenges) oStmt ↔
     nonDoomedFoldingProp 𝔽q β i.succ challenges (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
-  have h_oracle_size_eq: toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ := by
-    simp only [toOutCodewordsCount_succ_eq ℓ ϑ i, hNCR, ↓reduceIte]
-  sorry
+  -- Both sides reduce to `True` via their bad-event disjunct, since both statement indices are `< ℓ`.
+  constructor
+  · intro _
+    refine Or.inr ?_
+    exact badEventExistsProp_of_lt 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.succ)
+      (oStmt := mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) (challenges := challenges)
+      (h_lt := by simp only [Fin.val_succ]; omega) (h_eq := rfl)
+  · intro _
+    refine Or.inr ?_
+    exact badEventExistsProp_of_lt 𝔽q β (stmtIdx := i.castSucc) (oracleIdx := i.castSucc)
+      (oStmt := oStmt) (challenges := Fin.init challenges)
+      (h_lt := by simp only [Fin.coe_castSucc]; omega) (h_eq := rfl)
 
 def oracleWitnessConsistency
     (stmtIdx : Fin (ℓ + 1)) (oracleIdx : Fin (ℓ + 1))
@@ -990,7 +1041,40 @@ def roundRelationProp (i : Fin (ℓ + 1))
   masterKStateProp (mp := mp) 𝔽q β
     (stmtIdx := i) (oracleIdx := i) (h_le := le_refl i) stmt wit oStmt (localChecks := True)
 
-/-- A modified version of roundRelationProp (i+1) -/
+open Classical in
+/-- A modified version of roundRelationProp (i+1).
+
+STATEMENT REPAIR (2026-06-04): at *non-commitment* rounds the bad-event disjunct is evaluated at
+the statement index `i.succ` (the relay-step / `roundRelation i.succ` form) rather than at the
+oracle index `i.castSucc`.
+
+Why a per-round branch. `foldStepRelOut i` is the relOut of the fold step and the relIn of whichever
+single step consumes round `i` — the *commit* step when `isCommitmentRound ℓ ϑ i`, the *relay* step
+otherwise (the two are mutually exclusive). These two consumers need *different* forms:
+
+* Commit rounds (`ϑ ∣ i+1 ∧ i+1 ≠ ℓ`): `commitKState.toFun_empty` is `rfl` against
+  `commitKStateProp 0 = masterKStateProp (stmtIdx := i.succ) (oracleIdx := i.castSucc)`, i.e. the
+  bad event at `stmtIdx := oracleIdx := i.castSucc` (the "ignore the latest oracle's bad event one
+  step behind" design). The commit step *changes* the oracle count, so the relay relabel does not
+  apply; this weak form is the intended one.
+
+* Non-commitment rounds (`¬ isCommitmentRound`, includes the last round `i+1 = ℓ`): the relay step
+  is a 0-round protocol, so `relayKnowledgeStateFunction.toFun_empty` demands
+  `relIn ↔ toFun 0 = relayKStateProp = roundRelation i.succ` (its relOut). With the weak form this
+  `↔` is FALSE at the last round (`i+1 = ℓ`): the relIn bad event at `stmtIdx := i.castSucc`
+  (guard `j*ϑ+ϑ ≤ i`) is vacuously `True` via the top block, but `roundRelation i.succ` evaluates
+  the bad event at `stmtIdx := oracleIdx := i.succ` (guard `j*ϑ+ϑ ≤ ℓ`, satisfied by that top block)
+  — a *genuine* existential. So `True ↔ (genuine bad event ∨ owc)` fails. Evaluating the relIn bad
+  event at the *statement* index `i.succ` instead makes it coincide with the relay image of
+  `roundRelation i.succ` at *every* non-commitment round, including the boundary — the oracle data
+  agrees up to the relay relabel (`hNCR ⇒ count i.castSucc = count i.succ`); see
+  `badEventExistsProp_relay_preserved` / `foldStepRelOut_relay_eq_roundRelation`.
+
+The owc disjunct is unchanged (`oracleWitnessConsistency (stmtIdx := i.succ) (oracleIdx :=
+i.castSucc)`), matching both consumers via `oracleWitnessConsistency_relay_preserved`. Only
+`foldStepRelOut` (confined to `Basic.lean` + `Steps.lean`) is affected; the fold-step theorems that
+mention it are by-name and their proofs are research-tier `sorry` stubs, so no proven content
+regresses, and the commit path keeps its weak form. -/
 def foldStepRelOutProp (i : Fin ℓ)
     (input : (Statement (L := L) Context i.succ ×
       (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)) ×

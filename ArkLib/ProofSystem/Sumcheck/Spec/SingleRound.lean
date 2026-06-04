@@ -358,33 +358,177 @@ def outputRelation :
 
 variable {ι : Type} (oSpec : OracleSpec ι)
 
+/-- The oracle prover for `sendClaim`. It reads the honest oracle polynomial `p` (index `()`), sends
+it as the protocol message, and outputs the carried target together with both oracles `(p, q)`
+(indexed by `Unit ⊕ Unit`, with `q` the just-sent message). Direct construction (mirrors
+`SendClaim.oracleProver`, adapted to the carried-`R` statement). -/
+def sendClaim.oracleProver : OracleProver oSpec
+    (StmtIn R) (OStmtIn R deg) Unit
+    (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) Unit ⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ where
+  PrvState
+  | 0 => StmtIn R × R⦃≤ deg⦄[X]
+  | 1 => StmtIn R × R⦃≤ deg⦄[X]
+  input := fun ⟨⟨target, oStmt⟩, _⟩ => (target, oStmt ())
+  sendMessage | ⟨0, _⟩ => fun ⟨target, p⟩ => pure (p, (target, p))
+  receiveChallenge | ⟨0, h⟩ => nomatch h
+  output := fun ⟨target, p⟩ => pure
+    ((target, fun x => match x with | .inl _ => p | .inr _ => p), ())
+
+/-- The oracle verifier for `sendClaim`: it carries the input target `a` as the output statement and
+performs no oracle checks. The output oracles are the input oracle `p` (index `inl ()`, `embed` to
+`Sum.inl ()`) and the prover's message `q` (index `inr ()`, `embed` to `Sum.inr ⟨0, _⟩`). -/
+def sendClaim.oracleVerifier : OracleVerifier oSpec
+    (StmtIn R) (OStmtIn R deg)
+    (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) ⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ where
+  verify := fun target _ => pure target
+  embed := {
+    toFun := fun
+      | .inl _ => .inl ()
+      | .inr _ => .inr ⟨0, by simp⟩
+    inj' := by
+      intro a b h
+      match a, b with
+      | .inl _, .inl _ => rfl
+      | .inl _, .inr _ => simp at h
+      | .inr _, .inl _ => simp at h
+      | .inr _, .inr _ => rfl }
+  hEq := by
+    intro i
+    match i with
+    | .inl _ => rfl
+    | .inr _ => rfl
+
 def oracleReduction.sendClaim : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit
-    (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) Unit ⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ := sorry
-  -- by
-  -- refine SendClaim.oracleReduction oSpec (StmtIn R) (OStmtIn R deg) ?_
-  -- (SendClaim.oracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit)
+    (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) Unit ⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ where
+  prover := sendClaim.oracleProver R deg oSpec
+  verifier := sendClaim.oracleVerifier R deg oSpec
+
+/-- The `CheckClaim` predicate for sum-check: query the *claimed* polynomial `q` (oracle index
+`inr ()`) at every evaluation point in `univ.map D`, sum the responses, and check that the sum
+equals the target `a` (read via `ReaderT`). This is the `∑_{x ∈ D} q.eval x = a` check. -/
+def checkClaim.pred :
+    ReaderT (StmtAfterCheckClaim R) (OracleComp [OStmtAfterCheckClaim R deg]ₒ) Prop :=
+  ReaderT.mk fun target => do
+    let sum ← (((univ.map D).toList).foldlM
+      (fun (acc : R) x => do
+        let resp ← (OracleComp.lift <| OracleSpec.query
+          (spec := [OStmtAfterCheckClaim R deg]ₒ)
+          (show [OStmtAfterCheckClaim R deg]ₒ.Domain from ⟨Sum.inr (), x⟩) :
+          OracleComp [OStmtAfterCheckClaim R deg]ₒ R)
+        pure (acc + resp))
+      (0 : R))
+    pure (sum = target)
 
 def oracleReduction.checkClaim : OracleReduction oSpec
     (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) Unit
     (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg) Unit !p[] :=
-  sorry
+  CheckClaim.oracleReduction oSpec (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg)
+    (checkClaim.pred R deg D)
+
+/-- The protocol spec for `randomQuery`: the verifier sends a single random challenge `q : R`. -/
+@[reducible]
+def randomQuery.pSpec : ProtocolSpec 1 := ⟨!v[.V_to_P], !v[R]⟩
+
+instance : VerifierOnly (randomQuery.pSpec R) where
+  verifier_first' := by simp [randomQuery.pSpec]
+
+/-- The oracle prover for `randomQuery`. It carries the two oracles `(p, q)` (indexed by
+`Unit ⊕ Unit`), receives the verifier's random challenge, and outputs the challenge as the new
+statement while keeping both oracles. Direct construction (mirrors `RandomQuery.oracleProver`,
+adapted to the `Unit ⊕ Unit` oracle index and the carried-`R` input statement). -/
+def randomQuery.oracleProver : OracleProver oSpec
+    (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg) Unit
+    (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) Unit (randomQuery.pSpec R) where
+  PrvState
+  | 0 => ∀ _ : Unit ⊕ Unit, R⦃≤ deg⦄[X]
+  | 1 => (∀ _ : Unit ⊕ Unit, R⦃≤ deg⦄[X]) × R
+  input := fun x => x.1.2
+  sendMessage | ⟨0, h⟩ => nomatch h
+  receiveChallenge | ⟨0, _⟩ => fun oracles => pure fun q => (oracles, q)
+  output := fun (oracles, q) => pure ((q, oracles), ())
+
+/-- The oracle verifier for `randomQuery`: it returns the random challenge as the new statement and
+performs no oracle checks, keeping both input oracles (`embed := Sum.inl`). -/
+def randomQuery.oracleVerifier : OracleVerifier oSpec
+    (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg)
+    (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) (randomQuery.pSpec R) where
+  verify := fun _ chal => do
+    let q : R := chal ⟨0, rfl⟩
+    pure q
+  embed := Function.Embedding.inl
+  hEq := by intro i; rfl
 
 def oracleReduction.randomQuery : OracleReduction oSpec
     (StmtAfterCheckClaim R) (OStmtAfterCheckClaim R deg) Unit
-    (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) Unit ⟨!v[.V_to_P], !v[R]⟩ :=
-  sorry
+    (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) Unit ⟨!v[.V_to_P], !v[R]⟩ where
+  prover := randomQuery.oracleProver R deg oSpec
+  verifier := randomQuery.oracleVerifier R deg oSpec
+
+-- NOTE (2026-06-04): A completeness lemma for `oracleReduction.randomQuery` (and the matching
+-- branch of `oracleReduction_perfectCompleteness`) is staged — it is a faithful port of
+-- `RandomQuery.oracleReduction_completeness`, but the final relation step diverges because the
+-- output relation here is stated via the polynomial `OracleInterface` (`(oStmt _).1.eval`)
+-- rather than the abstract `answer`. Left for follow-up.
+
+/-- The oracle-aware statement map for `reduceClaim`: the verifier reads the *claimed* polynomial
+`q` (oracle index `inr ()`) at the challenge `chal`, returning the new context statement
+`(q.eval chal, chal)`. This is the canonical sum-check next-round target `b := q.eval r`. -/
+def reduceClaim.mapStmtO (chal : StmtAfterRandomQuery R) :
+    OracleComp (oSpec + ([OStmtAfterRandomQuery R deg]ₒ + [(!p[] : ProtocolSpec 0).Message]ₒ))
+      (StmtOut R) := do
+  let resp ← (OracleComp.lift <| OracleSpec.query
+    (spec := [OStmtAfterRandomQuery R deg]ₒ)
+    (show [OStmtAfterRandomQuery R deg]ₒ.Domain from ⟨Sum.inr (), chal⟩) :
+    OracleComp (oSpec + ([OStmtAfterRandomQuery R deg]ₒ + [(!p[] : ProtocolSpec 0).Message]ₒ)) R)
+  pure (resp, chal)
+
+/-- The pure specification of `reduceClaim.mapStmtO`: directly evaluate the claimed polynomial. -/
+@[reducible, simp]
+def reduceClaim.mapStmtO_spec (chal : StmtAfterRandomQuery R)
+    (oStmt : ∀ i, OStmtAfterRandomQuery R deg i) : StmtOut R :=
+  ((oStmt (Sum.inr ())).1.eval chal, chal)
 
 def oracleReduction.reduceClaim : OracleReduction oSpec
     (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) Unit
-    (StmtOut R) (OStmtOut R deg) Unit !p[] := by
-  refine ReduceClaim.oracleReduction oSpec
-    ?_ (fun _ _ => ()) (Function.Embedding.inl) (by simp)
-  · simp; sorry
+    (StmtOut R) (OStmtOut R deg) Unit !p[] :=
+  ReduceClaim.oracleReductionO (oSpec := oSpec)
+    (mapStmtO := reduceClaim.mapStmtO R deg oSpec)
+    (mapStmtO_spec := reduceClaim.mapStmtO_spec R deg)
+    (mapWit := fun _ _ => ())
+    (embedIdx := Function.Embedding.inl) (hEq := by simp)
+
+/-- Coherence between the verifier's oracle map `reduceClaim.mapStmtO` (which queries the claimed
+polynomial `q` at the challenge) and the prover's pure spec `reduceClaim.mapStmtO_spec` (which
+evaluates `q` directly): simulating the single oracle query against the concrete oracle data returns
+exactly `(q.eval chal, chal)`. -/
+theorem reduceClaim_mapCoherent :
+    ReduceClaim.MapCoherent (oSpec := oSpec)
+      (reduceClaim.mapStmtO R deg oSpec) (reduceClaim.mapStmtO_spec R deg) := by
+  intro chal oStmt msgs
+  simp only [reduceClaim.mapStmtO, reduceClaim.mapStmtO_spec]
+  -- The single query `⟨inr (), chal⟩` to `[OStmt]ₒ` routes through `simOracle2` to
+  -- `answer (oStmt (inr ())) chal = (oStmt (inr ())).1.eval chal`.
+  have hq : (OracleComp.lift (OracleSpec.query
+        (spec := [OStmtAfterRandomQuery R deg]ₒ)
+        (show [OStmtAfterRandomQuery R deg]ₒ.Domain from ⟨Sum.inr (), chal⟩)) :
+      OracleComp (oSpec + ([OStmtAfterRandomQuery R deg]ₒ
+        + [(!p[] : ProtocolSpec 0).Message]ₒ)) R)
+      = (liftM (OracleSpec.query
+          (spec := oSpec + ([OStmtAfterRandomQuery R deg]ₒ
+            + [(!p[] : ProtocolSpec 0).Message]ₒ))
+          (Sum.inr (Sum.inl ⟨Sum.inr (), chal⟩))) :
+        OracleComp _ R) := rfl
+  rw [hq, simulateQ_query_bind]
+  simp only [OracleInterface.simOracle2, QueryImpl.addLift_def,
+    QueryImpl.add_apply_inr, QueryImpl.add_apply_inl,
+    QueryImpl.liftTarget_apply, OracleInterface.simOracle0, OracleQuery.cont_query,
+    OracleQuery.input_query, monadLift_pure, pure_bind, simulateQ_pure]
+  rfl
 
 def oracleReduction : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit
     (StmtOut R) (OStmtOut R deg) Unit (pSpec R deg) :=
   ((oracleReduction.sendClaim R deg oSpec)
-  |>.append (oracleReduction.checkClaim R deg oSpec)
+  |>.append (oracleReduction.checkClaim R deg D oSpec)
   |>.append (oracleReduction.randomQuery R deg oSpec)
   |>.append (oracleReduction.reduceClaim R deg oSpec))
 
@@ -393,31 +537,43 @@ open NNReal
 variable [SampleableType R]
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
+set_option maxHeartbeats 1000000 in
+theorem sendCheck_perfectCompleteness :
+    ((oracleReduction.sendClaim R deg oSpec).append
+        (oracleReduction.checkClaim R deg D oSpec)).perfectCompleteness init impl
+      (inputRelation R deg D) (relationAfterCheckClaim R deg) := by
+  refine OracleReduction.append_perfectCompleteness
+    (rel₂ := relationAfterSendClaim R deg D)
+    (oracleReduction.sendClaim R deg oSpec)
+    (oracleReduction.checkClaim R deg D oSpec) ?_ ?_
+  all_goals sorry
+
+set_option maxHeartbeats 4000000 in
 theorem oracleReduction_perfectCompleteness :
     (oracleReduction R deg oSpec).perfectCompleteness init impl
       (inputRelation R deg D) (outputRelation R deg) := by
-  simp [oracleReduction]
+  unfold oracleReduction
   refine OracleReduction.append_perfectCompleteness
     (rel₂ := relationAfterRandomQuery R deg)
     ((((oracleReduction.sendClaim R deg oSpec).append
-        (oracleReduction.checkClaim R deg oSpec)).append
+        (oracleReduction.checkClaim R deg D oSpec)).append
         (oracleReduction.randomQuery R deg oSpec)))
     (oracleReduction.reduceClaim R deg oSpec) ?_ ?_
-  · refine OracleReduction.append_perfectCompleteness
-      (rel₂ := relationAfterCheckClaim R deg)
-      ((oracleReduction.sendClaim R deg oSpec).append
-        (oracleReduction.checkClaim R deg oSpec))
-      (oracleReduction.randomQuery R deg oSpec) ?_ ?_
-    · refine OracleReduction.append_perfectCompleteness
-        (rel₂ := relationAfterSendClaim R deg D)
-        (oracleReduction.sendClaim R deg oSpec)
-        (oracleReduction.checkClaim R deg oSpec) ?_ ?_
-      · sorry
-      · sorry
-    · sorry
-  · simp [oracleReduction.reduceClaim]
-    refine ReduceClaim.oracleReduction_completeness _ _ ?_
-    sorry
+  · sorry
+  · -- `reduceClaim` is the oracle-aware variant; use `oracleReductionO_completeness`.
+    refine ReduceClaim.oracleReductionO_completeness
+      (mapStmtO := reduceClaim.mapStmtO R deg oSpec)
+      (mapStmtO_spec := reduceClaim.mapStmtO_spec R deg)
+      (relIn := relationAfterRandomQuery R deg) (relOut := outputRelation R deg)
+      (reduceClaim_mapCoherent R deg oSpec) ?_
+    -- Relation pull-back: `relationAfterRandomQuery` ⟹ `outputRelation` under the mapped statement.
+    rintro chal oStmt ⟨⟩ hIn
+    simp only [relationAfterRandomQuery, Set.mem_setOf_eq] at hIn
+    simp only [outputRelation, ReduceClaim.mapOStmt, reduceClaim.mapStmtO_spec, Set.mem_setOf_eq]
+    -- The output oracle at `()` is the input oracle at `inl ()` (= `p`); the new target is
+    -- `q.eval chal`. The `relationAfterRandomQuery` says `q.eval chal = p.eval chal`.
+    simp only [Function.Embedding.inl_apply]
+    exact hIn.symm
 
 theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
     (oracleReduction R deg oSpec).verifier.rbrKnowledgeSoundness init impl
@@ -1092,11 +1248,19 @@ private def simpleKnowledgeStateFunction :
       rw [simulateQ_pure] at hx'
       simp at hx'
 
-/-- Round-by-round knowledge soundness for the verifier -/
-theorem verifier_rbrKnowledgeSoundness [Fintype R] :
-    (verifier R deg D oSpec).rbrKnowledgeSoundness init impl
-    (inputRelation R deg D) (outputRelation R deg) (fun _ => (deg : ℝ≥0) / (Fintype.card R)) := by
-  sorry
+-- REMOVED (false statement — Finding-13/eq-510 family):
+--   `verifier_rbrKnowledgeSoundness` for the plain (non-oracle) `verifier`, at the
+--   stated round error `deg / card R`.
+-- Root cause: the plain `verifier` only checks the **message polynomial** sent in
+-- the transcript; it never cross-checks that message against the prover's committed
+-- **oracle statement**. A malicious prover can therefore commit to one polynomial as
+-- the oracle and send a different, consistent-looking message — a probability-1
+-- knowledge-soundness break, so the claimed `deg / card R` error bound is false
+-- (the true bound is 1). This is a bug, not an unfinished proof.
+-- The TRUE, proven counterpart is `Simple.oracleVerifier_rbrKnowledgeSoundness`
+-- (just below): the *oracle* verifier does enforce the message-vs-oracle consistency
+-- and so attains the `deg / card R` error.
+-- See docs/kb/audits/gh-issues-campaign-2026-06-04.md, section "Statements found FALSE".
 
 /-- Round-by-round knowledge soundness for the oracle verifier -/
 theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
@@ -1166,16 +1330,72 @@ def extractorLens (i : Fin n) : Extractor.Lens
 
 variable {ι : Type} (oSpec : OracleSpec ι) [DecidableEq R] [SampleableType R]
 
+/-- The full `Fin n`-evaluation point that the virtual oracle-routing lens `simOStmt` uses to answer
+an inner univariate evaluation query at `pt`, summing the outer multivariate polynomial over the
+remaining coordinates.
+
+We insert the queried point `pt` at coordinate `i` and fill the other `n - 1` coordinates with the
+prior `challenges` (for the `j < i` slots) and the summation index `y` (for the rest). This mirrors
+the `∑ x ∈ (univ.map D) ^ᶠ (n - i), poly ⸨X ⦃i⦄, challenges, x⸩` shape of `oStmtLens.toFunA`, so the
+routing answers the inner univariate query exactly by the value `toFunA` would expose. -/
+def sumPoint (i : Fin n) (pt : R) (stmtIn : StatementRound R n i.castSucc)
+    (y : Fin (n - 1) → R) : Fin n → R :=
+  let h : n = n - 1 + 1 := by have := i.isLt; omega
+  ((Fin.cast h i).insertNth pt
+    (fun k => if hk : (k : ℕ) < (i : ℕ) then stmtIn.challenges ⟨k, by simpa using hk⟩ else y k))
+    ∘ Fin.cast h
+
+/-- The concrete sum-check **oracle-routing lens** instantiating the new `OracleStatement.OracleLens`
+API (#433). The value layer reuses the existing value-level lens `oStmtLens` verbatim (so all the
+soundness / completeness machinery still applies via `toLens`). The routing data is:
+
+- `projStmt`/`liftStmt`: the non-oracle projection (drop to the round `target`) and lift (snoc the new
+  challenge onto the running challenge vector), matching `oStmtLens.toFunB`'s statement shape.
+- `simOStmt`: answers each inner univariate evaluation query `⟨(), pt⟩` against the *outer*
+  multivariate oracle by `∑ y ∈ (univ.map D) ^ᶠ (n - 1), outerPoly.eval (sumPoint i pt stmtIn y)` —
+  the virtual `|D|^(n-1)`-fold summation, reading the prior `challenges` from the outer statement via
+  `ReaderT`.
+- `embedOStmt`/`hEqOStmt`: the single output oracle is the (unchanged) input oracle, so we draw it
+  from the input side (`.inl`) with definitional type coherence. -/
+noncomputable def sumcheckOracleLens (i : Fin n) :
+    OracleStatement.OracleLens oSpec
+      (StatementRound R n i.castSucc) (StatementRound R n i.succ)
+      (Simple.StmtIn R) (Simple.StmtOut R)
+      (OracleStatement R n deg) (OracleStatement R n deg)
+      (Simple.OStmtIn R deg) (Simple.OStmtOut R deg)
+      (pSpec R deg) where
+  toLens := oStmtLens R n deg D i
+  projStmt := fun stmtIn => stmtIn.target
+  liftStmt := fun outerStmtIn innerStmtOut =>
+    { target := innerStmtOut.1, challenges := Fin.snoc outerStmtIn.challenges innerStmtOut.2 }
+  simOStmt := fun q =>
+    match q with
+    | ⟨(), pt⟩ => ReaderT.mk fun stmtIn =>
+      (((univ.map D) ^ᶠ (n - 1)).toList).foldlM
+        (fun (acc : R) y => do
+          let resp ← (OracleComp.lift <| OracleSpec.query
+            (spec := [OracleStatement R n deg]ₒ)
+            (show [OracleStatement R n deg]ₒ.Domain from ⟨(), sumPoint R n i pt stmtIn y⟩) :
+            OracleComp (oSpec + [OracleStatement R n deg]ₒ) R)
+          pure (acc + resp))
+        (0 : R)
+  embedOStmt := Function.Embedding.inl
+  hEqOStmt := fun _ => rfl
+
 /-- The verifier for the `i`-th round of the sum-check protocol -/
 def verifier (i : Fin n) : Verifier oSpec
     (StatementRound R n i.castSucc × (∀ i, OracleStatement R n deg i))
     (StatementRound R n i.succ × (∀ i, OracleStatement R n deg i)) (pSpec R deg) :=
   (Simple.verifier R deg D oSpec).liftContext (oStmtLens R n deg D i)
 
-/-- The oracle verifier for the `i`-th round of the sum-check protocol -/
+/-- The oracle verifier for the `i`-th round of the sum-check protocol.
+
+Migrated to the new `OracleStatement.OracleLens` API (#433): the oracle-routing lens
+`sumcheckOracleLens` supplies the `simOStmt`/`embedOStmt` data that the value-level `oStmtLens`
+cannot express. -/
 def oracleVerifier (i : Fin n) : OracleVerifier oSpec (StatementRound R n i.castSucc)
     (OracleStatement R n deg) (StatementRound R n i.succ) (OracleStatement R n deg) (pSpec R deg) :=
-  (Simple.oracleVerifier R deg D oSpec).liftContext (oStmtLens R n deg D i)
+  (Simple.oracleVerifier R deg D oSpec).liftContext (sumcheckOracleLens R n deg D oSpec i)
 
 /-- The sum-check reduction for the `i`-th round of the sum-check protocol -/
 def reduction (i : Fin n) : Reduction oSpec
@@ -1183,11 +1403,16 @@ def reduction (i : Fin n) : Reduction oSpec
     ((StatementRound R n i.succ) × (∀ i, OracleStatement R n deg i)) Unit (pSpec R deg) :=
   (Simple.reduction R deg D oSpec).liftContext (oCtxLens R n deg D i).toContext
 
-/-- The sum-check oracle reduction for the `i`-th round of the sum-check protocol -/
+/-- The sum-check oracle reduction for the `i`-th round of the sum-check protocol.
+
+Migrated to the new `OracleReduction.liftContext` signature (#433), which takes the separate
+oracle-routing `stmtLens := sumcheckOracleLens` (carrying `simOStmt`/`embedOStmt`) alongside the
+value-level context lens. -/
 def oracleReduction (i : Fin n) : OracleReduction oSpec
     (StatementRound R n i.castSucc) (OracleStatement R n deg) Unit
     (StatementRound R n i.succ) (OracleStatement R n deg) Unit (pSpec R deg) :=
   (Simple.oracleReduction R deg D oSpec).liftContext (oCtxLens R n deg D i)
+    (sumcheckOracleLens R n deg D oSpec i)
 
 omit [SampleableType R] in
 @[simp]
@@ -1602,25 +1827,46 @@ theorem verifier_rbrKnowledgeSoundness [Fintype R] :
     (Simple.oracleVerifier_rbrKnowledgeSoundness R deg D oSpec)
 
 /-- Completeness theorem for single-round of sum-check, obtained by transporting the completeness
-proof for the simplified version -/
-theorem oracleReduction_perfectCompleteness :
+proof for the simplified version.
+
+Migrated to the new `OracleStatement.OracleLens` API (#433): `OracleReduction.liftContext` now takes
+the oracle-routing `sumcheckOracleLens` and `liftContext_perfectCompleteness` requires the
+`LiftContextCoherent` side condition relating the routing to the value-level lens (`toVerifier_comm`,
+a genuine lens-coherence obligation for the non-invertible `|D|^(n-1)` summation routing — see
+`OracleVerifier.LiftContextCoherent`). We thread it through as a hypothesis, exactly as the upstream
+`liftContext_perfectCompleteness` does. The `hStmt` coherence (`stmtLens.toLens = lens.stmt`) holds
+by `rfl` because `sumcheckOracleLens.toLens` and `(oCtxLens …).stmt` are both `oStmtLens …`. -/
+theorem oracleReduction_perfectCompleteness
+    (coh : OracleVerifier.LiftContextCoherent (sumcheckOracleLens R n deg D oSpec i)
+      (Simple.oracleVerifier R deg D oSpec)) :
     (oracleReduction R n deg D oSpec i).perfectCompleteness init impl
       (relationRound R n deg D i.castSucc) (relationRound R n deg D i.succ) :=
   OracleReduction.liftContext_perfectCompleteness
     (lens := oCtxLens R n deg D i)
+    (stmtLens := sumcheckOracleLens R n deg D oSpec i)
     (lensComplete := oCtxLens_complete i)
+    (coh := coh)
+    (hStmt := rfl)
     (Simple.oracleReduction_perfectCompleteness R deg D oSpec)
 
 /-- Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by
-  transporting the knowledge soundness proof for the simplified version -/
-theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
+  transporting the knowledge soundness proof for the simplified version.
+
+Migrated to the new `OracleStatement.OracleLens` API (#433): `liftContext_rbr_knowledgeSoundness`
+now takes the oracle-routing `stmtLens := sumcheckOracleLens` (with the value-level soundness stated
+on its `toLens = oStmtLens`) and the `LiftContextCoherent` side condition (`toVerifier_comm`). We
+thread coherence as a hypothesis, exactly as the upstream lemma does. -/
+theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R]
+    (coh : OracleVerifier.LiftContextCoherent (sumcheckOracleLens R n deg D oSpec i)
+      (Simple.oracleVerifier R deg D oSpec)) :
     (oracleVerifier R n deg D oSpec i).rbrKnowledgeSoundness init impl
     (relationRound R n deg D i.castSucc) (relationRound R n deg D i.succ)
     (fun _ => (deg : ℝ≥0) / Fintype.card R) :=
   OracleVerifier.liftContext_rbr_knowledgeSoundness
-    (stmtLens := oStmtLens R n deg D i)
+    (stmtLens := sumcheckOracleLens R n deg D oSpec i)
     (witLens := Witness.InvLens.trivial)
     (Simple.oracleVerifier R deg D oSpec)
+    (coh := coh)
     (lensKS := extractorLens_rbr_knowledge_soundness i)
     (Simple.oracleVerifier_rbrKnowledgeSoundness R deg D oSpec)
 
