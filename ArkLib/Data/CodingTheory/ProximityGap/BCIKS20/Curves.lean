@@ -110,42 +110,6 @@ lemma goodCoeffsCurve_card_bounds_of_prob_threshold {k deg : ℕ}
   · exact finset_card_gt_of_natCast_le_ennreal_lt hsmall hx
   · exact finset_card_ge_of_pred_natCast_le_ennreal_lt hlarge hx
 
-omit [DecidableEq ι] in
-/-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
-
-Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter
-pair `(δ, ε)` and a curve passing through words `u₀, ..., uκ`, such that
-the probability that a random point on the curve is `δ`-close to the Reed-Solomon code
-is at most `ε`. Then, the words `u₀, ..., uκ` have correlated agreement. -/
-theorem correlatedAgreement_affine_curves {k : ℕ}
-    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
-    -- `deg = 0` makes the statement false: `errorBound`'s Johnson
-    -- branch vacates the threshold at deg = 0; counterexample in upstream-issues.md).
-    [NeZero deg]
-    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
-    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
-      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
-  classical
-  rcases Nat.eq_zero_or_pos k with hk0 | hkpos
-  · subst hk0
-    exact RS_correlatedAgreement_curves_k_zero (deg := deg) (domain := domain) (δ := δ)
-  · by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
-        (C := ReedSolomon.code domain deg)
-    · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).
-      exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
-    · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain).
-      unfold δ_ε_correlatedAgreementCurves
-      intro u hprob
-      have hS_card :
-          ((k : ℝ≥0∞) * (errorBound δ deg domain : ℝ≥0∞)) *
-              (Fintype.card F : ℝ≥0∞) <
-            ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
-              ℝ≥0∞) := by
-        simpa [ENNReal.coe_mul, ENNReal.coe_natCast] using
-          goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt
-            (u := u) (η := (k : ℝ≥0) * errorBound δ deg domain) hprob
-      sorry
-
 omit [DecidableEq ι] [Fintype F] in
 /-- Integral-weight list agreement on a sufficiently large set of curve parameters
 gives correlated coordinate agreement for the input coefficient lists. This is
@@ -869,6 +833,82 @@ theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_prob_threshold_cor
       (deg := deg) (domain := domain) (δ := δ) u hx hsmall hlarge
   exact goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos_core
     (deg := deg) (domain := domain) (δ := δ) hk hbounds.1 hbounds.2 hcoeffPoly
+
+omit [DecidableEq ι] in
+/-- List-branch front door after the probability calculation.
+
+This packages the exact remaining outputs needed from the list-decoding part of
+the argument: two lower bounds on the probability threshold and the
+coefficient-polynomial extraction witness. -/
+theorem RS_jointAgreement_of_prob_gt_and_coeff_polys
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{let z ← $ᵖ F}[
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hsmall :
+      (k : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hlarge :
+      ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  have hS_card :
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal) := by
+    simpa [ENNReal.coe_mul, ENNReal.coe_natCast] using
+      goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt
+        (u := u) (η := (k : ℝ≥0) * errorBound δ deg domain) hprob
+  exact goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_prob_threshold_core
+    (deg := deg) (domain := domain) (δ := δ) hk hS_card hsmall hlarge hcoeffPoly
+
+omit [DecidableEq ι] in
+/-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
+
+Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter
+pair `(δ, ε)` and a curve passing through words `u₀, ..., uκ`, such that
+the probability that a random point on the curve is `δ`-close to the Reed-Solomon code
+is at most `ε`. Then, the words `u₀, ..., uκ` have correlated agreement. -/
+theorem correlatedAgreement_affine_curves {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    -- `deg = 0` makes the statement false: `errorBound`'s Johnson
+    -- branch vacates the threshold at deg = 0; counterexample in upstream-issues.md).
+    [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  rcases Nat.eq_zero_or_pos k with hk0 | hkpos
+  · subst hk0
+    exact RS_correlatedAgreement_curves_k_zero (deg := deg) (domain := domain) (δ := δ)
+  · by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+        (C := ReedSolomon.code domain deg)
+    · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).
+      exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
+    · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain).
+      unfold δ_ε_correlatedAgreementCurves
+      intro u hprob
+      -- The final call is `RS_jointAgreement_of_prob_gt_and_coeff_polys`;
+      -- the remaining list-decoding work is to supply its two threshold lower
+      -- bounds and coefficient-polynomial extraction witness.
+      sorry
 
 end CoreResults
 
