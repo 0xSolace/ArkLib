@@ -527,6 +527,95 @@ noncomputable def triConstraintMap (box : Finset (ℕ × ℕ × ℕ)) (m zMax : 
       (Polynomial.C (u₀ i.1) + Polynomial.X * Polynomial.C (u₁ i.1))
       i.2.1.1.1 i.2.1.1.2 i.2.2.1) ∘ₗ triCoeffsToPolyₗ box
 
+/-! ### Box, budget and the counting inequality
+
+We instantiate the linear system with a concrete box of `(i, j, t)` triples and a `Z`-budget large
+enough that the number of unknowns strictly exceeds the number of constraints.  The `(i, j)` part is
+the bivariate Guruswami–Sudan box `weigthBoundIndices (k+1) Dpg` (so its size is the proven
+`numVars (k+1) Dpg`); the `Z`-index `t` ranges over `0 … zCap`.  Choosing `zCap = (#constraints)·Dpg`
+makes the strict bivariate gap `numVars > numConstraints` dominate the extra `Z`-degree the shift
+introduces, giving `#box > #constraints`. -/
+
+open GuruswamiSudan in
+/-- The bivariate degree cap used for Claim 5.4: the proximity-gap degree bound with `ρ=(k+1)/n`. -/
+noncomputable def gsDpg (n m k : ℕ) : ℕ := proximity_gap_degree_bound (k + 1) n m
+
+/-- The `Z`-budget of the box: large enough that the `Z`-degree introduced by shifting (`≤ Dpg`)
+cannot overturn the strict bivariate counting gap. -/
+noncomputable def gsZCap (n m k : ℕ) : ℕ := GuruswamiSudan.numConstraints n m * gsDpg n m k
+
+/-- The number of `Z`-coefficients the constraints can occupy: the box `Z`-budget plus the maximal
+`Y`-degree `≤ Dpg` (the shift `Y ← Y + (u₀ + Z·u₁)` raises the `Z`-degree by at most the `Y`-degree).
+-/
+noncomputable def gsZMax (n m k : ℕ) : ℕ := gsZCap n m k + gsDpg n m k
+
+/-- The embedding `((i,j),t) ↦ (i,j,t)`. -/
+def gsTriple : (ℕ × ℕ) × ℕ → ℕ × ℕ × ℕ := fun p ↦ (p.1.1, p.1.2, p.2)
+
+lemma gsTriple_injective : Function.Injective gsTriple := by
+  intro ⟨⟨i, j⟩, t⟩ ⟨⟨i', j'⟩, t'⟩ h
+  simp only [gsTriple, Prod.mk.injEq] at h
+  obtain ⟨hi, hj, ht⟩ := h
+  simp [hi, hj, ht]
+
+open GuruswamiSudan in
+/-- The box of `(i, j, t)` triples: bivariate Guruswami–Sudan `(i,j)`-box times `Z`-budget. -/
+noncomputable def gsBox (n m k : ℕ) : Finset (ℕ × ℕ × ℕ) :=
+  ((weigthBoundIndices (k + 1) (gsDpg n m k)) ×ˢ (Finset.range (gsZCap n m k + 1))).image gsTriple
+
+open GuruswamiSudan in
+/-- The cardinality of the box is `numVars (k+1) Dpg · (zCap+1)`. -/
+lemma card_gsBox (n m k : ℕ) :
+    (gsBox n m k).card = numVars (k + 1) (gsDpg n m k) * (gsZCap n m k + 1) := by
+  classical
+  unfold gsBox numVars
+  rw [Finset.card_image_of_injective _ gsTriple_injective, Finset.card_product, Finset.card_range]
+
+open GuruswamiSudan in
+/-- Membership in the box: `(i, j, t) ∈ gsBox` iff `(i,j) ∈ weigthBoundIndices (k+1) Dpg` and
+`t ≤ zCap`. -/
+lemma mem_gsBox {n m k : ℕ} {p : ℕ × ℕ × ℕ} :
+    p ∈ gsBox n m k ↔
+      (p.1, p.2.1) ∈ weigthBoundIndices (k + 1) (gsDpg n m k) ∧ p.2.2 ≤ gsZCap n m k := by
+  classical
+  unfold gsBox
+  rw [Finset.mem_image]
+  constructor
+  · rintro ⟨⟨⟨i, j⟩, t⟩, hmem, rfl⟩
+    rw [Finset.mem_product] at hmem
+    simp only [gsTriple, Finset.mem_range] at *
+    exact ⟨hmem.1, Nat.lt_succ_iff.mp hmem.2⟩
+  · intro ⟨h1, h2⟩
+    refine ⟨((p.1, p.2.1), p.2.2), ?_, ?_⟩
+    · rw [Finset.mem_product, Finset.mem_range]
+      exact ⟨h1, Nat.lt_succ_of_le h2⟩
+    · simp [gsTriple]
+
+open GuruswamiSudan in
+/-- The counting inequality: `#box > #constraints`.  This is the trivariate analogue of
+`numVars_gt_numConstraints`, with the `Z`-budget chosen so the strict bivariate gap dominates. -/
+lemma card_gsBox_gt_constraints (n m k : ℕ) :
+    (gsBox n m k).card >
+      n * (constraintIndices m).card * (gsZMax n m k + 1) := by
+  rw [card_gsBox]
+  set Dpg := gsDpg n m k with hDpg
+  set B := numConstraints n m with hB
+  -- A := numVars (k+1) Dpg ≥ B + 1
+  have hAB : numVars (k + 1) Dpg ≥ B + 1 := by
+    have h := numVars_gt_numConstraints (k + 1) n m
+    have hDpg' : Dpg = proximity_gap_degree_bound (k + 1) n m := hDpg
+    rw [hDpg', hB]; omega
+  have hzcap : gsZCap n m k = B * Dpg := by rw [gsZCap, hDpg, hB]
+  have hzmax : gsZMax n m k = B * Dpg + Dpg := by rw [gsZMax, hzcap, hDpg]
+  have hBconstr : n * (constraintIndices m).card = B := by rw [hB, numConstraints]
+  rw [hBconstr, hzmax, hzcap]
+  -- numVars · (B·Dpg + 1) > B · (B·Dpg + Dpg + 1)
+  calc n * (constraintIndices m).card * (B * Dpg + Dpg + 1)
+      = B * (B * Dpg + Dpg + 1) := by rw [hBconstr]
+    _ < (B + 1) * (B * Dpg + 1) := by ring_nf; omega
+    _ ≤ numVars (k + 1) Dpg * (B * Dpg + 1) := by
+        exact Nat.mul_le_mul_right _ hAB
+
 end ModifiedGuruswamiHelpers
 
 omit [DecidableEq (RatFunc F)] in
