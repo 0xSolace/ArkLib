@@ -10,6 +10,19 @@ set_option linter.unusedVariables false
 
 variable {L : Type} [CommRing L] [Nontrivial L] [DecidableEq L]
 
+-- Value-form of `finSumFinEquiv.symm`: classify by whether the index value is `< m`.
+theorem finSumFinEquiv_symm_dite {m n : ℕ} (x : Fin (m + n)) :
+    finSumFinEquiv.symm x
+      = if h : (x : ℕ) < m then Sum.inl ⟨x, h⟩
+        else Sum.inr ⟨(x : ℕ) - m, by omega⟩ := by
+  by_cases h : (x : ℕ) < m
+  · rw [dif_pos h]
+    rw [show x = Fin.castAdd n ⟨x, h⟩ from by apply Fin.ext; simp]
+    rw [finSumFinEquiv_symm_apply_castAdd]
+  · rw [dif_neg h]
+    rw [show x = Fin.natAdd m ⟨(x : ℕ) - m, by omega⟩ from by apply Fin.ext; simp; omega]
+    rw [finSumFinEquiv_symm_apply_natAdd]
+
 -- Characterization: fixFirstVariablesOfMQP as a `bind₁` partial substitution.
 theorem fixVars_eq_bind₁ (ℓ : ℕ) (v : Fin (ℓ + 1)) (poly : MvPolynomial (Fin ℓ) L)
     (challenges : Fin v → L) :
@@ -63,8 +76,35 @@ theorem fixVars_step (ℓ : ℕ) (poly : MvPolynomial (Fin ℓ) L) (v : Fin (ℓ
   apply congrArg (fun f => bind₁ f poly)
   funext i
   -- Reduce the equivs to value-conditions.
-  simp only [Equiv.trans_apply, finCongr_apply]
-  trace_state
-  sorry
+  simp only [Equiv.trans_apply, finCongr_apply, finSumFinEquiv_symm_dite, Fin.coe_cast]
+  -- Three regions on `i.val`: survivor (< ℓ-v-1), the freshly-fixed `r'` (= ℓ-v-1), and the
+  -- previously-fixed `challenges` (≥ ℓ-v, i.e. > ℓ-v-1).
+  by_cases h1 : (i : ℕ) < ℓ - v - 1
+  · -- survivor on both sides → `X`
+    have h2 : (i : ℕ) < ℓ - v := by omega
+    rw [dif_pos h2, Sum.elim_inl, dif_pos h1, Sum.elim_inl]
+    -- RHS: inner survivor too
+    rw [dif_pos h1, Sum.elim_inl]
+    rw [rename_X, finCongr_apply]
+    rfl
+  · by_cases h2 : (i : ℕ) < ℓ - v
+    · -- `i.val = ℓ - v - 1`: freshly-fixed coordinate → `C r'` on both sides
+      rw [dif_pos h2, Sum.elim_inl, dif_neg h1, Sum.elim_inr]
+      rw [dif_neg h1, Sum.elim_inr]
+      rw [rename_C]
+      -- `snoc challenges r'` at index `ℓ - v - 1 = (v:ℕ)` is `r'`
+      congr 1
+      have : (⟨(i : ℕ) - (ℓ - v - 1), by omega⟩ : Fin ((v : ℕ) + 1)) = Fin.last (v : ℕ) := by
+        apply Fin.ext; simp [Fin.val_last]; omega
+      rw [this, Fin.snoc_last]
+    · -- `i.val ≥ ℓ - v`: previously-fixed coordinate → `C (challenges …)` on both sides
+      rw [dif_neg h2, Sum.elim_inr]
+      rw [dif_neg h1, Sum.elim_inr, rename_C]
+      -- `snoc challenges r'` at a castSucc index gives `challenges …`
+      congr 1
+      have hidx : (⟨(i : ℕ) - (ℓ - v - 1), by omega⟩ : Fin ((v : ℕ) + 1))
+          = Fin.castSucc ⟨(i : ℕ) - (ℓ - v), by omega⟩ := by
+        apply Fin.ext; simp [Fin.coe_castSucc]; omega
+      rw [hidx, Fin.snoc_castSucc]
 
 end ScratchRS
