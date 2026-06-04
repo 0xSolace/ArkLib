@@ -835,6 +835,71 @@ theorem jointProximity_diffStack_line_close
   intro j
   refine ⟨fun hj ↦ (h_zero_S' j hj), fun hne hj ↦ hne (h_zero_S' j hj)⟩
 
+open Classical in
+/-- **The jointly-proximate contribution to `ε_mca`.** Explicit name for the part of the `ε_mca`
+supremum that the in-tree machinery cannot bound against `ε_ca`: the worst-case `mcaEvent`
+probability over the stacks `u` that *are* jointly `δ`-close to `C` (where the `ε_ca` body is
+`0`). On the non-jointly-close stacks the bound `Pr_γ[mcaEvent] ≤ Pr_γ[line δ-close] ≤ ε_ca`
+is already proved (`epsMCA_restricted_le_epsCA`); this term isolates exactly the residue.
+
+By `epsMCA_le_epsCA_add_jointlyProximateContribution`,
+`ε_mca(C, δ) ≤ ε_ca(C, δ, δ) + jointlyProximateContribution C δ`. ABF26 Lemma 4.6 is the
+statement that this contribution is itself `≤ ε_ca` in the UDR (so that the sum collapses back to
+`ε_ca`); proving that requires the global Guruswami–Sudan/[Hab25] list-decoding bound on the
+exceptional-`γ` set of the fixed difference stack `(u 0 - p₀, u 1 - p₁)` (see
+`jointProximity_diffStack_line_close`), which is not yet available in-tree. -/
+noncomputable def jointlyProximateContribution (C : Set (ι → A)) (δ : ℝ≥0) : ENNReal :=
+  ⨆ u : WordStack A (Fin 2) ι,
+    if jointProximity (C := C) (u := u) δ then
+      Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]
+    else (0 : ENNReal)
+
+open Classical in
+/-- **Decomposition of `ε_mca` (audited intermediate toward ABF26 Lemma 4.6).**
+
+`ε_mca(C, δ) ≤ ε_ca(C, δ, δ) + jointlyProximateContribution C δ`.
+
+This shrinks the remaining gap of Lemma 4.6 to *exactly* the contribution of the
+jointly-`δ`-close stacks, with that contribution given an explicit name. The proof splits the
+`ε_mca` supremum body `Pr_γ[mcaEvent]` pointwise into its `jointProximity` and
+`¬jointProximity` parts (one of the two is `0`), then applies `iSup_add_le` and bounds the
+non-jointly-close part by `ε_ca` via the already-proven `epsMCA_restricted_le_epsCA`.
+
+What remains for the full equality `ε_mca = ε_ca` (in the UDR) is `jointlyProximateContribution
+C δ ≤ ε_ca`. The kernel-checked obstruction shows this is *not* a pointwise body bound (on a
+jointly-close `u` the `ε_ca` body is `0` while `Pr_γ[mcaEvent]` may be positive); the genuine
+content needed is the list-decoding count of the exceptional `γ` of the fixed difference stack
+of `jointProximity_diffStack_line_close`, the GS/PS machinery absent from the tree. -/
+theorem epsMCA_le_epsCA_add_jointlyProximateContribution (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) C δ ≤
+      epsCA (F := F) C δ δ + jointlyProximateContribution (F := F) C δ := by
+  classical
+  -- Abbreviations for the two gated suprema.
+  set notjpSup : ENNReal :=
+    (⨆ u : WordStack A (Fin 2) ι,
+      if jointProximity (C := C) (u := u) δ then (0 : ENNReal)
+      else Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) with h_notjpSup
+  have h_notjp_le : notjpSup ≤ epsCA (F := F) C δ δ := epsMCA_restricted_le_epsCA C δ
+  unfold epsMCA jointlyProximateContribution
+  -- Bound the `ε_mca` supremum body-by-body; each body splits as one of the two gated suprema.
+  apply iSup_le
+  intro u
+  by_cases hjp : jointProximity (C := C) (u := u) δ
+  · -- jointly-close: body `≤ contribution ≤ ε_ca + contribution`.
+    refine le_trans ?_ (le_add_left (le_refl _))
+    refine le_trans ?_ (le_iSup (fun u : WordStack A (Fin 2) ι ↦
+      if jointProximity (C := C) (u := u) δ then
+        Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]
+      else (0 : ENNReal)) u)
+    rw [if_pos hjp]
+  · -- non-jointly-close: body `≤ notjpSup ≤ ε_ca ≤ ε_ca + contribution`.
+    refine le_trans ?_ (le_add_right h_notjp_le)
+    rw [h_notjpSup]
+    refine le_trans ?_ (le_iSup (fun u : WordStack A (Fin 2) ι ↦
+      if jointProximity (C := C) (u := u) δ then (0 : ENNReal)
+      else Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) u)
+    rw [if_neg hjp]
+
 /-- **ABF26 Lemma 4.6.** In the unique-decoding regime `δ < δ_min(C)/2`, `ε_mca` and `ε_ca`
 coincide: `ε_mca(C, δ) = ε_ca(C, δ)`.
 
