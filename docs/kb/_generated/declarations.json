@@ -11106,7 +11106,7 @@
         {
           "doc": "Unique decoding brick for the \u00a76.1 argument: two codewords of a code with minimum distance `d` that are both within distance summing below `d` of a common word are equal (triangle inequality).",
           "kind": "lemma",
-          "line": 90,
+          "line": 91,
           "name": "ProximityGap.eq_of_both_close_lt_minDist",
           "namespace": "ProximityGap",
           "short_name": "eq_of_both_close_lt_minDist",
@@ -11115,7 +11115,7 @@
         {
           "doc": "If the set of points `\u03b4`-close to the code `V` has at least `n * l + 1` points, then there exists a curve defined by vectors `v` from `V` such that the points of `curve u` and `curve v` are `\u03b4`-close with the same parameters. Moreover, `u` and `v` differ at at most `\u03b4 * n` positions.",
           "kind": "theorem",
-          "line": 104,
+          "line": 105,
           "name": "ProximityGap.large_agreement_set_on_curve_implies_correlated_agreement",
           "namespace": "ProximityGap",
           "short_name": "large_agreement_set_on_curve_implies_correlated_agreement",
@@ -11124,16 +11124,16 @@
         {
           "doc": "The distance bound from [BCIKS20].",
           "kind": "def",
-          "line": 124,
-          "name": "ProximityGap._anon_def_124",
+          "line": 125,
+          "name": "ProximityGap._anon_def_125",
           "namespace": "ProximityGap",
-          "short_name": "_anon_def_124",
+          "short_name": "_anon_def_125",
           "signature": "def noncomputable def \u03b4\u2080 (rho : \u211a) (m : \u2115) : \u211d :="
         },
         {
           "doc": "If the set of points on the curve defined by `u` close to `V` has at least `((1 + 1 / (2 * m)) ^ 7 * m ^ 7) / (3 * (Real.rpow rho (3 / 2 : \u211a))) * n ^ 2 * l + 1` points, then there exist vectors `v` from `V` that are `(1 - \u03b4) * n` close to `u`.",
           "kind": "theorem",
-          "line": 130,
+          "line": 131,
           "name": "ProximityGap.large_agreement_set_on_curve_implies_correlated_agreement'",
           "namespace": "ProximityGap",
           "short_name": "large_agreement_set_on_curve_implies_correlated_agreement'",
