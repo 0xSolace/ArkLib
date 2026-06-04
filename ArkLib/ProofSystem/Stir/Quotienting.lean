@@ -97,6 +97,52 @@ disagreementSet := { x ∈ ι ∩ S ∧ AnsPoly x ≠ f x }. -/
 noncomputable def disagreementSet (f : ι → F) (S : Finset F) (Ans : S → F) : Finset F :=
   Set.toFinset ({x : ι | x.val ∈ S ∧ (ansPoly S Ans).eval x.val ≠ f x}.image Subtype.val)
 
+/-- The quotient-reconstruction polynomial `w * V_S + Ans'` stays below `degree` whenever
+`deg w < degree - |S|` and `|S| < degree`. -/
+lemma reconstruct_mem_degreeLT {S : Finset F} {degree : ℕ} (hS_lt : S.card < degree)
+    {w : Polynomial F} (hw : w ∈ Polynomial.degreeLT F (degree - S.card)) (Ans : S → F) :
+    w * vanishingPoly S + ansPoly S Ans ∈ Polynomial.degreeLT F degree := by
+  rw [Polynomial.mem_degreeLT] at hw ⊢
+  refine lt_of_le_of_lt (Polynomial.degree_add_le _ _) (max_lt ?_ ?_)
+  · rcases eq_or_ne w 0 with rfl | hw0
+    · rw [zero_mul, Polynomial.degree_zero]
+      exact WithBot.bot_lt_coe _
+    · rw [Polynomial.degree_mul,
+        Polynomial.degree_eq_natDegree (vanishingPoly_monic S).ne_zero,
+        vanishingPoly_natDegree]
+      have h1 : w.degree + (S.card : WithBot ℕ)
+          < ((degree - S.card : ℕ) : WithBot ℕ) + (S.card : WithBot ℕ) :=
+        WithBot.add_lt_add_right (by simp) hw
+      refine lt_of_lt_of_eq h1 ?_
+      rw [← Nat.cast_add, Nat.sub_add_cancel hS_lt.le]
+  · exact lt_trans (ansPoly_degree_lt S Ans) (by exact_mod_cast hS_lt)
+
+omit [DecidableEq F] in
+/-- Evaluation vectors of `degreeLT` polynomials are codewords. -/
+lemma evalOnPoints_mem_code {degree : ℕ} {domain : ι ↪ F} {p : Polynomial F}
+    (hp : p ∈ Polynomial.degreeLT F degree) :
+    (fun x => p.eval (domain x)) ∈ code domain degree :=
+  Submodule.mem_map.mpr ⟨p, hp, rfl⟩
+
+/-- Decoding round-trip: a codeword that is the evaluation vector of a polynomial of degree
+below `degree ≤ |ι|` decodes back to that polynomial (interpolation uniqueness). -/
+lemma decodeLT_evalOnPoints {degree : ℕ} {domain : ι ↪ F} (hdeg : degree ≤ ι.card)
+    {p : Polynomial F} (hp : p ∈ Polynomial.degreeLT F degree)
+    (c : code domain degree) (hc : ∀ x, c.val x = p.eval (domain x)) :
+    ((decodeLT c : Polynomial F)) = p := by
+  have hval : c.val = fun x => p.eval (domain x) := funext hc
+  have hlt : p.degree < (((Finset.univ : Finset ι)).card : WithBot ℕ) := by
+    rw [Polynomial.mem_degreeLT] at hp
+    refine lt_of_lt_of_le hp ?_
+    rw [Finset.card_univ, Fintype.card_coe]
+    exact_mod_cast hdeg
+  have h := Lagrange.eq_interpolate (s := (Finset.univ : Finset ι)) (v := ⇑domain)
+    domain.injective.injOn hlt
+  calc ((decodeLT c : Polynomial F))
+      = Lagrange.interpolate Finset.univ ⇑domain c.val := rfl
+    _ = Lagrange.interpolate Finset.univ ⇑domain (fun i => p.eval (domain i)) := by rw [hval]
+    _ = p := h.symm
+
 /-- Quotienting Lemma 4.4
   Let `f : ι → F` be a function, `degree` a degree parameter, `δ ∈ (0,1)` be a distance parameter
   `S` be a set with |S| < degree, `Ans, Fill : S → F`. Suppose for all `u ∈ Λ(code, f, δ)`,
