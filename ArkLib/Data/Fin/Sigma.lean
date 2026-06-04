@@ -214,10 +214,10 @@ theorem dflatten_two_eq_append {n : Fin 2 → ℕ} {motive : (k : Fin (vsum n)) 
 --     {motive : (k : Fin (vsum n)) → Sort*}
 --     {v : (i : Fin (m + 1)) → (j : Fin (n i)) → motive (embedSum i j)} (k : Fin (vsum n)) :
 --     dflatten (motive := motive) v k =
---       dappend (dflatten (motive := sorry) (fun i => v i.castSucc)) (v (last _)) := by
+--       dappend (dflatten (fun i => v i.castSucc)) (v (last _)) := by
 --   induction m with
 --   | zero => exact Fin.elim0 k
---   | succ m ih => sorry
+--   | succ m ih =>
 
 @[simp]
 theorem dflatten_splitSum {m : ℕ} {n : Fin m → ℕ} {motive : (k : Fin (vsum n)) → Sort*}
@@ -553,7 +553,6 @@ theorem sum_le_of_divSum?_eq_some {m : ℕ} {n : Fin m → ℕ} {k : Fin (∑ j,
 
 def modSum {m : ℕ} {n : Fin m → ℕ} (k : Fin (∑ j, n j)) : Fin (n (divSum k)) :=
   ⟨k - ∑ j, n (Fin.castLE (divSum k).isLt.le j), by
-    -- sorry
     have divSum_mem : divSum k ∈ divSum? n k := by
       simp only [divSum, divSum?, Option.mem_def, Option.some_get]
     have hk : k < ∑ j, n (Fin.castLE (divSum k).isLt j) := by

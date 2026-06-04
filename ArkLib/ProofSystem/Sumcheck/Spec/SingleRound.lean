@@ -669,7 +669,7 @@ theorem reduction_perfectCompleteness :
     obtain ⟨s, _, hx⟩ := hx
     simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
     obtain ⟨⟨_, s'⟩, hx, rfl⟩ := hx
-    -- Same decomposition as sorry 1: peel outer OptionT bind
+    -- Same decomposition as the first case: peel outer OptionT bind
     erw [simulateQ_bind] at hx
     erw [StateT.run_bind] at hx
     rw [mem_support_bind_iff] at hx
@@ -1028,7 +1028,6 @@ theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
 --     -- rw [← OracleComp.support_map]
 --     -- simp [verifier]
 --     -- let x := tr ⟨0, by simp⟩
---     sorry
 
 -- /-- Trivial extractor since witness is `Unit` -/
 -- def rbrExtractor : Extractor.RoundByRound (pSpec R deg) oSpec (Statement R n i.castSucc) Unit :=

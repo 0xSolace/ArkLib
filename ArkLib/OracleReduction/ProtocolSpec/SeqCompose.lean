@@ -120,10 +120,10 @@ def fst (T : (pSpec₁ ++ₚ pSpec₂).Transcript k) : pSpec₁.Transcript ⟨mi
   if hk : k ≤ m then
     fun i => by
     dsimp [take]; have := T ⟨i, lt_of_lt_of_le i.isLt (inf_le_left)⟩; simp at this; sorry
-    -- dcast (by sorry) (T ⟨i, lt_of_lt_of_le i.isLt (inf_le_left)⟩)
+    -- dcast _ (T ⟨i, lt_of_lt_of_le i.isLt (inf_le_left)⟩)
   else
     fun i => sorry
-    -- dcast (by sorry) (T ⟨i, by omega⟩)
+    -- dcast _ (T ⟨i, by omega⟩)
 
 /-- The second half of a partial transcript for a concatenated protocol. -/
 def snd (T : (pSpec₁ ++ₚ pSpec₂).Transcript k) : pSpec₂.Transcript ⟨k - m, by omega⟩ :=
@@ -131,7 +131,7 @@ def snd (T : (pSpec₁ ++ₚ pSpec₂).Transcript k) : pSpec₂.Transcript ⟨k 
     fun i => Fin.elim0 (by simpa [hk] using i)
   else
     fun i => sorry
-    -- dcast (by sorry) (T ⟨m + i, by simp_all; dsimp at i; have := i.isLt; omega⟩)
+    -- dcast _ (T ⟨m + i, by simp_all; dsimp at i; have := i.isLt; omega⟩)
 
 end Transcript
 

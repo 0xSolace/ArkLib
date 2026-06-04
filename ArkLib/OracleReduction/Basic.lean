@@ -505,7 +505,7 @@ structure OracleVerifier {ι : Type} (oSpec : OracleSpec ι)
 -- instance {ιₛᵢ ιₘ ιₛₒ : Type} {OStmtIn : ιₛᵢ → Type} [Oₛᵢ : ∀ i, OracleInterface (OStmtIn i)]
 --     {Message : ιₘ → Type} [Oₘ : ∀ i, OracleInterface (Message i)]
 --     (OStmtOut : ιₛₒ → Type) (embed : ιₛₒ ↪ ιₛᵢ ⊕ ιₘ) :
---     ∀ i, OStmtOut i := fun i => by sorry
+--     ∀ i, OStmtOut i
 
 namespace OracleVerifier
 

@@ -225,11 +225,10 @@ variable {Statement} {OStatement}
 --   simp only [ChallengeIdx, Fin.reduceLast, Prover.runToRound_zero_of_prover_first, Fin.isValue,
 --     bind_pure_comp, liftM_eq_liftComp, liftComp_map, Functor.map_map, pure_bind]
 --   intro stmt oStmt _
---   sorry
 --   -- simp [Reduction.run, Prover.run, Verifier.run, simOracle2]
 --   -- aesop
 
--- theorem oracleReduction_rbr_knowledge_soundness : True := sorry
+-- theorem oracleReduction_rbr_knowledge_soundness : True
 
 end OracleReduction
 
