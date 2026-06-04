@@ -740,6 +740,13 @@ theorem runToRound_eq_bind_continueFromTo
 
 -- FRONTIER NOTE (rbrSoundness → soundness, probability bridge; ArkLib#1).
 --
+-- KEYSTONE STATUS: the round-range decomposition `runToRound_eq_bind_continueFromTo` (and its
+-- supporting `continueFromTo` / `continueFromTo_self` / `continueFromTo_succ_of_ne` /
+-- `processRound_eq_bind`, all axiom-clean, directly above) is now PROVEN.  With `k := i.succ`,
+-- `j := Fin.last n` it rewrites `Prover.run` / `Reduction.run` so the round-`i.succ` prefix is an
+-- explicit `>>=`-prefix of the full run (verified).  The structural connective the spine below
+-- called for is therefore in place; what remains is purely the probability-plumbing transport.
+--
 -- The remaining gap is the *per-round distributional marginal* relating the full prover run's
 -- round-`i.succ` transcript prefix to the round-by-round game's `runToRound i.castSucc`-then-fresh-
 -- challenge form.  An earlier attempt formulated this as a *computation equality*

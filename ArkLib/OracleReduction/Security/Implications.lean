@@ -104,14 +104,41 @@ theorem rbrSoundness_implies_soundness (langIn : Set StmtIn) (langOut : Set Stmt
   --   • `Prover.fin_take_snoc_of_le` — geometric prefix preservation under `snoc`;
   --   • `exists_challenge_flip_of_full`, `probEvent_le_sum_of_imp_exists` — combinatorial backbone.
   --
-  -- REMAINING (structural assembly only): a `runToRound` *round-range decomposition*
-  --   `runToRound (last n) = runToRound i.succ >>= continueRoundsFrom`  (a plain `OracleComp`
-  -- equality, since the continuation only `processRound`s further rounds), so that
-  -- `probEvent_simulateQ_run'_bind_trailing_le` can drop the `continueRoundsFrom` tail and the
-  -- `Reduction.run` verifier/output tail, exposing the `runToRound i.succ` prefix to which
-  -- `fst_map_runToRound_succ_challenge` then applies, landing on the rbr game `hsf i`.  This
-  -- decomposition is a dependent-`Fin`-range induction (the continuation's type depends on `i`);
-  -- it is the last keystone.  See Execution.lean FRONTIER NOTE.
+  -- KEYSTONE (DONE): the `runToRound` *round-range decomposition*
+  --   `runToRound (last n) = runToRound i.succ >>= continueFromTo i.succ (last n)`
+  -- is now proven, axiom-clean, in Execution.lean as
+  -- `Prover.runToRound_eq_bind_continueFromTo` (plus `Prover.continueFromTo`,
+  -- `continueFromTo_self`, `continueFromTo_succ_of_ne`, `processRound_eq_bind`).  It rewrites
+  -- `Prover.run` / `Reduction.run` to expose the `runToRound i.succ` prefix as a `>>=`-prefix of the
+  -- full run (verified to rewrite `Prover.run` directly).
+  --
+  -- REMAINING FRONTIER (probability-plumbing assembly; no new combinatorial/keystone content):
+  --   (A) First-crossing wiring — apply
+  --       `Verifier.StateFunction.probEvent_le_sum_of_imp_exists` over `κ = pSpec.ChallengeIdx` with
+  --       `q` = the accept event `(_, stmtOut) ↦ stmtOut ∈ langOut` on the soundness game's result
+  --       `((FullTranscript × StmtOut × WitOut) × StmtOut)` (type `OptionT ProbComp _`), and
+  --       `p i x := ¬ sf i.castSucc stmtIn (x.1.1.take i.castSucc) ∧
+  --                  sf i.succ stmtIn ((x.1.1.take i.castSucc).concat (x.1.1 i))`
+  --       (prefix-only, via `take_succ_eq_concat`).  The support-implication `himp` is
+  --       `exists_challenge_flip_of_full`, whose `hlast` hypothesis (`sf (last n) stmtIn tr`) is
+  --       supplied by the contrapositive of `sf.toFun_full` (an accepting support point cannot have
+  --       `¬ sf (last n)`, else `Pr[accept] = 0`); `¬ sf 0` comes from `stmtIn ∉ langIn` via
+  --       `toFun_empty`.  This step needs the `OptionT ProbComp` / `run'` plumbing that ties a
+  --       support point's transcript `x.1.1` to its verifier verdict `x.2` (same plumbing as
+  --       `toFun_full`'s own statement).
+  --   (B) Per-round bound — for each fixed `i`, show
+  --       `Pr[p i | soundness game] ≤ Pr[rbr event i | rbr game i] ≤ rbrSoundnessError i (= hsf i)`.
+  --       Rewrite the soundness game's `Prover.run` by the keystone to
+  --       `runToRound i.succ >>= (continueFromTo … >>= output)`, push that through `Reduction.run`'s
+  --       `OptionT` (verifier/`getM` tail), and drop every trailing bind by
+  --       `Verifier.StateFunction.probEvent_simulateQ_run'_bind_trailing_le` (the state-aware
+  --       failure-monotone transport) — applied per `s` and lifted over the shared `init` by
+  --       `probEvent_bind_mono`.  The surviving `runToRound i.succ` prefix is rewritten by
+  --       `Prover.fst_map_runToRound_succ_challenge` into the rbr game's
+  --       `runToRound i.castSucc >>= getChallenge` shape (its trailing `receiveChallenge` dropped by
+  --       the same failure-monotone step), matching `hsf i` exactly.
+  -- Both (A) and (B) are pure VCVio `probEvent`/`OptionT`/`run'`/`init`-threading; the
+  -- combinatorial backbone and the keystone they rest on are fully banked.
   sorry
 
 /-- Round-by-round knowledge soundness with error `rbrKnowledgeError` implies round-by-round
