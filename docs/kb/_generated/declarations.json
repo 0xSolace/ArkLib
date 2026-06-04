@@ -15135,9 +15135,72 @@
           "signature": "class classical"
         },
         {
+          "doc": "**Provable per-stack dominance on the non-jointly-close branch (no UDR needed).** For a fixed stack `u` that is *not* jointly `\u03b4`-close, the `epsMCA` body `Pr_\u03b3[mcaEvent]` is bounded by the `epsCA` body `Pr_\u03b3[line \u03b4-close]`. This is the pointwise probability monotonicity that follows directly from `mcaEvent_imp_relCloseToCode` (every `mcaEvent` at `\u03b3` makes the line `\u03b4`-close), with no unique-decoding hypothesis. This isolates exactly the half of ABF26 Lemma 4.6's hard direction that *is* a pointwise `iSup`-monotonicity. The complementary `jointProximity` branch \u2014 where the `epsCA` body collap",
+          "kind": "theorem",
+          "line": 575,
+          "name": "ProximityGap.epsMCA_body_le_epsCA_body_of_not_jointProximity",
+          "namespace": "ProximityGap",
+          "short_name": "epsMCA_body_le_epsCA_body_of_not_jointProximity",
+          "signature": "theorem epsMCA_body_le_epsCA_body_of_not_jointProximity"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 580,
+          "name": "ProximityGap._anon_class_580",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_580",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Restricted MCA error: the fully-provable slice of ABF26 Lemma 4.6 (no UDR needed).** `epsMCA` is `\u2a06 u, Pr_\u03b3[mcaEvent]`. If we *restrict the supremum to the non-jointly-close stacks* \u2014 i.e. zero out every `u` for which `jointProximity C u \u03b4` already holds \u2014 then the resulting error is `\u2264 \u03b5_ca(C, \u03b4, \u03b4)`, unconditionally (for any `Set`-code `C`). Pointwise: on a non-jointly-close `u`, the `epsCA` body is the line-close probability and `epsMCA_body_le_epsCA_body_of_not_jointProximity` gives the bound; on a jointly-close `u`, the restricted body is `0`. So this is genuine `iSup`-monotonicity and ",
+          "kind": "theorem",
+          "line": 596,
+          "name": "ProximityGap.epsMCA_restricted_le_epsCA",
+          "namespace": "ProximityGap",
+          "short_name": "epsMCA_restricted_le_epsCA",
+          "signature": "theorem epsMCA_restricted_le_epsCA (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) :"
+        },
+        {
+          "doc": "**Where Approach A (pointwise event-implication) fails for ABF26 Lemma 4.6 \u2014 even in the unique-decoding regime.** *(Formalization note for the UDR case of WHIR Conjecture 1, cf. WHIR \u00a74.2 [ACFY24] and the Hab\u00f6ck note [Hab25]; the beyond-UDR case is the open prize territory.)* A natural attempt at the hard direction `\u03b5_mca \u2264 \u03b5_ca` is to prove the *pointwise* event implication `mcaEvent C \u03b4 u\u2080 u\u2081 \u03b3 \u2192 caEvent`, i.e. `mcaEvent \u03b3 \u2192 \u00ac jointProximity C u \u03b4`, which would give `Pr_\u03b3[mcaEvent] \u2264 Pr_\u03b3[line \u03b4-close]` and hence `iSup`-monotonicity. **This implication is false, even under the UDR hypothesi",
+          "kind": "theorem",
+          "line": 646,
+          "name": "ProximityGap.eq_of_relDist_le_of_two_mul_lt_dist",
+          "namespace": "ProximityGap",
+          "short_name": "eq_of_relDist_le_of_two_mul_lt_dist",
+          "signature": "theorem eq_of_relDist_le_of_two_mul_lt_dist"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 652,
+          "name": "ProximityGap._anon_class_652",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_652",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Kernel-checked core of the obstruction: in UDR the `mcaEvent` witness is forced.** Concretely substantiating the prose analysis above. Assume the UDR hypothesis `2\u00b7\u03b4\u00b7n < \u03b4_min(C)`, a stack `u` for which `jointProximity C u \u03b4` holds (so `jointAgreement` provides a codeword pair `p\u2080, p\u2081 \u2208 C` agreeing with `(u 0, u 1)` on a set `S'` of size `\u2265 (1-\u03b4)\u00b7n`), and an `mcaEvent` at `\u03b3` with witness set `S` and codeword `w \u2208 C`. Then **`w = p\u2080 + \u03b3\u00b7p\u2081`** \u2014 the line's `mcaEvent` witness coincides with the unique close combined codeword. Proof: `w = u 0 + \u03b3\u00b7(u 1)` on `S` and `p\u2080 + \u03b3\u00b7p\u2081 = u 0 + \u03b3\u00b7(u 1)` on",
+          "kind": "theorem",
+          "line": 691,
+          "name": "ProximityGap.mcaEvent_witness_eq_combined_of_jointProximity_udr",
+          "namespace": "ProximityGap",
+          "short_name": "mcaEvent_witness_eq_combined_of_jointProximity_udr",
+          "signature": "theorem mcaEvent_witness_eq_combined_of_jointProximity_udr"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 701,
+          "name": "ProximityGap._anon_class_701",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_701",
+          "signature": "class classical"
+        },
+        {
           "doc": "**ABF26 Lemma 4.6.** In the unique-decoding regime `\u03b4 < \u03b4_min(C)/2`, `\u03b5_mca` and `\u03b5_ca` coincide: `\u03b5_mca(C, \u03b4) = \u03b5_ca(C, \u03b4)`. The unique-decoding hypothesis is expressed as `2 \u00b7 \u03b4 \u00b7 n < \u03b4_min(C) \u00b7 n = \u2016C\u2016\u2080` to avoid fractional arithmetic in \u2115 \u2014 equivalent to the paper's `\u03b4 < \u03b4_min(C)/2`. The proof is reduced here to **one** inequality. The direction `\u03b5_ca \u2264 \u03b5_mca` is the in-tree `epsCA_le_epsMCA` (no UDR needed). What remains, `\u03b5_mca \u2264 \u03b5_ca`, is the genuinely hard direction: **Status of the remaining direction: external admit** ([ACFY25, Lemma 4.10]; footnote 6 in ABF26 notes the proof is for ",
           "kind": "theorem",
-          "line": 587,
+          "line": 802,
           "name": "ProximityGap.epsMCA_eq_epsCA_below_udr",
           "namespace": "ProximityGap",
           "short_name": "epsMCA_eq_epsCA_below_udr",
@@ -15146,7 +15209,7 @@
         {
           "doc": "Row-extraction: the `k`-th row of a `Fin t \u2192 A`-valued word, as an `A`-valued word.",
           "kind": "def",
-          "line": 598,
+          "line": 813,
           "name": "ProximityGap.row_of",
           "namespace": "ProximityGap",
           "short_name": "row_of",
@@ -15155,7 +15218,7 @@
         {
           "doc": "**ABF26 Lemma 4.7.** For any F-additive code `C` (here: a `Submodule F (\u03b9 \u2192 A)`) and `t : \u2115`: `\u03b5_mca(C^\u2261t, \u03b4) \u2264 t \u00b7 \u03b5_mca(C, \u03b4)`. Proof recipe: 1. `mcaEvent` for the interleaved code at `\u03b3` implies `\u2203 k`, `mcaEvent` for the `k`-th row restriction (witness set `S` is shared; if every row admitted a joint codeword pair on `S`, assembling them column-by-column would produce a joint codeword pair in `C^\u22c8 (Fin t)` agreeing on `S`, contradicting the interleaved's \"no joint pair\" clause). 2. `Pr_le_Pr_of_implies` lifts the per-`\u03b3` implication to a probability bound. 3. `Pr_exists_Fin_le_sum` (union b",
           "kind": "theorem",
-          "line": 614,
+          "line": 829,
           "name": "ProximityGap.epsMCA_interleaved_le",
           "namespace": "ProximityGap",
           "short_name": "epsMCA_interleaved_le",
@@ -15164,28 +15227,28 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 617,
-          "name": "ProximityGap._anon_class_617",
+          "line": 832,
+          "name": "ProximityGap._anon_class_832",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_617",
+          "short_name": "_anon_class_832",
           "signature": "class classical"
         },
         {
           "doc": "**Bridge for affine spaces.** The predicate `\u03b4_\u03b5_correlatedAgreementAffineSpaces C \u03b4 \u03b5` (from `Basic.lean`, threshold `\u03b5`) is equivalent to `epsCA_affineSpaces C k \u03b4 \u03b4 \u2264 \u03b5`. Same proof recipe as the `AffineLines` and `Curves` bridges.",
           "kind": "theorem",
-          "line": 695,
-          "name": "ProximityGap._anon_theorem_695",
+          "line": 910,
+          "name": "ProximityGap._anon_theorem_910",
           "namespace": "ProximityGap",
-          "short_name": "_anon_theorem_695",
+          "short_name": "_anon_theorem_910",
           "signature": "theorem theorem \u03b4_\u03b5_correlatedAgreementAffineSpaces_iff_epsCA_affineSpaces_le {k : \u2115}"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 699,
-          "name": "ProximityGap._anon_class_699",
+          "line": 914,
+          "name": "ProximityGap._anon_class_914",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_699",
+          "short_name": "_anon_class_914",
           "signature": "class classical"
         }
       ]
@@ -50396,7 +50459,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5473,
+      "declarations": 5480,
       "files": 287
     }
   }
