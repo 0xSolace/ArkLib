@@ -778,6 +778,29 @@ lemma elimPoly_ne_zero {H : F[X][Y]} [Fact (Irreducible H)] (hH : 0 < H.natDegre
   apply hres_ne
   rw [← hmap, hzero, map_zero]
 
+/-- `S_β` is contained in the (finite) root set of the elimination polynomial. -/
+lemma S_β_subset_root_set {H : F[X][Y]} [Fact (Irreducible H)] (hH : 0 < H.natDegree) (β : 𝒪 H)
+    (hP : canonicalRepOf𝒪 hH β ≠ 0) :
+    S_β β ⊆ {z : F | (elimPoly hH β).IsRoot z} := by
+  intro z hz
+  exact elimPoly_eval_eq_zero_of_mem_S_β hH β hz
+
+/-- The cardinality of `S_β` is bounded by the degree of the elimination polynomial. -/
+lemma ncard_S_β_le_natDegree_elimPoly {H : F[X][Y]} [Fact (Irreducible H)] (hH : 0 < H.natDegree)
+    (β : 𝒪 H) (hP : canonicalRepOf𝒪 hH β ≠ 0) :
+    Set.ncard (S_β β) ≤ (elimPoly hH β).natDegree := by
+  classical
+  have hsub : S_β β ⊆ ↑(elimPoly hH β).roots.toFinset := by
+    intro z hz
+    rw [Finset.mem_coe, Multiset.mem_toFinset, Polynomial.mem_roots (elimPoly_ne_zero hH β hP)]
+    exact elimPoly_eval_eq_zero_of_mem_S_β hH β hz
+  calc Set.ncard (S_β β)
+      ≤ Set.ncard (↑(elimPoly hH β).roots.toFinset : Set F) :=
+        Set.ncard_le_ncard hsub (Finset.finite_toSet _)
+    _ = (elimPoly hH β).roots.toFinset.card := Set.ncard_coe_finset _
+    _ ≤ Multiset.card (elimPoly hH β).roots := Multiset.toFinset_card_le _
+    _ ≤ (elimPoly hH β).natDegree := Polynomial.card_roots' _
+
 /-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20].
 
 Statement repair (necessary, documented for upstream): the section context provides only
