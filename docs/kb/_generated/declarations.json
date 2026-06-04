@@ -11528,7 +11528,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 34,
+          "line": 40,
           "name": "ProximityGap.RS_exists_bivariate_AB_of_goodCoeffsCurve_card_gt",
           "namespace": "ProximityGap",
           "short_name": "RS_exists_bivariate_AB_of_goodCoeffsCurve_card_gt",
@@ -11537,19 +11537,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 51,
-          "name": "ProximityGap._anon_class_51",
+          "line": 58,
+          "name": "ProximityGap._anon_class_58",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_51",
-          "signature": "class classical"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 74,
-          "name": "ProximityGap._anon_class_74",
-          "namespace": "ProximityGap",
-          "short_name": "_anon_class_74",
+          "short_name": "_anon_class_58",
           "signature": "class classical"
         },
         {
@@ -11573,46 +11564,55 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 99,
-          "name": "ProximityGap._anon_class_99",
+          "line": 98,
+          "name": "ProximityGap._anon_class_98",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_99",
+          "short_name": "_anon_class_98",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 141,
-          "name": "ProximityGap._anon_class_141",
+          "line": 107,
+          "name": "ProximityGap._anon_class_107",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_141",
+          "short_name": "_anon_class_107",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 168,
-          "name": "ProximityGap._anon_class_168",
+          "line": 149,
+          "name": "ProximityGap._anon_class_149",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_168",
+          "short_name": "_anon_class_149",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 210,
-          "name": "ProximityGap._anon_class_210",
+          "line": 176,
+          "name": "ProximityGap._anon_class_176",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_210",
+          "short_name": "_anon_class_176",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 215,
-          "name": "ProximityGap._anon_class_215",
+          "line": 218,
+          "name": "ProximityGap._anon_class_218",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_215",
+          "short_name": "_anon_class_218",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 223,
+          "name": "ProximityGap._anon_class_223",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_223",
           "signature": "class classical"
         }
       ]
