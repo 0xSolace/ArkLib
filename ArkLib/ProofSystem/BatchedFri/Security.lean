@@ -289,10 +289,9 @@ lemma fri_round_consistency_completeness
   := by
   refine rs_code_mem_of_card_le_degree ?_ _
   rw [Fintype.card_coe]
-  exact le_of_eq <| by
-    simpa [evalDomainSigma]
-      using (CosetFftDomain.size_of_smooth_coset_domain_eq_pow_of_2
-        (ω := evalDomainSigma s ω (i.1 + 1)))
+  refine le_of_eq ?_
+  simp only [evalDomainSigma, Domain.CosetFftDomainClass.card_toFinset]
+  exact Fintype.card_fin _
 
 end Completeness
 

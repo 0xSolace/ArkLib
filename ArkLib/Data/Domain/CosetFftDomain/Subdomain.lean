@@ -467,4 +467,14 @@ lemma twoNthRoot_correct_one {n : ℕ} {ω : SmoothCosetFftDomain n F}
 
 end CosetFftDomain
 
+
+/-- Compatibility form of the smooth-coset domain size: the `toFinset` of a
+`SmoothCosetFftDomain n F` has exactly `2 ^ n` elements. -/
+@[simp]
+lemma size_of_smooth_coset_domain_eq_pow_of_2 {F : Type} [Field F] [DecidableEq F]
+    {n : ℕ} {ω : SmoothCosetFftDomain n F} :
+    Finset.card (Domain.CosetFftDomainClass.toFinset ω) = 2 ^ n := by
+  rw [Domain.CosetFftDomainClass.card_toFinset]
+  simp
+
 end Domain
