@@ -175,6 +175,30 @@ theorem simulateQ_optionT_forIn (impl : QueryImpl spec n)
     | done b => exact simulateQ_optionT_pure impl b
     | yield b => exact ih b
 
+/-- `simulateQ` commutes with `List.Vector.mmap` in the `OptionT (OracleComp …)` monad: simulating a
+vector-`mmap` of oracle queries equals the `mmap` of the simulated query body. This is the missing
+`simulateQ_listVector_mmap`; it collapses the inner `(List.Vector.ofFn id).mmap` of the verifier's
+fiber-query gathering loop through `simulateQ`, complementing `simulateQ_optionT_forIn`. -/
+theorem simulateQ_optionT_listVector_mmap (impl : QueryImpl spec n)
+    (f : α → OptionT (OracleComp spec) γ) (g : α → OptionT n γ)
+    (hg : ∀ a, g a = simulateQ impl (f a)) :
+    ∀ {N : ℕ} (v : List.Vector α N),
+      simulateQ impl (List.Vector.mmap f v : OptionT (OracleComp spec) (List.Vector γ N))
+        = (List.Vector.mmap g v : OptionT n (List.Vector γ N)) := by
+  intro N v
+  induction v using List.Vector.inductionOn with
+  | nil =>
+    rw [List.Vector.mmap_nil, List.Vector.mmap_nil, simulateQ_optionT_pure]
+  | cons ih =>
+    rename_i a tail
+    rw [List.Vector.mmap_cons, List.Vector.mmap_cons, simulateQ_optionT_bind, hg]
+    refine bind_congr ?_
+    intro h'
+    rw [simulateQ_optionT_bind, ih]
+    refine bind_congr ?_
+    intro t'
+    rw [simulateQ_optionT_pure]
+
 end ForInSupport
 
 /-!
