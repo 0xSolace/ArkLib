@@ -1436,6 +1436,54 @@ theorem common_roots_subset_S_β_mk
   rw [_root_.BCIKS20AppendixA.π_z, Ideal.Quotient.lift_mk]
   exact hPt
 
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- A large finite common-root fiber triggers Appendix A.1 for the quotient class of `P`. -/
+theorem common_roots_force_lift_zero
+    {H P : F[X][Y]} [Fact (Irreducible H)]
+    (hH : 0 < H.natDegree) (D : ℕ) (hD : D ≥ Bivariate.totalDegree H)
+    {T : Finset F}
+    (hroot : ∀ z ∈ T, ∃ t : F,
+      Polynomial.evalEval z t (_root_.BCIKS20AppendixA.H_tilde' H) = 0 ∧
+        Polynomial.evalEval z t P = 0)
+    (hcard :
+      (T.card : WithBot ℕ) >
+        _root_.BCIKS20AppendixA.weight_Λ_over_𝒪 hH
+          (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P :
+            _root_.BCIKS20AppendixA.𝒪 H) D * (H.natDegree : WithBot ℕ)) :
+    _root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃 H
+      (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P :
+        _root_.BCIKS20AppendixA.𝒪 H) = 0 := by
+  classical
+  let β : _root_.BCIKS20AppendixA.𝒪 H :=
+    Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P
+  have hsub : (T : Set F) ⊆ _root_.BCIKS20AppendixA.S_β β := by
+    simpa [β] using (common_roots_subset_S_β_mk (H := H) (P := P) (T := T) hroot)
+  rcases eq_or_ne (_root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β) 0 with hβ | hβ
+  · simpa [β] using
+      (_root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃_eq_zero_of_canonicalRep_eq_zero
+        hH β hβ)
+  have hSfinite : (_root_.BCIKS20AppendixA.S_β β).Finite := by
+    have hsubroot :
+        _root_.BCIKS20AppendixA.S_β β ⊆
+          ↑((_root_.BCIKS20AppendixA.elimPoly hH β).roots.toFinset) := by
+      intro z hz
+      rw [Finset.mem_coe, Multiset.mem_toFinset,
+        Polynomial.mem_roots (_root_.BCIKS20AppendixA.elimPoly_ne_zero hH β hβ)]
+      exact _root_.BCIKS20AppendixA.elimPoly_eval_eq_zero_of_mem_S_β hH β hz
+    exact (Finset.finite_toSet _).subset hsubroot
+  have hTcard : T.card ≤ Set.ncard (_root_.BCIKS20AppendixA.S_β β) := by
+    rw [← Set.ncard_coe_finset T]
+    exact Set.ncard_le_ncard hsub hSfinite
+  have hTcard' :
+      (T.card : WithBot ℕ) ≤
+        (Set.ncard (_root_.BCIKS20AppendixA.S_β β) : WithBot ℕ) := by
+    exact_mod_cast hTcard
+  have hSβ_card :
+      (Set.ncard (_root_.BCIKS20AppendixA.S_β β) : WithBot ℕ) >
+        _root_.BCIKS20AppendixA.weight_Λ_over_𝒪 hH β D * (H.natDegree : WithBot ℕ) :=
+    lt_of_lt_of_le (by simpa [β] using hcard) hTcard'
+  simpa [β] using _root_.BCIKS20AppendixA.Lemma_A_1 hH β D hD hSβ_card
+
 /-! ### Statement Analysis for Claim 5.7
 
 `exists_factors_with_large_common_root_set` (Claim 5.7, `Agreement.lean`) carries a second
