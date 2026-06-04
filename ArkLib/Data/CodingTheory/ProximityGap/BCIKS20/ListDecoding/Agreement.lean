@@ -7,6 +7,8 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 
+set_option linter.style.longFile 2400
+
 /-!
 # BCIKS20 list-decoding agreement compatibility module
 
@@ -613,6 +615,33 @@ lemma exists_pg_factors_with_large_common_root_set_of_graph_conditions
   exact ⟨R, H, hR, hRirr, hHirr, hHdeg, hHdvd, hRsep, by
     convert hcard using 3, hlarge'⟩
 
+/-- The side hypotheses needed for the proved graph-condition candidate-pair
+extractions.  This package avoids repeating the same large binder block in the
+root-clearing API. -/
+structure GraphExtractionHypotheses
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) where
+  hx0 : ∀ R : F[Z][X][Y],
+    R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs →
+      Bivariate.evalX (Polynomial.C x₀) R ≠ 0
+  hsep : ∀ R : F[Z][X][Y],
+    R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs →
+      (Bivariate.evalX (Polynomial.C x₀) R).Separable
+  hS_nonempty :
+    (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty
+  A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n)
+  hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+    ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+      (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+        (ωs i)
+  hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+    Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card
+  hlarge :
+    #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+      2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q
+
 omit [DecidableEq (RatFunc F)] in
 /-- Candidate-pair extraction plus the proved Appendix-A root-clearing bridge.
 
@@ -765,6 +794,188 @@ lemma exists_pg_factors_with_large_common_root_set_setToFinset_of_graph_conditio
         #(coeffs_of_close_proximity k ωs δ u₀ u₁) := by
     simp
   simpa [hdomain_card] using hcard_set
+
+omit [DecidableEq (RatFunc F)] in
+/-- The `R` polynomial extracted from the graph-condition theorem that also
+carries the proved `clearDenomY` root-clearing payload. -/
+noncomputable def R_graph_clear
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs) :
+    F[Z][X][Y] :=
+  (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hcond.hx0 hcond.hsep hcond.hS_nonempty hcond.A hcond.hA hcond.hcount
+    hcond.hlarge).choose
+
+omit [DecidableEq (RatFunc F)] in
+/-- The `H` polynomial extracted with `R_graph_clear`. -/
+noncomputable def H_graph_clear
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs) :
+    F[Z][X] :=
+  (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hcond.hx0 hcond.hsep hcond.hS_nonempty hcond.A hcond.hA hcond.hcount
+    hcond.hlarge).choose_spec.choose
+
+omit [DecidableEq (RatFunc F)] in
+lemma R_graph_clear_mem_pg_Rset
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs) :
+    R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond ∈
+      pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs := by
+  exact (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hcond.hx0 hcond.hsep hcond.hS_nonempty hcond.A hcond.hA hcond.hcount
+    hcond.hlarge).choose_spec.choose_spec.1
+
+omit [DecidableEq (RatFunc F)] in
+lemma irreducible_R_graph_clear
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs) :
+    Irreducible (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) := by
+  exact (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hcond.hx0 hcond.hsep hcond.hS_nonempty hcond.A hcond.hA hcond.hcount
+    hcond.hlarge).choose_spec.choose_spec.2.1
+
+omit [DecidableEq (RatFunc F)] in
+lemma irreducible_H_graph_clear
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs) :
+    Irreducible (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) := by
+  exact (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hcond.hx0 hcond.hsep hcond.hS_nonempty hcond.A hcond.hA hcond.hcount
+    hcond.hlarge).choose_spec.choose_spec.2.2.1
+
+omit [DecidableEq (RatFunc F)] in
+lemma natDegree_H_graph_clear_pos
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs) :
+    0 < (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond).natDegree := by
+  exact (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hcond.hx0 hcond.hsep hcond.hS_nonempty hcond.A hcond.hA hcond.hcount
+    hcond.hlarge).choose_spec.choose_spec.2.2.2.1
+
+omit [DecidableEq (RatFunc F)] in
+instance fact_irreducible_H_graph_clear
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs) :
+    Fact (Irreducible (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) :=
+  ⟨irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond⟩
+
+omit [DecidableEq (RatFunc F)] in
+instance fact_natDegree_H_graph_clear_pos
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs) :
+    Fact (0 < (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond).natDegree) :=
+  ⟨natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond⟩
+
+omit [DecidableEq (RatFunc F)] in
+lemma H_graph_clear_dvd_evalX_R_graph_clear
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs) :
+    H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond ∣
+      Bivariate.evalX (Polynomial.C x₀)
+        (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) := by
+  exact (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hcond.hx0 hcond.hsep hcond.hS_nonempty hcond.A hcond.hA hcond.hcount
+    hcond.hlarge).choose_spec.choose_spec.2.2.2.2.1
+
+omit [DecidableEq (RatFunc F)] in
+lemma evalX_R_graph_clear_separable
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs) :
+    (Bivariate.evalX (Polynomial.C x₀)
+      (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)).Separable := by
+  exact (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hcond.hx0 hcond.hsep hcond.hS_nonempty hcond.A hcond.hA hcond.hcount
+    hcond.hlarge).choose_spec.choose_spec.2.2.2.2.2.1
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+lemma claimA2_hypotheses_graph_clear
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs) :
+    Hypotheses x₀
+      (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) :=
+  ⟨H_graph_clear_dvd_evalX_R_graph_clear
+      (F := F) (m := m) (n := n) k δ x₀ h_gs hcond,
+    evalX_R_graph_clear_separable
+      (F := F) (m := m) (n := n) k δ x₀ h_gs hcond⟩
+
+omit [DecidableEq (RatFunc F)] in
+/-- The root-clearing payload projected from the side-condition-explicit
+candidate extraction. -/
+lemma H_tilde'_dvd_clearDenomY_graph_clear
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    {e D : ℕ}
+    (he :
+      (Bivariate.evalX (Polynomial.C x₀)
+        (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)).natDegree ≤ e)
+    (hD : D ≥
+      Bivariate.totalDegree
+        (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))
+    (hcard :
+      ((Finset.univ.filter
+        (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+          have P : F[X] :=
+            Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+          (pg_eval_on_Z (F := F)
+              (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) z.1).eval P = 0 ∧
+            (Bivariate.evalX z.1
+              (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)).eval
+              (P.eval x₀) = 0)).card : WithBot ℕ) >
+        _root_.BCIKS20AppendixA.weight_Λ_over_𝒪
+          (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (Ideal.Quotient.mk
+            (Ideal.span
+              {_root_.BCIKS20AppendixA.H_tilde'
+                (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)})
+            (Polynomial.clearDenomY
+              ((H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond).coeff
+                (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond).natDegree)
+              e
+              (Bivariate.evalX (Polynomial.C x₀)
+                (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))) :
+            _root_.BCIKS20AppendixA.𝒪
+              (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))
+          D *
+          ((H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond).natDegree :
+            WithBot ℕ)) :
+    _root_.BCIKS20AppendixA.H_tilde'
+        (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) ∣
+      Polynomial.clearDenomY
+        ((H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond).coeff
+          (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond).natDegree)
+        e
+        (Bivariate.evalX (Polynomial.C x₀)
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) := by
+  exact (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hcond.hx0 hcond.hsep hcond.hS_nonempty hcond.A hcond.hA hcond.hcount
+    hcond.hlarge).choose_spec.choose_spec.2.2.2.2.2.2.2.2 (e := e) (D := D)
+      (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      he hD hcard
 
 /-- The `R` polynomial extracted from the proved, side-condition-explicit Claim 5.7
 replacement.  Unlike the legacy `R` below, this one carries all hypotheses needed
@@ -1245,6 +1456,37 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_of_beta_embedding_zero
 
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
+lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hemb : ∀ t ≥ k,
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃
+          (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (β
+          (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t) = 0) :
+    ∀ t ≥ k,
+    α'
+      x₀
+      (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (claimA2_hypotheses_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      t
+    =
+    (0 : BCIKS20AppendixA.𝕃
+      (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) := by
+  intro t ht
+  exact alpha'_eq_zero_of_embedding_beta_eq_zero
+    (F := F) (x₀ := x₀)
+    (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (claimA2_hypotheses_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (hemb t ht)
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
 /-- Graph-extractor version of the conditional Claim 5.8' bridge.  Once the
 Appendix-A argument supplies tail-coefficient vanishing for the `γ'` built from
 `R_graph,H_graph`, the published truncation statement follows immediately. -/
@@ -1320,6 +1562,52 @@ lemma approximate_solution_is_exact_solution_coeffs_graph'_of_gamma_coeff_zero
         hx0 hsep hS_nonempty A hA hcount hlarge)
       (claimA2_hypotheses_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
         hx0 hsep hS_nonempty A hA hcount hlarge))
+    hzero
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+/-- Cleared graph-extractor version of the conditional Claim 5.8' bridge. -/
+lemma approximate_solution_is_exact_solution_coeffs_graph_clear'_of_gamma_coeff_zero
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hzero : ∀ t ≥ k,
+      PowerSeries.coeff t
+        (γ' x₀
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (claimA2_hypotheses_graph_clear
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) =
+        (0 : BCIKS20AppendixA.𝕃
+          (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))) :
+    γ' x₀
+      (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (claimA2_hypotheses_graph_clear
+        (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) =
+        PowerSeries.mk (fun t =>
+          if t ≥ k
+          then (0 : BCIKS20AppendixA.𝕃
+            (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))
+          else PowerSeries.coeff t
+            (γ'
+              x₀
+              (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+              (irreducible_H_graph_clear
+                (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+              (natDegree_H_graph_clear_pos
+                (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+              (claimA2_hypotheses_graph_clear
+                (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))) := by
+  exact powerSeries_eq_truncate_of_coeff_zero_ge
+    (γ' x₀
+      (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (claimA2_hypotheses_graph_clear
+        (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))
     hzero
 
 open BCIKS20AppendixA.ClaimA2 in
@@ -1404,6 +1692,174 @@ lemma approximate_solution_is_exact_solution_coeffs'
               (claimA2_hypotheses k h_gs))) := by
    sorry
 
+open Polynomial Polynomial.Bivariate in
+noncomputable def constantCoeffPolynomialInY (P : F[Z][X]) : F[X] :=
+  P.sum fun n p => Polynomial.monomial n (p.coeff 0)
+
+open Polynomial Polynomial.Bivariate in
+noncomputable def linearCoeffPolynomialInY (P : F[Z][X]) : F[X] :=
+  P.sum fun n p => Polynomial.monomial n (p.coeff 1)
+
+open Polynomial Polynomial.Bivariate in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma exists_linear_in_coeff_variable_of_degreeX_le_one (Ppoly : F[Z][X])
+    (hP : Bivariate.degreeX Ppoly ≤ 1) :
+    ∃ v₀ v₁ : F[X],
+      Ppoly =
+        (Polynomial.map Polynomial.C v₀) +
+          (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁) := by
+  classical
+  refine ⟨constantCoeffPolynomialInY Ppoly, linearCoeffPolynomialInY Ppoly, ?_⟩
+  apply Polynomial.ext
+  intro n
+  apply Polynomial.ext
+  intro j
+  simp only [coeff_add, coeff_map, coeff_C_mul]
+  unfold constantCoeffPolynomialInY linearCoeffPolynomialInY
+  simp only [Polynomial.sum]
+  rw [Polynomial.finset_sum_coeff, Polynomial.finset_sum_coeff]
+  simp only [Polynomial.coeff_monomial]
+  by_cases hn : n ∈ Ppoly.support
+  · have hne : Ppoly.coeff n ≠ 0 := Polynomial.mem_support_iff.mp hn
+    have hdeg : (Ppoly.coeff n).natDegree ≤ 1 :=
+      le_trans (Bivariate.coeff_natDegree_le_degreeX Ppoly n) hP
+    rw [Polynomial.eq_X_add_C_of_natDegree_le_one hdeg]
+    simp [hne, Polynomial.coeff_add, Polynomial.coeff_C_mul]
+    ring_nf
+  · have hp0 : Ppoly.coeff n = 0 := Polynomial.notMem_support_iff.mp hn
+    simp [hn, hp0]
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma gamma'_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+    {R : F[Z][X][Y]} {H : F[Z][X]}
+    (H_irreducible : Irreducible H) (hHdeg : 0 < H.natDegree)
+    (hHyp : Hypotheses x₀ R H)
+    {Ppoly : F[Z][X]}
+    (hrepr :
+      γ' x₀ R H_irreducible hHdeg hHyp =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _ Ppoly)
+    (hP : Bivariate.degreeX Ppoly ≤ 1) :
+    ∃ (v₀ v₁ : F[X]),
+      γ' x₀ R H_irreducible hHdeg hHyp =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _
+            (
+              (Polynomial.map Polynomial.C v₀) +
+              (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)
+            ) := by
+  rcases exists_linear_in_coeff_variable_of_degreeX_le_one (F := F) Ppoly hP with
+    ⟨v₀, v₁, hlin⟩
+  refine ⟨v₀, v₁, ?_⟩
+  rw [hrepr, hlin]
+
+open Polynomial in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma eval_linear_in_coeff_variable (v₀ v₁ : F[X]) (a : F) :
+    (((Polynomial.map Polynomial.C v₀) +
+      (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁) : F[Z][X]).eval
+        (Polynomial.C a)) =
+      (Polynomial.C (v₀.eval a) + (v₁.eval a) • Polynomial.X : F[X]) := by
+  rw [Polynomial.eval_add, Polynomial.eval_mul]
+  rw [Polynomial.eval_map, Polynomial.eval₂_at_apply]
+  rw [Polynomial.eval_C]
+  rw [Polynomial.eval_map, Polynomial.eval₂_at_apply]
+  rw [mul_comm Polynomial.X (Polynomial.C (v₁.eval a))]
+  rw [Polynomial.C_mul']
+
+open Polynomial in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma eval_linear_in_coeff_variable_eq_word
+    {v₀ v₁ : F[X]} {a u₀ u₁ : F}
+    (h₀ : v₀.eval a = u₀) (h₁ : v₁.eval a = u₁) :
+    (((Polynomial.map Polynomial.C v₀) +
+      (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁) : F[Z][X]).eval
+        (Polynomial.C a)) =
+      (Polynomial.C u₀ + u₁ • Polynomial.X : F[X]) := by
+  rw [eval_linear_in_coeff_variable, h₀, h₁]
+
+open Polynomial in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma polynomial_representative_matches_word_of_linear_coeff_values
+    {Ppoly : F[Z][X]} {v₀ v₁ : F[X]} {a u₀ u₁ : F}
+    (hlin :
+      Ppoly =
+        (Polynomial.map Polynomial.C v₀) +
+          (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁))
+    (h₀ : v₀.eval a = u₀) (h₁ : v₁.eval a = u₁) :
+    Ppoly.eval (Polynomial.C a) =
+      (Polynomial.C u₀ + u₁ • Polynomial.X : F[X]) := by
+  rw [hlin]
+  exact eval_linear_in_coeff_variable_eq_word (F := F) h₀ h₁
+
+open BCIKS20AppendixA.ClaimA2 in
+lemma solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    {Ppoly : F[Z][X]}
+    (hrepr :
+      γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+        (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+        (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _ Ppoly)
+    (hP : Bivariate.degreeX Ppoly ≤ 1) :
+    ∃ (v₀ v₁ : F[X]),
+      γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+        (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+        (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _
+            (
+              (Polynomial.map Polynomial.C v₀) +
+              (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)
+            ) := by
+  exact gamma'_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+    (F := F) (x₀ := x₀)
+    (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+    (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+    (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs)
+    hrepr hP
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+lemma solution_gamma_graph_clear_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    {Ppoly : F[Z][X]}
+    (hrepr :
+      γ' x₀
+        (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (irreducible_H_graph_clear
+          (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (natDegree_H_graph_clear_pos
+          (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (claimA2_hypotheses_graph_clear
+          (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _ Ppoly)
+    (hP : Bivariate.degreeX Ppoly ≤ 1) :
+    ∃ (v₀ v₁ : F[X]),
+      γ' x₀
+        (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (irreducible_H_graph_clear
+          (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (natDegree_H_graph_clear_pos
+          (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (claimA2_hypotheses_graph_clear
+          (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _
+            (
+              (Polynomial.map Polynomial.C v₀) +
+              (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)
+            ) := by
+  exact gamma'_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+    (F := F) (x₀ := x₀)
+    (irreducible_H_graph_clear
+      (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (natDegree_H_graph_clear_pos
+      (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (claimA2_hypotheses_graph_clear
+      (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    hrepr hP
+
 open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.9 from [BCIKS20].
 States that the solution `γ` is linear in the variable `Z`.
@@ -1448,6 +1904,28 @@ lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
   Classical.choose_spec
     (Classical.choose_spec (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs))
 
+open Polynomial in
+/-- Side-condition-explicit algebraic core of Claim 5.10.  Once the linear
+representative extracted by Claim 5.9 has coefficient polynomials evaluating to
+the word values at `ωs x`, the desired `P(ωs x) = u₀ x + (u₁ x) Z`
+identity is immediate. -/
+lemma P_eval_eq_word_of_solution_gamma_coeff_values
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (x : Fin n)
+    (h₀ : (Classical.choose
+        (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
+        (ωs x) = u₀ x)
+    (h₁ : (Classical.choose
+        (Classical.choose_spec <|
+          solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
+        (ωs x) = u₁ x) :
+    (P k δ x₀ h_gs).eval (Polynomial.C (ωs x)) =
+      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X := by
+  unfold P
+  exact polynomial_representative_matches_word_of_linear_coeff_values
+    (F := F) (a := ωs x) (u₀ := u₀ x) (u₁ := u₁ x) rfl h₀ h₁
+
 /-- The set `S'_x` from [BCIKS20] (just before Claim 5.10). The set of all `z ∈ S'` such that
 `w(x,z)` matches `P_z(x)`. -/
 noncomputable def matching_set_at_x
@@ -1458,6 +1936,93 @@ noncomputable def matching_set_at_x
     u₀ x + z * u₁ x =
       (Pz h).eval (ωs x)}
       (@Fintype.ofFinite _ Subtype.finite)
+
+/-- For a fixed close parameter `z`, the coordinates where the word
+`u₀ + z • u₁` matches its Reed-Solomon witness polynomial. -/
+noncomputable def matching_coords_for_z
+    (δ : ℚ)
+    (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) :
+    Finset (Fin n) :=
+  (Finset.univ : Finset (Fin n)).filter fun x =>
+    u₀ x + z.1 * u₁ x =
+      (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+        (ωs x)
+
+omit [DecidableEq (RatFunc F)] in
+lemma mem_matching_coords_for_z
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) (x : Fin n) :
+    x ∈ matching_coords_for_z k δ h_gs z ↔
+      u₀ x + z.1 * u₁ x =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs x) := by
+  simp [matching_coords_for_z]
+
+omit [DecidableEq (RatFunc F)] in
+lemma coeff_mem_matching_set_at_x_of_mem_matching_coords
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) {x : Fin n}
+    (hx : x ∈ matching_coords_for_z k δ h_gs z) :
+    z.1 ∈ matching_set_at_x k δ h_gs x := by
+  rw [mem_matching_coords_for_z (F := F) (m := m) (n := n) (k := k) (Q := Q)
+    h_gs z x] at hx
+  simpa [matching_set_at_x] using hx
+
+omit [DecidableEq (RatFunc F)] in
+lemma matching_coords_filter_card_le_matching_set_at_x_card
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (S : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) (x : Fin n) :
+    (S.filter (fun z => x ∈ matching_coords_for_z k δ h_gs z)).card ≤
+      (matching_set_at_x k δ h_gs x).card := by
+  classical
+  let img : Finset F := (S.filter (fun z =>
+    x ∈ matching_coords_for_z k δ h_gs z)).image (fun z => (z.1 : F))
+  have hsub : img ⊆ matching_set_at_x k δ h_gs x := by
+    intro y hy
+    rcases Finset.mem_image.mp hy with ⟨z, hz, rfl⟩
+    exact coeff_mem_matching_set_at_x_of_mem_matching_coords
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z
+      (Finset.mem_filter.mp hz).2
+  have hcard :
+      img.card = (S.filter (fun z => x ∈ matching_coords_for_z k δ h_gs z)).card := by
+    dsimp [img]
+    exact Finset.card_image_of_injective _ fun a b h => Subtype.ext h
+  rw [← hcard]
+  exact Finset.card_le_card hsub
+
+open Polynomial in
+/-- Claim 5.10 with the missing counting-to-coefficient-value bridge exposed
+as hypotheses.  The published cardinality assumptions are retained so this can
+replace the legacy statement at call sites once the Appendix-A/value bridge is
+available. -/
+lemma solution_gamma_matches_word_if_subset_large_of_coeff_values
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    {x : Fin n}
+    {D : ℕ}
+    (_hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (_hx : (matching_set_at_x k δ h_gs x).card >
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D)
+    (h₀ : (Classical.choose
+        (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
+        (ωs x) = u₀ x)
+    (h₁ : (Classical.choose
+        (Classical.choose_spec <|
+          solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
+        (ωs x) = u₁ x) :
+    (P k δ x₀ h_gs).eval (Polynomial.C (ωs x)) =
+      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X :=
+  P_eval_eq_word_of_solution_gamma_coeff_values
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs x h₀ h₁
 
 /-- Claim 5.10 of [BCIKS20].
 Needed to prove Claim 5.9. This claim states that `γ(x) = w(x,Z)` if the cardinality `|S'_x|` is big
@@ -1483,6 +2048,177 @@ lemma solution_gamma_matches_word_if_subset_large
     : (P k δ x₀ h_gs).eval (Polynomial.C (ωs x)) =
       (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X
     := by sorry
+
+/-- Select exactly `r` elements from a finite set once its cardinality is large
+enough.  This is the final selection step in Claim 5.11 after double-counting
+has produced enough good coordinates. -/
+lemma exists_subset_card_eq_of_le_card {α : Type} [DecidableEq α] {S : Finset α} {r : ℕ}
+    (hcard : r ≤ S.card) :
+    ∃ T : Finset α, T ⊆ S ∧ T.card = r :=
+  Finset.exists_subset_card_eq hcard
+
+/-- Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most
+`m` bad coordinates, then coordinates that are bad for at least `t` elements of
+`S` occupy at most `m * #S / t` in the multiplicative form below. -/
+lemma heavyCoords_card_mul_le {α β : Type} [Fintype α] [DecidableEq α]
+    {S : Finset β} {B : β → Finset α} {m : ℕ}
+    (hB : ∀ z ∈ S, (B z).card ≤ m) (t : ℕ) :
+    ((Finset.univ : Finset α).filter
+      (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card)).card * t
+      ≤ m * S.card := by
+  classical
+  have hswap : ∑ x : α, (S.filter (fun z => x ∈ B z)).card =
+      ∑ z ∈ S, (B z).card := by
+    have h1 : ∀ x : α, (S.filter (fun z => x ∈ B z)).card =
+        ∑ z ∈ S, if x ∈ B z then 1 else 0 := fun x => Finset.card_filter _ _
+    have h2 : ∀ z : β, (B z).card = ∑ x : α, if x ∈ B z then 1 else 0 := by
+      intro z
+      rw [← Finset.card_filter, Finset.filter_univ_mem]
+    simp only [h1, h2]
+    exact Finset.sum_comm
+  have hbound : ∑ z ∈ S, (B z).card ≤ m * S.card := by
+    calc
+      ∑ z ∈ S, (B z).card ≤ ∑ _z ∈ S, m := Finset.sum_le_sum hB
+      _ = m * S.card := by rw [Finset.sum_const, smul_eq_mul, mul_comm]
+  have hfilter :
+      ((Finset.univ : Finset α).filter
+        (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card)).card * t
+        ≤ ∑ x : α, (S.filter (fun z => x ∈ B z)).card := by
+    calc
+      ((Finset.univ : Finset α).filter
+        (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card)).card * t
+          = ∑ _x ∈ (Finset.univ : Finset α).filter
+              (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card), t := by
+            rw [Finset.sum_const, smul_eq_mul]
+      _ ≤ ∑ x ∈ (Finset.univ : Finset α).filter
+              (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card),
+              (S.filter (fun z => x ∈ B z)).card :=
+            Finset.sum_le_sum fun x hx => (Finset.mem_filter.mp hx).2
+      _ ≤ ∑ x : α, (S.filter (fun z => x ∈ B z)).card :=
+            Finset.sum_le_sum_of_subset (Finset.filter_subset _ _)
+  exact le_trans hfilter (hswap ▸ hbound)
+
+/-- Complement-to-incidence form of the heavy-coordinate argument.  If a
+coordinate is not heavy for the bad sets `B`, then it is nonbad for more than
+`threshold` elements of `S`, provided `threshold + t ≤ #S`.  The hypothesis
+`hcard` is the remaining arithmetic lower bound on the non-heavy coordinates. -/
+lemma exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card
+    {α β : Type} [Fintype α] [DecidableEq α]
+    {S : Finset β} {B : β → Finset α} {r threshold t : ℕ}
+    (hthreshold : threshold + t ≤ S.card)
+    (hcard : r ≤ ((Finset.univ : Finset α) \
+      ((Finset.univ : Finset α).filter
+        (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card))).card) :
+    ∃ T : Finset α, T.card = r ∧
+      ∀ x ∈ T, threshold < (S.filter (fun z => x ∉ B z)).card := by
+  classical
+  let heavy : Finset α := (Finset.univ : Finset α).filter
+    (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card)
+  obtain ⟨T, hsub, hTcard⟩ :=
+    exists_subset_card_eq_of_le_card (S := (Finset.univ : Finset α) \ heavy) hcard
+  refine ⟨T, hTcard, ?_⟩
+  intro x hx
+  have hxnot : x ∉ heavy := (Finset.mem_sdiff.mp (hsub hx)).2
+  have hbad_lt : (S.filter (fun z => x ∈ B z)).card < t := by
+    exact Nat.lt_of_not_ge fun hbad => hxnot (by simp [heavy, hbad])
+  have hsplit :
+      (S.filter (fun z => x ∈ B z)).card +
+        (S.filter (fun z => x ∉ B z)).card = S.card := by
+    simpa using
+      (Finset.card_filter_add_card_filter_not (s := S) (p := fun z => x ∈ B z))
+  omega
+
+lemma exists_good_coordinate_subset_of_filter_card
+    {α : Type} [Fintype α] [DecidableEq α] {r : ℕ} {p : α → Prop} [DecidablePred p]
+    (hcard : r ≤ ((Finset.univ : Finset α).filter p).card) :
+    ∃ T : Finset α, T.card = r ∧ ∀ x ∈ T, p x := by
+  obtain ⟨T, hsub, hTcard⟩ :=
+    exists_subset_card_eq_of_le_card
+      (S := (Finset.univ : Finset α).filter p) (r := r) hcard
+  refine ⟨T, hTcard, ?_⟩
+  intro x hx
+  exact (Finset.mem_filter.mp (hsub hx)).2
+
+/-- Incidence-form selection step for Claim 5.11.  Once a separate
+double-counting argument shows that at least `r` coordinates have more than
+`threshold` incident good parameters, this selects exactly `r` of them. -/
+lemma exists_coordinate_subset_with_large_incidence
+    {α β : Type} [Fintype α] [DecidableEq α]
+    {S : Finset β} {G : β → Finset α} {r threshold : ℕ}
+    (hcard : r ≤ ((Finset.univ : Finset α).filter
+      (fun x => threshold < (S.filter (fun z => x ∈ G z)).card)).card) :
+    ∃ T : Finset α, T.card = r ∧
+      ∀ x ∈ T, threshold < (S.filter (fun z => x ∈ G z)).card :=
+  exists_good_coordinate_subset_of_filter_card hcard
+
+/-- Side-condition-explicit Claim 5.11.  The remaining mathematical work is to
+prove `hcard` from the §5 matching construction; the finite-set selection part
+itself is just `exists_good_coordinate_subset_of_filter_card`. -/
+lemma exists_points_with_large_matching_subset_of_filter_card
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {D : ℕ}
+    (hcard : k + 1 ≤ ((Finset.univ : Finset (Fin n)).filter
+      (fun x =>
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D < (matching_set_at_x k δ h_gs x).card)).card) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      (matching_set_at_x k δ h_gs x).card >
+        (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D := by
+  simpa [gt_iff_lt] using
+    exists_good_coordinate_subset_of_filter_card (α := Fin n) (r := k + 1)
+      (p := fun x =>
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D < (matching_set_at_x k δ h_gs x).card)
+      hcard
+
+/-- Incidence-counting version of the Claim 5.11 selection step.  A later
+double-counting proof can work with the per-parameter coordinate sets
+`matching_coords_for_z`; this lemma converts the resulting incidence lower
+bound into the published `matching_set_at_x` conclusion. -/
+lemma exists_points_with_large_matching_subset_of_incidence_filter_card
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (S : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    {D : ℕ}
+    (hcard : k + 1 ≤ ((Finset.univ : Finset (Fin n)).filter
+      (fun x =>
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D <
+            (S.filter (fun z => x ∈ matching_coords_for_z k δ h_gs z)).card)).card) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      (matching_set_at_x k δ h_gs x).card >
+        (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D := by
+  obtain ⟨Dtop, hDtop, hgood⟩ :=
+    exists_good_coordinate_subset_of_filter_card (α := Fin n) (r := k + 1)
+      (p := fun x =>
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D <
+            (S.filter (fun z => x ∈ matching_coords_for_z k δ h_gs z)).card)
+      hcard
+  refine ⟨Dtop, hDtop, ?_⟩
+  intro x hx
+  exact lt_of_lt_of_le (hgood x hx)
+    (matching_coords_filter_card_le_matching_set_at_x_card
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs S x)
 
 /-- Claim 5.11 from [BCIKS20].
 There exists a set of points `{x₀,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in

@@ -100,6 +100,33 @@ def inputToTerm {M : ℕ} : InputOracleIdx M → TermIdx M
   | .table => ⟨0, by omega⟩
   | .column i => ⟨i.val + 1, by omega⟩
 
+@[simp] theorem inputToTerm_table {M : ℕ} :
+    inputToTerm (.table : InputOracleIdx M) = (0 : TermIdx M) := rfl
+
+@[simp] theorem inputToTerm_column {M : ℕ} (i : Fin M) :
+    inputToTerm (.column i) = ⟨i.val + 1, by omega⟩ := rfl
+
+@[simp] theorem termToInput_inputToTerm {M : ℕ} (i : InputOracleIdx M) :
+    termToInput (inputToTerm i) = i := by
+  cases i with
+  | table =>
+      simp [termToInput]
+  | column i =>
+      simp [termToInput]
+
+@[simp] theorem inputToTerm_termToInput {M : ℕ} (i : TermIdx M) :
+    inputToTerm (termToInput i) = i := by
+  unfold termToInput
+  split
+  · rename_i h
+    apply Fin.ext
+    simp [inputToTerm, h]
+  · rename_i h
+    apply Fin.ext
+    simp [inputToTerm]
+    have hi_pos : 0 < i.val := Nat.pos_of_ne_zero h
+    omega
+
 /-- Protocol parameter `ℓ`, the chosen partial-sum size from Protocol 2. -/
 structure ProtocolParams (M : ℕ) where
   /-- The partial-sum size `ℓ`. -/
@@ -115,11 +142,79 @@ namespace ProtocolParams
 def numGroups {M : ℕ} (params : ProtocolParams M) : ℕ :=
   (M + params.sumSize) / params.sumSize
 
+theorem numGroups_pos {M : ℕ} (params : ProtocolParams M) : 0 < params.numGroups := by
+  unfold numGroups
+  exact Nat.div_pos (by omega) params.sumSize_pos
+
 /-- The consecutive interval `Iₖ = [(k - 1)ℓ, kℓ) ∩ [0, M]`, zero-indexed. -/
 def group {M : ℕ} (params : ProtocolParams M) (k : Fin params.numGroups) :
     Finset (TermIdx M) :=
   Finset.univ.filter fun i : TermIdx M =>
     k.val * params.sumSize ≤ i.val ∧ i.val < (k.val + 1) * params.sumSize
+
+@[simp] theorem mem_group_iff {M : ℕ} (params : ProtocolParams M)
+    (k : Fin params.numGroups) (i : TermIdx M) :
+    i ∈ params.group k ↔
+      k.val * params.sumSize ≤ i.val ∧ i.val < (k.val + 1) * params.sumSize := by
+  simp [group]
+
+/-- The canonical group index `⌊i / ℓ⌋` is in range for every term `i`. -/
+theorem groupIndex_lt_numGroups {M : ℕ} (params : ProtocolParams M) (i : TermIdx M) :
+    i.val / params.sumSize < params.numGroups := by
+  unfold numGroups
+  rw [Nat.div_lt_iff_lt_mul params.sumSize_pos]
+  have hmod_lt : (M + params.sumSize) % params.sumSize < params.sumSize :=
+    Nat.mod_lt _ params.sumSize_pos
+  have hdecomp := Nat.div_add_mod (M + params.sumSize) params.sumSize
+  have hdecomp' :
+      (M + params.sumSize) / params.sumSize * params.sumSize +
+          (M + params.sumSize) % params.sumSize = M + params.sumSize := by
+    simpa [Nat.mul_comm] using hdecomp
+  have hi : i.val < M + 1 := i.isLt
+  omega
+
+/-- Every term belongs to its canonical partial-sum group. -/
+@[simp] theorem groupIndex_mem {M : ℕ} (params : ProtocolParams M) (i : TermIdx M) :
+    i ∈ params.group ⟨i.val / params.sumSize, params.groupIndex_lt_numGroups i⟩ := by
+  rw [mem_group_iff]
+  constructor
+  · simpa [Nat.mul_comm] using Nat.mul_div_le i.val params.sumSize
+  · exact Nat.lt_mul_of_div_lt (Nat.lt_succ_self _) params.sumSize_pos
+
+/-- The Protocol 2 partial-sum groups cover all term indices. -/
+theorem exists_mem_group {M : ℕ} (params : ProtocolParams M) (i : TermIdx M) :
+    ∃ k : Fin params.numGroups, i ∈ params.group k :=
+  ⟨⟨i.val / params.sumSize, params.groupIndex_lt_numGroups i⟩, params.groupIndex_mem i⟩
+
+/-- Membership in a partial-sum group identifies the quotient `⌊i / ℓ⌋`. -/
+theorem groupIndex_eq_of_mem {M : ℕ} (params : ProtocolParams M)
+    (k : Fin params.numGroups) (i : TermIdx M) (hmem : i ∈ params.group k) :
+    i.val / params.sumSize = k.val := by
+  exact Nat.div_eq_of_lt_le ((params.mem_group_iff k i).mp hmem).1
+    ((params.mem_group_iff k i).mp hmem).2
+
+/-- A term is in exactly the partial-sum group selected by its quotient `⌊i / ℓ⌋`. -/
+theorem mem_group_iff_groupIndex_eq {M : ℕ} (params : ProtocolParams M)
+    (k : Fin params.numGroups) (i : TermIdx M) :
+    i ∈ params.group k ↔ i.val / params.sumSize = k.val := by
+  constructor
+  · exact params.groupIndex_eq_of_mem k i
+  · intro h
+    rw [mem_group_iff]
+    constructor
+    · have hle := Nat.mul_div_le i.val params.sumSize
+      rw [h] at hle
+      simpa [Nat.mul_comm] using hle
+    · have hlt : i.val / params.sumSize < k.val + 1 := by omega
+      exact Nat.lt_mul_of_div_lt hlt params.sumSize_pos
+
+/-- Partial-sum groups are disjoint on term indices. -/
+theorem group_eq_of_mem {M : ℕ} (params : ProtocolParams M)
+    {k l : Fin params.numGroups} {i : TermIdx M}
+    (hk : i ∈ params.group k) (hl : i ∈ params.group l) : k = l := by
+  apply Fin.ext
+  exact (params.groupIndex_eq_of_mem k i hk).symm.trans
+    (params.groupIndex_eq_of_mem l i hl)
 
 end ProtocolParams
 
@@ -165,6 +260,14 @@ def inputRelation (F : Type u) [Field F] [Fintype F] (n M : ℕ) :
     ∀ i : Fin M, ∀ x : Hypercube n, ∃ y : Hypercube n,
       evalOnHypercube (columnOracle oStmt i) x = evalOnHypercube (tableOracle oStmt) y }
 
+@[simp] theorem mem_inputRelation_iff
+    {F : Type u} [Field F] [Fintype F] {n M : ℕ}
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i) (wit : Unit) :
+    (((stmt, oStmt), wit) ∈ inputRelation F n M) ↔
+      ∀ i : Fin M, ∀ x : Hypercube n, ∃ y : Hypercube n,
+        evalOnHypercube (columnOracle oStmt i) x = evalOnHypercube (tableOracle oStmt) y := by
+  rfl
+
 /-- The full LogUp protocol returns no additional public data on success. -/
 @[reducible, simp]
 def StmtOut : Type :=
@@ -188,6 +291,15 @@ instance instOStmtOutOracleInterface :
 /-- The full protocol has a trivial final relation: successful verification returns `Unit`. -/
 def outputRelation : Set ((StmtOut × (∀ i, OStmtOut i)) × Unit) :=
   Set.univ
+
+@[simp] theorem mem_outputRelation (x : (StmtOut × (∀ i, OStmtOut i)) × Unit) :
+    x ∈ outputRelation := by
+  simp [outputRelation]
+
+@[simp] theorem outputRelation_language :
+    outputRelation.language = (Set.univ : Set (StmtOut × (∀ i, OStmtOut i))) := by
+  ext x
+  simp [Set.language, outputRelation]
 
 section ProtocolSpec
 
@@ -317,15 +429,54 @@ noncomputable def termPhi (oStmt : ∀ i, OStmtIn F n M i) (xChallenge : F)
     (i : TermIdx M) (u : Hypercube n) : F :=
   phi oStmt xChallenge (termToInput i) u
 
+omit [Fintype F] [DecidableEq F] in
+@[simp] theorem termPhi_zero (oStmt : ∀ i, OStmtIn F n M i)
+    (xChallenge : F) (u : Hypercube n) :
+    termPhi oStmt xChallenge (0 : TermIdx M) u =
+      xChallenge + evalOnHypercube (tableOracle oStmt) u := by
+  simp [termPhi, termToInput, phi]
+
+omit [Fintype F] [DecidableEq F] in
+@[simp] theorem termPhi_succ (oStmt : ∀ i, OStmtIn F n M i)
+    (xChallenge : F) (i : Fin M) (u : Hypercube n) :
+    termPhi oStmt xChallenge ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩ u =
+      xChallenge + evalOnHypercube (columnOracle oStmt i) u := by
+  simp [termPhi, termToInput, phi]
+
 /-- The numerator term, indexed as `0, ..., M` as in the paper. -/
 noncomputable def termNumerator (multiplicity : MultilinearOracle F n)
     (i : TermIdx M) (u : Hypercube n) : F :=
   numerator multiplicity (termToInput i) u
 
+omit [Fintype F] [DecidableEq F] in
+@[simp] theorem termNumerator_zero (multiplicity : MultilinearOracle F n)
+    (u : Hypercube n) :
+    termNumerator multiplicity (0 : TermIdx M) u = evalOnHypercube multiplicity u := by
+  simp [termNumerator, termToInput, numerator]
+
+omit [Fintype F] [DecidableEq F] in
+@[simp] theorem termNumerator_succ (multiplicity : MultilinearOracle F n)
+    (i : Fin M) (u : Hypercube n) :
+    termNumerator multiplicity ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩ u = -1 := by
+  simp [termNumerator, termToInput, numerator]
+
 /-- Product of the denominator terms in one partial-sum group. -/
 noncomputable def denominatorProduct (groups : PartialSumGroups M K)
     (oStmt : ∀ i, OStmtIn F n M i) (xChallenge : F) (k : Fin K) (u : Hypercube n) : F :=
   ∏ i ∈ groups k, termPhi oStmt xChallenge i u
+
+omit [Fintype F] [DecidableEq F] in
+private theorem sum_div_mul_prod_eq_sum_mul_prod_erase
+    {α : Type} [DecidableEq α]
+    (s : Finset α) (num den : α → F) (hden : ∀ i ∈ s, den i ≠ 0) :
+    (∑ i ∈ s, num i / den i) * (∏ i ∈ s, den i) =
+      ∑ i ∈ s, num i * ∏ j ∈ s.erase i, den j := by
+  classical
+  rw [Finset.sum_mul]
+  apply Finset.sum_congr rfl
+  intro i hi
+  rw [← Finset.mul_prod_erase s den hi]
+  field_simp [hden i hi]
 
 /-- The domain-identity expression for one helper function `hₖ`. -/
 noncomputable def domainIdentityTerm (groups : PartialSumGroups M K)
@@ -341,11 +492,38 @@ noncomputable def helperValue (groups : PartialSumGroups M K)
     (xChallenge : F) (k : Fin K) (u : Hypercube n) : F :=
   ∑ i ∈ groups k, termNumerator multiplicity i u / termPhi oStmt xChallenge i u
 
+omit [Fintype F] [DecidableEq F] in
+theorem helperValue_mul_denominatorProduct
+    (groups : PartialSumGroups M K) (oStmt : ∀ i, OStmtIn F n M i)
+    (multiplicity : MultilinearOracle F n) (xChallenge : F) (k : Fin K) (u : Hypercube n)
+    (hden : ∀ i ∈ groups k, termPhi oStmt xChallenge i u ≠ 0) :
+    helperValue groups oStmt multiplicity xChallenge k u *
+        denominatorProduct groups oStmt xChallenge k u =
+      ∑ i ∈ groups k,
+        termNumerator multiplicity i u *
+          ∏ j ∈ (groups k).erase i, termPhi oStmt xChallenge j u := by
+  unfold helperValue denominatorProduct
+  exact sum_div_mul_prod_eq_sum_mul_prod_erase (groups k)
+    (fun i => termNumerator multiplicity i u)
+    (fun i => termPhi oStmt xChallenge i u) hden
+
 /-- The honest helper oracle `hₖ : H → F` for one partial-sum group. -/
 noncomputable def helperOracle (groups : PartialSumGroups M K)
     (oStmt : ∀ i, OStmtIn F n M i) (multiplicity : MultilinearOracle F n)
     (xChallenge : F) (k : Fin K) : MultilinearOracle F n :=
   ⟨fun u => helperValue groups oStmt multiplicity xChallenge k u⟩
+
+omit [Fintype F] [DecidableEq F] in
+theorem domainIdentityTerm_honest_helper_eq_zero
+    (groups : PartialSumGroups M K) (oStmt : ∀ i, OStmtIn F n M i)
+    (multiplicity : MultilinearOracle F n) (xChallenge : F) (k : Fin K) (u : Hypercube n)
+    (hden : ∀ i ∈ groups k, termPhi oStmt xChallenge i u ≠ 0) :
+    domainIdentityTerm groups oStmt multiplicity
+        (fun k => helperOracle groups oStmt multiplicity xChallenge k) xChallenge k u = 0 := by
+  unfold domainIdentityTerm
+  simp only [evalOnHypercube, helperOracle]
+  rw [helperValue_mul_denominatorProduct groups oStmt multiplicity xChallenge k u hden]
+  simp
 
 /-- The honest helper-oracle bundle `h₁, ..., h_K` from paper equation (16). -/
 noncomputable def honestHelpers (oStmt : ∀ i, OStmtIn F n M i) (xChallenge : F) :
@@ -389,9 +567,32 @@ def numeratorAtPoint (evals : PointEvaluations F M K) : InputOracleIdx M → F
 def termPhiAtPoint (xChallenge : F) (evals : PointEvaluations F M K) (i : TermIdx M) : F :=
   phiAtPoint xChallenge evals (termToInput i)
 
+omit [Fintype F] [DecidableEq F] in
+@[simp] theorem termPhiAtPoint_zero (xChallenge : F) (evals : PointEvaluations F M K) :
+    termPhiAtPoint xChallenge evals (0 : TermIdx M) = xChallenge + evals.table := by
+  simp [termPhiAtPoint, termToInput, phiAtPoint]
+
+omit [Fintype F] [DecidableEq F] in
+@[simp] theorem termPhiAtPoint_succ (xChallenge : F)
+    (evals : PointEvaluations F M K) (i : Fin M) :
+    termPhiAtPoint xChallenge evals ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩ =
+      xChallenge + evals.columns i := by
+  simp [termPhiAtPoint, termToInput, phiAtPoint]
+
 /-- Term numerator at the final sumcheck point, indexed by `0, ..., M`. -/
 def termNumeratorAtPoint (evals : PointEvaluations F M K) (i : TermIdx M) : F :=
   numeratorAtPoint evals (termToInput i)
+
+omit [Fintype F] [DecidableEq F] in
+@[simp] theorem termNumeratorAtPoint_zero (evals : PointEvaluations F M K) :
+    termNumeratorAtPoint evals (0 : TermIdx M) = evals.multiplicity := by
+  simp [termNumeratorAtPoint, termToInput, numeratorAtPoint]
+
+omit [Fintype F] [DecidableEq F] in
+@[simp] theorem termNumeratorAtPoint_succ
+    (evals : PointEvaluations F M K) (i : Fin M) :
+    termNumeratorAtPoint evals ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩ = -1 := by
+  simp [termNumeratorAtPoint, termToInput, numeratorAtPoint]
 
 /-- The domain-identity expression at the final sumcheck point `r`. -/
 noncomputable def domainIdentityAtPoint (groups : PartialSumGroups M K)

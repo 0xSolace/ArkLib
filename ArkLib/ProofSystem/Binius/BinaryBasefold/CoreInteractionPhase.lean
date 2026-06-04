@@ -566,10 +566,87 @@ def NBlockMessages := 2 * (ϑ - 1) + 3
 
 def sumcheckFoldKnowledgeError := fun j : (pSpecSumcheckFold 𝔽q β (ϑ:=ϑ)
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).ChallengeIdx =>
-    if hj: (j.val % NBlockMessages (ϑ:=ϑ)) % 2 = 1 then
+    let jn : ℕ := j.1.val
+    if hj: (jn % NBlockMessages (ϑ:=ϑ)) % 2 = 1 then
       foldKnowledgeError 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        ⟨j / NBlockMessages (ϑ:=ϑ) * ϑ + ((j % NBlockMessages (ϑ:=ϑ)) / 2 + 1), by
-          sorry⟩ ⟨1, rfl⟩
+        ⟨jn / NBlockMessages (ϑ:=ϑ) * ϑ + (jn % NBlockMessages (ϑ:=ϑ)) / 2, by
+          let N := NBlockMessages (ϑ := ϑ)
+          have hN_pos : 0 < N := by
+            dsimp [N, NBlockMessages]
+            omega
+          have hϑ_pos : 0 < ϑ := Nat.pos_of_neZero ϑ
+          have hN_eq : N = 2 * ϑ + 1 := by
+            dsimp [N, NBlockMessages]
+            omega
+          have h_inner_len :
+              Fin.vsum (fun _ : Fin (ϑ - 1) => 2) = 2 * (ϑ - 1) := by
+            simpa [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+              nsmul_eq_mul, Nat.mul_comm]
+          have h_nonlast_len :
+              Fin.vsum (fun _ : Fin (ℓ / ϑ - 1) =>
+                (Fin.vsum fun _ : Fin (ϑ - 1) => 2) + 3) =
+                (ℓ / ϑ - 1) * N := by
+            simpa [Fin.vsum_eq_univ_sum, h_inner_len, Finset.sum_const, Finset.card_univ,
+              Fintype.card_fin, nsmul_eq_mul, N, NBlockMessages, Nat.mul_comm,
+              Nat.mul_left_comm, Nat.mul_assoc]
+          have h_last_len :
+              Fin.vsum (fun _ : Fin ϑ => 2) = 2 * ϑ := by
+            simpa [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+              nsmul_eq_mul, Nat.mul_comm]
+          have hj_lt := j.1.isLt
+          dsimp [pSpecSumcheckFold, pSpecNonLastBlocks, pSpecFullNonLastBlock, pSpecLastBlock,
+            pSpecFoldRelaySequence, pSpecFoldRelay, pSpecFoldCommit, pSpecFold, pSpecRelay,
+            pSpecCommit, NBlockMessages, ProtocolSpec.append, ProtocolSpec.seqCompose] at hj_lt
+          have hj_total : jn < (ℓ / ϑ - 1) * N + 2 * ϑ := by
+            calc
+              jn < (Fin.vsum fun _ : Fin (ℓ / ϑ - 1) =>
+                  (Fin.vsum fun _ : Fin (ϑ - 1) => 2) + 3) +
+                  Fin.vsum (fun _ : Fin ϑ => 2) := by
+                    simpa [jn] using hj_lt
+              _ = (ℓ / ϑ - 1) * N + 2 * ϑ := by
+                rw [h_nonlast_len, h_last_len]
+          have hdivmod := Nat.div_add_mod jn N
+          have hmod_lt := Nat.mod_lt jn hN_pos
+          have hdiv_mul : ℓ / ϑ * ϑ = ℓ := Nat.div_mul_cancel hdiv.out
+          have hℓ_pos : 0 < ℓ := Nat.pos_of_neZero ℓ
+          have hquot_pos : 0 < ℓ / ϑ := by
+            apply Nat.pos_of_ne_zero
+            intro hquot_zero
+            have : ℓ = 0 := by
+              rw [← hdiv_mul, hquot_zero]
+              simp
+            omega
+          have hj_bound' : jn < (ℓ / ϑ) * N := by
+            calc
+              jn < (ℓ / ϑ - 1) * N + 2 * ϑ := hj_total
+              _ < (ℓ / ϑ - 1) * N + N := by
+                rw [hN_eq]
+                omega
+              _ = (ℓ / ϑ) * N := by
+                calc
+                  (ℓ / ϑ - 1) * N + N = (ℓ / ϑ - 1) * N + 1 * N := by
+                    rw [one_mul]
+                  _ = (ℓ / ϑ - 1 + 1) * N := by
+                    rw [Nat.add_mul]
+                  _ = (ℓ / ϑ) * N := by
+                    rw [Nat.sub_one_add_one (Nat.ne_of_gt hquot_pos)]
+          have hj_bound : jn < N * (ℓ / ϑ) := by
+            simpa [Nat.mul_comm] using hj_bound'
+          have hdiv_lt : jn / N < ℓ / ϑ := Nat.div_lt_of_lt_mul hj_bound
+          have hmod_odd : (jn % N) % 2 = 1 := by
+            simpa [N] using hj
+          have hmod_half_lt : (jn % N) / 2 < ϑ := by
+            have hmod_decomp := Nat.div_add_mod (jn % N) 2
+            omega
+          change jn / N * ϑ + (jn % N) / 2 < ℓ
+          calc
+            jn / N * ϑ + (jn % N) / 2 < jn / N * ϑ + ϑ := by
+              exact Nat.add_lt_add_left hmod_half_lt _
+            _ = (jn / N + 1) * ϑ := by
+              rw [Nat.add_mul, one_mul]
+            _ ≤ (ℓ / ϑ) * ϑ := by
+              exact Nat.mul_le_mul_right ϑ (Nat.succ_le_of_lt hdiv_lt)
+            _ = ℓ := hdiv_mul⟩ ⟨1, rfl⟩
     else 0 -- this case never happens
 
 /-- Round-by-round knowledge soundness for the sumcheck fold oracle verifier -/

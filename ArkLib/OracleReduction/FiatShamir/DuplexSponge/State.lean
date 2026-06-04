@@ -87,6 +87,11 @@ def generateTag (iopBytes : ByteArray) : Vector UInt8 32 :=
   -- `keccak256 iopBytes`, returned as a fixed-length 32-byte vector.
   Keccak.keccak256Vector iopBytes
 
+/-- The generated domain-separator tag is always a 32-byte Keccak digest. -/
+@[simp] theorem generateTag_toList_length (iopBytes : ByteArray) :
+    (generateTag iopBytes).toList.length = 32 := by
+  simp [generateTag]
+
 /-- Initialize a stateful hash object from a domain separator.
 
 Rust interface:
@@ -129,6 +134,15 @@ def absorb (state : HashStateWithInstructions U H) (input : Array U) :
   | _ =>
     .error { message := "Invalid tag: expected an Absorb operation" }
 
+/-- If the next expected operation exactly matches the input length, `absorb` consumes it. -/
+theorem absorb_eq_ok_of_next_absorb_eq_size
+    (state : HashStateWithInstructions U H) (input : Array U)
+    (hnext : state.stack[0]? = some (DomainSeparator.Op.Absorb input.size)) :
+    state.absorb input =
+      .ok { ds := DuplexSpongeInterface.absorbUnchecked (state.ds, input),
+            stack := state.stack.extract 1 } := by
+  simp [absorb, hnext]
+
 /-- Perform a secure squeeze operation.
 
 Rust interface:
@@ -161,6 +175,17 @@ def squeeze (state : HashStateWithInstructions U H) (outputSize : Nat) :
   | _ =>
     .error { message := "Invalid tag: expected a Squeeze operation" }
 
+/-- If the next expected operation exactly matches the requested output size, `squeeze` consumes
+it. -/
+theorem squeeze_eq_ok_of_next_squeeze_eq_size
+    (state : HashStateWithInstructions U H) (outputSize : Nat)
+    (hnext : state.stack[0]? = some (DomainSeparator.Op.Squeeze outputSize)) :
+    state.squeeze outputSize =
+      let result := DuplexSpongeInterface.squeezeUnchecked
+        (state.ds, Array.replicate outputSize (0 : U))
+      .ok ({ ds := result.1, stack := state.stack.extract 1 }, result.2) := by
+  simp [squeeze, hnext]
+
 /-- Process a hint operation.
 
 Rust interface:
@@ -178,6 +203,13 @@ def hint (state : HashStateWithInstructions U H) :
     .ok { state with stack := state.stack.extract 1 }
   | _ =>
     .error { message := "Invalid tag: expected a Hint operation" }
+
+/-- If the next expected operation is `Hint`, `hint` consumes exactly that operation. -/
+theorem hint_eq_ok_of_next_hint
+    (state : HashStateWithInstructions U H)
+    (hnext : state.stack[0]? = some DomainSeparator.Op.Hint) :
+    state.hint = .ok { state with stack := state.stack.extract 1 } := by
+  simp [hint, hnext]
 
 /-- Perform a ratchet operation.
 
@@ -197,6 +229,15 @@ def ratchet (state : HashStateWithInstructions U H) :
           stack := state.stack.extract 1 }
   | _ =>
     .error { message := "Invalid tag: expected a Ratchet operation" }
+
+/-- If the next expected operation is `Ratchet`, `ratchet` consumes it and ratchets the sponge. -/
+theorem ratchet_eq_ok_of_next_ratchet
+    (state : HashStateWithInstructions U H)
+    (hnext : state.stack[0]? = some DomainSeparator.Op.Ratchet) :
+    state.ratchet =
+      .ok { ds := DuplexSpongeInterface.ratchetUnchecked (U := U) state.ds,
+            stack := state.stack.extract 1 } := by
+  simp [ratchet, hnext]
 
 end HashStateWithInstructions
 

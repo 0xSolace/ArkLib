@@ -34,7 +34,7 @@ We define the notions of Appendix A of [BCIKS20].
 
 -/
 
-set_option linter.style.longFile 2900
+set_option linter.style.longFile 3100
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal
 
@@ -2001,6 +2001,11 @@ noncomputable def fieldTo𝕃 {H : F[X][Y]} : F →+* 𝕃 H :=
 /-- Constructing power series over the function field `𝕃 H` out of a polynomial. -/
 noncomputable def polyToPowerSeries𝕃 (H : F[X][Y]) (P : F[X][Y]) : PowerSeries (𝕃 H) :=
   PowerSeries.mk <| fun n => liftToFunctionField (P.coeff n)
+
+@[simp]
+lemma coeff_polyToPowerSeries𝕃 (H : F[X][Y]) (P : F[X][Y]) (n : ℕ) :
+    PowerSeries.coeff n (polyToPowerSeries𝕃 H P) = liftToFunctionField (P.coeff n) :=
+  PowerSeries.coeff_mk n _
 
 end
 
