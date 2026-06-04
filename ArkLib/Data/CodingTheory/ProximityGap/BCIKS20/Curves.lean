@@ -6,6 +6,7 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.UniqueDecoding
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.ToMathlib.Polynomial.EvalExt
 
@@ -33,7 +34,21 @@ theorem correlatedAgreement_affine_curves {k : ℕ}
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
-  sorry
+  classical
+  by_cases hdeg0 : deg = 0
+  · -- Degenerate degree-0 corner (single zero codeword); open, see fork-review notes.
+    sorry
+  · haveI : NeZero deg := ⟨hdeg0⟩
+    by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+        (C := ReedSolomon.code domain deg)
+    · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).
+      rcases Nat.eq_zero_or_pos k with hk0 | hkpos
+      · subst hk0
+        exact RS_correlatedAgreement_curves_k_zero hUDR
+      · exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
+    · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain). Research item:
+      -- the Guruswami–Sudan/§5 machinery (graph-vanishing bridge) is the known bottom.
+      sorry
 
 end CoreResults
 
@@ -169,57 +184,6 @@ private lemma eq_of_both_close_lt_minDist {n : ℕ} {F : Type} [DecidableEq F]
   by_contra hne
   have htri : Δ₀(w₁, w₂) ≤ Δ₀(w₁, f) + Δ₀(f, w₂) := hammingDist_triangle w₁ f w₂
   exact absurd (le_trans (hV w₁ h₁ w₂ h₂ hne) htri) (not_le.mpr hsum)
-
-/-- If the set of points `δ`-close to the code `V` has at least `n * l + 1` points, then
-there exists a curve defined by vectors `v` from `V` such that the points of `curve u`
-and `curve v` are `δ`-close with the same parameters. Moreover, `u` and `v` differ at
-at most `δ * n` positions. -/
-theorem large_agreement_set_on_curve_implies_correlated_agreement {l : ℕ}
-    {rho : ℚ≥0}
-    {δ : ℚ≥0}
-    {V : Finset (Fin n → F)}
-    -- Finding 15 repair: `V` must be a code of rate `rho` (min relative distance ≥ 1 − rho);
-    -- with `rho` free and `V` arbitrary the statement is false (counterexample in
-    -- research/formal/arklib-patches/upstream-issues.md, Finding 15).
-    (hV : ∀ w ∈ V, ∀ w' ∈ V, w ≠ w' → (1 - rho) * n ≤ (Δ₀(w, w') : ℚ≥0))
-    (hδ : δ ≤ (1 - rho) / 2)
-    {u : Fin l → Fin n → F}
-    (hS : n * l < (coeffs_of_close_proximity_curve (F := F) δ u V).card) :
-    coeffs_of_close_proximity_curve (F := F) δ u V = Finset.univ ∧
-      ∃ v : Fin l → Fin n → F,
-        -- Finding 15b repair: the witness curve must pass through codewords —
-        -- without `∀ i, v i ∈ V` the existential is satisfied by `v := u` (vacuous).
-        (∀ i, v i ∈ V) ∧
-        ∀ z,
-          δᵣ(Curve.polynomialCurveEval (F := F) (A := F) u z,
-            Curve.polynomialCurveEval (F := F) (A := F) v z) ≤ δ ∧
-          ({ x : Fin n | ∃ i, u i x ≠ v i x } : Finset _).card ≤ δ * n := by
-  sorry
-
-/-- The distance bound from [BCIKS20]. -/
-noncomputable def δ₀ (rho : ℚ) (m : ℕ) : ℝ :=
-  1 - Real.sqrt rho - Real.sqrt rho / (2 * m)
-
-/-- If the set of points on the curve defined by `u` close to `V` has at least
-`((1 + 1 / (2 * m)) ^ 7 * m ^ 7) / (3 * (Real.rpow rho (3 / 2 : ℚ))) * n ^ 2 * l + 1`
-points, then there exist vectors `v` from `V` that are `(1 - δ) * n` close to `u`. -/
-theorem large_agreement_set_on_curve_implies_correlated_agreement' {l : ℕ}
-    [Finite F]
-    {m : ℕ}
-    {rho : ℚ≥0}
-    {δ : ℚ≥0}
-    (hm : 3 ≤ m)
-    {V : Finset (Fin n → F)}
-    -- Finding 15 repair (same defect as the unique-decoding lemma above).
-    (hV : ∀ w ∈ V, ∀ w' ∈ V, w ≠ w' → (1 - rho) * n ≤ (Δ₀(w, w') : ℚ≥0))
-    (hδ : δ ≤ δ₀ rho m)
-    {u : Fin l → Fin n → F}
-    (hS : ((1 + 1 / (2 * m)) ^ 7 * m ^ 7) / (3 * (Real.rpow rho (3 / 2 : ℚ)))
-      * n ^ 2 * l < (coeffs_of_close_proximity_curve (F := F) δ u V).card) :
-    ∃ v : Fin l → Fin n → F,
-      ∀ i, v i ∈ V ∧
-        (1 - δ) * n ≤ ({ x : Fin n | ∀ i, u i x = v i x } : Finset _).card := by
-  sorry
 
 end BCIKS20ProximityGapSection6
 
