@@ -13655,6 +13655,55 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCKHS25/CollinearProximates.lean": {
+      "declarations": [
+        {
+          "doc": "The joint disagreement set of the pairs `(u\u2080, u\u2081)` and `(p\u2080, p\u2081)`.",
+          "kind": "def",
+          "line": 35,
+          "name": "BCKHS25.jointDisagreement",
+          "namespace": "BCKHS25",
+          "short_name": "jointDisagreement",
+          "signature": "def jointDisagreement (u\u2080 u\u2081 p\u2080 p\u2081 : \u03b9 \u2192 F) : Finset \u03b9 :="
+        },
+        {
+          "doc": "At a joint-disagreement point, at most one `z` can reconcile the line combinations: the difference is an affine-in-`z` expression with not all coefficients zero.",
+          "kind": "lemma",
+          "line": 41,
+          "name": "BCKHS25.card_reconciling_le_one",
+          "namespace": "BCKHS25",
+          "short_name": "card_reconciling_le_one",
+          "signature": "lemma card_reconciling_le_one (u\u2080 u\u2081 p\u2080 p\u2081 : \u03b9 \u2192 F) {x : \u03b9}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 44,
+          "name": "BCKHS25._anon_class_44",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_44",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**[BCKHS25] Lemma 2.4 (collinear proximates), product form.** If `\u0394(u\u2080 + z\u00b7u\u2081, p\u2080 + z\u00b7p\u2081) \u2264 e` for every `z` in a set `Z` with `|Z| \u2265 2`, then the joint disagreement count `d` satisfies `(|Z| \u2212 1) \u00b7 d \u2264 |Z| \u00b7 e` (equivalently `d \u2264 |Z|/(|Z|\u22121) \u00b7 e`).",
+          "kind": "theorem",
+          "line": 70,
+          "name": "BCKHS25.card_jointDisagreement_mul_le",
+          "namespace": "BCKHS25",
+          "short_name": "card_jointDisagreement_mul_le",
+          "signature": "theorem card_jointDisagreement_mul_le {u\u2080 u\u2081 p\u2080 p\u2081 : \u03b9 \u2192 F} {e : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 75,
+          "name": "BCKHS25._anon_class_75",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_75",
+          "signature": "class classical"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/ProximityGap/Basic.lean": {
       "declarations": [
         {
@@ -38454,9 +38503,27 @@
           "signature": "theorem forIn_yield_pure_eq_foldl (l : List \u03b1) (g : \u03b1 \u2192 \u03b3 \u2192 \u03b3) :"
         },
         {
+          "doc": "**`StateT.run`-evaluated `forIn` cons-step membership.** Membership in the support of the `StateT.run \u2026 s`-evaluation of `forIn (a :: l) init f` (an `OptionT (StateT \u03c3 ProbComp)` loop) decomposes into a first-step outcome `p` in the support of `StateT.run (f a init) st`, followed by the remaining loop run on `p`'s `yield`/`done`/`none` branch. Proved by reducing the `OptionT`/`StateT` bind to a `ProbComp`-level bind (`List.forIn_cons` + the monad-instance unfolds) and applying `mem_support_bind_iff`.",
+          "kind": "theorem",
+          "line": 160,
+          "name": "Binius.BinaryBasefold.QueryPhase.ForInSupport.stateT_run_forIn_cons_mem",
+          "namespace": "Binius.BinaryBasefold.QueryPhase.ForInSupport",
+          "short_name": "stateT_run_forIn_cons_mem",
+          "signature": "theorem stateT_run_forIn_cons_mem {\u03c3' \u03b4 \u03b5 : Type} (a : \u03b5) (l : List \u03b5) (init : \u03b4)"
+        },
+        {
+          "doc": "**Invariant rule for the `StateT.run`-evaluated `forIn`-loop support.** If `Inv` holds of the initial accumulator and is preserved by every per-element body step (over the support of the `StateT.run`-evaluated body, looking at the `yield`/`done` outcome's accumulator), then `Inv` holds of every successful (`some`-tagged) accumulator value in the support of the whole evaluated loop. This is the `OptionT (StateT \u03c3 ProbComp)` analogue of `forIn_support_invariant`, usable on the `simulateQ`-collapsed verifier run where `support` is only available post-`StateT.run`.",
+          "kind": "theorem",
+          "line": 186,
+          "name": "Binius.BinaryBasefold.QueryPhase.ForInSupport.stateT_run_forIn_support_invariant",
+          "namespace": "Binius.BinaryBasefold.QueryPhase.ForInSupport",
+          "short_name": "stateT_run_forIn_support_invariant",
+          "signature": "theorem stateT_run_forIn_support_invariant {\u03c3' \u03b4 \u03b5 : Type}"
+        },
+        {
           "doc": "`simulateQ` commutes with `OptionT.pure`.",
           "kind": "theorem",
-          "line": 146,
+          "line": 225,
           "name": "Binius.BinaryBasefold.QueryPhase.ForInSupport.simulateQ_optionT_pure",
           "namespace": "Binius.BinaryBasefold.QueryPhase.ForInSupport",
           "short_name": "simulateQ_optionT_pure",
@@ -38465,7 +38532,7 @@
         {
           "doc": "`simulateQ` commutes with `forIn` over a list in the `OptionT (OracleComp \u2026)` monad: simulating a loop equals the loop whose body is the simulated body (packaged as `g` with `hg : g = simulateQ \u2218 f`, which sidesteps the elaboration ambiguity between the base- and `OptionT`-lifted `simulateQ`). This is the structural bridge that lets the `simulateQ`-image of a loop-based `OracleVerifier.verify` body be analyzed with the support lemmas above \u2014 it is exactly the missing `simulateQ_forIn`.",
           "kind": "theorem",
-          "line": 157,
+          "line": 236,
           "name": "Binius.BinaryBasefold.QueryPhase.ForInSupport.simulateQ_optionT_forIn",
           "namespace": "Binius.BinaryBasefold.QueryPhase.ForInSupport",
           "short_name": "simulateQ_optionT_forIn",
@@ -38474,7 +38541,7 @@
         {
           "doc": "`simulateQ` commutes with `List.Vector.mmap` in the `OptionT (OracleComp \u2026)` monad: simulating a vector-`mmap` of oracle queries equals the `mmap` of the simulated query body. This is the missing `simulateQ_listVector_mmap`; it collapses the inner `(List.Vector.ofFn id).mmap` of the verifier's fiber-query gathering loop through `simulateQ`, complementing `simulateQ_optionT_forIn`.",
           "kind": "theorem",
-          "line": 181,
+          "line": 260,
           "name": "Binius.BinaryBasefold.QueryPhase.ForInSupport.simulateQ_optionT_listVector_mmap",
           "namespace": "Binius.BinaryBasefold.QueryPhase.ForInSupport",
           "short_name": "simulateQ_optionT_listVector_mmap",
@@ -38483,7 +38550,7 @@
         {
           "doc": "**`simOracle2` oracle-statement-query collapse (`OracleComp` form).** Simulating, via `simOracle2 oSpec t\u2081 t\u2082`, the lift into the combined spec `oSpec + ([T\u2081]\u2092 + [T\u2082]\u2092)` of a single query to the *left* (oracle-statement) family `[T\u2081]\u2092` collapses to `pure` of that oracle's `answer`, with all queries routed to `t\u2081`.",
           "kind": "lemma",
-          "line": 223,
+          "line": 302,
           "name": "Binius.BinaryBasefold.QueryPhase.ForInSupport.simulateQ_simOracle2_leftQuery_oc",
           "namespace": "Binius.BinaryBasefold.QueryPhase.ForInSupport",
           "short_name": "simulateQ_simOracle2_leftQuery_oc",
@@ -38492,7 +38559,7 @@
         {
           "doc": "**`simOracle2` oracle-statement-query collapse (`OptionT`-`query` form).** The same reduction as `simulateQ_simOracle2_leftQuery_oc`, phrased for the `query`/`monadLift` form that appears in an `OracleVerifier.verify` body that queries an oracle statement. This is the left-family counterpart of `RingSwitching.Prelude.simulateQ_simOracle2_query`, consumed by the query-phase verifier-run collapse.",
           "kind": "lemma",
-          "line": 243,
+          "line": 322,
           "name": "Binius.BinaryBasefold.QueryPhase.ForInSupport.simulateQ_simOracle2_leftQuery",
           "namespace": "Binius.BinaryBasefold.QueryPhase.ForInSupport",
           "short_name": "simulateQ_simOracle2_leftQuery",
@@ -38501,7 +38568,7 @@
         {
           "doc": "Extract suffix (v_{i+\u03d1}, ..., v_{\u2113+R-1}) from challenge v for proximity testing",
           "kind": "def",
-          "line": 267,
+          "line": 346,
           "name": "Binius.BinaryBasefold.QueryPhase.extractNextSuffixFromChallenge",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "extractNextSuffixFromChallenge",
@@ -38510,7 +38577,7 @@
         {
           "doc": "This proposition declaratively captures the iterative logic of the verifier. For each repetition and each folding step, it asserts that the folded value of the function from level `i` must equal the value of the function from the oracle of the next level `i+\u03d1`.",
           "kind": "def",
-          "line": 279,
+          "line": 358,
           "name": "Binius.BinaryBasefold.QueryPhase.proximityChecksSpec",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "proximityChecksSpec",
@@ -38519,7 +38586,7 @@
         {
           "doc": "RBR knowledge error for the query phase. Proximity testing error rate: `(1/2 + 1/(2 * 2^\ud835\udce1))^\u03b3`",
           "kind": "def",
-          "line": 354,
+          "line": 433,
           "name": "Binius.BinaryBasefold.QueryPhase.queryRbrKnowledgeError",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryRbrKnowledgeError",
@@ -38528,7 +38595,7 @@
         {
           "doc": "Oracle query helper: query a committed codeword at a given domain point. Restricted to codeword indices where the oracle range is L.",
           "kind": "def",
-          "line": 360,
+          "line": 439,
           "name": "Binius.BinaryBasefold.QueryPhase.queryCodeword",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryCodeword",
@@ -38537,7 +38604,7 @@
         {
           "doc": "**Per-query collapse for the query phase.** Simulating a single `queryCodeword` oracle-statement query under `simOracle2 []\u2092 oStmt msgs` returns `OptionT.lift (pure \u2026)` of the oracle statement evaluated at the query point. This holds definitionally: `queryCodeword jj point` is `query (spec := [OracleStatement \u2026]\u2092) \u27e8\u27e8jj, _\u27e9, point\u27e9`, and `simOracle2`'s left-family (oracle-statement) routing of `inr (inl \u2026)` computes to `answer (oStmt jj) point = oStmt jj point`. This is the load-bearing per-query primitive for collapsing the query-phase verifier run; each `List.Vector.mmap` query body in `query",
           "kind": "lemma",
-          "line": 382,
+          "line": 461,
           "name": "Binius.BinaryBasefold.QueryPhase.queryCodeword_collapse",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryCodeword_collapse",
@@ -38546,7 +38613,7 @@
         {
           "doc": "The oracle prover for the final query phase (equivalent to regular prover).",
           "kind": "def",
-          "line": 404,
+          "line": 483,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleProver",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleProver",
@@ -38555,7 +38622,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 431,
+          "line": 510,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleVerifier",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleVerifier",
@@ -38564,7 +38631,7 @@
         {
           "doc": "The oracle reduction for the final query phase.",
           "kind": "def",
-          "line": 552,
+          "line": 631,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleReduction",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleReduction",
@@ -38573,7 +38640,7 @@
         {
           "doc": "The final query round as an `OracleProof` (since it outputs Bool and no oracle statements).",
           "kind": "def",
-          "line": 567,
+          "line": 646,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleProof",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleProof",
@@ -38582,7 +38649,7 @@
         {
           "doc": "Perfect completeness for the final query round (using the oracle queryProof).",
           "kind": "theorem",
-          "line": 577,
+          "line": 656,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleProof_perfectCompleteness",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleProof_perfectCompleteness",
@@ -38591,7 +38658,7 @@
         {
           "doc": "The round-by-round extractor for the query phase. Since f^(0) is always available, we can invoke the extractMLP function directly.",
           "kind": "def",
-          "line": 606,
+          "line": 685,
           "name": "Binius.BinaryBasefold.QueryPhase.queryRbrExtractor",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryRbrExtractor",
@@ -38600,7 +38667,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 618,
+          "line": 697,
           "name": "Binius.BinaryBasefold.QueryPhase.queryKStateProp",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryKStateProp",
@@ -38609,7 +38676,7 @@
         {
           "doc": "The knowledge state function for the query phase",
           "kind": "def",
-          "line": 647,
+          "line": 726,
           "name": "Binius.BinaryBasefold.QueryPhase.queryKnowledgeStateFunction",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryKnowledgeStateFunction",
@@ -38618,7 +38685,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the oracle verifier (query phase)",
           "kind": "theorem",
-          "line": 745,
+          "line": 836,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleVerifier_rbrKnowledgeSoundness",
@@ -49641,8 +49708,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5390,
-      "files": 285
+      "declarations": 5397,
+      "files": 286
     }
   }
 }
