@@ -587,6 +587,58 @@ private lemma simOracle2_comp_router₂
     rw [emitMessageInr, simulateQ_simOracle2_emitMessageQuery]
     rfl
 
+/-! ### Transcript-split bridges
+
+The composite verifier answers `V₁`/`V₂` against the *appended* transcript `tr`, restricted to the
+`inl`/`inr` halves; the plain `Verifier.append` answers them against `tr.fst`/`tr.snd`. These agree
+(up to the message-type `▸`), which is what lets the fused legs above line up with the RHS. -/
+
+variable (tr : (pSpec₁ ++ₚ pSpec₂).FullTranscript)
+
+/-- `tr.fst`'s messages are `tr`'s `inl`-messages (cast across `Message_inl`). -/
+theorem fst_messages_eq (i : pSpec₁.MessageIdx) :
+    (FullTranscript.fst tr).messages i =
+      _root_.cast (Message_inl (pSpec₂ := pSpec₂) i) (tr.messages (MessageIdx.inl i)) := by
+  apply eq_of_heq
+  simp only [FullTranscript.messages, FullTranscript.fst, MessageIdx.inl, eqRec_eq_cast]
+  exact HEq.trans (cast_heq _ _) (cast_heq _ _).symm
+
+/-- `tr.snd`'s messages are `tr`'s `inr`-messages (cast across `Message_inr`). -/
+theorem snd_messages_eq (i : pSpec₂.MessageIdx) :
+    (FullTranscript.snd tr).messages i =
+      _root_.cast (Message_inr (pSpec₁ := pSpec₁) i) (tr.messages (MessageIdx.inr i)) := by
+  apply eq_of_heq
+  simp only [FullTranscript.messages, FullTranscript.snd, MessageIdx.inr, eqRec_eq_cast]
+  exact HEq.trans (cast_heq _ _) (cast_heq _ _).symm
+
+/-- The appended challenge type at `ChallengeIdx.inl i` is `pSpec₁`'s challenge type at `i`. -/
+theorem Challenge_inl (i : pSpec₁.ChallengeIdx) :
+    (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl i) = pSpec₁.Challenge i := by
+  simp only [ProtocolSpec.Challenge, ChallengeIdx.inl, ProtocolSpec.append,
+    Fin.vappend_eq_append, Fin.append_left]
+
+/-- The appended challenge type at `ChallengeIdx.inr i` is `pSpec₂`'s challenge type at `i`. -/
+theorem Challenge_inr (i : pSpec₂.ChallengeIdx) :
+    (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inr i) = pSpec₂.Challenge i := by
+  simp only [ProtocolSpec.Challenge, ChallengeIdx.inr, ProtocolSpec.append,
+    Fin.vappend_eq_append, Fin.append_right]
+
+/-- `tr.fst`'s challenges are `tr`'s `inl`-challenges (cast across `Challenge_inl`). -/
+theorem fst_challenges_eq (i : pSpec₁.ChallengeIdx) :
+    (FullTranscript.fst tr).challenges i =
+      _root_.cast (Challenge_inl (pSpec₂ := pSpec₂) i) (tr.challenges (ChallengeIdx.inl i)) := by
+  apply eq_of_heq
+  simp only [FullTranscript.challenges, FullTranscript.fst, ChallengeIdx.inl, eqRec_eq_cast]
+  exact HEq.trans (cast_heq _ _) (cast_heq _ _).symm
+
+/-- `tr.snd`'s challenges are `tr`'s `inr`-challenges (cast across `Challenge_inr`). -/
+theorem snd_challenges_eq (i : pSpec₂.ChallengeIdx) :
+    (FullTranscript.snd tr).challenges i =
+      _root_.cast (Challenge_inr (pSpec₁ := pSpec₁) i) (tr.challenges (ChallengeIdx.inr i)) := by
+  apply eq_of_heq
+  simp only [FullTranscript.challenges, FullTranscript.snd, ChallengeIdx.inr, eqRec_eq_cast]
+  exact HEq.trans (cast_heq _ _) (cast_heq _ _).symm
+
 end OracleVerifier.Append
 
 open Function Embedding in
@@ -665,7 +717,13 @@ lemma OracleVerifier.append_toVerifier
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
     [coh : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) (Oₛ₂ := Oₛ₂) V₁] :
       (OracleVerifier.append V₁ V₂).toVerifier =
-        Verifier.append V₁.toVerifier V₂.toVerifier := sorry
+        Verifier.append V₁.toVerifier V₂.toVerifier := by
+  apply Verifier.ext
+  funext ⟨stmt, oStmt⟩ tr
+  simp only [OracleVerifier.append, OracleVerifier.toVerifier, Verifier.append,
+    OracleVerifier.Append.verify]
+  trace_state
+  sorry
 
 /-- Sequential composition of oracle reductions is just the sequential composition of the oracle
   provers and oracle verifiers. -/
