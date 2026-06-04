@@ -46,7 +46,8 @@ private lemma triv_comp_add_C_eq_zero_iff (p : S[X]) (a : S) :
   · exfalso; have := congrArg (fun q => Polynomial.coeff q 1) h2; simp at this
 
 private lemma triv_compRingHom_addC_injective (a : S) :
-    Function.Injective (Polynomial.compRingHom (Polynomial.X + Polynomial.C a) : S[X] →+* S[X]) := by
+    Function.Injective
+      (Polynomial.compRingHom (Polynomial.X + Polynomial.C a) : S[X] →+* S[X]) := by
   rw [injective_iff_map_eq_zero]; intro r hr
   rw [Polynomial.coe_compRingHom] at hr; exact (triv_comp_add_C_eq_zero_iff r a).mp hr
 
