@@ -110,7 +110,13 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 where `q = |F|`, `n = |ι|`, and `k = dim(C)` is the dimension of the linear code `C`
 (so `|C| = q^k`). The paper's proof uses an averaging argument over random words; we
 admit it here as an external result. Uses `hammingBallVolume` (ABF26 D2.4) from
-`HammingBallVolume.lean`. -/
+`HammingBallVolume.lean`.
+
+**STATUS: NEEDS_CLASSICAL.** The `sorry` is not a port: discharging it requires the
+classical Elias averaging argument plus Hamming-ball volume / list-decoding API that is
+not yet in mathlib (no Reed-Solomon, list-decoding, or Johnson-bound API upstream). This
+is a genuine ground-up formalization task, not a port of an existing result.
+See `research/formal/arklib-proof-research-2026-06.md`. -/
 theorem linear_lambda_ge_elias_volume_eli57
     (C : Submodule F (ι → F)) (δ : ℝ) (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1) :
     ENNReal.ofReal
@@ -125,7 +131,12 @@ volume estimate `Vol_q(δ, n) ≥ q^{n·(ρ-1+H_q(δ))} / √(8·n·δ·(1-δ))`
 
   `|Λ(C, δ)| ≥ q^{n·(ρ - 1 + H_q(δ))} / √(8·n·δ·(1-δ))`
 
-Uses `qEntropy` (ABF26 D2.2). Admitted as an external result. -/
+Uses `qEntropy` (ABF26 D2.2). Admitted as an external result.
+
+**STATUS: NEEDS_CLASSICAL.** Proving this needs the classical MS77 (MacWilliams-Sloane)
+entropy volume estimate and the surrounding list-decoding machinery, none of which is in
+mathlib (no Reed-Solomon / list-decoding / volume-bound API upstream). Ground-up
+formalization task, not a port. See `research/formal/arklib-proof-research-2026-06.md`. -/
 theorem linear_lambda_ge_entropy_volume
     (C : Submodule F (ι → F)) (δ : ℝ) (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1) :
     let q : ℕ := Fintype.card F
@@ -144,7 +155,12 @@ error-correcting code of rate `ρ` with `|Λ(C, δ)| ≤ ℓ`. Then:
 
   `|C| ≤ |F|^{n - ⌊(ℓ+1)/ℓ · δ · n⌋}`
 
-Equivalently, `δ ≤ ℓ/(ℓ+1) · (1-ρ)`. Admitted as an external result. -/
+Equivalently, `δ ≤ ℓ/(ℓ+1) · (1-ρ)`. Admitted as an external result.
+
+**STATUS: NEEDS_CLASSICAL.** The generalized Singleton bound [ST20] is settled classical
+coding theory, but its proof is unformalized anywhere; mathlib has no Reed-Solomon,
+list-decoding, or Singleton-bound API. Discharging the `sorry` is a genuine ground-up
+formalization, not a port. See `research/formal/arklib-proof-research-2026-06.md`. -/
 theorem linear_C_le_generalized_singleton_st20
     (C : Submodule F (ι → F)) (ℓ : ℕ) (δ : ℝ)
     (_hℓ_pos : 0 < ℓ) (_hℓ_lt : ℓ < Fintype.card F)
@@ -177,7 +193,13 @@ the paper's "rate at least ρ" reading and avoids the impossible real-equality
 `finrank/n = ρ` for irrational `ρ`). The rate-≥-ρ form is what the proof actually
 uses (the conclusion is a *lower* bound on `|F|`, monotone in the rate hypothesis).
 
-Admitted as an external result. -/
+Admitted as an external result.
+
+**STATUS: NEEDS_CLASSICAL.** The large-alphabet barrier [BDG24, AGL23] is settled
+classical list-decoding theory whose proof is unformalized anywhere; mathlib lacks the
+Reed-Solomon / generalized-Singleton / list-decoding API the argument depends on.
+Ground-up formalization task, not a port.
+See `research/formal/arklib-proof-research-2026-06.md`. -/
 theorem large_alphabet_barrier_bdg24_agl23
     (ℓ : ℕ) (_hℓ_ge : 2 ≤ ℓ) (ρ : ℝ) (_hρ_pos : 0 < ρ) (_hρ_lt : ρ < 1) :
     ∃ α : ℝ, 0 < α ∧
@@ -205,7 +227,15 @@ prime `q`, `δ ∈ (0, 1 - 1/q)`, and `ε ∈ (0, 1)`. There exists `γ > 0` suc
 
 The paper's full statement gives a `1 - q^{-Ω(n)}` probability over the choice of `C`;
 we existentially package this as "there exists a witness code" since ArkLib does not
-yet have a probability distribution over linear codes. -/
+yet have a probability distribution over linear codes.
+
+**STATUS: NEEDS_CLASSICAL.** The [GLMRSW22 Thm 4.1] random-linear-code lower bound is
+settled classical coding theory but unformalized anywhere; mathlib lacks the
+list-decoding / entropy-rate API the proof needs. Discharging the `sorry` is a ground-up
+formalization, not a port. (Secondary DESIGN_OBSTRUCTION: the paper's `1 - q^{-Ω(n)}`
+probabilistic guarantee is downgraded here to a bare existential witness because ArkLib
+has no probability distribution over linear codes; a faithful statement would need that
+distribution added first.) See `research/formal/arklib-proof-research-2026-06.md`. -/
 theorem random_linear_lambda_lower_glmrsw22
     (q : ℕ) (_hq_pp : IsPrimePow q)
     (δ : ℝ) (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1 - 1 / q)
@@ -237,7 +267,13 @@ a Reed-Solomon code `C := RS[F_q, F_q, ⌊q^α⌋]` and a word `w : F_q → F_q`
 
   `|Λ(C, 1 - q^{β-1}, w)| ≥ q^{(α - β²) · log q}`
 
-Admitted as an external result. -/
+Admitted as an external result.
+
+**STATUS: NEEDS_CLASSICAL.** [BKR06 Cor 2.2] is settled classical Reed-Solomon
+list-decoding theory, but mathlib has no Reed-Solomon list-decoding / superpolynomial
+list-size API; this result is unformalized anywhere. Discharging the `sorry` is a
+ground-up formalization, not a port.
+See `research/formal/arklib-proof-research-2026-06.md`. -/
 theorem rs_lambda_superpoly_extension_bkr06
     (α β : ℝ) (_hα_pos : 0 < α) (_hα_lt : α < β) (_hβ_lt : β < 1) :
     -- `qs` carries the prime-power requirement as a *conjunct* alongside
@@ -264,7 +300,12 @@ fields. Fix `0 < α, β < 1`. For all sufficiently large primes `p`, there exist
 
   `|Λ(C, 1 - ((1-β)/α) · p^{α-1}, w)| > Ω(p^{p^α · β/2})`
 
-Admitted as an external result. -/
+Admitted as an external result.
+
+**STATUS: NEEDS_CLASSICAL.** [GHSZ02 Cor 20] is settled classical Reed-Solomon
+list-decoding theory over prime fields, but unformalized anywhere; mathlib has no
+Reed-Solomon list-decoding API. Discharging the `sorry` is a ground-up formalization,
+not a port. See `research/formal/arklib-proof-research-2026-06.md`. -/
 theorem rs_lambda_large_prime_ghsz02
     (α β : ℝ) (_hα_pos : 0 < α) (_hα_lt : α < 1) (_hβ_pos : 0 < β) (_hβ_lt : β < 1) :
     ∃ (c : ℝ) (_ : 0 < c) (p₀ : ℕ),
@@ -288,7 +329,15 @@ with a word `w : L → F_q` such that:
   `|Λ(C, 1/(j+1), w)| > j`
 
 Witnesses that high-rate RS codes cannot be list-decoded beyond `1/(j+1)` with list
-size `j`. Admitted as an external result. -/
+size `j`. Admitted as an external result.
+
+**STATUS: NEEDS_CLASSICAL.** [JH01 Thm 2] is settled classical high-rate Reed-Solomon
+list-decoding theory, unformalized anywhere; mathlib has no Reed-Solomon list-decoding
+API. Discharging the `sorry` is a ground-up formalization, not a port. (Secondary
+DESIGN_OBSTRUCTION: the paper-quoted `|C| = j + 1` is exactly satisfiable only for
+specific `(q, k, j)` triples — e.g. `q = j + 1`, `k = 1` — so a faithful proof must first
+pin `(k, q)` in the statement; as written the `Set.ncard C = j + 1` conjunct is not
+universally satisfiable.) See `research/formal/arklib-proof-research-2026-06.md`. -/
 theorem rs_lambda_high_rate_jh01
     (j : ℕ) (_hj_ge : 2 ≤ j) :
     -- Prime-power and modular requirements moved out of `→`-implications
@@ -321,7 +370,16 @@ up to capacity. Let `C : F^k → (F^s)^n` be a τ-subspace-design code. For ever
 
 Combined with `IsSubspaceDesign` (ABF26 D2.16) and `subspaceDesign_tau_lower`
 (L2.17), this gives a list-decoding bound up to capacity for any subspace-design code.
-Admitted as an external result. -/
+Admitted as an external result.
+
+**STATUS: NEEDS_CLASSICAL.** [CZ25 Thm B.5] is the *corrected, provable* subspace-design
+route to capacity-radius list decodability — NOT the disproven up-to-capacity
+correlated-agreement / mutual-correlated-agreement / list-decodability conjecture (those
+live in `Whir/MutualCorrAgreement`, `CapacityBounds`, `BCIKS20`). The subspace-design
+result holds (cf. "Optimal Proximity Gap for Folded RS via Subspace Designs",
+arXiv 2601.10047). It is simply unformalized: mathlib has no subspace-design /
+Reed-Solomon / list-decoding API, so discharging the `sorry` is a ground-up formalization
+task, not a port. See `research/formal/arklib-proof-research-2026-06.md`. -/
 theorem subspaceDesign_list_decoding_cz25
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
