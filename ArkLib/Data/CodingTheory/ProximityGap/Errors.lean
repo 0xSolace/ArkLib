@@ -900,6 +900,57 @@ theorem epsMCA_le_epsCA_add_jointlyProximateContribution (C : Set (ι → A)) (�
       else Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) u)
     rw [if_neg hjp]
 
+open Classical in
+/-- **Tight (max-form) decomposition of `ε_mca` (audited intermediate toward ABF26 Lemma 4.6).**
+
+`ε_mca(C, δ) ≤ max (ε_ca(C, δ, δ)) (jointlyProximateContribution C δ)`.
+
+Sharper than the additive `epsMCA_le_epsCA_add_jointlyProximateContribution`: because each
+`ε_mca` supremum body is *either* the non-jointly-close gated body (`≤ ε_ca`) *or* the
+jointly-close gated body (`≤ jointlyProximateContribution`) — never both at once — the two
+contributions combine by `max`, not by `+`. The proof bounds each body by the `max` of the two
+gated suprema and uses `iSup_le`.
+
+This is the decomposition that makes ABF26 Lemma 4.6 collapse: the *only* remaining fact is
+`jointlyProximateContribution C δ ≤ ε_ca(C, δ, δ)` (in the UDR), after which
+`max (ε_ca) (jointlyProximateContribution) = ε_ca` and `ε_mca ≤ ε_ca` follows. That single
+remaining inequality is the ACFY25/[Hab25] list-decoding bound on the exceptional `γ` of the
+fixed difference stack (`jointProximity_diffStack_line_close`); it is the content not yet
+available in-tree. -/
+theorem epsMCA_le_max_epsCA_jointlyProximateContribution (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) C δ ≤
+      max (epsCA (F := F) C δ δ) (jointlyProximateContribution (F := F) C δ) := by
+  classical
+  set notjpSup : ENNReal :=
+    (⨆ u : WordStack A (Fin 2) ι,
+      if jointProximity (C := C) (u := u) δ then (0 : ENNReal)
+      else Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) with h_notjpSup
+  have h_notjp_le : notjpSup ≤ epsCA (F := F) C δ δ := epsMCA_restricted_le_epsCA C δ
+  unfold epsMCA
+  apply iSup_le
+  intro u
+  by_cases hjp : jointProximity (C := C) (u := u) δ
+  · -- jointly-close body `≤ jointlyProximateContribution ≤ max …`.
+    refine le_trans ?_ (le_max_right _ _)
+    have h_body_le :
+        Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ] ≤
+          jointlyProximateContribution (F := F) C δ := by
+      unfold jointlyProximateContribution
+      refine le_trans ?_ (le_iSup (fun u : WordStack A (Fin 2) ι ↦
+        if jointProximity (C := C) (u := u) δ then
+          Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]
+        else (0 : ENNReal)) u)
+      rw [if_pos hjp]
+    exact h_body_le
+  · -- non-jointly-close body `≤ notjpSup ≤ ε_ca ≤ max …`.
+    refine le_trans ?_ (le_max_left _ _)
+    refine le_trans ?_ h_notjp_le
+    rw [h_notjpSup]
+    refine le_trans ?_ (le_iSup (fun u : WordStack A (Fin 2) ι ↦
+      if jointProximity (C := C) (u := u) δ then (0 : ENNReal)
+      else Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) u)
+    rw [if_neg hjp]
+
 /-- **ABF26 Lemma 4.6.** In the unique-decoding regime `δ < δ_min(C)/2`, `ε_mca` and `ε_ca`
 coincide: `ε_mca(C, δ) = ε_ca(C, δ)`.
 
@@ -910,18 +961,28 @@ The proof is reduced here to **one** inequality. The direction `ε_ca ≤ ε_mca
 `epsCA_le_epsMCA` (no UDR needed). What remains, `ε_mca ≤ ε_ca`, is the genuinely hard
 direction:
 
-**Status of the remaining direction: external admit** ([ACFY25, Lemma 4.10]; footnote 6 in
-ABF26 notes the proof is for linear codes but generalises to F-additive codes). It is **not**
-a pointwise `iSup`-monotonicity: for a fixed stack `u`, when `jointProximity C u δ` holds the
-`epsCA` body collapses to `0` while `Pr_γ[mcaEvent]` can still be **positive** — under UDR the
-line can agree with the unique close codeword `v₀ + γ·v₁` on `S_pair ∪ {i*}` for an extra
-position `i*`, which happens exactly when `γ` solves a per-`i*` linear equation, a non-empty
-`γ`-set. So `epsMCA_body u ≤ epsCA_body u` is false in general; the inequality only holds after
-the global dominance/rearrangement argument of ACFY25 (matching each such `u` against a
-non-jointly-close `u'` realising the same probability). Formalising that argument is out of
-scope for Phase 1; tracked in `docs/kb/ABF26_PLAN.md` §6 conjecture ledger. The provable
-structural half `mcaEvent → δᵣ(line, C) ≤ δ` is recorded above as
-`mcaEvent_imp_relCloseToCode`. -/
+**Status of the remaining direction: shrunk to ONE explicit inequality.** Via the audited
+max-form decomposition `epsMCA_le_max_epsCA_jointlyProximateContribution`,
+`ε_mca ≤ max (ε_ca) (jointlyProximateContribution C δ)`. So the whole hard direction now
+follows from the *single* residual
+
+  `jointlyProximateContribution C δ ≤ ε_ca(C, δ, δ)`     (the `sorry` below),
+
+after which `max (ε_ca) (jointlyProximateContribution) = ε_ca`. This is strictly less than the
+former opaque `ε_mca ≤ ε_ca` admit: the residual is now explicitly the worst-case `mcaEvent`
+mass over the *jointly-`δ`-close* stacks only (the `¬jointProximity` part is already discharged
+by `epsMCA_restricted_le_epsCA`).
+
+Why even this residual is **not** a pointwise `iSup`-monotonicity ([ACFY25, Lemma 4.10];
+footnote 6 in ABF26 notes the proof is for linear codes but generalises to F-additive codes):
+for a fixed jointly-close stack `u` the `epsCA` body collapses to `0` while `Pr_γ[mcaEvent]`
+can still be **positive** — under UDR the line agrees with the unique close codeword
+`p₀ + γ·p₁` on the witness set for the exact `γ` solving the per-position linear equations of
+the *fixed difference stack* `(u 0 - p₀, u 1 - p₁)` (see `jointProximity_diffStack_line_close`),
+a non-empty `γ`-set. So the bound only holds after the global dominance/rearrangement of ACFY25
+(equivalently: the Guruswami–Sudan/[Hab25] list-decoding count of those exceptional `γ`),
+machinery not yet in-tree. Tracked in `docs/kb/ABF26_PLAN.md` §6 conjecture ledger. The provable
+structural half `mcaEvent → δᵣ(line, C) ≤ δ` is recorded above as `mcaEvent_imp_relCloseToCode`. -/
 theorem epsMCA_eq_epsCA_below_udr
     (C : Submodule F (ι → A)) (δ : ℝ≥0)
     (_h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) <
@@ -929,8 +990,15 @@ theorem epsMCA_eq_epsCA_below_udr
     epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ =
     epsCA (F := F) (A := A) ((C : Set (ι → A))) δ δ := by
   refine le_antisymm ?_ (epsCA_le_epsMCA C δ)
-  -- Remaining hard direction `ε_mca ≤ ε_ca` (ACFY25 Lemma 4.10): see docstring.
-  sorry -- ABF26 L4.6 (ε_mca ≤ ε_ca only): external result from ACFY25 Lemma 4.10
+  -- Reduce the hard direction to the single residual `jointlyProximateContribution ≤ ε_ca`
+  -- via the audited max-form decomposition.
+  refine le_trans (epsMCA_le_max_epsCA_jointlyProximateContribution
+    (F := F) (C := (C : Set (ι → A))) δ) ?_
+  rw [max_le_iff]
+  refine ⟨le_refl _, ?_⟩
+  -- Remaining: `jointlyProximateContribution C δ ≤ ε_ca` — the ACFY25 Lemma 4.10 list-decoding
+  -- count of the exceptional `γ` of the fixed difference stack; see docstring.
+  sorry -- ABF26 L4.6 residual: jointlyProximateContribution ≤ ε_ca (ACFY25 Lemma 4.10)
 
 /-- Row-extraction: the `k`-th row of a `Fin t → A`-valued word, as an `A`-valued word. -/
 private def row_of {ι : Type} {A : Type} {t : ℕ}
