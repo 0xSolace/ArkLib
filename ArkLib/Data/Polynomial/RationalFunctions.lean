@@ -1966,6 +1966,204 @@ lemma natDegree_ξ_pre_coeff_top_le {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
     rw [h0, Polynomial.natDegree_zero]
     exact Nat.zero_le _
 
+/-- In the degenerate regime `d_H = d` (cofactor `g` constant in `Y`), separability of `Q = R(x₀,·)`
+forces the cofactor's constant term to be a unit of `F[X]`, so the `Y`-leading coefficient of `ξ_pre`
+is itself a constant (`natDegree` zero). This is the structural fact that keeps the tight `d_H = d`
+case of `weight_ξ_bound` within budget. -/
+lemma natDegree_ξ_pre_coeff_top_eq_zero_of_natDegree_eq {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
+    [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (hd : 2 ≤ R.natDegree)
+    {g : F[X][Y]} (hg : Bivariate.evalX (Polynomial.C x₀) R = H * g)
+    (hdH : H.natDegree = R.natDegree) :
+    ((ξ_pre x₀ R H).coeff (R.natDegree - 1)).natDegree = 0 := by
+  classical
+  have hbound := natDegree_ξ_pre_coeff_top_le hHyp hd hg
+  rw [hdH, Nat.sub_self] at hbound
+  -- It remains to show `(g.coeff 0).natDegree = 0`, i.e. `g.coeff 0` is a unit.
+  -- `g.natDegree = 0`, so `g` is constant in `Y`: `g = C (g.coeff 0)`.
+  set Q : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) R with hQ_def
+  have hQ_ne : Q ≠ 0 := evalX_ne_zero_of_hypotheses hHyp
+  have hH_ne : H ≠ 0 := Polynomial.ne_zero_of_natDegree_gt H_natDegree_pos.out
+  have hg_ne : g ≠ 0 := by intro h0; rw [h0, mul_zero] at hg; exact hQ_ne hg
+  have hg_natDeg : g.natDegree = 0 := by
+    have hQdeg_le : Q.natDegree ≤ R.natDegree := by
+      rw [hQ_def]; exact evalX_natDegree_le (Polynomial.C x₀) R
+    have hmul : Q.natDegree = H.natDegree + g.natDegree := by
+      rw [hg, Polynomial.natDegree_mul hH_ne hg_ne]
+    omega
+  -- `C g₀ ∣ Q` and `C g₀ ∣ Q'`, so it divides 1 by coprimality.
+  set g₀ : F[X] := g.coeff 0 with hg₀_def
+  have hg_eq : g = Polynomial.C g₀ := Polynomial.eq_C_of_natDegree_eq_zero hg_natDeg
+  have hQ_eq : Q = H * Polynomial.C g₀ := by rw [hg, hg_eq]
+  have hsep : Q.Separable := hHyp.separable_evalX
+  rw [Polynomial.Separable] at hsep
+  have hdvd_Q : Polynomial.C g₀ ∣ Q := by
+    rw [hQ_eq]; exact Dvd.intro_left H rfl
+  have hdvd_Q' : Polynomial.C g₀ ∣ Q.derivative := by
+    rw [hQ_eq, Polynomial.derivative_mul, Polynomial.derivative_C, mul_zero, add_zero]
+    exact Dvd.intro_left H.derivative rfl
+  have hunit : IsUnit (Polynomial.C g₀) := hsep.isUnit_of_dvd' hdvd_Q hdvd_Q'
+  have hunit_g0 : IsUnit g₀ := Polynomial.isUnit_C.mp hunit
+  have hg0 : g₀.natDegree = 0 := Polynomial.natDegree_eq_zero_of_isUnit hunit_g0
+  omega
+
+/-- The per-monomial budget bound for the lower coefficients of `ξ_pre` (indices `< d - 1`):
+`n · m + (ξ_pre.coeff n).natDegree ≤ (d - 1) · m`, where `m = D + 1 - d_H`. The margin is
+`d - d_H ≥ 0`, which holds because `H ∣ R(x₀,·)` forces `d_H ≤ d`. -/
+lemma ξ_pre_lower_budget {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]} {D : ℕ}
+    (hd : 2 ≤ R.natDegree) (hH : 0 < H.natDegree) (hdH_le : H.natDegree ≤ R.natDegree)
+    (hD_H : Bivariate.totalDegree H ≤ D)
+    (hD_Rx0 : Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R) ≤ D)
+    {n : ℕ} (hn : n < R.natDegree - 1) :
+    n * (D + 1 - H.natDegree) + ((ξ_pre x₀ R H).coeff n).natDegree ≤
+      (R.natDegree - 1) * (D + 1 - H.natDegree) := by
+  -- ξ_pre.coeff n = P.coeff n * W^(d-2-n)
+  rw [ξ_pre_coeff_of_lt hd hn]
+  set d := R.natDegree with hd_def
+  set dH := H.natDegree with hdH_def
+  set w := (H.leadingCoeff).natDegree with hw_def
+  have hPbound : ((Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff n).natDegree ≤
+      D - (n + 1) := natDegree_evalX_derivative_coeff_le hD_Rx0 n
+  have hdH_le_D : dH ≤ D := by
+    have hH_in : dH ∈ H.support :=
+      Polynomial.mem_support_iff.mpr
+        (Polynomial.leadingCoeff_ne_zero.mpr (Polynomial.ne_zero_of_natDegree_gt hH))
+    have := Bivariate.coeff_totalDegree_le H hH_in
+    omega
+  have hWbound : w ≤ D - dH := by
+    have h1 : (H.coeff dH).natDegree ≤ Bivariate.totalDegree H - dH :=
+      natDegree_coeff_le_of_totalDegree_le H le_rfl dH
+    have h2 : (H.coeff dH).natDegree = w := by rw [hw_def, Polynomial.leadingCoeff, ← hdH_def]
+    omega
+  -- natDeg(P.coeff n · W^(d-2-n)) ≤ (D-(n+1)) + (d-2-n)·w
+  have hcoeff_bound :
+      ((Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff n *
+        H.leadingCoeff ^ (d - 2 - n)).natDegree ≤ (D - (n + 1)) + (d - 2 - n) * w := by
+    refine Polynomial.natDegree_mul_le.trans ?_
+    exact Nat.add_le_add hPbound (Polynomial.natDegree_pow_le.trans (by rw [hw_def]))
+  refine (Nat.add_le_add_left hcoeff_bound _).trans ?_
+  -- numeric inequality: n·m + (D-(n+1)) + (d-2-n)·w ≤ (d-1)·m, m = D+1-dH.
+  -- Substitution off = d-1-n ≥ 1; m = e+1 with e = D-dH; w ≤ e.  Margin = d - dH ≥ 0.
+  obtain ⟨off, hoff⟩ : ∃ off, d - 1 = n + 1 + off := ⟨d - 2 - n, by omega⟩
+  have hdne : d - 2 - n = off := by omega
+  rw [hdne] at hcoeff_bound ⊢
+  rw [hoff]
+  -- Goal: n*(D+1-dH) + ((D-(n+1)) + off*w) ≤ (n+1+off)*(D+1-dH)
+  set e := D - dH with he_def
+  have hmw : w ≤ e := by omega
+  have hme : D + 1 - dH = e + 1 := by omega
+  rw [hme]
+  have hDsub : D - (n + 1) ≤ e + 1 + off := by omega
+  have hprod : off * w ≤ off * e := Nat.mul_le_mul_left _ hmw
+  have hexp : (n + 1 + off) * (e + 1) = n * (e + 1) + (e + 1) + (off * e + off) := by ring
+  rw [hexp]
+  omega
+
+/-- The pure-arithmetic core of `sub_term_budget`: with `w ≤ D - d_H`, `t_H + t_g ≤ D`,
+`w + d_H ≤ t_H` (the leading-coefficient degree bound), `i < d_H`, `d_H < d` and `n = i + (d-1-d_H)`,
+one has `n·m + ((t_g - (d - d_H)) + ((t_H - i) + (d_H - 1 - i)·w)) ≤ (d-1)·m` for `m = D + 1 - d_H`.
+The margin is `d - d_H ≥ 1`. -/
+lemma numeric_sub_budget (D d dH i n w tH tg : ℕ)
+    (hwH : w + dH ≤ tH) (hwD : w ≤ D - dH) (htot : tH + tg ≤ D) (htH : tH ≤ D)
+    (hi_lt : i < dH) (hdH_lt : dH < d) (hn_eq : n = i + (d - 1 - dH)) (hdH_le_D : dH ≤ D) :
+    n * (D + 1 - dH) + ((tg - (d - dH)) + ((tH - i) + (dH - 1 - i) * w)) ≤
+      (d - 1) * (D + 1 - dH) := by
+  -- off = dH - i ≥ 1, and d - 1 - n = off; m = D+1-dH.
+  obtain ⟨off, hoff⟩ : ∃ off, dH = i + 1 + off := ⟨dH - 1 - i, by omega⟩
+  have hd1n : d - 1 = n + (off + 1) := by omega
+  have hwe : (dH - 1 - i) = off := by omega
+  rw [hwe]
+  rw [show (d - 1) * (D + 1 - dH) = (n + (off + 1)) * (D + 1 - dH) by rw [hd1n]]
+  rw [show (n + (off + 1)) * (D + 1 - dH) =
+        n * (D + 1 - dH) + (off + 1) * (D + 1 - dH) by ring]
+  -- need: (tg-(d-dH)) + ((tH-i) + off*w) ≤ (off+1)*(D+1-dH)
+  refine Nat.add_le_add_left ?_ _
+  -- bound each: tg-(d-dH) ≤ D - tH - (d-dH) ... use htot; tH - i ≤ D - i;
+  -- off*w ≤ off*(D-dH). (off+1)*(D+1-dH) = (off+1)*(D-dH) + (off+1).
+  have hprodw : off * w ≤ off * (D - dH) := Nat.mul_le_mul_left _ hwD
+  have hexp : (off + 1) * (D + 1 - dH) = off * (D - dH) + (D - dH) + (off + 1) := by
+    rw [show D + 1 - dH = (D - dH) + 1 by omega]; ring
+  rw [hexp]
+  -- tg - (d - dH) ≤ D - tH - (d - dH) ≤ (D - dH) - (i + 1) - off  (since tH ≥ dH + w ≥ dH, i+1+off=dH)
+  -- We avoid sharp telescoping; just bound: (tg-(d-dH)) + (tH - i) ≤ (D-dH) + 1 + off.
+  have hkey : (tg - (d - dH)) + (tH - i) ≤ (D - dH) + (off + 1) := by
+    -- tg ≤ D - tH, so tg - (d-dH) ≤ D - tH - (d-dH). Then + (tH - i):
+    -- ≤ D - (d - dH) - i = D - d + dH - i = D - d + (i+1+off) - i = D - d + 1 + off ≤ D - dH + 1 + off
+    omega
+  omega
+
+/-- The per-monomial budget bound for the subtracted correction term
+`C(lc)·X^(d-1-d_H)·H_tilde' H` of the `weight_ξ_bound` representative, where `lc = ξ_pre.coeff (d-1)`.
+For each `n < d - 1`, `n · m + (sub.coeff n).natDegree ≤ (d - 1) · m`. The cofactor identity
+(`natDegree lc ≤ natDegree (g.coeff (d - d_H))`) is what keeps the cross terms in budget. -/
+lemma sub_term_budget {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
+    [H_natDegree_pos : Fact (0 < H.natDegree)] {D : ℕ}
+    (hHyp : Hypotheses x₀ R H) (hd : 2 ≤ R.natDegree) (hH : 0 < H.natDegree)
+    (hdH_lt : H.natDegree < R.natDegree)
+    (hD_H : Bivariate.totalDegree H ≤ D)
+    {g : F[X][Y]} (hg : Bivariate.evalX (Polynomial.C x₀) R = H * g)
+    (htot : Bivariate.totalDegree H + Bivariate.totalDegree g ≤ D)
+    {n : ℕ} (hn : n < R.natDegree - 1) :
+    n * (D + 1 - H.natDegree) +
+        ((Polynomial.C ((ξ_pre x₀ R H).coeff (R.natDegree - 1)) *
+            Polynomial.X ^ (R.natDegree - 1 - H.natDegree) * H_tilde' H).coeff n).natDegree ≤
+      (R.natDegree - 1) * (D + 1 - H.natDegree) := by
+  classical
+  set d := R.natDegree with hd_def
+  set dH := H.natDegree with hdH_def
+  set k := d - 1 - dH with hk_def
+  set lc := (ξ_pre x₀ R H).coeff (d - 1) with hlc_def
+  set w := (H.leadingCoeff).natDegree with hw_def
+  set tH := Bivariate.totalDegree H with htH_def
+  set tg := Bivariate.totalDegree g with htg_def
+  -- The subtracted polynomial's coefficient at `n`.
+  have hcoeff_eq :
+      (Polynomial.C lc * Polynomial.X ^ k * H_tilde' H).coeff n =
+        (if k ≤ n then lc * (H_tilde' H).coeff (n - k) else 0) := by
+    rw [show (Polynomial.C lc * Polynomial.X ^ k * H_tilde' H : F[X][Y]) =
+           Polynomial.C lc * (H_tilde' H * Polynomial.X ^ k) by ring]
+    rw [Polynomial.coeff_C_mul, Polynomial.coeff_mul_X_pow']
+    split <;> simp
+  rw [hcoeff_eq]
+  by_cases hkn : k ≤ n
+  · rw [if_pos hkn]
+    -- i = n - k < dH, so H_tilde'.coeff i = H.coeff i * W^(dH-1-i).
+    set i := n - k with hi_def
+    have hi_lt : i < dH := by omega
+    -- natDeg(lc) ≤ natDeg(g.coeff (d - dH))
+    have hlc_bound : lc.natDegree ≤ (g.coeff (d - dH)).natDegree :=
+      natDegree_ξ_pre_coeff_top_le hHyp hd hg
+    -- natDeg(g.coeff (d - dH)) ≤ tg - (d - dH)
+    have hg_coeff : (g.coeff (d - dH)).natDegree ≤ tg - (d - dH) := by
+      rw [htg_def]; exact natDegree_coeff_le_of_totalDegree_le g le_rfl (d - dH)
+    -- natDeg(H_tilde'.coeff i) ≤ (tH - i) + (dH-1-i)*w
+    have hHt_bound : ((H_tilde' H).coeff i).natDegree ≤ (tH - i) + (dH - 1 - i) * w := by
+      rw [htH_def, hw_def, hdH_def]
+      exact natDegree_H_tilde'_coeff_le hH hi_lt
+    -- natDeg(lc * H_tilde'.coeff i) ≤ natDeg(lc) + natDeg(H_tilde'.coeff i)
+    have hmul : (lc * (H_tilde' H).coeff i).natDegree ≤
+        (tg - (d - dH)) + ((tH - i) + (dH - 1 - i) * w) := by
+      refine Polynomial.natDegree_mul_le.trans ?_
+      exact Nat.add_le_add (hlc_bound.trans hg_coeff) hHt_bound
+    refine (Nat.add_le_add_left hmul _).trans ?_
+    -- numeric: n*m + (tg-(d-dH)) + (tH-i) + (dH-1-i)*w ≤ (d-1)*m, m=D+1-dH.
+    -- with i = n-k, k=d-1-dH, so n = i + (d-1-dH), d-1-n = dH - i.
+    have hwH : w + dH ≤ tH := by
+      have h1 : (H.coeff dH).natDegree + dH ≤ Bivariate.totalDegree H :=
+        Bivariate.coeff_totalDegree_le H
+          (Polynomial.mem_support_iff.mpr
+            (Polynomial.leadingCoeff_ne_zero.mpr (Polynomial.ne_zero_of_natDegree_gt hH)))
+      have h2 : (H.coeff dH).natDegree = w := by rw [hw_def, Polynomial.leadingCoeff, ← hdH_def]
+      rw [htH_def]; omega
+    have htH_le_D : tH ≤ D := hD_H
+    have hdH_le_D : dH ≤ D := by omega
+    have hwD : w ≤ D - dH := by omega
+    have hn_eq : n = i + (d - 1 - dH) := by omega
+    exact numeric_sub_budget D d dH i n w tH tg hwH hwD htot htH_le_D hi_lt hdH_lt hn_eq hdH_le_D
+  · rw [if_neg hkn, Polynomial.natDegree_zero, add_zero]
+    -- 0 contribution: n*m ≤ (d-1)*m since n < d-1.
+    exact Nat.mul_le_mul_right _ (by omega)
+
 /-- The bound of the weight `Λ` of the elements `ζ` as stated in Claim A.2 of Appendix A.4
 of [BCIKS20].
 
