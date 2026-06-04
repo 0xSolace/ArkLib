@@ -384,6 +384,81 @@ lemma Reduction.support_run_pure_verifier
       rw [htd]
       exact hvOut
 
+/-- **Verifier-verdict transport for the soundness game.**  Any *accepting* support point of the
+    simulated reduction run — i.e. `some x` in the support of
+    `(simulateQ (impl.addLift challengeQueryImpl) (reduction.run stmt wit).run).run' s` — has its
+    verifier verdict `x.2` reachable as a support point of the *verifier game*
+    `(simulateQ impl (reduction.verifier.run stmt x.1.1)).run' s'` on the *realized* transcript
+    `x.1.1`, for some intermediate state `s'`.
+
+    This is the support-level bridge consumed by `rbrSoundness_implies_soundness` (obligation A): it
+    ties a soundness-game support point's transcript `x.1.1` to its verdict `x.2`, exactly as
+    `StateFunction.toFun_full` requires.  The proof walks the `OptionT`/`StateT` bind chain of
+    `Reduction.run` (prover lift, then the verifier `OptionT` verdict, then `getM`), and collapses the
+    `impl.addLift challengeQueryImpl` simulation of the `oSpec`-only verifier `verify` back to
+    `simulateQ impl` via `QueryImpl.simulateQ_add_liftComp_left`. -/
+theorem Reduction.support_run_verdict
+    {StmtIn WitIn StmtOut WitOut : Type} {n : ℕ} {pSpec : ProtocolSpec n}
+    [∀ i, SampleableType (pSpec.Challenge i)] {σ : Type}
+    (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (impl : QueryImpl oSpec (StateT σ ProbComp)) (s : σ)
+    (stmt : StmtIn) (wit : WitIn)
+    (x : (FullTranscript pSpec × StmtOut × WitOut) × StmtOut)
+    (hx : some x ∈ support
+      (StateT.run' (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+        (reduction.run stmt wit).run) s)) :
+    ∃ s', some x.2 ∈ support
+      (StateT.run' (simulateQ impl (reduction.verifier.run stmt x.1.1)) s') := by
+  unfold Reduction.run at hx
+  simp only [OptionT.run_bind, Option.elimM, simulateQ_bind, StateT.run'_eq, StateT.run_bind,
+    support_bind, Set.mem_iUnion, support_map, Set.mem_image] at hx
+  obtain ⟨⟨pOpt, s1⟩, hp_mem, hx⟩ := hx
+  subst hx
+  obtain ⟨⟨iOpt, is⟩, _hi_mem, hverif⟩ := hp_mem
+  simp only at hverif
+  cases iOpt with
+  | none => simp only [Option.elim_none, simulateQ_pure, StateT.run_pure, support_pure,
+      Set.mem_singleton_iff, Prod.mk.injEq, reduceCtorEq, false_and] at hverif
+  | some pr =>
+    simp only [Option.elim_some, Verifier.run, simulateQ_bind, StateT.run_bind,
+      support_bind, Set.mem_iUnion] at hverif
+    obtain ⟨⟨vOpt, vs⟩, hv_mem, hgetM⟩ := hverif
+    simp only at hgetM
+    cases vOpt with
+    | none => simp only [Option.elim_none, simulateQ_pure, StateT.run_pure, support_pure,
+        Set.mem_singleton_iff, Prod.mk.injEq, reduceCtorEq, false_and] at hgetM
+    | some v =>
+      cases v with
+      | none => simp [Option.getM] at hgetM
+      | some w =>
+        simp only [Option.getM_some, OptionT.run_pure, pure_bind, Option.elim_some,
+          simulateQ_pure, StateT.run_pure, support_pure, Set.mem_singleton_iff,
+          Prod.mk.injEq] at hgetM
+        obtain ⟨hxeq, _⟩ := hgetM
+        have hxeq' : x = (pr, w) := Option.some.inj hxeq
+        have hx1 : x.1 = pr := congrArg Prod.fst hxeq'
+        have hx2 : x.2 = w := congrArg Prod.snd hxeq'
+        refine ⟨is, ?_⟩
+        rw [hx2, hx1, Verifier.run]
+        rw [show ((liftM ((reduction.verifier.verify stmt pr.1).run) :
+              OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run)
+            = (Option.some <$> OracleComp.liftComp
+                ((reduction.verifier.verify stmt pr.1).run) (oSpec + [pSpec.Challenge]ₒ)) from by
+              conv_lhs => dsimp only [liftM, MonadLiftT.monadLift, MonadLift.monadLift]
+              simp only [OptionT.run_mk, OptionT.lift]
+              erw [simulateQ_bind]
+              simp only [simulateQ_pure, ← map_eq_pure_bind]
+              rfl] at hv_mem
+        rw [simulateQ_map, QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_left,
+          QueryImpl.liftTarget_self, StateT.run_map, support_map, Set.mem_image] at hv_mem
+        obtain ⟨⟨a, s'⟩, hmem, heq⟩ := hv_mem
+        simp only [Prod.mk.injEq, Option.some.injEq] at heq
+        obtain ⟨ha, _hs⟩ := heq
+        show some w ∈ support (StateT.run' (simulateQ impl
+          (reduction.verifier.verify stmt pr.1).run) is)
+        rw [StateT.run'_eq, support_map, Set.mem_image]
+        exact ⟨(a, s'), hmem, by rw [ha]⟩
+
 /-- An execution of an interactive reduction on a given initial statement and witness. Consists of
   first running the prover, and then the verifier. Returns the full transcript, the output statement
   and witness from the prover, and the output statement from the verifier, along with the logs of
