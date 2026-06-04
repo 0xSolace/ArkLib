@@ -132,13 +132,13 @@ private lemma coeff_evalX_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb →
       · simp
       · intro b _ hb
         have hne : ((j : ℕ) : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-        simp [hne, hne.symm]
+        simp [hne.symm]
       · intro habs
         exact absurd (Finset.mem_univ _) habs
     · rw [dif_neg h]
       refine Finset.sum_eq_zero fun b _ => ?_
       have hne : (j : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => h (heq ▸ b.isLt)
-      simp [hne, hne.symm]
+      simp [hne.symm]
   have : (evalX a (toPolyB v)).coeff j = ((toPolyB v).coeff j).eval a := by
     simp [evalX, Polynomial.coeff]
   rw [this, hcoeff]
@@ -164,13 +164,13 @@ private lemma coeff_evalX_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb →
       · simp
       · intro b _ hb
         have hne : ((j : ℕ) : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-        simp [hne, hne.symm]
+        simp [hne.symm]
       · intro habs
         exact absurd (Finset.mem_univ _) habs
     · rw [dif_neg h]
       refine Finset.sum_eq_zero fun b _ => ?_
       have hne : (j : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => h (heq ▸ b.isLt)
-      simp [hne, hne.symm]
+      simp [hne.symm]
   have : (evalX a (toPolyA v)).coeff j = ((toPolyA v).coeff j).eval a := by
     simp [evalX, Polynomial.coeff]
   rw [this, hcoeff]
