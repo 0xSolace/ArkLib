@@ -11831,9 +11831,36 @@
           "signature": "class classical"
         },
         {
+          "doc": "The `(i, j, t)`-coefficient of `a \u00b7 X^i Y^j Z^t` (i.e. `((\u00b7.coeff j).coeff i).coeff t`).",
+          "kind": "lemma",
+          "line": 440,
+          "name": "ProximityGap.coeff_triMonC",
+          "namespace": "ProximityGap",
+          "short_name": "coeff_triMonC",
+          "signature": "lemma coeff_triMonC (i j t i' j' t' : \u2115) (a : F) :"
+        },
+        {
+          "doc": "Coefficient extraction for `triCoeffsToPoly`: the coefficient of `X^i Y^j Z^t` at a box index `p = (i, j, t)` is exactly `c p`.",
+          "kind": "lemma",
+          "line": 460,
+          "name": "ProximityGap.coeff_triCoeffsToPoly",
+          "namespace": "ProximityGap",
+          "short_name": "coeff_triCoeffsToPoly",
+          "signature": "lemma coeff_triCoeffsToPoly (box : Finset (\u2115 \u00d7 \u2115 \u00d7 \u2115)) (c : box \u2192 F) (p : box) :"
+        },
+        {
+          "doc": "A nonzero coefficient vector yields a nonzero assembled polynomial (the `Q_ne_0` field).",
+          "kind": "lemma",
+          "line": 474,
+          "name": "ProximityGap.triCoeffsToPoly_ne_zero",
+          "namespace": "ProximityGap",
+          "short_name": "triCoeffsToPoly_ne_zero",
+          "signature": "lemma triCoeffsToPoly_ne_zero (box : Finset (\u2115 \u00d7 \u2115 \u00d7 \u2115)) (c : box \u2192 F) (hc : c \u2260 0) :"
+        },
+        {
           "doc": "Claim 5.4 from [BCIKS20]. It essentially claims that there exists a solution to the Guruswami-Sudan constraints above. NOTE: As currently formalized this lemma is **false** for `n = 0` or `k = 0` (see `modified_guruswami_unsat_of_n_zero` / `modified_guruswami_unsat_of_k_zero`): the degree bound `D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  The statement below therefore carries the proven-necessary side conditions `0 < n` and `0 < k` (the paper's non-degenerate regime is `k + 1 \u2264 n`, `1 \u2264 m`; the eventual dimension-counting proof \u2014 the trivariate analogue of `G",
           "kind": "lemma",
-          "line": 451,
+          "line": 496,
           "name": "ProximityGap.modified_guruswami_has_a_solution",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_has_a_solution",
@@ -11842,16 +11869,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 461,
-          "name": "ProximityGap._anon_instance_461",
+          "line": 506,
+          "name": "ProximityGap._anon_instance_506",
           "namespace": "ProximityGap",
-          "short_name": "_anon_instance_461",
+          "short_name": "_anon_instance_506",
           "signature": "instance noncomputable instance {\u03b1 : Type} (s : Set \u03b1) [inst : Finite s] : Fintype s := Fintype.ofFinite _"
         },
         {
           "doc": "The set `S` (equation 5.2 of [BCIKS20]).",
           "kind": "def",
-          "line": 464,
+          "line": 509,
           "name": "ProximityGap.coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity",
@@ -11860,7 +11887,7 @@
         {
           "doc": "There exists a `\u03b4`-close polynomial `P_z` for each `z` from the set `S`.",
           "kind": "lemma",
-          "line": 471,
+          "line": 516,
           "name": "ProximityGap.exists_Pz_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "exists_Pz_of_coeffs_of_close_proximity",
@@ -11869,7 +11896,7 @@
         {
           "doc": "The `\u03b4`-close polynomial `Pz` for each `z` from the set `S` (`coeffs_of_close_proximity`).",
           "kind": "def",
-          "line": 490,
+          "line": 535,
           "name": "ProximityGap.Pz",
           "namespace": "ProximityGap",
           "short_name": "Pz",
@@ -11878,7 +11905,7 @@
         {
           "doc": "Proposition 5.5 from [BCIKS20]. There exists a subset `S'` of the set `S` and a bivariate polynomial `P(X, Z)` that matches `Pz` on that set.",
           "kind": "lemma",
-          "line": 498,
+          "line": 543,
           "name": "ProximityGap.exists_a_set_and_a_matching_polynomial",
           "namespace": "ProximityGap",
           "short_name": "exists_a_set_and_a_matching_polynomial",
@@ -11887,7 +11914,7 @@
         {
           "doc": "The subset `S'` extracted from Proprosition 5.5 [BCIKS20].",
           "kind": "def",
-          "line": 508,
+          "line": 553,
           "name": "ProximityGap.matching_set",
           "namespace": "ProximityGap",
           "short_name": "matching_set",
@@ -11896,7 +11923,7 @@
         {
           "doc": "`S'` is indeed a subset of `S`",
           "kind": "lemma",
-          "line": 514,
+          "line": 559,
           "name": "ProximityGap.matching_set_is_a_sub_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "matching_set_is_a_sub_of_coeffs_of_close_proximity",
@@ -47073,7 +47100,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5106,
+      "declarations": 5109,
       "files": 282
     }
   }
