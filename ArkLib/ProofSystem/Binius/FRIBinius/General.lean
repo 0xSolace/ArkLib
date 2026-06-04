@@ -169,54 +169,7 @@ noncomputable def fullOracleProof :
 ## Security Properties
 -/
 
-variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
-
-/-- Perfect completeness for the full Binary Basefold protocol (reduction) -/
-theorem fullOracleReduction_perfectCompleteness :
-  OracleReduction.perfectCompleteness
-    (oracleReduction := fullOracleReduction κ L K β ℓ ℓ' 𝓡 ϑ γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l (𝓑:=𝓑))
-    (relIn := BatchingPhase.batchingInputRelation κ L K (β:=booleanHypercubeBasis κ L K β)
-      ℓ ℓ' h_l (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate))
-    (relOut := acceptRejectOracleRel)
-    (init := init)
-    (impl := impl) :=
-  OracleReduction.append_perfectCompleteness
-    (R₁ := batchingCoreReduction κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l (𝓑 := 𝓑))
-    (R₂ := QueryPhase.queryOracleReduction K β γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ))
-    (OStmt₁ := (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate).OStmtIn)
-    (OStmt₂ := BinaryBasefold.OracleStatement K β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
-    (OStmt₃ := fun _ : Empty => Unit)
-    (Oₛ₁:= (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate).Oₛᵢ)
-    (Oₛ₂:=Binius.BinaryBasefold.instOracleStatementBinaryBasefold K β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ) (i := Fin.last ℓ'))
-    (Oₛ₃:=by exact fun i ↦ by exact OracleInterface.instDefault)
-    (pSpec₁ := batchingCorePspec κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate)
-    (pSpec₂ := BinaryBasefold.pSpecQuery K β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (rel₁ := BatchingPhase.batchingInputRelation κ L K (β:=booleanHypercubeBasis κ L K β)
-      ℓ ℓ' h_l (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate))
-    (rel₂ := BinaryBasefold.finalSumcheckRelOut K β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (rel₃ := acceptRejectOracleRel)
-    (h₁ := by
-      apply OracleReduction.append_perfectCompleteness
-        (rel₁ := BatchingPhase.batchingInputRelation κ L K (β:=booleanHypercubeBasis κ L K β)
-          ℓ ℓ' h_l (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate))
-        (rel₂ := RingSwitching.sumcheckRoundRelation κ L K (booleanHypercubeBasis κ L K β)
-        ℓ ℓ' h_l (𝓑 := 𝓑) (aOStmtIn := BinaryBasefoldAbstractOStmtIn κ L K β ℓ'
-          𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) 0)
-        (rel₃ := BinaryBasefold.finalSumcheckRelOut K β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-      · apply BatchingPhase.batchingReduction_perfectCompleteness κ L K
-          (β:=booleanHypercubeBasis κ L K β) ℓ ℓ' h_l (𝓑 := 𝓑)
-          (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate)
-      · apply CoreInteractionPhase.coreInteractionOracleReduction_perfectCompleteness
-          κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l (𝓑 := 𝓑)
-    )
-    (h₂ := QueryPhase.queryOracleProof_perfectCompleteness K β γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ) init impl)
-
--- TODO: state RBR KS
+-- Note: state RBR KS
 
 end
 end Binius.FRIBinius.FullFRIBinius

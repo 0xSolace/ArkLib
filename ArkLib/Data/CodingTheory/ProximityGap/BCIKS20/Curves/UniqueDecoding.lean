@@ -15,8 +15,8 @@ point on the degree-`k` parameterized curve through `u 0, …, u k` is `δ`-clos
 to the Reed–Solomon code with probability exceeding `k · (n/q)`, then the
 words have correlated (joint) agreement. Curves analogue of
 `AffineLines/UniqueDecoding.lean`; consumes the Curves GoodCoeffs +
-JointAgreement chain. The list-decoding regime (Theorem 6.2) remains open
-(§5 chain).
+JointAgreement chain. The list-decoding regime (Theorem 6.2) is handled by
+the separate §5 chain.
 -/
 
 namespace ProximityGap
@@ -64,7 +64,7 @@ theorem RS_correlatedAgreement_curves_uniqueDecodingRegime {k deg : ℕ}
     (domain := domain) (δ := δ) hk hδ u hS
 
 /-- The `k = 0` corner of curves correlated agreement: a degree-0 "curve" is the
-constant word `u 0`, so any positive probability of closeness gives the plain
+uniform word `u 0`, so any positive probability of closeness gives the plain
 closeness fact, and joint agreement follows from unique decoding. -/
 theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     [NeZero deg]

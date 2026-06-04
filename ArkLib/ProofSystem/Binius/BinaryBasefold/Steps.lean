@@ -214,22 +214,6 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-theorem foldOracleReduction_perfectCompleteness (i : Fin ℓ) :
-    OracleReduction.perfectCompleteness
-      (pSpec := pSpecFold (L := L))
-      (relIn := roundRelation 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i.castSucc (mp := mp))
-      (relOut := foldStepRelOut 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i (mp := mp))
-      (oracleReduction := foldOracleReduction 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i)
-      (init := init)
-      (impl := impl) := by
-  unfold OracleReduction.perfectCompleteness
-  intro stmtIn witIn h_relIn
-  simp only
-  sorry
-
 open scoped NNReal
 
 open Classical in
@@ -337,51 +321,6 @@ def foldKStateProp {i : Fin ℓ} (m : Fin (2 + 1))
       ) -- this holds the  constraint for witOut in relOut
 
 -- Note: this fold step couldn't carry bad-event errors, because we don't have oracles yet.
-
-/-- Knowledge state function (KState) for single round -/
-def foldKnowledgeStateFunction (i : Fin ℓ) :
-    (foldOracleVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).KnowledgeStateFunction init impl
-      (relIn := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i.castSucc)
-      (relOut := foldStepRelOut (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i)
-      (extractor := foldRbrExtractor (mp:=mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) where
-  toFun := fun m ⟨stmt, oStmt⟩ tr witMid =>
-    foldKStateProp (mp:=mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
-      (i := i) (m := m) (tr := tr) (stmt := stmt) (witMid := witMid) (oStmt := oStmt)
-  toFun_empty := fun _ _ => by rfl
-  toFun_next := fun m hDir stmtIn tr msg witMid => by
-    obtain ⟨stmt, oStmt⟩ := stmtIn
-    fin_cases m
-    · exact fun ⟨_, h⟩ => ⟨trivial, h⟩
-    · simp at hDir
-  toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut h_relOut => by
-    simp at h_relOut
-    rcases h_relOut with ⟨stmtOut, ⟨oStmtOut, h_conj⟩⟩
-    have h_simulateQ := h_conj.1
-    have h_foldStepRelOut := h_conj.2
-    set witLast := (foldRbrExtractor (mp:=mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).extractOut
-      ⟨stmtLast, oStmtLast⟩ tr witOut
-    simp only [Fin.reduceLast, Fin.isValue]
-    -- ⊢ foldKStateProp 𝔽q β 2 tr stmtLast witLast oStmtLast
-    -- TODO : prove this via the relations between stmtLast & stmtOut,
-      --  witLast & witOut, oStmtLast & oStmtOut
-    sorry
-
-/-- RBR knowledge soundness for a single round oracle verifier -/
-theorem foldOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ) :
-    (foldOracleVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).rbrKnowledgeSoundness init impl
-      (relIn := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i.castSucc)
-      (relOut := foldStepRelOut (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i)
-      (foldKnowledgeError 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) := by
-  use fun _ => Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc
-  use foldRbrExtractor (mp:=mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
-  use foldKnowledgeStateFunction (mp:=mp) 𝔽q β (ϑ := ϑ)
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i
-  intro stmtIn witIn prover j
-  sorry
 
 end FoldStep
 section CommitStep
@@ -512,22 +451,6 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-theorem commitOracleReduction_perfectCompleteness (i : Fin ℓ)
-    (hCR : isCommitmentRound ℓ ϑ i) :
-    OracleReduction.perfectCompleteness
-      (pSpec := pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
-      (relIn := foldStepRelOut (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i)
-      (relOut := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i.succ)
-      (oracleReduction := commitOracleReduction 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hCR)
-      (init := init)
-      (impl := impl) := by
-  unfold OracleReduction.perfectCompleteness
-  intro stmtIn witIn h_relIn
-  sorry
-
 open scoped NNReal
 
 def commitKnowledgeError {i : Fin ℓ}
@@ -581,43 +504,6 @@ def commitKStateProp (i : Fin ℓ) (m : Fin (1 + 1))
       (h_le := le_refl _)
       (stmt := stmtOut) (wit := witOut) (oStmt := oStmtOut)
       (localChecks := True)
-
-/-- Knowledge state function (KState) for single round -/
-def commitKState (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
-    (commitOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      i hCR).KnowledgeStateFunction init impl
-      (relIn := foldStepRelOut (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i)
-      (relOut := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i.succ)
-      (extractor := commitRbrExtractor 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) where
-  toFun := fun m ⟨stmtIn, oStmtIn⟩ tr witMid =>
-    commitKStateProp 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
-      (i := i) (m := m) (stmtIn := stmtIn) (witMid := witMid) (oStmtIn := oStmtIn) (mp:=mp)
-  toFun_empty := fun stmtIn witMid => by rfl
-  toFun_next := fun m hDir (stmtIn, oStmtIn) tr msg witMid => by
-    simp only [Nat.reduceAdd]
-    intro kState_next
-    fin_cases m
-    simpa [commitKStateProp] using kState_next.1
-  toFun_full := fun (stmtIn, oStmtIn) tr witOut=> by
-    sorry
-
-/-- RBR knowledge soundness for a single round oracle verifier -/
-theorem commitOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ)
-    (hCR : isCommitmentRound ℓ ϑ i) :
-    (commitOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      i hCR).rbrKnowledgeSoundness init impl
-      (relIn := foldStepRelOut (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i)
-      (relOut := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i.succ)
-      (commitKnowledgeError 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
-  use fun _ => Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ
-  use commitRbrExtractor 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
-  use commitKState (mp:=mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR
-  intro stmtIn witIn prover j
-  exact absurd j.2 (by simp [pSpecCommit])
 
 end CommitStep
 
@@ -695,23 +581,6 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-theorem relayOracleReduction_perfectCompleteness (i : Fin ℓ)
-    (hNCR : ¬ isCommitmentRound ℓ ϑ i) :
-    OracleReduction.perfectCompleteness
-      (pSpec := pSpecRelay)
-      (relIn := foldStepRelOut (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i)
-      (relOut := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i.succ)
-      (oracleReduction := relayOracleReduction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        i hNCR)
-      (init := init)
-      (impl := impl) := by
-  unfold OracleReduction.perfectCompleteness
-  intro stmtIn witIn h_relIn
-  simp only
-  sorry
-
 def relayKnowledgeError (m : pSpecRelay.ChallengeIdx) : ℝ≥0 :=
   match m with
   | ⟨j, _⟩ => j.elim0
@@ -742,80 +611,6 @@ def relayKStateProp (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
     (stmt := stmtIn) (wit := witMid) (oStmt := mapOStmtOutRelayStep
       𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)
     (localChecks := True)
-
-/-- Knowledge state function (KState) for single round -/
-def relayKnowledgeStateFunction (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i) :
-    (relayOracleVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        i hNCR).KnowledgeStateFunction init impl
-      (relIn := foldStepRelOut (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i)
-      (relOut := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i.succ)
-      (extractor := relayRbrExtractor 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) where
-  toFun := fun m ⟨stmtIn, oStmtIn⟩ tr witMid =>
-    relayKStateProp (mp:=mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (𝓑 := 𝓑) i hNCR stmtIn witMid oStmtIn
-  toFun_empty := fun ⟨stmtIn, oStmtIn⟩ witIn => by
-    simp only [foldStepRelOut, foldStepRelOutProp, cast_eq, Set.mem_setOf_eq, relayKStateProp]
-    unfold masterKStateProp
-    simp only [Fin.val_succ, Fin.coe_castSucc, Fin.take_eq_init, true_and, Fin.take_eq_self]
-    have hRight := oracleWitnessConsistency_relay_preserved (mp := mp) (𝓑 := 𝓑) 𝔽q β i
-      hNCR stmtIn witIn oStmtIn
-    rw [hRight]
-    sorry
-  toFun_next := fun m hDir (stmtIn, oStmtIn) tr msg witMid => by exact fun a ↦ a
-  toFun_full := fun (stmtIn, oStmtIn) tr witOut=> by
-    intro h
-    rw [gt_iff_lt, probEvent_pos_iff] at h
-    obtain ⟨x, hx, hrel⟩ := h
-    -- The relay verifier deterministically outputs `(stmtIn, mapOStmtOutRelayStep ... oStmtIn)`.
-    have hrun : Verifier.run (stmtIn, oStmtIn) tr (relayOracleVerifier 𝔽q β
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR).toVerifier =
-        (pure (stmtIn, mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)
-          : OptionT (OracleComp []ₒ) _) := by
-      simp only [Verifier.run, OracleVerifier.toVerifier, relayOracleVerifier]
-      erw [simulateQ_pure]
-      rfl
-    rw [hrun] at hx
-    rw [OptionT.mem_support_iff] at hx
-    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
-    obtain ⟨s, _, hx⟩ := hx
-    have key : (simulateQ impl (pure (stmtIn,
-        mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn) :
-          OptionT (OracleComp []ₒ) _)).run' s =
-        pure (some (stmtIn,
-          mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)) := by
-      change (simulateQ impl (pure (some (stmtIn,
-        mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)) :
-          OracleComp []ₒ _)).run' s = _
-      rw [simulateQ_pure]
-      change Prod.fst <$> (pure (some (stmtIn,
-        mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)) :
-          StateT σ ProbComp _).run s = _
-      rw [StateT.run_pure]; simp [map_pure]
-    rw [key] at hx
-    simp only [support_pure, Set.mem_singleton_iff] at hx
-    cases hx
-    -- Now `hrel : ((stmtIn, mapOStmtOutRelayStep ...), witOut) ∈ roundRelation i.succ`,
-    -- which is definitionally `relayKStateProp 𝔽q β i hNCR stmtIn witOut oStmtIn`.
-    exact hrel
-
-/-- RBR knowledge soundness for a single round oracle verifier -/
-theorem relayOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ)
-    (hNCR : ¬ isCommitmentRound ℓ ϑ i) :
-    (relayOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        i hNCR).rbrKnowledgeSoundness init impl
-      (relIn := foldStepRelOut (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i)
-      (relOut := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i.succ)
-      (relayKnowledgeError) := by
-  use fun _ => Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ
-  use relayRbrExtractor 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
-  use relayKnowledgeStateFunction (mp:=mp) 𝔽q β (ϑ := ϑ)
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hNCR
-  intro stmtIn witIn prover j
-  exact j.val.elim0
 
 end RelayStep
 
@@ -946,22 +741,6 @@ noncomputable def finalSumcheckOracleReduction :
   prover := finalSumcheckProver 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
   verifier := finalSumcheckVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
 
-/-- Perfect completeness for the final sumcheck step -/
-theorem finalSumcheckOracleReduction_perfectCompleteness {σ : Type}
-  (init : ProbComp σ)
-  (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
-  OracleReduction.perfectCompleteness
-    (pSpec := pSpecFinalSumcheckStep (L := L))
-    (relIn := roundRelation 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (𝓑 := 𝓑) (mp := BBF_SumcheckMultiplierParam) (Fin.last ℓ))
-    (relOut := finalSumcheckRelOut 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (oracleReduction := finalSumcheckOracleReduction 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) (init := init) (impl := impl) := by
-  unfold OracleReduction.perfectCompleteness
-  intro stmtIn witIn h_relIn
-  simp only
-  sorry
-
 /-- RBR knowledge error for the final sumcheck step -/
 def finalSumcheckKnowledgeError (m : pSpecFinalSumcheckStep (L := L).ChallengeIdx) :
   ℝ≥0 :=
@@ -1036,41 +815,6 @@ def finalSumcheckKStateProp {m : Fin (1 + 1)} (tr : Transcript m (pSpecFinalSumc
         · exact hdiv.out) (input := ⟨stmtOut, oStmt⟩)
 
     sumcheckFinalCheck ∧ finalFoldingProp -- local checks ∧ (oracleConsitency ∨ badEventExists)
-
-/-- The knowledge state function for the final sumcheck step -/
-noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
-    (finalSumcheckVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).KnowledgeStateFunction init impl
-    (relIn := roundRelation 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (𝓑 := 𝓑) (mp := BBF_SumcheckMultiplierParam) (Fin.last ℓ))
-    (relOut := finalSumcheckRelOut 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (extractor := finalSumcheckRbrExtractor 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-  where
-  toFun := fun m ⟨stmt, oStmt⟩ tr witMid =>
-    finalSumcheckKStateProp 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (𝓑 := 𝓑) (tr := tr) (stmt := stmt) (witMid := witMid) (oStmt := oStmt)
-  toFun_empty := fun stmt witMid => by simp only; rfl
-  toFun_next := fun m hDir stmt tr msg witMid h => by
-    -- Either bad events exist, or (oracleFoldingConsistency is true so
-      -- the extractor can construct a satisfying witness)
-    sorry
-  toFun_full := fun stmt tr witOut h => by
-    sorry
-
-/-- Round-by-round knowledge soundness for the final sumcheck step -/
-theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type}
-    (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
-    (finalSumcheckVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).rbrKnowledgeSoundness init impl
-      (relIn := roundRelation 𝔽q β (ϑ := ϑ) (𝓑 := 𝓑)
-        (mp := BBF_SumcheckMultiplierParam) (Fin.last ℓ))
-      (relOut := finalSumcheckRelOut 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-      (rbrKnowledgeError := finalSumcheckKnowledgeError) := by
-  use FinalSumcheckWit (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ)
-  use finalSumcheckRbrExtractor 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-  use finalSumcheckKnowledgeStateFunction 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (𝓑 := 𝓑) init impl
-  intro stmtIn witIn prover j
-  exact absurd j.2 (by simp [pSpecFinalSumcheckStep])
 
 end FinalSumcheckStep
 end

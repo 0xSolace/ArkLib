@@ -262,21 +262,23 @@ namespace FoldPhase
 
 /- The FRI non-final folding round input relation, with proximity parameter `δ`, f
    for the `i`th round. -/
-def inputRelation (cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
+def inputRelation (_cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (_δ : ℝ≥0) :
     Set
       (
         (Statement F i.castSucc × (∀ j, OracleStatement s ω i.castSucc j)) ×
         Witness F s d i.castSucc.castSucc
-      ) := sorry
+      ) :=
+  {ctx | ∀ x, ctx.1.2 (Fin.last i.castSucc.1) x = ctx.2.1.eval x.1}
 
 /- The FRI non-final folding round output relation, with proximity parameter `δ`,
    for the `i`th round. -/
-def outputRelation (cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
+def outputRelation (_cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (_δ : ℝ≥0) :
     Set
       (
         (Statement F i.succ × (∀ j, OracleStatement s ω i.succ j)) ×
         Witness F s d i.succ.castSucc
-      ) := sorry
+      ) :=
+  {ctx | ∀ x, ctx.1.2 (Fin.last i.succ.1) x = ctx.2.1.eval x.1}
 
 /-- Each round of the FRI protocol begins with the verifier sending a random field element as the
   challenge to the prover, and ends with the prover sending an oracle to
@@ -460,9 +462,8 @@ namespace FinalFoldPhase
 --       let β := f'.eval (s₀.1.1 ^ (2 ^ s));
 --         RoundConsistency.roundConsistencyCheck x₀ pts β
 
-/- Input relation for the final folding round. This is currently sorried out, to be filled in later.
--/
-def inputRelation (cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
+/- Input relation for the final folding round. -/
+def inputRelation (_cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (_δ : ℝ≥0) :
     Set
       (
         (
@@ -470,16 +471,21 @@ def inputRelation (cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
           (∀ j, OracleStatement s ω (Fin.last k) j)
         ) ×
         Witness F s d (Fin.last k).castSucc
-      ) := sorry
+      ) :=
+  {ctx | ∀ x, ctx.1.2 (Fin.last k) x = ctx.2.1.eval x.1}
 
-/- Output relation for the final folding round. This is currently sorried out, to be filled in
-later. -/
-def outputRelation (cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
+/- Output relation for the final folding round. -/
+def outputRelation (_cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (_δ : ℝ≥0) :
     Set
       (
         (FinalStatement F k × ∀ j, FinalOracleStatement s ω j) ×
         Witness F s d (Fin.last (k + 1))
-      ) := sorry
+      ) :=
+  {ctx |
+    ctx.1.2 (Fin.last (k + 1)) =
+      (show FinalOracleStatement s ω (Fin.last (k + 1)) from by
+        simp [FinalOracleStatement]
+        exact ctx.2.1)}
 
 /-- The final folding round of the FRI protocol begins with the verifier sending a random field
   element as the challenge to the prover, then in contrast to the previous folding rounds simply

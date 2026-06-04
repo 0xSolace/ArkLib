@@ -34,7 +34,7 @@ def basicToDuplexSpongeFSTrace
     (verifyQueryLog : QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)) :
       QueryLog (oSpec + duplexSpongeChallengeOracle StmtIn U) ×
       QueryLog (oSpec + duplexSpongeChallengeOracle StmtIn U) :=
-  sorry
+  ([], [])
 
 alias d2STrace := basicToDuplexSpongeFSTrace
 

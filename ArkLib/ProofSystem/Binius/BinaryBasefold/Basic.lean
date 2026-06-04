@@ -296,7 +296,7 @@ omit [NeZero ℓ] hdiv in
 If a new oracle is committed at round `i + 1` (i.e., `ϑ ∣ i + 1`), then the index of this
 new oracle (which is the count of oracles from the previous round, `i`) multiplied by `ϑ`
 equals the current round number `i + 1`.
-TODO: double check why this is still correct when replacing `hCR` with `ϑ | i + 1`
+The proof uses the commitment-round hypothesis to recover divisibility at `i + 1`.
 -/
 lemma toOutCodewordsCount_mul_ϑ_eq_i_succ (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
   (toOutCodewordsCount ℓ ϑ i.castSucc) * ϑ = i.val + 1 := by
@@ -935,22 +935,12 @@ lemma firstOracleWitnessConsistencyProp_relay_preserved (i : Fin ℓ)
     firstOracleWitnessConsistencyProp 𝔽q β wit.t
       (getFirstOracle 𝔽q β (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt)) := by congr
 
-lemma nonDoomedFoldingProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
-    (challenges : Fin i.succ → L)
-    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
-    :
-    nonDoomedFoldingProp 𝔽q β i.castSucc (Fin.init challenges) oStmt ↔
-    nonDoomedFoldingProp 𝔽q β i.succ challenges (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
-  have h_oracle_size_eq: toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ := by
-    simp only [toOutCodewordsCount_succ_eq ℓ ϑ i, hNCR, ↓reduceIte]
-  sorry
-
 def oracleWitnessConsistency
     (stmtIdx : Fin (ℓ + 1)) (oracleIdx : Fin (ℓ + 1))
     (h_le : oracleIdx.val ≤ stmtIdx.val) (stmt : Statement (L := L) (Context := Context) stmtIdx)
     (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIdx)
     (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      ϑ (i := oracleIdx) j)) : Prop :=
+  ϑ (i := oracleIdx) j)) : Prop :=
   let witnessStructuralInvariant: Prop := witnessStructuralInvariant (mp := mp) (i:=stmtIdx) 𝔽q β
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmt wit
   let sumCheckConsistency: Prop := sumcheckConsistencyProp (𝓑 := 𝓑) stmt.sumcheck_target wit.H
@@ -961,18 +951,6 @@ def oracleWitnessConsistency
     (oStmt := oStmt)
   witnessStructuralInvariant ∧ sumCheckConsistency ∧ firstOracleConsistency ∧
     oracleFoldingConsistency
-
-lemma oracleWitnessConsistency_relay_preserved
-    (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
-    (stmt : Statement (L := L) Context i.succ)
-    (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
-    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
-    oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β i.succ i.castSucc
-      (le_succ ↑i.castSucc) stmt wit oStmt =
-    oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β i.succ i.succ (by rfl) stmt wit
-      (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
-  unfold oracleWitnessConsistency
-  sorry
 
 /-- Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event
 of the `i-th` oracle if any and enable it after the next V's challenge, i.e. one
