@@ -27,6 +27,51 @@ noncomputable def ansPoly (S : Finset F) (Ans : S → F) : Polynomial F :=
 noncomputable def vanishingPoly (S : Finset F) : Polynomial F :=
   ∏ s ∈ S, (Polynomial.X - Polynomial.C s)
 
+omit [DecidableEq F] in
+/-- The vanishing polynomial vanishes at every point of `S`. -/
+lemma vanishingPoly_eval_eq_zero {S : Finset F} {s : F} (hs : s ∈ S) :
+    (vanishingPoly S).eval s = 0 := by
+  unfold vanishingPoly
+  rw [Polynomial.eval_prod]
+  exact Finset.prod_eq_zero hs (by simp)
+
+omit [DecidableEq F] in
+/-- The vanishing polynomial is nonzero off `S`. -/
+lemma vanishingPoly_eval_ne_zero {S : Finset F} {s : F} (hs : s ∉ S) :
+    (vanishingPoly S).eval s ≠ 0 := by
+  unfold vanishingPoly
+  rw [Polynomial.eval_prod]
+  refine Finset.prod_ne_zero_iff.mpr fun a ha => ?_
+  simp only [Polynomial.eval_sub, Polynomial.eval_X, Polynomial.eval_C]
+  exact sub_ne_zero_of_ne (fun h => hs (h ▸ ha))
+
+omit [DecidableEq F] in
+/-- The vanishing polynomial is monic. -/
+lemma vanishingPoly_monic (S : Finset F) : (vanishingPoly S).Monic :=
+  Polynomial.monic_prod_of_monic _ _ (fun s _ => Polynomial.monic_X_sub_C s)
+
+omit [DecidableEq F] in
+/-- The vanishing polynomial has degree exactly `|S|`. -/
+lemma vanishingPoly_natDegree (S : Finset F) : (vanishingPoly S).natDegree = S.card := by
+  unfold vanishingPoly
+  rw [Polynomial.natDegree_prod_of_monic _ _ (fun s _ => Polynomial.monic_X_sub_C s)]
+  simp
+
+/-- The answer polynomial has degree below `|S|`. -/
+lemma ansPoly_degree_lt (S : Finset F) (Ans : S → F) :
+    (ansPoly S Ans).degree < S.card := by
+  unfold ansPoly
+  have h := Lagrange.degree_interpolate_lt (s := S.attach) (v := fun i => (i : F)) Ans
+    Subtype.val_injective.injOn
+  rwa [Finset.card_attach] at h
+
+/-- The answer polynomial interpolates `Ans` on `S`. -/
+lemma ansPoly_eval {S : Finset F} (Ans : S → F) {s : F} (hs : s ∈ S) :
+    (ansPoly S Ans).eval s = Ans ⟨s, hs⟩ := by
+  unfold ansPoly
+  exact Lagrange.eval_interpolate_at_node Ans
+    Subtype.val_injective.injOn (Finset.mem_attach S ⟨s, hs⟩)
+
 /-- Definition 4.2
   funcQuotient is the quotient function that outputs
   if x ∈ S,  Fill(x).
