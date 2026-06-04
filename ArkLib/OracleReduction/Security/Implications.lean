@@ -125,36 +125,28 @@ theorem rbrKnowledgeSoundness_implies_knowledgeSoundness
 --         Verifier.StateRestoration.knowledgeSoundness init impl relIn relOut
 --           (verifier.addSalt Salt) (∑ i, rbrKnowledgeError i) := by placeholder
 
-/-- State-restoration soundness for a protocol with added salts implies state-restoration
-soundness for the original protocol (with improved parameters?)
--/
-theorem srSoundness_addSalt_implies_srSoundness_original
-    (langIn : Set StmtIn) (langOut : Set StmtOut)
-    (Salt : pSpec.MessageIdx → Type) [∀ i, Nonempty (Salt i)] [∀ i, Fintype (Salt i)]
-    (verifier : Verifier oSpec StmtIn StmtOut pSpec)
-    (srInit : ProbComp (QueryImpl (srChallengeOracle StmtIn (pSpec.addSalt Salt)) Id))
-    (srImpl : QueryImpl oSpec
-      (StateT (QueryImpl (srChallengeOracle StmtIn (pSpec.addSalt Salt)) Id) ProbComp))
-    (srSoundnessError : ℝ≥0) :
-      Verifier.StateRestoration.soundness srInit srImpl langIn langOut
-        (verifier.addSalt Salt) srSoundnessError →
-        Verifier.StateRestoration.soundness sorry sorry langIn langOut
-          verifier srSoundnessError := by sorry
-
-/-- State-restoration knowledge soundness for a protocol with added salts implies state-restoration
-knowledge soundness for the original protocol with improved parameters. -/
-theorem srKnowledgeSoundness_addSalt_implies_srKnowledgeSoundness_original
-    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
-    (Salt : pSpec.MessageIdx → Type) [∀ i, Nonempty (Salt i)] [∀ i, Fintype (Salt i)]
-    (verifier : Verifier oSpec StmtIn StmtOut pSpec)
-    (srInit : ProbComp (QueryImpl (srChallengeOracle StmtIn (pSpec.addSalt Salt)) Id))
-    (srImpl : QueryImpl oSpec
-      (StateT (QueryImpl (srChallengeOracle StmtIn (pSpec.addSalt Salt)) Id) ProbComp))
-    (srKnowledgeError : ℝ≥0) :
-      Verifier.StateRestoration.knowledgeSoundness srInit srImpl relIn relOut
-        (verifier.addSalt Salt) srKnowledgeError →
-        Verifier.StateRestoration.knowledgeSoundness sorry sorry relIn relOut
-          verifier srKnowledgeError := by sorry
+-- STATEMENT REPAIR (2026-06-04): DELETED `srSoundness_addSalt_implies_srSoundness_original` and
+-- `srKnowledgeSoundness_addSalt_implies_srKnowledgeSoundness_original`.
+--
+-- Both theorems were provably misconceived (and had literal `sorry` placeholders inside their own
+-- *statements*, for the original game's `init`/`impl`, so they could not even be coherently stated).
+-- They asserted that state-restoration (knowledge) soundness of the *salted* protocol implies
+-- state-restoration (knowledge) soundness of the *original* protocol. But:
+--
+--   1. There is no principled way to source the original SR game's `(init, impl)` over
+--      `srChallengeOracle StmtIn pSpec` from the salted game's `(srInit, srImpl)` over
+--      `srChallengeOracle StmtIn (pSpec.addSalt Salt)` — the salted SR challenge oracle ranges over
+--      strictly more transcripts. The two `sorry`s in the conclusion stood exactly where that
+--      (nonexistent) derivation was required.
+--
+--   2. State-restoration soundness is precisely the soundness notion that is **NOT preserved** under
+--      salting: ArkLib/OracleReduction/Salt.lean (L198-205) records an explicit in-repo
+--      counterexample — "the verifier sends one random bit per round, and accepts iff it sends zero
+--      for every round" — for which SR (knowledge) soundness fails to transfer across `addSalt`.
+--
+-- See docs/kb/audits/gh-issues-campaign-2026-06-04.md ("Design gaps", salt counterexample item) and
+-- the (commented-out, deliberately deferred) `rbrSoundness_implies_srSoundness_addSalt` family above,
+-- which captures the only salt/SR relationship that is conjectured to hold (rbr ⇒ SR under salt).
 
 /-- State-restoration soundness implies basic (straightline) soundness.
 
