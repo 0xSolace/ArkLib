@@ -122,30 +122,18 @@ necessarily unique for every type) -/
 protected def cast
     (hOₘ : ∀ i, Oₘ₁ i = dcast (Message.cast_idx hSpec) (Oₘ₂ (i.cast hn hSpec)))
     (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁) :
-    OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₂ where
-  verify := fun stmt challenges =>
-    let impl : QueryImpl (oSpec + ([OStmtIn]ₒ + [pSpec₁.Message]ₒ))
-      (OracleComp (oSpec + ([OStmtIn]ₒ + [pSpec₂.Message]ₒ))) := sorry
-    simulateQ impl (V.verify stmt (dcast₂ hn.symm (dcast_symm hn hSpec) challenges))
-  embed := V.embed.trans
-    (Embedding.sumMap
-      (Equiv.refl _).toEmbedding
-      ⟨MessageIdx.cast hn hSpec, MessageIdx.cast_injective hn hSpec⟩)
-  hEq := fun i => by
-    simp [Embedding.sumMap, Equiv.refl]
-    have := V.hEq i
-    rw [this]
-    split
-    next a b h' => simp [h']
-    next a b h' => simp [h']; exact (Message.cast_idx hSpec).symm
+    OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₂ := by
+  subst hn
+  subst hSpec
+  have hO : Oₘ₁ = Oₘ₂ := by
+    funext i
+    simpa using hOₘ i
+  subst hO
+  exact V
 
 variable (hOₘ : ∀ i, Oₘ₁ i = dcast (Message.cast_idx hSpec) (Oₘ₂ (i.cast hn hSpec)))
 
--- @[simp]
--- theorem cast_id :
---     OracleVerifier.cast rfl rfl (fun i => rfl) =
---       (id : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁ → _) := by
---   sorry
+-- A simp theorem for the identity cast would require transporting the oracle interface instance.
 
 -- Need to cast oracle interface as well
 -- instance instDCast₂OracleVerifier : DCast₃ Nat ProtocolSpec
@@ -156,7 +144,13 @@ variable (hOₘ : ∀ i, Oₘ₁ i = dcast (Message.cast_idx hSpec) (Oₘ₂ (i.
 @[simp]
 theorem cast_toVerifier (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁) :
     (OracleVerifier.cast hn hSpec hOₘ V).toVerifier = Verifier.cast hn hSpec V.toVerifier := by
-  sorry
+  subst hn
+  subst hSpec
+  have hO : Oₘ₁ = Oₘ₂ := by
+    funext i
+    simpa using hOₘ i
+  subst hO
+  rfl
 
 end OracleVerifier
 
@@ -294,7 +288,6 @@ open NNReal
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
   [inst₁ : ∀ i, SampleableType (pSpec₁.Challenge i)]
   [inst₂ : ∀ i, SampleableType (pSpec₂.Challenge i)]
-  (hChallenge : ∀ i, inst₁ i = dcast (by simp) (inst₂ (i.cast hn hSpec)))
 
 section Protocol
 
@@ -304,10 +297,7 @@ namespace Reduction
 
 variable (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec₁)
 
--- @[simp]
--- theorem cast_completeness (ε : ℝ≥0) (hComplete : R.completeness init impl relIn relOut ε) :
---     (R.cast hn hSpec).completeness init impl relIn relOut ε := by
---   sorry
+-- The completeness transport theorem is deferred until the execution cast lemmas are complete.
 
 -- @[simp]
 -- theorem cast_perfectCompleteness (hComplete : R.perfectCompleteness init impl relIn relOut) :
@@ -321,11 +311,19 @@ namespace Verifier
 variable (V : Verifier oSpec StmtIn StmtOut pSpec₁)
 
 @[simp]
-theorem cast_rbrKnowledgeSoundness (ε : pSpec₁.ChallengeIdx → ℝ≥0)
+theorem cast_rbrKnowledgeSoundness
+    (hChallenge : ∀ i, inst₁ i = dcast (by simp) (inst₂ (i.cast hn hSpec)))
+    (ε : pSpec₁.ChallengeIdx → ℝ≥0)
     (hRbrKs : V.rbrKnowledgeSoundness init impl relIn relOut ε) :
     (V.cast hn hSpec).rbrKnowledgeSoundness init impl relIn relOut
       (ε ∘ (ChallengeIdx.cast hn.symm (cast_symm hSpec))) := by
-  sorry
+  subst hn
+  subst hSpec
+  have hInst : inst₁ = inst₂ := by
+    funext i
+    simpa using hChallenge i
+  subst hInst
+  exact hRbrKs
 
 end Verifier
 
@@ -362,13 +360,15 @@ namespace OracleVerifier
 variable (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁)
 
 @[simp]
-theorem cast_rbrKnowledgeSoundness (ε : pSpec₁.ChallengeIdx → ℝ≥0)
+theorem cast_rbrKnowledgeSoundness
+    (hChallenge : ∀ i, inst₁ i = dcast (by simp) (inst₂ (i.cast hn hSpec)))
+    (ε : pSpec₁.ChallengeIdx → ℝ≥0)
     (hRbrKs : V.rbrKnowledgeSoundness init impl relIn relOut ε) :
     (V.cast hn hSpec hOₘ).rbrKnowledgeSoundness init impl relIn relOut
       (ε ∘ (ChallengeIdx.cast hn.symm (cast_symm hSpec))) := by
   unfold rbrKnowledgeSoundness
   rw [cast_toVerifier]
-  exact Verifier.cast_rbrKnowledgeSoundness hn hSpec V.toVerifier ε hRbrKs
+  exact Verifier.cast_rbrKnowledgeSoundness hn hSpec V.toVerifier hChallenge ε hRbrKs
 
 end OracleVerifier
 

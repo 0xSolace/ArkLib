@@ -123,20 +123,7 @@ def runWithLogToRound (i : Fin (n + 1))
 private lemma fst_map_simulateQ_loggingOracle_run {ι : Type} {spec : OracleSpec ι} {α : Type}
     (oa : OracleComp spec α) :
     Prod.fst <$> WriterT.run (simulateQ loggingOracle oa) = oa := by
-  induction oa using OracleComp.induction with
-  | pure a => simp
-  | query_bind t oa ih =>
-    simp only [simulateQ_query_bind]
-    show Prod.fst <$> (do let u ← liftM (loggingOracle t); simulateQ loggingOracle (oa u)).run =
-      liftM (query t) >>= oa
-    stop -- This is broken for now until the refactor of `loggingOracle` and `WriterT`
-    simp only [WriterT.run_bind, map_bind, Functor.map_map]
-    have key : ∀ (w : QueryLog spec), (fun a_1 => (Prod.map id (w * ·) a_1).1) =
-        (Prod.fst : α × QueryLog spec → α) :=
-      fun w => funext fun ⟨a, b⟩ => rfl
-    simp_rw [key, ih]
-    rw [← bind_map_left Prod.fst]
-    rfl
+  exact loggingOracle.fst_map_run_simulateQ oa
 
 @[simp]
 lemma runWithLogToRound_discard_log_eq_runToRound (i : Fin (n + 1))
@@ -700,16 +687,5 @@ variable {ι : Type} {oSpec : OracleSpec ι}
 --   funext chal; simp [OracleSpec.append] at chal
 --   congr; funext state; congr
 --   rw [← Transcript.mk2_eq_toFull_snoc_snoc _ _]
-
--- theorem Reduction.run_of_isSingleRound [IsSingleRound pSpec]
---     (reduction : Reduction pSpec oSpec StmtIn WitIn StmtOut WitOut PrvState)
---     (stmt : StmtIn) (wit : WitIn) :
---       reduction.run stmt wit = do
---         let state := reduction.prover.load stmt wit
---         let ⟨⟨msg, state⟩, queryLog⟩ ← liftComp (simulate loggingOracle ∅
---           (reduction.prover.sendMessage default state))
---         let challenge := reduction.prover.receiveChallenge default state
---         let stmtOut ← reduction.verifier.verify stmt transcript
---         return (transcript, queryLog, stmtOut, reduction.prover.output state) := by sorry
 
 end Classes
