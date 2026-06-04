@@ -335,7 +335,6 @@ variable {m : ℕ}
 --     (R : ∀ i, Reduction oSpec (Stmt i.castSucc) (Wit i.castSucc) (Stmt i.succ) (Wit i.succ)
 --       (pSpec i)) :
 --       (Reduction.seqCompose R).run stmt wit := by
---   sorry
 
 -- end Execution
 
@@ -448,8 +447,32 @@ theorem seqCompose_rbrSoundness
       (fun i => rbrSoundnessError i.succ) (fun i => h i.succ)
     simp at this
     convert append_rbrSoundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this <;>
-    sorry
+      (h 0) this using 1
+    · funext combinedIdx
+      let ij := seqComposeChallengeIdxToSigma (pSpec := pSpec) combinedIdx
+      have hij : seqComposeChallengeIdxToSigma (pSpec := pSpec) combinedIdx = ij := rfl
+      rw [← (seqComposeChallengeEquiv pSpec).right_inv combinedIdx]
+      have hleft := (seqComposeChallengeEquiv pSpec).left_inv ij
+      change seqComposeChallengeIdxToSigma (sigmaChallengeIdxToSeqCompose ij.1 ij.2) = ij at hleft
+      simp only [seqComposeChallengeEquiv] at *
+      rw [hleft]
+      rw [hij]
+      rcases ij with ⟨i, j⟩
+      cases i using Fin.cases with
+      | zero =>
+        simp [sigmaChallengeIdxToSeqCompose, ChallengeIdx.sumEquiv]
+      | succ i =>
+        have htail := (seqComposeChallengeEquiv (fun k => pSpec k.succ)).left_inv ⟨i, j⟩
+        change seqComposeChallengeIdxToSigma (pSpec := fun k => pSpec k.succ)
+            (sigmaChallengeIdxToSeqCompose i j) = ⟨i, j⟩ at htail
+        simp [sigmaChallengeIdxToSeqCompose, ChallengeIdx.sumEquiv]
+        change rbrSoundnessError i.succ j =
+          rbrSoundnessError
+            (seqComposeChallengeIdxToSigma (pSpec := fun k => pSpec k.succ)
+              (sigmaChallengeIdxToSeqCompose i j)).fst.succ
+            (seqComposeChallengeIdxToSigma (pSpec := fun k => pSpec k.succ)
+              (sigmaChallengeIdxToSeqCompose i j)).snd
+        rw [htail]
 
 /-- If all verifiers in a sequence satisfy round-by-round knowledge soundness with respective RBR
     knowledge errors, then their sequential composition also satisfies round-by-round knowledge
@@ -476,8 +499,32 @@ theorem seqCompose_rbrKnowledgeSoundness
       (fun i => rbrKnowledgeError i.succ) (fun i => h i.succ)
     simp at this
     convert append_rbrKnowledgeSoundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this <;>
-    sorry
+      (h 0) this using 1
+    · funext combinedIdx
+      let ij := seqComposeChallengeIdxToSigma (pSpec := pSpec) combinedIdx
+      have hij : seqComposeChallengeIdxToSigma (pSpec := pSpec) combinedIdx = ij := rfl
+      rw [← (seqComposeChallengeEquiv pSpec).right_inv combinedIdx]
+      have hleft := (seqComposeChallengeEquiv pSpec).left_inv ij
+      change seqComposeChallengeIdxToSigma (sigmaChallengeIdxToSeqCompose ij.1 ij.2) = ij at hleft
+      simp only [seqComposeChallengeEquiv] at *
+      rw [hleft]
+      rw [hij]
+      rcases ij with ⟨i, j⟩
+      cases i using Fin.cases with
+      | zero =>
+        simp [sigmaChallengeIdxToSeqCompose, ChallengeIdx.sumEquiv]
+      | succ i =>
+        have htail := (seqComposeChallengeEquiv (fun k => pSpec k.succ)).left_inv ⟨i, j⟩
+        change seqComposeChallengeIdxToSigma (pSpec := fun k => pSpec k.succ)
+            (sigmaChallengeIdxToSeqCompose i j) = ⟨i, j⟩ at htail
+        simp [sigmaChallengeIdxToSeqCompose, ChallengeIdx.sumEquiv]
+        change rbrKnowledgeError i.succ j =
+          rbrKnowledgeError
+            (seqComposeChallengeIdxToSigma (pSpec := fun k => pSpec k.succ)
+              (sigmaChallengeIdxToSeqCompose i j)).fst.succ
+            (seqComposeChallengeIdxToSigma (pSpec := fun k => pSpec k.succ)
+              (sigmaChallengeIdxToSeqCompose i j)).snd
+        rw [htail]
 
 end Verifier
 

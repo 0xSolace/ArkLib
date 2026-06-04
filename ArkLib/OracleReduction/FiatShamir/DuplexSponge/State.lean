@@ -104,8 +104,20 @@ pub fn absorb(&mut self, input: &[U]) -> Result<(), DomainSeparatorMismatch>
 -/
 def absorb (state : HashStateWithInstructions U H) (input : Array U) :
     Except DomainSeparatorMismatch (HashStateWithInstructions U H) := do
-  -- TODO: Fix implementation with proper interface calls and array bounds checking
-  sorry
+  match state.stack.toList with
+  | DomainSeparator.Op.Absorb count :: rest =>
+      if count = input.size then
+        let newDs := DuplexSpongeInterface.absorbUnchecked (state.ds, input)
+        .ok { ds := newDs, stack := rest.toArray }
+      else
+        .error { message := s!"Domain separator mismatch: expected absorb of {count} units, \
+          got {input.size}" }
+  | op :: _ =>
+      .error { message := s!"Domain separator mismatch: expected absorb of {input.size} units, \
+        got {repr op}" }
+  | [] =>
+      .error { message := s!"Domain separator mismatch: expected absorb of {input.size} units, \
+        got end of domain separator" }
 
 /-- Perform a secure squeeze operation.
 
@@ -116,8 +128,21 @@ pub fn squeeze(&mut self, output: &mut [U]) -> Result<(), DomainSeparatorMismatc
 -/
 def squeeze (state : HashStateWithInstructions U H) (outputSize : Nat) :
     Except DomainSeparatorMismatch (HashStateWithInstructions U H × Array U) := do
-  -- TODO: Fix implementation with proper interface calls and array bounds checking
-  sorry
+  match state.stack.toList with
+  | DomainSeparator.Op.Squeeze count :: rest =>
+      if count = outputSize then
+        let (newDs, output) :=
+          DuplexSpongeInterface.squeezeUnchecked (state.ds, Array.replicate outputSize 0)
+        .ok ({ ds := newDs, stack := rest.toArray }, output)
+      else
+        .error { message := s!"Domain separator mismatch: expected squeeze of {count} units, \
+          got {outputSize}" }
+  | op :: _ =>
+      .error { message := s!"Domain separator mismatch: expected squeeze of {outputSize} units, \
+        got {repr op}" }
+  | [] =>
+      .error { message := s!"Domain separator mismatch: expected squeeze of {outputSize} units, \
+        got end of domain separator" }
 
 /-- Process a hint operation.
 
@@ -128,8 +153,13 @@ pub fn hint(&mut self) -> Result<(), DomainSeparatorMismatch>
 -/
 def hint (state : HashStateWithInstructions U H) :
     Except DomainSeparatorMismatch (HashStateWithInstructions U H) := do
-  -- TODO: Fix implementation with proper array bounds checking
-  sorry
+  match state.stack.toList with
+  | DomainSeparator.Op.Hint :: rest =>
+      .ok { state with stack := rest.toArray }
+  | op :: _ =>
+      .error { message := s!"Domain separator mismatch: expected hint, got {repr op}" }
+  | [] =>
+      .error { message := "Domain separator mismatch: expected hint, got end of domain separator" }
 
 /-- Perform a ratchet operation.
 
@@ -140,8 +170,15 @@ pub fn ratchet(&mut self) -> Result<(), DomainSeparatorMismatch>
 -/
 def ratchet (state : HashStateWithInstructions U H) :
     Except DomainSeparatorMismatch (HashStateWithInstructions U H) := do
-  -- TODO: Fix implementation with proper interface calls and array bounds checking
-  sorry
+  match state.stack.toList with
+  | DomainSeparator.Op.Ratchet :: rest =>
+      let newDs := DuplexSpongeInterface.ratchetUnchecked U state.ds
+      .ok { ds := newDs, stack := rest.toArray }
+  | op :: _ =>
+      .error { message := s!"Domain separator mismatch: expected ratchet, got {repr op}" }
+  | [] =>
+      .error {
+        message := "Domain separator mismatch: expected ratchet, got end of domain separator" }
 
 end HashStateWithInstructions
 
@@ -226,8 +263,7 @@ pub fn hint_bytes(&mut self) -> Result<&'a [u8], DomainSeparatorMismatch>
 def hintBytes (state : FSVerifierState U H) :
     Except DomainSeparatorMismatch (FSVerifierState U H × ByteArray) := do
   let newHashState ← state.hashState.hint
-
-    -- Ensure at least 4 bytes are available for the length prefix
+  -- Ensure at least 4 bytes are available for the length prefix
   if state.nargString.size < 4 then
     .error { message := "Insufficient transcript remaining for hint" }
   else
@@ -238,7 +274,6 @@ def hintBytes (state : FSVerifierState U H) :
     let byte3 := state.nargString[3]!.toNat
     let length := byte0 + (byte1 <<< 8) + (byte2 <<< 16) + (byte3 <<< 24)
     let rest := state.nargString.extract 4 state.nargString.size
-
     -- Ensure the rest of the slice has `length` bytes
     if rest.size < length then
       .error { message := s!"Insufficient transcript remaining, got {rest.size}, need {length}" }
@@ -352,7 +387,7 @@ Rust interface:
 pub fn hint_bytes(&mut self, hint: &[u8]) -> Result<(), DomainSeparatorMismatch>
 ```
 -/
-def hintBytes (state : FSProverState U H R) (hint : ByteArray) :
+def hintBytes (state : FSProverState U H R) (_hint : ByteArray) :
     Except DomainSeparatorMismatch (FSProverState U H R) :=
   match state.hashState.hint with
   | .ok newHashState =>

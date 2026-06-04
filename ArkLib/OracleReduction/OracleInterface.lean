@@ -6,6 +6,8 @@ Authors: Quang Dao
 
 import VCVio
 import CompPoly.Data.MvPolynomial.Notation
+import ArkLib.Data.MvPolynomial.Degrees
+import ArkLib.Data.MvPolynomial.SchwartzZippelCounting
 import Mathlib.Algebra.Polynomial.Roots
 -- import ArkLib.Data.MlPoly.Basic
 
@@ -367,6 +369,82 @@ theorem distanceLE_polynomial_degreeLE :
 theorem distanceLE_mvPolynomial_degreeLE {σ : Type} [Fintype σ] [DecidableEq σ] :
     distanceLE (instMvPolynomialDegreeLE R d σ)
       (Fintype.card σ * d * Fintype.card R ^ (Fintype.card σ - 1)) := by
-  sorry
+  classical
+  letI : Field R := Fintype.fieldOfDomain R
+  simp [distanceLE]
+  intro p hp p' hp' hNe
+  let f : MvPolynomial σ R := p - p'
+  have hf : f ≠ 0 := sub_ne_zero_of_ne hNe
+  have hpDeg : ∀ i, p.degreeOf i ≤ d :=
+    (MvPolynomial.mem_restrictDegree_iff_degreeOf_le p d).mp hp
+  have hp'Deg : ∀ i, p'.degreeOf i ≤ d :=
+    (MvPolynomial.mem_restrictDegree_iff_degreeOf_le p' d).mp hp'
+  have hDegreeOf : ∀ i, f.degreeOf i ≤ d := by
+    intro i
+    exact le_trans (degreeOf_sub_le i p p') (max_le (hpDeg i) (hp'Deg i))
+  have hTotal : f.totalDegree ≤ Fintype.card σ * d := by
+    rw [MvPolynomial.totalDegree]
+    refine Finset.sup_le fun m hm => ?_
+    calc
+      m.sum (fun _ e => e) = ∑ i : σ, m i := by
+        rw [Finsupp.sum_fintype]
+        simp
+      _ ≤ ∑ _i : σ, d := by
+        refine Finset.sum_le_sum fun i _ => ?_
+        exact le_trans (MvPolynomial.monomial_le_degreeOf i hm) (hDegreeOf i)
+      _ = Fintype.card σ * d := by
+        simp
+  have hCardPos : 0 < Fintype.card R := Fintype.card_pos
+  have hSZ :=
+    schwartz_zippel_counting (F := R) (f := MvPolynomial.rename (Fintype.equivFin σ) f)
+      (hf := MvPolynomial.rename_ne_zero_of_injective (Fintype.equivFin σ).injective hf)
+      (S := fun _ : Fin (Fintype.card σ) => Finset.univ)
+      (d := Fintype.card σ * d) (m := Fintype.card R)
+      (hd := by
+        exact le_trans (MvPolynomial.totalDegree_rename_le (Fintype.equivFin σ) f) hTotal)
+      hCardPos (fun _ => by simp)
+  have hRootCard :
+      (Finset.filter (fun x : σ → R => MvPolynomial.eval x f = 0) Finset.univ).card *
+        Fintype.card R ≤
+        (Fintype.card σ * d) * Fintype.card R ^ Fintype.card σ := by
+    convert hSZ using 1
+    · have hBij :
+          (Finset.filter (fun x : σ → R => MvPolynomial.eval x f = 0) Finset.univ).card =
+            (Finset.filter
+              (fun x : Fin (Fintype.card σ) → R =>
+                MvPolynomial.eval x (MvPolynomial.rename (Fintype.equivFin σ) f) = 0)
+              (Fintype.piFinset fun _ : Fin (Fintype.card σ) => Finset.univ)).card := by
+        refine Finset.card_bij (fun x _ => x ∘ (Fintype.equivFin σ).symm) ?_ ?_ ?_
+        · intro x hx
+          simp only [Finset.mem_filter, Fintype.mem_piFinset, Finset.mem_univ, true_and] at hx ⊢
+          simpa [MvPolynomial.eval_rename, Function.comp_assoc] using hx
+        · intro x hx y hy h
+          funext i
+          simpa using congr_fun h (Fintype.equivFin σ i)
+        · intro y hy
+          refine ⟨y ∘ Fintype.equivFin σ, ?_, ?_⟩
+          · simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+            simp only [Finset.mem_filter, Fintype.mem_piFinset, Finset.mem_univ] at hy
+            simpa [MvPolynomial.eval_rename, Function.comp_assoc] using hy
+          · funext i
+            simp
+      exact congrArg (fun n => n * Fintype.card R) hBij
+    · simp
+  have hDiv :
+      (Finset.filter (fun x : σ → R => MvPolynomial.eval x f = 0) Finset.univ).card ≤
+        Fintype.card σ * d * Fintype.card R ^ (Fintype.card σ - 1) := by
+    cases hσ : Fintype.card σ with
+    | zero =>
+        apply Nat.le_of_mul_le_mul_right (c := Fintype.card R)
+        · simpa [hσ] using hRootCard
+        · exact hCardPos
+    | succ n =>
+        refine Nat.le_of_mul_le_mul_right (c := Fintype.card R) ?_ hCardPos
+        simpa [hσ, pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm] using hRootCard
+  refine le_trans ?_ hDiv
+  apply Finset.card_le_card
+  intro x hx
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx ⊢
+  simpa [f, sub_eq_zero] using hx
 
 end PolynomialDistance

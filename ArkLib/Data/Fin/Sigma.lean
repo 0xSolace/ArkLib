@@ -131,14 +131,34 @@ theorem embedSum_splitSum {m : ℕ} {n : Fin m → ℕ} (k : Fin (vsum n)) :
     embedSum (splitSum k).1 (splitSum k).2 = k := by
   induction m with
   | zero => exact Fin.elim0 k
-  | succ m ih => sorry
+  | succ m ih =>
+    cases k using Fin.addCases with
+    | left k =>
+      simp only [splitSum_succ]
+      erw [dappend_left]
+      simp
+    | right k =>
+      simp only [splitSum_succ]
+      erw [dappend_right]
+      simp [ih]
+      rfl
 
 @[simp]
 theorem splitSum_embedSum {m : ℕ} {n : Fin m → ℕ} (i : Fin m) (j : Fin (n i)) :
     splitSum (embedSum i j) = ⟨i, j⟩ := by
   induction m with
   | zero => exact Fin.elim0 i
-  | succ m ih => sorry
+  | succ m ih =>
+    induction i using induction with
+    | zero =>
+      simp only [embedSum_succ_zero, splitSum_succ]
+      erw [dappend_left]
+    | succ i ih' =>
+      simp only [embedSum_succ_succ, splitSum_succ]
+      erw [dappend_right]
+      have h := ih (n := fun i => n i.succ) i j
+      exact Sigma.ext (by simpa using congrArg (fun p => p.1.succ) h)
+        (by simpa using (Sigma.mk.inj_iff.mp h).2)
 
 def finSum'FinEquiv' {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (vsum n) where
   toFun := fun ij => embedSum ij.1 ij.2
@@ -206,7 +226,14 @@ theorem dflatten_splitSum {m : ℕ} {n : Fin m → ℕ} {motive : (k : Fin (vsum
   induction m with
   | zero => exact Fin.elim0 k
   | succ m ih =>
-    sorry
+    cases k using Fin.addCases with
+    | left k =>
+      simp only [dflatten_succ, embedSum_succ_zero]
+      erw [dappend_left]
+    | right k =>
+      simp only [dflatten_succ, embedSum_succ_succ]
+      erw [dappend_right]
+      exact ih (motive := fun k => motive (natAdd (n 0) k)) (fun k => v (natAdd (n 0) k)) k
 
 @[simp]
 theorem dflatten_embedSum {m : ℕ} {n : Fin m → ℕ} {motive : (k : Fin (vsum n)) → Sort*}
@@ -312,7 +339,20 @@ theorem fflatten_embedSum {A : Sort u} {F : A → Sort v} {m : ℕ} {n : Fin m �
     {α : (i : Fin m) → (j : Fin (n i)) → A}
     (v : (i : Fin m) → (j : Fin (n i)) → F (α i j)) (i : Fin m) (j : Fin (n i)) :
     fflatten v (embedSum i j) = cast (by simp) (v i j) := by
-  sorry
+  induction m with
+  | zero => exact Fin.elim0 i
+  | succ m ih =>
+    induction i using induction with
+    | zero =>
+      simp only [embedSum_succ_zero, fflatten_succ]
+      erw [fappend_left]
+      exact cast_eq_iff_heq.mpr (cast_heq _ _).symm
+    | succ i ih' =>
+      simp only [embedSum_succ_succ, fflatten_succ]
+      erw [fappend_right]
+      rw [ih (fun i => v i.succ) i j]
+      exact cast_eq_iff_heq.mpr <|
+        HEq.trans (cast_heq _ (v i.succ j)) (cast_heq _ (v i.succ j)).symm
 
 /-- Functorial flatten with two arguments: flattens two nested heterogeneous tuple
 `(i : Fin m) → (j : Fin (n i)) → F (α i j)` into a single heterogeneous tuple with type
@@ -369,7 +409,20 @@ theorem fflatten₂_embedSum {A : Sort u} {B : Sort v} {F : A → B → Sort w} 
     {β : (i : Fin m) → (j : Fin (n i)) → B}
     (v : (i : Fin m) → (j : Fin (n i)) → F (α i j) (β i j)) (i : Fin m) (j : Fin (n i)) :
     fflatten₂ v (embedSum i j) = cast (by simp) (v i j) := by
-  sorry
+  induction m with
+  | zero => exact Fin.elim0 i
+  | succ m ih =>
+    induction i using induction with
+    | zero =>
+      simp only [embedSum_succ_zero, fflatten₂_succ]
+      erw [fappend₂_left]
+      exact cast_eq_iff_heq.mpr (cast_heq _ _).symm
+    | succ i ih' =>
+      simp only [embedSum_succ_succ, fflatten₂_succ]
+      erw [fappend₂_right]
+      rw [ih (fun i => v i.succ) i j]
+      exact cast_eq_iff_heq.mpr <|
+        HEq.trans (cast_heq _ (v i.succ j)) (cast_heq _ (v i.succ j)).symm
 
 /-- Heterogeneous flatten: flattens a nested heterogeneous tuple
 `(i : Fin m) → (j : Fin (n i)) → α i j` into a single heterogeneous tuple with type
@@ -449,22 +502,22 @@ def divSum? {m : ℕ} (n : Fin m → ℕ) (k : ℕ) : Option (Fin m) :=
 
 theorem divSum?_is_some_iff_lt_sum {m : ℕ} {n : Fin m → ℕ} {k : ℕ} :
     (divSum? n k).isSome ↔ k < ∑ i, n i := by
-  sorry
-  -- constructor
-  -- · intro h
-  --   simp only [divSum?, Nat.succ_eq_add_one, castLE, isSome_find_iff] at h
-  --   obtain ⟨i, hi⟩ := h
-  --   have : i.val + 1 + (m - i.val - 1) = m := by omega
-  --   rw [← Fin.sum_congr' _ this, Fin.sum_univ_add]
-  --   simp only [gt_iff_lt]
-  --   exact Nat.lt_add_right _ hi
-  -- · intro isLt
-  --   have : m ≠ 0 := fun h => by subst h; simp at isLt
-  --   refine Fin.isSome_find_iff.mpr ?_
-  --   have hm : (m - 1) + 1 = m := by omega
-  --   refine ⟨Fin.cast hm (Fin.last (m - 1)), ?_⟩
-  --   simp only [coe_cast, val_last, Nat.succ_eq_add_one, Fin.castLE_of_eq hm,
-  --       Fin.sum_congr' n hm, isLt]
+  constructor
+  · intro h
+    simp only [divSum?, Nat.succ_eq_add_one, castLE, Fin.isSome_find?_iff] at h
+    obtain ⟨i, hi⟩ := h
+    have : i.val + 1 + (m - i.val - 1) = m := by omega
+    rw [← Fin.sum_congr' _ this, Fin.sum_univ_add]
+    simp only [gt_iff_lt]
+    exact Nat.lt_add_right _ (by simpa using hi)
+  · intro isLt
+    have : m ≠ 0 := fun h => by subst h; simp at isLt
+    refine Fin.isSome_find?_iff.mpr ?_
+    have hm : (m - 1) + 1 = m := by omega
+    refine ⟨Fin.cast hm (Fin.last (m - 1)), ?_⟩
+    simp only [Fin.val_cast, val_last, Nat.succ_eq_add_one, Fin.castLE_of_eq hm]
+    change decide (k < ∑ i, n (Fin.cast hm i)) = true
+    simpa [Fin.sum_congr' n hm] using isLt
 
 def divSum {m : ℕ} {n : Fin m → ℕ} (k : Fin (∑ j, n j)) : Fin m :=
   (divSum? n k).get (divSum?_is_some_iff_lt_sum.mpr k.isLt)
@@ -476,7 +529,11 @@ theorem sum_le_of_divSum?_eq_some {m : ℕ} {n : Fin m → ℕ} {k : Fin (∑ j,
     simp only [Finset.univ_eq_empty, Finset.sum_empty, _root_.zero_le]
   · have : (i.val - 1) + 1 = i.val := by omega
     rw [← Fin.sum_congr' _ this]
-    sorry
+    have hmem : i ∈ divSum? n k := Option.mem_def.mpr hi
+    have hmin := (Fin.mem_find?_iff.mp hmem).2
+    exact not_lt.mp <| by
+      simpa [divSum?] using hmin ⟨i.val - 1, by omega⟩
+        (Fin.lt_def.mpr (by simp; omega))
     -- have := Fin.find_min (Option.mem_def.mp hi) (j := ⟨i.val - 1, by omega⟩) <| Fin.lt_def.mpr
     --   (by simp only; omega)
     -- exact not_lt.mp this
@@ -487,7 +544,7 @@ def modSum {m : ℕ} {n : Fin m → ℕ} (k : Fin (∑ j, n j)) : Fin (n (divSum
     have divSum_mem : divSum k ∈ divSum? n k := by
       simp only [divSum, divSum?, Option.mem_def, Option.some_get]
     have hk : k < ∑ j, n (Fin.castLE (divSum k).isLt j) := by
-      sorry --Fin.find_spec _ divSum_mem
+      simpa using (Fin.mem_find?_iff.mp divSum_mem).1
     simp only [Fin.sum_univ_succAbove _ (Fin.last (divSum k)), succAbove_last] at hk
     rw [Nat.sub_lt_iff_lt_add' (sum_le_of_divSum?_eq_some divSum_mem)]
     rw [add_comm]

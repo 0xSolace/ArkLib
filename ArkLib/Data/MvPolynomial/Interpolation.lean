@@ -252,8 +252,8 @@ section Interpolation
 variable {F : Type*} [Field F] {ι : Type*} [DecidableEq ι]
 variable {s : Finset ι} {v : ι → F} {i j : ι}
 
-/-- Define basis polynomials for interpolation -/
-protected def basis : F := sorry
+/-- Value of the univariate Lagrange basis polynomial indexed by `i`, evaluated at `v j`. -/
+protected def basis : F := (Lagrange.basis s v i).eval (v j)
 
 end Interpolation
 
