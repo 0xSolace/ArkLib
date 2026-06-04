@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 283 files, 5348 declarations
+- `ArkLib` — 283 files, 5352 declarations
 
 ## Same short-name across multiple files (143 groups)
 
@@ -836,12 +836,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `queryCodeword` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.QueryPhase.queryCodeword` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:305](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L305) — Oracle query helper: query a committed codeword at a given domain point. Restricted to codeword indi
+- `def Binius.BinaryBasefold.QueryPhase.queryCodeword` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:360](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L360) — Oracle query helper: query a committed codeword at a given domain point. Restricted to codeword indi
 - `def Fri.Spec.QueryRound.queryCodeword` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:820](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L820) — (no docstring)
 
 ### `queryOracleReduction` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.QueryPhase.queryOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:474](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L474) — The oracle reduction for the final query phase.
+- `def Binius.BinaryBasefold.QueryPhase.queryOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:529](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L529) — The oracle reduction for the final query phase.
 - `def Fri.Spec.QueryRound.queryOracleReduction` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:938](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L938) — (no docstring)
 
 ### `reduction_verifier_eq_verifier` (2 declarations, 2 files)
