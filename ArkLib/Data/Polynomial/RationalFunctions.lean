@@ -12,6 +12,7 @@ import Mathlib.RingTheory.Ideal.Span
 import Mathlib.RingTheory.PowerSeries.Substitution
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.Polynomial.Resultant.Basic
 
 /-!
 # Definitions and Theorems about Function Fields and Rings of Regular Functions
@@ -670,6 +671,112 @@ lemma exists_common_root_of_mem_S_β {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 
   refine ⟨root.1, root.2, ?_⟩
   rw [← π_z_eq_evalEval_canonicalRep hH β z root]
   exact hroot
+
+/-- The `X`-elimination polynomial of Lemma A.1: the `Y`-resultant of `H_tilde' H` with the
+canonical representative of `β`, an element of `F[X]`. Its roots contain `S_β`. -/
+noncomputable def elimPoly {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) : F[X] :=
+  Polynomial.resultant (H_tilde' H) (canonicalRepOf𝒪 hH β)
+    (H_tilde' H).natDegree (canonicalRepOf𝒪 hH β).natDegree
+
+/-- Specializing `X := z` commutes with the resultant: `(elimPoly β).eval z` is the resultant over
+`F` of the two specialized univariate polynomials in `Y`. -/
+lemma eval_elimPoly {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) (z : F) :
+    (elimPoly hH β).eval z =
+      Polynomial.resultant (Polynomial.Bivariate.evalX z (H_tilde' H))
+        (Polynomial.Bivariate.evalX z (canonicalRepOf𝒪 hH β))
+        (H_tilde' H).natDegree (canonicalRepOf𝒪 hH β).natDegree := by
+  rw [elimPoly, Polynomial.Bivariate.evalX_eq_map, Polynomial.Bivariate.evalX_eq_map,
+      Polynomial.resultant_map_map]
+  rfl
+
+/-- For `z ∈ S_β`, the elimination polynomial vanishes at `z`. -/
+lemma elimPoly_eval_eq_zero_of_mem_S_β {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) {z : F}
+    (hz : z ∈ S_β β) :
+    (elimPoly hH β).eval z = 0 := by
+  classical
+  obtain ⟨t, hHt, hPt⟩ := exists_common_root_of_mem_S_β hH β hz
+  rw [eval_elimPoly]
+  set f := Polynomial.Bivariate.evalX z (H_tilde' H) with hf_def
+  set g := Polynomial.Bivariate.evalX z (canonicalRepOf𝒪 hH β) with hg_def
+  -- Both specialized polynomials have `t` as a root, so `X - C t` divides each.
+  have hf_root : f.IsRoot t := by
+    rw [hf_def, Polynomial.Bivariate.evalX_eq_map, Polynomial.IsRoot,
+        Polynomial.map_evalRingHom_eval]; exact hHt
+  have hg_root : g.IsRoot t := by
+    rw [hg_def, Polynomial.Bivariate.evalX_eq_map, Polynomial.IsRoot,
+        Polynomial.map_evalRingHom_eval]; exact hPt
+  have hdvd_f : (Polynomial.X - Polynomial.C t) ∣ f := Polynomial.dvd_iff_isRoot.mpr hf_root
+  have hdvd_g : (Polynomial.X - Polynomial.C t) ∣ g := Polynomial.dvd_iff_isRoot.mpr hg_root
+  -- The degree arguments dominate the actual degrees of `f` and `g`.
+  have hfle : f.natDegree ≤ (H_tilde' H).natDegree := by
+    rw [hf_def, Polynomial.Bivariate.evalX_eq_map]; exact Polynomial.natDegree_map_le
+  have hgle : g.natDegree ≤ (canonicalRepOf𝒪 hH β).natDegree := by
+    rw [hg_def, Polynomial.Bivariate.evalX_eq_map]; exact Polynomial.natDegree_map_le
+  have hmn : (H_tilde' H).natDegree ≠ 0 ∨ (canonicalRepOf𝒪 hH β).natDegree ≠ 0 :=
+    Or.inl (by rw [natDegree_H_tilde' hH]; exact Nat.ne_of_gt hH)
+  -- By contradiction: if the resultant is nonzero, `X - C t` would divide a nonzero constant.
+  by_contra hres
+  obtain ⟨p, q, _, _, hpq⟩ :=
+    Polynomial.exists_mul_add_mul_eq_C_resultant f g hfle hgle hmn
+  have hdvd_C : (Polynomial.X - Polynomial.C t) ∣
+      Polynomial.C (Polynomial.resultant f g (H_tilde' H).natDegree
+        (canonicalRepOf𝒪 hH β).natDegree) := by
+    rw [← hpq]; exact dvd_add (hdvd_f.mul_right p) (hdvd_g.mul_right q)
+  have hC_ne : Polynomial.C (Polynomial.resultant f g (H_tilde' H).natDegree
+      (canonicalRepOf𝒪 hH β).natDegree) ≠ 0 := by
+    simpa [Polynomial.C_eq_zero] using hres
+  have hdeg_le := Polynomial.degree_le_of_dvd hdvd_C hC_ne
+  rw [Polynomial.degree_X_sub_C, Polynomial.degree_C
+      (by simpa [Polynomial.C_eq_zero] using hres)] at hdeg_le
+  exact absurd hdeg_le (by decide)
+
+/-- The elimination polynomial is nonzero. This is where `[Fact (Irreducible H)]` is used: over
+`RatFunc F`, `H_tilde H` is irreducible and the (mapped) canonical representative has strictly
+smaller `Y`-degree, hence cannot be divisible by `H_tilde H`, so the two are coprime and their
+resultant — the image of `elimPoly` under `univPolyHom` — is nonzero. -/
+lemma elimPoly_ne_zero {H : F[X][Y]} [Fact (Irreducible H)] (hH : 0 < H.natDegree)
+    (β : 𝒪 H) (hP : canonicalRepOf𝒪 hH β ≠ 0) :
+    elimPoly hH β ≠ 0 := by
+  have hinj : Function.Injective (univPolyHom : F[X] →+* RatFunc F) := by
+    rw [univPolyHom]; exact IsFractionRing.injective _ _
+  -- Map the resultant down to `RatFunc F`.
+  have hmap : univPolyHom (elimPoly hH β) =
+      Polynomial.resultant (H_tilde H) ((canonicalRepOf𝒪 hH β).map univPolyHom)
+        (H_tilde' H).natDegree (canonicalRepOf𝒪 hH β).natDegree := by
+    rw [elimPoly, ← Polynomial.resultant_map_map, H_tilde_equiv_H_tilde']
+  -- The mapped canonical representative is nonzero with `Y`-degree `< H_tilde H`.
+  set P' := (canonicalRepOf𝒪 hH β).map univPolyHom with hP'_def
+  have hP'_ne : P' ≠ 0 := by
+    rw [hP'_def]
+    intro hzero
+    exact hP (by
+      have hmi : Function.Injective (Polynomial.map (univPolyHom : F[X] →+* RatFunc F)) :=
+        Polynomial.map_injective _ hinj
+      exact hmi (by simpa using hzero))
+  have hHt_irr : Irreducible (H_tilde H) := irreducibleHTildeOfIrreducible hH (Fact.out)
+  have hdeg_lt : P'.degree < (H_tilde H).degree := by
+    rw [hP'_def]
+    refine lt_of_le_of_lt Polynomial.degree_map_le ?_
+    rw [degree_H_tilde_eq hH]
+    exact canonicalRepOf𝒪_degree_lt hH β
+  -- `H_tilde H` does not divide `P'` (degree), so they are coprime.
+  have hnotdvd : ¬ (H_tilde H ∣ P') := fun hdvd =>
+    absurd (Polynomial.eq_zero_of_dvd_of_degree_lt hdvd hdeg_lt) hP'_ne
+  have hcop : IsCoprime (H_tilde H) P' :=
+    (dvd_or_isCoprime _ _ hHt_irr).resolve_left hnotdvd
+  have hres_ne : Polynomial.resultant (H_tilde H) P'
+      (H_tilde' H).natDegree (canonicalRepOf𝒪 hH β).natDegree ≠ 0 := by
+    have hcop' : IsCoprime (H_tilde H) P' := hcop
+    -- `resultant_ne_zero` uses default degrees; rewrite to the right degree arguments.
+    have hHd : (H_tilde H).natDegree = (H_tilde' H).natDegree := by
+      rw [natDegree_H_tilde hH, natDegree_H_tilde' hH]
+    have hPd : P'.natDegree = (canonicalRepOf𝒪 hH β).natDegree := by
+      rw [hP'_def, Polynomial.natDegree_map_eq_of_injective hinj]
+    have := Polynomial.resultant_ne_zero (H_tilde H) P' hcop'
+    rwa [hHd, hPd] at this
+  intro hzero
+  apply hres_ne
+  rw [← hmap, hzero, map_zero]
 
 /-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20].
 
