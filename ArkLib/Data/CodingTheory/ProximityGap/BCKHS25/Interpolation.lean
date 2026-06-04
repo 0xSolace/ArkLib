@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import CompPoly.ToMathlib.Polynomial.BivariateDegree
+import ArkLib.ToMathlib.Polynomial.EvalExt
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Tactic
@@ -571,4 +572,51 @@ lemma evalY_BW_identity {A B : F[X][Y]} (domain : ι ↪ F) (u₀ u₁ : ι → 
   rw [← evalX_eval_comm, ← evalX_eval_comm, hid x]
   simp [Polynomial.eval_add, Polynomial.eval_mul]
 
+/-- Steps 1–2 of Claim 2.3: given the BW pair and a degree-`k` proximate at
+`z` agreeing outside ≤ `e` points, the bivariate factors at `Y := z`:
+`evalY z B = P_z · evalY z A` (by-degree equality on the agreement set). -/
+lemma evalY_eq_proximate_mul {k e h : ℕ}
+    (hn : k + 2 * e + h + 1 ≤ Fintype.card ι)
+    {A B : F[X][Y]} (domain : ι ↪ F) (u₀ u₁ : ι → F)
+    (hA : degreeX A < e + h + 1) (hB : degreeX B < k + e + h + 1)
+    (hid : ∀ x : ι, evalX (domain x) B
+      = (Polynomial.C (u₀ x) + Polynomial.C (u₁ x) * Polynomial.X)
+          * evalX (domain x) A)
+    {z : F} {p : F[X]} (hp : p.natDegree ≤ k)
+    (hprox : (Finset.univ.filter
+      (fun x => p.eval (domain x) ≠ u₀ x + u₁ x * z)).card ≤ e) :
+    evalY z B = p * evalY z A := by
+  classical
+  -- the agreement set has ≥ k + e + h + 1 points
+  set Agr : Finset ι := Finset.univ.filter (fun x => p.eval (domain x) = u₀ x + u₁ x * z)
+    with hAgr
+  have hAgr_card : k + e + h + 1 ≤ Agr.card := by
+    have hsplit : Agr.card + (Finset.univ.filter
+        (fun x => p.eval (domain x) ≠ u₀ x + u₁ x * z)).card = Fintype.card ι := by
+      rw [hAgr, Finset.filter_card_add_filter_neg_card_eq_card]
+      · simp
+    omega
+  -- both sides have degree < k + e + h + 1 and agree on the embedded agreement set
+  refine Polynomial.eq_of_eval_eq_degree (n := k + e + h + 1) ?_ ?_
+    (Agr.image domain) ?_ ?_
+  · -- degree of evalY z B
+    have hlt : (evalY z B).natDegree < k + e + h + 1 :=
+      lt_of_le_of_lt (natDegree_evalY_le_degreeX z B) hB
+    exact lt_of_le_of_lt Polynomial.degree_le_natDegree (WithBot.coe_lt_coe.mpr hlt)
+  · -- degree of p * evalY z A
+    have hA' := natDegree_evalY_le_degreeX z A
+    have hAe : (evalY z A).natDegree ≤ e + h := le_trans hA' (by omega)
+    have hmul : (p * evalY z A).natDegree < k + e + h + 1 := by
+      have h1 : (p * evalY z A).natDegree ≤ p.natDegree + (evalY z A).natDegree :=
+        Polynomial.natDegree_mul_le
+      omega
+    exact lt_of_le_of_lt Polynomial.degree_le_natDegree (WithBot.coe_lt_coe.mpr hmul)
+  · -- enough agreement points
+    rw [Finset.card_image_of_injective _ domain.injective]
+    exact hAgr_card
+  · -- pointwise agreement
+    intro a ha
+    rcases Finset.mem_image.mp ha with ⟨x, hx, rfl⟩
+    have hagree : p.eval (domain x) = u₀ x + u₁ x * z := (Finset.mem_filter.mp hx).2
+    rw [evalY_BW_identity domain u₀ u₁ hid z x, Polynomial.eval_mul, hagree]
 end BCKHS25
