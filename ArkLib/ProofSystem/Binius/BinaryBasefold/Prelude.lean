@@ -1225,6 +1225,26 @@ theorem sum_fin_pow_succ_split_low {M : Type*} [AddCommMonoid M] (n : ℕ)
     apply Fin.ext; simp only
     omega
 
+set_option maxHeartbeats 2000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- One-step recursion of `foldMatrixNat` at an entry. -/
+theorem foldMatrixNat_succ_apply (i : Fin r) (n : ℕ) (h : i.val + (n + 1) < ℓ + 𝓡)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨↑i + (n + 1), by omega⟩)
+    (a b : Fin (2 ^ (n + 1))) :
+    foldMatrixNat 𝔽q β i (n + 1) h y a b =
+      baseFoldMatrix 𝔽q β ⟨i.val + n, by omega⟩ (h_i := by simp only; omega)
+        (y := ⟨y.val, by have := y.property; simpa only [Nat.add_assoc] using this⟩)
+        ⟨a.val % 2, Nat.mod_lt _ (by omega)⟩
+        ⟨b.val / 2 ^ n, Nat.div_lt_of_lt_mul (by have e : 2 ^ (n + 1) = 2 * 2 ^ n := (by rw [pow_succ, Nat.mul_comm]); have := b.isLt; omega)⟩ *
+      foldMatrixNat 𝔽q β i n (show i.val + n < ℓ + 𝓡 by omega)
+        (qMap_total_fiber 𝔽q β (i := ⟨i.val + n, by omega⟩) (steps := 1)
+          (h_i_add_steps := by simp only; omega)
+          (y := ⟨y.val, by have := y.property; simpa only [Nat.add_assoc] using this⟩)
+          ⟨b.val / 2 ^ n, Nat.div_lt_of_lt_mul (by have e : 2 ^ (n + 1) = 2 * 2 ^ n := (by rw [pow_succ, Nat.mul_comm]); have := b.isLt; omega)⟩)
+        ⟨a.val / 2, Nat.div_lt_of_lt_mul (by have e : 2 ^ (n + 1) = 2 * 2 ^ n := (by rw [pow_succ, Nat.mul_comm]); have := a.isLt; omega)⟩
+        ⟨b.val % 2 ^ n, Nat.mod_lt _ (Nat.two_pow_pos n)⟩ := by
+  rfl
+
 /-- **Lemma 4.9.** The iterated fold equals the localized fold evaluation via matmul form -/
 theorem iterated_fold_eq_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i + steps ≤ ℓ)
     (f : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i, by omega⟩ → L)
