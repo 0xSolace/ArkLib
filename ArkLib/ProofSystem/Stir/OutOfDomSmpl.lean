@@ -63,6 +63,21 @@ private lemma uniform_event_mass {α : Type} [Fintype α] [Nonempty α]
       simp [PMF.uniformOfFintype_apply, PMF.pure_apply, h, eq_iff_iff]
   · rw [Finset.sum_const, nsmul_eq_mul]
 
+/-- Counting a coordinatewise event: the tuples satisfying `Q` in every coordinate form the
+`piFinset` of the per-coordinate solution set, so their count is `(#Q)^s`. Together with
+`uniform_event_mass` this replaces any independence machinery by pure counting. -/
+private lemma card_filter_forall_pi {β : Type} [Fintype β] [DecidableEq β] {s : ℕ}
+    (Q : β → Prop) [DecidablePred Q] :
+    (Finset.univ.filter (fun r : Fin s → β => ∀ i, Q (r i))).card
+      = ((Finset.univ.filter Q).card) ^ s := by
+  classical
+  have h : (Finset.univ.filter (fun r : Fin s → β => ∀ i, Q (r i)))
+      = Fintype.piFinset (fun _ : Fin s => Finset.univ.filter Q) := by
+    ext r
+    simp [Fintype.mem_piFinset]
+  rw [h, Fintype.card_piFinset]
+  simp
+
 /-- Lemma 4.5.1 -/
 lemma out_of_dom_smpl_1
   {δ l : ℝ≥0} {s : ℕ} {f : ι → F} {degree : ℕ} {φ : ι ↪ F}
