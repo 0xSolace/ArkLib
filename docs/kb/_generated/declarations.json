@@ -8320,16 +8320,16 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 35,
-          "name": "_anon_theorem_35",
+          "line": 37,
+          "name": "_anon_theorem_37",
           "namespace": "",
-          "short_name": "_anon_theorem_35",
+          "short_name": "_anon_theorem_37",
           "signature": "theorem theorem's outermost binder. The user instantiates at the call site."
         },
         {
-          "doc": "**ABF26 Lemma 3.7 [Eli57].** Elias volume lower bound on list size: `|\u039b(C, \u03b4)| \u2265 Vol_q(\u03b4, n) / q^(n-k)` where `q = |F|`, `n = |\u03b9|`, and `k = dim(C)` is the dimension of the linear code `C` (so `|C| = q^k`). The paper's proof uses an averaging argument over random words; we admit it here as an external result. Uses `hammingBallVolume` (ABF26 D2.4) from `HammingBallVolume.lean`.",
+          "doc": "**ABF26 Lemma 3.7 [Eli57].** Elias volume lower bound on list size: `|\u039b(C, \u03b4)| \u2265 Vol_q(\u03b4, n) / q^(n-k)` where `q = |F|`, `n = |\u03b9|`, and `k = dim(C)` is the dimension of the linear code `C` (so `|C| = q^k`). **Proven** by the paper's averaging argument (fulltext \u00a73, [Eli57]): the maximised list size dominates the mean over received words, and double counting gives `\u2211_f |\u039b(C,\u03b4,f)| = \u2211_{c\u2208C} Vol_q(\u03b4,n) = q^k \u00b7 Vol_q(\u03b4,n)`, so the max is `\u2265 Vol/q^{n-k}`. Uses `hammingBallVolume` (ABF26 D2.4) and `hammingBallVolume_eq_ncard_hammingBall` from `HammingBallVolume.lean`.",
           "kind": "theorem",
-          "line": 114,
+          "line": 118,
           "name": "CodingTheory.linear_lambda_ge_elias_volume_eli57",
           "namespace": "CodingTheory",
           "short_name": "linear_lambda_ge_elias_volume_eli57",
@@ -8338,7 +8338,7 @@
         {
           "doc": "**ABF26 Corollary 3.8.** Volume-based lower bound on list size, using the MS77 volume estimate `Vol_q(\u03b4, n) \u2265 q^{n\u00b7(\u03c1-1+H_q(\u03b4))} / \u221a(8\u00b7n\u00b7\u03b4\u00b7(1-\u03b4))`. With `\u03c1 := k/n`: `|\u039b(C, \u03b4)| \u2265 q^{n\u00b7(\u03c1 - 1 + H_q(\u03b4))} / \u221a(8\u00b7n\u00b7\u03b4\u00b7(1-\u03b4))` Uses `qEntropy` (ABF26 D2.2). Admitted as an external result.",
           "kind": "theorem",
-          "line": 129,
+          "line": 236,
           "name": "CodingTheory.linear_lambda_ge_entropy_volume",
           "namespace": "CodingTheory",
           "short_name": "linear_lambda_ge_entropy_volume",
@@ -8347,7 +8347,7 @@
         {
           "doc": "**ABF26 Theorem 3.9 [ST20 Thm 1.2].** Generalized Singleton bound for list decoding. Let `F` be a finite field, `0 < \u2113 < |F|`, `\u03b4 \u2208 (0, 1)`, and let `C \u2286 F^n` be a linear error-correcting code of rate `\u03c1` with `|\u039b(C, \u03b4)| \u2264 \u2113`. Then: `|C| \u2264 |F|^{n - \u230a(\u2113+1)/\u2113 \u00b7 \u03b4 \u00b7 n\u230b}` Equivalently, `\u03b4 \u2264 \u2113/(\u2113+1) \u00b7 (1-\u03c1)`. Admitted as an external result.",
           "kind": "theorem",
-          "line": 148,
+          "line": 255,
           "name": "CodingTheory.linear_C_le_generalized_singleton_st20",
           "namespace": "CodingTheory",
           "short_name": "linear_C_le_generalized_singleton_st20",
@@ -8356,7 +8356,7 @@
         {
           "doc": "**ABF26 Theorem 3.10 [BDG24, AGL23].** Large-alphabet barrier for generalized Singleton attainment. For every `\u2113 \u2265 2` and `\u03c1 \u2208 (0, 1)` there exists a constant `\u03b1_\u2113\u03c1 > 0` such that for every `\u03b7 > 0` and every sufficiently large `n`, every linear error-correcting code `C \u2286 F^n` of rate at least `\u03c1` with `|\u039b(C, \u2113/(\u2113+1) \u00b7 (1-\u03c1-\u03b7))| \u2264 \u2113` satisfies: `|F| \u2265 2^{\u03b1_\u2113\u03c1 / \u03b7}` i.e. attaining the generalized Singleton bound up to `\u03b7` slack requires alphabet size exponential in `1/\u03b7`. We existentially package the \"sufficiently large\" threshold as an explicit `n\u2080` parameter rather than relying on Lean's `even",
           "kind": "theorem",
-          "line": 181,
+          "line": 288,
           "name": "CodingTheory.large_alphabet_barrier_bdg24_agl23",
           "namespace": "CodingTheory",
           "short_name": "large_alphabet_barrier_bdg24_agl23",
@@ -8365,7 +8365,7 @@
         {
           "doc": "**ABF26 Theorem 3.11 [GLMRSW22 Thm 4.1].** Random linear code lower bound. Fix a prime `q`, `\u03b4 \u2208 (0, 1 - 1/q)`, and `\u03b5 \u2208 (0, 1)`. There exists `\u03b3 > 0` such that for all `1 - H_q(\u03b4) - \u03b3 < \u03c1 < 1 - H_q(\u03b4)` and all sufficiently large `n`, some linear code `C \u2286 F^n` of rate `\u03c1` satisfies: `|\u039b(C, \u03b4)| > \u230aH_q(\u03b4) / (1 - H_q(\u03b4) - \u03c1) - \u03b5\u230b` The paper's full statement gives a `1 - q^{-\u03a9(n)}` probability over the choice of `C`; we existentially package this as \"there exists a witness code\" since ArkLib does not yet have a probability distribution over linear codes.",
           "kind": "theorem",
-          "line": 209,
+          "line": 316,
           "name": "CodingTheory.random_linear_lambda_lower_glmrsw22",
           "namespace": "CodingTheory",
           "short_name": "random_linear_lambda_lower_glmrsw22",
@@ -8374,7 +8374,7 @@
         {
           "doc": "**ABF26 Theorem 3.12 [BKR06 Cor 2.2].** Reed-Solomon superpolynomial list-size over extension fields. Fix `0 < \u03b1 < \u03b2 < 1`. For infinitely many prime powers `q` there exists a Reed-Solomon code `C := RS[F_q, F_q, \u230aq^\u03b1\u230b]` and a word `w : F_q \u2192 F_q` such that: `|\u039b(C, 1 - q^{\u03b2-1}, w)| \u2265 q^{(\u03b1 - \u03b2\u00b2) \u00b7 log q}` Admitted as an external result.",
           "kind": "theorem",
-          "line": 241,
+          "line": 348,
           "name": "CodingTheory.rs_lambda_superpoly_extension_bkr06",
           "namespace": "CodingTheory",
           "short_name": "rs_lambda_superpoly_extension_bkr06",
@@ -8383,7 +8383,7 @@
         {
           "doc": "**ABF26 Theorem 3.13 [GHSZ02 Cor 20].** Reed-Solomon large list-size over prime fields. Fix `0 < \u03b1, \u03b2 < 1`. For all sufficiently large primes `p`, there exists `C := RS[F_p, F_p, \u230ap^\u03b1\u230b]` and a word `w : F_p \u2192 F_p` such that: `|\u039b(C, 1 - ((1-\u03b2)/\u03b1) \u00b7 p^{\u03b1-1}, w)| > \u03a9(p^{p^\u03b1 \u00b7 \u03b2/2})` Admitted as an external result.",
           "kind": "theorem",
-          "line": 268,
+          "line": 375,
           "name": "CodingTheory.rs_lambda_large_prime_ghsz02",
           "namespace": "CodingTheory",
           "short_name": "rs_lambda_large_prime_ghsz02",
@@ -8392,7 +8392,7 @@
         {
           "doc": "**ABF26 Theorem 3.14 [JH01 Thm 2].** Large-rate Reed-Solomon lower bound. Fix an integer `j \u2265 2`. For infinitely many prime powers `q` with `q \u2261 1 (mod j+1)`, there exists `C := RS[F_q, L, k]` with `|C| = j + 1` and rate `\u03c1 \u2248 (j-1)/(j+1)` together with a word `w : L \u2192 F_q` such that: `|\u039b(C, 1/(j+1), w)| > j` Witnesses that high-rate RS codes cannot be list-decoded beyond `1/(j+1)` with list size `j`. Admitted as an external result.",
           "kind": "theorem",
-          "line": 292,
+          "line": 399,
           "name": "CodingTheory.rs_lambda_high_rate_jh01",
           "namespace": "CodingTheory",
           "short_name": "rs_lambda_high_rate_jh01",
@@ -8401,7 +8401,7 @@
         {
           "doc": "**ABF26 Theorem 3.4 [CZ25 Theorem B.5].** \u03c4-subspace-design codes are list-decodable up to capacity. Let `C : F^k \u2192 (F^s)^n` be a \u03c4-subspace-design code. For every `\u03b7 > 0`: `|\u039b(C, 1 - \u03c4(1/\u03b7) - \u03b7)| \u2264 (1 - \u03c4(1/\u03b7)) / \u03b7` Combined with `IsSubspaceDesign` (ABF26 D2.16) and `subspaceDesign_tau_lower` (L2.17), this gives a list-decoding bound up to capacity for any subspace-design code. Admitted as an external result.",
           "kind": "theorem",
-          "line": 325,
+          "line": 432,
           "name": "CodingTheory.subspaceDesign_list_decoding_cz25",
           "namespace": "CodingTheory",
           "short_name": "subspaceDesign_list_decoding_cz25",
@@ -8410,7 +8410,7 @@
         {
           "doc": "**ABF26 Corollary 3.5 [CZ25 Corollary 2.21].** Folded Reed-Solomon codes are list-decodable up to capacity. Let `C := FRS[F, L, k, s, \u03c9]` be a folded RS code of rate `\u03c1`. For any `\u03b7 > 0` with `1/\u03b7 < s`: `|\u039b(C, 1 - \u03c1\u00b7s/(s - 1/\u03b7 + 1) - \u03b7)| \u2264 (s\u00b7(1-\u03c1) + 1 - 1/\u03b7) / (\u03b7\u00b7(s + 1 - 1/\u03b7))` When `\u03b7 \u2265 \u221a(3/s)`, the bound simplifies to `|\u039b(C, 1 - \u03c1 - \u03b7)| \u2264 1/\u03b7`. Derives from T3.4 + T2.18 (FRS is \u03c4-subspace-design). Admitted as an external result.",
           "kind": "theorem",
-          "line": 344,
+          "line": 451,
           "name": "CodingTheory.frs_list_decoding_capacity_cz25",
           "namespace": "CodingTheory",
           "short_name": "frs_list_decoding_capacity_cz25",
