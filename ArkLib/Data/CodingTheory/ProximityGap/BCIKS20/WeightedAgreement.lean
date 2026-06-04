@@ -284,12 +284,12 @@ has μ-measure strictly larger than
 
 `α - (l + 1) / (S'.card - (l + 1))`. -/
 lemma list_agreement_on_curve_implies_correlated_agreement_bound
-    {k l : ℕ} {u : Fin (l + 2) → ι → F}
+    {_k l : ℕ} {u : Fin (l + 2) → ι → F}
     {deg : ℕ} {domain : ι ↪ F}
     {μ : ι → Set.Icc (0 : ℚ) 1}
     {α : ℝ≥0}
     {v : Fin (l + 2) → ι → F}
-    (hv : ∀ i, v i ∈ ReedSolomon.code domain deg)
+    (_hv : ∀ i, v i ∈ ReedSolomon.code domain deg)
     {S' : Finset F}
     (hS'_card : S'.card > l + 1) :
     letI w (x : ι) (z : F) : F := Curve.polynomialCurveEval (F := F) (A := F) u z x
