@@ -38499,9 +38499,18 @@
           "signature": "def queryCodeword (j : Fin (toOutCodewordsCount \u2113 \u03d1 (Fin.last \u2113)))"
         },
         {
+          "doc": "**Per-query collapse for the query phase.** Simulating a single `queryCodeword` oracle-statement query under `simOracle2 []\u2092 oStmt msgs` returns `OptionT.lift (pure \u2026)` of the oracle statement evaluated at the query point. This holds definitionally: `queryCodeword jj point` is `query (spec := [OracleStatement \u2026]\u2092) \u27e8\u27e8jj, _\u27e9, point\u27e9`, and `simOracle2`'s left-family (oracle-statement) routing of `inr (inl \u2026)` computes to `answer (oStmt jj) point = oStmt jj point`. This is the load-bearing per-query primitive for collapsing the query-phase verifier run; each `List.Vector.mmap` query body in `query",
+          "kind": "lemma",
+          "line": 382,
+          "name": "Binius.BinaryBasefold.QueryPhase.queryCodeword_collapse",
+          "namespace": "Binius.BinaryBasefold.QueryPhase",
+          "short_name": "queryCodeword_collapse",
+          "signature": "lemma queryCodeword_collapse"
+        },
+        {
           "doc": "The oracle prover for the final query phase (equivalent to regular prover).",
           "kind": "def",
-          "line": 381,
+          "line": 404,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleProver",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleProver",
@@ -38510,7 +38519,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 408,
+          "line": 431,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleVerifier",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleVerifier",
@@ -38519,7 +38528,7 @@
         {
           "doc": "The oracle reduction for the final query phase.",
           "kind": "def",
-          "line": 529,
+          "line": 552,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleReduction",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleReduction",
@@ -38528,7 +38537,7 @@
         {
           "doc": "The final query round as an `OracleProof` (since it outputs Bool and no oracle statements).",
           "kind": "def",
-          "line": 544,
+          "line": 567,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleProof",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleProof",
@@ -38537,7 +38546,7 @@
         {
           "doc": "Perfect completeness for the final query round (using the oracle queryProof).",
           "kind": "theorem",
-          "line": 554,
+          "line": 577,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleProof_perfectCompleteness",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleProof_perfectCompleteness",
@@ -38546,7 +38555,7 @@
         {
           "doc": "The round-by-round extractor for the query phase. Since f^(0) is always available, we can invoke the extractMLP function directly.",
           "kind": "def",
-          "line": 583,
+          "line": 606,
           "name": "Binius.BinaryBasefold.QueryPhase.queryRbrExtractor",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryRbrExtractor",
@@ -38555,7 +38564,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 595,
+          "line": 618,
           "name": "Binius.BinaryBasefold.QueryPhase.queryKStateProp",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryKStateProp",
@@ -38564,7 +38573,7 @@
         {
           "doc": "The knowledge state function for the query phase",
           "kind": "def",
-          "line": 624,
+          "line": 647,
           "name": "Binius.BinaryBasefold.QueryPhase.queryKnowledgeStateFunction",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryKnowledgeStateFunction",
@@ -38573,7 +38582,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the oracle verifier (query phase)",
           "kind": "theorem",
-          "line": 698,
+          "line": 745,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleVerifier_rbrKnowledgeSoundness",
@@ -49596,7 +49605,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5385,
+      "declarations": 5386,
       "files": 285
     }
   }

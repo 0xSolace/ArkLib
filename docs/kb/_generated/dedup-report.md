@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 285 files, 5385 declarations
+- `ArkLib` — 285 files, 5386 declarations
 
 ## Same short-name across multiple files (143 groups)
 
@@ -841,7 +841,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `queryOracleReduction` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.QueryPhase.queryOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:529](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L529) — The oracle reduction for the final query phase.
+- `def Binius.BinaryBasefold.QueryPhase.queryOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:552](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L552) — The oracle reduction for the final query phase.
 - `def Fri.Spec.QueryRound.queryOracleReduction` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:938](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L938) — (no docstring)
 
 ### `reduction_verifier_eq_verifier` (2 declarations, 2 files)
