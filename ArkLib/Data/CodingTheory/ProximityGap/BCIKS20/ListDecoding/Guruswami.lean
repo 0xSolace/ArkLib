@@ -17,6 +17,107 @@ open scoped BigOperators LinearCode
 
 universe u v w k l
 
+/-! ### Generic order-of-vanishing lower bound over an integral-domain coefficient ring
+
+The bivariate root-multiplicity lower bound `GuruswamiSudan.rootMultiplicity_ge_of_shift_zero`
+is stated over a field.  The trivariate Guruswami–Sudan setting of [BCIKS20] Claim 5.4 evaluates
+multiplicity of `Q : F[Z][X][Y]` over the coefficient ring `S = F[Z] = Polynomial F`, which is an
+integral domain but not a field.  The lemmas below re-establish the order-`m` vanishing criterion
+(`triv_rootMultiplicity_ge_of_shift_zero`) over any `[CommRing S] [IsDomain S]`, mirroring the
+field proof but only using `NoZeroDivisors`. -/
+section GenericTrivariateMultiplicity
+
+open Polynomial Polynomial.Bivariate
+
+variable {S : Type} [CommRing S] [IsDomain S] [DecidableEq S]
+
+private lemma triv_comp_add_C_eq_zero_iff (p : S[X]) (a : S) :
+    p.comp (Polynomial.X + Polynomial.C a) = 0 ↔ p = 0 := by
+  rw [Polynomial.comp_eq_zero_iff]
+  refine ⟨?_, fun h => Or.inl h⟩
+  rintro (h | ⟨_, h2⟩)
+  · exact h
+  · exfalso; have := congrArg (fun q => Polynomial.coeff q 1) h2; simp at this
+
+private lemma triv_compRingHom_addC_injective (a : S) :
+    Function.Injective (Polynomial.compRingHom (Polynomial.X + Polynomial.C a) : S[X] →+* S[X]) := by
+  rw [injective_iff_map_eq_zero]; intro r hr
+  rw [Polynomial.coe_compRingHom] at hr; exact (triv_comp_add_C_eq_zero_iff r a).mp hr
+
+omit [IsDomain S] in
+private lemma triv_rm0_none_imp_zero (g : S[X][Y]) (hg : rootMultiplicity₀ g = none) :
+    g = 0 := by
+  unfold rootMultiplicity₀ at hg
+  cases hwd : weightedDegree g 1 1 with
+  | none => exact absurd hwd (weightedDegree_ne_none _ _ _)
+  | some deg =>
+    rw [hwd] at hg; simp only at hg
+    rw [List.min?_eq_none_iff, List.filterMap_eq_nil_iff] at hg
+    have hcoeff_zero : ∀ s t, s ≤ deg → t ≤ deg → coeff g s t = 0 := by
+      intro s t hs ht
+      have hmem := hg (s, t) (by
+        rw [List.product, List.mem_flatMap]
+        refine ⟨s, List.mem_range.mpr (Nat.lt_succ_of_le hs), ?_⟩
+        rw [List.mem_map]; exact ⟨t, List.mem_range.mpr (Nat.lt_succ_of_le ht), rfl⟩)
+      by_contra hc; simp only [hc, if_false] at hmem; exact (Option.some_ne_none _ hmem)
+    have hwd_nat : natWeightedDegree g 1 1 = deg := by
+      rw [weightedDegree_eq_natWeightedDegree] at hwd; exact Option.some.inj hwd
+    have hcn : ∀ nn, g.coeff nn = 0 := by
+      intro nn; by_contra hgn
+      have hb : 1 * (g.coeff nn).natDegree + 1 * nn ≤ natWeightedDegree g 1 1 :=
+        Finset.le_sup (f := fun mm => 1 * (g.coeff mm).natDegree + 1 * mm)
+          (Polynomial.mem_support_iff.mpr hgn)
+      rw [hwd_nat] at hb; simp only [one_mul] at hb
+      have hn' : nn ≤ deg := by omega
+      apply hgn; ext s; simp only [Polynomial.coeff_zero]
+      by_cases hs : s ≤ deg
+      · have := hcoeff_zero s nn hs hn'; rwa [Bivariate.coeff] at this
+      · push Not at hs; exact Polynomial.coeff_eq_zero_of_natDegree_lt (by omega)
+    exact Polynomial.ext (fun nn => by rw [hcn nn, Polynomial.coeff_zero])
+
+private lemma triv_shift_eq_zero_iff (f : S[X][Y]) (x y : S) :
+    shift f x y = 0 ↔ f = 0 := by
+  unfold shift
+  rw [Polynomial.map_eq_zero_iff (triv_compRingHom_addC_injective x)]
+  exact triv_comp_add_C_eq_zero_iff f (Polynomial.C y)
+
+omit [IsDomain S] in
+private lemma triv_rm0_some_witness (g : S[X][Y]) (val : ℕ)
+    (hg : rootMultiplicity₀ g = some val) :
+    ∃ s t, coeff g s t ≠ 0 ∧ s + t = val := by
+  unfold rootMultiplicity₀ at hg
+  cases hwd : weightedDegree g 1 1 with
+  | none => rw [hwd] at hg; simp at hg
+  | some deg =>
+    rw [hwd] at hg; simp only at hg
+    have hmem := List.min?_mem hg
+    rw [List.mem_filterMap] at hmem
+    obtain ⟨⟨s, t⟩, _, hval⟩ := hmem
+    by_cases hc : coeff g s t = 0
+    · simp [hc] at hval
+    · simp only [hc, if_false] at hval; exact ⟨s, t, hc, by simpa using hval⟩
+
+/-- Order-`m` vanishing from shifted-coefficient vanishing, over an integral-domain coefficient
+ring `S`.  This is the `[CommRing S] [IsDomain S]` port of the field-only
+`GuruswamiSudan.rootMultiplicity_ge_of_shift_zero`, needed for the trivariate setting `S = F[Z]`. -/
+private lemma triv_rootMultiplicity_ge_of_shift_zero {f : S[X][Y]} {x y : S}
+    {m : ℕ} (hf : f ≠ 0)
+    (h : ∀ s t, s + t < m → ((shift f x y).coeff t).coeff s = 0) :
+    (m : ℕ) ≤ Bivariate.rootMultiplicity f x y := by
+  unfold Bivariate.rootMultiplicity
+  cases hrm : rootMultiplicity₀ (shift f x y) with
+  | none => exact absurd ((triv_shift_eq_zero_iff f x y).mp (triv_rm0_none_imp_zero _ hrm)) hf
+  | some val =>
+    show (m : Option ℕ) ≤ some val
+    have hmval : m ≤ val := by
+      by_contra hlt
+      push Not at hlt
+      obtain ⟨s, t, hne, hst⟩ := triv_rm0_some_witness (shift f x y) val hrm
+      apply hne; rw [Bivariate.coeff]; exact h s t (by omega)
+    exact_mod_cast hmval
+
+end GenericTrivariateMultiplicity
+
 section BCIKS20ProximityGapSection5
 
 variable {F : Type} [Field F] [DecidableEq F] [DecidableEq (RatFunc F)]
@@ -175,6 +276,71 @@ lemma modified_guruswami_unsat_of_k_zero {m n : ℕ} {ωs : Fin n ↪ F} {Q : F[
   have hY := h.Q_D_Y
   simp only [Nat.cast_zero, div_zero] at hY
   exact absurd hY (not_lt.mpr (Nat.cast_nonneg _))
+
+/-! ### Trivariate monomial degree facts
+
+The candidate solution `Q` of `ModifiedGuruswami` is assembled from the monomials `X^i Y^j Z^t`.
+The lemmas below pin down each degree measure of a single such monomial, which is what controls
+where a sum of monomials sits relative to the `ModifiedGuruswami` degree bounds. -/
+
+/-- The trivariate monomial `X^i Y^j Z^t` as an element of `F[Z][X][Y]`. -/
+noncomputable def triMonomial (i j t : ℕ) : F[Z][X][Y] :=
+  Polynomial.monomial j (Polynomial.monomial i (Polynomial.monomial t (1 : F)))
+
+omit [DecidableEq (RatFunc F)] in
+/-- The trivariate monomial `X^i Y^j Z^t` is nonzero. -/
+lemma triMonomial_ne_zero (i j t : ℕ) : triMonomial (F := F) i j t ≠ 0 := by
+  unfold triMonomial; simp
+
+omit [DecidableEq (RatFunc F)] in
+/-- `degreeX (X^i Y^j Z^t) = i`. -/
+lemma degreeX_triMonomial (i j t : ℕ) : degreeX (triMonomial (F := F) i j t) = i := by
+  unfold degreeX triMonomial
+  rw [Polynomial.support_monomial _
+    (by simp : (Polynomial.monomial i (Polynomial.monomial t (1:F))) ≠ 0)]
+  simp [Polynomial.coeff_monomial, Polynomial.natDegree_monomial]
+
+omit [DecidableEq (RatFunc F)] in
+/-- `natDegreeY (X^i Y^j Z^t) = j`. -/
+lemma natDegreeY_triMonomial (i j t : ℕ) : natDegreeY (triMonomial (F := F) i j t) = j := by
+  unfold natDegreeY triMonomial
+  rw [Polynomial.natDegree_monomial]
+  simp
+
+omit [DecidableEq (RatFunc F)] in
+/-- `natWeightedDegree (X^i Y^j Z^t) u v = u*i + v*j`. -/
+lemma natWeightedDegree_triMonomial (i j t u v : ℕ) :
+    natWeightedDegree (triMonomial (F := F) i j t) u v = u * i + v * j := by
+  unfold natWeightedDegree triMonomial
+  rw [Polynomial.support_monomial _
+    (by simp : (Polynomial.monomial i (Polynomial.monomial t (1:F))) ≠ 0)]
+  simp [Polynomial.coeff_monomial, Polynomial.natDegree_monomial]
+
+omit [DecidableEq (RatFunc F)] in
+/-- The `D_YZ` measure (as defined in `Trivariate.lean`) of a monomial `X^i Y^j Z^t` with `i ≠ j`
+equals just the `Y`-degree index `j`.
+
+This records a property of the *current* `D_YZ` definition: it computes
+`max over j_Y of (j_Y + max over k_X of (Bivariate.coeff Q j_Y k_X).natDegree)`, and since
+`Bivariate.coeff Q a b = (Q.coeff b).coeff a` (the first argument is the inner `X`-index), the
+inner contribution vanishes for a single monomial unless `i = j`.  In particular the `Z`-degree
+`t` is not captured, which makes the `Q_D_YZ` bound of `ModifiedGuruswami` easy to satisfy. -/
+lemma D_YZ_triMonomial_of_ne (i j t : ℕ) (hij : i ≠ j) :
+    D_YZ (triMonomial (F := F) i j t) = j := by
+  unfold D_YZ triMonomial
+  rw [Polynomial.support_monomial _
+    (by simp : (Polynomial.monomial i (Polynomial.monomial t (1:F))) ≠ 0)]
+  simp only [Finset.image_singleton, Finset.max_singleton]
+  have hcj : (Polynomial.monomial j (Polynomial.monomial i (Polynomial.monomial t (1:F)))).coeff j
+      = Polynomial.monomial i (Polynomial.monomial t (1:F)) := by
+    rw [Polynomial.coeff_monomial, if_pos rfl]
+  rw [hcj]
+  rw [Polynomial.support_monomial _ (by simp : (Polynomial.monomial t (1:F)) ≠ 0)]
+  simp only [Finset.image_singleton, Finset.max_singleton]
+  unfold Polynomial.Bivariate.coeff
+  rw [Polynomial.coeff_monomial, if_neg (Ne.symm hij)]
+  simp [Polynomial.natDegree_zero]
+  rfl
 
 end ModifiedGuruswamiHelpers
 
