@@ -366,7 +366,6 @@ def foldKnowledgeStateFunction (i : Fin ℓ) :
     -- ⊢ foldKStateProp 𝔽q β 2 tr stmtLast witLast oStmtLast
     -- TODO : prove this via the relations between stmtLast & stmtOut,
       --  witLast & witOut, oStmtLast & oStmtOut
-    have h_oStmt : oStmtLast = oStmtOut := by sorry
     sorry
 
 /-- RBR knowledge soundness for a single round oracle verifier -/
@@ -573,6 +572,11 @@ def commitKStateProp (i : Fin ℓ) (m : Fin (1 + 1))
     let ⟨_, stmtOut, oStmtOut, witOut⟩ := getCommitProverFinalOutput 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i ⟨stmtIn, oStmtIn, witMid⟩
     masterKStateProp (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
+      (stmtIdx := i.succ) (oracleIdx := i.castSucc)
+      (h_le := by simp only [Fin.coe_castSucc, Fin.val_succ, le_add_iff_nonneg_right, zero_le])
+      (stmt := stmtIn) (wit := witMid) (oStmt := oStmtIn)
+      (localChecks := True) ∧
+    masterKStateProp (mp := mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
       (stmtIdx := i.succ) (oracleIdx := i.succ)
       (h_le := le_refl _)
       (stmt := stmtOut) (wit := witOut) (oStmt := oStmtOut)
@@ -594,7 +598,8 @@ def commitKState (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
   toFun_next := fun m hDir (stmtIn, oStmtIn) tr msg witMid => by
     simp only [Nat.reduceAdd]
     intro kState_next
-    sorry
+    fin_cases m
+    simpa [commitKStateProp] using kState_next.1
   toFun_full := fun (stmtIn, oStmtIn) tr witOut=> by
     sorry
 
