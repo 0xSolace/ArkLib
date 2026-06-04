@@ -1221,7 +1221,8 @@ def foldStepRelOut (i : Fin ℓ) :
     Set ((Statement (L := L) Context i.succ ×
       (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)) ×
       Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ) :=
-  { input | foldStepRelOutProp (mp := mp) 𝔽q β i input}
+  { input | foldStepRelOutProp (L := L) (𝔽q := 𝔽q) (β := β)
+      (Context := Context) (mp := mp) i input}
 
 /-- Relation at step `i` of the CoreInteraction. `∀ i < ℓ, R_i` must hold at the
 beginning of ITERATION `i`. `R_ℓ` must hold after the last iteration and before sending

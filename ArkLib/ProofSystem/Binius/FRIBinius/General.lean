@@ -29,7 +29,7 @@ namespace Binius.FRIBinius.FullFRIBinius
 noncomputable section
 
 open Polynomial MvPolynomial OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Module
-  Binius
+  Binius TensorProduct
 open Binius.BinaryBasefold RingSwitching
 
 variable (κ : ℕ) [NeZero κ]
@@ -45,11 +45,81 @@ variable (h_ℓ_add_R_rate : ℓ' + 𝓡 < 2 ^ κ)
 variable (h_l : ℓ = ℓ' + κ)
 variable [hdiv : Fact (ϑ ∣ ℓ')]
 
-/-- The Binius ring-switching profile, built from the boolean-hypercube basis derived from `β`.
-Kept defeq to `binaryTowerProfile … (booleanHypercubeBasis …)` so all downstream RingSwitching
-semantics and axioms are preserved. -/
+/-- The Binius ring-switching profile, built from the boolean-hypercube basis derived from `β`. -/
 def biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
-  RingSwitching.binaryTowerProfile κ K L (booleanHypercubeBasis κ L K β)
+  let βH := booleanHypercubeBasis κ L K β
+  {
+    basis := βH
+    A := RingSwitching.TensorAlgebra K L
+    φ₀ := RingSwitching.φ₀ L K
+    φ₁ := RingSwitching.φ₁ L K
+    decomposeRows := RingSwitching.decompose_tensor_algebra_rows (β := βH)
+    decomposeColumns := RingSwitching.decompose_tensor_algebra_columns (β := βH)
+    decomposeRows_spec := by
+      -- `z = ∑ u, φ₀ ((βH.baseChange L).repr z u) * φ₁ (βH u)` is `Basis.sum_repr` for
+      -- `βH.baseChange L`: `φ₀ a * φ₁ b = a ⊗ₜ b` and `(βH.baseChange L) u = 1 ⊗ₜ βH u`.
+      intro z
+      conv_lhs => rw [← Basis.sum_repr (βH.baseChange L) z]
+      apply Finset.sum_congr rfl
+      intro u _
+      unfold RingSwitching.decompose_tensor_algebra_rows
+      rw [Basis.baseChange_apply]
+      simp only [RingSwitching.φ₀, RingSwitching.φ₁, RingHom.coe_mk, MonoidHom.coe_mk,
+        OneHom.coe_mk, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul,
+        TensorProduct.smul_tmul', smul_eq_mul]
+    decomposeColumns_spec := by
+      -- column-side dual: `Basis.sum_repr` for `baseChangeRight βH` (right `L`-module structure),
+      -- using `φ₁ a * φ₀ b = b ⊗ₜ a` and `(baseChangeRight βH) v = βH v ⊗ₜ 1`.
+      intro z
+      letI rightAlgebra : Algebra L (L ⊗[K] L) := Algebra.TensorProduct.rightAlgebra
+      letI rightModule : Module L (L ⊗[K] L) := rightAlgebra.toModule
+      conv_lhs => rw [← Basis.sum_repr
+        (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)) z]
+      apply Finset.sum_congr rfl
+      intro v _
+      conv_rhs => rw [show RingSwitching.decompose_tensor_algebra_columns (L := L) (K := K)
+        (β := booleanHypercubeBasis κ L K β) z v
+        = (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr z v
+          from rfl]
+      rw [Basis.baseChangeRight_apply]
+      simp only [RingSwitching.φ₀, RingSwitching.φ₁, RingHom.coe_mk, MonoidHom.coe_mk,
+        OneHom.coe_mk, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+      rw [Algebra.smul_def, Algebra.TensorProduct.right_algebraMap_apply,
+        Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one]
+    decomposeRows_add := by
+      -- additivity of `(βH.baseChange L).repr` (a `LinearEquiv`)
+      intro z w u
+      unfold RingSwitching.decompose_tensor_algebra_rows
+      rw [map_add, Finsupp.add_apply]
+    decomposeRows_φ₀_mul_φ₁ := by
+      -- `decomposeRows (φ₀ a * φ₁ b) u = βH.repr b u • a` via `Basis.baseChange_repr_tmul`
+      intro a b u
+      have h : RingSwitching.φ₀ L K a * RingSwitching.φ₁ L K b = a ⊗ₜ[K] b := by
+        simp only [RingSwitching.φ₀, RingSwitching.φ₁, RingHom.coe_mk, MonoidHom.coe_mk,
+          OneHom.coe_mk, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+      rw [h]
+      unfold RingSwitching.decompose_tensor_algebra_rows
+      rw [Basis.baseChange_repr_tmul]
+    decomposeColumns_add := by
+      -- additivity of `(baseChangeRight βH).repr` (right `L`-module structure)
+      intro z w v
+      letI rightAlgebra : Algebra L (L ⊗[K] L) := Algebra.TensorProduct.rightAlgebra
+      letI rightModule : Module L (L ⊗[K] L) := rightAlgebra.toModule
+      show (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr
+            (z + w) v
+        = (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr z v
+        + (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr w v
+      rw [map_add, Finsupp.add_apply]
+    decomposeColumns_φ₀_mul_φ₁ := by
+      -- `decomposeColumns (φ₀ a * φ₁ b) v = βH.repr a v • b` via `Basis.baseChangeRight_repr_tmul`
+      intro a b v
+      have h : RingSwitching.φ₀ L K a * RingSwitching.φ₁ L K b = a ⊗ₜ[K] b := by
+        simp only [RingSwitching.φ₀, RingSwitching.φ₁, RingHom.coe_mk, MonoidHom.coe_mk,
+          OneHom.coe_mk, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+      rw [h]
+      unfold RingSwitching.decompose_tensor_algebra_columns
+      rw [Basis.baseChangeRight_repr_tmul]
+  }
 
 section Pspec
 
@@ -191,7 +261,7 @@ theorem fullOracleReduction_perfectCompleteness
       (CoreInteractionPhase.sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
       (BinaryBasefold.CoreInteraction.sumcheckFoldOracleReduction K β (ϑ:=ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).verifier) :
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).verifier) :
   OracleReduction.perfectCompleteness
     (oracleReduction := fullOracleReduction κ L K β ℓ ℓ' 𝓡 ϑ γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l )
@@ -231,7 +301,7 @@ theorem fullOracleReduction_perfectCompleteness
           (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate)
       · -- THREADED (2026-06-04): sumcheck-fold lens coherence
         apply CoreInteractionPhase.coreInteractionOracleReduction_perfectCompleteness
-          κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l (𝓑 := 𝓑) coh
+          κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l coh
     )
     (h₂ := QueryPhase.queryOracleProof_perfectCompleteness K β γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ) init impl)
