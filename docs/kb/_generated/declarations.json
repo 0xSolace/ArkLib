@@ -11635,6 +11635,28 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/UniqueDecoding.lean": {
+      "declarations": [
+        {
+          "doc": "**Correlated agreement for low-degree parameterized curves, unique-decoding regime** ([BCIKS20] Theorem 6.1 / the UDR case of Theorem 1.5): curves analogue of `RS_correlatedAgreement_affineLines_uniqueDecodingRegime`.",
+          "kind": "theorem",
+          "line": 34,
+          "name": "ProximityGap.RS_correlatedAgreement_curves_uniqueDecodingRegime",
+          "namespace": "ProximityGap",
+          "short_name": "RS_correlatedAgreement_curves_uniqueDecodingRegime",
+          "signature": "theorem RS_correlatedAgreement_curves_uniqueDecodingRegime {k deg : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 40,
+          "name": "ProximityGap._anon_class_40",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_40",
+          "signature": "class classical"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ErrorBound.lean": {
       "declarations": [
         {
@@ -49520,8 +49542,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5377,
-      "files": 284
+      "declarations": 5379,
+      "files": 285
     }
   }
 }
