@@ -490,7 +490,6 @@ existing `rfl`/instance-driven Binius proofs (and the byte-identical `#print axi
     unfold φ₀ φ₁
     simp [Algebra.TensorProduct.tmul_mul_tmul]
 
-end RingSwitching
 
 /-! ## DP24 Ring-Switching Algebra Layer
 
@@ -517,7 +516,7 @@ tensor factor (`decompose_columns (a ⊗ b) v = β.repr a v • b`). Hence
 report for the explicit failing term.
 -/
 section RingSwitchingAlgebra
-open Module Binius.BinaryBasefold
+open Module
 
 variable {κ₀ : ℕ} [NeZero κ₀]
 variable {L₀ : Type} [Field L₀] [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2]
@@ -560,14 +559,15 @@ omit [Fintype K₀] [DecidableEq K₀] in
 /-- **DP24 packing expansion.** The prover's tensor
 `ŝ := φ₁(t')(φ₀(r_κ), …, φ₀(r_{ℓ-1}))` expands over the suffix hypercube as
 `ŝ = Σ_{w ∈ {0,1}^ℓ'} φ₀(eq̃(w, r_suffix)) · φ₁(t'(w))`, i.e. `Σ_w eq̃(r_suffix, w) ⊗ t'(w)`. -/
-lemma embedded_MLP_eval_eq_sum (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
+lemma embedded_MLP_eval_eq_sum (β : Module.Basis (Fin κ₀ → Fin 2) K₀ L₀)
+    (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
     (t' : MultilinearPoly L₀ ℓ') (r : Fin ℓ → L₀) :
-    embedded_MLP_eval κ₀ L₀ K₀ ℓ ℓ' h_l t' r =
+    embedded_MLP_eval κ₀ L₀ K₀ (binaryTowerProfile κ₀ K₀ L₀ β) ℓ ℓ' h_l t' r =
       ∑ w : Fin ℓ' → Fin 2,
         (φ₀ L₀ K₀ (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
             (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r)))
           * (φ₁ L₀ K₀ (eval (fun i => (if w i == 1 then (1 : L₀) else 0)) t'.val)) := by
-  unfold embedded_MLP_eval componentWise_φ₁_embed_MLE getEvaluationPointSuffix
+  unfold embedded_MLP_eval componentWise_embed_MLE getEvaluationPointSuffix
   simp only []
   rw [← MvPolynomial.eval₂_eq_eval_map]
   conv_lhs => rw [← MvPolynomial.is_multilinear_iff_eq_evals_zeroOne.mp t'.property]
@@ -637,7 +637,8 @@ lemma decompose_rows_packMLE (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : 
     (β : Basis (Fin κ₀ → Fin 2) K₀ L₀) (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀)
     (u : Fin κ₀ → Fin 2) :
     decompose_tensor_algebra_rows (L := L₀) (K := K₀) (β := β)
-        (embedded_MLP_eval κ₀ L₀ K₀ ℓ ℓ' h_l (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) u
+        (embedded_MLP_eval κ₀ L₀ K₀ (binaryTowerProfile κ₀ K₀ L₀ β) ℓ ℓ' h_l
+          (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) u
       = ∑ w : Fin ℓ' → Fin 2,
           (MvPolynomial.eval (fun i =>
               ((if h : i.val < κ₀ then u ⟨i.val, h⟩ else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀)) t.val)
@@ -650,4 +651,4 @@ lemma decompose_rows_packMLE (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : 
 
 end RingSwitchingAlgebra
 
-end Binius.RingSwitching
+end RingSwitching
