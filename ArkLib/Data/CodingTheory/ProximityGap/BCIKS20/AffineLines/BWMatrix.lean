@@ -1596,6 +1596,47 @@ theorem BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_ge {F : Type}
     simpa [Nat.lt_succ_iff] using this
   rw [hcard, mul_comm]
 
+
+open Polynomial in
+/-- Degree-`d` generalization of `BW_homMatrix_det_updateCol_natDegree_le_of_lt`:
+replacing an EVALUATION column (index < e+1) of a BW minor over degree-≤`d`
+words by a constant unit column drops the determinant degree to ≤ `d * e`. -/
+theorem BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_lt {F : Type} [Field F]
+    {ι : Type} [Fintype ι] (e k : ℕ) (ωs : ι → F) (g : ι → F[X]) (d : ℕ)
+    (hd : ∀ i, (g i).natDegree ≤ d) (r : Fin ((e + 1) + (e + k)) → ι)
+    (i0 : Fin ((e + 1) + (e + k))) (j : Fin ((e + 1) + (e + k))) (hj : j.1 < e + 1) :
+    (Matrix.det
+        (Matrix.updateCol
+          (Matrix.submatrix
+            (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X])) g) r id)
+          j (Pi.single i0 (1 : F[X])))).natDegree ≤ d * e := by
+  classical
+  have hb : ∀ i' j' : Fin ((e + 1) + (e + k)),
+      ((Matrix.updateCol
+          (Matrix.submatrix
+            (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X])) g) r id)
+          j (Pi.single i0 (1 : F[X]))) i' j').natDegree
+        ≤ (if j'.1 ≤ e ∧ j' ≠ j then d else 0) := by
+    intro i' j'
+    by_cases hje : j' = j
+    · subst hje
+      simp only [Matrix.updateCol_apply, if_pos rfl]
+      have : ¬ (j'.1 ≤ e ∧ j' ≠ j') := by simp
+      rw [if_neg this]
+      rcases eq_or_ne i' i0 with h | h <;> simp [Pi.single, Function.update, h]
+    · simp only [Matrix.updateCol_apply, if_neg hje, Matrix.submatrix_apply, id]
+      refine le_trans (BW_homMatrix_entry_natDegree_le_of_branch e k ωs g d hd (r i') j') ?_
+      by_cases hlt : (j'.1 < e + 1)
+      · rw [if_pos hlt, if_pos ⟨Nat.lt_succ_iff.mp hlt, hje⟩]
+      · rw [if_neg hlt]
+        exact Nat.zero_le _
+  refine le_trans (natDegree_det_le_sum_col_bounds _ _ _ hb) ?_
+  rw [← Finset.sum_filter]
+  simp only [Finset.sum_const, smul_eq_mul]
+  have hcard : #{j' : Fin ((e + 1) + (e + k)) | j'.1 ≤ e ∧ j' ≠ j} = e :=
+    Fin_sum_ite_lt_and_ne_eq_e e k j (Nat.lt_succ_iff.mp hj)
+  rw [hcard, mul_comm]
+
 end CoreResults
 
 end ProximityGap
