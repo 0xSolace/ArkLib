@@ -191,7 +191,7 @@ theorem fullOracleReduction_perfectCompleteness
       (CoreInteractionPhase.sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
       (BinaryBasefold.CoreInteraction.sumcheckFoldOracleReduction K β (ϑ:=ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).verifier) :
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).verifier) :
   OracleReduction.perfectCompleteness
     (oracleReduction := fullOracleReduction κ L K β ℓ ℓ' 𝓡 ϑ γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l )
@@ -231,7 +231,7 @@ theorem fullOracleReduction_perfectCompleteness
           (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate)
       · -- THREADED (2026-06-04): sumcheck-fold lens coherence
         apply CoreInteractionPhase.coreInteractionOracleReduction_perfectCompleteness
-          κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l (𝓑 := 𝓑) coh
+          κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l coh
     )
     (h₂ := QueryPhase.queryOracleProof_perfectCompleteness K β γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ) init impl)
