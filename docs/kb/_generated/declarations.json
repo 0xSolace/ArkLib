@@ -14219,6 +14219,24 @@
           "namespace": "ReedSolomon",
           "short_name": "multiConstrainedCode",
           "signature": "def multiConstrainedCode"
+        },
+        {
+          "doc": "Decoded multilinear polynomials of smooth codewords are degreewise linear.",
+          "kind": "lemma",
+          "line": 697,
+          "name": "ReedSolomon.mVdecode_mem_restrictDegree",
+          "namespace": "ReedSolomon",
+          "short_name": "mVdecode_mem_restrictDegree",
+          "signature": "lemma mVdecode_mem_restrictDegree (u : smoothCode domain m) :"
+        },
+        {
+          "doc": "For a degreewise-linear polynomial `p`, the weight constraint with the out-of-domain evaluation weight `Z \u00b7 eq(r, X)` \u2014 value variable at index `0`, matching `toWeightAssignment` \u2014 holds iff `p(r) = \u03c3`: by the multilinear-extension identity, `\u2211 b \u2208 {0,1}^m, p(b) \u00b7 eq(r, b) = p(r)`.",
+          "kind": "lemma",
+          "line": 708,
+          "name": "ReedSolomon.weightConstraint_eqPolynomial_iff",
+          "namespace": "ReedSolomon",
+          "short_name": "weightConstraint_eqPolynomial_iff",
+          "signature": "lemma weightConstraint_eqPolynomial_iff"
         }
       ]
     },
@@ -44582,18 +44600,27 @@
           "signature": "def blockRelDistance"
         },
         {
-          "doc": "The block relative distance simplifies to the standard relative Hamming distance when `k=0`.",
+          "doc": "The block relative distance simplifies to the standard relative Hamming distance when `k=i`: each block over `z` is then the singleton `{z}` itself, so block disagreement is pointwise disagreement. `h\u03c6'` pins the evaluation embedding to the canonical subtype inclusion (as in the paper, where the power domain sits inside `F` directly); for an arbitrary embedding the blocks are unrelated to the points and the claim fails.",
           "kind": "lemma",
-          "line": 132,
+          "line": 139,
           "name": "BlockRelDistance.blockRelDistance_eq_relHammingDist_of_k_eq_i",
           "namespace": "BlockRelDistance",
           "short_name": "blockRelDistance_eq_relHammingDist_of_k_eq_i",
           "signature": "lemma blockRelDistance_eq_relHammingDist_of_k_eq_i -- Renamed for clarity"
         },
         {
+          "doc": "",
+          "kind": "class",
+          "line": 150,
+          "name": "BlockRelDistance._anon_class_150",
+          "namespace": "BlockRelDistance",
+          "short_name": "_anon_class_150",
+          "signature": "class classical"
+        },
+        {
           "doc": "For the set S \u2286 F^\u03b9, we define the minimum block relative distance wrt set S.",
           "kind": "def",
-          "line": 145,
+          "line": 173,
           "name": "BlockRelDistance.minBlockRelDistance",
           "namespace": "BlockRelDistance",
           "short_name": "minBlockRelDistance",
@@ -44602,7 +44629,7 @@
         {
           "doc": "Definition 4.18 For a smooth ReedSolomon code C = RS[F, \u03b9^(2\u2071), \u03c6', m], proximity parameter \u03b4 \u2208 [0,1] function f : \u03b9^(2\u2071) \u2192 F, we define the following as the list of codewords of C \u03b4-close to f, i.e., u \u2208 C such that \u0394\u1d63(i, k, f, S', \u03c6', u) \u2264 \u03b4.",
           "kind": "def",
-          "line": 161,
+          "line": 189,
           "name": "BlockRelDistance.listBlockRelDistance",
           "namespace": "BlockRelDistance",
           "short_name": "listBlockRelDistance",
@@ -44611,7 +44638,7 @@
         {
           "doc": "Claim 4.19, Part 1 For a smooth Reed-Solomon code, the standard relative Hamming distance `\u03b4\u1d63(f,g)` is a lower bound for the (i, k)-wise block relative distance `\u0394\u1d63(i, k, f, S', \u03c6', g)`.",
           "kind": "lemma",
-          "line": 179,
+          "line": 207,
           "name": "BlockRelDistance.relHammingDist_le_blockRelDistance",
           "namespace": "BlockRelDistance",
           "short_name": "relHammingDist_le_blockRelDistance",
@@ -44620,7 +44647,7 @@
         {
           "doc": "Claim 4.19, Part 2 As a consequence of `relHammingDist_le_blockRelDistance`, the list of codewords within a certain block relative distance `\u03b4` is a subset of the list of codewords within the same relative Hamming distance `\u03b4`.",
           "kind": "lemma",
-          "line": 194,
+          "line": 222,
           "name": "BlockRelDistance.listBlock_subset_listHamming",
           "namespace": "BlockRelDistance",
           "short_name": "listBlock_subset_listHamming",
@@ -44846,9 +44873,9 @@
     "ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean": {
       "declarations": [
         {
-          "doc": "Lemma 4.24 Let `f : \u03b9 \u2192 F`, `m` be the number of variables, `s` be a repetition parameter and `\u03b4 \u2208 [0,1]` be a distance parameter, then for every `r\u2081,...,r\u209b \u2208 F\u1d50` the following statements are equivalent: - \u2203 distinct u, u' \u2208 \u039b(C,f,\u03b4) such that \u2200 i < s, uPoly(r\u1d62) = uPoly'(r\u1d62) where, \u039b(C,f,\u03b4) denotes the list of codewords of C \u03b4-close to f uPoly, uPoly' denotes the decoded multivariate polynomials of u and u' - \u2203 \u03c3\u2081,..,\u03c3\u209b : F, such that |\u039b(C',f,\u03b4)| > 1 where, C' is a multiconstrained RS = MCRS[F, \u03b9, \u03c6, m, s, w, \u03c3] \u03c3 = {\u03c3\u2081,..,\u03c3\u209b}, w = {w\u2081,..,w\u209b}, w\u1d62 = Z * eqPolynomial(r\u1d62)",
+          "doc": "Lemma 4.24 Let `f : \u03b9 \u2192 F`, `m` be the number of variables, `s` be a repetition parameter and `\u03b4 \u2208 [0,1]` be a distance parameter, then for every `r\u2081,...,r\u209b \u2208 F\u1d50` the following statements are equivalent: - \u2203 distinct u, u' \u2208 \u039b(C,f,\u03b4) such that \u2200 i < s, uPoly(r\u1d62) = uPoly'(r\u1d62) where, \u039b(C,f,\u03b4) denotes the list of codewords of C \u03b4-close to f uPoly, uPoly' denotes the decoded multivariate polynomials of u and u' - \u2203 \u03c3\u2081,..,\u03c3\u209b : F, such that |\u039b(C',f,\u03b4)| > 1 where, C' is a multiconstrained RS = MCRS[F, \u03b9, \u03c6, m, s, w, \u03c3] \u03c3 = {\u03c3\u2081,..,\u03c3\u209b}, w = {w\u2081,..,w\u209b}, w\u1d62 = Z * eqPolynomial(r\u1d62) Note on the weight encod",
           "kind": "lemma",
-          "line": 29,
+          "line": 35,
           "name": "OutOfDomSmpl.crs_equiv_rs_random_point_agreement",
           "namespace": "OutOfDomSmpl",
           "short_name": "crs_equiv_rs_random_point_agreement",
@@ -44857,7 +44884,7 @@
         {
           "doc": "Lemma 4.25 part 1 Let `f : \u03b9 \u2192 F`, `m` be the number of variables, `s` be a repetition parameter and `\u03b4 \u2208 [0,1]` be a distance parameter, if `C = RS [F, \u03b9, m]` is `(\u03b4,l)`-list decodable then `Pr_{r \u2190 F} [ \u2203 \u03c3\u2081,..,\u03c3\u209b : F, |\u039b(C',f,\u03b4)| > 1 ] =` `Pr_{r \u2190 F} [ \u2203 distinct u, u' \u2208 RS[F, \u03b9, \u03c6, m] s.t. uPoly(pow(r)) = uPoly'(pow(r))]` where, pow(x,m) = {x^2\u2070,x^2\u00b9,....,x^2^{m-1}} C' = CRS [F, \u03b9, \u03c6, m, s, w, \u03c3] \u03c3 = {\u03c3\u2081,..,\u03c3\u209b}, w = {w\u2081,..,w\u209b}, w\u1d62 = Z * eqPolynomial(pow(r,m))",
           "kind": "lemma",
-          "line": 56,
+          "line": 80,
           "name": "OutOfDomSmpl.oodSampling_crs_eq_rs",
           "namespace": "OutOfDomSmpl",
           "short_name": "oodSampling_crs_eq_rs",
@@ -44866,7 +44893,7 @@
         {
           "doc": "The mass that the `Pr_{...}[...]` PMF encoding assigns to an event under uniform sampling is exactly `#event / #domain`.",
           "kind": "lemma",
-          "line": 130,
+          "line": 154,
           "name": "OutOfDomSmpl.uniform_event_mass",
           "namespace": "OutOfDomSmpl",
           "short_name": "uniform_event_mass",
@@ -44875,16 +44902,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 134,
-          "name": "OutOfDomSmpl._anon_class_134",
+          "line": 158,
+          "name": "OutOfDomSmpl._anon_class_158",
           "namespace": "OutOfDomSmpl",
-          "short_name": "_anon_class_134",
+          "short_name": "_anon_class_158",
           "signature": "class classical"
         },
         {
           "doc": "Tuples satisfying `Q` in every coordinate form the `piFinset` of the per-coordinate solution set, so their count is `(#Q)^s`.",
           "kind": "lemma",
-          "line": 145,
+          "line": 169,
           "name": "OutOfDomSmpl.card_filter_forall_pi",
           "namespace": "OutOfDomSmpl",
           "short_name": "card_filter_forall_pi",
@@ -44893,16 +44920,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 149,
-          "name": "OutOfDomSmpl._anon_class_149",
+          "line": 173,
+          "name": "OutOfDomSmpl._anon_class_173",
           "namespace": "OutOfDomSmpl",
-          "short_name": "_anon_class_149",
+          "short_name": "_anon_class_173",
           "signature": "class classical"
         },
         {
           "doc": "Distinct smooth codewords decode to distinct univariate polynomials (the decoded polynomial interpolates the codeword on the domain).",
           "kind": "lemma",
-          "line": 159,
+          "line": 183,
           "name": "OutOfDomSmpl.decodeLT_ne_of_val_ne",
           "namespace": "OutOfDomSmpl",
           "short_name": "decodeLT_ne_of_val_ne",
@@ -44911,7 +44938,7 @@
         {
           "doc": "Two distinct smooth codewords' decoded polynomials agree on at most `2^m - 1` field points: agreement points are roots of the nonzero difference of degree `< 2^m`.",
           "kind": "lemma",
-          "line": 173,
+          "line": 197,
           "name": "OutOfDomSmpl.card_agreement_le",
           "namespace": "OutOfDomSmpl",
           "short_name": "card_agreement_le",
@@ -44920,16 +44947,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 178,
-          "name": "OutOfDomSmpl._anon_class_178",
+          "line": 202,
+          "name": "OutOfDomSmpl._anon_class_202",
           "namespace": "OutOfDomSmpl",
-          "short_name": "_anon_class_178",
+          "short_name": "_anon_class_202",
           "signature": "class classical"
         },
         {
           "doc": "Evaluating the decoded multilinear polynomial at the power vector `(r^(2^j))_j` recovers the decoded univariate polynomial's value at `r` (the smooth-code power substitution round-trip).",
           "kind": "lemma",
-          "line": 204,
+          "line": 228,
           "name": "OutOfDomSmpl.mVdecode_eval_pow",
           "namespace": "OutOfDomSmpl",
           "short_name": "mVdecode_eval_pow",
@@ -44938,11 +44965,20 @@
         {
           "doc": "Lemma 4.25 part 2 Let `f : \u03b9 \u2192 F`, `m` be the number of variables, `s` be a repetition parameter and `\u03b4 \u2208 [0,1]` be a distance parameter, if `C = RS [F, \u03b9, m]` is `(\u03b4,l)`-list decodable then the above equation is bounded as `\u2264 l\u00b2/2 * (2\u1d50/|F|)\u02e2`",
           "kind": "lemma",
-          "line": 232,
+          "line": 256,
           "name": "OutOfDomSmpl.oodSampling_rs_le_bound",
           "namespace": "OutOfDomSmpl",
           "short_name": "oodSampling_rs_le_bound",
           "signature": "lemma oodSampling_rs_le_bound"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 270,
+          "name": "OutOfDomSmpl._anon_class_270",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "_anon_class_270",
+          "signature": "class classical"
         }
       ]
     },
@@ -45939,7 +45975,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 4980,
+      "declarations": 4984,
       "files": 282
     }
   }

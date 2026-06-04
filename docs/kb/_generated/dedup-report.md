@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 282 files, 4980 declarations
+- `ArkLib` — 282 files, 4984 declarations
 
 ## Same short-name across multiple files (143 groups)
 
@@ -913,22 +913,22 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `card_agreement_le` (2 declarations, 2 files)
 
 - `lemma OutOfDomSmpl.card_agreement_le` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:100](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L100) — The agreement set of two distinct codewords' polynomials (inside any subtype of `F`) has at most `de
-- `lemma OutOfDomSmpl.card_agreement_le` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:173](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L173) — Two distinct smooth codewords' decoded polynomials agree on at most `2^m - 1` field points: agreemen
+- `lemma OutOfDomSmpl.card_agreement_le` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:197](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L197) — Two distinct smooth codewords' decoded polynomials agree on at most `2^m - 1` field points: agreemen
 
 ### `card_filter_forall_pi` (2 declarations, 2 files)
 
 - `lemma OutOfDomSmpl.card_filter_forall_pi` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:69](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L69) — Counting a coordinatewise event: the tuples satisfying `Q` in every coordinate form the `piFinset` o
-- `lemma OutOfDomSmpl.card_filter_forall_pi` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:145](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L145) — Tuples satisfying `Q` in every coordinate form the `piFinset` of the per-coordinate solution set, so
+- `lemma OutOfDomSmpl.card_filter_forall_pi` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:169](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L169) — Tuples satisfying `Q` in every coordinate form the `piFinset` of the per-coordinate solution set, so
 
 ### `decodeLT_ne_of_val_ne` (2 declarations, 2 files)
 
 - `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:85](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L85) — Distinct codewords decode to distinct polynomials: the decoded polynomial interpolates the codeword 
-- `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:159](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L159) — Distinct smooth codewords decode to distinct univariate polynomials (the decoded polynomial interpol
+- `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:183](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L183) — Distinct smooth codewords decode to distinct univariate polynomials (the decoded polynomial interpol
 
 ### `uniform_event_mass` (2 declarations, 2 files)
 
 - `lemma OutOfDomSmpl.uniform_event_mass` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:53](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L53) — The mass that the `Pr_{...}[...]` PMF encoding assigns to an event under uniform sampling is exactly
-- `lemma OutOfDomSmpl.uniform_event_mass` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:130](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L130) — The mass that the `Pr_{...}[...]` PMF encoding assigns to an event under uniform sampling is exactly
+- `lemma OutOfDomSmpl.uniform_event_mass` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:154](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L154) — The mass that the `Pr_{...}[...]` PMF encoding assigns to an event under uniform sampling is exactly
 
 ## Near-duplicate docstrings (Jaccard ≥ 0.85, 62 cross-file pairs)
 
