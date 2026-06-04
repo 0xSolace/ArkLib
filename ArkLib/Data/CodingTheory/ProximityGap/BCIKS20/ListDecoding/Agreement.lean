@@ -1183,6 +1183,67 @@ lemma approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero
     (hemb t ht)
 
 open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+lemma approximate_solution_is_exact_solution_coeffs_graph_of_beta_embedding_zero
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q)
+    (hemb : ∀ t ≥ k,
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃
+          (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)
+        (β
+          (H := H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)
+          (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge) t) = 0) :
+    ∀ t ≥ k,
+    α'
+      x₀
+      (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (irreducible_H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (claimA2_hypotheses_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      t
+    =
+    (0 : BCIKS20AppendixA.𝕃
+      (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)) := by
+  intro t ht
+  exact alpha'_eq_zero_of_embedding_beta_eq_zero
+    (F := F) (x₀ := x₀)
+    (irreducible_H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep hS_nonempty A hA hcount hlarge)
+    (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep hS_nonempty A hA hcount hlarge)
+    (claimA2_hypotheses_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep hS_nonempty A hA hcount hlarge)
+    (hemb t ht)
+
+open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 from [BCIKS20].
 States that the approximate solution is actually a solution. This version of the claim is stated in
 terms of coefficients.

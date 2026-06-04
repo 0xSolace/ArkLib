@@ -19,6 +19,7 @@ noncomputable def emb (w : ι → α) : ι × α → ℝ :=
 noncomputable def codeInner (u v : ι → α) : ℝ := ∑ p : ι × α, emb u p * emb v p
 def agree (u v : ι → α) : ℕ := (Finset.univ.filter (fun i => u i = v i)).card
 
+omit [DecidableEq ι] [Fintype α] in
 /-- Agreement and Hamming distance partition the coordinate set. -/
 theorem agree_add_hammingDist (u v : ι → α) :
     agree u v + hammingDist u v = Fintype.card ι := by
@@ -81,10 +82,13 @@ theorem codeInner_eq_card_mul_sub_hammingDist (u v : ι → α) (hq : 0 < Fintyp
     have hsum := agree_add_hammingDist u v
     have hsub : agree u v = Fintype.card ι - hammingDist u v := by omega
     rw [hsub]
-    exact Nat.cast_sub hdist_le
+    exact (Nat.cast_sub hdist_le :
+      ((Fintype.card ι - hammingDist u v : ℕ) : ℝ) =
+        (Fintype.card ι : ℝ) - (hammingDist u v : ℝ))
   rw [codeInner_eq_agree_sub u v hq, hagree]
   ring
 
+omit [DecidableEq ι] in
 /-- **Constant norm.** `⟨x_w, x_w⟩ = n(1 − 1/q)` (every coordinate agrees with
 itself). -/
 theorem codeInner_self (w : ι → α) (hq : 0 < Fintype.card α) :
