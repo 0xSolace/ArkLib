@@ -1343,7 +1343,7 @@ The `Z`-degree bound on the resultant `Res_Y(r, H̃')` of the canonical represen
 regular element `β` and the defining relation `H̃'`. This is the analytic heart of the lemma: a
 weighted-degree count on the Sylvester determinant. -/
 lemma natDegree_resultant_canonicalRep_le {H : F[X][Y]} {D : ℕ}
-    (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) (β : 𝒪 H) :
+    (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) {β : 𝒪 H} (hβ : β ≠ 0) :
     (↑(Polynomial.resultant (canonicalRepOf𝒪 hH β) (H_tilde' H) H.natDegree H.natDegree).natDegree
         : WithBot ℕ)
       ≤ weight_Λ_over_𝒪 hH β D * H.natDegree := by
@@ -1378,7 +1378,7 @@ lemma Lemma_A_1 {H : F[X][Y]} [hHirreducible : Fact (Irreducible H)]
   have hdeg_bound :
       (↑R.natDegree : WithBot ℕ) ≤ weight_Λ_over_𝒪 hH β D * H.natDegree := by
     rw [hR_def, hr_def]
-    exact natDegree_resultant_canonicalRep_le hD hH β
+    exact natDegree_resultant_canonicalRep_le hD hH hβ
   -- Chain the inequalities in `WithBot ℕ` to contradict the hypothesis.
   have h1 : (↑(Set.ncard (S_β β)) : WithBot ℕ) ≤ ↑R.natDegree := by
     exact_mod_cast hcard_le
