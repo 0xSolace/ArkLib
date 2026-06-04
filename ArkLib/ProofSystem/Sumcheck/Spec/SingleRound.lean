@@ -1229,9 +1229,14 @@ instance extractorLens_rbr_knowledge_soundness :
       (fun _ _ => True)
       ⟨oStmtLens R n deg D i, Witness.InvLens.trivial⟩ where
   proj_knowledgeSound := by
-    -- simp [relationRound, Simple.outputRelation, Verifier.compatStatement,
-    --   Simple.oracleVerifier_eq_verifier, Simple.verifier, Verifier.run]
-    sorry
+    rintro ⟨⟨target, challenges⟩, oStmt⟩ ⟨⟨newTarget, chal⟩, oStmt'⟩ _ hCompat _hLift
+    simp only [Verifier.compatStatement, Simple.oracleVerifier_eq_verifier] at hCompat
+    obtain ⟨tr, htr⟩ := hCompat
+    simp [Verifier.run, Simple.verifier, Statement.Lens.proj] at htr
+    obtain ⟨-, ⟨hEval, hChal⟩, hOracle⟩ := htr
+    subst hChal
+    subst hOracle
+    simpa [Simple.outputRelation] using hEval
   lift_knowledgeSound := by
     simp [relationRound, Simple.inputRelation, Statement.Lens.proj]
     unfold oStmtLens
@@ -1240,8 +1245,10 @@ instance extractorLens_rbr_knowledge_soundness :
     | succ n ih =>
       intro stmt oStmt hRelIn
       simp at hRelIn ⊢
-      -- Now it's a statement about polynomials
-      sorry
+      rw [← hRelIn]
+      simp_rw [Polynomial.eval_finset_sum]
+      simp_rw [← MvPolynomial.eval_eq_eval_mv_eval_finSuccEquivNth]
+      exact (sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)).symm
 
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
