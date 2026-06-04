@@ -10340,6 +10340,78 @@
           "namespace": "ProximityGap",
           "short_name": "_anon_class_1470",
           "signature": "class classical"
+        },
+        {
+          "doc": "Branch-precise entry degree bound for the BW matrix over degree-\u2264`d` words: evaluation columns (index < e+1) have degree \u2264 `d`, constraint columns are constants.",
+          "kind": "theorem",
+          "line": 1526,
+          "name": "ProximityGap.BW_homMatrix_entry_natDegree_le_of_branch",
+          "namespace": "ProximityGap",
+          "short_name": "BW_homMatrix_entry_natDegree_le_of_branch",
+          "signature": "theorem BW_homMatrix_entry_natDegree_le_of_branch {F : Type} [Field F]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1531,
+          "name": "ProximityGap._anon_class_1531",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1531",
+          "signature": "class classical"
+        },
+        {
+          "doc": "General per-column degree accounting for determinants (subsumes the fixed `d`/`d\u00b7n` bounds): if every entry of column `j` has degree \u2264 `b j`, the determinant has degree \u2264 `\u2211 j, b j`. This is the single abstraction behind all the [BCIKS20] \u00a74/\u00a76.1 minor-degree bounds.",
+          "kind": "theorem",
+          "line": 1553,
+          "name": "ProximityGap.natDegree_det_le_sum_col_bounds",
+          "namespace": "ProximityGap",
+          "short_name": "natDegree_det_le_sum_col_bounds",
+          "signature": "theorem natDegree_det_le_sum_col_bounds {F : Type} [Field F] (n : \u2115)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1557,
+          "name": "ProximityGap._anon_class_1557",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1557",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Degree-`d` generalization of `BW_homMatrix_det_updateCol_natDegree_le_of_ge`: replacing a CONSTRAINT column (index \u2265 e+1) of a BW minor over degree-\u2264`d` words by a constant unit column keeps the determinant degree \u2264 `d * (e + 1)`.",
+          "kind": "theorem",
+          "line": 1576,
+          "name": "ProximityGap.BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_ge",
+          "namespace": "ProximityGap",
+          "short_name": "BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_ge",
+          "signature": "theorem BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_ge {F : Type} [Field F]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1585,
+          "name": "ProximityGap._anon_class_1585",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1585",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Degree-`d` generalization of `BW_homMatrix_det_updateCol_natDegree_le_of_lt`: replacing an EVALUATION column (index < e+1) of a BW minor over degree-\u2264`d` words by a constant unit column drops the determinant degree to \u2264 `d * e`.",
+          "kind": "theorem",
+          "line": 1613,
+          "name": "ProximityGap.BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_lt",
+          "namespace": "ProximityGap",
+          "short_name": "BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_lt",
+          "signature": "theorem BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_lt {F : Type} [Field F]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1622,
+          "name": "ProximityGap._anon_class_1622",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1622",
+          "signature": "class classical"
         }
       ]
     },
@@ -37682,9 +37754,54 @@
           "signature": "def challengeTensorProduct (steps : \u2115) (r_challenges : Fin steps \u2192 L) : Vector L (2 ^ steps) :="
         },
         {
+          "doc": "The inner `Nat.rec` accumulator of `challengeTensorProduct` (for nonzero outer `steps`), exposed as a structural recursion so we can reason about it compositionally.",
+          "kind": "def",
+          "line": 973,
+          "name": "Binius.BinaryBasefold.ctpAux",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "ctpAux",
+          "signature": "def ctpAux (m : \u2115) (r_challenges : Fin m \u2192 L) : (k : \u2115) \u2192 k \u2264 m \u2192 Vector L (2 ^ k)"
+        },
+        {
+          "doc": "The raw inner `Nat.rec` accumulator equals the named `ctpAux`, at every level `k \u2264 m`.",
+          "kind": "theorem",
+          "line": 984,
+          "name": "Binius.BinaryBasefold.natRec_ctp_eq_ctpAux",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "natRec_ctp_eq_ctpAux",
+          "signature": "theorem natRec_ctp_eq_ctpAux (m : \u2115) (r_challenges : Fin m \u2192 L) :"
+        },
+        {
+          "doc": "`challengeTensorProduct` (nonzero `steps`) is exactly its named inner recursion.",
+          "kind": "theorem",
+          "line": 1014,
+          "name": "Binius.BinaryBasefold.challengeTensorProduct_eq_ctpAux",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "challengeTensorProduct_eq_ctpAux",
+          "signature": "theorem challengeTensorProduct_eq_ctpAux (m : \u2115) (hm : m \u2260 0) (r_challenges : Fin m \u2192 L) :"
+        },
+        {
+          "doc": "`ctpAux` get only depends on the challenges at indices `< k`.",
+          "kind": "theorem",
+          "line": 1022,
+          "name": "Binius.BinaryBasefold.ctpAux_congr",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "ctpAux_congr",
+          "signature": "theorem ctpAux_congr (m m' : \u2115) (r' : Fin m \u2192 L) (r'' : Fin m' \u2192 L) :"
+        },
+        {
+          "doc": "Tensor product recursion (entry form): low bit selects last challenge, high bits index the `n`-step tensor over truncated challenges.",
+          "kind": "theorem",
+          "line": 1044,
+          "name": "Binius.BinaryBasefold.challengeTensorProduct_succ_get",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "challengeTensorProduct_succ_get",
+          "signature": "theorem challengeTensorProduct_succ_get (n : \u2115) (r_challenges : Fin (n + 1) \u2192 L)"
+        },
+        {
           "doc": "Evaluation vector [f^(i)(x_0) ... f^(i)(x_{2 ^ steps-1})]^T",
           "kind": "def",
-          "line": 972,
+          "line": 1073,
           "name": "Binius.BinaryBasefold.fiberEvaluationMapping",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberEvaluationMapping",
@@ -37693,7 +37810,7 @@
         {
           "doc": "Matrix-vector multiplication form of iterated fold : For a local `steps > 0`, `\u2200 i \u2208 {0, ..., l-steps}`, `y \u2208 S^(i+steps)`, `fold(f^(i), r_0, ..., r_{steps-1})(y) = [\u2a02_{j=0}^{steps-1}(1-r_j, r_j)] \u2022 M_y` `\u2022 [f^(i)(x_0) ... f^(i)(x_{2 ^ steps-1})]^T`, where the right-hand vector's values `(x_0, ..., x_{2 ^ steps-1})` represent the fiber `(q^(i+steps-1) \u2218 ... \u2218 q^(i))\u207b\u00b9({y}) \u2282 S^(i)`.",
           "kind": "def",
-          "line": 992,
+          "line": 1093,
           "name": "Binius.BinaryBasefold.localized_fold_matrix_form",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "localized_fold_matrix_form",
@@ -37702,7 +37819,7 @@
         {
           "doc": "Wrapper of `localized_fold_matrix_form` with `fiber_eval_mapping` being specified explicitly.",
           "kind": "def",
-          "line": 1009,
+          "line": 1110,
           "name": "Binius.BinaryBasefold.localized_fold_eval",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "localized_fold_eval",
@@ -37711,7 +37828,7 @@
         {
           "doc": "**Lemma 4.9.** The iterated fold equals the localized fold evaluation via matmul form",
           "kind": "theorem",
-          "line": 1022,
+          "line": 1123,
           "name": "Binius.BinaryBasefold.iterated_fold_eq_matrix_form",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "iterated_fold_eq_matrix_form",
@@ -37720,7 +37837,7 @@
         {
           "doc": "Lemma 4.13 : if f\u207d\u2071\u207e is evaluation of P\u207d\u2071\u207e(X) over S\u207d\u2071\u207e, then fold(f\u207d\u2071\u207e, r_chal) is evaluation of P\u207d\u2071\u207a\u00b9\u207e(X) over S\u207d\u2071\u207a\u00b9\u207e. At level `i = \u2113`, we have P\u207d\u02e1\u207e =",
           "kind": "theorem",
-          "line": 1039,
+          "line": 1140,
           "name": "Binius.BinaryBasefold.fold_advances_evaluation_poly",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fold_advances_evaluation_poly",
@@ -37729,7 +37846,7 @@
         {
           "doc": "Given a point `v \u2208 S^(0)`, extract the middle `steps` bits `{v_i, ..., v_{i+steps-1}}` as a `Fin (2 ^ steps)`.",
           "kind": "def",
-          "line": 1226,
+          "line": 1327,
           "name": "Binius.BinaryBasefold.extractMiddleFinMask",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "extractMiddleFinMask",
@@ -37738,7 +37855,7 @@
         {
           "doc": "The Reed-Solomon code C^(i) for round i in Binary Basefold. For each i \u2208 {0, steps, ..., \u2113}, C(i) is the Reed-Solomon code RS_{L, S\u207d\u2071\u207e}[2^{\u2113+R-i}, 2^{\u2113-i}].",
           "kind": "def",
-          "line": 1252,
+          "line": 1353,
           "name": "Binius.BinaryBasefold.BBF_Code",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_Code",
@@ -37747,7 +37864,7 @@
         {
           "doc": "The (minimum) distance d_i of the code C^(i) : `d\u1d62 := 2^(\u2113 + R - i) - 2^(\u2113 - i) + 1`",
           "kind": "def",
-          "line": 1261,
+          "line": 1362,
           "name": "Binius.BinaryBasefold.BBF_CodeDistance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_CodeDistance",
@@ -37756,7 +37873,7 @@
         {
           "doc": "Disagreement set \u0394 : The set of points where two functions disagree. For functions f^(i+\u03d1) and g^(i+\u03d1), this is {y \u2208 S^(i+\u03d1) | f^(i+\u03d1)(y) \u2260 g^(i+\u03d1)(y)}. `Set`-valued analogue of the canonical `Code.disagreementCols` (in `ArkLib/Data/CodingTheory/Basic/Distance.lean`): used here because the underlying `sDomain` need not be `Fintype` / `DecidableEq` at every call site. When both instances are available, the two coincide modulo `Set.toFinset`.",
           "kind": "def",
-          "line": 1272,
+          "line": 1373,
           "name": "Binius.BinaryBasefold.disagreementSet",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "disagreementSet",
@@ -37765,7 +37882,7 @@
         {
           "doc": "Fiber-wise disagreement set \u0394^(i) : The set of points y \u2208 S^(i+\u03d1) for which functions f^(i) and g^(i) are not identical when restricted to the entire fiber of points in S\u207d\u2071\u207e that maps to y.",
           "kind": "def",
-          "line": 1281,
+          "line": 1382,
           "name": "Binius.BinaryBasefold.fiberwiseDisagreementSet",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseDisagreementSet",
@@ -37774,7 +37891,7 @@
         {
           "doc": "Fiber-wise distance d^(i) : The minimum size of the fiber-wise disagreement set between f^(i) and any codeword in C^(i).",
           "kind": "def",
-          "line": 1292,
+          "line": 1393,
           "name": "Binius.BinaryBasefold.fiberwiseDistance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseDistance",
@@ -37783,7 +37900,7 @@
         {
           "doc": "Fiberwise closeness : f^(i) is fiberwise close to C^(i) if 2 * d^(i)(f^(i), C^(i)) < d_{i+steps}",
           "kind": "def",
-          "line": 1303,
+          "line": 1404,
           "name": "Binius.BinaryBasefold.fiberwiseClose",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseClose",
@@ -37792,7 +37909,7 @@
         {
           "doc": "Hamming closeness : f is close to C in Hamming distance if 2 * d(f, C) < d_i",
           "kind": "def",
-          "line": 1311,
+          "line": 1412,
           "name": "Binius.BinaryBasefold.hammingClose",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "hammingClose",
@@ -37801,7 +37918,7 @@
         {
           "doc": "Unique closest codeword : If a function f^(i) is within the unique decoding radius of the code C^(i), then this gives the unique closest codeword using Berlekamp-Welch decoder.",
           "kind": "def",
-          "line": 1321,
+          "line": 1422,
           "name": "Binius.BinaryBasefold.uniqueClosestCodeword",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "uniqueClosestCodeword",
@@ -37810,7 +37927,7 @@
         {
           "doc": "if `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d_{\u1d62\u208asteps} / 2` (fiberwise distance), then `d(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d\u1d62/2` (regular code distance)",
           "kind": "theorem",
-          "line": 1495,
+          "line": 1596,
           "name": "Binius.BinaryBasefold.fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius",
@@ -37819,7 +37936,7 @@
         {
           "doc": "Compliance condition (Definition 4.17) : For an index `i` that is a multiple of `steps`, the oracle `f_i` is compliant if it's close to the code fiber-wise, the next oracle `f_i_plus_steps` is close to its code, and their unique closest codewords are consistent with folding.",
           "kind": "def",
-          "line": 1711,
+          "line": 1812,
           "name": "Binius.BinaryBasefold.isCompliant",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "isCompliant",
@@ -37828,7 +37945,7 @@
         {
           "doc": "Farness implies non-compliance. If `f_i` is far from its code `C_i`, it cannot be compliant. This follows directly from the contrapositive of `fiberwise_dist_lt_imp_dist_lt`.",
           "kind": "lemma",
-          "line": 1744,
+          "line": 1845,
           "name": "Binius.BinaryBasefold.farness_implies_non_compliance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "farness_implies_non_compliance",
@@ -37837,7 +37954,7 @@
         {
           "doc": "Bad event for folding (Definition 4.19) : This event captures two scenarios where the random folding challenges undermine the protocol's soundness checks. For `i \u2208 {0, ..., \u2113 - steps}`, - In case `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d\u1d62\u208asteps / 2` : `\u0394\u207d\u2071\u207e(f\u207d\u2071\u207e, f\u0304\u207d\u2071\u207e) \u2284 \u0394(fold(f\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'), fold(f\u0304\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'))` - In case `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) \u2265 d\u1d62\u208asteps / 2` : `d(fold(f\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'), C\u207d\u2071\u207asteps\u207e) < d\u1d62\u208asteps / 2`",
           "kind": "def",
-          "line": 1773,
+          "line": 1874,
           "name": "Binius.BinaryBasefold.foldingBadEvent",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldingBadEvent",
@@ -49017,7 +49134,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5322,
+      "declarations": 5335,
       "files": 282
     }
   }
