@@ -153,7 +153,7 @@ lemma relativeUniqueDecodingRadius_lt_one_sub_sqrtRate
   -- positivity forces ρ < 1
   have hρ_lt_one : ρ < 1 := by
     by_contra hge
-    push_neg at hge
+    push Not at hge
     have : (1 : ℝ≥0) - ρ = 0 := tsub_eq_zero_of_le hge
     rw [hudr, this] at hpos
     simp at hpos
