@@ -28017,7 +28017,7 @@
         {
           "doc": "A **non-adaptive** oracle verifier is an oracle verifier that makes a **fixed** list of queries to the input oracle statements and the prover's messages. These queries can depend on the input statement and the challenges, but later queries are not dependent on the responses of previous queries. Formally, we model this as a tuple of functions: - `queryOStmt`, which outputs a list of queries to the input oracle statements, - `queryMsg`, which outputs a list of queries to the prover's messages, - `verify`, which outputs the new statement from the query-response pairs. We allow querying the shared",
           "kind": "structure",
-          "line": 559,
+          "line": 561,
           "name": "OracleVerifier.NonAdaptive",
           "namespace": "OracleVerifier",
           "short_name": "NonAdaptive",
@@ -28026,7 +28026,7 @@
         {
           "doc": "Converts a non-adaptive oracle verifier into the general oracle verifier interface. This essentially performs the queries via `List.mapM`, then runs `verify` on the query-response pairs.",
           "kind": "def",
-          "line": 592,
+          "line": 594,
           "name": "OracleVerifier.NonAdaptive.toOracleVerifier",
           "namespace": "OracleVerifier.NonAdaptive",
           "short_name": "toOracleVerifier",
@@ -28035,7 +28035,7 @@
         {
           "doc": "The number of queries made to the `i`-th oracle statement, for a given input statement and challenges.",
           "kind": "def",
-          "line": 618,
+          "line": 620,
           "name": "OracleVerifier.NonAdaptive.numOStmtQueries",
           "namespace": "OracleVerifier.NonAdaptive",
           "short_name": "numOStmtQueries",
@@ -28044,7 +28044,7 @@
         {
           "doc": "The number of queries made to the `i`-th prover's message, for a given input statement and challenges.",
           "kind": "def",
-          "line": 625,
+          "line": 627,
           "name": "OracleVerifier.NonAdaptive.numOMsgQueries",
           "namespace": "OracleVerifier.NonAdaptive",
           "short_name": "numOMsgQueries",
@@ -28053,7 +28053,7 @@
         {
           "doc": "The total number of queries made to the oracle statements and the prover's messages, for a given input statement and challenges.",
           "kind": "def",
-          "line": 632,
+          "line": 634,
           "name": "OracleVerifier.NonAdaptive.totalNumQueries",
           "namespace": "OracleVerifier.NonAdaptive",
           "short_name": "totalNumQueries",
@@ -28062,7 +28062,7 @@
         {
           "doc": "An **interactive reduction** for a given protocol specification `pSpec`, and relative to oracles defined by `oSpec`, consists of a prover and a verifier.",
           "kind": "structure",
-          "line": 643,
+          "line": 645,
           "name": "Reduction",
           "namespace": "",
           "short_name": "Reduction",
@@ -28071,7 +28071,7 @@
         {
           "doc": "An **interactive oracle reduction** for a given protocol specification `pSpec`, and relative to oracles defined by `oSpec`, consists of a prover and an **oracle** verifier.",
           "kind": "structure",
-          "line": 651,
+          "line": 653,
           "name": "OracleReduction",
           "namespace": "",
           "short_name": "OracleReduction",
@@ -28080,7 +28080,7 @@
         {
           "doc": "An interactive oracle reduction can be seen as an interactive reduction, via coercing the oracle verifier to a (normal) verifier",
           "kind": "def",
-          "line": 662,
+          "line": 664,
           "name": "OracleReduction.toReduction",
           "namespace": "",
           "short_name": "OracleReduction.toReduction",
@@ -28089,7 +28089,7 @@
         {
           "doc": "An **interactive proof (IP)** is an interactive reduction where the output statement is a boolean, the output witness is trivial (a `Unit`), and the relation checks whether the output statement is true.",
           "kind": "def",
-          "line": 675,
+          "line": 677,
           "name": "Proof",
           "namespace": "",
           "short_name": "Proof",
@@ -28098,7 +28098,7 @@
         {
           "doc": "An **interactive oracle proof (IOP)** is an interactive oracle reduction where the output statement is a boolean, while both the output oracle statement & the output witness are trivial (`Unit` type). As a consequence, the output relation in an IOP is effectively a function `Bool \u2192 Prop`, which we can again assume to be the trivial one (sending `true` to `True`).",
           "kind": "def",
-          "line": 685,
+          "line": 687,
           "name": "OracleProof",
           "namespace": "",
           "short_name": "OracleProof",
@@ -28107,7 +28107,7 @@
         {
           "doc": "A **non-interactive prover** is a prover that only sends a single message to the verifier.",
           "kind": "def",
-          "line": 693,
+          "line": 695,
           "name": "NonInteractiveProver",
           "namespace": "",
           "short_name": "NonInteractiveProver",
@@ -28116,7 +28116,7 @@
         {
           "doc": "A **non-interactive verifier** is a verifier that only receives a single message from the prover.",
           "kind": "def",
-          "line": 699,
+          "line": 701,
           "name": "NonInteractiveVerifier",
           "namespace": "",
           "short_name": "NonInteractiveVerifier",
@@ -28125,7 +28125,7 @@
         {
           "doc": "A **non-interactive reduction** is an interactive reduction with only a single message from the prover to the verifier (and none in the other direction).",
           "kind": "def",
-          "line": 705,
+          "line": 707,
           "name": "NonInteractiveReduction",
           "namespace": "",
           "short_name": "NonInteractiveReduction",
@@ -28134,7 +28134,7 @@
         {
           "doc": "The trivial / identity prover, which does not send any messages to the verifier, and returns its input context (statement & witness) as output.",
           "kind": "def",
-          "line": 717,
+          "line": 719,
           "name": "Prover.id",
           "namespace": "",
           "short_name": "Prover.id",
@@ -28143,7 +28143,7 @@
         {
           "doc": "The trivial / identity verifier, which does not receive any messages from the prover, and returns its input statement as output.",
           "kind": "def",
-          "line": 726,
+          "line": 728,
           "name": "Verifier.id",
           "namespace": "",
           "short_name": "Verifier.id",
@@ -28152,7 +28152,7 @@
         {
           "doc": "The trivial / identity reduction, which consists of the trivial prover and verifier.",
           "kind": "def",
-          "line": 730,
+          "line": 732,
           "name": "Reduction.id",
           "namespace": "",
           "short_name": "Reduction.id",
@@ -28161,7 +28161,7 @@
         {
           "doc": "The trivial / identity prover in an oracle reduction, which unfolds to the trivial prover for the associated non-oracle reduction.",
           "kind": "def",
-          "line": 736,
+          "line": 738,
           "name": "OracleProver.id",
           "namespace": "",
           "short_name": "OracleProver.id",
@@ -28170,7 +28170,7 @@
         {
           "doc": "The trivial / identity verifier in an oracle reduction, which receives no messages from the prover, and returns its input statement as output.",
           "kind": "def",
-          "line": 742,
+          "line": 744,
           "name": "OracleVerifier.id",
           "namespace": "",
           "short_name": "OracleVerifier.id",
@@ -28179,7 +28179,7 @@
         {
           "doc": "The trivial / identity oracle reduction, which consists of the trivial oracle prover and verifier.",
           "kind": "def",
-          "line": 750,
+          "line": 752,
           "name": "OracleReduction.id",
           "namespace": "",
           "short_name": "OracleReduction.id",
@@ -28188,7 +28188,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 754,
+          "line": 756,
           "name": "Prover.trivial",
           "namespace": "",
           "short_name": "Prover.trivial",
@@ -28197,7 +28197,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 755,
+          "line": 757,
           "name": "Verifier.trivial",
           "namespace": "",
           "short_name": "Verifier.trivial",
@@ -28206,7 +28206,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 756,
+          "line": 758,
           "name": "Reduction.trivial",
           "namespace": "",
           "short_name": "Reduction.trivial",
@@ -28215,7 +28215,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 757,
+          "line": 759,
           "name": "OracleProver.trivial",
           "namespace": "",
           "short_name": "OracleProver.trivial",
@@ -28224,7 +28224,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 758,
+          "line": 760,
           "name": "OracleVerifier.trivial",
           "namespace": "",
           "short_name": "OracleVerifier.trivial",
@@ -28233,7 +28233,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 759,
+          "line": 761,
           "name": "OracleReduction.trivial",
           "namespace": "",
           "short_name": "OracleReduction.trivial",
@@ -28242,7 +28242,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 762,
+          "line": 764,
           "name": "OracleVerifier.id_toVerifier",
           "namespace": "",
           "short_name": "OracleVerifier.id_toVerifier",
@@ -28251,7 +28251,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 770,
+          "line": 772,
           "name": "OracleReduction.id_toReduction",
           "namespace": "",
           "short_name": "OracleReduction.id_toReduction",
@@ -28260,7 +28260,7 @@
         {
           "doc": "A protocol specification with the prover speaking first",
           "kind": "class",
-          "line": 784,
+          "line": 786,
           "name": "ProtocolSpec.ProverFirst",
           "namespace": "ProtocolSpec",
           "short_name": "ProverFirst",
@@ -28269,7 +28269,7 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 787,
+          "line": 789,
           "name": "ProtocolSpec.VerifierFirst",
           "namespace": "ProtocolSpec",
           "short_name": "VerifierFirst",
@@ -28278,7 +28278,7 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 790,
+          "line": 792,
           "name": "ProtocolSpec.ProverLast",
           "namespace": "ProtocolSpec",
           "short_name": "ProverLast",
@@ -28287,7 +28287,7 @@
         {
           "doc": "A protocol specification with the verifier speaking last",
           "kind": "class",
-          "line": 794,
+          "line": 796,
           "name": "ProtocolSpec.VerifierLast",
           "namespace": "ProtocolSpec",
           "short_name": "VerifierLast",
@@ -28296,7 +28296,7 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 797,
+          "line": 799,
           "name": "ProtocolSpec.ProverOnly",
           "namespace": "ProtocolSpec",
           "short_name": "ProverOnly",
@@ -28305,7 +28305,7 @@
         {
           "doc": "A non-interactive protocol specification with a single message from the prover to the verifier",
           "kind": "alias",
-          "line": 801,
+          "line": 803,
           "name": "ProtocolSpec.NonInteractive",
           "namespace": "ProtocolSpec",
           "short_name": "NonInteractive",
@@ -28314,7 +28314,7 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 803,
+          "line": 805,
           "name": "ProtocolSpec.VerifierOnly",
           "namespace": "ProtocolSpec",
           "short_name": "VerifierOnly",
@@ -28323,7 +28323,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 806,
+          "line": 808,
           "name": "ProtocolSpec.prover_first",
           "namespace": "ProtocolSpec",
           "short_name": "prover_first",
@@ -28332,7 +28332,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 810,
+          "line": 812,
           "name": "ProtocolSpec.verifier_first",
           "namespace": "ProtocolSpec",
           "short_name": "verifier_first",
@@ -28341,7 +28341,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 814,
+          "line": 816,
           "name": "ProtocolSpec.prover_last",
           "namespace": "ProtocolSpec",
           "short_name": "prover_last",
@@ -28350,7 +28350,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 818,
+          "line": 820,
           "name": "ProtocolSpec.verifier_last",
           "namespace": "ProtocolSpec",
           "short_name": "verifier_last",
@@ -28359,20 +28359,11 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 826,
-          "name": "ProtocolSpec._anon_instance_826",
-          "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_826",
-          "signature": "instance instance [ProverFirst pSpec] : ProverLast pSpec where"
-        },
-        {
-          "doc": "",
-          "kind": "instance",
           "line": 828,
           "name": "ProtocolSpec._anon_instance_828",
           "namespace": "ProtocolSpec",
           "short_name": "_anon_instance_828",
-          "signature": "instance instance [VerifierFirst pSpec] : VerifierLast pSpec where"
+          "signature": "instance instance [ProverFirst pSpec] : ProverLast pSpec where"
         },
         {
           "doc": "",
@@ -28381,7 +28372,7 @@
           "name": "ProtocolSpec._anon_instance_830",
           "namespace": "ProtocolSpec",
           "short_name": "_anon_instance_830",
-          "signature": "instance instance [h : ProverLast pSpec] : ProverFirst pSpec where"
+          "signature": "instance instance [VerifierFirst pSpec] : VerifierLast pSpec where"
         },
         {
           "doc": "",
@@ -28390,79 +28381,79 @@
           "name": "ProtocolSpec._anon_instance_832",
           "namespace": "ProtocolSpec",
           "short_name": "_anon_instance_832",
+          "signature": "instance instance [h : ProverLast pSpec] : ProverFirst pSpec where"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 834,
+          "name": "ProtocolSpec._anon_instance_834",
+          "namespace": "ProtocolSpec",
+          "short_name": "_anon_instance_834",
           "signature": "instance instance [h : VerifierFirst pSpec] : VerifierFirst pSpec where"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 835,
-          "name": "ProtocolSpec._anon_instance_835",
+          "line": 837,
+          "name": "ProtocolSpec._anon_instance_837",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_835",
+          "short_name": "_anon_instance_837",
           "signature": "instance instance [ProverFirst pSpec] : Unique (pSpec.MessageIdx) where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 836,
-          "name": "ProtocolSpec._anon_def_836",
+          "line": 838,
+          "name": "ProtocolSpec._anon_def_838",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_def_836",
+          "short_name": "_anon_def_838",
           "signature": "def default := \u27e80, by simp\u27e9"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 839,
-          "name": "ProtocolSpec._anon_instance_839",
+          "line": 841,
+          "name": "ProtocolSpec._anon_instance_841",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_839",
+          "short_name": "_anon_instance_841",
           "signature": "instance instance [VerifierFirst pSpec] : Unique (pSpec.ChallengeIdx) where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 840,
-          "name": "ProtocolSpec._anon_def_840",
+          "line": 842,
+          "name": "ProtocolSpec._anon_def_842",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_def_840",
+          "short_name": "_anon_def_842",
           "signature": "def default := \u27e80, by simp\u27e9"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 843,
-          "name": "ProtocolSpec._anon_instance_843",
+          "line": 845,
+          "name": "ProtocolSpec._anon_instance_845",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_843",
+          "short_name": "_anon_instance_845",
           "signature": "instance instance [h : ProverFirst pSpec] : IsEmpty (pSpec.ChallengeIdx) where"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 846,
-          "name": "ProtocolSpec._anon_instance_846",
+          "line": 848,
+          "name": "ProtocolSpec._anon_instance_848",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_846",
+          "short_name": "_anon_instance_848",
           "signature": "instance instance [h : VerifierFirst pSpec] : IsEmpty (pSpec.MessageIdx) where"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 849,
-          "name": "ProtocolSpec._anon_instance_849",
+          "line": 851,
+          "name": "ProtocolSpec._anon_instance_851",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_849",
+          "short_name": "_anon_instance_851",
           "signature": "instance instance [ProverFirst pSpec] : \u2200 i, VCVCompatible (pSpec.Challenge i) := isEmptyElim"
-        },
-        {
-          "doc": "",
-          "kind": "instance",
-          "line": 850,
-          "name": "ProtocolSpec._anon_instance_850",
-          "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_850",
-          "signature": "instance instance [VerifierFirst pSpec] : \u2200 i, OracleInterface (pSpec.Message i) := isEmptyElim"
         },
         {
           "doc": "",
@@ -28471,21 +28462,30 @@
           "name": "ProtocolSpec._anon_instance_852",
           "namespace": "ProtocolSpec",
           "short_name": "_anon_instance_852",
+          "signature": "instance instance [VerifierFirst pSpec] : \u2200 i, OracleInterface (pSpec.Message i) := isEmptyElim"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 854,
+          "name": "ProtocolSpec._anon_instance_854",
+          "namespace": "ProtocolSpec",
+          "short_name": "_anon_instance_854",
           "signature": "instance instance [ProverFirst pSpec] [h : OracleInterface (pSpec.\u00abType\u00bb 0)] :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 855,
-          "name": "ProtocolSpec._anon_instance_855",
+          "line": 857,
+          "name": "ProtocolSpec._anon_instance_857",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_855",
+          "short_name": "_anon_instance_857",
           "signature": "instance instance [VerifierFirst pSpec] [h : VCVCompatible (pSpec.\u00abType\u00bb 0)] :"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 862,
+          "line": 864,
           "name": "ProtocolSpec.prover_last_of_two",
           "namespace": "ProtocolSpec",
           "short_name": "prover_last_of_two",
@@ -28494,7 +28494,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 866,
+          "line": 868,
           "name": "ProtocolSpec.verifier_last_of_two",
           "namespace": "ProtocolSpec",
           "short_name": "verifier_last_of_two",
@@ -28503,7 +28503,7 @@
         {
           "doc": "A protocol specification with a single round of interaction consisting of two messages, with the prover speaking first and the verifier speaking last This notation is currently somewhat ambiguous, given that there are other valid ways of defining a \"single-round\" protocol, such as letting the verifier speaks first, letting the prover speaks multiple times, etc.",
           "kind": "class",
-          "line": 875,
+          "line": 877,
           "name": "ProtocolSpec.IsSingleRound",
           "namespace": "ProtocolSpec",
           "short_name": "IsSingleRound",
@@ -28512,7 +28512,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 877,
+          "line": 879,
           "name": "ProtocolSpec.ProverThenVerifier",
           "namespace": "ProtocolSpec",
           "short_name": "ProverThenVerifier",
@@ -28521,61 +28521,61 @@
         {
           "doc": "The first message is the only message from the prover to the verifier",
           "kind": "instance",
-          "line": 884,
-          "name": "ProtocolSpec.IsSingleRound._anon_instance_884",
+          "line": 886,
+          "name": "ProtocolSpec.IsSingleRound._anon_instance_886",
           "namespace": "ProtocolSpec.IsSingleRound",
-          "short_name": "_anon_instance_884",
+          "short_name": "_anon_instance_886",
           "signature": "instance instance [IsSingleRound pSpec] : Unique (pSpec.MessageIdx) where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 885,
-          "name": "ProtocolSpec.IsSingleRound._anon_def_885",
+          "line": 887,
+          "name": "ProtocolSpec.IsSingleRound._anon_def_887",
           "namespace": "ProtocolSpec.IsSingleRound",
-          "short_name": "_anon_def_885",
+          "short_name": "_anon_def_887",
           "signature": "def default := \u27e80, by simp\u27e9"
         },
         {
           "doc": "The second message is the only challenge from the verifier to the prover",
           "kind": "instance",
-          "line": 894,
-          "name": "ProtocolSpec.IsSingleRound._anon_instance_894",
+          "line": 896,
+          "name": "ProtocolSpec.IsSingleRound._anon_instance_896",
           "namespace": "ProtocolSpec.IsSingleRound",
-          "short_name": "_anon_instance_894",
+          "short_name": "_anon_instance_896",
           "signature": "instance instance [IsSingleRound pSpec] : Unique (pSpec.ChallengeIdx) where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 895,
-          "name": "ProtocolSpec.IsSingleRound._anon_def_895",
+          "line": 897,
+          "name": "ProtocolSpec.IsSingleRound._anon_def_897",
           "namespace": "ProtocolSpec.IsSingleRound",
-          "short_name": "_anon_def_895",
+          "short_name": "_anon_def_897",
           "signature": "def default := \u27e81, by simp\u27e9"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 903,
-          "name": "ProtocolSpec.IsSingleRound._anon_instance_903",
+          "line": 905,
+          "name": "ProtocolSpec.IsSingleRound._anon_instance_905",
           "namespace": "ProtocolSpec.IsSingleRound",
-          "short_name": "_anon_instance_903",
+          "short_name": "_anon_instance_905",
           "signature": "instance instance [IsSingleRound pSpec] [h : OracleInterface (pSpec.Message default)] :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 909,
-          "name": "ProtocolSpec.IsSingleRound._anon_instance_909",
+          "line": 911,
+          "name": "ProtocolSpec.IsSingleRound._anon_instance_911",
           "namespace": "ProtocolSpec.IsSingleRound",
-          "short_name": "_anon_instance_909",
+          "short_name": "_anon_instance_911",
           "signature": "instance instance [IsSingleRound pSpec] [h : VCVCompatible (pSpec.Challenge default)] :"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 918,
+          "line": 920,
           "name": "ProtocolSpec.FullTranscript.mk2",
           "namespace": "ProtocolSpec",
           "short_name": "FullTranscript.mk2",
@@ -28584,7 +28584,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 921,
+          "line": 923,
           "name": "ProtocolSpec.FullTranscript.mk2_eq_snoc_snoc",
           "namespace": "ProtocolSpec",
           "short_name": "FullTranscript.mk2_eq_snoc_snoc",
@@ -28593,7 +28593,7 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 939,
+          "line": 941,
           "name": "Prover.IsPure",
           "namespace": "",
           "short_name": "Prover.IsPure",
@@ -28602,7 +28602,7 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 943,
+          "line": 945,
           "name": "Verifier.IsPure",
           "namespace": "",
           "short_name": "Verifier.IsPure",
@@ -28611,7 +28611,7 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 947,
+          "line": 949,
           "name": "Reduction.IsPure",
           "namespace": "",
           "short_name": "Reduction.IsPure",
@@ -28901,7 +28901,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 190,
+          "line": 192,
           "name": "OracleVerifier.append_toVerifier",
           "namespace": "",
           "short_name": "OracleVerifier.append_toVerifier",
@@ -28910,7 +28910,7 @@
         {
           "doc": "Sequential composition of oracle reductions is just the sequential composition of the oracle provers and oracle verifiers.",
           "kind": "def",
-          "line": 198,
+          "line": 200,
           "name": "OracleReduction.append",
           "namespace": "",
           "short_name": "OracleReduction.append",
@@ -28919,7 +28919,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 205,
+          "line": 207,
           "name": "OracleReduction.append_toReduction",
           "namespace": "",
           "short_name": "OracleReduction.append_toReduction",
@@ -28928,7 +28928,7 @@
         {
           "doc": "The sequential composition of two straightline extractors. TODO: state a monotone condition on the extractor, namely that if extraction succeeds on a given query log, then it also succeeds on any extension of that query log",
           "kind": "def",
-          "line": 234,
+          "line": 236,
           "name": "Extractor.Straightline.append",
           "namespace": "Extractor",
           "short_name": "Straightline.append",
@@ -28937,7 +28937,7 @@
         {
           "doc": "The round-by-round extractor for the sequential composition of two (oracle) reductions",
           "kind": "def",
-          "line": 245,
+          "line": 247,
           "name": "Extractor.RoundByRound.append",
           "namespace": "Extractor",
           "short_name": "RoundByRound.append",
@@ -28946,7 +28946,7 @@
         {
           "doc": "The sequential composition of two state functions.",
           "kind": "def",
-          "line": 273,
+          "line": 276,
           "name": "Verifier.StateFunction.append",
           "namespace": "Verifier",
           "short_name": "StateFunction.append",
@@ -28955,7 +28955,7 @@
         {
           "doc": "The challenge type at index `i` of the left protocol coincides with the challenge type at the embedded index `ChallengeIdx.inl i` of the appended protocol. This is the response-type equality underlying the `SubSpec` inclusion of the left challenge oracle into the appended one.",
           "kind": "theorem",
-          "line": 329,
+          "line": 332,
           "name": "Prover.range_challenge_append_inl",
           "namespace": "Prover",
           "short_name": "range_challenge_append_inl",
@@ -28964,7 +28964,7 @@
         {
           "doc": "The challenge type at index `i` of the right protocol coincides with the challenge type at the embedded index `ChallengeIdx.inr i` of the appended protocol. This is the response-type equality underlying the `SubSpec` inclusion of the right challenge oracle into the appended one.",
           "kind": "theorem",
-          "line": 338,
+          "line": 341,
           "name": "Prover.range_challenge_append_inr",
           "namespace": "Prover",
           "short_name": "range_challenge_append_inr",
@@ -28973,25 +28973,25 @@
         {
           "doc": "The left protocol's challenge oracle is a sub-spec of the appended protocol's challenge oracle: a query to challenge round `i` of `pSpec\u2081` is forwarded to round `ChallengeIdx.inl i` of `pSpec\u2081 ++\u209a pSpec\u2082`, with responses transported back along `range_challenge_append_inl`.",
           "kind": "instance",
-          "line": 347,
-          "name": "Prover._anon_instance_347",
+          "line": 350,
+          "name": "Prover._anon_instance_350",
           "namespace": "Prover",
-          "short_name": "_anon_instance_347",
+          "short_name": "_anon_instance_350",
           "signature": "instance instance : [(pSpec\u2081).Challenge]\u2092 \u2282\u2092 [(pSpec\u2081 ++\u209a pSpec\u2082).Challenge]\u2092 where"
         },
         {
           "doc": "The right protocol's challenge oracle is a sub-spec of the appended protocol's challenge oracle: a query to challenge round `i` of `pSpec\u2082` is forwarded to round `ChallengeIdx.inr i` of `pSpec\u2081 ++\u209a pSpec\u2082`, with responses transported back along `range_challenge_append_inr`.",
           "kind": "instance",
-          "line": 356,
-          "name": "Prover._anon_instance_356",
+          "line": 359,
+          "name": "Prover._anon_instance_359",
           "namespace": "Prover",
-          "short_name": "_anon_instance_356",
+          "short_name": "_anon_instance_359",
           "signature": "instance instance : [(pSpec\u2082).Challenge]\u2092 \u2282\u2092 [(pSpec\u2081 ++\u209a pSpec\u2082).Challenge]\u2092 where"
         },
         {
           "doc": "States that running an appended prover `P\u2081.append P\u2082` with an initial statement `stmt\u2081` and witness `wit\u2081` behaves as expected: it first runs `P\u2081` to obtain an intermediate statement `stmt\u2082`, witness `wit\u2082`, and transcript `transcript\u2081`. Then, it runs `P\u2082` on `stmt\u2082` and `wit\u2082` to produce the final statement `stmt\u2083`, witness `wit\u2083`, and transcript `transcript\u2082`. The overall output is `stmt\u2083`, `wit\u2083`, and the combined transcript `transcript\u2081 ++\u209c transcript\u2082`.",
           "kind": "theorem",
-          "line": 369,
+          "line": 372,
           "name": "Prover.append_run",
           "namespace": "Prover",
           "short_name": "append_run",
@@ -29000,7 +29000,7 @@
         {
           "doc": "Running the sequential composition of two verifiers on a transcript of the combined protocol is equivalent to running the first verifier on the first part of the transcript, and the second verifier on the second part of the transcript, and returning the final statement.",
           "kind": "theorem",
-          "line": 389,
+          "line": 392,
           "name": "Verifier.append_run",
           "namespace": "Verifier",
           "short_name": "append_run",
@@ -29009,7 +29009,7 @@
         {
           "doc": "Sequential composition preserves completeness Namely, two reductions satisfy completeness with compatible relations (`rel\u2081`, `rel\u2082` for `R\u2081` and `rel\u2082`, `rel\u2083` for `R\u2082`), and respective completeness errors `completenessError\u2081` and `completenessError\u2082`, then their sequential composition `R\u2081.append R\u2082` also satisfies completeness with respect to `rel\u2081` and `rel\u2083`. The completeness error of the appended reduction is the sum of the individual errors (`completenessError\u2081 + completenessError\u2082`).",
           "kind": "theorem",
-          "line": 461,
+          "line": 464,
           "name": "Reduction.append_completeness",
           "namespace": "Reduction",
           "short_name": "append_completeness",
@@ -29018,7 +29018,7 @@
         {
           "doc": "If two reductions satisfy perfect completeness with compatible relations, then their concatenation also satisfies perfect completeness.",
           "kind": "theorem",
-          "line": 479,
+          "line": 482,
           "name": "Reduction.append_perfectCompleteness",
           "namespace": "Reduction",
           "short_name": "append_perfectCompleteness",
@@ -29027,7 +29027,7 @@
         {
           "doc": "If two verifiers satisfy soundness with compatible languages and respective soundness errors, then their sequential composition also satisfies soundness. The soundness error of the appended verifier is the sum of the individual errors.",
           "kind": "theorem",
-          "line": 503,
+          "line": 506,
           "name": "Verifier.append_soundness",
           "namespace": "Verifier",
           "short_name": "append_soundness",
@@ -29036,7 +29036,7 @@
         {
           "doc": "If two verifiers satisfy knowledge soundness with compatible relations and respective knowledge errors, then their sequential composition also satisfies knowledge soundness. The knowledge error of the appended verifier is the sum of the individual errors.",
           "kind": "theorem",
-          "line": 514,
+          "line": 517,
           "name": "Verifier.append_knowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "append_knowledgeSoundness",
@@ -29045,7 +29045,7 @@
         {
           "doc": "If two verifiers satisfy round-by-round soundness with compatible languages and respective RBR soundness errors, then their sequential composition also satisfies round-by-round soundness. The RBR soundness error of the appended verifier extends the individual errors appropriately.",
           "kind": "theorem",
-          "line": 527,
+          "line": 530,
           "name": "Verifier.append_rbrSoundness",
           "namespace": "Verifier",
           "short_name": "append_rbrSoundness",
@@ -29054,7 +29054,7 @@
         {
           "doc": "If two verifiers satisfy round-by-round knowledge soundness with compatible relations and respective RBR knowledge errors, then their sequential composition also satisfies round-by-round knowledge soundness. The RBR knowledge error of the appended verifier extends the individual errors appropriately.",
           "kind": "theorem",
-          "line": 542,
+          "line": 545,
           "name": "Verifier.append_rbrKnowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "append_rbrKnowledgeSoundness",
@@ -29063,7 +29063,7 @@
         {
           "doc": "Sequential composition preserves completeness Namely, two oracle reductions satisfy completeness with compatible relations (`rel\u2081`, `rel\u2082` for `R\u2081` and `rel\u2082`, `rel\u2083` for `R\u2082`), and respective completeness errors `completenessError\u2081` and `completenessError\u2082`, then their sequential composition `R\u2081.append R\u2082` also satisfies completeness with respect to `rel\u2081` and `rel\u2083`. The completeness error of the appended reduction is the sum of the individual errors (`completenessError\u2081 + completenessError\u2082`).",
           "kind": "theorem",
-          "line": 585,
+          "line": 588,
           "name": "OracleReduction.append_completeness",
           "namespace": "OracleReduction",
           "short_name": "append_completeness",
@@ -29072,7 +29072,7 @@
         {
           "doc": "If two oracle reductions satisfy perfect completeness with compatible relations, then their sequential composition also satisfies perfect completeness.",
           "kind": "theorem",
-          "line": 599,
+          "line": 602,
           "name": "OracleReduction.append_perfectCompleteness",
           "namespace": "OracleReduction",
           "short_name": "append_perfectCompleteness",
@@ -29081,7 +29081,7 @@
         {
           "doc": "If two oracle verifiers satisfy soundness with compatible languages and respective soundness errors, then their sequential composition also satisfies soundness. The soundness error of the appended verifier is the sum of the individual errors.",
           "kind": "theorem",
-          "line": 619,
+          "line": 622,
           "name": "OracleVerifier.append_soundness",
           "namespace": "OracleVerifier",
           "short_name": "append_soundness",
@@ -29090,7 +29090,7 @@
         {
           "doc": "If two oracle verifiers satisfy knowledge soundness with compatible relations and respective knowledge errors, then their sequential composition also satisfies knowledge soundness. The knowledge error of the appended verifier is the sum of the individual errors.",
           "kind": "theorem",
-          "line": 633,
+          "line": 636,
           "name": "OracleVerifier.append_knowledgeSoundness",
           "namespace": "OracleVerifier",
           "short_name": "append_knowledgeSoundness",
@@ -29099,7 +29099,7 @@
         {
           "doc": "If two oracle verifiers satisfy round-by-round soundness with compatible languages and respective RBR soundness errors, then their sequential composition also satisfies round-by-round soundness. The RBR soundness error of the appended verifier extends the individual errors appropriately.",
           "kind": "theorem",
-          "line": 649,
+          "line": 652,
           "name": "OracleVerifier.append_rbrSoundness",
           "namespace": "OracleVerifier",
           "short_name": "append_rbrSoundness",
@@ -29108,7 +29108,7 @@
         {
           "doc": "If two oracle verifiers satisfy round-by-round knowledge soundness with compatible relations and respective RBR knowledge errors, then their sequential composition also satisfies round-by-round knowledge soundness. The RBR knowledge error of the appended verifier extends the individual errors appropriately.",
           "kind": "theorem",
-          "line": 665,
+          "line": 668,
           "name": "OracleVerifier.append_rbrKnowledgeSoundness",
           "namespace": "OracleVerifier",
           "short_name": "append_rbrKnowledgeSoundness",
@@ -30123,9 +30123,18 @@
           "signature": "def BacktrackSequence.Index (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))"
         },
         {
+          "doc": "",
+          "kind": "class",
+          "line": 74,
+          "name": "DuplexSpongeFS._anon_class_74",
+          "namespace": "DuplexSpongeFS",
+          "short_name": "_anon_class_74",
+          "signature": "class classical"
+        },
+        {
           "doc": "A family of backtrack sequences, defined as a finite set of backtrack sequences such that no two sequences are strict subsets of each other",
           "kind": "structure",
-          "line": 81,
+          "line": 106,
           "name": "DuplexSpongeFS.BacktrackSequenceFamily",
           "namespace": "DuplexSpongeFS",
           "short_name": "BacktrackSequenceFamily",
@@ -30134,7 +30143,7 @@
         {
           "doc": "The backtracking procedure in Section 5.2, which takes in: - the query-answer trace for the oracle `(h, p, p\u207b\u00b9)` - a state (vector of `N` units) And returns one of the following: - `none` - `err` - A result consisting of: an input statement, a round index `i \u2264 n`, and the protocol messages up to round `i` NOTE: we do _not_ define the extra data structure `tr\u25b5` as in the paper, as that is entirely derived from the actual trace and is only present for efficiency (which we do not plan to reason about) TODO: figure out the best way to encode the two errors (currently we encode `err` as the failure",
           "kind": "def",
-          "line": 107,
+          "line": 132,
           "name": "DuplexSpongeFS.backTrack",
           "namespace": "DuplexSpongeFS",
           "short_name": "backTrack",
@@ -30181,9 +30190,9 @@
           "signature": "def NoRedundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) : Prop :="
         },
         {
-          "doc": "Procedure to remove all redundant queries from the duplex sponge query-answer trace",
+          "doc": "Procedure to remove all redundant queries from the duplex sponge query-answer trace. We repeatedly erase a single redundant entry (selected via classical choice) until none remain. Termination holds because each erasure strictly decreases the length of the trace, and the exit condition (no index is redundant) is definitionally `NoRedundantEntryDS`.",
           "kind": "def",
-          "line": 72,
+          "line": 76,
           "name": "OracleSpec.QueryLog.removeRedundantEntryDS",
           "namespace": "OracleSpec.QueryLog",
           "short_name": "removeRedundantEntryDS",
@@ -30192,7 +30201,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 89,
+          "line": 104,
           "name": "OracleSpec.QueryLog.BadEventDS.capacitySegmentDupHash",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "capacitySegmentDupHash",
@@ -30201,7 +30210,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 104,
+          "line": 119,
           "name": "OracleSpec.QueryLog.BadEventDS.E_h",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_h",
@@ -30210,7 +30219,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 106,
+          "line": 121,
           "name": "OracleSpec.QueryLog.BadEventDS.capacitySegmentDupPerm",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "capacitySegmentDupPerm",
@@ -30219,7 +30228,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 123,
+          "line": 138,
           "name": "OracleSpec.QueryLog.BadEventDS.E_p",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_p",
@@ -30228,7 +30237,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 125,
+          "line": 140,
           "name": "OracleSpec.QueryLog.BadEventDS.capacitySegmentDupPermInv",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "capacitySegmentDupPermInv",
@@ -30237,7 +30246,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 142,
+          "line": 157,
           "name": "OracleSpec.QueryLog.BadEventDS.E_pinv",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_pinv",
@@ -30246,7 +30255,7 @@
         {
           "doc": "There exists an output capacity segment in the base trace tr\u00af that appears as a prior input/output capacity segment. This breaks down into one of the predicates above",
           "kind": "def",
-          "line": 146,
+          "line": 161,
           "name": "OracleSpec.QueryLog.BadEventDS.capacitySegmentDup",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "capacitySegmentDup",
@@ -30255,7 +30264,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 149,
+          "line": 164,
           "name": "OracleSpec.QueryLog.BadEventDS.E_dup",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_dup",
@@ -30264,7 +30273,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 153,
+          "line": 168,
           "name": "OracleSpec.QueryLog.BadEventDS.notFunction",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "notFunction",
@@ -30273,7 +30282,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 161,
+          "line": 176,
           "name": "OracleSpec.QueryLog.BadEventDS.E_func",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_func",
@@ -30282,7 +30291,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 163,
+          "line": 178,
           "name": "OracleSpec.QueryLog.BadEventDS.combined",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "combined",
@@ -30291,7 +30300,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 166,
+          "line": 181,
           "name": "OracleSpec.QueryLog.BadEventDS.E",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E",
@@ -30300,7 +30309,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 172,
+          "line": 187,
           "name": "OracleSpec.QueryLog.BadEventDS.collisionFwdFwd",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "collisionFwdFwd",
@@ -30309,7 +30318,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 179,
+          "line": 194,
           "name": "OracleSpec.QueryLog.BadEventDS.E_col_p",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_col_p",
@@ -30318,7 +30327,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 181,
+          "line": 196,
           "name": "OracleSpec.QueryLog.BadEventDS.collisionBwdBwd",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "collisionBwdBwd",
@@ -30327,7 +30336,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 188,
+          "line": 203,
           "name": "OracleSpec.QueryLog.BadEventDS.E_col_pinv",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_col_pinv",
@@ -30336,7 +30345,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 190,
+          "line": 205,
           "name": "OracleSpec.QueryLog.BadEventDS.collisionFwdBwd",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "collisionFwdBwd",
@@ -30345,7 +30354,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 197,
+          "line": 212,
           "name": "OracleSpec.QueryLog.BadEventDS.E_col_p_pinv",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_col_p_pinv",
@@ -30354,7 +30363,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 199,
+          "line": 214,
           "name": "OracleSpec.QueryLog.BadEventDS.collisionBwdFwd",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "collisionBwdFwd",
@@ -30363,7 +30372,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 206,
+          "line": 221,
           "name": "OracleSpec.QueryLog.BadEventDS.E_col_pinv_p",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_col_pinv_p",
@@ -30372,7 +30381,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 208,
+          "line": 223,
           "name": "OracleSpec.QueryLog.BadEventDS.collisionPerm",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "collisionPerm",
@@ -30381,7 +30390,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 211,
+          "line": 226,
           "name": "OracleSpec.QueryLog.BadEventDS.E_prp",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_prp",
@@ -30390,7 +30399,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 213,
+          "line": 228,
           "name": "OracleSpec.QueryLog.BadEventDS.not_collisionPerm_of_not_combined",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "not_collisionPerm_of_not_combined",
@@ -30399,7 +30408,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 298,
+          "line": 313,
           "name": "OracleSpec.QueryLog.BadEventDS.inv",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "inv",
@@ -30408,7 +30417,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 302,
+          "line": 317,
           "name": "OracleSpec.QueryLog.BadEventDS.E_inv",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_inv",
@@ -30417,7 +30426,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 304,
+          "line": 319,
           "name": "OracleSpec.QueryLog.BadEventDS.not_inv_of_not_combined",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "not_inv_of_not_combined",
@@ -30426,7 +30435,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 307,
+          "line": 322,
           "name": "OracleSpec.QueryLog.BadEventDS.fork",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "fork",
@@ -30435,7 +30444,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 311,
+          "line": 326,
           "name": "OracleSpec.QueryLog.BadEventDS.E_fork",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_fork",
@@ -30444,7 +30453,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 313,
+          "line": 328,
           "name": "OracleSpec.QueryLog.BadEventDS.not_fork_of_not_combined",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "not_fork_of_not_combined",
@@ -30453,7 +30462,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 317,
+          "line": 332,
           "name": "OracleSpec.QueryLog.BadEventDS.outOfOrderHash",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "outOfOrderHash",
@@ -30462,7 +30471,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 321,
+          "line": 336,
           "name": "OracleSpec.QueryLog.BadEventDS.E_time_h",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_time_h",
@@ -30471,7 +30480,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 323,
+          "line": 338,
           "name": "OracleSpec.QueryLog.BadEventDS.outOfOrderPerm",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "outOfOrderPerm",
@@ -30480,7 +30489,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 327,
+          "line": 342,
           "name": "OracleSpec.QueryLog.BadEventDS.E_time_p",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_time_p",
@@ -30489,7 +30498,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 329,
+          "line": 344,
           "name": "OracleSpec.QueryLog.BadEventDS.outOfOrder",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "outOfOrder",
@@ -30498,7 +30507,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 332,
+          "line": 347,
           "name": "OracleSpec.QueryLog.BadEventDS.E_time",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "E_time",
@@ -30507,7 +30516,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 334,
+          "line": 349,
           "name": "OracleSpec.QueryLog.BadEventDS.not_outOfOrder_of_not_combined",
           "namespace": "OracleSpec.QueryLog.BadEventDS",
           "short_name": "not_outOfOrder_of_not_combined",
@@ -30639,7 +30648,7 @@
         {
           "doc": "",
           "kind": "alias",
-          "line": 44,
+          "line": 49,
           "name": "DuplexSpongeFS.d2SAlgo",
           "namespace": "DuplexSpongeFS",
           "short_name": "d2SAlgo",
@@ -36002,9 +36011,18 @@
           "signature": "def f_succ'"
         },
         {
+          "doc": "",
+          "kind": "lemma",
+          "line": 252,
+          "name": "Fri.rs_code_mem_of_card_le_degree",
+          "namespace": "Fri",
+          "short_name": "rs_code_mem_of_card_le_degree",
+          "signature": "lemma rs_code_mem_of_card_le_degree"
+        },
+        {
           "doc": "This theorem asserts that given an appropriate codeword, `f` of an appropriate Reed-Solomon code, the result of honestly folding the corresponding polynomial is then itself a member of the next Reed-Solomon code. Corresponds to Claim 8.1 of [BCIKS20]",
           "kind": "lemma",
-          "line": 257,
+          "line": 277,
           "name": "Fri.fri_round_consistency_completeness",
           "namespace": "Fri",
           "short_name": "fri_round_consistency_completeness",
@@ -36013,7 +36031,7 @@
         {
           "doc": "Affine space: {g | \u2203 x : Fin t.succ \u2192 \ud835\udd3d, x 0 = 1 \u2227 g = \u2211 i, x i \u2022 f i  }",
           "kind": "def",
-          "line": 336,
+          "line": 305,
           "name": "Fri.F\u209b",
           "namespace": "Fri",
           "short_name": "F\u209b",
@@ -36022,7 +36040,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 339,
+          "line": 308,
           "name": "Fri.correlated_agreement_density",
           "namespace": "Fri",
           "short_name": "correlated_agreement_density",
@@ -36031,7 +36049,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 350,
+          "line": 319,
           "name": "Fri.oracleImpl",
           "namespace": "Fri",
           "short_name": "oracleImpl",
@@ -36040,34 +36058,34 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 389,
-          "name": "Fri._anon_instance_389",
+          "line": 358,
+          "name": "Fri._anon_instance_358",
           "namespace": "Fri",
-          "short_name": "_anon_instance_389",
+          "short_name": "_anon_instance_358",
           "signature": "instance instance {l : \u2115} : ([(Spec.QueryRound.pSpec l (\u03c9 := \u03c9)).Message]\u2092).Inhabited where"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 397,
-          "name": "Fri._anon_instance_397",
+          "line": 366,
+          "name": "Fri._anon_instance_366",
           "namespace": "Fri",
-          "short_name": "_anon_instance_397",
+          "short_name": "_anon_instance_366",
           "signature": "instance instance {l : \u2115} : ([(Spec.QueryRound.pSpec l (\u03c9 := \u03c9)).Message]\u2092).Fintype where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 406,
-          "name": "Fri._anon_def_406",
+          "line": 375,
+          "name": "Fri._anon_def_375",
           "namespace": "Fri",
-          "short_name": "_anon_def_406",
+          "short_name": "_anon_def_375",
           "signature": "def noncomputable def \u03b5C"
         },
         {
           "doc": "",
           "kind": "abbrev",
-          "line": 413,
+          "line": 382,
           "name": "Fri.fullChallengeProtocol",
           "namespace": "Fri",
           "short_name": "fullChallengeProtocol",
@@ -36076,115 +36094,115 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 417,
-          "name": "Fri._anon_instance_417",
+          "line": 386,
+          "name": "Fri._anon_instance_386",
           "namespace": "Fri",
-          "short_name": "_anon_instance_417",
+          "short_name": "_anon_instance_386",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 490,
-          "name": "Fri._anon_instance_490",
+          "line": 459,
+          "name": "Fri._anon_instance_459",
           "namespace": "Fri",
-          "short_name": "_anon_instance_490",
+          "short_name": "_anon_instance_459",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 563,
-          "name": "Fri._anon_instance_563",
+          "line": 532,
+          "name": "Fri._anon_instance_532",
           "namespace": "Fri",
-          "short_name": "_anon_instance_563",
+          "short_name": "_anon_instance_532",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 574,
-          "name": "Fri._anon_instance_574",
+          "line": 543,
+          "name": "Fri._anon_instance_543",
           "namespace": "Fri",
-          "short_name": "_anon_instance_574",
+          "short_name": "_anon_instance_543",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 585,
-          "name": "Fri._anon_instance_585",
+          "line": 554,
+          "name": "Fri._anon_instance_554",
           "namespace": "Fri",
-          "short_name": "_anon_instance_585",
+          "short_name": "_anon_instance_554",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 598,
-          "name": "Fri._anon_instance_598",
+          "line": 567,
+          "name": "Fri._anon_instance_567",
           "namespace": "Fri",
-          "short_name": "_anon_instance_598",
+          "short_name": "_anon_instance_567",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 611,
-          "name": "Fri._anon_instance_611",
+          "line": 580,
+          "name": "Fri._anon_instance_580",
           "namespace": "Fri",
-          "short_name": "_anon_instance_611",
+          "short_name": "_anon_instance_580",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 618,
-          "name": "Fri._anon_instance_618",
+          "line": 587,
+          "name": "Fri._anon_instance_587",
           "namespace": "Fri",
-          "short_name": "_anon_instance_618",
+          "short_name": "_anon_instance_587",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 625,
-          "name": "Fri._anon_instance_625",
+          "line": 594,
+          "name": "Fri._anon_instance_594",
           "namespace": "Fri",
-          "short_name": "_anon_instance_625",
+          "short_name": "_anon_instance_594",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 644,
-          "name": "Fri._anon_instance_644",
+          "line": 613,
+          "name": "Fri._anon_instance_613",
           "namespace": "Fri",
-          "short_name": "_anon_instance_644",
+          "short_name": "_anon_instance_613",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 663,
-          "name": "Fri._anon_instance_663",
+          "line": 632,
+          "name": "Fri._anon_instance_632",
           "namespace": "Fri",
-          "short_name": "_anon_instance_663",
+          "short_name": "_anon_instance_632",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 679,
-          "name": "Fri._anon_instance_679",
+          "line": 648,
+          "name": "Fri._anon_instance_648",
           "namespace": "Fri",
-          "short_name": "_anon_instance_679",
+          "short_name": "_anon_instance_648",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "Corresponds to Claim 8.2 of [BCIKS20]",
           "kind": "lemma",
-          "line": 692,
+          "line": 661,
           "name": "Fri.fri_query_soundness",
           "namespace": "Fri",
           "short_name": "fri_query_soundness",
@@ -36193,7 +36211,7 @@
         {
           "doc": "Corresponds to Claim 8.3 of [BCIKS20]",
           "kind": "lemma",
-          "line": 816,
+          "line": 785,
           "name": "Fri.fri_soundness",
           "namespace": "Fri",
           "short_name": "fri_soundness",
@@ -38389,7 +38407,7 @@
         {
           "doc": "RBR knowledge soundness for a single round oracle verifier",
           "kind": "theorem",
-          "line": 375,
+          "line": 374,
           "name": "Binius.BinaryBasefold.CoreInteraction.foldOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "foldOracleVerifier_rbrKnowledgeSoundness",
@@ -38398,7 +38416,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 394,
+          "line": 393,
           "name": "Binius.BinaryBasefold.CoreInteraction.commitPrvState",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "commitPrvState",
@@ -38407,7 +38425,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 402,
+          "line": 401,
           "name": "Binius.BinaryBasefold.CoreInteraction.getCommitProverFinalOutput",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "getCommitProverFinalOutput",
@@ -38416,7 +38434,7 @@
         {
           "doc": "The prover for the `i`-th round of Binary commitmentfold.",
           "kind": "def",
-          "line": 414,
+          "line": 413,
           "name": "Binius.BinaryBasefold.CoreInteraction.commitOracleProver",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "commitOracleProver",
@@ -38425,7 +38443,7 @@
         {
           "doc": "The oracle verifier for the `i`-th round of Binary commitmentfold.",
           "kind": "def",
-          "line": 444,
+          "line": 443,
           "name": "Binius.BinaryBasefold.CoreInteraction.commitOracleVerifier",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "commitOracleVerifier",
@@ -38434,16 +38452,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 463,
-          "name": "Binius.BinaryBasefold.CoreInteraction._anon_class_463",
+          "line": 462,
+          "name": "Binius.BinaryBasefold.CoreInteraction._anon_class_462",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
-          "short_name": "_anon_class_463",
+          "short_name": "_anon_class_462",
           "signature": "class classical"
         },
         {
           "doc": "The oracle reduction that is the `i`-th round of Binary commitmentfold.",
           "kind": "def",
-          "line": 500,
+          "line": 499,
           "name": "Binius.BinaryBasefold.CoreInteraction.commitOracleReduction",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "commitOracleReduction",
@@ -38452,7 +38470,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 519,
+          "line": 518,
           "name": "Binius.BinaryBasefold.CoreInteraction.commitOracleReduction_perfectCompleteness",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "commitOracleReduction_perfectCompleteness",
@@ -38461,7 +38479,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 537,
+          "line": 536,
           "name": "Binius.BinaryBasefold.CoreInteraction.commitKnowledgeError",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "commitKnowledgeError",
@@ -38470,7 +38488,7 @@
         {
           "doc": "The round-by-round extractor for a single round. Since f^(0) is always available, we can invoke the extractMLP function directly.",
           "kind": "def",
-          "line": 546,
+          "line": 545,
           "name": "Binius.BinaryBasefold.CoreInteraction.commitRbrExtractor",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "commitRbrExtractor",
@@ -38479,7 +38497,7 @@
         {
           "doc": "Note : stmtIn and witMid already advances to state `(i+1)` from the fold step, while oStmtIn is not.",
           "kind": "def",
-          "line": 561,
+          "line": 560,
           "name": "Binius.BinaryBasefold.CoreInteraction.commitKStateProp",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "commitKStateProp",
@@ -38488,7 +38506,7 @@
         {
           "doc": "Knowledge state function (KState) for single round",
           "kind": "def",
-          "line": 585,
+          "line": 589,
           "name": "Binius.BinaryBasefold.CoreInteraction.commitKState",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "commitKState",
@@ -38497,7 +38515,7 @@
         {
           "doc": "RBR knowledge soundness for a single round oracle verifier",
           "kind": "theorem",
-          "line": 605,
+          "line": 610,
           "name": "Binius.BinaryBasefold.CoreInteraction.commitOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "commitOracleVerifier_rbrKnowledgeSoundness",
@@ -38506,7 +38524,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 625,
+          "line": 630,
           "name": "Binius.BinaryBasefold.CoreInteraction.relayPrvState",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "relayPrvState",
@@ -38515,7 +38533,7 @@
         {
           "doc": "The prover for the `i`-th round of Binary relayfold.",
           "kind": "def",
-          "line": 631,
+          "line": 636,
           "name": "Binius.BinaryBasefold.CoreInteraction.relayOracleProver",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "relayOracleProver",
@@ -38524,7 +38542,7 @@
         {
           "doc": "The oracle verifier for the `i`-th round of Binary relayfold.",
           "kind": "def",
-          "line": 652,
+          "line": 657,
           "name": "Binius.BinaryBasefold.CoreInteraction.relayOracleVerifier",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "relayOracleVerifier",
@@ -38533,7 +38551,7 @@
         {
           "doc": "The oracle reduction that is the `i`-th round of Binary relayfold.",
           "kind": "def",
-          "line": 677,
+          "line": 682,
           "name": "Binius.BinaryBasefold.CoreInteraction.relayOracleReduction",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "relayOracleReduction",
@@ -38542,7 +38560,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 696,
+          "line": 701,
           "name": "Binius.BinaryBasefold.CoreInteraction.relayOracleReduction_perfectCompleteness",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "relayOracleReduction_perfectCompleteness",
@@ -38551,7 +38569,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 713,
+          "line": 718,
           "name": "Binius.BinaryBasefold.CoreInteraction.relayKnowledgeError",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "relayKnowledgeError",
@@ -38560,7 +38578,7 @@
         {
           "doc": "The round-by-round extractor for a single round. Since f^(0) is always available, we can invoke the extractMLP function directly.",
           "kind": "def",
-          "line": 719,
+          "line": 724,
           "name": "Binius.BinaryBasefold.CoreInteraction.relayRbrExtractor",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "relayRbrExtractor",
@@ -38569,7 +38587,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 732,
+          "line": 737,
           "name": "Binius.BinaryBasefold.CoreInteraction.relayKStateProp",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "relayKStateProp",
@@ -38578,7 +38596,7 @@
         {
           "doc": "Knowledge state function (KState) for single round",
           "kind": "def",
-          "line": 745,
+          "line": 750,
           "name": "Binius.BinaryBasefold.CoreInteraction.relayKnowledgeStateFunction",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "relayKnowledgeStateFunction",
@@ -38587,7 +38605,7 @@
         {
           "doc": "RBR knowledge soundness for a single round oracle verifier",
           "kind": "theorem",
-          "line": 802,
+          "line": 807,
           "name": "Binius.BinaryBasefold.CoreInteraction.relayOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "relayOracleVerifier_rbrKnowledgeSoundness",
@@ -38596,16 +38614,16 @@
         {
           "doc": "Oracle interface instance for the final sumcheck step message",
           "kind": "instance",
-          "line": 843,
-          "name": "Binius.BinaryBasefold.CoreInteraction._anon_instance_843",
+          "line": 848,
+          "name": "Binius.BinaryBasefold.CoreInteraction._anon_instance_848",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
-          "short_name": "_anon_instance_843",
+          "short_name": "_anon_instance_848",
           "signature": "instance instance : \u2200 j, OracleInterface ((pSpecFinalSumcheckStep (L := L)).Message j) := fun j =>"
         },
         {
           "doc": "The prover for the final sumcheck step",
           "kind": "def",
-          "line": 848,
+          "line": 853,
           "name": "Binius.BinaryBasefold.CoreInteraction.finalSumcheckProver",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "finalSumcheckProver",
@@ -38614,7 +38632,7 @@
         {
           "doc": "The verifier for the final sumcheck step",
           "kind": "def",
-          "line": 890,
+          "line": 895,
           "name": "Binius.BinaryBasefold.CoreInteraction.finalSumcheckVerifier",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "finalSumcheckVerifier",
@@ -38623,7 +38641,7 @@
         {
           "doc": "The oracle reduction for the final sumcheck step",
           "kind": "def",
-          "line": 934,
+          "line": 939,
           "name": "Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleReduction",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "finalSumcheckOracleReduction",
@@ -38632,7 +38650,7 @@
         {
           "doc": "Perfect completeness for the final sumcheck step",
           "kind": "theorem",
-          "line": 948,
+          "line": 953,
           "name": "Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleReduction_perfectCompleteness",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "finalSumcheckOracleReduction_perfectCompleteness",
@@ -38641,7 +38659,7 @@
         {
           "doc": "RBR knowledge error for the final sumcheck step",
           "kind": "def",
-          "line": 964,
+          "line": 969,
           "name": "Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeError",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "finalSumcheckKnowledgeError",
@@ -38650,7 +38668,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 969,
+          "line": 974,
           "name": "Binius.BinaryBasefold.CoreInteraction.FinalSumcheckWit",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "FinalSumcheckWit",
@@ -38659,7 +38677,7 @@
         {
           "doc": "The round-by-round extractor for the final sumcheck step",
           "kind": "def",
-          "line": 975,
+          "line": 980,
           "name": "Binius.BinaryBasefold.CoreInteraction.finalSumcheckRbrExtractor",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "finalSumcheckRbrExtractor",
@@ -38668,7 +38686,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1005,
+          "line": 1010,
           "name": "Binius.BinaryBasefold.CoreInteraction.finalSumcheckKStateProp",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "finalSumcheckKStateProp",
@@ -38677,7 +38695,7 @@
         {
           "doc": "The knowledge state function for the final sumcheck step",
           "kind": "def",
-          "line": 1039,
+          "line": 1044,
           "name": "Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeStateFunction",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "finalSumcheckKnowledgeStateFunction",
@@ -38686,7 +38704,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the final sumcheck step",
           "kind": "theorem",
-          "line": 1059,
+          "line": 1064,
           "name": "Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.BinaryBasefold.CoreInteraction",
           "short_name": "finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
@@ -44055,12 +44073,12 @@
           "name": "RingSwitching.SumcheckPhase.coreInteractionRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionRbrKnowledgeError",
-          "signature": "def coreInteractionRbrKnowledgeError (_ : (pSpecCoreInteraction L \u2113').ChallengeIdx) : \u211d\u22650 :="
+          "signature": "def coreInteractionRbrKnowledgeError (j : (pSpecCoreInteraction L \u2113').ChallengeIdx) : \u211d\u22650 :="
         },
         {
           "doc": "RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 593,
+          "line": 598,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_rbrKnowledgeSoundness",
@@ -44379,7 +44397,7 @@
         {
           "doc": "",
           "kind": "abbrev",
-          "line": 364,
+          "line": 376,
           "name": "Spartan.Spec.SecondSumcheckChallenge",
           "namespace": "Spartan.Spec",
           "short_name": "SecondSumcheckChallenge",
@@ -44388,7 +44406,7 @@
         {
           "doc": "Unfolds to `(r_y, (r_A, r_B, r_C), r_x, \u03c4, \ud835\udd69) :` `(Fin \u2113_n \u2192 R) \u00d7 (R1CS.MatrixIdx \u2192 R) \u00d7 (Fin (2 ^ \u2113_m) \u2192 R) \u00d7 (Fin \u2113_m \u2192 R) \u00d7` `(Fin (2 ^ \u2113_n - 2 ^ \u2113_w) \u2192 R)`",
           "kind": "abbrev",
-          "line": 370,
+          "line": 382,
           "name": "Spartan.Spec.Statement.AfterSecondSumcheck",
           "namespace": "Spartan.Spec",
           "short_name": "Statement.AfterSecondSumcheck",
@@ -44397,7 +44415,7 @@
         {
           "doc": "",
           "kind": "abbrev",
-          "line": 374,
+          "line": 386,
           "name": "Spartan.Spec.OracleStatement.AfterSecondSumcheck",
           "namespace": "Spartan.Spec",
           "short_name": "OracleStatement.AfterSecondSumcheck",
@@ -44406,7 +44424,7 @@
         {
           "doc": "",
           "kind": "abbrev",
-          "line": 378,
+          "line": 390,
           "name": "Spartan.Spec.Witness.AfterSecondSumcheck",
           "namespace": "Spartan.Spec",
           "short_name": "Witness.AfterSecondSumcheck",
@@ -48594,7 +48612,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5275,
+      "declarations": 5277,
       "files": 282
     }
   }
