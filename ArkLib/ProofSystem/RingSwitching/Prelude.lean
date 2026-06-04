@@ -1657,6 +1657,29 @@ theorem fixFirstVariablesOfMQP_projectToMid_step (ℓ : ℕ) [NeZero ℓ] (t m :
   -- which are equal `Fin (ℓ+1)` values (`↑i.succ = ↑i + 1 = ↑i.castSucc + 1`), hence defeq.
   rfl
 
+/-- **Round-polynomial marginal identity (core of target (b)).** Evaluating, at `r'`, the sum over a
+finite set `S` of the partial evaluations `Polynomial.map (eval (pt x)) (finSuccEquivNth L 0 H)`
+equals the sum over `S` of the full evaluations of `H` with variable `0` fixed to `r'` (the rest set
+by `pt x`). This is the marginal that `getSumcheckRoundPoly` computes: it keeps variable `0` as the
+round indeterminate (`finSuccEquivNth L 0`, i.e. `Fin.insertNth 0 = Fin.cons`). Generic in the index
+type/point function so it can absorb the `Fin.append (∅) · ∘ Fin.cast` reindexing of the round code.
+
+CONVENTION NOTE (counterexample-backed, see `getSumcheckRoundPoly_eval_eq_sum_cons` in
+`SumcheckPhase.lean`): the surviving variable here is variable `0` (`Fin.cons r' (pt x)`), **not**
+the last variable. The naive target (b) form `getSumcheckRoundPoly H r' = ∑ (fixFirstVariablesOfMQP
+H {r'})` is FALSE, because `fixFirstVariablesOfMQP` fixes the *last* variable while
+`getSumcheckRoundPoly` marginalises variable `0`; for an asymmetric `H` the two marginals differ.
+Counterexample (`L = ZMod 7`, `H = X 0 + 3·X 1` over `Fin 2`, `r' = 2`):
+`getSumcheckRoundPoly H` (var 0) at `2` is `H(2,0)+H(2,1) = 2+5 = 0`, whereas
+`∑ (fix-last H {2})` is `(0+6)+(1+6) = 6 ≠ 0`. Hence (b) holds only for the variable-`0` marginal. -/
+theorem roundPoly_eval_eq_sum_cons {k : ℕ} {ι : Type*} (S : Finset ι) (pt : ι → (Fin k → L))
+    (H : MvPolynomial (Fin (k + 1)) L) (r' : L) :
+    Polynomial.eval r' (∑ x ∈ S, Polynomial.map (eval (pt x)) (finSuccEquivNth L 0 H))
+      = ∑ x ∈ S, eval (Fin.cons r' (pt x)) H := by
+  rw [Polynomial.eval_finset_sum]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [← eval_eq_eval_mv_eval_finSuccEquivNth, Fin.insertNth_zero']
+
 end RoundTransition
 
 end RingSwitching

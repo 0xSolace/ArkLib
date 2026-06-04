@@ -153,6 +153,45 @@ open scoped NNReal
 abbrev roundKnowledgeError (L : Type) [Fintype L] (ℓ : ℕ) (i : Fin ℓ) : NNReal :=
   Sumcheck.Structured.roundKnowledgeError L ℓ i 2
 
+omit [NeZero κ] [Fintype L] [DecidableEq L] [SampleableType L] [NeZero ℓ] [NeZero ℓ'] in
+/-- **Target (b): `getSumcheckRoundPoly` value as a cube sum (variable-`0`/`cons` form).**
+The round univariate `getSumcheckRoundPoly ℓ (boolDomain L ℓ) i H` evaluated at the verifier
+challenge `r'` equals the sum, over the next round's Boolean cube `(boolDomain.drop (i+1)).cube`, of
+the full round polynomial `H` with the round variable (variable `0`) fixed to `r'` and the remaining
+coordinates ranging over the cube. Proven from the marginal identity `roundPoly_eval_eq_sum_cons`
+(Prelude). `curH` is `H` transported across the index equality `ℓ-i.castSucc = (ℓ-i.castSucc-1)+1`
+(this is `getSumcheckRoundPoly`'s own internal `curH_cast`, supplied here via a `HEq`).
+
+STATEMENT-REPAIR NOTE (counterexample-backed, defect-#8/#10/#11 family). The naive target (b),
+`getSumcheckRoundPoly H r' = ∑ over next cube of (fixFirstVariablesOfMQP H {r'})`, is FALSE.
+`getSumcheckRoundPoly` keeps variable `0` as the round indeterminate (`finSuccEquivNth L 0` ⇒
+`Fin.cons r' …`), whereas `fixFirstVariablesOfMQP` fixes the *last* variable; for an asymmetric `H`
+these two marginals of `H` are different. Counterexample (`L = ZMod 7`, `H = X 0 + 3·X 1` over
+`Fin 2`, `r' = 2`): `getSumcheckRoundPoly H` (var 0) at `2` is `H(2,0)+H(2,1) = 2+5 = 0`, while
+`∑ (fix-last H {2})` is `(0+6)+(1+6) = 6 ≠ 0`. Hence (b) holds only for the variable-`0` marginal
+stated below. This surfaces a variable-convention mismatch *inside the structured round machinery*:
+`getSumcheckRoundPoly` (var 0) and `getRoundProverFinalOutput`'s witness advance
+`fixFirstVariablesOfMQP … {r'}` (last var) marginalise different coordinates of the same witness
+`H`. Aligning them (so the round polynomial and the witness advance agree on the round variable) is
+a fix to the shared `Sumcheck.Structured.SingleRound` machinery — see the blocker note on
+`iteratedSumcheckOracleReduction_perfectCompleteness`. -/
+theorem getSumcheckRoundPoly_eval_eq_sum_cons (i : Fin ℓ')
+    (H : L⦃≤ 2⦄[X Fin (ℓ' - ↑i.castSucc)]) (r' : L)
+    (curH : L[X Fin ((ℓ' - ↑i.castSucc - 1) + 1)]) (hcurH : HEq curH H.val) :
+    (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) H).val.eval r'
+      = ∑ x ∈ ((boolDomain L ℓ').drop (↑i.castSucc + 1)).cube,
+          MvPolynomial.eval (Fin.cons r' (Fin.append (fun j => j.elim0) x ∘ Fin.cast (by omega)))
+            curH := by
+  unfold getSumcheckRoundPoly
+  dsimp only
+  rw [RingSwitching.roundPoly_eval_eq_sum_cons]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  congr 1
+  apply eq_of_heq
+  -- `curH_cast` is `Eq.mpr _ H.val`, hence `HEq` to `H.val`; `curH` is also `HEq` to `H.val`.
+  refine HEq.trans ?_ hcurH.symm
+  exact cast_heq _ _
+
 noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
   Extractor.RoundByRound []ₒ
     (StmtIn := (Statement (L := L) (ℓ := ℓ')
