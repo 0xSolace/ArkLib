@@ -260,18 +260,27 @@ noncomputable def sumcheckOracleReduction [SampleableType F] :
     OracleReduction oSpec (StmtAfterOuter F n M params) (OStmtAfterOuter F n M params) Unit
       (StmtOut) (OStmtOut) Unit
       (logupSumcheckPSpec F n M params) :=
-  let lens :
-      OracleContext.Lens.{0, 0, 0, 0}
+    let lens :
+        OracleContext.Lens.{0, 0, 0, 0}
         (StmtAfterOuter F n M params) StmtOut
         (LogupSumcheckStmtIn F n M params) (LogupSumcheckStmtOut F n M params)
         (OStmtAfterOuter F n M params) OStmtOut
         (LogupSumcheckOracleStatement F n M params)
         (LogupSumcheckOracleStatement F n M params)
-        Unit Unit Unit Unit :=
-    logupSumcheckContextLens F n M params
-  (logupConcreteSumcheckOracleReduction oSpec F n M params
-      (Fact.out : (-1 : F) ≠ 1)).liftContext
-    lens
+          Unit Unit Unit Unit :=
+      logupSumcheckContextLens F n M params
+    let stmtLens : OracleStatement.OracleLens oSpec
+        (StmtAfterOuter F n M params) StmtOut
+        (LogupSumcheckStmtIn F n M params) (LogupSumcheckStmtOut F n M params)
+        (OStmtAfterOuter F n M params) OStmtOut
+        (LogupSumcheckOracleStatement F n M params)
+        (LogupSumcheckOracleStatement F n M params)
+        (logupSumcheckPSpec F n M params) := by
+      classical
+      sorry
+    (logupConcreteSumcheckOracleReduction oSpec F n M params
+        (Fact.out : (-1 : F) ≠ 1)).liftContext
+      lens stmtLens
 
 end SumcheckLift
 

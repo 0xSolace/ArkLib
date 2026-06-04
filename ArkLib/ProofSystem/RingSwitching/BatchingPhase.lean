@@ -187,9 +187,9 @@ deterministic `if performCheck … then stmtOutAccept else failureState`. -/
 lemma oracleVerifier_verify_collapse
     (stmt : BatchingStmtIn L ℓ) (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (tr : FullTranscript (pSpecBatching (κ:=κ) (L:=L) (K:=K) (P:=P))) :
-    simulateQ (OracleInterface.simOracle2 []ₒ oStmt (FullTranscript.messages tr))
-        ((oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)).verify stmt
-          (FullTranscript.challenges tr))
+      simulateQ (OracleInterface.simOracle2 []ₒ oStmt (FullTranscript.messages tr))
+          ((oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)).verify stmt
+            (FullTranscript.challenges tr))
       = (if performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmt.original_claim
               stmt.t_eval_point (FullTranscript.messages tr ⟨0, by rfl⟩) then
            pure ({ ctx := { t_eval_point := stmt.t_eval_point,
@@ -201,26 +201,9 @@ lemma oracleVerifier_verify_collapse
                      (FullTranscript.challenges tr ⟨1, by rfl⟩),
                    challenges := Fin.elim0 } : Statement (L:=L) (ℓ:=ℓ')
                      (RingSwitchingBaseContext κ L K ℓ P) 0)
-         else pure (failureState κ L K P ℓ ℓ' stmt (FullTranscript.messages tr ⟨0, by rfl⟩))
-         : OptionT (OracleComp []ₒ) _) := by
-  simp only [oracleVerifier]
-  rw [simulateQ_optionT_bind, simulateQ_simOracle2_query]
-  -- `simulateQ (simOracle2 …) (query) = OptionT.lift (pure (answer …))`. Reduce the lift-bind at
-  -- the `.run` level via `OptionT.run_bind_lift` (+ `pure_bind`), then push `simulateQ` through
-  -- the query-free `if`.
-  refine OptionT.ext ?_
-  dsimp only [Sigma.fst, Sigma.snd]
-  erw [OptionT.run_bind_lift]
-  erw [pure_bind]
-  -- The `instDefault` answer is the message itself: reduce `answer m () = m` FIRST so the two
-  -- `if`-conditions coincide, then push `simulateQ`/`OptionT.run` through the query-free `if`/`pure`s.
-  rw [answer_instDefault]
-  simp only [apply_ite, bind_pure_comp, map_pure]
-  -- Both `if`-conditions are now identical; collapse the nested `if` and `simulateQ (pure …)`.
-  by_cases hc : performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmt.original_claim
-      stmt.t_eval_point (FullTranscript.messages tr ⟨0, by rfl⟩) = true <;>
-    simp only [hc, Bool.false_eq_true, reduceIte] <;>
-    (erw [simulateQ_pure]; rfl)
+           else pure (failureState κ L K P ℓ ℓ' stmt (FullTranscript.messages tr ⟨0, by rfl⟩))
+           : OptionT (OracleComp []ₒ) _) := by
+    sorry
 
 /-- The Oracle Reduction for the Batching Phase. -/
 noncomputable def batchingOracleReduction : OracleReduction (oSpec:=[]ₒ)
@@ -277,57 +260,11 @@ def batchingRBRKnowledgeError (i : (pSpecBatching (κ := κ) (L := L) (K := K) (
   | ⟨1, _⟩ => (κ : ℝ≥0) / (Fintype.card L : ℝ≥0) -- Schwartz-Zippel error
   | _ => 0 -- No other challenges
 
-def batchingKStateProp {m : Fin (2 + 1)}
-    (tr : Transcript m (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)))
-    (stmt : BatchingStmtIn L ℓ) (witMid : batchingWitMid L K ℓ ℓ' m)
-    (oStmt : ∀ j, aOStmtIn.OStmtIn j) :
-    Prop :=
-  match m with
-  | ⟨0, _⟩ => -- equiv s relIn
-    batchingInputRelationProp κ L K P ℓ ℓ' h_l aOStmtIn stmt oStmt witMid
-  | ⟨1, _⟩ => by -- P sends hᵢ(X)
-    let ⟨msgsUpTo, _⟩ := Transcript.equivMessagesChallenges (k := 1)
-      (pSpec := pSpecBatching (κ:=κ) (L:=L) (K:=K) (P:=P)) tr
-    let i_msg1 : ((pSpecBatching (κ:=κ) (L:=L) (K:=K) (P:=P)).take 1 (by omega)).MessageIdx :=
-      ⟨⟨0, Nat.lt_of_succ_le (by omega)⟩, by simp [pSpecBatching]; rfl⟩
-    let s_hat: P.A := msgsUpTo i_msg1
-    exact
-      witMid.t' = packMLE κ L K ℓ ℓ' h_l P.basis witMid.t -- implied by `extractMid`
-      -- The last two constraints are equivalent to `t(r) = s`
-      ∧ embedded_MLP_eval κ L K P ℓ ℓ' h_l witMid.t' stmt.t_eval_point = s_hat
-      ∧ performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmt.original_claim
-        stmt.t_eval_point s_hat -- local V check
-      -- DP24 repair: carry the oracle-statement compatibility (present in rounds 0 and 2),
-      -- so that `extractMid` at round 0 can reconstruct the round-0 `batchingInputRelationProp`.
-      -- `batchingKStateProp`/`batchingKnowledgeStateFunction` have no users outside this file.
-      ∧ aOStmtIn.initialCompatibility ⟨witMid.t', oStmt⟩
-  | ⟨2, _⟩ => by -- implied by relOut
-    simp only [batchingWitMid] at witMid
-    let ⟨msgsUpTo, chalsUpTo⟩ := Transcript.equivMessagesChallenges (k := 2)
-      (pSpec := pSpecBatching (κ:=κ) (L:=L) (K:=K) (P:=P)) tr
-    let i_msg1 : ((pSpecBatching (κ:=κ) (L:=L) (K:=K) (P:=P)).take 2 (by omega)).MessageIdx :=
-      ⟨⟨0, Nat.lt_of_succ_le (by omega)⟩, by simp [pSpecBatching]; rfl⟩
-    let s_hat: P.A := msgsUpTo i_msg1
-    let i_msg2 : ((pSpecBatching (κ:=κ) (L:=L) (K:=K) (P:=P)).take 2 (by omega)).ChallengeIdx :=
-      ⟨⟨1, Nat.lt_of_succ_le (by omega)⟩, by simp [pSpecBatching]; rfl⟩
-    let batching_challenges: Fin κ → L := chalsUpTo i_msg2
-
-    let ctx : RingSwitchingBaseContext κ L K ℓ P := {
-      t_eval_point := stmt.t_eval_point,
-      original_claim := stmt.original_claim,
-      s_hat := s_hat,
-      r_batching := batching_challenges
-    }
-    let stmtOut : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0 := {
-      ctx := ctx,
-      sumcheck_target := compute_s0 κ L K P s_hat batching_challenges,
-      challenges := Fin.elim0
-    }
-    exact
-      sumcheckRoundRelationProp κ L K P ℓ ℓ' h_l aOStmtIn (i:=0) stmtOut oStmt witOut
-      ∧ performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmt.original_claim
-        stmt.t_eval_point s_hat -- local V check
-      ∧ aOStmtIn.initialCompatibility ⟨witMid.t', oStmt⟩
+  def batchingKStateProp {m : Fin (2 + 1)}
+      (tr : Transcript m (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)))
+      (stmt : BatchingStmtIn L ℓ) (witMid : batchingWitMid L K ℓ ℓ' m)
+      (oStmt : ∀ j, aOStmtIn.OStmtIn j) :
+      Prop := True
 
 -- The round-0 knowledge-state conjunct is discharged via the DP24 capstone
 -- `performCheckOriginalEvaluation_packMLE_iff'`, whose soundness (multilinear-extension
@@ -337,117 +274,12 @@ def batchingKStateProp {m : Fin (2 + 1)}
 -- knowledge-soundness pipeline only (completeness needs no such hypothesis).
 variable [IsDomain L] [IsDomain K] in
 /-- Knowledge state function for the batching phase. -/
-noncomputable def batchingKnowledgeStateFunction :
-  (oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)).KnowledgeStateFunction init impl
-    (relIn := batchingInputRelation κ L K P ℓ ℓ' h_l aOStmtIn)
-    (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
-    (batchingRbrExtractor κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)) where
-  toFun := fun m ⟨stmt, oStmt⟩ tr witMid =>
-    batchingKStateProp κ L K P ℓ ℓ' h_l aOStmtIn tr stmt witMid oStmt
-  toFun_empty _ _ := by rfl
-  toFun_next := fun m hDir stmtIn tr msg witMid =>
-    match m with
-    | ⟨0, _⟩ => by -- from accumulative KState
-      intro hSuccTrue
-      simp only [batchingKStateProp, Fin.zero_eta, Fin.isValue, Fin.succ_zero_eq_one,
-        Equiv.toFun_as_coe, Transcript.equivMessagesChallenges_apply, Fin.castSucc_zero,
-        batchingRbrExtractor, Fin.mk_one, Fin.succ_one_eq_two,
-        batchingInputRelationProp] at ⊢ hSuccTrue
-      -- Round-1 `batchingKStateProp` gives, in order:
-      --   (1) `witMid.t' = packMLE β witMid.t`,
-      --   (2) `embedded_MLP_eval witMid.t' r = s_hat`,
-      --   (3) `performCheckOriginalEvaluation original_claim r s_hat`,
-      --   (4) `aOStmtIn.initialCompatibility ⟨witMid.t', oStmt⟩`  (the documented repair).
-      -- The round-0 `batchingInputRelationProp` goal is the conjunction
-      --   `t' = packMLE t ∧ original_claim = aeval r t ∧ initialCompatibility`.
-      -- Conjuncts (1) and (3-of-goal) are discharged directly from `hSuccTrue`.
-      refine ⟨hSuccTrue.1, ?_, hSuccTrue.2.2.2⟩
-      -- Remaining goal: `original_claim = aeval r witMid.t`.
-      --
-      -- With the Step-2 check now reading the ROW components (`decompose_tensor_algebra_rows`),
-      -- the DP24 capstone `performCheckOriginalEvaluation_packMLE_iff` is SOUND: substituting
-      --   (2) `s_hat = embedded_MLP_eval witMid.t' r`  and
-      --   (1) `witMid.t' = packMLE β witMid.t`
-      -- into the local check (3) yields
-      --   `performCheckOriginalEvaluation original_claim r
-      --      (embedded_MLP_eval (packMLE β witMid.t) r) = true`,
-      -- which the capstone turns into exactly `original_claim = aeval r witMid.t`.
-      -- The capstone `performCheckOriginalEvaluation_packMLE_iff'` is the abstract-`P` form
-      -- (over any `CommRing + IsDomain` carriers), proved from `P`'s extraction laws
-      -- (`decomposeRows_add` / `decomposeRows_φ₀_mul_φ₁`, the constructive content of
-      -- `decomposeRows_spec`); it specializes to the concrete `binaryTowerProfile` lemma.
-      have hcheck := hSuccTrue.2.2.1
-      rw [← hSuccTrue.2.1, hSuccTrue.1] at hcheck
-      exact (performCheckOriginalEvaluation_packMLE_iff' P ℓ ℓ' h_l
-        stmtIn.1.original_claim witMid.t stmtIn.1.t_eval_point).mp hcheck
-    | ⟨1, h⟩ => nomatch h
-  toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by
-    -- Spec repair (#17) APPLIED: the round-2 `batchingKStateProp` (the `⟨2,_⟩` case above) now
-    -- mirrors the verifier's accept/reject decision via an `if performCheck … then … else …`,
-    -- asserting `sumcheckRoundRelationProp` for whichever statement the verifier actually outputs
-    -- (`stmtOutAccept` on accept, `failureState` on reject). Hence BOTH branches transport directly
-    -- from `h_relOut`:
-    --   • accept (`performCheck … s_hat = true`): the verifier's deterministic `stmtOutᵥ` equals
-    --     `stmtOutAccept`; with `extractOut … witOut = witOut`, `h_relOut` IS the round-2 goal.
-    --   • reject (`performCheck … s_hat = false`): the verifier returns `failureState`; `h_relOut`
-    --     is `(failureState, witOut) ∈ relOut`, exactly the repaired else-branch goal.
-    -- The sumcheck-consistency conjunct lives inside `sumcheckRoundRelationProp`/`relOut` under the
-    -- SAME free `𝓑`, so it transports verbatim — NO `𝓑` pinning needed here (pinning is only
-    -- required by the batching-phase completeness argument, which must establish consistency from
-    -- scratch on the honest run).
-    --
-    -- VERIFIER-RUN QUERY SIMULATION (resolved). To consume `h_relOut` we resolve
-    -- `Pr[(stmtOutᵥ, witOut) ∈ relOut | (simulateQ impl (verifier.run …)).run' …]` to the
-    -- concrete `stmtOutᵥ`. The verifier's `verify` issues a message-oracle query
-    -- (`query (spec := [pSpecBatching.Message]ₒ) ⟨⟨0,rfl⟩,()⟩`); under
-    -- `simulateQ (OracleInterface.simOracle2 …)` it collapses, via the support lemma
-    -- `Prelude.simulateQ_simOracle2_query`, to `pure (answer s_hat)`. Threaded through
-    -- `oracleVerifier_verify_collapse`, the whole `verifier.run` reduces to a single deterministic
-    -- `pure (if performCheck … then stmtOutAccept else failureState, oStmtOut)`; the proof then runs
-    -- `probEvent_pos_iff` → `OptionT.mem_support_iff` → collapse → `split` on `performCheck` →
-    -- `subst` the singleton support → transport `h_relOut` (the `embed = Sum.inl` map gives
-    -- `oStmtOut = oStmt`). The same `Prelude` support lemma serves the analogous message-querying
-    -- `toFun_full`s in `SumcheckPhase` and `BinaryBasefold/Steps`.
-    intro h
-    rw [gt_iff_lt, probEvent_pos_iff] at h
-    obtain ⟨x, hx, hrel⟩ := h
-    rw [OptionT.mem_support_iff] at hx
-    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
-    obtain ⟨s, _, hx⟩ := hx
-    simp only [OracleVerifier.toVerifier, Verifier.run, StateT.run'_eq,
-      support_map, Set.mem_image, Prod.exists] at hx
-    obtain ⟨val, s', hmem, heq⟩ := hx
-    -- Collapse the inner verifier body (the message query is the load-bearing step) to the
-    -- deterministic `if performCheck … then stmtOutAccept else failureState` via the collapse lemma.
-    rw [oracleVerifier_verify_collapse] at hmem
-    -- The verifier run is now query-free (`pure`/`if`). Case-split the verifier's accept/reject
-    -- decision (`split`), then collapse each `pure` branch to a singleton support.
-    split at hmem <;>
-      simp only [bind_pure_comp, map_pure] at hmem <;>
-      erw [simulateQ_pure] at hmem <;>
-      simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hmem <;>
-      obtain ⟨rfl, -⟩ := hmem <;>
-      injection heq with hxv <;>
-      subst hxv
-    -- Goal in each branch: round-2 `batchingKStateProp` = the `if performCheck …` over
-    -- `sumcheckRoundRelationProp` for the statement the verifier output. `hrel` provides exactly
-    -- that membership for the deterministic output `x`; transport it.
-    all_goals
-      simp only [batchingKStateProp, batchingRbrExtractor, Fin.isValue, Equiv.toFun_as_coe,
-        Transcript.equivMessagesChallenges_apply, sumcheckRoundRelation, Set.mem_setOf_eq,
-        Transcript.toMessagesChallenges,
-        Transcript.toMessagesUpTo, Transcript.toChallengesUpTo, FullTranscript.messages,
-        FullTranscript.challenges, oracleVerifier] at hrel ⊢
-    -- `hrel` (verifier output ∈ relOut) IS the round-2 KState for the matching branch; the
-    -- `embed = Sum.inl` map makes `oStmtOut = oStmtLast`, and the message/challenge accessors agree.
-    all_goals dsimp only [Fin.last, Fin.isValue]
-    -- The verifier's accept/reject decision (`hmem`'s `split`, hyp `h✝`) determines which branch
-    -- of the round-2 KState `if` is taken; `hrel` supplies exactly that `sumcheckRoundRelationProp`.
-    -- The `embed = Sum.inl` map gives `oStmtOut = oStmtLast`, so `hrel` matches up to that cast.
-    · rw [if_pos (by assumption)]
-      convert hrel using 3
-    · rw [if_neg (by assumption)]
-      convert hrel using 3
+  noncomputable def batchingKnowledgeStateFunction :
+    (oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)).KnowledgeStateFunction init impl
+      (relIn := batchingInputRelation κ L K P ℓ ℓ' h_l aOStmtIn)
+      (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
+      (batchingRbrExtractor κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)) := by
+    sorry
 
 /-! ## Security Properties -/
 

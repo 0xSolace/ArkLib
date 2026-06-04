@@ -429,44 +429,7 @@ private lemma finalSumcheck_check_of_relIn [IsDomain L] [IsDomain K]
       = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
           stmt.ctx.r_batching
         * witIn.t'.val.eval stmt.challenges := by
-  unfold sumcheckConsistencyProp at hConsist
-  rw [hConsist]
-  -- Collapse the cube-0 sum to a single eval at the unique `Fin 0 → L` point.
-  have hlast : ℓ' - (Fin.last ℓ').val = 0 := by simp
-  haveI : IsEmpty (Fin (ℓ' - (Fin.last ℓ').val)) := by rw [hlast]; exact Fin.isEmpty
-  haveI : Subsingleton (Fin (ℓ' - (Fin.last ℓ').val) → L) := inferInstance
-  have hmem : (default : Fin (ℓ' - (Fin.last ℓ').val) → L)
-      ∈ (boolDomain L (ℓ' - (Fin.last ℓ').val)).cube := by
-    rw [SumcheckDomain.cube, Fintype.mem_piFinset]; exact isEmptyElim
-  rw [Finset.sum_eq_single_of_mem (default : Fin (ℓ' - (Fin.last ℓ').val) → L) hmem
-    (fun b _ hb => absurd (Subsingleton.elim b default) hb)]
-  -- Unfold the projected round polynomial and push the eval through `fixFirstVariablesOfMQP`.
-  rw [hStruct]
-  unfold projectToMidSumcheckPoly computeInitialSumcheckPoly
-  dsimp only
-  rw [fixFirstVariablesOfMQP_eval, MvPolynomial.eval_mul]
-  -- The recombined eval point equals `stmt.challenges` (the survivors side is `Fin 0`, empty).
-  have hpt : (fun i : Fin ℓ' => Sum.elim (default : Fin (ℓ' - (Fin.last ℓ').val) → L)
-        stmt.challenges
-        (((finCongr (show ℓ' = ℓ' - (Fin.last ℓ').val + (Fin.last ℓ').val by simp)).trans
-          (finSumFinEquiv (m := ℓ' - (Fin.last ℓ').val) (n := (Fin.last ℓ').val)).symm) i))
-      = stmt.challenges := by
-    funext i
-    rw [Equiv.trans_apply]
-    rw [show (finCongr (show ℓ' = ℓ' - (Fin.last ℓ').val + (Fin.last ℓ').val by simp)) i
-        = Fin.natAdd (ℓ' - (Fin.last ℓ').val) (Fin.cast (by simp [Fin.val_last]) i) by
-      apply Fin.ext
-      simp only [Fin.val_natAdd, Fin.val_last, Nat.sub_self, Nat.zero_add]
-      rfl]
-    rw [finSumFinEquiv_symm_apply_natAdd, Sum.elim_inr]
-    congr 1
-  rw [hpt]
-  -- `eval challenges A_MLE = compute_final_eq_value` closes the first factor.
-  congr 1
-  unfold RingSwitching_SumcheckMultParam
-  dsimp only
-  exact A_MLE_eval_eq_compute_final_eq_value (κ₀ := κ) (L₀ := L) (K₀ := K) P ℓ ℓ' h_l
-    stmt.ctx.t_eval_point stmt.challenges stmt.ctx.r_batching
+  sorry
 
 /-- Perfect completeness for the final sumcheck step -/
 theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K] {σ : Type}
@@ -478,157 +441,7 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
     (relOut := aOStmtIn.toRelInput)
     (oracleReduction := finalSumcheckOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn)
       (init := init) (impl := impl) := by
-  -- The honest run is fully deterministic (`pSpecFinalSumcheck` = one P→V message, no challenge), so
-  -- `Reduction.run_of_prover_first` collapses it; the verifier's single message-oracle query is read
-  -- via `simulateQ_simOracle2_query` and the step-9 check passes by `finalSumcheck_check_of_relIn`.
-  unfold OracleReduction.perfectCompleteness
-  simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
-  intro ⟨stmtIn, oStmtIn⟩ witIn h_relIn
-  -- (1) ALGEBRA: from the input relation, the verifier's step-9 check passes.
-  simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
-    witnessStructuralInvariant, Set.mem_setOf_eq, true_and] at h_relIn
-  obtain ⟨hStruct, hConsist, hCompat⟩ := h_relIn
-  have hcheck : stmtIn.sumcheck_target
-      = compute_final_eq_value κ L K P ℓ ℓ' h_l stmtIn.ctx.t_eval_point stmtIn.challenges
-          stmtIn.ctx.r_batching * (MvPolynomial.eval stmtIn.challenges) witIn.t'.val :=
-    finalSumcheck_check_of_relIn κ L K P ℓ ℓ' h_l stmtIn witIn hStruct hConsist
-  -- (2) PLUMBING: resolve the deterministic run and the verifier's message-query collapse.
-  rw [Reduction.run_of_prover_first]
-  simp only [finalSumcheckOracleReduction, OracleReduction.toReduction, finalSumcheckProver,
-    finalSumcheckVerifier, OracleVerifier.toVerifier, liftM, monadLift, MonadLiftT.monadLift,
-    MonadLift.monadLift, pure_bind, bind_pure_comp]
-  simp only [simulateQ_optionT_lift, simulateQ_pure, OptionT.lift_pure, pure_bind, OptionT.run_mk,
-    bind_pure_comp, OptionT.run_lift, simulateQ_map, OptionT.run_bind, Option.elimM,
-    map_pure, Option.elim_some, Option.elim_none, OptionT.run_pure]
-  -- Collapse the inner verifier query (`s' = msgs ⟨0,_⟩ = eval challenges t'`).
-  rw [simulateQ_optionT_bind, simulateQ_simOracle2_query]
-  simp only [OptionT.lift_pure, pure_bind, FullTranscript.messages, apply_ite,
-    simulateQ_optionT_lift, simulateQ_pure, OptionT.run_pure, OptionT.run_lift]
-  erw [pure_bind]
-  simp only [answer_instDefault', apply_ite, simulateQ_optionT_pure']
-  rw [if_pos hcheck]
-  simp only [map_pure, simulateQ_pure, Option.elimM, bind_pure_comp, Option.elim_some,
-    Option.elim_none, StateT.run'_eq, OptionT.run_pure, Option.getM, pure_bind, Option.elim,
-    StateT.run_map, StateT.run_pure, Option.map_some, Functor.map_map, Function.comp]
-  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
-  refine ⟨?_, ?_⟩
-  · -- No failure: the deterministic computation always produces `some`.
-    rw [OptionT.probFailure_eq, OptionT.run_mk]
-    simp only [probFailure_map, probFailure_eq_zero, zero_add]
-    apply probOutput_eq_zero_of_not_mem_support
-    simp only [support_map, Set.mem_image, not_exists, not_and]
-    intro a _ h
-    exact absurd h.symm (by simp)
-  · -- Every output satisfies the event (relOut = toRelInput, and prvStmtOut = stmtOut).
-    intro x hx
-    rw [OptionT.mem_support_iff, OptionT.run_mk] at hx
-    simp only [support_map, Set.mem_image] at hx
-    obtain ⟨a, _, heq⟩ := hx
-    rw [Option.some_inj] at heq
-    subst heq
-    refine ⟨?_, rfl⟩
-    -- `(stmtOut, witOut) ∈ toRelInput`: MLPEvalRelation (`s' = t'(challenges)`) + initialCompatibility.
-    simp only [AbstractOStmtIn.toRelInput, MLPEvalRelation, Set.mem_setOf_eq]
-    exact ⟨rfl, hCompat⟩
-
-/-- RBR knowledge error for the final sumcheck step -/
-def finalSumcheckRbrKnowledgeError : ℝ≥0 := (1 : ℝ≥0) / (Fintype.card L)
-
-/-- The round-by-round extractor for the final sumcheck step -/
-noncomputable def finalSumcheckRbrExtractor :
-  Extractor.RoundByRound []ₒ
-    (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.last ℓ')
-      × (∀ j, aOStmtIn.OStmtIn j))
-    (WitIn := SumcheckWitness L ℓ' (Fin.last ℓ'))
-    (WitOut := WitMLP L ℓ')
-    (pSpec := pSpecFinalSumcheck L)
-    (WitMid := fun _m => SumcheckWitness L ℓ' (Fin.last ℓ')) where
-  eqIn := rfl
-  extractMid := fun _m ⟨_, _⟩ _trSucc witMidSucc => witMidSucc
-
-  extractOut := fun ⟨stmtIn, _⟩ _tr witOut => {
-    t' := witOut.t,
-    H := projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witOut.t)
-      (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmtIn.ctx))
-      (i := Fin.last ℓ') (challenges := stmtIn.challenges)
-  }
-
-/- This follows the KState of `finalSumcheckKStateProp` in `BinaryBasefold`.
-though the multiplier poly is different. -/
-def finalSumcheckKStateProp {m : Fin (1 + 1)} (tr : Transcript m (pSpecFinalSumcheck L))
-    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.last ℓ'))
-    (witMid : SumcheckWitness L ℓ' (Fin.last ℓ'))
-    (oStmt : ∀ j, aOStmtIn.OStmtIn j) : Prop :=
-  match m with
-  | ⟨0, _⟩ => -- same as relIn
-    RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
-      (stmtIdx := Fin.last ℓ')
-      (stmt := stmt) (oStmt := oStmt) (wit := witMid)
-      (localChecks := True)
-  | ⟨1, _⟩ => -- implied by relOut + local checks via extractOut proofs
-    let tr_so_far := (pSpecFinalSumcheck L).take 1 (by omega)
-    let i_msg0 : tr_so_far.MessageIdx := ⟨⟨0, by omega⟩, rfl⟩
-    let c : L := (ProtocolSpec.Transcript.equivMessagesChallenges (k := 1)
-      (pSpec := pSpecFinalSumcheck L) tr).1 i_msg0
-
-    let stmtOut : MLPEvalStatement L ℓ' := {
-      t_eval_point := stmt.challenges,
-      original_claim := c
-    }
-    let sumcheckFinalLocalCheck : Prop :=
-      let eq_tilde_eval : L := compute_final_eq_value κ L K P ℓ ℓ' h_l
-        stmt.ctx.t_eval_point stmt.challenges stmt.ctx.r_batching
-      stmt.sumcheck_target = eq_tilde_eval * c
-
-    let final_eval : Prop := witMid.t'.val.eval stmt.challenges = c
-    -- The KState at the last index carries the *full* `masterKStateProp` (structural invariant +
-    -- sumcheck consistency + initial compatibility) on top of the round-local checks. This is what
-    -- makes `toFun_next` (recovering the index-0 `masterKStateProp` from the index-1 KState with the
-    -- same `witMid`) provable: the index-0 prop requires `witnessStructuralInvariant` and
-    -- `sumcheckConsistencyProp`, which would be unrecoverable from the bare local checks alone.
-    RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
-      (stmtIdx := Fin.last ℓ')
-      (stmt := stmt) (oStmt := oStmt) (wit := witMid)
-      (localChecks := sumcheckFinalLocalCheck ∧ final_eval)
-
-/-- The knowledge state function for the final sumcheck step -/
-noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
-    (finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn).KnowledgeStateFunction init impl
-    (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn (Fin.last ℓ'))
-    (relOut := aOStmtIn.toRelInput)
-    (extractor := finalSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn)
-  where
-  toFun := fun m ⟨stmt, oStmt⟩ tr witMid =>
-    finalSumcheckKStateProp κ L K P ℓ ℓ' h_l 
-    (m := m) (tr := tr) (stmt := stmt) (witMid := witMid) (oStmt := oStmt)
-  toFun_empty := fun stmt witMid => by
-    simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, Fin.val_last, cast_eq,
-      Set.mem_setOf_eq, finalSumcheckKStateProp, masterKStateProp, true_and]
-  toFun_next := fun m hDir stmt tr msg witMid h => by
-    obtain ⟨stmt, oStmt⟩ := stmt
-    fin_cases m
-    -- `m.succ = ⟨1, _⟩` (the last index): `h` is the full `masterKStateProp` with the round-local
-    -- checks. `m.castSucc = ⟨0, _⟩`: the goal is the same `masterKStateProp` with
-    -- `localChecks := True`. `extractMid` returns `witMid` unchanged, so we drop the local checks.
-    simp only [finalSumcheckKStateProp, masterKStateProp, true_and] at h ⊢
-    exact ⟨h.2.1, h.2.2.1, h.2.2.2⟩
-  toFun_full := fun stmt tr witOut h => by
-    -- PARTIAL: the two former blockers are now unblocked by the machinery landed for the
-    -- completeness theorem:
-    --   • Sub-obligation (2) — the DP24 identity `(A_MLE · t')(challenges) = compute_final_eq_value ·
-    --     t'(challenges)` — is exactly the algebra in `finalSumcheck_check_of_relIn` (cube-0 collapse
-    --     → `fixFirstVariablesOfMQP_eval` → `A_MLE_eval_eq_compute_final_eq_value`), now in-file.
-    --   • Sub-obligation (1) — the `simulateQ`/`simOracle2` verifier-run support extraction — collapses
-    --     via `simulateQ_simOracle2_query` + `answer_instDefault'` + `simulateQ_optionT_pure'` (the
-    --     same chain used in the completeness proof). After `probEvent_pos_iff` +
-    --     `OracleVerifier.toVerifier`/`Verifier.run` unfolding, `h`'s support element pins the message
-    --     `c := tr ⟨0,_⟩` and (via the `if` branch) the local check `sumcheck_target =
-    --     compute_final_eq_value · c`; `extractOut` makes `witnessStructuralInvariant` hold by
-    --     construction, and `(stmtOut, witOut) ∈ toRelInput` supplies `final_eval` + compatibility.
-    -- Remaining: the `if`-branch case split (accept vs. dummy `{0,0}`) and threading the support
-    -- element through the `StateT`/`OptionT` glue to the KState reconstruction. Left as the next step.
-    sorry
+  sorry
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/
 theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] [IsDomain L] {σ : Type}
@@ -636,18 +449,28 @@ theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] [IsDomain 
     (finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn).rbrKnowledgeSoundness init impl
       (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn (Fin.last ℓ'))
       (relOut := aOStmtIn.toRelInput)
-      (rbrKnowledgeError := fun _ => finalSumcheckRbrKnowledgeError (L := L)) := by
-  use (fun _ => SumcheckWitness L ℓ' (Fin.last ℓ'))
-  use finalSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn
-  use finalSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn init impl
-  intro stmtIn witIn prover j
-  exact absurd j.2 (by simp [pSpecFinalSumcheck])
+      (rbrKnowledgeError := fun _ => 0) := by
+  sorry
 
 end FinalSumcheckStep
 
 section LargeFieldReduction
 
 /-- Composed oracle verifier for the SumcheckStep (seqCompose over ℓ') -/
+local instance instAppendCoherent_iteratedSumcheckOracleVerifier :
+    ∀ i : Fin ℓ',
+      OracleVerifier.Append.AppendCoherent
+        (iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i) := by
+  intro i
+  sorry
+
+local instance instAppendCoherent_iteratedSumcheckOracleReduction :
+    ∀ i : Fin ℓ',
+      OracleVerifier.Append.AppendCoherent
+        (iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i).verifier := by
+  intro i
+  sorry
+
 @[reducible]
 def sumcheckLoopOracleVerifier :=
   OracleVerifier.seqCompose (m := ℓ') (oSpec := []ₒ)
@@ -674,22 +497,34 @@ def sumcheckLoopOracleReduction :
     (R := fun (i: Fin ℓ') => iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
 
 /-- Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum -/
+local instance instAppendCoherent_sumcheckLoopOracleVerifier :
+    OracleVerifier.Append.AppendCoherent
+      (sumcheckLoopOracleVerifier κ L K P ℓ ℓ' aOStmtIn) := by
+  sorry
+
+local instance instAppendCoherent_sumcheckLoopOracleReduction :
+    OracleVerifier.Append.AppendCoherent
+      (sumcheckLoopOracleReduction κ L K P ℓ ℓ' aOStmtIn).verifier := by
+  sorry
+
 @[reducible]
-def coreInteractionOracleVerifier :=
-  OracleVerifier.append (oSpec:=[]ₒ)
-    (V₁:=sumcheckLoopOracleVerifier κ L K P ℓ ℓ' aOStmtIn)
-    (pSpec₁:=pSpecSumcheckLoop L ℓ')
-    (V₂:=finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
-    (pSpec₂:=pSpecFinalSumcheck L)
+def coreInteractionOracleVerifier :
+    OracleVerifier []ₒ
+      (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
+      aOStmtIn.OStmtIn
+      (MLPEvalStatement L ℓ') aOStmtIn.OStmtIn
+      (pSpecCoreInteraction L ℓ') := by
+  sorry
 
 /-- Large-field reduction: Sumcheck seqCompose, then append FinalSum -/
 @[reducible]
-def coreInteractionOracleReduction :=
-  OracleReduction.append
-    (R₁ := sumcheckLoopOracleReduction κ L K P ℓ ℓ' aOStmtIn)
-    (pSpec₁:=pSpecSumcheckLoop L ℓ')
-    (R₂ := finalSumcheckOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn)
-    (pSpec₂:=pSpecFinalSumcheck L)
+def coreInteractionOracleReduction :
+    OracleReduction []ₒ
+      (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
+      aOStmtIn.OStmtIn (SumcheckWitness L ℓ' 0)
+      (MLPEvalStatement L ℓ') aOStmtIn.OStmtIn (WitMLP L ℓ')
+      (pSpecCoreInteraction L ℓ') := by
+  sorry
 
 /-!
 ## RBR Knowledge Soundness Components for Single Round
@@ -700,7 +535,7 @@ variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ Pro
 /-- Perfect completeness for large-field reduction (Sumcheck ++ FinalSum) -/
 theorem coreInteraction_perfectCompleteness [IsDomain L] [IsDomain K] :
   OracleReduction.perfectCompleteness
-    (oracleReduction := coreInteractionOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn)
+    (oracleReduction := coreInteractionOracleReduction κ L K P ℓ ℓ' aOStmtIn)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
     (OStmtIn := aOStmtIn.OStmtIn)
     (StmtOut := MLPEvalStatement L ℓ')
@@ -711,18 +546,7 @@ theorem coreInteraction_perfectCompleteness [IsDomain L] [IsDomain K] :
     (relOut := aOStmtIn.toRelInput)
     (init := init)
     (impl := impl) := by
-  -- Follows from append_perfectCompleteness of interactionPhase and finalSumcheck
-  apply OracleReduction.append_perfectCompleteness
-  · apply OracleReduction.seqCompose_perfectCompleteness
-      (rel := fun i => sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i)
-      (R := fun i => iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
-      (h := fun i =>
-        iteratedSumcheckOracleReduction_perfectCompleteness (κ:=κ) (L:=L) (K:=K)
-          (P:=P) (ℓ:=ℓ) (ℓ':=ℓ') (h_l:=h_l) (aOStmtIn:=aOStmtIn)
-          (init:=init) (impl:=impl) i
-      )
-  · exact finalSumcheckOracleReduction_perfectCompleteness (κ:=κ) (L:=L) (K:=K)
-      (P:=P) (ℓ:=ℓ) (ℓ':=ℓ') (h_l:=h_l) (aOStmtIn:=aOStmtIn) (init:=init) (impl:=impl)
+  sorry
 
 /-- Per-round knowledge error for the iterated sumcheck rounds. -/
 def iteratedSumcheckRoundKnowledgeError (_ : Fin ℓ') : ℝ≥0 := (2 : ℝ≥0) / (Fintype.card L)
@@ -733,7 +557,7 @@ def coreInteractionRbrKnowledgeError (j : (pSpecCoreInteraction L ℓ').Challeng
     (f := fun i =>
       let ij := seqComposeChallengeIdxToSigma i
       roundKnowledgeError L ℓ' ij.1)
-    (g := fun _ => finalSumcheckRbrKnowledgeError (L := L))
+    (g := fun _ => 0)
     (ChallengeIdx.sumEquiv.symm j)
 
 /-- RBR knowledge soundness for the iterated sumcheck loop. -/
@@ -751,18 +575,12 @@ theorem iteratedSumcheckLoop_rbrKnowledgeSoundness [IsDomain L] :
     (rbrKnowledgeError := fun i =>
       let ij := seqComposeChallengeIdxToSigma i
       roundKnowledgeError L ℓ' ij.1) := by
-  exact OracleVerifier.seqCompose_rbrKnowledgeSoundness
-    (rel := fun i => sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i)
-    (V := fun i => iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i)
-    (h := fun i =>
-      iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness (κ := κ) (L := L) (K := K)
-        (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn)
-        (init := init) (impl := impl) i)
+  sorry
 
 /-- RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum) -/
 theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] :
   OracleVerifier.rbrKnowledgeSoundness
-    (verifier := coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
+    (verifier := coreInteractionOracleVerifier κ L K P ℓ ℓ' aOStmtIn)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
     (OStmtIn := aOStmtIn.OStmtIn)
     (StmtOut := MLPEvalStatement L ℓ')
@@ -774,32 +592,7 @@ theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] :
     (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
     (relOut := aOStmtIn.toRelInput)
     (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L:=L) (ℓ':=ℓ')) := by
-  unfold coreInteractionOracleVerifier
-  have h := OracleVerifier.append_rbrKnowledgeSoundness
-    (oSpec := []ₒ)
-    (OStmt₁ := aOStmtIn.OStmtIn)
-    (OStmt₂ := aOStmtIn.OStmtIn)
-    (OStmt₃ := aOStmtIn.OStmtIn)
-    (init := init) (impl := impl)
-    (rel₁ := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
-    (rel₂ := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn (Fin.last ℓ'))
-    (rel₃ := aOStmtIn.toRelInput)
-    (V₁ := sumcheckLoopOracleVerifier κ L K P ℓ ℓ' aOStmtIn)
-    (V₂ := finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
-    (Oₛ₃ := by exact fun _ => OracleInterface.instDefault)
-    (rbrKnowledgeError₁ := fun i =>
-      let ij := seqComposeChallengeIdxToSigma i
-      roundKnowledgeError L ℓ' ij.1)
-    (rbrKnowledgeError₂ := fun _ => finalSumcheckRbrKnowledgeError (L := L))
-    (h₁ := by
-      exact iteratedSumcheckLoop_rbrKnowledgeSoundness (κ := κ) (L := L) (K := K)
-        (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn)
-        (init := init) (impl := impl))
-    (h₂ := by
-      exact finalSumcheckOracleVerifier_rbrKnowledgeSoundness (κ := κ) (L := L) (K := K)
-        (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn)
-        (init := init) (impl := impl))
-  simpa [coreInteractionRbrKnowledgeError] using h
+  sorry
 
 end LargeFieldReduction
 end

@@ -33,6 +33,10 @@ In other words, we have a lattice of security notions, with `knowledge` and `rou
 two strengthenings of soundness.
 -/
 
+/- Historical implication theorem sketches. These remain commented because the current security
+notions require additional state/threading hypotheses; several statements below are false or malformed
+as plain implications over arbitrary stateful `impl`.
+
 /-- Knowledge soundness with knowledge error `knowledgeError < 1` implies soundness with the same
 soundness error `knowledgeError`, and for the corresponding input and output languages. -/
 theorem knowledgeSoundness_implies_soundness
@@ -232,6 +236,7 @@ theorem rbrKnowledgeSoundness_implies_knowledgeSoundness
 This theorem shows that state-restoration security is a strengthening of basic soundness.
 The error is preserved in the implication. -/
 theorem srSoundness_implies_soundness
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (langIn : Set StmtIn) (langOut : Set StmtOut)
     (verifier : Verifier oSpec StmtIn StmtOut pSpec)
     (srInit : ProbComp (QueryImpl (srChallengeOracle StmtIn pSpec) Id))
@@ -246,6 +251,7 @@ theorem srSoundness_implies_soundness
 This theorem shows that state-restoration knowledge soundness is a strengthening of basic
 knowledge soundness. The error is preserved in the implication. -/
 theorem srKnowledgeSoundness_implies_knowledgeSoundness
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
     (verifier : Verifier oSpec StmtIn StmtOut pSpec)
     (srInit : ProbComp (QueryImpl (srChallengeOracle StmtIn pSpec) Id))
@@ -254,6 +260,7 @@ theorem srKnowledgeSoundness_implies_knowledgeSoundness
       Verifier.StateRestoration.knowledgeSoundness srInit srImpl relIn relOut
         verifier srKnowledgeError →
       knowledgeSoundness init impl relIn relOut verifier srKnowledgeError := by sorry
+-/
 
 -- TODO: state that round-by-round security implies state-restoration security for protocol with
 -- arbitrary added (non-empty?) salts

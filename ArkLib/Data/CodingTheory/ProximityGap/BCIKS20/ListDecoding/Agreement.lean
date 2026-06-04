@@ -6,6 +6,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Extraction
+import ArkLib.Data.Polynomial.RationalFunctions
 
 /-!
 # BCIKS20 list-decoding agreement compatibility module
@@ -357,13 +358,27 @@ noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q 
 open BCIKS20AppendixA.ClaimA2 in
 /-- The extracted `P` from Claim 5.9 equals `γ`. -/
 lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
-  γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
-    (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
-    (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
-  BCIKS20AppendixA.polyToPowerSeries𝕃 _
-    (P k δ x₀ h_gs) :=
+    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+      (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+      (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+    BCIKS20AppendixA.polyToPowerSeries𝕃 (H k δ x₀ h_gs) (P k δ x₀ h_gs) :=
   Classical.choose_spec
     (Classical.choose_spec (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs))
+
+/-- Compatibility alias for the currently available extraction set. The full BCIKS matching-set
+construction is still open; the active extraction module exposes `coeffs_of_close_proximity`. -/
+noncomputable def matching_set
+    (k : ℕ) (ωs : Fin n ↪ F) (δ : ℚ) (u₀ u₁ : Fin n → F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : Finset F :=
+  coeffs_of_close_proximity k ωs δ u₀ u₁
+
+lemma matching_set_is_a_sub_of_coeffs_of_close_proximity
+    (k : ℕ) {ωs : Fin n ↪ F} {δ : ℚ} {u₀ u₁ : Fin n → F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {z : F}
+    (h : z ∈ matching_set k ωs δ u₀ u₁ h_gs) :
+    z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁ := by
+  simpa [matching_set] using h
 
 /-- The set `S'_x` from [BCIKS20] (just before Claim 5.10). The set of all `z ∈ S'` such that
 `w(x,z)` matches `P_z(x)`. -/

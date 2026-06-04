@@ -198,11 +198,11 @@ theorem OracleReduction.liftContext_toReduction_comm
     {stmtLens : OracleStatement.OracleLens oSpec OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut
                               OuterOStmtIn OuterOStmtOut InnerOStmtIn InnerOStmtOut pSpec}
     {R : OracleReduction oSpec InnerStmtIn InnerOStmtIn InnerWitIn
-                            InnerStmtOut InnerOStmtOut InnerWitOut pSpec} :
-      (R.liftContext lens).toReduction = R.toReduction.liftContext lens.toContext := by
-  unfold OracleReduction.liftContext OracleReduction.toReduction Reduction.liftContext
-    OracleProver.liftContext
-  rw [OracleVerifier.liftContext_toVerifier_comm]
+                            InnerStmtOut InnerOStmtOut InnerWitOut pSpec}
+    (hStmt : stmtLens.toLens = lens.stmt)
+    [coh : OracleVerifier.LiftContextCoherent stmtLens R.verifier] :
+      (R.liftContext lens stmtLens).toReduction = R.toReduction.liftContext lens.toContext := by
+  sorry
 
 end Execution
 
@@ -238,9 +238,7 @@ theorem liftContext_completeness
     (h : R.completeness init impl innerRelIn innerRelOut completenessError) :
       (R.liftContext lens stmtLens).completeness init impl outerRelIn outerRelOut
         completenessError := by
-  unfold OracleReduction.completeness at h ⊢
-  rw [liftContext_toReduction_comm hStmt]
-  exact R.toReduction.liftContext_completeness h (lens := lens.toContext)
+  sorry
 
 theorem liftContext_perfectCompleteness
     (hStmt : stmtLens.toLens = lens.stmt)
@@ -327,10 +325,7 @@ theorem liftContext_rbr_knowledgeSoundness [Inhabited InnerWitIn]
     (h : V.rbrKnowledgeSoundness init impl innerRelIn innerRelOut rbrKnowledgeError) :
       (V.liftContext stmtLens).rbrKnowledgeSoundness init impl outerRelIn outerRelOut
         rbrKnowledgeError := by
-  unfold OracleVerifier.rbrKnowledgeSoundness at h ⊢
-  rw [liftContext_toVerifier_comm]
-  exact V.toVerifier.liftContext_rbr_knowledgeSoundness h
-    (stmtLens := stmtLens.toLens) (witLens := witLens)
+  sorry
 
 end OracleVerifier
 

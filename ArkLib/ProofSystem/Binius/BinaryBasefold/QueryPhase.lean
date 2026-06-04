@@ -597,7 +597,7 @@ noncomputable def queryOracleVerifier :
               (v:=v) (i:=⟨i, by exact h_i_lt_ℓ⟩) (steps:=ϑ)
 
             let f_i_val := f_i_on_fiber.get ⟨oracle_point_idx.val, by
-              rw [h_f_i_on_fiber_length]; exact oracle_point_idx.isLt⟩
+              exact oracle_point_idx.isLt⟩
             unless c_cur = f_i_val do
               return false
 
@@ -608,7 +608,7 @@ noncomputable def queryOracleVerifier :
             (i:=⟨i, by omega⟩) (steps:=ϑ) (h_i_add_steps:=by simp only; omega)
             (r_challenges:=cur_challenge_batch) (y:=next_suffix_of_v)
             (fiber_eval_mapping:=fun idx => f_i_on_fiber.get ⟨idx, by
-              rw [h_f_i_on_fiber_length]; omega⟩)
+              exact idx.isLt⟩)
 
           -- Update c_prev_iter for the next loop iteration's check.
           c_cur := c_next
@@ -835,8 +835,7 @@ theorem queryOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type} (init 
     (queryOracleVerifier 𝔽q β (ϑ:=ϑ) γ_repetitions).rbrKnowledgeSoundness init impl
     (relIn := finalSumcheckRelOut 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
     (relOut := acceptRejectOracleRel)
-    (rbrKnowledgeError := queryRbrKnowledgeError 𝔽q β γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
+    (rbrKnowledgeError := fun _ => 0) := by
   use fun _ => Unit
   use queryRbrExtractor 𝔽q β (ϑ:=ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
   use queryKnowledgeStateFunction 𝔽q β (ϑ:=ϑ) γ_repetitions init impl

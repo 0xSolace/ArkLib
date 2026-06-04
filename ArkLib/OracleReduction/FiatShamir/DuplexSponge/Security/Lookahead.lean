@@ -129,7 +129,7 @@ noncomputable def lookAhead (fwdPermTrace : QueryLog (forwardPermutationOracle (
     let sampledUnits ←
       (Vector.ofFn (fun _ : Fin (challengeSize i) => ())).mapM fun _ =>
         liftM ((Unit →ₒ U).query ())
-    let seqUnits := seqRateSegment.flatMap (fun v => v.toList)
+    let seqUnits := knownRateUnits
     return some <| Vector.ofFn fun j =>
       match seqUnits[j.val]? with
       | some u => u

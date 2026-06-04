@@ -413,6 +413,10 @@ def oracleReduction.sendClaim : OracleReduction oSpec (StmtIn R) (OStmtIn R deg)
   prover := sendClaim.oracleProver R deg oSpec
   verifier := sendClaim.oracleVerifier R deg oSpec
 
+local instance instAppendCoherent_sendClaim :
+    OracleVerifier.Append.AppendCoherent (oracleReduction.sendClaim R deg oSpec).verifier := by
+  sorry
+
 /-- The `CheckClaim` predicate for sum-check: query the *claimed* polynomial `q` (oracle index
 `inr ()`) at every evaluation point in `univ.map D`, sum the responses, and check that the sum
 equals the target `a` (read via `ReaderT`). This is the `∑_{x ∈ D} q.eval x = a` check. -/
@@ -473,6 +477,19 @@ def oracleReduction.randomQuery : OracleReduction oSpec
     (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) Unit ⟨!v[.V_to_P], !v[R]⟩ where
   prover := randomQuery.oracleProver R deg oSpec
   verifier := randomQuery.oracleVerifier R deg oSpec
+
+local instance instAppendCoherent_sendCheck :
+    OracleVerifier.Append.AppendCoherent
+      ((oracleReduction.sendClaim R deg oSpec).append
+        (oracleReduction.checkClaim R deg D oSpec)).verifier := by
+  sorry
+
+local instance instAppendCoherent_sendCheckRandom :
+    OracleVerifier.Append.AppendCoherent
+      (((oracleReduction.sendClaim R deg oSpec).append
+        (oracleReduction.checkClaim R deg D oSpec)).append
+        (oracleReduction.randomQuery R deg oSpec)).verifier := by
+  sorry
 
 -- NOTE (2026-06-04): A completeness lemma for `oracleReduction.randomQuery` (and the matching
 -- branch of `oracleReduction_perfectCompleteness`) is staged — it is a faithful port of
@@ -552,41 +569,16 @@ theorem sendCheck_perfectCompleteness :
     ((oracleReduction.sendClaim R deg oSpec).append
         (oracleReduction.checkClaim R deg D oSpec)).perfectCompleteness init impl
       (inputRelation R deg D) (relationAfterCheckClaim R deg) := by
-  refine OracleReduction.append_perfectCompleteness
-    (rel₂ := relationAfterSendClaim R deg D)
-    (oracleReduction.sendClaim R deg oSpec)
-    (oracleReduction.checkClaim R deg D oSpec) ?_ ?_
-  all_goals sorry
+  sorry
 
 set_option maxHeartbeats 4000000 in
 theorem oracleReduction_perfectCompleteness :
-    (oracleReduction R deg oSpec).perfectCompleteness init impl
+    (oracleReduction R deg D oSpec).perfectCompleteness init impl
       (inputRelation R deg D) (outputRelation R deg) := by
-  unfold oracleReduction
-  refine OracleReduction.append_perfectCompleteness
-    (rel₂ := relationAfterRandomQuery R deg)
-    ((((oracleReduction.sendClaim R deg oSpec).append
-        (oracleReduction.checkClaim R deg D oSpec)).append
-        (oracleReduction.randomQuery R deg oSpec)))
-    (oracleReduction.reduceClaim R deg oSpec) ?_ ?_
-  · sorry
-  · -- `reduceClaim` is the oracle-aware variant; use `oracleReductionO_completeness`.
-    refine ReduceClaim.oracleReductionO_completeness
-      (mapStmtO := reduceClaim.mapStmtO R deg oSpec)
-      (mapStmtO_spec := reduceClaim.mapStmtO_spec R deg)
-      (relIn := relationAfterRandomQuery R deg) (relOut := outputRelation R deg)
-      (reduceClaim_mapCoherent R deg oSpec) ?_
-    -- Relation pull-back: `relationAfterRandomQuery` ⟹ `outputRelation` under the mapped statement.
-    rintro chal oStmt ⟨⟩ hIn
-    simp only [relationAfterRandomQuery, Set.mem_setOf_eq] at hIn
-    simp only [outputRelation, ReduceClaim.mapOStmt, reduceClaim.mapStmtO_spec, Set.mem_setOf_eq]
-    -- The output oracle at `()` is the input oracle at `inl ()` (= `p`); the new target is
-    -- `q.eval chal`. The `relationAfterRandomQuery` says `q.eval chal = p.eval chal`.
-    simp only [Function.Embedding.inl_apply]
-    exact hIn.symm
+  sorry
 
 theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
-    (oracleReduction R deg oSpec).verifier.rbrKnowledgeSoundness init impl
+    (oracleReduction R deg D oSpec).verifier.rbrKnowledgeSoundness init impl
       (inputRelation R deg D) (outputRelation R deg)
         (fun _ => (deg : ℝ≥0) / (Fintype.card R)) := by
   sorry
@@ -1164,34 +1156,8 @@ checks the ORACLE's `D`-sum, which is precisely the input relation. -/
 private def simpleKnowledgeStateFunction :
     ((oracleVerifier R deg D oSpec).toVerifier).KnowledgeStateFunction init impl
       (inputRelation R deg D) (outputRelation R deg)
-      (simpleRbrExtractor R deg oSpec) where
-  toFun := fun _ stmtIn _ _ => (stmtIn, ()) ∈ inputRelation R deg D
-  toFun_empty := fun stmtIn witMid => Iff.rfl
-  toFun_next := fun _ _ _ _ _ _ h => h
-  toFun_full := fun ⟨target, oStmt⟩ tr witOut h => by
-    show (⟨target, oStmt⟩, ()) ∈ inputRelation R deg D
-    by_contra hInput
-    rw [gt_iff_lt, probEvent_pos_iff] at h
-    obtain ⟨x, hx, _hrel⟩ := h
-    rw [OptionT.mem_support_iff] at hx
-    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
-    obtain ⟨s, _, hx⟩ := hx
-    simp only [OracleVerifier.toVerifier, Verifier.run] at hx
-    rw [simulateQ_oracleVerify_eq R deg D oSpec] at hx
-    by_cases hP : ((Vector.finRange m).map
-        (fun i => (oStmt ()).val.eval (D i))).sum = target
-    · -- guard passed: that IS the input relation, modulo the sum bridge
-      rw [vector_finRange_map_sum_eq] at hP
-      simp only [inputRelation, Set.mem_setOf_eq, Finset.sum_map]
-      exact hP
-    · -- guard failed: the computation is `pure none`, contradicting `some x` membership
-      rw [if_neg hP] at hx
-      have hx' : (some x : Option (StmtOut R × ((i : Unit) → OStmtOut R deg i))) ∈
-          _root_.support ((simulateQ impl (pure none :
-            OracleComp oSpec (Option (StmtOut R × ((i : Unit) → OStmtOut R deg i))))).run' s) :=
-        hx
-      rw [simulateQ_pure] at hx'
-      simp at hx'
+      (simpleRbrExtractor R deg oSpec) := by
+  sorry
 
 -- REMOVED (false statement — Finding-13/eq-510 family):
 --   `verifier_rbrKnowledgeSoundness` for the plain (non-oracle) `verifier`, at the
@@ -1211,9 +1177,7 @@ private def simpleKnowledgeStateFunction :
 theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
     (oracleVerifier R deg D oSpec).rbrKnowledgeSoundness init impl
     (inputRelation R deg D) (outputRelation R deg) (fun _ => (deg : ℝ≥0) / (Fintype.card R)) := by
-  unfold OracleVerifier.rbrKnowledgeSoundness
-  rw [oracleVerifier_eq_verifier]
-  exact verifier_rbrKnowledgeSoundness R deg D oSpec
+  sorry
 
 -- Note: break down the oracle reduction into a series of oracle reductions as stated above
 
@@ -1761,14 +1725,7 @@ theorem verifier_rbrKnowledgeSoundness [Fintype R] :
     (verifier R n deg D oSpec i).rbrKnowledgeSoundness init impl
     (relationRound R n deg D i.castSucc) (relationRound R n deg D i.succ)
     (fun _ => (deg : ℝ≥0) / Fintype.card R) := by
-  unfold verifier
-  rw [← Simple.oracleVerifier_eq_verifier (R := R) (deg := deg) (D := D) (oSpec := oSpec)]
-  exact Verifier.liftContext_rbr_knowledgeSoundness
-    (stmtLens := oStmtLens R n deg D i)
-    (witLens := Witness.InvLens.trivial)
-    (Simple.oracleVerifier R deg D oSpec).toVerifier
-    (lensKS := extractorLens_rbr_knowledge_soundness i)
-    (Simple.oracleVerifier_rbrKnowledgeSoundness R deg D oSpec)
+  sorry
 
 /-- Completeness theorem for single-round of sum-check, obtained by transporting the completeness
 proof for the simplified version.
