@@ -22,6 +22,12 @@ component is nonzero" in both constructions.
 
 namespace BCKHS25
 
+-- Decidability/Fintype instances are threaded through the section; several
+-- statement-level lemmas do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 open Polynomial Polynomial.Bivariate
 
 open Module
@@ -86,7 +92,7 @@ def BWMatrix' (da za db zb : ℕ) (domain : ι ↪ F) (u₀ u₁ : ι → F) :
 /-- The dimension count: with `zb = za + 1` (B one Z-degree higher) and
 `da·za + db·(za+1) > n·(za+1)`, the constraint system has a nontrivial
 solution. -/
-theorem exists_ne_zero_BWvec (da za db zb : ℕ) (hzb : zb = za + 1)
+theorem exists_ne_zero_BWvec (da za db zb : ℕ) (_hzb : zb = za + 1)
     (domain : ι ↪ F) (u₀ u₁ : ι → F)
     (hcount : Fintype.card ι * zb < da * za + db * zb) :
     ∃ v : BWIdx da za db zb → F, v ≠ 0 ∧
@@ -126,13 +132,13 @@ private lemma coeff_evalX_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb →
       · simp
       · intro b _ hb
         have hne : ((j : ℕ) : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-        simp [hne, hne.symm]
+        simp [hne.symm]
       · intro habs
         exact absurd (Finset.mem_univ _) habs
     · rw [dif_neg h]
       refine Finset.sum_eq_zero fun b _ => ?_
       have hne : (j : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => h (heq ▸ b.isLt)
-      simp [hne, hne.symm]
+      simp [hne.symm]
   have : (evalX a (toPolyB v)).coeff j = ((toPolyB v).coeff j).eval a := by
     simp [evalX, Polynomial.coeff]
   rw [this, hcoeff]
@@ -158,13 +164,13 @@ private lemma coeff_evalX_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb →
       · simp
       · intro b _ hb
         have hne : ((j : ℕ) : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-        simp [hne, hne.symm]
+        simp [hne.symm]
       · intro habs
         exact absurd (Finset.mem_univ _) habs
     · rw [dif_neg h]
       refine Finset.sum_eq_zero fun b _ => ?_
       have hne : (j : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => h (heq ▸ b.isLt)
-      simp [hne, hne.symm]
+      simp [hne.symm]
   have : (evalX a (toPolyA v)).coeff j = ((toPolyA v).coeff j).eval a := by
     simp [evalX, Polynomial.coeff]
   rw [this, hcoeff]

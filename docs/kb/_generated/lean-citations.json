@@ -160,6 +160,9 @@
     "ArkLib/Data/CodingTheory/ProximityGap/Basic.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/ProximityGap/Errors.lean": [
+      "ACFY24"
+    ],
     "ArkLib/Data/CodingTheory/ProximityGap/Folding.lean": [
       "ACFY24"
     ],
@@ -287,6 +290,7 @@
   "keys": {
     "ACFY24": [
       "ArkLib/Data/CodingTheory/ListDecodability.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/Errors.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Folding.lean",
       "ArkLib/Data/CodingTheory/ReedSolomon/Multilinear.lean",
       "ArkLib/Data/CodingTheory/ReedSolomon.lean",
