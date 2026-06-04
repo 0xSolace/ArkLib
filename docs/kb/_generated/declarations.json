@@ -11774,7 +11774,7 @@
           "signature": "def noncomputable def \u03b4_\u03b5_proximityGap {\u03b1 : Type} [DecidableEq \u03b1] [Nonempty \u03b1]"
         },
         {
-          "doc": "Definition: `(\u03b4, \u03b5)`-correlated agreement for affine lines. For every pair of words `u\u2080, u\u2081`, if the probability that a random affine line `u\u2080 + z \u2022 u\u2081` is `\u03b4`-close to `C` exceeds `\u03b5`, then `u\u2080` and `u\u2081` have correlated agreement with `C`. -- **TODO**: prove that `\u03b4_\u03b5_correlatedAgreementAffineLines` implies `\u03b4_\u03b5_proximityGap`",
+          "doc": "Definition: `(\u03b4, \u03b5)`-correlated agreement for affine lines. For every pair of words `u\u2080, u\u2081`, if the probability that a random affine line `u\u2080 + z \u2022 u\u2081` is `\u03b4`-close to `C` exceeds `\u03b5`, then `u\u2080` and `u\u2081` have correlated agreement with `C`. -- **NOTE**: prove that `\u03b4_\u03b5_correlatedAgreementAffineLines` implies `\u03b4_\u03b5_proximityGap`",
           "kind": "def",
           "line": 111,
           "name": "ProximityGap._anon_def_111",
@@ -16831,7 +16831,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 291,
+          "line": 297,
           "name": "Fin.vflatten_splitSum",
           "namespace": "Fin",
           "short_name": "vflatten_splitSum",
@@ -16840,7 +16840,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 296,
+          "line": 302,
           "name": "Fin.vflatten_embedSum",
           "namespace": "Fin",
           "short_name": "vflatten_embedSum",
@@ -16849,7 +16849,7 @@
         {
           "doc": "Functorial flatten: flattens a nested heterogeneous tuple `(i : Fin m) \u2192 (j : Fin (n i)) \u2192 F (\u03b1 i j)` into a single heterogeneous tuple with type `(k : Fin (vsum n)) \u2192 F (vflatten \u03b1 k)` where `vflatten` operates on the vector of types `\u03b1`. Unlike `dflatten` which requires an explicit unified motive, `fflatten` uses `vflatten` to automatically construct the motive from the input type family.",
           "kind": "def",
-          "line": 306,
+          "line": 312,
           "name": "Fin.fflatten",
           "namespace": "Fin",
           "short_name": "fflatten",
@@ -16858,7 +16858,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 314,
+          "line": 320,
           "name": "Fin.fflatten_zero",
           "namespace": "Fin",
           "short_name": "fflatten_zero",
@@ -16867,7 +16867,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 319,
+          "line": 325,
           "name": "Fin.fflatten_succ",
           "namespace": "Fin",
           "short_name": "fflatten_succ",
@@ -16876,7 +16876,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 325,
+          "line": 331,
           "name": "Fin.fflatten_one",
           "namespace": "Fin",
           "short_name": "fflatten_one",
@@ -16885,7 +16885,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 331,
+          "line": 337,
           "name": "Fin.fflatten_two_eq_append",
           "namespace": "Fin",
           "short_name": "fflatten_two_eq_append",
@@ -16894,7 +16894,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 337,
+          "line": 343,
           "name": "Fin.fflatten_splitSum",
           "namespace": "Fin",
           "short_name": "fflatten_splitSum",
@@ -16903,7 +16903,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 356,
+          "line": 362,
           "name": "Fin.fflatten_embedSum",
           "namespace": "Fin",
           "short_name": "fflatten_embedSum",
@@ -16912,7 +16912,7 @@
         {
           "doc": "Functorial flatten with two arguments: flattens two nested heterogeneous tuple `(i : Fin m) \u2192 (j : Fin (n i)) \u2192 F (\u03b1 i j)` into a single heterogeneous tuple with type `(k : Fin (vsum n)) \u2192 F (vflatten \u03b1 k)` where `vflatten` operates on the vector of types `\u03b1`. Unlike `dflatten` which requires an explicit unified motive, `fflatten` uses `vflatten` to automatically construct the motive from the input type family.",
           "kind": "def",
-          "line": 379,
+          "line": 385,
           "name": "Fin.fflatten\u2082",
           "namespace": "Fin",
           "short_name": "fflatten\u2082",
@@ -16921,7 +16921,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 388,
+          "line": 394,
           "name": "Fin.fflatten\u2082_zero",
           "namespace": "Fin",
           "short_name": "fflatten\u2082_zero",
@@ -16930,7 +16930,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 394,
+          "line": 400,
           "name": "Fin.fflatten\u2082_succ",
           "namespace": "Fin",
           "short_name": "fflatten\u2082_succ",
@@ -16939,7 +16939,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 401,
+          "line": 407,
           "name": "Fin.fflatten\u2082_one",
           "namespace": "Fin",
           "short_name": "fflatten\u2082_one",
@@ -16948,7 +16948,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 408,
+          "line": 414,
           "name": "Fin.fflatten\u2082_two_eq_append",
           "namespace": "Fin",
           "short_name": "fflatten\u2082_two_eq_append",
@@ -16957,7 +16957,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 415,
+          "line": 421,
           "name": "Fin.fflatten\u2082_embedSum",
           "namespace": "Fin",
           "short_name": "fflatten\u2082_embedSum",
@@ -16966,7 +16966,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 434,
+          "line": 440,
           "name": "Fin.fflatten\u2082_splitSum",
           "namespace": "Fin",
           "short_name": "fflatten\u2082_splitSum",
@@ -16975,7 +16975,7 @@
         {
           "doc": "Heterogeneous flatten: flattens a nested heterogeneous tuple `(i : Fin m) \u2192 (j : Fin (n i)) \u2192 \u03b1 i j` into a single heterogeneous tuple with type `(k : Fin (vsum n)) \u2192 vflatten \u03b1 k` where `vflatten` operates on the vector of types `\u03b1`. Unlike `dflatten` which requires an explicit unified motive, `hflatten` uses `vflatten` to automatically construct the motive from the input type family.",
           "kind": "def",
-          "line": 450,
+          "line": 456,
           "name": "Fin.hflatten",
           "namespace": "Fin",
           "short_name": "hflatten",
@@ -16984,7 +16984,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 458,
+          "line": 464,
           "name": "Fin.hflatten_zero",
           "namespace": "Fin",
           "short_name": "hflatten_zero",
@@ -16993,7 +16993,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 463,
+          "line": 469,
           "name": "Fin.hflatten_succ",
           "namespace": "Fin",
           "short_name": "hflatten_succ",
@@ -17002,7 +17002,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 470,
+          "line": 476,
           "name": "Fin.hflatten_one",
           "namespace": "Fin",
           "short_name": "hflatten_one",
@@ -17011,7 +17011,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 475,
+          "line": 481,
           "name": "Fin.hflatten_two_eq_append",
           "namespace": "Fin",
           "short_name": "hflatten_two_eq_append",
@@ -17020,7 +17020,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 480,
+          "line": 486,
           "name": "Fin.hflatten_splitSum",
           "namespace": "Fin",
           "short_name": "hflatten_splitSum",
@@ -17029,7 +17029,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 486,
+          "line": 492,
           "name": "Fin.hflatten_embedSum",
           "namespace": "Fin",
           "short_name": "hflatten_embedSum",
@@ -17038,7 +17038,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 497,
+          "line": 503,
           "name": "Fin.map",
           "namespace": "Fin",
           "short_name": "map",
@@ -17047,7 +17047,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 500,
+          "line": 506,
           "name": "Fin.range",
           "namespace": "Fin",
           "short_name": "range",
@@ -17056,7 +17056,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 502,
+          "line": 508,
           "name": "Fin.ranges",
           "namespace": "Fin",
           "short_name": "ranges",
@@ -17065,7 +17065,7 @@
         {
           "doc": "Find the first index `i` such that `k` is smaller than `\u2211 j < i, a j`, and return `none` otherwise. This is the dependent version of `Fin.divNat`.",
           "kind": "def",
-          "line": 517,
+          "line": 523,
           "name": "Fin.divSum",
           "namespace": "Fin",
           "short_name": "divSum",
@@ -17074,7 +17074,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 520,
+          "line": 526,
           "name": "Fin.divSum",
           "namespace": "Fin",
           "short_name": "divSum",
@@ -17083,7 +17083,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 539,
+          "line": 551,
           "name": "Fin.divSum",
           "namespace": "Fin",
           "short_name": "divSum",
@@ -17092,7 +17092,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 542,
+          "line": 554,
           "name": "Fin.sum_le_of_divSum",
           "namespace": "Fin",
           "short_name": "sum_le_of_divSum",
@@ -17101,7 +17101,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 554,
+          "line": 570,
           "name": "Fin.modSum",
           "namespace": "Fin",
           "short_name": "modSum",
@@ -17110,7 +17110,7 @@
         {
           "doc": "Equivalence between `(i : Fin m) \u00d7 Fin (n i)` and `Fin (\u2211 i, n i)`. Put this as the prime version since it already exists in mathlib (though with a different definition that's not def'eq to this one).",
           "kind": "def",
-          "line": 570,
+          "line": 589,
           "name": "Fin.finSigmaFinEquiv'",
           "namespace": "Fin",
           "short_name": "finSigmaFinEquiv'",
@@ -17119,7 +17119,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 593,
+          "line": 612,
           "name": "Fin.finSigmaFinEquiv'_apply",
           "namespace": "Fin",
           "short_name": "finSigmaFinEquiv'_apply",
@@ -17128,7 +17128,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 596,
+          "line": 615,
           "name": "Fin.finSigmaFinEquiv'_pair",
           "namespace": "Fin",
           "short_name": "finSigmaFinEquiv'_pair",
@@ -20139,6 +20139,163 @@
           "namespace": "UInt8",
           "short_name": "_anon_instance_660",
           "signature": "instance instance : SpongeUnit UInt8 where"
+        }
+      ]
+    },
+    "ArkLib/Data/Hash/Keccak.lean": {
+      "declarations": [
+        {
+          "doc": "The Keccak-256 sponge rate in bytes (`1088` bits).",
+          "kind": "def",
+          "line": 59,
+          "name": "Keccak.rateBytes",
+          "namespace": "Keccak",
+          "short_name": "rateBytes",
+          "signature": "def rateBytes : Nat := 136"
+        },
+        {
+          "doc": "The number of rounds in `Keccak-f[1600]`.",
+          "kind": "def",
+          "line": 62,
+          "name": "Keccak.numRounds",
+          "namespace": "Keccak",
+          "short_name": "numRounds",
+          "signature": "def numRounds : Nat := 24"
+        },
+        {
+          "doc": "The number of 64-bit lanes in the `Keccak-f[1600]` state.",
+          "kind": "def",
+          "line": 65,
+          "name": "Keccak.numLanes",
+          "namespace": "Keccak",
+          "short_name": "numLanes",
+          "signature": "def numLanes : Nat := 25"
+        },
+        {
+          "doc": "The 24 round constants for the \u03b9 (iota) step of `Keccak-f[1600]`.",
+          "kind": "def",
+          "line": 68,
+          "name": "Keccak.roundConstants",
+          "namespace": "Keccak",
+          "short_name": "roundConstants",
+          "signature": "def roundConstants : Array UInt64 := #["
+        },
+        {
+          "doc": "The rotation offsets for the \u03c1 (rho) step, indexed by lane position `x + 5 * y`.",
+          "kind": "def",
+          "line": 77,
+          "name": "Keccak.rhoOffsets",
+          "namespace": "Keccak",
+          "short_name": "rhoOffsets",
+          "signature": "def rhoOffsets : Array UInt64 := #["
+        },
+        {
+          "doc": "Left-rotate a 64-bit word by `n` bits (`n` taken modulo 64).",
+          "kind": "def",
+          "line": 85,
+          "name": "Keccak.rotl64",
+          "namespace": "Keccak",
+          "short_name": "rotl64",
+          "signature": "def rotl64 (x : UInt64) (n : UInt64) : UInt64 :="
+        },
+        {
+          "doc": "The \u03b8 (theta) step of `Keccak-f[1600]`.",
+          "kind": "def",
+          "line": 90,
+          "name": "Keccak.theta",
+          "namespace": "Keccak",
+          "short_name": "theta",
+          "signature": "def theta (a : Array UInt64) : Array UInt64 := Id.run do"
+        },
+        {
+          "doc": "The \u03c1 (rho) and \u03c0 (pi) steps of `Keccak-f[1600]`, combined. `\u03c1` rotates each lane by its offset; `\u03c0` permutes lane positions via `b[y, 2x + 3y] = rotl(a[x, y], r[x,y])`.",
+          "kind": "def",
+          "line": 111,
+          "name": "Keccak.rhoPi",
+          "namespace": "Keccak",
+          "short_name": "rhoPi",
+          "signature": "def rhoPi (a : Array UInt64) : Array UInt64 := Id.run do"
+        },
+        {
+          "doc": "The \u03c7 (chi) step of `Keccak-f[1600]`: `a[x, y] \u2295= (\u00aca[x+1, y]) \u2227 a[x+2, y]`.",
+          "kind": "def",
+          "line": 122,
+          "name": "Keccak.chi",
+          "namespace": "Keccak",
+          "short_name": "chi",
+          "signature": "def chi (a : Array UInt64) : Array UInt64 := Id.run do"
+        },
+        {
+          "doc": "A single round of `Keccak-f[1600]`: \u03b8, then \u03c1\u03c0, then \u03c7, then \u03b9 (XOR round constant into lane 0).",
+          "kind": "def",
+          "line": 140,
+          "name": "Keccak.keccakRound",
+          "namespace": "Keccak",
+          "short_name": "keccakRound",
+          "signature": "def keccakRound (a : Array UInt64) (rc : UInt64) : Array UInt64 :="
+        },
+        {
+          "doc": "The `Keccak-f[1600]` permutation: 24 rounds applied to a 25-lane state.",
+          "kind": "def",
+          "line": 147,
+          "name": "Keccak.keccakF",
+          "namespace": "Keccak",
+          "short_name": "keccakF",
+          "signature": "def keccakF (a : Array UInt64) : Array UInt64 :="
+        },
+        {
+          "doc": "Read 8 bytes (little-endian) from `bytes` starting at `off` as a `UInt64`. Out-of-range positions read as `0` (used after the message has been padded into full blocks, so this never actually happens for in-range lanes).",
+          "kind": "def",
+          "line": 153,
+          "name": "Keccak.loadLaneLE",
+          "namespace": "Keccak",
+          "short_name": "loadLaneLE",
+          "signature": "def loadLaneLE (bytes : ByteArray) (off : Nat) : UInt64 := Id.run do"
+        },
+        {
+          "doc": "XOR a single `rate`-sized block (`136` bytes) of `bytes` (starting at `off`) into the state's rate lanes, in little-endian lane order.",
+          "kind": "def",
+          "line": 162,
+          "name": "Keccak.absorbBlock",
+          "namespace": "Keccak",
+          "short_name": "absorbBlock",
+          "signature": "def absorbBlock (state : Array UInt64) (bytes : ByteArray) (off : Nat) : Array UInt64 := Id.run do"
+        },
+        {
+          "doc": "Apply `pad10*1` padding to `input` for the given `rate`, with domain byte `0x01` (original Keccak). Produces a byte array whose length is a multiple of `rate`.",
+          "kind": "def",
+          "line": 171,
+          "name": "Keccak.padInput",
+          "namespace": "Keccak",
+          "short_name": "padInput",
+          "signature": "def padInput (input : ByteArray) : ByteArray := Id.run do"
+        },
+        {
+          "doc": "Store the first `n` lanes of `state` as little-endian bytes, concatenated.",
+          "kind": "def",
+          "line": 191,
+          "name": "Keccak.squeezeBytes",
+          "namespace": "Keccak",
+          "short_name": "squeezeBytes",
+          "signature": "def squeezeBytes (state : Array UInt64) (numBytes : Nat) : ByteArray := Id.run do"
+        },
+        {
+          "doc": "Keccak-256 (Ethereum variant): hash `input` to a 32-byte digest. Sponge with rate `136` bytes, capacity `512` bits, `pad10*1` padding with the original-Keccak domain byte `0x01`, little-endian lane loading, squeezing `32` bytes.",
+          "kind": "def",
+          "line": 210,
+          "name": "Keccak.keccak256",
+          "namespace": "Keccak",
+          "short_name": "keccak256",
+          "signature": "def keccak256 (input : ByteArray) : ByteArray := Id.run do"
+        },
+        {
+          "doc": "Keccak-256 returning a fixed-length `Vector UInt8 32` digest. Pads/truncates defensively, but `keccak256` always produces exactly 32 bytes.",
+          "kind": "def",
+          "line": 220,
+          "name": "Keccak.keccak256Vector",
+          "namespace": "Keccak",
+          "short_name": "keccak256Vector",
+          "signature": "def keccak256Vector (input : ByteArray) : Vector UInt8 32 :="
         }
       ]
     },
@@ -28369,16 +28526,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 32,
-          "name": "_anon_instance_32",
+          "line": 33,
+          "name": "_anon_instance_33",
           "namespace": "",
-          "short_name": "_anon_instance_32",
+          "short_name": "_anon_instance_33",
           "signature": "instance instance : Repr ByteArray where"
         },
         {
           "doc": "A stateful hash object that interfaces with duplex sponges. Rust interface: ```rust #[derive(Clone)] pub struct HashStateWithInstructions<H, U = u8> where U: Unit, H: DuplexSpongeInterface<U>, { /// The internal duplex sponge used for absorbing and squeezing data. ds: H, /// A stack of expected sponge operations. stack: VecDeque<Op>, /// Marker to associate the unit type `U` without storing a value. _unit: PhantomData<U>, } ``` This structure maintains the sponge state and tracks expected operations to ensure protocol compliance.",
           "kind": "structure",
-          "line": 57,
+          "line": 58,
           "name": "HashStateWithInstructions",
           "namespace": "",
           "short_name": "HashStateWithInstructions",
@@ -28387,7 +28544,7 @@
         {
           "doc": "Generate a 32-byte tag from the domain separator bytes using Keccak. Rust implementation: ```rust fn generate_tag(iop_bytes: &[u8]) -> [u8; 32] { let mut keccak = Keccak::default(); keccak.absorb_unchecked(iop_bytes); let mut tag = [0u8; 32]; keccak.squeeze_unchecked(&mut tag); tag } ```",
           "kind": "def",
-          "line": 82,
+          "line": 83,
           "name": "HashStateWithInstructions.generateTag",
           "namespace": "HashStateWithInstructions",
           "short_name": "generateTag",
@@ -28396,7 +28553,7 @@
         {
           "doc": "Initialize a stateful hash object from a domain separator. Rust interface: ```rust pub fn new(domain_separator: &DomainSeparator<H, U>) -> Self ```",
           "kind": "def",
-          "line": 93,
+          "line": 97,
           "name": "HashStateWithInstructions.new",
           "namespace": "HashStateWithInstructions",
           "short_name": "new",
@@ -28405,7 +28562,7 @@
         {
           "doc": "Perform secure absorption of elements into the sponge. Rust interface: ```rust pub fn absorb(&mut self, input: &[U]) -> Result<(), DomainSeparatorMismatch> ```",
           "kind": "def",
-          "line": 105,
+          "line": 109,
           "name": "HashStateWithInstructions.absorb",
           "namespace": "HashStateWithInstructions",
           "short_name": "absorb",
@@ -28414,7 +28571,7 @@
         {
           "doc": "Perform a secure squeeze operation. Rust interface: ```rust pub fn squeeze(&mut self, output: &mut [U]) -> Result<(), DomainSeparatorMismatch> ```",
           "kind": "def",
-          "line": 135,
+          "line": 139,
           "name": "HashStateWithInstructions.squeeze",
           "namespace": "HashStateWithInstructions",
           "short_name": "squeeze",
@@ -28423,7 +28580,7 @@
         {
           "doc": "Process a hint operation. Rust interface: ```rust pub fn hint(&mut self) -> Result<(), DomainSeparatorMismatch> ```",
           "kind": "def",
-          "line": 167,
+          "line": 171,
           "name": "HashStateWithInstructions.hint",
           "namespace": "HashStateWithInstructions",
           "short_name": "hint",
@@ -28432,7 +28589,7 @@
         {
           "doc": "Perform a ratchet operation. Rust interface: ```rust pub fn ratchet(&mut self) -> Result<(), DomainSeparatorMismatch> ```",
           "kind": "def",
-          "line": 185,
+          "line": 189,
           "name": "HashStateWithInstructions.ratchet",
           "namespace": "HashStateWithInstructions",
           "short_name": "ratchet",
@@ -28441,7 +28598,7 @@
         {
           "doc": "The verifier state for interactive proofs. Rust interface: ```rust pub struct VerifierState<'a, H = DefaultHash, U = u8> where H: DuplexSpongeInterface<U>, U: Unit, { pub(crate) hash_state: HashStateWithInstructions<H, U>, pub(crate) narg_string: &'a [u8], } ``` The verifier state contains a hash state and a reference to the NARG string (Non-interactive ARGument string) containing the proof transcript.",
           "kind": "structure",
-          "line": 216,
+          "line": 220,
           "name": "FSVerifierState",
           "namespace": "",
           "short_name": "FSVerifierState",
@@ -28450,7 +28607,7 @@
         {
           "doc": "Create a new VerifierState from a domain separator and NARG string. Rust interface: ```rust pub fn new(domain_separator: &DomainSeparator<H, U>, narg_string: &'a [u8]) -> Self ```",
           "kind": "def",
-          "line": 234,
+          "line": 238,
           "name": "FSVerifierState.new",
           "namespace": "FSVerifierState",
           "short_name": "new",
@@ -28459,7 +28616,7 @@
         {
           "doc": "Read units from the NARG string and absorb them. Rust interface: ```rust pub fn fill_next_units(&mut self, input: &mut [U]) -> Result<(), DomainSeparatorMismatch> ```",
           "kind": "def",
-          "line": 246,
+          "line": 250,
           "name": "FSVerifierState.fillNextUnits",
           "namespace": "FSVerifierState",
           "short_name": "fillNextUnits",
@@ -28468,7 +28625,7 @@
         {
           "doc": "Read a hint from the NARG string. Rust interface: ```rust pub fn hint_bytes(&mut self) -> Result<&'a [u8], DomainSeparatorMismatch> ```",
           "kind": "def",
-          "line": 277,
+          "line": 281,
           "name": "FSVerifierState.hintBytes",
           "namespace": "FSVerifierState",
           "short_name": "hintBytes",
@@ -28477,7 +28634,7 @@
         {
           "doc": "Signal the end of statement with ratcheting. Rust interface: ```rust pub fn ratchet(&mut self) -> Result<(), DomainSeparatorMismatch> ```",
           "kind": "def",
-          "line": 307,
+          "line": 311,
           "name": "FSVerifierState.ratchet",
           "namespace": "FSVerifierState",
           "short_name": "ratchet",
@@ -28486,7 +28643,7 @@
         {
           "doc": "A cryptographically-secure random number generator bound to the protocol transcript. Rust interface: ```rust pub struct ProverPrivateRng<R: RngCore + CryptoRng> { /// The duplex sponge that is used to generate the random coins. pub(crate) ds: Keccak, /// The cryptographic random number generator that seeds the sponge. pub(crate) csrng: R, } ``` This ensures that the prover's randomness is deterministically derived from the protocol transcript while being seeded by a cryptographically secure source.",
           "kind": "structure",
-          "line": 329,
+          "line": 333,
           "name": "ProverPrivateRng",
           "namespace": "",
           "short_name": "ProverPrivateRng",
@@ -28495,7 +28652,7 @@
         {
           "doc": "The prover state for interactive proofs. Rust interface: ```rust pub struct ProverState<H = DefaultHash, U = u8, R = DefaultRng> where U: Unit, H: DuplexSpongeInterface<U>, R: RngCore + CryptoRng, { /// The randomness state of the prover. pub(crate) rng: ProverPrivateRng<R>, /// The public coins for the protocol pub(crate) hash_state: HashStateWithInstructions<H, U>, /// The encoded data. pub(crate) narg_string: Vec<u8>, } ``` The Fiat-Shamir prover state maintains secret randomness, tracks the protocol state, and builds the proof transcript. This extends the verifier state to include the rand",
           "kind": "structure",
-          "line": 358,
+          "line": 362,
           "name": "FSProverState",
           "namespace": "",
           "short_name": "FSProverState",
@@ -28504,7 +28661,7 @@
         {
           "doc": "Create a new `FSProverState` from a domain separator and RNG. Rust interface: ```rust pub fn new(domain_separator: &DomainSeparator<H, U>, csrng: R) -> Self ```",
           "kind": "def",
-          "line": 375,
+          "line": 379,
           "name": "FSProverState.new",
           "namespace": "FSProverState",
           "short_name": "new",
@@ -28513,7 +28670,7 @@
         {
           "doc": "Add units to the protocol transcript. Rust interface: ```rust pub fn add_units(&mut self, input: &[U]) -> Result<(), DomainSeparatorMismatch> ```",
           "kind": "def",
-          "line": 388,
+          "line": 392,
           "name": "FSProverState.addUnits",
           "namespace": "FSProverState",
           "short_name": "addUnits",
@@ -28522,7 +28679,7 @@
         {
           "doc": "Add a hint to the protocol transcript. Rust interface: ```rust pub fn hint_bytes(&mut self, hint: &[u8]) -> Result<(), DomainSeparatorMismatch> ```",
           "kind": "def",
-          "line": 404,
+          "line": 408,
           "name": "FSProverState.hintBytes",
           "namespace": "FSProverState",
           "short_name": "hintBytes",
@@ -28531,7 +28688,7 @@
         {
           "doc": "Ratchet the protocol state. Rust interface: ```rust pub fn ratchet(&mut self) -> Result<(), DomainSeparatorMismatch> ```",
           "kind": "def",
-          "line": 420,
+          "line": 424,
           "name": "FSProverState.ratchet",
           "namespace": "FSProverState",
           "short_name": "ratchet",
@@ -28540,7 +28697,7 @@
         {
           "doc": "Get the current NARG string (proof transcript). Rust interface: ```rust pub fn narg_string(&self) -> &[u8] ```",
           "kind": "def",
-          "line": 434,
+          "line": 438,
           "name": "FSProverState.getNargString",
           "namespace": "FSProverState",
           "short_name": "getNargString",
@@ -28549,7 +28706,7 @@
         {
           "doc": "Type class for unit transcript operations. Rust interface: ```rust pub trait UnitTranscript<U> { fn public_units(&mut self, input: &[U]) -> Result<(), DomainSeparatorMismatch>; fn fill_challenge_units(&mut self, input: &mut [U]) -> Result<(), DomainSeparatorMismatch>; } ```",
           "kind": "class",
-          "line": 448,
+          "line": 452,
           "name": "UnitTranscript",
           "namespace": "",
           "short_name": "UnitTranscript",
@@ -28558,25 +28715,25 @@
         {
           "doc": "UnitTranscript instance for FSVerifierState.",
           "kind": "instance",
-          "line": 455,
-          "name": "_anon_instance_455",
+          "line": 459,
+          "name": "_anon_instance_459",
           "namespace": "",
-          "short_name": "_anon_instance_455",
+          "short_name": "_anon_instance_459",
           "signature": "instance instance {U : Type} {H : Type*} [SpongeUnit U] [DuplexSpongeInterface U H] :"
         },
         {
           "doc": "UnitTranscript instance for FSProverState.",
           "kind": "instance",
-          "line": 465,
-          "name": "_anon_instance_465",
+          "line": 469,
+          "name": "_anon_instance_469",
           "namespace": "",
-          "short_name": "_anon_instance_465",
+          "short_name": "_anon_instance_469",
           "signature": "instance instance {U : Type} {H : Type*} {R : Type*} [SpongeUnit U] [DuplexSpongeInterface U H] :"
         },
         {
           "doc": "Create a ProverState from this domain separator. Rust interface: ```rust pub fn to_prover_state(&self) -> crate::ProverState<H, U, crate::DefaultRng> ```",
           "kind": "def",
-          "line": 490,
+          "line": 494,
           "name": "DomainSeparator.toProverState",
           "namespace": "DomainSeparator",
           "short_name": "toProverState",
@@ -28585,7 +28742,7 @@
         {
           "doc": "Create a FSVerifierState from this domain separator and transcript. Rust interface: ```rust pub fn to_verifier_state<'a>(&self, transcript: &'a [u8]) -> crate::VerifierState<'a, H, U> ```",
           "kind": "def",
-          "line": 500,
+          "line": 504,
           "name": "DomainSeparator.toVerifierState",
           "namespace": "DomainSeparator",
           "short_name": "toVerifierState",
@@ -29182,7 +29339,7 @@
         {
           "doc": "The outer prover after lifting invokes the inner prover on the projected input, and lifts the output",
           "kind": "def",
-          "line": 62,
+          "line": 63,
           "name": "Prover.liftContext",
           "namespace": "",
           "short_name": "Prover.liftContext",
@@ -29191,7 +29348,7 @@
         {
           "doc": "The outer verifier after lifting invokes the inner verifier on the projected input, and lifts the output",
           "kind": "def",
-          "line": 81,
+          "line": 82,
           "name": "Verifier.liftContext",
           "namespace": "",
           "short_name": "Verifier.liftContext",
@@ -29200,7 +29357,7 @@
         {
           "doc": "The outer reduction after lifting is the combination of the lifting of the prover and verifier",
           "kind": "def",
-          "line": 92,
+          "line": 93,
           "name": "Reduction.liftContext",
           "namespace": "",
           "short_name": "Reduction.liftContext",
@@ -29209,7 +29366,7 @@
         {
           "doc": "The outer extractor after lifting invokes the inner extractor on the projected input, and lifts the output",
           "kind": "def",
-          "line": 103,
+          "line": 104,
           "name": "Extractor.Straightline.liftContext",
           "namespace": "",
           "short_name": "Extractor.Straightline.liftContext",
@@ -29218,7 +29375,7 @@
         {
           "doc": "The outer round-by-round extractor after lifting invokes the inner extractor on the projected input, and lifts the output",
           "kind": "def",
-          "line": 116,
+          "line": 117,
           "name": "Extractor.RoundByRound.liftContext",
           "namespace": "",
           "short_name": "Extractor.RoundByRound.liftContext",
@@ -29227,7 +29384,7 @@
         {
           "doc": "Compatibility relation between the outer input statement and the inner output statement, relative to a verifier. We require that the inner output statement is a possible output of the verifier on the outer input statement, for any given transcript. Note that we have to existentially quantify over transcripts since we only reference the verifier, and there's no way to get the transcript without a prover.",
           "kind": "def",
-          "line": 133,
+          "line": 134,
           "name": "Verifier.compatStatement",
           "namespace": "",
           "short_name": "Verifier.compatStatement",
@@ -29236,7 +29393,7 @@
         {
           "doc": "Compatibility relation between the outer input context and the inner output context, relative to a reduction. We require that the inner output context (statement + witness) is a possible output of the reduction on the outer input context (statement + witness).",
           "kind": "def",
-          "line": 145,
+          "line": 146,
           "name": "Reduction.compatContext",
           "namespace": "",
           "short_name": "Reduction.compatContext",
@@ -29245,7 +29402,7 @@
         {
           "doc": "Compatibility relation between the outer input witness and the inner output witness, relative to a straightline extractor. We require that the inner output witness is a possible output of the straightline extractor on the outer input witness, for a given input statement, transcript, and prover and verifier's query logs.",
           "kind": "def",
-          "line": 161,
+          "line": 162,
           "name": "Extractor.Straightline.compatWit",
           "namespace": "",
           "short_name": "Extractor.Straightline.compatWit",
@@ -29254,16 +29411,34 @@
         {
           "doc": "The outer state function after lifting invokes the inner state function on the projected input, and lifts the output",
           "kind": "def",
-          "line": 172,
+          "line": 173,
           "name": "Verifier.StateFunction.liftContext",
           "namespace": "",
           "short_name": "Verifier.StateFunction.liftContext",
           "signature": "def Verifier.StateFunction.liftContext"
         },
         {
+          "doc": "Stateful simulation can only restrict the set of reachable outcomes: any value in the support of `(simulateQ so oa).run' s` is already in the support of `oa`. This holds for an arbitrary stateful oracle implementation `so` (even one that changes the target oracle spec), since `simulateQ` threads the computation along the original control flow, and `query t` has full support over its range.",
+          "kind": "theorem",
+          "line": 213,
+          "name": "mem_support_simulateQ_run'_subset",
+          "namespace": "",
+          "short_name": "mem_support_simulateQ_run'_subset",
+          "signature": "theorem mem_support_simulateQ_run'_subset"
+        },
+        {
+          "doc": "Folding an output post-map `g` over an `OptionT ProbComp` computation of the form `OptionT.mk ((fun p => Option.map g p.1) <$> base)` into the event predicate: its `probEvent` of `P` equals the `probEvent` of `P \u2218 g` over the unmapped `OptionT.mk ((fun p => p.1) <$> base)`. Used to relate the lifted reduction run (which post-composes the inner run with the output lens map) to the inner run.",
+          "kind": "theorem",
+          "line": 246,
+          "name": "probEvent_optionT_mk_map_fst_map",
+          "namespace": "",
+          "short_name": "probEvent_optionT_mk_map_fst_map",
+          "signature": "theorem probEvent_optionT_mk_map_fst_map {\u03b1 \u03b2 \u03b3 : Type}"
+        },
+        {
           "doc": "Lifting the prover intertwines with the process round function",
           "kind": "theorem",
-          "line": 211,
+          "line": 258,
           "name": "Prover.liftContext_processRound",
           "namespace": "Prover",
           "short_name": "liftContext_processRound",
@@ -29272,7 +29447,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 230,
+          "line": 278,
           "name": "Prover.liftContext_runToRound",
           "namespace": "Prover",
           "short_name": "liftContext_runToRound",
@@ -29281,7 +29456,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 250,
+          "line": 298,
           "name": "Prover.liftContext_runWithLogToRound",
           "namespace": "Prover",
           "short_name": "liftContext_runWithLogToRound",
@@ -29290,7 +29465,7 @@
         {
           "doc": "Running the lifted outer prover is equivalent to running the inner prover on the projected input, and then integrating the output",
           "kind": "theorem",
-          "line": 267,
+          "line": 315,
           "name": "Prover.liftContext_run",
           "namespace": "Prover",
           "short_name": "liftContext_run",
@@ -29299,7 +29474,7 @@
         {
           "doc": "Lifting the prover intertwines with logging queries of the prover",
           "kind": "theorem",
-          "line": 281,
+          "line": 329,
           "name": "Prover.liftContext_runWithLog",
           "namespace": "Prover",
           "short_name": "liftContext_runWithLog",
@@ -29308,7 +29483,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 299,
+          "line": 347,
           "name": "Reduction.liftContext_run",
           "namespace": "Reduction",
           "short_name": "liftContext_run",
@@ -29317,7 +29492,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 315,
+          "line": 363,
           "name": "Reduction.liftContext_runWithLog",
           "namespace": "Reduction",
           "short_name": "liftContext_runWithLog",
@@ -29326,7 +29501,7 @@
         {
           "doc": "Lifting the reduction preserves completeness, assuming the lens satisfies its completeness conditions",
           "kind": "theorem",
-          "line": 349,
+          "line": 414,
           "name": "Reduction.liftContext_completeness",
           "namespace": "Reduction",
           "short_name": "liftContext_completeness",
@@ -29335,7 +29510,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 373,
+          "line": 454,
           "name": "Reduction.liftContext_perfectCompleteness",
           "namespace": "Reduction",
           "short_name": "liftContext_perfectCompleteness",
@@ -29344,7 +29519,7 @@
         {
           "doc": "Lifting the reduction preserves soundness, assuming the lens satisfies its soundness conditions",
           "kind": "theorem",
-          "line": 395,
+          "line": 476,
           "name": "Verifier.liftContext_soundness",
           "namespace": "Verifier",
           "short_name": "liftContext_soundness",
@@ -29353,7 +29528,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 442,
+          "line": 520,
           "name": "Verifier.liftContext_knowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "liftContext_knowledgeSoundness",
@@ -29362,7 +29537,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 491,
+          "line": 569,
           "name": "Verifier.liftContext_rbr_soundness",
           "namespace": "Verifier",
           "short_name": "liftContext_rbr_soundness",
@@ -29371,7 +29546,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 528,
+          "line": 603,
           "name": "Verifier.liftContext_rbr_knowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "liftContext_rbr_knowledgeSoundness",
@@ -29380,7 +29555,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 560,
+          "line": 635,
           "name": "OuterStmtIn_Test",
           "namespace": "",
           "short_name": "OuterStmtIn_Test",
@@ -29389,7 +29564,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 561,
+          "line": 636,
           "name": "InnerStmtIn_Test",
           "namespace": "",
           "short_name": "InnerStmtIn_Test",
@@ -29398,7 +29573,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 564,
+          "line": 639,
           "name": "outerRelIn_Test",
           "namespace": "",
           "short_name": "outerRelIn_Test",
@@ -29407,7 +29582,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 567,
+          "line": 642,
           "name": "innerRelIn_Test",
           "namespace": "",
           "short_name": "innerRelIn_Test",
@@ -29416,7 +29591,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 570,
+          "line": 645,
           "name": "OuterStmtOut_Test",
           "namespace": "",
           "short_name": "OuterStmtOut_Test",
@@ -29425,7 +29600,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 571,
+          "line": 646,
           "name": "InnerStmtOut_Test",
           "namespace": "",
           "short_name": "InnerStmtOut_Test",
@@ -29434,7 +29609,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 574,
+          "line": 649,
           "name": "outerRelOut_Test",
           "namespace": "",
           "short_name": "outerRelOut_Test",
@@ -29443,7 +29618,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 577,
+          "line": 652,
           "name": "innerRelOut_Test",
           "namespace": "",
           "short_name": "innerRelOut_Test",
@@ -29452,7 +29627,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 581,
+          "line": 656,
           "name": "testStmtLens",
           "namespace": "",
           "short_name": "testStmtLens",
@@ -29461,7 +29636,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 586,
+          "line": 661,
           "name": "testLens",
           "namespace": "",
           "short_name": "testLens",
@@ -29470,7 +29645,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 592,
+          "line": 667,
           "name": "testLensE",
           "namespace": "",
           "short_name": "testLensE",
@@ -29479,7 +29654,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 597,
+          "line": 672,
           "name": "instTestLensComplete",
           "namespace": "",
           "short_name": "instTestLensComplete",
@@ -29488,7 +29663,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 607,
+          "line": 682,
           "name": "instTestLensKnowledgeSound",
           "namespace": "",
           "short_name": "instTestLensKnowledgeSound",
@@ -32529,9 +32704,27 @@
           "signature": "lemma Reduction.run_mk_verifier_id {WitIn WitOut : Type}"
         },
         {
+          "doc": "Lifting an `OracleComp` into `OptionT` commutes with `Functor.map`.",
+          "kind": "lemma",
+          "line": 536,
+          "name": "liftM_oc_map_optionT",
+          "namespace": "",
+          "short_name": "liftM_oc_map_optionT",
+          "signature": "lemma liftM_oc_map_optionT {spec : OracleSpec \u03b9} {X Y : Type}"
+        },
+        {
+          "doc": "Running, with query logging, the reduction obtained from an arbitrary prover and the identity verifier: the verifier's output statement is always the input statement, the verifier makes no queries, and the prover's run (with its log) is otherwise unchanged.",
+          "kind": "lemma",
+          "line": 548,
+          "name": "Reduction.runWithLog_mk_verifier_id",
+          "namespace": "",
+          "short_name": "Reduction.runWithLog_mk_verifier_id",
+          "signature": "lemma Reduction.runWithLog_mk_verifier_id {WitIn WitOut : Type}"
+        },
+        {
           "doc": "The identity / trivial verifier is perfectly sound.",
           "kind": "theorem",
-          "line": 536,
+          "line": 565,
           "name": "Verifier.id_soundness",
           "namespace": "",
           "short_name": "Verifier.id_soundness",
@@ -32540,7 +32733,7 @@
         {
           "doc": "The straightline extractor for the identity / trivial reduction, which just returns the input witness.",
           "kind": "def",
-          "line": 564,
+          "line": 586,
           "name": "Extractor.Straightline.id",
           "namespace": "",
           "short_name": "Extractor.Straightline.id",
@@ -32549,7 +32742,7 @@
         {
           "doc": "The identity / trivial verifier is perfectly knowledge sound.",
           "kind": "theorem",
-          "line": 569,
+          "line": 591,
           "name": "Verifier.id_knowledgeSoundness",
           "namespace": "",
           "short_name": "Verifier.id_knowledgeSoundness",
@@ -32558,7 +32751,7 @@
         {
           "doc": "The identity / trivial reduction is perfectly complete.",
           "kind": "theorem",
-          "line": 637,
+          "line": 617,
           "name": "OracleReduction.id_perfectCompleteness",
           "namespace": "",
           "short_name": "OracleReduction.id_perfectCompleteness",
@@ -32567,7 +32760,7 @@
         {
           "doc": "The identity / trivial verifier is perfectly sound.",
           "kind": "theorem",
-          "line": 646,
+          "line": 626,
           "name": "OracleVerifier.id_soundness",
           "namespace": "",
           "short_name": "OracleVerifier.id_soundness",
@@ -32576,7 +32769,7 @@
         {
           "doc": "The identity / trivial verifier is perfectly knowledge sound.",
           "kind": "theorem",
-          "line": 653,
+          "line": 633,
           "name": "OracleVerifier.id_knowledgeSoundness",
           "namespace": "",
           "short_name": "OracleVerifier.id_knowledgeSoundness",
@@ -32898,34 +33091,34 @@
         {
           "doc": "Coercion to the underlying function of a state function",
           "kind": "instance",
-          "line": 256,
-          "name": "Verifier._anon_instance_256",
+          "line": 254,
+          "name": "Verifier._anon_instance_254",
           "namespace": "Verifier",
-          "short_name": "_anon_instance_256",
+          "short_name": "_anon_instance_254",
           "signature": "instance instance {langIn : Set StmtIn} {langOut : Set StmtOut}"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 261,
-          "name": "Verifier._anon_instance_261",
+          "line": 259,
+          "name": "Verifier._anon_instance_259",
           "namespace": "Verifier",
-          "short_name": "_anon_instance_261",
+          "short_name": "_anon_instance_259",
           "signature": "instance instance {langIn : Set StmtIn} {langOut : Set StmtOut}"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 266,
-          "name": "Verifier._anon_instance_266",
+          "line": 264,
+          "name": "Verifier._anon_instance_264",
           "namespace": "Verifier",
-          "short_name": "_anon_instance_266",
+          "short_name": "_anon_instance_264",
           "signature": "instance instance {relIn : Set (StmtIn \u00d7 WitIn)} {relOut : Set (StmtOut \u00d7 WitOut)}"
         },
         {
           "doc": "A protocol with `verifier` satisfies round-by-round soundness with respect to input language `langIn`, output language `langOut`, and error `rbrSoundnessError` if: - there exists a state function `stateFunction` for the verifier and the input/output languages, such that - for all initial statement `stmtIn` not in `langIn`, - for all initial witness `witIn`, - for all provers `prover`, - for all `i : Fin n` that is a round corresponding to a challenge, the probability that: - the state function is false for the partial transcript output by the prover - the state function is true for the partial",
           "kind": "def",
-          "line": 290,
+          "line": 288,
           "name": "Verifier.rbrSoundness",
           "namespace": "Verifier",
           "short_name": "rbrSoundness",
@@ -32934,7 +33127,7 @@
         {
           "doc": "Type class for round-by-round soundness for a verifier Note that we put the error as a field in the type class to make it easier for synthesization (often the rbr error will need additional simplification / proof)",
           "kind": "class",
-          "line": 314,
+          "line": 312,
           "name": "Verifier.IsRBRSound",
           "namespace": "Verifier",
           "short_name": "IsRBRSound",
@@ -32943,7 +33136,7 @@
         {
           "doc": "A protocol with `verifier` satisfies round-by-round knowledge soundness with respect to input relation `relIn`, output relation `relOut`, and error `rbrKnowledgeError` if: - there exists a state function `stateFunction` for the verifier and the languages of the input/output relations, such that - for all initial statement `stmtIn` not in the language of `relIn`, - for all initial witness `witIn`, - for all provers `prover`, - for all `i : Fin n` that is a round corresponding to a challenge, the probability that: - the state function is false for the partial transcript output by the prover - th",
           "kind": "def",
-          "line": 336,
+          "line": 334,
           "name": "Verifier.rbrKnowledgeSoundnessOneShot",
           "namespace": "Verifier",
           "short_name": "rbrKnowledgeSoundnessOneShot",
@@ -32952,7 +33145,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 359,
+          "line": 357,
           "name": "Verifier.rbrKnowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "rbrKnowledgeSoundness",
@@ -32961,7 +33154,7 @@
         {
           "doc": "Type class for round-by-round knowledge soundness for a verifier Note that we put the error as a field in the type class to make it easier for synthesization (often the rbr error will need additional simplification / proof)",
           "kind": "class",
-          "line": 387,
+          "line": 385,
           "name": "Verifier.IsRBRKnowledgeSound",
           "namespace": "Verifier",
           "short_name": "IsRBRKnowledgeSound",
@@ -32970,7 +33163,7 @@
         {
           "doc": "Implication: one-shot rbr knowledge soundness implies general rbr knowledge soundness (with the same error)",
           "kind": "theorem",
-          "line": 394,
+          "line": 392,
           "name": "Verifier.rbrKnowledgeSoundnessOneShot_implies_rbrKnowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "rbrKnowledgeSoundnessOneShot_implies_rbrKnowledgeSoundness",
@@ -32979,7 +33172,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 437,
+          "line": 435,
           "name": "OracleVerifier.StateFunction",
           "namespace": "OracleVerifier",
           "short_name": "StateFunction",
@@ -32988,7 +33181,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 444,
+          "line": 442,
           "name": "OracleVerifier.KnowledgeStateFunction",
           "namespace": "OracleVerifier",
           "short_name": "KnowledgeStateFunction",
@@ -32997,7 +33190,7 @@
         {
           "doc": "Round-by-round soundness of an oracle reduction is the same as for non-oracle reductions.",
           "kind": "def",
-          "line": 454,
+          "line": 452,
           "name": "OracleVerifier.rbrSoundness",
           "namespace": "OracleVerifier",
           "short_name": "rbrSoundness",
@@ -33006,7 +33199,7 @@
         {
           "doc": "Round-by-round knowledge soundness of an oracle reduction is the same as for non-oracle reductions.",
           "kind": "def",
-          "line": 463,
+          "line": 461,
           "name": "OracleVerifier.rbrKnowledgeSoundness",
           "namespace": "OracleVerifier",
           "short_name": "rbrKnowledgeSoundness",
@@ -33015,7 +33208,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 481,
+          "line": 479,
           "name": "Proof.rbrSoundness",
           "namespace": "Proof",
           "short_name": "rbrSoundness",
@@ -33024,7 +33217,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 487,
+          "line": 485,
           "name": "Proof.rbrKnowledgeSoundness",
           "namespace": "Proof",
           "short_name": "rbrKnowledgeSoundness",
@@ -33033,7 +33226,7 @@
         {
           "doc": "Round-by-round soundness of an oracle reduction is the same as for non-oracle reductions.",
           "kind": "def",
-          "line": 498,
+          "line": 496,
           "name": "OracleProof.rbrSoundness",
           "namespace": "OracleProof",
           "short_name": "rbrSoundness",
@@ -33042,7 +33235,7 @@
         {
           "doc": "Round-by-round knowledge soundness of an oracle reduction is the same as for non-oracle reductions.",
           "kind": "def",
-          "line": 506,
+          "line": 504,
           "name": "OracleProof.rbrKnowledgeSoundness",
           "namespace": "OracleProof",
           "short_name": "rbrKnowledgeSoundness",
@@ -33051,7 +33244,7 @@
         {
           "doc": "The state function for the identity / trivial verifier, which just returns whether the statement is in the language.",
           "kind": "def",
-          "line": 518,
+          "line": 516,
           "name": "Verifier.StateFunction.id",
           "namespace": "",
           "short_name": "Verifier.StateFunction.id",
@@ -33060,7 +33253,7 @@
         {
           "doc": "The identity / trivial verifier is perfectly round-by-round sound.",
           "kind": "lemma",
-          "line": 542,
+          "line": 540,
           "name": "Verifier.id_rbrSoundness",
           "namespace": "",
           "short_name": "Verifier.id_rbrSoundness",
@@ -33069,7 +33262,7 @@
         {
           "doc": "The round-by-round extractor for the identity / trivial verifier, which just returns the input witness.",
           "kind": "def",
-          "line": 549,
+          "line": 547,
           "name": "Extractor.RoundByRound.id",
           "namespace": "",
           "short_name": "Extractor.RoundByRound.id",
@@ -33078,7 +33271,7 @@
         {
           "doc": "The knowledge state function for the identity / trivial verifier, which just returns whether the statement is in the relation.",
           "kind": "def",
-          "line": 557,
+          "line": 555,
           "name": "Verifier.KnowledgeStateFunction.id",
           "namespace": "",
           "short_name": "Verifier.KnowledgeStateFunction.id",
@@ -33087,7 +33280,7 @@
         {
           "doc": "The identity / trivial verifier is perfectly round-by-round knowledge sound.",
           "kind": "lemma",
-          "line": 583,
+          "line": 581,
           "name": "Verifier.id_rbrKnowledgeSoundness",
           "namespace": "",
           "short_name": "Verifier.id_rbrKnowledgeSoundness",
@@ -33096,7 +33289,7 @@
         {
           "doc": "The identity / trivial oracle verifier is perfectly round-by-round knowledge sound.",
           "kind": "lemma",
-          "line": 592,
+          "line": 590,
           "name": "OracleVerifier.id_rbrKnowledgeSoundness",
           "namespace": "",
           "short_name": "OracleVerifier.id_rbrKnowledgeSoundness",
@@ -36436,7 +36629,7 @@
         {
           "doc": "The final oracle verifier that composes sumcheckFold with finalSumcheckStep",
           "kind": "def",
-          "line": 610,
+          "line": 612,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleVerifier",
@@ -36445,7 +36638,7 @@
         {
           "doc": "The final oracle reduction that composes sumcheckFold with finalSumcheckStep",
           "kind": "def",
-          "line": 628,
+          "line": 630,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleReduction",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleReduction",
@@ -36454,7 +36647,7 @@
         {
           "doc": "Perfect completeness for the core interaction oracle reduction",
           "kind": "theorem",
-          "line": 650,
+          "line": 652,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleReduction_perfectCompleteness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleReduction_perfectCompleteness",
@@ -36463,7 +36656,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 674,
+          "line": 676,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleRbrKnowledgeError",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleRbrKnowledgeError",
@@ -36472,7 +36665,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the core interaction oracle verifier",
           "kind": "theorem",
-          "line": 683,
+          "line": 685,
           "name": "Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.FRIBinius.CoreInteractionPhase",
           "short_name": "coreInteractionOracleVerifier_rbrKnowledgeSoundness",
@@ -36707,18 +36900,27 @@
           "signature": "theorem reduction_completeness [Nonempty \u03c3] [DecidableEq Statement] :"
         },
         {
-          "doc": "The knowledge state function for the `CheckClaim` reduction, mirroring the trivial-verifier template `Verifier.KnowledgeStateFunction.id`: at round `0` the state simply records that the input is in `relIn`.",
+          "doc": "The round-by-round extractor for the `CheckClaim` reduction. Trivial since the witness is `Unit`.",
           "kind": "def",
-          "line": 121,
+          "line": 120,
+          "name": "CheckClaim.extractor",
+          "namespace": "CheckClaim",
+          "short_name": "extractor",
+          "signature": "def extractor : Extractor.RoundByRound oSpec Statement Unit Unit !p[] (fun _ => Unit) where"
+        },
+        {
+          "doc": "The knowledge state function for the `CheckClaim` reduction. Since there is no challenge round, the state function simply records whether the predicate holds on the statement.",
+          "kind": "def",
+          "line": 127,
           "name": "CheckClaim.knowledgeStateFunction",
           "namespace": "CheckClaim",
           "short_name": "knowledgeStateFunction",
           "signature": "def knowledgeStateFunction :"
         },
         {
-          "doc": "The `CheckClaim` reduction satisfies perfect round-by-round knowledge soundness.",
+          "doc": "The `CheckClaim` reduction satisfies perfect round-by-round knowledge soundness. Note that since there is no challenge round, all the work is done in the definition of the knowledge state function.",
           "kind": "theorem",
-          "line": 158,
+          "line": 169,
           "name": "CheckClaim.verifier_rbr_knowledge_soundness",
           "namespace": "CheckClaim",
           "short_name": "verifier_rbr_knowledge_soundness",
@@ -36727,7 +36929,7 @@
         {
           "doc": "The oracle prover for the `CheckClaim` oracle reduction.",
           "kind": "def",
-          "line": 173,
+          "line": 184,
           "name": "CheckClaim.oracleProver",
           "namespace": "CheckClaim",
           "short_name": "oracleProver",
@@ -36736,7 +36938,7 @@
         {
           "doc": "The oracle verifier for the `CheckClaim` oracle reduction.",
           "kind": "def",
-          "line": 186,
+          "line": 197,
           "name": "CheckClaim.oracleVerifier",
           "namespace": "CheckClaim",
           "short_name": "oracleVerifier",
@@ -36745,7 +36947,7 @@
         {
           "doc": "The oracle reduction for the `CheckClaim` oracle reduction.",
           "kind": "def",
-          "line": 194,
+          "line": 205,
           "name": "CheckClaim.oracleReduction",
           "namespace": "CheckClaim",
           "short_name": "oracleReduction",
@@ -37379,9 +37581,18 @@
           "signature": "def toRelOut : Set ((Statement \u00d7 Witness) \u00d7 Unit) :="
         },
         {
+          "doc": "Running the `SendWitness` reduction deterministically sends the witness and returns the unchanged statement-witness pair.",
+          "kind": "theorem",
+          "line": 75,
+          "name": "SendWitness.reduction_run",
+          "namespace": "SendWitness",
+          "short_name": "reduction_run",
+          "signature": "theorem reduction_run (stmtIn : Statement) (witIn : Witness) :"
+        },
+        {
           "doc": "The `SendWitness` reduction satisfies perfect completeness.",
           "kind": "theorem",
-          "line": 77,
+          "line": 86,
           "name": "SendWitness.reduction_completeness",
           "namespace": "SendWitness",
           "short_name": "reduction_completeness",
@@ -37390,7 +37601,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 109,
+          "line": 104,
           "name": "SendWitness.reduction_rbr_knowledge_soundness",
           "namespace": "SendWitness",
           "short_name": "reduction_rbr_knowledge_soundness",
@@ -37399,7 +37610,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 123,
+          "line": 118,
           "name": "SendWitness.oraclePSpec",
           "namespace": "SendWitness",
           "short_name": "oraclePSpec",
@@ -37408,7 +37619,7 @@
         {
           "doc": "The oracle prover for the `SendWitness` oracle reduction. For each round `i : Fin (FinEnum.card \u03b9w)`, the prover sends the witness `wit (FinEnum.equiv.symm i)` to the verifier.",
           "kind": "def",
-          "line": 138,
+          "line": 133,
           "name": "SendWitness.oracleProver",
           "namespace": "SendWitness",
           "short_name": "oracleProver",
@@ -37417,7 +37628,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 219,
+          "line": 214,
           "name": "SendSingleWitness.oraclePSpec",
           "namespace": "SendSingleWitness",
           "short_name": "oraclePSpec",
@@ -37426,7 +37637,7 @@
         {
           "doc": "The oracle prover for the `SendSingleWitness` oracle reduction. The prover sends the witness `wit` to the verifier as the only oracle message.",
           "kind": "def",
-          "line": 226,
+          "line": 221,
           "name": "SendSingleWitness.oracleProver",
           "namespace": "SendSingleWitness",
           "short_name": "oracleProver",
@@ -37435,7 +37646,7 @@
         {
           "doc": "The oracle verifier for the `SendSingleWitness` oracle reduction. The verifier receives the input statement `stmt` and returns it, and also specifying the oracle message as the output oracle statement.",
           "kind": "def",
-          "line": 242,
+          "line": 237,
           "name": "SendSingleWitness.oracleVerifier",
           "namespace": "SendSingleWitness",
           "short_name": "oracleVerifier",
@@ -37444,7 +37655,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 255,
+          "line": 250,
           "name": "SendSingleWitness.oracleReduction",
           "namespace": "SendSingleWitness",
           "short_name": "oracleReduction",
@@ -37453,7 +37664,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 265,
+          "line": 260,
           "name": "SendSingleWitness.oracleProver_run",
           "namespace": "SendSingleWitness",
           "short_name": "oracleProver_run",
@@ -37462,7 +37673,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 273,
+          "line": 268,
           "name": "SendSingleWitness.oracleVerifier_toVerifier_run",
           "namespace": "SendSingleWitness",
           "short_name": "oracleVerifier_toVerifier_run",
@@ -37471,7 +37682,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 287,
+          "line": 288,
           "name": "SendSingleWitness.toORelOut",
           "namespace": "SendSingleWitness",
           "short_name": "toORelOut",
@@ -37480,7 +37691,7 @@
         {
           "doc": "The `SendSingleWitness` oracle reduction satisfies perfect completeness.",
           "kind": "theorem",
-          "line": 294,
+          "line": 295,
           "name": "SendSingleWitness.oracleReduction_completeness",
           "namespace": "SendSingleWitness",
           "short_name": "oracleReduction_completeness",
@@ -37489,7 +37700,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 312,
+          "line": 329,
           "name": "SendSingleWitness.oracleReduction_rbr_knowledge_soundness",
           "namespace": "SendSingleWitness",
           "short_name": "oracleReduction_rbr_knowledge_soundness",
@@ -41946,18 +42157,90 @@
           "signature": "def listDecodingCollisionProbability"
         },
         {
+          "doc": "The mass that the `Pr_{...}[...]` PMF encoding assigns to an event under uniform sampling is exactly `#event / #domain` \u2014 the counting bridge used to estimate collision probabilities.",
+          "kind": "lemma",
+          "line": 53,
+          "name": "OutOfDomSmpl.uniform_event_mass",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "uniform_event_mass",
+          "signature": "lemma uniform_event_mass {\u03b1 : Type} [Fintype \u03b1] [Nonempty \u03b1]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 57,
+          "name": "OutOfDomSmpl._anon_class_57",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "_anon_class_57",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Counting a coordinatewise event: the tuples satisfying `Q` in every coordinate form the `piFinset` of the per-coordinate solution set, so their count is `(#Q)^s`. Together with `uniform_event_mass` this replaces any independence machinery by pure counting.",
+          "kind": "lemma",
+          "line": 69,
+          "name": "OutOfDomSmpl.card_filter_forall_pi",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "card_filter_forall_pi",
+          "signature": "lemma card_filter_forall_pi {\u03b2 : Type} [Fintype \u03b2] [DecidableEq \u03b2] {s : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 73,
+          "name": "OutOfDomSmpl._anon_class_73",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "_anon_class_73",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Distinct codewords decode to distinct polynomials: the decoded polynomial interpolates the codeword on the domain (`Lagrange.eval_interpolate_at_node`), so equal polynomials force equal codewords.",
+          "kind": "lemma",
+          "line": 85,
+          "name": "OutOfDomSmpl.decodeLT_ne_of_val_ne",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "decodeLT_ne_of_val_ne",
+          "signature": "lemma decodeLT_ne_of_val_ne {\u03c6 : \u03b9 \u21aa F} {degree : \u2115} (u u' : code \u03c6 degree)"
+        },
+        {
+          "doc": "The agreement set of two distinct codewords' polynomials (inside any subtype of `F`) has at most `degree \u2212 1` elements: agreement points are roots of the nonzero difference, whose degree is below `degree`.",
+          "kind": "lemma",
+          "line": 100,
+          "name": "OutOfDomSmpl.card_agreement_le",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "card_agreement_le",
+          "signature": "lemma card_agreement_le {\u03c6 : \u03b9 \u21aa F} {degree : \u2115} (u u' : code \u03c6 degree)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 105,
+          "name": "OutOfDomSmpl._anon_class_105",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "_anon_class_105",
+          "signature": "class classical"
+        },
+        {
           "doc": "Lemma 4.5.1",
           "kind": "lemma",
-          "line": 52,
+          "line": 133,
           "name": "OutOfDomSmpl.out_of_dom_smpl_1",
           "namespace": "OutOfDomSmpl",
           "short_name": "out_of_dom_smpl_1",
           "signature": "lemma out_of_dom_smpl_1"
         },
         {
+          "doc": "",
+          "kind": "class",
+          "line": 141,
+          "name": "OutOfDomSmpl._anon_class_141",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "_anon_class_141",
+          "signature": "class classical"
+        },
+        {
           "doc": "Lemma 4.5.2",
           "kind": "lemma",
-          "line": 62,
+          "line": 265,
           "name": "OutOfDomSmpl.out_of_dom_smpl_2",
           "namespace": "OutOfDomSmpl",
           "short_name": "out_of_dom_smpl_2",
@@ -42021,9 +42304,63 @@
           "signature": "def vanishingPoly (S : Finset F) : Polynomial F :="
         },
         {
+          "doc": "The vanishing polynomial vanishes at every point of `S`.",
+          "kind": "lemma",
+          "line": 34,
+          "name": "Quotienting.vanishingPoly_eval_eq_zero",
+          "namespace": "Quotienting",
+          "short_name": "vanishingPoly_eval_eq_zero",
+          "signature": "lemma vanishingPoly_eval_eq_zero {S : Finset F} {s : F} (hs : s \u2208 S) :"
+        },
+        {
+          "doc": "The vanishing polynomial is nonzero off `S`.",
+          "kind": "lemma",
+          "line": 42,
+          "name": "Quotienting.vanishingPoly_eval_ne_zero",
+          "namespace": "Quotienting",
+          "short_name": "vanishingPoly_eval_ne_zero",
+          "signature": "lemma vanishingPoly_eval_ne_zero {S : Finset F} {s : F} (hs : s \u2209 S) :"
+        },
+        {
+          "doc": "The vanishing polynomial is monic.",
+          "kind": "lemma",
+          "line": 52,
+          "name": "Quotienting.vanishingPoly_monic",
+          "namespace": "Quotienting",
+          "short_name": "vanishingPoly_monic",
+          "signature": "lemma vanishingPoly_monic (S : Finset F) : (vanishingPoly S).Monic :="
+        },
+        {
+          "doc": "The vanishing polynomial has degree exactly `|S|`.",
+          "kind": "lemma",
+          "line": 57,
+          "name": "Quotienting.vanishingPoly_natDegree",
+          "namespace": "Quotienting",
+          "short_name": "vanishingPoly_natDegree",
+          "signature": "lemma vanishingPoly_natDegree (S : Finset F) : (vanishingPoly S).natDegree = S.card := by"
+        },
+        {
+          "doc": "The answer polynomial has degree below `|S|`.",
+          "kind": "lemma",
+          "line": 63,
+          "name": "Quotienting.ansPoly_degree_lt",
+          "namespace": "Quotienting",
+          "short_name": "ansPoly_degree_lt",
+          "signature": "lemma ansPoly_degree_lt (S : Finset F) (Ans : S \u2192 F) :"
+        },
+        {
+          "doc": "The answer polynomial interpolates `Ans` on `S`.",
+          "kind": "lemma",
+          "line": 71,
+          "name": "Quotienting.ansPoly_eval",
+          "namespace": "Quotienting",
+          "short_name": "ansPoly_eval",
+          "signature": "lemma ansPoly_eval {S : Finset F} (Ans : S \u2192 F) {s : F} (hs : s \u2208 S) :"
+        },
+        {
           "doc": "Definition 4.2 funcQuotient is the quotient function that outputs if x \u2208 S,  Fill(x). else       (f(x) - Ans'(x)) / V(x). Note here that, V(x) = 0 \u2200 x \u2208 S, otherwise V(x) \u2260 0.",
           "kind": "def",
-          "line": 37,
+          "line": 82,
           "name": "Quotienting.funcQuotient",
           "namespace": "Quotienting",
           "short_name": "funcQuotient",
@@ -42032,7 +42369,7 @@
         {
           "doc": "Definition 4.3 polyQuotient is the polynomial derived from the polynomials fPoly, Ans' and V, where Ans' is a polynomial s.t. Ans'(x) = fPoly(x) for x \u2208 S, and V is the vanishing polynomial on S as before. Then, polyQuotient = (fPoly - Ans') / V, where polyQuotient.degree < (fPoly.degree - \u03b9.card)",
           "kind": "def",
-          "line": 48,
+          "line": 93,
           "name": "Quotienting.polyQuotient",
           "namespace": "Quotienting",
           "short_name": "polyQuotient",
@@ -42041,25 +42378,70 @@
         {
           "doc": "We define the set disagreementSet(f,\u03b9,S,Ans) as the set of all points x \u2208 \u03b9 that lie in S such that the Ans' disagrees with f, we have disagreementSet := { x \u2208 \u03b9 \u2229 S \u2227 AnsPoly x \u2260 f x }. Quotienting-specific shape \u2014 *not* a direct specialisation of `Code.disagreementCols` (which compares two `\u03b9 \u2192 R` words pointwise). Here the comparison is between `f x` and the *polynomial extension* `(ansPoly S Ans).eval x` of a finite assignment `Ans : S \u2192 F`, and is restricted to `x` whose image lies in the answer-set `S`. The canonical-base relationship is therefore: it is the `Code.disagreementCols`-like ",
           "kind": "def",
-          "line": 64,
+          "line": 109,
           "name": "Quotienting.disagreementSet",
           "namespace": "Quotienting",
           "short_name": "disagreementSet",
           "signature": "def disagreementSet (f : \u03b9 \u2192 F) (S : Finset F) (Ans : S \u2192 F) : Finset F :="
         },
         {
-          "doc": "Quotienting Lemma 4.4 Let `f : \u03b9 \u2192 F` be a function, `degree` a degree parameter, `\u03b4 \u2208 (0,1)` be a distance parameter `S` be a set with |S| < degree, `Ans, Fill : S \u2192 F`. Suppose for all `u \u2208 \u039b(code, f, \u03b4)`, there exists `x : S`, such that `uPoly(x) \u2260 Ans(x)` then `\u03b4\u1d63(funcQuotient(f, S, Ans, Fill), code[\u03b9, F, degree - |S|]) + |T|/|\u03b9| > \u03b4`, where T is the disagreementSet as defined above",
+          "doc": "The quotient-reconstruction polynomial `w * V_S + Ans'` stays below `degree` whenever `deg w < degree - |S|` and `|S| < degree`.",
           "kind": "lemma",
-          "line": 73,
+          "line": 114,
+          "name": "Quotienting.reconstruct_mem_degreeLT",
+          "namespace": "Quotienting",
+          "short_name": "reconstruct_mem_degreeLT",
+          "signature": "lemma reconstruct_mem_degreeLT {S : Finset F} {degree : \u2115} (hS_lt : S.card < degree)"
+        },
+        {
+          "doc": "Evaluation vectors of `degreeLT` polynomials are codewords.",
+          "kind": "lemma",
+          "line": 134,
+          "name": "Quotienting.evalOnPoints_mem_code",
+          "namespace": "Quotienting",
+          "short_name": "evalOnPoints_mem_code",
+          "signature": "lemma evalOnPoints_mem_code {degree : \u2115} {domain : \u03b9 \u21aa F} {p : Polynomial F}"
+        },
+        {
+          "doc": "Decoding round-trip: a codeword that is the evaluation vector of a polynomial of degree below `degree \u2264 |\u03b9|` decodes back to that polynomial (interpolation uniqueness).",
+          "kind": "lemma",
+          "line": 141,
+          "name": "Quotienting.decodeLT_evalOnPoints",
+          "namespace": "Quotienting",
+          "short_name": "decodeLT_evalOnPoints",
+          "signature": "lemma decodeLT_evalOnPoints {degree : \u2115} {domain : \u03b9 \u21aa F} (hdeg : degree \u2264 \u03b9.card)"
+        },
+        {
+          "doc": "The `\u211a\u22650`-valued relative Hamming distance, cast to `ENNReal`, is the `ENNReal` quotient of the Hamming distance by the domain size.",
+          "kind": "lemma",
+          "line": 160,
+          "name": "Quotienting.relHammingDist_cast_ennreal",
+          "namespace": "Quotienting",
+          "short_name": "relHammingDist_cast_ennreal",
+          "signature": "lemma relHammingDist_cast_ennreal {\u03b9' : Type*} [Fintype \u03b9'] [Nonempty \u03b9'] {G : Type*}"
+        },
+        {
+          "doc": "Quotienting Lemma 4.4 Let `f : \u03b9 \u2192 F` be a function, `degree` a degree parameter, `\u03b4 \u2208 (0,1)` be a distance parameter `S` be a set with |S| < degree, `Ans, Fill : S \u2192 F`. Suppose for all `u \u2208 \u039b(code, f, \u03b4)`, there exists `x : S`, such that `uPoly(x) \u2260 Ans(x)` then `\u03b4\u1d63(funcQuotient(f, S, Ans, Fill), code[\u03b9, F, degree - |S|]) + |T|/|\u03b9| > \u03b4`, where T is the disagreementSet as defined above. Compared to the original (sorried) statement, two hypotheses are added; both are implicit in [ACFY24stir] and necessary for the claim: * `hdom : \u2200 x, domain x = x.val` \u2014 `funcQuotient`/`disagreementSet` and th",
+          "kind": "lemma",
+          "line": 186,
           "name": "Quotienting.quotienting",
           "namespace": "Quotienting",
           "short_name": "quotienting",
           "signature": "lemma quotienting {degree : \u2115} {domain : \u03b9 \u21aa F} [Nonempty \u03b9]"
         },
         {
+          "doc": "",
+          "kind": "class",
+          "line": 194,
+          "name": "Quotienting._anon_class_194",
+          "namespace": "Quotienting",
+          "short_name": "_anon_class_194",
+          "signature": "class classical"
+        },
+        {
           "doc": "Computable version of `ansPoly`: the unique interpolating polynomial of degree `< |S|` agreeing with `Ans` on `S`. Built on CompPoly's `CLagrange.interpolate`.",
           "kind": "def",
-          "line": 84,
+          "line": 295,
           "name": "Quotienting.cpolyAnsPoly",
           "namespace": "Quotienting",
           "short_name": "cpolyAnsPoly",
@@ -42068,7 +42450,7 @@
         {
           "doc": "Bridge lemma: `cpolyAnsPoly` and `ansPoly` agree under `toPoly`.",
           "kind": "lemma",
-          "line": 89,
+          "line": 300,
           "name": "Quotienting.cpolyAnsPoly_toPoly",
           "namespace": "Quotienting",
           "short_name": "cpolyAnsPoly_toPoly",
@@ -42077,7 +42459,7 @@
         {
           "doc": "Computable version of `vanishingPoly`: `\u220f s \u2208 S, (X - C s)`, built on CompPoly's `CPolynomial`.",
           "kind": "def",
-          "line": 96,
+          "line": 307,
           "name": "Quotienting.cpolyVanishingPoly",
           "namespace": "Quotienting",
           "short_name": "cpolyVanishingPoly",
@@ -42086,7 +42468,7 @@
         {
           "doc": "Bridge lemma: `cpolyVanishingPoly` and `vanishingPoly` agree under `toPoly`.",
           "kind": "lemma",
-          "line": 101,
+          "line": 312,
           "name": "Quotienting.cpolyVanishingPoly_toPoly",
           "namespace": "Quotienting",
           "short_name": "cpolyVanishingPoly_toPoly",
@@ -42095,7 +42477,7 @@
         {
           "doc": "Computable version of `funcQuotient`. Uses the cpoly versions of `ansPoly` and `vanishingPoly` for the off-`S` branch; the on-`S` branch is identical to the Mathlib spec.",
           "kind": "def",
-          "line": 112,
+          "line": 323,
           "name": "Quotienting.cpolyFuncQuotient",
           "namespace": "Quotienting",
           "short_name": "cpolyFuncQuotient",
@@ -42104,7 +42486,7 @@
         {
           "doc": "Function equality: `cpolyFuncQuotient` agrees with `funcQuotient`.",
           "kind": "lemma",
-          "line": 119,
+          "line": 330,
           "name": "Quotienting.cpolyFuncQuotient_eq_funcQuotient",
           "namespace": "Quotienting",
           "short_name": "cpolyFuncQuotient_eq_funcQuotient",
@@ -42113,7 +42495,7 @@
         {
           "doc": "Computable version of `disagreementSet`: the set of `x \u2208 \u03b9 \u2229 S` at which the answer polynomial `cpolyAnsPoly` disagrees with `f`. Uses `Finset.filter` over the decidable predicate in place of the noncomputable `Set.toFinset`.",
           "kind": "def",
-          "line": 133,
+          "line": 344,
           "name": "Quotienting.cpolyDisagreementSet",
           "namespace": "Quotienting",
           "short_name": "cpolyDisagreementSet",
@@ -42122,7 +42504,7 @@
         {
           "doc": "Set equality: `cpolyDisagreementSet` and `disagreementSet` describe the same `Finset F`.",
           "kind": "lemma",
-          "line": 139,
+          "line": 350,
           "name": "Quotienting.cpolyDisagreementSet_eq_disagreementSet",
           "namespace": "Quotienting",
           "short_name": "cpolyDisagreementSet_eq_disagreementSet",
@@ -43044,9 +43426,27 @@
           "signature": "lemma oracleReduction_verifier_eq_verifier {i : Fin n} :"
         },
         {
+          "doc": "Keystone `Fin`-plumbing identity for the sum-check round split: inserting `a` at position `i` into `append c y \u2218 cast` agrees with appending the cons-extended tuple `cons a y` to `c`.",
+          "kind": "lemma",
+          "line": 889,
+          "name": "Sumcheck.Spec.SingleRound.append_cons_eq_insertNth",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "append_cons_eq_insertNth",
+          "signature": "lemma append_cons_eq_insertNth {n' : \u2115} {\u03b1 : Type} (i : Fin (n' + 1)) (a : \u03b1)"
+        },
+        {
+          "doc": "The sum-check round split: the `(n'+1-i)`-fold sum factors as a sum over the first coordinate of a sum over the remaining `(n'-i)` coordinates, with the inserted-variable evaluation.",
+          "kind": "lemma",
+          "line": 932,
+          "name": "Sumcheck.Spec.SingleRound.sumcheck_round_split",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "sumcheck_round_split",
+          "signature": "lemma sumcheck_round_split {n' : \u2115} {m' : \u2115} (D' : Fin m' \u21aa R) (i : Fin (n' + 1))"
+        },
+        {
           "doc": "",
           "kind": "instance",
-          "line": 887,
+          "line": 986,
           "name": "Sumcheck.Spec.SingleRound.oCtxLens_complete",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oCtxLens_complete",
@@ -43055,7 +43455,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 919,
+          "line": 1016,
           "name": "Sumcheck.Spec.SingleRound.extractorLens_rbr_knowledge_soundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "extractorLens_rbr_knowledge_soundness",
@@ -43064,7 +43464,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 944,
+          "line": 1041,
           "name": "Sumcheck.Spec.SingleRound.reduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction_perfectCompleteness",
@@ -43073,7 +43473,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 952,
+          "line": 1049,
           "name": "Sumcheck.Spec.SingleRound.verifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "verifier_rbrKnowledgeSoundness",
@@ -43082,7 +43482,7 @@
         {
           "doc": "Completeness theorem for single-round of sum-check, obtained by transporting the completeness proof for the simplified version",
           "kind": "theorem",
-          "line": 962,
+          "line": 1059,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -43091,7 +43491,7 @@
         {
           "doc": "Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by transporting the knowledge soundness proof for the simplified version",
           "kind": "theorem",
-          "line": 975,
+          "line": 1072,
           "name": "Sumcheck.Spec.SingleRound.oracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleVerifier_rbrKnowledgeSoundness",
@@ -43100,7 +43500,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1035,
+          "line": 1132,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverState",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverState",
@@ -43109,7 +43509,7 @@
         {
           "doc": "Prover input for the `i`-th round of the sum-check protocol, where `i < n`",
           "kind": "def",
-          "line": 1042,
+          "line": 1139,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverInput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverInput",
@@ -43118,7 +43518,7 @@
         {
           "doc": "Prover interaction for the `i`-th round of the sum-check protocol, where `i < n`.",
           "kind": "def",
-          "line": 1048,
+          "line": 1145,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverRound",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverRound",
@@ -43127,7 +43527,7 @@
         {
           "doc": "Since there is no witness, the prover's output for each round `i < n` of the sum-check protocol is trivial",
           "kind": "def",
-          "line": 1073,
+          "line": 1170,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverOutput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverOutput",
@@ -43136,7 +43536,7 @@
         {
           "doc": "The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-defined for `n > 0`, since when `n = 0` there is no protocol.",
           "kind": "def",
-          "line": 1080,
+          "line": 1177,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.prover",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "prover",
@@ -43145,7 +43545,7 @@
         {
           "doc": "The (non-oracle) verifier of the sum-check protocol for the `i`-th round, where `i < n + 1`",
           "kind": "def",
-          "line": 1090,
+          "line": 1187,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.verifier",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "verifier",
@@ -44464,9 +44864,81 @@
           "signature": "lemma oodSampling_crs_eq_rs"
         },
         {
+          "doc": "The mass that the `Pr_{...}[...]` PMF encoding assigns to an event under uniform sampling is exactly `#event / #domain`.",
+          "kind": "lemma",
+          "line": 130,
+          "name": "OutOfDomSmpl.uniform_event_mass",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "uniform_event_mass",
+          "signature": "lemma uniform_event_mass {\u03b1 : Type} [Fintype \u03b1] [Nonempty \u03b1]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 134,
+          "name": "OutOfDomSmpl._anon_class_134",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "_anon_class_134",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Tuples satisfying `Q` in every coordinate form the `piFinset` of the per-coordinate solution set, so their count is `(#Q)^s`.",
+          "kind": "lemma",
+          "line": 145,
+          "name": "OutOfDomSmpl.card_filter_forall_pi",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "card_filter_forall_pi",
+          "signature": "lemma card_filter_forall_pi {\u03b2 : Type} [Fintype \u03b2] [DecidableEq \u03b2] {s : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 149,
+          "name": "OutOfDomSmpl._anon_class_149",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "_anon_class_149",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Distinct smooth codewords decode to distinct univariate polynomials (the decoded polynomial interpolates the codeword on the domain).",
+          "kind": "lemma",
+          "line": 159,
+          "name": "OutOfDomSmpl.decodeLT_ne_of_val_ne",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "decodeLT_ne_of_val_ne",
+          "signature": "lemma decodeLT_ne_of_val_ne {\u03c6 : \u03b9 \u21aa F} [Smooth \u03c6] {m : \u2115} (u u' : smoothCode \u03c6 m)"
+        },
+        {
+          "doc": "Two distinct smooth codewords' decoded polynomials agree on at most `2^m - 1` field points: agreement points are roots of the nonzero difference of degree `< 2^m`.",
+          "kind": "lemma",
+          "line": 173,
+          "name": "OutOfDomSmpl.card_agreement_le",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "card_agreement_le",
+          "signature": "lemma card_agreement_le [Fintype F] {\u03c6 : \u03b9 \u21aa F} [Smooth \u03c6] {m : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 178,
+          "name": "OutOfDomSmpl._anon_class_178",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "_anon_class_178",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Evaluating the decoded multilinear polynomial at the power vector `(r^(2^j))_j` recovers the decoded univariate polynomial's value at `r` (the smooth-code power substitution round-trip).",
+          "kind": "lemma",
+          "line": 204,
+          "name": "OutOfDomSmpl.mVdecode_eval_pow",
+          "namespace": "OutOfDomSmpl",
+          "short_name": "mVdecode_eval_pow",
+          "signature": "lemma mVdecode_eval_pow {\u03c6 : \u03b9 \u21aa F} [Smooth \u03c6] {m : \u2115} (u : smoothCode \u03c6 m) (r : F) :"
+        },
+        {
           "doc": "Lemma 4.25 part 2 Let `f : \u03b9 \u2192 F`, `m` be the number of variables, `s` be a repetition parameter and `\u03b4 \u2208 [0,1]` be a distance parameter, if `C = RS [F, \u03b9, m]` is `(\u03b4,l)`-list decodable then the above equation is bounded as `\u2264 l\u00b2/2 * (2\u1d50/|F|)\u02e2`",
           "kind": "lemma",
-          "line": 129,
+          "line": 232,
           "name": "OutOfDomSmpl.oodSampling_rs_le_bound",
           "namespace": "OutOfDomSmpl",
           "short_name": "oodSampling_rs_le_bound",
@@ -45467,8 +45939,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 4928,
-      "files": 281
+      "declarations": 4980,
+      "files": 282
     }
   }
 }
