@@ -30,7 +30,22 @@ namespace STIR
   and let Bstar(ρ) = √ρ. For all `δ ∈ (0, 1 - Bstar(ρ))`, `f₁,...,fₘ : ι → F`, if
   `Pr_{r ← F} [ δᵣ(rⱼ * fⱼ, C) ≤ δ] > err'(degree, ρ, δ, m)`
   then ∃ S ⊆ ι, |S| ≥ (1 - δ) * |ι| and
-  ∀ i : m, ∃ u : C, u(S) = fᵢ(S) -/
+  ∀ i : m, ∃ u : C, u(S) = fᵢ(S)
+
+  **ABF26 mapping.** Predicate-style "joint correlated agreement" form of the
+  proximity-gap bound. ABF26's numeric counterparts:
+
+  - `ProximityGap.epsCA C δ_fld δ_int` (Def 4.1, in
+    `ArkLib/Data/CodingTheory/ProximityGap/Errors.lean`) bounds the same "line δ-close
+    but stack not jointly close" probability for **m = 2** (affine lines).
+  - For **general m**, the analogue is `epsCA_curves C (m-1) δ_fld δ_int` (the
+    polynomial-curve variant) or the BCIKS20-specific RS bound stated here.
+
+  This BCIKS20 lemma is the *witness-extraction* form: high `Pr[close]` forces the
+  existence of a large agreement set. The contrapositive bounds `Pr[close]` by
+  `err'(...)` when no such set exists — that is the bound `epsCA_curves C δ δ ≤
+  err'(...)` for `C = RS[F, ι, degree]`. A future bridge `proximity_gap_iff_epsCA_le`
+  would make this iff explicit; deferred per Phase 4 of `docs/kb/ABF26_INTEGRATION_PLAN.md`. -/
 lemma proximity_gap
   {F : Type} [Field F] [Fintype F] [DecidableEq F]
   {ι : Type} [Fintype ι] [Nonempty ι] {φ : ι ↪ F}
