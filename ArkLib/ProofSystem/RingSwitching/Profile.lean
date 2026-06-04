@@ -89,6 +89,24 @@ structure RingSwitchingProfile (B L : Type*) (κ : ℕ)
   decomposeRows_spec : ∀ z : A, z = ∑ u, φ₀ (decomposeRows z u) * φ₁ (basis u)
   /-- **Column reconstruction law**: the right/`φ₁`-action dual of `decomposeRows_spec`. -/
   decomposeColumns_spec : ∀ z : A, z = ∑ v, φ₁ (decomposeColumns z v) * φ₀ (basis v)
+  /-- **Row additivity**: row coordinates are additive. Together with
+  `decomposeRows_φ₀_mul_φ₁` this is the *extraction* direction (rows of a reconstruction
+  recover the coordinates), which `decomposeRows_spec` alone does not imply — two distinct
+  coordinate vectors could reconstruct the same element without it. Binius: linearity of
+  `(β.baseChange L).repr`. -/
+  decomposeRows_add : ∀ z w : A, ∀ u, decomposeRows (z + w) u = decomposeRows z u + decomposeRows w u
+  /-- **Row atomic extraction**: the row coordinates of a pure `φ₀ a * φ₁ b` element are the
+  basis coordinates of `b` scaled into `a`. Binius: `Basis.baseChange_repr_tmul`. -/
+  decomposeRows_φ₀_mul_φ₁ : ∀ (a b : L) (u : Fin κ → Fin 2),
+    decomposeRows (φ₀ a * φ₁ b) u = basis.repr b u • a
+  /-- **Column additivity**: the column-side dual of `decomposeRows_add`. -/
+  decomposeColumns_add : ∀ z w : A, ∀ v,
+    decomposeColumns (z + w) v = decomposeColumns z v + decomposeColumns w v
+  /-- **Column atomic extraction**: the column coordinates of a pure `φ₀ a * φ₁ b` element are
+  the basis coordinates of `a` scaled into `b` — the dual of `decomposeRows_φ₀_mul_φ₁`.
+  Binius: `Basis.baseChangeRight_repr_tmul`. -/
+  decomposeColumns_φ₀_mul_φ₁ : ∀ (a b : L) (v : Fin κ → Fin 2),
+    decomposeColumns (φ₀ a * φ₁ b) v = basis.repr a v • b
 
 attribute [instance] RingSwitchingProfile.commRingA RingSwitchingProfile.algLA
 

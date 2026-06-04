@@ -409,7 +409,13 @@ Then compute `Σ_{u ∈ {0,1}^κ} eq̃(u_0, ..., u_{κ-1}, r''_0, ..., r''_{κ-1
 def compute_final_eq_value (r_eval : Fin ℓ → L)
     (r'_challenges : Fin ℓ' → L) (r''_batching : Fin κ → L) : L :=
   let e_tensor := compute_final_eq_tensor κ L K P ℓ ℓ' h_l r_eval r'_challenges
-  let e_u : (Fin κ → Fin 2) → L := P.decomposeRows e_tensor
+  -- Soundness fix (defect #10, dual of the #8 performCheck fix): the final eq-value must read
+  -- the COLUMN components of the eq-tensor. Term-by-term derivation (via
+  -- `MLE_eval_eq_sum_eqTilde` + `eqTilde_tensor_expand` + the atomic extraction laws):
+  -- `decomposeColumns (eqTilde(φ₀∘r_suf, φ₁∘ch)) v = Σ_w β.repr(eqTilde(w,r_suf)) v • eqTilde(w,ch)`,
+  -- which matches `A_MLE.eval ch` after eqTilde symmetry; the rows form yields the transposed
+  -- bilinear pairing, which is NOT symmetric — the A_MLE identity is false for rows.
+  let e_u : (Fin κ → Fin 2) → L := P.decomposeColumns e_tensor
   Finset.sum Finset.univ fun (u : Fin κ → Fin 2) =>
     let u_as_L : Fin κ → L := fun i => if u i == 1 then 1 else 0
     let eq_u_r_batching : L := -- `eq̃(u_0, ..., u_{κ-1}, r''_0, ..., r''_{κ-1})`
@@ -455,39 +461,51 @@ open Module in
 definitions above: `A := L ⊗[K] L`, embeddings `φ₀ = · ⊗ 1` / `φ₁ = 1 ⊗ ·`, and the decompositions
 are the `K`-basis coordinates via the left/right `L`-module structures.
 
-Marked `@[reducible]` so that, once the protocol code is rewired through the profile, references to
-`(binaryTowerProfile …).A` (etc.) unfold to `L ⊗[K] L` at reducible transparency — preserving the
-existing `rfl`/instance-driven Binius proofs (and the byte-identical `#print axioms`). -/
-@[reducible] def binaryTowerProfile (κ : ℕ) [NeZero κ] (K L : Type)
-    [Field K] [Field L] [Algebra K L] (β : Module.Basis (Fin κ → Fin 2) K L) :
-    RingSwitchingProfile K L κ where
-  basis := β
-  A := TensorAlgebra K L
-  commRingA := inferInstanceAs (CommRing (L ⊗[K] L))
-  algLA := Algebra.TensorProduct.leftAlgebra
-  φ₀ := φ₀ L K
-  φ₁ := φ₁ L K
-  decomposeRows := fun s => decompose_tensor_algebra_rows (L := L) (K := K) (β := β) s
-  decomposeColumns := fun s => decompose_tensor_algebra_columns (L := L) (K := K) (β := β) s
-  decomposeRows_spec := fun z => by
-    conv_lhs => rw [← (β.baseChange L).sum_repr z]
-    refine Finset.sum_congr rfl fun u _ => ?_
-    unfold decompose_tensor_algebra_rows
-    rw [Basis.baseChange_apply, smul_tmul']
-    show _ = (φ₀ L K) _ * (φ₁ L K) _
-    unfold φ₀ φ₁
-    simp [Algebra.TensorProduct.tmul_mul_tmul]
-  decomposeColumns_spec := fun z => by
-    letI rightAlgebra : Algebra L (L ⊗[K] L) := Algebra.TensorProduct.rightAlgebra
-    letI rightModule : Module L (L ⊗[K] L) := rightAlgebra.toModule
-    conv_lhs => rw [← (Basis.baseChangeRight (b := β) (Right := L)).sum_repr z]
-    refine Finset.sum_congr rfl fun v _ => ?_
-    unfold decompose_tensor_algebra_columns
-    rw [Basis.baseChangeRight_apply, Algebra.smul_def]
-    show algebraMap L (L ⊗[K] L) _ * _ = (φ₁ L K) _ * (φ₀ L K) _
-    rw [show (algebraMap L (L ⊗[K] L)) =
-      (Algebra.TensorProduct.includeRight).toRingHom.comp (algebraMap L L) by rfl]
-    unfold φ₀ φ₁
-    simp [Algebra.TensorProduct.tmul_mul_tmul]
+The final sumcheck step's completeness needs to evaluate the round polynomial
+`H = projectToMidSumcheckPoly t' m (Fin.last ℓ') challenges` (= `fixFirstVariablesOfMQP` of
+`m · t'` at *all* `ℓ'` variables) at the 0-variate point and recognise it as `(m · t')(challenges)`.
+The two lemmas below provide that bridge generically. -/
+section FixVarsEval
+open MvPolynomial
+
+/-- **`sumAlgEquiv` evaluation.** Evaluating the curried polynomial `sumAlgEquiv p` by `eval x` on
+the outer (`S₁`) variables and `eval challenges` on the inner (`S₂`) coefficient ring equals
+evaluating `p` directly at the combined point `Sum.elim x challenges`. Proven by `induction_on`,
+using `sumToIter` (`= sumAlgEquiv` by `rfl`) on the generators. -/
+theorem sumAlgEquiv_eval₂ {L : Type} [CommRing L] {S₁ S₂ : Type} [Fintype S₁]
+    (x : S₁ → L) (challenges : S₂ → L) (p : MvPolynomial (S₁ ⊕ S₂) L) :
+    eval₂ (eval challenges) x ((sumAlgEquiv L S₁ S₂) p) = eval (Sum.elim x challenges) p := by
+  induction p using MvPolynomial.induction_on with
+  | C a =>
+    rw [show ((sumAlgEquiv L S₁ S₂) (C a)) = sumToIter L S₁ S₂ (C a) from rfl, sumToIter_C,
+      MvPolynomial.eval₂_C, MvPolynomial.eval_C, MvPolynomial.eval_C]
+  | add p q hp hq =>
+    simp only [map_add, MvPolynomial.eval₂_add, MvPolynomial.eval_add, hp, hq]
+  | mul_X p s hp =>
+    simp only [map_mul, MvPolynomial.eval₂_mul, MvPolynomial.eval_mul, hp]
+    congr 1
+    cases s with
+    | inl a => rw [show ((sumAlgEquiv L S₁ S₂) (X (Sum.inl a))) = sumToIter L S₁ S₂ (X (Sum.inl a))
+        from rfl, sumToIter_Xl, MvPolynomial.eval₂_X, MvPolynomial.eval_X, Sum.elim_inl]
+    | inr b => rw [show ((sumAlgEquiv L S₁ S₂) (X (Sum.inr b))) = sumToIter L S₁ S₂ (X (Sum.inr b))
+        from rfl, sumToIter_Xr, MvPolynomial.eval₂_C, MvPolynomial.eval_X, MvPolynomial.eval_X,
+        Sum.elim_inr]
+
+/-- **`fixFirstVariablesOfMQP` evaluation.** Evaluating the polynomial obtained by fixing the last
+`v` variables of `poly` to `challenges` (then `eval x` on the survivors) equals evaluating `poly`
+directly at the recombined point (survivors from `x`, fixed coords from `challenges`, via the same
+`finCongr`/`finSumFinEquiv` reindexing used in `fixFirstVariablesOfMQP`). -/
+theorem fixFirstVariablesOfMQP_eval {L : Type} [CommRing L] (ℓ : ℕ) (v : Fin (ℓ+1))
+    (poly : MvPolynomial (Fin ℓ) L) (challenges : Fin v → L) (x : Fin (ℓ - v) → L) :
+    eval x (fixFirstVariablesOfMQP ℓ v poly challenges)
+      = eval (fun i => Sum.elim x challenges
+          (((finCongr (by rw [Nat.add_comm]; exact (Nat.add_sub_of_le v.is_le).symm)).trans
+            (finSumFinEquiv (m := ℓ - v) (n := v).symm)) i)) poly := by
+  unfold fixFirstVariablesOfMQP
+  dsimp only
+  rw [MvPolynomial.eval_map, sumAlgEquiv_eval₂, eval_rename]
+  rfl
+
+end FixVarsEval
 
 end RingSwitching

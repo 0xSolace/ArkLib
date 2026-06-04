@@ -21,6 +21,12 @@ JointAgreement chain. The list-decoding regime (Theorem 6.2) remains open
 
 namespace ProximityGap
 
+-- Decidability/Fintype instances are threaded through the section; the
+-- statement-level theorem does not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 open NNReal Finset Function ProbabilityTheory Code
 open scoped BigOperators LinearCode
 
@@ -68,7 +74,7 @@ constant word `u 0`, so any positive probability of closeness gives the plain
 closeness fact, and joint agreement follows from unique decoding. -/
 theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     [NeZero deg]
-    (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
+    (_hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
       (C := ReedSolomon.code domain deg)) :
     δ_ε_correlatedAgreementCurves (k := 0) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
@@ -88,7 +94,7 @@ theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ
       omega
     obtain ⟨z, hz⟩ := hne
     have hz' := hz
-    simp only [RS_goodCoeffsCurve, hconst z, Finset.filter_const] at hz'
+    simp only [RS_goodCoeffsCurve] at hz'
     by_contra hp
     simp [hp] at hz' 
   -- unique-decode and collect the agreement set
@@ -112,7 +118,7 @@ theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ
     intro j hj
     have := (hT_agree j).1 hj
     have ht0 : t = 0 := Fin.fin_one_eq_zero t
-    simp [ht0, Finset.mem_filter]
+    subst ht0; simp only [Finset.mem_filter, Finset.mem_univ, true_and]
     exact this.symm
 
 
@@ -147,7 +153,7 @@ lemma relativeUniqueDecodingRadius_lt_one_sub_sqrtRate
   -- positivity forces ρ < 1
   have hρ_lt_one : ρ < 1 := by
     by_contra hge
-    push_neg at hge
+    push Not at hge
     have : (1 : ℝ≥0) - ρ = 0 := tsub_eq_zero_of_le hge
     rw [hudr, this] at hpos
     simp at hpos

@@ -136,8 +136,11 @@ def fullRbrKnowledgeError (i : (fullPspec κ L K P ℓ' mlIOPCS).ChallengeIdx) :
   (ChallengeIdx.sumEquiv.symm i)
 
 omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challenge i)] in
-/-- Round-by-round knowledge soundness for the full ring-switching oracle verifier -/
-theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] :
+/-- Round-by-round knowledge soundness for the full ring-switching oracle verifier.
+`IsDomain K` (with the existing `IsDomain L`) is inherited from the batching phase's knowledge
+soundness, where it backs the DP24 row-extraction capstone; it holds in every real instantiation
+(`binaryTowerProfile` builds from a field `K`). -/
+theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] {𝓑 : Fin 2 ↪ L} :
   OracleVerifier.rbrKnowledgeSoundness
     (verifier := fullOracleVerifier κ L K P ℓ ℓ' h_l mlIOPCS)
     (init := init)

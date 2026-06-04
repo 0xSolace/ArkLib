@@ -103,6 +103,263 @@ noncomputable def fold_k_set
   (set : Set ((indexPowT S φ 0) → F)) (αs : Fin k → F) (hk : k ≤ m): Set (indexPowT S φ k → F) :=
     { g | ∃ f ∈ set, g = fold_k f αs hk}
 
+/-! ### Helper lemmas for the folding degree-halving argument (Claim 4.15 part 1)
+
+These lemmas establish the standard fact that a single fold replaces a degree-`< 2N`
+univariate polynomial by a degree-`< N` one via the even/odd decomposition
+`p(z) = pₑ(z²) + z · pₒ(z²)`, where the random fold is `pₑ + α·pₒ`. Iterating `k` times
+takes a degree-`< 2^m` polynomial to a degree-`< 2^(m-k)` polynomial. -/
+namespace FoldingHelpers
+
+open Polynomial BlockRelDistance ReedSolomon
+
+variable {F : Type*} [Field F]
+
+/-- Even part of a univariate polynomial: `pₑ = ∑_j coeff(p, 2j) Xʲ`. -/
+noncomputable def evenPart (p : F[X]) : F[X] :=
+  ∑ j ∈ Finset.range (p.natDegree + 1), Polynomial.monomial j (p.coeff (2 * j))
+
+/-- Odd part of a univariate polynomial: `pₒ = ∑_j coeff(p, 2j+1) Xʲ`. -/
+noncomputable def oddPart (p : F[X]) : F[X] :=
+  ∑ j ∈ Finset.range (p.natDegree + 1), Polynomial.monomial j (p.coeff (2 * j + 1))
+
+lemma evenPart_coeff (p : F[X]) (n : ℕ) :
+    (evenPart p).coeff n = if n ≤ p.natDegree then p.coeff (2 * n) else 0 := by
+  unfold evenPart
+  rw [Polynomial.finset_sum_coeff]
+  simp only [Polynomial.coeff_monomial]
+  rw [Finset.sum_ite_eq' (Finset.range (p.natDegree+1)) n (fun j => p.coeff (2*j))]
+  simp only [Finset.mem_range]
+  by_cases h : n ≤ p.natDegree
+  · rw [if_pos (Nat.lt_succ_iff.mpr h), if_pos h]
+  · rw [if_neg (by omega), if_neg h]
+
+lemma oddPart_coeff (p : F[X]) (n : ℕ) :
+    (oddPart p).coeff n = if n ≤ p.natDegree then p.coeff (2 * n + 1) else 0 := by
+  unfold oddPart
+  rw [Polynomial.finset_sum_coeff]
+  simp only [Polynomial.coeff_monomial]
+  rw [Finset.sum_ite_eq' (Finset.range (p.natDegree+1)) n (fun j => p.coeff (2*j+1))]
+  simp only [Finset.mem_range]
+  by_cases h : n ≤ p.natDegree
+  · rw [if_pos (Nat.lt_succ_iff.mpr h), if_pos h]
+  · rw [if_neg (by omega), if_neg h]
+
+/-- Polynomial identity: `p = pₑ(X²) + X · pₒ(X²)`. -/
+lemma poly_eq_even_odd (p : F[X]) :
+    p = (evenPart p).comp (X ^ 2) + X * (oddPart p).comp (X ^ 2) := by
+  ext n
+  rw [coeff_add, ← expand_eq_comp_X_pow, ← expand_eq_comp_X_pow]
+  rcases Nat.even_or_odd n with ⟨k, hk⟩ | ⟨k, hk⟩
+  · subst hk
+    rw [coeff_expand (by norm_num) (evenPart p) (k+k)]
+    have h2k : (2 : ℕ) ∣ (k + k) := ⟨k, by ring⟩
+    simp only [h2k, if_true]
+    have hdiv : (k + k) / 2 = k := by omega
+    rw [hdiv, evenPart_coeff]
+    have hsecond : (X * (expand F 2 (oddPart p))).coeff (k + k) = 0 := by
+      by_cases hk0 : k = 0
+      · subst hk0; simp [coeff_X_mul_zero (expand F 2 (oddPart p))]
+      · have : k + k = (k + k - 1) + 1 := by omega
+        rw [this, coeff_X_mul]
+        rw [coeff_expand (by norm_num) (oddPart p) (k + k - 1)]
+        have hodd : ¬ (2 : ℕ) ∣ (k + k - 1) := by omega
+        simp only [hodd, if_false]
+    rw [hsecond, _root_.add_zero]
+    by_cases hkdeg : k ≤ p.natDegree
+    · simp only [hkdeg, if_true, two_mul]
+    · simp only [hkdeg, if_false]
+      have hcz : p.coeff (k + k) = 0 := by
+        apply Polynomial.coeff_eq_zero_of_natDegree_lt; omega
+      rw [hcz]
+  · subst hk
+    rw [coeff_expand (by norm_num) (evenPart p) (2 * k + 1)]
+    have hno : ¬ (2 : ℕ) ∣ (2 * k + 1) := by omega
+    simp only [hno, if_false, _root_.zero_add]
+    rw [coeff_X_mul (expand F 2 (oddPart p)) (2 * k)]
+    rw [coeff_expand (by norm_num) (oddPart p) (2 * k)]
+    have hdvd : (2 : ℕ) ∣ (2 * k) := ⟨k, by ring⟩
+    simp only [hdvd, if_true]
+    have hdiv2 : (2 * k) / 2 = k := by omega
+    rw [hdiv2, oddPart_coeff]
+    by_cases hkdeg : k ≤ p.natDegree
+    · simp only [hkdeg, if_true]
+    · simp only [hkdeg, if_false]
+      have hcz : p.coeff (2 * k + 1) = 0 := by
+        apply Polynomial.coeff_eq_zero_of_natDegree_lt; omega
+      rw [hcz]
+
+/-- Key decomposition for evaluation: `p(v) = pₑ(v²) + v·pₒ(v²)`. -/
+lemma eval_eq_even_odd (p : F[X]) (v : F) :
+    p.eval v = (evenPart p).eval (v ^ 2) + v * (oddPart p).eval (v ^ 2) := by
+  conv_lhs => rw [poly_eq_even_odd p]
+  simp [Polynomial.eval_comp]
+
+/-- The fold polynomial: `foldPoly p α = pₑ + α·pₒ`. -/
+noncomputable def foldPoly (p : F[X]) (α : F) : F[X] := evenPart p + α • oddPart p
+
+/-- The fold-evaluation identity: for `v ≠ 0` and `2 ≠ 0`,
+    `(p(v)+p(-v))/2 + α·((p(v)-p(-v))/(2v)) = (foldPoly p α)(v²)`. -/
+lemma foldf_eq_foldPoly_eval (p : F[X]) (α v : F) (hv : v ≠ 0) (h2 : (2 : F) ≠ 0) :
+    (p.eval v + p.eval (-v)) / 2 + α * ((p.eval v - p.eval (-v)) / (2 * v))
+      = (foldPoly p α).eval (v ^ 2) := by
+  have hev : p.eval v = (evenPart p).eval (v^2) + v * (oddPart p).eval (v^2) :=
+    eval_eq_even_odd p v
+  have hodv : p.eval (-v) = (evenPart p).eval (v^2) + (-v) * (oddPart p).eval (v^2) := by
+    have := eval_eq_even_odd p (-v)
+    rwa [neg_pow, show ((-1 : F)) ^ 2 = 1 by ring, one_mul] at this
+  rw [hev, hodv]
+  unfold foldPoly
+  rw [Polynomial.eval_add, Polynomial.eval_smul, smul_eq_mul]
+  field_simp
+  ring
+
+lemma evenPart_degree_lt (p : F[X]) (N : ℕ) (h : p.degree < (2 * N : ℕ)) :
+    (evenPart p).degree < (N : ℕ) := by
+  rw [Polynomial.degree_lt_iff_coeff_zero]
+  intro n hn
+  rw [evenPart_coeff]
+  have hNn : (N : ℕ) ≤ n := by exact_mod_cast hn
+  by_cases hkdeg : n ≤ p.natDegree
+  · simp only [hkdeg, if_true]
+    apply Polynomial.coeff_eq_zero_of_degree_lt
+    refine lt_of_lt_of_le h ?_
+    exact_mod_cast Nat.mul_le_mul_left 2 hNn
+  · simp only [hkdeg, if_false]
+
+lemma oddPart_degree_lt (p : F[X]) (N : ℕ) (h : p.degree < (2 * N : ℕ)) :
+    (oddPart p).degree < (N : ℕ) := by
+  rw [Polynomial.degree_lt_iff_coeff_zero]
+  intro n hn
+  rw [oddPart_coeff]
+  have hNn : (N : ℕ) ≤ n := by exact_mod_cast hn
+  by_cases hkdeg : n ≤ p.natDegree
+  · simp only [hkdeg, if_true]
+    apply Polynomial.coeff_eq_zero_of_degree_lt
+    refine lt_of_lt_of_le h ?_
+    have hle : 2 * N ≤ 2 * n + 1 := by omega
+    exact_mod_cast hle
+  · simp only [hkdeg, if_false]
+
+/-- Degree halving: if `deg p < 2N` then `deg (foldPoly p α) < N`. -/
+lemma foldPoly_degree_lt (p : F[X]) (α : F) (N : ℕ) (h : p.degree < (2 * N : ℕ)) :
+    (foldPoly p α).degree < (N : ℕ) := by
+  unfold foldPoly
+  refine lt_of_le_of_lt (Polynomial.degree_add_le _ _) ?_
+  rw [max_lt_iff]
+  refine ⟨evenPart_degree_lt p N h, ?_⟩
+  refine lt_of_le_of_lt (Polynomial.degree_smul_le α (oddPart p)) ?_
+  exact oddPart_degree_lt p N h
+
+/-- `extract_x` produces a square root of `y.val`. -/
+lemma extract_x_sq {ι : Type} [Pow ι ℕ] {F : Type} [Field F]
+    (S : Finset ι) (φ : ι ↪ F) (k : ℕ) (y : indexPowT S φ (k + 1)) :
+    ((extract_x S φ k y).val) ^ 2 = y.val := by
+  have hx := Classical.choose_spec y.property
+  have hval : (extract_x S φ k y).val = (φ (Classical.choose y.property)) ^ (2^k) := rfl
+  rw [hval, ← pow_mul, ← pow_succ]
+  exact hx.2.symm
+
+/-- A function `f : indexPowT S φ k → F` is the `.val`-evaluation of polynomial `p`. -/
+def IsEvalOf {ι : Type} [Pow ι ℕ] {F : Type} [Field F]
+    {S : Finset ι} {φ : ι ↪ F} {k : ℕ}
+    (f : indexPowT S φ k → F) (p : F[X]) : Prop :=
+  ∀ z : indexPowT S φ k, f z = p.eval z.val
+
+/-- **Single fold step.** If `fk` is the `.val`-evaluation of `p`, the domain values are
+    nonzero, negation is compatible with `.val`, and `2 ≠ 0`, then folding `fk` by `α`
+    produces the `.val`-evaluation of `foldPoly p α`. -/
+lemma foldf_isEvalOf {ι : Type} [Pow ι ℕ] {F : Type} [Field F]
+    {S : Finset ι} {φ : ι ↪ F} {k : ℕ} [Neg (indexPowT S φ k)]
+    (p : F[X]) (α : F) (fk : indexPowT S φ k → F)
+    (hfk : IsEvalOf fk p)
+    (hneg : ∀ z : indexPowT S φ k, (-z).val = -(z.val))
+    (hnz : ∀ z : indexPowT S φ k, z.val ≠ 0)
+    (h2 : (2 : F) ≠ 0) :
+    IsEvalOf (fun y => foldf S φ y fk α) (foldPoly p α) := by
+  intro y
+  change foldf S φ y fk α = (foldPoly p α).eval y.val
+  simp only [foldf]
+  set xPow := extract_x S φ k y with hxPow
+  have hfx : fk xPow = p.eval xPow.val := hfk xPow
+  have hfnx : fk (-xPow) = p.eval (-(xPow.val)) := by
+    rw [hfk (-xPow), hneg xPow]
+  rw [hfx, hfnx]
+  have hv : xPow.val ≠ 0 := hnz xPow
+  rw [foldf_eq_foldPoly_eval p α xPow.val hv h2]
+  congr 1
+  exact extract_x_sq S φ k y
+
+/-- **Iterated fold tracks a polynomial with halving degree.** For each `i ≤ m`, there is a
+    polynomial of degree `< 2^(m-i)` whose `.val`-evaluation equals `fold_k_core f i αs`,
+    provided the base function is the `.val`-evaluation of a degree-`< 2^m` polynomial and the
+    per-level pinning facts hold. -/
+lemma fold_k_core_isEvalOf {ι : Type} [Pow ι ℕ] {F : Type} [Field F]
+    {S : Finset ι} {φ : ι ↪ F} [∀ i : ℕ, Neg (indexPowT S φ i)]
+    (f : indexPowT S φ 0 → F) (p₀ : F[X]) (m : ℕ)
+    (hp₀deg : p₀.degree < (2 ^ m : ℕ))
+    (hf : IsEvalOf f p₀)
+    (hneg : ∀ (i : ℕ) (z : indexPowT S φ i), (-z).val = -(z.val))
+    (hnz : ∀ (i : ℕ) (z : indexPowT S φ i), z.val ≠ 0)
+    (h2 : (2 : F) ≠ 0) :
+    ∀ (i : ℕ), i ≤ m → ∀ (αs : Fin i → F),
+      ∃ q : F[X], q.degree < (2 ^ (m - i) : ℕ) ∧ IsEvalOf (fold_k_core f i αs) q := by
+  intro i
+  induction i with
+  | zero =>
+    intro _ αs
+    refine ⟨p₀, by simpa using hp₀deg, ?_⟩
+    intro z
+    exact hf z
+  | succ k ih =>
+    intro hk αs
+    have hk' : k ≤ m := Nat.le_of_succ_le hk
+    obtain ⟨q, hqdeg, hqeval⟩ := ih hk' (fun i => αs (Fin.succ i))
+    refine ⟨foldPoly q (αs 0), ?_, ?_⟩
+    · have hmk : m - k = (m - (k+1)) + 1 := by omega
+      have hq' : q.degree < (2 * 2 ^ (m - (k+1)) : ℕ) := by
+        rw [hmk] at hqdeg
+        rw [pow_succ] at hqdeg
+        have heq : (2 ^ (m - (k+1)) * 2 : ℕ) = (2 * 2 ^ (m - (k+1)) : ℕ) := by ring
+        rwa [heq] at hqdeg
+      exact foldPoly_degree_lt q (αs 0) (2 ^ (m - (k+1))) hq'
+    · have hstep := foldf_isEvalOf (S := S) (φ := φ) (k := k) q (αs 0)
+        (fold_k_core f k (fun i => αs (Fin.succ i))) hqeval (hneg k) (hnz k) h2
+      intro y
+      show fold_k_core f (k+1) αs y = (foldPoly q (αs 0)).eval y.val
+      exact hstep y
+
+/-- From smooth-code membership and `.val`-pinning, extract the evaluating polynomial. -/
+lemma isEvalOf_of_mem_smoothCode {ι : Type} [Pow ι ℕ] {F : Type} [Field F] [DecidableEq F]
+    {S : Finset ι} {φ : ι ↪ F} {k m : ℕ}
+    {φ_k : (indexPowT S φ k) ↪ F} [Fintype (indexPowT S φ k)] [Smooth φ_k]
+    (hφk : ∀ z : indexPowT S φ k, φ_k z = z.val)
+    (f : indexPowT S φ k → F) (hf : f ∈ smoothCode φ_k m) :
+    ∃ p : F[X], p.degree < (2 ^ m : ℕ) ∧ IsEvalOf f p := by
+  rw [smoothCode, ReedSolomon.mem_code_iff_exists_polynomial] at hf
+  obtain ⟨p, hpdeg, hpeq⟩ := hf
+  refine ⟨p, hpdeg, ?_⟩
+  intro z
+  rw [hpeq]
+  change p.eval (φ_k z) = p.eval z.val
+  rw [hφk z]
+
+/-- From `.val`-evaluation by a low-degree polynomial and `.val`-pinning,
+    conclude smooth-code membership. -/
+lemma mem_smoothCode_of_isEvalOf {ι : Type} [Pow ι ℕ] {F : Type} [Field F] [DecidableEq F]
+    {S : Finset ι} {φ : ι ↪ F} {k m : ℕ}
+    {φ_k : (indexPowT S φ k) ↪ F} [Fintype (indexPowT S φ k)] [Smooth φ_k]
+    (hφk : ∀ z : indexPowT S φ k, φ_k z = z.val)
+    (g : indexPowT S φ k → F) (p : F[X]) (hpdeg : p.degree < (2 ^ m : ℕ))
+    (hg : IsEvalOf g p) :
+    g ∈ smoothCode φ_k m := by
+  rw [smoothCode]
+  apply ReedSolomon.mem_code_of_polynomial_of_degree_lt_of_eval p hpdeg
+  intro z
+  rw [hg z, hφk z]
+
+end FoldingHelpers
+
 section FoldingLemmas
 
 open MutualCorrAgreement Generator LinearMvExtension ListDecodable
@@ -349,10 +606,15 @@ lemma fold_f_g
   unfold fold_k
   exact fold_f_g_core φ_all hφ hneg hx0 h2 f k αs hk
 
-/-- Claim 4.5 part 2
+/-- Claim 4.15 part 2
   If fPoly be the multilinear extension of f, then we have
-  (m-k)-variate multilinear extension of g as `gPoly = fPoly(α₀,α₁,...α_{k-1},X_k,..,X_{m-1})`
--/
+  (m-k)-variate multilinear extension of g as `gPoly = fPoly(α₀,α₁,...α_{k-1},X_k,..,X_{m-1})`.
+
+  **Signature correction (from paper).** The original statement quantified over an *arbitrary*
+  codeword `g : smoothCode φ_k (m-k)` with no link to `f`, which makes the conclusion false (the
+  RHS is determined by `f`, the LHS by an unrelated `g`). The paper-faithful statement, matching
+  Claim 4.15, requires `g` to be the actual fold of `f`, i.e. `g = fold_k f αs`. The hypothesis
+  `hg` below pins this, using exactly the `fold_k` of `fold_f_g` (Claim 4.15 part 1). -/
 lemma fold_f_g_poly
   {S : Finset ι} {φ : ι ↪ F} {k m : ℕ}
   {φ_0 : (indexPowT S φ 0) ↪ F} {φ_k : (indexPowT S φ k) ↪ F}
@@ -360,7 +622,8 @@ lemma fold_f_g_poly
   [Fintype (indexPowT S φ k)] [DecidableEq (indexPowT S φ k)] [Smooth φ_k]
   [∀ i : ℕ, Neg (indexPowT S φ i)]
   (αs : Fin k → F) (hk : k ≤ m)
-  (f : smoothCode φ_0 m) (g : smoothCode φ_k (m-k)) :
+  (f : smoothCode φ_0 m) (g : smoothCode φ_k (m-k))
+  (hg : (g : indexPowT S φ k → F) = fold_k (f : indexPowT S φ 0 → F) αs hk) :
   let fPoly := mVdecode f
   let gPoly := mVdecode g
   gPoly = partialEval fPoly αs hk :=
@@ -478,7 +741,13 @@ theorem folding_listdecoding_if_genMutualCorrAgreement
     `S_0` and `S_1` denote finite sets of elements of type ι and ι², and
     `Λᵣ` denotes the list of δ-close codewords wrt block relative distance.
     `Λᵣ(0,k,f,S_0,C)` denotes Λᵣ at f : ι → F for code C and
-    `Λᵣ(1,k,fold_k(f,(fun _ : Fin 1 => α)),S_1,C')` denotes Λᵣ at fold_k : ι^2 → F for code C'. -/
+    `Λᵣ(1,k,fold_k(f,(fun _ : Fin 1 => α)),S_1,C')` denotes Λᵣ at fold_k : ι^2 → F for code C'.
+
+  **ABF26 mapping.** Probabilistic correctness of folded-RS list decoding. The
+  `errStar` accounting comes from MCA bounds (ABF26 Def 4.3 `epsMCA`). The underlying
+  list-size bound for FRS specializes ABF26 T3.4 (`subspaceDesign_list_decoding_cz25`
+  in `ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean`) via the folded-RS
+  τ-subspace-design property (T2.18). -/
 lemma folding_preserves_listdecoding_base
   [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
   [Fintype ι] [DecidableEq ι] [Smooth φ] {δ : ℝ≥0}
@@ -507,7 +776,13 @@ lemma folding_preserves_listdecoding_base
 /-- Lemma 4.22
   Following same parameters as Lemma 4.21 above, and states
   `∀ α : F, fold_k_set(Λᵣ(0,k,f,S_0,C,δ),(fun _ : Fin 1 => α)) ⊆
-      Λᵣ(1,k-1,fold_k(f,(fun _ : Fin 1 => α)),S_1,C',δ)` -/
+      Λᵣ(1,k-1,fold_k(f,(fun _ : Fin 1 => α)),S_1,C',δ)`
+
+  **ABF26 mapping.** Deterministic inclusion form underlying L4.21. The probabilistic
+  half (L4.21) bounds the failure probability of the *reverse* inclusion; this lemma
+  asserts the *forward* inclusion always holds. No direct ABF26 paper counterpart —
+  this is the "easy half" of folded-code list-decoding (corresponds to ABF26's "every
+  folded image of a δ-close codeword is δ-close", a structural fact). -/
 lemma folding_preserves_listdecoding_bound
   {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ]
   {δ : ℝ≥0} {f : (indexPowT S φ 0) → F}
@@ -536,7 +811,13 @@ lemma folding_preserves_listdecoding_bound
   `Pr_{α ← F} [
       Λᵣ(1,k-1,fold_k(f,(fun _ : Fin 1 => α)),S_1,C',δ) ¬ ⊆
         fold_k_set(Λᵣ(0,k,f,S_0,C,δ),(fun _ : Fin 1 => α))
-    ] < errStar(C',2,δ)` -/
+    ] < errStar(C',2,δ)`
+
+  **ABF26 mapping.** The probabilistic half of L4.21 / L4.22 — bounds the failure
+  probability of the reverse inclusion (every δ-close codeword of the folded code
+  comes from a δ-close codeword of the unfolded code, except with `errStar` prob).
+  Combines L4.22 (forward inclusion deterministic) with this lemma to recover the
+  ≠ event of L4.21. -/
 lemma folding_preserves_listdecoding_base_ne_subset
   [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
   [Fintype ι] [DecidableEq ι] [Smooth φ] {δ : ℝ≥0}

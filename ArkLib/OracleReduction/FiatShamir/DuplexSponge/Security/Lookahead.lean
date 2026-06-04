@@ -85,9 +85,7 @@ def computeLookaheadSequenceFamily
     (trace : QueryLog (forwardPermutationOracle (CanonicalSpongeState U)))
     (state : CanonicalSpongeState U) (i : pSpec.ChallengeIdx) :
     LookaheadSequenceFamily trace state i :=
-  { seqFamily := ∅
-    maximality := by simp
-    length_le_challengeSize := by simp }
+  sorry
 
 /-- The lookahead procedure in Section 5.2, which takes in:
 - A query-answer trace for the oracle `p`

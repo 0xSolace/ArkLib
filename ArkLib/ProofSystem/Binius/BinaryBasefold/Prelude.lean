@@ -1771,7 +1771,13 @@ def BBF_CodeDistance (ℓ 𝓡 : ℕ) (i : Fin (ℓ + 1)) : ℕ :=
   2^(ℓ + 𝓡 - i.val) - 2^(ℓ - i.val) + 1
 
 /-- Disagreement set Δ : The set of points where two functions disagree.
-For functions f^(i+ϑ) and g^(i+ϑ), this is {y ∈ S^(i+ϑ) | f^(i+ϑ)(y) ≠ g^(i+ϑ)(y)}. -/
+For functions f^(i+ϑ) and g^(i+ϑ), this is {y ∈ S^(i+ϑ) | f^(i+ϑ)(y) ≠ g^(i+ϑ)(y)}.
+
+`Set`-valued analogue of the canonical `Code.disagreementCols` (in
+`ArkLib/Data/CodingTheory/Basic/Distance.lean`): used here because the
+underlying `sDomain` need not be `Fintype` / `DecidableEq` at every
+call site. When both instances are available, the two coincide modulo
+`Set.toFinset`. -/
 def disagreementSet (i : Fin ℓ) (steps : ℕ) [NeZero steps] (h_i_add_steps : i.val + steps ≤ ℓ)
   (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i.val + steps, by
     exact Nat.lt_add_of_pos_right_of_le (↑i + steps) ℓ 1 h_i_add_steps⟩) :

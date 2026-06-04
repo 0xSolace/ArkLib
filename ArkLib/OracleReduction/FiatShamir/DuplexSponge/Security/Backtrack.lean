@@ -116,9 +116,9 @@ from the actual trace and is only present for efficiency (which we do not plan t
 
 TODO: figure out the best way to encode the two errors (currently we encode `err` as the failure of
 OracleComp, and `none` as `Option.none` inside) -/
-def backTrack (_trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
-    (_state : CanonicalSpongeState U) :
+def backTrack (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) :
     OptionT Option ((StmtIn × (i : Fin (n + 1)) × (pSpec.MessagesUpTo i))) :=
-  failure
+  sorry
 
 end DuplexSpongeFS

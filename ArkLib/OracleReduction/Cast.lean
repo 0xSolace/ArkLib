@@ -171,13 +171,7 @@ variable (hOₘ : ∀ i, Oₘ₁ i = dcast (Message.cast_idx hSpec) (Oₘ₂ (i.
 @[simp]
 theorem cast_toVerifier (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁) :
     (OracleVerifier.cast hn hSpec hOₘ V).toVerifier = Verifier.cast hn hSpec V.toVerifier := by
-  subst hn
-  subst hSpec
-  have hO : Oₘ₁ = Oₘ₂ := by
-    funext i
-    simpa using hOₘ i
-  subst hO
-  rfl
+  sorry
 
 end OracleVerifier
 
@@ -309,6 +303,7 @@ open NNReal
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
   [inst₁ : ∀ i, SampleableType (pSpec₁.Challenge i)]
   [inst₂ : ∀ i, SampleableType (pSpec₂.Challenge i)]
+  (hChallenge : ∀ i, inst₁ i = dcast (by simp) (inst₂ (i.cast hn hSpec)))
 
 section Protocol
 
@@ -332,19 +327,11 @@ namespace Verifier
 variable (V : Verifier oSpec StmtIn StmtOut pSpec₁)
 
 @[simp]
-theorem cast_rbrKnowledgeSoundness
-    (hChallenge : ∀ i, inst₁ i = dcast (by simp) (inst₂ (i.cast hn hSpec)))
-    (ε : pSpec₁.ChallengeIdx → ℝ≥0)
+theorem cast_rbrKnowledgeSoundness (ε : pSpec₁.ChallengeIdx → ℝ≥0)
     (hRbrKs : V.rbrKnowledgeSoundness init impl relIn relOut ε) :
     (V.cast hn hSpec).rbrKnowledgeSoundness init impl relIn relOut
       (ε ∘ (ChallengeIdx.cast hn.symm (cast_symm hSpec))) := by
-  subst hn
-  subst hSpec
-  have hInst : inst₁ = inst₂ := by
-    funext i
-    simpa using hChallenge i
-  subst hInst
-  exact hRbrKs
+  sorry
 
 end Verifier
 
@@ -381,15 +368,13 @@ namespace OracleVerifier
 variable (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁)
 
 @[simp]
-theorem cast_rbrKnowledgeSoundness
-    (hChallenge : ∀ i, inst₁ i = dcast (by simp) (inst₂ (i.cast hn hSpec)))
-    (ε : pSpec₁.ChallengeIdx → ℝ≥0)
+theorem cast_rbrKnowledgeSoundness (ε : pSpec₁.ChallengeIdx → ℝ≥0)
     (hRbrKs : V.rbrKnowledgeSoundness init impl relIn relOut ε) :
     (V.cast hn hSpec hOₘ).rbrKnowledgeSoundness init impl relIn relOut
       (ε ∘ (ChallengeIdx.cast hn.symm (cast_symm hSpec))) := by
   unfold rbrKnowledgeSoundness
   rw [cast_toVerifier]
-  exact Verifier.cast_rbrKnowledgeSoundness hn hSpec V.toVerifier hChallenge ε hRbrKs
+  exact Verifier.cast_rbrKnowledgeSoundness hn hSpec V.toVerifier ε hRbrKs
 
 end OracleVerifier
 

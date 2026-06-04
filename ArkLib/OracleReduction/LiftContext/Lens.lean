@@ -512,14 +512,16 @@ instance [Inhabited OuterWitOut]
       innerRelIn.language innerRelOut.language
       compatStmt where
   proj_sound := fun outerStmtIn hCompat => by
-    simp [Set.language] at hCompat ⊢
+    simp only [Set.language, Set.mem_image, Prod.exists, exists_and_right, exists_eq_right,
+      not_exists] at hCompat ⊢
     intro innerWitIn hRelIn
     contrapose! hCompat
     let outerWitIn := lens.wit.lift (outerStmtIn, default) innerWitIn
     have hOuterWitIn := instKS.lift_knowledgeSound outerStmtIn default innerWitIn (by simp) hRelIn
     exact ⟨outerWitIn, hOuterWitIn⟩
   lift_sound := fun outerStmtIn innerStmtOut hCompat hInnerRelOut => by
-    simp [Set.language] at hCompat hInnerRelOut ⊢
+    simp only [Set.language, Set.mem_image, Prod.exists, exists_and_right, exists_eq_right,
+      not_exists] at hCompat hInnerRelOut ⊢
     intro outerWitOut hOuterRelOut
     contrapose! hInnerRelOut
     let innerWitOut := lens.wit.proj (outerStmtIn, outerWitOut)
