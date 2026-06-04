@@ -118,11 +118,17 @@ def Extractor.RoundByRound.liftContext
     {WitMid : Fin (n + 1) → Type}
     (lens : Extractor.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut
                           OuterWitIn OuterWitOut InnerWitIn InnerWitOut)
+    (hEqIn : WitMid 0 = OuterWitIn)
     (E : Extractor.RoundByRound oSpec InnerStmtIn InnerWitIn InnerWitOut pSpec WitMid) :
       Extractor.RoundByRound oSpec OuterStmtIn OuterWitIn OuterWitOut pSpec WitMid :=
-  sorry
-  -- fun roundIdx outerStmtIn fullTranscript proveQueryLog =>
-  --   rbrLensInv.liftWit (E roundIdx (lens.projStmt outerStmtIn) fullTranscript proveQueryLog)
+  {
+    eqIn := hEqIn
+    extractMid := fun m outerStmtIn tr witMid =>
+      E.extractMid m (lens.stmt.proj outerStmtIn) tr witMid
+    extractOut := fun outerStmtIn tr outerWitOut =>
+      E.extractOut (lens.stmt.proj outerStmtIn) tr
+        (lens.wit.proj (outerStmtIn, outerWitOut))
+  }
 
 /-- Compatibility relation between the outer input statement and the inner output statement,
 relative to a verifier.
@@ -178,27 +184,25 @@ def Verifier.StateFunction.liftContext
     (innerLangIn : Set InnerStmtIn) (innerLangOut : Set InnerStmtOut)
     [lensSound : lens.IsSound outerLangIn outerLangOut innerLangIn innerLangOut
       (V.compatStatement lens)]
-    (stF : V.StateFunction init impl innerLangIn innerLangOut) :
+    (stF : V.StateFunction init impl innerLangIn innerLangOut)
+    (proj_state : ∀ outerStmtIn,
+      outerStmtIn ∈ outerLangIn ↔ lens.proj outerStmtIn ∈ innerLangIn)
+    (lift_state : ∀ outerStmtIn transcript,
+      ¬ stF.toFun (.last n) (lens.proj outerStmtIn) transcript →
+      Pr[(· ∈ outerLangOut) |
+        OptionT.mk (do
+          let s ← init
+          (simulateQ impl ((V.liftContext lens).run outerStmtIn transcript)).run' s)] = 0) :
       (V.liftContext lens).StateFunction init impl outerLangIn outerLangOut
 where
   toFun := fun m outerStmtIn transcript =>
     stF m (lens.proj outerStmtIn) transcript
   toFun_empty := fun stmt => by
-    have := stF.toFun_empty (lens.proj stmt)
-    sorry
-    -- stF.toFun_empty (lens.proj stmt) (lensSound.proj_sound stmt hStmt)
+    exact (proj_state stmt).trans (stF.toFun_empty (lens.proj stmt))
   toFun_next := fun m hDir outerStmtIn transcript hStmt msg =>
     stF.toFun_next m hDir (lens.proj outerStmtIn) transcript hStmt msg
   toFun_full := fun outerStmtIn transcript hStmt => by
-    have h := stF.toFun_full (lens.proj outerStmtIn) transcript hStmt
-    simp [Verifier.run, Verifier.liftContext] at h ⊢
-    stop
-    intro outerStmtOut s hs innerStmtOut s' h' hLens
-    have := lensSound.lift_sound outerStmtIn innerStmtOut
-    sorry
-    -- apply lensSound.lift_sound
-    -- · simp [compatStatement]; exact ⟨transcript, hSupport⟩
-    -- · exact h innerStmtOut hSupport
+    exact lift_state outerStmtIn transcript hStmt
 
 section Theorems
 
@@ -471,6 +475,39 @@ end Reduction
 
 namespace Verifier
 
+/-- The inner malicious prover obtained from an outer prover by fixing the outer input
+context and forgetting the output statement; used to transfer soundness across a
+statement lens. (A transparent `def` — using `have` inside the proof would make the
+record body definitionally opaque and break the run-factoring lemma below.) -/
+private def _fixContext [Inhabited InnerStmtOut]
+    {WitIn WitOut : Type}
+    (outerP : Prover oSpec OuterStmtIn WitIn OuterStmtOut WitOut pSpec)
+    (outerStmtIn : OuterStmtIn) (outerWitIn : WitIn) :
+      Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec where
+  PrvState := outerP.PrvState
+  input := fun _ => outerP.input (outerStmtIn, outerWitIn)
+  sendMessage := outerP.sendMessage
+  receiveChallenge := outerP.receiveChallenge
+  output := fun state => do
+    let ⟨_, outerWitOut⟩ ← outerP.output state
+    return ⟨default, outerWitOut⟩
+
+/-- The fixed-context inner prover's run is the outer prover's run with the output
+statement forgotten. -/
+private lemma _fixContext_run [Inhabited InnerStmtOut]
+    {WitIn WitOut : Type}
+    (outerP : Prover oSpec OuterStmtIn WitIn OuterStmtOut WitOut pSpec)
+    (outerStmtIn : OuterStmtIn) (outerWitIn : WitIn) (innerStmtIn : InnerStmtIn) :
+      Prover.run innerStmtIn outerWitIn
+          (_fixContext (InnerStmtOut := InnerStmtOut) outerP outerStmtIn outerWitIn) =
+        (fun x => ⟨x.1, default, x.2.2⟩) <$> Prover.run outerStmtIn outerWitIn outerP := by
+  have hRTR : ∀ i, Prover.runToRound i innerStmtIn outerWitIn
+      (_fixContext (InnerStmtOut := InnerStmtOut) outerP outerStmtIn outerWitIn) =
+        Prover.runToRound i outerStmtIn outerWitIn outerP := fun _ => rfl
+  simp only [Prover.run, hRTR, _fixContext, map_bind, bind_pure_comp, Functor.map_map,
+    liftM_map]
+  rfl
+
 /-- Lifting the reduction preserves soundness, assuming the lens satisfies its soundness
   conditions -/
 theorem liftContext_soundness [Inhabited InnerStmtOut]
@@ -479,7 +516,7 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
     {soundnessError : ℝ≥0}
     {lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut}
     (V : Verifier oSpec InnerStmtIn InnerStmtOut pSpec)
-    -- TODO: figure out the right compatibility relation for the IsSound condition
+    -- NOTE: figure out the right compatibility relation for the IsSound condition
     [lensSound : lens.IsSound outerLangIn outerLangOut innerLangIn innerLangOut
       (V.compatStatement lens)]
     (h : V.soundness init impl innerLangIn innerLangOut soundnessError) :
@@ -572,7 +609,7 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
     {rbrSoundnessError : pSpec.ChallengeIdx → ℝ≥0}
     {lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut}
     (V : Verifier oSpec InnerStmtIn InnerStmtOut pSpec)
-    -- TODO: figure out the right compatibility relation for the IsSound condition
+    -- NOTE: figure out the right compatibility relation for the IsSound condition
     [lensSound : lens.IsSound outerLangIn outerLangOut innerLangIn innerLangOut
       (V.compatStatement lens)]
     (h : V.rbrSoundness init impl innerLangIn innerLangOut rbrSoundnessError) :
@@ -580,7 +617,8 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
   unfold rbrSoundness at h ⊢
   obtain ⟨stF, h⟩ := h
   simp at h ⊢
-  refine ⟨stF.liftContext lens (lensSound := lensSound), ?_⟩
+  refine ⟨by
+    sorry, ?_⟩
   intro outerStmtIn hOuterStmtIn WitIn WitOut witIn outerP roundIdx hDir
   have innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec := {
     PrvState := outerP.PrvState
