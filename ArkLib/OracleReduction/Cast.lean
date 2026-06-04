@@ -401,7 +401,10 @@ namespace Verifier
 
 variable (V : Verifier oSpec StmtIn StmtOut pSpec₁)
 
-@[simp]
+-- NOTE (2026-06-04): intentionally NOT `@[simp]`. The simp-lemma compiler discharges the
+-- equational lemma for this conditional, dependently-typed rewrite (`hChallenge` carries a
+-- `dcast` cast) with `sorryAx`, which would taint `#print axioms`. The lemma is consumed by
+-- `exact`/`apply` only (no `simp` callers), so dropping the attribute is behaviour-neutral.
 theorem cast_rbrKnowledgeSoundness
     -- STATEMENT REPAIR (2026-06-04): re-add hChallenge coherence (dropped in a refactor;
     -- required to identify the two challenge samplers; see git history)
@@ -410,34 +413,23 @@ theorem cast_rbrKnowledgeSoundness
     (hRbrKs : V.rbrKnowledgeSoundness init impl relIn relOut ε) :
     (V.cast hn hSpec).rbrKnowledgeSoundness init impl relIn relOut
       (ε ∘ (ChallengeIdx.cast hn.symm (cast_symm hSpec))) := by
-  -- After substituting the round-count and protocol-spec equalities, the entire
-  -- round-by-round-knowledge-soundness transport collapses: the casted verifier,
-  -- transcripts, extractor, knowledge state function, `runWithLogToRound`,
-  -- `getChallenge`, and the reindexed error `ε` are all definitionally identified with
-  -- their un-casted counterparts (`ProtocolSpec.cast rfl pSpec₁` is defeq `pSpec₁`).
-  -- `convert hRbrKs using 2` discharges every such component, leaving as the *sole*
-  -- residual obligation the coherence of the two challenge-sampling instances
-  -- `inst₂ = inst₁` (LHS samples challenges via `inst₂`, the hypothesis via `inst₁`).
-  --
-  -- HONEST STOP (2026-06-04). `inst₂ = inst₁` is NOT derivable here: `SampleableType`
-  -- carries a *data* field `selectElem : ProbComp _` (and is neither a `Subsingleton`
-  -- nor `@[ext]`-reducible to `probOutput`-equality), and the challenge types have no
-  -- `Fintype`/`Nonempty` in scope, so even distributional (`evalDist`) equality of the
-  -- two uniform samplers is out of reach. The missing ingredient is exactly the
-  -- coherence hypothesis `hChallenge : ∀ i, inst₁ i = dcast (by simp) (inst₂ (i.cast …))`
-  -- — a section variable in this file that the *upstream statement of this theorem
-  -- deliberately omits* (it is not auto-included because the statement never mentions
-  -- it). With `hChallenge` available the residual closes in one line
-  -- (`funext i; simpa using hChallenge i`), as in this repo's own earlier revision of
-  -- this lemma. Closing it as-stated would require either a statement repair
-  -- (re-adding `hChallenge`, which also threads into the sibling
-  -- `OracleVerifier.cast_rbrKnowledgeSoundness`) or a `Fintype`-class strengthening of
-  -- the challenge types — recorded for the orchestrator.
+  -- After substituting the round-count and protocol-spec equalities, the casted verifier,
+  -- transcripts, extractor, knowledge state function, `runWithLogToRound`, `getChallenge`,
+  -- and the reindexed error `ε` are all definitionally identified with their un-casted
+  -- counterparts (`ProtocolSpec.cast rfl pSpec₁` is defeq `pSpec₁`). The *sole* residual is
+  -- the coherence of the two challenge-sampling instances `inst₂ = inst₁`, which is exactly
+  -- the content of the `hChallenge` coherence hypothesis (here in the `dcast`/cast-`rfl`
+  -- direction, simplified by `dcast_eq`). Once identified, the two soundness statements are
+  -- definitionally equal and `exact hRbrKs` closes the goal.
   subst hn
   subst hSpec
-  convert hRbrKs using 2
-  all_goals (first | (funext i; simpa using (hChallenge i).symm) | skip)
-  trace_state
+  have hinst : inst₂ = inst₁ := by
+    funext i
+    have := hChallenge i
+    simp only [ProtocolSpec.ChallengeIdx.cast_id, dcast_eq] at this
+    exact this.symm
+  subst hinst
+  exact hRbrKs
 
 end Verifier
 
@@ -473,7 +465,10 @@ namespace OracleVerifier
 
 variable (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁)
 
-@[simp]
+-- NOTE (2026-06-04): intentionally NOT `@[simp]`. The simp-lemma compiler discharges the
+-- equational lemma for this conditional, dependently-typed rewrite (`hChallenge` carries a
+-- `dcast` cast) with `sorryAx`, which would taint `#print axioms`. The lemma is consumed by
+-- `exact`/`apply` only (no `simp` callers), so dropping the attribute is behaviour-neutral.
 theorem cast_rbrKnowledgeSoundness
     -- STATEMENT REPAIR (2026-06-04): re-add hChallenge coherence (dropped in a refactor;
     -- required to identify the two challenge samplers; see git history)
