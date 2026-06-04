@@ -346,6 +346,19 @@ theorem averageDist_le_plotkin
   unfold d
   simpa [Nat.cast_sum] using hplot
 
+/-- A finite point-list `Λ(C,δ,f)` has average pairwise distance at least the
+minimum distance of `C`, provided it contains at least two words. -/
+theorem minDist_le_averageDistOn_closeCodewordsRelFinset
+    {ι : Type} [Fintype ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) (f : ι → α) (δ : ℝ)
+    (hB : 1 < (ListDecodable.closeCodewordsRelFinset C f δ).card) :
+    (Code.minDist C : ℚ) ≤
+      averageDistOn (ListDecodable.closeCodewordsRelFinset C f δ) := by
+  apply minDist_le_averageDistOn_of_subset hB
+  intro x hx
+  exact (ListDecodable.mem_closeCodewordsRelFinset.mp hx).1
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
