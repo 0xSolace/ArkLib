@@ -757,6 +757,67 @@ theorem reduction_perfectCompleteness :
       simp only [Set.mem_setOf_eq, outputRelation]
       constructor <;> simp
 
+/-- Any successful run of the simple single-round reduction has the prover's output oracle statement
+  equal to the input polynomial, and its output target equal to that polynomial evaluated at the
+  challenge. This captures the honest prover's behavior: it forwards the input polynomial and
+  reports its evaluation at the verifier's challenge. -/
+theorem reduction_run_prover_output (target : R) (oStmt : ∀ i, OStmtIn R deg i)
+    {result : (FullTranscript (pSpec R deg) × (StmtOut R × (∀ i, OStmtOut R deg i)) × Unit)
+      × (StmtOut R × (∀ i, OStmtOut R deg i))}
+    (hresult : some result ∈ support ((reduction R deg D oSpec).run (target, oStmt) ()).run) :
+    (result.1.2.1.2 = fun _ => oStmt ())
+      ∧ result.1.2.1.1.1 = (oStmt ()).1.eval result.1.2.1.1.2 := by
+  simp only [Reduction.run, Prover.run, Verifier.run, reduction, prover, verifier,
+    Prover.runToRound, Prover.processRound, Fin.induction_two, pSpec,
+    bind_pure_comp, Functor.map_map, Function.comp] at hresult
+  -- Resolve round 0 direction (P_to_V)
+  split at hresult <;> rename_i hDir0
+  · exact absurd hDir0 (by decide)
+  -- Resolve round 1 direction (V_to_P)
+  split at hresult <;> rename_i hDir1
+  swap
+  · exact absurd hDir1 (by decide)
+  -- Collapse all pure computations and reduce the support membership. The only oracle interaction
+  -- is the challenge query; everything else is deterministic, so the support is fully described.
+  simp only [MonadLift.monadLift, liftM, monadLift, MonadLiftT.monadLift,
+    OracleComp.liftComp_pure, OracleComp.liftComp_query, OracleComp.liftComp_bind,
+    map_pure, pure_bind, bind_pure_comp, map_bind, bind_map_left, map_eq_bind_pure_comp,
+    Functor.map_map, Function.comp, OracleQuery.cont_query, OracleQuery.input_query,
+    OptionT.run_map, OptionT.run_mk, OptionT.run_pure, OptionT.run_lift,
+    OptionT.run_bind, Option.elimM, support_bind, support_map, support_pure, support_query,
+    Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff, Set.mem_univ, Set.image_univ,
+    Set.mem_range, exists_const, exists_prop, true_and, mem_support_bind_iff] at hresult
+  -- Destructure the existentials. `proverOpt = some proverOut`, `proverOut.2 = (oStmt (), chal)`.
+  obtain ⟨proverOpt, ⟨proverOut, ⟨roundState, hRound, hOut⟩, hSome⟩, hresult⟩ := hresult
+  -- Resolve the round-state structure: `roundState = (transcript, oStmt (), challenge)`.
+  simp at hRound
+  obtain ⟨challenge, _hch, hRoundEq⟩ := Set.mem_iUnion₂.mp hRound
+  rw [Set.mem_singleton_iff] at hRoundEq
+  -- `roundState = (transcript, oStmt (), challenge)`, so `roundState.2 = (oStmt (), challenge)`.
+  subst hRoundEq
+  simp only [OracleComp.liftComp_pure, support_pure, Set.mem_singleton_iff] at hOut
+  obtain ⟨out, rfl, hProverEq⟩ := hOut
+  subst hProverEq hSome
+  -- `proverOut` and hence `result.1` are fully determined. Resolve `result` from the verifier elim.
+  -- `(some proverOut).elim (pure none) f = f proverOut`; the final result is `(proverOut, _)`.
+  simp only [Option.elim_some] at hresult
+  rw [mem_support_bind_iff] at hresult
+  obtain ⟨verdictOpt, _hverdict, hresult⟩ := hresult
+  -- The continuation is `verdictOpt.elim (pure none) (fun x_1 => ... pure (some (proverOut, _)))`.
+  rcases verdictOpt with _ | verdict
+  · simp only [Option.elim_none, support_pure, Set.mem_singleton_iff] at hresult
+    exact absurd hresult (by simp)
+  · simp only [Option.elim_some] at hresult
+    rw [mem_support_bind_iff] at hresult
+    obtain ⟨getMOpt, _hgetM, hresult⟩ := hresult
+    rcases getMOpt with _ | getMv
+    · simp only [Option.elim_none, support_pure, Set.mem_singleton_iff] at hresult
+      exact absurd hresult (by simp)
+    · simp only [Option.elim_some, support_pure, Set.mem_singleton_iff,
+        Option.some.injEq] at hresult
+      -- `result = (proverOut, getMv)`, so `result.1 = proverOut`.
+      subst hresult
+      exact ⟨rfl, rfl⟩
 
 /-- Perfect completeness for the oracle reduction -/
 theorem oracleReduction_perfectCompleteness :
@@ -983,6 +1044,71 @@ private lemma sumcheck_round_split {n' : ℕ} {m' : ℕ} (D' : Fin m' ↪ R) (i 
   · rintro ⟨a, y⟩ hay
     rw [append_cons_eq_insertNth i a c y hc1 hc2 hc3]
 
+/-- Pointwise `Fin`-plumbing identity for the single-point round split: appending `a` via `snoc` to
+`c` and then `w` agrees with inserting `a` at position `i` into `append c w'`. -/
+private lemma append_snoc_eq_insertNth {n' : ℕ} {α : Type} (i : Fin (n' + 1)) (a : α)
+    (c : Fin (i : ℕ) → α) (z : Fin ((n' + 1) - (i.succ : ℕ)) → α)
+    (hc1 : n' + 1 = ((i : ℕ) + 1) + ((n' + 1) - (i.succ : ℕ)))
+    (hc2 : n' = (i : ℕ) + (n' - i))
+    (hc5 : (n' + 1) - (i.succ : ℕ) = n' - (i : ℕ)) :
+    (Fin.append (Fin.snoc c a) z ∘ Fin.cast hc1 : Fin (n' + 1) → α)
+      = i.insertNth a (Fin.append c (z ∘ Fin.cast hc5.symm) ∘ Fin.cast hc2) := by
+  rw [Fin.eq_insertNth_iff]
+  refine ⟨?_, ?_⟩
+  · simp only [Function.comp_apply]
+    have : (Fin.cast hc1 i : Fin (((i : ℕ) + 1) + ((n' + 1) - (i.succ : ℕ))))
+        = Fin.castAdd _ (Fin.last (i : ℕ)) := by apply Fin.ext; simp
+    rw [this, Fin.append_left, Fin.snoc_last]
+  · ext j
+    simp only [Fin.removeNth_apply, Function.comp_apply]
+    rcases lt_or_ge (j : ℕ) (i : ℕ) with hlt | hge
+    · have hsa : i.succAbove j = j.castSucc :=
+        Fin.succAbove_of_castSucc_lt _ _ (by simp [Fin.lt_def, hlt])
+      rw [hsa]
+      have hL : (Fin.cast hc1 j.castSucc : Fin (((i : ℕ) + 1) + ((n' + 1) - (i.succ : ℕ))))
+          = Fin.castAdd _ (Fin.castSucc ⟨(j : ℕ), hlt⟩ : Fin ((i : ℕ) + 1)) := by
+        apply Fin.ext; simp
+      have hR : (Fin.cast hc2 j : Fin ((i : ℕ) + (n' - i)))
+          = Fin.castAdd _ (⟨(j : ℕ), hlt⟩ : Fin (i : ℕ)) := by apply Fin.ext; simp
+      rw [hL, hR, Fin.append_left, Fin.append_left, Fin.snoc_castSucc]
+    · have hsa : i.succAbove j = j.succ :=
+        Fin.succAbove_of_le_castSucc _ _ (by simp [Fin.le_def, hge])
+      rw [hsa]
+      have hL : (Fin.cast hc1 j.succ : Fin (((i : ℕ) + 1) + ((n' + 1) - (i.succ : ℕ))))
+          = Fin.natAdd ((i : ℕ) + 1) (⟨(j : ℕ) - (i : ℕ), by omega⟩ : Fin ((n' + 1) - (i.succ : ℕ)))
+            := by apply Fin.ext; simp; omega
+      have hR : (Fin.cast hc2 j : Fin ((i : ℕ) + (n' - i)))
+          = Fin.natAdd (i : ℕ) (⟨(j : ℕ) - (i : ℕ), by omega⟩ : Fin (n' - i)) := by
+        apply Fin.ext; simp; omega
+      rw [hL, hR, Fin.append_right, Fin.append_right, Function.comp_apply]
+      congr 1
+
+/-- The single-point sum-check round split: specializing the inserted variable at a fixed value `a`
+(rather than summing over the domain). The `(n'+1-i.succ)`-fold sum with `a` snoc-appended to `c`
+agrees with the `(n'-i)`-fold sum that inserts `a` at position `i`. This realizes the round-i claim
+update used in the lens completeness `lift`. -/
+private lemma sumcheck_round_split_point {n' : ℕ} {m' : ℕ} (D' : Fin m' ↪ R) (i : Fin (n' + 1))
+    (c : Fin (i : ℕ) → R) (a : R) (p : MvPolynomial (Fin (n' + 1)) R)
+    (hc1 : n' + 1 = ((i : ℕ) + 1) + ((n' + 1) - (i.succ : ℕ)))
+    (hc2 : n' = (i : ℕ) + (n' - i))
+    (hc5 : (n' + 1) - (i.succ : ℕ) = n' - (i : ℕ)) :
+    (∑ z ∈ (univ.map D') ^ᶠ ((n' + 1) - (i.succ : ℕ)),
+        MvPolynomial.eval (Fin.append (Fin.snoc c a) z ∘ Fin.cast hc1) p)
+      = ∑ y ∈ (univ.map D') ^ᶠ (n' - i),
+          MvPolynomial.eval (i.insertNth a (Fin.append c y ∘ Fin.cast hc2)) p := by
+  refine Finset.sum_nbij' (i := fun z => z ∘ Fin.cast hc5.symm) (j := fun y => y ∘ Fin.cast hc5)
+    ?_ ?_ ?_ ?_ ?_
+  · intro z hz
+    simp only [Fintype.mem_piFinset] at hz ⊢
+    intro k; exact hz _
+  · intro y hy
+    simp only [Fintype.mem_piFinset] at hy ⊢
+    intro k; exact hy _
+  · intro z _; funext k; simp
+  · intro y _; funext k; simp
+  · intro z _
+    rw [append_snoc_eq_insertNth i a c z hc1 hc2 hc5]
+
 instance oCtxLens_complete :
     (oCtxLens R n deg D i).toContext.IsComplete
       (relationRound R n deg D i.castSucc) (Simple.inputRelation R deg D)
@@ -1004,14 +1130,46 @@ where
       --            = ∑ z ∈ D^(n+1-i), eval (append c z ∘ cast) p
       exact sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)
   lift_complete := by
-    simp [relationRound]
-    unfold compatContext oStmtLens
-    -- simp
-    -- induction n with
-    -- | zero => exact Fin.elim0 i
-    -- | succ n ih =>
-    --   simp
-    sorry
+    rintro ⟨⟨oldTarget, challenges⟩, oStmt⟩ ⟨⟩ ⟨⟨newTarget, chal⟩, oStmt'⟩ ⟨⟩ hCompat hRelIn hRelOut
+    -- From the inner output relation: `newTarget = (oStmt' ()).eval chal`.
+    simp only [Simple.outputRelation, Set.mem_setOf_eq] at hRelOut
+    -- From compatibility: `oStmt'` is the prover's output oracle, i.e. the round polynomial.
+    rw [Reduction.compatContext, Simple.oracleReduction_eq_reduction] at hCompat
+    simp only [Set.mem_image, Function.comp_apply] at hCompat
+    obtain ⟨runResult, hrunMem, hrunEq⟩ := hCompat
+    -- Apply the prover-output characterization: `oStmt'` is the projected (round) polynomial.
+    have hProverOut := Simple.reduction_run_prover_output R deg D oSpec
+      (Statement.Lens.proj (oCtxLens R n deg D i).stmt
+        ({ target := oldTarget, challenges := challenges }, oStmt)).1
+      (Statement.Lens.proj (oCtxLens R n deg D i).stmt
+        ({ target := oldTarget, challenges := challenges }, oStmt)).2
+      (result := runResult)
+      (by rw [OptionT.mem_support_iff] at hrunMem; exact hrunMem)
+    rw [hrunEq] at hProverOut
+    obtain ⟨hOStmt', hTarget⟩ := hProverOut
+    simp only [Statement.Lens.proj, oCtxLens] at hOStmt' hTarget
+    -- `hOStmt' : oStmt' = fun _ => (round poly)`, `hTarget : newTarget = (round poly).eval chal`.
+    -- Reduce the goal: lift keeps `oStmt`; unfold relationRound and the round-poly projection.
+    simp only [relationRound, oCtxLens, Statement.Lens.lift, Witness.Lens.lift,
+      OracleContext.Lens.toContext, Set.mem_setOf_eq]
+    dsimp only [oStmtLens]
+    -- Goal: `∑ x ∈ D^(n-i.succ), (oStmt ()) ⸨Fin.snoc challenges chal, x⸩ = newTarget`.
+    rw [hTarget]
+    clear hOStmt' hTarget hRelOut hrunEq hrunMem runResult hRelIn oStmt' newTarget
+    -- Case on `n` to evaluate the round-poly projection (`oStmtLens.toFunA`).
+    revert challenges oStmt chal oldTarget
+    induction n with
+    | zero => exact Fin.elim0 i
+    | succ n ih =>
+      clear ih
+      intro oStmt oldTarget challenges chal
+      dsimp only [oStmtLens]
+      simp_rw [Polynomial.eval_finset_sum, ← eval_eq_eval_mv_eval_finSuccEquivNth]
+      -- The claim update is exactly the single-point round split.
+      have hi : (i.succ : ℕ) = (i : ℕ) + 1 := Fin.val_succ i
+      have hilt : (i : ℕ) < n + 1 := i.isLt
+      exact sumcheck_round_split_point D i challenges chal _
+        (by omega) (by omega) (by omega)
 
 instance extractorLens_rbr_knowledge_soundness :
     Extractor.Lens.IsKnowledgeSound
@@ -1043,7 +1201,7 @@ theorem reduction_perfectCompleteness :
     (relationRound R n deg D i.castSucc) (relationRound R n deg D i.succ) :=
   Reduction.liftContext_perfectCompleteness
     (lens := (oCtxLens R n deg D i).toContext)
-    (lensComplete := by simp; sorry)
+    (lensComplete := Simple.oracleReduction_eq_reduction R deg D oSpec ▸ oCtxLens_complete i)
     (Simple.reduction_perfectCompleteness R deg D oSpec)
 
 theorem verifier_rbrKnowledgeSoundness [Fintype R] :
