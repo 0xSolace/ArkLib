@@ -85,6 +85,7 @@ States that the approximate solution is actually a solution. This version of the
 terms of coefficients. -/
 lemma approximate_solution_is_exact_solution_coeffs
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     : ∀ t ≥ k,
     α'
       x₀
@@ -104,6 +105,7 @@ This version is in terms of polynomials.
 -/
 lemma approximate_solution_is_exact_solution_coeffs'
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     :
     γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
         (claimA2_hypotheses k h_gs) =
@@ -124,6 +126,7 @@ open BCIKS20AppendixA.ClaimA2 in
 States that the solution `γ` is linear in the variable `Z`. -/
 lemma solution_gamma_is_linear_in_Z
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     :
   ∃ (v₀ v₁ : F[X]),
     γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
@@ -136,7 +139,8 @@ lemma solution_gamma_is_linear_in_Z
           ) := by sorry
 
 /-- The linear represenation of the solution `γ` extracted from Claim 5.9. -/
-noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : F[Z][X] :=
+noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)] : F[Z][X] :=
   let v₀ := Classical.choose (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)
   let v₁ := Classical.choose
     (Classical.choose_spec <| solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)
@@ -173,6 +177,7 @@ enough. -/
 lemma solution_gamma_matches_word_if_subset_large
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     {x : Fin n}
     {D : ℕ}
     (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))

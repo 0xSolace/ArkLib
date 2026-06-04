@@ -11,6 +11,8 @@ import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Ideal.Span
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.PowerSeries.Substitution
+import Mathlib.RingTheory.Polynomial.GaussLemma
+import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # Definitions and Theorems about Function Fields and Rings of Regular Functions
@@ -36,7 +38,7 @@ namespace BCIKS20AppendixA
 
 section
 
-variable {F : Type} [CommRing F] [IsDomain F]
+variable {F : Type} [Field F]
 
 /-- Construction of the monisized polynomial `H_tilde` in Appendix A.1 of [BCIKS20].
 Note: Here `H ∈ F[X][Y]` translates to `H ∈ F[Z][Y]` in [BCIKS20] and H_tilde in
@@ -185,7 +187,6 @@ noncomputable def H_tilde' (H : F[X][Y]) : F[X][Y] :=
       ∑ i ∈ Finset.range d,
         Polynomial.C (hᵢ i * W ^ (d - 1 - i)) * Polynomial.X ^ i
 
-omit [IsDomain F] in
 /-- If `H` has positive degree in `Y`, then `H_tilde' H` is monic. -/
 lemma H_tilde'_monic (H : F[X][Y]) (hH : 0 < H.natDegree) :
     (H_tilde' H).Monic := by
@@ -542,14 +543,12 @@ lemma canonicalRepOf𝒪_degree_lt {H : F[X][Y]} (hH : 0 < H.natDegree) (β : �
   rw [canonicalRepOf𝒪]
   exact Polynomial.degree_modByMonic_lt _ (H_tilde'_monic H hH)
 
-omit [IsDomain F] in
 /-- The canonical representative has natural degree bounded by the defining relation. -/
 lemma canonicalRepOf𝒪_natDegree_le {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) :
     (canonicalRepOf𝒪 hH β).natDegree ≤ (H_tilde' H).natDegree := by
   rw [canonicalRepOf𝒪]
   exact Polynomial.natDegree_modByMonic_le _ (H_tilde'_monic H hH)
 
-omit [IsDomain F] in
 /-- The canonical representative maps back to the original quotient element of `𝒪`. -/
 @[simp]
 lemma mk_canonicalRepOf𝒪 {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) :
@@ -573,7 +572,6 @@ lemma mk_canonicalRepOf𝒪 {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) :
     _ = β := by
             simp [I, p]
 
-omit [IsDomain F] in
 /-- Canonical representatives of quotient constructors are computed by `modByMonic`. -/
 lemma canonicalRepOf𝒪_mk {H : F[X][Y]} (hH : 0 < H.natDegree) (p : F[X][Y]) :
     canonicalRepOf𝒪 hH (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) p : 𝒪 H) =
@@ -587,7 +585,6 @@ lemma canonicalRepOf𝒪_mk {H : F[X][Y]} (hH : 0 < H.natDegree) (p : F[X][Y]) :
         = (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) p : 𝒪 H) := by simp
     _ = Ideal.Quotient.mk (Ideal.span {H_tilde' H}) p := rfl
 
-omit [IsDomain F] in
 /-- The canonical representative of zero is zero. -/
 @[simp]
 lemma canonicalRepOf𝒪_zero {H : F[X][Y]} (hH : 0 < H.natDegree) :
@@ -612,7 +609,6 @@ noncomputable def weight_Λ (f H : F[X][Y]) (D : ℕ) : WithBot ℕ :=
       WithBot.some <| deg * (D + 1 - Bivariate.natDegreeY H) + (f.coeff deg).natDegree
     )
 
-omit [IsDomain F] in
 /-- The zero polynomial has bottom `Λ`-weight. -/
 @[simp]
 lemma weight_Λ_zero (H : F[X][Y]) (D : ℕ) :
@@ -624,14 +620,12 @@ canonical representatives in `F[X][Y]`. -/
 noncomputable def weight_Λ_over_𝒪 {H : F[X][Y]} (hH : 0 < H.natDegree) (f : 𝒪 H) (D : ℕ) :
     WithBot ℕ := weight_Λ (canonicalRepOf𝒪 hH f) H D
 
-omit [IsDomain F] in
 /-- The `𝒪`-weight of zero is bottom. -/
 @[simp]
 lemma weight_Λ_over_𝒪_zero {H : F[X][Y]} (hH : 0 < H.natDegree) (D : ℕ) :
     weight_Λ_over_𝒪 hH (0 : 𝒪 H) D = ⊥ := by
   simp [weight_Λ_over_𝒪]
 
-omit [IsDomain F] in
 /-- The `𝒪`-weight of a quotient constructor is computed on its canonical remainder. -/
 lemma weight_Λ_over_𝒪_mk {H : F[X][Y]} (hH : 0 < H.natDegree) (p : F[X][Y])
     (D : ℕ) :
