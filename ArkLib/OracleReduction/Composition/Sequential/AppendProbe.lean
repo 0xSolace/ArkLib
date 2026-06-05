@@ -137,6 +137,21 @@ theorem liftM_heq_congr {ι ι' : Type} {spec : OracleSpec ι} {superSpec : Orac
   subst hα
   rw [eq_of_heq hma]
 
+/-- HEq congruence: `liftM` (the `OracleQuery → OracleComp` embedding over the SAME spec) of HEq
+queries (over equal response types) gives HEq computations. -/
+theorem liftM_query_heq {ιs : Type} {spec : OracleSpec ιs} {α α' : Type}
+    (hα : α = α') {q : OracleQuery spec α} {q' : OracleQuery spec α'} (hq : HEq q q') :
+    HEq (liftM q : OracleComp spec α) (liftM q' : OracleComp spec α') := by
+  subst hα; rw [eq_of_heq hq]
+
+/-- HEq of two oracle queries over the same spec whose inputs agree and whose response types are
+propositionally equal, with HEq continuations. -/
+theorem oracleQuery_heq {ιs : Type} {spec : OracleSpec ιs} {α α' : Type}
+    {t t' : spec.Domain} (ht : t = t')
+    {f : spec.Range t → α} {f' : spec.Range t' → α'} (hα : α = α') (hf : HEq f f') :
+    HEq (OracleQuery.mk t f) (OracleQuery.mk t' f') := by
+  subst ht; subst hα; rw [eq_of_heq hf]
+
 /-- **OracleComp-level lift-coherence.**  Lifting `mx : OracleComp spec` first through an intermediate
 spec `midSpec` and then to `superSpec` agrees, as a *function*, with lifting it directly to
 `superSpec`, provided the two query-level `MonadLiftT`s cohere
@@ -231,7 +246,6 @@ theorem append_Message_castLE (i : Fin m)
 via `Function.hfunext`, splitting each index into the appended `msg` (last) or an interior entry
 read from the transcript. -/
 theorem concat_heq (i : Fin m)
-    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (i.castLE (by omega)) = .P_to_V)
     {t : (pSpec₁ ++ₚ pSpec₂).Transcript (i.castLE (by omega)).castSucc}
     {t' : pSpec₁.Transcript i.castSucc}
     {msg : (pSpec₁ ++ₚ pSpec₂).«Type» (i.castLE (by omega))} {msg' : pSpec₁.«Type» i}
@@ -338,6 +352,79 @@ theorem append_receiveChallenge_left (i : Fin m)
   apply HEq.trans (cast_heq _ _)
   exact receiveChallenge_heq_congr hidxeq ((cast_heq _ _).trans (cast_heq _ _).symm)
 
+/-- **Left-round `getChallenge` reduction.**  The appended protocol's `getChallenge` at a left
+challenge round `i < m` is heterogeneously equal to the `liftM` (along the left challenge `SubSpec`
+`[pSpec₁.Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ`) of `pSpec₁`'s `getChallenge`.  The two
+single queries coincide on the (value-equal) challenge index `i.castLE = ChallengeIdx.inl ⟨i,_⟩`; the
+response types differ only by the propositional `range_challenge_append_inl` transport carried by the
+SubSpec `onResponse`, so the queries are HEq. -/
+theorem append_getChallenge_left (i : Fin m)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (i.castLE (by omega)) = .V_to_P)
+    (hDir₁ : pSpec₁.dir i = .V_to_P) :
+    HEq ((pSpec₁ ++ₚ pSpec₂).getChallenge ⟨i.castLE (by omega), hDir⟩)
+        (liftM (pSpec₁.getChallenge ⟨i, hDir₁⟩) :
+          OracleComp [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ _) := by
+  unfold ProtocolSpec.getChallenge
+  have hChalEq : (pSpec₁ ++ₚ pSpec₂).Challenge ⟨i.castLE (by omega), hDir⟩
+      = pSpec₁.Challenge ⟨i, hDir₁⟩ := by
+    show Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (i.castLE (by omega)) = pSpec₁.«Type» i
+    rw [Fin.vappend_eq_append,
+      show (i.castLE (show m ≤ m + n by omega)) = Fin.castAdd n i from by ext; simp, Fin.append_left]
+  show HEq (liftM (OracleSpec.query (spec := [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+        ⟨⟨i.castLE (by omega), hDir⟩, ()⟩))
+      (liftM (OracleSpec.query (spec := [pSpec₁.Challenge]ₒ) ⟨⟨i, hDir₁⟩, ()⟩) :
+        OracleComp [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ _)
+  -- Make the OracleQuery-level lift explicit so both sides are `liftM (· : OracleQuery superSpec)`.
+  rw [show (liftM (OracleSpec.query (spec := [pSpec₁.Challenge]ₒ) ⟨⟨i, hDir₁⟩, ()⟩) :
+          OracleComp [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ _)
+        = liftM (liftM (OracleSpec.query (spec := [pSpec₁.Challenge]ₒ) ⟨⟨i, hDir₁⟩, ()⟩)
+            : OracleQuery [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ _) from rfl]
+  refine liftM_query_heq hChalEq ?_
+  rw [OracleSpec.query_def]
+  show HEq (OracleQuery.mk (spec := [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) ⟨⟨i.castLE (by omega), hDir⟩, ()⟩ id)
+      (MonadLift.monadLift (OracleSpec.query (spec := [pSpec₁.Challenge]ₒ) ⟨⟨i, hDir₁⟩, ()⟩))
+  rw [SubSpec.liftM_eq_lift]
+  refine oracleQuery_heq ?_ hChalEq ?_
+  · -- inputs agree: `⟨i.castLE, hDir⟩ = onQuery ⟨i,hDir₁⟩ = ⟨ChallengeIdx.inl ⟨i,hDir₁⟩, ()⟩`.
+    show (⟨⟨i.castLE (by omega), hDir⟩, ()⟩ : [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.Domain)
+      = ⟨ChallengeIdx.inl ⟨i, hDir₁⟩, ()⟩
+    congr 1
+  · -- continuations: `id ≍ onResponse ⟨i,hDir₁⟩`, which is the `range_challenge_append_inl` transport.
+    simp only [OracleQuery.cont_query, OracleQuery.input_query, Function.id_comp]
+    have hdom : [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.Range ⟨⟨i.castLE (by omega), hDir⟩, ()⟩
+        = [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.Range
+            ((inferInstance : [(pSpec₁).Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).onQuery
+              ⟨⟨i, hDir₁⟩, ()⟩) := by
+      show (pSpec₁ ++ₚ pSpec₂).Challenge ⟨i.castLE (by omega), hDir⟩
+        = (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl ⟨i, hDir₁⟩)
+      congr 1
+    refine Function.hfunext hdom (fun a a' haa => ?_)
+    refine haa.trans ?_
+    -- `a' ≍ onResponse ⟨i,hDir₁⟩ a'`; `onResponse` is a type-level `▸` (= `cast`) transport.
+    dsimp only [SubSpec.onResponse]
+    refine HEq.symm ?_
+    generalize_proofs h
+    exact cast_heq h a'
+
+/-- `processRound` resolved at a challenge (`V_to_P`) round (mirror of `processRound_message`). -/
+theorem processRound_challenge' {ι : Type} {oSpec : OracleSpec ι}
+    {StmtIn WitIn StmtOut WitOut : Type} {N : ℕ} {pSpec : ProtocolSpec N}
+    (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec) (j : Fin N)
+    (hDir : pSpec.dir j = .V_to_P)
+    (currentResult : OracleComp (oSpec + [pSpec.Challenge]ₒ)
+      (pSpec.Transcript j.castSucc × prover.PrvState j.castSucc)) :
+    prover.processRound j currentResult = (do
+      let ⟨transcript, state⟩ ← currentResult
+      let challenge ← pSpec.getChallenge ⟨j, hDir⟩
+      letI newState := (← prover.receiveChallenge ⟨j, hDir⟩ state) challenge
+      return ⟨transcript.concat challenge, newState⟩) := by
+  rw [Prover.processRound_def]
+  apply bind_congr
+  rintro ⟨transcript, state⟩
+  dsimp only
+  split <;> rename_i hDir'
+  · rfl
+  · exact absurd (hDir.symm.trans hDir') (by decide)
 
 /-- **Left-round `processRound` compatibility (message branch).**  Working scratch lemma to inspect
 the message-round goal shape. -/
@@ -430,7 +517,105 @@ theorem append_processRound_left_message (i : Fin m) (hDir₁ : pSpec₁.dir i =
       prod_heq_split (append_Message_castLE i hDir hDir₁) (append_PrvState_succ i) hmsg
     refine prodMk_heq (append_Transcript_succ i) (append_PrvState_succ i) ?_ hns
     -- `Transcript.concat msg t ≍ Transcript.concat msg' t'`
-    exact concat_heq i hDir ht hm
+    exact concat_heq i ht hm
+
+/-- **Left-round `processRound` compatibility (challenge branch).**  The `V_to_P` analogue of
+`append_processRound_left_message`: at a left challenge round `i < m`, the appended prover's
+`processRound` (heterogeneously) equals the `liftM` of `P₁`'s, assuming the run-up-to inputs are
+HEq.  Mirrors the message branch, with `getChallenge` (`append_getChallenge_left`) and
+`receiveChallenge` (`append_receiveChallenge_left`) in place of `sendMessage`, plus the extra
+function-application of the `receiveChallenge` result to the sampled challenge. -/
+theorem append_processRound_left_challenge (i : Fin m) (hDir₁ : pSpec₁.dir i = .V_to_P)
+    (curA : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (i.castLE (by omega)).castSucc
+        × (P₁.append P₂).PrvState (i.castLE (by omega)).castSucc))
+    (cur₁ : OracleComp (oSpec + [pSpec₁.Challenge]ₒ)
+      (pSpec₁.Transcript i.castSucc × P₁.PrvState i.castSucc))
+    (hcur : HEq curA (liftM cur₁ :
+      OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)) :
+    HEq ((P₁.append P₂).processRound (i.castLE (by omega)) curA)
+      (liftM (P₁.processRound i cur₁) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) := by
+  have hDir : (pSpec₁ ++ₚ pSpec₂).dir (i.castLE (by omega)) = .V_to_P := by
+    rw [append_dir_castLE]; exact hDir₁
+  rw [processRound_challenge' (P₁.append P₂) (i.castLE (by omega)) hDir curA,
+    processRound_challenge' P₁ i hDir₁ cur₁]
+  simp only [liftM_bind, liftM_pure]
+  refine bind_heq_congr
+    (by rw [append_Transcript_castSucc i, append_PrvState_castSucc i])
+    (by rw [append_Transcript_succ i, append_PrvState_succ i]) hcur ?_
+  rintro ⟨t, s⟩ ⟨t', s'⟩ hr
+  obtain ⟨ht, hs⟩ := prod_heq_split (append_Transcript_castSucc i) (append_PrvState_castSucc i) hr
+  dsimp only
+  -- Collapse the RHS double-lifts (oSpec'-level transitive ⇒ direct) of the challenge-oracle
+  -- computations.  Here both `getChallenge` and `receiveChallenge` already live in the appended
+  -- challenge oracle on the RHS after the inner `liftM`; the outer `liftM` to the full spec is the
+  -- challenge `SubSpec` lift, common to both sides.
+  -- Challenge value type equality.
+  have hChalEq : (pSpec₁ ++ₚ pSpec₂).Challenge ⟨i.castLE (by omega), hDir⟩
+      = pSpec₁.Challenge ⟨i, hDir₁⟩ := by
+    show Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (i.castLE (by omega)) = pSpec₁.«Type» i
+    rw [Fin.vappend_eq_append,
+      show (i.castLE (show m ≤ m + n by omega)) = Fin.castAdd n i from by ext; simp, Fin.append_left]
+  -- Bind over the (HEq) `getChallenge` computations.
+  refine bind_heq_congr (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+    hChalEq
+    (by rw [append_Transcript_succ i, append_PrvState_succ i]) ?_ ?_
+  · -- `getChallenge` HEq, lifted to the full spec.  Both sides lift the appended challenge oracle
+    -- `[(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ` into the full spec via the same `+`-right `SubSpec`; the
+    -- underlying `getChallenge` HEq is `append_getChallenge_left`.
+    exact liftM_heq_congr (spec := [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) hChalEq
+      (append_getChallenge_left i hDir hDir₁)
+  · -- continuation: bind over `receiveChallenge`, then `pure (concat, f challenge)`.
+    rintro chalA chal₁ hchal
+    -- Collapse the RHS double-lift of `receiveChallenge` (transitive oSpec→S ⇒ direct).
+    have hcollapse : (liftM (liftM (P₁.receiveChallenge ⟨i, hDir₁⟩ s') :
+          OracleComp (oSpec + [pSpec₁.Challenge]ₒ) _) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)
+        = liftM (P₁.receiveChallenge ⟨i, hDir₁⟩ s' : OracleComp oSpec _) := by rfl
+    rw [hcollapse]
+    -- `receiveChallenge` returns `Challenge → State`; the bind result `f` is applied to the
+    -- challenge.  HEq of the receiveChallenge computations:
+    have hrecvBase : HEq ((P₁.append P₂).receiveChallenge ⟨i.castLE (by omega), hDir⟩ s)
+        (P₁.receiveChallenge ⟨i, hDir₁⟩ s') :=
+      (append_receiveChallenge_left i hDir hDir₁ s).trans
+        (receiveChallenge_heq_congr rfl ((cast_heq _ _).trans hs))
+    refine bind_heq_congr (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (α := (pSpec₁ ++ₚ pSpec₂).Challenge ⟨i.castLE (by omega), hDir⟩
+        → (P₁.append P₂).PrvState (i.castLE (by omega)).succ)
+      (α' := pSpec₁.Challenge ⟨i, hDir₁⟩ → P₁.PrvState i.succ)
+      (β := (pSpec₁ ++ₚ pSpec₂).Transcript (i.castLE (by omega)).succ
+        × (P₁.append P₂).PrvState (i.castLE (by omega)).succ)
+      (β' := pSpec₁.Transcript i.succ × P₁.PrvState i.succ)
+      (by rw [hChalEq, append_PrvState_succ i])
+      (by rw [append_Transcript_succ i, append_PrvState_succ i]) ?_ ?_
+    · -- lifted `receiveChallenge` HEq, transitive RHS ⇒ direct via `liftComp_liftComp`.
+      have hαeq : ((pSpec₁ ++ₚ pSpec₂).Challenge ⟨i.castLE (by omega), hDir⟩
+            → (P₁.append P₂).PrvState (i.castLE (by omega)).succ)
+          = (pSpec₁.Challenge ⟨i, hDir₁⟩ → P₁.PrvState i.succ) := by
+        rw [hChalEq, append_PrvState_succ i]
+      show HEq (OracleComp.liftComp ((P₁.append P₂).receiveChallenge ⟨i.castLE (by omega), hDir⟩ s)
+              (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+          (OracleComp.liftComp
+            (OracleComp.liftComp (P₁.receiveChallenge ⟨i, hDir₁⟩ s') (oSpec + [pSpec₁.Challenge]ₒ))
+            (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+      rw [liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₁.Challenge]ₒ)
+        (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)
+        (P₁.receiveChallenge ⟨i, hDir₁⟩ s')]
+      exact liftComp_heq_congr (spec := oSpec)
+        (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) hαeq hrecvBase
+    · -- `pure (concat chal t, f chal)`: concat + function-application HEq.
+      rintro fA f₁ hf
+      refine pure_heq_pure (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+        (by rw [append_Transcript_succ i, append_PrvState_succ i]) ?_
+      refine prodMk_heq (append_Transcript_succ i) (append_PrvState_succ i) ?_ ?_
+      · -- `concat chalA t ≍ concat chal₁ t'`
+        exact concat_heq i ht hchal
+      · -- `fA chalA ≍ f₁ chal₁`: application of HEq (non-dependent) functions to HEq arguments.
+        refine heq_app hChalEq ?_ hf hchal
+        -- codomain families are the constant `fun _ => PrvState succ`; HEq via the state equality.
+        rw [hChalEq, append_PrvState_succ i]
 
 /-- **The corrected well-founded `append_runToRound_left`.**  Running the appended prover up to a
 left-half round `j ≤ m` (embedded as `j.castLE` into `Fin (m + n + 1)`) is heterogeneously equal to
@@ -475,20 +660,10 @@ theorem append_runToRound_left (j : Fin (m + 1)) :
     cases hd : pSpec₁.dir i with
     | V_to_P => ?_
     | P_to_V => ?_
-    · -- `V_to_P` (challenge round).  WIP: mirror of the message branch, but the `getChallenge`/
-      -- `receiveChallenge` shapes lift across DIFFERENT challenge oracles ([pSpec₁.Challenge]ₒ vs
-      -- [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ, related by the left challenge SubSpec
-      -- `range_challenge_append_inl`).  The remaining pieces are:
-      --   (1) `append_getChallenge_left`: appended `getChallenge ⟨i.castLE,_⟩`
-      --        ≍ `liftM (pSpec₁.getChallenge ⟨i,_⟩)` (HEq, response types differ by
-      --        `range_challenge_append_inl`), and
-      --   (2) `append_processRound_left_challenge`: the V_to_P analogue of
-      --        `append_processRound_left_message`, assembling (1) + `append_receiveChallenge_left`
-      --        + `concat_heq` under the appended challenge `liftM`/`liftComp_liftComp` bridge.
-      -- Goal here: `processRound (i.castLE) appended curA ≍ liftM (processRound i P₁ cur₁)` with
-      -- `curA = runToRound (i.castLE).castSucc appended`, `cur₁ = runToRound i.castSucc P₁`,
-      -- `hcur : curA ≍ liftM cur₁`, and `hd : pSpec₁.dir i = .V_to_P`.
-      sorry
+    · -- `V_to_P` (challenge round): close via the proven challenge-branch lemma.
+      exact append_processRound_left_challenge i hd
+        ((P₁.append P₂).runToRound (i.castLE (by omega)).castSucc stmt wit)
+        (P₁.runToRound i.castSucc stmt wit) hcur
     · -- `P_to_V` (message round): close directly via the proven message-branch lemma.
       exact append_processRound_left_message i hd
         ((P₁.append P₂).runToRound (i.castLE (by omega)).castSucc stmt wit)
