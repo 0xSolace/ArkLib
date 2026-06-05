@@ -14,11 +14,23 @@ brief for the next wave of work.
 
 ## Current Baseline
 
-The ArkLib/Data non-sorry warning budget has been reported clean by recent validation runs. In the
-live checkout, `lake build ArkLib` now completes after the JH01 close-ball proof stabilization and
-the stale scratch-import cleanup. Re-run `./scripts/validate.sh` before starting a new warning-budget
-batch because multiple agents are changing umbrella imports and scratch files concurrently. The
-proximity-prize keystone has a real conditional bridge in
+As of the latest run on 2026-06-05, `./scripts/validate.sh` reached the Data warning-budget check
+and reported `No ArkLib/Data non-sorry warnings found.` The same run then failed during the build
+phase for `ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement`: Lean emitted only
+the known `sorry` warnings for that file, then Lake reported a missing generated
+`Agreement.olean`. Treat this as the current validation blocker, not as a Data warning-budget
+regression.
+
+Recent validation repair work also removed several transient blockers: the Binius ring-switching
+prelude was updated to the profile-aware sumcheck context, `Whir/Folding.lean` was restored after a
+duplicate appended block caused redeclaration failures, `GK16Wronskian` was made to extend the
+existing `ProximityPrizeLeaves` folded-Wronskian primitives instead of redeclaring them, and new
+Data warning-budget failures in `ListDecoding/Bounds`, `AGL23Barrier`, `CZ25CapacityReduction`,
+`BKR06SubspacePoly`, `RSListSize`, and `HenselSeriesCoeff` were reduced to zero non-sorry
+warnings. Re-run `./scripts/validate.sh` before starting a new warning-budget batch because multiple
+agents are changing umbrella imports, WHIR files, and proximity-prize files concurrently.
+
+The proximity-prize keystone has a real conditional bridge in
 `ArkLib.BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec`, but it still needs its section-5
 extraction/setup hypotheses supplied and connected to the in-place `Curves.lean` theorem.
 
@@ -66,7 +78,8 @@ proofs, targeted `lake build <module>` checks, and updates to the audit docs wit
 - Gamma and beta path: fix the `x₀`/gamma recentering issue, replace `β_regular` with `betaRec`,
   and thread the resulting hypotheses into the `Curves.lean` front door.
 - Validation repair: preserve the zero ArkLib/Data non-sorry warning budget, then repair the
-  umbrella-imported build blockers exposed by `./scripts/update-lib.sh` and `./scripts/validate.sh`.
+  current `Agreement.olean` build artifact failure exposed by `./scripts/validate.sh`; if it
+  reproduces, isolate whether it is a Lake artifact issue or a hidden elaboration failure.
 - Sorry audit: inventory remaining executable `sorry`s on proof-critical paths and distinguish
   active gaps from documentation-only or intentionally abstract interfaces.
 - ZKVM map: extend the baseline report's whole-stack analysis with theorem-to-component evidence
