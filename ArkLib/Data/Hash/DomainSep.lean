@@ -145,6 +145,40 @@ def new (id : Char) (count : Option Nat) : Except DomainSeparatorMismatch Op :=
   | ('S', some c) => if c > 0 then pure (Squeeze c) else .error ⟨"Invalid tag"⟩
   | _ => .error ⟨"Invalid tag"⟩
 
+@[simp] theorem new_absorb_of_pos {count : Nat} (hcount : 0 < count) :
+    new 'A' (some count) = .ok (Absorb count) := by
+  simp [new, hcount]
+  rfl
+
+@[simp] theorem new_absorb_zero :
+    new 'A' (some 0) = .error ⟨"Invalid tag"⟩ := by
+  rfl
+
+@[simp] theorem new_hint_none :
+    new 'H' none = .ok Hint := by
+  rfl
+
+@[simp] theorem new_hint_zero :
+    new 'H' (some 0) = .ok Hint := by
+  rfl
+
+@[simp] theorem new_ratchet_none :
+    new 'R' none = .ok Ratchet := by
+  rfl
+
+@[simp] theorem new_ratchet_zero :
+    new 'R' (some 0) = .ok Ratchet := by
+  rfl
+
+@[simp] theorem new_squeeze_of_pos {count : Nat} (hcount : 0 < count) :
+    new 'S' (some count) = .ok (Squeeze count) := by
+  simp [new, hcount]
+  rfl
+
+@[simp] theorem new_squeeze_zero :
+    new 'S' (some 0) = .error ⟨"Invalid tag"⟩ := by
+  rfl
+
 end Op
 
 variable {H : Type*} {U : Type} [SpongeUnit U] [DuplexSpongeInterface U H]

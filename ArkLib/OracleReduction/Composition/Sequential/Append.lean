@@ -264,83 +264,103 @@ def router₁ : QueryImpl (oSpec + ([OStmt₁]ₒ + [pSpec₁.Message]ₒ))
         query (spec := oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) (Sum.inr (Sum.inl t))
     | Sum.inr (Sum.inr ⟨i, q⟩) => emitMessageInl (pSpec₂ := pSpec₂) i q
 
-/-- Transport an `[OStmt₁]ₒ`-query along an interface agreement that is genuinely heterogeneous in
-both the carrier type and the `OracleInterface` instance. Given an abstract source carrier `S` with
-interface `O` agreeing (`HEq`) with the input-oracle interface `Oₛ₁ k`, emit the query into the
-appended oracle context at `[OStmt₁]ₒ` index `k`. Generalizing over `S`/`O` (rather than rewriting
-the dependent `Oₛ₂ i`) sidesteps the motive-not-type-correct issue; the two `subst`s then make the
-transport definitional, exactly as in `emitMessageQuery`. -/
-private def emitOStmt₁QueryAux
-    {S : Type} (O : OracleInterface S) (k : ιₛ₁)
-    (hT : S = OStmt₁ k) (hO : HEq O (Oₛ₁ k)) (q : O.Query) :
+/-- Specialize `V₁.hEq i` to the type equality `OStmt₁ k = OStmt₂ i` under the branch witness
+`h : V₁.embed i = Sum.inl k` (oriented source-first, to match the `congrArg OracleInterface`
+cast shape used by `OracleVerifier.castMessageQuery`). -/
+theorem hEqInl (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (i : ιₛ₂) (k : ιₛ₁) (h : V₁.embed i = Sum.inl k) : OStmt₁ k = OStmt₂ i := by
+  have := V₁.hEq i; rw [h] at this; exact this.symm
+
+/-- Specialize `V₁.hEq i` to the type equality `pSpec₁.Message k = OStmt₂ i` under the branch witness
+`h : V₁.embed i = Sum.inr k`. -/
+theorem hEqInr (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (i : ιₛ₂) (k : pSpec₁.MessageIdx) (h : V₁.embed i = Sum.inr k) :
+    pSpec₁.Message k = OStmt₂ i := by
+  have := V₁.hEq i; rw [h] at this; exact this.symm
+
+/-- Per-query body emitting a query to `V₁`'s output oracle interface at an index that `V₁.embed`
+maps to an *input* oracle statement `OStmt₁ k` (i.e. `V₁.embed i = .inl k`). The interface `O` (here
+`Oₛ₂ i`) agrees, up to the type equality `hSt : OStmt₁ k = T`, with the source interface `Oₛ₁ k` via
+the coherence equality `hO`. The query is routed straight into `[OStmt₁]ₒ` at index `k`.
+
+Modelled line-by-line on `emitMessageQuery` / `OracleVerifier.castMessageQuery` (`Cast.lean`): the
+`subst hSt; subst hO` collapse turns `O` into the registered source interface `Oₛ₁ k`, so the query
+and its response have exactly the oracle-spec types. -/
+private def emitOStmtQueryInl
+    {T : Type} (O : OracleInterface T)
+    (k : ιₛ₁) (hSt : OStmt₁ k = T)
+    (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₛ₁ k))
+    (q : O.Query) :
     OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) (O.Response q) := by
-  subst hT
-  -- now `O O' : OracleInterface (OStmt₁ k)` and `hO : HEq O (Oₛ₁ k)` is homogeneous.
-  cases eq_of_heq hO
+  subst hSt
+  subst hO
   exact query (spec := oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ))
     (Sum.inr (Sum.inl ⟨k, q⟩))
 
-/-- Transport a `pSpec₁`-message query along a heterogeneous interface agreement and emit it at
-`MessageIdx.inl k` (cf. `emitOStmt₁QueryAux`, `emitMessageInl`). -/
-private def emitOStmt₁MsgAux
-    {S : Type} (O : OracleInterface S) (k : pSpec₁.MessageIdx)
-    (hT : S = pSpec₁.Message k) (hO : HEq O (Oₘ₁ k)) (q : O.Query) :
+/-- Per-query body for the case `V₁.embed i = .inr k`: `V₁`'s output oracle for `OStmt₂ i` is the
+prover's `pSpec₁`-message `pSpec₁.Message k` (answered, in the appended spec, at `MessageIdx.inl k`).
+The interface `O` agrees, up to `hSt : pSpec₁.Message k = T`, with `Oₘ₁ k` via `hO`.
+After collapsing the casts we delegate to the proven `emitMessageInl` router. -/
+private def emitOStmtQueryInr
+    {T : Type} (O : OracleInterface T)
+    (k : pSpec₁.MessageIdx) (hSt : pSpec₁.Message k = T)
+    (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₘ₁ k))
+    (q : O.Query) :
     OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) (O.Response q) := by
-  subst hT
-  cases eq_of_heq hO
-  exact emitMessageInl (oSpec := oSpec) (OStmt₁ := OStmt₁) (pSpec₂ := pSpec₂) k q
+  subst hSt
+  subst hO
+  exact emitMessageInl (pSpec₂ := pSpec₂) (OStmt₁ := OStmt₁) k q
 
-/-- The per-index instance-coherence side condition needed to route `V₁`'s output-oracle-statement
-queries (cf. `OracleVerifier.LiftContextCoherent` for the analogous `liftContext` side condition,
-#433). For each output index `i : ιₛ₂`, the `OracleInterface` of `OStmt₂ i` must agree —
-*heterogeneously, as an interface*, not merely a type equality — with the interface of its source as
-selected by `V₁.embed i`: `Oₛ₁ k` if `.inl k`, `Oₘ₁ k` if `.inr k`. This is exactly the data missing
-from `V₁.hEq i` (a bare type equality), because the output-oracle interfaces are free parameters of
-`OracleVerifier` (the commented-out `Oₛₒ` field, `OracleReduction/Basic.lean`). Honest appends
-discharge it by `rfl`/`HEq.rfl` once their output interfaces are *defined* to match their sources. -/
-def OStmtCoherent (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁) : Prop :=
-  ∀ i : ιₛ₂, match V₁.embed i with
-    | Sum.inl k => HEq (Oₛ₂ i) (Oₛ₁ k)
-    | Sum.inr k => HEq (Oₛ₂ i) (Oₘ₁ k)
+/-- Coherence side condition for `OracleVerifier.append` at the oracle-interface level.
 
-/-- Emit a query to `V₁`'s output oracle statement `OStmt₂ i`.
+`OracleVerifier.hEq` only records a *type* equality `OStmt₂ i = (source type)`; faithfully routing a
+query `q : (Oₛ₂ i).Query` to the underlying source oracle additionally requires the registered
+`OracleInterface` instances to agree (the output-oracle-statement interfaces `Oₛ₂` are *free*
+parameters of `OracleVerifier`, cf. the commented-out `Oₛₒ` field in `Basic.lean`). This is the
+direct analogue of `OracleVerifier.LiftContextCoherent` (#433) for `liftContext`.
 
-DEF-GAP REPAIR (2026-06-04, #433-analogue): if `V₁.embed i = .inl k`, V₁'s output oracle for
-`OStmt₂ i` is `OStmt₁ k` (answered via `Oₛ₁ k`); if `.inr k`, it is the `pSpec₁`-message at `k`,
-carried into the appended message oracle at `MessageIdx.inl k` (answered via `Oₘ₁ k`). Routing the
-query `q : (Oₛ₂ i).Query` to that oracle requires the *interface* agreement `Oₛ₂ i ≍ Oₛ₁ k` (resp.
-`Oₘ₁ k`), which is **not** derivable from `V₁.hEq i` (a bare type equality `OStmt₂ i = OStmt₁ k`):
-the output-oracle interfaces are free parameters of `OracleVerifier`. We close the gap by carrying
-the minimal coherence hypothesis `OStmtCoherent V₁` (the analogue of
-`OracleVerifier.LiftContextCoherent`); the routing is then fully defined. This is a *local* repair:
-`OracleVerifier.append`'s signature is unchanged (its `verify` field is the `pure none` stub and does
-not consume this router), so the blast radius is nil. -/
+`hCohInl`/`hCohInr` state, in the exact `cast (congrArg OracleInterface hSt) (source)` shape consumed
+by `emitOStmtQuery{Inl,Inr}`, that `Oₛ₂ i` agrees with the source interface (`Oₛ₁ k` resp. `Oₘ₁ k`)
+selected by `V₁.embed i`, conditioned on the corresponding `embed`-branch witness `h`. Honest
+verifiers (e.g. the LogUp outer verifier) discharge both by `rfl`/`simp`. -/
+class AppendCoherent (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁) : Prop where
+  hCohInl : ∀ (i : ιₛ₂) (k : ιₛ₁) (h : V₁.embed i = Sum.inl k),
+    (Oₛ₂ i) = _root_.cast (congrArg OracleInterface (hEqInl V₁ i k h)) (Oₛ₁ k)
+  hCohInr : ∀ (i : ιₛ₂) (k : pSpec₁.MessageIdx) (h : V₁.embed i = Sum.inr k),
+    (Oₛ₂ i) = _root_.cast (congrArg OracleInterface (hEqInr V₁ i k h)) (Oₘ₁ k)
+
+/-- Emit a query to `V₁`'s output oracle statement `OStmt₂ i`, faithfully routed into the
+appended-spec oracle context.
+
+If `V₁.embed i = .inl k`, the query is sent to the input oracle statement `OStmt₁ k`; if `.inr k`, it
+is sent (via `emitMessageInl`) to the appended `pSpec₁`-message at `MessageIdx.inl k`. The transport
+of the query/response across the type equality `V₁.hEq i` is justified by the instance-coherence side
+condition `AppendCoherent V₁` (the same kind of side condition resolved by
+`OracleVerifier.LiftContextCoherent` for `liftContext`). -/
 def emitOStmt₂Query (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
-    (coh : OStmtCoherent V₁) (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
+    [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
     OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) ((Oₛ₂ i).Response q) := by
-  have hcoh := coh i
-  have hTy := V₁.hEq i
-  -- Split on how `V₁.embed i` selects the source oracle; `V₁.hEq i` supplies the carrier type
-  -- equality, `coh i` the (heterogeneous) interface agreement.
-  rcases hemb : V₁.embed i with k | k
-  · rw [hemb] at hcoh hTy
-    -- `hTy : OStmt₂ i = OStmt₁ k`, `hcoh : HEq (Oₛ₂ i) (Oₛ₁ k)`.
-    exact emitOStmt₁QueryAux (oSpec := oSpec) (pSpec₂ := pSpec₂) (Oₛ₂ i) k hTy hcoh q
-  · rw [hemb] at hcoh hTy
-    -- `hTy : OStmt₂ i = pSpec₁.Message k`, `hcoh : HEq (Oₛ₂ i) (Oₘ₁ k)`.
-    exact emitOStmt₁MsgAux (oSpec := oSpec) (OStmt₁ := OStmt₁) (Oₛ₂ i) k hTy hcoh q
+  -- Case on how `V₁.embed` derives `OStmt₂ i`.
+  cases h : V₁.embed i with
+  | inl k =>
+      exact emitOStmtQueryInl (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
+        (Oₛ₂ i) k (hEqInl V₁ i k h) (coh.hCohInl i k h) q
+  | inr k =>
+      exact emitOStmtQueryInr (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
+        (Oₛ₂ i) k (hEqInr V₁ i k h) (coh.hCohInr i k h) q
 
 /-- Router carrying `V₂`'s oracle context into the appended-spec oracle context: `oSpec` passes
 through; `OStmt₂`-queries are answered via `V₁`'s output oracle statements (`emitOStmt₂Query`);
 `pSpec₂`-message queries are emitted at `MessageIdx.inr`. -/
 def router₂ (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
-    (coh : OStmtCoherent V₁) :
+    [AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁] :
     QueryImpl (oSpec + ([OStmt₂]ₒ + [pSpec₂.Message]ₒ))
       (OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ))) :=
   fun q => match q with
     | Sum.inl t =>
         query (spec := oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) (Sum.inl t)
-    | Sum.inr (Sum.inl ⟨i, q⟩) => emitOStmt₂Query V₁ coh i q
+    | Sum.inr (Sum.inl ⟨i, q⟩) => emitOStmt₂Query V₁ i q
     | Sum.inr (Sum.inr ⟨i, q⟩) => emitMessageInr (pSpec₁ := pSpec₁) i q
 
 /-- The composite `verify`: run `V₁` (routed by `router₁`) to obtain the intermediate statement,
@@ -348,13 +368,13 @@ then run `V₂` (routed by `router₂ V₁`) to obtain the final statement, all 
 oracle context. -/
 def verify
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
-    (coh : OStmtCoherent V₁)
+    [AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
     (stmt : Stmt₁) (challenges : (pSpec₁ ++ₚ pSpec₂).Challenges) :
     OptionT (OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ))) Stmt₃ := do
   let stmt₂ ← simulateQ router₁ (V₁.verify stmt (fun chal =>
     by simpa [ChallengeIdx.inl, ProtocolSpec.append] using challenges (ChallengeIdx.inl chal)))
-  simulateQ (router₂ V₁ coh) (V₂.verify stmt₂ (fun chal =>
+  simulateQ (router₂ V₁) (V₂.verify stmt₂ (fun chal =>
     by simpa [ChallengeIdx.inr, ProtocolSpec.append] using challenges (ChallengeIdx.inr chal)))
 
 end OracleVerifier.Append
@@ -363,7 +383,7 @@ open Function Embedding in
 def OracleVerifier.append (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) :
       OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₃ OStmt₃ (pSpec₁ ++ₚ pSpec₂) where
-  verify := fun _ _ => OptionT.mk (pure none)
+  verify := OracleVerifier.Append.verify V₁ V₂
 
   -- Need to provide an embedding `ιₛ₃ ↪ ιₛ₁ ⊕ (pSpec₁ ++ₚ pSpec₂).MessageIdx`
   embed :=
@@ -391,6 +411,14 @@ def OracleVerifier.append (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ 
       simp [h] at this ⊢
       simp [this, MessageIdx.inr]
 
+@[simp]
+lemma OracleVerifier.append_toVerifier
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) :
+      (OracleVerifier.append V₁ V₂).toVerifier =
+        Verifier.append V₁.toVerifier V₂.toVerifier := by
+  sorry
+
 /-- Sequential composition of oracle reductions is just the sequential composition of the oracle
   provers and oracle verifiers. -/
 def OracleReduction.append (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
@@ -398,6 +426,14 @@ def OracleReduction.append (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁
       OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₃ OStmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂) where
   prover := Prover.append R₁.prover R₂.prover
   verifier := OracleVerifier.append R₁.verifier R₂.verifier
+
+@[simp]
+lemma OracleReduction.append_toReduction
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂) :
+      (OracleReduction.append R₁ R₂).toReduction =
+        Reduction.append R₁.toReduction R₂.toReduction := by
+  ext : 1 <;> simp [toReduction, OracleReduction.append, Reduction.append]
 
 end OracleProtocol
 
@@ -529,6 +565,194 @@ def RoundByRound.append
       exact congrArg WitMid₂ (Fin.ext (by simp only [Fin.val_succ, Fin.val_last]; omega))
 
 end Extractor
+
+section Security
+
+open scoped NNReal
+
+section Protocol
+
+variable {Stmt₁ Wit₁ Stmt₂ Wit₂ Stmt₃ Wit₃ : Type}
+    {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+    [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)}
+    {rel₃ : Set (Stmt₃ × Wit₃)}
+
+namespace Reduction
+
+theorem reduction_append_completeness
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) :
+      (R₁.append R₂).completeness init impl
+        rel₁ rel₃ (completenessError₁ + completenessError₂) := by
+  sorry
+
+theorem reduction_append_perfectCompleteness
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
+      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
+  unfold perfectCompleteness at h₁ h₂ ⊢
+  simpa using reduction_append_completeness R₁ R₂ h₁ h₂
+
+end Reduction
+
+namespace Verifier
+
+theorem append_soundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {soundnessError₁ soundnessError₂ : ℝ≥0}
+    (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
+    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) :
+      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := by
+  sorry
+
+theorem append_knowledgeSoundness
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {knowledgeError₁ knowledgeError₂ : ℝ≥0}
+    (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
+    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) :
+      (V₁.append V₂).knowledgeSoundness init impl
+        rel₁ rel₃ (knowledgeError₁ + knowledgeError₂) := by
+  sorry
+
+theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
+    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) :
+      (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
+        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  sorry
+
+theorem append_rbrKnowledgeSoundness
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
+      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  sorry
+
+end Verifier
+
+end Protocol
+
+section OracleProtocol
+
+variable {Stmt₁ : Type} {ιₛ₁ : Type} {OStmt₁ : ιₛ₁ → Type}
+    [Oₛ₁ : ∀ i, OracleInterface (OStmt₁ i)]
+    {Wit₁ : Type}
+    {Stmt₂ : Type} {ιₛ₂ : Type} {OStmt₂ : ιₛ₂ → Type}
+    [Oₛ₂ : ∀ i, OracleInterface (OStmt₂ i)]
+    {Wit₂ : Type}
+    {Stmt₃ : Type} {ιₛ₃ : Type} {OStmt₃ : ιₛ₃ → Type}
+    [Oₛ₃ : ∀ i, OracleInterface (OStmt₃ i)]
+    {Wit₃ : Type}
+    {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+    [Oₘ₁ : ∀ i, OracleInterface ((pSpec₁.Message i))]
+    [Oₘ₂ : ∀ i, OracleInterface ((pSpec₂.Message i))]
+    [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel₁ : Set ((Stmt₁ × ∀ i, OStmt₁ i) × Wit₁)}
+    {rel₂ : Set ((Stmt₂ × ∀ i, OStmt₂ i) × Wit₂)}
+    {rel₃ : Set ((Stmt₃ × ∀ i, OStmt₃ i) × Wit₃)}
+
+namespace OracleReduction
+
+theorem append_completeness
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) :
+      (R₁.append R₂).completeness init impl
+        rel₁ rel₃ (completenessError₁ + completenessError₂) := by
+  unfold completeness
+  convert Reduction.reduction_append_completeness R₁.toReduction R₂.toReduction h₁ h₂
+  simp only [append_toReduction]
+
+theorem append_perfectCompleteness
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
+      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
+  unfold perfectCompleteness
+  convert Reduction.reduction_append_perfectCompleteness R₁.toReduction R₂.toReduction h₁ h₂
+  simp only [append_toReduction]
+
+end OracleReduction
+
+namespace OracleVerifier
+
+variable {lang₁ : Set (Stmt₁ × (∀ i, OStmt₁ i))}
+    {lang₂ : Set (Stmt₂ × (∀ i, OStmt₂ i))}
+    {lang₃ : Set (Stmt₃ × (∀ i, OStmt₃ i))}
+
+theorem append_soundness
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {soundnessError₁ soundnessError₂ : ℝ≥0}
+    (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
+    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) :
+      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := by
+  unfold soundness
+  convert Verifier.append_soundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+theorem append_knowledgeSoundness
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {knowledgeError₁ knowledgeError₂ : ℝ≥0}
+    (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
+    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) :
+      (V₁.append V₂).knowledgeSoundness init impl rel₁ rel₃
+        (knowledgeError₁ + knowledgeError₂) := by
+  unfold knowledgeSoundness
+  convert Verifier.append_knowledgeSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+theorem append_rbrSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
+    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) :
+      (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
+        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  unfold rbrSoundness
+  convert Verifier.append_rbrSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+theorem append_rbrKnowledgeSoundness
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
+      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  unfold rbrKnowledgeSoundness
+  convert Verifier.append_rbrKnowledgeSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+end OracleVerifier
+
+end OracleProtocol
+
+end Security
 
 namespace Verifier
 

@@ -2002,6 +2002,11 @@ noncomputable def fieldTo𝕃 {H : F[X][Y]} : F →+* 𝕃 H :=
 noncomputable def polyToPowerSeries𝕃 (H : F[X][Y]) (P : F[X][Y]) : PowerSeries (𝕃 H) :=
   PowerSeries.mk <| fun n => liftToFunctionField (P.coeff n)
 
+@[simp]
+lemma coeff_polyToPowerSeries𝕃 (H : F[X][Y]) (P : F[X][Y]) (n : ℕ) :
+    PowerSeries.coeff n (polyToPowerSeries𝕃 H P) = liftToFunctionField (P.coeff n) :=
+  PowerSeries.coeff_mk n _
+
 /-! ### The `X`-elimination polynomial of Lemma A.1 (recovered)
 
 The following block (`elimPoly` and its three lemmas, together with the helper lemmas

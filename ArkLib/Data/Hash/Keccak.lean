@@ -221,4 +221,19 @@ def keccak256Vector (input : ByteArray) : Vector UInt8 32 :=
   let digest := keccak256 input
   Vector.ofFn (fun i => digest.get! i.val)
 
+@[simp] theorem rateBytes_eq : rateBytes = 136 := rfl
+
+@[simp] theorem numRounds_eq : numRounds = 24 := rfl
+
+@[simp] theorem numLanes_eq : numLanes = 25 := rfl
+
+@[simp] theorem roundConstants_size : roundConstants.size = numRounds := rfl
+
+@[simp] theorem rhoOffsets_size : rhoOffsets.size = numLanes := rfl
+
+/-- The fixed-length Keccak-256 vector API always exposes exactly 32 bytes. -/
+@[simp] theorem keccak256Vector_toList_length (input : ByteArray) :
+    (keccak256Vector input).toList.length = 32 := by
+  simp [keccak256Vector]
+
 end Keccak

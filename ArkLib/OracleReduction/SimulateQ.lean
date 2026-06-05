@@ -32,6 +32,18 @@ namespace OracleComp
 variable {ι : Type} {spec : OracleSpec ι} {r : Type → Type*}
   [Monad r] [LawfulMonad r] (impl : QueryImpl spec r)
 
+/-- `simulateQ` over `OptionT.map` when the underlying computation is already pure after
+simulation. -/
+lemma simulateQ_optionT_map_of_pure
+    {α β : Type} (mx : OptionT (OracleComp spec) α) (f : α → β) (x : α)
+    (hmx : simulateQ impl mx.run =
+      (pure (some x) : r (Option α))) :
+    simulateQ impl (f <$> mx).run =
+    (pure (some (f x)) : r (Option β)) := by
+  rw [OptionT.run_map, simulateQ_map]
+  rw [hmx]
+  simp
+
 /-- `simulateQ` over `List.mapM` in `OptionT`: when each step is pure under `simulateQ`,
 the whole `mapM` is pure of the pointwise mapped list. -/
 lemma simulateQ_optionT_list_mapM_pure

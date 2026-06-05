@@ -69,6 +69,17 @@ def logupSumcheckPolynomialRowsAgree
       qOnHypercube (canonicalGroups params) (fun i => oStmt (.input i)) (oStmt .multiplicity)
         (oStmt .helpers) stmt.xChallenge stmt.zChallenge stmt.batchingScalars u
 
+omit [Fintype F] [DecidableEq F] in
+theorem logupSumcheckPolynomialRowsAgree_of_signsDistinct
+    (hSigns : (-1 : F) ≠ 1)
+    (stmt : StmtAfterOuter F n M params)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i) :
+    logupSumcheckPolynomialRowsAgree F n M params stmt oStmt := by
+  intro u
+  simpa [logupSumcheckPolynomial] using
+    logupQPolynomial_eval_signPoint_eq_qOnHypercube
+      (F := F) (n := n) (M := M) (params := params) hSigns stmt oStmt u
+
 /-- The LogUp zero-sum claim that is fed to the generic sumcheck. -/
 noncomputable def logupOuterSumcheckClaim
     (stmt : StmtAfterOuter F n M params)
@@ -76,6 +87,219 @@ noncomputable def logupOuterSumcheckClaim
   ∑ u : Hypercube n,
     qOnHypercube (canonicalGroups params) (fun i => oStmt (.input i)) (oStmt .multiplicity)
       (oStmt .helpers) stmt.xChallenge stmt.zChallenge stmt.batchingScalars u
+
+theorem logupOuterSumcheckClaim_honestHelpers_eq_sum_helpers
+    (stmtIn : StmtIn F n M)
+    (oStmtIn : ∀ i, OStmtIn F n M i)
+    (stmt : StmtAfterOuter F n M params)
+    (hInput : (((stmtIn, oStmtIn), ()) ∈ inputRelation F n M))
+    (htable : ∀ u : Hypercube n,
+      stmt.xChallenge + evalOnHypercube (tableOracle oStmtIn) u ≠ 0) :
+    logupOuterSumcheckClaim F n M params stmt
+      (fun
+        | .input i => oStmtIn i
+        | .multiplicity => honestMultiplicity oStmtIn
+        | .helpers => honestHelpers params oStmtIn stmt.xChallenge) =
+      ∑ u : Hypercube n,
+        ∑ k : Fin params.numGroups,
+          evalOnHypercube (honestHelpers params oStmtIn stmt.xChallenge k) u := by
+  unfold logupOuterSumcheckClaim
+  apply Finset.sum_congr rfl
+  intro u _
+  have hden :
+      ∀ k : Fin params.numGroups, ∀ i ∈ canonicalGroups params k,
+        termPhi oStmtIn stmt.xChallenge i u ≠ 0 := by
+    intro _ i _
+    exact termPhi_ne_zero_of_inputRelation_of_table
+      stmtIn oStmtIn stmt.xChallenge hInput htable i u
+  simpa [honestHelpers] using
+    qOnHypercube_honest_helpers (groups := canonicalGroups params)
+      oStmtIn (honestMultiplicity oStmtIn) stmt.xChallenge stmt.zChallenge
+      stmt.batchingScalars u hden
+
+omit [Fintype F] [DecidableEq F] in
+theorem canonicalGroups_sum_partition (f : TermIdx M → F) :
+    (∑ k : Fin params.numGroups, ∑ i ∈ canonicalGroups params k, f i) =
+      ∑ i : TermIdx M, f i := by
+  classical
+  simp only [canonicalGroups]
+  rw [Finset.sum_sigma' (s := (Finset.univ : Finset (Fin params.numGroups)))
+    (t := fun k => params.group k) (f := fun _ i => f i)]
+  refine Finset.sum_bij (s := (Finset.univ.sigma fun k => params.group k))
+    (t := (Finset.univ : Finset (TermIdx M))) (i := fun x _ => x.2) ?_ ?_ ?_ ?_
+  · intro x _
+    exact Finset.mem_univ x.2
+  · intro x hx y hy hxy
+    rcases x with ⟨kx, ix⟩
+    rcases y with ⟨ky, iy⟩
+    change ix = iy at hxy
+    have hfst : kx = ky := by
+      apply params.group_eq_of_mem (i := ix)
+      · exact (Finset.mem_sigma.mp hx).2
+      · rw [hxy]
+        exact (Finset.mem_sigma.mp hy).2
+    cases hfst
+    cases hxy
+    rfl
+  · intro i _
+    rcases params.exists_mem_group i with ⟨k, hk⟩
+    exact ⟨Sigma.mk k i, Finset.mem_sigma.mpr ⟨Finset.mem_univ k, hk⟩, rfl⟩
+  · intro x _
+    rfl
+
+omit [Fintype F] in
+theorem honest_helper_sum_eq_sum_terms
+    (oStmt : ∀ i, OStmtIn F n M i) (xChallenge : F) (u : Hypercube n) :
+    (∑ k : Fin params.numGroups,
+        evalOnHypercube (honestHelpers params oStmt xChallenge k) u) =
+      ∑ i : TermIdx M,
+        termNumerator (honestMultiplicity oStmt) i u / termPhi oStmt xChallenge i u := by
+  simpa [honestHelpers, helperOracle, helperValue, evalOnHypercube] using
+    canonicalGroups_sum_partition (params := params)
+      (f := fun i : TermIdx M =>
+        termNumerator (honestMultiplicity oStmt) i u / termPhi oStmt xChallenge i u)
+
+omit [Fintype F] in
+theorem sum_terms_eq_table_add_columns
+    (oStmt : ∀ i, OStmtIn F n M i) (xChallenge : F) (u : Hypercube n) :
+    (∑ i : TermIdx M,
+        termNumerator (honestMultiplicity oStmt) i u / termPhi oStmt xChallenge i u) =
+      evalOnHypercube (honestMultiplicity oStmt) u /
+        (xChallenge + evalOnHypercube (tableOracle oStmt) u) +
+        ∑ i : Fin M,
+          (-1 : F) / (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+  change (∑ i : Fin (M + 1),
+        termNumerator (honestMultiplicity oStmt) i u / termPhi oStmt xChallenge i u) = _
+  rw [Fin.sum_univ_succ]
+  congr 1
+
+omit [Fintype F] in
+theorem sum_terms_zero_no_columns
+    (oStmt : ∀ i, OStmtIn F n 0 i) (xChallenge : F) (u : Hypercube n) :
+    (∑ i : TermIdx 0,
+        termNumerator (honestMultiplicity oStmt) i u / termPhi oStmt xChallenge i u) = 0 := by
+  rw [sum_terms_eq_table_add_columns (F := F) (n := n) (M := 0) oStmt xChallenge u]
+  simp [honestMultiplicity_eval_zero_no_columns]
+
+omit [Fintype F] in
+theorem honest_helper_sum_zero_no_columns
+    (params : ProtocolParams 0) (oStmt : ∀ i, OStmtIn F n 0 i) (xChallenge : F) :
+    (∑ u : Hypercube n,
+      ∑ k : Fin params.numGroups,
+        evalOnHypercube (honestHelpers params oStmt xChallenge k) u) = 0 := by
+  apply Finset.sum_eq_zero
+  intro u _
+  rw [honest_helper_sum_eq_sum_terms
+    (F := F) (n := n) (M := 0) (params := params) oStmt xChallenge u]
+  exact sum_terms_zero_no_columns (F := F) (n := n) oStmt xChallenge u
+
+theorem honest_helper_sum_zero_of_inputRelation
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i)
+    (hInput : (((stmt, oStmt), ()) ∈ inputRelation F n M))
+    (hM : 0 < M) (xChallenge : F) :
+    (∑ u : Hypercube n,
+      ∑ k : Fin params.numGroups,
+        evalOnHypercube (honestHelpers params oStmt xChallenge k) u) = 0 := by
+  have hhelpers_eq_terms :
+      (∑ u : Hypercube n,
+        ∑ k : Fin params.numGroups,
+          evalOnHypercube (honestHelpers params oStmt xChallenge k) u) =
+        ∑ u : Hypercube n,
+          ∑ i : TermIdx M,
+            termNumerator (honestMultiplicity oStmt) i u /
+              termPhi oStmt xChallenge i u := by
+    apply Finset.sum_congr rfl
+    intro u _
+    exact honest_helper_sum_eq_sum_terms
+      (F := F) (n := n) (M := M) (params := params) oStmt xChallenge u
+  have hterms_split :
+      (∑ u : Hypercube n,
+          ∑ i : TermIdx M,
+            termNumerator (honestMultiplicity oStmt) i u /
+              termPhi oStmt xChallenge i u) =
+        (∑ u : Hypercube n,
+          evalOnHypercube (honestMultiplicity oStmt) u /
+            (xChallenge + evalOnHypercube (tableOracle oStmt) u)) +
+        ∑ u : Hypercube n,
+          ∑ i : Fin M,
+            (-1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+    simp_rw [sum_terms_eq_table_add_columns
+      (F := F) (n := n) (M := M) oStmt xChallenge]
+    rw [Finset.sum_add_distrib]
+  have hcolumns_neg :
+      (∑ u : Hypercube n,
+          ∑ i : Fin M,
+            (-1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u)) =
+        - ∑ i : Fin M,
+            ∑ u : Hypercube n,
+              (1 : F) /
+                (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+    rw [Finset.sum_comm]
+    simp_rw [neg_div]
+    simp_rw [Finset.sum_neg_distrib]
+  calc
+    (∑ u : Hypercube n,
+      ∑ k : Fin params.numGroups,
+        evalOnHypercube (honestHelpers params oStmt xChallenge k) u)
+        = ∑ u : Hypercube n,
+            ∑ i : TermIdx M,
+              termNumerator (honestMultiplicity oStmt) i u /
+                termPhi oStmt xChallenge i u := hhelpers_eq_terms
+    _ = (∑ u : Hypercube n,
+          evalOnHypercube (honestMultiplicity oStmt) u /
+            (xChallenge + evalOnHypercube (tableOracle oStmt) u)) +
+        ∑ u : Hypercube n,
+          ∑ i : Fin M,
+            (-1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := hterms_split
+    _ = (∑ a : F, (lookupMultiplicityCount oStmt a : F) / (xChallenge + a)) +
+        ∑ u : Hypercube n,
+          ∑ i : Fin M,
+            (-1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+          change
+            (∑ u : Hypercube n,
+              normalizedMultiplicityValue oStmt u /
+                (xChallenge + evalOnHypercube (tableOracle oStmt) u)) +
+              ∑ u : Hypercube n,
+                ∑ i : Fin M,
+                  (-1 : F) /
+                    (xChallenge + evalOnHypercube (columnOracle oStmt i) u) =
+              (∑ a : F, (lookupMultiplicityCount oStmt a : F) / (xChallenge + a)) +
+              ∑ u : Hypercube n,
+                ∑ i : Fin M,
+                  (-1 : F) /
+                    (xChallenge + evalOnHypercube (columnOracle oStmt i) u)
+          rw [table_sum_normalizedMultiplicity_eq_lookup_sum stmt oStmt hInput hM]
+    _ = (∑ i : Fin M,
+          ∑ u : Hypercube n,
+            (1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u)) +
+        ∑ u : Hypercube n,
+          ∑ i : Fin M,
+            (-1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+          rw [lookupMultiplicity_sum_div_eq_column_sum]
+    _ = 0 := by
+          rw [hcolumns_neg]
+          exact add_neg_cancel _
+
+theorem honest_helper_sum_zero_of_inputRelation_all
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i)
+    (hInput : (((stmt, oStmt), ()) ∈ inputRelation F n M))
+    (xChallenge : F) :
+    (∑ u : Hypercube n,
+      ∑ k : Fin params.numGroups,
+        evalOnHypercube (honestHelpers params oStmt xChallenge k) u) = 0 := by
+  by_cases hM : 0 < M
+  · exact honest_helper_sum_zero_of_inputRelation
+      (F := F) (n := n) (M := M) (params := params) stmt oStmt hInput hM xChallenge
+  · have hM0 : M = 0 := by omega
+    subst M
+    exact honest_helper_sum_zero_no_columns
+      (F := F) (n := n) params oStmt xChallenge
 
 /-- Semantic agreement between final oracle-query answers and the retained LogUp oracles. -/
 def logupPointEvaluationsAgree
@@ -86,6 +310,67 @@ def logupPointEvaluationsAgree
     evals.table = lagrangeOracleEval (oStmt (.input .table)) r ∧
     (∀ i : Fin M, evals.columns i = lagrangeOracleEval (oStmt (.input (.column i))) r) ∧
       ∀ k : Fin params.numGroups, evals.helpers k = lagrangeOracleEval ((oStmt .helpers) k) r
+
+omit [Fintype F] [DecidableEq F] in
+theorem logupPointEvaluationsAgree.multiplicity
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals) :
+    evals.multiplicity = lagrangeOracleEval (oStmt .multiplicity) r :=
+  h.1
+
+omit [Fintype F] [DecidableEq F] in
+theorem logupPointEvaluationsAgree.table
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals) :
+    evals.table = lagrangeOracleEval (oStmt (.input .table)) r :=
+  h.2.1
+
+omit [Fintype F] [DecidableEq F] in
+theorem logupPointEvaluationsAgree.column
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals) (i : Fin M) :
+    evals.columns i = lagrangeOracleEval (oStmt (.input (.column i))) r :=
+  h.2.2.1 i
+
+omit [Fintype F] [DecidableEq F] in
+theorem logupPointEvaluationsAgree.helper
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals)
+    (k : Fin params.numGroups) :
+    evals.helpers k = lagrangeOracleEval ((oStmt .helpers) k) r :=
+  h.2.2.2 k
+
+omit [Fintype F] [DecidableEq F] in
+theorem termPhiAtPoint_zero_of_logupPointEvaluationsAgree
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals)
+    (xChallenge : F) :
+    termPhiAtPoint xChallenge evals (0 : TermIdx M) =
+      xChallenge + lagrangeOracleEval (oStmt (.input .table)) r := by
+  simp [h.2.1]
+
+omit [Fintype F] [DecidableEq F] in
+theorem termPhiAtPoint_succ_of_logupPointEvaluationsAgree
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals)
+    (xChallenge : F) (i : Fin M) :
+    termPhiAtPoint xChallenge evals ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩ =
+      xChallenge + lagrangeOracleEval (oStmt (.input (.column i))) r := by
+  simp [h.2.2.1 i]
+
+omit [Fintype F] [DecidableEq F] in
+theorem termNumeratorAtPoint_zero_of_logupPointEvaluationsAgree
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals) :
+    termNumeratorAtPoint evals (0 : TermIdx M) = lagrangeOracleEval (oStmt .multiplicity) r := by
+  simp [h.1]
 
 end SumcheckInterface
 
@@ -183,14 +468,166 @@ sumcheck plus LogUp's final oracle-query check. -/
 structure LogupSumcheckBridge
     (stmt : StmtAfterOuter F n M params)
     (oStmt : ∀ i, OStmtAfterOuter F n M params i) where
-  rowsAgree : logupSumcheckPolynomialRowsAgree F n M params stmt oStmt
   claimZero : logupOuterSumcheckClaim F n M params stmt oStmt = 0
-  finalEval :
-    ∀ (r : Fin n → F) (evals : PointEvaluations F M params.numGroups),
-      logupPointEvaluationsAgree F n M params r oStmt evals →
-        MvPolynomial.eval r (logupSumcheckPolynomial F n M params stmt oStmt).1 =
-          qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge r
-            stmt.batchingScalars evals
+
+theorem LogupSumcheckBridge.of_honestHelpers
+    [Fintype F] [DecidableEq F]
+    (stmtIn : StmtIn F n M)
+    (oStmtIn : ∀ i, OStmtIn F n M i)
+    (stmt : StmtAfterOuter F n M params)
+    (hInput : (((stmtIn, oStmtIn), ()) ∈ inputRelation F n M))
+    (htable : ∀ u : Hypercube n,
+      stmt.xChallenge + evalOnHypercube (tableOracle oStmtIn) u ≠ 0)
+    (hHelpers :
+      (∑ u : Hypercube n,
+        ∑ k : Fin params.numGroups,
+          evalOnHypercube (honestHelpers params oStmtIn stmt.xChallenge k) u) = 0) :
+    LogupSumcheckBridge F n M params stmt
+      (fun
+        | .input i => oStmtIn i
+        | .multiplicity => honestMultiplicity oStmtIn
+        | .helpers => honestHelpers params oStmtIn stmt.xChallenge) where
+  claimZero := by
+    rw [logupOuterSumcheckClaim_honestHelpers_eq_sum_helpers
+      (F := F) (n := n) (M := M) (params := params)
+      stmtIn oStmtIn stmt hInput htable]
+    exact hHelpers
+
+theorem LogupSumcheckBridge.of_honest
+    [Fintype F] [DecidableEq F]
+    (stmtIn : StmtIn F n M)
+    (oStmtIn : ∀ i, OStmtIn F n M i)
+    (stmt : StmtAfterOuter F n M params)
+    (hInput : (((stmtIn, oStmtIn), ()) ∈ inputRelation F n M))
+    (htable : ∀ u : Hypercube n,
+      stmt.xChallenge + evalOnHypercube (tableOracle oStmtIn) u ≠ 0) :
+    LogupSumcheckBridge F n M params stmt
+      (fun
+        | .input i => oStmtIn i
+        | .multiplicity => honestMultiplicity oStmtIn
+        | .helpers => honestHelpers params oStmtIn stmt.xChallenge) :=
+  LogupSumcheckBridge.of_honestHelpers
+    (F := F) (n := n) (M := M) (params := params)
+    stmtIn oStmtIn stmt hInput htable
+    (honest_helper_sum_zero_of_inputRelation_all
+      (F := F) (n := n) (M := M) (params := params)
+      stmtIn oStmtIn hInput stmt.xChallenge)
+
+theorem LogupSumcheckBridge.relationInput
+    {hSigns : (-1 : F) ≠ 1}
+    {stmt : StmtAfterOuter F n M params}
+    {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    (bridge : LogupSumcheckBridge F n M params stmt oStmt) :
+    logupSumcheckRelationInput F n M params hSigns stmt oStmt :=
+  logupSumcheckRelationInput_of_rowsAgree (F := F) (n := n) (M := M) (params := params)
+    (logupSumcheckPolynomialRowsAgree_of_signsDistinct
+      (F := F) (n := n) (M := M) (params := params) hSigns stmt oStmt)
+    bridge.claimZero
+
+theorem logupSumcheckRelationInput_of_honest
+    [Fintype F] [DecidableEq F]
+    {hSigns : (-1 : F) ≠ 1}
+    (stmtIn : StmtIn F n M)
+    (oStmtIn : ∀ i, OStmtIn F n M i)
+    (stmt : StmtAfterOuter F n M params)
+    (hInput : (((stmtIn, oStmtIn), ()) ∈ inputRelation F n M))
+    (htable : ∀ u : Hypercube n,
+      stmt.xChallenge + evalOnHypercube (tableOracle oStmtIn) u ≠ 0) :
+    logupSumcheckRelationInput F n M params hSigns stmt
+      (fun
+        | .input i => oStmtIn i
+        | .multiplicity => honestMultiplicity oStmtIn
+        | .helpers => honestHelpers params oStmtIn stmt.xChallenge) :=
+  (LogupSumcheckBridge.of_honest
+    (F := F) (n := n) (M := M) (params := params)
+    stmtIn oStmtIn stmt hInput htable).relationInput
+
+theorem logupSumcheckPolynomial_finalEval
+    {stmt : StmtAfterOuter F n M params}
+    {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    (r : Fin n → F) (evals : PointEvaluations F M params.numGroups)
+    (hAgree : logupPointEvaluationsAgree F n M params r oStmt evals) :
+    MvPolynomial.eval r (logupSumcheckPolynomial F n M params stmt oStmt).1 =
+      qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge r
+        stmt.batchingScalars evals := by
+  exact logupQPolynomial_eval_eq_qAtPoint (F := F) (n := n) (M := M) (params := params)
+    stmt oStmt r evals hAgree.multiplicity hAgree.table hAgree.column hAgree.helper
+
+theorem logupSumcheckOutputTarget_eq_eval
+    {hSigns : (-1 : F) ≠ 1}
+    {out : LogupSumcheckStmtOut F n M params}
+    {oStmt : ∀ i, LogupSumcheckOracleStatement F n M params i}
+    (hRel :
+      ((out, oStmt), ()) ∈
+        Sumcheck.Spec.relationRound F n (logupSumcheckDegree M params)
+          (signDomain F hSigns) (.last n)) :
+    out.target = MvPolynomial.eval out.challenges (oStmt ()).1 := by
+  unfold Sumcheck.Spec.relationRound at hRel
+  rw [← hRel]
+  have hzero : n - ↑(Fin.last n : Fin (n + 1)) = 0 := by simp
+  letI : IsEmpty (Fin (n - ↑(Fin.last n : Fin (n + 1)))) := by
+    rw [hzero]
+    infer_instance
+  rw [Fintype.piFinset_of_isEmpty]
+  let x0 : Fin (n - ↑(Fin.last n : Fin (n + 1))) → F := fun i => isEmptyElim i
+  rw [Finset.sum_eq_single x0]
+  · have hpoint :
+        Fin.append out.challenges x0 ∘
+            Fin.cast (Sumcheck.Spec.relationRound._proof_1 n (Fin.last n)) =
+          out.challenges := by
+      rw [Fin.append_right_nil out.challenges x0 hzero]
+      ext i
+      simp
+    rw [hpoint]
+    rfl
+  · intro y _ hy
+    exfalso
+    apply hy
+    funext i
+    exact isEmptyElim i
+  · intro hx
+    exact False.elim (hx (@Finset.mem_univ _ Unique.fintype x0))
+
+theorem LogupSumcheckBridge.finalQueryCheck
+    {stmt : StmtAfterOuter F n M params}
+    {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    (out : LogupSumcheckStmtOut F n M params)
+    (evals : PointEvaluations F M params.numGroups)
+    (hAgree :
+      logupPointEvaluationsAgree F n M params out.challenges oStmt evals)
+    (hTarget :
+      out.target =
+        MvPolynomial.eval out.challenges
+          (logupSumcheckPolynomial F n M params stmt oStmt).1) :
+    Logup.finalQueryCheck (canonicalGroups params) stmt.xChallenge stmt.zChallenge out.challenges
+      stmt.batchingScalars evals out.target := by
+  change
+    qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge out.challenges
+      stmt.batchingScalars evals = out.target
+  rw [hTarget]
+  exact (logupSumcheckPolynomial_finalEval (F := F) (n := n) (M := M) (params := params)
+    (stmt := stmt) (oStmt := oStmt) out.challenges evals hAgree).symm
+
+theorem LogupSumcheckBridge.finalQueryCheck_of_relation
+    {hSigns : (-1 : F) ≠ 1}
+    {stmt : StmtAfterOuter F n M params}
+    {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    (out : LogupSumcheckStmtOut F n M params)
+    (evals : PointEvaluations F M params.numGroups)
+    (hAgree :
+      logupPointEvaluationsAgree F n M params out.challenges oStmt evals)
+    (hRel :
+      ((out, logupSumcheckOracleStmt F n M params stmt oStmt), ()) ∈
+        Sumcheck.Spec.relationRound F n (logupSumcheckDegree M params)
+          (signDomain F hSigns) (.last n)) :
+    Logup.finalQueryCheck (canonicalGroups params) stmt.xChallenge stmt.zChallenge out.challenges
+      stmt.batchingScalars evals out.target := by
+  apply LogupSumcheckBridge.finalQueryCheck (F := F) (n := n) (M := M) (params := params)
+    out evals hAgree
+  simpa [logupSumcheckOracleStmt] using
+    logupSumcheckOutputTarget_eq_eval (F := F) (n := n) (M := M) (params := params)
+      (hSigns := hSigns) (out := out)
+      (oStmt := logupSumcheckOracleStmt F n M params stmt oStmt) hRel
 
 
 end SumcheckBridge
@@ -270,8 +707,8 @@ all soundness / completeness machinery keeps applying), and the routing data is:
   querying the *outer* LogUp oracles at `r` (the table, columns, multiplicity, and helper oracles),
   assembling their point evaluations into `PointEvaluations`, and returning
   `qAtPoint … r …` — the verifier's final check value `Q(L_H(r,z), m(r), φᵢ(r), hₖ(r))` from paper
-  equation (19). This is the value the honest `Q` polynomial takes (cf. `LogupSumcheckBridge.finalEval`),
-  reading `x, z, λ` from the outer non-oracle statement via `ReaderT`.
+  equation (19). This is the value the honest `Q` polynomial takes (cf. `finalEval`), reading
+  `x, z, λ` from the outer non-oracle statement via `ReaderT`.
 - `embedOStmt` / `hEqOStmt`: the full LogUp protocol leaves no output oracle statements
   (`OutputOracleIdx = Fin 0`), so the output-side embedding is the (vacuous) empty embedding. -/
 noncomputable def logupSumcheckOracleLens [Fintype F] [DecidableEq F] [SampleableType F] :
@@ -306,8 +743,9 @@ noncomputable def logupSumcheckOracleLens [Fintype F] [DecidableEq F] [Sampleabl
             table := t
             columns := fun i => colList.getD i.val 0
             helpers := fun k => helperList.getD k.val 0 }
-        pure (show F from qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge r
-          stmt.batchingScalars evals)
+        pure (show F from
+          qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge r
+            stmt.batchingScalars evals)
   embedOStmt := Function.Embedding.ofIsEmpty
   hEqOStmt := fun i => Fin.elim0 i
 

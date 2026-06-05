@@ -32,6 +32,9 @@ import ArkLib.Data.Classes.HasSize
 import ArkLib.Data.Classes.Initialize
 import ArkLib.Data.Classes.Serde
 import ArkLib.Data.Classes.Slice
+import ArkLib.Data.CodingTheory.CodeGeometry
+import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
+import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
 import ArkLib.Data.CodingTheory.Basic.DecodingRadius
 import ArkLib.Data.CodingTheory.Basic.Distance
 import ArkLib.Data.CodingTheory.Basic.Entropy
@@ -273,6 +276,7 @@ import ArkLib.ProofSystem.ToyProblem.Spec.SimplifiedIOR
 import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement
+import ArkLib.ProofSystem.Whir.MCAJohnsonErrStar
 import ArkLib.ProofSystem.Whir.OutofDomainSmpl
 import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
