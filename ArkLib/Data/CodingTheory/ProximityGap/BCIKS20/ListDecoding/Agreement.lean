@@ -5912,7 +5912,8 @@ lemma exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_boun
 `ArkLib.Claim511` double-counting theorem. This has the same BCIKS20 object
 shape as `exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound_complement`,
 but keeps the imported combinatorial core visible to downstream callers. -/
-lemma exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound_complement_claim511
+lemma
+    exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound_complement_claim511
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
