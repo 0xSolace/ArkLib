@@ -975,7 +975,7 @@ omit [CharP L₀ 2] in
 Step-2 check on the honest tensor `ŝ = embedded_MLP_eval (packMLE P.basis t) r` accepts exactly when
 the original claim equals `t(r) = aeval r t`. This is the soundness/completeness pivot consumed by
 the batching phase for an arbitrary profile. -/
-lemma performCheckOriginalEvaluation_packMLE_iff' (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
+lemma performCheckOriginalEvaluation_packMLE_iff (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
     (h_l : ℓ = ℓ' + κ₀) (s : L₀)
     (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀) :
     performCheckOriginalEvaluation κ₀ L₀ K₀ P ℓ ℓ' h_l s r
@@ -1259,7 +1259,7 @@ lemma check_rows_sum_eq_aeval (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l :
 /-- **DP24 ring-switching capstone (decision form).** The verifier's Step-2 check on the prover's
 honest tensor `ŝ = embedded_MLP_eval (packMLE β t) r` accepts exactly when the original claim
 equals `t(r) = aeval r t`. This is the soundness/completeness pivot for the batching phase. -/
-lemma performCheckOriginalEvaluation_packMLE_iff (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
+lemma performCheckOriginalEvaluation_packMLE_iff_binaryTower (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
     (h_l : ℓ = ℓ' + κ₀) (β : Basis (Fin κ₀ → Fin 2) K₀ L₀) (s : L₀)
     (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀) :
     performCheckOriginalEvaluation κ₀ L₀ K₀ (binaryTowerProfile κ₀ K₀ L₀ β) ℓ ℓ' h_l s r
