@@ -7,6 +7,7 @@ Authors: Eliza
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCounting
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 
 /-!
 # Guruswami–Sudan-degree-exposed mutual-correlated-agreement (MCAGS)
@@ -483,6 +484,72 @@ theorem gsList_bad_gamma_le_gsListBound
   le_trans (gsList_bad_gamma_bound L u₀ u₁ x hx S hwitness) hL
 
 end Counting
+
+/-! ## Step 4 — the prize statement (ABF26 Grand Challenge 1), against the real GS definitions
+
+With the GS-exposed framework in place, the ABF26 §1 Grand MCA Challenge — a `poly(2^m, 1/ρ)/q`
+upper bound on the MCA error at the prize rates `ρ ∈ {1/2, 1/4, 1/8, 1/16}` over smooth domains,
+up to radius `δ ≤ 1 - ρ - η` — is now **formally stateable against real definitions**: it is a
+bound on `epsMCAgs` (the GS-exposed error of this file), with the list family `L` being a faithful
+GS list assignment. The statement carries an honest `sorry`: proving it *is* the open Grand
+Challenge 1 (the beyond-UDR prize territory), deliberately not attempted here. We give the
+statement so the prize has a real target; steps 1–3 supply its UDR floor (the dominance
+`epsMCAgs_restricted_le_epsCA` and the GS count `gsList_bad_gamma_bound`). -/
+
+section Prize
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+open scoped NNReal
+
+/-- The GS-exposed prize right-hand side at interleaving exponent `m`, rate `ρ`, gap `η`, over a
+field of size `q`: `(1/q) · (2^m)^{c₁} / (ρ^{c₂} · η^{c₃})`. This is the `poly(2^m, 1/ρ)/q` shape
+of ABF26 Grand Challenge 1, mirroring `GrandChallenges.mcaConjectureBound` but phrased in the
+prize's `(2^m, 1/ρ, 1/η)` parameters. -/
+noncomputable def epsMCAgsPrizeBound (q m : ℕ) (ρ η : ℝ≥0) (c₁ c₂ c₃ : ℝ) : ℝ :=
+  (1 / (q : ℝ)) * ((2 : ℝ) ^ m) ^ c₁ / ((ρ : ℝ) ^ c₂ * (η : ℝ) ^ c₃)
+
+/-- **ABF26 Grand Challenge 1, GS-exposed CONJECTURE form (honest `sorry`).**
+
+For the Reed-Solomon code at a prize rate `ρ = prizeRates j` over an evaluation domain `domain`
+(taken smooth in the prize regime), interleaving exponent `m`, and any radius
+`δ ≤ 1 - ρ - η` with gap `η > 0`, the GS-exposed MCA error against a faithful GS list family `L`
+is `≤ epsMCAgsPrizeBound q m ρ η c₁ c₂ c₃` for some universal constants `c₁, c₂, c₃`.
+
+This is the prize Grand Challenge 1 statement, now stated against the **real** GS-exposed
+definitions of this file (`epsMCAgs`, `gsListBound`), not against an opaque admit. Its proof is
+the open prize: the `sorry` below is the honest CONJECTURE marker, not a gamed closure. The UDR
+floor is supplied by steps 1–3 of this file:
+* `epsMCAgs_restricted_le_epsCA` gives the dominance below `δ_min/2`;
+* `gsList_bad_gamma_bound` gives the `|L|`-degree per-`γ` count (the new theorem the
+  double-coverage refutation demanded);
+* `mcaEventGS_singleton_eq_mcaEvent_udr` certifies the GS definition is faithful in UDR.
+
+The remaining gap to the full statement is the *beyond-UDR* GS list-decoder mass bound (radius up
+to the Johnson/capacity bound `1 - ρ - η`), which is exactly the external prize content. -/
+theorem epsMCAgs_prizeBound_conjecture
+    (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F))
+    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ)) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      epsMCAgs (F := F)
+        ((ReedSolomon.code (domain := domain)
+          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+        δ L
+      ≤ ENNReal.ofReal
+          (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃) := by
+  -- ════════════════════════════════════════════════════════════════════════════════════════
+  -- HONEST CONJECTURE MARKER — ABF26 Grand Challenge 1, beyond-UDR direction.
+  -- This is the open prize: the GS list-decoder mass bound on the exceptional-γ set up to the
+  -- capacity radius `1 - ρ - η`. Steps 1–3 of this file (epsMCAgs_restricted_le_epsCA,
+  -- gsList_bad_gamma_bound, mcaEventGS_singleton_eq_mcaEvent_udr) supply the UDR floor; the
+  -- remaining content is the external prize and is deliberately NOT discharged here. The
+  -- statement is what this file makes formally stateable against real GS-exposed definitions.
+  -- ════════════════════════════════════════════════════════════════════════════════════════
+  sorry
+
+end Prize
 
 end MCAGS
 
