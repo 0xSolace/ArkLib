@@ -166,6 +166,7 @@ namespace ReedSolomon
 
 variable {F : Type*} [Field F] {ι : Type*} [DecidableEq ι]
 
+omit [DecidableEq ι] in
 /-- **Interpolation through a subset of the Reed–Solomon domain.**
 For any subset `S` of the evaluation domain with `#S ≤ k`, and any target values
 `target : ι → F`, there is a codeword `f` of the degree-`< k` Reed–Solomon code over
@@ -173,7 +174,6 @@ For any subset `S` of the evaluation domain with `#S ≤ k`, and any target valu
 
 The witness codeword is the evaluation vector of the Lagrange interpolant
 `Lagrange.interpolate S domain target`, which has degree `< #S ≤ k`. -/
-omit [DecidableEq ι] in
 theorem ReedSolomon_interpolate_through_subset
     {k : ℕ} (domain : ι ↪ F) (S : Finset ι) (hS : S.card ≤ k) (target : ι → F) :
     ∃ f ∈ ReedSolomon.code domain k, ∀ i ∈ S, f i = target i := by
