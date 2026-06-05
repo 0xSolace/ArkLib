@@ -1192,9 +1192,9 @@ residual from the opaque `jointlyProximateContribution ≤ ε_ca` to the **singl
   `Pr_γ[mcaEvent C δ (u 0 - p₀) (u 1 - p₁) γ] ≤ ε_ca(C, δ, δ)`     (Step B),
 
 where `d` *vanishes* on the size-`≥(1-δ)n` `jointProximity` set `S'`. This is strictly less than
-the former opaque residual: the `¬jointProximity` part is discharged by `epsMCA_restricted_le_epsCA`,
-the jointly-close part is normalized to a difference stack, and only the bound on the
-exceptional-`γ` set of that one fixed difference stack remains.
+the former opaque residual: the `¬jointProximity` part is discharged by
+`epsMCA_restricted_le_epsCA`, the jointly-close part is normalized to a difference stack, and only
+the bound on the exceptional-`γ` set of that one fixed difference stack remains.
 
 Why even this residual is **not** a pointwise `iSup`-monotonicity ([ACFY25, Lemma 4.10];
 footnote 6 in ABF26 notes the proof is for linear codes but generalises to F-additive codes):

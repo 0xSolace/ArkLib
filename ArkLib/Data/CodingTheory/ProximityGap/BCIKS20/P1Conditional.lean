@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
 
+set_option linter.style.longLine false
+
 /-!
 # (P1) CONDITIONAL UNLOCK — the structured weight invariant and the P1 collapse, GIVEN the lift identity
 
