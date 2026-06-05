@@ -239,6 +239,22 @@ theorem rs_epsCA_small_loss_r4_10
   -- δ_int/(δ_int-δ_fld). So R4.10 is blocked SOLELY on T4.9.2 — no independent external
   -- content. Re-attempt immediately after T4.9.2 lands.
 
+/-- The currently stated `0 < γ < 1` hypotheses do not by themselves imply the
+floor-collapse side condition needed in `rs_epsCA_small_loss_r4_10`.
+
+The intended R4.2 step needs
+`floor (δ_fld * n) = floor ((δ_fld + γ / n) * n)`. This can fail when `δ_fld * n`
+is close to the next integer: with `n = 10`, `δ_fld = 9/100`, and `γ = 1/5`,
+the floors are `0` and `1`.  Any closure of R4.10 must therefore add or derive a
+no-boundary-crossing hypothesis, not just use `0 < γ < 1`. -/
+theorem r4_10_floor_collapse_hypotheses_insufficient :
+    ¬ (∀ δ γ : ℝ≥0, 0 < γ → (γ : ℝ) < 1 →
+      Nat.floor ((δ : ℝ) * (10 : ℝ)) =
+        Nat.floor (((δ + γ / (10 : ℝ≥0) : ℝ≥0) : ℝ) * (10 : ℝ))) := by
+  intro h
+  have hbad := h (9 / 100 : ℝ≥0) (1 / 5 : ℝ≥0) (by norm_num) (by norm_num)
+  norm_num at hbad
+
 /-- **ABF26 Theorem 4.12 [BCHKS25 Thm 4.6].** For `C := RS[F, L, k]` with rate `ρ` and
 `η > 0`, letting `ρ_plus := ρ + 1/n` and `m := max(⌈√ρ_plus/(2η)⌉, 3)`, for
 `δ < 1 - √ρ_plus - η`:
