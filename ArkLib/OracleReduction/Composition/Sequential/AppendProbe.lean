@@ -669,4 +669,40 @@ theorem append_runToRound_left (j : Fin (m + 1)) :
         ((P₁.append P₂).runToRound (i.castLE (by omega)).castSucc stmt wit)
         (P₁.runToRound i.castSucc stmt wit) hcur
 
+/-- **Seam specialization of `append_runToRound_left`.**  Running the appended prover up to the
+*seam* round `m` (the last round of `pSpec₁`, embedded as `(Fin.last m).castLE` into the appended
+protocol) is heterogeneously equal to the `liftM` of running `P₁` to its last round — i.e. the full
+honest run of `P₁`'s message phase.  This is the entry point for assembling `Prover.append_run`:
+after the seam, the continuation runs `P₂` (rounds `m+1 .. m+n`) starting from `P₁.output`-fed
+`P₂.input`. -/
+theorem append_runToRound_seam :
+    HEq ((P₁.append P₂).runToRound ((Fin.last m).castLE (by omega)) stmt wit)
+      (liftM (P₁.runToRound (Fin.last m) stmt wit) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) :=
+  append_runToRound_left (Fin.last m)
+
+/- **WIP: `Prover.append_run` (deliverable 2).**  With `append_runToRound_left`/`_seam` proven, the
+full run characterization
+
+  `(P₁.append P₂).run stmt wit = (do let ⟨tr₁,s₂,w₂⟩ ← liftM (P₁.run stmt wit);
+       let ⟨tr₂,s₃,w₃⟩ ← liftM (P₂.run s₂ w₂); return ⟨tr₁ ++ₜ tr₂, s₃, w₃⟩)`
+
+decomposes (via `runToRound_eq_bind_continueFromTo` at `k = m`) as:
+
+  1. LEFT (DONE): run to the seam `= liftM (P₁.runToRound (last) ..)`  — `append_runToRound_seam`.
+  2. SEAM (round `m`): the appended prover's seam step runs `P₁.sendMessage`/`receiveChallenge` of
+     the last `pSpec₁` round, then merges via `P₁.output ≫= P₂.input` (see `Prover.append`'s
+     `sendMessage`/`receiveChallenge`/`output` `i = m` branches).  This is the genuinely new piece:
+     a `continueFromTo … m … (m+1)` step whose state transition is `P₁.output → P₂.input`, NOT a
+     uniform left/right round.
+  3. RIGHT: rounds `m+1 .. m+n` are pure `P₂` rounds.  Needs `append_runToRound_right`, the mirror
+     of `append_runToRound_left` using `P₂` and the RIGHT challenge `SubSpec`
+     `[pSpec₂.Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ` (`range_challenge_append_inr`,
+     `ChallengeIdx.inr`), with `Fin.natAdd m` index transports in place of `Fin.castAdd n`.
+  4. `output`: combine via the `++ₜ` transcript-append and `P₁.output`/`P₂.output` (the `output`
+     branch of `Prover.append`, which also handles the `n = 0` degenerate seam).
+
+Steps 3 and 4, plus the seam (2), remain.  The right block mirrors the (proven) left block
+mutatis mutandis; the seam-merge is new but is a single `continueFromTo` step. -/
+
 end Prover
