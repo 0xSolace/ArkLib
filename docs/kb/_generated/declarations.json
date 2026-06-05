@@ -18614,9 +18614,27 @@
           "signature": "theorem induction_three' {motive : Fin 4 \u2192 Sort*} {zero : motive 0}"
         },
         {
-          "doc": "Heterogeneous equality on `Fin.induction`",
+          "doc": "",
           "kind": "theorem",
           "line": 111,
+          "name": "Fin.induction_four",
+          "namespace": "Fin",
+          "short_name": "induction_four",
+          "signature": "theorem induction_four {motive : Fin 5 \u2192 Sort*} {zero : motive 0}"
+        },
+        {
+          "doc": "Alternate version of `Fin.induction_four` that uses `4 : Fin 5` instead of `last 4`.",
+          "kind": "theorem",
+          "line": 118,
+          "name": "Fin.induction_four'",
+          "namespace": "Fin",
+          "short_name": "induction_four'",
+          "signature": "theorem induction_four' {motive : Fin 5 \u2192 Sort*} {zero : motive 0}"
+        },
+        {
+          "doc": "Heterogeneous equality on `Fin.induction`",
+          "kind": "theorem",
+          "line": 124,
           "name": "Fin.induction_heq",
           "namespace": "Fin",
           "short_name": "induction_heq",
@@ -18625,7 +18643,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 122,
+          "line": 135,
           "name": "Fin.induction_init",
           "namespace": "Fin",
           "short_name": "induction_init",
@@ -18634,7 +18652,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 134,
+          "line": 147,
           "name": "Fin.induction_tail",
           "namespace": "Fin",
           "short_name": "induction_tail",
@@ -18643,7 +18661,7 @@
         {
           "doc": "`Fin.induction` on `m + n` for `i \u2264 m` steps is equivalent to `Fin.induction` on `m` for `i` steps.",
           "kind": "theorem",
-          "line": 147,
+          "line": 160,
           "name": "Fin.induction_append_left",
           "namespace": "Fin",
           "short_name": "induction_append_left",
@@ -18652,7 +18670,7 @@
         {
           "doc": "`Fin.induction` on `m + n` for `m + i` steps is equivalent to `Fin.induction` on `n` on `i` steps on the result of `Fin.induction` on `m`.",
           "kind": "theorem",
-          "line": 161,
+          "line": 174,
           "name": "Fin.induction_append_right",
           "namespace": "Fin",
           "short_name": "induction_append_right",
@@ -18661,7 +18679,7 @@
         {
           "doc": "`Fin.insertNth 0` is equivalent to `Fin.cases`.",
           "kind": "theorem",
-          "line": 181,
+          "line": 194,
           "name": "Fin.insertNth_zero_eq_cases",
           "namespace": "Fin",
           "short_name": "insertNth_zero_eq_cases",
@@ -18670,7 +18688,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 195,
+          "line": 208,
           "name": "Fin.append_zero_of_succ_left",
           "namespace": "Fin",
           "short_name": "append_zero_of_succ_left",
@@ -18679,7 +18697,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 200,
+          "line": 213,
           "name": "Fin.append_last_of_succ_right",
           "namespace": "Fin",
           "short_name": "append_last_of_succ_right",
@@ -18688,7 +18706,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 204,
+          "line": 217,
           "name": "Fin.append_comp",
           "namespace": "Fin",
           "short_name": "append_comp",
@@ -18697,7 +18715,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 210,
+          "line": 223,
           "name": "Fin.append_comp'",
           "namespace": "Fin",
           "short_name": "append_comp'",
@@ -18706,7 +18724,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 214,
+          "line": 227,
           "name": "Fin.addCases_left'",
           "namespace": "Fin",
           "short_name": "addCases_left'",
@@ -18715,7 +18733,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 221,
+          "line": 234,
           "name": "Fin.addCases_right'",
           "namespace": "Fin",
           "short_name": "addCases_right'",
@@ -18724,7 +18742,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 233,
+          "line": 246,
           "name": "Fin.append_right'",
           "namespace": "Fin",
           "short_name": "append_right'",
@@ -18733,7 +18751,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 238,
+          "line": 251,
           "name": "Fin.append_left_of_lt",
           "namespace": "Fin",
           "short_name": "append_left_of_lt",
@@ -18742,7 +18760,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 243,
+          "line": 256,
           "name": "Fin.append_right_of_not_lt",
           "namespace": "Fin",
           "short_name": "append_right_of_not_lt",
@@ -18751,7 +18769,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 249,
+          "line": 262,
           "name": "Fin.append_left_injective",
           "namespace": "Fin",
           "short_name": "append_left_injective",
@@ -18760,7 +18778,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 257,
+          "line": 270,
           "name": "Fin.append_right_injective",
           "namespace": "Fin",
           "short_name": "append_right_injective",
@@ -18769,7 +18787,7 @@
         {
           "doc": "Version of `Fin.addCases` that splits the motive into two dependent vectors `\u03b1` and `\u03b2`, and the return type is `Fin.append \u03b1 \u03b2`.",
           "kind": "def",
-          "line": 268,
+          "line": 281,
           "name": "Fin.addCases'",
           "namespace": "Fin",
           "short_name": "addCases'",
@@ -18778,7 +18796,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 279,
+          "line": 292,
           "name": "Fin.addCases'_left",
           "namespace": "Fin",
           "short_name": "addCases'_left",
@@ -18787,7 +18805,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 285,
+          "line": 298,
           "name": "Fin.addCases'_right",
           "namespace": "Fin",
           "short_name": "addCases'_right",
@@ -18796,7 +18814,7 @@
         {
           "doc": "Embed `Fin (l.get k)` into `Fin l.sum` at the `k`-th block. Indexing is **positional** (`k : Fin l.length`): the previous membership-based design (`n \u2208 l`) collapsed duplicate lengths (e.g. for `l = [2, 2]` both occurrences embedded into the head block, leaving the tail block unreachable), which made the accompanying eliminator unprovable.",
           "kind": "def",
-          "line": 305,
+          "line": 318,
           "name": "Fin.castSum",
           "namespace": "Fin",
           "short_name": "castSum",
@@ -18805,7 +18823,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 310,
+          "line": 323,
           "name": "Fin.castSum_castLT",
           "namespace": "Fin",
           "short_name": "castSum_castLT",
@@ -18814,7 +18832,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 315,
+          "line": 328,
           "name": "Fin.castSum_castAdd",
           "namespace": "Fin",
           "short_name": "castSum_castAdd",
@@ -18823,7 +18841,7 @@
         {
           "doc": "Dependent elimination for `Fin l.sum`: every index lies in exactly one positional block `castSum l k i`.",
           "kind": "def",
-          "line": 321,
+          "line": 334,
           "name": "Fin.sumCases",
           "namespace": "Fin",
           "short_name": "sumCases",
@@ -18832,7 +18850,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 350,
+          "line": 363,
           "name": "Fin.finSuccEquivNth'",
           "namespace": "Fin",
           "short_name": "finSuccEquivNth'",
@@ -31077,9 +31095,72 @@
           "signature": "theorem Prover.runToRound_zero_of_prover_first"
         },
         {
-          "doc": "Running the identity or trivial reduction results in the same input statement and witness, and empty transcript.",
+          "doc": "**Single-round unfolding of `runToRound`.**  Running the prover up to round `j.succ` is the same as running it up to round `j.castSucc` and then processing round `j`.",
           "kind": "theorem",
           "line": 542,
+          "name": "Prover.runToRound_succ",
+          "namespace": "Prover",
+          "short_name": "runToRound_succ",
+          "signature": "theorem runToRound_succ (j : Fin n)"
+        },
+        {
+          "doc": "**`processRound` at a challenge (V_to_P) round.**  Specialization of `processRound` to a round `i` that is a challenge round (so `pSpec.dir i = .V_to_P`).",
+          "kind": "theorem",
+          "line": 551,
+          "name": "Prover.processRound_challenge",
+          "namespace": "Prover",
+          "short_name": "processRound_challenge",
+          "signature": "theorem processRound_challenge (i : pSpec.ChallengeIdx)"
+        },
+        {
+          "doc": "**Kleisli continuation folding `processRound` over rounds `k .. j-1`.**  Transforms a round-`k` partial result `(transcript, state)` into the round-`j` partial run, by folding `processRound`. Defined by `Fin.induction` on the *target* index `j`: when the running index reaches `k` exactly it returns the supplied start `rk` (`pure`), and each subsequent `succ` step applies one more `processRound`.  (The `j < k` branches are never used; for those the dependent-`Fin` base is filled with the `runToRound 0` seed value, kept only to make the fold total.)",
+          "kind": "def",
+          "line": 575,
+          "name": "Prover.continueFromTo",
+          "namespace": "Prover",
+          "short_name": "continueFromTo",
+          "signature": "def continueFromTo (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)"
+        },
+        {
+          "doc": "**`continueFromTo` step at a `succ` target that has not yet reached the start.**  When the target `m.succ` is *strictly past* the start index `k` (`k \u2260 m.succ`), the continuation applies one more `processRound m` on top of the round-`m.castSucc` continuation.",
+          "kind": "theorem",
+          "line": 592,
+          "name": "Prover.continueFromTo_succ_of_ne",
+          "namespace": "Prover",
+          "short_name": "continueFromTo_succ_of_ne",
+          "signature": "theorem continueFromTo_succ_of_ne (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)"
+        },
+        {
+          "doc": "**`continueFromTo` at the diagonal is the identity (`pure`).**  Continuing from round `k` to round `k` returns the start result unchanged.",
+          "kind": "theorem",
+          "line": 604,
+          "name": "Prover.continueFromTo_self",
+          "namespace": "Prover",
+          "short_name": "continueFromTo_self",
+          "signature": "theorem continueFromTo_self (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)"
+        },
+        {
+          "doc": "**`processRound` factors as a bind on its input.**  Since `processRound j cur` first runs `cur` and then performs a round-`j` step depending only on `cur`'s output, it equals `cur >>= (round-j step on a `pure`d result)`.",
+          "kind": "theorem",
+          "line": 616,
+          "name": "Prover.processRound_eq_bind",
+          "namespace": "Prover",
+          "short_name": "processRound_eq_bind",
+          "signature": "theorem processRound_eq_bind (j : Fin n) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)"
+        },
+        {
+          "doc": "**Round-range decomposition of `runToRound` (THE keystone).**  For any earlier round `k \u2264 j`, the prover run up to round `j` equals the run up to round `k` followed by the continuation `continueFromTo` that folds `processRound` over rounds `k .. j-1`.  A plain `OracleComp` equality, proved by `Fin.induction` on `j` (with `k` fixed) via `runToRound_succ`, `processRound_eq_bind`, and monad associativity.",
+          "kind": "theorem",
+          "line": 628,
+          "name": "Prover.runToRound_eq_bind_continueFromTo",
+          "namespace": "Prover",
+          "short_name": "runToRound_eq_bind_continueFromTo",
+          "signature": "theorem runToRound_eq_bind_continueFromTo"
+        },
+        {
+          "doc": "Running the identity or trivial reduction results in the same input statement and witness, and empty transcript.",
+          "kind": "theorem",
+          "line": 675,
           "name": "Reduction.id_run",
           "namespace": "",
           "short_name": "Reduction.id_run",
@@ -31088,7 +31169,7 @@
         {
           "doc": "Running the identity or trivial reduction, with logging of queries to the shared oracle, results in the same input statement and witness, empty transcript, and empty query logs.",
           "kind": "theorem",
-          "line": 551,
+          "line": 684,
           "name": "Reduction.id_runWithLog",
           "namespace": "",
           "short_name": "Reduction.id_runWithLog",
@@ -31097,7 +31178,7 @@
         {
           "doc": "Running the identity or trivial oracle reduction results in the same input statement, oracle statement, and witness.",
           "kind": "theorem",
-          "line": 560,
+          "line": 693,
           "name": "OracleReduction.id_run",
           "namespace": "",
           "short_name": "OracleReduction.id_run",
@@ -31106,7 +31187,7 @@
         {
           "doc": "Running the identity or trivial oracle reduction results in the same input statement, oracle statement, and witness.",
           "kind": "theorem",
-          "line": 568,
+          "line": 701,
           "name": "OracleReduction.id_runWithLog",
           "namespace": "",
           "short_name": "OracleReduction.id_runWithLog",
@@ -31115,7 +31196,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 586,
+          "line": 719,
           "name": "Prover.runToRound_one_of_prover_first",
           "namespace": "",
           "short_name": "Prover.runToRound_one_of_prover_first",
@@ -31124,7 +31205,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 602,
+          "line": 735,
           "name": "Prover.runToRound_one_of_verifier_first",
           "namespace": "",
           "short_name": "Prover.runToRound_one_of_verifier_first",
@@ -31133,7 +31214,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 629,
+          "line": 762,
           "name": "Prover.run_of_verifier_first",
           "namespace": "",
           "short_name": "Prover.run_of_verifier_first",
@@ -31142,7 +31223,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 640,
+          "line": 773,
           "name": "Prover.run_of_prover_first",
           "namespace": "",
           "short_name": "Prover.run_of_prover_first",
@@ -31151,7 +31232,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 650,
+          "line": 783,
           "name": "Reduction.run_of_prover_first",
           "namespace": "",
           "short_name": "Reduction.run_of_prover_first",
@@ -50661,7 +50742,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5502,
+      "declarations": 5511,
       "files": 288
     }
   }
