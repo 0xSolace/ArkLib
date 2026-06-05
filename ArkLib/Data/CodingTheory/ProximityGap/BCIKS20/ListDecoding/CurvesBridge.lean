@@ -1026,10 +1026,10 @@ theorem correlatedAgreement_affine_lines_of_strict_eval_polys_and_boundary_card
   classical
   refine correlatedAgreement_affine_curves_of_strict_eval_polys_and_boundary_card
     (k := 1) (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0)) hδ ?_ ?_
-  · intro hk1 u hprob hJ _hsqrt
-    exact section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords
-      (F := F) (n := n) (m := m) (k := k) hk (ωs := ωs) δ hDx hYZ hsubset hunique
-      hk1 u hprob hJ
+  · exact fun hk1 u hprob hJ _hsqrt P hP =>
+      section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords
+        (F := F) (n := n) (m := m) (k := k) hk (ωs := ωs) δ hDx hYZ hsubset hunique
+        hk1 u hprob hJ P hP
   · intro _hk u hδeq hcard
     have h_u_eq := wordStack_fin_two_eq_finMapTwoWords (F := F) (n := n) u
     have hcard_close :
