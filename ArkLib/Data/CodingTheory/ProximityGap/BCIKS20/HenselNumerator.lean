@@ -2042,6 +2042,17 @@ theorem prod_map_coeff_trunc_eq (x₀ : F) (R : F[X][X][Y])
   exact Multiset.map_congr rfl (fun l hl => by
     simp only [βHenselTrunc, PowerSeries.coeff_mk, if_pos (hs l hl)])
 
+/-- Partition-specialized truncation agreement.  If every part of `λ` is at most
+`t`, then the partition product built from the `t`-truncation equals the one built
+from the assembled series. -/
+theorem partitionProd_coeff_trunc_eq {m : ℕ} (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) (lam : Nat.Partition m)
+    (hs : ∀ l ∈ lam.parts, l ≤ t) :
+    partitionProd lam (fun l => PowerSeries.coeff l (βHenselTrunc H x₀ R hHyp t))
+      = partitionProd lam (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp)) := by
+  rw [partitionProd, partitionProd]
+  exact prod_map_coeff_trunc_eq H x₀ R hHyp t lam.parts hs
+
 /-- **Per-partition cleared term (PROVEN corollary).** Instantiating the product bridge at
 a partition `λ ⊢ m` and rewriting the `W`-exponent by `partition_sum_add_one_local`. -/
 theorem partitionProd_coeff_assembled {m : ℕ} (x₀ : F) (R : F[X][X][Y])
@@ -2055,6 +2066,20 @@ theorem partitionProd_coeff_assembled {m : ℕ} (x₀ : F) (R : F[X][X][Y])
   congr 2
   exact congrArg (fun n => (liftToFunctionField (H := H) H.leadingCoeff) ^ n)
     (partition_sum_add_one_local lam)
+
+/-- **Per-partition cleared term for the truncation (PROVEN).**  When all parts of
+`λ` are at most `t`, the partition product of coefficients of `βHenselTrunc t`
+has the same cleared `βHensel` numerator expression as the assembled product. -/
+theorem partitionProd_coeff_trunc_assembled {m : ℕ} (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) (lam : Nat.Partition m)
+    (hs : ∀ l ∈ lam.parts, l ≤ t) :
+    partitionProd lam (fun l => PowerSeries.coeff l (βHenselTrunc H x₀ R hHyp t))
+      = embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp))
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (m + Multiset.card lam.parts)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))
+                ^ ((lam.parts.map (fun l => 2 * l - 1)).sum)) := by
+  rw [partitionProd_coeff_trunc_eq H x₀ R hHyp t lam hs,
+    partitionProd_coeff_assembled H x₀ R hHyp lam]
 
 /-- **(P2) order-`(t+1)` vanishing — THE SINGLE IRREDUCIBLE RESIDUAL (documented `sorry`).**
 
