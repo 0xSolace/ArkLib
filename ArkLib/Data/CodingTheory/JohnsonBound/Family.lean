@@ -432,6 +432,47 @@ theorem minDist_le_averageDistOn_closeCodewordsRelFinset
   intro x hx
   exact (ListDecodable.mem_closeCodewordsRelFinset.mp hx).1
 
+/-- Close-list wrapper for the radical-free `CodeGeometry` Johnson cap.
+
+This converts the finite point-list into an indexed family via `Finset.equivFin`.
+The remaining hypotheses are exactly the agreement lower bound to the received
+word, the pairwise agreement upper bound from the code distance, and the
+radical-free Johnson algebra side condition. -/
+theorem closeCodewordsRelFinset_card_le_of_johnson_condition
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) (f : ι → α) (δ : ℝ)
+    {A B ℓ : ℕ} {β : ℝ}
+    (hq : 0 < Fintype.card α) (hβ : 0 ≤ β)
+    (hA : ∀ x ∈ ListDecodable.closeCodewordsRelFinset C f δ,
+      A ≤ CodeGeometry.agree x f)
+    (hB : ∀ u ∈ ListDecodable.closeCodewordsRelFinset C f δ,
+      ∀ v ∈ ListDecodable.closeCodewordsRelFinset C f δ,
+        u ≠ v → CodeGeometry.agree u v ≤ B)
+    (hcond : ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))
+      + (ℓ : ℝ) * (((B : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))) < 0) :
+    (ListDecodable.closeCodewordsRelFinset C f δ).card ≤ ℓ := by
+  classical
+  let S := ListDecodable.closeCodewordsRelFinset C f δ
+  by_cases hS : S.card = 0
+  · simp [S, hS]
+  · have hSpos : 0 < S.card := Nat.pos_of_ne_zero hS
+    let e : Fin S.card ≃ S := (Finset.equivFin S).symm
+    let c : Fin S.card → ι → α := fun i => (e i).1
+    have hAidx : ∀ i, A ≤ CodeGeometry.agree (c i) f := by
+      intro i
+      exact hA (c i) (e i).2
+    have hBidx : ∀ i j, i ≠ j → CodeGeometry.agree (c i) (c j) ≤ B := by
+      intro i j hij
+      apply hB (c i) (e i).2 (c j) (e j).2
+      intro hval
+      apply hij
+      exact e.injective (Subtype.ext hval)
+    exact CodeGeometry.card_le_of_johnson_condition hq hSpos f c ℓ hAidx hBidx hβ hcond
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
