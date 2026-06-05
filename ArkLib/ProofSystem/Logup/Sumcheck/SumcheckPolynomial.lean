@@ -214,6 +214,84 @@ private noncomputable def domainIdentityPolynomial
         ∏ j ∈ (canonicalGroups params k).erase i,
           termPhiPolynomial F n M params stmt oStmt j
 
+private theorem inputOraclePolynomial_eval
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i) (idx : InputOracleIdx M)
+    (r : Fin n → F) :
+    MvPolynomial.eval r (inputOraclePolynomial F n M params oStmt idx) =
+      match idx with
+      | .table => lagrangeOracleEval (oStmt (.input .table)) r
+      | .column i => lagrangeOracleEval (oStmt (.input (.column i))) r := by
+  cases idx with
+  | table =>
+      simpa [inputOraclePolynomial] using
+        multilinearOraclePolynomial_eval F n (oStmt (.input .table)) r
+  | column i =>
+      simpa [inputOraclePolynomial] using
+        multilinearOraclePolynomial_eval F n (oStmt (.input (.column i))) r
+
+private theorem multiplicityPolynomial_eval
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i) (r : Fin n → F) :
+    MvPolynomial.eval r (multiplicityPolynomial F n M params oStmt) =
+      lagrangeOracleEval (oStmt .multiplicity) r :=
+  multilinearOraclePolynomial_eval F n (oStmt .multiplicity) r
+
+private theorem helperPolynomial_eval
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i) (k : Fin params.numGroups)
+    (r : Fin n → F) :
+    MvPolynomial.eval r (helperPolynomial F n M params oStmt k) =
+      lagrangeOracleEval ((oStmt .helpers) k) r :=
+  multilinearOraclePolynomial_eval F n ((oStmt .helpers) k) r
+
+private theorem termPhiPolynomial_eval_eq_termPhiAtPoint
+    (stmt : StmtAfterOuter F n M params)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i)
+    (r : Fin n → F) (evals : PointEvaluations F M params.numGroups)
+    (htable : evals.table = lagrangeOracleEval (oStmt (.input .table)) r)
+    (hcolumns : ∀ i : Fin M, evals.columns i =
+      lagrangeOracleEval (oStmt (.input (.column i))) r)
+    (i : TermIdx M) :
+    MvPolynomial.eval r (termPhiPolynomial F n M params stmt oStmt i) =
+      termPhiAtPoint stmt.xChallenge evals i := by
+  unfold termPhiPolynomial termPhiAtPoint phiAtPoint
+  cases hidx : termToInput i with
+  | table =>
+      simp [inputOraclePolynomial_eval, htable]
+  | column j =>
+      simp [inputOraclePolynomial_eval, hcolumns j]
+
+private theorem termNumeratorPolynomial_eval_eq_termNumeratorAtPoint
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i)
+    (r : Fin n → F) (evals : PointEvaluations F M params.numGroups)
+    (hmultiplicity : evals.multiplicity = lagrangeOracleEval (oStmt .multiplicity) r)
+    (i : TermIdx M) :
+    MvPolynomial.eval r (termNumeratorPolynomial F n M params oStmt i) =
+      termNumeratorAtPoint evals i := by
+  unfold termNumeratorPolynomial termNumeratorAtPoint numeratorAtPoint
+  cases hidx : termToInput i with
+  | table =>
+      simp [multiplicityPolynomial_eval, hmultiplicity]
+  | column j =>
+      simp
+
+private theorem domainIdentityPolynomial_eval_eq_domainIdentityAtPoint
+    (stmt : StmtAfterOuter F n M params)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i)
+    (r : Fin n → F) (evals : PointEvaluations F M params.numGroups)
+    (hmultiplicity : evals.multiplicity = lagrangeOracleEval (oStmt .multiplicity) r)
+    (htable : evals.table = lagrangeOracleEval (oStmt (.input .table)) r)
+    (hcolumns : ∀ i : Fin M, evals.columns i =
+      lagrangeOracleEval (oStmt (.input (.column i))) r)
+    (hhelpers : ∀ k : Fin params.numGroups, evals.helpers k =
+      lagrangeOracleEval ((oStmt .helpers) k) r)
+    (k : Fin params.numGroups) :
+    MvPolynomial.eval r (domainIdentityPolynomial F n M params stmt oStmt k) =
+      domainIdentityAtPoint (canonicalGroups params) stmt.xChallenge evals k := by
+  unfold domainIdentityPolynomial domainIdentityAtPoint
+  simp [helperPolynomial_eval, hhelpers k,
+    termPhiPolynomial_eval_eq_termPhiAtPoint F n M params stmt oStmt r evals htable hcolumns,
+    termNumeratorPolynomial_eval_eq_termNumeratorAtPoint F n M params oStmt r evals
+      hmultiplicity]
+
 private theorem multilinearOraclePolynomial_degreeOf (oracle : MultilinearOracle F n)
     (i : Fin n) :
     MvPolynomial.degreeOf i (multilinearOraclePolynomial F n oracle) ≤ 1 := by
@@ -364,6 +442,25 @@ noncomputable def logupQPolynomial
       lagrangeKernelPolynomial F n stmt.zChallenge *
         MvPolynomial.C (stmt.batchingScalars k) *
           domainIdentityPolynomial F n M params stmt oStmt k)
+
+/-- Evaluating the concrete LogUp sumcheck polynomial at the final verifier point recovers the
+value reconstructed by LogUp's final oracle-query check. -/
+theorem logupQPolynomial_eval_eq_qAtPoint
+    (stmt : StmtAfterOuter F n M params)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i)
+    (r : Fin n → F) (evals : PointEvaluations F M params.numGroups)
+    (hmultiplicity : evals.multiplicity = lagrangeOracleEval (oStmt .multiplicity) r)
+    (htable : evals.table = lagrangeOracleEval (oStmt (.input .table)) r)
+    (hcolumns : ∀ i : Fin M, evals.columns i =
+      lagrangeOracleEval (oStmt (.input (.column i))) r)
+    (hhelpers : ∀ k : Fin params.numGroups, evals.helpers k =
+      lagrangeOracleEval ((oStmt .helpers) k) r) :
+    MvPolynomial.eval r (logupQPolynomial F n M params stmt oStmt) =
+      qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge r
+        stmt.batchingScalars evals := by
+  simp [logupQPolynomial, qAtPoint, helperPolynomial_eval, hhelpers, lagrangeKernelPolynomial_eval,
+    domainIdentityPolynomial_eval_eq_domainIdentityAtPoint F n M params stmt oStmt r evals
+      hmultiplicity htable hcolumns hhelpers]
 
 theorem logupQPolynomial_degreeOf
     (stmt : StmtAfterOuter F n M params)
