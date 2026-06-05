@@ -1914,6 +1914,21 @@ theorem assembledSeries_isRoot_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
   · exact coeff_zero_eval_βHenselAssembled H x₀ R hHyp
   · exact hsucc t
 
+/-- Conditional identification with the genuine Hensel root from the single
+successor-coefficient residual.
+
+Once the positive-order root coefficients vanish, `assembledSeries_isRoot_of_coeff_succ_eval`
+turns the assembled numerator series into a root of `Q`; the already-proven order-`0`
+coefficient then lets `gammaGenuine_unique` identify it with the genuine Hensel lift. -/
+theorem βHenselAssembled_eq_gammaGenuine_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hsucc : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0) :
+    βHenselAssembled H x₀ R hHyp = gammaGenuine x₀ R H hHyp :=
+  βHenselAssembled_eq_gammaGenuine H x₀ R hHyp
+    (assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp hsucc)
+
 /-- **(P2) explicit-residual lift identity — PROVEN.**
 
 The repaired lift identity follows from the successor-coefficient vanishing residual. This combines
