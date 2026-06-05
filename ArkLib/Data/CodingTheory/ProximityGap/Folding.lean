@@ -260,6 +260,16 @@ theorem foldWord_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F} :
     ((f i + f i') / 2) + α * ((f i - f i') / (2 * x)) := by 
   simp [foldWord, foldValue_k_1]
 
+/-- Function-level form of `foldWord_k_1`. -/
+theorem foldWord_k_1' [NeZero n] {α : F} :
+  foldWord domain f 1 α = fun i ↦
+    let x : domain := CosetFftDomain.twoNthRoot (i := 1)
+        ⟨domain.subdomainNatReversed 1 i, by simp⟩
+    let i := domain.log x
+    let i' := domain.log ⟨-x.1, by obtain ⟨x, hx⟩ := x; simpa using hx⟩
+    ((f i + f i') / 2) + α * ((f i - f i') / (2 * x)) := by
+  aesop (add simp [foldWord_k_1])
+
 omit [DecidableEq F] in
 /-- TODO: this will go once this https://github.com/Verified-zkEVM/CompPoly/pull/203
   is merged. -/
