@@ -230,12 +230,12 @@ the exceptional set injects into `E`, giving `|T| ≤ |E| ≤ n`. This is the
 "from the proof of Lemma 1" step of the paper, isolated with the GS output as a
 hypothesis (honest staging: the GS production of `(a, b)` is the deep part, not this). -/
 
+omit [DecidableEq ι] in
 /-- **Hab25 Claim-1 endgame.** If every exceptional scalar `z ∈ T` matches the received
 word at some coordinate of the disagreement set `E = disagreeSet d₀ d₁` (i.e.
 `affineGap d₀ d₁ z x = 0` for some `x ∈ E`), then `|T| ≤ |E|`: the choice of witness
 coordinate is injective, because an affine functional that is nontrivial at `x` has at
 most one root. -/
-omit [DecidableEq ι] in
 theorem hab25_endgame_count [Nonempty ι] (d₀ d₁ : ι → F) (T : Finset F)
     (hT : ∀ z ∈ T, ∃ x ∈ disagreeSet d₀ d₁, affineGap d₀ d₁ z x = 0) :
     T.card ≤ (disagreeSet d₀ d₁).card := by
