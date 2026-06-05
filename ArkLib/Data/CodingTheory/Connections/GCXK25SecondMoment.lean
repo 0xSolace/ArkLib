@@ -2,7 +2,10 @@ import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Data.Finset.Card
 import Mathlib.Tactic
 
-/-! # GCXK25 second-moment counting core (scratch) -/
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+
+/-! # GCXK25 second-moment counting core -/
 
 namespace GCXK25SecondMoment
 
