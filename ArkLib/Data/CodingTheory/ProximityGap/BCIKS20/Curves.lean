@@ -2315,6 +2315,44 @@ theorem correlatedAgreement_affine_curves_of_uniform_strict_coeff_polys_and_boun
   exact hCoeff u P hP
 
 omit [DecidableEq ι] in
+/-- Closed-radius coefficient-polynomial capstone when the strict branch
+supplies one canonical decoded family uniformly in the received word stack.
+This is the canonical-family version of
+`correlatedAgreement_affine_curves_of_uniform_strict_coeff_polys_and_boundary_card`. -/
+theorem correlatedAgreement_affine_curves_of_uniform_strict_canonical_coeff_polys_and_boundary_card
+    {k : ℕ} {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCanonicalCoeff :
+      ∀ u : WordStack F (Fin (k + 1)) ι,
+        ∃ P₀ : F → Polynomial F,
+          (∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P₀ z).coeff j = (B j).eval z) ∧
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                P z = P₀ z)
+    (hBoundaryCard : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      δ = 1 - ReedSolomon.sqrtRate deg domain →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_uniform_strict_coeff_polys_and_boundary_card
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_ hBoundaryCard
+  intro u P hP
+  obtain ⟨P₀, hCoeff₀, huniq⟩ := hStrictCanonicalCoeff u
+  exact coeff_polys_for_all_decoded_of_canonical_agreement
+    (deg := deg) (domain := domain) (δ := δ)
+    (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+    (u := u) P₀ hCoeff₀ huniq P hP
+
+omit [DecidableEq ι] in
 /-- Strict square-root-radius capstone phrased in the coefficient-polynomial
 language of §5. In the strict range, the closed-boundary branch is impossible. -/
 theorem correlatedAgreement_affine_curves_of_strict_coeff_polys {k : ℕ}
