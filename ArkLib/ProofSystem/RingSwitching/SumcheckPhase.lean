@@ -1397,13 +1397,12 @@ def sumcheckLoopOracleReduction :
 instance instSumcheckLoopOracleReductionAppendCoherent :
     OracleVerifier.Append.AppendCoherent
       (sumcheckLoopOracleReduction κ L K P ℓ ℓ' aOStmtIn).verifier :=
-  OracleReduction.seqCompose_verifier_appendCoherent
-    (m := ℓ') (oSpec := []ₒ)
-    (pSpec := fun _ => pSpecSumcheckRound L)
-    (OStmt := fun _ => aOStmtIn.OStmtIn)
-    (Stmt := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P))
-    (Wit := fun i => SumcheckWitness L ℓ' i)
-    (R := fun i => iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
+  by
+    change OracleVerifier.Append.AppendCoherent
+      (sumcheckLoopOracleVerifier κ L K P ℓ ℓ' aOStmtIn)
+    exact instSumcheckLoopOracleVerifierAppendCoherent
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
+      (aOStmtIn := aOStmtIn)
 
 /-- Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum -/
 @[reducible]
