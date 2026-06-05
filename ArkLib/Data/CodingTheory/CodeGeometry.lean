@@ -233,4 +233,41 @@ theorem card_le_of_gram_bounds {L : ℕ} (hL : 0 < L) (S : Fin L → Fin L → �
   have hDo_le : Do ≤ 0 := le_of_lt hDo
   nlinarith [hfull, hLpos, hDo_le]
 
+/-- Diagonal bound for the shifted Gram entries: if the listed word agrees with
+the center on at least `A` coordinates, then (with `β ≥ 0`)
+`⟨y,y⟩ ≤ n(1−1/q)(1+β²) − 2β(A − n/q)`. -/
+theorem shiftInner_diag_le (hq : 0 < Fintype.card α)
+    {f w : ι → α} {A : ℕ} (hA : A ≤ agree w f) {β : ℝ} (hβ : 0 ≤ β) :
+    codeInner w w - β * codeInner w f - β * codeInner w f + β ^ 2 * codeInner f f
+      ≤ (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)) := by
+  have h1 := codeInner_self w hq
+  have h2 := codeInner_eq_agree_sub w f hq
+  have h3 := codeInner_self f hq
+  rw [h1, h2, h3]
+  have hAle : (A : ℝ) ≤ (agree w f : ℝ) := by exact_mod_cast hA
+  nlinarith [hβ, hAle]
+
+/-- Off-diagonal bound: if two listed words agree with the center on at least
+`A` coordinates each, and with each other on at most `B` coordinates, then
+(with `β ≥ 0`)
+`⟨y_i,y_j⟩ ≤ (B − n/q) − 2β(A − n/q) + β²·n(1−1/q)`. -/
+theorem shiftInner_offdiag_le (hq : 0 < Fintype.card α)
+    {f u v : ι → α} {A B : ℕ}
+    (hAu : A ≤ agree u f) (hAv : A ≤ agree v f) (hB : agree u v ≤ B)
+    {β : ℝ} (hβ : 0 ≤ β) :
+    codeInner u v - β * codeInner u f - β * codeInner v f + β ^ 2 * codeInner f f
+      ≤ ((B : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) := by
+  have h1 := codeInner_eq_agree_sub u v hq
+  have h2 := codeInner_eq_agree_sub u f hq
+  have h3 := codeInner_eq_agree_sub v f hq
+  have h4 := codeInner_self f hq
+  rw [h1, h2, h3, h4]
+  have hAu' : (A : ℝ) ≤ (agree u f : ℝ) := by exact_mod_cast hAu
+  have hAv' : (A : ℝ) ≤ (agree v f : ℝ) := by exact_mod_cast hAv
+  have hB' : (agree u v : ℝ) ≤ (B : ℝ) := by exact_mod_cast hB
+  nlinarith [hβ, hAu', hAv', hB']
+
 end CodeGeometry
