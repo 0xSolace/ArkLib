@@ -246,6 +246,49 @@ theorem averageDistToOn_real_le_of_forall_dist_le
           rw [sum_const, nsmul_eq_mul]
           field_simp [hcard_pos.ne']
 
+/-- A relative-distance bound gives the corresponding absolute Hamming-distance
+bound after multiplying by the block length. -/
+lemma hammingDist_real_le_of_relHammingDist_le
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    {α : Type} [DecidableEq α] {f c : ι → α} {δ : ℝ}
+    (h : ((Code.relHammingDist f c : ℚ≥0) : ℝ) ≤ δ) :
+    (hammingDist f c : ℝ) ≤ δ * (Fintype.card ι : ℝ) := by
+  have hn_pos : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
+  unfold Code.relHammingDist at h
+  simp only [NNRat.cast_div, NNRat.cast_natCast] at h
+  rw [div_le_iff₀ hn_pos] at h
+  exact h
+
+/-- Elements of a finite point-list are within absolute radius `δ · n` of the
+received word. -/
+lemma hammingDist_real_le_of_mem_closeCodewordsRelFinset
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    {C : ListDecodable.Code ι α} {f c : ι → α} {δ : ℝ}
+    (h : c ∈ ListDecodable.closeCodewordsRelFinset C f δ) :
+    (hammingDist f c : ℝ) ≤ δ * (Fintype.card ι : ℝ) := by
+  have hrel := (ListDecodable.mem_closeCodewordsRelFinset.mp h).2
+  simp only [ListDecodable.relHammingBall, Set.mem_setOf_eq] at hrel
+  have hn_pos : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
+  unfold Code.relHammingDist at hrel
+  simp only [NNRat.cast_div, NNRat.cast_natCast] at hrel
+  rw [div_le_iff₀ hn_pos] at hrel
+  convert hrel using 1
+  congr
+
+/-- The finite point-list average distance to its received word is bounded by
+the relative radius times the block length. -/
+theorem averageDistToOn_closeCodewordsRelFinset_le_radius_mul_card
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) (f : ι → α) (δ : ℝ)
+    (hB : 0 < (ListDecodable.closeCodewordsRelFinset C f δ).card) :
+    ((averageDistToOn (ListDecodable.closeCodewordsRelFinset C f δ) f : ℚ) : ℝ) ≤
+      δ * (Fintype.card ι : ℝ) := by
+  apply averageDistToOn_real_le_of_forall_dist_le hB
+  intro x hx
+  exact hammingDist_real_le_of_mem_closeCodewordsRelFinset hx
+
 /-- Any two distinct members of a code are separated by at least `Code.minDist`. -/
 lemma minDist_le_hammingDist_of_mem_ne
     {ι : Type} [Fintype ι] {α : Type} [DecidableEq α]
