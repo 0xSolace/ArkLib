@@ -971,7 +971,6 @@ theorem section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords
           (((1 : ℕ) : ENNReal) * (errorBound (δ : ℝ≥0) (k + 1) ωs : ENNReal)) →
       (1 - (LinearCode.rate (ReedSolomon.code ωs (k + 1)) : ℝ≥0)) / 2 <
         (δ : ℝ≥0) →
-      (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs →
       ∀ P : F → Polynomial F,
         (∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
             u (δ : ℝ≥0),
@@ -984,7 +983,7 @@ theorem section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords
                 u (δ : ℝ≥0),
               ∀ x : Fin n, (P z).eval (ωs x) = (E x).eval z := by
   classical
-  intro hk1 u hprob hJ _hsqrt P hP
+  intro hk1 u hprob hJ P hP
   obtain ⟨P₀, hEval₀, huniq⟩ :=
     section5_strict_canonical_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords
       (F := F) (n := n) (m := m) (k := k) hk (ωs := ωs)
