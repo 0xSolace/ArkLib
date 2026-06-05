@@ -2316,6 +2316,33 @@ theorem correlatedAgreement_affine_curves_of_strict_coeff_polys {k : ℕ}
     exact False.elim (hnot hδ)
 
 omit [DecidableEq ι] in
+/-- Strict square-root-radius coefficient-polynomial capstone when the §5
+coefficient-polynomial extraction is uniform in the received word stack. This is
+the natural shape of selected-domain extraction: the probability and Johnson
+side conditions are only needed by the §6 threshold front door, not by the
+coefficient assembly witness itself. -/
+theorem correlatedAgreement_affine_curves_of_uniform_strict_coeff_polys {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hCoeff : ∀ u : WordStack F (Fin (k + 1)) ι,
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+              (P z).eval ∘ domain) ≤ δ) →
+          ∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_strict_coeff_polys
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_
+  intro _hk u _hprob _hJ P hP
+  exact hCoeff u P hP
+
+omit [DecidableEq ι] in
 /-- Strict square-root-radius coefficient-polynomial capstone when §5 supplies
 one canonical decoded family, coefficient-polynomial witnesses for it, and
 uniqueness of decoded families on the good-coefficient set. -/
