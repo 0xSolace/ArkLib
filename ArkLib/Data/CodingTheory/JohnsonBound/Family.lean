@@ -1024,7 +1024,7 @@ theorem Lambda_le_of_le_JqℓRecipReal_minDist_of_scaled_distance_le
 This packages the structural fact that a code with two distinct codewords has
 positive minimum distance, so downstream callers can use the natural
 nontriviality hypothesis instead of separately proving `0 < Code.minDist C`. -/
-theorem Lambda_le_of_JqℓRecipReal_nontrivial_of_scaled_distance_le
+theorem Lambda_le_of_JqℓRecipReal_minDist_of_scaled_distance_le_of_nontrivial
     {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
     {α : Type} [Fintype α] [DecidableEq α]
     (C : ListDecodable.Code ι α) {ℓ : ℕ}
@@ -1045,7 +1045,7 @@ theorem Lambda_le_of_JqℓRecipReal_nontrivial_of_scaled_distance_le
 
 /-- Monotone-radius nontrivial-code version of
 `Lambda_le_of_le_JqℓRecipReal_minDist_of_scaled_distance_le`. -/
-theorem Lambda_le_of_le_JqℓRecipReal_nontrivial_of_scaled_distance_le
+theorem Lambda_le_of_le_JqℓRecipReal_minDist_of_scaled_distance_le_of_nontrivial
     {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
     {α : Type} [Fintype α] [DecidableEq α]
     (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ}
