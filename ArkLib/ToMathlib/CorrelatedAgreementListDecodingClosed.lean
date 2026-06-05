@@ -280,6 +280,71 @@ theorem correlatedAgreement_affine_curves_listDecoding_closed_canonical {k deg :
   exact correlatedAgreement_affine_curves_of_uniform_strict_canonical_coeff_polys_and_boundary_card
     (deg := deg) (domain := domain) (δ := δ) hδ hStrictCanonicalCoeff hBoundaryCard
 
+omit [Nonempty ι] [DecidableEq ι] in
+/-- Turn the genuine §5 extraction datum for one canonical decoded family into
+the canonical coefficient-polynomial package consumed by the closed keystone.
+
+The coefficient witnesses are still derived from `Section5StrictData` through
+`curveCoeffPolys_of_betaRec`; the only extra assumption is the expected
+uniqueness statement identifying every good decoding with the chosen canonical
+family `P₀`. -/
+theorem canonicalCoeffPolys_of_section5CanonicalData {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    {u : WordStack F (Fin (k + 1)) ι} {P₀ : F → Polynomial F}
+    (d : Section5StrictData (k := k) (deg := deg) (domain := domain) (δ := δ) u P₀)
+    (hunique : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+      ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        P z = P₀ z) :
+    (∃ B : ℕ → Polynomial F,
+      (∀ j < deg, (B j).natDegree < k + 1) ∧
+        ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          ∀ j < deg, (P₀ z).coeff j = (B j).eval z) ∧
+    ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+      ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        P z = P₀ z := by
+  exact ⟨hcoeffPoly_witness_of_section5Data d, hunique⟩
+
+omit [DecidableEq ι] in
+/-- Closed list-decoding keystone where the strict branch supplies exactly the
+canonical §5 extraction data for one family `P₀` per stack, plus uniqueness.
+
+This is the direct residual target for the current §5 assembly: the betaRec
+extraction datum is still genuine `Section5StrictData`, while the theorem
+packages it into the canonical-coefficient front door automatically. -/
+theorem correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hCanonicalExtract :
+      ∀ u : WordStack F (Fin (k + 1)) ι,
+        ∃ P₀ : F → Polynomial F,
+          ∃ _d : Section5StrictData (k := k) (deg := deg) (domain := domain) (δ := δ) u P₀,
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              P z = P₀ z)
+    (hBoundaryCard : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      δ = 1 - ReedSolomon.sqrtRate deg domain →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_listDecoding_closed_canonical
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_ hBoundaryCard
+  intro u
+  obtain ⟨P₀, d, hunique⟩ := hCanonicalExtract u
+  exact ⟨P₀, canonicalCoeffPolys_of_section5CanonicalData d hunique⟩
+
 end CorrelatedAgreementListDecodingClosed
 
 end ArkLib
@@ -290,3 +355,5 @@ end ArkLib
 #print axioms ArkLib.CorrelatedAgreementListDecodingClosed.hcoeffPoly_of_section5Extraction
 #print axioms ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed
 #print axioms ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_canonical
+#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.canonicalCoeffPolys_of_section5CanonicalData
+#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical

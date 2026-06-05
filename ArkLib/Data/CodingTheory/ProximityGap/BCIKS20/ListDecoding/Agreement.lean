@@ -5797,6 +5797,63 @@ lemma exists_points_with_canonical_eval_polys_on_close_subset_of_natCeil_delta_n
     h_gs hk (D := D) (E := ⌈δ * (n : ℚ)⌉₊) (t := t)
     (Nat.le_ceil _) hcover hthreshold hsmall hunique
 
+/-- Canonical selected-domain package in the complement-threshold arithmetic shape.
+
+This is the direct consumer form for callers that have already chosen the natural
+slack `#S - threshold`: it packages Claim 5.11 coverage, the canonical `PzFamily`
+evaluation-polynomial witnesses, and uniqueness under one strict counting inequality. -/
+lemma exists_points_with_canonical_eval_polys_on_close_subset_of_natCeil_delta_nonmatching_bound_complement
+    [NeZero n]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hk : 0 < k)
+    {D : ℕ}
+    (hcover :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D)
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D ≤ #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (hsmall :
+      ⌈δ * (n : ℚ)⌉₊ * #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) <
+        (n - k) *
+          (#(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) -
+            (2 * k + 1)
+              * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+              * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+              * D))
+    (hunique : ∀ P : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        P z = PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∃ P₀ : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        (P₀ z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P₀ z).eval ∘ ωs) ≤ δ) ∧
+      (∃ E : Dtop → F[X],
+        (∀ x, (E x).natDegree < k + 1) ∧
+          ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+            ∀ x : Dtop, (P₀ z).eval (ωs x.1) = (E x).eval z) ∧
+      ∀ P : F → F[X],
+        (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+          (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
+        ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁, P z = P₀ z := by
+  obtain ⟨Dtop, hcard, hsubset⟩ :=
+    exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound_complement
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs (D := D) hcover hthreshold hsmall
+  refine ⟨Dtop, hcard, ?_⟩
+  exact PzFamily_exists_canonical_eval_polys_on_close_subset_and_unique
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) h_gs Dtop hk hsubset
+    hunique
+
 /-- Claim 5.11 from [BCIKS20].
 There exists a set of points `{x₀,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in
 Claim 5.10.
