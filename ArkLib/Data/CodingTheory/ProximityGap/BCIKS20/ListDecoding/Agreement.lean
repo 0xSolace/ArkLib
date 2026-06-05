@@ -431,32 +431,6 @@ theorem Q_graph_factor_dvd [DecidableEq (Polynomial F)]
 /-! ### Side-condition-explicit Claim 5.7 helpers -/
 
 omit [DecidableEq (RatFunc F)] in
-/-- Restate graph vanishing through the `pg_eval_on_Z` accessor consumed by the extraction toolbox. -/
-theorem Q_vanishes_on_close_codeword_graph_pg [DecidableEq (Polynomial F)]
-    (k : ℕ) {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁)
-    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
-    (A : Finset (Fin n))
-    (hA : ∀ i ∈ A, (u₀ + z • u₁) i = (Pz hS).eval (ωs i))
-    (hcount : Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k < m * A.card) :
-    (pg_eval_on_Z (F := F) Q z).eval (Pz hS) = 0 := by
-  have hkey := Q_vanishes_on_close_codeword_graph (F := F) k h_gs hS hQz_ne A hA hcount
-  rwa [c57_eval_on_Z_eq_pg] at hkey
-
-omit [DecidableEq (RatFunc F)] in
-/-- A one-parameter graph-vanishing fact gives the linear-factor divisibility used by Claim 5.7. -/
-theorem Q_graph_factor_dvd [DecidableEq (Polynomial F)]
-    (k : ℕ) {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁)
-    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
-    (A : Finset (Fin n))
-    (hA : ∀ i ∈ A, (u₀ + z • u₁) i = (Pz hS).eval (ωs i))
-    (hcount : Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k < m * A.card) :
-    Polynomial.X - Polynomial.C (Pz hS) ∣ pg_eval_on_Z (F := F) Q z :=
-  Polynomial.dvd_iff_isRoot.mpr
-    (Q_vanishes_on_close_codeword_graph_pg (F := F) k h_gs hS hQz_ne A hA hcount)
-
-omit [DecidableEq (RatFunc F)] in
 /-- Convert the explicit graph-vanishing side conditions into the divisibility hypothesis consumed
 by `pg_exists_common_candidate_pair_of_dvd_card_natDegreeY`.
 
@@ -490,9 +464,8 @@ lemma pg_divisibility_of_graph_vanishing_conditions [DecidableEq (Polynomial F)]
       simpa [P, ← c57_eval_on_Z_eq_pg (F := F) Q z.1] using hvanish
     exact Polynomial.dvd_iff_isRoot.mpr hroot
 
-open Trivariate in
-open Bivariate in
-/-- Claim 5.7 of [BCIKS20].
+/-
+Claim 5.7 of [BCIKS20].
 
 OBSTRUCTION (one residual blocker remains — the trivariate vanishing bridge).
 

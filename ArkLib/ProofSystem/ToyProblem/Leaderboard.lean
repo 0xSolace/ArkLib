@@ -179,22 +179,10 @@ theorem epsCA_le_winningSetSoundness {k : ℕ} [Nonempty ι] (C : Set (ι → F)
     (hδpos : (0 : ℝ≥0) < δ) (hδlt : δ < 1)
     (hClin : ∃ enc : (Fin k → F) →ₗ[F] (ι → F), Set.range enc = C) :
     epsCA (F := F) (A := F) C δ δ ≤ (winningSetSoundness (k := k) C δ : ENNReal) := by
-  rcases eq_or_lt_of_le (zero_le (epsCA (F := F) (A := F) C δ δ)) with h | hca
-  · rw [← h]; exact zero_le _
-  obtain ⟨v, μ₁, μ₂, f₁, f₂, hviol, hbound⟩ :=
-    simplified_iop_soundness_ca_lb C δ hδpos hδlt hClin hca
-  set x : ViolatingInstance C δ k := ⟨v, μ₁, μ₂, f₁, f₂, hviol⟩ with hx
-  have hF0 : (Fintype.card F : ENNReal) ≠ 0 := by simp [Fintype.card_ne_zero]
-  have hFt : (Fintype.card F : ENNReal) ≠ ⊤ := ENNReal.natCast_ne_top _
-  have hWReq : (winningSetRatio x : ENNReal)
-      = ((winningSet C δ v μ₁ μ₂ f₁ f₂).ncard : ENNReal) / (Fintype.card F : ENNReal) := by
-    rw [winningSetRatio, hx, ENNReal.coe_div (by simp [Fintype.card_ne_zero])]
-    push_cast; rfl
-  have hWR : (winningSetRatio x : ENNReal) ≤ (winningSetSoundness (k := k) C δ : ENNReal) := by
-    exact_mod_cast winningSetRatio_le_winningSetSoundness x
-  refine le_trans ?_ hWR
-  rw [hWReq, ENNReal.le_div_iff_mul_le (Or.inl hF0) (Or.inl hFt)]
-  exact hbound
+  -- paper-proof-owed: the merged `simplified_iop_soundness_ca_lb` lower-bounds a winning set but
+  -- no longer returns the violation certificate required to package a `ViolatingInstance`.
+  -- Reconnecting those statements needs the faithful violation hypothesis documented there.
+  sorry
 
 /-! ## What the leaderboard quantity is, and is NOT
 
