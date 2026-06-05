@@ -12157,9 +12157,36 @@
           "signature": "def evalOnPoints [Semiring F] : F[X] \u2192\u2097[F] (\u03b9 \u2192 F) where"
         },
         {
+          "doc": "Proves that `evalOnPoints` preserves multiplication as well.",
+          "kind": "def",
+          "line": 45,
+          "name": "ReedSolomon.evalOnPointsRingHom",
+          "namespace": "ReedSolomon",
+          "short_name": "evalOnPointsRingHom",
+          "signature": "def evalOnPointsRingHom [CommSemiring F] : F[X] \u2192+* (\u03b9 \u2192 F) where"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 52,
+          "name": "ReedSolomon.evalOnPointsRingHom_eq_evalOnPoints",
+          "namespace": "ReedSolomon",
+          "short_name": "evalOnPointsRingHom_eq_evalOnPoints",
+          "signature": "lemma evalOnPointsRingHom_eq_evalOnPoints [CommSemiring F] {p : F[X]} {domain : \u03b9 \u21aa F} :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 56,
+          "name": "ReedSolomon.evalOnPoints_mul",
+          "namespace": "ReedSolomon",
+          "short_name": "evalOnPoints_mul",
+          "signature": "lemma evalOnPoints_mul [CommSemiring F] {domain : \u03b9 \u21aa F} {p q : F[X]} :"
+        },
+        {
           "doc": "The Reed-Solomon code for polynomials of degree less than `deg` and evaluation points `domain`.",
           "kind": "def",
-          "line": 46,
+          "line": 62,
           "name": "ReedSolomon.code",
           "namespace": "ReedSolomon",
           "short_name": "code",
@@ -12168,7 +12195,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 49,
+          "line": 65,
           "name": "ReedSolomon.codewordToPoly",
           "namespace": "ReedSolomon",
           "short_name": "codewordToPoly",
@@ -12177,7 +12204,7 @@
         {
           "doc": "The generator matrix of the Reed-Solomon code of degree `deg` and evaluation points `domain`.",
           "kind": "def",
-          "line": 55,
+          "line": 71,
           "name": "ReedSolomon.genMatrix",
           "namespace": "ReedSolomon",
           "short_name": "genMatrix",
@@ -12186,7 +12213,7 @@
         {
           "doc": "The (parity)-check matrix of the Reed-Solomon code, assuming `\u03b9` is finite.",
           "kind": "def",
-          "line": 59,
+          "line": 75,
           "name": "ReedSolomon.checkMatrix",
           "namespace": "ReedSolomon",
           "short_name": "checkMatrix",
@@ -12195,7 +12222,7 @@
         {
           "doc": "",
           "kind": "abbrev",
-          "line": 78,
+          "line": 94,
           "name": "ReedSolomon.RScodeSet",
           "namespace": "ReedSolomon",
           "short_name": "RScodeSet",
@@ -12204,7 +12231,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 81,
+          "line": 97,
           "name": "ReedSolomon.toFinset",
           "namespace": "ReedSolomon",
           "short_name": "toFinset",
@@ -12213,7 +12240,25 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 94,
+          "line": 111,
+          "name": "ReedSolomon.evalOnPoints_C",
+          "namespace": "ReedSolomon",
+          "short_name": "evalOnPoints_C",
+          "signature": "lemma evalOnPoints_C {domain : \u03b9 \u21aa F} {a : F} :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 115,
+          "name": "ReedSolomon.evalOnPoints_X",
+          "namespace": "ReedSolomon",
+          "short_name": "evalOnPoints_X",
+          "signature": "lemma evalOnPoints_X {domain : \u03b9 \u21aa F} :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 118,
           "name": "ReedSolomon.natDegree_lt_of_mem_degreeLT",
           "namespace": "ReedSolomon",
           "short_name": "natDegree_lt_of_mem_degreeLT",
@@ -12222,7 +12267,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 99,
+          "line": 123,
           "name": "ReedSolomon.encode",
           "namespace": "ReedSolomon",
           "short_name": "encode",
@@ -12231,7 +12276,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 102,
+          "line": 126,
           "name": "ReedSolomon.encode_mem_ReedSolomon_code",
           "namespace": "ReedSolomon",
           "short_name": "encode_mem_ReedSolomon_code",
@@ -12240,7 +12285,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 109,
+          "line": 133,
           "name": "ReedSolomon.makeZero",
           "namespace": "ReedSolomon",
           "short_name": "makeZero",
@@ -12249,7 +12294,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 112,
+          "line": 136,
           "name": "ReedSolomon.codewordIsZero_makeZero",
           "namespace": "ReedSolomon",
           "short_name": "codewordIsZero_makeZero",
@@ -12258,7 +12303,7 @@
         {
           "doc": "The Vandermonde matrix is the generator matrix for an RS code of length `\u03b9` and dimension `deg`.",
           "kind": "lemma",
-          "line": 119,
+          "line": 143,
           "name": "ReedSolomon.genMatIsVandermonde",
           "namespace": "ReedSolomon",
           "short_name": "genMatIsVandermonde",
@@ -12267,16 +12312,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 121,
-          "name": "ReedSolomon._anon_class_121",
+          "line": 145,
+          "name": "ReedSolomon._anon_class_145",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_class_121",
+          "short_name": "_anon_class_145",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 140,
+          "line": 164,
           "name": "ReedSolomon.mem_code_of_polynomial_of_degree_lt_of_eval",
           "namespace": "ReedSolomon",
           "short_name": "mem_code_of_polynomial_of_degree_lt_of_eval",
@@ -12285,7 +12330,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 149,
+          "line": 173,
           "name": "ReedSolomon.mem_code_of_polynomial_of_natDegree_lt_of_eval",
           "namespace": "ReedSolomon",
           "short_name": "mem_code_of_polynomial_of_natDegree_lt_of_eval",
@@ -12294,7 +12339,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 159,
+          "line": 183,
           "name": "ReedSolomon.mem_code_iff_exists_polynomial",
           "namespace": "ReedSolomon",
           "short_name": "mem_code_iff_exists_polynomial",
@@ -12303,7 +12348,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 169,
+          "line": 193,
           "name": "ReedSolomon.mem_code_iff_exists_polynomial_of_ne_zero",
           "namespace": "ReedSolomon",
           "short_name": "mem_code_iff_exists_polynomial_of_ne_zero",
@@ -12312,7 +12357,7 @@
         {
           "doc": "**Monotonicity of `code` in the degree bound.** If `n \u2264 m`, the degree-`n` Reed-Solomon code is contained in the degree-`m` code over the same domain.",
           "kind": "lemma",
-          "line": 185,
+          "line": 209,
           "name": "ReedSolomon.code_mono",
           "namespace": "ReedSolomon",
           "short_name": "code_mono",
@@ -12321,7 +12366,7 @@
         {
           "doc": "**The degree-zero Reed-Solomon code is trivial.** Only the zero word is a codeword of `code \u03b1 0`. A direct corollary of `Polynomial.degreeLT_zero` (general polynomial fact) + `Submodule.map_bot` (general linear-algebra fact).",
           "kind": "lemma",
-          "line": 193,
+          "line": 217,
           "name": "ReedSolomon.code_zero",
           "namespace": "ReedSolomon",
           "short_name": "code_zero",
@@ -12330,7 +12375,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 204,
+          "line": 228,
           "name": "ReedSolomon.dim_eq_deg_of_le",
           "namespace": "ReedSolomon",
           "short_name": "dim_eq_deg_of_le",
@@ -12339,16 +12384,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 206,
-          "name": "ReedSolomon._anon_class_206",
+          "line": 230,
+          "name": "ReedSolomon._anon_class_230",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_class_206",
+          "short_name": "_anon_class_230",
           "signature": "class classical"
         },
         {
           "doc": "Generalized dimension formula for RS code with arbitrary finite index type `\u03b9`.",
           "kind": "lemma",
-          "line": 213,
+          "line": 237,
           "name": "ReedSolomon.dim_eq_deg_of_le'",
           "namespace": "ReedSolomon",
           "short_name": "dim_eq_deg_of_le'",
@@ -12357,7 +12402,7 @@
         {
           "doc": "The dimension of an RS-code equals the cardinality of the evaluation points if the original degree exceeds the cardinality.",
           "kind": "lemma",
-          "line": 269,
+          "line": 293,
           "name": "ReedSolomon.dim_eq_card_of_lt",
           "namespace": "ReedSolomon",
           "short_name": "dim_eq_card_of_lt",
@@ -12366,7 +12411,7 @@
         {
           "doc": "Assumption-less expression for the dimension of an RS-code. The dimension equals the minimum of the degree and the cardinality of the evaluation set.",
           "kind": "theorem",
-          "line": 299,
+          "line": 323,
           "name": "ReedSolomon.dim_eq_min_deg_card",
           "namespace": "ReedSolomon",
           "short_name": "dim_eq_min_deg_card",
@@ -12375,7 +12420,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 310,
+          "line": 334,
           "name": "ReedSolomon.length_eq_domain_size",
           "namespace": "ReedSolomon",
           "short_name": "length_eq_domain_size",
@@ -12384,7 +12429,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 314,
+          "line": 338,
           "name": "ReedSolomon.rateOfLinearCode_eq_div",
           "namespace": "ReedSolomon",
           "short_name": "rateOfLinearCode_eq_div",
@@ -12393,7 +12438,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 319,
+          "line": 343,
           "name": "ReedSolomon.length_eq_domain_card'",
           "namespace": "ReedSolomon",
           "short_name": "length_eq_domain_card'",
@@ -12402,7 +12447,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 326,
+          "line": 350,
           "name": "ReedSolomon.rateOfLinearCode_eq_div'",
           "namespace": "ReedSolomon",
           "short_name": "rateOfLinearCode_eq_div'",
@@ -12411,7 +12456,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 333,
+          "line": 357,
           "name": "ReedSolomon.rateOfLinearCode_eq_min_div",
           "namespace": "ReedSolomon",
           "short_name": "rateOfLinearCode_eq_min_div",
@@ -12420,7 +12465,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 340,
+          "line": 364,
           "name": "ReedSolomon.dist_le_length",
           "namespace": "ReedSolomon",
           "short_name": "dist_le_length",
@@ -12429,7 +12474,7 @@
         {
           "doc": "",
           "kind": "abbrev",
-          "line": 345,
+          "line": 369,
           "name": "ReedSolomon.sqrtRate",
           "namespace": "ReedSolomon",
           "short_name": "sqrtRate",
@@ -12438,7 +12483,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 350,
+          "line": 374,
           "name": "ReedSolomon.card_le_card_of_count_inj",
           "namespace": "ReedSolomon",
           "short_name": "card_le_card_of_count_inj",
@@ -12447,16 +12492,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 354,
-          "name": "ReedSolomon._anon_class_354",
+          "line": 378,
+          "name": "ReedSolomon._anon_class_378",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_class_354",
+          "short_name": "_anon_class_378",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 366,
+          "line": 390,
           "name": "ReedSolomon.constantCode",
           "namespace": "ReedSolomon",
           "short_name": "constantCode",
@@ -12465,7 +12510,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 371,
+          "line": 395,
           "name": "ReedSolomon.weight_constantCode",
           "namespace": "ReedSolomon",
           "short_name": "weight_constantCode",
@@ -12474,7 +12519,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 376,
+          "line": 400,
           "name": "ReedSolomon.constantCode_mem_code",
           "namespace": "ReedSolomon",
           "short_name": "constantCode_mem_code",
@@ -12483,7 +12528,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 382,
+          "line": 406,
           "name": "ReedSolomon.constantCode_eq_ofNat_zero_iff",
           "namespace": "ReedSolomon",
           "short_name": "constantCode_eq_ofNat_zero_iff",
@@ -12492,7 +12537,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 388,
+          "line": 412,
           "name": "ReedSolomon.wt_constantCode",
           "namespace": "ReedSolomon",
           "short_name": "wt_constantCode",
@@ -12501,7 +12546,7 @@
         {
           "doc": "The minimal code distance of an RS code of length `\u03b9` and dimension `deg` is `\u03b9 - deg + 1`.",
           "kind": "theorem",
-          "line": 395,
+          "line": 419,
           "name": "ReedSolomon.minDist",
           "namespace": "ReedSolomon",
           "short_name": "minDist",
@@ -12510,7 +12555,7 @@
         {
           "doc": "Generalized minimal code distance for RS code with arbitrary finite index type `\u03b9`.",
           "kind": "theorem",
-          "line": 428,
+          "line": 452,
           "name": "ReedSolomon.minDist'",
           "namespace": "ReedSolomon",
           "short_name": "minDist'",
@@ -12519,16 +12564,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 431,
-          "name": "ReedSolomon._anon_class_431",
+          "line": 455,
+          "name": "ReedSolomon._anon_class_455",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_class_431",
+          "short_name": "_anon_class_455",
           "signature": "class classical"
         },
         {
           "doc": "Reed-Solomon codes are maximum distance separable (MDS).",
           "kind": "lemma",
-          "line": 470,
+          "line": 494,
           "name": "ReedSolomon.isMDS_code",
           "namespace": "ReedSolomon",
           "short_name": "isMDS_code",
@@ -12537,16 +12582,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 472,
-          "name": "ReedSolomon._anon_class_472",
+          "line": 496,
+          "name": "ReedSolomon._anon_class_496",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_class_472",
+          "short_name": "_anon_class_496",
           "signature": "class classical"
         },
         {
           "doc": "Generalized distance equality for RS code with arbitrary finite index type `\u03b9`.",
           "kind": "theorem",
-          "line": 478,
+          "line": 502,
           "name": "ReedSolomon.dist_eq'",
           "namespace": "ReedSolomon",
           "short_name": "dist_eq'",
@@ -12555,7 +12600,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 484,
+          "line": 508,
           "name": "ReedSolomon.dist_eq",
           "namespace": "ReedSolomon",
           "short_name": "dist_eq",
@@ -12564,7 +12609,7 @@
         {
           "doc": "Generalized unique decoding radius for RS code with arbitrary finite index type `\u03b9`.",
           "kind": "theorem",
-          "line": 491,
+          "line": 515,
           "name": "ReedSolomon.uniqueDecodingRadius_RS_eq'",
           "namespace": "ReedSolomon",
           "short_name": "uniqueDecodingRadius_RS_eq'",
@@ -12573,7 +12618,7 @@
         {
           "doc": "Generalized relative unique decoding radius for RS code with arbitrary finite index type `\u03b9`.",
           "kind": "theorem",
-          "line": 503,
+          "line": 527,
           "name": "ReedSolomon.relativeUniqueDecodingRadius_RS_eq'",
           "namespace": "ReedSolomon",
           "short_name": "relativeUniqueDecodingRadius_RS_eq'",
@@ -12582,7 +12627,7 @@
         {
           "doc": "The exact unique decoding radius for Reed-Solomon codes via MDS property: `d = n - k + 1`. The unique decoding radius is \u230a(d-1)/2\u230b = \u230a(n-k)/2\u230b.",
           "kind": "theorem",
-          "line": 522,
+          "line": 546,
           "name": "ReedSolomon.uniqueDecodingRadius_RS_eq",
           "namespace": "ReedSolomon",
           "short_name": "uniqueDecodingRadius_RS_eq",
@@ -12591,7 +12636,7 @@
         {
           "doc": "The relative unique decoding radius for Reed-Solomon codes: `(1 - \u03c1)/2`.",
           "kind": "theorem",
-          "line": 531,
+          "line": 555,
           "name": "ReedSolomon.relativeUniqueDecodingRadius_RS_eq",
           "namespace": "ReedSolomon",
           "short_name": "relativeUniqueDecodingRadius_RS_eq",
@@ -12600,7 +12645,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 545,
+          "line": 569,
           "name": "ReedSolomon.finCarrier",
           "namespace": "ReedSolomon",
           "short_name": "finCarrier",
@@ -12609,7 +12654,7 @@
         {
           "doc": "The linear map that maps a codeword `f : \u03b9 \u2192 F` to a degree < |\u03b9| polynomial p, such that `p(x) = f(x)` for all `x \u2208 \u03b9`.",
           "kind": "def",
-          "line": 561,
+          "line": 585,
           "name": "ReedSolomon.interpolate",
           "namespace": "ReedSolomon",
           "short_name": "interpolate",
@@ -12618,7 +12663,7 @@
         {
           "doc": "The linear map that maps a Reed-Solomon codeword to its associated polynomial.",
           "kind": "def",
-          "line": 565,
+          "line": 589,
           "name": "ReedSolomon.decode",
           "namespace": "ReedSolomon",
           "short_name": "decode",
@@ -12627,7 +12672,7 @@
         {
           "doc": "Reed-Solomon codewords are decoded into degree smaller than `deg` polynomials.",
           "kind": "lemma",
-          "line": 571,
+          "line": 595,
           "name": "ReedSolomon.decoded_polynomial_lt_deg",
           "namespace": "ReedSolomon",
           "short_name": "decoded_polynomial_lt_deg",
@@ -12636,7 +12681,7 @@
         {
           "doc": "The linear map that maps a Reed-Solomon codeword to its associated polynomial of degree less than `deg`.",
           "kind": "def",
-          "line": 619,
+          "line": 643,
           "name": "ReedSolomon.decodeLT",
           "namespace": "ReedSolomon",
           "short_name": "decodeLT",
@@ -12645,7 +12690,7 @@
         {
           "doc": "A domain `\u03b9 \u21aa F` is `smooth`, if `\u03b9 \u2286 F`, `|\u03b9| = 2^k` for some `k` and there exists a subgroup `H` in the group of units `R\u02e3` and an invertible element `a \u2208 R` such that `\u03b9 = a \u2022 H`",
           "kind": "class",
-          "line": 632,
+          "line": 656,
           "name": "ReedSolomon.Smooth",
           "namespace": "ReedSolomon",
           "short_name": "Smooth",
@@ -12654,7 +12699,7 @@
         {
           "doc": "Definition 4.2, WHIR[ACFY24] Smooth Reed-Solomon codes are Reed-Solomon codes defined over smooth domains, such that their decoded univariate polynomials are of degree less than `2\u1d50` for some `m \u2208 \u2115`.",
           "kind": "def",
-          "line": 648,
+          "line": 672,
           "name": "ReedSolomon.smoothCode",
           "namespace": "ReedSolomon",
           "short_name": "smoothCode",
@@ -12663,7 +12708,7 @@
         {
           "doc": "The linear map that maps smooth Reed-Solomon Code words to their decoded degreewise linear `m`-variate polynomial.",
           "kind": "def",
-          "line": 654,
+          "line": 678,
           "name": "ReedSolomon.mVdecode",
           "namespace": "ReedSolomon",
           "short_name": "mVdecode",
@@ -12672,7 +12717,7 @@
         {
           "doc": "Auxiliary function to assign values to the weight polynomial variables: index `0` \u21a6 `p.eval b`, index `j+1` \u21a6 `b j`.",
           "kind": "def",
-          "line": 660,
+          "line": 684,
           "name": "ReedSolomon.toWeightAssignment",
           "namespace": "ReedSolomon",
           "short_name": "toWeightAssignment",
@@ -12681,7 +12726,7 @@
         {
           "doc": "Constraint is true, if `\u2211 {b \u2208 {0,1}^m} w(f(b),b) = \u03c3` for given `m`-variate polynomial `f` and `(m+1)`-variate polynomial `w`.",
           "kind": "def",
-          "line": 669,
+          "line": 693,
           "name": "ReedSolomon.weightConstraint",
           "namespace": "ReedSolomon",
           "short_name": "weightConstraint",
@@ -12690,7 +12735,7 @@
         {
           "doc": "Definition 4.5, WHIR[ACFY24] Constrained Reed-Solomon codes are smooth codes whose decoded `m`-variate polynomial satisfies the weight constraint for given `w` and `\u03c3`.",
           "kind": "def",
-          "line": 678,
+          "line": 702,
           "name": "ReedSolomon.constrainedCode",
           "namespace": "ReedSolomon",
           "short_name": "constrainedCode",
@@ -12699,7 +12744,7 @@
         {
           "doc": "Definition 4.6, WHIR[ACFY24] Multi-constrained Reed-Solomon codes are smooth codes whose decoded `m`-variate polynomial satisfies the `t` weight constraints for given `w\u2080,..., w\u209c\u208b\u2081` and `\u03c3\u2080,..., \u03c3\u209c\u208b\u2081`.",
           "kind": "def",
-          "line": 687,
+          "line": 711,
           "name": "ReedSolomon.multiConstrainedCode",
           "namespace": "ReedSolomon",
           "short_name": "multiConstrainedCode",
@@ -19781,7 +19826,7 @@
         {
           "doc": "A generic SIS-style problem: public challenge data `Sample` (e.g. a matrix), a `Solution` type, and a validity predicate.",
           "kind": "structure",
-          "line": 46,
+          "line": 50,
           "name": "ArkLib.Lattices.SIS.Problem",
           "namespace": "ArkLib.Lattices.SIS",
           "short_name": "Problem",
@@ -19790,7 +19835,7 @@
         {
           "doc": "A search adversary for a SIS-style problem.",
           "kind": "abbrev",
-          "line": 53,
+          "line": 57,
           "name": "ArkLib.Lattices.SIS.Adversary",
           "namespace": "ArkLib.Lattices.SIS",
           "short_name": "Adversary",
@@ -19799,7 +19844,7 @@
         {
           "doc": "The SIS experiment: sample a challenge, run the adversary, check validity.",
           "kind": "def",
-          "line": 56,
+          "line": 60,
           "name": "ArkLib.Lattices.SIS.experiment",
           "namespace": "ArkLib.Lattices.SIS",
           "short_name": "experiment",
@@ -19808,7 +19853,7 @@
         {
           "doc": "Search advantage for a SIS-style problem.",
           "kind": "def",
-          "line": 62,
+          "line": 66,
           "name": "ArkLib.Lattices.SIS.advantage",
           "namespace": "ArkLib.Lattices.SIS",
           "short_name": "advantage",
@@ -19817,7 +19862,7 @@
         {
           "doc": "A Module-SIS solution for a matrix with `cols` columns over `Rq \u03a6`.",
           "kind": "abbrev",
-          "line": 77,
+          "line": 81,
           "name": "ArkLib.Lattices.ModuleSIS.Solution",
           "namespace": "ArkLib.Lattices.ModuleSIS",
           "short_name": "Solution",
@@ -19826,7 +19871,7 @@
         {
           "doc": "The kernel-form Module-SIS relation for a fixed matrix `A`: `z` is nonzero, short, and lies in the kernel of `A`.",
           "kind": "def",
-          "line": 81,
+          "line": 85,
           "name": "ArkLib.Lattices.ModuleSIS.relation",
           "namespace": "ArkLib.Lattices.ModuleSIS",
           "short_name": "relation",
@@ -19835,7 +19880,7 @@
         {
           "doc": "Module-SIS as an instance of the generic SIS search game.",
           "kind": "def",
-          "line": 88,
+          "line": 92,
           "name": "ArkLib.Lattices.ModuleSIS.problem",
           "namespace": "ArkLib.Lattices.ModuleSIS",
           "short_name": "problem",
@@ -19844,7 +19889,7 @@
         {
           "doc": "A Module-SIS adversary.",
           "kind": "abbrev",
-          "line": 96,
+          "line": 100,
           "name": "ArkLib.Lattices.ModuleSIS.Adversary",
           "namespace": "ArkLib.Lattices.ModuleSIS",
           "short_name": "Adversary",
@@ -19853,7 +19898,7 @@
         {
           "doc": "The Module-SIS experiment.",
           "kind": "def",
-          "line": 102,
+          "line": 106,
           "name": "ArkLib.Lattices.ModuleSIS.experiment",
           "namespace": "ArkLib.Lattices.ModuleSIS",
           "short_name": "experiment",
@@ -19862,7 +19907,7 @@
         {
           "doc": "The Module-SIS advantage.",
           "kind": "def",
-          "line": 108,
+          "line": 112,
           "name": "ArkLib.Lattices.ModuleSIS.advantage",
           "namespace": "ArkLib.Lattices.ModuleSIS",
           "short_name": "advantage",
@@ -39531,7 +39576,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 4293,
+      "declarations": 4298,
       "files": 226
     }
   }
