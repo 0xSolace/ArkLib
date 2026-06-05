@@ -18,6 +18,13 @@ import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib
 
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
+set_option linter.unusedVariables false
+set_option linter.unusedSimpArgs false
+set_option linter.style.longLine false
+
 open scoped BigOperators NNReal
 open Real Finset
 
@@ -83,7 +90,6 @@ theorem hammingDist_add_right (x y t : ι → F) :
   · intro h hxy; exact h (by rw [hxy])
   · intro h hxy; exact h (by simpa using add_right_cancel hxy)
 
-omit [Nonempty ι] in
 omit [Nonempty ι] in
 theorem ballVolF_eq (x x' : ι → F) (r : ℕ) : ballVolF x r = ballVolF x' r := by
   classical
