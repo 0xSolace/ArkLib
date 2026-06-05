@@ -50,8 +50,8 @@ omit [Nonempty ι] [DecidableEq ι] in
 lemma goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt {k deg : ℕ}
     {domain : ι ↪ F} {δ η : ℝ≥0} (u : WordStack F (Fin (k + 1)) ι)
     (hprob :
-      Pr_{let z ← $ᵖ F}[
-          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
             ReedSolomon.code domain deg) ≤ δ] > (η : ENNReal)) :
     (η : ENNReal) * (Fintype.card F : ENNReal) <
       ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
@@ -450,7 +450,7 @@ theorem decoded_polynomial_family_on_codeword_curve_implies_jointAgreement {l : 
     (u := u) (deg := deg) (domain := domain) (δ := δ) (v := v)
     hv hS'_card hS'_card₁ P hPcurve (fun z hz => (hdecoded z hz).2)
 
-omit [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- The two curve notations used in the Curves files agree pointwise. -/
 lemma polynomialCurveEval_eq_sum_smul {k : ℕ} (u : Fin (k + 1) → ι → F) (z : F) :
     (fun x => Curve.polynomialCurveEval (F := F) (A := F) u z x) =
@@ -885,7 +885,7 @@ theorem coeff_polys_of_eval_polys_on_domain {k deg : ℕ}
               simp [B, Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_C,
                 mul_comm]
 
-omit [Nonempty ι] [Fintype F] in
+omit [Fintype ι] [Nonempty ι] [Fintype F] in
 /-- Selected-domain version of `coeff_polys_of_eval_polys_on_domain`. It is the
 interpolation bridge needed after Claim 5.11 selects only a large coordinate
 subset: evaluations on any domain subset with at least `deg` points determine
@@ -949,7 +949,7 @@ theorem coeff_polys_of_eval_polys_on_finset_domain {k deg : ℕ}
               simp [B, Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_C,
                 mul_comm]
 
-omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] in
 /-- Conversely, coefficient-polynomial dependence gives pointwise
 evaluation-polynomial dependence by summing the coefficient polynomials against
 the fixed domain powers. -/
@@ -1289,8 +1289,8 @@ theorem RS_jointAgreement_of_prob_gt_and_coeff_polys
     (hk : 0 < k)
     (u : WordStack F (Fin (k + 1)) ι)
     (hprob :
-      Pr_{let z ← $ᵖ F}[
-          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
             ReedSolomon.code domain deg) ≤ δ] >
         ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
     (hsmall :
@@ -1332,8 +1332,8 @@ theorem RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds
     (hk : 0 < k)
     (u : WordStack F (Fin (k + 1)) ι)
     (hprob :
-      Pr_{let z ← $ᵖ F}[
-          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
             ReedSolomon.code domain deg) ≤ δ] >
         ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
     (hεsmall :
@@ -1640,8 +1640,8 @@ theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
     (hk : 0 < k)
     (u : WordStack F (Fin (k + 1)) ι)
     (hprob :
-      Pr_{let z ← $ᵖ F}[
-          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
             ReedSolomon.code domain deg) ≤ δ] >
         ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
     (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
@@ -1697,8 +1697,8 @@ theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_eval_polys
     (hk : 0 < k)
     (u : WordStack F (Fin (k + 1)) ι)
     (hprob :
-      Pr_{let z ← $ᵖ F}[
-          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
             ReedSolomon.code domain deg) ≤ δ] >
         ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
     (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
@@ -2529,7 +2529,7 @@ section BCIKS20ProximityGapSection6
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {n : ℕ} [NeZero n]
 
-omit [NeZero n] in
+omit [Fintype F] [NeZero n] in
 /-- The generic degree-one curve sum for `Code.finMapTwoWords` is the affine
 line word. -/
 lemma sum_finMapTwoWords_eq (u₀ u₁ : Fin n → F) (z : F) :

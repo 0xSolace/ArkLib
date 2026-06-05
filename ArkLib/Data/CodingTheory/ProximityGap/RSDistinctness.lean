@@ -15,10 +15,9 @@ open Polynomial
 
 variable {F : Type} [Field F] {ι : Type} (domain : ι ↪ F)
 
-open Classical in
 /-- **RS distinctness.** Distinct `p, q ∈ degreeLT F k` agree on `< k` of the
 domain points: `|{x ∈ S : p(ωₓ) = q(ωₓ)}| < k`. -/
-theorem degreeLT_agree_card_lt_of_ne {k : ℕ}
+theorem degreeLT_agree_card_lt_of_ne [DecidableEq F] {k : ℕ}
     {p q : F[X]} (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k)
     (hpq : p ≠ q) (S : Finset ι) :
     (S.filter (fun x => p.eval (domain x) = q.eval (domain x))).card < k := by
@@ -38,24 +37,21 @@ theorem degreeLT_agree_card_lt_of_ne {k : ℕ}
   rw [Finset.card_image_of_injective _ domain.injective] at hcard
   omega
 
-open Classical in
 /-- Contrapositive form: agreement on `≥ k` domain points forces equality. -/
-theorem degreeLT_eq_of_agree_card_ge {k : ℕ}
+theorem degreeLT_eq_of_agree_card_ge [DecidableEq F] {k : ℕ}
     {p q : F[X]} (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k)
     {S : Finset ι} (h : k ≤ (S.filter (fun x => p.eval (domain x) = q.eval (domain x))).card) :
     p = q := by
   by_contra hpq
   exact absurd h (not_le.mpr (degreeLT_agree_card_lt_of_ne domain hp hq hpq S))
 
-open Classical in
 /-- Pointwise agreement on at least `k` domain points forces equality for
 degree-`< k` polynomials. -/
-omit [DecidableEq F] in
 theorem degreeLT_eq_of_agree_on_finset {k : ℕ}
     {p q : F[X]} (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k)
     {S : Finset ι} (hcard : k ≤ S.card)
     (hagree : ∀ x ∈ S, p.eval (domain x) = q.eval (domain x)) :
-  p = q := by
+    p = q := by
   classical
   have hfilter : S.filter (fun x => p.eval (domain x) = q.eval (domain x)) = S := by
     apply Finset.ext
@@ -71,7 +67,7 @@ theorem degreeLT_eq_of_agree_on_finset {k : ℕ}
 word `w` on at least `a` domain points and `2a ≥ n + k` (the unique-decoding
 radius), then `p = q`: their agreement sets overlap in `≥ k` points on which `p`
 and `q` coincide, forcing equality by RS distinctness. -/
-theorem degreeLT_unique_decode [Fintype ι] {k : ℕ} {p q : F[X]} {w : ι → F}
+theorem degreeLT_unique_decode [DecidableEq F] [Fintype ι] {k : ℕ} {p q : F[X]} {w : ι → F}
     (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k) {a : ℕ}
     (hpa : a ≤ (Finset.univ.filter (fun x => p.eval (domain x) = w x)).card)
     (hqa : a ≤ (Finset.univ.filter (fun x => q.eval (domain x) = w x)).card)
