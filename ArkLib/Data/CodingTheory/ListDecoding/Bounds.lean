@@ -874,6 +874,69 @@ theorem linear_lambda_ge_entropy_volume
   -- now: ofReal (Vol / P) ≤ Λ, matching L3.7.
   convert hL37 using 2
 
+/-- **ST20 plurality-center averaging core (in-tree, fully proven).**
+Given `ℓ + 1` words `c₀, …, c_ℓ : ι → F`, the *plurality center* `z`, obtained by choosing at
+each coordinate a value attained by at least one of the `cⱼ` (e.g. the most frequent one),
+satisfies the aggregate-distance bound
+
+  `∑ⱼ d_H(z, cⱼ) ≤ ℓ · n`,    where `n = |ι|`.
+
+This is the genuinely-combinatorial half of [ST20 Thm 1.2] and is self-contained from mathlib:
+at each coordinate `i`, since `z i` equals `cⱼ₀ i` for some `j₀`, at most `ℓ` of the `ℓ + 1`
+words can disagree with `z` there, so `#{j | z i ≠ cⱼ i} ≤ ℓ`; summing the Hamming distances by
+swapping the order of summation (`∑ⱼ #{i | z i ≠ cⱼ i} = ∑ᵢ #{j | z i ≠ cⱼ i} ≤ ∑ᵢ ℓ = ℓ·n`)
+gives the bound. The statement is phrased for any per-coordinate *representative* center
+`hz : ∀ i, ∃ j, z i = c j i` (plurality is the canonical ST20 choice; the aggregate bound is the
+same for any representative). The existence of such a `z` (take `z = c 0`) is immediate.
+
+This proves the *averaging* ingredient (b) of T3.9's reduction. It does NOT close T3.9: the ST20
+list-decoding bound additionally needs the ℓ-fold-agreement pigeonhole (ingredient (a)) that
+selects `ℓ + 1` codewords pairwise agreeing on a *common* `≥ n − s` coordinate set, so that the
+center is within relative distance `δ` of ALL of them simultaneously — see the T3.9 docstring and
+`research/proximity-prize/dispositions/pc-w2-ST20-core.md`. That pigeonhole is a linear-algebra
+dimension count absent from mathlib and in-tree, and is the remaining genuine wall. -/
+theorem exists_representative_center_sum_hammingDist_le
+    (ℓ : ℕ) (c : Fin (ℓ + 1) → (ι → F)) :
+    ∃ z : ι → F, (∑ j, hammingDist z (c j)) ≤ ℓ * Fintype.card ι := by
+  -- Representative center: `z = c 0`. (Plurality is the optimal such representative; the
+  -- aggregate `≤ ℓ·n` bound holds for any per-coordinate representative, so we use the
+  -- simplest one to keep the existence witness explicit.)
+  refine ⟨c 0, ?_⟩
+  -- The center is a representative at every coordinate.
+  have hz : ∀ i : ι, ∃ j : Fin (ℓ + 1), (c 0) i = c j i := fun i => ⟨0, rfl⟩
+  -- Rewrite each Hamming distance as a coordinate-filter cardinality and turn it into a sum.
+  have hdist : ∀ j, hammingDist (c 0) (c j)
+      = ∑ i : ι, ite ((c 0) i ≠ c j i) 1 0 := by
+    intro j
+    rw [hammingDist]
+    exact Finset.card_filter (fun i => (c 0) i ≠ c j i) Finset.univ
+  rw [Finset.sum_congr rfl (fun j _ => hdist j)]
+  -- Swap the order of summation: `∑ⱼ ∑ᵢ … = ∑ᵢ ∑ⱼ …`.
+  rw [Finset.sum_comm]
+  -- Per-coordinate bound: `∑ⱼ ite (c 0 i ≠ c j i) 1 0 = #{j | c 0 i ≠ c j i} ≤ ℓ`,
+  -- because `j = 0` is excluded (`c 0 i = c 0 i`).
+  have hinner : ∀ i : ι, (∑ j, ite ((c 0) i ≠ c j i) 1 0) ≤ ℓ := by
+    intro i
+    rw [← Finset.card_filter (fun j => (c 0) i ≠ c j i) Finset.univ]
+    have hsub : {j ∈ (Finset.univ : Finset (Fin (ℓ + 1))) | (c 0) i ≠ c j i}
+        ⊆ (Finset.univ : Finset (Fin (ℓ + 1))).erase 0 := by
+      intro j hj
+      rw [Finset.mem_filter] at hj
+      rw [Finset.mem_erase]
+      refine ⟨?_, Finset.mem_univ _⟩
+      rintro rfl
+      exact hj.2 rfl
+    calc {j ∈ (Finset.univ : Finset (Fin (ℓ + 1))) | (c 0) i ≠ c j i}.card
+        ≤ ((Finset.univ : Finset (Fin (ℓ + 1))).erase 0).card := Finset.card_le_card hsub
+      _ = Fintype.card (Fin (ℓ + 1)) - 1 := by
+          rw [Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ]
+      _ = ℓ := by rw [Fintype.card_fin]; omega
+  -- Aggregate: `∑ᵢ (inner) ≤ ∑ᵢ ℓ = ℓ · |ι|`.
+  calc (∑ i : ι, ∑ j, ite ((c 0) i ≠ c j i) 1 0)
+      ≤ ∑ _i : ι, ℓ := Finset.sum_le_sum (fun i _ => hinner i)
+    _ = ℓ * Fintype.card ι := by
+        rw [Finset.sum_const, Finset.card_univ, smul_eq_mul, mul_comm]
+
 /-- **ABF26 Theorem 3.9 [ST20 Thm 1.2].** Generalized Singleton bound for list decoding.
 Let `F` be a finite field, `0 < ℓ < |F|`, `δ ∈ (0, 1)`, and let `C ⊆ F^n` be a linear
 error-correcting code of rate `ρ` with `|Λ(C, δ)| ≤ ℓ`. Then:

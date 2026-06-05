@@ -1540,6 +1540,65 @@ theorem βHensel_weight_bound (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypoth
 
 /-! ### 4e. (P2) the lift identity — the irreducible BCIKS20 A.4 frontier -/
 
+/-- **(P2) right-hand side, definitionally unfolded (PROVEN, axiom-clean).**
+
+The `(P2)` right-hand side `α_t · W^{t+1} · ξ^{2t−1}` is, by the *definition* of the in-tree
+`ClaimA2.α` (`RationalFunctions.lean:3024`,
+`α_t = embeddingOf𝒪Into𝕃 (ClaimA2.β R t) / (W^{t+1} · (embeddingOf𝒪Into𝕃 ξ)^{2t−1})`), nothing
+but the embedding of `ClaimA2.β R t` once the `W^{t+1}·ξ^{2t−1}` denominator is cancelled.  In the
+field `𝕃 H` this cancellation is exactly `div_mul_cancel₀`, gated on the denominator being nonzero.
+
+This lemma is **pure denominator clearing**; it carries no root content.  Its sole purpose is to
+make the genuine `(P2)` residual *mechanically explicit*: the right-hand side of `(P2)` is
+`embeddingOf𝒪Into𝕃 (ClaimA2.β R t)`, and `ClaimA2.β R t = (β_regular …).choose` is the
+*placeholder* numerator family (its existence witness in `RationalFunctions.lean:3005` is the
+**vacuous** `β = 0`), which is a *different object family* from the genuine recursive `βHensel`.
+So `(P2)` as stated equates `embeddingOf𝒪Into𝕃 (βHensel … t)` with
+`embeddingOf𝒪Into𝕃 (ClaimA2.β R t)` — see `βHensel_lift_identity_iff_β_eq` below. -/
+theorem ClaimA2_α_mul_Wξ_eq_embedding_β (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hden : (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+              * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) ≠ 0) :
+    ClaimA2.α x₀ R H hHyp t
+        * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+        * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)
+      = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
+  -- Unfold the definition of `α_t`; the `let W` in `ClaimA2.α` is `liftToFunctionField …`.
+  show embeddingOf𝒪Into𝕃 H (ClaimA2.β R t)
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+        * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+        * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)
+      = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t)
+  rw [mul_assoc]
+  exact div_mul_cancel₀ _ hden
+
+/-- **(P2) reduced to the genuine-vs-placeholder `β` identity (PROVEN, axiom-clean).**
+
+Under the (genuine, BCIKS20-faithful) hypothesis that the `(P2)` denominator
+`W^{t+1}·ξ^{2t−1}` is nonzero, the `(P2)` lift identity `βHensel_lift_identity` is **logically
+equivalent** to the bare statement that the two numerator families agree under the embedding:
+`embeddingOf𝒪Into𝕃 (βHensel … t) = embeddingOf𝒪Into𝕃 (ClaimA2.β R t)`.
+
+This is the honest, machine-checkable localisation of the residual: `(P2)` is *not* a missing
+algebraic-cancellation fact (that part is `ClaimA2_α_mul_Wξ_eq_embedding_β`, proven above); it is
+the assertion that the *placeholder* coefficient family `ClaimA2.β` (built from the vacuous
+`β_regular = 0` witness) coincides with the *genuine* recursive Hensel numerator `βHensel`.  That
+identification is precisely the BCIKS20 Appendix A.4 root theory (`R(X, γ, Z) = 0`, the Hensel-lift
+existence/uniqueness of the power-series root `γ`), which is **not in tree** and cannot be
+manufactured from the connective/denominator-clearing layer.  See `pc-w2-P2-attack.md`. -/
+theorem βHensel_lift_identity_iff_β_eq (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hden : (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+              * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) ≠ 0) :
+    (embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = ClaimA2.α x₀ R H hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+      ↔ embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+            = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
+  rw [ClaimA2_α_mul_Wξ_eq_embedding_β H x₀ R hHyp t hden]
+
 /-- **(P2) lift identity — the IRREDUCIBLE FRONTIER (documented `sorry`).**
 `embeddingOf𝒪Into𝕃 (βHensel … t) = α_t · W^{t+1} · ξ^{2t−1}` (`α_t` is the in-tree
 `ClaimA2.α`).
@@ -1550,7 +1609,15 @@ Establishing it requires the formal statement and proof that `γ` (defined at
 `RationalFunctions.lean:3036`) **is a root** of `R(X, ·, Z)` over the function field — the
 `R(X,γ,Z)=0` power-series root fact — which is unproven in tree and is the genuine
 mathematical content of A.4 (the Hensel-lift uniqueness/existence argument).  Out of scope
-for this wave; flagged as the irreducible frontier of ingredient D. -/
+for this wave; flagged as the irreducible frontier of ingredient D.
+
+RESIDUAL LOCALISED (axiom-clean, above): `ClaimA2_α_mul_Wξ_eq_embedding_β` clears the
+`W^{t+1}·ξ^{2t−1}` denominator, so under that denominator's nonvanishing this identity is
+equivalent (`βHensel_lift_identity_iff_β_eq`) to `embeddingOf𝒪Into𝕃 (βHensel … t) =
+embeddingOf𝒪Into𝕃 (ClaimA2.β R t)`.  The irreducible content is thus exactly: the genuine
+recursive numerator `βHensel` agrees with the placeholder family `ClaimA2.β` (whose witness
+`β_regular`, `RationalFunctions.lean:3005`, is the vacuous `β = 0`).  That agreement is the
+A.4 root theory `R(X,γ,Z)=0`; it cannot be obtained from the denominator-clearing layer. -/
 theorem βHensel_lift_identity (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (t : ℕ) :
     embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
