@@ -7,7 +7,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 
-set_option linter.style.longFile 4200
+set_option linter.style.longFile 4400
 
 /-!
 # BCIKS20 list-decoding agreement compatibility module
@@ -2885,6 +2885,76 @@ lemma P_eval_eval_eq_word_of_solution_gamma_coeff_values
     h_gs x h₀ h₁]
   simp [mul_comm]
 
+omit [DecidableEq (RatFunc F)] in
+/-- The chosen close polynomial family as a total function of the curve
+parameter.  Outside `coeffs_of_close_proximity` the value is irrelevant; all
+assembly lemmas consume it only on that finite set. -/
+noncomputable def PzFamily
+    (δ : ℚ) (u₀ u₁ : Fin n → F) (ωs : Fin n ↪ F) (k : ℕ) : F → F[X] :=
+  fun z =>
+    if h : z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ then
+      Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) h
+    else
+      0
+
+omit [DecidableEq (RatFunc F)] in
+lemma PzFamily_eq_Pz_of_mem
+    {z : F} (hz : z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) :
+    PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z =
+      Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) hz := by
+  simp [PzFamily, hz]
+
+omit [DecidableEq (RatFunc F)] in
+lemma PzFamily_coeff_eq_Pz_coeff_of_mem
+    {z : F} (hz : z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) (j : ℕ) :
+    (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).coeff j =
+      (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) hz).coeff j := by
+  rw [PzFamily_eq_Pz_of_mem (F := F) (n := n) (k := k)
+    (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs) hz]
+
+omit [DecidableEq (RatFunc F)] in
+lemma PzFamily_eval_eq_Pz_eval_of_mem
+    {z : F} (hz : z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) (x : F) :
+    (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval x =
+      (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) hz).eval x := by
+  rw [PzFamily_eq_Pz_of_mem (F := F) (n := n) (k := k)
+    (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs) hz]
+
+omit [DecidableEq (RatFunc F)] in
+lemma PzFamily_natDegree_lt_succ_of_mem
+    {z : F} (hz : z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) :
+    (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).natDegree < k + 1 := by
+  rw [PzFamily_eq_Pz_of_mem (F := F) (n := n) (k := k)
+    (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs) hz]
+  exact Nat.lt_succ_of_le
+    (Pz_natDegree_le (n := n) (k := k) (ωs := ωs) (δ := δ)
+      (u₀ := u₀) (u₁ := u₁) hz)
+
+omit [DecidableEq (RatFunc F)] in
+lemma PzFamily_relDist_le_of_mem
+    {z : F} (hz : z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) :
+    δᵣ(u₀ + z • u₁,
+        (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval ∘ ωs) ≤ δ := by
+  rw [PzFamily_eq_Pz_of_mem (F := F) (n := n) (k := k)
+    (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs) hz]
+  exact Pz_relDist_le (n := n) (k := k) (ωs := ωs) (δ := δ)
+    (u₀ := u₀) (u₁ := u₁) hz
+
+omit [DecidableEq (RatFunc F)] in
+/-- `PzFamily` has exactly the decoded-family hypotheses used by the §6
+coefficient/evaluation-polynomial assembly front doors, restricted to the close
+parameter set. -/
+lemma PzFamily_decoded_on_close_set :
+    ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).natDegree < k + 1 ∧
+        δᵣ(u₀ + z • u₁,
+          (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval ∘ ωs) ≤ δ := by
+  intro z hz
+  exact ⟨PzFamily_natDegree_lt_succ_of_mem
+      (F := F) (n := n) (k := k) (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs) hz,
+    PzFamily_relDist_le_of_mem
+      (F := F) (n := n) (k := k) (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs) hz⟩
+
 /-- The set `S'_x` from [BCIKS20] (just before Claim 5.10). The set of all `z ∈ S'` such that
 `w(x,z)` matches `P_z(x)`. -/
 noncomputable def matching_set_at_x
@@ -2918,6 +2988,19 @@ lemma mem_matching_coords_for_z
         (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
           (ωs x) := by
   simp [matching_coords_for_z]
+
+omit [DecidableEq (RatFunc F)] in
+lemma mem_matching_coords_for_z_iff_PzFamily
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) (x : Fin n) :
+    x ∈ matching_coords_for_z k δ h_gs z ↔
+      u₀ x + z.1 * u₁ x =
+        (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z.1).eval (ωs x) := by
+  rw [mem_matching_coords_for_z
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z x]
+  rw [PzFamily_eq_Pz_of_mem
+    (F := F) (n := n) (k := k) (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs) z.2]
 
 omit [DecidableEq (RatFunc F)] in
 lemma coeff_mem_matching_set_at_x_of_mem_matching_coords
@@ -2958,11 +3041,109 @@ lemma mem_matching_set_at_x_iff
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) (z : F) :
     z ∈ matching_set_at_x k δ h_gs x ↔
-      ∃ h : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁,
+      ∃ _h : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁,
         u₀ x + z * u₁ x =
-          (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) h).eval
+          (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) _h).eval
             (ωs x) := by
   simp [matching_set_at_x]
+
+omit [DecidableEq (RatFunc F)] in
+lemma mem_matching_set_at_x_iff_PzFamily
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) (z : F) :
+    z ∈ matching_set_at_x k δ h_gs x ↔
+      ∃ (_ : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁),
+        u₀ x + z * u₁ x =
+          (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x) := by
+  rw [mem_matching_set_at_x_iff
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x z]
+  constructor
+  · rintro ⟨hz, hmatch⟩
+    refine ⟨hz, ?_⟩
+    rwa [PzFamily_eq_Pz_of_mem
+      (F := F) (n := n) (k := k) (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs) hz]
+  · rintro ⟨hz, hmatch⟩
+    refine ⟨hz, ?_⟩
+    rwa [PzFamily_eq_Pz_of_mem
+      (F := F) (n := n) (k := k) (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs) hz] at hmatch
+
+omit [DecidableEq (RatFunc F)] in
+lemma matching_set_at_x_eq_filter_PzFamily
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) :
+    matching_set_at_x k δ h_gs x =
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).filter fun z =>
+        u₀ x + z * u₁ x =
+          (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x) := by
+  apply Finset.ext
+  intro z
+  rw [mem_matching_set_at_x_iff_PzFamily
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x z]
+  simp only [Finset.mem_filter]
+  constructor
+  · rintro ⟨hz, hmatch⟩
+    exact ⟨hz, hmatch⟩
+  · rintro ⟨hz, hmatch⟩
+    exact ⟨hz, hmatch⟩
+
+omit [DecidableEq (RatFunc F)] in
+lemma matching_set_at_x_card_eq_filter_PzFamily
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) :
+    (matching_set_at_x k δ h_gs x).card =
+      ((coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).filter fun z =>
+        u₀ x + z * u₁ x =
+          (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x)).card := by
+  rw [matching_set_at_x_eq_filter_PzFamily
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x]
+
+open Polynomial in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- The degree-one curve-parameter polynomial representing the line word at a
+fixed coordinate. -/
+noncomputable def lineValuePolynomial (u₀ u₁ : Fin n → F) (x : Fin n) : F[X] :=
+  Polynomial.C (u₀ x) + Polynomial.C (u₁ x) * Polynomial.X
+
+open Polynomial in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma lineValuePolynomial_eval (u₀ u₁ : Fin n → F) (x : Fin n) (z : F) :
+    (lineValuePolynomial (F := F) (n := n) u₀ u₁ x).eval z = u₀ x + z * u₁ x := by
+  rw [lineValuePolynomial, Polynomial.eval_add, Polynomial.eval_mul,
+    Polynomial.eval_C, Polynomial.eval_C, Polynomial.eval_X]
+  ring
+
+open Polynomial in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma lineValuePolynomial_natDegree_le_one (u₀ u₁ : Fin n → F) (x : Fin n) :
+    (lineValuePolynomial (F := F) (n := n) u₀ u₁ x).natDegree ≤ 1 := by
+  unfold lineValuePolynomial
+  refine (Polynomial.natDegree_add_le _ _).trans ?_
+  refine max_le ?_ ?_
+  · rw [Polynomial.natDegree_C]
+    omega
+  · simpa using Polynomial.natDegree_C_mul_X_pow_le (u₁ x) 1
+
+open Polynomial in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma lineValuePolynomial_natDegree_lt_succ_succ (u₀ u₁ : Fin n → F) (x : Fin n) :
+    (lineValuePolynomial (F := F) (n := n) u₀ u₁ x).natDegree < 1 + 1 := by
+  exact Nat.lt_succ_of_le (lineValuePolynomial_natDegree_le_one (F := F) u₀ u₁ x)
+
+open Polynomial in
+omit [DecidableEq (RatFunc F)] in
+/-- Membership in `matching_set_at_x` gives exactly the pointwise evaluation
+polynomial relation for the total close-polynomial family. -/
+lemma PzFamily_eval_eq_lineValuePolynomial_eval_of_mem_matching_set_at_x
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) {x : Fin n} {z : F}
+    (hz : z ∈ matching_set_at_x k δ h_gs x) :
+    (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x) =
+      (lineValuePolynomial (F := F) (n := n) u₀ u₁ x).eval z := by
+  rcases (mem_matching_set_at_x_iff_PzFamily
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x z).mp hz with
+    ⟨_hzclose, hmatch⟩
+  rw [lineValuePolynomial_eval]
+  exact hmatch.symm
 
 omit [DecidableEq (RatFunc F)] in
 lemma matching_set_at_x_eq_matching_coords_image_univ

@@ -286,6 +286,21 @@ theorem honest_helper_sum_zero_of_inputRelation
           rw [hcolumns_neg]
           exact add_neg_cancel _
 
+theorem honest_helper_sum_zero_of_inputRelation_all
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i)
+    (hInput : (((stmt, oStmt), ()) ∈ inputRelation F n M))
+    (xChallenge : F) :
+    (∑ u : Hypercube n,
+      ∑ k : Fin params.numGroups,
+        evalOnHypercube (honestHelpers params oStmt xChallenge k) u) = 0 := by
+  by_cases hM : 0 < M
+  · exact honest_helper_sum_zero_of_inputRelation
+      (F := F) (n := n) (M := M) (params := params) stmt oStmt hInput hM xChallenge
+  · have hM0 : M = 0 := by omega
+    subst M
+    exact honest_helper_sum_zero_no_columns
+      (F := F) (n := n) params oStmt xChallenge
+
 /-- Semantic agreement between final oracle-query answers and the retained LogUp oracles. -/
 def logupPointEvaluationsAgree
     (r : Fin n → F)
@@ -478,6 +493,26 @@ theorem LogupSumcheckBridge.of_honestHelpers
       stmtIn oStmtIn stmt hInput htable]
     exact hHelpers
 
+theorem LogupSumcheckBridge.of_honest
+    [Fintype F] [DecidableEq F]
+    (stmtIn : StmtIn F n M)
+    (oStmtIn : ∀ i, OStmtIn F n M i)
+    (stmt : StmtAfterOuter F n M params)
+    (hInput : (((stmtIn, oStmtIn), ()) ∈ inputRelation F n M))
+    (htable : ∀ u : Hypercube n,
+      stmt.xChallenge + evalOnHypercube (tableOracle oStmtIn) u ≠ 0) :
+    LogupSumcheckBridge F n M params stmt
+      (fun
+        | .input i => oStmtIn i
+        | .multiplicity => honestMultiplicity oStmtIn
+        | .helpers => honestHelpers params oStmtIn stmt.xChallenge) :=
+  LogupSumcheckBridge.of_honestHelpers
+    (F := F) (n := n) (M := M) (params := params)
+    stmtIn oStmtIn stmt hInput htable
+    (honest_helper_sum_zero_of_inputRelation_all
+      (F := F) (n := n) (M := M) (params := params)
+      stmtIn oStmtIn hInput stmt.xChallenge)
+
 theorem LogupSumcheckBridge.relationInput
     {hSigns : (-1 : F) ≠ 1}
     {stmt : StmtAfterOuter F n M params}
@@ -488,6 +523,24 @@ theorem LogupSumcheckBridge.relationInput
     (logupSumcheckPolynomialRowsAgree_of_signsDistinct
       (F := F) (n := n) (M := M) (params := params) hSigns stmt oStmt)
     bridge.claimZero
+
+theorem logupSumcheckRelationInput_of_honest
+    [Fintype F] [DecidableEq F]
+    {hSigns : (-1 : F) ≠ 1}
+    (stmtIn : StmtIn F n M)
+    (oStmtIn : ∀ i, OStmtIn F n M i)
+    (stmt : StmtAfterOuter F n M params)
+    (hInput : (((stmtIn, oStmtIn), ()) ∈ inputRelation F n M))
+    (htable : ∀ u : Hypercube n,
+      stmt.xChallenge + evalOnHypercube (tableOracle oStmtIn) u ≠ 0) :
+    logupSumcheckRelationInput F n M params hSigns stmt
+      (fun
+        | .input i => oStmtIn i
+        | .multiplicity => honestMultiplicity oStmtIn
+        | .helpers => honestHelpers params oStmtIn stmt.xChallenge) :=
+  (LogupSumcheckBridge.of_honest
+    (F := F) (n := n) (M := M) (params := params)
+    stmtIn oStmtIn stmt hInput htable).relationInput
 
 theorem logupSumcheckPolynomial_finalEval
     {stmt : StmtAfterOuter F n M params}
