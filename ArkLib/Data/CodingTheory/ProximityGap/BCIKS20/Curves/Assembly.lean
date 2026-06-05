@@ -545,6 +545,35 @@ theorem correlatedAgreement_affine_curves_of_section5_canonical_data
   exact correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical
     (deg := deg) (domain := domain) (δ := δ) hδ hCanonicalExtract hBoundaryCard
 
+omit [DecidableEq ι] in
+/-- Non-cyclic public wrapper for the closed list-decoding assembly theorem
+with canonical §5 extraction data required only in the strict Johnson branch. -/
+theorem correlatedAgreement_affine_curves_of_strict_section5_canonical_data
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hCanonicalExtract : ∀ (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ArkLib.CorrelatedAgreementListDecodingClosed.StrictCanonicalSection5Data
+        (k := k) (deg := deg) (domain := domain) (δ := δ) u)
+    (hBoundary : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ¬δ < 1 - ReedSolomon.sqrtRate deg domain →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  open ArkLib.CorrelatedAgreementListDecodingClosed in
+  exact correlatedAgreement_affine_curves_listDecoding_closed_of_strict_section5_canonical
+    (deg := deg) (domain := domain) (δ := δ) hδ hCanonicalExtract hBoundary
+
 end CurveAssemblyBridge
 
 end ProximityGap
