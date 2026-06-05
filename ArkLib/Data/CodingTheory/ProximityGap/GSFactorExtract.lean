@@ -43,6 +43,8 @@ No `sorry`, `admit`, or `native_decide`; every theorem is checked to depend only
 
 namespace GSFactorExtract
 
+noncomputable section
+
 open Polynomial Finset
 
 /-! ## Part 1: multiplicity-sum bound and factor extraction -/
@@ -201,8 +203,8 @@ theorem card_distinct_linear_factors_le_natDegree
   have hsub : Ps.val ⊆ Q.roots := by
     intro p hp
     rw [← Finset.mem_def] at hp
-    rw [Polynomial.mem_roots hQ, Polynomial.IsRoot.def, ← Polynomial.dvd_iff_isRoot]
-    exact hdvd p hp
+    rw [Polynomial.mem_roots hQ]
+    simpa [Polynomial.IsRoot.def] using (Polynomial.dvd_iff_isRoot).mp (hdvd p hp)
   -- distinct roots of a nonzero polynomial number ≤ its `natDegree`
   exact Polynomial.card_le_degree_of_subset_roots hsub
 
@@ -245,5 +247,7 @@ theorem gs_factor_extraction_list_size
   exact curve_factor_extraction Q p (hroot p hp) (hbudget p hp)
 
 end EndToEnd
+
+end
 
 end GSFactorExtract
