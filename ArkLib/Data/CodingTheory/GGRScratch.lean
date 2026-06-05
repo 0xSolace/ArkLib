@@ -24,10 +24,14 @@ lemma transpose_mem_closeCodewordsRel [Nonempty ι] {m : ℕ} {C : Set (ι → F
   obtain ⟨hmem, hball⟩ := hV
   refine ⟨hmem k, ?_⟩
   rw [relHammingBall, Set.mem_setOf_eq] at hball ⊢
-  calc (δᵣ(f.transpose k, V.transpose k) : ℝ)
-      = (δᵣ(V.transpose k, f.transpose k) : ℝ) := by rw [relHammingDist_comm]
-    _ ≤ (δᵣ(V, f) : ℝ) := by exact_mod_cast relHammingDist_transpose_le f V k
-    _ = (δᵣ(f, V) : ℝ) := by rw [relHammingDist_comm]
-    _ ≤ δ := hball
+  -- The relHammingDist value is independent of the DecidableEq instance.
+  have hball' : (δᵣ(f, V) : ℝ) ≤ δ := by convert hball using 3
+  have key : (δᵣ(f.transpose k, V.transpose k) : ℝ) ≤ δ := by
+    calc (δᵣ(f.transpose k, V.transpose k) : ℝ)
+        = (δᵣ(V.transpose k, f.transpose k) : ℝ) := by rw [relHammingDist_comm]
+      _ ≤ (δᵣ(V, f) : ℝ) := by exact_mod_cast relHammingDist_transpose_le f V k
+      _ = (δᵣ(f, V) : ℝ) := by rw [relHammingDist_comm]
+      _ ≤ δ := hball'
+  convert key using 3
 
 end GGRScratch
