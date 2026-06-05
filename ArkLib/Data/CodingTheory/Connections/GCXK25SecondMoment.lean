@@ -372,6 +372,19 @@ theorem card_lt_inv_of_second_moment_rs
   have hbound : r - a + ε < 1 := by rw [hadef]; linarith
   linarith [hNε, hbound]
 
+/-- Reciprocal form of `card_lt_inv_of_second_moment_rs`, matching the usual statement
+`|Bad²| < 1 / ε` of GCXK25 Lemma 3. -/
+theorem card_lt_one_div_of_second_moment_rs
+    (T : Finset κ) (A : κ → Finset ι) (hT : T.Nonempty)
+    (p ε : ℝ) (hε : 0 < ε) (hεp : ε ≤ p) (hp1 : p < 1)
+    (hn : 0 < Fintype.card ι)
+    (hSle : ∀ α ∈ T, ((1 - p + ε) ^ ((1 : ℝ) / 2)) * (Fintype.card ι : ℝ) ≤ (A α).card)
+    (hBle : ∀ α ∈ T, ∀ β ∈ T, α ≠ β →
+        ((A α ∩ A β).card : ℝ) ≤ (1 - p) * (Fintype.card ι : ℝ)) :
+    (T.card : ℝ) < 1 / ε := by
+  rw [lt_div_iff₀ hε]
+  exact card_lt_inv_of_second_moment_rs T A hT p ε hε hεp hp1 hn hSle hBle
+
 end GCXK25SecondMoment
 
 /- Axiom audit: the key results in this file were checked with `#print axioms`
