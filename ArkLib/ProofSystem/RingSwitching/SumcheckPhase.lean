@@ -57,6 +57,48 @@ variable (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
 variable (h_l : ℓ = ℓ' + κ)
 variable (aOStmtIn : AbstractOStmtIn L ℓ')
 
+/-! ## Shared `simulateQ`/`OptionT` collapse helpers
+
+These small `rfl`/`OptionT.ext` lemmas are used by both the iterated-round and final-sumcheck
+verifier-run collapses (the `toFun_full` support extractions and the completeness peel). They are
+hoisted above both sections so the defect-#21 vacuous-REJECT discharge can reuse them. -/
+
+/-- The `instDefault` oracle answer is the message itself (`answer m () = m`). -/
+@[simp] private lemma answer_instDefault' {M : Type _} (m : M) (q : Unit) :
+    @OracleInterface.answer M OracleInterface.instDefault m q = m := rfl
+
+/-- `simulateQ` commutes with `OptionT.pure` (no explicit empty-spec universes). -/
+private theorem simulateQ_optionT_pure' {ιₐ ιᵦ : Type} {specₐ : OracleSpec ιₐ}
+    {specᵦ : OracleSpec ιᵦ} {γ : Type} (impl : QueryImpl specₐ (OracleComp specᵦ)) (b : γ) :
+    simulateQ impl (pure b : OptionT (OracleComp specₐ) γ)
+      = (pure b : OptionT (OracleComp specᵦ) γ) := by
+  rw [show (pure b : OptionT (OracleComp specₐ) γ) = OptionT.lift (pure b)
+        from (OptionT.lift_pure b).symm]
+  rw [simulateQ_optionT_lift, simulateQ_pure, OptionT.lift_pure]
+
+/-- `simulateQ` commutes with `OptionT` `failure`, for an arbitrary lawful target monad `m` (so it
+applies to both the inner `OracleComp`-valued and outer `StateT`-valued simulation passes).
+Companion to `simulateQ_optionT_pure'`; discharges the defect-#21 vacuous REJECT branches. -/
+private theorem simulateQ_optionT_failure' {ιₐ : Type} {specₐ : OracleSpec ιₐ}
+    {m : Type → Type} [Monad m] [LawfulMonad m] {γ : Type} (impl : QueryImpl specₐ m) :
+    simulateQ impl (failure : OptionT (OracleComp specₐ) γ) = (failure : OptionT m γ) := by
+  rw [OracleComp.failure_def]
+  apply OptionT.ext
+  simp only [OptionT.run_mk, simulateQ_pure, OptionT.fail]
+  rfl
+
+/-- A map over `OptionT` `failure` is `failure`. -/
+private theorem map_optionT_failure' {ιₐ : Type} {specₐ : OracleSpec ιₐ} {γ δ : Type}
+    (f : γ → δ) :
+    (f <$> (failure : OptionT (OracleComp specₐ) γ))
+      = (failure : OptionT (OracleComp specₐ) δ) := by
+  apply OptionT.ext
+  rw [OptionT.run_map]
+  show Option.map f <$> (pure none : OracleComp specₐ (Option γ))
+    = (pure none : OracleComp specₐ (Option δ))
+  rw [map_pure]
+  rfl
+
 section IteratedSumcheckStep
 
 /-! ## Per-round prover / verifier (re-exported from `Sumcheck.Structured.SingleRound`)
@@ -227,6 +269,51 @@ noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
         (i := i.castSucc) (challenges := stmtIn.challenges)
     }
 
+/-- **Iterated-round verifier-run collapse (defect-#21 guard form).** Under the message-oracle
+simulation `simulateQ (simOracle2 …)`, the 2-message `roundOracleVerifier`
+(= `iteratedSumcheckOracleVerifier`) reduces to a single deterministic `if`: on the sumcheck check
+passing it `pure`s the accept statement (next-round target `h_i(r')`, challenges advanced by
+`Fin.cons r'`), and on a failed check it emits `failure` (defect-#21) — so the reject branch has
+*no* support element. This is the 2-message analog of
+`BatchingPhase.oracleVerifier_verify_collapse`; the message query collapses via
+`simulateQ_simOracle2_query` (+ `answer_instDefault'`), then `guard_eq`/`apply_ite` exposes the
+`if`. `msgs ⟨0,_⟩` is the round univariate `h_i`, `chals ⟨1,_⟩` is the verifier challenge `r'`. -/
+private lemma iteratedSumcheckOracleVerifier_verify_collapse (i : Fin ℓ')
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
+    (oStmt : ∀ j, aOStmtIn.OStmtIn j)
+    (tr : FullTranscript (pSpecSumcheckRound L)) :
+    simulateQ (OracleInterface.simOracle2 []ₒ oStmt (FullTranscript.messages tr))
+        ((iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i).verify stmt
+          (FullTranscript.challenges tr))
+      = (if (∑ b ∈ (boolDomain L ℓ').points i, (FullTranscript.messages tr ⟨0, rfl⟩).val.eval b)
+            = stmt.sumcheck_target then
+           pure ({ ctx := stmt.ctx,
+                   sumcheck_target := (FullTranscript.messages tr ⟨0, rfl⟩).val.eval
+                     (FullTranscript.challenges tr ⟨1, rfl⟩),
+                   challenges := Fin.cons (FullTranscript.challenges tr ⟨1, rfl⟩) stmt.challenges }
+                 : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.succ)
+         else failure
+         : OptionT (OracleComp []ₒ) _) := by
+  -- `iteratedSumcheckOracleVerifier = roundOracleVerifier` (a `@[reducible]` wrapper); unfold to
+  -- the shared verify body and collapse the single message-oracle query.
+  simp only [iteratedSumcheckOracleVerifier, Sumcheck.Structured.roundOracleVerifier]
+  rw [simulateQ_optionT_bind, simulateQ_simOracle2_query]
+  refine OptionT.ext ?_
+  dsimp only [Sigma.fst, Sigma.snd]
+  erw [OptionT.run_bind_lift]
+  erw [pure_bind]
+  -- `answer (instDefault) m () = m` makes the queried message the transcript message `h_i`; then
+  -- `guard_eq` exposes the `if`, and `simulateQ`/`OptionT.run` push through the query-free parts.
+  rw [answer_instDefault']
+  simp only [guard_eq, apply_ite, map_pure, bind_pure_comp]
+  by_cases hc : (∑ b ∈ (boolDomain L ℓ').points i, (FullTranscript.messages tr ⟨0, rfl⟩).val.eval b)
+      = stmt.sumcheck_target
+  · simp only [hc, if_true, reduceIte]
+    erw [simulateQ_pure]
+    rfl
+  · simp only [hc, if_false, reduceIte]
+    rw [map_optionT_failure', simulateQ_optionT_failure']
+
 /-- This follows the KState of `foldKStateProp` -/
 def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
     (tr : Transcript m (pSpecSumcheckRound L))
@@ -313,45 +400,83 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       simp [pSpecSumcheckRound] at hDir
   toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by
     intro h_relOut
-    simp at h_relOut
-    rcases h_relOut with ⟨stmtOut, ⟨oStmtOut, h_conj⟩⟩
-    have h_simulateQ := h_conj.1
-    have h_SumcheckStepRelOut := h_conj.2
+    -- (A) SUPPORT EXTRACTION (front-end, defect-#21 verifier-collapse). Turn the `> 0` probability
+    -- into a support element and collapse the 2-message verifier run via the now-proven
+    -- `iteratedSumcheckOracleVerifier_verify_collapse` (the analog of
+    -- `BatchingPhase.oracleVerifier_verify_collapse`). The collapse's reject branch is `failure`
+    -- (guard-emitting verifier), so on a failed sumcheck check the run has no support element.
+    rw [gt_iff_lt, probEvent_pos_iff] at h_relOut
+    obtain ⟨⟨stmtOut, oStmtOut⟩, hx, h_SumcheckStepRelOut⟩ := h_relOut
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
     set witLast := (iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i).extractOut
-      ⟨stmtLast, oStmtLast⟩ tr witOut
+      ⟨stmtLast, oStmtLast⟩ tr witOut with hwitLast
     simp only [Fin.reduceLast, Fin.isValue]
-    -- ⊢ iteratedSumcheckKStateProp … 2 tr stmtLast witLast oStmtLast  (index `Fin.last 2 = ⟨2,_⟩`)
-    --
-    -- STRUCTURAL ANALYSIS (lane-b, building on the now-closed final-sumcheck accept branch).
-    -- The support-extraction front-end is the same as the closed `finalSumcheck…toFun_full`:
-    --   `probEvent_pos_iff` → `OptionT.mem_support_iff` → `support_bind`/`Set.mem_iUnion`
-    --   → collapse `simulateQ (simOracle2 …) (roundOracleVerifier.verify …)` to a deterministic
-    --     `if sumcheck_check then stmtOutAccept else dummyStmt` (analog of
-    --     `BatchingPhase.oracleVerifier_verify_collapse`, which must be BUILT for the 2-message
-    --     `Sumcheck.Structured.roundOracleVerifier` — none exists yet) → `split`/`subst` the
-    --     singleton support → transport `h_SumcheckStepRelOut`.
-    --
-    -- TWO WALLS (both shared with the final-sumcheck step; documented to save re-derivation):
-    --   (1) INDEX/STRUCTURE MISMATCH (not a pure transport, unlike `BatchingPhase`'s #17). Here the
-    --       index-⟨2⟩ KState is `masterKStateProp (stmtIdx := i.castSucc) (stmt := stmtLast)
-    --       (localChecks := localizedRoundPolyCheck ∧ nextSumcheckTargetCheck)`, whereas
-    --       `relOut = sumcheckRoundRelation … i.succ` is `masterKStateProp (stmtIdx := i.succ)
-    --       (stmt := stmtOut)`. Different index AND statement: `h_SumcheckStepRelOut` must be
-    --       RECONSTRUCTED into the round-local checks via the round-polynomial algebra (the
-    --       `getSumcheckRoundPoly` cube-sum identity + `projectToNextSumcheckPoly` step), NOT
-    --       transported verbatim. This is the multi-round analog of `finalSumcheck_cube0_sum_eq`.
-    --   (2) ORIENTATION WALL — NOW RESOLVED by the defect-#21 machinery repair. The shared
-    --       `Sumcheck.Structured.roundOracleVerifier` now emits `failure` (`guard`) on a failed
-    --       sumcheck check (instead of a dummy `{sumcheck_target := 0, challenges := …}`), so the
-    --       reject branch has no support element and is vacuous — the dummy can no longer lie in
-    --       `relOut`. After the support-extraction front-end collapses the verifier run, the reject
-    --       branch closes by `absurd` on the empty support; only the accept branch remains, which is
-    --       wall (1).
-    -- REMAINING after defect-#21: wall (1) (index/structure reconstruction of the index-⟨2⟩ KState
-    -- from `h_SumcheckStepRelOut` via the round-polynomial cube-sum algebra) is independent of the
-    -- verifier-failure repair and is still open; it needs the multi-round analog of
-    -- `finalSumcheck_cube0_sum_eq` plus the run-shape peel. Left as WIP `sorry`.
-    sorry
+    -- Collapse `simulateQ (simOracle2 …) (verify …)` to the deterministic `if sumcheck_check then
+    -- pure stmtOutAccept else failure` (defect-#21), then peel `Verifier.run`/`toVerifier`.
+    simp only [OracleVerifier.toVerifier, Verifier.run, bind_pure_comp,
+      StateT.run'_eq, support_map, Set.mem_image, Prod.exists] at hx
+    obtain ⟨val, s', hmem, heq⟩ := hx
+    rw [iteratedSumcheckOracleVerifier_verify_collapse] at hmem
+    -- (B) CASE SPLIT on the verifier's sumcheck check (`split` reads the `if` cond from `hmem`).
+    split at hmem
+    · -- ACCEPT branch: pin the deterministic output, then reconstruct the index-⟨2⟩ KState.
+      rename_i hcheck
+      simp only [bind_pure_comp, map_pure] at hmem
+      erw [simulateQ_pure] at hmem
+      simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff, Option.some.injEq,
+        Prod.mk.injEq] at hmem
+      obtain ⟨hval, -⟩ := hmem
+      -- `heq : some val = some (stmtOut, oStmtOut)`; with `hval : val = (stmtOutAccept, oStmt)`,
+      -- pin `stmtOut = stmtOutAccept` and `oStmtOut = oStmtLast`.
+      rw [hval] at heq
+      simp only [Option.some.injEq, Prod.mk.injEq] at heq
+      obtain ⟨rfl, rfl⟩ := heq
+      -- Reduce the index-⟨2⟩ KState to its four conjuncts and `h_SumcheckStepRelOut` (the
+      -- verifier's accept output `(stmtOutAccept, witOut)` ∈ relOut at index `i.succ`) to its three.
+      unfold iteratedSumcheckKStateProp
+      simp only [masterKStateProp, witnessStructuralInvariant, sumcheckRoundRelation,
+        sumcheckRoundRelationProp, Set.mem_setOf_eq] at h_SumcheckStepRelOut ⊢
+      obtain ⟨-, hWitStruct, hConsistSucc, hCompat⟩ := h_SumcheckStepRelOut
+      refine ⟨⟨?_, ?_⟩, ?_, ?_, ?_⟩
+      · -- WALL (1a) — `localizedRoundPolyCheck`: the prover's sent `h_i = getSumcheckRoundPoly i
+        -- witLast.H`. NOT derivable from `h_SumcheckStepRelOut` + the verifier check: the verifier
+        -- only checks `∑ h_i(b) = target`, never that `h_i` equals the ground-truth round poly, so
+        -- a malicious prover's `h_i` need not match. This conjunct belongs to the round's *bad
+        -- event*; closing it requires the multi-round KState redesign flagged in the mission (the
+        -- `getSumcheckRoundPoly` cube-sum identity is necessary but not sufficient). Open WIP.
+        sorry
+      · -- WALL (1b) — `nextSumcheckTargetCheck`: `h_i.eval r' = (getSumcheckRoundPoly i
+        -- witLast.H).eval r'`. Follows from (1a) by congruence (`eval r'`). Blocked on (1a). Open WIP.
+        sorry
+      · -- `witnessStructuralInvariant` at `i.castSucc`: TRUE BY DEFINITION of the extractor's
+        -- `witLast.H := projectToMidSumcheckPoly … i.castSucc stmtLast.challenges`.
+        rfl
+      · -- WALL (1c) — `sumcheckConsistencyProp (boolDomain (ℓ'-i.castSucc)) stmtLast.sumcheck_target
+        -- witLast.H`. Reconstruction from `hConsistSucc` (consistency at `i.succ` for `witOut.H`)
+        -- via the cons-step `projectToMid` advance + `getSumcheckRoundPoly_eval_eq_sum_snoc`: the
+        -- multi-round analog of `finalSumcheck_cube0_sum_eq`. Needs the dedicated round-transition
+        -- algebra lemma (`fixFirstVariablesOfMQP_projectToMid_step` chained with the cube marginal).
+        -- Open WIP.
+        sorry
+      · -- `initialCompatibility (witLast.t', oStmtLast)`: `witLast.t' = witOut.t'` (extractor), and
+        -- the verifier's `embed = Sum.inl` makes `oStmtOut = oStmtLast`, so this is `hCompat`.
+        exact hCompat
+    · -- REJECT branch (defect-#21, NOW VACUOUS). On a failed check the verifier emits `failure`, so
+      -- the run has no support element; `hmem`'s membership in `support failure` is contradictory.
+      exfalso
+      -- `(fun a => (a, oStmt)) <$> failure = failure` (`map_optionT_failure'`), `simulateQ` keeps
+      -- it; then `failure.run s = pure (none, s)` has support without `some`.
+      rw [map_optionT_failure', simulateQ_optionT_failure'] at hmem
+      rw [show (failure : OptionT (StateT σ ProbComp) (Statement (L := L) (ℓ := ℓ')
+            (RingSwitchingBaseContext κ L K ℓ P) i.succ × (∀ j, aOStmtIn.OStmtIn j)))
+          = (pure none : StateT σ ProbComp _) from rfl] at hmem
+      rw [StateT.run_pure] at hmem
+      simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hmem
+      -- `hmem.1 : val = none` contradicts `heq : val = some (stmtOut, oStmtOut)`.
+      rw [hmem.1] at heq
+      exact absurd heq.symm (by simp)
 
 /-- RBR knowledge soundness for a single round oracle verifier -/
 theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : Fin ℓ') :
@@ -375,42 +500,6 @@ section FinalSumcheckStep
 /-- `pSpecFinalSumcheck L` is a single prover-to-verifier message (no challenge). -/
 instance : ProverOnly (pSpecFinalSumcheck L) where
   prover_first' := rfl
-
-/-- The `instDefault` oracle answer is the message itself (`answer m () = m`). -/
-@[simp] private lemma answer_instDefault' {M : Type _} (m : M) (q : Unit) :
-    @OracleInterface.answer M OracleInterface.instDefault m q = m := rfl
-
-/-- `simulateQ` commutes with `OptionT.pure` (no explicit empty-spec universes). -/
-private theorem simulateQ_optionT_pure' {ιₐ ιᵦ : Type} {specₐ : OracleSpec ιₐ}
-    {specᵦ : OracleSpec ιᵦ} {γ : Type} (impl : QueryImpl specₐ (OracleComp specᵦ)) (b : γ) :
-    simulateQ impl (pure b : OptionT (OracleComp specₐ) γ)
-      = (pure b : OptionT (OracleComp specᵦ) γ) := by
-  rw [show (pure b : OptionT (OracleComp specₐ) γ) = OptionT.lift (pure b)
-        from (OptionT.lift_pure b).symm]
-  rw [simulateQ_optionT_lift, simulateQ_pure, OptionT.lift_pure]
-
-/-- `simulateQ` commutes with `OptionT` `failure`, for an arbitrary lawful target monad `m` (so it
-applies to both the inner `OracleComp`-valued and outer `StateT`-valued simulation passes).
-Companion to `simulateQ_optionT_pure'`; discharges the defect-#21 vacuous REJECT branches. -/
-private theorem simulateQ_optionT_failure' {ιₐ : Type} {specₐ : OracleSpec ιₐ}
-    {m : Type → Type} [Monad m] [LawfulMonad m] {γ : Type} (impl : QueryImpl specₐ m) :
-    simulateQ impl (failure : OptionT (OracleComp specₐ) γ) = (failure : OptionT m γ) := by
-  rw [OracleComp.failure_def]
-  apply OptionT.ext
-  simp only [OptionT.run_mk, simulateQ_pure, OptionT.fail]
-  rfl
-
-/-- A map over `OptionT` `failure` is `failure`. -/
-private theorem map_optionT_failure' {ιₐ : Type} {specₐ : OracleSpec ιₐ} {γ δ : Type}
-    (f : γ → δ) :
-    (f <$> (failure : OptionT (OracleComp specₐ) γ))
-      = (failure : OptionT (OracleComp specₐ) δ) := by
-  apply OptionT.ext
-  rw [OptionT.run_map]
-  show Option.map f <$> (pure none : OracleComp specₐ (Option γ))
-    = (pure none : OracleComp specₐ (Option δ))
-  rw [map_pure]
-  rfl
 
 /-- The prover for the final sumcheck step -/
 noncomputable def finalSumcheckProver :
