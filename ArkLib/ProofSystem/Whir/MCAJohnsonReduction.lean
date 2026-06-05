@@ -8,11 +8,15 @@ affine-line instance of `hasMutualCorrAgreement` with that error function. -/
 
 namespace MCAJohnsonReduction
 
+noncomputable section
+
 open MutualCorrAgreement ProbabilityTheory
 open scoped NNReal ENNReal
 
 variable {ι : Type} [Fintype ι] [Nonempty ι]
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {F : Type} [Field F] [Fintype F]
+
+local instance : DecidableEq F := Classical.decEq F
 
 /-- **Affine-line MCA from an epsMCA bound.** If `epsMCA C δ ≤ E δ` for every
 `δ < 1`, then the affine-line proximity-condition probability is `≤ E δ`. This is
@@ -23,8 +27,11 @@ theorem mca_affineLine_of_epsMCA_bound
     (hbound : ∀ δ : ℝ≥0, δ < 1 → ProximityGap.epsMCA (F := F) (A := F)
       ((C : Set (ι → F))) δ ≤ E δ)
     (f : Fin 2 → ι → F) (δ : ℝ≥0) (hδ : δ < 1) :
-    Pr_{let γ ←$ᵖ F}[proximityCondition (parℓ := Fin 2) f δ
+    Pr_{
+      let γ ← $ᵖ F}[proximityCondition (parℓ := Fin 2) f δ
         (fun j ↦ if j = 0 then 1 else γ) C] ≤ E δ :=
   le_trans (Pr_proximityCondition_le_epsMCA hδ f) (hbound δ hδ)
+
+end
 
 end MCAJohnsonReduction
