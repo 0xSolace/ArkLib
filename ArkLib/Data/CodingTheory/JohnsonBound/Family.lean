@@ -64,6 +64,15 @@ noncomputable def Jqℓ (q ℓ : ℚ) (δ : ℚ) : ℝ :=
   let lFac : ℚ := ℓ / (ℓ - 1)
   ((1 - 1 / q) : ℚ) * (1 - √(1 - frac * lFac * δ))
 
+/-- Reciprocal finite-list Johnson radius reached by the current quadratic-cap
+route, stated over reals for direct use with `Code.minDist C / n`.
+
+This is deliberately distinct from paper-facing `Jqℓ`: it uses
+`(ℓ-1)/ℓ` rather than `ℓ/(ℓ-1)`. -/
+noncomputable def JqℓRecipReal (q ℓ δ : ℝ) : ℝ :=
+  (1 - 1 / q) *
+    (1 - √(1 - (1 / (1 - 1 / q)) * ((ℓ - 1) / ℓ) * δ))
+
 /-- **ABF26 Definition 3.1, `J`.** Paper's asymptotic Johnson bound:
 
   `J(δ) := 1 - √(1 - δ)`
@@ -910,6 +919,25 @@ theorem Lambda_le_of_reciprocal_johnson_radius
     field_simp [hℓ_real_pos.ne']
     nlinarith [hdrel_pos, hℓ_real_pos]
   simpa [γ, drel, L, z] using htarget
+
+/-- Named-radius wrapper for `Lambda_le_of_reciprocal_johnson_radius`. -/
+theorem Lambda_le_of_JqℓRecipReal_minDist
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {ℓ : ℕ}
+    (hℓ : 2 ≤ ℓ) (hq_one : 1 < Fintype.card α)
+    (hmin_pos : 0 < Code.minDist C)
+    (hrad :
+      0 ≤ 1
+        - (1 / (1 - 1 / (Fintype.card α : ℝ)))
+          * (((ℓ : ℝ) - 1) / (ℓ : ℝ))
+          * ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ))) :
+    ListDecodable.Lambda C
+      (JqℓRecipReal (Fintype.card α : ℝ) (ℓ : ℝ)
+        ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ))) ≤
+        (ℓ : ℕ∞) := by
+  simpa [JqℓRecipReal] using
+    Lambda_le_of_reciprocal_johnson_radius C hℓ hq_one hmin_pos hrad
 
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
