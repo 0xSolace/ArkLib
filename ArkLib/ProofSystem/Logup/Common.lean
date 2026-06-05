@@ -443,6 +443,23 @@ omit [Fintype F] [DecidableEq F] in
       xChallenge + evalOnHypercube (columnOracle oStmt i) u := by
   simp [termPhi, termToInput, phi]
 
+omit [DecidableEq F] in
+theorem termPhi_ne_zero_of_inputRelation_of_table
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i)
+    (xChallenge : F)
+    (hInput : (((stmt, oStmt), ()) ∈ inputRelation F n M))
+    (htable : ∀ u : Hypercube n,
+      xChallenge + evalOnHypercube (tableOracle oStmt) u ≠ 0)
+    (i : TermIdx M) (u : Hypercube n) :
+    termPhi oStmt xChallenge i u ≠ 0 := by
+  unfold termPhi
+  cases hidx : termToInput i with
+  | table =>
+      simpa [hidx, phi] using htable u
+  | column c =>
+      rcases (mem_inputRelation_iff stmt oStmt ()).mp hInput c u with ⟨y, hy⟩
+      simpa [hidx, phi, hy] using htable y
+
 /-- The numerator term, indexed as `0, ..., M` as in the paper. -/
 noncomputable def termNumerator (multiplicity : MultilinearOracle F n)
     (i : TermIdx M) (u : Hypercube n) : F :=

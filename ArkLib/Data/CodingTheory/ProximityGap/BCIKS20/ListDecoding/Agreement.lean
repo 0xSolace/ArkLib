@@ -7,7 +7,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 
-set_option linter.style.longFile 3000
+set_option linter.style.longFile 3200
 
 /-!
 # BCIKS20 list-decoding agreement compatibility module
@@ -1356,6 +1356,118 @@ lemma powerSeries_eq_truncate_of_coeff_zero_ge
   · simp [ht, hzero t ht]
   · simp [ht]
 
+lemma powerSeries_eq_coe_trunc_of_coeff_zero_ge
+    {R : Type} [CommSemiring R] (f : PowerSeries R) {k : ℕ}
+    (hzero : ∀ t, t ≥ k → PowerSeries.coeff t f = 0) :
+    f = (f.trunc k : PowerSeries R) := by
+  ext t
+  by_cases ht : t < k
+  · simp [PowerSeries.coeff_trunc, ht]
+  · have htk : t ≥ k := Nat.le_of_not_gt ht
+    simp [PowerSeries.coeff_trunc, ht, hzero t htk]
+
+lemma powerSeries_mk_eq_coe_trunc_of_tail_zero
+    {R : Type} [CommSemiring R] (a : ℕ → R) {k : ℕ}
+    (hzero : ∀ t, t ≥ k → a t = 0) :
+    PowerSeries.mk a = ((PowerSeries.mk a).trunc k : PowerSeries R) :=
+  powerSeries_eq_coe_trunc_of_coeff_zero_ge (PowerSeries.mk a)
+    (by
+      intro t ht
+      simpa using hzero t ht)
+
+lemma powerSeries_subst_coe_polynomial
+    {R : Type} [CommRing R] (a : PowerSeries R) (p : Polynomial R) :
+    PowerSeries.subst a (p : PowerSeries R) = Polynomial.aeval a p := by
+  rw [Polynomial.toPowerSeries_toMvPowerSeries]
+  rw [PowerSeries.subst_def]
+  rw [MvPowerSeries.subst_coe]
+  induction p using Polynomial.induction_on' with
+  | add p q hp hq => simp [map_add, hp, hq]
+  | monomial n r => simp [Polynomial.aeval_def]
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma alpha'_powerSeries_eq_trunc_of_coeff_zero
+    {R : F[Z][X][Y]} {H : F[Z][X]}
+    (H_irreducible : Irreducible H) (hHdeg : 0 < H.natDegree)
+    (hHyp : Hypotheses x₀ R H) {k : ℕ}
+    (hzero : ∀ t ≥ k,
+      α' x₀ R H_irreducible hHdeg hHyp t =
+        (0 : BCIKS20AppendixA.𝕃 H)) :
+    PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp) =
+      ((PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)).trunc k :
+        PowerSeries (BCIKS20AppendixA.𝕃 H)) :=
+  powerSeries_mk_eq_coe_trunc_of_tail_zero
+    (α' x₀ R H_irreducible hHdeg hHyp) hzero
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma gamma'_eq_subst_alpha'_trunc_of_coeff_zero
+    {R : F[Z][X][Y]} {H : F[Z][X]}
+    (H_irreducible : Irreducible H) (hHdeg : 0 < H.natDegree)
+    (hHyp : Hypotheses x₀ R H) {k : ℕ}
+    (hzero : ∀ t ≥ k,
+      α' x₀ R H_irreducible hHdeg hHyp t =
+        (0 : BCIKS20AppendixA.𝕃 H)) :
+    γ' x₀ R H_irreducible hHdeg hHyp =
+      let shift : PowerSeries (BCIKS20AppendixA.𝕃 H) := PowerSeries.mk fun t =>
+        match t with
+        | 0 => BCIKS20AppendixA.fieldTo𝕃 (-x₀)
+        | 1 => 1
+        | _ => 0
+      PowerSeries.subst shift
+        ((PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)).trunc k :
+          PowerSeries (BCIKS20AppendixA.𝕃 H)) := by
+  let shift : PowerSeries (BCIKS20AppendixA.𝕃 H) := PowerSeries.mk fun t =>
+    match t with
+    | 0 => BCIKS20AppendixA.fieldTo𝕃 (-x₀)
+    | 1 => 1
+    | _ => 0
+  change PowerSeries.subst shift (PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)) =
+    PowerSeries.subst shift
+      ((PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)).trunc k :
+        PowerSeries (BCIKS20AppendixA.𝕃 H))
+  exact congrArg (PowerSeries.subst shift)
+    (alpha'_powerSeries_eq_trunc_of_coeff_zero (F := F) (x₀ := x₀)
+      H_irreducible hHdeg hHyp hzero)
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma gamma'_eq_aeval_alpha'_trunc_of_coeff_zero
+    {R : F[Z][X][Y]} {H : F[Z][X]}
+    (H_irreducible : Irreducible H) (hHdeg : 0 < H.natDegree)
+    (hHyp : Hypotheses x₀ R H) {k : ℕ}
+    (hzero : ∀ t ≥ k,
+      α' x₀ R H_irreducible hHdeg hHyp t =
+        (0 : BCIKS20AppendixA.𝕃 H)) :
+    γ' x₀ R H_irreducible hHdeg hHyp =
+      let shift : PowerSeries (BCIKS20AppendixA.𝕃 H) := PowerSeries.mk fun t =>
+        match t with
+        | 0 => BCIKS20AppendixA.fieldTo𝕃 (-x₀)
+        | 1 => 1
+        | _ => 0
+      Polynomial.aeval shift
+        ((PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)).trunc k) := by
+  let shift : PowerSeries (BCIKS20AppendixA.𝕃 H) := PowerSeries.mk fun t =>
+    match t with
+    | 0 => BCIKS20AppendixA.fieldTo𝕃 (-x₀)
+    | 1 => 1
+    | _ => 0
+  change PowerSeries.subst shift (PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)) =
+    Polynomial.aeval shift ((PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)).trunc k)
+  calc
+    PowerSeries.subst shift (PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp))
+        = PowerSeries.subst shift
+            ((PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)).trunc k :
+              PowerSeries (BCIKS20AppendixA.𝕃 H)) := by
+            exact congrArg (PowerSeries.subst shift)
+              (alpha'_powerSeries_eq_trunc_of_coeff_zero (F := F) (x₀ := x₀)
+                H_irreducible hHdeg hHyp hzero)
+    _ = Polynomial.aeval shift
+            ((PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)).trunc k) := by
+            exact powerSeries_subst_coe_polynomial shift
+              ((PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)).trunc k)
+
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 lemma alpha'_eq_zero_of_embedding_beta_eq_zero
@@ -1485,6 +1597,77 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embeddin
     (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
     (claimA2_hypotheses_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
     (hemb t ht)
+
+open BCIKS20AppendixA.ClaimA2 in
+lemma approximate_solution_alpha_powerSeries_eq_trunc_of_beta_embedding_zero
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hemb : ∀ t ≥ k,
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t) = 0) :
+    PowerSeries.mk
+      (α'
+        x₀
+        (R k δ x₀ h_gs)
+        (irreducible_H k h_gs)
+        (natDegree_H_pos k h_gs)
+        (claimA2_hypotheses k h_gs)) =
+      ((PowerSeries.mk
+        (α'
+          x₀
+          (R k δ x₀ h_gs)
+          (irreducible_H k h_gs)
+          (natDegree_H_pos k h_gs)
+          (claimA2_hypotheses k h_gs))).trunc k :
+        PowerSeries (BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))) := by
+  exact alpha'_powerSeries_eq_trunc_of_coeff_zero
+    (F := F) (x₀ := x₀)
+    (irreducible_H k h_gs)
+    (natDegree_H_pos k h_gs)
+    (claimA2_hypotheses k h_gs)
+    (approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs hemb)
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+lemma approximate_solution_alpha_graph_clear_powerSeries_eq_trunc_of_beta_embedding_zero
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hemb : ∀ t ≥ k,
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃
+          (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (β
+          (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t) = 0) :
+    PowerSeries.mk
+      (α'
+        x₀
+        (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (claimA2_hypotheses_graph_clear
+          (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) =
+      ((PowerSeries.mk
+        (α'
+          x₀
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (natDegree_H_graph_clear_pos
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (claimA2_hypotheses_graph_clear
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))).trunc k :
+        PowerSeries (BCIKS20AppendixA.𝕃
+          (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))) := by
+  exact alpha'_powerSeries_eq_trunc_of_coeff_zero
+    (F := F) (x₀ := x₀)
+    (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (claimA2_hypotheses_graph_clear
+      (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hemb)
 
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in

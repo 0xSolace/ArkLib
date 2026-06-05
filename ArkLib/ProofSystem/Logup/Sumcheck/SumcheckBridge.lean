@@ -69,6 +69,17 @@ def logupSumcheckPolynomialRowsAgree
       qOnHypercube (canonicalGroups params) (fun i => oStmt (.input i)) (oStmt .multiplicity)
         (oStmt .helpers) stmt.xChallenge stmt.zChallenge stmt.batchingScalars u
 
+omit [Fintype F] [DecidableEq F] in
+theorem logupSumcheckPolynomialRowsAgree_of_signsDistinct
+    (hSigns : (-1 : F) ≠ 1)
+    (stmt : StmtAfterOuter F n M params)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i) :
+    logupSumcheckPolynomialRowsAgree F n M params stmt oStmt := by
+  intro u
+  simpa [logupSumcheckPolynomial] using
+    logupQPolynomial_eval_signPoint_eq_qOnHypercube
+      (F := F) (n := n) (M := M) (params := params) hSigns stmt oStmt u
+
 /-- The LogUp zero-sum claim that is fed to the generic sumcheck. -/
 noncomputable def logupOuterSumcheckClaim
     (stmt : StmtAfterOuter F n M params)
@@ -76,6 +87,35 @@ noncomputable def logupOuterSumcheckClaim
   ∑ u : Hypercube n,
     qOnHypercube (canonicalGroups params) (fun i => oStmt (.input i)) (oStmt .multiplicity)
       (oStmt .helpers) stmt.xChallenge stmt.zChallenge stmt.batchingScalars u
+
+theorem logupOuterSumcheckClaim_honestHelpers_eq_sum_helpers
+    (stmtIn : StmtIn F n M)
+    (oStmtIn : ∀ i, OStmtIn F n M i)
+    (stmt : StmtAfterOuter F n M params)
+    (hInput : (((stmtIn, oStmtIn), ()) ∈ inputRelation F n M))
+    (htable : ∀ u : Hypercube n,
+      stmt.xChallenge + evalOnHypercube (tableOracle oStmtIn) u ≠ 0) :
+    logupOuterSumcheckClaim F n M params stmt
+      (fun
+        | .input i => oStmtIn i
+        | .multiplicity => honestMultiplicity oStmtIn
+        | .helpers => honestHelpers params oStmtIn stmt.xChallenge) =
+      ∑ u : Hypercube n,
+        ∑ k : Fin params.numGroups,
+          evalOnHypercube (honestHelpers params oStmtIn stmt.xChallenge k) u := by
+  unfold logupOuterSumcheckClaim
+  apply Finset.sum_congr rfl
+  intro u _
+  have hden :
+      ∀ k : Fin params.numGroups, ∀ i ∈ canonicalGroups params k,
+        termPhi oStmtIn stmt.xChallenge i u ≠ 0 := by
+    intro _ i _
+    exact termPhi_ne_zero_of_inputRelation_of_table
+      stmtIn oStmtIn stmt.xChallenge hInput htable i u
+  simpa [honestHelpers] using
+    qOnHypercube_honest_helpers (groups := canonicalGroups params)
+      oStmtIn (honestMultiplicity oStmtIn) stmt.xChallenge stmt.zChallenge
+      stmt.batchingScalars u hden
 
 /-- Semantic agreement between final oracle-query answers and the retained LogUp oracles. -/
 def logupPointEvaluationsAgree
@@ -244,7 +284,6 @@ sumcheck plus LogUp's final oracle-query check. -/
 structure LogupSumcheckBridge
     (stmt : StmtAfterOuter F n M params)
     (oStmt : ∀ i, OStmtAfterOuter F n M params i) where
-  rowsAgree : logupSumcheckPolynomialRowsAgree F n M params stmt oStmt
   claimZero : logupOuterSumcheckClaim F n M params stmt oStmt = 0
 
 theorem LogupSumcheckBridge.relationInput
@@ -254,7 +293,9 @@ theorem LogupSumcheckBridge.relationInput
     (bridge : LogupSumcheckBridge F n M params stmt oStmt) :
     logupSumcheckRelationInput F n M params hSigns stmt oStmt :=
   logupSumcheckRelationInput_of_rowsAgree (F := F) (n := n) (M := M) (params := params)
-    bridge.rowsAgree bridge.claimZero
+    (logupSumcheckPolynomialRowsAgree_of_signsDistinct
+      (F := F) (n := n) (M := M) (params := params) hSigns stmt oStmt)
+    bridge.claimZero
 
 theorem logupSumcheckPolynomial_finalEval
     {stmt : StmtAfterOuter F n M params}
@@ -300,7 +341,7 @@ theorem logupSumcheckOutputTarget_eq_eval
     funext i
     exact isEmptyElim i
   · intro hx
-    exact False.elim (hx (Finset.mem_univ x0))
+    exact False.elim (hx (@Finset.mem_univ _ Unique.fintype x0))
 
 theorem LogupSumcheckBridge.finalQueryCheck
     {stmt : StmtAfterOuter F n M params}
