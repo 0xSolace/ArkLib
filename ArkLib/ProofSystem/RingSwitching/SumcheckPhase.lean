@@ -389,6 +389,29 @@ private theorem simulateQ_optionT_pure' {ιₐ ιᵦ : Type} {specₐ : OracleSp
         from (OptionT.lift_pure b).symm]
   rw [simulateQ_optionT_lift, simulateQ_pure, OptionT.lift_pure]
 
+/-- `simulateQ` commutes with `OptionT` `failure`, for an arbitrary lawful target monad `m` (so it
+applies to both the inner `OracleComp`-valued and outer `StateT`-valued simulation passes).
+Companion to `simulateQ_optionT_pure'`; discharges the defect-#21 vacuous REJECT branches. -/
+private theorem simulateQ_optionT_failure' {ιₐ : Type} {specₐ : OracleSpec ιₐ}
+    {m : Type → Type} [Monad m] [LawfulMonad m] {γ : Type} (impl : QueryImpl specₐ m) :
+    simulateQ impl (failure : OptionT (OracleComp specₐ) γ) = (failure : OptionT m γ) := by
+  rw [OracleComp.failure_def]
+  apply OptionT.ext
+  simp only [OptionT.run_mk, simulateQ_pure, OptionT.fail]
+  rfl
+
+/-- A map over `OptionT` `failure` is `failure`. -/
+private theorem map_optionT_failure' {ιₐ : Type} {specₐ : OracleSpec ιₐ} {γ δ : Type}
+    (f : γ → δ) :
+    (f <$> (failure : OptionT (OracleComp specₐ) γ))
+      = (failure : OptionT (OracleComp specₐ) δ) := by
+  apply OptionT.ext
+  rw [OptionT.run_map]
+  show Option.map f <$> (pure none : OracleComp specₐ (Option γ))
+    = (pure none : OracleComp specₐ (Option δ))
+  rw [map_pure]
+  rfl
+
 /-- The prover for the final sumcheck step -/
 noncomputable def finalSumcheckProver :
   OracleProver
@@ -448,11 +471,16 @@ noncomputable def finalSumcheckVerifier :
 
     -- 9. `V` requires `s_{ℓ'} ?= (Σ_{u ∈ {0,1}^κ} eq̃(u_0, ..., u_{κ-1},`
       -- `r''_0, ..., r''_{κ-1}) ⋅ e_u) ⋅ s'`.
-    unless stmtIn.sumcheck_target = eq_tilde_eval * s' do
-      return { -- dummy stmtOut
-        t_eval_point := 0,
-        original_claim := 0,
-      }
+    -- FAILURE-EMITTING VERIFIER (defect-#21 repair, mirroring `roundOracleVerifier`). On a failed
+    -- step-9 check the verifier emits `failure` (`guard`, i.e. `OptionT` `none`) rather than a
+    -- *dummy* accepting statement `{0, 0}`. The dummy let a maliciously-chosen `witOut` (with
+    -- `witOut.t.eval 0 = 0`) lie in `relOut = toRelInput` while the KState local check
+    -- `sumcheck_target = eq_tilde_eval * c` is FALSE, leaving the `toFun_full` REJECT branch
+    -- unprovable (the dummy is reachable). With `guard` the reject branch has no support element,
+    -- so it is vacuous and the knowledge-soundness contract (verifier signals rejection, never
+    -- forwards a fake statement) holds. Completeness only exercises the accept branch (via
+    -- `if_pos`), so this does not weaken `finalSumcheckOracleReduction_perfectCompleteness`.
+    guard (stmtIn.sumcheck_target = eq_tilde_eval * s')
 
     -- Statement/protocol repair (defect #11): the *forwarded* MLP-evaluation claim is `t'(r') = s'`,
     -- so `original_claim := s'` (with `t_eval_point := r' = challenges`). The eq-scaled value
@@ -608,10 +636,18 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
   simp only [OptionT.lift_pure, pure_bind, FullTranscript.messages, apply_ite,
     simulateQ_optionT_lift, simulateQ_pure, OptionT.run_pure, OptionT.run_lift]
   erw [pure_bind]
-  simp only [answer_instDefault', apply_ite, simulateQ_optionT_pure']
+  -- `guard check` (defect-#21) `= if check then pure () else failure` (`guard_eq`); the trailing
+  -- `pure () >>= fun _ => pure stmtOut` collapses to `pure stmtOut` (`pure_bind`), so the accept
+  -- branch is identical to the prior `unless`-fallthrough. Select it via `hcheck`.
+  simp only [answer_instDefault', guard_eq, apply_ite, simulateQ_optionT_pure', pure_bind]
   rw [if_pos hcheck]
-  simp only [map_pure, simulateQ_pure, Option.elimM, bind_pure_comp, Option.elim_some,
-    Option.elim_none, StateT.run'_eq, OptionT.run_pure, Option.getM, pure_bind, Option.elim,
+  -- After selecting the accept branch the verify body is `pure () >>= fun _ => pure stmtOut`;
+  -- collapse it through `simulateQ`/`OptionT` (`simulateQ_optionT_bind`/`_pure'`/`lift_pure`) so
+  -- the inner run is a single `pure (some stmtOut)` and the `Option.elimM`/`getM` match reduces —
+  -- the same `pure`-shaped normal form the prior dummy verifier produced.
+  simp only [simulateQ_optionT_bind, simulateQ_optionT_lift, simulateQ_optionT_pure',
+    OptionT.lift_pure, pure_bind, map_pure, simulateQ_pure, Option.elimM, bind_pure_comp,
+    Option.elim_some, Option.elim_none, StateT.run'_eq, OptionT.run_pure, Option.getM, Option.elim,
     StateT.run_map, StateT.run_pure, Option.map_some, Functor.map_map, Function.comp]
   rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
@@ -738,13 +774,18 @@ noncomputable def finalSumcheckKnowledgeStateFunction [IsDomain L] [IsDomain K] 
     simp only [finalSumcheckVerifier, OracleVerifier.toVerifier, Verifier.run,
       bind_pure_comp] at hx
     rw [simulateQ_optionT_bind, simulateQ_simOracle2_query] at hx
-    simp only [OptionT.lift_pure, FullTranscript.messages, apply_ite,
-      simulateQ_optionT_lift, simulateQ_pure, OptionT.run_pure, OptionT.run_lift,
+    simp only [OptionT.lift_pure, FullTranscript.messages,
+      OptionT.run_pure, OptionT.run_lift,
       answer_instDefault', simulateQ_optionT_pure', simulateQ_map, map_pure] at hx
     erw [pure_bind] at hx
     -- Rewrite the run's `tr 0` to the `equivMessagesChallenges` message `c` so the case split and the
     -- final KState reconstruction speak the same language. `hc0 : c = tr 0` is definitional.
     rw [show (tr (0 : Fin 1) : L) = c from hc0.symm] at hx
+    -- `guard check` (defect-#21) `= if check then pure () else failure` (`guard_eq`); the map
+    -- `(fun _ => stmtOut₀) <$> (·)` distributes over the `ite` (`apply_ite`), turning the
+    -- verifier run into `if check then pure stmtOut₀ else (failure mapped)`. The reject branch
+    -- maps `failure`, which stays `failure` (empty support), so it is VACUOUS.
+    simp only [guard_eq, apply_ite, map_pure] at hx
     -- (B) CASE SPLIT on the verifier's step-9 accept condition.
     by_cases hcheck : stmt.sumcheck_target
         = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
@@ -784,29 +825,31 @@ noncomputable def finalSumcheckKnowledgeStateFunction [IsDomain L] [IsDomain K] 
         exact (finalSumcheck_cube0_sum_eq κ L K P ℓ ℓ' h_l stmt witOut.t).symm
       · -- `initialCompatibility ⟨witOut.t, oStmt⟩`.
         exact hCompat
-    · -- REJECT branch: verifier returns the dummy `{t_eval_point := 0, original_claim := 0}`. The
-      -- support element pins `stmtOut` to that dummy.
-      rw [if_neg hcheck] at hx
-      simp only [map_pure, simulateQ_pure, StateT.run'_eq, StateT.run_pure, support_pure,
-        Set.mem_singleton_iff, Option.some.injEq, Prod.mk.injEq] at hx
-      obtain ⟨rfl, -⟩ := hx
-      -- ORIENTATION WALL (analog of the round-2 KState/failureState question flagged in
-      -- `BatchingPhase`). After the dummy is pinned, the hypotheses are:
-      --   `hcheck : ¬(sumcheck_target = compute_final_eq_value · c)`   (the verifier's check FAILED)
-      --   `hrel   : ({0,0}, witOut) ∈ toRelInput`, i.e. `0 = witOut.t.eval 0 ∧ initialCompatibility`
-      -- while the goal (the index-1 KState) REQUIRES `sumcheckFinalLocalCheck`, i.e. exactly
-      -- `sumcheck_target = compute_final_eq_value · c` — which `hcheck` negates. So the reject branch
-      -- is genuinely UNREACHABLE-as-vacuous only if the dummy cannot lie in `relOut`; but the dummy
-      -- `{0,0}` IS in `relOut` whenever `witOut.t.eval 0 = 0` (a coincidence the prover can force).
+    · -- REJECT branch (defect-#21 repair, NOW VACUOUS). On a failed step-9 check the
+      -- guard-emitting `finalSumcheckVerifier` produces `failure` (`OptionT` `none`), not a dummy
+      -- statement. Selecting the `if_neg` branch leaves the verifier run as
+      -- `(fun _ => stmtOut₀) <$> (failure : OptionT …)`, which is `failure`; `simulateQ` keeps
+      -- it and its `run'` support contains no `some`. So the support hypothesis
+      -- `hx : some (stmtOut, oStmtOut) ∈ support …` is contradictory.
       --
-      -- ROOT CAUSE (verifier design, not a proof gap): `finalSumcheckVerifier` returns a *dummy
-      -- statement* on a failed check (`unless … do return {0,0}`), whereas the round-by-round
-      -- knowledge-soundness contract (and the `Sumcheck/Spec/SingleRound` template) requires the
-      -- verifier to emit `failure` (`guard`/`OptionT` `none`) on a failed check, which makes the
-      -- reject branch vacuous (no support element). The documented repair is to switch the reject to
-      -- `failure`; this does not touch completeness (which only exercises the accept branch via
-      -- `if_pos`). Deferred to keep this commit's accept-branch closure isolated and reviewable.
-      sorry
+      -- This is the verifier-design fix flagged in the prior WIP note: emitting a dummy let the
+      -- dummy `{0,0}` lie in `relOut` whenever `witOut.t.eval 0 = 0` (prover-forceable), leaving
+      -- the reject branch unprovable. With `guard`/`failure` the reject branch has no support
+      -- element and is vacuous, matching the soundness contract (no fake statement is forwarded).
+      exfalso
+      rw [if_neg hcheck] at hx
+      -- Propagate `failure` outward: `f <$> failure = failure` (`map_optionT_failure'`) and
+      -- `simulateQ` commutes with `failure` (`simulateQ_optionT_failure'`). The verifier run is
+      -- then `failure`, whose `run'` support is `{none}` (`= pure none`); `some _ ∈ supp` False.
+      rw [map_optionT_failure', simulateQ_optionT_failure', map_optionT_failure',
+        simulateQ_optionT_failure'] at hx
+      -- `failure : OptionT (StateT σ ProbComp)` is `OptionT.fail = OptionT.mk (pure none)`;
+      -- `run' … s` is then `pure none`, support `{none}`. `hx` claims `some _ ∈ {none}`: absurd.
+      rw [show (failure : OptionT (StateT σ ProbComp) (MLPEvalStatement L ℓ'
+            × (∀ j, aOStmtIn.OStmtIn j))) = (pure none : StateT σ ProbComp _) from rfl] at hx
+      rw [StateT.run'_eq, StateT.run_pure] at hx
+      simp only [map_pure, support_pure, Set.mem_singleton_iff] at hx
+      exact absurd hx (by simp)
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/
 theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] [IsDomain L] [IsDomain K]
