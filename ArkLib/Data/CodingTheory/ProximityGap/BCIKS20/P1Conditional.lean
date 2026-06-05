@@ -123,7 +123,7 @@ carved link (which is the structured target itself, per-`l`).  `hlift` is carrie
 gating explicit; it is the source of `hSWL`'s content. -/
 theorem βHensel_weight_structured (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hH : 0 < H.natDegree) {D : ℕ}
-    (hlift : ∀ t : ℕ,
+    (_hlift : ∀ t : ℕ,
       embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
         = αGenuine H x₀ R hHyp t
             * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)

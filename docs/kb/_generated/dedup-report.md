@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 393 files, 7985 declarations
+- `ArkLib` — 396 files, 8025 declarations
 
 ## Same short-name across multiple files (296 groups)
 
@@ -691,7 +691,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `mem_toFinset_iff_mem` (3 declarations, 2 files)
 
 - `lemma Domain.CosetFftDomainClass.mem_toFinset_iff_mem` [ArkLib/Data/Domain/CosetFftDomain/Mem.lean:61](../../../ArkLib/Data/Domain/CosetFftDomain/Mem.lean#L61) — (no docstring)
-- `lemma Domain.CosetFftDomain.mem_toFinset_iff_mem` [ArkLib/Data/Domain/CosetFftDomain/Mem.lean:102](../../../ArkLib/Data/Domain/CosetFftDomain/Mem.lean#L102) — (no docstring)
+- `lemma Domain.CosetFftDomain.mem_toFinset_iff_mem` [ArkLib/Data/Domain/CosetFftDomain/Mem.lean:107](../../../ArkLib/Data/Domain/CosetFftDomain/Mem.lean#L107) — (no docstring)
 - `lemma Domain.FftDomain.mem_toFinset_iff_mem` [ArkLib/Data/Domain/FftDomain/Mem.lean:60](../../../ArkLib/Data/Domain/FftDomain/Mem.lean#L60) — (no docstring)
 
 ### `neg_mem_domain_iff_mem` (3 declarations, 2 files)

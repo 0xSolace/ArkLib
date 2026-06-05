@@ -19795,7 +19795,7 @@
         {
           "doc": "Every two-row word stack is definitionally the stack made from its two rows.",
           "kind": "lemma",
-          "line": 30,
+          "line": 31,
           "name": "ProximityGap.wordStack_fin_two_eq_finMapTwoWords",
           "namespace": "ProximityGap",
           "short_name": "wordStack_fin_two_eq_finMapTwoWords",
@@ -19804,7 +19804,7 @@
         {
           "doc": "The BCKHS25 line stack is the same two-row stack used by the \u00a75 bridge.",
           "kind": "lemma",
-          "line": 39,
+          "line": 40,
           "name": "ProximityGap.lineWordStack_eq_finMapTwoWords",
           "namespace": "ProximityGap",
           "short_name": "lineWordStack_eq_finMapTwoWords",
@@ -19813,7 +19813,7 @@
         {
           "doc": "For degree-one curves through two words, the \u00a76 close-parameter set is the same set as the \u00a75 affine-line close-proximity set.",
           "kind": "theorem",
-          "line": 48,
+          "line": 49,
           "name": "ProximityGap.coeffs_of_close_proximity_curve_finMapTwoWords_eq_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_curve_finMapTwoWords_eq_close_proximity",
@@ -19822,16 +19822,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 53,
-          "name": "ProximityGap._anon_class_53",
+          "line": 54,
+          "name": "ProximityGap._anon_class_54",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_53",
+          "short_name": "_anon_class_54",
           "signature": "class classical"
         },
         {
           "doc": "Direct \u00a75-to-\u00a76 specialization: the affine-line close-proximity set from the list-decoding section is exactly the degree-one `RS_goodCoeffsCurve` set.",
           "kind": "theorem",
-          "line": 94,
+          "line": 95,
           "name": "ProximityGap.coeffs_of_close_proximity_eq_goodCoeffsCurve_finMapTwoWords",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_eq_goodCoeffsCurve_finMapTwoWords",
@@ -19840,7 +19840,7 @@
         {
           "doc": "Membership form of `coeffs_of_close_proximity_eq_goodCoeffsCurve_finMapTwoWords`.",
           "kind": "theorem",
-          "line": 107,
+          "line": 108,
           "name": "ProximityGap.coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords",
@@ -19849,7 +19849,7 @@
         {
           "doc": "Cardinality form of `coeffs_of_close_proximity_eq_goodCoeffsCurve_finMapTwoWords`.",
           "kind": "theorem",
-          "line": 117,
+          "line": 118,
           "name": "ProximityGap.coeffs_of_close_proximity_card_eq_goodCoeffsCurve_finMapTwoWords",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_card_eq_goodCoeffsCurve_finMapTwoWords",
@@ -19858,7 +19858,7 @@
         {
           "doc": "Boundary-card supplier for the \u00a75 affine-line bridge, routed through the Hensel-free [BCKHS25] restored-distance affine-line `jointAgreement`. The existing closed-radius capstones only expose nonemptiness of the boundary close set. This adapter records the additional [BCKHS25] obligations needed to turn that same close set into a restored-distance joint-agreement certificate.",
           "kind": "theorem",
-          "line": 132,
+          "line": 133,
           "name": "ProximityGap.affine_lines_boundaryCard_of_BCKHS25_restored",
           "namespace": "ProximityGap",
           "short_name": "affine_lines_boundaryCard_of_BCKHS25_restored",
@@ -19867,16 +19867,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 157,
-          "name": "ProximityGap._anon_class_157",
+          "line": 158,
+          "name": "ProximityGap._anon_class_158",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_157",
+          "short_name": "_anon_class_158",
           "signature": "class classical"
         },
         {
           "doc": "The \u00a75 canonical `PzFamily` package in the exact canonical-evaluation shape consumed by the strict \u00a76 curve front doors, specialized to degree-one curves `Code.finMapTwoWords`. The hypotheses are the remaining \u00a75 assembly inputs: every close parameter is in every coordinate matching set, and decoded representatives are unique on the \u00a75 close set.",
           "kind": "theorem",
-          "line": 175,
+          "line": 176,
           "name": "ProximityGap.PzFamily_exists_canonical_eval_polys_goodCoeffsCurve_finMapTwoWords",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_exists_canonical_eval_polys_goodCoeffsCurve_finMapTwoWords",
@@ -19885,16 +19885,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 207,
-          "name": "ProximityGap._anon_class_207",
+          "line": 208,
+          "name": "ProximityGap._anon_class_208",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_207",
+          "short_name": "_anon_class_208",
           "signature": "class classical"
         },
         {
           "doc": "Selected-domain coefficient-polynomial witness for the \u00a76 strict-Johnson front door, specialized to the \u00a75 affine-line setup. Claim 5.11 naturally selects only `k + 1` coordinates.  Since decoded polynomials have degree `< k + 1`, interpolation on that selected domain is enough to recover every coefficient as a degree-one polynomial in the curve parameter.",
           "kind": "theorem",
-          "line": 256,
+          "line": 257,
           "name": "ProximityGap.hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain",
           "namespace": "ProximityGap",
           "short_name": "hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain",
@@ -19903,16 +19903,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 281,
-          "name": "ProximityGap._anon_class_281",
+          "line": 282,
+          "name": "ProximityGap._anon_class_282",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_281",
+          "short_name": "_anon_class_282",
           "signature": "class classical"
         },
         {
           "doc": "Canonical coefficient-polynomial package for `PzFamily` on a selected matching domain, in the exact shape consumed by the strict \u00a76 canonical coefficient front doors.",
           "kind": "theorem",
-          "line": 343,
+          "line": 344,
           "name": "ProximityGap.PzFamily_exists_canonical_coeff_polys_goodCoeffsCurve_finMapTwoWords_of_selected_domain",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_exists_canonical_coeff_polys_goodCoeffsCurve_finMapTwoWords_of_selected_domain",
@@ -19921,16 +19921,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 372,
-          "name": "ProximityGap._anon_class_372",
+          "line": 373,
+          "name": "ProximityGap._anon_class_373",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_372",
+          "short_name": "_anon_class_373",
           "signature": "class classical"
         },
         {
           "doc": "Strict Johnson \u00a76 joint-agreement front door specialized to the \u00a75 affine-line setup, using only the Claim-5.11 selected coordinate domain.",
           "kind": "theorem",
-          "line": 407,
+          "line": 408,
           "name": "ProximityGap.RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_selected_matching_domain",
           "namespace": "ProximityGap",
           "short_name": "RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_selected_matching_domain",
@@ -19939,16 +19939,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 431,
-          "name": "ProximityGap._anon_class_431",
+          "line": 432,
+          "name": "ProximityGap._anon_class_432",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_431",
+          "short_name": "_anon_class_432",
           "signature": "class classical"
         },
         {
           "doc": "Strict Johnson \u00a76 joint-agreement front door specialized to the \u00a75 affine-line setup, with the selected coordinate domain produced from any uniform integer bad-coordinate bound `E`. This is the same bridge as the nat-ceil wrapper below, but it keeps the bad-coordinate bound abstract.  The nat-ceil version is recovered by taking `E = \u2308\u03b4 * n\u2309\u208a`.",
           "kind": "theorem",
-          "line": 448,
+          "line": 449,
           "name": "ProximityGap.RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_delta_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_delta_nonmatching_bound",
@@ -19957,16 +19957,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 484,
-          "name": "ProximityGap._anon_class_484",
+          "line": 485,
+          "name": "ProximityGap._anon_class_485",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_484",
+          "short_name": "_anon_class_485",
           "signature": "class classical"
         },
         {
           "doc": "Strict Johnson \u00a76 joint-agreement front door specialized to the \u00a75 affine-line setup, with the selected coordinate domain produced by the nat-ceil nonmatching-coordinate form of Claim 5.11.",
           "kind": "theorem",
-          "line": 496,
+          "line": 497,
           "name": "ProximityGap.RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_natCeil_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_natCeil_nonmatching_bound",
@@ -19975,16 +19975,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 532,
-          "name": "ProximityGap._anon_class_532",
+          "line": 533,
+          "name": "ProximityGap._anon_class_533",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_532",
+          "short_name": "_anon_class_533",
           "signature": "class classical"
         },
         {
           "doc": "Strict Johnson \u00a76 joint-agreement front door specialized to the \u00a75 affine-line setup, with the `ModifiedGuruswami` solution produced by Claim 5.4 and the selected coordinate domain produced by the nat-ceil Claim-5.11 counting package for that chosen solution.",
           "kind": "theorem",
-          "line": 543,
+          "line": 544,
           "name": "ProximityGap.RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_exists_natCeil_counting",
           "namespace": "ProximityGap",
           "short_name": "RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_exists_natCeil_counting",
@@ -19993,16 +19993,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 580,
-          "name": "ProximityGap._anon_class_580",
+          "line": 581,
+          "name": "ProximityGap._anon_class_581",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_580",
+          "short_name": "_anon_class_581",
           "signature": "class classical"
         },
         {
           "doc": "Strict square-root-radius degree-one correlated-agreement capstone in the native \u00a75 affine-line language, with Claim-5.11 supplied in its nat-ceil counting form for every affine line. This is the strict-radius analogue of the `PzFamily` capstone below, but it uses only the selected-domain coefficient-polynomial bridge; callers no longer need matching-set coverage at every coordinate.",
           "kind": "theorem",
-          "line": 597,
+          "line": 598,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting",
@@ -20011,16 +20011,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 629,
-          "name": "ProximityGap._anon_class_629",
+          "line": 630,
+          "name": "ProximityGap._anon_class_630",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_629",
+          "short_name": "_anon_class_630",
           "signature": "class classical"
         },
         {
           "doc": "Strict Johnson \u00a76 joint-agreement front door specialized to the \u00a75 degree-one affine-line setup.  The remaining hypotheses are exactly the \u00a75 matching-set coverage and uniqueness data needed to build the canonical `PzFamily` package.",
           "kind": "theorem",
-          "line": 651,
+          "line": 652,
           "name": "ProximityGap.RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_PzFamily",
           "namespace": "ProximityGap",
           "short_name": "RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_PzFamily",
@@ -20029,16 +20029,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 673,
-          "name": "ProximityGap._anon_class_673",
+          "line": 674,
+          "name": "ProximityGap._anon_class_674",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_673",
+          "short_name": "_anon_class_674",
           "signature": "class classical"
         },
         {
           "doc": "Strict Johnson \u00a76 joint-agreement front door specialized to the \u00a75 degree-one affine-line setup, with the `ModifiedGuruswami` solution produced by Claim 5.4's current constructive existence theorem. The remaining caller obligations are the regime side conditions for the Guruswami-Sudan construction and the matching-set/uniqueness facts for the chosen solution.",
           "kind": "theorem",
-          "line": 690,
+          "line": 691,
           "name": "ProximityGap.RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_exists_PzFamily",
           "namespace": "ProximityGap",
           "short_name": "RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_exists_PzFamily",
@@ -20047,16 +20047,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 715,
-          "name": "ProximityGap._anon_class_715",
+          "line": 716,
+          "name": "ProximityGap._anon_class_716",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_715",
+          "short_name": "_anon_class_716",
           "signature": "class classical"
         },
         {
           "doc": "Degree-one correlated-agreement capstone in the native \u00a75 affine-line language, using the nat-ceil Claim-5.11 counting package for the strict branch and a boundary-card obligation for the closed square-root boundary.",
           "kind": "theorem",
-          "line": 729,
+          "line": 730,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_and_boundary_card",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_and_boundary_card",
@@ -20065,16 +20065,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 766,
-          "name": "ProximityGap._anon_class_766",
+          "line": 767,
+          "name": "ProximityGap._anon_class_767",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_766",
+          "short_name": "_anon_class_767",
           "signature": "class classical"
         },
         {
           "doc": "Degree-one correlated-agreement capstone in the native \u00a75 affine-line language, exposing the strict branch as one canonical coefficient-polynomial `PzFamily` package per received word stack.  The selected coordinate domain is produced from the nat-ceil Claim-5.11 counting package.",
           "kind": "theorem",
-          "line": 800,
+          "line": 801,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_canonical_coeff",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_canonical_coeff",
@@ -20083,16 +20083,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 837,
-          "name": "ProximityGap._anon_class_837",
+          "line": 838,
+          "name": "ProximityGap._anon_class_838",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_837",
+          "short_name": "_anon_class_838",
           "signature": "class classical"
         },
         {
           "doc": "Strict Johnson canonical coefficient-polynomial supplier for affine lines, with Claim-5.11 counting supplied in the complement-threshold arithmetic shape. This factors the strict branch used by `correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff` into the exact canonical-coefficient front-door shape consumed by the \u00a76 curve wrappers.",
           "kind": "theorem",
-          "line": 874,
+          "line": 875,
           "name": "ProximityGap.section5_strict_canonical_coeff_polys_for_RS_goodCoeffsCurve_finMapTwoWords_of_natCeil_complement_counting",
           "namespace": "ProximityGap",
           "short_name": "section5_strict_canonical_coeff_polys_for_RS_goodCoeffsCurve_finMapTwoWords_of_natCeil_complement_counting",
@@ -20101,16 +20101,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 930,
-          "name": "ProximityGap._anon_class_930",
+          "line": 931,
+          "name": "ProximityGap._anon_class_931",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_930",
+          "short_name": "_anon_class_931",
           "signature": "class classical"
         },
         {
           "doc": "Degree-one correlated-agreement capstone in the native \u00a75 affine-line language, with Claim-5.11 counting supplied in the complement-threshold arithmetic shape.  This is the same canonical-coefficient front door as `correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_canonical_coeff`, but the strict branch uses the natural slack `#S - threshold` directly.",
           "kind": "theorem",
-          "line": 952,
+          "line": 953,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff",
@@ -20119,16 +20119,34 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 994,
-          "name": "ProximityGap._anon_class_994",
+          "line": 995,
+          "name": "ProximityGap._anon_class_995",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_994",
+          "short_name": "_anon_class_995",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Closed square-root-radius degree-one correlated-agreement capstone for affine lines, with the strict branch supplied by the \u00a75 complement-counting canonical-coefficient package and the boundary branch supplied by the Hensel-free [BCKHS25] restored-distance affine-line theorem.",
+          "kind": "theorem",
+          "line": 1028,
+          "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_BCKHS25_boundary",
+          "namespace": "ProximityGap",
+          "short_name": "correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_BCKHS25_boundary",
+          "signature": "theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_BCKHS25_boundary"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1083,
+          "name": "ProximityGap._anon_class_1083",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1083",
           "signature": "class classical"
         },
         {
           "doc": "Strict square-root-radius degree-one correlated-agreement capstone in the native \u00a75 affine-line language, with Claim-5.11 counting supplied in the complement-threshold arithmetic shape. Unlike the closed-boundary wrapper, this version needs no boundary obligation because the global hypothesis is already `\u03b4 < 1 - sqrtRate`.",
           "kind": "theorem",
-          "line": 1028,
+          "line": 1097,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_strict",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_strict",
@@ -20137,16 +20155,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1065,
-          "name": "ProximityGap._anon_class_1065",
+          "line": 1134,
+          "name": "ProximityGap._anon_class_1134",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1065",
+          "short_name": "_anon_class_1134",
           "signature": "class classical"
         },
         {
           "doc": "Strict square-root-radius degree-one correlated-agreement capstone routed through the non-cyclic closed assembly wrapper. This is the same \u00a75 affine-line input package as `correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_strict`, but it consumes the public `Curves.Assembly` front door rather than the lower-level curve theorem directly.",
           "kind": "theorem",
-          "line": 1080,
+          "line": 1149,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_assembled",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_assembled",
@@ -20155,16 +20173,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1117,
-          "name": "ProximityGap._anon_class_1117",
+          "line": 1186,
+          "name": "ProximityGap._anon_class_1186",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1117",
+          "short_name": "_anon_class_1186",
           "signature": "class classical"
         },
         {
           "doc": "Strict Johnson canonical-evaluation supplier for the \u00a76 curve front doors, specialized to \u00a75 affine lines represented as `Code.finMapTwoWords`. This factors the exact hypothesis shape consumed by `correlatedAgreement_affine_curves_of_strict_canonical_eval_polys` out of the capstone theorem below. The remaining assumptions are the \u00a75 Guruswami-Sudan existence side conditions plus matching-set coverage and uniqueness for each affine line.",
           "kind": "theorem",
-          "line": 1136,
+          "line": 1205,
           "name": "ProximityGap.section5_strict_canonical_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
           "namespace": "ProximityGap",
           "short_name": "section5_strict_canonical_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
@@ -20173,16 +20191,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1173,
-          "name": "ProximityGap._anon_class_1173",
+          "line": 1242,
+          "name": "ProximityGap._anon_class_1242",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1173",
+          "short_name": "_anon_class_1242",
           "signature": "class classical"
         },
         {
           "doc": "Strict square-root-radius degree-one correlated-agreement capstone routed through the non-cyclic closed assembly wrapper, using the native \u00a75 `PzFamily`/evaluation-polynomial package.",
           "kind": "theorem",
-          "line": 1191,
+          "line": 1260,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_PzFamily_assembled",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_PzFamily_assembled",
@@ -20191,16 +20209,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1210,
-          "name": "ProximityGap._anon_class_1210",
+          "line": 1279,
+          "name": "ProximityGap._anon_class_1279",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1210",
+          "short_name": "_anon_class_1279",
           "signature": "class classical"
         },
         {
           "doc": "Strict Johnson evaluation-polynomial supplier for the \u00a76 curve front doors, derived from the canonical `PzFamily` supplier above.",
           "kind": "theorem",
-          "line": 1224,
+          "line": 1293,
           "name": "ProximityGap.section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
           "namespace": "ProximityGap",
           "short_name": "section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
@@ -20209,16 +20227,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1257,
-          "name": "ProximityGap._anon_class_1257",
+          "line": 1326,
+          "name": "ProximityGap._anon_class_1326",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1257",
+          "short_name": "_anon_class_1326",
           "signature": "class classical"
         },
         {
           "doc": "Degree-one correlated-agreement capstone in the native \u00a75 affine-line language, using the raw strict evaluation-polynomial front door. This is the same mathematical content as `correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card`, but exposes the \u00a75 extraction in the non-canonical hypothesis shape consumed by `correlatedAgreement_affine_curves_of_strict_eval_polys_and_boundary_card`.",
           "kind": "theorem",
-          "line": 1274,
+          "line": 1343,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_eval_polys_and_boundary_card",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_eval_polys_and_boundary_card",
@@ -20227,16 +20245,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1298,
-          "name": "ProximityGap._anon_class_1298",
+          "line": 1367,
+          "name": "ProximityGap._anon_class_1367",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1298",
+          "short_name": "_anon_class_1367",
           "signature": "class classical"
         },
         {
           "doc": "Strict square-root-radius degree-one correlated-agreement capstone in the native \u00a75 affine-line language, using the raw strict evaluation-polynomial front door.",
           "kind": "theorem",
-          "line": 1319,
+          "line": 1388,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_eval_polys",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_eval_polys",
@@ -20245,16 +20263,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1338,
-          "name": "ProximityGap._anon_class_1338",
+          "line": 1407,
+          "name": "ProximityGap._anon_class_1407",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1338",
+          "short_name": "_anon_class_1407",
           "signature": "class classical"
         },
         {
           "doc": "Degree-one correlated-agreement capstone in the native \u00a75 affine-line language. The generic \u00a76 theorem quantifies over arbitrary `WordStack F (Fin 2) (Fin n)`; this wrapper identifies every such stack with `Code.finMapTwoWords (u 0) (u 1)` and transports both the strict `PzFamily` package and the closed-boundary cardinality obligation through the \u00a75/\u00a76 close-set equality.",
           "kind": "theorem",
-          "line": 1352,
+          "line": 1421,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card",
@@ -20263,16 +20281,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1376,
-          "name": "ProximityGap._anon_class_1376",
+          "line": 1445,
+          "name": "ProximityGap._anon_class_1445",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1376",
+          "short_name": "_anon_class_1445",
           "signature": "class classical"
         },
         {
           "doc": "Strict square-root-radius degree-one correlated-agreement capstone in the native \u00a75 affine-line language. Unlike `correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card`, this version needs no closed-boundary obligation because the global hypothesis is already `\u03b4 < 1 - sqrtRate`.",
           "kind": "theorem",
-          "line": 1399,
+          "line": 1468,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_PzFamily",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_PzFamily",
@@ -20281,10 +20299,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1418,
-          "name": "ProximityGap._anon_class_1418",
+          "line": 1487,
+          "name": "ProximityGap._anon_class_1487",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1418",
+          "short_name": "_anon_class_1487",
           "signature": "class classical"
         }
       ]
@@ -22026,6 +22044,73 @@
           "namespace": "ProximityGap",
           "short_name": "H_tilde'_dvd_clearDenomY_of_large_candidate_fiber_card",
           "signature": "theorem H_tilde'_dvd_clearDenomY_of_large_candidate_fiber_card"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P1Conditional.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "structure",
+          "line": 49,
+          "name": "_anon_structure_49",
+          "namespace": "",
+          "short_name": "_anon_structure_49",
+          "signature": "structure structured invariant via the wave-5 `\u2115`-arithmetic `structured_weight_collapse`"
+        },
+        {
+          "doc": "**The carved weight-from-identity link (named gap).**  At a fixed weight budget `D`, the structured per-coefficient weight bound on `\u03b2Hensel t`.  This is `\u039b_\ud835\udcaa(\u03b2_t) \u2264 1 + (t+1)\u039b(W) + e_t\u00b7\u039b(\u03be)`, the genuine BCIKS20 A.4 \"weight of `\u03b1_t`\" content read off the lift identity. It is the ONE precisely-located gap: the `\ud835\udd43`-level identity `embedding \u03b2_t = \u03b1_t\u00b7W^{t+1}\u00b7\u03be^{e_t}` together with `\u039b(\u03b1_t) \u2264 1` *and* an embedding-compatible reading of `\u039b_\ud835\udcaa` would deliver it, but `\u039b_\ud835\udcaa` is the weight of the canonical `F[X][Y]`-representative, not an `\ud835\udd43`-invariant, so no in-tree lemma transports it.  We name it her",
+          "kind": "def",
+          "line": 95,
+          "name": "BCIKS20.HenselNumerator.StructuredWeightFromLift",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "StructuredWeightFromLift",
+          "signature": "def StructuredWeightFromLift (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 108,
+          "name": "BCIKS20.HenselNumerator.with",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "with",
+          "signature": "theorem with the lift identity carried as an explicit hypothesis `hlift` (so the dependency on (P2) is"
+        },
+        {
+          "doc": "**(P1) Task 2 \u2014 the STRUCTURED INVARIANT, conditional.**  Given the (P2) lift identity `hlift` (`embedding \u03b2_t = \u03b1Genuine t \u00b7 W^{t+1} \u00b7 \u03be^{e_t}` for all `t`) and the carved weight-from-identity link `hSWL` (the genuine `\u039b(\u03b1_t) \u2264 1` content transported to `\u039b_\ud835\udcaa`), the structured invariant `\u039b_\ud835\udcaa(\u03b2Hensel l) \u2264 1 + (l+1)\u00b7\u039b(W) + e_l\u00b7\u039b(\u03be)`   for all `l` holds.  `\u039b(W) = (lc H).natDegree`, `\u039b(\u03be) = (d\u22121)\u00b7(D\u2212dH+1)`, `e_l = 2l\u22121` (\u2115-truncated, `= e_l` of the task: `e_0 = 0`, `e_l = 2l\u22121` for `l \u2265 1`). The proof is by strong induction; both the base `l = 0` and the step are supplied uniformly by the carved l",
+          "kind": "theorem",
+          "line": 124,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_124",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_theorem_124",
+          "signature": "theorem theorem \u03b2Hensel_weight_structured (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        },
+        {
+          "doc": "**(P1) Task 3 \u2014 the loose weight bound, conditional.**  From the structured invariant `\u03b2Hensel_weight_structured` (under the lift identity + carved link), the loose Claim-A.2 target `\u039b_\ud835\udcaa(\u03b2Hensel t) \u2264 (2t+1)\u00b7natDegreeY R \u00b7 D` follows by the proven `\u2115`-arithmetic collapse `structured_weight_collapse` (`= \u03b2Hensel_weight_bound_of_structured_weight`), under the paper's faithful regime `2 \u2264 d`, `dH \u2264 d`, `\u039b(W)+dH \u2264 D`. This is the conditional (P1): it auto-unlocks when `\u03b2Hensel_lift_identity` becomes axiom-clean (w16 vanishing) by instantiating `hlift := \u03b2Hensel_lift_identity \u2026` and supplying `hSWL`",
+          "kind": "theorem",
+          "line": 162,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_162",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_theorem_162",
+          "signature": "theorem theorem \u03b2Hensel_weight_bound_of_lift (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        },
+        {
+          "doc": "**CONDITIONAL (P1), final form.**  Identical conclusion to the in-tree `\u03b2Hensel_weight_bound` (whose inductive step bottoms out at the open per-term WALL), but proven via the (P2) lift identity `hlift` + the carved weight-from-identity link `hSWL`, *bypassing* the WALL entirely.  This is the honest realisation of BCIKS20's \"consider the weight of `\u03b1_t`\" route: the (A.1) recursion is never re-traversed; the weight is read off the closed form.",
+          "kind": "theorem",
+          "line": 190,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_190",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_theorem_190",
+          "signature": "theorem theorem \u03b2Hensel_weight_bound_conditional (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**AUTO-UNLOCK witness.**  Once `\u03b2Hensel_lift_identity` is axiom-clean (w16 vanishing landed), the `hlift` hypothesis of the conditional (P1) is discharged unconditionally by the in-tree `\u03b2Hensel_lift_identity`.  This lemma exhibits that discharge: feeding `\u03b2Hensel_lift_identity` for `hlift`, the conditional (P1) needs ONLY the carved link `hSWL` (the genuine A.4 weight-of-`\u03b1_t` content) plus the paper's faithful regime hypotheses.",
+          "kind": "theorem",
+          "line": 210,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_210",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_theorem_210",
+          "signature": "theorem theorem \u03b2Hensel_weight_bound_unlocked (x\u2080 : F) (R : F[X][X][Y])"
         }
       ]
     },
@@ -24834,6 +24919,19 @@
           "namespace": "ProximityGap",
           "short_name": "folding_preserves_distance",
           "signature": "theorem folding_preserves_distance"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/Folding/Multilinear.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 33,
+          "name": "ProximityGap.foldWord_eq_evalOnPoints_powAlgHom",
+          "namespace": "ProximityGap",
+          "short_name": "foldWord_eq_evalOnPoints_powAlgHom",
+          "signature": "lemma foldWord_eq_evalOnPoints_powAlgHom [NeZero n] {\u03b1 : F}"
         }
       ]
     },
@@ -29771,44 +29869,53 @@
         },
         {
           "doc": "",
-          "kind": "instance",
+          "kind": "lemma",
           "line": 79,
-          "name": "Domain._anon_instance_79",
+          "name": "Domain.CosetFftDomainClass.not_zero_mem_toFinset",
+          "namespace": "Domain.CosetFftDomainClass",
+          "short_name": "not_zero_mem_toFinset",
+          "signature": "lemma not_zero_mem_toFinset :"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 84,
+          "name": "Domain._anon_instance_84",
           "namespace": "Domain",
-          "short_name": "_anon_instance_79",
+          "short_name": "_anon_instance_84",
           "signature": "instance instance {\u03c9 : CosetFftDomain \u03b9 F} : Inhabited \u03c9.toFinset where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 80,
-          "name": "Domain._anon_def_80",
+          "line": 85,
+          "name": "Domain._anon_def_85",
           "namespace": "Domain",
-          "short_name": "_anon_def_80",
+          "short_name": "_anon_def_85",
           "signature": "def default := \u27e8\u03c9 0, by simp [CosetFftDomainClass.toFinset]\u27e9"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 82,
-          "name": "Domain._anon_instance_82",
+          "line": 87,
+          "name": "Domain._anon_instance_87",
           "namespace": "Domain",
-          "short_name": "_anon_instance_82",
+          "short_name": "_anon_instance_87",
           "signature": "instance instance {\u03c9 : CosetFftDomain \u03b9 F} : Inhabited \u03c9 where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 83,
-          "name": "Domain._anon_def_83",
+          "line": 88,
+          "name": "Domain._anon_def_88",
           "namespace": "Domain",
-          "short_name": "_anon_def_83",
+          "short_name": "_anon_def_88",
           "signature": "def default := \u27e8\u03c9 0, by simp [CosetFftDomainClass.toFinset]\u27e9"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 91,
+          "line": 96,
           "name": "Domain.CosetFftDomain.mem_iff_exists_mul",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "mem_iff_exists_mul",
@@ -29817,7 +29924,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 96,
+          "line": 101,
           "name": "Domain.CosetFftDomain.mem_toFinset_iff_exists_mul",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "mem_toFinset_iff_exists_mul",
@@ -29826,7 +29933,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 102,
+          "line": 107,
           "name": "Domain.CosetFftDomain.mem_toFinset_iff_mem",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "mem_toFinset_iff_mem",
@@ -29835,7 +29942,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 107,
+          "line": 112,
           "name": "Domain.CosetFftDomain.mem_toFinset_self",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "mem_toFinset_self",
@@ -29844,10 +29951,10 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 112,
-          "name": "Domain._anon_instance_112",
+          "line": 117,
+          "name": "Domain._anon_instance_117",
           "namespace": "Domain",
-          "short_name": "_anon_instance_112",
+          "short_name": "_anon_instance_117",
           "signature": "instance instance {x : F} {\u03c9 : CosetFftDomain \u03b9 F} : Decidable (x \u2208 \u03c9) :="
         }
       ]
@@ -37379,6 +37486,271 @@
           "namespace": "MvPolynomial",
           "short_name": "eval_comp_eval_C_finSuccEquiv",
           "signature": "theorem eval_comp_eval_C_finSuccEquiv (p : R[X (Fin (n + 1))]) (y : Fin n \u2192 R) (x : R) :"
+        }
+      ]
+    },
+    "ArkLib/Data/MvPolynomial/EvenAndOdd.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 23,
+          "name": "MvPolynomial.substPlus",
+          "namespace": "MvPolynomial",
+          "short_name": "substPlus",
+          "signature": "def substPlus (p : MvPolynomial (Fin n) R) :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 27,
+          "name": "MvPolynomial.substMinus",
+          "namespace": "MvPolynomial",
+          "short_name": "substMinus",
+          "signature": "def substMinus (p : MvPolynomial (Fin n) R) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 31,
+          "name": "MvPolynomial.substPlus_mem_restrictDegree",
+          "namespace": "MvPolynomial",
+          "short_name": "substPlus_mem_restrictDegree",
+          "signature": "lemma substPlus_mem_restrictDegree"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 54,
+          "name": "MvPolynomial.substMinus_mem_restrictDegree",
+          "namespace": "MvPolynomial",
+          "short_name": "substMinus_mem_restrictDegree",
+          "signature": "lemma substMinus_mem_restrictDegree"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 105,
+          "name": "MvPolynomial.mul_C_mem_restrictDegree",
+          "namespace": "MvPolynomial",
+          "short_name": "mul_C_mem_restrictDegree",
+          "signature": "lemma mul_C_mem_restrictDegree"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 111,
+          "name": "MvPolynomial.even_mem",
+          "namespace": "MvPolynomial",
+          "short_name": "even_mem",
+          "signature": "lemma even_mem (p : R\u2983\u2264 1\u2984[X (Fin n)]) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 116,
+          "name": "MvPolynomial.odd_mem",
+          "namespace": "MvPolynomial",
+          "short_name": "odd_mem",
+          "signature": "lemma odd_mem (p : R\u2983\u2264 1\u2984[X (Fin n)]) :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 121,
+          "name": "MvPolynomial.even",
+          "namespace": "MvPolynomial",
+          "short_name": "even",
+          "signature": "def even (p : R\u2983\u2264 1\u2984[X (Fin n)]) :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 125,
+          "name": "MvPolynomial.odd",
+          "namespace": "MvPolynomial",
+          "short_name": "odd",
+          "signature": "def odd (p : R\u2983\u2264 1\u2984[X (Fin n)]) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 129,
+          "name": "MvPolynomial.formula_for_monomial",
+          "namespace": "MvPolynomial",
+          "short_name": "formula_for_monomial",
+          "signature": "lemma formula_for_monomial"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 161,
+          "name": "MvPolynomial.formula_generic",
+          "namespace": "MvPolynomial",
+          "short_name": "formula_generic",
+          "signature": "lemma formula_generic"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 183,
+          "name": "MvPolynomial.even_and_odd_formula",
+          "namespace": "MvPolynomial",
+          "short_name": "even_and_odd_formula",
+          "signature": "lemma even_and_odd_formula"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 189,
+          "name": "MvPolynomial.shiftDown",
+          "namespace": "MvPolynomial",
+          "short_name": "shiftDown",
+          "signature": "def shiftDown (q : MvPolynomial (Fin n) R) : MvPolynomial (Fin (n - 1)) R :="
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 192,
+          "name": "MvPolynomial.shiftDown_shiftUp_eq",
+          "namespace": "MvPolynomial",
+          "short_name": "shiftDown_shiftUp_eq",
+          "signature": "lemma shiftDown_shiftUp_eq (q : MvPolynomial (Fin n) R) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 199,
+          "name": "MvPolynomial.substNoX0_eq_self_of_even",
+          "namespace": "MvPolynomial",
+          "short_name": "substNoX0_eq_self_of_even",
+          "signature": "lemma substNoX0_eq_self_of_even"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 211,
+          "name": "MvPolynomial.substNoX0_eq_self_of_odd",
+          "namespace": "MvPolynomial",
+          "short_name": "substNoX0_eq_self_of_odd",
+          "signature": "lemma substNoX0_eq_self_of_odd"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 223,
+          "name": "MvPolynomial.aeval_shift_monomial_zero_case",
+          "namespace": "MvPolynomial",
+          "short_name": "aeval_shift_monomial_zero_case",
+          "signature": "lemma aeval_shift_monomial_zero_case {n : \u2115} [NeZero n]"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 239,
+          "name": "MvPolynomial.aeval_shift_monomial_nonzero_case",
+          "namespace": "MvPolynomial",
+          "short_name": "aeval_shift_monomial_nonzero_case",
+          "signature": "lemma aeval_shift_monomial_nonzero_case"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 278,
+          "name": "MvPolynomial.aeval_shift_monomial_mem",
+          "namespace": "MvPolynomial",
+          "short_name": "aeval_shift_monomial_mem",
+          "signature": "lemma aeval_shift_monomial_mem {n : \u2115} [NeZero n]"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 287,
+          "name": "MvPolynomial.aeval_shift_mem_restrictDegree",
+          "namespace": "MvPolynomial",
+          "short_name": "aeval_shift_mem_restrictDegree",
+          "signature": "lemma aeval_shift_mem_restrictDegree"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 296,
+          "name": "MvPolynomial.even_pred",
+          "namespace": "MvPolynomial",
+          "short_name": "even_pred",
+          "signature": "def even_pred (p : R\u2983\u2264 1\u2984[X (Fin n)]) : R\u2983\u2264 1\u2984[X (Fin (n - 1))] :="
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 302,
+          "name": "MvPolynomial.odd_pred",
+          "namespace": "MvPolynomial",
+          "short_name": "odd_pred",
+          "signature": "def odd_pred (p : R\u2983\u2264 1\u2984[X (Fin n)]) : R\u2983\u2264 1\u2984[X (Fin (n - 1))] :="
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 307,
+          "name": "MvPolynomial.even_and_odd_formula'",
+          "namespace": "MvPolynomial",
+          "short_name": "even_and_odd_formula'",
+          "signature": "lemma even_and_odd_formula'"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 320,
+          "name": "MvPolynomial.even_and_odd_eval",
+          "namespace": "MvPolynomial",
+          "short_name": "even_and_odd_eval",
+          "signature": "lemma even_and_odd_eval"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 331,
+          "name": "MvPolynomial.shiftedPowAlgHom",
+          "namespace": "MvPolynomial",
+          "short_name": "shiftedPowAlgHom",
+          "signature": "def shiftedPowAlgHom :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 337,
+          "name": "MvPolynomial.shiftedPowAlgHom_eq_powAlgHom_comp_sq_x",
+          "namespace": "MvPolynomial",
+          "short_name": "shiftedPowAlgHom_eq_powAlgHom_comp_sq_x",
+          "signature": "lemma shiftedPowAlgHom_eq_powAlgHom_comp_sq_x"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 347,
+          "name": "MvPolynomial.powAlgHom_aeval_shift",
+          "namespace": "MvPolynomial",
+          "short_name": "powAlgHom_aeval_shift",
+          "signature": "lemma powAlgHom_aeval_shift (q : MvPolynomial (Fin (n - 1)) R) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 355,
+          "name": "MvPolynomial.powAlgHom_eq_even_add_odd",
+          "namespace": "MvPolynomial",
+          "short_name": "powAlgHom_eq_even_add_odd",
+          "signature": "lemma powAlgHom_eq_even_add_odd"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 368,
+          "name": "MvPolynomial.powAlgHom_eq_even_add_odd_powAlgHom",
+          "namespace": "MvPolynomial",
+          "short_name": "powAlgHom_eq_even_add_odd_powAlgHom",
+          "signature": "lemma powAlgHom_eq_even_add_odd_powAlgHom"
         }
       ]
     },
@@ -73425,8 +73797,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7985,
-      "files": 393
+      "declarations": 8025,
+      "files": 396
     }
   }
 }

@@ -100,6 +100,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.CurvesBridge
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Extraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1Conditional
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
@@ -116,6 +117,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
+import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
 import ArkLib.Data.CodingTheory.ProximityGap.GK16DegreeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.GK16RootCounting
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Wronskian
@@ -188,6 +190,7 @@ import ArkLib.Data.Matrix.Sparse
 import ArkLib.Data.Matrix.Vandermonde
 import ArkLib.Data.Misc.Basic
 import ArkLib.Data.MvPolynomial.Degrees
+import ArkLib.Data.MvPolynomial.EvenAndOdd
 import ArkLib.Data.MvPolynomial.Interpolation
 import ArkLib.Data.MvPolynomial.LinearMvExtension
 import ArkLib.Data.MvPolynomial.Multilinear
