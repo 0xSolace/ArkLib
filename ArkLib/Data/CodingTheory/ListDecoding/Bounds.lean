@@ -227,6 +227,35 @@ theorem linear_lambda_ge_elias_volume_eli57
   rw [hcast]
   exact ENNReal.ofReal_le_ofReal hM_le
 
+/-- Entropy-volume lower bound reduced to the already-proven Elias volume bound.
+
+This is the checked consumer side of ABF26 Corollary 3.8: if an analytic
+Hamming-ball estimate has already shown that the entropy expression is bounded by
+the Elias RHS `Vol_q(δ,n) / q^(n-k)`, then `linear_lambda_ge_elias_volume_eli57`
+closes the desired `Lambda` lower bound. -/
+theorem linear_lambda_ge_entropy_volume_of_le_elias_rhs
+    (C : Submodule F (ι → F)) (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hEntropy_le_elias :
+      let q : ℕ := Fintype.card F
+      let n : ℕ := Fintype.card ι
+      let k : ℕ := Module.finrank F C
+      let ρ : ℝ := k / n
+      ENNReal.ofReal
+          ((q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ))
+            / (8 * n * δ * (1 - δ)) ^ ((1 : ℝ) / 2))
+        ≤ ENNReal.ofReal
+            ((hammingBallVolume q δ n : ℝ) / (q : ℝ) ^ ((n : ℝ) - k))) :
+    let q : ℕ := Fintype.card F
+    let n : ℕ := Fintype.card ι
+    let k : ℕ := Module.finrank F C
+    let ρ : ℝ := k / n
+    ENNReal.ofReal
+        ((q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ))
+          / (8 * n * δ * (1 - δ)) ^ ((1 : ℝ) / 2))
+      ≤ (Lambda ((C : Set (ι → F))) δ : ENNReal) := by
+  exact le_trans hEntropy_le_elias
+    (linear_lambda_ge_elias_volume_eli57 C δ hδ_pos hδ_lt)
+
 /-- **ABF26 Corollary 3.8.** Volume-based lower bound on list size, using the MS77
 volume estimate `Vol_q(δ, n) ≥ q^{n·H_q(δ)} / √(8·n·δ·(1-δ))`. With `ρ := k/n`:
 
