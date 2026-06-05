@@ -558,9 +558,7 @@ private lemma finalSumcheck_check_of_relIn [IsDomain L] [IsDomain K]
   rw [hpt]
   -- `eval challenges A_MLE = compute_final_eq_value` closes the first factor.
   congr 1
-  unfold RingSwitching_SumcheckMultParam
-  dsimp only
-  sorry
+  exact A_MLE_eval_eq_compute_final_eq_value κ L K P ℓ ℓ' h_l stmt
 
 /-- Perfect completeness for the final sumcheck step -/
 theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K] {σ : Type}

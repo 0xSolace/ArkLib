@@ -35,6 +35,7 @@ import ArkLib.Data.Classes.Slice
 import ArkLib.Data.CodingTheory.CodeGeometry
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
+import ArkLib.Data.CodingTheory.ProximityPrizeCA
 import ArkLib.Data.CodingTheory.Basic.DecodingRadius
 import ArkLib.Data.CodingTheory.Basic.Distance
 import ArkLib.Data.CodingTheory.Basic.Entropy
@@ -82,6 +83,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.JointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.UniqueDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.CurvesBridge
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Extraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
@@ -277,6 +279,11 @@ import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement
 import ArkLib.ProofSystem.Whir.MCAJohnsonErrStar
+import ArkLib.ProofSystem.Whir.MCAJohnsonErrStarBounds
+import ArkLib.ProofSystem.Whir.MCAJohnsonReduction
+import ArkLib.ProofSystem.Whir.MCAJohnsonMutualExtract
+import ArkLib.ProofSystem.Whir.MCAJohnsonUniqueness
+import ArkLib.ProofSystem.Whir.MCAJohnsonJointAgreement
 import ArkLib.ProofSystem.Whir.OutofDomainSmpl
 import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
@@ -296,3 +303,9 @@ import ArkLib.ToVCVio.OracleComp.EvalDist
 import ArkLib.ToVCVio.OracleComp.SimSemantics.SimulateQ
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
+import ArkLib.ProofSystem.Whir.MCAJohnsonTrivialRegime
+import ArkLib.ProofSystem.Whir.MCAJohnsonHardRegime
+import ArkLib.ProofSystem.Whir.MCAJohnsonCurveExtract
+import ArkLib.ProofSystem.Whir.MCAJohnsonCurveJoint
+import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
+import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness

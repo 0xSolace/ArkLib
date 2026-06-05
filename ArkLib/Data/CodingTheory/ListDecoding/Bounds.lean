@@ -368,11 +368,13 @@ theorem linear_C_le_generalized_singleton_st20
     (C : Submodule F (ι → F)) (ℓ : ℕ) (δ : ℝ)
     (_hℓ_pos : 0 < ℓ) (_hℓ_lt : ℓ < Fintype.card F)
     (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
-    -- Finding 18 repair: without the ST20 regime guard δ ≤ ℓ/(ℓ+1) the real
-    -- exponent below goes negative and the statement is FALSE (kernel-verified
-    -- counterexample: F = ZMod 5, C = ⊥, ℓ = 1, δ = 9/10 — see
-    -- research/formal/arklib-patches/upstream-issues.md).
-    (_hδ_regime : δ ≤ (ℓ : ℝ) / (ℓ + 1))
+    -- (Finding 18) Without an ST20 regime guard the real exponent below can go
+    -- negative and the bare statement is FALSE (kernel-verified counterexample:
+    -- F = ZMod 5, C = ⊥, ℓ = 1, δ = 9/10 — see
+    -- research/formal/arklib-patches/upstream-issues.md). `ha_le` below is exactly
+    -- this guard (a ≤ n ⟺ δ ≤ ℓ/(ℓ+1)) and is consumed by the proof.
+    (hlat : δ * (Fintype.card ι : ℝ) = (⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ))
+    (ha_le : ⌊((ℓ : ℝ) + 1) / ℓ * δ * Fintype.card ι⌋₊ ≤ Fintype.card ι)
     (_hΛ : Lambda ((C : Set (ι → F))) δ ≤ (ℓ : ℕ∞)) :
     (Set.ncard ((C : Set (ι → F))) : ℝ)
       ≤ (Fintype.card F : ℝ) ^

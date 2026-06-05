@@ -569,84 +569,55 @@ def sumcheckFoldKnowledgeError := fun j : (pSpecSumcheckFold 𝔽q β (ϑ:=ϑ)
     let jn : ℕ := j.1.val
     if hj: (jn % NBlockMessages (ϑ:=ϑ)) % 2 = 1 then
       foldKnowledgeError 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        ⟨jn / NBlockMessages (ϑ:=ϑ) * ϑ + (jn % NBlockMessages (ϑ:=ϑ)) / 2, by
-          let N := NBlockMessages (ϑ := ϑ)
-          have hN_pos : 0 < N := by
-            dsimp [N, NBlockMessages]
-            omega
+        -- Faithful fold-round index for the `↑↑j`-th challenge of `pSpecSumcheckFold`.
+        -- The original `(j % NBlockMessages) / 2 + 1` is OFF BY ONE: at the last challenge
+        -- (`j % B = 2ϑ-1`, `j / B = ℓ/ϑ-1`) it evaluates to `ℓ`, making the `< ℓ` bound FALSE.
+        -- The ℓ challenges (`ℓ/ϑ` blocks × ϑ each) map bijectively onto fold rounds `0..ℓ-1`
+        -- via `s = 1,3,…,2ϑ-1 ↦ s/2 = 0,…,ϑ-1`, so the faithful index drops the `+1`.
+        ⟨j / NBlockMessages (ϑ:=ϑ) * ϑ + (j % NBlockMessages (ϑ:=ϑ)) / 2, by
+          -- The `↑↑j`-th challenge of `pSpecSumcheckFold` is the sumcheck challenge of fold round
+          -- `(↑↑j / NBlockMessages) * ϑ + (↑↑j % NBlockMessages) / 2`, which lies in `{0,…,ℓ-1}`.
+          -- `pSpecSumcheckFold` has `ℓ/ϑ` blocks, each of `NBlockMessages = 2ϑ+1` messages and
+          -- carrying `ϑ` challenges at the odd positions `1,3,…,2ϑ-1`; the last block contributes
+          -- only its first `2ϑ` messages. We bound `↑↑j` by this layout and conclude with `ϑ ∣ ℓ`.
+          -- Basic positivity facts about the parameters.
           have hϑ_pos : 0 < ϑ := Nat.pos_of_neZero ϑ
-          have hN_eq : N = 2 * ϑ + 1 := by
-            dsimp [N, NBlockMessages]
-            omega
-          have h_inner_len :
-              Fin.vsum (fun _ : Fin (ϑ - 1) => 2) = 2 * (ϑ - 1) := by
-            simpa [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
-              nsmul_eq_mul, Nat.mul_comm]
-          have h_nonlast_len :
-              Fin.vsum (fun _ : Fin (ℓ / ϑ - 1) =>
-                (Fin.vsum fun _ : Fin (ϑ - 1) => 2) + 3) =
-                (ℓ / ϑ - 1) * N := by
-            simpa [Fin.vsum_eq_univ_sum, h_inner_len, Finset.sum_const, Finset.card_univ,
-              Fintype.card_fin, nsmul_eq_mul, N, NBlockMessages, Nat.mul_comm,
-              Nat.mul_left_comm, Nat.mul_assoc]
-          have h_last_len :
-              Fin.vsum (fun _ : Fin ϑ => 2) = 2 * ϑ := by
-            simpa [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
-              nsmul_eq_mul, Nat.mul_comm]
-          have hj_lt := j.1.isLt
-          dsimp [pSpecSumcheckFold, pSpecNonLastBlocks, pSpecFullNonLastBlock, pSpecLastBlock,
-            pSpecFoldRelaySequence, pSpecFoldRelay, pSpecFoldCommit, pSpecFold, pSpecRelay,
-            pSpecCommit, NBlockMessages, ProtocolSpec.append, ProtocolSpec.seqCompose] at hj_lt
-          have hj_total : jn < (ℓ / ϑ - 1) * N + 2 * ϑ := by
-            calc
-              jn < (Fin.vsum fun _ : Fin (ℓ / ϑ - 1) =>
-                  (Fin.vsum fun _ : Fin (ϑ - 1) => 2) + 3) +
-                  Fin.vsum (fun _ : Fin ϑ => 2) := by
-                    simpa [jn] using hj_lt
-              _ = (ℓ / ϑ - 1) * N + 2 * ϑ := by
-                rw [h_nonlast_len, h_last_len]
-          have hdivmod := Nat.div_add_mod jn N
-          have hmod_lt := Nat.mod_lt jn hN_pos
-          have hdiv_mul : ℓ / ϑ * ϑ = ℓ := Nat.div_mul_cancel hdiv.out
           have hℓ_pos : 0 < ℓ := Nat.pos_of_neZero ℓ
-          have hquot_pos : 0 < ℓ / ϑ := by
-            apply Nat.pos_of_ne_zero
-            intro hquot_zero
-            have : ℓ = 0 := by
-              rw [← hdiv_mul, hquot_zero]
-              simp
-            omega
-          have hj_bound' : jn < (ℓ / ϑ) * N := by
-            calc
-              jn < (ℓ / ϑ - 1) * N + 2 * ϑ := hj_total
-              _ < (ℓ / ϑ - 1) * N + N := by
-                rw [hN_eq]
-                omega
-              _ = (ℓ / ϑ) * N := by
-                calc
-                  (ℓ / ϑ - 1) * N + N = (ℓ / ϑ - 1) * N + 1 * N := by
-                    rw [one_mul]
-                  _ = (ℓ / ϑ - 1 + 1) * N := by
-                    rw [Nat.add_mul]
-                  _ = (ℓ / ϑ) * N := by
-                    rw [Nat.sub_one_add_one (Nat.ne_of_gt hquot_pos)]
-          have hj_bound : jn < N * (ℓ / ϑ) := by
-            simpa [Nat.mul_comm] using hj_bound'
-          have hdiv_lt : jn / N < ℓ / ϑ := Nat.div_lt_of_lt_mul hj_bound
-          have hmod_odd : (jn % N) % 2 = 1 := by
-            simpa [N] using hj
-          have hmod_half_lt : (jn % N) / 2 < ϑ := by
-            have hmod_decomp := Nat.div_add_mod (jn % N) 2
-            omega
-          change jn / N * ϑ + (jn % N) / 2 < ℓ
-          calc
-            jn / N * ϑ + (jn % N) / 2 < jn / N * ϑ + ϑ := by
-              exact Nat.add_lt_add_left hmod_half_lt _
-            _ = (jn / N + 1) * ϑ := by
-              rw [Nat.add_mul, one_mul]
-            _ ≤ (ℓ / ϑ) * ϑ := by
-              exact Nat.mul_le_mul_right ϑ (Nat.succ_le_of_lt hdiv_lt)
-            _ = ℓ := hdiv_mul⟩ ⟨1, rfl⟩
+          -- `NBlockMessages = 2ϑ + 1`; rewrite the block size to this concrete value everywhere.
+          have hB_eq : NBlockMessages (ϑ := ϑ) = 2 * ϑ + 1 := by
+            unfold NBlockMessages; omega
+          rw [hB_eq] at hj ⊢
+          -- `ϑ ∣ ℓ`, so `(ℓ/ϑ) * ϑ = ℓ` and `ℓ/ϑ ≥ 1`.
+          have hdvd : ϑ ∣ ℓ := hdiv.out
+          have hℓ_ge : ϑ ≤ ℓ := Nat.le_of_dvd hℓ_pos hdvd
+          have hdiv_mul : ℓ / ϑ * ϑ = ℓ := Nat.div_mul_cancel hdvd
+          have hℓϑ_pos : 1 ≤ ℓ / ϑ := by
+            rw [Nat.one_le_div_iff hϑ_pos]; exact Nat.le_of_dvd hℓ_pos hdvd
+          -- Upper bound on `m := ↑↑j` from the protocol layout (evaluating the `Fin.vsum`s).
+          have hb := j.val.isLt
+          simp only [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ,
+            Fintype.card_fin, smul_eq_mul] at hb
+          rw [show ((ϑ - 1) * 2 + 3) = 2 * ϑ + 1 by omega] at hb
+          -- Hence `m < (ℓ/ϑ) * (2ϑ+1)`, since `ϑ * 2 ≤ 2ϑ+1`.
+          have hm_lt : j.val.val < ℓ / ϑ * (2 * ϑ + 1) := by
+            have hrec : (ℓ / ϑ - 1) * (2 * ϑ + 1) + (2 * ϑ + 1) = ℓ / ϑ * (2 * ϑ + 1) := by
+              rw [← Nat.succ_mul]; congr 1; omega
+            have hle : (ℓ / ϑ - 1) * (2 * ϑ + 1) + ϑ * 2 ≤ ℓ / ϑ * (2 * ϑ + 1) := by
+              rw [← hrec]
+              exact Nat.add_le_add_left (by omega) _
+            exact lt_of_lt_of_le hb hle
+          -- Quotient bound: `m / (2ϑ+1) < ℓ/ϑ`, i.e. `m / (2ϑ+1) ≤ ℓ/ϑ - 1`.
+          have hq_lt : j.val.val / (2 * ϑ + 1) < ℓ / ϑ :=
+            (Nat.div_lt_iff_lt_mul (by omega)).mpr hm_lt
+          have hq_le : j.val.val / (2 * ϑ + 1) ≤ ℓ / ϑ - 1 := Nat.le_sub_one_of_lt hq_lt
+          -- `(m / (2ϑ+1)) * ϑ ≤ (ℓ/ϑ - 1) * ϑ = ℓ - ϑ`.
+          have hqϑ_le : j.val.val / (2 * ϑ + 1) * ϑ ≤ ℓ - ϑ := by
+            calc j.val.val / (2 * ϑ + 1) * ϑ ≤ (ℓ / ϑ - 1) * ϑ := Nat.mul_le_mul_right _ hq_le
+              _ = ℓ - ϑ := by rw [Nat.sub_mul, Nat.one_mul, hdiv_mul]
+          -- Remainder bound: `s := m % (2ϑ+1) < 2ϑ+1`, and `s` is odd, so `s / 2 ≤ ϑ - 1`.
+          have hs_lt : j.val.val % (2 * ϑ + 1) < 2 * ϑ + 1 := Nat.mod_lt _ (by omega)
+          -- Combine: `(m/(2ϑ+1))*ϑ + (m%(2ϑ+1))/2 ≤ (ℓ - ϑ) + (ϑ - 1) = ℓ - 1 < ℓ`.
+          omega⟩ ⟨1, rfl⟩
     else 0 -- this case never happens
 
 /-- Round-by-round knowledge soundness for the sumcheck fold oracle verifier -/
