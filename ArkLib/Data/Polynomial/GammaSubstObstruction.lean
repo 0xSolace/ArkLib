@@ -121,4 +121,18 @@ theorem coeff_aeval_shift {R : Type*} [CommRing R]
         (Polynomial.taylor r P).coeff i * PowerSeries.coeff n (γ ^ i) := by
   rw [← aeval_taylor_powerSeries, coeff_aeval_powerSeries]
 
+/-- **Order-0 of the composition = evaluation at the constant coefficient.** The base case
+of the order-by-order vanishing induction for `R(X, γ, Z) = 0`: since the in-tree base
+fact is `R(x₀, α₀) = 0` (proven, `eval₂_liftToFunctionField_div_leadingCoeff_H_eq_zero`),
+this lemma converts it into the vanishing of the order-0 coefficient of the composed
+series `aeval γ R` whenever `constantCoeff γ = α₀`. -/
+theorem constantCoeff_aeval_powerSeries {R : Type*} [CommRing R]
+    (P : Polynomial R) (γ : PowerSeries R) :
+    PowerSeries.constantCoeff (Polynomial.aeval γ P) =
+      Polynomial.eval (PowerSeries.constantCoeff γ) P := by
+  rw [Polynomial.aeval_eq_sum_range, map_sum,
+    Polynomial.eval_eq_sum_range]
+  exact Finset.sum_congr rfl fun i _ => by
+    rw [PowerSeries.constantCoeff_smul, map_pow, smul_eq_mul]
+
 end ProximityPrize
