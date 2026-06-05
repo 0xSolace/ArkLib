@@ -627,6 +627,28 @@ end ComponentReductions
 
 section CoreInteractionPhaseReduction
 
+/-- The final sumcheck verifier only forwards its output oracle statement from its input oracle
+statement: its `embed` always lands in `Sum.inl`. -/
+instance instFinalSumcheckVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (finalSumcheckVerifier 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
+  constructor
+  · intro i k h
+    simp [finalSumcheckVerifier] at h ⊢
+    subst h
+    rfl
+  · intro i k h
+    simp [finalSumcheckVerifier] at h
+
+/-- The reduction-level analogue for the final sumcheck step. -/
+instance instFinalSumcheckOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (finalSumcheckOracleReduction 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).verifier :=
+  instFinalSumcheckVerifierAppendCoherent 𝔽q β (ϑ := ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+
 /-- The final oracle verifier that composes sumcheckFold with finalSumcheckStep -/
 @[reducible]
 def coreInteractionOracleVerifier :=
@@ -664,13 +686,13 @@ instance instCoreInteractionOracleVerifierAppendCoherent :
     OracleVerifier.Append.AppendCoherent
       (coreInteractionOracleVerifier 𝔽q β (ϑ:=ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
-  sorry
+  infer_instance
 
 instance instCoreInteractionOracleReductionAppendCoherent :
     OracleVerifier.Append.AppendCoherent
       (coreInteractionOracleReduction 𝔽q β (ϑ:=ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).verifier := by
-  sorry
+  infer_instance
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
