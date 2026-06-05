@@ -207,7 +207,6 @@ theorem coeff_eq_getElem_of_lt [LawfulBEq R] {p : UniPoly R} {i} (hi : i < p.siz
     -- split between i > k and i <= k
     have h_size : k + 1 = (p.extract 0 (k + 1)).size := by
       simp [Array.size_extract]
-      exact Nat.succ_le_of_lt k.is_lt
     rcases (Nat.lt_or_ge k i) with hik | hik
     · have hik' : i ≥ (p.extract 0 (k + 1)).size := by linarith
       rw [Array.getElem?_eq_none hik', Option.getD_none]
@@ -993,7 +992,7 @@ lemma nsmul_descends [LawfulBEq R] (n : ℕ) (p₁ p₂ : UniPoly R) :
   intro heq
   unfold nsmul_descending
   apply Quotient.sound
-  unfold nsmul equiv
+  unfold nsmul
   intro i
   repeat rw [nsmul_raw_equiv, coeff_eq_coeff]
   rw [heq i]
@@ -1011,7 +1010,6 @@ lemma neg_descends (a b : UniPoly R) : equiv a b → neg_descending a = neg_desc
   unfold equiv neg_descending
   intros heq
   apply Quotient.sound
-  unfold equiv
   intro i
   rw [neg_coeff a i, neg_coeff b i, heq i]
 
@@ -1028,7 +1026,7 @@ lemma sub_descends [LawfulBEq R] (a₁ b₁ a₂ b₂ : UniPoly R) :
   unfold equiv sub_descending
   intros heq_a heq_b
   apply Quotient.sound
-  unfold sub equiv
+  unfold sub
   calc
     a₁.add b₁.neg ≈ a₁.add_raw b₁.neg := add_equiv_raw a₁ b₁.neg
     _ ≈ a₂.add_raw b₂.neg := by

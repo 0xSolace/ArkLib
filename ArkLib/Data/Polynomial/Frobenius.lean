@@ -87,9 +87,9 @@ theorem prod_X_sub_C_eq_X_pow_card_sub_X (h_Fq_card_gt_1 : Fintype.card Fq > 1):
 
   -- 4. CONCLUSION : Since P and Q are monic, split, and have the same roots, they are equal.
   have hP_eq_prod : P = (Multiset.map (fun a ↦ Polynomial.X - Polynomial.C a) P.roots).prod := by
-    apply Polynomial.eq_prod_roots_of_monic_of_splits_id hP_monic hP_splits
+    exact hP_splits.eq_prod_roots_of_monic hP_monic
   have hQ_eq_prod : Q = (Multiset.map (fun a ↦ Polynomial.X - Polynomial.C a) Q.roots).prod := by
-    apply Polynomial.eq_prod_roots_of_monic_of_splits_id hQ_monic hQ_splits
+    exact hQ_splits.eq_prod_roots_of_monic hQ_monic
   rw [hP_eq_prod, hQ_eq_prod, h_roots_eq]
 
 variable {L : Type*} [CommRing L] [Algebra Fq L]
