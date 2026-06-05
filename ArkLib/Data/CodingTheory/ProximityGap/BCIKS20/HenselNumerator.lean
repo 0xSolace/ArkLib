@@ -11,7 +11,7 @@ import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.GammaGenuine
 
-set_option linter.style.longFile 2400
+set_option linter.style.longFile 2600
 -- This proof-note-heavy integration file contains many long paper-route doc lines.
 set_option linter.style.longLine false
 
@@ -2243,13 +2243,114 @@ theorem partitionProd_coeff_trunc_assembled_of_surviving {k i1 : ℕ}
   exact partitionProd_coeff_trunc_assembled H x₀ R hHyp k lam
     (fun l hl => Nat.lt_succ_iff.mp (surviving_parts_lt lam hlam hl))
 
-/-- **(P2) order-`(t+1)` vanishing — THE SINGLE IRREDUCIBLE RESIDUAL (documented `sorry`).**
+/-! ### 4g. The Faà-di-Bruno coefficient bridge for `Q` (PROVEN, content-free)
+
+These three declarations carry NO open content.  They lay the order-`n` coefficient of
+`eval γ Q` completely bare in the partition/`countPerms` shape that the `(A.1)` recursion's
+`B_coeff`/`partitionProd`/`prefactor` objects were *built* to match, isolating the single
+remaining combinatorial-weight reconciliation into the named residual
+`faaDiBruno_succ_sum_eq_zero` below. -/
+
+/-- **The `Q`-coefficient bridge (PROVEN, axiom-clean, content-free).**
+The order-`a` (`X`-Taylor) coefficient of the `i`-th power-series coefficient of `Q` is the lift
+of the `i`-th `Y`-coefficient of the middle-`X` Hasse derivative `Δ_X^{a} R` specialised at
+`X = x₀`.
+
+This is the exact composite of the orchestrator's prepped chain, every step a proven rewrite:
+`Q.coeff i = coeffHom x₀ H (R.coeff i)` (`coeff_map`); `coeff a (coeffHom …) =
+liftToFunctionField ((taylor (C x₀) (R.coeff i)).coeff a)` (`coeff_coeffHom`); the mathlib Taylor
+identity `(taylor r f).coeff a = (hasseDeriv a f).eval r` (`Polynomial.taylor_coeff`) turns the
+`X`-Taylor coefficient into the middle-`X` Hasse derivative evaluated at `x₀`; and the proven
+layer-commutations `evalX_C_coeff` / `hasseDerivX_coeff` (wave 4) re-express
+`eval (C x₀) (hasseDeriv a (R.coeff i))` as `(evalX (C x₀) (Δ_X^{a} R)).coeff i` — exactly the
+`F[X]` object whose lift sits inside `hasseCoeffRepr𝒪`.  The `X`-Taylor order `a` IS the
+middle-`X` Hasse order `i1` of the `(A.1)` recursion. -/
+theorem coeff_Q_eq_B (x₀ : F) (R : F[X][X][Y]) (i a : ℕ) :
+    PowerSeries.coeff a ((Q x₀ R H).coeff i)
+      = liftToFunctionField (H := H)
+          ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX a R)).coeff i) := by
+  rw [Q, Polynomial.coeff_map, coeff_coeffHom, Polynomial.taylor_coeff,
+    evalX_C_coeff, hasseDerivX_coeff]
+
+/-- **The full Faà-di-Bruno expansion of `coeff n (eval γ Q)` (PROVEN, axiom-clean, content-free).**
+Chaining the three proven expansion lemmas with the `Q`-coefficient bridge `coeff_Q_eq_B`:
+
+* `HenselSeriesCoeff.coeff_eval_eq_sum_range` — the convolution over the `Y`-degree `i ≤ deg Q`;
+* `PowerSeries.coeff_mul` — the antidiagonal split of each `coeff n (Q.coeff i · γ^i)` into the
+  `X`-Taylor order `a = ab.1` and the `Y`-composition order `b = ab.2`;
+* `PowerSeriesComposition.coeff_pow_eq_partitionSum` — each `coeff b (γ^i)` as the `countPerms`-
+  weighted sum over the distinct value-multisets `m` of weak compositions of `b` into `i` parts
+  (the partitions `λ` of the `(A.1)` recursion); and
+* `coeff_Q_eq_B` on the `a`-coefficient of `Q.coeff i`.
+
+The `liftToFunctionField (… (evalX (C x₀) (Δ_X^{a} R)).coeff i)` factor is precisely the genuine
+iterated-Hasse object underlying `B_coeff` (modulo the `Y`-Hasse binomial bookkeeping `C(i, Σλ)`
+linking the `Y`-coefficient index `i` to a `Δ_Y^{Σλ}`, which `prefactor_paper_factorization`'s
+`countPerms = multinomial(λ)` already supplies on the `Multiset.countPerms m` factor).  Nothing
+here is open: the residual is exactly the *value* of this sum. -/
+theorem coeff_eval_Q_faaDiBruno (x₀ : F) (R : F[X][X][Y])
+    (γ : PowerSeries (𝕃 H)) (n : ℕ) :
+    PowerSeries.coeff n (Polynomial.eval γ (Q x₀ R H))
+      = ∑ i ∈ Finset.range ((Q x₀ R H).natDegree + 1),
+          ∑ ab ∈ Finset.antidiagonal n,
+            (liftToFunctionField (H := H)
+                ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX ab.1 R)).coeff i))
+            * (∑ m ∈ (Finset.finsuppAntidiag (Finset.range i) ab.2).image
+                      (ArkLib.PowerSeriesComposition.valueMultiset (Finset.range i)),
+                (Multiset.countPerms m) • ((m.map (fun j => PowerSeries.coeff j γ)).prod)) := by
+  rw [ProximityPrize.HenselSeriesCoeff.coeff_eval_eq_sum_range]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [PowerSeries.coeff_mul]
+  refine Finset.sum_congr rfl fun ab _ => ?_
+  rw [ArkLib.PowerSeriesComposition.coeff_pow_eq_partitionSum]
+  congr 1
+  exact coeff_Q_eq_B H x₀ R i ab.1
+
+/-- **(P2) the single named combinatorial residual (documented `sorry`).**
+
+After the PROVEN, content-free Faà-di-Bruno expansion `coeff_eval_Q_faaDiBruno`, the order-`(t+1)`
+coefficient of `eval (βHenselAssembled …) Q` *is* this explicit partition/`countPerms` sum.  Its
+vanishing is the genuine, fully-isolated BCIKS20 A.4 content: the combinatorial-weight
+reconciliation that the `countPerms`-weighted Faà-di-Bruno sum over the value-multisets `m`
+collapses — against the `(A.1)` recursion `βHensel_succ` (which negates exactly the
+`i1 ≥ 1` / surviving-partition terms) — to `0`.  This is the `prefactor_eq_paper` wall
+(reconciling the `Y`-Hasse intrinsic `C(i, Σλ)` weight against the paper's `multinomial(j0, λ)`,
+§5) stated at its smallest faithful carving: a single sum equality, with the convolution, the
+antidiagonal split, the power-partition expansion, and the per-coefficient `Q`-bridge ALL PROVEN
+above.  No false content: it is the true statement that `gammaGenuine` (a genuine root) makes this
+sum vanish; only the term-by-term combinatorial collapse is unformalised. -/
+theorem faaDiBruno_succ_sum_eq_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    (∑ i ∈ Finset.range ((Q x₀ R H).natDegree + 1),
+        ∑ ab ∈ Finset.antidiagonal (t + 1),
+          (liftToFunctionField (H := H)
+              ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX ab.1 R)).coeff i))
+          * (∑ m ∈ (Finset.finsuppAntidiag (Finset.range i) ab.2).image
+                    (ArkLib.PowerSeriesComposition.valueMultiset (Finset.range i)),
+              (Multiset.countPerms m) •
+                ((m.map (fun j =>
+                  PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))).prod))) = 0 := by
+  -- IRREDUCIBLE FRONTIER (the ONLY remaining `sorry` of (P2)): the combinatorial-weight
+  -- reconciliation `prefactor_eq_paper` — the `countPerms`-weighted Faà-di-Bruno sum collapses,
+  -- against the `(A.1)` recursion `βHensel_succ`, to `0`.  Everything connective (convolution,
+  -- antidiagonal split, power-partition expansion, per-coefficient `Q`-bridge) is PROVEN above.
+  sorry
+
+/-- **(P2) order-`(t+1)` vanishing — REDUCED to the single named combinatorial residual
+`faaDiBruno_succ_sum_eq_zero` (no bare `sorry`; the proof is the PROVEN Faà-di-Bruno expansion
+applied to the named residual).**
 
 The successor-order coefficient of `eval (βHenselAssembled …) Q` vanishes.  This is the genuine,
 minimally-carved BCIKS20 A.4 content: with the order-`0` half already PROVEN
 (`coeff_zero_eval_βHenselAssembled`) and the whole-series statement assembled from this by
 `PowerSeries.ext` (`assembledSeries_isRoot` below), the *entire* remaining mathematical content
 of (P2) is exactly this per-successor-order vanishing.
+
+REDUCTION (NEW — wave w13g).  By the PROVEN, content-free expansion `coeff_eval_Q_faaDiBruno`
+(convolution + antidiagonal + power-partition + the `Q`-coefficient bridge `coeff_Q_eq_B`), this
+coefficient *equals* the explicit partition/`countPerms` sum, whose vanishing is the single named
+residual `faaDiBruno_succ_sum_eq_zero`.  So this theorem now carries no bare `sorry`: it is the
+proven expansion followed by the one carved combinatorial lemma.
 
 WHY THIS IS THE GENUINE A.4 CONTENT.  The (A.1) recursion `βHensel_succ` was *built* so that the
 order-`(k+1)` coefficient of `R(X, γ, Z)` vanishes: comparing the `X^{k+1}` coefficient of
@@ -2281,11 +2382,12 @@ base case, the extensionality assembly, the denominator clearing, and the unique
 theorem coeff_succ_eval_βHenselAssembled (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
     PowerSeries.coeff (t + 1) (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0 := by
-  -- IRREDUCIBLE FRONTIER: the Faà-di-Bruno expansion `coeff_eval ↔ B_coeff·partitionProd` at
-  -- order `t+1` (equivalently, the (A.1)-recursion ↔ Newton-correction match), gated on the
-  -- STATED-NOT-PROVEN combinatorial reconciliation `prefactor_eq_paper`.  All surrounding
-  -- scaffolding (order-0 base, extensionality assembly, denominator clearing, uniqueness) PROVEN.
-  sorry
+  -- REDUCED (wave w13g): the PROVEN content-free Faà-di-Bruno expansion lays this coefficient
+  -- bare as the explicit partition/`countPerms` sum; its vanishing is the single named residual
+  -- `faaDiBruno_succ_sum_eq_zero` (the `prefactor_eq_paper` combinatorial reconciliation), the
+  -- ONLY remaining open content.  No bare `sorry` here.
+  rw [coeff_eval_Q_faaDiBruno]
+  exact faaDiBruno_succ_sum_eq_zero H x₀ R hHyp t
 
 /-- **(P2) the assembled series is a root of `Q` — PROVEN modulo the SINGLE per-successor-order
 residual `coeff_succ_eval_βHenselAssembled`.**
