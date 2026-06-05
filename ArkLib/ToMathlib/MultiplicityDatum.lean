@@ -114,6 +114,38 @@ theorem hord_of_rootMultiplicity_ge [DecidableEq F] {n : ℕ}
     ∀ i ∈ A, GuruswamiSudan.HasOrderAt Qz (ωs i) (Pz.eval (ωs i)) m :=
   fun i hi => hasOrderAt_of_rootMultiplicity_ge (hmult i hi)
 
+/-! ### Matching-factor corollaries from root-multiplicity data
+
+These are the direct single-candidate consumers of the obligation-4 datum above: once the proven
+root-multiplicity lower bound holds on a candidate's agreement set, the standalone
+`MatchingExtractor` adapters produce the matching factor `Y - P(X)` dividing the interpolant.
+-/
+
+/-- **GS matching-factor extraction from bivariate root-multiplicity data.**
+
+If the interpolant has root multiplicity at least `m` on the agreement graph points of `Pz`, and
+the specialized degree is below the corresponding root-count budget, then `Y - Pz(X)` divides the
+interpolant. -/
+theorem matchingFactor_dvd_of_rootMultiplicity_and_count [DecidableEq F] {n : ℕ}
+    (ωs : Fin n ↪ F) (Qz : F[X][Y]) (Pz : F[X]) (m : ℕ) (A : Finset (Fin n))
+    (hmult : ∀ i ∈ A,
+      (m : Option ℕ) ≤ Bivariate.rootMultiplicity Qz (ωs i) (Pz.eval (ωs i)))
+    (hcount : (Qz.eval Pz).natDegree < m * A.card) :
+    (Polynomial.X - Polynomial.C Pz) ∣ Qz := by
+  exact MatchingExtractor.matchingFactor_dvd_of_orderM_and_count ωs Qz Pz m A
+    (hord_of_rootMultiplicity_ge ωs Qz Pz m A hmult) hcount
+
+/-- Weighted-degree form of `matchingFactor_dvd_of_rootMultiplicity_and_count`. -/
+theorem matchingFactor_dvd_of_rootMultiplicity_and_weightedDegree [DecidableEq F] {n : ℕ}
+    (ωs : Fin n ↪ F) (Qz : F[X][Y]) (Pz : F[X]) (m k : ℕ) (A : Finset (Fin n))
+    (hPdeg : Pz.natDegree ≤ k)
+    (hmult : ∀ i ∈ A,
+      (m : Option ℕ) ≤ Bivariate.rootMultiplicity Qz (ωs i) (Pz.eval (ωs i)))
+    (hwcount : Bivariate.natWeightedDegree Qz 1 k < m * A.card) :
+    (Polynomial.X - Polynomial.C Pz) ∣ Qz := by
+  exact MatchingExtractor.matchingFactor_dvd_of_weightedDegree ωs Qz Pz m k A hPdeg
+    (hord_of_rootMultiplicity_ge ωs Qz Pz m A hmult) hwcount
+
 /-! ### List-size corollaries from root-multiplicity data
 
 These are the direct finite-family consumers of the obligation-4 datum above: once each candidate
@@ -230,6 +262,8 @@ end ArkLib
 
 #print axioms ArkLib.MultiplicityDatum.hasOrderAt_of_rootMultiplicity_ge
 #print axioms ArkLib.MultiplicityDatum.hord_of_rootMultiplicity_ge
+#print axioms ArkLib.MultiplicityDatum.matchingFactor_dvd_of_rootMultiplicity_and_count
+#print axioms ArkLib.MultiplicityDatum.matchingFactor_dvd_of_rootMultiplicity_and_weightedDegree
 #print axioms ArkLib.MultiplicityDatum.list_size_le_of_rootMultiplicity_and_count
 #print axioms ArkLib.MultiplicityDatum.list_size_le_of_rootMultiplicity_and_weightedDegree
 #print axioms ArkLib.MultiplicityDatum.leadingCoeff_Hlift
