@@ -19,6 +19,8 @@ import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
+set_option linter.style.longFile 1600
+
 /-!
 # List-decoding bounds from ABF26 §3
 
@@ -1013,7 +1015,7 @@ private theorem st20_nat_ineq (ℓ r₀ : ℕ) (hℓ : 1 ≤ ℓ) :
   have hcore : ℓ*b + s ≤ r₀ := by
     have key : ((ℓ+1)*b + s) * ℓ ≤ (ℓ+1)*r₀ := by rw [← hs_eq]; exact hAl
     nlinarith [key, hs_le, hℓ, Nat.zero_le b, Nat.zero_le s, Nat.zero_le r₀,
-               mul_le_mul_right' hs_le ℓ]
+               Nat.mul_le_mul_right ℓ hs_le]
   have hexp : (ℓ+1)*b = ℓ*b + b := by ring
   rw [hexp]; omega
 
@@ -1061,7 +1063,7 @@ private theorem st20_kernel_extract (C : Submodule F (ι → F)) (S : Finset ι)
 
 -- ===== ST20 (T3.9) helper 5: distance bound for constructed y =====
 private theorem st20_dist_bound (S : Finset ι) (ℓ : ℕ)
-    (cf : Fin (ℓ+1) → (ι → F))
+    (cf : Fin (ℓ + 1) → (ι → F))
     (hcfC0 : ∀ j, ∀ i, i ∈ S → cf j i = 0) :
     ∃ y : ι → F, ∀ j : Fin (ℓ+1),
       hammingDist y (cf j) ≤ Sᶜ.card - Sᶜ.card / (ℓ+1) := by
@@ -1180,7 +1182,7 @@ theorem linear_C_le_generalized_singleton_st20
   -- finrank F C ≤ n - a
   have hfin_le : Module.finrank F C ≤ n - a := by
     by_contra hcon
-    push_neg at hcon
+    push Not at hcon
     obtain ⟨S, _, hS⟩ := Finset.exists_subset_card_eq (s := (Finset.univ : Finset ι))
       (n := n - a) (by rw [Finset.card_univ, ← hn_def]; omega)
     have hScard : S.card = n - a := hS

@@ -63,6 +63,14 @@ theorem agree_evalVec_le_of_ne (domain : ι ↪ F) {k : ℕ}
   rw [agree_evalVec]
   omega
 
+omit [Fintype F] [DecidableEq ι] in
+/-- A distance-`e` evaluation vector has at least `n - e` agreements with the center word. -/
+theorem agree_evalVec_ge_of_hammingDist_le (domain : ι ↪ F) {p : F[X]} {w : ι → F} {e : ℕ}
+    (hclose : hammingDist (evalVec domain p) w ≤ e) :
+    Fintype.card ι - e ≤ CodeGeometry.agree (evalVec domain p) w := by
+  have hbridge := CodeGeometry.agree_add_hammingDist (evalVec domain p) w
+  omega
+
 omit [DecidableEq ι] in
 /-- **Reed–Solomon list-size from pairwise distinctness.**
 
@@ -106,9 +114,8 @@ theorem rs_list_size_from_pairwise
   -- A := n − e lower-bounds each center agreement (from the closeness hypothesis).
   have hA : ∀ i, (Fintype.card ι - e) ≤ CodeGeometry.agree (c i) w := by
     intro i
-    have hbridge := CodeGeometry.agree_add_hammingDist (c i) w
-    have hcl : hammingDist (c i) w ≤ e := hclose i
-    omega
+    simpa [hc] using
+      agree_evalVec_ge_of_hammingDist_le domain (p := p i) (w := w) (e := e) (hclose i)
   -- B := k − 1 upper-bounds each pairwise agreement (RS distinctness).
   have hB : ∀ i j, i ≠ j → CodeGeometry.agree (c i) (c j) ≤ (k - 1) := by
     intro i j hij
