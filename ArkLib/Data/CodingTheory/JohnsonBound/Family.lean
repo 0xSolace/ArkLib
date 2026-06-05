@@ -259,6 +259,19 @@ lemma hammingDist_real_le_of_relHammingDist_le
   rw [div_le_iff₀ hn_pos] at h
   exact h
 
+/-- A relative-distance bound also gives the corresponding integer absolute
+Hamming-distance bound by flooring `δ · n`. -/
+lemma hammingDist_le_floor_mul_card_of_relHammingDist_le
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    {α : Type} [DecidableEq α] {f c : ι → α} {δ : ℝ}
+    (hδ : 0 ≤ δ) (h : ((Code.relHammingDist f c : ℚ≥0) : ℝ) ≤ δ) :
+    hammingDist f c ≤ ⌊δ * (Fintype.card ι : ℝ)⌋₊ := by
+  have hn_pos : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
+  unfold Code.relHammingDist at h
+  simp only [NNRat.cast_div, NNRat.cast_natCast] at h
+  rw [div_le_iff₀ hn_pos] at h
+  exact (Nat.le_floor_iff (mul_nonneg hδ (Nat.cast_nonneg _))).mpr h
+
 /-- Elements of a finite point-list are within absolute radius `δ · n` of the
 received word. -/
 lemma hammingDist_real_le_of_mem_closeCodewordsRelFinset
@@ -275,6 +288,42 @@ lemma hammingDist_real_le_of_mem_closeCodewordsRelFinset
   rw [div_le_iff₀ hn_pos] at hrel
   convert hrel using 1
   congr
+
+/-- Elements of a finite point-list are within integer radius
+`⌊δ · n⌋₊` of the received word. -/
+lemma hammingDist_le_floor_mul_card_of_mem_closeCodewordsRelFinset
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    {C : ListDecodable.Code ι α} {f c : ι → α} {δ : ℝ}
+    (hδ : 0 ≤ δ)
+    (h : c ∈ ListDecodable.closeCodewordsRelFinset C f δ) :
+    hammingDist f c ≤ ⌊δ * (Fintype.card ι : ℝ)⌋₊ := by
+  have hrel := (ListDecodable.mem_closeCodewordsRelFinset.mp h).2
+  simp only [ListDecodable.relHammingBall, Set.mem_setOf_eq] at hrel
+  have hn_pos : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
+  unfold Code.relHammingDist at hrel
+  simp only [NNRat.cast_div, NNRat.cast_natCast] at hrel
+  rw [div_le_iff₀ hn_pos] at hrel
+  apply (Nat.le_floor_iff (mul_nonneg hδ (Nat.cast_nonneg _))).mpr
+  convert hrel using 1
+  congr
+
+/-- A close-list word agrees with the received word on at least
+`n - ⌊δ · n⌋₊` coordinates. -/
+lemma card_sub_floor_mul_card_le_agree_of_mem_closeCodewordsRelFinset
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    {C : ListDecodable.Code ι α} {f c : ι → α} {δ : ℝ}
+    (hδ : 0 ≤ δ)
+    (h : c ∈ ListDecodable.closeCodewordsRelFinset C f δ) :
+    Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊ ≤ CodeGeometry.agree c f := by
+  have hdist := hammingDist_le_floor_mul_card_of_mem_closeCodewordsRelFinset hδ h
+  have hsum := CodeGeometry.agree_add_hammingDist c f
+  have hdist_symm : hammingDist c f = hammingDist f c := by
+    unfold hammingDist
+    simp_rw [ne_comm]
+  rw [hdist_symm] at hsum
+  omega
 
 /-- The finite point-list average distance to its received word is bounded by
 the relative radius times the block length. -/
