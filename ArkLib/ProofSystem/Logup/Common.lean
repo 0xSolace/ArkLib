@@ -541,6 +541,22 @@ noncomputable def qOnHypercube (groups : PartialSumGroups M K)
       lagrangeKernel F u zChallenge * batchingScalars k *
         domainIdentityTerm groups oStmt multiplicity helpers xChallenge k u)
 
+omit [Fintype F] [DecidableEq F] in
+theorem qOnHypercube_honest_helpers
+    (groups : PartialSumGroups M K) (oStmt : ∀ i, OStmtIn F n M i)
+    (multiplicity : MultilinearOracle F n) (xChallenge : F) (zChallenge : Fin n → F)
+    (batchingScalars : Fin K → F) (u : Hypercube n)
+    (hden : ∀ k : Fin K, ∀ i ∈ groups k, termPhi oStmt xChallenge i u ≠ 0) :
+    qOnHypercube groups oStmt multiplicity
+        (fun k => helperOracle groups oStmt multiplicity xChallenge k)
+        xChallenge zChallenge batchingScalars u =
+      ∑ k : Fin K, evalOnHypercube (helperOracle groups oStmt multiplicity xChallenge k) u := by
+  unfold qOnHypercube
+  apply Finset.sum_congr rfl
+  intro k _
+  rw [domainIdentityTerm_honest_helper_eq_zero groups oStmt multiplicity xChallenge k u (hden k)]
+  simp
+
 /-- Point evaluations queried by the verifier at the final sumcheck point `r`. -/
 structure PointEvaluations (F : Type) (M K : ℕ) where
   /-- Claimed value `m(r)`. -/
@@ -602,6 +618,36 @@ noncomputable def domainIdentityAtPoint (groups : PartialSumGroups M K)
       termNumeratorAtPoint evals i *
         ∏ j ∈ (groups k).erase i, termPhiAtPoint xChallenge evals j
 
+omit [Fintype F] [DecidableEq F] in
+noncomputable def helperValueAtPoint (groups : PartialSumGroups M K)
+    (xChallenge : F) (evals : PointEvaluations F M K) (k : Fin K) : F :=
+  ∑ i ∈ groups k, termNumeratorAtPoint evals i / termPhiAtPoint xChallenge evals i
+
+omit [Fintype F] [DecidableEq F] in
+theorem helperValueAtPoint_mul_denominatorProduct
+    (groups : PartialSumGroups M K) (xChallenge : F) (evals : PointEvaluations F M K)
+    (k : Fin K) (hden : ∀ i ∈ groups k, termPhiAtPoint xChallenge evals i ≠ 0) :
+    helperValueAtPoint groups xChallenge evals k *
+        (∏ i ∈ groups k, termPhiAtPoint xChallenge evals i) =
+      ∑ i ∈ groups k,
+        termNumeratorAtPoint evals i *
+          ∏ j ∈ (groups k).erase i, termPhiAtPoint xChallenge evals j := by
+  unfold helperValueAtPoint
+  exact sum_div_mul_prod_eq_sum_mul_prod_erase (groups k)
+    (fun i => termNumeratorAtPoint evals i)
+    (fun i => termPhiAtPoint xChallenge evals i) hden
+
+omit [Fintype F] [DecidableEq F] in
+theorem domainIdentityAtPoint_eq_zero
+    (groups : PartialSumGroups M K) (xChallenge : F) (evals : PointEvaluations F M K)
+    (k : Fin K)
+    (hhelper : evals.helpers k = helperValueAtPoint groups xChallenge evals k)
+    (hden : ∀ i ∈ groups k, termPhiAtPoint xChallenge evals i ≠ 0) :
+    domainIdentityAtPoint groups xChallenge evals k = 0 := by
+  unfold domainIdentityAtPoint
+  rw [hhelper, helperValueAtPoint_mul_denominatorProduct groups xChallenge evals k hden]
+  simp
+
 /-- The verifier's final check value `Q(L_H(r,z), m(r), φᵢ(r), hₖ(r))` from paper (19). -/
 noncomputable def qAtPoint (groups : PartialSumGroups M K) (xChallenge : F)
     (zChallenge rChallenge : Fin n → F) (batchingScalars : Fin K → F)
@@ -610,6 +656,20 @@ noncomputable def qAtPoint (groups : PartialSumGroups M K) (xChallenge : F)
     evals.helpers k +
       lagrangeKernelAtPoint F rChallenge zChallenge * batchingScalars k *
         domainIdentityAtPoint groups xChallenge evals k)
+
+omit [Fintype F] [DecidableEq F] in
+theorem qAtPoint_eq_sum_helpers
+    (groups : PartialSumGroups M K) (xChallenge : F) (zChallenge rChallenge : Fin n → F)
+    (batchingScalars : Fin K → F) (evals : PointEvaluations F M K)
+    (hhelper : ∀ k : Fin K, evals.helpers k = helperValueAtPoint groups xChallenge evals k)
+    (hden : ∀ k : Fin K, ∀ i ∈ groups k, termPhiAtPoint xChallenge evals i ≠ 0) :
+    qAtPoint groups xChallenge zChallenge rChallenge batchingScalars evals =
+      ∑ k : Fin K, evals.helpers k := by
+  unfold qAtPoint
+  apply Finset.sum_congr rfl
+  intro k _
+  rw [domainIdentityAtPoint_eq_zero groups xChallenge evals k (hhelper k) (hden k)]
+  simp
 
 /-- Predicate for paper step 4: final oracle-query answers match the sumcheck's expected value. -/
 noncomputable def finalQueryCheck (groups : PartialSumGroups M K) (xChallenge : F)

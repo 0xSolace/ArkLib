@@ -87,6 +87,67 @@ def logupPointEvaluationsAgree
     (∀ i : Fin M, evals.columns i = lagrangeOracleEval (oStmt (.input (.column i))) r) ∧
       ∀ k : Fin params.numGroups, evals.helpers k = lagrangeOracleEval ((oStmt .helpers) k) r
 
+omit [Fintype F] [DecidableEq F] in
+theorem logupPointEvaluationsAgree.multiplicity
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals) :
+    evals.multiplicity = lagrangeOracleEval (oStmt .multiplicity) r :=
+  h.1
+
+omit [Fintype F] [DecidableEq F] in
+theorem logupPointEvaluationsAgree.table
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals) :
+    evals.table = lagrangeOracleEval (oStmt (.input .table)) r :=
+  h.2.1
+
+omit [Fintype F] [DecidableEq F] in
+theorem logupPointEvaluationsAgree.column
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals) (i : Fin M) :
+    evals.columns i = lagrangeOracleEval (oStmt (.input (.column i))) r :=
+  h.2.2.1 i
+
+omit [Fintype F] [DecidableEq F] in
+theorem logupPointEvaluationsAgree.helper
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals)
+    (k : Fin params.numGroups) :
+    evals.helpers k = lagrangeOracleEval ((oStmt .helpers) k) r :=
+  h.2.2.2 k
+
+omit [Fintype F] [DecidableEq F] in
+theorem termPhiAtPoint_zero_of_logupPointEvaluationsAgree
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals)
+    (xChallenge : F) :
+    termPhiAtPoint xChallenge evals (0 : TermIdx M) =
+      xChallenge + lagrangeOracleEval (oStmt (.input .table)) r := by
+  simp [h.2.1]
+
+omit [Fintype F] [DecidableEq F] in
+theorem termPhiAtPoint_succ_of_logupPointEvaluationsAgree
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals)
+    (xChallenge : F) (i : Fin M) :
+    termPhiAtPoint xChallenge evals ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩ =
+      xChallenge + lagrangeOracleEval (oStmt (.input (.column i))) r := by
+  simp [h.2.2.1 i]
+
+omit [Fintype F] [DecidableEq F] in
+theorem termNumeratorAtPoint_zero_of_logupPointEvaluationsAgree
+    {r : Fin n → F} {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    {evals : PointEvaluations F M params.numGroups}
+    (h : logupPointEvaluationsAgree F n M params r oStmt evals) :
+    termNumeratorAtPoint evals (0 : TermIdx M) = lagrangeOracleEval (oStmt .multiplicity) r := by
+  simp [h.1]
+
 end SumcheckInterface
 
 section SumcheckBridge
