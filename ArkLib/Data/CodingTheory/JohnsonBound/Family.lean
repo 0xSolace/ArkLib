@@ -710,6 +710,25 @@ theorem Lambda_le_of_floor_minDist_johnson_condition
   exact closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_condition
     C f δ hδ hq hβ hcond
 
+/-- Package a pointwise close-list cap at the paper-facing `Jqℓ` radius into a
+`Lambda` bound.
+
+This isolates the list-size supremum step in ABF26 Theorem 3.2 from the
+remaining q-ary Plotkin/radius algebra. -/
+theorem Lambda_le_of_forall_closeCodewordsRelFinset_card_le_Jqℓ
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {ℓ : ℕ}
+    (hpoint :
+      ∀ f : ι → α,
+        (ListDecodable.closeCodewordsRelFinset C f
+          (Jqℓ (Fintype.card α : ℚ) ℓ
+            ((Code.minDist C : ℚ) / Fintype.card ι))).card ≤ ℓ) :
+    ListDecodable.Lambda C
+      (Jqℓ (Fintype.card α : ℚ) ℓ
+        ((Code.minDist C : ℚ) / Fintype.card ι)) ≤ (ℓ : ℕ∞) := by
+  exact ListDecodable.Lambda_le_natCast_of_forall_closeFinset_card_le hpoint
+
 /-- Lambda-level Johnson cap with the close-list radius side condition written
 using the real radius `n - δ*n` instead of the floored integer radius.
 
