@@ -9,6 +9,7 @@ import Mathlib.Combinatorics.Enumerative.Partition.Basic
 import Mathlib.Data.Nat.Choose.Multinomial
 import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.Data.Polynomial.PowerSeriesComposition
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.GammaGenuine
 
 set_option linter.style.longFile 1900
 -- This proof-note-heavy integration file contains many long paper-route doc lines.
@@ -436,6 +437,7 @@ layer (char-free, no `m!`, per BCIKS20 line 4350), never a stub. -/
 
 open Polynomial Polynomial.Bivariate
 open BCIKS20AppendixA
+open ProximityPrize.BCIKS20.GammaGenuine
 
 section Wave2
 
