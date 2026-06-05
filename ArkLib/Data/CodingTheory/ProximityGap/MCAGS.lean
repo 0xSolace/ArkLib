@@ -6,6 +6,7 @@ Authors: Eliza
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCounting
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
 
 /-!
 # Guruswami–Sudan-degree-exposed mutual-correlated-agreement (MCAGS)
@@ -386,6 +387,102 @@ theorem epsMCAgs_restricted_le_epsCA
     exact mcaEventGSrow_probability_le_line_close (L u) C δ u
 
 end
+
+/-! ## Step 3 — the per-`γ` counting the double-coverage refutation said must exist
+
+`ProximityGap.LineDecodingCounting.double_coverage_counterexample` proves the bare multi-`γ`
+double-coverage count is **FALSE** for every `m := ⌊δ·n⌋ ≥ 1`. Its refutation prose states the
+faithful route must instead "run per pair of close codewords" using the GS list. We supply that
+count here, over the scalar code (`A = F`, the Reed-Solomon / prize regime):
+
+* **`bad_gamma_pinned_by_witness`** — a fixed list codeword `w`, at a coordinate `x` where
+  `u₁ x ≠ 0`, line-witnesses at **at most one** `γ`: `w x = u₀ x + γ·u₁ x` is affine in `γ` with
+  nonzero slope `u₁ x`, so `affine_root_subsingleton` pins `γ`. (The "two-linear-equations
+  trick": a *second* `γ` would force a *second* linear equation `w x = u₀ x + γ'·u₁ x`,
+  subtracting `(γ - γ')·u₁ x = 0`, contradiction.)
+* **`gsList_bad_gamma_bound`** — summing over the list, the bad `γ` (those carrying a GS-row
+  line-witness in `L` at a fixed `u₁`-active coordinate) number `≤ |L| ≤ gsListBound ℓ`. This is
+  the `|L|`-style count (per the same affine pivot the in-tree `affine_match_card_le_one` /
+  Hab25 double-count use, the analogue of `Polynomial.card_roots'`) that replaces the false
+  double-coverage target. -/
+
+section Counting
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+open CodingTheory.ProximityGap.Hab25Core
+
+/-- **Per-witness `γ`-pinning (the two-linear-equations trick).** Over the scalar code, fix a
+codeword `w : ι → F` and a coordinate `x` with `u₁ x ≠ 0`. The set of `γ` at which `w` matches
+the line `u₀ + γ·u₁` *at `x`* — i.e. `w x = u₀ x + γ·u₁ x` — has at most one element: the affine
+map `γ ↦ (u₀ x - w x) + γ·(u₁ x)` is non-trivial (nonzero slope), so it vanishes at most once. -/
+theorem bad_gamma_pinned_by_witness
+    (w u₀ u₁ : ι → F) (x : ι) (hx : u₁ x ≠ 0) :
+    {γ : F | w x = u₀ x + γ * u₁ x}.Subsingleton := by
+  have h_iff : {γ : F | w x = u₀ x + γ * u₁ x} = {γ : F | (u₀ x - w x) + γ * u₁ x = 0} := by
+    ext γ
+    simp only [Set.mem_setOf_eq]
+    constructor
+    · intro h; rw [h]; ring
+    · intro h; linear_combination -h
+  rw [h_iff]
+  exact affine_root_subsingleton (Or.inr hx)
+
+/-- **`Finset` form of the per-witness pinning.** At most one `γ` in any finite scalar set `S`
+makes `w` match the line at the `u₁`-active coordinate `x`. -/
+theorem bad_gamma_match_card_le_one
+    (w u₀ u₁ : ι → F) (x : ι) (hx : u₁ x ≠ 0) (S : Finset F) :
+    (S.filter (fun γ => w x = u₀ x + γ * u₁ x)).card ≤ 1 := by
+  rw [Finset.card_le_one]
+  intro z hz w' hw'
+  rw [Finset.mem_filter] at hz hw'
+  exact bad_gamma_pinned_by_witness w u₀ u₁ x hx hz.2 hw'.2
+
+/-- **Step 3 (main): GS list-size bound on the bad `γ`.** The new theorem the double-coverage
+refutation said must exist *instead* of the false count.
+
+Fix a coordinate `x` with `u₁ x ≠ 0`. Suppose every bad `γ` in a finite scalar set `S` carries a
+GS-row line-witness `w ∈ L` matching the line at `x` (`w x = u₀ x + γ·u₁ x`) — the situation the
+GS-row event guarantees once the witness set `S_γ` contains the `u₁`-active coordinate `x`. Then
+the number of bad `γ` is at most `|L| ≤ gsListBound ℓ`: each list codeword pins **at most one**
+bad `γ` (the per-witness pinning), so the bad set injects into `L`.
+
+This is the `|L|`-degree count that the double-coverage counterexample
+(`LineDecodingCounting.double_coverage_counterexample`) showed must replace the false
+per-position double-coverage target. -/
+theorem gsList_bad_gamma_bound
+    (L : Finset (ι → F)) (u₀ u₁ : ι → F) (x : ι) (hx : u₁ x ≠ 0) (S : Finset F)
+    (hwitness : ∀ γ ∈ S, ∃ w ∈ L, w x = u₀ x + γ * u₁ x) :
+    S.card ≤ L.card := by
+  classical
+  -- Choose, for each bad `γ`, its list-witness at `x`.
+  choose! wf hwf_mem hwf_eq using hwitness
+  -- The assignment `γ ↦ wf γ` maps `S` into `L` and is injective: two `γ` with the same witness
+  -- `w` both satisfy `w x = u₀ x + γ·u₁ x`, so the per-witness pinning forces them equal.
+  apply Finset.card_le_card_of_injOn wf
+  · intro γ hγ; exact hwf_mem γ hγ
+  · intro γ hγ γ' hγ' h_eq
+    -- both `γ, γ'` are roots of the affine map for the *same* codeword `w := wf γ = wf γ'`.
+    have h1 : wf γ x = u₀ x + γ * u₁ x := hwf_eq γ hγ
+    have h2 : wf γ' x = u₀ x + γ' * u₁ x := hwf_eq γ' hγ'
+    rw [h_eq] at h1
+    exact bad_gamma_pinned_by_witness (wf γ') u₀ u₁ x hx h1 h2
+
+/-- **Step 3, list-size handle form.** Restating `gsList_bad_gamma_bound` against the GS list-size
+bound `gsListBound ℓ`: when the GS list `L` has size `≤ ℓ`, the bad `γ` (each carrying a list
+witness at the `u₁`-active coordinate `x`) number `≤ gsListBound ℓ`. This is the `ε ≤ |L|/q`-style
+numerator the GS list decoder produces — `|L|² · d`-bounded when the per-pair degree `d` enters;
+here, over the scalar code with the affine (`degree-1`) pivot, the per-witness count collapses the
+`|L|²·d` form to the sharp `|L|`. -/
+theorem gsList_bad_gamma_le_gsListBound
+    (ℓ : ℕ) (L : Finset (ι → F)) (hL : L.card ≤ gsListBound ℓ)
+    (u₀ u₁ : ι → F) (x : ι) (hx : u₁ x ≠ 0) (S : Finset F)
+    (hwitness : ∀ γ ∈ S, ∃ w ∈ L, w x = u₀ x + γ * u₁ x) :
+    S.card ≤ gsListBound ℓ :=
+  le_trans (gsList_bad_gamma_bound L u₀ u₁ x hx S hwitness) hL
+
+end Counting
 
 end MCAGS
 
