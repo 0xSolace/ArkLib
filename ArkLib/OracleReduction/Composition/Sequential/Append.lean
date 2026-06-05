@@ -1021,6 +1021,26 @@ theorem append_runToRound_seam :
         OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) :=
   append_runToRound_left (Fin.last m)
 
+/-! ### Right-block run characterization support (in progress)
+
+The right block mirrors the left, but the appended prover's right half is indexed through
+`Fin.natAdd (m + 1)` (interior rounds `m+1 .. m+n`) and—crucially—the **seam round** `m`
+(`Prover.append`'s `i = m` branch) is *not* a uniform right round: it threads `P₁.output >>= P₂.input`
+before `P₂`'s round-`0` step.  We record here the proven right-half state transport; the remaining
+right reductions and the seam-merge lemma are the documented obstruction of `append_run`. -/
+
+/-- PrvState of the appended prover at a *right interior* round `m + 1 + k` (`k : Fin n`) equals
+`P₂`'s state at round `k + 1`.  Mirror of `append_PrvState_castLE` via `Fin.append_right`/`Fin.tail`
+(here `Fin.tail P₂.PrvState ∘ Fin.cast` reduces to `P₂.PrvState ∘ Fin.succ` on the right). -/
+theorem append_PrvState_natAdd_succ (k : Fin n) :
+    (P₁.append P₂).PrvState (Fin.natAdd (m + 1) k |>.cast (by omega)) = P₂.PrvState k.succ := by
+  unfold Prover.append
+  dsimp only [Function.comp_apply]
+  rw [show (Fin.cast (by omega) (Fin.natAdd (m + 1) k |>.cast (by omega)) : Fin (m + 1 + n))
+        = Fin.natAdd (m + 1) k from by ext; simp]
+  rw [Fin.append_right]
+  rfl
+
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
 witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
@@ -1033,7 +1053,33 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
         let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (P₁.run stmt wit)
         let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (P₂.run stmt₂ wit₂)
         return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩) := by
-  unfold run runToRound
+  -- **WIP (left block DONE; seam + right block remain).**
+  --
+  -- Expose `run` as `runToRound (Fin.last (m+n))` followed by `output` (`run_eq_runToRound_last`),
+  -- then factor the full run at the seam `k = ⟨m,_⟩` via the keystone
+  -- `runToRound_eq_bind_continueFromTo`:
+  --
+  --   (P₁.append P₂).runToRound (last (m+n)) stmt wit
+  --     = (P₁.append P₂).runToRound ⟨m,_⟩ stmt wit
+  --         >>= continueFromTo (P₁.append P₂) stmt wit ⟨m,_⟩ (last (m+n)).
+  --
+  -- The first factor is `append_runToRound_seam` (PROVEN, this file): heterogeneously the `liftM` of
+  -- `P₁.runToRound (last m)` — i.e. `P₁`'s full message phase.  The remaining obligation is the
+  -- continuation `continueFromTo … ⟨m,_⟩ (last (m+n))`, which decomposes as:
+  --   (a) SEAM round `m` (`Prover.append`'s `i = m` branch): `P₁.output >>= P₂.input >>= P₂` round 0.
+  --       This is the genuinely new monadic-interleaving step (no left-block analog); it produces the
+  --       `(stmt₂, wit₂) = ← P₁.output (…)` and feeds `P₂.input (stmt₂, wit₂)`, matching the RHS
+  --       boundary `liftM (P₁.run …) >>= fun ⟨_,stmt₂,wit₂⟩ => liftM (P₂.run stmt₂ wit₂)`.
+  --   (b) RIGHT interior rounds `m+1 .. m+n-1` (`Prover.append`'s `i > m` branch): uniform `P₂`
+  --       rounds, the mirror of the proven left block under `Fin.natAdd (m+1)` /
+  --       `range_challenge_append_inr` (state transport: `append_PrvState_natAdd_succ`, PROVEN above).
+  --   (c) `output`: combine via `++ₜ` (`FullTranscript.append`, `append_fst`/`append_snd`) and the
+  --       `P₂.output` tail (the `output` branch of `Prover.append`, incl. the `n = 0` degenerate seam).
+  --
+  -- Remaining precise obligation: the seam+right continuation lemma
+  --   HEq (continueFromTo (P₁.append P₂) stmt wit ⟨m,_⟩ (last (m+n)) rSeam)
+  --       (do let ⟨tr₂,s₃,w₃⟩ ← liftM (P₂.run (P₁.output-derived stmt₂) wit₂); …)
+  -- where `rSeam` is the seam-state result of `append_runToRound_seam`.  Blocked on (a) and (b).
   sorry
 
 -- TODO: Need to define a function that "extracts" a second prover from the combined prover
