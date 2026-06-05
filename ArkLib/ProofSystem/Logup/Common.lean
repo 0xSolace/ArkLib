@@ -441,6 +441,35 @@ theorem tableMultiplicityCount_pos_of_eval
   exact ⟨u, by simp⟩
 
 omit [Field F] [Fintype F] in
+theorem tableMultiplicityCount_eq_zero_of_not_exists_eval
+    (oStmt : ∀ i, OStmtIn F n M i) (a : F)
+    (hnot : ¬ ∃ u : Hypercube n,
+      evalOnHypercube (tableOracle oStmt) u = a) :
+    tableMultiplicityCount oStmt a = 0 := by
+  unfold tableMultiplicityCount
+  rw [Finset.card_eq_zero]
+  apply Finset.eq_empty_iff_forall_notMem.mpr
+  intro u hmem
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hmem
+  exact hnot ⟨u, hmem⟩
+
+theorem lookupMultiplicityCount_eq_zero_of_not_exists_table
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i)
+    (hInput : (((stmt, oStmt), ()) ∈ inputRelation F n M)) (a : F)
+    (hnot : ¬ ∃ u : Hypercube n,
+      evalOnHypercube (tableOracle oStmt) u = a) :
+    lookupMultiplicityCount oStmt a = 0 := by
+  unfold lookupMultiplicityCount
+  rw [Finset.card_eq_zero]
+  apply Finset.eq_empty_iff_forall_notMem.mpr
+  intro ix hmem
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hmem
+  rcases (mem_inputRelation_iff stmt oStmt ()).mp hInput ix.1 ix.2 with ⟨y, hy⟩
+  apply hnot
+  refine ⟨y, ?_⟩
+  rw [← hy, hmem]
+
+omit [Field F] [Fintype F] in
 theorem tableMultiplicityCount_le_card_hypercube
     (oStmt : ∀ i, OStmtIn F n M i) (a : F) :
     tableMultiplicityCount oStmt a ≤ Fintype.card (Hypercube n) := by
