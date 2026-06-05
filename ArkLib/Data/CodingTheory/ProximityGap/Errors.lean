@@ -621,6 +621,23 @@ theorem line_close_probability_le_epsCA_of_not_jointProximity
         else Pr_{let γ ← $ᵖ F}[δᵣ(u 0 + γ • u 1, C) ≤ δ_fld])
       u)
 
+/-- Direct per-stack `mcaEvent` domination by `ε_ca` on the non-jointly-close branch.
+
+This packages the fully-proven half of the MCA-to-CA comparison in the form most useful to
+sampling and reduction arguments: once a stack is known not to be jointly close at
+`δ_int`, its `mcaEvent` probability at radius `δ_fld` is bounded by
+`ε_ca(C, δ_fld, δ_int)`. The jointly-close branch remains the genuine Step-B residual in
+`epsMCA_eq_epsCA_below_udr`. -/
+theorem mcaEvent_probability_le_epsCA_of_not_jointProximity
+    (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (hjp : ¬ jointProximity (C := C) (u := u) δ_int) :
+    Pr_{let γ ← $ᵖ F}[mcaEvent C δ_fld (u 0) (u 1) γ] ≤
+      epsCA (F := F) C δ_fld δ_int := by
+  exact le_trans
+    (Pr_le_Pr_of_implies _ _ _ fun γ hγ ↦
+      mcaEvent_imp_relCloseToCode C δ_fld (u 0) (u 1) γ hγ)
+    (line_close_probability_le_epsCA_of_not_jointProximity C δ_fld δ_int u hjp)
+
 open Classical in
 /-- **Restricted MCA error: the fully-provable slice of ABF26 Lemma 4.6 (no UDR needed).**
 
