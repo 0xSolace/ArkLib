@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import Mathlib.Data.Finset.Card
+import Mathlib.InformationTheory.Hamming
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.Tactic
 
@@ -39,6 +40,39 @@ def jointAgreeSet (f₁ f₂ g₁ g₂ : ι → F) : Finset ι :=
 /-- The affine line word `f₁ + γ • f₂`. -/
 def linComb (f₁ f₂ : ι → F) (γ : F) : ι → F :=
   fun x => f₁ x + γ * f₂ x
+
+/-- Package two words as a single word over the product alphabet. -/
+def pairWord (f₁ f₂ : ι → F) : ι → F × F :=
+  fun x => (f₁ x, f₂ x)
+
+/-- A Hamming-distance lower bound for paired words is the same as an upper
+bound on the joint agreement set. -/
+theorem jointAgreeSet_card_add_lt_of_hammingDist_gt
+    {f₁ f₂ g₁ g₂ : ι → F} {w : ℕ}
+    (h : w < hammingDist (pairWord f₁ f₂) (pairWord g₁ g₂)) :
+    (jointAgreeSet f₁ f₂ g₁ g₂).card + w < Fintype.card ι := by
+  classical
+  have hpartition :
+      (jointAgreeSet f₁ f₂ g₁ g₂).card +
+        hammingDist (pairWord f₁ f₂) (pairWord g₁ g₂) = Fintype.card ι := by
+    simpa [jointAgreeSet, pairWord, hammingDist] using
+      (Finset.card_filter_add_card_filter_not
+        (s := (Finset.univ : Finset ι))
+        (p := fun x : ι => f₁ x = g₁ x ∧ f₂ x = g₂ x))
+  omega
+
+/-- If two words have Hamming distance at most `d`, then they agree on at
+least `|ι| - d` coordinates. -/
+theorem card_le_agreeSet_card_add_of_hammingDist_le
+    {f g : ι → F} {d : ℕ} (h : hammingDist f g ≤ d) :
+    Fintype.card ι ≤ (agreeSet f g).card + d := by
+  classical
+  have hpartition :
+      (agreeSet f g).card + hammingDist f g = Fintype.card ι := by
+    simpa [agreeSet, hammingDist] using
+      (Finset.card_filter_add_card_filter_not
+        (s := (Finset.univ : Finset ι)) (p := fun x : ι => f x = g x))
+  omega
 
 /-- Inclusion-exclusion in the form used by the halved-threshold CA argument. -/
 theorem card_inter_add_card_univ_ge (A B : Finset ι) :

@@ -83,6 +83,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.JointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.UniqueDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.CurvesBridge
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Extraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
