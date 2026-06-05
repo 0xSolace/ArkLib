@@ -43,12 +43,21 @@ genuine `β` recursion of BCIKS20 (A.1) over the in-tree ring `𝒪 H`:
 6. `βHensel : ℕ → 𝒪 H` — **the keystone**: the genuine (A.1) well-founded recursion,
    base case `β₀ = T mod H̃` (genuine `mk X`, not `0`), recursive arm the literal (A.1)
    sum `− ∑_{i1} ∑_{λ ≠ indiscrete} W^{…}·ξ^{…}·B_{i1,λ}·∏_l β_l^{λ_l}`.
-7. `βHensel_zero` — base-case value lemma (PROVEN).
-8. `(P1) βHensel_weight_bound` — `t = 0` case PROVEN; inductive step a documented `sorry`.
+7. `βHensel_zero` / `βHensel_succ` — base-case + recursive-step value lemmas (PROVEN).
+8. `(P1) βHensel_weight_bound` — `t = 0` PROVEN; inductive step FULLY ASSEMBLED (strong
+   induction + `βHensel_succ` + the over-`𝒪` weight calculus below), reduced to the **single**
+   documented per-term residual `βHensel_succ_term_weight_le`.
 9. `(P2) βHensel_lift_identity` — the irreducible BCIKS20 A.4 frontier, documented `sorry`.
 
-See `ingredientD-wave1-design.md` / `ingredientD-wave1-foundation.md` / `ingredientD-wave2.md`
-for the staged specs.
+WAVE 3 SCOPE (§4c′ / 4d below).  The reusable **`Λ`-weight calculus over `𝒪 H`**, all PROVEN
+axiom-clean (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`):
+`weight_Λ_over_𝒪_mul_le` / `_add_le` / `_neg` / `_sum_le` / `_pow_le` / `_nsmul_le`,
+`weight_Λ_over_𝒪_W` (the in-tree `Λ(W)` bound), `partitionProd_weight_le` (multiset
+sub-additivity), `weight_Λ_nsmul_le`, `B_coeff_weight_le_hasse` (`B_coeff` → `hasseCoeffRepr𝒪`),
+`surviving_parts_lt`, `sum_map_two_mul_succ`, and the IH-fed product bound
+`partitionProd_βHensel_weight_le`.  These reduce (P1) to one precise per-term WALL.
+
+See `ingredientD-wave1-design.md` / `…-wave2.md` / `…-wave3.md` for the staged specs.
 
 The objects here are the **genuine** mathematical objects, never stubs:
 `mvHasseCoeff k p` has `coeff n = (∏ᵢ (nᵢ+kᵢ).choose kᵢ) · coeff (n+k) p`, i.e. the real
@@ -476,6 +485,211 @@ noncomputable def B_coeff (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
 noncomputable def W𝒪 : 𝒪 H :=
   Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (Polynomial.C (H.leadingCoeff))
 
+/-! ### 4c′. The `Λ`-weight calculus over `𝒪 H`
+
+The `Λ`-weight `weight_Λ_over_𝒪` is defined on the *canonical representative* of a regular
+element, but it is genuinely **sub-additive / sub-multiplicative**: lift each operand to its
+canonical representative, apply the polynomial-level calculus
+(`weight_Λ_mul_le`/`weight_Λ_add_le`/`weight_Λ_sum_le` from `RationalFunctions`), and descend
+again with the workhorse `weight_Λ_over_𝒪_le_of_mk_eq` (`Ideal.Quotient.mk` being a ring hom).
+
+These are the genuine over-`𝒪` analogues used by the `(A.1)` weight telescoping.  Each requires
+`Bivariate.totalDegree H ≤ D` (the same `D ≥ tot H` premise of `weight_Λ_over_𝒪_le_of_mk_eq`). -/
+
+variable {D : ℕ}
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- `Λ_𝒪(a · b) ≤ Λ_𝒪(a) + Λ_𝒪(b)`: sub-multiplicativity over `𝒪 H`.  Take the canonical
+representatives `ra, rb`; then `mk (ra · rb) = a · b`, and
+`weight_Λ (ra · rb) ≤ weight_Λ ra + weight_Λ rb = Λ_𝒪 a + Λ_𝒪 b`. -/
+lemma weight_Λ_over_𝒪_mul_le (hH : 0 < H.natDegree) (hDH : Bivariate.totalDegree H ≤ D)
+    (a b : 𝒪 H) :
+    weight_Λ_over_𝒪 hH (a * b) D
+      ≤ weight_Λ_over_𝒪 hH a D + weight_Λ_over_𝒪 hH b D := by
+  set ra := canonicalRepOf𝒪 hH a with hra
+  set rb := canonicalRepOf𝒪 hH b with hrb
+  have hmk : (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (ra * rb) : 𝒪 H) = a * b := by
+    rw [map_mul, hra, hrb, mk_canonicalRepOf𝒪, mk_canonicalRepOf𝒪]
+  refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH hmk) ?_
+  refine le_trans (weight_Λ_mul_le ra rb H D) ?_
+  -- `weight_Λ_over_𝒪 hH a D = weight_Λ ra H D` definitionally.
+  exact le_of_eq (by rw [weight_Λ_over_𝒪, weight_Λ_over_𝒪, ← hra, ← hrb])
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- `Λ_𝒪(a + b) ≤ max(Λ_𝒪 a, Λ_𝒪 b)`: sub-additivity over `𝒪 H`. -/
+lemma weight_Λ_over_𝒪_add_le (hH : 0 < H.natDegree) (hDH : Bivariate.totalDegree H ≤ D)
+    (a b : 𝒪 H) :
+    weight_Λ_over_𝒪 hH (a + b) D
+      ≤ max (weight_Λ_over_𝒪 hH a D) (weight_Λ_over_𝒪 hH b D) := by
+  set ra := canonicalRepOf𝒪 hH a with hra
+  set rb := canonicalRepOf𝒪 hH b with hrb
+  have hmk : (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (ra + rb) : 𝒪 H) = a + b := by
+    rw [map_add, hra, hrb, mk_canonicalRepOf𝒪, mk_canonicalRepOf𝒪]
+  refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH hmk) ?_
+  refine le_trans (weight_Λ_add_le ra rb H D) ?_
+  exact le_of_eq (by rw [weight_Λ_over_𝒪, weight_Λ_over_𝒪, ← hra, ← hrb])
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- `Λ_𝒪(-a) = Λ_𝒪(a)`: the `𝒪`-weight is negation-invariant (`mk (-ra) = -a`,
+`weight_Λ_neg`). -/
+lemma weight_Λ_over_𝒪_neg (hH : 0 < H.natDegree) (hDH : Bivariate.totalDegree H ≤ D) (a : 𝒪 H) :
+    weight_Λ_over_𝒪 hH (-a) D ≤ weight_Λ_over_𝒪 hH a D := by
+  set ra := canonicalRepOf𝒪 hH a with hra
+  have hmk : (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (-ra) : 𝒪 H) = -a := by
+    rw [map_neg, hra, mk_canonicalRepOf𝒪]
+  refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH hmk) ?_
+  rw [weight_Λ_neg]
+  exact le_of_eq (by rw [weight_Λ_over_𝒪, ← hra])
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- `Λ_𝒪(∑ᵢ f i) ≤ sup of Λ_𝒪(f i)`: the `𝒪`-weight of a finite sum is bounded by the sup of
+the summand weights.  Derived from `weight_Λ_over_𝒪_add_le` by induction. -/
+lemma weight_Λ_over_𝒪_sum_le {ι : Type*} (hH : 0 < H.natDegree)
+    (hDH : Bivariate.totalDegree H ≤ D) (s : Finset ι) (f : ι → 𝒪 H) :
+    weight_Λ_over_𝒪 hH (∑ i ∈ s, f i) D ≤ s.sup (fun i => weight_Λ_over_𝒪 hH (f i) D) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp [weight_Λ_over_𝒪_zero]
+  | insert a s ha ih =>
+      rw [Finset.sum_insert ha, Finset.sup_insert]
+      exact (weight_Λ_over_𝒪_add_le H hH hDH _ _).trans (max_le_max le_rfl ih)
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- `Λ_𝒪(a ^ k) ≤ k • Λ_𝒪(a)` (i.e. `≤ k · Λ_𝒪(a)` in `WithBot ℕ`): the power bound over
+`𝒪 H`, by induction on `k` from `weight_Λ_over_𝒪_mul_le`.  The `k = 0` case uses
+`Λ_𝒪(1) ≤ 0`. -/
+lemma weight_Λ_over_𝒪_pow_le (hH : 0 < H.natDegree) (hDH : Bivariate.totalDegree H ≤ D)
+    (a : 𝒪 H) (k : ℕ) :
+    weight_Λ_over_𝒪 hH (a ^ k) D ≤ k • weight_Λ_over_𝒪 hH a D := by
+  induction k with
+  | zero =>
+      simp only [pow_zero, zero_smul]
+      -- `Λ_𝒪(1) ≤ 0`: `1 = mk 1`, `weight_Λ 1 ≤ 0` (degree-0 constant).
+      have hmk : (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (1 : F[X][Y]) : 𝒪 H) = 1 := by
+        rw [map_one]
+      refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH hmk) ?_
+      rw [show (1 : F[X][Y]) = Polynomial.C (1 : F[X]) by rw [map_one]]
+      refine le_trans (weight_Λ_C_le H D 1) ?_
+      simp
+  | succ n ih =>
+      rw [pow_succ, succ_nsmul]
+      refine le_trans (weight_Λ_over_𝒪_mul_le H hH hDH _ _) ?_
+      exact add_le_add ih le_rfl
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- The genuine in-tree value of `Λ(W)`: `Λ_𝒪(W𝒪) ≤ (H.leadingCoeff).natDegree`.  `W𝒪` is
+`mk (C W)` with `W = H.leadingCoeff ∈ F[X]`, a degree-0 (in `Y`) constant whose `Λ`-weight is
+the `X`-degree `W.natDegree` of the leading `Y`-coefficient (`weight_Λ_C_le`).  This is the
+in-tree analogue of BCIKS20's `Λ(W)`; the per-`Y`-power weight `m` contributes `0` (the `Y`-power
+is `0`).  Stated as the load-bearing `Λ(W)` bound for the `(A.1)` telescoping. -/
+lemma weight_Λ_over_𝒪_W (hH : 0 < H.natDegree) (hDH : Bivariate.totalDegree H ≤ D) :
+    weight_Λ_over_𝒪 hH (W𝒪 H) D ≤ WithBot.some (H.leadingCoeff).natDegree := by
+  rw [W𝒪]
+  refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH (r := Polynomial.C (H.leadingCoeff)) rfl) ?_
+  exact weight_Λ_C_le H D _
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- **`partitionProd` weight sub-additivity over `𝒪 H`.**  For `lam : Nat.Partition m` and a
+family `b : ℕ → 𝒪 H`, `Λ_𝒪(∏_l (b l)^{λ_l}) ≤ ∑_{l ∈ lam.parts} Λ_𝒪(b l)` (the sum over the
+*multiset* of parts, i.e. each distinct part `l` counted `λ_l` times).  By induction on the
+multiset of parts using `weight_Λ_over_𝒪_mul_le`; the empty product has weight `≤ 0`.
+
+This is the genuine `Λ(∏_l β_l^{λ_l}) ≤ ∑_l λ_l·Λ(β_l)` of the `(A.1)` telescoping: the
+multiset-`sum` form `(lam.parts.map (Λ_𝒪 ∘ b)).sum` is exactly `∑_l λ_l·Λ_𝒪(b l)`. -/
+lemma partitionProd_weight_le (hH : 0 < H.natDegree) (hDH : Bivariate.totalDegree H ≤ D)
+    {m : ℕ} (lam : Nat.Partition m) (b : ℕ → 𝒪 H) :
+    weight_Λ_over_𝒪 hH (partitionProd lam b) D
+      ≤ (lam.parts.map (fun l => weight_Λ_over_𝒪 hH (b l) D)).sum := by
+  rw [partitionProd]
+  -- Generalize over the multiset of parts and induct.
+  generalize hms : lam.parts = ms
+  clear hms
+  induction ms using Multiset.induction_on with
+  | empty =>
+      simp only [Multiset.map_zero, Multiset.prod_zero, Multiset.sum_zero]
+      -- `Λ_𝒪(1) ≤ 0`.
+      have hmk : (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (1 : F[X][Y]) : 𝒪 H) = 1 := by
+        rw [map_one]
+      refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH hmk) ?_
+      rw [show (1 : F[X][Y]) = Polynomial.C (1 : F[X]) by rw [map_one]]
+      refine le_trans (weight_Λ_C_le H D 1) ?_
+      simp
+  | cons l ms ih =>
+      rw [Multiset.map_cons, Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons]
+      exact (weight_Λ_over_𝒪_mul_le H hH hDH _ _).trans (add_le_add le_rfl ih)
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- Polynomial-level `nsmul` weight bound: scaling by a natural number cannot increase the
+`Λ`-weight (`(n • r).support ⊆ r.support` and `(n • c).natDegree ≤ c.natDegree`).  In positive
+characteristic `n • r` may collapse to a *smaller* weight, never a larger one. -/
+lemma weight_Λ_nsmul_le (n : ℕ) (r : F[X][Y]) :
+    weight_Λ (n • r) H D ≤ weight_Λ r H D := by
+  classical
+  refine Finset.sup_le (fun k hk => ?_)
+  have hcoeff : (n • r).coeff k = n • r.coeff k := by
+    rw [Polynomial.coeff_smul]
+  -- `k ∈ (n • r).support` ⟹ `(n • r).coeff k ≠ 0` ⟹ `r.coeff k ≠ 0` (smul of 0 is 0).
+  have hne : (n • r).coeff k ≠ 0 := Polynomial.mem_support_iff.mp hk
+  have hrne : r.coeff k ≠ 0 := by
+    intro h0; apply hne; rw [hcoeff, h0, smul_zero]
+  have hk_mem : k ∈ r.support := Polynomial.mem_support_iff.mpr hrne
+  have hdeg : ((n • r).coeff k).natDegree ≤ (r.coeff k).natDegree := by
+    rw [hcoeff]; exact Polynomial.natDegree_smul_le _ _
+  calc (WithBot.some (k * (D + 1 - Bivariate.natDegreeY H) + ((n • r).coeff k).natDegree) :
+          WithBot ℕ)
+      ≤ WithBot.some (k * (D + 1 - Bivariate.natDegreeY H) + (r.coeff k).natDegree) := by
+          exact_mod_cast Nat.add_le_add_left hdeg _
+    _ ≤ weight_Λ r H D := le_weight_Λ_of_mem_support hk_mem
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- `Λ_𝒪(n • a) ≤ Λ_𝒪(a)`: scaling a regular element by `n : ℕ` cannot raise its `𝒪`-weight.
+`n • a = mk (n • ra)` (`mk` is `ℕ`-linear), and `weight_Λ (n • ra) ≤ weight_Λ ra`. -/
+lemma weight_Λ_over_𝒪_nsmul_le (hH : 0 < H.natDegree) (hDH : Bivariate.totalDegree H ≤ D)
+    (n : ℕ) (a : 𝒪 H) :
+    weight_Λ_over_𝒪 hH (n • a) D ≤ weight_Λ_over_𝒪 hH a D := by
+  set ra := canonicalRepOf𝒪 hH a with hra
+  have hmk : (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (n • ra) : 𝒪 H) = n • a := by
+    rw [map_nsmul, hra, mk_canonicalRepOf𝒪]
+  refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH hmk) ?_
+  refine le_trans (weight_Λ_nsmul_le H n ra) ?_
+  exact le_of_eq (by rw [weight_Λ_over_𝒪, ← hra])
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- **`B_coeff` weight reduces to the iterated-Hasse representative.**
+`Λ_𝒪(B_{i1,λ}) ≤ Λ_𝒪(hasseCoeffRepr𝒪 x₀ R i1 (Σλ))`: the integer `prefactor` scalar cannot
+raise the weight (`weight_Λ_over_𝒪_nsmul_le`).  The remaining content — bounding
+`Λ_𝒪(hasseCoeffRepr𝒪 …)` by `(D − Σλ) + (d − δ_{i1,0} − Σλ)·Λ(W)` (the iterated-Hasse degree
+drop + `W`-clearing) — is the deferred `B_coeff_weight` wall. -/
+lemma B_coeff_weight_le_hasse (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
+    (lam : Nat.Partition m) (hH : 0 < H.natDegree) (hDH : Bivariate.totalDegree H ≤ D) :
+    weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D
+      ≤ weight_Λ_over_𝒪 hH (hasseCoeffRepr𝒪 H x₀ R i1 (sigmaLambda lam)) D := by
+  rw [B_coeff]
+  exact weight_Λ_over_𝒪_nsmul_le H hH hDH _ _
+
+/-- Every part of a *surviving* partition is `< k+1`: a `lam : Nat.Partition (k+1−i1)` with
+`(k+1) ∉ lam.parts` has all parts `l` positive and `≤ k+1−i1 ≤ k+1`, and `l ≠ k+1`, hence
+`l < k+1`.  This is the genuine well-foundedness witness for the `(A.1)` recursion: the guard
+`if l < k+1` always takes the `then` branch on a surviving partition's parts. -/
+theorem surviving_parts_lt {k i1 : ℕ} (lam : Nat.Partition (k + 1 - i1))
+    (hlam : (k + 1) ∉ lam.parts) {l : ℕ} (hl : l ∈ lam.parts) : l < k + 1 := by
+  have hle : l ≤ lam.parts.sum := Multiset.le_sum_of_mem hl
+  rw [lam.parts_sum] at hle
+  have hne : l ≠ k + 1 := fun h => hlam (h ▸ hl)
+  omega
+
+/-- The genuine `∑_l λ_l·(2l+1)` telescoping coefficient as a pure-`ℕ` multiset identity:
+`∑_{l ∈ parts} (2l+1)·c = (2·(∑ parts) + parts.card)·c`.  For `lam : Nat.Partition (k+1−i1)`
+this is `(2·(k+1−i1) + Σλ)·c` (using `parts.sum = k+1−i1`, `parts.card = Σλ`), the exact
+contribution of the `∏_l β_l^{λ_l}` factor to the BCIKS20 weight telescoping. -/
+theorem sum_map_two_mul_succ (ms : Multiset ℕ) (c : ℕ) :
+    (ms.map (fun l => (2 * l + 1) * c)).sum = (2 * ms.sum + Multiset.card ms) * c := by
+  induction ms using Multiset.induction_on with
+  | empty => simp
+  | cons a s ih =>
+      rw [Multiset.map_cons, Multiset.sum_cons, ih, Multiset.sum_cons, Multiset.card_cons]
+      ring
+
 /-- **The keystone.** BCIKS20 Claim A.2's recursive Hensel-lift numerator `β_t ∈ 𝒪 H`,
 the genuine recursion of `(A.1)`.  Defined by strong recursion on `t`:
 
@@ -524,6 +738,23 @@ theorem βHensel_zero (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x�
   unfold βHensel
   rw [Nat.strongRecOn_eq]
 
+/-- **Recursive-step unfolding (PROVEN).**  `βHensel … (k+1)` equals the literal `(A.1)` sum,
+with the inner recursive calls `β_l` now written as `βHensel … l` (the well-founded `ih l`
+unfolds to `βHensel … l` since `Nat.strongRecOn` is its own fixpoint).  This is the genuine
+`(A.1)` recurrence read at a successor, the workhorse for the (P1) inductive step. -/
+theorem βHensel_succ (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (k : ℕ) :
+    βHensel H x₀ R hHyp (k + 1) =
+      - ∑ i1 ∈ Finset.range (k + 2),
+          ∑ lam ∈ (Finset.univ : Finset (Nat.Partition (k + 1 - i1))).filter
+                    (fun lam => (k + 1) ∉ lam.parts),
+            (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+              * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+              * B_coeff H x₀ R i1 lam
+              * partitionProd lam
+                  (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0) := by
+  conv_lhs => rw [βHensel, Nat.strongRecOn_eq]
+  rfl
+
 /-- The base case embeds to the genuine function-field variable `T`: a value witness that
 `βHensel … 0` is the genuine `T mod H̃` and not a fake. -/
 theorem embeddingOf𝒪Into𝕃_βHensel_zero (x₀ : F) (R : F[X][X][Y])
@@ -531,7 +762,70 @@ theorem embeddingOf𝒪Into𝕃_βHensel_zero (x₀ : F) (R : F[X][X][Y])
     embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp 0) = functionFieldT (H := H) := by
   rw [βHensel_zero, embeddingOf𝒪Into𝕃_mk, liftBivariate_X]
 
-/-! ### 4d. (P1) the weight bound — `t = 0` case PROVEN, inductive step staged -/
+/-- **The `∏_l β_l^{λ_l}` factor bound — PROVEN (the IH-fed product half of the telescoping).**
+For a *surviving* `lam : Nat.Partition (k+1−i1)` (`(k+1) ∉ lam.parts`) and the genuine guarded
+recursive family from `βHensel_succ`, given the induction hypothesis
+`hIH : ∀ l < k+1, Λ_𝒪(β_l) ≤ (2l+1)·d_R·D`,
+the partition product weight is `≤ (2·(k+1−i1) + Σλ)·d_R·D`.
+
+This fully discharges the product half of the BCIKS20 telescoping: the guard always fires
+(`surviving_parts_lt`), `partitionProd_weight_le` gives the multiset-sum bound, `hIH` bounds each
+factor, and `sum_map_two_mul_succ` evaluates `∑_{l∈parts}(2l+1)·d_R·D = (2·parts.sum + parts.card)·d_R·D`
+with `parts.sum = k+1−i1`, `parts.card = Σλ`.  No `sorry`. -/
+theorem partitionProd_βHensel_weight_le (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (k i1 : ℕ)
+    (hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+        ≤ WithBot.some ((2 * l + 1) * Bivariate.natDegreeY R * D))
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts) :
+    weight_Λ_over_𝒪 hH
+        (partitionProd lam (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
+      ≤ WithBot.some
+          ((2 * (k + 1 - i1) + sigmaLambda lam) * Bivariate.natDegreeY R * D) := by
+  classical
+  -- The guard always fires on a surviving partition's parts: rewrite the family.
+  have hcongr : partitionProd lam
+      (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)
+      = partitionProd lam (fun l => βHensel H x₀ R hHyp l) := by
+    rw [partitionProd, partitionProd]
+    refine congrArg Multiset.prod (Multiset.map_congr rfl (fun l hl => ?_))
+    rw [dif_pos (surviving_parts_lt lam hlam hl)]
+  rw [hcongr]
+  -- Multiset-sum bound via `partitionProd_weight_le`.
+  refine le_trans (partitionProd_weight_le H hH hDH lam (fun l => βHensel H x₀ R hHyp l)) ?_
+  -- Bound the `WithBot ℕ` multiset sum by the `some` of the ℕ multiset sum, using `hIH`.
+  set c := Bivariate.natDegreeY R * D with hc
+  have hkey : (lam.parts.map (fun l => weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D)).sum
+      ≤ WithBot.some ((lam.parts.map (fun l => (2 * l + 1) * c)).sum) := by
+    -- Inductive monotone-sum + coe-push over the multiset of parts.
+    have hmem : ∀ l ∈ lam.parts,
+        weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+          ≤ WithBot.some ((2 * l + 1) * c) := by
+      intro l hl
+      have := hIH l (surviving_parts_lt lam hlam hl)
+      rwa [show (2 * l + 1) * Bivariate.natDegreeY R * D = (2 * l + 1) * c by rw [hc, mul_assoc]]
+        at this
+    -- Generalize the multiset and induct.
+    revert hmem
+    generalize lam.parts = ms
+    intro hmem
+    induction ms using Multiset.induction_on with
+    | empty => simp
+    | cons a s ih =>
+        rw [Multiset.map_cons, Multiset.sum_cons, Multiset.map_cons, Multiset.sum_cons,
+          WithBot.coe_add]
+        refine add_le_add (hmem a (Multiset.mem_cons_self a s)) ?_
+        exact ih (fun l hl => hmem l (Multiset.mem_cons_of_mem hl))
+  refine le_trans hkey ?_
+  -- Evaluate the ℕ multiset sum: `(2·parts.sum + parts.card)·c`, then identify parts.sum/card.
+  rw [sum_map_two_mul_succ, lam.parts_sum, sigmaLambda]
+  rw [hc]
+  rw [show Multiset.card lam.parts = lam.parts.card from rfl]
+  ring_nf
+  rfl
+
+/-! ### 4d. (P1) the weight bound — `t = 0` PROVEN, inductive step assembled to one per-term WALL -/
 
 /-- **(P1) `t = 0` case (PROVEN).**  `weight_Λ_over_𝒪 hH (βHensel … 0) D
 ≤ (2·0+1)·natDegreeY R·D = natDegreeY R · D`.
@@ -561,30 +855,98 @@ theorem βHensel_weight_bound_zero (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.H
             _ ≤ (2 * 0 + 1) * Bivariate.natDegreeY R * D := Nat.mul_le_mul_right D h1
   exact_mod_cast hle
 
-/-- **(P1) full weight bound — STAGED with a documented `sorry` for the inductive step.**
-`weight_Λ_over_𝒪 hH (βHensel … t) D ≤ (2t+1)·natDegreeY R·D`.
+/-- **(P1) per-term weight bound — the SOLE residual WALL of the inductive step.**
 
-The `t = 0` case is `βHensel_weight_bound_zero` (PROVEN above).  The inductive step is the
-documented WALL: induction on the `(A.1)` sum, bounding each summand via
-  (1) the **`B_coeff` weight lemma** `weight (B_coeff …) D ≤ (D−Σλ)+(d−δ−Σλ)·Λ(W)`
-      (the deferred half of §4b),
-  (2) **`partitionProd` weight subadditivity** `weight (∏_l β_l^{λ_l}) ≤ ∑_l λ_l·weight(β_l)`
-      fed by the IHs `weight (β_l) ≤ (2l+1)·natDegreeY R·D` for `l < t+1`,
-  (3) `weight_ξ_bound` for the `ξ`-power and `Λ(W) = natDegreeY H` for the `W`-power,
-  (4) `weight_Λ` sum subadditivity over the double sum,
-summed per BCIKS20 lines 4264–4268.  None of (1)–(4) is faked; this is the next-wave target. -/
+For an `(A.1)` summand indexed by `i1 ∈ range (k+2)` and a *surviving* partition
+`lam ∈ P(k+1−i1)` with `(k+1) ∉ lam.parts`, the single term
+`W^{i1+δ−1} · ξ^{2i1+Σλ−2} · B_{i1,λ} · ∏_l β_l^{λ_l}` has `Λ`-weight `≤ (2(k+1)+1)·d_R·D`,
+**given the induction hypothesis** `hIH : ∀ l < k+1, Λ_𝒪(β_l) ≤ (2l+1)·d_R·D`.
+
+This is the BCIKS20 telescoping at the level of one term (paper lines 4264–4268).  Once
+established, the full `(A.1)` sum bound follows mechanically by the *already-proven* over-`𝒪`
+weight calculus (`_neg`, `_sum_le`) — see `βHensel_weight_bound`.
+
+WALL (documented, NOT faked).  Closing this term requires three genuine ingredients this wave
+does not yet have:
+  (a) the **`B_coeff` weight** bound `Λ_𝒪(hasseCoeffRepr𝒪 … i1 Σλ) ≤ (D−Σλ)+(d−δ−Σλ)·Λ(W)`
+      (the iterated-Hasse degree-drop + `W`-clearing, the deferred half of §4b); reduced to the
+      single-`mk` `hasseCoeffRepr𝒪` representative by `B_coeff_weight_le_hasse` (PROVEN);
+  (b) the **`ξ`-power** bound `Λ_𝒪(ξ^e) ≤ e·Λ(ξ)` (PROVEN here as `weight_Λ_over_𝒪_pow_le`)
+      fed by `weight_ξ_bound` — but `weight_ξ_bound` requires `2 ≤ d_R`, whereas (P1) only
+      assumes `1 ≤ d_R`; at `d_R = 1` the `ξ` weight is not bounded by the present in-tree API
+      (a genuine hypothesis-strength gap, NOT to be papered over by strengthening (P1));
+  (c) the genuine BCIKS20 **telescoping**.  IMPORTANT — this does NOT close by naive per-factor
+      splitting: the product factor alone is bounded (`partitionProd_βHensel_weight_le`, PROVEN,
+      IH-fed) by `(2(k+1−i1)+Σλ)·d_R·D`, and `Σλ` can EXCEED `2·i1+1` (e.g. an all-ones `λ` has
+      `Σλ = k+1−i1`), so `Λ(W^a)+Λ(ξ^b)+Λ(B)+Λ(P) ≰ (2(k+1)+1)·d_R·D` in general.  The paper's
+      tighter argument couples the `ξ^{2i1+Σλ−2}`/`B_{i1,λ}` *negative* exponents (`δ`, the `−2`,
+      the `D−Σλ` in `B`) to the partition so the `Σλ` growth cancels — exactly why BCIKS20 says
+      "an easier way is to consider the weight of `α_t`" (line 4276).  This coupled bound is the
+      irreducible content of this residual.
+PROVEN above and reusable for the next wave: the IH-fed product bound
+`partitionProd_βHensel_weight_le`, the over-`𝒪` calculus `_neg`/`_sum_le`/`_mul`/`_pow`/`_W`/
+`_nsmul`, `B_coeff_weight_le_hasse`, `surviving_parts_lt`, `sum_map_two_mul_succ`. -/
+theorem βHensel_succ_term_weight_le (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (hdR : 1 ≤ Bivariate.natDegreeY R) (k : ℕ)
+    (hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+        ≤ WithBot.some ((2 * l + 1) * Bivariate.natDegreeY R * D))
+    (i1 : ℕ) (_hi1 : i1 ∈ Finset.range (k + 2))
+    (lam : Nat.Partition (k + 1 - i1)) (_hlam : (k + 1) ∉ lam.parts) :
+    weight_Λ_over_𝒪 hH
+        ((W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+          * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+          * B_coeff H x₀ R i1 lam
+          * partitionProd lam
+              (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
+      ≤ WithBot.some ((2 * (k + 1) + 1) * Bivariate.natDegreeY R * D) := by
+  -- WALL (documented, NOT faked): the genuine BCIKS20 per-term telescoping (paper lines
+  -- 4264–4268).  The product factor `∏_l β_l^{λ_l}` is bounded (IH-fed) by the PROVEN
+  -- `partitionProd_βHensel_weight_le`; the over-`𝒪` multiplicative calculus
+  -- (`weight_Λ_over_𝒪_mul_le`/`_pow_le`), the `W`-factor bound (`weight_Λ_over_𝒪_W`) and the
+  -- `B_coeff`→`hasseCoeffRepr𝒪` reduction (`B_coeff_weight_le_hasse`) are all PROVEN above.
+  --
+  -- The residual is NOT closeable by naive per-factor splitting: the product bound alone is
+  -- `(2(k+1−i1)+Σλ)·d_R·D`, and `Σλ` can exceed `2·i1+1` (e.g. `λ` all-ones), so the term must
+  -- be bounded by the genuine telescoping that couples the `ξ^{2i1+Σλ−2}` / `B_{i1,λ}` factors
+  -- to the partition (the paper's tighter argument, NOT the sum of independent factor weights).
+  -- That genuine bound additionally needs (a) the `B_coeff`-Hasse weight
+  -- `Λ_𝒪(hasseCoeffRepr𝒪 … i1 Σλ) ≤ (D−Σλ)+(d−δ−Σλ)·Λ(W)` and (b) the `ξ` weight via
+  -- `weight_ξ_bound`, which requires `2 ≤ d_R` (this lemma has only `1 ≤ d_R` — a real
+  -- hypothesis-strength gap at `d_R = 1`).  Deferred; see disposition `ingredientD-wave3.md`.
+  sorry
+
+/-- **(P1) full weight bound.**  `weight_Λ_over_𝒪 hH (βHensel … t) D ≤ (2t+1)·natDegreeY R·D`.
+
+The `t = 0` case is `βHensel_weight_bound_zero` (PROVEN).  The inductive step is now FULLY
+ASSEMBLED from the proven over-`𝒪` weight calculus: strong induction supplies the IH for all
+`l < t`; `βHensel_succ` exposes the literal `(A.1)` sum; `weight_Λ_over_𝒪_neg` strips the sign;
+two applications of `weight_Λ_over_𝒪_sum_le` + `Finset.sup_le` reduce the double sum to the
+per-term bound `βHensel_succ_term_weight_le`.  The ONLY residual is that per-term WALL. -/
 theorem βHensel_weight_bound (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hH : 0 < H.natDegree) {D : ℕ} (_hDH : Bivariate.totalDegree H ≤ D)
     (_hdR : 1 ≤ Bivariate.natDegreeY R) (t : ℕ) :
     weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
-  match t with
-  | 0 => exact βHensel_weight_bound_zero H x₀ R hHyp hH _hDH _hdR
-  | (_k + 1) =>
-      -- WALL: the inductive step of (P1).  See the docstring: needs the `B_coeff` weight
-      -- lemma + `partitionProd` weight subadditivity + `weight_ξ_bound` + `weight_Λ` sum
-      -- subadditivity, summed per BCIKS20 lines 4264–4268.  Deferred to the next wave.
-      sorry
+  classical
+  induction t using Nat.strong_induction_on with
+  | _ t hIH =>
+    match t with
+    | 0 => exact βHensel_weight_bound_zero H x₀ R hHyp hH _hDH _hdR
+    | (k + 1) =>
+        -- Expose the `(A.1)` sum and strip the sign.
+        rw [βHensel_succ]
+        refine le_trans (weight_Λ_over_𝒪_neg H hH _hDH _) ?_
+        -- Outer sum over `i1 ∈ range (k+2)`.
+        refine le_trans (weight_Λ_over_𝒪_sum_le H hH _hDH _ _) ?_
+        refine Finset.sup_le (fun i1 hi1 => ?_)
+        -- Inner sum over surviving `lam`.
+        refine le_trans (weight_Λ_over_𝒪_sum_le H hH _hDH _ _) ?_
+        refine Finset.sup_le (fun lam hlam => ?_)
+        -- Per-term bound, with the IH for `βHensel … l` (`l < k+1`) supplied by strong induction.
+        exact βHensel_succ_term_weight_le H x₀ R hHyp hH _hDH _hdR k
+          (fun l hl => hIH l (by omega)) i1 hi1 lam (Finset.mem_filter.mp hlam).2
 
 /-! ### 4e. (P2) the lift identity — the irreducible BCIKS20 A.4 frontier -/
 
@@ -617,7 +979,10 @@ end Wave2
   `multinomial(j0, λ)`.  (The `B_coeff` definition uses `prefactor` directly; the matching
   lemma only affects the exact embedding identity, not the genuineness of the object.)
 
-* `B_coeff` weight + embedding lemmas (the deferred half of §4b) — feed (P1)'s inductive step.
+* `B_coeff` weight + embedding lemmas (the deferred half of §4b) — feed (P1)'s per-term WALL
+  `βHensel_succ_term_weight_le`.  The `B_coeff`→`hasseCoeffRepr𝒪` reduction is PROVEN
+  (`B_coeff_weight_le_hasse`); the remaining `Λ_𝒪(hasseCoeffRepr𝒪 … i1 Σλ) ≤ (D−Σλ)+(d−δ−Σλ)·Λ(W)`
+  (iterated-Hasse degree-drop + `W`-clearing) and the `weight_ξ_bound` `2 ≤ d_R` gap are the WALL.
 
 * iterated-Hasse Leibniz/product rule — needed only for (P2). -/
 
