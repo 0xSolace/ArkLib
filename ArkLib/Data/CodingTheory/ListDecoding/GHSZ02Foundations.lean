@@ -19,6 +19,8 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib
 
 set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
 set_option linter.unusedVariables false
 set_option linter.unusedSimpArgs false
 set_option linter.style.longLine false
@@ -79,7 +81,6 @@ noncomputable def ballVolF (x : ι → F) (r : ℕ) : ℕ :=
   (Finset.univ.filter (fun y : ι → F => hammingDist x y ≤ r)).card
 
 /-- Hamming distance is translation-invariant on the right. -/
-omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
 theorem hammingDist_add_right (x y t : ι → F) :
     hammingDist (x + t) (y + t) = hammingDist x y := by
   classical
@@ -154,7 +155,6 @@ theorem exists_word_listAtF_ge (C : Finset (ι → F)) (r : ℕ) :
   rw [hsum] at hle; rwa [Finset.card_univ] at hle
 
 /-- Relative↔absolute radius bridge (same as Elias proof). -/
-omit [DecidableEq ι] [Fintype F] in
 theorem closeCodewordsRel_iff
     (C : Submodule F (ι → F)) (w : ι → F) (δ : ℝ) (hδ_nonneg : 0 ≤ δ) (c : ι → F) :
     (c ∈ closeCodewordsRel (↑C : Set (ι → F)) w δ)
@@ -173,7 +173,6 @@ theorem closeCodewordsRel_iff
 For `C = ReedSolomon.code domain k`, `q=|F|`, `n=|ι|`, `k≤n`, `0<δ<1`: there is a word `w` with
 `q^k · C(n,⌊δn⌋) · (q-1)^⌊δn⌋  ≤  qⁿ · |Λ(C,δ,w)|`. -/
 theorem ghsz02_rs_averaging_core
-    [Nonempty ι]
     (domain : ι ↪ F) (k : ℕ) (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hk : k ≤ Fintype.card ι) :
     ∃ w : ι → F,
