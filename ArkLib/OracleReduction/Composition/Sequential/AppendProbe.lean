@@ -461,6 +461,37 @@ theorem append_runToRound_left (j : Fin (m + 1)) :
         = (i.castLE (show m ≤ m + n by omega)).succ := by ext; simp
     rw [hidx, Prover.runToRound_succ]
     rw [Prover.runToRound_succ]
-    sorry
+    -- Goal: `processRound (i.castLE) appended (runToRound (i.castLE).castSucc appended)
+    --        ≍ liftM (processRound i P₁ (runToRound i.castSucc P₁))`.
+    -- `ih` carries the run up to the seam-predecessor round: `runToRound (i.castSucc.castLE) appended
+    --   ≍ liftM (runToRound i.castSucc P₁)`.  Normalize its index to `(i.castLE).castSucc`.
+    have hcur : HEq ((P₁.append P₂).runToRound (i.castLE (by omega)).castSucc stmt wit)
+        (liftM (P₁.runToRound i.castSucc stmt wit) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) := by
+      have hcastSucc : (i.castSucc.castLE (show m + 1 ≤ m + n + 1 by omega) : Fin (m + n + 1))
+          = (i.castLE (show m ≤ m + n by omega)).castSucc := by ext; simp
+      rw [← hcastSucc]; exact ih
+    -- Case-split on the direction of the left round `i`.
+    cases hd : pSpec₁.dir i with
+    | V_to_P => ?_
+    | P_to_V => ?_
+    · -- `V_to_P` (challenge round).  WIP: mirror of the message branch, but the `getChallenge`/
+      -- `receiveChallenge` shapes lift across DIFFERENT challenge oracles ([pSpec₁.Challenge]ₒ vs
+      -- [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ, related by the left challenge SubSpec
+      -- `range_challenge_append_inl`).  The remaining pieces are:
+      --   (1) `append_getChallenge_left`: appended `getChallenge ⟨i.castLE,_⟩`
+      --        ≍ `liftM (pSpec₁.getChallenge ⟨i,_⟩)` (HEq, response types differ by
+      --        `range_challenge_append_inl`), and
+      --   (2) `append_processRound_left_challenge`: the V_to_P analogue of
+      --        `append_processRound_left_message`, assembling (1) + `append_receiveChallenge_left`
+      --        + `concat_heq` under the appended challenge `liftM`/`liftComp_liftComp` bridge.
+      -- Goal here: `processRound (i.castLE) appended curA ≍ liftM (processRound i P₁ cur₁)` with
+      -- `curA = runToRound (i.castLE).castSucc appended`, `cur₁ = runToRound i.castSucc P₁`,
+      -- `hcur : curA ≍ liftM cur₁`, and `hd : pSpec₁.dir i = .V_to_P`.
+      sorry
+    · -- `P_to_V` (message round): close directly via the proven message-branch lemma.
+      exact append_processRound_left_message i hd
+        ((P₁.append P₂).runToRound (i.castLE (by omega)).castSucc stmt wit)
+        (P₁.runToRound i.castSucc stmt wit) hcur
 
 end Prover
