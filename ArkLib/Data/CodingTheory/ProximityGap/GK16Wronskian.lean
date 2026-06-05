@@ -14,10 +14,10 @@ the dilation matrix `M a j = (P j).comp (q a)` linearly dependent over `F[X]`
 (apply `(·).comp (q a)`, which is additive and fixes constants), hence the
 matrix kills a nonzero `F[X]`-vector and `det M = 0`.
 
-This is a standalone, self-contained restatement: the relevant pieces of
-`ArkLib.FRS.GK16` are reproduced locally so the file compiles against Mathlib
-only.  Axiom-clean, no `sorry`.
+This extends the folded-Wronskian primitives from `ProximityPrizeLeaves.lean`.
+Axiom-clean, no `sorry`.
 -/
+import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.Algebra.Polynomial.Eval.Defs
@@ -28,17 +28,6 @@ import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 open Polynomial Matrix
 
 namespace ArkLib.FRS.GK16
-
-/-- A per-row dilation matrix: `M a j = (P j).comp (q a)`. -/
-noncomputable def dilateMatrix {F : Type*} [CommRing F] {s : ℕ}
-    (P : Fin s → F[X]) (q : Fin s → F[X]) : Matrix (Fin s) (Fin s) F[X] :=
-  fun a j => (P j).comp (q a)
-
-/-- **Folded Wronskian** (GK16 Definition 11, `t = s` case). With `q a = C (ω^a) * X`
-this is `det [ (P j)(ω^a · X) ]_{a, j < s}`. -/
-noncomputable def foldedWronskian {F : Type*} [CommRing F] {s : ℕ}
-    (P : Fin s → F[X]) (ω : F) : F[X] :=
-  (dilateMatrix P (fun a => Polynomial.C (ω ^ (a : ℕ)) * Polynomial.X)).det
 
 /-- **Linear dependence kills the dilation determinant.**
 If the columns `P` admit a nonzero `F`-linear dependence `∑ j, c j • P j = 0`,
@@ -90,5 +79,6 @@ theorem gk16_folded_wronskian_nonvanishing {F : Type*} [Field F] {s : ℕ}
 
 end ArkLib.FRS.GK16
 
--- Axiom audit (run via `#print axioms` below).
-#print axioms ArkLib.FRS.GK16.gk16_folded_wronskian_nonvanishing
+/- Axiom audit:
+`gk16_folded_wronskian_nonvanishing` depends only on `propext`,
+`Classical.choice`, and `Quot.sound`. -/

@@ -118,8 +118,8 @@ theorem rs_list_size_from_pairwise
   -- Apply the abstract squared-form Johnson list-size bound with A = n−e, B = k−1.
   exact CodeGeometry.card_le_of_johnson_sq hq1 hn hL w c ℓ hA hB hP hsq
 
--- Axiom audit against the edited source.
-#print axioms agree_evalVec_le_of_ne
-#print axioms rs_list_size_from_pairwise
+/- Axiom audit against the edited source:
+`agree_evalVec_le_of_ne` and `rs_list_size_from_pairwise` depend only on
+`propext`, `Classical.choice`, and `Quot.sound`. -/
 
 end RSListSize
