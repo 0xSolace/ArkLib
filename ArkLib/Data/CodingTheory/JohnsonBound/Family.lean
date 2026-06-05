@@ -383,6 +383,29 @@ theorem exists_closeList_gt_and_averageDistOn_le_plotkin_of_natCast_lt_Lambda
   exact averageDistOn_le_plotkin (ListDecodable.closeCodewordsRelFinset C f δ)
     (by omega) hq
 
+/-- A violated finite `Lambda` bound produces one concrete close-list carrying
+both sides of the average-distance squeeze: its average distance is at least
+`Code.minDist C`, and at most the q-ary Plotkin expression. -/
+theorem exists_closeList_gt_and_minDist_le_averageDistOn_and_averageDistOn_le_plotkin
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ}
+    (hℓ : 1 ≤ ℓ) (hq : 0 < Fintype.card α)
+    (hΛ : (ℓ : ℕ∞) < ListDecodable.Lambda C δ) :
+    ∃ f : ι → α,
+      ℓ < (ListDecodable.closeCodewordsRelFinset C f δ).card ∧
+        ((Code.minDist C : ℚ) : ℝ) ≤
+          ((averageDistOn (ListDecodable.closeCodewordsRelFinset C f δ) : ℚ) : ℝ) ∧
+        ((averageDistOn (ListDecodable.closeCodewordsRelFinset C f δ) : ℚ) : ℝ) ≤
+          ((ListDecodable.closeCodewordsRelFinset C f δ).card : ℝ) /
+              (((ListDecodable.closeCodewordsRelFinset C f δ).card : ℝ) - 1) *
+            (Fintype.card ι : ℝ) *
+              (1 - 1 / (Fintype.card α : ℝ)) := by
+  rcases exists_closeList_gt_and_averageDistOn_le_plotkin_of_natCast_lt_Lambda
+      C hℓ hq hΛ with ⟨f, hf_card, hf_plotkin⟩
+  refine ⟨f, hf_card, ?_, hf_plotkin⟩
+  exact_mod_cast minDist_le_averageDistOn_closeCodewordsRelFinset C f δ (by omega)
+
 end JohnsonBound
 
 namespace CodingTheory
