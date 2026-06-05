@@ -1070,6 +1070,22 @@ theorem degreeX_hasseCoeffRepr_le (x₀ : F) (R : F[X][X][Y]) (i1 m D : ℕ)
   unfold Bivariate.degreeX
   exact Finset.sup_le (fun n _ => hcoeff n)
 
+/-- **Graded `B_coeff` weight bound.**  This is the paper-literal specialization of
+`B_coeff_weight_le`: under the graded `Z`-degree hypothesis on every `Y`-coefficient of `R`,
+the residual `degreeX` term is bounded by `D - Σλ`. -/
+lemma B_coeff_weight_le_graded (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
+    (lam : Nat.Partition m) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hR : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j) :
+    weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D
+      ≤ WithBot.some
+          ((Bivariate.natDegreeY R - sigmaLambda lam) * (D + 1 - Bivariate.natDegreeY H)
+            + (D - sigmaLambda lam)) := by
+  refine (B_coeff_weight_le H x₀ R i1 lam hH hDH).trans ?_
+  exact_mod_cast Nat.add_le_add_left
+    (degreeX_hasseCoeffRepr_le x₀ R i1 (sigmaLambda lam) D hR)
+    ((Bivariate.natDegreeY R - sigmaLambda lam) * (D + 1 - Bivariate.natDegreeY H))
+
 /-- Every part of a *surviving* partition is `< k+1`: a `lam : Nat.Partition (k+1−i1)` with
 `(k+1) ∉ lam.parts` has all parts `l` positive and `≤ k+1−i1 ≤ k+1`, and `l ≠ k+1`, hence
 `l < k+1`.  This is the genuine well-foundedness witness for the `(A.1)` recursion: the guard
