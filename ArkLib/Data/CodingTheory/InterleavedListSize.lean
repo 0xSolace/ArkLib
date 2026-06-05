@@ -146,4 +146,16 @@ theorem Lambda_interleaved_le_pow [Fintype F] [Nonempty ι] {m : ℕ}
         (Set.toFinite _).cast_ncard_eq
     _ ≤ (Lambda C δ) ^ m := encard_closeCodewordsRel_interleaved_le f
 
+/-- Unary interleaving specializes the product bound to the base list size. -/
+theorem Lambda_interleaved_fin_one_le [Fintype F] [Nonempty ι]
+    (C : Set (ι → F)) (δ : ℝ) :
+    Lambda (interleavedCodeSet (κ := Fin 1) C) δ ≤ Lambda C δ := by
+  simpa using (Lambda_interleaved_le_pow (m := 1) C δ)
+
+/-- Empty interleaving has list size at most one under the elementary product bound. -/
+theorem Lambda_interleaved_fin_zero_le_one [Fintype F] [Nonempty ι]
+    (C : Set (ι → F)) (δ : ℝ) :
+    Lambda (interleavedCodeSet (κ := Fin 0) C) δ ≤ 1 := by
+  simpa using (Lambda_interleaved_le_pow (m := 0) C δ)
+
 end InterleavedCode.ListSize

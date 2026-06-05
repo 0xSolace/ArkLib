@@ -11,7 +11,7 @@ import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.GammaGenuine
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2300
 -- This proof-note-heavy integration file contains many long paper-route doc lines.
 set_option linter.style.longLine false
 
@@ -1959,6 +1959,102 @@ theorem βHensel_lift_identity_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
           * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
   βHensel_lift_identity_of_assembledSeries_isRoot H x₀ R hHyp
     (assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp hsucc) t
+
+/-- The `t`-truncation of the assembled series: coefficients `≤ t` agree with
+`βHenselAssembled`, all higher coefficients are `0`. -/
+noncomputable def βHenselTrunc (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (t : ℕ) : PowerSeries (𝕃 H) :=
+  PowerSeries.mk (fun j =>
+    if j ≤ t then PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp) else 0)
+
+/-- **The defect reduction (PROVEN — the first slice of the per-order match).**
+By the series-coefficient Newton linearization (`HenselSeriesCoeff.coeff_eval_sub_at`)
+against the `t`-truncation, the order-`(t+1)` coefficient of `eval (βHenselAssembled) Q`
+splits into the truncated *defect* plus the `ζ`-linear response of the new coefficient:
+
+  `coeff (t+1) (eval γ Q) = coeff (t+1) (eval γₜ Q) + ζ · coeff (t+1) γ`.
+
+Hence the residual `coeff_succ_eval_βHenselAssembled` is equivalent to the *cleared defect
+identity* `embedding (βHensel (t+1)) = −W^{t+2}·ξ^{e_{t+1}}·coeff (t+1) (eval γₜ Q)/ζ` —
+the (A.1) sum being exactly the expansion of the truncated defect. -/
+theorem coeff_succ_eval_defect_reduction (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) =
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp) := by
+  have hagree : ∀ j < t + 1,
+      PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp)
+        = PowerSeries.coeff j (βHenselTrunc H x₀ R hHyp t) := by
+    intro j hj
+    simp only [βHenselTrunc, PowerSeries.coeff_mk, if_pos (Nat.lt_succ_iff.mp hj)]
+  have hsub := ProximityPrize.HenselSeriesCoeff.coeff_eval_sub_at (Q := Q x₀ R H)
+    (γ₁ := βHenselAssembled H x₀ R hHyp) (γ₂ := βHenselTrunc H x₀ R hHyp t)
+    (Nat.succ_pos t) hagree
+  have htrunc_top : PowerSeries.coeff (t + 1) (βHenselTrunc H x₀ R hHyp t) = 0 := by
+    simp only [βHenselTrunc, PowerSeries.coeff_mk, if_neg (Nat.not_succ_le_self t)]
+  have hderiv : Polynomial.eval (PowerSeries.constantCoeff (βHenselAssembled H x₀ R hHyp))
+      (Polynomial.derivative (ProximityPrize.HenselSeriesCoeff.Q₀ (Q x₀ R H)))
+        = ClaimA2.ζ R x₀ H := by
+    rw [βHenselAssembled_constantCoeff, eval_α₀_derivative_Q₀]
+  rw [htrunc_top, sub_zero, hderiv] at hsub
+  linear_combination hsub
+
+/-- **Product bridge (PROVEN — the multiplicative half of the cleared-defect identity).**
+The product of assembled-series coefficients over any finite multiset of orders clears to
+the embedded product of the (A.1) numerators over the telescoped `W`/`ξ` powers. -/
+theorem prod_map_coeff_assembled (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (s : Multiset ℕ) :
+    (s.map (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp))).prod
+      = embeddingOf𝒪Into𝕃 H ((s.map (βHensel H x₀ R hHyp)).prod)
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^ ((s.map (· + 1)).sum)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))
+              ^ ((s.map (fun l => 2 * l - 1)).sum)) := by
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a t ih =>
+      simp only [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons]
+      rw [ih,
+        show PowerSeries.coeff a (βHenselAssembled H x₀ R hHyp)
+          = embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp a)
+              / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (a + 1)
+                  * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * a - 1)) from by
+            simp [βHenselAssembled, PowerSeries.coeff_mk],
+        map_mul, pow_add, pow_add, div_mul_div_comm]
+      ring
+
+/-- `∑_{l ∈ λ.parts} (l+1) = m + Σλ` — the `W`-power telescope. Local restatement of
+`ProximityPrize.MultinomialChainRule.partition_sum_add_one`. -/
+theorem partition_sum_add_one_local {m : ℕ} (lam : Nat.Partition m) :
+    (lam.parts.map (· + 1)).sum = m + Multiset.card lam.parts := by
+  rw [Multiset.sum_map_add]
+  simp [lam.parts_sum, Multiset.map_id']
+
+/-- **Truncation agreement for products (PROVEN).** Over any multiset of orders all `≤ t`,
+the truncated and assembled coefficient products coincide. -/
+theorem prod_map_coeff_trunc_eq (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) (s : Multiset ℕ)
+    (hs : ∀ l ∈ s, l ≤ t) :
+    (s.map (fun l => PowerSeries.coeff l (βHenselTrunc H x₀ R hHyp t))).prod
+      = (s.map (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp))).prod := by
+  congr 1
+  exact Multiset.map_congr rfl (fun l hl => by
+    simp only [βHenselTrunc, PowerSeries.coeff_mk, if_pos (hs l hl)])
+
+/-- **Per-partition cleared term (PROVEN corollary).** Instantiating the product bridge at
+a partition `λ ⊢ m` and rewriting the `W`-exponent by `partition_sum_add_one_local`. -/
+theorem partitionProd_coeff_assembled {m : ℕ} (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (lam : Nat.Partition m) :
+    partitionProd lam (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp))
+      = embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp))
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (m + Multiset.card lam.parts)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))
+                ^ ((lam.parts.map (fun l => 2 * l - 1)).sum)) := by
+  rw [partitionProd, prod_map_coeff_assembled, ← partitionProd]
+  congr 2
+  exact congrArg (fun n => (liftToFunctionField (H := H) H.leadingCoeff) ^ n)
+    (partition_sum_add_one_local lam)
 
 /-- **(P2) order-`(t+1)` vanishing — THE SINGLE IRREDUCIBLE RESIDUAL (documented `sorry`).**
 
