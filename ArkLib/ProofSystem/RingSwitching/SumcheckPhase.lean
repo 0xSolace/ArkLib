@@ -820,9 +820,9 @@ private lemma iteratedSumcheck_badChallenge_card_le [IsDomain L] (i : Fin ℓ')
       ¬ (iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i).toFun
             ((⟨1, by decide⟩ : Fin 2).castSucc) (stmt, oStmt) tr
             ((iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i).extractMid
-              (⟨1, by decide⟩ : Fin 2) (stmt, oStmt) (Transcript.concat (m := (⟨1, by decide⟩ : Fin 2)) r' tr) witMid)
+              (⟨1, by decide⟩ : Fin 2) (stmt, oStmt) (Transcript.concat (m := (⟨1, by decide⟩ : Fin 2)) (show (pSpecSumcheckRound L).«Type» (⟨1, by decide⟩ : Fin 2) from r') tr) witMid)
         ∧ (iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i).toFun
-            ((⟨1, by decide⟩ : Fin 2).succ) (stmt, oStmt) (Transcript.concat (m := (⟨1, by decide⟩ : Fin 2)) r' tr) witMid)).card
+            ((⟨1, by decide⟩ : Fin 2).succ) (stmt, oStmt) (Transcript.concat (m := (⟨1, by decide⟩ : Fin 2)) (show (pSpecSumcheckRound L).«Type» (⟨1, by decide⟩ : Fin 2) from r') tr) witMid)).card
       ≤ 2 := by
   classical
   -- `h_i` is the prover's round-0 univariate (the transcript message).
