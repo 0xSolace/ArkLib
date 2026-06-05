@@ -1670,6 +1670,23 @@ theorem βHensel_lift_identity_iff_β_eq (x₀ : F) (R : F[X][X][Y])
             = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
   rw [ClaimA2_α_mul_Wξ_eq_embedding_β H x₀ R hHyp t hden]
 
+/-- **(P2) equivalence with the denominator localized to `ξ`.**  The `W` factor in the
+denominator is always nonzero, so the reusable nonzero premise can be focused on the actual
+remaining obligation `embeddingOf𝒪Into𝕃 ξ ≠ 0`. -/
+theorem βHensel_lift_identity_iff_β_eq_of_ξ_ne_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hξ : embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ≠ 0) :
+    (embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = ClaimA2.α x₀ R H hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+      ↔ embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+            = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
+  exact βHensel_lift_identity_iff_β_eq H x₀ R hHyp t
+    (mul_ne_zero
+      (pow_ne_zero _ (liftToFunctionField_leadingCoeff_ne_zero (H := H)))
+      (pow_ne_zero _ hξ))
+
 /-- **(P2) forward wrapper from the localized β-numerator equality.**
 
 Once the genuine Hensel numerator `βHensel` is known to agree under the embedding with the
