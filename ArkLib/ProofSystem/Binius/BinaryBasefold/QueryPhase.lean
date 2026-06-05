@@ -903,7 +903,10 @@ noncomputable def queryKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
 Per the Binius/BaseFold proximity-gap analysis, a single repetition rejects a word that is far from
 the code with probability at least `1 - (1/2 + 2^-(𝓡+1))`, and the `γ` repetitions are independent,
 giving the soundness error `(1/2 + 2^-(𝓡+1))^γ`.  As `pSpecQuery` has a single challenge round, this
-is a constant function of the challenge index. -/
+is a constant function of the challenge index.
+
+(This def lives inside the file-level `noncomputable section`, so the NNReal division below
+needs no explicit `noncomputable` marker.) -/
 def queryRbrKnowledgeError
     (_j : (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).ChallengeIdx) :
     ℝ≥0 :=

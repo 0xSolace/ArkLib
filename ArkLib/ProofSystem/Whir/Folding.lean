@@ -773,6 +773,14 @@ theorem Pr_le_finset_sum_of_implies {α : Type} (D : PMF.{0} α) {β : Type} [De
 -/
 
 -- NOTE: need to align this better with the inductive way this is shown via the other lemmas below.
+-- DISPOSITION (2026-06-04): open — gated on the MCA chain. This probabilistic list-decoding
+-- equivalence is the `k`-fold composite of the single-step base lemmas below
+-- (`folding_preserves_listdecoding_base`/`_bound`, L4.21/4.22), whose `errStar` accounting is in
+-- turn supplied by `MutualCorrAgreement.hasMutualCorrAgreement` via `params.h`. Until the MCA
+-- bounds (`mca_rsc`/`mca_linearCode`, themselves open — see their dispositions) are available, the
+-- per-round error budget summed here cannot be discharged. The deterministic structural
+-- ingredient (`fold_f_g`/`fold_f_g_poly`, the fold tracks a degree-halving polynomial) is proven
+-- above; what remains is the probabilistic list-set equality, not a folding-algebra fact.
 theorem folding_listdecoding_if_genMutualCorrAgreement
   [Fintype F] {S : Finset ι} {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ] {k m : ℕ}
   {S' : Finset (indexPowT S φ 0)} {φ' : (indexPowT S φ 0) ↪ F}
@@ -826,6 +834,10 @@ theorem folding_listdecoding_if_genMutualCorrAgreement
   τ-subspace-design property (T2.18).
 
   ## Statement repair (paper-faithful hypotheses, 2026-06-04)
+
+  (Supersedes the earlier wave3 "open" disposition: with the `hsub`/`hrev` repair below this
+  lemma is now fully proven, so the genuine probabilistic core is threaded in as `hrev` rather
+  than left as a `sorry`.)
 
   As literally stated the lemma is **false**: `BStar` and `errStar` are abstract,
   *unconstrained* function parameters, so instantiating `errStar := fun _ _ _ => 0`
@@ -1047,7 +1059,11 @@ lemma fold_disagreementSet_subset
 
   See the block comment above `fold_disagreementSet_subset` for the documented statement
   repair (paper-faithful smooth-domain hypotheses), required for the same reasons as on
-  `fold_f_g` / `relHammingDist_le_blockRelDistance`. -/
+  `fold_f_g` / `relHammingDist_le_blockRelDistance`.
+
+  (Supersedes the earlier wave3 "open" disposition: the two pieces it cited as missing — fold
+  code-membership via the repaired single-step `foldf_step_mem_smoothCode`, and the block-distance
+  contraction `fold_disagreementSet_subset` — are now both proven below, so this lemma is closed.) -/
 lemma folding_preserves_listdecoding_bound
   {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ]
   {δ : ℝ≥0} {f : (indexPowT S φ 0) → F}

@@ -5,6 +5,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps
+import ArkLib.OracleReduction.Composition.Sequential.Append
 
 /-!
 ## Binary Basefold Core Interaction Phase
@@ -880,6 +881,18 @@ theorem sumcheckFold_round_lt (ϑ B x : ℕ) (hϑ : 1 ≤ ϑ)
     rw [hqeq]
     omega
 
+/-- Per-challenge RBR knowledge error for the composed sumcheck-fold protocol: challenge `j`
+(at offset `j % NBlockMessages` inside block `j / NBlockMessages`) is the verifier challenge of
+fold round `(j / NBlockMessages) · ϑ + (j % NBlockMessages) / 2`, whose error is
+`foldKnowledgeError` at that round.
+
+STATEMENT REPAIR (index off-by-one): the previous form added `+ 1` to the in-block fold index
+`(j % NBlockMessages) / 2`.  That (a) overflows `Fin ℓ` exactly at the last challenge of the last
+block (`j = (ℓ/ϑ − 1)·(2ϑ+1) + (2ϑ−1)` maps to `(ℓ/ϑ)·ϑ = ℓ`, since `ϑ ∣ ℓ`), making the bound
+unprovable as stated, and (b) misroutes `foldKnowledgeError`'s bad-event term: that term fires
+when `ϑ ∣ (i + 1)`, i.e. at the *commit-round* challenge `i = b·ϑ + (ϑ−1)` (block offset `2ϑ−1`),
+which is the image of the un-shifted map — with the `+ 1` the commit challenge would land on
+`(b+1)·ϑ` where the term does not fire. -/
 def sumcheckFoldKnowledgeError := fun j : (pSpecSumcheckFold 𝔽q β (ϑ:=ϑ)
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).ChallengeIdx =>
     if hj: (j.val % NBlockMessages (ϑ:=ϑ)) % 2 = 1 then
