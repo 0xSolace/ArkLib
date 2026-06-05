@@ -2115,6 +2115,18 @@ theorem βHensel_lift_identity_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y]
   βHensel_lift_identity_of_assembledSeries_isRoot H x₀ R hHyp
     (assembledSeries_isRoot_of_trunc_defect_cancel H x₀ R hHyp hcancel) t
 
+/-- Coefficients of the recentered `Q` coefficient series are the `X`-Hasse
+derivatives of the corresponding `Y`-coefficient of `R`, evaluated at `x₀` and
+lifted to the function field. This is the first bridge from the power-series
+coefficient expansion to the Appendix-A Hasse-derivative notation. -/
+theorem coeff_Q_coeff_eq_eval_hasseDerivX
+    (x₀ : F) (R : F[X][X][Y]) (j i1 : ℕ) :
+    PowerSeries.coeff i1 ((Q x₀ R H).coeff j) =
+      liftToFunctionField (H := H)
+        (Polynomial.eval (Polynomial.C x₀) (Polynomial.hasseDeriv i1 (R.coeff j))) := by
+  rw [Q, Polynomial.coeff_map, ProximityPrize.BCIKS20.GammaGenuine.coeff_coeffHom,
+    Polynomial.taylor_coeff]
+
 /-- **Product bridge (PROVEN — the multiplicative half of the cleared-defect identity).**
 The product of assembled-series coefficients over any finite multiset of orders clears to
 the embedded product of the (A.1) numerators over the telescoped `W`/`ξ` powers. -/
