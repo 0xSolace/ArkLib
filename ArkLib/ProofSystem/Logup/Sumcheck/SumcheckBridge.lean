@@ -159,6 +159,20 @@ theorem honest_helper_sum_eq_sum_terms
       (f := fun i : TermIdx M =>
         termNumerator (honestMultiplicity oStmt) i u / termPhi oStmt xChallenge i u)
 
+omit [Fintype F] in
+theorem sum_terms_eq_table_add_columns
+    (oStmt : ∀ i, OStmtIn F n M i) (xChallenge : F) (u : Hypercube n) :
+    (∑ i : TermIdx M,
+        termNumerator (honestMultiplicity oStmt) i u / termPhi oStmt xChallenge i u) =
+      evalOnHypercube (honestMultiplicity oStmt) u /
+        (xChallenge + evalOnHypercube (tableOracle oStmt) u) +
+        ∑ i : Fin M,
+          (-1 : F) / (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+  change (∑ i : Fin (M + 1),
+        termNumerator (honestMultiplicity oStmt) i u / termPhi oStmt xChallenge i u) = _
+  rw [Fin.sum_univ_succ]
+  congr 1
+
 /-- Semantic agreement between final oracle-query answers and the retained LogUp oracles. -/
 def logupPointEvaluationsAgree
     (r : Fin n → F)
