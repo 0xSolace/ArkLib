@@ -216,6 +216,48 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_PzFamily
     (hk := Nat.zero_lt_succ 0) (u := Code.finMapTwoWords u₀ u₁)
     hprob hJ hδ P₀ hEval₀ huniq
 
+/-- Strict Johnson §6 joint-agreement front door specialized to the §5
+degree-one affine-line setup, with the `ModifiedGuruswami` solution produced
+by Claim 5.4's current constructive existence theorem.
+
+The remaining caller obligations are the regime side conditions for the
+Guruswami-Sudan construction and the matching-set/uniqueness facts for the
+chosen solution. -/
+theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_exists_PzFamily
+    {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
+    (δ : ℚ≥0) (u₀ u₁ : Fin n → F)
+    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
+    (hprob :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • Code.finMapTwoWords u₀ u₁ t,
+          ReedSolomon.code ωs (k + 1)) ≤ (δ : ℝ≥0)] >
+        (((1 : ℕ) : ENNReal) * (errorBound (δ : ℝ≥0) (k + 1) ωs : ENNReal)))
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code ωs (k + 1)) : ℝ≥0)) / 2 <
+      (δ : ℝ≥0))
+    (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (hsubset : ∀ {Q : F[Z][X][Y]}
+      (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n),
+        coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ ⊆
+          matching_set_at_x k (δ : ℚ) h_gs x)
+    (hunique : ∀ P : F → Polynomial F,
+        (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+          (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+        ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+          P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    jointAgreement (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (W := Code.finMapTwoWords u₀ u₁) := by
+  classical
+  obtain ⟨Q, h_gs⟩ :=
+    modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
+      (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u₀) (u₁ := u₁) hDx hYZ
+  exact RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_PzFamily
+    (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
+    δ u₀ u₁ hprob hJ hδ h_gs
+    (fun x => hsubset h_gs x)
+    hunique
+
 end BCIKS20ProximityGapSection5To6Bridge
 
 end ProximityGap

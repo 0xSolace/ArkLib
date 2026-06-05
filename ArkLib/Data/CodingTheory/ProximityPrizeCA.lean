@@ -139,6 +139,21 @@ theorem ca_halved_count_le_one [Fintype F]
   by_contra hne
   exact ca_halved C f₁ f₂ d hprem hne hh₁ hh₂ hA₁ hA₂
 
+open Classical in
+/-- Half-threshold correlated agreement, with the separation premise stated as a Hamming-distance
+lower bound on paired words. -/
+theorem ca_halved_count_le_one_of_hammingDist [Fintype F]
+    (C : Submodule F (ι → F))
+    (f₁ f₂ : ι → F) (d : ℕ)
+    (hprem : ∀ g₁ ∈ C, ∀ g₂ ∈ C,
+      2 * d < hammingDist (pairWord f₁ f₂) (pairWord g₁ g₂)) :
+    ((Finset.univ : Finset F).filter
+      (fun γ => ∃ h ∈ C, Fintype.card ι ≤ (agreeSet (linComb f₁ f₂ γ) h).card + d)).card
+    ≤ 1 :=
+  ca_halved_count_le_one C f₁ f₂ d
+    (fun g₁ hg₁ g₂ hg₂ =>
+      jointAgreeSet_card_add_lt_of_hammingDist_gt (hprem g₁ hg₁ g₂ hg₂))
+
 private def IsBadWitness
     (C : Submodule F (ι → F))
     (f₁ f₂ : ι → F) (w : ℕ) (γ : F)
@@ -252,5 +267,21 @@ theorem ca_equal_threshold
     _ = Nat.choose (Fintype.card ι) (Fintype.card ι - w) := by
         rw [Finset.card_powersetCard, Finset.card_univ]
     _ = Nat.choose (Fintype.card ι) w := Nat.choose_symm hw
+
+/-- Equal-threshold correlated-agreement upper bound, with the separation premise stated as a
+Hamming-distance lower bound on paired words. -/
+theorem ca_equal_threshold_of_hammingDist
+    (C : Submodule F (ι → F))
+    (f₁ f₂ : ι → F) (w : ℕ) (hw : w ≤ Fintype.card ι)
+    (hprem : ∀ g₁ ∈ C, ∀ g₂ ∈ C,
+      w < hammingDist (pairWord f₁ f₂) (pairWord g₁ g₂))
+    (Γ : Finset F)
+    (hbad : ∀ γ ∈ Γ,
+      ∃ h ∈ C, Fintype.card ι ≤ (agreeSet (linComb f₁ f₂ γ) h).card + w) :
+    Γ.card ≤ Nat.choose (Fintype.card ι) w :=
+  ca_equal_threshold C f₁ f₂ w hw
+    (fun g₁ hg₁ g₂ hg₂ =>
+      jointAgreeSet_card_add_lt_of_hammingDist_gt (hprem g₁ hg₁ g₂ hg₂))
+    Γ hbad
 
 end ProximityPrizeCA
