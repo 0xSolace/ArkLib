@@ -25453,64 +25453,6 @@
         }
       ]
     },
-    "ArkLib/Data/CodingTheory/ProximityGap/MCAListSizeConversion.lean": {
-      "declarations": [
-        {
-          "doc": "",
-          "kind": "structure",
-          "line": 43,
-          "name": "the",
-          "namespace": "",
-          "short_name": "the",
-          "signature": "structure the `mcaEvent` forbids. Concretely, since each witness set has size `\u2265 (1-\u03b4)\u00b7n`, any two"
-        },
-        {
-          "doc": "The set of **bad slopes** of a two-row word stack `(u\u2080, u\u2081)` at radius `\u03b4`: those `\u03b3 \u2208 F` for which the MCA bad event `ProximityGap.mcaEvent C \u03b4 u\u2080 u\u2081 \u03b3` fires.",
-          "kind": "def",
-          "line": 91,
-          "name": "ProximityGap.MCAListSize.badSlopes",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "badSlopes",
-          "signature": "def badSlopes (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (u\u2080 u\u2081 : \u03b9 \u2192 A) : Finset F :="
-        },
-        {
-          "doc": "**Probability-to-count identity.** The inner probability of `ProximityGap.epsMCA` over a uniform slope `\u03b3 \u2190$\u1d56 F` is exactly `#badSlopes / |F|`. This is the load-bearing reduction that turns the analytic `\u03b5_mca` body into a finite count.",
-          "kind": "theorem",
-          "line": 98,
-          "name": "ProximityGap.MCAListSize.Pr_mcaEvent_eq_badSlopes_card_div",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "Pr_mcaEvent_eq_badSlopes_card_div",
-          "signature": "theorem Pr_mcaEvent_eq_badSlopes_card_div (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (u\u2080 u\u2081 : \u03b9 \u2192 A) :"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 101,
-          "name": "ProximityGap.MCAListSize._anon_class_101",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "_anon_class_101",
-          "signature": "class classical"
-        },
-        {
-          "doc": "**Per-stack count \u21d2 `\u03b5_mca` ceiling.** If every two-row word stack has at most `N` bad slopes, then `\u03b5_mca(C, \u03b4) \u2264 N / |F|`. The supremum over stacks of `#bad/|F|` is dominated termwise by `N/|F|`.",
-          "kind": "theorem",
-          "line": 110,
-          "name": "ProximityGap.MCAListSize.epsMCA_le_of_badSlopeCount",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "epsMCA_le_of_badSlopeCount",
-          "signature": "theorem epsMCA_le_of_badSlopeCount (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (N : \u2115)"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 113,
-          "name": "ProximityGap.MCAListSize._anon_class_113",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "_anon_class_113",
-          "signature": "class classical"
-        }
-      ]
-    },
     "ArkLib/Data/CodingTheory/ProximityGap/ProximityGapP.lean": {
       "declarations": [
         {
@@ -72971,8 +72913,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7935,
-      "files": 392
+      "declarations": 7929,
+      "files": 391
     }
   }
 }
