@@ -28713,6 +28713,82 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/zz_a5_devwork.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 28,
+          "name": "ProximityGap.MCAListSize.badSlopes",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "badSlopes",
+          "signature": "def badSlopes (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (u\u2080 u\u2081 : \u03b9 \u2192 A) : Finset F :="
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 32,
+          "name": "ProximityGap.MCAListSize.Pr_mcaEvent_eq_badSlopes_card_div",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "Pr_mcaEvent_eq_badSlopes_card_div",
+          "signature": "theorem Pr_mcaEvent_eq_badSlopes_card_div (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (u\u2080 u\u2081 : \u03b9 \u2192 A) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 35,
+          "name": "ProximityGap.MCAListSize._anon_class_35",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "_anon_class_35",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 41,
+          "name": "ProximityGap.MCAListSize.epsMCA_le_of_badSlopeCount",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "epsMCA_le_of_badSlopeCount",
+          "signature": "theorem epsMCA_le_of_badSlopeCount (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (N : \u2115)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 44,
+          "name": "ProximityGap.MCAListSize._anon_class_44",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "_anon_class_44",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 57,
+          "name": "ProximityGap.MCAListSize.badSlope_rs_witness",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "badSlope_rs_witness",
+          "signature": "theorem badSlope_rs_witness {\u03b4 : \u211d\u22650} {f\u2080 f\u2081 : \u03b9 \u2192 F} {\u03b3 : F}"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 75,
+          "name": "ProximityGap.MCAListSize.affineLine_jointAgree_of_two_badSlopes",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "affineLine_jointAgree_of_two_badSlopes",
+          "signature": "theorem affineLine_jointAgree_of_two_badSlopes {\u03b4 : \u211d\u22650} {f\u2080 f\u2081 : \u03b9 \u2192 F} {\u03b3 \u03b3' : F}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 87,
+          "name": "ProximityGap.MCAListSize._anon_class_87",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "_anon_class_87",
+          "signature": "class classical"
+        }
+      ]
+    },
     "ArkLib/Data/CompPoly/Basic.lean": {
       "declarations": [
         {
@@ -72698,8 +72774,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7906,
-      "files": 389
+      "declarations": 7914,
+      "files": 390
     }
   }
 }
