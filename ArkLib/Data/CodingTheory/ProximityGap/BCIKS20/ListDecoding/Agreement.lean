@@ -7,7 +7,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 
-set_option linter.style.longFile 5100
+set_option linter.style.longFile 5300
 
 /-!
 # BCIKS20 list-decoding agreement compatibility module
@@ -2136,6 +2136,80 @@ lemma approximate_solution_gamma_graph_coeff_zero_of_beta_embedding_zero
       (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs
       hx0 hsep hS_nonempty A hA hcount hlarge hemb)
 
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+/-- Graph gamma-tail coefficient vanishing from the exact Appendix-A Lemma A.1
+largeness condition. -/
+lemma approximate_solution_gamma_graph_coeff_zero_of_Sβ_large
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q)
+    (hlargeS : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree
+        (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+          hx0 hsep hS_nonempty A hA hcount hlarge) ∧
+        Set.ncard (S_β
+          (β
+            (H := H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+              hx0 hsep hS_nonempty A hA hcount hlarge)
+            (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+              hx0 hsep hS_nonempty A hA hcount hlarge) t)) >
+          weight_Λ_over_𝒪
+            (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+              hx0 hsep hS_nonempty A hA hcount hlarge)
+            (β
+              (H := H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+                hx0 hsep hS_nonempty A hA hcount hlarge)
+              (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+                hx0 hsep hS_nonempty A hA hcount hlarge) t) D *
+            (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+              hx0 hsep hS_nonempty A hA hcount hlarge).natDegree) :
+    ∀ t ≥ k,
+      PowerSeries.coeff t
+        (γ' x₀
+          (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)
+          (irreducible_H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)
+          (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)
+          (claimA2_hypotheses_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)) =
+        (0 : BCIKS20AppendixA.𝕃
+          (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)) := by
+  exact gamma'_coeff_zero_of_alpha'_coeff_zero
+    (F := F) (x₀ := x₀)
+    (irreducible_H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep hS_nonempty A hA hcount hlarge)
+    (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep hS_nonempty A hA hcount hlarge)
+    (claimA2_hypotheses_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep hS_nonempty A hA hcount hlarge)
+    (approximate_solution_is_exact_solution_coeffs_graph_of_Sβ_large
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs
+      hx0 hsep hS_nonempty A hA hcount hlarge hlargeS)
+
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_gamma_graph_clear_coeff_zero_of_beta_embedding_zero
@@ -2168,6 +2242,50 @@ lemma approximate_solution_gamma_graph_clear_coeff_zero_of_beta_embedding_zero
       (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
     (approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero
       (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hemb)
+
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+/-- Graph-clear gamma-tail coefficient vanishing from the exact Appendix-A
+Lemma A.1 largeness condition. -/
+lemma approximate_solution_gamma_graph_clear_coeff_zero_of_Sβ_large
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree
+        (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) ∧
+        Set.ncard (S_β
+          (β
+            (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+            (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t)) >
+          weight_Λ_over_𝒪
+            (natDegree_H_graph_clear_pos
+              (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+            (β
+              (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+              (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t) D *
+            (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond).natDegree) :
+    ∀ t ≥ k,
+      PowerSeries.coeff t
+        (γ' x₀
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (irreducible_H_graph_clear
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (natDegree_H_graph_clear_pos
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (claimA2_hypotheses_graph_clear
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) =
+        (0 : BCIKS20AppendixA.𝕃
+          (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) := by
+  exact gamma'_coeff_zero_of_alpha'_coeff_zero
+    (F := F) (x₀ := x₀)
+    (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (claimA2_hypotheses_graph_clear
+      (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hlarge)
 
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
