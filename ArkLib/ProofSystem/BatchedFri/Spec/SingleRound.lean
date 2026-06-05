@@ -53,22 +53,36 @@ instance : ∀ j, OracleInterface (OracleStatement m ω j) :=
 
 namespace BatchingRound
 
+-- DEFINITION COMPLETED (2026-06-04): batching-round input relation. The batched-FRI input is a
+-- collection of `m + 1` purported codewords on the full domain `ω`, each committed to its own
+-- low-degree witness polynomial (degree `< 2 ^ (∑ s) * d`). Following [BCIKS20 §8]/[FRI1216], the
+-- well-formed-input relation asserts every batched oracle is the honest evaluation of its witness
+-- polynomial on `ω`. (No `δ`: the relation is stated on the witnessed polynomials directly; the
+-- subsequent proximity claim is carried by the FRI round-0 relation after batching — see
+-- `outputRelation`, which composes with `Fri.Spec.FoldPhase.inputRelation`.)
 def inputRelation :
     Set
       (
         (Unit × (∀ j, OracleStatement m ω j)) ×
         Witness F s d m
-      ) := sorry
+      ) :=
+  {ctx | ∀ j x, ctx.1.2 j x = (ctx.2 j).1.eval x.1}
 
-/- The FRI non-final folding round output relation, with proximity parameter `δ`,
-   for the `i`th round. -/
+-- DEFINITION COMPLETED (2026-06-04): batching-round output relation. After the verifier sends the
+-- random batching coefficients, the protocol hands off to the FRI round-0 reduction on the single
+-- batched codeword. The relation is the FRI round-0 well-formedness clause: the (single) round-0
+-- oracle on `ω = subdomainNatReversed 0` is the honest evaluation of the batched witness polynomial.
+-- This is exactly the witness/oracle-agreement half of `Fri.Spec.FoldPhase.inputRelation` at `i = 0`,
+-- so the batching reduction composes with FRI (the random-linear-combination batching of the `m + 1`
+-- oracles is realised in `liftingLens.stmt`).
 def outputRelation :
     Set
       (
         (Fri.Spec.Statement F (0 : Fin (k + 1)) ×
         (∀ j, Fri.Spec.OracleStatement s ω (0 : Fin (k + 1)) j)) ×
         Fri.Spec.Witness F s d (0 : Fin (k + 2))
-      ) := sorry
+      ) :=
+  {ctx | ∀ x, ctx.1.2 0 x = ctx.2.1.eval x.1}
 
 /-- The verifier send `m` field elements to batch the `m + 1` batched polynomials,
     the prover then returns the putative codeword corresponding to the batched polynomial -/
@@ -202,6 +216,7 @@ def batchVerifier :
   hEq := by simp
 
 /-- The batching round oracle reduction. -/
+@[reducible]
 def batchOracleReduction :
   OracleReduction []ₒ
     Unit (OracleStatement m ω) (Witness F s d m)
@@ -211,6 +226,27 @@ def batchOracleReduction :
     (batchSpec F m) where
   prover := batchProver s d m
   verifier := batchVerifier (k := k) m
+
+/-- The batching-round oracle verifier passes every output oracle through to the unchanged input
+oracle (`embed = Sum.inl`, `OStmtIn = OStmtOut = OracleStatement m ω`, `hEq` by `simp`) and exposes
+no message oracle, so its `AppendCoherent` coherence holds by `rfl`. Used to `.append` the batching
+round onto the lifted FRI reduction. -/
+instance instBatchVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (batchVerifier (k := k) m (ω := ω)) where
+  hCohInl := fun a k h => by
+    have : a = k := by
+      simpa only [batchVerifier, Function.Embedding.coeFn_mk, Sum.inl.injEq] using h
+    subst this; rfl
+  hCohInr := fun a k h => by
+    simp only [batchVerifier, Function.Embedding.coeFn_mk, reduceCtorEq] at h
+
+instance instBatchOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (Oₛ₁ := (inferInstance : ∀ j, OracleInterface (OracleStatement m ω j)))
+      (Oₛ₂ := (inferInstance : ∀ j, OracleInterface (OracleStatement m ω j)))
+      (Oₘ₁ := (inferInstance : ∀ j, OracleInterface ((batchSpec F m).Message j)))
+      (batchOracleReduction s d m).verifier :=
+  instBatchVerifierAppendCoherent (k := k) m (ω := ω)
 
 end BatchingRound
 

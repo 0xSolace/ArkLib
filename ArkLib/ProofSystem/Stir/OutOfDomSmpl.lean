@@ -11,6 +11,8 @@ import ArkLib.Data.Probability.Notation
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Vector
 
+set_option maxHeartbeats 2000000
+
 open Finset ListDecodable NNReal Polynomial ProbabilityTheory ReedSolomon
 namespace OutOfDomSmpl
 
@@ -37,16 +39,16 @@ def domainComplement (φ : ι ↪ F) : Finset F :=
 noncomputable def listDecodingCollisionProbability
   (φ : ι ↪ F) (f : ι → F) (δ : ℝ) (s degree : ℕ)
   (h_nonempty : Nonempty (domainComplement φ)) : ENNReal :=
-  Pr_{let r ←$ᵖ (Fin s → domainComplement φ)}[ ∃ (u u' : code φ degree),
-                                    u.val ≠ u'.val ∧
-                                    u.val ∈ closeCodewordsRel (code φ degree) f δ ∧
-                                    u'.val ∈ closeCodewordsRel (code φ degree) f δ ∧
-                                    ∀ i : Fin s,
-                                    let uPoly := decodeLT u
-                                    let uPoly' := decodeLT u'
-                                    (uPoly : F[X]).eval (r i).1
-                                      = (uPoly' : F[X]).eval (r i).1
-                                    ]
+  Pr_{let r ←$ᵖ (Fin s → domainComplement φ)}[
+    ∃ (u u' : code φ degree),
+      u.val ≠ u'.val ∧
+      u.val ∈ closeCodewordsRel (code φ degree) f δ ∧
+      u'.val ∈ closeCodewordsRel (code φ degree) f δ ∧
+      ∀ i : Fin s,
+        let uPoly := decodeLT u
+        let uPoly' := decodeLT u'
+        (uPoly : F[X]).eval (r i).1 = (uPoly' : F[X]).eval (r i).1
+  ]
 
 /-- The mass that the `Pr_{...}[...]` PMF encoding assigns to an event under uniform sampling
 is exactly `#event / #domain` — the counting bridge used to estimate collision probabilities. -/

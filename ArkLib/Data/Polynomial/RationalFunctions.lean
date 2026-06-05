@@ -34,7 +34,7 @@ We define the notions of Appendix A of [BCIKS20].
 
 -/
 
-set_option linter.style.longFile 2900
+set_option linter.style.longFile 3200
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal
 
@@ -44,9 +44,7 @@ section
 
 variable {F : Type} [Field F]
 
-/-- Construction of the monisized polynomial `H_tilde` in Appendix A.1 of [BCIKS20].
-Note: Here `H ∈ F[X][Y]` translates to `H ∈ F[Z][Y]` in [BCIKS20] and H_tilde in
-`Polynomial (RatFunc F)` translates to `H_tilde ∈ F(Z)[T]` in [BCIKS20]. -/
+/-- Construction of the monisized polynomial `H_tilde` in Appendix A.1 of [BCIKS20]. -/
 noncomputable def H_tilde (H : F[X][Y]) : Polynomial (RatFunc F) :=
   let hᵢ (i : ℕ) := H.coeff i
   let d := H.natDegree
@@ -145,7 +143,6 @@ lemma irreducibleHTildeOfIrreducible {F : Type} [Field F] {H : Polynomial (Polyn
     Irreducible H → Irreducible (H_tilde H) :=
   irreducibleHTildeOfIrreducible_of_natDegree_pos hHdeg
 
-/-- The function field `𝕃 ` from Appendix A.1 of [BCIKS20]. -/
 abbrev 𝕃 (H : F[X][Y]) : Type :=
   (Polynomial (RatFunc F)) ⧸ (Ideal.span {H_tilde H})
 
@@ -191,7 +188,6 @@ noncomputable def H_tilde' (H : F[X][Y]) : F[X][Y] :=
       ∑ i ∈ Finset.range d,
         Polynomial.C (hᵢ i * W ^ (d - 1 - i)) * Polynomial.X ^ i
 
-/-- If `H` has positive degree in `Y`, then `H_tilde' H` is monic. -/
 lemma H_tilde'_monic (H : F[X][Y]) (hH : 0 < H.natDegree) :
     (H_tilde' H).Monic := by
   classical
@@ -202,6 +198,73 @@ lemma H_tilde'_monic (H : F[X][Y]) (hH : 0 < H.natDegree) :
       intro i hi
       exact (Polynomial.degree_C_mul_X_pow_le i _).trans_lt
         (WithBot.coe_lt_coe.2 (Finset.mem_range.mp hi))
+
+lemma evalEval_H_tilde' (H : F[X][Y]) (hH : 0 < H.natDegree) (z y : F) :
+    Polynomial.evalEval z ((H.coeff H.natDegree).eval z * y) (H_tilde' H) =
+      ((H.coeff H.natDegree).eval z) ^ (H.natDegree - 1) * Polynomial.evalEval z y H := by
+  classical
+  set d := H.natDegree with hd
+  set W : F[X] := H.coeff d with hW
+  set w : F := W.eval z with hw
+  have hdne : d ≠ 0 := by omega
+  have hwd : Polynomial.eval z (H.coeff d) = w := by rw [← hW, hw]
+  have hEvalH : Polynomial.evalEval z y H =
+      ∑ i ∈ Finset.range (H.natDegree + 1), (H.coeff i).eval z * y ^ i := by
+    rw [Polynomial.evalEval]
+    rw [show Polynomial.eval (Polynomial.C y) H =
+        ∑ i ∈ Finset.range (H.natDegree + 1), H.coeff i * (Polynomial.C y) ^ i by
+      exact Polynomial.eval_eq_sum_range (x := Polynomial.C y)]
+    simp only [Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_pow,
+      Polynomial.eval_C]
+  rw [H_tilde', if_neg (by simpa [hd] using hdne)]
+  simp only [Polynomial.evalEval_add, Polynomial.evalEval_pow, Polynomial.evalEval_X,
+    Polynomial.evalEval_finset_sum, Polynomial.evalEval_mul, Polynomial.evalEval_C,
+    Polynomial.eval_mul, Polynomial.eval_pow]
+  rw [hEvalH]
+  simp only [hd]
+  rw [Finset.sum_range_succ]
+  simp only [← hd]
+  rw [mul_add]
+  have hsum_lower :
+      (∑ x ∈ Finset.range d, Polynomial.eval z (H.coeff x) *
+          Polynomial.eval z (H.coeff d) ^ (d - 1 - x) * (w * y) ^ x) =
+        w ^ (d - 1) * ∑ x ∈ Finset.range d, Polynomial.eval z (H.coeff x) * y ^ x := by
+    rw [Finset.mul_sum]
+    refine Finset.sum_congr rfl ?_
+    intro i hi
+    have hid : d - 1 - i + i = d - 1 := by
+      have : i < d := Finset.mem_range.mp hi
+      omega
+    rw [hwd, mul_pow]
+    calc
+      Polynomial.eval z (H.coeff i) * w ^ (d - 1 - i) * (w ^ i * y ^ i)
+          = Polynomial.eval z (H.coeff i) * ((w ^ (d - 1 - i) * w ^ i) * y ^ i) := by ring
+      _ = Polynomial.eval z (H.coeff i) * (w ^ (d - 1) * y ^ i) := by rw [← pow_add, hid]
+      _ = w ^ (d - 1) * (Polynomial.eval z (H.coeff i) * y ^ i) := by ring
+  have hlead : (w * y) ^ d = w ^ (d - 1) * (Polynomial.eval z (H.coeff d) * y ^ d) := by
+    rw [hwd, mul_pow]
+    have hpow : w ^ d = w ^ (d - 1) * w := by
+      have hds : d = (d - 1) + 1 := by omega
+      calc
+        w ^ d = w ^ ((d - 1) + 1) := congrArg (fun n : ℕ => w ^ n) hds
+        _ = w ^ (d - 1) * w := by rw [pow_succ]
+    rw [hpow]; ring
+  rw [hsum_lower, hlead, add_comm]
+
+lemma evalEval_H_tilde'_eq_zero_of_evalEval_eq_zero (H : F[X][Y]) (hH : 0 < H.natDegree)
+    {z y : F} (hroot : Polynomial.evalEval z y H = 0) :
+    Polynomial.evalEval z ((H.coeff H.natDegree).eval z * y) (H_tilde' H) = 0 := by
+  rw [evalEval_H_tilde' H hH z y, hroot, mul_zero]
+
+lemma eval_evalX_eq_evalEval (H : F[X][Y]) (z y : F) :
+    (Polynomial.Bivariate.evalX z H).eval y = Polynomial.evalEval z y H := by
+  rw [Polynomial.Bivariate.evalX_eq_map, Polynomial.map_evalRingHom_eval]
+
+lemma evalEval_H_tilde'_eq_zero_of_evalX_eq_zero (H : F[X][Y]) (hH : 0 < H.natDegree)
+    {z y : F} (hroot : (Polynomial.Bivariate.evalX z H).eval y = 0) :
+    Polynomial.evalEval z ((H.coeff H.natDegree).eval z * y) (H_tilde' H) = 0 := by
+  apply evalEval_H_tilde'_eq_zero_of_evalEval_eq_zero H hH
+  rwa [← eval_evalX_eq_evalEval H z y]
 
 private lemma monicize_term {K : Type} [Field K] (a b : K) (i d : ℕ)
     (ha : a ≠ 0) (hi : i < d) :
@@ -1939,6 +2002,152 @@ noncomputable def fieldTo𝕃 {H : F[X][Y]} : F →+* 𝕃 H :=
 noncomputable def polyToPowerSeries𝕃 (H : F[X][Y]) (P : F[X][Y]) : PowerSeries (𝕃 H) :=
   PowerSeries.mk <| fun n => liftToFunctionField (P.coeff n)
 
+@[simp]
+lemma coeff_polyToPowerSeries𝕃 (H : F[X][Y]) (P : F[X][Y]) (n : ℕ) :
+    PowerSeries.coeff n (polyToPowerSeries𝕃 H P) = liftToFunctionField (P.coeff n) :=
+  PowerSeries.coeff_mk n _
+
+/-! ### The `X`-elimination polynomial of Lemma A.1 (recovered)
+
+The following block (`elimPoly` and its three lemmas, together with the helper lemmas
+`degree_H_tilde_eq`, `π_z_eq_evalEval_canonicalRep`, `exists_common_root_of_mem_S_β` they depend
+on) was wrongly excised by a reconciliation merge. It is restored verbatim from commit `71ab8cc57`
+(pre-excision `ce4e2497a^`). The §5 BCIKS20 list-decoding chain (`Extraction → Agreement`)
+references `BCIKS20AppendixA.elimPoly`, `elimPoly_ne_zero`, `elimPoly_eval_eq_zero_of_mem_S_β` at
+the namespace top level. -/
+
+/-- The degree of `H_tilde H` (over `RatFunc F`) equals the degree of `H_tilde' H` (over `F[X]`). -/
+lemma degree_H_tilde_eq {H : F[X][Y]} (hH : 0 < H.natDegree) :
+    (H_tilde H).degree = (H_tilde' H).degree := by
+  rw [← H_tilde_equiv_H_tilde', (H_tilde'_monic H hH).degree_map univPolyHom]
+
+/-- The substitution `π_z` evaluated on `β` agrees with evaluating the canonical representative
+of `β` at `(z, t_z)`. -/
+lemma π_z_eq_evalEval_canonicalRep {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) (z : F)
+    (root : rationalRoot (H_tilde' H) z) :
+    (π_z z root) β = Polynomial.evalEval z root.1 (canonicalRepOf𝒪 hH β) := by
+  conv_lhs => rw [← mk_canonicalRepOf𝒪 hH β]
+  rw [π_z, Ideal.Quotient.lift_mk]
+  rfl
+
+/-- Membership in `S_β` extracts, for the canonical representative `P` of `β`, a common root
+`(z, t_z)` of `H_tilde' H` and `P` over `F`. -/
+lemma exists_common_root_of_mem_S_β {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) {z : F}
+    (hz : z ∈ S_β β) :
+    ∃ t : F, Polynomial.evalEval z t (H_tilde' H) = 0 ∧
+      Polynomial.evalEval z t (canonicalRepOf𝒪 hH β) = 0 := by
+  obtain ⟨root, hroot⟩ := hz
+  refine ⟨root.1, root.2, ?_⟩
+  rw [← π_z_eq_evalEval_canonicalRep hH β z root]
+  exact hroot
+
+/-- The `X`-elimination polynomial of Lemma A.1: the `Y`-resultant of `H_tilde' H` with the
+canonical representative of `β`, an element of `F[X]`. Its roots contain `S_β`. -/
+noncomputable def elimPoly {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) : F[X] :=
+  Polynomial.resultant (H_tilde' H) (canonicalRepOf𝒪 hH β)
+    (H_tilde' H).natDegree (canonicalRepOf𝒪 hH β).natDegree
+
+/-- Specializing `X := z` commutes with the resultant: `(elimPoly β).eval z` is the resultant over
+`F` of the two specialized univariate polynomials in `Y`. -/
+lemma eval_elimPoly {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) (z : F) :
+    (elimPoly hH β).eval z =
+      Polynomial.resultant (Polynomial.Bivariate.evalX z (H_tilde' H))
+        (Polynomial.Bivariate.evalX z (canonicalRepOf𝒪 hH β))
+        (H_tilde' H).natDegree (canonicalRepOf𝒪 hH β).natDegree := by
+  rw [elimPoly, Polynomial.Bivariate.evalX_eq_map, Polynomial.Bivariate.evalX_eq_map,
+      Polynomial.resultant_map_map]
+  rfl
+
+/-- For `z ∈ S_β`, the elimination polynomial vanishes at `z`. -/
+lemma elimPoly_eval_eq_zero_of_mem_S_β {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) {z : F}
+    (hz : z ∈ S_β β) :
+    (elimPoly hH β).eval z = 0 := by
+  classical
+  obtain ⟨t, hHt, hPt⟩ := exists_common_root_of_mem_S_β hH β hz
+  rw [eval_elimPoly]
+  set f := Polynomial.Bivariate.evalX z (H_tilde' H) with hf_def
+  set g := Polynomial.Bivariate.evalX z (canonicalRepOf𝒪 hH β) with hg_def
+  -- Both specialized polynomials have `t` as a root, so `X - C t` divides each.
+  have hf_root : f.IsRoot t := by
+    rw [hf_def, Polynomial.Bivariate.evalX_eq_map, Polynomial.IsRoot,
+        Polynomial.map_evalRingHom_eval]; exact hHt
+  have hg_root : g.IsRoot t := by
+    rw [hg_def, Polynomial.Bivariate.evalX_eq_map, Polynomial.IsRoot,
+        Polynomial.map_evalRingHom_eval]; exact hPt
+  have hdvd_f : (Polynomial.X - Polynomial.C t) ∣ f := Polynomial.dvd_iff_isRoot.mpr hf_root
+  have hdvd_g : (Polynomial.X - Polynomial.C t) ∣ g := Polynomial.dvd_iff_isRoot.mpr hg_root
+  -- The degree arguments dominate the actual degrees of `f` and `g`.
+  have hfle : f.natDegree ≤ (H_tilde' H).natDegree := by
+    rw [hf_def, Polynomial.Bivariate.evalX_eq_map]; exact Polynomial.natDegree_map_le
+  have hgle : g.natDegree ≤ (canonicalRepOf𝒪 hH β).natDegree := by
+    rw [hg_def, Polynomial.Bivariate.evalX_eq_map]; exact Polynomial.natDegree_map_le
+  have hmn : (H_tilde' H).natDegree ≠ 0 ∨ (canonicalRepOf𝒪 hH β).natDegree ≠ 0 :=
+    Or.inl (by rw [natDegree_H_tilde' hH]; exact Nat.ne_of_gt hH)
+  -- By contradiction: if the resultant is nonzero, `X - C t` would divide a nonzero constant.
+  by_contra hres
+  obtain ⟨p, q, _, _, hpq⟩ :=
+    Polynomial.exists_mul_add_mul_eq_C_resultant f g hfle hgle hmn
+  have hdvd_C : (Polynomial.X - Polynomial.C t) ∣
+      Polynomial.C (Polynomial.resultant f g (H_tilde' H).natDegree
+        (canonicalRepOf𝒪 hH β).natDegree) := by
+    rw [← hpq]; exact dvd_add (hdvd_f.mul_right p) (hdvd_g.mul_right q)
+  have hC_ne : Polynomial.C (Polynomial.resultant f g (H_tilde' H).natDegree
+      (canonicalRepOf𝒪 hH β).natDegree) ≠ 0 := by
+    simpa [Polynomial.C_eq_zero] using hres
+  have hdeg_le := Polynomial.degree_le_of_dvd hdvd_C hC_ne
+  rw [Polynomial.degree_X_sub_C, Polynomial.degree_C
+      (by simpa [Polynomial.C_eq_zero] using hres)] at hdeg_le
+  exact absurd hdeg_le (by decide)
+
+/-- The elimination polynomial is nonzero. This is where `[Fact (Irreducible H)]` is used: over
+`RatFunc F`, `H_tilde H` is irreducible and the (mapped) canonical representative has strictly
+smaller `Y`-degree, hence cannot be divisible by `H_tilde H`, so the two are coprime and their
+resultant — the image of `elimPoly` under `univPolyHom` — is nonzero. -/
+lemma elimPoly_ne_zero {H : F[X][Y]} [Fact (Irreducible H)] (hH : 0 < H.natDegree)
+    (β : 𝒪 H) (hP : canonicalRepOf𝒪 hH β ≠ 0) :
+    elimPoly hH β ≠ 0 := by
+  have hinj : Function.Injective (univPolyHom : F[X] →+* RatFunc F) := by
+    rw [univPolyHom]; exact IsFractionRing.injective _ _
+  -- Map the resultant down to `RatFunc F`.
+  have hmap : univPolyHom (elimPoly hH β) =
+      Polynomial.resultant (H_tilde H) ((canonicalRepOf𝒪 hH β).map univPolyHom)
+        (H_tilde' H).natDegree (canonicalRepOf𝒪 hH β).natDegree := by
+    rw [elimPoly, ← Polynomial.resultant_map_map, H_tilde_equiv_H_tilde']
+  -- The mapped canonical representative is nonzero with `Y`-degree `< H_tilde H`.
+  set P' := (canonicalRepOf𝒪 hH β).map univPolyHom with hP'_def
+  have hP'_ne : P' ≠ 0 := by
+    rw [hP'_def]
+    intro hzero
+    exact hP (by
+      have hmi : Function.Injective (Polynomial.map (univPolyHom : F[X] →+* RatFunc F)) :=
+        Polynomial.map_injective _ hinj
+      exact hmi (by simpa using hzero))
+  have hHt_irr : Irreducible (H_tilde H) := irreducibleHTildeOfIrreducible hH (Fact.out)
+  have hdeg_lt : P'.degree < (H_tilde H).degree := by
+    rw [hP'_def]
+    refine lt_of_le_of_lt Polynomial.degree_map_le ?_
+    rw [degree_H_tilde_eq hH]
+    exact canonicalRepOf𝒪_degree_lt hH β
+  -- `H_tilde H` does not divide `P'` (degree), so they are coprime.
+  have hnotdvd : ¬ (H_tilde H ∣ P') := fun hdvd =>
+    absurd (Polynomial.eq_zero_of_dvd_of_degree_lt hdvd hdeg_lt) hP'_ne
+  have hcop : IsCoprime (H_tilde H) P' :=
+    (dvd_or_isCoprime _ _ hHt_irr).resolve_left hnotdvd
+  have hres_ne : Polynomial.resultant (H_tilde H) P'
+      (H_tilde' H).natDegree (canonicalRepOf𝒪 hH β).natDegree ≠ 0 := by
+    have hcop' : IsCoprime (H_tilde H) P' := hcop
+    -- `resultant_ne_zero` uses default degrees; rewrite to the right degree arguments.
+    -- (`natDegree_H_tilde` was excised; derive the natDegree equality from `degree_H_tilde_eq`.)
+    have hHd : (H_tilde H).natDegree = (H_tilde' H).natDegree :=
+      Polynomial.natDegree_eq_of_degree_eq (degree_H_tilde_eq hH)
+    have hPd : P'.natDegree = (canonicalRepOf𝒪 hH β).natDegree := by
+      rw [hP'_def, Polynomial.natDegree_map_eq_of_injective hinj]
+    have := Polynomial.resultant_ne_zero (H_tilde H) P' hcop'
+    rwa [hHd, hPd] at this
+  intro hzero
+  apply hres_ne
+  rw [← hmap, hzero, map_zero]
+
 end
 
 
@@ -2782,8 +2991,22 @@ lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) (hHyp : Hypotheses x₀ 
         natDegree_ξ_pre_coeff_top_eq_zero_of_natDegree_eq hHyp hd2 hg hdH_eq
       rw [htop, add_zero]
 
-/-- There exist regular elements `β` with a weight bound as given in Claim A.2
-of Appendix A.4 of [BCIKS20]. -/
+/-- There exist regular elements `β` with the *weight upper bound* of Claim A.2 of
+Appendix A.4 of [BCIKS20].
+
+**Honesty note (the §5 frontier).** This lemma asserts ONLY the weight upper bound
+`Λ(β) ≤ (2t+1)·d_R·D`, which is satisfied vacuously by `β = 0` — and that is exactly
+the witness used here (`fun _ => ⟨0, by simp⟩`). It is therefore a true but
+*under-specified* statement: the `β` it produces is NOT the genuine recursive
+Hensel-lift numerator of [BCIKS20] (A.1), and carries no functional relation to
+`R`/`x₀`. The genuine numerator additionally satisfies the lift identity
+`embeddingOf𝒪Into𝕃 (β t) = α_t · W^{t+1} · ξ^{e_t}` that Claims 5.8/5.8'/5.9 read off
+(`α' t = 0 ⟺ embedding (β t) = 0` via `Lemma_A_1`); constructing it requires recursive
+multivariate-Hasse / integer-partition / multinomial infrastructure not present in this
+tree or in mathlib. This is the irreducible in-tree frontier of the BCIKS20 §5 chain.
+See `research/proximity-prize/dispositions/ingredient-D-{plan,result}.md` for the full
+construction spec. The signature is also missing `x₀`/`hHyp`, so it structurally cannot
+yet reference `α₀ = T/W`; a genuine numerator needs a strengthened signature. -/
 lemma β_regular (R : F[X][X][Y])
                 (H : F[X][Y]) [_H_irreducible : Fact (Irreducible H)]
                 [_H_natDegree_pos : Fact (0 < H.natDegree)]

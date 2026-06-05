@@ -54,6 +54,39 @@ oracles in `Spec.lean`) answers its only (unit) query with the message itself. -
 @[simp] lemma answer_instDefault {M : Type _} (m : M) (q : Unit) :
     @OracleInterface.answer M OracleInterface.instDefault m q = m := rfl
 
+open OracleInterface in
+/-- Local message-query collapse for `OracleInterface.simOracle2`. -/
+lemma simulateQ_simOracle2_messageQuery {ι : Type} {oSpec : OracleSpec ι}
+    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _)
+      = (pure (OracleInterface.answer (t₂ qm.1) qm.2) : OracleComp oSpec _) := by
+  change simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM ((oSpec + ([T₁]ₒ + [T₂]ₒ)).query (Sum.inr (Sum.inr qm)))) = _
+  rw [simulateQ_spec_query]
+  simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inr,
+    QueryImpl.liftTarget_apply]
+  change liftM (OracleInterface.simOracle0 T₂ t₂ qm) = _
+  simp only [OracleInterface.simOracle0]
+  rfl
+
+open OracleInterface in
+/-- OptionT/query form of `simulateQ_simOracle2_messageQuery`. -/
+lemma simulateQ_simOracle2_query {ι : Type} {oSpec : OracleSpec ι}
+    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+      = (OptionT.lift (pure (OracleInterface.answer (t₂ qm.1) qm.2))
+          : OptionT (OracleComp oSpec) _) := by
+  rw [show (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+        = OptionT.lift (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _) from rfl]
+  rw [simulateQ_optionT_lift, simulateQ_simOracle2_messageQuery]
+  rfl
+
 variable (κ : ℕ) [NeZero κ]
 variable (L : Type) [CommRing L] [Nontrivial L] [Fintype L] [DecidableEq L]
   [SampleableType L]
@@ -179,6 +212,20 @@ noncomputable def oracleVerifier :
   embed := ⟨fun j => Sum.inl j, fun a b h => by cases h; rfl⟩
   hEq := fun i => rfl
 
+/-- The batching-phase oracle verifier passes every output oracle through to the unchanged input
+oracle (`embed = Sum.inl`, `OStmtIn = OStmtOut`, `hEq = rfl`) and exposes no message oracle, so its
+`AppendCoherent` coherence holds by `rfl`. Used to `.append` the batching phase onto the core
+interaction phase. -/
+instance instOracleVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)) where
+  hCohInl := fun a k h => by
+    have : a = k := by
+      simpa only [oracleVerifier, Function.Embedding.coeFn_mk, Sum.inl.injEq] using h
+    subst this; rfl
+  hCohInr := fun a k h => by
+    simp only [oracleVerifier, Function.Embedding.coeFn_mk, reduceCtorEq] at h
+
 open OracleInterface in
 omit [NeZero κ] [Fintype L] [SampleableType L] [Fintype K] [DecidableEq K]
   [NeZero ℓ] [NeZero ℓ'] in
@@ -231,6 +278,13 @@ noncomputable def batchingOracleReduction : OracleReduction (oSpec:=[]ₒ)
     (pSpec := pSpecBatching (κ:=κ) (L:=L) (K:=K) (P:=P)) where
   prover := oracleProver κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)
   verifier := oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)
+
+/-- The batching oracle *reduction*'s verifier is definitionally `oracleVerifier`, so it inherits
+`AppendCoherent`. -/
+instance instBatchingOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (batchingOracleReduction κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)).verifier :=
+  instOracleVerifierAppendCoherent κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)
 
 /-! ## RBR Knowledge Soundness Components -/
 
@@ -388,7 +442,11 @@ noncomputable def batchingKnowledgeStateFunction :
       -- `decomposeRows_spec`); it specializes to the concrete `binaryTowerProfile` lemma.
       have hcheck := hSuccTrue.2.2.1
       rw [← hSuccTrue.2.1, hSuccTrue.1] at hcheck
-      exact (performCheckOriginalEvaluation_packMLE_iff' P ℓ ℓ' h_l
+      -- `hcheck : performCheckOriginalEvaluation original_claim r
+      --   (embedded_MLP_eval (packMLE P.basis witMid.t) r) = true`. The DP24 capstone
+      -- `performCheckOriginalEvaluation_packMLE_iff` (ported, Profile-abstract) turns this into
+      -- exactly `original_claim = aeval r witMid.t.val` (= the goal `… = witMid.t.val.aeval r`).
+      exact (performCheckOriginalEvaluation_packMLE_iff P ℓ ℓ' h_l
         stmtIn.1.original_claim witMid.t stmtIn.1.t_eval_point).mp hcheck
     | ⟨1, h⟩ => nomatch h
   toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by
@@ -403,7 +461,7 @@ noncomputable def batchingKnowledgeStateFunction :
     --     is `(failureState, witOut) ∈ relOut`, exactly the repaired else-branch goal.
     -- The sumcheck-consistency conjunct lives inside `sumcheckRoundRelationProp`/`relOut` under the
     -- SAME free `𝓑`, so it transports verbatim — NO `𝓑` pinning needed here (pinning is only
-    -- required by `batchingReduction_perfectCompleteness`, which must establish consistency from
+    -- required by the batching-phase completeness argument, which must establish consistency from
     -- scratch on the honest run).
     --
     -- VERIFIER-RUN QUERY SIMULATION (resolved). To consume `h_relOut` we resolve

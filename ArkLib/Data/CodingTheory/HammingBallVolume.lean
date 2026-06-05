@@ -205,4 +205,44 @@ theorem hammingBallVolume_eq_ncard_hammingBall
   refine Finset.sum_congr rfl (fun i _ ↦ ?_)
   exact (card_filter_hammingDist_eq y i).symm
 
+/-- **Top-term lower bound on the Hamming-ball volume.** The volume is at least
+its single largest-index summand `C(n, ⌊δn⌋)·(q−1)^⌊δn⌋`. This is the first
+(combinatorial) half of the entropy-volume estimate `q^{nH_q(δ)}/√(…) ≤ Vol`
+(ABF26 C3.8): keep only the boundary term, then the remaining work is the
+Stirling lower bound on the single binomial coefficient. -/
+theorem hammingBallVolume_ge_top_term (q : ℕ) (δ : ℝ) (n : ℕ) :
+    Nat.choose n (⌊δ * n⌋₊) * (q - 1) ^ (⌊δ * n⌋₊) ≤ hammingBallVolume q δ n := by
+  classical
+  rw [hammingBallVolume]
+  refine Finset.single_le_sum (f := fun i => Nat.choose n i * (q - 1) ^ i)
+    (fun i _ => Nat.zero_le _) ?_
+  exact Finset.self_mem_range_succ _
+
+/-- **Single-term lower bound on the Hamming-ball volume.**
+
+Every summand whose radius index lies inside the ball gives a lower bound on
+`Vol_q(δ,n)`.  This is the flexible form used by entropy-volume arguments that
+choose an index near `δn` and then apply a binomial/Stirling estimate to that
+single summand. -/
+theorem hammingBallVolume_ge_term_of_le_floor
+    (q : ℕ) (δ : ℝ) (n i : ℕ) (hi : i ≤ ⌊δ * n⌋₊) :
+    Nat.choose n i * (q - 1) ^ i ≤ hammingBallVolume q δ n := by
+  classical
+  rw [hammingBallVolume]
+  refine Finset.single_le_sum (f := fun j => Nat.choose n j * (q - 1) ^ j)
+    (fun j _ => Nat.zero_le _) ?_
+  exact Finset.mem_range.mpr (Nat.lt_succ_of_le hi)
+
+/-- Real-valued form of `hammingBallVolume_ge_term_of_le_floor`. -/
+theorem hammingBallVolume_real_ge_term_of_le_floor
+    (q : ℕ) (δ : ℝ) (n i : ℕ) (hi : i ≤ ⌊δ * n⌋₊) :
+    ((Nat.choose n i * (q - 1) ^ i : ℕ) : ℝ) ≤ (hammingBallVolume q δ n : ℝ) := by
+  exact_mod_cast hammingBallVolume_ge_term_of_le_floor q δ n i hi
+
+/-- Real-valued form of the top-term lower bound. -/
+theorem hammingBallVolume_real_ge_top_term (q : ℕ) (δ : ℝ) (n : ℕ) :
+    ((Nat.choose n (⌊δ * n⌋₊) * (q - 1) ^ (⌊δ * n⌋₊) : ℕ) : ℝ)
+      ≤ (hammingBallVolume q δ n : ℝ) := by
+  exact hammingBallVolume_real_ge_term_of_le_floor q δ n (⌊δ * n⌋₊) le_rfl
+
 end CodingTheory

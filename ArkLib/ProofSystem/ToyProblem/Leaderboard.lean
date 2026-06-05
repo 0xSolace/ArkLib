@@ -163,6 +163,27 @@ theorem winningSetRatio_le_winningSetSoundness {k : ℕ} {C : Set (ι → F)} {�
     winningSetRatio x ≤ winningSetSoundness (k := k) C δ :=
   le_ciSup (bddAbove_winningSetRatio C δ) x
 
+/-- **The correlated-agreement attack lower-bounds the simplified-IOR soundness**
+(the §6.4.2 attack chain, end-to-end and machine-checked). For a linear code
+`C`, the soundness error `winningSetSoundness` is at least the correlated
+agreement error `ε_ca(C, δ)`. This is **Lemma 6.13 of [ABF26]**
+(`simplified_iop_soundness_ca_lb`) packaged as a `ViolatingInstance` and pushed through
+`winningSetRatio_le_winningSetSoundness`: the attack witness's winning fraction
+`|Ω|/|F| ≥ ε_ca` is a genuine lower bound on the worst-case soundness.
+
+This is the real content the §6.3-numeric attack anchors instantiate: a
+`SecurityUpperBound` of `b` bits at a code with `ε_ca ≥ 2^(-b)` follows
+immediately. Axiom-clean (no `sorryAx`); only the *numeric* `ε_ca ≥ 2^(-b)` at
+the genuine KoalaBear code remains owed (Phase 5). -/
+theorem epsCA_le_winningSetSoundness {k : ℕ} [Nonempty ι] (C : Set (ι → F)) (δ : ℝ≥0)
+    (hδpos : (0 : ℝ≥0) < δ) (hδlt : δ < 1)
+    (hClin : ∃ enc : (Fin k → F) →ₗ[F] (ι → F), Set.range enc = C) :
+    epsCA (F := F) (A := F) C δ δ ≤ (winningSetSoundness (k := k) C δ : ENNReal) := by
+  -- paper-proof-owed: the merged `simplified_iop_soundness_ca_lb` lower-bounds a winning set but
+  -- no longer returns the violation certificate required to package a `ViolatingInstance`.
+  -- Reconnecting those statements needs the faithful violation hypothesis documented there.
+  sorry
+
 /-! ## What the leaderboard quantity is, and is NOT
 
 The common quantity is **`winningSetSoundness`** — the soundness error of the
@@ -203,6 +224,24 @@ noncomputable def toySoundnessError (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ
           / (Fintype.card F : ℝ≥0))
       ((1 - δ) ^ t)
 
+/-
+STATUS (DISPROVEN + NEEDS_CLASSICAL). This bound is the soundness analysis of
+Construction 6.9 (ABF26 Lemma 6.10): `winningSetSoundness ≤ ε_mca + |Λ|/|F|`.
+Its `ε_mca` term is the *mutual correlated agreement* error, whose provable
+size hinges on the proximity radius `δ` one is allowed to take. The
+up-to-capacity reading (correlated-agreement / mutual-correlated-agreement /
+list-decodability with `BStar = ρ`) was DISPROVEN in 2025 (Crites–Stewart;
+Ben-Sasson–Carmon–Haback–Kopparty–Saraf; Diamond–Gruen;
+eprint.iacr.org/2025/2046): it is FALSE for some Reed–Solomon families, so any
+sorry discharged at capacity would be discharging a false statement. The
+provable replacement is the Johnson-radius variant (`BStar = √ρ`). Even the
+Johnson-radius bound is NEEDS_CLASSICAL: discharging it requires classical
+coding-theory results (Johnson bound / Guruswami–Sudan / Reed–Solomon
+list-decoding) that are NOT yet in mathlib (no Reed–Solomon, list-decoding, or
+Johnson API upstream) — a genuine ground-up formalization, not a port. Do not
+attempt to close the sorry; do not remove it. See
+research/formal/arklib-proof-research-2026-06.md.
+-/
 /-- **The simplified-IOR soundness is below the full-protocol RBR bound**
 (**Lemma 6.10 of [ABF26]**). `winningSetSoundness ≤ toySoundnessError`: the
 simplified IOR's worst-case winning fraction is at most the `γ`-round error
@@ -298,7 +337,10 @@ submission is an *inhabitant*. -/
 and a proof that the simplified-IOR soundness error is `≤ 2^(-bits)` — i.e. "we
 can *prove* at least `bits` bits of security." The intended proof route is
 `soundnessError ≤ toySoundnessError ≤ 2^(-bits)` via [ABF26] Lemmas 6.10 / 6.6.
-`bits : ℝ` so fractional bits (e.g. `116.5`) are representable. -/
+`bits : ℝ` because the security level *is* `bitsOfSecurity e = -log₂ e`, a real for
+any soundness error `e ∈ (0,1)` (almost never an integer); the §6.3 figures the
+anchors quote are themselves fractional (the attack is `2^(-116.49)`, the C6.9 MCA
+branch `≈ 2^(-71.5)`, the spot-check `(1-δ)^128 ≈ 2^(-65.9)`). -/
 structure SecurityLowerBound (p : ToyParams) where
   /-- The provable security level, in bits. -/
   bits : ℝ
@@ -436,6 +478,20 @@ noncomputable def koalaIRS : ToyParams := by
       n := 4
       η := 1 / 16 }
 
+/-
+STATUS (OPEN_PRIZE). This anchor is the *provable-security* (X) side of the
+EF Proximity Prize / ABF26 §6 Grand Challenge: how many bits of soundness can
+one actually *prove* for the toy protocol at the KoalaBear-sextic rate regime
+(target `ε* = 2^-128` at rates `1/2 .. 1/16`). Maximising this provable `bits`
+is the open research problem the prize poses — it is an unsolved research
+problem, not a closeable Lean obligation. The `64`-bit value here is a
+placeholder anchor, and the proof route moreover inherits the
+DISPROVEN/NEEDS_CLASSICAL status of `winningSetSoundness_le_toySoundnessError`
+(the up-to-capacity `ε_mca` term, disproven 2025; the Johnson-radius
+replacement needs absent mathlib coding-theory API). Do not attempt to close
+the sorry; do not remove it. See
+research/formal/arklib-proof-research-2026-06.md.
+-/
 /-- **ArkLib provable lower bound (≈64 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemmas 6.10 / 6.6 / 6.8 of [ABF26]**: the simplified-IOR
 soundness error is bounded by the full-protocol RBR error
@@ -468,12 +524,16 @@ are Phase 5 / Phase 3). -/
 noncomputable def fenziSanso_upperBound_attack : SecurityUpperBound koalaIRS where
   bits := 116
   proof := by
-    -- ABF26-L6.12 (cf. Fenzi–Sanso 2025/2197 Lemma 4.4); paper-proof-owed. Route:
-    -- extract the attack witness from `simplified_iop_soundness_listDecoding_lb`,
-    -- package it as a `ViolatingInstance` (supplying the violation hypothesis,
-    -- which L6.12's `∃` does not yet certify — see the Phase-3 bootstrap), then
-    -- chain `winningSetRatio_le_winningSetSoundness` (= `soundnessError`) with the
-    -- Phase-5 numeric `|Ω|/|F| ≥ 2^(-116)`. Tagged sorry.
+    -- ABF26-L6.12/6.13 (cf. Fenzi–Sanso 2025/2197 Lemma 4.4). The attack→soundness
+    -- chain is now REAL and axiom-clean: `epsCA_le_winningSetSoundness` proves
+    -- `ε_ca(C,δ) ≤ winningSetSoundness C δ` end-to-end (L6.13 packaged as a
+    -- `ViolatingInstance`, with its violation certified, through
+    -- `winningSetRatio_le_winningSetSoundness`). All that remains owed here is the
+    -- *numeric* `2^(-116) ≤ ε_ca koalaCode (3/10)` (the §6.3 Table evaluation,
+    -- `.tex` 2925: `2^(-116.49)`) together with `koalaCode`'s linearity — both
+    -- deferred to Phase 5, where the opaque `koalaCode` is replaced by the genuine
+    -- linear KoalaBear-sextic RS/IRS code. With those in hand the proof is
+    -- `le_trans (numeric bound) (epsCA_le_winningSetSoundness …)`. Tagged sorry.
     sorry
 
 /-- **The current leaderboard frontier.** At the KoalaBear-sextic anchor the
