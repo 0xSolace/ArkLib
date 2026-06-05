@@ -216,6 +216,36 @@ noncomputable def averageDistOn
   (1 : ℚ) / (2 * choose_2 B.card) *
     ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, Δ₀(x.1, x.2)
 
+/-- Average absolute distance from a fixed center to a finite family. -/
+noncomputable def averageDistToOn
+    {ι : Type} [Fintype ι] {α : Type} [DecidableEq α]
+    (B : Finset (ι → α)) (f : ι → α) : ℚ :=
+  (1 : ℚ) / B.card * ∑ x ∈ B, Δ₀(f, x)
+
+/-- If every word in a finite family has absolute distance at most `r` from `f`,
+then its average absolute distance from `f` is at most `r`. -/
+theorem averageDistToOn_real_le_of_forall_dist_le
+    {ι : Type} [Fintype ι]
+    {α : Type} [DecidableEq α]
+    {B : Finset (ι → α)} {f : ι → α} {r : ℝ}
+    (hB : 0 < B.card)
+    (hdist : ∀ x ∈ B, (hammingDist f x : ℝ) ≤ r) :
+    ((averageDistToOn B f : ℚ) : ℝ) ≤ r := by
+  unfold averageDistToOn
+  have hsum : (∑ x ∈ B, (hammingDist f x : ℝ)) ≤
+      ∑ x ∈ B, r :=
+    Finset.sum_le_sum hdist
+  have hcard_pos : (0 : ℝ) < (B.card : ℝ) := by exact_mod_cast hB
+  calc
+    ((1 : ℚ) / B.card * ∑ x ∈ B, Δ₀(f, x) : ℚ) =
+        (1 : ℝ) / B.card * ∑ x ∈ B, (hammingDist f x : ℝ) := by
+          simp [Nat.cast_sum]
+    _ ≤ (1 : ℝ) / B.card * ∑ x ∈ B, r :=
+          mul_le_mul_of_nonneg_left hsum (by positivity)
+    _ = r := by
+          rw [sum_const, nsmul_eq_mul]
+          field_simp [hcard_pos.ne']
+
 /-- Any two distinct members of a code are separated by at least `Code.minDist`. -/
 lemma minDist_le_hammingDist_of_mem_ne
     {ι : Type} [Fintype ι] {α : Type} [DecidableEq α]
