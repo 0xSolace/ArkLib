@@ -1041,6 +1041,170 @@ theorem append_PrvState_natAdd_succ (k : Fin n) :
   rw [Fin.append_right]
   rfl
 
+/-- The appended protocol's direction at a *right interior* round `Fin.natAdd m k` (`k : Fin n`)
+matches `pSpec₂`'s direction at `k`.  Mirror of `append_dir_castLE` via `Fin.append_right`. -/
+theorem append_dir_natAdd (k : Fin n) :
+    (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = pSpec₂.dir k := by
+  show Fin.vappend pSpec₁.dir pSpec₂.dir (Fin.natAdd m k) = pSpec₂.dir k
+  rw [Fin.vappend_eq_append, Fin.append_right]
+
+/-- The appended-protocol message type at a right interior round equals `pSpec₂`'s. -/
+theorem append_Message_natAdd (k : Fin n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .P_to_V) (hDir₂ : pSpec₂.dir k = .P_to_V) :
+    (pSpec₁ ++ₚ pSpec₂).Message ⟨Fin.natAdd m k, hDir⟩ = pSpec₂.Message ⟨k, hDir₂⟩ := by
+  show Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (Fin.natAdd m k) = pSpec₂.«Type» k
+  rw [Fin.vappend_eq_append, Fin.append_right]
+
+/-- The appended-protocol challenge type at a right interior round equals `pSpec₂`'s. -/
+theorem append_Challenge_natAdd (k : Fin n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .V_to_P) (hDir₂ : pSpec₂.dir k = .V_to_P) :
+    (pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m k, hDir⟩ = pSpec₂.Challenge ⟨k, hDir₂⟩ := by
+  show Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (Fin.natAdd m k) = pSpec₂.«Type» k
+  rw [Fin.vappend_eq_append, Fin.append_right]
+
+/-! ### Seam-round reductions
+
+The seam round `m` is the genuinely-new monadic-interleaving step of `Prover.append` (the `i = m`
+branch): it threads `P₁.output state >>= P₂.input` before `P₂`'s round-`0` step.  We characterize the
+two seam shapes (`sendMessage`/`receiveChallenge`) heterogeneously in terms of `P₁.output` /
+`P₂.input` / `P₂`'s round-0 step.  These feed the seam-round `processRound` in the right-block run. -/
+
+/-- State-type equality: the appended prover's state at the seam-round `castSucc` index `m`
+(the state going INTO the seam round) equals `P₁`'s last state. -/
+theorem append_PrvState_seam_castSucc (hn : 0 < n) :
+    (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc = P₁.PrvState (Fin.last m) := by
+  have := append_PrvState_castLE (P₁ := P₁) (P₂ := P₂) (Fin.last m)
+  rw [show ((Fin.last m).castLE (show m + 1 ≤ m + n + 1 by omega) : Fin (m + n + 1))
+        = (⟨m, by omega⟩ : Fin (m + n)).castSucc from by ext; simp] at this
+  exact this
+
+/-- **Seam-round `sendMessage` reduction.**  At the seam round `m` (the `i = m` branch of
+`Prover.append.sendMessage`), the appended prover's `sendMessage` is heterogeneously equal to
+`P₁.output state >>= fun ctx => P₂.sendMessage ⟨0,_⟩ (P₂.input ctx)`. -/
+theorem append_sendMessage_seam (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir ⟨m, by omega⟩ = .P_to_V)
+    (hDir₂ : pSpec₂.dir ⟨0, hn⟩ = .P_to_V)
+    (state : (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc) :
+    HEq ((P₁.append P₂).sendMessage ⟨⟨m, by omega⟩, hDir⟩ state)
+      (do
+        let ctxIn₂ ← P₁.output (cast (append_PrvState_seam_castSucc hn) state)
+        P₂.sendMessage ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂) : OracleComp oSpec _) := by
+  unfold Prover.append
+  dsimp only [Fin.vappend_eq_append]
+  have hnlt : ¬ (↑(⟨m, by omega⟩ : Fin (m + n)) : ℕ) < m := by simp
+  rw [id_eq, dif_neg hnlt]
+  have heqm : (↑(⟨m, by omega⟩ : Fin (m + n)) : ℕ) = m := by simp
+  rw [dif_pos heqm]
+  simp only [eq_mpr_eq_cast, eq_mp_eq_cast]
+  apply HEq.trans (cast_heq _ _)
+  -- Both sides are `P₁.output (·) >>= fun ctx => P₂.sendMessage ⟨0,_⟩ (P₂.input ctx)` over oSpec;
+  -- the seam's internally-cast `state` and our `cast _ state` target the same `P₁.PrvState (last m)`.
+  refine bind_heq_congr (α := Stmt₂ × Wit₂) (α' := Stmt₂ × Wit₂) rfl
+    (by congr 1) ?_ ?_
+  · apply heq_of_eq; congr 1
+  · rintro c c' rfl; rfl
+
+/-- **Seam-round `receiveChallenge` reduction.**  The `V_to_P` analogue of `append_sendMessage_seam`:
+at the seam round `m`, the appended prover's `receiveChallenge` is heterogeneously equal to
+`P₁.output state >>= fun ctx => P₂.receiveChallenge ⟨0,_⟩ (P₂.input ctx)`. -/
+theorem append_receiveChallenge_seam (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir ⟨m, by omega⟩ = .V_to_P)
+    (hDir₂ : pSpec₂.dir ⟨0, hn⟩ = .V_to_P)
+    (state : (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc) :
+    HEq ((P₁.append P₂).receiveChallenge ⟨⟨m, by omega⟩, hDir⟩ state)
+      (do
+        let ctxIn₂ ← P₁.output (cast (append_PrvState_seam_castSucc hn) state)
+        P₂.receiveChallenge ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂) : OracleComp oSpec _) := by
+  unfold Prover.append
+  dsimp only [Fin.vappend_eq_append]
+  have hnlt : ¬ (↑(⟨m, by omega⟩ : Fin (m + n)) : ℕ) < m := by simp
+  rw [dif_neg hnlt]
+  have heqm : (↑(⟨m, by omega⟩ : Fin (m + n)) : ℕ) = m := by simp
+  rw [dif_pos heqm]
+  simp only [eq_mpr_eq_cast, eq_mp_eq_cast]
+  apply HEq.trans (cast_heq _ _)
+  refine bind_heq_congr (α := Stmt₂ × Wit₂) (α' := Stmt₂ × Wit₂) rfl
+    (by congr 1) ?_ ?_
+  · apply heq_of_eq; congr 1
+  · rintro c c' rfl; rfl
+
+/-! ### Right interior-round reductions
+
+The right *interior* rounds `m+1 .. m+n-1` are the `i > m` branch of `Prover.append`: uniform `P₂`
+rounds.  These mirror the left-block reductions (`append_sendMessage_left` etc.), now indexed through
+`Fin.natAdd m k` (`k : Fin n`, `k > 0`); the appended step reduces heterogeneously to `P₂`'s step at
+round `k`, with the state transported by `append_PrvState_natAdd_castSucc`. -/
+
+/-- State-type equality: the appended prover's state at the interior right round `Fin.natAdd m k`'s
+`castSucc` (state going INTO interior round `k`, where `k > 0`) equals `P₂`'s state at `k`. -/
+theorem append_PrvState_natAdd_castSucc (k : Fin n) (hk : 0 < (k : ℕ)) :
+    (P₁.append P₂).PrvState (Fin.natAdd m k).castSucc = P₂.PrvState k.castSucc := by
+  have hpred : (⟨(k : ℕ) - 1, by omega⟩ : Fin n).succ = k.castSucc := by ext; simp; omega
+  have := append_PrvState_natAdd_succ (P₁ := P₁) (P₂ := P₂) ⟨(k : ℕ) - 1, by omega⟩
+  rw [hpred] at this
+  rw [show ((Fin.natAdd m k).castSucc : Fin (m + n + 1))
+        = (Fin.natAdd (m + 1) (⟨(k : ℕ) - 1, by omega⟩ : Fin n)).cast (by omega) from by
+        ext; simp; omega]
+  exact this
+
+/-- State-type equality at the interior right round `succ` index (state AFTER interior round `k`,
+`k > 0`).  Equals `P₂.PrvState k.succ`. -/
+theorem append_PrvState_natAdd_interior_succ (k : Fin n) (hk : 0 < (k : ℕ)) :
+    (P₁.append P₂).PrvState (Fin.natAdd m k).succ = P₂.PrvState k.succ := by
+  have := append_PrvState_natAdd_succ (P₁ := P₁) (P₂ := P₂) k
+  rw [show ((Fin.natAdd m k).succ : Fin (m + n + 1))
+        = (Fin.natAdd (m + 1) k).cast (by omega) from by ext; simp; omega]
+  exact this
+
+/-- **Right interior-round `sendMessage` reduction.**  At an interior right round `Fin.natAdd m k`
+(`k : Fin n`, `k > 0`, the `i > m` branch of `Prover.append.sendMessage`), the appended prover's
+`sendMessage` is heterogeneously equal to `P₂`'s `sendMessage` at round `k`. -/
+theorem append_sendMessage_natAdd (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .P_to_V)
+    (hDir₂ : pSpec₂.dir k = .P_to_V)
+    (state : (P₁.append P₂).PrvState (Fin.natAdd m k).castSucc) :
+    HEq ((P₁.append P₂).sendMessage ⟨Fin.natAdd m k, hDir⟩ state)
+      (P₂.sendMessage ⟨k, hDir₂⟩ (cast (append_PrvState_natAdd_castSucc k hk) state)) := by
+  unfold Prover.append
+  dsimp only [Fin.vappend_eq_append]
+  have hnlt : ¬ (↑(Fin.natAdd m k) : ℕ) < m := by simp
+  rw [id_eq, dif_neg hnlt]
+  have hne : (↑(Fin.natAdd m k) : ℕ) ≠ m := by simp; omega
+  rw [dif_neg hne]
+  simp only [eq_mpr_eq_cast, eq_mp_eq_cast]
+  apply HEq.trans (cast_heq _ _)
+  have hkeq : (⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩ : Fin n) = k := by ext; simp
+  have hdir₂' : pSpec₂.dir ⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩ = .P_to_V := by
+    rw [hkeq]; exact hDir₂
+  have hidx : (⟨⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩, hdir₂'⟩ : pSpec₂.MessageIdx)
+      = ⟨k, hDir₂⟩ := by ext; simp
+  refine sendMessage_heq_congr hidx ?_
+  exact (cast_heq _ _).trans ((cast_heq _ _).trans (cast_heq _ _).symm)
+
+/-- **Right interior-round `receiveChallenge` reduction.**  Mirror of `append_sendMessage_natAdd`
+for the `V_to_P` direction. -/
+theorem append_receiveChallenge_natAdd (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .V_to_P)
+    (hDir₂ : pSpec₂.dir k = .V_to_P)
+    (state : (P₁.append P₂).PrvState (Fin.natAdd m k).castSucc) :
+    HEq ((P₁.append P₂).receiveChallenge ⟨Fin.natAdd m k, hDir⟩ state)
+      (P₂.receiveChallenge ⟨k, hDir₂⟩ (cast (append_PrvState_natAdd_castSucc k hk) state)) := by
+  unfold Prover.append
+  dsimp only [Fin.vappend_eq_append]
+  have hnlt : ¬ (↑(Fin.natAdd m k) : ℕ) < m := by simp
+  rw [dif_neg hnlt]
+  have hne : (↑(Fin.natAdd m k) : ℕ) ≠ m := by simp; omega
+  rw [dif_neg hne]
+  simp only [eq_mpr_eq_cast, eq_mp_eq_cast]
+  apply HEq.trans (cast_heq _ _)
+  have hkeq : (⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩ : Fin n) = k := by ext; simp
+  have hdir₂' : pSpec₂.dir ⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩ = .V_to_P := by
+    rw [hkeq]; exact hDir₂
+  have hidx : (⟨⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩, hdir₂'⟩ : pSpec₂.ChallengeIdx)
+      = ⟨k, hDir₂⟩ := by ext; simp
+  refine receiveChallenge_heq_congr hidx ?_
+  exact (cast_heq _ _).trans ((cast_heq _ _).trans (cast_heq _ _).symm)
+
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
 witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
@@ -1053,33 +1217,47 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
         let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (P₁.run stmt wit)
         let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (P₂.run stmt₂ wit₂)
         return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩) := by
-  -- **WIP (left block DONE; seam + right block remain).**
+  -- **WIP — left block DONE; ALL per-round seam+interior reductions now PROVEN; run-assembly
+  -- (transcript-prefix family + right-block run induction + output) remains.**
   --
-  -- Expose `run` as `runToRound (Fin.last (m+n))` followed by `output` (`run_eq_runToRound_last`),
+  -- Strategy: expose `run` as `runToRound (Fin.last (m+n))` ≫ `output` (`run_eq_runToRound_last`),
   -- then factor the full run at the seam `k = ⟨m,_⟩` via the keystone
   -- `runToRound_eq_bind_continueFromTo`:
-  --
   --   (P₁.append P₂).runToRound (last (m+n)) stmt wit
   --     = (P₁.append P₂).runToRound ⟨m,_⟩ stmt wit
   --         >>= continueFromTo (P₁.append P₂) stmt wit ⟨m,_⟩ (last (m+n)).
+  -- The first factor = `append_runToRound_seam` (PROVEN): ≍ `liftM (P₁.runToRound (last m))`.
   --
-  -- The first factor is `append_runToRound_seam` (PROVEN, this file): heterogeneously the `liftM` of
-  -- `P₁.runToRound (last m)` — i.e. `P₁`'s full message phase.  The remaining obligation is the
-  -- continuation `continueFromTo … ⟨m,_⟩ (last (m+n))`, which decomposes as:
-  --   (a) SEAM round `m` (`Prover.append`'s `i = m` branch): `P₁.output >>= P₂.input >>= P₂` round 0.
-  --       This is the genuinely new monadic-interleaving step (no left-block analog); it produces the
-  --       `(stmt₂, wit₂) = ← P₁.output (…)` and feeds `P₂.input (stmt₂, wit₂)`, matching the RHS
-  --       boundary `liftM (P₁.run …) >>= fun ⟨_,stmt₂,wit₂⟩ => liftM (P₂.run stmt₂ wit₂)`.
-  --   (b) RIGHT interior rounds `m+1 .. m+n-1` (`Prover.append`'s `i > m` branch): uniform `P₂`
-  --       rounds, the mirror of the proven left block under `Fin.natAdd (m+1)` /
-  --       `range_challenge_append_inr` (state transport: `append_PrvState_natAdd_succ`, PROVEN above).
-  --   (c) `output`: combine via `++ₜ` (`FullTranscript.append`, `append_fst`/`append_snd`) and the
-  --       `P₂.output` tail (the `output` branch of `Prover.append`, incl. the `n = 0` degenerate seam).
+  -- PROVEN per-round handles (all #print-axioms clean), ready to feed the run induction:
+  --   • SEAM round `m` (`i = m` branch): `append_sendMessage_seam` / `append_receiveChallenge_seam`
+  --     reduce the seam step to `P₁.output (cast _ state) >>= fun ctx => P₂.{send,recv} ⟨0,_⟩
+  --     (P₂.input ctx)` — exactly the `liftM (P₁.run) >>= fun ⟨_,s₂,w₂⟩ => liftM (P₂.run s₂ w₂)`
+  --     boundary (state transport `append_PrvState_seam_castSucc`, dir `append_dir_natAdd ⟨0,_⟩`).
+  --   • RIGHT interior rounds `m+1..m+n-1` (`i > m` branch): `append_sendMessage_natAdd` /
+  --     `append_receiveChallenge_natAdd` reduce to `P₂`'s step at round `k`; state transports
+  --     `append_PrvState_natAdd_castSucc` / `_interior_succ`; types `append_{dir,Message,Challenge}_natAdd`.
   --
-  -- Remaining precise obligation: the seam+right continuation lemma
-  --   HEq (continueFromTo (P₁.append P₂) stmt wit ⟨m,_⟩ (last (m+n)) rSeam)
-  --       (do let ⟨tr₂,s₃,w₃⟩ ← liftM (P₂.run (P₁.output-derived stmt₂) wit₂); …)
-  -- where `rSeam` is the seam-state result of `append_runToRound_seam`.  Blocked on (a) and (b).
+  -- REMAINING OBSTRUCTION (the genuinely new content, blocking assembly):
+  --   (T) Transcript-PREFIX family.  Unlike the left block (where the appended transcript truncated
+  --       to `j ≤ m` IS `pSpec₁.Transcript j`), the RIGHT block carries the full `transcript₁`
+  --       prefix: `(pSpec₁++pSpec₂).Transcript (natAdd m k).castSucc ≅ transcript₁ ⊕ pSpec₂.Transcript
+  --       k.castSucc`.  Need `Fin.happend`/`Fin.snoc` interaction lemmas — a prefix analogue of the
+  --       proven `concat_heq` — proving `Transcript.concat msg (transcript₁ ++ₜ tr₂)
+  --       ≍ transcript₁ ++ₜ (Transcript.concat msg tr₂)` (i.e. `Fin.happend` commutes with the
+  --       seam-side `Fin.snoc`), plus the seam boundary `transcript₁ ++ₜ (default : Transcript 0)
+  --       ≍ transcript₁`.
+  --   (R) Right-block run induction.  By `Fin.induction` on `k : Fin (n+1)`, with the prefix `(T)`
+  --       threaded: `continueFromTo (P₁++P₂) stmt wit ⟨m,_⟩ (natAdd m k) rSeam`
+  --       ≍ (do `⟨tr₂,s₂'⟩ ← P₂.runToRound k (P₂.input (←P₁.output …)) …; pure (transcript₁ ++ₜ tr₂, …)`)
+  --       — base `k=0` is `continueFromTo_self`; succ steps peel via `continueFromTo_succ_of_ne` +
+  --       `processRound_{message,challenge}` and the PROVEN per-round seam/interior reductions above.
+  --   (O) `output` assembly: combine via `++ₜ` (`append_fst`/`append_snd`) + `P₂.output` tail
+  --       (`output` branch of `Prover.append`, incl. `n = 0` degenerate seam where the right block is
+  --       empty and `P₁.output >>= P₂.input >>= P₂.output` collapses).
+  --
+  -- All round-local reductions are discharged; the residue is the transcript-prefix dependent-tuple
+  -- bookkeeping (T) + its induction (R) + output (O).  This is a `HEq`/`Fin.happend` engineering
+  -- task on top of the now-complete reduction layer, with NO remaining monadic-interleaving gap.
   sorry
 
 -- TODO: Need to define a function that "extracts" a second prover from the combined prover
