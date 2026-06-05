@@ -52,7 +52,7 @@ instance instBatchingCoreVerifierAppendCoherent :
   OracleVerifier.Append.AppendCoherent.append
     (c₁ := BatchingPhase.instOracleVerifierAppendCoherent κ L K P ℓ ℓ' h_l
       (aOStmtIn := mlIOPCS.toAbstractOStmtIn))
-    (c₂ := SumcheckPhase.instCoreInteractionOracleVerifierAppendCoherent κ L K P ℓ ℓ' h_l
+    (c₂ := RingSwitching.SumcheckPhase.instCoreInteractionOracleVerifierAppendCoherent κ L K P ℓ ℓ' h_l
       (aOStmtIn := mlIOPCS.toAbstractOStmtIn)) _ _
 
 /-- The oracle verifier for the full Binary Basefold protocol -/
@@ -74,7 +74,10 @@ def batchingCoreReduction :=
 instance instBatchingCoreReductionAppendCoherent :
     OracleVerifier.Append.AppendCoherent
       (batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS).verifier :=
-  OracleVerifier.Append.AppendCoherent.oracleReductionAppend _ _
+  OracleVerifier.Append.AppendCoherent.oracleReductionAppend
+    (R₁ := BatchingPhase.batchingOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
+    (R₂ := RingSwitching.SumcheckPhase.coreInteractionOracleReduction κ L K P ℓ ℓ' h_l
+       mlIOPCS.toAbstractOStmtIn)
 
 /-- The reduction for the full Binary Basefold protocol -/
 @[reducible]
