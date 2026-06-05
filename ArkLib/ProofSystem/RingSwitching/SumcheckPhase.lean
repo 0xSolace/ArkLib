@@ -1431,8 +1431,8 @@ variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ Pro
 /-- Perfect completeness for large-field reduction (Sumcheck ++ FinalSum) -/
 theorem coreInteraction_perfectCompleteness [IsDomain L] [IsDomain K] :
   OracleReduction.perfectCompleteness
-	    (oracleReduction := coreInteractionOracleReduction (κ := κ) (L := L) (K := K)
-	      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
+      (oracleReduction := coreInteractionOracleReduction (κ := κ) (L := L) (K := K)
+        (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
     (OStmtIn := aOStmtIn.OStmtIn)
     (StmtOut := MLPEvalStatement L ℓ')
@@ -1462,8 +1462,8 @@ def coreInteractionRbrKnowledgeError (j : (pSpecCoreInteraction L ℓ').Challeng
 /-- RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum) -/
 theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
   OracleVerifier.rbrKnowledgeSoundness
-	    (verifier := coreInteractionOracleVerifier (κ := κ) (L := L) (K := K)
-	      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
+      (verifier := coreInteractionOracleVerifier (κ := κ) (L := L) (K := K)
+        (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
     (OStmtIn := aOStmtIn.OStmtIn)
     (StmtOut := MLPEvalStatement L ℓ')
