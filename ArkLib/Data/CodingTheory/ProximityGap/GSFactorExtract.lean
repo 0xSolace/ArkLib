@@ -175,6 +175,21 @@ theorem curve_factor_extraction
   rw [Y_sub_Cp_dvd_iff_curveRestrict_eq_zero]
   exact eq_zero_of_natDegree_lt_multiplicity_sum hroot hbudget
 
+/-- **Factor extraction from root multiplicities.**  This is the usual GS-facing
+form: each agreement point contributes multiplicity `m a` to the univariate
+restriction `Q(X, p(X))`. -/
+theorem curve_factor_extraction_of_rootMultiplicity
+    (Q : (F[X])[X]) (p : F[X]) {S : Finset F} {m : F → ℕ}
+    (hroot : ∀ a ∈ S, m a ≤ (curveRestrict Q p).rootMultiplicity a)
+    (hbudget : (curveRestrict Q p).natDegree < ∑ a ∈ S, m a) :
+    (X - C p) ∣ Q := by
+  refine curve_factor_extraction Q p ?_ hbudget
+  intro a ha
+  by_cases hzero : curveRestrict Q p = 0
+  · rw [hzero]
+    exact dvd_zero _
+  · exact (Polynomial.le_rootMultiplicity_iff hzero).mp (hroot a ha)
+
 end FieldAssembly
 
 /-! ## Part 2: list-size bound
@@ -245,6 +260,18 @@ theorem gs_factor_extraction_list_size
   apply gs_list_size_le Q hQ Ps
   intro p hp
   exact curve_factor_extraction Q p (hroot p hp) (hbudget p hp)
+
+/-- End-to-end list-size bound in the root-multiplicity form normally produced
+by multiplicity transfer from interpolation constraints. -/
+theorem gs_factor_extraction_list_size_of_rootMultiplicity
+    (Q : (F[X])[X]) (hQ : Q ≠ 0) (Ps : Finset F[X])
+    (S : F[X] → Finset F) (m : F[X] → F → ℕ)
+    (hroot : ∀ p ∈ Ps, ∀ a ∈ S p, m p a ≤ (curveRestrict Q p).rootMultiplicity a)
+    (hbudget : ∀ p ∈ Ps, (curveRestrict Q p).natDegree < ∑ a ∈ S p, m p a) :
+    Ps.card ≤ Q.natDegree := by
+  apply gs_list_size_le Q hQ Ps
+  intro p hp
+  exact curve_factor_extraction_of_rootMultiplicity Q p (hroot p hp) (hbudget p hp)
 
 end EndToEnd
 
