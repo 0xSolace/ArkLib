@@ -571,7 +571,7 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
     Transcript.concat]
   simp only [liftComp_pure, liftComp_bind, liftComp_map, bind_assoc, pure_bind, map_pure]
   dsimp only []
-  simp only [liftComp_pure, liftComp_map, bind_assoc, pure_bind, map_pure]
+  skip
   sorry
 
 noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
@@ -1408,6 +1408,8 @@ instance instSumcheckLoopOracleReductionAppendCoherent :
 /-- Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum -/
 @[reducible]
 def coreInteractionOracleVerifier :=
+  letI := instSumcheckLoopOracleVerifierAppendCoherent
+    (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn)
   OracleVerifier.append (oSpec:=[]ₒ)
     (V₁:=sumcheckLoopOracleVerifier κ L K P ℓ ℓ' aOStmtIn)
     (pSpec₁:=pSpecSumcheckLoop L ℓ')
@@ -1417,6 +1419,8 @@ def coreInteractionOracleVerifier :=
 /-- Large-field reduction: Sumcheck seqCompose, then append FinalSum -/
 @[reducible]
 def coreInteractionOracleReduction :=
+  letI := instSumcheckLoopOracleReductionAppendCoherent
+    (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn)
   OracleReduction.append
     (R₁ := sumcheckLoopOracleReduction κ L K P ℓ ℓ' aOStmtIn)
     (pSpec₁:=pSpecSumcheckLoop L ℓ')
