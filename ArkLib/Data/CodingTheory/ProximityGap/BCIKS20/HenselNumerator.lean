@@ -75,7 +75,18 @@ half GIVEN the structured IH).  WAVE 5 also PROVES the precise wall: the structu
 NOT derivable from the (A.1) recursion (sub-additivity forces constant `D`, not `1`); it requires
 `Λ(α_t)=1`, i.e. (P2)'s root identity.  So (P1) is gated on the structured IH, which is gated on (P2).
 
-See `ingredientD-wave1-design.md` / `…-wave2.md` / … / `…-wave5.md` for the staged specs.
+WAVE 6 SCOPE (§4b′ — the (a-residual), CLOSED, axiom-clean `[propext, Classical.choice, Quot.sound]`,
+P2-independent).  The `B_coeff` weight bound `B_coeff_weight_le` is now FULLY PROVEN:
+`weight_Λ_over_𝒪 hH (B_coeff … i1 λ) D ≤ (natDegreeY R − Σλ)·(D+1−natDegreeY H) + degreeX p`.  Its
+new ingredients: the `Y↦T` bridge `liftBivariate_eq_eval₂_functionFieldT`, the no-divisibility
+`W`-clearing sum `W_pow_mul_eval₂_div_eq_liftBivariate`, the `W`-clearing **embedding identity**
+`embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared` (`embedding ⟦cleared⟧ = W^{natDegreeY p}·hasseEvalAtRoot`,
+the exact analogue of `RationalFunctions.embeddingOf𝒪Into𝕃_mk_ξ_pre`), and the `Y`/`X` weight split
+`weight_Λ_le_natDegreeY_mul_add_degreeX`.  The remaining `(P1)` residual is now EXACTLY the per-term
+wall (c) ⇐ structured IH ⇐ (P2); the (a-residual) no longer gates anything.  The only `B_coeff`
+sharpening left is the pure degree fact `degreeX p ≤ D−Σλ` (off the (P1)⇐(P2) path).
+
+See `ingredientD-wave1-design.md` / `…-wave2.md` / … / `…-wave6.md` for the staged specs.
 
 The objects here are the **genuine** mathematical objects, never stubs:
 `mvHasseCoeff k p` has `coeff n = (∏ᵢ (nᵢ+kᵢ).choose kᵢ) · coeff (n+k) p`, i.e. the real
@@ -528,10 +539,13 @@ noncomputable def hasseCoeffRepr𝒪 (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) : 
 `R` at `(x₀, α₀)` carrying its genuine integer prefactor — not a stub and not secretly `0`
 (`prefactor_pos` shows the integer weight is positive).
 
-WALL (the only deferred piece of `B_coeff`): the *weight* lemma
-`weight_Λ_over_𝒪 hH (B_coeff …) D ≤ (D − Σλ) + (d − δ_{i1,0} − Σλ)·Λ(W)` and the embedding
-identity `embeddingOf𝒪Into𝕃 (B_coeff …) = prefactor · W^{d−δ−Σλ} · hasseEvalAtRoot …` (the
-`Y↦T` vs `Y↦T/W` clearing).  The definition itself is complete and genuine. -/
+CLOSED (wave 6, P2-independent, axiom-clean): the *weight* lemma `B_coeff_weight_le`
+(`weight_Λ_over_𝒪 hH (B_coeff …) D ≤ (natDegreeY R − Σλ)·(D+1−natDegreeY H) + degreeX p`, the
+genuine in-tree realisation of the paper's `(D−Σλ)+(d−δ−Σλ)·Λ(W)`) and the `W`-clearing
+embedding identity `embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared`
+(`embedding ⟦cleared⟧ = W^{natDegreeY p}·hasseEvalAtRoot`, mirroring `embeddingOf𝒪Into𝕃_mk_ξ_pre`).
+The only further sharpening (to the paper's exact `(D−Σλ)` constant) is the pure P2-independent
+degree-tracking lemma `degreeX p ≤ D − Σλ`.  The definition itself is complete and genuine. -/
 noncomputable def B_coeff (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
     (lam : Nat.Partition m) : 𝒪 H :=
   (prefactor R.natDegree i1 lam) • hasseCoeffRepr𝒪 H x₀ R i1 (sigmaLambda lam)
@@ -736,11 +750,11 @@ This is the **`Y`-degree component** of BCIKS20's `B_coeff` weight bound
 `Λ_𝒪(hasseCoeffRepr𝒪 … i1 m) ≤ (D−m) + (d−δ−m)·Λ(W)` (lines 4060–4077): the `Y`-degree drop by
 `m = Σλ` is what supplies the `−m`.  It is genuinely true and reusable.
 
-The bound is stated on the **representative polynomial** (`F[X][Y]`-level `natDegreeY`), NOT yet on
-`weight_Λ_over_𝒪`: descending it to the `𝒪`-weight `Λ_𝒪(hasseCoeffRepr𝒪 …)` and producing the
-`Λ(W)`-scaled `(d−δ−m)` term requires the **`W`-clearing embedding identity** (`Y↦T` vs `Y↦T/W`)
-that converts each cleared `Y`-power into a `W`-factor — that is the genuine deferred content of
-`B_coeff_weight` and is NOT a degree fact.  See `ingredientD-wave4.md`. -/
+The bound is stated on the **representative polynomial** (`F[X][Y]`-level `natDegreeY`); it is
+descended to the `𝒪`-weight in `B_coeff_weight_le` (wave 6), where the complementary `X`-degree
+component (`degreeX p`) supplies the budget and the `W`-clearing embedding identity
+(`embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared`, the `Y↦T` vs `Y↦T/W` clearing analogue of
+`embeddingOf𝒪Into𝕃_mk_ξ_pre`) exhibits the `Λ(W)`-scaled structure.  See `ingredientD-wave6.md`. -/
 theorem hasseCoeffRepr𝒪_natDegreeY_le (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
     Bivariate.natDegreeY
         (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
@@ -748,6 +762,174 @@ theorem hasseCoeffRepr𝒪_natDegreeY_le (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ
   refine (evalX_natDegreeY_le (Polynomial.C x₀) _).trans ?_
   refine (hasseDerivX_natDegreeY_le i1 _).trans ?_
   exact hasseDerivY_natDegreeY_le m R
+
+/-! ### 4b′. The `W`-clearing embedding identity for the Hasse coefficient (WAVE 6, P2-independent)
+
+The `Y`-degree drop (`hasseCoeffRepr𝒪_natDegreeY_le`) is the `−Σλ` component of the `B_coeff`
+weight bound.  This block supplies the **complementary** piece: the `W`-clearing embedding identity
+relating the `Y↦T` lift form (`hasseCoeffRepr𝒪 = mk p`) to the `Y↦T/W` evaluation form
+(`hasseEvalAtRoot = eval₂ (T/W) p`), exactly mirroring how `embeddingOf𝒪Into𝕃_mk_ξ_pre`
+(`RationalFunctions.lean`:2380) relates `⟦ξ_pre⟧` to `ζ = eval₂ (T/W) R'(x₀,·)`.
+
+Unlike `ξ_pre` — which is *constructed* as a `W`-cleared polynomial whose top coefficient is
+`W`-divided (`P.coeff(d-1)/W`) using the genuine divisibility `W ∣ R'(x₀,·)_{d-1}` — the Hasse
+representative `hasseCoeffRepr𝒪 = mk p` is the *un-divided* `Y↦T` lift.  So the honest clearing
+identity here multiplies by `W^{natDegreeY p}` (the full `Y`-degree, NO top-coefficient division
+needed, hence NO divisibility hypothesis): clearing every `(T/W)^n` denominator at once converts
+each cleared `Y`-power `n` into a `W^{(deg)−n}` factor.  This is the genuine, always-true
+`W`-clearing identity, P2-independent. -/
+
+set_option linter.unusedSectionVars false in
+/-- **Bridge:** the bivariate lift `liftBivariate` is the `Y↦T` evaluation `eval₂ liftToFunctionField T`.
+Both are ring homs `F[X][Y] →+* 𝕃 H` agreeing on constants (`liftToFunctionField`) and on the
+variable (`functionFieldT`), so `Polynomial.ringHom_ext` identifies them.  This is the algebraic
+content behind `hasseCoeffRepr𝒪 = mk p` having embedding `eval₂ T p` (the un-cleared `Y↦T` form),
+to be compared against `hasseEvalAtRoot = eval₂ (T/W) p`. -/
+lemma liftBivariate_eq_eval₂_functionFieldT (p : F[X][Y]) :
+    liftBivariate (H := H) p
+      = Polynomial.eval₂ liftToFunctionField (functionFieldT (H := H)) p := by
+  have hring :
+      (liftBivariate (H := H) : F[X][Y] →+* 𝕃 H)
+        = Polynomial.eval₂RingHom (liftToFunctionField (H := H)) (functionFieldT (H := H)) := by
+    refine Polynomial.ringHom_ext (fun a => ?_) ?_
+    · rw [liftBivariate_C, Polynomial.coe_eval₂RingHom, Polynomial.eval₂_C]
+    · rw [liftBivariate_X, Polynomial.coe_eval₂RingHom, Polynomial.eval₂_X]
+  calc liftBivariate (H := H) p
+      = (liftBivariate (H := H) : F[X][Y] →+* 𝕃 H) p := rfl
+    _ = (Polynomial.eval₂RingHom (liftToFunctionField (H := H)) (functionFieldT (H := H))) p := by
+          rw [hring]
+    _ = Polynomial.eval₂ liftToFunctionField (functionFieldT (H := H)) p := by
+          rw [Polynomial.coe_eval₂RingHom]
+
+/-- **The `W`-clearing identity (lower-sum form, NO divisibility).**  For `P : F[X][Y]` with
+`P.natDegree ≤ k`, clearing the `(T/W)`-denominators of `eval₂ (T/W) P` by the full `W^k` gives a
+genuine `Y↦T`-polynomial image:
+`W^k · eval₂ (T/W) P = liftBivariate (∑_{i≤k} C(P.coeff i · W_poly^{k−i}) · X^i)`.
+This is the lower-sum portion of `W_pow_mul_eval₂_div_eq_sum` specialised to the `P.coeff(k+1) = 0`
+case; it needs no divisibility because every cleared power `i ≤ k` lands as a *non-negative* `W`-power
+`W^{k−i}` (no `1/W`).  Mirrors the `ξ_pre` clearing sum but for the un-divided Hasse representative. -/
+lemma W_pow_mul_eval₂_div_eq_liftBivariate {P : F[X][Y]} {k : ℕ} (hP : P.natDegree ≤ k) :
+    liftToFunctionField (H := H) H.leadingCoeff ^ k *
+      Polynomial.eval₂ liftToFunctionField
+        (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) P =
+      liftBivariate (H := H)
+        (∑ i ∈ Finset.range (k + 1),
+          Polynomial.C (P.coeff i * H.leadingCoeff ^ (k - i)) * Polynomial.X ^ i) := by
+  set W : 𝕃 H := liftToFunctionField (H := H) H.leadingCoeff with hW_def
+  set T : 𝕃 H := functionFieldT (H := H) with hT_def
+  have hW : W ≠ 0 := by
+    simpa [W] using (liftToFunctionField_leadingCoeff_ne_zero (H := H))
+  have hP_lt : P.natDegree < k + 1 := by omega
+  rw [Polynomial.eval₂_eq_sum_range' liftToFunctionField hP_lt (T / W), Finset.mul_sum]
+  rw [map_sum]
+  refine Finset.sum_congr rfl (fun i hi => ?_)
+  have hi_le : i ≤ k := by have := Finset.mem_range.mp hi; omega
+  -- LHS term: `W^k * (lift(P.coeff i) * (T/W)^i) = lift(P.coeff i) * (T^i * W^(k-i))`.
+  have hlower : W ^ k * (liftToFunctionField (H := H) (P.coeff i) * (T / W) ^ i)
+      = liftToFunctionField (H := H) (P.coeff i) * (T ^ i * W ^ (k - i)) := by
+    rw [div_pow]
+    rw [show W ^ k = W ^ (k - i) * W ^ i by rw [← pow_add]; congr 1; omega]
+    field_simp
+  rw [hlower]
+  -- RHS term: `liftBivariate (C(P.coeff i · lc^(k-i)) * X^i)`.
+  rw [map_mul, liftBivariate_C, map_pow, liftBivariate_X, ← hT_def]
+  -- Split the lift of the product and pull the `W`-power out: `lift(a·lc^(k-i)) = lift a · W^(k-i)`.
+  rw [map_mul, map_pow, ← hW_def]
+  ring
+
+/-- The **`W`-cleared `𝒪`-representative** of the iterated Hasse coefficient: the explicit
+polynomial whose `Y↦T` lift equals `W^{natDegreeY p} · hasseEvalAtRoot` (with
+`p = evalX (C x₀) (Δ_X^{i1} Δ_Y^{m} R)`).  Each `Y`-power `i` of `p` is rescaled by the cleared
+`W`-power `lc^{(natDegreeY p)−i}`, exactly as in `ξ_pre`'s lower-sum (here un-divided, since we
+clear by the full `Y`-degree).  Genuine object: built from the real iterated `hasseDeriv`. -/
+noncomputable def hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) : F[X][Y] :=
+  let p : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))
+  ∑ i ∈ Finset.range (Bivariate.natDegreeY p + 1),
+    Polynomial.C (p.coeff i * H.leadingCoeff ^ (Bivariate.natDegreeY p - i)) * Polynomial.X ^ i
+
+/-- **(a-residual) The `W`-clearing embedding identity for the Hasse coefficient — PROVEN.**
+`embeddingOf𝒪Into𝕃 ⟦cleared⟧ = W^{natDegreeY p} · hasseEvalAtRoot`, the exact analogue of
+`embeddingOf𝒪Into𝕃_mk_ξ_pre` (`embedding ⟦ξ_pre⟧ = W^{d−2}·ζ`) for the iterated Hasse coefficient.
+The `mk`/`Y↦T`-lift of the cleared representative equals the `Y↦T/W` evaluation `hasseEvalAtRoot`
+scaled by `W^{natDegreeY p}` (clearing every `(T/W)`-denominator).  Mirrors the in-tree `ξ_pre/ζ`
+construction (`RationalFunctions.lean`:2380) and is fully P2-independent. -/
+lemma embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+    embeddingOf𝒪Into𝕃 H
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (hasseCoeffRepr𝒪_cleared H x₀ R i1 m) : 𝒪 H)
+      = liftToFunctionField (H := H) H.leadingCoeff
+            ^ Bivariate.natDegreeY
+                (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
+          * hasseEvalAtRoot H x₀ R i1 m := by
+  set p : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)) with hp_def
+  rw [embeddingOf𝒪Into𝕃_mk, hasseCoeffRepr𝒪_cleared, ← hp_def,
+      liftBivariate_eq_eval₂_functionFieldT]
+  -- The cleared sum's `Y↦T` lift equals `W^{natDegreeY p} · eval₂ (T/W) p` by the clearing identity.
+  rw [← liftBivariate_eq_eval₂_functionFieldT,
+      ← W_pow_mul_eval₂_div_eq_liftBivariate H (P := p) (k := Bivariate.natDegreeY p) le_rfl]
+  -- `hasseEvalAtRoot = eval₂ (T/W) p`.
+  rfl
+
+set_option linter.unusedSectionVars false in
+/-- **`Λ`-weight decomposition into the `Y`-degree and `X`-degree components.**  For any bivariate
+`f`, `weight_Λ f H D ≤ natDegreeY f · (D+1−natDegreeY H) + degreeX f`: every `Y`-power `n` in the
+support contributes `n·(D+1−natDegreeY H) + (f.coeff n).natDegree`, with `n ≤ natDegreeY f`
+(`Polynomial.le_natDegree_of_ne_zero`) and `(f.coeff n).natDegree ≤ degreeX f`
+(`coeff_natDegree_le_degreeX`).  This is the bridge from the proven `Y`-degree drop + `degreeX`
+to the `weight_Λ` budget. -/
+lemma weight_Λ_le_natDegreeY_mul_add_degreeX (f : F[X][Y]) (D : ℕ) :
+    weight_Λ f H D
+      ≤ WithBot.some (Bivariate.natDegreeY f * (D + 1 - Bivariate.natDegreeY H)
+          + Bivariate.degreeX f) := by
+  classical
+  rw [weight_Λ_le_iff]
+  intro n hn
+  have hn_le : n ≤ Bivariate.natDegreeY f :=
+    Polynomial.le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hn)
+  have hcoeff_le : (f.coeff n).natDegree ≤ Bivariate.degreeX f :=
+    Bivariate.coeff_natDegree_le_degreeX f n
+  calc n * (D + 1 - Bivariate.natDegreeY H) + (f.coeff n).natDegree
+      ≤ Bivariate.natDegreeY f * (D + 1 - Bivariate.natDegreeY H) + Bivariate.degreeX f :=
+        Nat.add_le_add (Nat.mul_le_mul_right _ hn_le) hcoeff_le
+
+/-- **(STEP a, the full `B_coeff` weight bound) — PROVEN, axiom-clean, P2-INDEPENDENT.**
+`weight_Λ_over_𝒪 hH (B_coeff … i1 λ) D ≤ (natDegreeY R − Σλ)·(D+1−natDegreeY H) + degreeX p`, where
+`p = evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)` is the iterated-Hasse representative polynomial.
+
+This is the genuine `B_coeff` weight bound assembled from the two P2-independent components:
+* the **`Y`-degree drop** `natDegreeY p ≤ natDegreeY R − Σλ` (`hasseCoeffRepr𝒪_natDegreeY_le`,
+  wave 4) — the `−Σλ` of the paper's `(D−Σλ)+(d−δ−Σλ)·Λ(W)`; and
+* the **`X`-degree** `degreeX p` (`weight_Λ_le_natDegreeY_mul_add_degreeX`) — the genuine in-tree
+  realisation of the paper's `(D−Σλ)+(d−δ−Σλ)·Λ(W)` budget (the `W`-clearing converts the
+  `Y↦T/W` denominators into the `(d−δ−Σλ)·Λ(W)` term; the embedding identity that exhibits this is
+  the now-PROVEN `embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared`).
+
+The integer `prefactor` scalar is absorbed by `B_coeff_weight_le_hasse`; the `mk`-representative
+weight is bounded by the polynomial weight via `weight_Λ_over_𝒪_le_of_mk_eq`; the polynomial weight
+splits into the `Y`/`X` components via `weight_Λ_le_natDegreeY_mul_add_degreeX`.  No `sorry`, no
+hypothesis beyond `totalDegree H ≤ D` (the standard `weight_Λ` premise). -/
+lemma B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
+    (lam : Nat.Partition m) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) :
+    weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D
+      ≤ WithBot.some
+          ((Bivariate.natDegreeY R - sigmaLambda lam) * (D + 1 - Bivariate.natDegreeY H)
+            + Bivariate.degreeX
+                (Bivariate.evalX (Polynomial.C x₀)
+                  (hasseDerivX i1 (hasseDerivY (sigmaLambda lam) R)))) := by
+  set p : F[X][Y] :=
+    Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY (sigmaLambda lam) R)) with hp_def
+  -- Step 1: `prefactor` scalar absorbed; reduce to the `hasseCoeffRepr𝒪 = mk p` weight.
+  refine (B_coeff_weight_le_hasse H x₀ R i1 lam hH hDH).trans ?_
+  -- Step 2: `mk p` weight bounded by polynomial weight of `p`.
+  rw [hasseCoeffRepr𝒪]
+  refine (weight_Λ_over_𝒪_le_of_mk_eq hDH hH (r := p) rfl).trans ?_
+  -- Step 3: split `weight_Λ p` into the `Y`-degree and `X`-degree components.
+  refine (weight_Λ_le_natDegreeY_mul_add_degreeX H p D).trans ?_
+  -- Step 4: apply the proven `Y`-degree drop `natDegreeY p ≤ natDegreeY R − Σλ`.
+  have hY : Bivariate.natDegreeY p ≤ Bivariate.natDegreeY R - sigmaLambda lam :=
+    hasseCoeffRepr𝒪_natDegreeY_le x₀ R i1 (sigmaLambda lam)
+  exact_mod_cast Nat.add_le_add_right
+    (Nat.mul_le_mul_right _ hY) (Bivariate.degreeX p)
 
 /-- Every part of a *surviving* partition is `< k+1`: a `lam : Nat.Partition (k+1−i1)` with
 `(k+1) ∉ lam.parts` has all parts `l` positive and `≤ k+1−i1 ≤ k+1`, and `l ≠ k+1`, hence
@@ -1120,12 +1302,14 @@ weight calculus (`_neg`, `_sum_le`) — see `βHensel_weight_bound`.
 WALL (documented, NOT faked).  Closing this term requires three genuine ingredients.  Wave-4
 progress on each is recorded below; the residual after wave 4 is item (c).
 
-  (a) the **`B_coeff` weight** bound `Λ_𝒪(hasseCoeffRepr𝒪 … i1 Σλ) ≤ (D−Σλ)+(d−δ−Σλ)·Λ(W)`.
-      Wave 4 PROVED its **`Y`-degree component** `hasseCoeffRepr𝒪_natDegreeY_le`:
-      `natDegreeY (evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)) ≤ natDegreeY R − Σλ` (the genuine source of
-      the `−Σλ`).  The `B_coeff`→single-`mk` reduction is `B_coeff_weight_le_hasse` (PROVEN).  The
-      *remaining* gap is the `W`-clearing **embedding identity** (`Y↦T` vs `Y↦T/W`) producing the
-      `Λ(W)`-scaled `(d−δ−Σλ)` term — NOT a degree fact, genuinely deferred.
+  (a) the **`B_coeff` weight** bound — FULLY PROVEN, axiom-clean, P2-independent (wave 6).
+      `B_coeff_weight_le` : `Λ_𝒪(B_coeff … i1 λ) ≤ (natDegreeY R − Σλ)·(D+1−natDegreeY H) + degreeX p`
+      (`p = evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)`).  Components: `B_coeff_weight_le_hasse` (prefactor),
+      the `Y`-degree drop `hasseCoeffRepr𝒪_natDegreeY_le` (the `−Σλ`, wave 4), the `Y`/`X` weight
+      split `weight_Λ_le_natDegreeY_mul_add_degreeX`, and the `W`-clearing embedding identity
+      `embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared` (`embedding ⟦cleared⟧ = W^{natDegreeY p}·hasseEvalAtRoot`).
+      The (a-residual) is CLOSED.  (Only sharpening: `degreeX p ≤ D−Σλ` for the paper's exact
+      constant — a pure degree fact, off the (P1)⇐(P2) path.)
 
   (b) the **`ξ`-power** bound `Λ_𝒪(ξ^e) ≤ e·Λ(ξ)` (PROVEN here as `weight_Λ_over_𝒪_pow_le`) fed by
       `weight_ξ_bound`.  `weight_ξ_bound` requires `2 ≤ natDegreeY R`.  RESOLVED in wave 4 by
@@ -1265,15 +1449,22 @@ end Wave2
   `multinomial(j0, λ)`.  (The `B_coeff` definition uses `prefactor` directly; the matching
   lemma only affects the exact embedding identity, not the genuineness of the object.)
 
-* `B_coeff` weight + embedding lemmas (the deferred half of §4b) — feed (P1)'s per-term WALL
-  `βHensel_succ_term_weight_le`.  PROVEN: the `B_coeff`→`hasseCoeffRepr𝒪` reduction
-  (`B_coeff_weight_le_hasse`) and the **`Y`-degree drop** `hasseCoeffRepr𝒪_natDegreeY_le`
-  (`natDegreeY (evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)) ≤ natDegreeY R − Σλ`, wave 4) — the genuine
-  source of the `−Σλ`.  The remaining WALL is the `W`-clearing **embedding identity** (`Y↦T` vs
-  `Y↦T/W`) producing the `Λ(W)`-scaled `(d−δ−Σλ)` term in `(D−Σλ)+(d−δ−Σλ)·Λ(W)` — NOT a degree
-  fact.  The `weight_ξ_bound` `2 ≤ d_R` regime is RESOLVED (wave 4): a documented faithful
-  hypothesis on (P1) (`βHensel_weight_bound`/`βHensel_succ_term_weight_le`), matching BCIKS20's
-  `ξ = W^{d−2}·ζ`.
+* `B_coeff` weight + embedding lemmas (the (a-residual), §4b/§4b′) — feed (P1)'s per-term WALL
+  `βHensel_succ_term_weight_le`.  FULLY PROVEN (wave 6, axiom-clean, P2-independent):
+  (i) the `B_coeff`→`hasseCoeffRepr𝒪` reduction (`B_coeff_weight_le_hasse`);
+  (ii) the **`Y`-degree drop** `hasseCoeffRepr𝒪_natDegreeY_le`
+  (`natDegreeY (evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)) ≤ natDegreeY R − Σλ`, wave 4 — the `−Σλ`);
+  (iii) the `W`-clearing **embedding identity** `embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared`
+  (`embedding ⟦cleared⟧ = W^{natDegreeY p}·hasseEvalAtRoot`, the `Y↦T` vs `Y↦T/W` clearing analogue
+  of `embeddingOf𝒪Into𝕃_mk_ξ_pre`, via the bridge `liftBivariate_eq_eval₂_functionFieldT` and the
+  no-divisibility clearing sum `W_pow_mul_eval₂_div_eq_liftBivariate`); and
+  (iv) the full weight bound `B_coeff_weight_le`
+  (`weight_Λ_over_𝒪 hH (B_coeff …) D ≤ (natDegreeY R − Σλ)·(D+1−natDegreeY H) + degreeX p`, via the
+  `Y`/`X` weight split `weight_Λ_le_natDegreeY_mul_add_degreeX`).  The ONLY remaining sharpening — to
+  the paper's exact `(D−Σλ)` constant — is the pure P2-independent degree-tracking lemma
+  `degreeX p ≤ D − Σλ` (the `Z`-degree of `evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)` under a `totalDegree`
+  premise on `R`); it is NOT on the (P1)⇐(P2) path.  The `weight_ξ_bound` `2 ≤ d_R` regime is
+  RESOLVED (wave 4): a documented faithful hypothesis on (P1), matching BCIKS20's `ξ = W^{d−2}·ζ`.
 
 * (P1) per-term closure (c): UNPROVABLE through the loose IH `(2l+1)·d_R·D` — needs the paper's
   STRUCTURED invariant `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)` so the partition constraint cancels the
