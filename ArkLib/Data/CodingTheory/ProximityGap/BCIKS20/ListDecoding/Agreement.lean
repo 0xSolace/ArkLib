@@ -381,6 +381,50 @@ theorem Q_vanishes_on_close_codeword_graph [DecidableEq (Polynomial F)]
     (Bivariate.natWeightedDegree Qz 1 k) A hroots hA hdeg hcount
   rw [hQz, hP] at this ⊢; exact this
 
+omit [DecidableEq (RatFunc F)] in
+/-- *Keystone, restated for the `pg_eval_on_Z` accessor consumed by `Extraction.lean`.*  The
+Gap-B keystone produces graph-vanishing phrased with `Trivariate.eval_on_Z`; the entire
+Claim-5.7 extraction toolbox (`pg_exists_R_of_Q_eval_zero`, `pg_exists_pair_for_z`,
+`pg_exists_common_candidate_pair_of_dvd`) is phrased with the definitional twin `pg_eval_on_Z`.
+This lemma transports the keystone across the (now-proven) identity `c57_eval_on_Z_eq_pg`, so the
+keystone's output is in exactly the shape the toolbox consumes. -/
+theorem Q_vanishes_on_close_codeword_graph_pg [DecidableEq (Polynomial F)]
+    (k : ℕ) {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁)
+    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
+    (A : Finset (Fin n))
+    (hA : ∀ i ∈ A, (u₀ + z • u₁) i = (Pz hS).eval (ωs i))
+    (hcount : Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k < m * A.card) :
+    (pg_eval_on_Z (F := F) Q z).eval (Pz hS) = 0 := by
+  have hkey := Q_vanishes_on_close_codeword_graph (F := F) k h_gs hS hQz_ne A hA hcount
+  rwa [c57_eval_on_Z_eq_pg] at hkey
+
+omit [DecidableEq (RatFunc F)] in
+/-- *Keystone ⟹ the `hdiv` divisibility hypothesis of the extraction toolbox.*  The factor theorem
+turns the keystone's graph-vanishing `(pg_eval_on_Z Q z).eval (Pz) = 0` into the linear-factor
+divisibility `X - C (Pz) ∣ pg_eval_on_Z Q z` — which is *verbatim* the per-`z` hypothesis `hdiv`
+of `pg_exists_common_candidate_pair_of_dvd` /
+`pg_exists_common_candidate_pair_of_dvd_card_natDegreeY`.
+
+This is the maximal honest reach of the Gap-B keystone toward Claim 5.7: it supplies, for any single
+`z ∈ S` equipped with an agreement set `A` satisfying the Johnson count `m·#A > natWeightedDegree …`,
+the exact divisibility the first-conjunct pigeonhole needs.  Closing the *whole* of Claim 5.7 from
+here is still blocked — `hdiv` must hold for **every** `z ∈ S` simultaneously, which requires the
+Johnson count for every `z`, i.e. a `δ ≤ δ₀` binder absent from the (uneditable) statement; and the
+second cardinality conjunct of Claim 5.7 is independently false off the list-decoding regime
+(`Extraction.c57_second_conjunct_unsat_of_S_empty`).  See the obstruction docstring on
+`exists_factors_with_large_common_root_set`. -/
+theorem Q_graph_factor_dvd [DecidableEq (Polynomial F)]
+    (k : ℕ) {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁)
+    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
+    (A : Finset (Fin n))
+    (hA : ∀ i ∈ A, (u₀ + z • u₁) i = (Pz hS).eval (ωs i))
+    (hcount : Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k < m * A.card) :
+    Polynomial.X - Polynomial.C (Pz hS) ∣ pg_eval_on_Z (F := F) Q z :=
+  Polynomial.dvd_iff_isRoot.mpr
+    (Q_vanishes_on_close_codeword_graph_pg (F := F) k h_gs hS hQz_ne A hA hcount)
+
 open Trivariate in
 open Bivariate in
 /-- Claim 5.7 of [BCIKS20].
@@ -584,6 +628,38 @@ lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
     (P k δ x₀ h_gs) :=
   Classical.choose_spec
     (Classical.choose_spec (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs))
+
+/-- The set `S'` from [BCIKS20] (just before Claim 5.10): the sub-collection of close coefficients
+`z ∈ S = coeffs_of_close_proximity` that are bound to the common irreducible factor pair `(R, H)`
+selected by the Claim-5.7 pigeonhole.
+
+REPAIR NOTE (pre-existing breakage, restored from wave-3 commit 9e8fb10b). `matching_set`,
+`matching_set_is_a_sub_of_coeffs_of_close_proximity`, and the upstream Prop 5.5
+`exists_a_set_and_a_matching_polynomial` were *referenced* by `matching_set_at_x` and by the §5 GAP
+docstrings but never **defined** anywhere in the tree, so this file — and the entire BCIKS20 §5
+downstream — failed to compile with `Unknown identifier matching_set`. (This breakage was masked
+behind the earlier Extraction.lean failure; it resurfaced once Extraction compiled and the elimPoly
+block was recovered.) We supply the missing definition here.
+
+Faithfulness: in [BCIKS20] `S' ⊆ S` is the fiber bound to the chosen `(R, H)`.  Pinning that fiber
+formally would force `matching_set` to carry the Claim-5.7 `.choose` data `R k δ x₀ h_gs` (hence an
+extra `x₀` parameter the call site `matching_set k ωs δ u₀ u₁ h_gs` does not pass).  We
+therefore define `S' := S` (the maximal subset) — an honest *over-approximation* of the paper's `S'`.
+This only ever **weakens** the cardinality hypotheses of the still-`sorry` Claims 5.10/5.11 (a larger
+`S'` makes `|S'_x|` larger, so their hypotheses are easier, not vacuous), and the inclusion
+`S' ⊆ S` holds by `id`.  No proven statement is affected. -/
+noncomputable def matching_set
+    (k : ℕ) (ωs : Fin n ↪ F) (δ : ℚ) (u₀ u₁ : Fin n → F)
+    (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : Finset F :=
+  coeffs_of_close_proximity k ωs δ u₀ u₁
+
+omit [DecidableEq (RatFunc F)] in
+/-- `matching_set` (BCIKS20's `S'`) is a subset of `S = coeffs_of_close_proximity` (here, equal by
+the `S' := S` over-approximation — see `matching_set`). -/
+lemma matching_set_is_a_sub_of_coeffs_of_close_proximity
+    (k : ℕ) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) {z : F}
+    (h : z ∈ matching_set k ωs δ u₀ u₁ h_gs) :
+    z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁ := h
 
 /-- The set `S'_x` from [BCIKS20] (just before Claim 5.10). The set of all `z ∈ S'` such that
 `w(x,z)` matches `P_z(x)`. -/
