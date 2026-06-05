@@ -555,8 +555,9 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
   simp only [liftM, monadLift, MonadLiftT.monadLift, MonadLift.monadLift, pure_bind,
     bind_pure_comp, map_pure, Functor.map_map, Function.comp, getRoundProverFinalOutput,
     Transcript.concat]
-  simp only [liftComp_pure, liftComp_bind, liftComp_map, bind_assoc, pure_bind, map_pure,
-    Prod.mk.eta]
+  simp only [bind_assoc, pure_bind, OptionT.lift, OptionT.mk]
+  simp only [Prod.mk.eta, map_pure, liftComp_pure, liftComp_map, pure_bind, bind_pure_comp,
+    Functor.map_map, Function.comp_def]
   trace_state
   sorry
 
