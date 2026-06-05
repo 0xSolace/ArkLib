@@ -218,4 +218,41 @@ theorem hab25_lemma1_counting
   rw [hkey] at hlb
   omega
 
+
+/-! ## E1 — the Claim-1 endgame count (Hab25 lines 302–310)
+
+Once the deep GS/Hensel machinery (Steps 5–7) produces a **unique** affine explanation
+`p_z = a + z·b` for the good folds, the residual count is elementary: every "exceptional"
+scalar `z` (one whose fold agrees with the received word *somewhere the affine pair does
+not explain*) must match at a coordinate of the disagreement set `E` of the pair, and
+each such coordinate serves **at most one** scalar (`affine_root_subsingleton`). Hence
+the exceptional set injects into `E`, giving `|T| ≤ |E| ≤ n`. This is the
+"from the proof of Lemma 1" step of the paper, isolated with the GS output as a
+hypothesis (honest staging: the GS production of `(a, b)` is the deep part, not this). -/
+
+/-- **Hab25 Claim-1 endgame.** If every exceptional scalar `z ∈ T` matches the received
+word at some coordinate of the disagreement set `E = disagreeSet d₀ d₁` (i.e.
+`affineGap d₀ d₁ z x = 0` for some `x ∈ E`), then `|T| ≤ |E|`: the choice of witness
+coordinate is injective, because an affine functional that is nontrivial at `x` has at
+most one root. -/
+omit [DecidableEq ι] in
+theorem hab25_endgame_count [Nonempty ι] (d₀ d₁ : ι → F) (T : Finset F)
+    (hT : ∀ z ∈ T, ∃ x ∈ disagreeSet d₀ d₁, affineGap d₀ d₁ z x = 0) :
+    T.card ≤ (disagreeSet d₀ d₁).card := by
+  classical
+  choose w hwmem hwzero using hT
+  refine Finset.card_le_card_of_injOn
+    (fun z => if hz : z ∈ T then w z hz else Classical.arbitrary ι)
+    (fun z hz => by simp only [Finset.mem_coe] at hz; simp only [dif_pos hz]; exact hwmem z hz) ?_
+  intro z hz y hy hxy
+  simp only [Finset.mem_coe] at hz hy
+  simp only [dif_pos hz, dif_pos hy] at hxy
+  have hzx : affineGap d₀ d₁ z (w z hz) = 0 := hwzero z hz
+  have hyx : affineGap d₀ d₁ y (w z hz) = 0 := by rw [hxy]; exact hwzero y hy
+  have hne : d₀ (w z hz) ≠ 0 ∨ d₁ (w z hz) ≠ 0 := by
+    have hmem := hwmem z hz
+    simpa [disagreeSet] using hmem
+  exact affine_root_subsingleton hne (by simpa [affineGap] using hzx)
+    (by simpa [affineGap] using hyx)
+
 end CodingTheory.ProximityGap.Hab25Core
