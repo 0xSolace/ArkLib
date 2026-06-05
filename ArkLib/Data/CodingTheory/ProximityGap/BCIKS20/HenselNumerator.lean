@@ -2058,6 +2058,32 @@ theorem assembledSeries_isRoot_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y]
   assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp
     (fun t => coeff_succ_eval_of_trunc_defect_cancel H x₀ R hHyp t (hcancel t))
 
+/-- The assembled series is the genuine Hensel root once every truncated-defect
+cancellation is proved. -/
+theorem βHenselAssembled_eq_gammaGenuine_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hcancel : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0) :
+    βHenselAssembled H x₀ R hHyp = gammaGenuine x₀ R H hHyp :=
+  βHenselAssembled_eq_gammaGenuine H x₀ R hHyp
+    (assembledSeries_isRoot_of_trunc_defect_cancel H x₀ R hHyp hcancel)
+
+/-- Coefficient-level form of the trunc-defect cancellation reduction. -/
+theorem coeff_βHenselAssembled_eq_αGenuine_of_trunc_defect_cancel
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hcancel : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0)
+    (t : ℕ) :
+    PowerSeries.coeff t (βHenselAssembled H x₀ R hHyp) = αGenuine H x₀ R hHyp t := by
+  rw [βHenselAssembled_eq_gammaGenuine_of_trunc_defect_cancel H x₀ R hHyp hcancel,
+    αGenuine]
+
 /-- The repaired lift identity follows directly from the per-order
 truncated-defect cancellations. -/
 theorem βHensel_lift_identity_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y])
