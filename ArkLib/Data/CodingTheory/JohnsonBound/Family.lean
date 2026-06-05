@@ -957,6 +957,67 @@ theorem Lambda_le_of_le_JqℓRecipReal_minDist
   exact le_trans (ListDecodable.Lambda_mono (C := C) hδ_le)
     (Lambda_le_of_JqℓRecipReal_minDist C hℓ hq_one hmin_pos hrad)
 
+/-- Named reciprocal Johnson bound with the radicand hypothesis expressed as
+the scaled-distance condition `((ℓ-1)/ℓ) * drel ≤ γ`. -/
+theorem Lambda_le_of_JqℓRecipReal_minDist_of_scaled_distance_le
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {ℓ : ℕ}
+    (hℓ : 2 ≤ ℓ) (hq_one : 1 < Fintype.card α)
+    (hmin_pos : 0 < Code.minDist C)
+    (hscaled :
+      (((ℓ : ℝ) - 1) / (ℓ : ℝ)) *
+          ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ))
+        ≤ 1 - 1 / (Fintype.card α : ℝ)) :
+    ListDecodable.Lambda C
+      (JqℓRecipReal (Fintype.card α : ℝ) (ℓ : ℝ)
+        ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ))) ≤
+        (ℓ : ℕ∞) := by
+  apply Lambda_le_of_JqℓRecipReal_minDist C hℓ hq_one hmin_pos
+  let γ : ℝ := 1 - 1 / (Fintype.card α : ℝ)
+  let drel : ℝ := (Code.minDist C : ℝ) / (Fintype.card ι : ℝ)
+  have hq_real : 1 < (Fintype.card α : ℝ) := by exact_mod_cast hq_one
+  have hq_real_pos : 0 < (Fintype.card α : ℝ) := lt_trans zero_lt_one hq_real
+  have hγ_pos : 0 < γ := by
+    have hfrac_pos :
+        0 < ((Fintype.card α : ℝ) - 1) / (Fintype.card α : ℝ) :=
+      div_pos (sub_pos.mpr hq_real) hq_real_pos
+    have hγ_eq :
+        γ = ((Fintype.card α : ℝ) - 1) / (Fintype.card α : ℝ) := by
+      dsimp [γ]
+      field_simp [hq_real_pos.ne']
+    rw [hγ_eq]
+    exact hfrac_pos
+  change 0 ≤ 1 - (1 / γ) * (((ℓ : ℝ) - 1) / (ℓ : ℝ)) * drel
+  have hscaled' :
+      (((ℓ : ℝ) - 1) / (ℓ : ℝ)) * drel ≤ γ := by
+    simpa [γ, drel] using hscaled
+  rw [sub_nonneg]
+  have hmul :
+      (1 / γ) * ((((ℓ : ℝ) - 1) / (ℓ : ℝ)) * drel) ≤ (1 / γ) * γ :=
+    mul_le_mul_of_nonneg_left hscaled' (by positivity)
+  have hcancel : (1 / γ) * γ = 1 := by
+    field_simp [hγ_pos.ne']
+  nlinarith
+
+/-- Monotone-radius version of
+`Lambda_le_of_JqℓRecipReal_minDist_of_scaled_distance_le`. -/
+theorem Lambda_le_of_le_JqℓRecipReal_minDist_of_scaled_distance_le
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ}
+    (hδ_le : δ ≤ JqℓRecipReal (Fintype.card α : ℝ) (ℓ : ℝ)
+      ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ)))
+    (hℓ : 2 ≤ ℓ) (hq_one : 1 < Fintype.card α)
+    (hmin_pos : 0 < Code.minDist C)
+    (hscaled :
+      (((ℓ : ℝ) - 1) / (ℓ : ℝ)) *
+          ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ))
+        ≤ 1 - 1 / (Fintype.card α : ℝ)) :
+    ListDecodable.Lambda C δ ≤ (ℓ : ℕ∞) := by
+  exact le_trans (ListDecodable.Lambda_mono (C := C) hδ_le)
+    (Lambda_le_of_JqℓRecipReal_minDist_of_scaled_distance_le C hℓ hq_one hmin_pos hscaled)
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
