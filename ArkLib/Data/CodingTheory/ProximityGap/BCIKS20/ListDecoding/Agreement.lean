@@ -2049,6 +2049,33 @@ lemma approximate_solution_gamma_coeff_zero_of_beta_embedding_zero
       (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
       h_gs hemb)
 
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+/-- Gamma-tail coefficient vanishing from the exact Appendix-A Lemma A.1
+largeness condition. -/
+lemma approximate_solution_gamma_coeff_zero_of_Sβ_large
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
+        Set.ncard (S_β (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t)) >
+          weight_Λ_over_𝒪 (natDegree_H_pos k h_gs)
+            (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t) D *
+            (H k δ x₀ h_gs).natDegree) :
+    ∀ t ≥ k,
+      PowerSeries.coeff t
+        (γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+          (claimA2_hypotheses k h_gs)) =
+        (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)) := by
+  exact gamma'_coeff_zero_of_alpha'_coeff_zero
+    (F := F) (x₀ := x₀)
+    (irreducible_H k h_gs)
+    (natDegree_H_pos k h_gs)
+    (claimA2_hypotheses k h_gs)
+    (approximate_solution_is_exact_solution_coeffs_of_Sβ_large
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs hlarge)
+
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_gamma_graph_coeff_zero_of_beta_embedding_zero
