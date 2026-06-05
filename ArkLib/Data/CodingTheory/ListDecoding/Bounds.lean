@@ -280,7 +280,7 @@ lemma `hammingBallVolume_ge_qEntropy` in `HammingBallVolume.lean` (Stirling boun
 `Nat.choose` + `Real.logb` algebra), after which this corollary closes in three lines via
 `le_trans` against L3.7. Admitted pending (★). -/
 theorem linear_lambda_ge_entropy_volume
-    (C : Submodule F (ι → F)) (δ : ℝ) (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1) :
+    (C : Submodule F (ι → F)) (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1) :
     let q : ℕ := Fintype.card F
     let n : ℕ := Fintype.card ι
     let k : ℕ := Module.finrank F C
@@ -289,6 +289,7 @@ theorem linear_lambda_ge_entropy_volume
         ((q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ))
           / (8 * n * δ * (1 - δ)) ^ ((1 : ℝ) / 2))
       ≤ (Lambda ((C : Set (ι → F))) δ : ENNReal) := by
+  refine linear_lambda_ge_entropy_volume_of_le_elias_rhs C δ hδ_pos hδ_lt ?_
   sorry -- ABF26-C3.8; reduces to L3.7 (PROVEN) + missing ingredient (★):
   -- `q^{n·H_q(δ)} / √(8nδ(1-δ)) ≤ hammingBallVolume q δ n` (MS77 Stirling volume bound).
 
