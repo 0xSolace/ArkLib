@@ -258,7 +258,9 @@ open Real Stirling Filter
 -- ===== Robbins upper bound (proven) =====
 theorem robbins_upper {m : ℕ} (hm : m ≠ 0) :
     stirlingSeq m ≤ √π * Real.exp (1 / (12 * m)) := by
-  set H : ℕ → ℝ := fun n => Real.log (stirlingSeq (n + 1)) - Real.log (√π) - 1 / (12 * ((n : ℝ) + 1))
+  set H : ℕ → ℝ := fun n =>
+      Real.log (stirlingSeq (n + 1)) - Real.log (√π) -
+        1 / (12 * ((n : ℝ) + 1))
     with hH
   have hsqrtπ_pos : (0 : ℝ) < √π := Real.sqrt_pos.mpr Real.pi_pos
   have hmono : Monotone H := by
@@ -273,8 +275,10 @@ theorem robbins_upper {m : ℕ} (hm : m ≠ 0) :
     have hdiff' : Real.log (stirlingSeq (n + 1)) - Real.log (stirlingSeq (n + 2)) ≤
         1 / (12 * ((n : ℝ) + 1)) - 1 / (12 * ((n : ℝ) + 2)) := by
       rw [← htel]; convert hdiff using 2; push_cast; ring
-    show Real.log (stirlingSeq (n + 1)) - Real.log (√π) - 1 / (12 * ((n : ℝ) + 1)) ≤
-        Real.log (stirlingSeq (n + 1 + 1)) - Real.log (√π) - 1 / (12 * (((n + 1 : ℕ) : ℝ) + 1))
+    change Real.log (stirlingSeq (n + 1)) - Real.log (√π) -
+          1 / (12 * ((n : ℝ) + 1)) ≤
+        Real.log (stirlingSeq (n + 1 + 1)) - Real.log (√π) -
+          1 / (12 * (((n + 1 : ℕ) : ℝ) + 1))
     have hidx : (n + 1 + 1) = (n + 2) := by ring
     rw [hidx]
     have hpush : (((n + 1 : ℕ) : ℝ) + 1) = ((n : ℝ) + 2) := by push_cast; ring
@@ -513,16 +517,19 @@ theorem radical_collapse (K j : ℕ) (hK : 1 ≤ K) (hj : 1 ≤ j) :
     ring
   rw [hL, hR]
 
--- power identity: ((K+j)/e)^(K+j) = [((K+j)/K)^K * ((K+j)/j)^j] * [(K/e)^K * (j/e)^j]
+-- Power identity splitting `((K+j)/e)^(K+j)` into binomial and Stirling-scale factors.
 theorem power_identity (K j : ℕ) (hK : 1 ≤ K) (hj : 1 ≤ j) :
     (((K:ℝ) + j) / Real.exp 1) ^ (K + j)
-      = ((((K:ℝ)+j)/K)^K * (((K:ℝ)+j)/j)^j) * (((K:ℝ) / Real.exp 1) ^ K * ((j:ℝ) / Real.exp 1) ^ j) := by
+      = ((((K:ℝ)+j)/K)^K * (((K:ℝ)+j)/j)^j)
+        * (((K:ℝ) / Real.exp 1) ^ K * ((j:ℝ) / Real.exp 1) ^ j) := by
   have hKpos : (0:ℝ) < K := by exact_mod_cast hK
   have hjpos : (0:ℝ) < j := by exact_mod_cast hj
   have he : (0:ℝ) < Real.exp 1 := Real.exp_pos 1
   rw [pow_add]
-  rw [show ((((K:ℝ)+j)/K)^K * (((K:ℝ)+j)/j)^j) * (((K:ℝ) / Real.exp 1) ^ K * ((j:ℝ) / Real.exp 1) ^ j)
-      = ((((K:ℝ)+j)/K) * ((K:ℝ) / Real.exp 1))^K * ((((K:ℝ)+j)/j) * ((j:ℝ) / Real.exp 1))^j by
+  rw [show ((((K:ℝ)+j)/K)^K * (((K:ℝ)+j)/j)^j)
+        * (((K:ℝ) / Real.exp 1) ^ K * ((j:ℝ) / Real.exp 1) ^ j)
+      = ((((K:ℝ)+j)/K) * ((K:ℝ) / Real.exp 1))^K
+        * ((((K:ℝ)+j)/j) * ((j:ℝ) / Real.exp 1))^j by
         rw [mul_pow, mul_pow]; ring]
   congr 1
   · congr 1
@@ -569,7 +576,7 @@ theorem master_eq (K j : ℕ) (hK : 1 ≤ K) (hj : 1 ≤ j) :
   -- Now substitute the power identity for ((K+j)/e)^(K+j).
   rw [power_identity K j hK hj]
   -- And the radical collapse.
-  -- LHS = √(8Kj/(K+j)) * [ss(K+j) (√(2(K+j)) * [Bpow * (K/e)^K (j/e)^j])] / [ss K (√(2K)(K/e)^K) · ss j (√(2j)(j/e)^j)]
+  -- LHS is reduced by splitting the power term and collapsing the radical factor.
   -- Goal is an equality of reals; field_simp + the radical_collapse relation + ring.
   have hrad := radical_collapse K j hK hj
   -- denominators nonzero
@@ -1000,7 +1007,6 @@ theorem linear_C_le_generalized_singleton_st20
   --      large δ); a faithful version needs the regime guard `δ ≤ ℓ/(ℓ+1)`. Not added here
   --      so the external-admit signature stays bridge-stable.
 
-#print axioms linear_C_le_generalized_singleton_st20
 end LowerBounds_General
 
 section LargeAlphabetBarrier
