@@ -795,6 +795,27 @@ theorem Lambda_le_of_gamma_optimal_johnson_condition
   rw [hquad]
   simpa [γ, drel] using hcond
 
+/-- Gamma-form optimal-beta Johnson cap with the remaining condition stated as
+a square lower bound.
+
+This is the most compact handoff to radius algebra: prove that the squared
+gap from the alphabet cap dominates the affine distance term, and the Lambda
+bound follows. -/
+theorem Lambda_le_of_gamma_square_condition
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ}
+    (hδ : 0 ≤ δ) (hq_one : 1 < Fintype.card α)
+    (hδ_le_gamma : δ ≤ 1 - 1 / (Fintype.card α : ℝ))
+    (hsquare :
+      let γ : ℝ := 1 - 1 / (Fintype.card α : ℝ)
+      let drel : ℝ := (Code.minDist C : ℝ) / (Fintype.card ι : ℝ)
+      γ + (ℓ : ℝ) * (γ - drel) <
+        ((ℓ : ℝ) + 1) * (γ - δ) ^ 2 / γ) :
+    ListDecodable.Lambda C δ ≤ (ℓ : ℕ∞) := by
+  apply Lambda_le_of_gamma_optimal_johnson_condition C hδ hq_one hδ_le_gamma
+  simpa using sub_neg.mpr hsquare
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
