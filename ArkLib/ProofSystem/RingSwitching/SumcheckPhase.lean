@@ -798,6 +798,43 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       rw [hmem.1] at heq
       exact absurd heq.symm (by simp)
 
+/-- **Per-transcript Schwartz–Zippel core (defect-#22 soundness justification).** For a FIXED input
+statement `stmt`, oracle statement `oStmt`, and round-0 transcript `tr : Transcript 1` (carrying the
+prover's univariate `h_i := tr ⟨0⟩`), the set of verifier challenges `r'` triggering the RBR bad
+event `∃ witMid, ¬kSF⟨1⟩ tr witMid ∧ kSF⟨2⟩ (tr.concat r') witMid` has cardinality `≤ 2`.
+
+This is the soundness obligation that JUSTIFIES the #22 KState redesign: `kSF⟨2⟩` (the redesigned
+post-challenge state) gives `witMid`'s structural invariant — pinning `witMid.H = projectToMid
+i.castSucc stmt.challenges`, so `h_star := getSumcheckRoundPoly i witMid.H` is the SAME for every
+`witMid` — plus `explicitVCheck` (`∑_b h_i(b) = stmt.sumcheck_target`) and `nextSumcheckTargetCheck`
+(`h_i(r') = h_star(r')`). `¬kSF⟨1⟩` then forces `h_i ≠ h_star`: under `kSF⟨2⟩`'s struct +
+`explicitVCheck`, the cube identity `getSumcheckRoundPoly_points_sum_eq_cube` makes `h_i = h_star ⇒`
+all of `kSF⟨1⟩`'s conjuncts (its `sumcheckConsistencyProp` becomes `stmt.sumcheck_target = ∑_b h_i(b)
+= ∑_b h_star(b) = ∑_cube witMid.H`), so the only way `kSF⟨1⟩` fails is `h_i ≠ h_star`. Hence the bad
+event ⟹ `r' ∈ roots(h_i - h_star)` with `h_i - h_star ≠ 0` of degree `≤ 2`, a set of size `< 2`. -/
+private lemma iteratedSumcheck_badChallenge_card_le [IsDomain L] (i : Fin ℓ')
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
+    (oStmt : ∀ j, aOStmtIn.OStmtIn j)
+    (tr : (pSpecSumcheckRound L).Transcript (⟨1, by decide⟩ : Fin 3).castSucc) :
+    (Finset.univ.filter (fun r' : L => ∃ witMid,
+      ¬ (iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i).toFun
+            (⟨1, by decide⟩ : Fin 3).castSucc (stmt, oStmt) tr
+            ((iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i).extractMid
+              (⟨1, by decide⟩ : Fin 3) (stmt, oStmt) (Transcript.concat r' tr) witMid)
+        ∧ (iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i).toFun
+            (⟨1, by decide⟩ : Fin 3).succ (stmt, oStmt) (Transcript.concat r' tr) witMid)).card
+      ≤ 2 := by
+  classical
+  -- `h_i` is the prover's round-0 univariate (the transcript message).
+  set h_i : L⦃≤ 2⦄[X] := tr ⟨0, by decide⟩ with hh_i
+  simp only [iteratedSumcheckKnowledgeStateFunction, iteratedSumcheckKStateProp,
+    iteratedSumcheckRbrExtractor, masterKStateProp, witnessStructuralInvariant,
+    sumcheckConsistencyProp, Transcript.equivMessagesChallenges, Equiv.coe_fn_mk,
+    Transcript.toMessagesChallenges, Transcript.toMessagesUpTo, Transcript.toChallengesUpTo,
+    Fin.isValue]
+  trace_state
+  sorry
+
 /-- RBR knowledge soundness for a single round oracle verifier -/
 theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : Fin ℓ') :
     (iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i).rbrKnowledgeSoundness init impl
