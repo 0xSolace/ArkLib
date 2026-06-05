@@ -2335,6 +2335,20 @@ section BCIKS20ProximityGapSection6
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {n : ℕ} [NeZero n]
 
+/-- The two-point curve stack corresponding to the affine line `u₀ + z • u₁`. -/
+noncomputable def lineWordStack (u₀ u₁ : Fin n → F) : WordStack F (Fin (1 + 1)) (Fin n) :=
+  Fin.cases u₀ (fun _ : Fin 1 => u₁)
+
+omit [NeZero n] in
+/-- The generic curve sum for `lineWordStack` is the affine line word. -/
+lemma sum_lineWordStack_eq (u₀ u₁ : Fin n → F) (z : F) :
+    (∑ t : Fin (1 + 1), (z ^ (t : ℕ)) • lineWordStack (F := F) (n := n) u₀ u₁ t)
+      = u₀ + z • u₁ := by
+  funext x
+  rw [Fin.sum_univ_two]
+  change (z ^ (0 : ℕ)) * u₀ x + (z ^ (1 : ℕ)) * u₁ x = u₀ x + z * u₁ x
+  ring
+
 /-- The parameters for which the curve points are `δ`-close to a set `V`
 (typically, a linear code). This is the set `S` from the proximity gap paper. -/
 noncomputable def coeffs_of_close_proximity_curve {l : ℕ}

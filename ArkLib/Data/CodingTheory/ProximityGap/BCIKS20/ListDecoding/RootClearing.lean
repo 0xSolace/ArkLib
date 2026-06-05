@@ -165,6 +165,78 @@ theorem pg_candidate_fiber_image_card_eq
     (fun a b h => Subtype.ext h)
 
 omit [DecidableEq (RatFunc F)] in
+theorem embedding_clearDenomY_of_large_candidate_fiber
+    (x₀ : F) {R : F[Z][X][Y]} {H : F[Z][X]} [Fact (Irreducible H)]
+    (hH : 0 < H.natDegree) {e D : ℕ}
+    (he : (Bivariate.evalX (Polynomial.C x₀) R).natDegree ≤ e)
+    (hD : D ≥ Bivariate.totalDegree H)
+    (hcard :
+      (((Finset.univ.filter
+        (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+          let P : F[X] :=
+            Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+          (pg_eval_on_Z (F := F) R z.1).eval P = 0 ∧
+            (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0)).image
+          (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ => z.1)).card :
+          WithBot ℕ) >
+        _root_.BCIKS20AppendixA.weight_Λ_over_𝒪 hH
+          (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H})
+            (Polynomial.clearDenomY (H.coeff H.natDegree) e
+              (Bivariate.evalX (Polynomial.C x₀) R)) :
+            _root_.BCIKS20AppendixA.𝒪 H) D * (H.natDegree : WithBot ℕ)) :
+    _root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃 H
+      (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H})
+        (Polynomial.clearDenomY (H.coeff H.natDegree) e
+          (Bivariate.evalX (Polynomial.C x₀) R)) :
+        _root_.BCIKS20AppendixA.𝒪 H) = 0 := by
+  exact common_roots_force_lift_zero hH D hD
+    (pg_candidate_fiber_image_common_roots_cleared x₀ hH he) hcard
+
+omit [DecidableEq (RatFunc F)] in
+theorem embedding_clearDenomY_of_large_candidate_fiber_card
+    (x₀ : F) {R : F[Z][X][Y]} {H : F[Z][X]} [Fact (Irreducible H)]
+    (hH : 0 < H.natDegree) {e D : ℕ}
+    (he : (Bivariate.evalX (Polynomial.C x₀) R).natDegree ≤ e)
+    (hD : D ≥ Bivariate.totalDegree H)
+    (hcard :
+      ((Finset.univ.filter
+        (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+          let P : F[X] :=
+            Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+          (pg_eval_on_Z (F := F) R z.1).eval P = 0 ∧
+            (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0)).card : WithBot ℕ) >
+        _root_.BCIKS20AppendixA.weight_Λ_over_𝒪 hH
+          (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H})
+            (Polynomial.clearDenomY (H.coeff H.natDegree) e
+              (Bivariate.evalX (Polynomial.C x₀) R)) :
+            _root_.BCIKS20AppendixA.𝒪 H) D * (H.natDegree : WithBot ℕ)) :
+    _root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃 H
+      (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H})
+        (Polynomial.clearDenomY (H.coeff H.natDegree) e
+          (Bivariate.evalX (Polynomial.C x₀) R)) :
+        _root_.BCIKS20AppendixA.𝒪 H) = 0 := by
+  have hcard_image :
+      (((Finset.univ.filter
+        (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+          let P : F[X] :=
+            Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+          (pg_eval_on_Z (F := F) R z.1).eval P = 0 ∧
+            (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0)).image
+          (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ => z.1)).card :
+          WithBot ℕ) >
+        _root_.BCIKS20AppendixA.weight_Λ_over_𝒪 hH
+          (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H})
+            (Polynomial.clearDenomY (H.coeff H.natDegree) e
+              (Bivariate.evalX (Polynomial.C x₀) R)) :
+            _root_.BCIKS20AppendixA.𝒪 H) D * (H.natDegree : WithBot ℕ) := by
+    rw [pg_candidate_fiber_image_card_eq (F := F) (k := k) (ωs := ωs)
+      (δ := δ) (u₀ := u₀) (u₁ := u₁) x₀ R H]
+    exact hcard
+  exact embedding_clearDenomY_of_large_candidate_fiber
+    (F := F) (n := n) (k := k) (δ := δ) (ωs := ωs) (u₀ := u₀) (u₁ := u₁)
+    x₀ hH he hD hcard_image
+
+omit [DecidableEq (RatFunc F)] in
 theorem H_tilde'_dvd_clearDenomY_of_large_candidate_fiber
     (x₀ : F) {R : F[Z][X][Y]} {H : F[Z][X]} [Fact (Irreducible H)]
     (hH : 0 < H.natDegree) {e D : ℕ}
