@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 377 files, 7677 declarations
+- `ArkLib` — 376 files, 7674 declarations
 
-## Same short-name across multiple files (289 groups)
+## Same short-name across multiple files (285 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -1608,27 +1608,27 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `weight_Λ_over_𝒪_add_le` (2 declarations, 2 files)
 
-- `lemma BCIKS20.HenselNumerator.weight_Λ_over_𝒪_add_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:622](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L622) — `Λ_𝒪(a + b) ≤ max(Λ_𝒪 a, Λ_𝒪 b)`: sub-additivity over `𝒪 H`.
+- `lemma BCIKS20.HenselNumerator.weight_Λ_over_𝒪_add_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:627](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L627) — `Λ_𝒪(a + b) ≤ max(Λ_𝒪 a, Λ_𝒪 b)`: sub-additivity over `𝒪 H`.
 - `lemma ArkLib.weight_Λ_over_𝒪_add_le` [ArkLib/ToMathlib/WeightLambdaCalculus.lean:87](../../../ArkLib/ToMathlib/WeightLambdaCalculus.lean#L87) — Sub-additivity of the `𝒪`-weight under addition: `Λ(a + b) ≤ max (Λ a) (Λ b)`.
 
 ### `weight_Λ_over_𝒪_mul_le` (2 declarations, 2 files)
 
-- `lemma BCIKS20.HenselNumerator.weight_Λ_over_𝒪_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:607](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L607) — `Λ_𝒪(a · b) ≤ Λ_𝒪(a) + Λ_𝒪(b)`: sub-multiplicativity over `𝒪 H`.  Take the canonical representatives
+- `lemma BCIKS20.HenselNumerator.weight_Λ_over_𝒪_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:612](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L612) — `Λ_𝒪(a · b) ≤ Λ_𝒪(a) + Λ_𝒪(b)`: sub-multiplicativity over `𝒪 H`.  Take the canonical representatives
 - `lemma ArkLib.weight_Λ_over_𝒪_mul_le` [ArkLib/ToMathlib/WeightLambdaCalculus.lean:148](../../../ArkLib/ToMathlib/WeightLambdaCalculus.lean#L148) — Sub-multiplicativity of the `𝒪`-weight: `Λ(a · b) ≤ Λ a + Λ b`. This is the central inequality the A
 
 ### `weight_Λ_over_𝒪_neg` (2 declarations, 2 files)
 
-- `lemma BCIKS20.HenselNumerator.weight_Λ_over_𝒪_neg` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:637](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L637) — `Λ_𝒪(-a) = Λ_𝒪(a)`: the `𝒪`-weight is negation-invariant (`mk (-ra) = -a`, `weight_Λ_neg`).
+- `lemma BCIKS20.HenselNumerator.weight_Λ_over_𝒪_neg` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:642](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L642) — `Λ_𝒪(-a) = Λ_𝒪(a)`: the `𝒪`-weight is negation-invariant (`mk (-ra) = -a`, `weight_Λ_neg`).
 - `lemma ArkLib.weight_Λ_over_𝒪_neg` [ArkLib/ToMathlib/WeightLambdaCalculus.lean:104](../../../ArkLib/ToMathlib/WeightLambdaCalculus.lean#L104) — Sub-additivity of the `𝒪`-weight under negation: it is invariant.
 
 ### `weight_Λ_over_𝒪_pow_le` (2 declarations, 2 files)
 
-- `lemma BCIKS20.HenselNumerator.weight_Λ_over_𝒪_pow_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:663](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L663) — `Λ_𝒪(a ^ k) ≤ k • Λ_𝒪(a)` (i.e. `≤ k · Λ_𝒪(a)` in `WithBot ℕ`): the power bound over `𝒪 H`, by induc
+- `lemma BCIKS20.HenselNumerator.weight_Λ_over_𝒪_pow_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:668](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L668) — `Λ_𝒪(a ^ k) ≤ k • Λ_𝒪(a)` (i.e. `≤ k · Λ_𝒪(a)` in `WithBot ℕ`): the power bound over `𝒪 H`, by induc
 - `lemma ArkLib.weight_Λ_over_𝒪_pow_le` [ArkLib/ToMathlib/WeightLambdaCalculus.lean:163](../../../ArkLib/ToMathlib/WeightLambdaCalculus.lean#L163) — Sub-multiplicativity for powers: `Λ(a ^ n) ≤ n • Λ a` (with `0 • Λ a = 0`, matching `weight_Λ_over_𝒪
 
 ### `weight_Λ_over_𝒪_sum_le` (2 declarations, 2 files)
 
-- `lemma BCIKS20.HenselNumerator.weight_Λ_over_𝒪_sum_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:649](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L649) — `Λ_𝒪(∑ᵢ f i) ≤ sup of Λ_𝒪(f i)`: the `𝒪`-weight of a finite sum is bounded by the sup of the summand
+- `lemma BCIKS20.HenselNumerator.weight_Λ_over_𝒪_sum_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:654](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L654) — `Λ_𝒪(∑ᵢ f i) ≤ sup of Λ_𝒪(f i)`: the `𝒪`-weight of a finite sum is bounded by the sup of the summand
 - `lemma ArkLib.weight_Λ_over_𝒪_sum_le` [ArkLib/ToMathlib/WeightLambdaCalculus.lean:129](../../../ArkLib/ToMathlib/WeightLambdaCalculus.lean#L129) — The `𝒪`-weight of a finite sum is bounded by the `sup` of the summands' weights.
 
 ### `OracleInterface` (3 declarations, 2 files)
@@ -1641,11 +1641,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma OutOfDomSmpl.card_agreement_le` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:102](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L102) — The agreement set of two distinct codewords' polynomials (inside any subtype of `F`) has at most `de
 - `lemma OutOfDomSmpl.card_agreement_le` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:197](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L197) — Two distinct smooth codewords' decoded polynomials agree on at most `2^m - 1` field points: agreemen
-
-### `card_eq_sum_indicator` (2 declarations, 2 files)
-
-- `theorem GCXK25SecondMoment.card_eq_sum_indicator` [ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean:29](../../../ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean#L29) — (no docstring)
-- `theorem GCXK25SecondMoment.card_eq_sum_indicator` [ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean:104](../../../ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean#L104) — (no docstring)
 
 ### `card_filter_forall_pi` (2 declarations, 2 files)
 
@@ -1672,25 +1667,10 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma ProximityGap.finset_card_gt_of_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:104](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L104) — (no docstring)
 - `theorem ProximityGap.finset_card_gt_of_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:110](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L110) — Convert an ENNReal lower bound on a finite set cardinality into a natural number strict cardinality 
 
-### `mult` (2 declarations, 2 files)
-
-- `def GCXK25SecondMoment.mult` [ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean:18](../../../ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean#L18) — Per-coordinate multiplicity: how many of the sets `A α` (for `α ∈ T`) contain `x`.
-- `def GCXK25SecondMoment.mult` [ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean:95](../../../ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean#L95) — Per-coordinate multiplicity: how many of the sets `A α` (for `α ∈ T`) contain `x`.
-
-### `mult_eq_sum` (2 declarations, 2 files)
-
-- `theorem GCXK25SecondMoment.mult_eq_sum` [ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean:22](../../../ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean#L22) — (no docstring)
-- `theorem GCXK25SecondMoment.mult_eq_sum` [ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean:98](../../../ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean#L98) — (no docstring)
-
 ### `qEntropy_mul_log_eq_qaryEntropy` (2 declarations, 2 files)
 
 - `theorem CodingTheory.qEntropy_mul_log_eq_qaryEntropy` [ArkLib/Data/CodingTheory/ProximityPrizeLeaves.lean:143](../../../ArkLib/Data/CodingTheory/ProximityPrizeLeaves.lean#L143) — **Base-change bridge for the `q`-ary entropy.** For `q ≥ 2`, ArkLib's `qEntropy` (defined with base-
 - `theorem CodingTheory.qEntropy_mul_log_eq_qaryEntropy` [ArkLib/Data/CodingTheory/ProximityPrizeLeaves2.lean:82](../../../ArkLib/Data/CodingTheory/ProximityPrizeLeaves2.lean#L82) — **Base-change bridge for the `q`-ary entropy** (re-proven locally so that this file is self-containe
-
-### `sum_card_eq_sum_mult` (2 declarations, 2 files)
-
-- `theorem GCXK25SecondMoment.sum_card_eq_sum_mult` [ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean:37](../../../ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean#L37) — **Double counting (rows = columns).** Total size of the family equals the sum of per-coordinate mult
-- `theorem GCXK25SecondMoment.sum_card_eq_sum_mult` [ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean:114](../../../ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean#L114) — **Double counting (rows = columns).** Total size of the family equals the sum of per-coordinate mult
 
 ### `uniform_event_mass` (2 declarations, 2 files)
 

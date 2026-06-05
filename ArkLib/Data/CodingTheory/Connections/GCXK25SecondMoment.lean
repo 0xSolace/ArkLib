@@ -59,6 +59,8 @@ this exactly, abstractly over an arbitrary finite family of subsets.
   `|T|·ε < 1` (i.e. `|T| < 1/ε`) at `S = √(1−p+ε)·n`, `B = (1−p)·n`, under `ε ≤ p < 1`.
   The `ε ≤ p` hypothesis is exactly the `η ≤ δ` constraint already added to
   `linear_listSize_to_epsMCA_gcxk25` (so that `1 − √(1−δ+η)` stays in `[0,1]`).
+* `card_lt_one_div_of_second_moment_rs` — the same result in the direct reciprocal form
+  `|T| < 1 / ε`, matching the usual Lemma 3 statement.
 
 ## What this file does *not* close
 

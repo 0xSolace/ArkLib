@@ -5487,7 +5487,7 @@
         {
           "doc": "Per-coordinate multiplicity: how many of the sets `A \u03b1` (for `\u03b1 \u2208 T`) contain `x`.",
           "kind": "def",
-          "line": 18,
+          "line": 93,
           "name": "GCXK25SecondMoment.mult",
           "namespace": "GCXK25SecondMoment",
           "short_name": "mult",
@@ -5496,7 +5496,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 22,
+          "line": 96,
           "name": "GCXK25SecondMoment.mult_eq_sum",
           "namespace": "GCXK25SecondMoment",
           "short_name": "mult_eq_sum",
@@ -5505,16 +5505,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 24,
-          "name": "GCXK25SecondMoment._anon_class_24",
+          "line": 98,
+          "name": "GCXK25SecondMoment._anon_class_98",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_24",
+          "short_name": "_anon_class_98",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 29,
+          "line": 102,
           "name": "GCXK25SecondMoment.card_eq_sum_indicator",
           "namespace": "GCXK25SecondMoment",
           "short_name": "card_eq_sum_indicator",
@@ -5523,16 +5523,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 31,
-          "name": "GCXK25SecondMoment._anon_class_31",
+          "line": 104,
+          "name": "GCXK25SecondMoment._anon_class_104",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_31",
+          "short_name": "_anon_class_104",
           "signature": "class classical"
         },
         {
           "doc": "**Double counting (rows = columns).** Total size of the family equals the sum of per-coordinate multiplicities.",
           "kind": "theorem",
-          "line": 37,
+          "line": 112,
           "name": "GCXK25SecondMoment.sum_card_eq_sum_mult",
           "namespace": "GCXK25SecondMoment",
           "short_name": "sum_card_eq_sum_mult",
@@ -5541,11 +5541,128 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 39,
-          "name": "GCXK25SecondMoment._anon_class_39",
+          "line": 114,
+          "name": "GCXK25SecondMoment._anon_class_114",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_39",
+          "short_name": "_anon_class_114",
           "signature": "class classical"
+        },
+        {
+          "doc": "**Second moment = pairwise intersections.** `\u2211_\u03b1 \u2211_\u03b2 |A_\u03b1 \u2229 A_\u03b2| = \u2211_x d(x)\u00b2`.",
+          "kind": "theorem",
+          "line": 124,
+          "name": "GCXK25SecondMoment.sum_sum_card_inter_eq_sum_mult_sq",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "sum_sum_card_inter_eq_sum_mult_sq",
+          "signature": "theorem sum_sum_card_inter_eq_sum_mult_sq (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 126,
+          "name": "GCXK25SecondMoment._anon_class_126",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_126",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Cauchy\u2013Schwarz / Chebyshev second-moment bound (\u2115 form).** The square of the total size of the family is at most `n` times the sum of all pairwise intersection sizes. This is the first inequality `(5)\u2013(6)` of the GCXK25 second-moment count, packaged over the ambient coordinate set `\u03b9` (so the union bound `r \u2264 n` is automatic).",
+          "kind": "theorem",
+          "line": 161,
+          "name": "GCXK25SecondMoment.sq_sum_card_le_card_mul_sum_sum_card_inter",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "sq_sum_card_le_card_mul_sum_sum_card_inter",
+          "signature": "theorem sq_sum_card_le_card_mul_sum_sum_card_inter (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 164,
+          "name": "GCXK25SecondMoment._anon_class_164",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_164",
+          "signature": "class classical"
+        },
+        {
+          "doc": "The total second moment splits into the diagonal (`\u2211 |A \u03b1|`) plus the off-diagonal pairwise intersections.",
+          "kind": "theorem",
+          "line": 172,
+          "name": "GCXK25SecondMoment.sum_sum_card_inter_eq_diag_add_offdiag",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "sum_sum_card_inter_eq_diag_add_offdiag",
+          "signature": "theorem sum_sum_card_inter_eq_diag_add_offdiag (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 176,
+          "name": "GCXK25SecondMoment._anon_class_176",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_176",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Off-diagonal pairwise bound (\u2115 form).** If every distinct pair `\u03b1 \u2260 \u03b2` (both in `T`) has `|A \u03b1 \u2229 A \u03b2| \u2264 B`, the off-diagonal sum is at most `N\u00b7(N-1)\u00b7B`, where `N = |T|`.",
+          "kind": "theorem",
+          "line": 184,
+          "name": "GCXK25SecondMoment.offdiag_le",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "offdiag_le",
+          "signature": "theorem offdiag_le (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) {B : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 187,
+          "name": "GCXK25SecondMoment._anon_class_187",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_187",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**GCXK25 second-moment master inequality (real form).** Let `T` be a nonempty index set with `N := |T|` members, and `A : \u03ba \u2192 Finset \u03b9` a family of subsets of an ambient coordinate set of size `n`. Suppose * each member is large: `S \u2264 |A \u03b1|` for all `\u03b1 \u2208 T` (with `S \u2265 0`); * distinct members overlap little: `|A \u03b1 \u2229 A \u03b2| \u2264 B` for all distinct `\u03b1, \u03b2 \u2208 T`. Then `N \u00b7 S\u00b2 \u2264 n \u00b7 (S + (N \u2212 1) \u00b7 B)`. This is the inequality the GCXK25 proof of Lemma 3 extracts from Cauchy\u2013Schwarz right before substituting the Reed\u2013Solomon values `S = \u221a(1\u2212p+\u03b5)\u00b7n`, `B = (1\u2212p)\u00b7n` (which then yield `N < 1/\u03b5`). Proven via th",
+          "kind": "theorem",
+          "line": 217,
+          "name": "GCXK25SecondMoment.card_le_of_second_moment",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "card_le_of_second_moment",
+          "signature": "theorem card_le_of_second_moment"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 224,
+          "name": "GCXK25SecondMoment._anon_class_224",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_224",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**GCXK25 Lemma 3 (second-moment count of bad second-part points).** Specialization of `card_le_of_second_moment` to the Reed\u2013Solomon values `S = \u221a(1\u2212p+\u03b5)\u00b7n` (member lower bound: a bad second-part point is at least `1\u2212\u221a(1\u2212p+\u03b5)`-close, so its `\u03b4`-agreement domain has `\u2265 \u221a(1\u2212p+\u03b5)\u00b7n` coordinates) and `B = (1\u2212p)\u00b7n` (distinct agreement domains share `\u2264 (1\u2212p)\u00b7n` coordinates). Under `0 < \u03b5`, `\u03b5 \u2264 p < 1`, and `0 < n`, `|T| \u00b7 \u03b5 < \u221a(1\u2212p+\u03b5) \u2212 (1\u2212p) + \u03b5 \u2264 1`, i.e. `|T| < 1/\u03b5`. This is exactly the bound `|Bad(\u03c0\u2081,\u03c0\u2082,\u03b4)\u00b2| < 1/\u03b5` of GCXK25 Lemma 3, packaged abstractly over the agree-domain family `T`. The hypo",
+          "kind": "theorem",
+          "line": 330,
+          "name": "GCXK25SecondMoment.card_lt_inv_of_second_moment_rs",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "card_lt_inv_of_second_moment_rs",
+          "signature": "theorem card_lt_inv_of_second_moment_rs"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 338,
+          "name": "GCXK25SecondMoment._anon_class_338",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_338",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Reciprocal form of `card_lt_inv_of_second_moment_rs`, matching the usual statement `|Bad\u00b2| < 1 / \u03b5` of GCXK25 Lemma 3.",
+          "kind": "theorem",
+          "line": 377,
+          "name": "GCXK25SecondMoment.card_lt_one_div_of_second_moment_rs",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "card_lt_one_div_of_second_moment_rs",
+          "signature": "theorem card_lt_one_div_of_second_moment_rs"
         }
       ]
     },
@@ -14564,6 +14681,15 @@
           "namespace": "ProximityGap",
           "short_name": "goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_prob_threshold",
           "signature": "theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_prob_threshold"
+        },
+        {
+          "doc": "Non-cyclic public wrapper for the closed list-decoding assembly theorem. `Curves.lean` cannot import `ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed` directly, because that file itself imports the curve front doors.  This module sits above both sides of the dependency graph, so it can expose the final canonical \u00a75 residual shape under the `ProximityGap` namespace.",
+          "kind": "theorem",
+          "line": 454,
+          "name": "ProximityGap.correlatedAgreement_affine_curves_of_section5_canonical_data",
+          "namespace": "ProximityGap",
+          "short_name": "correlatedAgreement_affine_curves_of_section5_canonical_data",
+          "signature": "theorem correlatedAgreement_affine_curves_of_section5_canonical_data"
         }
       ]
     },
@@ -15159,16 +15285,16 @@
         {
           "doc": "",
           "kind": "axiom",
-          "line": 69,
-          "name": "_anon_axiom_69",
+          "line": 74,
+          "name": "_anon_axiom_74",
           "namespace": "",
-          "short_name": "_anon_axiom_69",
+          "short_name": "_anon_axiom_74",
           "signature": "axiom axiom-clean (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`):"
         },
         {
           "doc": "The **multivariate binomial weight** attached to multi-indices `s, k : \u03c3 \u2192\u2080 \u2115`: `\u220f\u1d62 (s\u1d62).choose (k\u1d62)`, the product (over the union of supports \u2014 the only indices that can contribute a factor `\u2260 1`) of the single-variable binomial coefficients. This is the genuine coefficient that the iterated single-variable Hasse derivative produces: for `s = n + k` it is `\u220f\u1d62 (n\u1d62+k\u1d62).choose k\u1d62`.  When `k\u1d62 > s\u1d62` for some `i` the factor is `(s\u1d62).choose (k\u1d62) = 0`, killing the term \u2014 exactly \"cannot differentiate past the degree\".",
           "kind": "def",
-          "line": 135,
+          "line": 140,
           "name": "BCIKS20.HenselNumerator.mvBinom",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvBinom",
@@ -15177,7 +15303,7 @@
         {
           "doc": "`mvBinom s k = 0` whenever `k` does not divide-down into `s` (i.e. some `k\u1d62 > s\u1d62`): the binomial factor `(s\u1d62).choose (k\u1d62)` vanishes.  This is precisely the truncated-subtraction guard that makes the Hasse coefficient pick out only the genuine shift `s = n + k`.",
           "kind": "theorem",
-          "line": 141,
+          "line": 146,
           "name": "BCIKS20.HenselNumerator.mvBinom_eq_zero_of_not_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvBinom_eq_zero_of_not_le",
@@ -15186,16 +15312,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 142,
-          "name": "BCIKS20.HenselNumerator._anon_class_142",
+          "line": 147,
+          "name": "BCIKS20.HenselNumerator._anon_class_147",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_142",
+          "short_name": "_anon_class_147",
           "signature": "class classical"
         },
         {
           "doc": "`mvBinom (n + k) k = \u220f\u1d62 (n\u1d62 + k\u1d62).choose k\u1d62`, the genuine multivariate binomial weight of the shift `n \u21a6 n + k` (the value carried by `mvHasseCoeff`).",
           "kind": "theorem",
-          "line": 154,
+          "line": 159,
           "name": "BCIKS20.HenselNumerator.mvBinom_add_right",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvBinom_add_right",
@@ -15204,16 +15330,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 156,
-          "name": "BCIKS20.HenselNumerator._anon_class_156",
+          "line": 161,
+          "name": "BCIKS20.HenselNumerator._anon_class_161",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_156",
+          "short_name": "_anon_class_161",
           "signature": "class classical"
         },
         {
           "doc": "The `k`-th **multivariate Hasse coefficient** of `p`: the genuine coeff-of-Taylor-shift object `\u0394^k p`, defined (\u00e0 la `Polynomial.hasseDeriv`) as `\u2211_s monomial (s - k) (mvBinom s k \u2022 coeff s p)`. Its `coeff n` is `(\u220f\u1d62 (n\u1d62+k\u1d62).choose k\u1d62) \u00b7 coeff (n+k) p` (`mvHasseCoeff_coeff`), the binomial-weighted shift used by BCIKS20 (characteristic-free, no division, no `m!`).  It is the iterated single-variable `Polynomial.hasseDeriv`, one derivative per variable (`mvHasseCoeff_single_coeff` shows the single-variable agreement).",
           "kind": "def",
-          "line": 170,
+          "line": 175,
           "name": "BCIKS20.HenselNumerator.mvHasseCoeff",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvHasseCoeff",
@@ -15222,7 +15348,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 174,
+          "line": 179,
           "name": "BCIKS20.HenselNumerator.mvHasseCoeff_zero_right",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvHasseCoeff_zero_right",
@@ -15231,7 +15357,7 @@
         {
           "doc": "The defining coefficient formula: the genuine binomial-weighted shift.",
           "kind": "theorem",
-          "line": 179,
+          "line": 184,
           "name": "BCIKS20.HenselNumerator.mvHasseCoeff_coeff",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvHasseCoeff_coeff",
@@ -15240,16 +15366,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 182,
-          "name": "BCIKS20.HenselNumerator._anon_class_182",
+          "line": 187,
+          "name": "BCIKS20.HenselNumerator._anon_class_187",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_182",
+          "short_name": "_anon_class_187",
           "signature": "class classical"
         },
         {
           "doc": "`mvBinom n 0 = 1`: the empty (`k = 0`) shift carries no binomial weight.",
           "kind": "theorem",
-          "line": 207,
+          "line": 212,
           "name": "BCIKS20.HenselNumerator.mvBinom_zero_right",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvBinom_zero_right",
@@ -15258,16 +15384,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 208,
-          "name": "BCIKS20.HenselNumerator._anon_class_208",
+          "line": 213,
+          "name": "BCIKS20.HenselNumerator._anon_class_213",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_208",
+          "short_name": "_anon_class_213",
           "signature": "class classical"
         },
         {
           "doc": "`mvHasseCoeff 0 = id` (non-vacuity / `hasseDeriv_zero'` analogue): the zeroth Hasse coefficient is the polynomial itself, so the construction is genuinely not the zero map.",
           "kind": "theorem",
-          "line": 217,
+          "line": 222,
           "name": "BCIKS20.HenselNumerator.mvHasseCoeff_zero_left",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvHasseCoeff_zero_left",
@@ -15276,16 +15402,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 218,
-          "name": "BCIKS20.HenselNumerator._anon_class_218",
+          "line": 223,
+          "name": "BCIKS20.HenselNumerator._anon_class_223",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_218",
+          "short_name": "_anon_class_223",
           "signature": "class classical"
         },
         {
           "doc": "`mvHasseCoeff k` is additive in `p`.",
           "kind": "theorem",
-          "line": 225,
+          "line": 230,
           "name": "BCIKS20.HenselNumerator.mvHasseCoeff_add",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvHasseCoeff_add",
@@ -15294,16 +15420,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 227,
-          "name": "BCIKS20.HenselNumerator._anon_class_227",
+          "line": 232,
+          "name": "BCIKS20.HenselNumerator._anon_class_232",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_227",
+          "short_name": "_anon_class_232",
           "signature": "class classical"
         },
         {
           "doc": "`mvHasseCoeff k` is `R`-linear (compatible with scalar multiplication).",
           "kind": "theorem",
-          "line": 234,
+          "line": 239,
           "name": "BCIKS20.HenselNumerator.mvHasseCoeff_smul",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvHasseCoeff_smul",
@@ -15312,16 +15438,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 236,
-          "name": "BCIKS20.HenselNumerator._anon_class_236",
+          "line": 241,
+          "name": "BCIKS20.HenselNumerator._anon_class_241",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_236",
+          "short_name": "_anon_class_241",
           "signature": "class classical"
         },
         {
           "doc": "The genuine multivariate binomial weight of a *single-variable* shift: when both multi-indices are concentrated at the same coordinate `i`, the weight is the ordinary `Nat.choose`.  This is the coefficient-level statement that `mvHasseCoeff (single i k)` agrees with the single-variable `Polynomial.hasseDeriv k` (whose coefficient is `(n+k).choose k`, `Polynomial.hasseDeriv_coeff`).",
           "kind": "theorem",
-          "line": 248,
+          "line": 253,
           "name": "BCIKS20.HenselNumerator.mvBinom_single",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvBinom_single",
@@ -15330,16 +15456,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 250,
-          "name": "BCIKS20.HenselNumerator._anon_class_250",
+          "line": 255,
+          "name": "BCIKS20.HenselNumerator._anon_class_255",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_250",
+          "short_name": "_anon_class_255",
           "signature": "class classical"
         },
         {
           "doc": "Single-variable agreement (the `hasseDeriv_coeff` analogue): for a single-coordinate shift `k = single i m`, the `single i n`-coefficient of `mvHasseCoeff (single i m) p` is exactly the binomial-weighted shift `(n+m).choose m \u00b7 coeff (single i (n+m)) p` \u2014 identical to the coefficient produced by the single-variable `Polynomial.hasseDeriv m` (`Polynomial.hasseDeriv_coeff`).  This certifies `mvHasseCoeff` is the genuine Hasse object.",
           "kind": "theorem",
-          "line": 273,
+          "line": 278,
           "name": "BCIKS20.HenselNumerator.mvHasseCoeff_single_coeff",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvHasseCoeff_single_coeff",
@@ -15348,16 +15474,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 276,
-          "name": "BCIKS20.HenselNumerator._anon_class_276",
+          "line": 281,
+          "name": "BCIKS20.HenselNumerator._anon_class_281",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_276",
+          "short_name": "_anon_class_281",
           "signature": "class classical"
         },
         {
           "doc": "Evaluation on a single monomial: `mvHasseCoeff k (monomial s a)` has the expected binomial-weighted single monomial as its value, witnessing non-vacuity (a genuine `monomial` with the genuine `mvBinom` weight, never identically zero when `k \u2264 s` and `a \u2260 0`).",
           "kind": "theorem",
-          "line": 282,
+          "line": 287,
           "name": "BCIKS20.HenselNumerator.mvHasseCoeff_monomial",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvHasseCoeff_monomial",
@@ -15366,16 +15492,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 285,
-          "name": "BCIKS20.HenselNumerator._anon_class_285",
+          "line": 290,
+          "name": "BCIKS20.HenselNumerator._anon_class_290",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_285",
+          "short_name": "_anon_class_290",
           "signature": "class classical"
         },
         {
           "doc": "`mvBinom s k \u2260 0` whenever `k \u2264 s`: every factor `(s\u1d62).choose (k\u1d62)` is positive because `k\u1d62 \u2264 s\u1d62`.  Dual to `mvBinom_eq_zero_of_not_le`; the positivity half of the genuine weight.",
           "kind": "theorem",
-          "line": 313,
+          "line": 318,
           "name": "BCIKS20.HenselNumerator.mvBinom_pos",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvBinom_pos",
@@ -15384,16 +15510,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 314,
-          "name": "BCIKS20.HenselNumerator._anon_class_314",
+          "line": 319,
+          "name": "BCIKS20.HenselNumerator._anon_class_319",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_314",
+          "short_name": "_anon_class_319",
           "signature": "class classical"
         },
         {
           "doc": "The monomial `mvHasseCoeff`, read at the shifted index `s - k`, returns *exactly* the genuine binomial multiple `mvBinom s k \u00b7 a` (whose integer weight `mvBinom s k` is positive by `mvBinom_pos` when `k \u2264 s`).  This is the load-bearing anti-stub witness that `mvHasseCoeff` is the genuine Hasse object, never a secretly-zero map.  (Stated over any `CommSemiring`; in positive characteristic the *cast* of the weight may collapse, so the honest non-vacuity is the \u2115-level `mvBinom_pos`, not a field-level `\u2260 0` \u2014 which would be false over `F\u209a`.)",
           "kind": "theorem",
-          "line": 326,
+          "line": 331,
           "name": "BCIKS20.HenselNumerator.mvHasseCoeff_monomial_coeff_eq",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "mvHasseCoeff_monomial_coeff_eq",
@@ -15402,16 +15528,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 329,
-          "name": "BCIKS20.HenselNumerator._anon_class_329",
+          "line": 334,
+          "name": "BCIKS20.HenselNumerator._anon_class_334",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_329",
+          "short_name": "_anon_class_334",
           "signature": "class classical"
         },
         {
           "doc": "`\u03a3\u03bb := \u2211_l \u03bb_l`, the *number of parts* of a partition (counted with multiplicity). In BCIKS20 (`A.1`) this is the total order of the `Y`-Hasse derivative and the `\u03be`-exponent contributor.  Equals `\u03bb.parts.card` (each part `l` is listed `\u03bb_l` times).",
           "kind": "def",
-          "line": 341,
+          "line": 346,
           "name": "BCIKS20.HenselNumerator.sigmaLambda",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "sigmaLambda",
@@ -15420,7 +15546,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 344,
+          "line": 349,
           "name": "BCIKS20.HenselNumerator.sigmaLambda_indiscrete",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "sigmaLambda_indiscrete",
@@ -15429,7 +15555,7 @@
         {
           "doc": "The **partition-indexed product** `\u220f_l (b l)^{\u03bb_l}` for `lam : Nat.Partition m` and a family `b : \u2115 \u2192 M`.  Defined as the product over the multiset of parts (each distinct part `l` appears exactly `\u03bb_l = lam.parts.count l` times, so it is automatically raised to its multiplicity). This is the genuine `\u220f_l \u03b2_l^{\u03bb_l}` of BCIKS20 `(A.1)` \u2014 see `partitionProd_eq_prod_count`.",
           "kind": "def",
-          "line": 356,
+          "line": 361,
           "name": "BCIKS20.HenselNumerator.partitionProd",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd",
@@ -15438,7 +15564,7 @@
         {
           "doc": "The reindexing-by-multiplicity identity certifying `partitionProd` is the genuine `\u220f_l (b l)^{\u03bb_l}`: the product over parts equals the product over *distinct* parts `l`, each raised to its multiplicity `\u03bb_l = lam.parts.count l`.",
           "kind": "theorem",
-          "line": 362,
+          "line": 367,
           "name": "BCIKS20.HenselNumerator.partitionProd_eq_prod_count",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_eq_prod_count",
@@ -15447,16 +15573,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 364,
-          "name": "BCIKS20.HenselNumerator._anon_class_364",
+          "line": 369,
+          "name": "BCIKS20.HenselNumerator._anon_class_369",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_364",
+          "short_name": "_anon_class_369",
           "signature": "class classical"
         },
         {
           "doc": "The empty (`m = 0`) partition product is `1`: `Nat.Partition 0` has no parts.",
           "kind": "theorem",
-          "line": 369,
+          "line": 374,
           "name": "BCIKS20.HenselNumerator.partitionProd_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_zero",
@@ -15465,7 +15591,7 @@
         {
           "doc": "The product over the *indiscrete* partition (single part `m`, `m \u2260 0`) is just `b m` (the `\u03bb_m = 1` term).  In BCIKS20 this is the excluded special partition `\u03bb(t)`.",
           "kind": "theorem",
-          "line": 386,
+          "line": 391,
           "name": "BCIKS20.HenselNumerator.partitionProd_indiscrete",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_indiscrete",
@@ -15474,7 +15600,7 @@
         {
           "doc": "`partitionProd` is multiplicative in the family.",
           "kind": "theorem",
-          "line": 392,
+          "line": 397,
           "name": "BCIKS20.HenselNumerator.partitionProd_mul",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_mul",
@@ -15483,7 +15609,7 @@
         {
           "doc": "The combinatorial **prefactor** of BCIKS20's `A_{i1,\u03bb}` coefficient (lines 4042\u20134080), as an explicit natural number: the binomial `C(i, i1)` times the multinomial over the parts of `\u03bb` together with the order-0 multiplicity.  Here it is rendered as `Nat.choose i i1 * Nat.multinomial (lam.parts.toFinset) (lam.parts.count)` \u2014 the genuine `multinomial(\u03bb\u2081, \u2026, \u03bb_l, \u2026)` over distinct part-multiplicities. WALL (deferred to a later wave): the *matching lemma* equating this with the exact paper combinatorial factor (reconciling the Hasse-derivative's intrinsic `C(j, \u03a3\u03bb)` weight against the paper's `mu",
           "kind": "def",
-          "line": 406,
+          "line": 411,
           "name": "BCIKS20.HenselNumerator.prefactor",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "prefactor",
@@ -15492,7 +15618,7 @@
         {
           "doc": "The prefactor is genuinely positive whenever the binomial part is (so it is never a secretly-zero stub): `Nat.multinomial` is always `> 0`.",
           "kind": "theorem",
-          "line": 411,
+          "line": 416,
           "name": "BCIKS20.HenselNumerator.prefactor_pos",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "prefactor_pos",
@@ -15501,7 +15627,7 @@
         {
           "doc": "The multinomial part of the BCIKS20 prefactor is exactly the value-multiset permutation count used by the power-series composition expansion.",
           "kind": "theorem",
-          "line": 418,
+          "line": 423,
           "name": "BCIKS20.HenselNumerator.countPerms_parts_eq_multinomial",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "countPerms_parts_eq_multinomial",
@@ -15510,7 +15636,7 @@
         {
           "doc": "`prefactor` as the binomial Hasse weight times the composition fiber-count `countPerms`.  This is the direct bridge from `PowerSeriesComposition.coeff_pow_eq_partitionSum` to the `B_coeff` normalization.",
           "kind": "theorem",
-          "line": 426,
+          "line": 431,
           "name": "BCIKS20.HenselNumerator.prefactor_eq_choose_mul_countPerms",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "prefactor_eq_choose_mul_countPerms",
@@ -15519,7 +15645,7 @@
         {
           "doc": "`\u0394_X^{i1}`: the `i1`-th Hasse derivative on the **lift `X` layer** (the middle `Polynomial` layer) of `R : F[X][X][Y]`, applied coefficient-wise through the outer `Y` layer.  Each `Y`-coefficient `a : F[X][X]` is sent to `Polynomial.hasseDeriv i1 a`, the genuine binomial-weighted-shift Hasse derivative on its own `X` variable.  This is the genuine `\u0394_X^{i1}` of BCIKS20 (char-free).",
           "kind": "def",
-          "line": 462,
+          "line": 467,
           "name": "BCIKS20.HenselNumerator.hasseDerivX",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivX",
@@ -15528,7 +15654,7 @@
         {
           "doc": "`\u0394_Y^{m}`: the `m`-th Hasse derivative on the **outermost `Y` layer** of `R`, i.e. the ordinary mathlib `Polynomial.hasseDeriv m` (genuine, char-free).",
           "kind": "def",
-          "line": 467,
+          "line": 472,
           "name": "BCIKS20.HenselNumerator.hasseDerivY",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivY",
@@ -15537,7 +15663,7 @@
         {
           "doc": "Non-vacuity: `\u0394_X^{0} = id` (`hasseDeriv 0 = id`, layer-wise).  Certifies `hasseDerivX` is genuinely not the zero map.",
           "kind": "theorem",
-          "line": 473,
+          "line": 478,
           "name": "BCIKS20.HenselNumerator.hasseDerivX_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivX_zero",
@@ -15546,7 +15672,7 @@
         {
           "doc": "Non-vacuity: `\u0394_Y^{0} = id`.",
           "kind": "theorem",
-          "line": 480,
+          "line": 485,
           "name": "BCIKS20.HenselNumerator.hasseDerivY_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivY_zero",
@@ -15555,7 +15681,7 @@
         {
           "doc": "`\u0394_X^{i1}` is additive (it is `Polynomial.hasseDeriv i1`, an `F[X]`-linear map, applied coefficient-wise).  Genuine-object witness.",
           "kind": "theorem",
-          "line": 485,
+          "line": 490,
           "name": "BCIKS20.HenselNumerator.hasseDerivX_add",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivX_add",
@@ -15564,7 +15690,7 @@
         {
           "doc": "`\u0394_Y^{m}` is additive.",
           "kind": "theorem",
-          "line": 493,
+          "line": 498,
           "name": "BCIKS20.HenselNumerator.hasseDerivY_add",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivY_add",
@@ -15573,7 +15699,7 @@
         {
           "doc": "`\u0394_X^{i1}` never raises the **`Y`-degree**: `natDegreeY (\u0394_X^{i1} p) \u2264 natDegreeY p`.  `\u0394_X` acts coefficient-wise through the outer `Y` layer (`p.sum (fun n a => monomial n (hasseDeriv i1 a))`), re-monomialising each `Y`-coefficient at the *same* `Y`-degree `n \u2264 natDegreeY p`.",
           "kind": "theorem",
-          "line": 510,
+          "line": 515,
           "name": "BCIKS20.HenselNumerator.hasseDerivX_natDegreeY_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivX_natDegreeY_le",
@@ -15582,16 +15708,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 512,
-          "name": "BCIKS20.HenselNumerator._anon_class_512",
+          "line": 517,
+          "name": "BCIKS20.HenselNumerator._anon_class_517",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_512",
+          "short_name": "_anon_class_517",
           "signature": "class classical"
         },
         {
           "doc": "`\u0394_Y^{m}` drops the **`Y`-degree** by (at least) `m`: `natDegreeY (\u0394_Y^{m} p) \u2264 natDegreeY p \u2212 m`. This is mathlib's `Polynomial.natDegree_hasseDeriv_le` on the outer `Y` layer \u2014 the genuine source of the `\u2212m` (`= \u2212\u03a3\u03bb`) in BCIKS20's `B_coeff` weight bound.",
           "kind": "theorem",
-          "line": 523,
+          "line": 528,
           "name": "BCIKS20.HenselNumerator.hasseDerivY_natDegreeY_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivY_natDegreeY_le",
@@ -15600,7 +15726,7 @@
         {
           "doc": "`evalX (C x\u2080)` (the **lift `X`-layer** substitution, ground ring `F[X]`) never raises the **`Y`-degree**: `natDegreeY (evalX a p) \u2264 natDegreeY p`.  `evalX a = map (evalRingHom a)` (`Bivariate.evalX_eq_map`), and `map` cannot raise `natDegree` (`Polynomial.natDegree_map_le`).",
           "kind": "theorem",
-          "line": 531,
+          "line": 536,
           "name": "BCIKS20.HenselNumerator.evalX_natDegreeY_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "evalX_natDegreeY_le",
@@ -15609,7 +15735,7 @@
         {
           "doc": "Evaluate the iterated Hasse coefficient `\u0394_X^{i1} \u0394_Y^{m} R` of the trivariate `R` at `(X = x\u2080, Y = \u03b1\u2080 = T/W)`, landing in `\ud835\udd43 H`.  `X \u21a6 x\u2080` via `Bivariate.evalX (C x\u2080)`; the remaining `Y` is sent to `\u03b1\u2080 = T/W` via `eval\u2082 liftToFunctionField`.  This **mirrors `ClaimA2.\u03b6`** exactly (`RationalFunctions.lean`:2229), which is the `i1 = 1, m = 0` analogue applied to `R.derivative`.",
           "kind": "def",
-          "line": 546,
+          "line": 551,
           "name": "BCIKS20.HenselNumerator.hasseEvalAtRoot",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseEvalAtRoot",
@@ -15618,7 +15744,7 @@
         {
           "doc": "`\u03b4_{i1,0} = if i1 = 0 then 1 else 0`, the BCIKS20 \"save a `W`\" indicator.",
           "kind": "def",
-          "line": 553,
+          "line": 558,
           "name": "BCIKS20.HenselNumerator.deltaSave",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "deltaSave",
@@ -15627,7 +15753,7 @@
         {
           "doc": "The genuine `\ud835\udcaa H`-representative of the iterated Hasse coefficient of `R` at `(x\u2080, \u00b7)`, **lifted by `Y \u21a6 T` (the `W`-cleared form)**.  Concretely: take `\u0394_X^{i1} \u0394_Y^{\u03a3\u03bb} R : F[X][X][Y]`, specialise the lift layer `X \u21a6 x\u2080` to a polynomial in `F[X][Y]`, and `mk` it into `\ud835\udcaa H = F[X][Y] \u29f8 \u27e8H\u0303'\u27e9`.  The `Y \u21a6 T` lift (= `mk`) is exactly the `W`-cleared form of the `Y \u21a6 T/W` evaluation `hasseEvalAtRoot` (clearing the `T/W` denominators multiplies by the appropriate `W`-power).  Genuine: built from the real iterated `Polynomial.hasseDeriv`, never `0`.",
           "kind": "def",
-          "line": 562,
+          "line": 567,
           "name": "BCIKS20.HenselNumerator.hasseCoeffRepr\ud835\udcaa",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseCoeffRepr\ud835\udcaa",
@@ -15636,7 +15762,7 @@
         {
           "doc": "BCIKS20's rescaled coefficient `B_{i1,\u03bb} \u2208 \ud835\udcaa H` (lines 4042\u20134080): the combinatorial `prefactor` (`C(d,i1)\u00b7multinomial(\u03bb)`) times the `W`-cleared iterated-Hasse coefficient `hasseCoeffRepr\ud835\udcaa`.  This is the **genuine** object \u2014 the real iterated Hasse coefficient of `R` at `(x\u2080, \u03b1\u2080)` carrying its genuine integer prefactor \u2014 not a stub and not secretly `0` (`prefactor_pos` shows the integer weight is positive). CLOSED (wave 6, P2-independent, axiom-clean): the *weight* lemma `B_coeff_weight_le` (`weight_\u039b_over_\ud835\udcaa hH (B_coeff \u2026) D \u2264 (natDegreeY R \u2212 \u03a3\u03bb)\u00b7(D+1\u2212natDegreeY H) + degreeX p`, the genuine i",
           "kind": "def",
-          "line": 579,
+          "line": 584,
           "name": "BCIKS20.HenselNumerator.B_coeff",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "B_coeff",
@@ -15645,7 +15771,7 @@
         {
           "doc": "The image of `W = H.leadingCoeff` as an element of `\ud835\udcaa H` (the constant `C W \u2208 F[X][Y]`, `mk`-ed).  Genuine `W` factor for the `(A.1)` recursion.",
           "kind": "def",
-          "line": 587,
+          "line": 592,
           "name": "BCIKS20.HenselNumerator.W\ud835\udcaa",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "W\ud835\udcaa",
@@ -15654,7 +15780,7 @@
         {
           "doc": "`\u039b_\ud835\udcaa(a \u00b7 b) \u2264 \u039b_\ud835\udcaa(a) + \u039b_\ud835\udcaa(b)`: sub-multiplicativity over `\ud835\udcaa H`.  Take the canonical representatives `ra, rb`; then `mk (ra \u00b7 rb) = a \u00b7 b`, and `weight_\u039b (ra \u00b7 rb) \u2264 weight_\u039b ra + weight_\u039b rb = \u039b_\ud835\udcaa a + \u039b_\ud835\udcaa b`.",
           "kind": "lemma",
-          "line": 607,
+          "line": 612,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_mul_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_mul_le",
@@ -15663,7 +15789,7 @@
         {
           "doc": "`\u039b_\ud835\udcaa(a + b) \u2264 max(\u039b_\ud835\udcaa a, \u039b_\ud835\udcaa b)`: sub-additivity over `\ud835\udcaa H`.",
           "kind": "lemma",
-          "line": 622,
+          "line": 627,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_add_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_add_le",
@@ -15672,7 +15798,7 @@
         {
           "doc": "`\u039b_\ud835\udcaa(-a) = \u039b_\ud835\udcaa(a)`: the `\ud835\udcaa`-weight is negation-invariant (`mk (-ra) = -a`, `weight_\u039b_neg`).",
           "kind": "lemma",
-          "line": 637,
+          "line": 642,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_neg",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_neg",
@@ -15681,7 +15807,7 @@
         {
           "doc": "`\u039b_\ud835\udcaa(\u2211\u1d62 f i) \u2264 sup of \u039b_\ud835\udcaa(f i)`: the `\ud835\udcaa`-weight of a finite sum is bounded by the sup of the summand weights.  Derived from `weight_\u039b_over_\ud835\udcaa_add_le` by induction.",
           "kind": "lemma",
-          "line": 649,
+          "line": 654,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_sum_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_sum_le",
@@ -15690,16 +15816,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 652,
-          "name": "BCIKS20.HenselNumerator._anon_class_652",
+          "line": 657,
+          "name": "BCIKS20.HenselNumerator._anon_class_657",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_652",
+          "short_name": "_anon_class_657",
           "signature": "class classical"
         },
         {
           "doc": "`\u039b_\ud835\udcaa(a ^ k) \u2264 k \u2022 \u039b_\ud835\udcaa(a)` (i.e. `\u2264 k \u00b7 \u039b_\ud835\udcaa(a)` in `WithBot \u2115`): the power bound over `\ud835\udcaa H`, by induction on `k` from `weight_\u039b_over_\ud835\udcaa_mul_le`.  The `k = 0` case uses `\u039b_\ud835\udcaa(1) \u2264 0`.",
           "kind": "lemma",
-          "line": 663,
+          "line": 668,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_pow_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_pow_le",
@@ -15708,7 +15834,7 @@
         {
           "doc": "The genuine in-tree value of `\u039b(W)`: `\u039b_\ud835\udcaa(W\ud835\udcaa) \u2264 (H.leadingCoeff).natDegree`.  `W\ud835\udcaa` is `mk (C W)` with `W = H.leadingCoeff \u2208 F[X]`, a degree-0 (in `Y`) constant whose `\u039b`-weight is the `X`-degree `W.natDegree` of the leading `Y`-coefficient (`weight_\u039b_C_le`).  This is the in-tree analogue of BCIKS20's `\u039b(W)`; the per-`Y`-power weight `m` contributes `0` (the `Y`-power is `0`).  Stated as the load-bearing `\u039b(W)` bound for the `(A.1)` telescoping.",
           "kind": "lemma",
-          "line": 687,
+          "line": 692,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_W",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_W",
@@ -15717,7 +15843,7 @@
         {
           "doc": "**`partitionProd` weight sub-additivity over `\ud835\udcaa H`.**  For `lam : Nat.Partition m` and a family `b : \u2115 \u2192 \ud835\udcaa H`, `\u039b_\ud835\udcaa(\u220f_l (b l)^{\u03bb_l}) \u2264 \u2211_{l \u2208 lam.parts} \u039b_\ud835\udcaa(b l)` (the sum over the *multiset* of parts, i.e. each distinct part `l` counted `\u03bb_l` times).  By induction on the multiset of parts using `weight_\u039b_over_\ud835\udcaa_mul_le`; the empty product has weight `\u2264 0`. This is the genuine `\u039b(\u220f_l \u03b2_l^{\u03bb_l}) \u2264 \u2211_l \u03bb_l\u00b7\u039b(\u03b2_l)` of the `(A.1)` telescoping: the multiset-`sum` form `(lam.parts.map (\u039b_\ud835\udcaa \u2218 b)).sum` is exactly `\u2211_l \u03bb_l\u00b7\u039b_\ud835\udcaa(b l)`.",
           "kind": "lemma",
-          "line": 701,
+          "line": 706,
           "name": "BCIKS20.HenselNumerator.partitionProd_weight_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_weight_le",
@@ -15726,7 +15852,7 @@
         {
           "doc": "Polynomial-level `nsmul` weight bound: scaling by a natural number cannot increase the `\u039b`-weight (`(n \u2022 r).support \u2286 r.support` and `(n \u2022 c).natDegree \u2264 c.natDegree`).  In positive characteristic `n \u2022 r` may collapse to a *smaller* weight, never a larger one.",
           "kind": "lemma",
-          "line": 727,
+          "line": 732,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_nsmul_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_nsmul_le",
@@ -15735,16 +15861,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 729,
-          "name": "BCIKS20.HenselNumerator._anon_class_729",
+          "line": 734,
+          "name": "BCIKS20.HenselNumerator._anon_class_734",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_729",
+          "short_name": "_anon_class_734",
           "signature": "class classical"
         },
         {
           "doc": "`\u039b_\ud835\udcaa(n \u2022 a) \u2264 \u039b_\ud835\udcaa(a)`: scaling a regular element by `n : \u2115` cannot raise its `\ud835\udcaa`-weight. `n \u2022 a = mk (n \u2022 ra)` (`mk` is `\u2115`-linear), and `weight_\u039b (n \u2022 ra) \u2264 weight_\u039b ra`.",
           "kind": "lemma",
-          "line": 749,
+          "line": 754,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_nsmul_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_nsmul_le",
@@ -15753,7 +15879,7 @@
         {
           "doc": "**`B_coeff` weight reduces to the iterated-Hasse representative.** `\u039b_\ud835\udcaa(B_{i1,\u03bb}) \u2264 \u039b_\ud835\udcaa(hasseCoeffRepr\ud835\udcaa x\u2080 R i1 (\u03a3\u03bb))`: the integer `prefactor` scalar cannot raise the weight (`weight_\u039b_over_\ud835\udcaa_nsmul_le`).  The remaining content \u2014 bounding `\u039b_\ud835\udcaa(hasseCoeffRepr\ud835\udcaa \u2026)` by `(D \u2212 \u03a3\u03bb) + (d \u2212 \u03b4_{i1,0} \u2212 \u03a3\u03bb)\u00b7\u039b(W)` (the iterated-Hasse degree drop + `W`-clearing) \u2014 is the deferred `B_coeff_weight` wall.",
           "kind": "lemma",
-          "line": 765,
+          "line": 770,
           "name": "BCIKS20.HenselNumerator.B_coeff_weight_le_hasse",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "B_coeff_weight_le_hasse",
@@ -15762,7 +15888,7 @@
         {
           "doc": "**The iterated-Hasse representative `Y`-degree drop (genuine, axiom-clean).**  The polynomial underlying `hasseCoeffRepr\ud835\udcaa x\u2080 R i1 m` \u2014 namely `evalX (C x\u2080) (\u0394_X^{i1} \u0394_Y^{m} R)` \u2014 has **`Y`-degree `\u2264 natDegreeY R \u2212 m`**.  Composes the three \u00a74a\u2032 drops: `\u0394_Y^{m}` drops the `Y`-degree by `m` (`hasseDerivY_natDegreeY_le`), and neither `\u0394_X^{i1}` (`hasseDerivX_natDegreeY_le`) nor the lift substitution `evalX (C x\u2080)` (`evalX_natDegreeY_le`) raises it. This is the **`Y`-degree component** of BCIKS20's `B_coeff` weight bound `\u039b_\ud835\udcaa(hasseCoeffRepr\ud835\udcaa \u2026 i1 m) \u2264 (D\u2212m) + (d\u2212\u03b4\u2212m)\u00b7\u039b(W)` (lines 4060\u20134077): the ",
           "kind": "theorem",
-          "line": 788,
+          "line": 793,
           "name": "BCIKS20.HenselNumerator.hasseCoeffRepr\ud835\udcaa_natDegreeY_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseCoeffRepr\ud835\udcaa_natDegreeY_le",
@@ -15771,7 +15897,7 @@
         {
           "doc": "**Bridge:** the bivariate lift `liftBivariate` is the `Y\u21a6T` evaluation `eval\u2082 liftToFunctionField T`. Both are ring homs `F[X][Y] \u2192+* \ud835\udd43 H` agreeing on constants (`liftToFunctionField`) and on the variable (`functionFieldT`), so `Polynomial.ringHom_ext` identifies them.  This is the algebraic content behind `hasseCoeffRepr\ud835\udcaa = mk p` having embedding `eval\u2082 T p` (the un-cleared `Y\u21a6T` form), to be compared against `hasseEvalAtRoot = eval\u2082 (T/W) p`.",
           "kind": "lemma",
-          "line": 818,
+          "line": 823,
           "name": "BCIKS20.HenselNumerator.liftBivariate_eq_eval\u2082_functionFieldT",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "liftBivariate_eq_eval\u2082_functionFieldT",
@@ -15780,7 +15906,7 @@
         {
           "doc": "**The `W`-clearing identity (lower-sum form, NO divisibility).**  For `P : F[X][Y]` with `P.natDegree \u2264 k`, clearing the `(T/W)`-denominators of `eval\u2082 (T/W) P` by the full `W^k` gives a genuine `Y\u21a6T`-polynomial image: `W^k \u00b7 eval\u2082 (T/W) P = liftBivariate (\u2211_{i\u2264k} C(P.coeff i \u00b7 W_poly^{k\u2212i}) \u00b7 X^i)`. This is the lower-sum portion of `W_pow_mul_eval\u2082_div_eq_sum` specialised to the `P.coeff(k+1) = 0` case; it needs no divisibility because every cleared power `i \u2264 k` lands as a *non-negative* `W`-power `W^{k\u2212i}` (no `1/W`).  Mirrors the `\u03be_pre` clearing sum but for the un-divided Hasse representa",
           "kind": "lemma",
-          "line": 841,
+          "line": 846,
           "name": "BCIKS20.HenselNumerator.W_pow_mul_eval\u2082_div_eq_liftBivariate",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "W_pow_mul_eval\u2082_div_eq_liftBivariate",
@@ -15789,7 +15915,7 @@
         {
           "doc": "The **`W`-cleared `\ud835\udcaa`-representative** of the iterated Hasse coefficient: the explicit polynomial whose `Y\u21a6T` lift equals `W^{natDegreeY p} \u00b7 hasseEvalAtRoot` (with `p = evalX (C x\u2080) (\u0394_X^{i1} \u0394_Y^{m} R)`).  Each `Y`-power `i` of `p` is rescaled by the cleared `W`-power `lc^{(natDegreeY p)\u2212i}`, exactly as in `\u03be_pre`'s lower-sum (here un-divided, since we clear by the full `Y`-degree).  Genuine object: built from the real iterated `hasseDeriv`.",
           "kind": "def",
-          "line": 875,
+          "line": 880,
           "name": "BCIKS20.HenselNumerator.hasseCoeffRepr\ud835\udcaa_cleared",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseCoeffRepr\ud835\udcaa_cleared",
@@ -15798,7 +15924,7 @@
         {
           "doc": "**(a-residual) The `W`-clearing embedding identity for the Hasse coefficient \u2014 PROVEN.** `embeddingOf\ud835\udcaaInto\ud835\udd43 \u27e6cleared\u27e7 = W^{natDegreeY p} \u00b7 hasseEvalAtRoot`, the exact analogue of `embeddingOf\ud835\udcaaInto\ud835\udd43_mk_\u03be_pre` (`embedding \u27e6\u03be_pre\u27e7 = W^{d\u22122}\u00b7\u03b6`) for the iterated Hasse coefficient. The `mk`/`Y\u21a6T`-lift of the cleared representative equals the `Y\u21a6T/W` evaluation `hasseEvalAtRoot` scaled by `W^{natDegreeY p}` (clearing every `(T/W)`-denominator).  Mirrors the in-tree `\u03be_pre/\u03b6` construction (`RationalFunctions.lean`:2380) and is fully P2-independent.",
           "kind": "lemma",
-          "line": 886,
+          "line": 891,
           "name": "BCIKS20.HenselNumerator.embeddingOf\ud835\udcaaInto\ud835\udd43_hasseCoeffRepr\ud835\udcaa_cleared",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_hasseCoeffRepr\ud835\udcaa_cleared",
@@ -15807,7 +15933,7 @@
         {
           "doc": "**`\u039b`-weight decomposition into the `Y`-degree and `X`-degree components.**  For any bivariate `f`, `weight_\u039b f H D \u2264 natDegreeY f \u00b7 (D+1\u2212natDegreeY H) + degreeX f`: every `Y`-power `n` in the support contributes `n\u00b7(D+1\u2212natDegreeY H) + (f.coeff n).natDegree`, with `n \u2264 natDegreeY f` (`Polynomial.le_natDegree_of_ne_zero`) and `(f.coeff n).natDegree \u2264 degreeX f` (`coeff_natDegree_le_degreeX`).  This is the bridge from the proven `Y`-degree drop + `degreeX` to the `weight_\u039b` budget.",
           "kind": "lemma",
-          "line": 909,
+          "line": 914,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_le_natDegreeY_mul_add_degreeX",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_le_natDegreeY_mul_add_degreeX",
@@ -15816,16 +15942,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 913,
-          "name": "BCIKS20.HenselNumerator._anon_class_913",
+          "line": 918,
+          "name": "BCIKS20.HenselNumerator._anon_class_918",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_913",
+          "short_name": "_anon_class_918",
           "signature": "class classical"
         },
         {
           "doc": "**(STEP a, the full `B_coeff` weight bound) \u2014 PROVEN, axiom-clean, P2-INDEPENDENT.** `weight_\u039b_over_\ud835\udcaa hH (B_coeff \u2026 i1 \u03bb) D \u2264 (natDegreeY R \u2212 \u03a3\u03bb)\u00b7(D+1\u2212natDegreeY H) + degreeX p`, where `p = evalX (C x\u2080) (\u0394_X^{i1} \u0394_Y^{\u03a3\u03bb} R)` is the iterated-Hasse representative polynomial. This is the genuine `B_coeff` weight bound assembled from the two P2-independent components: * the **`Y`-degree drop** `natDegreeY p \u2264 natDegreeY R \u2212 \u03a3\u03bb` (`hasseCoeffRepr\ud835\udcaa_natDegreeY_le`, wave 4) \u2014 the `\u2212\u03a3\u03bb` of the paper's `(D\u2212\u03a3\u03bb)+(d\u2212\u03b4\u2212\u03a3\u03bb)\u00b7\u039b(W)`; and * the **`X`-degree** `degreeX p` (`weight_\u039b_le_natDegreeY_mul_add_degreeX`",
           "kind": "lemma",
-          "line": 940,
+          "line": 945,
           "name": "BCIKS20.HenselNumerator.B_coeff_weight_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "B_coeff_weight_le",
@@ -15834,7 +15960,7 @@
         {
           "doc": "The `Y^n`-coefficient of `\u0394_X^{i1} q` is `Polynomial.hasseDeriv i1` of the `Y^n`-coefficient of `q`: `\u0394_X^{i1}` acts coefficient-wise through the outer `Y` layer, re-monomialising at the same `Y`-degree, so it commutes with taking the `Y`-coefficient.",
           "kind": "theorem",
-          "line": 982,
+          "line": 987,
           "name": "BCIKS20.HenselNumerator.hasseDerivX_coeff",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivX_coeff",
@@ -15843,16 +15969,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 984,
-          "name": "BCIKS20.HenselNumerator._anon_class_984",
+          "line": 989,
+          "name": "BCIKS20.HenselNumerator._anon_class_989",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_984",
+          "short_name": "_anon_class_989",
           "signature": "class classical"
         },
         {
           "doc": "`\u0394_X^{i1}` (the **middle-`X` Hasse derivative** on a `Y`-coefficient `b : F[X][X]`) never raises the **`Z`-degree** (`Bivariate.degreeX`): its `X`-coefficient at `k` is `\u2191((k+i1).choose i1)\u00b7b.coeff (k+i1)`, a ground-`\u2115`-cast scalar times an original `Z`-coefficient (`hasseDeriv_coeff`), so its `natDegree` is `\u2264 degreeX b`.  The middle-`X` Hasse lowers the middle-`X` degree but cannot touch the innermost `Z`-degree.",
           "kind": "theorem",
-          "line": 997,
+          "line": 1002,
           "name": "BCIKS20.HenselNumerator.degreeX_hasseDeriv_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "degreeX_hasseDeriv_le",
@@ -15861,16 +15987,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 999,
-          "name": "BCIKS20.HenselNumerator._anon_class_999",
+          "line": 1004,
+          "name": "BCIKS20.HenselNumerator._anon_class_1004",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_999",
+          "short_name": "_anon_class_1004",
           "signature": "class classical"
         },
         {
           "doc": "A ground-`\u2115`-cast scalar multiple never raises the **`Z`-degree** (`Bivariate.degreeX`): `(\u2191c)\u00b7b = c \u2022 b`, and each `X`-coefficient `c \u2022 (b.coeff k)` has `natDegree \u2264 (b.coeff k).natDegree \u2264 degreeX b` (`natDegree_smul_le`).  Used to discard the `(n+m).choose m` Hasse-coefficient scalar.",
           "kind": "theorem",
-          "line": 1010,
+          "line": 1015,
           "name": "BCIKS20.HenselNumerator.degreeX_natCast_mul_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "degreeX_natCast_mul_le",
@@ -15879,16 +16005,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1012,
-          "name": "BCIKS20.HenselNumerator._anon_class_1012",
+          "line": 1017,
+          "name": "BCIKS20.HenselNumerator._anon_class_1017",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1012",
+          "short_name": "_anon_class_1017",
           "signature": "class classical"
         },
         {
           "doc": "Evaluating the **middle-`X` layer at the ground constant `C x\u2080`** (`Polynomial.eval (C x\u2080)`, the scalar-level core of `evalX (C x\u2080)`) never raises the **`Z`-degree**: `eval (C x\u2080) b = \u2211_e (b.coeff e)\u00b7(C x\u2080)^e`, and each `(C x\u2080)^e` is a `Z`-constant (`natDegree = 0`), so every term has `natDegree \u2264 (b.coeff e).natDegree \u2264 degreeX b`.",
           "kind": "theorem",
-          "line": 1026,
+          "line": 1031,
           "name": "BCIKS20.HenselNumerator.natDegree_eval_C_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "natDegree_eval_C_le",
@@ -15897,16 +16023,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1028,
-          "name": "BCIKS20.HenselNumerator._anon_class_1028",
+          "line": 1033,
+          "name": "BCIKS20.HenselNumerator._anon_class_1033",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1028",
+          "short_name": "_anon_class_1033",
           "signature": "class classical"
         },
         {
           "doc": "The `Y^n`-coefficient of `evalX (C x\u2080) q` is `Polynomial.eval (C x\u2080)` of the `Y^n`-coefficient of `q` (`evalX (C x\u2080) = map (evalRingHom (C x\u2080))`, `coeff_map`).",
           "kind": "theorem",
-          "line": 1041,
+          "line": 1046,
           "name": "BCIKS20.HenselNumerator.evalX_C_coeff",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "evalX_C_coeff",
@@ -15915,7 +16041,7 @@
         {
           "doc": "**The `Z`-degree (`degreeX`) bound \u2014 PROVEN, axiom-clean, P2-INDEPENDENT.** `degreeX (evalX (C x\u2080) (\u0394_X^{i1} \u0394_Y^{\u03a3\u03bb} R)) \u2264 D \u2212 \u03a3\u03bb`, the paper's *literal* `(D\u2212\u03a3\u03bb)` constant (BCIKS20 4345's `Q_{ji}` graded `Z`-degree), under the genuine graded-`Z`-degree premise on `R`: each `Y^j`-coefficient of `R` has `Z`-degree `\u2264 D \u2212 j` (BCIKS20 lines 2110\u20132111: `degZ Q_{ji} \u2264 D\u2212j`). Mechanism (each step above): the `Y^n`-coefficient of `\u0394_Y^{\u03a3\u03bb} R` is `\u2191((n+\u03a3\u03bb).choose \u03a3\u03bb)\u00b7R.coeff (n+\u03a3\u03bb)` (`hasseDeriv_coeff`), whose `Z`-degree is `\u2264 degreeX (R.coeff (n+\u03a3\u03bb)) \u2264 D\u2212(n+\u03a3\u03bb) \u2264 D\u2212\u03a3\u03bb` by the premise; neither `\u0394_X^{i",
           "kind": "theorem",
-          "line": 1060,
+          "line": 1065,
           "name": "BCIKS20.HenselNumerator.degreeX_hasseCoeffRepr_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "degreeX_hasseCoeffRepr_le",
@@ -15924,16 +16050,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1065,
-          "name": "BCIKS20.HenselNumerator._anon_class_1065",
+          "line": 1070,
+          "name": "BCIKS20.HenselNumerator._anon_class_1070",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1065",
+          "short_name": "_anon_class_1070",
           "signature": "class classical"
         },
         {
           "doc": "**Graded `B_coeff` weight bound.**  This is the paper-literal specialization of `B_coeff_weight_le`: under the graded `Z`-degree hypothesis on every `Y`-coefficient of `R`, the residual `degreeX` term is bounded by `D - \u03a3\u03bb`.",
           "kind": "lemma",
-          "line": 1087,
+          "line": 1092,
           "name": "BCIKS20.HenselNumerator.B_coeff_weight_le_graded",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "B_coeff_weight_le_graded",
@@ -15942,7 +16068,7 @@
         {
           "doc": "Every part of a *surviving* partition is `< k+1`: a `lam : Nat.Partition (k+1\u2212i1)` with `(k+1) \u2209 lam.parts` has all parts `l` positive and `\u2264 k+1\u2212i1 \u2264 k+1`, and `l \u2260 k+1`, hence `l < k+1`.  This is the genuine well-foundedness witness for the `(A.1)` recursion: the guard `if l < k+1` always takes the `then` branch on a surviving partition's parts.",
           "kind": "theorem",
-          "line": 1104,
+          "line": 1109,
           "name": "BCIKS20.HenselNumerator.surviving_parts_lt",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "surviving_parts_lt",
@@ -15951,7 +16077,7 @@
         {
           "doc": "A surviving partition only sees recursive indices below the guard `k+1`, so the guarded family in `\u03b2Hensel_succ` has the same partition product as the unguarded family.",
           "kind": "theorem",
-          "line": 1113,
+          "line": 1118,
           "name": "BCIKS20.HenselNumerator.partitionProd_surviving_guard",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_surviving_guard",
@@ -15960,16 +16086,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1118,
-          "name": "BCIKS20.HenselNumerator._anon_class_1118",
+          "line": 1123,
+          "name": "BCIKS20.HenselNumerator._anon_class_1123",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1118",
+          "short_name": "_anon_class_1123",
           "signature": "class classical"
         },
         {
           "doc": "The genuine `\u2211_l \u03bb_l\u00b7(2l+1)` telescoping coefficient as a pure-`\u2115` multiset identity: `\u2211_{l \u2208 parts} (2l+1)\u00b7c = (2\u00b7(\u2211 parts) + parts.card)\u00b7c`.  For `lam : Nat.Partition (k+1\u2212i1)` this is `(2\u00b7(k+1\u2212i1) + \u03a3\u03bb)\u00b7c` (using `parts.sum = k+1\u2212i1`, `parts.card = \u03a3\u03bb`), the exact contribution of the `\u220f_l \u03b2_l^{\u03bb_l}` factor to the BCIKS20 weight telescoping.",
           "kind": "theorem",
-          "line": 1127,
+          "line": 1132,
           "name": "BCIKS20.HenselNumerator.sum_map_two_mul_succ",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "sum_map_two_mul_succ",
@@ -15978,34 +16104,34 @@
         {
           "doc": "**The keystone.** BCIKS20 Claim A.2's recursive Hensel-lift numerator `\u03b2_t \u2208 \ud835\udcaa H`, the genuine recursion of `(A.1)`.  Defined by strong recursion on `t`: * `\u03b2\u2080 := T mod H\u0303`, the genuine canonical `\ud835\udcaa`-representative of the function-field variable `T = functionFieldT` \u2014 concretely `mk (Polynomial.X : F[X][Y])`, whose embedding is `liftBivariate X = functionFieldT = T` (genuine base, **not** `0`). * `\u03b2_{t+1} := \u2212 \u2211_{i1 \u2208 range(t+2)} \u2211_{\u03bb \u2208 P(t+1\u2212i1), (t+1) \u2209 \u03bb.parts} W^{i1+\u03b4_{i1,0}\u22121} \u00b7 \u03be^{2i1+\u03a3\u03bb\u22122} \u00b7 B_{i1,\u03bb} \u00b7 \u220f_l (\u03b2_l)^{\u03bb_l}`, the literal `(A.1)` sum, with: - the **genuine** exclusion `\u03bb \u2260 \u03bb(t",
           "kind": "def",
-          "line": 1161,
-          "name": "BCIKS20.HenselNumerator._anon_def_1161",
+          "line": 1166,
+          "name": "BCIKS20.HenselNumerator._anon_def_1166",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_def_1161",
+          "short_name": "_anon_def_1166",
           "signature": "def noncomputable def \u03b2Hensel (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) :"
         },
         {
           "doc": "**Base case value lemma (PROVEN).**  `\u03b2Hensel \u2026 0 = mk X`, the genuine `T mod H\u0303` representative (whose embedding is `functionFieldT = T`).",
           "kind": "theorem",
-          "line": 1177,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1177",
+          "line": 1182,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1182",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1177",
+          "short_name": "_anon_theorem_1182",
           "signature": "theorem theorem \u03b2Hensel_zero (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) :"
         },
         {
           "doc": "**Recursive-step unfolding (PROVEN).**  `\u03b2Hensel \u2026 (k+1)` equals the literal `(A.1)` sum, with the inner recursive calls `\u03b2_l` now written as `\u03b2Hensel \u2026 l` (the well-founded `ih l` unfolds to `\u03b2Hensel \u2026 l` since `Nat.strongRecOn` is its own fixpoint).  This is the genuine `(A.1)` recurrence read at a successor, the workhorse for the (P1) inductive step.",
           "kind": "theorem",
-          "line": 1187,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1187",
+          "line": 1192,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1192",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1187",
+          "short_name": "_anon_theorem_1192",
           "signature": "theorem theorem \u03b2Hensel_succ (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) (k : \u2115) :"
         },
         {
           "doc": "The base case embeds to the genuine function-field variable `T`: a value witness that `\u03b2Hensel \u2026 0` is the genuine `T mod H\u0303` and not a fake.",
           "kind": "theorem",
-          "line": 1202,
+          "line": 1207,
           "name": "BCIKS20.HenselNumerator.embeddingOf\ud835\udcaaInto\ud835\udd43_\u03b2Hensel_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_\u03b2Hensel_zero",
@@ -16014,7 +16140,7 @@
         {
           "doc": "**The `\u220f_l \u03b2_l^{\u03bb_l}` factor bound \u2014 PROVEN (the IH-fed product half of the telescoping).** For a *surviving* `lam : Nat.Partition (k+1\u2212i1)` (`(k+1) \u2209 lam.parts`) and the genuine guarded recursive family from `\u03b2Hensel_succ`, given the induction hypothesis `hIH : \u2200 l < k+1, \u039b_\ud835\udcaa(\u03b2_l) \u2264 (2l+1)\u00b7d_R\u00b7D`, the partition product weight is `\u2264 (2\u00b7(k+1\u2212i1) + \u03a3\u03bb)\u00b7d_R\u00b7D`. This fully discharges the product half of the BCIKS20 telescoping: the guard always fires (`surviving_parts_lt`), `partitionProd_weight_le` gives the multiset-sum bound, `hIH` bounds each factor, and `sum_map_two_mul_succ` evaluates `\u2211_{l\u2208",
           "kind": "theorem",
-          "line": 1217,
+          "line": 1222,
           "name": "BCIKS20.HenselNumerator.partitionProd_\u03b2Hensel_weight_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_\u03b2Hensel_weight_le",
@@ -16023,25 +16149,25 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1228,
-          "name": "BCIKS20.HenselNumerator._anon_class_1228",
+          "line": 1233,
+          "name": "BCIKS20.HenselNumerator._anon_class_1233",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1228",
+          "short_name": "_anon_class_1233",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "structure",
-          "line": 1273,
-          "name": "BCIKS20.HenselNumerator._anon_structure_1273",
+          "line": 1278,
+          "name": "BCIKS20.HenselNumerator._anon_structure_1278",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_structure_1273",
+          "short_name": "_anon_structure_1278",
           "signature": "structure structured route (BCIKS20 Claim A.2, the `\u03b1_t`-weight closed form):"
         },
         {
           "doc": "**WAVE 5 \u2014 the structured per-part weight sum (genuine `\u2115` telescoping).**  For a multiset `ms` of *positive* parts (a `Nat.Partition`'s parts), the per-part structured weight `1 + (l+1)\u00b7w + e_l\u00b7x` (with `e_l = 2l\u22121`) sums to the closed form `card + (sum + card)\u00b7w + (2\u00b7sum \u2212 card)\u00b7x`. This is the genuine `\u2211_l \u03bb_l\u00b7(1+(l+1)\u039b(W)+e_l\u00b7\u039b(\u03be))` bookkeeping of BCIKS20's `\u03b1_t` route: the `\u039b(W)`-coefficient telescopes to `\u03a3_l (l+1)\u03bb_l = (k+1\u2212i1)+\u03a3\u03bb` and the `\u039b(\u03be)`-coefficient to `\u03a3_l (2l\u22121)\u03bb_l = 2(k+1\u2212i1)\u2212\u03a3\u03bb` (the `\u2212\u03a3\u03bb` is what cancels the `\u03be`/`B` negative exponents).  The positivity hypothesis `1 \u2264 l` m",
           "kind": "theorem",
-          "line": 1315,
+          "line": 1320,
           "name": "BCIKS20.HenselNumerator.sum_map_structured",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "sum_map_structured",
@@ -16050,7 +16176,7 @@
         {
           "doc": "**WAVE 5 \u2014 the final `\u2115`-arithmetic collapse of the structured bound to the loose target.** `1 + (t+1)\u00b7wW + e_t\u00b7((d\u22121)\u00b7(D\u2212dH+1)) \u2264 (2t+1)\u00b7d\u00b7D`, with `e_t = 2t\u22121` (`\u2115` truncated, `= max(0,2t\u22121)`), under the genuine in-tree relations `wW + dH \u2264 D` (`\u039b(W) = (lc H).natDegree`, and `(lc H).natDegree + dH \u2264 totalDegree H \u2264 D`), `2 \u2264 d` (`= natDegreeY R`, the paper's regime), `1 \u2264 dH \u2264 d` (`dH = natDegreeY H`).  Here `wW` bounds `\u039b(W)` and `(d\u22121)\u00b7(D\u2212dH+1)` bounds `\u039b(\u03be)` (`weight_\u03be_bound`). This is the BCIKS20 Claim A.2 arithmetic collapse `((d\u22121)e_t + t+1)(D\u2212dH+1) \u2212 t < (2t+1)dD` (the `\u2264` form), nume",
           "kind": "theorem",
-          "line": 1350,
+          "line": 1355,
           "name": "BCIKS20.HenselNumerator.structured_weight_collapse",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "structured_weight_collapse",
@@ -16059,16 +16185,16 @@
         {
           "doc": "**Structured invariant consumer for (P1).** Once the P2/`\u03b1_t` route supplies the structured Hensel-numerator weight `\u039b(\u03b2_t) \u2264 1 + (t+1)\u039b(W) + e_t\u039b(\u03be)`, the loose Claim-A.2 target `\u039b(\u03b2_t) \u2264 (2t+1)\u00b7d_R\u00b7D` follows by the proven arithmetic collapse `structured_weight_collapse`. This theorem deliberately keeps the genuine structured invariant as an explicit hypothesis; it does not use the false loose-IH route of `\u03b2Hensel_succ_term_weight_le`.",
           "kind": "theorem",
-          "line": 1381,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1381",
+          "line": 1386,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1386",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1381",
+          "short_name": "_anon_theorem_1386",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_of_structured_weight (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**WAVE 5 \u2014 the `WithBot \u2115` nsmul-bound helper.**  If `w \u2264 some n` then `k \u2022 w \u2264 some (k\u00b7n)`: the over-`\ud835\udcaa` power bound `weight_\u039b_over_\ud835\udcaa_pow_le` produces `k \u2022 \u039b_\ud835\udcaa(a)`, and this descends a numeric `\u039b_\ud835\udcaa(a) \u2264 some n` to `\u039b_\ud835\udcaa(a^k) \u2264 some (k\u00b7n)` (used for the `W`/`\u03be` power factors).",
           "kind": "theorem",
-          "line": 1402,
+          "line": 1407,
           "name": "BCIKS20.HenselNumerator.nsmul_withBot_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "nsmul_withBot_le",
@@ -16077,7 +16203,7 @@
         {
           "doc": "**WAVE 5 \u2014 the structured `\u220f_l \u03b2_l^{\u03bb_l}` factor bound (the genuine structured-IH product half).**  GIVEN the paper's **structured** induction hypothesis `hIH : \u2200 l < k+1, \u039b_\ud835\udcaa(\u03b2_l) \u2264 1 + (l+1)\u00b7wW + e_l\u00b7x\u03be` (`e_l = 2l\u22121`, `wW`/`x\u03be` the `\u039b(W)`/`\u039b(\u03be)` bounds), the partition-product weight is `\u2264 \u03a3\u03bb + ((k+1\u2212i1)+\u03a3\u03bb)\u00b7wW + (2(k+1\u2212i1)\u2212\u03a3\u03bb)\u00b7x\u03be`. This is the structured analogue of `partitionProd_\u03b2Hensel_weight_le`: the guard fires (`surviving_parts_lt`), `partitionProd_weight_le` gives the multiset-sum bound, the structured `hIH` bounds each factor, and `sum_map_structured` evaluates the closed form using",
           "kind": "theorem",
-          "line": 1422,
+          "line": 1427,
           "name": "BCIKS20.HenselNumerator.partitionProd_\u03b2Hensel_weight_structured_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_\u03b2Hensel_weight_structured_le",
@@ -16086,52 +16212,52 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1434,
-          "name": "BCIKS20.HenselNumerator._anon_class_1434",
+          "line": 1439,
+          "name": "BCIKS20.HenselNumerator._anon_class_1439",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1434",
+          "short_name": "_anon_class_1439",
           "signature": "class classical"
         },
         {
           "doc": "**(P1) `t = 0` case (PROVEN).**  `weight_\u039b_over_\ud835\udcaa hH (\u03b2Hensel \u2026 0) D \u2264 (2\u00b70+1)\u00b7natDegreeY R\u00b7D = natDegreeY R \u00b7 D`. Proof: `\u03b2Hensel \u2026 0 = mk X`, and `weight_\u039b_over_\ud835\udcaa hH (mk X) D \u2264 weight_\u039b X H D = D + 1 \u2212 natDegreeY H \u2264 D \u2264 natDegreeY R \u00b7 D` (using `0 < H.natDegree = natDegreeY H` and `1 \u2264 natDegreeY R`).  Mirrors the numeric structure of `weight_\u03be_bound`.",
           "kind": "theorem",
-          "line": 1471,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1471",
+          "line": 1476,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1476",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1471",
+          "short_name": "_anon_theorem_1476",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_zero (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "**(P1) per-term weight bound \u2014 the SOLE residual WALL of the inductive step.** For an `(A.1)` summand indexed by `i1 \u2208 range (k+2)` and a *surviving* partition `lam \u2208 P(k+1\u2212i1)` with `(k+1) \u2209 lam.parts`, the single term `W^{i1+\u03b4\u22121} \u00b7 \u03be^{2i1+\u03a3\u03bb\u22122} \u00b7 B_{i1,\u03bb} \u00b7 \u220f_l \u03b2_l^{\u03bb_l}` has `\u039b`-weight `\u2264 (2(k+1)+1)\u00b7d_R\u00b7D`, **given the induction hypothesis** `hIH : \u2200 l < k+1, \u039b_\ud835\udcaa(\u03b2_l) \u2264 (2l+1)\u00b7d_R\u00b7D`. This is the BCIKS20 telescoping at the level of one term (paper lines 4264\u20134268).  Once established, the full `(A.1)` sum bound follows mechanically by the *already-proven* over-`\ud835\udcaa` weight calculus (`_neg`, `_",
           "kind": "theorem",
-          "line": 1543,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1543",
+          "line": 1548,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1548",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1543",
+          "short_name": "_anon_theorem_1548",
           "signature": "theorem theorem \u03b2Hensel_succ_term_weight_le (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P1) full weight bound.**  `weight_\u039b_over_\ud835\udcaa hH (\u03b2Hensel \u2026 t) D \u2264 (2t+1)\u00b7natDegreeY R\u00b7D`. The `t = 0` case is `\u03b2Hensel_weight_bound_zero` (PROVEN).  The inductive step is FULLY ASSEMBLED from the proven over-`\ud835\udcaa` weight calculus: strong induction supplies the IH for all `l < t`; `\u03b2Hensel_succ` exposes the literal `(A.1)` sum; `weight_\u039b_over_\ud835\udcaa_neg` strips the sign; two applications of `weight_\u039b_over_\ud835\udcaa_sum_le` + `Finset.sup_le` reduce the double sum to the per-term bound `\u03b2Hensel_succ_term_weight_le`.  The ONLY residual is that per-term WALL. HYPOTHESIS: `2 \u2264 natDegreeY R` (wave 4) \u2014 the paper's",
           "kind": "theorem",
-          "line": 1599,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1599",
+          "line": 1604,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1604",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1599",
+          "short_name": "_anon_theorem_1604",
           "signature": "theorem theorem \u03b2Hensel_weight_bound (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 1604,
-          "name": "BCIKS20.HenselNumerator._anon_class_1604",
+          "line": 1609,
+          "name": "BCIKS20.HenselNumerator._anon_class_1609",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1604",
+          "short_name": "_anon_class_1609",
           "signature": "class classical"
         },
         {
           "doc": "**(P2) right-hand side, definitionally unfolded (PROVEN, axiom-clean).** The `(P2)` right-hand side `\u03b1_t \u00b7 W^{t+1} \u00b7 \u03be^{2t\u22121}` is, by the *definition* of the in-tree `ClaimA2.\u03b1` (`RationalFunctions.lean:3024`, `\u03b1_t = embeddingOf\ud835\udcaaInto\ud835\udd43 (ClaimA2.\u03b2 R t) / (W^{t+1} \u00b7 (embeddingOf\ud835\udcaaInto\ud835\udd43 \u03be)^{2t\u22121})`), nothing but the embedding of `ClaimA2.\u03b2 R t` once the `W^{t+1}\u00b7\u03be^{2t\u22121}` denominator is cancelled.  In the field `\ud835\udd43 H` this cancellation is exactly `div_mul_cancel\u2080`, gated on the denominator being nonzero. This lemma is **pure denominator clearing**; it carries no root content.  Its sole purpose is to",
           "kind": "theorem",
-          "line": 1640,
+          "line": 1645,
           "name": "BCIKS20.HenselNumerator.ClaimA2_\u03b1_mul_W\u03be_eq_embedding_\u03b2",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "ClaimA2_\u03b1_mul_W\u03be_eq_embedding_\u03b2",
@@ -16140,70 +16266,70 @@
         {
           "doc": "**(P2) reduced to the genuine-vs-placeholder `\u03b2` identity (PROVEN, axiom-clean).** Under the (genuine, BCIKS20-faithful) hypothesis that the `(P2)` denominator `W^{t+1}\u00b7\u03be^{2t\u22121}` is nonzero, the `(P2)` lift identity `\u03b2Hensel_lift_identity` is **logically equivalent** to the bare statement that the two numerator families agree under the embedding: `embeddingOf\ud835\udcaaInto\ud835\udd43 (\u03b2Hensel \u2026 t) = embeddingOf\ud835\udcaaInto\ud835\udd43 (ClaimA2.\u03b2 R t)`. This is the honest, machine-checkable localisation of the residual: `(P2)` is *not* a missing algebraic-cancellation fact (that part is `ClaimA2_\u03b1_mul_W\u03be_eq_embedding_\u03b2`, proven ab",
           "kind": "theorem",
-          "line": 1672,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1672",
+          "line": 1677,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1677",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1672",
+          "short_name": "_anon_theorem_1677",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_iff_\u03b2_eq (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P2) equivalence with the denominator localized to `\u03be`.**  The `W` factor in the denominator is always nonzero, so the reusable nonzero premise can be focused on the actual remaining obligation `embeddingOf\ud835\udcaaInto\ud835\udd43 \u03be \u2260 0`.",
           "kind": "theorem",
-          "line": 1687,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1687",
+          "line": 1692,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1692",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1687",
+          "short_name": "_anon_theorem_1692",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_iff_\u03b2_eq_of_\u03be_ne_zero (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P2) forward wrapper from the localized \u03b2-numerator equality.** Once the genuine Hensel numerator `\u03b2Hensel` is known to agree under the embedding with the paper placeholder numerator `ClaimA2.\u03b2`, the full `(P2)` lift identity follows by the already-proven denominator-clearing equivalence `\u03b2Hensel_lift_identity_iff_\u03b2_eq`. This is the reusable consumer form of the P2 reduction: the remaining mathematical content is only the supplied \u03b2-equality hypothesis.",
           "kind": "theorem",
-          "line": 1708,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1708",
+          "line": 1713,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1713",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1708",
+          "short_name": "_anon_theorem_1713",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_of_\u03b2_embedding_eq (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P2) reverse wrapper from the lift identity to the localized \u03b2-numerator equality.** This is the converse consumer form of `\u03b2Hensel_lift_identity_of_\u03b2_embedding_eq`: once a caller has established the full lift identity, the denominator-clearing equivalence immediately returns the exact embedded equality between the genuine Hensel numerator and the paper placeholder numerator.",
           "kind": "theorem",
-          "line": 1726,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1726",
+          "line": 1731,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1731",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1726",
+          "short_name": "_anon_theorem_1731",
           "signature": "theorem theorem \u03b2_embedding_eq_of_\u03b2Hensel_lift_identity (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**The genuine Hensel coefficient `\u03b1_t`** (A.4): the `t`-th coefficient of the genuine Hensel-lift root `gammaGenuine`.  Replaces the vacuous in-tree `ClaimA2.\u03b1` (built on `\u03b2 = 0`). `\u03b1Genuine 0 = \u03b1\u2080 = T/W` (`\u03b1Genuine_zero`).",
           "kind": "def",
-          "line": 1771,
-          "name": "BCIKS20.HenselNumerator._anon_def_1771",
+          "line": 1776,
+          "name": "BCIKS20.HenselNumerator._anon_def_1776",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_def_1771",
+          "short_name": "_anon_def_1776",
           "signature": "def noncomputable def \u03b1Genuine (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) (t : \u2115) :"
         },
         {
           "doc": "`\u03b1Genuine 0 = \u03b1\u2080 = T/W`: the genuine order-0 coefficient is the base root (PROVEN, axiom-clean).",
           "kind": "theorem",
-          "line": 1777,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1777",
+          "line": 1782,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1782",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1777",
+          "short_name": "_anon_theorem_1782",
           "signature": "theorem theorem \u03b1Genuine_zero (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) :"
         },
         {
           "doc": "**`\u03b6 \u2260 0` (PROVEN, axiom-clean).**  The genuine separability datum: `\u03b6 R x\u2080 H` is a unit in the field `\ud835\udd43 H` because `eval \u03b1\u2080 (derivative Q\u2080) = \u03b6` (`eval_\u03b1\u2080_derivative_Q\u2080`) is a unit (`isUnit_eval_\u03b1\u2080_derivative_Q\u2080`, from `Separable.eval\u2082_derivative_ne_zero`).  This is the in-tree realisation of the simple-root hypothesis that drives the Hensel lift.",
           "kind": "theorem",
-          "line": 1785,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1785",
+          "line": 1790,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1790",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1785",
+          "short_name": "_anon_theorem_1790",
           "signature": "theorem theorem \u03b6_ne_zero (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) :"
         },
         {
           "doc": "**`embedding \u03be \u2260 0` (PROVEN, axiom-clean).**  From `embedding \u03be = W^{d\u22122}\u00b7\u03b6` (`embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be`), `W \u2260 0` (`liftToFunctionField_leadingCoeff_ne_zero`) and `\u03b6 \u2260 0`. This is the nonvanishing that makes the A.4 denominator `W^{t+1}\u00b7\u03be^{e_t}` invertible.",
           "kind": "theorem",
-          "line": 1795,
+          "line": 1800,
           "name": "BCIKS20.HenselNumerator.embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be_ne_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be_ne_zero",
@@ -16212,7 +16338,7 @@
         {
           "doc": "**The A.4 denominator `W^{t+1}\u00b7\u03be^{2t\u22121}` is nonzero (PROVEN, axiom-clean).**",
           "kind": "theorem",
-          "line": 1803,
+          "line": 1808,
           "name": "BCIKS20.HenselNumerator.den_ne_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "den_ne_zero",
@@ -16221,70 +16347,88 @@
         {
           "doc": "**The assembled numerator series of `\u03b2Hensel`.**  The `t`-th coefficient is the (A.4) *normalized* numerator `embedding (\u03b2Hensel \u2026 t) / (W^{t+1}\u00b7\u03be^{e_t})`.  By construction, the repaired lift identity at `t` holds iff this series' `t`-th coefficient equals `\u03b1Genuine t`; so proving the identity for all `t` is exactly proving `\u03b2HenselAssembled = gammaGenuine`.  This is the honest, machine-checkable localisation of BCIKS20's \"consider the weight of `\u03b1_t`\" route (line 4276): build the power series from the (A.1) numerators and identify it with the Hensel root by uniqueness.",
           "kind": "def",
-          "line": 1816,
-          "name": "BCIKS20.HenselNumerator._anon_def_1816",
+          "line": 1821,
+          "name": "BCIKS20.HenselNumerator._anon_def_1821",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_def_1816",
+          "short_name": "_anon_def_1821",
           "signature": "def noncomputable def \u03b2HenselAssembled (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) :"
         },
         {
           "doc": "**Order-0 of the assembled series (PROVEN, axiom-clean \u2014 the genuine base case `t = 0`).** `constantCoeff (\u03b2HenselAssembled \u2026) = \u03b1\u2080`.  Computation: the `t = 0` coefficient is `embedding (\u03b2Hensel \u2026 0) / (W^{0+1}\u00b7\u03be^{0}) = T / W = \u03b1\u2080`, using `embeddingOf\ud835\udcaaInto\ud835\udd43_\u03b2Hensel_zero` (`embedding (\u03b2Hensel \u2026 0) = T`), `e_0 = 2\u00b70\u22121 = 0` in `\u2115`, and the definition `\u03b1\u2080 = T/W`.  This is the `t = 0` instance of the repaired lift identity, discharged in full.",
           "kind": "theorem",
-          "line": 1828,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1828",
+          "line": 1833,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1833",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1828",
+          "short_name": "_anon_theorem_1833",
           "signature": "theorem theorem \u03b2HenselAssembled_constantCoeff (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P2) base case \u2014 PROVEN, axiom-clean.**  The repaired lift identity at `t = 0`: `embedding (\u03b2Hensel \u2026 0) = \u03b1Genuine 0 \u00b7 W^{1} \u00b7 \u03be^{0} = \u03b1\u2080 \u00b7 W = (T/W)\u00b7W = T`.",
           "kind": "theorem",
-          "line": 1838,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1838",
+          "line": 1843,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1843",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1838",
+          "short_name": "_anon_theorem_1843",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_zero (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**The assembled series is the genuine root, GIVEN it is a root of `Q` (PROVEN reduction, axiom-clean).**  By `gammaGenuine_unique`, any root of `Q` whose constant coefficient is `\u03b1\u2080` equals `gammaGenuine`.  The constant-coefficient side is the base case `\u03b2HenselAssembled_constantCoeff` (PROVEN); the root side is supplied as `hroot`.  This isolates the *entire* remaining mathematical content of (P2) into the single hypothesis `eval (\u03b2HenselAssembled \u2026) Q = 0`.",
           "kind": "theorem",
-          "line": 1854,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1854",
+          "line": 1859,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1859",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1854",
+          "short_name": "_anon_theorem_1859",
           "signature": "theorem theorem \u03b2HenselAssembled_eq_gammaGenuine (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P2) full lift identity, GIVEN the assembled series is a root (PROVEN reduction, axiom-clean).**  Once `\u03b2HenselAssembled` is identified with `gammaGenuine` (via the proven base case + uniqueness, `\u03b2HenselAssembled_eq_gammaGenuine`), its `t`-th coefficient *is* `\u03b1Genuine t`, and clearing the (nonzero, `den_ne_zero`) denominator yields the identity for **every** `t` from the single root hypothesis.",
           "kind": "theorem",
-          "line": 1865,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1865",
+          "line": 1870,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1870",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1865",
+          "short_name": "_anon_theorem_1870",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_of_assembledSeries_isRoot (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
-          "doc": "**(P2) the assembled series is a root of `Q` \u2014 THE SINGLE IRREDUCIBLE RESIDUAL (documented `sorry`).** `eval (\u03b2HenselAssembled \u2026) Q = 0`, i.e. the genuine BCIKS20 A.4 statement that the power series assembled from the (A.1) numerators `\u03b2Hensel` (normalized by `W^{t+1}\u00b7\u03be^{e_t}`) is a root of the `X`-recentered `Y`-polynomial `Q` of `R`.  This is the deepest remaining step and the *only* residual of (P2): everything else (base case, denominator nonvanishing, the uniqueness reduction to `gammaGenuine`, and the clearing of the denominator for all `t`) is PROVEN above. WHY THIS IS THE GENUINE A.4 C",
+          "doc": "**(P2) order-0 vanishing \u2014 PROVEN, axiom-clean.**  The order-`0` coefficient of `eval (\u03b2HenselAssembled \u2026) Q` vanishes: `coeff 0 (eval \u03b3 Q) = eval (constantCoeff \u03b3) Q\u2080` (`HenselSeriesCoeff.constantCoeff_eval`), and `constantCoeff (\u03b2HenselAssembled \u2026) = \u03b1\u2080` (`\u03b2HenselAssembled_constantCoeff`), so the value is `eval \u03b1\u2080 Q\u2080 = 0` by the base root `eval_\u03b1\u2080_Q\u2080_eq_zero` (`H \u2223 evalX (C x\u2080) R` and `H(\u03b1\u2080) = 0`).  This discharges the order-`0` half of the root residual unconditionally; only the orders `\u2265 1` remain.",
           "kind": "theorem",
-          "line": 1906,
+          "line": 1891,
+          "name": "BCIKS20.HenselNumerator.coeff_zero_eval_\u03b2HenselAssembled",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "coeff_zero_eval_\u03b2HenselAssembled",
+          "signature": "theorem coeff_zero_eval_\u03b2HenselAssembled (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**(P2) order-`(t+1)` vanishing \u2014 THE SINGLE IRREDUCIBLE RESIDUAL (documented `sorry`).** The successor-order coefficient of `eval (\u03b2HenselAssembled \u2026) Q` vanishes.  This is the genuine, minimally-carved BCIKS20 A.4 content: with the order-`0` half already PROVEN (`coeff_zero_eval_\u03b2HenselAssembled`) and the whole-series statement assembled from this by `PowerSeries.ext` (`assembledSeries_isRoot` below), the *entire* remaining mathematical content of (P2) is exactly this per-successor-order vanishing. WHY THIS IS THE GENUINE A.4 CONTENT.  The (A.1) recursion `\u03b2Hensel_succ` was *built* so that th",
+          "kind": "theorem",
+          "line": 1933,
+          "name": "BCIKS20.HenselNumerator.coeff_succ_eval_\u03b2HenselAssembled",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "coeff_succ_eval_\u03b2HenselAssembled",
+          "signature": "theorem coeff_succ_eval_\u03b2HenselAssembled (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**(P2) the assembled series is a root of `Q` \u2014 PROVEN modulo the SINGLE per-successor-order residual `coeff_succ_eval_\u03b2HenselAssembled`.** `eval (\u03b2HenselAssembled \u2026) Q = 0`, the genuine BCIKS20 A.4 statement that the power series assembled from the (A.1) numerators `\u03b2Hensel` (normalized by `W^{t+1}\u00b7\u03be^{e_t}`) is a root of the `X`-recentered `Y`-polynomial `Q` of `R`.  Proved by `PowerSeries.ext`, splitting into the order-`0` vanishing `coeff_zero_eval_\u03b2HenselAssembled` (PROVEN) and the order-`(t+1)` vanishing `coeff_succ_eval_\u03b2HenselAssembled` (the single documented residual).  Everything else ",
+          "kind": "theorem",
+          "line": 1953,
           "name": "BCIKS20.HenselNumerator.assembledSeries_isRoot",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "assembledSeries_isRoot",
           "signature": "theorem assembledSeries_isRoot (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) :"
         },
         {
-          "doc": "**(P2) lift identity \u2014 REPAIRED against the genuine root, PROVEN modulo the single residual `assembledSeries_isRoot`.** `embeddingOf\ud835\udcaaInto\ud835\udd43 (\u03b2Hensel \u2026 t) = \u03b1Genuine t \u00b7 W^{t+1} \u00b7 \u03be^{2t\u22121}`, where `\u03b1Genuine t = coeff t (gammaGenuine \u2026)` is the genuine Hensel coefficient of A.4 (NOT the vacuous in-tree `ClaimA2.\u03b1`; see the statement-repair note at \u00a74f above). PROOF STATUS.  Fully reduced to the single root residual `assembledSeries_isRoot`: `\u03b2Hensel_lift_identity_of_assembledSeries_isRoot` derives this for all `t` from `eval (\u03b2HenselAssembled) Q = 0`, using the PROVEN base case (`\u03b2HenselAssembled",
+          "doc": "**(P2) lift identity \u2014 REPAIRED against the genuine root, PROVEN modulo the single per-successor-order residual `coeff_succ_eval_\u03b2HenselAssembled`.** `embeddingOf\ud835\udcaaInto\ud835\udd43 (\u03b2Hensel \u2026 t) = \u03b1Genuine t \u00b7 W^{t+1} \u00b7 \u03be^{2t\u22121}`, where `\u03b1Genuine t = coeff t (gammaGenuine \u2026)` is the genuine Hensel coefficient of A.4 (NOT the vacuous in-tree `ClaimA2.\u03b1`; see the statement-repair note at \u00a74f above). PROOF STATUS.  Reduced to the single per-successor-order residual `coeff_succ_eval_\u03b2HenselAssembled` (`coeff (t+1) (eval (\u03b2HenselAssembled) Q) = 0`): `assembledSeries_isRoot` assembles the full root `eval (\u03b2Hens",
           "kind": "theorem",
-          "line": 1923,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1923",
+          "line": 1975,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1975",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1923",
+          "short_name": "_anon_theorem_1975",
           "signature": "theorem theorem \u03b2Hensel_lift_identity (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1939,
+          "line": 1991,
           "name": "BCIKS20.HenselNumerator.only",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "only",
@@ -16293,10 +16437,10 @@
         {
           "doc": "",
           "kind": "structure",
-          "line": 1961,
-          "name": "BCIKS20.HenselNumerator._anon_structure_1961",
+          "line": 2013,
+          "name": "BCIKS20.HenselNumerator._anon_structure_2013",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_structure_1961",
+          "short_name": "_anon_structure_2013",
           "signature": "structure structured invariant is itself UNDERIVABLE from the (A.1) recursion (sub-additivity forces a"
         }
       ]
@@ -22800,181 +22944,6 @@
           "namespace": "ProximityGap",
           "short_name": "folding_preserves_distance",
           "signature": "theorem folding_preserves_distance"
-        }
-      ]
-    },
-    "ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean": {
-      "declarations": [
-        {
-          "doc": "Per-coordinate multiplicity: how many of the sets `A \u03b1` (for `\u03b1 \u2208 T`) contain `x`.",
-          "kind": "def",
-          "line": 95,
-          "name": "GCXK25SecondMoment.mult",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "mult",
-          "signature": "def mult (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) (x : \u03b9) : \u2115 :="
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 98,
-          "name": "GCXK25SecondMoment.mult_eq_sum",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "mult_eq_sum",
-          "signature": "theorem mult_eq_sum (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) (x : \u03b9) :"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 100,
-          "name": "GCXK25SecondMoment._anon_class_100",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_100",
-          "signature": "class classical"
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 104,
-          "name": "GCXK25SecondMoment.card_eq_sum_indicator",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "card_eq_sum_indicator",
-          "signature": "theorem card_eq_sum_indicator (s : Finset \u03b9) :"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 106,
-          "name": "GCXK25SecondMoment._anon_class_106",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_106",
-          "signature": "class classical"
-        },
-        {
-          "doc": "**Double counting (rows = columns).** Total size of the family equals the sum of per-coordinate multiplicities.",
-          "kind": "theorem",
-          "line": 114,
-          "name": "GCXK25SecondMoment.sum_card_eq_sum_mult",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "sum_card_eq_sum_mult",
-          "signature": "theorem sum_card_eq_sum_mult (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) :"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 116,
-          "name": "GCXK25SecondMoment._anon_class_116",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_116",
-          "signature": "class classical"
-        },
-        {
-          "doc": "**Second moment = pairwise intersections.** `\u2211_\u03b1 \u2211_\u03b2 |A_\u03b1 \u2229 A_\u03b2| = \u2211_x d(x)\u00b2`.",
-          "kind": "theorem",
-          "line": 126,
-          "name": "GCXK25SecondMoment.sum_sum_card_inter_eq_sum_mult_sq",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "sum_sum_card_inter_eq_sum_mult_sq",
-          "signature": "theorem sum_sum_card_inter_eq_sum_mult_sq (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) :"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 128,
-          "name": "GCXK25SecondMoment._anon_class_128",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_128",
-          "signature": "class classical"
-        },
-        {
-          "doc": "**Cauchy\u2013Schwarz / Chebyshev second-moment bound (\u2115 form).** The square of the total size of the family is at most `n` times the sum of all pairwise intersection sizes. This is the first inequality `(5)\u2013(6)` of the GCXK25 second-moment count, packaged over the ambient coordinate set `\u03b9` (so the union bound `r \u2264 n` is automatic).",
-          "kind": "theorem",
-          "line": 163,
-          "name": "GCXK25SecondMoment.sq_sum_card_le_card_mul_sum_sum_card_inter",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "sq_sum_card_le_card_mul_sum_sum_card_inter",
-          "signature": "theorem sq_sum_card_le_card_mul_sum_sum_card_inter (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) :"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 166,
-          "name": "GCXK25SecondMoment._anon_class_166",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_166",
-          "signature": "class classical"
-        },
-        {
-          "doc": "The total second moment splits into the diagonal (`\u2211 |A \u03b1|`) plus the off-diagonal pairwise intersections.",
-          "kind": "theorem",
-          "line": 174,
-          "name": "GCXK25SecondMoment.sum_sum_card_inter_eq_diag_add_offdiag",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "sum_sum_card_inter_eq_diag_add_offdiag",
-          "signature": "theorem sum_sum_card_inter_eq_diag_add_offdiag (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) :"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 178,
-          "name": "GCXK25SecondMoment._anon_class_178",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_178",
-          "signature": "class classical"
-        },
-        {
-          "doc": "**Off-diagonal pairwise bound (\u2115 form).** If every distinct pair `\u03b1 \u2260 \u03b2` (both in `T`) has `|A \u03b1 \u2229 A \u03b2| \u2264 B`, the off-diagonal sum is at most `N\u00b7(N-1)\u00b7B`, where `N = |T|`.",
-          "kind": "theorem",
-          "line": 186,
-          "name": "GCXK25SecondMoment.offdiag_le",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "offdiag_le",
-          "signature": "theorem offdiag_le (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) {B : \u2115}"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 189,
-          "name": "GCXK25SecondMoment._anon_class_189",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_189",
-          "signature": "class classical"
-        },
-        {
-          "doc": "**GCXK25 second-moment master inequality (real form).** Let `T` be a nonempty index set with `N := |T|` members, and `A : \u03ba \u2192 Finset \u03b9` a family of subsets of an ambient coordinate set of size `n`. Suppose * each member is large: `S \u2264 |A \u03b1|` for all `\u03b1 \u2208 T` (with `S \u2265 0`); * distinct members overlap little: `|A \u03b1 \u2229 A \u03b2| \u2264 B` for all distinct `\u03b1, \u03b2 \u2208 T`. Then `N \u00b7 S\u00b2 \u2264 n \u00b7 (S + (N \u2212 1) \u00b7 B)`. This is the inequality the GCXK25 proof of Lemma 3 extracts from Cauchy\u2013Schwarz right before substituting the Reed\u2013Solomon values `S = \u221a(1\u2212p+\u03b5)\u00b7n`, `B = (1\u2212p)\u00b7n` (which then yield `N < 1/\u03b5`). Proven via th",
-          "kind": "theorem",
-          "line": 219,
-          "name": "GCXK25SecondMoment.card_le_of_second_moment",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "card_le_of_second_moment",
-          "signature": "theorem card_le_of_second_moment"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 226,
-          "name": "GCXK25SecondMoment._anon_class_226",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_226",
-          "signature": "class classical"
-        },
-        {
-          "doc": "**GCXK25 Lemma 3 (second-moment count of bad second-part points).** Specialization of `card_le_of_second_moment` to the Reed\u2013Solomon values `S = \u221a(1\u2212p+\u03b5)\u00b7n` (member lower bound: a bad second-part point is at least `1\u2212\u221a(1\u2212p+\u03b5)`-close, so its `\u03b4`-agreement domain has `\u2265 \u221a(1\u2212p+\u03b5)\u00b7n` coordinates) and `B = (1\u2212p)\u00b7n` (distinct agreement domains share `\u2264 (1\u2212p)\u00b7n` coordinates). Under `0 < \u03b5`, `\u03b5 \u2264 p < 1`, and `0 < n`, `|T| \u00b7 \u03b5 < \u221a(1\u2212p+\u03b5) \u2212 (1\u2212p) + \u03b5 \u2264 1`, i.e. `|T| < 1/\u03b5`. This is exactly the bound `|Bad(\u03c0\u2081,\u03c0\u2082,\u03b4)\u00b2| < 1/\u03b5` of GCXK25 Lemma 3, packaged abstractly over the agree-domain family `T`. The hypo",
-          "kind": "theorem",
-          "line": 332,
-          "name": "GCXK25SecondMoment.card_lt_inv_of_second_moment_rs",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "card_lt_inv_of_second_moment_rs",
-          "signature": "theorem card_lt_inv_of_second_moment_rs"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 340,
-          "name": "GCXK25SecondMoment._anon_class_340",
-          "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_340",
-          "signature": "class classical"
         }
       ]
     },
@@ -70589,8 +70558,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7677,
-      "files": 377
+      "declarations": 7674,
+      "files": 376
     }
   }
 }

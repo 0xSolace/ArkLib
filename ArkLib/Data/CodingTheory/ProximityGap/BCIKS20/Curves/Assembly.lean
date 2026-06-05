@@ -445,6 +445,37 @@ theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_prob_threshold
       (Fintype.card F : ENNReal))
     hx hsmall hlarge hcoeffPoly
 
+omit [DecidableEq ι] in
+/-- Non-cyclic public wrapper for the closed list-decoding assembly theorem.
+
+`Curves.lean` cannot import `ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed`
+directly, because that file itself imports the curve front doors.  This module sits
+above both sides of the dependency graph, so it can expose the final canonical §5
+residual shape under the `ProximityGap` namespace. -/
+theorem correlatedAgreement_affine_curves_of_section5_canonical_data
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hCanonicalExtract :
+      ∀ u : WordStack F (Fin (k + 1)) ι,
+        ∃ P₀ : F → Polynomial F,
+          ∃ _ : _root_.ArkLib.CorrelatedAgreementListDecodingClosed.Section5StrictData
+            (k := k) (deg := deg) (domain := domain) (δ := δ) u P₀,
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              P z = P₀ z)
+    (hBoundaryCard : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      δ = 1 - ReedSolomon.sqrtRate deg domain →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  exact _root_.ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical
+    (deg := deg) (domain := domain) (δ := δ) hδ hCanonicalExtract hBoundaryCard
+
 end CurveAssemblyBridge
 
 end ProximityGap
