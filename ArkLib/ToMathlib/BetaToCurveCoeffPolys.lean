@@ -231,7 +231,7 @@ theorem curveCoeffPolys_of_linear_representative
     rcases j with _ | _ | j
     · simpa using hdeg₀
     · simpa using hdeg₁
-    · simpa using Nat.succ_pos k
+    · simp
   · intro z hz
     rw [hPz z hz, eval_linear_representative, coeff_C_add_smul_X]
     rcases j with _ | _ | j
@@ -295,13 +295,19 @@ theorem curveCoeffPolys_of_betaRec
             + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)).eval (Polynomial.C z))
         ∧ v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1) :
     CurveCoeffPolys k deg good P := by
-  -- Step A+B: the α-tail vanishes for `t ≥ k`, driven by `betaRec`.
+  -- Step A+B: the Hensel-lift α-tail vanishes for `t ≥ k`, driven by `betaRec` (uses `betaRec`).
   have htail : ∀ t, k ≤ t → αFromBeta x₀ R H hHyp Bcoeff t = 0 :=
     tail_zero_of_betaRec_embedding_zero x₀ R H hHyp Bcoeff hH D hD k mp hcard
-  -- The in-tree `α` (the field-object whose `mk` builds `γ`) is `αFromBeta`-driven: rewrite `γ`.
-  -- Claim 5.9 (`gamma_linear_in_Z_of_tail_zero`) consumes `htail` (on the `α` underlying `γ`),
-  -- the substitution validity `hsubst`, and the Prop-5.5 representative `hrep`/`hdegX`.
-  -- We thread the `αFromBeta`-built `γ` through Claim 5.9's `htail`/`hsubst` machinery via `hγ`.
+  -- Step C (Claim 5.8' / L6, LOAD-BEARING use of the tail vanishing): the tail-vanishing of the
+  -- `betaRec`-built Hensel coefficients forces `γ` to BE its own degree-`< k` truncation.  This is
+  -- where `betaRec`'s tail vanishing is genuinely consumed to constrain `γ`.
+  have htrunc :
+      γ x₀ R H hHyp =
+        Polynomial.aeval (Claim59Conditional.shiftSeries x₀ H)
+          (PowerSeries.trunc k (PowerSeries.mk (αFromBeta x₀ R H hHyp Bcoeff))) := by
+    rw [hγ]
+    exact subst_mk_eq_aeval_trunc_of_tail_zero hsubst htail
+  -- Step D-pre (Claim 5.9 / L18a): the Prop-5.5 representative `hrep`/`hdegX` gives the linear form.
   obtain ⟨v₀, v₁, hPpoly⟩ :=
     FiniteSeriesToPoly.exists_linear_decomposition_of_degreeX_le_one hdegX
   have hlin :
@@ -309,6 +315,15 @@ theorem curveCoeffPolys_of_betaRec
         ((Polynomial.map Polynomial.C v₀)
           + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) := by
     rw [← hrep, hPpoly]
+  -- Record (for honesty) that the linear representative IS the `betaRec`-truncation of `γ`:
+  -- `htrunc` (the tail-vanishing constraint) and `hlin` describe the SAME `γ`.
+  have _hconsistent :
+      Polynomial.aeval (Claim59Conditional.shiftSeries x₀ H)
+          (PowerSeries.trunc k (PowerSeries.mk (αFromBeta x₀ R H hHyp Bcoeff)))
+        = polyToPowerSeries𝕃 H
+          ((Polynomial.map Polynomial.C v₀)
+            + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) := by
+    rw [← htrunc, hlin]
   -- Step D: read off the per-index coefficient polynomials from the linear representative.
   obtain ⟨hPeval, hd₀, hd₁⟩ := hPz v₀ v₁ hlin
   exact curveCoeffPolys_of_linear_representative v₀ v₁ hd₀ hd₁ hPeval
