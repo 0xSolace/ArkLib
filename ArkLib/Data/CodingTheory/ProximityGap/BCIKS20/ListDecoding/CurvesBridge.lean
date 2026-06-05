@@ -20,6 +20,15 @@ section BCIKS20ProximityGapSection5To6Bridge
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {n : ℕ} [NeZero n]
 
+omit [Field F] [Fintype F] [DecidableEq F] [NeZero n] in
+/-- Every two-row word stack is definitionally the stack made from its two rows. -/
+lemma wordStack_fin_two_eq_finMapTwoWords (u : WordStack F (Fin 2) (Fin n)) :
+    u = Code.finMapTwoWords (u 0) (u 1) := by
+  funext rowIdx
+  match rowIdx with
+  | 0 => rfl
+  | 1 => rfl
+
 /-- For degree-one curves through two words, the §6 close-parameter set is the
 same set as the §5 affine-line close-proximity set. -/
 theorem coeffs_of_close_proximity_curve_finMapTwoWords_eq_close_proximity
@@ -292,11 +301,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_
   refine correlatedAgreement_affine_curves_of_strict_canonical_eval_polys_and_boundary_card
     (k := 1) (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0)) hδ ?_ ?_
   · intro _hk u _hprob _hJ _hsqrt
-    have h_u_eq : u = Code.finMapTwoWords (u 0) (u 1) := by
-      funext rowIdx
-      match rowIdx with
-      | 0 => rfl
-      | 1 => rfl
+    have h_u_eq := wordStack_fin_two_eq_finMapTwoWords (F := F) (n := n) u
     obtain ⟨Q, h_gs⟩ :=
       modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
         (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
@@ -309,11 +314,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_
     rw [h_u_eq]
     exact ⟨P₀, hEval, huniq⟩
   · intro _hk u hδeq hcard
-    have h_u_eq : u = Code.finMapTwoWords (u 0) (u 1) := by
-      funext rowIdx
-      match rowIdx with
-      | 0 => rfl
-      | 1 => rfl
+    have h_u_eq := wordStack_fin_two_eq_finMapTwoWords (F := F) (n := n) u
     have hcard_close :
         0 < (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) (u 0) (u 1)).card := by
       rw [coeffs_of_close_proximity_card_eq_goodCoeffsCurve_finMapTwoWords
@@ -351,11 +352,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_PzFamily
   refine correlatedAgreement_affine_curves_of_strict_canonical_eval_polys
     (k := 1) (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0)) hδ ?_
   intro _hk u _hprob _hJ
-  have h_u_eq : u = Code.finMapTwoWords (u 0) (u 1) := by
-    funext rowIdx
-    match rowIdx with
-    | 0 => rfl
-    | 1 => rfl
+  have h_u_eq := wordStack_fin_two_eq_finMapTwoWords (F := F) (n := n) u
   obtain ⟨Q, h_gs⟩ :=
     modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
       (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ

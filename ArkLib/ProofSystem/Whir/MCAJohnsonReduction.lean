@@ -11,7 +11,7 @@ namespace MCAJohnsonReduction
 open MutualCorrAgreement ProbabilityTheory
 open scoped NNReal ENNReal
 
-variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {ι : Type} [Fintype ι] [Nonempty ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-- **Affine-line MCA from an epsMCA bound.** If `epsMCA C δ ≤ E δ` for every

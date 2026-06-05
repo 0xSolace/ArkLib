@@ -16,7 +16,7 @@ open MutualCorrAgreement ProbabilityTheory PMF Generator
 open scoped NNReal ENNReal
 
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
-  {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+  {ι : Type} [Fintype ι] [Nonempty ι]
 
 /-- **MCA from `errStar ≥ 1`.** If the error function is `≥ 1` on the whole valid
 range, the generator has mutual correlated agreement — because the
