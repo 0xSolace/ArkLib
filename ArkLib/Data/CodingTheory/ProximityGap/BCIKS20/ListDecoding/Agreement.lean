@@ -6,6 +6,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
 
 set_option linter.style.longFile 5600
 
@@ -1648,11 +1649,43 @@ lemma approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero
     (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)) := by
   intro t ht
   exact alpha'_eq_zero_of_embedding_beta_eq_zero
-    (F := F) (x₀ := x₀)
+    (F := F) (x₀ := x₀) (R := R k δ x₀ h_gs) (H := H k δ x₀ h_gs)
     (irreducible_H k h_gs)
     (natDegree_H_pos k h_gs)
     (claimA2_hypotheses k h_gs)
     (hemb t ht)
+
+open BCIKS20AppendixA.ClaimA2 in
+lemma approximate_solution_is_exact_solution_coeffs_of_βHensel_embedding_zero
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hcompat : ∀ t ≥ k,
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (_root_.BCIKS20.HenselNumerator.βHensel
+          (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+          (claimA2_hypotheses k h_gs) t) =
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t))
+    (hβzero : ∀ t ≥ k,
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (_root_.BCIKS20.HenselNumerator.βHensel
+          (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+          (claimA2_hypotheses k h_gs) t) = 0) :
+    ∀ t ≥ k,
+    α'
+      x₀
+      (R k δ x₀ h_gs)
+      (irreducible_H k h_gs)
+      (natDegree_H_pos k h_gs)
+      (claimA2_hypotheses k h_gs)
+      t
+    =
+    (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)) := by
+  exact approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀) h_gs
+    (fun t ht => by
+      rw [← hcompat t ht]
+      exact hβzero t ht)
 
 open BCIKS20AppendixA in
 open BCIKS20AppendixA.ClaimA2 in
