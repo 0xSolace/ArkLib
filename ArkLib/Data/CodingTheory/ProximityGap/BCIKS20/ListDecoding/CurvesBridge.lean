@@ -644,6 +644,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_and_b
     (k := 1) (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0)) hδ ?_ ?_
   · intro _hk u _hprob _hJ _hsqrt P hP
     have h_u_eq := wordStack_fin_two_eq_finMapTwoWords (F := F) (n := n) u
+    rw [h_u_eq] at hP ⊢
     obtain ⟨Q, h_gs⟩ :=
       modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
         (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
@@ -656,18 +657,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_and_b
     exact hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain
       (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
       δ (u 0) (u 1) h_gs Dtop hDtop_card hsubset
-      (hunique (u 0) (u 1) h_gs) P
-      (by
-        intro z hz
-        have hz_u :
-            z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
-              u (δ : ℝ≥0) := by
-          rw [h_u_eq]
-          exact hz
-        have hzP := hP z hz_u
-        exact ⟨hzP.1, by
-          rw [← h_u_eq]
-          exact hzP.2⟩)
+      (hunique (u 0) (u 1) h_gs) P hP
   · intro _hk u hδeq hcard
     have h_u_eq := wordStack_fin_two_eq_finMapTwoWords (F := F) (n := n) u
     have hcard_close :
