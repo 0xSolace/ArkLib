@@ -74,6 +74,19 @@ theorem card_le_agreeSet_card_add_of_hammingDist_le
         (s := (Finset.univ : Finset ι)) (p := fun x : ι => f x = g x))
   omega
 
+/-- A Hamming-distance lower bound is the same as an upper bound on the
+agreement set. -/
+theorem agreeSet_card_add_lt_of_hammingDist_gt
+    {f g : ι → F} {w : ℕ} (h : w < hammingDist f g) :
+    (agreeSet f g).card + w < Fintype.card ι := by
+  classical
+  have hpartition :
+      (agreeSet f g).card + hammingDist f g = Fintype.card ι := by
+    simpa [agreeSet, hammingDist] using
+      (Finset.card_filter_add_card_filter_not
+        (s := (Finset.univ : Finset ι)) (p := fun x : ι => f x = g x))
+  omega
+
 /-- Inclusion-exclusion in the form used by the halved-threshold CA argument. -/
 theorem card_inter_add_card_univ_ge (A B : Finset ι) :
     (A ∩ B).card + Fintype.card ι ≥ A.card + B.card := by
@@ -305,6 +318,16 @@ theorem far_implies_joint_far
   have hg := hfar g₂ hg₂
   omega
 
+/-- Hamming-distance form of `far_implies_joint_far`. -/
+theorem far_implies_joint_far_of_hammingDist
+    (C : Submodule F (ι → F))
+    (rest fᵢ : ι → F) (d : ℕ)
+    (hfar : ∀ g ∈ C, 2 * d < hammingDist fᵢ g) :
+    ∀ g₁ ∈ C, ∀ g₂ ∈ C,
+      (jointAgreeSet rest fᵢ g₁ g₂).card + 2 * d < Fintype.card ι :=
+  far_implies_joint_far C rest fᵢ d
+    (fun g hg => agreeSet_card_add_lt_of_hammingDist_gt (hfar g hg))
+
 /-- Per-coordinate batch correlated agreement: after fixing an arbitrary `rest`,
 there are not two distinct coefficients that make `rest + α • fᵢ` close to the
 code, provided `fᵢ` itself is `2 * d`-far from the code. -/
@@ -318,6 +341,20 @@ theorem batch_ca_per_coord
     (hA₂ : Fintype.card ι ≤ (agreeSet (linComb rest fᵢ α₂) c₂).card + d) :
     False :=
   ca_halved C rest fᵢ d (far_implies_joint_far C rest fᵢ d hfar) hne hc₁ hc₂ hA₁ hA₂
+
+/-- Hamming-distance form of the per-coordinate batch CA contradiction. -/
+theorem batch_ca_per_coord_of_hammingDist
+    (C : Submodule F (ι → F))
+    (rest fᵢ : ι → F) (d : ℕ)
+    (hfar : ∀ g ∈ C, 2 * d < hammingDist fᵢ g)
+    {α₁ α₂ : F} (hne : α₁ ≠ α₂)
+    {c₁ c₂ : ι → F} (hc₁ : c₁ ∈ C) (hc₂ : c₂ ∈ C)
+    (hA₁ : Fintype.card ι ≤ (agreeSet (linComb rest fᵢ α₁) c₁).card + d)
+    (hA₂ : Fintype.card ι ≤ (agreeSet (linComb rest fᵢ α₂) c₂).card + d) :
+    False :=
+  batch_ca_per_coord C rest fᵢ d
+    (fun g hg => agreeSet_card_add_lt_of_hammingDist_gt (hfar g hg))
+    hne hc₁ hc₂ hA₁ hA₂
 
 /-- Contrapositive singleton form for the per-coordinate batch CA argument. -/
 theorem batch_ca_at_most_one
@@ -347,6 +384,18 @@ theorem batch_ca_per_coord_bad_card [Fintype F]
   intro α₁ hα₁ α₂ hα₂
   rw [Finset.mem_filter] at hα₁ hα₂
   exact batch_ca_at_most_one C rest fᵢ d hfar hα₁.2 hα₂.2
+
+open Classical in
+/-- Hamming-distance form of `batch_ca_per_coord_bad_card`. -/
+theorem batch_ca_per_coord_bad_card_of_hammingDist [Fintype F]
+    (C : Submodule F (ι → F))
+    (rest fᵢ : ι → F) (d : ℕ)
+    (hfar : ∀ g ∈ C, 2 * d < hammingDist fᵢ g) :
+    ((Finset.univ : Finset F).filter
+      (fun α => ∃ c ∈ C, Fintype.card ι ≤
+        (agreeSet (linComb rest fᵢ α) c).card + d)).card ≤ 1 :=
+  batch_ca_per_coord_bad_card C rest fᵢ d
+    (fun g hg => agreeSet_card_add_lt_of_hammingDist_gt (hfar g hg))
 
 /-- A finite union of bad scalar sets, one per batch coordinate, has cardinality bounded by
 the number of coordinates when each coordinate contributes at most one bad scalar. -/
@@ -381,5 +430,20 @@ theorem batch_ca_aggregate [Fintype F]
       (fun α => ∃ c ∈ C,
         Fintype.card ι ≤ (agreeSet (linComb (rest i) (f i) α) c).card + d))
     (fun i => batch_ca_per_coord_bad_card C (rest i) (f i) d (hfar i))
+
+open Classical in
+/-- Hamming-distance form of `batch_ca_aggregate`. -/
+theorem batch_ca_aggregate_of_hammingDist [Fintype F]
+    (C : Submodule F (ι → F))
+    {κ : Type*} [Fintype κ] [DecidableEq κ]
+    (rest : κ → ι → F) (f : κ → ι → F) (d : ℕ)
+    (hfar : ∀ i, ∀ g ∈ C, 2 * d < hammingDist (f i) g) :
+    (Finset.univ.biUnion (fun i =>
+      (Finset.univ : Finset F).filter
+        (fun α => ∃ c ∈ C,
+          Fintype.card ι ≤ (agreeSet (linComb (rest i) (f i) α) c).card + d))).card
+    ≤ Fintype.card κ :=
+  batch_ca_aggregate C rest f d
+    (fun i g hg => agreeSet_card_add_lt_of_hammingDist_gt (hfar i g hg))
 
 end ProximityPrizeCA
