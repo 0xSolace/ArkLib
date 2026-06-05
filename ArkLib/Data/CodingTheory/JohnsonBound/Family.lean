@@ -599,6 +599,93 @@ theorem closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_condition
     exact closeCodewordsRelFinset_pairwise_agree_le_card_sub_minDist hu hv hne
   · exact hcond
 
+set_option maxHeartbeats 5000000
+
+/-- Close-list wrapper for the squared-distance `CodeGeometry` Johnson cap.
+
+This consumes the directly usable distance-form theorem:
+each listed word is within Hamming distance `e` of the received word, and
+distinct listed codewords are separated by at least `d`. -/
+theorem closeCodewordsRelFinset_card_le_of_johnson_sq_dist
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) (f : ι → α) (δ : ℝ)
+    {e d ℓ : ℕ}
+    (hq1 : 1 < Fintype.card α) (hn : 0 < Fintype.card ι)
+    (hclose : ∀ x ∈ ListDecodable.closeCodewordsRelFinset C f δ,
+      hammingDist x f ≤ e)
+    (hdist : ∀ u ∈ ListDecodable.closeCodewordsRelFinset C f δ,
+      ∀ v ∈ ListDecodable.closeCodewordsRelFinset C f δ,
+        u ≠ v → d ≤ hammingDist u v)
+    (hP : (Fintype.card ι : ℝ) / (Fintype.card α : ℝ) ≤
+      ((Fintype.card ι - e : ℕ) : ℝ))
+    (hsq : ((ℓ : ℝ) + 1)
+        * (((Fintype.card ι - e : ℕ) : ℝ) -
+            (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)) ^ 2
+      > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)))
+        * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))
+            + (ℓ : ℝ) * (((Fintype.card ι - d : ℕ) : ℝ) -
+                (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))) :
+    (ListDecodable.closeCodewordsRelFinset C f δ).card ≤ ℓ := by
+  classical
+  let S := ListDecodable.closeCodewordsRelFinset C f δ
+  by_cases hS : S.card = 0
+  · simp [S, hS]
+  · have hSpos : 0 < S.card := Nat.pos_of_ne_zero hS
+    let idx : Fin S.card ≃ S := (Finset.equivFin S).symm
+    let c : Fin S.card → ι → α := fun i => (idx i).1
+    have hclose_idx : ∀ i, hammingDist (c i) f ≤ e := by
+      intro i
+      exact hclose (c i) (idx i).2
+    have hdist_idx : ∀ i j, i ≠ j → d ≤ hammingDist (c i) (c j) := by
+      intro i j hij
+      apply hdist (c i) (idx i).2 (c j) (idx j).2
+      intro hval
+      apply hij
+      exact idx.injective (Subtype.ext hval)
+    exact CodeGeometry.card_le_of_johnson_sq_dist
+      (ι := ι) (α := α)
+      hq1 hn hSpos f c ℓ hclose_idx hdist_idx hP hsq
+
+/-- Canonical close-list squared-distance Johnson cap with
+`e = ⌊δ·n⌋₊` and `d = minDist(C)`. -/
+theorem closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_sq_dist
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) (f : ι → α) (δ : ℝ)
+    {ℓ : ℕ}
+    (hδ : 0 ≤ δ) (hq1 : 1 < Fintype.card α)
+    (hP : (Fintype.card ι : ℝ) / (Fintype.card α : ℝ) ≤
+      ((Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℕ) : ℝ))
+    (hsq : ((ℓ : ℝ) + 1)
+        * ((((Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℕ) : ℝ)) -
+            (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)) ^ 2
+      > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)))
+        * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))
+            + (ℓ : ℝ) * (((Fintype.card ι - Code.minDist C : ℕ) : ℝ) -
+                (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))) :
+    (ListDecodable.closeCodewordsRelFinset C f δ).card ≤ ℓ := by
+  have hclose : ∀ x ∈ ListDecodable.closeCodewordsRelFinset C f δ,
+      hammingDist x f ≤ ⌊δ * (Fintype.card ι : ℝ)⌋₊ := by
+    intro x hx
+    have hdist := hammingDist_le_floor_mul_card_of_mem_closeCodewordsRelFinset hδ hx
+    have hsymm : hammingDist x f = hammingDist f x := by
+      unfold hammingDist
+      simp_rw [ne_comm]
+    rwa [hsymm]
+  have hdist : ∀ u ∈ ListDecodable.closeCodewordsRelFinset C f δ,
+      ∀ v ∈ ListDecodable.closeCodewordsRelFinset C f δ,
+        u ≠ v → Code.minDist C ≤ hammingDist u v := by
+    intro u hu v hv hne
+    exact minDist_le_hammingDist_of_mem_ne
+      (ListDecodable.mem_closeCodewordsRelFinset.mp hu).1
+      (ListDecodable.mem_closeCodewordsRelFinset.mp hv).1 hne
+  exact closeCodewordsRelFinset_card_le_of_johnson_sq_dist
+    (ι := ι) (α := α) (C := C) (f := f) (δ := δ)
+    (e := ⌊δ * (Fintype.card ι : ℝ)⌋₊)
+    (d := Code.minDist C) (ℓ := ℓ)
+    hq1 (Fintype.card_pos) hclose hdist hP hsq
+
 /-- Lambda-level Johnson cap with the canonical close-list agreement parameters.
 
 This is the pointwise close-list cap packaged through the maximised

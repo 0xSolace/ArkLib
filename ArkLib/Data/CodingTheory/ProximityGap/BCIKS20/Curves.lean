@@ -921,6 +921,72 @@ theorem eval_polys_of_coeff_polys_on_domain {k deg : ℕ}
               simp [E, Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_C,
                 mul_comm]
 
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
+/-- Upgrade a canonical decoded-family evaluation witness to the universal
+`hEvalPoly` shape used by the list-decoding assembly, assuming every decoded
+family agrees with the canonical one on the parameter set.
+
+This isolates the remaining uniqueness/representative bridge: §5 can construct
+one family, while §6 asks for all decoded families. -/
+theorem eval_polys_for_all_decoded_of_canonical_agreement {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} {S : Finset F}
+    {u : WordStack F (Fin (k + 1)) ι}
+    (P₀ : F → Polynomial F)
+    (hEval₀ : ∃ E : ι → Polynomial F,
+      (∀ x, (E x).natDegree < k + 1) ∧
+        ∀ z ∈ S, ∀ x, (P₀ z).eval (domain x) = (E x).eval z)
+    (huniq : ∀ P : F → Polynomial F,
+      (∀ z ∈ S,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∀ z ∈ S, P z = P₀ z) :
+    ∀ P : F → Polynomial F,
+      (∀ z ∈ S,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ E : ι → Polynomial F,
+          (∀ x, (E x).natDegree < k + 1) ∧
+            ∀ z ∈ S, ∀ x, (P z).eval (domain x) = (E x).eval z := by
+  intro P hdecoded
+  obtain ⟨E, hEdeg, hEval⟩ := hEval₀
+  refine ⟨E, hEdeg, ?_⟩
+  intro z hz x
+  rw [huniq P hdecoded z hz]
+  exact hEval z hz x
+
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
+/-- Coefficient-polynomial analogue of
+`eval_polys_for_all_decoded_of_canonical_agreement`. -/
+theorem coeff_polys_for_all_decoded_of_canonical_agreement {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} {S : Finset F}
+    {u : WordStack F (Fin (k + 1)) ι}
+    (P₀ : F → Polynomial F)
+    (hCoeff₀ : ∃ B : ℕ → Polynomial F,
+      (∀ j < deg, (B j).natDegree < k + 1) ∧
+        ∀ z ∈ S, ∀ j < deg, (P₀ z).coeff j = (B j).eval z)
+    (huniq : ∀ P : F → Polynomial F,
+      (∀ z ∈ S,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∀ z ∈ S, P z = P₀ z) :
+    ∀ P : F → Polynomial F,
+      (∀ z ∈ S,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ S, ∀ j < deg, (P z).coeff j = (B j).eval z := by
+  intro P hdecoded
+  obtain ⟨B, hBdeg, hCoeff⟩ := hCoeff₀
+  refine ⟨B, hBdeg, ?_⟩
+  intro z hz j hj
+  rw [huniq P hdecoded z hz]
+  exact hCoeff z hz j hj
+
 omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- Reindex a finite sum of curve coefficient words. -/
 theorem curve_sum_reindex_equiv_core {κ κ' : Type} [Fintype κ] [Fintype κ']
@@ -1593,6 +1659,76 @@ theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_eval_polys
       hJ hδ)
     hEvalPoly
 
+omit [DecidableEq ι] in
+/-- Strict Johnson front door when §5 supplies one canonical decoded family,
+an evaluation-polynomial witness for that family, and uniqueness of decoded
+families on the good coefficient set. -/
+theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_canonical_eval_polys
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (P₀ : F → Polynomial F)
+    (hEval₀ : ∃ E : ι → Polynomial F,
+      (∀ x, (E x).natDegree < k + 1) ∧
+        ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          ∀ x, (P₀ z).eval (domain x) = (E x).eval z)
+    (huniq : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          P z = P₀ z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  exact RS_jointAgreement_of_prob_gt_strict_johnson_and_eval_polys
+    (deg := deg) (domain := domain) (δ := δ) hk u hprob hJ hδ
+    (eval_polys_for_all_decoded_of_canonical_agreement
+      (deg := deg) (domain := domain) (δ := δ)
+      (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+      (u := u) P₀ hEval₀ huniq)
+
+omit [DecidableEq ι] in
+/-- Strict Johnson front door when §5 supplies one canonical decoded family,
+coefficient-polynomial witnesses for that family, and uniqueness of decoded
+families on the good coefficient set. -/
+theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_canonical_coeff_polys
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (P₀ : F → Polynomial F)
+    (hCoeff₀ : ∃ B : ℕ → Polynomial F,
+      (∀ j < deg, (B j).natDegree < k + 1) ∧
+        ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          ∀ j < deg, (P₀ z).coeff j = (B j).eval z)
+    (huniq : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          P z = P₀ z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  exact RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
+    (deg := deg) (domain := domain) (δ := δ) hk u hprob hJ hδ
+    (coeff_polys_for_all_decoded_of_canonical_agreement
+      (deg := deg) (domain := domain) (δ := δ)
+      (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+      (u := u) P₀ hCoeff₀ huniq)
+
 omit [DecidableEq ι] [Fintype F] in
 /-- For Reed-Solomon codes, the rate-half radius is the relative unique-decoding
 radius in the non-full-code case, and is `0` in the full-code case. This lets
@@ -1755,6 +1891,49 @@ theorem correlatedAgreement_affine_curves_of_strict_eval_polys_and_boundary_card
   exact hBoundaryCard hk u hδeq hcard
 
 omit [DecidableEq ι] in
+/-- Evaluation-polynomial capstone when the strict Johnson §5 branch supplies
+one canonical decoded family, evaluation-polynomial witnesses for it, and
+uniqueness of decoded families on the good-coefficient set. -/
+theorem correlatedAgreement_affine_curves_of_strict_canonical_eval_polys_and_boundary_card
+    {k : ℕ} {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCanonicalEval :
+      ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+        Pr_{
+          let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+            ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+        (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+        δ < 1 - ReedSolomon.sqrtRate deg domain →
+        ∃ P₀ : F → Polynomial F,
+          (∃ E : ι → Polynomial F,
+            (∀ x, (E x).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ x, (P₀ z).eval (domain x) = (E x).eval z) ∧
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                P z = P₀ z)
+    (hBoundaryCard : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      δ = 1 - ReedSolomon.sqrtRate deg domain →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_strict_eval_polys_and_boundary_card
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_ hBoundaryCard
+  intro hk u hprob hJ hsqrt P hP
+  obtain ⟨P₀, hEval₀, huniq⟩ := hStrictCanonicalEval hk u hprob hJ hsqrt
+  exact eval_polys_for_all_decoded_of_canonical_agreement
+    (deg := deg) (domain := domain) (δ := δ)
+    (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+    (u := u) P₀ hEval₀ huniq P hP
+
+omit [DecidableEq ι] in
 /-- Strict square-root-radius capstone. In the strict range
 `δ < 1 - sqrtRate`, the closed-boundary branch is impossible, so the final
 curve theorem follows from only the strict Johnson §5 evaluation-polynomial
@@ -1786,6 +1965,44 @@ theorem correlatedAgreement_affine_curves_of_strict_eval_polys {k : ℕ}
     exact hStrictEval hk u hprob hJ P hP
   · intro _hk _u _hprob _hJ hnot
     exact False.elim (hnot hδ)
+
+omit [DecidableEq ι] in
+/-- Strict square-root-radius capstone when §5 supplies one canonical decoded
+family, evaluation-polynomial witnesses for it, and uniqueness of decoded
+families on the good-coefficient set. -/
+theorem correlatedAgreement_affine_curves_of_strict_canonical_eval_polys {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCanonicalEval :
+      ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+        Pr_{
+          let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+            ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+        (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+        ∃ P₀ : F → Polynomial F,
+          (∃ E : ι → Polynomial F,
+            (∀ x, (E x).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ x, (P₀ z).eval (domain x) = (E x).eval z) ∧
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                P z = P₀ z) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_strict_eval_polys
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_
+  intro hk u hprob hJ P hP
+  obtain ⟨P₀, hEval₀, huniq⟩ := hStrictCanonicalEval hk u hprob hJ
+  exact eval_polys_for_all_decoded_of_canonical_agreement
+    (deg := deg) (domain := domain) (δ := δ)
+    (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+    (u := u) P₀ hEval₀ huniq P hP
 
 omit [DecidableEq ι] in
 /-- Final curve theorem assuming the strict Johnson branch supplies
@@ -1867,6 +2084,49 @@ theorem correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary_car
   exact hBoundaryCard hk u hδeq hcard
 
 omit [DecidableEq ι] in
+/-- Coefficient-polynomial capstone when the strict Johnson §5 branch supplies
+one canonical decoded family, coefficient-polynomial witnesses for it, and
+uniqueness of decoded families on the good-coefficient set. -/
+theorem correlatedAgreement_affine_curves_of_strict_canonical_coeff_polys_and_boundary_card
+    {k : ℕ} {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCanonicalCoeff :
+      ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+        Pr_{
+          let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+            ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+        (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+        δ < 1 - ReedSolomon.sqrtRate deg domain →
+        ∃ P₀ : F → Polynomial F,
+          (∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P₀ z).coeff j = (B j).eval z) ∧
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                P z = P₀ z)
+    (hBoundaryCard : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      δ = 1 - ReedSolomon.sqrtRate deg domain →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary_card
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_ hBoundaryCard
+  intro hk u hprob hJ hsqrt P hP
+  obtain ⟨P₀, hCoeff₀, huniq⟩ := hStrictCanonicalCoeff hk u hprob hJ hsqrt
+  exact coeff_polys_for_all_decoded_of_canonical_agreement
+    (deg := deg) (domain := domain) (δ := δ)
+    (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+    (u := u) P₀ hCoeff₀ huniq P hP
+
+omit [DecidableEq ι] in
 /-- Strict square-root-radius capstone phrased in the coefficient-polynomial
 language of §5. In the strict range, the closed-boundary branch is impossible. -/
 theorem correlatedAgreement_affine_curves_of_strict_coeff_polys {k : ℕ}
@@ -1896,6 +2156,44 @@ theorem correlatedAgreement_affine_curves_of_strict_coeff_polys {k : ℕ}
     exact hStrictCoeff hk u hprob hJ P hP
   · intro _hk _u _hprob _hJ hnot
     exact False.elim (hnot hδ)
+
+omit [DecidableEq ι] in
+/-- Strict square-root-radius coefficient-polynomial capstone when §5 supplies
+one canonical decoded family, coefficient-polynomial witnesses for it, and
+uniqueness of decoded families on the good-coefficient set. -/
+theorem correlatedAgreement_affine_curves_of_strict_canonical_coeff_polys {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCanonicalCoeff :
+      ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+        Pr_{
+          let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+            ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+        (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+        ∃ P₀ : F → Polynomial F,
+          (∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P₀ z).coeff j = (B j).eval z) ∧
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                P z = P₀ z) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_strict_coeff_polys
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_
+  intro hk u hprob hJ P hP
+  obtain ⟨P₀, hCoeff₀, huniq⟩ := hStrictCanonicalCoeff hk u hprob hJ
+  exact coeff_polys_for_all_decoded_of_canonical_agreement
+    (deg := deg) (domain := domain) (δ := δ)
+    (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+    (u := u) P₀ hCoeff₀ huniq P hP
 
 omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].

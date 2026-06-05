@@ -3310,6 +3310,45 @@ lemma PzFamily_decoded_and_exists_eval_polys_of_close_subset_matching_set_at_x
     (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) h_gs hk
     (fun _ hz x => hsubset x hz)
 
+open Polynomial in
+omit [DecidableEq (RatFunc F)] in
+/-- Canonical-family package for the §6 bridge: under the full-coordinate
+matching-set condition, `PzFamily` supplies the decoded family and the
+evaluation-polynomial witness; an external uniqueness/representative theorem
+then upgrades it to the canonical-family shape consumed by the curve assembly
+wrappers. -/
+lemma PzFamily_exists_canonical_eval_polys_of_close_subset_and_unique
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hk : 0 < k)
+    (hsubset : ∀ x : Fin n,
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+        matching_set_at_x k δ h_gs x)
+    (hunique : ∀ P : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        P z = PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z) :
+    ∃ P₀ : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        (P₀ z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P₀ z).eval ∘ ωs) ≤ δ) ∧
+      (∃ E : Fin n → F[X],
+        (∀ x, (E x).natDegree < k + 1) ∧
+          ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+            ∀ x : Fin n, (P₀ z).eval (ωs x) = (E x).eval z) ∧
+      ∀ P : F → F[X],
+        (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+          (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
+        ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁, P z = P₀ z := by
+  refine ⟨PzFamily (F := F) (n := n) δ u₀ u₁ ωs k, ?_, ?_, ?_⟩
+  · exact PzFamily_decoded_on_close_set
+      (F := F) (n := n) (k := k) (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs)
+  · exact PzFamily_exists_eval_polys_of_forall_mem_matching_set_at_x
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) h_gs hk
+      (fun _ hz x => hsubset x hz)
+  · intro P hP z hz
+    exact hunique P hP z hz
+
 omit [DecidableEq (RatFunc F)] in
 lemma matching_set_at_x_eq_matching_coords_image_univ
     {ωs : Fin n ↪ F}
