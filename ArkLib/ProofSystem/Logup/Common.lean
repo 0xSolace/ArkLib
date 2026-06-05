@@ -677,6 +677,18 @@ noncomputable def finalQueryCheck (groups : PartialSumGroups M K) (xChallenge : 
     (evals : PointEvaluations F M K) (expectedValue : F) : Prop :=
   qAtPoint groups xChallenge zChallenge rChallenge batchingScalars evals = expectedValue
 
+omit [Fintype F] [DecidableEq F] in
+theorem finalQueryCheck_of_expected_sum_helpers
+    (groups : PartialSumGroups M K) (xChallenge : F) (zChallenge rChallenge : Fin n → F)
+    (batchingScalars : Fin K → F) (evals : PointEvaluations F M K)
+    (hhelper : ∀ k : Fin K, evals.helpers k = helperValueAtPoint groups xChallenge evals k)
+    (hden : ∀ k : Fin K, ∀ i ∈ groups k, termPhiAtPoint xChallenge evals i ≠ 0) :
+    finalQueryCheck groups xChallenge zChallenge rChallenge batchingScalars evals
+      (∑ k : Fin K, evals.helpers k) := by
+  unfold finalQueryCheck
+  exact qAtPoint_eq_sum_helpers groups xChallenge zChallenge rChallenge batchingScalars evals
+    hhelper hden
+
 end ProtocolAlgebra
 
 end Logup

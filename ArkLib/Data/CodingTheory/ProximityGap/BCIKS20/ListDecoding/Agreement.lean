@@ -303,7 +303,8 @@ private theorem gapB_transport_mult [DecidableEq (Polynomial F)]
     rw [hφ, hy, map_add, map_mul, coe_evalRingHom, eval_C, eval_X, eval_C, mul_comm]
   have hvanQ := gapB_shift_coeff_zero_of_mult_ge_dom Qt x y M hm
   have hvanQz : ∀ s t, s + t < M →
-      ((Bivariate.shift (Qt.map (Polynomial.mapRingHom φ)) ω (u0 + z * u1)).coeff t).coeff s = 0 := by
+      ((Bivariate.shift (Qt.map (Polynomial.mapRingHom φ)) ω (u0 + z * u1)).coeff t).coeff s =
+        0 := by
     intro s t hst
     have : Polynomial.Bivariate.coeff
         (Bivariate.shift (Qt.map (Polynomial.mapRingHom φ)) (φ x) (φ y)) s t = 0 := by
@@ -1994,6 +1995,56 @@ lemma matching_coords_filter_card_le_matching_set_at_x_card
   rw [← hcard]
   exact Finset.card_le_card hsub
 
+omit [DecidableEq (RatFunc F)] in
+lemma mem_matching_set_at_x_iff
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) (z : F) :
+    z ∈ matching_set_at_x k δ h_gs x ↔
+      ∃ h : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁,
+        u₀ x + z * u₁ x =
+          (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) h).eval
+            (ωs x) := by
+  simp [matching_set_at_x]
+
+omit [DecidableEq (RatFunc F)] in
+lemma matching_set_at_x_eq_matching_coords_image_univ
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) :
+    ((Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)).filter
+      (fun z => x ∈ matching_coords_for_z k δ h_gs z)).image (fun z => (z.1 : F)) =
+        matching_set_at_x k δ h_gs x := by
+  classical
+  apply Finset.ext
+  intro z
+  constructor
+  · intro hz
+    rcases Finset.mem_image.mp hz with ⟨w, hw, rfl⟩
+    exact coeff_mem_matching_set_at_x_of_mem_matching_coords
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs w
+      (Finset.mem_filter.mp hw).2
+  · intro hz
+    rcases (mem_matching_set_at_x_iff
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x z).mp hz with
+      ⟨hzclose, hmatch⟩
+    refine Finset.mem_image.mpr ⟨⟨z, hzclose⟩, ?_, rfl⟩
+    rw [Finset.mem_filter]
+    refine ⟨Finset.mem_univ _, ?_⟩
+    rw [mem_matching_coords_for_z
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs ⟨z, hzclose⟩ x]
+    exact hmatch
+
+omit [DecidableEq (RatFunc F)] in
+lemma matching_coords_univ_filter_card_eq_matching_set_at_x_card
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) :
+    ((Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)).filter
+      (fun z => x ∈ matching_coords_for_z k δ h_gs z)).card =
+        (matching_set_at_x k δ h_gs x).card := by
+  classical
+  rw [← matching_set_at_x_eq_matching_coords_image_univ
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x]
+  exact (Finset.card_image_of_injective _ fun a b h => Subtype.ext h).symm
+
 /-- Coordinates where the selected close polynomial for `z` does not match the
 line word.  These are the bad coordinates used by the Claim 5.11
 double-counting argument. -/
@@ -2115,6 +2166,66 @@ noncomputable def graphExtractionHypotheses_of_matching_coords
       (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z i).mp hi
   hcount := hcount
   hlarge := hlarge
+
+omit [DecidableEq (RatFunc F)] in
+noncomputable def graphExtractionHypotheses_of_nonmatching_count
+    [DecidableEq (Polynomial F)]
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k <
+        m * (n - (nonmatching_coords_for_z k δ h_gs z).card))
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs :=
+  graphExtractionHypotheses_of_matching_coords
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hx0 hsep hS_nonempty
+    (fun z => by
+      simpa [matching_coords_card_eq_sub_nonmatching_coords_card
+        (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z] using hcount z)
+    hlarge
+
+omit [DecidableEq (RatFunc F)] in
+noncomputable def graphExtractionHypotheses_of_uniform_nonmatching_bound
+    [DecidableEq (Polynomial F)]
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    {E : ℕ}
+    (hbad : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      (nonmatching_coords_for_z k δ h_gs z).card ≤ E)
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (n - E))
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs :=
+  graphExtractionHypotheses_of_nonmatching_count
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hx0 hsep hS_nonempty
+    (fun z => by
+      exact lt_of_lt_of_le (hcount z)
+        (Nat.mul_le_mul_left m (Nat.sub_le_sub_left (hbad z) n)))
+    hlarge
 
 open Polynomial in
 /-- Claim 5.10 with the missing counting-to-coefficient-value bridge exposed
@@ -2387,6 +2498,102 @@ lemma exists_points_with_large_matching_subset_of_heavy_nonmatching_complement_c
   exact lt_of_lt_of_le (hgood x hx)
     (nonmatching_coords_filter_card_le_matching_set_at_x_card
       (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs S x)
+
+omit [DecidableEq (RatFunc F)] in
+/-- Derive the complement-cardinality side condition for the heavy-bad
+coordinate form of Claim 5.11 from a uniform bad-coordinate bound. -/
+lemma heavy_nonmatching_complement_card_ge_of_uniform_bound
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (S : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    {E t : ℕ}
+    (hbad : ∀ z ∈ S, (nonmatching_coords_for_z k δ h_gs z).card ≤ E)
+    (hsmall : E * S.card < (n - k) * t) :
+    k + 1 ≤ ((Finset.univ : Finset (Fin n)) \
+      ((Finset.univ : Finset (Fin n)).filter
+        (fun x =>
+          t ≤ (S.filter
+            (fun z => x ∈ nonmatching_coords_for_z k δ h_gs z)).card))).card := by
+  classical
+  let heavy : Finset (Fin n) := (Finset.univ : Finset (Fin n)).filter
+    (fun x =>
+      t ≤ (S.filter
+        (fun z => x ∈ nonmatching_coords_for_z k δ h_gs z)).card)
+  have hmul : heavy.card * t ≤ E * S.card := by
+    simpa [heavy] using
+      heavyCoords_card_mul_le (α := Fin n)
+        (β := coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)
+        (S := S) (B := fun z => nonmatching_coords_for_z k δ h_gs z)
+        (m := E) hbad t
+  have hheavy_lt : heavy.card < n - k := by
+    exact Nat.lt_of_mul_lt_mul_right (lt_of_le_of_lt hmul hsmall)
+  have hsubset : heavy ⊆ (Finset.univ : Finset (Fin n)) := Finset.subset_univ _
+  have hcard :
+      ((Finset.univ : Finset (Fin n)) \ heavy).card = n - heavy.card := by
+    rw [Finset.card_sdiff_of_subset hsubset, Finset.card_univ, Fintype.card_fin]
+  change k + 1 ≤ ((Finset.univ : Finset (Fin n)) \ heavy).card
+  rw [hcard]
+  omega
+
+/-- Uniform-bad-coordinate version of the Claim 5.11 selection step.  The
+arithmetic hypothesis `hsmall` is exactly the paper's requirement that the heavy
+bad coordinates leave at least `k + 1` usable coordinates. -/
+lemma exists_points_with_large_matching_subset_of_uniform_nonmatching_bound
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (S : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    {D E t : ℕ}
+    (hbad : ∀ z ∈ S, (nonmatching_coords_for_z k δ h_gs z).card ≤ E)
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D + t ≤ S.card)
+    (hsmall : E * S.card < (n - k) * t) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      (matching_set_at_x k δ h_gs x).card >
+        (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D := by
+  exact exists_points_with_large_matching_subset_of_heavy_nonmatching_complement_card
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs S (D := D) (t := t) hthreshold
+    (heavy_nonmatching_complement_card_ge_of_uniform_bound
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ)
+      h_gs S hbad hsmall)
+
+/-- Full-close-set version of the uniform-bad-coordinate Claim 5.11 wrapper. -/
+lemma exists_points_with_large_matching_subset_of_univ_uniform_nonmatching_bound
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {D E t : ℕ}
+    (hbad : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      (nonmatching_coords_for_z k δ h_gs z).card ≤ E)
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D + t ≤ #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (hsmall :
+      E * #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) < (n - k) * t) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      (matching_set_at_x k δ h_gs x).card >
+        (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D := by
+  exact exists_points_with_large_matching_subset_of_uniform_nonmatching_bound
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs (Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (D := D) (E := E) (t := t)
+    (fun z _hz => hbad z)
+    (by simpa using hthreshold)
+    (by simpa using hsmall)
 
 /-- Claim 5.11 from [BCIKS20].
 There exists a set of points `{x₀,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in

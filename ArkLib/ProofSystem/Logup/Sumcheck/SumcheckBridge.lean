@@ -253,6 +253,47 @@ structure LogupSumcheckBridge
           qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge r
             stmt.batchingScalars evals
 
+theorem LogupSumcheckBridge.relationInput
+    {hSigns : (-1 : F) ≠ 1}
+    {stmt : StmtAfterOuter F n M params}
+    {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    (bridge : LogupSumcheckBridge F n M params stmt oStmt) :
+    logupSumcheckRelationInput F n M params hSigns stmt oStmt :=
+  logupSumcheckRelationInput_of_rowsAgree (F := F) (n := n) (M := M) (params := params)
+    bridge.rowsAgree bridge.claimZero
+
+theorem logupSumcheckOutputTarget_eq_eval
+    {hSigns : (-1 : F) ≠ 1}
+    {out : LogupSumcheckStmtOut F n M params}
+    {oStmt : ∀ i, LogupSumcheckOracleStatement F n M params i}
+    (hRel :
+      ((out, oStmt), ()) ∈
+        Sumcheck.Spec.relationRound F n (logupSumcheckDegree M params)
+          (signDomain F hSigns) (.last n)) :
+    out.target = MvPolynomial.eval out.challenges (oStmt ()).1 := by
+  unfold Sumcheck.Spec.relationRound at hRel
+  simpa using hRel.symm
+
+theorem LogupSumcheckBridge.finalQueryCheck
+    {stmt : StmtAfterOuter F n M params}
+    {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    (bridge : LogupSumcheckBridge F n M params stmt oStmt)
+    (out : LogupSumcheckStmtOut F n M params)
+    (evals : PointEvaluations F M params.numGroups)
+    (hAgree :
+      logupPointEvaluationsAgree F n M params out.challenges oStmt evals)
+    (hTarget :
+      out.target =
+        MvPolynomial.eval out.challenges
+          (logupSumcheckPolynomial F n M params stmt oStmt).1) :
+    finalQueryCheck (canonicalGroups params) stmt.xChallenge stmt.zChallenge out.challenges
+      stmt.batchingScalars evals out.target := by
+  change
+    qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge out.challenges
+      stmt.batchingScalars evals = out.target
+  rw [hTarget]
+  exact (bridge.finalEval out.challenges evals hAgree).symm
+
 
 end SumcheckBridge
 
@@ -331,8 +372,8 @@ all soundness / completeness machinery keeps applying), and the routing data is:
   querying the *outer* LogUp oracles at `r` (the table, columns, multiplicity, and helper oracles),
   assembling their point evaluations into `PointEvaluations`, and returning
   `qAtPoint … r …` — the verifier's final check value `Q(L_H(r,z), m(r), φᵢ(r), hₖ(r))` from paper
-  equation (19). This is the value the honest `Q` polynomial takes (cf. `LogupSumcheckBridge.finalEval`),
-  reading `x, z, λ` from the outer non-oracle statement via `ReaderT`.
+  equation (19). This is the value the honest `Q` polynomial takes (cf. `finalEval`), reading
+  `x, z, λ` from the outer non-oracle statement via `ReaderT`.
 - `embedOStmt` / `hEqOStmt`: the full LogUp protocol leaves no output oracle statements
   (`OutputOracleIdx = Fin 0`), so the output-side embedding is the (vacuous) empty embedding. -/
 noncomputable def logupSumcheckOracleLens [Fintype F] [DecidableEq F] [SampleableType F] :
@@ -367,8 +408,9 @@ noncomputable def logupSumcheckOracleLens [Fintype F] [DecidableEq F] [Sampleabl
             table := t
             columns := fun i => colList.getD i.val 0
             helpers := fun k => helperList.getD k.val 0 }
-        pure (show F from qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge r
-          stmt.batchingScalars evals)
+        pure (show F from
+          qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge r
+            stmt.batchingScalars evals)
   embedOStmt := Function.Embedding.ofIsEmpty
   hEqOStmt := fun i => Fin.elim0 i
 
