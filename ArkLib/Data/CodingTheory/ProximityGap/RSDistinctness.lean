@@ -1,0 +1,49 @@
+import ArkLib.Data.CodingTheory.ReedSolomon
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineSpaces
+import Mathlib.Tactic
+
+/-! # Reed–Solomon distinctness (consumable for GS list-decoding counting)
+
+Distinct degree-`<k` polynomials agree on fewer than `k` domain points — the
+Reed–Solomon minimum-distance fact underlying every list-decoding distinctness
+count: two candidate codewords cannot match on `≥ k` evaluation points without
+being identical. Consumable by the GS list-size / Sbeta agreement-counting. -/
+
+namespace RSDistinct
+
+open Polynomial
+open scoped Classical
+
+variable {F : Type} [Field F] {ι : Type} [Fintype ι] [DecidableEq ι] (domain : ι ↪ F)
+
+/-- **RS distinctness.** Distinct `p, q ∈ degreeLT F k` agree on `< k` of the
+domain points: `|{x ∈ S : p(ωₓ) = q(ωₓ)}| < k`. -/
+theorem degreeLT_agree_card_lt_of_ne {k : ℕ}
+    {p q : F[X]} (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k)
+    (hpq : p ≠ q) (S : Finset ι) :
+    (S.filter (fun x => p.eval (domain x) = q.eval (domain x))).card < k := by
+  classical
+  have hd0 : p - q ≠ 0 := sub_ne_zero.mpr hpq
+  have hdmem : p - q ∈ Polynomial.degreeLT F k := Submodule.sub_mem _ hp hq
+  have hdeg : (p - q).natDegree < k := by
+    rw [Polynomial.natDegree_lt_iff_degree_lt hd0]
+    exact Polynomial.mem_degreeLT.mp hdmem
+  set T : Finset ι := S.filter (fun x => p.eval (domain x) = q.eval (domain x)) with hT
+  have hroots : ∀ a ∈ T.image domain, (p - q).IsRoot a := by
+    intro a ha
+    obtain ⟨x, hx, rfl⟩ := Finset.mem_image.mp ha
+    have hxe := (Finset.mem_filter.mp hx).2
+    simp only [Polynomial.IsRoot, Polynomial.eval_sub, hxe, sub_self]
+  have hcard := ProximityGap.card_roots_finset_le_natDegree hd0 hroots
+  rw [Finset.card_image_of_injective _ domain.injective] at hcard
+  omega
+
+/-- Contrapositive form: agreement on `≥ k` domain points forces equality. -/
+theorem degreeLT_eq_of_agree_card_ge {k : ℕ}
+    {p q : F[X]} (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k)
+    {S : Finset ι} (h : k ≤ (S.filter (fun x => p.eval (domain x) = q.eval (domain x))).card) :
+    p = q := by
+  by_contra hpq
+  exact absurd h (not_le.mpr (degreeLT_agree_card_lt_of_ne domain hp hq hpq S))
+
+end RSDistinct

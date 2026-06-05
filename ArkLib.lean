@@ -308,3 +308,4 @@ import ArkLib.ProofSystem.Whir.MCAJohnsonHardRegime
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveExtract
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveJoint
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
+import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
