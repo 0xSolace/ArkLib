@@ -525,6 +525,139 @@ theorem Prover.runToRound_zero_of_prover_first
       prover.runToRound 0 stmt wit = (pure (default, prover.input (stmt, wit))) := by
   simp [Prover.runToRound]
 
+namespace Prover
+
+/-! ### Prefix / round-range decomposition of `runToRound`
+
+These additive lemmas relate the prover's full run to its per-round partial runs.  The keystone is
+`runToRound_eq_bind_continueFromTo`: for any earlier round `k ≤ j`, the run up to round `j` factors
+as the run up to `k` followed by a continuation `continueFromTo` that folds `processRound` over the
+remaining rounds `k .. j-1`.  This is a plain `OracleComp` *equality* (the continuation only
+`processRound`s further rounds), which is the structural connective consumed by both the
+`rbrSoundness → soundness` probability bridge and the sequential-composition `append_run`
+characterization. -/
+
+/-- **Single-round unfolding of `runToRound`.**  Running the prover up to round `j.succ` is the same
+  as running it up to round `j.castSucc` and then processing round `j`. -/
+theorem runToRound_succ (j : Fin n)
+    (stmt : StmtIn) (wit : WitIn) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    prover.runToRound j.succ stmt wit
+      = prover.processRound j (prover.runToRound j.castSucc stmt wit) := by
+  unfold runToRound
+  rw [Fin.induction_succ]
+
+/-- **`processRound` at a challenge (V_to_P) round.**  Specialization of `processRound` to a round
+  `i` that is a challenge round (so `pSpec.dir i = .V_to_P`). -/
+theorem processRound_challenge (i : pSpec.ChallengeIdx)
+    (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (currentResult : OracleComp (oSpec + [pSpec.Challenge]ₒ)
+      (pSpec.Transcript i.1.castSucc × prover.PrvState i.1.castSucc)) :
+    prover.processRound i.1 currentResult = (do
+      let ⟨transcript, state⟩ ← currentResult
+      let challenge ← pSpec.getChallenge i
+      let newState := (← prover.receiveChallenge i state) challenge
+      return ⟨transcript.concat challenge, newState⟩) := by
+  unfold processRound
+  obtain ⟨j, hj⟩ := i
+  simp only
+  congr 1
+  funext x
+  split <;> rename_i hDir
+  · rfl
+  · rw [hj] at hDir; exact absurd hDir (by decide)
+
+/-- **Kleisli continuation folding `processRound` over rounds `k .. j-1`.**  Transforms a round-`k`
+partial result `(transcript, state)` into the round-`j` partial run, by folding `processRound`.
+Defined by `Fin.induction` on the *target* index `j`: when the running index reaches `k` exactly it
+returns the supplied start `rk` (`pure`), and each subsequent `succ` step applies one more
+`processRound`.  (The `j < k` branches are never used; for those the dependent-`Fin` base is filled
+with the `runToRound 0` seed value, kept only to make the fold total.) -/
+noncomputable def continueFromTo (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) (k : Fin (n + 1)) :
+    (j : Fin (n + 1)) →
+      (pSpec.Transcript k × prover.PrvState k) →
+        OracleComp (oSpec + [pSpec.Challenge]ₒ) (pSpec.Transcript j × prover.PrvState j) :=
+  Fin.induction
+    (motive := fun j => (pSpec.Transcript k × prover.PrvState k) →
+        OracleComp (oSpec + [pSpec.Challenge]ₒ) (pSpec.Transcript j × prover.PrvState j))
+    (fun rk => if h : (k : Fin (n + 1)) = 0 then h ▸ pure rk
+               else pure (default, prover.input (stmt, wit)))
+    (fun m prev rk =>
+      if h : (k : Fin (n + 1)) = m.succ then h ▸ pure rk
+      else prover.processRound m (prev rk))
+
+/-- **`continueFromTo` step at a `succ` target that has not yet reached the start.**  When the target
+`m.succ` is *strictly past* the start index `k` (`k ≠ m.succ`), the continuation applies one more
+`processRound m` on top of the round-`m.castSucc` continuation. -/
+theorem continueFromTo_succ_of_ne (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) (k : Fin (n + 1)) (m : Fin n)
+    (hne : (k : Fin (n + 1)) ≠ m.succ)
+    (rk : pSpec.Transcript k × prover.PrvState k) :
+    continueFromTo prover stmt wit k m.succ rk
+      = prover.processRound m (continueFromTo prover stmt wit k m.castSucc rk) := by
+  unfold continueFromTo
+  rw [Fin.induction_succ]
+  simp only [hne, ↓reduceDIte]
+
+/-- **`continueFromTo` at the diagonal is the identity (`pure`).**  Continuing from round `k` to
+round `k` returns the start result unchanged. -/
+theorem continueFromTo_self (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn)
+    (k : Fin (n + 1)) (rk : pSpec.Transcript k × prover.PrvState k) :
+    continueFromTo prover stmt wit k k rk = pure rk := by
+  unfold continueFromTo
+  induction k using Fin.induction with
+  | zero => simp [Fin.induction_zero]
+  | succ m _ => simp [Fin.induction_succ]
+
+/-- **`processRound` factors as a bind on its input.**  Since `processRound j cur` first runs `cur`
+and then performs a round-`j` step depending only on `cur`'s output, it equals
+`cur >>= (round-j step on a `pure`d result)`. -/
+theorem processRound_eq_bind (j : Fin n) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (cur : OracleComp (oSpec + [pSpec.Challenge]ₒ)
+      (pSpec.Transcript j.castSucc × prover.PrvState j.castSucc)) :
+    prover.processRound j cur = cur >>= (fun r => prover.processRound j (pure r)) := by
+  unfold processRound
+  simp only [pure_bind]
+
+/-- **Round-range decomposition of `runToRound` (THE keystone).**  For any earlier round `k ≤ j`, the
+prover run up to round `j` equals the run up to round `k` followed by the continuation
+`continueFromTo` that folds `processRound` over rounds `k .. j-1`.  A plain `OracleComp` equality,
+proved by `Fin.induction` on `j` (with `k` fixed) via `runToRound_succ`, `processRound_eq_bind`, and
+monad associativity. -/
+theorem runToRound_eq_bind_continueFromTo
+    (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) (k j : Fin (n + 1)) (hkj : k ≤ j) :
+    prover.runToRound j stmt wit
+      = prover.runToRound k stmt wit >>= continueFromTo prover stmt wit k j := by
+  induction j using Fin.induction with
+  | zero =>
+    have hk0 : k = 0 := le_antisymm hkj (Fin.zero_le _)
+    subst hk0
+    conv_rhs => rw [show (continueFromTo prover stmt wit 0 0)
+                      = (fun rk => pure rk) from funext (continueFromTo_self prover stmt wit 0)]
+    rw [bind_pure]
+  | succ m ih =>
+    rcases eq_or_lt_of_le hkj with heq | hlt
+    · subst heq
+      conv_rhs => rw [show (continueFromTo prover stmt wit (m.succ) (m.succ))
+                        = (fun rk => pure rk)
+                          from funext (continueFromTo_self prover stmt wit _)]
+      rw [bind_pure]
+    · have hkm : k ≤ m.castSucc := by rw [Fin.le_castSucc_iff]; exact hlt
+      have hne : (k : Fin (n + 1)) ≠ m.succ := ne_of_lt hlt
+      rw [runToRound_succ, ih hkm]
+      have hcont : continueFromTo prover stmt wit k m.succ
+          = fun rk => prover.processRound m (continueFromTo prover stmt wit k m.castSucc rk) :=
+        funext (fun rk => continueFromTo_succ_of_ne prover stmt wit k m hne rk)
+      rw [hcont, processRound_eq_bind m prover
+            (runToRound k stmt wit prover >>= continueFromTo prover stmt wit k m.castSucc),
+          bind_assoc]
+      refine bind_congr (fun rk => ?_)
+      rw [← processRound_eq_bind]
+
+end Prover
+
 end Execution
 
 variable {ι : Type} {oSpec : OracleSpec ι}
