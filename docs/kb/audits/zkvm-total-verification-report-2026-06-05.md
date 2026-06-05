@@ -108,14 +108,26 @@ The honest current status from the ledger:
 - The Grand MCA Challenge and Grand List-Decoding Challenge are present as Lean predicates /
   framework objects, but their resolutions remain open research.
 
+Update from the 2026-06-05 swarm audit: the conditional assembly
+`betaRec => CurveCoeffPolys` is already present as the genuine theorem
+`ArkLib.BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec` in
+`ArkLib/ToMathlib/BetaToCurveCoeffPolys.lean`. It is not merely a wrapper around
+`hcoeffPoly`; it routes through `tail_zero_of_betaRec_embedding_zero`,
+`BetaMatchingVanishes.betaRec_embedding_eq_zero_of_matchingSet_large`,
+`alphaFromBeta`, and `curveCoeffPolys_of_linear_representative`. The remaining
+keystone work is to supply the theorem's explicit section-5 extraction/setup
+hypotheses and connect them to the in-place `Curves.lean` theorem.
+
 Remaining work for the proximity-prize keystone:
 
-1. Assemble the end-to-end `betaRec => CurveCoeffPolys` theorem.
+1. Supply the remaining `curveCoeffPolys_of_betaRec` hypotheses upstream:
+   matching-point data, matching-set cardinality / weight bound, `gamma`
+   representative data, degree-X bound, and decoded-family specialization bridge.
 2. Discharge residual `Hlift H ∣ R`.
 3. Fix the `gamma` recentering bug for `x0 != 0`.
 4. Replace the trivial `beta_regular` with `betaRec`.
-5. Supply `hcoeffPoly`.
-6. Close `correlatedAgreement_affine_curves`.
+5. Supply `hcoeffPoly` to the relevant `Curves.lean` front doors.
+6. Close the in-place `correlatedAgreement_affine_curves`.
 7. De-taint STIR/WHIR/FRI downstream uses.
 8. Resolve or improve the Grand MCA / List-Decoding research challenges to close the prize gap.
 

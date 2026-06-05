@@ -299,10 +299,14 @@ MultiplicityDatum.lean ✅ (7 decls): discharges the §5 datum from IN-TREE prov
 its upstream producers. Non-vacuous (genuinely uses in-tree multiplicity, verified vs F4 lesson).
 
 HONEST remaining work to reach Curves:1819 (post-F4):
-1. ASSEMBLE the end-to-end `betaRec ⟹ CurveCoeffPolys` theorem (the F4 gap — the conditional bricks
-   reduce each link: betaRec→MatchingVanishes(L12)→embedding=0(L14)→Claims 5.9/5.10 decoded-coeff→
-   per-z coeff polys; the SINGLE composed theorem must be written, NOT assumed like the capstone did).
-2. Discharge the residual `Hlift H ∣ R` (GS-factor divisibility — in-tree App-A factorization fact).
-3. F1 γ-recenter fix + L13 β_regular drop-in (cross-file RationalFunctions.lean — COORDINATE w/ live).
-4. Then hcoeffPoly (front door Curves:1199) → correlatedAgreement_affine_curves clean → STIR/WHIR.
+1. ✅ ASSEMBLED conditionally: `ArkLib.BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec`
+   genuinely proves `betaRec ⟹ CurveCoeffPolys` without assuming `hcoeffPoly`; it routes through
+   `tail_zero_of_betaRec_embedding_zero`, `betaRec_embedding_eq_zero_of_matchingSet_large`,
+   `alphaFromBeta`, and the linear-representative read-off.
+2. Supply the remaining extraction/setup hypotheses for that theorem in the in-tree §5 context:
+   matching-point data, matching-set cardinality/weight bound, γ representative data, degree-X bound,
+   and the decoded-family specialization bridge.
+3. Discharge the residual `Hlift H ∣ R` (GS-factor divisibility — in-tree App-A factorization fact).
+4. F1 γ-recenter fix + L13 β_regular drop-in (cross-file RationalFunctions.lean — COORDINATE w/ live).
+5. Then hcoeffPoly (front door Curves:1199) → correlatedAgreement_affine_curves clean → STIR/WHIR.
 Prize Grand Challenges remain OPEN research independent of all this.
