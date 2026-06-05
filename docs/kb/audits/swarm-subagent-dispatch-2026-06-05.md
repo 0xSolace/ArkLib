@@ -2,7 +2,7 @@
 
 Date: 2026-06-05
 
-Root guide: [`../../AGENTS.md`](../../AGENTS.md)
+Root guide: [`../../../AGENTS.md`](../../../AGENTS.md)
 
 Baseline status report:
 [`zkvm-total-verification-report-2026-06-05.md`](zkvm-total-verification-report-2026-06-05.md)

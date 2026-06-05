@@ -9,6 +9,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
+import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
 
 -- This bridge exposes paper-aligned theorem names that exceed the style line limit.
 set_option linter.style.longLine false
@@ -28,6 +29,15 @@ omit [Field F] [Fintype F] [DecidableEq F] [NeZero n] in
 /-- Every two-row word stack is definitionally the stack made from its two rows. -/
 lemma wordStack_fin_two_eq_finMapTwoWords (u : WordStack F (Fin 2) (Fin n)) :
     u = Code.finMapTwoWords (u 0) (u 1) := by
+  funext rowIdx
+  match rowIdx with
+  | 0 => rfl
+  | 1 => rfl
+
+omit [Field F] [Fintype F] [DecidableEq F] [NeZero n] in
+/-- The BCKHS25 line stack is the same two-row stack used by the §5 bridge. -/
+lemma lineWordStack_eq_finMapTwoWords (u₀ u₁ : Fin n → F) :
+    BCKHS25.lineWordStack u₀ u₁ = Code.finMapTwoWords u₀ u₁ := by
   funext rowIdx
   match rowIdx with
   | 0 => rfl
@@ -111,6 +121,48 @@ theorem coeffs_of_close_proximity_card_eq_goodCoeffsCurve_finMapTwoWords
         (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0)).card := by
   rw [coeffs_of_close_proximity_eq_goodCoeffsCurve_finMapTwoWords
     (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁]
+
+/-- Boundary-card supplier for the §5 affine-line bridge, routed through the
+Hensel-free [BCKHS25] restored-distance affine-line `jointAgreement`.
+
+The existing closed-radius capstones only expose nonemptiness of the boundary
+close set. This adapter records the additional [BCKHS25] obligations needed to
+turn that same close set into a restored-distance joint-agreement certificate. -/
+set_option linter.unusedFintypeInType false in
+theorem affine_lines_boundaryCard_of_BCKHS25_restored
+    {k e h DZ : ℕ} {ωs : Fin n ↪ F} (δ : ℚ≥0)
+    (hn : k + 2 * e + h + 1 = Fintype.card (Fin n))
+    (hDZ : e + 1 ≤ (h + 1) * DZ) (hDZ0 : 0 < DZ)
+    (hS2 : ∀ u₀ u₁ : Fin n → F,
+      0 < (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card →
+      2 ≤ (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card)
+    (prox : ∀ u₀ u₁ : Fin n → F,
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        ∃ p : Polynomial F, p.natDegree ≤ k ∧
+          (Finset.univ.filter
+            (fun x => p.eval (ωs x) ≠ u₀ x + u₁ x * z)).card ≤ e)
+    (hratio : ∀ u₀ u₁ : Fin n → F,
+      ((k + e + h : ℕ) : ℚ) / (Fintype.card (Fin n) : ℚ)
+        + ((DZ : ℕ) : ℚ) /
+          ((coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card : ℚ) < 1)
+    (hfit : ∀ u₀ u₁ : Fin n → F,
+      (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card * (e + h) ≤
+        ((coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1)
+          * Nat.floor ((δ : ℝ≥0) * (Fintype.card (Fin n) : ℝ≥0))) :
+    ∀ u₀ u₁ : Fin n → F,
+      (δ : ℝ≥0) = 1 - ReedSolomon.sqrtRate (k + 1) ωs →
+      0 < (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card →
+      jointAgreement (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+        (W := Code.finMapTwoWords u₀ u₁) := by
+  classical
+  intro u₀ u₁ _hδeq hcard
+  have hja :=
+    BCKHS25.jointAgreement_of_proximates_restored (F := F) (ι := Fin n)
+      (k := k) (e := e) (h := h) (DZ := DZ) (δ := (δ : ℝ≥0))
+      hn hDZ hDZ0 ωs u₀ u₁
+      (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁)
+      (hS2 u₀ u₁ hcard) (prox u₀ u₁) (hratio u₀ u₁) (hfit u₀ u₁)
+  simpa [lineWordStack_eq_finMapTwoWords] using hja
 
 open Polynomial in
 /-- The §5 canonical `PzFamily` package in the exact canonical-evaluation
@@ -967,6 +1019,74 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_cou
       exact hcard
     rw [h_u_eq]
     exact hBoundaryCard (u 0) (u 1) hδeq hcard_close
+
+/-- Closed square-root-radius degree-one correlated-agreement capstone for
+affine lines, with the strict branch supplied by the §5 complement-counting
+canonical-coefficient package and the boundary branch supplied by the
+Hensel-free [BCKHS25] restored-distance affine-line theorem. -/
+theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_BCKHS25_boundary
+    {m k e h DZ : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
+    [DecidableEq (RatFunc F)]
+    (δ : ℚ≥0)
+    (hδ : (δ : ℝ≥0) ≤ 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
+    (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
+      ∃ (x₀ : F) (D : ℕ),
+        (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
+          (2 * k + 1)
+            * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+            * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+            * D ∧
+        (2 * k + 1)
+          * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+          * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+          * D ≤ #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) ∧
+        ⌈(δ : ℚ) * (n : ℚ)⌉₊ *
+            #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) <
+          (n - k) *
+            (#(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) -
+              (2 * k + 1)
+                * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+                * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+                * D))
+    (hunique : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (P : F → Polynomial F),
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z)
+    (hn : k + 2 * e + h + 1 = Fintype.card (Fin n))
+    (hDZ : e + 1 ≤ (h + 1) * DZ) (hDZ0 : 0 < DZ)
+    (hS2 : ∀ u₀ u₁ : Fin n → F,
+      0 < (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card →
+      2 ≤ (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card)
+    (prox : ∀ u₀ u₁ : Fin n → F,
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        ∃ p : Polynomial F, p.natDegree ≤ k ∧
+          (Finset.univ.filter
+            (fun x => p.eval (ωs x) ≠ u₀ x + u₁ x * z)).card ≤ e)
+    (hratio : ∀ u₀ u₁ : Fin n → F,
+      ((k + e + h : ℕ) : ℚ) / (Fintype.card (Fin n) : ℚ)
+        + ((DZ : ℕ) : ℚ) /
+          ((coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card : ℚ) < 1)
+    (hfit : ∀ u₀ u₁ : Fin n → F,
+      (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card * (e + h) ≤
+        ((coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1)
+          * Nat.floor ((δ : ℝ≥0) * (Fintype.card (Fin n) : ℝ≥0))) :
+    δ_ε_correlatedAgreementCurves (k := 1) (A := F) (F := F) (ι := Fin n)
+      (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
+  classical
+  exact
+    correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff
+      (F := F) (n := n) (m := m) (k := k) hk (ωs := ωs) δ hδ hDx hYZ
+      hcounting hunique
+      (affine_lines_boundaryCard_of_BCKHS25_restored
+        (F := F) (n := n) (k := k) (e := e) (h := h) (DZ := DZ) (ωs := ωs) δ
+        hn hDZ hDZ0 hS2 prox hratio hfit)
 
 /-- Strict square-root-radius degree-one correlated-agreement capstone in the
 native §5 affine-line language, with Claim-5.11 counting supplied in the
