@@ -9,6 +9,8 @@ import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.CodeGeometry
 import Mathlib.Algebra.Order.Chebyshev
 
+set_option linter.style.longFile 2000
+
 /-!
 # ABF26 §3.1 — Johnson family `J_{q,ℓ}, J_q, J` and Theorem 3.2 / Corollary 3.3
 
@@ -600,8 +602,9 @@ theorem closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_condition
     exact closeCodewordsRelFinset_pairwise_agree_le_card_sub_minDist hu hv hne
   · exact hcond
 
-set_option maxHeartbeats 5000000
+set_option maxHeartbeats 5000000 in
 
+-- The squared-distance Johnson wrapper unfolds several finite-code geometry bounds.
 /-- Close-list wrapper for the squared-distance `CodeGeometry` Johnson cap.
 
 This consumes the directly usable distance-form theorem:

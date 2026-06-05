@@ -353,7 +353,7 @@ theorem linear_lambda_ge_entropy_volume
         ((q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ))
           / (8 * n * δ * (1 - δ)) ^ ((1 : ℝ) / 2))
       ≤ (Lambda ((C : Set (ι → F))) δ : ENNReal) := by
-  refine linear_lambda_ge_entropy_volume_of_le_elias_rhs C δ hδ_pos hδ_lt ?_
+  refine linear_lambda_ge_entropy_volume_of_hammingBallVolume_ge_qEntropy C δ hδ_pos hδ_lt ?_
   sorry -- ABF26-C3.8; reduces to L3.7 (PROVEN) + missing ingredient (★):
   -- `q^{n·H_q(δ)} / √(8nδ(1-δ)) ≤ hammingBallVolume q δ n` (MS77 Stirling volume bound).
 

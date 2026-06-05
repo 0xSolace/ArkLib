@@ -8,6 +8,8 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.Polynomial.RationalFunctions
 
+set_option linter.style.longFile 1700
+
 namespace ProximityGap
 
 open Polynomial Polynomial.Bivariate NNReal Finset Function ProbabilityTheory Code Trivariate
