@@ -325,7 +325,7 @@ theorem correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canoni
     (hCanonicalExtract :
       ∀ u : WordStack F (Fin (k + 1)) ι,
         ∃ P₀ : F → Polynomial F,
-          ∃ _d : Section5StrictData (k := k) (deg := deg) (domain := domain) (δ := δ) u P₀,
+          ∃ _ : Section5StrictData (k := k) (deg := deg) (domain := domain) (δ := δ) u P₀,
           ∀ P : F → Polynomial F,
             (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
               (P z).natDegree < deg ∧
