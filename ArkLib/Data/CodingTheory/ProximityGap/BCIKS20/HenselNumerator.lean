@@ -2029,6 +2029,21 @@ theorem coeff_succ_eval_defect_reduction (x₀ : F) (R : F[X][X][Y])
   rw [htrunc_top, sub_zero, hderiv] at hsub
   linear_combination hsub
 
+/-- Successor-coefficient vanishing from the cleared truncated-defect
+cancellation. This isolates the remaining `(A.1)` expansion obligation from the
+already-proven Newton linearization step. -/
+theorem coeff_succ_eval_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hcancel :
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0) :
+    PowerSeries.coeff (t + 1)
+      (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0 := by
+  rw [coeff_succ_eval_defect_reduction H x₀ R hHyp t]
+  exact hcancel
+
 /-- **Product bridge (PROVEN — the multiplicative half of the cleared-defect identity).**
 The product of assembled-series coefficients over any finite multiset of orders clears to
 the embedded product of the (A.1) numerators over the telescoped `W`/`ξ` powers. -/
