@@ -73,14 +73,13 @@ namespace GHSZ02RS
 
 open CodingTheory ListDecodable
 
-variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {ι : Type} [Fintype ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-- Hamming ball volume around `x`: number of words within distance `r`. -/
 noncomputable def ballVolF (x : ι → F) (r : ℕ) : ℕ :=
   (Finset.univ.filter (fun y : ι → F => hammingDist x y ≤ r)).card
 
-omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
 theorem hammingDist_add_right (x y t : ι → F) :
     hammingDist (x + t) (y + t) = hammingDist x y := by
   classical
@@ -90,7 +89,6 @@ theorem hammingDist_add_right (x y t : ι → F) :
   · intro h hxy; exact h (by rw [hxy])
   · intro h hxy; exact h (by simpa using add_right_cancel hxy)
 
-omit [Nonempty ι] in
 theorem ballVolF_eq (x x' : ι → F) (r : ℕ) : ballVolF x r = ballVolF x' r := by
   classical
   unfold ballVolF
@@ -119,7 +117,7 @@ noncomputable def listAtF (C : Finset (ι → F)) (x : ι → F) (r : ℕ) : ℕ
   (C.filter (fun c => hammingDist x c ≤ r)).card
 
 /-- Double-counting: `∑_x |B(x,r) ∩ C| = |C| · V`. -/
-theorem sum_listAtF (C : Finset (ι → F)) (r : ℕ) (x₀ : ι → F) :
+theorem sum_listAtF [Nonempty ι] (C : Finset (ι → F)) (r : ℕ) (x₀ : ι → F) :
     (∑ x : ι → F, listAtF C x r) = C.card * ballVolF x₀ r := by
   classical
   unfold listAtF; simp_rw [Finset.card_filter]; rw [Finset.sum_comm]
@@ -138,7 +136,7 @@ theorem sum_listAtF (C : Finset (ι → F)) (r : ℕ) (x₀ : ι → F) :
   rw [Finset.sum_const, smul_eq_mul]
 
 /-- GHSZ02 Lemma 19 averaging existence (integer form). -/
-theorem exists_word_listAtF_ge (C : Finset (ι → F)) (r : ℕ) :
+theorem exists_word_listAtF_ge [Nonempty ι] (C : Finset (ι → F)) (r : ℕ) :
     ∃ x₀ : ι → F, C.card * ballVolF x₀ r ≤ (Fintype.card (ι → F)) * listAtF C x₀ r := by
   classical
   haveI : Nonempty (ι → F) := inferInstance
@@ -154,9 +152,9 @@ theorem exists_word_listAtF_ge (C : Finset (ι → F)) (r : ℕ) :
       _ = (Finset.univ : Finset (ι → F)).card * listAtF C x₀ r := by rw [smul_eq_mul]
   rw [hsum] at hle; rwa [Finset.card_univ] at hle
 
-omit [DecidableEq ι] [Fintype F] in
 /-- Relative↔absolute radius bridge (same as Elias proof). -/
 theorem closeCodewordsRel_iff
+    [Nonempty ι]
     (C : Submodule F (ι → F)) (w : ι → F) (δ : ℝ) (hδ_nonneg : 0 ≤ δ) (c : ι → F) :
     (c ∈ closeCodewordsRel (↑C : Set (ι → F)) w δ)
       ↔ (c ∈ C ∧ hammingDist w c ≤ ⌊δ * Fintype.card ι⌋₊) := by
@@ -170,11 +168,11 @@ theorem closeCodewordsRel_iff
     ← hn_def, Nat.le_floor_iff (mul_nonneg hδ_nonneg (Nat.cast_nonneg n))]
   congr!
 
-omit [DecidableEq ι] [DecidableEq F] in
 /-- **ABF26 Theorem 3.13 / GHSZ02 Corollary 20 — averaging core (full combinatorial strength).**
 For `C = ReedSolomon.code domain k`, `q=|F|`, `n=|ι|`, `k≤n`, `0<δ<1`: there is a word `w` with
 `q^k · C(n,⌊δn⌋) · (q-1)^⌊δn⌋  ≤  qⁿ · |Λ(C,δ,w)|`. -/
 theorem ghsz02_rs_averaging_core
+    [Nonempty ι]
     (domain : ι ↪ F) (k : ℕ) (δ : ℝ) (hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
     (hk : k ≤ Fintype.card ι) :
     ∃ w : ι → F,
