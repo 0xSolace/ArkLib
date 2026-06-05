@@ -1599,6 +1599,25 @@ theorem βHensel_lift_identity_iff_β_eq (x₀ : F) (R : F[X][X][Y])
             = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
   rw [ClaimA2_α_mul_Wξ_eq_embedding_β H x₀ R hHyp t hden]
 
+/-- **(P2) forward wrapper from the localized β-numerator equality.**
+
+Once the genuine Hensel numerator `βHensel` is known to agree under the embedding with the
+paper placeholder numerator `ClaimA2.β`, the full `(P2)` lift identity follows by the
+already-proven denominator-clearing equivalence `βHensel_lift_identity_iff_β_eq`. This is
+the reusable consumer form of the P2 reduction: the remaining mathematical content is only
+the supplied β-equality hypothesis. -/
+theorem βHensel_lift_identity_of_β_embedding_eq (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hden : (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+              * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) ≠ 0)
+    (hβ : embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+            = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t)) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = ClaimA2.α x₀ R H hHyp t
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) := by
+  exact (βHensel_lift_identity_iff_β_eq H x₀ R hHyp t hden).2 hβ
+
 /-- **(P2) lift identity — the IRREDUCIBLE FRONTIER (documented `sorry`).**
 `embeddingOf𝒪Into𝕃 (βHensel … t) = α_t · W^{t+1} · ξ^{2t−1}` (`α_t` is the in-tree
 `ClaimA2.α`).
