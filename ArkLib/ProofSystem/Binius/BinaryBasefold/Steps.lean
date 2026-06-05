@@ -684,6 +684,28 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
+/-- Run-collapse for the relay reduction: since `pSpecRelay` is the zero-round protocol, the honest
+prover and (oracle) verifier execute deterministically. The verifier returns the input non-oracle
+statement, and both prover and verifier relabel the oracle statements via `mapOStmtOutRelayStep`. -/
+private lemma relayReduction_run_collapse (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
+    (stmtIn : Statement (L := L) Context i.succ)
+    (oStmtIn : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (witIn : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ) :
+    (relayOracleReduction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR).toReduction.run
+        (stmtIn, oStmtIn) witIn =
+      (pure ⟨⟨default,
+          (stmtIn, mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn),
+          witIn⟩,
+          (stmtIn, mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)⟩) := by
+  simp only [OracleReduction.toReduction, Reduction.run, relayOracleReduction,
+    relayOracleProver, relayOracleVerifier, Prover.run,
+    Prover.runToRound_zero_of_prover_first,
+    OracleVerifier.toVerifier, Verifier.run,
+    simulateQ_pure, OptionT.run_pure,
+    bind_pure_comp, map_pure, pure_bind, monadLift_pure, liftM_pure,
+    Option.getM, StateT.run'_eq, StateT.run_pure]
+  rfl
+
 theorem relayOracleReduction_perfectCompleteness (i : Fin ℓ)
     (hNCR : ¬ isCommitmentRound ℓ ϑ i) :
     OracleReduction.perfectCompleteness
@@ -696,7 +718,65 @@ theorem relayOracleReduction_perfectCompleteness (i : Fin ℓ)
         i hNCR)
       (init := init)
       (impl := impl) := by
-  sorry
+  unfold OracleReduction.perfectCompleteness
+  rw [Reduction.perfectCompleteness_eq_prob_one]
+  intro ⟨stmtIn, oStmtIn⟩ witIn h_relIn
+  -- The relay reduction is a 0-round protocol; both prover and verifier execute deterministically.
+  rw [relayReduction_run_collapse]
+  -- Abbreviation for the deterministic relabeled oracle statement.
+  set relayO := mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn
+    with hrelayO
+  -- The output statement-witness pair is in `roundRelation i.succ` (the mathematical core).
+  have h_rel : ((stmtIn, relayO), witIn) ∈
+      roundRelation (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ := by
+    simp only [roundRelation, Set.mem_setOf_eq, roundRelationProp, masterKStateProp]
+    simp only [foldStepRelOut, Set.mem_setOf_eq, foldStepRelOutProp, hNCR, if_false] at h_relIn
+    have h_take : Fin.take (m := (i.succ : Fin (ℓ + 1)).val) (le_refl _) stmtIn.challenges
+        = stmtIn.challenges := by funext x; simp [Fin.take_apply]
+    refine ⟨trivial, ?_⟩
+    rw [h_take, hrelayO]
+    rw [← badEventExistsProp_relay_preserved 𝔽q β i hNCR stmtIn.challenges oStmtIn,
+        ← oracleWitnessConsistency_relay_preserved 𝔽q β i hNCR stmtIn witIn oStmtIn]
+    exact h_relIn
+  -- The run collapses to a deterministic `pure`; its event probability is exactly one because the
+  -- success predicate holds on the (unique) output and `init` contributes probability one.
+  -- (Same plumbing as `Reduction.id_perfectCompleteness`, with the relabeled oracle statement.)
+  rw [probEvent_eq_one_iff]
+  refine ⟨?_, ?_⟩
+  · -- `Pr[⊥ | OptionT.mk ...] = 0`.
+    rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp only [probFailure_eq_zero, zero_add]
+    apply probOutput_eq_zero_of_not_mem_support
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _
+    change none ∈ _root_.support
+      (StateT.run' (simulateQ _ (pure (some
+        (((default : pSpecRelay.FullTranscript), (stmtIn, relayO), witIn), stmtIn, relayO)) :
+        OracleComp _ _)) s) → False
+    rw [simulateQ_pure]
+    change none ∈ _root_.support
+      (Prod.fst <$> (pure (some
+        (((default : pSpecRelay.FullTranscript), (stmtIn, relayO), witIn), stmtIn, relayO)) :
+        StateT σ ProbComp _).run s) → False
+    rw [StateT.run_pure]; simp [map_pure]
+  · -- Every supported output satisfies the success predicate.
+    intro x hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    change some x ∈ _root_.support
+      (StateT.run' (simulateQ _ (pure (some
+        (((default : pSpecRelay.FullTranscript), (stmtIn, relayO), witIn), stmtIn, relayO)) :
+        OracleComp _ _)) s) at hx
+    rw [simulateQ_pure] at hx
+    change some x ∈ _root_.support
+      (Prod.fst <$> (pure (some
+        (((default : pSpecRelay.FullTranscript), (stmtIn, relayO), witIn), stmtIn, relayO)) :
+        StateT σ ProbComp _).run s) at hx
+    rw [StateT.run_pure] at hx
+    simp [map_pure, support_pure] at hx
+    cases hx
+    exact ⟨h_rel, rfl⟩
 
 def relayKnowledgeError (m : pSpecRelay.ChallengeIdx) : ℝ≥0 :=
   match m with

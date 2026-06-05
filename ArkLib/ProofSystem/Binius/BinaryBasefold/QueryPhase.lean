@@ -714,6 +714,62 @@ else
       (ϑ:=ϑ) γ_repetitions γ_challenges oStmt fold_challenges stmt.final_constant
     proximityTestsCheck
 
+/-! ### Helper lemmas for `queryKnowledgeStateFunction.toFun_full`
+
+The `toFun_full` obligation transports "the verifier accepts (positive prob)" into the
+`proximityChecksSpec` state property. After the (already-present) query-collapse `simp` block, the
+verifier run is a query-free doubly-nested `forIn` over `OptionT (StateT σ ProbComp)`, and the
+hypothesis is membership in the support of its `StateT.run … s`-evaluation. The helpers below isolate
+the *loop-plumbing* content — peeling the final functor-`bind` at the `ProbComp` level, and the
+outer/inner **no-early-exit** invariants — resting on the already-proven
+`ForInSupport.stateT_run_forIn_support_invariant`. They are proved independently and sorry-free.
+
+The genuinely BaseFold-specific remainder (the fold-semantics *cast alignment* between the loop's
+`localized_fold_matrix_form`/`extractMiddleFinMask`/`next_suffix_of_v` and the identically-shaped
+`proximityChecksSpec` terms, with the one-iteration index shift) is research-tier and is NOT part of
+these loop-plumbing helpers. -/
+section ToFunFullHelpers
+
+variable {σ' δ ε : Type}
+
+open ForInSupport
+
+/-- **`StateT.run`-evaluated `OptionT`-bind cons-step membership.** Membership in the support of the
+`StateT.run … s`-evaluation of `m >>= k` (an `OptionT (StateT σ' ProbComp)` bind) decomposes into a
+first outcome `p` in the support of `StateT.run m st`, followed by the continuation run on `p`'s
+`some`/`none` branch. This is the plain-`bind` analogue of
+`ForInSupport.stateT_run_forIn_cons_mem`, used to peel the final
+`outerLoop >>= (pure ∘ fun a => (a, oStmtOut))` step. -/
+theorem stateT_run_optionT_bind_mem (m : OptionT (StateT σ' ProbComp) δ)
+    (k : δ → OptionT (StateT σ' ProbComp) ε) (st : σ') (x : Option ε × σ') :
+    x ∈ support (StateT.run (m >>= k : OptionT (StateT σ' ProbComp) ε) st) ↔
+      ∃ p ∈ support (StateT.run m st),
+        x ∈ support
+          (match p.1 with
+            | some b => StateT.run (k b) p.2
+            | none => (pure (none, p.2) : ProbComp (Option ε × σ'))) := by
+  simp only [bind, OptionT.bind, OptionT.mk, StateT.bind, StateT.run]
+  erw [mem_support_bind_iff]
+  apply exists_congr; intro p
+  apply and_congr_right; intro _
+  rcases p with ⟨op, sp⟩
+  rcases op with _ | b
+  · rfl
+  · rfl
+
+/-- **`StateT.run`-evaluated `OptionT.pure` support.** A value `x` is in the support of the
+`StateT.run … st`-evaluation of `pure b` (an `OptionT (StateT σ' ProbComp)` pure) iff
+`x = (some b, st)`. This collapses the `some`-branch of `stateT_run_optionT_bind_mem` when the
+continuation is `pure ∘ f`. -/
+theorem mem_support_stateT_run_optionT_pure (b : δ) (st : σ') (x : Option δ × σ') :
+    x ∈ support (StateT.run (pure b : OptionT (StateT σ' ProbComp) δ) st) ↔
+      x = (some b, st) := by
+  rw [show StateT.run (pure b : OptionT (StateT σ' ProbComp) δ) st
+        = (pure (some b, st) : ProbComp (Option δ × σ')) from rfl]
+  rw [mem_support_pure_iff]
+
+end ToFunFullHelpers
+
 /-- The knowledge state function for the query phase -/
 noncomputable def queryKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
@@ -793,25 +849,43 @@ noncomputable def queryKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
     -- functor map, not a `StateT`-level map — confirmed by `pp.explicit`.)
     rw [show (∀ {X Y} (f : X → Y) (x : OptionT (StateT σ ProbComp) X),
           f <$> x = x >>= (pure ∘ f)) from fun f x => map_eq_pure_bind f x] at hx
-    -- SHARPENED RESIDUAL (corrected: the prior note claimed the loop-support machinery for steps 1-2
-    -- was "in hand"; it was NOT — `ForInSupport.forIn_support_invariant` needs `[HasEvalSet m]` for the
-    -- loop monad, but `HasEvalSet (StateT σ ProbComp)` does NOT exist, so it does not apply to this
-    -- `OptionT (StateT σ ProbComp)` loop as-is. The genuinely missing primitive — a
-    -- `StateT.run`-evaluated `forIn` support transport, landing the loop at the `ProbComp` level where
-    -- `support` IS defined — is now PROVEN above: `ForInSupport.stateT_run_forIn_cons_mem` (cons-step
-    -- membership via `List.forIn_cons` + the monad-instance unfolds + `mem_support_bind_iff`) and
-    -- `ForInSupport.stateT_run_forIn_support_invariant` (the induction-free `Inv`-rule, the
-    -- `OptionT (StateT σ ProbComp)` analogue of `forIn_support_invariant`). The remaining work, now
-    -- resting on a REAL primitive rather than a missing one:
-    --  (1) OUTER NO-EARLY-EXIT. Split `hx` at the outer `>>= finalContinuation` (one `StateT.run`/
-    --      `OptionT`-bind step), exposing the outer-loop result `r : MProd (Option Bool) PUnit` in
-    --      `support (StateT.run outerLoop s')`. Apply `stateT_run_forIn_support_invariant` with
-    --      `Inv acc := acc.fst = none`; the per-rep step obligation (the inner `match acc.fst`
-    --      continuation only ever writes `done ⟨some false,_⟩` on a FAILED check and `yield ⟨none,_⟩`
-    --      otherwise) discharges by `cases acc.fst` (which ι-reduces the content-addressed verifier
-    --      matcher `queryOracleVerifier.match_1`, after which each branch is a `pure` collapsed by
-    --      `simulateQ_optionT_pure`). With `hab/hx_eq` forcing `r = some (true,_)`, conclude
-    --      `r.fst = none`, so every per-rep `unless` and the final `unless c_cur = c` held.
+    -- VERIFIED ADVANCE (loop-plumbing, sorry-free): peel the final
+    -- `outerDo >>= (pure ∘ fun a => (a, oStmtOut))` step at the `ProbComp` level via the in-file
+    -- `stateT_run_optionT_bind_mem`, exposing the outer-`do` result `p : Option Bool × σ` and reducing
+    -- the `some`/`none` continuation branches with `mem_support_stateT_run_optionT_pure`. The accept
+    -- witness (`hab : a = some x`, `hx_eq : x = (true, _)`) then forces the outer-`do` result tag
+    -- `p.1 = some true` — i.e. the simulated verifier run produced `true`.
+    rw [stateT_run_optionT_bind_mem] at hx
+    obtain ⟨p, hp, hx⟩ := hx
+    have hp1 : p.1 = some true := by
+      rcases hpfst : p.1 with _ | bval
+      · rw [hpfst] at hx
+        simp only [mem_support_pure_iff] at hx
+        rw [hab] at hx
+        exact absurd (congrArg Prod.fst hx).symm (by simp)
+      · rw [hpfst] at hx
+        simp only [Function.comp_apply, mem_support_stateT_run_optionT_pure] at hx
+        rw [hab, hx_eq] at hx
+        have hfst := congrArg Prod.fst hx
+        simp only at hfst
+        have hb : bval = true := by
+          have h2 := Option.some.inj hfst
+          exact (congrArg Prod.fst h2).symm
+        rw [hb]
+    -- RESIDUAL (research-tier; the loop-plumbing above — bind-peel + `p.1 = some true` — is
+    -- sorry-free, resting on the in-file `stateT_run_optionT_bind_mem` /
+    -- `mem_support_stateT_run_optionT_pure` and the already-proven
+    -- `ForInSupport.stateT_run_forIn_*` transport). What remains splits into:
+    --  (1) OUTER NO-EARLY-EXIT. From `hp : p ∈ support (StateT.run (outerLoop >>= finalMatch) s)` and
+    --      `hp1 : p.1 = some true`, peel the inner `outerLoop >>= finalMatch` with
+    --      `stateT_run_optionT_bind_mem`, exposing the outer-loop result `r : MProd (Option Bool) PUnit`
+    --      in `support (StateT.run outerLoop s')`. Apply `stateT_run_forIn_support_invariant` with
+    --      `Inv acc := acc.fst ≠ some true` (the inner `match acc.fst` continuation only ever writes
+    --      `done ⟨some false,_⟩` on a FAILED check and `yield ⟨none,_⟩` otherwise — and the outer
+    --      `match r.fst | some a => done ⟨some a,_⟩` only forwards a `some false`/`none` from the inner
+    --      loop, never `some true`). Since `finalMatch` sends `r.fst = some true ↦ true`,
+    --      `r.fst = none ↦ true`, `r.fst = some false ↦ false`, `p.1 = some true` together with the
+    --      invariant forces `r.fst = none`: every per-rep `unless` and the final `unless c_cur = c` held.
     --  (2) PER-REP INNER INVARIANT. Same `stateT_run_forIn_support_invariant` on the inner
     --      `forIn (finRange (ℓ/ϑ))` loop, `Inv c := c.fst = none`, transports each fold-level
     --      consistency check `c_cur = f^(i)(v_i,…)` out of the inner support.
@@ -823,6 +897,17 @@ noncomputable def queryKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
     --      `localized_fold_eval_succ`/`_zero` + `foldMatrixNat_succ_apply` (proven in Prelude) supply
     --      the fold-semantics facts. This index/cast bookkeeping is the genuine remaining content.
     sorry
+
+/-- The round-by-round knowledge error of the query phase.
+
+Per the Binius/BaseFold proximity-gap analysis, a single repetition rejects a word that is far from
+the code with probability at least `1 - (1/2 + 2^-(𝓡+1))`, and the `γ` repetitions are independent,
+giving the soundness error `(1/2 + 2^-(𝓡+1))^γ`.  As `pSpecQuery` has a single challenge round, this
+is a constant function of the challenge index. -/
+def queryRbrKnowledgeError
+    (_j : (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).ChallengeIdx) :
+    ℝ≥0 :=
+  ((1 : ℝ≥0) / 2 + (1 : ℝ≥0) / 2 ^ (𝓡 + 1)) ^ γ_repetitions
 
 /-- Round-by-round knowledge soundness for the oracle verifier (query phase) -/
 theorem queryOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type} (init : ProbComp σ)
