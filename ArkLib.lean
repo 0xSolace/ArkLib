@@ -63,6 +63,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.AGL23Barrier
 import ArkLib.Data.CodingTheory.ListDecoding.BKR06SubspacePoly
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityReduction
+import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.ListDecoding.ScratchJH02
 import ArkLib.Data.CodingTheory.ListDecoding.ScratchSeq

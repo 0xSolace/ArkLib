@@ -188,6 +188,15 @@ theorem gammaGenuine_root {x₀ : F} {R : F[X][X][Y]} (hHyp : Hypotheses x₀ R 
   (ProximityPrize.HenselSeriesCoeff.exists_powerSeries_root_seriesCoeff
     (eval_α₀_Q₀_eq_zero hHyp) (isUnit_eval_α₀_derivative_Q₀ hHyp)).choose_spec.2
 
+/-! ## Coefficient-level consumers -/
+
+/-- Every coefficient of the genuine root equation vanishes. This is the coefficient-level
+form downstream Appendix-A arguments need when proving identities order by order. -/
+theorem coeff_gammaGenuine_root {x₀ : F} {R : F[X][X][Y]} (hHyp : Hypotheses x₀ R H) (t : ℕ) :
+    PowerSeries.coeff t (Polynomial.eval (gammaGenuine x₀ R H hHyp) (Q x₀ R H)) = 0 := by
+  rw [gammaGenuine_root hHyp]
+  simp
+
 /-! ## Uniqueness among roots sharing `α₀` -/
 
 /-- **Uniqueness.** Any root `γ'` of `Q` whose constant coefficient is `α₀` equals
@@ -201,5 +210,12 @@ theorem gammaGenuine_unique {x₀ : F} {R : F[X][X][Y]} (hHyp : Hypotheses x₀ 
     (gammaGenuine_root hHyp)
   · rw [hc, gammaGenuine_constantCoeff hHyp]
   · rw [hc]; exact isUnit_eval_α₀_derivative_Q₀ hHyp
+
+/-- Any other root with the same order-0 datum has the same coefficients as `gammaGenuine`. -/
+theorem coeff_eq_gammaGenuine_of_root {x₀ : F} {R : F[X][X][Y]} (hHyp : Hypotheses x₀ R H)
+    {γ' : (𝕃 H)⟦X⟧} (hc : PowerSeries.constantCoeff γ' = α₀ H)
+    (hroot : Polynomial.eval γ' (Q x₀ R H) = 0) (t : ℕ) :
+    PowerSeries.coeff t γ' = PowerSeries.coeff t (gammaGenuine x₀ R H hHyp) := by
+  rw [gammaGenuine_unique hHyp hc hroot]
 
 end ProximityPrize.BCIKS20.GammaGenuine

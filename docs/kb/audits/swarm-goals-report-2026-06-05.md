@@ -14,21 +14,28 @@ brief for the next wave of work.
 
 ## Current Baseline
 
-As of the latest run on 2026-06-05, `./scripts/validate.sh` reached the Data warning-budget check
-and reported `No ArkLib/Data non-sorry warnings found.` The same run then failed during the build
-phase for `ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement`: Lean emitted only
-the known `sorry` warnings for that file, then Lake reported a missing generated
-`Agreement.olean`. Treat this as the current validation blocker, not as a Data warning-budget
-regression.
+As of the latest validation evidence on 2026-06-05, `./scripts/validate.sh` reached the Data
+warning-budget check and reported `No ArkLib/Data non-sorry warnings found.` That run then failed
+during the build phase for
+`ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement`: Lean emitted only the known
+`sorry` warnings for that file, then Lake reported a missing generated `Agreement.olean`. A direct
+follow-up build of
+`ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement` succeeded and produced the
+artifact, so treat the original failure as a transient Lake/artifact blocker unless it reproduces in
+the next full `./scripts/validate.sh` run.
 
 Recent validation repair work also removed several transient blockers: the Binius ring-switching
 prelude was updated to the profile-aware sumcheck context, `Whir/Folding.lean` was restored after a
-duplicate appended block caused redeclaration failures, `GK16Wronskian` was made to extend the
-existing `ProximityPrizeLeaves` folded-Wronskian primitives instead of redeclaring them, and new
+duplicate appended block caused redeclaration failures, `Whir/FoldingScratchDev.lean` was reduced to
+a declaration-free compatibility shim that points to the production
+`Fold.folding_preserves_listdecoding_base_of_mca_bridge` theorem, `GK16Wronskian` was made to extend
+the existing `ProximityPrizeLeaves` folded-Wronskian primitives instead of redeclaring them, and new
 Data warning-budget failures in `ListDecoding/Bounds`, `AGL23Barrier`, `CZ25CapacityReduction`,
-`BKR06SubspacePoly`, `RSListSize`, and `HenselSeriesCoeff` were reduced to zero non-sorry
-warnings. Re-run `./scripts/validate.sh` before starting a new warning-budget batch because multiple
-agents are changing umbrella imports, WHIR files, and proximity-prize files concurrently.
+`BKR06SubspacePoly`, `RSListSize`, and `HenselSeriesCoeff` were reduced to zero non-sorry warnings.
+Direct builds of `ArkLib.ProofSystem.Whir.FoldingScratchDev` and
+`ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement` succeeded after these fixes.
+Re-run `./scripts/validate.sh` before starting a new warning-budget batch because multiple agents
+are changing umbrella imports, WHIR files, and proximity-prize files concurrently.
 
 The proximity-prize keystone has a real conditional bridge in
 `ArkLib.BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec`, but it still needs its section-5
@@ -77,9 +84,9 @@ proofs, targeted `lake build <module>` checks, and updates to the audit docs wit
   existing `betaRec` bridge to section-5 data rather than re-proving the bridge.
 - Gamma and beta path: fix the `x₀`/gamma recentering issue, replace `β_regular` with `betaRec`,
   and thread the resulting hypotheses into the `Curves.lean` front door.
-- Validation repair: preserve the zero ArkLib/Data non-sorry warning budget, then repair the
-  current `Agreement.olean` build artifact failure exposed by `./scripts/validate.sh`; if it
-  reproduces, isolate whether it is a Lake artifact issue or a hidden elaboration failure.
+- Validation repair: preserve the zero ArkLib/Data non-sorry warning budget, then re-run
+  `./scripts/validate.sh`; if the prior `Agreement.olean` artifact failure reproduces, isolate
+  whether it is a Lake artifact issue or a hidden elaboration failure.
 - Sorry audit: inventory remaining executable `sorry`s on proof-critical paths and distinguish
   active gaps from documentation-only or intentionally abstract interfaces.
 - ZKVM map: extend the baseline report's whole-stack analysis with theorem-to-component evidence
