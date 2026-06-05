@@ -19,7 +19,7 @@ namespace ProximityGap
 -- several statement-level bricks do not mention them directly.
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
-set_option linter.style.longFile 2200
+set_option linter.style.longFile 2700
 
 open NNReal Finset Function ProbabilityTheory
 open scoped BigOperators LinearCode ProbabilityTheory ENNReal

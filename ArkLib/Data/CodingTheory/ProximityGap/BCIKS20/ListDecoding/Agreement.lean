@@ -3227,6 +3227,33 @@ lemma PzFamily_exists_eval_polys_on_matching_domain_subtype
 
 open Polynomial in
 omit [DecidableEq (RatFunc F)] in
+/-- Bundled selected-domain extraction for `PzFamily`: decodedness on the
+close-parameter set plus evaluation-polynomial witnesses on a Claim
+5.11-selected coordinate domain. -/
+lemma PzFamily_decoded_and_exists_eval_polys_on_matching_domain_subtype
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (Dtop : Finset (Fin n))
+    (hk : 0 < k)
+    (hmatch : ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ x ∈ Dtop, z ∈ matching_set_at_x k δ h_gs x) :
+    (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).natDegree < k + 1 ∧
+        δᵣ(u₀ + z • u₁,
+          (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval ∘ ωs) ≤ δ) ∧
+      ∃ E : Dtop → F[X],
+        (∀ x, (E x).natDegree < k + 1) ∧
+          ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+            ∀ x : Dtop,
+              (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x.1) =
+                (E x).eval z := by
+  exact ⟨PzFamily_decoded_on_close_set
+      (F := F) (n := n) (k := k) (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs),
+    PzFamily_exists_eval_polys_on_matching_domain_subtype
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) h_gs Dtop hk hmatch⟩
+
+open Polynomial in
+omit [DecidableEq (RatFunc F)] in
 /-- Selected-domain canonical-family package for the §5-to-§6 bridge. Claim
 5.11 selects a coordinate set `Dtop`; once every close parameter matches every
 selected coordinate, `PzFamily` gives the decoded canonical representative and
