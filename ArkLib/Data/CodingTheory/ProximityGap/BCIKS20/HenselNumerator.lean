@@ -1895,6 +1895,44 @@ theorem coeff_zero_eval_βHenselAssembled (x₀ : F) (R : F[X][X][Y])
     ProximityPrize.HenselSeriesCoeff.constantCoeff_eval, βHenselAssembled_constantCoeff]
   exact eval_α₀_Q₀_eq_zero hHyp
 
+/-- **(P2) explicit-residual root reduction — PROVEN.**
+
+If the single successor-order residual is supplied as a hypothesis, then the assembled
+`βHensel` series is a root of `Q`. This is the hypothesis-taking version of
+`assembledSeries_isRoot`; unlike that theorem, this declaration does not depend on the
+documented residual `sorry` and is the reusable API for any future proof of the Faà-di-Bruno
+coefficient bridge. -/
+theorem assembledSeries_isRoot_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hsucc : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0) :
+    Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 := by
+  ext t
+  rw [map_zero]
+  rcases t with _ | t
+  · exact coeff_zero_eval_βHenselAssembled H x₀ R hHyp
+  · exact hsucc t
+
+/-- **(P2) explicit-residual lift identity — PROVEN.**
+
+The repaired lift identity follows from the successor-coefficient vanishing residual. This combines
+the explicit-residual root reduction `assembledSeries_isRoot_of_coeff_succ_eval` with the already
+proven uniqueness and denominator-clearing theorem
+`βHensel_lift_identity_of_assembledSeries_isRoot`. -/
+theorem βHensel_lift_identity_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hsucc : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0)
+    (t : ℕ) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = αGenuine H x₀ R hHyp t
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+  βHensel_lift_identity_of_assembledSeries_isRoot H x₀ R hHyp
+    (assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp hsucc) t
+
 /-- **(P2) order-`(t+1)` vanishing — THE SINGLE IRREDUCIBLE RESIDUAL (documented `sorry`).**
 
 The successor-order coefficient of `eval (βHenselAssembled …) Q` vanishes.  This is the genuine,
@@ -1952,11 +1990,8 @@ uniqueness reduction to `gammaGenuine` `βHenselAssembled_eq_gammaGenuine`, and 
 clearing for all `t`) is PROVEN above. -/
 theorem assembledSeries_isRoot (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
     Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 := by
-  ext t
-  rw [map_zero]
-  rcases t with _ | t
-  · exact coeff_zero_eval_βHenselAssembled H x₀ R hHyp
-  · exact coeff_succ_eval_βHenselAssembled H x₀ R hHyp t
+  exact assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp
+    (coeff_succ_eval_βHenselAssembled H x₀ R hHyp)
 
 /-- **(P2) lift identity — REPAIRED against the genuine root, PROVEN modulo the single
 per-successor-order residual `coeff_succ_eval_βHenselAssembled`.**
