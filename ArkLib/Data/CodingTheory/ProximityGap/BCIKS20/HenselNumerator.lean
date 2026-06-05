@@ -46,7 +46,8 @@ genuine `β` recursion of BCIKS20 (A.1) over the in-tree ring `𝒪 H`:
 7. `βHensel_zero` / `βHensel_succ` — base-case + recursive-step value lemmas (PROVEN).
 8. `(P1) βHensel_weight_bound` — `t = 0` PROVEN; inductive step FULLY ASSEMBLED (strong
    induction + `βHensel_succ` + the over-`𝒪` weight calculus below), reduced to the **single**
-   documented per-term residual `βHensel_succ_term_weight_le`.
+   documented per-term residual `βHensel_succ_term_weight_le`.  WAVE 4 carries the paper's faithful
+   regime hypothesis `2 ≤ natDegreeY R` (BCIKS20 `ξ = W^{d−2}·ζ`, `d ≥ 2`).
 9. `(P2) βHensel_lift_identity` — the irreducible BCIKS20 A.4 frontier, documented `sorry`.
 
 WAVE 3 SCOPE (§4c′ / 4d below).  The reusable **`Λ`-weight calculus over `𝒪 H`**, all PROVEN
@@ -57,7 +58,15 @@ sub-additivity), `weight_Λ_nsmul_le`, `B_coeff_weight_le_hasse` (`B_coeff` → 
 `surviving_parts_lt`, `sum_map_two_mul_succ`, and the IH-fed product bound
 `partitionProd_βHensel_weight_le`.  These reduce (P1) to one precise per-term WALL.
 
-See `ingredientD-wave1-design.md` / `…-wave2.md` / `…-wave3.md` for the staged specs.
+WAVE 4 SCOPE (§4a′ + the (b) regime).  The iterated-Hasse **`Y`-degree drop** (axiom-clean
+`[propext, Classical.choice, Quot.sound]`): `hasseDerivX_natDegreeY_le` / `hasseDerivY_natDegreeY_le`
+/ `evalX_natDegreeY_le` compose to `hasseCoeffRepr𝒪_natDegreeY_le`
+(`natDegreeY (evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)) ≤ natDegreeY R − Σλ`) — the `Y`-degree component
+of the `B_coeff` weight (the `−Σλ`).  And the (b) `ξ`-regime `2 ≤ natDegreeY R` is now a documented
+faithful hypothesis on (P1).  The residual is the per-term wall (c) — unprovable through the loose
+IH; needs the structured `α_t`-weight invariant (see `…-wave4.md`).
+
+See `ingredientD-wave1-design.md` / `…-wave2.md` / `…-wave3.md` / `…-wave4.md` for the staged specs.
 
 The objects here are the **genuine** mathematical objects, never stubs:
 `mvHasseCoeff k p` has `coeff n = (∏ᵢ (nᵢ+kᵢ).choose kᵢ) · coeff (n+k) p`, i.e. the real
@@ -435,6 +444,46 @@ theorem hasseDerivY_add (m : ℕ) (p q : F[X][X][Y]) :
     hasseDerivY m (p + q) = hasseDerivY m p + hasseDerivY m q := by
   unfold hasseDerivY; simp [map_add]
 
+/-! ### 4a′. The iterated-Hasse **`Y`-degree drop** (genuine, axiom-clean)
+
+The `Y`-degree (`Bivariate.natDegreeY = Polynomial.natDegree` on the outer layer) behaviour of
+the two Hasse layers and of the lift-substitution `evalX (C x₀)`.  This is the *load-bearing
+`Y`-degree component* of the `B_coeff` weight bound `Λ ≤ (D−m) + (d−δ−m)·Λ(W)` (the `Y`-Hasse
+`Δ_Y^{m}` is what produces the `−m`; `Δ_X^{i1}` and `evalX` never raise the `Y`-degree).  The
+*remaining* gap to that full weight bound is the `W`-clearing (`Y↦T` vs `Y↦T/W`) embedding
+identity coupling the `X`-degree to `Λ(W)`, which is NOT a degree fact and stays deferred — see
+`hasseCoeffRepr𝒪_natDegreeY_le`'s docstring. -/
+
+/-- `Δ_X^{i1}` never raises the **`Y`-degree**: `natDegreeY (Δ_X^{i1} p) ≤ natDegreeY p`.  `Δ_X`
+acts coefficient-wise through the outer `Y` layer (`p.sum (fun n a => monomial n (hasseDeriv i1 a))`),
+re-monomialising each `Y`-coefficient at the *same* `Y`-degree `n ≤ natDegreeY p`. -/
+theorem hasseDerivX_natDegreeY_le (i1 : ℕ) (p : F[X][X][Y]) :
+    Bivariate.natDegreeY (hasseDerivX i1 p) ≤ Bivariate.natDegreeY p := by
+  classical
+  unfold hasseDerivX Bivariate.natDegreeY
+  rw [Polynomial.sum]
+  refine (Polynomial.natDegree_sum_le _ _).trans ?_
+  refine (Finset.fold_max_le _).mpr ⟨Nat.zero_le _, fun n hn => ?_⟩
+  refine (Polynomial.natDegree_monomial_le _).trans ?_
+  exact Polynomial.le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hn)
+
+/-- `Δ_Y^{m}` drops the **`Y`-degree** by (at least) `m`: `natDegreeY (Δ_Y^{m} p) ≤ natDegreeY p − m`.
+This is mathlib's `Polynomial.natDegree_hasseDeriv_le` on the outer `Y` layer — the genuine source
+of the `−m` (`= −Σλ`) in BCIKS20's `B_coeff` weight bound. -/
+theorem hasseDerivY_natDegreeY_le (m : ℕ) (p : F[X][X][Y]) :
+    Bivariate.natDegreeY (hasseDerivY m p) ≤ Bivariate.natDegreeY p - m := by
+  unfold hasseDerivY Bivariate.natDegreeY
+  exact Polynomial.natDegree_hasseDeriv_le p m
+
+/-- `evalX (C x₀)` (the **lift `X`-layer** substitution, ground ring `F[X]`) never raises the
+**`Y`-degree**: `natDegreeY (evalX a p) ≤ natDegreeY p`.  `evalX a = map (evalRingHom a)`
+(`Bivariate.evalX_eq_map`), and `map` cannot raise `natDegree` (`Polynomial.natDegree_map_le`). -/
+theorem evalX_natDegreeY_le (a : F[X]) (p : F[X][X][Y]) :
+    Bivariate.natDegreeY (Bivariate.evalX a p) ≤ Bivariate.natDegreeY p := by
+  unfold Bivariate.natDegreeY
+  rw [Bivariate.evalX_eq_map]
+  exact Polynomial.natDegree_map_le
+
 /-! ### 4b. Evaluation at the root `(x₀, α₀ = T/W)` and the rescaled coefficient `B_{i1,λ}` -/
 
 variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
@@ -667,6 +716,30 @@ lemma B_coeff_weight_le_hasse (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
   rw [B_coeff]
   exact weight_Λ_over_𝒪_nsmul_le H hH hDH _ _
 
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- **The iterated-Hasse representative `Y`-degree drop (genuine, axiom-clean).**  The polynomial
+underlying `hasseCoeffRepr𝒪 x₀ R i1 m` — namely `evalX (C x₀) (Δ_X^{i1} Δ_Y^{m} R)` — has
+**`Y`-degree `≤ natDegreeY R − m`**.  Composes the three §4a′ drops: `Δ_Y^{m}` drops the `Y`-degree
+by `m` (`hasseDerivY_natDegreeY_le`), and neither `Δ_X^{i1}` (`hasseDerivX_natDegreeY_le`) nor the
+lift substitution `evalX (C x₀)` (`evalX_natDegreeY_le`) raises it.
+
+This is the **`Y`-degree component** of BCIKS20's `B_coeff` weight bound
+`Λ_𝒪(hasseCoeffRepr𝒪 … i1 m) ≤ (D−m) + (d−δ−m)·Λ(W)` (lines 4060–4077): the `Y`-degree drop by
+`m = Σλ` is what supplies the `−m`.  It is genuinely true and reusable.
+
+The bound is stated on the **representative polynomial** (`F[X][Y]`-level `natDegreeY`), NOT yet on
+`weight_Λ_over_𝒪`: descending it to the `𝒪`-weight `Λ_𝒪(hasseCoeffRepr𝒪 …)` and producing the
+`Λ(W)`-scaled `(d−δ−m)` term requires the **`W`-clearing embedding identity** (`Y↦T` vs `Y↦T/W`)
+that converts each cleared `Y`-power into a `W`-factor — that is the genuine deferred content of
+`B_coeff_weight` and is NOT a degree fact.  See `ingredientD-wave4.md`. -/
+theorem hasseCoeffRepr𝒪_natDegreeY_le (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+    Bivariate.natDegreeY
+        (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
+      ≤ Bivariate.natDegreeY R - m := by
+  refine (evalX_natDegreeY_le (Polynomial.C x₀) _).trans ?_
+  refine (hasseDerivX_natDegreeY_le i1 _).trans ?_
+  exact hasseDerivY_natDegreeY_le m R
+
 /-- Every part of a *surviving* partition is `< k+1`: a `lam : Nat.Partition (k+1−i1)` with
 `(k+1) ∉ lam.parts` has all parts `l` positive and `≤ k+1−i1 ≤ k+1`, and `l ≠ k+1`, hence
 `l < k+1`.  This is the genuine well-foundedness witness for the `(A.1)` recursion: the guard
@@ -866,29 +939,46 @@ This is the BCIKS20 telescoping at the level of one term (paper lines 4264–426
 established, the full `(A.1)` sum bound follows mechanically by the *already-proven* over-`𝒪`
 weight calculus (`_neg`, `_sum_le`) — see `βHensel_weight_bound`.
 
-WALL (documented, NOT faked).  Closing this term requires three genuine ingredients this wave
-does not yet have:
-  (a) the **`B_coeff` weight** bound `Λ_𝒪(hasseCoeffRepr𝒪 … i1 Σλ) ≤ (D−Σλ)+(d−δ−Σλ)·Λ(W)`
-      (the iterated-Hasse degree-drop + `W`-clearing, the deferred half of §4b); reduced to the
-      single-`mk` `hasseCoeffRepr𝒪` representative by `B_coeff_weight_le_hasse` (PROVEN);
-  (b) the **`ξ`-power** bound `Λ_𝒪(ξ^e) ≤ e·Λ(ξ)` (PROVEN here as `weight_Λ_over_𝒪_pow_le`)
-      fed by `weight_ξ_bound` — but `weight_ξ_bound` requires `2 ≤ d_R`, whereas (P1) only
-      assumes `1 ≤ d_R`; at `d_R = 1` the `ξ` weight is not bounded by the present in-tree API
-      (a genuine hypothesis-strength gap, NOT to be papered over by strengthening (P1));
-  (c) the genuine BCIKS20 **telescoping**.  IMPORTANT — this does NOT close by naive per-factor
-      splitting: the product factor alone is bounded (`partitionProd_βHensel_weight_le`, PROVEN,
-      IH-fed) by `(2(k+1−i1)+Σλ)·d_R·D`, and `Σλ` can EXCEED `2·i1+1` (e.g. an all-ones `λ` has
-      `Σλ = k+1−i1`), so `Λ(W^a)+Λ(ξ^b)+Λ(B)+Λ(P) ≰ (2(k+1)+1)·d_R·D` in general.  The paper's
-      tighter argument couples the `ξ^{2i1+Σλ−2}`/`B_{i1,λ}` *negative* exponents (`δ`, the `−2`,
-      the `D−Σλ` in `B`) to the partition so the `Σλ` growth cancels — exactly why BCIKS20 says
-      "an easier way is to consider the weight of `α_t`" (line 4276).  This coupled bound is the
-      irreducible content of this residual.
-PROVEN above and reusable for the next wave: the IH-fed product bound
-`partitionProd_βHensel_weight_le`, the over-`𝒪` calculus `_neg`/`_sum_le`/`_mul`/`_pow`/`_W`/
-`_nsmul`, `B_coeff_weight_le_hasse`, `surviving_parts_lt`, `sum_map_two_mul_succ`. -/
+WALL (documented, NOT faked).  Closing this term requires three genuine ingredients.  Wave-4
+progress on each is recorded below; the residual after wave 4 is item (c).
+
+  (a) the **`B_coeff` weight** bound `Λ_𝒪(hasseCoeffRepr𝒪 … i1 Σλ) ≤ (D−Σλ)+(d−δ−Σλ)·Λ(W)`.
+      Wave 4 PROVED its **`Y`-degree component** `hasseCoeffRepr𝒪_natDegreeY_le`:
+      `natDegreeY (evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)) ≤ natDegreeY R − Σλ` (the genuine source of
+      the `−Σλ`).  The `B_coeff`→single-`mk` reduction is `B_coeff_weight_le_hasse` (PROVEN).  The
+      *remaining* gap is the `W`-clearing **embedding identity** (`Y↦T` vs `Y↦T/W`) producing the
+      `Λ(W)`-scaled `(d−δ−Σλ)` term — NOT a degree fact, genuinely deferred.
+
+  (b) the **`ξ`-power** bound `Λ_𝒪(ξ^e) ≤ e·Λ(ξ)` (PROVEN here as `weight_Λ_over_𝒪_pow_le`) fed by
+      `weight_ξ_bound`.  `weight_ξ_bound` requires `2 ≤ natDegreeY R`.  RESOLVED in wave 4 by
+      ADDING `hdR2 : 2 ≤ natDegreeY R` as a **documented faithful hypothesis**: this is exactly the
+      paper's operating regime — BCIKS20 writes `ξ = W^{d−2}·ζ` (lines 3958, 4077), which is a
+      genuine element of `𝒪` only for `d ≥ 2` (at `d = 1` it has a *negative* `W`-power and the
+      bound `(D−1)+(d−2)Λ(W)` is false, see `weight_ξ_bound`'s own honesty note).  The degenerate
+      `d_R = 1` case (R linear in `Y`) has no nontrivial `(A.1)` telescoping and is not the regime
+      of Claim A.2.  This is a faithful match to the paper, NOT a silent strengthening.
+
+  (c) the genuine BCIKS20 **telescoping** — the IRREDUCIBLE residual after wave 4.  IMPORTANT: this
+      does NOT close by naive per-factor splitting **with the loose IH** `Λ(β_l) ≤ (2l+1)·d_R·D`:
+      the product factor alone is `(2(k+1−i1)+Σλ)·d_R·D` (PROVEN `partitionProd_βHensel_weight_le`),
+      and `Σλ` can EXCEED `2·i1+1` (e.g. an all-ones `λ` has `Σλ = k+1−i1`), so even the product
+      factor alone can exceed the target `(2(k+1)+1)·d_R·D`, and the positive `W`/`ξ`/`B` factors
+      only worsen it.  Hence the per-term bound is UNPROVABLE through the loose IH — it is the loss
+      in collapsing the paper's *structured* per-coefficient weight `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)`
+      (with `e_l = max(0,2l−1)`, BCIKS20 line 3962) to `(2l+1)·d_R·D` that destroys the cancellation.
+      The honest closure of (P1) therefore requires carrying the **structured invariant** as the IH
+      (so the partition constraint `Σ_l l·λ_l = k+1−i1` makes the `Σλ` growth cancel against the
+      `ξ`/`B` negative exponents) — exactly why BCIKS20 says "an easier way is to consider the weight
+      of `α_t`" (line 4276): the paper bounds `α_t` (weight `Λ(Y)=1`) and reads `β_t = α_t·W^{t+1}·ξ^{e_t}`
+      off the closed form, sidestepping the (A.1) recursion entirely.  This is the genuine content
+      of the wall and is documented, not exploited with a false step.
+
+PROVEN above and reusable: the IH-fed product bound `partitionProd_βHensel_weight_le`, the over-`𝒪`
+calculus `_neg`/`_sum_le`/`_mul`/`_pow`/`_W`/`_nsmul`, `B_coeff_weight_le_hasse`,
+`hasseCoeffRepr𝒪_natDegreeY_le` (wave 4), `surviving_parts_lt`, `sum_map_two_mul_succ`. -/
 theorem βHensel_succ_term_weight_le (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
-    (hDH : Bivariate.totalDegree H ≤ D) (hdR : 1 ≤ Bivariate.natDegreeY R) (k : ℕ)
+    (hDH : Bivariate.totalDegree H ≤ D) (hdR2 : 2 ≤ Bivariate.natDegreeY R) (k : ℕ)
     (hIH : ∀ l, l < k + 1 →
       weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
         ≤ WithBot.some ((2 * l + 1) * Bivariate.natDegreeY R * D))
@@ -902,38 +992,40 @@ theorem βHensel_succ_term_weight_le (x₀ : F) (R : F[X][X][Y])
               (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
       ≤ WithBot.some ((2 * (k + 1) + 1) * Bivariate.natDegreeY R * D) := by
   -- WALL (documented, NOT faked): the genuine BCIKS20 per-term telescoping (paper lines
-  -- 4264–4268).  The product factor `∏_l β_l^{λ_l}` is bounded (IH-fed) by the PROVEN
-  -- `partitionProd_βHensel_weight_le`; the over-`𝒪` multiplicative calculus
-  -- (`weight_Λ_over_𝒪_mul_le`/`_pow_le`), the `W`-factor bound (`weight_Λ_over_𝒪_W`) and the
-  -- `B_coeff`→`hasseCoeffRepr𝒪` reduction (`B_coeff_weight_le_hasse`) are all PROVEN above.
-  --
-  -- The residual is NOT closeable by naive per-factor splitting: the product bound alone is
-  -- `(2(k+1−i1)+Σλ)·d_R·D`, and `Σλ` can exceed `2·i1+1` (e.g. `λ` all-ones), so the term must
-  -- be bounded by the genuine telescoping that couples the `ξ^{2i1+Σλ−2}` / `B_{i1,λ}` factors
-  -- to the partition (the paper's tighter argument, NOT the sum of independent factor weights).
-  -- That genuine bound additionally needs (a) the `B_coeff`-Hasse weight
-  -- `Λ_𝒪(hasseCoeffRepr𝒪 … i1 Σλ) ≤ (D−Σλ)+(d−δ−Σλ)·Λ(W)` and (b) the `ξ` weight via
-  -- `weight_ξ_bound`, which requires `2 ≤ d_R` (this lemma has only `1 ≤ d_R` — a real
-  -- hypothesis-strength gap at `d_R = 1`).  Deferred; see disposition `ingredientD-wave3.md`.
+  -- 4264–4280).  Wave-4 progress: (b) the `2 ≤ d_R` ξ-regime is now a documented faithful
+  -- hypothesis (`hdR2`, matching the paper's `ξ = W^{d−2}·ζ`); (a) the `B_coeff` Y-degree drop is
+  -- PROVEN (`hasseCoeffRepr𝒪_natDegreeY_le`).  The IRREDUCIBLE residual is (c): the per-term bound
+  -- is UNPROVABLE through the loose IH `Λ(β_l) ≤ (2l+1)·d_R·D` supplied here — the product factor
+  -- alone (`partitionProd_βHensel_weight_le`) is `(2(k+1−i1)+Σλ)·d_R·D`, and `Σλ` can exceed
+  -- `2·i1+1` (e.g. `λ` all-ones), so it already exceeds the target and the positive W/ξ/B factors
+  -- worsen it.  Honest closure needs the paper's STRUCTURED invariant
+  -- `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)` as IH so the partition constraint cancels the `Σλ` growth —
+  -- "an easier way is to consider the weight of `α_t`" (line 4276).  See `ingredientD-wave4.md`.
   sorry
 
 /-- **(P1) full weight bound.**  `weight_Λ_over_𝒪 hH (βHensel … t) D ≤ (2t+1)·natDegreeY R·D`.
 
-The `t = 0` case is `βHensel_weight_bound_zero` (PROVEN).  The inductive step is now FULLY
-ASSEMBLED from the proven over-`𝒪` weight calculus: strong induction supplies the IH for all
-`l < t`; `βHensel_succ` exposes the literal `(A.1)` sum; `weight_Λ_over_𝒪_neg` strips the sign;
-two applications of `weight_Λ_over_𝒪_sum_le` + `Finset.sup_le` reduce the double sum to the
-per-term bound `βHensel_succ_term_weight_le`.  The ONLY residual is that per-term WALL. -/
+The `t = 0` case is `βHensel_weight_bound_zero` (PROVEN).  The inductive step is FULLY ASSEMBLED
+from the proven over-`𝒪` weight calculus: strong induction supplies the IH for all `l < t`;
+`βHensel_succ` exposes the literal `(A.1)` sum; `weight_Λ_over_𝒪_neg` strips the sign; two
+applications of `weight_Λ_over_𝒪_sum_le` + `Finset.sup_le` reduce the double sum to the per-term
+bound `βHensel_succ_term_weight_le`.  The ONLY residual is that per-term WALL.
+
+HYPOTHESIS: `2 ≤ natDegreeY R` (wave 4) — the paper's faithful operating regime: BCIKS20's
+`ξ = W^{d−2}·ζ` is a genuine element of `𝒪` only for `d ≥ 2` (lines 3958, 4077), and Claim A.2's
+weight bound is stated in this regime.  The `d_R = 1` degenerate case (R linear in `Y`) is not the
+Hensel-lift regime of Appendix A.4.  This matches the paper; it is not a silent strengthening.  The
+`t = 0` case needs only `1 ≤ d_R`, derived from `hdR2`. -/
 theorem βHensel_weight_bound (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hH : 0 < H.natDegree) {D : ℕ} (_hDH : Bivariate.totalDegree H ≤ D)
-    (_hdR : 1 ≤ Bivariate.natDegreeY R) (t : ℕ) :
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R) (t : ℕ) :
     weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
   classical
   induction t using Nat.strong_induction_on with
   | _ t hIH =>
     match t with
-    | 0 => exact βHensel_weight_bound_zero H x₀ R hHyp hH _hDH _hdR
+    | 0 => exact βHensel_weight_bound_zero H x₀ R hHyp hH _hDH (by omega)
     | (k + 1) =>
         -- Expose the `(A.1)` sum and strip the sign.
         rw [βHensel_succ]
@@ -945,7 +1037,7 @@ theorem βHensel_weight_bound (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypoth
         refine le_trans (weight_Λ_over_𝒪_sum_le H hH _hDH _ _) ?_
         refine Finset.sup_le (fun lam hlam => ?_)
         -- Per-term bound, with the IH for `βHensel … l` (`l < k+1`) supplied by strong induction.
-        exact βHensel_succ_term_weight_le H x₀ R hHyp hH _hDH _hdR k
+        exact βHensel_succ_term_weight_le H x₀ R hHyp hH _hDH hdR2 k
           (fun l hl => hIH l (by omega)) i1 hi1 lam (Finset.mem_filter.mp hlam).2
 
 /-! ### 4e. (P2) the lift identity — the irreducible BCIKS20 A.4 frontier -/
@@ -980,9 +1072,18 @@ end Wave2
   lemma only affects the exact embedding identity, not the genuineness of the object.)
 
 * `B_coeff` weight + embedding lemmas (the deferred half of §4b) — feed (P1)'s per-term WALL
-  `βHensel_succ_term_weight_le`.  The `B_coeff`→`hasseCoeffRepr𝒪` reduction is PROVEN
-  (`B_coeff_weight_le_hasse`); the remaining `Λ_𝒪(hasseCoeffRepr𝒪 … i1 Σλ) ≤ (D−Σλ)+(d−δ−Σλ)·Λ(W)`
-  (iterated-Hasse degree-drop + `W`-clearing) and the `weight_ξ_bound` `2 ≤ d_R` gap are the WALL.
+  `βHensel_succ_term_weight_le`.  PROVEN: the `B_coeff`→`hasseCoeffRepr𝒪` reduction
+  (`B_coeff_weight_le_hasse`) and the **`Y`-degree drop** `hasseCoeffRepr𝒪_natDegreeY_le`
+  (`natDegreeY (evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)) ≤ natDegreeY R − Σλ`, wave 4) — the genuine
+  source of the `−Σλ`.  The remaining WALL is the `W`-clearing **embedding identity** (`Y↦T` vs
+  `Y↦T/W`) producing the `Λ(W)`-scaled `(d−δ−Σλ)` term in `(D−Σλ)+(d−δ−Σλ)·Λ(W)` — NOT a degree
+  fact.  The `weight_ξ_bound` `2 ≤ d_R` regime is RESOLVED (wave 4): a documented faithful
+  hypothesis on (P1) (`βHensel_weight_bound`/`βHensel_succ_term_weight_le`), matching BCIKS20's
+  `ξ = W^{d−2}·ζ`.
+
+* (P1) per-term closure (c): UNPROVABLE through the loose IH `(2l+1)·d_R·D` — needs the paper's
+  STRUCTURED invariant `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)` so the partition constraint cancels the
+  `Σλ` growth (BCIKS20's `α_t`-weight route, line 4276).
 
 * iterated-Hasse Leibniz/product rule — needed only for (P2). -/
 
