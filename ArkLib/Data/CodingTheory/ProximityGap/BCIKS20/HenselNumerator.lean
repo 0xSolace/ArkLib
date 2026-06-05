@@ -2053,6 +2053,16 @@ theorem partitionProd_coeff_trunc_eq {m : ℕ} (x₀ : F) (R : F[X][X][Y])
   rw [partitionProd, partitionProd]
   exact prod_map_coeff_trunc_eq H x₀ R hHyp t lam.parts hs
 
+/-- Partition-specialized truncation agreement in the guard shape produced by
+`surviving_parts_lt`: every part is `< t + 1`. -/
+theorem partitionProd_coeff_trunc_eq_of_parts_lt_succ {m : ℕ} (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) (lam : Nat.Partition m)
+    (hs : ∀ l ∈ lam.parts, l < t + 1) :
+    partitionProd lam (fun l => PowerSeries.coeff l (βHenselTrunc H x₀ R hHyp t))
+      = partitionProd lam (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp)) := by
+  exact partitionProd_coeff_trunc_eq H x₀ R hHyp t lam
+    (fun l hl => Nat.lt_succ_iff.mp (hs l hl))
+
 /-- **Per-partition cleared term (PROVEN corollary).** Instantiating the product bridge at
 a partition `λ ⊢ m` and rewriting the `W`-exponent by `partition_sum_add_one_local`. -/
 theorem partitionProd_coeff_assembled {m : ℕ} (x₀ : F) (R : F[X][X][Y])
@@ -2080,6 +2090,23 @@ theorem partitionProd_coeff_trunc_assembled {m : ℕ} (x₀ : F) (R : F[X][X][Y]
                 ^ ((lam.parts.map (fun l => 2 * l - 1)).sum)) := by
   rw [partitionProd_coeff_trunc_eq H x₀ R hHyp t lam hs,
     partitionProd_coeff_assembled H x₀ R hHyp lam]
+
+/-- Cleared truncation term for a surviving `(A.1)` partition. The survival
+condition rules out the current order `k + 1`, so every recursive part is
+visible to the `k`-truncation. -/
+theorem partitionProd_coeff_trunc_assembled_of_surviving {k i1 : ℕ}
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (lam : Nat.Partition (k + 1 - i1))
+    (hlam : (k + 1) ∉ lam.parts) :
+    partitionProd lam (fun l => PowerSeries.coeff l (βHenselTrunc H x₀ R hHyp k))
+      = embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp))
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^
+              (k + 1 - i1 + Multiset.card lam.parts)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))
+                ^ ((lam.parts.map (fun l => 2 * l - 1)).sum)) := by
+  exact partitionProd_coeff_trunc_assembled H x₀ R hHyp k lam
+    (fun l hl => Nat.lt_succ_iff.mp (surviving_parts_lt lam hlam hl))
 
 /-- **(P2) order-`(t+1)` vanishing — THE SINGLE IRREDUCIBLE RESIDUAL (documented `sorry`).**
 
