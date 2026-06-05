@@ -412,4 +412,38 @@ theorem card_le_of_johnson_sq (hq1 : 1 < Fintype.card α) (hn : 0 < Fintype.card
   rw [hnR, hqR] at hsq
   nlinarith [hsq]
 
+/-- **q-ary Johnson list-size bound, distance form.** A family of words each
+within Hamming distance `e` of a center `f`, pairwise at Hamming distance `≥ d`
+(the code minimum distance), has size `≤ ℓ` whenever the squared Johnson
+condition `(ℓ+1)(n−e−n/q)² > N(N + ℓ(n−d−n/q))` holds (`N := n(1−1/q)`,
+`n−e ≥ n/q`). This is the directly-consumable code-distance form of ABF26
+Theorem 3.2 — the `agree`-based `card_le_of_johnson_sq` with `A = n−e`,
+`B = n−d` supplied from the `agree ↔ hammingDist` bridge. -/
+theorem card_le_of_johnson_sq_dist (hq1 : 1 < Fintype.card α) (hn : 0 < Fintype.card ι)
+    {L : ℕ} (hL : 0 < L)
+    (f : ι → α) (c : Fin L → ι → α) {e d : ℕ} (ℓ : ℕ)
+    (hclose : ∀ i, hammingDist (c i) f ≤ e)
+    (hdist : ∀ i j, i ≠ j → d ≤ hammingDist (c i) (c j))
+    (hP : (Fintype.card ι : ℝ) / (Fintype.card α : ℝ) ≤ ((Fintype.card ι - e : ℕ) : ℝ))
+    (hsq : ((ℓ : ℝ) + 1)
+        * (((Fintype.card ι - e : ℕ) : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)) ^ 2
+      > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)))
+        * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))
+            + (ℓ : ℝ) * (((Fintype.card ι - d : ℕ) : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))) :
+    L ≤ ℓ := by
+  classical
+  -- A := n − e is a lower bound for each agree(c i, f)
+  have hA : ∀ i, (Fintype.card ι - e) ≤ agree (c i) f := by
+    intro i
+    have hbridge := agree_add_hammingDist (c i) f
+    have := hclose i
+    omega
+  -- B := n − d is an upper bound for each pairwise agree
+  have hB : ∀ i j, i ≠ j → agree (c i) (c j) ≤ (Fintype.card ι - d) := by
+    intro i j hij
+    have hbridge := agree_add_hammingDist (c i) (c j)
+    have := hdist i j hij
+    omega
+  exact card_le_of_johnson_sq hq1 hn hL f c ℓ hA hB hP hsq
+
 end CodeGeometry
