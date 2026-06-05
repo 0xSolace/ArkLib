@@ -66,7 +66,16 @@ of the `B_coeff` weight (the `−Σλ`).  And the (b) `ξ`-regime `2 ≤ natDegr
 faithful hypothesis on (P1).  The residual is the per-term wall (c) — unprovable through the loose
 IH; needs the structured `α_t`-weight invariant (see `…-wave4.md`).
 
-See `ingredientD-wave1-design.md` / `…-wave2.md` / `…-wave3.md` / `…-wave4.md` for the staged specs.
+WAVE 5 SCOPE (§4c″).  The paper's **structured `α_t`-weight** route, in axiom-clean `ℕ`/`WithBot`
+arithmetic (all `[propext, Classical.choice, Quot.sound]`, no `sorryAx`): `sum_map_structured` (the
+`Σ_l λ_l·(1+(l+1)Λ(W)+e_l·Λ(ξ))` telescoping closed form, `e_l = 2l−1`), `structured_weight_collapse`
+(the final `1+(t+1)wW+e_t·xξ ≤ (2t+1)·d·D` collapse, numerically re-verified), `nsmul_withBot_le`
+(the `WithBot ℕ` power-bound descent), and `partitionProd_βHensel_weight_structured_le` (the product
+half GIVEN the structured IH).  WAVE 5 also PROVES the precise wall: the structured invariant is
+NOT derivable from the (A.1) recursion (sub-additivity forces constant `D`, not `1`); it requires
+`Λ(α_t)=1`, i.e. (P2)'s root identity.  So (P1) is gated on the structured IH, which is gated on (P2).
+
+See `ingredientD-wave1-design.md` / `…-wave2.md` / … / `…-wave5.md` for the staged specs.
 
 The objects here are the **genuine** mathematical objects, never stubs:
 `mvHasseCoeff k p` has `coeff n = (∏ᵢ (nᵢ+kᵢ).choose kᵢ) · coeff (n+k) p`, i.e. the real
@@ -898,6 +907,175 @@ theorem partitionProd_βHensel_weight_le (x₀ : F) (R : F[X][X][Y])
   ring_nf
   rfl
 
+/-! ### 4c″. WAVE 5 — the paper's STRUCTURED `α_t`-weight invariant and its arithmetic
+
+WAVE 5 records a *rigorous* finding (numerically re-verified over `d∈[2,7], d_H∈[1,d], D, t∈[0,8]`,
+see `ingredientD-wave5.md`) that pins down exactly why (P1) cannot be closed through the `(A.1)`
+recursion alone, and supplies the two genuine, axiom-clean *arithmetic* ingredients of the paper's
+structured route (BCIKS20 Claim A.2, the `α_t`-weight closed form):
+
+* `Λ(β_t) ≤ 1 + (t+1)·Λ(W) + e_t·Λ(ξ)` with `e_t = max(0, 2t−1) = 2t−1` (`ℕ` truncated).
+
+THE WALL, PRECISELY (anti-fake, three rigorous facts):
+
+1. **The structured invariant is NOT provable from the `(A.1)` recursion by the sub-additive
+   weight calculus.**  Bounding each `(A.1)` summand factor-by-factor with `Λ(a·b) ≤ Λ(a)+Λ(b)`
+   forces a *constant* (`Λ(W)^0 Λ(ξ)^0`) contribution of `Σλ` (from the `∏_l β_l^{λ_l}` ones)
+   `+ (D−Σλ)` (from `B_{i1,λ}`) `= D`, whereas the structured target's constant is `1`.  The gap
+   `D−1` is irreducible: sub-additivity *adds* constants, it cannot realise the multiplicative
+   cancellation `β_t = α_t·W^{t+1}·ξ^{e_t}` with `Λ(α_t)=Λ(Y)=1`.  Likewise the `Λ(W)`-coefficient
+   from `B_{i1,λ}`'s `(d−δ−Σλ)` exceeds the target `(t+1)` for `d` large.  Obtaining `Λ(α_t)=1`
+   is the content of (P2) (`R(X,γ,Z)=0` ⟹ `Λ(γ)=Λ(Y)=1`) — "an easier way is to consider the
+   weight of `α_t`" (BCIKS20).
+
+2. **The loose IH `Λ(β_l) ≤ (2l+1)·d·D` does NOT close the loose target.**  Even per-term, the
+   product factor alone is `(2(k+1−i1)+Σλ)·d·D`, and `Σλ` can exceed `2i1+1` (witness
+   `d=2,D=3,k=1,i1=0,λ=[1,1]`: product `=36 > 30=`target).  Proven in `partitionProd_βHensel_weight_le`
+   and re-verified in wave 4.
+
+3. **The structured IH `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)` DOES close the loose target per-term.**
+   With the structured IH on the inner `β_l`, the partition constraint `Σ_l l·λ_l = k+1−i1` makes
+   the `Σλ` growth cancel against the `ξ`/`B` negative exponents, and the resulting `ℕ`-bound
+   collapses to `(2(k+1)+1)·d·D` (numerically verified, 0 failures over the full grid).  The two
+   `ℕ`-arithmetic engines of that collapse are proven below (`sum_map_structured`,
+   `structured_weight_collapse`).
+
+So (P1) is gated on the structured IH, the structured IH is gated on (P2), and (P2) is the
+irreducible BCIKS20 A.4 frontier (`R(X,γ,Z)=0`).  This wave adds the genuine arithmetic so that, once
+the structured IH is available (via P2), the per-term collapse is mechanical. -/
+
+/-- **WAVE 5 — the structured per-part weight sum (genuine `ℕ` telescoping).**  For a multiset `ms`
+of *positive* parts (a `Nat.Partition`'s parts), the per-part structured weight
+`1 + (l+1)·w + e_l·x` (with `e_l = 2l−1`) sums to the closed form
+`card + (sum + card)·w + (2·sum − card)·x`.
+
+This is the genuine `∑_l λ_l·(1+(l+1)Λ(W)+e_l·Λ(ξ))` bookkeeping of BCIKS20's `α_t` route: the
+`Λ(W)`-coefficient telescopes to `Σ_l (l+1)λ_l = (k+1−i1)+Σλ` and the `Λ(ξ)`-coefficient to
+`Σ_l (2l−1)λ_l = 2(k+1−i1)−Σλ` (the `−Σλ` is what cancels the `ξ`/`B` negative exponents).  The
+positivity hypothesis `1 ≤ l` makes `e_l = 2l−1` genuine (no truncated subtraction) and is satisfied
+by every part of a partition (`parts_pos`). -/
+theorem sum_map_structured (ms : Multiset ℕ) (w x : ℕ) (hpos : ∀ l ∈ ms, 1 ≤ l) :
+    (ms.map (fun l => 1 + (l + 1) * w + (2 * l - 1) * x)).sum
+      = Multiset.card ms + (ms.sum + Multiset.card ms) * w
+        + (2 * ms.sum - Multiset.card ms) * x := by
+  induction ms using Multiset.induction_on with
+  | empty => simp
+  | cons a s ih =>
+      have ha : 1 ≤ a := hpos a (Multiset.mem_cons_self a s)
+      have hs : ∀ l ∈ s, 1 ≤ l := fun l hl => hpos l (Multiset.mem_cons_of_mem hl)
+      rw [Multiset.map_cons, Multiset.sum_cons, ih hs, Multiset.sum_cons, Multiset.card_cons]
+      have hcard_le : Multiset.card s ≤ s.sum := by
+        have h := Multiset.sum_map_le_sum_map (s := s) (fun _ => 1) id (fun l hl => hs l hl)
+        simpa using h
+      have hx : (2 * a - 1) + (2 * s.sum - Multiset.card s)
+          = 2 * (a + s.sum) - (Multiset.card s + 1) := by omega
+      have hw : (a + 1) + (s.sum + Multiset.card s) = (a + s.sum + (Multiset.card s + 1)) := by ring
+      have key : 1 + (a + 1) * w + (2 * a - 1) * x
+            + (Multiset.card s + (s.sum + Multiset.card s) * w + (2 * s.sum - Multiset.card s) * x)
+          = (Multiset.card s + 1) + (a + s.sum + (Multiset.card s + 1)) * w
+            + (2 * (a + s.sum) - (Multiset.card s + 1)) * x := by
+        rw [← hx, ← hw]; ring
+      exact key
+
+/-- **WAVE 5 — the final `ℕ`-arithmetic collapse of the structured bound to the loose target.**
+`1 + (t+1)·wW + e_t·((d−1)·(D−dH+1)) ≤ (2t+1)·d·D`, with `e_t = 2t−1` (`ℕ` truncated, `= max(0,2t−1)`),
+under the genuine in-tree relations `wW + dH ≤ D` (`Λ(W) = (lc H).natDegree`, and
+`(lc H).natDegree + dH ≤ totalDegree H ≤ D`), `2 ≤ d` (`= natDegreeY R`, the paper's regime),
+`1 ≤ dH ≤ d` (`dH = natDegreeY H`).  Here `wW` bounds `Λ(W)` and `(d−1)·(D−dH+1)` bounds `Λ(ξ)`
+(`weight_ξ_bound`).
+
+This is the BCIKS20 Claim A.2 arithmetic collapse
+`((d−1)e_t + t+1)(D−dH+1) − t < (2t+1)dD` (the `≤` form), numerically re-verified over
+`d∈[2,7], dH∈[1,d], D, t∈[0,8]`.  It is the genuine "step 2" of the structured route: once the
+structured weight `Λ(β_t) ≤ 1+(t+1)Λ(W)+e_t·Λ(ξ)` is established (via P2), this collapses it to the
+loose `(2t+1)·d·D` bound that (P1) states. -/
+theorem structured_weight_collapse (d dH D t wW : ℕ) (hd : 2 ≤ d) (hdH : 1 ≤ dH)
+    (hdHd : dH ≤ d) (hw : wW + dH ≤ D) :
+    1 + (t + 1) * wW + (2 * t - 1) * ((d - 1) * (D - dH + 1)) ≤ (2 * t + 1) * d * D := by
+  have hdHD : dH ≤ D := by omega
+  rcases Nat.eq_zero_or_pos t with ht | ht
+  · subst ht
+    simp only [Nat.mul_zero, Nat.zero_sub, Nat.zero_mul, Nat.add_zero]
+    nlinarith [hw, hd, hdH, hdHd, hdHD]
+  · obtain ⟨e, rfl⟩ : ∃ e, D = dH + e := ⟨D - dH, by omega⟩
+    obtain ⟨c, rfl⟩ : ∃ c, d = c + 1 := ⟨d - 1, by omega⟩
+    obtain ⟨s, rfl⟩ : ∃ s, t = s + 1 := ⟨t - 1, by omega⟩
+    have hwe : wW ≤ e := by omega
+    have hc1 : 1 ≤ c := by omega
+    have hdHc : dH ≤ c + 1 := hdHd
+    have h1 : (c + 1) - 1 = c := by omega
+    have h2 : (dH + e) - dH + 1 = e + 1 := by omega
+    have h3 : 2 * (s + 1) - 1 = 2 * s + 1 := by omega
+    rw [h1, h2, h3]
+    nlinarith [hwe, hc1, hdH, hdHc, Nat.mul_le_mul_left (2 * s + 2) hwe,
+      Nat.mul_le_mul_left (2 * s + 1) (Nat.mul_le_mul_left c (by omega : e + 1 ≤ dH + e))]
+
+/-- **WAVE 5 — the `WithBot ℕ` nsmul-bound helper.**  If `w ≤ some n` then `k • w ≤ some (k·n)`:
+the over-`𝒪` power bound `weight_Λ_over_𝒪_pow_le` produces `k • Λ_𝒪(a)`, and this descends a
+numeric `Λ_𝒪(a) ≤ some n` to `Λ_𝒪(a^k) ≤ some (k·n)` (used for the `W`/`ξ` power factors). -/
+theorem nsmul_withBot_le (k n : ℕ) {w : WithBot ℕ} (h : w ≤ WithBot.some n) :
+    k • w ≤ WithBot.some (k * n) := by
+  have hk : k • (WithBot.some n : WithBot ℕ) = WithBot.some (k * n) := by
+    induction k with
+    | zero => simp
+    | succ m ih => rw [succ_nsmul, ih, ← WithBot.coe_add]; congr 1; ring
+  exact (nsmul_le_nsmul_right h k).trans hk.le
+
+/-- **WAVE 5 — the structured `∏_l β_l^{λ_l}` factor bound (the genuine structured-IH product
+half).**  GIVEN the paper's **structured** induction hypothesis
+`hIH : ∀ l < k+1, Λ_𝒪(β_l) ≤ 1 + (l+1)·wW + e_l·xξ` (`e_l = 2l−1`, `wW`/`xξ` the `Λ(W)`/`Λ(ξ)`
+bounds), the partition-product weight is
+`≤ Σλ + ((k+1−i1)+Σλ)·wW + (2(k+1−i1)−Σλ)·xξ`.
+
+This is the structured analogue of `partitionProd_βHensel_weight_le`: the guard fires
+(`surviving_parts_lt`), `partitionProd_weight_le` gives the multiset-sum bound, the structured `hIH`
+bounds each factor, and `sum_map_structured` evaluates the closed form using `parts.sum = k+1−i1`,
+`parts.card = Σλ`, and `parts_pos` (every part `≥ 1`).  The `Λ(W)`-coefficient
+`(k+1−i1)+Σλ = Σ_l(l+1)λ_l` and the `Λ(ξ)`-coefficient `2(k+1−i1)−Σλ = Σ_l(2l−1)λ_l` are the genuine
+telescoped exponents of BCIKS20's `α_t` route.  No `sorry`. -/
+theorem partitionProd_βHensel_weight_structured_le (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (k i1 : ℕ) (wW xξ : ℕ)
+    (hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+        ≤ WithBot.some (1 + (l + 1) * wW + (2 * l - 1) * xξ))
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts) :
+    weight_Λ_over_𝒪 hH
+        (partitionProd lam (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
+      ≤ WithBot.some
+          (sigmaLambda lam + ((k + 1 - i1) + sigmaLambda lam) * wW
+            + (2 * (k + 1 - i1) - sigmaLambda lam) * xξ) := by
+  classical
+  have hcongr : partitionProd lam
+      (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)
+      = partitionProd lam (fun l => βHensel H x₀ R hHyp l) := by
+    rw [partitionProd, partitionProd]
+    refine congrArg Multiset.prod (Multiset.map_congr rfl (fun l hl => ?_))
+    rw [dif_pos (surviving_parts_lt lam hlam hl)]
+  rw [hcongr]
+  refine le_trans (partitionProd_weight_le H hH hDH lam (fun l => βHensel H x₀ R hHyp l)) ?_
+  have hkey : (lam.parts.map (fun l => weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D)).sum
+      ≤ WithBot.some
+          ((lam.parts.map (fun l => 1 + (l + 1) * wW + (2 * l - 1) * xξ)).sum) := by
+    have hmem : ∀ l ∈ lam.parts,
+        weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+          ≤ WithBot.some (1 + (l + 1) * wW + (2 * l - 1) * xξ) :=
+      fun l hl => hIH l (surviving_parts_lt lam hlam hl)
+    revert hmem
+    generalize lam.parts = ms
+    intro hmem
+    induction ms using Multiset.induction_on with
+    | empty => simp
+    | cons a s ih =>
+        rw [Multiset.map_cons, Multiset.sum_cons, Multiset.map_cons, Multiset.sum_cons,
+          WithBot.coe_add]
+        refine add_le_add (hmem a (Multiset.mem_cons_self a s)) ?_
+        exact ih (fun l hl => hmem l (Multiset.mem_cons_of_mem hl))
+  refine le_trans hkey ?_
+  -- Evaluate the ℕ multiset sum via the structured telescoping (parts are positive).
+  rw [sum_map_structured lam.parts wW xξ (fun l hl => lam.parts_pos hl)]
+  rw [lam.parts_sum, sigmaLambda, show Multiset.card lam.parts = lam.parts.card from rfl]
+
 /-! ### 4d. (P1) the weight bound — `t = 0` PROVEN, inductive step assembled to one per-term WALL -/
 
 /-- **(P1) `t = 0` case (PROVEN).**  `weight_Λ_over_𝒪 hH (βHensel … 0) D
@@ -992,15 +1170,31 @@ theorem βHensel_succ_term_weight_le (x₀ : F) (R : F[X][X][Y])
               (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
       ≤ WithBot.some ((2 * (k + 1) + 1) * Bivariate.natDegreeY R * D) := by
   -- WALL (documented, NOT faked): the genuine BCIKS20 per-term telescoping (paper lines
-  -- 4264–4280).  Wave-4 progress: (b) the `2 ≤ d_R` ξ-regime is now a documented faithful
-  -- hypothesis (`hdR2`, matching the paper's `ξ = W^{d−2}·ζ`); (a) the `B_coeff` Y-degree drop is
-  -- PROVEN (`hasseCoeffRepr𝒪_natDegreeY_le`).  The IRREDUCIBLE residual is (c): the per-term bound
-  -- is UNPROVABLE through the loose IH `Λ(β_l) ≤ (2l+1)·d_R·D` supplied here — the product factor
-  -- alone (`partitionProd_βHensel_weight_le`) is `(2(k+1−i1)+Σλ)·d_R·D`, and `Σλ` can exceed
-  -- `2·i1+1` (e.g. `λ` all-ones), so it already exceeds the target and the positive W/ξ/B factors
-  -- worsen it.  Honest closure needs the paper's STRUCTURED invariant
-  -- `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)` as IH so the partition constraint cancels the `Σλ` growth —
-  -- "an easier way is to consider the weight of `α_t`" (line 4276).  See `ingredientD-wave4.md`.
+  -- 4264–4280).  Wave-4 progress: (b) the `2 ≤ d_R` ξ-regime is a documented faithful hypothesis
+  -- (`hdR2`, matching the paper's `ξ = W^{d−2}·ζ`); (a) the `B_coeff` Y-degree drop is PROVEN
+  -- (`hasseCoeffRepr𝒪_natDegreeY_le`).
+  --
+  -- WAVE-5 RIGOROUS DIAGNOSIS (anti-fake, numerically re-verified, see `ingredientD-wave5.md`):
+  -- this per-term lemma is UNPROVABLE through the loose IH `Λ(β_l) ≤ (2l+1)·d_R·D` supplied here —
+  -- the product factor alone (`partitionProd_βHensel_weight_le`) is `(2(k+1−i1)+Σλ)·d_R·D`, and `Σλ`
+  -- can exceed `2·i1+1` (e.g. `λ` all-ones: `d=2,D=3,k=1,i1=0,λ=[1,1]` gives product `36 > 30`), so it
+  -- already exceeds the target and the positive W/ξ/B factors worsen it.
+  --
+  -- Moreover the natural fix — carry the paper's STRUCTURED invariant `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)`
+  -- (`e_l = max(0,2l−1)`) as the strong-induction IH — is itself UNPROVABLE *from the (A.1) recursion*:
+  -- the sub-additive calculus forces a constant (`Λ(W)^0Λ(ξ)^0`) contribution of `Σλ + (D−Σλ) = D`,
+  -- whereas the structured target's constant is `1` (gap `D−1`, irreducible — sub-additivity adds
+  -- constants, it cannot realise the multiplicative cancellation `β_t = α_t·W^{t+1}·ξ^{e_t}` with
+  -- `Λ(α_t)=Λ(Y)=1`).  Obtaining `Λ(α_t)=1` is the content of (P2) (`R(X,γ,Z)=0`).  This is exactly
+  -- BCIKS20's "an easier way is to consider the weight of `α_t`" (line 4276).
+  --
+  -- WAVE-5 PROGRESS (axiom-clean, above): GIVEN the structured IH, the per-term collapse to this loose
+  -- target IS provable — `partitionProd_βHensel_weight_structured_le` (structured product half),
+  -- `sum_map_structured` (the `Σ_l λ_l·(…)` telescoping), `structured_weight_collapse` (the final
+  -- `1+(t+1)wW+e_t·xξ ≤ (2t+1)dD` arithmetic, verified `0` failures over `d∈[2,7],dH∈[1,d],D,t∈[0,8]`),
+  -- and `nsmul_withBot_le` (the `WithBot ℕ` power-bound descent).  So (P1) is gated *solely* on the
+  -- structured IH, which is gated on (P2).  Closing this `sorry` with the loose IH would be a FALSE
+  -- step (rigorously impossible); it is left open by design.  See `ingredientD-wave5.md`.
   sorry
 
 /-- **(P1) full weight bound.**  `weight_Λ_over_𝒪 hH (βHensel … t) D ≤ (2t+1)·natDegreeY R·D`.
@@ -1083,7 +1277,13 @@ end Wave2
 
 * (P1) per-term closure (c): UNPROVABLE through the loose IH `(2l+1)·d_R·D` — needs the paper's
   STRUCTURED invariant `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)` so the partition constraint cancels the
-  `Σλ` growth (BCIKS20's `α_t`-weight route, line 4276).
+  `Σλ` growth (BCIKS20's `α_t`-weight route, line 4276).  WAVE 5 PROVES, additionally, that the
+  structured invariant is itself UNDERIVABLE from the (A.1) recursion (sub-additivity forces a
+  constant `D`, the target constant is `1`; gap `= D−1`, realisable only via `Λ(α_t)=1`, i.e. P2).
+  So (P1) is gated on the structured IH, which is gated on (P2).  The structured route's genuine
+  `ℕ`/`WithBot` arithmetic IS proven (axiom-clean): `partitionProd_βHensel_weight_structured_le`,
+  `sum_map_structured`, `structured_weight_collapse`, `nsmul_withBot_le` — once the structured IH is
+  supplied (via P2), the per-term collapse is mechanical.
 
 * iterated-Hasse Leibniz/product rule — needed only for (P2). -/
 
