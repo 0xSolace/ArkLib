@@ -2136,6 +2136,23 @@ lemma nonmatching_coords_for_z_card_div_le_delta
     (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z] using hrel
 
 omit [DecidableEq (RatFunc F)] in
+lemma nonmatching_coords_for_z_card_le_of_delta_mul_le
+    [NeZero n]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)
+    {E : ℕ}
+    (hE : δ * (n : ℚ) ≤ E) :
+    (nonmatching_coords_for_z k δ h_gs z).card ≤ E := by
+  have hrel := nonmatching_coords_for_z_card_div_le_delta
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z
+  have hnpos : (0 : ℚ) < n := by exact_mod_cast Nat.pos_of_neZero n
+  have hcard :
+      ((nonmatching_coords_for_z k δ h_gs z).card : ℚ) ≤ δ * n :=
+    (div_le_iff₀ hnpos).mp hrel
+  exact_mod_cast le_trans hcard hE
+
+omit [DecidableEq (RatFunc F)] in
 noncomputable def graphExtractionHypotheses_of_matching_coords
     [DecidableEq (Polynomial F)]
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
@@ -2226,6 +2243,36 @@ noncomputable def graphExtractionHypotheses_of_uniform_nonmatching_bound
       exact lt_of_lt_of_le (hcount z)
         (Nat.mul_le_mul_left m (Nat.sub_le_sub_left (hbad z) n)))
     hlarge
+
+omit [DecidableEq (RatFunc F)] in
+noncomputable def graphExtractionHypotheses_of_delta_nonmatching_bound
+    [NeZero n]
+    [DecidableEq (Polynomial F)]
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    {E : ℕ}
+    (hE : δ * (n : ℚ) ≤ E)
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (n - E))
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs :=
+  graphExtractionHypotheses_of_uniform_nonmatching_bound
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hx0 hsep hS_nonempty
+    (fun z => nonmatching_coords_for_z_card_le_of_delta_mul_le
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z hE)
+    hcount hlarge
 
 open Polynomial in
 /-- Claim 5.10 with the missing counting-to-coefficient-value bridge exposed
@@ -2594,6 +2641,36 @@ lemma exists_points_with_large_matching_subset_of_univ_uniform_nonmatching_bound
     (fun z _hz => hbad z)
     (by simpa using hthreshold)
     (by simpa using hsmall)
+
+/-- Full-close-set Claim 5.11 wrapper where the uniform bad-coordinate bound is
+obtained from the relative-distance radius `δ`. -/
+lemma exists_points_with_large_matching_subset_of_delta_nonmatching_bound
+    [NeZero n]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {D E t : ℕ}
+    (hE : δ * (n : ℚ) ≤ E)
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D + t ≤ #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (hsmall :
+      E * #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) < (n - k) * t) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      (matching_set_at_x k δ h_gs x).card >
+        (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D := by
+  exact exists_points_with_large_matching_subset_of_univ_uniform_nonmatching_bound
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs (D := D) (E := E) (t := t)
+    (fun z => nonmatching_coords_for_z_card_le_of_delta_mul_le
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z hE)
+    hthreshold hsmall
 
 /-- Claim 5.11 from [BCIKS20].
 There exists a set of points `{x₀,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in

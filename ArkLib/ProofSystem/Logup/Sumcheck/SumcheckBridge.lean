@@ -262,6 +262,41 @@ theorem LogupSumcheckBridge.relationInput
   logupSumcheckRelationInput_of_rowsAgree (F := F) (n := n) (M := M) (params := params)
     bridge.rowsAgree bridge.claimZero
 
+theorem logupSumcheckOutputTarget_eq_eval
+    {hSigns : (-1 : F) ≠ 1}
+    {out : LogupSumcheckStmtOut F n M params}
+    {oStmt : ∀ i, LogupSumcheckOracleStatement F n M params i}
+    (hRel :
+      ((out, oStmt), ()) ∈
+        Sumcheck.Spec.relationRound F n (logupSumcheckDegree M params)
+          (signDomain F hSigns) (.last n)) :
+    out.target = MvPolynomial.eval out.challenges (oStmt ()).1 := by
+  unfold Sumcheck.Spec.relationRound at hRel
+  rw [← hRel]
+  have hzero : n - ↑(Fin.last n : Fin (n + 1)) = 0 := by simp
+  letI : IsEmpty (Fin (n - ↑(Fin.last n : Fin (n + 1)))) := by
+    rw [hzero]
+    infer_instance
+  rw [Fintype.piFinset_of_isEmpty]
+  let x0 : Fin (n - ↑(Fin.last n : Fin (n + 1))) → F := fun i => isEmptyElim i
+  rw [Finset.sum_eq_single x0]
+  · have hpoint :
+        Fin.append out.challenges x0 ∘
+            Fin.cast (Sumcheck.Spec.relationRound._proof_1 n (Fin.last n)) =
+          out.challenges := by
+      rw [Fin.append_right_nil out.challenges x0 hzero]
+      ext i
+      simp
+    rw [hpoint]
+    rfl
+  · intro y _ hy
+    exfalso
+    apply hy
+    funext i
+    exact isEmptyElim i
+  · intro hx
+    exact False.elim (hx (Finset.mem_univ x0))
+
 theorem LogupSumcheckBridge.finalQueryCheck
     {stmt : StmtAfterOuter F n M params}
     {oStmt : ∀ i, OStmtAfterOuter F n M params i}
@@ -274,13 +309,35 @@ theorem LogupSumcheckBridge.finalQueryCheck
       out.target =
         MvPolynomial.eval out.challenges
           (logupSumcheckPolynomial F n M params stmt oStmt).1) :
-    finalQueryCheck (canonicalGroups params) stmt.xChallenge stmt.zChallenge out.challenges
+    Logup.finalQueryCheck (canonicalGroups params) stmt.xChallenge stmt.zChallenge out.challenges
       stmt.batchingScalars evals out.target := by
   change
     qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge out.challenges
       stmt.batchingScalars evals = out.target
   rw [hTarget]
   exact (bridge.finalEval out.challenges evals hAgree).symm
+
+theorem LogupSumcheckBridge.finalQueryCheck_of_relation
+    {hSigns : (-1 : F) ≠ 1}
+    {stmt : StmtAfterOuter F n M params}
+    {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    (bridge : LogupSumcheckBridge F n M params stmt oStmt)
+    (out : LogupSumcheckStmtOut F n M params)
+    (evals : PointEvaluations F M params.numGroups)
+    (hAgree :
+      logupPointEvaluationsAgree F n M params out.challenges oStmt evals)
+    (hRel :
+      ((out, logupSumcheckOracleStmt F n M params stmt oStmt), ()) ∈
+        Sumcheck.Spec.relationRound F n (logupSumcheckDegree M params)
+          (signDomain F hSigns) (.last n)) :
+    Logup.finalQueryCheck (canonicalGroups params) stmt.xChallenge stmt.zChallenge out.challenges
+      stmt.batchingScalars evals out.target := by
+  apply LogupSumcheckBridge.finalQueryCheck (F := F) (n := n) (M := M) (params := params)
+    bridge out evals hAgree
+  simpa [logupSumcheckOracleStmt] using
+    logupSumcheckOutputTarget_eq_eval (F := F) (n := n) (M := M) (params := params)
+      (hSigns := hSigns) (out := out)
+      (oStmt := logupSumcheckOracleStmt F n M params stmt oStmt) hRel
 
 
 end SumcheckBridge
