@@ -98,6 +98,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
+import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.CollinearProximates
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.Interpolation
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
