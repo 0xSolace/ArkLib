@@ -371,8 +371,10 @@ lemma relHammingDist_transpose_le {F : Type*} [DecidableEq F] [Fintype ι] [None
     simpa [Matrix.transpose] using this
   gcongr
 
+set_option linter.unusedSectionVars false in
+set_option linter.unusedFintypeInType false in
 /-- A close interleaved codeword projects, column-wise, to a codeword of the base code. -/
-lemma closeCodewordsRel_interleaved_transpose_mem_code {F : Type*} [Fintype ι]
+lemma closeCodewordsRel_interleaved_transpose_mem_code {F : Type*}
     {m : ℕ} {C : Set (ι → F)} {δ : ℝ}
     {f V : Matrix ι (Fin m) F}
     (hV : V ∈ ListDecodable.closeCodewordsRel (interleavedCodeSet (κ := Fin m) C) f δ)
@@ -858,7 +860,9 @@ file and in `ListDecodability.lean`: the interleaved-code carrier
 (`interleavedCodeSet`, with its `Fintype` instance `interleavedCodeSet_fintype`),
 the maximised list size `Lambda` (= `ListDecodability.Lambda`) and its monotonicity
 (`Lambda_mono`), and the row-projection characterisation `mem_interleavedCode_iff`
-(`V ∈ C^{≡m} ↔ ∀ k, V.transpose k ∈ C`).
+(`V ∈ C^{≡m} ↔ ∀ k, V.transpose k ∈ C`).  In particular,
+`closeCodewordsRel_interleaved_transpose_mem_code` proves that any interleaved
+codeword in a relative Hamming ball projects, row-wise, to a codeword of `C`.
 
 The residual is the **Gopalan–Guruswami–Raghavendra (GGR11)** combinatorial
 list-recovery recursion (RANDOM 2011, "List Decoding Tensor Products and Interleaved
