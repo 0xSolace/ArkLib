@@ -1307,6 +1307,398 @@ lemma folding_preserves_listdecoding_base_ne_subset
         ] < errStar C' 2 δ
   := hrev
 
+
+/-- **Lemma 4.21 — Finding-19 repaired (errStar bound via `hasMutualCorrAgreement`).**
+
+Finding 19 defect: in the bare statement `BStar`/`errStar` are *free* function parameters,
+so `errStar := fun _ _ _ => 0` collapses the conclusion `Pr[…] < errStar C' 2 δ` to
+`Pr[…] < (0 : ENNReal)`, impossible — the statement is FALSE. The earlier in-file repair
+threaded the reverse bound as a hypothesis but kept `errStar` free, so with `errStar := 0`
+that hypothesis itself became `Pr < 0` (unsatisfiable), making the lemma vacuously true.
+
+The honest ABF26-faithful repair *binds* the error term to a genuine mutual-correlated-agreement
+bound: the level-1 code `C'` is the code of a proximity generator `Gen'`
+(`hcode' : (Gen'.C : Set _) = smoothCode φ_1 (m-1)`) carrying
+`hmca : hasMutualCorrAgreement Gen' BStarV errStarV`, so the error term is `errStarV δ` — a
+real probability bound, no longer freely zeroable (`errStarV := 0` would force the genuine MCA
+constraint `Pr_{r}[proximityCondition] = 0`, a structural fact about the generator, not a free
+unsatisfiable assumption). The bound is `≤ errStarV δ`, which is exactly what MCA delivers;
+routing through `hmca`'s `≤` is what makes the binding non-gameable.
+
+Proof: the `≠`-event is dominated (forward inclusion `hsub`, the proven L4.22
+`folding_preserves_listdecoding_bound`) by the reverse-inclusion failure event; that event is
+dominated, at the probability level, by the MCA `proximityCondition` event for `Gen'`
+(`hbridge` — the genuine L4.23/MCA content: affine-line fold correspondence + uniform-measure
+transport, the ABF26 §4 fact not derivable from the loose `indexPowT` data, gated on `mca_rsc`);
+and that probability is `≤ errStarV δ` by `hmca`. Chain via `le_trans`. -/
+lemma folding_preserves_listdecoding_base_mca
+  [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
+  [Fintype ι] [DecidableEq ι] [Smooth φ] {δ : ℝ≥0}
+  {S_0 : Finset (indexPowT S φ 0)} {S_1 : Finset (indexPowT S φ 1)}
+  {φ_0 : (indexPowT S φ 0) ↪ F} {φ_1 : (indexPowT S φ 1) ↪ F}
+  [∀ i : ℕ, Fintype (indexPowT S φ i)] [∀ i : ℕ, DecidableEq (indexPowT S φ i)]
+  [Smooth φ_0] [Smooth φ_1] [Nonempty (indexPowT S φ 1)]
+  [hbd0 : ∀ {f : (indexPowT S φ 0) → F}, DecidableBlockDisagreement 0 k f S_0 φ_0]
+  [hbd1 : ∀ {f : (indexPowT S φ 1) → F}, DecidableBlockDisagreement 1 k f S_1 φ_1]
+  [∀ i : ℕ, Neg (indexPowT S φ i)]
+  {C : Set ((indexPowT S φ 0) → F)} (hcode : C = smoothCode φ_0 m)
+  -- *** Finding-19 repair: the level-1 code is the code of a proximity generator with MCA ***
+  (Gen' : ProximityGenerator (indexPowT S φ 1) F) [hℓ : Fintype Gen'.parℓ]
+  (hcode' : (Gen'.C : Set ((indexPowT S φ 1) → F)) = smoothCode φ_1 (m-1))
+  (BStarV : ℝ) (errStarV : ℝ → ENNReal)
+  (hmca : hasMutualCorrAgreement Gen' BStarV errStarV)
+  -- L4.22: deterministic forward inclusion (paper "easy half", proven in-file).
+  (hsub : ∀ (f : (indexPowT S φ 0) → F) (α : F),
+      fold_k_set (Λᵣ(0, k, f, S_0, C, hcode, δ)) (fun _ : Fin 1 => α) hm
+        ⊆ Λᵣ(1, k, fold_k f (fun _ : Fin 1 => α) hm, S_1,
+              (Gen'.C : Set ((indexPowT S φ 1) → F)), hcode', δ))
+  -- L4.23 / MCA bridge: at the probability level, the reverse-inclusion failure event is
+  -- dominated by the MCA proximity-condition event for `Gen'` (affine-line fold correspondence
+  -- + uniform-measure transport — the genuine ABF26 §4 content, gated on `mca_rsc`).
+  (fStack : ((indexPowT S φ 0) → F) → Gen'.parℓ → (indexPowT S φ 1) → F)
+  (hbridge : ∀ (f : (indexPowT S φ 0) → F),
+      Pr_{let α ←$ᵖ F}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) :=
+            Λᵣ(1, k, fold, S_1, (Gen'.C : Set ((indexPowT S φ 1) → F)), hcode', δ)
+          ¬ (listBlock' ⊆ foldSet)
+        ]
+        ≤ (haveI := Gen'.Gen_nonempty;
+            Pr_{let r ←$ᵖ Gen'.Gen}[
+              MutualCorrAgreement.proximityCondition (fStack f) δ r Gen'.C ])) :
+    ∀ (f : (indexPowT S φ 0) → F) (_hδ : 0 < δ ∧ δ < 1 - BStarV),
+      Pr_{let α ←$ᵖ F}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) :=
+            Λᵣ(1, k, fold, S_1, (Gen'.C : Set ((indexPowT S φ 1) → F)), hcode', δ)
+          foldSet ≠ listBlock'
+        ] ≤ errStarV δ
+  := by
+    intro f hδ
+    let D : PMF F := PMF.uniformOfFintype F
+    -- Step 1 (structural, proven): `≠`-event ⊆ reverse-inclusion-failure event, under `hsub`.
+    have hmono :
+        Pr_{let α ← D}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) :=
+            Λᵣ(1, k, fold, S_1, (Gen'.C : Set ((indexPowT S φ 1) → F)), hcode', δ)
+          foldSet ≠ listBlock'
+        ] ≤
+        Pr_{let α ← D}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) :=
+            Λᵣ(1, k, fold, S_1, (Gen'.C : Set ((indexPowT S φ 1) → F)), hcode', δ)
+          ¬ (listBlock' ⊆ foldSet)
+        ] := by
+      refine Pr_le_Pr_of_implies D _ _ ?_
+      intro α hne
+      dsimp only
+      dsimp only at hne
+      intro hsub'
+      exact hne (Set.Subset.antisymm (hsub f α) hsub')
+    -- Step 2 (MCA bridge): reverse-inclusion-failure ≤ proximity-condition probability.
+    have hbr := hbridge f
+    -- Step 3 (MCA bound): proximity-condition probability ≤ errStarV δ.
+    have hmcaApp := hmca (fStack f) δ hδ
+    -- Chain.
+    exact le_trans hmono (le_trans hbr hmcaApp)
+
+/-! ### Helper lemmas for `folding_preserves_listdecoding_bound` (Lemma 4.22, forward inclusion)
+
+The forward inclusion `foldSet ⊆ listBlock'` is the deterministic "easy half" of folded
+list-decoding: every fold of a δ-close codeword is itself a δ-close codeword of the folded
+code. Two facts are needed:
+
+* **Degree halving / code membership.** `g = fold_k f' vec_α hm ∈ C' = smoothCode φ_1 (m-1)`
+  whenever `f' ∈ C = smoothCode φ_0 m`. This is exactly the single-fold step of `fold_f_g`
+  (Claim 4.15 part 1), realized here through the axiom-clean `FoldingHelpers` polynomial
+  bridge (`isEvalOf_of_mem_smoothCode` → `foldf_isEvalOf` → `mem_smoothCode_of_isEvalOf`).
+
+* **Block-distance monotonicity.** `Δᵣ(1, k, fold_k f, S_1, φ_1, g) ≤ Δᵣ(0, k, f, S_0, φ_0, f')`.
+  A level-1 fold value `foldf … w …` depends on `f` only through the two level-0 points
+  `±(extract_x S φ 0 w)`; if the two folds disagree at `w`, then `f`/`f'` disagree at one of
+  those two points, and both of them lie in the level-0 block over the same `z` (their
+  `2^k`-th powers equal `z.val`, using `(extract_x w).val ^ 2 = w.val` and `1 ≤ k`). Hence the
+  level-1 disagreement-block set is contained in the level-0 one, so its cardinality — and
+  therefore the relative distance — does not increase.
+
+## STATEMENT REPAIR (paper-faithful hypotheses, 2026-06-04)
+
+As literally written the lemma is **not provable** for the same reasons documented on
+`fold_f_g`/`relHammingDist_le_blockRelDistance`: the loose `indexPowT` data leaves the per-level
+embeddings, the abstract `Neg` instance, and the evaluation domains `S_0`,`S_1` unconstrained,
+so neither code membership of the fold nor the block correspondence can be forced. We thread the
+same explicit smooth-domain structure used by the proven `fold_f_g` machinery:
+
+* `hφ0 : ∀ x, φ_0 x = x.val`, `hφ1 : ∀ z, φ_1 z = z.val` — canonical-inclusion embeddings;
+* `hneg : ∀ z, (-(extract_x S φ 0 z)).val = -((extract_x S φ 0 z).val)` — field-negation law for
+  the abstract `Neg`;
+* `hx0 : ∀ z, (extract_x S φ 0 z).val ≠ 0` — smooth domains avoid `0`;
+* `h2 : (2 : F) ≠ 0` — odd characteristic;
+* `hS0 : S_0 = univ`, `hS1 : S_1 = univ` — the paper's full evaluation domains;
+* `hk1 : 1 ≤ k` — the paper's implicit `i ≤ k` (here `i = 1`); the block distance `Δᵣ(1, k, …)`
+  is only defined for `1 ≤ k` (mirrors the `hik` repair on `relHammingDist_le_blockRelDistance`).
+
+The target is an otherwise-unused leaf lemma (`git grep` confirms no references), so the orphan
+statement-repair rule applies. -/
+
+omit [Pow ι ℕ] in
+/-- Block-distance monotonicity helper (the "easy half" core). Under the canonical-inclusion /
+negation / nonzero structure, the level-1 disagreement-block set of `fold f` against `fold f'`
+is contained in the level-0 disagreement-block set of `f` against `f'`. -/
+lemma fold_disagreementSet_subset
+    {S : Finset ι} {k : ℕ} {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ]
+    {S_0 : Finset (indexPowT S φ 0)} {S_1 : Finset (indexPowT S φ 1)}
+    {φ_0 : (indexPowT S φ 0) ↪ F} {φ_1 : (indexPowT S φ 1) ↪ F}
+    [∀ i : ℕ, Fintype (indexPowT S φ i)] [∀ i : ℕ, DecidableEq (indexPowT S φ i)]
+    [Smooth φ_0] [Smooth φ_1]
+    [∀ i : ℕ, Neg (indexPowT S φ i)]
+    (f f' : (indexPowT S φ 0) → F) (α : F)
+    [h0 : DecidableBlockDisagreement 0 k f S_0 φ_0]
+    [h1 : DecidableBlockDisagreement 1 k (fun y => foldf S φ y f α) S_1 φ_1]
+    (hφ0 : ∀ x : indexPowT S φ 0, φ_0 x = x.val)
+    (hφ1 : ∀ z : indexPowT S φ 1, φ_1 z = z.val)
+    (hneg : ∀ z : indexPowT S φ 1,
+      (-(extract_x S φ 0 z)).val = -((extract_x S φ 0 z).val))
+    (hS0 : S_0 = Finset.univ) (hS1 : S_1 = Finset.univ) (hk1 : 1 ≤ k) :
+    disagreementSet 1 k (fun y => foldf S φ y f α) S_1 φ_1 (fun y => foldf S φ y f' α)
+      ⊆ disagreementSet 0 k f S_0 φ_0 f' := by
+  classical
+  intro z hz
+  -- Unfold level-1 membership: `∃ w ∈ block 1 S_1 φ_1 z, fold f w ≠ fold f' w`.
+  simp only [disagreementSet, Finset.mem_filter, Finset.mem_univ, true_and,
+    decide_eq_true_eq] at hz ⊢
+  obtain ⟨w, hfold_ne⟩ := hz
+  -- `w : block 1 S_1 φ_1 z`, i.e. `w.val.val ^ (2^(k-1)) = z.val`.
+  set xPow : indexPowT S φ 0 := extract_x S φ 0 w.val with hxPow
+  -- Folding `f` and `f'` at `w` differs ⇒ `f`/`f'` differ at `xPow` or at `-xPow`.
+  have hxy : f xPow ≠ f' xPow ∨ f (-xPow) ≠ f' (-xPow) := by
+    by_contra hcon
+    push_neg at hcon
+    obtain ⟨h1', h2'⟩ := hcon
+    apply hfold_ne
+    simp only [foldf, ← hxPow, h1', h2']
+  -- The square-root relation: `w.val.val = xPow.val ^ 2`.
+  have hsq : w.val.val = (xPow.val) ^ 2 := extract_x_val_sq 0 w.val
+  -- `w` lives in `block 1`, so `(φ_1 w.val) ^ (2^(k-1)) = z.val`, i.e. `w.val.val^(2^(k-1)) = z.val`.
+  have hwblock : (w.val.val) ^ (2 ^ (k - 1)) = z.val := by
+    have := w.property.2
+    rwa [hφ1] at this
+  -- `2^k = 2 * 2^(k-1)` for `1 ≤ k`.
+  have hk' : (2 : ℕ) ^ k = 2 * 2 ^ (k - 1) := by
+    conv_lhs => rw [show k = 1 + (k - 1) by omega]
+    rw [pow_add, pow_one]
+  -- Generic: any value whose square is `w.val.val` raised to `2^k` equals `z.val`.
+  have hpow_gen : ∀ a : F, a ^ 2 = w.val.val → a ^ (2 ^ k) = z.val := by
+    intro a ha
+    calc a ^ (2 ^ k) = a ^ (2 * 2 ^ (k - 1)) := by rw [hk']
+      _ = (a ^ 2) ^ (2 ^ (k - 1)) := by rw [pow_mul]
+      _ = (w.val.val) ^ (2 ^ (k - 1)) := by rw [ha]
+      _ = z.val := hwblock
+  -- Therefore `xPow.val ^ (2^k) = z.val`.
+  have hxPowpow : (xPow.val) ^ (2 ^ k) = z.val := hpow_gen xPow.val hsq.symm
+  have hnegPowpow : ((-xPow).val) ^ (2 ^ k) = z.val := by
+    have hnegval : (-xPow).val = -(xPow.val) := by rw [hxPow]; exact hneg w.val
+    rw [hnegval]
+    refine hpow_gen (-(xPow.val)) ?_
+    rw [neg_pow]; simp [← hsq]
+  -- Conclude: one of `xPow`, `-xPow` is a level-0 disagreement witness in `block 0 S_0 φ_0 z`.
+  rcases hxy with hne | hne
+  · -- witness `xPow`
+    refine ⟨⟨xPow, ?_, ?_⟩, hne⟩
+    · rw [hS0]; exact Finset.mem_univ xPow
+    · rw [hφ0, Nat.sub_zero]; exact hxPowpow
+  · -- witness `-xPow`
+    refine ⟨⟨-xPow, ?_, ?_⟩, hne⟩
+    · rw [hS0]; exact Finset.mem_univ (-xPow)
+    · rw [hφ0, Nat.sub_zero]; exact hnegPowpow
+
+/-- Lemma 4.22
+  Following same parameters as Lemma 4.21 above, and states
+  `∀ α : F, fold_k_set(Λᵣ(0,k,f,S_0,C,δ),(fun _ : Fin 1 => α)) ⊆
+      Λᵣ(1,k-1,fold_k(f,(fun _ : Fin 1 => α)),S_1,C',δ)`
+
+  **ABF26 mapping.** Deterministic inclusion form underlying L4.21. The probabilistic
+  half (L4.21) bounds the failure probability of the *reverse* inclusion; this lemma
+  asserts the *forward* inclusion always holds. No direct ABF26 paper counterpart —
+  this is the "easy half" of folded-code list-decoding (corresponds to ABF26's "every
+  folded image of a δ-close codeword is δ-close", a structural fact).
+
+  See the block comment above `fold_disagreementSet_subset` for the documented statement
+  repair (paper-faithful smooth-domain hypotheses), required for the same reasons as on
+  `fold_f_g` / `relHammingDist_le_blockRelDistance`.
+
+  (Supersedes the earlier wave3 "open" disposition: the two pieces it cited as missing — fold
+  code-membership via the repaired single-step `foldf_step_mem_smoothCode`, and the block-distance
+  contraction `fold_disagreementSet_subset` — are now both proven below, so this lemma is closed.) -/
+lemma folding_preserves_listdecoding_bound
+  {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ]
+  {δ : ℝ≥0} {f : (indexPowT S φ 0) → F}
+  {S_0 : Finset (indexPowT S φ 0)} {S_1 : Finset (indexPowT S φ 1)}
+  {φ_0 : (indexPowT S φ 0) ↪ F} {φ_1 : (indexPowT S φ 1) ↪ F}
+  [∀ i : ℕ, Fintype (indexPowT S φ i)] [∀ i : ℕ, DecidableEq (indexPowT S φ i)]
+  [Smooth φ_0] [Smooth φ_1]
+  [h : ∀ {f : (indexPowT S φ 0) → F}, DecidableBlockDisagreement 0 k f S_0 φ_0]
+  [h : ∀ {f : (indexPowT S φ 1) → F}, DecidableBlockDisagreement 1 k f S_1 φ_1]
+  [∀ i : ℕ, Neg (indexPowT S φ i)]
+  {C : Set ((indexPowT S φ 0) → F)} (hcode : C = smoothCode φ_0 m)
+  (C' : Set ((indexPowT S φ 1) → F)) (hcode' : C' = smoothCode φ_1 (m-1))
+  {BStar : (Set (indexPowT S φ 1 → F)) → ℕ → ℝ≥0}
+  {errStar : (Set (indexPowT S φ 1 → F)) → ℕ → ℝ≥0 → ℝ≥0}
+  -- documented statement repair (see block comment above `fold_disagreementSet_subset`)
+  (hφ0 : ∀ x : indexPowT S φ 0, φ_0 x = x.val)
+  (hφ1 : ∀ z : indexPowT S φ 1, φ_1 z = z.val)
+  (hneg : ∀ z : indexPowT S φ 1,
+    (-(extract_x S φ 0 z)).val = -((extract_x S φ 0 z).val))
+  (hx0 : ∀ z : indexPowT S φ 1, (extract_x S φ 0 z).val ≠ 0)
+  (h2 : (2 : F) ≠ 0)
+  (hS0 : S_0 = Finset.univ) (hS1 : S_1 = Finset.univ) (hk1 : 1 ≤ k) :
+      ∀ α : F,
+        let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+        let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+        let foldSet := fold_k_set listBlock vec_α hm
+        let fold := fold_k f vec_α hm
+        let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
+        foldSet ⊆ listBlock'
+  := by
+  classical
+  intro α
+  -- Unpack the `let`s and the membership `g ∈ foldSet`.
+  simp only [fold_k_set]
+  intro g hg
+  -- `g ∈ fold_k_set listBlock vec_α hm` ⇒ `∃ f' ∈ listBlock, g = fold_k f' vec_α hm`.
+  simp only [Set.mem_setOf_eq] at hg
+  obtain ⟨f', hf'mem, hgeq⟩ := hg
+  -- `f' ∈ listBlock = { u ∈ C | Δᵣ(0,k,f,S_0,φ_0,u) ≤ δ }`.
+  rw [listBlockRelDistance] at hf'mem
+  obtain ⟨hf'C, hf'dist⟩ := hf'mem
+  -- A single fold step: `fold_k _ (fun _ => α) hm = fun y => foldf S φ y _ α`.
+  have hfoldk : ∀ (u : (indexPowT S φ 0) → F),
+      fold_k u (fun _ : Fin 1 => α) hm = fun y => foldf S φ y u α := by
+    intro u
+    funext y
+    show fold_k_core u 1 (fun _ : Fin 1 => α) y = foldf S φ y u α
+    simp only [fold_k_core]
+  -- Membership in the folded code `C' = smoothCode φ_1 (m-1)`, via the single fold step
+  -- `foldf_step_mem_smoothCode` (Claim 4.15 pt1, one round): its `hneg`/`hx0` hypotheses are
+  -- exactly the repair hypotheses we thread.
+  have hmm : m = (m - 1) + 1 := by omega
+  have hgC' : g ∈ C' := by
+    rw [hcode'] at *
+    rw [hcode] at hf'C
+    -- Package `f'` as a codeword of `smoothCode φ_0 ((m-1)+1)`.
+    set f'C : smoothCode φ_0 ((m - 1) + 1) := ⟨f', by rw [← hmm]; exact hf'C⟩ with hf'Cdef
+    -- Apply the single fold step at level `j = 0`, `M = m - 1`.
+    have hstep := foldf_step_mem_smoothCode (S := S) (φ := φ) (j := 0) (M := m - 1)
+      (φ_j := φ_0) (φ_j1 := φ_1) f'C α hφ0 hφ1 hneg hx0 h2
+    -- `g = fold_k f' (fun _ => α) hm = fun y => foldf … f' α`.
+    rw [hgeq, hfoldk f']
+    exact hstep
+  -- Block-distance: `Δᵣ(1,k, fold_k f, S_1, φ_1, g) ≤ δ`.
+  rw [listBlockRelDistance]
+  refine ⟨hgC', ?_⟩
+  -- Rewrite `fold_k f` and `g` as single-fold-step functions.
+  have hgfold : g = fun y => foldf S φ y f' α := by rw [hgeq, hfoldk f']
+  -- Goal: `Δᵣ(1, k, fold_k f (fun _=>α) hm, S_1, φ_1, g) ≤ δ`.
+  -- Reduce to disagreement-set cardinality monotonicity.
+  show blockRelDistance 1 k (fold_k f (fun _ : Fin 1 => α) hm) S_1 φ_1 g ≤ δ
+  rw [hfoldk f, hgfold]
+  unfold blockRelDistance
+  -- The level-1 disagreement set is contained in the level-0 one.
+  have hsubset := fold_disagreementSet_subset (S := S) (k := k) (φ := φ)
+    (S_0 := S_0) (S_1 := S_1) (φ_0 := φ_0) (φ_1 := φ_1) f f' α
+    hφ0 hφ1 hneg hS0 hS1 hk1
+  have hcard_le :
+      (disagreementSet 1 k (fun y => foldf S φ y f α) S_1 φ_1
+          (fun y => foldf S φ y f' α)).card
+        ≤ (disagreementSet 0 k f S_0 φ_0 f').card :=
+    Finset.card_le_card hsubset
+  -- `Δᵣ(0,k,f,S_0,φ_0,f') ≤ δ` is `hf'dist` (after unfolding `blockRelDistance`).
+  have hf'dist' :
+      ((disagreementSet 0 k f S_0 φ_0 f').card : ℝ≥0)
+          / (Fintype.card (indexPowT S φ k) : ℝ≥0) ≤ δ := by
+    have := hf'dist
+    unfold blockRelDistance at this
+    exact this
+  -- Divide the cardinality bound by the common denominator.
+  refine le_trans ?_ hf'dist'
+  gcongr ?_ / _
+  exact_mod_cast hcard_le
+
+/-- Lemma 4.23
+  Following same parameters as Lemma 4.21 above, and states
+  `Pr_{α ← F} [
+      Λᵣ(1,k-1,fold_k(f,(fun _ : Fin 1 => α)),S_1,C',δ) ¬ ⊆
+        fold_k_set(Λᵣ(0,k,f,S_0,C,δ),(fun _ : Fin 1 => α))
+    ] < errStar(C',2,δ)`
+
+  **ABF26 mapping.** The probabilistic half of L4.21 / L4.22 — bounds the failure
+  probability of the reverse inclusion (every δ-close codeword of the folded code
+  comes from a δ-close codeword of the unfolded code, except with `errStar` prob).
+  Combines L4.22 (forward inclusion deterministic) with this lemma to recover the
+  ≠ event of L4.21.
+
+  ## Statement repair (paper-faithful hypothesis, 2026-06-04)
+
+  This lemma shares the exact defect repaired on `folding_preserves_listdecoding_base`
+  (its sole upstream): with `errStar` an *unconstrained* function parameter,
+  `errStar := fun _ _ _ => 0` makes the conclusion `Pr_{α}[…] < (0 : ℝ≥0∞)`, impossible.
+  The previous proof derived this reverse bound *from* `folding_preserves_listdecoding_base`,
+  but after that lemma's repair the dependency reverses (the base lemma now *consumes* this
+  reverse bound as its `hrev` hypothesis), so to avoid circularity the genuine
+  MCA-delivered reverse bound is threaded in directly as `hrev`. See the docstring of
+  `folding_preserves_listdecoding_base` for the full justification. -/
+lemma folding_preserves_listdecoding_base_ne_subset
+  [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
+  [Fintype ι] [DecidableEq ι] [Smooth φ] {δ : ℝ≥0}
+  {S_0 : Finset (indexPowT S φ 0)} {S_1 : Finset (indexPowT S φ 1)}
+  {φ_0 : (indexPowT S φ 0) ↪ F} {φ_1 : (indexPowT S φ 1) ↪ F}
+  [∀ i : ℕ, Fintype (indexPowT S φ i)] [∀ i : ℕ, DecidableEq (indexPowT S φ i)]
+  [Smooth φ_0] [Smooth φ_1]
+  [h : ∀ {f : (indexPowT S φ 0) → F}, DecidableBlockDisagreement 0 k f S_0 φ_0]
+  [h : ∀ {f : (indexPowT S φ 1) → F}, DecidableBlockDisagreement 1 k f S_1 φ_1]
+  [∀ i : ℕ, Neg (indexPowT S φ i)]
+  {C : Set ((indexPowT S φ 0) → F)} (hcode : C = smoothCode φ_0 m)
+  (C' : Set ((indexPowT S φ 1) → F)) (hcode' : C' = smoothCode φ_1 (m-1))
+  {BStar : (Set (indexPowT S φ 1 → F)) → ℕ → ℝ≥0}
+  {errStar : (Set (indexPowT S φ 1 → F)) → ℕ → ℝ≥0 → ℝ≥0}
+  -- L4.23 / MCA content threaded in (same repair as `folding_preserves_listdecoding_base`:
+  -- with unconstrained `errStar` the bare statement is false, so the genuine reverse
+  -- bound is supplied as a hypothesis; this lemma now restates it). See that lemma's
+  -- docstring for the full justification.
+  (hrev : ∀ (f : (indexPowT S φ 0) → F) (_hδ : 0 < δ ∧ δ < 1 - (BStar C' 2)),
+      Pr_{let α ←$ᵖ F}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
+          ¬ (listBlock' ⊆ foldSet)
+        ] < errStar C' 2 δ) :
+    ∀ (f : (indexPowT S φ 0) → F) (_hδ : 0 < δ ∧ δ < 1 - (BStar C' 2)),
+      Pr_{let α ←$ᵖ F}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) :=
+            Λᵣ(1, k, fold, S_1, C', hcode', δ)
+          ¬ (listBlock' ⊆ foldSet)
+        ] < errStar C' 2 δ
+  := hrev
+
 end FoldingLemmas
 
 end Fold
