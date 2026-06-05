@@ -1000,6 +1000,7 @@ theorem linear_C_le_generalized_singleton_st20
   --      large δ); a faithful version needs the regime guard `δ ≤ ℓ/(ℓ+1)`. Not added here
   --      so the external-admit signature stays bridge-stable.
 
+#print axioms linear_C_le_generalized_singleton_st20
 end LowerBounds_General
 
 section LargeAlphabetBarrier
@@ -1287,11 +1288,4 @@ theorem frs_list_decoding_capacity_cz25
 
 end SubspaceDesignUpperBounds
 
-#print axioms st20_range_fiber_ge
-#print axioms st20_attach_fiber_ge
-#print axioms st20_nat_ineq
-#print axioms st20_kernel_extract
-#print axioms st20_dist_bound
-#print axioms st20_ncard_eq
-#print axioms linear_C_le_generalized_singleton_st20
 end CodingTheory
