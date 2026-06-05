@@ -1425,7 +1425,7 @@ theorem common_roots_force_lift_zero
   · have hβzero : β = 0 := by
       rw [← _root_.BCIKS20AppendixA.mk_canonicalRepOf𝒪 hH β, hβ]
       simp
-    simpa [β, hβzero]
+    simp [β, hβzero]
   have hSfinite : (_root_.BCIKS20AppendixA.S_β β).Finite := by
     let R : F[X] :=
       Polynomial.resultant (_root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β)

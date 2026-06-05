@@ -13,13 +13,14 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import ArkLib.ToMathlib.Polynomial.NatDegreeOfSum
 
+set_option linter.style.longFile 2900
+
 namespace ProximityGap
 
 -- Decidability instances are threaded through the sections for the §6 machinery;
 -- several statement-level bricks do not mention them directly.
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
-set_option linter.style.longFile 2900
 
 open NNReal Finset Function ProbabilityTheory
 open scoped BigOperators LinearCode ProbabilityTheory ENNReal

@@ -603,7 +603,6 @@ theorem closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_condition
   · exact hcond
 
 set_option maxHeartbeats 5000000 in
-
 -- The squared-distance Johnson wrapper unfolds several finite-code geometry bounds.
 /-- Close-list wrapper for the squared-distance `CodeGeometry` Johnson cap.
 
