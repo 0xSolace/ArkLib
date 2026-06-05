@@ -19857,12 +19857,12 @@
         },
         {
           "doc": "Boundary-card supplier for the \u00a75 affine-line bridge, routed through the Hensel-free [BCKHS25] restored-distance affine-line `jointAgreement`. The existing closed-radius capstones only expose nonemptiness of the boundary close set. This adapter records the additional [BCKHS25] obligations needed to turn that same close set into a restored-distance joint-agreement certificate.",
-          "kind": "theorem",
+          "kind": "lemma",
           "line": 133,
           "name": "ProximityGap.affine_lines_boundaryCard_of_BCKHS25_restored",
           "namespace": "ProximityGap",
           "short_name": "affine_lines_boundaryCard_of_BCKHS25_restored",
-          "signature": "theorem affine_lines_boundaryCard_of_BCKHS25_restored"
+          "signature": "lemma affine_lines_boundaryCard_of_BCKHS25_restored"
         },
         {
           "doc": "",
@@ -29869,53 +29869,44 @@
         },
         {
           "doc": "",
-          "kind": "lemma",
-          "line": 79,
-          "name": "Domain.CosetFftDomainClass.not_zero_mem_toFinset",
-          "namespace": "Domain.CosetFftDomainClass",
-          "short_name": "not_zero_mem_toFinset",
-          "signature": "lemma not_zero_mem_toFinset :"
-        },
-        {
-          "doc": "",
           "kind": "instance",
-          "line": 84,
-          "name": "Domain._anon_instance_84",
+          "line": 79,
+          "name": "Domain._anon_instance_79",
           "namespace": "Domain",
-          "short_name": "_anon_instance_84",
+          "short_name": "_anon_instance_79",
           "signature": "instance instance {\u03c9 : CosetFftDomain \u03b9 F} : Inhabited \u03c9.toFinset where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 85,
-          "name": "Domain._anon_def_85",
+          "line": 80,
+          "name": "Domain._anon_def_80",
           "namespace": "Domain",
-          "short_name": "_anon_def_85",
+          "short_name": "_anon_def_80",
           "signature": "def default := \u27e8\u03c9 0, by simp [CosetFftDomainClass.toFinset]\u27e9"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 87,
-          "name": "Domain._anon_instance_87",
+          "line": 82,
+          "name": "Domain._anon_instance_82",
           "namespace": "Domain",
-          "short_name": "_anon_instance_87",
+          "short_name": "_anon_instance_82",
           "signature": "instance instance {\u03c9 : CosetFftDomain \u03b9 F} : Inhabited \u03c9 where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 88,
-          "name": "Domain._anon_def_88",
+          "line": 83,
+          "name": "Domain._anon_def_83",
           "namespace": "Domain",
-          "short_name": "_anon_def_88",
+          "short_name": "_anon_def_83",
           "signature": "def default := \u27e8\u03c9 0, by simp [CosetFftDomainClass.toFinset]\u27e9"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 96,
+          "line": 91,
           "name": "Domain.CosetFftDomain.mem_iff_exists_mul",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "mem_iff_exists_mul",
@@ -29924,7 +29915,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 101,
+          "line": 96,
           "name": "Domain.CosetFftDomain.mem_toFinset_iff_exists_mul",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "mem_toFinset_iff_exists_mul",
@@ -29933,7 +29924,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 107,
+          "line": 102,
           "name": "Domain.CosetFftDomain.mem_toFinset_iff_mem",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "mem_toFinset_iff_mem",
@@ -29942,7 +29933,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 112,
+          "line": 107,
           "name": "Domain.CosetFftDomain.mem_toFinset_self",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "mem_toFinset_self",
@@ -29951,10 +29942,10 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 117,
-          "name": "Domain._anon_instance_117",
+          "line": 112,
+          "name": "Domain._anon_instance_112",
           "namespace": "Domain",
-          "short_name": "_anon_instance_117",
+          "short_name": "_anon_instance_112",
           "signature": "instance instance {x : F} {\u03c9 : CosetFftDomain \u03b9 F} : Decidable (x \u2208 \u03c9) :="
         }
       ]
@@ -73797,7 +73788,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 8025,
+      "declarations": 8024,
       "files": 396
     }
   }
