@@ -104,8 +104,8 @@ theorem hasOrderAt_of_rootMultiplicity_ge [DecidableEq F] {Q : F[X][Y]} {x y : F
 /-- **Obligation-4 datum, packaged over an agreement set.**  From the *proven* per-index root
 multiplicity `m ≤ rootMultiplicity Qz (ωs i) (Pz.eval (ωs i))` (the field-side output of
 `gsQ_multiplicity` / the `gapB_transport_mult` transport behind
-`Q_vanishes_on_close_codeword_graph`) on an agreement set `A`, the exact `hord` hypothesis consumed by
-`MatchingExtractor.matchingFactor_dvd_of_orderM_and_count` is produced:
+`Q_vanishes_on_close_codeword_graph`) on an agreement set `A`, the exact `hord` hypothesis consumed
+by `MatchingExtractor.matchingFactor_dvd_of_orderM_and_count` is produced:
 `∀ i ∈ A, GuruswamiSudan.HasOrderAt Qz (ωs i) (Pz.eval (ωs i)) m`. -/
 theorem hord_of_rootMultiplicity_ge [DecidableEq F] {n : ℕ}
     (ωs : Fin n ↪ F) (Qz : F[X][Y]) (Pz : F[X]) (m : ℕ) (A : Finset (Fin n))
