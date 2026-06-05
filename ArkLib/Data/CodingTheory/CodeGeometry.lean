@@ -36,7 +36,8 @@ private lemma row_identity (u v : ι → α) (i : ι) (hq : 0 < Fintype.card α)
   classical
   set q : ℝ := (Fintype.card α : ℝ) with hqdef
   have hqne : q ≠ 0 := by positivity
-  have hprod : ∀ a : α, ((if u i = a then (1:ℝ) else 0) - 1/q) * ((if v i = a then 1 else 0) - 1/q)
+  have hprod : ∀ a : α,
+      ((if u i = a then (1:ℝ) else 0) - 1/q) * ((if v i = a then 1 else 0) - 1/q)
       = (if u i = a then (1:ℝ) else 0) * (if v i = a then 1 else 0)
         - (1/q) * (if u i = a then (1:ℝ) else 0)
         - (1/q) * (if v i = a then (1:ℝ) else 0)
@@ -331,7 +332,8 @@ theorem card_le_of_johnson_condition (hq : 0 < Fintype.card α) {L : ℕ} (hL : 
     L ≤ ℓ := by
   classical
   -- Dd is nonnegative: it dominates the (PSD-nonnegative) single-word Gram entry
-  have hDd_nonneg : (0 : ℝ) ≤ ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+  have hDd_nonneg : (0 : ℝ) ≤
+      ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
         - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))) := by
     have hpsd := sum_sum_shiftInner_nonneg (fun _ : Fin 1 => c ⟨0, hL⟩) f β
     simp only [Fin.sum_univ_one] at hpsd
@@ -346,7 +348,8 @@ theorem card_le_of_johnson_condition (hq : 0 < Fintype.card α) {L : ℕ} (hL : 
         + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))) 0 with h | h
     · exact h
     · exfalso
-      have hnn : (0 : ℝ) ≤ (ℓ : ℝ) * (((B : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+      have hnn : (0 : ℝ) ≤
+          (ℓ : ℝ) * (((B : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
         - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
         + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))) :=
         mul_nonneg (by positivity) h

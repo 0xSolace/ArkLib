@@ -173,6 +173,7 @@ For any subset `S` of the evaluation domain with `#S ≤ k`, and any target valu
 
 The witness codeword is the evaluation vector of the Lagrange interpolant
 `Lagrange.interpolate S domain target`, which has degree `< #S ≤ k`. -/
+omit [DecidableEq ι] in
 theorem ReedSolomon_interpolate_through_subset
     {k : ℕ} (domain : ι ↪ F) (S : Finset ι) (hS : S.card ≤ k) (target : ι → F) :
     ∃ f ∈ ReedSolomon.code domain k, ∀ i ∈ S, f i = target i := by
