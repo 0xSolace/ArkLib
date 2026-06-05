@@ -11,6 +11,7 @@ import ArkLib.CommitmentScheme.Ajtai.Simple.Correctness
 import ArkLib.CommitmentScheme.Ajtai.Simple.Scheme
 import ArkLib.CommitmentScheme.Ajtai.Simple.Security
 import ArkLib.CommitmentScheme.Basic
+import ArkLib.CommitmentScheme.CommitmentScheme
 import ArkLib.CommitmentScheme.Fold
 import ArkLib.CommitmentScheme.KZG.Algebra
 import ArkLib.CommitmentScheme.KZG.Basic
