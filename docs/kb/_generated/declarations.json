@@ -21984,6 +21984,127 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2Close.lean": {
+      "declarations": [
+        {
+          "doc": "A part of a multiset with `m.sum \u2264 t+1` and `(t+1) \u2209 m` is `\u2264 t`.",
+          "kind": "theorem",
+          "line": 35,
+          "name": "BCIKS20.HenselNumerator.part_le_of_notMem_succ",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "part_le_of_notMem_succ",
+          "signature": "theorem part_le_of_notMem_succ {t : \u2115} {m : Multiset \u2115} (hsum : m.sum \u2264 t + 1)"
+        },
+        {
+          "doc": "**Product vanishing on the killed terms.**  If `(t+1) \u2208 m` then the truncated coefficient product over `m` is `0`, because the `(t+1)`-coefficient of the `t`-truncation is `0`.",
+          "kind": "theorem",
+          "line": 43,
+          "name": "BCIKS20.HenselNumerator.prod_map_coeff_trunc_eq_zero_of_mem",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "prod_map_coeff_trunc_eq_zero_of_mem",
+          "signature": "theorem prod_map_coeff_trunc_eq_zero_of_mem (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**Product agreement on the surviving terms.**  If `m.sum \u2264 t+1` and `(t+1) \u2209 m`, every part is `\u2264 t`, so the truncated and assembled coefficient products over `m` coincide.",
+          "kind": "theorem",
+          "line": 52,
+          "name": "BCIKS20.HenselNumerator.prod_map_coeff_trunc_eq_assembled_of_notMem",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "prod_map_coeff_trunc_eq_assembled_of_notMem",
+          "signature": "theorem prod_map_coeff_trunc_eq_assembled_of_notMem (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "Every value-multiset in the image `(finsuppAntidiag (range i) s).image (valueMultiset \u2026)` has multiset-sum exactly `s`.",
+          "kind": "theorem",
+          "line": 63,
+          "name": "BCIKS20.HenselNumerator.image_valueMultiset_sum",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "image_valueMultiset_sum",
+          "signature": "theorem image_valueMultiset_sum {i s : \u2115} {m : Multiset \u2115}"
+        },
+        {
+          "doc": "**STEP 1 \u2014 the per-(i, ab) inner-sum restriction (PROVEN).**",
+          "kind": "theorem",
+          "line": 73,
+          "name": "BCIKS20.HenselNumerator.inner_sum_trunc_eq_restricted_assembled",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "inner_sum_trunc_eq_restricted_assembled",
+          "signature": "theorem inner_sum_trunc_eq_restricted_assembled (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**STEP 1 (the wiped w14 lemma, RE-DERIVED, PROVEN).** `trunc_defect_eq_faaDiBruno_assembled_restricted` \u2014 the order-`(t+1)` coefficient of `eval (\u03b2HenselTrunc t) Q` equals the assembled Fa\u00e0-di-Bruno partition/`countPerms` sum **restricted** to value-multisets `m` with `(t+1) \u2209 m`.",
+          "kind": "theorem",
+          "line": 96,
+          "name": "BCIKS20.HenselNumerator.trunc_defect_eq_faaDiBruno_assembled_restricted",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "trunc_defect_eq_faaDiBruno_assembled_restricted",
+          "signature": "theorem trunc_defect_eq_faaDiBruno_assembled_restricted (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "Abbreviation for the restricted Fa\u00e0-di-Bruno sum of STEP 1 (the order-`(t+1)` truncated defect, laid bare).",
+          "kind": "def",
+          "line": 122,
+          "name": "BCIKS20.HenselNumerator.restrictedFaaDiBrunoSum",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "restrictedFaaDiBrunoSum",
+          "signature": "def restrictedFaaDiBrunoSum (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "STEP 1, repackaged: the order-`(t+1)` truncated defect equals `restrictedFaaDiBrunoSum`.",
+          "kind": "theorem",
+          "line": 136,
+          "name": "BCIKS20.HenselNumerator.trunc_defect_eq_restrictedFaaDiBrunoSum",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "trunc_defect_eq_restrictedFaaDiBrunoSum",
+          "signature": "theorem trunc_defect_eq_restrictedFaaDiBrunoSum (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**THE SINGLE NAMED COMBINATORIAL CORE of P2 (the carved residual), as a `Prop`.** `RestrictedFaaDiBrunoMatch`: the restricted Fa\u00e0-di-Bruno sum equals `\u2212\u03b6 \u00b7 coeff(t+1)(\u03b2HenselAssembled)` at every order.  This is the genuine BCIKS20 A.4 match: bijecting the restricted value-multisets `m` (entries = orders, zeros allowed, `card = i`, `(t+1) \u2209 m`) against the `(A.1)` index pairs `(i1, \u03bb)` \u2014 X-Taylor order `ab.1 = i1`, positive entries forming `\u03bb \u22a2 ab.2`, zero-slot count `i \u2212 card \u03bb` the Y-degree bookkeeping \u2014 matching `countPerms m` against `prefactor = C(i,i1)\u00b7multinomial(\u03bb)`, the per-term values",
+          "kind": "def",
+          "line": 152,
+          "name": "BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatch",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "RestrictedFaaDiBrunoMatch",
+          "signature": "def RestrictedFaaDiBrunoMatch (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**STEP 2 \u2014 the truncated-defect cancellation, reduced to the single named core (PROVEN from `RestrictedFaaDiBrunoMatch`).**",
+          "kind": "theorem",
+          "line": 160,
+          "name": "BCIKS20.HenselNumerator.trunc_defect_cancel_assembled",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "trunc_defect_cancel_assembled",
+          "signature": "theorem trunc_defect_cancel_assembled (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**P2 root, conditional on the carved core (PROVEN reduction).**",
+          "kind": "theorem",
+          "line": 170,
+          "name": "BCIKS20.HenselNumerator.assembledSeries_isRoot_of_match",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "assembledSeries_isRoot_of_match",
+          "signature": "theorem assembledSeries_isRoot_of_match (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**P2 lift identity, conditional on the carved core (PROVEN reduction).**",
+          "kind": "theorem",
+          "line": 177,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_177",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_theorem_177",
+          "signature": "theorem theorem \u03b2Hensel_lift_identity_of_match (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**`P2_closed` \u2014 the residual statement of P2 (PROVEN reduction).** The ENTIRE remaining mathematical content of BCIKS20 A.4's P2 is `RestrictedFaaDiBrunoMatch`: given it, the assembled series is the genuine Hensel root AND the repaired lift identity holds for all orders.  Everything else of P2 \u2014 STEP 1, the order-`0` base, the Newton linearization, the `PowerSeries.ext` assembly, the denominator clearing, and the uniqueness reduction to `gammaGenuine` \u2014 is PROVEN (here and upstream). WIRE-IN (one-line edit to `HenselNumerator.lean`, NOT made here): replace the body of the sorried `faaDiBruno_s",
+          "kind": "theorem",
+          "line": 197,
+          "name": "BCIKS20.HenselNumerator.P2_closed",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "P2_closed",
+          "signature": "theorem P2_closed (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Prelude.lean": {
       "declarations": []
     },
@@ -72734,8 +72855,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7910,
-      "files": 389
+      "declarations": 7923,
+      "files": 390
     }
   }
 }
