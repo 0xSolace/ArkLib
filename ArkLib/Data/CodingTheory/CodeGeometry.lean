@@ -309,4 +309,50 @@ theorem johnson_quadratic_cap (hq : 0 < Fintype.card α) {L : ℕ} (hL : 0 < L)
     intro i j hij
     simpa [hS] using shiftInner_offdiag_le hq (hA i) (hA j) (hB i j hij) hβ
 
+/-- **Radical-free Johnson list-size bound (finite form).** Under the
+agreement/distance constraints of `johnson_quadratic_cap`, if the shift
+parameter additionally satisfies `Dd + ℓ·Do < 0`, then `L ≤ ℓ`. Stated without
+square roots: instantiating `β` optimally at the `J_{q,ℓ}` radius discharges
+the side condition, recovering ABF26 Theorem 3.2. -/
+theorem card_le_of_johnson_condition (hq : 0 < Fintype.card α) {L : ℕ} (hL : 0 < L)
+    (f : ι → α) (c : Fin L → ι → α) {A B : ℕ} (ℓ : ℕ)
+    (hA : ∀ i, A ≤ agree (c i) f)
+    (hB : ∀ i j, i ≠ j → agree (c i) (c j) ≤ B)
+    {β : ℝ} (hβ : 0 ≤ β)
+    (hcond : ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))
+      + (ℓ : ℝ) * (((B : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))) < 0) :
+    L ≤ ℓ := by
+  classical
+  -- Dd is nonnegative: it dominates the (PSD-nonnegative) single-word Gram entry
+  have hDd_nonneg : (0 : ℝ) ≤ ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))) := by
+    have hpsd := sum_sum_shiftInner_nonneg (fun _ : Fin 1 => c ⟨0, hL⟩) f β
+    simp only [Fin.sum_univ_one] at hpsd
+    have hdiag := shiftInner_diag_le hq (hA ⟨0, hL⟩) hβ
+    linarith [hpsd, hdiag]
+  -- hence Do < 0
+  have hDo_neg : (((B : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))) < 0 := by
+    rcases lt_or_ge (((B : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))) 0 with h | h
+    · exact h
+    · exfalso
+      have hnn : (0 : ℝ) ≤ (ℓ : ℝ) * (((B : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))) :=
+        mul_nonneg (by positivity) h
+      linarith [hcond, hDd_nonneg, hnn]
+  -- the quadratic cap
+  have hcap := johnson_quadratic_cap hq hL f c hA hB hβ hDo_neg
+  -- finish: (L−1)(−Do) ≤ Dd < ℓ(−Do), −Do > 0 ⟹ L−1 < ℓ
+  have hfin : ((L : ℝ) - 1) < (ℓ : ℝ) := by
+    nlinarith [hcap, hcond, hDo_neg]
+  have : (L : ℝ) < (ℓ : ℝ) + 1 := by linarith
+  exact_mod_cast Nat.lt_succ_iff.mp (by exact_mod_cast this)
+
 end CodeGeometry
