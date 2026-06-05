@@ -1217,33 +1217,47 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
         let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (P₁.run stmt wit)
         let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (P₂.run stmt₂ wit₂)
         return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩) := by
-  -- **WIP (left block DONE; seam + right block remain).**
+  -- **WIP — left block DONE; ALL per-round seam+interior reductions now PROVEN; run-assembly
+  -- (transcript-prefix family + right-block run induction + output) remains.**
   --
-  -- Expose `run` as `runToRound (Fin.last (m+n))` followed by `output` (`run_eq_runToRound_last`),
+  -- Strategy: expose `run` as `runToRound (Fin.last (m+n))` ≫ `output` (`run_eq_runToRound_last`),
   -- then factor the full run at the seam `k = ⟨m,_⟩` via the keystone
   -- `runToRound_eq_bind_continueFromTo`:
-  --
   --   (P₁.append P₂).runToRound (last (m+n)) stmt wit
   --     = (P₁.append P₂).runToRound ⟨m,_⟩ stmt wit
   --         >>= continueFromTo (P₁.append P₂) stmt wit ⟨m,_⟩ (last (m+n)).
+  -- The first factor = `append_runToRound_seam` (PROVEN): ≍ `liftM (P₁.runToRound (last m))`.
   --
-  -- The first factor is `append_runToRound_seam` (PROVEN, this file): heterogeneously the `liftM` of
-  -- `P₁.runToRound (last m)` — i.e. `P₁`'s full message phase.  The remaining obligation is the
-  -- continuation `continueFromTo … ⟨m,_⟩ (last (m+n))`, which decomposes as:
-  --   (a) SEAM round `m` (`Prover.append`'s `i = m` branch): `P₁.output >>= P₂.input >>= P₂` round 0.
-  --       This is the genuinely new monadic-interleaving step (no left-block analog); it produces the
-  --       `(stmt₂, wit₂) = ← P₁.output (…)` and feeds `P₂.input (stmt₂, wit₂)`, matching the RHS
-  --       boundary `liftM (P₁.run …) >>= fun ⟨_,stmt₂,wit₂⟩ => liftM (P₂.run stmt₂ wit₂)`.
-  --   (b) RIGHT interior rounds `m+1 .. m+n-1` (`Prover.append`'s `i > m` branch): uniform `P₂`
-  --       rounds, the mirror of the proven left block under `Fin.natAdd (m+1)` /
-  --       `range_challenge_append_inr` (state transport: `append_PrvState_natAdd_succ`, PROVEN above).
-  --   (c) `output`: combine via `++ₜ` (`FullTranscript.append`, `append_fst`/`append_snd`) and the
-  --       `P₂.output` tail (the `output` branch of `Prover.append`, incl. the `n = 0` degenerate seam).
+  -- PROVEN per-round handles (all #print-axioms clean), ready to feed the run induction:
+  --   • SEAM round `m` (`i = m` branch): `append_sendMessage_seam` / `append_receiveChallenge_seam`
+  --     reduce the seam step to `P₁.output (cast _ state) >>= fun ctx => P₂.{send,recv} ⟨0,_⟩
+  --     (P₂.input ctx)` — exactly the `liftM (P₁.run) >>= fun ⟨_,s₂,w₂⟩ => liftM (P₂.run s₂ w₂)`
+  --     boundary (state transport `append_PrvState_seam_castSucc`, dir `append_dir_natAdd ⟨0,_⟩`).
+  --   • RIGHT interior rounds `m+1..m+n-1` (`i > m` branch): `append_sendMessage_natAdd` /
+  --     `append_receiveChallenge_natAdd` reduce to `P₂`'s step at round `k`; state transports
+  --     `append_PrvState_natAdd_castSucc` / `_interior_succ`; types `append_{dir,Message,Challenge}_natAdd`.
   --
-  -- Remaining precise obligation: the seam+right continuation lemma
-  --   HEq (continueFromTo (P₁.append P₂) stmt wit ⟨m,_⟩ (last (m+n)) rSeam)
-  --       (do let ⟨tr₂,s₃,w₃⟩ ← liftM (P₂.run (P₁.output-derived stmt₂) wit₂); …)
-  -- where `rSeam` is the seam-state result of `append_runToRound_seam`.  Blocked on (a) and (b).
+  -- REMAINING OBSTRUCTION (the genuinely new content, blocking assembly):
+  --   (T) Transcript-PREFIX family.  Unlike the left block (where the appended transcript truncated
+  --       to `j ≤ m` IS `pSpec₁.Transcript j`), the RIGHT block carries the full `transcript₁`
+  --       prefix: `(pSpec₁++pSpec₂).Transcript (natAdd m k).castSucc ≅ transcript₁ ⊕ pSpec₂.Transcript
+  --       k.castSucc`.  Need `Fin.happend`/`Fin.snoc` interaction lemmas — a prefix analogue of the
+  --       proven `concat_heq` — proving `Transcript.concat msg (transcript₁ ++ₜ tr₂)
+  --       ≍ transcript₁ ++ₜ (Transcript.concat msg tr₂)` (i.e. `Fin.happend` commutes with the
+  --       seam-side `Fin.snoc`), plus the seam boundary `transcript₁ ++ₜ (default : Transcript 0)
+  --       ≍ transcript₁`.
+  --   (R) Right-block run induction.  By `Fin.induction` on `k : Fin (n+1)`, with the prefix `(T)`
+  --       threaded: `continueFromTo (P₁++P₂) stmt wit ⟨m,_⟩ (natAdd m k) rSeam`
+  --       ≍ (do `⟨tr₂,s₂'⟩ ← P₂.runToRound k (P₂.input (←P₁.output …)) …; pure (transcript₁ ++ₜ tr₂, …)`)
+  --       — base `k=0` is `continueFromTo_self`; succ steps peel via `continueFromTo_succ_of_ne` +
+  --       `processRound_{message,challenge}` and the PROVEN per-round seam/interior reductions above.
+  --   (O) `output` assembly: combine via `++ₜ` (`append_fst`/`append_snd`) + `P₂.output` tail
+  --       (`output` branch of `Prover.append`, incl. `n = 0` degenerate seam where the right block is
+  --       empty and `P₁.output >>= P₂.input >>= P₂.output` collapses).
+  --
+  -- All round-local reductions are discharged; the residue is the transcript-prefix dependent-tuple
+  -- bookkeeping (T) + its induction (R) + output (O).  This is a `HEq`/`Fin.happend` engineering
+  -- task on top of the now-complete reduction layer, with NO remaining monadic-interleaving gap.
   sorry
 
 -- TODO: Need to define a function that "extracts" a second prover from the combined prover
