@@ -5444,7 +5444,6 @@ lemma exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_boun
     (Nat.le_ceil _)
     hthreshold hsmall
 
-omit [DecidableEq (RatFunc F)] in
 /-- Turn a Claim-5.11 point set with sufficiently large `S'_x` fibers into the
 full close-set coverage condition consumed by the canonical `PzFamily`
 evaluation-polynomial package. -/
@@ -5505,7 +5504,6 @@ lemma exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_
       h_gs (D := D) (t := t) hthreshold hsmall
   refine ⟨Dtop, hcard, ?_⟩
   exact close_proximity_subset_matching_set_on_points_of_large_matching_subset
-    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
     h_gs hcover hlarge
 
 /-- Claim 5.11 from [BCIKS20].
