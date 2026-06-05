@@ -303,3 +303,4 @@ import ArkLib.ToVCVio.OracleComp.EvalDist
 import ArkLib.ToVCVio.OracleComp.SimSemantics.SimulateQ
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
+import ArkLib.ProofSystem.Whir.MCAJohnsonTrivialRegime
