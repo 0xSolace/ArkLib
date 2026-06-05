@@ -508,6 +508,83 @@ noncomputable def normalizedMultiplicityValue (oStmt : ∀ i, OStmtIn F n M i)
   let a := evalOnHypercube (tableOracle oStmt) u
   (lookupMultiplicityCount oStmt a : F) / (tableMultiplicityCount oStmt a : F)
 
+theorem table_fiber_normalizedMultiplicity_sum_eq_lookup_div
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i)
+    (hM : 0 < M) (a xChallenge : F)
+    (hpos : 0 < tableMultiplicityCount oStmt a) :
+    (∑ u ∈ (Finset.univ : Finset (Hypercube n)).filter fun u =>
+        evalOnHypercube (tableOracle oStmt) u = a,
+      normalizedMultiplicityValue oStmt u /
+        (xChallenge + evalOnHypercube (tableOracle oStmt) u)) =
+      (lookupMultiplicityCount oStmt a : F) / (xChallenge + a) := by
+  have hcount_ne :
+      (tableMultiplicityCount oStmt a : F) ≠ 0 :=
+    tableMultiplicityCount_natCast_ne_zero_of_stmt stmt oStmt a hM hpos
+  have hcard :
+      ((Finset.univ : Finset (Hypercube n)).filter fun u =>
+        evalOnHypercube (tableOracle oStmt) u = a).card =
+        tableMultiplicityCount oStmt a := by
+    rfl
+  calc
+    (∑ u ∈ (Finset.univ : Finset (Hypercube n)).filter fun u =>
+        evalOnHypercube (tableOracle oStmt) u = a,
+      normalizedMultiplicityValue oStmt u /
+        (xChallenge + evalOnHypercube (tableOracle oStmt) u))
+        = ∑ u ∈ (Finset.univ : Finset (Hypercube n)).filter fun u =>
+            evalOnHypercube (tableOracle oStmt) u = a,
+          ((lookupMultiplicityCount oStmt a : F) /
+              (tableMultiplicityCount oStmt a : F)) / (xChallenge + a) := by
+          apply Finset.sum_congr rfl
+          intro u hu
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hu
+          simp [normalizedMultiplicityValue, hu]
+    _ = (tableMultiplicityCount oStmt a : F) *
+          (((lookupMultiplicityCount oStmt a : F) /
+              (tableMultiplicityCount oStmt a : F)) / (xChallenge + a)) := by
+          rw [Finset.sum_const]
+          simp [hcard, nsmul_eq_mul]
+    _ = (lookupMultiplicityCount oStmt a : F) / (xChallenge + a) := by
+          field_simp [hcount_ne]
+
+theorem table_sum_normalizedMultiplicity_eq_lookup_sum
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i)
+    (hInput : (((stmt, oStmt), ()) ∈ inputRelation F n M))
+    (hM : 0 < M) (xChallenge : F) :
+    (∑ u : Hypercube n,
+      normalizedMultiplicityValue oStmt u /
+        (xChallenge + evalOnHypercube (tableOracle oStmt) u)) =
+      ∑ a : F, (lookupMultiplicityCount oStmt a : F) / (xChallenge + a) := by
+  rw [← Finset.sum_fiberwise_of_maps_to
+    (s := (Finset.univ : Finset (Hypercube n)))
+    (t := (Finset.univ : Finset F))
+    (g := fun u : Hypercube n => evalOnHypercube (tableOracle oStmt) u)
+    (f := fun u : Hypercube n =>
+      normalizedMultiplicityValue oStmt u /
+        (xChallenge + evalOnHypercube (tableOracle oStmt) u))
+    (fun _ _ => Finset.mem_univ _)]
+  apply Finset.sum_congr rfl
+  intro a _
+  by_cases hpos : 0 < tableMultiplicityCount oStmt a
+  · exact table_fiber_normalizedMultiplicity_sum_eq_lookup_div
+      stmt oStmt hM a xChallenge hpos
+  · have hnot : ¬ ∃ u : Hypercube n,
+        evalOnHypercube (tableOracle oStmt) u = a := by
+      intro hex
+      rcases hex with ⟨u, hu⟩
+      have hcount_pos :=
+        tableMultiplicityCount_pos_of_eval (oStmt := oStmt) u
+      rw [hu] at hcount_pos
+      exact hpos hcount_pos
+    have hfilter :
+        ((Finset.univ : Finset (Hypercube n)).filter fun u =>
+          evalOnHypercube (tableOracle oStmt) u = a) = ∅ := by
+      have hcard_zero :=
+        tableMultiplicityCount_eq_zero_of_not_exists_eval oStmt a hnot
+      simpa [tableMultiplicityCount] using hcard_zero
+    have hlookup_zero :=
+      lookupMultiplicityCount_eq_zero_of_not_exists_table stmt oStmt hInput a hnot
+    simp [hfilter, hlookup_zero]
+
 omit [Fintype F] in
 theorem normalizedMultiplicityValue_zero_no_columns
     (oStmt : ∀ i, OStmtIn F n 0 i) (u : Hypercube n) :
