@@ -5654,6 +5654,49 @@ lemma exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_
     h_gs (D := D) (E := ⌈δ * (n : ℚ)⌉₊) (t := t)
     (Nat.le_ceil _) hcover hthreshold hsmall
 
+/-- Complement-threshold close-subset bridge for the canonical integer
+bad-coordinate bound. This is the same selected-domain conclusion as
+`exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound`,
+but with `t` specialized to the complement of the target fiber threshold. -/
+lemma exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound_complement
+    [NeZero n]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {D : ℕ}
+    (hcover :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D)
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D ≤ #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (hsmall :
+      ⌈δ * (n : ℚ)⌉₊ * #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) <
+        (n - k) *
+          (#(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) -
+            (2 * k + 1)
+              * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+              * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+              * D)) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+        matching_set_at_x k δ h_gs x := by
+  obtain ⟨Dtop, hcard, hlarge⟩ :=
+    exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound_complement
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs (D := D) hthreshold hsmall
+  refine ⟨Dtop, hcard, ?_⟩
+  exact close_proximity_subset_matching_set_on_points_of_large_matching_subset
+    (F := F) (m := m) (n := n) (Q := Q)
+    (k := k) (δ := δ) (x₀ := x₀) (ωs := ωs) (Dtop := Dtop) (D := D)
+    h_gs hcover hlarge
+
 open Polynomial in
 /-- Claim-5.11 plus the canonical `PzFamily` selected-domain package for any
 uniform integer bad-coordinate bound `E`.  This is the assembled form consumed
