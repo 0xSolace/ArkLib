@@ -1018,6 +1018,52 @@ theorem Lambda_le_of_le_JqℓRecipReal_minDist_of_scaled_distance_le
   exact le_trans (ListDecodable.Lambda_mono (C := C) hδ_le)
     (Lambda_le_of_JqℓRecipReal_minDist_of_scaled_distance_le C hℓ hq_one hmin_pos hscaled)
 
+/-- Nontrivial-code version of
+`Lambda_le_of_JqℓRecipReal_minDist_of_scaled_distance_le`.
+
+This packages the structural fact that a code with two distinct codewords has
+positive minimum distance, so downstream callers can use the natural
+nontriviality hypothesis instead of separately proving `0 < Code.minDist C`. -/
+theorem Lambda_le_of_JqℓRecipReal_nontrivial_of_scaled_distance_le
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {ℓ : ℕ}
+    (hℓ : 2 ≤ ℓ) (hq_one : 1 < Fintype.card α)
+    (hC : Set.Nontrivial C)
+    (hscaled :
+      (((ℓ : ℝ) - 1) / (ℓ : ℝ)) *
+          ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ))
+        ≤ 1 - 1 / (Fintype.card α : ℝ)) :
+    ListDecodable.Lambda C
+      (JqℓRecipReal (Fintype.card α : ℝ) (ℓ : ℝ)
+        ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ))) ≤
+        (ℓ : ℕ∞) := by
+  have hmin_pos : 0 < Code.minDist C := by
+    simpa [Code.dist_eq_minDist] using
+      Code.dist_pos_of_Nontrivial (ι := ι) (F := α) (C := C) hC
+  exact Lambda_le_of_JqℓRecipReal_minDist_of_scaled_distance_le C hℓ hq_one hmin_pos hscaled
+
+/-- Monotone-radius nontrivial-code version of
+`Lambda_le_of_le_JqℓRecipReal_minDist_of_scaled_distance_le`. -/
+theorem Lambda_le_of_le_JqℓRecipReal_nontrivial_of_scaled_distance_le
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ}
+    (hδ_le : δ ≤ JqℓRecipReal (Fintype.card α : ℝ) (ℓ : ℝ)
+      ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ)))
+    (hℓ : 2 ≤ ℓ) (hq_one : 1 < Fintype.card α)
+    (hC : Set.Nontrivial C)
+    (hscaled :
+      (((ℓ : ℝ) - 1) / (ℓ : ℝ)) *
+          ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ))
+        ≤ 1 - 1 / (Fintype.card α : ℝ)) :
+    ListDecodable.Lambda C δ ≤ (ℓ : ℕ∞) := by
+  have hmin_pos : 0 < Code.minDist C := by
+    simpa [Code.dist_eq_minDist] using
+      Code.dist_pos_of_Nontrivial (ι := ι) (F := α) (C := C) hC
+  exact Lambda_le_of_le_JqℓRecipReal_minDist_of_scaled_distance_le C hδ_le hℓ
+    hq_one hmin_pos hscaled
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
