@@ -299,8 +299,8 @@ theorem far_implies_joint_far
     (hfar : ∀ g ∈ C, (agreeSet fᵢ g).card + 2 * d < Fintype.card ι) :
     ∀ g₁ ∈ C, ∀ g₂ ∈ C,
       (jointAgreeSet rest fᵢ g₁ g₂).card + 2 * d < Fintype.card ι := by
-  intro _g₁ _hg₁ g₂ hg₂
-  have hsub := jointAgreeSet_subset_agreeSet_snd rest fᵢ _g₁ g₂
+  intro g₁ _hg₁ g₂ hg₂
+  have hsub := jointAgreeSet_subset_agreeSet_snd rest fᵢ g₁ g₂
   have hcard := Finset.card_le_card hsub
   have hg := hfar g₂ hg₂
   omega

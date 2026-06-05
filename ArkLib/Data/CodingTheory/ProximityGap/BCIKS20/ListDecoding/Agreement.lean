@@ -1613,6 +1613,39 @@ lemma approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero
     (claimA2_hypotheses k h_gs)
     (hemb t ht)
 
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+/-- Claim 5.8 front door from the exact Appendix-A Lemma A.1 largeness
+condition.  This isolates the remaining geometric work: for each coefficient
+index `t ≥ k`, it is enough to produce a degree bound `D` and prove that
+`S_β (β R t)` is larger than `Λ(β R t) * deg H`. -/
+lemma approximate_solution_is_exact_solution_coeffs_of_Sβ_large
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
+        Set.ncard (S_β (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t)) >
+          weight_Λ_over_𝒪 (natDegree_H_pos k h_gs)
+            (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t) D *
+            (H k δ x₀ h_gs).natDegree) :
+    ∀ t ≥ k,
+    α'
+      x₀
+      (R k δ x₀ h_gs)
+      (irreducible_H k h_gs)
+      (natDegree_H_pos k h_gs)
+      (claimA2_hypotheses k h_gs)
+      t
+    =
+    (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)) := by
+  exact approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀) h_gs
+    (fun t ht => by
+      obtain ⟨D, hD, hcard⟩ := hlarge t ht
+      exact BCIKS20AppendixA.Lemma_A_1
+        (H := H k δ x₀ h_gs) (natDegree_H_pos k h_gs)
+        (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t) D hD hcard)
+
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_is_exact_solution_coeffs_graph_of_beta_embedding_zero
