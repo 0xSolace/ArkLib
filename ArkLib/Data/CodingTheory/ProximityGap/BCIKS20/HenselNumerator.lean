@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.HasseDeriv
 import Mathlib.Combinatorics.Enumerative.Partition.Basic
 import Mathlib.Data.Nat.Choose.Multinomial
 import ArkLib.Data.Polynomial.RationalFunctions
+import ArkLib.Data.Polynomial.PowerSeriesComposition
 
 set_option linter.style.longFile 1900
 -- This proof-note-heavy integration file contains many long paper-route doc lines.
@@ -401,6 +402,20 @@ theorem prefactor_pos {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) (hi : i1 �
     0 < prefactor i i1 lam := by
   rw [prefactor]
   exact Nat.mul_pos (Nat.choose_pos hi) (Nat.multinomial_pos _ _)
+
+/-- The multinomial part of the BCIKS20 prefactor is exactly the value-multiset
+permutation count used by the power-series composition expansion. -/
+theorem countPerms_parts_eq_multinomial {m : ℕ} (lam : Nat.Partition m) :
+    lam.parts.countPerms =
+      Nat.multinomial lam.parts.toFinset (fun l => lam.parts.count l) :=
+  ArkLib.PowerSeriesComposition.countPerms_eq_multinomial lam.parts
+
+/-- `prefactor` as the binomial Hasse weight times the composition fiber-count
+`countPerms`.  This is the direct bridge from
+`PowerSeriesComposition.coeff_pow_eq_partitionSum` to the `B_coeff` normalization. -/
+theorem prefactor_eq_choose_mul_countPerms {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) :
+    prefactor i i1 lam = Nat.choose i i1 * lam.parts.countPerms := by
+  rw [prefactor, countPerms_parts_eq_multinomial]
 
 end Partition
 

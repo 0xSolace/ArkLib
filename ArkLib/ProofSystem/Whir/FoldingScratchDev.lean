@@ -1,9 +1,12 @@
 import ArkLib.ProofSystem.Whir.Folding
 
 /-!
-TMP verification scratch for the Finding-19 repair of `folding_preserves_listdecoding_base`
-(WHIR Lemma 4.21). NOT a tracked file. Proves the repaired statement against the real
-in-file/MutualCorrAgreement definitions.
+Compatibility wrapper for the Finding-19 repair of `folding_preserves_listdecoding_base`
+(WHIR Lemma 4.21).
+
+The production theorem now lives in `Folding.lean` as
+`folding_preserves_listdecoding_base_of_mca_bridge`; this file preserves the earlier scratch
+identifier for references created during development.
 -/
 
 namespace Fold
@@ -16,7 +19,6 @@ open MutualCorrAgreement Generator LinearMvExtension ListDecodable
 variable {F : Type} [Field F] [DecidableEq F]
          {ι : Type} [Pow ι ℕ]
 
-omit [Pow ι ℕ] in
 /-- **Lemma 4.21 — Finding-19 repaired (errStar bound via `hasMutualCorrAgreement`).**
 
 Finding 19 defect: in the bare statement `BStar`/`errStar` are *free* function parameters,
@@ -80,39 +82,8 @@ lemma folding_preserves_listdecoding_base_mca
           foldSet ≠ listBlock'
         ] ≤ errStarV δ
   := by
-    intro f hδ
-    let D : PMF F := PMF.uniformOfFintype F
-    -- Step 1 (structural, proven): `≠`-event ⊆ reverse-inclusion-failure event, under `hsub`.
-    have hmono :
-        Pr_{let α ← D}[
-          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
-          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
-          let foldSet := fold_k_set listBlock vec_α hm
-          let fold := fold_k f vec_α hm
-          let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
-          foldSet ≠ listBlock'
-        ] ≤
-        Pr_{let α ← D}[
-          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
-          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
-          let foldSet := fold_k_set listBlock vec_α hm
-          let fold := fold_k f vec_α hm
-          let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
-          ¬ (listBlock' ⊆ foldSet)
-        ] := by
-      refine Pr_le_Pr_of_implies D _ _ ?_
-      intro α hne
-      dsimp only
-      dsimp only at hne
-      intro hsub'
-      exact hne (Set.Subset.antisymm (hsub f α) hsub')
-    -- Step 2 (MCA bridge): reverse-inclusion-failure ≤ proximity-condition probability.
-    have hbr := hbridge f
-    -- Step 3 (MCA bound): proximity-condition probability ≤ errStarV δ.
-    have hmcaApp := hmca (fStack f) δ hδ
-    -- Chain.
-    refine le_trans hmono (le_trans hbr ?_)
-    exact hmcaApp
+    exact folding_preserves_listdecoding_base_of_mca_bridge hm hcode C' hcode' Gen'
+      BStarV errStarV hmca hsub fStack hbridge
 
 end FoldingLemmasTmp
 
