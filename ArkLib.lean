@@ -35,6 +35,7 @@ import ArkLib.Data.Classes.Slice
 import ArkLib.Data.CodingTheory.CodeGeometry
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
+import ArkLib.Data.CodingTheory.ProximityPrizeCA
 import ArkLib.Data.CodingTheory.Basic.DecodingRadius
 import ArkLib.Data.CodingTheory.Basic.Distance
 import ArkLib.Data.CodingTheory.Basic.Entropy

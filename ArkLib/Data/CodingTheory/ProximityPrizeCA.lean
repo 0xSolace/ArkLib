@@ -1,0 +1,222 @@
+/-
+Copyright (c) 2024-2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+
+import Mathlib.Data.Finset.Card
+import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Tactic
+
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+
+/-!
+# Correlated-agreement counting leaves
+
+Verified generic linear-code leaves for the proximity-prize correlated-agreement track.
+The core arguments are adapted from the public IoTeX `rs-proximity-gaps` Lean
+development (Apache-2.0): distinct bad line parameters can be solved as a
+two-by-two linear system, producing a joint codeword pair and contradicting the
+joint-distance premise.
+-/
+
+namespace ProximityPrizeCA
+
+open Finset Fintype
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+variable {F : Type*} [Field F] [DecidableEq F]
+
+/-- The agreement set of two words. -/
+def agreeSet (f g : ι → F) : Finset ι :=
+  Finset.univ.filter (fun x => f x = g x)
+
+/-- The joint agreement set of two word pairs. -/
+def jointAgreeSet (f₁ f₂ g₁ g₂ : ι → F) : Finset ι :=
+  Finset.univ.filter (fun x => f₁ x = g₁ x ∧ f₂ x = g₂ x)
+
+/-- The affine line word `f₁ + γ • f₂`. -/
+def linComb (f₁ f₂ : ι → F) (γ : F) : ι → F :=
+  fun x => f₁ x + γ * f₂ x
+
+/-- Inclusion-exclusion in the form used by the halved-threshold CA argument. -/
+theorem card_inter_add_card_univ_ge (A B : Finset ι) :
+    (A ∩ B).card + Fintype.card ι ≥ A.card + B.card := by
+  have h := (Finset.card_union_add_card_inter A B).symm
+  have hle : (A ∪ B).card ≤ Fintype.card ι := Finset.card_le_univ _
+  omega
+
+/-- Half-threshold correlated agreement, two-parameter contradiction. -/
+theorem ca_halved
+    (C : Submodule F (ι → F))
+    (f₁ f₂ : ι → F) (d : ℕ)
+    (hprem : ∀ g₁ ∈ C, ∀ g₂ ∈ C,
+      (jointAgreeSet f₁ f₂ g₁ g₂).card + 2 * d < Fintype.card ι)
+    {γ₁ γ₂ : F} (hne : γ₁ ≠ γ₂)
+    {h₁ h₂ : ι → F} (hh₁ : h₁ ∈ C) (hh₂ : h₂ ∈ C)
+    (hS₁ : Fintype.card ι ≤ (agreeSet (linComb f₁ f₂ γ₁) h₁).card + d)
+    (hS₂ : Fintype.card ι ≤ (agreeSet (linComb f₁ f₂ γ₂) h₂).card + d) :
+    False := by
+  set S₁ := agreeSet (linComb f₁ f₂ γ₁) h₁ with hS₁_def
+  set S₂ := agreeSet (linComb f₁ f₂ γ₂) h₂ with hS₂_def
+  have hie := card_inter_add_card_univ_ge (ι := ι) S₁ S₂
+  have hγ : γ₁ - γ₂ ≠ 0 := sub_ne_zero.mpr hne
+  set g₂ : ι → F := (γ₁ - γ₂)⁻¹ • (h₁ - h₂) with hg₂_def
+  set g₁ : ι → F := h₁ - γ₁ • g₂ with hg₁_def
+  have hg₂C : g₂ ∈ C := C.smul_mem _ (C.sub_mem hh₁ hh₂)
+  have hg₁C : g₁ ∈ C := C.sub_mem hh₁ (C.smul_mem _ hg₂C)
+  have hsub : S₁ ∩ S₂ ⊆ jointAgreeSet f₁ f₂ g₁ g₂ := by
+    intro x hx
+    rw [Finset.mem_inter] at hx
+    simp only [S₁, S₂, agreeSet, linComb, Finset.mem_filter, mem_univ, true_and] at hx
+    obtain ⟨eq1, eq2⟩ := hx
+    have hf₂ : f₂ x = g₂ x := by
+      simp only [hg₂_def, Pi.smul_apply, Pi.sub_apply, smul_eq_mul]
+      rw [eq_comm, inv_mul_eq_div, div_eq_iff hγ]
+      rw [eq_comm, mul_comm]
+      linear_combination eq1 - eq2
+    have hf₁ : f₁ x = g₁ x := by
+      simp only [hg₁_def, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
+      rw [← hf₂]
+      linear_combination eq1
+    simp only [jointAgreeSet, Finset.mem_filter, mem_univ, true_and]
+    exact ⟨hf₁, hf₂⟩
+  have hcard : (S₁ ∩ S₂).card ≤ (jointAgreeSet f₁ f₂ g₁ g₂).card :=
+    Finset.card_le_card hsub
+  have hcontra := hprem g₁ hg₁C g₂ hg₂C
+  omega
+
+open Classical in
+/-- Half-threshold correlated agreement, count form. -/
+theorem ca_halved_count_le_one [Fintype F]
+    (C : Submodule F (ι → F))
+    (f₁ f₂ : ι → F) (d : ℕ)
+    (hprem : ∀ g₁ ∈ C, ∀ g₂ ∈ C,
+      (jointAgreeSet f₁ f₂ g₁ g₂).card + 2 * d < Fintype.card ι) :
+    ((Finset.univ : Finset F).filter
+      (fun γ => ∃ h ∈ C, Fintype.card ι ≤ (agreeSet (linComb f₁ f₂ γ) h).card + d)).card
+    ≤ 1 := by
+  rw [Finset.card_le_one]
+  intro γ₁ hγ₁ γ₂ hγ₂
+  rw [Finset.mem_filter] at hγ₁ hγ₂
+  obtain ⟨_, h₁, hh₁, hA₁⟩ := hγ₁
+  obtain ⟨_, h₂, hh₂, hA₂⟩ := hγ₂
+  by_contra hne
+  exact ca_halved C f₁ f₂ d hprem hne hh₁ hh₂ hA₁ hA₂
+
+private def IsBadWitness
+    (C : Submodule F (ι → F))
+    (f₁ f₂ : ι → F) (w : ℕ) (γ : F)
+    (h : ι → F) (A : Finset ι) : Prop :=
+  h ∈ C ∧ A.card = Fintype.card ι - w ∧ A ⊆ agreeSet (linComb f₁ f₂ γ) h
+
+omit [DecidableEq ι] in
+private lemma exists_witness
+    (C : Submodule F (ι → F))
+    (f₁ f₂ : ι → F) (w : ℕ) (γ : F)
+    (hbad : ∃ h ∈ C, Fintype.card ι ≤ (agreeSet (linComb f₁ f₂ γ) h).card + w) :
+    ∃ (h : ι → F) (A : Finset ι), IsBadWitness C f₁ f₂ w γ h A := by
+  obtain ⟨h, hC, hcard⟩ := hbad
+  have hagree_card : Fintype.card ι - w ≤ (agreeSet (linComb f₁ f₂ γ) h).card := by
+    omega
+  obtain ⟨A, hAsub, hAcard⟩ :=
+    Finset.exists_subset_card_eq hagree_card
+  exact ⟨h, A, hC, hAcard, hAsub⟩
+
+private theorem ca_equal_threshold_pair
+    (C : Submodule F (ι → F))
+    (f₁ f₂ : ι → F) (w : ℕ)
+    (hprem : ∀ g₁ ∈ C, ∀ g₂ ∈ C,
+      (jointAgreeSet f₁ f₂ g₁ g₂).card + w < Fintype.card ι)
+    {γ₁ γ₂ : F} (hne : γ₁ ≠ γ₂)
+    {h₁ h₂ : ι → F} (hh₁ : h₁ ∈ C) (hh₂ : h₂ ∈ C)
+    {A : Finset ι} (hAcard : A.card + w = Fintype.card ι)
+    (hAgree₁ : A ⊆ agreeSet (linComb f₁ f₂ γ₁) h₁)
+    (hAgree₂ : A ⊆ agreeSet (linComb f₁ f₂ γ₂) h₂) :
+    False := by
+  have hγ : γ₁ - γ₂ ≠ 0 := sub_ne_zero.mpr hne
+  set g₂ : ι → F := (γ₁ - γ₂)⁻¹ • (h₁ - h₂) with hg₂_def
+  set g₁ : ι → F := h₁ - γ₁ • g₂ with hg₁_def
+  have hg₂C : g₂ ∈ C := C.smul_mem _ (C.sub_mem hh₁ hh₂)
+  have hg₁C : g₁ ∈ C := C.sub_mem hh₁ (C.smul_mem _ hg₂C)
+  have hsub : A ⊆ jointAgreeSet f₁ f₂ g₁ g₂ := by
+    intro x hxA
+    have h1 : f₁ x + γ₁ * f₂ x = h₁ x := by
+      have := hAgree₁ hxA
+      simp only [agreeSet, linComb, Finset.mem_filter, mem_univ, true_and] at this
+      exact this
+    have h2 : f₁ x + γ₂ * f₂ x = h₂ x := by
+      have := hAgree₂ hxA
+      simp only [agreeSet, linComb, Finset.mem_filter, mem_univ, true_and] at this
+      exact this
+    have hf₂ : f₂ x = g₂ x := by
+      simp only [hg₂_def, Pi.smul_apply, Pi.sub_apply, smul_eq_mul]
+      rw [eq_comm, inv_mul_eq_div, div_eq_iff hγ]
+      rw [eq_comm, mul_comm]
+      linear_combination h1 - h2
+    have hf₁ : f₁ x = g₁ x := by
+      simp only [hg₁_def, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
+      rw [← hf₂]
+      linear_combination h1
+    simp only [jointAgreeSet, Finset.mem_filter, mem_univ, true_and]
+    exact ⟨hf₁, hf₂⟩
+  have hcard : A.card ≤ (jointAgreeSet f₁ f₂ g₁ g₂).card :=
+    Finset.card_le_card hsub
+  have hcontra := hprem g₁ hg₁C g₂ hg₂C
+  omega
+
+/-- Equal-threshold correlated-agreement upper bound. -/
+theorem ca_equal_threshold
+    (C : Submodule F (ι → F))
+    (f₁ f₂ : ι → F) (w : ℕ) (hw : w ≤ Fintype.card ι)
+    (hprem : ∀ g₁ ∈ C, ∀ g₂ ∈ C,
+      (jointAgreeSet f₁ f₂ g₁ g₂).card + w < Fintype.card ι)
+    (Γ : Finset F)
+    (hbad : ∀ γ ∈ Γ,
+      ∃ h ∈ C, Fintype.card ι ≤ (agreeSet (linComb f₁ f₂ γ) h).card + w) :
+    Γ.card ≤ Nat.choose (Fintype.card ι) w := by
+  classical
+  let pickH : ∀ γ ∈ Γ, ι → F := fun γ hγ =>
+    Classical.choose (exists_witness C f₁ f₂ w γ (hbad γ hγ))
+  let pickA : ∀ γ ∈ Γ, Finset ι := fun γ hγ =>
+    Classical.choose
+      (Classical.choose_spec (exists_witness C f₁ f₂ w γ (hbad γ hγ)))
+  have pickSpec : ∀ γ (hγ : γ ∈ Γ),
+      IsBadWitness C f₁ f₂ w γ (pickH γ hγ) (pickA γ hγ) := fun γ hγ =>
+    Classical.choose_spec
+      (Classical.choose_spec (exists_witness C f₁ f₂ w γ (hbad γ hγ)))
+  have hmem : ∀ γ (hγ : γ ∈ Γ),
+      pickA γ hγ ∈ (Finset.univ : Finset ι).powersetCard (Fintype.card ι - w) := by
+    intro γ hγ
+    rw [Finset.mem_powersetCard]
+    exact ⟨Finset.subset_univ _, (pickSpec γ hγ).2.1⟩
+  have hinj : Set.InjOn (fun γ => if hγ : γ ∈ Γ then pickA γ hγ else ∅) Γ := by
+    intro γ₁ hmem₁ γ₂ hmem₂ hAeq
+    have hγ₁ : γ₁ ∈ Γ := hmem₁
+    have hγ₂ : γ₂ ∈ Γ := hmem₂
+    by_contra hne
+    simp only [dif_pos hγ₁, dif_pos hγ₂] at hAeq
+    set A := pickA γ₁ hγ₁ with hA_def
+    have hA_card : A.card + w = Fintype.card ι := by
+      have : A.card = Fintype.card ι - w := (pickSpec γ₁ hγ₁).2.1
+      omega
+    obtain ⟨hC₁, _, hsub₁⟩ := pickSpec γ₁ hγ₁
+    obtain ⟨hC₂, _, hsub₂_raw⟩ := pickSpec γ₂ hγ₂
+    have hsub₂ : A ⊆ agreeSet (linComb f₁ f₂ γ₂) (pickH γ₂ hγ₂) := by
+      rw [hAeq]
+      exact hsub₂_raw
+    exact ca_equal_threshold_pair C f₁ f₂ w hprem hne hC₁ hC₂ hA_card hsub₁ hsub₂
+  calc Γ.card
+      ≤ ((Finset.univ : Finset ι).powersetCard (Fintype.card ι - w)).card := by
+        refine Finset.card_le_card_of_injOn
+          (fun γ => if hγ : γ ∈ Γ then pickA γ hγ else ∅) ?_ hinj
+        intro γ hγ
+        rw [Finset.mem_coe] at hγ
+        simp only [dif_pos hγ, Finset.mem_coe]
+        exact hmem γ hγ
+    _ = Nat.choose (Fintype.card ι) (Fintype.card ι - w) := by
+        rw [Finset.card_powersetCard, Finset.card_univ]
+    _ = Nat.choose (Fintype.card ι) w := Nat.choose_symm hw
+
+end ProximityPrizeCA
