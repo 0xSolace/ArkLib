@@ -69,7 +69,7 @@ open Classical in
 word `w` on at least `a` domain points and `2a ≥ n + k` (the unique-decoding
 radius), then `p = q`: their agreement sets overlap in `≥ k` points on which `p`
 and `q` coincide, forcing equality by RS distinctness. -/
-theorem degreeLT_unique_decode {k : ℕ} {p q : F[X]} {w : ι → F}
+theorem degreeLT_unique_decode [Fintype ι] {k : ℕ} {p q : F[X]} {w : ι → F}
     (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k) {a : ℕ}
     (hpa : a ≤ (Finset.univ.filter (fun x => p.eval (domain x) = w x)).card)
     (hqa : a ≤ (Finset.univ.filter (fun x => q.eval (domain x) = w x)).card)
