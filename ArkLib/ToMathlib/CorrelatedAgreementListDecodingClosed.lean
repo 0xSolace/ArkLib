@@ -164,7 +164,6 @@ def section5StrictDataOfEqOnGood {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0
     rcases d.hPz v₀ v₁ hγlin with ⟨hPz₀, hv₀, hv₁⟩
     exact ⟨fun z hz => by rw [hEq z hz, hPz₀ z hz], hv₀, hv₁⟩
 
-omit [Nonempty ι] [DecidableEq ι] in
 /-- Canonical §5 data for one received word stack, bundled as data.
 
 The uniqueness field is propositional, but the whole structure lives in `Type`, so it can be used as
