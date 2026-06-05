@@ -1174,16 +1174,54 @@ theorem johnson_bound_lambda_le_ell
   -- Tagged sorry until the Johnson-radius algebra and list-packaging layer land.
   sorry
 
+/-- Pure-algebra engine for `mds_johnson_lambda_le`: the `β = √ρ` Johnson cap
+`2·η·T²·(Dd − Do) ≤ −Do` after clearing the field-size denominator `Q = q`.
+
+Here `T = √ρ`, `S = A − N·(T+η) ≥ 0` is the slack in the agreement lower bound,
+`N` is the block length, and the two Gram quantities are written in closed form
+(`−Do` and `Dd − Do`). The decisive use of the radius constraint `η ≤ 1 − T`
+(equivalent to `1 − √ρ − η ≥ 0`) appears via `hEle`. -/
+private lemma mds_core_ineq
+    (N Q T E S : ℝ) (hN : 1 ≤ N) (hQ : 0 < Q) (hT0 : 0 < T) (hT1 : T < 1)
+    (hE : 0 < E) (hEle : E ≤ 1 - T) (hS : 0 ≤ S) :
+    2 * E * T ^ 2 * (N * (1 - 1 / Q) - (T ^ 2 * N - 1) + N / Q)
+      ≤ (2 * T) * S + 1 + 2 * N * T * E + N * (1 / Q) * (1 - T) ^ 2 := by
+  -- `F := 2QE(NT(T³−T+1) − T²) + N(1−T)² + Q ≥ 0`, the heart of the bound.
+  have hcube : 0 ≤ T ^ 3 - T + 1 := by
+    nlinarith [sq_nonneg (T - 1), hT0, hT1, mul_pos hT0 hT0]
+  have ht2 : 2 * T ^ 2 * (1 - T) ≤ 1 := by
+    nlinarith [sq_nonneg (3 * T - 2), hT0, hT1,
+      mul_nonneg (sq_nonneg T) (le_of_lt (by linarith : (0 : ℝ) < 1 - T))]
+  have p1 : 0 ≤ 2 * Q * E * N * T * (T ^ 3 - T + 1) := by positivity
+  have p2 : 0 ≤ N * (1 - T) ^ 2 := by positivity
+  have p3 : 0 ≤ 2 * Q * T ^ 2 * (1 - T - E) :=
+    mul_nonneg (by positivity) (by linarith)
+  have p4 : 0 ≤ Q * (1 - 2 * T ^ 2 * (1 - T)) :=
+    mul_nonneg (le_of_lt hQ) (by linarith)
+  have hF : 0 ≤ 2 * Q * E * (N * T * (T ^ 3 - T + 1) - T ^ 2) + N * (1 - T) ^ 2 + Q := by
+    nlinarith [p1, p2, p3, p4]
+  have hST : 0 ≤ 2 * Q * S * T := by positivity
+  -- Clear the `1/Q` denominators and finish from `2QST + F ≥ 0`.
+  rw [← sub_nonneg]
+  have hid :
+      ((2 * T) * S + 1 + 2 * N * T * E + N * (1 / Q) * (1 - T) ^ 2)
+        - 2 * E * T ^ 2 * (N * (1 - 1 / Q) - (T ^ 2 * N - 1) + N / Q)
+      = (2 * Q * S * T
+          + (2 * Q * E * (N * T * (T ^ 3 - T + 1) - T ^ 2) + N * (1 - T) ^ 2 + Q)) / Q := by
+    field_simp; ring
+  rw [hid]
+  exact div_nonneg (by linarith [hF, hST]) (le_of_lt hQ)
+
 /-- **ABF26 Corollary 3.3.** MDS coarse Johnson corollary. For every MDS code `C` with
 rate `ρ := dim C / n` and `η > 0`:
 
   `|Λ(C, 1 - √ρ - η)| ≤ 1 / (2 · η · ρ)`
 
-Derives from L2.6 (Singleton bound: MDS implies `δ_min = 1 - ρ + 1/n`, available via
-the `IsMDS_iff_rate_distance` bridge) plus T3.2 (or its asymptotic version via `Jcap`).
-Admitted as an external result; the path to a machine-checked proof requires the
-asymptotic-Johnson form `Lambda C δ ≤ 1/(2·(Jcap δ - δ))` plus MDS rate-distance
-manipulation.
+Machine-checked via the radical-free simplex Johnson quadratic cap
+(`CodeGeometry.johnson_quadratic_cap`) with shift parameter `β = √ρ`, the MDS
+Singleton equation (`LinearCode.IsMDS_iff_rate_distance`, giving
+`d_min = n - k + 1`), and the algebra lemma `mds_core_ineq`. This route does not
+go through `johnson_bound_lambda_le_ell` (ABF26 T3.2).
 
 **Rate derivation.** `ρ` is bound inline as `(Module.finrank F C : ℝ) / Fintype.card ι`
 rather than passed as a separate parameter — this matches the upstream `IsMDS`
@@ -1197,15 +1235,216 @@ theorem mds_johnson_lambda_le
     let ρ : ℝ := (Module.finrank F C : ℝ) / Fintype.card ι
     (Lambda ((C : Set (ι → F))) (1 - Real.sqrt ρ - η) : ENNReal) ≤
       ENNReal.ofReal (1 / (2 * η * ρ)) := by
-  -- ABF26-C3.3; external admit. Reduction chain (each step verified to exist in-tree):
-  --   1. `IsMDS_iff_rate_distance` (Basic/LinearCode.lean) ⇒ for an MDS code,
-  --      `δ_min = 1 - ρ + 1/n`, hence `Jcap δ_min = 1 - √ρ + O(1/n)` matches the
-  --      `1 - √ρ - η` radius once `η` absorbs the `1/n` correction.
-  --   2. The asymptotic (q,ℓ → ∞) `Jcap` form of T3.2: `Lambda C δ ≤ 1/(2·(Jcap δ - δ))`.
-  -- BLOCKED: step 2 IS T3.2 in its asymptotic specialisation. The q-ary Plotkin
-  -- average-distance upper bound is now available, so the remaining obstruction is
-  -- the T3.2 Johnson-radius/list-packaging proof plus pure algebra on the Singleton
-  -- equation. Tagged sorry until T3.2 lands at `Jqℓ`/`Jcap`.
-  sorry
+  -- ABF26-C3.3. Full machine-checked proof via the radical-free Johnson quadratic
+  -- cap (`CodeGeometry.johnson_quadratic_cap`) with shift parameter `β = √ρ`.
+  --
+  -- For each received word `f`, every codeword in the close list
+  -- `Λ(C, 1-√ρ-η, f)` agrees with `f` on at least `A = n - ⌊δ·n⌋ ≥ n(√ρ+η)`
+  -- coordinates, and distinct codewords pairwise agree on at most `B = n - d_min`
+  -- coordinates. MDS gives `d_min = n - k + 1`, hence `B = k - 1`. The simplex
+  -- Gram cap with `β = √ρ` then yields, for the list size `M`,
+  --   `(M-1)·(-Do) ≤ Dd`,
+  -- and the algebra `Dd ≤ (1/(2ηρ) - 1)·(-Do)` (with `-Do > 0`) closes
+  -- `M ≤ 1/(2ηρ)`. Empty/degenerate radius cases (`δ < 0`) give `Λ = ∅`.
+  classical
+  intro ρ
+  -- Basic facts about `n`, `k`, `ρ`.
+  set n : ℕ := Fintype.card ι with hn_def
+  set k : ℕ := Module.finrank F C with hk_def
+  have hn_pos : 0 < n := Fintype.card_pos
+  have hnR_pos : (0 : ℝ) < (n : ℝ) := by exact_mod_cast hn_pos
+  -- MDS forces `1 ≤ k` (otherwise `d_min = n + 1 > n`, impossible).
+  have hmin_eq : (Code.minDist ((C : Set (ι → F))) : ℝ) = (n : ℝ) - (k : ℝ) + 1 := by
+    have h := (LinearCode.IsMDS_iff_rate_distance C).mp _h_mds
+    have hk_le : k ≤ n := by
+      rw [hk_def, hn_def]
+      have := Submodule.finrank_le (R := F) (M := ι → F) C
+      simpa [Module.finrank_fintype_fun_eq_card] using this
+    -- `IsMDS_iff_rate_distance` gives the divided form; clear the denominator.
+    have hne : (n : ℝ) ≠ 0 := ne_of_gt hnR_pos
+    rw [hn_def, hk_def] at *
+    field_simp at h
+    linarith
+  have hmin_le : Code.minDist ((C : Set (ι → F))) ≤ n := by
+    rw [hn_def]; exact minDist_le_card _
+  have hk_pos : 0 < k := by
+    by_contra hk0
+    have hk0' : k = 0 := by omega
+    have : (Code.minDist ((C : Set (ι → F))) : ℝ) = (n : ℝ) + 1 := by
+      rw [hmin_eq, hk0']; push_cast; ring
+    have hle : (Code.minDist ((C : Set (ι → F))) : ℝ) ≤ (n : ℝ) := by exact_mod_cast hmin_le
+    linarith
+  have hkR_pos : (0 : ℝ) < (k : ℝ) := by exact_mod_cast hk_pos
+  have hρ_pos : 0 < ρ := by
+    show 0 < (k : ℝ) / (n : ℝ)
+    positivity
+  set δ : ℝ := 1 - Real.sqrt ρ - η with hδ_def
+  -- `q = card F ≥ 2`.
+  have hq_pos : 0 < Fintype.card F := Fintype.card_pos
+  -- Reduce to the empty-or-bounded case on the radius sign.
+  by_cases hδ_neg : δ < 0
+  · -- Radius negative: every close list is empty, so `Lambda = 0`.
+    have hzero : Lambda ((C : Set (ι → F))) δ = 0 := by
+      unfold Lambda
+      apply le_antisymm _ (zero_le _)
+      refine iSup_le fun f => ?_
+      have hempty : closeCodewordsRel ((C : Set (ι → F))) f δ = ∅ := by
+        ext c
+        simp only [Set.mem_empty_iff_false, iff_false]
+        rintro ⟨_, hc⟩
+        simp only [ListDecodable.relHammingBall, Set.mem_setOf_eq] at hc
+        exact absurd (le_trans (NNRat.cast_nonneg _) hc) (not_le.mpr hδ_neg)
+      rw [hempty]; simp
+    rw [hzero]; simp
+  · push Not at hδ_neg
+    -- Main case: `0 ≤ δ`. Pointwise bound, then lift to `Lambda`.
+    -- `√ρ ≤ 1 - η`, so `ρ < 1` and `η ≤ 1 - √ρ`.
+    set t : ℝ := Real.sqrt ρ with ht_def
+    have ht_nonneg : 0 ≤ t := Real.sqrt_nonneg _
+    have ht_sq : t ^ 2 = ρ := by
+      rw [ht_def, Real.sq_sqrt (le_of_lt hρ_pos)]
+    have ht_pos : 0 < t := by
+      rw [ht_def]; exact Real.sqrt_pos.mpr hρ_pos
+    have hη_le : η ≤ 1 - t := by
+      have : t ≤ 1 - η := by have := hδ_neg; rw [hδ_def] at this; linarith
+      linarith
+    have ht_lt_one : t < 1 := by linarith [_hη_pos, hη_le]
+    -- RHS as a real number.
+    have hrhs_pos : (0 : ℝ) < 1 / (2 * η * ρ) := by positivity
+    -- Pointwise real bound on every close-list cardinality.
+    have hpoint : ∀ f : ι → F,
+        ((ListDecodable.closeCodewordsRelFinset ((C : Set (ι → F))) f δ).card : ℝ)
+          ≤ 1 / (2 * η * ρ) := by
+      intro f
+      set S := ListDecodable.closeCodewordsRelFinset ((C : Set (ι → F))) f δ with hS_def
+      set M : ℕ := S.card with hM_def
+      by_cases hM0 : M = 0
+      · rw [hM0]; simp only [Nat.cast_zero]; exact le_of_lt hrhs_pos
+      · have hMpos : 0 < M := Nat.pos_of_ne_zero hM0
+        -- Transport the close-list to a `Fin M`-indexed family.
+        set e : Fin M ≃ S := (Finset.equivFin S).symm with he_def
+        set c : Fin M → ι → F := fun i => (e i).1 with hc_def
+        -- Center-agreement lower bound `A = n - ⌊δ·n⌋`.
+        set A : ℕ := n - ⌊δ * (n : ℝ)⌋₊ with hA_def
+        have hA : ∀ i, A ≤ CodeGeometry.agree (c i) f := by
+          intro i
+          have hmem : (c i) ∈ S := (e i).2
+          rw [hA_def]
+          exact card_sub_floor_mul_card_le_agree_of_mem_closeCodewordsRelFinset hδ_neg hmem
+        -- Pairwise-agreement upper bound `B = n - d_min`.
+        set B : ℕ := n - Code.minDist ((C : Set (ι → F))) with hB_def
+        have hB : ∀ i j, i ≠ j → CodeGeometry.agree (c i) (c j) ≤ B := by
+          intro i j hij
+          have hci : (c i) ∈ S := (e i).2
+          have hcj : (c j) ∈ S := (e j).2
+          have hne : (c i) ≠ (c j) := by
+            intro hval; apply hij; exact e.injective (Subtype.ext hval)
+          rw [hB_def]
+          exact closeCodewordsRelFinset_pairwise_agree_le_card_sub_minDist hci hcj hne
+        -- Real values of `A`, `B`.
+        have hδ_lt_one : δ < 1 := by rw [hδ_def]; linarith [ht_pos, _hη_pos]
+        have hflr_le : (⌊δ * (n : ℝ)⌋₊ : ℝ) ≤ δ * (n : ℝ) :=
+          Nat.floor_le (by positivity)
+        have hflr_le_n : ⌊δ * (n : ℝ)⌋₊ ≤ n := by
+          apply Nat.floor_le_of_le
+          nlinarith [hδ_lt_one, hnR_pos, hδ_neg]
+        have hAR_ge : (n : ℝ) - δ * (n : ℝ) ≤ ((A : ℝ)) := by
+          rw [hA_def, Nat.cast_sub hflr_le_n]
+          linarith [hflr_le]
+        -- Real value of `B = k - 1`.
+        have hmin_le_n : Code.minDist ((C : Set (ι → F))) ≤ n := hmin_le
+        have hBR_eq : ((B : ℝ)) = (k : ℝ) - 1 := by
+          rw [hB_def, Nat.cast_sub hmin_le_n]
+          have : (Code.minDist ((C : Set (ι → F))) : ℝ) = (n : ℝ) - (k : ℝ) + 1 := hmin_eq
+          linarith
+        -- Abbreviations matching `johnson_quadratic_cap`.
+        set q : ℝ := (Fintype.card F : ℝ) with hq_def
+        have hqR_pos : 0 < q := by rw [hq_def]; exact_mod_cast hq_pos
+        have hq_ge_one : (1 : ℝ) ≤ q := by rw [hq_def]; exact_mod_cast hq_pos
+        have hMR : (1 : ℝ) ≤ (M : ℝ) := by exact_mod_cast hMpos
+        have hinvq_pos : 0 < 1 / q := by positivity
+        -- `k = ρ·n = t²·n`, and `A ≥ n·(t + η)` (since `δ = 1 - t - η`).
+        have hkn : (k : ℝ) = t ^ 2 * (n : ℝ) := by
+          have hkr : ρ = (k : ℝ) / (n : ℝ) := rfl
+          rw [ht_sq, hkr]; field_simp
+        have hAge : (n : ℝ) * (t + η) ≤ (A : ℝ) := by
+          have heq : (n : ℝ) - δ * (n : ℝ) = (n : ℝ) * (t + η) := by rw [hδ_def]; ring
+          linarith [hAR_ge, heq]
+        have hAfac : 0 ≤ (A : ℝ) - (n : ℝ) * (t + η) := by linarith [hAge]
+        -- Name the off-diagonal (`Do`) and diagonal (`Dd`) Gram bounds.
+        set Do : ℝ :=
+          ((B : ℝ) - (n : ℝ) / q) - 2 * t * ((A : ℝ) - (n : ℝ) / q)
+            + t ^ 2 * (n : ℝ) * (1 - 1 / q) with hDo_def
+        set Dd : ℝ :=
+          (n : ℝ) * (1 - 1 / q) * (1 + t ^ 2) - 2 * t * ((A : ℝ) - (n : ℝ) / q)
+          with hDd_def
+        -- Closed forms (after `B = k-1 = t²n-1`), clearing the `1/q`.
+        have hDo_id :
+            Do = -(2 * t) * ((A : ℝ) - (n : ℝ) * (t + η)) - 1 - 2 * (n : ℝ) * t * η
+              - (n : ℝ) * (1 / q) * (1 - t) ^ 2 := by
+          rw [hDo_def, hBR_eq, hkn]; field_simp; ring
+        have hDd_id :
+            Dd = (n : ℝ) * (1 - 1 / q) * (1 + t ^ 2)
+              - 2 * t * ((A : ℝ) - (n : ℝ) / q) := rfl
+        -- Negativity of `Do`.
+        have hDo_neg : Do < 0 := by
+          rw [hDo_id]
+          have h1 : 0 ≤ 2 * t * ((A : ℝ) - (n : ℝ) * (t + η)) :=
+            mul_nonneg (by positivity) hAfac
+          have h2 : 0 ≤ (n : ℝ) * (1 / q) * (1 - t) ^ 2 :=
+            mul_nonneg (by positivity) (sq_nonneg _)
+          have h3 : 0 ≤ 2 * (n : ℝ) * t * η := by positivity
+          linarith
+        have hnegDo_pos : 0 < -Do := by linarith
+        -- `hcap : (M - 1) * (-Do) ≤ Dd`.
+        have hcap := CodeGeometry.johnson_quadratic_cap
+          (ι := ι) (α := F) hq_pos hMpos f c hA hB ht_nonneg
+          (by rw [← hDo_def]; exact hDo_neg)
+        rw [← hDo_def, ← hDd_def] at hcap
+        -- Key algebraic inequality: `Dd ≤ (1/(2ηρ) - 1) * (-Do)`.
+        have h2ηρ_pos : 0 < 2 * η * ρ := by positivity
+        -- Core polynomial fact: `2·η·ρ·(Dd - Do) ≤ -Do`, from `mds_core_ineq`.
+        have hN1 : (1 : ℝ) ≤ (n : ℝ) := by exact_mod_cast hn_pos
+        have hcore : 2 * η * ρ * (Dd - Do) ≤ -Do := by
+          have hDdDo : Dd - Do =
+              (n : ℝ) * (1 - 1 / q) - ((t : ℝ) ^ 2 * (n : ℝ) - 1) + (n : ℝ) / q := by
+            rw [hDd_def, hDo_def, hBR_eq, hkn]; ring
+          have hnegDo_id :
+              -Do = (2 * t) * ((A : ℝ) - (n : ℝ) * (t + η)) + 1 + 2 * (n : ℝ) * t * η
+                + (n : ℝ) * (1 / q) * (1 - t) ^ 2 := by
+            rw [hDo_id]; ring
+          rw [hDdDo, hnegDo_id, ← ht_sq, show 2 * η * (t ^ 2) = 2 * η * t ^ 2 from rfl]
+          exact mds_core_ineq (n : ℝ) q t η ((A : ℝ) - (n : ℝ) * (t + η))
+            hN1 hqR_pos ht_pos ht_lt_one _hη_pos hη_le hAfac
+        have hkey : Dd ≤ (1 / (2 * η * ρ) - 1) * (-Do) := by
+          have hrw : (1 / (2 * η * ρ) - 1) * (-Do) = (-Do) / (2 * η * ρ) + Do := by
+            field_simp; ring
+          rw [hrw, ← sub_le_iff_le_add, le_div_iff₀ h2ηρ_pos]
+          linarith [hcore]
+        have hcap' : ((M : ℝ) - 1) * (-Do) ≤ (1 / (2 * η * ρ) - 1) * (-Do) :=
+          le_trans hcap hkey
+        have hMm1 : (M : ℝ) - 1 ≤ 1 / (2 * η * ρ) - 1 :=
+          le_of_mul_le_mul_right hcap' hnegDo_pos
+        linarith
+    -- Lift the pointwise real bound to `Lambda ≤ ENNReal.ofReal (1/(2ηρ))`.
+    -- First bound `Lambda` by the natural number `⌊1/(2ηρ)⌋₊`.
+    set ℓ : ℕ := ⌊1 / (2 * η * ρ)⌋₊ with hℓ_def
+    have hrhs_nonneg : (0 : ℝ) ≤ 1 / (2 * η * ρ) := by positivity
+    have hΛ_le : ListDecodable.Lambda ((C : Set (ι → F))) δ ≤ (ℓ : ℕ∞) := by
+      apply ListDecodable.Lambda_le_natCast_of_forall_closeFinset_card_le
+      intro f
+      rw [hℓ_def, Nat.le_floor_iff hrhs_nonneg]
+      exact hpoint f
+    -- Then convert through `ENNReal`, using `↑⌊x⌋₊ ≤ x`.
+    have hcoe : (ListDecodable.Lambda ((C : Set (ι → F))) δ : ENNReal) ≤ (ℓ : ENNReal) := by
+      have h := ENat.toENNReal_mono hΛ_le
+      simpa using h
+    refine le_trans hcoe ?_
+    rw [show ((ℓ : ENNReal)) = ENNReal.ofReal (ℓ : ℝ) by
+      rw [ENNReal.ofReal_natCast]]
+    apply ENNReal.ofReal_le_ofReal
+    rw [hℓ_def]
+    exact Nat.floor_le hrhs_nonneg
+
 
 end CodingTheory
