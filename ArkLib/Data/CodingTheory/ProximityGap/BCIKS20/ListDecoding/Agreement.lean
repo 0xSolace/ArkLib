@@ -7,6 +7,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
+import ArkLib.ToMathlib.Claim511
 
 set_option linter.style.longFile 6300
 
@@ -5906,6 +5907,60 @@ lemma exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_boun
         * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
         * D)
     (by omega) hsmall
+
+/-- Direct Claim-5.11 complement wrapper through the standalone
+`ArkLib.Claim511` double-counting theorem. This has the same BCIKS20 object
+shape as `exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound_complement`,
+but keeps the imported combinatorial core visible to downstream callers. -/
+lemma exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound_complement_claim511
+    [NeZero n]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {D : ℕ}
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D ≤ #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (hsmall :
+      ⌈δ * (n : ℚ)⌉₊ * #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) <
+        (n - k) *
+          (#(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) -
+            (2 * k + 1)
+              * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+              * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+              * D)) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      (matching_set_at_x k δ h_gs x).card >
+        (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D := by
+  classical
+  exact ArkLib.Claim511.exists_points_with_large_matching_subset_fin_complement
+    (n := n)
+    (β := coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)
+    (γ := F)
+    (S := (Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)))
+    (nonmatching := fun z => nonmatching_coords_for_z k δ h_gs z)
+    (matchSet := fun x => matching_set_at_x k δ h_gs x)
+    (E := ⌈δ * (n : ℚ)⌉₊)
+    (k := k)
+    (dH := Bivariate.natDegreeY <| H k δ x₀ h_gs)
+    (dR := Bivariate.natDegreeY <| R k δ x₀ h_gs)
+    (D := D)
+    (by simpa using hthreshold)
+    (fun z _hz =>
+      nonmatching_coords_for_z_card_le_natCeil_delta_mul
+        (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z)
+    (by simpa using hsmall)
+    (fun x hx =>
+      lt_of_lt_of_le hx
+        (nonmatching_coords_filter_card_le_matching_set_at_x_card
+          (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs
+          (Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) x))
 
 /-- Turn a Claim-5.11 point set with sufficiently large `S'_x` fibers into the
 full close-set coverage condition consumed by the canonical `PzFamily`
