@@ -144,29 +144,28 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
   unfold OracleReduction.perfectCompleteness
   intro stmtIn witIn h_relIn
   simp only
-  -- BLOCKER (variable-convention defect in the shared structured round machinery; counterexample-
-  -- backed). The two round-transition lemmas this proof needs are now in-file in their TRUE forms:
-  --   • (a) `RingSwitching.fixFirstVariablesOfMQP_projectToMid_step` (Prelude) — the projected
-  --     round polynomial advances `i.castSucc → i.succ` with the challenge folded in as
-  --     `Fin.cons r' challenges` (NOT `Fin.snoc challenges r'`, which is false — see its note).
-  --   • (b) `getSumcheckRoundPoly_eval_eq_sum_cons` (above) — `getSumcheckRoundPoly H` at `r'`
-  --     sums `H` over the next cube with the round variable (variable 0) fixed to `r'`.
-  -- They do NOT close this theorem, because the honest output violates the OUTPUT relation under the
-  -- protocol's *as-written* conventions:
-  --   1. `getRoundProverFinalOutput` / `roundOracleVerifier` accumulate `stmt.challenges` via
-  --      `Fin.snoc stmtIn.challenges r'`, but `witnessStructuralInvariant i.succ` then requires
-  --      `witOut.H = projectToMidSumcheckPoly … i.succ (Fin.snoc challenges r')`. With the relIn
-  --      invariant `witIn.H = projectToMid … i.castSucc challenges` and the honest advance
-  --      `witOut.H = fixFirstVariablesOfMQP … witIn.H {r'}`, this reduces to the SNOC form of (a),
-  --      which is FALSE (counterexample in (a)'s note: ZMod 7, ℓ=3, i=1, X0+2X1+4X2, ![5], 3).
-  --   2. `getSumcheckRoundPoly` marginalises variable 0 while the witness advance
-  --      `fixFirstVariablesOfMQP … {r'}` fixes the LAST variable; for an asymmetric round polynomial
-  --      these are different marginals (counterexample in (b)'s note), so the new
-  --      `sumcheck_target = h_i.eval r'` is not the `∑`-consistency value for `witOut.H`.
-  -- HONEST RESOLUTION (out of scope here — shared-code change consumed by other instantiations):
-  -- align `Sumcheck.Structured.SingleRound` so the round polynomial and the witness advance use the
-  -- same round variable and challenges accumulate via `Fin.cons` (matching (a)/(b)). Once aligned,
-  -- (a) and (b) close this theorem directly. Left as a WIP `sorry` to keep the build green.
+  -- WIP (algebra UNBLOCKED by the defect-#20 machinery repair; remaining work is the run-shape peel).
+  -- After the coherent var-ordering repair in `Sumcheck.Structured.SingleRound`, the honest round is
+  -- now fully consistent and the OUTPUT relation is *provable* (no false residual remains):
+  --   • challenges accumulate via `Fin.cons r' stmtIn.challenges` in BOTH the prover
+  --     (`getRoundProverFinalOutput`) and the verifier (`roundOracleVerifier`), matching the cons-form
+  --     round transition `RingSwitching.fixFirstVariablesOfMQP_projectToMid_step`;
+  --   • `witnessStructuralInvariant i.succ` then holds: `witOut.H = fixFirstVariablesOfMQP … witIn.H
+  --     {r'}` and, from the relIn invariant `witIn.H = projectToMidSumcheckPoly … i.castSucc ch`, the
+  --     cons-step lemma gives `witOut.H = (rename finCongr) (projectToMidSumcheckPoly … i.succ
+  --     (Fin.cons r' ch))` — exactly what relOut demands (the old cons=snoc obstruction is GONE);
+  --   • `sumcheckConsistencyProp i.succ` holds: the repaired `getSumcheckRoundPoly` marginalises the
+  --     LAST variable, so `stmtOut.sumcheck_target = h_i.eval r' = ∑_{next cube} (fix-last witIn.H
+  --     {r'}) = ∑_{cube} witOut.H` via `getSumcheckRoundPoly_eval_eq_sum_snoc` + `fixFirstVariablesOfMQP_eval`;
+  --     the verifier's check `∑_{D.points i} h_i.eval b = sumcheck_target` discharges from the relIn
+  --     `sumcheckConsistencyProp i.castSucc` (`h_i` is the variable-`(last)` marginal of `witIn.H`);
+  --   • `initialCompatibility` carries over (`witOut.t' = witIn.t'`).
+  -- REMAINING (mechanical, no math obstruction): peel the 2-message honest `OracleReduction.run`
+  -- (`run_eq_run_reduction` → `Reduction.run`/`Prover.run`/`Verifier.run` → `runToRound`/`processRound`
+  -- `Fin.induction_two`), collapse the verifier's `simOracle2` message-query (`simulateQ_simOracle2_query`)
+  -- and the `guard`-emitting failure branch (defect-#21, now in `roundOracleVerifier`), then discharge
+  -- the four KState conjuncts above. This is the same run-shape plumbing as the final-sumcheck
+  -- completeness peel; deferred here as WIP to keep the build green after the machinery repair landed.
   sorry
 
 open scoped NNReal
@@ -177,37 +176,32 @@ abbrev roundKnowledgeError (L : Type) [Fintype L] (ℓ : ℕ) (i : Fin ℓ) : NN
   Sumcheck.Structured.roundKnowledgeError L ℓ i 2
 
 omit [NeZero κ] [Fintype L] [DecidableEq L] [SampleableType L] [NeZero ℓ] [NeZero ℓ'] in
-/-- **Target (b): `getSumcheckRoundPoly` value as a cube sum (variable-`0`/`cons` form).**
-The round univariate `getSumcheckRoundPoly ℓ (boolDomain L ℓ) i H` evaluated at the verifier
-challenge `r'` equals the sum, over the next round's Boolean cube `(boolDomain.drop (i+1)).cube`, of
-the full round polynomial `H` with the round variable (variable `0`) fixed to `r'` and the remaining
-coordinates ranging over the cube. Proven from the marginal identity `roundPoly_eval_eq_sum_cons`
-(Prelude). `curH` is `H` transported across the index equality `ℓ-i.castSucc = (ℓ-i.castSucc-1)+1`
-(this is `getSumcheckRoundPoly`'s own internal `curH_cast`, supplied here via a `HEq`).
+/-- **Target (b): `getSumcheckRoundPoly` value as a cube sum (LAST-variable/`snoc` form, defect-#20
+repair).** The round univariate `getSumcheckRoundPoly ℓ (boolDomain L ℓ) i H` evaluated at the
+verifier challenge `r'` equals the sum, over the next round's Boolean cube
+`(boolDomain.drop (i+1)).cube`, of the full round polynomial `H` with the **last** round variable
+fixed to `r'` (via `Fin.snoc`) and the surviving coordinates ranging over the cube. Proven from the
+marginal identity `roundPoly_eval_eq_sum_snoc` (Prelude). `curH` is `H` transported across the index
+equality `ℓ-i.castSucc = (ℓ-i.castSucc-1)+1` (`getSumcheckRoundPoly`'s own internal `curH_cast`,
+supplied via a `HEq`).
 
-STATEMENT-REPAIR NOTE (counterexample-backed, defect-#8/#10/#11 family). The naive target (b),
-`getSumcheckRoundPoly H r' = ∑ over next cube of (fixFirstVariablesOfMQP H {r'})`, is FALSE.
-`getSumcheckRoundPoly` keeps variable `0` as the round indeterminate (`finSuccEquivNth L 0` ⇒
-`Fin.cons r' …`), whereas `fixFirstVariablesOfMQP` fixes the *last* variable; for an asymmetric `H`
-these two marginals of `H` are different. Counterexample (`L = ZMod 7`, `H = X 0 + 3·X 1` over
-`Fin 2`, `r' = 2`): `getSumcheckRoundPoly H` (var 0) at `2` is `H(2,0)+H(2,1) = 2+5 = 0`, while
-`∑ (fix-last H {2})` is `(0+6)+(1+6) = 6 ≠ 0`. Hence (b) holds only for the variable-`0` marginal
-stated below. This surfaces a variable-convention mismatch *inside the structured round machinery*:
-`getSumcheckRoundPoly` (var 0) and `getRoundProverFinalOutput`'s witness advance
-`fixFirstVariablesOfMQP … {r'}` (last var) marginalise different coordinates of the same witness
-`H`. Aligning them (so the round polynomial and the witness advance agree on the round variable) is
-a fix to the shared `Sumcheck.Structured.SingleRound` machinery — see the blocker note on
-`iteratedSumcheckOracleReduction_perfectCompleteness`. -/
-theorem getSumcheckRoundPoly_eval_eq_sum_cons (i : Fin ℓ')
+VARIABLE-CONVENTION NOTE (defect-#20). The repaired `getSumcheckRoundPoly` keeps the **last**
+variable as the round indeterminate (`finSuccEquivNth L (Fin.last _)` ⇒ `Fin.snoc … r'`), matching
+the witness advance `getRoundProverFinalOutput`'s `fixFirstVariablesOfMQP … {r'}` (which also fixes
+the *last* surviving variable) and the `Fin.cons`-form round transition
+`fixFirstVariablesOfMQP_projectToMid_step`. The previous variable-`0` form was inconsistent with the
+end-consuming order of `projectToMidSumcheckPoly`; for an asymmetric `H` the two marginals differ
+(verified `ZMod 7` counterexample in `RingSwitching.Prelude`'s `RoundTransition` note). -/
+theorem getSumcheckRoundPoly_eval_eq_sum_snoc (i : Fin ℓ')
     (H : L⦃≤ 2⦄[X Fin (ℓ' - ↑i.castSucc)]) (r' : L)
     (curH : L[X Fin ((ℓ' - ↑i.castSucc - 1) + 1)]) (hcurH : HEq curH H.val) :
     (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) H).val.eval r'
       = ∑ x ∈ ((boolDomain L ℓ').drop (↑i.castSucc + 1)).cube,
-          MvPolynomial.eval (Fin.cons r' (Fin.append (fun j => j.elim0) x ∘ Fin.cast (by omega)))
-            curH := by
+          MvPolynomial.eval
+            (Fin.snoc (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega)) r') curH := by
   unfold getSumcheckRoundPoly
   dsimp only
-  rw [RingSwitching.roundPoly_eval_eq_sum_cons]
+  rw [RingSwitching.roundPoly_eval_eq_sum_snoc]
   refine Finset.sum_congr rfl fun x _ => ?_
   congr 1
   apply eq_of_heq
@@ -346,16 +340,17 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     --       RECONSTRUCTED into the round-local checks via the round-polynomial algebra (the
     --       `getSumcheckRoundPoly` cube-sum identity + `projectToNextSumcheckPoly` step), NOT
     --       transported verbatim. This is the multi-round analog of `finalSumcheck_cube0_sum_eq`.
-    --   (2) ORIENTATION WALL on the reject branch. `roundOracleVerifier` returns a DUMMY statement
-    --       (`{sumcheck_target := 0, challenges := snoc … 0}`) on a failed check, so the dummy can
-    --       lie in `relOut` while the unconditional `localizedRoundPolyCheck ∧ nextSumcheckTargetCheck`
-    --       is false — the SAME defect as the final-sumcheck reject branch. The clean fixes are
-    --       either (a) the verifier emits `failure` (`guard`) on a failed check (cascades into
-    --       re-proving the structured-round completeness), or (b) a `BatchingPhase`-#17-style
-    --       branch-mirroring `if sumcheck_check then … else …` in the index-⟨2⟩ KStateProp — but
-    --       (b) only transports cleanly when the KState branch EQUALS `relOut`, which it does not
-    --       here (see wall (1)). So this round needs the verifier-`failure` repair, identical to the
-    --       final-sumcheck conclusion.
+    --   (2) ORIENTATION WALL — NOW RESOLVED by the defect-#21 machinery repair. The shared
+    --       `Sumcheck.Structured.roundOracleVerifier` now emits `failure` (`guard`) on a failed
+    --       sumcheck check (instead of a dummy `{sumcheck_target := 0, challenges := …}`), so the
+    --       reject branch has no support element and is vacuous — the dummy can no longer lie in
+    --       `relOut`. After the support-extraction front-end collapses the verifier run, the reject
+    --       branch closes by `absurd` on the empty support; only the accept branch remains, which is
+    --       wall (1).
+    -- REMAINING after defect-#21: wall (1) (index/structure reconstruction of the index-⟨2⟩ KState
+    -- from `h_SumcheckStepRelOut` via the round-polynomial cube-sum algebra) is independent of the
+    -- verifier-failure repair and is still open; it needs the multi-round analog of
+    -- `finalSumcheck_cube0_sum_eq` plus the run-shape peel. Left as WIP `sorry`.
     sorry
 
 /-- RBR knowledge soundness for a single round oracle verifier -/
