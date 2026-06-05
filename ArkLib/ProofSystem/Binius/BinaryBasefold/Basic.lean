@@ -650,10 +650,23 @@ def snoc_oracle {i : Fin ℓ}
           exact Nat.lt_of_le_of_ne hi_succ_le_ℓ hi_succ_ne_ℓ
         rw [toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hi]
         rfl
-      by
-        simp only [OracleStatement]
-        simp_rw [h_commit_round]
-        exact newOracleFn -- where fᵢ is the oracle for round i+1
+      -- KERNEL-LIGHT restatement (wave6-commitfix). Instead of `simp_rw [h_commit_round]`
+      -- (which produces an `Eq.rec` over the whole `↥(sDomain …) → L` type and forces the kernel
+      -- to unfold `OracleStatement`/`sDomain`'s omega bound when later identified with the
+      -- framework's `toVerifier` cast — a deterministic kernel timeout), we transport `newOracleFn`
+      -- along a SINGLE named type-equality built by `congrArg` from a proof-irrelevant `Fin r`
+      -- index equality. `cast`/`congrArg` do not unfold their type arguments, so the resulting
+      -- term is kernel-cheap, and the new-oracle value is a single `cast` (matchable against
+      -- `toVerifier`'s `hEq ▸ …` cast via `cast`-irrelevance instead of whole-type defeq).
+      have hfin : (⟨i.succ.val, fin_ℓ_add_one_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ⟩ : Fin r)
+          = ⟨j.val * ϑ, by
+            have := toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i.succ j; omega⟩ :=
+        Fin.ext (by simpa using h_commit_round.symm)
+      have htype :
+          (OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
+            = OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ j :=
+        congrArg (fun (k : Fin r) => ↥(sDomain 𝔽q β h_ℓ_add_R_rate k) → L) hfin
+      cast htype newOracleFn -- where fᵢ is the oracle for round i+1
     else by
       simp only [OracleStatement]
       have h := toOutCodewordsCount_succ_eq ℓ ϑ i
