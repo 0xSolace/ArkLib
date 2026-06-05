@@ -1385,6 +1385,78 @@ lemma powerSeries_subst_coe_polynomial
   | add p q hp hq => simp [map_add, hp, hq]
   | monomial n r => simp [Polynomial.aeval_def]
 
+lemma polynomial_aeval_coe_eq_coe_comp
+    {R : Type} [CommRing R] (p q : Polynomial R) :
+    Polynomial.aeval (q : PowerSeries R) p = ((p.comp q : Polynomial R) : PowerSeries R) := by
+  induction p using Polynomial.induction_on' with
+  | add p r hp hr =>
+      rw [Polynomial.add_comp]
+      simp [map_add, hp, hr]
+  | monomial n a =>
+      rw [Polynomial.aeval_monomial]
+      rw [← Polynomial.C_mul_X_pow_eq_monomial]
+      simp
+
+lemma natDegree_C_add_X_le_one {R : Type} [CommRing R] (c : R) :
+    (Polynomial.C c + Polynomial.X : Polynomial R).natDegree ≤ 1 := by
+  calc
+    (Polynomial.C c + Polynomial.X : Polynomial R).natDegree
+        ≤ max (Polynomial.C c : Polynomial R).natDegree (Polynomial.X : Polynomial R).natDegree :=
+          Polynomial.natDegree_add_le _ _
+    _ ≤ 1 := by
+      apply max_le
+      · simp [Polynomial.natDegree_C]
+      · exact Polynomial.natDegree_X_le
+
+lemma powerSeries_trunc_zero {R : Type} [Semiring R] (f : PowerSeries R) :
+    f.trunc 0 = (0 : Polynomial R) := by
+  ext n
+  simp
+
+lemma coeff_aeval_affine_trunc_eq_zero_of_ge
+    {R : Type} [CommRing R] (f : PowerSeries R) (c : R) {k t : ℕ} (ht : t ≥ k) :
+    PowerSeries.coeff t
+      (Polynomial.aeval (((Polynomial.C c + Polynomial.X : Polynomial R) : PowerSeries R))
+        (f.trunc k)) = 0 := by
+  rw [polynomial_aeval_coe_eq_coe_comp]
+  rw [Polynomial.coeff_coe]
+  by_cases hk : k = 0
+  · subst k
+    rw [powerSeries_trunc_zero]
+    simp
+  · have hdegp : (f.trunc k).natDegree < k := by
+      obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hk
+      simpa using PowerSeries.natDegree_trunc_lt f j
+    have hdegq : (Polynomial.C c + Polynomial.X : Polynomial R).natDegree ≤ 1 :=
+      natDegree_C_add_X_le_one c
+    have hdegcomp_le :
+        ((f.trunc k).comp (Polynomial.C c + Polynomial.X : Polynomial R)).natDegree
+          ≤ (f.trunc k).natDegree := by
+      calc
+        ((f.trunc k).comp (Polynomial.C c + Polynomial.X : Polynomial R)).natDegree
+            ≤ (f.trunc k).natDegree
+                * (Polynomial.C c + Polynomial.X : Polynomial R).natDegree :=
+              Polynomial.natDegree_comp_le
+        _ ≤ (f.trunc k).natDegree * 1 := Nat.mul_le_mul_left _ hdegq
+        _ = (f.trunc k).natDegree := Nat.mul_one _
+    exact Polynomial.coeff_eq_zero_of_natDegree_lt
+      (lt_of_le_of_lt hdegcomp_le (lt_of_lt_of_le hdegp ht))
+
+set_option linter.unusedSimpArgs false in
+lemma affine_shift_powerSeries_eq_coe_C_add_X {R : Type} [CommRing R] (c : R) :
+    PowerSeries.mk (fun t => match t with | 0 => c | 1 => 1 | _ => 0) =
+      ((Polynomial.C c + Polynomial.X : Polynomial R) : PowerSeries R) := by
+  ext t
+  cases t with
+  | zero => simp [PowerSeries.coeff_X, Polynomial.coeff_coe, Polynomial.coeff_add,
+      Polynomial.coeff_C, Polynomial.coeff_X]
+  | succ t =>
+      cases t with
+      | zero => simp [PowerSeries.coeff_X, Polynomial.coeff_coe, Polynomial.coeff_add,
+          Polynomial.coeff_C, Polynomial.coeff_X]
+      | succ t => simp [PowerSeries.coeff_X, Polynomial.coeff_coe, Polynomial.coeff_add,
+          Polynomial.coeff_C, Polynomial.coeff_X]
+
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 lemma alpha'_powerSeries_eq_trunc_of_coeff_zero
@@ -1467,6 +1539,41 @@ lemma gamma'_eq_aeval_alpha'_trunc_of_coeff_zero
             ((PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)).trunc k) := by
             exact powerSeries_subst_coe_polynomial shift
               ((PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)).trunc k)
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma gamma'_coeff_zero_of_alpha'_coeff_zero
+    {R : F[Z][X][Y]} {H : F[Z][X]}
+    (H_irreducible : Irreducible H) (hHdeg : 0 < H.natDegree)
+    (hHyp : Hypotheses x₀ R H) {k : ℕ}
+    (hzero : ∀ t ≥ k,
+      α' x₀ R H_irreducible hHdeg hHyp t =
+        (0 : BCIKS20AppendixA.𝕃 H)) :
+    ∀ t ≥ k,
+      PowerSeries.coeff t (γ' x₀ R H_irreducible hHdeg hHyp) =
+        (0 : BCIKS20AppendixA.𝕃 H) := by
+  intro t ht
+  let shift : PowerSeries (BCIKS20AppendixA.𝕃 H) := PowerSeries.mk fun t =>
+    match t with
+    | 0 => BCIKS20AppendixA.fieldTo𝕃 (-x₀)
+    | 1 => 1
+    | _ => 0
+  have hγ := gamma'_eq_aeval_alpha'_trunc_of_coeff_zero
+    (F := F) (x₀ := x₀) H_irreducible hHdeg hHyp hzero
+  rw [hγ]
+  change PowerSeries.coeff t
+      (Polynomial.aeval shift
+        ((PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp)).trunc k)) = 0
+  have hshift : shift =
+      ((Polynomial.C (BCIKS20AppendixA.fieldTo𝕃 (H := H) (-x₀)) + Polynomial.X :
+          Polynomial (BCIKS20AppendixA.𝕃 H)) :
+        PowerSeries (BCIKS20AppendixA.𝕃 H)) := by
+    exact affine_shift_powerSeries_eq_coe_C_add_X
+      (BCIKS20AppendixA.fieldTo𝕃 (H := H) (-x₀))
+  rw [hshift]
+  exact coeff_aeval_affine_trunc_eq_zero_of_ge
+    (PowerSeries.mk (α' x₀ R H_irreducible hHdeg hHyp))
+    (BCIKS20AppendixA.fieldTo𝕃 (H := H) (-x₀)) ht
 
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
@@ -1871,10 +1978,20 @@ lemma approximate_solution_is_exact_solution_coeffs'
             (γ'
               x₀
               (R k (x₀ := x₀) (δ := δ) h_gs)
-              (irreducible_H k h_gs)
-              (natDegree_H_pos k h_gs)
-              (claimA2_hypotheses k h_gs))) := by
-   sorry
+            (irreducible_H k h_gs)
+            (natDegree_H_pos k h_gs)
+            (claimA2_hypotheses k h_gs))) := by
+  exact approximate_solution_is_exact_solution_coeffs'_of_gamma_coeff_zero
+    (F := F) (m := m) (n := n) (k := k) (δ := δ) (x₀ := x₀) (Q := Q)
+    h_gs
+    (gamma'_coeff_zero_of_alpha'_coeff_zero
+      (F := F) (x₀ := x₀)
+      (irreducible_H k h_gs)
+      (natDegree_H_pos k h_gs)
+      (claimA2_hypotheses k h_gs)
+      (approximate_solution_is_exact_solution_coeffs
+        (F := F) (m := m) (n := n) (k := k) (δ := δ) (x₀ := x₀) (Q := Q)
+        h_gs))
 
 open Polynomial Polynomial.Bivariate in
 noncomputable def constantCoeffPolynomialInY (P : F[Z][X]) : F[X] :=

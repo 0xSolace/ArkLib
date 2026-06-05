@@ -286,6 +286,29 @@ structure LogupSumcheckBridge
     (oStmt : ∀ i, OStmtAfterOuter F n M params i) where
   claimZero : logupOuterSumcheckClaim F n M params stmt oStmt = 0
 
+theorem LogupSumcheckBridge.of_honestHelpers
+    [Fintype F] [DecidableEq F]
+    (stmtIn : StmtIn F n M)
+    (oStmtIn : ∀ i, OStmtIn F n M i)
+    (stmt : StmtAfterOuter F n M params)
+    (hInput : (((stmtIn, oStmtIn), ()) ∈ inputRelation F n M))
+    (htable : ∀ u : Hypercube n,
+      stmt.xChallenge + evalOnHypercube (tableOracle oStmtIn) u ≠ 0)
+    (hHelpers :
+      (∑ u : Hypercube n,
+        ∑ k : Fin params.numGroups,
+          evalOnHypercube (honestHelpers params oStmtIn stmt.xChallenge k) u) = 0) :
+    LogupSumcheckBridge F n M params stmt
+      (fun
+        | .input i => oStmtIn i
+        | .multiplicity => honestMultiplicity oStmtIn
+        | .helpers => honestHelpers params oStmtIn stmt.xChallenge) where
+  claimZero := by
+    rw [logupOuterSumcheckClaim_honestHelpers_eq_sum_helpers
+      (F := F) (n := n) (M := M) (params := params)
+      stmtIn oStmtIn stmt hInput htable]
+    exact hHelpers
+
 theorem LogupSumcheckBridge.relationInput
     {hSigns : (-1 : F) ≠ 1}
     {stmt : StmtAfterOuter F n M params}
