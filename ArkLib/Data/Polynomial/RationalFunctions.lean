@@ -2986,8 +2986,22 @@ lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) (hHyp : Hypotheses x₀ 
         natDegree_ξ_pre_coeff_top_eq_zero_of_natDegree_eq hHyp hd2 hg hdH_eq
       rw [htop, add_zero]
 
-/-- There exist regular elements `β` with a weight bound as given in Claim A.2
-of Appendix A.4 of [BCIKS20]. -/
+/-- There exist regular elements `β` with the *weight upper bound* of Claim A.2 of
+Appendix A.4 of [BCIKS20].
+
+**Honesty note (the §5 frontier).** This lemma asserts ONLY the weight upper bound
+`Λ(β) ≤ (2t+1)·d_R·D`, which is satisfied vacuously by `β = 0` — and that is exactly
+the witness used here (`fun _ => ⟨0, by simp⟩`). It is therefore a true but
+*under-specified* statement: the `β` it produces is NOT the genuine recursive
+Hensel-lift numerator of [BCIKS20] (A.1), and carries no functional relation to
+`R`/`x₀`. The genuine numerator additionally satisfies the lift identity
+`embeddingOf𝒪Into𝕃 (β t) = α_t · W^{t+1} · ξ^{e_t}` that Claims 5.8/5.8'/5.9 read off
+(`α' t = 0 ⟺ embedding (β t) = 0` via `Lemma_A_1`); constructing it requires recursive
+multivariate-Hasse / integer-partition / multinomial infrastructure not present in this
+tree or in mathlib. This is the irreducible in-tree frontier of the BCIKS20 §5 chain.
+See `research/proximity-prize/dispositions/ingredient-D-{plan,result}.md` for the full
+construction spec. The signature is also missing `x₀`/`hHyp`, so it structurally cannot
+yet reference `α₀ = T/W`; a genuine numerator needs a strengthened signature. -/
 lemma β_regular (R : F[X][X][Y])
                 (H : F[X][Y]) [_H_irreducible : Fact (Irreducible H)]
                 [_H_natDegree_pos : Fact (0 < H.natDegree)]
