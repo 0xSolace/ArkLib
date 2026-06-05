@@ -750,8 +750,8 @@ theorem Pr_le_finset_sum_of_implies {α : Type} (D : PMF.{0} α) {β : Type} [De
       _ ≤ ∑ i ∈ s, D r * (if Q i r then (1 : ENNReal) else 0) :=
             Finset.single_le_sum (f := fun i => D r * (if Q i r then (1 : ENNReal) else 0))
               (fun i _ => zero_le _) hi₀s
-	  · simp only [hP, if_false, MulZeroClass.mul_zero]
-	    exact zero_le _
+  · simp only [hP, if_false, MulZeroClass.mul_zero]
+    exact zero_le _
 
 /-- If `A x` is always a subset of `B x`, then the event that the two sets differ is contained
 in the event that the reverse inclusion fails. -/
@@ -932,19 +932,15 @@ lemma folding_preserves_listdecoding_base
           let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
           let foldSet := fold_k_set listBlock vec_α hm
           let fold := fold_k f vec_α hm
-	          let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
-	          ¬ (listBlock' ⊆ foldSet)
-	        ] :=
-	      Pr_set_ne_le_Pr_not_subset_of_subset D
-	        (fun α =>
-	          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
-	          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
-	          fold_k_set listBlock vec_α hm)
-	        (fun α =>
-	          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
-	          let fold := fold_k f vec_α hm
-	          Λᵣ(1, k, fold, S_1, C', hcode', δ))
-	        (fun α => hsub f α)
+          let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
+          ¬ (listBlock' ⊆ foldSet)
+        ] := by
+        refine Pr_le_Pr_of_implies D _ _ ?_
+        intro α hne
+        dsimp only
+        dsimp only at hne
+        intro hsub'
+        exact hne (Set.Subset.antisymm (hsub f α) hsub')
     exact lt_of_le_of_lt hmono hrev'
 
 /-- **Lemma 4.21, MCA-bridged repaired form.**
@@ -1015,20 +1011,16 @@ lemma folding_preserves_listdecoding_base_of_mca_bridge
           let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
           let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
           let foldSet := fold_k_set listBlock vec_α hm
-	          let fold := fold_k f vec_α hm
-	          let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
-	          ¬ (listBlock' ⊆ foldSet)
-	        ] :=
-	      Pr_set_ne_le_Pr_not_subset_of_subset D
-	        (fun α =>
-	          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
-	          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
-	          fold_k_set listBlock vec_α hm)
-	        (fun α =>
-	          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
-	          let fold := fold_k f vec_α hm
-	          Λᵣ(1, k, fold, S_1, C', hcode', δ))
-	        (fun α => hsub f α)
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
+          ¬ (listBlock' ⊆ foldSet)
+        ] := by
+        refine Pr_le_Pr_of_implies D _ _ ?_
+        intro α hne
+        dsimp only
+        dsimp only at hne
+        intro hsub'
+        exact hne (Set.Subset.antisymm (hsub f α) hsub')
     exact le_trans hmono (le_trans (hbridge f) (hmca (fStack f) δ hδ))
 
 /-! ### Helper lemmas for `folding_preserves_listdecoding_bound` (Lemma 4.22, forward inclusion)
