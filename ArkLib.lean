@@ -165,6 +165,7 @@ import ArkLib.Data.Polynomial.FoldingPolynomial
 import ArkLib.Data.Polynomial.Indicator
 import ArkLib.Data.Polynomial.Interface
 import ArkLib.Data.Polynomial.Prelims
+import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.Data.Polynomial.SplitFold
 import ArkLib.Data.Polynomial.Trivariate
