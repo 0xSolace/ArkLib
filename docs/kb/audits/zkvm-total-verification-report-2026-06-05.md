@@ -15,11 +15,12 @@ memory/lookups/permutations, implementation equivalence, transcript/hash/commitm
 recursion/aggregation, and on-chain verifier correctness.
 
 The `lalalune/ArkLib` fork represents a major expansion over upstream `Verified-zkEVM/ArkLib`.
-At the time of inspection, local `main` tracked `fork/main` at commit `5fd2c0259` and was `2,983`
-commits ahead of `origin/main`, with approximately `78,324` insertions and `5,330` deletions across
-`334` files. The fork grows the Lean source tree under `ArkLib/` from `205` Lean files upstream to
-`359`, while a filtered executable-`sorry` scan drops from roughly `236` unresolved proof placeholders
-upstream to roughly `97` in the fork.
+At the time of inspection, local `main` tracked `fork/main` at commit `cad49a13a`, with additional
+local proof-wrapper edits under review, and was roughly `2,983` commits ahead of `origin/main`, with
+approximately `78k+` insertions and `5k+` deletions across `334+` files. The fork grows the Lean
+source tree under `ArkLib/` from `205` Lean files upstream to `359+`, while a filtered executable
+`sorry` scan drops from roughly `236` unresolved proof placeholders upstream to roughly `97-113` in
+the fork depending on the scan filter.
 
 Validation status: `./scripts/validate.sh` completed the Lean build successfully, but exited nonzero
 because the Data warning budget found `52` ArkLib/Data non-sorry warnings. Therefore the fork is
@@ -217,4 +218,3 @@ git grep -n -E '(^|[^A-Za-z0-9_])sorry([^A-Za-z0-9_]|$)' origin/main -- ArkLib '
 git grep -n -E '(^|[^A-Za-z0-9_])sorry([^A-Za-z0-9_]|$)' fork/main -- ArkLib '*.lean'
 ./scripts/validate.sh
 ```
-
