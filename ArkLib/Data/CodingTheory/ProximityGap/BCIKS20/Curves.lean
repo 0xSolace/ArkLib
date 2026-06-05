@@ -1582,27 +1582,15 @@ theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_eval_polys
             ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
               ∀ x, (P z).eval (domain x) = (E x).eval z) :
     jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
-  classical
-  have hS_card :
-      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
-          (Fintype.card F : ENNReal) <
-        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
-          ENNReal) := by
-    simpa [ENNReal.coe_mul, ENNReal.coe_natCast] using
-      goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt
-        (u := u) (η := (k : ℝ≥0) * errorBound δ deg domain) hprob
-  exact goodCoeffsCurve_eval_polys_implies_jointAgreement_of_prob_threshold_core
+  exact RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds_eval_polys
     (deg := deg) (domain := domain) (δ := δ) hk
     (RS_degree_le_domain_card_of_rate_half_lt_and_le_sqrt
       (deg := deg) (domain := domain) hJ (le_of_lt hδ))
-    hS_card
-    (prob_threshold_small_of_strict_johnson
-      (deg := deg) (domain := domain) (δ := δ) hk
+    u hprob
+    (DivergenceOfSets.errorBound_ge_const (deg := deg) (domain := domain)
       (Nat.pos_of_neZero deg) hδ)
-    (prob_threshold_large_of_errorBound_ge_succ_const
-      (deg := deg) (domain := domain) (δ := δ)
-      (errorBound_ge_succ_const_of_strict_johnson (deg := deg) (domain := domain)
-        hJ hδ))
+    (errorBound_ge_succ_const_of_strict_johnson (deg := deg) (domain := domain)
+      hJ hδ)
     hEvalPoly
 
 omit [DecidableEq ι] [Fintype F] in
