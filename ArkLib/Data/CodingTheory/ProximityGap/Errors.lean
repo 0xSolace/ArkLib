@@ -201,9 +201,10 @@ theorem no_row_codeword_on_zero_line_witness_of_not_pairJointAgreesOn
     ((-γ) • c) i = (-γ) • c i := rfl
     _ = (-γ) • d₁ i := by rw [hagree i hi]
     _ = d₀ i := by
-      have hz : d₀ i + γ • d₁ i = 0 := (hzero i hi).symm
-      rw [← neg_eq_iff_add_eq_zero] at hz
-      simpa [neg_smul] using congrArg Neg.neg hz.symm
+      have hz : d₀ i = -(γ • d₁ i) := by
+        rw [eq_neg_iff_add_eq_zero]
+        exact (hzero i hi).symm
+      simpa [neg_smul] using hz.symm
 
 /-- The "bad" event in ABF26 Definition 4.3: there is a witness set `S` of size at least
 `(1-δ)·n` on which the line `u₀ + γ • u₁` exactly equals some codeword of `C`, but no
