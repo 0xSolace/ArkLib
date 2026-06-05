@@ -24931,19 +24931,6 @@
         }
       ]
     },
-    "ArkLib/Data/CodingTheory/ProximityGap/Folding/Multilinear.lean": {
-      "declarations": [
-        {
-          "doc": "",
-          "kind": "lemma",
-          "line": 33,
-          "name": "ProximityGap.foldWord_eq_evalOnPoints_powAlgHom",
-          "namespace": "ProximityGap",
-          "short_name": "foldWord_eq_evalOnPoints_powAlgHom",
-          "signature": "lemma foldWord_eq_evalOnPoints_powAlgHom [NeZero n] {\u03b1 : F}"
-        }
-      ]
-    },
     "ArkLib/Data/CodingTheory/ProximityGap/GK16DegreeBudget.lean": {
       "declarations": [
         {
@@ -73806,8 +73793,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 8026,
-      "files": 396
+      "declarations": 8025,
+      "files": 395
     }
   }
 }
