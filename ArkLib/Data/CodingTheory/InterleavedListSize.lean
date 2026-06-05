@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+
 import ArkLib.Data.CodingTheory.InterleavedCode
 
 /-!
@@ -40,13 +46,16 @@ namespace InterleavedCode.ListSize
 
 variable {ι F : Type} [Fintype ι]
 
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
+set_option linter.style.setOption false
 set_option maxHeartbeats 1000000
 
+-- The instance-transport conversions around relative Hamming distance are heartbeat-heavy.
 /-- A close interleaved codeword projects, column-wise, to a close codeword of the base code.
 
 This re-derives the projection close-list membership from the in-tree
 projection-distance lemma `relHammingDist_transpose_le`. -/
-omit [Field F] in
 lemma transpose_mem_closeCodewordsRel [DecidableEq F] [Nonempty ι] {m : ℕ}
     {C : Set (ι → F)} {δ : ℝ}
     {f V : Matrix ι (Fin m) F}
@@ -79,7 +88,6 @@ lemma transpose_mem_closeCodewordsRel [DecidableEq F] [Nonempty ι] {m : ℕ}
 
 /-- The per-column base-code list size is bounded by the maximised list size `Lambda C δ`
 (when `F` is finite, so all lists are finite). -/
-omit [Field F] [DecidableEq F] in
 lemma encard_closeCodewordsRel_le_Lambda [Fintype F] {C : Set (ι → F)} {δ : ℝ} (g : ι → F) :
     (closeCodewordsRel C g δ).encard ≤ Lambda C δ := by
   have hfin : (closeCodewordsRel C g δ).Finite := Set.toFinite _
