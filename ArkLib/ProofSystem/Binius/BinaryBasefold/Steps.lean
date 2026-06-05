@@ -517,6 +517,66 @@ noncomputable def commitOracleVerifier (i : Fin ℓ) (hCR : isCommitmentRound �
       rw! [h]
       rfl
 
+/-- The commit-step oracle verifier routes each output oracle (round `i.succ`) either to the
+unchanged input oracle (`embed j = Sum.inl ⟨j.val,_⟩`, `j.val < count(i.castSucc)`) or, for the single
+new index `j.val = count(i.castSucc)`, to the freshly committed codeword prover message
+(`embed j = Sum.inr ⟨0,_⟩`). In both branches the registered `OracleInterface` is the canonical
+point-query `instFunction` over `sDomain … → L`, whose carrier depends only on the numeric exponent
+(`j.val * ϑ` for the input branch; `count(i.castSucc) * ϑ = i.val + 1` for the committed branch, by
+`toOutCodewordsCount_mul_ϑ_eq_i_succ`). So once the embed-branch witness fixes the numeric index both
+interfaces are definitionally equal and the required `cast` collapses by `rfl` after the index
+`subst`/`rw!`. -/
+instance instCommitOracleVerifierAppendCoherent (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
+    OracleVerifier.Append.AppendCoherent
+      (commitOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (Context := Context) i hCR) where
+  hCohInl := fun a k h => by
+    -- then-branch of the `dite`: `a.val < count(i.castSucc)` and `k.val = a.val`.
+    have hak : a.val = k.val := by
+      simp only [commitOracleVerifier, Function.Embedding.coeFn_mk] at h
+      split_ifs at h with hlt
+      exact congrArg Fin.val (Sum.inl.inj h)
+    obtain ⟨av, hav⟩ := a; obtain ⟨kv, hkv⟩ := k
+    simp only [] at hak; subst hak; rfl
+  hCohInr := fun a k h => by
+    -- else-branch of the `dite`: `a.val = count(i.castSucc)`, `k = ⟨0,_⟩`; the output oracle there
+    -- is the committed codeword whose interface is `instFunction` over `sDomain ⟨count*ϑ,_⟩ → L`,
+    -- and `count * ϑ = i.val + 1` makes it the message interface.
+    have hnlt : ¬ a.val < toOutCodewordsCount ℓ ϑ i.castSucc := by
+      simp only [commitOracleVerifier, Function.Embedding.coeFn_mk] at h
+      split_ifs at h with hlt
+      exact hlt
+    have ha_lt : a.val < toOutCodewordsCount ℓ ϑ i.succ := a.isLt
+    have ha_lt' : a.val < toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
+      have := toOutCodewordsCount_succ_eq ℓ ϑ i
+      simp only [hCR, ↓reduceIte] at this
+      omega
+    have hacond : a.val = toOutCodewordsCount ℓ ϑ i.castSucc := by omega
+    have hkk : k = ⟨0, by simp [pSpecCommit]⟩ := by
+      apply Subtype.ext
+      obtain ⟨kv, hkv⟩ := k
+      simp only [pSpecCommit] at hkv ⊢
+      apply Fin.ext; simp only [Fin.val_zero]; omega
+    subst hkk
+    apply eq_of_heq
+    refine HEq.trans ?_ (cast_heq _ _).symm
+    -- both sides are `instFunction` over `sDomain ⟨·,_⟩ → L`; after fixing the numeric index they
+    -- coincide.  `OracleStatement i.succ a` uses exponent `a.val * ϑ = count(i.castSucc) * ϑ`,
+    -- the message `OracleFunction i.succ` uses exponent `i.val + 1`; these are equal.
+    have hexp : toOutCodewordsCount ℓ ϑ i.castSucc * ϑ = i.val + 1 :=
+      toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR
+    obtain ⟨av, hav⟩ := a
+    simp only [] at hacond
+    subst hacond
+    show HEq (instOracleStatementBinaryBasefold 𝔽q β
+      ⟨toOutCodewordsCount ℓ ϑ i.castSucc, hav⟩)
+      (OracleInterface.instFunction
+        (α := sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + 1, by omega⟩) (β := L))
+    unfold instOracleStatementBinaryBasefold OracleStatement OracleInterface.instFunction
+      OracleContext.ofFunction
+    rw! [hexp]
+    rfl
+
 /-- The oracle reduction that is the `i`-th round of Binary commitmentfold. -/
 noncomputable def commitOracleReduction (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
   OracleReduction (oSpec := []ₒ)
@@ -531,6 +591,13 @@ noncomputable def commitOracleReduction (i : Fin ℓ) (hCR : isCommitmentRound �
     (pSpec := pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) where
   prover := commitOracleProver 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
   verifier := commitOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hCR
+
+instance instCommitOracleReductionAppendCoherent (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
+    OracleVerifier.Append.AppendCoherent
+      (commitOracleReduction 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := Context)
+        i hCR).verifier :=
+  instCommitOracleVerifierAppendCoherent 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (Context := Context) i hCR
 
 variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
   {n : ℕ} {deg : ℕ} {m : ℕ} {D : Fin m ↪ R}
