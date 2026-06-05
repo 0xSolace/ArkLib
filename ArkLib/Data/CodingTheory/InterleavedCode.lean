@@ -371,6 +371,15 @@ lemma relHammingDist_transpose_le {F : Type*} [DecidableEq F] [Fintype ι] [None
     simpa [Matrix.transpose] using this
   gcongr
 
+/-- A close interleaved codeword projects, column-wise, to a codeword of the base code. -/
+lemma closeCodewordsRel_interleaved_transpose_mem_code {F : Type*} [Fintype ι]
+    {m : ℕ} {C : Set (ι → F)} {δ : ℝ}
+    {f V : Matrix ι (Fin m) F}
+    (hV : V ∈ ListDecodable.closeCodewordsRel (interleavedCodeSet (κ := Fin m) C) f δ)
+    (k : Fin m) :
+    V.transpose k ∈ C :=
+  hV.1 k
+
 @[simp]
 lemma interleavedCode_eq_interleavedCodeSet_of_moduleCode {F A : Type*} {κ ι : Type*} [Semiring F]
     [AddCommMonoid A] [Module F A] {MC : ModuleCode ι F A} :
