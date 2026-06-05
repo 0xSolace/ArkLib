@@ -747,6 +747,54 @@ theorem Lambda_le_of_gamma_johnson_condition
   apply Lambda_le_of_normalized_johnson_condition C hδ hq hβ
   simpa [sub_eq_add_neg, add_assoc, add_left_comm, add_comm] using hcond
 
+/-- Gamma-form Johnson cap specialized to the quadratic minimizer
+`β = (γ - δ)/γ`.
+
+This is the Lean-facing algebra target for the final `Jqℓ` instantiation: after
+showing the radius lies below `γ` and the displayed scalar expression is
+negative, the Lambda bound follows. -/
+theorem Lambda_le_of_gamma_optimal_johnson_condition
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ}
+    (hδ : 0 ≤ δ) (hq_one : 1 < Fintype.card α)
+    (hδ_le_gamma : δ ≤ 1 - 1 / (Fintype.card α : ℝ))
+    (hcond :
+      let γ : ℝ := 1 - 1 / (Fintype.card α : ℝ)
+      let drel : ℝ := (Code.minDist C : ℝ) / (Fintype.card ι : ℝ)
+      γ + (ℓ : ℝ) * (γ - drel) - ((ℓ : ℝ) + 1) * (γ - δ) ^ 2 / γ < 0) :
+    ListDecodable.Lambda C δ ≤ (ℓ : ℕ∞) := by
+  let γ : ℝ := 1 - 1 / (Fintype.card α : ℝ)
+  let drel : ℝ := (Code.minDist C : ℝ) / (Fintype.card ι : ℝ)
+  have hq : 0 < Fintype.card α := lt_trans Nat.zero_lt_one hq_one
+  have hq_real : 1 < (Fintype.card α : ℝ) := by exact_mod_cast hq_one
+  have hq_real_pos : 0 < (Fintype.card α : ℝ) := lt_trans zero_lt_one hq_real
+  have hγ_pos : 0 < γ := by
+    have hfrac_pos :
+        0 < ((Fintype.card α : ℝ) - 1) / (Fintype.card α : ℝ) :=
+      div_pos (sub_pos.mpr hq_real) hq_real_pos
+    have hγ_eq :
+        γ = ((Fintype.card α : ℝ) - 1) / (Fintype.card α : ℝ) := by
+      dsimp [γ]
+      field_simp [hq_real_pos.ne']
+    rw [hγ_eq]
+    exact hfrac_pos
+  have hβ_nonneg : 0 ≤ (γ - δ) / γ := by
+    exact div_nonneg (sub_nonneg.mpr (by simpa [γ] using hδ_le_gamma)) hγ_pos.le
+  apply Lambda_le_of_gamma_johnson_condition C hδ hq hβ_nonneg
+  change γ * (1 + ((γ - δ) / γ) ^ 2) - 2 * ((γ - δ) / γ) * (γ - δ)
+      + (ℓ : ℝ) * ((γ - drel) - 2 * ((γ - δ) / γ) * (γ - δ)
+        + ((γ - δ) / γ) ^ 2 * γ) < 0
+  have hquad :
+      γ * (1 + ((γ - δ) / γ) ^ 2) - 2 * ((γ - δ) / γ) * (γ - δ)
+          + (ℓ : ℝ) * ((γ - drel) - 2 * ((γ - δ) / γ) * (γ - δ)
+            + ((γ - δ) / γ) ^ 2 * γ)
+        = γ + (ℓ : ℝ) * (γ - drel) - ((ℓ : ℝ) + 1) * (γ - δ) ^ 2 / γ := by
+    field_simp [hγ_pos.ne']
+    ring
+  rw [hquad]
+  simpa [γ, drel] using hcond
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
