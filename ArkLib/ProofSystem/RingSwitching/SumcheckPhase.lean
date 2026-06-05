@@ -398,6 +398,148 @@ theorem getSumcheckRoundPoly_points_sum_eq_cube (i : Fin ℓ')
           Fin.append_left]
       exact congrArg x (Fin.ext rfl)
 
+/-- **Round-transition consistency (next-round cube form, defect-#20 last-variable).** The prover's
+round univariate `getSumcheckRoundPoly i (projectToMidSumcheckPoly … i.castSucc challenges)`
+evaluated at the verifier challenge `r'` equals the *next* round's cube sum of the advanced projected
+polynomial `projectToMidSumcheckPoly … i.succ (Fin.cons r' challenges)`. This is the multi-round
+analog of `finalSumcheck_cube0_sum_eq`: it relates `h_star.eval r'` (the next-round target produced
+by the honest verifier) to `∑_cube witOut.H` (the next-round sumcheck consistency), and is the
+load-bearing identity for the iterated KState's `nextSumcheckTargetCheck` reconstruction.
+
+Derivation: `getSumcheckRoundPoly_eval_eq_sum_snoc` rewrites the LHS as a survivor-cube sum of the
+round polynomial `H = projectToMid … i.castSucc challenges` with the *last* surviving variable fixed
+to `r'` (via `Fin.snoc`); `fixFirstVariablesOfMQP_eval` (with `v := 1`) identifies that snoc-eval with
+the survivor-eval of `fixFirstVariablesOfMQP (ℓ'-i.castSucc) ⟨1⟩ H {r'}`; the round-transition
+`fixFirstVariablesOfMQP_projectToMid_step` rewrites that fixed-last poly as `rename (finCongr)
+(projectToMid … i.succ (cons r' challenges)) = rename (finCongr) witOut.H`; finally `eval_rename` +
+a `Fin.cast` reindex of the (uniform Boolean) survivor cube collapse the rename to the next-round
+cube sum. -/
+theorem getSumcheckRoundPoly_eval_eq_cube_succ (i : Fin ℓ')
+    (t m : MultilinearPoly L ℓ') (challenges : Fin i.castSucc → L) (r' : L) :
+    (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i)
+        (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+          (i := i.castSucc) (challenges := challenges))).val.eval r'
+      = ∑ z ∈ (boolDomain L (ℓ' - ↑i.succ)).cube,
+          (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+            (i := i.succ) (challenges := Fin.cons r' challenges)).val.eval z := by
+  -- Abbreviate `H := witLast.H = projectToMid … i.castSucc challenges`.
+  set H : L⦃≤ 2⦄[X Fin (ℓ' - ↑i.castSucc)] :=
+    projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+      (i := i.castSucc) (challenges := challenges) with hHdef
+  -- `ℓ' - i.castSucc = (ℓ'-i.castSucc-1) + 1` from `i.isLt`.
+  have hn : ℓ' - ↑i.castSucc = (ℓ' - ↑i.castSucc - 1) + 1 := by
+    have := i.2; simp only [Fin.val_castSucc]; omega
+  set curH : L[X Fin ((ℓ' - ↑i.castSucc - 1) + 1)] := rename (finCongr hn) H.val with hcurH_def
+  have hHEq : HEq curH H.val := by
+    rw [hcurH_def]; exact rename_finCongr_heq (h := hn) (p := H.val)
+  -- (1) LHS: round univariate value as a survivor-cube snoc-sum (last-variable form).
+  rw [getSumcheckRoundPoly_eval_eq_sum_snoc (i := i) (H := H) (r' := r') (curH := curH)
+    (hcurH := hHEq)]
+  -- (2) Rewrite each snoc-eval of `curH` back to an eval of `H` (via `eval_rename`), then to the
+  -- survivor-eval of the *fixed-last* `H` (via `fixFirstVariablesOfMQP_eval` with `v := 1`).
+  have hpos : 0 < ℓ' - ↑i.castSucc := by have := i.2; simp only [Fin.val_castSucc]; omega
+  set v1 : Fin (ℓ' - ↑i.castSucc + 1) := ⟨1, by omega⟩ with hv1
+  -- Survivor point of `fixFirstVariablesOfMQP _ v1` lives over `Fin ((ℓ'-i.castSucc) - v1)`; with
+  -- `v1 = 1` this is the same dimension `ℓ'-i.castSucc-1` as the `curH` survivors.
+  have hfix : ∀ x : Fin (ℓ' - (↑i.castSucc + 1)) → L,
+      MvPolynomial.eval
+          (Fin.snoc (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega)) r') curH
+        = MvPolynomial.eval
+            (fun k : Fin ((ℓ' - ↑i.castSucc) - ↑v1) =>
+              (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by simp only [hv1]; omega)) k)
+            (fixFirstVariablesOfMQP (ℓ' - ↑i.castSucc) v1 H.val (fun _ => r')) := by
+    intro x
+    -- `fixFirstVariablesOfMQP_eval` (v := v1): `eval y (fix-last H {r'}) = eval (recombine y {r'}) H`.
+    rw [RingSwitching.fixFirstVariablesOfMQP_eval (L := L) (ℓ := ℓ' - ↑i.castSucc)
+        v1 H.val (fun _ => r')
+        (fun k : Fin ((ℓ' - ↑i.castSucc) - ↑v1) =>
+          (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by simp only [hv1]; omega)) k)]
+    -- Both sides are `eval (·) H.val`; transport the snoc-eval of `curH` to `H` via `eval_rename`.
+    rw [hcurH_def, eval_rename]
+    refine congrArg (fun pt => MvPolynomial.eval pt H.val) ?_
+    -- The recombined points agree coordinatewise: the survivors come from `x` and the single fixed
+    -- coordinate is `r'`, in both the `Fin.snoc … r' ∘ finCongr` and the `Sum.elim … {r'}` forms.
+    funext j
+    -- LHS (after `eval_rename`): `(Fin.snoc … r') (Fin.cast hn j)`, `Fin.cast hn j : Fin (…-1+1)`.
+    -- RHS (`fixFirstVariablesOfMQP_eval` recombine): classify `j` by the `finSumFinEquiv` split
+    -- (`finSumFinEquiv_symm_dite`: split on `j < (ℓ'-i.castSucc) - v1`).
+    simp only [Function.comp_apply, Equiv.trans_apply, finCongr_apply,
+      RingSwitching.finSumFinEquiv_symm_dite, Fin.val_cast]
+    by_cases hj : (j : ℕ) < ℓ' - ↑i.castSucc - 1
+    · -- survivor coordinate: both sides read `x` at the matching index.
+      rw [dif_pos (show (j : ℕ) < (ℓ' - ↑i.castSucc) - ↑v1 by simp only [hv1]; omega), Sum.elim_inl]
+      simp only [show (Fin.cast hn j) = Fin.castSucc ⟨(j : ℕ), by omega⟩ from Fin.ext rfl,
+        Fin.snoc_castSucc, Function.comp_apply, Fin.val_cast]
+    · -- fixed coordinate (`j = ℓ'-i.castSucc-1`, the last): both sides read `r'`.
+      have hjlast : (j : ℕ) = ℓ' - ↑i.castSucc - 1 := by have := j.2; omega
+      rw [dif_neg (show ¬ (j : ℕ) < (ℓ' - ↑i.castSucc) - ↑v1 by simp only [hv1]; omega),
+          Sum.elim_inr]
+      simp only [show (Fin.cast hn j) = Fin.last (ℓ' - ↑i.castSucc - 1) from Fin.ext (by simp [hjlast]),
+        Fin.snoc_last]
+  rw [Finset.sum_congr rfl (fun x _ => hfix x)]
+  -- (3) The fixed-last `H` is the advanced projected poly up to `rename (finCongr)`; rewrite via the
+  -- round-transition step, then push `eval_rename` and reindex the survivor cube to the next cube.
+  have hstep := RingSwitching.fixFirstVariablesOfMQP_projectToMid_step (L := L) (ℓ := ℓ') t m i
+    challenges r'
+  -- `hstep : fix-last (projectToMid i.castSucc ch) {r'} = rename (finCongr) (projectToMid i.succ …)`.
+  rw [show (fixFirstVariablesOfMQP (ℓ' - ↑i.castSucc) ⟨1, by
+              have := i.2; simp only [Fin.val_castSucc]; omega⟩ H.val (fun _ => r'))
+        = (fixFirstVariablesOfMQP (ℓ' - ↑i.castSucc) ⟨1, by
+              have := i.2; simp only [Fin.val_castSucc]; omega⟩
+            (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+              (i := i.castSucc) (challenges := challenges)).val (fun _ => r')) from by rw [hHdef]]
+  rw [hstep]
+  -- Push `eval_rename` so each survivor eval is of the next-round projected poly directly.
+  have hren : ∀ x : Fin (ℓ' - (↑i.castSucc + 1)) → L,
+      MvPolynomial.eval (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega))
+          (rename (finCongr (show ℓ' - (↑i.succ : ℕ) = ℓ' - ↑i.castSucc - 1 by
+              have := i.2; simp only [Fin.val_succ, Fin.val_castSucc]; omega))
+            (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+              (i := i.succ) (challenges := Fin.cons r' challenges)).val)
+        = MvPolynomial.eval
+            ((Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega))
+              ∘ finCongr (show ℓ' - (↑i.succ : ℕ) = ℓ' - ↑i.castSucc - 1 by
+                have := i.2; simp only [Fin.val_succ, Fin.val_castSucc]; omega))
+            (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+              (i := i.succ) (challenges := Fin.cons r' challenges)).val := by
+    intro x; rw [eval_rename]
+  rw [Finset.sum_congr rfl (fun x _ => hren x)]
+  -- (4) Reindex the survivor cube `((boolDomain ℓ').drop (i+1)).cube` to the next-round cube
+  -- `(boolDomain (ℓ'-i.succ)).cube`; both are the uniform Boolean cube of dimension `ℓ'-i.succ`.
+  simp only [boolDomain, SumcheckDomain.drop_uniform]
+  symm
+  have hdim : ℓ' - (↑i.succ : ℕ) = ℓ' - (↑i.castSucc + 1) := by
+    have := i.2; simp only [Fin.val_succ, Fin.val_castSucc]
+  apply Finset.sum_nbij' (fun z => z ∘ Fin.cast hdim) (fun y => y ∘ Fin.cast hdim.symm)
+  · intro z hz
+    apply SumcheckDomain.mem_cube.2
+    intro j
+    exact by simpa using SumcheckDomain.mem_cube.1 hz (Fin.cast hdim j)
+  · intro y hy
+    apply SumcheckDomain.mem_cube.2
+    intro j
+    exact by simpa using SumcheckDomain.mem_cube.1 hy (Fin.cast hdim.symm j)
+  · intro z _; funext j; simp
+  · intro y _; funext j; simp
+  · intro z _
+    refine congrArg
+      (fun pt => MvPolynomial.eval pt
+        (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+          (i := i.succ) (challenges := Fin.cons r' challenges)).val) ?_
+    funext j
+    -- The recombined point `append (z ∘ cast) ∅ (cast (finCongr j))` reads `z` at the value-`j`
+    -- index (the `Fin.append`-with-empty is the left part, and every cast preserves `.val`).
+    simp only [Function.comp_apply, finCongr_apply, Fin.cast_cast]
+    rw [show (Fin.cast (show ℓ' - (↑i.succ : ℕ) = ℓ' - (↑i.castSucc + 1) + 0 by
+              have := i.2; simp only [Fin.val_succ, Fin.val_castSucc]; omega) j)
+          = Fin.castAdd 0 (Fin.cast hdim j) from Fin.ext rfl,
+        Fin.append_left, Function.comp_apply]
+    exact congrArg z (Fin.ext (by simp only [Fin.val_cast]))
+  -- The `getSumcheckRoundPoly_eval_eq_sum_snoc` rewrite leaves its (conclusion-irrelevant) autobound
+  -- `ℕ` parameters as trailing metavariable goals; any `ℕ` discharges them (the lemma's statement is
+  -- independent of them).
+  all_goals exact ℓ'
+
 noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
   Extractor.RoundByRound []ₒ
     (StmtIn := (Statement (L := L) (ℓ := ℓ')
@@ -509,19 +651,36 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
         let localizedRoundPolyCheck := h_i = h_star
         explicitVCheck ∧ localizedRoundPolyCheck
       )
-  | ⟨2, h2⟩ => -- implied by (relOut + V's check)
-    -- The bad-folding-event of `fᵢ` is also introduced internaly by `masterKStateProp`
-    RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
-      (stmtIdx := i.castSucc)
-      (stmt := stmt) (oStmt := oStmt) (wit := witMid)
-      (localChecks :=
-        let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := by simp only [Nat.one_le_ofNat])
-        let r_i' := get_rᵢ' (m := ⟨2, h2⟩) (tr := tr) (hm := by simp only [le_refl])
-        let localizedRoundPolyCheck := h_i = h_star
-        let nextSumcheckTargetCheck := -- this presents sumcheck of next round (sᵢ = s^*ᵢ)
-          h_i.val.eval r_i' = h_star.val.eval r_i'
-        localizedRoundPolyCheck ∧ nextSumcheckTargetCheck
-      ) -- this holds the constraint for witOut in relOut
+  | ⟨2, h2⟩ => -- implied by (relOut + V's check); the SOUNDNESS-CORRECT post-challenge KState.
+    -- DEFECT-#22 (KState-redesign, counterexample-backed) — the post-challenge (index-⟨2⟩) KState must
+    -- NOT carry `localizedRoundPolyCheck` (`h_i = h_star`) nor the master `sumcheckConsistencyProp`
+    -- on the INPUT statement: a malicious prover may send `h_i ≠ h_star`, the honest verifier only
+    -- checks `∑_b h_i(b) = stmtLast.sumcheck_target` (never `h_i = h_star`), so for an accepted run
+    -- with `(stmtOut, witOut) ∈ relOut` neither `h_i = h_star` nor `stmtLast.sumcheck_target =
+    -- ∑_cube witLast.H` is provable in `toFun_full` (the prior `masterKStateProp` form was therefore
+    -- unclosable — the SAME wall as the open `BinaryBasefold.foldKStateProp`). The correct
+    -- post-challenge invariant keeps only what relOut + the verifier check actually pin down:
+    --   • `explicitVCheck`  — the verifier's accept condition `∑_b h_i(b) = stmtLast.sumcheck_target`
+    --     (= `hcheck`, available on the accept branch);
+    --   • `nextSumcheckTargetCheck` — `h_i.eval r' = h_star.eval r'` (derivable from relOut's
+    --     consistency+structural at `i.succ` via `getSumcheckRoundPoly_eval_eq_cube_succ`);
+    --   • `witnessStructuralInvariant` (true by the extractor's definition of `witLast.H`);
+    --   • `initialCompatibility` (= `hCompat`).
+    -- RBR knowledge soundness still closes at `2/|L|`: the bad event `¬kSF⟨1⟩ ∧ kSF⟨2⟩` forces
+    -- `h_i ≠ h_star` (from `¬kSF⟨1⟩`, since `kSF⟨2⟩`'s struct+`explicitVCheck`+the cube identity make
+    -- `h_i = h_star ⇒ kSF⟨1⟩`'s consistency, and `h_i = h_star` is `kSF⟨1⟩`'s remaining local check)
+    -- yet `h_i.eval r' = h_star.eval r'` (from `kSF⟨2⟩`), i.e. `r'` is a root of the nonzero degree-≤2
+    -- `h_i - h_star` — a Schwartz–Zippel `2/|L|` event. So this is strictly the soundness-faithful
+    -- KState, not a weakening: index ⟨1⟩ retains the full `masterKStateProp + localizedRoundPolyCheck`.
+    let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := by simp only [Nat.one_le_ofNat])
+    let r_i' := get_rᵢ' (m := ⟨2, h2⟩) (tr := tr) (hm := by simp only [le_refl])
+    let explicitVCheck :=
+      (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmt.sumcheck_target
+    let nextSumcheckTargetCheck := -- this presents sumcheck of next round (sᵢ = s^*ᵢ)
+      h_i.val.eval r_i' = h_star.val.eval r_i'
+    explicitVCheck ∧ nextSumcheckTargetCheck
+      ∧ RingSwitching.witnessStructuralInvariant κ L K P ℓ ℓ' h_l stmt witMid
+      ∧ aOStmtIn.initialCompatibility ⟨witMid.t', oStmt⟩
 
 /-- Knowledge state function (KState) for single round -/
 def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
@@ -580,36 +739,50 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       rw [hval] at heq
       simp only [Option.some.injEq, Prod.mk.injEq] at heq
       obtain ⟨rfl, rfl⟩ := heq
-      -- Reduce the index-⟨2⟩ KState to its four conjuncts and `h_SumcheckStepRelOut` (the
-      -- verifier's accept output `(stmtOutAccept, witOut)` ∈ relOut at index `i.succ`) to its three.
+      -- Reduce the index-⟨2⟩ KState (defect-#22 form) to its four conjuncts, and
+      -- `h_SumcheckStepRelOut` (the verifier's accept output `(stmtOutAccept, witOut)` ∈ relOut at
+      -- index `i.succ`) to its three (master-conjuncts at `i.succ`).
       unfold iteratedSumcheckKStateProp
       simp only [masterKStateProp, witnessStructuralInvariant, sumcheckRoundRelation,
-        sumcheckRoundRelationProp, Set.mem_setOf_eq] at h_SumcheckStepRelOut ⊢
+        sumcheckRoundRelationProp, Set.mem_setOf_eq, sumcheckConsistencyProp]
+        at h_SumcheckStepRelOut ⊢
       obtain ⟨-, hWitStruct, hConsistSucc, hCompat⟩ := h_SumcheckStepRelOut
-      refine ⟨⟨?_, ?_⟩, ?_, ?_, ?_⟩
-      · -- WALL (1a) — `localizedRoundPolyCheck`: the prover's sent `h_i = getSumcheckRoundPoly i
-        -- witLast.H`. NOT derivable from `h_SumcheckStepRelOut` + the verifier check: the verifier
-        -- only checks `∑ h_i(b) = target`, never that `h_i` equals the ground-truth round poly, so
-        -- a malicious prover's `h_i` need not match. This conjunct belongs to the round's *bad
-        -- event*; closing it requires the multi-round KState redesign flagged in the mission (the
-        -- `getSumcheckRoundPoly` cube-sum identity is necessary but not sufficient). Open WIP.
-        sorry
-      · -- WALL (1b) — `nextSumcheckTargetCheck`: `h_i.eval r' = (getSumcheckRoundPoly i
-        -- witLast.H).eval r'`. Follows from (1a) by congruence (`eval r'`). Blocked on (1a). Open WIP.
-        sorry
-      · -- `witnessStructuralInvariant` at `i.castSucc`: TRUE BY DEFINITION of the extractor's
-        -- `witLast.H := projectToMidSumcheckPoly … i.castSucc stmtLast.challenges`.
-        rfl
-      · -- WALL (1c) — `sumcheckConsistencyProp (boolDomain (ℓ'-i.castSucc)) stmtLast.sumcheck_target
-        -- witLast.H`. Reconstruction from `hConsistSucc` (consistency at `i.succ` for `witOut.H`)
-        -- via the cons-step `projectToMid` advance + `getSumcheckRoundPoly_eval_eq_sum_snoc`: the
-        -- multi-round analog of `finalSumcheck_cube0_sum_eq`. Needs the dedicated round-transition
-        -- algebra lemma (`fixFirstVariablesOfMQP_projectToMid_step` chained with the cube marginal).
-        -- Open WIP.
-        sorry
-      · -- `initialCompatibility (witLast.t', oStmtLast)`: `witLast.t' = witOut.t'` (extractor), and
-        -- the verifier's `embed = Sum.inl` makes `oStmtOut = oStmtLast`, so this is `hCompat`.
-        exact hCompat
+      -- `witLast.H = projectToMid i.castSucc stmtLast.challenges` (extractor def) and `witLast.t' =
+      -- witOut.t'`; pin them so the round-poly identity speaks `witLast`'s language.
+      have hwitLastH : witLast.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witOut.t')
+          (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmtLast.ctx))
+          (i := i.castSucc) (challenges := stmtLast.challenges) := rfl
+      have hwitLastt : witLast.t' = witOut.t' := rfl
+      -- `hcheck` is the verifier's accept condition `∑_b (msgs tr ⟨0⟩)(b) = stmtLast.sumcheck_target`.
+      refine ⟨?_, ?_, rfl, hCompat⟩
+      · -- `explicitVCheck` = the verifier's accept condition `hcheck`.
+        exact hcheck
+      · -- `nextSumcheckTargetCheck`: `h_i.eval r' = h_star.eval r'` with
+        -- `h_star = getSumcheckRoundPoly i witLast.H`. The accept output pins
+        -- `stmtOut.sumcheck_target = h_i.eval r'` and `stmtOut.challenges = Fin.cons r' stmtLast.…`;
+        -- relOut's consistency `stmtOut.sumcheck_target = ∑_cube witOut.H` + structural
+        -- `witOut.H = projectToMid i.succ (cons r' stmtLast.challenges)` give
+        -- `h_i.eval r' = ∑_cube (projectToMid i.succ (cons r' …))`; and
+        -- `h_star.eval r' = getSumcheckRoundPoly i (projectToMid i.castSucc …) .eval r'` equals the
+        -- same next-round cube sum by `getSumcheckRoundPoly_eval_eq_cube_succ`.
+        rw [hwitLastH,
+          getSumcheckRoundPoly_eval_eq_cube_succ (i := i) (t := witOut.t')
+            (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmtLast.ctx))
+            (challenges := stmtLast.challenges) (r' := _)]
+        -- Normalise the `equivMessagesChallenges` message/challenge extractions in BOTH the goal and
+        -- `hConsistSucc`/`hWitStruct` to the bare transcript reads `tr ⟨0,_⟩` / `tr ⟨1,_⟩` (both
+        -- `toMessagesUpTo`/`toChallengesUpTo` are just `tr` at the index), so they speak the same form.
+        simp only [Transcript.equivMessagesChallenges, Equiv.coe_fn_mk,
+          Transcript.toMessagesChallenges, Transcript.toMessagesUpTo, Transcript.toChallengesUpTo,
+          FullTranscript.messages, FullTranscript.challenges, Fin.isValue]
+          at hConsistSucc hWitStruct ⊢
+        -- LHS `tr 0 .eval (tr 1) = stmtOut.sumcheck_target = ∑_cube witOut.H = ∑_cube (projectToMid
+        -- i.succ stmtOut.challenges)`; `stmtOut.challenges = Fin.cons (tr 1) stmtLast.challenges`.
+        rw [hWitStruct] at hConsistSucc
+        -- The goal LHS `eval (tr ⟨1,_⟩) (tr ⟨0,_⟩)` and `hConsistSucc`'s `eval (tr 1) (tr 0)` are the
+        -- same transcript reads (defeq `Fin 2` indices); `convert` closes the index encoding gap, and
+        -- the resulting cube sums agree (same `projectToMid i.succ (cons (tr 1) stmtLast.challenges)`).
+        convert hConsistSucc using 3 <;> apply Fin.ext <;> rfl
     · -- REJECT branch (defect-#21, NOW VACUOUS). On a failed check the verifier emits `failure`, so
       -- the run has no support element; `hmem`'s membership in `support failure` is contradictory.
       exfalso
@@ -625,6 +798,43 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       rw [hmem.1] at heq
       exact absurd heq.symm (by simp)
 
+/-- **Per-transcript Schwartz–Zippel core (defect-#22 soundness justification).** For a FIXED input
+statement `stmt`, oracle statement `oStmt`, and round-0 transcript `tr : Transcript 1` (carrying the
+prover's univariate `h_i := tr ⟨0⟩`), the set of verifier challenges `r'` triggering the RBR bad
+event `∃ witMid, ¬kSF⟨1⟩ tr witMid ∧ kSF⟨2⟩ (tr.concat r') witMid` has cardinality `≤ 2`.
+
+This is the soundness obligation that JUSTIFIES the #22 KState redesign: `kSF⟨2⟩` (the redesigned
+post-challenge state) gives `witMid`'s structural invariant — pinning `witMid.H = projectToMid
+i.castSucc stmt.challenges`, so `h_star := getSumcheckRoundPoly i witMid.H` is the SAME for every
+`witMid` — plus `explicitVCheck` (`∑_b h_i(b) = stmt.sumcheck_target`) and `nextSumcheckTargetCheck`
+(`h_i(r') = h_star(r')`). `¬kSF⟨1⟩` then forces `h_i ≠ h_star`: under `kSF⟨2⟩`'s struct +
+`explicitVCheck`, the cube identity `getSumcheckRoundPoly_points_sum_eq_cube` makes `h_i = h_star ⇒`
+all of `kSF⟨1⟩`'s conjuncts (its `sumcheckConsistencyProp` becomes `stmt.sumcheck_target = ∑_b h_i(b)
+= ∑_b h_star(b) = ∑_cube witMid.H`), so the only way `kSF⟨1⟩` fails is `h_i ≠ h_star`. Hence the bad
+event ⟹ `r' ∈ roots(h_i - h_star)` with `h_i - h_star ≠ 0` of degree `≤ 2`, a set of size `< 2`. -/
+private lemma iteratedSumcheck_badChallenge_card_le [IsDomain L] (i : Fin ℓ')
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
+    (oStmt : ∀ j, aOStmtIn.OStmtIn j)
+    (tr : (pSpecSumcheckRound L).Transcript ((⟨1, by decide⟩ : Fin 2).castSucc)) :
+    (Finset.univ.filter (fun r' : L => ∃ witMid,
+      ¬ (iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i).toFun
+            ((⟨1, by decide⟩ : Fin 2).castSucc) (stmt, oStmt) tr
+            ((iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i).extractMid
+              (⟨1, by decide⟩ : Fin 2) (stmt, oStmt) (Transcript.concat (m := (⟨1, by decide⟩ : Fin 2)) (show (pSpecSumcheckRound L).«Type» (⟨1, by decide⟩ : Fin 2) from r') tr) witMid)
+        ∧ (iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i).toFun
+            ((⟨1, by decide⟩ : Fin 2).succ) (stmt, oStmt) (Transcript.concat (m := (⟨1, by decide⟩ : Fin 2)) (show (pSpecSumcheckRound L).«Type» (⟨1, by decide⟩ : Fin 2) from r') tr) witMid)).card
+      ≤ 2 := by
+  classical
+  -- `h_i` is the prover's round-0 univariate (the transcript message).
+  set h_i : L⦃≤ 2⦄[X] := tr ⟨0, by decide⟩ with hh_i
+  simp only [iteratedSumcheckKnowledgeStateFunction, iteratedSumcheckKStateProp,
+    iteratedSumcheckRbrExtractor, masterKStateProp, witnessStructuralInvariant,
+    sumcheckConsistencyProp, Transcript.equivMessagesChallenges, Equiv.coe_fn_mk,
+    Transcript.toMessagesChallenges, Transcript.toMessagesUpTo, Transcript.toChallengesUpTo,
+    Fin.isValue]
+  trace_state
+  sorry
+
 /-- RBR knowledge soundness for a single round oracle verifier -/
 theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : Fin ℓ') :
     (iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i).rbrKnowledgeSoundness init impl
@@ -635,15 +845,31 @@ theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : F
   use iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i
   use iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i
   intro stmtIn witIn prover j
-  -- WIP (blocked, two independent obstructions):
-  --   (a) `iteratedSumcheckKnowledgeStateFunction` still carries the wall-(1) `toFun_full` `sorry`s
-  --       (the index-⟨2⟩ ACCEPT-branch round-poly algebra; see above). The defect-#21 verifier-failure
-  --       repair only unblocked the REJECT branch / run-collapse front-end, which are now closed.
-  --   (b) the round bad-event probability bound `Pr[challenge hits a root] ≤ roundKnowledgeError`
-  --       (degree-2 Schwartz–Zippel over `L` for the single round challenge `r'`) is a separate
-  --       analysis, independent of `toFun_full`. The challenge index `j` here is the round's single
-  --       `V_to_P` message; the bound is `2 / |L|` (`roundKnowledgeError L ℓ' i`).
-  -- Both must land before this closes; left as WIP `sorry`.
+  obtain ⟨stmt, oStmt⟩ := stmtIn
+  -- The single challenge is at round index `1` (`pSpecSumcheckRound` = `[P_to_V, V_to_P]`).
+  have hj : j = ⟨1, rfl⟩ := by
+    obtain ⟨jv, hjdir⟩ := j
+    match jv, hjdir with
+    | ⟨0, _⟩, hjdir => simp [pSpecSumcheckRound] at hjdir
+    | ⟨1, _⟩, _ => rfl
+  subst hj
+  -- KEY SOUNDNESS REDUCTION (defect-#22 KState). For ANY transcript `tr` (whatever round-0 message
+  -- `h_i := tr ⟨0⟩` the prover sends) and challenge `r'`, the bad-event predicate
+  --   `∃ witMid, ¬kSF⟨1⟩ tr witMid ∧ kSF⟨2⟩ (tr.concat r') witMid`
+  -- forces `r'` to be a root of the FIXED nonzero degree-≤2 univariate `h_i - h_star`, where
+  -- `h_star := getSumcheckRoundPoly i (projectToMid i.castSucc stmt.challenges)` is pinned by
+  -- `kSF⟨2⟩`'s `witnessStructuralInvariant` (so it is the SAME for every `witMid`):
+  --   • `kSF⟨2⟩` gives struct (`witMid.H = projectToMid i.castSucc stmt.challenges`),
+  --     `explicitVCheck` (`∑_b h_i(b) = stmt.sumcheck_target`) and `nextTarget` (`h_i(r') =
+  --     h_star(r')`);
+  --   • `¬kSF⟨1⟩`: `kSF⟨1⟩ = master(stmt,witMid) ∧ explicitVCheck ∧ (h_i = h_star)`. Under `kSF⟨2⟩`'s
+  --     struct + `explicitVCheck`, the cube identity `getSumcheckRoundPoly_points_sum_eq_cube` makes
+  --     `h_i = h_star ⇒ consistency`, so the only remaining way `kSF⟨1⟩` can fail is `h_i ≠ h_star`.
+  -- Hence the predicate ⟹ `h_i ≠ h_star ∧ h_i(r') = h_star(r')`, i.e. `r' ∈ roots(h_i - h_star)`,
+  -- a set of size `< 2` (degree ≤ 2, nonzero) — a Schwartz–Zippel `2/|L|` event. WIP: the outer
+  -- probabilistic plumbing (peel `prover.runToRound 1`'s round-0 send + the uniform `r'` sample,
+  -- then `probEvent_uniformSample`/`card_roots`) mirrors `RandomQuery.oracleVerifier_rbrKnowledgeSoundness`
+  -- but with the extra prover-first round-0 message peel. Preserved per honest-completion.
   sorry
 
 end IteratedSumcheckStep
