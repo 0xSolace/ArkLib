@@ -245,9 +245,6 @@ at the window value.  (This is the coefficient-vector pillar; bridging it to the
 `F[X][Y]` interpolant `Q` of `gs_list_size_window` is the separate
 coefficient-vector ↔ bivariate-polynomial dictionary, not folded in here.) -/
 
-variable [DecidableEq F]
-
-omit [DecidableEq F] in
 /-- **Interpolation feasibility in the window `D := m·a − 1`** (the dimension
 condition becomes purely arithmetic).  If
 `n · (m·(m+1)/2) < #monomials(m·a − 1, k)`, then there is a nonzero interpolant

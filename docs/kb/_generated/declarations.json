@@ -7385,6 +7385,82 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/GuruswamiSudan/ListSizeBound.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 78,
+          "name": "GSListSizeBound.gs_dvd_of_agreement",
+          "namespace": "GSListSizeBound",
+          "short_name": "gs_dvd_of_agreement",
+          "signature": "theorem gs_dvd_of_agreement"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 87,
+          "name": "GSListSizeBound._anon_class_87",
+          "namespace": "GSListSizeBound",
+          "short_name": "_anon_class_87",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Guruswami\u2013Sudan list-size bound.** Let `Q : F[X][Y]` be a nonzero interpolant of `(1, k-1)`-weighted degree `\u2264 D`.  For every candidate `p` in a finite family `Ps`, suppose `p` has degree `< k` (`deg p \u2264 k \u2212 1`), `Q` vanishes to order `m` at the curve points over an agreement set `S p`, and the agreement condition `m \u00b7 |S p| > D` holds.  Then the number of candidates is at most the `Y`-degree of `Q`: `Ps.card \u2264 Q.natDegree`.",
+          "kind": "theorem",
+          "line": 130,
+          "name": "GSListSizeBound.gs_list_size_bound",
+          "namespace": "GSListSizeBound",
+          "short_name": "gs_list_size_bound",
+          "signature": "theorem gs_list_size_bound"
+        },
+        {
+          "doc": "**List-size bound, `D / (k-1)` form (A3 degree budget folded in).** Under the hypotheses of `gs_list_size_bound`, together with positivity of the weight `k \u2212 1`, the candidate count is bounded by `D / (k \u2212 1)`. This is the classical `L \u2264 D/(k-1)` Guruswami\u2013Sudan output-list bound.",
+          "kind": "theorem",
+          "line": 149,
+          "name": "GSListSizeBound.gs_list_size_bound_div",
+          "namespace": "GSListSizeBound",
+          "short_name": "gs_list_size_bound_div",
+          "signature": "theorem gs_list_size_bound_div"
+        },
+        {
+          "doc": "The agreement condition is automatic in the window `D := m\u00b7a \u2212 1`, for any agreement set of size `\u2265 a` (with multiplicity `m \u2265 1` and threshold `a \u2265 1`).",
+          "kind": "theorem",
+          "line": 179,
+          "name": "GSListSizeBound.agreement_window",
+          "namespace": "GSListSizeBound",
+          "short_name": "agreement_window",
+          "signature": "theorem agreement_window"
+        },
+        {
+          "doc": "**Guruswami\u2013Sudan list-size bound \u2014 explicit parameter window `D := m\u00b7a \u2212 1`.** Fix an agreement threshold `a \u2265 1`.  Let `Q : F[X][Y]` be a nonzero interpolant of `(1, k-1)`-weighted degree `\u2264 m\u00b7a \u2212 1`.  For every candidate `p` in the finite family `Ps`, suppose `p` has degree `< k`, `Q` vanishes to order `m` at the curve points over an agreement set `S p`, and `p` *agrees on at least `a` points* (`a \u2264 |S p|`).  Then `Ps.card \u2264 Q.natDegree`, with the agreement condition `m\u00b7a > D` discharged automatically by the window choice.  This is the Johnson-regime statement in which the only remaining fe",
+          "kind": "theorem",
+          "line": 200,
+          "name": "GSListSizeBound.gs_list_size_window",
+          "namespace": "GSListSizeBound",
+          "short_name": "gs_list_size_window",
+          "signature": "theorem gs_list_size_window"
+        },
+        {
+          "doc": "**Parameter-window list-size bound, `D / (k-1)` form.** Same hypotheses as `gs_list_size_window`, with `0 < k \u2212 1`, giving the explicit `Ps.card \u2264 (m\u00b7a \u2212 1) / (k \u2212 1)`.",
+          "kind": "theorem",
+          "line": 218,
+          "name": "GSListSizeBound.gs_list_size_window_div",
+          "namespace": "GSListSizeBound",
+          "short_name": "gs_list_size_window_div",
+          "signature": "theorem gs_list_size_window_div"
+        },
+        {
+          "doc": "**Interpolation feasibility in the window `D := m\u00b7a \u2212 1`** (the dimension condition becomes purely arithmetic).  If `n \u00b7 (m\u00b7(m+1)/2) < #monomials(m\u00b7a \u2212 1, k)`, then there is a nonzero interpolant coefficient vector vanishing to order `m` at all `n` interpolation points.  Direct specialization of `GSMultInterp.exists_ne_zero_vanishesToOrder` to `D := m\u00b7a \u2212 1`.",
+          "kind": "theorem",
+          "line": 253,
+          "name": "GSListSizeBound.interpolation_feasible_window",
+          "namespace": "GSListSizeBound",
+          "short_name": "interpolation_feasible_window",
+          "signature": "theorem interpolation_feasible_window (k m a n : \u2115) (xs ys : Fin n \u2192 F)"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/GuruswamiSudan/MultiplicityInterpolation.lean": {
       "declarations": [
         {
@@ -10364,6 +10440,172 @@
           "namespace": "ListDecodable",
           "short_name": "exists_closeFinset_card_gt_of_not_Lambda_le_natCast",
           "signature": "lemma exists_closeFinset_card_gt_of_not_Lambda_le_natCast [Fintype F]"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ListDecoding.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 31,
+          "name": "ReedSolomon.evalOnPoints",
+          "namespace": "ReedSolomon",
+          "short_name": "evalOnPoints",
+          "signature": "def evalOnPoints : F[X] \u2192\u2097[F] (Fin n \u2192 F) where"
+        },
+        {
+          "doc": "The Reed-Solomon code for polynomials of degree less than `deg` and evaluation points `points`.",
+          "kind": "def",
+          "line": 38,
+          "name": "ReedSolomon.code",
+          "namespace": "ReedSolomon",
+          "short_name": "code",
+          "signature": "def code (deg : \u2115) : Submodule F (Fin n \u2192 F) :="
+        },
+        {
+          "doc": "The generator matrix of the Reed-Solomon code of degree `deg` and evaluation points `points`.",
+          "kind": "def",
+          "line": 42,
+          "name": "ReedSolomon.genMatrix",
+          "namespace": "ReedSolomon",
+          "short_name": "genMatrix",
+          "signature": "def genMatrix (deg : \u2115) : Matrix (Fin deg) (Fin n) F :="
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 45,
+          "name": "ReedSolomon.checkMatrix",
+          "namespace": "ReedSolomon",
+          "short_name": "checkMatrix",
+          "signature": "def checkMatrix (deg : \u2115) : Matrix (Fin (n - deg)) (Fin n) F :="
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 48,
+          "name": "ReedSolomon.codeWithinDist",
+          "namespace": "ReedSolomon",
+          "short_name": "codeWithinDist",
+          "signature": "def codeWithinDist (dist : \u2115) (deg : \u2115) (evalpts : Fin n \u21aa F) (codeword : Fin n \u2192 F)"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 57,
+          "name": "ReedSolomon.one_k",
+          "namespace": "ReedSolomon",
+          "short_name": "one_k",
+          "signature": "def one_k (x: Fin 2): WithTop \u2115:="
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 70,
+          "name": "ReedSolomon.MvPolynomial.comp",
+          "namespace": "ReedSolomon",
+          "short_name": "MvPolynomial.comp",
+          "signature": "def MvPolynomial.comp (G : \u03c3 \u2192 MvPolynomial \u03c3' R) :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 76,
+          "name": "ReedSolomon.MultiplicityAtZero",
+          "namespace": "ReedSolomon",
+          "short_name": "MultiplicityAtZero",
+          "signature": "def MultiplicityAtZero (Q : MvPolynomial \u03c3 F) (w : (\u03c3  \u2192 WithTop \u2115)) : WithTop \u2115 :="
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 79,
+          "name": "ReedSolomon.MultiplicityGeneral",
+          "namespace": "ReedSolomon",
+          "short_name": "MultiplicityGeneral",
+          "signature": "def MultiplicityGeneral (Q : MvPolynomial \u03c3 F)"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 94,
+          "name": "ReedSolomon.Qpoly",
+          "namespace": "ReedSolomon",
+          "short_name": "Qpoly",
+          "signature": "def Qpoly (evalpts : Fin n \u21aa F) (codeword : Fin n \u2192 F) (d : \u2115) (r : \u2115) :="
+        },
+        {
+          "doc": "",
+          "kind": "structure",
+          "line": 109,
+          "name": "ReedSolomon.ListDecodingAlgorithm",
+          "namespace": "ReedSolomon",
+          "short_name": "ListDecodingAlgorithm",
+          "signature": "structure ListDecodingAlgorithm (maxdist : \u2115) (deg : \u2115) (evalpts : Fin n \u21aa F) where"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 124,
+          "name": "ReedSolomon.listDecodingAlgorithm",
+          "namespace": "ReedSolomon",
+          "short_name": "listDecodingAlgorithm",
+          "signature": "def listDecodingAlgorithm (maxdist : \u2115) (k : \u2115) (codeword: Fin n \u2192 F) (evalpts : Fin n \u21aa F):"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 133,
+          "name": "ReedSolomon.algoStep1",
+          "namespace": "ReedSolomon",
+          "short_name": "algoStep1",
+          "signature": "def algoStep1 (maxdist : \u2115) (k : \u2115) (deg : \u2115)"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 136,
+          "name": "ReedSolomon.MvPolynomial.finOneEquiv",
+          "namespace": "ReedSolomon",
+          "short_name": "MvPolynomial.finOneEquiv",
+          "signature": "def MvPolynomial.finOneEquiv : MvPolynomial (Fin 1) R \u2243\u2090[R] (Polynomial R) := by"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 141,
+          "name": "ReedSolomon.MvPolynomial.finTwoEquiv",
+          "namespace": "ReedSolomon",
+          "short_name": "MvPolynomial.finTwoEquiv",
+          "signature": "def MvPolynomial.finTwoEquiv : MvPolynomial (Fin 2) R \u2243\u2090[R] (Polynomial (Polynomial R)) := by"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 150,
+          "name": "ReedSolomon.algoStep2",
+          "namespace": "ReedSolomon",
+          "short_name": "algoStep2",
+          "signature": "def algoStep2 {k : \u2115} {evalpts : Fin n \u21aa F} {codeword: Fin n \u2192 F} {deg : \u2115} {maxdist : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 165,
+          "name": "ReedSolomon.MvPolynomial.factorize",
+          "namespace": "ReedSolomon",
+          "short_name": "MvPolynomial.factorize",
+          "signature": "def MvPolynomial.factorize (P : MvPolynomial \u03c3 R) : List (MvPolynomial \u03c3 R) := sorry"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 182,
+          "name": "ReedSolomon.correctCharacter",
+          "namespace": "ReedSolomon",
+          "short_name": "correctCharacter",
+          "signature": "theorem correctCharacter (h : f.1.eval (\u03b1 i) = y i) :"
         }
       ]
     },
@@ -15347,9 +15589,18 @@
           "signature": "theorem correlatedAgreement_affine_curves_of_section5_canonical_coeff_data"
         },
         {
-          "doc": "Non-cyclic public wrapper for the closed list-decoding assembly theorem with the strict branch phrased as canonical \u00a75 extraction data for one decoded family, plus uniqueness.",
+          "doc": "Non-cyclic public wrapper for the closed canonical coefficient-polynomial assembly theorem with canonical coefficient data required only in the strict Johnson branch.",
           "kind": "theorem",
           "line": 523,
+          "name": "ProximityGap.correlatedAgreement_affine_curves_of_strict_canonical_coeff_data",
+          "namespace": "ProximityGap",
+          "short_name": "correlatedAgreement_affine_curves_of_strict_canonical_coeff_data",
+          "signature": "theorem correlatedAgreement_affine_curves_of_strict_canonical_coeff_data"
+        },
+        {
+          "doc": "Non-cyclic public wrapper for the closed list-decoding assembly theorem with the strict branch phrased as canonical \u00a75 extraction data for one decoded family, plus uniqueness.",
+          "kind": "theorem",
+          "line": 563,
           "name": "ProximityGap.correlatedAgreement_affine_curves_of_section5_canonical_data",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_curves_of_section5_canonical_data",
@@ -15358,7 +15609,7 @@
         {
           "doc": "Non-cyclic public wrapper for the closed list-decoding assembly theorem with canonical \u00a75 extraction data required only in the strict Johnson branch.",
           "kind": "theorem",
-          "line": 551,
+          "line": 591,
           "name": "ProximityGap.correlatedAgreement_affine_curves_of_strict_section5_canonical_data",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_curves_of_strict_section5_canonical_data",
@@ -19987,31 +20238,31 @@
           "signature": "class classical"
         },
         {
-          "doc": "Strict Johnson canonical-evaluation supplier for the \u00a76 curve front doors, specialized to \u00a75 affine lines represented as `Code.finMapTwoWords`. This factors the exact hypothesis shape consumed by `correlatedAgreement_affine_curves_of_strict_canonical_eval_polys` out of the capstone theorem below. The remaining assumptions are the \u00a75 Guruswami-Sudan existence side conditions plus matching-set coverage and uniqueness for each affine line.",
+          "doc": "Strict square-root-radius degree-one correlated-agreement capstone in the native \u00a75 affine-line language, with Claim-5.11 counting supplied in the complement-threshold arithmetic shape. Unlike the closed-boundary wrapper, this version needs no boundary obligation because the global hypothesis is already `\u03b4 < 1 - sqrtRate`.",
           "kind": "theorem",
-          "line": 978,
-          "name": "ProximityGap.section5_strict_canonical_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
+          "line": 975,
+          "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_strict",
           "namespace": "ProximityGap",
-          "short_name": "section5_strict_canonical_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
-          "signature": "theorem section5_strict_canonical_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords"
+          "short_name": "correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_strict",
+          "signature": "theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_strict"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 1015,
-          "name": "ProximityGap._anon_class_1015",
+          "line": 1012,
+          "name": "ProximityGap._anon_class_1012",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1015",
+          "short_name": "_anon_class_1012",
           "signature": "class classical"
         },
         {
-          "doc": "Strict Johnson evaluation-polynomial supplier for the \u00a76 curve front doors, derived from the canonical `PzFamily` supplier above.",
+          "doc": "Strict Johnson canonical-evaluation supplier for the \u00a76 curve front doors, specialized to \u00a75 affine lines represented as `Code.finMapTwoWords`. This factors the exact hypothesis shape consumed by `correlatedAgreement_affine_curves_of_strict_canonical_eval_polys` out of the capstone theorem below. The remaining assumptions are the \u00a75 Guruswami-Sudan existence side conditions plus matching-set coverage and uniqueness for each affine line.",
           "kind": "theorem",
-          "line": 1032,
-          "name": "ProximityGap.section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
+          "line": 1028,
+          "name": "ProximityGap.section5_strict_canonical_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
           "namespace": "ProximityGap",
-          "short_name": "section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
-          "signature": "theorem section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords"
+          "short_name": "section5_strict_canonical_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
+          "signature": "theorem section5_strict_canonical_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords"
         },
         {
           "doc": "",
@@ -20023,9 +20274,27 @@
           "signature": "class classical"
         },
         {
-          "doc": "Degree-one correlated-agreement capstone in the native \u00a75 affine-line language, using the raw strict evaluation-polynomial front door. This is the same mathematical content as `correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card`, but exposes the \u00a75 extraction in the non-canonical hypothesis shape consumed by `correlatedAgreement_affine_curves_of_strict_eval_polys_and_boundary_card`.",
+          "doc": "Strict Johnson evaluation-polynomial supplier for the \u00a76 curve front doors, derived from the canonical `PzFamily` supplier above.",
           "kind": "theorem",
           "line": 1082,
+          "name": "ProximityGap.section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
+          "namespace": "ProximityGap",
+          "short_name": "section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
+          "signature": "theorem section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1115,
+          "name": "ProximityGap._anon_class_1115",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1115",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Degree-one correlated-agreement capstone in the native \u00a75 affine-line language, using the raw strict evaluation-polynomial front door. This is the same mathematical content as `correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card`, but exposes the \u00a75 extraction in the non-canonical hypothesis shape consumed by `correlatedAgreement_affine_curves_of_strict_eval_polys_and_boundary_card`.",
+          "kind": "theorem",
+          "line": 1132,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_eval_polys_and_boundary_card",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_eval_polys_and_boundary_card",
@@ -20034,16 +20303,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1106,
-          "name": "ProximityGap._anon_class_1106",
+          "line": 1156,
+          "name": "ProximityGap._anon_class_1156",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1106",
+          "short_name": "_anon_class_1156",
           "signature": "class classical"
         },
         {
           "doc": "Strict square-root-radius degree-one correlated-agreement capstone in the native \u00a75 affine-line language, using the raw strict evaluation-polynomial front door.",
           "kind": "theorem",
-          "line": 1127,
+          "line": 1177,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_eval_polys",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_eval_polys",
@@ -20052,16 +20321,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1146,
-          "name": "ProximityGap._anon_class_1146",
+          "line": 1196,
+          "name": "ProximityGap._anon_class_1196",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1146",
+          "short_name": "_anon_class_1196",
           "signature": "class classical"
         },
         {
           "doc": "Degree-one correlated-agreement capstone in the native \u00a75 affine-line language. The generic \u00a76 theorem quantifies over arbitrary `WordStack F (Fin 2) (Fin n)`; this wrapper identifies every such stack with `Code.finMapTwoWords (u 0) (u 1)` and transports both the strict `PzFamily` package and the closed-boundary cardinality obligation through the \u00a75/\u00a76 close-set equality.",
           "kind": "theorem",
-          "line": 1160,
+          "line": 1210,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card",
@@ -20070,16 +20339,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1184,
-          "name": "ProximityGap._anon_class_1184",
+          "line": 1234,
+          "name": "ProximityGap._anon_class_1234",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1184",
+          "short_name": "_anon_class_1234",
           "signature": "class classical"
         },
         {
           "doc": "Strict square-root-radius degree-one correlated-agreement capstone in the native \u00a75 affine-line language. Unlike `correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card`, this version needs no closed-boundary obligation because the global hypothesis is already `\u03b4 < 1 - sqrtRate`.",
           "kind": "theorem",
-          "line": 1207,
+          "line": 1257,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_PzFamily",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_PzFamily",
@@ -20088,10 +20357,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1226,
-          "name": "ProximityGap._anon_class_1226",
+          "line": 1276,
+          "name": "ProximityGap._anon_class_1276",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1226",
+          "short_name": "_anon_class_1276",
           "signature": "class classical"
         }
       ]
@@ -25184,6 +25453,64 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/ProximityGap/MCAListSizeConversion.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "structure",
+          "line": 43,
+          "name": "the",
+          "namespace": "",
+          "short_name": "the",
+          "signature": "structure the `mcaEvent` forbids. Concretely, since each witness set has size `\u2265 (1-\u03b4)\u00b7n`, any two"
+        },
+        {
+          "doc": "The set of **bad slopes** of a two-row word stack `(u\u2080, u\u2081)` at radius `\u03b4`: those `\u03b3 \u2208 F` for which the MCA bad event `ProximityGap.mcaEvent C \u03b4 u\u2080 u\u2081 \u03b3` fires.",
+          "kind": "def",
+          "line": 91,
+          "name": "ProximityGap.MCAListSize.badSlopes",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "badSlopes",
+          "signature": "def badSlopes (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (u\u2080 u\u2081 : \u03b9 \u2192 A) : Finset F :="
+        },
+        {
+          "doc": "**Probability-to-count identity.** The inner probability of `ProximityGap.epsMCA` over a uniform slope `\u03b3 \u2190$\u1d56 F` is exactly `#badSlopes / |F|`. This is the load-bearing reduction that turns the analytic `\u03b5_mca` body into a finite count.",
+          "kind": "theorem",
+          "line": 98,
+          "name": "ProximityGap.MCAListSize.Pr_mcaEvent_eq_badSlopes_card_div",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "Pr_mcaEvent_eq_badSlopes_card_div",
+          "signature": "theorem Pr_mcaEvent_eq_badSlopes_card_div (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (u\u2080 u\u2081 : \u03b9 \u2192 A) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 101,
+          "name": "ProximityGap.MCAListSize._anon_class_101",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "_anon_class_101",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Per-stack count \u21d2 `\u03b5_mca` ceiling.** If every two-row word stack has at most `N` bad slopes, then `\u03b5_mca(C, \u03b4) \u2264 N / |F|`. The supremum over stacks of `#bad/|F|` is dominated termwise by `N/|F|`.",
+          "kind": "theorem",
+          "line": 110,
+          "name": "ProximityGap.MCAListSize.epsMCA_le_of_badSlopeCount",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "epsMCA_le_of_badSlopeCount",
+          "signature": "theorem epsMCA_le_of_badSlopeCount (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (N : \u2115)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 113,
+          "name": "ProximityGap.MCAListSize._anon_class_113",
+          "namespace": "ProximityGap.MCAListSize",
+          "short_name": "_anon_class_113",
+          "signature": "class classical"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/ProximityGap/ProximityGapP.lean": {
       "declarations": [
         {
@@ -25611,6 +25938,82 @@
           "namespace": "RSListSize",
           "short_name": "_anon_class_111",
           "signature": "class classical"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/VandermondeMCAExtract.lean": {
+      "declarations": [
+        {
+          "doc": "The **full Vandermonde curve** combination `\u2211\u2c7c \u03b3^j \u2022 f\u2c7c`, the honest Reed\u2013Solomon power generator `r \u21a6 (1, \u03b3, \u2026, \u03b3^{par\u2113\u22121})`. This is `ProximityGapP.curveComb` at the canonical exponent `exp j = (j : \u2115)`.",
+          "kind": "def",
+          "line": 76,
+          "name": "VandermondeMCA.vandermondeCurve",
+          "namespace": "VandermondeMCA",
+          "short_name": "vandermondeCurve",
+          "signature": "def vandermondeCurve {par\u2113 : \u2115} (u : WordStack F (Fin par\u2113) \u03b9) (\u03b3 : F) : \u03b9 \u2192 F :="
+        },
+        {
+          "doc": "`vandermondeCurve` is exactly `ProximityGapP.curveComb` at `exp = Fin.val`.",
+          "kind": "theorem",
+          "line": 80,
+          "name": "VandermondeMCA.vandermondeCurve_eq_curveComb",
+          "namespace": "VandermondeMCA",
+          "short_name": "vandermondeCurve_eq_curveComb",
+          "signature": "theorem vandermondeCurve_eq_curveComb {par\u2113 : \u2115} (u : WordStack F (Fin par\u2113) \u03b9) (\u03b3 : F) :"
+        },
+        {
+          "doc": "Membership in the Reed\u2013Solomon code, unfolded to a degree-`<deg` polynomial that evaluates to the word on every domain point.",
+          "kind": "theorem",
+          "line": 97,
+          "name": "VandermondeMCA.mem_rs_code_iff",
+          "namespace": "VandermondeMCA",
+          "short_name": "mem_rs_code_iff",
+          "signature": "theorem mem_rs_code_iff {deg : \u2115} (domain : \u03b9 \u21aa F) (w : \u03b9 \u2192 F) :"
+        },
+        {
+          "doc": "**Keystone \u2014 multi-slope Vandermonde joint extraction.** Let `f : Fin par\u2113 \u2192 \u03b9 \u2192 F` be a word stack and `\u03b1s : Fin par\u2113 \u2192 F` be `par\u2113` *distinct* slopes. Suppose for each slope index `i` there is a Reed\u2013Solomon codeword `c i \u2208 ReedSolomon.code domain deg` that agrees, on a common witness set `S`, with the full Vandermonde curve combination `\u2211\u2c7c (\u03b1s i)^j \u00b7 f\u2c7c`. Then the *entire* stack `f` jointly agrees with a tuple of RS-codewords on `S`, i.e. `ProximityGapP.pairJointAgreesOnP` holds. This is the algebraic content of mutual correlated agreement for the full Vandermonde generator: distinct slopes",
+          "kind": "theorem",
+          "line": 116,
+          "name": "VandermondeMCA.multislope_pairJointAgreesOnP",
+          "namespace": "VandermondeMCA",
+          "short_name": "multislope_pairJointAgreesOnP",
+          "signature": "theorem multislope_pairJointAgreesOnP {par\u2113 : \u2115} {deg : \u2115} (domain : \u03b9 \u21aa F)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 123,
+          "name": "VandermondeMCA._anon_class_123",
+          "namespace": "VandermondeMCA",
+          "short_name": "_anon_class_123",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Contrapositive corollary.** Under the multi-slope extraction hypothesis of `multislope_pairJointAgreesOnP`, the MCA bad event `mcaEventP` at the full Vandermonde generator (`exp = Fin.val`) can never hold *on this witness set `S`*, at any slope `\u03b3`: the bad event's joint-disagreement clause `\u00ac pairJointAgreesOnP C S f` is directly refuted by the extracted tuple. We phrase this via the negation of a `mcaEventP`-style conjunction *pinned to `S`*: there is no slope `\u03b3` and codeword `w` agreeing with the Vandermonde curve on `S` together with joint disagreement on `S`. Once `par\u2113` distinct slope",
+          "kind": "theorem",
+          "line": 154,
+          "name": "VandermondeMCA.multislope_excludes_mcaEventP",
+          "namespace": "VandermondeMCA",
+          "short_name": "multislope_excludes_mcaEventP",
+          "signature": "theorem multislope_excludes_mcaEventP {par\u2113 : \u2115} {deg : \u2115} (domain : \u03b9 \u21aa F)"
+        },
+        {
+          "doc": "**Predicate bridge (full Vandermonde).** The `exp = Fin.val` specialization of `ProximityGapP.proximityConditionP_imp_mcaEventP`: WHIR's `proximityCondition` with the honest Vandermonde generator `r = fun j \u21a6 \u03b3^(j : \u2115)` gives the `par\u2113`-ary MCA event at `exp = Fin.val`.",
+          "kind": "theorem",
+          "line": 186,
+          "name": "VandermondeMCA.proximityConditionVandermonde_imp_mcaEventP",
+          "namespace": "VandermondeMCA",
+          "short_name": "proximityConditionVandermonde_imp_mcaEventP",
+          "signature": "theorem proximityConditionVandermonde_imp_mcaEventP"
+        },
+        {
+          "doc": "**Full-Vandermonde specialization of `Pr_proximityConditionP_le_epsMCAP`.** For any word stack `f : Fin par\u2113 \u2192 \u03b9 \u2192 F`, the probability over `\u03b3 \u2190$\u1d56 F` of WHIR's `proximityCondition` with the honest Vandermonde generator `r = fun j \u21a6 \u03b3^(j : \u2115) = (1, \u03b3, \u2026, \u03b3^{par\u2113\u22121})` is bounded by the `par\u2113`-ary MCA error `epsMCAP C (Fin.val) \u03b4`. This is the bound downstream WHIR proofs need to cite at the *true* `genRSC` generator (`ProximityGen.lean`), not merely the affine line.",
+          "kind": "theorem",
+          "line": 202,
+          "name": "VandermondeMCA.Pr_proximityConditionVandermonde_le_epsMCAP",
+          "namespace": "VandermondeMCA",
+          "short_name": "Pr_proximityConditionVandermonde_le_epsMCAP",
+          "signature": "theorem Pr_proximityConditionVandermonde_le_epsMCAP"
         }
       ]
     },
@@ -39097,12 +39500,12 @@
           "name": "ProximityPrize.MultinomialChainRule.multinomial_map",
           "namespace": "ProximityPrize.MultinomialChainRule",
           "short_name": "multinomial_map",
-          "signature": "theorem multinomial_map {\u03b1 \u03b2 : Type*} [DecidableEq \u03b1] [DecidableEq \u03b2]"
+          "signature": "theorem multinomial_map {\u03b1 \u03b2 : Type*} (s : Finset \u03b1) (e : \u03b1 \u21aa \u03b2) (f : \u03b2 \u2192 \u2115) :"
         },
         {
           "doc": "**The chain rule / `prefactor_eq_paper` reconciliation (abstract form).** For a fresh slot of weight `j\u2080` adjoined to a finite family of slot-weights `f` on `s`: `multinomial (j\u2080-slot \u222a s) = C(j\u2080 + \u03a3f, \u03a3f) \u00b7 multinomial s f`. With `s` = the distinct part sizes of a partition `\u03bb` and `f` = their multiplicities (`\u03a3f = \u03a3\u03bb`), this is exactly `(j; j\u2080, \u03bb) = C(j, \u03a3\u03bb)\u00b7(\u03a3\u03bb; \u03bb)`.",
           "kind": "theorem",
-          "line": 49,
+          "line": 48,
           "name": "ProximityPrize.MultinomialChainRule.multinomial_option_insert",
           "namespace": "ProximityPrize.MultinomialChainRule",
           "short_name": "multinomial_option_insert",
@@ -39111,7 +39514,7 @@
         {
           "doc": "**Specialisation to a `Nat.Partition`** \u2014 the literal `prefactor_eq_paper` shape: `(j\u2080 + \u03a3\u03bb; j\u2080, \u03bb\u2081, \u2026) = C(j\u2080 + \u03a3\u03bb, \u03a3\u03bb) \u00b7 (\u03a3\u03bb; \u03bb\u2081, \u2026)` with `\u03a3\u03bb = lam.parts.card` (`\u2211 count = card`) and the in-tree multiplicities `lam.parts.count`.",
           "kind": "theorem",
-          "line": 72,
+          "line": 71,
           "name": "ProximityPrize.MultinomialChainRule.prefactor_paper_factorization",
           "namespace": "ProximityPrize.MultinomialChainRule",
           "short_name": "prefactor_paper_factorization",
@@ -39120,7 +39523,7 @@
         {
           "doc": "`\u2211_{l \u2208 \u03bb.parts} (l + 1) = m + \u03a3\u03bb` for a partition `\u03bb \u22a2 m`: the `W`-power telescope.",
           "kind": "theorem",
-          "line": 99,
+          "line": 98,
           "name": "ProximityPrize.MultinomialChainRule.partition_sum_add_one",
           "namespace": "ProximityPrize.MultinomialChainRule",
           "short_name": "partition_sum_add_one",
@@ -39129,7 +39532,7 @@
         {
           "doc": "General multiset form: over positive entries, `\u2211 (2l \u2212 1) + #s = 2\u00b7\u2211 l`.",
           "kind": "theorem",
-          "line": 105,
+          "line": 104,
           "name": "ProximityPrize.MultinomialChainRule.multiset_sum_two_mul_sub_one",
           "namespace": "ProximityPrize.MultinomialChainRule",
           "short_name": "multiset_sum_two_mul_sub_one",
@@ -39138,7 +39541,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 116,
+          "line": 115,
           "name": "ProximityPrize.MultinomialChainRule.partition_sum_two_mul_sub_one",
           "namespace": "ProximityPrize.MultinomialChainRule",
           "short_name": "partition_sum_two_mul_sub_one",
@@ -46773,6 +47176,73 @@
           "namespace": "DomainSeparator",
           "short_name": "toVerifierState",
           "signature": "def toVerifierState (ds : DomainSeparator U H) (transcript : ByteArray) : FSVerifierState U H :="
+        }
+      ]
+    },
+    "ArkLib/OracleReduction/Kilian/Basic.lean": {
+      "declarations": [
+        {
+          "doc": "The oracle specification for a PCP proof string of length `length` over the alphabet `Symbol`: a single oracle indexed by positions `Fin length`, where querying position `i` returns the `i`-th symbol of the proof.",
+          "kind": "def",
+          "line": 28,
+          "name": "PCP.spec",
+          "namespace": "PCP",
+          "short_name": "spec",
+          "signature": "def spec (Symbol : Type) (length : \u2115) : OracleSpec (Fin length) :="
+        },
+        {
+          "doc": "A **Probabilistically Checkable Proof (PCP)** system for a relation `rel : Stmt \u2192 Wit \u2192 Prop`. The honest prover turns a statement and witness into a proof string of `length` symbols over the alphabet `Symbol`. The verifier is a probabilistic oracle computation: it may toss random coins (modeled by `unifSpec`) and adaptively query positions of the proof string (modeled by `PCP.spec Symbol length`), and outputs a single accept/reject bit.",
+          "kind": "structure",
+          "line": 39,
+          "name": "PCP",
+          "namespace": "",
+          "short_name": "PCP",
+          "signature": "structure PCP (Stmt Wit : Type) (rel : Stmt \u2192 Wit \u2192 Prop) where"
+        },
+        {
+          "doc": "Run the PCP verifier on statement `stmt` against a concrete proof string `proof`, answering each oracle query for position `i` with `proof.get i` and leaving the verifier's coin tosses as an ordinary probabilistic computation.",
+          "kind": "def",
+          "line": 57,
+          "name": "PCP.runVerifier",
+          "namespace": "PCP",
+          "short_name": "runVerifier",
+          "signature": "def runVerifier (pcp : PCP Stmt Wit rel) (stmt : Stmt)"
+        },
+        {
+          "doc": "A PCP system satisfies **correctness** with error `correctnessError` if for every statement/witness pair `(stmt, wit)` in the relation, the honest verifier accepts a proof produced by the honest prover with probability at least `1 - correctnessError`.",
+          "kind": "def",
+          "line": 66,
+          "name": "PCP.correctness",
+          "namespace": "PCP",
+          "short_name": "correctness",
+          "signature": "def correctness (pcp : PCP Stmt Wit rel) (correctnessError : \u211d\u22650) : Prop :="
+        },
+        {
+          "doc": "A PCP system satisfies **perfect correctness** if it satisfies correctness with no error.",
+          "kind": "def",
+          "line": 75,
+          "name": "PCP.perfectCorrectness",
+          "namespace": "PCP",
+          "short_name": "perfectCorrectness",
+          "signature": "def perfectCorrectness (pcp : PCP Stmt Wit rel) : Prop :="
+        },
+        {
+          "doc": "A PCP system satisfies **soundness** with error `soundnessError` if for every statement `stmt` outside the language (i.e. with no valid witness), and every adversarially chosen proof string, the verifier accepts with probability at most `soundnessError`. Since the verifier's only source of randomness is its own coin tosses, it suffices to quantify over fixed proof strings: a randomized malicious prover is a convex combination of these, so it can do no better than the best fixed proof.",
+          "kind": "def",
+          "line": 85,
+          "name": "PCP.soundness",
+          "namespace": "PCP",
+          "short_name": "soundness",
+          "signature": "def soundness (pcp : PCP Stmt Wit rel) (soundnessError : \u211d\u22650) : Prop :="
+        },
+        {
+          "doc": "A PCP system satisfies **perfect soundness** if it satisfies soundness with no error, i.e. the verifier never accepts a proof for a statement outside the language.",
+          "kind": "def",
+          "line": 93,
+          "name": "PCP.perfectSoundness",
+          "namespace": "PCP",
+          "short_name": "perfectSoundness",
+          "signature": "def perfectSoundness (pcp : PCP Stmt Wit rel) : Prop :="
         }
       ]
     },
@@ -69374,9 +69844,18 @@
           "signature": "theorem correlatedAgreement_affine_curves_listDecoding_closed_canonical {k deg : \u2115}"
         },
         {
-          "doc": "Turn the genuine \u00a75 extraction datum for one canonical decoded family into the canonical coefficient-polynomial package consumed by the closed keystone. The coefficient witnesses are still derived from `Section5StrictData` through `curveCoeffPolys_of_betaRec`; the only extra assumption is the expected uniqueness statement identifying every good decoding with the chosen canonical family `P\u2080`.",
+          "doc": "Closed list-decoding keystone with branch-specific canonical coefficient-polynomial data. This is the coefficient-polynomial analogue of `correlatedAgreement_affine_curves_listDecoding_closed_of_strict_section5_canonical`: the strict Johnson branch may use the probability/radius hypotheses to choose its canonical decoded family and coefficient witnesses, while the closed square-root boundary remains explicit.",
           "kind": "theorem",
           "line": 350,
+          "name": "ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_coeff",
+          "namespace": "ArkLib.CorrelatedAgreementListDecodingClosed",
+          "short_name": "correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_coeff",
+          "signature": "theorem correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_coeff"
+        },
+        {
+          "doc": "Turn the genuine \u00a75 extraction datum for one canonical decoded family into the canonical coefficient-polynomial package consumed by the closed keystone. The coefficient witnesses are still derived from `Section5StrictData` through `curveCoeffPolys_of_betaRec`; the only extra assumption is the expected uniqueness statement identifying every good decoding with the chosen canonical family `P\u2080`.",
+          "kind": "theorem",
+          "line": 393,
           "name": "ArkLib.CorrelatedAgreementListDecodingClosed.canonicalCoeffPolys_of_section5CanonicalData",
           "namespace": "ArkLib.CorrelatedAgreementListDecodingClosed",
           "short_name": "canonicalCoeffPolys_of_section5CanonicalData",
@@ -69385,7 +69864,7 @@
         {
           "doc": "Closed list-decoding keystone where the strict branch supplies exactly the canonical \u00a75 extraction data for one family `P\u2080` per stack, plus uniqueness. This is the direct residual target for the current \u00a75 assembly: the betaRec extraction datum is still genuine `Section5StrictData`, while the theorem packages it into the canonical-coefficient front door automatically.",
           "kind": "theorem",
-          "line": 381,
+          "line": 424,
           "name": "ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical",
           "namespace": "ArkLib.CorrelatedAgreementListDecodingClosed",
           "short_name": "correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical",
@@ -69394,7 +69873,7 @@
         {
           "doc": "Closed list-decoding keystone with branch-specific canonical \u00a75 extraction data. In the strict Johnson branch, it is enough to provide one canonical decoded family `P\u2080` carrying `Section5StrictData`, plus uniqueness of all good decodings against `P\u2080`.  The proof transports the canonical datum to each decoded family using `section5StrictData_of_eq_on_good`, then calls the per-decoding closed keystone.",
           "kind": "theorem",
-          "line": 414,
+          "line": 457,
           "name": "ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_of_strict_section5_canonical",
           "namespace": "ArkLib.CorrelatedAgreementListDecodingClosed",
           "short_name": "correlatedAgreement_affine_curves_listDecoding_closed_of_strict_section5_canonical",
@@ -72492,8 +72971,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7884,
-      "files": 387
+      "declarations": 7935,
+      "files": 392
     }
   }
 }

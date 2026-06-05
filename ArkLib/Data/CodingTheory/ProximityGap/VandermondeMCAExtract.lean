@@ -27,9 +27,9 @@ Vandermonde curve*, over Reed–Solomon codes:
 > (`ProximityGapP.pairJointAgreesOnP`). This is exactly the joint structure whose *failure* is the
 > defining clause of `ProximityGapP.mcaEventP`.
 
-The bridge between the two layers is `MCAJohnson.curve_mutual_extract`: it inverts the (distinct-node,
-hence invertible) Vandermonde system `c·eval = V *ᵥ f` to recover the polynomial tuple `p` with
-`p j` interpolating `f j` on `S`.
+The bridge between the two layers is `MCAJohnson.curve_mutual_extract`: it inverts the
+(distinct-node, hence invertible) Vandermonde system `c·eval = V *ᵥ f` to recover the tuple `p`
+with `p j` interpolating `f j` on `S`.
 
 ## Main definitions
 
@@ -181,7 +181,8 @@ variable {parℓ : ℕ}
 
 /-- **Predicate bridge (full Vandermonde).** The `exp = Fin.val` specialization of
 `ProximityGapP.proximityConditionP_imp_mcaEventP`: WHIR's `proximityCondition` with the honest
-Vandermonde generator `r = fun j ↦ γ^(j : ℕ)` implies the `parℓ`-ary MCA event at `exp = Fin.val`. -/
+Vandermonde generator `r = fun j ↦ γ^(j : ℕ)` gives the `parℓ`-ary MCA event at
+`exp = Fin.val`. -/
 theorem proximityConditionVandermonde_imp_mcaEventP
     {C : LinearCode ι F} {δ : ℝ≥0} (hδ : δ < 1)
     (f : Fin parℓ → ι → F) (γ : F)
@@ -210,3 +211,12 @@ theorem Pr_proximityConditionVandermonde_le_epsMCAP
 end WHIR
 
 end VandermondeMCA
+
+-- Per-theorem axiom audit. Every theorem must reduce to exactly
+-- `[propext, Classical.choice, Quot.sound]` (no `sorryAx`, no extra axioms).
+#print axioms VandermondeMCA.vandermondeCurve_eq_curveComb
+#print axioms VandermondeMCA.mem_rs_code_iff
+#print axioms VandermondeMCA.multislope_pairJointAgreesOnP
+#print axioms VandermondeMCA.multislope_excludes_mcaEventP
+#print axioms VandermondeMCA.proximityConditionVandermonde_imp_mcaEventP
+#print axioms VandermondeMCA.Pr_proximityConditionVandermonde_le_epsMCAP

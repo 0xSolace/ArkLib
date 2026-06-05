@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 387 files, 7884 declarations
+- `ArkLib` — 392 files, 7933 declarations
 
-## Same short-name across multiple files (296 groups)
+## Same short-name across multiple files (302 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -218,6 +218,15 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma RingSwitching.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1412](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1412) — **`simOracle2` message-query collapse (`OracleComp` form).** Simulating, via `simOracle2 oSpec t₁ t₂
 - `lemma ToyProblem.Spec.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:569](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L569) — `simOracle2` message-query collapse (`OracleComp` form), RIGHT (message) family.
 
+### `soundness` (6 declarations, 3 files)
+
+- `def PCP.soundness` [ArkLib/OracleReduction/Kilian/Basic.lean:85](../../../ArkLib/OracleReduction/Kilian/Basic.lean#L85) — A PCP system satisfies **soundness** with error `soundnessError` if for every statement `stmt` outsi
+- `def Verifier.soundness` [ArkLib/OracleReduction/Security/Basic.lean:238](../../../ArkLib/OracleReduction/Security/Basic.lean#L238) — A reduction satisfies **soundness** with error `soundnessError ≥ 0` and with respect to input langua
+- `def OracleVerifier.soundness` [ArkLib/OracleReduction/Security/Basic.lean:385](../../../ArkLib/OracleReduction/Security/Basic.lean#L385) — Soundness of an oracle reduction is the same as for non-oracle reductions.
+- `def Proof.soundness` [ArkLib/OracleReduction/Security/Basic.lean:428](../../../ArkLib/OracleReduction/Security/Basic.lean#L428) — (no docstring)
+- `def OracleProof.soundness` [ArkLib/OracleReduction/Security/Basic.lean:464](../../../ArkLib/OracleReduction/Security/Basic.lean#L464) — Soundness of an oracle reduction is the same as for non-oracle reductions.
+- `def Verifier.StateRestoration.soundness` [ArkLib/OracleReduction/Security/StateRestoration.lean:127](../../../ArkLib/OracleReduction/Security/StateRestoration.lean#L127) — State-restoration soundness
+
 ### `subdomain` (6 declarations, 3 files)
 
 - `def ReedSolomon.FftDomain.subdomain` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:806](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L806) — Given a smooth FFT domain `ω` of log-order `n` this function returns its subdomain of log-order `i`.
@@ -262,6 +271,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Logup.StmtOut` [ArkLib/ProofSystem/Logup/Common.lean:274](../../../ArkLib/ProofSystem/Logup/Common.lean#L274) — The full LogUp protocol returns no additional public data on success.
 - `def Sumcheck.Spec.SingleRound.Simpler.StmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:362](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L362) — (no docstring)
 - `def Sumcheck.Spec.SingleRound.Simple.StmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:586](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L586) — (no docstring)
+
+### `correctness` (4 declarations, 3 files)
+
+- `def Commitment.correctness` [ArkLib/CommitmentScheme/Basic.lean:88](../../../ArkLib/CommitmentScheme/Basic.lean#L88) — A commitment scheme satisfies **correctness** with error `correctnessError` if for all `data : Data`
+- `theorem KZG.correctness` [ArkLib/CommitmentScheme/KZG/Correctness.lean:51](../../../ArkLib/CommitmentScheme/KZG/Correctness.lean#L51) — Algebraic correctness of one KZG opening for a coefficient vector.
+- `theorem KZG.CommitmentScheme.correctness` [ArkLib/CommitmentScheme/KZG/Correctness.lean:161](../../../ArkLib/CommitmentScheme/KZG/Correctness.lean#L161) — The KZG scheme satisfies perfect correctness as defined in `CommitmentScheme`.
+- `def PCP.correctness` [ArkLib/OracleReduction/Kilian/Basic.lean:66](../../../ArkLib/OracleReduction/Kilian/Basic.lean#L66) — A PCP system satisfies **correctness** with error `correctnessError` if for every statement/witness 
 
 ### `drop` (4 declarations, 3 files)
 
@@ -592,14 +608,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def FSVerifierState.new` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean:279](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean#L279) — Create a new VerifierState from a domain separator and NARG string. Rust interface: ```rust pub fn n
 - `def FSProverState.new` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean:420](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean#L420) — Create a new `FSProverState` from a domain separator and RNG. Rust interface: ```rust pub fn new(dom
 
-### `soundness` (5 declarations, 2 files)
-
-- `def Verifier.soundness` [ArkLib/OracleReduction/Security/Basic.lean:238](../../../ArkLib/OracleReduction/Security/Basic.lean#L238) — A reduction satisfies **soundness** with error `soundnessError ≥ 0` and with respect to input langua
-- `def OracleVerifier.soundness` [ArkLib/OracleReduction/Security/Basic.lean:385](../../../ArkLib/OracleReduction/Security/Basic.lean#L385) — Soundness of an oracle reduction is the same as for non-oracle reductions.
-- `def Proof.soundness` [ArkLib/OracleReduction/Security/Basic.lean:428](../../../ArkLib/OracleReduction/Security/Basic.lean#L428) — (no docstring)
-- `def OracleProof.soundness` [ArkLib/OracleReduction/Security/Basic.lean:464](../../../ArkLib/OracleReduction/Security/Basic.lean#L464) — Soundness of an oracle reduction is the same as for non-oracle reductions.
-- `def Verifier.StateRestoration.soundness` [ArkLib/OracleReduction/Security/StateRestoration.lean:127](../../../ArkLib/OracleReduction/Security/StateRestoration.lean#L127) — State-restoration soundness
-
 ### `toList` (5 declarations, 2 files)
 
 - `def ReedSolomon.FftDomain.toList` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:287](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L287) — Convert an FFT domain into a list of all its members with proofs the members belong to the FFT domai
@@ -639,12 +647,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Interaction.Oracle.Spec.append` [ArkLib/Interaction/Oracle/Spec.lean:207](../../../ArkLib/Interaction/Oracle/Spec.lean#L207) — Sequential composition of `Oracle.Spec`: run `s₁` first, then continue with `s₂ pt₁` where `pt₁ : Pu
 - `abbrev ProtocolSpec.append` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:36](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L36) — Appending two `ProtocolSpec`s
 - `def ProtocolSpec.FullTranscript.append` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:147](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L147) — Appending two transcripts for two `ProtocolSpec`s
-
-### `correctness` (3 declarations, 2 files)
-
-- `def Commitment.correctness` [ArkLib/CommitmentScheme/Basic.lean:88](../../../ArkLib/CommitmentScheme/Basic.lean#L88) — A commitment scheme satisfies **correctness** with error `correctnessError` if for all `data : Data`
-- `theorem KZG.correctness` [ArkLib/CommitmentScheme/KZG/Correctness.lean:51](../../../ArkLib/CommitmentScheme/KZG/Correctness.lean#L51) — Algebraic correctness of one KZG opening for a coefficient vector.
-- `theorem KZG.CommitmentScheme.correctness` [ArkLib/CommitmentScheme/KZG/Correctness.lean:161](../../../ArkLib/CommitmentScheme/KZG/Correctness.lean#L161) — The KZG scheme satisfies perfect correctness as defined in `CommitmentScheme`.
 
 ### `experiment` (3 declarations, 2 files)
 
@@ -1426,6 +1428,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma Binius.RingSwitching.packMLE_repr_eval` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:575](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L575) — The basis coordinate of a packed evaluation recovers the small-field coefficient: `β.repr (t'(w)) u 
 - `lemma RingSwitching.packMLE_repr_eval` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:689](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L689) — The basis coordinate of a packed evaluation recovers the small-field coefficient: `β.repr (t'(w)) u 
 
+### `perfectCorrectness` (2 declarations, 2 files)
+
+- `def Commitment.perfectCorrectness` [ArkLib/CommitmentScheme/Basic.lean:109](../../../ArkLib/CommitmentScheme/Basic.lean#L109) — A commitment scheme satisfies **perfect correctness** if it satisfies correctness with no error.
+- `def PCP.perfectCorrectness` [ArkLib/OracleReduction/Kilian/Basic.lean:75](../../../ArkLib/OracleReduction/Kilian/Basic.lean#L75) — A PCP system satisfies **perfect correctness** if it satisfies correctness with no error.
+
 ### `perfectlyCorrect` (2 declarations, 2 files)
 
 - `theorem ArkLib.Lattices.Ajtai.InnerOuter.perfectlyCorrect` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Correctness.lean:198](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Correctness.lean#L198) — **Unconditional perfect correctness with the concrete binary decomposition.** Both message and inner
@@ -1525,6 +1532,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma ReedSolomon.CosetFftDomain.size_of_smooth_coset_domain_eq_pow_of_2` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1317](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1317) — (no docstring)
 - `lemma Domain.size_of_smooth_coset_domain_eq_pow_of_2` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:474](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L474) — Compatibility form of the smooth-coset domain size: the `toFinset` of a `SmoothCosetFftDomain n F` h
+
+### `spec` (2 declarations, 2 files)
+
+- `def PCP.spec` [ArkLib/OracleReduction/Kilian/Basic.lean:28](../../../ArkLib/OracleReduction/Kilian/Basic.lean#L28) — The oracle specification for a PCP proof string of length `length` over the alphabet `Symbol`: a sin
+- `def OracleInterface.spec` [ArkLib/OracleReduction/OracleInterface.lean:68](../../../ArkLib/OracleReduction/OracleInterface.lean#L68) — (no docstring)
 
 ### `sq_root_mem_subdomain` (2 declarations, 2 files)
 
@@ -1702,6 +1714,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma OutOfDomSmpl.card_filter_forall_pi` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:71](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L71) — Counting a coordinatewise event: the tuples satisfying `Q` in every coordinate form the `piFinset` o
 - `lemma OutOfDomSmpl.card_filter_forall_pi` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:169](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L169) — Tuples satisfying `Q` in every coordinate form the `piFinset` of the per-coordinate solution set, so
 
+### `checkMatrix` (2 declarations, 2 files)
+
+- `def ReedSolomon.checkMatrix` [ArkLib/Data/CodingTheory/ListDecoding.lean:45](../../../ArkLib/Data/CodingTheory/ListDecoding.lean#L45) — (no docstring)
+- `def ReedSolomon.checkMatrix` [ArkLib/Data/CodingTheory/ReedSolomon.lean:75](../../../ArkLib/Data/CodingTheory/ReedSolomon.lean#L75) — The (parity)-check matrix of the Reed-Solomon code, assuming `ι` is finite.
+
+### `code` (2 declarations, 2 files)
+
+- `def ReedSolomon.code` [ArkLib/Data/CodingTheory/ListDecoding.lean:38](../../../ArkLib/Data/CodingTheory/ListDecoding.lean#L38) — The Reed-Solomon code for polynomials of degree less than `deg` and evaluation points `points`.
+- `def ReedSolomon.code` [ArkLib/Data/CodingTheory/ReedSolomon.lean:62](../../../ArkLib/Data/CodingTheory/ReedSolomon.lean#L62) — The Reed-Solomon code for polynomials of degree less than `deg` and evaluation points `domain`.
+
 ### `coeff_zero_of_natDegree_lt` (2 declarations, 2 files)
 
 - `lemma ProximityGap.coeff_zero_of_natDegree_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:678](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L678) — (no docstring)
@@ -1712,6 +1734,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:87](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L87) — Distinct codewords decode to distinct polynomials: the decoded polynomial interpolates the codeword 
 - `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:183](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L183) — Distinct smooth codewords decode to distinct univariate polynomials (the decoded polynomial interpol
 
+### `evalOnPoints` (2 declarations, 2 files)
+
+- `def ReedSolomon.evalOnPoints` [ArkLib/Data/CodingTheory/ListDecoding.lean:31](../../../ArkLib/Data/CodingTheory/ListDecoding.lean#L31) — (no docstring)
+- `def ReedSolomon.evalOnPoints` [ArkLib/Data/CodingTheory/ReedSolomon.lean:39](../../../ArkLib/Data/CodingTheory/ReedSolomon.lean#L39) — The evaluation of a polynomial at a set of points specified by `domain : ι ↪ F`, as a linear map.
+
 ### `finset_card_ge_of_pred_natCast_le_ennreal_lt` (2 declarations, 2 files)
 
 - `lemma ProximityGap.finset_card_ge_of_pred_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:111](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L111) — (no docstring)
@@ -1721,6 +1748,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma ProximityGap.finset_card_gt_of_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:104](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L104) — (no docstring)
 - `theorem ProximityGap.finset_card_gt_of_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:110](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L110) — Convert an ENNReal lower bound on a finite set cardinality into a natural number strict cardinality 
+
+### `genMatrix` (2 declarations, 2 files)
+
+- `def ReedSolomon.genMatrix` [ArkLib/Data/CodingTheory/ListDecoding.lean:42](../../../ArkLib/Data/CodingTheory/ListDecoding.lean#L42) — The generator matrix of the Reed-Solomon code of degree `deg` and evaluation points `points`.
+- `def ReedSolomon.genMatrix` [ArkLib/Data/CodingTheory/ReedSolomon.lean:71](../../../ArkLib/Data/CodingTheory/ReedSolomon.lean#L71) — The generator matrix of the Reed-Solomon code of degree `deg` and evaluation points `domain`.
 
 ### `qEntropy_mul_log_eq_qaryEntropy` (2 declarations, 2 files)
 
