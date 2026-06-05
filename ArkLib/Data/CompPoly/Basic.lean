@@ -3,7 +3,7 @@ Copyright (c) 2024-2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
-import CompPoly.Multivariate.DegreeBound
+import CompPoly
 import ArkLib.OracleReduction.OracleInterface
 
 /-!
@@ -34,22 +34,6 @@ instance instOracleInterfaceCPolynomial [Nontrivial R] :
    toOC := {
      spec := R →ₒ R
      impl := fun point => do return CPolynomial.eval point (← read)
-   }
-
-instance instOracleInterfaceCDegreeLE [Semiring R] :
-    OracleInterface (CDegreeLE R deg) where
-   Query := R
-   toOC := {
-     spec := R →ₒ R
-     impl := fun point => do return CPolynomial.eval point (← read).1
-   }
-
-instance instOracleInterfaceCMvDegreeLE :
-    OracleInterface (CMvDegreeLE R n deg) where
-   Query := Fin n → R
-   toOC := {
-     spec := (Fin n → R) →ₒ R
-     impl := fun points => do return CMvPolynomial.eval points (← read).1
    }
 
 end OracleInterface

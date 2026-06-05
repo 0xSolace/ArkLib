@@ -218,7 +218,7 @@ theorem simplifiedIOR_knowledgeSound
       (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
         (WitOut := OutputWitness (F := F) k)
         init impl
-        (ToyProblem.Spec.outputRelationFor k encode δ)
+        (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
         (outputRelationFor (ι := ι) (F := F) k encode δ)
         ((epsMCA (F := F) (A := F) C δ).toNNReal +
           ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)

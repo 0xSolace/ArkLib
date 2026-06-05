@@ -1411,6 +1411,31 @@ def coreInteractionOracleVerifier :=
     (V₂:=finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
     (pSpec₂:=pSpecFinalSumcheck L)
 
+instance instFinalSumcheckOracleVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn) where
+  hCohInl := fun i k h => by
+    simp only [finalSumcheckVerifier, Function.Embedding.coeFn_mk] at h
+    obtain rfl := Sum.inl.inj h
+    rfl
+  hCohInr := fun i k h => by
+    simp only [finalSumcheckVerifier, Function.Embedding.coeFn_mk] at h
+    cases h
+
+instance instCoreInteractionOracleVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l aOStmtIn) :=
+  letI := instSumcheckLoopOracleVerifierAppendCoherent
+    (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn)
+  OracleVerifier.Append.AppendCoherent.append
+    (V₁ := sumcheckLoopOracleVerifier κ L K P ℓ ℓ' aOStmtIn)
+    (V₂ := finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
+    (c₁ := instSumcheckLoopOracleVerifierAppendCoherent
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn))
+    (c₂ := instFinalSumcheckOracleVerifierAppendCoherent
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := aOStmtIn))
+
 /-- Large-field reduction: Sumcheck seqCompose, then append FinalSum -/
 @[reducible]
 def coreInteractionOracleReduction :=
@@ -1421,6 +1446,16 @@ def coreInteractionOracleReduction :=
     (pSpec₁:=pSpecSumcheckLoop L ℓ')
     (R₂ := finalSumcheckOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn)
     (pSpec₂:=pSpecFinalSumcheck L)
+
+instance instCoreInteractionOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (coreInteractionOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn).verifier :=
+  by
+    change OracleVerifier.Append.AppendCoherent
+      (coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
+    exact instCoreInteractionOracleVerifierAppendCoherent
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := aOStmtIn)
 
 /-!
 ## RBR Knowledge Soundness Components for Single Round
