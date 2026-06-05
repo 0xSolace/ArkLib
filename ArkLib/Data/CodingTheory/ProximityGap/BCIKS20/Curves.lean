@@ -1853,6 +1853,53 @@ theorem correlatedAgreement_affine_curves_of_strict_eval_polys_and_boundary {k :
     (hStrictEval hk u hprob hJ hsqrt)
 
 omit [DecidableEq ι] in
+/-- Evaluation-polynomial capstone with canonical decoded-family data in the
+strict Johnson branch and the original closed-boundary obligation left
+explicit. -/
+theorem correlatedAgreement_affine_curves_of_strict_canonical_eval_polys_and_boundary
+    {k : ℕ} {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCanonicalEval :
+      ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+        Pr_{
+          let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+            ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+        (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+        δ < 1 - ReedSolomon.sqrtRate deg domain →
+        ∃ P₀ : F → Polynomial F,
+          (∃ E : ι → Polynomial F,
+            (∀ x, (E x).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ x, (P₀ z).eval (domain x) = (E x).eval z) ∧
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                P z = P₀ z)
+    (hBoundary : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ¬δ < 1 - ReedSolomon.sqrtRate deg domain →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_strict_eval_polys_and_boundary
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_ hBoundary
+  intro hk u hprob hJ hsqrt P hP
+  obtain ⟨P₀, hEval₀, huniq⟩ := hStrictCanonicalEval hk u hprob hJ hsqrt
+  exact eval_polys_for_all_decoded_of_canonical_agreement
+    (deg := deg) (domain := domain) (δ := δ)
+    (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+    (u := u) P₀ hEval₀ huniq P hP
+
+omit [DecidableEq ι] in
 /-- Evaluation-polynomial capstone with the closed square-root boundary
 reduced to equality at the boundary and nonemptiness of the good-coefficient
 set. -/
@@ -2044,6 +2091,53 @@ theorem correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary {k 
   exact RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
     (deg := deg) (domain := domain) (δ := δ) hk u hprob hJ hsqrt
     (hStrictCoeff hk u hprob hJ hsqrt)
+
+omit [DecidableEq ι] in
+/-- Coefficient-polynomial capstone with canonical decoded-family data in the
+strict Johnson branch and the original closed-boundary obligation left
+explicit. -/
+theorem correlatedAgreement_affine_curves_of_strict_canonical_coeff_polys_and_boundary
+    {k : ℕ} {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCanonicalCoeff :
+      ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+        Pr_{
+          let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+            ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+        (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+        δ < 1 - ReedSolomon.sqrtRate deg domain →
+        ∃ P₀ : F → Polynomial F,
+          (∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P₀ z).coeff j = (B j).eval z) ∧
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                P z = P₀ z)
+    (hBoundary : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ¬δ < 1 - ReedSolomon.sqrtRate deg domain →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_ hBoundary
+  intro hk u hprob hJ hsqrt P hP
+  obtain ⟨P₀, hCoeff₀, huniq⟩ := hStrictCanonicalCoeff hk u hprob hJ hsqrt
+  exact coeff_polys_for_all_decoded_of_canonical_agreement
+    (deg := deg) (domain := domain) (δ := δ)
+    (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+    (u := u) P₀ hCoeff₀ huniq P hP
 
 omit [DecidableEq ι] in
 /-- Coefficient-polynomial capstone with the closed square-root boundary
@@ -2285,6 +2379,32 @@ theorem coeffs_of_close_proximity_curve_RS_toFinset_card_eq_goodCoeffsCurve
         δ u (ReedSolomon.toFinset domain deg)).card =
       (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u (δ : ℝ≥0)).card := by
   rw [coeffs_of_close_proximity_curve_RS_toFinset_eq_goodCoeffsCurve
+    (F := F) (n := n) (k := k) (deg := deg) (domain := domain) δ u]
+
+omit [NeZero n] in
+/-- Strict cardinal lower bounds transport from the §6 close-parameter set to
+the `RS_goodCoeffsCurve` set used by the curve assembly layer. -/
+theorem coeffs_of_close_proximity_curve_RS_toFinset_card_gt_iff_goodCoeffsCurve
+    {k deg : ℕ} {domain : Fin n ↪ F}
+    (δ : ℚ≥0) (u : WordStack F (Fin (k + 1)) (Fin n)) (m : ℕ) :
+    (coeffs_of_close_proximity_curve (F := F) (n := n) (l := k + 1)
+        δ u (ReedSolomon.toFinset domain deg)).card > m ↔
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u
+        (δ : ℝ≥0)).card > m := by
+  rw [coeffs_of_close_proximity_curve_RS_toFinset_card_eq_goodCoeffsCurve
+    (F := F) (n := n) (k := k) (deg := deg) (domain := domain) δ u]
+
+omit [NeZero n] in
+/-- Non-strict cardinal lower bounds transport from the §6 close-parameter set
+to the `RS_goodCoeffsCurve` set used by the curve assembly layer. -/
+theorem coeffs_of_close_proximity_curve_RS_toFinset_card_ge_iff_goodCoeffsCurve
+    {k deg : ℕ} {domain : Fin n ↪ F}
+    (δ : ℚ≥0) (u : WordStack F (Fin (k + 1)) (Fin n)) (m : ℕ) :
+    (coeffs_of_close_proximity_curve (F := F) (n := n) (l := k + 1)
+        δ u (ReedSolomon.toFinset domain deg)).card ≥ m ↔
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u
+        (δ : ℝ≥0)).card ≥ m := by
+  rw [coeffs_of_close_proximity_curve_RS_toFinset_card_eq_goodCoeffsCurve
     (F := F) (n := n) (k := k) (deg := deg) (domain := domain) δ u]
 
 omit [DecidableEq F] in
