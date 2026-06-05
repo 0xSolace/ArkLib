@@ -11,7 +11,7 @@ import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.GammaGenuine
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2300
 -- This proof-note-heavy integration file contains many long paper-route doc lines.
 set_option linter.style.longLine false
 
@@ -1961,6 +1961,43 @@ theorem prod_map_coeff_assembled (x₀ : F) (R : F[X][X][Y])
             simp [βHenselAssembled, PowerSeries.coeff_mk],
         map_mul, pow_add, pow_add, div_mul_div_comm]
       ring
+
+/-- `∑_{l ∈ λ.parts} (l+1) = m + Σλ` — the `W`-power telescope. Local restatement of
+`ProximityPrize.MultinomialChainRule.partition_sum_add_one` (olean not yet built;
+dedupe when it is). -/
+theorem partition_sum_add_one_local {m : ℕ} (lam : Nat.Partition m) :
+    (lam.parts.map (· + 1)).sum = m + Multiset.card lam.parts := by
+  rw [Multiset.sum_map_add]
+  simp [lam.parts_sum, Multiset.map_id']
+
+/-- **Truncation agreement for products (PROVEN).** Over any multiset of orders all `≤ t`,
+the truncated and assembled coefficient products coincide (coefficient-wise agreement
+`coeff_mk`/`if_pos` pushed through `Multiset.map`). -/
+theorem prod_map_coeff_trunc_eq (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) (s : Multiset ℕ)
+    (hs : ∀ l ∈ s, l ≤ t) :
+    (s.map (fun l => PowerSeries.coeff l (βHenselTrunc H x₀ R hHyp t))).prod
+      = (s.map (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp))).prod := by
+  congr 1
+  exact Multiset.map_congr rfl (fun l hl => by
+    simp only [βHenselTrunc, PowerSeries.coeff_mk, if_pos (hs l hl)])
+
+/-- **Per-partition cleared term (PROVEN corollary).** Instantiating the product bridge at
+a partition `λ ⊢ m` and rewriting the `W`-exponent by the telescope
+`partition_sum_add_one`: the partition product of assembled coefficients is the embedded
+`(A.1)` numerator product over `W^{m+Σλ} · ξ^{∑(2l−1)}` (with `∑(2l−1) + Σλ = 2m`
+available as `partition_sum_two_mul_sub_one` for the consumer's exponent algebra). -/
+theorem partitionProd_coeff_assembled {m : ℕ} (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (lam : Nat.Partition m) :
+    partitionProd lam (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp))
+      = embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp))
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (m + Multiset.card lam.parts)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))
+                ^ ((lam.parts.map (fun l => 2 * l - 1)).sum)) := by
+  rw [partitionProd, prod_map_coeff_assembled, ← partitionProd]
+  congr 2
+  exact congrArg (fun n => (liftToFunctionField (H := H) H.leadingCoeff) ^ n)
+    (partition_sum_add_one_local lam)
 
 /-- **(P2) order-`(t+1)` vanishing — THE SINGLE IRREDUCIBLE RESIDUAL (documented `sorry`).**
 
