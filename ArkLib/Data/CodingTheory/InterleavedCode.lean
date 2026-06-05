@@ -358,6 +358,19 @@ noncomputable instance instFintypeInterleavedModuleCode [Fintype A] : Fintype (M
 lemma interleavedCode_eq_interleavedCodeSet {A : Type*} {ι : Type*} {κ : Type*} {C : Set (ι → A)} :
     (C ^⋈ κ) = interleavedCodeSet (κ := κ) C:= by rfl
 
+set_option linter.unusedSectionVars false in
+set_option linter.unusedFintypeInType false in
+-- Column projection shrinks relative Hamming distance for interleaved words.
+lemma relHammingDist_transpose_le {F : Type*} [DecidableEq F] [Fintype ι] [Nonempty ι] {m : ℕ}
+    (f V : Matrix ι (Fin m) F) (k : Fin m) :
+    δᵣ(V.transpose k, f.transpose k) ≤ δᵣ(V, f) := by
+  unfold relHammingDist
+  have h : hammingDist (V.transpose k) (f.transpose k) ≤ hammingDist V f := by
+    have := hammingDist_comp_le_hammingDist (γ := fun _ : ι => Fin m → F)
+      (β := fun _ : ι => F) (fun (_ : ι) (row : Fin m → F) => row k) (x := V) (y := f)
+    simpa [Matrix.transpose] using this
+  gcongr
+
 @[simp]
 lemma interleavedCode_eq_interleavedCodeSet_of_moduleCode {F A : Type*} {κ ι : Type*} [Semiring F]
     [AddCommMonoid A] [Module F A] {MC : ModuleCode ι F A} :
