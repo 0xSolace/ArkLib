@@ -502,7 +502,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting
         P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
     δ_ε_correlatedAgreementCurves (k := 1) (A := F) (F := F) (ι := Fin n)
       (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
-  (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
+      (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
   classical
   refine correlatedAgreement_affine_curves_of_uniform_strict_coeff_polys
     (k := 1) (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0)) hδ ?_
@@ -638,7 +638,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_and_b
         (W := Code.finMapTwoWords u₀ u₁)) :
     δ_ε_correlatedAgreementCurves (k := 1) (A := F) (F := F) (ι := Fin n)
       (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
-  (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
+      (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
   classical
   refine correlatedAgreement_affine_curves_of_uniform_strict_coeff_polys_and_boundary_card
     (k := 1) (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0)) hδ ?_ ?_
