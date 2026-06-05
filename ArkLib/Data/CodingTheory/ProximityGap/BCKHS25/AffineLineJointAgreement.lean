@@ -183,4 +183,61 @@ theorem card_jointDisagreement_restored (k e h DZ : ℕ)
   have := hclose z
   rwa [hpt] at this
 
+/-- **[BCKHS25] §2 restored-distance affine-line `jointAgreement`.**
+
+This is the consumer form of `card_jointDisagreement_restored`: if the restored
+bound
+`(|S| - 1) * d ≤ |S| * (e + h)`
+fits inside the target proximity radius, i.e.
+`|S| * (e + h) ≤ (|S| - 1) * ⌊δ n⌋`, then the same Hensel-free
+Berlekamp-Welch/Polishchuk-Spielman route yields `jointAgreement` for the
+two-row affine-line stack. -/
+theorem jointAgreement_of_proximates_restored (k e h DZ : ℕ) {δ : ℝ≥0}
+    (hn : k + 2 * e + h + 1 = Fintype.card ι)
+    (hDZ : e + 1 ≤ (h + 1) * DZ) (hDZ0 : 0 < DZ)
+    (domain : ι ↪ F) (u₀ u₁ : ι → F) (S : Finset F)
+    (hS2 : 2 ≤ S.card)
+    (prox : ∀ z ∈ S, ∃ p : F[X], p.natDegree ≤ k ∧
+      (Finset.univ.filter (fun x => p.eval (domain x) ≠ u₀ x + u₁ x * z)).card ≤ e)
+    (hratio : ((k + e + h : ℕ) : ℚ) / (Fintype.card ι : ℚ)
+      + ((DZ : ℕ) : ℚ) / (S.card : ℚ) < 1)
+    (hfit :
+      S.card * (e + h) ≤
+        (S.card - 1) * Nat.floor (δ * (Fintype.card ι : ℝ≥0))) :
+    jointAgreement (F := F) (κ := Fin 2) (ι := ι)
+      (C := ReedSolomon.code domain (k + 1)) (δ := δ) (W := lineWordStack u₀ u₁) := by
+  classical
+  have hS0 : 0 < S.card := by omega
+  obtain ⟨p₀, p₁, hp₀, hp₁, hrestored⟩ :=
+    card_jointDisagreement_restored k e h DZ hn hDZ hDZ0 domain u₀ u₁ S hS0 prox hratio
+  have hrestoredS := hrestored S hS2
+  have hpos : 0 < S.card - 1 := by omega
+  have hdis_oriented :
+      (Finset.univ.filter
+        (fun x => ¬(u₀ x = p₀.eval (domain x) ∧ u₁ x = p₁.eval (domain x)))).card
+        ≤ Nat.floor (δ * (Fintype.card ι : ℝ≥0)) := by
+    refine le_of_mul_le_mul_left ?_ hpos
+    exact le_trans hrestoredS hfit
+  have hfilter :
+      Finset.univ.filter
+        (fun x => ¬(p₀.eval (domain x) = u₀ x ∧ p₁.eval (domain x) = u₁ x))
+        =
+      Finset.univ.filter
+        (fun x => ¬(u₀ x = p₀.eval (domain x) ∧ u₁ x = p₁.eval (domain x))) := by
+    apply Finset.filter_congr
+    intro x _hx
+    constructor
+    · intro h h'
+      exact h ⟨h'.1.symm, h'.2.symm⟩
+    · intro h h'
+      exact h ⟨h'.1.symm, h'.2.symm⟩
+  have hdis :
+      (Finset.univ.filter
+        (fun x => ¬(p₀.eval (domain x) = u₀ x ∧ p₁.eval (domain x) = u₁ x))).card
+        ≤ Nat.floor (δ * (Fintype.card ι : ℝ≥0)) := by
+    rwa [hfilter]
+  haveI : NeZero (k + 1) := ⟨Nat.succ_ne_zero k⟩
+  exact jointAgreement_of_jointDisagreement_le (deg := k + 1)
+    (Nat.lt_succ_of_le hp₀) (Nat.lt_succ_of_le hp₁) hdis
+
 end BCKHS25

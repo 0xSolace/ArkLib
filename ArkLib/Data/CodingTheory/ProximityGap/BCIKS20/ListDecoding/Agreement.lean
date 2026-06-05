@@ -909,6 +909,79 @@ lemma exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_cond
   simp
 
 omit [DecidableEq (RatFunc F)] in
+/-- Candidate-pair extraction plus `clearDenomY`, with close-set nonemptiness
+derived from the same large-set hypothesis.
+
+This is the large-set front door for the graph-condition Claim-5.7 replacement:
+callers need only provide the graph agreement/count hypotheses and the Johnson
+large-set inequality, not a separate proof that the close set is nonempty. -/
+lemma exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions_of_large
+    [DecidableEq (Polynomial F)] [DecidableEq (RatFunc F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    ∃ R H,
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs ∧
+      Irreducible R ∧
+      Irreducible H ∧
+      0 < H.natDegree ∧
+      H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
+      (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
+        #(Finset.univ.filter
+            (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+              (Trivariate.eval_on_Z R z.1).eval
+                  (Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2) = 0 ∧
+                (Bivariate.evalX z.1 H).eval
+                  ((Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval x₀)
+                  = 0))
+        ≥ #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) /
+          Bivariate.natDegreeY Q ∧
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q ∧
+      ∀ {e D : ℕ},
+        (hHpos : 0 < H.natDegree) →
+        (Bivariate.evalX (Polynomial.C x₀) R).natDegree ≤ e →
+        D ≥ Bivariate.totalDegree H →
+        ((Finset.univ.filter
+          (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+            have P : F[X] :=
+              Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+            (pg_eval_on_Z (F := F) R z.1).eval P = 0 ∧
+              (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0)).card : WithBot ℕ) >
+          _root_.BCIKS20AppendixA.weight_Λ_over_𝒪 hHpos
+            (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H})
+              (Polynomial.clearDenomY (H.coeff H.natDegree) e
+                (Bivariate.evalX (Polynomial.C x₀) R)) :
+              _root_.BCIKS20AppendixA.𝒪 H) D * (H.natDegree : WithBot ℕ) →
+        _root_.BCIKS20AppendixA.H_tilde' H ∣
+          Polynomial.clearDenomY (H.coeff H.natDegree) e
+            (Bivariate.evalX (Polynomial.C x₀) R) := by
+  exact exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hx0 hsep
+    (coeffs_of_close_proximity_nonempty_of_large_natdiv
+      (F := F) (n := n) (m := m) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hlarge)
+    A hA hcount hlarge
+
+omit [DecidableEq (RatFunc F)] in
 lemma exists_pg_factors_with_large_common_root_set_setToFinset_of_graph_conditions
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
