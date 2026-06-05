@@ -3,6 +3,7 @@ import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Eval.Degree
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Tactic
+import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 
 /-! # Guruswami–Sudan factor extraction (Track A3)
 
@@ -190,6 +191,19 @@ theorem curve_factor_extraction_of_rootMultiplicity
     exact dvd_zero _
   · exact (Polynomial.le_rootMultiplicity_iff hzero).mp (hroot a ha)
 
+/-- **Factor extraction from bivariate order-vanishing.**  If `Q` vanishes to order
+`m a` at every curve point `(a, p(a))`, then the substitution lemma supplies the
+univariate divisibility witnesses consumed by `curve_factor_extraction`. -/
+theorem curve_factor_extraction_of_vanishesToOrder
+    (Q : (F[X])[X]) (p : F[X]) {S : Finset F} {m : F → ℕ}
+    (hvan : ∀ a ∈ S, ArkLib.GS.vanishesToOrder (m a) Q a (p.eval a))
+    (hbudget : (curveRestrict Q p).natDegree < ∑ a ∈ S, m a) :
+    (X - C p) ∣ Q := by
+  refine curve_factor_extraction Q p ?_ hbudget
+  intro a ha
+  simpa [curveRestrict] using
+    (ArkLib.GS.vanishesToOrder.dvd_eval (hvan a ha) p rfl)
+
 end FieldAssembly
 
 /-! ## Part 2: list-size bound
@@ -272,6 +286,19 @@ theorem gs_factor_extraction_list_size_of_rootMultiplicity
   apply gs_list_size_le Q hQ Ps
   intro p hp
   exact curve_factor_extraction_of_rootMultiplicity Q p (hroot p hp) (hbudget p hp)
+
+/-- End-to-end list-size bound directly from bivariate order-vanishing along each
+candidate curve `Y = p(X)`. -/
+theorem gs_factor_extraction_list_size_of_vanishesToOrder
+    (Q : (F[X])[X]) (hQ : Q ≠ 0) (Ps : Finset F[X])
+    (S : F[X] → Finset F) (m : F[X] → F → ℕ)
+    (hvan : ∀ p ∈ Ps, ∀ a ∈ S p,
+      ArkLib.GS.vanishesToOrder (m p a) Q a (p.eval a))
+    (hbudget : ∀ p ∈ Ps, (curveRestrict Q p).natDegree < ∑ a ∈ S p, m p a) :
+    Ps.card ≤ Q.natDegree := by
+  apply gs_list_size_le Q hQ Ps
+  intro p hp
+  exact curve_factor_extraction_of_vanishesToOrder Q p (hvan p hp) (hbudget p hp)
 
 end EndToEnd
 
