@@ -13,8 +13,9 @@ namespace RSDistinct
 
 open Polynomial
 
-variable {F : Type} [Field F] [DecidableEq F] {ι : Type} (domain : ι ↪ F)
+variable {F : Type} [Field F] {ι : Type} (domain : ι ↪ F)
 
+open Classical in
 /-- **RS distinctness.** Distinct `p, q ∈ degreeLT F k` agree on `< k` of the
 domain points: `|{x ∈ S : p(ωₓ) = q(ωₓ)}| < k`. -/
 theorem degreeLT_agree_card_lt_of_ne {k : ℕ}
@@ -37,6 +38,7 @@ theorem degreeLT_agree_card_lt_of_ne {k : ℕ}
   rw [Finset.card_image_of_injective _ domain.injective] at hcard
   omega
 
+open Classical in
 /-- Contrapositive form: agreement on `≥ k` domain points forces equality. -/
 theorem degreeLT_eq_of_agree_card_ge {k : ℕ}
     {p q : F[X]} (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k)
@@ -45,26 +47,26 @@ theorem degreeLT_eq_of_agree_card_ge {k : ℕ}
   by_contra hpq
   exact absurd h (not_le.mpr (degreeLT_agree_card_lt_of_ne domain hp hq hpq S))
 
+open Classical in
 /-- Pointwise agreement on at least `k` domain points forces equality for
 degree-`< k` polynomials. -/
+omit [DecidableEq F] in
 theorem degreeLT_eq_of_agree_on_finset {k : ℕ}
     {p q : F[X]} (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k)
     {S : Finset ι} (hcard : k ≤ S.card)
     (hagree : ∀ x ∈ S, p.eval (domain x) = q.eval (domain x)) :
-    p = q := by
+  p = q := by
   classical
-  apply degreeLT_eq_of_agree_card_ge domain hp hq
-  rw [show S.filter (fun x => p.eval (domain x) = q.eval (domain x)) = S by
+  have hfilter : S.filter (fun x => p.eval (domain x) = q.eval (domain x)) = S := by
     apply Finset.ext
     intro x
     constructor
     · intro hx
       exact (Finset.mem_filter.mp hx).1
     · intro hx
-      exact Finset.mem_filter.mpr ⟨hx, hagree x hx⟩]
-  exact hcard
+      exact Finset.mem_filter.mpr ⟨hx, hagree x hx⟩
+  exact degreeLT_eq_of_agree_card_ge domain hp hq (S := S) (by rwa [hfilter])
 
-open Classical in
 /-- **Reed–Solomon unique decoding.** If `p, q ∈ degreeLT F k` each agree with a
 word `w` on at least `a` domain points and `2a ≥ n + k` (the unique-decoding
 radius), then `p = q`: their agreement sets overlap in `≥ k` points on which `p`
