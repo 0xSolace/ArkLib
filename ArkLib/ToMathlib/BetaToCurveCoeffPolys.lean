@@ -204,8 +204,8 @@ theorem coeff_C_add_smul_X (a b : F) :
   rw [Polynomial.coeff_add, smul_eq_C_mul, Polynomial.coeff_C]
   rcases j with _ | _ | j
   · simp
-  · simp [Polynomial.coeff_C_mul]
-  · simp [Polynomial.coeff_C_mul, Polynomial.coeff_X, Nat.succ_ne_zero]
+  · simp
+  · simp
 
 /-- **Step D — the read-off (pure algebra, the deliverable's last link).**
 
@@ -231,13 +231,13 @@ theorem curveCoeffPolys_of_linear_representative
     rcases j with _ | _ | j
     · simpa using hdeg₀
     · simpa using hdeg₁
-    · simp; omega
+    · simpa using Nat.succ_pos k
   · intro z hz
     rw [hPz z hz, eval_linear_representative, coeff_C_add_smul_X]
     rcases j with _ | _ | j
     · simp
     · simp
-    · simp [Nat.succ_ne_zero]
+    · simp
 
 /-! ## The deliverable — `betaRec ⟹ CurveCoeffPolys`, end to end
 
@@ -302,15 +302,13 @@ theorem curveCoeffPolys_of_betaRec
   -- Claim 5.9 (`gamma_linear_in_Z_of_tail_zero`) consumes `htail` (on the `α` underlying `γ`),
   -- the substitution validity `hsubst`, and the Prop-5.5 representative `hrep`/`hdegX`.
   -- We thread the `αFromBeta`-built `γ` through Claim 5.9's `htail`/`hsubst` machinery via `hγ`.
-  obtain ⟨v₀, v₁, hlin⟩ :
-      ∃ v₀ v₁ : F[X],
-        γ x₀ R H hHyp = polyToPowerSeries𝕃 H
-          ((Polynomial.map Polynomial.C v₀)
-            + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) := by
-    -- The tail-vanishing of `αFromBeta` + `hγ` give the truncation; `hrep`/`hdegX` give linearity.
-    -- This is exactly `Claim59Conditional`'s linear-extraction, fed the `αFromBeta`-built `γ`.
-    exact Claim59Conditional.FiniteSeriesToPoly.exists_linear_decomposition_of_degreeX_le_one hdegX
-      |>.elim (fun w₀ h => ⟨w₀, h.choose, by rw [← hrep, h.choose_spec]⟩)
+  obtain ⟨v₀, v₁, hPpoly⟩ :=
+    FiniteSeriesToPoly.exists_linear_decomposition_of_degreeX_le_one hdegX
+  have hlin :
+      γ x₀ R H hHyp = polyToPowerSeries𝕃 H
+        ((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) := by
+    rw [← hrep, hPpoly]
   -- Step D: read off the per-index coefficient polynomials from the linear representative.
   obtain ⟨hPeval, hd₀, hd₁⟩ := hPz v₀ v₁ hlin
   exact curveCoeffPolys_of_linear_representative v₀ v₁ hd₀ hd₁ hPeval
