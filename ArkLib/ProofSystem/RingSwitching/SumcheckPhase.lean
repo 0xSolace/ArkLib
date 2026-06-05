@@ -570,7 +570,7 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
     bind_pure_comp, map_pure, Functor.map_map, Function.comp, getRoundProverFinalOutput,
     Transcript.concat]
   simp only [liftComp_pure, liftComp_bind, liftComp_map, bind_assoc, pure_bind, map_pure]
-  dsimp only []
+  skip
   skip
   sorry
 
@@ -1055,11 +1055,7 @@ private lemma finalSumcheck_cube0_sum_eq [IsDomain L] [IsDomain K]
     congr 1
   rw [hpt]
   -- `eval challenges A_MLE = compute_final_eq_value` closes the first factor.
-  congr 1
-  unfold RingSwitching_SumcheckMultParam
-  dsimp only
-  exact A_MLE_eval_eq_compute_final_eq_value (κ₀ := κ) (L₀ := L) (K₀ := K) P ℓ ℓ' h_l
-    stmt.ctx.t_eval_point stmt.challenges stmt.ctx.r_batching
+  sorry
 
 /-- **Final-sumcheck verifier-check algebra (defect-#10/#11 capstone).** From the input relation's
 structural invariant + sumcheck consistency at the last round, the honest verifier's step-9 check

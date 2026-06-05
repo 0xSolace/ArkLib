@@ -3833,6 +3833,76 @@ lemma matching_set_at_x_card_eq_filter_PzFamily
   rw [matching_set_at_x_eq_filter_PzFamily
     (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x]
 
+omit [DecidableEq (RatFunc F)] in
+lemma matching_set_at_x_subset_close_proximity
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) :
+    matching_set_at_x k δ h_gs x ⊆
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ := by
+  intro z hz
+  exact (mem_matching_set_at_x_iff
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x z).mp hz |>.1
+
+omit [DecidableEq (RatFunc F)] in
+lemma close_proximity_subset_matching_set_at_x_of_card_le
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n)
+    (hcard :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card ≤
+        (matching_set_at_x k δ h_gs x).card) :
+    coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+      matching_set_at_x k δ h_gs x := by
+  have hEq :
+      matching_set_at_x k δ h_gs x =
+        coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ :=
+    Finset.eq_of_subset_of_card_le
+      (matching_set_at_x_subset_close_proximity
+        (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x)
+      hcard
+  intro z hz
+  rwa [← hEq] at hz
+
+omit [DecidableEq (RatFunc F)] in
+lemma close_proximity_subset_matching_set_at_x_of_pred_lt_card
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n)
+    (hcard :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 <
+        (matching_set_at_x k δ h_gs x).card) :
+    coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+      matching_set_at_x k δ h_gs x := by
+  apply close_proximity_subset_matching_set_at_x_of_card_le
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x
+  omega
+
+omit [DecidableEq (RatFunc F)] in
+lemma close_proximity_subset_matching_set_at_x_on_domain_of_card_le
+    {ωs : Fin n ↪ F} {Dtop : Finset (Fin n)}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcard : ∀ x ∈ Dtop,
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card ≤
+        (matching_set_at_x k δ h_gs x).card) :
+    ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+        matching_set_at_x k δ h_gs x := by
+  intro x hx
+  exact close_proximity_subset_matching_set_at_x_of_card_le
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x (hcard x hx)
+
+omit [DecidableEq (RatFunc F)] in
+lemma close_proximity_subset_matching_set_at_x_on_domain_of_pred_lt_card
+    {ωs : Fin n ↪ F} {Dtop : Finset (Fin n)}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcard : ∀ x ∈ Dtop,
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 <
+        (matching_set_at_x k δ h_gs x).card) :
+    ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+        matching_set_at_x k δ h_gs x := by
+  intro x hx
+  exact close_proximity_subset_matching_set_at_x_of_pred_lt_card
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x (hcard x hx)
+
 open Polynomial in
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 /-- The degree-one curve-parameter polynomial representing the line word at a
