@@ -42,22 +42,25 @@ Current status:
 * **L6.13 is PROVEN** (`simplified_iop_soundness_ca_lb`), under the linear-code
   encoder hypothesis on `C` (the regime `relation`/`relaxedRelation` demand).
 * **L6.12 is PROVEN** (`simplified_iop_soundness_listDecoding_lb`): the §6.4.1
-  winning-set construction (the two Claim-B.1 applications + the affine
-  injection from the message-pair image into winning challenges) is fully
-  machine-checked against the fixed-encoding `winningSetFor enc`. See its
-  docstring.
+  winning-set construction (one Claim-B.1 application + the paper's injective
+  affine reparametrisation of `S_v` into winning challenges) is fully
+  machine-checked against the fixed-encoding `winningSetFor enc`. The bound is
+  the **paper-exact** `N·|F|/(|F|+N−1)` (eprint 2026/680 §6.4.1, Lemma 6.12),
+  under the paper's hypothesis `|F| > binom(N, 2)`. See its docstring.
 
 L6.12/L6.13 are stated in coding-theory form (direct cardinality bounds on
 `winningSet`); their protocol-level reading bounds the soundness of
 `ToyProblem.SimplifiedIOR.reduction` from below.
 
-**L6.12 status (Phase 4, 2026-06-04).** The proof is decomposed and its full
-logical skeleton compiles; all the probability/algebra infrastructure is proven
-and axiom-clean (`exists_dotProduct_image_lb` and `exists_affine_image_lb` —
-the two Claim-B.1 applications; `claimB1_bound_to_real`; `listDecoding_winning_lb`;
-`mem_winningSetFor_of_agree`; `affine_collision_card_le_one`; plus
+**L6.12 status (paper-exact, 2026-06-04).** Fully proven and axiom-clean
+(`#print axioms`: `[propext, Classical.choice, Quot.sound]`). The infrastructure:
+`exists_dotProduct_image_lb` (the single Claim-B.1 application);
+`exists_affine_injective_image` (the paper's injective `ψ : S_v → Γ`, which
+carries the B.1 bound through verbatim — replacing the earlier lossy second B.1);
+`claimB1_bound_to_real`; `mem_winningSetFor_of_agree`;
+`affine_collision_card_le_one`; plus
 `Pr_map_eq` / `prob_dotProduct_eq_zero_le` / `prob_uniform_le_inv_of_card_le_one`
-in `Data/Probability/Instances.lean`).
+in `Data/Probability/Instances.lean`.
 
 **Faithfulness fix applied:** the statement is now against the **fixed-encoding**
 `relaxedRelationFor enc` / `winningSetFor enc` (Definitions.lean). A Phase-4
@@ -477,56 +480,97 @@ private lemma affine_collision_card_le_one {a₁ a₂ b₁ b₂ μ₂ : F}
     have : a₁ = b₁ := sub_right_injective hx'
     rw [this]
 
-open Probability in
-/-- **Second Claim-B.1 application (abstract affine form).** For a set `T ⊆ F×F`
-with `|T| < |F|`, there is a value `μ₂` avoiding every second coordinate of `T`
-and a `μ₁` under which the affine map `(a,b) ↦ (μ₁−a)/(b−μ₂)` has image of size
-at least `|T| / (1 + (|T|−1)/|F|)` (= `|F|·|T|/(|F|+|T|−1)`).
+/-- **Injective affine reparametrisation (ABF26 §6.4.1, paper-exact step 4).**
+For a set `T ⊆ F×F` with `(|T| choose 2) < |F|` (the paper's hypothesis
+`|F| > binom(|Λ|, 2)`), there is a value `μ₂` avoiding every second coordinate of
+`T` and a `μ₁` under which the affine map `ψ : (a,b) ↦ (μ₁−a)/(b−μ₂)` is
+**injective** on `T`, so `|ψ(T)| = |T|`.
 
-This is the second `exists_large_image_of_pairwise_collision_bound` (Claim B.1)
-application in ABF26 §6.4.1: the per-point collision bound is `≤ 1/|F|` because
-the affine equation has `≤ 1` solution (`affine_collision_card_le_one`). The
-`∀ p ∈ T, p.2 ≠ μ₂` clause also forces `(μ₁,μ₂) ∉ T` (the violation step). -/
-private lemma exists_affine_image_lb (T : Finset (F × F))
-    (hTcard : T.card < Fintype.card F) :
+This is the paper's *injectivity* argument (NOT a second Claim-B.1 application):
+each colliding pair `{(a₁,a₂),(b₁,b₂)} ∈ binom(T,2)` rules out at most one bad `μ₁`
+(`affine_collision_card_le_one`), so the bad set `B` has `|B| ≤ binom(|T|,2) < |F|`
+and some `μ₁ ∉ B` makes `ψ` injective. Because `ψ` is injective the winning-set
+bound inherits the *first* Claim-B.1 output `|S_v| ≥ N·|F|/(|F|+N−1)` verbatim
+(no lossy second `z ↦ z/(|F|+z−1)` pass), which is why the soundness bound is the
+paper-exact `N·|F|/(|F|+N−1)`. The `∀ p ∈ T, p.2 ≠ μ₂` clause also forces
+`(μ₁,μ₂) ∉ T` (the violation step). -/
+private lemma exists_affine_injective_image (T : Finset (F × F))
+    (hTlt : T.card < Fintype.card F) (hTcard : Nat.choose T.card 2 < Fintype.card F) :
     ∃ (μ₁ μ₂ : F), (∀ p ∈ T, p.2 ≠ μ₂) ∧
-      (T.card : ENNReal) / (1 + (T.card - 1) * (Fintype.card F : ENNReal)⁻¹)
-        ≤ ((T.image (fun p ↦ (μ₁ - p.1) / (p.2 - μ₂))).card : ENNReal) := by
+      Set.InjOn (fun p : F × F ↦ (μ₁ - p.1) / (p.2 - μ₂)) T ∧
+      (T.image (fun p ↦ (μ₁ - p.1) / (p.2 - μ₂))).card = T.card := by
   classical
+  -- `|T| < |F|` ⇒ a `μ₂` not appearing as a second coordinate exists
+  -- (paper step: `|S²ⁿᵈ_v| ≤ |S_v| < |F|`).
   obtain ⟨μ₂, hμ₂⟩ : ∃ μ₂ : F, μ₂ ∉ T.image Prod.snd := by
     by_contra h
     simp only [not_exists, not_not] at h
     have heq : T.image Prod.snd = Finset.univ := Finset.eq_univ_iff_forall.mpr h
     have h2 : Fintype.card F ≤ T.card := by
       rw [← Finset.card_univ (α := F), ← heq]; exact Finset.card_image_le
-    exact absurd h2 (not_le.mpr hTcard)
+    exact absurd h2 (not_le.mpr hTlt)
   have hμ₂' : ∀ p ∈ T, p.2 ≠ μ₂ := fun p hp h ↦ hμ₂ (h ▸ Finset.mem_image_of_mem Prod.snd hp)
-  set g' : F → (↥T → F) := fun μ₁ p ↦ (μ₁ - (p : F × F).1) / ((p : F × F).2 - μ₂) with hg'
-  set Φ' : PMF (↥T → F) := (PMF.uniformOfFintype F).map g' with hΦ'
-  have hcoll : ∀ x y : ↥T, x ≠ y →
-      Pr_{ let φ ← Φ' }[(decide (φ x = φ y) : Prop)] ≤ (Fintype.card F : ENNReal)⁻¹ := by
-    intro x y hxy
-    rw [hΦ', Pr_map_eq]
-    have hxy' : (x : F × F) ≠ (y : F × F) := fun h ↦ hxy (Subtype.ext h)
-    have hpq : ((x : F × F).1, (x : F × F).2) ≠ ((y : F × F).1, (y : F × F).2) := by
-      simpa using hxy'
-    simp only [hg', decide_eq_true_eq]
-    exact prob_uniform_le_inv_of_card_le_one _
-      (affine_collision_card_le_one (hμ₂' x x.2) (hμ₂' y y.2) hpq)
-  obtain ⟨φ, hφ_supp, hφ_card⟩ :=
-    exists_large_image_of_pairwise_collision_bound Φ' (Fintype.card F : ENNReal)⁻¹ hcoll
-  rw [hΦ', PMF.mem_support_map_iff] at hφ_supp
-  obtain ⟨μ₁, _, hμ₁⟩ := hφ_supp
-  refine ⟨μ₁, μ₂, hμ₂', ?_⟩
-  -- relate `Finset.univ.image (g' μ₁)` to `T.image (fun p ↦ (μ₁ - p.1)/(p.2 - μ₂))`
-  have hset : Finset.univ.image φ = T.image (fun p ↦ (μ₁ - p.1) / (p.2 - μ₂)) := by
-    rw [← hμ₁]
-    ext z
-    simp only [Finset.mem_image, Finset.mem_univ, true_and, Subtype.exists, hg']
-    constructor <;> rintro ⟨a, ha, rfl⟩ <;> exact ⟨a, ha, rfl⟩
-  have hcardT : (Fintype.card ↥T) = T.card := Fintype.card_coe T
-  rw [hset, hcardT] at hφ_card
-  exact hφ_card
+  -- The "bad" set of `μ₁` for which some pair of distinct points of `T` collide.
+  set ψ : F → F × F → F := fun μ₁ p ↦ (μ₁ - p.1) / (p.2 - μ₂) with hψ
+  set B : Finset F :=
+    (T.powersetCard 2).biUnion (fun pr ↦
+      Finset.univ.filter (fun μ₁ : F ↦ ∃ a ∈ pr, ∃ b ∈ pr, a ≠ b ∧ ψ μ₁ a = ψ μ₁ b)) with hB
+  -- Each `pr`-summand has card `≤ 1` (`affine_collision_card_le_one`).
+  have hbad_le : ∀ pr ∈ T.powersetCard 2,
+      (Finset.univ.filter (fun μ₁ : F ↦ ∃ a ∈ pr, ∃ b ∈ pr, a ≠ b ∧ ψ μ₁ a = ψ μ₁ b)).card
+        ≤ 1 := by
+    intro pr hpr
+    rw [Finset.mem_powersetCard] at hpr
+    obtain ⟨hsub, hcard2⟩ := hpr
+    obtain ⟨a, b, hab, rfl⟩ := Finset.card_eq_two.mp hcard2
+    have haT : a ∈ T := hsub (by simp)
+    have hbT : b ∈ T := hsub (by simp)
+    -- The `∃` predicate over `{a,b}` collapses to the single `ψ μ₁ a = ψ μ₁ b` equation.
+    refine le_trans (Finset.card_le_card ?_)
+      (affine_collision_card_le_one (a₁ := a.1) (a₂ := a.2) (b₁ := b.1) (b₂ := b.2)
+        (hμ₂' a haT) (hμ₂' b hbT) (by simpa using hab))
+    intro μ₁ hμ₁
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hμ₁ ⊢
+    obtain ⟨x, hx, y, hy, hxy, hcoll⟩ := hμ₁
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hx hy
+    -- `x, y ∈ {a,b}`, distinct ⇒ `{x,y} = {a,b}` as an ordered or swapped pair.
+    rcases hx with rfl | rfl <;> rcases hy with rfl | rfl
+    · exact absurd rfl hxy
+    · simpa [hψ] using hcoll
+    · rw [hψ] at hcoll; exact hcoll.symm
+    · exact absurd rfl hxy
+  have hBcard : B.card ≤ Nat.choose T.card 2 := by
+    calc B.card ≤ (T.powersetCard 2).card * 1 := Finset.card_biUnion_le_card_mul _ _ 1 hbad_le
+      _ = Nat.choose T.card 2 := by rw [mul_one, Finset.card_powersetCard]
+  -- Some `μ₁ ∉ B` exists since `|B| < |F|`.
+  obtain ⟨μ₁, hμ₁⟩ : ∃ μ₁ : F, μ₁ ∉ B := by
+    by_contra h
+    simp only [not_exists, not_not] at h
+    have : Fintype.card F ≤ B.card := by
+      rw [← Finset.card_univ (α := F)]
+      exact Finset.card_le_card (fun x _ ↦ h x)
+    omega
+  -- For this `μ₁`, the affine map is injective on `T`.
+  have hinj : Set.InjOn (fun p : F × F ↦ (μ₁ - p.1) / (p.2 - μ₂)) (T : Set (F × F)) := by
+    intro a ha b hb hcoll
+    simp only [Finset.mem_coe] at ha hb
+    have hcoll' : ψ μ₁ a = ψ μ₁ b := hcoll
+    by_contra hne
+    -- `{a,b} ∈ powersetCard 2 T` and `μ₁` collides them ⇒ `μ₁ ∈ B`, contradiction.
+    apply hμ₁
+    rw [hB, Finset.mem_biUnion]
+    refine ⟨{a, b}, ?_, ?_⟩
+    · rw [Finset.mem_powersetCard]
+      refine ⟨?_, Finset.card_eq_two.mpr ⟨a, b, hne, rfl⟩⟩
+      intro z hz
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hz
+      rcases hz with rfl | rfl
+      · exact ha
+      · exact hb
+    · rw [Finset.mem_filter]
+      exact ⟨Finset.mem_univ _, a, by simp, b, by simp, hne, hcoll'⟩
+  refine ⟨μ₁, μ₂, hμ₂', hinj, ?_⟩
+  exact Finset.card_image_of_injOn hinj
 
 omit [Fintype F] [DecidableEq F] in
 /-- **Fixed-encoding winning-set membership (agreement form).** Generalises
@@ -550,58 +594,42 @@ theorem mem_winningSetFor_of_agree {k : ℕ} {δ : ℝ≥0}
     ⟨fun _ ↦ m, fun _ ↦ rfl, fun _ ↦ hconstr⟩,
     S, hScard, fun _ j hj ↦ hagree j hj⟩
 
-/-- **Real-arithmetic chain closing ABF26 §6.4.1.** From the first Claim-B.1
-lower bound `N·|F|/(|F|+N−1) ≤ s` (here `s = |S_v|`), the second Claim-B.1
-application's winning fraction `|F|·s/(|F|+s−1)` is at least the final bound
-`N·|F|/(|F|+2N)`.
-
-The paper argues via the increasing map `z ↦ z/(|F|+z−1)` and the inequality
-`(|F|−1)²+(2|F|−1)N ≤ |F|²+2|F|N`; after clearing denominators the whole chain
-collapses to `N·(|F|−1) ≤ s·(|F|+N)`, which follows from `N·|F| ≤ s·(|F|+N−1)`
-and `s ≥ 0`. -/
-lemma listDecoding_winning_lb {Fc N s : ℝ} (hF : (1 : ℝ) ≤ Fc) (hN : (1 : ℝ) ≤ N)
-    (hslb : N * Fc / (Fc + N - 1) ≤ s) :
-    N * Fc / (Fc + 2 * N) ≤ Fc * s / (Fc + s - 1) := by
-  have hFN1 : (0 : ℝ) < Fc + N - 1 := by linarith
-  have hslb' : N * Fc ≤ s * (Fc + N - 1) := by rwa [div_le_iff₀ hFN1] at hslb
-  have hs1 : (1 : ℝ) ≤ s := by
-    refine le_trans ?_ hslb
-    rw [le_div_iff₀ hFN1]
-    nlinarith [mul_nonneg (by linarith : (0 : ℝ) ≤ N - 1) (by linarith : (0 : ℝ) ≤ Fc - 1)]
-  have hFs1 : (0 : ℝ) < Fc + s - 1 := by linarith
-  have hF2N : (0 : ℝ) < Fc + 2 * N := by linarith
-  rw [div_le_div_iff₀ hF2N hFs1]
-  nlinarith [mul_le_mul_of_nonneg_left hslb' (by linarith : (0 : ℝ) ≤ Fc), hs1, hN, hF,
-    mul_nonneg (by linarith : (0:ℝ) ≤ s) (by linarith : (0:ℝ) ≤ N)]
-
 omit [DecidableEq F] in
 /-- **Lemma 6.12 of [ABF26]** (list-decoding lower bound on the simplified IOR).
 
 Coding-theory form: if `C` is a linear code (the image of an `F`-linear
-encoding of message dimension `k`) and `|Λ(C^{≡2}, δ)| < |F|`,
+encoding of message dimension `k`), `|Λ(C^{≡2}, δ)| < |F|` and
+`(|Λ(C^{≡2}, δ)| choose 2) < |F|` (the paper's `|F| > binom(|Λ|, 2)`),
 then there exist witnesses `(v, μ_1, μ_2, f_1, f_2)` with `(f_1, f_2)` lying
 **outside** the relaxed relation `R̃_{C,δ}^2` (the `violates` conjunct), for
 which the winning challenge set `Ω^{f_1,f_2}_{v,μ_1,μ_2}` (Definition 6.11)
-has at least `|Λ(C^{≡2}, δ)| · |F| / (|F| + 2·|Λ(C^{≡2}, δ)|)` elements.
+has at least `|Λ(C^{≡2}, δ)| · |F| / (|F| + |Λ(C^{≡2}, δ)| − 1)` elements.
 
 The protocol-level reading: the soundness error of the simplified IOR
 `T'[C, t]` (Construction 6.9, `ToyProblem.SimplifiedIOR.reduction`) is
-at least `|Λ(C^{≡2}, δ)| / (|F| + 2·|Λ(C^{≡2}, δ)|)`.
+at least `|Λ(C^{≡2}, δ)| / (|F| + |Λ(C^{≡2}, δ)| − 1)`.
 
-## Statement provenance (corrected 2026-06-04, finding S5)
+## Statement provenance (paper-exact, strengthened 2026-06-04)
 
 Writing `N := |Λ(C^{≡2}, δ)|`, `F := |F|`, the **final** soundness bound in
-ABF26 §6.4.1 (canonical `.tex` `lemma:list-decoding-attack`, lines 2655–2719)
-is `N / (F + 2N)`, hence the winning-set cardinality bound `N · F / (F + 2N)`.
-The earlier in-tree denominator `F + N − 1` was the *intermediate* `|S_v|`
-bound from the **first** Claim-B.1 application (paper step 3); the winning set
-is bounded only after a **second** B.1 application (step 4) by
-`F · |S_v| / (F + |S_v| − 1)`, which the paper then chains down (via the
-increasing map `z ↦ z/(F + z − 1)` and `(F−1)² + (2F−1)N ≤ F² + 2FN`) to the
-final `N/(F + 2N)`. The old `N · F / (F + N − 1)` therefore *overshot* the
-provable bound. The corrected `N · F / (F + 2N)` matches the `.tex`.
+ABF26 §6.4.1 (eprint 2026/680 §6.4.1, p.36; Lemma 6.12) is
+`N / (F + N − 1)`, hence the winning-set cardinality bound `N · F / (F + N − 1)`.
+The paper's hypothesis is `|F| > binom(N, 2)` (page 35, statement of Lemma 6.12).
 
-## Proof recipe (ABF26 §6.4.1, with B.1 now machine-checked)
+**Adjudication (2026-06-04, eprint 2026/680 p.36 vs. local extract
+`research/proximity-prize/artifacts/2026-680.txt` lines 1660–1700).** The paper
+applies Claim B.1 **once** — the first application gives
+`|S_v| ≥ N / (1 + (N−1)/F) = N·F/(F+N−1)` — and then exhibits an **injective**
+affine map `ψ : S_v → Γ_{μ₁,μ₂}`, so `|Γ_{μ₁,μ₂}| ≥ |S_v| ≥ N·F/(F+N−1)`. The
+injectivity (NOT a second Claim-B.1 pass) is what carries the first-B.1 bound
+through *verbatim*. The previously in-tree `N·F/(F+2N)` used a **second**, lossy
+B.1 application on the affine map (giving `F·|S_v|/(F+|S_v|−1)`) and a denominator
+chain `z ↦ z/(F+z−1)`; that overestimated the collision slack and undershot the
+paper. Replacing the second B.1 with the paper's injective `ψ` recovers the exact
+`N·F/(F+N−1)`. The injection requires `|F| > binom(N, 2)` (so a `μ₁` avoiding the
+`≤ binom(|S_v|, 2)` bad values exists); this is exactly the paper's hypothesis.
+
+## Proof recipe (ABF26 §6.4.1, with Claim B.1 machine-checked)
 
 The intermediate `|S_v| ≥ N · F / (F + N − 1)` is exactly the conclusion of
 Claim B.1 specialised to `|S| = N`, `|T| = F`, `ε = 1/F`:
@@ -614,14 +642,15 @@ Claim B.1 specialised to `|S| = N`, `|T| = F`, `ε = 1/F`:
 2. **Pairwise collision bound.** For distinct list entries the linear
    functional `⟨·, v⟩` collides with probability `≤ 1/F` over `v ←$ F^k`.
 
-3. **Apply B.1 (first time).** Obtain `v*` with `|S_{v*}| ≥ N·F/(F+N−1)`.
+3. **Apply Claim B.1 (the only B.1 use).** Obtain `v*` with
+   `|S_{v*}| ≥ N·F/(F+N−1)` (`exists_dotProduct_image_lb` + `claimB1_bound_to_real`).
 
-4. **Apply B.1 (second time) + violation.** Pick `μ₂` not a second coordinate
-   in `S_{v*}` and (by a second B.1 on the affine map `(a₁,a₂) ↦
-   (μ₁−a₁)/(a₂−μ₂)`) a `μ₁` giving a winning set of size
-   `≥ F·|S_{v*}|/(F+|S_{v*}|−1)`. Since `(μ₁,μ₂) ∉ S_{v*}`, the instance
-   violates `R̃_{C,δ}^2` (the `violates` conjunct). Chasing the algebra gives
-   the final `N·F/(F+2N)`.
+4. **Affine injection + violation.** Pick `μ₂` not a second coordinate in
+   `S_{v*}` and a `μ₁` (avoiding the `≤ binom(|S_{v*}|, 2) < |F|` bad values)
+   under which the affine map `(a₁,a₂) ↦ (μ₁−a₁)/(a₂−μ₂)` is **injective** on
+   `S_{v*}` (`exists_affine_injective_image`). Then the winning set has size
+   `≥ |S_{v*}| ≥ N·F/(F+N−1)`. Since `(μ₁,μ₂) ∉ S_{v*}`, the instance violates
+   `R̃_{C,δ}^2` (the `violates` conjunct).
 
 The encoding hypothesis is `∃ enc, Function.Injective enc ∧ range enc = C` — the
 faithful "linear code of dimension `k`" assumption (an injective `F`-linear
@@ -639,17 +668,19 @@ quantitative bound transfers to the existential `winningSet` via
 `winningSetFor_subset`.)
 
 The proof decomposes into reusable, separately-verified pieces:
-`exists_dotProduct_image_lb` (first B.1, inner-product collision via
-`prob_dotProduct_eq_zero_le`), `exists_affine_image_lb` (second B.1, affine
-collision via `affine_collision_card_le_one`), `claimB1_bound_to_real` (the
-ENNReal→ℝ bridge), `listDecoding_winning_lb` (the `z ↦ z/(F+z−1)` denominator
-chain), and `mem_winningSetFor_of_agree` (the membership step). -/
+`exists_dotProduct_image_lb` (the one Claim-B.1 use, inner-product collision via
+`prob_dotProduct_eq_zero_le`), `exists_affine_injective_image` (the paper's
+injective affine reparametrisation via `affine_collision_card_le_one`),
+`claimB1_bound_to_real` (the ENNReal→ℝ bridge), and `mem_winningSetFor_of_agree`
+(the membership step). -/
 theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
     [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0) (_hδ_pos : (0 : ℝ≥0) < δ) (_hδ_lt : δ < 1)
     (enc : (Fin k → F) →ₗ[F] (ι → F)) (hinj : Function.Injective enc)
     (hC : Set.range enc = C)
     (hF : ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ)
+      < Fintype.card F)
+    (hFchoose : Nat.choose (Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat 2
       < Fintype.card F) :
     ∃ (v : Fin k → F) (μ₁ μ₂ : F) (f₁ f₂ : ι → F),
       ¬ relaxedRelationFor (ℓ := 2) enc δ v ![μ₁, μ₂] ![f₁, f₂] ∧
@@ -657,7 +688,7 @@ theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
         (((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ)
             * Fintype.card F)
           / (Fintype.card F
-              + 2 * ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ)) := by
+              + ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ) - 1) := by
   classical
   set Cint : Set (Matrix ι (Fin 2) F) := interleavedCodeSet (κ := Fin 2) C with hCint
   -- Maximising matrix `fStar` for the list size (finite supremum, as in L6.13).
@@ -675,6 +706,7 @@ theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
   set f₂ : ι → F := fun i ↦ fStar i 1 with hf2
   have hcardF1 : 1 ≤ Fintype.card F := Fintype.card_pos
   have hNltF : N < Fintype.card F := by exact_mod_cast hF
+  have hNchoose : Nat.choose N 2 < Fintype.card F := hFchoose
   -- Message-pair enumeration of `Λ(C^{≡2}, δ, (f₁,f₂))`.
   set Smsg : Finset ((Fin k → F) × (Fin k → F)) :=
     Finset.univ.filter (fun p ↦ encStack enc p ∈ closeCodewordsRel Cint fStar (δ : ℝ)) with hSmsg
@@ -739,8 +771,13 @@ theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
   have hSvle : Sv.card ≤ N := by
     rw [← hcardSmsg, hSvdef]; exact le_trans Finset.card_image_le (le_of_eq (Finset.card_univ))
   have hSvltF : Sv.card < Fintype.card F := lt_of_le_of_lt hSvle hNltF
-  -- SECOND B.1: pick `μ₂` off the second coordinates and a winning `μ₁`.
-  obtain ⟨μ₁, μ₂, hμ₂off, hwin⟩ := exists_affine_image_lb Sv hSvltF
+  have hSvchoose : Nat.choose Sv.card 2 < Fintype.card F :=
+    lt_of_le_of_lt (Nat.choose_le_choose 2 hSvle) hNchoose
+  -- AFFINE INJECTION (paper-exact step 4): pick `μ₂` off the second coordinates and a
+  -- `μ₁` under which the affine reparametrisation `ψ` is INJECTIVE on `S_v`. Injectivity
+  -- (not a lossy second Claim-B.1) carries the first-B.1 bound `|S_v|` through verbatim.
+  obtain ⟨μ₁, μ₂, hμ₂off, _hψinj, hwincard⟩ :=
+    exists_affine_injective_image Sv hSvltF hSvchoose
   set winImg : Finset F := Sv.image (fun p ↦ (μ₁ - p.1) / (p.2 - μ₂)) with hwinImg
   refine ⟨v, μ₁, μ₂, f₁, f₂, ?_, ?_⟩
   · -- VIOLATION CONJUNCT (against the fixed-encoding `relaxedRelationFor enc`).
@@ -829,30 +866,14 @@ theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
         rw [henc]
         -- `f₁ i = fStar i 0 = enc m.1 i`, `f₂ i = fStar i 1 = enc m.2 i`.
         rw [show f₁ i = fStar i 0 from rfl, show f₂ i = fStar i 1 from rfl, h0, h1]
-    -- A + bridge: `N·F/(F+N−1) ≤ |S_v|`.
+    -- FIRST B.1 + bridge: `N·F/(F+N−1) ≤ |S_v|` (the paper's `|S_v| ≥ N·F/(F+N−1)`).
     have hAreal : (N : ℝ) * Fintype.card F / (Fintype.card F + N - 1) ≤ (Sv.card : ℝ) :=
       claimB1_bound_to_real hcardF1 hN1 hv
-    -- B + bridge: `|S_v|·F/(F+|S_v|−1) ≤ |winImg|`.
-    have hSv1 : 1 ≤ Sv.card := by
-      rcases Nat.eq_zero_or_pos Sv.card with h0 | h; swap; · exact h
-      -- |S_v| = 0 would force the A-bound `N·F/(F+N−1) ≤ 0`, impossible for N ≥ 1.
-      exfalso
-      have hpos : (0 : ℝ) < (N : ℝ) * Fintype.card F / (Fintype.card F + N - 1) := by
-        have : (0 : ℝ) < Fintype.card F + N - 1 := by
-          have : (1 : ℝ) ≤ N := by exact_mod_cast hN1
-          have : (1 : ℝ) ≤ Fintype.card F := by exact_mod_cast hcardF1
-          linarith
-        positivity
-      rw [h0] at hAreal; norm_num at hAreal; linarith
-    have hBreal : (Sv.card : ℝ) * Fintype.card F / (Fintype.card F + Sv.card - 1)
-        ≤ (winImg.card : ℝ) := claimB1_bound_to_real hcardF1 hSv1 hwin
-    -- Denominator chain.
-    have hchain : (N : ℝ) * Fintype.card F / (Fintype.card F + 2 * N)
-        ≤ Fintype.card F * (Sv.card : ℝ) / (Fintype.card F + Sv.card - 1) :=
-      listDecoding_winning_lb (by exact_mod_cast hcardF1) (by exact_mod_cast hN1) hAreal
-    have hwinge : (N : ℝ) * Fintype.card F / (Fintype.card F + 2 * N) ≤ (winImg.card : ℝ) := by
-      refine le_trans hchain (le_trans (le_of_eq ?_) hBreal)
-      ring
+    -- INJECTIVITY (paper step 4): `|winImg| = |S_v|`, so the first-B.1 bound passes through
+    -- VERBATIM — no lossy `z ↦ z/(F+z−1)` second pass. This is the paper-exact denominator.
+    have hwinge : (N : ℝ) * Fintype.card F / (Fintype.card F + N - 1) ≤ (winImg.card : ℝ) := by
+      refine le_trans hAreal (le_of_eq ?_)
+      rw [hwinImg]; exact_mod_cast hwincard.symm
     -- winImg ⊆ winningSet ⇒ |winImg| ≤ ncard(winningSet).
     have hncard : (winImg.card : ℝ) ≤ ((winningSetFor enc δ v μ₁ μ₂ f₁ f₂).ncard : ℝ) := by
       have : winImg.card ≤ (winningSetFor enc δ v μ₁ μ₂ f₁ f₂).ncard := by
