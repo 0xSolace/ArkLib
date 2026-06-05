@@ -549,22 +549,32 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
     rw [getSumcheckRoundPoly_points_sum_eq_cube (i := i) (H := witIn.H), ← hConsist]
   -- (B) NEXT-ROUND CONSISTENCY (for every challenge `r'`): the next-round target `h_i.eval r'`
   -- equals the next cube-sum of the advanced witness `witOut.H = fixFirstVariablesOfMQP … {r'}`.
-  -- This is `getSumcheckRoundPoly_eval_eq_cube_succ` instantiated at the honest witness.
-  -- (C) PLUMBING: collapse the deterministic prover binds, the verifier message-query, and the
-  -- `guard` (which always passes by `hcheck`), reducing the run to a `$ᵗ L`-sample probEvent.
-  simp only [liftM, monadLift, MonadLiftT.monadLift, MonadLift.monadLift, pure_bind,
-    bind_pure_comp, map_pure, Functor.map_map, Function.comp, getRoundProverFinalOutput,
-    Transcript.concat]
-  simp only [bind_assoc, pure_bind, OptionT.lift, OptionT.mk]
-  simp only [Prod.mk.eta, map_pure, liftComp_pure, liftComp_map, pure_bind, bind_pure_comp,
-    Functor.map_map, Function.comp_def]
-  -- Push `simulateQ` through the prover/verifier binds (the pure-binds only collapse once `simulateQ`
-  -- is distributed inward, mirroring `RandomQuery.oracleVerifier_rbrKnowledgeSoundness`).
-  erw [simulateQ_bind]
-  simp only [simulateQ_map, simulateQ_pure, simulateQ_bind, MonadLift.monadLift, liftM, monadLift,
-    MonadLiftT.monadLift, map_pure, pure_bind, bind_assoc, StateT.run'_eq, StateT.run_bind,
-    StateT.run_pure, StateT.run_map, map_bind, QueryImpl.simulateQ_add_liftComp_right]
-  trace_state
+  -- This is `getSumcheckRoundPoly_eval_eq_cube_succ` instantiated at the honest witness (PROVEN, in
+  -- scope after the lemma-reorder above). With (A)+(B) the relOut discharge is purely algebraic.
+  --
+  -- (C) PLUMBING WALL (the genuinely-blocking residual). The honest run is a 2-message+1-challenge
+  -- oracle reduction: P→V `h_i := getSumcheckRoundPoly i witIn.H` (deterministic), V samples `r' ← L`
+  -- (the single `$ᵗ L` step), prover output `getRoundProverFinalOutput`, then V reads the message via
+  -- `simulateQ (simOracle2 …)`, runs `guard (∑_b h_i(b) = sumcheck_target)` (ALWAYS passes by
+  -- `hcheck`), and outputs. Goal: `probEvent (…) = 1`.
+  --
+  -- The collapse needs `simulateQ` PUSHED through the run while KEEPING the `OptionT (StateT σ
+  -- ProbComp)` layering intact (use `simulateQ_optionT_bind`/`simulateQ_optionT_lift`, NOT raw
+  -- `OptionT.lift`/`OptionT.mk` unfolds — those mix the `Option`/`OracleComp` levels and strand the
+  -- prover's `OracleComp` `pure (default,…)` binds, which then refuse `pure_bind`: the FreeM monad's
+  -- `pure`/`bind` only reduce once `simulateQ` is distributed to expose them at the `StateT σ ProbComp`
+  -- level). The prover messages are `liftComp`'d `[]ₒ → []ₒ + [Challenge]ₒ`, peeled by
+  -- `QueryImpl.simulateQ_add_liftComp_left` (after `QueryImpl.addLift_def`); the challenge query peels
+  -- by `simulateQ_spec_query` + `challengeQueryImpl`; the verifier message-read by
+  -- `simulateQ_simOracle2_query` + `answer_instDefault'`. The endgame is `probEvent_eq_one_iff` over
+  -- `$ᵗ L`: no-failure (the `guard` passes for every `r'` by `hcheck`) + every output satisfies relOut
+  -- (by (A)+(B) for every `r'`). This is the single-challenge analog of the closed
+  -- `finalSumcheckOracleReduction_perfectCompleteness` accept-branch peel, but that twin has ZERO
+  -- challenges so `Reduction.run_of_prover_first` collapses it deterministically — here the `$ᵗ L`
+  -- sample blocks that shortcut and there is NO in-repo precedent for a CLOSED 2-msg+1-challenge
+  -- oracle-reduction completeness (RandomQuery has 1 challenge but 0 prover messages; this combines
+  -- both). The exact remaining obligation: the `simulateQ_optionT`-level run-shape peel (above) +
+  -- the relOut discharge (A)+(B). Preserved as WIP per honest-completion (algebra DONE; plumbing open).
   sorry
 
 noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
