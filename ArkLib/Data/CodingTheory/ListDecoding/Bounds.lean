@@ -1976,9 +1976,17 @@ theorem frs_list_decoding_capacity_cz25_of_residuals_prop
 
 end SubspaceDesignUpperBounds
 
--- Axiom audit on the corrected BKR06 extension/family reduction (and the bridges it chains).
+-- Axiom audit on the narrowed ABF26 §3 residual bridges.  These are the source-level regression
+-- anchors for #74: BKR06 and GHSZ02 isolate their geometric/asymptotic cores, while CZ25/FRS
+-- expose the design-dimension and FRS-subspace-design residuals without turning the external
+-- paper statements into fake theorems.
 #print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06_of_family
 #print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06_of_residuals
 #print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06_of_injection
+#print axioms CodingTheory.rs_lambda_large_prime_ghsz02_of_residuals
+#print axioms CodingTheory.rs_lambda_large_prime_ghsz02_of_injection
+#print axioms CodingTheory.subspaceDesign_list_decoding_cz25_of_residual
+#print axioms CodingTheory.frs_list_decoding_capacity_cz25_of_residuals
+#print axioms CodingTheory.frs_list_decoding_capacity_cz25_of_residuals_prop
 
 end CodingTheory
