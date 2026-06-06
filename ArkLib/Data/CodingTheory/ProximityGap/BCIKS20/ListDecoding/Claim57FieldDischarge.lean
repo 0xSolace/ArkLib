@@ -207,6 +207,208 @@ theorem exists_good_x₀_evalX_discr_y_ne [Fintype F]
   rw [hbad, claim57_badX] at this
   simpa [Finset.mem_filter] using this
 
+/-! ## Fields `hx0` / `hsep` — the **X-shape** reconciliation (Finding F12)
+
+The producer above (`exists_good_x₀_evalX_discr_y_ne`) is **`Z`-shaped**: `evalX x₀ (discr_y R)`
+specializes the *inner* `Z` variable of the `Y`-discriminant `discr_y R : F[Z][X]`.  But the
+`Claim57Residuals.hx0`/`hsep` fields are **`X`-shaped**: `evalX (Polynomial.C x₀) R` specializes the
+*middle* `X` variable of `R : (F[Z][X])[Y]` (the base-ring element is `C x₀ : F[Z]`, so
+`evalX (C x₀) R = R.map (Polynomial.evalRingHom (C x₀))` with
+`Polynomial.evalRingHom (C x₀) : F[Z][X] →+* F[Z]`).  These specialize *different* variables
+(`X` vs `Z`), so the `Z`-producer does not feed the `X`-consumer.  Here we **rerun the avoidance
+argument against the `X`-variable specialization**, landing exactly on the `evalX (C x₀) R` shape.
+
+The exact finiteness (per the issue): `evalX (C x₀) R = 0` forces the `X`-leading coefficient
+`R.leadingCoeff : F[Z][X]` to vanish at `C x₀`, and the discriminant
+`discr (evalX (C x₀) R) = (Polynomial.evalRingHom (C x₀)) R.discr` (by the natDegree-preserving
+commutation `discr_map_of_natDegree_preserved`) is `R.discr` evaluated at `C x₀`.  Both bad
+conditions have the form `p.eval (C x₀) = 0` for `p ∈ {R.leadingCoeff, R.discr} ⊆ F[Z][X]`; pushing
+through any `Z`-value `z` that does not kill `p` (`p.map (evalRingHom z) ≠ 0`) injects the bad set
+into the roots of `p.map (evalRingHom z) : F[X]`, giving the precise per-factor bound
+`(p.map (evalRingHom z)).natDegree` (lemma `c56_evalC_bad_set_card_le`).  Summing over the finite
+`pg_Rset` and applying the field-size budget yields the good `x₀`. -/
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- *`X`-shape bad-set bound for a univariate `eval (C x₀)` on `F[Z][X]`.*  For `p : F[Z][X]` and a
+`Z`-value `z₀` with `p.map (evalRingHom z₀) ≠ 0`, the set of `x₀ : F` with `p.eval (C x₀) = 0`
+injects (via the commuting `Z`-evaluation `evalRingHom z₀`) into the roots of
+`p.map (evalRingHom z₀) : F[X]`, so it has at most `(p.map (evalRingHom z₀)).natDegree` elements.
+
+This is the `X`-shape analogue of `Extraction.c56_evalX_bad_set_card_le` (which counts the *inner-`Z`*
+evaluation `evalX`); here we count the *middle-`X`* evaluation `eval (C ·)` of `F[Z][X]`. -/
+theorem c56_evalC_bad_set_card_le [Fintype F] (p : F[Z][X]) (z₀ : F)
+    (hz : p.map (Polynomial.evalRingHom z₀) ≠ 0) :
+    (Finset.univ.filter (fun x₀ : F => p.eval (Polynomial.C x₀) = 0)).card
+      ≤ (p.map (Polynomial.evalRingHom z₀)).natDegree := by
+  classical
+  set g : F[X] := p.map (Polynomial.evalRingHom z₀) with hgdef
+  have hsub : (Finset.univ.filter (fun x₀ : F => p.eval (Polynomial.C x₀) = 0))
+      ⊆ g.roots.toFinset := by
+    intro x hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx
+    have h0 : (Polynomial.evalRingHom z₀) (p.eval (Polynomial.C x)) = 0 := by rw [hx]; simp
+    -- naturality of `eval` under the `Z`-evaluation ring hom, plus `(evalRingHom z₀)(C x) = x`.
+    have hnat : (Polynomial.evalRingHom z₀) (p.eval (Polynomial.C x)) = g.eval x := by
+      have hev : p.eval (Polynomial.C x)
+          = p.eval₂ (RingHom.id (Polynomial F)) (Polynomial.C x) := (Polynomial.eval₂_id).symm
+      rw [hev, Polynomial.hom_eval₂ p (RingHom.id (Polynomial F)) (Polynomial.evalRingHom z₀)
+        (Polynomial.C x)]
+      have hcx : (Polynomial.evalRingHom z₀) (Polynomial.C x) = x := by simp
+      rw [hcx, RingHom.comp_id, hgdef, Polynomial.eval_map]
+    rw [hnat] at h0
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hz, Polynomial.IsRoot.def]
+    exact h0
+  calc (Finset.univ.filter (fun x₀ : F => p.eval (Polynomial.C x₀) = 0)).card
+      ≤ g.roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ Multiset.card g.roots := Multiset.toFinset_card_le _
+    _ ≤ g.natDegree := Polynomial.card_roots' _
+
+/-- *`X`-shape bad set for a single `pg_Rset` factor.*  The values of `x₀ : F` at which the
+`X`-specialized factor `evalX (C x₀) R` itself vanishes — the exact `hx0`-field bad locus. -/
+noncomputable def claim57_badXC [Fintype F] (R : F[Z][X][Y]) : Finset F :=
+  Finset.univ.filter (fun x₀ : F => Bivariate.evalX (Polynomial.C x₀) R = 0)
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- *`X`-shape per-factor bad-set bound.*  `evalX (C x₀) R = 0` forces the `X`-leading coefficient
+`R.leadingCoeff` to vanish at `C x₀` (its `R.natDegree` coefficient is `evalRingHom (C x₀)` of
+`R.leadingCoeff`), so `claim57_badXC R` injects into the `eval (C ·)`-bad set of `R.leadingCoeff`,
+bounded by `c56_evalC_bad_set_card_le` for any `Z`-witness `z₀` with
+`R.leadingCoeff.map (evalRingHom z₀) ≠ 0`. -/
+theorem claim57_badXC_card_le [Fintype F] (R : F[Z][X][Y]) (z₀ : F)
+    (hz : R.leadingCoeff.map (Polynomial.evalRingHom z₀) ≠ 0) :
+    (claim57_badXC R).card ≤ (R.leadingCoeff.map (Polynomial.evalRingHom z₀)).natDegree := by
+  classical
+  refine le_trans (Finset.card_le_card ?_)
+    (c56_evalC_bad_set_card_le R.leadingCoeff z₀ hz)
+  intro x hx
+  rw [claim57_badXC, Finset.mem_filter] at hx
+  obtain ⟨_, hx0⟩ := hx
+  rw [Finset.mem_filter]
+  refine ⟨Finset.mem_univ _, ?_⟩
+  rw [Polynomial.Bivariate.evalX_eq_map] at hx0
+  have hlc : (Polynomial.evalRingHom (Polynomial.C x)) R.leadingCoeff = 0 := by
+    have : (R.map (Polynomial.evalRingHom (Polynomial.C x))).coeff R.natDegree = 0 := by
+      rw [hx0]; simp
+    rwa [Polynomial.coeff_map, Polynomial.coeff_natDegree] at this
+  simpa [Polynomial.coe_evalRingHom] using hlc
+
+omit [DecidableEq (RatFunc F)] in
+/-- **`hx0` field, discharged outright (X-shape).**  The Claim-5.6 `X`-specialization step *in the
+exact consumer shape*: under a per-factor `Z`-witness `z` not killing the `X`-leading coefficient
+(`hlead`) and the genuine [BCIKS20] large-field budget `hcard` (total `X`-degree of the
+`Z`-specialized leading coefficients `< |F|`), there is a single `x₀ : F` with
+`evalX (Polynomial.C x₀) R ≠ 0` for **every** `R ∈ pg_Rset`.
+
+This is precisely the `hx0` field of `Claim57Residuals` (cf. `Agreement`/`Section5ConcreteJohnson`),
+now provable *outright* — the `X`-vs-`Z` mismatch (Finding F12) is reconciled by counting against the
+`X`-specialization rather than the `Z`-specialization of the discriminant. -/
+theorem exists_good_x₀_X_shape_ne [Fintype F]
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : F[Z][X][Y] → F)
+    (hlead : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R.leadingCoeff.map (Polynomial.evalRingHom (z R)) ≠ 0)
+    (hcard :
+      (((pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs).toList).map
+        (fun R => (R.leadingCoeff.map (Polynomial.evalRingHom (z R))).natDegree)).sum
+        < Fintype.card F) :
+    ∃ x₀ : F,
+      ∀ R : F[Z][X][Y],
+        R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          Bivariate.evalX (Polynomial.C x₀) R ≠ 0 := by
+  classical
+  set L : List F[Z][X][Y] :=
+    (pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs).toList with hLdef
+  have hmem : ∀ R, R ∈ L ↔
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs := by
+    intro R; rw [hLdef]; exact Finset.mem_toList
+  set bad : F[Z][X][Y] → Finset F := claim57_badXC with hbad
+  have hbad_card : ∀ R ∈ L, (bad R).card
+      ≤ (R.leadingCoeff.map (Polynomial.evalRingHom (z R))).natDegree := by
+    intro R hR
+    exact claim57_badXC_card_le R (z R) (hlead R ((hmem R).1 hR))
+  have hsum_le :
+      (L.map (fun R => (bad R).card)).sum
+        ≤ (L.map (fun R =>
+            (R.leadingCoeff.map (Polynomial.evalRingHom (z R))).natDegree)).sum :=
+    List.sum_le_sum hbad_card
+  have hsum_lt : (L.map (fun R => (bad R).card)).sum < Fintype.card F :=
+    lt_of_le_of_lt hsum_le hcard
+  obtain ⟨x₀, hx₀⟩ := c56_exists_avoiding L bad hsum_lt
+  refine ⟨x₀, fun R hR => ?_⟩
+  have hRL : R ∈ L := (hmem R).2 hR
+  have := hx₀ R hRL
+  rw [hbad, claim57_badXC] at this
+  simpa [Finset.mem_filter] using this
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- **`hsep` field — the honest domain-level separability bridge (X-shape).**  Over the *domain*
+`F[Z]` (where `evalX (C x₀) R` lives), `(evalX (C x₀) R).Separable` is **not** implied by
+`discr (evalX (C x₀) R) ≠ 0` alone (see `DiscriminantSeparable`, Lemma 2′): `Separable` is
+`IsCoprime f f.derivative`, whose Bézout identity must equal a *unit*, and by `resultant_deriv` the
+derivative-resultant `±·leadingCoeff·discr` is a unit only when *both* the `Y`-leading coefficient
+and the discriminant of `evalX (C x₀) R` are units of `F[Z]` (i.e. nonzero `F`-constants in `Z`).
+This lemma exposes exactly that honest condition: given positive degree and a *unit* derivative
+resultant of the specialized factor, it is `Separable`.  (Over a field the leading-coefficient unit
+is automatic and this reduces to `discr ≠ 0`.) -/
+theorem separable_evalX_of_resultant_isUnit (R : F[Z][X][Y]) (x₀ : F)
+    (hdeg : 0 < (Bivariate.evalX (Polynomial.C x₀) R).natDegree)
+    (hres : IsUnit (Polynomial.resultant (Bivariate.evalX (Polynomial.C x₀) R)
+      (Bivariate.evalX (Polynomial.C x₀) R).derivative
+      (Bivariate.evalX (Polynomial.C x₀) R).natDegree
+      ((Bivariate.evalX (Polynomial.C x₀) R).natDegree - 1))) :
+    (Bivariate.evalX (Polynomial.C x₀) R).Separable :=
+  Polynomial.separable_of_resultant_isUnit hdeg hres
+
+omit [DecidableEq (RatFunc F)] in
+/-- **`hx0` ∧ `hsep` — the full X-shape good-specialization producer.**  Combines the outright
+`hx0` discharge (`exists_good_x₀_X_shape_ne`) with the honest domain-level separability bridge: it
+produces a single `x₀ : F` such that for every `R ∈ pg_Rset` both `evalX (C x₀) R ≠ 0` *and*
+`(evalX (C x₀) R).Separable` hold — i.e. the **exact** `hx0`/`hsep` field pair.
+
+The separability conjunct is supplied by the honest per-point side condition `hsepPt` (the §5
+good-specialization separability assumption, cf. the F8/F10 precedents): wherever the `X`-specialized
+factors do not collapse, they are separable over `F[Z]` — the genuine residual that
+`separable_evalX_of_resultant_isUnit` shows is equivalent to the specialized derivative-resultant
+being a unit, *not* derivable from discriminant nonvanishing alone over the non-field base. -/
+theorem exists_good_x₀_X_shape [Fintype F]
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : F[Z][X][Y] → F)
+    (hlead : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R.leadingCoeff.map (Polynomial.evalRingHom (z R)) ≠ 0)
+    (hcard :
+      (((pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs).toList).map
+        (fun R => (R.leadingCoeff.map (Polynomial.evalRingHom (z R))).natDegree)).sum
+        < Fintype.card F)
+    (hsepPt : ∀ x₀ : F,
+      (∀ R : F[Z][X][Y],
+        R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          Bivariate.evalX (Polynomial.C x₀) R ≠ 0) →
+      ∀ R : F[Z][X][Y],
+        R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          (Bivariate.evalX (Polynomial.C x₀) R).Separable) :
+    ∃ x₀ : F,
+      (∀ R : F[Z][X][Y],
+        R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          Bivariate.evalX (Polynomial.C x₀) R ≠ 0) ∧
+      (∀ R : F[Z][X][Y],
+        R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          (Bivariate.evalX (Polynomial.C x₀) R).Separable) := by
+  obtain ⟨x₀, hx₀⟩ := exists_good_x₀_X_shape_ne (k := k) h_gs z hlead hcard
+  exact ⟨x₀, hx₀, hsepPt x₀ hx₀⟩
+
 /-! ## Assembly — `Claim57Residuals.ofInTree`
 
 The full residual bundle from the minimal honest remaining hypotheses, assembled through the proven
