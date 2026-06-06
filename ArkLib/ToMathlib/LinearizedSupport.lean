@@ -517,7 +517,8 @@ theorem bkr06_tight_N_realizes
     rw [hv2] at hexp_nonneg ⊢
     have hmv_uv : m * (v - u) = m * v - m * u := Nat.mul_sub_left_distrib m v u
     have hvmv : v * (m - v) = v * m - v * v := Nat.mul_sub_left_distrib v m v
-    rw [hmv_uv, hvmv]
+    have hcomm : v * m = m * v := Nat.mul_comm v m
+    rw [hmv_uv, hvmv, hcomm]
     omega
   have hNcount : N + 1 = q ^ (m * u - v ^ 2) := by
     have hpos : 0 < q ^ (m * u - v ^ 2) := Nat.pow_pos hqpos
