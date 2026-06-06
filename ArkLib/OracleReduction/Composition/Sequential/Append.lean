@@ -2697,6 +2697,9 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
           simp only [Fin.le_def, Fin.val_last]; omega)]
   simpa [appendRunRightResidual] using hRight
 
+#print axioms Prover.appendRunRightResidual
+#print axioms Prover.append_run
+
 -- Future work: define a function that extracts a second prover from the combined prover.
 
 end Prover

@@ -313,6 +313,11 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_runCollapse {δ : Na
     hCollapse stmtIn witIn
   rw [hcollapse]
 
+#print axioms Reduction.duplexSpongeFiatShamir_runCollapseResidual
+#print axioms Reduction.duplexSpongeFiatShamirSalted_runCollapseResidual
+#print axioms Reduction.duplexSpongeFiatShamir_completeness_unroll_of_runCollapse
+#print axioms Reduction.duplexSpongeFiatShamirSalted_completeness_unroll_of_runCollapse
+
 end Completeness
 
 end Reduction
