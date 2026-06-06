@@ -548,7 +548,7 @@ open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
       Pr_{r ← F} [δᵣ(Combine(dstar,r,(f₁,degs₁),...,(fₘ,degsₘ)))]
                    > err' (dstar, ρ, δ, m * (dstar + 1) - ∑ i degsᵢ) -/
 theorem combine_theorem
-  {φ : ι ↪ F} {dstar m : ℕ}
+  {φ : ι ↪ F} {dstar m : ℕ} [NeZero dstar]
   (fs : Fin m → ι → F) (degs : Fin m → ℕ) (hdegs : ∀ i, degs i ≤ dstar)
   (δ : ℝ≥0) (hδPos : δ > 0)
   (hδLt : δ < (min (1 - (ReedSolomon.sqrtRate dstar φ))
@@ -580,9 +580,9 @@ theorem combine_theorem
           (add simp [total_terms, block_size])
           (add safe (by exists Finset.univ)) 
       · aesop (add simp [total_terms, block_size])
-    · have proximity_gap := 
-        @ProximityGap.correlatedAgreement_affine_curves ι _ _ F _ _ _ 
-          (total_terms dstar degs - 1) dstar φ δ (le_of_lt <| by
+    · have proximity_gap :=
+        @ProximityGap.correlatedAgreement_affine_curves ι _ _ F _ _ _
+          (total_terms dstar degs - 1) dstar φ δ (by infer_instance) (le_of_lt <| by
             aesop (add simp [lt_min_iff, ReedSolomon.sqrtRate]))
       simp only [ProximityGap.δ_ε_correlatedAgreementCurves] at proximity_gap
       specialize proximity_gap 

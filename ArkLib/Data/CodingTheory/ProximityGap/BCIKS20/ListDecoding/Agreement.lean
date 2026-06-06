@@ -5395,8 +5395,8 @@ lemma solution_gamma_matches_word_if_subset_large_of_coeff_values
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     {x : Fin n}
     {D : ℕ}
-    (_hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
-    (_hx : (matching_set_at_x k δ h_gs x).card >
+    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (hx : (matching_set_at_x k δ h_gs x).card >
       (2 * k + 1)
         * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
         * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
@@ -5460,8 +5460,8 @@ lemma solution_gamma_matches_word_if_subset_large_of_linear_witness
                 (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
     {x : Fin n}
     {D : ℕ}
-    (_hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
-    (_hx : (matching_set_at_x k δ h_gs x).card >
+    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (hx : (matching_set_at_x k δ h_gs x).card >
       (2 * k + 1)
         * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
         * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
@@ -5631,11 +5631,11 @@ lemma solution_gamma_graph_matches_word_if_subset_large_of_coeff_values
                 (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
     {x : Fin n}
     {D : ℕ}
-    (_hD : D ≥
+    (hD : D ≥
       Bivariate.totalDegree
         (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
           hx0 hsep hS_nonempty A hA hcount hlarge))
-    (_hx : (matching_set_at_x k δ h_gs x).card >
+    (hx : (matching_set_at_x k δ h_gs x).card >
       (2 * k + 1)
         * (Bivariate.natDegreeY <|
             H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
@@ -5742,10 +5742,10 @@ lemma solution_gamma_graph_clear_matches_word_if_subset_large_of_coeff_values
                 (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
     {x : Fin n}
     {D : ℕ}
-    (_hD : D ≥
+    (hD : D ≥
       Bivariate.totalDegree
         (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))
-    (_hx : (matching_set_at_x k δ h_gs x).card >
+    (hx : (matching_set_at_x k δ h_gs x).card >
       (2 * k + 1)
         * (Bivariate.natDegreeY <|
             H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)

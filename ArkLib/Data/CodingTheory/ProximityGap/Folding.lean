@@ -861,6 +861,7 @@ theorem folding_preserves_distance
       @correlatedAgreement_affine_curves (Fin (2 ^ (n - k))) _ _ F _ _ _ 
         (2 ^ k - 1) (d / (2 ^ k)) 
         (domain := domain.subdomainNatReversed k) (δ := δ) 
+        ⟨by rw [Nat.div_ne_zero_iff]; omega⟩
         (hδ := bound_tighter)
     unfold foldWord δ_ε_correlatedAgreementCurves at *
     by_contra contra
