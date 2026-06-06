@@ -7,6 +7,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
 import ArkLib.ToMathlib.KeystoneCapstone
 
+set_option linter.style.longLine false
+
 /-!
 # The closed list-decoding keystone — `correlatedAgreement_affine_curves_listDecoding_closed`
 

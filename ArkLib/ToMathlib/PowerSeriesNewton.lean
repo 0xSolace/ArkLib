@@ -1,6 +1,8 @@
 import Mathlib
 import ArkLib.ToMathlib.PowerSeriesHenselianA
 
+set_option linter.style.longLine false
+
 /-!
 # Constructive Newton / Hensel iteration over `k⟦X⟧`
 

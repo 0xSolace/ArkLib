@@ -8,6 +8,8 @@ import ArkLib.ToMathlib.BetaMatchingVanishes
 import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.Claim59Conditional
 
+set_option linter.style.longLine false
+
 /-!
 # `betaRec ⟹ CurveCoeffPolys` — the genuine end-to-end §5 list-decoding assembly (F4-gap closure)
 

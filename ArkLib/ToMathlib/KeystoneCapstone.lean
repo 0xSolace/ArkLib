@@ -7,6 +7,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.ToMathlib.CoeffExtract
 import ArkLib.ToMathlib.IngredientCBridge
 
+set_option linter.style.longLine false
+set_option linter.style.whitespace false
+
 /-!
 # Keystone capstone — the `hcoeffPoly` witness for the Johnson list-decoding branch
 
