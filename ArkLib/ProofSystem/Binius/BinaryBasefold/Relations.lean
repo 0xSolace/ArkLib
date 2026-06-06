@@ -647,13 +647,15 @@ def finalSumcheckStepFoldingStateProp {h_le : ϑ ≤ ℓ}
 def strictOracleFoldingConsistencyProp (t : MultilinearPoly L ℓ) (i : Fin (ℓ + 1))
     (challenges : Fin i → L)
     (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i) j) : Prop :=
-  letI : BEq L := inferInstance
-  letI : LawfulBEq L := inferInstance
-  let P₀ : CompPoly.CPolynomial L :=
-    computablePolynomialFromNovelCoeffsF₂ (𝔽q := 𝔽q) (β := β) ℓ (by omega)
-      (fun ω => t.val.eval (bitsOfIndex ω))
+  -- API MIGRATION (issue #32 handoff (b)): the stale `CompPoly.CPolynomial` level-0 oracle
+  -- (`computablePolynomialFromNovelCoeffsF₂` + `CPolynomial.eval`) is replaced by the canonical
+  -- branch level-0 oracle built exactly as in `Basic.getMidCodewords` — the in-degree-bound
+  -- `polynomialFromNovelCoeffsF₂` evaluated on `S⁽⁰⁾`. This keeps `f₀` definitionally the same as
+  -- `getMidCodewords`'s base function and drops the (mid-refactor) CompPoly dependency here.
+  let P₀ : L⦃< 2 ^ ℓ⦄[X] :=
+    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval ω)
   let f₀ : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 :=
-    fun y => P₀.eval y.val
+    fun y => P₀.val.eval y.val
   ∀ (j : Fin (toOutCodewordsCount ℓ ϑ i)),
     let destIdx : Fin r := ⟨oraclePositionToDomainIndex (positionIdx := j), by
       have h_le := oracle_index_le_ℓ (i := i) (j := j); omega

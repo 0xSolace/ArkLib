@@ -51,6 +51,10 @@ open scoped NNReal ENNReal
 namespace ToyProblem.Spec
 
 open Extractor
+-- Activate the scoped `Pr_{ … }[ … ]` probability notation (its `macro_rules` are
+-- `scoped` under `ProbabilityTheory`); without this the `Pr_{ … }` syntax in
+-- `toyProtocol_extracts` parses but has no elaborator.
+open scoped ProbabilityTheory
 
 variable {ι F : Type} [Fintype ι] [Field F]
 variable {k : ℕ}

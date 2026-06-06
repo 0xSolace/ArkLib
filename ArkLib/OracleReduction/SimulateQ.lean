@@ -57,18 +57,18 @@ lemma simulateQ_optionT_list_mapM_pure
   | nil => exact simulateQ_pure impl (some [])
   | cons a rest ih =>
     change simulateQ impl ((a :: rest).mapM f : OptionT (OracleComp spec) (List β)).run = _
-    rw [List.mapM_cons, simulateQ_optionT_bind'']
+    rw [List.mapM_cons, OptionT.run_bind, Option.elimM, simulateQ_bind]
     -- After rewrite: Option.elimM (simulateQ impl (f a).run) (pure none) (fun r => ...) = ...
     -- Substitute the first step via `hfg a`.
     have h₁ : (f a : OracleComp spec (Option β)) = (f a).run := rfl
     rw [← h₁, hfg a]
-    simp only [Option.elimM, pure_bind, Option.elim_some]
+    simp only [pure_bind, Option.elim_some]
     -- Now peel the inner bind for `let rs ← rest.mapM f; pure (r :: rs)`.
-    rw [simulateQ_optionT_bind'']
+    rw [OptionT.run_bind, Option.elimM, simulateQ_bind]
     have h₂ : (rest.mapM f : OracleComp spec (Option (List β))) =
         (rest.mapM f : OptionT (OracleComp spec) (List β)).run := rfl
     rw [← h₂, ih]
-    simp only [Option.elimM, pure_bind, Option.elim_some]
+    simp only [pure_bind, Option.elim_some]
     -- The final step is `pure (g a :: rest.map g)` in OptionT.
     change simulateQ impl ((pure (g a :: rest.map g) : OptionT (OracleComp spec) (List β)).run) = _
     exact simulateQ_pure impl (some (g a :: rest.map g))

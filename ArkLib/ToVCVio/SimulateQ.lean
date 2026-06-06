@@ -13,12 +13,7 @@ import VCVio.OracleComp.SimSemantics.Append
 This module establishes key distributive and routing properties of query simulation
 (`simulateQ`) over monadic structures. Specifically:
 
-1. **Distributivity over Iteration**: `simulateQ_list_forIn` shows that query simulation,
-   acting as a monad morphism, distributes over the monadic loop construction `forIn`
-   on lists. This ensures that simulating a looped interactive protocol is definitionally
-   equivalent to looping the simulated round step.
-
-2. **Multi-Stage Query Routing**: `simulateQ_addLift_add_liftM_left` and
+1. **Multi-Stage Query Routing**: `simulateQ_addLift_add_liftM_left` and
    `simulateQ_addLift_add_liftM_right` analyze the behavior of `simulateQ` under nested
    direct-sum oracle specifications of the form `spec + (spec₁ + spec₂)`. They prove that
    queries double-lifted from a component specification route directly to the corresponding
@@ -26,24 +21,6 @@ This module establishes key distributive and routing properties of query simulat
 -/
 
 open OracleComp OracleSpec
-
-/-- Query simulation distributes over `forIn` on a list. This establishes that the monad
-morphism `simulateQ impl` commutes with list iteration, mapping the loop step-by-step
-in the target monad. -/
-@[simp]
-lemma simulateQ_list_forIn {ι : Type*} {spec : OracleSpec ι} {n : Type → Type _}
-    [Monad n] [LawfulMonad n] (impl : QueryImpl spec n) {α β : Type}
-    (xs : List α) (init : β) (f : α → β → OracleComp spec (ForInStep β)) :
-    simulateQ impl (forIn xs init f) = forIn xs init (fun a b ↦ simulateQ impl (f a b)) := by
-  induction xs generalizing init with
-  | nil => simp
-  | cons x xs ih =>
-    rw [List.forIn_cons, List.forIn_cons, simulateQ_bind]
-    congr 1
-    funext step
-    cases step with
-    | done b => simp
-    | yield b => exact ih b
 
 /-- Commute query simulation with double-lifting in a nested oracle sum:
 `spec + (spec₁ + spec₂)`. A computation originating in `spec₁` that is double-lifted
