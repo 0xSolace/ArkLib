@@ -629,6 +629,24 @@ def rs_epsCA_breakdown_cs25
   -- RS-ball-count bridge (absent; qEntropy is defined but unconnected to hammingBallVolume /
   -- RS code counts). Genuinely external.
 
+/-- The hard lower-bound half of CS25 complete CA breakdown.
+
+This is the current epsCA-facing target for the missing qEntropy/RS-ball-count argument:
+under the CS25 entropy-band hypotheses, enough RS codewords in a Hamming ball should force
+`ε_ca(RS, δ, δ) = 1`'s nontrivial `≥ 1` direction.  The routine `≤ 1` half is already
+checked by `rs_epsCA_breakdown_cs25_of_lower_bound`. -/
+def rs_epsCA_breakdown_cs25_entropyBallLowerWitness
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
+    (_hq_ge : 10 ≤ Fintype.card F)
+    (_hδ_lo :
+        1 - qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (_hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ)) :
+    Prop :=
+  1 ≤ epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ δ
+
 /-- Checked bridge for the CS25 breakdown statement.
 
 Since `epsCA` is always at most `1`, the complete-breakdown equality is reduced to the
@@ -659,6 +677,21 @@ theorem rs_epsCA_breakdown_cs25_of_lower_bound
       by_cases hγ : δᵣ(u 0 + γ • u 1,
           (ReedSolomon.code domain k : Set (ι → F))) ≤ δ <;> simp [hγ])
       (PMF.tsum_coe (PMF.uniformOfFintype F)).le
+
+/-- CS25 breakdown from the named entropy/RS-ball-count lower-bound witness. -/
+theorem rs_epsCA_breakdown_cs25_of_entropyBallLowerWitness
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hlower :
+      rs_epsCA_breakdown_cs25_entropyBallLowerWitness domain k δ hq_ge hδ_lo hδ_hi) :
+    rs_epsCA_breakdown_cs25 domain k δ hq_ge hδ_lo hδ_hi :=
+  rs_epsCA_breakdown_cs25_of_lower_bound domain k δ hq_ge hδ_lo hδ_hi hlower
 
 /-- The ABF26 T4.18 Johnson radius for the fixed relative distance `15/16`.  This is kept
 as a named expression so the existential construction and Grand-MCA adapters use the same
