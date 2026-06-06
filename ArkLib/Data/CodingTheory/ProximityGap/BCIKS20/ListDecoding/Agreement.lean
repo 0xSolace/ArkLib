@@ -2667,9 +2667,6 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embeddin
   exact approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero
     (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hemb
 
-lemma approx_coeffs_graph_clear_beta_zero_of_graphExtraction :=
-  approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero_of_graphExtraction
-
 open BCIKS20AppendixA in
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
@@ -2717,9 +2714,6 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large_of_
       hcond hfactor
   exact approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large
     (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hlarge
-
-lemma approx_coeffs_graph_clear_of_Sβ_large_of_graphExtraction :=
-  approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large_of_graphExtraction
 
 open BCIKS20AppendixA.ClaimA2 in
 lemma approximate_solution_alpha_powerSeries_eq_trunc_of_beta_embedding_zero
