@@ -3,9 +3,9 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
-import VCVio.Interaction.Basic.Spec
-import VCVio.Interaction.Basic.Append
-import VCVio.Interaction.TwoParty.Strategy
+import PolyFun.Interaction.Basic.Spec
+import PolyFun.Interaction.Basic.Append
+import PolyFun.Interaction.TwoParty.Strategy
 import ArkLib.OracleReduction.OracleInterface
 
 /-!
