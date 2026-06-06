@@ -245,6 +245,31 @@ noncomputable def latticeIndexOf (δ : ℝ≥0) (hδ : δ ≤ 1) : Fin (Fintype.
 @[simp] theorem latticeIndexOf_val (δ : ℝ≥0) (hδ : δ ≤ 1) :
     (latticeIndexOf (ι := ι) δ hδ).val = Nat.floor (δ * (Fintype.card ι : ℝ≥0)) := rfl
 
+/-- A uniform per-stack bad-scalar count bound gives an `ε_mca` upper bound.
+
+This is the faithful-lattice-facing form of the finite bad-`γ` counting strategy: to prove a
+radius is MCA-good, it is enough to show every word stack has at most `B` bad scalars. -/
+theorem epsMCA_le_of_forall_mcaBadCount_le
+    (C : Set (ι → F)) (δ : ℝ≥0) {B : ENNReal}
+    (hcard : ∀ u : WordStack F (Fin 2) ι,
+      (mcaBadCount (F := F) C δ (u 0) (u 1) : ENNReal) ≤ B) :
+    epsMCA (F := F) (A := F) C δ ≤
+      B / (Fintype.card F : ENNReal) := by
+  classical
+  rw [epsMCA_eq_iSup_mcaBadCount]
+  exact ENNReal.div_le_div_right (iSup_le fun u => hcard u) _
+
+/-- A uniform bad-scalar count bound packaged directly as an MCA lower witness. -/
+def MCALowerWitness.ofBadCountLe
+    (C : Set (ι → F)) {δ ε_star : ℝ≥0} {B : ENNReal}
+    (hδ : δ ≤ 1)
+    (hcard : ∀ u : WordStack F (Fin 2) ι,
+      (mcaBadCount (F := F) C δ (u 0) (u 1) : ENNReal) ≤ B)
+    (hB : B / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    MCALowerWitness C ε_star :=
+  MCALowerWitness.ofLe hδ
+    (le_trans (epsMCA_le_of_forall_mcaBadCount_le C δ hcard) hB)
+
 /-- `ε_mca` at a real radius equals `ε_mca` at its lattice point `⌊δ·n⌋/n` (step structure):
 the radius enters only through `⌊δ·n⌋`. -/
 theorem epsMCA_eq_at_latticeIndex (C : Set (ι → F)) (δ : ℝ≥0) (hδ : δ ≤ 1) :

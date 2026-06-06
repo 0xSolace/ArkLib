@@ -30,6 +30,10 @@ stubs carrying `sorry`.
 `MuTwoPowDerandRefutation.not_kwpc_rigidity_zmod17` refute the universal
 `mu_{2^t}` reduced-intersection-matrix full-rank derandomization route.  The counterexample
 is already formalized in ArkLib for `k = 3`, three vertices, and eight geometric coordinates.
+The matrix-level form — the explicit 6×6 reduced intersection matrix, its kernel
+certificate, and the determinant/rank drop (`rim_det_eq_zero`, `rim_rank_lt_six`,
+`rim_rank_drop`, with `ZMod 17` instances) — lives in
+`ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank`.
 Future work on the Grand List Decoding value question must account for this evenness /
 plus-minus-pair obstruction instead of attempting to prove the false universal RIM statement.
 

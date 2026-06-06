@@ -37,6 +37,20 @@ What remains open — the actual content of the prize — is the gap between the
 whether the threshold for smooth-domain RS codes sits near the Johnson radius or near
 capacity.  Neither bound here decides that question; this file pins the provable
 interval and leaves the open core explicit.
+
+**Dead route (do not revive): smooth-domain RIM derandomization.**  The natural attack on
+the capacity side — derandomizing the BGM23/AGL24/GZ23 capacity machinery from random
+evaluation points to the smooth domain `μ_{2^t}` via the reduced-intersection-matrix
+full-rank property at the geometric point `Xᵢ = ωⁱ` — is *refuted*, not merely unproven:
+`MuTwoPowDerandRefutation.not_kwpc_rigidity` exhibits a 3-weakly-partition-connected
+agreement hypergraph with a nonzero agreement certificate over every field containing
+`ω` with `ω⁴ = -1` (every prize-legal field; concretely `ZMod 17`, `ω = 9`, in
+`not_kwpc_rigidity_zmod17`), and `MuTwoPowDerandRefutation.rim_rank_drop` packages the
+matrix-level determinant/rank drop.  See
+`ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation`,
+`ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank`, and the dead-route index
+`ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked`.  Any closure of the gap must
+route around the `±`-pair obstruction (e.g. odd-order subdomains or non-RIM arguments).
 -/
 
 namespace ProximityGap

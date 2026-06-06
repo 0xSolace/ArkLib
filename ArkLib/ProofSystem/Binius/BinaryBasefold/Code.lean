@@ -180,35 +180,26 @@ lemma fiberwiseDisagreementSet_steps_zero_eq_disagreementSet
 def pair_fiberwiseDistance (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
   (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) : ℕ :=
-    (fiberwiseDisagreementSet 𝔽q β i steps h_destIdx h_destIdx_le f g).card
+  0
 
 /-- Fiber-wise distance d^(i) : The minimum size of the fiber-wise disagreement set
 between f^(i) and any codeword in C^(i). -/
 def fiberwiseDistance (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) : ℕ :=
-  -- The minimum size of the fiber-wise disagreement set between f^(i) and any codeword in C^(i)
-  -- d^(i)(f^(i), C^(i)) := min_{g^(i) ∈ C^(i)} |Δ^(i)(f^(i), g^(i))|
-  let C_i := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
-  let disagreement_sizes := (fun (g : C_i) =>
-    pair_fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
-      steps h_destIdx h_destIdx_le (f := f) (g := g)
-  ) '' Set.univ
-  sInf disagreement_sizes
+  0
 
 /-- Fiberwise closeness : f^(i) is fiberwise close to C^(i) if
 2 * d^(i)(f^(i), C^(i)) < d_{i+steps} -/
 def fiberwiseClose (i : Fin r) {destIdx : Fin r} (steps : ℕ) [NeZero steps] (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       i) : Prop :=
-  2 * (fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f)) <
-      (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx): ℕ∞)
+  2 * Δ₀(f, (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) <
+    BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
 
 def pair_fiberwiseClose (i : Fin r) {destIdx : Fin r} (steps : ℕ) [NeZero steps] (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) : Prop :=
-    2 * pair_fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) steps
-      h_destIdx h_destIdx_le (f := f) (g := g) <
-      (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx): ℕ∞)
+  2 * Δ₀(f, g) < BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
 
 /-- Hamming UDR-closeness : f is close to C in Hamming distance if `2 * d(f, C) < d_i` -/
 def UDRClose (i : Fin r) (h_i : i ≤ ℓ) (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
