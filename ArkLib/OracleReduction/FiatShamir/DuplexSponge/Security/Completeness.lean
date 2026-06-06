@@ -277,14 +277,20 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
       (QueryImpl.liftTarget (StateT σ ProbComp)
         (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩)))
       (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) using 2
-    rw [liftM_OptionT_eq]
+    -- Residual: the `run`-side (two-step, associativity-routed) `OptionT` lift equals the
+    -- lemma-side direct lift. `OptionT.run` of either is a `simulateQ` over the honest run; the
+    -- `show` exposes the two-step lift as the nested `simulateQ` form so `simulateQ_compose` fuses
+    -- it, and the fused query handler equals the direct subspec query-lift pointwise.
     show simulateQ _ (simulateQ _
         (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run) =
-      simulateQ _ (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run
+      simulateQ (fun t => liftM (OracleSpec.query t))
+        (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run
     rw [← QueryImpl.simulateQ_compose]
-    refine congrFun (congrArg _ ?_) _
+    congr 1
     funext t
-    rcases t with t | t | t <;> rfl
+    rcases t with t | t <;>
+      simp only [QueryImpl.apply_compose, simulateQ_spec_query, simulateQ_query,
+        Functor.map_map, id_map, id_eq, Function.comp]
   rw [hcollapse]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality
@@ -326,14 +332,17 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_run_eq {δ : Nat}
           (pSpec := ⟨!v[Direction.P_to_V],
             !v[ProtocolSpec.Messages.SaltedProof (pSpec := pSpec) (U := U) δ]⟩)))
       (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn) using 2
-    rw [liftM_OptionT_eq]
+    -- Residual: the salted analogue of the unsalted lift-equality residual; see there.
     show simulateQ _ (simulateQ _
         (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn).run) =
-      simulateQ _ (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn).run
+      simulateQ (fun t => liftM (OracleSpec.query t))
+        (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn).run
     rw [← QueryImpl.simulateQ_compose]
-    refine congrFun (congrArg _ ?_) _
+    congr 1
     funext t
-    rcases t with t | t | t <;> rfl
+    rcases t with t | t <;>
+      simp only [QueryImpl.apply_compose, simulateQ_spec_query, simulateQ_query,
+        Functor.map_map, id_map, id_eq, Function.comp]
   rw [hcollapse]
 
 end Completeness

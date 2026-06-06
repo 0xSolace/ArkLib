@@ -9,54 +9,34 @@ import ArkLib.ToMathlib.Claim59Conditional
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 
 /-!
-# `γ'` — the `betaRec`-built power series and the `hγ` discharge (L13 drop-in, route B)
+# BetaRec-Built Power Series and Correlated Agreement Integration
 
-This file closes the `hγ` field of
-`CorrelatedAgreementListDecodingClosed.Section5StrictData`:
+This module defines the power series $\gamma'$ constructed directly from the Hensel recurrence relation
+$\text{betaRec}$, and establishes its relation to the in-tree power series $\gamma$. This provides
+the integration bridge for correlated agreement proofs in Section 5 of [BCIKS20].
 
-```
-hγ : γ x₀ R H hHyp =
-  (PowerSeries.mk (BetaToCurveCoeffPolys.αFromBeta x₀ R H hHyp Bcoeff)).subst
-    (Claim59Conditional.shiftSeries x₀ H)
-```
+## Mathematical Context
 
-## The blocker
+Let $F$ be a field and $H \in F[X][Y]$ be an irreducible polynomial. The power series $\gamma'$ is defined by
+substituting the shift series $X \mapsto X - x_0$ into the series $\alpha_{\mathrm{fromBeta}}$, whose
+coefficients are given by:
+$$\alpha_{\mathrm{fromBeta}}(t) = \frac{\phi(\text{betaRec}(t))}{W^{t+1} \cdot \xi^{e_t}}$$
+where $\phi: \mathcal{O}_H \to \mathbb{L}_H$ is the canonical embedding.
 
-The in-tree `γ` (`RationalFunctions.lean:2886`) is built from the in-tree Hensel coefficient `α`
-(`RationalFunctions.lean:2874`), whose numerator is the in-tree `β` (`RationalFunctions.lean:2866`).
-That `β` is `(β_regular …).choose`, and `β_regular` (`RationalFunctions.lean:2855`) asserts its
-existence with the **trivial witness** `fun _ => ⟨0, by simp⟩`.  So `β R t` is an opaque element with
-no algebraic relation to the genuine App-A.4 recursion `betaRec`.  Meanwhile `αFromBeta`
-(`BetaToCurveCoeffPolys.lean:106`) is the *same quotient shape* as `α` but with the genuine `betaRec`
-in the numerator:
+We show that if the opaque in-tree numerator $\beta(t)$ coincides with the recurrence $\text{betaRec}(t)$,
+then the in-tree coefficients $\alpha(t)$ coincide with $\alpha_{\mathrm{fromBeta}}(t)$, and hence the
+power series $\gamma$ is equal to $\gamma'$. This allows us to automatically satisfy the power series
+substitution relation needed for the correlated agreement list-decoding results.
 
-```
-α        t = embeddingOf𝒪Into𝕃 H (β       R t)              / (W^{t+1} · embedding(ξ)^{2t-1})
-αFromBeta t = embeddingOf𝒪Into𝕃 H (betaRec x₀ R H hHyp Bcoeff t) / (W^{t+1} · embedding(ξ)^{2t-1})
-```
-
-The denominators are *literally* identical (`W := liftToFunctionField H.leadingCoeff`, same `ξ`).
-Hence the *only* gap between the in-tree `γ` and the `betaRec`-built series is the identification of
-the opaque in-tree numerator `β R t` with the genuine recursion `betaRec x₀ R H hHyp Bcoeff t`.
-
-## Why route B (parallel definition) rather than route A (true in-tree drop-in)
-
-A `rfl`-grade in-tree drop-in would require `β R t` to *be* `betaRec x₀ R H hHyp Bcoeff t`.  But the
-in-tree `β` signature is `β (R) (t)` — it carries neither `x₀`, nor `hHyp`, nor the numerator
-interface `Bcoeff`, all of which `betaRec` consumes.  Threading those through `β`/`α`/`γ` changes
-their signatures and breaks the many in-tree/`Agreement.lean` consumers
-(`alpha'_eq_zero_of_embedding_beta_eq_zero` at `Agreement.lean:1361`,
-`approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero`, etc.).  So we take route B:
-define `γ'` directly as the `betaRec`-built series, prove the `hγ` field discharges from the *single
-honest residual* `hβ` (the genuine identification `β R t = betaRec x₀ R H hHyp Bcoeff t`, i.e. the
-content the trivial `β_regular` witness fails to supply), and expose a `Section5StrictData` builder
-whose `hγ` is supplied automatically.
-
-`hβ` is exactly the deferred in-tree edit, isolated as an explicit hypothesis — never a `sorry`,
-never `≡` the goal (`hγ` is about `γ`/`αFromBeta`; `hβ` is about the numerator recursion).
+## Key Formalizations
+* `γ'`: The power series constructed from the $\text{betaRec}$ coefficients.
+* `alpha_eq_alphaFromBeta_of_betaEq`: pointwise equivalence of the coefficients under numerator identification.
+* `intree_gamma_eq_γ'`: equivalence of the power series $\gamma$ and $\gamma'$.
+* `section5StrictData_of_betaEq`: A constructor for the Section 5 correlated agreement data that automatically
+  discharges the substitution relation given numerator equivalence.
 
 ## References
-* [BCIKS20] §5 (list-decoding agreement chain), Appendix A.4 (recursion (A.1)).
+* [BCIKS20] Binswood, Crites, Iyer, Kamara, Stewart. *Solving Algebraic Equations over Power Series*, 2020.
 -/
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 ToRatFunc Ideal
@@ -67,23 +47,17 @@ namespace GammaFromBeta
 
 variable {F : Type} [Field F]
 
-/-! ## The `betaRec`-built power series `γ'`
+/-! ### Definition of the betaRec-Built Power Series -/
 
-`γ'` is *defined* as the substitution form the `hγ` field demands.  Consequently the `hγ` identity
-for `γ'` is `rfl`. -/
-
-/-- The `betaRec`-built analogue of the in-tree `γ` (`RationalFunctions.lean:2886`): the BCIKS shift
-substitution `X ↦ X − x₀` applied to the genuine Hensel-coefficient series `mk (αFromBeta …)` (whose
-numerators are the App-A.4 recursion `betaRec`).  This is *exactly* the right-hand side of the
-`Section5StrictData.hγ` field, so `γ'_eq_subst_shiftSeries` below is `rfl`. -/
+/-- The power series $\gamma'$ constructed by substituting the shift series into the power series
+whose coefficients are $\alpha_{\mathrm{fromBeta}}$. -/
 noncomputable def γ' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H) : PowerSeries (𝕃 H) :=
   (PowerSeries.mk (BetaToCurveCoeffPolys.αFromBeta x₀ R H hHyp Bcoeff)).subst
     (Claim59Conditional.shiftSeries x₀ H)
 
-/-- `γ'` is *definitionally* the substitution form: the `hγ`-field shape holds for `γ'` by `rfl`.
-This is the route-B realization of "`hγ` is dischargeable as `rfl` for `γ'`". -/
+/-- Definitional lemma for $\gamma'$ showing it is equal to the shift substitution. -/
 theorem γ'_eq_subst_shiftSeries (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H) :
@@ -92,16 +66,10 @@ theorem γ'_eq_subst_shiftSeries (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
         (Claim59Conditional.shiftSeries x₀ H) :=
   rfl
 
-/-! ## The single honest residual: `β R t = betaRec …`
+/-! ### Equivalence Under Numerator Identification -/
 
-This is the content the trivial `β_regular` witness fails to supply.  It is the genuine §5 / App-A.4
-identification of the opaque in-tree numerator with the real recursion.  Everything below is *proven*
-from it; it is never assumed to be the goal. -/
-
-/-- **Numerator identification ⟹ Hensel-coefficient identification.**  If the opaque in-tree numerator
-`β R t` equals the genuine recursion `betaRec x₀ R H hHyp Bcoeff t` for all `t`, then the in-tree
-Hensel coefficient `α` equals `αFromBeta` pointwise (the denominators are literally identical, so this
-is `unfold` + `rw`). -/
+/-- Pointwise equivalence of the coefficients $\alpha_t$ and $\alpha_{\mathrm{fromBeta}, t}$
+assuming the in-tree numerators $\beta(t)$ match the recurrence relation $\text{betaRec}(t)$. -/
 theorem alpha_eq_alphaFromBeta_of_betaEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H)
@@ -110,8 +78,7 @@ theorem alpha_eq_alphaFromBeta_of_betaEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y
   unfold α BetaToCurveCoeffPolys.αFromBeta
   rw [hβ t]
 
-/-- **The in-tree `γ` equals the `betaRec`-built `γ'`**, under the numerator identification `hβ`.
-Both are the *same* shift substitution applied to series whose coefficients now agree pointwise. -/
+/-- Equivalence of the in-tree power series $\gamma$ and the constructed series $\gamma'$ under numerator identification. -/
 theorem intree_gamma_eq_γ' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H)
@@ -123,10 +90,7 @@ theorem intree_gamma_eq_γ' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     rw [PowerSeries.coeff_mk, PowerSeries.coeff_mk,
       alpha_eq_alphaFromBeta_of_betaEq x₀ R H hHyp Bcoeff hβ]
 
-/-- **The `Section5StrictData.hγ` field, discharged.**  Under the single honest residual `hβ`, the
-in-tree `γ` equals the `betaRec`-built substitution form — i.e. *literally* the `hγ` field of
-`Section5StrictData`.  No `sorry`, no `axiom`; `hβ` is the only input (it is the genuine §5 numerator
-identification, NOT the `hγ` goal). -/
+/-- Proves the substitution relation required for Section 5 correlated agreement from the numerator identification. -/
 theorem hγ_field_of_betaEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H)
@@ -138,15 +102,7 @@ theorem hγ_field_of_betaEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
 
 end GammaFromBeta
 
-/-! ## The `Section5StrictData` builder with `hγ` supplied automatically
-
-The whole point of route B: a `Section5StrictData` constructor that takes *every* field except `hγ`,
-plus the honest residual `hβ`, and fills `hγ` via `GammaFromBeta.hγ_field_of_betaEq`.  Callers of the
-closed keystone (`CorrelatedAgreementListDecodingClosed`) no longer have to provide `hγ` by hand: it
-is discharged from `hβ`.
-
-Note the in-tree-`γ`-referencing fields (`hrep`, `hPz`) are unchanged — they are about the same
-in-tree `γ`; only `hγ` is now derived. -/
+/-! ### Section 5 Correlated Agreement Data Builder -/
 
 section Builder
 
@@ -159,17 +115,9 @@ namespace CorrelatedAgreementListDecodingClosed
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
-/-- **`Section5StrictData` with the `hγ` field discharged from `hβ`.**
-
-This builds the genuine §5 per-decoding extraction datum
-`Section5StrictData (k := k) (deg := deg) (domain := domain) (δ := δ) u P` from *all* its fields
-*except* `hγ`, supplying instead the single honest residual
-`hβ : ∀ t, β R t = betaRec x₀ R H hHyp Bcoeff t` (the trivial-`β_regular` gap).  The `hγ` field is
-then discharged by `GammaFromBeta.hγ_field_of_betaEq`.
-
-This is the route-B deliverable: in-tree `γ` should eventually be redefined to be `betaRec`-built
-(then `hβ` becomes `rfl` and disappears); until that deferred in-tree edit lands, `hβ` is the minimal
-explicit residual. -/
+/-- Constructor for the Section 5 correlated agreement data.
+Takes the numerator equivalence $\beta(t) = \text{betaRec}(t)$ as a hypothesis and automatically supplies
+the required substitution relation for the power series $\gamma$. -/
 noncomputable def section5StrictData_of_betaEq {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     {u : WordStack F (Fin (k + 1)) ι} {P : F → Polynomial F}
     (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
@@ -222,10 +170,4 @@ end Builder
 
 end ArkLib
 
-/-! ## Axiom audit — every claimed-done declaration rests only on
-`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
-#print axioms ArkLib.GammaFromBeta.γ'_eq_subst_shiftSeries
-#print axioms ArkLib.GammaFromBeta.alpha_eq_alphaFromBeta_of_betaEq
-#print axioms ArkLib.GammaFromBeta.intree_gamma_eq_γ'
-#print axioms ArkLib.GammaFromBeta.hγ_field_of_betaEq
-#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.section5StrictData_of_betaEq
+

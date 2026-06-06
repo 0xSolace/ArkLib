@@ -164,6 +164,11 @@ theorem winningSetRatio_le_winningSetSoundness {k : ℕ} {C : Set (ι → F)} {�
     winningSetRatio x ≤ winningSetSoundness (k := k) C δ :=
   le_ciSup (bddAbove_winningSetRatio C δ) x
 
+/-- The simplified-IOR soundness scalar is a genuine probability bound: it is at most `1`. -/
+theorem winningSetSoundness_le_one {k : ℕ} (C : Set (ι → F)) (δ : ℝ≥0) :
+    winningSetSoundness (k := k) C δ ≤ 1 := by
+  exact ciSup_le fun x : ViolatingInstance C δ k => winningSetRatio_le_one x
+
 /-- **The correlated-agreement attack lower-bounds the simplified-IOR soundness**
 (the §6.4.2 attack chain, end-to-end and machine-checked). For a linear code
 `C`, the soundness error `winningSetSoundness` is at least the correlated
@@ -426,6 +431,16 @@ attribute [instance] ToyParams.field ToyParams.fintypeF ToyParams.decEqF ToyPara
 projected onto the bundled carrier. -/
 noncomputable def ToyParams.soundnessError (p : ToyParams) : ℝ≥0 :=
   winningSetSoundness (k := p.k) p.C p.δ
+
+/-- The bundled simplified-IOR soundness error is bounded by `1`. -/
+theorem ToyParams.soundnessError_le_one (p : ToyParams) :
+    p.soundnessError ≤ 1 :=
+  _root_.ToyProblem.winningSetSoundness_le_one (k := p.k) p.C p.δ
+
+/-- The bundled simplified-IOR soundness error lies in the probability interval `[0, 1]`. -/
+theorem ToyParams.soundnessError_mem_Icc (p : ToyParams) :
+    p.soundnessError ∈ Set.Icc 0 1 :=
+  ⟨zero_le _, p.soundnessError_le_one⟩
 
 /-- The full-protocol RBR upper-bound vehicle (Lemmas 6.6 / 6.8) at a parameter
 point. -/

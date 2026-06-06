@@ -201,7 +201,7 @@ lemma foldingBadEventAtBlock_snoc_castSucc_eq (i : Fin ℓ)
     simp only at h_guard_cast
     omega
 
-attribute [irreducible] foldingBadEventAtBlock
+-- `foldingBadEventAtBlock` (and its `[irreducible]` attribute) now live in `Basic.lean`.
 
 open Classical in
 def blockBadEventExistsProp
@@ -425,6 +425,8 @@ section FoldStepPreservationLemmas
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context}
 
 end FoldStepPreservationLemmas
+
+section CommitStepPreservationLemmas
 
 lemma incrementalBadEventExistsProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
     (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)

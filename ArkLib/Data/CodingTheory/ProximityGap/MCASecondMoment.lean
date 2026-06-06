@@ -327,44 +327,12 @@ lemma epsStar_lt_second_moment_value {M' q : ℕ} (hq : 0 < q)
   -- `(M' - M'²/Q) = (D : ℝ≥0∞)/Q`.
   have hMq : ((M' * q : ℕ) : ℝ≥0∞) / Q = (M' : ℝ≥0∞) := by
     rw [hQ]; push_cast; rw [mul_div_assoc, ENNReal.div_self hQne hQtop, mul_one]
-<<<<<<< HEAD
   have hDcast : (D : ℝ≥0∞) = ((M' * q : ℕ) : ℝ≥0∞) - ((M' * M' : ℕ) : ℝ≥0∞) := by
     rw [hD]; exact Nat.cast_sub hle
-||||||| 75d3622ca
-  have hDcast : (D : ℝ≥0∞) = (M' * q : ℕ) - (M' * M' : ℕ) := by
-    rw [hD, Nat.cast_sub hle]
-=======
-  have hDcast : (D : ℝ≥0∞) =
-      ((M' * q : ℕ) : ℝ≥0∞) - ((M' * M' : ℕ) : ℝ≥0∞) := by
-    simp [hD]
->>>>>>> fork/main
   have hval : (M' : ℝ≥0∞) - (M' * M' : ℝ≥0∞) / Q = (D : ℝ≥0∞) / Q := by
     rw [hDcast, ENNReal.sub_div (by intro _ _; exact hQne), hMq]
-<<<<<<< HEAD
     norm_num
-||||||| 75d3622ca
-    push_cast
-=======
-    push_cast
-    rfl
->>>>>>> fork/main
   rw [hval]
-<<<<<<< HEAD
-||||||| 75d3622ca
-  -- `(D/Q)/Q = D/(Q*Q)`.
-  rw [div_div]
-  set QQ : ℝ≥0∞ := Q * Q with hQQ
-  have hQQne : QQ ≠ 0 := mul_ne_zero hQne hQne
-  have hQQtop : QQ ≠ ⊤ := ENNReal.mul_ne_top hQtop hQtop
-=======
-  -- `(D/Q)/Q = D/(Q*Q)`.
-  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc,
-    ← ENNReal.mul_inv (a := Q) (b := Q) (Or.inl hQne) (Or.inl hQtop),
-    ← div_eq_mul_inv]
-  set QQ : ℝ≥0∞ := Q * Q with hQQ
-  have hQQne : QQ ≠ 0 := mul_ne_zero hQne hQne
-  have hQQtop : QQ ≠ ⊤ := ENNReal.mul_ne_top hQtop hQtop
->>>>>>> fork/main
   -- `ε* = (2^128)⁻¹`.
   have hepsStar : (ProximityGap.epsStar : ℝ≥0∞) = (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ := by
     rw [ProximityGap.epsStar]; push_cast; rw [one_div]
@@ -384,24 +352,82 @@ lemma epsStar_lt_second_moment_value {M' q : ℕ} (hq : 0 < q)
       _ = (2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞) := by push_cast; ring
   have hinvne : (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ ≠ 0 := ENNReal.inv_ne_zero.mpr hpow_ne_top
   have hinvtop : (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ ≠ ⊤ := ENNReal.inv_ne_top.mpr hpow_ne_zero
-<<<<<<< HEAD
   calc (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * Q * Q
       = (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * (Q * Q) := by rw [mul_assoc]
     _ < (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * ((2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞)) :=
-        ENNReal.mul_lt_mul_right hinvne hinvtop hcast
-||||||| 75d3622ca
-  calc (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * QQ
-      < (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * ((2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞)) :=
         ENNReal.mul_lt_mul_left hinvne hinvtop hcast
-=======
-  calc (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * QQ
-      < (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * ((2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞)) :=
-        by
-          simpa [mul_comm, mul_left_comm, mul_assoc] using
-            ENNReal.mul_lt_mul_left hinvne hinvtop hcast
->>>>>>> fork/main
     _ = (D : ℝ≥0∞) := by
         rw [← mul_assoc, ENNReal.inv_mul_cancel hpow_ne_zero hpow_ne_top, one_mul]
+
+/-- Every prize rate is at most `1/2`. -/
+private lemma prizeRates_le_half (j : Fin 4) : prizeRates j ≤ 1 / 2 := by
+  unfold prizeRates
+  have h2 : (2 : ℝ≥0) ^ (1 : ℕ) ≤ 2 ^ (j.val + 1) :=
+    pow_le_pow_right₀ one_le_two (by omega)
+  rw [pow_one] at h2
+  exact div_le_div_of_nonneg_left (by norm_num) (by norm_num) h2
+
+/-- For `n ≥ 2`, every prize-rate degree satisfies `k_j + 1 ≤ n`. -/
+private lemma prizeRate_floor_add_one_le (j : Fin 4) (hn : 2 ≤ Fintype.card ι) :
+    ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1 ≤ Fintype.card ι := by
+  set k := ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ with hk_def
+  have h2 : (2 : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0) := by exact_mod_cast hn
+  have hkr : (k : ℝ≥0) ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) := by
+    rw [hk_def]
+    refine le_trans (Nat.floor_le (zero_le _)) ?_
+    gcongr
+    exact prizeRates_le_half j
+  have hcast : ((k + 1 : ℕ) : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0) := by
+    push_cast
+    calc (k : ℝ≥0) + 1
+        ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) + 1 := by gcongr
+      _ ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) + (1 / 2) * (Fintype.card ι : ℝ≥0) := by
+          gcongr
+          calc (1 : ℝ≥0) = (1 / 2) * 2 := by norm_num
+            _ ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) := by gcongr
+      _ = (Fintype.card ι : ℝ≥0) := by
+          rw [← add_mul]
+          norm_num
+  exact_mod_cast hcast
+
+/-- **Second-moment negative decision for the formal MCA prize.**
+At any prize-rate index `j`, if a family size `M' ≤ C(n, k_j+1)` makes the
+second-moment endpoint value exceed `ε*`, then the collapsed formal MCA prize predicate
+is false.  This wires `epsMCA_one_ge_second_moment` into
+`mcaPrize_iff_forall_epsMCA_one`. -/
+theorem not_mcaPrize_of_second_moment
+    (domain : ι ↪ F) (j : Fin 4) (hn : 2 ≤ Fintype.card ι) {M' : ℕ}
+    (hM : M' ≤ Nat.choose (Fintype.card ι)
+      (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1))
+    (hle : M' * M' ≤ M' * Fintype.card F)
+    (hnum :
+      Fintype.card F * Fintype.card F <
+        2 ^ (128 : ℕ) *
+          (M' * Fintype.card F - M' * M')) :
+    ¬ GrandChallenges.mcaPrize domain := by
+  intro hprize
+  set k := ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ with hk_def
+  have hk_add : k + 1 ≤ Fintype.card ι := by
+    rw [hk_def]
+    exact prizeRate_floor_add_one_le j hn
+  have hlt_value :
+      (ProximityGap.epsStar : ℝ≥0∞) <
+        ((M' : ℝ≥0∞) - (M' * M' : ℝ≥0∞) /
+          (Fintype.card F : ℝ≥0∞)) / (Fintype.card F : ℝ≥0∞) :=
+    epsStar_lt_second_moment_value (M' := M') (q := Fintype.card F)
+      Fintype.card_pos hle hnum
+  have hlower :
+      ((M' : ℝ≥0∞) - (M' * M' : ℝ≥0∞) /
+          (Fintype.card F : ℝ≥0∞)) / (Fintype.card F : ℝ≥0∞) ≤
+        epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 :=
+    epsMCA_one_ge_second_moment domain (k := k) (M' := M') hk_add
+      (by simpa [hk_def] using hM)
+  have hlt_eps :
+      (ProximityGap.epsStar : ℝ≥0∞) <
+        epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 :=
+    lt_of_lt_of_le hlt_value hlower
+  have hbound := (mcaPrize_iff_forall_epsMCA_one domain).mp hprize j
+  exact absurd hbound (not_le.mpr (by simpa [hk_def] using hlt_eps))
 
 end SecondMoment
 

@@ -2211,112 +2211,13 @@ theorem fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius (i : Fin ℓ) (step
   apply Nat.lt_of_le_pred (n := 2 * Δ₀(f, C_i).toNat) (m := d_i) (h := h_d_i_gt_0)
     (h_final_inequality)
 
-/--
-Compliance condition (Definition 4.17) : For an index `i` that is a multiple of `steps`,
-the oracle `f_i` is compliant if it's close to the code fiber-wise, the next oracle
-`f_i_plus_steps` is close to its code, and their unique closest codewords are consistent
-with folding.
--/
-def isCompliant (i : Fin (ℓ)) (steps : ℕ) [NeZero steps]
-  (h_i_add_steps : i + steps ≤ ℓ)
-  (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-  (f_i_plus_steps : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      ⟨i + steps, by omega⟩)
-  (challenges : Fin steps → L) : Prop :=
-  ∃ (h_fw_dist_lt : 2 * fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
-      (steps := steps) h_i_add_steps f_i < (BBF_CodeDistance ℓ 𝓡 ⟨i + steps, by omega⟩ : ℕ∞))
-    (h_dist_next_lt : 2 * distFromCode f_i_plus_steps
-      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i + steps, by omega⟩)
-      < (BBF_CodeDistance ℓ 𝓡 ⟨i + steps, by omega⟩ : ℕ∞)), -- note that two lts are equal
-    -- Third constraint : the DECODED codewords are consistent via the iterated_fold
-    let h_dist_curr_lt := fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) steps h_i_add_steps f_i
-      (h_fw_dist_lt := h_fw_dist_lt)
-    let f_bar_i := uniqueClosestCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := ⟨i, by omega⟩) (h_i := fin_ℓ_lt_ℓ_add_R i) f_i h_dist_curr_lt
-    let f_bar_i_plus_steps := uniqueClosestCodeword 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i + steps, by omega⟩)
-      (h_i := fin_ℓ_steps_lt_ℓ_add_R i steps h_i_add_steps)
-      f_i_plus_steps h_dist_next_lt
-    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (steps := ⟨steps, by apply Nat.lt_succ_of_le; exact Nat.le_of_add_left_le h_i_add_steps⟩)
-      (i := ⟨i, by omega⟩)
-      (h_i_add_steps := by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i steps h_i_add_steps)
-      f_bar_i challenges = f_bar_i_plus_steps
 
-omit [CharP L 2] [NeZero ℓ] in
-/--
-Farness implies non-compliance. If `f_i` is far from its code `C_i`, it cannot be
-compliant. This follows directly from the contrapositive of
-`fiberwise_dist_lt_imp_dist_lt`.
--/
-lemma farness_implies_non_compliance (i : Fin ℓ) (steps : ℕ) [NeZero steps]
-  (h_i_add_steps : i + steps ≤ ℓ)
-  (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-  (f_i_plus_steps : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    ⟨i + steps, by omega⟩)
-  (challenges : Fin steps → L)
-  (h_far : 2 * Code.distFromCode f_i
-      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-    ≥ (BBF_CodeDistance ℓ 𝓡 ⟨i, by omega⟩ : ℕ∞)) :
-  ¬ isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
-    h_i_add_steps f_i f_i_plus_steps challenges :=
-by -- We use our key theorem that "fiber-wise close" implies "Hamming close".
-  intro h_compliant
-  rcases h_compliant with ⟨h_fw_dist_lt, _, _⟩
-  have h_close := fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius 𝔽q β
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps) h_i_add_steps f_i
-    h_fw_dist_lt
-  have h_not_far := LT.lt.not_ge h_close
-  exact h_not_far h_far
-
-/--
-Bad event for folding (Definition 4.19) : This event captures two scenarios where the
-random folding challenges undermine the protocol's soundness checks.
-For `i ∈ {0, ..., ℓ - steps}`,
-- In case `d⁽ⁱ⁾(f⁽ⁱ⁾, C⁽ⁱ⁾) < dᵢ₊steps / 2` :
-  `Δ⁽ⁱ⁾(f⁽ⁱ⁾, f̄⁽ⁱ⁾) ⊄ Δ(fold(f⁽ⁱ⁾, rᵢ', ..., rᵢ₊steps₋₁'), fold(f̄⁽ⁱ⁾, rᵢ', ..., rᵢ₊steps₋₁'))`
-- In case `d⁽ⁱ⁾(f⁽ⁱ⁾, C⁽ⁱ⁾) ≥ dᵢ₊steps / 2` :
-  `d(fold(f⁽ⁱ⁾, rᵢ', ..., rᵢ₊steps₋₁'), C⁽ⁱ⁺steps⁾) < dᵢ₊steps / 2`
--/
-def foldingBadEvent (i : Fin ℓ) (steps : ℕ) [NeZero steps] (h_i_add_steps : i + steps ≤ ℓ)
-  (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-  (challenges : Fin steps → L) : Prop :=
-  let d_i_plus_steps := BBF_CodeDistance ℓ 𝓡 ⟨i + steps, by omega⟩
-  if h_is_close : 2 * fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
-      steps h_i_add_steps f_i < (d_i_plus_steps : ℕ∞) then
-    -- Case 1 : The oracle `f_i` is fiber-wise "close" to the code.
-    -- The bad event is when folding causes disagreements to vanish, violating Lemma 4.18.
-    -- This happens if the random challenges are unlucky.
-    let h_dist_curr_lt := fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps) h_i_add_steps f_i h_is_close
-
-    let f_bar_i := uniqueClosestCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := ⟨i, by omega⟩) (h_i := by apply Nat.lt_add_of_pos_right_of_le; omega) f_i
-      h_dist_curr_lt
-    let folded_f_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (steps := ⟨steps, by omega⟩) (i := ⟨i, by omega⟩)
-      (h_i_add_steps := by apply Nat.lt_add_of_pos_right_of_le; omega) f_i challenges
-    let folded_f_bar_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (steps := ⟨steps, by omega⟩) (i := ⟨i, by omega⟩)
-      (h_i_add_steps := by apply Nat.lt_add_of_pos_right_of_le; omega) f_bar_i challenges
-
-    let fiberwise_disagreements := fiberwiseDisagreementSet 𝔽q β i steps h_i_add_steps
-      f_i f_bar_i
-    let folded_disagreements := disagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps
-      h_i_add_steps folded_f_i folded_f_bar_i
-    -- The bad event is that the subset relation does NOT hold.
-    ¬ (fiberwise_disagreements ⊆ folded_disagreements)
-  else
-    -- Case 2 : The oracle `f_i` is fiber-wise "far" from the code.
-    -- Folding a "far" function should result in another "far" function.
-    -- The bad event is when folding makes this far function appear "close" to the code.
-    let folded_f_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (steps := ⟨steps, by omega⟩) (i := ⟨i, by omega⟩)
-      (h_i_add_steps := by simp only; apply Nat.lt_add_of_pos_right_of_le; omega) f_i challenges
-    let dist_to_code := distFromCode folded_f_i
-      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i + steps, by omega⟩)
-    2 * dist_to_code < (d_i_plus_steps : ℕ∞)
+-- NOTE: the legacy `isCompliant`, `farness_implies_non_compliance`, and `foldingBadEvent`
+-- definitions that previously lived here (old `Fin ℓ` / `h_i_add_steps` signature, using
+-- the pre-split `fiberwiseDistance` / `uniqueClosestCodeword` API) were removed to resolve
+-- the duplicate-declaration error: the canonical versions now live in
+-- `ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance` (with the new
+-- `Fin r` / `destIdx` signature). No call site referenced the old Prelude versions.
 
 end SoundnessTools
 end

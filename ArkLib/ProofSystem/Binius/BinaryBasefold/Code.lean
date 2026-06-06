@@ -115,9 +115,13 @@ lemma BBF_CodeDistance_eq (i : Fin r) (h_i : i ≤ ℓ) :
 
 /-- Disagreement set Δ : The set of points where two functions disagree.
 For functions f^(i) and g^(i), this is {y ∈ S^(i) | f^(i)(y) ≠ g^(i)(y)}. -/
-def disagreementSet (i : Fin r) (h_i : i ≤ ℓ)
+def disagreementSet (i : Fin r)
+  {destIdx : Fin r} (h_destIdx : destIdx = i.val)
   (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :
-  Finset ((sDomain 𝔽q β h_ℓ_add_R_rate) i) := {y | f y ≠ g y}
+  Finset ((sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :=
+  have h_destIdx_eq_i : destIdx = i := Fin.ext h_destIdx
+  {(y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) |
+    f (cast (by subst h_destIdx_eq_i; rfl) y) ≠ g (cast (by subst h_destIdx_eq_i; rfl) y)}
 
 /-- Fiber-wise disagreement set Δ^(i) : The set of points y ∈ S^(i+ϑ) for which
 functions f^(i) and g^(i) are not identical when restricted to the entire fiber
@@ -972,188 +976,10 @@ lemma iterated_fold_preserves_BBF_Code_membership (i : Fin r) {destIdx : Fin r} 
       (f := f_k_code_word) (r_chal := r_challenges (Fin.last k))
     exact res
 
-/--
-Compliance condition (Definition 4.17) : For an index `i` that is a multiple of `steps`,
-the oracle `f_i` is compliant if it's close to the code fiber-wise, the next oracle
-`f_i_plus_steps` is close to its code, and their unique closest codewords are consistent
-with folding.
--/
-def isCompliant (i : Fin r) {destIdx : Fin r} (steps : ℕ) (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
-  (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
-  (f_i_plus_steps : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
-  (challenges : Fin steps → L) : Prop :=
-  ∃ (h_fw_dist_lt : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
-    (steps := steps) h_destIdx h_destIdx_le (f := f_i))
-    (h_dist_next_lt : UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := destIdx) (h_i := by omega) (f := f_i_plus_steps)), -- note that two lts are equal
-    -- Third constraint : the DECODED codewords are consistent via the iterated_fold
-    let h_dist_curr_lt := UDRClose_of_fiberwiseClose 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) steps h_destIdx h_destIdx_le f_i
-      (h_fw_dist_lt := h_fw_dist_lt)
-    let f_bar_i := UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := i) (h_i := by omega) (f := f_i) (h_within_radius := h_dist_curr_lt)
-    let f_bar_i_plus_steps := UDRCodeword 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx) (h_i := by omega)
-      f_i_plus_steps h_dist_next_lt
-    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps := steps) (i := i)
-      h_destIdx h_destIdx_le
-      f_bar_i challenges = f_bar_i_plus_steps
-
-omit [CharP L 2] in
-/--
-Farness implies non-compliance. If `f_i` is far from its code `C_i`, it cannot be
-compliant. This follows directly from the contrapositive of
-`fiberwise_dist_lt_imp_dist_lt`.
--/
-lemma farness_implies_non_compliance (i : Fin r) {destIdx : Fin r} (steps : ℕ) (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
-  (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
-  (f_i_plus_steps : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
-  (challenges : Fin steps → L)
-  (h_far : 2 * Δ₀(f_i, (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
-    ≥ (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) : ℕ∞)) :
-  ¬ isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
-    (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f_i := f_i) (f_i_plus_steps := f_i_plus_steps) (challenges := challenges) := by -- We use our key theorem that "fiber-wise close" implies "Hamming close".
-  intro h_compliant
-  rcases h_compliant with ⟨h_fw_dist_lt, _, _⟩
-  have h_close := UDRClose_of_fiberwiseClose 𝔽q β
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps) (destIdx := destIdx)
-    (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i) (h_fw_dist_lt := h_fw_dist_lt)
-  have h_not_far := LT.lt.not_ge h_close
-  exact h_not_far h_far
-
-/-- **Fold error containment**: Two words achieve `fold error containment` for a specific tuple of challenges if folding them does not
-introduce new errors outside of their fiberwise disagreement set. -/
-def fold_error_containment (i : Fin r) {destIdx : Fin r} (steps : ℕ) (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    (f f_bar : (sDomain 𝔽q β h_ℓ_add_R_rate) i → L)
-    (r_challenges : Fin steps → L) :=
-    let fiberwise_Δ_set := fiberwiseDisagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
-      h_destIdx h_destIdx_le (f := f) (g := f_bar)
-    let folded_f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps := steps) (i := i)
-      h_destIdx h_destIdx_le (f := f) (r_challenges := r_challenges)
-    let folded_f_bar := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps := steps) (i := i)
-      h_destIdx h_destIdx_le (f := f_bar) (r_challenges := r_challenges)
-    let folded_Δ_set := disagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx) (h_i := by omega) (f := folded_f) (g := folded_f_bar)
-    folded_Δ_set ⊆ fiberwise_Δ_set
-
-/-! **Lemma 4.18.** For each `i ∈ {0, steps, ..., ℓ-steps}`, if `f⁽ⁱ⁾` is `UDR-close`, then, for each tuple of folding challenges `(rᵢ', ..., r_{i+steps-1}') ∈ L^steps`, we have that `fold error containment` holds.
--- * **Main Idea of Proof:** Proceeds by contraposition. If `y ∉ Δ⁽ⁱ⁾(f⁽ⁱ⁾, f̄⁽ⁱ⁾)`, then the restrictions of `f⁽ⁱ⁾` and `f̄⁽ⁱ⁾` to the fiber over `y` are identical. By Definition 4.8, this implies their folded values at `y` are also identical.
--- * **Intuition**: Because folding is local (Def 4.8), if `f⁽ⁱ⁾` and `f̄⁽ⁱ⁾` agree completely on the fiber above a point `y`, their folded values at `y` must also agree.
--- * **Consequence**: If `f⁽ⁱ⁾` is close to `f̄⁽ⁱ⁾`, then `fold(f⁽ⁱ⁾)` must be close to `fold(f̄⁽ⁱ⁾)`.
--/
-lemma fold_error_containment_of_UDRClose (i : Fin r) {destIdx : Fin r} (steps : ℕ) (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
-  (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
-  (challenges : Fin steps → L)
-  (h_UDRClose : UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (h_i := by omega) (f := f_i)) :
-  let f_bar := UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (h_i := by omega) (f := f_i) (h_within_radius := h_UDRClose)
-  fold_error_containment 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps) (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i) (f_bar := f_bar) (r_challenges := challenges) := by
--- 1. Unfold definitions
-  unfold fold_error_containment disagreementSet fiberwiseDisagreementSet
-
-  set f_bar := UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (h_i := by omega) (f := f_i) (h_within_radius := h_UDRClose)
-
-  -- 2. Start the subset proof
-  simp only
-  intro y -- convert subset relation to membership implication of y
-  -- ⊢ **y in folded disagreement set → y in fiberwise disagreement set**
-  intro hy_in_folded_disagreement -- ⊢ **y in fiberwise disagreement set**
-
-  -- 3. Proof by contradiction (or contraposition logic)
-  -- The hypothesis says: folded_f(y) ≠ folded_f_bar(y)
-  simp only [ne_eq, mem_filter, mem_univ, true_and] at hy_in_folded_disagreement
-
-  -- We want to show y ∈ fiberwiseDisagreementSet
-  -- This means: ∃ x in fiber(y), f(x) ≠ f_bar(x)
-  -- Let's assume the opposite: ∀ x in fiber(y), f(x) = f_bar(x)
-  by_contra h_not_in_fiber_disagreement
-  simp only [Fin.eta, ne_eq, Subtype.exists, mem_filter, mem_univ, true_and, not_exists, not_and,
-    Decidable.not_not] at h_not_in_fiber_disagreement
-
-  -- 4. Use Lemma 4.9 (iterated_fold_eq_matrix_form) to express the fold operation
-  -- We need to show that if the fiber inputs are equal, the folded output is equal.
-
-  let folded_f_y := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps := steps)
-      (i := i) h_destIdx h_destIdx_le
-      (f := f_i) (r_challenges := challenges) (y := y)
-
-  let folded_f_bar_y := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps := steps)
-      (i := i) h_destIdx h_destIdx_le
-      (f := f_bar) (r_challenges := challenges) (y := y)
-
-  -- Apply the matrix form lemma to both sides
-  have h_matrix_f := iterated_fold_eq_matrix_form 𝔽q β (i := i) (steps := steps) h_destIdx h_destIdx_le (f := f_i) (r_challenges := challenges)
-  have h_matrix_f_bar := iterated_fold_eq_matrix_form 𝔽q β (i := i) (steps := steps) h_destIdx h_destIdx_le (f := f_bar) (r_challenges := challenges)
-
-  rw [h_matrix_f] at hy_in_folded_disagreement
-  rw [h_matrix_f_bar] at hy_in_folded_disagreement
-
-  -- 5. Show the RHS of the matrix forms are equal
-  -- The RHS depends on `localized_fold_matrix_form`.
-  -- This function depends on `foldMatrix` (same for both) and `fiberEvaluations`.
-  -- We just need to show `fiberEvaluations` is the same for both.
-
-  set fiberEvals_f_i := fiberEvaluations 𝔽q β (i := i) (steps := steps) h_destIdx h_destIdx_le (f := f_i) y
-  set fiberEvals_f_bar_i := fiberEvaluations 𝔽q β (i := i) (steps := steps) h_destIdx h_destIdx_le (f := f_bar) y
-  have h_fiber_evals_eq : fiberEvals_f_i = fiberEvals_f_bar_i := by
-    ext k
-    unfold fiberEvals_f_i fiberEvals_f_bar_i fiberEvaluations
-    -- The k-th fiber point x is:
-    let x := qMap_total_fiber 𝔽q β (i := i) (steps := steps) h_destIdx h_destIdx_le y k
-
-    -- We need to show f_i(x) = f_bar(x).
-    -- This follows from our contradiction hypothesis `h_not_in_fiber_disagreement`.
-    apply h_not_in_fiber_disagreement x
-
-    -- We must prove x is actually in the fiber of y (which is true by construction/definition)
-    -- Use the lemma `generates_quotient_point_if_is_fiber_of_y` or similar
-    let res := generates_quotient_point_if_is_fiber_of_y 𝔽q β (i := i) (steps := steps) h_destIdx h_destIdx_le (x := x) (y := y) (hx_is_fiber := by use k)
-    exact res.symm
-
-  -- 6. Final Contradiction
-  -- Since the fiber evaluations are equal, the matrix products must be equal.
-  -- localized_fold_matrix_form is just a function of these evaluations.
-  have h_folded_eq : localized_fold_matrix_form 𝔽q β (i := i) (steps := steps) h_destIdx h_destIdx_le (f := f_i) (r_challenges := challenges) y =
-                     localized_fold_matrix_form 𝔽q β (i := i) (steps := steps) h_destIdx h_destIdx_le (f := f_bar) (r_challenges := challenges) y := by
-    unfold localized_fold_matrix_form
-    simp only
-    unfold fiberEvals_f_i fiberEvals_f_bar_i at h_fiber_evals_eq
-    rw [h_fiber_evals_eq]
-
-  -- Contradiction: We proved they are equal, but hypothesis says they are unequal.
-  exact hy_in_folded_disagreement h_folded_eq
-
-open Classical in
-/-- **Definition 4.19** Bad event for folding : This event captures two scenarios where the
-random folding challenges undermine the protocol's soundness checks.
-For `i ∈ {0, ..., ℓ - steps}`,
-- In case `d⁽ⁱ⁾(f⁽ⁱ⁾, C⁽ⁱ⁾) < dᵢ₊steps / 2` (fiberwise close):
-  `Δ⁽ⁱ⁾(f⁽ⁱ⁾, f̄⁽ⁱ⁾) ⊄ Δ(fold(f⁽ⁱ⁾, rᵢ', ..., r_{i+steps-1}'), fold(f̄⁽ⁱ⁾, rᵢ', ..., r_{i+steps-1}'))`, i.e. fiberwiseDisagreementSet ⊄ foldedDisagreementSet
-- In case `d⁽ⁱ⁾(f⁽ⁱ⁾, C⁽ⁱ⁾) ≥ dᵢ₊steps / 2`  (fiberwise far):
-  `d(fold(f⁽ⁱ⁾, rᵢ', ..., rᵢ₊steps₋₁'), C⁽ⁱ⁺steps⁾) < dᵢ₊steps / 2`, i.e. foldedUDRClose -/
-def foldingBadEvent (i : Fin r) {destIdx : Fin r} (steps : ℕ) (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
-  (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
-  (r_challenges : Fin steps → L) : Prop :=
-
-  let folded_f_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i) (r_challenges := r_challenges)
-
-  if h_is_close : (fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps) h_destIdx h_destIdx_le (f := f_i)) then
-    -- Case 1 : The oracle `f_i` is fiber-wise "close" to the code.
-    -- The bad event is when folding causes disagreements to vanish, violating Lemma 4.18.
-    -- This happens if the random challenges are unlucky.
-
-    let f_bar_i := UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      i (f := f_i) (h_within_radius := UDRClose_of_fiberwiseClose 𝔽q β i steps h_destIdx h_destIdx_le f_i h_is_close)
-
-    let folded_f_bar_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_bar_i) (r_challenges := r_challenges)
-
-    -- The Bad Condition: FiberDisagreements ⊈ FoldedDisagreements
-    ¬ (fiberwiseDisagreementSet 𝔽q β i steps h_destIdx h_destIdx_le (f := f_i) (g := f_bar_i) ⊆
-       disagreementSet 𝔽q β (i := destIdx) (h_i := by omega) (f := folded_f_i) (g := folded_f_bar_i))
-
-  else
-    -- Case 2 : The oracle `f_i` is fiber-wise "far" from the code.
-    -- Folding a "far" function should result in another "far" function.
-    -- The bad event is when folding makes this far function appear "close" to the code.
-    UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx)
-      (h_i := by omega) (f := folded_f_i)
+-- NOTE: `isCompliant`, `farness_implies_non_compliance`, `fold_error_containment`,
+-- `fold_error_containment_of_UDRClose`, and `foldingBadEvent` were moved to
+-- `ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance` (the canonical home) to avoid
+-- duplicate declarations across the split modules. See that module for the current
+-- definitions; this file only provides the code/fiber primitives they build on.
 
 end SoundnessTools
