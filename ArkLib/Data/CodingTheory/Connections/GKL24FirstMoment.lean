@@ -250,6 +250,27 @@ def GKL24FirstMomentResidual (MC : Submodule F (ι → F)) (δ : ℝ≥0) (B_T b
     ∃ T : Finset (ι → F), (∀ w ∈ (MC : Set (ι → F)), w ∈ T) ∧ (T.card : ℝ) ≤ B_T ∧
       ∀ w ∈ T, ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w).card : ℝ) ≤ b
 
+/-- **In-tree relaxed instance of the GKL24 first-moment residual.** Taking `T` to be the finite
+set of all codewords of `MC`, the single-codeword determinacy bound above gives the residual with
+carrier size `|F|^n` and per-codeword count `n`.
+
+This is deliberately the relaxed `b = n` specialization, not GCXK25's external `b = δ_list · n`
+charging bound. It is useful because downstream arguments that only need the residual interface,
+but can tolerate the weaker first-moment count, no longer need to carry any paper hypothesis. -/
+theorem GKL24FirstMomentResidual_inTree_card
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) :
+    GKL24FirstMomentResidual MC δ
+      (Fintype.card (ι → F) : ℝ) (Fintype.card ι : ℝ) := by
+  classical
+  intro u
+  refine ⟨Finset.univ.filter (fun w : ι → F => w ∈ (MC : Set (ι → F))), ?_, ?_, ?_⟩
+  · intro w hw
+    simp [hw]
+  · exact_mod_cast Finset.card_filter_le (fun w : ι → F => w ∈ (MC : Set (ι → F))) Finset.univ
+  · intro w hw
+    rw [Finset.mem_filter] at hw
+    exact mcaBadWitness_card_le_card_real MC δ (u 0) (u 1) w hw.2
+
 open CodingTheory.Bridge in
 /-- **Conditional strengthening: the `B_T · b` first-moment shape from the GKL24 residual.**
 Given the single named residual `GKL24FirstMomentResidual MC δ B_T b` with `b ≥ 0`,
@@ -271,6 +292,21 @@ theorem epsMCA_le_ofReal_of_gkl24_residual
   obtain ⟨T, hT, hcard, hper⟩ := hres u
   exact mcaBad_card_le_listFactor_mul_perCodeword (MC : Set (ι → F)) δ (u 0) (u 1) T hT
     hb0 hcard hper
+
+/-- **Fully in-tree `ε_mca` first-moment relaxation.** This is the residual corollary obtained from
+`GKL24FirstMomentResidual_inTree_card`: without any GKL24/GCXK25 hypothesis,
+
+  `ε_mca(MC, δ) ≤ ENNReal.ofReal ((|F|^n · n) / |F|)`.
+
+The bound is intentionally crude; its role is to close the residual interface in settings where
+one only needs a finite first-moment estimate. -/
+theorem epsMCA_le_ofReal_inTree_firstMoment_card
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) :
+    epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
+      ENNReal.ofReal
+        (((Fintype.card (ι → F) : ℝ) * (Fintype.card ι : ℝ)) / Fintype.card F) :=
+  epsMCA_le_ofReal_of_gkl24_residual MC δ (by positivity)
+    (GKL24FirstMomentResidual_inTree_card MC δ)
 
 end Compose
 

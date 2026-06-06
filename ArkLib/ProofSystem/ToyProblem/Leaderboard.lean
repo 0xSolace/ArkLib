@@ -6,6 +6,7 @@ Authors: Alexander Hicks
 
 import ArkLib.ProofSystem.ToyProblem.SoundnessBounds
 import ArkLib.ToMathlib.ToyProblemViolation
+import ArkLib.ToMathlib.KoalaBearCode
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.FieldTheory.Finite.GaloisField
@@ -696,6 +697,179 @@ theorem securityGap_koalaIRS_anchors :
       securityGap (arklib_lowerBound_irs_t128 hLo) (fenziSanso_upperBound_attack hHi) = 52 := by
   intro hLo hHi
   simp only [securityGap, arklib_lowerBound_irs_t128, fenziSanso_upperBound_attack]
+  norm_num
+
+/-- The conditional KoalaBear-sextic anchor frontier is nonnegative. This is the
+order-only form of `securityGap_koalaIRS_anchors`, and depends only on the explicit
+anchor residual assumptions. -/
+theorem securityGap_koalaIRS_anchors_nonneg
+    (hLo : arklib_lowerBound_irs_t128_residual)
+    (hHi : fenziSanso_upperBound_attack_residual) :
+    0 ≤ securityGap (arklib_lowerBound_irs_t128 hLo) (fenziSanso_upperBound_attack hHi) := by
+  exact securityGap_nonneg (arklib_lowerBound_irs_t128 hLo) (fenziSanso_upperBound_attack hHi)
+
+/-! ## Concrete KoalaBear-sextic carrier (Phase 5 instantiation)
+
+The anchor point `koalaIRS` above runs over a same-*order* stand-in field
+`GaloisField 2 128` with an `opaque` code (kept so its two anchor inequalities
+remain genuine owed obligations rather than computable-and-hence-true/false).
+That opacity is **load-bearing** and is left untouched, so existing consumers of
+`koalaCode` / `koalaIRS` are unaffected.
+
+Here we add the *genuine* KoalaBear-sextic carrier as a **parallel** anchor
+point `koalaIRSConcrete`, over the real field `F_{p^6}`
+(`KoalaBear.Sextic`, `p = 2^31 - 2^24 + 1`) and the genuine rate-`1/2`
+Reed–Solomon code (`KoalaBear.rsCodeSet`, the range of an explicit `F`-linear
+evaluation encoder). Two things are now *concrete*, not owed:
+
+* **the field size** — `|F| = p^6 ≈ 2^186` (`KoalaBear.card_sextic`), so the
+  prize window `[2^(-116), 2^(-64)]` is genuinely representable; and
+* **the code's `F`-linearity** — true *by construction*
+  (`KoalaBear.rsCode_isLinear` is `⟨rsEncoder, rfl⟩`), which is exactly the
+  `hClin` hypothesis the proven attack chain `epsCA_le_winningSetSoundness`
+  requires and the opaque stand-in could not supply.
+
+What remains genuinely owed at the concrete carrier is *only* the §6
+code-theoretic content (the size of the attack winning set / the value of
+`ε_ca` of the RS code), not field arithmetic or linearity. The numeric anchor
+reductions below discharge the **explicit-power arithmetic** end-to-end (sorry-
+free, `norm_num` only), turning each owed obligation into a pure coding-theory
+fact about a *winning-set cardinality*. -/
+
+/-- The genuine KoalaBear-sextic anchor parameter point: identical regime to
+`koalaIRS` (`δ = 3/10`, `t = 128`, `k = 2`), but over the **real** field
+`F_{p^6}` and the **genuine** rate-`1/2` RS code. Phase-5 realisation of the
+intended `(q, ext, ρ, n)` documentary regime. -/
+noncomputable def koalaIRSConcrete : ToyParams where
+  F := KoalaBear.Sextic
+  ι := Fin 4
+  C := KoalaBear.rsCodeSet
+  δ := 3 / 10
+  t := 128
+  k := 2
+  q := 2 ^ 31 - 2 ^ 24 + 1
+  ext := 6
+  ρ := 1 / 2
+  s := 1
+  n := 4
+  η := 1 / 16
+
+/-- The genuine carrier's field is the KoalaBear-sextic field, of size
+`p^6 ≈ 2^186`. -/
+theorem card_koalaIRSConcrete_F :
+    Fintype.card koalaIRSConcrete.F = KoalaBear.fieldSize ^ 6 :=
+  KoalaBear.card_sextic
+
+/-! ### `2^(-bits)` as an explicit reciprocal power (the arithmetic core)
+
+The leaderboard's `bits` exponents are *real* (`NNReal.rpow`); the anchor
+inequalities compare them against the rational `|Ω|/|F|`. The bridge is purely
+arithmetic: `(2 : ℝ≥0) ^ (-(b : ℝ)) = (2 ^ b)⁻¹` for a natural `b`. -/
+
+/-- `(2 : ℝ≥0) ^ (-(b : ℝ)) = ((2 : ℝ≥0) ^ b)⁻¹` for natural `b`: the real
+exponent `-(b)` collapses to the reciprocal natural power. The arithmetic core
+of both numeric anchors. -/
+theorem two_rpow_neg_natCast (b : ℕ) :
+    (2 : ℝ≥0) ^ (-(b : ℝ)) = ((2 : ℝ≥0) ^ b)⁻¹ := by
+  rw [show (-(b : ℝ)) = (((-(b : ℤ)) : ℤ) : ℝ) by push_cast; ring,
+    NNReal.rpow_intCast, zpow_neg, zpow_natCast]
+
+/-! ### Attack-side numeric reduction (`fenziSanso` ⇒ explicit power)
+
+The proven backbone is `winningSetRatio_le_winningSetSoundness`: any violating
+instance's winning fraction `|Ω|/|F|` lower-bounds `winningSetSoundness`. Over
+the concrete field `|F| = p^6 ≤ 2^186`, a winning set of `≥ 2^70` challenges
+already realises the `2^(-116)` attack floor (`2^70 / 2^186 = 2^(-116)`). This
+turns the §6.4 attack obligation into a *single cardinality bound* — the genuine
+code-theoretic content — with all field arithmetic discharged here. -/
+
+/-- **Attack-side numeric anchor (concrete carrier), sorry-free.** A single
+violating instance over the genuine KoalaBear-sextic RS code whose winning set
+has at least `2^70` challenges forces `winningSetSoundness ≥ 2^(-116)` — the
+attack floor. (`|F| = p^6 ≤ 2^186`, so `|Ω|/|F| ≥ 2^70/2^186 = 2^(-116)`.) The
+hypothesis is exactly the §6.4 winning-set construction's *cardinality output*;
+the explicit-power arithmetic is closed by `norm_num`. -/
+theorem winningSetSoundness_concrete_ge_of_card
+    (x : ViolatingInstance KoalaBear.rsCodeSet (3 / 10) 2)
+    (hx : (2 : ℕ) ^ 70 ≤
+      (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard) :
+    (2 : ℝ≥0) ^ (-(116 : ℝ)) ≤
+      winningSetSoundness (k := 2) KoalaBear.rsCodeSet (3 / 10) := by
+  -- `winningSetRatio x ≤ winningSetSoundness`; bound `2^(-116) ≤ winningSetRatio x`.
+  refine le_trans ?_ (winningSetRatio_le_winningSetSoundness x)
+  -- `winningSetRatio x = |Ω| / |F|` with `|F| = card Sextic`.
+  rw [winningSetRatio, two_rpow_neg_natCast]
+  -- Abbreviate the winning-set cardinality.
+  set Ncard : ℕ := (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard
+    with hN
+  have hFle : (Fintype.card KoalaBear.Sextic : ℝ≥0) ≤ (2 : ℝ≥0) ^ 186 := by
+    have hc := KoalaBear.card_sextic_le_186
+    calc (Fintype.card KoalaBear.Sextic : ℝ≥0)
+        ≤ (((2 : ℕ) ^ 186 : ℕ) : ℝ≥0) := by exact_mod_cast hc
+      _ = (2 : ℝ≥0) ^ 186 := by push_cast; ring
+  have hFpos : (0 : ℝ≥0) < (Fintype.card KoalaBear.Sextic : ℝ≥0) := by
+    exact_mod_cast Fintype.card_pos
+  have hNge : (2 : ℝ≥0) ^ 70 ≤ (Ncard : ℝ≥0) := by
+    calc (2 : ℝ≥0) ^ 70 = (((2 : ℕ) ^ 70 : ℕ) : ℝ≥0) := by push_cast; ring
+      _ ≤ (Ncard : ℝ≥0) := by exact_mod_cast hx
+  -- `(2^116)⁻¹ ≤ Ncard / |F|`.
+  rw [le_div_iff₀ hFpos]
+  -- `(2^116)⁻¹ * |F| ≤ 2^70 ≤ Ncard`, using `|F| ≤ 2^186 = 2^70 · 2^116`.
+  calc ((2 : ℝ≥0) ^ 116)⁻¹ * (Fintype.card KoalaBear.Sextic : ℝ≥0)
+      ≤ ((2 : ℝ≥0) ^ 116)⁻¹ * (2 : ℝ≥0) ^ 186 := by gcongr
+    _ = (2 : ℝ≥0) ^ 70 := by
+        rw [show (186 : ℕ) = 70 + 116 by norm_num, pow_add, mul_comm, mul_assoc,
+          mul_inv_cancel₀ (by positivity), mul_one]
+    _ ≤ (Ncard : ℝ≥0) := hNge
+
+/-- **Attack-side residual at the concrete carrier.** The §6.4 winning-set
+construction over the genuine KoalaBear-sextic RS code: a violating instance
+with `≥ 2^70` winning challenges. This is the *pure coding-theory* content owed
+(Phase 4 winning-set combinatorics / the `ε_ca`-realising witness), now
+stripped of all field arithmetic and linearity (the latter holds by
+construction via `KoalaBear.rsCode_isLinear`). -/
+def fenziSanso_upperBound_attack_concrete_residual : Prop :=
+  ∃ x : ViolatingInstance KoalaBear.rsCodeSet (3 / 10) 2,
+    (2 : ℕ) ^ 70 ≤
+      (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard
+
+/-- **Winning-set attack upper bound (≈116 bits) at the GENUINE KoalaBear-sextic
+carrier.** Same ceiling as `fenziSanso_upperBound_attack`, but over the real
+field `F_{p^6}` and the genuine rate-`1/2` RS code, and conditional only on the
+*coding-theory* residual `fenziSanso_upperBound_attack_concrete_residual` (a
+cardinality bound on the attack winning set) — the field arithmetic
+(`|F| = p^6`, `2^70/2^186 = 2^(-116)`) is fully discharged by
+`winningSetSoundness_concrete_ge_of_card`. -/
+noncomputable def fenziSanso_upperBound_attack_concrete
+    (h : fenziSanso_upperBound_attack_concrete_residual) :
+    SecurityUpperBound koalaIRSConcrete where
+  bits := 116
+  proof := by
+    obtain ⟨x, hx⟩ := h
+    show koalaIRSConcrete.soundnessError ≥ (2 : ℝ≥0) ^ (-(116 : ℝ))
+    exact winningSetSoundness_concrete_ge_of_card x hx
+
+/-! ### Provable-side numeric reduction (`arklib_lowerBound` ⇒ explicit power)
+
+The provable side routes through the full-protocol RBR vehicle
+`toySoundnessError`, whose binding cap at the prize regime is the spot-check
+term `(1-δ)^t = (7/10)^128`. The *numeric* obligation
+`toySoundnessError ≤ 2^(-64)` reduces to bounding that explicit power; the
+remaining `winningSetSoundness ≤ toySoundnessError` step is ABF26 Lemma 6.10,
+which is **DISPROVEN/NEEDS_CLASSICAL** (see
+`winningSetSoundness_le_toySoundnessError` docstring) and is left as the owed
+residual — *not* attempted here. -/
+
+/-- The spot-check branch dominates and is below `2^(-64)`: at `δ = 3/10`,
+`t = 128`, the term `(1 - δ)^t = (7/10)^128 ≤ 2^(-64)`. Pure explicit-power
+arithmetic over `ℝ≥0` (`(7/10)^128 ≈ 2^(-65.9)`); cross-multiplied to integers
+and closed by `norm_num`. This is the binding numeric cap of the provable side. -/
+theorem spotCheck_le_two_pow_neg_64 :
+    ((1 : ℝ≥0) - 3 / 10) ^ (128 : ℕ) ≤ (2 : ℝ≥0) ^ (-(64 : ℝ)) := by
+  rw [two_rpow_neg_natCast, show (1 : ℝ≥0) - 3 / 10 = 7 / 10 by norm_num]
+  -- `(7/10)^128 ≤ (2^64)⁻¹`  ⇔  `(7/10)^128 * 2^64 ≤ 1`.
+  rw [le_inv_iff_mul_le (by positivity), div_pow, div_mul_eq_mul_div,
+    div_le_one (by positivity)]
   norm_num
 
 end ToyProblem
