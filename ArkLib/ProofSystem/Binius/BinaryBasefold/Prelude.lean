@@ -805,15 +805,17 @@ def fold_legacy (i : Fin r) (h_i : i + 1 < ℓ + 𝓡) (f : (sDomain 𝔽q β
 def fold (i : Fin r) {destIdx : Fin r} (h_destIdx : destIdx.val = i.val + 1)
     (h_destIdx_le : destIdx ≤ ℓ)
     (f : (sDomain 𝔽q β h_ℓ_add_R_rate) i → L) (r_chal : L) :
-    (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx → L :=
-  fun y => by
-    let hidx : destIdx = ⟨i.val + 1, by omega⟩ := Fin.ext h_destIdx
-    subst hidx
-    exact fold_legacy 𝔽q β (i := i)
-      (h_i := by
-        have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
-        omega)
-      (f := f) (r_chal := r_chal) y
+    (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx → L := by
+  have h_i : i.val + 1 < ℓ + 𝓡 := by
+    have hle : i.val + 1 ≤ ℓ := by
+      rw [← h_destIdx]
+      exact h_destIdx_le
+    have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+    exact Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right hR)
+  have hidx : (⟨i.val + 1, Nat.lt_trans h_i h_ℓ_add_R_rate⟩ : Fin r) = destIdx :=
+    Fin.ext h_destIdx.symm
+  exact cast (congrArg (fun j => (sDomain 𝔽q β h_ℓ_add_R_rate j → L)) hidx)
+    (fold_legacy 𝔽q β (i := i) (h_i := h_i) (f := f) (r_chal := r_chal))
 
 def baseFoldMatrix (i : Fin r) (h_i : i + 1 < ℓ + 𝓡)
     (y : ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨↑i + 1, by omega⟩)) : Matrix (Fin 2) (Fin 2) L :=
@@ -920,22 +922,25 @@ def iterated_fold_steps (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.v
 def iterated_fold (i : Fin r) (steps : ℕ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : sDomain 𝔽q β h_ℓ_add_R_rate (i := i) → L) (r_challenges : Fin steps → L) :
-    sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L :=
-  fun y => by
-    let stepsFin : Fin (ℓ + 1) := ⟨steps, by
-      have hsum_le : i.val + steps ≤ ℓ := by omega
-      omega⟩
-    let hstep : i.val + stepsFin.val < ℓ + 𝓡 := by
-      have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
-      have hsum_le : i.val + steps ≤ ℓ := by omega
-      omega
-    let hidx : destIdx =
-        ⟨i.val + stepsFin.val, Nat.lt_trans (m := ℓ + 𝓡) hstep h_ℓ_add_R_rate⟩ :=
-      Fin.ext h_destIdx
-    subst hidx
-    exact iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L := by
+  have hsum_le : i.val + steps ≤ ℓ := by
+    rw [← h_destIdx]
+    exact h_destIdx_le
+  let stepsFin : Fin (ℓ + 1) := ⟨steps, by omega⟩
+  let hstep : i.val + stepsFin.val < ℓ + 𝓡 := by
+    change i.val + steps < ℓ + 𝓡
+    have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+    exact Nat.lt_of_le_of_lt hsum_le (Nat.lt_add_of_pos_right hR)
+  have hidx :
+      (⟨i.val + stepsFin.val, Nat.lt_trans (m := ℓ + 𝓡) hstep h_ℓ_add_R_rate⟩ : Fin r) =
+        destIdx :=
+    Fin.ext h_destIdx.symm
+  exact cast (congrArg (fun j => (sDomain 𝔽q β h_ℓ_add_R_rate j → L)) hidx)
+    (iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := i) (steps := stepsFin) hstep (f := f)
-      (r_challenges := r_challenges) y
+      (r_challenges := fun j => r_challenges ⟨j.val, by
+        change j.val < steps
+        exact j.isLt⟩))
 
 set_option maxHeartbeats 1000000 in
 seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
