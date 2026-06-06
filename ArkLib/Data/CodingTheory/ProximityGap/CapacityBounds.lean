@@ -880,6 +880,72 @@ theorem frs_epsMCA_capacity_gg25_of_residuals_prop
     (domain := domain) (k := k) (s := s) (ω := ω) (η := η) (t := t) ht
     hT218 hT413 hRadius hBound
 
+/-- **ABF26 T4.14 — single T4.13 instance reduction.**
+
+The broader residual theorem above takes the full GG25 T4.13 theorem as a universal hypothesis.
+For closing a concrete folded-RS instance, it is enough to supply the one subspace-design MCA
+bound at the chosen `τ`, code, and integer `t`, plus the same radius and real-bound arithmetic.
+This theorem exposes that smaller target. -/
+theorem frs_epsMCA_capacity_gg25_of_subspaceDesign_bound
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (τ : ℕ → ℝ) (t : ℕ)
+    (hT413 :
+      epsMCA (F := F) (A := Fin s → F)
+          ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F)))
+          ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
+        ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F))
+    (hRadius :
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      ((1 - ρ - η).toNNReal : ℝ≥0) =
+        (1 - τ (t + 1) - 3 / (2 * t)).toNNReal)
+    (hBound :
+      let n : ℝ := Fintype.card ι
+      ((t : ℝ) * n + 4 * t ^ 2) / Fintype.card F ≤
+        2 * n / (η * Fintype.card F) + 24 / (η ^ 3 * Fintype.card F)) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    epsMCA (F := F) (A := Fin s → F)
+        ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F)))
+        ((1 - ρ - η).toNNReal) ≤
+      ENNReal.ofReal (2 * n / (η * Fintype.card F)
+        + 24 / (η ^ 3 * Fintype.card F)) := by
+  intro n ρ
+  rw [hRadius]
+  exact le_trans hT413 (ENNReal.ofReal_le_ofReal hBound)
+
+/-- Prop-level T4.14 adapter from a single public T4.13 instance.
+
+This consumes `subspaceDesign_epsMCA_gg25` for the folded-RS code at the chosen `τ` and `t`, so
+the remaining T4.14 work is exactly the FRS subspace-design input plus the explicit arithmetic
+side conditions. -/
+theorem frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1)
+    (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (τ : ℕ → ℝ) (t : ℕ) (ht : 0 < t)
+    (hT218 : IsSubspaceDesign s τ (ReedSolomon.Folded.frsCode domain k s ω))
+    (hT413 : subspaceDesign_epsMCA_gg25 s τ
+        (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht)
+    (hRadius :
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      ((1 - ρ - η).toNNReal : ℝ≥0) =
+        (1 - τ (t + 1) - 3 / (2 * t)).toNNReal)
+    (hBound :
+      let n : ℝ := Fintype.card ι
+      ((t : ℝ) * n + 4 * t ^ 2) / Fintype.card F ≤
+        2 * n / (η * Fintype.card F) + 24 / (η ^ 3 * Fintype.card F)) :
+    frs_epsMCA_capacity_gg25 domain k s ω η hη_pos hη_lt hs_gt := by
+  refine frs_epsMCA_capacity_gg25_of_subspaceDesign_bound
+    (domain := domain) (k := k) (s := s) (ω := ω) (η := η)
+    (τ := τ) (t := t) ?_ hRadius hBound
+  simpa [subspaceDesign_epsMCA_gg25] using hT413
+
 /-! ### Random Reed-Solomon MCA up to capacity — ABF26 T4.15 ([GG25]) -/
 
 /-- **ABF26 Theorem 4.15 [GG25 Thm 5.15], statement front door.**
@@ -954,5 +1020,6 @@ def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
 end SubspaceDesignFRS
 
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
 
 end CodingTheory
