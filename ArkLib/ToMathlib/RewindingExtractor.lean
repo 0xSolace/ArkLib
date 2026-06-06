@@ -381,9 +381,9 @@ prefix" into the single averaged `Pr[...] ≤ ε` bound — the genuine residual
 missing piece.
 -/
 
-namespace Bridge
+namespace Extractor
 
-open Extractor
+namespace Bridge
 
 /-- **Named residual.** The single remaining ingredient to land `protocol62_knowledgeSound`:
 a translation from the rewinding knowledge-soundness predicate (this file) to the straightline
@@ -425,3 +425,5 @@ theorem rewindingKS_of_extractor
   ⟨E, hE⟩
 
 end Bridge
+
+end Extractor

@@ -110,7 +110,7 @@ theorem discr_map_of_natDegree_preserved [IsDomain B] {φ : A →+* B} {f : A[X]
   have hgne : g ≠ 0 := map_ne_zero_of_natDegree_preserved hdeg hmap
   -- leading coefficient survives: `g.leadingCoeff = φ f.leadingCoeff`.
   have hglc : g.leadingCoeff = φ f.leadingCoeff := by
-    rw [leadingCoeff, leadingCoeff, hmap, hg, coeff_map]
+    rw [← coeff_natDegree, ← coeff_natDegree, hmap, hg, coeff_map]
   have hlc_ne : g.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hgne
   -- transport the resultant across `φ` at the *fixed* size arguments `(natDegree, natDegree-1)`.
   have hmapres :
@@ -182,17 +182,9 @@ nonvanishing of the specialized factor and its separability.  We phrase the brid
 rewrites with the in-tree `Polynomial.Bivariate.evalX_eq_map` and the `discr_y = ± discr` unfolding
 to land on the `evalX (C x₀) R` / `(evalX (C x₀) R).Separable` shapes of `hx0` / `hsep`.
 
-NB the X-vs-Z caveat in the module docstring: this bridge is on the `X`-specialization
-`evalRingHom (C x₀)`, consistent on both sides. -/
-
-/-- The `X`-specialization commutation, written with `evalRingHom (C x₀)` for direct wiring to
-`evalX (C x₀)` (recall `evalX a f = f.map (evalRingHom a)`).  Both sides specialize the same
-variable. -/
-theorem discr_map_evalRingHom_C {F : Type*} [Field F] {R : F[X][X]} (x₀ : F)
-    (hdeg : 0 < R.natDegree)
-    (hmap : (R.map (evalRingHom (C x₀ : F[X]))).natDegree = R.natDegree) :
-    (R.map (evalRingHom (C x₀ : F[X]))).discr = (evalRingHom (C x₀ : F[X])) R.discr :=
-  discr_map_of_natDegree_preserved (B := F[X]) hdeg hmap
+NB the X-vs-Z caveat in the module docstring: instantiate the general bridges below at
+`φ := Polynomial.evalRingHom (C x₀)` to get the `X`-specialization (consistent on both sides), since
+`evalX (C x₀) R = R.map (Polynomial.evalRingHom (C x₀))` by `Polynomial.Bivariate.evalX_eq_map`. -/
 
 /-- **Lemma 3 (the payoff bridge), `discr` form.**  Let `R` be a positive-degree polynomial over the
 domain `A` (e.g. `A = F[Z][X]`, `R : F[Z][X][Y]`), and `φ : A →+* B` a `natDegree`-preserving hom

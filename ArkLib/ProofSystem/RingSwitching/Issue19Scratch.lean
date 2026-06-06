@@ -1,5 +1,4 @@
 import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
-import ArkLib.OracleReduction.Completeness
 
 open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial
   Module TensorProduct Nat Matrix
@@ -20,64 +19,21 @@ variable (h_l : ℓ = ℓ' + κ)
 variable (aOStmtIn : AbstractOStmtIn L ℓ')
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-local instance : (([]ₒ : OracleSpec PEmpty).Inhabited) where
-  inhabited_B q := nomatch q
+/-!
+This scratch file used to contain an attempted proof of the iterated sumcheck round
+perfect-completeness residual.  The actual source module now exposes that obligation as the named
+`Prop` `iteratedSumcheckOracleReduction_perfectCompleteness_residual`, so keeping a duplicate
+scratch theorem with executable holes made the root sorry census fail without adding a usable API.
 
-local instance : (([]ₒ : OracleSpec PEmpty).Fintype) where
-  fintype_B q := nomatch q
+The alias below keeps this file as an importable audit anchor while leaving the real proof obligation
+explicit and unlaundered in `SumcheckPhase.lean`.
+-/
 
-local instance : ∀ j, OracleInterface ((pSpecSumcheckRound L).Challenge j) :=
-  ProtocolSpec.challengeOracleInterface
-
-local instance : ([(pSpecSumcheckRound L).Challenge]ₒ).Inhabited := by
-  refine { inhabited_B := ?_ }
-  intro q
-  rcases q with ⟨⟨i, hi⟩, query⟩
-  have hi_one : i = 1 := by
-    fin_cases i
-    · simp at hi
-    · rfl
-  subst i
-  cases query
-  change Inhabited L
-  exact ⟨0⟩
-
-local instance : ([(pSpecSumcheckRound L).Challenge]ₒ).Fintype := by
-  refine { fintype_B := ?_ }
-  intro q
-  rcases q with ⟨⟨i, hi⟩, query⟩
-  have hi_one : i = 1 := by
-    fin_cases i
-    · simp at hi
-    · rfl
-  subst i
-  cases query
-  change Fintype L
-  infer_instance
-
-theorem iteratedSumcheckOracleReduction_perfectCompleteness_residual_holds
-    (hInit : NeverFail init) :
+/-- Scratch/audit alias for the live iterated-sumcheck completeness frontier. -/
+abbrev iteratedSumcheckOracleReduction_perfectCompleteness_residual_frontier : Prop :=
     iteratedSumcheckOracleReduction_perfectCompleteness_residual
       (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := aOStmtIn) (init := init) (impl := impl) := by
-  intro i
-  letI : ([(pSpecSumcheckRound L).Challenge]ₒ).Inhabited := inferInstance
-  letI : ([(pSpecSumcheckRound L).Challenge]ₒ).Fintype := inferInstance
-  have key := OracleReduction.unroll_2_message_reduction_perfectCompleteness
-    (oSpec := []ₒ) (pSpec := pSpecSumcheckRound L)
-    (iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
-    (sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.castSucc)
-    (sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ)
-    init impl hInit (by rfl) (by rfl)
-    (by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])
-  rw [key]
-  intro stmtIn oStmtIn witIn h_relIn
-  simp_rw [probEvent_eq_one_iff]
-  dsimp only [iteratedSumcheckOracleReduction, iteratedSumcheckOracleProver,
-    iteratedSumcheckOracleVerifier, OracleVerifier.toVerifier, FullTranscript.mk2]
-  refine ⟨?_, ?_⟩
-  · sorry
-  · sorry
+      (aOStmtIn := aOStmtIn) (init := init) (impl := impl)
 
 end
 end RingSwitching.SumcheckPhase
