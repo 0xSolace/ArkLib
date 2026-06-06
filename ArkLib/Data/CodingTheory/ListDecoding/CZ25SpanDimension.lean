@@ -68,6 +68,23 @@ The argument has two halves:
   `subspaceDesign_list_decoding_cz25_of_dimensionCount`, the in-tree T3.4 `Λ`-bound follows
   from `CZ25SpanBound` directly.
 
+**Refutation + correction (2026-06-06).** `CZ25SpanBound` *as originally stated* is
+**false** in the negative-radix regime `δ := 1 - τ(⌊1/η⌋) - η < 0` — its witness clause
+`m·η ≤ δ` has nonnegative left side but negative right side, so it is unsatisfiable
+(`cz25SpanBound_false_of_neg_radius`). That regime is reachable by genuine FRS designs
+(`τ(r₀) = 1` whenever `r₀ = ⌊1/η⌋ > s`, i.e. `η < 1/s`), where the *true* statement
+`CZ25DimensionCount` holds vacuously (empty list). The faithful residual is `CZ25SpanBound'`,
+the same witness clause **guarded** by `0 ≤ δ` (mirroring the consumer's own `δ`-sign split):
+
+* `cz25SpanBound_false_of_neg_radius` — the kernel refutation (the witness clause is
+  unsatisfiable when `δ < 0`).
+* `CZ25SpanBound'` — the corrected, guarded residual.
+* `cz25SpanBound'_of_dimensionCount` — `CZ25DimensionCount ⟹ CZ25SpanBound'` via the only
+  valid witness `m = |L| - 1`, establishing that the corrected residual carries exactly the
+  genuine CZ25 content (it is equivalent to `CZ25DimensionCount` on `δ ≥ 0`).
+* `subspaceDesign_list_decoding_cz25_of_spanBound'` — the in-tree T3.4 `Λ`-bound from the
+  corrected residual, routing `δ < 0` through the empty list where it belongs.
+
 ## Sanity check (tiny example, `q = 5`, `n = 4`, `k = 1`, `δ = 1/4`)
 
 Take `s = 1` (alphabet `F = 𝔽₅`), `n = 4`, a dimension-`1` code (`k = 1`), `η = 1/4` so
