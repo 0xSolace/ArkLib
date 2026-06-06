@@ -137,7 +137,7 @@ lemma exists_gt_Lambda_eq (δstar : ℝ≥0) (hδ : δstar < 1) :
       calc (δstar : ℝ) * (n : ℝ) < 1 * (n : ℝ) := by
             exact mul_lt_mul_of_pos_right this hnR
         _ = (n : ℝ) := one_mul _
-    rw [div_le_one hnR]
+    rw [div_le_iff₀ hnR]
     have : (fl : ℝ) + 1 ≤ (n : ℝ) := by exact_mod_cast Nat.succ_le_of_lt hfl_lt
     simpa using this
   -- midpoint witness
@@ -159,7 +159,7 @@ lemma exists_gt_Lambda_eq (δstar : ℝ≥0) (hδ : δstar < 1) :
     have hgcoe : (δstar : ℝ) < (g : ℝ) := by exact_mod_cast hlt_g
     refine Lambda_eq_of_grid C δstar.coe_nonneg ?_ ?_
     · -- δ* ≤ midpoint
-      rw [← NNReal.coe_le_coe]
+      change (δstar : ℝ) ≤ (((δstar + g) / 2 : ℝ≥0) : ℝ)
       push_cast
       linarith
     · -- midpoint · n < ⌊δ* · n⌋ + 1
@@ -173,7 +173,7 @@ lemma exists_gt_Lambda_eq (δstar : ℝ≥0) (hδ : δstar < 1) :
         _ = (fl : ℝ) + 1 := by
             rw [hgR, div_mul_cancel₀]
             exact hnR.ne'
-        _ = (⌊(δstar : ℝ) * (Fintype.card ι : ℝ)⌋₊ : ℝ) + 1 := by rw [← hfl, hn]
+        _ = (⌊(δstar : ℝ) * (Fintype.card ι : ℝ)⌋₊ : ℝ) + 1 := by simp [hfl, hn]
 
 end Grid
 
@@ -213,6 +213,7 @@ section ReedSolomon
 variable {F ι : Type} [Field F] [Fintype F] [DecidableEq F]
   [Fintype ι] [Nonempty ι] [DecidableEq ι]
 
+omit [DecidableEq F] [DecidableEq ι] in
 /-- Any code containing all constant words has interleaved radius-1 list size at least
 `|F|`: the constant interleaved stacks are pairwise distinct and all lie in the radius-1
 ball around any fixed word. -/
@@ -240,12 +241,9 @@ lemma card_le_Lambda_interleaved_one
       rw [this]
       exact hconst x
     · -- within relative distance 1
-      show ((Code.relHammingDist (fun _ _ => (0 : F)) (e x) : ℚ≥0) : ℝ) ≤ ((1 : ℝ≥0) : ℝ)
-      have := Code.relHammingDist_le_one (u := fun _ _ => (0 : F)) (v := e x)
-      push_cast
-      exact_mod_cast this
+      simp [relHammingBall]
   have hcard : (Set.range e).ncard = Fintype.card F := by
-    rw [Set.ncard_range_of_injective _ hinj, Nat.card_eq_fintype_card]
+    rw [Set.ncard_range_of_injective hinj, Nat.card_eq_fintype_card]
   calc (Fintype.card F : ℕ∞)
       = ((Set.range e).ncard : ℕ∞) := by rw [hcard]
     _ ≤ ((ListDecodable.closeCodewordsRel (C^⋈ (Fin m)) (fun _ _ => (0 : F))
@@ -268,7 +266,9 @@ theorem not_grandListDecodingChallengeRS
   -- constants are RS codewords for k ≥ 1
   have : NeZero k := ⟨hk⟩
   have hconst : ∀ x : F, (fun _ : ι => x) ∈ (ReedSolomon.code domain k : Set (ι → F)) :=
-    fun x => constantCode_mem_code (x := x) (α := domain)
+    fun x => by
+      change ReedSolomon.constantCode x ι ∈ ReedSolomon.code domain k
+      exact ReedSolomon.constantCode_mem_code
   have h1 : (Fintype.card F : ℕ∞) ≤
       ListDecodable.Lambda ((ReedSolomon.code domain k : Set (ι → F))^⋈ (Fin m))
         ((1 : ℝ≥0) : ℝ) :=
@@ -281,8 +281,8 @@ theorem not_grandListDecodingChallengeRS
       (Fintype.card F : ENNReal) := by
     calc (ε_star : ENNReal) * (Fintype.card F : ENNReal)
         < 1 * (Fintype.card F : ENNReal) := by
-          rw [ENNReal.mul_lt_mul_right hq0 hqt]
-          exact_mod_cast hε
+          rw [mul_comm (ε_star : ENNReal), mul_comm (1 : ENNReal)]
+          exact ENNReal.mul_lt_mul_right hq0 hqt (by exact_mod_cast hε)
       _ = (Fintype.card F : ENNReal) := one_mul _
   have h1' : (Fintype.card F : ENNReal) ≤
       (ListDecodable.Lambda ((ReedSolomon.code domain k : Set (ι → F))^⋈ (Fin m))
@@ -317,7 +317,7 @@ theorem not_listDecodingPrize
   · -- ε* = 2⁻¹²⁸ < 1
     rw [epsStar]
     rw [div_lt_one]
-    · exact one_lt_pow (by norm_num) (by norm_num)
+    · exact_mod_cast (Nat.one_lt_pow (n := 128) (a := 2) (by norm_num) (by norm_num))
     · positivity
 
 end ReedSolomon
