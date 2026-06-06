@@ -78,7 +78,7 @@ distinct challenges already realises the bound. PROVEN, axiom-clean. -/
 lemma listDecoding_lb_le_listSize (N : ℕ) (M : ℝ) (hM : (1 : ℝ) ≤ M) :
     ((N : ℝ) * M) / (M + (N : ℝ) - 1) ≤ (N : ℝ) := by
   rcases Nat.eq_zero_or_pos N with hN | hN
-  · subst hN; simp; positivity
+  · subst hN; simp
   · have hNR : (1 : ℝ) ≤ (N : ℝ) := by exact_mod_cast hN
     have hden_pos : 0 < M + (N : ℝ) - 1 := by linarith
     rw [div_le_iff₀ hden_pos]
