@@ -6,6 +6,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.Fold
 
 namespace Binius.BinaryBasefold.CoreInteraction
+noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
 open Binius.BinaryBasefold
 open scoped NNReal ProbabilityTheory
@@ -39,7 +40,7 @@ def commitPrvState (i : Fin ℓ) : Fin (1 + 1) → Type := fun
 def getCommitProverFinalOutput (i : Fin ℓ)
     (inputPrvState : commitPrvState (Context := Context) 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i 0) :
-  OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨↑i + 1, by omega⟩ ×
+  (↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨↑i + 1, by omega⟩) → L) ×
   commitPrvState (Context := Context) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i 1 :=
   let (stmtIn, oStmtIn, witIn) := inputPrvState
   let fᵢ_succ := witIn.f
@@ -49,7 +50,7 @@ def getCommitProverFinalOutput (i : Fin ℓ)
   (fᵢ_succ, (stmtIn, oStmtOut, witIn))
 
 /-! The prover for the `i`-th round of Binary commitmentfold. -/
-def commitOracleProver (i : Fin ℓ) :
+noncomputable def commitOracleProver (i : Fin ℓ) :
   OracleProver (oSpec := []ₒ)
     -- current round
     (StmtIn := Statement (L := L) Context i.succ)
@@ -74,7 +75,7 @@ def commitOracleProver (i : Fin ℓ) :
     exact pure ⟨⟨stmt, oStmt⟩, wit⟩
 
 /-! The oracle verifier for the `i`-th round of Binary commitmentfold. -/
-def commitOracleVerifier (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
+noncomputable def commitOracleVerifier (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
   OracleVerifier
     (oSpec := []ₒ)
     (StmtIn := Statement (L := L) Context i.succ)
@@ -96,7 +97,7 @@ def commitOracleVerifier (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
       (𝓑 := 𝓑) i hCR).hEq
 
 /-! The oracle reduction that is the `i`-th round of Binary commitmentfold. -/
-def commitOracleReduction (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
+noncomputable def commitOracleReduction (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
   OracleReduction (oSpec := []ₒ)
     (StmtIn := Statement (L := L) Context i.succ)
     (OStmtIn := OracleStatement 𝔽q β (ϑ := ϑ)
@@ -134,6 +135,7 @@ The proof follows the same pattern as `foldOracleReduction_perfectCompleteness`:
 - No verification check
 - Just extends the oracle with the new function
 -/
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
 theorem commitOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fin ℓ)
     (hCR : isCommitmentRound ℓ ϑ i) :
     OracleReduction.perfectCompleteness
@@ -145,8 +147,8 @@ theorem commitOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : 
       (oracleReduction := commitOracleReduction 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) (mp := mp) i hCR)
       (init := init)
-      (impl := impl) := by sorry
-/- Original proof depends on commitStepLogic prover fields (sorry'd for computability).
+      (impl := impl) := by
+  -- Step 1: Unroll the 1-message reduction
   rw [OracleReduction.unroll_1_message_reduction_perfectCompleteness_P_to_V (oSpec := []ₒ)
     (hInit := hInit) (pSpec := pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
     (hDir0 := by rfl)
@@ -319,7 +321,6 @@ theorem commitOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : 
       · rfl -- or `exact h_agree.1`
       · rw [newOracleFn_eq]
         exact h_agree.2
--/
 
 open scoped NNReal
 
@@ -332,7 +333,7 @@ def commitKnowledgeError {i : Fin ℓ}
 
 /-! The round-by-round extractor for a single round.
 Since f^(0) is always available, we can invoke the extractMLP function directly. -/
-def commitRbrExtractor (i : Fin ℓ) :
+noncomputable def commitRbrExtractor (i : Fin ℓ) :
   Extractor.RoundByRound []ₒ
     (StmtIn := (Statement (L := L) Context i.succ) × (∀ j, OracleStatement 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc j))
@@ -505,6 +506,7 @@ def commitKState (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
     exact h_relOut
 
 /-! RBR knowledge soundness for a single round oracle verifier -/
+omit [SampleableType L] in
 theorem commitOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ)
     (hCR : isCommitmentRound ℓ ϑ i) :
     (commitOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -514,8 +516,16 @@ theorem commitOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ)
       (relOut := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)  i.succ)
       (commitKnowledgeError 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
-  sorry
+  use fun _ => Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ
+  use commitRbrExtractor 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
+  use commitKState (mp:=mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR
+  intro stmtIn witIn prover ⟨j, hj⟩
+  cases j using Fin.cases with
+  | zero => simp only [ne_eq, reduceCtorEq, not_false_eq_true, Fin.isValue, Matrix.cons_val_fin_one,
+    Direction.not_P_to_V_eq_V_to_P] at hj
+  | succ j' => exact Fin.elim0 j'
 
 end CommitStep
 end SingleIteratedSteps
+end
 end Binius.BinaryBasefold.CoreInteraction
