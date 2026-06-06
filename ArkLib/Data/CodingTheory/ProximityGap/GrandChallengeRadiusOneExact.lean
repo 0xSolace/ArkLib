@@ -78,7 +78,7 @@ lemma cT_deepHole (domain : ι ↪ F) {k : ℕ} {T : Finset ι} (hT : T.card = k
       _ < ((k + 1 : ℕ) : WithBot ℕ) := by exact_mod_cast Nat.lt_succ_self k
   have hpoly : Lagrange.interpolate T (fun i => domain i)
       (fun i => (X ^ k : F[X]).eval (domain i)) = X ^ k :=
-    Lagrange.interpolate_poly_eq_self hinj (by rwa [Nat.cast_id] at hdeg ⊢)
+    (Lagrange.eq_interpolate hinj hdeg).symm
   have hval : (deepHole domain k) = (fun i => (X ^ k : F[X]).eval (domain i)) := by
     funext i; simp [deepHole, eval_pow, eval_X]
   rw [cT_apply, hval, hpoly]
@@ -130,7 +130,7 @@ lemma extendable_iff_cT_eq_zero (domain : ι ↪ F) {k : ℕ} {T : Finset ι} (h
       · exact h
       · -- degree = k but coeff k = 0 is impossible unless... use leadingCoeff
         exfalso
-        have hk : p.natDegree = k := natDegree_eq_of_degree_eq_some h.symm
+        have hk : p.natDegree = k := natDegree_eq_of_degree_eq_some h
         have : p.coeff k ≠ 0 := by
           rw [← hk]
           exact Polynomial.leadingCoeff_ne_zero.mpr (by
@@ -156,10 +156,14 @@ lemma line_extendable_iff (domain : ι ↪ F) {k : ℕ} {T : Finset ι} (hT : T.
     (∃ w ∈ (ReedSolomon.code domain k : Set (ι → F)), ∀ i ∈ T, w i = u₀ i + γ • (deepHole domain k) i)
       ↔ γ = -cT domain k T u₀ := by
   rw [extendable_iff_cT_eq_zero domain hT]
+  -- the function `fun i => u₀ i + γ • deepHole i` is `u₀ + γ • deepHole` as a `Pi`
+  have hfun : (fun i => u₀ i + γ • (deepHole domain k) i)
+      = u₀ + γ • deepHole domain k := rfl
+  rw [hfun]
   -- c_T (u₀ + γ • u₁) = c_T u₀ + γ • c_T u₁ = c_T u₀ + γ
   have hlin : cT domain k T (u₀ + γ • deepHole domain k)
       = cT domain k T u₀ + γ * cT domain k T (deepHole domain k) := by
-    rw [map_add, map_smul]; ring
+    rw [map_add, map_smul, smul_eq_mul]
   rw [hlin, cT_deepHole domain hT, mul_one]
   constructor
   · intro h; linear_combination h

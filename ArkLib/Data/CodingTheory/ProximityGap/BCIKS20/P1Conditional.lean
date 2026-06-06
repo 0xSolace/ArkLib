@@ -3,6 +3,7 @@ Copyright (c) 2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
 
 set_option linter.style.longLine false
 
@@ -270,6 +271,40 @@ theorem βHensel_weight_bound_unlocked (x₀ : F) (R : F[X][X][Y])
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
   βHensel_weight_bound_of_lift' H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW
     (fun t => βHensel_lift_identity H x₀ R hHyp hzero t) hα t
+
+/-- **P1 weight bound unlocked by full P2 vanishing.**
+This consumes the sharper `FaaDiBrunoFullSumVanishes` endpoint, whose P2 capstone already provides
+the lift identity needed by `βHensel_weight_bound_of_lift'`. -/
+theorem βHensel_weight_bound_unlocked_of_fullVanishes (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_of_lift' H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW
+    (fun t => (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 t) hα t
+
+/-- **P1 weight bound unlocked by the restricted P2 match.**
+`RestrictedFaaDiBrunoMatch` is the smallest carved P2 bridge currently exposed by `P2Vanish`;
+given it, the P1 collapse no longer needs to mention the legacy successor-sum residual. -/
+theorem βHensel_weight_bound_unlocked_of_restrictedMatch (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_of_lift' H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW
+    (fun t => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 t) hα t
 
 end P1Conditional
 

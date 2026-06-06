@@ -229,11 +229,9 @@ theorem unroll_n_message_reduction_perfectCompleteness
   rw [and_assoc, and_assoc]
   conv => -- Key block to split the Prod support membership
     dsimp only [Functor.map, OptionT.instMonad]
-    simp only [OptionT.mem_support_OptionT_bind_run_some_iff,
-      OptionT.mem_support_OptionT_run_bind_some,
-      OptionT.mem_support_OptionT_bind_pure_comp_run_some_iff,
-      OptionT.mem_support_OptionT_pure_run_some_iff, Challenge,
+    simp only [OptionT.mem_support_OptionT_bind_run_some_iff, Challenge,
       Function.comp_apply, Prod.exists]
+  trace_state
   apply and_congr
   · constructor
     · intro h tr lastPrvState h_mem_prvRun
@@ -259,11 +257,6 @@ theorem unroll_n_message_reduction_perfectCompleteness
         · intro h pStmtOut pOStmtOut vStmtOut vOstmtOut witOut tr h_vOut
             lastPrvState h_mem_prvRun h_pOut
           have h_res := h tr pStmtOut pOStmtOut witOut vStmtOut vOstmtOut (by
-            simp only [OptionT.mem_support_OptionT_bind_run_some_iff,
-              OptionT.mem_support_OptionT_run_bind_some,
-              OptionT.mem_support_OptionT_bind_pure_comp_run_some_iff,
-              OptionT.mem_support_OptionT_pure_run_some_iff, Challenge,
-              Function.comp_apply, Prod.exists]
             use tr, lastPrvState
             constructor
             · exact h_mem_prvRun
@@ -277,11 +270,6 @@ theorem unroll_n_message_reduction_perfectCompleteness
           )
           exact h_res
         · intro h tr pStmtOut pOStmtOut witOut vStmtOut vOstmtOut h_exists_tr_lastPrvState
-          simp only [OptionT.mem_support_OptionT_bind_run_some_iff,
-            OptionT.mem_support_OptionT_run_bind_some,
-            OptionT.mem_support_OptionT_bind_pure_comp_run_some_iff,
-            OptionT.mem_support_OptionT_pure_run_some_iff, Challenge,
-            Function.comp_apply, Prod.exists] at h_exists_tr_lastPrvState
           rcases h_exists_tr_lastPrvState with
             ⟨a, b, h_prv, a_1, b_1, b_2, h_out, a_2, b_ver, h_ver, h_pure⟩
           simp only [OptionT.support_OptionT_pure_run, Set.mem_singleton_iff, Option.some.injEq,

@@ -11,11 +11,6 @@ import Mathlib.Tactic
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 
 set_option linter.unusedSectionVars false
--- The Johnson-range MCA skeleton (below) carries the full BCHKS25/Hab25 numeric bound
--- verbatim and several `ε_mca`-vocabulary residual `Prop`s; this pushes the file past the
--- default 1500-line cap, matching the precedent of the other large `ProximityGap` files
--- (`Errors.lean`, `CapacityBounds.lean`).
-set_option linter.style.longFile 2000
 
 /-!
 # Hab25 core: from collinearity to correlated agreement (Lemma 1, [AHIV17/BKS18])
@@ -314,7 +309,8 @@ follows mechanically*. -/
 
 namespace Hab25Johnson
 
-open ProximityGap ProximityGap.GrandChallenges
+open _root_.ProximityGap _root_.ProximityGap.GrandChallenges
+open scoped NNReal ENNReal
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
