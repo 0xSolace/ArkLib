@@ -122,7 +122,7 @@ theorem mcaBadWitness_subset_image_combiningPoint
     apply hpair
     refine ⟨w, hw, 0, MC.zero_mem, ?_⟩
     intro i hi
-    refine ⟨?_, by simpa using (hcon i hi)⟩
+    refine ⟨?_, by simpa using (hcon i hi).symm⟩
     -- `w i = u₀ i + γ • u₁ i = u₀ i` since `u₁ i = 0`.
     rw [hwline i hi, hcon i hi]
     simp

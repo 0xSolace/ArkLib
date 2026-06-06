@@ -86,6 +86,7 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 `RS_goodCoeffsCurve u δ` is `δᵣ(curve z, code) ≤ δ`, which by
 `Code.relDistFromCode_le_iff_distFromCode_le` is equivalent to `Δ₀(curve z, code) ≤ ⌊δ · n⌋`,
 two radii with equal floor `⌊δ · n⌋` produce the *same* good-coefficient set. -/
+@[nolint unusedArguments]
 theorem goodCoeffsCurve_eq_of_floor_eq {k deg : ℕ} {domain : ι ↪ F} {δ δ' : ℝ≥0}
     (u : WordStack F (Fin (k + 1)) ι)
     (hfloor : Nat.floor (δ * Fintype.card ι) = Nat.floor (δ' * Fintype.card ι)) :
@@ -102,7 +103,7 @@ theorem goodCoeffsCurve_eq_of_floor_eq {k deg : ℕ} {domain : ι ↪ F} {δ δ'
 `S.card ≥ (1 − δ)·n` is equivalent, by `Code.relDist_floor_bound_iff_complement_bound`, to
 `n − ⌊δ · n⌋ ≤ S.card`, which depends on `δ` only through `⌊δ · n⌋`.  Hence two radii with equal
 floor give equivalent `jointAgreement` statements. -/
-theorem jointAgreement_iff_of_floor_eq {κ deg : ℕ} {domain : ι ↪ F} {δ δ' : ℝ≥0}
+theorem jointAgreement_iff_of_floor_eq {κ : Type*} {deg : ℕ} {domain : ι ↪ F} {δ δ' : ℝ≥0}
     (u : κ → ι → F)
     (hfloor : Nat.floor (δ * Fintype.card ι) = Nat.floor (δ' * Fintype.card ι)) :
     jointAgreement (C := (ReedSolomon.code domain deg : Set (ι → F))) (δ := δ) (W := u)

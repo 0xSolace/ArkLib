@@ -474,6 +474,15 @@ theorem strictCoeffPolysResidual_of_betaRecFin
   intro hk u hprob hJ hsqrt P hP
   exact hcoeffPoly_of_betaRecFin (hInput hk u hprob hJ hsqrt) P
 
+omit [Nonempty ι] [DecidableEq ι] in
+/-- The strict coefficient-polynomial residual is vacuous for `k = 0`, since its first argument is
+`0 < k`. This gives degenerate callers a theorem instead of an explicit residual hypothesis. -/
+theorem strictCoeffPolysResidual_zero
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} :
+    StrictCoeffPolysResidual (k := 0) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk
+  omega
+
 /-! ## Step 4 — the keystone, Johnson branch driven by the real `betaRec`
 
 Feeding `strictCoeffPolysResidual_of_betaRec` into `correlatedAgreement_affine_curves`

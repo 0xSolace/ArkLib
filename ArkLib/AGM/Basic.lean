@@ -10,13 +10,13 @@ import ArkLib.Data.Classes.Serde
 
 /-! # The Algebraic Group Model (with Oblivious Sampling)
 
-This module formalizes the Algebraic Group Model (AGM) equipped with oblivious sampling, drawing on
-the foundations laid by Jaeger and Mohan [JM24] as well as Lipmaa, Parisella, and Siim [LPS24]. In the
-AGM, adversaries are modeled as algebraic: any group element output by the adversary must be
-accompanied by an explicit representation (a vector of exponents) expressing it as a linear
-combination of previously received group elements. This formalization supports group operations,
-exponentiation, equality testing, and serialized encoding/decoding, tracking the adversary's state
-as a dynamic valuation table.
+This module formalizes the Algebraic Group Model (AGM) equipped with oblivious sampling,
+drawing on the foundations laid by Jaeger and Mohan [JM24] as well as Lipmaa, Parisella,
+and Siim [LPS24]. In the AGM, adversaries are modeled as algebraic: any group element
+output by the adversary must be accompanied by an explicit representation (a vector of
+exponents) expressing it as a linear combination of previously received group elements.
+This formalization supports group operations, exponentiation, equality testing, and
+serialized encoding/decoding, tracking the adversary's state as a dynamic valuation table.
 
 ## References
 
@@ -38,10 +38,10 @@ structure GroupRepresentation {G : Type*} [Group G] {p : ℕ} (prev : List G) (t
 local instance {α : Type*} : Zero (Option α) where
   zero := none
 
-/-- A partially defined table of group elements, indexed by `ι`. The table represents the adversary's
-  knowledge state, mapping currently accessible group elements to their algebraic values.
-  Finiteness of the support is enforced via `DFinsupp` (which provides a computable representation
-  of finitely supported functions). -/
+/-- A partially defined table of group elements, indexed by `ι`. The table represents the
+  adversary's knowledge state, mapping currently accessible group elements to their algebraic
+  values. Finiteness of the support is enforced via `DFinsupp` (which provides a computable
+  representation of finitely supported functions). -/
 @[reducible]
 def GroupValTable (ι : Type*) (G : Type*) := Π₀ _ : ι, Option G
 
