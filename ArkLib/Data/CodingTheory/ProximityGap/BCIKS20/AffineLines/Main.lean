@@ -61,6 +61,26 @@ theorem RS_correlatedAgreement_affineLines {deg : ℕ} {domain : ι ↪ F} {δ :
     exact hcurves u (by
       simpa [one_mul, Fin.sum_univ_two] using hprob)
 
+omit [DecidableEq ι] in
+/-- Strict square-root-radius affine-line capstone. In the strict range, the closed-boundary
+residual branch of the curves theorem is impossible, so only the strict coefficient-polynomial
+extraction residual is needed. -/
+theorem RS_correlatedAgreement_affineLines_strict {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hStrictCoeff : StrictCoeffPolysResidual (k := 1) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain) :
+  δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
+    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  have hcurves := correlatedAgreement_affine_curves_of_strict_coeff_polys
+    (k := 1) (deg := deg) (domain := domain) (δ := δ) hδ
+    (fun hk u hprob hJ P hP => hStrictCoeff hk u hprob hJ hδ P hP)
+  unfold δ_ε_correlatedAgreementAffineLines
+  intro u hprob
+  unfold δ_ε_correlatedAgreementCurves at hcurves
+  exact hcurves u (by
+    simpa [one_mul, Fin.sum_univ_two] using hprob)
+
 end CoreResults
 
 end ProximityGap

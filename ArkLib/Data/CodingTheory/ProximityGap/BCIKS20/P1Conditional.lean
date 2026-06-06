@@ -112,6 +112,18 @@ def AlphaGenuineRegularWeightLe (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypo
     embeddingOf𝒪Into𝕃 H a = αGenuine H x₀ R hHyp t
       ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
 
+/-- **The `𝒪`-level divisibility-with-weight form** of the carved A.4 link.
+At order `t`, `βHensel t` factors in `𝒪 H` as
+`a_t · W𝒪^{t+1} · ξ^{2t-1}`, with quotient `Λ_𝒪`-weight `≤ 1`.
+Under the lift identity this is equivalent to `AlphaGenuineRegularWeightLe`;
+see `alphaWeight_iff_divWeight`. -/
+def DivWeightLe (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ) : Prop :=
+  ∀ t : ℕ, ∃ a : 𝒪 H,
+    βHensel H x₀ R hHyp t
+        = a * (W𝒪 H) ^ (t + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t - 1)
+      ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
+
 /-! ### 1′. Task 1 — the weight-from-identity LINK: the `𝒪`-level factorization -/
 
 /-- **(P1) Task 1 — THE WEIGHT-FROM-IDENTITY LINK.**  Given the (P2) lift identity at order `t`
@@ -137,6 +149,48 @@ theorem βHensel_eq_alpha_mul_of_lift (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA
   apply embeddingOf𝒪Into𝕃_injective hH
   rw [hlift_t]
   rw [map_mul, map_mul, map_pow, map_pow, ha, embeddingOf𝒪Into𝕃_W𝒪]
+
+/-- **Reverse bridge, `𝒪 → 𝕃`.** Given the `𝒪`-level factorization of
+`βHensel t` and the lift identity at `t`, the quotient embeds to
+`αGenuine t`.  This is the reverse half needed to identify the carved
+regularity residual with the concrete clearing-divisibility residual. -/
+theorem alpha_eq_embedding_of_fact (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) {a : 𝒪 H}
+    (hfact : βHensel H x₀ R hHyp t
+      = a * (W𝒪 H) ^ (t + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t - 1))
+    (hlift_t :
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :
+    embeddingOf𝒪Into𝕃 H a = αGenuine H x₀ R hHyp t := by
+  have hpush : embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = embeddingOf𝒪Into𝕃 H a
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) := by
+    rw [hfact, map_mul, map_mul, map_pow, map_pow, embeddingOf𝒪Into𝕃_W𝒪]
+  rw [hlift_t, mul_assoc, mul_assoc] at hpush
+  exact mul_right_cancel₀ (den_ne_zero H x₀ R hHyp t) hpush.symm
+
+/-- **Exact residual identification.**  Given the (P2) lift identity for all
+orders, the carved regularity/weight residual `AlphaGenuineRegularWeightLe` is
+equivalent to the concrete `𝒪`-divisibility-with-weight residual
+`DivWeightLe`. -/
+theorem alphaWeight_iff_divWeight (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D ↔ DivWeightLe H x₀ R hHyp hH D := by
+  constructor
+  · intro hα t
+    obtain ⟨a, ha_eq, ha_wt⟩ := hα t
+    exact ⟨a, βHensel_eq_alpha_mul_of_lift H x₀ R hHyp hH t ha_eq (hlift t), ha_wt⟩
+  · intro hd t
+    obtain ⟨a, hfact, ha_wt⟩ := hd t
+    exact ⟨a, alpha_eq_embedding_of_fact H x₀ R hHyp t hfact (hlift t), ha_wt⟩
 
 /-! ### 2. The structured invariant — proven from the factorization + the over-`𝒪` weight calculus -/
 
@@ -228,6 +282,32 @@ theorem βHensel_weight_bound_of_lift (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA
   -- Step B (Task 3): collapse to the loose target via the proven wave-5 arithmetic.
   exact βHensel_weight_bound_of_structured_weight H x₀ R hHyp hH hdR2 hdHR hW t hstructured
 
+/-- **(P1) from the concrete divisibility residual.**  This is the same
+weight-bound entry point as `βHensel_weight_bound_of_lift`, but callers may now
+supply the `𝒪`-level clearing-divisibility form `DivWeightLe`; the equivalence
+`alphaWeight_iff_divWeight` converts it to the carved regularity form needed by
+the structured-weight proof. -/
+theorem βHensel_weight_bound_of_divWeight (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hdiv : DivWeightLe H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
+  have hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D :=
+    (alphaWeight_iff_divWeight H x₀ R hHyp hH D hlift).2 hdiv
+  exact βHensel_weight_bound_of_lift H x₀ R hHyp hH hDH hdR2 hdHR hW hlift hα hξ t
+
 /-! ### 4. The fully-assembled conditional (P1), and the auto-unlock witness
 
 `weight_ξ_bound` (PROVEN in `RationalFunctions`) discharges `hξ` under its regime, and
@@ -252,6 +332,27 @@ theorem βHensel_weight_bound_of_lift' (x₀ : F) (R : F[X][X][Y]) (hHyp : Claim
     weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
   refine βHensel_weight_bound_of_lift H x₀ R hHyp hH hDH hdR2 hdHR hW hlift hα ?_ t
+  exact ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0
+
+/-- **(P1), with `hξ` discharged, from the concrete divisibility residual.**
+After `weight_ξ_bound`, the remaining P1 inputs are exactly the lift identity
+and `DivWeightLe`. -/
+theorem βHensel_weight_bound_of_divWeight' (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
+  refine βHensel_weight_bound_of_divWeight H x₀ R hHyp hH hDH hdR2 hdHR hW hlift hdiv ?_ t
   exact ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0
 
 /-- **AUTO-UNLOCK witness.**  Given the explicit w16 vanishing residual, the `hlift` hypothesis is

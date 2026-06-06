@@ -86,7 +86,7 @@ section GraphCount
 
 variable {K : Type*} [Field K]
 variable {F : Type*} [Field F] [Module F K]
-variable (V₀ W₀ : Submodule F K) (h : IsCompl V₀ W₀)
+variable (V₀ W₀ : Submodule F K)
 
 /-- The graph embedding `φ_L : V₀ →ₗ[F] K`, `p ↦ (p : K) + (L p : K)`, for an
 `𝔽`-linear map `L : V₀ → W₀`.  Its range is the BKR06 "graph subspace". -/
@@ -98,7 +98,7 @@ def graphEmbedding (L : V₀ →ₗ[F] W₀) : V₀ →ₗ[F] K :=
 
 /-- The graph embedding is injective: if `(p : K) + (L p : K) = 0` then `p ∈ V₀`
 and `-(L p) ∈ V₀`, but `L p ∈ W₀` and `V₀ ⊓ W₀ = ⊥`, forcing `p = 0`. -/
-lemma graphEmbedding_injective (L : V₀ →ₗ[F] W₀) :
+lemma graphEmbedding_injective (h : IsCompl V₀ W₀) (L : V₀ →ₗ[F] W₀) :
     Function.Injective (graphEmbedding V₀ W₀ L) := by
   rw [← LinearMap.ker_eq_bot]
   rw [LinearMap.ker_eq_bot']
@@ -110,7 +110,7 @@ lemma graphEmbedding_injective (L : V₀ →ₗ[F] W₀) :
   have hmemW : (p : K) ∈ W₀ := by
     rw [hpK]; exact W₀.neg_mem (L p).2
   have hinf : (p : K) ∈ V₀ ⊓ W₀ := ⟨hmemV, hmemW⟩
-  rw [h.inf_eq_bot] at hinf
+  rw [IsCompl.inf_eq_bot h] at hinf
   have : (p : K) = 0 := by simpa using hinf
   exact Subtype.ext this
 
@@ -119,14 +119,15 @@ def graphSubspace (L : V₀ →ₗ[F] W₀) : Submodule F K :=
   LinearMap.range (graphEmbedding V₀ W₀ L)
 
 /-- The graph subspace has dimension `v = finrank V₀`. -/
-lemma finrank_graphSubspace [FiniteDimensional F K] (L : V₀ →ₗ[F] W₀) :
+lemma finrank_graphSubspace [FiniteDimensional F K]
+    (h : IsCompl V₀ W₀) (L : V₀ →ₗ[F] W₀) :
     Module.finrank F (graphSubspace V₀ W₀ L) = Module.finrank F V₀ :=
   LinearMap.finrank_range_of_inj (graphEmbedding_injective V₀ W₀ h L)
 
 /-- `L ↦ graphSubspace L` is injective.  If two graph subspaces coincide, then for
 each `p`, `(p : K) + (L p : K) = (p' : K) + (L' p' : K)` for some `p'`; comparing
 `V₀`- and `W₀`-components (using `IsCompl`) forces `p' = p` and `L p = L' p`. -/
-lemma graphSubspace_injective :
+lemma graphSubspace_injective (h : IsCompl V₀ W₀) :
     Function.Injective (graphSubspace V₀ W₀) := by
   intro L L' hLL'
   ext p
@@ -137,19 +138,23 @@ lemma graphSubspace_injective :
   simp only [graphEmbedding_apply] at hp'
   -- (p : K) + (L p : K) = (p' : K) + (L' p' : K)
   -- ⇒ (p : K) - (p' : K) = (L' p' : K) - (L p : K) ∈ V₀ ⊓ W₀ = ⊥
-  have hdiff : (p : K) - (p' : K) = (L' p' : K) - (L p : K) := by linear_combination -hp'
+  have hdiff : (p : K) - (p' : K) = (L' p' : K) - (L p : K) := by
+    calc
+      (p : K) - (p' : K) = ((p : K) + (L p : K)) - ((p' : K) + (L p : K)) := by abel
+      _ = ((p' : K) + (L' p' : K)) - ((p' : K) + (L p : K)) := by rw [← hp']
+      _ = (L' p' : K) - (L p : K) := by abel
   have hV : (p : K) - (p' : K) ∈ V₀ := V₀.sub_mem p.2 p'.2
   have hW : (p : K) - (p' : K) ∈ W₀ := by
     rw [hdiff]; exact W₀.sub_mem (L' p').2 (L p).2
   have hzero : (p : K) - (p' : K) = 0 := by
     have hmeminf : (p : K) - (p' : K) ∈ V₀ ⊓ W₀ := ⟨hV, hW⟩
-    rw [h.inf_eq_bot] at hmeminf; simpa using hmeminf
+    rw [IsCompl.inf_eq_bot h] at hmeminf; simpa using hmeminf
   have hpp' : p = p' := Subtype.ext (sub_eq_zero.mp hzero)
+  subst hpp'
   -- and then L p = L' p, reading off the W₀-component
-  have hLeq : (L p : K) = (L' p : K) := by
-    rw [hpp']; linear_combination hp'
-  rw [hpp']
-  exact Subtype.ext (by rw [← hpp'] at hLeq ⊢; exact hLeq)
+  have hLeq' : (L' p : K) = (L p : K) := by
+    exact add_left_cancel hp'
+  exact hLeq'.symm
 
 end GraphCount
 
@@ -186,6 +191,13 @@ theorem card_dimv_subspaces_ge
     Submodule.finrank_add_eq_of_isCompl hcompl
   have hfinW₀ : Module.finrank F W₀ = Module.finrank F K - v := by omega
   -- the image of `graphSubspace` over all linear maps `V₀ →ₗ[F] W₀`
+  letI : Fintype V₀ := Fintype.ofFinite V₀
+  letI : Fintype W₀ := Fintype.ofFinite W₀
+  letI : Fintype (V₀ →ₗ[F] W₀) :=
+    Fintype.ofInjective (fun L : V₀ →ₗ[F] W₀ => fun x => L x) (by
+      intro L L' hLL
+      ext x
+      exact congrFun hLL x)
   refine ⟨Finset.image (graphSubspace V₀ W₀) (Finset.univ : Finset (V₀ →ₗ[F] W₀)), ?_, ?_⟩
   · -- cardinality: injective image, #(V₀ →ₗ W₀) = q^{v(m-v)}
     rw [Finset.card_image_of_injective _ (graphSubspace_injective V₀ W₀ hcompl)]
@@ -264,29 +276,31 @@ theorem exists_pattern_fiber_family
   -- pigeonhole on the pattern map ι → (Fin w → K)
   have hpat_card : Fintype.card (Fin w → K) = (Fintype.card K) ^ w :=
     Fintype.card_pi_const K w
+  -- the pattern fiber finset
+  let fiber : (Fin w → K) → Finset ι :=
+    fun y => Finset.univ.filter (fun i => topPattern k w (g i) = y)
   -- there is a fiber of size > N
-  have key : ∃ y : (Fin w → K), N < #{i | topPattern k w (g i) = y} := by
+  have key : ∃ y : (Fin w → K), N < (fiber y).card := by
     by_contra hcon
     push_neg at hcon
     -- if every fiber ≤ N, then |ι| ≤ #patterns * N
     have hsum : (Fintype.card ι) ≤ (Fintype.card (Fin w → K)) * N := by
-      classical
-      have hpart : ∑ y : (Fin w → K), #{i | topPattern k w (g i) = y} = Fintype.card ι := by
+      have hpart : ∑ y : (Fin w → K), (fiber y).card = Fintype.card ι := by
         rw [← Finset.card_univ (α := ι)]
         exact (Finset.card_eq_sum_card_fiberwise
           (f := fun i => topPattern k w (g i)) (s := Finset.univ) (t := Finset.univ)
           (fun i _ => Finset.mem_univ _)).symm
       calc Fintype.card ι
-          = ∑ y : (Fin w → K), #{i | topPattern k w (g i) = y} := hpart.symm
+          = ∑ y : (Fin w → K), (fiber y).card := hpart.symm
         _ ≤ ∑ _y : (Fin w → K), N := Finset.sum_le_sum (fun y _ => hcon y)
         _ = (Fintype.card (Fin w → K)) * N := by
             rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
     rw [hpat_card] at hsum
     omega
   obtain ⟨y, hy⟩ := key
-  refine ⟨{i | topPattern k w (g i) = y}, hy, ?_⟩
+  refine ⟨fiber y, hy, ?_⟩
   intro i hi j hj
-  simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hi hj
+  simp only [fiber, Finset.mem_filter, Finset.mem_univ, true_and] at hi hj
   have hpat : topPattern k w (g i) = topPattern k w (g j) := by rw [hi, hj]
   exact sub_mem_degreeLT_of_topPattern_eq (hdeg i) (hdeg j) hcov hpat
 

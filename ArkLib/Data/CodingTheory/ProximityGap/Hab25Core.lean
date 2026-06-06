@@ -11,6 +11,12 @@ import Mathlib.Tactic
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 
 set_option linter.unusedSectionVars false
+-- The Johnson-range MCA skeleton (below) carries `[DecidableEq ι]`/`[DecidableEq F]` section
+-- instances that several `ε_mca`-vocabulary statements need only at proof time, not in their
+-- types; suppress the noisy `unused...InType` warnings file-wide, matching the idiom in the
+-- sibling `Errors.lean` and `GrandChallenges.lean`.
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
 
 /-!
 # Hab25 core: from collinearity to correlated agreement (Lemma 1, [AHIV17/BKS18])
@@ -324,7 +330,7 @@ identical expression.
 
   `( (2(m+½)⁵ + 3(m+½)·δ·ρ₊) / (3·ρ₊^{3/2}) · n + (m+½)/√ρ₊ ) / |F|`. -/
 noncomputable def johnsonBoundReal
-    (domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0) : ℝ :=
+    (_domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0) : ℝ :=
   let n : ℝ := Fintype.card ι
   let ρ_plus : ℝ := k / n + 1 / n
   let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
@@ -335,7 +341,7 @@ noncomputable def johnsonBoundReal
 
 /-- The Johnson-range side condition `δ < 1 − √ρ₊ − η` on the radius, in real form. Matches
 the `_hδ` hypothesis of `rs_epsMCA_johnson_range_bchks25`. -/
-def InJohnsonRange (domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0) : Prop :=
+def InJohnsonRange (_domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0) : Prop :=
   (δ : ℝ) <
     1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) - (η : ℝ)
 

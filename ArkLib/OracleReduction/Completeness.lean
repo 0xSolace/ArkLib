@@ -229,9 +229,9 @@ theorem unroll_n_message_reduction_perfectCompleteness
   rw [and_assoc, and_assoc]
   conv => -- Key block to split the Prod support membership
     dsimp only [Functor.map, OptionT.instMonad]
-    simp only [OptionT.mem_support_OptionT_bind_run_some_iff, Challenge,
+    simp only [OptionT.monad_bind_eq_bind,
+      OptionT.mem_support_OptionT_bind_run_some_iff, Challenge,
       Function.comp_apply, Prod.exists]
-  trace_state
   apply and_congr
   · constructor
     · intro h tr lastPrvState h_mem_prvRun
@@ -290,7 +290,6 @@ theorem unroll_n_message_reduction_perfectCompleteness
             refine ⟨h_pOut, ?_⟩
             use vStmtOut, vOStmtOut
             refine ⟨?_, rfl⟩
-            dsimp only [OptionT.run] at h_ver
             simp only [OptionT.mem_support_simulateQ_liftQuery_iff, liftM_OptionT_eq]
             exact h_ver
           · intro hRight tr pStmtOut pOStmtOut pWitOut vStmtOut vOStmtOut h_exists_tr_lastPrvState
@@ -379,6 +378,7 @@ theorem unroll_0_message_reduction_perfectCompleteness
   simp only [Fin.induction_zero]
   dsimp only [ChallengeIdx, Challenge, Fin.isValue, Fin.reduceLast, liftComp_eq_liftM]
   simp only [liftM_pure, bind_pure_comp, pure_bind, Prod.mk.eta]
+  rfl
 
 end ZeroMessageProtocol
 
@@ -451,8 +451,10 @@ theorem unroll_1_message_reduction_perfectCompleteness_P_to_V
   congr!
   rename_i _ prvState1 prvOut
   all_goals
-    funext i
-    fin_cases i <;> rfl
+    first
+    | (funext i; fin_cases i <;> rfl)
+    | (congr 1 <;> (try funext i) <;> (try fin_cases i) <;> rfl)
+    | (congr 2 <;> (try funext i) <;> (try fin_cases i) <;> rfl)
 
 /-- **Derive 1-message V→P version from generic n-message theorem**
 
@@ -518,9 +520,10 @@ theorem unroll_1_message_reduction_perfectCompleteness_V_to_P
     bind_map_left]
   congr!
   all_goals
-  · funext i
-    fin_cases i
-    · rfl
+    first
+    | (funext i; fin_cases i <;> rfl)
+    | (congr 1 <;> (try funext i) <;> (try fin_cases i) <;> rfl)
+    | (congr 2 <;> (try funext i) <;> (try fin_cases i) <;> rfl)
 
 end OneMessageProtocol
 
@@ -598,10 +601,10 @@ theorem unroll_2_message_reduction_perfectCompleteness
     Prod.mk.eta, bind_assoc]
   congr!
   all_goals
-  · funext i
-    fin_cases i
-    · rfl
-    · rfl
+    first
+    | (funext i; fin_cases i <;> rfl)
+    | (congr 1 <;> (try funext i) <;> (try fin_cases i) <;> rfl)
+    | (congr 2 <;> (try funext i) <;> (try fin_cases i) <;> rfl)
 
 end TwoMessageProtocol
 
@@ -1102,9 +1105,7 @@ theorem probOutput_eq_PMF_apply
     {α : Type} (oa : OracleComp spec α) (pmf : PMF α) (x : α)
     (h : evalDist oa = OptionT.lift pmf) :
     Pr[= x | oa] = pmf x := by
-  have h' : evalDist oa = liftM pmf := by
-    exact (show evalDist oa = liftM pmf from by
-      simpa [OptionT.liftM_def] using h)
+  have h' : evalDist oa = liftM pmf := h
   exact (evalDist_eq_liftM_iff (mx := oa) (p := pmf)).1 h' x
 
 open Classical in
@@ -1142,7 +1143,7 @@ theorem probOutput_uniformOfFintype_eq_Pr
     (x : L) :
     Pr[= x | $ᵗ L] = Pr_{ let y ← $ᵖ L }[y = x] := by
   refine probOutput_uniform_eq_Pr ($ᵗ L) x ?_
-  simpa [OptionT.liftM_def] using (evalDist_uniformSample (α := L))
+  rw [← OptionT.liftM_def]; exact (evalDist_uniformSample (α := L))
 
 open Classical in
 /-- **Convert sum of uniform probabilities back to Pr_ notation**

@@ -197,7 +197,7 @@ lemma cT_sub_ne_zero (domain : ι ↪ F) {k : ℕ} {T T' : Finset ι}
     by_contra h
     push_neg at h
     -- T ⊆ T' and equal cards ⇒ T = T'
-    exact hne (Finset.eq_of_subset_of_card_le h (le_of_eq (hT.trans hT'.symm)))
+    exact hne (Finset.eq_of_subset_of_card_le h (le_of_eq (hT'.trans hT.symm)))
   obtain ⟨i₀, hi₀T, hi₀T'⟩ := hexists
   -- indicator word e_{i₀}
   set e : ι → F := fun i => if i = i₀ then 1 else 0 with he
@@ -233,7 +233,7 @@ lemma cT_sub_ne_zero (domain : ι ↪ F) {k : ℕ} {T T' : Finset ι}
     rw [hbasis]
     -- coeff k of basis = leadingCoeff (since natDegree basis = #T - 1 = k) ≠ 0
     have hnatdeg : (Lagrange.basis T (fun i => domain i) i₀).natDegree = k := by
-      rw [Lagrange.natDegree_basis hinj hi₀T, hT]
+      rw [Lagrange.natDegree_basis hinj hi₀T, hT]; omega
     rw [← hnatdeg, ← Polynomial.leadingCoeff]
     exact Polynomial.leadingCoeff_ne_zero.mpr (Lagrange.basis_ne_zero hinj hi₀T)
   -- contradiction: applying the zero functional to e gives c_T e - c_{T'} e = 0
@@ -245,25 +245,24 @@ lemma cT_sub_ne_zero (domain : ι ↪ F) {k : ℕ} {T T' : Finset ι}
 `φ : (ι → F) →ₗ[F] F` has kernel of `F`-dimension `n - 1`, hence the set of its zeros has
 cardinality `q^{n-1}`. -/
 lemma card_ker_eq (φ : (ι → F) →ₗ[F] F) (hφ : φ ≠ 0) :
-    Fintype.card (LinearMap.ker φ) = Fintype.card F ^ (Fintype.card ι - 1) := by
+    Nat.card (LinearMap.ker φ) = Fintype.card F ^ (Fintype.card ι - 1) := by
   classical
+  have : Fintype (LinearMap.ker φ) := Fintype.ofFinite _
+  rw [Nat.card_eq_fintype_card]
   -- finrank of kernel = n - 1 by rank-nullity + surjectivity (range = ⊤, finrank 1)
   have hsurj : Function.Surjective φ := by
-    rw [← LinearMap.range_eq_top]
-    -- range is a submodule of F (dim 1); nonzero ⇒ range = ⊤
-    rcases (Submodule.eq_bot_or_eq_top (LinearMap.range φ)) with h | h
-    · exfalso; apply hφ
-      ext u
-      have : φ u ∈ LinearMap.range φ := ⟨u, rfl⟩
-      rw [h, Submodule.mem_bot] at this
-      simpa using this
-    · exact h
+    -- pick u₀ with φ u₀ ≠ 0, then a = φ ((a / φ u₀) • u₀)
+    obtain ⟨u₀, hu₀⟩ : ∃ u₀, φ u₀ ≠ 0 := by
+      by_contra h
+      push_neg at h
+      exact hφ (LinearMap.ext h)
+    intro a
+    refine ⟨(a / φ u₀) • u₀, ?_⟩
+    rw [map_smul, smul_eq_mul, div_mul_cancel₀ _ hu₀]
   have hrange : Module.finrank F (LinearMap.range φ) = 1 := by
-    rw [LinearMap.range_eq_top.mpr hsurj]
-    simp [Module.finrank_top, Module.finrank_self]
-  have hrn := finrank_range_add_finrank_ker φ
+    rw [LinearMap.range_eq_top.mpr hsurj, finrank_top, Module.finrank_self]
+  have hrn := LinearMap.finrank_range_add_finrank_ker φ
   rw [hrange, Module.finrank_pi (R := F) (ι := ι)] at hrn
-  simp only [Finset.sum_const, Finset.card_univ, smul_eq_mul, mul_one] at hrn
   have hker : Module.finrank F (LinearMap.ker φ) = Fintype.card ι - 1 := by omega
   rw [Module.card_eq_pow_finrank (K := F) (V := LinearMap.ker φ), hker]
 
@@ -276,26 +275,206 @@ lemma card_agree_le (domain : ι ↪ F) {k : ℕ} {T T' : Finset ι}
   classical
   set φ : (ι → F) →ₗ[F] F := cT domain k T - cT domain k T' with hφdef
   have hφ : φ ≠ 0 := cT_sub_ne_zero domain hT hT' hne
-  -- filter = ker φ as sets
-  have hbij : (Finset.univ.filter (fun u : ι → F => cT domain k T u = cT domain k T' u))
-      = (Finset.univ.filter (fun u : ι → F => u ∈ LinearMap.ker φ)) := by
-    apply Finset.filter_congr
-    intro u _
-    rw [LinearMap.mem_ker]
-    simp only [hφdef, LinearMap.sub_apply, eq_iff_iff]
+  have hFin : Fintype (LinearMap.ker φ) := Fintype.ofFinite _
+  -- the filter predicate coincides with membership in `ker φ`
+  have hpred : ∀ u : ι → F, (cT domain k T u = cT domain k T' u) ↔ (φ u = 0) := by
+    intro u
+    rw [hφdef]
+    simp only [LinearMap.sub_apply]
     constructor
     · intro h; rw [h]; ring
-    · intro h; linarith [sub_eq_zero.mp (by linear_combination h)]
-  rw [hbij]
-  -- card of filter (· ∈ ker) = Fintype.card ker
-  have : (Finset.univ.filter (fun u : ι → F => u ∈ LinearMap.ker φ)).card
-      = Fintype.card (LinearMap.ker φ) := by
-    rw [Fintype.card_eq.mpr ⟨?_⟩]
-    · rfl
-    · exact (Equiv.subtypeEquivRight (by simp)).trans
-        (Equiv.Set.ofEq (by ext; simp)) |>.symm.trans (Equiv.refl _)
-  rw [this]
-  exact card_ker_eq φ hφ
+    · intro h; exact sub_eq_zero.mp h
+  -- rewrite filter card via the subtype card of the kernel
+  rw [Finset.filter_congr (q := fun u : ι → F => φ u = 0) (fun u _ => hpred u)]
+  rw [show (Finset.univ.filter (fun u : ι → F => φ u = 0)).card
+        = Fintype.card { u : ι → F // φ u = 0 } from
+      (Fintype.card_subtype (fun u : ι → F => φ u = 0)).symm]
+  rw [show Fintype.card { u : ι → F // φ u = 0 } = Nat.card (LinearMap.ker φ) from ?_]
+  · exact card_ker_eq φ hφ
+  · rw [Nat.card_eq_fintype_card]
+    exact Fintype.card_congr (Equiv.subtypeEquivRight (fun u => by rw [LinearMap.mem_ker]))
+
+/-- **Hyperplane avoidance.** If `q > C(C(n, k+1), 2)`, there is a first word `u₀` for which the
+functionals `c_T` (over `(k+1)`-subsets `T`) take pairwise distinct values: the union of the
+`C(C(n,k+1),2)` "agreement hyperplanes" `{u | c_T u = c_{T'} u}` (each of size `q^{n-1}`) does
+not cover all `q^n` words. -/
+lemma exists_u0_injOn_cT (domain : ι ↪ F) {k : ℕ} (hk : k + 1 ≤ Fintype.card ι)
+    (hq : (Nat.choose (Fintype.card ι) (k + 1)).choose 2 < Fintype.card F) :
+    ∃ u₀ : ι → F, ∀ T ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
+      ∀ T' ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
+        cT domain k T u₀ = cT domain k T' u₀ → T = T' := by
+  classical
+  set n := Fintype.card ι with hn
+  set Subs := (Finset.univ : Finset ι).powersetCard (k + 1) with hSubs
+  -- the set of "bad" first words (some pair of distinct subsets gives equal functionals)
+  set bad : Finset (ι → F) := Finset.univ.filter
+    (fun u => ∃ T ∈ Subs, ∃ T' ∈ Subs, T ≠ T' ∧ cT domain k T u = cT domain k T' u) with hbad
+  -- it suffices to find u₀ ∉ bad
+  suffices hsuff : ∃ u₀, u₀ ∉ bad by
+    obtain ⟨u₀, hu₀⟩ := hsuff
+    refine ⟨u₀, fun T hT T' hT' heq => ?_⟩
+    by_contra hTne
+    exact hu₀ (by rw [hbad, Finset.mem_filter]; exact ⟨Finset.mem_univ _, T, hT, T', hT', hTne, heq⟩)
+  -- bound: card bad < card univ = q^n  ⇒  bad ≠ univ  ⇒  ∃ u₀ ∉ bad
+  have hcard_univ : (Finset.univ : Finset (ι → F)).card = Fintype.card F ^ n := by
+    rw [Finset.card_univ, Fintype.card_pi]; simp [hn]
+  -- bad ⊆ ⋃ over the 2-subsets of Subs of the agreement filters
+  set Pairs := Subs.powersetCard 2 with hPairs
+  have hbad_sub : bad ⊆ Pairs.biUnion (fun P =>
+      Finset.univ.filter (fun u : ι → F =>
+        ∃ T ∈ P, ∃ T' ∈ P, T ≠ T' ∧ cT domain k T u = cT domain k T' u)) := by
+    intro u hu
+    rw [hbad, Finset.mem_filter] at hu
+    obtain ⟨_, T, hT, T', hT', hTne, heq⟩ := hu
+    rw [Finset.mem_biUnion]
+    refine ⟨{T, T'}, ?_, ?_⟩
+    · rw [hPairs, Finset.mem_powersetCard]
+      refine ⟨?_, ?_⟩
+      · intro x hx
+        rcases Finset.mem_insert.mp hx with h | h
+        · exact h ▸ hT
+        · exact (Finset.mem_singleton.mp h) ▸ hT'
+      · rw [Finset.card_insert_of_notMem (by simp [hTne]), Finset.card_singleton]
+    · rw [Finset.mem_filter]
+      exact ⟨Finset.mem_univ _, T, Finset.mem_insert_self _ _, T',
+        Finset.mem_insert_of_mem (Finset.mem_singleton_self _), hTne, heq⟩
+  -- each agreement filter (over a 2-element pair) has card ≤ q^(n-1)
+  have heach : ∀ P ∈ Pairs,
+      (Finset.univ.filter (fun u : ι → F =>
+        ∃ T ∈ P, ∃ T' ∈ P, T ≠ T' ∧ cT domain k T u = cT domain k T' u)).card
+        ≤ Fintype.card F ^ (n - 1) := by
+    intro P hP
+    rw [hPairs, Finset.mem_powersetCard] at hP
+    obtain ⟨hPsub, hPcard⟩ := hP
+    -- P = {T, T'} with T ≠ T', both (k+1)-subsets
+    obtain ⟨T, T', hTne, hPeq⟩ := Finset.card_eq_two.mp hPcard
+    have hTmem : T ∈ Subs := hPsub (hPeq ▸ Finset.mem_insert_self _ _)
+    have hT'mem : T' ∈ Subs := hPsub (hPeq ▸ Finset.mem_insert_of_mem (Finset.mem_singleton_self _))
+    rw [hSubs, Finset.mem_powersetCard] at hTmem hT'mem
+    -- the filter is contained in the single agreement filter for (T, T')
+    have hsub : (Finset.univ.filter (fun u : ι → F =>
+        ∃ S ∈ P, ∃ S' ∈ P, S ≠ S' ∧ cT domain k S u = cT domain k S' u))
+        ⊆ Finset.univ.filter (fun u : ι → F => cT domain k T u = cT domain k T' u) := by
+      intro u hu
+      rw [Finset.mem_filter] at hu ⊢
+      refine ⟨Finset.mem_univ _, ?_⟩
+      obtain ⟨S, hS, S', hS', hSne, hSeq⟩ := hu.2
+      -- S, S' ∈ {T, T'}, distinct ⇒ {S,S'} = {T,T'}; so c_T u = c_{T'} u
+      rw [hPeq, Finset.mem_insert, Finset.mem_singleton] at hS hS'
+      rcases hS with hSa | hSa <;> rcases hS' with hSb | hSb
+      · exact absurd (hSa.trans hSb.symm) hSne
+      · exact (congrArg (fun (R : Finset ι) => cT domain k R u) hSa).symm.trans
+          (hSeq.trans (congrArg (fun (R : Finset ι) => cT domain k R u) hSb))
+      · exact (congrArg (fun (R : Finset ι) => cT domain k R u) hSb).symm.trans
+          (hSeq.symm.trans (congrArg (fun (R : Finset ι) => cT domain k R u) hSa))
+      · exact absurd (hSa.trans hSb.symm) hSne
+    calc _ ≤ (Finset.univ.filter (fun u : ι → F =>
+            cT domain k T u = cT domain k T' u)).card := Finset.card_le_card hsub
+      _ = Fintype.card F ^ (n - 1) := card_agree_le domain hTmem.2 hT'mem.2 hTne
+  -- assemble the union bound
+  have hbad_card : bad.card ≤ ((Nat.choose n (k + 1)).choose 2) * Fintype.card F ^ (n - 1) := by
+    calc bad.card ≤ (Pairs.biUnion _).card := Finset.card_le_card hbad_sub
+      _ ≤ ∑ P ∈ Pairs, (Finset.univ.filter (fun u : ι → F =>
+            ∃ T ∈ P, ∃ T' ∈ P, T ≠ T' ∧ cT domain k T u = cT domain k T' u)).card :=
+          Finset.card_biUnion_le
+      _ ≤ ∑ _P ∈ Pairs, Fintype.card F ^ (n - 1) := Finset.sum_le_sum heach
+      _ = Pairs.card * Fintype.card F ^ (n - 1) := by rw [Finset.sum_const, smul_eq_mul]
+      _ = ((Nat.choose n (k + 1)).choose 2) * Fintype.card F ^ (n - 1) := by
+          rw [hPairs, Finset.card_powersetCard, hSubs, Finset.card_powersetCard, Finset.card_univ,
+            ← hn]
+  -- q^(n-1) * q = q^n, and #pairs < q, so card bad < q^n
+  have hpos : 0 < Fintype.card F := Fintype.card_pos
+  have hn1 : n - 1 + 1 = n := by omega
+  have hstrict : bad.card < Fintype.card F ^ n := by
+    calc bad.card ≤ ((Nat.choose n (k + 1)).choose 2) * Fintype.card F ^ (n - 1) := hbad_card
+      _ < Fintype.card F * Fintype.card F ^ (n - 1) := by
+          have hpp : 0 < Fintype.card F ^ (n - 1) := pow_pos hpos _
+          exact Nat.mul_lt_mul_of_pos_right hq hpp
+      _ = Fintype.card F ^ n := by rw [← pow_succ', hn1]
+  -- card bad < card univ ⇒ ∃ u₀ ∉ bad
+  by_contra hcon
+  push_neg at hcon
+  have hbeq : bad = Finset.univ := Finset.eq_univ_of_forall hcon
+  rw [hbeq, hcard_univ] at hstrict
+  exact lt_irrefl _ hstrict
+
+/-- **Lower-bound counting.** With the deep-hole second word and a first word `u₀` separating all
+the `c_T`, the bad `γ`-set contains the `C(n,k+1)` distinct values `γ_T = -c_T(u₀)`, so
+`Pr_γ[mcaEvent] ≥ C(n,k+1)/q`. -/
+lemma mcaEvent_prob_ge (domain : ι ↪ F) {k : ℕ} (hk : k + 1 ≤ Fintype.card ι)
+    (hq : (Nat.choose (Fintype.card ι) (k + 1)).choose 2 < Fintype.card F)
+    {u₀ : ι → F}
+    (hu₀ : ∀ T ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
+      ∀ T' ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
+        cT domain k T u₀ = cT domain k T' u₀ → T = T') :
+    (Nat.choose (Fintype.card ι) (k + 1) : ENNReal) / (Fintype.card F : ENNReal) ≤
+      Pr_{ let γ ←$ᵖ F }[ mcaEvent (ReedSolomon.code domain k : Set (ι → F)) 1 u₀
+        (deepHole domain k) γ ] := by
+  classical
+  rw [prob_uniform_eq_card_filter_div_card]
+  set Subs := (Finset.univ : Finset ι).powersetCard (k + 1) with hSubs
+  set Bad := Finset.univ.filter
+    (fun γ : F => mcaEvent (ReedSolomon.code domain k : Set (ι → F)) 1 u₀ (deepHole domain k) γ)
+    with hBad
+  -- the map T ↦ -c_T(u₀) injects Subs into Bad
+  set g : Finset ι → F := fun T => -cT domain k T u₀ with hg
+  have hmaps : ∀ T ∈ Subs, g T ∈ Bad := by
+    intro T hT
+    rw [hSubs, Finset.mem_powersetCard] at hT
+    rw [hBad, Finset.mem_filter]
+    exact ⟨Finset.mem_univ _, mcaEvent_at_gammaT domain hT.2 u₀⟩
+  have hinj : Set.InjOn g (↑Subs) := by
+    intro T hT T' hT' hgeq
+    rw [Finset.mem_coe] at hT hT'
+    apply hu₀ T hT T' hT'
+    have : cT domain k T u₀ = cT domain k T' u₀ := by
+      have := hgeq; rw [hg] at this; simpa using neg_injective this
+    exact this
+  -- therefore #Subs ≤ #Bad
+  have hcard_le : Subs.card ≤ Bad.card :=
+    Finset.card_le_card_of_injOn g hmaps hinj
+  rw [hSubs, Finset.card_powersetCard, Finset.card_univ] at hcard_le
+  -- push to ENNReal division
+  have hnum : (↑(Nat.choose (Fintype.card ι) (k + 1)) : ENNReal) ≤ (↑(↑Bad.card : ℝ≥0) : ENNReal) := by
+    exact_mod_cast hcard_le
+  have hden : (↑(↑(Fintype.card F) : ℝ≥0) : ENNReal) = (↑(Fintype.card F) : ENNReal) := by
+    push_cast; rfl
+  rw [hden]
+  gcongr
+
+/-- **Lower bound on the radius-one MCA error.** For `C := RS[F, domain, k]` with `k + 1 ≤ n`
+and `q > C(C(n, k+1), 2)`: `ε_mca(C, 1) ≥ C(n, k+1) / q`. -/
+theorem epsMCA_one_ge_choose_div (domain : ι ↪ F) {k : ℕ} (hk : k + 1 ≤ Fintype.card ι)
+    (hq : (Nat.choose (Fintype.card ι) (k + 1)).choose 2 < Fintype.card F) :
+    (Nat.choose (Fintype.card ι) (k + 1) : ENNReal) / (Fintype.card F : ENNReal) ≤
+      epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 := by
+  obtain ⟨u₀, hu₀⟩ := exists_u0_injOn_cT domain hk hq
+  have hpr := mcaEvent_prob_ge domain hk hq hu₀
+  refine le_trans hpr ?_
+  unfold epsMCA
+  exact le_iSup (fun u : WordStack F (Fin 2) ι =>
+    Pr_{ let γ ←$ᵖ F }[ mcaEvent (ReedSolomon.code domain k : Set (ι → F)) 1 (u 0) (u 1) γ ])
+    (Code.finMapTwoWords u₀ (deepHole domain k))
+
+/-- **EXACT radius-one MCA value.** For `C := RS[F, domain, k]` with injective `domain`,
+`n := |ι|`, `k + 1 ≤ n`, and `q := |F| > C(C(n, k+1), 2)`:
+
+  `ε_mca(C, 1) = C(n, k+1) / |F|`. -/
+theorem epsMCA_one_eq_choose_div (domain : ι ↪ F) {k : ℕ} (hk : k + 1 ≤ Fintype.card ι)
+    (hq : (Nat.choose (Fintype.card ι) (k + 1)).choose 2 < Fintype.card F) :
+    epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 =
+      (Nat.choose (Fintype.card ι) (k + 1) : ENNReal) / (Fintype.card F : ENNReal) :=
+  le_antisymm (epsMCA_one_le_choose_div domain k) (epsMCA_one_ge_choose_div domain hk hq)
+
+/-- **The formal §1 Grand MCA Challenge for Reed–Solomon is decided by a single inequality.**
+Under `k + 1 ≤ n` and `q > C(C(n, k+1), 2)`, the Grand MCA Challenge holds for `RS[F, domain, k]`
+at threshold `ε*` iff `C(n, k+1) / |F| ≤ ε*`. -/
+theorem grandMCAChallenge_iff_choose_le (domain : ι ↪ F) {k : ℕ} (hk : k + 1 ≤ Fintype.card ι)
+    (hq : (Nat.choose (Fintype.card ι) (k + 1)).choose 2 < Fintype.card F) (ε_star : ℝ≥0) :
+    grandMCAChallenge (ReedSolomon.code domain k) ε_star ↔
+      (Nat.choose (Fintype.card ι) (k + 1) : ENNReal) / (Fintype.card F : ENNReal)
+        ≤ (ε_star : ENNReal) := by
+  rw [grandMCAChallenge_iff_epsMCA_one, epsMCA_one_eq_choose_div domain hk hq]
 
 end Exact
 
