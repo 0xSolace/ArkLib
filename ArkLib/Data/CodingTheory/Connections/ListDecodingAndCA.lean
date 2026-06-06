@@ -228,6 +228,23 @@ theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card
     ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
     T hT hTsub hcard
 
+/-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — canonical in-tree first-moment relaxation.**
+This is the no-carrier version of `linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card`.
+Taking the carrier to be all codewords and using the proven single-codeword determinacy count gives
+
+  `ε_mca(C, 1 − √(1 − δ + η)) ≤ ENNReal.ofReal ((|F|^n · n)/|F|)`.
+
+It is intentionally much weaker than the GCXK25/GKL24 `L²·δ·n` first-moment term, but it closes
+the first-moment residual interface without any external hypothesis. -/
+theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_univ
+    (C : LinearCode ι F) (δ η : ℝ) :
+    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
+        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
+      ENNReal.ofReal
+        (((Fintype.card (ι → F) : ℝ) * (Fintype.card ι : ℝ)) / Fintype.card F) :=
+  ProximityGap.epsMCA_le_ofReal_inTree_firstMoment_card C
+    ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3].** List decoding implies MCA.
 
 Let `C ⊆ F^n` be a linear code and let `δ, η ∈ (0, 1)`. If `|Λ(C, δ)| ≤ L`, then
