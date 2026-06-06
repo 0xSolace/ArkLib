@@ -10,48 +10,47 @@ import Mathlib.Algebra.CharP.CharAndCard
 import Mathlib.Data.Nat.Choose.Dvd
 
 /-!
-# Polynomial infrastructure for the Erdős–Heilbronn restricted-sumset bound
+# Polynomial Infrastructure for the Erdős–Heilbronn Restricted Sumset Bound
 
-This file proves the polynomial and coefficient lemmas used in the `h = 2` Erdős–Heilbronn
-argument via Alon's Combinatorial Nullstellensatz
+This module establishes the polynomial and coefficient-theoretic foundations necessary to prove
+the $h = 2$ case of the Erdős–Heilbronn conjecture via Alon's Combinatorial Nullstellensatz
 (`MvPolynomial.combinatorial_nullstellensatz_exists_eval_nonzero`).
 
-For a field `F` of prime characteristic `p`, a finite set `A ⊆ F` with `n := |A| ≥ 2`, and
-`2(n - 2) < p`, the set of distinct-pair sums
+## Mathematical Context
 
-  `Σ₂(A) := { ∑_{a ∈ S} a : S ⊆ A, |S| = 2 } = { a + b : a, b ∈ A, a ≠ b }`
+For a field $\mathbb{F}$ of prime characteristic $p$ and a finite subset $A \subseteq \mathbb{F}$
+with $n := |A| \ge 2$, the restricted sumset of distinct-pair sums is defined as:
+$$\Sigma_2(A) := \{ a + b : a, b ∈ A, a \neq b \}$$
 
-should have cardinality at least `2n - 3`:
+If $2(n - 2) < p$, the Erdős–Heilbronn theorem asserts that:
+$$|\Sigma_2(A)| \ge 2n - 3$$
 
-  `|Σ₂(A)| ≥ 2(n - 2) + 1`.
+## Proof Strategy (Alon–Nathanson–Ruzsa, $h = 2$)
 
-## Staged proof outline (Alon–Nathanson–Ruzsa, `h = 2`)
+We proceed by contradiction. Suppose $|\Sigma_2(A)| \le 2(n - 2)$. Since $|\mathbb{F}| \ge p > 2(n - 2)$,
+we can pad $\Sigma_2(A)$ to a subset $C'$ of cardinality exactly $m := 2(n - 2)$.
+We then define the bivariate polynomial:
+$$Q(X_0, X_1) := (X_1 - X_0) \prod_{c \in C'} (X_0 + X_1 - c) \in \mathbb{F}[X_0, X_1]$$
 
-Suppose `|Σ₂(A)| ≤ 2(n - 2)`. Pad `Σ₂(A)` to a set `C'` of size exactly `m := 2(n - 2)`
-(possible because `|F| ≥ p > m`). Consider the two-variable polynomial
+This polynomial $Q$ vanishes on the entire Cartesian product $A \times A$:
+- If $x_0 = x_1$, the factor $(X_1 - X_0)$ vanishes.
+- If $x_0 \neq x_1$, then $x_0 + x_1 \in \Sigma_2(A) \subseteq C'$, so one of the factors of the product vanishes.
 
-  `Q := (X₁ - X₀) · ∏_{c ∈ C'} (X₀ + X₁ - C c) ∈ F[X₀, X₁]`.
+The total degree of $Q$ is $1 + m = 2n - 3$. We target the monomial $t = X_0^{n-1} X_1^{n-2}$,
+which has degree $2n - 3$. The coefficient of $t$ in $Q$ equals its coefficient in the leading homogeneous
+part of $Q$, which is $(X_1 - X_0)(X_0 + X_1)^m$. This coefficient is given by:
+$$\binom{m}{n-1} - \binom{m}{n-2}$$
 
-`Q` vanishes on all of `A × A`: tuples with `X₀ = X₁` are killed by the first factor; tuples with
-`X₀ ≠ X₁` have `X₀ + X₁ ∈ Σ₂(A) ⊆ C'`, killing one factor of the product.
+By combinatorial and modular arithmetic arguments, this coefficient is shown to be nonzero modulo $p$
+under the condition $m < p$. By Alon's Combinatorial Nullstellensatz, there must exist some point
+$(x_0, x_1) \in A \times A$ such that $Q(x_0, x_1) \neq 0$, yielding a contradiction.
 
-`Q` has total degree `1 + m = 2n - 3`, equal to the degree of the monomial
-`t := X₀^{n-1} X₁^{n-2}`. The coefficient of `t` in `Q` equals its coefficient in the leading
-part `(X₁ - X₀)(X₀ + X₁)^m`, namely
-
-  `C(m, n-1) - C(m, n-2)`,
-
-which is nonzero mod `p` because `(n-1)·(C(m,n-2) - C(m,n-1)) = C(m,n-2)` and `p` is coprime to
-`C(m, n-2)` (as `m < p`). The Nullstellensatz packaging IS carried out here:
-`erdos_heilbronn_two` is the full `h = 2` theorem, derived from the coefficient,
-nonvanishing, total-degree, and vanishing lemmas via
-`combinatorial_nullstellensatz_exists_eval_nonzero` and a padding step. The general-`h`
-Dias da Silva–Hamidoune statement (Schur/ballot-number coefficient) remains future work.
+This formalization focuses on the $h=2$ case; for general $h$, the bound is given by the Dias da Silva–Hamidoune
+theorem, which requires analyzing ballot-number coefficient structures.
 
 ## References
 
-- [Alon, *Combinatorial Nullstellensatz*][Alon_1999]
-- Dias da Silva, Hamidoune; Erdős, Heilbronn.
+- Alon, N. *Combinatorial Nullstellensatz*. Combinatorics, Probability and Computing, 1999.
 -/
 
 namespace MvPolynomial
@@ -342,9 +341,9 @@ theorem erdos_heilbronn_two {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
     2 * (A.card - 2) + 1 ≤ (restrictedSumset2 A).card := by
   classical
   set n := A.card with hncard
-  -- For `n = 2` the bound is `1 ≤ |Σ₂(A)|`, which holds since `Σ₂(A)` is nonempty.
+  /- For the base case $n = 2$, the bound reduces to $1 \le |\Sigma_2(A)|$, which holds since $A$ has cardinality 2, implying there exists at least one pair of distinct elements whose sum is in $\Sigma_2(A)$. -/
   rcases Nat.lt_or_ge n 3 with hlt | hge
-  · -- n = 2
+  · -- Case $n = 2$.
     have hn2 : n = 2 := by omega
     rw [hn2]
     simp only [Nat.sub_self, Nat.mul_zero, Nat.zero_add]
@@ -353,13 +352,13 @@ theorem erdos_heilbronn_two {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
       add_mem_restrictedSumset2 (hAeq ▸ Finset.mem_insert_self _ _)
         (hAeq ▸ Finset.mem_insert_of_mem (Finset.mem_singleton_self _)) hab
     exact Finset.card_pos.mpr ⟨_, hmem⟩
-  · -- n ≥ 3: the polynomial method.
+  · -- Case $n \ge 3$. We apply Alon's Combinatorial Nullstellensatz.
     have hn3 : 3 ≤ n := hge
     by_contra hcon
     push Not at hcon
     have hle : (restrictedSumset2 A).card ≤ 2 * (n - 2) := by omega
     set m := 2 * (n - 2) with hm
-    -- `p ≤ |F|`, hence `m < |F|`, so we can pad `Σ₂(A)` to a set of size `m`.
+    /- Since $p \le |F|$ and $m < p$, we have $m < |F|$, allowing us to pad the restricted sumset to a set of size $m$. -/
     have hp_le_card : p ≤ Fintype.card F := by
       haveI : Fact p.Prime := ⟨hp⟩
       have hdvd : p ∣ Fintype.card F := by
@@ -370,17 +369,17 @@ theorem erdos_heilbronn_two {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
       (Finset.subset_univ (restrictedSumset2 A)) hle (by rw [Finset.card_univ]; exact hm_le_card)
     set f := MvPolynomial.ehQ C' with hf
     set t := MvPolynomial.ehMon (n - 1) (n - 2) with ht
-    -- coeff of `t` in `f` is nonzero.
+    -- Verify that the coefficient of the target monomial $t$ in the polynomial $f$ is nonzero.
     have hcoeff : MvPolynomial.coeff t f ≠ 0 := by
       rw [hf, ht, MvPolynomial.coeff_ehQ_eq_leading hn3 hC'card,
         MvPolynomial.coeff_leading hn3]
       exact MvPolynomial.leading_coeff_ne_zero hp hchar hn3 (hm ▸ hsmall)
-    -- `t.degree = m + 1`.
+    -- Compute the degree of the monomial $t$, which is exactly $m + 1$.
     have htdeg : t.degree = m + 1 := by
       rw [ht, Finsupp.degree_eq_sum, Fin.sum_univ_two,
         MvPolynomial.ehMon_apply_zero, MvPolynomial.ehMon_apply_one]
       omega
-    -- total degree of `f` equals `t.degree`.
+    -- Establish that the total degree of $f$ is exactly equal to the degree of $t$.
     have htotalDeg : f.totalDegree = t.degree := by
       refine le_antisymm ?_ ?_
       · rw [htdeg, hf, ← hC'card]
@@ -390,7 +389,7 @@ theorem erdos_heilbronn_two {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
         rw [← Finset.sum_subset (Finset.subset_univ t.support)
           (fun i _ hi => Finsupp.notMem_support_iff.mp hi)]
         exact MvPolynomial.le_totalDegree (p := f) hmem
-    -- degree condition `t i < #(S i) = n`.
+    -- Confirm that the degree of the monomial $t$ in each variable $X_i$ is strictly less than $|A| = n$.
     set S : Fin 2 → Finset F := fun _ => A with hS
     have htS : ∀ i, t i < (S i).card := by
       intro i
@@ -398,10 +397,10 @@ theorem erdos_heilbronn_two {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
       fin_cases i
       · simp [ht, MvPolynomial.ehMon_apply_zero, ← hncard]; omega
       · simp [ht, MvPolynomial.ehMon_apply_one, ← hncard]; omega
-    -- Apply the Combinatorial Nullstellensatz.
+    -- Apply Alon's Combinatorial Nullstellensatz to obtain a point of non-vanishing.
     obtain ⟨s, hsA, hsne⟩ := MvPolynomial.combinatorial_nullstellensatz_exists_eval_nonzero
       f t hcoeff htotalDeg S htS
-    -- But `f` vanishes on `A × A`.
+    -- Show that this contradicts the fact that $f$ vanishes identically on the grid $A \times A$.
     apply hsne
     apply MvPolynomial.eval_ehQ_eq_zero
     by_cases heq : s 0 = s 1

@@ -380,6 +380,13 @@ exhibiting genuine perfect soundness should special-case it. For the prize
 regime `e ∈ (0, 1)` so `bitsOfSecurity e > 0`. -/
 noncomputable def bitsOfSecurity (e : ℝ≥0) : ℝ := -Real.logb 2 (e : ℝ)
 
+/-- A positive soundness error bounded by `1` has nonnegative bits of security. -/
+theorem bitsOfSecurity_nonneg {e : ℝ≥0} (hpos : 0 < e) (hle : e ≤ 1) :
+    0 ≤ bitsOfSecurity e := by
+  rw [bitsOfSecurity, le_neg]
+  rw [Real.logb_le_iff_le_rpow (by norm_num) (by exact_mod_cast hpos)]
+  simpa using (NNReal.coe_le_coe.mpr hle)
+
 /-! ## Parameter record (KoalaBear-sextic regime)
 
 `ToyParams` bundles the ambient field/index and interpreted code (the
@@ -441,6 +448,16 @@ theorem ToyParams.soundnessError_le_one (p : ToyParams) :
 theorem ToyParams.soundnessError_mem_Icc (p : ToyParams) :
     p.soundnessError ∈ Set.Icc 0 1 :=
   ⟨zero_le _, p.soundnessError_le_one⟩
+
+/-- Real-valued form of `ToyParams.soundnessError_mem_Icc`. -/
+theorem ToyParams.coe_soundnessError_mem_Icc (p : ToyParams) :
+    (p.soundnessError : ℝ) ∈ Set.Icc 0 1 :=
+  ⟨NNReal.coe_nonneg _, by exact_mod_cast p.soundnessError_le_one⟩
+
+/-- The true bits-of-security of a positive bundled soundness error is nonnegative. -/
+theorem ToyParams.bitsOfSecurity_nonneg (p : ToyParams) (hpos : 0 < p.soundnessError) :
+    0 ≤ bitsOfSecurity p.soundnessError :=
+  _root_.ToyProblem.bitsOfSecurity_nonneg hpos p.soundnessError_le_one
 
 /-- The full-protocol RBR upper-bound vehicle (Lemmas 6.6 / 6.8) at a parameter
 point. -/

@@ -7,6 +7,7 @@ import ArkLib.Data.Polynomial.RationalFunctionsStrong
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.BetaIdentify
+import ArkLib.ToMathlib.BoundaryDischarge
 
 /-!
 # `L13Milestone` — the numerator-identification residual *supplied by definition*
@@ -215,6 +216,53 @@ theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_resid
     (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput
     (ArkLib.BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
       (k := k) (deg := deg) (domain := domain) (δ := δ) hLattice hStrictBoundary)
+
+omit [DecidableEq ι] in
+/-- Closed-radius §5 keystone with the β-identification residual removed and the lattice-boundary
+residual discharged from explicit boundary-card data.
+
+This is the same endpoint as
+`correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual`, but callers supply the
+concrete boundary facts: good-set cardinality bounds plus the coefficient-polynomial extraction.
+`BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys` converts those facts
+to the smaller lattice residual isolated by the quantization split. -/
+theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_boundaryData
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      BetaCurveInputFin (k := k) (deg := deg) (domain := domain) (δ := δ) u)
+    (hStrictBoundary : ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
+      δ' < δ →
+      Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι) →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ').card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u))
+    (hBoundaryData : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      δ = 1 - ReedSolomon.sqrtRate deg domain →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k) ∧
+      ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * k) ∧
+      (∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+              (P z).eval ∘ domain) ≤ δ) →
+          ∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P z).coeff j = (B j).eval z)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual
+    (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput hStrictBoundary
+    (ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
+      (k := k) (deg := deg) (domain := domain) (δ := δ) hBoundaryData)
 
 end L13Milestone
 

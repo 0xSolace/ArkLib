@@ -14,6 +14,10 @@ import Mathlib.Algebra.Polynomial.BigOperators
 
 namespace Polynomial
 
+/--
+The natural degree of a sum of polynomials is strictly less than $n$ (where $n > 0$)
+if the natural degree of each individual summand is strictly less than $n$.
+-/
 theorem natDegree_sum_lt_of_forall_lt.{u_1, w}
   {ι : Type w} (s : Finset ι) {S : Type u_1} [Semiring S]
   {n : ℕ} [inst : NeZero n] (f : ι → Polynomial S) (h : ∀ i ∈ s, (f i).natDegree < n) :

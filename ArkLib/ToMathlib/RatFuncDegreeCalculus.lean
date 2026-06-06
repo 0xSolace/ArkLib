@@ -6,38 +6,33 @@ Authors: ArkLib Contributors
 import Mathlib
 
 /-!
-# A degree calculus for `RatFunc F`
+# Degree Calculus for Rational Functions
 
-This file develops a *degree calculus* for rational functions `RatFunc F` over a field `F`,
-tracking how the "Z-degree" complexity of a rational function propagates through field
-arithmetic.  The motivation is bounding coefficient degrees in the BCIKS20 Appendix-A.4 Hensel
-recursion, where one repeatedly forms sums, products, inverses and powers of rational functions
-and needs a uniform polynomial bound on the degree of the resulting numerator/denominator.
+This module establishes a *degree calculus* for the field of rational functions $\mathbb{F}(X)$
+(represented in Mathlib via `RatFunc 𝔽`). It tracks the propagation of algebraic complexity
+under field operations. This calculus is key for bounding coefficient degrees in iterative
+constructions, such as the Hensel lifting process in [BCIKS20] Appendix A.4, where rational functions
+are subjected to addition, multiplication, inversion, and power operations.
 
-## Two degree measures
+## Definitions and Measures
 
-* `RatFunc.intDegree : RatFunc F → ℤ` (already in mathlib) is the *difference*
-  `num.natDegree - denom.natDegree`.  It is exactly additive on products
-  (`RatFunc.intDegree_mul`), negated on inverses (`RatFunc.intDegree_inv`) and subadditive on
-  sums (`RatFunc.intDegree_add_le`).  We record the relevant mathlib lemmas / a couple of small
-  corollaries for completeness.
+We analyze two distinct notions of degree:
 
-* `ArkLib.zDeg : RatFunc F → ℕ`, defined here as `max num.natDegree denom.natDegree`, is the
-  *size* of the reduced representation.  Unlike `intDegree` it never cancels numerator against
-  denominator, so it is the right measure to bound the data one actually stores.  The core results
-  are the subadditivity/submultiplicativity bounds:
+1. **Additive Degree (`RatFunc.intDegree`)**:
+   Defined as $\text{intDegree}(p/q) = \deg(p) - \deg(q)$. This measure behaves cleanly under
+   multiplicative operations ($\text{intDegree}(f \cdot g) = \text{intDegree}(f) + \text{intDegree}(g)$)
+   and satisfies subadditivity under addition.
 
-  * `zDeg_add_le      : zDeg (a + b) ≤ zDeg a + zDeg b`
-  * `zDeg_add_le'     : zDeg (a + b) ≤ max (zDeg a) (zDeg b) + zDeg b`  (the weaker requested form)
-  * `zDeg_mul_le      : zDeg (a * b) ≤ zDeg a + zDeg b`
-  * `zDeg_algebraMap  : zDeg (algebraMap F (RatFunc F) c) = 0`
-  * `zDeg_C           : zDeg (RatFunc.C c) = 0`
-  * `zDeg_inv         : zDeg a⁻¹ = zDeg a`
-  * `zDeg_pow_le      : zDeg (a ^ n) ≤ n * zDeg a`
+2. **Structural Size Measure (`zDeg`)**:
+   Defined as $\text{zDeg}(p/q) = \max(\deg(p), \deg(q))$ for $p, q$ coprime.
+   This captures the maximum degree of the polynomial components in the reduced representation,
+   serving as a proxy for the space/computational complexity of the rational function.
 
-All proofs are kernel-clean (no `sorry`/`admit`/`axiom`/`native_decide`); the axiom audit at the
-bottom of the file checks every main lemma depends only on
-`[propext, Classical.choice, Quot.sound]`.
+We prove the core subadditivity and submultiplicativity properties of $\text{zDeg}$:
+* Sum: $\text{zDeg}(f + g) \le \text{zDeg}(f) + \text{zDeg}(g)$
+* Product: $\text{zDeg}(f \cdot g) \le \text{zDeg}(f) + \text{zDeg}(g)$
+* Inverse: $\text{zDeg}(f^{-1}) = \text{zDeg}(f)$
+* Power: $\text{zDeg}(f^n) \le n \cdot \text{zDeg}(f)$
 -/
 
 namespace ArkLib

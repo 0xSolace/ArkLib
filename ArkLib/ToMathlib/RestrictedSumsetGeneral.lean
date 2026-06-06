@@ -14,63 +14,38 @@ import Mathlib.Data.Nat.Prime.Factorial
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 
 /-!
-# Polynomial infrastructure for the general Erdős–Heilbronn / Dias da Silva–Hamidoune bound
+# Polynomial Infrastructure for the General Erdős–Heilbronn / Dias da Silva–Hamidoune Bound
 
-This file generalises the `h = 2` Erdős–Heilbronn argument
-(`ArkLib.ToMathlib.RestrictedSumset`) to general `h`, the **Dias da Silva–Hamidoune theorem**:
-for a field `F` of prime characteristic `p`, a finite set `A ⊆ F` with `n := |A|`, and
-`1 ≤ h ≤ n` with `h(n - h) < p`, the set of `h`-subset sums
+This module generalizes the $h = 2$ Erdős–Heilbronn restricted sumset bound (formalized in
+`ArkLib.ToMathlib.RestrictedSumset`) to general subset size $h \ge 1$. This generalization is known as the
+**Dias da Silva–Hamidoune theorem**.
 
-  `Σ_h(A) := { ∑_{a ∈ S} a : S ⊆ A, |S| = h }`
+For a field $\mathbb{F}$ of prime characteristic $p$, a finite subset $A \subseteq \mathbb{F}$ with $n := |A|$,
+and $1 \le h \le n$ with $h(n - h) < p$, the set of $h$-subset sums
+$$\Sigma_h(A) := \left\{ \sum_{a \in S} a : S \subseteq A, |S| = h \right\}$$
+has cardinality at least $h(n - h) + 1$.
 
-has cardinality at least `h(n - h) + 1`.
+## Algebraic Strategy (Alon–Nathanson–Ruzsa)
 
-## Strategy (Alon–Nathanson–Ruzsa)
+We proceed via Alon's Combinatorial Nullstellensatz. Suppose for contradiction that $|\Sigma_h(A)| \le h(n - h)$.
+We pad $\Sigma_h(A)$ to a set $C'$ of cardinality exactly $m := h(n - h)$ and define the $h$-variable polynomial:
+$$Q(X_0, \dots, X_{h-1}) := \left(\prod_{0 \le i < j < h} (X_j - X_i)\right) \prod_{c \in C'} \left(\left(\sum_{k=0}^{h-1} X_k\right) - c\right)$$
+which is the product of the Vandermonde determinant and the padded sumset linear factors.
 
-Suppose `|Σ_h(A)| ≤ m := h(n - h)`. Pad `Σ_h(A)` to a set `C'` of size exactly `m` and consider
-the `h`-variable polynomial
+By construction, $Q$ vanishes identically on $A^h$:
+- If two coordinates are equal, the Vandermonde factor vanishes.
+- If all coordinates are distinct, the sum of the coordinates is in $\Sigma_h(A) \subseteq C'$, so one of the sumset factors vanishes.
 
-  `Q := (∏_{i < j} (X j - X i)) · ∏_{c ∈ C'} ((∑_k X k) - C c) ∈ F[X₀, …, X_{h-1}]`.
+The total degree of $Q$ is $\binom{h}{2} + h(n - h)$. We target the monomial $t = \prod_{i=0}^{h-1} X_i^{n-1-i}$.
+The coefficient of $t$ in $Q$ corresponds to its coefficient in the leading homogeneous part:
+$$V(X) \cdot \left(\sum_{k=0}^{h-1} X_k\right)^m$$
+Expanding this via the determinant representation of the Vandermonde polynomial yields the alternating sum:
+$$\text{coeff}_t = \sum_{\sigma \in \mathfrak{S}_h} \text{sign}(\sigma) \cdot \text{multinomial}(t - \text{permExp}(\sigma))$$
 
-The first factor is the **Vandermonde polynomial**; the second is the **padded sumset factor**.
-`Q` vanishes on `A^h`: on tuples with a repeated coordinate the Vandermonde factor vanishes, and
-on tuples with distinct coordinates the column sum lies in `Σ_h(A) ⊆ C'`, killing the product.
-
-`Q` has total degree `C(h,2) + m`, equal to the degree of the monomial
-`t := ∏_i X_i^{n-1-i}` (which has each per-variable degree `< n = |A|`). The coefficient of `t`
-in `Q` equals its coefficient in the leading part `Vandermonde · (∑_k X k)^m`, which expands, via
-the determinant (permutation) form of the Vandermonde polynomial, into the alternating sum
-
-  `coeff t = ∑_{σ ∈ Perm (Fin h)} sign σ · multinomial(t − permExp σ)`   (`coeff_vdmX_mul_sumPow`)
-
-a `± m!·(superfactorial/∏ factorial)` ballot/standard-Young-tableau number. The Nullstellensatz is
-then applied exactly as in the `h = 2` file.
-
-## Status
-
-The full general theorem `erdos_heilbronn` is proved unconditionally (no extra hypotheses beyond
-`p` prime, `1 ≤ h ≤ n`, `h(n - h) < p`, and `n ≤ p`). The added hypothesis `n ≤ p` is harmless:
-for `F = ZMod p` (the main case of interest) any `A ⊆ F` forces `n = |A| ≤ p` automatically; under
-it every factorial appearing in the coefficient has argument `< p`, so the classical
-Frobenius / Vandermonde-in-factorials coefficient is a `p`-adic unit and hence nonzero in `F`.
-
-The coefficient of the target monomial `t = ∏_i X_i^{n-1-i}` in the leading part is exhibited in
-**closed form** by `coeff_closed_form`:
-
-  `(∏_k (t_k)!) · coeff t [vdmX · (∑ X)^M] = M! · det (vandermonde (t_0, …, t_{h-1}))`
-
-(an identity over any field, where the right-hand determinant is the integer Vandermonde
-`∏_{i<j}(t_j − t_i)`), obtained by recognising the alternating multinomial sum as a
-generalised Vandermonde determinant via `descPochhammer`. Its nonvanishing mod `p`
-(`coeff_ehTarget_ne_zero`) then follows from the factorials being `p`-units.
-
-A version `erdos_heilbronn_of_coeff` taking the coefficient nonvanishing as an explicit
-hypothesis (and so dropping `n ≤ p`) is also provided.
-
-## References
-
-- [Alon, *Combinatorial Nullstellensatz*][Alon_1999]
-- Dias da Silva, Hamidoune; Erdős, Heilbronn; Alon–Nathanson–Ruzsa.
+This is evaluated in closed form as:
+$$\prod_{k=0}^{h-1} (t_k)! \cdot \text{coeff}_t \left[ V(X) \cdot \left(\sum_k X_k\right)^M \right] = M! \cdot \det\left(\text{vandermonde}(t_0, \dots, t_{h-1})\right)$$
+Under the characteristic bounds, this expression is a $p$-adic unit, proving it is nonzero. The theorem then
+follows from the Combinatorial Nullstellensatz.
 -/
 
 namespace MvPolynomial
@@ -528,8 +503,7 @@ end General
 
 section Main
 
--- `[Fintype F]` is genuinely needed in the proofs (the padding step uses `Fintype.card F`);
--- the linter's preference for `[Finite F]` is suppressed here.
+/- The `Fintype F` instance is required for cardinality bounds and padding steps. -/
 set_option linter.unusedFintypeInType false
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
@@ -651,19 +625,20 @@ end Main
 
 end MvPolynomial
 
-/-! ## Reed–Solomon MCA corollary at general degree `k`
+/-!
+## Reed–Solomon MCA Corollary at General Degree $k$
 
-Combining the general Erdős–Heilbronn / Dias da Silva–Hamidoune bound (`h = k + 1`) with the
-unconditional subset-sum floor `ProximityGap.epsMCA_one_ge_card_subsetSums` gives a lower bound
-with explicit additive content for `ε_mca(RS[F, domain, k], 1)`, mirroring the `k = 1` result
-`ProximityGap.epsMCA_one_ge_erdos_heilbronn`. -/
+Combining the general Erdős–Heilbronn / Dias da Silva–Hamidoune bound ($h = k + 1$) with the
+unconditional subset-sum lower bound `ProximityGap.epsMCA_one_ge_card_subsetSums` yields a lower bound
+for the maximum correlation agreement $\varepsilon_{\text{mca}}(\text{RS}[\mathbb{F}, \text{domain}, k], 1)$
+with explicit additive content.
+-/
 
 namespace ProximityGap
 
 open scoped BigOperators ENNReal
 
--- The section variables carry typeclass instances used uniformly across the bridge; suppress the
--- linters as in the sibling file `SubsetSumErdosHeilbronn.lean`.
+/- Suppress unused variable linters for the localized bridge variables. -/
 set_option linter.unusedSectionVars false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedFintypeInType false

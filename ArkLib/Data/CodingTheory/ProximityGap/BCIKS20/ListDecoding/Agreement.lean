@@ -2369,6 +2369,75 @@ lemma approximate_solution_is_exact_solution_coeffs_of_βHensel_lift_identity_S�
 
 open BCIKS20AppendixA in
 open BCIKS20AppendixA.ClaimA2 in
+/-- Claim 5.8 coefficient front door from the structured Hensel-weight route.
+
+This composes the structured-weight-to-`S_β` converter with the genuine Hensel
+lift-identity front door, so callers no longer need to expose the intermediate
+`S_β` largeness statement. -/
+lemma approximate_solution_is_exact_solution_coeffs_of_βHensel_lift_identity_structured_weight
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hden : ∀ t ≥ k,
+      (liftToFunctionField (H := H k δ x₀ h_gs)
+            (H k δ x₀ h_gs).leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+              (ξ x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs)
+                (claimA2_hypotheses k h_gs))) ^ (2 * t - 1) ≠ 0)
+    (hlift : ∀ t ≥ k,
+      embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (_root_.BCIKS20.HenselNumerator.βHensel
+          (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+          (claimA2_hypotheses k h_gs) t)
+        = α x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t
+          * (liftToFunctionField (H := H k δ x₀ h_gs)
+              (H k δ x₀ h_gs).leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+              (ξ x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs)
+                (claimA2_hypotheses k h_gs))) ^ (2 * t - 1))
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
+        2 ≤ Bivariate.natDegreeY (R k δ x₀ h_gs) ∧
+        Bivariate.natDegreeY (H k δ x₀ h_gs) ≤
+          Bivariate.natDegreeY (R k δ x₀ h_gs) ∧
+        (H k δ x₀ h_gs).leadingCoeff.natDegree +
+            Bivariate.natDegreeY (H k δ x₀ h_gs) ≤ D ∧
+        weight_Λ_over_𝒪 (natDegree_H_pos k h_gs)
+          (_root_.BCIKS20.HenselNumerator.βHensel
+            (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t) D
+          ≤ WithBot.some
+            (1 + (t + 1) * (H k δ x₀ h_gs).leadingCoeff.natDegree
+              + (2 * t - 1)
+                * ((Bivariate.natDegreeY (R k δ x₀ h_gs) - 1)
+                  * (D - Bivariate.natDegreeY (H k δ x₀ h_gs) + 1))) ∧
+        (Set.ncard (S_β
+          (_root_.BCIKS20.HenselNumerator.βHensel
+            (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t)) : WithBot ℕ) >
+          WithBot.some
+            ((2 * t + 1) * Bivariate.natDegreeY (R k δ x₀ h_gs) * D)
+            * ((H k δ x₀ h_gs).natDegree : WithBot ℕ)) :
+    ∀ t ≥ k,
+    α'
+      x₀
+      (R k δ x₀ h_gs)
+      (irreducible_H k h_gs)
+      (natDegree_H_pos k h_gs)
+      (claimA2_hypotheses k h_gs)
+      t
+    =
+    (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)) :=
+  approximate_solution_is_exact_solution_coeffs_of_βHensel_lift_identity_Sβ_large
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hden hlift
+    (βHensel_Sβ_large_of_structured_weight
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs hlarge)
+
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 front door from the exact Appendix-A Lemma A.1 largeness
 condition.  This isolates the remaining geometric work: for each coefficient
 index `t ≥ k`, it is enough to produce a degree bound `D` and prove that
@@ -3548,6 +3617,81 @@ lemma approximate_solution_is_exact_solution_coeffs'_of_βHensel_lift_identity_S
         (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
         (claimA2_hypotheses k h_gs) t (hden t ht) (hlift t ht))
     hlarge
+
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+/-- Claim 5.8' front door from the structured Hensel-weight route.
+
+This is the published `γ'` truncation form, with the intermediate `S_β`
+largeness discharged by `βHensel_Sβ_large_of_structured_weight`. -/
+lemma approximate_solution_is_exact_solution_coeffs'_of_βHensel_lift_identity_structured_weight
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hden : ∀ t ≥ k,
+      (liftToFunctionField (H := H k δ x₀ h_gs)
+            (H k δ x₀ h_gs).leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+              (ξ x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs)
+                (claimA2_hypotheses k h_gs))) ^ (2 * t - 1) ≠ 0)
+    (hlift : ∀ t ≥ k,
+      embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (_root_.BCIKS20.HenselNumerator.βHensel
+          (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+          (claimA2_hypotheses k h_gs) t)
+        = α x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t
+          * (liftToFunctionField (H := H k δ x₀ h_gs)
+              (H k δ x₀ h_gs).leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+              (ξ x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs)
+                (claimA2_hypotheses k h_gs))) ^ (2 * t - 1))
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
+        2 ≤ Bivariate.natDegreeY (R k δ x₀ h_gs) ∧
+        Bivariate.natDegreeY (H k δ x₀ h_gs) ≤
+          Bivariate.natDegreeY (R k δ x₀ h_gs) ∧
+        (H k δ x₀ h_gs).leadingCoeff.natDegree +
+            Bivariate.natDegreeY (H k δ x₀ h_gs) ≤ D ∧
+        weight_Λ_over_𝒪 (natDegree_H_pos k h_gs)
+          (_root_.BCIKS20.HenselNumerator.βHensel
+            (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t) D
+          ≤ WithBot.some
+            (1 + (t + 1) * (H k δ x₀ h_gs).leadingCoeff.natDegree
+              + (2 * t - 1)
+                * ((Bivariate.natDegreeY (R k δ x₀ h_gs) - 1)
+                  * (D - Bivariate.natDegreeY (H k δ x₀ h_gs) + 1))) ∧
+        (Set.ncard (S_β
+          (_root_.BCIKS20.HenselNumerator.βHensel
+            (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t)) : WithBot ℕ) >
+          WithBot.some
+            ((2 * t + 1) * Bivariate.natDegreeY (R k δ x₀ h_gs) * D)
+            * ((H k δ x₀ h_gs).natDegree : WithBot ℕ)) :
+    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+        (claimA2_hypotheses k h_gs) =
+        PowerSeries.mk (fun t =>
+          if t ≥ k
+          then (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))
+          else PowerSeries.coeff t
+            (γ'
+              x₀
+              (R k (x₀ := x₀) (δ := δ) h_gs)
+              (irreducible_H k h_gs)
+              (natDegree_H_pos k h_gs)
+              (claimA2_hypotheses k h_gs))) := by
+  exact powerSeries_eq_truncate_of_coeff_zero_ge
+    (γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+      (claimA2_hypotheses k h_gs))
+    (gamma'_coeff_zero_of_alpha'_coeff_zero
+      (F := F) (x₀ := x₀)
+      (irreducible_H k h_gs)
+      (natDegree_H_pos k h_gs)
+      (claimA2_hypotheses k h_gs)
+      (approximate_solution_is_exact_solution_coeffs_of_βHensel_lift_identity_structured_weight
+        (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+        h_gs hden hlift hlarge))
 
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in

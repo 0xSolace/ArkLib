@@ -7,31 +7,22 @@ import ArkLib.Data.Polynomial.RationalFunctionsCore
 import Mathlib
 
 /-!
-# `Λ`-weight calculus on the ring of regular elements `𝒪`
+# $\Lambda$-Weight Calculus on the Ring of Regular Elements $\mathcal{O}_H$
 
-This file builds the arithmetic toolkit for the bivariate `Λ`-weight on the ring of regular
-elements `𝒪 H` (`weight_Λ_over_𝒪`), as required by the App.-A.4 weight induction of [BCIKS20]
-(brick **L3** of the proximity-prize DAG, feeding the Claim A.2 weight bound for the Hensel
-numerators `β_t`).
+This module establishes the arithmetic and algebraic properties of the bivariate $\Lambda$-weight
+on the ring of regular elements $\mathcal{O}_H$ (formalized as `weight_Λ_over_𝒪`). This calculus
+supports the inductive weight bounds utilized in [BCIKS20] Appendix A.4 (Hensel lifting weight induction),
+which bounds the algebraic complexity of the Hensel numerator sequence $\beta_t$.
 
-The polynomial-level weight calculus already lives in
-`ArkLib.Data.Polynomial.RationalFunctions` (`weight_Λ_add_le`, `weight_Λ_mul_le`,
-`weight_Λ_sum_le`, …). Here we lift those facts across the quotient
-`𝒪 H = F[X][X] ⧸ span {H_tilde' H}` using the workhorse `weight_Λ_over_𝒪_le_of_mk_eq`, and we
-add the facts the App.-A.4 induction consumes:
+The weight $\Lambda(a)$ for $a \in \mathcal{O}_H$ measures the degree complexity of its canonical
+polynomial representative. This module establishes:
+- Sub-additivity under addition, subtraction, and finite summation (bounded by the maximum weight).
+- Sub-multiplicativity under multiplication and powers (bounded by the sum of weights).
+- Base weights for constants and leading coefficient multiples (such as the regular element $W$).
+- Monotonicity of the weight with respect to the degree parameter $D$.
 
-* sub-additivity under `+`/`-`/`∑` (bound by `max`/`sup`),
-* sub-multiplicativity under `*`/`^` (bound by `+`/`•`),
-* the weights of `0`, `1`, scalar (`C`) and `W = liftToFunctionField H.leadingCoeff` multiples,
-* monotonicity of the weight in the degree parameter `D`.
-
-The weight is `WithBot ℕ`-valued; `⊥` (the weight of `0`) is the additive bottom and we are careful
-to keep the bounds true in that algebra (e.g. the `max`/`+` bounds hold with `⊥` absorbed
-correctly). No new `sorry`/`admit`/`axiom`/`native_decide`: every lemma below is kernel-clean and
-reduces to the in-tree polynomial calculus.
-
-All names live in `namespace ArkLib`; the in-tree objects are opened from
-`BCIKS20AppendixA`. This file does **not** edit the (0-sorry) `RationalFunctions.lean`.
+The weights take values in $\mathbb{N} \cup \{-\infty\}$ (represented as `WithBot ℕ`), where $-\infty$
+behaves as the additive identity and bottom element under the join.
 -/
 
 namespace ArkLib
@@ -312,33 +303,11 @@ lemma weight_Λ_over_𝒪_pow_le_of_le {H : F[X][Y]} {D : ℕ}
       rw [pow_succ, Nat.succ_mul]
       exact weight_Λ_over_𝒪_mul_le_of_le hD hH ih ha
 
-/-- The `(2t+1)·d_R·D` weight target of Claim A.2 as a `WithBot ℕ`-bound transfers along `≤`:
-if a witness's weight is `≤` the tight `1 + (t+1)Λ(W) + e_t·Λ(ξ)` budget and that budget is `≤
-(2t+1)·d_R·D`, the Claim A.2 bound holds. This is the `L10`-collapse shape. -/
+/-- Transitivity of weight bounds when lifting tight inductive budgets. -/
 lemma weight_Λ_over_𝒪_le_trans_nat {H : F[X][Y]} {D : ℕ} {a : 𝒪 H} {b c : ℕ}
     (hH : 0 < H.natDegree)
     (hab : weight_Λ_over_𝒪 hH a D ≤ (WithBot.some b : WithBot ℕ)) (hbc : b ≤ c) :
     weight_Λ_over_𝒪 hH a D ≤ (WithBot.some c : WithBot ℕ) :=
   hab.trans (WithBot.coe_le_coe.mpr hbc)
-
-#print axioms weight_Λ_over_𝒪_mul_le
-#print axioms weight_Λ_over_𝒪_add_le
-#print axioms weight_Λ_over_𝒪_sub_le
-#print axioms weight_Λ_over_𝒪_pow_le
-#print axioms weight_Λ_over_𝒪_sum_le
-#print axioms weight_Λ_over_𝒪_C_le
-#print axioms weight_Λ_over_𝒪_C_mul_le
-#print axioms weight_Λ_over_𝒪_W_reg_le
-#print axioms weight_Λ_over_𝒪_W_reg_mul_le
-#print axioms embeddingOf𝒪Into𝕃_W_reg
-#print axioms weight_Λ_over_𝒪_T_le
-#print axioms weight_Λ_mono_D
-#print axioms weight_Λ_over_𝒪_mono_D
-#print axioms weight_Λ_over_𝒪_one_le
-#print axioms weight_Λ_over_𝒪_neg
-#print axioms weight_Λ_over_𝒪_mul_le_of_le
-#print axioms weight_Λ_over_𝒪_add_le_of_le
-#print axioms weight_Λ_over_𝒪_pow_le_of_le
-#print axioms weight_Λ_over_𝒪_le_trans_nat
 
 end ArkLib

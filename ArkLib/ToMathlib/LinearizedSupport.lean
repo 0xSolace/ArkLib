@@ -56,7 +56,7 @@ the tight fiber `q^{(u+1)m − v²}` that BKR06 consumes.
   `(u+1)m − v² = (α−β²)·log q` and the proven count `q^{(u+1)m − v²} ≤ N+1`.
 
 All declarations compile `sorry`/`axiom`-free and are axiom-clean
-(`[propext, Classical.choice, Quot.sound]`); see the in-file `#print axioms`.
+(`[propext, Classical.choice, Quot.sound]`).
 -/
 
 set_option linter.unusedSectionVars false
