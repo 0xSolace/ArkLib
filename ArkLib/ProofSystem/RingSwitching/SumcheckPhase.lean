@@ -677,9 +677,11 @@ theorem iteratedSumcheckPostChallengeLocalChecks_iff_fullTranscript (i : Fin ℓ
     (tr : FullTranscript (pSpecSumcheckRound L))
     (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
     (witMid : SumcheckWitness L ℓ' i.castSucc) :
-    iteratedSumcheckPostChallengeLocalChecks κ L K P ℓ ℓ' h_l i
+    iteratedSumcheckPostChallengeLocalChecks
+        (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') i
         (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L)) stmt witMid
-      ↔ iteratedSumcheckPostChallengeFullTranscriptLocalChecks κ L K P ℓ ℓ' h_l i
+      ↔ iteratedSumcheckPostChallengeFullTranscriptLocalChecks
+        (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') i
         tr stmt witMid := by
   simp [iteratedSumcheckPostChallengeLocalChecks,
     iteratedSumcheckPostChallengeFullTranscriptLocalChecks,
