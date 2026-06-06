@@ -42,6 +42,8 @@ folds (`b < finrank A ≤ s`).
 Everything here is `sorry`/axiom-clean.
 -/
 
+set_option linter.unusedSectionVars false
+
 open Polynomial Module
 
 namespace ReedSolomon.Folded
