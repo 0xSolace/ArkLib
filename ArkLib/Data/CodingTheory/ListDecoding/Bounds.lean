@@ -103,6 +103,7 @@ codes, and "sufficiently large `n`". We capture these uniformly as follows:
 - [JH01] Theorem 2, source of T3.14.
 -/
 
+set_option linter.style.longFile 2000
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false

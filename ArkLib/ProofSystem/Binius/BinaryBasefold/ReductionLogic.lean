@@ -9,8 +9,6 @@ import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.OracleReduction.Completeness
 import ArkLib.Data.Misc.Basic
 
-set_option maxHeartbeats 400000
-namespace Binius.BinaryBasefold.CoreInteraction
 /-!
 ## Binary Basefold single steps
 - **Fold step** :

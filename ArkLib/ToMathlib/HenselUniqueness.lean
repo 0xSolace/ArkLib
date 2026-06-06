@@ -48,6 +48,8 @@ Everything is kernel-clean (`#print axioms` at the bottom; only
 `propext / Classical.choice / Quot.sound`).
 -/
 
+set_option linter.style.longLine false
+
 open PowerSeries
 
 namespace ArkLib
