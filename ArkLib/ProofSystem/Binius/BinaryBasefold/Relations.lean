@@ -520,6 +520,7 @@ lemma incrementalBadEventExistsProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isC
     exact hj'
 
 -- (moved to Basic.lean) declarations canonicalized in Basic: removed duplicates here.
+set_option maxHeartbeats 1000000 in
 lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (oStmtIn : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
     (newOracle : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -534,9 +535,8 @@ lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : is
   rcases h_bad with ⟨j, hj_bad⟩
   by_cases hj_lt : j.val < toOutCodewordsCount ℓ ϑ i.castSucc
   · refine ⟨⟨j.val, hj_lt⟩, ?_⟩
-    -- `hj_bad` is already past the `∃` (the `rcases` exposed the body), so only the goal
-    -- still carries the `incrementalBadEventExistsProp` head.
-    unfold incrementalBadEventExistsProp
+    -- Both `hj_bad` and the goal are already past the `∃` head (the `rcases`/anonymous
+    -- constructor exposed the bodies), so there is nothing left to unfold.
     dsimp [OracleFrontierIndex.val_mkFromStmtIdx,
       OracleFrontierIndex.val_mkFromStmtIdxCastSuccOfSucc] at hj_bad ⊢
     simpa [snoc_oracle, hj_lt] using hj_bad
@@ -548,8 +548,9 @@ lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : is
       simp only [toOutCodewordsCount_succ_eq, hCR, ↓reduceIte]
     have hj_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
       have hj_le : j.val ≤ toOutCodewordsCount ℓ ϑ i.castSucc := by
-        rw [← Nat.lt_succ_iff, ← h_count_succ]
-        exact j.isLt
+        -- (`.succ` vs `+ 1` is defeq-only under rc2; route through `omega`.)
+        have := j.isLt
+        omega
       have hj_ge : toOutCodewordsCount ℓ ϑ i.castSucc ≤ j.val := by
         simpa only [not_lt] using hj_lt
       omega
