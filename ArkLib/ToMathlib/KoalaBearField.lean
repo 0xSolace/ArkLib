@@ -52,6 +52,8 @@ abbrev Sextic : Type := GaloisField fieldSize 6
 
 noncomputable instance : Fintype Sextic := Fintype.ofFinite _
 
+noncomputable instance : DecidableEq Sextic := Classical.decEq _
+
 /-- The genuine KoalaBear-sextic field has the standard finite-field structure. -/
 example : Field Sextic := inferInstance
 
