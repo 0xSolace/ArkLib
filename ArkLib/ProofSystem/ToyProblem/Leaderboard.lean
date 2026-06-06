@@ -164,6 +164,11 @@ theorem winningSetRatio_le_winningSetSoundness {k : ℕ} {C : Set (ι → F)} {�
     winningSetRatio x ≤ winningSetSoundness (k := k) C δ :=
   le_ciSup (bddAbove_winningSetRatio C δ) x
 
+/-- The simplified-IOR soundness scalar is a genuine probability bound: it is at most `1`. -/
+theorem winningSetSoundness_le_one {k : ℕ} (C : Set (ι → F)) (δ : ℝ≥0) :
+    winningSetSoundness (k := k) C δ ≤ 1 := by
+  exact ciSup_le fun x : ViolatingInstance C δ k => winningSetRatio_le_one x
+
 /-- **The correlated-agreement attack lower-bounds the simplified-IOR soundness**
 (the §6.4.2 attack chain, end-to-end and machine-checked). For a linear code
 `C`, the soundness error `winningSetSoundness` is at least the correlated
