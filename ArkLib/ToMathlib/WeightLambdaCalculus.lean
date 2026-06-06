@@ -1,7 +1,10 @@
 /-
 Copyright (c) 2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
 -/
+import ArkLib.Data.Polynomial.RationalFunctionsCore
+import Mathlib
 
 /-!
 # $\Lambda$-Weight Calculus on the Ring of Regular Elements $\mathcal{O}_H$
@@ -21,8 +24,6 @@ polynomial representative. This module establishes:
 The weights take values in $\mathbb{N} \cup \{-\infty\}$ (represented as `WithBot ℕ`), where $-\infty$
 behaves as the additive identity and bottom element under the join.
 -/
-import ArkLib.Data.Polynomial.RationalFunctionsCore
-import Mathlib
 
 namespace ArkLib
 
