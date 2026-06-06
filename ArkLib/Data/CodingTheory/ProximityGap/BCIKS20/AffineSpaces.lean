@@ -346,7 +346,7 @@ theorem average_proximity_implies_proximity_of_linear_subspace
       δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
         (C := ReedSolomon.code domain (k + 1)) (δ := δ)
         (ε := ProximityGap.errorBound δ (k + 1) domain) :=
-    RS_correlatedAgreement_affineLines (ι := ι) (F := F) (deg := k + 1) (domain := domain)
+    RS_correlatedAgreement_affineLines_strict (ι := ι) (F := F) (deg := k + 1) (domain := domain)
       (δ := δ) hStrictCoeff hδ.2
   have hJA :
       jointAgreement (C := ReedSolomon.code domain (k + 1)) (δ := δ)
@@ -699,7 +699,7 @@ theorem all_affine_elements_close {k : ℕ} [NeZero k]
       hPr_fin with ⟨a, hline⟩
     have hJA : Code.jointAgreement (C := (V : Set (ι → F))) (δ := δ)
         (W := Code.finMapTwoWords a.1 dir) := by
-      apply RS_correlatedAgreement_affineLines hStrictCoeff hBoundaryCard hδ
+      apply RS_correlatedAgreement_affineLines_strict hStrictCoeff hδ
       simpa [Code.finMapTwoWords] using hline
     exact jointAgreement_implies_second_proximity
       (ι := ι) (F := F) (C := (V : Set (ι → F)))
@@ -903,7 +903,7 @@ theorem all_affine_elements_close {k : ℕ} [NeZero k]
       (ε := ProximityGap.errorBound δ deg domain) hPr_span with ⟨a, hline⟩
     have hJA : Code.jointAgreement (C := (V : Set (ι → F))) (δ := δ)
         (W := Code.finMapTwoWords a.1 x) := by
-      apply RS_correlatedAgreement_affineLines hStrictCoeff hBoundaryCard hδ
+      apply RS_correlatedAgreement_affineLines_strict hStrictCoeff hδ
       simpa [Code.finMapTwoWords] using hline
     exact jointAgreement_implies_second_proximity
       (ι := ι) (F := F) (C := (V : Set (ι → F)))
