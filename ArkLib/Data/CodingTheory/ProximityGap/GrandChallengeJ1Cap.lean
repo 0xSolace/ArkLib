@@ -45,6 +45,8 @@ set_option linter.unusedSectionVars false
 
 namespace ProximityGap
 
+namespace GrandChallengesLattice
+
 open Polynomial ReedSolomon
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
@@ -240,13 +242,15 @@ theorem mcaBadCount_j1_le_two
   mcaBadCount_j1_le_two_of_not_three_ratioConstraints domain u₀ u₁
     (not_three_j1_ratioConstraints domain hk u₀ u₁)
 
+end GrandChallengesLattice
+
 end ProximityGap
 
 /-! ## Axiom audit — every declaration must rest only on
 `[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
-#print axioms ProximityGap.code_ext_of_agree_card_le
-#print axioms ProximityGap.j1RatioConstraint_exists_omitted_codeword
-#print axioms ProximityGap.j1_gamma_eq_of_same_window
-#print axioms ProximityGap.not_three_j1_ratioConstraints
-#print axioms ProximityGap.j1RatioConstraintBadScalars_card_le_two
-#print axioms ProximityGap.mcaBadCount_j1_le_two
+#print axioms ProximityGap.GrandChallengesLattice.code_ext_of_agree_card_le
+#print axioms ProximityGap.GrandChallengesLattice.j1RatioConstraint_exists_omitted_codeword
+#print axioms ProximityGap.GrandChallengesLattice.j1_gamma_eq_of_same_window
+#print axioms ProximityGap.GrandChallengesLattice.not_three_j1_ratioConstraints
+#print axioms ProximityGap.GrandChallengesLattice.j1RatioConstraintBadScalars_card_le_two
+#print axioms ProximityGap.GrandChallengesLattice.mcaBadCount_j1_le_two
