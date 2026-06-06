@@ -331,7 +331,9 @@ noncomputable def MCAUpperWitness.ofSamplingDG25
     (hDG25 : CodingTheory.linear_epsCA_ge_sampling_dg25 C δ δ' hδ' hδ_pos hδ_lt)
     (hgt :
       ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
-          * Pr_{let u ← $ᵖ (ι → F)}[δᵣ(u, (C : Set (ι → F))) ≤ δ] >
+          * Pr_{
+              let u ← $ᵖ (ι → F)
+              }[δᵣ(u, (C : Set (ι → F))) ≤ δ] >
         (ε_star : ENNReal)) :
     MCAUpperWitness (C : Set (ι → F)) ε_star :=
   MCAUpperWitness.ofEpsCAGt (MC := C) (ε_star := ε_star) (δ := δ)

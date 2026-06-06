@@ -54,7 +54,7 @@ set_option linter.unusedSectionVars false
 
 namespace ProximityGap
 
-open scoped NNReal
+open scoped NNReal ProbabilityTheory
 
 namespace GrandChallengesLattice
 
@@ -341,6 +341,47 @@ theorem mcaThreshold_lt_ofEpsCAGt {MC : Submodule F (ι → F)} {ε_star δ : �
     mcaThreshold (MC : Set (ι → F)) ε_star hne < latticeIndexOf (ι := ι) δ hδ :=
   mcaThreshold_lt_MCAUpperWitness (MC : Set (ι → F)) ε_star hne
     (MCAUpperWitness.ofEpsCAGt h) hδ
+
+/-- The CS25 complete-CA-breakdown lower bound gives a direct upper bracket on the faithful
+MCA lattice threshold. -/
+theorem mcaThreshold_lt_ofRSBreakdownCS25
+    (domain : ι ↪ F) (k : ℕ) (δ ε_star : ℝ≥0)
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) ε_star)
+    (hδle : δ ≤ 1)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - CodingTheory.qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((CodingTheory.qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hCS25 : CodingTheory.rs_epsCA_breakdown_cs25 domain k δ hq_ge hδ_lo hδ_hi)
+    (hε : (ε_star : ENNReal) < 1) :
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne <
+      latticeIndexOf (ι := ι) δ hδle :=
+  mcaThreshold_lt_MCAUpperWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star hne
+    (MCAUpperWitness.ofRSBreakdownCS25 domain k δ ε_star hq_ge hδ_lo hδ_hi hCS25 hε)
+    hδle
+
+/-- The DG25 sampling lower bound gives a direct upper bracket on the faithful MCA lattice
+threshold once the sampling lower bound is numerically above `ε*`. -/
+theorem mcaThreshold_lt_ofSamplingDG25
+    (C : LinearCode ι F) (δ δ' ε_star : ℝ≥0)
+    (hne : mcaThresholdExists (C : Set (ι → F)) ε_star)
+    (hδle : δ ≤ 1)
+    (hδ' : (δ' : ENNReal) = ⨆ u : ι → F, δᵣ(u, (C : Set (ι → F))))
+    (hδ_pos : 0 < δ) (hδ_lt : δ < δ')
+    (hDG25 : CodingTheory.linear_epsCA_ge_sampling_dg25 C δ δ' hδ' hδ_pos hδ_lt)
+    (hgt :
+      ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
+          * Pr_{
+              let u ← $ᵖ (ι → F)
+              }[δᵣ(u, (C : Set (ι → F))) ≤ δ] >
+        (ε_star : ENNReal)) :
+    mcaThreshold (C : Set (ι → F)) ε_star hne < latticeIndexOf (ι := ι) δ hδle :=
+  mcaThreshold_lt_MCAUpperWitness (C : Set (ι → F)) ε_star hne
+    (MCAUpperWitness.ofSamplingDG25 C δ δ' ε_star hδ' hδ_pos hδ_lt hDG25 hgt)
+    hδle
 
 /-- A lower MCA witness and a capacity-side `ε_ca` upper witness bracket the faithful lattice
 threshold directly. This is the lattice version of the common Johnson-lower/capacity-upper
