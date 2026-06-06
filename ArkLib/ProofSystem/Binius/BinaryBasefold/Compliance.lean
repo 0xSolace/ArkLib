@@ -148,8 +148,10 @@ lemma fold_error_containment_of_UDRClose (i : Fin r) {destIdx : Fin r} (steps : 
         exact hnone ⟨x, hx⟩)
     -- Rewrite in the generalizing direction (composite `UDRCodeword …` term ↦ the variable
     -- `f_i`): the forward direction's motive is not type correct because the codeword's
-    -- `h_within_radius` argument itself mentions `f_i`.
-    rw [← h_eq] at hy
+    -- `h_within_radius` argument itself mentions `f_i`.  `simp only` rather than `rw`:
+    -- the codeword occurrence in `hy` carries proof arguments that only match up to
+    -- proof irrelevance, which `rw`'s keyed abstraction cannot see.
+    simp only [← h_eq] at hy
     simpa [disagreementSet] using hy
   simpa [fiberwiseDisagreementSet, h_steps_ne, h_exists]
 
