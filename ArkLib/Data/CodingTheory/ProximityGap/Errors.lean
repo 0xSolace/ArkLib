@@ -1413,6 +1413,30 @@ theorem epsMCA_le_max_epsCA_card_div_udr [NoZeroSMulDivisors F A]
     (F := F) (C := (C : Set (ι → A))) δ) ?_
   exact max_le_max (le_refl _) (jointlyProximateContribution_le_card_div_udr C δ h_udr)
 
+/-- **ABF26 Lemma 4.6 from the numeric Guruswami-Sudan dominance.**
+
+The audited UDR decomposition gives
+`ε_mca(C,δ) ≤ max(ε_ca(C,δ,δ), ⌊δ n⌋/|F|)`. Hence any downstream formalization that supplies the
+single numeric dominance `⌊δ n⌋/|F| ≤ ε_ca(C,δ,δ)` gets the full equality immediately, without
+using the stronger per-stack residual `diffStackMCAResidualBelowUDR`.
+
+This is the cleanest adapter for the ACFY25/BCIKS20/Hab25 exceptional-`γ` count: the external
+content is exactly the scalar lower bound needed to collapse the proven max-form inequality. -/
+theorem epsMCA_eq_epsCA_below_udr_of_card_div_le_epsCA [NoZeroSMulDivisors F A]
+    (C : Submodule F (ι → A)) (δ : ℝ≥0)
+    (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) <
+              (Code.dist ((C : Set (ι → A))) : ℝ≥0))
+    (h_card :
+      ((Nat.floor (δ * (Fintype.card ι : ℝ≥0)) : ENNReal) /
+          (Fintype.card F : ENNReal)) ≤
+        epsCA (F := F) (A := A) ((C : Set (ι → A))) δ δ) :
+    epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ =
+    epsCA (F := F) (A := A) ((C : Set (ι → A))) δ δ := by
+  refine le_antisymm ?_ (epsCA_le_epsMCA C δ)
+  refine le_trans (epsMCA_le_max_epsCA_card_div_udr (F := F) (A := A) C δ h_udr) ?_
+  rw [max_le_iff]
+  exact ⟨le_refl _, h_card⟩
+
 /-- **Named residual for ABF26 Lemma 4.6's hard direction.**
 
 For every jointly-`δ`-close stack `u` and every codeword pair `(p₀, p₁) ∈ C²`, the MCA mass of
