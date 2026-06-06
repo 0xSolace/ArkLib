@@ -379,10 +379,10 @@ lemma foldingBadEventAtBlock_imp_incrementalBadEvent_last
     omega
   simp only [OracleFrontierIndex.val_mkFromStmtIdx, Fin.val_last, h_le, ↓reduceDIte] at h_j_bad
   let blockStartIdx : Fin r := ⟨j.val * ϑ, by
-    exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      ((oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ) j).isLt)⟩
+    exact Nat.lt_trans (oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ) j).isLt
+      (ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate))⟩
   let destIdx : Fin r := ⟨j.val * ϑ + ϑ, by
-    exact lt_r_of_le_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_le⟩
+    exact Nat.lt_of_le_of_lt h_le (ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate))⟩
   let rChallenges : Fin ϑ → L := fun cId => challenges ⟨j.val * ϑ + cId.val, by
     change j.val * ϑ + cId.val < ℓ
     omega⟩
@@ -418,10 +418,10 @@ lemma incrementalBadEvent_last_imp_foldingBadEventAtBlock
   have hk : min ϑ (ℓ - j.val * ϑ) = ϑ := by
     omega
   let blockStartIdx : Fin r := ⟨j.val * ϑ, by
-    exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      ((oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ) j).isLt)⟩
+    exact Nat.lt_trans (oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ) j).isLt
+      (ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate))⟩
   let destIdx : Fin r := ⟨j.val * ϑ + ϑ, by
-    exact lt_r_of_le_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_le⟩
+    exact Nat.lt_of_le_of_lt h_le (ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate))⟩
   let rChallenges : Fin ϑ → L := fun cId => challenges ⟨j.val * ϑ + cId.val, by
     change j.val * ϑ + cId.val < ℓ
     omega⟩
@@ -534,12 +534,14 @@ lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : is
   rcases h_bad with ⟨j, hj_bad⟩
   by_cases hj_lt : j.val < toOutCodewordsCount ℓ ϑ i.castSucc
   · refine ⟨⟨j.val, hj_lt⟩, ?_⟩
-    unfold incrementalBadEventExistsProp at hj_bad ⊢
+    -- `hj_bad` is already past the `∃` (the `rcases` exposed the body), so only the goal
+    -- still carries the `incrementalBadEventExistsProp` head.
+    unfold incrementalBadEventExistsProp
     dsimp [OracleFrontierIndex.val_mkFromStmtIdx,
       OracleFrontierIndex.val_mkFromStmtIdxCastSuccOfSucc] at hj_bad ⊢
     simpa [snoc_oracle, hj_lt] using hj_bad
   · exfalso
-    unfold incrementalBadEventExistsProp at hj_bad
+    -- `hj_bad` is already past the `∃` head (see above).
     dsimp [OracleFrontierIndex.val_mkFromStmtIdx] at hj_bad
     have h_count_succ :
         toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
@@ -612,7 +614,7 @@ lemma oracleFoldingConsistencyProp_commit_step_backward (i : Fin ℓ) (hCR : isC
     dsimp [j']
     exact hj
   simp only [oracleFoldingConsistencyProp, snoc_oracle, hj_lt, hj_next_lt,
-    getFoldingChallenges_init_succ_eq] at h_old ⊢
+    getFoldingChallenges_init_succ_eq, id_eq, dite_true, ↓reduceDIte] at h_old ⊢
   exact h_old
 
 end CommitStepPreservationLemmas

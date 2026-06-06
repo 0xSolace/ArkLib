@@ -93,17 +93,19 @@ theorem rs_lambda_superpoly_extension_bkr06_proven
       refine ⟨e.toEmbedding,
         (ReedSolomon.evalOnPoints (Function.Embedding.refl F) pivot) ∘ e, ?_⟩
       dsimp only
-      rw [ge_iff_le, ← hF]
-      -- chain: target ≤ count over F (trivial regime) ≤ count over ι (transport)
+      rw [ge_iff_le]
+      -- chain: target ≤ count over F (trivial regime) ≤ count over ι (transport);
+      -- align the lemma instances to the goal's raw `2^(i+1)` via `hF`.
       have htrans :=
         rs_closeCodewords_ncard_transport (K := F) e kk
           (ReedSolomon.evalOnPoints (Function.Embedding.refl F) pivot)
           (1 - (Fintype.card F : ℝ) ^ (β - 1))
-      calc (Fintype.card F : ℝ) ^ ((α - β ^ 2) * Real.log (Fintype.card F))
+      rw [hF] at hcount htrans
+      calc ((2 ^ (i + 1) : ℕ) : ℝ) ^ ((α - β ^ 2) * Real.log ((2 ^ (i + 1) : ℕ) : ℝ))
           ≤ _ := hcount
         _ ≤ _ := by exact_mod_cast htrans
   · -- ## Band regime `β² < α`: the tight chain at the shifted witness sequence.
-    push_neg at hreg
+    push Not at hreg
     have hL2pos : (0 : ℝ) < Real.log 2 := Real.log_pos (by norm_num)
     have hL2lt1 : Real.log 2 < 1 := by
       have := Real.log_two_lt_d9
@@ -184,23 +186,29 @@ theorem rs_lambda_superpoly_extension_bkr06_proven
       set δ : ℝ := 1 - (Fintype.card F : ℝ) ^ (β - 1) with hδ
       refine ⟨e.toEmbedding, w₀ ∘ e, ?_⟩
       dsimp only
-      rw [ge_iff_le, ← hF]
-      -- count chain: window monotonicity then index transport
+      rw [ge_iff_le]
+      -- count chain: window monotonicity then index transport; align the lemma
+      -- instances to the goal's raw `2^m` via `hF`.
       have hmono := rs_closeCodewords_ncard_mono_window (K := F)
         (Function.Embedding.refl F) w₀ δ hk_window
       have htrans := rs_closeCodewords_ncard_transport (K := F) e kk w₀ δ
+      rw [hδ] at hcount hmono htrans
+      rw [hF] at hcount hmono htrans
       -- exponent chain: target = 2^{(α−β²)·log2·m²} ≤ 2^{m·u − v²} ≤ tight count
-      have htarget : (Fintype.card F : ℝ) ^ ((α - β ^ 2) * Real.log (Fintype.card F))
+      have htarget : ((2 ^ m : ℕ) : ℝ) ^ ((α - β ^ 2) * Real.log ((2 ^ m : ℕ) : ℝ))
           ≤ (2 : ℝ) ^ ((m : ℝ) * u - (v : ℝ) ^ 2) := by
-        rw [hF, target_exponent_eq α β m]
+        rw [target_exponent_eq α β m]
         exact Real.rpow_le_rpow_of_exponent_le (by norm_num) hexp
+      -- the tight count with the ℕ-cast `(2 : ℕ) : ℝ = 2` bridge
+      have hcount' : (2 : ℝ) ^ ((m : ℝ) * u - (v : ℝ) ^ 2) ≤
+          ((ListDecodable.closeCodewordsRel
+              ((ReedSolomon.code (Function.Embedding.refl F) (2 ^ u + 1) : Set (F → F)))
+              w₀ (1 - ((2 ^ m : ℕ) : ℝ) ^ (β - 1))).ncard : ℝ) := by
+        exact_mod_cast hcount
       -- assemble
-      calc (Fintype.card F : ℝ) ^ ((α - β ^ 2) * Real.log (Fintype.card F))
+      calc ((2 ^ m : ℕ) : ℝ) ^ ((α - β ^ 2) * Real.log ((2 ^ m : ℕ) : ℝ))
           ≤ (2 : ℝ) ^ ((m : ℝ) * u - (v : ℝ) ^ 2) := htarget
-        _ ≤ _ := by
-            -- tight count, with the ℕ-cast `(2 : ℕ) : ℝ = 2` bridge
-            convert hcount using 2
-            norm_num
+        _ ≤ _ := hcount'
         _ ≤ _ := by exact_mod_cast le_trans hmono htrans
 
 #print axioms BKR06.rs_lambda_superpoly_extension_bkr06_proven

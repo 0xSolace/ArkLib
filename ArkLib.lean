@@ -296,7 +296,6 @@ import ArkLib.OracleReduction.Completeness
 import ArkLib.OracleReduction.Composition.Parallel.Basic
 import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Composition.Sequential.General
-import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.FiatShamir.Basic
@@ -458,6 +457,7 @@ import ArkLib.ProofSystem.ZkVMBoundary
 import ArkLib.ToCompPoly.Univariate.Basic
 import ArkLib.ToCompPoly.Univariate.Lagrange
 import ArkLib.ToMathlib.AppendHelpers
+import ArkLib.ToMathlib.BKR06BareT312
 import ArkLib.ToMathlib.BKR06Close
 import ArkLib.ToMathlib.BKR06EndToEnd
 import ArkLib.ToMathlib.BKR06FiberCount
