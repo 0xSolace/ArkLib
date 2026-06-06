@@ -9,6 +9,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdElias
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLattice
 import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
+import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountRatio
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
@@ -188,8 +189,8 @@ theorem mcaEventWitness_card_pred_le_j1
     simp only [Fin.val_mk, Nat.cast_one]
     apply NNReal.coe_injective
     rw [NNReal.coe_mul, NNReal.coe_sub hdiv_le, NNReal.coe_one,
-      NNReal.coe_div, NNReal.coe_one,
-      Nat.cast_sub (Nat.succ_le_of_lt hn), Nat.cast_one]
+      NNReal.coe_div, NNReal.coe_one]
+    push_cast [Nat.cast_sub (Nat.succ_le_of_lt hn)]
     field_simp [show (n : ℝ) ≠ 0 by exact_mod_cast hn.ne']
     ring
   have hnn : ((n - 1 : ℕ) : ℝ≥0) ≤ (S.card : ℝ≥0) := by
@@ -237,6 +238,52 @@ theorem mcaEvent_j1_witness_inventory
       ¬ pairJointAgreesOn C S u₀ u₁ := by
   rcases h with ⟨S, hS, hline, hno⟩
   exact ⟨S, mcaEventWitness_j1_shape S hS, hline, hno⟩
+
+/-- A radius-`1/n` MCA event over Reed-Solomon produces the ratio constraints needed for
+the J1 quadratic/algebraic cap.
+
+The theorem packages only the formal reduction.  The remaining hard input is the independent
+algebraic statement that the set of scalars satisfying these constraints has cardinality at
+most two. -/
+theorem mcaEvent_j1_exists_window_ratio_constraints
+    (domain : ι ↪ F) {k : ℕ} {u₀ u₁ : ι → F} {γ : F}
+    (h : mcaEvent (F := F)
+      (ReedSolomon.code domain k : Set (ι → F))
+      (mcaLatticePoint (Fintype.card ι)
+        (⟨1, by
+          have hn : 0 < Fintype.card ι := Fintype.card_pos
+          omega⟩ : Fin (Fintype.card ι + 1)))
+      u₀ u₁ γ) :
+    ∃ S : Finset ι,
+      (S = Finset.univ ∨ ∃ i : ι, S = Finset.univ.erase i) ∧
+      NonExtendableOn (ReedSolomon.code domain k : Set (ι → F)) S u₁ ∧
+      (∀ T : Finset ι, T ⊆ S → T.card = k + 1 →
+        cT domain k T (u₀ + γ • u₁) = 0) ∧
+      ∃ T : Finset ι, T ⊆ S ∧ T.card = k + 1 ∧ cT domain k T u₁ ≠ 0 ∧
+        γ = -(cT domain k T u₀) / cT domain k T u₁ := by
+  rcases mcaEvent_j1_witness_inventory
+      (C := (ReedSolomon.code domain k : Set (ι → F))) u₀ u₁ γ h with
+    ⟨S, hshape, ⟨w, hw, hwline⟩, hpair⟩
+  have hneS : NonExtendableOn (ReedSolomon.code domain k : Set (ι → F)) S u₁ :=
+    nonExtendable_of_mcaEvent (ReedSolomon.code domain k) hw hwline hpair
+  have hconstraints :
+      ∀ T : Finset ι, T ⊆ S → T.card = k + 1 →
+        cT domain k T (u₀ + γ • u₁) = 0 := by
+    intro T hTS hTcard
+    refine (extendable_iff_cT_eq_zero domain hTcard (u₀ + γ • u₁)).mp ?_
+    exact ⟨w, hw, fun i hi => hwline i (hTS hi)⟩
+  obtain ⟨T, hTS, hTcard, hneT⟩ := exists_card_eq_subset_nonExtendable domain hneS
+  have hne0 : cT domain k T u₁ ≠ 0 := fun h0 =>
+    hneT ((extendable_iff_cT_eq_zero domain hTcard u₁).mpr h0)
+  have hline0 : cT domain k T (u₀ + γ • u₁) = 0 :=
+    hconstraints T hTS hTcard
+  have hlin : cT domain k T u₀ + γ * cT domain k T u₁ = 0 := by
+    rw [← smul_eq_mul, ← map_smul, ← map_add]
+    exact hline0
+  have hγ : γ = -(cT domain k T u₀) / cT domain k T u₁ := by
+    field_simp
+    linear_combination hlin
+  exact ⟨S, hshape, hneS, hconstraints, T, hTS, hTcard, hne0, hγ⟩
 
 /-- `ε_mca(C, j/n) ≤ ε*` at the lattice radius `j/n`. Decidable so the satisfying set is a
 `Finset`. -/
