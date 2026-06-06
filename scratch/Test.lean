@@ -11,12 +11,14 @@ variable {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι}
   [HasMessageSize pSpec] [∀ i, Serialize (pSpec.Message i) (Vector U (messageSize i))]
   [HasChallengeSize pSpec] [∀ i, Deserialize (pSpec.Challenge i) (Vector U (challengeSize i))]
 
-theorem test_runCollapseResidual
-    {σ : Type}
-    (impl : QueryImpl (oSpec + duplexSpongeChallengeOracle StmtIn U) (StateT σ ProbComp))
+theorem run_eq_honestExecution
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmtIn : StmtIn) (witIn : WitIn) :
-    Reduction.duplexSpongeFiatShamir_runCollapseResidual (U := U) impl R stmtIn witIn := by
-  unfold Reduction.duplexSpongeFiatShamir_runCollapseResidual
-  sorry
-
+    Reduction.duplexSpongeFiatShamir_run_eq_honestExecution (U := U) R stmtIn witIn := by
+  unfold Reduction.duplexSpongeFiatShamir_run_eq_honestExecution
+  unfold Reduction.run Reduction.duplexSpongeFiatShamir
+  unfold Reduction.duplexSpongeFiatShamirHonestExecution
+  unfold Reduction.duplexSpongeFiatShamirHonestRun
+  unfold Reduction.prover
+  -- let's try rfl
+  rfl

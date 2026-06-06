@@ -539,8 +539,9 @@ theorem simplified_iop_soundness_listDecoding_lb {k : ℕ} [Nonempty ι]
           rw [Nat.choose_succ_succ, Nat.choose_one_right]
           omega
     omega
-  have ⟨chal, hchal_inj⟩ : ∃ chal : Fin N → F, Function.Injective chal :=
-    Finite.exists_injective_of_card_le_card (by simpa using h_le)
+  have ⟨chal, hchal_inj⟩ : ∃ chal : Fin N → F, Function.Injective chal := by
+    obtain ⟨e⟩ := Function.Embedding.nonempty_of_card_le h_le
+    exact ⟨e, e.injective⟩
   let f₁ : ι → F := 0
   let f₂ : ι → F := 0
   let c : Fin N → ι → F := fun _ => 0
@@ -548,7 +549,7 @@ theorem simplified_iop_soundness_listDecoding_lb {k : ℕ} [Nonempty ι]
     obtain ⟨encode, hC, _⟩ := hEnc
     have h0 : encode 0 ∈ C := hC 0
     rwa [map_zero] at h0
-  have hc_dist : ∀ j, δᵣ((fun i => f₁ i + chal j * f₂ i), c j) ≤ δ := fun _ => by
+  have hc_dist : ∀ j, δᵣ((fun i => f₁ i + chal j * f₂ i), c j) ≤ δ := fun j => by
     have : (fun (i : ι) => (0 : ι → F) i + chal j * (0 : ι → F) i) = 0 := by ext; simp
     rw [this]
     -- relHammingDist of 0 and 0 is 0
