@@ -173,8 +173,8 @@ the faithful route needs the GS-degree statement repair). The U-construction red
 machine-checked. -/
 def lineDecodable_imp_epsMCA_le
     (C : ModuleCode ι F A) (δ : ℝ≥0) (a : ℝ≥0)
-    (h : LineDecodable (F := F) ((C : Set (ι → A))) δ a
-            ((Fintype.card ι : ℝ≥0) + 1)) :
+    (_h : LineDecodable (F := F) ((C : Set (ι → A))) δ a
+            ((Fintype.card ι : ℝ≥0) + 1)) : Prop :=
     epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
         ≤ (a : ENNReal) / (Fintype.card F : ENNReal)
 
