@@ -449,6 +449,19 @@ discharged, but these are reusable by whoever completes Step 4:
   * `pair_linearForm_collision_le` : the Step-2 *pair*-collision bound feeding
     Claim B.1 — distinct message pairs collide under `v ↦ (⟨m₀,v⟩,⟨m₁,v⟩)`
     with probability `≤ 1/|F|`, via the proven `linearForm_collision_prob`. -/
+
+/-- Specialized nonnegativity of the exact L6.12 target expression. This is
+the arithmetic orientation needed when converting the B.1 image lower bound
+into a winning-set cardinality bound. -/
+theorem simplified_iop_soundness_listDecoding_target_nonneg (C : Set (ι → F)) (δ : ℝ≥0) :
+    0 ≤
+      (((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ)
+          * Fintype.card F)
+        / (Fintype.card F
+            + ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ) - 1) := by
+  apply listDecoding_lb_nonneg
+  exact_mod_cast Fintype.card_pos (α := F)
+
 def simplified_iop_soundness_listDecoding_lb_residual {k : ℕ}
     (C : Set (ι → F)) (δ : ℝ≥0) : Prop :=
   ∃ (v : Fin k → F) (μ₁ μ₂ : F) (f₁ f₂ : ι → F),

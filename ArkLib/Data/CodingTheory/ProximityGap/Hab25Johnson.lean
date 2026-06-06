@@ -496,9 +496,15 @@ theorem mcaThreshold_eq_latticeIndexOf_residuals_and_epsCAGt_adjacent
   let whi : MCAUpperWitness (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star :=
     MCAUpperWitness.ofEpsCAGt
       (MC := ReedSolomon.code domain k) (ε_star := ε_star) (δ := δ_hi) hhi
-  simpa [whi] using
+  have hδhi' : whi.δ ≤ 1 := by
+    simpa [whi] using hδhi
+  have hadj' :
+      (GrandChallengesLattice.latticeIndexOf (ι := ι₀) whi.δ hδhi').val =
+        (GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_lo hδlo_le_one).val + 1 := by
+    simpa [whi] using hadj
+  simpa [whi, hδhi'] using
     (mcaThreshold_eq_latticeIndexOf_residuals_and_upperWitness_adjacent
-      domain k η δ_lo ε_star hη hδ hδlo_le_one R hle whi hδhi hadj)
+      domain k η δ_lo ε_star hη hδ hδlo_le_one R hle whi hδhi' hadj')
 
 end Reduction
 
