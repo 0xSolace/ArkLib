@@ -82,11 +82,11 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-! ## Step-function transport: both sides depend on `δ` only through `⌊δ · n⌋` -/
 
+omit [DecidableEq ι] in
 /-- **The good set is a step function of `⌊δ · n⌋`.**  Since membership in
 `RS_goodCoeffsCurve u δ` is `δᵣ(curve z, code) ≤ δ`, which by
 `Code.relDistFromCode_le_iff_distFromCode_le` is equivalent to `Δ₀(curve z, code) ≤ ⌊δ · n⌋`,
 two radii with equal floor `⌊δ · n⌋` produce the *same* good-coefficient set. -/
-omit [DecidableEq ι] in
 theorem goodCoeffsCurve_eq_of_floor_eq {k deg : ℕ} {domain : ι ↪ F} {δ δ' : ℝ≥0}
     (u : WordStack F (Fin (k + 1)) ι)
     (hfloor : Nat.floor (δ * Fintype.card ι) = Nat.floor (δ' * Fintype.card ι)) :
@@ -99,11 +99,11 @@ theorem goodCoeffsCurve_eq_of_floor_eq {k deg : ℕ} {domain : ι ↪ F} {δ δ'
   rw [Code.relDistFromCode_le_iff_distFromCode_le, Code.relDistFromCode_le_iff_distFromCode_le,
     hfloor]
 
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
 /-- **`jointAgreement` is a step function of `⌊δ · n⌋`.**  The agreement-set cardinality bound
 `S.card ≥ (1 − δ)·n` is equivalent, by `Code.relDist_floor_bound_iff_complement_bound`, to
 `n − ⌊δ · n⌋ ≤ S.card`, which depends on `δ` only through `⌊δ · n⌋`.  Hence two radii with equal
 floor give equivalent `jointAgreement` statements. -/
-omit [DecidableEq ι] in
 theorem jointAgreement_iff_of_floor_eq {κ : Type*} {deg : ℕ} {domain : ι ↪ F} {δ δ' : ℝ≥0}
     (u : κ → ι → F)
     (hfloor : Nat.floor (δ * Fintype.card ι) = Nat.floor (δ' * Fintype.card ι)) :
@@ -202,7 +202,7 @@ theorem boundaryCardResidual_of_not_lattice {k deg : ℕ} {domain : ι ↪ F} {�
     rw [hgood]; exact hcardPos
   -- `jointAgreement` at the strict-interior radius, then transported back to the boundary.
   have hjoint' := hStrict u δ' hδ'lt hδ'floor hcardPos'
-  exact (jointAgreement_iff_of_floor_eq (deg := deg) (domain := domain) u hδ'floor).mpr hjoint'
+  exact (jointAgreement_iff_of_floor_eq (deg := deg) (domain := domain) u hδ'floor.symm).mpr hjoint'
 
 /-! ## The precisely isolated genuine lattice case -/
 

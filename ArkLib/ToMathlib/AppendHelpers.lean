@@ -39,7 +39,7 @@ theorem support_liftComp {τ : Type} {superSpec : OracleSpec τ} {α : Type}
         OracleQuery.cont_query, OracleQuery.input_query, id_eq, ih]
       constructor
       · rintro ⟨i, -, hi⟩; exact ⟨i, hi⟩
-      · rintro ⟨i, hi⟩; exact ⟨i, ⟨i, mem_support_query t i, rfl⟩, hi⟩
+      · rintro ⟨i, hi⟩; exact ⟨i, ⟨i, by simp, rfl⟩, hi⟩
 
 end OracleComp
 
@@ -90,6 +90,10 @@ theorem verifier_output_mem_run_support
               -- `support_liftComp` removes the spec-lift, giving `some vOut ∈ support (V.run …).run`.
               rw [OptionT.mem_support_iff]
               have hLift := hstmtOut
+              -- `liftM = monadLift`; rewrite via `OptionT.run_monadLift` to expose `some <$> …`.
+              change some (some vOut) ∈ support
+                (monadLift (reduction.verifier.run stmt proverResult.1).run :
+                  OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run at hLift
               rw [OptionT.run_monadLift] at hLift
               rw [show (monadLift (reduction.verifier.run stmt proverResult.1).run :
                       OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option StmtOut))

@@ -984,7 +984,7 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
   intro WitIn WitOut witIn outerP outerStmtIn hOuterStmtIn
   let innerPLens : Context.Lens InnerStmtIn InnerStmtOut OuterStmtIn OuterStmtOut
       WitIn WitOut WitIn WitOut := {
-	    stmt := (fun _ => outerStmtIn) ⇆ (fun _ innerStmtOut => lens.lift outerStmtIn innerStmtOut)
+    stmt := (fun _ => outerStmtIn) ⇆ (fun _ innerStmtOut => lens.lift outerStmtIn innerStmtOut)
     wit := Prod.snd ⇆ (fun _ => Prod.snd)
   }
   let innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec :=
