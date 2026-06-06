@@ -110,28 +110,59 @@ matrix; every such `γ` is then a *common root of every `(j+1)×(j+1)` minor*.  
 containment as a hypothesis (`hsub`) on a chosen minor and conclude the cap from the engine
 above, under the explicit nondegeneracy hypothesis `hQ : minor ≠ 0`. -/
 
-/-- **The general SILVER cap.**  Let `Q` be any `m×m` minor (determinant of an affine matrix
-`M`) of the elimination system, and `bad` a finset of scalars each of which is a root of `Q`
-(the ELIMj common-root containment).  *Under the named nondegeneracy hypothesis* `Q ≠ 0`, the
-bad set has cardinality `≤ m`.
+/-- **The general SILVER cap.**  Let `Q := M.det` be any `m×m` minor (determinant of an affine
+matrix `M`) of the elimination system, and `bad` a finset of scalars each of which is a root
+of `Q` (the ELIMj common-root containment `hsub`).  Then the bad set has cardinality `≤ m`.
 
-For `m = j + 1` this is exactly `P[j] ≤ j+1` restricted to the affine system, off the thin
-all-minors-vanish degenerate locus (the honest caveat of research note §5). -/
+The **named nondegeneracy caveat lives in the hypothesis `hsub`**, not as a free `Q ≠ 0`
+flag: the containment `bad ⊆ Q.roots` is exactly the ELIMj conclusion, and it is *only
+derivable when `Q` is a nonzero minor* — on the degenerate "all minors vanish" locus the
+common-root set is `F` itself and no nonzero minor exists, so `hsub` is unavailable.  This is
+the honest caveat of research note §5, faithfully located: the engine caps `bad` off the
+degenerate locus precisely because that is the locus where `hsub` can be supplied.  (When
+`Q = 0`, `Q.roots = ∅` and `hsub` would force `bad = ∅`, vacuously `≤ m` — so the bound is
+unconditional *given `hsub`*, and the degenerate locus is the regime where `hsub` fails to
+hold of any single minor.)
+
+For `m = j + 1` this is exactly `P[j] ≤ j+1` restricted to the affine system. -/
 theorem affineSystemBadScalars_card_le_of_subset_minor_roots {m : ℕ}
     (M : Matrix (Fin m) (Fin m) F[X]) (hM : ∀ i j, (M i j).natDegree ≤ 1)
-    (bad : Finset F) (hsub : bad.val ⊆ M.det.roots) (hQ : M.det ≠ 0) :
+    (bad : Finset F) (hsub : bad.val ⊆ M.det.roots) :
     bad.card ≤ m :=
   le_trans (card_le_degree_of_subset_roots hsub) (affineMatrix_det_natDegree_le M hM)
+
+/-- **The general SILVER cap, with the nondegeneracy hypothesis named explicitly.**  This is
+the `hQ`-gated form the research note states: `bad ⊆ Q.roots` *for a nonzero minor* `Q ≠ 0`
+caps the bad set at `m`.  Here `hQ` is the literal "the minor does not vanish identically"
+caveat — the thin degenerate locus is exactly `{Q = 0}`, excluded by `hQ`.  The bound is
+delivered by the engine through the containment `hsub`; `hQ` certifies the containment is the
+*genuine* nonzero-minor common-root statement rather than the vacuous `bad ⊆ ∅`. -/
+theorem affineSystemBadScalars_card_le_of_nondegenerate_minor {m : ℕ}
+    (M : Matrix (Fin m) (Fin m) F[X]) (hM : ∀ i j, (M i j).natDegree ≤ 1)
+    (bad : Finset F) (hQ : M.det ≠ 0) (hsub : bad.val ⊆ M.det.roots) :
+    bad.card ≤ m := by
+  -- `hQ` is the named nondegeneracy hypothesis: for the *nonzero* determinant `M.det`, the root
+  -- multiset has `card ≤ degree = natDegree ≤ m` (`Polynomial.card_roots`, which needs `hQ`),
+  -- and the bad set injects into it via the ELIMj containment `hsub`.
+  have hbadle : bad.card ≤ (Multiset.card M.det.roots : ℕ) :=
+    Multiset.card_le_card (Finset.val_le_iff_val_subset.2 hsub)
+  have hcard : (Multiset.card M.det.roots : WithBot ℕ) ≤ M.det.degree :=
+    Polynomial.card_roots hQ
+  have hroots : (Multiset.card M.det.roots : ℕ) ≤ M.det.natDegree := by
+    have hle : (Multiset.card M.det.roots : WithBot ℕ) ≤ (M.det.natDegree : WithBot ℕ) :=
+      le_trans hcard (Polynomial.degree_le_natDegree)
+    exact_mod_cast hle
+  exact le_trans hbadle (le_trans hroots (affineMatrix_det_natDegree_le M hM))
 
 /-- **The (j=1) instance — the `2×2` minor route re-derives the J1 cap `≤ 2`.**  This is the
 QUAD route of `GrandChallengeInteriorJ1.lean` recast as the `m = 2` case of the general
 minor engine: a bad set inside the roots of a nonzero determinant of `2×2` affine entries has
-card `≤ 2`. -/
+card `≤ 2`.  Matches `j1RatioConstraintBadScalars_card_le_two_via_quadratic`. -/
 theorem affineSystemBadScalars_card_le_two_via_2x2
     (M : Matrix (Fin 2) (Fin 2) F[X]) (hM : ∀ i j, (M i j).natDegree ≤ 1)
-    (bad : Finset F) (hsub : bad.val ⊆ M.det.roots) (hQ : M.det ≠ 0) :
+    (bad : Finset F) (hQ : M.det ≠ 0) (hsub : bad.val ⊆ M.det.roots) :
     bad.card ≤ 2 :=
-  affineSystemBadScalars_card_le_of_subset_minor_roots M hM bad hsub hQ
+  affineSystemBadScalars_card_le_of_nondegenerate_minor M hM bad hQ hsub
 
 /-- **BRONZE (j=2) — the `3×3` minor route caps the J2 affine bad set at `3`.**  Lifting the
 J1 QUAD (`2×2`) route one degree up: the three top-coefficient constraints of the omit-`2`
@@ -141,19 +172,20 @@ scalar is one of its `≤ 3` roots.  This is the second exact interior row's upp
 mirroring `j1RatioConstraintBadScalars_card_le_two_via_quadratic` at `j = 2`. -/
 theorem affineSystemBadScalars_card_le_three_via_3x3
     (M : Matrix (Fin 3) (Fin 3) F[X]) (hM : ∀ i j, (M i j).natDegree ≤ 1)
-    (bad : Finset F) (hsub : bad.val ⊆ M.det.roots) (hQ : M.det ≠ 0) :
+    (bad : Finset F) (hQ : M.det ≠ 0) (hsub : bad.val ⊆ M.det.roots) :
     bad.card ≤ 3 :=
-  affineSystemBadScalars_card_le_of_subset_minor_roots M hM bad hsub hQ
+  affineSystemBadScalars_card_le_of_nondegenerate_minor M hM bad hQ hsub
 
 /-- **The general-`j` skeleton, indexed by `j`.**  The wide-regime `(j+1)×(j+1)`-minor cap:
 a bad set inside the roots of a nonzero `(j+1)`-minor of an affine elimination matrix has
-card `≤ j+1`.  This is the `m = j + 1` specialization, stated in the `j`-indexing of the law,
-to make the instantiation at `j = 1, 2` literal. -/
+card `≤ j+1` — under the named nondegeneracy hypothesis `Q ≠ 0`.  This is the `m = j + 1`
+specialization, stated in the `j`-indexing of the law, to make the instantiation at
+`j = 1, 2` literal. -/
 theorem affineSystemBadScalars_card_le_jp1_via_minor (j : ℕ)
     (M : Matrix (Fin (j + 1)) (Fin (j + 1)) F[X]) (hM : ∀ i k, (M i k).natDegree ≤ 1)
-    (bad : Finset F) (hsub : bad.val ⊆ M.det.roots) (hQ : M.det ≠ 0) :
+    (bad : Finset F) (hQ : M.det ≠ 0) (hsub : bad.val ⊆ M.det.roots) :
     bad.card ≤ j + 1 :=
-  affineSystemBadScalars_card_le_of_subset_minor_roots M hM bad hsub hQ
+  affineSystemBadScalars_card_le_of_nondegenerate_minor M hM bad hQ hsub
 
 /-! ## The J2 lower bound — the `3`-spike plant at radius `2/n`
 
@@ -232,6 +264,7 @@ end ProximityGap
 `[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ProximityGap.GrandChallengesLattice.affineMatrix_det_natDegree_le
 #print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_of_subset_minor_roots
+#print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_of_nondegenerate_minor
 #print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_two_via_2x2
 #print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_three_via_3x3
 #print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_jp1_via_minor

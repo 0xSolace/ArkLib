@@ -1,3 +1,4 @@
+
 /-
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -941,7 +942,6 @@ under `_h_encode_mem` (`honestInputRelation_subset_inputRelation`) — so the
 claim is faithful and never vacuous. Completeness against `inputRelation k C`
 itself is *false* (counterexample in the `honestInputRelation` docstring:
 `encode' = 0`, `encode = id`, `wit ≠ 0`). -/
-omit [Fintype ι] [DecidableEq ι] [Fintype F] in
 theorem oracleReduction_perfectCompleteness
     [SampleableType F] [SampleableType ι]
     {σ : Type} (init : ProbComp σ)
@@ -978,15 +978,15 @@ theorem oracleReduction_perfectCompleteness
   simp only [oracleReduction, OracleReduction.toReduction, Reduction.run, Prover.run,
     Verifier.run, oracleProver, OracleVerifier.toVerifier,
     Prover.runToRound, Prover.processRound, Fin.induction_three, pSpec,
-    bind_pure_comp, Function.comp]
+    bind_pure_comp]
   -- Peel the three prover rounds: V→P (γ), P→V (g), V→P (xs).
   split <;> rename_i hDir0
   swap
   · exact absurd hDir0 (by decide)
-  try simp only [pure_bind, map_pure, Functor.map_map, Function.comp, bind_pure_comp]
+  try simp only [pure_bind, map_pure, Functor.map_map, bind_pure_comp]
   split <;> rename_i hDir1
   · exact absurd hDir1 (by decide)
-  try simp only [pure_bind, map_pure, Functor.map_map, Function.comp, bind_pure_comp]
+  try simp only [pure_bind, map_pure, Functor.map_map, bind_pure_comp]
   split <;> rename_i hDir2
   swap
   · exact absurd hDir2 (by decide)
@@ -1142,7 +1142,6 @@ feeding the proven witness through the residual (no `sorry`, no `axiom`).
 
 **Named bridge residual.** The named L6.6 bridge residual is carried as the explicit hypothesis
 `hBridge`; no global axiom is introduced. -/
-omit [DecidableEq ι] [Fintype F] in
 theorem protocol62_knowledgeSound
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
     (C : Set (ι → F)) (δ : ℝ≥0)
@@ -1185,7 +1184,6 @@ accounting splits its failure across the `γ` and spot-check rounds). No `sorry`
 
 **Named bridge residual.** The named L6.8 bridge residual is carried as the explicit hypothesis
 `hBridge`; no global axiom is introduced. -/
-omit [DecidableEq ι] [Fintype F] in
 theorem protocol62_rbrKnowledgeSound
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
     (C : Set (ι → F)) (δ : ℝ≥0)

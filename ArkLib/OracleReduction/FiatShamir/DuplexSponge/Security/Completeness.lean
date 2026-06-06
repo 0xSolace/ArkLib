@@ -183,7 +183,6 @@ theorem duplexSpongeFiatShamir_run_eq_honestExecution
     (R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn =
       liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) := by
   unfold duplexSpongeFiatShamirHonestExecution duplexSpongeFiatShamirHonestRun
-  unfold Reduction.run Reduction.duplexSpongeFiatShamir Reduction.prover
   haveI : ProtocolSpec.ProverOnly ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩ := dsfsProverOnly
   rw [Reduction.run_of_prover_first]
   sorry
@@ -197,7 +196,6 @@ theorem duplexSpongeFiatShamirSalted_run_eq_honestExecution {δ : Nat}
     (R.duplexSpongeFiatShamirSalted (U := U) sampleSalt).run stmtIn witIn =
       liftM (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn) := by
   unfold duplexSpongeFiatShamirSaltedHonestExecution duplexSpongeFiatShamirSaltedHonestRun
-  unfold Reduction.run Reduction.duplexSpongeFiatShamirSalted Reduction.prover
   haveI : ProtocolSpec.ProverOnly ⟨!v[Direction.P_to_V], !v[ProtocolSpec.Messages.SaltedProof (pSpec := pSpec) (U := U) δ]⟩ := dsfsSaltedProverOnly
   rw [Reduction.run_of_prover_first]
   sorry
@@ -217,7 +215,7 @@ theorem duplexSpongeFiatShamir_runCollapseResidual
         (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run := by
   rw [duplexSpongeFiatShamir_run_eq_honestExecution]
   change simulateQ (impl + QueryImpl.liftTarget _ challengeQueryImpl) _ = _
-  exact simulateQ_add_run_liftM_left impl (QueryImpl.liftTarget _ challengeQueryImpl) (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)
+  exact simulateQ_add_run_liftM_left impl (QueryImpl.liftTarget _ (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩))) (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)
 
 /-- Salted analogue of `duplexSpongeFiatShamir_runCollapseResidual`. -/
 theorem duplexSpongeFiatShamirSalted_runCollapseResidual {δ : Nat}
@@ -233,7 +231,7 @@ theorem duplexSpongeFiatShamirSalted_runCollapseResidual {δ : Nat}
           sampleSalt stmtIn witIn).run := by
   rw [duplexSpongeFiatShamirSalted_run_eq_honestExecution]
   change simulateQ (impl + QueryImpl.liftTarget _ challengeQueryImpl) _ = _
-  exact simulateQ_add_run_liftM_left impl (QueryImpl.liftTarget _ challengeQueryImpl) (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn)
+  exact simulateQ_add_run_liftM_left impl (QueryImpl.liftTarget _ (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[ProtocolSpec.Messages.SaltedProof (pSpec := pSpec) (U := U) δ]⟩))) (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn)
 
 /-- Completeness of the unsalted DSFS transform is equivalent to the explicit honest execution
 packaged via `Reduction.duplexSpongeFiatShamirHonestExecution`. -/
