@@ -1923,6 +1923,20 @@ private lemma newAPI_i_add_steps_lt {i : Fin r} {destIdx : Fin r} {steps : ℕ}
   have hle : i.val + steps ≤ ℓ := by rw [← h_destIdx]; exact h_destIdx_le
   exact Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡))
 
+/-- Lift a `{destIdx}`-keyed domain point `y : S⁽ᵈᵉˢᵗ⁾` to the legacy `⟨i + steps, _⟩`-keyed index.
+Both indices are equal as `Fin r` (`destIdx.val = i.val + steps`), so the two `sDomain` submodules
+coincide; the lift is `y` transported across that index equality. -/
+private def newAPI_liftPoint {i : Fin r} {destIdx : Fin r} {steps : ℕ}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
+    (sDomain 𝔽q β h_ℓ_add_R_rate)
+      (⟨i.val + steps, Nat.lt_trans (newAPI_i_add_steps_lt 𝔽q β h_destIdx h_destIdx_le)
+        h_ℓ_add_R_rate⟩ : Fin r) :=
+  ⟨y.val, by
+    have hidx : (⟨i.val + steps, Nat.lt_trans (newAPI_i_add_steps_lt 𝔽q β h_destIdx h_destIdx_le)
+        h_ℓ_add_R_rate⟩ : Fin r) = destIdx := Fin.eq_of_val_eq h_destIdx.symm
+    rw [hidx]; exact y.property⟩
+
 /-- **`M_y` matrix (canonical new-API form).** Same matrix as `foldMatrix_steps`, re-keyed on
 `(steps : ℕ) {destIdx}`; both reduce to `foldMatrixNat`. `y` is a point of `S⁽ᵈᵉˢᵗ⁾`, lifted to the
 legacy `⟨i + steps, _⟩` index by its underlying value (`destIdx.val = i.val + steps`). -/
@@ -1931,7 +1945,7 @@ noncomputable def foldMatrix (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
     Matrix (Fin (2 ^ steps)) (Fin (2 ^ steps)) L :=
   foldMatrixNat 𝔽q β i steps (newAPI_i_add_steps_lt 𝔽q β h_destIdx h_destIdx_le)
-    ⟨y.val, by have := y.property; rw [h_destIdx] at this; exact this⟩
+    (newAPI_liftPoint 𝔽q β h_destIdx h_destIdx_le y)
 
 /-- **Fiber evaluations** `[f(x_0), …, f(x_{2^steps-1})]` of `f` over the iterated-quotient fiber
 of `y` (canonical new-API). `f : S⁽ⁱ⁾ → L`, `y : S⁽ᵈᵉˢᵗ⁾` (lifted to the legacy `⟨i + steps, _⟩`
@@ -1943,7 +1957,7 @@ noncomputable def fiberEvaluations (i : Fin r) {destIdx : Fin r} (steps : ℕ)
   fun idx =>
     f (qMap_total_fiber 𝔽q β (i := i) (steps := steps)
       (h_i_add_steps := newAPI_i_add_steps_lt 𝔽q β h_destIdx h_destIdx_le)
-      (y := ⟨y.val, by have := y.property; rw [h_destIdx] at this; exact this⟩) idx)
+      (y := newAPI_liftPoint 𝔽q β h_destIdx h_destIdx_le y) idx)
 
 /-- **Single-point localized fold matrix form** (canonical new-API):
 `challengeTensorExpansion steps r ⬝ᵥ (foldMatrix … y *ᵥ fiber_eval_mapping)`. The `Soundness/*`
