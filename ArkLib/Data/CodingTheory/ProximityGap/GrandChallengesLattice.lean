@@ -619,6 +619,49 @@ theorem mcaThresholdLattice_bracketed_of_lowerWitness_and_epsCAGt
     mcaThreshold_lt_ofEpsCAGt
       (mcaThresholdExists_of_MCALowerWitness (MC : Set (ι → F)) ε_star wlo) hhi hδhi⟩
 
+/-- The BCHKS25 Johnson-range MCA lower bound and any capacity-side `ε_ca` upper witness
+bracket the faithful MCA lattice threshold directly for Reed-Solomon codes. -/
+theorem mcaThresholdLattice_bracketed_ofJohnsonBCHKS25_and_epsCAGt
+    (domain : ι ↪ F) (k : ℕ) (η δ_lo δ_hi ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ_lo : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδlo_le_one : δ_lo ≤ 1)
+    (hBCHKS25 : CodingTheory.rs_epsMCA_johnson_range_bchks25 domain k η δ_lo
+      hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+            (let n : ℝ := Fintype.card ι
+             let ρ_plus : ℝ := k / n + 1 / n
+             let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+             ((2 * (m + 1 / 2) ^ 5 + 3 * (m + 1 / 2) * δ_lo * ρ_plus) /
+                    (3 * ρ_plus ^ ((3 : ℝ) / 2)) *
+                  n +
+                (m + 1 / 2) / ρ_plus ^ ((1 : ℝ) / 2)) /
+               (Fintype.card F : ℝ)) ≤
+          (ε_star : ENNReal))
+    (hhi :
+      epsCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) δ_hi δ_hi >
+        (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1) :
+    let hne := mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ_lo ε_star hη
+      hδ_johnson hδlo_le_one hBCHKS25 hle
+    latticeIndexOf (ι := ι) δ_lo hδlo_le_one ≤
+        mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne ∧
+      mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne <
+        latticeIndexOf (ι := ι) δ_hi hδhi :=
+  let wlo := MCALowerWitness.ofJohnsonBCHKS25 domain k η δ_lo ε_star hη hδ_johnson
+    hδlo_le_one hBCHKS25 hle
+  ⟨MCALowerWitness_le_mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star
+      (mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ_lo ε_star hη hδ_johnson
+        hδlo_le_one hBCHKS25 hle) wlo,
+    mcaThreshold_lt_ofEpsCAGt
+      (MC := ReedSolomon.code domain k)
+      (mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ_lo ε_star hη hδ_johnson
+        hδlo_le_one hBCHKS25 hle) hhi hδhi⟩
+
 /-- The second-moment radius-one lower bound gives a direct upper bracket on the faithful
 MCA lattice threshold: in the explicit numeric regime where `epsStar < (M' - M'^2/q)/q`,
 the top radius `1` already exceeds `epsStar`, so the threshold lies strictly below the
