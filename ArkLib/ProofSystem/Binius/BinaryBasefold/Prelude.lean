@@ -875,13 +875,19 @@ lemma foldMatrixNat_one (i : Fin r) (h_i_add_steps : i.val + 1 < ℓ + 𝓡)
   all_goals simp only [Fin.coe_cast]
   all_goals omega
 
-/-- Iterated fold over `steps` steps starting at domain index `i`. -/
-def iterated_fold (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
+/-- Iterated fold over `steps` steps starting at domain index `i` (LEGACY signature, keyed on
+`steps : Fin (ℓ + 1)` and `h_i_add_steps : i.val + steps < ℓ + 𝓡`).
+
+DEPRECATED naming: the canonical, externally-consumed entry point is `iterated_fold` (below),
+which takes `(steps : ℕ) {destIdx : Fin r} (h_destIdx : destIdx.val = i.val + steps)
+(h_destIdx_le : destIdx ≤ ℓ)`. All Prelude-internal recursion/proofs continue to use
+`iterated_fold_steps`; external callers use the new `iterated_fold`. -/
+def iterated_fold_steps (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
     (f : sDomain 𝔽q β h_ℓ_add_R_rate (i := i) → L) (r_challenges : Fin steps → L) :
     sDomain 𝔽q β h_ℓ_add_R_rate
       (⟨i + steps.val, Nat.lt_trans (m := ℓ + 𝓡) (h_i_add_steps) h_ℓ_add_R_rate⟩) → L := by
   let domain_type := sDomain 𝔽q β h_ℓ_add_R_rate
-  let fold_func := fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+  let fold_func := fold_legacy 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
   let α (j : Fin (steps + 1)) := domain_type (⟨i + j.val, by omega⟩) → L
   let fold_step (j : Fin steps) (f_acc : α ⟨j, by omega⟩) : α j.succ := by
     unfold α domain_type at *
