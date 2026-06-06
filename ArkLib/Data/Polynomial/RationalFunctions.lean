@@ -3165,6 +3165,24 @@ def γ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
     | _ => 0
   PowerSeries.subst (PowerSeries.mk subst) (PowerSeries.mk (α x₀ R H hHyp))
 
+/-- The semantic-wrapper coefficient sequence specializes to the in-file `α` when its
+candidate numerator sequence is the in-file `β`. -/
+@[simp]
+theorem alphaOfNumerators_beta (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) :
+    alphaOfNumerators x₀ R H hHyp (β R) = α x₀ R H hHyp :=
+  rfl
+
+/-- The semantic-wrapper power series specializes to the in-file `γ` when its candidate
+numerator sequence is the in-file `β`. -/
+@[simp]
+theorem gammaOfNumerators_beta (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) :
+    gammaOfNumerators x₀ R H hHyp (β R) = γ x₀ R H hHyp :=
+  rfl
+
 def γ' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)
     (hHdeg : 0 < H.natDegree) (hHyp : Hypotheses x₀ R H) : PowerSeries (𝕃 H) :=
   γ x₀ R H (φ := ⟨H_irreducible⟩) (H_natDegree_pos := ⟨hHdeg⟩) hHyp
