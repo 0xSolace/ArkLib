@@ -1015,8 +1015,8 @@ set_option linter.unusedSectionVars false in
 /-- `Δ_X^{i1}` (the **middle-`X` Hasse derivative** on a `Y`-coefficient `b : F[X][X]`) never raises
 the **`Z`-degree** (`Bivariate.degreeX`): its `X`-coefficient at `k` is `↑((k+i1).choose i1)·b.coeff
 (k+i1)`, a ground-`ℕ`-cast scalar times an original `Z`-coefficient (`hasseDeriv_coeff`), so its
-`natDegree` is `≤ degreeX b`.  The middle-`X` Hasse lowers the middle-`X` degree but cannot touch the
-innermost `Z`-degree. -/
+`natDegree` is `≤ degreeX b`.  The middle-`X` Hasse lowers the middle-`X` degree but cannot touch
+the innermost `Z`-degree. -/
 theorem degreeX_hasseDeriv_le (i1 : ℕ) (b : F[X][X]) :
     Bivariate.degreeX (Polynomial.hasseDeriv i1 b) ≤ Bivariate.degreeX b := by
   classical
@@ -1029,7 +1029,8 @@ theorem degreeX_hasseDeriv_le (i1 : ℕ) (b : F[X][X]) :
 set_option linter.unusedSectionVars false in
 /-- A ground-`ℕ`-cast scalar multiple never raises the **`Z`-degree** (`Bivariate.degreeX`):
 `(↑c)·b = c • b`, and each `X`-coefficient `c • (b.coeff k)` has `natDegree ≤ (b.coeff k).natDegree
-≤ degreeX b` (`natDegree_smul_le`).  Used to discard the `(n+m).choose m` Hasse-coefficient scalar. -/
+≤ degreeX b` (`natDegree_smul_le`).  Used to discard the `(n+m).choose m` Hasse-coefficient
+scalar. -/
 theorem degreeX_natCast_mul_le (c : ℕ) (b : F[X][X]) :
     Bivariate.degreeX ((c : F[X][X]) * b) ≤ Bivariate.degreeX b := by
   classical
@@ -1059,8 +1060,8 @@ theorem natDegree_eval_C_le (x₀ : F) (b : F[X][X]) :
   omega
 
 set_option linter.unusedSectionVars false in
-/-- The `Y^n`-coefficient of `evalX (C x₀) q` is `Polynomial.eval (C x₀)` of the `Y^n`-coefficient of
-`q` (`evalX (C x₀) = map (evalRingHom (C x₀))`, `coeff_map`). -/
+/-- The `Y^n`-coefficient of `evalX (C x₀) q` is `Polynomial.eval (C x₀)` of the `Y^n`-coefficient
+of `q` (`evalX (C x₀) = map (evalRingHom (C x₀))`, `coeff_map`). -/
 theorem evalX_C_coeff (x₀ : F) (q : F[X][X][Y]) (n : ℕ) :
     (Bivariate.evalX (Polynomial.C x₀) q).coeff n
       = Polynomial.eval (Polynomial.C x₀) (q.coeff n) := by
@@ -1070,7 +1071,8 @@ set_option linter.unusedSectionVars false in
 /-- **The `Z`-degree (`degreeX`) bound — PROVEN, axiom-clean, P2-INDEPENDENT.**
 `degreeX (evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)) ≤ D − Σλ`, the paper's *literal* `(D−Σλ)` constant
 (BCIKS20 4345's `Q_{ji}` graded `Z`-degree), under the genuine graded-`Z`-degree premise on `R`:
-each `Y^j`-coefficient of `R` has `Z`-degree `≤ D − j` (BCIKS20 lines 2110–2111: `degZ Q_{ji} ≤ D−j`).
+each `Y^j`-coefficient of `R` has `Z`-degree `≤ D − j` (BCIKS20 lines 2110–2111:
+`degZ Q_{ji} ≤ D−j`).
 
 Mechanism (each step above): the `Y^n`-coefficient of `Δ_Y^{Σλ} R` is `↑((n+Σλ).choose Σλ)·R.coeff
 (n+Σλ)` (`hasseDeriv_coeff`), whose `Z`-degree is `≤ degreeX (R.coeff (n+Σλ)) ≤ D−(n+Σλ) ≤ D−Σλ` by
