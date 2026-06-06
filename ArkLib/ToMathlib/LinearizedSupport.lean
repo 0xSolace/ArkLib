@@ -534,4 +534,72 @@ theorem bkr06_tight_N_realizes
       < q ^ (m * (v - u)) * (N + 1) := Nat.mul_lt_mul_of_pos_left (by omega) hKvu_pos
     _ = q ^ (v * (m - v)) := hfull
 
+/-! ### End-to-end tight family + `hexp`
+
+The fully-wired tight pipeline: from the linearizedness residual `hlin` and BKR06's
+parameter algebra, produce a family `𝓛` with `N < |ι|` *and* the in-tree `hexp`
+inequality `q^{(α−β²)·log q} ≤ (N : ℝ) + 1`, where `N + 1 = q^{m·u − v²}` exactly.
+Combined with `BKR06.bkr06_hfamily_of_card` this yields `q^{(α−β²)·log q} ≤ |ι|`. -/
+
+/-- **BKR06 tight family with discharged `hexp`.**
+
+Putting the proven pieces together at `q = #F`, `m = finrank F K` (`#K = q^m`),
+dimension `v ≤ m`, cutoff index `u ≤ v` with the tight exponent nonnegative
+(`v² ≤ m·u`), and the linearizedness residual `hlin`:
+
+* there is a family `𝓛 : ι → Submodule F K` of distinct dimension-`v` subspaces whose
+  subspace polynomials pairwise differ only below degree `q^u + 1`, with
+  `N < |ι|` for `N := q^{m·u − v²} − 1`;
+* under the single parameter identity `(m·u − v² : ℝ) = (α − β²)·log q`, the in-tree
+  `hexp` inequality `q^{(α−β²)·log q} ≤ (N : ℝ) + 1` holds (`= q^{m·u − v²}`), so
+  `bkr06_hfamily_of_card` gives `q^{(α−β²)·log q} ≤ |ι|`.
+
+The proof composes `bkr06_tight_pigeonhole_family_card`, `bkr06_tight_N_realizes`, and
+`bkr06_tight_hexp_of_count`; the *only* non-proven inputs are `hlin` (the flag-recursion
+support fact, whose closure engine is proven) and `hparam` (the parameter identity). -/
+theorem bkr06_tight_family_hfamily
+    (α β : ℝ)
+    (q : ℕ) (hq : 2 ≤ q) (hqcard : Fintype.card F = q)
+    (v u : ℕ) (hv : v ≤ Module.finrank F K) (huv : u ≤ v)
+    (hexp_nonneg : v ^ 2 ≤ Module.finrank F K * u)
+    (hlin : ∀ W : Submodule F K, Module.finrank F W = v →
+        IsQLinearized q (subspacePoly (subFinset W)))
+    (hparam : ((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) = (α - β ^ 2) * Real.log q) :
+    ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
+      (_ : ∀ i, Fintype (𝓛 i)),
+      (∀ i, Module.finrank F (𝓛 i) = v) ∧
+      Function.Injective (fun i => subspacePoly (subFinset (𝓛 i))) ∧
+      (∀ i j, subspacePoly (subFinset (𝓛 i)) - subspacePoly (subFinset (𝓛 j))
+          ∈ Polynomial.degreeLT K (q ^ u + 1)) ∧
+      (q : ℝ) ^ ((α - β ^ 2) * Real.log q) ≤ (Fintype.card ι : ℝ) := by
+  classical
+  set m : ℕ := Module.finrank F K with hm
+  -- #K = q^m
+  have hKcard : Fintype.card K = q ^ m := by
+    rw [← hqcard, hm]; exact Module.card_eq_pow_finrank (K := F) (V := K)
+  -- the concrete tight N and its two consequences
+  obtain ⟨hbig, hNcount⟩ :=
+    bkr06_tight_N_realizes q m u v (by omega) (Fintype.card K) hKcard hv huv hexp_nonneg
+  set N : ℕ := q ^ (m * u - v ^ 2) - 1 with hN
+  -- the tight family at this N (rewrite the size hypothesis into card form)
+  have hbig_card : (Fintype.card K) ^ (v - u) * N
+      < (Fintype.card F) ^ (v * (Module.finrank F K - v)) := by
+    rw [hqcard, hKcard, ← hm]; exact hbig
+  obtain ⟨ι, hFin, hDec, 𝓛, hFinL, hcard, hdim, hinj, hagree⟩ :=
+    bkr06_tight_pigeonhole_family_card q hq hqcard v u hv huv N hlin hbig_card
+  refine ⟨ι, hFin, hDec, 𝓛, hFinL, hdim, hinj, hagree, ?_⟩
+  -- N < |ι|, and the tight count gives q^{(α-β²)log q} ≤ N+1 ≤ |ι|
+  have hexp_le_N1 : (q : ℝ) ^ ((α - β ^ 2) * Real.log q) ≤ (N : ℝ) + 1 := by
+    apply bkr06_tight_hexp_of_count α β q N m u v ?_ hparam
+    -- q^{(mu - v² : ℝ)} = (q^{mu-v²} : ℕ) = N+1, since exponent is a Nat (nonneg)
+    have hcast : ((m : ℝ) * u - (v : ℝ) ^ 2) = ((m * u - v ^ 2 : ℕ) : ℝ) := by
+      have hv2 : (v : ℝ) ^ 2 = ((v ^ 2 : ℕ) : ℝ) := by push_cast; ring
+      rw [hv2, Nat.cast_sub hexp_nonneg]; push_cast; ring
+    rw [hcast, Real.rpow_natCast, ← Nat.cast_pow, ← hNcount]
+    push_cast; ring
+  have hN1 : (N : ℝ) + 1 ≤ (Fintype.card ι : ℝ) := by
+    have : N + 1 ≤ Fintype.card ι := hcard
+    exact_mod_cast this
+  exact le_trans hexp_le_N1 hN1
+
 end BKR06

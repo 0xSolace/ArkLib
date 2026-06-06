@@ -439,6 +439,7 @@ import ArkLib.ToMathlib.CS25Claim3Counting
 import ArkLib.ToMathlib.CS25DeepHole
 import ArkLib.ToMathlib.CS25DeepHoleFinish
 import ArkLib.ToMathlib.CS25DeepHoleFinish2
+import ArkLib.ToMathlib.CS25JointFar
 import ArkLib.ToMathlib.Claim510Conditional
 import ArkLib.ToMathlib.Claim511
 import ArkLib.ToMathlib.Claim59Conditional
@@ -471,6 +472,7 @@ import ArkLib.ToMathlib.KeystoneCapstone
 import ArkLib.ToMathlib.KeystoneStrictResidual
 import ArkLib.ToMathlib.List.Basic
 import ArkLib.ToMathlib.MatchingExtractor
+import ArkLib.ToMathlib.MpFinSupply
 import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.MultiplicityDatum
 import ArkLib.ToMathlib.MvPolynomial.Equiv

@@ -179,8 +179,8 @@ theorem deepHoleJointFar_holds
     simp
   rw [hg0] at hga
   simp only [Polynomial.eval_zero] at hga
-  -- `0 = −1` is a contradiction in a field.
-  exact one_ne_zero (by linear_combination -hga)
+  -- `0 = −1` is a contradiction in a field: `−1 = 0` gives `1 = 0`.
+  exact one_ne_zero (neg_eq_zero.mp hga.symm)
 
 /-! ### The fully-discharged final theorem -/
 
