@@ -146,4 +146,13 @@ theorem countPerms_eq_choose_zeroCount_mul_positivePart (m : Multiset ℕ) :
           * (positivePart m).countPerms :=
       countPerms_replicate_zero_add (zeroCount m) (positivePart m) (zero_notMem_positivePart m)
 
+/-- Zero-peeling, re-keyed to the positive-part/Y-Hasse binomial. -/
+theorem countPerms_replicate_zero_add_choose_sl (j0 : ℕ) (lam : Multiset ℕ)
+    (h0 : (0 : ℕ) ∉ lam) :
+    (Multiset.replicate j0 0 + lam).countPerms
+      = (j0 + lam.card).choose lam.card * lam.countPerms := by
+  rw [countPerms_replicate_zero_add j0 lam h0]
+  congr 1
+  simpa [Nat.add_sub_cancel_right] using Nat.choose_symm (Nat.le_add_left lam.card j0)
+
 end BCIKS20.HenselNumerator
