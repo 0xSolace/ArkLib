@@ -1293,6 +1293,89 @@ theorem mcaThreshold_spec_ofLineDecodingTarget
   mcaThreshold_spec (C : Set (ι → F)) ε_star
     (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
 
+/-- The GKL24 1.5-Johnson MCA lower bound makes the faithful MCA lattice threshold exist
+whenever its explicit right-hand side is below the target `ε_star`. -/
+theorem mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24
+    (C : ModuleCode ι F F) (δ_min η δ ε_star : ℝ≥0)
+    (h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → F)) : ℝ) / Fintype.card ι)
+    (hη : 0 < η) (hη_lt_δ_min : η < δ_min)
+    (hδ_johnson :
+      (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)))
+    (hδ_le_one : δ ≤ 1)
+    (hGKL24 : CodingTheory.linear_epsMCA_1_5_johnson_gkl24 C δ_min η δ
+      h_δ_min hη hη_lt_δ_min hδ_johnson)
+    (hle :
+      ENNReal.ofReal
+        ((((Fintype.card ι : ℝ) + 6) / η
+          + 2 / ((η : ℝ) *
+              ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)
+                - (1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 2)))
+         ) / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
+    mcaThresholdExists (C : Set (ι → F)) ε_star :=
+  mcaThresholdExists_of_MCALowerWitness (C : Set (ι → F)) ε_star
+    (MCALowerWitness.ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+      hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle)
+
+/-- The faithful MCA threshold obtained from the GKL24 1.5-Johnson lower bound satisfies
+the MCA target. -/
+theorem mcaThreshold_spec_ofLinearOnePointFiveJohnsonGKL24
+    (C : ModuleCode ι F F) (δ_min η δ ε_star : ℝ≥0)
+    (h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → F)) : ℝ) / Fintype.card ι)
+    (hη : 0 < η) (hη_lt_δ_min : η < δ_min)
+    (hδ_johnson :
+      (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)))
+    (hδ_le_one : δ ≤ 1)
+    (hGKL24 : CodingTheory.linear_epsMCA_1_5_johnson_gkl24 C δ_min η δ
+      h_δ_min hη hη_lt_δ_min hδ_johnson)
+    (hle :
+      ENNReal.ofReal
+        ((((Fintype.card ι : ℝ) + 6) / η
+          + 2 / ((η : ℝ) *
+              ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)
+                - (1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 2)))
+         ) / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
+    let hne :=
+      mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+        hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle
+    mcaSatisfies (C : Set (ι → F)) ε_star
+      (mcaThreshold (C : Set (ι → F)) ε_star hne) :=
+  mcaThreshold_spec (C : Set (ι → F)) ε_star
+    (mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+      hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle)
+
+/-- The GKL24 1.5-Johnson MCA lower bound gives a direct lower bracket on the faithful
+MCA lattice threshold at `⌊δ·n⌋`. -/
+theorem latticeIndexOf_le_mcaThreshold_ofLinearOnePointFiveJohnsonGKL24
+    (C : ModuleCode ι F F) (δ_min η δ ε_star : ℝ≥0)
+    (h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → F)) : ℝ) / Fintype.card ι)
+    (hη : 0 < η) (hη_lt_δ_min : η < δ_min)
+    (hδ_johnson :
+      (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)))
+    (hδ_le_one : δ ≤ 1)
+    (hGKL24 : CodingTheory.linear_epsMCA_1_5_johnson_gkl24 C δ_min η δ
+      h_δ_min hη hη_lt_δ_min hδ_johnson)
+    (hle :
+      ENNReal.ofReal
+        ((((Fintype.card ι : ℝ) + 6) / η
+          + 2 / ((η : ℝ) *
+              ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)
+                - (1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 2)))
+         ) / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
+    let hne :=
+      mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+        hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold (C : Set (ι → F)) ε_star hne := by
+  exact MCALowerWitness_le_mcaThreshold (C : Set (ι → F)) ε_star
+    (mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+      hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle)
+    (MCALowerWitness.ofLinearOnePointFiveJohnsonGKL24 C δ_min η δ ε_star h_δ_min hη
+      hη_lt_δ_min hδ_johnson hδ_le_one hGKL24 hle)
+
+#print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_ofLinearOnePointFiveJohnsonGKL24
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_ofLinearOnePointFiveJohnsonGKL24
+
 /-- The BCHKS25 Johnson-range MCA lower bound makes the faithful MCA lattice threshold exist
 whenever its explicit right-hand side is below the target `ε_star`. -/
 theorem mcaThresholdExists_ofJohnsonBCHKS25
