@@ -199,6 +199,168 @@ lemma exists_u0_small_collisions (domain : ι ↪ F) {k : ℕ} {𝒯 : Finset (F
   have hqn : 0 < Fintype.card F := Fintype.card_pos
   nlinarith [hsum_lo, hqpos, hqn]
 
+/-! ## (3) The main second-moment lower bound -/
+
+/-- **Bad-scalar count lower bound at a chosen `u₀`.** For the deep-hole line `(u₀, deepHole)`,
+the distinct values `c_T(u₀)` over `T ∈ 𝒯` are all bad scalars, so the bad count is at least
+`#𝒯 - coll(u₀)`. -/
+lemma mcaBadCount_ge_of_family (domain : ι ↪ F) {k : ℕ} {𝒯 : Finset (Finset ι)}
+    (h𝒯 : ∀ T ∈ 𝒯, T.card = k + 1) (u₀ : ι → F) :
+    𝒯.card - collCount domain k 𝒯 u₀ ≤
+      mcaBadCount (F := F) (ReedSolomon.code domain k : Set (ι → F)) 1 u₀ (deepHole domain k) := by
+  classical
+  -- the map `T ↦ -c_T(u₀)` lands in the bad-scalar filter set.
+  set Bad : Finset F := Finset.univ.filter
+    (fun γ : F => mcaEvent (ReedSolomon.code domain k : Set (ι → F)) 1 u₀ (deepHole domain k) γ)
+    with hBad
+  have hmaps : ∀ T ∈ 𝒯, (-cT domain k T u₀) ∈ Bad := by
+    intro T hT
+    rw [hBad, Finset.mem_filter]
+    exact ⟨Finset.mem_univ _, mcaEvent_at_gammaT domain (h𝒯 T hT) u₀⟩
+  -- `#(𝒯.image (-c_·(u₀))) ≤ #Bad = mcaBadCount`.
+  have h1 : (𝒯.image (fun T => -cT domain k T u₀)).card ≤ Bad.card := by
+    apply Finset.card_le_card
+    intro γ hγ
+    rw [Finset.mem_image] at hγ
+    obtain ⟨T, hT, rfl⟩ := hγ
+    exact hmaps T hT
+  -- image card is invariant under negation.
+  have h2 : (𝒯.image (fun T => -cT domain k T u₀)).card
+      = (𝒯.image (fun T => cT domain k T u₀)).card := by
+    rw [show (fun T => -cT domain k T u₀) = (fun x => -x) ∘ (fun T => cT domain k T u₀) from rfl,
+      ← Finset.image_image]
+    exact Finset.card_image_of_injective _ neg_injective
+  -- fiber-counting: `#𝒯 - coll ≤ #(image)`.
+  have h3 := card_image_ge_card_sub_offDiag_collisions 𝒯 (fun T => cT domain k T u₀)
+  rw [hBad] at h1
+  rw [mcaBadCount]
+  simp only [collCount]
+  rw [h2] at h1
+  exact le_trans h3 h1
+
+open Classical in
+/-- **The second-moment lower bound on the radius-one MCA error.** For `RS[F, domain, k]` with
+`k + 1 ≤ n`, and *any* `M' ≤ C(n, k+1)`:
+
+  `(M' - M'²/q)/q ≤ ε_mca(RS, 1)`,
+
+an unconditional bound (`ℝ≥0∞` subtraction is truncated, so safe even when the bound is `0`).
+This survives far below the quadratic threshold `q > C(C(n,k+1),2)` of
+`epsMCA_one_eq_choose_div`. -/
+theorem epsMCA_one_ge_second_moment (domain : ι ↪ F) {k M' : ℕ}
+    (hk : k + 1 ≤ Fintype.card ι) (hM' : M' ≤ Nat.choose (Fintype.card ι) (k + 1)) :
+    ((M' : ℝ≥0∞) - (M' * M' : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)) / (Fintype.card F : ℝ≥0∞)
+      ≤ epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 := by
+  classical
+  -- choose a family `𝒯` of `M'` distinct `(k+1)`-subsets.
+  have hpc : ((Finset.univ : Finset ι).powersetCard (k + 1)).card
+      = Nat.choose (Fintype.card ι) (k + 1) := by
+    rw [Finset.card_powersetCard, Finset.card_univ]
+  have hM'card : M' ≤ ((Finset.univ : Finset ι).powersetCard (k + 1)).card := by
+    rw [hpc]; exact hM'
+  obtain ⟨𝒯, h𝒯sub, h𝒯card⟩ := Finset.exists_subset_card_eq hM'card
+  have h𝒯 : ∀ T ∈ 𝒯, T.card = k + 1 := by
+    intro T hT
+    have := h𝒯sub hT
+    rw [Finset.mem_powersetCard] at this
+    exact this.2
+  -- pick a low-collision first word.
+  obtain ⟨u₀, hu₀⟩ := exists_u0_small_collisions domain h𝒯
+  -- integer facts.
+  set c := collCount domain k 𝒯 u₀ with hc
+  set B := mcaBadCount (F := F) (ReedSolomon.code domain k : Set (ι → F)) 1 u₀ (deepHole domain k)
+    with hBdef
+  have hBC : M' - c ≤ B := by
+    have := mcaBadCount_ge_of_family domain h𝒯 u₀
+    rwa [h𝒯card] at this
+  have hMBc : M' ≤ B + c := by omega
+  -- `q·c ≤ |𝒯.offDiag| = M'·(M'-1) ≤ M'·M'`.
+  have hoff : 𝒯.offDiag.card = M' * M' - M' := by rw [Finset.offDiag_card, h𝒯card]
+  have hqc : Fintype.card F * c ≤ M' * M' := by
+    rw [hc] at hu₀ ⊢
+    rw [hoff] at hu₀
+    omega
+  -- push to `ℝ≥0∞`.
+  set q : ℝ≥0∞ := (Fintype.card F : ℝ≥0∞) with hq
+  have hqne : q ≠ 0 := by rw [hq]; simp only [ne_eq, Nat.cast_eq_zero]; exact Fintype.card_ne_zero
+  have hqtop : q ≠ ⊤ := by rw [hq]; exact ENNReal.natCast_ne_top _
+  -- `c ≤ M'²/q` in `ℝ≥0∞` from `q·c ≤ M'²`.
+  have hc_div : (c : ℝ≥0∞) ≤ (M' * M' : ℝ≥0∞) / q := by
+    rw [ENNReal.le_div_iff_mul_le (Or.inl hqne) (Or.inl hqtop)]
+    calc (c : ℝ≥0∞) * q = q * (c : ℝ≥0∞) := mul_comm _ _
+      _ = ((Fintype.card F * c : ℕ) : ℝ≥0∞) := by rw [hq]; push_cast; ring
+      _ ≤ ((M' * M' : ℕ) : ℝ≥0∞) := by exact_mod_cast hqc
+      _ = (M' * M' : ℝ≥0∞) := by push_cast; ring
+  -- `M' ≤ B + M'²/q` in `ℝ≥0∞`.
+  have hMB : (M' : ℝ≥0∞) ≤ (B : ℝ≥0∞) + (M' * M' : ℝ≥0∞) / q := by
+    calc (M' : ℝ≥0∞) ≤ ((B + c : ℕ) : ℝ≥0∞) := by exact_mod_cast hMBc
+      _ = (B : ℝ≥0∞) + (c : ℝ≥0∞) := by push_cast; ring
+      _ ≤ (B : ℝ≥0∞) + (M' * M' : ℝ≥0∞) / q := by gcongr
+  -- hence `M' - M'²/q ≤ B` (truncated sub).
+  have hsub : (M' : ℝ≥0∞) - (M' * M' : ℝ≥0∞) / q ≤ (B : ℝ≥0∞) := by
+    rw [tsub_le_iff_right]; exact hMB
+  -- divide by `q` and embed `B/q` below the supremum.
+  calc ((M' : ℝ≥0∞) - (M' * M' : ℝ≥0∞) / q) / q
+      ≤ (B : ℝ≥0∞) / q := ENNReal.div_le_div_right hsub q
+    _ ≤ epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 := by
+        rw [epsMCA_eq_iSup_mcaBadCount]
+        apply ENNReal.div_le_div_right
+        refine le_iSup
+          (fun u : WordStack F (Fin 2) ι =>
+            (mcaBadCount (F := F) (ReedSolomon.code domain k : Set (ι → F)) 1 (u 0) (u 1)
+              : ℝ≥0∞))
+          (Code.finMapTwoWords u₀ (deepHole domain k))
+
+/-! ## (4) Decision corollaries -/
+
+/-- **Numeric bridge.** If `M'*M' ≤ M'*q` and `q*q < 2^128 * (M'*q - M'*M')`, then
+`ε* = 2^{-128} < (M' - M'²/q)/q` as `ℝ≥0∞`. -/
+lemma epsStar_lt_second_moment_value {M' q : ℕ} (hq : 0 < q)
+    (hle : M' * M' ≤ M' * q)
+    (hnum : q * q < 2 ^ (128 : ℕ) * (M' * q - M' * M')) :
+    (ProximityGap.epsStar : ℝ≥0∞) <
+      ((M' : ℝ≥0∞) - (M' * M' : ℝ≥0∞) / (q : ℝ≥0∞)) / (q : ℝ≥0∞) := by
+  set Q : ℝ≥0∞ := (q : ℝ≥0∞) with hQ
+  have hQne : Q ≠ 0 := by rw [hQ]; simp only [ne_eq, Nat.cast_eq_zero]; omega
+  have hQtop : Q ≠ ⊤ := by rw [hQ]; exact ENNReal.natCast_ne_top _
+  set D : ℕ := M' * q - M' * M' with hD
+  -- `(M' - M'²/Q) = (D : ℝ≥0∞)/Q`.
+  have hMq : ((M' * q : ℕ) : ℝ≥0∞) / Q = (M' : ℝ≥0∞) := by
+    rw [hQ]; push_cast; rw [mul_div_assoc, ENNReal.div_self hQne hQtop, mul_one]
+  have hDcast : (D : ℝ≥0∞) = (M' * q : ℕ) - (M' * M' : ℕ) := by
+    rw [hD, Nat.cast_sub hle]
+  have hval : (M' : ℝ≥0∞) - (M' * M' : ℝ≥0∞) / Q = (D : ℝ≥0∞) / Q := by
+    rw [hDcast, ENNReal.sub_div (by intro _ _; exact hQne), hMq]
+    push_cast
+  rw [hval]
+  -- `(D/Q)/Q = D/(Q*Q)`.
+  rw [div_div]
+  set QQ : ℝ≥0∞ := Q * Q with hQQ
+  have hQQne : QQ ≠ 0 := mul_ne_zero hQne hQne
+  have hQQtop : QQ ≠ ⊤ := ENNReal.mul_ne_top hQtop hQtop
+  -- `ε* = (2^128)⁻¹`.
+  have hepsStar : (ProximityGap.epsStar : ℝ≥0∞) = (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ := by
+    rw [ProximityGap.epsStar]; push_cast; rw [one_div]
+  rw [hepsStar]
+  have hpow_ne_zero : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ 0 := by positivity
+  have hpow_ne_top : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ ⊤ := by finiteness
+  -- `(2^128)⁻¹ < D/QQ ⟺ (2^128)⁻¹ * QQ < D`.
+  rw [ENNReal.lt_div_iff_mul_lt (by left; exact hQQne) (by left; exact hQQtop)]
+  -- `QQ < 2^128 * D` from the ℕ hypothesis, then multiply by `(2^128)⁻¹`.
+  have hcast : QQ < (2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞) := by
+    rw [hQQ, hQ]
+    have hh : (q * q : ℕ) < (2 ^ (128 : ℕ) * D : ℕ) := by rw [hD] at hnum ⊢; exact hnum
+    calc ((q : ℝ≥0∞)) * (q : ℝ≥0∞) = ((q * q : ℕ) : ℝ≥0∞) := by push_cast; ring
+      _ < ((2 ^ (128 : ℕ) * D : ℕ) : ℝ≥0∞) := by exact_mod_cast hh
+      _ = (2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞) := by push_cast; ring
+  have hinvne : (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ ≠ 0 := ENNReal.inv_ne_zero.mpr hpow_ne_top
+  have hinvtop : (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ ≠ ⊤ := ENNReal.inv_ne_top.mpr hpow_ne_zero
+  calc (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * QQ
+      < (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * ((2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞)) :=
+        ENNReal.mul_lt_mul_left hinvne hinvtop hcast
+    _ = (D : ℝ≥0∞) := by
+        rw [← mul_assoc, ENNReal.inv_mul_cancel hpow_ne_zero hpow_ne_top, one_mul]
+
 end SecondMoment
 
 end ProximityGap
