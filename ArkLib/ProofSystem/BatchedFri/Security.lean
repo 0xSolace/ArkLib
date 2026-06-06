@@ -30,6 +30,15 @@ import ArkLib.ToMathlib.List.Basic
 import ArkLib.ToMathlib.Finset.Basic
 import Mathlib.Algebra.Ring.NonZeroDivisors
 
+/-!
+# Security of the Batched FRI protocol
+
+We develop the security analysis of the Batched FRI oracle reduction following [BCIKS20]. The file
+sets up the coset-evaluation machinery (`cosetEnum`, `cosetG`, `VDM` and its inverse `VDMInv`, the
+`fin_equiv_coset` reindexing) used to reason about proximity over the smooth coset FFT evaluation
+domains, towards completeness and soundness statements for the batched protocol.
+-/
+
 namespace Fri
 section Fri
 

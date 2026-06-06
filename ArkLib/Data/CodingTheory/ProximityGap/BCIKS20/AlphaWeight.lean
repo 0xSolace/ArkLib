@@ -74,6 +74,9 @@ only the proven `βHensel_lift_identity_zero` + injectivity); we do not fake the
 NO `axiom`/`admit`/`native_decide`/`bv_decide`/`sorry`.  Audited in-file via `#print axioms`.
 -/
 
+set_option linter.style.longLine false
+set_option linter.unusedSectionVars false
+
 namespace BCIKS20.HenselNumerator
 
 open Polynomial Polynomial.Bivariate
