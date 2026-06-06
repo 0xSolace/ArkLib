@@ -681,22 +681,19 @@ theorem reduction_append_completeness
     {completenessError₁ completenessError₂ : ℝ≥0}
     (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
     (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂)
-    (hAppendCompleteness :
+    (hRight : ∀ stmt wit, Prover.appendRunRightResidual R₁.prover R₂.prover stmt wit) :
       (R₁.append R₂).completeness init impl
-        rel₁ rel₃ (completenessError₁ + completenessError₂)) :
-      (R₁.append R₂).completeness init impl
-        rel₁ rel₃ (completenessError₁ + completenessError₂) :=
-  hAppendCompleteness
+        rel₁ rel₃ (completenessError₁ + completenessError₂) := by
+  sorry
 
 theorem reduction_append_perfectCompleteness
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
     (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
     (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
     (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
-    (hAppendPerfectCompleteness :
-      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃) :
+    (hRight : ∀ stmt wit, Prover.appendRunRightResidual R₁.prover R₂.prover stmt wit) :
       (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
-  exact hAppendPerfectCompleteness
+  sorry
 
 end Reduction
 
@@ -855,12 +852,10 @@ theorem append_completeness
     {completenessError₁ completenessError₂ : ℝ≥0}
     (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
     (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂)
-    (hAppendCompleteness :
-      (R₁.append R₂).completeness init impl
-        rel₁ rel₃ (completenessError₁ + completenessError₂)) :
+    (hRight : ∀ stmt wit, Prover.appendRunRightResidual R₁.prover R₂.prover stmt wit) :
       (R₁.append R₂).completeness init impl
         rel₁ rel₃ (completenessError₁ + completenessError₂) :=
-  hAppendCompleteness
+  Reduction.reduction_append_completeness R₁.reduction R₂.reduction h₁ h₂ hRight
 
 theorem append_perfectCompleteness
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
@@ -868,10 +863,9 @@ theorem append_perfectCompleteness
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
     (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
     (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
-    (hAppendPerfectCompleteness :
-      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃) :
+    (hRight : ∀ stmt wit, Prover.appendRunRightResidual R₁.prover R₂.prover stmt wit) :
       (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ :=
-  hAppendPerfectCompleteness
+  Reduction.reduction_append_perfectCompleteness R₁.reduction R₂.reduction h₁ h₂ hRight
 
 end OracleReduction
 

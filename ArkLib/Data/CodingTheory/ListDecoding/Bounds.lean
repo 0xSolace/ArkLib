@@ -1953,12 +1953,15 @@ fields. Fix `0 < α, β < 1`. For all sufficiently large primes `p`, there exist
 
   `|Λ(C, 1 - ((1-β)/α) · p^{α-1}, w)| > Ω(p^{p^α · β/2})`
 
-Admitted as an external result.
-
-**STATUS: NEEDS_CLASSICAL.** [GHSZ02 Cor 20] is settled classical Reed-Solomon
-list-decoding theory over prime fields, but unformalized anywhere; mathlib has no
-Reed-Solomon list-decoding API. Discharging the `sorry` is a ground-up formalization,
-not a port. See `research/formal/arklib-proof-research-2026-06.md`.
+**STATUS: PROVEN.** This front door is discharged as an in-tree, axiom-clean theorem:
+`GHSZ02LargeNProof.rs_lambda_large_prime_ghsz02_proven` in
+`ArkLib/ToMathlib/GHSZ02LargeNProof.lean` (the `GHSZ02LargeN` asymptotic ledger proven
+from explicit thresholds via choose-symmetry + `Nat.pow_le_choose` + the `(1−1/p)^p`
+brick; thresholds eventually satisfied by filter/tendsto compositions; uniform
+Ω-constant `c = 1/2` through the in-tree `hcount_of_largeN` reduction).  The
+`def : Prop` below is retained as the statement surface; the `_of_residuals`/injection
+forms remain as intermediate API.  Historical context:
+`research/formal/arklib-proof-research-2026-06.md`.
 
 **HONEST REDUCTION AVAILABLE.** The Ω-constant + strict-inequality bookkeeping is fully
 proven, `sorry`-free and axiom-clean, in `rs_lambda_large_prime_ghsz02_of_residuals`
