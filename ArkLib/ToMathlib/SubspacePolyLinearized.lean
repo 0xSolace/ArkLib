@@ -233,7 +233,8 @@ theorem subspacePoly_flag_recursion
   have hRHS_ne : RHS ≠ 0 := hRHS_mon.ne_zero
   have hLHS_mon : (subspacePoly (subFinset W)).Monic := subspacePoly_monic _
   -- degrees agree: |W| = q·|W₀| = RHS.natDegree
-  have hLHS_deg : (subspacePoly (subFinset W)).natDegree = Fintype.card F * (subFinset W₀).card := by
+  have hLHS_deg : (subspacePoly (subFinset W)).natDegree
+      = Fintype.card F * (subFinset W₀).card := by
     rw [subspacePoly_natDegree, hW, subFinset_sup_span_singleton_card W₀ x hx]
   have hRHS_deg : RHS.natDegree = Fintype.card F * (subFinset W₀).card :=
     subspacePoly_recursion_natDegree W₀ hq x

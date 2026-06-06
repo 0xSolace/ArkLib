@@ -153,6 +153,7 @@ open scoped BigOperators ENNReal ProbabilityTheory LinearCode
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
+omit [DecidableEq ι] in
 /-- **The §5 keystone, β-identification-residual-free (L13 milestone).**
 
 The BCIKS20 keystone goal `δ_ε_correlatedAgreementCurves` holds in the strict square-root Johnson
@@ -165,7 +166,6 @@ with `betaRec` *by definition*, so nothing on this path assumes the identificati
 
 This forwards verbatim to the proven betaRec-native keystone
 `correlatedAgreement_affine_curves_johnson_of_betaRecFin_strict`. -/
-omit [DecidableEq ι] in
 theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
     (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
