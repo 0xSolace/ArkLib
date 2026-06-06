@@ -332,6 +332,16 @@ theorem mcaThreshold_lt_MCAUpperWitness (C : Set (ι → F)) (ε_star : ℝ≥0)
   rw [← epsMCA_eq_at_latticeIndex C w.δ hδ] at this
   exact absurd this (not_le.mpr w.exceeds)
 
+/-- A capacity-side `ε_ca` lower bound for a linear code gives a lattice upper bracket on the
+faithful MCA threshold. -/
+theorem mcaThreshold_lt_ofEpsCAGt {MC : Submodule F (ι → F)} {ε_star δ : ℝ≥0}
+    (hne : mcaThresholdExists (MC : Set (ι → F)) ε_star)
+    (h : epsCA (F := F) (A := F) (MC : Set (ι → F)) δ δ > (ε_star : ENNReal))
+    (hδ : δ ≤ 1) :
+    mcaThreshold (MC : Set (ι → F)) ε_star hne < latticeIndexOf (ι := ι) δ hδ :=
+  mcaThreshold_lt_MCAUpperWitness (MC : Set (ι → F)) ε_star hne
+    (MCAUpperWitness.ofEpsCAGt h) hδ
+
 /-- **Lattice bracketing of the MCA threshold (faithful `mca_threshold_bracketed`).** A
 lower witness and an upper witness (at a radius `≤ 1`) bracket the lattice threshold:
 `⌊δ_lo·n⌋ ≤ mcaThreshold < ⌊δ_hi·n⌋`. This is the lattice replacement for
