@@ -44,9 +44,12 @@ square — exactly the rational-`√ρ` lattice case flagged in the task brief.
 So the boundary case splits cleanly:
 
 * **Non-lattice case** (`deg·n` not a perfect square, i.e. `⌊δ·n⌋ < δ·n`): the boundary
-  obligation reduces *exactly* to a strict-interior obligation at the nearby `δ'`.  This is the
-  bulk of the parameter space and is discharged here by `boundaryCardResidual_of_not_lattice`,
-  modulo the *same* strict-interior `jointAgreement` producer the §5 extraction already supplies.
+  obligation reduces *exactly* to the *strict-interior analogue* of itself at the nearby
+  `δ' < 1 − √ρ` (positive good set ⟹ `jointAgreement`).  This is the bulk of the parameter space
+  and is discharged here by `boundaryCardResidual_of_not_lattice`, modulo that strict-interior
+  producer.  The producer is *not* identical to `StrictCoeffPolysResidual`, but it is the obligation
+  in the regime `errorBound > 0`, where the §5 quantitative probability threshold is available —
+  unlike the exact boundary, where `errorBound = 0` makes it vacuous (cf. `BoundaryDischarge.lean`).
 * **Lattice case** (`δ·n ∈ ℕ`): the boundary *is* the left endpoint of its level set, the
   reduction to a strict sub-radius is unavailable, and the genuine Johnson-boundary combinatorics
   is required.  This case is **precisely isolated** as `BoundaryCardLatticeResidual` and is *not*
@@ -232,8 +235,9 @@ case, handled by the strict-interior producer `hStrict` through `boundaryCardRes
 A single `lt_or_eq` on `⌊δ·n⌋ ≤ δ·n` discharges the whole `BoundaryCardResidual`.
 
 This is the exact `BoundaryCardResidual` shape consumed by the keystone
-`ProximityGap.correlatedAgreement_affine_curves`.  Its *only* genuinely open input is
-`hLattice`; the non-lattice bulk is reduced to the strict interior that §5 already covers. -/
+`ProximityGap.correlatedAgreement_affine_curves`.  Its *only* genuinely boundary-specific open
+input is `hLattice`; the non-lattice bulk is reduced to `hStrict`, the strict-interior analogue at
+radii `δ' < δ` where `errorBound > 0` makes the §5 quantitative machinery applicable. -/
 theorem boundaryCardResidual_of_lattice_residual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hLattice : BoundaryCardLatticeResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hStrict : ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
@@ -300,15 +304,16 @@ input is no longer the full `BoundaryCardResidual` but the *strictly smaller* su
 the quantization analysis:
 
 * `hStrictCoeff` — the strict Johnson §5 extraction (`StrictCoeffPolysResidual`), unchanged;
-* `hStrict` — a strict-interior `jointAgreement` producer (the §5-covered regime `δ' < δ`), which
-  is what the non-lattice bulk of the boundary reduces to;
+* `hStrict` — the strict-interior analogue of the boundary obligation (positive good set ⟹
+  `jointAgreement`) at radii `δ' < δ`, the regime `errorBound > 0` where the §5 quantitative
+  threshold is available; this is what the non-lattice bulk of the boundary reduces to;
 * `hLattice` — the precisely isolated genuine `BoundaryCardLatticeResidual` (only the
   `1/n`-lattice-point boundary, i.e. `deg·n` a perfect square).
 
 The boundary `BoundaryCardResidual` is reconstructed from `hStrict` and `hLattice` via
 `boundaryCardResidual_of_lattice_residual` and fed to the keystone.  Compared to the bare keystone,
-this corollary moves the entire non-lattice boundary into the strict-interior obligation that §5
-already discharges, leaving `hLattice` as the only genuinely boundary-specific datum. -/
+this corollary moves the entire non-lattice boundary off the measure-zero boundary into the strict
+interior, leaving `hLattice` as the only genuinely boundary-specific datum. -/
 theorem correlatedAgreement_affine_curves_of_lattice_residual {k deg : ℕ} {domain : ι ↪ F}
     {δ : ℝ≥0} [NeZero deg]
     (hStrictCoeff :
