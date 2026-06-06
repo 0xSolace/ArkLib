@@ -2866,8 +2866,8 @@ theorem ordinaryRSCapacityAtPrizeRates_of_pointwise
     OrdinaryRSCapacityAtPrizeRates domain τ ℓ := by
   intro r
   exact Lambda_le_natCast_of_forall_closeFinset_card_le
-    (C := ReedSolomon.code domain
-      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+    (C := (ReedSolomon.code domain
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
     (δ := (((((τ r).val : ℕ) : ℝ≥0) /
       (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ))
     (ℓ := ℓ r) (hPointwise r)
