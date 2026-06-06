@@ -106,10 +106,10 @@ theorem fromCMvPolynomial_CMLE'_eq_MLE' (evals : Fin (2 ^ n) → R) :
       (by
         intro x
         refine congr_arg₂ HMul.hMul ?_ rfl
-        · refine congr_arg eqPolynomial (funext fun j => ?_)
+        · refine congr_arg eqPolynomial ?_
           let e : (Fin n → Fin 2) ≃ Fin (2 ^ n) := finFunctionFinEquiv
-          exact congr_arg (fun t : Fin 2 => (t : R))
-            (Eq.symm (congr_fun (Equiv.symm_apply_apply e x) j)))).symm
+          funext j
+          rw [Equiv.symm_apply_apply e x])).symm
   simpa [Function.comp_apply] using hsum
 
 /-- Hypercube evaluation for `CMLE'`; matches `MvPolynomial.MLE'_eval_zeroOne`. -/

@@ -17,6 +17,12 @@ Sequential composition of:
 ## References
 
 * [Diamond, B.E. and Posen, J., *Polylogarithmic proofs for multilinears over binary towers*][DP24]
+
+## Residual surface
+
+The full-protocol security wrappers below expose the remaining sequential-composition
+obligations as explicit hypotheses. These hypotheses are named by their protocol role rather
+than by a generic residual name, matching the audit convention in `CoreInteractionPhase.lean`.
 -/
 
 open AdditiveNTT Polynomial
@@ -109,7 +115,7 @@ variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ Pro
 
 /-- Perfect completeness for the full Binary Basefold protocol (reduction) -/
 theorem fullOracleReduction_perfectCompleteness (hInit : init.neverFails)
-    (hResidual : OracleReduction.perfectCompleteness
+    (hFullProtocolCompleteness : OracleReduction.perfectCompleteness
     (oracleReduction := fullOracleReduction 𝔽q β γ_repetitions (ϑ:=ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑))
     (relIn := strictRoundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β (ϑ:=ϑ)
@@ -125,7 +131,7 @@ theorem fullOracleReduction_perfectCompleteness (hInit : init.neverFails)
     (relOut := acceptRejectOracleRel)
     (init := init)
     (impl := impl) := by
-  exact hResidual
+  exact hFullProtocolCompleteness
 
 open scoped NNReal
 
@@ -141,13 +147,14 @@ variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ Pro
 
 /-- Round-by-round knowledge soundness for the full Binary Basefold oracle verifier -/
 theorem fullOracleVerifier_rbrKnowledgeSoundness
-    (hResidual : (fullOracleVerifier 𝔽q β γ_repetitions (ϑ:=ϑ) (𝓑 := 𝓑)
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).rbrKnowledgeSoundness init impl
-    (relIn := roundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β (ϑ:=ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑)  0)
-    (relOut := acceptRejectOracleRel)
-    (rbrKnowledgeError := fullRbrKnowledgeError 𝔽q β γ_repetitions (ϑ:=ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))) :
+    (hFullProtocolRbrKnowledgeSoundness :
+      (fullOracleVerifier 𝔽q β γ_repetitions (ϑ:=ϑ) (𝓑 := 𝓑)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).rbrKnowledgeSoundness init impl
+      (relIn := roundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑)  0)
+      (relOut := acceptRejectOracleRel)
+      (rbrKnowledgeError := fullRbrKnowledgeError 𝔽q β γ_repetitions (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate))) :
     (fullOracleVerifier 𝔽q β γ_repetitions (ϑ:=ϑ) (𝓑 := 𝓑)
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).rbrKnowledgeSoundness init impl
     (relIn := roundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β (ϑ:=ϑ)
@@ -155,6 +162,6 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness
     (relOut := acceptRejectOracleRel)
     (rbrKnowledgeError := fullRbrKnowledgeError 𝔽q β γ_repetitions (ϑ:=ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
-  exact hResidual
+  exact hFullProtocolRbrKnowledgeSoundness
 
 end Binius.BinaryBasefold.FullBinaryBasefold
