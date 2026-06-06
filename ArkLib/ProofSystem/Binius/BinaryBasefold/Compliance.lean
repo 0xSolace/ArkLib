@@ -151,7 +151,10 @@ lemma fold_error_containment_of_UDRClose (i : Fin r) {destIdx : Fin r} (steps : 
     -- `h_within_radius` argument itself mentions `f_i`.  `simp only` rather than `rw`:
     -- the codeword occurrence in `hy` carries proof arguments that only match up to
     -- proof irrelevance, which `rw`'s keyed abstraction cannot see.
-    simp only [← h_eq] at hy
+    -- `dsimp` exposed the codeword in `hy` as its `Classical.choose` body, while `h_eq`
+    -- carries the folded `UDRCodeword` head — unfold it so the rewrite pattern matches.
+    unfold UDRCodeword at h_eq
+    rw [← h_eq] at hy
     simpa [disagreementSet] using hy
   simpa [fiberwiseDisagreementSet, h_steps_ne, h_exists]
 
