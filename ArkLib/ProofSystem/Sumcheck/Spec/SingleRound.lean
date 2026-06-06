@@ -1063,10 +1063,9 @@ theorem oracleReduction_perfectCompleteness :
     Functor.map_map, Function.comp_def, map_map, OptionT.run_pure, Option.getM,
     Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
   simp only [OptionT.run_map, OptionT.run_mk]
-  simp only [OptionT.run_pure, map_pure, Option.map_some, liftM_pure, pure_bind,
-    bind_pure_comp]
-  rw [ge_iff_le]
+  simp only [OptionT.run_pure, Option.map_some, liftM_pure, pure_bind, bind_pure_comp]
   simp only [ENNReal.coe_zero, tsub_zero]
+  rw [ge_iff_le]
   rw [one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
   · -- No failure: the computation is a `some`-producing map over the challenge sample.
@@ -1076,29 +1075,41 @@ theorem oracleReduction_perfectCompleteness :
     simp only [support_bind, Set.mem_iUnion, not_exists]
     intro s _ hmem
     erw [simulateQ_bind] at hmem
-    simp only [StateT.run'_eq, support_map, Set.mem_image] at hmem
-    obtain ⟨⟨_, s'⟩, hmem, _⟩ := hmem
-    rw [StateT.run_bind, mem_support_bind_iff] at hmem
-    obtain ⟨⟨proverResult, s''⟩, _, hmem⟩ := hmem
-    simp only [liftM_pure, map_pure] at hmem
-    erw [simulateQ_pure] at hmem
-    rw [StateT.run_pure] at hmem
-    simp only [support_pure, Set.mem_singleton_iff] at hmem
+    rw [StateT.run'_bind_lib, mem_support_bind_iff] at hmem
+    obtain ⟨⟨proverResult, s'⟩, hProver, hmem⟩ := hmem
+    cases proverResult with
+    | none =>
+        rw [OptionT.run_liftM_run] at hProver
+        erw [simulateQ_map] at hProver
+        rw [StateT.run_map] at hProver
+        simp only [support_map, Set.mem_image, Prod.exists, Option.some.injEq] at hProver
+    | some proverResult =>
+        simp only [liftM_pure] at hmem
+        erw [simulateQ_pure] at hmem
+        rw [StateT.run'_pure_lib] at hmem
+        simp only [support_pure, Set.mem_singleton_iff] at hmem
+        exact Option.noConfusion hmem
   · -- Event: holds for every sampled challenge by construction.
     intro x hx
     rw [OptionT.mem_support_iff] at hx
     simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
     erw [simulateQ_bind] at hx
-    simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
-    obtain ⟨⟨_, s'⟩, hx, _⟩ := hx
-    rw [StateT.run_bind, mem_support_bind_iff] at hx
-    obtain ⟨⟨proverResult, s''⟩, hw, hx⟩ := hx
-    simp only [liftM_pure, map_pure] at hx
-    erw [simulateQ_pure] at hx
-    rw [StateT.run_pure] at hx
-    simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
-    subst x
+    rw [StateT.run'_bind_lib, mem_support_bind_iff] at hx
+    obtain ⟨⟨proverResult, s'⟩, hw, hx⟩ := hx
+    cases proverResult with
+    | none =>
+        rw [OptionT.run_liftM_run] at hw
+        erw [simulateQ_map] at hw
+        rw [StateT.run_map] at hw
+        simp only [support_map, Set.mem_image, Prod.exists, Option.some.injEq] at hw
+        exact False.elim hw
+    | some proverResult =>
+        simp only [liftM_pure] at hx
+        erw [simulateQ_pure] at hx
+        rw [StateT.run'_pure_lib] at hx
+        simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
+        subst x
     refine ⟨?_, ?_⟩
     · simp only [outputRelation, Set.mem_setOf_eq]
       rfl
