@@ -184,7 +184,7 @@ theorem mcaEventWitness_card_pred_le_j1
   have hn_sub_cast : ((n - 1 : ℕ) : ℝ) = (n : ℝ) - 1 := by
     rw [Nat.cast_sub (Nat.succ_le_of_lt hn), Nat.cast_one]
   have hn_sub_cast_nn : (((n - 1 : ℕ) : ℝ≥0) : ℝ) = (n : ℝ) - 1 := by
-    simpa only [NNReal.coe_natCast] using hn_sub_cast
+    norm_num [Nat.cast_sub (Nat.succ_le_of_lt hn)]
   have hmul :
       (1 - mcaLatticePoint n
         (⟨1, by omega⟩ : Fin (n + 1))) * (n : ℝ≥0) =
