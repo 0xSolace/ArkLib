@@ -2841,6 +2841,37 @@ def OrdinaryRSCapacityAtPrizeRates
       (((((τ r).val : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) ≤
         (ℓ r : ℕ∞)
 
+/-- Pointwise finite-list form of `OrdinaryRSCapacityAtPrizeRates`.
+
+This is the native finite combinatorial target: for every received word, the finite list of
+ordinary Reed-Solomon codewords at the proposed predecessor radius has cardinality at most
+`ℓ r`. -/
+def OrdinaryRSCapacityPointwiseAtPrizeRates
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) : Prop :=
+  ∀ r : Fin 4, ∀ f : ι → F,
+    (closeCodewordsRelFinset
+      (ReedSolomon.code domain
+        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      f (((((τ r).val : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)).card ≤
+        ℓ r
+
+/-- Pointwise close-list bounds supply the maximised `Λ` cap needed by the LD prize. -/
+theorem ordinaryRSCapacityAtPrizeRates_of_pointwise
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hPointwise : OrdinaryRSCapacityPointwiseAtPrizeRates domain τ ℓ) :
+    OrdinaryRSCapacityAtPrizeRates domain τ ℓ := by
+  intro r
+  exact Lambda_le_natCast_of_forall_closeFinset_card_le
+    (C := ReedSolomon.code domain
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+    (δ := (((((τ r).val : ℕ) : ℝ≥0) /
+      (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ))
+    (ℓ := ℓ r) (hPointwise r)
+
 /-- Per-rate adjacent base-code `Λ` caps and Elias certificates resolve the faithful
 four-rate list-decoding lattice prize directly.
 

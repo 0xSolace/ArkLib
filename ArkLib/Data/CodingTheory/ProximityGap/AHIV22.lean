@@ -1571,7 +1571,8 @@ This lands the BCIKS20 unique-decoding bound `errorBound δ deg α`; the tighter
 bound remains the separate row-span-to-affine-line specialization work. -/
 theorem ahiv17_affineLine_correlatedAgreement_residual_uniqueDecodingRegime
     [Nonempty ι] (deg : ℕ) (α : ι ↪ F) {δ : ℝ≥0}
-    (hδ : δ ≤ relativeUniqueDecodingRadius (C := ReedSolomon.code α deg)) :
+    (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code α deg)) :
     ahiv17_affineLine_correlatedAgreement_residual deg α δ (ProximityGap.errorBound δ deg α) :=
   ahiv17_affineLine_residual_uniqueDecodingRegime hδ
 
