@@ -7,13 +7,14 @@ Authors: ArkLib Contributors
 import ArkLib.OracleReduction.Execution
 
 /-!
-# Helper bricks for sequential composition / context lifting of (oracle) reductions
+# Support Preservation under Oracle Reduction and Context Lifting
 
-This file collects small, fully-proven, axiom-clean bricks used by the security proofs in
+This module establishes the core algebraic and support-level transport lemmas required for
+the sequential composition and context lifting of oracle reductions, specifically supporting
 `OracleReduction/Composition/Sequential/Append.lean` and `OracleReduction/LiftContext/Reduction.lean`.
 
-Keeping them here (rather than inline) isolates the reusable support-transport reasoning from the
-larger proofs and avoids re-deriving the `liftComp`-support equality each time.
+By isolating the support-transport reasoning from the larger security reductions, we maintain
+modularity and avoid re-deriving the invariance of monadic supports under spec extensions.
 -/
 
 open OracleSpec OracleComp ProtocolSpec
@@ -22,9 +23,10 @@ variable {ι : Type} {oSpec : OracleSpec ι}
 
 namespace OracleComp
 
-/-- `OracleComp.liftComp` preserves the support: a value is reachable after lifting to a larger
-oracle spec iff it is reachable in the original computation.  This is the support-level shadow of
-`evalDist_liftComp` (which gives the full distributional equality). -/
+/-- The monadic lifting operation `liftComp` preserves the support of a computation.
+Specifically, for any oracle spec extension `superSpec` that embeds `oSpec`, the set of reachable
+outcomes of `liftComp mx superSpec` is identical to the support of the original computation `mx`.
+This constitutes the support-level projection of the distributional identity `evalDist_liftComp`. -/
 theorem support_liftComp {τ : Type} {superSpec : OracleSpec τ} {α : Type}
     [MonadLift (OracleQuery oSpec) (OracleQuery superSpec)]
     (mx : OracleComp oSpec α) :
@@ -47,14 +49,15 @@ namespace Reduction
 
 variable {StmtIn WitIn StmtOut WitOut : Type} {n : ℕ} {pSpec : ProtocolSpec n}
 
-/-- The verifier's output statement of any complete result in the support of `Reduction.run` is
-itself a reachable output of the verifier on the input statement and the produced full transcript.
+/-- Verifier reachability under reduction runs.
+Let `reduction` be a reduction protocol. For any statement-witness pair in the support of the
+full reduction execution `reduction.run stmt wit`, the verifier's final output statement is a
+reachable outcome of the verifier's execution when run on the statement and the transcript.
 
-This supplies the transcript witness for `Verifier.compatStatement`: the witness transcript is the
-`proverResult.1` component of the run result.  The verifier sub-computation appears inside
-`Reduction.run` as `liftM (verifier.run stmt td).run`; since `OracleComp.liftComp` preserves the
-support (`OracleComp.support_liftComp`), reachability transfers back to the un-lifted
-`verifier.run`. -/
+This provides the transcript witness for `Verifier.compatStatement`: the witness transcript is
+the `proverResult.1` component of the run result. The verifier sub-computation is lifted as
+`liftM (verifier.run stmt td).run`; because `OracleComp.liftComp` preserves supports, the reachability
+relation transports back to the un-lifted execution. -/
 theorem verifier_output_mem_run_support
     {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
     {stmt : StmtIn} {wit : WitIn}
@@ -71,8 +74,8 @@ theorem verifier_output_mem_run_support
       simp only [Option.elim_some, OptionT.run_bind, Option.elimM] at hx
       rw [mem_support_bind_iff] at hx
       obtain ⟨stmtOutOpt, hstmtOut, hx⟩ := hx
-      -- `stmtOutOpt : Option (Option StmtOut)`: the outer `Option` is from the monadic bind value,
-      -- the inner from the verifier's optional output.  Both must be `some` for `x` to be reachable.
+      -- `stmtOutOpt` is of type `Option (Option StmtOut)`, representing the outer monadic bind
+      -- and the verifier's optional output. Both must be `some` for `x` to be reachable.
       cases stmtOutOpt with
       | none => simp at hx
       | some vOutOpt =>
@@ -84,13 +87,11 @@ theorem verifier_output_mem_run_support
               have hx2 : x.2 = vOut := congrArg Prod.snd hx
               have hx11 : x.1.1 = proverResult.1 := congrArg (Prod.fst ∘ Prod.fst) hx
               rw [hx2, hx11]
-              -- Transfer reachability of `some vOut` from the lifted verifier run to the original.
-              -- `hstmtOut : some (some vOut) ∈ support (liftM (V.run …).run).run`.  The lift is
-              -- `OptionT.lift ∘ liftComp`, so `(liftM (V.run).run).run = some <$> liftComp (V.run).run`;
-              -- `support_liftComp` removes the spec-lift, giving `some vOut ∈ support (V.run …).run`.
+              -- Transport the reachability of `some vOut` from the lifted verifier run to the original.
+              -- `hstmtOut` asserts `some (some vOut) ∈ support (liftM (V.run …).run).run`. Since the lift
+              -- is `OptionT.lift ∘ liftComp`, we decompose the lift as `some <$> liftComp (V.run).run`.
               rw [OptionT.mem_support_iff]
               have hLift := hstmtOut
-              -- `liftM = monadLift`; expose the lift as `some <$> liftComp (V.run).run`.
               have hrun : (liftM (reduction.verifier.run stmt proverResult.1).run :
                     OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run
                   = some <$> OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
