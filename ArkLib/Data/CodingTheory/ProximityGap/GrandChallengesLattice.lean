@@ -285,6 +285,44 @@ theorem mcaEvent_j1_exists_window_ratio_constraints
     linear_combination hlin
   exact ⟨S, hshape, hneS, hconstraints, T, hTS, hTcard, hne0, hγ⟩
 
+open Classical in
+/-- The finite scalar set cut out by the J1 window ratio constraints.
+
+The remaining J1 algebraic core is to show this set has cardinality at most two for every
+stack `(u₀,u₁)`. -/
+noncomputable def j1RatioConstraintBadScalars
+    (domain : ι ↪ F) (k : ℕ) (u₀ u₁ : ι → F) : Finset F :=
+  Finset.univ.filter fun γ : F =>
+    ∃ S : Finset ι,
+      (S = Finset.univ ∨ ∃ i : ι, S = Finset.univ.erase i) ∧
+      NonExtendableOn (ReedSolomon.code domain k : Set (ι → F)) S u₁ ∧
+      (∀ T : Finset ι, T ⊆ S → T.card = k + 1 →
+        cT domain k T (u₀ + γ • u₁) = 0)
+
+/-- Conditional J1 bad-count cap.  Once the independent finite-algebra theorem
+`(j1RatioConstraintBadScalars domain k u₀ u₁).card ≤ 2` is proved, every actual bad scalar
+at radius `1/n` injects into that constraint set. -/
+theorem mcaBadCount_j1_le_two_of_ratioConstraint_card_le_two
+    (domain : ι ↪ F) {k : ℕ} (u₀ u₁ : ι → F)
+    (hcard : (j1RatioConstraintBadScalars domain k u₀ u₁).card ≤ 2) :
+    mcaBadCount (F := F)
+      (ReedSolomon.code domain k : Set (ι → F))
+      (mcaLatticePoint (Fintype.card ι)
+        (⟨1, by
+          have hn : 0 < Fintype.card ι := Fintype.card_pos
+          omega⟩ : Fin (Fintype.card ι + 1)))
+      u₀ u₁ ≤ 2 := by
+  classical
+  unfold mcaBadCount
+  refine le_trans (Finset.card_le_card ?_) hcard
+  intro γ hγ
+  rw [Finset.mem_filter] at hγ
+  rw [j1RatioConstraintBadScalars, Finset.mem_filter]
+  refine ⟨Finset.mem_univ γ, ?_⟩
+  rcases mcaEvent_j1_exists_window_ratio_constraints domain hγ.2 with
+    ⟨S, hshape, hneS, hconstraints, _T, _hTS, _hTcard, _hne0, _hγ⟩
+  exact ⟨S, hshape, hneS, hconstraints⟩
+
 /-- `ε_mca(C, j/n) ≤ ε*` at the lattice radius `j/n`. Decidable so the satisfying set is a
 `Finset`. -/
 def mcaSatisfies (C : Set (ι → F)) (ε_star : ℝ≥0) (j : Fin (Fintype.card ι + 1)) : Prop :=
