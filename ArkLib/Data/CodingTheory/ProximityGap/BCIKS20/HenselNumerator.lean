@@ -2597,8 +2597,12 @@ end BCIKS20.HenselNumerator
 -- EXPLICIT hypothesis `FaaDiBrunoSuccSumZeroResidual` (a `Prop`, not a `sorry`), so the theorems
 -- below that consume it are clean conditional reductions, not unfinished proofs.
 #print axioms BCIKS20.HenselNumerator.βHensel_succ
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant
+#print axioms BCIKS20.HenselNumerator.βHenselSuccTermStructuredWeightResidual
+#print axioms BCIKS20.HenselNumerator.βHenselSuccTermWeightResidual_of_structured
 #print axioms BCIKS20.HenselNumerator.prefactor_eq_countPerms
 #print axioms BCIKS20.HenselNumerator.coeff_eval_Q_faaDiBruno
+#print axioms BCIKS20.HenselNumerator.FaaDiBrunoSuccSumZeroResidual
 #print axioms BCIKS20.HenselNumerator.βHensel_lift_identity_zero
 #print axioms BCIKS20.HenselNumerator.coeff_zero_eval_βHenselAssembled
 #print axioms BCIKS20.HenselNumerator.βHenselAssembled_constantCoeff
