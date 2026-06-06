@@ -10,6 +10,7 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.SubspaceDesign
+import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.Probability.Combinatorial
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
