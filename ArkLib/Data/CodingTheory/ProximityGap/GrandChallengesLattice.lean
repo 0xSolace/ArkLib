@@ -1013,6 +1013,20 @@ theorem exists_mcaPrizeLatticeResolved_iff (domain : ι ↪ F) :
     intro j
     exact ⟨h j, rfl⟩
 
+/-- Per-rate lower MCA witnesses resolve the faithful MCA lattice prize existentially.  This is
+the four-rate aggregation form used by downstream Johnson/GS/CA upper-bound pipelines. -/
+theorem exists_mcaPrizeLatticeResolved_of_lowerWitnesses
+    (domain : ι ↪ F)
+    (w : ∀ j : Fin 4,
+      GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1), mcaPrizeLatticeResolved domain τ :=
+  (exists_mcaPrizeLatticeResolved_iff domain).mpr fun j =>
+    mcaThresholdExists_of_MCALowerWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar (w j)
+
 /-- A proposed solution of the list-decoding prize lattice problem at interleaving `m`: for
 every prize rate, the faithful list-decoding lattice threshold is the supplied index `τ j`. -/
 def listPrizeLatticeResolved (domain : ι ↪ F) (m : ℕ)
@@ -1076,6 +1090,20 @@ theorem exists_listPrizeLatticeResolved_iff (domain : ι ↪ F) (m : ℕ) :
         m epsStar (h j), ?_⟩
     intro j
     exact ⟨h j, rfl⟩
+
+/-- Per-rate lower list-decoding witnesses resolve the faithful list lattice prize
+existentially for the chosen interleaving `m`. -/
+theorem exists_listPrizeLatticeResolved_of_lowerWitnesses
+    (domain : ι ↪ F) (m : ℕ)
+    (w : ∀ j : Fin 4,
+      GrandChallenges.ListLowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1), listPrizeLatticeResolved domain m τ :=
+  (exists_listPrizeLatticeResolved_iff domain m).mpr fun j =>
+    listThresholdExists_of_ListLowerWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      m epsStar (w j)
 
 end GrandChallengesLattice
 
