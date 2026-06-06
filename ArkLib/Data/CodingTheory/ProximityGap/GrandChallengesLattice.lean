@@ -2822,6 +2822,25 @@ theorem listPrizeLatticeResolved_of_canonical_listLatticeThreshold_eq
   apply Fin.ext
   rw [listThreshold_val_eq_listLatticeThreshold C m epsStar hne' (hne r), heq r]
 
+/-- **Ordinary Reed-Solomon capacity cap at the four ABF26 prize rates.**
+
+This is the exact base-code list-size theorem needed by the faithful list-decoding prize:
+for each prize rate, the ordinary smooth-domain Reed-Solomon code has maximised list size
+at most `ℓ r` at the proposed predecessor lattice radius `(τ r).val / n`.
+
+The rest of the Lambda/Elias machinery below is fully formalized; proving this predicate is
+the remaining ordinary-RS capacity-side mathematical payload. -/
+def OrdinaryRSCapacityAtPrizeRates
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) : Prop :=
+  ∀ r : Fin 4,
+    Lambda
+      (ReedSolomon.code domain
+        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (((((τ r).val : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) ≤
+        (ℓ r : ℕ∞)
+
 /-- Per-rate adjacent base-code `Λ` caps and Elias certificates resolve the faithful
 four-rate list-decoding lattice prize directly.
 
@@ -2870,6 +2889,43 @@ theorem listPrizeLatticeResolved_of_Lambda_le_and_elias_next
       ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
     (m := m) (j := (τ r).val) (ℓ := ℓ r)
     hm (hnext r) (hLambda r) (hpow r) (hvol_next r) (hne r)
+
+/-- A named ordinary-RS capacity cap plus adjacent Elias certificates resolve the faithful
+four-rate list-decoding lattice prize.
+
+This is the same theorem as `listPrizeLatticeResolved_of_Lambda_le_and_elias_next`, with the
+lower-side hypothesis packaged as `OrdinaryRSCapacityAtPrizeRates` so the remaining LD target
+has a single source-level name. -/
+theorem listPrizeLatticeResolved_of_ordinaryRSCapacityAtPrizeRates_and_elias_next
+    (domain : ι ↪ F) (m : ℕ)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hm : m ≠ 0)
+    (hnext : ∀ r : Fin 4, (τ r).val + 1 < Fintype.card ι)
+    (hCapacity : OrdinaryRSCapacityAtPrizeRates domain τ ℓ)
+    (hpow : ∀ r : Fin 4,
+      ((ℓ r : ENNReal)) ^ m ≤
+        (epsStar : ENNReal) * (Fintype.card F : ENNReal))
+    (hvol_next : ∀ r : Fin 4,
+      (epsStar : ENNReal) * (Fintype.card F : ENNReal) <
+        ENNReal.ofReal
+          ((CodingTheory.hammingBallVolume (Fintype.card F)
+              (((((τ r).val + 1 : ℕ) : ℝ≥0) /
+                    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+              (Fintype.card ι) : ℝ)
+            / (Fintype.card F : ℝ) ^
+                ((Fintype.card ι : ℝ) -
+                  Module.finrank F
+                    (ReedSolomon.code domain
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊))))
+    (hne : ∀ r : Fin 4,
+      (GrandChallenges.listLatticeSet
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar).Nonempty) :
+    listPrizeLatticeResolved domain m τ :=
+  listPrizeLatticeResolved_of_Lambda_le_and_elias_next
+    domain m τ ℓ hm hnext hCapacity hpow hvol_next hne
 
 /-- **Packaged four-rate Lambda/Elias exact frontier for the faithful LD prize.**
 

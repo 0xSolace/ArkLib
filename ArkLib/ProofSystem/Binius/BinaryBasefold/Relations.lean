@@ -42,6 +42,8 @@ section SecurityRelations
 -- transport is definitional by proof irrelevance).  `Eq.trans` instances are used
 -- instead of `rw` because the `↑(i.succ)`/`↑i.castSucc` step-count indices only reduce to
 -- `i.val + 1`/`i.val` definitionally, which keyed rewriting cannot see.
+set_option maxHeartbeats 1000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
 lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     (challenges : Fin i.castSucc → L) (r_i' : L) :
   (getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -94,8 +96,17 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     funext z
     rw [iterated_fold_zero_steps]
     have hch := Fin.init_snoc (n := i.val) (α := fun _ => L) (x := r_i') (p := challenges)
-    set_option pp.explicit true in trace_state
-    rw [hch]
+    -- Matcher-free transport of `hch` (`rw`/`simp`/`generalize` all fail to abstract the
+    -- occurrence even though it is alpha-identical): congruence with an explicit motive,
+    -- so only defeq checking is involved, then the remaining transport is definitional.
+    refine Eq.trans (congrFun (congrArg (fun ch =>
+      iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := 0) (steps := i.val) (destIdx := ⟨i.val, hmid_lt⟩)
+        (h_destIdx := by simp)
+        (h_destIdx_le := by simp only [Fin.mk_le_mk, Fin.val_mk]; omega)
+        (f := fun x => ((polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
+          (fun ω => t.val.eval ω)).val).eval x.val)
+        (r_challenges := ch)) hch) z) ?_
     rfl
   · -- Challenge: `snoc challenges r_i' (last _) = r_i'` (the right side beta-reduces).
     exact Fin.snoc_last (n := i.val) (α := fun _ => L) (x := r_i') (p := challenges)
