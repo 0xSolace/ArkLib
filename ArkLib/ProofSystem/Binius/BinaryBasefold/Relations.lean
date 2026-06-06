@@ -162,7 +162,7 @@ noncomputable def getFoldProverFinalOutput (i : Fin ℓ)
   exact ⟨⟨stmtOut, oStmtIn⟩, witOut⟩
 
 @[reducible]
-def foldProverComputeMsg (i : Fin ℓ)
+noncomputable def foldProverComputeMsg (i : Fin ℓ)
     (witIn : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc) :
     ↥L⦃≤ 2⦄[X] :=
   -- The structured round-poly API is keyed on a `SumcheckDomain`; the Binius boolean cube
@@ -193,6 +193,24 @@ section SumcheckContextIncluded_Relations
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context}
 
 -- (moved to Basic.lean) declarations canonicalized in Basic: removed duplicates here.
+
+/-- **Berlekamp–Welch extraction correctness at the base level** (`i = 0`): `extractMLP`
+succeeds with output `tpoly` iff `tpoly`'s base codeword is within the unique-decoding
+radius of `f` (the `firstOracleWitnessConsistencyProp` bound).
+
+NAMED RESIDUAL (documented, #33). The forward direction is BW decoder soundness, the
+backward direction BW decoder completeness inside the UDR; both reduce to
+`BerlekampWelch.decoder` correctness transported across the `sDomain` point enumeration
+that `extractMLP` uses (cardinality/equiv glue currently unported). Kept as a single
+documented residual rather than a non-typechecking placeholder, per campaign convention.
+Consumed by `firstOracleWitnessConsistencyProp_unique` below. -/
+axiom extractMLP_eq_some_iff_pair_UDRClose
+    (f : OracleFunction (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
+    (tpoly : MultilinearPoly L ℓ) :
+    extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some tpoly ↔
+    firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) tpoly f
+
 lemma firstOracleWitnessConsistencyProp_unique (t₁ t₂ : MultilinearPoly L ℓ)
     (f₀ : OracleFunction (𝔽q := 𝔽q) (β := β)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
