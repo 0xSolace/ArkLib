@@ -686,6 +686,19 @@ theorem mca_threshold_bracketed
     wlo.δ ≤ R.δStar ∧ R.δStar ≤ whi.δ :=
   ⟨wlo.le_δStar R, whi.δStar_le R⟩
 
+/-- **Symbolic interval for Grand List Decoding resolutions.** For an RS code with
+`m`-fold interleaving at threshold `ε*`, a lower list witness and an upper list witness
+bracket the maximal threshold of any `GrandListResolution`: `δ_lo ≤ δ* ≤ δ_hi`.
+This is the real-threshold-resolution analogue of the faithful lattice brackets in
+`GrandChallengesLattice`. -/
+theorem list_threshold_bracketed
+    (domain : ι ↪ F) (k m : ℕ) (ε_star : ℝ≥0)
+    (wlo : ListLowerWitness (ReedSolomon.code domain k : Set (ι → F)) m ε_star)
+    (whi : ListUpperWitness (ReedSolomon.code domain k : Set (ι → F)) m ε_star)
+    (R : GrandListResolution (ReedSolomon.code domain k : Set (ι → F)) m ε_star) :
+    wlo.δ ≤ R.δStar ∧ R.δStar ≤ whi.δ :=
+  ⟨wlo.le_δStar R, whi.δStar_le R⟩
+
 end GrandChallenges
 
 end ProximityGap
