@@ -567,6 +567,16 @@ theorem SecurityUpperBound.bitsOfSecurity_le {p : ToyParams} (hi : SecurityUpper
   have := NNReal.coe_le_coe.mpr hi.proof
   rwa [NNReal.coe_rpow, NNReal.coe_ofNat] at this
 
+/-- Two-sided bracket for the true bits-of-security certified by a lower/upper
+leaderboard pair. This packages the common downstream use of
+`SecurityLowerBound.le_bitsOfSecurity` and
+`SecurityUpperBound.bitsOfSecurity_le`. -/
+theorem bitsOfSecurity_mem_Icc_of_bounds {p : ToyParams}
+    (lo : SecurityLowerBound p) (hi : SecurityUpperBound p)
+    (h : 0 < p.soundnessError) :
+    bitsOfSecurity p.soundnessError ∈ Set.Icc lo.bits hi.bits :=
+  ⟨lo.le_bitsOfSecurity h, hi.bitsOfSecurity_le h⟩
+
 /-! ## Anchor parameter point and the two current entries
 
 `koalaIRS` fixes the KoalaBear-sextic regime numerics (`q = 2^31 - 2^24 + 1`,
