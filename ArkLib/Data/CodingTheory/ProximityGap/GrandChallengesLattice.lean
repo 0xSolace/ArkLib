@@ -236,6 +236,13 @@ theorem mcaThresholdExists_of_MCALowerWitness (C : Set (ι → F)) (ε_star : �
     rw [← epsMCA_eq_at_latticeIndex C w.δ w.le_one]
     exact w.bound⟩
 
+/-- The faithful MCA threshold obtained from a lower witness satisfies the MCA bound. -/
+theorem mcaThreshold_spec_of_MCALowerWitness (C : Set (ι → F)) (ε_star : ℝ≥0)
+    (w : MCALowerWitness C ε_star) :
+    let hne := mcaThresholdExists_of_MCALowerWitness C ε_star w
+    mcaSatisfies C ε_star (mcaThreshold C ε_star hne) :=
+  mcaThreshold_spec C ε_star (mcaThresholdExists_of_MCALowerWitness C ε_star w)
+
 /-- **Upper bracket.** An `MCAUpperWitness` at a radius `δ ≤ 1` forces
 `mcaThreshold < ⌊δ·n⌋`: its lattice point already exceeds `ε*`, so the threshold is strictly
 below it. -/
@@ -390,6 +397,14 @@ theorem listThresholdExists_of_ListLowerWitness (C : Set (ι → F)) (m : ℕ)
     unfold listSatisfies
     rw [← Lambda_eq_at_latticeIndex C m w.δ w.le_one]
     exact w.bound⟩
+
+/-- The faithful list-decoding threshold obtained from a lower witness satisfies the list
+bound. -/
+theorem listThreshold_spec_of_ListLowerWitness (C : Set (ι → F)) (m : ℕ)
+    (ε_star : ℝ≥0) (w : GrandChallenges.ListLowerWitness C m ε_star) :
+    let hne := listThresholdExists_of_ListLowerWitness C m ε_star w
+    listSatisfies C m ε_star (listThreshold C m ε_star hne) :=
+  listThreshold_spec C m ε_star (listThresholdExists_of_ListLowerWitness C m ε_star w)
 
 /-- **Upper bracket.** A `ListUpperWitness` at a radius `δ ≤ 1` forces
 `listThreshold < ⌊δ·n⌋`. -/
