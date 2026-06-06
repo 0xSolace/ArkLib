@@ -193,9 +193,10 @@ all orders.  Everything else of P2 — STEP 1, the order-`0` base, the Newton li
 `PowerSeries.ext` assembly, the denominator clearing, and the uniqueness reduction to
 `gammaGenuine` — is PROVEN (here and upstream).
 
-WIRE-IN (one-line edit to `HenselNumerator.lean`, NOT made here): replace the body of the sorried
-`faaDiBruno_succ_sum_eq_zero` so it is discharged from `RestrictedFaaDiBrunoMatch` via
-`coeff_succ_eval_defect_reduction` + `trunc_defect_cancel_assembled`. -/
+WIRE-IN (not made here): the legacy `faaDiBruno_succ_sum_eq_zero`/`FaaDiBrunoSuccSumZeroResidual`
+frontier is discharged from `RestrictedFaaDiBrunoMatch` via
+`coeff_succ_eval_defect_reduction` + `trunc_defect_cancel_assembled`; the genuinely open step is
+still proving the `B_coeff` prefactor re-keying that supplies `RestrictedFaaDiBrunoMatch`. -/
 theorem P2_closed (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
     (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0)
@@ -205,5 +206,15 @@ theorem P2_closed (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R 
             * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :=
   ⟨assembledSeries_isRoot_of_match H x₀ R hHyp hmatch,
     βHensel_lift_identity_of_match H x₀ R hHyp hmatch⟩
+
+-- In-file axiom audit for the carved P2 core and its conditional endpoint reductions.
+section AxiomAudit
+#print axioms RestrictedFaaDiBrunoMatch
+#print axioms trunc_defect_eq_restrictedFaaDiBrunoSum
+#print axioms trunc_defect_cancel_assembled
+#print axioms assembledSeries_isRoot_of_match
+#print axioms βHensel_lift_identity_of_match
+#print axioms P2_closed
+end AxiomAudit
 
 end BCIKS20.HenselNumerator
