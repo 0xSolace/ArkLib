@@ -211,4 +211,55 @@ theorem ratioSupport_deepHole_eq (domain : ι ↪ F) (k : ℕ) :
   rw [cT_deepHole domain hT.2]
   exact one_ne_zero
 
+/-! ## Sharp exact-value criterion: ratio-injectivity replaces the field-size hypothesis
+
+`GrandChallengeRadiusOneExact.epsMCA_one_eq_choose_div` proves the exact radius-one value
+`ε_mca(RS, 1) = C(n, k+1)/q` under the *crude field-size* sufficient condition
+`q > C(C(n, k+1), 2)` (enough room for `C(n,k+1)` distinct subset functionals to be pairwise
+separated generically). The genuine attainment criterion is sharper: the `C(n,k+1)` cap is hit
+exactly as soon as **some** stack direction `u₀` has the `(k+1)`-subset functionals `c_T(u₀)`
+pairwise distinct — equivalently its bad-ratio image is injective. This holds on far smaller
+fields for structured domains, directly **narrowing the undecided middle band** (Issue #39). -/
+
+/-- **Sharp radius-one lower bound.** If some `u₀` has injective `c_T` functionals over the
+`(k+1)`-subsets, then `C(n, k+1)/q ≤ ε_mca(RS, 1)` — *no* field-size hypothesis. The deep-hole
+second word turns each subset `T` into the distinct bad scalar `-c_T(u₀)`. -/
+theorem epsMCA_one_ge_choose_div_of_cT_injOn (domain : ι ↪ F) (k : ℕ) (u₀ : ι → F)
+    (hu₀ : ∀ T ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
+      ∀ T' ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
+        cT domain k T u₀ = cT domain k T' u₀ → T = T') :
+    (Nat.choose (Fintype.card ι) (k + 1) : ENNReal) / (Fintype.card F : ENNReal) ≤
+      epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 := by
+  refine le_trans (mcaEvent_prob_ge domain hu₀) ?_
+  unfold epsMCA
+  exact le_iSup (fun u : WordStack F (Fin 2) ι =>
+    Pr_{ let γ ←$ᵖ F }[ mcaEvent (ReedSolomon.code domain k : Set (ι → F)) 1 (u 0) (u 1) γ ])
+    (Code.finMapTwoWords u₀ (deepHole domain k))
+
+/-- **Sharp EXACT radius-one value.** `ε_mca(RS, 1) = C(n, k+1)/q` whenever some `u₀` has
+injective `c_T` functionals over the `(k+1)`-subsets. Strictly weaker hypothesis than
+`epsMCA_one_eq_choose_div`'s `q > C(C(n,k+1), 2)` (which produces such a `u₀` via
+`exists_u0_injOn_cT`); needs no `k + 1 ≤ n` either. -/
+theorem epsMCA_one_eq_choose_div_of_cT_injOn (domain : ι ↪ F) (k : ℕ) (u₀ : ι → F)
+    (hu₀ : ∀ T ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
+      ∀ T' ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
+        cT domain k T u₀ = cT domain k T' u₀ → T = T') :
+    epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 =
+      (Nat.choose (Fintype.card ι) (k + 1) : ENNReal) / (Fintype.card F : ENNReal) :=
+  le_antisymm (epsMCA_one_le_choose_div domain k)
+    (epsMCA_one_ge_choose_div_of_cT_injOn domain k u₀ hu₀)
+
+/-- **Sharp decision of the formal Grand MCA Challenge.** Under ratio-injectivity for some
+`u₀`, the Challenge holds for `RS[F, domain, k]` at threshold `ε*` iff `C(n, k+1)/q ≤ ε*` —
+the same clean dichotomy as `grandMCAChallenge_iff_choose_le` but on the sharper criterion,
+deciding the predicate on smaller fields than the `q > C(C(n,k+1),2)` regime. -/
+theorem grandMCAChallenge_iff_choose_le_of_cT_injOn (domain : ι ↪ F) (k : ℕ) (u₀ : ι → F)
+    (hu₀ : ∀ T ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
+      ∀ T' ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
+        cT domain k T u₀ = cT domain k T' u₀ → T = T') (ε_star : ℝ≥0) :
+    grandMCAChallenge (ReedSolomon.code domain k) ε_star ↔
+      (Nat.choose (Fintype.card ι) (k + 1) : ENNReal) / (Fintype.card F : ENNReal)
+        ≤ (ε_star : ENNReal) := by
+  rw [grandMCAChallenge_iff_epsMCA_one, epsMCA_one_eq_choose_div_of_cT_injOn domain k u₀ hu₀]
+
 end ProximityGap
