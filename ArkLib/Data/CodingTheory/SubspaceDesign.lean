@@ -622,17 +622,28 @@ which chains `ArkLib.FRS.GK16.natDegree_foldedWronskian_le` (`deg L ≤ s·(k-1)
    `ArkLib.FRS.GK16.gk16_folded_wronskian_nonvanishing` (`GK16Wronskian.lean`).
 
 ② **GK16 Claim 16** — `rootMultiplicity (domain i) L ≥ dim (A ⊓ ker(eval_i))`: the link
-   from a vanishing subspace to a high-multiplicity root of `L`, via the
-   determinant-derivative expansion `L^(ℓ) = ∑ det(M^{(i₁,…,i_s)})` (GK16 §3) and a
-   row-sharing rank argument over `F[X]` (Claim 15: `rank M(α) ≤ s - dim(A ⊓ ker(eval_i))`).
+   from a vanishing subspace to a high-multiplicity root of `L`. **The mathematical core is
+   now proven, axiom-clean** (`ArkLib.FRS.GK16.claim16_rootMultiplicity_ge`): pass to an
+   `A_i`-adapted basis (an invertible recombination `Q^{(i)}` of `P`), where each of the
+   `dim A_i` adapted columns of the folded Wronskian is `(X − domain i)`-divisible
+   (orbit-vanishing), so the column-divisibility determinant lemma
+   `ArkLib.FRS.GK16.pow_dvd_det_of_col_dvd` factors `(X − domain i)^{dim A_i}` out of
+   `det [Q^{(i)} l (ω^b X)] = foldedWronskian Q^{(i)} ω`; transporting across the nonzero
+   change-of-basis constant (`foldedWronskian_change_basis`, `rootMultiplicity_C_mul`)
+   yields the bound for `foldedWronskian P ω`.
 
-Plus the structural encoder-isomorphism transport (`A ≤ frsCode ↔ U ⊆ degreeLT F k`,
-carrying `finrank (A ⊓ ker(eval_i)) = dim (U ∩ H_{domain i})`), which is routine but
-unwritten. These are bundled into the hypothesis `GK16DegreeBudget k s (frsCode …)`. With
-residual ① (Lemma 12) **now discharged as a theorem**, the budget reduces to ② alone — the
-Claim-16 / transport witness `GK16Claim16WitnessIndep` (no longer assuming `L ≠ 0`), via
-`gk16DegreeBudget_of_claim16WitnessIndep`; once ② is formalized that hypothesis becomes a
-theorem and this result is unconditional. -/
+The single remaining gap is the **structural encoder-isomorphism + adapted-basis transport**
+(`A ≤ frsCode ↔ U ⊆ degreeLT F k`, carrying `finrank (A ⊓ ker(eval_i)) = dim (U ∩ H_{domain
+i})` and supplying, per `i`, the adapted invertible recombination `Q^{(i)}` with its
+`dim A_i`-element orbit-vanishing index set — presupposing the design-range side condition
+`dim A ≤ s`), which is routine but unwritten. It is isolated precisely as the named residual
+`GK16Claim16StructuralData`. With residual ① (Lemma 12) **and the Claim-16 multiplicity
+engine** both discharged as theorems, the budget reduces to this single structural residual,
+via `gk16DegreeBudget_of_structuralData`; once it is formalized the hypothesis becomes a
+theorem and this result is unconditional. The intermediate witness `GK16Claim16WitnessIndep`
+(no longer assuming `L ≠ 0`) is discharged from `GK16Claim16StructuralData` by
+`gk16Claim16WitnessIndep_of_structuralData`, and feeds the budget via
+`gk16DegreeBudget_of_claim16WitnessIndep`. -/
 theorem frs_is_subspaceDesign_gk16
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
