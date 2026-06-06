@@ -781,7 +781,7 @@ theorem append_knowledgeSoundness
 Sequential composition preserves round-by-round soundness, with the per-round error obtained by
 routing through `ChallengeIdx.sumEquiv`.
 
-The composite state function is intended to be `Verifier.StateFunction.append` (proven, above),
+The composite state function is intended to be `Verifier.StateFunction.append` (proven, above). -/
 def appendRbrSoundnessResidual {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)

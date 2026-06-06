@@ -591,11 +591,8 @@ lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : is
             (positionIdx := j) : ℕ), h_bs_lt⟩ : Fin r).val := by
       dsimp only [oraclePositionToDomainIndex, Fin.val_mk]
       omega
-    have h_f_block := by
-      simpa [OracleStatement, oraclePositionToDomainIndex, snoc_oracle, hj_lt, hCR]
-        using (snoc_oracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          (h_destIdx := rfl) oStmtIn newOracle j)
-    -- The challenge function is over `Fin (min …) = Fin 0` (by `hk`): eliminate.
+    -- `f_block_start`/`r_challenges` must be `hj_bad`'s exact terms (the negation lemma
+    -- is instantiated against them); the in-lambda proof is `Fin 0`-vacuous via `hk`.
     exact
       (incrementalFoldingBadEvent_of_k_eq_0_is_false 𝔽q β
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -609,8 +606,12 @@ lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : is
         (h_midIdx := h_midIdx_val)
         (h_destIdx := rfl)
         (h_destIdx_le := h_le_ℓ)
-        (f_block_start := h_f_block)
-        (r_challenges := fun cId => absurd (hk ▸ cId.isLt) (Nat.not_lt_zero _))) hj_bad
+        (f_block_start := snoc_oracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (h_destIdx := rfl) oStmtIn newOracle j)
+        (r_challenges := fun cId => challenges ⟨j.val * ϑ + cId.val, by
+          have h0 := cId.isLt
+          rw [hk] at h0
+          exact absurd h0 (Nat.not_lt_zero _)⟩)) hj_bad
 
 lemma oracleFoldingConsistencyProp_commit_step_backward (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (challenges : Fin i.succ.val → L)
@@ -639,7 +640,9 @@ lemma oracleFoldingConsistencyProp_commit_step_backward (i : Fin ℓ) (hCR : isC
   have hj_next_lt : j'.val + 1 < toOutCodewordsCount ℓ ϑ i.castSucc := by
     dsimp [j']
     exact hj
-  simp only [oracleFoldingConsistencyProp, snoc_oracle, hj_lt, hj_next_lt,
+  -- `getNextOracle` must be opened so the `snoc_oracle` access at `j + 1` (strictly below
+  -- the appended last position, by `hj_next_lt`) reduces to the original family's entry.
+  simp only [oracleFoldingConsistencyProp, getNextOracle, snoc_oracle, hj_lt, hj_next_lt,
     getFoldingChallenges_init_succ_eq, id_eq, dite_true, ↓reduceDIte] at h_old ⊢
   exact h_old
 
