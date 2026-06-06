@@ -799,6 +799,46 @@ def fri_soundness
           (δ := 1 - α)
           (W := f)
 
+/-- Split frontier for Claim 8.3.  The `fri_soundness` residual is the end-to-end
+verifier-failure statement for batched FRI, while the remaining proof should be assembled from
+separate ingredients:
+
+* lifting the query-soundness Claim 8.2 output to the full-domain statement used here,
+* the sequential-composition soundness theorem for the composed batched FRI reduction,
+* the accounting step showing `εC 𝔽 n s m ρ_sqrt + α ^ l` bounds the verifier failure event.
+
+As with `FriQuerySoundnessParts`, these fields are intentionally named `Prop`s plus a reassembly
+map.  This keeps Claim 8.3 faithful without hiding the missing probabilistic proof behind a
+monolithic assumption. -/
+structure FriSoundnessParts
+    {t l m : ℕ}
+  (f : Fin t.succ → (ω → 𝔽))
+  (m_ge_3 : m ≥ 3) where
+  query_soundness_lift : Prop
+  sequential_composition_soundness : Prop
+  total_error_accounting : Prop
+  pieces_imply_claim :
+    query_soundness_lift →
+    sequential_composition_soundness →
+    total_error_accounting →
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3
+
+/-- Reassemble Claim 8.3 from its split frontier.  The hard probabilistic and
+sequential-composition ingredients remain separate named targets. -/
+theorem fri_soundness_of_parts
+    {t l m : ℕ}
+  (f : Fin t.succ → (ω → 𝔽))
+  (m_ge_3 : m ≥ 3)
+  (parts : FriSoundnessParts (n := n) (s := s) (d := d) (ω := ω) (l := l)
+    (domain_size_cond := domain_size_cond) f m_ge_3)
+  (h_query : parts.query_soundness_lift)
+  (h_seq : parts.sequential_composition_soundness)
+  (h_total : parts.total_error_accounting) :
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3 :=
+  parts.pieces_imply_claim h_query h_seq h_total
+
 end Soundness
 
 end Fri
