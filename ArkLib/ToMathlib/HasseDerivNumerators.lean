@@ -44,7 +44,7 @@ This file does **not** edit the (0-sorry) `RationalFunctions.lean`.  All names l
 `namespace ArkLib`; the in-tree objects are opened from `BCIKS20AppendixA`.
 -/
 
-import ArkLib.Data.Polynomial.RationalFunctions
+import ArkLib.Data.Polynomial.RationalFunctionsCore
 import Mathlib
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA
