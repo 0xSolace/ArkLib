@@ -258,30 +258,13 @@ theorem simplifiedIOR_knowledgeSound
     (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
-    (decode : ToyProblem.Spec.ToyPrefix ι F k → (Fin k → F) × (Fin k → F))
-    (hBridge :
-      Bridge.StraightlineOfRewinding
-        (ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding C δ decode)
-        ((verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
-          (WitOut := OutputWitness (F := F) k)
-          init impl
-          (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
-          (outputRelationFor (ι := ι) (F := F) k encode δ)
-          ((epsMCA (F := F) (A := F) C δ).toNNReal +
-            ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-              / (Fintype.card F : ℝ≥0)))) :
-      (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
-        (WitOut := OutputWitness (F := F) k)
-        init impl
-        (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
-        (outputRelationFor (ι := ι) (F := F) k encode δ)
-        ((epsMCA (F := F) (A := F) C δ).toNNReal +
-          ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-            / (Fintype.card F : ℝ≥0)) :=
-  -- ABF26-L6.10: fed the *proven* rewinding witness through the named bridge residual.
-  simplifiedIOR_knowledgeSound_residual init impl C δ encode decode hBridge
+    (decode : ToyProblem.Spec.ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
+    Extractor.knowledgeSoundnessViaRewinding
+      (ToyProblem.Spec.outputRelation k C δ)
+      (ToyProblem.Spec.toyStmtOf (ι := ι) (F := F) (k := k))
+      (ToyProblem.Spec.toyAccepts (ι := ι) (F := F) (k := k) C δ decode) :=
+  ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding C δ decode
 
-#print axioms simplifiedIOR_knowledgeSound_residual
 
 end Protocol
 
@@ -291,5 +274,4 @@ end ToyProblem
 
 /-! ### Axiom audit (issue #18 simplified ToyProblem bridge residual frontier) -/
 
-#print axioms ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound_residual
 #print axioms ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound

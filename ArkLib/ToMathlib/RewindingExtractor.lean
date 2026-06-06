@@ -379,12 +379,3 @@ prefix" into the single averaged `Pr[...] ≤ ε` bound — the genuine residual
 `StraightlineOfRewinding` below. No statement is weakened: the residual is the precise, smallest
 missing piece.
 -/
--- `Extractor.Bridge.*` (their canonical home, nested under `Extractor`) and as the
--- shorter `Bridge.*`. Downstream consumers (the ToyProblem spec files) use both
--- spellings; this `export` makes them denote the same declarations rather than two
--- separate copies.
-namespace Bridge
-
-end Bridge
-
-end Bridge
