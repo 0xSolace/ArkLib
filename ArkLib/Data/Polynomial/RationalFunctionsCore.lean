@@ -414,6 +414,11 @@ lemma H_tilde_equiv_H_tilde' (H : F[X][Y]) : (H_tilde' H).map univPolyHom = H_ti
             Polynomial.X ^ H.natDegree := by
               rw [add_comm]
 
+/-- The polynomial `H_tilde'` agrees with the monicization `H_tilde` after embedding into
+`Polynomial (RatFunc F)`. This is the forward-named alias used by later Appendix A proofs. -/
+lemma map_H_tilde'_eq_H_tilde (H : F[X][Y]) : (H_tilde' H).map univPolyHom = H_tilde H :=
+  H_tilde_equiv_H_tilde' H
+
 section FieldIrreducibility
 
 variable {F : Type} [Field F]
@@ -2990,6 +2995,32 @@ lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) (hHyp : Hypotheses x₀ 
       have htop : ((ξ_pre x₀ R H).coeff (d - 1)).natDegree = 0 :=
         natDegree_ξ_pre_coeff_top_eq_zero_of_natDegree_eq hHyp hd2 hg hdH_eq
       rw [htop, add_zero]
+
+/-- A total degree for the trivariate polynomial `R`, represented as a polynomial in `Y` with
+bivariate coefficients in the `Z` and `X` variables. -/
+def trivariateTotalDegree (R : F[X][X][Y]) : ℕ :=
+  R.support.sup (fun i => Bivariate.totalDegree (R.coeff i) + i)
+
+/-- Each coefficient of `R` is bounded by `trivariateTotalDegree R`. -/
+lemma coeff_totalDegree_add_index_le_trivariateTotalDegree (R : F[X][X][Y]) {i : ℕ}
+    (hi : i ∈ R.support) :
+    Bivariate.totalDegree (R.coeff i) + i ≤ trivariateTotalDegree R := by
+  classical
+  unfold trivariateTotalDegree
+  exact Finset.le_sup (f := fun i => Bivariate.totalDegree (R.coeff i) + i) hi
+
+/-- A canonical degree bound large enough for both `H` and all coefficients of `R`. -/
+def defaultDegreeBound (R : F[X][X][Y]) (H : F[X][Y]) : ℕ :=
+  max (Bivariate.totalDegree H) (trivariateTotalDegree R)
+
+lemma defaultDegreeBound_ge_H (R : F[X][X][Y]) (H : F[X][Y]) :
+    Bivariate.totalDegree H ≤ defaultDegreeBound R H :=
+  le_max_left _ _
+
+lemma defaultDegreeBound_ge_R_coeff (R : F[X][X][Y]) (H : F[X][Y]) {i : ℕ}
+    (hi : i ∈ R.support) :
+    Bivariate.totalDegree (R.coeff i) + i ≤ defaultDegreeBound R H :=
+  (coeff_totalDegree_add_index_le_trivariateTotalDegree R hi).trans (le_max_right _ _)
 
 end ClaimA2
 end
