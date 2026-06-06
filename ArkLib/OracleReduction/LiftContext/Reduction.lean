@@ -314,7 +314,9 @@ lemma simulateQ_addLift_liftM
     simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
       (liftM oa : OracleComp (oSpec + [pSpec.Challenge]ₒ) α) =
       (simulateQ impl oa : StateT σ ProbComp α) := by
-  sorry
+  rw [show (liftM oa : OracleComp (oSpec + [pSpec.Challenge]ₒ) α) =
+      liftComp oa (oSpec + [pSpec.Challenge]ₒ) by rw [liftComp_eq_liftM]]
+  rw [QueryImpl.simulateQ_add_liftComp_left]
 
 @[simp]
 lemma OptionT.simulateQ_addLift_liftM
@@ -366,6 +368,20 @@ lemma OptionT.simulateQ_getM_some
     OptionT.mk (simulateQ impl (((some x : Option α).getM : OptionT (OracleComp spec) α).run)) =
       OptionT.mk (pure (some x) : StateT σ ProbComp (Option α))
   rw [simulateQ_getM_run_some (impl := impl) (x := x)]
+
+@[simp]
+lemma Option.getM_map_run
+    {m : Type _ → Type _} [Monad m] [LawfulMonad m] {α β : Type _}
+    (f : α → β) (x : Option α) :
+    ((Option.map f x).getM : OptionT m β).run =
+      (Option.map f <$> (x.getM : OptionT m α).run) := by
+  cases x <;> simp [Option.getM]
+
+@[simp]
+lemma Option.map_comp_lambda
+    {α β γ : Type _} (f : β → γ) (g : α → β) (x : Option α) :
+    Option.map (f ∘ g) x = Option.map (fun y => f (g y)) x := by
+  cases x <;> rfl
 
 @[simp]
 lemma StateT.run_pure_some_bind_map
@@ -717,9 +733,9 @@ theorem liftContext_run
           R.run.uncurry (lens.proj (outerStmtIn, outerWitIn))
         return ⟨⟨fullTranscript, lens.lift (outerStmtIn, outerWitIn) innerCtxOut⟩ ,
                 lens.stmt.lift outerStmtIn verInnerStmtOut⟩ := by
-  unfold run
-  simp [liftContext, Prover.liftContext_run, Verifier.liftContext, Verifier.run, Function.uncurry]
-  sorry
+  apply OptionT.ext
+  simp [run, liftContext, Prover.liftContext_run, Verifier.liftContext, Verifier.run,
+    Function.uncurry, OptionT.run_bind, OptionT.run_map, Functor.map_map, Function.comp]
 
 theorem liftContext_runWithLog
     {lens : Context.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut
@@ -731,9 +747,10 @@ theorem liftContext_runWithLog
           R.runWithLog.uncurry (lens.proj (outerStmtIn, outerWitIn))
         return ⟨⟨⟨fullTranscript, lens.lift (outerStmtIn, outerWitIn) innerCtxOut⟩,
                 lens.stmt.lift outerStmtIn verInnerStmtOut⟩, queryLog⟩ := by
-  unfold runWithLog
-  simp [liftContext, Prover.liftContext_runWithLog, Verifier.liftContext, Verifier.run]
-  sorry
+  apply OptionT.ext
+  simp [runWithLog, liftContext, Prover.liftContext_runWithLog, Verifier.liftContext,
+    Verifier.run, Function.uncurry, OptionT.run_bind, OptionT.run_map, Functor.map_map,
+    Function.comp]
 
 end Reduction
 
@@ -893,8 +910,6 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
       (V.compatStatement lens)]
     (h : V.soundness init impl innerLangIn innerLangOut soundnessError) :
       (V.liftContext lens).soundness init impl outerLangIn outerLangOut soundnessError := by
-  sorry
-/-
   unfold soundness at h ⊢
   intro WitIn WitOut outerWitIn outerP outerStmtIn hOuterStmtIn
   let innerPLens : Context.Lens InnerStmtIn InnerStmtOut OuterStmtIn OuterStmtOut
@@ -988,7 +1003,6 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
           __do_lift] ≤ ↑soundnessError
   rw [hOuterExec]
   exact le_trans hCompare hInner
--/
 
 /-
   Lifting the reduction preserves knowledge soundness, assuming the lens satisfies its knowledge

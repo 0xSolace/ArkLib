@@ -221,4 +221,9 @@ file — `coeff_pow_sub_below` (LEMMA A), `coeff_pow_sub_at` (LEMMA B),
 depends only on `[propext, Classical.choice, Quot.sound]`: no `sorryAx`, no `native_decide` /
 `Lean.ofReduceBool`. The file is sorry-free and `lake env lean` exits 0. -/
 
+#print axioms ProximityPrize.NewtonLinearization.coeff_pow_sub_below
+#print axioms ProximityPrize.NewtonLinearization.coeff_pow_sub_at
+#print axioms ProximityPrize.NewtonLinearization.coeff_aeval_eq_sum_range
+#print axioms ProximityPrize.NewtonLinearization.coeff_aeval_sub_at
+
 end ProximityPrize.NewtonLinearization

@@ -346,3 +346,10 @@ construction (`S`, `coeff_S_succ_of_le`, `coeff_S_eq_zero_of_lt`, `coeff_S_stabl
 exits 0. -/
 
 end ProximityPrize.HenselExistence
+
+-- Axiom audit: every claimed-done declaration rests only on
+-- `[propext, Classical.choice, Quot.sound]`.
+#print axioms ProximityPrize.HenselExistence.coeff_aeval_sub_at
+#print axioms ProximityPrize.HenselExistence.aeval_γ_eq_zero
+#print axioms ProximityPrize.HenselExistence.exists_powerSeries_root
+#print axioms ProximityPrize.HenselExistence.aeval_root_unique

@@ -174,7 +174,10 @@ lemma getMidCodewords_succ (t : MultilinearPoly L ℓ) (i : Fin ℓ)
       (i := i.castSucc) (t := t) (challenges := challenges))
     (r_challenges := fun _ => r_i'))
   := by
-  sorry
+  ext y
+  unfold getMidCodewords iterated_fold
+  rw [Fin.dfoldl_succ_last]
+  rfl
 
 section FoldStepLogic
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context}
@@ -652,7 +655,59 @@ lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : is
         oStmtIn newOracle) challenges →
     incrementalBadEventExistsProp 𝔽q β i.succ (OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i)
       oStmtIn challenges := by
-  sorry
+  intro h_bad
+  rcases h_bad with ⟨j, hj_bad⟩
+  by_cases hj_lt : j.val < toOutCodewordsCount ℓ ϑ i.castSucc
+  · refine ⟨⟨j.val, hj_lt⟩, ?_⟩
+    unfold incrementalBadEventExistsProp at hj_bad ⊢
+    dsimp [OracleFrontierIndex.val_mkFromStmtIdx,
+      OracleFrontierIndex.val_mkFromStmtIdxCastSuccOfSucc] at hj_bad ⊢
+    simpa [snoc_oracle, hj_lt] using hj_bad
+  · exfalso
+    unfold incrementalBadEventExistsProp at hj_bad
+    dsimp [OracleFrontierIndex.val_mkFromStmtIdx] at hj_bad
+    have h_count_succ :
+        toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
+      simp only [toOutCodewordsCount_succ_eq, hCR, ↓reduceIte]
+    have hj_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
+      have hj_le : j.val ≤ toOutCodewordsCount ℓ ϑ i.castSucc := by
+        rw [← Nat.lt_succ_iff, ← h_count_succ]
+        exact j.isLt
+      have hj_ge : toOutCodewordsCount ℓ ϑ i.castSucc ≤ j.val := by
+        simpa only [not_lt] using hj_lt
+      omega
+    have h_domain : j.val * ϑ = i.succ.val := by
+      rw [hj_eq]
+      exact toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ (i := i) (hCR := hCR)
+    have hk : min ϑ (i.succ.val - j.val * ϑ) = 0 := by
+      rw [h_domain]
+      simp
+    exact
+      (incrementalFoldingBadEvent_of_k_eq_0_is_false 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (ϑ := ϑ)
+        (block_start_idx := ⟨oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ)
+          (positionIdx := j), by omega⟩)
+        (k := min ϑ (i.succ.val - j.val * ϑ))
+        (h_k := hk)
+        (midIdx := ⟨j.val * ϑ + min ϑ (i.succ.val - j.val * ϑ), by omega⟩)
+        (destIdx := ⟨j.val * ϑ + ϑ, by
+          dsimp only [oraclePositionToDomainIndex]
+          omega⟩)
+        (h_midIdx := by dsimp [oraclePositionToDomainIndex]; omega)
+        (h_destIdx := rfl)
+        (h_destIdx_le := oracle_index_add_steps_le_ℓ ℓ ϑ
+          (i := (OracleFrontierIndex.mkFromStmtIdx i.succ).val) (j := j))
+        (f_block_start := by
+          simpa [OracleStatement, oraclePositionToDomainIndex, snoc_oracle, hj_lt, hCR]
+            using (snoc_oracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+              (h_destIdx := rfl) oStmtIn newOracle j))
+        (r_challenges := fun cId => challenges ⟨j.val * ϑ + cId.val, by
+          have h_k_le_stmt :
+              min ϑ (i.succ.val - j.val * ϑ) ≤ i.succ.val - j.val * ϑ :=
+            Nat.min_le_right ϑ (i.succ.val - j.val * ϑ)
+          have h_cId_lt_k : cId.val < min ϑ (i.succ.val - j.val * ϑ) := cId.isLt
+          omega⟩)) hj_bad
 
 lemma oracleFoldingConsistencyProp_commit_step_backward (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (challenges : Fin i.succ.val → L)
@@ -663,7 +718,27 @@ lemma oracleFoldingConsistencyProp_commit_step_backward (i : Fin ℓ) (hCR : isC
       (snoc_oracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (h_destIdx := rfl)
         oStmtIn newOracle) →
     oracleFoldingConsistencyProp 𝔽q β (i := i.castSucc) (Fin.init challenges) oStmtIn := by
-  sorry
+  intro h j hj
+  have h_count_succ :
+      toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
+    simp only [toOutCodewordsCount_succ_eq, hCR, ↓reduceIte]
+  let j' : Fin (toOutCodewordsCount ℓ ϑ i.succ) := ⟨j.val, by
+    rw [h_count_succ]
+    omega⟩
+  have hj' : j'.val + 1 < toOutCodewordsCount ℓ ϑ i.succ := by
+    dsimp [j']
+    rw [h_count_succ]
+    omega
+  have h_old := h j' hj'
+  have hj_lt : j'.val < toOutCodewordsCount ℓ ϑ i.castSucc := by
+    dsimp [j']
+    exact j.isLt
+  have hj_next_lt : j'.val + 1 < toOutCodewordsCount ℓ ϑ i.castSucc := by
+    dsimp [j']
+    exact hj
+  simp only [oracleFoldingConsistencyProp, snoc_oracle, hj_lt, hj_next_lt,
+    getFoldingChallenges_init_succ_eq] at h_old ⊢
+  exact h_old
 
 end CommitStepPreservationLemmas
 

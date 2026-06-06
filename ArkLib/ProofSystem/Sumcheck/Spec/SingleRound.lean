@@ -740,8 +740,6 @@ variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ Pro
 theorem reduction_perfectCompleteness :
     (reduction R deg D oSpec).perfectCompleteness init impl
       (inputRelation R deg D) (outputRelation R deg) := by
-  sorry
-/-
   simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
   intro ⟨target, oStmt⟩ () hValid
   simp only [inputRelation, Set.mem_setOf_eq] at hValid
@@ -764,6 +762,7 @@ theorem reduction_perfectCompleteness :
     guard, if_pos hValid]
   -- 5. After full simplification, the computation should be OptionT-free
   -- Prove Pr[event | comp] ≥ 1
+  simp only [ENNReal.coe_zero, tsub_zero]
   rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
   · -- No failure
@@ -955,7 +954,6 @@ theorem reduction_perfectCompleteness :
       obtain ⟨_, ⟨_, rfl⟩, _, rfl⟩ := hval2
       simp only [Set.mem_setOf_eq, outputRelation]
       constructor <;> simp
--/
 
 
 /-- Closed form of the simulated oracle-verifier `verify`: the inner `simOracle2`
@@ -1032,8 +1030,6 @@ private lemma vector_finRange_map_sum_eq' (g : Fin m → R) :
 theorem oracleReduction_perfectCompleteness :
     (oracleReduction R deg D oSpec).perfectCompleteness init impl
       (inputRelation R deg D) (outputRelation R deg) := by
-  sorry
-/-
   -- Direct proof (no detour through `oracleReduction_eq_reduction`): the oracle verifier
   -- collapses to a guard on the ORACLE's D-sum, which holds by `hValid`.
   unfold OracleReduction.perfectCompleteness
@@ -1057,6 +1053,7 @@ theorem oracleReduction_perfectCompleteness :
   simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
     Functor.map_map, Function.comp_def, map_map, OptionT.run_pure, Option.getM,
     Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
+  simp only [ENNReal.coe_zero, tsub_zero]
   rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
   all_goals
@@ -1121,7 +1118,6 @@ theorem oracleReduction_perfectCompleteness :
       simp only [Prod.mk.injEq] at heqc
       obtain ⟨⟨rfl, rfl, rfl⟩, rfl⟩ := heqc
       rfl
--/
 
 /-- Trivial round-by-round extractor (all witnesses are `Unit`). -/
 private def simpleRbrExtractor : Extractor.RoundByRound oSpec
