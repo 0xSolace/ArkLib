@@ -87,6 +87,7 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | Proximity-prize audit doc refresh (this index family) | #59 |
 | Root build / validation regressions after #36 | #60 |
 | Proximity Prize betaRec-to-hcoeffPoly keystone assembly | #61 |
+| BCIKS20 Section 5 `hPz` supplier from per-z Hensel/matching data | #91 |
 | BCS compiler beyond statement-level scaffolding | #62 |
 | ArkLib SNARK/proof-system completion obligations | #63 |
 | BCIKS20 exact lattice boundary residual for the closed Johnson branch | #64 |
