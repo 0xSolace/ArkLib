@@ -16,9 +16,8 @@ theorem run_eq_honestExecution
     (stmtIn : StmtIn) (witIn : WitIn) :
     Reduction.duplexSpongeFiatShamir_run_eq_honestExecution (U := U) R stmtIn witIn := by
   unfold Reduction.duplexSpongeFiatShamir_run_eq_honestExecution
-  unfold Reduction.run Reduction.duplexSpongeFiatShamir
   unfold Reduction.duplexSpongeFiatShamirHonestExecution
   unfold Reduction.duplexSpongeFiatShamirHonestRun
-  unfold Reduction.prover
-  -- let's try rfl
-  rfl
+  rw [Reduction.run_of_prover_first]
+  -- now let's see the remaining goal
+  sorry
