@@ -184,21 +184,23 @@ left in this summand is GKL24's sharpening of that support count to `δ·n`. The
 summand is supplied separately by `GCXK25SecondMoment.card_lt_one_div_of_second_moment_rs`. -/
 theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
     (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
-    (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
+    (hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
     (_hη_pos : 0 < η) (_hη_lt : η < 1) (_hη_le_δ : η ≤ δ)
     (_hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
-    -- The GKL24 first-moment agree-domain residual (the genuine external content), at the
-    -- Johnson-lifted radius and with list-size factor `B_T = L²`:
+    -- The GKL24 first-moment agree-domain residual (the genuine external content): at the
+    -- Johnson-lifted MCA radius, with list-size factor `B_T = L²` and per-codeword count
+    -- `b = δ·n` (`δ` the *list-decoding* radius, GCXK25's `|Bad¹| ≤ p·n`):
     (hres :
         ProximityGap.GKL24FirstMomentResidual C
           ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
-          ((L : ℝ) ^ 2) (Fintype.card ι : ℝ)) :
+          ((L : ℝ) ^ 2) (δ * Fintype.card ι)) :
     epsMCA (F := F) (A := F) ((C : Set (ι → F)))
         ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
       ENNReal.ofReal
         (((L : ℝ) ^ 2 * (δ * Fintype.card ι)) / Fintype.card F) :=
   ProximityGap.epsMCA_le_ofReal_of_gkl24_residual C
-    ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) hres
+    ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+    (by positivity) hres
 
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3].** List decoding implies MCA.
 
