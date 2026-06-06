@@ -155,6 +155,83 @@ theorem affineSystemBadScalars_card_le_jp1_via_minor (j : ℕ)
     bad.card ≤ j + 1 :=
   affineSystemBadScalars_card_le_of_subset_minor_roots M hM bad hsub hQ
 
+/-! ## The J2 lower bound — the `3`-spike plant at radius `2/n`
+
+The wide-regime lower bound half is unconditional and kernel-verified: the explicit
+two-window `3`-spike plant realizes three distinct bad scalars at the interior radius `2/n`.
+This reuses the in-tree general `t`-spike floor `epsMCA_ge_spike` with `t = 3` and the size
+lemma `spike_three_size_at_interiorJ2` (already proved in `GrandChallengeInteriorJ1.lean`).
+The interior hypothesis is `k + 4 ≤ n` (i.e. `n ≥ k + j + 2` at `j = 2`), and `3 ≤ q`. -/
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable [Fintype F] [DecidableEq F]
+
+open ReedSolomon Code
+
+/-- **The J2 lower bound: `3/q ≤ ε_mca(C, 2/n)`.**  The explicit `3`-spike plant
+(`epsMCA_ge_spike` with `t = 3`) realizes three bad scalars at the interior radius `2/n`.
+This is the research note's two-window plant at `j = 2`; `3 ≤ q` and `k + 4 ≤ n` suffice.
+Together with the `3×3`-minor upper-bound shape this is the lower half of the second exact
+interior row `P[2] = 3`. -/
+theorem epsMCA_interiorJ2_ge
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 4 ≤ Fintype.card ι) (hq : 3 ≤ Fintype.card F) :
+    (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤
+      epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F))
+        (mcaLatticePoint (Fintype.card ι)
+          (⟨2, by
+            have hn : 0 < Fintype.card ι := Fintype.card_pos
+            omega⟩ : Fin (Fintype.card ι + 1))) := by
+  classical
+  set n := Fintype.card ι with hndef
+  have hn3 : 3 ≤ n := by omega
+  have ht_n : 3 + k ≤ n := by omega
+  have hδ : ((1 - mcaLatticePoint n (⟨2, by omega⟩ : Fin (n + 1))) * n : ℝ≥0)
+      ≤ ((n - 3 + 1 : ℕ) : ℝ≥0) :=
+    spike_three_size_at_interiorJ2 (n := n) hn3
+  have hspike := epsMCA_ge_spike domain k 3
+    (mcaLatticePoint n (⟨2, by omega⟩ : Fin (n + 1))) ht_n hq hδ
+  simpa using hspike
+
+/-- **J2 lattice satisfaction lower bracket.**  At the interior radius `2/n`, if the faithful
+MCA bound is to hold (`mcaSatisfies` at index `2`), then `3/q ≤ ε*` is necessary — because
+the `3`-spike plant forces `ε_mca(C, 2/n) ≥ 3/q`.  Contrapositively, when `ε* < 3/q` the
+faithful threshold is strictly below J2. -/
+theorem mcaThreshold_lt_two_of_interiorJ2_gt
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 4 ≤ Fintype.card ι) (hq : 3 ≤ Fintype.card F)
+    {ε_star : ℝ≥0}
+    (hbad : (ε_star : ℝ≥0∞) < (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞))
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) ε_star) :
+    let j2 : Fin (Fintype.card ι + 1) := ⟨2, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne < j2 := by
+  let C : Set (ι → F) := ReedSolomon.code domain k
+  let j2 : Fin (Fintype.card ι + 1) := ⟨2, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  by_contra hnot
+  have hj2_le : j2 ≤ mcaThreshold C ε_star hne := not_lt.mp hnot
+  have hsat_threshold : mcaSatisfies C ε_star (mcaThreshold C ε_star hne) :=
+    mcaThreshold_spec C ε_star hne
+  have hsat_j2 : mcaSatisfies C ε_star j2 :=
+    mcaSatisfies_downward_closed C ε_star hj2_le hsat_threshold
+  have hge : (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤
+      epsMCA (F := F) (A := F) C (mcaLatticePoint (Fintype.card ι) j2) :=
+    epsMCA_interiorJ2_ge domain hk hq
+  have : (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞) :=
+    le_trans hge hsat_j2
+  exact (not_le_of_gt hbad) this
+
 end GrandChallengesLattice
 
 end ProximityGap
+
+/-! ## Axiom audit — every declaration must rest only on
+`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
+#print axioms ProximityGap.GrandChallengesLattice.affineMatrix_det_natDegree_le
+#print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_of_subset_minor_roots
+#print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_two_via_2x2
+#print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_three_via_3x3
+#print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_jp1_via_minor
+#print axioms ProximityGap.GrandChallengesLattice.epsMCA_interiorJ2_ge
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lt_two_of_interiorJ2_gt
