@@ -34,12 +34,10 @@ theorem support_liftComp {τ : Type} {superSpec : OracleSpec τ} {α : Type}
   | query_bind t oa ih =>
       rw [OracleComp.liftComp_bind, OracleComp.liftComp_query]
       ext y
-      simp only [support_bind, Set.mem_iUnion]
-      constructor
-      · rintro ⟨u, _hu, hy⟩
-        exact ⟨u, mem_support_query t u, (ih u) ▸ hy⟩
-      · rintro ⟨u, hu, hy⟩
-        exact ⟨u, hu, (ih u).symm ▸ hy⟩
+      simp only [support_bind, Set.mem_iUnion, support_map, Set.mem_image,
+        OracleComp.support_query, Set.mem_univ, true_and, ih]
+      simp only [OracleQuery.cont_query, OracleComp.support_liftM, OracleQuery.input_query,
+        Set.mem_range, exists_exists_eq_and, id_eq]
 
 end OracleComp
 
