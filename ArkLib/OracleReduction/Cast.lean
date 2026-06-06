@@ -174,18 +174,6 @@ protected def cast
 
 variable (hOₘ : ∀ i, Oₘ₁ i = dcast (Message.cast_idx hSpec) (Oₘ₂ (i.cast hn hSpec)))
 
--- @[simp]
--- theorem cast_id :
---     OracleVerifier.cast rfl rfl (fun i => rfl) =
---       (id : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁ → _) := by
---   placeholder
-
--- Need to cast oracle interface as well
--- instance instDCast₂OracleVerifier : DCast₃ Nat ProtocolSpec
---     (fun _ pSpec => OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec) where
---   dcast₂ := OracleVerifier.cast
---   dcast₂_id := OracleVerifier.cast_id
-
 /-- Helper for `cast_toVerifier`: the output oracle-statement function produced by
 `OracleVerifier.toVerifier` depends only on the embedding pointwise. If two embeddings `e` and `emb`
 agree pointwise, the resulting (dependent) `match` functions are equal, up to the proof-irrelevant
@@ -414,16 +402,6 @@ variable {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
 namespace Reduction
 
 variable (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec₁)
-
--- @[simp]
--- theorem cast_completeness (ε : ℝ≥0) (hComplete : R.completeness init impl relIn relOut ε) :
---     (R.cast hn hSpec).completeness init impl relIn relOut ε := by
---   placeholder
-
--- @[simp]
--- theorem cast_perfectCompleteness (hComplete : R.perfectCompleteness init impl relIn relOut) :
---     (R.cast hn hSpec).perfectCompleteness init impl relIn relOut :=
---   cast_completeness hn hSpec R 0 hComplete
 
 end Reduction
 

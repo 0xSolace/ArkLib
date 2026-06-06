@@ -967,44 +967,4 @@ variable {ι : Type} {oSpec : OracleSpec ι}
     {StmtIn WitIn StmtOut WitOut : Type}
     {pSpec : ProtocolSpec 2}
 
--- /-- Simplification of the prover's execution in a single-round, two-message protocol where the
---   prover speaks first -/
--- theorem Prover.run_of_isSingleRound [IsSingleRound pSpec] (stmt : StmtIn) (wit : WitIn)
---     (prover : Prover pSpec oSpec StmtIn WitIn StmtOut WitOut) :
---       prover.run stmt wit = (do
---         let state ← liftComp (prover.load stmt wit)
---         let ⟨⟨msg, state⟩, queryLog⟩ ← liftComp
---           (simulate loggingOracle ∅ (prover.sendMessage default state emptyTranscript))
---         let challenge ← query (Sum.inr default) ()
---         let state ← liftComp (prover.receiveChallenge default state transcript challenge)
---         let transcript := Transcript.mk2 msg challenge
---         let witOut := prover.output state
---         return (transcript, queryLog, witOut)) := by
---   simp [Prover.run, Prover.runToRound, Fin.reduceFinMk, Fin.val_two,
---     Fin.val_zero, Fin.coe_castSucc, Fin.val_succ, dir_apply, bind_pure_comp, getType_apply,
---     Fin.induction_two, Fin.val_one, pure_bind, map_bind, liftComp]
---   split <;> rename_i hDir0
---   · exfalso; simp only [prover_first, reduceCtorEq] at hDir0
---   split <;> rename_i hDir1
---   swap
---   · exfalso; simp only [verifier_last_of_two, reduceCtorEq] at hDir1
---   simp only [Functor.map_map, bind_map_left, default]
---   congr; funext x; congr; funext y;
---   simp only [Fin.isValue, map_bind, Functor.map_map, dir_apply, Fin.succ_one_eq_two,
---     Fin.succ_zero_eq_one, queryBind_inj', true_and, exists_const]
---   funext chal; simp [OracleSpec.append] at chal
---   congr; funext state; congr
---   rw [← Transcript.mk2_eq_toFull_snoc_snoc _ _]
-
--- theorem Reduction.run_of_isSingleRound [IsSingleRound pSpec]
---     (reduction : Reduction pSpec oSpec StmtIn WitIn StmtOut WitOut PrvState)
---     (stmt : StmtIn) (wit : WitIn) :
---       reduction.run stmt wit = do
---         let state := reduction.prover.load stmt wit
---         let ⟨⟨msg, state⟩, queryLog⟩ ← liftComp (simulate loggingOracle ∅
---           (reduction.prover.sendMessage default state))
---         let challenge := reduction.prover.receiveChallenge default state
---         let stmtOut ← reduction.verifier.verify stmt transcript
---         return (transcript, queryLog, stmtOut, reduction.prover.output state) := by placeholder
-
 end Classes
