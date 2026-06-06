@@ -157,6 +157,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdElias
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdHalfDist
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdJohnsonSq
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLattice
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeListClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOneExact
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeResolutionWitness
