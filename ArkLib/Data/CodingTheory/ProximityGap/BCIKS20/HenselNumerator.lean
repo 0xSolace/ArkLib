@@ -2609,6 +2609,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHenselAssembled_eq_gammaGenuine
 #print axioms BCIKS20.HenselNumerator.assembledSeries_isRoot_of_coeff_succ_eval
 #print axioms BCIKS20.HenselNumerator.βHensel_lift_identity_of_assembledSeries_isRoot
+#print axioms BCIKS20.HenselNumerator.FaaDiBrunoSuccSumZeroResidual
 #print axioms BCIKS20.HenselNumerator.faaDiBruno_succ_sum_eq_zero
 #print axioms BCIKS20.HenselNumerator.coeff_succ_eval_βHenselAssembled
 #print axioms BCIKS20.HenselNumerator.assembledSeries_isRoot
