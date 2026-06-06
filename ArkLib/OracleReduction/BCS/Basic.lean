@@ -261,6 +261,49 @@ def BCSCompiledPhases.toReduction {StmtMid WitMid : Type}
       (pSpec.BCSTransform pSpecCom CommitmentType e) :=
   BCSTransform e phases.interaction phases.opening
 
+/-- The phase-realization half of the BCS compiler frontier: the interaction phase must realize
+the original oracle-message flow through commitments, and the opening phase must realize the
+verifier's query log through commitment openings. This is deliberately a conjunction of the two
+fields already carried by `BCSCompiledPhases`, so downstream files can require the compiler-frontier
+content as one named hypothesis while still projecting the two independent bricks. -/
+def BCSPhaseRealizationFrontier {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    (phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e) : Prop :=
+  phases.interaction_realizes_oracle_messages ∧ phases.opening_realizes_query_log
+
+/-- Project the interaction-realization brick from the named phase frontier. -/
+theorem BCSPhaseRealizationFrontier.interaction {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e}
+    (h : BCSPhaseRealizationFrontier phases) :
+    phases.interaction_realizes_oracle_messages :=
+  h.1
+
+/-- Project the query-log-opening brick from the named phase frontier. -/
+theorem BCSPhaseRealizationFrontier.opening {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e}
+    (h : BCSPhaseRealizationFrontier phases) :
+    phases.opening_realizes_query_log :=
+  h.2
+
+/-- `BCSCompiledPhases.toReduction` is exactly the appended BCS transform on the packaged
+interaction and opening phases. This small bridge lets downstream code unfold the current compiler
+frontier through a named theorem rather than through record projections. -/
+theorem BCSCompiledPhases.toReduction_eq_BCSTransform {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    (phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e) :
+    phases.toReduction = BCSTransform e phases.interaction phases.opening :=
+  rfl
+
 /-- Security obligations still required to turn `BCSCompiledPhases.toReduction` into the final
 compiler theorem.  These are intentionally named as fields rather than hidden in a monolithic
 an opaque placeholder: each field corresponds to a separate proof brick in issue #62.
@@ -278,6 +321,57 @@ structure BCSSecurityFrontier {StmtMid WitMid : Type}
   completeness_preservation_target : Prop
   soundness_preservation_target : Prop
   knowledge_soundness_preservation_target : Prop
+
+/-- All currently named BCS compiler-frontier obligations for a packaged pair of phases.
+
+This is **not** a security theorem: it is the machine-checkable checklist that a future full BCS
+compiler theorem must discharge before `BCSCompiledPhases.toReduction` can be promoted from the
+append-only frontier to the accepted committed compiler. -/
+def BCSCompilerFrontierReady {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    (phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e)
+    (frontier : BCSSecurityFrontier (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      phases) : Prop :=
+  BCSPhaseRealizationFrontier phases ∧
+    frontier.commitment_correctness_available ∧
+    frontier.commitment_binding_or_extractability_available ∧
+    frontier.completeness_preservation_target ∧
+    frontier.soundness_preservation_target ∧
+    frontier.knowledge_soundness_preservation_target
+
+/-- Package the named BCS compiler-frontier obligations from their independent proof bricks. -/
+theorem BCSCompilerFrontierReady.intro {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e}
+    {frontier : BCSSecurityFrontier (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      phases}
+    (hPhase : BCSPhaseRealizationFrontier phases)
+    (hCorrect : frontier.commitment_correctness_available)
+    (hBindingOrExtract : frontier.commitment_binding_or_extractability_available)
+    (hComplete : frontier.completeness_preservation_target)
+    (hSound : frontier.soundness_preservation_target)
+    (hKS : frontier.knowledge_soundness_preservation_target) :
+    BCSCompilerFrontierReady phases frontier :=
+  ⟨hPhase, hCorrect, hBindingOrExtract, hComplete, hSound, hKS⟩
+
+/-- Project the phase-realization obligations from a ready BCS compiler frontier. -/
+theorem BCSCompilerFrontierReady.phase {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e}
+    {frontier : BCSSecurityFrontier (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      phases}
+    (h : BCSCompilerFrontierReady phases frontier) :
+    BCSPhaseRealizationFrontier phases :=
+  h.1
 
 /-! #### Design note: the fully general transform
 

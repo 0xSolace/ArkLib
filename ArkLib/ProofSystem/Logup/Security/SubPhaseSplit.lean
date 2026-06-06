@@ -31,9 +31,12 @@ each half separately and re-deriving the top-level reductions from the split hal
 
 * `OuterSoundnessResidual` / `SumcheckSoundnessResidual` and the `Iff.rfl` bridge
   `subPhaseSoundnessResidual_iff_split`;
-* `logup_soundness_of_split` — `logup_soundness` from the two halves + the append lemma;
+* `AppendSoundnessResidual` / `LogupSoundnessBrickResidual` and
+  `logup_soundness_of_bricks` — the two sub-phase halves plus the explicit append-composition
+  brick;
 * the completeness analogues `OuterCompletenessResidual` / `SumcheckCompletenessResidual`,
-  `subPhaseCompletenessResidual_iff_split`, `logup_completeness_of_split`.
+  `AppendCompletenessResidual` / `LogupCompletenessBrickResidual`,
+  `subPhaseCompletenessResidual_iff_split`, `logup_completeness_of_bricks`.
 
 No new mathematics and no new axioms: the bridges are definitional and the reductions
 chain the existing `logup_soundness_of_residual` / `logup_completeness_of_residual`.
@@ -98,6 +101,32 @@ theorem logup_soundness_of_split (sumcheckSoundnessError : ℝ≥0)
   logup_soundness_of_residual oSpec F n M params init impl sumcheckSoundnessError
     ⟨hOuter, hSumcheck⟩ hAppendSoundness
 
+/-- The **append-composition** soundness brick still exposed by
+`OracleVerifier.append_soundness`. Keeping it separately named makes the remaining #13 wall
+three-way rather than hiding composition inside an anonymous hypothesis. -/
+def AppendSoundnessResidual (sumcheckSoundnessError : ℝ≥0) : Prop :=
+  (logupVerifier oSpec F n M params).soundness init impl
+    (inputRelation F n M).language outputRelation.language
+    (logupSoundnessError F n M params sumcheckSoundnessError)
+
+/-- The fully split soundness residual surface: outer LogUp soundness, lifted sumcheck
+soundness, and append-composition soundness. -/
+def LogupSoundnessBrickResidual (sumcheckSoundnessError : ℝ≥0) : Prop :=
+  OuterSoundnessResidual oSpec F n M params init impl ∧
+    SumcheckSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError ∧
+      AppendSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError
+
+/-- **LogUp soundness from all named bricks.** This is a packaging theorem: it consumes the
+three independently named remaining soundness obligations instead of a bundled sub-phase residual
+plus an anonymous append-composition hypothesis. -/
+theorem logup_soundness_of_bricks (sumcheckSoundnessError : ℝ≥0)
+    (h : LogupSoundnessBrickResidual oSpec F n M params init impl sumcheckSoundnessError) :
+    (logupVerifier oSpec F n M params).soundness init impl
+      (inputRelation F n M).language outputRelation.language
+      (logupSoundnessError F n M params sumcheckSoundnessError) :=
+  logup_soundness_of_split oSpec F n M params init impl sumcheckSoundnessError
+    h.1 h.2.1 h.2.2
+
 /-! ### Completeness halves -/
 
 /-- The **outer** half of `SubPhaseCompletenessResidual`: the outer phase is complete with
@@ -136,6 +165,27 @@ theorem logup_completeness_of_split
       (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
   logup_completeness_of_residual oSpec F n M params init impl ⟨hOuter, hSumcheck⟩
     hAppendCompleteness
+
+/-- The **append-composition** completeness brick still exposed by
+`OracleReduction.append_completeness`. -/
+def AppendCompletenessResidual : Prop :=
+  (logupOracleReduction oSpec F n M params).completeness init impl
+    (inputRelation F n M) outputRelation (logupCompletenessError F n)
+
+/-- The fully split completeness residual surface: outer LogUp completeness, lifted sumcheck
+completeness, and append-composition completeness. -/
+def LogupCompletenessBrickResidual : Prop :=
+  OuterCompletenessResidual oSpec F n M params init impl ∧
+    SumcheckCompletenessResidual oSpec F n M params init impl ∧
+      AppendCompletenessResidual oSpec F n M params init impl
+
+/-- **LogUp completeness from all named bricks.** This consumes the three independently named
+remaining completeness obligations. -/
+theorem logup_completeness_of_bricks
+    (h : LogupCompletenessBrickResidual oSpec F n M params init impl) :
+    (logupOracleReduction oSpec F n M params).completeness init impl
+      (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
+  logup_completeness_of_split oSpec F n M params init impl h.1 h.2.1 h.2.2
 
 end Split
 

@@ -296,6 +296,7 @@ def j1RatioConstraint (domain : ι ↪ F) (k : ℕ) (u₀ u₁ : ι → F) (γ :
     (∀ T : Finset ι, T ⊆ S → T.card = k + 1 →
       cT domain k T (u₀ + γ • u₁) = 0)
 
+open Classical in
 /-- The finite scalar set cut out by the J1 window ratio constraints.
 
 The remaining J1 algebraic core is to show this set has cardinality at most two for every
@@ -304,6 +305,7 @@ noncomputable def j1RatioConstraintBadScalars
     (domain : ι ↪ F) (k : ℕ) (u₀ u₁ : ι → F) : Finset F :=
   Finset.univ.filter (j1RatioConstraint domain k u₀ u₁)
 
+open Classical in
 @[simp] theorem mem_j1RatioConstraintBadScalars
     (domain : ι ↪ F) (k : ℕ) (u₀ u₁ : ι → F) (γ : F) :
     γ ∈ j1RatioConstraintBadScalars domain k u₀ u₁ ↔
