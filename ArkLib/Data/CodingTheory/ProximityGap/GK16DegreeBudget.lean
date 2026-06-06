@@ -38,28 +38,22 @@ on p. 9 of GK16 — i.e. the subspace-design sum is bounded by the degree budget
 - `ArkLib.FRS.GK16.sum_rootMultiplicity_foldedWronskian_le` — the degree-budget
   inequality above.
 
-## What remains for `frs_is_subspaceDesign_gk16`
+## Status for `frs_is_subspaceDesign_gk16`
 
-This file closes the **degree-counting spine** of GK16 §4. The two ingredients
-*not* yet formalized (genuine, named gaps), both deep:
+This file closes the **degree-counting spine** of GK16 §4. The two deep ingredients that were
+previously gaps are now **fully closed**:
 
 1. **GK16 Lemma 12, hard direction** — `LinearIndependent F P → foldedWronskian P ω ≠ 0`
-   (needs `ω` of multiplicative order ≥ `v`). **Now fully closed** in
-   `GK16Lemma12.lean` as an unconditional theorem:
-   - The **distinct-degree case is fully proven, axiom-clean**:
-     `ArkLib.FRS.GK16.foldedWronskian_ne_zero_of_distinct_natDegree`.
-   - The **general case is proven** via `ArkLib.FRS.GK16.gk16Lemma12HardResidual_holds`
-     which discharges the echelon-reduction residual, yielding the full unconditional
-     theorem `ArkLib.FRS.GK16.foldedWronskian_ne_zero_of_linearIndependent`.
-   The *easy* direction (`≠ 0 → LinearIndependent`) is in `GK16Wronskian.lean`
-   (`gk16_folded_wronskian_nonvanishing`).
-2. **GK16 Claim 16** — `rootMultiplicity (domain i) L ≥ dim (A ⊓ ker(eval_i))`,
-   the link from a vanishing subspace to a high-order root of `L`, via the
-   determinant-derivative expansion `L^(ℓ) = ∑ det(M^{(i₁,…,i_s)})` and a
-   row-sharing rank argument over `F[X]`.
+   is **fully closed** in `GK16Lemma12.lean` as an unconditional theorem
+   `ArkLib.FRS.GK16.foldedWronskian_ne_zero_of_linearIndependent`. (The easy direction
+   is in `GK16Wronskian.lean`).
+2. **GK16 Claim 16** — `rootMultiplicity (domain i) L ≥ dim (A ⊓ ker(eval_i))`
+   is **fully closed** in `SubspaceDesign.lean` and `GK16Structural.lean`
+   (the structural encoder-isomorphism + adapted-basis transport are completely written
+   and `sorry`-free).
 
-Both are stated precisely (with the parameter `t = s` specialization) in the
-docstring of `CodingTheory.frs_is_subspaceDesign_gk16`.
+Therefore, the entire GK16 §4 degree budget for the FRS half is unconditional and closed.
+Only the Univariate Multiplicity (UM) half of ABF26 T2.18 remains deferred.
 
 Compiles sorry-free; `#print axioms` gives exactly
 `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
