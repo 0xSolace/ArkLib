@@ -51,8 +51,7 @@ Then `claim57Residuals_of_gsInterpolant` assembles the full `Claim57Residuals` b
 interpolant `h_gs` together with the remaining genuine §5 inputs (`hx0`/`hsep`/`hlarge`/`hfactor`),
 by feeding the derived per-`z` `hcount` into `claim57Residuals_of_natCeil_johnson`.
 
-No `sorry`/`axiom`/`native_decide`; `#print axioms` at the bottom shows only
-`[propext, Classical.choice, Quot.sound]`.
+No `sorry`/`axiom`/`native_decide`.
 
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,

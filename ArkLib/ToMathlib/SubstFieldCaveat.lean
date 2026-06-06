@@ -116,13 +116,3 @@ theorem not_hasSubst_shiftSeries_of_ne_zero {x₀ : F} (hx₀ : x₀ ≠ 0) :
 end SubstFieldCaveat
 
 end ArkLib
-
-#print axioms ArkLib.SubstFieldCaveat.hasSubst_iff_isNilpotent_constantCoeff
-#print axioms ArkLib.SubstFieldCaveat.hasSubst_iff_constantCoeff_eq_zero_of_field
-#print axioms ArkLib.SubstFieldCaveat.not_hasSubst_of_constantCoeff_ne_zero_of_field
-#print axioms ArkLib.SubstFieldCaveat.constantCoeff_shiftSeries
-#print axioms ArkLib.SubstFieldCaveat.fieldTo𝕃_injective
-#print axioms ArkLib.SubstFieldCaveat.fieldTo𝕃_neg_eq_zero_iff
-#print axioms ArkLib.SubstFieldCaveat.hasSubst_shiftSeries_iff_eq_zero
-#print axioms ArkLib.SubstFieldCaveat.hasSubst_shiftSeries_zero
-#print axioms ArkLib.SubstFieldCaveat.not_hasSubst_shiftSeries_of_ne_zero

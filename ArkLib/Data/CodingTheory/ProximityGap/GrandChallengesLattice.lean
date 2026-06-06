@@ -1271,6 +1271,46 @@ theorem mcaPrizeLattice_bracketed_of_witnesses
     (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
     epsStar (wlo j) (whi j) (hδhi j)
 
+/-- Per-rate lower MCA witnesses and per-rate second-moment endpoint certificates bracket all
+four faithful MCA prize thresholds below the top lattice point.
+
+This is the four-rate faithful-lattice counterpart of
+`not_mcaPrize_of_second_moment`: instead of merely refuting the collapsed formal predicate,
+it records that radius `1` is already above the MCA budget, so any existing faithful
+threshold lies strictly below the top lattice point. -/
+theorem mcaPrizeLattice_lt_one_of_lowerWitnesses_and_secondMoment
+    (domain : ι ↪ F)
+    (wlo : ∀ j : Fin 4,
+      GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hk : ∀ j : Fin 4,
+      ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1 ≤ Fintype.card ι)
+    (M' : Fin 4 → ℕ)
+    (hM : ∀ j : Fin 4,
+      M' j ≤ Nat.choose (Fintype.card ι)
+        (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1))
+    (hle : ∀ j : Fin 4, M' j * M' j ≤ M' j * Fintype.card F)
+    (hnum : ∀ j : Fin 4,
+      Fintype.card F * Fintype.card F <
+        2 ^ (128 : ℕ) *
+          (M' j * Fintype.card F - M' j * M' j)) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      let hne := mcaThresholdExists_of_MCALowerWitness C epsStar (wlo j)
+      latticeIndexOf (ι := ι) (wlo j).δ (wlo j).le_one ≤
+          mcaThreshold C epsStar hne ∧
+        mcaThreshold C epsStar hne <
+          latticeIndexOf (ι := ι) (1 : ℝ≥0) le_rfl := fun j =>
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  let hne := mcaThresholdExists_of_MCALowerWitness C epsStar (wlo j)
+  ⟨MCALowerWitness_le_mcaThreshold C epsStar hne (wlo j),
+    mcaThreshold_lt_one_of_secondMoment domain
+      ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ (M' j) hne
+      (hk j) (hM j) (hle j) (hnum j)⟩
+
 /-- Adjacent per-rate MCA witnesses resolve the faithful MCA lattice prize with the lower
 witness indices as the four exact thresholds. -/
 theorem mcaPrizeLatticeResolved_of_adjacent_witnesses

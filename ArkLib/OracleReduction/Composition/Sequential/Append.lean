@@ -551,7 +551,16 @@ theorem oStmt_append_congr (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂
           | Sum.inl k => (V₁.hEq j ▸ h' ▸ oStmt k : OStmt₂ j)
           | Sum.inr k => (V₁.hEq j ▸ h' ▸ transcript.fst.messages k : OStmt₂ j) : OStmt₃ i)
       | Sum.inr j => (V₂.hEq i ▸ h ▸ transcript.snd.messages j : OStmt₃ i)) := by
-  sorry
+  rw [append_embed_eq]
+  cases h₂ : V₂.embed i with
+  | inl j =>
+      cases h₁ : V₁.embed j with
+      | inl k =>
+          simp [h₂, h₁, OracleVerifier.append]
+      | inr k =>
+          simp [h₂, h₁, OracleVerifier.append, MessageIdx.inl]
+  | inr j =>
+      simp [h₂, OracleVerifier.append, MessageIdx.inr]
 
 @[simp]
 lemma OracleVerifier.append_toVerifier

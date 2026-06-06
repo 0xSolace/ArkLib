@@ -86,8 +86,7 @@ is already proven in `Agreement.lean` modulo the `embedding = 0` input.
    published, already-formalized Agreement chain, surfaced as a hypothesis so this file compiles
    stand-alone and does not touch `Agreement.lean`.
 
-No `sorry`/`admit`/`axiom`/`native_decide`.  `#print axioms` at the bottom; only
-`propext / Classical.choice / Quot.sound`.
+No `sorry`/`admit`/`axiom`/`native_decide`.
 -/
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal BCIKS20AppendixA
