@@ -719,6 +719,53 @@ theorem mcaPrizeLatticeResolved_of_lowerWitnesses_and_spike_adjacent
   · intro j
     simpa using hadj j
 
+/-- Per-rate canonical-window lower bounds and adjacent middle-radius spike certificates resolve
+the faithful MCA lattice prize directly.
+
+This is the arithmetic-facing form of
+`mcaPrizeLatticeResolved_of_lowerWitnesses_and_spike_adjacent`: the lower witnesses are
+instantiated from the unconditional canonical-witness window bound, so an ABF26 certificate file
+only has to provide, at each of the four prize rates, the lower binomial/count inequality, the
+spike admissibility inequalities, and the one-step lattice adjacency check. -/
+theorem mcaPrizeLatticeResolved_of_chooseBounds_and_spike_adjacent
+    (domain : ι ↪ F)
+    (δ_lo δ_hi : Fin 4 → ℝ≥0) (t : Fin 4 → ℕ)
+    (hδlo : ∀ j : Fin 4, δ_lo j ≤ 1)
+    (hlo : ∀ j : Fin 4,
+      ((Fintype.card ι).choose
+          (max
+            (⌈((1 : ℝ≥0) - δ_lo j) * (Fintype.card ι : ℝ≥0)⌉₊)
+            (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1)) : ENNReal) /
+        (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal))
+    (hδhi : ∀ j : Fin 4, δ_hi j ≤ 1)
+    (ht_n : ∀ j : Fin 4,
+      t j + ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ ≤ Fintype.card ι)
+    (ht_q : ∀ j : Fin 4, t j ≤ Fintype.card F)
+    (hspike_radius : ∀ j : Fin 4,
+      ((1 - δ_hi j) * Fintype.card ι : ℝ≥0) ≤
+        (Fintype.card ι - t j + 1 : ℕ))
+    (hspike_gt : ∀ j : Fin 4,
+      (epsStar : ENNReal) < (t j : ENNReal) / (Fintype.card F : ENNReal))
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (δ_hi j) (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ_lo j) (hδlo j)).val + 1) :
+    mcaPrizeLatticeResolved domain
+      (fun j => latticeIndexOf (ι := ι) (δ_lo j) (hδlo j)) := by
+  let wlo : ∀ j : Fin 4,
+      GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar := fun j =>
+    MCALowerWitness.ofChooseLe domain
+      ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ (hδlo j) (hlo j)
+  have hadj' : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (δ_hi j) (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (wlo j).δ (wlo j).le_one).val + 1 := by
+    intro j
+    simpa [wlo] using hadj j
+  simpa [wlo] using
+    (mcaPrizeLatticeResolved_of_lowerWitnesses_and_spike_adjacent
+      domain wlo t δ_hi hδhi ht_n ht_q hspike_radius hspike_gt hadj')
+
 /-- A lower MCA witness and a capacity-side `ε_ca` upper witness bracket the faithful lattice
 threshold directly. This is the lattice version of the common Johnson-lower/capacity-upper
 workflow for linear codes. -/
@@ -1748,6 +1795,70 @@ theorem listPrizeLatticeResolved_of_johnson_sq_and_elias_next
       ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
     (m := m) (j := (τ r).val) (ℓ := ℓ r)
     hm (hnext r) hq1 (hP r) (hsq r) (hpow r) (hvol_next r) (hne r)
+
+/-- Per-rate adjacent Johnson-square/Elias certificates with the Reed-Solomon distance and
+rank already specialized to the prize degree.
+
+This is the numerics-facing ABF26 LD closing criterion: after supplying the standard
+Reed-Solomon facts `minDist = n - k + 1` and `finrank = k`, the two remaining analytic
+certificates are exactly the squared Johnson inequality and the Elias-volume inequality in
+terms of the concrete prize degree `k = ⌊rate·n⌋`. -/
+theorem listPrizeLatticeResolved_of_johnson_sq_rsDistance_and_elias_next
+    (domain : ι ↪ F) (m : ℕ)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hm : m ≠ 0)
+    (hnext : ∀ r : Fin 4, (τ r).val + 1 < Fintype.card ι)
+    (hq1 : 1 < Fintype.card F)
+    (hP : ∀ r : Fin 4,
+      (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+        ((Fintype.card ι - (τ r).val : ℕ) : ℝ))
+    (hminDist : ∀ r : Fin 4,
+      Code.minDist
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) =
+        Fintype.card ι - ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 1)
+    (hrank : ∀ r : Fin 4,
+      Module.finrank F
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊) =
+        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+    (hsq : ∀ r : Fin 4,
+      ((ℓ r : ℝ) + 1)
+          * ((((Fintype.card ι - (τ r).val : ℕ) : ℝ)) -
+              (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+        > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+          * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))
+              + (ℓ r : ℝ)
+                * (((Fintype.card ι -
+                    (Fintype.card ι -
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ℕ) : ℝ) -
+                    (Fintype.card ι : ℝ) / (Fintype.card F : ℝ))))
+    (hpow : ∀ r : Fin 4,
+      ((ℓ r : ENNReal)) ^ m ≤
+        (epsStar : ENNReal) * (Fintype.card F : ENNReal))
+    (hvol_next : ∀ r : Fin 4,
+      (epsStar : ENNReal) * (Fintype.card F : ENNReal) <
+        ENNReal.ofReal
+          ((CodingTheory.hammingBallVolume (Fintype.card F)
+              (((((τ r).val + 1 : ℕ) : ℝ≥0) /
+                    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+              (Fintype.card ι) : ℝ)
+            / (Fintype.card F : ℝ) ^
+                ((Fintype.card ι : ℝ) -
+                  ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)))
+    (hne : ∀ r : Fin 4,
+      (GrandChallenges.listLatticeSet
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar).Nonempty) :
+    listPrizeLatticeResolved domain m τ := by
+  refine listPrizeLatticeResolved_of_johnson_sq_and_elias_next
+    domain m τ ℓ hm hnext hq1 hP ?_ hpow ?_ hne
+  · intro r
+    simpa [hminDist r] using hsq r
+  · intro r
+    simpa [hrank r] using hvol_next r
 
 end GrandChallengesLattice
 

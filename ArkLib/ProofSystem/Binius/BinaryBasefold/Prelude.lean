@@ -890,7 +890,10 @@ noncomputable def foldMatrixNat (i : Fin r) :
         baseM aBit cBit * foldMatrixNat i n (by omega) (zMap cBit) aHigh bLow
 
 /-- `M_y` matrix which depends only on `y ∈ S^(i+ϑ)` -/
-def foldMatrix (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
+/-- `M_y` matrix (LEGACY `steps : Fin (ℓ + 1)` form). The canonical new-API `foldMatrix`
+(`steps : ℕ`, `{destIdx}`-keyed) is defined in the new-API section below; both reduce to
+`foldMatrixNat`. -/
+def foldMatrix_steps (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate)
       ⟨↑i + steps, by apply Nat.lt_trans (m := ℓ + 𝓡) (h_i_add_steps) h_ℓ_add_R_rate⟩)
     : Matrix (Fin (2 ^ steps.val)) (Fin (2 ^ steps.val)) L :=
@@ -1380,14 +1383,14 @@ def fiberEvaluationMapping (i : Fin r) (steps : ℕ) (h_i_add_steps : i.val + st
 where the right-hand vector's values `(x_0, ..., x_{2 ^ steps-1})` represent the fiber
 `(q^(i+steps-1) ∘ ... ∘ q^(i))⁻¹({y}) ⊂ S^(i)`.
 -/
-def localized_fold_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i.val + steps ≤ ℓ)
+def localized_fold_matrix_form_legacy (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i.val + steps ≤ ℓ)
     (r_challenges : Fin steps → L)
   (y : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨↑i + steps, by omega⟩)
   (fiber_eval_mapping : Fin (2 ^ steps) → L) :
   L := by
     let challenge_vec : Vector L (2 ^ steps) := challengeTensorProduct (L := L)
       (ℓ := ℓ) (𝓡 := 𝓡) (r := r) steps r_challenges
-    let fold_mat := foldMatrix 𝔽q β (i := ⟨i, by omega⟩) ⟨steps, by omega⟩
+    let fold_mat := foldMatrix_steps 𝔽q β (i := ⟨i, by omega⟩) ⟨steps, by omega⟩
       (h_i_add_steps := by apply Nat.lt_add_of_pos_right_of_le; omega) y
     -- Matrix-vector multiplication : challenge_vec^T • (fold_mat • fiber_eval_mapping)
     let intermediate_fn := Matrix.mulVec fold_mat fiber_eval_mapping
@@ -1406,7 +1409,7 @@ def localized_fold_eval (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i + steps �
     let fiber_eval_mapping := fiberEvaluationMapping 𝔽q β (steps := steps)
       (i := ⟨i, by omega⟩)
       (h_i_add_steps := by apply Nat.lt_add_of_pos_right_of_le; omega) f y
-    exact localized_fold_matrix_form 𝔽q β (i := i) steps h_i_add_steps r_challenges y
+    exact localized_fold_matrix_form_legacy 𝔽q β (i := i) steps h_i_add_steps r_challenges y
       fiber_eval_mapping
 
 /-- Split a sum over `Fin (2^(n+1))` into the high bit `c ∈ Fin 2` and the low `n` bits
@@ -1469,7 +1472,7 @@ theorem localized_fold_eval_eq_sum (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : 
               f (qMap_total_fiber 𝔽q β (i := ⟨i, by omega⟩) (steps := steps)
                 (h_i_add_steps := by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i steps h_i_add_steps)
                 (y := y) b) := by
-  unfold localized_fold_eval localized_fold_matrix_form fiberEvaluationMapping foldMatrix
+  unfold localized_fold_eval localized_fold_matrix_form_legacy fiberEvaluationMapping foldMatrix_steps
   simp only
   rw [Vector.dotProduct_eq_root_dotProduct]
   unfold _root_.dotProduct
@@ -1846,6 +1849,148 @@ def extractMiddleFinMask (v : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨0, by exact
 -- `eqTilde` is now defined generically in `ArkLib.Data.MvPolynomial.Multilinear` as
 -- `MvPolynomial.eqTilde r r' := eval r' (eqPolynomial r)`, accessible here unqualified via the
 -- file-level `open MvPolynomial`.
+
+/-!
+### New-API folding/matrix surface (`{destIdx}`-keyed)
+
+The definitions below are the canonical entry points consumed by `Code`, `Compliance`,
+`Relations`, `QueryPhase`, and the `Soundness/*` modules. They are stated against
+`(steps : ℕ) {destIdx : Fin r} (h_destIdx) (h_destIdx_le)` (the post-split convention) and are
+built on top of the legacy `*_steps`/`*_legacy`/`foldMatrixNat`/`localized_fold_eval` machinery
+above. `challengeTensorExpansion` is `multilinearWeight` (the `Soundness/Lift` lemmas `unfold`
+it to exactly that), so the matrix forms below unfold to
+`challengeTensorExpansion steps r ᵥ* foldMatrix … y ⬝ᵥ fiberEvaluations … f y`.
+-/
+
+/-- **Challenge tensor expansion** `⨂_{j}(1 - r_j, r_j)` as a function `Fin (2^n) → L`. This is
+exactly `multilinearWeight`; the `Soundness/Lift` indicator lemmas `unfold` it to that form. -/
+def challengeTensorExpansion (n : ℕ) (rc : Fin n → L) : Fin (2 ^ n) → L :=
+  multilinearWeight (F := L) (ϑ := n) (r := rc)
+
+/-- The single-step `n = 1` tensor expansion is `![1 - c, c]`. -/
+lemma challengeTensorExpansion_one (c : L) :
+    challengeTensorExpansion 1 (rc := fun _ => c) = ![1 - c, c] := by
+  unfold challengeTensorExpansion multilinearWeight
+  funext i
+  fin_cases i <;>
+    simp [Fin.prod_univ_one, Nat.testBit]
+
+/-- The legacy `Vector`-valued `challengeTensorProduct` agrees, entrywise, with the new-API
+`challengeTensorExpansion` (`= multilinearWeight`). This is the bridge that lets the legacy
+matmul lemma `localized_fold_eval_eq_sum` be reused under the new matrix-form API. -/
+theorem challengeTensorProduct_get_eq_challengeTensorExpansion
+    (n : ℕ) (rc : Fin n → L) (idx : Fin (2 ^ n)) :
+    (challengeTensorProduct (L := L) (ℓ := ℓ) (𝓡 := 𝓡) (r := r) n rc).get idx
+      = challengeTensorExpansion (L := L) n rc idx := by
+  induction n with
+  | zero =>
+    fin_cases idx
+    simp only [challengeTensorExpansion, multilinearWeight, Finset.univ_eq_empty,
+      Finset.prod_empty]
+    rfl
+  | succ k ih =>
+    rw [challengeTensorProduct_succ_get]
+    rw [ih (fun j => rc j.castSucc) ⟨idx.val / 2, Nat.div_lt_of_lt_mul
+      (Nat.lt_of_lt_of_eq idx.isLt (by rw [pow_succ, Nat.mul_comm]))⟩]
+    -- `multilinearWeight` over `Fin (k+1)` splits off the low (`j = 0`) bit, matching the
+    -- legacy recursion's `(if idx%2=0 then 1-r_last else r_last) * (…)` shape.
+    simp only [challengeTensorExpansion, multilinearWeight]
+    rw [Fin.prod_univ_succ]
+    have h_low : ∀ j : Fin k,
+        (idx.val.testBit j.succ.val) = ((idx.val / 2).testBit j.val) := by
+      intro j
+      simp only [Fin.val_succ, Nat.testBit_succ]
+    have h_last : idx.val.testBit 0 = decide (idx.val % 2 = 1) := by
+      simp only [Nat.testBit_zero]
+    by_cases hbit : idx.val % 2 = 0
+    · -- low bit `0`: legacy picks `1 - r_last`, `multilinearWeight` picks `1 - rc 0`.
+      have : idx.val.testBit 0 = false := by simp only [h_last, hbit]; decide
+      simp only [hbit, ↓reduceIte, this, Bool.false_eq_true, Fin.cons_zero]
+      rw [mul_comm]
+      congr 1
+      · apply Finset.prod_congr rfl
+        intro j _
+        rw [h_low j]
+        rfl
+    · have hbit1 : idx.val % 2 = 1 := by omega
+      have : idx.val.testBit 0 = true := by simp only [h_last, hbit1]; decide
+      simp only [hbit, ↓reduceIte, this, Fin.cons_zero]
+      rw [mul_comm]
+      congr 1
+      · apply Finset.prod_congr rfl
+        intro j _
+        rw [h_low j]
+        rfl
+
+/-- **`M_y` matrix (canonical new-API form).** Same matrix as `foldMatrix_steps`, re-keyed on
+`(steps : ℕ) {destIdx}`; both reduce to `foldMatrixNat`. `y` is a point of `S⁽ᵈᵉˢᵗ⁾`. -/
+noncomputable def foldMatrix (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
+    Matrix (Fin (2 ^ steps)) (Fin (2 ^ steps)) L :=
+  foldMatrixNat 𝔽q β i steps
+    (by
+      have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
+      have : destIdx.val ≤ ℓ := h_destIdx_le
+      omega)
+    ⟨y.val, by
+      have hy := y.property
+      have h_eq : destIdx = (⟨i.val + steps, by
+        have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
+        have : destIdx.val ≤ ℓ := h_destIdx_le
+        omega⟩ : Fin r) := Fin.eq_of_val_eq (by omega)
+      rw [h_eq] at hy
+      exact hy⟩
+
+/-- **Fiber evaluations** `[f(x_0), …, f(x_{2^steps-1})]` of `f` over the iterated-quotient fiber
+of `y` (canonical new-API). `f : S⁽ⁱ⁾ → L`, `y : S⁽ᵈᵉˢᵗ⁾`. -/
+noncomputable def fiberEvaluations (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) : Fin (2 ^ steps) → L :=
+  let fiberMap := qMap_total_fiber 𝔽q β (i := i) (steps := steps)
+    (h_i_add_steps := by
+      have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
+      have : destIdx.val ≤ ℓ := h_destIdx_le
+      omega)
+    (y := ⟨y.val, by
+      have hy := y.property
+      have h_eq : destIdx = (⟨i.val + steps, by
+        have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
+        have : destIdx.val ≤ ℓ := h_destIdx_le
+        omega⟩ : Fin r) := Fin.eq_of_val_eq (by omega)
+      rw [h_eq] at hy
+      exact hy⟩)
+  fun idx => f (fiberMap idx)
+
+/-- **Single-point localized fold matrix form** (canonical new-API):
+`challengeTensorExpansion steps r ⬝ᵥ (foldMatrix … y *ᵥ fiber_eval_mapping)`. The `Soundness/*`
+proofs `unfold` this to exactly the `challengeTensorExpansion … ⬝ᵥ foldMatrix … *ᵥ …` shape. -/
+noncomputable def single_point_localized_fold_matrix_form (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (r_challenges : Fin steps → L)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx)
+    (fiber_eval_mapping : Fin (2 ^ steps) → L) : L :=
+  let challenge_vec : Fin (2 ^ steps) → L :=
+    challengeTensorExpansion (L := L) steps r_challenges
+  let fold_mat : Matrix (Fin (2 ^ steps)) (Fin (2 ^ steps)) L :=
+    foldMatrix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
+      h_destIdx h_destIdx_le y
+  dotProduct challenge_vec (Matrix.mulVec fold_mat fiber_eval_mapping)
+
+/-- **Localized fold matrix form** (canonical new-API): the single-point form fed the fiber
+evaluations of `f`. Returns an `OracleFunction destIdx`. -/
+noncomputable def localized_fold_matrix_form (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (r_challenges : Fin steps → L) :
+    OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :=
+  fun y =>
+    single_point_localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps) h_destIdx h_destIdx_le (r_challenges := r_challenges) (y := y)
+      (fiber_eval_mapping :=
+        fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
+          h_destIdx h_destIdx_le f y)
 
 end Essentials
 
