@@ -127,14 +127,23 @@ theorem reduction_rbr_knowledge_soundness :
     toFun_full := fun stmt tr witOut hpr => by
       -- The verifier returns ⟨stmt, tr 0⟩, and toRelOut = Prod.fst ⁻¹' relIn,
       -- so (⟨stmt, tr 0⟩, witOut) ∈ toRelOut relIn means (stmt, tr 0) ∈ relIn.
-      simp only [verifier, Verifier.run, toRelOut] at hpr
+      simp only [Verifier.run, verifier] at hpr
       rw [gt_iff_lt, probEvent_pos_iff] at hpr
       obtain ⟨x, hx, hrel⟩ := hpr
       rw [OptionT.mem_support_iff] at hx
       simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
       obtain ⟨s, _, hx⟩ := hx
-      simp only [simulateQ_pure, StateT.run_pure, support_pure, Set.mem_singleton_iff] at hx
-      cases (Option.some.inj (Prod.mk.inj hx).1)
+      have key : (simulateQ impl
+          (pure (stmt, tr 0) : OptionT (OracleComp oSpec) (Statement × Witness))).run' s
+          = pure (some (stmt, tr 0)) := by
+        change (simulateQ impl
+          (pure (some (stmt, tr 0)) : OracleComp oSpec (Option (Statement × Witness)))).run' s = _
+        rw [simulateQ_pure]
+        change Prod.fst <$> (pure (some (stmt, tr 0)) : StateT σ ProbComp _).run s = _
+        rw [StateT.run_pure]; simp [map_pure]
+      rw [key] at hx
+      simp only [support_pure, Set.mem_singleton_iff] at hx
+      cases (Option.some.inj hx)
       exact hrel
   }, ?_⟩
   -- The final quantifier: ∀ i : ChallengeIdx (pSpec Witness), ... is vacuously true
@@ -361,20 +370,40 @@ theorem oracleReduction_rbr_knowledge_soundness :
     extractMid := fun ⟨0, _⟩ _stmt _tr witMid => witMid
     extractOut := fun _stmt tr _ => tr ⟨0, by omega⟩
   }, {
-    toFun := fun _ stmt _tr wit =>
-      oRelIn ⟨⟨stmt.1, fun i => stmt.2 (Sum.inl i)⟩, wit⟩
+    -- The RBR-KSF input statement is the verifier's input statement `Statement × (∀ i, OStatement i)`
+    -- (the witness oracle is sent during the protocol, not part of the input), so `stmt.2` is
+    -- indexed by `ιₛ` directly — no `Sum.inl` projection.
+    toFun := fun _ stmt _tr wit => oRelIn ⟨⟨stmt.1, stmt.2⟩, wit⟩
     toFun_empty := fun _ _ => by simp
     toFun_next := fun ⟨0, _⟩ _ _stmt _tr _msg _witMid h => h
     toFun_full := fun stmt tr witOut hpr => by
-      simp only [OracleVerifier.toVerifier, oracleVerifier, Verifier.run, toORelOut] at hpr
+      -- The oracle verifier deterministically returns `⟨stmt.1, Sum.rec stmt.2 (fun _ => tr 0)⟩`
+      -- (`oracleVerifier_toVerifier_run`); a positive-probability output that lies in `toORelOut`
+      -- therefore witnesses `oRelIn ⟨⟨stmt.1, stmt.2⟩, tr 0⟩`, which is the goal.
+      rw [oracleVerifier_toVerifier_run] at hpr
       rw [gt_iff_lt, probEvent_pos_iff] at hpr
       obtain ⟨x, hx, hrel⟩ := hpr
       rw [OptionT.mem_support_iff] at hx
       simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
       obtain ⟨s, _, hx⟩ := hx
-      erw [simulateQ_pure] at hx
-      simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff] at hx
-      cases (Option.some.inj (Prod.mk.inj hx).1)
+      have key : (simulateQ impl
+          (pure ⟨stmt.1, Sum.rec stmt.2 (fun i => match i with | 0 => tr 0)⟩
+            : OptionT (OracleComp oSpec) (Statement × (∀ j,
+                (Sum.elim OStatement fun _ : Fin 1 => Witness) j)))).run' s
+          = pure (some ⟨stmt.1, Sum.rec stmt.2 (fun i => match i with | 0 => tr 0)⟩) := by
+        change (simulateQ impl
+          (pure (some ⟨stmt.1, Sum.rec stmt.2 (fun i => match i with | 0 => tr 0)⟩)
+            : OracleComp oSpec (Option (Statement × (∀ j,
+                (Sum.elim OStatement fun _ : Fin 1 => Witness) j))))).run' s = _
+        rw [simulateQ_pure]
+        change Prod.fst <$> (pure (some _) : StateT σ ProbComp _).run s = _
+        rw [StateT.run_pure]; simp [map_pure]
+      rw [key] at hx
+      simp only [support_pure, Set.mem_singleton_iff] at hx
+      cases (Option.some.inj hx)
+      -- `hrel : (⟨stmt.1, Sum.rec stmt.2 (fun _ => tr 0)⟩, witOut) ∈ toORelOut oRelIn`,
+      -- which unfolds (projecting the `Sum.inl`/`Sum.inr` components) to the goal.
+      simp only [toORelOut, Set.mem_setOf_eq] at hrel
       convert hrel using 2
       congr 1
       ext i

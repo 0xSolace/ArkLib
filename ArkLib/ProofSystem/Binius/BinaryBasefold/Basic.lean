@@ -637,18 +637,30 @@ end IndexBounds
     In Binary Basefold, the oracle can be at most 1 index behind the statement index.
     - At statement index `i+1`, the oracle can be at `i` (after fold) or `i+1` (after commit)
 -/
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
+  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
+  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
+  hdiv in
 def OracleFrontierIndex {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :=
   { val : Fin (ℓ + 1) // val.val ≤ stmtIdx.val ∧ stmtIdx.val ≤ val.val + 1 }
 
 namespace OracleFrontierIndex
 
 /-- Create oracle frontier index equal to statement index (synchronized case) -/
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
+  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
+  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
+  hdiv in
 def mkFromStmtIdx {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :
     OracleFrontierIndex stmtIdx :=
   ⟨stmtIdx, by constructor <;> omega⟩
 
 /-- Create oracle frontier index for statement i.succ with oracle at i (lagging case).
     Used after fold step where stmtIdx advances but oracle hasn't committed yet. -/
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
+  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
+  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
+  hdiv in
 def mkFromStmtIdxCastSuccOfSucc {ℓ : ℕ} (i : Fin ℓ) :
     OracleFrontierIndex i.succ :=
   ⟨i.castSucc, by
@@ -658,14 +670,26 @@ def mkFromStmtIdxCastSuccOfSucc {ℓ : ℕ} (i : Fin ℓ) :
   ⟩
 
 @[simp]
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
+  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
+  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
+  hdiv in
 lemma val_mkFromStmtIdx {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :
     (mkFromStmtIdx stmtIdx).val = stmtIdx := rfl
 
 @[simp]
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
+  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
+  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
+  hdiv in
 lemma val_mkFromStmtIdxCastSuccOfSucc {ℓ : ℕ} (i : Fin ℓ) :
     (mkFromStmtIdxCastSuccOfSucc i).val = i.castSucc := rfl
 
 @[simp]
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
+  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
+  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
+  hdiv in
 lemma val_le_i {ℓ : ℕ} (i : Fin (ℓ + 1)) (oracleIdx : OracleFrontierIndex i) :
     oracleIdx.val ≤ i := by
   unfold OracleFrontierIndex at oracleIdx
@@ -674,6 +698,10 @@ lemma val_le_i {ℓ : ℕ} (i : Fin (ℓ + 1)) (oracleIdx : OracleFrontierIndex 
   · exact h.left
 
 @[simp]
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
+  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
+  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
+  hdiv in
 lemma val_mkFromStmtIdxCastSuccOfSucc_eq_mkFromStmtIdx {ℓ : ℕ} (i : Fin ℓ) :
     (mkFromStmtIdxCastSuccOfSucc i).val = (mkFromStmtIdx (ℓ := ℓ) i.castSucc).val := by rfl
 
@@ -882,7 +910,7 @@ def snoc_oracle {i : Fin ℓ} {destIdx : Fin r}
           apply Fin.eq_of_val_eq
           rw [h_destIdx]
           exact h_commit_round.symm
-        exact fun y => newOracleFn (cast (by rw [h_idx]) y)
+        exact fun y => newOracleFn (cast (by rw [← h_idx]) y)
     else by
       simp only [OracleStatement]
       have h := toOutCodewordsCount_succ_eq ℓ ϑ i
@@ -1354,7 +1382,7 @@ def roundRelationProp (i : Fin (ℓ + 1))
   let stmt := input.1.1
   let oStmt := input.1.2
   let wit := input.2
-  masterKStateProp (mp := mp) 𝔽q β
+  masterKStateProp (mp := mp) (𝓑 := 𝓑) 𝔽q β
     (stmtIdx := i) (oracleIdx := i) (h_le := le_refl i) stmt wit oStmt (localChecks := True)
 
 open Classical in
@@ -1443,9 +1471,9 @@ def finalNonDoomedFoldingProp {h_le : ϑ ≤ ℓ}
     -- folding consistency between two adjacent oracles `j` & `j + ϑ`
     exact isCompliant (i := ⟨k, by rw [h_k]; omega⟩) (steps := ϑ)
       (destIdx := ⟨ℓ, by omega⟩)
-      (h_destIdx := by apply Fin.eq_of_val_eq; simp only [Fin.val_add, Fin.val_mk]; omega)
+      (h_destIdx := by simp only [Fin.val_mk]; omega)
       (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega) (f_i := f_k)
-      (f_i_plus_steps := by simp only [h_k_add_ϑ]; exact f_ℓ) (challenges := challenges)
+      (f_i_plus_steps := by simpa only [h_k_add_ϑ] using f_ℓ) (challenges := challenges)
 
   -- If oracleFoldingConsistency is true, then we can extract the original
     -- well-formed poly `t` and derive witnesses that satisfy the relations at any state
@@ -1457,7 +1485,7 @@ def finalNonDoomedFoldingProp {h_le : ϑ ≤ ℓ}
   let finalFoldingBadEvent : Prop :=
     Binius.BinaryBasefold.foldingBadEvent (i := ⟨k, by rw [h_k]; omega⟩)
       (steps := ϑ) (destIdx := ⟨ℓ, by omega⟩)
-      (h_destIdx := by apply Fin.eq_of_val_eq; simp only [Fin.val_add, Fin.val_mk]; omega)
+      (h_destIdx := by simp only [Fin.val_mk]; omega)
       (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega) (f_i := f_k)
       (r_challenges := challenges)
 
@@ -1473,7 +1501,7 @@ def foldStepRelOut (i : Fin ℓ) :
     Set ((Statement (L := L) Context i.succ ×
       (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)) ×
       Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ) :=
-  { input | foldStepRelOutProp (L := L) (𝔽q := 𝔽q) (β := β)
+  { input | foldStepRelOutProp (L := L) (𝔽q := 𝔽q) (β := β) (𝓑 := 𝓑)
       (Context := Context) (mp := mp) i input}
 
 /-- Relation at step `i` of the CoreInteraction. `∀ i < ℓ, R_i` must hold at the
