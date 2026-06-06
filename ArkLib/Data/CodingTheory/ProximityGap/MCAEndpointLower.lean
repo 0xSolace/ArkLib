@@ -88,10 +88,10 @@ noncomputable def spikeWord₁ {t : ℕ} (e : Fin t ↪ ι) : ι → F :=
 
 open Classical in
 /-- The first row `u₀` of the spike line: at spike position `e j` it is `-(g j)`, elsewhere
-`0`. Encoded via `Function.invFun` of the injection `e`, which on the range of `e` returns the
-unique preimage. -/
+`0`. Encoded via the chosen preimage of the existential `∃ j, e j = i` (well-defined on the
+range of `e` by injectivity; avoids the `Nonempty (Fin t)` requirement of `Function.invFun`). -/
 noncomputable def spikeWord₀ {t : ℕ} (e : Fin t ↪ ι) (g : Fin t ↪ F) : ι → F :=
-  fun i => if h : i ∈ spikeSet e then -(g (Function.invFun e i)) else 0
+  fun i => if h : ∃ j, e j = i then -(g h.choose) else 0
 
 variable {t : ℕ} (e : Fin t ↪ ι) (g : Fin t ↪ F)
 
@@ -101,9 +101,9 @@ variable {t : ℕ} (e : Fin t ↪ ι) (g : Fin t ↪ F)
 lemma ej_mem_spikeSet (j : Fin t) : e j ∈ spikeSet e := by
   simp [spikeSet]
 
-/-- On the range of `e`, `Function.invFun e (e j) = j`. -/
-lemma invFun_e (j : Fin t) : Function.invFun e (e j) = j :=
-  Function.leftInverse_invFun e.injective j
+/-- The chosen preimage of `e j` under `e` is `j` itself, by injectivity. -/
+lemma choose_e (j : Fin t) (hex : ∃ j', e j' = e j) : hex.choose = j :=
+  e.injective hex.choose_spec
 
 @[simp] lemma spikeWord₁_apply_mem {i : ι} (hi : i ∈ spikeSet e) :
     spikeWord₁ (F := F) e i = 1 := by simp [spikeWord₁, hi]
@@ -115,11 +115,13 @@ lemma spikeWord₁_ej (j : Fin t) : spikeWord₁ (F := F) e (e j) = 1 := by
   simp [spikeWord₁_apply_mem e (ej_mem_spikeSet e j)]
 
 lemma spikeWord₀_apply_not_mem {i : ι} (hi : i ∉ spikeSet e) :
-    spikeWord₀ e g i = 0 := by simp [spikeWord₀, hi]
+    spikeWord₀ e g i = 0 := by
+  have hnex : ¬ ∃ j, e j = i := by rwa [mem_spikeSet] at hi
+  simp only [spikeWord₀, dif_neg hnex]
 
 lemma spikeWord₀_ej (j : Fin t) : spikeWord₀ e g (e j) = -(g j) := by
-  have hmem : e j ∈ spikeSet e := ej_mem_spikeSet e j
-  simp only [spikeWord₀, dif_pos hmem, invFun_e e j]
+  have hex : ∃ j', e j' = e j := ⟨j, rfl⟩
+  simp only [spikeWord₀, dif_pos hex, choose_e e j hex]
 
 /-! ## The witness set `S_j := (ι \ T) ∪ {e j}` -/
 
@@ -136,7 +138,7 @@ lemma card_spikeWitness (ht : t ≤ Fintype.card ι) (j : Fin t) :
     (spikeWitness e j).card = Fintype.card ι - t + 1 := by
   classical
   have hcompl : (Finset.univ \ spikeSet e).card = Fintype.card ι - t := by
-    rw [Finset.card_sdiff (Finset.subset_univ _), Finset.card_univ, card_spikeSet e ht]
+    rw [Finset.card_univ_diff, card_spikeSet e ht]
   have hdisj : Disjoint (Finset.univ \ spikeSet e) ({e j} : Finset ι) := by
     rw [Finset.disjoint_singleton_right]
     simp [ej_mem_spikeSet e j]
@@ -216,7 +218,7 @@ lemma not_pairJointAgreesOn_spike
     rw [this, spikeWord₁_apply_not_mem e hi']
   -- `|ι \ T| = n - t ≥ k`.
   have hcompl_card : (Finset.univ \ spikeSet e).card = Fintype.card ι - t := by
-    rw [Finset.card_sdiff (Finset.subset_univ _), Finset.card_univ, card_spikeSet e (by omega)]
+    rw [Finset.card_univ_diff, card_spikeSet e (by omega)]
   have hk_le : k ≤ (Finset.univ \ spikeSet e).card := by rw [hcompl_card]; omega
   -- Hence `v₁ = 0`.
   have hv₁_zero : v₁ = 0 :=
@@ -332,15 +334,11 @@ theorem epsMCA_ge_spike (domain : ι ↪ F) (k t : ℕ) (δ : ℝ≥0)
   obtain ⟨g⟩ : Nonempty (Fin t ↪ F) :=
     Function.Embedding.nonempty_of_card_le (by simp only [Fintype.card_fin]; exact ht_q)
   -- The per-`u` probability is below the supremum `ε_mca`.
-  have hle : Pr_{let γ ← $ᵖ F}[mcaEvent (ReedSolomon.code domain k : Set (ι → F)) δ
-        ((![spikeWord₀ e g, spikeWord₁ (F := F) e] : WordStack F (Fin 2) ι) 0)
-        ((![spikeWord₀ e g, spikeWord₁ (F := F) e] : WordStack F (Fin 2) ι) 1) γ]
-      ≤ epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) δ := by
-    unfold epsMCA
-    exact le_iSup _ (![spikeWord₀ e g, spikeWord₁ (F := F) e] : WordStack F (Fin 2) ι)
-  -- Reduce the stack rows to `u₀`, `u₁`.
-  simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] at hle
-  exact le_trans (pr_mcaEvent_spike_ge e g domain k δ ht_n hδ) hle
+  refine le_trans (pr_mcaEvent_spike_ge e g domain k δ ht_n hδ) ?_
+  unfold epsMCA
+  exact le_iSup (fun u : WordStack F (Fin 2) ι =>
+    Pr_{let γ ← $ᵖ F}[mcaEvent (ReedSolomon.code domain k : Set (ι → F)) δ (u 0) (u 1) γ])
+    (Code.finMapTwoWords (spikeWord₀ e g) (spikeWord₁ (F := F) e))
 
 /-! ## Corollaries -/
 
@@ -363,7 +361,7 @@ theorem epsMCA_ge_inv_card (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
     have : Fintype.card ι ≤ Fintype.card ι - 1 + 1 := by omega
     exact_mod_cast this
   have := epsMCA_ge_spike domain k 1 δ (by omega) ht_q hδ
-  rwa [Nat.cast_one, ENNReal.one_div] at this
+  rwa [Nat.cast_one, one_div] at this
 
 /-- **Endpoint floor at `δ = 1`.** At the maximal radius `δ = 1` the size hypothesis is
 free, so for `t := min (n - k) q` we get `min (n - k, q) / q ≤ ε_mca(RS, 1)`. -/
@@ -403,13 +401,14 @@ theorem epsStar_lt_epsMCA_one_of_field_small (domain : ι ↪ F) (k : ℕ)
     have hmin : min (n - k) q = q := by rw [min_eq_right hcase]
     have hfloor := epsMCA_one_ge (F := F) domain k (by omega)
     rw [hmin] at hfloor
-    have hqne : (q : ℝ≥0∞) ≠ 0 := by exact_mod_cast Nat.pos_iff.mp hq_pos |>.symm ▸ (by positivity)
+    have hqne : (q : ℝ≥0∞) ≠ 0 := by
+      simp only [ne_eq, Nat.cast_eq_zero]; omega
     have hqtop : (q : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top q
     have hself : (q : ℝ≥0∞) / (q : ℝ≥0∞) = 1 := ENNReal.div_self hqne hqtop
     rw [hself] at hfloor
     refine lt_of_lt_of_le ?_ hfloor
     rw [ENNReal.inv_lt_one]
-    exact ENNReal.one_lt_two_pow (by norm_num)
+    exact one_lt_pow₀ ENNReal.one_lt_two (by norm_num)
   · -- Case `q > n - k`: take `t := n - k`; floor `(n-k)/q > 2^(-128) ⟺ q < 2^128·(n-k)`.
     push_neg at hcase
     have hmin : min (n - k) q = n - k := by rw [min_eq_left (le_of_lt hcase)]
@@ -421,11 +420,21 @@ theorem epsStar_lt_epsMCA_one_of_field_small (domain : ι ↪ F) (k : ℕ)
       simp only [ne_eq, Nat.cast_eq_zero]; omega
     have hqtop : (q : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top q
     rw [ENNReal.lt_div_iff_mul_lt (Or.inl hqne) (Or.inl hqtop)]
-    rw [ENNReal.inv_mul_lt_iff_lt_mul] <;> try (first | exact (by norm_num) | skip)
-    · -- goal: `(q : ℝ≥0∞) < (n - k) * 2^128`
-      have : (q : ℝ≥0∞) < ((2 ^ (128 : ℕ) * (n - k) : ℕ) : ℝ≥0∞) := by exact_mod_cast hsmall
-      calc (q : ℝ≥0∞) < ((2 ^ (128 : ℕ) * (n - k) : ℕ) : ℝ≥0∞) := this
+    -- goal: `(2^128)⁻¹ * q < (n - k)`
+    have hpow_pos : (0 : ℝ≥0∞) < 2 ^ (128 : ℕ) := by positivity
+    have hpow_ne_zero : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ 0 := hpow_pos.ne'
+    have hpow_ne_top : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ ⊤ :=
+      ENNReal.pow_ne_top ENNReal.two_ne_top
+    have hq_lt : (q : ℝ≥0∞) < (2 ^ (128 : ℕ) : ℝ≥0∞) * ((n - k : ℕ) : ℝ≥0∞) := by
+      have hcast : (q : ℝ≥0∞) < ((2 ^ (128 : ℕ) * (n - k) : ℕ) : ℝ≥0∞) := by
+        exact_mod_cast hsmall
+      calc (q : ℝ≥0∞) < ((2 ^ (128 : ℕ) * (n - k) : ℕ) : ℝ≥0∞) := hcast
         _ = (2 ^ (128 : ℕ) : ℝ≥0∞) * ((n - k : ℕ) : ℝ≥0∞) := by push_cast; ring
-        _ = ((n - k : ℕ) : ℝ≥0∞) * (2 ^ (128 : ℕ) : ℝ≥0∞) := by ring
+    have hmono := (ENNReal.mul_lt_mul_left
+      (ENNReal.inv_ne_zero.mpr hpow_ne_top) (ENNReal.inv_ne_top.mpr hpow_ne_zero)).mpr hq_lt
+    calc (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * (q : ℝ≥0∞)
+        < (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * ((2 ^ (128 : ℕ) : ℝ≥0∞) * ((n - k : ℕ) : ℝ≥0∞)) := hmono
+      _ = ((n - k : ℕ) : ℝ≥0∞) := by
+          rw [← mul_assoc, ENNReal.inv_mul_cancel hpow_ne_zero hpow_ne_top, one_mul]
 
 end ProximityGap

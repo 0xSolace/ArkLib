@@ -13,6 +13,14 @@ import ArkLib.ProofSystem.Component.RandomQuery
 import ArkLib.ProofSystem.Component.ReduceClaim
 import ArkLib.Data.Fin.Basic
 
+set_option linter.flexible false
+set_option linter.unusedSimpArgs false
+set_option linter.unusedSectionVars false
+set_option linter.unnecessarySimpa false
+set_option linter.unusedDecidableInType false
+set_option linter.style.longLine false
+set_option linter.style.longFile 0
+
 /-!
 # Single round of the Sum-check Protocol
 
@@ -763,7 +771,8 @@ theorem reduction_perfectCompleteness :
   -- 5. After full simplification, the computation should be OptionT-free
   -- Prove Pr[event | comp] ≥ 1
   simp only [ENNReal.coe_zero, tsub_zero]
-  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  rw [ge_iff_le]
+  rw [one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
   · -- No failure
     rw [OptionT.probFailure_eq, OptionT.run_mk]
@@ -1053,50 +1062,43 @@ theorem oracleReduction_perfectCompleteness :
   simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
     Functor.map_map, Function.comp_def, map_map, OptionT.run_pure, Option.getM,
     Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
+  simp only [OptionT.run_map, OptionT.run_mk]
+  simp only [OptionT.run_pure, map_pure, Option.map_some, liftM_pure, pure_bind,
+    bind_pure_comp]
   rw [ge_iff_le]
   simp only [ENNReal.coe_zero, tsub_zero]
   rw [one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
-  all_goals
-    have hOC : ∀ {ι' : Type} {spec' : OracleSpec ι'} {α γ : Type} (g : α → γ)
-        (X : OracleComp spec' α),
-        ((g <$> (liftM X : OptionT (OracleComp spec') α)) : OptionT (OracleComp spec') γ)
-          = OptionT.mk ((some ∘ g) <$> X) := by
-      intro ι' spec' α γ g X
-      refine OptionT.ext ?_
-      rw [OptionT.run_map]
-      show Option.map g <$> (some <$> X) = _
-      simp [Functor.map_map, Function.comp_def]
   · -- No failure: the computation is a `some`-producing map over the challenge sample.
     rw [OptionT.probFailure_eq, OptionT.run_mk]
     simp only [probFailure_eq_zero, zero_add]
     apply probOutput_eq_zero_of_not_mem_support
     simp only [support_bind, Set.mem_iUnion, not_exists]
     intro s _ hmem
-    rw [hOC] at hmem
+    erw [simulateQ_bind] at hmem
     simp only [StateT.run'_eq, support_map, Set.mem_image] at hmem
-    obtain ⟨⟨v, s'⟩, hmem, hv⟩ := hmem
-    erw [simulateQ_map] at hmem
-    rw [StateT.run_map] at hmem
-    simp only [support_map, Set.mem_image] at hmem
-    obtain ⟨⟨w, s''⟩, hw, heq⟩ := hmem
-    obtain ⟨rfl, rfl⟩ := Prod.mk.inj heq
-    simp [Function.comp_def] at hv
+    obtain ⟨⟨_, s'⟩, hmem, _⟩ := hmem
+    rw [StateT.run_bind, mem_support_bind_iff] at hmem
+    obtain ⟨⟨proverResult, s''⟩, _, hmem⟩ := hmem
+    simp only [liftM_pure, map_pure] at hmem
+    erw [simulateQ_pure] at hmem
+    rw [StateT.run_pure] at hmem
+    simp only [support_pure, Set.mem_singleton_iff] at hmem
   · -- Event: holds for every sampled challenge by construction.
     intro x hx
     rw [OptionT.mem_support_iff] at hx
     simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
-    rw [hOC] at hx
+    erw [simulateQ_bind] at hx
     simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
-    obtain ⟨⟨v, s'⟩, hx, hv⟩ := hx
-    erw [simulateQ_map] at hx
-    rw [StateT.run_map] at hx
-    simp only [support_map, Set.mem_image] at hx
-    obtain ⟨⟨w, s''⟩, hw, heq⟩ := hx
-    obtain ⟨rfl, rfl⟩ := Prod.mk.inj heq
-    simp only [Function.comp_def, Option.some.injEq] at hv
-    subst hv
+    obtain ⟨⟨_, s'⟩, hx, _⟩ := hx
+    rw [StateT.run_bind, mem_support_bind_iff] at hx
+    obtain ⟨⟨proverResult, s''⟩, hw, hx⟩ := hx
+    simp only [liftM_pure, map_pure] at hx
+    erw [simulateQ_pure] at hx
+    rw [StateT.run_pure] at hx
+    simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
+    subst x
     refine ⟨?_, ?_⟩
     · simp only [outputRelation, Set.mem_setOf_eq]
       rfl
