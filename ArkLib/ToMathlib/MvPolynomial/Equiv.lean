@@ -84,7 +84,7 @@ theorem finSuccEquivNth_X_below {i : Fin n} (h : i.castSucc < p) :
 theorem finSuccEquivNth_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ) :
     coeff m (Polynomial.coeff (finSuccEquivNth R p f) i) = coeff (m.insertNth p i) f := by
   induction f using MvPolynomial.induction_on' generalizing i m with
-  | h1 u a =>
+  | monomial u a =>
     simp only [finSuccEquivNth_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, comp_apply,
       prod_pow, Fin.prod_univ_succAbove _ p, Fin.insertNth_apply_same,
       Fin.insertNth_apply_succAbove, Polynomial.coeff_C_mul, coeff_C_mul, coeff_monomial,
@@ -103,7 +103,7 @@ theorem finSuccEquivNth_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fi
         contradiction
       simpa only [monomial_eq, C_1, one_mul, prod_pow, Finsupp.removeNth_apply, if_neg hmj.symm]
         using coeff_monomial m (u.removeNth p) (1 : R)
-  | h2 q r hq hr =>
+  | add q r hq hr =>
     simp only [map_add, Polynomial.coeff_add, coeff_add, hq, hr]
 
 /-- The evaluation of `f` at `Fin.insertNth p y s` equals the evaluation at `y` of the polynomial
