@@ -12,9 +12,9 @@ import ArkLib.Data.CodingTheory.Basic.RelativeDistance
 /-!
 # Toy IOR soundness — the §6.4.1 Step-4 winning-set injection (ABF26 L6.12)
 
-This file builds the **genuine Step-4 construction** of [ABF26] §6.4.1 — the missing
-list→challenge injection that `ToyProblem.simplified_iop_soundness_listDecoding_lb`
-(`ProofSystem/ToyProblem/SoundnessBounds.lean`) needs to discharge its single live `sorry`.
+This file builds the **genuine Step-4 construction** of [ABF26] §6.4.1 — the
+list→challenge injection used by `ToyProblem.simplified_iop_soundness_listDecoding_lb`
+(`ProofSystem/ToyProblem/SoundnessBounds.lean`) to close the L6.12 proof.
 
 Steps 1–3 (the finite-`iSup` maximiser, the per-pair collision bound
 `linearForm_collision_prob`/`pair_linearForm_collision_le`, and Claim B.1
@@ -78,7 +78,7 @@ distinct challenges already realises the bound. PROVEN, axiom-clean. -/
 lemma listDecoding_lb_le_listSize (N : ℕ) (M : ℝ) (hM : (1 : ℝ) ≤ M) :
     ((N : ℝ) * M) / (M + (N : ℝ) - 1) ≤ (N : ℝ) := by
   rcases Nat.eq_zero_or_pos N with hN | hN
-  · subst hN; simp; positivity
+  · subst hN; simp
   · have hNR : (1 : ℝ) ≤ (N : ℝ) := by exact_mod_cast hN
     have hden_pos : 0 < M + (N : ℝ) - 1 := by linarith
     rw [div_le_iff₀ hden_pos]

@@ -567,6 +567,16 @@ theorem SecurityUpperBound.bitsOfSecurity_le {p : ToyParams} (hi : SecurityUpper
   have := NNReal.coe_le_coe.mpr hi.proof
   rwa [NNReal.coe_rpow, NNReal.coe_ofNat] at this
 
+/-- Two-sided bracket for the true bits-of-security certified by a lower/upper
+leaderboard pair. This packages the common downstream use of
+`SecurityLowerBound.le_bitsOfSecurity` and
+`SecurityUpperBound.bitsOfSecurity_le`. -/
+theorem bitsOfSecurity_mem_Icc_of_bounds {p : ToyParams}
+    (lo : SecurityLowerBound p) (hi : SecurityUpperBound p)
+    (h : 0 < p.soundnessError) :
+    bitsOfSecurity p.soundnessError ∈ Set.Icc lo.bits hi.bits :=
+  ⟨lo.le_bitsOfSecurity h, hi.bitsOfSecurity_le h⟩
+
 /-! ## Anchor parameter point and the two current entries
 
 `koalaIRS` fixes the KoalaBear-sextic regime numerics (`q = 2^31 - 2^24 + 1`,
@@ -848,6 +858,22 @@ noncomputable def fenziSanso_upperBound_attack_concrete
     obtain ⟨x, hx⟩ := h
     show koalaIRSConcrete.soundnessError ≥ (2 : ℝ≥0) ^ (-(116 : ℝ))
     exact winningSetSoundness_concrete_ge_of_card x hx
+
+/-- If the concrete Fenzi–Sanso winning-set residual holds, then the true
+bits-of-security of the concrete KoalaBear-sextic anchor is at most `116`. -/
+theorem koalaIRSConcrete_bitsOfSecurity_le_116
+    (h : fenziSanso_upperBound_attack_concrete_residual)
+    (hpos : 0 < koalaIRSConcrete.soundnessError) :
+    bitsOfSecurity koalaIRSConcrete.soundnessError ≤ 116 := by
+  simpa [fenziSanso_upperBound_attack_concrete] using
+    (fenziSanso_upperBound_attack_concrete h).bitsOfSecurity_le hpos
+
+/-- Interval-membership form of `koalaIRSConcrete_bitsOfSecurity_le_116`. -/
+theorem koalaIRSConcrete_bitsOfSecurity_mem_Iic_116
+    (h : fenziSanso_upperBound_attack_concrete_residual)
+    (hpos : 0 < koalaIRSConcrete.soundnessError) :
+    bitsOfSecurity koalaIRSConcrete.soundnessError ∈ Set.Iic (116 : ℝ) :=
+  koalaIRSConcrete_bitsOfSecurity_le_116 h hpos
 
 /-! ### Provable-side numeric reduction (`arklib_lowerBound` ⇒ explicit power)
 
