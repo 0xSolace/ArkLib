@@ -191,6 +191,8 @@ end ArkLib
 
 /-! ## Axiom audit — every declaration must rest only on
 `[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
+#print axioms ArkLib.BetaToCurveCoeffPolys.gammaLocal
+#print axioms ArkLib.BetaToCurveCoeffPolys.coeff_gammaLocal
 #print axioms ArkLib.BetaToCurveCoeffPolys.mk_eq_trunc_of_tail_zero
 #print axioms ArkLib.BetaToCurveCoeffPolys.gammaLocal_eq_trunc_of_betaRec
 #print axioms ArkLib.BetaToCurveCoeffPolys.natDegree_taylor_lt

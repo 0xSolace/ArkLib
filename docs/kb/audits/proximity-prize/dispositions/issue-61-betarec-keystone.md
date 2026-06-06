@@ -11,7 +11,8 @@ betaRec + Section 5 extraction data
 
 ## Current in-tree state
 
-The honest assembly route is `ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed`.
+The current front-door assembly route is
+`ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed`.
 
 The key non-vacuous step is:
 
@@ -30,6 +31,29 @@ path through `tail_zero_of_betaRec_embedding_zero` and
 `betaRec_embedding_eq_zero_of_matchingSet_large`. It does not assume a packaged conclusion
 equivalent to the front-door `hcoeffPoly` witness.
 
+There is now also an off-centre keystone route in:
+
+```lean
+ArkLib.ToMathlib.BetaToCurveCoeffPolysOffcentre
+```
+
+with the main declaration:
+
+```lean
+ArkLib.BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec_offcentre
+```
+
+This route replaces the centred-only `PowerSeries.subst (shiftSeries x0 H)` / `HasSubst` pair with
+the local-variable series:
+
+```lean
+ArkLib.BetaToCurveCoeffPolys.gammaLocal
+```
+
+and proves the same `CurveCoeffPolys` conclusion from a representative identity against
+`gammaLocal`. The proof is still load-bearing on `betaRec`: the truncation step is
+`gammaLocal_eq_trunc_of_betaRec`, which routes through the same matching-set large-root path.
+
 The bundling step is:
 
 ```lean
@@ -42,16 +66,19 @@ the curve front door.
 ## Remaining gate
 
 The remaining work is not to prove another wrapper from an `hcoeffPoly`-shaped assumption. The live
-gap is to supply `Section5StrictData` from the in-tree Section 5 context:
+gap is to wire the live Section 5 context into the genuine betaRec route:
 
 - matching-point data and matching-set cardinality/weight bounds;
-- the valid gamma/substitution representative data, including the F1 recentering issue;
-- the degree-X bound and decoded-family specialization bridge;
+- either the existing centred `Section5StrictData` inputs at `x0 = 0`, or the off-centre
+  `gammaLocal` representative input expected by `curveCoeffPolys_of_betaRec_offcentre`;
+- the degree-X bound and decoded-family specialization bridge, stated against the truncated local
+  representative in the off-centre route;
 - the GS-factor divisibility input `Hlift H ∣ R`;
 - the L13 betaRec drop-in for the legacy `β_regular` path.
 
-Those are the inputs to `curveCoeffPolys_of_betaRec`; the per-coefficient polynomial conclusion is
-derived after those inputs exist.
+The old `hsubst`/`hγ` fields are no longer the right off-centre target: the landed
+`gammaLocal` route is the non-vacuous replacement for that F1 caveat. The per-coefficient polynomial
+conclusion is still derived only after these Section 5 inputs exist.
 
 ## Anti-vacuity check
 
