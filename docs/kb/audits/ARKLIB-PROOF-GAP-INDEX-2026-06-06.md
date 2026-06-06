@@ -57,6 +57,7 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | ToyProblem protocol and leaderboard residual anchors | #18 |
 | RingSwitching and Binius completeness plumbing | #19 |
 | WHIR MCA conjecture placeholders and envelope bounds | #20 |
+| WHIR Vector IOPP construction, perfect completeness, and RBR soundness assembly | #113 |
 | External list-decoding, Johnson, interleaving, and subspace-design APIs | #21 |
 | CS25/BCHKS/BGKS bridges and deep-hole probability inputs | #22 |
 | Historical proximity-prize docs and inventories | #23 |
@@ -96,6 +97,8 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | BCIKS20 Section 5 `hPz` supplier from per-z Hensel/matching data | #91 |
 | BCS compiler beyond statement-level scaffolding | #62 |
 | ArkLib SNARK/proof-system completion obligations | #63 |
+| Spartan second-sumcheck / final CheckClaim / composed PIOP security | #114 |
+| Plonk gate/permutation soundness and full PIOP composition | #115 |
 | Algebraic Group Model foundational lemmas and AGM-to-GGM transfer | #118 |
 | BCIKS20 exact lattice boundary residual for the closed Johnson branch | #64 |
 | Grand MCA J1 radius-1/n finite-algebra bad-scalar cap | #65 |
