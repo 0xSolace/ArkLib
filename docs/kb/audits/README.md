@@ -32,3 +32,5 @@ Current audit pages:
   - OracleReduction sequential-composition and Fiat-Shamir residual surfaces.
 - [`issue-62-bcs-merkle-branch-harvest-2026-06-06.md`](issue-62-bcs-merkle-branch-harvest-2026-06-06.md)
   - BCS/Merkle branch-harvest note for stale `origin/merkle-tree-soundness`.
+- [`issue-75-johnson-branch-harvest-2026-06-06.md`](issue-75-johnson-branch-harvest-2026-06-06.md)
+  - Johnson-bound branch-harvest note for stale `origin/dtumad/finalize-4-26`.
