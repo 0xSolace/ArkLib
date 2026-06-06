@@ -703,7 +703,7 @@ non-jointly-close stack whose line is fully covered (CS25's probabilistic coveri
 the size-`n` subset sample space), feeding the already-proven entropy/ball-count input
 `linear_lambda_ge_entropy_volume`. -/
 theorem epsCA_ge_one_of_line_covered
-    (C : Set (ι → F)) (δ : ℝ≥0) (u : WordStack (A := F) (Fin 2) ι)
+    (C : Set (ι → F)) (δ : ℝ≥0) (u : Code.WordStack (A := F) (Fin 2) ι)
     (hu : ¬ Code.jointProximity (A := F) C (u := u) δ)
     (hcover : ∀ γ : F, δᵣ(u 0 + γ • u 1, C) ≤ δ) :
     1 ≤ ProximityGap.epsCA (F := F) (A := F) C δ δ := by

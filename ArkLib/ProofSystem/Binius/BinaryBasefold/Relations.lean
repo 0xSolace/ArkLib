@@ -520,7 +520,7 @@ lemma incrementalBadEventExistsProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isC
     exact hj'
 
 -- (moved to Basic.lean) declarations canonicalized in Basic: removed duplicates here.
-set_option maxHeartbeats 1000000 in
+set_option maxHeartbeats 4000000 in
 lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (oStmtIn : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
     (newOracle : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -548,8 +548,10 @@ lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : is
       simp only [toOutCodewordsCount_succ_eq, hCR, ↓reduceIte]
     have hj_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
       have hj_le : j.val ≤ toOutCodewordsCount ℓ ϑ i.castSucc := by
-        -- (`.succ` vs `+ 1` is defeq-only under rc2; route through `omega`.)
-        have := j.isLt
+        -- (`.succ` vs `+ 1` is defeq-only under rc2; rewrite the count first so omega
+        -- sees one atom.)
+        have h1 := j.isLt
+        rw [h_count_succ] at h1
         omega
       have hj_ge : toOutCodewordsCount ℓ ϑ i.castSucc ≤ j.val := by
         simpa only [not_lt] using hj_lt
