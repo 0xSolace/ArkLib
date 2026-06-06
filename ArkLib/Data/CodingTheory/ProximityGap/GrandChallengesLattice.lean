@@ -226,6 +226,16 @@ theorem MCALowerWitness_le_mcaThreshold (C : Set (ι → F)) (ε_star : ℝ≥0)
   rw [← epsMCA_eq_at_latticeIndex C w.δ w.le_one]
   exact w.bound
 
+/-- A lower MCA witness is already enough to make the faithful lattice threshold exist:
+round the certified real radius down to its Hamming lattice point. -/
+theorem mcaThresholdExists_of_MCALowerWitness (C : Set (ι → F)) (ε_star : ℝ≥0)
+    (w : MCALowerWitness C ε_star) :
+    mcaThresholdExists C ε_star :=
+  ⟨latticeIndexOf (ι := ι) w.δ w.le_one, by
+    unfold mcaSatisfies
+    rw [← epsMCA_eq_at_latticeIndex C w.δ w.le_one]
+    exact w.bound⟩
+
 /-- **Upper bracket.** An `MCAUpperWitness` at a radius `δ ≤ 1` forces
 `mcaThreshold < ⌊δ·n⌋`: its lattice point already exceeds `ε*`, so the threshold is strictly
 below it. -/
@@ -256,6 +266,18 @@ theorem mcaThresholdLattice_bracketed (C : Set (ι → F)) (ε_star : ℝ≥0)
       mcaThreshold C ε_star hne < latticeIndexOf (ι := ι) whi.δ hδhi :=
   ⟨MCALowerWitness_le_mcaThreshold C ε_star hne wlo,
     mcaThreshold_lt_MCAUpperWitness C ε_star hne whi hδhi⟩
+
+/-- **Lattice bracketing without a separate existence hypothesis.** The lower witness
+both constructs the threshold's nonemptiness proof and supplies the lower bracket. -/
+theorem mcaThresholdLattice_bracketed_of_witnesses (C : Set (ι → F)) (ε_star : ℝ≥0)
+    (wlo : MCALowerWitness C ε_star)
+    (whi : MCAUpperWitness C ε_star) (hδhi : whi.δ ≤ 1) :
+    let hne := mcaThresholdExists_of_MCALowerWitness C ε_star wlo
+    latticeIndexOf (ι := ι) wlo.δ wlo.le_one ≤ mcaThreshold C ε_star hne ∧
+      mcaThreshold C ε_star hne < latticeIndexOf (ι := ι) whi.δ hδhi :=
+  mcaThresholdLattice_bracketed C ε_star
+    (mcaThresholdExists_of_MCALowerWitness C ε_star wlo) wlo whi hδhi
+
 
 /-! ## The list-decoding lattice threshold
 
@@ -360,6 +382,15 @@ theorem ListLowerWitness_le_listThreshold (C : Set (ι → F)) (m : ℕ) (ε_sta
   rw [← Lambda_eq_at_latticeIndex C m w.δ w.le_one]
   exact w.bound
 
+/-- A lower list-decoding witness is enough to make the faithful list threshold exist. -/
+theorem listThresholdExists_of_ListLowerWitness (C : Set (ι → F)) (m : ℕ)
+    (ε_star : ℝ≥0) (w : GrandChallenges.ListLowerWitness C m ε_star) :
+    listThresholdExists C m ε_star :=
+  ⟨latticeIndexOf (ι := ι) w.δ w.le_one, by
+    unfold listSatisfies
+    rw [← Lambda_eq_at_latticeIndex C m w.δ w.le_one]
+    exact w.bound⟩
+
 /-- **Upper bracket.** A `ListUpperWitness` at a radius `δ ≤ 1` forces
 `listThreshold < ⌊δ·n⌋`. -/
 theorem listThreshold_lt_ListUpperWitness (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0)
@@ -388,6 +419,18 @@ theorem listThresholdLattice_bracketed (C : Set (ι → F)) (m : ℕ) (ε_star :
       listThreshold C m ε_star hne < latticeIndexOf (ι := ι) whi.δ hδhi :=
   ⟨ListLowerWitness_le_listThreshold C m ε_star hne wlo,
     listThreshold_lt_ListUpperWitness C m ε_star hne whi hδhi⟩
+
+/-- **List-threshold bracketing without a separate existence hypothesis.** The lower witness
+constructs the threshold's nonemptiness proof and supplies the lower bracket. -/
+theorem listThresholdLattice_bracketed_of_witnesses (C : Set (ι → F)) (m : ℕ)
+    (ε_star : ℝ≥0)
+    (wlo : GrandChallenges.ListLowerWitness C m ε_star)
+    (whi : GrandChallenges.ListUpperWitness C m ε_star) (hδhi : whi.δ ≤ 1) :
+    let hne := listThresholdExists_of_ListLowerWitness C m ε_star wlo
+    latticeIndexOf (ι := ι) wlo.δ wlo.le_one ≤ listThreshold C m ε_star hne ∧
+      listThreshold C m ε_star hne < latticeIndexOf (ι := ι) whi.δ hδhi :=
+  listThresholdLattice_bracketed C m ε_star
+    (listThresholdExists_of_ListLowerWitness C m ε_star wlo) wlo whi hδhi
 
 end GrandChallengesLattice
 
