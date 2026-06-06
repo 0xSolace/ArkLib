@@ -42,7 +42,7 @@ lemma toOutCodewordsCountOf0 : toOutCodewordsCount ℓ ϑ 0 = 1 := by
     nonpos_iff_eq_zero, zero_ne_one, imp_false]
   exact NeZero.ne ℓ
 
-instance : ∀ i, NeZero (toOutCodewordsCount ℓ ϑ i) := by
+instance instNeZeroNatToOutCodewordsCount : ∀ i, NeZero (toOutCodewordsCount ℓ ϑ i) := by
   intro i
   have h_ne_0: toOutCodewordsCount ℓ ϑ i ≠ 0 := by
     simp only [toOutCodewordsCount]
