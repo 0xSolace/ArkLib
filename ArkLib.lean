@@ -484,6 +484,7 @@ import ArkLib.ToMathlib.L13Milestone
 import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.List.Basic
+import ArkLib.ToMathlib.SubspacePolyLinearized
 import ArkLib.ToMathlib.MatchingExtractor
 import ArkLib.ToMathlib.MpFinSupply
 import ArkLib.ToMathlib.MpProducer

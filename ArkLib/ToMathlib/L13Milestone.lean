@@ -165,6 +165,7 @@ with `betaRec` *by definition*, so nothing on this path assumes the identificati
 
 This forwards verbatim to the proven betaRec-native keystone
 `correlatedAgreement_affine_curves_johnson_of_betaRecFin_strict`. -/
+omit [DecidableEq ι] in
 theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
     (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)

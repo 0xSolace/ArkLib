@@ -253,25 +253,20 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
   refine forall_congr' fun stmtIn => forall_congr' fun witIn => ?_
   refine imp_congr_right fun _ => ?_
   -- The two probability expressions agree pointwise: rewrite the DSFS run as the lifted honest
-  -- execution, then collapse the outer empty challenge oracle implementation.
-  simp only [hRun, QueryImpl.addLift_def, QueryImpl.liftTarget_self]
-  have hEq :
-      (do
-        let s ← init
-        StateT.run'
-          (simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp)
-              (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩)))
-            (liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)).run) s) =
-      (do
-        let s ← init
-        StateT.run'
-          (simulateQ impl
-            (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run) s) := by
-    refine bind_congr fun s => ?_
-    exact congrFun (congrArg StateT.run'
-      (simulateQ_add_run_liftM_left impl _
-        (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn))) s
-  rw [hEq]
+  -- execution, then collapse the outer empty challenge oracle implementation. The collapse uses
+  -- `simulateQ_add_run_liftM_left`: the lifted honest execution never queries the (empty) outer
+  -- Fiat-Shamir challenge oracle.
+  have hcollapse :
+      simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          ((R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn).run =
+        simulateQ impl
+          (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run := by
+    rw [hRun stmtIn witIn]
+    rw [QueryImpl.addLift_def, QueryImpl.liftTarget_self]
+    exact simulateQ_add_run_liftM_left impl
+      (QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
+      (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)
+  rw [hcollapse]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality
 residual.** The salted analogue of `duplexSpongeFiatShamir_completeness_unroll_of_run_eq`. -/
@@ -294,8 +289,16 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_run_eq {δ : Nat}
   simp only [duplexSpongeFiatShamirSalted_run_eq_honestExecution] at hRun
   refine forall_congr' fun stmtIn => forall_congr' fun witIn => ?_
   refine imp_congr_right fun _ => ?_
-  simp only [hRun, QueryImpl.addLift_def, QueryImpl.liftTarget_self]
-  simp only [simulateQ_add_run_liftM_left]
+  have hcollapse :
+      simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          ((R.duplexSpongeFiatShamirSalted (U := U) sampleSalt).run stmtIn witIn).run =
+        simulateQ impl
+          (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U)
+            sampleSalt stmtIn witIn).run := by
+    rw [hRun stmtIn witIn, QueryImpl.addLift_def, QueryImpl.liftTarget_self]
+    exact simulateQ_add_run_liftM_left impl _
+      (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn)
+  rw [hcollapse]
 
 end Completeness
 

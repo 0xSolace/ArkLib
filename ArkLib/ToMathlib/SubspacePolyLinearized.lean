@@ -365,3 +365,57 @@ theorem subspacePoly_isQLinearized_of_finrank
   rw [← hqcard]; exact subspacePoly_isQLinearized W
 
 end BKR06
+
+/-! ## End-to-end: the unconditional tight BKR06 family
+
+Composing the discharged `hlin` (`subspacePoly_isQLinearized_of_finrank`) with the proven
+tight pigeonhole + `hexp` pipeline `BKR06.bkr06_tight_family_hfamily`
+(`LinearizedSupport`), the linearizedness hypothesis is *eliminated*: the only remaining
+input is the documented parameter identity `hparam` (`m·u − v² = (α−β²)·log q`) and the
+nonneg side condition `hexp_nonneg`. -/
+
+namespace BKR06
+
+open Polynomial
+
+universe u
+
+variable {K : Type u} [Field K] [Fintype K] [DecidableEq K]
+variable {F : Type*} [Field F] [Fintype F] [Algebra F K]
+
+/-- **BKR06 tight family, `hlin` eliminated.**  Identical conclusion to
+`bkr06_tight_family_hfamily`, but with the linearizedness residual `hlin` *discharged* by
+`subspacePoly_isQLinearized_of_finrank` (valid for the genuine subfield action
+`[Algebra F K]`).  The only non-proven inputs left are the parameter identity `hparam` and
+the nonnegativity side condition `hexp_nonneg`. -/
+theorem bkr06_tight_family_hfamily_unconditional
+    (α β : ℝ)
+    (q : ℕ) (hq : 2 ≤ q) (hqcard : Fintype.card F = q)
+    (v u : ℕ) (hv : v ≤ Module.finrank F K) (huv : u ≤ v)
+    (hexp_nonneg : v ^ 2 ≤ Module.finrank F K * u)
+    (hparam : ((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) = (α - β ^ 2) * Real.log q) :
+    ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
+      (_ : ∀ i, Fintype (𝓛 i)),
+      (∀ i, Module.finrank F (𝓛 i) = v) ∧
+      Function.Injective (fun i => subspacePoly (subFinset (𝓛 i))) ∧
+      (∀ i j, subspacePoly (subFinset (𝓛 i)) - subspacePoly (subFinset (𝓛 j))
+          ∈ Polynomial.degreeLT K (q ^ u + 1)) ∧
+      (q : ℝ) ^ ((α - β ^ 2) * Real.log q) ≤ (Fintype.card ι : ℝ) :=
+  bkr06_tight_family_hfamily α β q hq hqcard v u hv huv hexp_nonneg
+    (fun W hW => subspacePoly_isQLinearized_of_finrank q hqcard v W hW)
+    hparam
+
+end BKR06
+
+-- Axiom audit on the freshly elaborated declarations.
+#print axioms BKR06.subspacePoly_eval_smul
+#print axioms BKR06.subspacePoly_recursion_monic
+#print axioms BKR06.subspacePoly_recursion_natDegree
+#print axioms BKR06.subFinset_sup_span_singleton_card
+#print axioms BKR06.subspacePoly_recursion_isRoot
+#print axioms BKR06.subspacePoly_flag_recursion
+#print axioms BKR06.subspacePoly_subFinset_bot
+#print axioms BKR06.subspacePoly_isQLinearized_span
+#print axioms BKR06.subspacePoly_isQLinearized
+#print axioms BKR06.subspacePoly_isQLinearized_of_finrank
+#print axioms BKR06.bkr06_tight_family_hfamily_unconditional
