@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import Mathlib.InformationTheory.Hamming
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Push
 
 /-!
