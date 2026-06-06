@@ -170,10 +170,4 @@ end Builder
 
 end ArkLib
 
-/-! ## Axiom audit — every claimed-done declaration rests only on
-`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
-#print axioms ArkLib.GammaFromBeta.γ'_eq_subst_shiftSeries
-#print axioms ArkLib.GammaFromBeta.alpha_eq_alphaFromBeta_of_betaEq
-#print axioms ArkLib.GammaFromBeta.intree_gamma_eq_γ'
-#print axioms ArkLib.GammaFromBeta.hγ_field_of_betaEq
-#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.section5StrictData_of_betaEq
+

@@ -225,11 +225,4 @@ end HenselDatumProducer
 
 end ArkLib
 
-/-! ## Axiom audit — must rest only on `[propext, Classical.choice, Quot.sound]`. -/
-#print axioms ArkLib.HenselDatumProducer.eval_sub_mem_span_X_of_congr
-#print axioms ArkLib.HenselDatumProducer.approxRoot_of_isRoot_of_congr
-#print axioms ArkLib.HenselDatumProducer.isUnit_derivative_eval_of_separable
-#print axioms ArkLib.HenselDatumProducer.isUnit_derivative_of_separable_of_isRoot_of_congr
-#print axioms ArkLib.HenselDatumProducer.henselDatum_of_sepInput
-#print axioms ArkLib.hPz_of_sepHenselInput
-#print axioms ArkLib.HenselDatumProducer.henselDatum_of_matchingDvd_and_sep
+

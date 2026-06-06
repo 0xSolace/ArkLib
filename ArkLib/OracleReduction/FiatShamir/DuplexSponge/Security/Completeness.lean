@@ -288,7 +288,9 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
     rw [← QueryImpl.simulateQ_compose]
     congr 1
     funext t
-    rcases t with t | t <;> rfl
+    rcases t with t | t <;>
+      simp only [QueryImpl.apply_compose, simulateQ_spec_query, simulateQ_query,
+        Functor.map_map, id_map, id_eq, Function.comp]
   rw [hcollapse]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality
@@ -338,7 +340,9 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_run_eq {δ : Nat}
     rw [← QueryImpl.simulateQ_compose]
     congr 1
     funext t
-    rcases t with t | t <;> rfl
+    rcases t with t | t <;>
+      simp only [QueryImpl.apply_compose, simulateQ_spec_query, simulateQ_query,
+        Functor.map_map, id_map, id_eq, Function.comp]
   rw [hcollapse]
 
 end Completeness

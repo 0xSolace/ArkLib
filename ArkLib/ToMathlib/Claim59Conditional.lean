@@ -129,8 +129,4 @@ end Claim59Conditional
 
 end ArkLib
 
-#print axioms ArkLib.Claim59Conditional.gamma_eq_subst_shiftSeries
-#print axioms ArkLib.Claim59Conditional.gamma_eq_aeval_trunc_of_tail_zero
-#print axioms ArkLib.Claim59Conditional.natDegree_trunc_mk_alpha_lt
-#print axioms ArkLib.Claim59Conditional.gamma_linear_in_Z_of_polynomial_representative_degreeX_le_one
-#print axioms ArkLib.Claim59Conditional.gamma_linear_in_Z_of_tail_zero
+

@@ -232,15 +232,4 @@ end FiniteSeriesToPoly
 
 end ArkLib
 
-#print axioms ArkLib.FiniteSeriesToPoly.coeff_truncPoly
-#print axioms ArkLib.FiniteSeriesToPoly.natDegree_truncPoly_lt
-#print axioms ArkLib.FiniteSeriesToPoly.natDegree_truncPoly_le
-#print axioms ArkLib.FiniteSeriesToPoly.coe_truncPoly_eq_of_coeff_eq_zero_ge
-#print axioms ArkLib.FiniteSeriesToPoly.exists_polynomial_coe_of_coeff_eq_zero_ge
-#print axioms ArkLib.FiniteSeriesToPoly.exists_polynomial_coe_of_coeff_eq_zero_ge'
-#print axioms ArkLib.FiniteSeriesToPoly.degreeX_le_of_forall_coeff_natDegree_le
-#print axioms ArkLib.FiniteSeriesToPoly.coeff_natDegree_le_degreeX
-#print axioms ArkLib.FiniteSeriesToPoly.degreeX_le_one_iff_forall_coeff_natDegree_le_one
-#print axioms ArkLib.FiniteSeriesToPoly.exists_linear_decomposition_of_coeff_high_X_eq_zero
-#print axioms ArkLib.FiniteSeriesToPoly.exists_linear_decomposition_of_degreeX_le_one
-#print axioms ArkLib.FiniteSeriesToPoly.exists_linear_polynomial_coe_of_finite_and_degreeX_le_one
+

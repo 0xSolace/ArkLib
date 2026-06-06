@@ -311,11 +311,4 @@ end MpFinSupply
 
 end ArkLib
 
-/-! ## Axiom audit — every declaration here must rest only on
-`[propext, Classical.choice, Quot.sound]`, with no `sorry`/`admit`/`axiom`/`native_decide`. -/
-#print axioms ArkLib.MpFinSupply.placeGeometry_of_henselDatum
-#print axioms ArkLib.MpFinSupply.placeGeometry_of_henselDatum_dvd
-#print axioms ArkLib.MpFinSupply.bridgeData_of_L12
-#print axioms ArkLib.MpFinSupply.bridgeData_of_L12_coeffExtract
-#print axioms ArkLib.MpFinSupply.mpFin_of_henselData
-#print axioms ArkLib.MpFinSupply.mpFin_of_henselData_dvd
+

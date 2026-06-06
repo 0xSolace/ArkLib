@@ -127,11 +127,4 @@ lemma genHasseCoeff_mem_regularElms_set_of_dvd_C {x₀ : F} {R : F[X][X][Y]} {H 
 
 end ArkLib
 
--- Axiom audit: every claimed-done lemma must rest only on `[propext, Classical.choice, Quot.sound]`.
-#print axioms ArkLib.evalX_innerXHasse_coeff
-#print axioms ArkLib.hdvd_top_of_dvd_hasseTaylor
-#print axioms ArkLib.hdvd_top_of_dvd_C
-#print axioms ArkLib.hdvd_C_implies_zero_case
-#print axioms ArkLib.hdvd_top_zero
-#print axioms ArkLib.genHasseCoeff_hasWPowerNumerator_of_dvd_C
-#print axioms ArkLib.genHasseCoeff_mem_regularElms_set_of_dvd_C
+

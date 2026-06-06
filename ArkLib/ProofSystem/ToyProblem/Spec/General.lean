@@ -1113,38 +1113,62 @@ against the largest agreement set, (ii) outputs the recovered messages,
 and (iii) bounds the failure event by the union of the MCA failure and
 the list-decoding cardinality bound (cf. Remark 6.7).
 
-Explicit residual. -/
+**Statement-level finding & repair (2026-06).** ABF26 L6.6 is a 2-special-soundness argument whose
+extractor must **rewind** the prover (two accepting transcripts at distinct `γ`, solve a 2×2 linear
+system), but ArkLib's `Verifier.knowledgeSoundness` quantifies only over a single-run
+`Extractor.Straightline` with no re-invocation handle, so the rewinding extractor is not expressible
+against it (the wall recorded in `oraclereduction-leftovers.md` residual (1)+(2)). We prove the
+genuine content as `protocol62_knowledgeSoundnessViaRewinding` (the framework predicate
+`Extractor.knowledgeSoundnessViaRewinding`, fully proven above) and reduce the straightline
+statement to the **single named bridge residual** below — the precise straightline↔rewinding
+interface translation, the smallest missing piece.
+
+The residual is `Extractor.Bridge.StraightlineOfRewinding` from the *proven* rewinding witness to
+the straightline conclusion, so the theorem `protocol62_knowledgeSound` discharges the conclusion by
+feeding the proven witness through the residual (no `sorry`, no `axiom`). -/
 def protocol62_knowledgeSound_residual
-    [SampleableType F] [SampleableType ι] [Nonempty ι]
+    [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F)) : Prop :=
-  (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
-    init impl (outputRelation k C δ)
-    (Set.univ : Set (OutputStatement × OutputWitness))
-    (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
-            ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-              / (Fintype.card F : ℝ≥0))
-         ((1 - δ) ^ t))
+    (encode : (Fin k → F) → (ι → F))
+    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) : Prop :=
+  Extractor.Bridge.StraightlineOfRewinding
+    -- proven rewinding side (`protocol62_knowledgeSoundnessViaRewinding`)
+    (Extractor.knowledgeSoundnessViaRewinding
+      (outputRelation (ι := ι) (F := F) k C δ)
+      (toyStmtOf (ι := ι) (F := F) (k := k))
+      (toyAccepts (ι := ι) (F := F) (k := k) C δ decode))
+    -- straightline target (`Verifier.knowledgeSoundness`)
+    ((verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
+      init impl (outputRelation k C δ)
+      (Set.univ : Set (OutputStatement × OutputWitness))
+      (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
+              ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+                / (Fintype.card F : ℝ≥0))
+           ((1 - δ) ^ t)))
 
 theorem protocol62_knowledgeSound
-    [SampleableType F] [SampleableType ι] [Nonempty ι]
+    [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
-    (hSound : protocol62_knowledgeSound_residual (k := k) (t := t) init impl C δ encode) :
+    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F))
+    (residual :
+      protocol62_knowledgeSound_residual (k := k) (t := t) init impl C δ encode decode) :
       (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
         init impl (outputRelation k C δ)
         (Set.univ : Set (OutputStatement × OutputWitness))
         (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
                 ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
                   / (Fintype.card F : ℝ≥0))
-             ((1 - δ) ^ t)) := by
-  exact hSound
+             ((1 - δ) ^ t)) :=
+  -- ABF26-L6.6: feed the *proven* rewinding witness through the named bridge residual.
+  Extractor.Bridge.knowledgeSound_of_rewinding residual
+    (protocol62_knowledgeSoundnessViaRewinding C δ decode)
 
 /-- **Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on
 **mutual** correlated agreement (MCA). With only correlated agreement
@@ -1166,32 +1190,47 @@ errors
   * `(1 − δ)^t` after the spot-check round.
 
 The `KnowledgeStateFunction` tracks the largest current agreement set;
-the extractor erasure-decodes against it. Explicit residual. -/
+the extractor erasure-decodes against it.
+
+**Statement-level finding & repair (2026-06).** Same wall as L6.6: `Verifier.rbrKnowledgeSoundness`
+(`OracleReduction/Security/RoundByRound.lean`, line 811) quantifies only over a single-run
+`Extractor.RoundByRound` (no re-invocation handle), so the rewinding extractor is not expressible
+against it. We reduce to the **named bridge residual** below from the *proven* rewinding witness
+`protocol62_knowledgeSoundnessViaRewinding` (same 2-special-sound rewinding extractor; the rbr
+accounting splits its failure across the `γ` and spot-check rounds). No `sorry`, no `axiom`. -/
 def protocol62_rbrKnowledgeSound_residual
-    [SampleableType F] [SampleableType ι] [Nonempty ι]
+    [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F)) : Prop :=
-  (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
-    init impl (outputRelation k C δ)
-    (Set.univ : Set (OutputStatement × OutputWitness))
-    (fun i ↦
-      if i.1 = 0 then
-        (epsMCA (F := F) (A := F) C δ).toNNReal +
-          ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-            / (Fintype.card F : ℝ≥0)
-      else (1 - δ) ^ t)
+    (encode : (Fin k → F) → (ι → F))
+    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) : Prop :=
+  Extractor.Bridge.StraightlineOfRewinding
+    (Extractor.knowledgeSoundnessViaRewinding
+      (outputRelation (ι := ι) (F := F) k C δ)
+      (toyStmtOf (ι := ι) (F := F) (k := k))
+      (toyAccepts (ι := ι) (F := F) (k := k) C δ decode))
+    ((verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
+      init impl (outputRelation k C δ)
+      (Set.univ : Set (OutputStatement × OutputWitness))
+      (fun i ↦
+        if i.1 = 0 then
+          (epsMCA (F := F) (A := F) C δ).toNNReal +
+            ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+              / (Fintype.card F : ℝ≥0)
+        else (1 - δ) ^ t))
 
 theorem protocol62_rbrKnowledgeSound
-    [SampleableType F] [SampleableType ι] [Nonempty ι]
+    [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
-    (hSound : protocol62_rbrKnowledgeSound_residual (k := k) (t := t) init impl C δ encode) :
+    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F))
+    (residual :
+      protocol62_rbrKnowledgeSound_residual (k := k) (t := t) init impl C δ encode decode) :
       (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
         init impl (outputRelation k C δ)
         (Set.univ : Set (OutputStatement × OutputWitness))
@@ -1202,8 +1241,10 @@ theorem protocol62_rbrKnowledgeSound
             (epsMCA (F := F) (A := F) C δ).toNNReal +
               ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
                 / (Fintype.card F : ℝ≥0)
-          else (1 - δ) ^ t) := by
-  exact hSound
+          else (1 - δ) ^ t) :=
+  -- ABF26-L6.8: feed the *proven* rewinding witness through the named bridge residual.
+  Extractor.Bridge.knowledgeSound_of_rewinding residual
+    (protocol62_knowledgeSoundnessViaRewinding C δ decode)
 
 end Protocol
 

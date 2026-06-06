@@ -268,10 +268,4 @@ end KeystoneAssembly
 
 end ArkLib
 
-/-! ## Axiom audit — every declaration rests only on `[propext, Classical.choice, Quot.sound]`. -/
-#print axioms ArkLib.KeystoneAssembly.htailDeg_field
-#print axioms ArkLib.KeystoneAssembly.section5DataFin_of_producers
-#print axioms ArkLib.KeystoneAssembly.correlatedAgreement_listDecoding_closed_fin
-#print axioms ArkLib.KeystoneAssembly.correlatedAgreement_listDecoding_strict_fin
-#print axioms ArkLib.KeystoneAssembly.keystone_of_section5Inputs
-#print axioms ArkLib.KeystoneAssembly.keystone_of_section5Inputs_strict
+

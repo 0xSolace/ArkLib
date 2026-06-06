@@ -53,11 +53,8 @@ theorem coeff_extract_scalar {k : Type*} [Field k]
     (haP : PowerSeries.coeff t aP = 0)
     (heq : aβ = aP) :
     s = 0 := by
-  -- Read off the `t`-th coefficient of the power-series equality `aβ = aP`.
   have hcoeff : PowerSeries.coeff t aβ = PowerSeries.coeff t aP := by rw [heq]
-  -- Combine with the two bridging readings: `s / D = 0`.
   rw [hαβ, haP] at hcoeff
-  -- `D ≠ 0` over a field, so the numerator vanishes.
   exact (div_eq_zero_iff.mp hcoeff).resolve_right hD
 
 /-- Repackaging of `coeff_extract_scalar` where the denominator $D$ is given as a product of powers
@@ -121,10 +118,3 @@ end BetaMatchingVanishes
 
 end ArkLib
 
--- Axiom audit: every claimed-done declaration must rest only on
--- `[propext, Classical.choice, Quot.sound]`.
-#print axioms ArkLib.CoeffExtract.coeff_extract_scalar
-#print axioms ArkLib.CoeffExtract.coeff_extract_scalar_prod
-#print axioms ArkLib.BetaMatchingVanishes.coeff_extract_betaRec
-#print axioms ArkLib.BetaMatchingVanishes.MatchingPoint.mk_coeffExtract
-#print axioms ArkLib.BetaMatchingVanishes.pi_z_betaRec_eq_zero_of_bridge

@@ -437,6 +437,11 @@ theorem ToyParams.soundnessError_le_one (p : ToyParams) :
     p.soundnessError ≤ 1 :=
   _root_.ToyProblem.winningSetSoundness_le_one (k := p.k) p.C p.δ
 
+/-- The bundled simplified-IOR soundness error lies in the probability interval `[0, 1]`. -/
+theorem ToyParams.soundnessError_mem_Icc (p : ToyParams) :
+    p.soundnessError ∈ Set.Icc 0 1 :=
+  ⟨zero_le _, p.soundnessError_le_one⟩
+
 /-- The full-protocol RBR upper-bound vehicle (Lemmas 6.6 / 6.8) at a parameter
 point. -/
 noncomputable def ToyParams.toySoundnessError (p : ToyParams) : ℝ≥0 :=

@@ -102,19 +102,15 @@ theorem deepHoleLine_relClose_of_mem_ball
   have hcw : ReedSolomon.evalOnPoints domain (lineQuotient p a)
       ∈ (ReedSolomon.code domain k : Set (ι → F)) :=
     lineQuotient_mem_RScode domain hp
-  -- The relative distance from the line to this codeword equals `δᵣ(u, evalOnPoints domain p)`.
   have hdist_eq :
       Code.relHammingDist (deepHoleLine domain u a (-(p.eval a)))
           (ReedSolomon.evalOnPoints domain (lineQuotient p a))
         = Code.relHammingDist u (ReedSolomon.evalOnPoints domain p) :=
     relHammingDist_deepHoleLine_eq domain u a p hdom
-  -- The ball membership implies that the relative Hamming distance is bounded by $\delta$.
-  -- Since `relHammingDist` is instance-irrelevant, we convert to absorb differences in decidability instances.
   have hball : (Code.relHammingDist u (ReedSolomon.evalOnPoints domain p) : ℝ) ≤ δ := by
     have hmem' := hmem
     rw [relHammingBall, Set.mem_setOf_eq] at hmem'
     convert hmem' using 3
-  -- So `δᵣ(line, witness) ≤ δ`, hence `≤ δ.toNNReal` as `ℝ≥0`.
   have hle_real :
       (Code.relHammingDist (deepHoleLine domain u a (-(p.eval a)))
           (ReedSolomon.evalOnPoints domain (lineQuotient p a)) : ℝ) ≤ δ := by
@@ -122,10 +118,8 @@ theorem deepHoleLine_relClose_of_mem_ball
   have hle_nn :
       Code.relHammingDist (deepHoleLine domain u a (-(p.eval a)))
           (ReedSolomon.evalOnPoints domain (lineQuotient p a)) ≤ δ.toNNReal := by
-    -- Comparison of the real-coerced distance with $\delta$.
     rw [← NNReal.coe_le_coe, Real.coe_toNNReal δ hδ0]
     exact hle_real
-  -- Lift codeword-closeness to code-closeness.
   rw [relCloseToCode_iff_relCloseToCodeword_of_minDist]
   exact ⟨_, hcw, hle_nn⟩
 
@@ -147,7 +141,6 @@ theorem numDistinct_le_card_caGood
     numDistinct p a ≤
       (Finset.univ.filter (fun γ : F => caCloseEvent domain u a k δ γ)).card := by
   classical
-  -- The distinct combiners are given by the image under negation, which is injective.
   have hcard_eq :
       (Finset.univ.image (fun j : Fin L => -(p j).eval a)).card = numDistinct p a := by
     rw [numDistinct]
@@ -155,7 +148,6 @@ theorem numDistinct_le_card_caGood
           = (fun x : F => -x) ∘ (fun j : Fin L => (p j).eval a) from rfl,
       ← Finset.image_image]
     exact Finset.card_image_of_injective _ neg_injective
-  -- Every distinct combiner satisfies the closeness event.
   have hsub :
       (Finset.univ.image (fun j : Fin L => -(p j).eval a)) ⊆
         Finset.univ.filter (fun γ : F => caCloseEvent domain u a k δ γ) := by
@@ -164,7 +156,6 @@ theorem numDistinct_le_card_caGood
     obtain ⟨j, -, rfl⟩ := hγ
     rw [Finset.mem_filter]
     refine ⟨Finset.mem_univ _, ?_⟩
-    -- Follows from the closeness transfer lemma.
     exact deepHoleLine_relClose_of_mem_ball domain u a (p j) hδ0 (hdeg j) hdom (hclose j)
   calc numDistinct p a = (Finset.univ.image (fun j : Fin L => -(p j).eval a)).card := hcard_eq.symm
     _ ≤ _ := Finset.card_le_card hsub
@@ -211,13 +202,11 @@ theorem pr_caCloseEvent_le_epsCA
       epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F)))
         δ.toNNReal δ.toNNReal := by
   classical
-  -- Bound the event probability by the supremum over all stacks not jointly close.
   refine le_trans (Pr_le_Pr_of_implies _ _ _ ?_)
     (line_close_probability_le_epsCA_of_not_jointProximity
       ((ReedSolomon.code domain k : Set (ι → F))) δ.toNNReal δ.toNNReal
       (dhStack domain u a) hjf)
   intro γ hγ
-  -- Follows from the line identity.
   rw [dhStack_line_eq]
   exact hγ
 
@@ -245,13 +234,11 @@ theorem numDistinct_le_eps_of_jointFar
     exact ENNReal.toNNReal_mono hεne (pr_caCloseEvent_le_epsCA domain u a k δ hjf)
   have hchain : ((numDistinct p a : ℝ≥0) / (Fintype.card F : ℝ≥0)) ≤ eCA.toNNReal :=
     le_trans h1 h2
-  -- Move to `ℝ` and clear the denominator.
   have hqpos : (0 : ℝ) < (Fintype.card F : ℝ) := by exact_mod_cast Fintype.card_pos
   have hchainR : (numDistinct p a : ℝ) / (Fintype.card F : ℝ) ≤ (eCA.toNNReal : ℝ) := by
     have := (NNReal.coe_le_coe.mpr hchain)
     rwa [NNReal.coe_div, NNReal.coe_natCast, NNReal.coe_natCast] at this
   rw [div_le_iff₀ hqpos] at hchainR
-  -- Convert back to real arithmetic.
   rw [ENNReal.coe_toNNReal_eq_toReal] at hchainR
   exact hchainR
 
@@ -300,19 +287,8 @@ theorem rs_epsCA_implies_lambda_extended_cs25_jointFar
                 δ.toNNReal δ.toNNReal).toReal) : ℕ∞) := by
   apply rs_epsCA_implies_lambda_extended_cs25_final
     domain k δ η hk_pos hη_lo hη_lt hkn hs_pos hε_ca
-  -- Discharge the probabilistic residual.
   intro ε L0 u p
   exact deepHoleProbResidual_of_jointFar domain u p hδ0 (fun a ha => hjf u a ha)
 
 end CodingTheory.CS25.DeepHole
 
-section AxiomAudit
-#print axioms CodingTheory.CS25.DeepHole.dhStack_line_eq
-#print axioms CodingTheory.CS25.DeepHole.deepHoleLine_relClose_of_mem_ball
-#print axioms CodingTheory.CS25.DeepHole.numDistinct_le_card_caGood
-#print axioms CodingTheory.CS25.DeepHole.numDistinct_div_card_le_pr
-#print axioms CodingTheory.CS25.DeepHole.pr_caCloseEvent_le_epsCA
-#print axioms CodingTheory.CS25.DeepHole.numDistinct_le_eps_of_jointFar
-#print axioms CodingTheory.CS25.DeepHole.deepHoleProbResidual_of_jointFar
-#print axioms CodingTheory.CS25.DeepHole.rs_epsCA_implies_lambda_extended_cs25_jointFar
-end AxiomAudit

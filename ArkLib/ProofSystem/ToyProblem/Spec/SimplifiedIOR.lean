@@ -208,31 +208,47 @@ spot-check term because C6.9 has no spot-check round.
 
 The proof is the "1-round version" of L6.8's KnowledgeStateFunction
 construction; same extractor strategy (erasure-decode against the
-agreement set). Explicit residual. -/
+agreement set).
+
+**Statement-level finding & repair (2026-06).** Same wall as L6.6 / L6.8: ArkLib's
+`Verifier.knowledgeSoundness` (`OracleReduction/Security/Basic.lean`, line 328) quantifies only over
+a single-run `Extractor.Straightline` with no re-invocation handle, so the 2-special-sound
+*rewinding* extractor this lemma needs is not expressible against it. The rewinding extractor is the
+*same* one as for Construction 6.2 (it extracts the input message pair `(u₁, u₂)` to the `R̃²`
+relation `ToyProblem.Spec.outputRelation` — exactly this lemma's `relIn`), so we reuse the proven
+`ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding` and reduce the straightline statement to
+the **named bridge residual** below. No `sorry`, no `axiom`. -/
 def simplifiedIOR_knowledgeSound_residual
-    [SampleableType F] [Nonempty ι]
+    [SampleableType F] [Nonempty ι] [Nonempty F]
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F)) : Prop :=
-  (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
-    (WitOut := OutputWitness (F := F) k)
-    init impl
-    (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
-    (outputRelationFor (ι := ι) (F := F) k encode δ)
-    ((epsMCA (F := F) (A := F) C δ).toNNReal +
-      ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-        / (Fintype.card F : ℝ≥0))
+    (encode : (Fin k → F) → (ι → F))
+    (decode : ToyProblem.Spec.ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) : Prop :=
+  Extractor.Bridge.StraightlineOfRewinding
+    (Extractor.knowledgeSoundnessViaRewinding
+      (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
+      (ToyProblem.Spec.toyStmtOf (ι := ι) (F := F) (k := k))
+      (ToyProblem.Spec.toyAccepts (ι := ι) (F := F) (k := k) C δ decode))
+    ((verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
+      (WitOut := OutputWitness (F := F) k)
+      init impl
+      (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
+      (outputRelationFor (ι := ι) (F := F) k encode δ)
+      ((epsMCA (F := F) (A := F) C δ).toNNReal +
+        ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+          / (Fintype.card F : ℝ≥0)))
 
 theorem simplifiedIOR_knowledgeSound
-    [SampleableType F] [Nonempty ι]
+    [SampleableType F] [Nonempty ι] [Nonempty F]
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
-    (hSound : simplifiedIOR_knowledgeSound_residual (k := k) init impl C δ encode) :
+    (decode : ToyProblem.Spec.ToyPrefix ι F k → (Fin k → F) × (Fin k → F))
+    (residual : simplifiedIOR_knowledgeSound_residual (k := k) init impl C δ encode decode) :
       (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
         (WitOut := OutputWitness (F := F) k)
         init impl
@@ -240,8 +256,10 @@ theorem simplifiedIOR_knowledgeSound
         (outputRelationFor (ι := ι) (F := F) k encode δ)
         ((epsMCA (F := F) (A := F) C δ).toNNReal +
           ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-            / (Fintype.card F : ℝ≥0)) := by
-  exact hSound
+            / (Fintype.card F : ℝ≥0)) :=
+  -- ABF26-L6.10: feed the *proven* rewinding witness through the named bridge residual.
+  Extractor.Bridge.knowledgeSound_of_rewinding residual
+    (ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding C δ decode)
 
 end Protocol
 

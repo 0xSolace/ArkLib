@@ -377,18 +377,4 @@ end KeystoneStrictResidual
 
 end ArkLib
 
-/-! ## Axiom audit — every claimed-done declaration must rest only on
-`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
-#print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_witness_of_betaRecCurveCoeffPolys
-#print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRec
-#print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec
-#print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_zero
-#print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec
-#print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec_strict
-#print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_section5DataFin_strict
--- The F5-corrected, satisfiable fin-variant front door:
-#print axioms ArkLib.KeystoneStrictResidual.betaCurveInputFin_hcardFin_satisfiable
-#print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRecFin
-#print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRecFin
-#print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRecFin
-#print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRecFin_strict
+
