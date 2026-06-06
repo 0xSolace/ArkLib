@@ -100,12 +100,18 @@ from a *concrete arithmetic* cardinality hypothesis. -/
 
 omit [Fintype F] [DecidableEq F] in
 /-- Multiplying a `WithBot ℕ` weight bound on the right by a nat is monotone, and the product of
-two nat-coercions is the nat-coercion of the product. -/
+two nat-coercions is the nat-coercion of the product.  Proven by `WithBot` casework (the only
+nontrivial branch is `a = some a₀`, where it reduces to `Nat.mul_le_mul_right`). -/
 private theorem withBot_mul_right_le {a : WithBot ℕ} {c d : ℕ}
     (h : a ≤ (c : WithBot ℕ)) : a * (d : WithBot ℕ) ≤ ((c * d : ℕ) : WithBot ℕ) := by
-  calc a * (d : WithBot ℕ) ≤ (c : WithBot ℕ) * (d : WithBot ℕ) :=
-        mul_le_mul_right' h _
-    _ = ((c * d : ℕ) : WithBot ℕ) := by rw [Nat.cast_mul]
+  induction a with
+  | bot => simpa using bot_le
+  | coe a₀ =>
+      rw [show ((c * d : ℕ) : WithBot ℕ) = (c : WithBot ℕ) * (d : WithBot ℕ) by
+        rw [Nat.cast_mul]]
+      rw [← WithBot.coe_mul, ← WithBot.coe_mul, WithBot.coe_le_coe]
+      have hac : a₀ ≤ c := by exact_mod_cast h
+      exact Nat.mul_le_mul_right d hac
 
 omit [Fintype F] [DecidableEq F] in
 /-- **The concrete `hcard` bridge (per index `t`).**  Under the App-A weight-budget inputs of
@@ -131,7 +137,7 @@ theorem hcard_of_concrete (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
       > weight_Λ_over_𝒪 hH (betaRec x₀ R H hHyp Bcoeff t) D * H.natDegree := by
   have hwt : weight_Λ_over_𝒪 hH (betaRec x₀ R H hHyp Bcoeff t) D
       ≤ (WithBot.some ((2 * t + 1) * d * D) : WithBot ℕ) :=
-    BetaWeightCollapse.betaRec_weight_le_concrete x₀ R H hHyp Bcoeff hD hH hd1 hdH_le hdH_D
+    betaRec_weight_le_concrete x₀ R H hHyp Bcoeff hD hH hd1 hdH_le hdH_D
       hbB hBzero hbξ t
   have hmul : weight_Λ_over_𝒪 hH (betaRec x₀ R H hHyp Bcoeff t) D * (H.natDegree : WithBot ℕ)
       ≤ ((((2 * t + 1) * d * D) * H.natDegree : ℕ) : WithBot ℕ) :=
