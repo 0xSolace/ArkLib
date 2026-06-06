@@ -65,8 +65,17 @@ while IFS= read -r entry; do
     continue
   fi
 
-  # Run the audit using the existing audit.sh harness
-  OUTPUT="$(./audit.sh "$FILE_PATH" "$THEOREM_NAME" 2>&1)" || true
+  # Audit against the built olean: import the module (path → dotted name)
+  # and #print axioms in a tiny scratch file. This avoids recompiling the
+  # flagship source files (audit.sh appends in-file and re-elaborates the
+  # whole file — minutes per multi-thousand-line module; the import-based
+  # probe is near-instant after `lake build`).
+  MODULE_NAME="$(echo "$FILE_PATH" | sed 's/\.lean$//; s#/#.#g')"
+  SCRATCH_BASE="$(mktemp -t axiom-audit-XXXXXX)"
+  SCRATCH="$SCRATCH_BASE.lean"
+  printf 'import %s\n#print axioms %s\n' "$MODULE_NAME" "$THEOREM_NAME" > "$SCRATCH"
+  OUTPUT="$(timeout 600 lake env lean "$SCRATCH" 2>&1)" || true
+  rm -f "$SCRATCH" "$SCRATCH_BASE"
 
   # Check for banned patterns
   if echo "$OUTPUT" | grep -qiE "$BANNED_PATTERNS"; then

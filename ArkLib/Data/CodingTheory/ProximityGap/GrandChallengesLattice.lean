@@ -480,6 +480,24 @@ theorem mcaThreshold_lt_ofSamplingDG25
     (MCAUpperWitness.ofSamplingDG25 C δ δ' ε_star hδ' hδ_pos hδ_lt hDG25 hgt)
     hδle
 
+/-- The arbitrary-radius spike lower bound gives a direct upper bracket on the faithful MCA
+lattice threshold.  Unlike the endpoint floor, this excludes every lattice point at or above
+the chosen radius `δ` whenever the spike value `t / |F|` already exceeds the MCA budget. -/
+theorem mcaThreshold_lt_ofSpike
+    (domain : ι ↪ F) (k t : ℕ) (δ ε_star : ℝ≥0)
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) ε_star)
+    (hδle : δ ≤ 1)
+    (ht_n : t + k ≤ Fintype.card ι) (ht_q : t ≤ Fintype.card F)
+    (hδ :
+      ((1 - δ) * Fintype.card ι : ℝ≥0) ≤ (Fintype.card ι - t + 1 : ℕ))
+    (hgt :
+      (ε_star : ENNReal) < (t : ENNReal) / (Fintype.card F : ENNReal)) :
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne <
+      latticeIndexOf (ι := ι) δ hδle :=
+  mcaThreshold_lt_MCAUpperWitness
+    (ReedSolomon.code domain k : Set (ι → F)) ε_star hne
+    ⟨δ, lt_of_lt_of_le hgt (epsMCA_ge_spike domain k t δ ht_n ht_q hδ)⟩ hδle
+
 /-- A lower MCA witness and the CS25 complete-CA-breakdown lower bound bracket the faithful
 MCA lattice threshold directly. -/
 theorem mcaThresholdLattice_bracketed_of_lowerWitness_and_RSBreakdownCS25
@@ -635,6 +653,33 @@ theorem mcaThresholdLattice_bracketed_ofJohnsonBCHKS25_and_SamplingDG25
       (mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ_lo ε_star hη hδ_johnson
         hδlo_le_one hBCHKS25 hle)
       hδhi hδ' hδ_pos hδ_lt hDG25 hgt⟩
+
+/-- A lower MCA witness and an arbitrary-radius spike certificate bracket the faithful MCA
+lattice threshold directly.  This is a middle-radius finite-search certificate: one side can
+come from Johnson/GS-style existence, while the other comes from the explicit spike family at
+the candidate next lattice radius. -/
+theorem mcaThresholdLattice_bracketed_of_lowerWitness_and_Spike
+    (domain : ι ↪ F) (k t : ℕ) (δ_hi ε_star : ℝ≥0)
+    (wlo : MCALowerWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star)
+    (hδhi : δ_hi ≤ 1)
+    (ht_n : t + k ≤ Fintype.card ι) (ht_q : t ≤ Fintype.card F)
+    (hδ :
+      ((1 - δ_hi) * Fintype.card ι : ℝ≥0) ≤ (Fintype.card ι - t + 1 : ℕ))
+    (hgt :
+      (ε_star : ENNReal) < (t : ENNReal) / (Fintype.card F : ENNReal)) :
+    let hne := mcaThresholdExists_of_MCALowerWitness
+      (ReedSolomon.code domain k : Set (ι → F)) ε_star wlo
+    latticeIndexOf (ι := ι) wlo.δ wlo.le_one ≤
+        mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne ∧
+      mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne <
+        latticeIndexOf (ι := ι) δ_hi hδhi :=
+  ⟨MCALowerWitness_le_mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star
+      (mcaThresholdExists_of_MCALowerWitness
+        (ReedSolomon.code domain k : Set (ι → F)) ε_star wlo) wlo,
+    mcaThreshold_lt_ofSpike domain k t δ_hi ε_star
+      (mcaThresholdExists_of_MCALowerWitness
+        (ReedSolomon.code domain k : Set (ι → F)) ε_star wlo)
+      hδhi ht_n ht_q hδ hgt⟩
 
 /-- A lower MCA witness and a capacity-side `ε_ca` upper witness bracket the faithful lattice
 threshold directly. This is the lattice version of the common Johnson-lower/capacity-upper

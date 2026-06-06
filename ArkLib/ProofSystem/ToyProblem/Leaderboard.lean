@@ -828,8 +828,9 @@ theorem winningSetSoundness_concrete_ge_of_card
   calc ((2 : ℝ≥0) ^ 116)⁻¹ * (Fintype.card KoalaBear.Sextic : ℝ≥0)
       ≤ ((2 : ℝ≥0) ^ 116)⁻¹ * (2 : ℝ≥0) ^ 186 := by gcongr
     _ = (2 : ℝ≥0) ^ 70 := by
-        rw [show (186 : ℕ) = 70 + 116 by norm_num, pow_add, mul_comm, mul_assoc,
-          mul_inv_cancel₀ (by positivity), mul_one]
+        rw [show (186 : ℕ) = 70 + 116 by norm_num, pow_add,
+          mul_comm ((2 : ℝ≥0) ^ 70) ((2 : ℝ≥0) ^ 116), ← mul_assoc,
+          inv_mul_cancel₀ (by positivity), one_mul]
     _ ≤ (Ncard : ℝ≥0) := hNge
 
 /-- **Attack-side residual at the concrete carrier.** The §6.4 winning-set

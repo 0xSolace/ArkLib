@@ -200,3 +200,24 @@ theorem simplified_iop_listDecoding_lb_of_winningChallenges [Nonempty ι] {k N :
   exact winningSet_ncard_ge_of_inj chal hchal_inj hwin
 
 end ToyProblem
+
+/-! ## Kernel-dependency audit
+
+Each `#print axioms` below must report only Lean's standard kernel axioms
+(`propext`, `Classical.choice`, `Quot.sound`) — i.e. **no** `sorryAx` and **no** project-level
+assumed constant. -/
+
+-- Step-4 arithmetic core (pure real analysis):
+#print axioms ToyProblem.listDecoding_lb_le_listSize
+
+-- Cardinality bridge (Set.ncard_le_ncard_of_injOn):
+#print axioms ToyProblem.winningSet_card_ge_of_inj
+
+-- Cardinality bridge + list-decoding bound:
+#print axioms ToyProblem.winningSet_ncard_ge_of_inj
+
+-- Per-challenge winning-set membership (the v = μ₁ = μ₂ = 0 instance):
+#print axioms ToyProblem.winningChal_mem_winningSet
+
+-- The assembled Step-4 lemma (the genuine L6.12 §6.4.1 list→challenge injection):
+#print axioms ToyProblem.simplified_iop_listDecoding_lb_of_winningChallenges

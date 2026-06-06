@@ -48,8 +48,12 @@ a message `m : Fin 2 → F` (the coefficients of the affine polynomial
 `j ↦ m 0 + m 1 · rsPoint j` on the four points. Manifestly `F`-linear. -/
 noncomputable def rsEncoder : (Fin 2 → Sextic) →ₗ[Sextic] (Fin 4 → Sextic) where
   toFun := fun m j => m 0 + m 1 * rsPoint j
-  map_add' := by intro m m'; funext j; simp; ring
-  map_smul' := by intro c m; funext j; simp; ring
+  map_add' := by
+    intro m m'; funext j
+    simp only [Pi.add_apply]; ring
+  map_smul' := by
+    intro c m; funext j
+    simp only [Pi.smul_apply, RingHom.id_apply, smul_eq_mul]; ring
 
 /-- The genuine **KoalaBear-sextic Reed–Solomon code** at the prize rate: the
 range of the evaluation encoder (rate `k/n = 2/4 = 1/2` over `F_{p^6}`). This is
