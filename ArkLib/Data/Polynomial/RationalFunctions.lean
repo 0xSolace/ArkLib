@@ -2991,6 +2991,49 @@ lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) (hHyp : Hypotheses x₀ 
         natDegree_ξ_pre_coeff_top_eq_zero_of_natDegree_eq hHyp hd2 hg hdH_eq
       rw [htop, add_zero]
 
+/-- The exponent of `ξ` in the denominator of the `t`-th Hensel coefficient.
+
+The paper separates `t = 0`, where no `ξ` factor appears, from `t ≥ 1`, where the exponent is
+`2*t - 1`. Naming this exponent keeps the split visible instead of relying on truncated
+subtraction to make the `t = 0` case vanish. -/
+def henselDenominatorExponent (t : ℕ) : ℕ :=
+  if t = 0 then 0 else 2 * t - 1
+
+@[simp]
+lemma henselDenominatorExponent_zero : henselDenominatorExponent 0 = 0 := by
+  simp [henselDenominatorExponent]
+
+@[simp]
+lemma henselDenominatorExponent_succ (t : ℕ) :
+    henselDenominatorExponent (t + 1) = 2 * (t + 1) - 1 := by
+  simp [henselDenominatorExponent]
+
+/-- A total degree for the trivariate polynomial `R`, represented as a polynomial in `Y` with
+bivariate coefficients in the `Z` and `X` variables. -/
+def trivariateTotalDegree (R : F[X][X][Y]) : ℕ :=
+  R.support.sup (fun i => Bivariate.totalDegree (R.coeff i) + i)
+
+/-- Each coefficient of `R` is bounded by `trivariateTotalDegree R`. -/
+lemma coeff_totalDegree_add_index_le_trivariateTotalDegree (R : F[X][X][Y]) {i : ℕ}
+    (hi : i ∈ R.support) :
+    Bivariate.totalDegree (R.coeff i) + i ≤ trivariateTotalDegree R := by
+  classical
+  unfold trivariateTotalDegree
+  exact Finset.le_sup (f := fun i => Bivariate.totalDegree (R.coeff i) + i) hi
+
+/-- A canonical degree bound large enough for both `H` and all coefficients of `R`. -/
+def defaultDegreeBound (R : F[X][X][Y]) (H : F[X][Y]) : ℕ :=
+  max (Bivariate.totalDegree H) (trivariateTotalDegree R)
+
+lemma defaultDegreeBound_ge_H (R : F[X][X][Y]) (H : F[X][Y]) :
+    Bivariate.totalDegree H ≤ defaultDegreeBound R H :=
+  le_max_left _ _
+
+lemma defaultDegreeBound_ge_R_coeff (R : F[X][X][Y]) (H : F[X][Y]) {i : ℕ}
+    (hi : i ∈ R.support) :
+    Bivariate.totalDegree (R.coeff i) + i ≤ defaultDegreeBound R H :=
+  (coeff_totalDegree_add_index_le_trivariateTotalDegree R hi).trans (le_max_right _ _)
+
 /-- There exist regular elements `β` with the *weight upper bound* of Claim A.2 of
 Appendix A.4 of [BCIKS20].
 
@@ -3057,7 +3100,8 @@ def α (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
     [H_natDegree_pos : Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
   let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
   embeddingOf𝒪Into𝕃 _ (β R t) /
-    (W ^ (t + 1) * (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H hHyp)) ^ (2*t - 1))
+    (W ^ (t + 1) *
+      (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H hHyp)) ^ henselDenominatorExponent t)
 
 def α' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)
     (hHdeg : 0 < H.natDegree) (hHyp : Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
