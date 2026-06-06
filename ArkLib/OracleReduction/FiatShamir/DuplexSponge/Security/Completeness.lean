@@ -272,7 +272,8 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
     -- The run-equality residual is stated with the canonical one-step subspec lift `liftComp` of the
     -- honest execution's `.run`, so the appended (never-queried) challenge oracle implementation
     -- collapses directly via `simulateQ_add_liftComp_left`.
-    rw [OptionT.run_mk, QueryImpl.simulateQ_add_liftComp_left]
+    rw [OptionT.run_mk]
+    simp only [QueryImpl.simulateQ_add_liftComp_left]
   rw [hcollapse]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality

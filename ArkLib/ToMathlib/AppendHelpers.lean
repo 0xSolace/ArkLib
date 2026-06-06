@@ -85,17 +85,15 @@ theorem verifier_output_mem_run_support
               have hx11 : x.1.1 = proverResult.1 := congrArg (Prod.fst ∘ Prod.fst) hx
               rw [hx2, hx11]
               -- Transfer reachability of `some vOut` from the lifted verifier run to the original.
-              -- `hstmtOut : some (some vOut) ∈ support (liftM (V.run …).run).run`; the outer `some` is
-              -- from `OptionT.run`, the inner from `V`'s optional verifier output.
+              -- `hstmtOut : some (some vOut) ∈ support (liftM (V.run …).run).run`; the inner `some`
+              -- is `V`'s optional verifier output.  `support_liftComp` removes the lift; the OptionT
+              -- membership `some vOut ∈ support (V.run …)` is exactly what `compatStatement` needs.
               have hLift :
                   some (some vOut) ∈ support
-                    (OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run.run
-                      (oSpec + [pSpec.Challenge]ₒ)) := by
+                    (OracleComp.liftComp ((reduction.verifier.run stmt proverResult.1).run)
+                      (oSpec + [pSpec.Challenge]ₒ)).run := by
                 simpa [liftComp_eq_liftM] using hstmtOut
-              rw [OracleComp.support_liftComp] at hLift
-              -- `support (V.run …).run.run` is `support (V.run …).run`'s lift; recover the OptionT mem.
-              have : some vOut ∈ support (reduction.verifier.run stmt proverResult.1).run := by
-                simpa using hLift
-              exact (OptionT.mem_support_iff _ _).2 this
+              rw [OptionT.run, OracleComp.support_liftComp] at hLift
+              exact (OptionT.mem_support_iff _ _).2 hLift
 
 end Reduction

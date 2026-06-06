@@ -925,10 +925,11 @@ theorem Reduction.verifier_output_mem_run_support
       | none =>
           simp only [Option.elim_none, OptionT.run_pure, support_pure,
             Set.mem_singleton_iff] at hx
+          cases hx
       | some vOut =>
           simp only [Option.elim_some, Option.getM_some, OptionT.run_pure, support_pure,
             Set.mem_singleton_iff] at hx
-          subst hx
+          subst x
           have hLift :
               some vOut ∈ support
                 (OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
