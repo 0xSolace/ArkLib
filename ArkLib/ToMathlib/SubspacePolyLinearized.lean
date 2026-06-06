@@ -242,7 +242,7 @@ theorem subspacePoly_flag_recursion
     -- L_W = (subFinset W).val.map (X - C ·) |>.prod
     have hLeq : subspacePoly (subFinset W)
         = ((subFinset W).val.map (fun a => X - C a)).prod := by
-      unfold subspacePoly; rw [Finset.prod_eq_multiset_prod]; rfl
+      unfold subspacePoly; rw [Finset.prod_eq_multiset_prod]
     rw [hLeq, Multiset.prod_X_sub_C_dvd_iff_le_roots hRHS_ne]
     -- (subFinset W).val ≤ RHS.roots: nodup + each element a root
     rw [Multiset.le_iff_count]
@@ -252,16 +252,15 @@ theorem subspacePoly_flag_recursion
       have hrootmem : r ∈ (W₀ ⊔ Submodule.span F {x} : Submodule F K) := by
         rw [mem_subFinset, hW] at hmem; exact hmem
       rw [Multiset.count_eq_one_of_mem (subFinset W).nodup hmem]
-      rw [← Multiset.one_le_count_iff_mem]
-      -- r ∈ RHS.roots since IsRoot ∧ RHS ≠ 0
-      have : r ∈ RHS.roots := by
+      -- 1 ≤ count r RHS.roots ⇐ r ∈ RHS.roots (IsRoot ∧ RHS ≠ 0)
+      have hr : r ∈ RHS.roots := by
         rw [Polynomial.mem_roots hRHS_ne]
         exact subspacePoly_recursion_isRoot W₀ x hrootmem
-      exact this
+      exact Multiset.one_le_count_iff_mem.2 hr
     · -- r ∉ subFinset W: count in val is 0
       rw [Multiset.count_eq_zero_of_notMem hmem]; exact Nat.zero_le _
   -- monic of equal degree + dvd ⟹ equal
-  refine (Polynomial.eq_of_dvd_of_natDegree_le_of_leadingCoeff hdvd ?_ ?_).symm.symm
+  refine Polynomial.eq_of_dvd_of_natDegree_le_of_leadingCoeff hdvd ?_ ?_
   · rw [hLHS_deg, hRHS_deg]
   · rw [hLHS_mon.leadingCoeff, hRHS_mon.leadingCoeff]
 
@@ -323,9 +322,10 @@ theorem subspacePoly_isQLinearized_span
         -- IsQLinearized (p^t) (L_{W₀}^{p^t} − C(...)·L_{W₀})  via pow_sub_C_mul
         have ihpt : IsQLinearized (p ^ t) (subspacePoly (subFinset W₀)) := by
           rw [← hpt]; exact ih
-        have hgoal := ihpt.pow_sub_C_mul
-          (((subspacePoly (subFinset W₀)).eval a) ^ (Fintype.card F - 1))
-        rw [hpt]; exact hgoal
+        -- rewrite every `#𝔽` to `p^t` (predicate arg + the polynomial's exponents)
+        rw [hpt]
+        exact ihpt.pow_sub_C_mul
+          (((subspacePoly (subFinset W₀)).eval a) ^ (p ^ t - 1))
 
 /-- **Main theorem (`hlin` residual, discharged).**  For *every* finite `𝔽_q`-subspace
 `W ⊆ K` (`q = #𝔽`), the subspace polynomial `L_W` is `q`-linearized: its support is
@@ -340,24 +340,18 @@ theorem subspacePoly_isQLinearized (W : Submodule F K) :
   -- the prime p = char K, with #F = p^t and [ExpChar K p]
   obtain ⟨p, hcharK, n, hpprime, _hcardK⟩ := FiniteField.card' K
   haveI : Fact p.Prime := ⟨hpprime⟩
+  haveI : CharP K p := hcharK
   haveI : ExpChar K p := ExpChar.prime hpprime
-  -- F also has characteristic p (transported along the injective algebraMap)
+  -- F also has characteristic p (pulled back along the injective algebraMap from K)
   haveI hcharF : CharP F p :=
-    charP_of_injective_algebraMap (FaithfulSMul.algebraMap_injective F K) p
-  obtain ⟨t, ht⟩ : ∃ t, Fintype.card F = p ^ t := by
-    obtain ⟨_, _, m, _, hm⟩ := FiniteField.card' F
-    -- the characteristic is unique, so the two primes coincide
-    have : CharP F p := hcharF
-    refine ⟨m, ?_⟩
-    rw [hm]
-    congr 1
-    exact (CharP.eq F ‹CharP F _› hcharF)
+    (algebraMap F K).charP (FaithfulSMul.algebraMap_injective F K) p
+  obtain ⟨t, _, ht⟩ := FiniteField.card (K := F) p
   -- W = span 𝔽 of its own carrier finset
   have hWspan : Submodule.span F ((subFinset W : Finset K) : Set K) = W := by
     have : ((subFinset W : Finset K) : Set K) = (W : Set K) := by
       ext x; simp [mem_subFinset]
     rw [this, Submodule.span_eq]
-  have := subspacePoly_isQLinearized_span (F := F) (K := K) p t ht (subFinset W)
+  have := subspacePoly_isQLinearized_span (F := F) (K := K) p (t : ℕ) ht (subFinset W)
   rwa [hWspan] at this
 
 /-- **`hlin` shape.**  The exact uniform-over-dimension residual consumed by

@@ -7,6 +7,7 @@ Authors: Quang Dao, Chung Thai Nguyen
 import ArkLib.Data.Hash.DuplexSponge
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Preliminaries
 import ArkLib.OracleReduction.FiatShamir.Basic
+import ArkLib.OracleReduction.FiatShamir.SingleSalt
 
 /-!
 # Duplex Sponge Fiat-Shamir
@@ -652,3 +653,57 @@ def Reduction.duplexSpongeFiatShamirSaltedRandom {δ : Nat}
       (oSpec + duplexSpongeChallengeOracle StmtIn U) StmtIn WitIn StmtOut WitOut where
   prover := R.prover.duplexSpongeFiatShamirSaltedRandom (U := U) (δ := δ)
   verifier := R.verifier.duplexSpongeFiatShamirSalted (U := U)
+
+/-! ### Section 5 transform surfaces and monad stacks
+
+These top-level types feed CO25 §5.4–5.8 (the trace/prover transforms). They are kept here, next
+to the salted DSFS surfaces above, because the Section 5 files (`TraceTransform`, `ProverTransform`)
+all take `[Codec pSpec U]` and reuse the same `gSpec`/`UnitSampleM` shapes. -/
+
+/-- Proof-string format for the salted DSFS surface (`τ` plus prover messages). -/
+abbrev DSSaltedProof {n : ℕ} (pSpec : ProtocolSpec n) (U : Type) (δ : Nat) :=
+  Vector U δ × pSpec.Messages
+
+/-- Paper-faithful type of the malicious DSFS prover `𝒫̃` (CO25 §5.4): queries
+`(h, p, p⁻¹) = duplexSpongeChallengeOracle` plus an ambient `oSpec`, and outputs a salted proof
+`(x, (τ, messages))` with on-sponge salt `τ : Vector U δ`. -/
+abbrev MaliciousProver {n : ℕ} {ι : Type} (oSpec : OracleSpec ι) (pSpec : ProtocolSpec n)
+    (StmtIn U : Type) [SpongeUnit U] [SpongeSize] (δ : ℕ) :=
+  OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
+    (StmtIn × DSSaltedProof (pSpec := pSpec) (U := U) δ)
+
+/-- `OracleComp σ` paired with a paper-faithful abort layer (`OptionT`).
+
+`OracleComp σ` queries `σ`; `OptionT` adds `none = abort` (CO25 §5 `err` outcome). Section 5
+simulators all live in this stack with various choices of `σ`. -/
+abbrev AbortComp {ι : Type} (σ : OracleSpec ι) := OptionT (OracleComp σ)
+
+/-- Shared abort/randomness monad stack used by Section 5 algorithms.
+
+`OptionT` provides paper-binary `abort`/`success`; the inner `OracleComp (Unit →ₒ U)` provides the
+fresh `𝒰(Σ)` sampling oracle. This is `AbortComp (Unit →ₒ U)`. -/
+abbrev UnitSampleM (U : Type) [SpongeUnit U] := AbortComp (Unit →ₒ U)
+
+section TransformTypes
+
+variable {ι : Type} {oSpec : OracleSpec ι}
+  {n : ℕ} {pSpec : ProtocolSpec n}
+  {StmtIn : Type} {U : Type} [SpongeUnit U] [SpongeSize]
+  {δ : Nat}
+  [codec : Codec pSpec U]
+
+/-- CO25 §5.4 — External challenge-oracle family augmented with the auxiliary sampling oracles.
+
+`D2SChallengePlusUnitOracle challengeSpec` is `challengeSpec + (Unit →ₒ U) + unifSpec`. -/
+abbrev D2SChallengePlusUnitOracle {κ : Type} (challengeSpec : OracleSpec κ) :=
+  challengeSpec + ((Unit →ₒ U) + unifSpec)
+
+/-- CO25 §5.4 Eq. 16 — shorthand for the recurring `gᵢ`-realization shape: a `QueryImpl`
+from the `gSpec` source into `StateT M (OptionT (OracleComp …))` over the basic-FS-style
+outer spec `D2SChallengePlusUnitOracle challengeSpec`. -/
+abbrev GImpl {κ : Type} (challengeSpec : OracleSpec κ) (M : Type) :=
+  QueryImpl (gSpec (U := U) StmtIn pSpec δ)
+    (StateT M
+      (OptionT (OracleComp (D2SChallengePlusUnitOracle (U := U) challengeSpec))))
+
+end TransformTypes
