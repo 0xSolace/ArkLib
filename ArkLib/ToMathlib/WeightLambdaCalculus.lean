@@ -11,8 +11,9 @@ import Mathlib
 
 This module establishes the arithmetic and algebraic properties of the bivariate $\Lambda$-weight
 on the ring of regular elements $\mathcal{O}_H$ (formalized as `weight_Λ_over_𝒪`). This calculus
-supports the inductive weight bounds utilized in [BCIKS20] Appendix A.4 (Hensel lifting weight induction),
-which bounds the algebraic complexity of the Hensel numerator sequence $\beta_t$.
+supports the inductive weight bounds utilized in [BCIKS20] Appendix A.4 (Hensel lifting
+weight induction), which bounds the algebraic complexity of the Hensel numerator sequence
+$\beta_t$.
 
 The weight $\Lambda(a)$ for $a \in \mathcal{O}_H$ measures the degree complexity of its canonical
 polynomial representative. This module establishes:
@@ -21,8 +22,8 @@ polynomial representative. This module establishes:
 - Base weights for constants and leading coefficient multiples (such as the regular element $W$).
 - Monotonicity of the weight with respect to the degree parameter $D$.
 
-The weights take values in $\mathbb{N} \cup \{-\infty\}$ (represented as `WithBot ℕ`), where $-\infty$
-behaves as the additive identity and bottom element under the join.
+The weights take values in $\mathbb{N} \cup \{-\infty\}$ (represented as `WithBot ℕ`), where
+$-\infty$ behaves as the additive identity and bottom element under the join.
 -/
 
 namespace ArkLib

@@ -17,22 +17,25 @@ of zero (i.e., a positive order).
 ## Mathematical Formulation
 
 Let $K$ be a field, and let $g(X) \in K[[X]]$ be a power series. Mathlib defines the substitution
-operator $f(g(X))$ for $f \in K[[X]]$ to be well-defined if the constant coefficient of $g$ is nilpotent,
-which is packaged as the `PowerSeries.HasSubst` predicate.
+operator $f(g(X))$ for $f \in K[[X]]$ to be well-defined if the constant coefficient of $g$
+is nilpotent, which is packaged as the `PowerSeries.HasSubst` predicate.
 
 Over a field $K$, the only nilpotent element is zero. Therefore, we have the equivalence:
 $$\text{HasSubst}(g) \iff \text{constantCoeff}(g) = 0$$
 
-In the context of the BCIKS substitution $X \mapsto X - x_0$ used in Hensel lifting, the shift series is
+In the context of the BCIKS substitution $X \mapsto X - x_0$ used in Hensel lifting, the
+shift series is
 $$g(X) = -x_0 + X$$
-If the field is $K = \mathbb{L}_H$, which contains the base field $F$, the constant coefficient is
-$0$ if and only if $x_0 = 0$. For any off-center point $x_0 \neq 0$, the substitution operator is not
-well-defined under the standard Mathlib definition.
+If the field is $K = \mathbb{L}_H$, which contains the base field $F$, the constant
+coefficient is $0$ if and only if $x_0 = 0$. For any off-center point $x_0 \neq 0$, the
+substitution operator is not well-defined under the standard Mathlib definition.
 
 ## Key Formalizations
-* `hasSubst_iff_constantCoeff_eq_zero_of_field`: Pointwise equivalence of the substitution condition to a zero constant coefficient over a field.
+* `hasSubst_iff_constantCoeff_eq_zero_of_field`: Pointwise equivalence of the substitution
+  condition to a zero constant coefficient over a field.
 * `constantCoeff_shiftSeries`: Computes the constant coefficient of the shift series.
-* `hasSubst_shiftSeries_iff_eq_zero`: Shows that the BCIKS shift series is substitutable if and only if the expansion center is $0$.
+* `hasSubst_shiftSeries_iff_eq_zero`: Shows that the BCIKS shift series is substitutable if
+  and only if the expansion center is $0$.
 -/
 
 open Polynomial PowerSeries
@@ -45,13 +48,15 @@ namespace SubstFieldCaveat
 
 /-! ### Substitution Conditions over Fields -/
 
-/-- Characterizes the substitution condition in terms of the nilpotency of the constant coefficient. -/
+/-- Characterizes the substitution condition in terms of the nilpotency of the constant
+coefficient. -/
 theorem hasSubst_iff_isNilpotent_constantCoeff {S : Type*} [CommRing S] (g : PowerSeries S) :
     PowerSeries.HasSubst g ↔ IsNilpotent (PowerSeries.constantCoeff g) := by
   unfold PowerSeries.HasSubst
   rfl
 
-/-- Over a field, a power series is substitutable if and only if its constant coefficient is zero. -/
+/-- Over a field, a power series is substitutable if and only if its constant coefficient is
+zero. -/
 theorem hasSubst_iff_constantCoeff_eq_zero_of_field {K : Type*} [Field K] (g : PowerSeries K) :
     PowerSeries.HasSubst g ↔ PowerSeries.constantCoeff g = 0 := by
   rw [hasSubst_iff_isNilpotent_constantCoeff]
@@ -98,7 +103,8 @@ theorem fieldTo𝕃_neg_eq_zero_iff {H : F[X][Y]} [Fact (Irreducible H)] [Fact (
 
 variable {H : F[X][Y]} [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 
-/-- Proves that the shift series satisfies the substitution condition if and only if the expansion center is $0$. -/
+/-- Proves that the shift series satisfies the substitution condition if and only if the
+expansion center is $0$. -/
 theorem hasSubst_shiftSeries_iff_eq_zero (x₀ : F) :
     PowerSeries.HasSubst (shiftSeries x₀ H) ↔ x₀ = 0 := by
   rw [hasSubst_iff_constantCoeff_eq_zero_of_field, constantCoeff_shiftSeries,
