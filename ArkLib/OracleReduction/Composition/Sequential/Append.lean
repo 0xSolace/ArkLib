@@ -2549,6 +2549,25 @@ theorem append_PrvState_last (hn : 0 < n) :
         ext; simp; omega]
   exact h
 
+/-- **Output assembly at the final appended round.**  For a non-empty right block (`0 < n`), the
+appended prover's `output` at the last round is `P₂`'s `output` applied to the final state
+transported by `append_PrvState_last` — exactly `Prover.append`'s `output` branch for `n ≠ 0`.  This
+is the `output`-assembly step of the right-block characterization of `append_run`.  (The `DCast.dcast`
+of the definition is reconciled to `_root_.cast` via `dcast_eq_root_cast`; the residual transport is
+closed by `cast_heq`/proof-irrelevance.) -/
+theorem append_output_last (hn : 0 < n)
+    (state : (P₁.append P₂).PrvState (Fin.last (m + n))) :
+    (P₁.append P₂).output state = P₂.output (cast (append_PrvState_last hn) state) := by
+  have hn0 : ¬ (n = 0) := by omega
+  show (P₁.append P₂).output state = _
+  unfold Prover.append
+  simp only [hn0, ↓reduceDIte]
+  congr 1
+  apply eq_of_heq
+  refine HEq.trans ?_ (cast_heq (append_PrvState_last hn) state).symm
+  simp only [dcast_eq_root_cast, eq_mp_eq_cast, _root_.cast_cast]
+  exact cast_heq _ _
+
 /-- **Right interior-round `sendMessage` reduction.**  At an interior right round `Fin.natAdd m k`
 (`k : Fin n`, `k > 0`, the `i > m` branch of `Prover.append.sendMessage`), the appended prover's
 `sendMessage` is heterogeneously equal to `P₂`'s `sendMessage` at round `k`. -/

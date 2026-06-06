@@ -431,12 +431,13 @@ theorem seqCompose_perfectCompleteness
         init impl (rel 0) (rel (Fin.last m)) :=
   hSeqComposePerfectCompleteness
 
+set_option maxHeartbeats 1000000 in
+-- The induction proof creates large dependent Fin goals in the successor case.
 /-- **Brick (issue #25): n-ary `seqCompose` perfect completeness reduces to the binary `append`
 keystone.** By induction on `m`: base case `Reduction.id_perfectCompleteness`; step unfolds via
 `seqCompose_succ` and discharges the binary `append` with `hAppend` + the IH. Feeding the eventual
 unconditional binary `reduction_append_perfectCompleteness` as `hAppend` closes the n-ary statement.
 Modeled on the proven `seqCompose'_appendCoherent` induction. -/
-set_option maxHeartbeats 1000000 in
 theorem seqCompose_perfectCompleteness_of_append {m : ℕ}
     (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
     {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
@@ -456,20 +457,23 @@ theorem seqCompose_perfectCompleteness_of_append {m : ℕ}
   induction m with
   | zero =>
     rw [seqCompose_zero]
-    -- `Fin.last 0` is definitionally `0`; supplying `init`/`impl` explicitly lets
-    -- unification assign `rel 0` before the (cheap, m = 0) defeq check on the indices.
-    exact Reduction.id_perfectCompleteness init impl
+    simpa using
+      (Reduction.id_perfectCompleteness (init := init) (impl := impl) (rel := rel 0))
   | succ m ih =>
-    rw [seqCompose_succ]
+    change ((R 0).append
+        (seqCompose (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))))
+      |>.perfectCompleteness init impl (rel 0) (rel (Fin.succ (Fin.last m)))
     exact hAppend (R 0) _ (h 0)
       (ih (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))
         (fun i => rel (Fin.succ i)) (fun i => h (Fin.succ i)))
 
+set_option maxHeartbeats 1000000 in
+-- The induction proof creates large dependent Fin goals in the successor case.
 /-- **Brick (issue #25): n-ary `seqCompose` completeness reduces to the binary `append` keystone.**
 Error-bearing analogue of `seqCompose_perfectCompleteness_of_append`: base case
-`Reduction.id_perfectCompleteness` (= completeness with error `0`) and `∑ (i : Fin 0) = 0`; step
-splits the error with `Fin.sum_univ_succ` into `completenessError 0 + ∑ tail` and applies `hAppend`. -/
-set_option maxHeartbeats 1000000 in
+`Reduction.id_perfectCompleteness` (= completeness with error `0`) and `∑ (i : Fin 0) = 0`;
+step splits the error with `Fin.sum_univ_succ` into `completenessError 0 + ∑ tail` and applies
+`hAppend`. -/
 theorem seqCompose_completeness_of_append {m : ℕ}
     (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
     {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
@@ -491,9 +495,14 @@ theorem seqCompose_completeness_of_append {m : ℕ}
   induction m with
   | zero =>
     rw [seqCompose_zero, Fin.sum_univ_zero]
-    exact Reduction.id_perfectCompleteness init impl
+    simpa [Reduction.perfectCompleteness] using
+      (Reduction.id_perfectCompleteness (init := init) (impl := impl) (rel := rel 0))
   | succ m ih =>
-    rw [seqCompose_succ, Fin.sum_univ_succ]
+    rw [Fin.sum_univ_succ]
+    change ((R 0).append
+        (seqCompose (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))))
+      |>.completeness init impl (rel 0) (rel (Fin.succ (Fin.last m)))
+        (completenessError 0 + ∑ i, completenessError (Fin.succ i))
     exact hAppend (R 0) _ (h 0)
       (ih (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))
         (fun i => rel (Fin.succ i)) (fun i => completenessError (Fin.succ i))
