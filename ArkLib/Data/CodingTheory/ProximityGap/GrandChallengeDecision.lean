@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOneExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
 
@@ -19,7 +20,7 @@ ABF26 §1 MCA prize predicate outside an explicit middle band of field sizes:
 
 * `mcaPrize_of_huge_field` — for `q ≥ 2^(n+128)` the formal prize predicate **holds**
   (with the vacuous maximal witness `δ* = 1`).
-* `not_mcaPrize_of_small_field` — for `q < 2¹²⁸ · (n - ⌊n/16⌋)` (and `n ≥ 16`) the
+* `not_mcaPrize_of_spike_band` — for `q < 2¹²⁸ · (n - ⌊n/16⌋)` (and `n ≥ 16`) the
   formal prize predicate is **false**: at the rate-`1/16` instance the radius-one MCA
   error already exceeds `2⁻¹²⁸`.
 * `epsMCA_one_bracket` — inside the remaining band the radius-one value is bracketed
@@ -61,7 +62,7 @@ theorem mcaPrize_of_huge_field (domain : ι ↪ F)
 `q < 2¹²⁸ · (n - ⌊n/16⌋)`, the formal §1 MCA prize predicate is false: at the prize rate
 `ρ = 1/16` (index `j = 3`) the spike floor gives `ε_mca(RS, 1) > 2⁻¹²⁸`, contradicting
 the radius-one bound forced by the endpoint collapse. -/
-theorem not_mcaPrize_of_small_field (domain : ι ↪ F)
+theorem not_mcaPrize_of_spike_band (domain : ι ↪ F)
     (hn : 16 ≤ Fintype.card ι)
     (hq : Fintype.card F <
       2 ^ (128 : ℕ) * (Fintype.card ι - ⌊prizeRates 3 * (Fintype.card ι : ℝ≥0)⌋₊)) :
@@ -111,5 +112,57 @@ theorem epsMCA_one_bracket (domain : ι ↪ F) (k : ℕ) (hk : k ≤ Fintype.car
     epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 ≤
       (2 ^ (Fintype.card ι) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
   ⟨epsMCA_one_ge domain k hk, epsMCA_le_two_pow_card_div (ReedSolomon.code domain k) 1⟩
+
+/-- Every prize rate is `≤ 1/2`. -/
+private lemma prizeRates_le_half (j : Fin 4) : prizeRates j ≤ 1 / 2 := by
+  unfold prizeRates
+  have h2 : (2 : ℝ≥0) ^ (1 : ℕ) ≤ 2 ^ (j.val + 1) :=
+    pow_le_pow_right₀ one_le_two (by omega)
+  rw [pow_one] at h2
+  exact div_le_div_of_nonneg_left (by norm_num) (by norm_num) h2
+
+/-- For `n ≥ 2`, every prize-rate degree satisfies `k_j + 1 ≤ n`. -/
+private lemma prizeRate_floor_add_one_le (j : Fin 4) (hn : 2 ≤ Fintype.card ι) :
+    ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1 ≤ Fintype.card ι := by
+  set k := ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ with hk_def
+  have h2 : (2 : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0) := by exact_mod_cast hn
+  have hkr : (k : ℝ≥0) ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) := by
+    rw [hk_def]
+    refine le_trans (Nat.floor_le (zero_le _)) ?_
+    gcongr
+    exact prizeRates_le_half j
+  have hcast : ((k + 1 : ℕ) : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0) := by
+    push_cast
+    calc (k : ℝ≥0) + 1
+        ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) + 1 := by gcongr
+      _ ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) + (1 / 2) * (Fintype.card ι : ℝ≥0) := by
+          gcongr
+          calc (1 : ℝ≥0) = (1 / 2) * 2 := by norm_num
+            _ ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) := by gcongr
+      _ = (Fintype.card ι : ℝ≥0) := by
+          rw [← add_mul]
+          norm_num
+  exact_mod_cast hcast
+
+/-- **Complete decision of the formal §1 MCA prize above the quadratic field threshold.**
+Whenever `q > C(C(n, k_j+1), 2)` for each prize rate (so the radius-one value is *exactly*
+`C(n, k_j+1)/q` by `epsMCA_one_eq_choose_div`), the formal MCA prize predicate is
+equivalent to four explicit numeric inequalities `C(n, k_j+1)/q ≤ 2⁻¹²⁸`. In this regime
+the formalized Grand MCA Challenge is therefore *fully decided* by finite arithmetic. -/
+theorem mcaPrize_iff_of_quadratic_field (domain : ι ↪ F)
+    (hn : 2 ≤ Fintype.card ι)
+    (hq : ∀ j : Fin 4,
+      (Nat.choose (Fintype.card ι)
+        (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1)).choose 2 < Fintype.card F) :
+    GrandChallenges.mcaPrize domain ↔
+      ∀ j : Fin 4,
+        ((Nat.choose (Fintype.card ι)
+            (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ℕ) : ℝ≥0∞) /
+            (Fintype.card F : ℝ≥0∞) ≤ (epsStar : ENNReal) := by
+  unfold GrandChallenges.mcaPrize GrandChallenges.grandMCAChallengeRSrate
+    GrandChallenges.grandMCAChallengeRS
+  exact forall_congr' fun j =>
+    grandMCAChallenge_iff_choose_le domain
+      (prizeRate_floor_add_one_le j hn) (hq j) epsStar
 
 end ProximityGap
