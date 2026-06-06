@@ -255,9 +255,9 @@ theorem ggr11_treeStructure_of_le_exp [Fintype F] [Nonempty ι]
   · -- base: Λ^0 = 1 ≤ 1
     intro b'; simp
   · -- Red column: Λ^(r'+1) ≤ Λ · Λ^(r')  (equality)
-    intro r'; rw [pow_succ]; rw [mul_comm]
+    intro r'; simp only; rw [pow_succ, mul_comm]
   · -- Pascal: Λ^(r'+1) ≤ Λ^(r'+1) + Λ · Λ^(r')
-    intro b' r'; exact le_add_right (le_refl _)
+    intro b' r'; simp only; exact le_add_right (le_refl _)
 
 set_option linter.unusedFintypeInType false in
 /-- Over a *finite* field the in-tree elementary product bound discharges the

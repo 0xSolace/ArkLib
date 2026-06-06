@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
+import ArkLib.Data.CodingTheory.ListDecoding.Bounds
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.ReedSolomon
@@ -88,7 +89,8 @@ theorem averaging_real
               * ((Fintype.card F : ℝ) - 1) ^ ⌊δ * Fintype.card ι⌋₊))
             / (Fintype.card F : ℝ) ^ (Fintype.card ι)
         ≤ ((closeCodewordsRel
-              ((ReedSolomon.code domain k : Submodule F (ι → F)) : Set (ι → F)) w δ).ncard : ℝ) := by
+              ((ReedSolomon.code domain k : Submodule F (ι → F)) : Set (ι → F))
+              w δ).ncard : ℝ) := by
   classical
   obtain ⟨w, hw⟩ := GHSZ02RS.ghsz02_rs_averaging_core domain k δ hδ_pos hδ_lt hk
   refine ⟨w, ?_⟩
@@ -96,39 +98,35 @@ theorem averaging_real
   have hqpos : (0 : ℝ) < (Fintype.card F : ℝ) := by
     exact_mod_cast Fintype.card_pos
   have hqn_pos : (0 : ℝ) < (Fintype.card F : ℝ) ^ (Fintype.card ι) := pow_pos hqpos _
-  -- Cast the integer averaging inequality to ℝ.
-  have hw' :
-      ((Fintype.card F) ^ k
-          * (Nat.choose (Fintype.card ι) ⌊δ * Fintype.card ι⌋₊
-              * (Fintype.card F - 1) ^ ⌊δ * Fintype.card ι⌋₊) : ℝ)
-        ≤ ((Fintype.card F) ^ (Fintype.card ι)
-            * (closeCodewordsRel ((ReedSolomon.code domain k : Submodule F (ι → F)) :
-                  Set (ι → F)) w δ).ncard : ℝ) := by
-    exact_mod_cast hw
+  -- Cast the integer averaging inequality to ℝ.  Name the ℕ quantities first so the
+  -- subtraction `card F - 1` is unambiguously ℕ-subtraction (not `Int.subNatNat`).
+  set Lnat : ℕ := (Fintype.card F) ^ k
+      * (Nat.choose (Fintype.card ι) ⌊δ * Fintype.card ι⌋₊
+          * (Fintype.card F - 1) ^ ⌊δ * Fintype.card ι⌋₊) with hLnat
+  set Rnat : ℕ := (Fintype.card F) ^ (Fintype.card ι)
+      * (closeCodewordsRel ((ReedSolomon.code domain k : Submodule F (ι → F)) :
+            Set (ι → F)) w δ).ncard with hRnat
+  have hw' : (Lnat : ℝ) ≤ (Rnat : ℝ) := by exact_mod_cast hw
   -- The ℕ-subtraction `(card F - 1)` casts to the ℝ-subtraction since `card F ≥ 1`.
   have hcard_ge_one : 1 ≤ Fintype.card F := Fintype.card_pos
   have hsub_cast : ((Fintype.card F - 1 : ℕ) : ℝ) = (Fintype.card F : ℝ) - 1 := by
     rw [Nat.cast_sub hcard_ge_one]; norm_num
   -- Rearrange: divide both sides by `q^n`.
   rw [div_le_iff₀ hqn_pos]
-  -- Match the LHS shape (casts of the ℕ-product) to `hw'`.
+  -- Match the LHS shape (casts of the ℕ-product) to `(Lnat : ℝ)`.
   have hLHS :
       ((Fintype.card F : ℝ) ^ k
           * ((Nat.choose (Fintype.card ι) ⌊δ * Fintype.card ι⌋₊ : ℝ)
               * ((Fintype.card F : ℝ) - 1) ^ ⌊δ * Fintype.card ι⌋₊))
-        = ((Fintype.card F) ^ k
-            * (Nat.choose (Fintype.card ι) ⌊δ * Fintype.card ι⌋₊
-                * (Fintype.card F - 1) ^ ⌊δ * Fintype.card ι⌋₊) : ℝ) := by
-    push_cast [hsub_cast]; ring
+        = (Lnat : ℝ) := by
+    rw [hLnat]; push_cast [hsub_cast]; ring
   rw [hLHS]
   -- And the RHS shape.
   have hRHS :
       ((closeCodewordsRel ((ReedSolomon.code domain k : Submodule F (ι → F)) : Set (ι → F))
             w δ).ncard : ℝ) * (Fintype.card F : ℝ) ^ (Fintype.card ι)
-        = ((Fintype.card F) ^ (Fintype.card ι)
-            * (closeCodewordsRel ((ReedSolomon.code domain k : Submodule F (ι → F)) :
-                  Set (ι → F)) w δ).ncard : ℝ) := by
-    push_cast; ring
+        = (Rnat : ℝ) := by
+    rw [hRnat]; push_cast; ring
   rw [hRHS]
   exact hw'
 
@@ -137,7 +135,7 @@ theorem averaging_real
 `(n + 1 − r)^r / r! ≤ C(n,r)` over `ℝ`. This is Mathlib's `Nat.pow_le_choose` specialised to
 `ℝ`; it is the real engine of GHSZ02 Cor 20's `C(n,a) ≥ (n/a)^a` step. -/
 theorem choose_real_ge_pow_div (r n : ℕ) :
-    (((n + 1 - r : ℕ) : ℝ) ^ r) / (r ! : ℝ) ≤ (Nat.choose n r : ℝ) :=
+    (((n + 1 - r : ℕ) : ℝ) ^ r) / (Nat.factorial r : ℝ) ≤ (Nat.choose n r : ℝ) :=
   Nat.pow_le_choose r n
 
 end GHSZ02Cor20
@@ -221,5 +219,35 @@ theorem hcount_of_largeN
       _ ≤ _ := hresid
   -- Chain through the averaging brick.
   exact le_trans hdiv hw
+
+/-- **GHSZ02 Corollary 20 — end-to-end front door (residual ⟹ Ω list-size bound).**
+
+The full per-instance ABF26 T3.13 conclusion, derived from the single named asymptotic residual
+`GHSZ02LargeN`. There exists a word `w` and an Ω-constant `c > 0` (witnessed by `c = 1/2`) with
+
+  `|Λ(RS[domain, ⌊p^α⌋], δ, w)| > c · p^{p^α·β/2}`.
+
+This chains `hcount_of_largeN` (averaging core + residual ⟹ `hcount`) into the in-tree, fully
+proven `rs_lambda_large_prime_ghsz02_of_residuals` (Ω-constant + strict-inequality bookkeeping).
+The only ingredient that is *not* discharged in-tree is `GHSZ02LargeN`, the GHSZ02 Cor-20
+`for large enough p` real inequality. -/
+theorem omega_listsize_of_largeN
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (α β : ℝ) (p : ℕ) (hp2 : 2 ≤ p)
+    (hcardF : Fintype.card F = p) (hcardι : Fintype.card ι = p)
+    (domain : ι ↪ F) (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hk : Nat.floor ((p : ℝ) ^ α) ≤ p)
+    (hlargeN : GHSZ02LargeN α β p δ) :
+    ∃ (w : ι → F) (c : ℝ), 0 < c ∧
+      ((closeCodewordsRel
+          ((ReedSolomon.code domain (Nat.floor ((p : ℝ) ^ α)) : Set (ι → F))) w δ).ncard : ℝ) >
+        c * (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) := by
+  obtain ⟨w, hcount⟩ :=
+    hcount_of_largeN α β p hp2 hcardF hcardι domain δ hδ_pos hδ_lt hk hlargeN
+  have hp1 : (1 : ℝ) ≤ p := by exact_mod_cast (by omega : 1 ≤ p)
+  obtain ⟨c, hc_pos, hc⟩ :=
+    rs_lambda_large_prime_ghsz02_of_residuals α β p hp1 domain w δ hcount
+  exact ⟨w, c, hc_pos, hc⟩
 
 end CodingTheory

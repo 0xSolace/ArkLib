@@ -79,20 +79,22 @@ theorem ofReal_le_card_div_of_card_mul_le
     exact_mod_cast (Fintype.card_pos (α := F)).ne'
   -- Real inequality: 1/c ≤ m / |F|.
   have hreal : (1 : ℝ) / c ≤ (m : ℝ) / Fintype.card F := by
-    rw [div_le_div_iff hc hqpos]
+    rw [div_le_div_iff₀ hc hqpos]
     -- 1 * |F| ≤ m * c
     have : (Fintype.card F : ℝ) ≤ (m : ℝ) * c := by rw [mul_comm] at hcard ⊢; linarith [hcard]
     linarith [this]
-  -- Convert RHS coe-division to `ENNReal.ofReal (m/|F|)`.
-  have hrhs : ((m : ℝ≥0) : ENNReal) / (Fintype.card F : ENNReal)
+  -- Convert RHS coe-division to `ENNReal.ofReal (m/|F|)`. The front door's denominator is
+  -- `((Fintype.card F : ℕ) : ENNReal)`; rewrite it through `ℝ≥0` to apply `ENNReal.coe_div`.
+  have hden : ((Fintype.card F : ℕ) : ENNReal) = ((Fintype.card F : ℝ≥0) : ENNReal) := by
+    norm_cast
+  have hrhs : ((m : ℝ≥0) : ENNReal) / ((Fintype.card F : ℕ) : ENNReal)
       = ENNReal.ofReal ((m : ℝ) / Fintype.card F) := by
+    rw [hden]
     rw [show ((m : ℝ≥0) : ENNReal) / ((Fintype.card F : ℝ≥0) : ENNReal)
         = (((m : ℝ≥0) / (Fintype.card F : ℝ≥0) : ℝ≥0) : ENNReal) by
       rw [ENNReal.coe_div hFne]]
     rw [ENNReal.coe_nnreal_eq]
     norm_num [ENNReal.ofReal_div_of_pos hqpos]
-  rw [show ((Fintype.card F : ℕ) : ENNReal) = ((Fintype.card F : ℝ≥0) : ENNReal) by
-        norm_cast] at hrhs
   rw [hrhs]
   exact ENNReal.ofReal_le_ofReal hreal
 

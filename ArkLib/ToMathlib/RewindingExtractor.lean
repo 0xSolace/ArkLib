@@ -43,15 +43,15 @@ of variation is the *fresh* verifier challenge. Concretely we provide:
    challenge → completion function) accepts on two distinct challenges and the extractor is
    2-special-sound, then the extractor outputs a valid witness. This is the combinatorial core.
 
-4. `prob_two_accepting_challenges_of_gt_inv` and `twoSpecialSound_forkingLemma` — the
+4. `exists_two_accepting_of_gt_inv` and `twoSpecialSound_forkingLemma` — the
    **probabilistic forking lemma** in the simplest 2-special-sound case: if the prover's
    single-challenge success probability *strictly exceeds* `1/|Challenge|` (the classical
    2-special-sound knowledge error), then two distinct accepting challenges exist, and hence the
    rewinding extractor succeeds. Proven with the in-tree probability machinery
    (`prob_uniform_le_inv_of_card_le_one`, the contrapositive of the `card ≤ 1` bound).
 
-5. `rewinding_failure_le_collision_bound` — a **collision-probability** bound for the rewinding
-   experiment, derived from the proven brick
+5. `exists_schedule_with_many_distinct_challenges` — a **collision-probability** bound for the
+   rewinding experiment, derived from the proven brick
    `Probability.exists_large_image_of_pairwise_collision_bound` (ABF26 Claim B.1): the two
    independent fresh challenges of a fork *collide* (and thus the fork yields no usable pair) with
    probability controlled by the per-pair collision rate. This is the form in which the brick feeds
@@ -425,17 +425,3 @@ theorem rewindingKS_of_extractor
   ⟨E, hE⟩
 
 end Bridge
-
--- AXIOM AUDIT (temporary)
-#print axioms Extractor.forkingExtractor_succeeds
-#print axioms Extractor.exists_two_accepting_of_gt_inv
-#print axioms Extractor.twoSpecialSound_forkingLemma
-#print axioms Extractor.exists_schedule_with_many_distinct_challenges
-#print axioms Extractor.knowledgeSoundnessViaRewinding.extracts
-#print axioms Bridge.knowledgeSound_of_rewinding
-#print axioms Bridge.rewindingKS_of_extractor
-#print axioms Extractor.twoSpecialSoundKnowledgeError
-#print axioms Extractor.knowledgeSoundnessViaRewinding
-#print axioms Extractor.RewindingExtractor.TwoSpecialSound
-#print axioms Extractor.RewindingExtractor
-#print axioms Bridge.StraightlineOfRewinding
