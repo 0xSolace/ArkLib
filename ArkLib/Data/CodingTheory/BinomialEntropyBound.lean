@@ -166,7 +166,7 @@ theorem npow_le_succ_mul_choose_mul_pow (n k : ℕ) (hk : k ≤ n) :
   rw [hsum, hconst] at hbound
   simpa only [binTerm] using hbound
 
--- Audit: the mode-term bound is kernel-clean (no `sorryAx`).
-#print axioms npow_le_succ_mul_choose_mul_pow
-
 end CodingTheory
+
+-- Audit: the mode-term bound is kernel-clean (no `sorryAx`).
+#print axioms CodingTheory.npow_le_succ_mul_choose_mul_pow
