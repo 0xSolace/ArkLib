@@ -810,6 +810,16 @@ noncomputable def fenziSanso_upperBound_attack_concrete
     show koalaIRSConcrete.soundnessError ≥ (2 : ℝ≥0) ^ (-(116 : ℝ))
     exact winningSetSoundness_concrete_ge_of_card x hx
 
+/-- The concrete KoalaBear-sextic winning-set cardinality residual is strong
+enough to discharge the original 116-bit leaderboard attack residual. This is
+the bridge that lets downstream users keep depending on the canonical
+`fenziSanso_upperBound_attack` name while proving only the concrete Phase-5
+cardinality statement. -/
+theorem fenziSanso_upperBound_attack_residual_of_concrete
+    (h : fenziSanso_upperBound_attack_concrete_residual) :
+    fenziSanso_upperBound_attack_residual := by
+  exact (fenziSanso_upperBound_attack_concrete h).proof
+
 /-- If the concrete Fenzi–Sanso winning-set residual holds, then the true
 bits-of-security of the concrete KoalaBear-sextic anchor is at most `116`. -/
 theorem koalaIRSConcrete_bitsOfSecurity_le_116
