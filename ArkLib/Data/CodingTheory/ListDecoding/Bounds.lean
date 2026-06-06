@@ -1779,8 +1779,9 @@ def subspaceDesign_list_decoding_cz25
   -- Missing ingredient: CZ25 Thm B.5's subspace-design list-decoding-up-to-capacity bound.
   -- |Λ(C,1-τ(1/η)-η)|≤(1-τ(1/η))/η follows from IsSubspaceDesign (in-tree D2.16) PLUS CZ25's
   -- design→list-size analysis (a dimension-counting bound on the close-codeword subspace),
-  -- which rests on L2.17 (subspaceDesign_tau_lower — STILL an external admit). Blocked
-  -- transitively on L2.17 + the CZ25 design→Λ conversion (absent). Genuinely external.
+  -- whose elementary rate lower bound prerequisite L2.17 (`subspaceDesign_tau_lower`) is now
+  -- proven in-tree. The remaining blocker is the CZ25 design→Λ conversion itself (absent).
+  -- Genuinely external.
 
 /-- **ABF26 Corollary 3.5 [CZ25 Cor 2.21] — honest reduction form.**
 
