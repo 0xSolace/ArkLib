@@ -8,6 +8,7 @@ import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ProofSystem.ToyProblem.Definitions
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.ToMathlib.RewindingExtractor
 
 /-!
 # Toy problem oracle reduction (ABF26 Construction 6.2)

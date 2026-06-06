@@ -275,7 +275,3 @@ end ArkLib
 #print axioms ArkLib.KeystoneAssembly.correlatedAgreement_listDecoding_strict_fin
 #print axioms ArkLib.KeystoneAssembly.keystone_of_section5Inputs
 #print axioms ArkLib.KeystoneAssembly.keystone_of_section5Inputs_strict
-
--- TEMP AUDIT
-#print axioms ArkLib.KeystoneAssembly.keystone_of_section5Inputs
-#print axioms ArkLib.KeystoneAssembly.keystone_of_section5Inputs_strict

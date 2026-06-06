@@ -432,6 +432,11 @@ projected onto the bundled carrier. -/
 noncomputable def ToyParams.soundnessError (p : ToyParams) : ℝ≥0 :=
   winningSetSoundness (k := p.k) p.C p.δ
 
+/-- The bundled simplified-IOR soundness error is bounded by `1`. -/
+theorem ToyParams.soundnessError_le_one (p : ToyParams) :
+    p.soundnessError ≤ 1 :=
+  _root_.ToyProblem.winningSetSoundness_le_one (k := p.k) p.C p.δ
+
 /-- The full-protocol RBR upper-bound vehicle (Lemmas 6.6 / 6.8) at a parameter
 point. -/
 noncomputable def ToyParams.toySoundnessError (p : ToyParams) : ℝ≥0 :=

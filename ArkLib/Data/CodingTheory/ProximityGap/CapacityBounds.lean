@@ -297,6 +297,70 @@ theorem rs_epsCA_small_loss_r4_10_of_residuals_prop
     (domain := domain) (k := k) (δ_fld := δ_fld) (γ := γ)
     hT492 hfloor hbound
 
+/-- **R4.10 floor-collapse arithmetic.**  The nearby internal radius
+`δ_int = δ_fld + γ/n` has the same Hamming-radius floor as `δ_fld` whenever the increment
+does not cross the next lattice boundary, i.e. `δ_fld*n + γ < ⌊δ_fld*n⌋ + 1`.
+
+This is the exact missing arithmetic condition identified by
+`r4_10_floor_collapse_hypotheses_insufficient`; unlike `0 < γ < 1`, it is strong enough to
+justify the in-tree `epsCA_eq_of_floor_eq` rewrite. -/
+lemma r4_10_floor_collapse_of_no_boundary_crossing
+    (δ_fld γ : ℝ≥0)
+    (hcross : δ_fld * (Fintype.card ι : ℝ≥0) + γ <
+        (Nat.floor (δ_fld * (Fintype.card ι : ℝ≥0)) : ℝ≥0) + 1) :
+    Nat.floor (δ_fld * Fintype.card ι) =
+      Nat.floor ((δ_fld + γ / (Fintype.card ι : ℝ≥0)) * Fintype.card ι) := by
+  set n : ℝ≥0 := Fintype.card ι with hn
+  have hnpos : 0 < n := by
+    rw [hn]
+    exact_mod_cast Fintype.card_pos
+  have hle_arg : δ_fld * n ≤ (δ_fld + γ / n) * n := by
+    calc δ_fld * n ≤ (δ_fld + γ / n) * n := by gcongr; exact le_add_of_nonneg_right (zero_le _)
+  have hfloor_le :
+      Nat.floor (δ_fld * n) ≤ Nat.floor ((δ_fld + γ / n) * n) :=
+    Nat.floor_le_floor hle_arg
+  have hmul : (δ_fld + γ / n) * n = δ_fld * n + γ := by
+    rw [add_mul, div_mul_cancel₀ _ (ne_of_gt hnpos)]
+  have hfloor_lt :
+      Nat.floor ((δ_fld + γ / n) * n) < Nat.floor (δ_fld * n) + 1 := by
+    rw [Nat.floor_lt (zero_le _)]
+    rw [hmul]
+    exact hcross
+  have hfloor_le' :
+      Nat.floor ((δ_fld + γ / n) * n) ≤ Nat.floor (δ_fld * n) := by
+    omega
+  rw [hn] at hfloor_le hfloor_le'
+  omega
+
+/-- Prop-level R4.10 reduction with the floor-collapse side condition discharged by the
+no-boundary-crossing inequality.  The only remaining substantive input is the T4.9.2 bound at
+`δ_fld + γ/n` and the real comparison between the T4.9.2 RHS and the simplified R4.10 RHS. -/
+theorem rs_epsCA_small_loss_r4_10_of_no_boundary_crossing_prop
+    (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0)
+    (h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
+                / Fintype.card ι / 3 ≤ δ_fld)
+    (hγ_pos : 0 < γ) (hγ_lt : (γ : ℝ) < 1)
+    (hcross : δ_fld * (Fintype.card ι : ℝ≥0) + γ <
+        (Nat.floor (δ_fld * (Fintype.card ι : ℝ≥0)) : ℝ≥0) + 1) :
+    let δ_int : ℝ≥0 := δ_fld + γ / (Fintype.card ι : ℝ≥0)
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let t492Bound : ℝ :=
+      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+          ((δ_int : ℝ) / (((δ_int : ℝ) - (δ_fld : ℝ)) * Fintype.card F))
+    let smallBound : ℝ :=
+      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+          ((n * δ_fld + γ) / (γ * Fintype.card F))
+    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
+        ENNReal.ofReal t492Bound →
+    t492Bound ≤ smallBound →
+    rs_epsCA_small_loss_r4_10 domain k δ_fld γ h_dmin hγ_pos hγ_lt := by
+  intro δ_int n ρ t492Bound smallBound hT492 hbound
+  refine rs_epsCA_small_loss_r4_10_of_residuals_prop
+    (domain := domain) (k := k) (δ_fld := δ_fld) (γ := γ)
+    h_dmin hγ_pos hγ_lt hT492 ?_ hbound
+  exact r4_10_floor_collapse_of_no_boundary_crossing (ι := ι) δ_fld γ hcross
+
 /-- The currently stated `0 < γ < 1` hypotheses do not by themselves imply the
 floor-collapse side condition needed in `rs_epsCA_small_loss_r4_10`.
 
