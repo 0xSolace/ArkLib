@@ -1676,13 +1676,19 @@ theorem ClaimA2_α_mul_Wξ_eq_embedding_β (x₀ : F) (R : F[X][X][Y])
         * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
         * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)
       = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
+  have hexp : ClaimA2.henselDenominatorExponent t = 2 * t - 1 := by
+    by_cases ht : t = 0
+    · simp [ClaimA2.henselDenominatorExponent, ht]
+    · simp [ClaimA2.henselDenominatorExponent, ht]
   -- Unfold the definition of `α_t`; the `let W` in `ClaimA2.α` is `liftToFunctionField …`.
   change embeddingOf𝒪Into𝕃 H (ClaimA2.β R t)
         / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
-            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^
+                ClaimA2.henselDenominatorExponent t)
         * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
         * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)
       = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t)
+  rw [hexp]
   rw [mul_assoc]
   exact div_mul_cancel₀ _ hden
 
