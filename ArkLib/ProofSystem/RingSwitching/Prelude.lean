@@ -1758,6 +1758,18 @@ theorem probEvent_eval_eq_le {L : Type} [CommRing L] [IsDomain L]
   rw [hev]
   exact probEvent_eval_zero_le (p - q) hsub d hd
 
+/-- **Degree-2 agreement bound for weakened KState (issue #29).**
+The iterated ring-switching sumcheck round compares two degree-`≤ 2` univariate polynomials:
+the prover message `h_i` and the ground-truth round polynomial `h_star`. This specialization packages
+the reusable Schwartz-Zippel bridge in exactly that bad-event shape, leaving only the verifier-run
+plumbing that extracts `hp`, `hq`, and `hpq` from the KState branch. -/
+theorem probEvent_eval_eq_degree_two_le {L : Type} [CommRing L] [IsDomain L]
+    [Fintype L] [DecidableEq L] [SampleableType L]
+    (p q : L[X]) (hpq : p ≠ q) (hp : p.natDegree ≤ 2) (hq : q.natDegree ≤ 2) :
+    Pr[fun x => p.eval x = q.eval x | ($ᵗ L)] ≤ (2 : ENNReal) / (Fintype.card L) := by
+  exact probEvent_eval_eq_le p q hpq 2
+    (le_trans (Polynomial.natDegree_sub_le p q) (max_le hp hq))
+
 end SchwartzZippelRootBound
 
 end RingSwitching
