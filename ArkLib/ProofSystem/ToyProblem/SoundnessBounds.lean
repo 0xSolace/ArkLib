@@ -8,6 +8,7 @@ import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.ProofSystem.ToyProblem.Definitions
+import ArkLib.ToMathlib.ToyStep4
 
 /-!
 # Toy problem soundness bounds (ABF26 §6)
