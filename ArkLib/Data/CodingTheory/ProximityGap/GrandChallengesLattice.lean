@@ -286,18 +286,29 @@ theorem mcaEvent_j1_exists_window_ratio_constraints
   exact ⟨S, hshape, hneS, hconstraints, T, hTS, hTcard, hne0, hγ⟩
 
 open Classical in
+/-- The J1 finite-algebra constraint for one scalar: `γ` is supported by a full or one-omitted
+window, `u₁` is non-extendable there, and every `(k+1)`-subset inside the window makes the
+line word `u₀ + γ • u₁` locally Reed-Solomon extendable. -/
+def j1RatioConstraint (domain : ι ↪ F) (k : ℕ) (u₀ u₁ : ι → F) (γ : F) : Prop :=
+  ∃ S : Finset ι,
+    (S = Finset.univ ∨ ∃ i : ι, S = Finset.univ.erase i) ∧
+    NonExtendableOn (ReedSolomon.code domain k : Set (ι → F)) S u₁ ∧
+    (∀ T : Finset ι, T ⊆ S → T.card = k + 1 →
+      cT domain k T (u₀ + γ • u₁) = 0)
+
 /-- The finite scalar set cut out by the J1 window ratio constraints.
 
 The remaining J1 algebraic core is to show this set has cardinality at most two for every
 stack `(u₀,u₁)`. -/
 noncomputable def j1RatioConstraintBadScalars
     (domain : ι ↪ F) (k : ℕ) (u₀ u₁ : ι → F) : Finset F :=
-  Finset.univ.filter fun γ : F =>
-    ∃ S : Finset ι,
-      (S = Finset.univ ∨ ∃ i : ι, S = Finset.univ.erase i) ∧
-      NonExtendableOn (ReedSolomon.code domain k : Set (ι → F)) S u₁ ∧
-      (∀ T : Finset ι, T ⊆ S → T.card = k + 1 →
-        cT domain k T (u₀ + γ • u₁) = 0)
+  Finset.univ.filter (j1RatioConstraint domain k u₀ u₁)
+
+@[simp] theorem mem_j1RatioConstraintBadScalars
+    (domain : ι ↪ F) (k : ℕ) (u₀ u₁ : ι → F) (γ : F) :
+    γ ∈ j1RatioConstraintBadScalars domain k u₀ u₁ ↔
+      j1RatioConstraint domain k u₀ u₁ γ := by
+  simp [j1RatioConstraintBadScalars]
 
 /-- Conditional J1 bad-count cap.  Once the independent finite-algebra theorem
 `(j1RatioConstraintBadScalars domain k u₀ u₁).card ≤ 2` is proved, every actual bad scalar
@@ -317,8 +328,7 @@ theorem mcaBadCount_j1_le_two_of_ratioConstraint_card_le_two
   refine le_trans (Finset.card_le_card ?_) hcard
   intro γ hγ
   rw [Finset.mem_filter] at hγ
-  rw [j1RatioConstraintBadScalars, Finset.mem_filter]
-  refine ⟨Finset.mem_univ γ, ?_⟩
+  rw [mem_j1RatioConstraintBadScalars]
   rcases mcaEvent_j1_exists_window_ratio_constraints domain hγ.2 with
     ⟨S, hshape, hneS, hconstraints, _T, _hTS, _hTcard, _hne0, _hγ⟩
   exact ⟨S, hshape, hneS, hconstraints⟩
