@@ -31,22 +31,26 @@ variable [hdiv : Fact (ϑ ∣ ℓ)]
 section SecurityRelations
 -- (moved to Basic.lean) declarations canonicalized in Basic: removed duplicates here.
 -- NOTE: `getMidCodewords` (in `Basic.lean`) folds `from level 0` over `steps := i` using the
--- (current, `Fin (ℓ+1)`-indexed) `iterated_fold`; this lemma is stated and proved against that
--- same `iterated_fold` signature so that it stays in sync with `Basic.getMidCodewords`.
+-- (current, `Fin (ℓ+1)`-indexed) `iterated_fold`. This lemma is stated and proved against that
+-- same `iterated_fold` signature (one extra fold step, `steps := ⟨1, _⟩`) so that it stays in
+-- sync with `Basic.getMidCodewords`. (The previously committed statement used a `Fin r` /
+-- `destIdx` `iterated_fold` signature that does not exist in the current module split, so it
+-- did not type-check; this restores the in-tree signature.)
 lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
   (challenges : Fin i.castSucc → L) (r_i' : L) :
   (getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := i.succ) (t := t) (challenges := Fin.snoc challenges r_i')) =
-  (fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+  (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := ⟨i, by omega⟩)
-    (h_i := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
+    (steps := ⟨1, by omega⟩)
+    (h_i_add_steps := by
+      simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
     (f := getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := i.castSucc) (t := t) (challenges := challenges))
-    (r_chal := r_i'))
+    (r_challenges := fun _ => r_i'))
   := by
   ext y
-  unfold getMidCodewords
-  conv_lhs => unfold iterated_fold
+  unfold getMidCodewords iterated_fold
   rw [Fin.dfoldl_succ_last]
   rfl
 
