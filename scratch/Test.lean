@@ -27,8 +27,7 @@ theorem run_eq_honestExecution
   unfold Prover.runToRoundDSFS
   -- Push liftM inside
   rw [OptionT.ext_iff]
-  simp only [OptionT.run_liftM, OptionT.run_bind, bind_assoc, pure_bind, OracleComp.bind_pure_comp]
-  simp only [OptionT.run_mk, Option.bind_some, Option.map_eq_map, Option.map_bind]
+  simp [liftComp_eq_liftM]
   congr
   ext x
   cases x

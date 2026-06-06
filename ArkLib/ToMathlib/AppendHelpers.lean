@@ -83,7 +83,9 @@ theorem verifier_output_mem_run_support
                     OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run
                   = some <$> OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
                       (oSpec + [pSpec.Challenge]ₒ) := by
-                rw [liftComp_eq_liftM]; rfl
+                rw [liftComp_eq_liftM]
+                simp only [OptionT.run_lift]
+                rfl
               rw [hrun, support_map, OracleComp.support_liftComp, Set.mem_image] at hLift
               obtain ⟨w, hw, hwEq⟩ := hLift
               rw [Option.some.injEq] at hwEq
