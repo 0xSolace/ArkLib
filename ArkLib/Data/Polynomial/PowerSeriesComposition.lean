@@ -439,3 +439,11 @@ This file is now **fully `sorry`-free**.  In-file `#print axioms` confirmed ever
 `fiberCard_eq_countPerms_staged` is now proven (renamed `fiberCard_eq_countPerms`). -/
 
 end ArkLib.PowerSeriesComposition
+
+-- Axiom audit: every claimed-done declaration rests only on
+-- `[propext, Classical.choice, Quot.sound]`.
+#print axioms ArkLib.PowerSeriesComposition.coeff_subst_eq_finset_sum
+#print axioms ArkLib.PowerSeriesComposition.coeff_pow_eq_compositionSum
+#print axioms ArkLib.PowerSeriesComposition.coeff_pow_eq_valueMultisetSum
+#print axioms ArkLib.PowerSeriesComposition.fiberCard_eq_countPerms
+#print axioms ArkLib.PowerSeriesComposition.coeff_pow_eq_partitionSum

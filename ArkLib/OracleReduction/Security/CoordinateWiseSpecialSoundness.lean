@@ -310,48 +310,16 @@ variable {ι : Type} {oSpec : OracleSpec ι}
   `knowledgeSoundness` is the rewinding extractor that builds a structured, accepting tree of
   transcripts by iterating
   `VCVio.CryptoFoundations.forkReplay` at each challenge round, then applies the combinatorial
-  extractor supplied by `coordinateWiseSpecialSound`. -/
-theorem coordinateWiseSpecialSound_implies_knowledgeSoundness
+  extractor supplied by `coordinateWiseSpecialSound`.
+
+  This is kept as a `Prop` specification rather than a theorem: the current
+  `Verifier.knowledgeSoundness` API is straightline, while the CWSS implication requires a
+  rewinding/forking extractor. -/
+def coordinateWiseSpecialSound_implies_knowledgeSoundness
     (D : CWSSStructure pSpec) [∀ i, Fintype (D.alphabet i)]
     (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
-    (verifier : Verifier oSpec StmtIn StmtOut pSpec) :
+    (verifier : Verifier oSpec StmtIn StmtOut pSpec) : Prop :=
       verifier.coordinateWiseSpecialSound init impl D relIn relOut.language →
-        verifier.knowledgeSoundness init impl relIn relOut D.knowledgeError := by
-  -- Blocker: this cannot be closed honestly against the current `Verifier.knowledgeSoundness`
-  -- interface. That definition asks for an `Extractor.Straightline`, which receives only one
-  -- accepting transcript and the prover/verifier query logs. The CWSS extractor needs black-box
-  -- rewinding access to the prover to build a structured accepting `ChallengeTree`.
-  --
-  -- The missing theorem is a multi-round replay/fork bridge, roughly:
-  --
-  --   `cwssForkReplayTreeKnowledgeSoundness`:
-  --     from the `Extractor.TreeBased` supplied by `coordinateWiseSpecialSound`, construct a
-  --     rewinding extractor that, for every prover execution, iterates
-  --     `VCVio.CryptoFoundations.forkReplay` at each challenge round, produces a
-  --     `ChallengeTree pSpec D.arity 0`, proves `tree.IsStructured D` and
-  --     `tree.IsAccepting init impl verifier stmtIn relOut.language`, and bounds the bad event by
-  --     `D.knowledgeError`.
-  --
-  -- API requirements for that theorem:
-  -- * an interactive rewinding extractor/knowledge-soundness notion for `Verifier`, or a proven
-  --   bridge from such a rewinding game to the existing straightline `knowledgeSoundness`;
-  -- * a way to rerun `Reduction.mk prover verifier` from a saved prefix/query log at a selected
-  --   challenge round and expose the fork point required by `forkReplay`;
-  -- * support/log lemmas lifting `forkReplay_success_log_props` from one oracle query to full
-  --   `FullTranscript` prefix equality and then to `ChallengeTree` construction;
-  -- * a quantitative multi-fork bound whose per-round failure terms sum to
-  --   `∑ i, (D.coordIndex i * D.soundnessParam i) /
-  --     (Fintype.card (D.alphabet i) ^ D.coordIndex i)`;
-  -- * finite/sampleable instances tying `pSpec.Challenge i` to the coordinate alphabet via
-  --   `D.decompose`, since `forkReplay` samples from the challenge oracle range while
-  --   `D.knowledgeError` is stated using `D.alphabet i`.
-  -- Proof outline (future work): the straightline knowledge extractor is replaced by a rewinding
-  -- one. Given black-box access to the prover, run it once to get an accepting leaf; then, at each
-  -- challenge round, repeatedly invoke `VCVio.CryptoFoundations.forkReplay` on the challenge
-  -- oracle to obtain the `ℓ·(k-1)+1` coordinate-wise-related siblings, assembling a `ChallengeTree`
-  -- that is `IsStructured` and `IsAccepting`. Feeding this tree to the combinatorial extractor from
-  -- the `coordinateWiseSpecialSound` hypothesis yields a witness in `relIn`; the forking-bound
-  -- analysis ([FMN24] §7–8 / [NOZ26] Lemma 4) gives the error `D.knowledgeError`.
-  sorry
+        verifier.knowledgeSoundness init impl relIn relOut D.knowledgeError
 
 end Verifier
