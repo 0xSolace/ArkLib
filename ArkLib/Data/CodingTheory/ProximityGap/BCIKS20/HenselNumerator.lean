@@ -1926,7 +1926,7 @@ theorem coeff_zero_eval_βHenselAssembled (x₀ : F) (R : F[X][X][Y])
 If the single successor-order residual is supplied as a hypothesis, then the assembled
 `βHensel` series is a root of `Q`. This is the hypothesis-taking version of
 `assembledSeries_isRoot`; unlike that theorem, this declaration does not depend on the
-documented residual `sorry` and is the reusable API for any future proof of the Faà-di-Bruno
+documented residual and is the reusable API for any future proof of the Faà-di-Bruno
 coefficient bridge. -/
 theorem assembledSeries_isRoot_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H)
