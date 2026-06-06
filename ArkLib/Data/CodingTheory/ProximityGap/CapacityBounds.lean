@@ -851,13 +851,12 @@ capacity-near radius `1 - k/n - η` bounded by `bound`, except with probability 
 The theorem's concrete GG25 asymptotic RHS is represented by the explicit `bound` parameter
 so this definition only claims the now-available random-domain statement surface. -/
 noncomputable def random_rs_mca
-    (F : Type*) [Field F] [Fintype F] [DecidableEq F]
+    (F : Type) [Field F] [Fintype F] [DecidableEq F]
     (n k : ℕ) (η : ℝ) (bound failure : ENNReal)
-    (hn_pos : 0 < n) (hn : n ≤ Fintype.card F) : Prop := by
+    (_hn_pos : 0 < n) (hn : n ≤ Fintype.card F) : Prop := by
   classical
   exact
     let goodDomain : Probability.SizeSubset F n → Prop := fun L =>
-      letI : Nonempty L := Probability.SizeSubset.nonempty_coe L hn_pos
       epsMCA (F := F) (A := F)
         ((ReedSolomon.code (Probability.SizeSubset.toEmbedding L) k : Set (L → F)))
         ((1 - (k : ℝ) / (n : ℝ) - η).toNNReal) ≤ bound
