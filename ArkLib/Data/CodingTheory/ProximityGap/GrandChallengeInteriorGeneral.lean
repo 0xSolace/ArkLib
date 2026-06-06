@@ -262,11 +262,14 @@ end ProximityGap
 
 /-! ## Axiom audit — every declaration must rest only on
 `[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
-#print axioms ProximityGap.GrandChallengesLattice.affineMatrix_det_natDegree_le
-#print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_of_subset_minor_roots
-#print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_of_nondegenerate_minor
-#print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_two_via_2x2
-#print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_three_via_3x3
-#print axioms ProximityGap.GrandChallengesLattice.affineSystemBadScalars_card_le_jp1_via_minor
-#print axioms ProximityGap.GrandChallengesLattice.epsMCA_interiorJ2_ge
-#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lt_two_of_interiorJ2_gt
+section AxiomAudit
+open ProximityGap.GrandChallengesLattice
+#print axioms affineMatrix_det_natDegree_le
+#print axioms affineSystemBadScalars_card_le_of_subset_minor_roots
+#print axioms affineSystemBadScalars_card_le_of_nondegenerate_minor
+#print axioms affineSystemBadScalars_card_le_two_via_2x2
+#print axioms affineSystemBadScalars_card_le_three_via_3x3
+#print axioms affineSystemBadScalars_card_le_jp1_via_minor
+#print axioms epsMCA_interiorJ2_ge
+#print axioms mcaThreshold_lt_two_of_interiorJ2_gt
+end AxiomAudit
