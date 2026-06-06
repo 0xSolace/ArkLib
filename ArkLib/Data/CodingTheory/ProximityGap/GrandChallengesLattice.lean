@@ -307,6 +307,13 @@ noncomputable def latticeIndexOf (δ : ℝ≥0) (hδ : δ ≤ 1) : Fin (Fintype.
 @[simp] theorem latticeIndexOf_val (δ : ℝ≥0) (hδ : δ ≤ 1) :
     (latticeIndexOf (ι := ι) δ hδ).val = Nat.floor (δ * (Fintype.card ι : ℝ≥0)) := rfl
 
+/-- Rounding a lattice point back to an index recovers that index. -/
+@[simp] theorem latticeIndexOf_mcaLatticePoint (j : Fin (Fintype.card ι + 1)) :
+    latticeIndexOf (ι := ι) (mcaLatticePoint (Fintype.card ι) j)
+      (mcaLatticePoint_le_one (Fintype.card ι) j) = j := by
+  ext
+  rw [latticeIndexOf_val, floor_mcaLatticePoint _ Fintype.card_pos]
+
 /-- A uniform per-stack bad-scalar count bound gives an `ε_mca` upper bound.
 
 This is the faithful-lattice-facing form of the finite bad-`γ` counting strategy: to prove a
@@ -331,6 +338,52 @@ def MCALowerWitness.ofBadCountLe
     MCALowerWitness C ε_star :=
   MCALowerWitness.ofLe hδ
     (le_trans (epsMCA_le_of_forall_mcaBadCount_le C δ hcard) hB)
+
+/-- Radius-`1/n` bad-count upper bounds, such as the J1 algebraic theorem, packaged as an
+MCA lower witness.  The only remaining inputs are the uniform bad-scalar count bound and the
+normalisation inequality `B / |F| ≤ ε*`. -/
+def MCALowerWitness.ofBadCountLe_j1
+    (C : Set (ι → F)) {ε_star : ℝ≥0} {B : ENNReal}
+    (hcard : ∀ u : WordStack F (Fin 2) ι,
+      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩
+      (mcaBadCount (F := F) C (mcaLatticePoint (Fintype.card ι) j1)
+        (u 0) (u 1) : ENNReal) ≤ B)
+    (hB : B / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    MCALowerWitness C ε_star := by
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  exact MCALowerWitness.ofBadCountLe C
+    (mcaLatticePoint_le_one (Fintype.card ι) j1)
+    (by simpa [j1] using hcard) hB
+
+/-- Radius-`1/n` bad-count upper bounds directly give the faithful MCA threshold lower
+bracket `1 ≤ δ*_C`.  This is the Lean-facing endpoint needed by the J1 route before pairing
+with an adjacent upper witness. -/
+theorem one_le_mcaThreshold_of_badCountLe_j1
+    (C : Set (ι → F)) {ε_star : ℝ≥0} {B : ENNReal}
+    (hcard : ∀ u : WordStack F (Fin 2) ι,
+      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩
+      (mcaBadCount (F := F) C (mcaLatticePoint (Fintype.card ι) j1)
+        (u 0) (u 1) : ENNReal) ≤ B)
+    (hB : B / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    let w : MCALowerWitness C ε_star := MCALowerWitness.ofBadCountLe_j1 C hcard hB
+    let hne := mcaThresholdExists_of_MCALowerWitness C ε_star w
+    j1 ≤ mcaThreshold C ε_star hne := by
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  let w : MCALowerWitness C ε_star := MCALowerWitness.ofBadCountLe_j1 C hcard hB
+  let hne := mcaThresholdExists_of_MCALowerWitness C ε_star w
+  have hle := MCALowerWitness_le_mcaThreshold C ε_star hne w
+  simpa [w, MCALowerWitness.ofBadCountLe_j1, j1] using hle
 
 /-- `ε_mca` at a real radius equals `ε_mca` at its lattice point `⌊δ·n⌋/n` (step structure):
 the radius enters only through `⌊δ·n⌋`. -/
@@ -1975,6 +2028,70 @@ theorem listPrizeLatticeResolved_of_johnson_sq_rsDistance_and_elias_next
     simpa [hminDist r] using hsq r
   · intro r
     simpa [hrank r] using hvol_next r
+
+/-- Numerics-facing ABF26 LD closing criterion with the standard Reed-Solomon invariants
+discharged from the degree side conditions.
+
+For each prize rate, it is enough to prove the concrete degree is positive and at most the
+block length.  The wrapper supplies `Code.minDist RS = n - k + 1` via
+`ReedSolomon.minDist_eq'` and `Module.finrank RS = k` via
+`ReedSolomon.dim_eq_deg_of_le'`, leaving only the Johnson/Elias arithmetic certificates. -/
+theorem listPrizeLatticeResolved_of_johnson_sq_rsDegreeLe_and_elias_next
+    (domain : ι ↪ F) (m : ℕ)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hm : m ≠ 0)
+    (hdeg_pos : ∀ r : Fin 4,
+      0 < ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+    (hdeg_le : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ ≤ Fintype.card ι)
+    (hnext : ∀ r : Fin 4, (τ r).val + 1 < Fintype.card ι)
+    (hq1 : 1 < Fintype.card F)
+    (hP : ∀ r : Fin 4,
+      (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+        ((Fintype.card ι - (τ r).val : ℕ) : ℝ))
+    (hsq : ∀ r : Fin 4,
+      ((ℓ r : ℝ) + 1)
+          * ((((Fintype.card ι - (τ r).val : ℕ) : ℝ)) -
+              (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+        > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+          * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))
+              + (ℓ r : ℝ)
+                * (((Fintype.card ι -
+                    (Fintype.card ι -
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ℕ) : ℝ) -
+                    (Fintype.card ι : ℝ) / (Fintype.card F : ℝ))))
+    (hpow : ∀ r : Fin 4,
+      ((ℓ r : ENNReal)) ^ m ≤
+        (epsStar : ENNReal) * (Fintype.card F : ENNReal))
+    (hvol_next : ∀ r : Fin 4,
+      (epsStar : ENNReal) * (Fintype.card F : ENNReal) <
+        ENNReal.ofReal
+          ((CodingTheory.hammingBallVolume (Fintype.card F)
+              (((((τ r).val + 1 : ℕ) : ℝ≥0) /
+                    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+              (Fintype.card ι) : ℝ)
+            / (Fintype.card F : ℝ) ^
+                ((Fintype.card ι : ℝ) -
+                  ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)))
+    (hne : ∀ r : Fin 4,
+      (GrandChallenges.listLatticeSet
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar).Nonempty) :
+    listPrizeLatticeResolved domain m τ := by
+  refine listPrizeLatticeResolved_of_johnson_sq_rsDistance_and_elias_next
+    domain m τ ℓ hm hnext hq1 hP ?_ ?_ hsq hpow hvol_next hne
+  · intro r
+    haveI : NeZero ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ :=
+      ⟨(hdeg_pos r).ne'⟩
+    exact ReedSolomon.minDist_eq' (α := domain) (hdeg_le r)
+  · intro r
+    simpa [LinearCode.dim] using
+      ReedSolomon.dim_eq_deg_of_le'
+        (α := domain)
+        (n := ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+        (hdeg_le r)
 
 /-! ## Concrete four-rate MCA prize brackets from named numeric certificates
 
