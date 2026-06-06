@@ -14,7 +14,7 @@ linter.style.longFile = 1500
 
 [[require]]
 name = "VCVio"
-git = "https://github.com/Verified-zkEVM/VCV-io"
+git = "https://github.com/lalalune/VCV-io.git"
 rev = "f85df0b4ec3ef4249876996da28a07c38e9137c2"
 
 [[require]]

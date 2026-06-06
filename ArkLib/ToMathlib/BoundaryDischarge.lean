@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
+import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 
 /-!
 # Discharging the closed square-root boundary `hBoundary` residual
@@ -293,6 +293,36 @@ theorem boundaryCardResidual_of_boundary_cards_and_coeffPolys
     (deg := deg) (domain := domain) (δ := δ) hk u hcardLt hcardGe hcoeffPoly
 
 omit [DecidableEq ι] in
+/-- **Exact `BoundaryCardLatticeResidual` adapter.**  This is the lattice-boundary analogue of
+`boundaryCardResidual_of_boundary_cards_and_coeffPolys`, targeting the smaller residual interface
+isolated in `BoundaryCardResidual.lean`.  The extra lattice hypothesis is intentionally unused:
+once the boundary cardinality bounds and coefficient-polynomial extraction are supplied, the
+assembly bridge proves `jointAgreement` directly. -/
+theorem boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hBoundaryData : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      δ = 1 - ReedSolomon.sqrtRate deg domain →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k) ∧
+      ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * k) ∧
+      (∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+              (P z).eval ∘ domain) ≤ δ) →
+          ∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P z).coeff j = (B j).eval z)) :
+    BoundaryCardResidual.BoundaryCardLatticeResidual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk u hδeq _hfloor hcardPos
+  obtain ⟨hcardLt, hcardGe, hcoeffPoly⟩ := hBoundaryData hk u hδeq hcardPos
+  exact boundary_jointAgreement_of_cards_and_coeffPolys
+    (deg := deg) (domain := domain) (δ := δ) hk u hcardLt hcardGe hcoeffPoly
+
+omit [DecidableEq ι] in
 /-- The closed-boundary residual is vacuous for `k = 0`, since its first argument is
 `0 < k`. This removes an unnecessary residual hypothesis from degenerate callers. -/
 theorem boundaryCardResidual_zero
@@ -313,4 +343,5 @@ end ArkLib
 #print axioms ArkLib.BoundaryDischarge.boundary_jointAgreement_of_cards_and_coeffPolys
 #print axioms ArkLib.BoundaryDischarge.hBoundary_of_boundary_cards_and_coeffPolys
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_of_boundary_cards_and_coeffPolys
+#print axioms ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_zero

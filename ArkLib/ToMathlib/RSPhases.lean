@@ -132,6 +132,12 @@ def BatchingConsistencyResidual {k : ℕ} (A : (Fin k → Fin 2) → R)
     (tEvals : (Fin k → Fin 2) → R) (s0 : R) : Prop :=
   s0 = ∑ b : Fin k → Fin 2, A b * tEvals b
 
+/-- The normalized batching value discharges the named consistency residual by reflexivity. -/
+theorem batchingConsistencyResidual_sum {k : ℕ} (A : (Fin k → Fin 2) → R)
+    (tEvals : (Fin k → Fin 2) → R) :
+    BatchingConsistencyResidual A tEvals (∑ b : Fin k → Fin 2, A b * tEvals b) := by
+  rfl
+
 /-- **Reduction:** given the named residual, the `sumcheckConsistencyProp`-shaped equation
 `s0 = ∑_{x ∈ boolDomain^k} (MLE A · p).eval x` holds, where `p` is the witness polynomial whose
 cube evaluations are `tEvals` (i.e. `tEvals b = eval (boolEmbedding ∘ b) p`). This is the exact
