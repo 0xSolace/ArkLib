@@ -357,3 +357,7 @@ def mcaLowerWitness_of_residuals
 end Reduction
 
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
+
+-- TEMP AUDIT
+#print axioms ProximityGap.Hab25.claim1_theorem2_integer
+#print axioms ProximityGap.Hab25.mca_johnson_of_residuals
