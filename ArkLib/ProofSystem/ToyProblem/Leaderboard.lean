@@ -352,9 +352,8 @@ is now the explicit residual proposition
 soundness is bounded by the first (`γ`-round) branch of `toySoundnessError`.
 This is an explicit paper-proof obligation, not a Lean proof hidden behind a
 hole. -/
-def winningSetSoundness_le_toySoundnessError_mcaSafe_residual {k : ℕ}
+def winningSetSoundness_le_toySoundnessError_residual {k : ℕ}
     (C : Set (ι → F)) (δ : ℝ≥0) : Prop :=
-  δ < (minRelHammingDistCode C : ℝ≥0) →
   winningSetSoundness (k := k) C δ ≤
     (epsMCA (F := F) (A := F) C δ).toNNReal +
       ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
@@ -369,8 +368,7 @@ first branch of the `max`. The X side routes through this to turn an
 lower bound. -/
 theorem winningSetSoundness_le_toySoundnessError {k : ℕ}
     (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ)
-    (hL610 : winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := k) C δ)
-    (hδ : δ < (minRelHammingDistCode C : ℝ≥0)) :
+    (hL610 : winningSetSoundness_le_toySoundnessError_residual (k := k) C δ) :
     winningSetSoundness (k := k) C δ ≤ toySoundnessError C δ t := by
   exact le_trans hL610 (le_max_left _ _)
 
@@ -474,11 +472,10 @@ noncomputable def ToyParams.toySoundnessError (p : ToyParams) : ℝ≥0 :=
 /-- `soundnessError ≤ toySoundnessError` at a parameter point, conditional on
 the explicit Lemma 6.10 residual for that parameter point. -/
 theorem ToyParams.soundnessError_le_toySoundnessError (p : ToyParams)
-    (hL610 : _root_.ToyProblem.winningSetSoundness_le_toySoundnessError_mcaSafe_residual
-      (k := p.k) p.C p.δ)
-    (hδ : p.δ < (minRelHammingDistCode p.C : ℝ≥0)) :
+    (hL610 : _root_.ToyProblem.winningSetSoundness_le_toySoundnessError_residual
+      (k := p.k) p.C p.δ) :
     p.soundnessError ≤ p.toySoundnessError :=
-  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t hL610 hδ
+  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t hL610
 
 /-! ## The two leaderboard interfaces
 
@@ -625,10 +622,12 @@ this residual by pretending those imports exist. See
 research/formal/arklib-proof-research-2026-06.md.
 -/
 /-- Explicit residual assumptions needed for the 64-bit Koala anchor:
-the §6.3 numeric evaluation of the RBR bound. (The Lemma 6.10 condition is
-discharged via the mcaSafe hypothesis for KoalaIRS since δ < δ_min). -/
-def arklib_lowerBound_irs_t128_numeric_residual : Prop :=
-  koalaIRS.toySoundnessError ≤ (2 : ℝ≥0) ^ (-(64 : ℝ))
+ABF26 Lemma 6.10 at `koalaIRS` plus the §6.3 numeric evaluation of the RBR
+bound. -/
+def arklib_lowerBound_irs_t128_residual : Prop :=
+  winningSetSoundness_le_toySoundnessError_residual
+      (k := koalaIRS.k) koalaIRS.C koalaIRS.δ ∧
+    koalaIRS.toySoundnessError ≤ (2 : ℝ≥0) ^ (-(64 : ℝ))
 
 /-- **ArkLib provable lower bound (≈64 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemmas 6.10 / 6.6 / 6.8 of [ABF26]**: the simplified-IOR
@@ -638,16 +637,13 @@ Table 2–3 numerics — the spot-check branch `(1-δ)^128 = (1/√2)^128 = 2^(-
 is the binding cap (`.tex` 2819–2823; the `ε_mca + |Λ|/|F|` branch is the even
 tighter ≈`2^(-71.5)`). 64 is thus a *conservative* (improvable) provable bound on
 `winningSetSoundness`. The proof routes `soundnessError ≤ toySoundnessError ≤
-2^(-64)`. Conditional on `arklib_lowerBound_irs_t128_numeric_residual` (the §6.3
+2^(-64)`. Conditional on `arklib_lowerBound_irs_t128_residual` (the §6.3
 numeric evaluation is Phase 5). -/
 noncomputable def arklib_lowerBound_irs_t128
-    (hNum : arklib_lowerBound_irs_t128_numeric_residual)
-    (hL610 : winningSetSoundness_le_toySoundnessError_mcaSafe_residual
-      (k := koalaIRS.k) koalaIRS.C koalaIRS.δ) : SecurityLowerBound koalaIRS where
+    (h : arklib_lowerBound_irs_t128_residual) : SecurityLowerBound koalaIRS where
   bits := 64
   proof := by
-    have hδ : koalaIRS.δ < (minRelHammingDistCode koalaIRS.C : ℝ≥0) := by norm_num [koalaIRS, minRelHammingDistCode]
-    exact le_trans (koalaIRS.soundnessError_le_toySoundnessError hL610 hδ) hNum
+    exact le_trans (koalaIRS.soundnessError_le_toySoundnessError h.1) h.2
 
 /-- **Winning-set attack upper bound (≈116 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemma 6.12 of [ABF26]** (§6.4.1; a similar observation appears
