@@ -38,8 +38,8 @@ theorem support_liftComp {τ : Type} {superSpec : OracleSpec τ} {α : Type}
       constructor
       · rintro ⟨u, _hu, hy⟩
         exact ⟨u, mem_support_query t u, (ih u) ▸ hy⟩
-      · rintro ⟨u, _hu, hy⟩
-        exact ⟨u, by simp, (ih u).symm ▸ hy⟩
+      · rintro ⟨u, hu, hy⟩
+        exact ⟨u, hu, (ih u).symm ▸ hy⟩
 
 end OracleComp
 

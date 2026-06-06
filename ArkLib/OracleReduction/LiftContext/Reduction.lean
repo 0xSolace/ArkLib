@@ -923,29 +923,27 @@ theorem Reduction.verifier_output_mem_run_support
       obtain ⟨stmtOutOpt, hstmtOut, hx⟩ := hx
       cases stmtOutOpt with
       | none =>
-          cases hx
-      | some vOutOpt =>
-          cases vOutOpt with
-          | none =>
-              simp [Option.getM_none] at hx
-          | some vOut =>
-              simp at hx
-              subst x
-              have hLift :
-                  some vOut ∈ support
-                    (OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
-                      (oSpec + [pSpec.Challenge]ₒ)) := by
-                simpa [liftComp_eq_liftM] using hstmtOut
-              have hSupp :
-                  support
-                    (OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
-                      (oSpec + [pSpec.Challenge]ₒ))
-                    = support (reduction.verifier.run stmt proverResult.1).run := by
-                apply Set.eq_of_subset_of_subset <;> intro y hy <;>
-                  simpa [OracleComp.mem_support_iff_probOutput_ne_zero,
-                    probOutput_liftComp] using hy
-              rw [hSupp] at hLift
-              exact (OptionT.mem_support_iff _ _).2 hLift
+          simp only [Option.elim_none, OptionT.run_pure, support_pure,
+            Set.mem_singleton_iff] at hx
+      | some vOut =>
+          simp only [Option.elim_some, Option.getM_some, OptionT.run_pure, support_pure,
+            Set.mem_singleton_iff] at hx
+          subst hx
+          have hLift :
+              some vOut ∈ support
+                (OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
+                  (oSpec + [pSpec.Challenge]ₒ)) := by
+            simpa [liftComp_eq_liftM] using hstmtOut
+          have hSupp :
+              support
+                (OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
+                  (oSpec + [pSpec.Challenge]ₒ))
+                = support (reduction.verifier.run stmt proverResult.1).run := by
+            apply Set.eq_of_subset_of_subset <;> intro y hy <;>
+              simpa [OracleComp.mem_support_iff_probOutput_ne_zero,
+                probOutput_liftComp] using hy
+          rw [hSupp] at hLift
+          exact (OptionT.mem_support_iff _ _).2 hLift
 
 namespace Verifier
 
@@ -994,10 +992,10 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
       (Reduction.mk outerP (V.liftContext lens)).run outerStmtIn witIn =
         f <$> (Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn := by
     apply OptionT.ext
-	    simp only [Reduction.run, Verifier.liftContext, Verifier.run, innerP,
-	      Prover.liftContext_run, innerPLens, Function.uncurry, f,
-	      OptionT.run_bind, OptionT.run_map, OptionT.run_mk,
-	      Functor.map_map, Function.comp, liftM_map, map_bind, bind_map_left, bind_pure_comp]
+    simp only [Reduction.run, Verifier.liftContext, Verifier.run, innerP,
+      Prover.liftContext_run, innerPLens, Function.uncurry, f,
+      OptionT.run_bind, OptionT.run_map, OptionT.run_mk,
+      Functor.map_map, Function.comp, map_bind, bind_map_left, bind_pure_comp]
   -- Push `f` through the stateful simulation, then `probEvent_map`.
   have hExecMap :
       OptionT.mk (do
