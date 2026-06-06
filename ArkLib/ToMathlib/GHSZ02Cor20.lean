@@ -148,21 +148,38 @@ open GHSZ02Cor20
 
 The single `for large enough p` analytic estimate that GHSZ02 Cor 20 establishes, isolated as
 one explicit real inequality between *closed-form* quantities (no codes, no `ncard`, no
-existentials over words). For the prime-field RS parameters of ABF26 T3.13 (`q = n = p`,
-`k = ⌊p^α⌋`, `r = ⌊δ·p⌋`), GHSZ02's chain
-`C(n,r)·(q−1)^r ≥ (n/a)^a·(q−1)^r ≥ n^k/a^a / q^{...}` combined with `a^a ≤ n^{(1−β/2)n^ε}`
-yields exactly:
+existentials over words):
 
-  `p^n · p^{p^α·β/2}  ≤  p^k · (C(n,r)·(p−1)^r)`.
+  `p^n · p^{p^α·β/2}  ≤  p^k · (C(n,r)·(p−1)^r)`
 
-This is the irreducible content of the corollary's `Ω(p^{p^α·β/2})` claim. Everything else —
-the Lemma-19 averaging *existence* of the word, the `q^n` division, the `ncard` cardinality
-arithmetic, and the Ω-constant `c = 1/2` strict-inequality bookkeeping — is proven in-tree
-(`GHSZ02Cor20.averaging_real`, `rs_lambda_large_prime_ghsz02_of_residuals`).
+(with `q = n = p`, `k = ⌊p^α⌋`, `r = ⌊δ·p⌋`).
+
+**Why this is exactly GHSZ02 Cor 20's content, with the constants tracked honestly.**
+Set the agreement `a = n − r`. Dividing the target by `p^n` and using
+`(p−1)^r / p^n = (1 − 1/p)^{n−a} · p^{−a}` gives the equivalent form
+
+  `p^{p^α·β/2}  ≤  C(n,a)·p^{k−a} · (1 − 1/p)^{n−a}`.
+
+GHSZ02's chain bounds the *codeword-count* factor `C(n,a)·p^{k−a} ≥ (n/a)^a·p^{k−a} = n^k/a^a`,
+then uses `a^a ≤ n^{(1−γ/2)n^ε}` (the `for large enough n` step, `ε ↔ α`, `γ ↔ β`) to get
+`C(n,a)·p^{k−a} ≥ n^{(γ/2)n^ε} = p^{p^α·β/2}`. The remaining `(1−1/p)^{n−a} ≥ 1/e`
+factor (`GHSZ02Core.one_sub_inv_pow_ge_inv_e`) costs a constant, which GHSZ02 absorbs into
+the `Ω`/exponent slack: the corollary states `Ω(n^{(γ/2)n^ε})`, and the `γ/2` exponent has
+genuine room below the achievable `~γ`, so the constant `1/e` is swallowed by taking `n` large
+enough. The displayed no-constant inequality is therefore the precise closed form that, fed
+through the averaging core, yields the `hcount` hypothesis used in
+`rs_lambda_large_prime_ghsz02_of_residuals`.
+
+Everything *around* this estimate is proven in-tree: the Lemma-19 averaging *existence* of the
+word, the `q^n` division, the `ncard` cardinality arithmetic, and the Ω-constant `c = 1/2`
+strict-inequality bookkeeping (`GHSZ02Cor20.averaging_real`,
+`rs_lambda_large_prime_ghsz02_of_residuals`).
 
 We keep this a residual because it carries the genuine `for large enough p` quantifier content
-of GHSZ02 Cor 20 (`a^a ≤ n^{(1−β/2)n^ε}` only for `n` above a threshold), which is an
-asymptotic estimate, not in-tree-derivable from the unhypothesised statement. -/
+of GHSZ02 Cor 20 (`a^a ≤ n^{(1−β/2)n^ε}` only for `n` above a threshold, plus the constant
+absorption above), an asymptotic estimate not derivable in-tree from the unhypothesised
+statement. **It is *not* a character-sum residual** — GHSZ02 Cor 20 uses no multiplicative
+characters (see the module header), so no Mathlib `GaussSum`/`MulChar` input is required. -/
 def GHSZ02LargeN
     (α β : ℝ) (p : ℕ) (δ : ℝ) : Prop :=
     (p : ℝ) ^ p * (p : ℝ) ^ ((p : ℝ) ^ α * β / 2)
@@ -251,3 +268,8 @@ theorem omega_listsize_of_largeN
   exact ⟨w, c, hc_pos, hc⟩
 
 end CodingTheory
+
+#print axioms GHSZ02Cor20.averaging_real
+#print axioms GHSZ02Cor20.choose_real_ge_pow_div
+#print axioms CodingTheory.hcount_of_largeN
+#print axioms CodingTheory.omega_listsize_of_largeN

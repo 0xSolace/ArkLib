@@ -67,6 +67,7 @@ All declarations below compile `sorry`/`axiom`-free and are axiom-clean
 -- every individual lemma's *type*; the in-type linters are stylistic here.
 set_option linter.unusedSectionVars false
 set_option linter.unusedVariables false
+set_option linter.unusedDecidableInType false
 
 namespace BKR06Close
 

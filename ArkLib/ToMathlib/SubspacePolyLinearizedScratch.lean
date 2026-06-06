@@ -108,7 +108,7 @@ example (W₀ : Submodule F K) (x : K) (y : K)
   -- eval (w + c•x) f = eval w f + eval (c•x) f = 0 + algebraMap c * a
   have hadd : f.eval (w + c • x) = f.eval w + f.eval (c • x) :=
     subspacePoly_eval_add_submodule W₀ w (c • x)
-  have hw0 : f.eval w = 0 := subspacePoly_eval_zero _ (by simp [hw])
+  have hw0 : f.eval w = 0 := (subspacePoly_isRoot_iff _ w).2 (by rw [mem_subFinset]; exact hw)
   have hcx : f.eval (c • x) = algebraMap F K c * a := sphom W₀ c x
   have hfy : f.eval (w + c • x) = algebraMap F K c * a := by rw [hadd, hw0, hcx, zero_add]
   -- eval RHS = (eval f)^q - a^(q-1) * (eval f)
@@ -119,12 +119,59 @@ example (W₀ : Submodule F K) (x : K) (y : K)
   have hcpow : (algebraMap F K c) ^ q = algebraMap F K c := by
     rw [← map_pow, FiniteField.pow_card]
   rw [mul_pow, hcpow]
-  -- algebraMap c * a^q - a^(q-1) * (algebraMap c * a)
-  -- = algebraMap c * a^q - algebraMap c * (a^(q-1) * a)
+  -- algebraMap c * a^q - a^(q-1) * (algebraMap c * a) = 0
   have ha : a ^ (q - 1) * a = a ^ q := by
     rw [← pow_succ]; congr 1; omega
-  ring_nf
-  rw [show q - 1 + 1 = q by omega]
-  ring
+  rw [show a ^ (q - 1) * (algebraMap F K c * a) = algebraMap F K c * (a ^ (q - 1) * a) by ring,
+      ha, sub_self]
+
+/-! ### RHS monic & degree facts -/
+
+/-- The subtracted term has natDegree < natDegree (f^q) (q ≥ 2, card > 0). -/
+example (W₀ : Submodule F K) (hq : 2 ≤ Fintype.card F) (x : K) :
+    let f := subspacePoly (subFinset W₀)
+    let q := Fintype.card F
+    let a := f.eval x
+    (C (a ^ (q - 1)) * f).degree < (f ^ q).degree := by
+  intro f q a
+  have hfmon : f.Monic := subspacePoly_monic _
+  have hfdeg : f.natDegree = (subFinset W₀).card := subspacePoly_natDegree _
+  have hcard_pos : 0 < (subFinset W₀).card :=
+    Finset.card_pos.2 ⟨0, by rw [mem_subFinset]; exact W₀.zero_mem⟩
+  apply Polynomial.degree_lt_degree
+  rw [hfmon.natDegree_pow]
+  calc (C (a ^ (q - 1)) * f).natDegree
+      ≤ f.natDegree := by
+        calc (C (a ^ (q - 1)) * f).natDegree
+            ≤ (C (a ^ (q - 1))).natDegree + f.natDegree := Polynomial.natDegree_mul_le
+          _ = f.natDegree := by rw [natDegree_C, zero_add]
+    _ < q * f.natDegree := by
+        have : 1 * f.natDegree < q * f.natDegree := by
+          apply Nat.mul_lt_mul_right
+          · rw [hfdeg]; exact hcard_pos
+          · omega
+        simpa using this
+
+/-- RHS is monic. -/
+example (W₀ : Submodule F K) (hq : 2 ≤ Fintype.card F) (x : K) :
+    let f := subspacePoly (subFinset W₀)
+    let q := Fintype.card F
+    let a := f.eval x
+    (f ^ q - C (a ^ (q - 1)) * f).Monic := by
+  intro f q a
+  have hfmon : f.Monic := subspacePoly_monic _
+  have hfdeg : f.natDegree = (subFinset W₀).card := subspacePoly_natDegree _
+  have hcard_pos : 0 < (subFinset W₀).card :=
+    Finset.card_pos.2 ⟨0, by rw [mem_subFinset]; exact W₀.zero_mem⟩
+  have hsub_deg : (C (a ^ (q - 1)) * f).degree < (f ^ q).degree := by
+    apply Polynomial.degree_lt_degree
+    rw [hfmon.natDegree_pow]
+    calc (C (a ^ (q - 1)) * f).natDegree
+        ≤ f.natDegree := le_trans Polynomial.natDegree_mul_le (by rw [natDegree_C, zero_add])
+      _ < q * f.natDegree := by
+          have : 1 * f.natDegree < q * f.natDegree :=
+            Nat.mul_lt_mul_right (by rw [hfdeg]; exact hcard_pos) (by omega)
+          simpa using this
+  exact (hfmon.pow q).sub_of_left hsub_deg
 
 end BKR06

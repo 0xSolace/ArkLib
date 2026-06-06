@@ -508,7 +508,6 @@ import ArkLib.ToMathlib.SubstFieldCaveat
 import ArkLib.ToMathlib.TailDegProducer
 import ArkLib.ToMathlib.ToyProblemViolation
 import ArkLib.ToMathlib.WeightLambdaCalculus
-import ArkLib.ToMathlib.scratch_ggr11
 import ArkLib.ToVCVio.EvalDist.Defs.Support
 import ArkLib.ToVCVio.EvalDist.Instances.OptionT
 import ArkLib.ToVCVio.Lemmas
