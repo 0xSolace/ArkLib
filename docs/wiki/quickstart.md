@@ -69,8 +69,14 @@ python3 -m pip install leanblueprint
 ## Important Notes
 
 - `./scripts/validate.sh` is the recommended convenience wrapper for routine local validation.
-- By default it runs `lake build`, `./scripts/check-imports.sh`, and
+- By default it now mirrors the CI verification gates so local == CI: the forbidden-token
+  precheck (`scripts/forbidden_tokens.py`) and the `--fail-on-holes` sorry census
+  (`scripts/sorry_census.py`) run before `lake build`, and the flagship axiom audit
+  (`scripts/axiom_audit.py`) runs after it, alongside `./scripts/check-imports.sh` and
   `python3 ./scripts/check-docs-integrity.py`.
+- A deliberate, documented residual `axiom` is exempted from the forbidden-token gate only by
+  listing its declaration name in `scripts/allowed_axioms.txt`; a stale entry (no matching
+  axiom in source) is itself a hard failure, so the allow-list cannot rot.
 - The lower-level scripts remain valid when you only want one specific check.
 - `scripts/build-project.sh` is now just a compile-only helper, not the convenience wrapper.
 - `scripts/README.md` is still useful as an inventory of helper scripts.

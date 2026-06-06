@@ -1,0 +1,16 @@
+# Allow-list for documented residual `axiom` declarations (read by scripts/forbidden_tokens.py).
+#
+# One Lean declaration name per line; `#` starts a comment. Every entry must
+# correspond to a CURRENTLY-PRESENT `axiom` in live ArkLib source whose docstring
+# documents it as a deliberate, tracked named residual (with an issue reference).
+# Stale entries (no matching axiom) fail the gate, so this list cannot rot.
+#
+# Listing an axiom here does NOT make it sound — it records that the residual is
+# tracked rather than laundered. Prefer converting residuals to `def … : Prop`
+# (which carries no kernel-trust cost) once the surrounding port allows it; remove
+# the entry here in the same change.
+
+# §6.4 winning-set combinatorics owed by the ToyProblem leaderboard attack bound
+# over the genuine KoalaBear-sextic RS code (cf. #106 / #18). Pure coding-theory
+# residual: a cardinality bound on the attack winning set.
+fenziSanso_upperBound_attack_concrete_residual

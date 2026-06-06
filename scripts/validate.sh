@@ -15,9 +15,12 @@ usage() {
   cat <<'EOF'
 Usage: ./scripts/validate.sh [--lint] [--docs] [--site]
 
-Default checks:
+Default checks (mirror CI gates so local == CI):
+  - python3 ./scripts/forbidden_tokens.py          (native_decide / bv_decide / unlisted axiom)
+  - python3 ./scripts/sorry_census.py --fail-on-holes
   - lake build
   - fail on non-`sorry` warnings under ArkLib/Data/
+  - python3 ./scripts/axiom_audit.py               (flagship pinned list; needs the build)
   - ./scripts/check-imports.sh
   - python3 ./scripts/check-docs-integrity.py
   - python3 ./scripts/kb/check_generated.py
@@ -60,6 +63,14 @@ cleanup() {
 }
 trap cleanup EXIT
 
+echo "# Forbidden-token precheck (native_decide / bv_decide / unlisted custom axiom)"
+python3 ./scripts/forbidden_tokens.py
+
+echo ""
+echo "# Sorry/admit census (--fail-on-holes)"
+python3 ./scripts/sorry_census.py --fail-on-holes
+
+echo ""
 echo "# Building project"
 lake build 2>&1 | tee "$build_log"
 
@@ -69,6 +80,10 @@ python3 ./scripts/check-warning-log.py "$build_log" \
   --path-prefix ArkLib/Data/ \
   --exclude-substring 'declaration uses `sorry`' \
   --label 'ArkLib/Data non-sorry warnings'
+
+echo ""
+echo "# Axiom audit (flagship pinned list; needs the build above)"
+python3 ./scripts/axiom_audit.py
 
 echo ""
 echo "# Checking umbrella imports"
