@@ -191,19 +191,24 @@ theorem epsMCA_interiorJ1_le
   have := mcaBadCount_j1_le_two_via_quadratic domain hk (u 0) (u 1)
   exact_mod_cast this
 
-/-- The size hypothesis of the `2`-spike construction at radius `1/n` is an equality:
-`(1 - 1/n)·n = n - 1 = n - 2 + 1` (for `1 ≤ n`). -/
+/-- The size hypothesis of the `2`-spike construction at radius `1/n`: `(1 - 1/n)·n ≤ n - 2 + 1`.
+For `2 ≤ n` this is an equality `(1 - 1/n)·n = n - 1 = n - 2 + 1`; for `n = 1` the right side is
+`1 ≥ 0` and the bound is loose.  Note `ℝ≥0` has truncated subtraction (no `AddGroupWithOne`), so
+the cast `↑(n - 1) = ↑n - 1` is established through `eq_tsub_of_add_eq`, not `Nat.cast_sub`. -/
 theorem spike_two_size_at_interiorJ1 {n : ℕ} (hn1 : 1 ≤ n) :
     ((1 - (1 : ℝ≥0) / (n : ℝ≥0)) * (n : ℝ≥0)) ≤ ((n - 2 + 1 : ℕ) : ℝ≥0) := by
-  have hnpos : 0 < n := hn1
-  have hnne : (n : ℝ≥0) ≠ 0 := Nat.cast_ne_zero.mpr hnpos.ne'
+  have hnne : (n : ℝ≥0) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
   have key : ((1 - (1 : ℝ≥0) / (n : ℝ≥0)) * (n : ℝ≥0)) = (n : ℝ≥0) - 1 := by
     rw [tsub_mul, one_mul, div_mul_cancel₀ _ hnne]
   rw [key]
   by_cases hn2 : 2 ≤ n
-  · have he : (n - 2 + 1 : ℕ) = n - 1 := by omega
-    rw [he, ← Nat.cast_one, ← Nat.cast_sub hn1]
-  · have hn_eq : n = 1 := by omega
+  · have h1 : (n - 2 + 1 : ℕ) = n - 1 := by omega
+    rw [h1, ← NNReal.coe_le_coe, NNReal.coe_sub]
+    · change (n : ℝ) - 1 ≤ ((n - 1 : ℕ) : ℝ)
+      rw [Nat.cast_sub hn1, Nat.cast_one]
+    · exact_mod_cast hn1
+  · -- `n = 1`: the left side is `0`, while the right side is `1`.
+    have hn_eq : n = 1 := by omega
     subst n
     norm_num
 
