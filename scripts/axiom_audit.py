@@ -46,7 +46,9 @@ def main() -> int:
     src = "\n".join(f"import {m}" for m in modules) + "\n\n"
     src += "\n".join(f"#print axioms {d}" for _, d in entries) + "\n"
 
-    with tempfile.NamedTemporaryFile("w", suffix=".lean", delete=False, dir=".") as tf:
+    # Scratch file OUTSIDE the repo: an autosync daemon commits anything that
+    # appears in the working tree, including short-lived temp files.
+    with tempfile.NamedTemporaryFile("w", suffix=".lean", delete=False) as tf:
         tf.write(src)
         tmp = Path(tf.name)
     try:
