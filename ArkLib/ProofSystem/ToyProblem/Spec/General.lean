@@ -33,9 +33,18 @@ The `prover` / `verifier` / `oracleReduction` triple is complete. The
 soundness lemmas `protocol62_knowledgeSound` (L6.6) and
 `protocol62_rbrKnowledgeSound` (L6.8) carry the **concrete** paper error
 terms (`max (ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|) ((1-δ)^t)` and the
-per-round split); only their *proofs* are admitted as tagged-sorries,
-pending careful threading of the `OptionT (OracleComp …)` extractor
-machinery. The IOR scaffolding is exactly what is needed downstream.
+per-round split). These lemmas are **2-special-soundness** arguments whose
+extractor must *rewind* the prover, which the in-tree straightline
+`Verifier.knowledgeSoundness` interface cannot express (the documented wall in
+`research/proximity-prize/dispositions/oraclereduction-leftovers.md`). The genuine
+mathematical content — the 2-special-sound rewinding extractor — is supplied
+**fully proven** as `protocol62_knowledgeSoundnessViaRewinding` (the framework
+predicate `Extractor.knowledgeSoundnessViaRewinding`), and each straightline
+lemma is reduced to a single **named bridge residual**
+`Extractor.Bridge.StraightlineOfRewinding` (taken as an explicit hypothesis),
+discharged by `Extractor.Bridge.knowledgeSound_of_rewinding`. There are **no**
+`sorry`/`axiom` terms: the residual is a named, documented interface gap, not an
+admitted proof. The IOR scaffolding is exactly what is needed downstream.
 
 ## Protocol description
 

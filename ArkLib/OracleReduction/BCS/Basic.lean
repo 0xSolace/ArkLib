@@ -26,7 +26,6 @@ The transformation establishes a composition where:
 1. Every oracle message type is replaced with a commitment type (via `renameMessage`).
 2. An opening phase consisting of the sequential composition of the per-message commitment-opening
    protocol specifications is appended.
--/
 
   ## What this file states (ArkLib#2: "initial attempt to state the BCS transform")
 
