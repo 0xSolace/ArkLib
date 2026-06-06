@@ -42,10 +42,15 @@ Current source also exposes the #14 split frontier:
   correlated-agreement-to-joint-agreement coding step.
 - `fri_query_soundness_of_parts` reassembles the faithful
   `fri_query_soundness` residual from those three named ingredients.
+- `FriSoundnessParts` separates the Claim 8.3 proof boundary into the
+  Claim 8.2 lift to the full-domain statement, sequential-composition
+  soundness, and the `totalError` accounting step.
+- `fri_soundness_of_parts` reassembles the faithful `fri_soundness` residual
+  from those three named ingredients.
 
-This is an API narrowing, not a proof of Claim 8.2. The actual probabilistic
-query-round theorem and the coding-theoretic bridge into `Code.jointAgreement`
-remain open proof work.
+This is an API narrowing, not a proof of Claims 8.2 or 8.3. The actual
+probabilistic query-round theorem, sequential-composition soundness theorem,
+and coding-theoretic bridge into `Code.jointAgreement` remain open proof work.
 
 ### STIR proximity gap
 
@@ -106,6 +111,11 @@ rg -n 'accounting placeholders|sorryAx-tainted|Honest residual|Open proof|residu
 
 Observed hits on 2026-06-06:
 
+> Superseded raw-line note: the `AffineLines/Main.lean:40` references in this
+> preserved command output are historical breadcrumbs. Current proximity-gap
+> ownership is by the named `StrictCoeffPolysResidual`, `BoundaryCardResidual`,
+> and `BoundaryCardLatticeResidual` interfaces plus their focused issues.
+
 ```text
 ArkLib/ProofSystem/Fri/Spec/Soundness.lean:19:soundness theorem — they are accounting placeholders pending the sequential
 ArkLib/ProofSystem/Stir/MainThm.lean:150:  -- full chain). Honest residual: this is a major protocol-formalisation effort gated on (1) the
@@ -117,14 +127,18 @@ ArkLib/ProofSystem/Stir/RoundProtocol.lean:187: Completeness of the real STIR fo
 ArkLib/ProofSystem/BatchedFri/Security.lean:695:def fri_query_soundness
 ArkLib/ProofSystem/BatchedFri/Security.lean:726:structure FriQuerySoundnessParts
 ArkLib/ProofSystem/BatchedFri/Security.lean:749:theorem fri_query_soundness_of_parts
+ArkLib/ProofSystem/BatchedFri/Security.lean:775:def fri_soundness
+ArkLib/ProofSystem/BatchedFri/Security.lean:813:structure FriSoundnessParts
+ArkLib/ProofSystem/BatchedFri/Security.lean:829:theorem fri_soundness_of_parts
 ```
 
 ## Remaining proof tracks
 
 1. FRI: add sequential-composition soundness infrastructure, prove the
    query-round acceptance/lens/coding ingredients exposed by
-   `FriQuerySoundnessParts`, then prove that `totalError` bounds the verifier
-   failure probability.
+   `FriQuerySoundnessParts`, discharge the Claim 8.3 lift/composition/accounting
+   ingredients exposed by `FriSoundnessParts`, then prove that `totalError`
+   bounds the verifier failure probability.
 2. BCIKS20/STIR proximity gap: close the affine-lines correlated-agreement
    theorem in the list-decoding regime, then lift through affine spaces and
    curves to the repaired monomial proximity-gap statement.

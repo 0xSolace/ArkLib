@@ -29,6 +29,16 @@ missing bridge is the probabilistic query-round analysis:
 4. Feed Claim 8.2 into `fri_soundness` / Claim 8.3, whose conclusion uses the
    same `Code.jointAgreement` predicate on the full domain.
 
+Current source exposes both sides of that frontier as named parts:
+
+- `FriQuerySoundnessParts` splits Claim 8.2 into query-round acceptance,
+  batching/oracle-lens, and correlated-agreement-to-joint-agreement ingredients.
+- `FriSoundnessParts` splits Claim 8.3 into the Claim 8.2 lift, the
+  sequential-composition soundness step, and the `totalError` accounting step.
+- `fri_query_soundness_of_parts` and `fri_soundness_of_parts` are small
+  reassembly theorems. They do not prove the missing probabilistic bounds; they
+  make the remaining obligations independently targetable.
+
 ## Existing in-tree pieces
 
 - `BatchedFri.Spec.BatchingRound.batchSpec` sends the random batching
@@ -60,7 +70,11 @@ Observed core anchors on 2026-06-06:
 ```text
 ArkLib/ProofSystem/BatchedFri/Security.lean:670: Corresponds to Claim 8.2 of [BCIKS20]
 ArkLib/ProofSystem/BatchedFri/Security.lean:695:def fri_query_soundness
-ArkLib/ProofSystem/BatchedFri/Security.lean:780:def fri_soundness
+ArkLib/ProofSystem/BatchedFri/Security.lean:726:structure FriQuerySoundnessParts
+ArkLib/ProofSystem/BatchedFri/Security.lean:749:theorem fri_query_soundness_of_parts
+ArkLib/ProofSystem/BatchedFri/Security.lean:775:def fri_soundness
+ArkLib/ProofSystem/BatchedFri/Security.lean:813:structure FriSoundnessParts
+ArkLib/ProofSystem/BatchedFri/Security.lean:829:theorem fri_soundness_of_parts
 ArkLib/ProofSystem/BatchedFri/Spec/General.lean:128:def batchedFRIOracleLens
 ArkLib/ProofSystem/BatchedFri/Spec/General.lean:257:def batchedFRIreduction
 ArkLib/ProofSystem/Fri/Spec/Soundness.lean:54:noncomputable def queryRoundError

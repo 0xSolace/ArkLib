@@ -37,9 +37,9 @@ section SecurityRelations
 -- `Basic.getMidCodewords` (issue #37: the legacy `Fin (ℓ+1)`-stepped signature is now
 -- `iterated_fold_steps`, Prelude-internal only).  Proof route (#32 handoff item (c)): peel
 -- the last step on both sides with the new-API peel `iterated_fold_last` at the shared mid
--- index `⟨i.val, _⟩`, then reconcile — `Fin.init_snoc`/`Fin.snoc_last` on the challenge
--- vectors and `iterated_fold_zero_steps` for the right-hand inner zero-step fold (whose
--- index transport is definitional by proof irrelevance).  `Eq.trans` instances are used
+-- index, then reconcile — `Fin.init_snoc`/`Fin.snoc_last` on the challenge vectors and
+-- `iterated_fold_zero_steps` for the right-hand inner zero-step fold (whose index
+-- transport is definitional by proof irrelevance).  `Eq.trans` instances are used
 -- instead of `rw` because the `↑(i.succ)`/`↑i.castSucc` step-count indices only reduce to
 -- `i.val + 1`/`i.val` definitionally, which keyed rewriting cannot see.
 lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)

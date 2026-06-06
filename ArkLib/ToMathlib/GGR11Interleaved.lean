@@ -76,12 +76,13 @@ and refactor the residual so that it names *only the first part* — the existen
 of a leaf-count function satisfying the GGR11 budget recursion that dominates the
 actual close set (`GGR11TreeStructure`).  The chain
 
-  `GGR11TreeStructure → GGR11PerWordBound → lambda_le_ggr11`
+  `GGR11TreeFrontier ↔ GGR11TreeStructure → GGR11PerWordBound → lambda_le_ggr11`
 
 is then fully proven (`perWordBound_of_treeStructure`,
-`lambda_le_ggr11_of_perWordBound`).  This shrinks the named external surface from
-"the whole §3 recursion incl. the closed-form `choose` bound" down to "the
-Erase-Decode tree exists with the stated Blue/Red budgets".
+`perWordBound_of_treeFrontier`, `lambda_le_ggr11_of_perWordBound`).  This shrinks
+the named external surface from "the whole §3 recursion incl. the closed-form
+`choose` bound" down to "the Erase-Decode tree exists with the stated Blue/Red
+budgets", with the per-word witness data named explicitly.
 -/
 
 open ListDecodable Code InterleavedCode
@@ -205,6 +206,55 @@ def GGR11TreeStructure (C : Set (ι → F)) (δ : ℝ) (m b r : ℕ) : Prop :=
       (∀ r', t 0 (r' + 1) ≤ (Lambda C δ) * t 0 r') ∧
       (∀ b' r', t (b' + 1) (r' + 1) ≤ t b' (r' + 1) + (Lambda C δ) * t (b' + 1) r')
 
+/-- Named per-received-word witness for the GGR11 Erase-Decode tree residual.
+
+This is the non-anonymous form of one `f`-instance of `GGR11TreeStructure`: a leaf-count
+function plus the Blue/Red budget inequalities that feed `ggr11_tree_count_le`.  Naming it
+separates the future tree-construction work from the already-proved closed-form counting lemma. -/
+structure GGR11TreeWitness (C : Set (ι → F)) (δ : ℝ) (m b r : ℕ)
+    (f : Matrix ι (Fin m) F) where
+  leafCount : ℕ → ℕ → ℕ∞
+  close_le_leafCount :
+    (closeCodewordsRel (interleavedCodeSet (κ := Fin m) C) f δ).encard ≤ leafCount b r
+  no_red_budget : ∀ b', leafCount b' 0 ≤ 1
+  red_only_step : ∀ r', leafCount 0 (r' + 1) ≤ (Lambda C δ) * leafCount 0 r'
+  blue_red_step :
+    ∀ b' r',
+      leafCount (b' + 1) (r' + 1) ≤
+        leafCount b' (r' + 1) + (Lambda C δ) * leafCount (b' + 1) r'
+
+/-- Granular frontier for the remaining GGR11 construction: every received word has a named
+Erase-Decode tree witness satisfying the Blue/Red budget recursion. -/
+def GGR11TreeFrontier (C : Set (ι → F)) (δ : ℝ) (m b r : ℕ) : Prop :=
+  ∀ f : Matrix ι (Fin m) F, Nonempty (GGR11TreeWitness C δ m b r f)
+
+/-- The named frontier is exactly strong enough to recover the existing residual shape. -/
+theorem treeStructure_of_frontier
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (h : GGR11TreeFrontier C δ m b r) :
+    GGR11TreeStructure C δ m b r := by
+  intro f
+  obtain ⟨w⟩ := h f
+  exact
+    ⟨w.leafCount, w.close_le_leafCount, w.no_red_budget, w.red_only_step,
+      w.blue_red_step⟩
+
+/-- Conversely, the existing residual immediately supplies the named frontier. -/
+theorem frontier_of_treeStructure
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (h : GGR11TreeStructure C δ m b r) :
+    GGR11TreeFrontier C δ m b r := by
+  intro f
+  obtain ⟨t, hdom, hbase, hrec0, hrec⟩ := h f
+  exact
+    ⟨
+      { leafCount := t
+        close_le_leafCount := hdom
+        no_red_budget := hbase
+        red_only_step := hrec0
+        blue_red_step := hrec }
+    ⟩
+
 /-- **The closed-form combinatorics discharges `GGR11PerWordBound` from
 `GGR11TreeStructure`.**
 
@@ -221,6 +271,13 @@ theorem perWordBound_of_treeStructure
     _ ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
         ggr11_tree_count_le (Lambda C δ) t hbase hrec0 hrec b r
 
+/-- The named frontier also reassembles to the per-word GGR11 bound. -/
+theorem perWordBound_of_treeFrontier
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (h : GGR11TreeFrontier C δ m b r) :
+    GGR11PerWordBound C δ m b r :=
+  perWordBound_of_treeStructure (treeStructure_of_frontier h)
+
 /-- **End-to-end:** the GGR11 interleaved list-size bound from the refined
 tree-existence residual. -/
 theorem lambda_le_ggr11_of_treeStructure
@@ -229,6 +286,14 @@ theorem lambda_le_ggr11_of_treeStructure
     Lambda (interleavedCodeSet (κ := Fin m) C) δ
       ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
   lambda_le_ggr11_of_perWordBound (perWordBound_of_treeStructure h)
+
+/-- End-to-end GGR11 list-size bound from the granular named frontier. -/
+theorem lambda_le_ggr11_of_treeFrontier
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (h : GGR11TreeFrontier C δ m b r) :
+    Lambda (interleavedCodeSet (κ := Fin m) C) δ
+      ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
+  lambda_le_ggr11_of_treeStructure (treeStructure_of_frontier h)
 
 set_option linter.unusedFintypeInType false in
 /-- **The refined residual is inhabited in the elementary regime.**
