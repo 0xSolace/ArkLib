@@ -156,6 +156,66 @@ lemma mem_closeCodewordsRel_of_agreement
     param_ineq_imp_dist_ratio_le N a q β δ hNpos haN hδdef hparam
   exact hammingDist_le_imp_mem_relHammingBall w c δ (le_trans hratio hparam_le)
 
+/-- **BKR06 closeness parameter inequality at the RS parameters.**  At BKR06's
+Reed–Solomon setting the domain size is `N = q` and the agreement count is the root
+count `a = q^v` of a dimension-`v` subspace polynomial.  The closeness parameter
+inequality `q^(β−1) ≤ a/N` then becomes `q^(β−1) ≤ q^v / q`, which holds **iff**
+`β ≤ v` (the BKR06 dimension condition).  We prove the (⟸) direction: from `β ≤ v`
+and `1 ≤ q` we get `q^(β−1) ≤ q^v / q`.  (`v ≥ 1` is needed so the cast `q^v/q` is
+the genuine root-count ratio; for `v = 0` the subspace is trivial and BKR06 does not
+apply.) -/
+lemma bkr06_param_ineq (q v : ℕ) (β : ℝ) (hq : (1 : ℝ) ≤ q) (hv : 1 ≤ v)
+    (hβv : β ≤ (v : ℝ)) :
+    (q : ℝ) ^ (β - 1) ≤ ((q : ℝ) ^ v) / q := by
+  have hqpos : (0 : ℝ) < q := by linarith
+  -- `q^v / q = q^(v − 1)` as a real `rpow`.
+  have hrw : ((q : ℝ) ^ v) / q = (q : ℝ) ^ ((v : ℝ) - 1) := by
+    rw [Real.rpow_sub hqpos, Real.rpow_natCast, Real.rpow_one]
+  rw [hrw]
+  -- monotone in the exponent: `β − 1 ≤ v − 1`.
+  exact Real.rpow_le_rpow_of_exponent_le hq (by linarith)
+
 end Closeness
+
+/-! ## (b) The "infinitely many prime powers" witness sequence -/
+
+section PrimePowerWitness
+
+/-- **BKR06 prime-power witness sequence.**  `qs i = 2^(i+1)`: a strictly increasing
+sequence of prime powers, supplying the `∃ qs, StrictMono qs ∧ ∀ i, IsPrimePow (qs i)`
+data demanded by the bare external `Prop`
+`CodingTheory.rs_lambda_superpoly_extension_bkr06`.  Powers of two are chosen so that
+*every* term is a prime power (`2^(i+1)`), and the field `𝔽_{2^(i+1)}` is a genuine
+BKR06 extension field. -/
+def bkr06PrimePowSeq : ℕ → ℕ := fun i => 2 ^ (i + 1)
+
+/-- `bkr06PrimePowSeq` is strictly monotone. -/
+lemma bkr06PrimePowSeq_strictMono : StrictMono bkr06PrimePowSeq := by
+  intro i j hij
+  simp only [bkr06PrimePowSeq]
+  exact Nat.pow_lt_pow_right (by norm_num) (by omega)
+
+/-- Every term of `bkr06PrimePowSeq` is a prime power. -/
+lemma bkr06PrimePowSeq_isPrimePow (i : ℕ) : IsPrimePow (bkr06PrimePowSeq i) := by
+  simp only [bkr06PrimePowSeq]
+  exact (Nat.prime_two.isPrimePow).pow (by omega)
+
+/-- Each term of `bkr06PrimePowSeq` is `≥ 2` (a genuine field cardinality). -/
+lemma bkr06PrimePowSeq_two_le (i : ℕ) : 2 ≤ bkr06PrimePowSeq i :=
+  (bkr06PrimePowSeq_isPrimePow i).two_le
+
+/-- **Existential packaging of the prime-power witness.**  Supplies the
+`∃ qs, StrictMono qs ∧ (∀ i, IsPrimePow (qs i)) ∧ P qs` skeleton given the per-index
+body `P` evaluated at the concrete witness sequence.  This is the *generic instantiation
+lemma*: any per-instance family residual `hbody` (the still-open BKR06 Lemma 3.5
+pigeonhole list-size construction, indexed by `bkr06PrimePowSeq`) is lifted to the bare
+external existential form without touching the witness-sequence construction. -/
+lemma exists_primePow_seq_of_body
+    {P : (ℕ → ℕ) → ℕ → Prop}
+    (hbody : ∀ i, P bkr06PrimePowSeq i) :
+    ∃ qs : ℕ → ℕ, StrictMono qs ∧ (∀ i, IsPrimePow (qs i)) ∧ (∀ i, P qs i) :=
+  ⟨bkr06PrimePowSeq, bkr06PrimePowSeq_strictMono, bkr06PrimePowSeq_isPrimePow, hbody⟩
+
+end PrimePowerWitness
 
 end BKR06Close
