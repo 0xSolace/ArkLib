@@ -9,6 +9,8 @@ import Mathlib.Algebra.MvPolynomial.Coeff
 import Mathlib.Algebra.CharP.CharAndCard
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.LinearAlgebra.Vandermonde
+import Mathlib.RingTheory.Polynomial.Pochhammer
+import Mathlib.Data.Nat.Prime.Factorial
 
 /-!
 # Polynomial infrastructure for the general Erdős–Heilbronn / Dias da Silva–Hamidoune bound
@@ -45,13 +47,24 @@ then applied exactly as in the `h = 2` file.
 
 ## Status
 
-Everything in the Alon–Nathanson–Ruzsa pipeline is proved unconditionally and generically in `h`
-EXCEPT the arithmetic nonvanishing of the alternating multinomial sum modulo `p`, which is the
-classical Frobenius / Vandermonde-in-factorials determinant identity. That single fact is carried
-as an explicit `Prop`-valued hypothesis `hcoeff` (the coefficient of `t` in the leading part is
-nonzero in `F`) on the main theorem `erdos_heilbronn_of_coeff`. The exact coefficient is exhibited
-in closed form by `coeff_vdmX_mul_sumPow`, so the hypothesis is a concrete, checkable arithmetic
-statement, not an oracle.
+The full general theorem `erdos_heilbronn` is proved unconditionally (no extra hypotheses beyond
+`p` prime, `1 ≤ h ≤ n`, `h(n - h) < p`, and `n ≤ p`). The added hypothesis `n ≤ p` is harmless:
+for `F = ZMod p` (the main case of interest) any `A ⊆ F` forces `n = |A| ≤ p` automatically; under
+it every factorial appearing in the coefficient has argument `< p`, so the classical
+Frobenius / Vandermonde-in-factorials coefficient is a `p`-adic unit and hence nonzero in `F`.
+
+The coefficient of the target monomial `t = ∏_i X_i^{n-1-i}` in the leading part is exhibited in
+**closed form** by `coeff_closed_form`:
+
+  `(∏_k (t_k)!) · coeff t [vdmX · (∑ X)^M] = M! · det (vandermonde (t_0, …, t_{h-1}))`
+
+(an identity over any field, where the right-hand determinant is the integer Vandermonde
+`∏_{i<j}(t_j − t_i)`), obtained by recognising the alternating multinomial sum as a
+generalised Vandermonde determinant via `descPochhammer`. Its nonvanishing mod `p`
+(`coeff_ehTarget_ne_zero`) then follows from the factorials being `p`-units.
+
+A version `erdos_heilbronn_of_coeff` taking the coefficient nonvanishing as an explicit
+hypothesis (and so dropping `n ≤ p`) is also provided.
 
 ## References
 
@@ -356,6 +369,158 @@ lemma eval_ehQ_eq_zero {Cset : Finset F} (s : Fin h → F)
       simp only [ehY, eval_sub, eval_sum, eval_X, eval_C, sub_self]
     rw [this, mul_zero]
 
+/-! ### Closed form for the coefficient and its nonvanishing -/
+
+/-- The sum of the permutation exponent vector is `C(h,2)`. -/
+lemma sum_permExp (σ : Equiv.Perm (Fin h)) : ∑ k, permExp σ k = h.choose 2 := by
+  have hk : ∑ k, permExp σ k = ∑ k, (σ.symm k : ℕ) := by
+    apply Finset.sum_congr rfl; intro k _; rw [permExp_apply]
+  rw [hk, Equiv.sum_comp σ.symm (fun i => (i : ℕ))]
+  rw [Fin.sum_univ_eq_sum_range (fun i => i), Finset.sum_range_id, Nat.choose_two_right]
+
+/-- **Per-permutation factorial/descending-factorial identity.** For a permutation `σ` with
+`permExp σ ≤ t`, the product of factorials times the multinomial coefficient of `t − permExp σ`
+equals `M!` times the product of descending factorials `∏_k (t_k)_{(σ⁻¹ k)}`. -/
+lemma term_factorial (t : Fin h →₀ ℕ) (M : ℕ) (σ : Equiv.Perm (Fin h))
+    (hsum : (∑ k, t k) = M + h.choose 2) (hle : permExp σ ≤ t) :
+    (∏ k, (t k).factorial) * (t - permExp σ).multinomial
+      = M.factorial * ∏ k, (t k).descFactorial (σ.symm k) := by
+  classical
+  have hsub : ∀ k, (t - permExp σ) k = t k - (σ.symm k : ℕ) := by
+    intro k; rw [Finsupp.coe_tsub, Pi.sub_apply, permExp_apply]
+  have hpt : ∀ k, (σ.symm k : ℕ) ≤ t k := by
+    intro k; have := hle k; rwa [permExp_apply] at this
+  have hsumd : ∑ k, (t - permExp σ) k = M := by
+    have hadd : ∑ k, t k = ∑ k, permExp σ k + ∑ k, (t - permExp σ) k := by
+      rw [← Finset.sum_add_distrib]; apply Finset.sum_congr rfl; intro k _
+      rw [hsub, permExp_apply]; have := hpt k; omega
+    rw [sum_permExp] at hadd; omega
+  have hmeq : (t - permExp σ).multinomial = Nat.multinomial Finset.univ (t - permExp σ) :=
+    Finsupp.multinomial_eq_of_support_subset (Finset.subset_univ _)
+  have hspec : (∏ k, ((t - permExp σ) k).factorial) * (t - permExp σ).multinomial = M.factorial := by
+    rw [hmeq]
+    have hh := Nat.multinomial_spec (Finset.univ) (fun k => (t - permExp σ) k)
+    rw [hsumd] at hh; exact hh
+  have hfact : ∏ k, (t k).factorial
+      = (∏ k, ((t - permExp σ) k).factorial) * ∏ k, (t k).descFactorial (σ.symm k) := by
+    rw [← Finset.prod_mul_distrib]; apply Finset.prod_congr rfl
+    intro k _; rw [hsub, Nat.factorial_mul_descFactorial (hpt k)]
+  calc (∏ k, (t k).factorial) * (t - permExp σ).multinomial
+      = ((∏ k, ((t - permExp σ) k).factorial) * ∏ k, (t k).descFactorial (σ.symm k))
+          * (t - permExp σ).multinomial := by rw [hfact]
+    _ = ((∏ k, ((t - permExp σ) k).factorial) * (t - permExp σ).multinomial)
+          * ∏ k, (t k).descFactorial (σ.symm k) := by ring
+    _ = M.factorial * ∏ k, (t k).descFactorial (σ.symm k) := by rw [hspec]
+
+/-- **Generalised Vandermonde / descending-factorial determinant.** The determinant of the matrix
+of descending factorials `[(t_k)_{(j)}]` equals the Vandermonde determinant `∏_{i<j}(t_j − t_i)`,
+because the descending factorials are monic polynomials of degrees `0, …, h−1`. -/
+lemma det_descFactorial_eq_vandermonde (t : Fin h → ℕ) :
+    (Matrix.of (fun k j : Fin h => (((t k).descFactorial (j : ℕ) : ℕ) : F))).det
+      = (Matrix.vandermonde (fun k => ((t k : ℕ) : F))).det := by
+  rw [Matrix.det_eval_matrixOfPolynomials_eq_det_vandermonde (fun k => ((t k : ℕ) : F))
+        (fun j => descPochhammer F j) (fun j => descPochhammer_natDegree F j)
+        (fun j => monic_descPochhammer F j)]
+  congr 1; ext k j
+  rw [Matrix.of_apply, Matrix.of_apply, descPochhammer_eval_eq_descFactorial F (t k) j]
+
+/-- The alternating sum `∑_σ sign σ • ∏_k N(k, σ⁻¹ k)` equals `det N`. -/
+lemma sum_sign_prod_inv_eq_det (N : Matrix (Fin h) (Fin h) F) :
+    ∑ σ : Equiv.Perm (Fin h), (Equiv.Perm.sign σ : ℤ) • ∏ k, N k (σ.symm k) = N.det := by
+  rw [Matrix.det_apply]
+  apply Finset.sum_congr rfl; intro σ _; congr 1
+  rw [← Equiv.prod_comp σ (fun k => N k (σ.symm k))]
+  apply Finset.prod_congr rfl; intro i _; rw [Equiv.symm_apply_apply]
+
+/-- **Closed form for the leading-part coefficient.** For any exponent vector `t` with
+`∑_k t_k = M + C(h,2)`,
+
+  `(∏_k (t_k)!) · coeff t [vdmX · (∑ X)^M] = M! · det (vandermonde (fun k => t_k))`,
+
+the right-hand determinant being the integer Vandermonde `∏_{i<j}(t_j − t_i)` cast into `F`. -/
+lemma coeff_closed_form (t : Fin h →₀ ℕ) (M : ℕ)
+    (hsum : (∑ k, t k) = M + h.choose 2) :
+    (∏ k, ((t k).factorial : F)) * coeff t ((vdmX (F := F) h) * (∑ k : Fin h, X k) ^ M)
+      = (M.factorial : F) * (Matrix.vandermonde (fun k => ((t k : ℕ) : F))).det := by
+  classical
+  rw [coeff_vdmX_mul_sumPow, Finset.mul_sum]
+  rw [← det_descFactorial_eq_vandermonde (F := F) (fun k => t k)]
+  rw [← sum_sign_prod_inv_eq_det, Finset.mul_sum]
+  apply Finset.sum_congr rfl
+  intro σ _
+  have hsumcond : permExp σ ≤ t → (t - permExp σ).sum (fun _ m => m) = M := by
+    intro hle
+    rw [Finsupp.sum_fintype _ _ (fun _ => rfl)]
+    have hadd : ∑ k, t k = ∑ k, permExp σ k + ∑ k, (t - permExp σ) k := by
+      rw [← Finset.sum_add_distrib]; apply Finset.sum_congr rfl; intro k _
+      rw [Finsupp.coe_tsub, Pi.sub_apply]; have := hle k; omega
+    rw [sum_permExp] at hadd; omega
+  by_cases hle : permExp σ ≤ t
+  · rw [if_pos hle, if_pos (hsumcond hle), mul_smul_comm, mul_smul_comm]
+    congr 1
+    have ht := term_factorial t M σ hsum hle
+    have hcast : ((∏ k, (t k).factorial : ℕ) : F) * ((t - permExp σ).multinomial : F)
+        = ((M.factorial : ℕ) : F) * ((∏ k, (t k).descFactorial (σ.symm k) : ℕ) : F) := by
+      rw [← Nat.cast_mul, ← Nat.cast_mul, ht]
+    push_cast at hcast
+    rw [hcast]
+    simp only [Matrix.of_apply]
+  · rw [if_neg hle, smul_zero, mul_zero]
+    have hex : ∃ k, t k < (σ.symm k : ℕ) := by
+      by_contra hc
+      push Not at hc
+      exact hle (Finsupp.le_def.mpr (fun k => by have := hc k; rw [permExp_apply]; omega))
+    obtain ⟨k, hk⟩ := hex
+    have hzero :
+        ∏ j, (Matrix.of (fun k j : Fin h => (((t k).descFactorial (j : ℕ) : ℕ) : F))) j (σ.symm j)
+          = 0 := by
+      apply Finset.prod_eq_zero (Finset.mem_univ k)
+      rw [Matrix.of_apply, Nat.descFactorial_eq_zero_iff_lt.mpr hk, Nat.cast_zero]
+    rw [hzero, smul_zero, mul_zero]
+
+/-- The cast factorial `(n! : F)` is nonzero when `n < p = ringChar F`. -/
+lemma factorial_cast_ne_zero {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p) {N : ℕ}
+    (hN : N < p) : ((N.factorial : ℕ) : F) ≠ 0 := by
+  haveI : CharP F p := hchar ▸ ringChar.charP F
+  rw [Ne, CharP.cast_eq_zero_iff F p]
+  intro hdvd
+  have := (Nat.Prime.dvd_factorial hp).mp hdvd
+  omega
+
+/-- The Vandermonde determinant of the staircase `(n-1-k)` is nonzero in `F` when `h ≤ n ≤ p`. -/
+lemma vandermonde_ehTarget_ne_zero {p : ℕ} (_hp : p.Prime) (hchar : ringChar F = p)
+    {n : ℕ} (hhn : h ≤ n) (hnp : n ≤ p) :
+    (Matrix.vandermonde (fun k : Fin h => (((n - 1 - (k : ℕ)) : ℕ) : F))).det ≠ 0 := by
+  haveI : CharP F p := hchar ▸ ringChar.charP F
+  rw [Matrix.det_vandermonde_ne_zero_iff]
+  intro i j hij
+  have hi : (n - 1 - (i : ℕ)) < p := by omega
+  have hj : (n - 1 - (j : ℕ)) < p := by omega
+  have hnat : (n - 1 - (i : ℕ)) = (n - 1 - (j : ℕ)) :=
+    CharP.natCast_injOn_Iio F p (Set.mem_Iio.mpr hi) (Set.mem_Iio.mpr hj) hij
+  exact Fin.ext (by omega)
+
+/-- **Nonvanishing of the target coefficient.** Under `h ≤ n ≤ p` and `h(n - h) < p`, the
+coefficient of the target monomial `t = ∏_i X_i^{n-1-i}` in the leading part is nonzero in `F`. -/
+lemma coeff_ehTarget_ne_zero {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
+    {n : ℕ} (hhn : h ≤ n) (hnp : n ≤ p) (hm : h * (n - h) < p) :
+    coeff (ehTarget h n) ((vdmX (F := F) h) * (∑ k : Fin h, X k) ^ (h * (n - h))) ≠ 0 := by
+  classical
+  -- the closed-form identity
+  have hsum : (∑ k, (ehTarget h n) k) = h * (n - h) + h.choose 2 := by
+    have hd : (ehTarget h n).degree = h.choose 2 + h * (n - h) := ehTarget_degree hhn
+    rw [Finsupp.degree_eq_sum] at hd
+    omega
+  have cf := coeff_closed_form (F := F) (ehTarget h n) (h * (n - h)) hsum
+  intro hzero
+  rw [hzero, mul_zero] at cf
+  have hfac : ((h * (n - h)).factorial : F) ≠ 0 := factorial_cast_ne_zero hp hchar hm
+  have hdet : (Matrix.vandermonde (fun k : Fin h => (((ehTarget h n) k : ℕ) : F))).det ≠ 0 := by
+    have hv := vandermonde_ehTarget_ne_zero (F := F) (h := h) hp hchar hhn hnp
+    convert hv using 3
+    funext k; rw [ehTarget_apply]
+  exact (mul_ne_zero hfac hdet) cf.symm
+
 end General
 
 section Main
@@ -454,6 +619,26 @@ theorem erdos_heilbronn_of_coeff {p : ℕ} (hp : p.Prime) (hchar : ringChar F = 
   · refine Or.inr (hC'sub ?_)
     exact sum_mem_restrictedSumset hinj (fun k => hsA k)
   · exact Or.inl hinj
+
+/-- **General Erdős–Heilbronn / Dias da Silva–Hamidoune theorem.**
+
+Let `F` be a finite field whose characteristic `p := ringChar F` is prime, and `A : Finset F` with
+`n := |A|`. For `1 ≤ h ≤ n`, `n ≤ p`, and `h(n - h) < p`, the restricted `h`-sumset
+
+  `Σ_h(A) = { ∑_{a ∈ S} a : S ⊆ A, |S| = h }`
+
+satisfies
+
+  `h(n - h) + 1 ≤ |Σ_h(A)|`.
+
+(For `h = 2` this is `erdos_heilbronn_two`; for general `h` it is the Dias da Silva–Hamidoune
+theorem. The hypothesis `n ≤ p` is automatic when `F = ZMod p`.) -/
+theorem erdos_heilbronn {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
+    (A : Finset F) (h : ℕ) (h1 : 1 ≤ h) (hhA : h ≤ A.card) (hnp : A.card ≤ p)
+    (hsmall : h * (A.card - h) < p) :
+    h * (A.card - h) + 1 ≤ (restrictedSumset A h).card :=
+  erdos_heilbronn_of_coeff hp hchar A h h1 hhA hsmall
+    (coeff_ehTarget_ne_zero hp hchar hhA hnp hsmall)
 
 end Main
 
