@@ -263,7 +263,8 @@ theorem pg_RsetDescended_comp_getD_dvd_Q
   -- the product divides Q (Q = C C₀ * product)
   have hprodeq : (∏ j ∈ Finset.range L.length, body j)
       = ∏ i ∈ Finset.range L.length,
-          ((L.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD i 0)) ^ e.getD i 0 := rfl
+          ((L.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD i 0)) ^ e.getD i 0 :=
+    Finset.prod_congr rfl (fun j _ => hbody j)
   have hprod_dvd_Q : (∏ j ∈ Finset.range L.length, body j) ∣ Q := by
     refine ⟨Polynomial.C C₀, ?_⟩
     rw [hprodeq, hfact]
