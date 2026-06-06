@@ -34,10 +34,9 @@ theorem support_liftComp {τ : Type} {superSpec : OracleSpec τ} {α : Type}
   | query_bind t oa ih =>
       rw [OracleComp.liftComp_bind, OracleComp.liftComp_query]
       ext y
-      simp only [support_bind, Set.mem_iUnion, support_map, Set.mem_image,
-        OracleComp.support_query, Set.mem_univ, true_and, ih]
-      simp only [OracleQuery.cont_query, OracleComp.support_liftM, OracleQuery.input_query,
-        Set.mem_range, exists_exists_eq_and, id_eq]
+      rw [show (query t : OracleComp oSpec _) >>= oa = (liftM (query t)) >>= oa from rfl]
+      simp only [support_bind, Set.mem_iUnion, OracleComp.support_liftM, Set.mem_range,
+        OracleQuery.cont_query, exists_exists_eq_and, ih]
 
 end OracleComp
 
@@ -83,15 +82,13 @@ theorem verifier_output_mem_run_support
               have hx11 : x.1.1 = proverResult.1 := congrArg (Prod.fst ∘ Prod.fst) hx
               rw [hx2, hx11]
               -- Transfer reachability of `some vOut` from the lifted verifier run to the original.
-              -- `hstmtOut : some (some vOut) ∈ support (liftM (V.run …).run).run`; the inner `some`
-              -- is `V`'s optional verifier output.  `support_liftComp` removes the lift; the OptionT
-              -- membership `some vOut ∈ support (V.run …)` is exactly what `compatStatement` needs.
-              have hLift :
-                  some (some vOut) ∈ support
-                    (OracleComp.liftComp ((reduction.verifier.run stmt proverResult.1).run)
-                      (oSpec + [pSpec.Challenge]ₒ)).run := by
-                simpa [liftComp_eq_liftM] using hstmtOut
-              rw [OptionT.run, OracleComp.support_liftComp] at hLift
-              exact (OptionT.mem_support_iff _ _).2 hLift
+              -- `hstmtOut` is reachability of `some vOut` in `support (liftM (V.run …).run)`;
+              -- `support_liftComp` removes the lift, giving the OptionT membership
+              -- `some vOut ∈ support (V.run …)` that `compatStatement` needs.
+              rw [OptionT.mem_support_iff]
+              have hLift := hstmtOut
+              rw [liftComp_eq_liftM (spec := oSpec) (superSpec := oSpec + [pSpec.Challenge]ₒ)] at *
+              rw [OracleComp.support_liftComp] at hLift
+              simpa using hLift
 
 end Reduction

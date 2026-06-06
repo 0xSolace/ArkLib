@@ -339,6 +339,77 @@ lemma toCodewordsCount_mul_ϑ_lt_ℓ (ℓ ϑ : ℕ) [NeZero ϑ] [NeZero ℓ] (i 
         · exact pos_of_neZero ℓ
         · exact pos_of_neZero ϑ
 
+omit hdiv in
+/-- The base index k = j * ϑ is less than ℓ for valid oracle indices -/
+@[simp]
+lemma oracle_block_k_bound (i : Fin (ℓ + 1)) (j : Fin (toOutCodewordsCount ℓ ϑ i)) :
+    j.val * ϑ < ℓ :=
+  toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i j
+
+omit [NeZero ℓ] [NeZero ϑ] hdiv in
+/-- The base index k = j * ϑ is less than or equal to i -/
+@[simp]
+lemma oracle_block_k_le_i (i : Fin (ℓ + 1)) (j : Fin (toOutCodewordsCount ℓ ϑ i))
+    : j.val * ϑ ≤ i := by
+  have h := toCodewordsCount_mul_ϑ_le_i ℓ ϑ i j
+  by_cases hi : i < ℓ <;> simp only [hi, ↓reduceIte] at h <;> omega
+
+/-- The next oracle index k + ϑ = (j+1) * ϑ is at most i -/
+@[simp]
+lemma oracle_block_k_next_le_i (i : Fin (ℓ + 1)) (j : Fin (toOutCodewordsCount ℓ ϑ i))
+    (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i) : j.val * ϑ + ϑ ≤ i := by
+  have h := toCodewordsCount_mul_ϑ_le_i ℓ ϑ i (j + 1)
+  rw [Fin.val_add_one' (h_a_add_1:=hj), Nat.add_mul, Nat.one_mul] at h
+  by_cases hi : i < ℓ <;> simp only [hi, ↓reduceIte] at h <;> omega
+
+omit [NeZero ℓ] [NeZero ϑ] in
+/-- For any oracle position j, the domain index j*ϑ plus ϑ steps is at most ℓ.
+This is a key bound for proving fiber-wise closeness requirements. -/
+@[simp]
+lemma oracle_index_add_steps_le_ℓ (i : Fin (ℓ + 1))
+    (j : Fin (toOutCodewordsCount ℓ ϑ i)) :
+    j.val * ϑ + ϑ ≤ ℓ := by
+  unfold toOutCodewordsCount
+  by_cases h : i < ℓ
+  · -- Case: i < ℓ, so toOutCodewordsCount = i/ϑ + 1
+    have hj_bound : j.val < i / ϑ + 1 := by
+      have : toOutCodewordsCount ℓ ϑ i = i / ϑ + 1 := by simp [toOutCodewordsCount, h]
+      rw [← this]; exact j.isLt
+    rw [← Nat.add_one_mul]
+    apply Nat.le_trans (Nat.mul_le_mul_right ϑ (Nat.succ_le_of_lt hj_bound))
+    apply Nat.mul_le_of_le_div
+    apply Nat.succ_le_of_lt
+    apply Nat.div_lt_of_lt_mul; rw [mul_comm]
+    rw [Nat.div_mul_cancel hdiv.out]
+    exact h
+  · -- Case: i ≥ ℓ, so toOutCodewordsCount = i/ϑ
+    have hj_bound : j.val < i / ϑ := by
+      have : toOutCodewordsCount ℓ ϑ i = i / ϑ := by simp [toOutCodewordsCount, h]
+      rw [← this]; exact j.isLt
+    calc j.val * ϑ + ϑ
+        = (j.val + 1) * ϑ := by rw [Nat.add_mul, Nat.one_mul]
+      _ ≤ (i / ϑ) * ϑ := by gcongr; omega
+      _ ≤ i := Nat.div_mul_le_self i ϑ
+      _ ≤ ℓ := Fin.is_le i
+
+omit [NeZero ℓ] [NeZero ϑ] in
+/-- For any oracle position j, the domain index j*ϑ is at most ℓ.
+This is a key bound for proving fiber-wise closeness requirements. -/
+@[simp]
+lemma oracle_index_le_ℓ (i : Fin (ℓ + 1))
+    (j : Fin (toOutCodewordsCount ℓ ϑ i)) :
+    j.val * ϑ ≤ ℓ := by
+  have h_le := oracle_index_add_steps_le_ℓ ℓ ϑ i j
+  omega
+
+/-- Convert oracle position index to oracle domain index by multiplying by ϑ.
+The position index j corresponds to the j-th oracle in the list of committed oracles,
+and the domain index is j*ϑ, which is the actual index in the Fin ℓ domain. -/
+@[reducible]
+def oraclePositionToDomainIndex {i : Fin (ℓ + 1)}
+    (positionIdx : Fin (toOutCodewordsCount ℓ ϑ i)) : Fin ℓ :=
+  ⟨positionIdx.val * ϑ, oracle_block_k_bound ℓ ϑ i positionIdx⟩
+
 def mkLastOracleIndex (i : Fin (ℓ + 1)) : Fin (toOutCodewordsCount ℓ ϑ i) := by
   have hv: ϑ ∣ ℓ := by exact hdiv.out
   rw [toOutCodewordsCount]
