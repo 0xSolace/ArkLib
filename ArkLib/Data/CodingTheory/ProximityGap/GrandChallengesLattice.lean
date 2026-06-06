@@ -1462,6 +1462,24 @@ theorem mcaThreshold_lt_ofEpsCAGt {MC : Submodule F (ι → F)} {ε_star δ : �
   mcaThreshold_lt_MCAUpperWitness (MC : Set (ι → F)) ε_star hne
     (MCAUpperWitness.ofEpsCAGt h) hδ
 
+/-- The packaged BCHKS25+KK25 near-capacity CA lower-bound witness gives a direct upper
+bracket on the faithful MCA lattice threshold once its explicit lower bound exceeds `ε*`. -/
+theorem mcaThreshold_lt_ofLowerCapacityBCHKS25KK25
+    (c ρ ε_star : ℝ≥0)
+    (W : CodingTheory.RSLowerCapacityWitness c ρ ι F)
+    (hne : mcaThresholdExists (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star)
+    (hδle : 1 - ρ - W.slack ≤ 1)
+    (hgt :
+      (ε_star : ENNReal) <
+        ((Fintype.card ι : ENNReal) ^ (c : ℝ)) / (Fintype.card F : ENNReal)) :
+    mcaThreshold (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star hne <
+      latticeIndexOf (ι := ι) (1 - ρ - W.slack) hδle :=
+  mcaThreshold_lt_MCAUpperWitness
+    (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star hne
+    (MCAUpperWitness.ofLowerCapacityBCHKS25KK25 c ρ ε_star W hgt) hδle
+
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lt_ofLowerCapacityBCHKS25KK25
+
 /-- The CS25 complete-CA-breakdown lower bound gives a direct upper bracket on the faithful
 MCA lattice threshold. -/
 theorem mcaThreshold_lt_ofRSBreakdownCS25
