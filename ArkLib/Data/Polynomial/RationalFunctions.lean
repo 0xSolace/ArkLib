@@ -3034,6 +3034,52 @@ lemma defaultDegreeBound_ge_R_coeff (R : F[X][X][Y]) (H : F[X][Y]) {i : ℕ}
     Bivariate.totalDegree (R.coeff i) + i ≤ defaultDegreeBound R H :=
   (coeff_totalDegree_add_index_le_trivariateTotalDegree R hi).trans (le_max_right _ _)
 
+/-- Coefficients in `F[Z][X]` evaluated as power series over the function field: `Z` is sent to
+the function-field coefficient embedding, and `X` is sent to the power-series variable. -/
+noncomputable def liftCoeffToPowerSeries (H : F[X][Y]) :
+    F[X][X] →+* PowerSeries (𝕃 H) :=
+  Polynomial.eval₂RingHom (RingHom.comp PowerSeries.C (liftToFunctionField (H := H)))
+    PowerSeries.X
+
+/-- Evaluation of the trivariate polynomial `R(X,Y,Z)` at a power series `Γ` for the `Y`
+variable, with the `X` variable interpreted as the power-series variable and `Z` interpreted in
+the function field of `H`. -/
+noncomputable def evalRAtPowerSeries (H : F[X][Y]) (R : F[X][X][Y])
+    (Γ : PowerSeries (𝕃 H)) : PowerSeries (𝕃 H) :=
+  Polynomial.eval₂ (liftCoeffToPowerSeries H) Γ R
+
+/-- The coefficient sequence obtained from a candidate sequence of regular numerators. -/
+noncomputable def alphaOfNumerators (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (βseq : ℕ → 𝒪 H) (t : ℕ) : 𝕃 H :=
+  let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
+  embeddingOf𝒪Into𝕃 _ (βseq t) /
+    (W ^ (t + 1) *
+      (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H hHyp)) ^ henselDenominatorExponent t)
+
+/-- The power series induced by a candidate sequence of regular numerators. -/
+noncomputable def gammaOfNumerators (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (βseq : ℕ → 𝒪 H) :
+    PowerSeries (𝕃 H) :=
+  let subst (t : ℕ) : 𝕃 H :=
+    match t with
+    | 0 => fieldTo𝕃 (-x₀)
+    | 1 => 1
+    | _ => 0
+  PowerSeries.subst (PowerSeries.mk subst)
+    (PowerSeries.mk (alphaOfNumerators x₀ R H hHyp βseq))
+
+/-- A numerator sequence has the semantic content required by Claim A.2: it gives the Hensel
+lift starting at `T / W`, and the induced power series is a root of `R(X,Y,Z)`. This is a
+statement shape only; the current in-file `β` stub below intentionally does not claim it. -/
+def IsHenselNumeratorSequence (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (βseq : ℕ → 𝒪 H) : Prop :=
+  alphaOfNumerators x₀ R H hHyp βseq 0 =
+      functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff ∧
+    evalRAtPowerSeries H R (gammaOfNumerators x₀ R H hHyp βseq) = 0
+
 /-- There exist regular elements `β` with the *weight upper bound* of Claim A.2 of
 Appendix A.4 of [BCIKS20].
 
