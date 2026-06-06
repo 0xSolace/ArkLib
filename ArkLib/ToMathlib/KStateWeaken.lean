@@ -72,7 +72,7 @@ def badPolyAgreement (r : F) (p q : F[X]) : Prop :=
 which they agree has cardinality at most `natDegree (p - q)`, hence at most any common degree bound.
 This is the finite-field instance of "distinct polynomials of degree `≤ D` agree on `≤ D` points",
 proven from Mathlib's `Polynomial.card_roots'` applied to `p - q`. -/
-theorem card_filter_eval_eq_le_natDegree {p q : F[X]} (hpq : p ≠ q) :
+theorem card_filter_eval_eq_le_natDegree [DecidableEq F] {p q : F[X]} (hpq : p ≠ q) :
     (Finset.univ.filter (fun r : F => p.eval r = q.eval r)).card ≤ (p - q).natDegree := by
   classical
   have hd0 : p - q ≠ 0 := sub_ne_zero.mpr hpq
@@ -104,7 +104,8 @@ theorem prob_badPolyAgreement_le {p q : F[X]} {D : ℕ}
         apply Finset.filter_false_of_mem
         intro r _
         exact fun hbad => hbad.1 hpq
-      rw [hempty, Finset.card_empty, Nat.cast_zero, zero_div]
+      rw [hempty, Finset.card_empty]
+      simp
     rw [hzero]; exact zero_le _
   · -- Distinct polynomials: bound the agreement-set cardinality by the degree budget `D`.
     rw [prob_uniform_eq_card_filter_div_card]
@@ -115,15 +116,17 @@ theorem prob_badPolyAgreement_le {p q : F[X]} {D : ℕ}
           = Finset.univ.filter (fun r : F => p.eval r = q.eval r) := by
       apply Finset.filter_congr
       intro r _
-      simp only [badPolyAgreement, eq_iff_iff, and_iff_right_iff_imp]
+      simp only [badPolyAgreement, and_iff_right_iff_imp]
       exact fun _ => hpq
     rw [hfilter]
     -- Now apply root counting and the degree budget, then divide.
-    refine div_le_div_of_nonneg_right ?_ (by positivity)
     have hcard := card_filter_eval_eq_le_natDegree (F := F) hpq
     have hdeg : (p - q).natDegree ≤ D :=
       le_trans (Polynomial.natDegree_sub_le p q) (max_le hp hq)
-    exact_mod_cast le_trans hcard hdeg
+    have hnum :
+        ((Finset.univ.filter (fun r : F => p.eval r = q.eval r)).card : ℝ≥0) ≤ (D : ℝ≥0) := by
+      exact_mod_cast le_trans hcard hdeg
+    gcongr
 
 /-- **Degree-2 specialization (ring-switching round polynomial).**
 The ring-switching / Binius round polynomial is degree `≤ 2` (carrier `↥F⦃≤ 2⦄[X]`), giving the

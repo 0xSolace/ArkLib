@@ -623,12 +623,32 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
         let localizedRoundPolyCheck := h_i = h_star
         explicitVCheck ∧ localizedRoundPolyCheck
       )
-  | ⟨2, h2⟩ => -- implied by (relOut + V's check)
-    -- Repaired weak post-challenge state. The previous strong state required reconstructing
-    -- `h_i = h_star` from a verifier check that only constrains the Boolean-point sum; that
-    -- statement
-    -- is false for malicious messages. The RBR theorem below therefore uses the unit error bound.
-    True
+  | ⟨2, h2⟩ => -- After V sends r'ᵢ (post-challenge OUTPUT state, issue #29 KState weakening)
+    -- Design (issue #29). The earlier strong post-challenge state demanded reconstructing the full
+    -- round polynomial `h_i = h_star` from the verifier run, which is *unprovable*: the honest
+    -- verifier only checks the Boolean-point sum `∑_b h_i(b) = target`, never `h_i = h_star`. The
+    -- previous repair collapsed this to `True`, forcing the unit error bound `1`.
+    --
+    -- The weakened-but-still-sharp state keeps the Boolean-sum check `explicitVCheck` and replaces
+    -- the unprovable polynomial-equality check with its *challenge-localized* consequence
+    -- `h_i(r'ᵢ) = h_star(r'ᵢ)` — exactly the next-round-target consistency the honest verifier and
+    -- `relOut` actually enforce (`sumcheck_target_succ = h_i(r'ᵢ)`, and for the ground truth
+    -- `h_star(r'ᵢ) = ∑_{next cube} (advanced H)` by `getSumcheckRoundPoly_eval_eq_cube_succ`). The
+    -- doom-escape event `¬(state@1) ∧ (state@2)` then reduces to `h_i ≠ h_star ∧ h_i(r'ᵢ) =
+    -- h_star(r'ᵢ)` = `KStateWeaken.badPolyAgreement r'ᵢ h_i h_star`, bounded by the Schwartz–Zippel
+    -- residual `2/|L|` (`KStateWeaken.prob_badPolyAgreement_degree_two_le`), giving the sharp
+    -- per-round knowledge error. -/
+    RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
+      (stmtIdx := i.castSucc)
+      (stmt := stmt) (oStmt := oStmt) (wit := witMid)
+      (localChecks :=
+        let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := by decide)
+        let r_i' := get_rᵢ' (m := ⟨2, h2⟩) (tr := tr) (hm := by simp only [le_refl])
+        let explicitVCheck :=
+          (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmt.sumcheck_target
+        let localizedTargetCheck := h_i.val.eval r_i' = h_star.val.eval r_i'
+        explicitVCheck ∧ localizedTargetCheck
+      )
 
 /-- Knowledge state function (KState) for single round -/
 def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :

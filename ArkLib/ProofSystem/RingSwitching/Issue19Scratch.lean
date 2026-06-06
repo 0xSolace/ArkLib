@@ -76,8 +76,10 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_residual_holds
   dsimp only [iteratedSumcheckOracleReduction, iteratedSumcheckOracleProver,
     iteratedSumcheckOracleVerifier, OracleVerifier.toVerifier, FullTranscript.mk2]
   refine ⟨?_, ?_⟩
-  · sorry
-  · sorry
+  · trace_state
+    sorry
+  · trace_state
+    sorry
 
 end
 end RingSwitching.SumcheckPhase
