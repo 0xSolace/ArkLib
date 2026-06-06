@@ -82,13 +82,17 @@ theorem verifier_output_mem_run_support
               have hx11 : x.1.1 = proverResult.1 := congrArg (Prod.fst ∘ Prod.fst) hx
               rw [hx2, hx11]
               -- Transfer reachability of `some vOut` from the lifted verifier run to the original.
-              -- `hstmtOut` is reachability of `some vOut` in `support (liftM (V.run …).run)`;
-              -- `support_liftComp` removes the lift, giving the OptionT membership
-              -- `some vOut ∈ support (V.run …)` that `compatStatement` needs.
+              -- `hstmtOut : some (some vOut) ∈ support (liftM (V.run …).run).run`.  Unfolding the
+              -- `liftM` (`some <$> liftComp (V.run).run`) and removing the spec-lift via
+              -- `support_liftComp` turns this into `some vOut ∈ support (V.run …).run`, i.e. the
+              -- OptionT membership `compatStatement` needs.
               rw [OptionT.mem_support_iff]
               have hLift := hstmtOut
-              rw [liftComp_eq_liftM (spec := oSpec) (superSpec := oSpec + [pSpec.Challenge]ₒ)] at *
-              rw [OracleComp.support_liftComp] at hLift
-              simpa using hLift
+              rw [OptionT.liftM_eq_mk_map_some, OptionT.run_mk, support_map,
+        OracleComp.support_liftComp] at hLift
+              rw [Set.mem_image] at hLift
+              obtain ⟨w, hw, hwEq⟩ := hLift
+              rw [Option.some.injEq] at hwEq
+              rwa [← hwEq]
 
 end Reduction
