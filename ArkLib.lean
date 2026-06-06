@@ -484,6 +484,7 @@ import ArkLib.ToMathlib.Claim57Supply
 import ArkLib.ToMathlib.Claim59Conditional
 import ArkLib.ToMathlib.CoeffExtract
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
+import ArkLib.ToMathlib.DiscriminantSeparable
 import ArkLib.ToMathlib.FiniteSeriesToPoly
 import ArkLib.ToMathlib.Finset.Basic
 import ArkLib.ToMathlib.Finset.ToListWithProof
