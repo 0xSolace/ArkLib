@@ -174,20 +174,20 @@ example (W₀ : Submodule F K) (hq : 2 ≤ Fintype.card F) (x : K) :
 
 /-- `card subFinset (W₀ ⊔ span{x}) = q * card subFinset W₀` when `x ∉ W₀`. -/
 example (W₀ : Submodule F K) (x : K) (hx : x ∉ W₀) :
-    (subFinset (W₀ ⊔ Submodule.span F {x})).card
+    (subFinset ((W₀ ⊔ Submodule.span F {x} : Submodule F K))).card
       = Fintype.card F * (subFinset W₀).card := by
   have hdisj : Disjoint W₀ (Submodule.span F {x}) :=
     Submodule.disjoint_span_singleton_of_notMem hx
   have hx0 : x ≠ 0 := fun h => hx (h ▸ W₀.zero_mem)
-  have hfr : Module.finrank F (W₀ ⊔ Submodule.span F {x})
-      = Module.finrank F W₀ + 1 := by
+  set W : Submodule F K := W₀ ⊔ Submodule.span F {x} with hW
+  have hfr : Module.finrank F W = Module.finrank F W₀ + 1 := by
     have aux := Submodule.finrank_sup_add_finrank_inf_eq W₀ (Submodule.span F {x})
-    rw [hdisj.eq_bot, finrank_bot, add_zero, finrank_span_singleton hx0] at aux
+    rw [hdisj.eq_bot, finrank_bot, add_zero, finrank_span_singleton hx0, ← hW] at aux
     omega
-  have hcardW : (subFinset (W₀ ⊔ Submodule.span F {x})).card
-      = Fintype.card F ^ (Module.finrank F (W₀ ⊔ Submodule.span F {x})) := by
+  have hcardW : (subFinset W).card
+      = Fintype.card F ^ (Module.finrank F W) := by
     rw [subFinset]; simp only [Set.toFinset_card]
-    exact Module.card_eq_pow_finrank (K := F) (V := _)
+    exact Module.card_eq_pow_finrank (K := F) (V := W)
   have hcardW0 : (subFinset W₀).card = Fintype.card F ^ (Module.finrank F W₀) := by
     rw [subFinset]; simp only [Set.toFinset_card]
     exact Module.card_eq_pow_finrank (K := F) (V := W₀)

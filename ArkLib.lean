@@ -424,7 +424,7 @@ import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
 import ArkLib.ToCompPoly.Univariate.Basic
 import ArkLib.ToCompPoly.Univariate.Lagrange
-import ArkLib.ToMathlib.BKR06CloseScratch
+import ArkLib.ToMathlib.BKR06Close
 import ArkLib.ToMathlib.BKR06FiberCount
 import ArkLib.ToMathlib.BKR06Injection
 import ArkLib.ToMathlib.BKR06Pigeonhole
@@ -488,6 +488,7 @@ import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.MultiplicityDatum
 import ArkLib.ToMathlib.MvPolynomial.Equiv
 import ArkLib.ToMathlib.PartitionRecursion
+import ArkLib.ToMathlib.PlaceGeometrySupply
 import ArkLib.ToMathlib.Polynomial.DegreeLT
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import ArkLib.ToMathlib.Polynomial.NatDegreeOfSum
