@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdElias
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLattice
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
@@ -1595,6 +1596,66 @@ theorem listPrizeLatticeResolved_of_canonical_listLatticeThreshold_eq
     rw [Fin.le_iff_val_le_val]
     exact le_trans hi_le_t (le_of_eq hτval)
   exact (listThreshold_unique C m epsStar hne' (τ r) hsatτ hmax).symm
+
+/-- Per-rate adjacent Johnson-square/Elias certificates resolve the faithful four-rate
+list-decoding lattice prize directly.
+
+This packages the canonical `Finset ℕ` exact-threshold theorem from
+`GrandChallengeLDThresholdElias.lean` through the prize-facing `Fin (n+1)` representation:
+for each prize rate, a squared Johnson certificate at `τ r` and an Elias-volume failure
+certificate at `(τ r).val + 1` determine the exact threshold. -/
+theorem listPrizeLatticeResolved_of_johnson_sq_and_elias_next
+    (domain : ι ↪ F) (m : ℕ)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hm : m ≠ 0)
+    (hnext : ∀ r : Fin 4, (τ r).val + 1 < Fintype.card ι)
+    (hq1 : 1 < Fintype.card F)
+    (hP : ∀ r : Fin 4,
+      (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+        ((Fintype.card ι - (τ r).val : ℕ) : ℝ))
+    (hsq : ∀ r : Fin 4,
+      ((ℓ r : ℝ) + 1)
+          * ((((Fintype.card ι - (τ r).val : ℕ) : ℝ)) -
+              (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+        > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+          * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))
+              + (ℓ r : ℝ)
+                * (((Fintype.card ι -
+                    Code.minDist
+                      (ReedSolomon.code domain
+                        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ :
+                          Set (ι → F)) : ℕ) : ℝ) -
+                    (Fintype.card ι : ℝ) / (Fintype.card F : ℝ))))
+    (hpow : ∀ r : Fin 4,
+      ((ℓ r : ENNReal)) ^ m ≤
+        (epsStar : ENNReal) * (Fintype.card F : ENNReal))
+    (hvol_next : ∀ r : Fin 4,
+      (epsStar : ENNReal) * (Fintype.card F : ENNReal) <
+        ENNReal.ofReal
+          ((CodingTheory.hammingBallVolume (Fintype.card F)
+              (((((τ r).val + 1 : ℕ) : ℝ≥0) /
+                    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+              (Fintype.card ι) : ℝ)
+            / (Fintype.card F : ℝ) ^
+                ((Fintype.card ι : ℝ) -
+                  Module.finrank F
+                    (ReedSolomon.code domain
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊))))
+    (hne : ∀ r : Fin 4,
+      (GrandChallenges.listLatticeSet
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar).Nonempty) :
+    listPrizeLatticeResolved domain m τ := by
+  refine listPrizeLatticeResolved_of_canonical_listLatticeThreshold_eq
+    domain m τ hne ?_
+  intro r
+  exact ProximityGap.listLatticeThreshold_eq_of_johnson_sq_and_elias_next
+    (C := ReedSolomon.code domain
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+    (m := m) (j := (τ r).val) (ℓ := ℓ r)
+    hm (hnext r) hq1 (hP r) (hsq r) (hpow r) (hvol_next r) (hne r)
 
 end GrandChallengesLattice
 
