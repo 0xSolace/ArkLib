@@ -782,24 +782,16 @@ Sequential composition preserves round-by-round soundness, with the per-round er
 routing through `ChallengeIdx.sumEquiv`.
 
 The composite state function is intended to be `Verifier.StateFunction.append` (proven, above),
-which witnesses the existential in the target `rbrSoundness`. *However*, `StateFunction.append`
-carries two
-side hypotheses that this theorem's statement does not currently provide, so as stated the theorem
-cannot be discharged via the intended route (a faithful proof must thread these in):
-  * `hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩` — the first verifier must be
-    *deterministic & non-failing*. The crossing inversion of `S₁.toFun_full` into the pointwise
-    `verify … ∉ lang₂` (the mechanism that makes the composite `toFun_full` true, per the
-    `StateFunction.append` statement-repair note) requires `V₁` to be a `pure`-verifier.
-  * `hInit : ∃ s, s ∈ support init` — at least one reachable initial state, else the `Pr = 0`
-    inversion is vacuous.
-With those two hypotheses added (or a more general `StateFunction.append` that drops determinism),
-the remaining content is: instantiate the composite state function, then per challenge round `i` of
-the
-appended protocol case on whether `i` lies in phase 1 (defer to `h₁`'s round bound, the appended
-challenge index `ChallengeIdx.inl i` carrying error `rbrSoundnessError₁ i`) or phase 2 (defer to
-`h₂`, `ChallengeIdx.inr`), the partial transcript split by the proven `Transcript.fst`/`.snd`
-transports — a per-round probabilistic argument with no honest-prover seam (rbr soundness is
-single-round, so no `Prover.append_run` is needed here). -/
+def appendRbrSoundnessResidual {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
+    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) : Prop :=
+  (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
+    (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm)
+
 theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
@@ -807,12 +799,10 @@ theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lan
     {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
     (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
     (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂)
-    (hAppendRbrSoundness :
-      (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
-        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm)) :
+    (hResidual : appendRbrSoundnessResidual V₁ V₂ h₁ h₂) :
       (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
         (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) :=
-  hAppendRbrSoundness
+  hResidual
 
 /-- **NAMED RESIDUAL (deep) + DOCUMENTED STATEMENT GAP (missing side conditions).**
 Sequential composition preserves round-by-round knowledge soundness.
