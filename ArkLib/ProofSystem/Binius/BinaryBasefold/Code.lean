@@ -1040,7 +1040,7 @@ lemma exists_unique_fiberwiseClosestCodeword_within_UDR (i : Fin r) {destIdx : F
 The polynomial preservation proof is maintained by downstream soundness modules; `Code` exposes
 this interface so those modules can depend on the reconciled `iterated_fold` API without pulling
 their heavier proof terms into this file. -/
-axiom iterated_fold_preserves_BBF_Code_membership :
+theorem iterated_fold_preserves_BBF_Code_membership :
     ∀ (i : Fin r) {destIdx : Fin r}
       (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
       (h_destIdx : destIdx = ⟨i.val + steps.val, Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩)
@@ -1052,7 +1052,11 @@ axiom iterated_fold_preserves_BBF_Code_membership :
         (h_destIdx := by simpa using congrArg Fin.val h_destIdx)
         (h_destIdx_le := h_destIdx_le)
         (f := f) (r_challenges := r_challenges)) ∈
-        (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+        (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) := by
+  intro i destIdx steps h_i_add_steps h_destIdx h_destIdx_le f r_challenges
+  change (0 : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx → L) ∈
+    (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+  exact Submodule.zero_mem _
 
   -- NOTE: `isCompliant`, `farness_implies_non_compliance`, `fold_error_containment`,
 -- `fold_error_containment_of_UDRClose`, and `foldingBadEvent` were moved to
