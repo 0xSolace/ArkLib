@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.ToMathlib.Claim57Supply
 import ArkLib.ToMathlib.Section5ConcreteJohnson
+import ArkLib.ToMathlib.DiscriminantSeparable
 
 /-!
 # Claim 5.7 residual bundle — per-field discharge brick (BCIKS20 §5)
@@ -133,8 +134,11 @@ expose them as explicit hypotheses (`hpos`/`hsepFF`) exactly as the issue requir
 silently assuming separability of the GS solution. -/
 
 /-- *Bad specialization set for a single `pg_Rset` factor.*  The values of `x₀ : F` at which the
-`X`-specialized discriminant `evalX x₀ (discr_y R)` vanishes. -/
-noncomputable def claim57_badX (R : F[Z][X][Y]) : Finset F :=
+inner-`Z`-specialized discriminant `evalX x₀ (discr_y R)` vanishes.
+
+The `[Fintype F]` instance is required for `Finset.univ`; it is always available wherever this set is
+used (the avoidance lemmas all carry `[Fintype F]`, refining the ambient `[Finite F]`). -/
+noncomputable def claim57_badX [Fintype F] (R : F[Z][X][Y]) : Finset F :=
   Finset.univ.filter (fun x₀ : F => Bivariate.evalX x₀ (Bivariate.discr_y R) = 0)
 
 omit [DecidableEq (RatFunc F)] in

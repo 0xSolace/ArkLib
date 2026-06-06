@@ -176,6 +176,55 @@ theorem separable_of_discr_ne_zero {K : Type*} [Field K] {f : K[X]}
   rw [mul_add, ← C_mul, inv_mul_cancel₀ hc_ne, C_1] at hscale
   rw [← hscale]; ring
 
+/-! ## Lemma 2′ — separability converse over an arbitrary commutative ring (domain-level)
+
+The field converse `separable_of_discr_ne_zero` crucially divides by the resultant in `K`.  Over a
+non-field commutative ring (e.g. the PID `F[Z]`, into which the §5 *X*-specialization
+`evalX (C x₀) R = R.map (evalRingHom (C x₀))` lands), `Separable` (`IsCoprime f f.derivative`,
+needing a Bézout identity equal to `1`) is **not** implied by `f.discr ≠ 0` alone: by
+`resultant_deriv`, `resultant f f' = ±·f.leadingCoeff·f.discr`, and a Bézout RHS `C(resultant)` is a
+*unit* only when the whole resultant is a unit — i.e. when *both* `f.leadingCoeff` and `f.discr` are
+units of the base.  Over `F[Z] = F[X]` the units are the nonzero constants, so this is strictly
+stronger than nonvanishing.  These two lemmas expose exactly that honest gap: they give domain-level
+`Separable` from the unit conditions, and reduce to `separable_of_discr_ne_zero` over a field (where
+`leadingCoeff` of a nonzero polynomial is automatically a unit). -/
+
+/-- **Lemma 2′ (domain separability converse, resultant form).**  Over any commutative ring, a
+positive-`natDegree` polynomial whose derivative-resultant
+`resultant f f.derivative f.natDegree (f.natDegree - 1)` is a *unit* is `Separable`.
+
+This is the honest domain-level primitive: a Bézout identity `f * p + f.derivative * q = C(res)`
+(from `exists_mul_add_mul_eq_C_resultant` at size args `(natDegree, natDegree-1)`, valid since
+`f.derivative.natDegree ≤ f.natDegree - 1`) has a *unit* right-hand side exactly when `res` is a
+unit, and a unit Bézout identity is `IsCoprime f f.derivative`, i.e. `f.Separable`. -/
+theorem separable_of_resultant_isUnit {f : A[X]}
+    (hdeg : 0 < f.natDegree)
+    (hres : IsUnit (resultant f f.derivative f.natDegree (f.natDegree - 1))) :
+    f.Separable := by
+  classical
+  obtain ⟨p, q, _hp, _hq, he⟩ :=
+    exists_mul_add_mul_eq_C_resultant f f.derivative (le_refl f.natDegree)
+      (natDegree_derivative_le f) (Or.inl (by omega))
+  have hCunit : IsUnit (C (resultant f f.derivative f.natDegree (f.natDegree - 1))) := hres.map C
+  rw [separable_def]
+  refine ⟨(↑hCunit.unit⁻¹ : A[X]) * p, (↑hCunit.unit⁻¹ : A[X]) * q, ?_⟩
+  have hkey : (↑hCunit.unit⁻¹ : A[X]) * (f * p + f.derivative * q) = 1 := by
+    rw [he]; exact hCunit.val_inv_mul
+  rw [← hkey]; ring
+
+/-- **Lemma 2′ (domain separability converse, discriminant form).**  Over any commutative ring, a
+positive-`natDegree` `f` with *both* `f.leadingCoeff` and `f.discr` units is `Separable`.  By
+`resultant_deriv` the derivative-resultant `±·f.leadingCoeff·f.discr` is then a unit, so this is the
+discriminant restatement of `separable_of_resultant_isUnit`.  Over a field `f.leadingCoeff` of a
+nonzero polynomial is automatically a unit, recovering `separable_of_discr_ne_zero`. -/
+theorem separable_of_leadingCoeff_isUnit_of_discr_isUnit {f : A[X]}
+    (hdeg : 0 < f.natDegree) (hlc : IsUnit f.leadingCoeff) (hdiscr : IsUnit f.discr) :
+    f.Separable := by
+  have hfdeg : 0 < f.degree := natDegree_pos_iff_degree_pos.mp hdeg
+  refine separable_of_resultant_isUnit hdeg ?_
+  rw [resultant_deriv hfdeg]
+  exact ((isUnit_one.neg.pow _).mul hlc).mul hdiscr
+
 /-! ## Lemma 3 — the payoff bridge (`Polynomial.discr` level)
 
 The §5 producer `exists_good_x₀_evalX_discr_y_ne` (`Claim57FieldDischarge.lean`) hands the #8 owner
@@ -231,5 +280,7 @@ end Polynomial
 #print axioms Polynomial.map_ne_zero_of_natDegree_preserved
 #print axioms Polynomial.discr_map_of_natDegree_preserved
 #print axioms Polynomial.separable_of_discr_ne_zero
+#print axioms Polynomial.separable_of_resultant_isUnit
+#print axioms Polynomial.separable_of_leadingCoeff_isUnit_of_discr_isUnit
 #print axioms Polynomial.ne_zero_and_separable_of_specialized_discr_ne_zero
 #print axioms Polynomial.ne_zero_and_separable_of_specialized_base_discr_ne_zero

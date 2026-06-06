@@ -276,10 +276,90 @@ theorem rs_close_codewords_card_ge_bkr06_exponent_form
     ring
   rwa [hexp]
 
+/-! ## Window monotonicity (gap (1) of the T3.12 base-parameter reconciliation)
+
+The bare T3.12 statement's window is `k = ⌊q^α⌋`; the construction's is `k = q^u + 1`.
+Reed-Solomon codes are nested in the degree bound (`ReedSolomon.code_mono`), so the
+close-codeword set — and hence its count — is monotone in the window.  This transports
+the proven tight count from the construction's window to any larger one. -/
+
+/-- `closeCodewordsRel` is monotone in the code. -/
+lemma closeCodewordsRel_mono_code {C C' : Set (K → K)} (h : C ⊆ C')
+    (w : K → K) (δ : ℝ) :
+    ListDecodable.closeCodewordsRel C w δ ⊆ ListDecodable.closeCodewordsRel C' w δ :=
+  fun _ hc => ⟨h hc.1, hc.2⟩
+
+/-- **Close-codeword count is monotone in the RS window.**  For `k ≤ k'`, the nested
+codes `RS[K, domain, k] ⊆ RS[K, domain, k']` give
+`|Λ(RS[k], w, δ)| ≤ |Λ(RS[k'], w, δ)|`. -/
+theorem rs_closeCodewords_ncard_mono_window
+    (domain : K ↪ K) (w : K → K) (δ : ℝ) {k k' : ℕ} (hk : k ≤ k') :
+    (ListDecodable.closeCodewordsRel
+        ((ReedSolomon.code domain k : Set (K → K))) w δ).ncard ≤
+      (ListDecodable.closeCodewordsRel
+        ((ReedSolomon.code domain k' : Set (K → K))) w δ).ncard :=
+  Set.ncard_le_ncard
+    (closeCodewordsRel_mono_code
+      (fun _ hc => ReedSolomon.code_mono hk domain hc) w δ)
+    (Set.toFinite _)
+
+/-! ## The trivial regime `α ≤ β²` (gap (3))
+
+When `α ≤ β²` the T3.12 count target `q^{(α−β²)·log q} ≤ q^0 = 1` is met by exhibiting
+a *single* close codeword: the pivot word itself (at `pivot = 0`, the zero codeword is
+`δ`-close to itself for any `δ ≥ 0`, and `δ = 1 − (#K)^{β−1} ≥ 0` for `β ≤ 1`).  No
+tight family is needed in this regime. -/
+
+/-- **T3.12 count shape, trivial regime `α ≤ β²` (fully proven).**  For `β ≤ 1` and
+`α ≤ β²`, every RS window admits a pivot whose close-codeword set at
+`δ = 1 − (#K)^{β−1}` meets the (≤ 1) count target `(#K)^{(α−β²)·log (#K)}`. -/
+theorem rs_close_codewords_card_ge_trivial_regime
+    (α β : ℝ) (hαβ : α ≤ β ^ 2) (hβ : β ≤ 1)
+    (domain : K ↪ K) (k : ℕ) :
+    ∃ pivot : K[X],
+      (Fintype.card K : ℝ) ^ ((α - β ^ 2) * Real.log (Fintype.card K)) ≤
+        ((ListDecodable.closeCodewordsRel
+            ((ReedSolomon.code domain k : Set (K → K)))
+            (ReedSolomon.evalOnPoints domain pivot)
+            (1 - (Fintype.card K : ℝ) ^ (β - 1))).ncard : ℝ) := by
+  refine ⟨0, ?_⟩
+  have hK1 : (1 : ℝ) ≤ Fintype.card K := by
+    exact_mod_cast Fintype.card_pos (α := K)
+  -- the radius is nonnegative: `(#K)^{β−1} ≤ 1` for `β ≤ 1`
+  have hδ0 : (0 : ℝ) ≤ 1 - (Fintype.card K : ℝ) ^ (β - 1) := by
+    have := Real.rpow_le_one_of_one_le_of_nonpos hK1 (by linarith : β - 1 ≤ 0)
+    linarith
+  -- the zero codeword is in the close-codeword set of the zero received word
+  have hmem : (0 : K → K) ∈ ListDecodable.closeCodewordsRel
+      ((ReedSolomon.code domain k : Set (K → K)))
+      (ReedSolomon.evalOnPoints domain 0)
+      (1 - (Fintype.card K : ℝ) ^ (β - 1)) := by
+    constructor
+    · exact (ReedSolomon.code domain k).zero_mem
+    · simp only [map_zero, ListDecodable.relHammingBall, Set.mem_setOf_eq,
+        Code.relHammingDist, hammingDist_self]
+      push_cast
+      simpa using hδ0
+  -- hence the count is at least one
+  have hpos : 0 < (ListDecodable.closeCodewordsRel
+      ((ReedSolomon.code domain k : Set (K → K)))
+      (ReedSolomon.evalOnPoints domain 0)
+      (1 - (Fintype.card K : ℝ) ^ (β - 1))).ncard :=
+    Set.ncard_pos (Set.toFinite _) |>.mpr ⟨0, hmem⟩
+  -- and the target is at most one
+  have htarget : (Fintype.card K : ℝ) ^ ((α - β ^ 2) * Real.log (Fintype.card K)) ≤ 1 :=
+    Real.rpow_le_one_of_one_le_of_nonpos hK1
+      (mul_nonpos_of_nonpos_of_nonneg (by linarith) (Real.log_nonneg hK1))
+  calc (Fintype.card K : ℝ) ^ ((α - β ^ 2) * Real.log (Fintype.card K))
+      ≤ 1 := htarget
+    _ ≤ _ := by exact_mod_cast hpos
+
 #print axioms BKR06.bkr06_param_ineq_extension
 #print axioms BKR06.agreement_count_ge_card
 #print axioms BKR06.mem_closeCodewordsRel_of_subspace
 #print axioms BKR06.bkr06_close_codewords_card_ge_tight
 #print axioms BKR06.rs_close_codewords_card_ge_bkr06_exponent_form
+#print axioms BKR06.rs_closeCodewords_ncard_mono_window
+#print axioms BKR06.rs_close_codewords_card_ge_trivial_regime
 
 end BKR06
