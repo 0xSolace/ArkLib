@@ -81,6 +81,20 @@ theorem RS_correlatedAgreement_affineLines_strict {deg : ℕ} {domain : ι ↪ F
   exact hcurves u (by
     simpa [one_mul, Fin.sum_univ_two] using hprob)
 
+omit [DecidableEq ι] in
+/-- Strict positive-radius affine-line capstone. This is the positive-`δ` API form used by
+the BCIKS20 proximity-gap statements; the current proof only needs the strict square-root
+upper bound, so the positivity hypothesis is retained as a harmless interface adapter. -/
+theorem RS_correlatedAgreement_affineLines_strict_pos {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (_hδ_pos : 0 < δ)
+    (hStrictCoeff : StrictCoeffPolysResidual (k := 1) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain) :
+  δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
+    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  RS_correlatedAgreement_affineLines_strict (ι := ι) (F := F) (deg := deg)
+    (domain := domain) (δ := δ) hStrictCoeff hδ
+
 end CoreResults
 
 end ProximityGap
