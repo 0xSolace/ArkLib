@@ -105,8 +105,8 @@ and discharging both the degree bound and the eval identity simultaneously. -/
 omit [Nonempty ι] [DecidableEq ι] in
 /-- **Bundling lemma (proven, kernel-clean).**  The per-coefficient curve-polynomial datum
 `CurveCoeffPolys` yields the bundled `hcoeffPoly` existential the front door consumes: a single
-`B : ℕ → Polynomial F` with `(B j).natDegree < k+1` for all `j < deg` and `(P z).coeff j = (B j).eval z`
-on the good set. -/
+`B : ℕ → Polynomial F` with `(B j).natDegree < k+1` for all `j < deg` and
+`(P z).coeff j = (B j).eval z` on the good set. -/
 theorem hcoeffPoly_witness_of_curveCoeffPolys
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (u : WordStack F (Fin (k + 1)) ι) (P : F → Polynomial F)
@@ -178,10 +178,11 @@ theorem hcoeffPoly_of_johnson_regime
 /-! ## End-to-end: `jointAgreement` through the front door
 
 To confirm the capstone's conclusion is exactly the front-door `hcoeffPoly`, we feed it to
-`ProximityGap.RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds` (Curves.lean:1199) and obtain
-`jointAgreement`.  This type-checks the capstone against the *real* keystone front door: every
-hypothesis other than `hcoeffPoly` is the standard probability-threshold input the front door already
-takes (`hprob`, `hεsmall`, `hεlarge`), so the list-decoding branch of Curves:1819 is, under
+`ProximityGap.RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds` (Curves.lean:1199)
+and obtain `jointAgreement`.  This type-checks the capstone against the *real* keystone
+front door: every hypothesis other than `hcoeffPoly` is the standard probability-threshold
+input the front door already takes (`hprob`, `hεsmall`, `hεlarge`), so the list-decoding
+branch of Curves:1819 is, under
 `Section55CurveCoeffOutput`, a front-door compatibility check. -/
 omit [DecidableEq ι] in
 theorem jointAgreement_of_johnson_regime
