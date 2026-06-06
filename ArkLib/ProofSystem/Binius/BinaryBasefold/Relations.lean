@@ -78,20 +78,27 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
   -- Both sides are now a single `fold` at the same (defeq) indices.  Close by congruence
   -- in the folded function and the challenge (term-level `init_snoc`/`snoc_last`: the simp
   -- forms do not fire here because of implicit-argument drift in the `Fin.snoc` motive).
-  refine congrArg₂ (fun f c =>
+  have hmid_lt : ((i.castSucc : Fin (ℓ + 1)) : ℕ) < r := by omega
+  have hdest_lt : i.val + 1 < r := by omega
+  have hdest_le : (⟨i.val + 1, hdest_lt⟩ : Fin r) ≤ ℓ := by
+    simp only [Fin.mk_le_mk, Fin.val_mk]; omega
+  refine congrArg₂ (fun g c =>
     fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := ⟨(i.castSucc : Fin (ℓ + 1)).val, by omega⟩)
-      (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by simp)
-      (h_destIdx_le := by omega) (f := f) (r_chal := c)) ?_ ?_
+      (i := ⟨(i.castSucc : Fin (ℓ + 1)).val, hmid_lt⟩)
+      (destIdx := ⟨i.val + 1, hdest_lt⟩) (h_destIdx := by simp)
+      (h_destIdx_le := hdest_le) (f := g) (r_chal := c)) ?_ ?_
   · -- Folded function: rewrite `init (snoc …) = challenges`, then the right-hand inner
     -- zero-step fold is the definitional transport of `getMidCodewords i.castSucc`.
+    -- (`α` must be given explicitly: `Fin.snoc`'s dependent motive `?α j.castSucc` is not
+    -- a higher-order pattern, so `simp`/`rw`/bare-term unification all fail without it.)
     funext z
     rw [iterated_fold_zero_steps]
-    refine Eq.trans (congrFun (congrArg _
-      (Fin.init_snoc (x := r_i') (p := challenges))) z) ?_
+    have hch : Fin.init (Fin.snoc challenges r_i') = challenges :=
+      Fin.init_snoc (α := fun _ => L) (x := r_i') (p := challenges)
+    rw [hch]
     rfl
   · -- Challenge: `snoc challenges r_i' (last _) = r_i'` (the right side beta-reduces).
-    exact Fin.snoc_last (x := r_i') (p := challenges)
+    exact Fin.snoc_last (α := fun _ => L) (x := r_i') (p := challenges)
 
 section FoldStepLogic
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context}

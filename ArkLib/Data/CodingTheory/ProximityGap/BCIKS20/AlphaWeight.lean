@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1Conditional
 
 /-!
 # (P1, A.4) `AlphaGenuineRegularWeightLe` — analysis, equivalence, structured closure, obstruction
@@ -100,13 +99,29 @@ variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 `embedding (W𝒪 H) = liftToFunctionField H.leadingCoeff` — the lift identity's `W^{t+1}` factor is
 literally the embedding of `W𝒪^{t+1}`.  Pure unfolding (`W𝒪 = mk (C lc)`,
 `embedding ∘ mk = liftBivariate`, `liftBivariate (C p) = liftToFunctionField p`).
-`embeddingOf𝒪Into𝕃_W𝒪` is imported from `P1Conditional`. -/
+-/
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- The embedding of the `𝒪`-element `W𝒪` is the `𝕃`-element `liftToFunctionField H.leadingCoeff`
+(the `W` of the lift identity). -/
+theorem embeddingOf𝒪Into𝕃_W𝒪 :
+    embeddingOf𝒪Into𝕃 H (W𝒪 H) = liftToFunctionField (H := H) H.leadingCoeff := by
+  rw [W𝒪, embeddingOf𝒪Into𝕃_mk, liftBivariate_C]
 
 /-! ### 1. The carved A.4 link, re-stated verbatim (the named gap)
 
 Identical to `P1Conditional.AlphaGenuineRegularWeightLe`: the genuine Hensel-root coefficient
 `αGenuine t ∈ 𝕃 H` is *regular* (an embedding of an `𝒪`-element) of `Λ_𝒪`-weight `≤ 1`.
-`AlphaGenuineRegularWeightLe` is imported from `P1Conditional`. -/
+-/
+
+/-- **The carved A.4 link (named gap).**  At order `t`, the genuine Hensel-root coefficient
+`αGenuine t` is the embedding of an `𝒪`-element `a_t` of `Λ_𝒪`-weight `≤ 1`.  This is the formal
+content of BCIKS20's `Λ(α_t) = Λ(Y) = 1`. -/
+def AlphaGenuineRegularWeightLe (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ) : Prop :=
+  ∀ t : ℕ, ∃ a : 𝒪 H,
+    embeddingOf𝒪Into𝕃 H a = αGenuine H x₀ R hHyp t
+      ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
 
 /-- **The `𝒪`-level divisibility-with-weight form** of the carved link.  At order `t`, `βHensel t`
 factors *in `𝒪 H`* as `a_t · W𝒪^{t+1} · ξ^{e_t}` with the quotient `a_t` of `Λ_𝒪`-weight `≤ 1`.
@@ -123,7 +138,24 @@ def DivWeightLe (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
 
 /-! ### 1′. The two halves of the `𝕃 ↔ 𝒪` bridge
 
-The `𝕃 → 𝒪` half `βHensel_eq_alpha_mul_of_lift` is imported from `P1Conditional`. -/
+-/
+
+/-- **Bridge, `𝕃 → 𝒪`.**  Given the (P2) lift identity at order `t` (`hlift_t`) and a carved
+`𝒪`-preimage `a` of `αGenuine t` (`ha`), the `βHensel t` factors, IN `𝒪 H`, as
+`βHensel t = a · W𝒪^{t+1} · ξ^{2t−1}`. -/
+theorem βHensel_eq_alpha_mul_of_lift (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (t : ℕ) {a : 𝒪 H}
+    (ha : embeddingOf𝒪Into𝕃 H a = αGenuine H x₀ R hHyp t)
+    (hlift_t :
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :
+    βHensel H x₀ R hHyp t
+      = a * (W𝒪 H) ^ (t + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t - 1) := by
+  apply embeddingOf𝒪Into𝕃_injective hH
+  rw [hlift_t]
+  rw [map_mul, map_mul, map_pow, map_pow, ha, embeddingOf𝒪Into𝕃_W𝒪]
 
 /-- **Bridge, `𝒪 → 𝕃`.**  The reverse: given the `𝒪`-level factorization `hfact` and the lift
 identity `hlift_t`, the quotient `a` embeds to `αGenuine t`.  Push `embedding` through `hfact`
@@ -184,8 +216,8 @@ This is the genuine forward closure: the carved link + the lift identity yield t
 structured weight invariant, via the `𝒪`-level factorization + the proven sub-multiplicative `Λ_𝒪`
 calculus.  It
 shows `AlphaGenuineRegularWeightLe` is at least as strong as the structured invariant (and, by §2's
-sub-additivity remark, strictly stronger).  `βHensel_weight_structured` is imported from
-`P1Conditional`. -/
+sub-additivity remark, strictly stronger).  `βHensel_weight_structured` is supplied by
+`HenselNumerator`. -/
 
 /-! ### 4. (P1) the loose weight bound, PROVEN from the structured invariant -/
 
