@@ -601,6 +601,30 @@ private lemma iteratedSumcheckOracleVerifier_verify_collapse (i : Fin ℓ')
   · simp only [hc, if_false, reduceIte]
     rw [map_optionT_failure', simulateQ_optionT_failure']
 
+/-- The `equivMessagesChallenges` message view of a full single-round sumcheck transcript is the
+same round polynomial as the direct `FullTranscript.messages` projection used by verifier-run
+collapse. This is the transcript-API bridge needed by the weakened KState path in issue #29. -/
+private theorem iteratedSumcheck_fullTranscript_message0_eq_equivMessagesChallenges
+    (tr : FullTranscript (pSpecSumcheckRound L)) :
+    (ProtocolSpec.Transcript.equivMessagesChallenges
+      (k := Fin.last 2) (pSpec := pSpecSumcheckRound L)
+      (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L))).1
+        ⟨⟨0, by omega⟩, by simp [pSpecSumcheckRound]⟩ =
+      FullTranscript.messages tr ⟨0, rfl⟩ := by
+  simp
+
+/-- The `equivMessagesChallenges` challenge view of a full single-round sumcheck transcript is the
+same verifier challenge as the direct `FullTranscript.challenges` projection used by verifier-run
+collapse. -/
+private theorem iteratedSumcheck_fullTranscript_challenge1_eq_equivMessagesChallenges
+    (tr : FullTranscript (pSpecSumcheckRound L)) :
+    (ProtocolSpec.Transcript.equivMessagesChallenges
+      (k := Fin.last 2) (pSpec := pSpecSumcheckRound L)
+      (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L))).2
+        ⟨⟨1, by omega⟩, by simp [pSpecSumcheckRound]⟩ =
+      FullTranscript.challenges tr ⟨1, rfl⟩ := by
+  simp
+
 /-- **Extracted-witness ground-truth telescoping (issue #29).** For the iterated-round RBR extractor
 (`extractOut`), whose extracted last witness has `H = projectToMidSumcheckPoly … i.castSucc
 challenges`, the ground-truth round univariate `h_star = getSumcheckRoundPoly i (extractedH)`

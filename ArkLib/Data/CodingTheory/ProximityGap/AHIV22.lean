@@ -1519,6 +1519,41 @@ theorem ahiv17_epsCA_bound_of_affineLine_residual
     ProximityGap.epsCA (F := F) (A := F) (RScodeSet α deg) δ δ ≤ (ε : ENNReal) :=
   ahiv17_epsCA_bound (deg := deg) (α := α) (δ := δ) (ε := ε) hAHIV
 
+/-! ### AHIV17/AHIV22 tighter `d/q` residual (issue #88)
+
+The row-span theorem `prob_of_bad_pts` proves a `‖RS‖₀ / |F|` probability bound for AHIV22's
+row-span sample space.  The remaining #88 source-to-interface work is to identify that row-span
+event with the affine-line correlated-agreement predicate consumed by ABF26.  We name exactly
+that target at the tighter `d/q` error level and provide the final checked `epsCA` wrapper below.
+-/
+
+/-- **#88 residual.** The AHIV22 row-span probability theorem, specialized all the way to the
+ABF26 affine-line correlated-agreement predicate at the tighter AHIV error level
+`‖RScodeSet α deg‖₀ / |F|`.
+
+This is intentionally still a residual: it is the missing row-span-to-affine-line event
+identification, not a consequence of the already-proven unique-decoding wrapper. -/
+def ahiv17_rowSpan_to_affineLine_dOverQ_residual
+    [Nonempty ι]
+    (deg : ℕ) (α : ι ↪ F) (δ : ℝ≥0) : Prop :=
+  ahiv17_affineLine_correlatedAgreement_residual deg α δ
+    ((‖RScodeSet α deg‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0))
+
+/-- **ABF26 T4.8 at the tighter AHIV `d/q` error level, conditional on the #88 bridge.**
+Once the row-span-to-affine-line specialization is supplied, the generic `epsCA` bridge gives
+
+`epsCA (RScodeSet α deg) δ δ ≤ ‖RScodeSet α deg‖₀ / |F|`.
+
+The only hypothesis here is the named #88 residual above; the wrapper itself is fully checked. -/
+theorem ahiv17_epsCA_bound_of_rowSpan_to_affineLine_dOverQ_residual
+    [Nonempty ι]
+    {deg : ℕ} {α : ι ↪ F} {δ : ℝ≥0}
+    (hAHIV : ahiv17_rowSpan_to_affineLine_dOverQ_residual deg α δ) :
+    ProximityGap.epsCA (F := F) (A := F) (RScodeSet α deg) δ δ ≤
+      (((‖RScodeSet α deg‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0)) : ENNReal) :=
+  ahiv17_epsCA_bound_of_affineLine_residual (deg := deg) (α := α) (δ := δ)
+    (ε := ((‖RScodeSet α deg‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0))) hAHIV
+
 /-! ### Unique-decoding-regime instantiation (fully proven, no residual)
 
 The named affine-line residual **holds** in the unique-decoding regime: `RScodeSet α deg`
@@ -1579,6 +1614,8 @@ theorem ahiv17_affineLine_correlatedAgreement_residual_uniqueDecodingRegime
 #print axioms ProximityToRS.ahiv17_affineLine_correlatedAgreement_residual
 #print axioms ProximityToRS.ahiv17_epsCA_bound
 #print axioms ProximityToRS.ahiv17_epsCA_bound_of_affineLine_residual
+#print axioms ProximityToRS.ahiv17_rowSpan_to_affineLine_dOverQ_residual
+#print axioms ProximityToRS.ahiv17_epsCA_bound_of_rowSpan_to_affineLine_dOverQ_residual
 #print axioms ProximityToRS.ahiv17_affineLine_residual_uniqueDecodingRegime
 #print axioms ProximityToRS.ahiv17_affineLine_correlatedAgreement_residual_uniqueDecodingRegime
 #print axioms ProximityToRS.ahiv17_epsCA_bound_uniqueDecodingRegime
