@@ -423,18 +423,15 @@ theorem epsStar_lt_epsMCA_one_of_field_small (domain : ι ↪ F) (k : ℕ)
     -- goal: `(2^128)⁻¹ * q < (n - k)`
     have hpow_pos : (0 : ℝ≥0∞) < 2 ^ (128 : ℕ) := by positivity
     have hpow_ne_zero : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ 0 := hpow_pos.ne'
-    have hpow_ne_top : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ ⊤ :=
-      ENNReal.pow_ne_top ENNReal.two_ne_top
+    have hpow_ne_top : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ ⊤ := by finiteness
     have hq_lt : (q : ℝ≥0∞) < (2 ^ (128 : ℕ) : ℝ≥0∞) * ((n - k : ℕ) : ℝ≥0∞) := by
       have hcast : (q : ℝ≥0∞) < ((2 ^ (128 : ℕ) * (n - k) : ℕ) : ℝ≥0∞) := by
         exact_mod_cast hsmall
       calc (q : ℝ≥0∞) < ((2 ^ (128 : ℕ) * (n - k) : ℕ) : ℝ≥0∞) := hcast
         _ = (2 ^ (128 : ℕ) : ℝ≥0∞) * ((n - k : ℕ) : ℝ≥0∞) := by push_cast; ring
-    have hmono := (ENNReal.mul_lt_mul_left
-      (ENNReal.inv_ne_zero.mpr hpow_ne_top) (ENNReal.inv_ne_top.mpr hpow_ne_zero)).mpr hq_lt
-    calc (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * (q : ℝ≥0∞)
-        < (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * ((2 ^ (128 : ℕ) : ℝ≥0∞) * ((n - k : ℕ) : ℝ≥0∞)) := hmono
-      _ = ((n - k : ℕ) : ℝ≥0∞) := by
-          rw [← mul_assoc, ENNReal.inv_mul_cancel hpow_ne_zero hpow_ne_top, one_mul]
+    rw [← ENNReal.div_eq_inv_mul,
+      ENNReal.div_lt_iff (Or.inl hpow_ne_zero) (Or.inl hpow_ne_top)]
+    calc (q : ℝ≥0∞) < (2 ^ (128 : ℕ) : ℝ≥0∞) * ((n - k : ℕ) : ℝ≥0∞) := hq_lt
+      _ = ((n - k : ℕ) : ℝ≥0∞) * (2 ^ (128 : ℕ) : ℝ≥0∞) := mul_comm _ _
 
 end ProximityGap
