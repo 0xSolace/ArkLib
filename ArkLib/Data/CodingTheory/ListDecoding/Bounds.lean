@@ -1814,13 +1814,15 @@ a Reed-Solomon code `C := RS[F_q, F_q, ⌊q^α⌋]` and a word `w : F_q → F_q`
 
   `|Λ(C, 1 - q^{β-1}, w)| ≥ q^{(α - β²) · log q}`
 
-Admitted as an external result.
-
-**STATUS: NEEDS_CLASSICAL.** [BKR06 Cor 2.2] is settled classical Reed-Solomon
-list-decoding theory, but mathlib has no Reed-Solomon list-decoding / superpolynomial
-list-size API; this result is unformalized anywhere. Discharging the `sorry` is a
-ground-up formalization, not a port.
-See `research/formal/arklib-proof-research-2026-06.md`.
+**STATUS: PROVEN.** This front door is discharged as an in-tree, axiom-clean theorem:
+`BKR06.rs_lambda_superpoly_extension_bkr06_proven` in
+`ArkLib/ToMathlib/BKR06BareT312.lean` (witness sequence `qs i = 2^{i+N+1}` past the
+Archimedean band threshold; per-instance assembly = ZMod-2 base-field glue +
+log-2-widened band cutoffs + the tight pigeonhole close-codeword count +
+floor-window/index transport, all from `ArkLib/ToMathlib/BKR06EndToEnd.lean`).  The
+`def : Prop` below is retained as the statement surface; the narrowed `_of_residuals`/
+injection/family forms remain as intermediate API.  Historical context:
+`research/formal/arklib-proof-research-2026-06.md`.
 
 **HONEST REDUCTION AVAILABLE.** The arithmetic core (the subspace-polynomial root count
 `q^d` dominating the target `q^{(α-β²)log q}` under BKR06's dimension threshold) is fully
