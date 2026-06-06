@@ -442,7 +442,7 @@ theorem mcaThresholdLattice_bracketed_of_residuals_and_upperWitness
     hη hδ hδlo_le_one R hle
   simpa [wlo, mcaThresholdExists_of_residuals] using
     (GrandChallengesLattice.mcaThresholdLattice_bracketed_of_witnesses
-      (C := ReedSolomon.code domain k : Set (ι₀ → F₀)) (ε_star := ε_star)
+      (C := (ReedSolomon.code domain k : Set (ι₀ → F₀))) (ε_star := ε_star)
       wlo whi hδhi)
 
 /-- **Adjacent upper witness closes the refined Hab25 lower bound to an exact lattice
@@ -467,7 +467,7 @@ theorem mcaThreshold_eq_latticeIndexOf_residuals_and_upperWitness_adjacent
     hη hδ hδlo_le_one R hle
   simpa [wlo, mcaThresholdExists_of_residuals] using
     (GrandChallengesLattice.mcaThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
-      (C := ReedSolomon.code domain k : Set (ι₀ → F₀)) (ε_star := ε_star)
+      (C := (ReedSolomon.code domain k : Set (ι₀ → F₀))) (ε_star := ε_star)
       wlo whi hδhi hadj)
 
 /-- **Adjacent `ε_ca` upper witness closes the refined Hab25 lower bound to an exact lattice
