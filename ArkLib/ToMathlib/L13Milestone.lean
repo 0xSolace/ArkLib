@@ -195,7 +195,6 @@ theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin
   correlatedAgreement_affine_curves_johnson_of_betaRecFin_strict
     (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput
 
-omit [DecidableEq ι] in
 /-- **The closed-radius §5 keystone, β-identification-residual-free, with the boundary quantized.**
 
 This is the non-strict companion to
@@ -231,7 +230,6 @@ theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_resid
     (ArkLib.BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
       (k := k) (deg := deg) (domain := domain) (δ := δ) hLattice hStrictBoundary)
 
-omit [DecidableEq ι] in
 /-- Closed-radius §5 keystone with the β-identification residual removed and the lattice-boundary
 residual discharged from explicit boundary-card data.
 
