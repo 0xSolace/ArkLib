@@ -1193,8 +1193,11 @@ theorem mcaThreshold_spec_ofJohnsonBCHKS25
     (mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ ε_star hη hδ_johnson hδ_le_one
       hBCHKS25 hle)
 
-/-- Under the §4.5 MCA conjecture, the conjectural lower-witness link also makes the faithful
-MCA lattice threshold exist. -/
+/-- Under the draft-source §4.5 MCA conjecture, the conjectural lower-witness link also makes the
+faithful MCA lattice threshold exist. The consumed `mcaConjecture` is faithful to an ignored ABF26
+`.tex` block rather than the rendered paper; use
+`mcaThresholdExists_of_ignoredSource_mcaConjecture` at exported API boundaries where that caveat
+should be visible in the declaration name. -/
 theorem mcaThresholdExists_of_mcaConjecture (h : mcaConjecture) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
@@ -1213,8 +1216,10 @@ theorem mcaThresholdExists_of_mcaConjecture (h : mcaConjecture) :
   exact mcaThresholdExists_of_MCALowerWitness
     (ReedSolomon.code domain k : Set (ιC → FC)) ε_star w
 
-/-- Under the §4.5 MCA conjecture, the faithful lattice threshold obtained from the conjectural
-lower-witness link satisfies the MCA bound. -/
+/-- Under the draft-source §4.5 MCA conjecture, the faithful lattice threshold obtained from the
+conjectural lower-witness link satisfies the MCA bound. Use
+`mcaThreshold_spec_of_ignoredSource_mcaConjecture` at exported API boundaries where the
+ignored-source caveat should be visible in the declaration name. -/
 theorem mcaThreshold_spec_of_mcaConjecture (h : mcaConjecture) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
@@ -1234,6 +1239,43 @@ theorem mcaThreshold_spec_of_mcaConjecture (h : mcaConjecture) :
   intro ιC _ _ _ FC _ _ _ domain k ε_star δ hk hδ hδ1 hle
   let hne := hExists domain k ε_star δ hk hδ hδ1 hle
   exact ⟨hne, mcaThreshold_spec (ReedSolomon.code domain k : Set (ιC → FC)) ε_star hne⟩
+
+/-- Name-explicit alias for `mcaThresholdExists_of_mcaConjecture`. The theorem statement is
+unchanged, but the exported name records that `mcaConjecture` is sourced from an ignored ABF26
+`.tex` block rather than the rendered paper. -/
+theorem mcaThresholdExists_of_ignoredSource_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (k : ℕ) (ε_star δ : ℝ≥0),
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (ε_star : ENNReal) →
+        mcaThresholdExists (ReedSolomon.code domain k : Set (ιC → FC)) ε_star :=
+  mcaThresholdExists_of_mcaConjecture h
+
+/-- Name-explicit alias for `mcaThreshold_spec_of_mcaConjecture`. The theorem statement is
+unchanged, but the exported name makes the ignored-source status of `mcaConjecture` hard to miss in
+downstream lattice-threshold composition. -/
+theorem mcaThreshold_spec_of_ignoredSource_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (k : ℕ) (ε_star δ : ℝ≥0),
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (ε_star : ENNReal) →
+        ∃ hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ιC → FC)) ε_star,
+          mcaSatisfies (ReedSolomon.code domain k : Set (ιC → FC)) ε_star
+            (mcaThreshold (ReedSolomon.code domain k : Set (ιC → FC)) ε_star hne) :=
+  mcaThreshold_spec_of_mcaConjecture h
+
+#print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_of_ignoredSource_mcaConjecture
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_of_ignoredSource_mcaConjecture
 
 /-- **Upper bracket.** An `MCAUpperWitness` at a radius `δ ≤ 1` forces
 `mcaThreshold < ⌊δ·n⌋`: its lattice point already exceeds `ε*`, so the threshold is strictly

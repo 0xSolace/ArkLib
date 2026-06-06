@@ -457,6 +457,47 @@ theorem rs_epsCA_small_loss_r4_10_of_no_boundary_crossing_prop
     h_dmin hγ_pos hγ_lt hT492 ?_ hbound
   exact r4_10_floor_collapse_of_no_boundary_crossing (ι := ι) δ_fld γ hcross
 
+/-- The nearby internal radius used in R4.10 is strictly above `δ_fld` when `γ > 0`. -/
+lemma r4_10_delta_lt_nearby
+    (δ_fld γ : ℝ≥0) (hγ_pos : 0 < γ) :
+    δ_fld < δ_fld + γ / (Fintype.card ι : ℝ≥0) := by
+  have hnpos : 0 < (Fintype.card ι : ℝ≥0) := by
+    exact_mod_cast Fintype.card_pos
+  exact lt_add_of_pos_right δ_fld (div_pos hγ_pos hnpos)
+
+/-- Public T4.9.2-to-R4.10 adapter.
+
+This wrapper consumes the actual `rs_epsCA_bchks25_item2` proposition at the nearby internal
+radius `δ_fld + γ/n`, then routes it through the already-checked R4.10 no-boundary-crossing
+reduction.  The hard external input is exactly BCHKS25 T4.9.2; the remaining hypotheses are
+the explicit floor-collapse and real-bound side conditions already isolated above. -/
+theorem rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
+    (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0)
+    (h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
+                / Fintype.card ι / 3 ≤ δ_fld)
+    (hγ_pos : 0 < γ) (hγ_lt : (γ : ℝ) < 1)
+    (hδ_lt : δ_fld < δ_fld + γ / (Fintype.card ι : ℝ≥0))
+    (hT492 : rs_epsCA_bchks25_item2 domain k δ_fld
+      (δ_fld + γ / (Fintype.card ι : ℝ≥0)) h_dmin hδ_lt)
+    (hcross : δ_fld * (Fintype.card ι : ℝ≥0) + γ <
+        (Nat.floor (δ_fld * (Fintype.card ι : ℝ≥0)) : ℝ≥0) + 1)
+    (hbound :
+      let δ_int : ℝ≥0 := δ_fld + γ / (Fintype.card ι : ℝ≥0)
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      let t492Bound : ℝ :=
+        max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+            ((δ_int : ℝ) / (((δ_int : ℝ) - (δ_fld : ℝ)) * Fintype.card F))
+      let smallBound : ℝ :=
+        max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+            ((n * δ_fld + γ) / (γ * Fintype.card F))
+      t492Bound ≤ smallBound) :
+    rs_epsCA_small_loss_r4_10 domain k δ_fld γ h_dmin hγ_pos hγ_lt := by
+  refine rs_epsCA_small_loss_r4_10_of_no_boundary_crossing_prop
+    (domain := domain) (k := k) (δ_fld := δ_fld) (γ := γ)
+    h_dmin hγ_pos hγ_lt hcross ?_ hbound
+  simpa [rs_epsCA_bchks25_item2] using hT492
+
 /-- The currently stated `0 < γ < 1` hypotheses do not by themselves imply the
 floor-collapse side condition needed in `rs_epsCA_small_loss_r4_10`.
 
@@ -594,6 +635,17 @@ theorem rs_epsCA_breakdown_cs25_of_lower_bound
           (ReedSolomon.code domain k : Set (ι → F))) ≤ δ <;> simp [hγ])
       (PMF.tsum_coe (PMF.uniformOfFintype F)).le
 
+/-- The ABF26 T4.18 Johnson radius for the fixed relative distance `15/16`.  This is kept
+as a named expression so the existential construction and Grand-MCA adapters use the same
+radius literal. -/
+noncomputable def johnsonJumpRadius : ℝ≥0 :=
+  (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)).toNNReal)
+
+/-- The proximity-loss internal radius appearing in ABF26 T4.18 for a domain of size `n`. -/
+noncomputable def johnsonJumpInternalRadius (n : ℕ) : ℝ≥0 :=
+  (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)
+      + 1 / 8 + 1 / (n : ℝ)).toNNReal)
+
 /-- **ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** CA jump at the Johnson bound. Fix `ε > 0`,
 let `δ := 15/16`. Then for all `F` of characteristic 2 there exists a Reed-Solomon code
 `C := RS[F, L, k]` with `n ≈ |F|^{(1+ε)/2}` and `δ_min(C) = 15/16` such that:
@@ -621,9 +673,8 @@ def rs_epsCA_johnson_jump_bchks25
       (Code.minDist ((ReedSolomon.code domain k : Set (ιC → FC))) : ℝ)
           / Fintype.card ιC = (15 : ℝ) / 16 ∧
       epsCA (F := FC) (A := FC) ((ReedSolomon.code domain k : Set (ιC → FC)))
-          (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)).toNNReal)
-          (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)
-              + 1 / 8 + 1 / (Fintype.card ιC : ℝ)).toNNReal) ≥
+          johnsonJumpRadius
+          (johnsonJumpInternalRadius (Fintype.card ιC)) ≥
         ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
           / (Fintype.card FC : ENNReal)
   -- Missing ingredient: BCHKS25's char-2 CA-jump CONSTRUCTION at the Johnson bound. LOWER
@@ -632,6 +683,59 @@ def rs_epsCA_johnson_jump_bchks25
   -- exhibiting the sharp proximity-gap discontinuity at J(δ_min). Code-construction lower
   -- bound; trivial epsCA≤1 is the wrong direction; no in-tree witness generator. Genuinely
   -- external.
+
+/-- Named payload for the BCHKS25 Johnson-jump construction.
+
+The external theorem `rs_epsCA_johnson_jump_bchks25` is existential over the domain and
+message dimension.  This structure exposes the witness data at a fixed domain type, so
+downstream Grand-MCA code can consume the lower-bound construction without unpacking the
+whole theorem statement each time. -/
+structure RSJohnsonJumpWitness
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    (ε : ℝ≥0) (ιC : Type) [Fintype ιC] [Nonempty ιC] [DecidableEq ιC] where
+  domain : ιC ↪ FC
+  k : ℕ
+  card_lower :
+    ((Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) - 1
+        ≤ (Fintype.card ιC : ℝ))
+  card_upper :
+    ((Fintype.card ιC : ℝ)
+        ≤ (Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) + 1)
+  minDist_eq :
+    (Code.minDist ((ReedSolomon.code domain k : Set (ιC → FC))) : ℝ)
+        / Fintype.card ιC = (15 : ℝ) / 16
+  epsCA_lower :
+    ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
+        / (Fintype.card FC : ENNReal) ≤
+      epsCA (F := FC) (A := FC) ((ReedSolomon.code domain k : Set (ιC → FC)))
+        johnsonJumpRadius
+        (johnsonJumpInternalRadius (Fintype.card ιC))
+
+/-- A packaged Johnson-jump witness reassembles the external T4.18 statement. -/
+theorem rs_epsCA_johnson_jump_bchks25_of_witness
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    (ε : ℝ≥0) (hε : 0 < ε)
+    {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    (W : RSJohnsonJumpWitness (FC := FC) ε ιC) :
+    rs_epsCA_johnson_jump_bchks25 (FC := FC) ε hε := by
+  exact ⟨ιC, inferInstance, inferInstance, inferInstance, W.domain, W.k,
+    W.card_lower, W.card_upper, W.minDist_eq, W.epsCA_lower⟩
+
+/-- Conversely, the existential T4.18 statement yields a named witness package for one
+domain type. -/
+theorem exists_rsJohnsonJumpWitness_of_bchks25
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    (ε : ℝ≥0) (hε : 0 < ε)
+    (h : rs_epsCA_johnson_jump_bchks25 (FC := FC) ε hε) :
+    ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC),
+      RSJohnsonJumpWitness (FC := FC) ε ιC := by
+  rcases h with ⟨ιC, hFintype, hNonempty, hDecEq, domain, k,
+    hcard_lower, hcard_upper, hminDist, heps⟩
+  letI := hFintype
+  letI := hNonempty
+  letI := hDecEq
+  exact ⟨ιC, hFintype, hNonempty, hDecEq,
+    ⟨domain, k, hcard_lower, hcard_upper, hminDist, heps⟩⟩
 
 end ReedSolomon
 
@@ -839,6 +943,72 @@ theorem frs_epsMCA_capacity_gg25_of_residuals_prop
     (domain := domain) (k := k) (s := s) (ω := ω) (η := η) (t := t) ht
     hT218 hT413 hRadius hBound
 
+/-- **ABF26 T4.14 — single T4.13 instance reduction.**
+
+The broader residual theorem above takes the full GG25 T4.13 theorem as a universal hypothesis.
+For closing a concrete folded-RS instance, it is enough to supply the one subspace-design MCA
+bound at the chosen `τ`, code, and integer `t`, plus the same radius and real-bound arithmetic.
+This theorem exposes that smaller target. -/
+theorem frs_epsMCA_capacity_gg25_of_subspaceDesign_bound
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (τ : ℕ → ℝ) (t : ℕ)
+    (hT413 :
+      epsMCA (F := F) (A := Fin s → F)
+          ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F)))
+          ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
+        ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F))
+    (hRadius :
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      ((1 - ρ - η).toNNReal : ℝ≥0) =
+        (1 - τ (t + 1) - 3 / (2 * t)).toNNReal)
+    (hBound :
+      let n : ℝ := Fintype.card ι
+      ((t : ℝ) * n + 4 * t ^ 2) / Fintype.card F ≤
+        2 * n / (η * Fintype.card F) + 24 / (η ^ 3 * Fintype.card F)) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    epsMCA (F := F) (A := Fin s → F)
+        ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F)))
+        ((1 - ρ - η).toNNReal) ≤
+      ENNReal.ofReal (2 * n / (η * Fintype.card F)
+        + 24 / (η ^ 3 * Fintype.card F)) := by
+  intro n ρ
+  rw [hRadius]
+  exact le_trans hT413 (ENNReal.ofReal_le_ofReal hBound)
+
+/-- Prop-level T4.14 adapter from a single public T4.13 instance.
+
+This consumes `subspaceDesign_epsMCA_gg25` for the folded-RS code at the chosen `τ` and `t`, so
+the remaining T4.14 work is exactly the FRS subspace-design input plus the explicit arithmetic
+side conditions. -/
+theorem frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1)
+    (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (τ : ℕ → ℝ) (t : ℕ) (ht : 0 < t)
+    (hT218 : IsSubspaceDesign s τ (ReedSolomon.Folded.frsCode domain k s ω))
+    (hT413 : subspaceDesign_epsMCA_gg25 s τ
+        (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht)
+    (hRadius :
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      ((1 - ρ - η).toNNReal : ℝ≥0) =
+        (1 - τ (t + 1) - 3 / (2 * t)).toNNReal)
+    (hBound :
+      let n : ℝ := Fintype.card ι
+      ((t : ℝ) * n + 4 * t ^ 2) / Fintype.card F ≤
+        2 * n / (η * Fintype.card F) + 24 / (η ^ 3 * Fintype.card F)) :
+    frs_epsMCA_capacity_gg25 domain k s ω η hη_pos hη_lt hs_gt := by
+  refine frs_epsMCA_capacity_gg25_of_subspaceDesign_bound
+    (domain := domain) (k := k) (s := s) (ω := ω) (η := η)
+    (τ := τ) (t := t) ?_ hRadius hBound
+  simpa [subspaceDesign_epsMCA_gg25] using hT413
+
 /-! ### Random Reed-Solomon MCA up to capacity — ABF26 T4.15 ([GG25]) -/
 
 /-- **ABF26 Theorem 4.15 [GG25 Thm 5.15], statement front door.**
@@ -911,5 +1081,8 @@ def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
   -- shadow). Blocked on #489 + T4.13. Genuinely external.
 
 end SubspaceDesignFRS
+
+#print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
 
 end CodingTheory

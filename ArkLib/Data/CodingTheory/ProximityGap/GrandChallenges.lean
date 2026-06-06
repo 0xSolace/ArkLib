@@ -358,6 +358,34 @@ noncomputable def MCAUpperWitness.ofSamplingDG25
   MCAUpperWitness.ofEpsCAGt (MC := C) (ε_star := ε_star) (δ := δ)
     (lt_of_lt_of_le hgt hDG25)
 
+/-- **Bridge from ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** A packaged Johnson-jump
+witness gives an MCA upper witness once its explicit CA lower bound clears `ε*`.
+
+The theorem's CA lower bound is stated with a proximity-loss internal radius.  The adapter
+therefore asks for the radius comparison `johnsonJumpRadius ≤ johnsonJumpInternalRadius n`
+and uses `epsCA_antitone_δ_int` before applying the generic `epsCA ≤ epsMCA` connector. -/
+noncomputable def MCAUpperWitness.ofJohnsonJumpBCHKS25
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    (ε ε_star : ℝ≥0)
+    (W : CodingTheory.RSJohnsonJumpWitness (FC := FC) ε ιC)
+    (hδ_int :
+      CodingTheory.johnsonJumpRadius ≤
+        CodingTheory.johnsonJumpInternalRadius (Fintype.card ιC))
+    (hgt :
+      (ε_star : ENNReal) <
+        ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
+          / (Fintype.card FC : ENNReal)) :
+    MCAUpperWitness (ι := ιC) (F := FC)
+      (ReedSolomon.code W.domain W.k : Set (ιC → FC)) ε_star :=
+  MCAUpperWitness.ofEpsCAGt (MC := ReedSolomon.code W.domain W.k)
+      (ε_star := ε_star) (δ := CodingTheory.johnsonJumpRadius) <| by
+    exact lt_of_lt_of_le hgt
+      (le_trans W.epsCA_lower
+        (epsCA_antitone_δ_int
+          (F := FC) (A := FC) (ReedSolomon.code W.domain W.k : Set (ιC → FC))
+          CodingTheory.johnsonJumpRadius hδ_int))
+
 /-! ## §4.5 conjecture and its positive-direction link to the prize
 
 ABF26 Conjecture `conj:mca-conjecture` posits a uniform polynomial upper bound on `ε_mca`
@@ -397,11 +425,15 @@ def mcaConjecture : Prop :=
         ENNReal.ofReal
           (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃)
 
-/-- **Positive-direction link to the prize.** Under the §4.5 MCA conjecture, for the
+/-- **Positive-direction link to the prize.** Under the draft-source §4.5 MCA conjecture, for the
 exposed constants, any RS code and radius `δ < 1 - ρ` with `δ ≤ 1` whose conjectural bound
 is `≤ ε*` admits an `MCALowerWitness`. (`MCALowerWitness` is data, so the conclusion is its
 `Nonempty`-ification — the constants `c₁ c₂ c₃` come from the conjecture's `Prop`-level
-existential.) See `[ABF26]` §4.5, Conjecture `conj:mca-conjecture`. -/
+existential.) See `[ABF26]` §4.5, Conjecture `conj:mca-conjecture`.
+
+The consumed conjecture is currently faithful to an ignored `.tex` block rather than a rendered
+paper statement; use `nonempty_mcaLowerWitness_of_ignoredSource_mcaConjecture` at exported API
+boundaries where that caveat should be visible in the declaration name. -/
 theorem nonempty_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
@@ -418,8 +450,10 @@ theorem nonempty_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
   intro ιC _ _ _ FC _ _ _ domain k ε_star δ hk hδ hδ1 hle
   exact ⟨⟨δ, hδ1, le_trans (hbound domain k δ hk hδ) hle⟩⟩
 
-/-- Same positive-direction link as `nonempty_mcaLowerWitness_of_mcaConjecture`, but exposing
-the witness as an ordinary existential for easier downstream composition. -/
+/-- Same draft-source positive-direction link as `nonempty_mcaLowerWitness_of_mcaConjecture`, but
+exposing the witness as an ordinary existential for easier downstream composition. Use
+`exists_mcaLowerWitness_of_ignoredSource_mcaConjecture` at exported API boundaries where the
+ignored-source caveat should be visible in the declaration name. -/
 theorem exists_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
@@ -436,6 +470,42 @@ theorem exists_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
   refine ⟨c₁, c₂, c₃, ?_⟩
   intro ιC _ _ _ FC _ _ _ domain k ε_star δ hk hδ hδ1 hle
   exact ⟨⟨δ, hδ1, le_trans (hbound domain k δ hk hδ) hle⟩, rfl⟩
+
+/-- Name-explicit alias for `nonempty_mcaLowerWitness_of_mcaConjecture`. The theorem statement is
+the same positive-direction link, but the name records that the input conjecture is sourced from an
+ignored ABF26 `.tex` block rather than the rendered paper. -/
+theorem nonempty_mcaLowerWitness_of_ignoredSource_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (k : ℕ) (ε_star δ : ℝ≥0),
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (ε_star : ENNReal) →
+        Nonempty (MCALowerWitness (ReedSolomon.code domain k : Set (ιC → FC)) ε_star) :=
+  nonempty_mcaLowerWitness_of_mcaConjecture h
+
+/-- Name-explicit alias for `exists_mcaLowerWitness_of_mcaConjecture`. The theorem statement is
+unchanged, but the exported name makes the ignored-source status of `mcaConjecture` hard to miss in
+downstream composition. -/
+theorem exists_mcaLowerWitness_of_ignoredSource_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (k : ℕ) (ε_star δ : ℝ≥0),
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (ε_star : ENNReal) →
+        ∃ w : MCALowerWitness (ReedSolomon.code domain k : Set (ιC → FC)) ε_star,
+          w.δ = δ :=
+  exists_mcaLowerWitness_of_mcaConjecture h
+
+#print axioms ProximityGap.GrandChallenges.nonempty_mcaLowerWitness_of_ignoredSource_mcaConjecture
+#print axioms ProximityGap.GrandChallenges.exists_mcaLowerWitness_of_ignoredSource_mcaConjecture
 
 /-! ## Witness-carrying resolutions for the Grand List Decoding Challenge
 
