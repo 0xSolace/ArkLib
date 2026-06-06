@@ -414,6 +414,23 @@ theorem ListUpperWitness.δStar_le {C : Set (ι → F)} {m : ℕ} {ε_star : ℝ
   push Not at h
   exact absurd (le_trans (lambda_coe_mono (le_of_lt h)) R.bound) (not_le.mpr w.exceeds)
 
+/-- **Bridge (list-size upper bound ⇒ list lower witness).** Any radius `δ ≤ 1` whose
+maximised list size is at most `ε*·|F|` is a `ListLowerWitness`. -/
+def ListLowerWitness.ofLe {C : Set (ι → F)} {m : ℕ} {ε_star δ : ℝ≥0}
+    (hδ : δ ≤ 1)
+    (h : (ListDecodable.Lambda (C^⋈ (Fin m)) (δ : ℝ) : ENNReal) ≤
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal))) :
+    ListLowerWitness C m ε_star :=
+  ⟨δ, hδ, h⟩
+
+/-- **Bridge (list-size lower bound ⇒ list upper witness).** Any radius where the
+maximised list size already exceeds `ε*·|F|` is a `ListUpperWitness`. -/
+def ListUpperWitness.ofGt {C : Set (ι → F)} {m : ℕ} {ε_star δ : ℝ≥0}
+    (h : (ListDecodable.Lambda (C^⋈ (Fin m)) (δ : ℝ) : ENNReal) >
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal))) :
+    ListUpperWitness C m ε_star :=
+  ⟨δ, h⟩
+
 /-- A list lower witness remains valid when the list-size threshold is relaxed. -/
 def ListLowerWitness.monoThreshold {C : Set (ι → F)} {m : ℕ} {ε_star ε_star' : ℝ≥0}
     (w : ListLowerWitness C m ε_star)
