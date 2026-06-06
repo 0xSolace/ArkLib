@@ -252,12 +252,7 @@ theorem simplifiedIOR_knowledgeSound_residual
 
 theorem simplifiedIOR_knowledgeSound
     [SampleableType F] [Nonempty ι] [Nonempty F]
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F))
-    (_hδ_pos : 0 < δ)
-    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
     (decode : ToyProblem.Spec.ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
     Extractor.knowledgeSoundnessViaRewinding
       (ToyProblem.Spec.outputRelation k C δ)

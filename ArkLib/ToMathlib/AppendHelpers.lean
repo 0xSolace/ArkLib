@@ -85,7 +85,8 @@ theorem verifier_output_mem_run_support
                       (oSpec + [pSpec.Challenge]ₒ) := by
                 rw [liftComp_eq_liftM]
                 simp only [liftM, monadLift, MonadLift.monadLift, MonadLiftT.monadLift,
-                  OptionT.lift, OptionT.mk, OptionT.run, map_eq_pure_bind]
+                  OptionT.lift, OptionT.mk, OptionT.run, map_eq_pure_bind, simulateQ_bind,
+                  simulateQ_pure, OracleComp.liftComp]
               rw [hrun, support_map, OracleComp.support_liftComp, Set.mem_image] at hLift
               obtain ⟨w, hw, hwEq⟩ := hLift
               rw [Option.some.injEq] at hwEq

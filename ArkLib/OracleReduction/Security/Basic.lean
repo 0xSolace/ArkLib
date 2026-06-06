@@ -574,7 +574,7 @@ theorem Reduction.id_perfectCompleteness {rel : Set (StmtIn × WitIn)} :
       (Prod.fst <$> (pure (some ((default, stmtIn, witIn), stmtIn)) :
         StateT σ ProbComp _).run s) at hx
     rw [StateT.run_pure] at hx
-    simp [map_pure, support_pure] at hx
+    simp only [map_pure, support_pure, Set.mem_singleton_iff, Option.some.injEq, Prod.mk.injEq] at hx
     cases hx
     exact ⟨hIn, rfl⟩
 
@@ -593,7 +593,8 @@ theorem Verifier.id_soundness {lang : Set StmtIn} :
     (Verifier.id : Verifier oSpec _ _ _).soundness init impl lang lang 0 := by
   unfold soundness
   intro WitIn WitOut witIn prover stmtIn hstmtIn
-  simp only [ENNReal.coe_zero, nonpos_iff_eq_zero, Reduction.run_mk_verifier_id, probEvent_eq_zero_iff]
+  simp only [ENNReal.coe_zero, nonpos_iff_eq_zero, Reduction.run_mk_verifier_id,
+    probEvent_eq_zero_iff]
   intro x hx hev
   apply hstmtIn
   rw [OptionT.mem_support_iff] at hx

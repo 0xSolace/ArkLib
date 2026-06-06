@@ -941,6 +941,7 @@ under `_h_encode_mem` (`honestInputRelation_subset_inputRelation`) — so the
 claim is faithful and never vacuous. Completeness against `inputRelation k C`
 itself is *false* (counterexample in the `honestInputRelation` docstring:
 `encode' = 0`, `encode = id`, `wit ≠ 0`). -/
+omit [Fintype ι] [DecidableEq ι] [Fintype F] in
 theorem oracleReduction_perfectCompleteness
     [SampleableType F] [SampleableType ι]
     {σ : Type} (init : ProbComp σ)
@@ -1093,8 +1094,7 @@ theorem oracleReduction_perfectCompleteness
     -- Peel the verifier's two OptionT binds (`liftM (pure …)` then the `match … some`).
     erw [simulateQ_optionT_bind] at hs
     -- The first bind is `liftM ((g <$> pure ()).run) = pure (some (g ()))`; reduce it.
-    simp only [map_pure, OptionT.run_mk, OptionT.run_pure, liftM_pure, simulateQ_pure,
-      StateT.run_pure, StateT.run_bind, pure_bind, support_bind, Set.mem_iUnion] at hs
+    simp only [map_pure, OptionT.run_mk, OptionT.run_pure, liftM_pure, simulateQ_pure] at hs
     obtain ⟨⟨a, sa⟩, ha, hs⟩ := hs
   · -- Event holds: the output statements are both `Unit` (`OutputStatement = Unit`,
     -- `OutputOracleStatement : Fin 0 → Type`), hence trivially in `Set.univ` and equal.
@@ -1142,42 +1142,10 @@ feeding the proven witness through the residual (no `sorry`, no `axiom`).
 
 **Named bridge residual.** The named L6.6 bridge residual is carried as the explicit hypothesis
 `hBridge`; no global axiom is introduced. -/
-theorem protocol62_knowledgeSound_residual
-    [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
-    (t : ℕ)
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl []ₒ (StateT σ ProbComp))
-    (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F))
-    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F))
-    (hBridge :
-      Bridge.StraightlineOfRewinding
-        (protocol62_knowledgeSoundnessViaRewinding C δ decode)
-        ((verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
-          init impl (outputRelation k C δ)
-          (Set.univ : Set (OutputStatement × OutputWitness))
-          (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
-                  ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-                    / (Fintype.card F : ℝ≥0))
-               ((1 - δ) ^ t)))) :
-    (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
-      init impl (outputRelation k C δ)
-      (Set.univ : Set (OutputStatement × OutputWitness))
-      (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
-              ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-                / (Fintype.card F : ℝ≥0))
-         ((1 - δ) ^ t)) :=
-  Bridge.knowledgeSound_of_rewinding hBridge
-    (protocol62_knowledgeSoundnessViaRewinding C δ decode)
-
+omit [DecidableEq ι] [Fintype F] in
 theorem protocol62_knowledgeSound
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F))
-    (_hδ_pos : 0 < δ)
-    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
     (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
     Extractor.knowledgeSoundnessViaRewinding
       (outputRelation k C δ)
@@ -1185,7 +1153,6 @@ theorem protocol62_knowledgeSound
       (toyAccepts (ι := ι) (F := F) (k := k) C δ decode) :=
   protocol62_knowledgeSoundnessViaRewinding C δ decode
 
-#print axioms protocol62_knowledgeSound
 
 /-- **Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on
 **mutual** correlated agreement (MCA). With only correlated agreement
@@ -1218,46 +1185,10 @@ accounting splits its failure across the `γ` and spot-check rounds). No `sorry`
 
 **Named bridge residual.** The named L6.8 bridge residual is carried as the explicit hypothesis
 `hBridge`; no global axiom is introduced. -/
-theorem protocol62_rbrKnowledgeSound_residual
-    [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
-    (t : ℕ)
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl []ₒ (StateT σ ProbComp))
-    (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F))
-    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F))
-    (hBridge :
-      Bridge.StraightlineOfRewinding
-        (protocol62_knowledgeSoundnessViaRewinding C δ decode)
-        ((verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
-          init impl (outputRelation k C δ)
-          (Set.univ : Set (OutputStatement × OutputWitness))
-          (fun i ↦
-            if i.1 = 0 then
-              (epsMCA (F := F) (A := F) C δ).toNNReal +
-                ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-                  / (Fintype.card F : ℝ≥0)
-            else (1 - δ) ^ t))) :
-    (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
-      init impl (outputRelation k C δ)
-      (Set.univ : Set (OutputStatement × OutputWitness))
-      (fun i ↦
-        if i.1 = 0 then
-          (epsMCA (F := F) (A := F) C δ).toNNReal +
-            ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-              / (Fintype.card F : ℝ≥0)
-        else (1 - δ) ^ t) :=
-  Bridge.knowledgeSound_of_rewinding hBridge
-    (protocol62_knowledgeSoundnessViaRewinding C δ decode)
-
+omit [DecidableEq ι] [Fintype F] in
 theorem protocol62_rbrKnowledgeSound
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F))
-    (_hδ_pos : 0 < δ)
-    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
     (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
     Extractor.knowledgeSoundnessViaRewinding
       (outputRelation k C δ)
@@ -1275,5 +1206,4 @@ end ToyProblem
 
 #print axioms ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding
 #print axioms ToyProblem.Spec.protocol62_knowledgeSound
-#print axioms ToyProblem.Spec.protocol62_rbrKnowledgeSound_residual
 #print axioms ToyProblem.Spec.protocol62_rbrKnowledgeSound
