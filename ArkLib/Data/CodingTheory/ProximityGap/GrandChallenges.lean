@@ -397,11 +397,15 @@ def mcaConjecture : Prop :=
         ENNReal.ofReal
           (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃)
 
-/-- **Positive-direction link to the prize.** Under the §4.5 MCA conjecture, for the
+/-- **Positive-direction link to the prize.** Under the draft-source §4.5 MCA conjecture, for the
 exposed constants, any RS code and radius `δ < 1 - ρ` with `δ ≤ 1` whose conjectural bound
 is `≤ ε*` admits an `MCALowerWitness`. (`MCALowerWitness` is data, so the conclusion is its
 `Nonempty`-ification — the constants `c₁ c₂ c₃` come from the conjecture's `Prop`-level
-existential.) See `[ABF26]` §4.5, Conjecture `conj:mca-conjecture`. -/
+existential.) See `[ABF26]` §4.5, Conjecture `conj:mca-conjecture`.
+
+The consumed conjecture is currently faithful to an ignored `.tex` block rather than a rendered
+paper statement; use `nonempty_mcaLowerWitness_of_ignoredSource_mcaConjecture` at exported API
+boundaries where that caveat should be visible in the declaration name. -/
 theorem nonempty_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
@@ -418,8 +422,10 @@ theorem nonempty_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
   intro ιC _ _ _ FC _ _ _ domain k ε_star δ hk hδ hδ1 hle
   exact ⟨⟨δ, hδ1, le_trans (hbound domain k δ hk hδ) hle⟩⟩
 
-/-- Same positive-direction link as `nonempty_mcaLowerWitness_of_mcaConjecture`, but exposing
-the witness as an ordinary existential for easier downstream composition. -/
+/-- Same draft-source positive-direction link as `nonempty_mcaLowerWitness_of_mcaConjecture`, but
+exposing the witness as an ordinary existential for easier downstream composition. Use
+`exists_mcaLowerWitness_of_ignoredSource_mcaConjecture` at exported API boundaries where the
+ignored-source caveat should be visible in the declaration name. -/
 theorem exists_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
@@ -436,6 +442,42 @@ theorem exists_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
   refine ⟨c₁, c₂, c₃, ?_⟩
   intro ιC _ _ _ FC _ _ _ domain k ε_star δ hk hδ hδ1 hle
   exact ⟨⟨δ, hδ1, le_trans (hbound domain k δ hk hδ) hle⟩, rfl⟩
+
+/-- Name-explicit alias for `nonempty_mcaLowerWitness_of_mcaConjecture`. The theorem statement is
+the same positive-direction link, but the name records that the input conjecture is sourced from an
+ignored ABF26 `.tex` block rather than the rendered paper. -/
+theorem nonempty_mcaLowerWitness_of_ignoredSource_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (k : ℕ) (ε_star δ : ℝ≥0),
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (ε_star : ENNReal) →
+        Nonempty (MCALowerWitness (ReedSolomon.code domain k : Set (ιC → FC)) ε_star) :=
+  nonempty_mcaLowerWitness_of_mcaConjecture h
+
+/-- Name-explicit alias for `exists_mcaLowerWitness_of_mcaConjecture`. The theorem statement is
+unchanged, but the exported name makes the ignored-source status of `mcaConjecture` hard to miss in
+downstream composition. -/
+theorem exists_mcaLowerWitness_of_ignoredSource_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (k : ℕ) (ε_star δ : ℝ≥0),
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (ε_star : ENNReal) →
+        ∃ w : MCALowerWitness (ReedSolomon.code domain k : Set (ιC → FC)) ε_star,
+          w.δ = δ :=
+  exists_mcaLowerWitness_of_mcaConjecture h
+
+#print axioms ProximityGap.GrandChallenges.nonempty_mcaLowerWitness_of_ignoredSource_mcaConjecture
+#print axioms ProximityGap.GrandChallenges.exists_mcaLowerWitness_of_ignoredSource_mcaConjecture
 
 /-! ## Witness-carrying resolutions for the Grand List Decoding Challenge
 
