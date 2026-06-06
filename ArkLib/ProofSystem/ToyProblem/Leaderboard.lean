@@ -760,8 +760,8 @@ theorem winningSetSoundness_concrete_ge_of_card
   rw [show (2 : ℝ≥0) ^ (-(116 : ℝ)) = ((2 : ℝ≥0) ^ 116)⁻¹ by
     exact two_rpow_neg_natCast 116]
   -- Abbreviate the winning-set cardinality.
-  set Ncard : ℕ := (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard
-    with hN
+  set Ncard : ℕ :=
+    (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard with hN
   have hFle : (Fintype.card KoalaBear.Sextic : ℝ≥0) ≤ (2 : ℝ≥0) ^ 186 := by
     have hc := KoalaBear.card_sextic_le_186
     calc (Fintype.card KoalaBear.Sextic : ℝ≥0)
@@ -782,6 +782,19 @@ theorem winningSetSoundness_concrete_ge_of_card
           mul_comm ((2 : ℝ≥0) ^ 70) ((2 : ℝ≥0) ^ 116), ← mul_assoc,
           inv_mul_cancel₀ (by positivity), one_mul]
     _ ≤ (Ncard : ℝ≥0) := hNge
+
+/-- **The proven attack chain applies to the genuine code** (linearity supplied
+by construction). `ε_ca(C, δ) ≤ winningSetSoundness C δ` at the concrete
+KoalaBear-sextic RS code: this is `epsCA_le_winningSetSoundness` discharged with
+the in-tree `δ`-bounds and the by-construction linear-encoder hypothesis
+`KoalaBear.rsCode_isLinear` — exactly the `hClin` the opaque stand-in could not
+provide. With this, the §6.4 attack obligation at the genuine code is *only* the
+numeric `2^(-116) ≤ ε_ca`; the soundness-vehicle step is now a real theorem. -/
+theorem epsCA_le_winningSetSoundness_concrete :
+    epsCA (F := KoalaBear.Sextic) (A := KoalaBear.Sextic) KoalaBear.rsCodeSet (3 / 10) (3 / 10)
+      ≤ (winningSetSoundness (k := 2) KoalaBear.rsCodeSet (3 / 10) : ENNReal) :=
+  epsCA_le_winningSetSoundness (k := 2) KoalaBear.rsCodeSet (3 / 10)
+    (by norm_num) (by norm_num) KoalaBear.rsCode_isLinear
 
 /-- **Attack-side residual at the concrete carrier.** The §6.4 winning-set
 construction over the genuine KoalaBear-sextic RS code: a violating instance

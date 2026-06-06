@@ -181,10 +181,6 @@ theorem mcaEventWitness_card_pred_le_j1
   have hdiv_le : (1 : ℝ≥0) / (n : ℝ≥0) ≤ 1 := by
     rw [div_le_one (by exact_mod_cast hn)]
     exact_mod_cast Nat.succ_le_of_lt hn
-  have hn_sub_cast : ((n - 1 : ℕ) : ℝ) = (n : ℝ) - 1 := by
-    rw [Nat.cast_sub (Nat.succ_le_of_lt hn), Nat.cast_one]
-  have hn_sub_cast_nn : (((n - 1 : ℕ) : ℝ≥0) : ℝ) = (n : ℝ) - 1 := by
-    norm_num [Nat.cast_sub (Nat.succ_le_of_lt hn)]
   have hmul :
       (1 - mcaLatticePoint n
         (⟨1, by omega⟩ : Fin (n + 1))) * (n : ℝ≥0) =
@@ -194,7 +190,9 @@ theorem mcaEventWitness_card_pred_le_j1
     apply NNReal.coe_injective
     rw [NNReal.coe_mul, NNReal.coe_sub hdiv_le, NNReal.coe_one,
       NNReal.coe_div, NNReal.coe_one]
-    rw [hn_sub_cast_nn]
+    have hcoen : ((n : ℝ≥0) : ℝ) = (n : ℝ) := by norm_num
+    have hcoem : (((n - 1 : ℕ) : ℝ≥0) : ℝ) = ((n - 1 : ℕ) : ℝ) := by norm_num
+    rw [hcoen, hcoem, Nat.cast_sub (Nat.succ_le_of_lt hn), Nat.cast_one]
     field_simp [show (n : ℝ) ≠ 0 by exact_mod_cast hn.ne']
     ring
   have hnn : ((n - 1 : ℕ) : ℝ≥0) ≤ (S.card : ℝ≥0) := by
