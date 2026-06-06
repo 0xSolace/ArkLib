@@ -188,7 +188,7 @@ theorem mcaEventWitness_card_pred_le_j1
     simp only [Fin.val_mk, Nat.cast_one]
     apply NNReal.coe_injective
     rw [NNReal.coe_mul, NNReal.coe_sub hdiv_le, NNReal.coe_one,
-      NNReal.coe_div (by exact_mod_cast hn.ne'), NNReal.coe_one,
+      NNReal.coe_div, NNReal.coe_one,
       Nat.cast_sub (Nat.succ_le_of_lt hn), Nat.cast_one]
     field_simp [show (n : ℝ) ≠ 0 by exact_mod_cast hn.ne']
     ring
@@ -223,7 +223,7 @@ theorem mcaEventWitness_j1_shape (S : Finset ι)
 /-- Event-level radius-`1/n` inventory for the MCA/J1 proof: every bad event has a witness
 window that is either all coordinates or all but one coordinate. -/
 theorem mcaEvent_j1_witness_inventory
-    {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
+    {A : Type} [AddCommGroup A] [Module F A]
     (C : Set (ι → A)) (u₀ u₁ : ι → A) (γ : F)
     (h : mcaEvent (F := F) C
       (mcaLatticePoint (Fintype.card ι)
