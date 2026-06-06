@@ -712,9 +712,15 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     rw [OptionT.mem_support_iff] at hx
     simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
-    -- Collapse `simulateQ (simOracle2 …) (verify …)` to the `if` form.
+    -- Unfold `Verifier.run` to `toVerifier.verify`, push the outer `simulateQ impl` through the
+    -- `do`-bind (over the empty oracle spec `[]ₒ` the impl pass is transparent), then collapse the
+    -- inner message-oracle simulation of `verify` to the closed `if` form via `verify_collapse`.
     simp only [Verifier.run, OracleVerifier.toVerifier, bind_pure_comp] at hx
-    rw [iteratedSumcheckOracleVerifier_verify_collapse (i := i) stmtLast oStmtLast tr] at hx
+    rw [simulateQ_optionT_bind] at hx
+    rw [iteratedSumcheckOracleVerifier_verify_collapse (i := i) (stmt := stmtLast)
+      (oStmt := oStmtLast) (tr := tr')] at hx
+    simp only [simulateQ_optionT_pure', simulateQ_map, map_pure, bind_pure_comp,
+      simulateQ_optionT_failure', simulateQ_ite, apply_ite, map_optionT_failure'] at hx
     -- (B) Case split on the Boolean-sum check (the only verifier check).
     by_cases hcheck :
         (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmtLast.sumcheck_target
