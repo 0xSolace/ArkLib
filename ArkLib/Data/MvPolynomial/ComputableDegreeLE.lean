@@ -7,6 +7,7 @@ Authors: Chung Thai Nguyen
 import CompPoly.Data.MvPolynomial.Notation
 import CompPoly.Multivariate.CMvPolynomial
 import CompPoly.Multivariate.MvPolyEquiv
+import CompPoly.Multivariate.Rename
 import CompPoly.Multivariate.Restrict
 import ArkLib.Data.MvPolynomial.Degrees
 
@@ -60,7 +61,10 @@ open CPoly CMvPolynomial in
 private theorem degreeOf_restrictDegree_le [BEq R] [LawfulBEq R]
     (d : Nat) (i : Fin n) (p : CPoly.CMvPolynomial n R) :
     (CPoly.CMvPolynomial.restrictDegree d p).degreeOf i ≤ d := by
-  sorry
+  unfold CPoly.CMvPolynomial.degreeOf
+  exact Finset.sup_le fun m hm =>
+    CPoly.degreeOf_le_of_mem_monomials_restrictDegree
+      (d := d) (p := p) (i := i) (by simpa using hm)
 /-- Canonical bounded-degree wrapper around a raw computable polynomial. -/
 def ofCMvPolynomial [BEq R] [LawfulBEq R] (d : ℕ) (p : CPoly.CMvPolynomial n R) :
     CPoly.CMvPolynomial.degreeLE n R d :=
@@ -82,6 +86,27 @@ variable {R : Type} [CommSemiring R] [BEq R] [LawfulBEq R] {d : ℕ}
 private def coeffMonomial (k : Fin (d + 1)) : CPoly.CMvMonomial 1 :=
   Vector.ofFn (fun _ => k.val)
 
+private theorem coeffMonomial_injective :
+    Function.Injective (coeffMonomial (d := d)) := by
+  intro k l h
+  apply Fin.ext
+  have h0 := congrArg (fun m : CPoly.CMvMonomial 1 => m.get 0) h
+  simpa [coeffMonomial] using h0
+
+private theorem coeffMonomial_degreeOf (k : Fin (d + 1)) :
+    (coeffMonomial (d := d) k).degreeOf 0 = k.val := by
+  simp [coeffMonomial, CPoly.CMvMonomial.degreeOf]
+
+private theorem coeff_monomial (m m' : CPoly.CMvMonomial 1) (c : R) :
+    CPoly.CMvPolynomial.coeff m (CPoly.CMvPolynomial.monomial m' c) =
+      if m = m' then c else 0 := by
+  have h := congrArg
+    (fun p : MvPolynomial (Fin 1) R => MvPolynomial.coeff (CPoly.CMvMonomial.toFinsupp m) p)
+    (CPoly.fromCMvPolynomial_monomial (R := R) m' c)
+  simpa [CPoly.coeff_eq, CPoly.CMvMonomial.ofFinsupp_toFinsupp,
+    MvPolynomial.coeff_monomial, CPoly.CMvMonomial.injective_toFinsupp.eq_iff,
+    eq_comm] using h
+
 /-- Coefficient vector for a bounded-degree computable univariate polynomial. -/
 def coeffVec (p : CPoly.CMvPolynomial.degreeLE 1 R d) : Fin (d + 1) → R :=
   fun k => CPoly.CMvPolynomial.coeff (coeffMonomial (d := d) k) (p : CPoly.CMvPolynomial 1 R)
@@ -90,13 +115,115 @@ def coeffVec (p : CPoly.CMvPolynomial.degreeLE 1 R d) : Fin (d + 1) → R :=
 def ofCoeffVec (coeffs : Fin (d + 1) → R) : CPoly.CMvPolynomial.degreeLE 1 R d :=
   ofCMvPolynomial d (∑ k, CPoly.CMvPolynomial.monomial (coeffMonomial (d := d) k) (coeffs k))
 
+/-- Coefficient of a single monomial built from `coeffMonomial`. -/
+private theorem coeff_coeffMonomial (k l : Fin (d + 1)) (c : R) :
+    CPoly.CMvPolynomial.coeff (coeffMonomial (d := d) k)
+        (CPoly.CMvPolynomial.monomial (coeffMonomial (d := d) l) c) =
+      if k = l then c else 0 := by
+  rw [coeff_monomial]
+  by_cases hkl : k = l
+  · subst hkl; simp
+  · rw [if_neg hkl, if_neg]
+    exact fun h => hkl (coeffMonomial_injective h)
+
+/-- Coefficient of a finite sum of monomials distributes over the sum. -/
+private theorem coeff_sum_coeffMonomial (k : Fin (d + 1)) (coeffs : Fin (d + 1) → R) :
+    CPoly.CMvPolynomial.coeff (coeffMonomial (d := d) k)
+        (∑ l, CPoly.CMvPolynomial.monomial (coeffMonomial (d := d) l) (coeffs l)) =
+      coeffs k := by
+  classical
+  rw [CPoly.coeff_sum]
+  simp [coeff_coeffMonomial]
+
+private theorem eq_coeffMonomial_of_degreeOf_le (m : CPoly.CMvMonomial 1)
+    (hm : m.degreeOf 0 ≤ d) :
+    m = coeffMonomial (d := d) ⟨m.degreeOf 0, Nat.lt_succ_of_le hm⟩ := by
+  apply CPoly.CMvMonomial.ext
+  intro i hi
+  have hi0 : i = 0 := Nat.lt_one_iff.mp hi
+  subst i
+  change m[0] = (Vector.ofFn (fun _ : Fin 1 => m.degreeOf 0))[0]
+  rw [Vector.getElem_ofFn]
+  rfl
+
+omit [BEq R] [LawfulBEq R] in
+private theorem coeff_eq_zero_of_degreeOf_gt
+    (p : CPoly.CMvPolynomial.degreeLE 1 R d) {m : CPoly.CMvMonomial 1}
+    (hm : d < m.degreeOf 0) :
+    CPoly.CMvPolynomial.coeff m (p : CPoly.CMvPolynomial 1 R) = 0 := by
+  by_cases hmem : m ∈ CPoly.Lawful.monomials (p : CPoly.CMvPolynomial 1 R)
+  · have hm_le_degree :
+        m.degreeOf 0 ≤ (p : CPoly.CMvPolynomial 1 R).degreeOf 0 := by
+      unfold CPoly.CMvPolynomial.degreeOf
+      exact Finset.le_sup (f := fun m : CPoly.CMvMonomial 1 => m.degreeOf 0)
+        (by simpa using hmem)
+    exact False.elim (Nat.not_lt_of_ge (hm_le_degree.trans (p.2 0)) hm)
+  · have hnot : m ∉ (p : CPoly.CMvPolynomial 1 R) := by
+      simpa [CPoly.Lawful.mem_monomials_iff] using hmem
+    unfold CPoly.CMvPolynomial.coeff
+    simp [hnot]
+
+private theorem coeff_sum_coeffMonomial_of_degreeOf_le (m : CPoly.CMvMonomial 1)
+    (hm : m.degreeOf 0 ≤ d) (coeffs : Fin (d + 1) → R) :
+    CPoly.CMvPolynomial.coeff m
+        (∑ k, CPoly.CMvPolynomial.monomial (coeffMonomial (d := d) k) (coeffs k)) =
+      coeffs ⟨m.degreeOf 0, Nat.lt_succ_of_le hm⟩ := by
+  let k : Fin (d + 1) := ⟨m.degreeOf 0, Nat.lt_succ_of_le hm⟩
+  have hmk : m = coeffMonomial (d := d) k :=
+    eq_coeffMonomial_of_degreeOf_le (d := d) m hm
+  calc
+    CPoly.CMvPolynomial.coeff m
+        (∑ k, CPoly.CMvPolynomial.monomial (coeffMonomial (d := d) k) (coeffs k))
+        = CPoly.CMvPolynomial.coeff (coeffMonomial (d := d) k)
+            (∑ k, CPoly.CMvPolynomial.monomial (coeffMonomial (d := d) k) (coeffs k)) := by
+          rw [hmk]
+    _ = coeffs k := coeff_sum_coeffMonomial k coeffs
+
 @[simp] theorem coeffVec_ofCoeffVec (coeffs : Fin (d + 1) → R) :
     coeffVec (ofCoeffVec (R := R) (d := d) coeffs) = coeffs := by
-  sorry
+  ext k
+  have hk : ∀ i : Fin 1, (coeffMonomial (d := d) k).degreeOf i ≤ d := by
+    intro i
+    fin_cases i
+    change (coeffMonomial (d := d) k).degreeOf 0 ≤ d
+    rw [coeffMonomial_degreeOf]
+    exact Nat.le_of_lt_succ k.2
+  simp only [coeffVec, ofCoeffVec, ofCMvPolynomial,
+    CPoly.coeff_restrictDegree_eq_self_of_le hk]
+  exact coeff_sum_coeffMonomial k coeffs
 
 @[simp] theorem ofCoeffVec_coeffVec (p : CPoly.CMvPolynomial.degreeLE 1 R d) :
     ofCoeffVec (R := R) (d := d) (coeffVec p) = p := by
-  sorry
+  ext m
+  by_cases hm : m.degreeOf 0 ≤ d
+  · rw [show CPoly.CMvPolynomial.coeff m
+        (ofCoeffVec (R := R) (d := d) (coeffVec p) : CPoly.CMvPolynomial 1 R) =
+        CPoly.CMvPolynomial.coeff m
+          (CPoly.CMvPolynomial.restrictDegree d
+            (∑ k, CPoly.CMvPolynomial.monomial (coeffMonomial (d := d) k)
+              (coeffVec p k))) by rfl]
+    rw [CPoly.coeff_restrictDegree, if_pos]
+    · rw [coeff_sum_coeffMonomial_of_degreeOf_le m hm]
+      let k : Fin (d + 1) := ⟨m.degreeOf 0, Nat.lt_succ_of_le hm⟩
+      have hmk : m = coeffMonomial (d := d) k :=
+        eq_coeffMonomial_of_degreeOf_le (d := d) m hm
+      change CPoly.CMvPolynomial.coeff (coeffMonomial (d := d) k)
+          (p : CPoly.CMvPolynomial 1 R) =
+        CPoly.CMvPolynomial.coeff m (p : CPoly.CMvPolynomial 1 R)
+      rw [← hmk]
+    · intro i
+      fin_cases i
+      exact hm
+  · rw [show CPoly.CMvPolynomial.coeff m
+        (ofCoeffVec (R := R) (d := d) (coeffVec p) : CPoly.CMvPolynomial 1 R) =
+        CPoly.CMvPolynomial.coeff m
+          (CPoly.CMvPolynomial.restrictDegree d
+            (∑ k, CPoly.CMvPolynomial.monomial (coeffMonomial (d := d) k)
+              (coeffVec p k))) by rfl]
+    rw [CPoly.coeff_restrictDegree, if_neg]
+    · exact (coeff_eq_zero_of_degreeOf_gt (d := d) p (Nat.lt_of_not_ge hm)).symm
+    · intro h
+      exact hm (h 0)
 
 /-- Bounded-degree computable univariate polynomials are equivalent to coefficient vectors. -/
 def coeffEquiv : CPoly.CMvPolynomial.degreeLE 1 R d ≃ (Fin (d + 1) → R) where

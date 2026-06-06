@@ -221,9 +221,9 @@ theorem perfectCompleteness_eq_prob_one :
       Pr[fun ⟨⟨_, (prvStmtOut, witOut)⟩, stmtOut⟩ =>
           ((stmtOut, witOut) ∈ relOut ∧ prvStmtOut = stmtOut)
         | OptionT.mk do (simulateQ pImpl (reduction.run stmtIn witIn)).run' (← init)] = 1 := by
-  simp only [perfectCompleteness, completeness, ENNReal.coe_zero, tsub_zero]
-  exact forall_congr' fun _ => forall_congr' fun _ => imp_congr_right fun _ =>
-    ⟨fun h => le_antisymm probEvent_le_one (ge_iff_le.mp h),
+  simp only [perfectCompleteness, completeness, completenessFromRun, ENNReal.coe_zero, tsub_zero]
+  refine forall_congr' fun _ => forall_congr' fun _ => imp_congr_right fun _ => ?_
+  exact ⟨fun h => le_antisymm probEvent_le_one (ge_iff_le.mp h),
      fun h => ge_of_eq h⟩
 
 -- /-- For a reduction without shared oracles (i.e. `oSpec = []ₒ`), perfect completeness occurs
@@ -542,7 +542,7 @@ section Trivial
 @[simp]
 theorem Reduction.id_perfectCompleteness {rel : Set (StmtIn × WitIn)} :
     (Reduction.id : Reduction oSpec _ _ _ _ _).perfectCompleteness init impl rel rel := by
-  simp only [perfectCompleteness, completeness, ENNReal.coe_zero, tsub_zero]
+  simp only [perfectCompleteness, completeness, completenessFromRun, ENNReal.coe_zero, tsub_zero]
   intro stmtIn witIn hIn
   simp only [Reduction.id_run]
   rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]

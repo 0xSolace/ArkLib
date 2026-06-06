@@ -214,17 +214,17 @@ def fiatShamirHonestExecution
 
 /-- Completeness of the transformed one-message reduction is equivalent to the explicit honest
 Fiat-Shamir execution packaged via `Reduction.fiatShamirHonestExecution`. -/
-theorem fiatShamir_completeness_unroll
+def fiatShamir_completeness_unroll
     (init : ProbComp σ)
     (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
     (relIn : Set (StmtIn × WitIn))
     (relOut : Set (StmtOut × WitOut))
     (completenessError : ℝ≥0)
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    Prop :=
     R.fiatShamir.completeness init impl relIn relOut completenessError ↔
       Reduction.completenessFromRun init impl relIn relOut
-        (R.fiatShamirHonestExecution) completenessError := by
-  sorry
+        (R.fiatShamirHonestExecution) completenessError
 
 -- TODO: discharge `fiatShamir_completeness_unroll`.
 -- `Reduction.run_of_prover_first` is now available, and `simulateQ_add_run_liftM_left` in

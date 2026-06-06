@@ -26,11 +26,25 @@ omit [DecidableEq ι] in
 Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter
 pair `(δ, ε)` and two words `u₀` and `u₁`, such that the probability that a random affine
 line passing through `u₀` and `u₁` is `δ`-close to Reed-Solomon code is at most `ε`.
-Then, the words `u₀` and `u₁` have correlated agreement. -/
+Then, the words `u₀` and `u₁` have correlated agreement.
+
+This is the `k = 1` affine-line specialization of the curves keystone
+`correlatedAgreement_affine_curves`. Following that keystone, the two list-decoding
+residuals are threaded as explicit hypotheses, specialized to `k = 1`:
+* `hStrictCoeff` is the [BCIKS20] §5 strict Johnson-branch coefficient-polynomial
+  extraction obligation (`StrictCoeffPolysResidual`);
+* `hBoundaryCard` is the [BCIKS20] §6.2 closed square-root boundary assembly
+  obligation (`BoundaryCardResidual`). -/
 theorem RS_correlatedAgreement_affineLines {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     -- Match the curves theorem: at `deg = 0`, the Johnson-branch error bound
     -- can make the list-decoding branch too weak for this statement.
     [NeZero deg]
+    -- [BCIKS20] §5: strict Johnson-branch coefficient-polynomial extraction residual,
+    -- specialized to the `k = 1` affine line.
+    (hStrictCoeff : StrictCoeffPolysResidual (k := 1) (deg := deg) (domain := domain) (δ := δ))
+    -- [BCIKS20] §6.2: closed square-root boundary assembly residual,
+    -- specialized to the `k = 1` affine line.
+    (hBoundaryCard : BoundaryCardResidual (k := 1) (deg := deg) (domain := domain) (δ := δ))
     (hδ : δ ≤ 1 - (ReedSolomon.sqrtRate deg domain)) :
   δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
     (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
@@ -40,7 +54,7 @@ theorem RS_correlatedAgreement_affineLines {deg : ℕ} {domain : ι ↪ F} {δ :
   · exact RS_correlatedAgreement_affineLines_uniqueDecodingRegime (hδ := hδ_uniqueDecodingRegime)
   · classical
     have hcurves := correlatedAgreement_affine_curves (k := 1) (deg := deg)
-      (domain := domain) (δ := δ) hδ
+      (domain := domain) (δ := δ) hStrictCoeff hBoundaryCard hδ
     unfold δ_ε_correlatedAgreementAffineLines
     intro u hprob
     unfold δ_ε_correlatedAgreementCurves at hcurves

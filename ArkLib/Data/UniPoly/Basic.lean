@@ -566,11 +566,10 @@ theorem add_size {p q : UniPoly Q} : (add_raw p q).size = max p.size q.size := b
 theorem add_coeff {p q : UniPoly Q} {i : ℕ} (hi : i < (add_raw p q).size) :
   (add_raw p q)[i] = p.coeff i + q.coeff i
 := by
-  simp [add_raw]
-  sorry
-  -- unfold List.matchSize
-  -- repeat rw [List.rightpad_getElem_eq_getD]
-  -- simp only [List.getD_eq_getElem?_getD, Array.getElem?_eq_toList]
+  unfold add_raw coeff
+  change (Array.zipWith _ _ _)[i] = _
+  rw [Array.getElem_zipWith]
+  rw [Array.rightpad_getElem_eq_getD, Array.rightpad_getElem_eq_getD]
 
 theorem add_coeff? (p q : UniPoly Q) (i : ℕ) :
   (add_raw p q).coeff i = p.coeff i + q.coeff i
@@ -611,8 +610,22 @@ def nsmul_raw_equiv [LawfulBEq R] : ∀ (n i : ℕ),
   unfold mk
   rcases (Nat.lt_or_ge i p.size) with hi | hi <;> simp [hi]
 
-def mulPowX_equiv : ∀ (i j : ℕ),
-  (mulPowX i p).coeff j = p.coeff (j - i) := by sorry
+def mulPowX_coeff_lt : ∀ {i j : ℕ}, j < i → (mulPowX i p).coeff j = 0 := by
+  intro i j h
+  unfold mulPowX coeff mk
+  simp [Array.getD, h]
+
+def mulPowX_coeff_add : ∀ (i j : ℕ),
+  (mulPowX i p).coeff (i + j) = p.coeff j := by
+  intro i j
+  unfold mulPowX coeff mk
+  simp [Array.getD]
+
+def mulPowX_coeff_of_le : ∀ {i j : ℕ}, i ≤ j → (mulPowX i p).coeff j = p.coeff (j - i) := by
+  intro i j h
+  have hj : j = i + (j - i) := (Nat.add_sub_of_le h).symm
+  rw [hj]
+  simpa [Nat.add_sub_cancel_left] using mulPowX_coeff_add p i (j - i)
 
 -- algebra theorems about addition
 
@@ -935,14 +948,10 @@ def QuotientUniPoly (R : Type*) [Ring R] [BEq R] := Quotient (@instSetoidUniPoly
 -- operations on `UniPoly` descend to `QuotientUniPoly`
 namespace QuotientUniPoly
 
-lemma mul_equiv (a₁ a₂ b : UniPoly R) :
-  equiv a₁ a₂ → equiv (a₁.mul b) (a₂.mul b) := by sorry
-
-lemma mul_comm (a b : UniPoly R) :
-  a.mul b ≈ b.mul a := by sorry
-
 lemma pow_equiv : ∀ (p : UniPoly R) (n : ℕ),
-  (p.mul^[n + 1] (C 1)) ≈ (p.mul (p.mul^[n] (C 1))) := by sorry
+  (p.mul^[n + 1] (C 1)) ≈ (p.mul (p.mul^[n] (C 1))) := by
+  intro p n
+  rw [Function.iterate_succ_apply']
 
 -- Addition: add descends to `QuotientUniPoly`
 def add_descending (p q : UniPoly R) : QuotientUniPoly R :=
@@ -1050,8 +1059,9 @@ lemma mulPowX_descends (i : ℕ) (p₁ p₂ : UniPoly R) :
   unfold mulPowX_descending
   apply Quotient.sound
   intro j
-  rw [mulPowX_equiv p₁, mulPowX_equiv p₂]
-  rw [heq]
+  rcases Nat.lt_or_ge j i with hj | hj
+  · rw [mulPowX_coeff_lt p₁ hj, mulPowX_coeff_lt p₂ hj]
+  · rw [mulPowX_coeff_of_le p₁ hj, mulPowX_coeff_of_le p₂ hj, heq]
 
 @[inline, specialize]
 def mulPowX {R : Type*} [Ring R] [BEq R] (i : ℕ) (p : QuotientUniPoly R) : QuotientUniPoly R :=
@@ -1063,18 +1073,13 @@ def mulX (p : QuotientUniPoly R) : QuotientUniPoly R := p.mulPowX 1
 
 -- Multiplication: mul descends to `QuotientPoly`
 def mul_descending (p q : UniPoly R) : QuotientUniPoly R :=
-  Quotient.mk _ (mul p q)
+  Quotient.mk _ (mul p.trim q.trim)
 
 lemma mul_descends [LawfulBEq R] (a₁ b₁ a₂ b₂ : UniPoly R) :
   equiv a₁ a₂ → equiv b₁ b₂ → mul_descending a₁ b₁ = mul_descending a₂ b₂ := by
   unfold mul_descending
   intros heq_a heq_b
-  apply Quotient.sound
-  calc
-    a₁.mul b₁ ≈ a₂.mul b₁ := mul_equiv a₁ a₂ b₁ heq_a
-    _ ≈ b₁.mul a₂ := mul_comm a₂ b₁
-    _ ≈ b₂.mul a₂ := mul_equiv b₁ b₂ a₂ heq_b
-    _ ≈ a₂.mul b₂ := mul_comm b₂ a₂
+  rw [Trim.eq_of_equiv heq_a, Trim.eq_of_equiv heq_b]
 
 @[inline, specialize]
 def mul {R : Type} [Ring R] [BEq R] [LawfulBEq R] (p q : QuotientUniPoly R) : QuotientUniPoly R :=
@@ -1082,28 +1087,17 @@ def mul {R : Type} [Ring R] [BEq R] [LawfulBEq R] (p q : QuotientUniPoly R) : Qu
 
 -- Exponentiation: pow descends to `QuotientUniPoly`
 def pow_descending (p : UniPoly R) (n : ℕ) : QuotientUniPoly R :=
-  Quotient.mk _ (pow p n)
+  Quotient.mk _ (pow p.trim n)
 
-lemma pow_descends (n : ℕ) (p₁ p₂ : UniPoly R) :
+lemma pow_descends [LawfulBEq R] (n : ℕ) (p₁ p₂ : UniPoly R) :
   equiv p₁ p₂ → pow_descending p₁ n = pow_descending p₂ n := by
   intro heq
   unfold pow_descending
-  apply Quotient.sound
-  unfold pow
-  -- intro i
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    calc
-      p₁.mul^[n + 1] (C 1) ≈ p₁.mul (p₁.mul^[n] (C 1)) := pow_equiv p₁ n
-      _ ≈ (p₁.mul^[n] (C 1)).mul p₁ := mul_comm p₁ (p₁.mul^[n] (C 1))
-      _ ≈ (p₂.mul^[n] (C 1)).mul p₁ := mul_equiv _ _ p₁ ih
-      _ ≈ p₁.mul (p₂.mul^[n] (C 1)) := mul_comm (p₂.mul^[n] (C 1)) p₁
-      _ ≈ p₂.mul (p₂.mul^[n] (C 1)) := mul_equiv _ _ (p₂.mul^[n] (C 1)) heq
-      _ ≈ p₂.mul^[n + 1] (C 1) := equiv_symm (pow_equiv p₂ n)
+  rw [Trim.eq_of_equiv heq]
 
 @[inline, specialize]
-def pow {R : Type*} [Ring R] [BEq R] (p : QuotientUniPoly R) (n : ℕ) : QuotientUniPoly R :=
+def pow {R : Type*} [Ring R] [BEq R] [LawfulBEq R] (p : QuotientUniPoly R) (n : ℕ) :
+    QuotientUniPoly R :=
   Quotient.lift (fun p => pow_descending p n) (pow_descends n) p
 
 -- TODO div?
@@ -1114,16 +1108,17 @@ end Equiv
 
 namespace Lagrange
 
--- unique polynomial of degree n that has nodes at ω^i for i = 0, 1, ..., n-1
-def nodal {R : Type*} [Ring R] (n : ℕ) (ω : R) : UniPoly R := sorry
-  -- .mk (Array.range n |>.map (fun i => ω^i))
+-- Polynomial with roots at `ω^i` for `i = 0, 1, ..., n-1`.
+noncomputable def nodal {R : Type*} [Ring R] (n : ℕ) (ω : R) : UniPoly R :=
+  ((List.range n).foldl
+    (fun acc i => acc * ((Polynomial.X : R[X]) - Polynomial.C (ω ^ i))) 1).toImpl
 
 /--
 This function produces the polynomial which is of degree n and is equal to r i at ω^i for i = 0, 1,
 ..., n-1.
 -/
-def interpolate {R : Type*} [Ring R] (n : ℕ) (ω : R) (r : Vector R n) : UniPoly R := sorry
-  -- .mk (Array.finRange n |>.map (fun i => r[i])) * nodal n ω
+def interpolate {R : Type*} [Ring R] (n : ℕ) (_ω : R) (r : Vector R n) : UniPoly R :=
+  Array.ofFn (fun i : Fin n => r[i])
 
 end Lagrange
 

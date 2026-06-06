@@ -64,7 +64,7 @@ structure Codec {n : ℕ} (pSpec : ProtocolSpec n) (U : Type) where
   sampleChallengePreimage_eq_uniform :
     ∀ i [VCVCompatible U] [VCVCompatible (pSpec.Challenge i)] (challenge : pSpec.Challenge i),
       HasEvalPMF.toPMF (sampleChallengePreimage i challenge) =
-        DuplexSpongeFS.sampleUniformPreimage (decode i) (decode_surjective i) challenge
+        DuplexSpongeFS.Preliminaries.sampleUniformPreimage (decode i) (decode_surjective i) challenge
 
 namespace Codec
 
@@ -103,7 +103,7 @@ class IsLawful (cdc : Codec pSpec U) : Prop where
   sampleChallengePreimage_eq_uniform :
     ∀ i [VCVCompatible U] [VCVCompatible (pSpec.Challenge i)] (challenge : pSpec.Challenge i),
       HasEvalPMF.toPMF (cdc.sampleChallengePreimage i challenge) =
-        DuplexSpongeFS.sampleUniformPreimage (cdc.decode i) (decode_surjective i) challenge
+        DuplexSpongeFS.Preliminaries.sampleUniformPreimage (cdc.decode i) (decode_surjective i) challenge
 
 instance (cdc : Codec pSpec U) : ProtocolSpec.Codec.IsLawful cdc where
   decode_surjective := cdc.decode_surjective
@@ -124,7 +124,7 @@ theorem sampleChallengePreimage_toPMF_apply
     (i : pSpec.ChallengeIdx) (challenge : pSpec.Challenge i)
     (units : Vector U (cdc.challengeSize i)) :
     HasEvalPMF.toPMF (cdc.sampleChallengePreimage i challenge) units =
-      DuplexSpongeFS.sampleUniformPreimage (cdc.decode i)
+      DuplexSpongeFS.Preliminaries.sampleUniformPreimage (cdc.decode i)
         (ProtocolSpec.Codec.IsLawful.decode_surjective (cdc := cdc) i) challenge units := by
   exact congrArg (fun p => p units)
     (ProtocolSpec.Codec.IsLawful.sampleChallengePreimage_eq_uniform (cdc := cdc) i challenge)

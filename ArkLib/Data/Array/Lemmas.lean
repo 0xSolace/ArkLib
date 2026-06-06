@@ -44,7 +44,10 @@ theorem rightpad_toList {a : Array α} {n : Nat} {unit : α} :
 theorem rightpad_getElem_eq_getD {a : Array α} {n : Nat} {unit : α} {i : Nat}
     (h : i < (a.rightpad n unit).size) : (a.rightpad n unit)[i] = a.getD i unit := by
   simp_rw [rightpad_toList] at h ⊢
-  sorry
+  have h' : i < (List.rightpad (List.replicate n unit).length unit a.toList).length := by
+    simpa using h
+  simpa using (List.rightpad_getElem_eq_getD (a := a.toList) (b := List.replicate n unit)
+    (unit := unit) (i := i) h')
 
 /-- `Array` version of `List.matchSize`, which rightpads the arrays to the same length. -/
 @[reducible]
@@ -169,7 +172,10 @@ def rightpadPowerOfTwo (unit : α) (a : Array α) : Array α :=
 
 @[simp] theorem rightpadPowerOfTwo_size (unit : α) (a : Array α) :
     (a.rightpadPowerOfTwo unit).size = 2 ^ (Nat.clog 2 a.size) := by
-  simp [rightpadPowerOfTwo, Nat.le_pow_iff_clog_le]
+  have hle : a.size ≤ 2 ^ Nat.clog 2 a.size := by
+    exact (Nat.clog_le_iff_le_pow (by omega : 1 < 2)).mp le_rfl
+  simp [rightpadPowerOfTwo]
+  omega
 
 /-- Get the last element of an array, assuming the array is non-empty. -/
 def getLast (a : Array α) (h : a.size > 0) : α := a[a.size - 1]
@@ -178,6 +184,29 @@ def getLast (a : Array α) (h : a.size > 0) : α := a[a.size - 1]
 def getLastD (a : Array α) (v₀ : α) : α := a.getD (a.size - 1) v₀
 
 @[simp] theorem popWhile_nil_or_last_false (p : α → Bool) (as : Array α)
-    (h : (as.popWhile p).size > 0) : ¬ (p <| (as.popWhile p).getLast h) := sorry
+    (h : (as.popWhile p).size > 0) : ¬ (p <| (as.popWhile p).getLast h) := by
+  induction as using Array.popWhile.induct p with
+  | case1 x hx htrue ih =>
+      have hpop : popWhile p x = popWhile p x.pop := by
+        rw [Array.popWhile.eq_def, dif_pos hx, if_pos htrue]
+      have h' : (popWhile p x.pop).size > 0 := by simpa [hpop] using h
+      have hlast : (popWhile p x).getLast h = (popWhile p x.pop).getLast h' := by
+        unfold getLast
+        simp [hpop]
+      rw [hlast]
+      exact ih h'
+  | case2 x hx hfalse =>
+      have hpop : popWhile p x = x := by
+        rw [Array.popWhile.eq_def, dif_pos hx, if_neg hfalse]
+      have hlast : (popWhile p x).getLast h = x[x.size - 1] := by
+        unfold getLast
+        simp [hpop]
+      rw [hlast]
+      exact hfalse
+  | case3 x hx =>
+      have hpop : popWhile p x = x := by
+        rw [Array.popWhile.eq_def, dif_neg hx]
+      have : x.size > 0 := by simpa [hpop] using h
+      exact (hx this).elim
 
 end Array

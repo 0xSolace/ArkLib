@@ -119,10 +119,10 @@ instance : ∀ i, SelectableType ((fullPspec κ (L:=L) (K:=K) (ℓ':=ℓ') mlIOP
 /-! ## FiniteRange instances for oracle specifications -/
 
 instance : ([(pSpecSumcheckRound (L:=L)).Challenge]ₒ).FiniteRange := by
-  sorry
+  infer_instance
 
 instance : ([(pSpecBatching κ (L:=L) (K:=K)).Challenge]ₒ).FiniteRange := by
-  sorry
+  infer_instance
 
 instance : ([]ₒ ++ₒ [(pSpecSumcheckRound (L:=L)).Challenge]ₒ).FiniteRange
   := []ₒ.instFiniteRangeSumAppend [(pSpecSumcheckRound (L:=L)).Challenge]ₒ
@@ -137,13 +137,13 @@ instance : ∀ i, Fintype ((pSpecBatching (κ := κ) (L := L) (K := K)).Challeng
   | ⟨0, h0⟩ => nomatch h0
   | ⟨1, _⟩ => by
     simp only [Challenge, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one]
-    sorry
+    infer_instance
 
 instance : ∀ i, Inhabited ((pSpecBatching (κ := κ) (L := L) (K := K)).Challenge i)
   | ⟨0, h0⟩ => nomatch h0
   | ⟨1, _⟩ => by
     simp only [Challenge, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one]
-    sorry
+    infer_instance
 
 end Pspec
 

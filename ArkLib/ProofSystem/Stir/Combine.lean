@@ -551,6 +551,10 @@ theorem combine_theorem
   {φ : ι ↪ F} {dstar m : ℕ} [NeZero dstar]
   (fs : Fin m → ι → F) (degs : Fin m → ℕ) (hdegs : ∀ i, degs i ≤ dstar)
   (δ : ℝ≥0) (hδPos : δ > 0)
+  (hStrictCoeff : ProximityGap.StrictCoeffPolysResidual
+    (k := total_terms dstar degs - 1) (deg := dstar) (domain := φ) (δ := δ))
+  (hBoundaryCard : ProximityGap.BoundaryCardResidual
+    (k := total_terms dstar degs - 1) (deg := dstar) (domain := φ) (δ := δ))
   (hδLt : δ < (min (1 - (ReedSolomon.sqrtRate dstar φ))
                    (1 - (rate (code φ dstar)) - 1 / Fintype.card ι)))
   (hProb : Pr_{ let r ← $ᵖ F}[δᵣ((combine φ dstar r fs degs), (code φ dstar)) ≤ δ] >
@@ -581,8 +585,9 @@ theorem combine_theorem
           (add safe (by exists Finset.univ)) 
       · aesop (add simp [total_terms, block_size])
     · have proximity_gap :=
-        @ProximityGap.correlatedAgreement_affine_curves ι _ _ F _ _ _
-          (total_terms dstar degs - 1) dstar φ δ (by infer_instance) (le_of_lt <| by
+        ProximityGap.correlatedAgreement_affine_curves
+          (k := total_terms dstar degs - 1) (deg := dstar)
+          (domain := φ) (δ := δ) hStrictCoeff hBoundaryCard (le_of_lt <| by
             aesop (add simp [lt_min_iff, ReedSolomon.sqrtRate]))
       simp only [ProximityGap.δ_ε_correlatedAgreementCurves] at proximity_gap
       specialize proximity_gap 

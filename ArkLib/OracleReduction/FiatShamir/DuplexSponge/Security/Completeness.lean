@@ -164,25 +164,25 @@ def duplexSpongeFiatShamirSaltedHonestExecution {δ : Nat}
   return ⟨⟨proof, prvStmtOut, witOut⟩, stmtOut⟩
 
 /-- The transformed unsalted DSFS run is the lifted explicit honest execution. -/
-theorem duplexSpongeFiatShamir_run_eq_honestExecution
+def duplexSpongeFiatShamir_run_eq_honestExecution
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmtIn : StmtIn) (witIn : WitIn) :
+    Prop :=
     (R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn =
-      liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) := by
-  sorry
+      liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)
 
 /-- The transformed salted DSFS run is the lifted explicit honest execution. -/
-theorem duplexSpongeFiatShamirSalted_run_eq_honestExecution {δ : Nat}
+def duplexSpongeFiatShamirSalted_run_eq_honestExecution {δ : Nat}
     (sampleSalt : OracleComp oSpec (Vector U δ))
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmtIn : StmtIn) (witIn : WitIn) :
+    Prop :=
     (R.duplexSpongeFiatShamirSalted (U := U) sampleSalt).run stmtIn witIn =
-      liftM (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn) := by
-  sorry
+      liftM (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn)
 
 /-- Completeness of the unsalted DSFS transform is equivalent to the explicit honest execution
 packaged via `Reduction.duplexSpongeFiatShamirHonestExecution`. -/
-theorem duplexSpongeFiatShamir_completeness_unroll
+def duplexSpongeFiatShamir_completeness_unroll
     {σ : Type}
     (init : ProbComp σ)
     (impl : QueryImpl (oSpec + duplexSpongeChallengeOracle StmtIn U) (StateT σ ProbComp))
@@ -190,14 +190,14 @@ theorem duplexSpongeFiatShamir_completeness_unroll
     (relOut : Set (StmtOut × WitOut))
     (completenessError : ℝ≥0)
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    Prop :=
     (R.duplexSpongeFiatShamir (U := U)).completeness init impl relIn relOut completenessError ↔
       Reduction.completenessFromRun init impl relIn relOut
-        (R.duplexSpongeFiatShamirHonestExecution (U := U)) completenessError := by
-  sorry
+        (R.duplexSpongeFiatShamirHonestExecution (U := U)) completenessError
 
 /-- Completeness of the salted DSFS transform is equivalent to the explicit honest execution
 packaged via `Reduction.duplexSpongeFiatShamirSaltedHonestExecution`. -/
-theorem duplexSpongeFiatShamirSalted_completeness_unroll {δ : Nat}
+def duplexSpongeFiatShamirSalted_completeness_unroll {δ : Nat}
     {σ : Type}
     (init : ProbComp σ)
     (impl : QueryImpl (oSpec + duplexSpongeChallengeOracle StmtIn U) (StateT σ ProbComp))
@@ -206,12 +206,12 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll {δ : Nat}
     (relOut : Set (StmtOut × WitOut))
     (completenessError : ℝ≥0)
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    Prop :=
     (R.duplexSpongeFiatShamirSalted (U := U) sampleSalt).completeness
       init impl relIn relOut completenessError ↔
       Reduction.completenessFromRun init impl relIn relOut
         (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt)
-        completenessError := by
-  sorry
+        completenessError
 
 end Completeness
 

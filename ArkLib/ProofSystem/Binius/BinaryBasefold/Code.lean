@@ -129,7 +129,8 @@ lemma fiberwiseDisagreementSet_congr_sourceDomain_index (sourceIdx₁ sourceIdx�
   let Δ_fiber₁ := fiberwiseDisagreementSet 𝔽q β sourceIdx₁ steps h_destIdx h_destIdx_le f g
   let Δ_fiber₂ := fiberwiseDisagreementSet 𝔽q β sourceIdx₂ steps (by omega) h_destIdx_le (fun x => f (cast (by subst h_sourceIdx_eq; rfl) x)) (fun x => g (cast (by subst h_sourceIdx_eq; rfl) x))
   Δ_fiber₁ = Δ_fiber₂ := by
-  sorry
+  subst h_sourceIdx_eq
+  rfl
 
 /-- When `steps = 0`, the fiberwise disagreement set (projecting to `S^{i+0} = S^i`)
 equals the ordinary pointwise disagreement set.
@@ -140,7 +141,8 @@ lemma fiberwiseDisagreementSet_steps_zero_eq_disagreementSet
     (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :
     fiberwiseDisagreementSet 𝔽q β i (steps := 0) (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) f g =
     disagreementSet 𝔽q β (i := i) (destIdx := destIdx) (h_destIdx := h_destIdx) f g := by
-  sorry
+  ext y
+  simp [fiberwiseDisagreementSet, disagreementSet]
 
 def pair_fiberwiseDistance (i : Fin r) {destIdx : Fin r} (steps : ℕ)
   (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
@@ -378,12 +380,28 @@ lemma UDRCodeword_eq_of_close
     (h₁ h₂ : UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i f) :
     UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i f h₁ =
       UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i f h₂ := by
-  sorry
+  let C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
+  let h₁' := (Code.UDR_close_iff_exists_unique_close_codeword (C := C) f).mp (by
+    rw [UDRClose_iff_within_UDR_radius] at h₁
+    exact h₁)
+  let h₂' := (Code.UDR_close_iff_exists_unique_close_codeword (C := C) f).mp (by
+    rw [UDRClose_iff_within_UDR_radius] at h₂
+    exact h₂)
+  exact (Classical.choose_spec h₁').2
+    (Classical.choose h₂') (Classical.choose_spec h₂').1
 
 lemma UDRCodeword_constFunc_eq_self (i : Fin r) (h_i : i ≤ ℓ) (c : L) :
   UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) h_i (f := fun _ => c)
     (h_within_radius := by apply constFunc_UDRClose) = fun _ => c := by
-  sorry
+  let hclose : UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i (fun _ => c) :=
+    constFunc_UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_i c
+  let C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
+  let huniq := (Code.UDR_close_iff_exists_unique_close_codeword (C := C) (fun _ => c)).mp (by
+    rw [UDRClose_iff_within_UDR_radius] at hclose
+    exact hclose)
+  exact (Classical.choose_spec huniq).2 (fun _ => c)
+    ⟨constFunc_mem_BBFCode 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_i c,
+      by simp [hammingDist]⟩
 
 lemma UDRCodeword_mem_BBF_Code (i : Fin r) (h_i : i ≤ ℓ)
   (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
