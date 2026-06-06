@@ -43,6 +43,8 @@ input shape. Concretely, it maps
 identity on `innerWitOut`).
 -/
 
+set_option linter.style.longFile 1900
+
 namespace Binius.FRIBinius.CoreInteractionPhase
 noncomputable section
 

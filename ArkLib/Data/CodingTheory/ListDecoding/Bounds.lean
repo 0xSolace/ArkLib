@@ -24,8 +24,6 @@ import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
-set_option linter.style.longFile 2000
-
 /-!
 # List-decoding bounds from ABF26 §3
 

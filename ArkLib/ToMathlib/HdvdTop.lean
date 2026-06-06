@@ -1,7 +1,15 @@
 /-
 Copyright (c) 2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.ToMathlib.HasseDerivNumeratorGeneral
+import ArkLib.ToMathlib.HasseDerivNumeratorConcrete
+import ArkLib.ToMathlib.HasseDerivNumerators
+import ArkLib.Data.Polynomial.RationalFunctions
+import Mathlib
 
+/-!
 # Discharge of the `hdvd_top` residual of brick **L2b-general**
 
 Brick L2b-general (`ArkLib.ToMathlib.HasseDerivNumeratorGeneral`) reduced the general (`i₁ > 0`)
@@ -66,12 +74,6 @@ What is proven (all kernel-clean, no `sorry`/`admit`/`axiom`/`native_decide`):
 * `hdvd_top_zero` — the `i₁ = 0` discharge from `Hypotheses` (no residual).
 * `genHasseCoeff_hasWPowerNumerator_of_dvd_C` — the residual-discharged general theorem.
 -/
-
-import ArkLib.ToMathlib.HasseDerivNumeratorGeneral
-import ArkLib.ToMathlib.HasseDerivNumeratorConcrete
-import ArkLib.ToMathlib.HasseDerivNumerators
-import ArkLib.Data.Polynomial.RationalFunctions
-import Mathlib
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2
 

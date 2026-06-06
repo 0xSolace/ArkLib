@@ -100,6 +100,8 @@ The predicate is that `∑ y ∈ D, s_i(y) = claim_i`.
 
 -/
 
+set_option linter.style.longFile 2100
+
 namespace Sumcheck
 
 open Polynomial MvPolynomial OracleSpec OracleComp ProtocolSpec Finset

@@ -1,7 +1,15 @@
 /-
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.Data.Polynomial.RationalFunctionsCore
+import ArkLib.ToMathlib.PartitionRecursion
+import ArkLib.ToMathlib.HasseDerivNumerators
+import ArkLib.ToMathlib.WeightLambdaCalculus
+import Mathlib
 
+/-!
 # The BCIKS20 Appendix-A.4 Hensel-lift numerator recursion `β_t` (brick **L7**)
 
 This file defines the **genuine** Appendix-A.4 recursion (A.1) of [BCIKS20] (eprint 2020/654) for the
@@ -68,12 +76,6 @@ Every genuine gap is an **explicit named hypothesis**, not a `sorry`/`axiom`:
 This file does **not** edit the (0-sorry) `RationalFunctions.lean`; all names live in `namespace
 ArkLib`, the in-tree objects opened from `BCIKS20AppendixA` / `…ClaimA2`.
 -/
-
-import ArkLib.Data.Polynomial.RationalFunctionsCore
-import ArkLib.ToMathlib.PartitionRecursion
-import ArkLib.ToMathlib.HasseDerivNumerators
-import ArkLib.ToMathlib.WeightLambdaCalculus
-import Mathlib
 
 set_option linter.style.longLine false
 set_option linter.unusedVariables false
