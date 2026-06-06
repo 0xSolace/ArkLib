@@ -486,4 +486,56 @@ theorem bkr06_tight_hexp_of_count
     (q : ℝ) ^ ((α - β ^ 2) * Real.log q) ≤ (N : ℝ) + 1 :=
   bkr06_tight_hexp α β q N _ htight hparam
 
+/-! ### Concrete tight count: realizing `N + 1 = q^{m·u − v²}`
+
+The tight pigeonhole admits any `N` with `(#K)^{v−u}·N < q^{v(m−v)}`.  Taking the
+maximal such `N`, we show — when the tight exponent `m·u − v²` is nonnegative (`v² ≤ m·u`)
+and `#K = q^m` — that `N + 1 = q^{m·u − v²}` *exactly*, the BKR06 tight family size.
+This closes the loop: the cardinality count and the `hexp` exponent agree on the nose,
+with no slack, leaving only the parameter identity `m·u − v² = (α−β²)·log q` as the
+genuine bookkeeping residual. -/
+
+/-- **Concrete tight `N`.**  With `#K = q^m` (`hKcard`), `v ≤ m`, and the tight exponent
+nonnegative (`v² ≤ m·u`), the value `N := q^{m·u − v²} − 1` satisfies both the tight
+pigeonhole's size hypothesis `(#K)^{v−u}·N < q^{v(m−v)}` and the exact count
+`N + 1 = q^{m·u − v²}` (natural-number arithmetic).  The cutoff index also satisfies
+`u ≤ v` whenever `v² ≤ m·u ≤ m·v` forces... (left to the caller via `huv`). -/
+theorem bkr06_tight_N_realizes
+    (q m u v : ℕ) (hq : 1 ≤ q)
+    (cardK : ℕ) (hKcard : cardK = q ^ m)
+    (hvm : v ≤ m) (huv : u ≤ v) (hexp_nonneg : v ^ 2 ≤ m * u) :
+    let N := q ^ (m * u - v ^ 2) - 1
+    cardK ^ (v - u) * N < q ^ (v * (m - v)) ∧
+      N + 1 = q ^ (m * u - v ^ 2) := by
+  intro N
+  have hqpos : 0 < q := hq
+  -- exact factorization: q^{v(m-v)} = q^{m(v-u)} · q^{mu - v²}, since both exponents add up.
+  have hexp_add : m * (v - u) + (m * u - v ^ 2) = v * (m - v) := by
+    -- m(v-u) + (mu - v²) = mv - mu + mu - v² = mv - v² = v(m-v)
+    have h1 : m * u ≤ m * v := Nat.mul_le_mul_left m huv
+    have h2 : v * v ≤ m * v := Nat.mul_le_mul_right v hvm
+    -- v² = v*v
+    have hv2 : v ^ 2 = v * v := sq v
+    rw [hv2] at hexp_nonneg ⊢
+    -- now pure Nat omega after expanding the products' monotonicity facts
+    have hmv_uv : m * (v - u) = m * v - m * u := Nat.mul_sub_le ▸ (Nat.left_distrib m v u ▸ by
+      rw [Nat.mul_sub_left])
+    have hvmv : v * (m - v) = v * m - v * v := by rw [Nat.mul_sub_left]
+    rw [hmv_uv, hvmv]
+    omega
+  have hNcount : N + 1 = q ^ (m * u - v ^ 2) := by
+    have hpos : 0 < q ^ (m * u - v ^ 2) := Nat.pos_pow_of_pos _ hqpos
+    simp only [N]
+    omega
+  refine ⟨?_, hNcount⟩
+  -- (#K)^{v-u} · N < (#K)^{v-u} · (N+1) = q^{m(v-u)} · q^{mu-v²} = q^{v(m-v)}
+  rw [hKcard, ← pow_mul]
+  have hfull : q ^ (m * (v - u)) * (N + 1) = q ^ (v * (m - v)) := by
+    rw [hNcount, ← pow_add, hexp_add]
+  have hKvu_pos : 0 < q ^ (m * (v - u)) := Nat.pos_pow_of_pos _ hqpos
+  calc q ^ (m * (v - u)) * N
+      < q ^ (m * (v - u)) * (N + 1) := by
+        apply Nat.mul_lt_mul_left hKvu_pos; omega
+    _ = q ^ (v * (m - v)) := hfull
+
 end BKR06
