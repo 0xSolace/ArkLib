@@ -685,8 +685,11 @@ theorem iteratedSumcheckPostChallengeLocalChecks_iff_fullTranscript (i : Fin ℓ
         tr stmt witMid := by
   simp [iteratedSumcheckPostChallengeLocalChecks,
     iteratedSumcheckPostChallengeFullTranscriptLocalChecks,
-    iteratedSumcheck_fullTranscript_message0_eq_equivMessagesChallenges,
-    iteratedSumcheck_fullTranscript_challenge1_eq_equivMessagesChallenges]
+    ProtocolSpec.Transcript.equivMessagesChallenges,
+    ProtocolSpec.Transcript.toMessagesChallenges,
+    ProtocolSpec.Transcript.toMessagesUpTo,
+    ProtocolSpec.Transcript.toChallengesUpTo,
+    ProtocolSpec.FullTranscript.messages, ProtocolSpec.FullTranscript.challenges]
 
 /-- **Extracted-witness ground-truth telescoping (issue #29).** For the iterated-round RBR extractor
 (`extractOut`), whose extracted last witness has `H = projectToMidSumcheckPoly … i.castSucc
