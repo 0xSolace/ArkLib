@@ -200,8 +200,12 @@ theorem spike_two_size_at_interiorJ1 {n : ℕ} (hn1 : 1 ≤ n) :
   have key : ((1 - (1 : ℝ≥0) / (n : ℝ≥0)) * (n : ℝ≥0)) = (n : ℝ≥0) - 1 := by
     rw [tsub_mul, one_mul, div_mul_cancel₀ _ hnne]
   rw [key]
-  have he : (n - 2 + 1 : ℕ) = n - 1 := by omega
-  rw [he, Nat.cast_sub hn1, Nat.cast_one]
+  by_cases hn2 : 2 ≤ n
+  · have he : (n - 2 + 1 : ℕ) = n - 1 := by omega
+    rw [he, ← Nat.cast_one, ← Nat.cast_sub hn1]
+  · have hn_eq : n = 1 := by omega
+    subst n
+    norm_num
 
 /-- **Lower bound: `2/q ≤ ε_mca(C, 1/n)`.**  The explicit `2`-spike plant
 (`epsMCA_ge_spike` with `t = 2`) realizes two bad scalars at radius `1/n`.  This is the research

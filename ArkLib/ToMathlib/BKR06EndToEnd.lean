@@ -354,6 +354,94 @@ theorem rs_close_codewords_card_ge_trivial_regime
       ≤ 1 := htarget
     _ ≤ _ := by exact_mod_cast hpos
 
+/-! ## Floor bookkeeping and band choice (rest of gap (1))
+
+The bare T3.12 window is `k = ⌊(#K)^α⌋ = ⌊((q:ℝ)^m)^α⌋`.  `rs_window_le_floor` shows the
+construction's window `q^u + 1` fits inside it whenever `u + 1 ≤ α·m` (so the count
+transports via `rs_closeCodewords_ncard_mono_window`).  `bkr06_band_choice` produces, for
+any `0 ≤ β ≤ 1`, `α ≤ 1` and `m` large enough (the single explicit largeness condition
+`β²·m + 2β + 3 ≤ α·m`, satisfiable for any `β² < α` once `m ≥ (2β+3)/(α−β²)`), explicit
+cutoffs `u`, `v` meeting **all** side conditions of the tight chain *and* the window
+condition simultaneously. -/
+
+/-- **Window floor bookkeeping.**  `q^u + 1 ≤ ⌊((q:ℝ)^m)^α⌋` whenever `u + 1 ≤ α·m`
+(`2 ≤ q`): the construction's window fits inside the bare statement's. -/
+lemma rs_window_le_floor (q m u : ℕ) (α : ℝ) (hq : 2 ≤ q)
+    (hum : (u + 1 : ℝ) ≤ α * m) :
+    q ^ u + 1 ≤ Nat.floor (((q : ℝ) ^ m) ^ α) := by
+  have hq0 : (0 : ℝ) < q := by exact_mod_cast Nat.lt_of_lt_of_le Nat.zero_lt_two hq
+  have hq1 : (1 : ℝ) ≤ q := by
+    exact_mod_cast Nat.le_of_lt (Nat.lt_of_lt_of_le Nat.one_lt_two hq)
+  apply Nat.le_floor
+  push_cast
+  have h1 : (q : ℝ) ^ u + 1 ≤ (q : ℝ) ^ (u + 1) := by
+    have hnat : q ^ u + 1 ≤ q ^ (u + 1) := by
+      have hpos : 0 < q ^ u := Nat.pow_pos (by omega)
+      calc q ^ u + 1 ≤ q ^ u + q ^ u := by omega
+        _ = 2 * q ^ u := by ring
+        _ ≤ q * q ^ u := Nat.mul_le_mul_right _ hq
+        _ = q ^ (u + 1) := by rw [pow_succ]; ring
+    exact_mod_cast hnat
+  calc (q : ℝ) ^ u + 1 ≤ (q : ℝ) ^ (u + 1) := h1
+    _ = (q : ℝ) ^ (((u + 1 : ℕ)) : ℝ) := (Real.rpow_natCast _ _).symm
+    _ ≤ (q : ℝ) ^ ((m : ℝ) * α) := by
+        apply Real.rpow_le_rpow_of_exponent_le hq1
+        push_cast
+        rw [mul_comm]
+        exact hum
+    _ = ((q : ℝ) ^ m) ^ α := by
+        rw [← Real.rpow_natCast (q : ℝ) m, ← Real.rpow_mul hq0.le]
+
+/-- **Band choice.**  For `0 ≤ β ≤ 1`, `α ≤ 1`, and `m` past the explicit largeness
+threshold `β²·m + 2β + 3 ≤ α·m`, the cutoffs `u := ⌈β²m + 2β + 1⌉₊` and
+`v := max ⌈βm⌉₊ u` satisfy **all** side conditions of the tight chain and the window
+condition: `v ≤ m`, `u ≤ v`, `v² ≤ m·u`, `u < m`, `β·m ≤ v`, and `u + 1 ≤ α·m`. -/
+lemma bkr06_band_choice (m : ℕ) (α β : ℝ) (hβ0 : 0 ≤ β) (hβ1 : β ≤ 1) (hα1 : α ≤ 1)
+    (hm : β ^ 2 * m + 2 * β + 3 ≤ α * m) :
+    ∃ u v : ℕ, v ≤ m ∧ u ≤ v ∧ v ^ 2 ≤ m * u ∧ u < m ∧
+      β * m ≤ (v : ℝ) ∧ (u + 1 : ℝ) ≤ α * m := by
+  set u : ℕ := ⌈β ^ 2 * m + 2 * β + 1⌉₊ with hu
+  set v : ℕ := max ⌈β * m⌉₊ u with hv
+  -- basic positivity / size facts
+  have hm3 : (3 : ℝ) ≤ m := by nlinarith [sq_nonneg β, Nat.cast_nonneg (α := ℝ) m]
+  have hu_lb : β ^ 2 * m + 2 * β + 1 ≤ (u : ℝ) := Nat.le_ceil _
+  have hu_ub : (u : ℝ) < β ^ 2 * m + 2 * β + 2 := by
+    have := Nat.ceil_lt_add_one
+      (by positivity : (0 : ℝ) ≤ β ^ 2 * m + 2 * β + 1)
+    calc (u : ℝ) < β ^ 2 * m + 2 * β + 1 + 1 := this
+      _ = β ^ 2 * m + 2 * β + 2 := by ring
+  -- u + 1 ≤ α·m  (window condition)
+  have hwindow : (u + 1 : ℝ) ≤ α * m := by nlinarith
+  -- u < m
+  have hum : u < m := by
+    have : (u : ℝ) + 1 ≤ (m : ℝ) := le_trans hwindow (by nlinarith)
+    exact_mod_cast this
+  -- v ≤ m
+  have hvm : v ≤ m := by
+    apply max_le _ (le_of_lt hum)
+    apply Nat.ceil_le.mpr
+    calc β * m ≤ 1 * m := by nlinarith [Nat.cast_nonneg (α := ℝ) m]
+      _ = (m : ℝ) := one_mul _
+  -- β·m ≤ v
+  have hβv : β * m ≤ (v : ℝ) := by
+    calc β * m ≤ (⌈β * m⌉₊ : ℝ) := Nat.le_ceil _
+      _ ≤ (v : ℝ) := by exact_mod_cast le_max_left _ _
+  -- v² ≤ m·u
+  have hv2 : v ^ 2 ≤ m * u := by
+    have hcases := max_cases ⌈β * m⌉₊ u
+    rcases hcases with ⟨hveq, _⟩ | ⟨hveq, _⟩
+    · -- v = ⌈βm⌉: (v:ℝ) < βm + 1, so v² < (βm+1)² ≤ m·(β²m+2β+1) ≤ m·u
+      have hvub : (v : ℝ) < β * m + 1 := by
+        rw [hv, hveq]
+        exact Nat.ceil_lt_add_one (by positivity)
+      have hv0 : (0 : ℝ) ≤ (v : ℝ) := Nat.cast_nonneg _
+      have hsq : ((v : ℝ)) ^ 2 ≤ (m : ℝ) * u := by nlinarith
+      exact_mod_cast hsq
+    · -- v = u: u² ≤ m·u from u ≤ m
+      rw [hv, hveq, pow_two]
+      exact Nat.mul_le_mul_right u (le_of_lt hum)
+  exact ⟨u, v, hvm, le_max_right _ _, hv2, hum, hβv, hwindow⟩
+
 #print axioms BKR06.bkr06_param_ineq_extension
 #print axioms BKR06.agreement_count_ge_card
 #print axioms BKR06.mem_closeCodewordsRel_of_subspace
@@ -361,5 +449,7 @@ theorem rs_close_codewords_card_ge_trivial_regime
 #print axioms BKR06.rs_close_codewords_card_ge_bkr06_exponent_form
 #print axioms BKR06.rs_closeCodewords_ncard_mono_window
 #print axioms BKR06.rs_close_codewords_card_ge_trivial_regime
+#print axioms BKR06.rs_window_le_floor
+#print axioms BKR06.bkr06_band_choice
 
 end BKR06
