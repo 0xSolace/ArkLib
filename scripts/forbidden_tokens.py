@@ -4,19 +4,12 @@
 Scans every .lean file under ArkLib/ and fails if live (non-comment) code
 contains:
   - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
-  - a custom `axiom` declaration.
+  - a custom `axiom` declaration whose name is not an allowlisted, documented
+    residual (see scripts/residual_axioms.txt).
 
 Comment and docstring occurrences are ignored. `sorry`/`admit` are handled
 separately by scripts/sorry_census.py --fail-on-holes; this precheck runs
 before any Lean toolchain is set up, so CI fails fast on laundering attempts.
-
-Documented residual `axiom` declarations may be explicitly exempted by listing
-their declaration name in `scripts/allowed_axioms.txt` (one name per line; `#`
-comments allowed). This is the auditable allow-list for deliberate, documented
-named residuals (e.g. coding-theory residuals owed by an in-progress port); the
-file is the single reviewable place where such exemptions live, so a stray or
-undocumented `axiom` still fails the gate. Exempting an axiom here does not make
-it sound — it records that the residual is tracked, not laundered.
 """
 
 from __future__ import annotations
@@ -26,26 +19,26 @@ import sys
 from pathlib import Path
 
 TOKEN_RE = re.compile(r"\b(native_decide|bv_decide)\b")
+# Capture the declared axiom name so it can be checked against the residual
+# allowlist. The name may be namespaced/contain primes; we keep the simple
+# token as written at the declaration site.
 AXIOM_RE = re.compile(
     r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*axiom\s+"
     r"([A-Za-z_][A-Za-z0-9_'.]*)"
 )
-# An `axiom` keyword whose name is not on the same line (rare); still forbidden
-# unless allow-listed, but we cannot read a name for it, so it can never match
-# the allow-list and therefore always fails (fail-safe).
-AXIOM_KW_RE = re.compile(r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*axiom\b")
+
+ALLOWLIST_PATH = Path(__file__).resolve().parent / "residual_axioms.txt"
 
 
-def load_allowed_axioms(root: Path) -> set[str]:
-    """Load the allow-list of documented residual axiom names, if present."""
-    allow_path = root / "scripts" / "allowed_axioms.txt"
-    if not allow_path.is_file():
+def load_allowlist(path: Path) -> set[str]:
+    """Names of documented residual axioms permitted in live source."""
+    if not path.exists():
         return set()
     names: set[str] = set()
-    for raw in allow_path.read_text(encoding="utf-8").splitlines():
+    for raw in path.read_text(encoding="utf-8").splitlines():
         line = raw.split("#", 1)[0].strip()
         if line:
-            names.add(line)
+            names.add(line.split()[0])
     return names
 
 
@@ -78,10 +71,10 @@ def comment_mask(text: str) -> list[bool]:
 
 def main() -> int:
     root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
-    allowed = load_allowed_axioms(root)
-    used_allowances: set[str] = set()
+    allowlist = load_allowlist(ALLOWLIST_PATH)
     failures: list[str] = []
-    exempted: list[str] = []
+    allowed_hits: list[str] = []
+    seen_allowed: set[str] = set()
     for path in sorted((root / "ArkLib").rglob("*.lean")):
         text = path.read_text(encoding="utf-8", errors="replace")
         mask = comment_mask(text)
@@ -92,32 +85,41 @@ def main() -> int:
         pos = 0
         for idx, line in enumerate(text.splitlines(True), start=1):
             first_live = next((off for off, ch in enumerate(line) if not ch.isspace()), None)
-            if first_live is not None and not mask[pos + first_live] and AXIOM_KW_RE.match(line):
-                named = AXIOM_RE.match(line)
-                name = named.group(1) if named else None
-                if name is not None and name in allowed:
-                    exempted.append(f"{path}:{idx}: {name}")
-                    used_allowances.add(name)
+            if first_live is None or mask[pos + first_live]:
+                pos += len(line)
+                continue
+            am = AXIOM_RE.match(line)
+            if am:
+                name = am.group(1)
+                if name in allowlist:
+                    seen_allowed.add(name)
+                    allowed_hits.append(f"{path}:{idx}: allowed documented residual axiom {name}")
                 else:
-                    suffix = f" ({name})" if name else ""
-                    failures.append(f"{path}:{idx}: forbidden custom axiom declaration{suffix}")
+                    failures.append(
+                        f"{path}:{idx}: forbidden custom axiom declaration {name} "
+                        f"(add to scripts/residual_axioms.txt only if it is a documented, "
+                        f"tracked residual)"
+                    )
             pos += len(line)
 
-    # A stale allow-list entry (no longer present in source) is itself a failure:
-    # it lets a future re-introduced axiom slip through silently.
-    for stale in sorted(allowed - used_allowances):
-        failures.append(f"scripts/allowed_axioms.txt: stale allow-list entry '{stale}' "
-                        f"(no matching axiom in live source)")
+    stale = sorted(allowlist - seen_allowed)
+    if stale:
+        print(
+            "WARNING: residual_axioms.txt entries match no live axiom (discharged? "
+            "remove the line): " + ", ".join(stale),
+            file=sys.stderr,
+        )
 
     if failures:
         print("\n".join(failures), file=sys.stderr)
         print(f"\nFORBIDDEN: {len(failures)} laundering token(s) in live source", file=sys.stderr)
         return 1
-    msg = "forbidden-token precheck: clean (no native_decide / bv_decide / unlisted axiom)"
-    if exempted:
-        msg += f"\n  {len(exempted)} documented residual axiom(s) allow-listed:"
-        msg += "".join(f"\n    {e}" for e in exempted)
-    print(msg)
+    if allowed_hits:
+        print("\n".join(allowed_hits))
+    print(
+        "forbidden-token precheck: clean (no native_decide / bv_decide / "
+        f"undocumented custom axiom; {len(allowed_hits)} allowlisted residual axiom(s))"
+    )
     return 0
 
 

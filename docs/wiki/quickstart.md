@@ -69,14 +69,10 @@ python3 -m pip install leanblueprint
 ## Important Notes
 
 - `./scripts/validate.sh` is the recommended convenience wrapper for routine local validation.
-- By default it now mirrors the CI verification gates so local == CI: the forbidden-token
-  precheck (`scripts/forbidden_tokens.py`) and the `--fail-on-holes` sorry census
-  (`scripts/sorry_census.py`) run before `lake build`, and the flagship axiom audit
-  (`scripts/axiom_audit.py`) runs after it, alongside `./scripts/check-imports.sh` and
-  `python3 ./scripts/check-docs-integrity.py`.
-- A deliberate, documented residual `axiom` is exempted from the forbidden-token gate only by
-  listing its declaration name in `scripts/allowed_axioms.txt`; a stale entry (no matching
-  axiom in source) is itself a hard failure, so the allow-list cannot rot.
+- By default it runs the three CI verification gates (`forbidden_tokens.py` precheck,
+  `sorry_census.py --fail-on-holes`, and `axiom_audit.py`) alongside `lake build`,
+  `./scripts/check-imports.sh`, and `python3 ./scripts/check-docs-integrity.py`, so a clean
+  local `validate.sh` matches the CI gate set (issue #111 parity).
 - The lower-level scripts remain valid when you only want one specific check.
 - `scripts/build-project.sh` is now just a compile-only helper, not the convenience wrapper.
 - `scripts/README.md` is still useful as an inventory of helper scripts.
@@ -119,7 +115,14 @@ python3 -m pip install leanblueprint
   (`scripts/axiom_audit.py` reading `scripts/flagship_axioms.txt`) that must
   stay within `propext`, `Classical.choice`, `Quot.sound`. Renaming or
   deleting a pinned flagship theorem without updating the list is a hard CI
-  failure.
+  failure. As of issue #111 these same three gates also run from
+  `./scripts/validate.sh`, so local validation matches CI.
+- The forbidden-token precheck rejects every custom `axiom` *except* the
+  documented, tracked residuals listed in
+  [`../../scripts/residual_axioms.txt`](../../scripts/residual_axioms.txt) (route (a)
+  of #111). Each allowlist entry names one residual axiom and the issue that owns its
+  eventual discharge; an undocumented or newly added `axiom` still fails the gate, and a
+  stale allowlist entry (matching no live axiom) prints a warning to prompt cleanup.
 - [`../../.github/workflows/check-imports.yml`](../../.github/workflows/check-imports.yml)
   checks that `ArkLib.lean` matches the tracked source tree.
 - [`../../.github/workflows/docs-integrity.yml`](../../.github/workflows/docs-integrity.yml)

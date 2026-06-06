@@ -15,12 +15,12 @@ usage() {
   cat <<'EOF'
 Usage: ./scripts/validate.sh [--lint] [--docs] [--site]
 
-Default checks (mirror CI gates so local == CI):
-  - python3 ./scripts/forbidden_tokens.py          (native_decide / bv_decide / unlisted axiom)
-  - python3 ./scripts/sorry_census.py --fail-on-holes
+Default checks (mirrors the CI gates so local == CI):
+  - python3 ./scripts/forbidden_tokens.py          (CI gate 1, precheck)
   - lake build
   - fail on non-`sorry` warnings under ArkLib/Data/
-  - python3 ./scripts/axiom_audit.py               (flagship pinned list; needs the build)
+  - python3 ./scripts/sorry_census.py --fail-on-holes  (CI gate 2)
+  - python3 ./scripts/axiom_audit.py                   (CI gate 3)
   - ./scripts/check-imports.sh
   - python3 ./scripts/check-docs-integrity.py
   - python3 ./scripts/kb/check_generated.py
@@ -63,12 +63,10 @@ cleanup() {
 }
 trap cleanup EXIT
 
-echo "# Forbidden-token precheck (native_decide / bv_decide / unlisted custom axiom)"
+# CI gate 1: fast laundering-token precheck (no Lean toolchain needed), run
+# before the build so a forbidden token / undocumented axiom fails fast.
+echo "# Forbidden-token precheck (native_decide / bv_decide / undocumented axiom)"
 python3 ./scripts/forbidden_tokens.py
-
-echo ""
-echo "# Sorry/admit census (--fail-on-holes)"
-python3 ./scripts/sorry_census.py --fail-on-holes
 
 echo ""
 echo "# Building project"
@@ -81,8 +79,14 @@ python3 ./scripts/check-warning-log.py "$build_log" \
   --exclude-substring 'declaration uses `sorry`' \
   --label 'ArkLib/Data non-sorry warnings'
 
+# CI gate 2: zero live sorry/admit holes in ArkLib source.
 echo ""
-echo "# Axiom audit (flagship pinned list; needs the build above)"
+echo "# Sorry census (zero live holes)"
+python3 ./scripts/sorry_census.py --fail-on-holes
+
+# CI gate 3: flagship theorems depend only on the standard axioms.
+echo ""
+echo "# Axiom audit (flagship theorems)"
 python3 ./scripts/axiom_audit.py
 
 echo ""
