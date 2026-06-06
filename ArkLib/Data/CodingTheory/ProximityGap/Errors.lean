@@ -1501,8 +1501,8 @@ Under UDR `2·δ·n < δ_min(C)` with the faithful instance `[NoZeroSMulDivisors
 implies the full per-stack difference-stack residual `diffStackMCAResidualBelowUDR C δ`. This is the
 honest *chaining* deliverable for ABF26 Lemma 4.6's hard direction: it isolates the one genuinely
 external input ((★), the [BCIKS20]/[ACFY25]/[Hab25] Guruswami–Sudan exceptional-`γ` rearrangement,
-delivered in-tree by the GS-witness lower bound `L46GS.floorCount_le_epsCA_of_gsWitness`) and derives
-the residual by a case split on the difference stack `d := (u 0 − p₀, u 1 − p₁)`:
+delivered in-tree by the GS-witness lower bound `L46GS.floorCount_le_epsCA_of_gsWitness`) and
+derives the residual by a case split on the difference stack `d := (u 0 − p₀, u 1 − p₁)`:
 
 * if `d` **is** jointly `δ`-close, its `mcaEvent` mass is `≤ ⌊δ·n⌋/|F|` by the kernel-checked
   in-tree count `jointlyProximate_mcaEvent_Pr_le_card_div_udr`, which (★) dominates by `ε_ca`;
@@ -1515,8 +1515,8 @@ the count `⌊δ·n⌋/|F|` can be positive, so (★) cannot hold from the count
 double-coverage target is kernel-refuted by
 `ProximityGap.LineDecodingCounting.double_coverage_counterexample`). Hence (★) is supplied here as a
 hypothesis, *not* proven for abstract `C`. The faithful statement that *does* prove (★) is the
-explicit BCIKS20-style witness existence `L46GS.GSWitnessLowerBound C δ ⌊δ·n⌋`, which holds for Reed–
-Solomon codes (`L46DiffStackRS`). -/
+explicit BCIKS20-style witness existence `L46GS.GSWitnessLowerBound C δ ⌊δ·n⌋`, which holds for
+Reed–Solomon codes (`L46DiffStackRS`). -/
 theorem diffStackMCAResidualBelowUDR_of_epsCA_ge [NoZeroSMulDivisors F A]
     (C : Submodule F (ι → A)) (δ : ℝ≥0)
     (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) < (Code.dist ((C : Set (ι → A))) : ℝ≥0))

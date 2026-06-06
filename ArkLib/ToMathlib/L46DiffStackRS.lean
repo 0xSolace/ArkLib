@@ -26,8 +26,8 @@ on top of two in-tree results:
 The numeric dominance `(★) : ⌊δ·n⌋/|F| ≤ ε_ca(C, δ, δ)` is **false for bare abstract codes**: a
 `Submodule`/`Set` code with no non-jointly-close near-codewords has `ε_ca = 0` while `⌊δ·n⌋/|F|` can
 be positive, and the per-coordinate double-coverage route that would prove it is kernel-refuted by
-`ProximityGap.LineDecodingCounting.double_coverage_counterexample`. So `(★)` is *not* a theorem about
-the abstract `epsCA`; it is a consequence of the explicit good-`γ`-set existence
+`ProximityGap.LineDecodingCounting.double_coverage_counterexample`. So `(★)` is *not* a theorem
+about the abstract `epsCA`; it is a consequence of the explicit good-`γ`-set existence
 `L46GS.GSWitnessLowerBound C δ ⌊δ·n⌋` ([BCIKS20, Prop 1.1] / [ACFY25, Lemma 4.10]).
 
 For Reed–Solomon codes that witness **exists**: a `δ`-close non-codeword (deep hole) lies in a
@@ -84,8 +84,8 @@ obligation.
 
 This is the RS instantiation of `diffStackMCAResidualBelowUDR_of_epsCA_ge`: the GS-witness
 hypothesis supplies the numeric dominance `⌊δ·n⌋/|F| ≤ ε_ca` (`floorCount_le_epsCA_of_gsWitness`),
-and the abstract chaining lemma turns that into the residual. The `[NoZeroSMulDivisors F F]` instance
-the chaining lemma needs is automatic for the field symbol space `A = F`.
+and the abstract chaining lemma turns that into the residual. The `[NoZeroSMulDivisors F F]`
+instance the chaining lemma needs is automatic for the field symbol space `A = F`.
 
 **Genuine hypotheses.**
 * `h_udr : 2·δ·n < δ_min(C)` — the unique-decoding regime (the paper's `δ < δ_min(C)/2`).
@@ -111,7 +111,8 @@ equality `ε_mca(C, δ) = ε_ca(C, δ, δ)` holds, reduced to the **single** nam
 Proof: this is `epsMCA_eq_epsCA_below_udr_of_gsWitness` specialised to `A = F` (where the required
 `[NoZeroSMulDivisors F F]` instance is automatic for the field symbol space). The hard direction
 `ε_mca ≤ ε_ca` collapses the in-tree UDR upper bound `ε_mca ≤ max(ε_ca, ⌊δ·n⌋/|F|)` using the
-GS-witness lower bound `⌊δ·n⌋/|F| ≤ ε_ca`; the easy direction `ε_ca ≤ ε_mca` is `epsCA_le_epsMCA`. -/
+GS-witness lower bound `⌊δ·n⌋/|F| ≤ ε_ca`; the easy direction `ε_ca ≤ ε_mca` is
+`epsCA_le_epsMCA`. -/
 theorem epsMCA_eq_epsCA_below_udr_rs (δ : ℝ≥0)
     (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) <
       (Code.dist ((ReedSolomon.code domain deg : Submodule F (ι → F)) : Set (ι → F)) : ℝ≥0))
@@ -126,9 +127,9 @@ theorem epsMCA_eq_epsCA_below_udr_rs (δ : ℝ≥0)
 
 /-- The RS distance is `card ι − deg + 1` ([Reed–Solomon MDS], `ReedSolomon.dist_eq'`), so the UDR
 hypothesis can be stated as the bare numeric inequality `2·δ·n < card ι − deg + 1`. This convenience
-lemma rewrites that numeric form into the `Code.dist` form `diffStackMCAResidualBelowUDR_rs` expects,
-so RS callers never need to unfold `Code.dist`. Requires `[NeZero deg]` and `deg ≤ card ι` (the RS
-distance formula's hypotheses). -/
+lemma rewrites that numeric form into the `Code.dist` form `diffStackMCAResidualBelowUDR_rs`
+expects, so RS callers never need to unfold `Code.dist`. Requires `[NeZero deg]` and `deg ≤ card ι`
+(the RS distance formula's hypotheses). -/
 theorem diffStackMCAResidualBelowUDR_rs_of_two_mul_lt_card_sub [NeZero deg]
     (h_deg : deg ≤ Fintype.card ι) (δ : ℝ≥0)
     (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) <
