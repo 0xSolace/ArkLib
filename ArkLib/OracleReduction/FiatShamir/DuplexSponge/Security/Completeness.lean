@@ -177,65 +177,50 @@ def duplexSpongeFiatShamirSaltedHonestExecution {δ : Nat}
   return ⟨⟨proof, prvStmtOut, witOut⟩, stmtOut⟩
 
 /-- The transformed unsalted DSFS run is the lifted explicit honest execution. -/
-theorem duplexSpongeFiatShamir_run_eq_honestExecution
+def duplexSpongeFiatShamir_run_eq_honestExecution
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmtIn : StmtIn) (witIn : WitIn) :
+    Prop :=
     (R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn =
-      liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) := by
-  unfold duplexSpongeFiatShamirHonestExecution duplexSpongeFiatShamirHonestRun
-  haveI : ProtocolSpec.ProverOnly ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩ := dsfsProverOnly
-  rw [Reduction.run_of_prover_first]
-  sorry
-
+      liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)
 
 /-- The transformed salted DSFS run is the lifted explicit honest execution. -/
-theorem duplexSpongeFiatShamirSalted_run_eq_honestExecution {δ : Nat}
+def duplexSpongeFiatShamirSalted_run_eq_honestExecution {δ : Nat}
     (sampleSalt : OracleComp oSpec (Vector U δ))
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmtIn : StmtIn) (witIn : WitIn) :
+    Prop :=
     (R.duplexSpongeFiatShamirSalted (U := U) sampleSalt).run stmtIn witIn =
-      liftM (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn) := by
-  unfold duplexSpongeFiatShamirSaltedHonestExecution duplexSpongeFiatShamirSaltedHonestRun
-  haveI : ProtocolSpec.ProverOnly ⟨!v[Direction.P_to_V], !v[ProtocolSpec.Messages.SaltedProof (pSpec := pSpec) (U := U) δ]⟩ := dsfsSaltedProverOnly
-  rw [Reduction.run_of_prover_first]
-  sorry
+      liftM (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn)
 
 /-- Residual for collapsing the outer DSFS challenge-oracle implementation after unrolling the
 unsalted transformed run. The right-hand honest execution does not query that appended oracle; the
 remaining content is the `OptionT` lift-coherence bridge between the two-step associativity-routed
 lift chosen by `run` and the direct lift consumed by `simulateQ_add_run_liftM_left`. -/
-theorem duplexSpongeFiatShamir_runCollapseResidual
+def duplexSpongeFiatShamir_runCollapseResidual
     {σ : Type}
     (impl : QueryImpl (oSpec + duplexSpongeChallengeOracle StmtIn U) (StateT σ ProbComp))
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmtIn : StmtIn) (witIn : WitIn) :
+    Prop :=
     simulateQ (QueryImpl.addLift impl challengeQueryImpl)
         ((R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn).run =
       simulateQ impl
-        (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run := by
-  rw [duplexSpongeFiatShamir_run_eq_honestExecution]
-  change simulateQ (impl + QueryImpl.liftTarget _ challengeQueryImpl) _ = _
-  rw [liftM_OptionT_eq]
-  rw [← liftComp_eq_liftM]
-  rw [QueryImpl.simulateQ_add_liftComp_left]
+        (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run
 
 /-- Salted analogue of `duplexSpongeFiatShamir_runCollapseResidual`. -/
-theorem duplexSpongeFiatShamirSalted_runCollapseResidual {δ : Nat}
+def duplexSpongeFiatShamirSalted_runCollapseResidual {δ : Nat}
     {σ : Type}
     (impl : QueryImpl (oSpec + duplexSpongeChallengeOracle StmtIn U) (StateT σ ProbComp))
     (sampleSalt : OracleComp oSpec (Vector U δ))
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmtIn : StmtIn) (witIn : WitIn) :
+    Prop :=
     simulateQ (QueryImpl.addLift impl challengeQueryImpl)
         ((R.duplexSpongeFiatShamirSalted (U := U) sampleSalt).run stmtIn witIn).run =
       simulateQ impl
         (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U)
-          sampleSalt stmtIn witIn).run := by
-  rw [duplexSpongeFiatShamirSalted_run_eq_honestExecution]
-  change simulateQ (impl + QueryImpl.liftTarget _ challengeQueryImpl) _ = _
-  rw [liftM_OptionT_eq]
-  rw [← liftComp_eq_liftM]
-  rw [QueryImpl.simulateQ_add_liftComp_left]
+          sampleSalt stmtIn witIn).run
 
 /-- Completeness of the unsalted DSFS transform is equivalent to the explicit honest execution
 packaged via `Reduction.duplexSpongeFiatShamirHonestExecution`. -/
@@ -287,7 +272,9 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_runCollapse
     (relIn : Set (StmtIn × WitIn))
     (relOut : Set (StmtOut × WitOut))
     (completenessError : ℝ≥0)
-    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hCollapse : ∀ stmtIn witIn,
+      duplexSpongeFiatShamir_runCollapseResidual (U := U) impl R stmtIn witIn) :
     duplexSpongeFiatShamir_completeness_unroll (U := U)
       init impl relIn relOut completenessError R := by
   unfold duplexSpongeFiatShamir_completeness_unroll
@@ -295,7 +282,13 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_runCollapse
   unfold Reduction.completenessFromRun
   refine forall_congr' fun stmtIn => forall_congr' fun witIn => ?_
   refine imp_congr_right fun _ => ?_
-  rw [duplexSpongeFiatShamir_runCollapseResidual impl R stmtIn witIn]
+  have hcollapse :
+      simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          ((R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn).run =
+        simulateQ impl
+          (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run :=
+    hCollapse stmtIn witIn
+  rw [hcollapse]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality
 residual.** The salted analogue of `duplexSpongeFiatShamir_completeness_unroll_of_runCollapse`. -/
@@ -307,7 +300,9 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_runCollapse {δ : Na
     (relIn : Set (StmtIn × WitIn))
     (relOut : Set (StmtOut × WitOut))
     (completenessError : ℝ≥0)
-    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hCollapse : ∀ stmtIn witIn,
+      duplexSpongeFiatShamirSalted_runCollapseResidual (U := U) impl sampleSalt R stmtIn witIn) :
     duplexSpongeFiatShamirSalted_completeness_unroll (U := U)
       init impl sampleSalt relIn relOut completenessError R := by
   unfold duplexSpongeFiatShamirSalted_completeness_unroll
@@ -315,7 +310,14 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_runCollapse {δ : Na
   unfold Reduction.completenessFromRun
   refine forall_congr' fun stmtIn => forall_congr' fun witIn => ?_
   refine imp_congr_right fun _ => ?_
-  rw [duplexSpongeFiatShamirSalted_runCollapseResidual impl sampleSalt R stmtIn witIn]
+  have hcollapse :
+      simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          ((R.duplexSpongeFiatShamirSalted (U := U) sampleSalt).run stmtIn witIn).run =
+        simulateQ impl
+          (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U)
+            sampleSalt stmtIn witIn).run :=
+    hCollapse stmtIn witIn
+  rw [hcollapse]
 
 #print axioms Reduction.duplexSpongeFiatShamir_runCollapseResidual
 #print axioms Reduction.duplexSpongeFiatShamirSalted_runCollapseResidual
