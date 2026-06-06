@@ -243,6 +243,121 @@ theorem epsMCA_interiorJ1_eq
       = (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
   le_antisymm (epsMCA_interiorJ1_le domain hk) (epsMCA_interiorJ1_ge domain hk hq)
 
+/-! ## Faithful threshold consequences of the exact J1 value -/
+
+/-- **Exact J1 lattice satisfaction criterion.**
+
+At the first nonzero MCA lattice point, the faithful predicate `mcaSatisfies` is equivalent
+to the single scalar inequality `2 / |F| ≤ ε*`. -/
+theorem mcaSatisfies_interiorJ1_iff_two_div_card_le
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 2 ≤ Fintype.card F)
+    (ε_star : ℝ≥0) :
+    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    mcaSatisfies
+        (ReedSolomon.code domain k : Set (ι → F)) ε_star j1 ↔
+      (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞) := by
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  simpa [mcaSatisfies, j1] using
+    (show
+      epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F))
+          (mcaLatticePoint (Fintype.card ι) j1) ≤ (ε_star : ℝ≥0∞) ↔
+        (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞) from by
+          rw [epsMCA_interiorJ1_eq domain hk hq])
+
+/-- If `2 / |F| ≤ ε*`, the faithful MCA lattice threshold is at least the J1 index. -/
+theorem one_le_mcaThreshold_of_interiorJ1
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 2 ≤ Fintype.card F)
+    {ε_star : ℝ≥0}
+    (hgood : (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞)) :
+    let C : Set (ι → F) := ReedSolomon.code domain k
+    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    let hne : mcaThresholdExists C ε_star :=
+      ⟨j1, (mcaSatisfies_interiorJ1_iff_two_div_card_le domain hk hq ε_star).mpr hgood⟩
+    j1 ≤ mcaThreshold C ε_star hne := by
+  let C : Set (ι → F) := ReedSolomon.code domain k
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  have hsat : mcaSatisfies C ε_star j1 :=
+    (mcaSatisfies_interiorJ1_iff_two_div_card_le domain hk hq ε_star).mpr hgood
+  let hne : mcaThresholdExists C ε_star := ⟨j1, hsat⟩
+  exact le_mcaThreshold C ε_star hne hsat
+
+/-- If `ε* < 2 / |F|`, then any existing faithful MCA threshold is strictly below J1. -/
+theorem mcaThreshold_lt_one_of_interiorJ1_gt
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 2 ≤ Fintype.card F)
+    {ε_star : ℝ≥0}
+    (hbad : (ε_star : ℝ≥0∞) < (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞))
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) ε_star) :
+    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne < j1 := by
+  let C : Set (ι → F) := ReedSolomon.code domain k
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  by_contra hnot
+  have hj1_le : j1 ≤ mcaThreshold C ε_star hne := not_lt.mp hnot
+  have hsat_threshold : mcaSatisfies C ε_star (mcaThreshold C ε_star hne) :=
+    mcaThreshold_spec C ε_star hne
+  have hsat_j1 : mcaSatisfies C ε_star j1 :=
+    mcaSatisfies_downward_closed C ε_star hj1_le hsat_threshold
+  exact (not_le_of_gt hbad)
+    ((mcaSatisfies_interiorJ1_iff_two_div_card_le domain hk hq ε_star).mp hsat_j1)
+
+/-- Four-rate MCA prize lower bracket from the exact J1 value.  When `2 / |F| ≤ ε*` and
+each prize-rate degree has a genuine J1 window (`k + 3 ≤ n`), every faithful MCA prize
+threshold is at least index `1`. -/
+theorem mcaPrizeLattice_one_le_of_interiorJ1
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hq : 2 ≤ Fintype.card F)
+    (hgood : (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (epsStar : ℝ≥0∞)) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩
+      let hne : mcaThresholdExists C epsStar :=
+        ⟨j1,
+          (mcaSatisfies_interiorJ1_iff_two_div_card_le domain (hk r) hq epsStar).mpr
+            hgood⟩
+      j1 ≤ mcaThreshold C epsStar hne := by
+  intro r
+  exact one_le_mcaThreshold_of_interiorJ1 domain (hk r) hq hgood
+
+/-- Four-rate MCA prize upper bracket below J1 when `ε* < 2 / |F|`.  In that small-field
+regime, any existing faithful threshold at the prize rates must be the zero lattice index. -/
+theorem mcaPrizeLattice_lt_one_of_interiorJ1_gt
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hq : 2 ≤ Fintype.card F)
+    (hbad : (epsStar : ℝ≥0∞) < (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞))
+    (hne : ∀ r : Fin 4,
+      mcaThresholdExists
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩
+      mcaThreshold C epsStar (hne r) < j1 := by
+  intro r
+  exact mcaThreshold_lt_one_of_interiorJ1_gt domain (hk r) hq hbad (hne r)
+
 end GrandChallengesLattice
 
 end ProximityGap
