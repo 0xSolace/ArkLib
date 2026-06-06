@@ -1,4 +1,20 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
 import Mathlib.LinearAlgebra.Lagrange
+
+/-!
+# Polynomial equality from agreement on enough evaluation points
+
+Identity lemmas for polynomials over a field: two polynomials whose degree is bounded and that
+agree on sufficiently many points are equal.
+
+* `eq_of_eval_eq_degree`: if `p.degree < n`, `q.degree < n`, and `p` and `q` agree on a finite
+  set `s` with `n ≤ s.card`, then `p = q`.
+* `eq_of_eval_eq_natDegree`: the `natDegree` variant of the same statement.
+-/
 
 namespace Polynomial
 

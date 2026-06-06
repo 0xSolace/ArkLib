@@ -1,4 +1,16 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
 import Mathlib.Algebra.Polynomial.BigOperators
+
+/-!
+# Degree of a finite sum of polynomials
+
+* `Polynomial.natDegree_sum_lt_of_forall_lt`: if every summand `f i` (for `i ∈ s`) has
+  `natDegree < n` with `n ≠ 0`, then the finite sum `∑ i ∈ s, f i` also has `natDegree < n`.
+-/
 
 namespace Polynomial
 
