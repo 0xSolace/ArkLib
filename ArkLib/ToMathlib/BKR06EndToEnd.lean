@@ -442,6 +442,75 @@ lemma bkr06_band_choice (m : ℕ) (α β : ℝ) (hβ0 : 0 ≤ β) (hβ1 : β ≤
       exact Nat.mul_le_mul_right u (le_of_lt hum)
   exact ⟨u, v, hvm, le_max_right _ _, hv2, hum, hβv, hwindow⟩
 
+/-! ## Exponent-comparison band (the last numeric before the bare-T3.12 assembly)
+
+The bare statement's count target at `Q = q^m` is `Q^{(α−β²)·log Q} = q^{(α−β²)·m²·log q}`,
+while the tight chain delivers `q^{m·u − v²}`.  `bkr06_band_choice_exponent` produces a
+*log-widened* band — `u := ⌈β²m + (α−β²)·L·m + 2β + 1⌉₊`, `v := ⌈βm⌉₊`, with `L`
+abstracting `log q` — meeting all six side conditions **and** the count comparison
+`(α−β²)·L·m² ≤ m·u − v²`, under two explicit largeness hypotheses.  Feasibility of
+`u ≤ v` rests on `(α−β²)·L < β(1−β)`, which at the `q = 2` witness sequence
+(`L = log 2 < 1`) is automatic from `α < β`. -/
+
+/-- **Band choice with exponent comparison.**  For `0 ≤ β ≤ 1`, `α ≤ 1`, `β² ≤ α`,
+`0 ≤ L`, and `m` past the two explicit largeness thresholds, the cutoffs
+`u := ⌈β²m + (α−β²)·L·m + 2β + 1⌉₊` and `v := ⌈βm⌉₊` satisfy all six side conditions
+of the tight chain *and* the count comparison `(α−β²)·L·m² ≤ m·u − v²` (stated in `ℝ`;
+the `ℕ`-side nonnegativity `v² ≤ m·u` is part of the conclusion). -/
+lemma bkr06_band_choice_exponent (m : ℕ) (α β L : ℝ)
+    (hβ0 : 0 ≤ β) (hβ1 : β ≤ 1) (hα1 : α ≤ 1) (hαβ2 : β ^ 2 ≤ α) (hL0 : 0 ≤ L)
+    (hL1 : β ^ 2 * m + (α - β ^ 2) * L * m + 2 * β + 2 ≤ β * m)
+    (hL2 : β ^ 2 * m + (α - β ^ 2) * L * m + 2 * β + 3 ≤ α * m) :
+    ∃ u v : ℕ, v ≤ m ∧ u ≤ v ∧ v ^ 2 ≤ m * u ∧ u < m ∧
+      β * m ≤ (v : ℝ) ∧ (u + 1 : ℝ) ≤ α * m ∧
+      (α - β ^ 2) * L * m ^ 2 ≤ (m : ℝ) * u - (v : ℝ) ^ 2 := by
+  have hcast0 : (0 : ℝ) ≤ (m : ℝ) := Nat.cast_nonneg m
+  have hprod0 : (0 : ℝ) ≤ (α - β ^ 2) * L * m :=
+    mul_nonneg (mul_nonneg (sub_nonneg.mpr hαβ2) hL0) hcast0
+  set A : ℝ := β ^ 2 * m + (α - β ^ 2) * L * m + 2 * β + 1 with hA
+  have hA0 : (0 : ℝ) ≤ A := by
+    have hsq : (0 : ℝ) ≤ β ^ 2 * m := mul_nonneg (sq_nonneg β) hcast0
+    nlinarith
+  set u : ℕ := ⌈A⌉₊ with hu
+  set v : ℕ := ⌈β * m⌉₊ with hv
+  have hu_lb : A ≤ (u : ℝ) := Nat.le_ceil _
+  have hu_ub : (u : ℝ) < A + 1 := Nat.ceil_lt_add_one hA0
+  have hv_lb : β * m ≤ (v : ℝ) := Nat.le_ceil _
+  have hv_ub : (v : ℝ) < β * m + 1 :=
+    Nat.ceil_lt_add_one (mul_nonneg hβ0 hcast0)
+  -- m ≥ 2 (in ℝ), from hL2: α·m ≥ 2β + 3 ≥ 3 and α·m ≤ m
+  have hm2 : (2 : ℝ) ≤ m := by
+    have hsq : (0 : ℝ) ≤ β ^ 2 * m := mul_nonneg (sq_nonneg β) hcast0
+    nlinarith
+  -- window: u + 1 ≤ α·m
+  have hwindow : (u : ℝ) + 1 ≤ α * m := by nlinarith
+  -- u < m
+  have hum : u < m := by
+    have : (u : ℝ) + 1 ≤ (m : ℝ) := le_trans hwindow (by nlinarith)
+    exact_mod_cast this
+  -- u ≤ v  (from A + 1 ≤ β·m ≤ v)
+  have huv : u ≤ v := by
+    have : (u : ℝ) < (v : ℝ) := by nlinarith
+    exact_mod_cast le_of_lt this
+  -- v ≤ m
+  have hvm : v ≤ m := by
+    apply Nat.ceil_le.mpr
+    nlinarith
+  -- v² ≤ m·u  (real side, then cast)
+  have hv2R : ((v : ℝ)) ^ 2 ≤ (m : ℝ) * u := by
+    have hmu : (m : ℝ) * A ≤ (m : ℝ) * u :=
+      mul_le_mul_of_nonneg_left hu_lb hcast0
+    have hv0 : (0 : ℝ) ≤ (v : ℝ) := Nat.cast_nonneg _
+    nlinarith
+  have hv2 : v ^ 2 ≤ m * u := by exact_mod_cast hv2R
+  -- exponent comparison
+  have hexp : (α - β ^ 2) * L * m ^ 2 ≤ (m : ℝ) * u - (v : ℝ) ^ 2 := by
+    have hmu : (m : ℝ) * A ≤ (m : ℝ) * u :=
+      mul_le_mul_of_nonneg_left hu_lb hcast0
+    have hv0 : (0 : ℝ) ≤ (v : ℝ) := Nat.cast_nonneg _
+    nlinarith
+  exact ⟨u, v, hvm, huv, hv2, hum, hv_lb, hwindow, hexp⟩
+
 #print axioms BKR06.bkr06_param_ineq_extension
 #print axioms BKR06.agreement_count_ge_card
 #print axioms BKR06.mem_closeCodewordsRel_of_subspace
@@ -451,5 +520,6 @@ lemma bkr06_band_choice (m : ℕ) (α β : ℝ) (hβ0 : 0 ≤ β) (hβ1 : β ≤
 #print axioms BKR06.rs_close_codewords_card_ge_trivial_regime
 #print axioms BKR06.rs_window_le_floor
 #print axioms BKR06.bkr06_band_choice
+#print axioms BKR06.bkr06_band_choice_exponent
 
 end BKR06
