@@ -60,6 +60,18 @@ variable {F : Type} [Field F]
          {H : F[X][Y]} [H_irreducible : Fact (Irreducible H)]
          [H_natDegree_pos : Fact (0 < H.natDegree)]
 
+/-- Denominator exponent used in the Claim-A.2 Hensel numerator formula. For `t = 0`, the
+subtraction is truncated to zero. -/
+def henselDenominatorExponent (t : ℕ) : ℕ :=
+  if t = 0 then 0 else 2 * t - 1
+
+lemma henselDenominatorExponent_zero : henselDenominatorExponent 0 = 0 := by
+  simp [henselDenominatorExponent]
+
+lemma henselDenominatorExponent_succ (t : ℕ) :
+    henselDenominatorExponent (t + 1) = 2 * (t + 1) - 1 := by
+  simp [henselDenominatorExponent]
+
 /-- There exist regular elements `β` with the *weight upper bound* of Claim A.2 of
 Appendix A.4 of [BCIKS20].
 
@@ -122,7 +134,8 @@ def α (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
     [H_natDegree_pos : Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
   let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
   embeddingOf𝒪Into𝕃 _ (β R t) /
-    (W ^ (t + 1) * (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H hHyp)) ^ (2*t - 1))
+    (W ^ (t + 1) *
+      (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H hHyp)) ^ henselDenominatorExponent t)
 
 def α' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)
     (hHdeg : 0 < H.natDegree) (hHyp : Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
@@ -139,6 +152,70 @@ def γ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
     | 1 => 1
     | _ => 0
   PowerSeries.subst (PowerSeries.mk subst) (PowerSeries.mk (α x₀ R H hHyp))
+
+/-- The coefficient sequence obtained from a candidate sequence of regular numerators. -/
+noncomputable def alphaOfNumerators (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (βseq : ℕ → 𝒪 H) (t : ℕ) : 𝕃 H :=
+  let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
+  embeddingOf𝒪Into𝕃 _ (βseq t) /
+    (W ^ (t + 1) *
+      (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H hHyp)) ^ henselDenominatorExponent t)
+
+/-- The power series induced by a candidate sequence of regular numerators. -/
+noncomputable def gammaOfNumerators (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (βseq : ℕ → 𝒪 H) :
+    PowerSeries (𝕃 H) :=
+  let subst (t : ℕ) : 𝕃 H :=
+    match t with
+    | 0 => fieldTo𝕃 (-x₀)
+    | 1 => 1
+    | _ => 0
+  PowerSeries.subst (PowerSeries.mk subst)
+    (PowerSeries.mk (alphaOfNumerators x₀ R H hHyp βseq))
+
+/-- Coefficients in `F[Z][X]` evaluated as power series over the function field: `Z` is sent to
+the function-field coefficient embedding, and `X` is sent to the power-series variable. -/
+noncomputable def liftCoeffToPowerSeries (H : F[X][Y]) :
+    F[X][X] →+* PowerSeries (𝕃 H) :=
+  Polynomial.eval₂RingHom (RingHom.comp PowerSeries.C (liftToFunctionField (H := H)))
+    PowerSeries.X
+
+/-- Evaluation of the trivariate polynomial `R(X,Y,Z)` at a power series `Γ` for the `Y`
+variable, with the `X` variable interpreted as the power-series variable and `Z` interpreted in
+the function field of `H`. -/
+noncomputable def evalRAtPowerSeries (H : F[X][Y]) (R : F[X][X][Y])
+    (Γ : PowerSeries (𝕃 H)) : PowerSeries (𝕃 H) :=
+  Polynomial.eval₂ (liftCoeffToPowerSeries H) Γ R
+
+/-- A numerator sequence has the semantic content required by Claim A.2: it gives the Hensel
+lift starting at `T / W`, and the induced power series is a root of `R(X,Y,Z)`. This is a
+statement shape only; the current in-file `β` stub below intentionally does not claim it. -/
+def IsHenselNumeratorSequence (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (βseq : ℕ → 𝒪 H) : Prop :=
+  alphaOfNumerators x₀ R H hHyp βseq 0 =
+      functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff ∧
+    evalRAtPowerSeries H R (gammaOfNumerators x₀ R H hHyp βseq) = 0
+
+/-- The semantic-wrapper coefficient sequence specializes to the in-file `α` when its
+candidate numerator sequence is the in-file `β`. -/
+@[simp]
+theorem alphaOfNumerators_beta (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) :
+    alphaOfNumerators x₀ R H hHyp (β R) = α x₀ R H hHyp :=
+  rfl
+
+/-- The semantic-wrapper power series specializes to the in-file `γ` when its candidate
+numerator sequence is the in-file `β`. -/
+@[simp]
+theorem gammaOfNumerators_beta (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) :
+    gammaOfNumerators x₀ R H hHyp (β R) = γ x₀ R H hHyp :=
+  rfl
 
 def γ' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)
     (hHdeg : 0 < H.natDegree) (hHyp : Hypotheses x₀ R H) : PowerSeries (𝕃 H) :=

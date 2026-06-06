@@ -47,6 +47,8 @@ This file does **not** edit the (0-sorry) `RationalFunctions.lean`.  All names l
 import ArkLib.Data.Polynomial.RationalFunctionsCore
 import Mathlib
 
+set_option linter.style.longLine false
+
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA
 
 namespace ArkLib

@@ -64,10 +64,10 @@ are genuinely load-bearing, and the gap is reduced to the SHARP, minimal A.4 fac
    structured invariant via the wave-5 `structured_weight_collapse`
    (`= βHensel_weight_bound_of_structured_weight`).
 
-Given the final w16 vanishing residual `FaaDiBrunoSuccSumZeroResidual`, `βHensel_lift_identity`
-is available as an axiom-clean conditional theorem and (P1) auto-unlocks
-(`βHensel_weight_bound_unlocked`): instantiate `hlift := βHensel_lift_identity`, supply the carved
-`α_t`-regularity, and the regime hypotheses.
+Given the final w16 vanishing residual `FaaDiBrunoSuccSumZeroResidual`, the P2 compatibility
+theorem `βHensel_lift_identity_of_faaDiBruno_succ_sum_eq_zero` supplies the repaired lift identity
+and (P1) auto-unlocks (`βHensel_weight_bound_unlocked`): instantiate `hlift` with that direct P2
+capstone, supply the carved `α_t`-regularity, and the regime hypotheses.
 
 NO `axiom`/`admit`/`native_decide`/`bv_decide`/`sorry`.  Audited in-file via `#print axioms`.
 -/
@@ -356,9 +356,10 @@ theorem βHensel_weight_bound_of_divWeight' (x₀ : F) (R : F[X][X][Y])
   exact ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0
 
 /-- **AUTO-UNLOCK witness.**  Given the explicit w16 vanishing residual, the `hlift` hypothesis is
-discharged by the in-tree conditional theorem `βHensel_lift_identity`.  This lemma exhibits that
-discharge: feeding `βHensel_lift_identity` for `hlift`, the conditional (P1) needs ONLY the carved
-A.4 link `hα` (`Λ(α_t) ≤ 1`) plus the paper's faithful regime hypotheses. -/
+discharged by the direct P2 compatibility theorem
+`βHensel_lift_identity_of_faaDiBruno_succ_sum_eq_zero`.  This lemma exhibits that discharge:
+feeding that theorem for `hlift`, the conditional (P1) needs ONLY the carved A.4 link `hα`
+(`Λ(α_t) ≤ 1`) plus the paper's faithful regime hypotheses. -/
 theorem βHensel_weight_bound_unlocked (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
     (hDH : Bivariate.totalDegree H ≤ D)
@@ -371,12 +372,13 @@ theorem βHensel_weight_bound_unlocked (x₀ : F) (R : F[X][X][Y])
     weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
   βHensel_weight_bound_of_lift' H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW
-    (fun t => βHensel_lift_identity H x₀ R hHyp hzero t) hα t
+    (fun t => βHensel_lift_identity_of_faaDiBruno_succ_sum_eq_zero H x₀ R hHyp hzero t)
+    hα t
 
 /-- **AUTO-UNLOCK witness from concrete divisibility.**  This is the
 `DivWeightLe` form of `βHensel_weight_bound_unlocked`: the Faà-di-Bruno
-successor residual supplies the lift identity, and the remaining A.4 input is
-the concrete `𝒪`-level clearing-divisibility residual. -/
+successor residual supplies the lift identity through the direct P2 compatibility theorem, and
+the remaining A.4 input is the concrete `𝒪`-level clearing-divisibility residual. -/
 theorem βHensel_weight_bound_unlocked_of_divWeight (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
     (hDH : Bivariate.totalDegree H ≤ D)
@@ -389,7 +391,8 @@ theorem βHensel_weight_bound_unlocked_of_divWeight (x₀ : F) (R : F[X][X][Y])
     weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
   βHensel_weight_bound_of_divWeight' H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW
-    (fun t => βHensel_lift_identity H x₀ R hHyp hzero t) hdiv t
+    (fun t => βHensel_lift_identity_of_faaDiBruno_succ_sum_eq_zero H x₀ R hHyp hzero t)
+    hdiv t
 
 /-- **P1 weight bound unlocked by full P2 vanishing.**
 This consumes the sharper `FaaDiBrunoFullSumVanishes` endpoint, whose P2 capstone already provides

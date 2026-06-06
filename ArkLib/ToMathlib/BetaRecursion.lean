@@ -75,6 +75,9 @@ import ArkLib.ToMathlib.HasseDerivNumerators
 import ArkLib.ToMathlib.WeightLambdaCalculus
 import Mathlib
 
+set_option linter.style.longLine false
+set_option linter.unusedVariables false
+
 namespace ArkLib
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2

@@ -2,6 +2,8 @@ import Mathlib
 import ArkLib.ToMathlib.PowerSeriesHenselianA
 import ArkLib.ToMathlib.PowerSeriesNewton
 
+set_option linter.style.longLine false
+
 /-!
 # Hensel / Newton root UNIQUENESS over `k⟦X⟧`
 

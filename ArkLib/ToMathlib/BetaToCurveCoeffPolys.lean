@@ -8,6 +8,8 @@ import ArkLib.ToMathlib.BetaMatchingVanishes
 import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.Claim59Conditional
 
+set_option linter.style.longLine false
+
 /-!
 # `betaRec ⟹ CurveCoeffPolys` — the genuine end-to-end §5 list-decoding assembly (F4-gap closure)
 
@@ -20,10 +22,11 @@ This file closes the **F4 gap** of the BCIKS20 §5 proximity-gap keystone grind
 
 ## Why this is NOT the F4 wrapper
 
-The earlier `KeystoneCapstone.lean` proved `hcoeffPoly` *trivially* by assuming
-`Section55Output u := ∀ P good, CurveCoeffPolys u P` — which is **definitionally the goal**.  Its
-proof never invoked `betaRec`, `embedding = 0`, or `MatchingVanishes`; it only re-bundled the assumed
-output.  That is a bundling wrapper, not a reduction.
+The earlier `KeystoneCapstone.lean` proved `hcoeffPoly` *trivially* by assuming the old
+front-door target `Section55CurveCoeffOutput u := ∀ P good, CurveCoeffPolys u P` -- which is
+**definitionally the goal**. Its proof never invoked `betaRec`, `embedding = 0`, or
+`MatchingVanishes`; it only re-bundled the assumed output. That is a bundling wrapper, not a
+reduction.
 
 Here, by contrast, `CurveCoeffPolys` is **derived** by *actually composing the β-construction*:
 

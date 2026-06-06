@@ -157,6 +157,7 @@ hypotheses only:
 * `hfactor` — the legacy bridge `R ∈ pg_Rset ⟹ R` is in the Eq-5.12 factorization list.
 
 All other fields of `Claim57Residuals` are discharged by the bricks. -/
+@[reducible]
 noncomputable def claim57Residuals_of_johnson
     [DecidableEq (Polynomial F)] [DecidableEq (RatFunc F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
@@ -192,6 +193,7 @@ omit [DecidableEq (RatFunc F)] in
 The most primitive Johnson form of `claim57Residuals_of_johnson`: the per-`z` matching-set bound is
 replaced by the degree budget `natWeightedDegree(eval_on_Z Q z) 1 k < m·(n − ⌈δ·n⌉)`, with the
 nonmatching coordinate count bounded by `⌈δ·n⌉` in tree from `δ`-closeness. -/
+@[reducible]
 noncomputable def claim57Residuals_of_natCeil_johnson
     [NeZero n] [DecidableEq (Polynomial F)] [DecidableEq (RatFunc F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
