@@ -106,11 +106,9 @@ theorem ncard_interleavedCodeSet_eq_pow {m : ℕ} (C : Set (ι → F)) (hC : C.F
       _ = ∏ _k : Fin m, C.encard := by rw [Set.encard_pi_eq_prod_encard]
       _ = C.encard ^ m := by rw [Finset.prod_const, Finset.card_univ, Fintype.card_fin]
   -- Transport back to `ncard`.
-  have hIcast : (interleavedCodeSet (κ := Fin m) C).ncard
-      = (interleavedCodeSet (κ := Fin m) C).encard := hIfin.cast_ncard_eq
-  have hCcast : C.ncard = C.encard := hC.cast_ncard_eq
-  have hgoal : ((interleavedCodeSet (κ := Fin m) C).ncard : ℕ∞) = (C.ncard ^ m : ℕ∞) := by
-    rw [hIcast, hencard, hCcast]; push_cast; ring
+  rw [← hIfin.cast_ncard_eq, ← hC.cast_ncard_eq] at hencard
+  have hgoal : ((interleavedCodeSet (κ := Fin m) C).ncard : ℕ∞) = ((C.ncard ^ m : ℕ) : ℕ∞) := by
+    rw [hencard]; push_cast; ring
   exact_mod_cast hgoal
 
 end Interleaving
@@ -157,10 +155,9 @@ theorem grandListDecodingChallenge_iff_pow_le (domain : ι ↪ F) {k : ℕ}
         ((ε_star : ENNReal) * (Fintype.card F : ENNReal)) := by
   rw [grandListDecodingChallenge_iff_Lambda_one,
     show ((1 : ℝ≥0) : ℝ) = (1 : ℝ) by norm_num,
-    Lambda_one_eq_ncard (α := Fin m → F),
-    ncard_interleavedReedSolomonCode domain hk m]
-  push_cast
-  rfl
+    Lambda_one_eq_ncard (α := Fin m → F)]
+  rw [ncard_interleavedReedSolomonCode domain hk m]
+  norm_cast
 
 /-- The rate-addressed Reed-Solomon list-decoding challenge in closed form. -/
 theorem grandListDecodingChallengeRS_iff_pow_le (domain : ι ↪ F) {k : ℕ}
