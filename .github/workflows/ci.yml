@@ -103,28 +103,29 @@ jobs:
             bash -eo pipefail -c './scripts/validate.sh'
 
       # ── Issue #47: CI enforcement gates ──────────────────────────────
+      # Gate 2: sorry census — zero live holes
       - name: Sorry census (zero live holes)
         run: |
           chmod +x scripts/ci-sorry-census.sh
           bash scripts/ci-sorry-census.sh
 
+      # Gate 3: axiom audit — flagship theorems only use blessed axioms
       - name: Axiom audit (flagship theorems)
         run: |
           chmod +x scripts/ci-axiom-audit.sh
           bash scripts/ci-axiom-audit.sh --flagship-list scripts/flagship-theorems.txt
 
+      # Gate 4: reject native_decide / bv_decide in proof terms
       - name: Reject native_decide / bv_decide in proofs
         run: |
-          echo "🔎 Scanning for native_decide/bv_decide usage in proof terms..."
+          echo "Scanning for native_decide/bv_decide usage in proof terms..."
           python3 -c "
           import re, sys
           from pathlib import Path
-
           TOKEN_RE = re.compile(r'\b(native_decide|bv_decide)\b')
           hits = []
           for f in sorted(Path('ArkLib').rglob('*.lean')):
               text = f.read_text(encoding='utf-8', errors='replace')
-              # Build comment mask
               mask = [False] * len(text)
               i, n, depth = 0, len(text), 0
               while i < n:
@@ -144,7 +145,6 @@ jobs:
                   else:
                       if depth > 0: mask[i] = True
                       i += 1
-              # Also mask string literals
               in_str = False
               for i, ch in enumerate(text):
                   if ch == chr(34) and not mask[i]: in_str = not in_str
@@ -154,12 +154,11 @@ jobs:
                       line = text.count(chr(10), 0, m.start()) + 1
                       hits.append(f'{f}:{line}:{m.group(1)}')
           if hits:
-              print('❌ Found native_decide/bv_decide in live proof code:')
+              print('FAIL: Found native_decide/bv_decide in live proof code:')
               for h in hits: print(f'  {h}')
               sys.exit(1)
-          print('✅ No native_decide/bv_decide in proof terms.')
+          print('PASS: No native_decide/bv_decide in proof terms.')
           "
-
 
       - name: Save Lean cache
         if: success() && steps.lake-cache.outputs.cache-hit != 'true'
