@@ -6,6 +6,7 @@ Authors: Alexander Hicks
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
+import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
