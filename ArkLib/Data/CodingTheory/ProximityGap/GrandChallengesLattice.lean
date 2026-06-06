@@ -753,6 +753,36 @@ theorem mcaThresholdLattice_bracketed_of_witnesses (C : Set (ι → F)) (ε_star
   mcaThresholdLattice_bracketed C ε_star
     (mcaThresholdExists_of_MCALowerWitness C ε_star wlo) wlo whi hδhi
 
+/-- If a lower MCA witness and an upper MCA witness land on adjacent lattice indices, the
+faithful MCA threshold is exactly the lower witness index.  This is the finite-search closing
+step: `lo ≤ threshold < lo + 1` pins the threshold. -/
+theorem mcaThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
+    (C : Set (ι → F)) (ε_star : ℝ≥0)
+    (wlo : MCALowerWitness C ε_star)
+    (whi : MCAUpperWitness C ε_star) (hδhi : whi.δ ≤ 1)
+    (hadj :
+      (latticeIndexOf (ι := ι) whi.δ hδhi).val =
+        (latticeIndexOf (ι := ι) wlo.δ wlo.le_one).val + 1) :
+    let hne := mcaThresholdExists_of_MCALowerWitness C ε_star wlo
+    mcaThreshold C ε_star hne = latticeIndexOf (ι := ι) wlo.δ wlo.le_one := by
+  classical
+  let hne := mcaThresholdExists_of_MCALowerWitness C ε_star wlo
+  let lo := latticeIndexOf (ι := ι) wlo.δ wlo.le_one
+  let hi := latticeIndexOf (ι := ι) whi.δ hδhi
+  have hbracket :
+      lo ≤ mcaThreshold C ε_star hne ∧ mcaThreshold C ε_star hne < hi := by
+    simpa [hne, lo, hi] using
+      mcaThresholdLattice_bracketed_of_witnesses C ε_star wlo whi hδhi
+  have hle : lo.val ≤ (mcaThreshold C ε_star hne).val := by
+    exact Fin.le_iff_val_le_val.mp hbracket.1
+  have hlt : (mcaThreshold C ε_star hne).val < hi.val := by
+    exact Fin.lt_def.mp hbracket.2
+  have hval : (mcaThreshold C ε_star hne).val = lo.val := by
+    have hadj' : hi.val = lo.val + 1 := by simpa [lo, hi] using hadj
+    omega
+  ext
+  exact hval
+
 
 /-! ## The list-decoding lattice threshold
 
@@ -941,6 +971,35 @@ theorem listThresholdLattice_bracketed_of_witnesses (C : Set (ι → F)) (m : �
   listThresholdLattice_bracketed C m ε_star
     (listThresholdExists_of_ListLowerWitness C m ε_star wlo) wlo whi hδhi
 
+/-- If a lower list witness and an upper list witness land on adjacent lattice indices, the
+faithful list-decoding threshold is exactly the lower witness index. -/
+theorem listThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
+    (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0)
+    (wlo : GrandChallenges.ListLowerWitness C m ε_star)
+    (whi : GrandChallenges.ListUpperWitness C m ε_star) (hδhi : whi.δ ≤ 1)
+    (hadj :
+      (latticeIndexOf (ι := ι) whi.δ hδhi).val =
+        (latticeIndexOf (ι := ι) wlo.δ wlo.le_one).val + 1) :
+    let hne := listThresholdExists_of_ListLowerWitness C m ε_star wlo
+    listThreshold C m ε_star hne = latticeIndexOf (ι := ι) wlo.δ wlo.le_one := by
+  classical
+  let hne := listThresholdExists_of_ListLowerWitness C m ε_star wlo
+  let lo := latticeIndexOf (ι := ι) wlo.δ wlo.le_one
+  let hi := latticeIndexOf (ι := ι) whi.δ hδhi
+  have hbracket :
+      lo ≤ listThreshold C m ε_star hne ∧ listThreshold C m ε_star hne < hi := by
+    simpa [hne, lo, hi] using
+      listThresholdLattice_bracketed_of_witnesses C m ε_star wlo whi hδhi
+  have hle : lo.val ≤ (listThreshold C m ε_star hne).val := by
+    exact Fin.le_iff_val_le_val.mp hbracket.1
+  have hlt : (listThreshold C m ε_star hne).val < hi.val := by
+    exact Fin.lt_def.mp hbracket.2
+  have hval : (listThreshold C m ε_star hne).val = lo.val := by
+    have hadj' : hi.val = lo.val + 1 := by simpa [lo, hi] using hadj
+    omega
+  ext
+  exact hval
+
 /-! ## Faithful prize-resolution targets
 
 The collapse-broken `GrandChallenges.mcaPrize` / `GrandChallenges.listDecodingPrize` predicates
@@ -1051,6 +1110,31 @@ theorem mcaPrizeLattice_bracketed_of_witnesses
     (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
     epsStar (wlo j) (whi j) (hδhi j)
 
+/-- Adjacent per-rate MCA witnesses resolve the faithful MCA lattice prize with the lower
+witness indices as the four exact thresholds. -/
+theorem mcaPrizeLatticeResolved_of_adjacent_witnesses
+    (domain : ι ↪ F)
+    (wlo : ∀ j : Fin 4,
+      GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (wlo j).δ (wlo j).le_one).val + 1) :
+    mcaPrizeLatticeResolved domain
+      (fun j => latticeIndexOf (ι := ι) (wlo j).δ (wlo j).le_one) := by
+  intro j
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  refine ⟨mcaThresholdExists_of_MCALowerWitness C epsStar (wlo j), ?_⟩
+  exact mcaThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
+    C epsStar (wlo j) (whi j) (hδhi j) (hadj j)
+
 /-- A proposed solution of the list-decoding prize lattice problem at interleaving `m`: for
 every prize rate, the faithful list-decoding lattice threshold is the supplied index `τ j`. -/
 def listPrizeLatticeResolved (domain : ι ↪ F) (m : ℕ)
@@ -1153,6 +1237,31 @@ theorem listPrizeLattice_bracketed_of_witnesses
   listThresholdLattice_bracketed_of_witnesses
     (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
     m epsStar (wlo j) (whi j) (hδhi j)
+
+/-- Adjacent per-rate list-decoding witnesses resolve the faithful list lattice prize with the
+lower witness indices as the four exact thresholds. -/
+theorem listPrizeLatticeResolved_of_adjacent_witnesses
+    (domain : ι ↪ F) (m : ℕ)
+    (wlo : ∀ j : Fin 4,
+      GrandChallenges.ListLowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.ListUpperWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (wlo j).δ (wlo j).le_one).val + 1) :
+    listPrizeLatticeResolved domain m
+      (fun j => latticeIndexOf (ι := ι) (wlo j).δ (wlo j).le_one) := by
+  intro j
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  refine ⟨listThresholdExists_of_ListLowerWitness C m epsStar (wlo j), ?_⟩
+  exact listThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
+    C m epsStar (wlo j) (whi j) (hδhi j) (hadj j)
 
 end GrandChallengesLattice
 
