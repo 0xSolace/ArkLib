@@ -342,6 +342,25 @@ theorem mcaThreshold_lt_ofEpsCAGt {MC : Submodule F (ι → F)} {ε_star δ : �
   mcaThreshold_lt_MCAUpperWitness (MC : Set (ι → F)) ε_star hne
     (MCAUpperWitness.ofEpsCAGt h) hδ
 
+/-- A lower MCA witness and a capacity-side `ε_ca` upper witness bracket the faithful lattice
+threshold directly. This is the lattice version of the common Johnson-lower/capacity-upper
+workflow for linear codes. -/
+theorem mcaThresholdLattice_bracketed_of_lowerWitness_and_epsCAGt
+    {MC : Submodule F (ι → F)} {ε_star δ_hi : ℝ≥0}
+    (wlo : MCALowerWitness (MC : Set (ι → F)) ε_star)
+    (hhi : epsCA (F := F) (A := F) (MC : Set (ι → F)) δ_hi δ_hi >
+      (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1) :
+    let hne := mcaThresholdExists_of_MCALowerWitness (MC : Set (ι → F)) ε_star wlo
+    latticeIndexOf (ι := ι) wlo.δ wlo.le_one ≤
+        mcaThreshold (MC : Set (ι → F)) ε_star hne ∧
+      mcaThreshold (MC : Set (ι → F)) ε_star hne <
+        latticeIndexOf (ι := ι) δ_hi hδhi :=
+  ⟨MCALowerWitness_le_mcaThreshold (MC : Set (ι → F)) ε_star
+      (mcaThresholdExists_of_MCALowerWitness (MC : Set (ι → F)) ε_star wlo) wlo,
+    mcaThreshold_lt_ofEpsCAGt
+      (mcaThresholdExists_of_MCALowerWitness (MC : Set (ι → F)) ε_star wlo) hhi hδhi⟩
+
 /-- **Lattice bracketing of the MCA threshold (faithful `mca_threshold_bracketed`).** A
 lower witness and an upper witness (at a radius `≤ 1`) bracket the lattice threshold:
 `⌊δ_lo·n⌋ ≤ mcaThreshold < ⌊δ_hi·n⌋`. This is the lattice replacement for
