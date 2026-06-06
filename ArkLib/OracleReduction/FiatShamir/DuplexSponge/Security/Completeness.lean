@@ -263,29 +263,26 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
           (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run := by
     rw [hRun stmtIn witIn]
     rw [QueryImpl.addLift_def, QueryImpl.liftTarget_self]
-    -- The reduction `run` lifts the honest execution (living in `oSpec + dsc`) into
-    -- `oSpec + dsc + [FSspec.Challenge]ₒ`. `OptionT.run` of that lift is the canonical subspec lift
-    -- `liftComp` of the honest execution's `.run`, regardless of the associativity path the lift
-    -- instance takes (any two subspec lifts into the same target agree). Rewriting to `liftComp`,
-    -- the appended (never-queried) challenge oracle implementation collapses via
-    -- `simulateQ_add_liftComp_left`.
-    have hlift :
-        OptionT.run (liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) :
-          OptionT (OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U +
-            [(⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩ : ProtocolSpec 1).Challenge]ₒ)) _) =
-          OracleComp.liftComp
-            (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run
-            (oSpec + duplexSpongeChallengeOracle StmtIn U +
-              [(⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩ : ProtocolSpec 1).Challenge]ₒ) := by
-      rw [OracleComp.liftComp_def]
-      refine congrFun (congrArg _ ?_) _
-      funext t
-      rcases t with t | t <;> rfl
-    rw [hlift]
-    exact QueryImpl.simulateQ_add_liftComp_left impl
+    -- Collapse the appended (never-queried) challenge oracle implementation via
+    -- `simulateQ_add_run_liftM_left`. `convert` bridges the only gap: the `OptionT` lift used by
+    -- `run` may route through the associativity path `oSpec + dsc → oSpec + (dsc + [c]) →
+    -- oSpec + dsc + [c]`, whereas the lemma uses the direct lift. The remaining residual equates
+    -- these two lifts of the same honest execution; both unfold (via `simulateQ_compose` for the
+    -- two-step path) to a `simulateQ` over the honest execution's `.run` whose query handler is the
+    -- subspec query-lift, and the handlers agree pointwise (`liftM_add_assoc`: the composed lift
+    -- equals the direct lift).
+    convert simulateQ_add_run_liftM_left impl
       (QueryImpl.liftTarget (StateT σ ProbComp)
         (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩)))
-      (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run
+      (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) using 2
+    rw [liftM_OptionT_eq]
+    show simulateQ _ (simulateQ _
+        (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run) =
+      simulateQ _ (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run
+    rw [← QueryImpl.simulateQ_compose]
+    refine congrFun (congrArg _ ?_) _
+    funext t
+    rcases t with t | t | t <;> rfl
   rw [hcollapse]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality
