@@ -47,7 +47,7 @@ Definitions specific to the Binary Basefold protocol based on the fundamentals d
 -/
 
 /-- Evaluate a bounded-degree univariate polynomial on the Binary Basefold domain `S⁽ⁱ⁾`. -/
-def polyToOracleFunc (domainIdx : Fin r) (P : L⦃<2^(ℓ - domainIdx.val)⦄[X]) :
+def polyToOracleFunc (domainIdx : Fin r) (P : L⦃< 2 ^ (ℓ - domainIdx.val)⦄[X]) :
     OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) domainIdx :=
   fun x => P.val.eval x.val
 
@@ -63,19 +63,22 @@ def BBF_Code (i : Fin r) :
 omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] in
 lemma exists_BBF_poly_of_codeword (i : Fin r)
     (u : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) :
-  ∃ P : L⦃<2^(ℓ-i)⦄[X], polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := i) (P := P) = u := by
+  ∃ P : L⦃< 2 ^ (ℓ - i)⦄[X],
+    polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (domainIdx := i) (P := P) = u := by
   have h_u_mem := u.property
   unfold BBF_Code at h_u_mem
   rw [ReedSolomon.mem_code_iff_exists_polynomial] at h_u_mem
   obtain ⟨P_raw, hP_degree, hP_eval⟩ := h_u_mem
-  let P : L⦃<2^(ℓ-i)⦄[X] := ⟨P_raw, by
+  let P : L⦃< 2 ^ (ℓ - i)⦄[X] := ⟨P_raw, by
     simpa [Polynomial.mem_degreeLT] using hP_degree⟩
   use P
   ext x
   simpa [polyToOracleFunc, ReedSolomon.evalOnPoints] using congrFun hP_eval.symm x
 
 def getBBF_Codeword_poly (i : Fin r)
-    (u : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) : L⦃<2^(ℓ-i)⦄[X] :=
+    (u : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) :
+    L⦃< 2 ^ (ℓ - i)⦄[X] :=
   Classical.choose (exists_BBF_poly_of_codeword 𝔽q β i u)
 
 omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] in
@@ -93,7 +96,7 @@ def getBBF_Codeword_of_poly (i : Fin r) (h_i : i ≤ ℓ) (P : L⦃< 2 ^ (ℓ - 
   have h_g_mem : g ∈ BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i := by
     unfold BBF_Code
     rw [ReedSolomon.mem_code_iff_exists_polynomial]
-    exact ⟨P.val, by simpa [Polynomial.mem_degreeLT] using P.property, by
+    exact ⟨P.val, P.2, by
       ext y
       simp [g, polyToOracleFunc, ReedSolomon.evalOnPoints]⟩
   exact ⟨g, h_g_mem⟩
@@ -116,13 +119,15 @@ lemma BBF_CodeDistance_eq (i : Fin r) (h_i : i ≤ ℓ) :
   let m := Fintype.card ((sDomain 𝔽q β h_ℓ_add_R_rate) i)
   have h_dist_RS := ReedSolomon.dist_eq' (F := L) (ι := (sDomain 𝔽q β h_ℓ_add_R_rate)
     (i := i)) (α := domain) (n := 2^(ℓ - i.val)) (h := by
-      rw [sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i) (h_i := by omega)]
+      rw [sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i)
+        (h_i := Nat.lt_add_of_pos_right_of_le (pos_of_neZero 𝓡) h_i)]
       rw [hF₂.out];
       apply Nat.pow_le_pow_right (hx := by omega); omega
     )
   unfold BBF_Code
   rw [h_dist_RS]
-  rw [sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i) (h_i := by omega), hF₂.out]
+  rw [sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i)
+    (h_i := Nat.lt_add_of_pos_right_of_le (pos_of_neZero 𝓡) h_i), hF₂.out]
 
 /-- Disagreement set Δ : The set of points where two functions disagree.
 For functions f^(i) and g^(i), this is {y ∈ S^(i) | f^(i)(y) ≠ g^(i)(y)}. -/
@@ -166,6 +171,8 @@ lemma fiberwiseDisagreementSet_steps_zero_eq_disagreementSet
     (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :
     fiberwiseDisagreementSet 𝔽q β i (steps := 0) (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) f g =
     disagreementSet 𝔽q β (i := i) (destIdx := destIdx) (h_destIdx := h_destIdx) f g := by
+  have h_destIdx_eq_i : destIdx = i := Fin.ext (by omega)
+  subst h_destIdx_eq_i
   ext y
   simp [fiberwiseDisagreementSet, disagreementSet]
 
@@ -176,7 +183,8 @@ def pair_fiberwiseDistance (i : Fin r) {destIdx : Fin r} (steps : ℕ)
 
 /-- Fiber-wise distance d^(i) : The minimum size of the fiber-wise disagreement set
 between f^(i) and any codeword in C^(i). -/
-def fiberwiseDistance (i : Fin r) {destIdx : Fin r} (steps : ℕ) (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ)
+def fiberwiseDistance (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) : ℕ :=
   -- The minimum size of the fiber-wise disagreement set between f^(i) and any codeword in C^(i)
   -- d^(i)(f^(i), C^(i)) := min_{g^(i) ∈ C^(i)} |Δ^(i)(f^(i), g^(i))|
@@ -245,7 +253,6 @@ lemma constFunc_UDRClose {i : Fin r} (h_i : i ≤ ℓ) (c : L) :
   rw [BBF_CodeDistance_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := i) (h_i := h_i)]
   norm_num
-  omega
 
 end ConstantFunctions
 omit [CharP L 2] [DecidableEq 𝔽q] h_β₀_eq_1 in
@@ -256,7 +263,8 @@ lemma UDRClose_iff_within_UDR_radius (i : Fin r) (h_i : i ≤ ℓ)
       uniqueDecodingRadius (ι := (sDomain 𝔽q β h_ℓ_add_R_rate i))
         (F := L) (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) := by
   unfold UDRClose
-  let card_Sᵢ := sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i) (h_i := by omega)
+  let card_Sᵢ := sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i)
+    (h_i := Nat.lt_add_of_pos_right_of_le (pos_of_neZero 𝓡) h_i)
   conv_rhs =>
     unfold BBF_Code;
     rw [ReedSolomon.uniqueDecodingRadius_RS_eq' (h := by
