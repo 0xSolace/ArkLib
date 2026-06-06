@@ -506,6 +506,21 @@ This is the structural sibling of `Prover.append_run` (a `simulateQ`/routing int
 `runToRound` interchange) and is the deep obstruction here; it is *not* probabilistic. It feeds the
 four `OracleVerifier.append_*` security theorems (their `convert … ; simp [append_toVerifier]` steps).
 -/
+theorem router₁_compose (oStmt : ∀ i, OStmt₁ i) (transcript : (pSpec₁ ++ₚ pSpec₂).FullTranscript) :
+    ((OracleInterface.simOracle2 oSpec oStmt transcript.messages) ∘ₛ router₁ (pSpec₂ := pSpec₂)) =
+      OracleInterface.simOracle2 oSpec oStmt transcript.fst.messages := by
+  sorry
+
+theorem router₂_compose (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (oStmt : ∀ i, OStmt₁ i) (transcript : (pSpec₁ ++ₚ pSpec₂).FullTranscript) :
+    ((OracleInterface.simOracle2 oSpec oStmt transcript.messages) ∘ₛ router₂ V₁) =
+      OracleInterface.simOracle2 oSpec (fun i => match h : V₁.embed i with
+        | Sum.inl j => (V₁.hEq i ▸ h ▸ oStmt j)
+        | Sum.inr j => (V₁.hEq i ▸ h ▸ transcript.fst.messages j))
+        transcript.snd.messages := by
+  sorry
+
 @[simp]
 lemma OracleVerifier.append_toVerifier
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
