@@ -477,6 +477,7 @@ import ArkLib.ToMathlib.PowerSeriesSubstCoeff
 import ArkLib.ToMathlib.Prop55
 import ArkLib.ToMathlib.RatFuncDegreeCalculus
 import ArkLib.ToMathlib.RestrictedSumset
+import ArkLib.ToMathlib.RestrictedSumsetGeneral
 import ArkLib.ToMathlib.SbetaPackaging
 import ArkLib.ToMathlib.SiegelInterpolation
 import ArkLib.ToMathlib.SubstFieldCaveat
