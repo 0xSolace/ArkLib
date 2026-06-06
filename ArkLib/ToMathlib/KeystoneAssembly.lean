@@ -274,7 +274,3 @@ end KeystoneAssembly
 end ArkLib
 
 
-
--- TEMP AUDIT
-#print axioms ArkLib.KeystoneAssembly.keystone_of_section5Inputs
-#print axioms ArkLib.KeystoneAssembly.keystone_of_section5Inputs_strict
