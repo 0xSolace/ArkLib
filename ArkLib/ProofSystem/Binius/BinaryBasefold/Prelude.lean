@@ -801,6 +801,42 @@ def fold_legacy (i : Fin r) (h_i : i + 1 < ℓ + 𝓡) (f : (sDomain 𝔽q β
     let f_x₁ := f x₁
     exact f_x₀ * ((1 - r_chal) * x₁.val - r_chal) + f_x₁ * (r_chal - (1 - r_chal) * x₀.val)
 
+/-- **Single-step fold (canonical new-API form).** Given `f : S⁽ⁱ⁾ → L` and challenge `r`,
+produce `S⁽ᵈᵉˢᵗ⁾ → L` for `destIdx = i + 1`. This is the entry point consumed by
+`Code`/`Compliance`/`Relations`/`QueryPhase`/`Soundness`; it is definitionally `fold_legacy`
+re-indexed to the propositionally-equal `destIdx`. The `h_destIdx_le : destIdx ≤ ℓ` hypothesis
+records the in-range constraint the soundness layer relies on (and supplies the legacy
+`i + 1 < ℓ + 𝓡` bound, since `𝓡 > 0`). -/
+def fold (i : Fin r) {destIdx : Fin r} (h_destIdx : destIdx = i.val + 1)
+    (h_destIdx_le : destIdx ≤ ℓ) (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (r_chal : L) : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :=
+  fun y =>
+    have h_i_succ : i.val + 1 < ℓ + 𝓡 := by
+      have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
+      have : destIdx.val ≤ ℓ := h_destIdx_le
+      have hval : destIdx.val = i.val + 1 := by rw [h_destIdx]
+      omega
+    fold_legacy 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (h_i := h_i_succ) f r_chal
+      ⟨y.val, by
+        have hy := y.property
+        have hval : destIdx.val = i.val + 1 := by rw [h_destIdx]
+        -- `y ∈ sDomain destIdx` and `destIdx.val = i + 1`, so `y ∈ sDomain ⟨i+1, _⟩`.
+        have h_eq : destIdx = (⟨i.val + 1, by omega⟩ : Fin r) := Fin.eq_of_val_eq (by omega)
+        rw [h_eq] at hy
+        exact hy⟩
+
+/-- `fold` agrees with `fold_legacy` pointwise (the canonical bridge used to port legacy
+folding lemmas to the new `{destIdx}` API). -/
+theorem fold_eq_fold_legacy (i : Fin r) (h_i : i.val + 1 < ℓ + 𝓡)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) (r_chal : L)
+    (h_destIdx_le : (⟨i.val + 1, by omega⟩ : Fin r) ≤ ℓ)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) (⟨i + 1, by omega⟩)) :
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+      (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := rfl) (h_destIdx_le := h_destIdx_le)
+      f r_chal y =
+    fold_legacy 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (h_i := h_i) f r_chal y := by
+  rfl
+
 def baseFoldMatrix (i : Fin r) (h_i : i + 1 < ℓ + 𝓡)
     (y : ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨↑i + 1, by omega⟩)) : Matrix (Fin 2) (Fin 2) L :=
   let fiberMap := qMap_total_fiber 𝔽q β (i := i) (steps := 1)
