@@ -1182,6 +1182,51 @@ theorem frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
     (τ := τ) (t := t) ?_ hRadius hBound
   simpa [subspaceDesign_epsMCA_gg25] using hT413
 
+/-- Packaged single-instance frontier for ABF26 T4.14 / GG25 Corollary 4.10.
+
+The fields are exactly the residual inputs consumed by
+`frs_epsMCA_capacity_gg25_of_subspaceDesign_prop`: one folded-RS subspace-design instance, one
+public T4.13 `subspaceDesign_epsMCA_gg25` instance at the selected `τ` and `t`, and the explicit
+radius/bound arithmetic that realizes the paper's informal `t ≈ 1 / η` choice.  Proving these
+fields is still the #86 content; this structure only names the non-duplicated front door. -/
+structure FRSEpsMCACapacityGG25Frontier
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F) (η : ℝ) where
+  hη_pos : 0 < η
+  hη_lt : η < 1
+  hs_gt : (s : ℝ) > 16 / η ^ 2
+  τ : ℕ → ℝ
+  t : ℕ
+  ht : 0 < t
+  hT218 : IsSubspaceDesign s τ (ReedSolomon.Folded.frsCode domain k s ω)
+  hT413 : subspaceDesign_epsMCA_gg25 s τ
+    (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht
+  hRadius :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    ((1 - ρ - η).toNNReal : ℝ≥0) =
+      (1 - τ (t + 1) - 3 / (2 * t)).toNNReal
+  hBound :
+    let n : ℝ := Fintype.card ι
+    ((t : ℝ) * n + 4 * t ^ 2) / Fintype.card F ≤
+      2 * n / (η * Fintype.card F) + 24 / (η ^ 3 * Fintype.card F)
+
+/-- Reassemble the public folded-RS MCA-up-to-capacity statement from the packaged
+single-instance frontier. -/
+theorem frs_epsMCA_capacity_gg25_of_frontier
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F) (η : ℝ)
+    (frontier : FRSEpsMCACapacityGG25Frontier domain k s ω η) :
+    frs_epsMCA_capacity_gg25 domain k s ω η
+      frontier.hη_pos frontier.hη_lt frontier.hs_gt :=
+  frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
+    (domain := domain) (k := k) (s := s) (ω := ω) (η := η)
+    frontier.hη_pos frontier.hη_lt frontier.hs_gt
+    frontier.τ frontier.t frontier.ht frontier.hT218 frontier.hT413
+    frontier.hRadius frontier.hBound
+
 /-! ### Random Reed-Solomon MCA up to capacity — ABF26 T4.15 ([GG25]) -/
 
 /-- **ABF26 Theorem 4.15 [GG25 Thm 5.15], statement front door.**
@@ -1284,6 +1329,8 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_residuals
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_residuals_prop
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_bound
+#print axioms CodingTheory.FRSEpsMCACapacityGG25Frontier
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_frontier
 #print axioms CodingTheory.rs_epsCA_bchks25_item2
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_residuals
