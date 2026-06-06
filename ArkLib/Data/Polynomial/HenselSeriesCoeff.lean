@@ -421,3 +421,11 @@ confirm every declaration depends only on `[propext, Classical.choice, Quot.soun
 `sorryAx`, no `native_decide` / `Lean.ofReduceBool`. -/
 
 end ProximityPrize.HenselSeriesCoeff
+
+-- Axiom audit: every claimed-done declaration rests only on
+-- `[propext, Classical.choice, Quot.sound]`.
+#print axioms ProximityPrize.HenselSeriesCoeff.coeff_eval_sub_at
+#print axioms ProximityPrize.HenselSeriesCoeff.coeff_S_stable
+#print axioms ProximityPrize.HenselSeriesCoeff.eval_γ_eq_zero
+#print axioms ProximityPrize.HenselSeriesCoeff.exists_powerSeries_root_seriesCoeff
+#print axioms ProximityPrize.HenselSeriesCoeff.root_unique_seriesCoeff

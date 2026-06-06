@@ -314,7 +314,9 @@ lemma simulateQ_addLift_liftM
     simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
       (liftM oa : OracleComp (oSpec + [pSpec.Challenge]ₒ) α) =
       (simulateQ impl oa : StateT σ ProbComp α) := by
-  sorry
+  rw [show (liftM oa : OracleComp (oSpec + [pSpec.Challenge]ₒ) α) =
+      liftComp oa (oSpec + [pSpec.Challenge]ₒ) by rw [liftComp_eq_liftM]]
+  rw [QueryImpl.simulateQ_add_liftComp_left]
 
 @[simp]
 lemma OptionT.simulateQ_addLift_liftM
@@ -368,6 +370,20 @@ lemma OptionT.simulateQ_getM_some
   rw [simulateQ_getM_run_some (impl := impl) (x := x)]
 
 @[simp]
+lemma Option.getM_map_run
+    {m : Type _ → Type _} [Monad m] [LawfulMonad m] {α β : Type _}
+    (f : α → β) (x : Option α) :
+    ((Option.map f x).getM : OptionT m β).run =
+      (Option.map f <$> (x.getM : OptionT m α).run) := by
+  cases x <;> simp [Option.getM]
+
+@[simp]
+lemma Option.map_comp_lambda
+    {α β γ : Type _} (f : β → γ) (g : α → β) (x : Option α) :
+    Option.map (f ∘ g) x = Option.map (fun y => f (g y)) x := by
+  cases x <;> rfl
+
+@[simp]
 lemma StateT.run_pure_some_bind_map
     {α β γ σ : Type}
     (s : σ) (x : β)
@@ -380,7 +396,6 @@ lemma StateT.run_pure_some_bind_map
           StateT.run (Option.map (fun y => (y, x)) <$> mx) a2.2) := by
   rw [StateT.run_pure]
   simp [StateT.run_map, pure_bind, Functor.map_map]
-  rfl
 
 @[simp]
 lemma StateT.run_simulateQ_optiont_map
@@ -717,9 +732,9 @@ theorem liftContext_run
           R.run.uncurry (lens.proj (outerStmtIn, outerWitIn))
         return ⟨⟨fullTranscript, lens.lift (outerStmtIn, outerWitIn) innerCtxOut⟩ ,
                 lens.stmt.lift outerStmtIn verInnerStmtOut⟩ := by
-  unfold run
-  simp [liftContext, Prover.liftContext_run, Verifier.liftContext, Verifier.run, Function.uncurry]
-  sorry
+  apply OptionT.ext
+  simp [run, liftContext, Prover.liftContext_run, Verifier.liftContext, Verifier.run,
+    Function.uncurry, OptionT.run_bind, OptionT.run_map, Functor.map_map, Function.comp]
 
 theorem liftContext_runWithLog
     {lens : Context.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut
@@ -731,9 +746,10 @@ theorem liftContext_runWithLog
           R.runWithLog.uncurry (lens.proj (outerStmtIn, outerWitIn))
         return ⟨⟨⟨fullTranscript, lens.lift (outerStmtIn, outerWitIn) innerCtxOut⟩,
                 lens.stmt.lift outerStmtIn verInnerStmtOut⟩, queryLog⟩ := by
-  unfold runWithLog
-  simp [liftContext, Prover.liftContext_runWithLog, Verifier.liftContext, Verifier.run]
-  sorry
+  apply OptionT.ext
+  simpa [runWithLog, liftContext, Prover.liftContext_runWithLog, Verifier.liftContext,
+    Verifier.run, Function.uncurry, OptionT.run_bind, OptionT.run_map, Functor.map_map,
+    Function.comp]
 
 end Reduction
 
@@ -894,101 +910,6 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
     (h : V.soundness init impl innerLangIn innerLangOut soundnessError) :
       (V.liftContext lens).soundness init impl outerLangIn outerLangOut soundnessError := by
   sorry
-/-
-  unfold soundness at h ⊢
-  intro WitIn WitOut outerWitIn outerP outerStmtIn hOuterStmtIn
-  let innerPLens : Context.Lens InnerStmtIn InnerStmtOut OuterStmtIn OuterStmtOut
-      WitIn WitOut WitIn WitOut := {
-    stmt := (fun _ => outerStmtIn) ⇆ (fun _ _ => (default : InnerStmtOut))
-    wit := Prod.snd ⇆ (fun _ => Prod.snd)
-  }
-  let innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec :=
-    outerP.liftContext innerPLens
-  have hInnerStmtIn : lens.proj outerStmtIn ∉ innerLangIn := by
-    exact lensSound.proj_sound _ hOuterStmtIn
-  let pImpl : QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp) :=
-    impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl
-  let pre : OptionT ProbComp ((FullTranscript pSpec × OuterStmtOut × WitOut) × σ) :=
-    OptionT.mk do
-      let s ← init
-      let a ← (simulateQ pImpl (Prover.run outerStmtIn outerWitIn outerP)).run s
-      pure (some a)
-  let outerBranch :
-      ((FullTranscript pSpec × OuterStmtOut × WitOut) × σ) →
-        OptionT ProbComp ((FullTranscript pSpec × OuterStmtOut × WitOut) × OuterStmtOut) :=
-    fun a => Prod.mk a.1 <$>
-      OptionT.mk ((simulateQ pImpl
-        (liftM (Verifier.run outerStmtIn a.1.1 (V.liftContext lens)) :
-          OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) OuterStmtOut)).run' a.2)
-  let innerBranch :
-      ((FullTranscript pSpec × OuterStmtOut × WitOut) × σ) →
-        OptionT ProbComp ((FullTranscript pSpec × InnerStmtOut × WitOut) × InnerStmtOut) :=
-    fun a => (fun stmtOut => ((a.1.1,
-        innerPLens.lift (lens.proj outerStmtIn, outerWitIn) a.1.2), stmtOut)) <$>
-      OptionT.mk ((simulateQ pImpl
-        (liftM (Verifier.run (lens.proj outerStmtIn) a.1.1 V) :
-          OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) InnerStmtOut)).run' a.2)
-  have hSound := h WitIn WitOut outerWitIn innerP (lens.proj outerStmtIn) hInnerStmtIn
-  have hInner :
-      Pr[fun x ↦ x.2 ∈ innerLangOut | pre >>= innerBranch] ≤ ↑soundnessError := by
-    simp [pre, innerBranch, innerP, innerPLens, Reduction_run_def, OptionT.lift,
-      Prover.liftContext_run, Verifier.run, liftM_OptionT_eq,
-      OptionT.mk_run'_map_stateful,
-      OptionT.mk_simulateQ_run'_map_stateful, OptionT.simulateQ_addLift_liftQuery,
-      Functor.map_map, Function.comp] at hSound ⊢
-    exact hSound
-  have hCompare :
-      Pr[fun x ↦ x.2 ∈ outerLangOut | pre >>= outerBranch] ≤
-        Pr[fun x ↦ x.2 ∈ innerLangOut | pre >>= innerBranch] := by
-    rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
-    refine ENNReal.tsum_le_tsum fun a => ?_
-    by_cases ha : a ∈ support pre
-    · refine mul_le_mul' le_rfl ?_
-      rw [probEvent_map, probEvent_map]
-      simpa [outerBranch, innerBranch, innerPLens, pImpl, liftComp_eq_liftM,
-        liftM_OptionT_eq, OptionT.mk_run'_map_stateful, OptionT.simulateQ_addLift_liftM,
-        Reduction_run_def,
-        OptionT.mk_simulateQ_run'_map_stateful, Functor.map_map, Function.comp] using
-        (Verifier.liftContext_probEvent_le
-          (lens := lens) (V := V)
-          (outerLangIn := outerLangIn) (outerLangOut := outerLangOut)
-          (innerLangIn := innerLangIn) (innerLangOut := innerLangOut)
-          (init := pure a.2) (impl := impl) outerStmtIn a.1.1)
-    · simp [probOutput_eq_zero_of_not_mem_support ha]
-  have hOuterExec :
-      OptionT.mk (do
-        let __do_lift ← init
-        (simulateQ pImpl
-          ((Reduction.mk outerP (V.liftContext lens)).run outerStmtIn outerWitIn).run).run'
-            __do_lift) =
-        pre >>= outerBranch := by
-    apply OptionT.ext
-    simp [pre, outerBranch, Verifier.liftContext, Verifier.run, Reduction_run_def, OptionT.lift,
-      liftM_OptionT_eq, OptionT.mk_map_run_state,
-      OptionT.mk_run'_map_stateful, OptionT.mk_simulateQ_run'_map_stateful,
-      OptionT.simulateQ_addLift_liftQuery, Functor.map_map, Function.comp]
-    congr 1
-    funext a
-    congr 1
-    funext x
-    let innerVerify : OptionT (OracleComp oSpec) InnerStmtOut :=
-      V.verify (lens.proj outerStmtIn) x.1.1
-    exact OptionT.run_map_prod_mk_state
-      (f := lens.lift outerStmtIn)
-      (x := x.1)
-      (mx := (simulateQ pImpl
-        (simulateQ (fun t ↦ liftM (query t)) innerVerify) :
-        OptionT (StateT σ ProbComp) InnerStmtOut))
-      (s := x.2)
-  change
-    Pr[fun x ↦ x.2 ∈ outerLangOut | OptionT.mk do
-      let __do_lift ← init
-      (simulateQ pImpl
-        ((Reduction.mk outerP (V.liftContext lens)).run outerStmtIn outerWitIn).run).run'
-          __do_lift] ≤ ↑soundnessError
-  rw [hOuterExec]
-  exact le_trans hCompare hInner
--/
 
 /-
   Lifting the reduction preserves knowledge soundness, assuming the lens satisfies its knowledge
