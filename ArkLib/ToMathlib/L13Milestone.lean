@@ -204,7 +204,7 @@ from the quantization split in `BoundaryCardResidual.lean`: the non-lattice part
 strict subradius by `hStrictBoundary`, and the exact `1/n` lattice points are isolated in
 `BoundaryCardLatticeResidual`. -/
 theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual
-    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg] [DecidableEq ι]
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
     (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
       Pr_{
