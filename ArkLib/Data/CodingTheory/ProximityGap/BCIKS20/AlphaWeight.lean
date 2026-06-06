@@ -337,3 +337,15 @@ theorem W𝒪_dvd_βHensel_zero_of_alphaWeight (x₀ : F) (R : F[X][X][Y])
 end AlphaWeight
 
 end BCIKS20.HenselNumerator
+
+-- Axiom audit: every closed declaration in this file depends on exactly the three standard axioms
+-- `[propext, Classical.choice, Quot.sound]` (no `sorry`/`admit`/`axiom`/`native_decide`).
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.embeddingOf𝒪Into𝕃_W𝒪
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_eq_alpha_mul_of_lift
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.alpha_eq_embedding_of_fact
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_iff_divWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_structured
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight'
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alpha
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alphaWeight

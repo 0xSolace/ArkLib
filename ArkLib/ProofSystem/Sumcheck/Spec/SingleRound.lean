@@ -1075,6 +1075,7 @@ theorem oracleReduction_perfectCompleteness :
     simp only [support_bind, Set.mem_iUnion, not_exists]
     intro s _ hmem
     erw [simulateQ_bind] at hmem
+    simp only [StateT.run'_eq] at hmem
     rw [StateT.run_bind] at hmem
     rw [mem_support_bind_iff] at hmem
     obtain ⟨⟨pr, s'⟩, _hpr, hmem⟩ := hmem
@@ -1089,6 +1090,7 @@ theorem oracleReduction_perfectCompleteness :
     simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
     erw [simulateQ_bind] at hx
+    simp only [StateT.run'_eq] at hx
     rw [StateT.run_bind] at hx
     rw [mem_support_bind_iff] at hx
     obtain ⟨⟨pr, s'⟩, hw, hx⟩ := hx
