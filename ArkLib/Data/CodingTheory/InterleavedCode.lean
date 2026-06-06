@@ -883,8 +883,10 @@ parts:
   dominates the per-word close-codeword set.  This is the list-recovery /
   erasure-decoding content that has **no in-tree analogue** (ArkLib has neither a
   list-recovery primitive nor the column-pruning lemmas it needs).  It is named
-  `InterleavedCode.GGR11.GGR11TreeStructure`, and the chain
-  `GGR11TreeStructure → GGR11PerWordBound → (this bound)` is fully proven there.
+  `InterleavedCode.GGR11.GGR11TreeStructure`, with the named per-word frontier
+  `InterleavedCode.GGR11.GGR11TreeFrontier` exposing the witness data. The chain
+  `GGR11TreeFrontier ↔ GGR11TreeStructure → GGR11PerWordBound → (this bound)` is
+  fully proven there.
 
 Note also `F` is only `[Field F]` (not `[Fintype F]`), so over an infinite field
 `Lambda C δ` can be `⊤`, in which case the RHS is `⊤` and the bound is trivially true;
