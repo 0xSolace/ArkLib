@@ -110,11 +110,15 @@ variable {h_ℓ_add_R_rate : ℓ + 𝓡 < r} -- ℓ ∈ {1, ..., r-1}
 section Essentials
 -- In this section, we ue notation `ϑ` for the folding steps, along with `(hdiv : ϑ ∣ ℓ)`
 
-/-- Oracle function type for round i.
-f^(i) : S⁽ⁱ⁾ → L, where |S⁽ⁱ⁾| = 2^{ℓ + R - i} -/
-abbrev OracleFunction (i : Fin (ℓ + 1)) : Type _ := sDomain 𝔽q β h_ℓ_add_R_rate ⟨i, by
-  exact Nat.lt_of_le_of_lt (n := i) (k := r) (m := ℓ) (h₁ := by exact Fin.is_le i)
-    (by exact lt_of_add_right_lt h_ℓ_add_R_rate)⟩ → L
+/-- Oracle function type for round `domainIdx`.
+f^(i) : S⁽ⁱ⁾ → L, where |S⁽ⁱ⁾| = 2^{ℓ + R - i}.
+
+NOTE (API migration): indexed by a general `domainIdx : Fin r` (matching the new-API
+`{destIdx : Fin r}` convention used throughout `Code`/`Compliance`/`Relations`), since
+this branch's `sDomain` takes a bare `Fin r` index with no in-range proof obligation. The
+pre-split `Fin (ℓ + 1)` form is recovered by coercing the level into `Fin r`. -/
+abbrev OracleFunction (domainIdx : Fin r) : Type _ :=
+  sDomain 𝔽q β h_ℓ_add_R_rate domainIdx → L
 
 omit [NeZero ℓ] in
 lemma fin_ℓ_lt_ℓ_add_one (i : Fin ℓ) : i < ℓ + 1 :=
