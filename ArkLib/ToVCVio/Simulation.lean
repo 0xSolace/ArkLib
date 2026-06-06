@@ -2430,8 +2430,9 @@ lemma support_simulateQ_bind_run_eq
 
 -- OptionT (StateT σ ProbComp) PUnit.{1}
 /-- **Support of StateT bind (run form)**
-Membership in `support ((m >>= g).run s)` is equivalent to: there exists `out_forIn ∈ support (m.run s)`
-such that `x` is in the support of continuing with `g` from that result (i.e. `(g out_forIn.1).run out_forIn.2`).
+Membership in `support ((m >>= g).run s)` is equivalent to: there exists
+`out_forIn ∈ support (m.run s)` such that `x` is in the support of continuing with `g` from
+that result (i.e. `(g out_forIn.1).run out_forIn.2`).
 Useful to "peel" the outer bind and get an existential over the forIn (or first part) outcome. -/
 lemma mem_support_StateT_bind_run {σ α β : Type}
     (ma : StateT σ ProbComp α) (f : α → StateT σ ProbComp β) (s : σ) (x : β × σ) :
@@ -2476,7 +2477,8 @@ are routed to `challengeQueryImpl`, which samples uniformly.
 This lemma simplifies `(impl ++ₛₒ challengeQueryImpl).impl (query (Sum.inr i) ())` to
 show it samples uniformly from the challenge space.
 
-**Note**: The `++ₛₒ` operator implicitly lifts `challengeQueryImpl` from `ProbComp` to `StateT σ ProbComp`.
+**Note**: The `++ₛₒ` operator implicitly lifts `challengeQueryImpl` from `ProbComp` to
+`StateT σ ProbComp`.
 -/
 theorem QueryImpl_append_impl_inr_stateful
     (impl : QueryImpl oSpec (StateT σ ProbComp))

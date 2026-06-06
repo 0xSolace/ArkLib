@@ -23,7 +23,7 @@ representative of `γ` together with the substitution data:
 * `hrep  : polyToPowerSeries𝕃 H Ppoly = γ x₀ R H hHyp`     (Prop 5.5: `γ` has a polynomial rep);
 * `hdegX : Polynomial.Bivariate.degreeX Ppoly ≤ 1`          (Prop 5.5: the curve is linear in `Z`);
 * `hγ    : γ = (mk αFromBeta).subst (shiftSeries x₀ H)`     (Claim 5.9 substitution form);
-* `hsubst: PowerSeries.HasSubst (shiftSeries x₀ H)`         (validity of the BCIKS shift `X ↦ X−x₀`).
+* `hsubst: PowerSeries.HasSubst (shiftSeries x₀ H)`        (validity of the BCIKS shift `X ↦ X−x₀`).
 
 ## The mathematics
 
@@ -49,7 +49,8 @@ series coming from a genuine `F[X][Y]` polynomial.  Its `t`-th coefficient is
 `liftToFunctionField (Ppoly.coeff t)`, which is `0` whenever `Ppoly.coeff t = 0`, i.e. whenever
 `t > Ppoly.natDegree`.  Hence the **truncation bound** is
 
-> `T := Ppoly.natDegree`  (the degree of the representative in the power-series / `X − x₀` variable),
+> `T := Ppoly.natDegree`  (the degree of the representative in the power-series / `X − x₀`
+> variable),
 
 and `αFromBeta t = 0` for every `t > T`.
 
@@ -211,8 +212,9 @@ theorem htailDeg_of_polynomial_representative {x₀ : F} {R : F[X][X][Y]}
 
 /-! ## Step 5 — packaged form: the `htailDeg` of a `Section5StrictDataFin`-shaped datum
 
-The same conclusion bundled to read off the explicit Prop-5.5 fields of the corrected datum, with the
-truncation index named `T := Ppoly.natDegree`.  This is exactly the shape consumed by the `htailDeg`
+The same conclusion bundled to read off the explicit Prop-5.5 fields of the corrected datum,
+with the truncation index named `T := Ppoly.natDegree`.  This is exactly the shape consumed
+by the `htailDeg`
 field of `HcardDischarge.Section5StrictDataFin`. -/
 
 /-- **Packaged producer.**  Records the truncation index `T := Ppoly.natDegree` and produces the

@@ -7,15 +7,15 @@ Authors: ArkLib Contributors
 import ArkLib.ProofSystem.ToyProblem.Spec.SimplifiedIOR
 
 /-!
-# Rewinding knowledge soundness for the toy IOR: axiom audit & usage
+# Rewinding knowledge soundness for the toy IOR: kernel-dependency audit & usage
 
 This module sits *downstream* of the toy-problem spec files and serves two purposes:
 
-1. **Axiom audit.** It re-checks (via `#print axioms`) that the rewinding-extractor content — the
+1. **Kernel-dependency audit.** It re-checks (via `#print axioms`) that the rewinding-extractor content — the
    2×2 solve `toySolve`, its correctness `toySolve_combine`, the 2-special-soundness theorem
    `toyRewindingExtractor_twoSpecialSound`, and the fully-proven framework witness
    `protocol62_knowledgeSoundnessViaRewinding` — depends on **no** `sorry` and **no** project-level
-   axiom (only Lean's standard `propext`/`Classical.choice`/`Quot.sound`).
+   assumed constant (only Lean's standard `propext`/`Classical.choice`/`Quot.sound`).
 
 2. **Usage demonstration.** It shows the proven rewinding witness driving the framework's
    operational guarantee `Extractor.knowledgeSoundnessViaRewinding.extracts`: whenever a malicious
@@ -61,8 +61,8 @@ randomness `γ` yields an extractable witness in the relaxed relation `R̃²_{C,
 
 This is the framework's `knowledgeSoundnessViaRewinding.extracts` instantiated at the *proven* toy
 witness `protocol62_knowledgeSoundnessViaRewinding`. It demonstrates the rewinding predicate is
-usable end-to-end, not an inert interface: the witness is produced with no `sorry` and no axiom
-beyond Lean's standard kernel axioms. -/
+usable end-to-end, not an inert interface: the witness is produced with no `sorry` and no
+project-level assumed constant beyond Lean's standard kernel dependencies. -/
 theorem toyProtocol_extracts [Fintype F] [Nonempty F]
     (C : Set (ι → F)) (δ : ℝ≥0)
     (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F))
@@ -78,11 +78,11 @@ theorem toyProtocol_extracts [Fintype F] [Nonempty F]
 
 end ToyProblem.Spec
 
-/-! ## Axiom audit
+/-! ## Kernel-dependency audit
 
 Each `#print axioms` below must report only Lean's standard kernel axioms
 (`propext`, `Classical.choice`, `Quot.sound`) — i.e. **no** `sorryAx` and **no** project-level
-axiom in the rewinding-extractor content or the framework witness. -/
+assumed constant in the rewinding-extractor content or the framework witness. -/
 
 -- 2×2 solve and its correctness (pure field algebra):
 #print axioms ToyProblem.Spec.toySolve
