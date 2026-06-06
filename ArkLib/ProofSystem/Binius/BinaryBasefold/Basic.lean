@@ -432,6 +432,60 @@ lemma mkLastOracleIndex_last : mkLastOracleIndex ℓ ϑ (Fin.last ℓ) = ℓ / �
   simp only [lt_self_iff_false, ↓reduceDIte]
   rfl
 
+def getLastOraclePositionIndex (i : Fin (ℓ + 1)) :
+  Fin (toOutCodewordsCount ℓ ϑ i) := by
+  let ne0 := (instNeZeroNatToOutCodewordsCount ℓ ϑ i).out
+  exact ⟨(toOutCodewordsCount ℓ ϑ i) - 1, by omega⟩
+
+@[reducible]
+def getLastOracleDomainIndex (oracleFrontierIdx : Fin (ℓ + 1)) :
+  Fin (ℓ) :=
+  oraclePositionToDomainIndex (positionIdx := (getLastOraclePositionIndex ℓ ϑ oracleFrontierIdx))
+
+lemma mkLastOracleIndex_eq_getLastOraclePositionIndex (i : Fin (ℓ + 1)) :
+    mkLastOracleIndex ℓ ϑ i = getLastOraclePositionIndex ℓ ϑ i := by
+  unfold mkLastOracleIndex getLastOraclePositionIndex
+  apply Fin.eq_of_val_eq
+  by_cases hi : i.val < ℓ
+  · simp only [hi, ↓reduceDIte]
+    unfold toOutCodewordsCount
+    simp only [hi, ↓reduceIte]
+    rfl
+  · simp only [hi, ↓reduceDIte]
+    unfold toOutCodewordsCount
+    simp only [hi, eq_mpr_eq_cast, cast_eq, ↓reduceIte, add_zero];
+    have h_eq: i.val = ℓ := by omega
+    rw [h_eq]
+
+lemma getLastOraclePositionIndex_last : getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ)
+  = ⟨ℓ / ϑ - 1, by
+    dsimp only [toOutCodewordsCount, Fin.val_last, lt_self_iff_false];
+    simp only [lt_self_iff_false,
+      ↓reduceIte, add_zero, tsub_lt_self_iff, Nat.div_pos_iff, zero_lt_one, and_true]
+    constructor
+    · exact pos_of_neZero ϑ
+    · apply Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ); exact hdiv.out
+    ⟩ := by
+  apply Fin.eq_of_val_eq
+  dsimp only [getLastOraclePositionIndex, Fin.val_last, lt_self_iff_false, Lean.Elab.WF.paramLet]
+  rw [toOutCodewordsCount_last]
+
+lemma getLastOracleDomainIndex_last : getLastOracleDomainIndex ℓ ϑ (Fin.last ℓ)
+  = ⟨ℓ - ϑ, by
+    have h_ne_0 : 0 < ϑ := by exact pos_of_neZero ϑ
+    have h_lt: ϑ ≤ ℓ := by apply Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ); exact hdiv.out
+    omega⟩ := by
+  apply Fin.eq_of_val_eq
+  dsimp only [getLastOracleDomainIndex]
+  rw [getLastOraclePositionIndex_last]; simp only;
+  rw [Nat.sub_mul, Nat.one_mul]
+  rw [Nat.div_mul_cancel (hdiv.out)]
+
+lemma getLastOracleDomainIndex_add_ϑ_le (i : Fin (ℓ + 1)) :
+    (getLastOracleDomainIndex ℓ ϑ i).val + ϑ ≤ ℓ := by
+  rw [getLastOracleDomainIndex, oraclePositionToDomainIndex]
+  simp only [oracle_index_add_steps_le_ℓ]
+
 end OracleStatementIndex
 
 -- The structured-sumcheck primitives (`MultilinearPoly`, `MultiquadraticPoly`,
