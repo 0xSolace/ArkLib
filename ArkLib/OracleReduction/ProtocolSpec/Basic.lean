@@ -547,6 +547,16 @@ def equivMessagesChallenges :
       simp [ofMessagesChallenges, toMessagesChallenges, toChallengesUpTo]
       split <;> aesop
 
+@[simp]
+theorem equivMessagesChallenges_fst_apply (transcript : Transcript k pSpec)
+    (i : MessageIdxUpTo k pSpec) :
+    (Transcript.equivMessagesChallenges transcript).1 i = transcript i.val := rfl
+
+@[simp]
+theorem equivMessagesChallenges_snd_apply (transcript : Transcript k pSpec)
+    (i : ChallengeIdxUpTo k pSpec) :
+    (Transcript.equivMessagesChallenges transcript).2 i = transcript i.val := rfl
+
 end Transcript
 
 namespace FullTranscript
@@ -555,9 +565,17 @@ namespace FullTranscript
 def messages (transcript : FullTranscript pSpec) (i : MessageIdx pSpec) :=
   transcript i.val
 
+@[simp]
+theorem messages_apply (transcript : FullTranscript pSpec) (i : MessageIdx pSpec) :
+    messages transcript i = transcript i.val := rfl
+
 @[reducible, inline, specialize]
 def challenges (transcript : FullTranscript pSpec) (i : ChallengeIdx pSpec) :=
   transcript i.val
+
+@[simp]
+theorem challenges_apply (transcript : FullTranscript pSpec) (i : ChallengeIdx pSpec) :
+    challenges transcript i = transcript i.val := rfl
 
 /-- Unique instance for the empty full transcript. -/
 instance : Unique (FullTranscript (default : ProtocolSpec 0)) := inferInstance
@@ -580,6 +598,16 @@ def equivMessagesChallenges : FullTranscript pSpec ≃ (Messages pSpec × Challe
   change Transcript (Fin.last n) pSpec ≃
     (MessagesUpTo (Fin.last n) pSpec × ChallengesUpTo (Fin.last n) pSpec)
   exact Transcript.equivMessagesChallenges
+
+@[simp]
+theorem equivMessagesChallenges_fst_apply (transcript : FullTranscript pSpec)
+    (i : MessageIdx pSpec) :
+    (FullTranscript.equivMessagesChallenges transcript).1 i = transcript.messages i := rfl
+
+@[simp]
+theorem equivMessagesChallenges_snd_apply (transcript : FullTranscript pSpec)
+    (i : ChallengeIdx pSpec) :
+    (FullTranscript.equivMessagesChallenges transcript).2 i = transcript.challenges i := rfl
 
 end FullTranscript
 
@@ -801,4 +829,3 @@ alias deriveTranscriptFS := deriveTranscriptSR
 end Messages
 
 end ProtocolSpec
-
