@@ -57,47 +57,48 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     (r_challenges := fun _ => r_i'))
   := by
   -- Peel the last of the left-hand steps.  The step count is instantiated as
-  -- `↑(i.castSucc) + 1` (defeq to `↑(i.succ)`) so that the produced `Fin.init`/`Fin.last`
-  -- terms sit at index `↑(i.castSucc)` — syntactically matching the `Fin.snoc` of the
-  -- statement, which lets `init_snoc`/`snoc_last` fire without any `Fin.val` reduction.
+  -- `i.val + 1` (defeq to `↑(i.succ)`): the statement's `Fin.snoc challenges r_i'` was
+  -- elaborated at index `n := i.val` (whnf of `↑(i.succ)` against `Fin (?n + 1)`), so the
+  -- peel's `Fin.init`/`Fin.last` must sit at `i.val` too — `init_snoc`/`snoc_last` have a
+  -- single `n`, and defeq-but-not-syntactic index mixes make them unusable.
   refine Eq.trans
     (iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
-      (midIdx := ⟨(i.castSucc : Fin (ℓ + 1)).val, by omega⟩)
-      (destIdx := ⟨i.val + 1, by omega⟩) (steps := (i.castSucc : Fin (ℓ + 1)).val)
+      (midIdx := ⟨i.val, by omega⟩)
+      (destIdx := ⟨i.val + 1, by omega⟩) (steps := i.val)
       (h_midIdx := by simp) (h_destIdx := by simp)
       (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
       (f := _) (r_challenges := _)) ?_
   -- Peel the single right-hand step (`steps = 0 + 1`).
   refine Eq.trans ?_
     (iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i.val, by omega⟩)
-      (midIdx := ⟨(i.castSucc : Fin (ℓ + 1)).val, by omega⟩)
+      (midIdx := ⟨i.val, by omega⟩)
       (destIdx := ⟨i.val + 1, by omega⟩) (steps := 0)
       (h_midIdx := by simp) (h_destIdx := by simp)
       (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
       (f := _) (r_challenges := _)).symm
   -- Both sides are now a single `fold` at the same (defeq) indices.  Close by congruence
-  -- in the folded function and the challenge (term-level `init_snoc`/`snoc_last`: the simp
-  -- forms do not fire here because of implicit-argument drift in the `Fin.snoc` motive).
-  have hmid_lt : ((i.castSucc : Fin (ℓ + 1)) : ℕ) < r := by omega
+  -- in the folded function and the challenge.  Term-level `init_snoc`/`snoc_last` with
+  -- `n` and `α` pinned explicitly: `Fin.snoc`'s dependent motive `?α j.castSucc` is not a
+  -- higher-order pattern, so `simp`/`rw`/bare-term unification all fail without them.
+  have hmid_lt : i.val < r := by omega
   have hdest_lt : i.val + 1 < r := by omega
   have hdest_le : (⟨i.val + 1, hdest_lt⟩ : Fin r) ≤ ℓ := by
     simp only [Fin.mk_le_mk, Fin.val_mk]; omega
   refine congrArg₂ (fun g c =>
     fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := ⟨(i.castSucc : Fin (ℓ + 1)).val, hmid_lt⟩)
+      (i := ⟨i.val, hmid_lt⟩)
       (destIdx := ⟨i.val + 1, hdest_lt⟩) (h_destIdx := by simp)
       (h_destIdx_le := hdest_le) (f := g) (r_chal := c)) ?_ ?_
   · -- Folded function: rewrite `init (snoc …) = challenges`, then the right-hand inner
     -- zero-step fold is the definitional transport of `getMidCodewords i.castSucc`.
-    -- (`α` must be given explicitly: `Fin.snoc`'s dependent motive `?α j.castSucc` is not
-    -- a higher-order pattern, so `simp`/`rw`/bare-term unification all fail without it.)
     funext z
     rw [iterated_fold_zero_steps]
-    have hch := Fin.init_snoc (α := fun _ => L) (x := r_i') (p := challenges)
+    have hch := Fin.init_snoc (n := i.val) (α := fun _ => L) (x := r_i') (p := challenges)
+    set_option pp.explicit true in trace_state
     rw [hch]
     rfl
   · -- Challenge: `snoc challenges r_i' (last _) = r_i'` (the right side beta-reduces).
-    exact Fin.snoc_last (α := fun _ => L) (x := r_i') (p := challenges)
+    exact Fin.snoc_last (n := i.val) (α := fun _ => L) (x := r_i') (p := challenges)
 
 section FoldStepLogic
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context}

@@ -7,6 +7,7 @@ Authors: Katerina Hristova, František Silváši, Chung Thai Nguyen, Elias Judin
 
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding
 
 set_option linter.style.longFile 1600
 
@@ -1518,8 +1519,53 @@ theorem ahiv17_epsCA_bound_of_affineLine_residual
     ProximityGap.epsCA (F := F) (A := F) (RScodeSet α deg) δ δ ≤ (ε : ENNReal) :=
   ahiv17_epsCA_bound (deg := deg) (α := α) (δ := δ) (ε := ε) hAHIV
 
+/-! ### Unique-decoding-regime instantiation (fully proven, no residual)
+
+The named affine-line residual **holds** in the unique-decoding regime: `RScodeSet α deg`
+is a definitional abbrev for `ReedSolomon.code α deg` (`ReedSolomon.lean`), so the BCIKS20
+affine-lines base case `RS_correlatedAgreement_affineLines_uniqueDecodingRegime` discharges
+`ahiv17_affineLine_correlatedAgreement_residual` at `ε = errorBound δ deg α` whenever
+`δ ≤ relUDR(RS)`.  Chaining through the `epsCA` bridge yields the fully-proven (non-residual)
+ABF26 T4.8 bound for the unique-decoding regime.
+
+Caveat (kept as the named residual above): this lands the BCIKS20 UDR error bound
+`errorBound δ deg α = n/q`; the tighter AHIV17 bound `d/q = ‖RS‖₀/q` from `prob_of_bad_pts`
+still requires the row-span → affine-line specialization tracked by
+`ahiv17_affineLine_correlatedAgreement_residual`. -/
+
+/-- The named affine-line residual, **discharged** in the unique-decoding regime by
+`ProximityGap.RS_correlatedAgreement_affineLines_uniqueDecodingRegime` (definitional match
+via the `RScodeSet` abbrev). -/
+theorem ahiv17_affineLine_residual_uniqueDecodingRegime
+    [Nonempty ι]
+    {deg : ℕ} {α : ι ↪ F} {δ : ℝ≥0}
+    (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code α deg)) :
+    ahiv17_affineLine_correlatedAgreement_residual deg α δ
+      (ProximityGap.errorBound δ deg α) :=
+  ProximityGap.RS_correlatedAgreement_affineLines_uniqueDecodingRegime
+    (deg := deg) (domain := α) (δ := δ) hδ
+
+/-- **ABF26 Theorem 4.8 / AHIV17 — unique-decoding regime, fully proven.**
+
+For `δ ≤ relUDR(RS[F, α, deg])`, the `epsCA` bound
+`epsCA (RScodeSet α deg) δ δ ≤ errorBound δ deg α` holds with **no residual hypothesis**:
+the affine-line correlated agreement is supplied by the proven BCIKS20 unique-decoding base
+case and routed through the generic `epsCA` bridge. -/
+theorem ahiv17_epsCA_bound_uniqueDecodingRegime
+    [Nonempty ι]
+    {deg : ℕ} {α : ι ↪ F} {δ : ℝ≥0}
+    (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code α deg)) :
+    ProximityGap.epsCA (F := F) (A := F) (RScodeSet α deg) δ δ
+      ≤ (ProximityGap.errorBound δ deg α : ENNReal) :=
+  ahiv17_epsCA_bound_of_affineLine_residual
+    (ahiv17_affineLine_residual_uniqueDecodingRegime hδ)
+
 #print axioms ProximityToRS.ahiv17_affineLine_correlatedAgreement_residual
 #print axioms ProximityToRS.ahiv17_epsCA_bound
 #print axioms ProximityToRS.ahiv17_epsCA_bound_of_affineLine_residual
+#print axioms ProximityToRS.ahiv17_affineLine_residual_uniqueDecodingRegime
+#print axioms ProximityToRS.ahiv17_epsCA_bound_uniqueDecodingRegime
 end ProximityToRS
 end
