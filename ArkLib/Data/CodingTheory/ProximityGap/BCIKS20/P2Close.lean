@@ -147,9 +147,10 @@ theorem trunc_defect_eq_restrictedFaaDiBrunoSum (x₀ : F) (R : F[X][X][Y])
 bijecting the restricted value-multisets `m` (entries = orders, zeros allowed, `card = i`,
 `(t+1) ∉ m`) against the `(A.1)` index pairs `(i1, λ)` — X-Taylor order `ab.1 = i1`, positive
 entries forming `λ ⊢ ab.2`, zero-slot count `i − card λ` the Y-degree bookkeeping — matching
-`countPerms m` against `prefactor = C(i,i1)·multinomial(λ)`, the per-term values via `coeff_Q_eq_B`
+`countPerms m` against the positive-part `prefactor = λ.parts.countPerms` together with the
+Y-Hasse binomial from `hasseDerivY_coeff`, the per-term values via `coeff_Q_eq_B`
   + `partitionProd_coeff_assembled`, and clearing the `W`/`ξ` telescopes with
-  `ζ_ne_zero`/`den_ne_zero`.
+  the `ζ` sign/denominator conventions.
 THIS is the last genuinely unformalized content of P2; everything else of P2 is PROVEN. -/
 def RestrictedFaaDiBrunoMatch (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) : Prop :=
