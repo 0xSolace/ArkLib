@@ -228,6 +228,29 @@ theorem divWeight_iff_cases (x₀ : F) (R : F[X][X][Y])
   · intro hcases
     exact DivWeightLe_of_cases H x₀ R hHyp hH D hcases.1 hcases.2
 
+/-- The base divisibility-with-weight case, with the vacuous `ξ^0` and `W𝒪^1` factors normalized
+away. This is the exact base witness target. -/
+theorem divWeight_zero_iff_W𝒪_factor (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) :
+    DivWeightLe_zero H x₀ R hHyp hH D ↔
+      ∃ a : 𝒪 H,
+        βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+          weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 := by
+  simp [DivWeightLe_zero]
+
+/-- The successor divisibility-with-weight case with the exponents normalized from the definition's
+`t + 1 + 1` and `2 * (t + 1) - 1` to `t + 2` and `2 * t + 1`. -/
+theorem divWeight_succ_iff_normalized_factor (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D t : ℕ) :
+    DivWeightLe_succ H x₀ R hHyp hH D t ↔
+      ∃ a : 𝒪 H,
+        βHensel H x₀ R hHyp (t + 1)
+          = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+          weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 := by
+  have hξ : 2 * (t + 1) - 1 = 2 * t + 1 := by omega
+  have hW : t + 1 + 1 = t + 2 := by omega
+  simp [DivWeightLe_succ, hξ, hW]
+
 /-! ### 1′. The two halves of the `𝕃 ↔ 𝒪` bridge
 
 -/
@@ -749,6 +772,8 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.zero
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.succ
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_iff_cases
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_zero_iff_W𝒪_factor
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_succ_iff_normalized_factor
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.embeddingOf𝒪Into𝕃_W𝒪
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_eq_alpha_mul_of_lift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alpha_eq_embedding_of_fact
