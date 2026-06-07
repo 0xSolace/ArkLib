@@ -449,61 +449,34 @@ noncomputable def paperTranscriptChallenge {M : ℕ} {ιs : Fin (M + 1) → Type
   (paperTranscriptFullTranscript P d T).challenges i
 
 omit [Field F] [SampleableType F] in
-@[simp] theorem paperTranscriptFullTranscript_apply_slot {M : ℕ}
+theorem paperTranscriptFullTranscript_apply_slot_heq {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
     (slot : PaperTranscriptSlot P) :
-    paperTranscriptFullTranscript P d T (paperTranscriptSlotIndex slot) =
-      paperTranscriptSlotPayload P d T slot := by
-  simp [paperTranscriptFullTranscript, paperTranscriptSlotIndex]
+    HEq (paperTranscriptFullTranscript P d T (paperTranscriptSlotIndex slot))
+      (paperTranscriptSlotPayload P d T slot) := by
+  rw [show slot =
+      (Fintype.equivFin (PaperTranscriptSlot P)).symm (paperTranscriptSlotIndex slot) by
+    simp [paperTranscriptSlotIndex]]
+  exact HEq.rfl
 
 omit [Field F] [SampleableType F] in
-@[simp] theorem paperTranscriptMessage_initialSumcheck {M : ℕ}
-    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
-    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
-    (s : Fin (P.foldingParam 0)) :
-    paperTranscriptMessage P d T (initialSumcheckMessageIdx P d s) =
-      initialSumcheckMessagePayload P d s (T.initialSumcheckMessage s) := by
-  simp [paperTranscriptMessage, initialSumcheckMessagePayload, initialSumcheckMessageIdx,
-    paperMessageIdx, paperTranscriptFullTranscript, paperTranscriptSlotIndex]
-
-omit [Field F] [SampleableType F] in
-@[simp] theorem paperTranscriptMessage_mainFoldedOracle {M : ℕ}
+theorem paperTranscriptMessage_mainFoldedOracle_heq {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) (i : Fin M) :
-    paperTranscriptMessage P d T (mainFoldedOracleMessageIdx P d i) =
-      mainFoldedOraclePayload P d i (T.mainFoldedOracle i) := by
+    HEq (paperTranscriptMessage P d T (mainFoldedOracleMessageIdx P d i))
+      (mainFoldedOraclePayload P d i (T.mainFoldedOracle i)) := by
   simp [paperTranscriptMessage, mainFoldedOraclePayload, mainFoldedOracleMessageIdx,
-    paperMessageIdx, paperTranscriptFullTranscript, paperTranscriptSlotIndex]
+    paperMessageIdx, ProtocolSpec.FullTranscript.messages]
 
 omit [Field F] [SampleableType F] in
-@[simp] theorem paperTranscriptMessage_mainOutOfDomainReply {M : ℕ}
+theorem paperTranscriptMessage_mainOutOfDomainReply_heq {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) (i : Fin M) :
-    paperTranscriptMessage P d T (mainOutOfDomainReplyMessageIdx P d i) =
-      mainOutOfDomainReplyPayload P d i (T.mainOutOfDomainReply i) := by
+    HEq (paperTranscriptMessage P d T (mainOutOfDomainReplyMessageIdx P d i))
+      (mainOutOfDomainReplyPayload P d i (T.mainOutOfDomainReply i)) := by
   simp [paperTranscriptMessage, mainOutOfDomainReplyPayload, mainOutOfDomainReplyMessageIdx,
-    paperMessageIdx, paperTranscriptFullTranscript, paperTranscriptSlotIndex]
-
-omit [Field F] [SampleableType F] in
-@[simp] theorem paperTranscriptMessage_mainSumcheck {M : ℕ}
-    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
-    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) (i : Fin M)
-    (s : Fin (P.foldingParam i.succ)) :
-    paperTranscriptMessage P d T (mainSumcheckMessageIdx P d i s) =
-      mainSumcheckMessagePayload P d i s (T.mainSumcheckMessage i s) := by
-  simp [paperTranscriptMessage, mainSumcheckMessagePayload, mainSumcheckMessageIdx,
-    paperMessageIdx, paperTranscriptFullTranscript, paperTranscriptSlotIndex]
-
-omit [Field F] [SampleableType F] in
-@[simp] theorem paperTranscriptMessage_finalPolynomial {M : ℕ}
-    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
-    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) :
-    paperTranscriptMessage P d T (finalPolynomialMessageIdx P d) =
-      finalPolynomialPayload P d T.finalPolynomial := by
-  simp [paperTranscriptMessage, finalPolynomialPayload, finalPolynomialMessageIdx,
-    paperMessageIdx, paperTranscriptFullTranscript, paperTranscriptSlotIndex,
-    paperTranscriptSlotPayload]
+    paperMessageIdx, ProtocolSpec.FullTranscript.messages]
 
 omit [Field F] [SampleableType F] in
 /-- A prover-side adapter that emits the prover-message slots from supplied paper transcript data.
