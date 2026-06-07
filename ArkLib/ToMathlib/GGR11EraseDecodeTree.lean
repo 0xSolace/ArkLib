@@ -129,6 +129,21 @@ mutual
     | t :: ts => redBranchingLe L t ∧ redBranchingLeList L ts
 end
 
+mutual
+  /-- Maximum Red out-degree over all nodes of an Erase-Decode tree. -/
+  def redBranching : EraseDecodeTree → ℕ
+    | leaf => 0
+    | node b rs => max (redBranchingOption b) (max rs.length (redBranchingList rs))
+
+  def redBranchingOption : Option EraseDecodeTree → ℕ
+    | none => 0
+    | some t => redBranching t
+
+  def redBranchingList : List EraseDecodeTree → ℕ
+    | [] => 0
+    | t :: ts => max (redBranching t) (redBranchingList ts)
+end
+
 @[simp] theorem leafCount_leaf : leafCount leaf = 1 := by rw [leafCount]
 
 @[simp] theorem blueDepth_leaf : blueDepth leaf = 0 := by rw [blueDepth]
@@ -211,6 +226,27 @@ theorem redBranchingLe_node (L : ℕ∞) (b : Option EraseDecodeTree)
           redBranchingLeList L rs := by
   rw [redBranchingLe]
 
+@[simp] theorem redBranching_leaf : redBranching leaf = 0 := by rw [redBranching]
+
+@[simp] theorem redBranchingOption_none : redBranchingOption none = 0 := by
+  rw [redBranchingOption]
+
+@[simp] theorem redBranchingOption_some (t : EraseDecodeTree) :
+    redBranchingOption (some t) = redBranching t := by
+  rw [redBranchingOption]
+
+@[simp] theorem redBranchingList_nil : redBranchingList [] = 0 := by
+  rw [redBranchingList]
+
+@[simp] theorem redBranchingList_cons (t : EraseDecodeTree) (ts : List EraseDecodeTree) :
+    redBranchingList (t :: ts) = max (redBranching t) (redBranchingList ts) := by
+  rw [redBranchingList]
+
+theorem redBranching_node (b : Option EraseDecodeTree) (rs : List EraseDecodeTree) :
+    redBranching (node b rs)
+      = max (redBranchingOption b) (max rs.length (redBranchingList rs)) := by
+  rw [redBranching]
+
 /-- Red-branching bounds are monotone in the allowed branching budget. -/
 theorem redBranchingLe_mono {L L' : ℕ∞} (hLL : L ≤ L') (t : EraseDecodeTree) :
     redBranchingLe L t → redBranchingLe L' t := by
@@ -231,6 +267,86 @@ theorem redBranchingLe_mono {L L' : ℕ∞} (hLL : L ≤ L') (t : EraseDecodeTre
   · intro t ts iht ihts hbr
     rw [redBranchingLeList_cons] at hbr ⊢
     exact ⟨iht hbr.1, ihts hbr.2⟩
+
+/-- Option-child Red-branching bounds are monotone in the allowed branching budget. -/
+theorem redBranchingLeOption_mono {L L' : ℕ∞} (hLL : L ≤ L')
+    (b : Option EraseDecodeTree) :
+    redBranchingLeOption L b → redBranchingLeOption L' b := by
+  cases b with
+  | none =>
+      intro _
+      simp
+  | some t =>
+      intro hbr
+      rw [redBranchingLeOption_some] at hbr ⊢
+      exact redBranchingLe_mono hLL t hbr
+
+/-- Red-child-list branching bounds are monotone in the allowed branching budget. -/
+theorem redBranchingLeList_mono {L L' : ℕ∞} (hLL : L ≤ L')
+    (rs : List EraseDecodeTree) :
+    redBranchingLeList L rs → redBranchingLeList L' rs := by
+  induction rs with
+  | nil =>
+      intro _
+      simp
+  | cons t ts ih =>
+      intro hbr
+      rw [redBranchingLeList_cons] at hbr ⊢
+      exact ⟨redBranchingLe_mono hLL t hbr.1, ih hbr.2⟩
+
+/-- Every concrete tree satisfies the Red-branching predicate at its own maximum Red out-degree. -/
+theorem redBranchingLe_redBranching (t : EraseDecodeTree) :
+    redBranchingLe (redBranching t : ℕ∞) t := by
+  refine (EraseDecodeTree.rec
+    (motive_1 := fun t => redBranchingLe (redBranching t : ℕ∞) t)
+    (motive_2 := fun b =>
+      redBranchingLeOption (redBranchingOption b : ℕ∞) b)
+    (motive_3 := fun rs =>
+      redBranchingLeList (redBranchingList rs : ℕ∞) rs)
+    ?leaf ?node ?none ?some ?nil ?cons) t
+  · simp
+  · intro b rs ihb ihrs
+    rw [redBranchingLe_node]
+    have hb_nat : redBranchingOption b ≤ redBranching (node b rs) := by
+      rw [redBranching_node]
+      exact Nat.le_max_left _ _
+    have hlen_nat : rs.length ≤ redBranching (node b rs) := by
+      rw [redBranching_node]
+      exact le_trans (Nat.le_max_left _ _) (Nat.le_max_right _ _)
+    have hrs_nat : redBranchingList rs ≤ redBranching (node b rs) := by
+      rw [redBranching_node]
+      exact le_trans (Nat.le_max_right _ _) (Nat.le_max_right _ _)
+    have hb : (redBranchingOption b : ℕ∞) ≤ (redBranching (node b rs) : ℕ∞) := by
+      exact_mod_cast hb_nat
+    have hlen : (rs.length : ℕ∞) ≤ (redBranching (node b rs) : ℕ∞) := by
+      exact_mod_cast hlen_nat
+    have hrs : (redBranchingList rs : ℕ∞) ≤ (redBranching (node b rs) : ℕ∞) := by
+      exact_mod_cast hrs_nat
+    exact ⟨redBranchingLeOption_mono hb b ihb, hlen, redBranchingLeList_mono hrs rs ihrs⟩
+  · simp
+  · intro t iht
+    simpa using iht
+  · simp
+  · intro t ts iht ihts
+    rw [redBranchingLeList_cons]
+    have ht_nat : redBranching t ≤ redBranchingList (t :: ts) := by
+      rw [redBranchingList_cons]
+      exact Nat.le_max_left _ _
+    have hts_nat : redBranchingList ts ≤ redBranchingList (t :: ts) := by
+      rw [redBranchingList_cons]
+      exact Nat.le_max_right _ _
+    have ht : (redBranching t : ℕ∞) ≤ (redBranchingList (t :: ts) : ℕ∞) := by
+      exact_mod_cast ht_nat
+    have hts : (redBranchingList ts : ℕ∞) ≤ (redBranchingList (t :: ts) : ℕ∞) := by
+      exact_mod_cast hts_nat
+    exact ⟨redBranchingLe_mono ht t iht, redBranchingLeList_mono hts ts ihts⟩
+
+/-- If a budget dominates a tree's computed maximum Red out-degree, it satisfies
+`redBranchingLe` for that budget. -/
+theorem redBranchingLe_of_redBranching_le {L : ℕ∞} {t : EraseDecodeTree}
+    (h : (t.redBranching : ℕ∞) ≤ L) :
+    t.redBranchingLe L :=
+  redBranchingLe_mono h t (redBranchingLe_redBranching t)
 
 end EraseDecodeTree
 
@@ -475,6 +591,21 @@ noncomputable def treeWitness_of_concreteEraseDecodeTree_of_redBranchingLe_le
   treeWitness_of_concreteEraseDecodeTree hLambda f tree hdom hbd hrd
     (EraseDecodeTree.redBranchingLe_mono hL_le tree hbr)
 
+/-- Constructor-facing witness adapter from the tree's computed maximum Red out-degree. Future
+Algorithm-1 builders may prove the numeric inequality `tree.redBranching ≤ Λ(C,δ)` and avoid
+carrying the recursive `redBranchingLe` predicate separately. -/
+noncomputable def treeWitness_of_concreteEraseDecodeTree_of_redBranching_le
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hLambda : 1 ≤ Lambda C δ)
+    (f : Matrix ι (Fin m) F) (tree : EraseDecodeTree)
+    (hdom :
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+          ≤ tree.leafCount)
+    (hbd : tree.blueDepth ≤ b) (hrd : tree.redDepth ≤ r)
+    (hbr : (tree.redBranching : ℕ∞) ≤ Lambda C δ) :
+    GGR11TreeWitness C δ m b r f :=
+  treeWitness_of_concreteEraseDecodeTree hLambda f tree hdom hbd hrd
+    (EraseDecodeTree.redBranchingLe_of_redBranching_le hbr)
+
 /-- A single concrete Erase-Decode tree supplies a named GGR11 witness at its own exact Blue/Red
 depths. This is the constructor-facing form for future Algorithm-1 tree builders: they only need
 to provide leaf domination and Red-branching, and the depth indices are read from the tree. -/
@@ -501,6 +632,18 @@ noncomputable def treeWitness_of_concreteEraseDecodeTree_self_of_redBranchingLe_
     GGR11TreeWitness C δ m tree.blueDepth tree.redDepth f :=
   treeWitness_of_concreteEraseDecodeTree_self hLambda f tree hdom
     (EraseDecodeTree.redBranchingLe_mono hL_le tree hbr)
+
+/-- Exact-depth witness adapter from the tree's computed maximum Red out-degree. -/
+noncomputable def treeWitness_of_concreteEraseDecodeTree_self_of_redBranching_le
+    {C : Set (ι → F)} {δ : ℝ} {m : ℕ} (hLambda : 1 ≤ Lambda C δ)
+    (f : Matrix ι (Fin m) F) (tree : EraseDecodeTree)
+    (hdom :
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+          ≤ tree.leafCount)
+    (hbr : (tree.redBranching : ℕ∞) ≤ Lambda C δ) :
+    GGR11TreeWitness C δ m tree.blueDepth tree.redDepth f :=
+  treeWitness_of_concreteEraseDecodeTree_self hLambda f tree hdom
+    (EraseDecodeTree.redBranchingLe_of_redBranching_le hbr)
 
 /-- Concrete Erase-Decode tree existence, with no preselected depth budgets, supplies some exact
 GGR11 witness indexed by the tree's own Blue/Red depths. -/
@@ -534,6 +677,22 @@ theorem treeWitness_of_eraseDecodeTree_self_of_redBranchingLe_le
     ⟨tree.blueDepth, tree.redDepth,
       ⟨treeWitness_of_concreteEraseDecodeTree_self_of_redBranchingLe_le
         hLambda f tree hdom hL_le hbr⟩⟩
+
+/-- Concrete Erase-Decode tree existence with its computed maximum Red out-degree bounded by
+`Λ(C,δ)` supplies some exact-depth GGR11 witness. -/
+theorem treeWitness_of_eraseDecodeTree_self_of_redBranching_le
+    {C : Set (ι → F)} {δ : ℝ} {m : ℕ} (hLambda : 1 ≤ Lambda C δ)
+    {f : Matrix ι (Fin m) F}
+    (H : ∃ t : EraseDecodeTree,
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+          ≤ t.leafCount ∧
+      (t.redBranching : ℕ∞) ≤ Lambda C δ) :
+    ∃ b r : ℕ, Nonempty (GGR11TreeWitness C δ m b r f) := by
+  obtain ⟨tree, hdom, hbr⟩ := H
+  exact
+    ⟨tree.blueDepth, tree.redDepth,
+      ⟨treeWitness_of_concreteEraseDecodeTree_self_of_redBranching_le
+        hLambda f tree hdom hbr⟩⟩
 
 /-- Concrete Erase-Decode tree existence supplies the named per-word GGR11 witness.
 
@@ -626,6 +785,22 @@ theorem treeWitness_of_eraseDecodeTree_of_redBranchingLe_le
     ⟨treeWitness_of_concreteEraseDecodeTree_of_redBranchingLe_le
       (L := L) hLambda f tree hdom hbd hrd hL_le hbr⟩
 
+/-- Concrete Erase-Decode tree existence with its computed maximum Red out-degree bounded by
+`Λ(C,δ)` supplies the named per-word GGR11 witness. -/
+theorem treeWitness_of_eraseDecodeTree_of_redBranching_le
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hLambda : 1 ≤ Lambda C δ)
+    {f : Matrix ι (Fin m) F}
+    (H : ∃ t : EraseDecodeTree,
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+          ≤ t.leafCount ∧
+      t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧
+      (t.redBranching : ℕ∞) ≤ Lambda C δ) :
+    Nonempty (GGR11TreeWitness C δ m b r f) := by
+  obtain ⟨tree, hdom, hbd, hrd, hbr⟩ := H
+  exact
+    ⟨treeWitness_of_concreteEraseDecodeTree_of_redBranching_le
+      hLambda f tree hdom hbd hrd hbr⟩
+
 /-- Uniform concrete Erase-Decode trees with a sharper local Red-branching budget supply the named
 GGR11 frontier whenever the local budget is at most `Λ(C,δ)`. -/
 theorem treeFrontier_of_eraseDecodeTree_of_redBranchingLe_le
@@ -639,6 +814,20 @@ theorem treeFrontier_of_eraseDecodeTree_of_redBranchingLe_le
     GGR11TreeFrontier C δ m b r := by
   intro f
   exact treeWitness_of_eraseDecodeTree_of_redBranchingLe_le hLambda hL_le (H f)
+
+/-- Uniform concrete Erase-Decode trees with computed Red branching bounded by `Λ(C,δ)` supply
+the named GGR11 frontier. -/
+theorem treeFrontier_of_eraseDecodeTree_of_redBranching_le
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hLambda : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      ∃ t : EraseDecodeTree,
+        (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+            ≤ t.leafCount ∧
+        t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧
+        (t.redBranching : ℕ∞) ≤ Lambda C δ) :
+    GGR11TreeFrontier C δ m b r := by
+  intro f
+  exact treeWitness_of_eraseDecodeTree_of_redBranching_le hLambda (H f)
 
 /-- Uniform concrete Erase-Decode trees with a sharper local Red-branching budget discharge the
 abstract GGR11 tree-structure residual after monotone lifting to `Λ(C,δ)`. -/
@@ -654,6 +843,19 @@ theorem treeStructure_of_eraseDecodeTree_of_redBranchingLe_le
   treeStructure_of_frontier
     (treeFrontier_of_eraseDecodeTree_of_redBranchingLe_le hLambda hL_le H)
 
+/-- Concrete trees whose computed Red branching is bounded by `Λ(C,δ)` discharge the abstract
+GGR11 tree-structure residual. -/
+theorem treeStructure_of_eraseDecodeTree_of_redBranching_le
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hLambda : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      ∃ t : EraseDecodeTree,
+        (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+            ≤ t.leafCount ∧
+        t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧
+        (t.redBranching : ℕ∞) ≤ Lambda C δ) :
+    GGR11TreeStructure C δ m b r :=
+  treeStructure_of_frontier (treeFrontier_of_eraseDecodeTree_of_redBranching_le hLambda H)
+
 /-- Concrete trees with a sharper local Red-branching budget, exposed at the per-word GGR11 bound
 surface. -/
 theorem perWordBound_of_eraseDecodeTree_of_redBranchingLe_le
@@ -668,6 +870,19 @@ theorem perWordBound_of_eraseDecodeTree_of_redBranchingLe_le
   perWordBound_of_treeFrontier
     (treeFrontier_of_eraseDecodeTree_of_redBranchingLe_le hLambda hL_le H)
 
+/-- Concrete trees with computed Red branching bounded by `Λ(C,δ)`, exposed at the per-word GGR11
+bound surface. -/
+theorem perWordBound_of_eraseDecodeTree_of_redBranching_le
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hLambda : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      ∃ t : EraseDecodeTree,
+        (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+            ≤ t.leafCount ∧
+        t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧
+        (t.redBranching : ℕ∞) ≤ Lambda C δ) :
+    GGR11PerWordBound C δ m b r :=
+  perWordBound_of_treeFrontier (treeFrontier_of_eraseDecodeTree_of_redBranching_le hLambda H)
+
 /-- End-to-end GGR11 bound from concrete trees with a sharper local Red-branching budget. -/
 theorem lambda_le_ggr11_of_eraseDecodeTree_of_redBranchingLe_le
     {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hLambda : 1 ≤ Lambda C δ)
@@ -681,6 +896,21 @@ theorem lambda_le_ggr11_of_eraseDecodeTree_of_redBranchingLe_le
       ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
   lambda_le_ggr11_of_treeFrontier
     (treeFrontier_of_eraseDecodeTree_of_redBranchingLe_le hLambda hL_le H)
+
+/-- End-to-end GGR11 bound from concrete trees whose computed Red branching is bounded by
+`Λ(C,δ)`. -/
+theorem lambda_le_ggr11_of_eraseDecodeTree_of_redBranching_le
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hLambda : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      ∃ t : EraseDecodeTree,
+        (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+            ≤ t.leafCount ∧
+        t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧
+        (t.redBranching : ℕ∞) ≤ Lambda C δ) :
+    Lambda (Code.interleavedCodeSet (κ := Fin m) C) δ
+      ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
+  lambda_le_ggr11_of_treeFrontier
+    (treeFrontier_of_eraseDecodeTree_of_redBranching_le hLambda H)
 
 /-- The one-close-codeword regime supplies the exact concrete-tree existence hypothesis used by
 `treeStructure_of_eraseDecodeTree`: choose the leaf tree for every received word. -/
@@ -749,22 +979,34 @@ theorem lambda_le_ggr11_of_leaf_close_le_one
 #print axioms EraseDecodeTree.leafCount_le
 #print axioms EraseDecodeTree.leafCount_le_self
 #print axioms EraseDecodeTree.redBranchingLe_mono
+#print axioms EraseDecodeTree.redBranchingLeOption_mono
+#print axioms EraseDecodeTree.redBranchingLeList_mono
+#print axioms EraseDecodeTree.redBranchingLe_redBranching
+#print axioms EraseDecodeTree.redBranchingLe_of_redBranching_le
 #print axioms treeWitness_of_concreteEraseDecodeTree
 #print axioms treeWitness_of_concreteEraseDecodeTree_of_redBranchingLe_le
+#print axioms treeWitness_of_concreteEraseDecodeTree_of_redBranching_le
 #print axioms treeWitness_of_concreteEraseDecodeTree_self
 #print axioms treeWitness_of_concreteEraseDecodeTree_self_of_redBranchingLe_le
+#print axioms treeWitness_of_concreteEraseDecodeTree_self_of_redBranching_le
 #print axioms treeWitness_of_eraseDecodeTree_self
 #print axioms treeWitness_of_eraseDecodeTree_self_of_redBranchingLe_le
+#print axioms treeWitness_of_eraseDecodeTree_self_of_redBranching_le
 #print axioms treeWitness_of_eraseDecodeTree
 #print axioms treeStructure_of_eraseDecodeTree
 #print axioms treeFrontier_of_eraseDecodeTree
 #print axioms perWordBound_of_eraseDecodeTree
 #print axioms lambda_le_ggr11_of_eraseDecodeTree
 #print axioms treeWitness_of_eraseDecodeTree_of_redBranchingLe_le
+#print axioms treeWitness_of_eraseDecodeTree_of_redBranching_le
 #print axioms treeFrontier_of_eraseDecodeTree_of_redBranchingLe_le
+#print axioms treeFrontier_of_eraseDecodeTree_of_redBranching_le
 #print axioms treeStructure_of_eraseDecodeTree_of_redBranchingLe_le
+#print axioms treeStructure_of_eraseDecodeTree_of_redBranching_le
 #print axioms perWordBound_of_eraseDecodeTree_of_redBranchingLe_le
+#print axioms perWordBound_of_eraseDecodeTree_of_redBranching_le
 #print axioms lambda_le_ggr11_of_eraseDecodeTree_of_redBranchingLe_le
+#print axioms lambda_le_ggr11_of_eraseDecodeTree_of_redBranching_le
 #print axioms eraseDecodeTreeExists_of_leaf_close_le_one
 #print axioms treeStructure_of_leaf_close_le_one
 #print axioms treeWitness_of_leaf_close_le_one
