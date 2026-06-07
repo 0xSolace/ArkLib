@@ -31,7 +31,7 @@ Finally `((|F|-1)/|F|) ≤ 1` gives the stated mass bound.
 -/
 
 open scoped NNReal ENNReal ProbabilityTheory BigOperators
-open ProximityGap
+open ProximityGap ProbabilityTheory
 
 namespace CodingTheory
 
@@ -58,20 +58,19 @@ theorem pr_relDist_le_epsCA_of_lt_covering
       Pr_{let u ← $ᵖ (ι → F)}[δᵣ(u, (C : Set (ι → F))) ≤ δ]
         = ∑ u₀ : ι → F, (Fintype.card (ι → F) : ℝ≥0∞)⁻¹ *
             Pr_{let γ ← $ᵖ F}[δᵣ(u₀ + γ • w, (C : Set (ι → F))) ≤ δ] := by
-    simp_rw [Pr_eq_tsum_indicator, tsum_fintype, PMF.uniformOfFintype_apply]
+    simp_rw [ProbabilityTheory.Pr_eq_tsum_indicator, tsum_fintype, PMF.uniformOfFintype_apply]
     exact (ArkLib.sum_uniform_line_indicator_eq
-      (fun u => δᵣ(u, (C : Set (ι → F))) ≤ δ) w).symm
+      (fun u => Code.relDistFromCode u (C : Set (ι → F)) ≤ (δ : ENNReal)) w).symm
   rw [hPr_eq]
-  refine le_trans (ArkLib.sum_uniform_mul_le_iSup _) ?_
-  refine iSup_le (fun u₀ => ?_)
-  have hbody :
-      Pr_{let γ ← $ᵖ F}[δᵣ(u₀ + γ • w, (C : Set (ι → F))) ≤ δ]
-        = (if Code.jointProximity (C : Set (ι → F)) (Code.finMapTwoWords u₀ w) δ then (0 : ENNReal)
-            else Pr_{let γ ← $ᵖ F}[δᵣ((Code.finMapTwoWords u₀ w) 0
-                  + γ • (Code.finMapTwoWords u₀ w) 1, (C : Set (ι → F))) ≤ δ]) := by
-    rw [if_neg (hnojoint u₀)]
-  rw [hbody]
-  exact le_iSup _ (Code.finMapTwoWords u₀ w)
+  refine le_trans (ArkLib.sum_uniform_mul_le_iSup _) (iSup_le (fun u₀ => ?_))
+  have e0 : (Code.finMapTwoWords u₀ w) (0 : Fin 2) = u₀ := rfl
+  have e1 : (Code.finMapTwoWords u₀ w) (1 : Fin 2) = w := rfl
+  refine le_trans (le_of_eq ?_)
+    (le_iSup (fun (u : Code.WordStack F (Fin 2) ι) =>
+      if Code.jointProximity (C : Set (ι → F)) u δ then (0 : ENNReal)
+      else Pr_{let γ ← $ᵖ F}[δᵣ(u 0 + γ • u 1, (C : Set (ι → F))) ≤ δ])
+      (Code.finMapTwoWords u₀ w))
+  rw [if_neg (hnojoint u₀), e0, e1]
 
 /-- **ABF26 Lemma 4.19 / DG25 Theorem 2.5.** The covering-radius sampling lower bound for `ε_ca`. -/
 theorem linear_epsCA_sampling_dg25_mass_le_epsCA
