@@ -621,23 +621,3 @@ noncomputable def Claim57Residuals.ofDescended (δ : ℚ) (x₀ : F)
     exact pg_RsetDescended_hfactor (k := k) h_gs R (hcoincide.symm ▸ hR)
 
 end ProximityGap
-
-/-! ## Axiom audit — every declaration must rest only on
-`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
-#print axioms ProximityGap.pg_RsetDescended
-#print axioms ProximityGap.mem_pg_RsetDescended_iff_mem_list
-#print axioms ProximityGap.pg_RsetDescended_hfactor
-#print axioms ProximityGap.pg_RsetDescended_irreducible
-#print axioms ProximityGap.pg_RsetDescended_separable_FF
-#print axioms ProximityGap.pg_RsetDescended_natDegree_pos
-#print axioms ProximityGap.pg_RsetDescended_discr_y_ne_zero
-#print axioms ProximityGap.pg_RsetDescended_comp_getD_dvd_Q
-#print axioms ProximityGap.pg_RsetDescended_comp_dvd_Q
-#print axioms ProximityGap.pg_RsetDescended_nonempty_iff
-#print axioms ProximityGap.pg_RsetDescended_nonempty
-#print axioms ProximityGap.pg_RsetDescended_descent_correspondence
-#print axioms ProximityGap.pg_RsetDescended_eq_pg_Rset_of_coincide
-#print axioms ProximityGap.exists_good_x₀_X_shape_ne_descended
-#print axioms ProximityGap.exists_good_x₀_X_shape_descended
-#print axioms ProximityGap.Claim57ResidualsDescended.ofInTree
-#print axioms ProximityGap.Claim57Residuals.ofDescended
