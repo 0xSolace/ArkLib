@@ -80,4 +80,47 @@ theorem exists_bivariate_interpolant {J : Type*} [Fintype J] (d₀ d₁ : ℕ) (
   · intro j
     exact congrFun (LinearMap.mem_ker.mp hABmem) j
 
+/-- **General bivariate interpolation existence (the `(X × Z)` grid).**  Given `N` points
+`(xₖ, zₖ)` with `N < (dX+1)(dZ+1)`, there is a nonzero bidegree-`(≤ dX, ≤ dZ)` bivariate polynomial
+`Q(X, Z) = ∑ⱼ Qⱼ(X)·Zʲ` (each `Qⱼ` of degree `< dX+1`, not all zero) vanishing at every grid point:
+`∑ⱼ Qⱼ(xₖ)·zₖʲ = 0`.  The bidegree space `Fin (dZ+1) → degreeLT (dX+1)` has dimension
+`(dX+1)(dZ+1) > N`, so the evaluation map's kernel is nontrivial.  This is the Polishchuk–Spielman /
+Sudan / Guruswami–Sudan interpolation engine — the 2-D foundation of the BCIKS20 exact-radius
+bivariate lift and of list decoding. -/
+theorem exists_bivariate_interpolant_general {J : Type*} [Fintype J] (dX dZ : ℕ) (x z : J → F)
+    (hJ : Fintype.card J < (dX + 1) * (dZ + 1)) :
+    ∃ Q : Fin (dZ + 1) → F[X], (∀ j, Q j ∈ degreeLT F (dX + 1)) ∧ (∃ j, Q j ≠ 0) ∧
+      ∀ k, ∑ j : Fin (dZ + 1), (Q j).eval (x k) * (z k) ^ (j : ℕ) = 0 := by
+  classical
+  haveI : FiniteDimensional F (degreeLT F (dX + 1)) :=
+    LinearEquiv.finiteDimensional (degreeLTEquiv F (dX + 1)).symm
+  -- the evaluation map on the bidegree space `Fin (dZ+1) → degreeLT (dX+1)`
+  let T : (Fin (dZ + 1) → degreeLT F (dX + 1)) →ₗ[F] (J → F) :=
+    { toFun := fun Q k => ∑ j : Fin (dZ + 1), (Q j).val.eval (x k) * (z k) ^ (j : ℕ)
+      map_add' := by
+        intro a b; funext k
+        simp only [Pi.add_apply, Submodule.coe_add, eval_add]
+        rw [← Finset.sum_add_distrib]
+        exact Finset.sum_congr rfl fun j _ => by ring
+      map_smul' := by
+        intro c a; funext k
+        simp only [Pi.smul_apply, SetLike.val_smul, smul_eq_C_mul, eval_mul, eval_C,
+          RingHom.id_apply, smul_eq_mul, Finset.mul_sum]
+        exact Finset.sum_congr rfl fun j _ => by ring }
+  have hdim : Module.finrank F (J → F)
+      < Module.finrank F (Fin (dZ + 1) → degreeLT F (dX + 1)) := by
+    rw [Module.finrank_fintype_fun_eq_card, Module.finrank_pi_fintype]
+    simp only [finrank_degreeLT, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+      smul_eq_mul]
+    exact lt_of_lt_of_eq hJ (Nat.mul_comm _ _)
+  have hker : LinearMap.ker T ≠ ⊥ := LinearMap.ker_ne_bot_of_finrank_lt hdim
+  obtain ⟨Q, hQmem, hQ0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hker
+  refine ⟨fun j => (Q j).val, fun j => (Q j).property, ?_, ?_⟩
+  · -- some coefficient is nonzero
+    by_contra h
+    push_neg at h
+    exact hQ0 (funext fun j => Subtype.ext (h j))
+  · intro k
+    exact congrFun (LinearMap.mem_ker.mp hQmem) k
+
 end Polynomial
