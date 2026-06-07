@@ -133,6 +133,29 @@ theorem restrictedFaaDiBrunoPartitionForm_zero_eq_zeroPowerSum
   simpa [restrictedFaaDiBrunoPartitionZeroPowerSum] using
     restrictedFaaDiBrunoPartitionForm_zero_eq_powerSum H x₀ R hHyp
 
+/-- The explicit surviving `t = 0` RHS target after the recursion partition branches collapse. -/
+def restrictedMatchRecursionPartitionZeroSingleBcoeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) : 𝕃 H :=
+  ClaimA2.ζ R x₀ H
+    * (embeddingOf𝒪Into𝕃 H (B_coeff H x₀ R 1 (Nat.Partition.indiscrete 0))
+      / ((liftToFunctionField (H := H) H.leadingCoeff) ^ 2
+          * embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)))
+
+/-- The order-zero RHS collapse, phrased through the named surviving single-`B_coeff` target. -/
+theorem restrictedMatchRecursionPartitionForm_zero_eq_singleBcoeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 =
+      restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp := by
+  unfold restrictedMatchRecursionPartitionForm restrictedMatchRecursionPartitionZeroSingleBcoeff
+  have hrange2 : Finset.range 2 = ({0, 1} : Finset ℕ) := by
+    ext n
+    simp
+    omega
+  rw [hrange2]
+  have hdefault : (default : Nat.Partition 0) = Nat.Partition.indiscrete 0 :=
+    ArkLib.Nat.Partition.eq_indiscrete_zero default
+  simp [deltaSave, sigmaLambda, hdefault]
+
 /-- At order zero, the normalized partition residual is exactly the surviving power-sum target
 against the recursion-side partition form. -/
 theorem restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_recursion
@@ -142,6 +165,16 @@ theorem restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_recursion
         restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 := by
   unfold RestrictedFaaDiBrunoPartitionMatchAt
   rw [restrictedFaaDiBrunoPartitionForm_zero_eq_zeroPowerSum H x₀ R hHyp]
+
+/-- At order zero, the normalized partition residual is exactly the surviving power-sum target
+against the single surviving recursion `B_coeff` term. -/
+theorem restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 ↔
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp := by
+  rw [restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_recursion H x₀ R hHyp,
+    restrictedMatchRecursionPartitionForm_zero_eq_singleBcoeff H x₀ R hHyp]
 
 /-- Build the fixed order-zero partition residual from the surviving power-sum equality. -/
 theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroPowerSum_eq_recursion
@@ -450,7 +483,10 @@ section AxiomAudit
 #print axioms restrictedFaaDiBrunoPartitionForm_zero_eq_powerSum
 #print axioms restrictedFaaDiBrunoPartitionZeroPowerSum
 #print axioms restrictedFaaDiBrunoPartitionForm_zero_eq_zeroPowerSum
+#print axioms restrictedMatchRecursionPartitionZeroSingleBcoeff
+#print axioms restrictedMatchRecursionPartitionForm_zero_eq_singleBcoeff
 #print axioms restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_recursion
+#print axioms restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff
 #print axioms RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroPowerSum_eq_recursion
 #print axioms zeroPowerSum_eq_recursion_of_partitionMatchAt_zero
 #print axioms restrictedMatchAt_zero_iff_zeroPowerSum_eq_recursion
