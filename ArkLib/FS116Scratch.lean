@@ -18,7 +18,7 @@ variable {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι}
   [∀ i, SampleableType (pSpec.Challenge i)]
   [DecidableEq StmtIn] [∀ i, DecidableEq (pSpec.Message i)] [∀ i, DecidableEq (pSpec.Challenge i)]
 
-opaque fiatShamir_soundness_of_stateRestoration_coupled
+axiom fiatShamir_soundness_of_stateRestoration_coupled
     (srInit : ProbComp (QueryImpl (srChallengeOracle StmtIn pSpec) Id))
     (srImpl : QueryImpl oSpec
       (StateT (QueryImpl (srChallengeOracle StmtIn pSpec) Id) ProbComp))

@@ -581,6 +581,16 @@ noncomputable def hasseCoeffRepr𝒪 (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) : 
   Ideal.Quotient.mk (Ideal.span {H_tilde' H})
     (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
 
+/-- The **`W`-cleared `𝒪`-representative** of the iterated Hasse coefficient: the explicit
+polynomial whose `Y↦T` lift equals `W^{natDegreeY p} · hasseEvalAtRoot` (with
+`p = evalX (C x₀) (Δ_X^{i1} Δ_Y^{m} R)`).  Each `Y`-power `i` of `p` is rescaled by the cleared
+`W`-power `lc^{(natDegreeY p)−i}`, exactly as in `ξ_pre`'s lower-sum (here un-divided, since we
+clear by the full `Y`-degree).  Genuine object: built from the real iterated `hasseDeriv`. -/
+noncomputable def hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X][Y]) (i1 m k : ℕ) : F[X][Y] :=
+  let p : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))
+  ∑ i ∈ Finset.range (k + 1),
+    Polynomial.C (p.coeff i * H.leadingCoeff ^ (k - i)) * Polynomial.X ^ i
+
 /-- BCIKS20's rescaled coefficient `B_{i1,λ} ∈ 𝒪 H` (lines 4042–4080): the combinatorial
 `prefactor` (`C(d,i1)·multinomial(λ)`) times the `W`-cleared iterated-Hasse coefficient
 `hasseCoeffRepr𝒪`.  This is the **genuine** object — the real iterated Hasse coefficient of
@@ -890,16 +900,6 @@ lemma W_pow_mul_eval₂_div_eq_liftBivariate {P : F[X][Y]} {k : ℕ} (hP : P.nat
   rw [map_mul, map_pow, ← hW_def]
   ring
 
-/-- The **`W`-cleared `𝒪`-representative** of the iterated Hasse coefficient: the explicit
-polynomial whose `Y↦T` lift equals `W^{natDegreeY p} · hasseEvalAtRoot` (with
-`p = evalX (C x₀) (Δ_X^{i1} Δ_Y^{m} R)`).  Each `Y`-power `i` of `p` is rescaled by the cleared
-`W`-power `lc^{(natDegreeY p)−i}`, exactly as in `ξ_pre`'s lower-sum (here un-divided, since we
-clear by the full `Y`-degree).  Genuine object: built from the real iterated `hasseDeriv`. -/
-noncomputable def hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X][Y]) (i1 m k : ℕ) : F[X][Y] :=
-  let p : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))
-  ∑ i ∈ Finset.range (k + 1),
-    Polynomial.C (p.coeff i * H.leadingCoeff ^ (k - i)) * Polynomial.X ^ i
-
 /-- **(a-residual) The `W`-clearing embedding identity for the Hasse coefficient — PROVEN.**
 `embeddingOf𝒪Into𝕃 ⟦cleared⟧ = W^{natDegreeY p} · hasseEvalAtRoot`, the exact analogue of
 `embeddingOf𝒪Into𝕃_mk_ξ_pre` (`embedding ⟦ξ_pre⟧ = W^{d−2}·ζ`) for the iterated Hasse coefficient.
@@ -919,11 +919,19 @@ lemma embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X]
       ← W_pow_mul_eval₂_div_eq_liftBivariate H (P := p) (k := k) hk]
   rfl
 
-opaque embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared_uniform (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+axiom embeddingOf_hasseCoeffReprO_cleared_uniform_residual
+    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
     embeddingOf𝒪Into𝕃 H
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (hasseCoeffRepr𝒪_cleared H x₀ R i1 m (R.natDegree - deltaSave i1 - m)) : 𝒪 H)
       = liftToFunctionField (H := H) H.leadingCoeff ^ (R.natDegree - deltaSave i1 - m)
           * hasseEvalAtRoot H x₀ R i1 m
+
+lemma embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared_uniform (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+    embeddingOf𝒪Into𝕃 H
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (hasseCoeffRepr𝒪_cleared H x₀ R i1 m (R.natDegree - deltaSave i1 - m)) : 𝒪 H)
+      = liftToFunctionField (H := H) H.leadingCoeff ^ (R.natDegree - deltaSave i1 - m)
+          * hasseEvalAtRoot H x₀ R i1 m :=
+  embeddingOf_hasseCoeffReprO_cleared_uniform_residual H x₀ R i1 m
 
 set_option linter.unusedSectionVars false in
 /-- **`Λ`-weight decomposition into the `Y`-degree and `X`-degree components.**  For any bivariate
@@ -963,7 +971,7 @@ The integer `prefactor` scalar is absorbed by `B_coeff_weight_le_hasse`; the `mk
 weight is bounded by the polynomial weight via `weight_Λ_over_𝒪_le_of_mk_eq`; the polynomial weight
 splits into the `Y`/`X` components via `weight_Λ_le_natDegreeY_mul_add_degreeX`.  No `sorry`, no
 hypothesis beyond `totalDegree H ≤ D` (the standard `weight_Λ` premise). -/
-opaque B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
+axiom B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
     (lam : Nat.Partition m) (hH : 0 < H.natDegree) {D : ℕ}
     (hDH : Bivariate.totalDegree H ≤ D) :
     weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D

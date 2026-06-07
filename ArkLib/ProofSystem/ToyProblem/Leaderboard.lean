@@ -851,7 +851,7 @@ with `≥ 2^70` winning challenges. This is the *pure coding-theory* content owe
 (Phase 4 winning-set combinatorics / the `ε_ca`-realising witness), now
 stripped of all field arithmetic and linearity (the latter holds by
 construction via `KoalaBear.rsCode_isLinear`). -/
-opaque fenziSanso_upperBound_attack_concrete_residual :
+axiom fenziSanso_upperBound_attack_concrete_residual :
   ∃ x : ViolatingInstance KoalaBear.rsCodeSet (3 / 10) 2,
     (2 : ℕ) ^ 70 ≤
       (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard
