@@ -623,6 +623,13 @@ theorem BCSOpeningLogFrontierSatisfied.retainedWitnesses
     log.schedule_has_retained_witnesses :=
   h.2
 
+/-- The typed opening-log frontier checklist is exactly its two named fields. -/
+theorem BCSOpeningLogFrontierSatisfied.iff_fields {CommitmentType : pSpec.MessageIdx → Type}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType} :
+    BCSOpeningLogFrontierSatisfied log ↔
+      log.schedule_realizes_query_log ∧ log.schedule_has_retained_witnesses :=
+  Iff.rfl
+
 /-- The remaining bridge from a discharged typed opening log to the abstract opening-phase
 realization field carried by `BCSCompiledPhases`.  The eventual generic compiler should prove this
 from the query-log API and the construction of the opening phase. -/
@@ -1427,6 +1434,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.intro
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.queryLog
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.retainedWitnesses
+#print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.iff_fields
 #print axioms OracleReduction.BCSOpeningLogBridge
 #print axioms OracleReduction.BCSOpeningLogBridge.apply
 #print axioms OracleReduction.BCSOpeningLogBridge.ofOpeningRealization
