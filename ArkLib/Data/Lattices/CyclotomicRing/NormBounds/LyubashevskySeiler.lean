@@ -53,6 +53,7 @@ The proof is a genuine piece of algebraic number theory, carried out here in ful
 * [Nguyen, N. K., and Seiler, G., *Greyhound: Fast Polynomial Commitments from Lattices*][NS24]
 * [Nguyen, N. K., O'Rourke, G., and Zhang, J., *Hachi: Efficient Lattice-Based Multilinear
     Polynomial Commitments over Extension Fields*][NOZ26]
+-/
 
 open scoped BigOperators
 
@@ -309,6 +310,7 @@ theorem eq_zero_of_dvd_X_pow_sub_C {β : ℕ} {s : ZMod q} (hs : s ^ 2 = -1)
       ← Finset.sum_add_distrib]
   -- Each term is `0`, so all coefficients vanish.
   have hterm0 : ∀ i, i < 2 ^ β → A i = 0 ∧ B i = 0 := by
+    intro i hi
     have hle : A i ^ 2 + B i ^ 2
         ≤ Rq.l2NormSq (powTwoCyclotomic (R := ZMod q) (β + 1)) c := by
       rw [hsplit]
