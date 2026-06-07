@@ -73,7 +73,7 @@ theorem not_jointProximity_zero_of_row_not_mem
   simp only [zero_mul, Nat.floor_zero, Nat.cast_zero, nonpos_iff_eq_zero] at hjp
   rw [distFromCode_eq_zero_iff_mem] at hjp
   -- `hjp : u.transpose ∈ interleavedCodeSet C`, i.e. every row of `u` is in `C`.
-  simp only [interleavedCodeSet, Set.mem_setOf_eq, Matrix.transpose_transpose] at hjp
+  simp only [interleavedCodeSet] at hjp
   exact hk (hjp k)
 
 /-- **General `NearCertainBadLine` producer (BGKS20 line-code construction).**
@@ -92,8 +92,10 @@ theorem nearCertainBadLine_of_line_code
   -- Each good line point is *exactly* in `C`, so its distance to `C` is `0 ≤ δ_fld`.
   have hmem : u 0 + γ • u 1 ∈ C := hΓ γ hγ
   have h0 : δᵣ(u 0 + γ • u 1, C) ≤ (0 : ENNReal) := by
+    have hself : δᵣ(u 0 + γ • u 1, u 0 + γ • u 1) = (0 : ℚ≥0) := by
+      simp [relHammingDist, hammingDist_self]
     refine le_trans (relDistFromCode_le_relDist_to_mem _ _ hmem) ?_
-    simp [relHammingDist, hammingDist_self]
+    rw [hself]; simp
   exact le_trans h0 (by positivity)
 
 /-- **T5.4 endpoint from the line-code producer.**

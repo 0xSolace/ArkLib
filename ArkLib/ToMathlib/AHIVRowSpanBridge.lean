@@ -166,3 +166,7 @@ lemma affineLine_prob_le_dOverQ
   exact_mod_cast hnum
 
 end ProximityToRS
+
+#print axioms ProximityToRS.affineLine_param_injective
+#print axioms ProximityToRS.affineLine_close_count_eq_numberOfClosePts
+#print axioms ProximityToRS.affineLine_prob_le_dOverQ

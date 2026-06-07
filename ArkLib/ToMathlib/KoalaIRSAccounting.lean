@@ -144,10 +144,9 @@ theorem hammingDist_rsEncoder_ge_three {m m' : Fin 2 → Sextic}
 coefficients. -/
 theorem rsEncoder_injective : Function.Injective rsEncoder := by
   intro m m' h
-  by_contra hne
-  have : 3 ≤ hammingDist (rsEncoder m) (rsEncoder m') :=
-    hammingDist_rsEncoder_ge_three (by rwa [h] at hne ⊢ |>.elim (fun _ => h) (fun _ => h) <;> exact h)
-  rw [h, hammingDist_self] at this
-  omega
+  have h0 : rsEncoder m 0 = rsEncoder m' 0 := by rw [h]
+  have h1 : rsEncoder m 1 = rsEncoder m' 1 := by rw [h]
+  obtain ⟨e0, e1⟩ := rsEncoder_agree_two_points_imp_eq (by decide : (0 : Fin 4) ≠ 1) h0 h1
+  funext k; fin_cases k <;> assumption
 
 end KoalaBear

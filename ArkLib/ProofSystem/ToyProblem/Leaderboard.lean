@@ -372,10 +372,10 @@ lower bound. -/
 theorem winningSetSoundness_le_toySoundnessError {k : ℕ} [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ)
     (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F), (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c)
-    (hResidual : winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := k) C δ hEnc)
     (hδ : δ < (minRelHammingDistCode C : ℝ≥0)) :
     winningSetSoundness (k := k) C δ ≤ toySoundnessError C δ t := by
-  exact le_trans (hResidual hδ) (le_max_left _ _)
+  have hL610 := winningSetSoundness_le_toySoundnessError_mcaSafe_residual C δ hEnc hδ
+  exact le_trans hL610 (le_max_left _ _)
 
 /-! ## Bits of security -/
 
