@@ -81,8 +81,13 @@ Current source exposes both sides of that frontier as named parts:
   `Fri.fri_query_soundness_lift_subdomainZero_to_domain` as Claim 8.3 lift
   front doors.
 - `Fri.Spec.Soundness.queryRoundError`, `queryError`, and `totalError` are
-  accounting definitions, but the FRI soundness theorem consuming them is still
-  deferred to sequential-composition/query-round infrastructure.
+  accounting definitions.  The projection lemmas
+  `Fri.Spec.roundError_sum_le_totalError`,
+  `Fri.Spec.roundError_le_totalError`, and
+  `Fri.Spec.queryError_le_totalError` show the fold-round and query
+  contributions are included in `totalError`; the FRI soundness theorem
+  consuming the full budget is still deferred to sequential-composition/query
+  infrastructure.
 
 ## Audit commands
 
