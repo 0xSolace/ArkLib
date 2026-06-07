@@ -77,6 +77,7 @@ import ArkLib.Data.CodingTheory.GVCounting
 import ArkLib.Data.CodingTheory.GilbertVarshamov
 import ArkLib.Data.CodingTheory.GuruswamiSudan
 import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
+import ArkLib.Data.CodingTheory.GuruswamiSudan.FeasibilityArith
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GuruswamiSudan
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ListSizeBound
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MonomialCount
@@ -233,6 +234,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25NonDegeneratePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSCoveredFraction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSNearBound
 import ArkLib.Data.CodingTheory.ProximityGap.CS25ReedSolomonHighDist
+import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentHighDist
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentIsolation
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentLinear
