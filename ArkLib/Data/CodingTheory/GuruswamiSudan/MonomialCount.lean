@@ -43,6 +43,42 @@ theorem card_monoIdx_ge_partial (k D t : ℕ) (ht : t ≤ D) :
   exact Finset.sum_le_sum_of_subset_of_nonneg
     (Finset.range_mono ht) (fun _ _ _ => Nat.zero_le _)
 
+/-- **Closed form of the partial monomial sum.** When the first `t` `Y`-exponents stay within the
+degree budget (`k·(t−1) ≤ D`, so no truncation), `∑_{b<t}(D − k·b) = t·D − k·t(t−1)/2` — the
+exact area of the GS staircase up to row `t`. -/
+theorem sum_range_sub_kb (k D t : ℕ) (ht : k * (t - 1) ≤ D) :
+    ∑ b ∈ Finset.range t, (D - k * b) = t * D - k * (t * (t - 1) / 2) := by
+  cases t with
+  | zero => simp
+  | succ s =>
+    have hb : ∀ b ∈ Finset.range (s + 1), k * b ≤ D := by
+      intro b hbmem
+      rw [Finset.mem_range] at hbmem
+      calc k * b ≤ k * s := Nat.mul_le_mul_left k (by omega)
+        _ ≤ D := by simpa using ht
+    have hadd : ∑ b ∈ Finset.range (s + 1), (D - k * b)
+        + ∑ b ∈ Finset.range (s + 1), (k * b) = ∑ _b ∈ Finset.range (s + 1), D := by
+      rw [← Finset.sum_add_distrib]
+      exact Finset.sum_congr rfl (fun b hbmem => Nat.sub_add_cancel (hb b hbmem))
+    rw [Finset.sum_const, Finset.card_range, smul_eq_mul] at hadd
+    have hgauss : ∑ b ∈ Finset.range (s + 1), b = (s + 1) * s / 2 := by
+      have h2 := Finset.sum_range_id_mul_two (s + 1)
+      simp only [Nat.add_sub_cancel] at h2
+      omega
+    have hkb : ∑ b ∈ Finset.range (s + 1), (k * b) = k * ((s + 1) * s / 2) := by
+      rw [← Finset.mul_sum, hgauss]
+    rw [hkb] at hadd
+    simp only [Nat.succ_sub_one]
+    omega
+
+/-- **Explicit triangle lower bound.** Combining the partial bound with its closed form: under
+`k·(t−1) ≤ D` and `t ≤ D`, `t·D − k·t(t−1)/2 ≤ (monoIdx k D).card`. Choosing `t ≈ D/k` gives the
+classical `≈ D²/(2k)` monomial count the GS regime checks against `n·m(m+1)/2`. -/
+theorem card_monoIdx_ge_triangle (k D t : ℕ) (htk : k * (t - 1) ≤ D) (ht : t ≤ D) :
+    t * D - k * (t * (t - 1) / 2) ≤ (monoIdx k D).card := by
+  rw [← sum_range_sub_kb k D t htk]
+  exact card_monoIdx_ge_partial k D t ht
+
 variable {F : Type*} [Field F]
 
 /-- **Directly-checkable GS interpolation feasibility.** If for some `t ≤ D` the partial monomial
@@ -61,6 +97,8 @@ theorem exists_ne_zero_vanishesToOrder_of_partial_sum
 #print axioms GSMultInterp.card_monoIdx
 #print axioms GSMultInterp.card_monoIdx_ge_partial
 #print axioms GSMultInterp.card_monoIdx_ge
+#print axioms GSMultInterp.sum_range_sub_kb
+#print axioms GSMultInterp.card_monoIdx_ge_triangle
 #print axioms GSMultInterp.exists_ne_zero_vanishesToOrder_of_partial_sum
 
 end GSMultInterp
