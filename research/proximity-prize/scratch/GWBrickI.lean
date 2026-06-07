@@ -116,7 +116,7 @@ abbrev GWCoeffSpace (F : Type*) [Field F] (s n k : ℕ) : Type _ :=
 `(n + k) + s · n`. -/
 lemma card_gwMonomialIndex (s n k : ℕ) :
     Fintype.card (GWMonomialIndex s n k) = (n + k) + s * n := by
-  simp [GWMonomialIndex, Fintype.card_sum, Fintype.card_prod, mul_comm]
+  simp [GWMonomialIndex, Fintype.card_sum, Fintype.card_prod]
 
 /-! ## 2. The strict unknowns-vs-constraints count -/
 
@@ -138,30 +138,31 @@ lemma gw_unknowns_gt_constraints {s n k : ℕ} (hk : 0 < k) :
 /-- **BRICK-I (coefficient form).**  *More unknowns than constraints ⟹ a nonzero
 interpolant.*
 
-Let `agree : Fin n → GWCoeffSpace F s n k → F` be the agreement-constraint
-matrix: for each evaluation point `j : Fin n`, `agree j` lists, against each
-free coefficient `i`, that coefficient's contribution to the value of the
-folded substitution at the `j`-th point.  The interpolation constraint at point
-`j` is the homogeneous linear equation `∑ i, c i · agree j i = 0`.  Because the
-number of free coefficients `(n + k) + s·n` strictly exceeds the `n` constraints
-(`gw_unknowns_gt_constraints`), there is a **nonzero** coefficient vector
-`c : GWCoeffSpace F s n k` satisfying every agreement constraint.
+Let `agree : Fin n → GWMonomialIndex s n k → F` be the agreement-constraint
+matrix: for each evaluation point `j : Fin n` and each free coefficient `i`,
+`agree j i` is that coefficient's contribution to the value of the folded
+substitution at the `j`-th point.  The interpolation constraint at point `j` is
+the homogeneous linear equation `∑ i, c i · agree j i = 0`.  Because the number
+of free coefficients `(n + k) + s·n` strictly exceeds the `n` constraints
+(`gw_unknowns_gt_constraints`, using the base-degree slack `0 < k`), there is a
+**nonzero** coefficient vector `c : GWCoeffSpace F s n k` satisfying every
+agreement constraint.
 
 This is the GW analogue of `modified_guruswami_has_a_solution`'s nonzero-kernel
 step, discharged here directly by the reusable Siegel core
 `ArkLib.exists_nonzero_constraint_solution`. -/
-theorem gw_interpolant_exists {F : Type*} [Field F] {s n k : ℕ} (hn : 0 < n)
-    (agree : Fin n → GWCoeffSpace F s n k → F) :
+theorem gw_interpolant_exists {F : Type*} [Field F] {s n k : ℕ} (hk : 0 < k)
+    (agree : Fin n → GWMonomialIndex s n k → F) :
     ∃ c : GWCoeffSpace F s n k, c ≠ 0 ∧
       ∀ j : Fin n, ∑ i : GWMonomialIndex s n k, c i * agree j i = 0 := by
   classical
   -- `a : C → M → F` is the constraint matrix; `C = Fin n`, `M = GWMonomialIndex`.
   have hcount : Fintype.card (Fin n) < Fintype.card (GWMonomialIndex s n k) := by
-    simpa [Fintype.card_fin] using gw_unknowns_gt_constraints (s := s) (k := k) hn
+    simpa [Fintype.card_fin] using gw_unknowns_gt_constraints (s := s) (k := k) hk
   obtain ⟨c, hc0, hc⟩ :=
     ArkLib.exists_nonzero_constraint_solution
       (K := F) (M := GWMonomialIndex s n k) (C := Fin n)
-      (fun j i => agree j i) hcount
+      agree hcount
   exact ⟨c, hc0, hc⟩
 
 /-! ## 4. The honest `Y`-linear polynomial object with the degree blocks -/
@@ -193,15 +194,17 @@ lemma natDegree_gwBlock_zero {F : Type*} [Field F] {s n k : ℕ}
     (hnk : 0 < n + k) (c : GWCoeffSpace F s n k) :
     (gwInterpolantBlocks c 0).natDegree < n + k := by
   classical
+  have hexpand : gwInterpolantBlocks c 0
+      = ∑ a : Fin (n + k), Polynomial.C (c (Sum.inl a)) * X ^ (a : ℕ) := by
+    simp [gwInterpolantBlocks]
   have hle : (gwInterpolantBlocks c 0).natDegree ≤ n + k - 1 := by
-    unfold gwInterpolantBlocks
-    simp only [dif_pos rfl]
+    rw [hexpand]
     apply Polynomial.natDegree_sum_le_of_forall_le
     intro a _
     calc (Polynomial.C (c (Sum.inl a)) * X ^ (a : ℕ)).natDegree
         ≤ (a : ℕ) := by
           refine le_trans (Polynomial.natDegree_mul_le) ?_
-          simp [Polynomial.natDegree_C, Polynomial.natDegree_X_pow]
+          simp [Polynomial.natDegree_C]
       _ ≤ n + k - 1 := by have := a.isLt; omega
   omega
 
@@ -212,16 +215,57 @@ lemma natDegree_gwBlock_succ {F : Type*} [Field F] {s n k : ℕ}
     (gwInterpolantBlocks c b).natDegree < n := by
   classical
   have hle : (gwInterpolantBlocks c b).natDegree ≤ n - 1 := by
-    unfold gwInterpolantBlocks
-    rw [dif_neg hb]
+    rw [show gwInterpolantBlocks c b
+        = ∑ a : Fin n, Polynomial.C (c (Sum.inr
+            ((⟨(b : ℕ) - 1, by have hb' : (b : ℕ) ≠ 0 := fun h => hb (Fin.ext h);
+              have := b.isLt; omega⟩ : Fin s), a))) * X ^ (a : ℕ) from by
+        simp only [gwInterpolantBlocks, dif_neg hb]]
     apply Polynomial.natDegree_sum_le_of_forall_le
     intro a _
     calc (Polynomial.C (c (Sum.inr (_, a))) * X ^ (a : ℕ)).natDegree
         ≤ (a : ℕ) := by
           refine le_trans (Polynomial.natDegree_mul_le) ?_
-          simp [Polynomial.natDegree_C, Polynomial.natDegree_X_pow]
+          simp [Polynomial.natDegree_C]
       _ ≤ n - 1 := by have := a.isLt; omega
   omega
+
+/-- The `a`-th coefficient of the assembled `A₀` block is exactly `c (inl a)`. -/
+lemma coeff_gwBlock_zero {F : Type*} [Field F] {s n k : ℕ}
+    (c : GWCoeffSpace F s n k) (a : Fin (n + k)) :
+    (gwInterpolantBlocks c 0).coeff (a : ℕ) = c (Sum.inl a) := by
+  classical
+  have hexpand : gwInterpolantBlocks c 0
+      = ∑ a' : Fin (n + k), Polynomial.C (c (Sum.inl a')) * X ^ (a' : ℕ) := by
+    simp [gwInterpolantBlocks]
+  rw [hexpand, Polynomial.finset_sum_coeff, Finset.sum_eq_single a]
+  · simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow]
+  · intro b _ hba
+    rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow]
+    rw [if_neg (by exact fun h => hba (Fin.ext h.symm))]
+    ring
+  · intro h; exact absurd (Finset.mem_univ a) h
+
+/-- The `a`-th coefficient of the assembled `A_{j+1}` block is exactly
+`c (inr (j, a))`. -/
+lemma coeff_gwBlock_succ {F : Type*} [Field F] {s n k : ℕ}
+    (c : GWCoeffSpace F s n k) (j : Fin s) (a : Fin n) :
+    (gwInterpolantBlocks c j.succ).coeff (a : ℕ) = c (Sum.inr (j, a)) := by
+  classical
+  have hsne : (j.succ : Fin (s + 1)) ≠ 0 := Fin.succ_ne_zero j
+  have hjeq : (⟨(j.succ : ℕ) - 1, by simp [Fin.val_succ]⟩ : Fin s) = j := by
+    apply Fin.ext; simp [Fin.val_succ]
+  have hexpand : gwInterpolantBlocks c j.succ
+      = ∑ a' : Fin n,
+          Polynomial.C (c (Sum.inr ((⟨(j.succ : ℕ) - 1, by
+            simp [Fin.val_succ]⟩ : Fin s), a'))) * X ^ (a' : ℕ) := by
+    simp only [gwInterpolantBlocks, dif_neg hsne]
+  rw [hexpand, Polynomial.finset_sum_coeff, Finset.sum_eq_single a]
+  · rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_pos rfl, mul_one, hjeq]
+  · intro b _ hba
+    rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow]
+    rw [if_neg (by exact fun h => hba (Fin.ext h.symm))]
+    ring
+  · intro h; exact absurd (Finset.mem_univ a) h
 
 /-- A nonzero coefficient vector yields a **nonzero** block tuple: at least one
 block is a nonzero polynomial.  (The coefficient-to-polynomial assembly is
@@ -233,52 +277,17 @@ lemma gwInterpolantBlocks_ne_zero {F : Type*} [Field F] {s n k : ℕ}
   intro hAll
   apply hc
   funext i
-  -- read off the relevant block coefficient and use that the block is `0`
   have hblock : ∀ b : Fin (s + 1), gwInterpolantBlocks c b = 0 := by
     intro b; rw [hAll]; rfl
   cases i with
   | inl a =>
-      have h0 := hblock 0
-      -- the `a`-th coefficient of `A₀` is `c (inl a)`
-      have hcoeff : (gwInterpolantBlocks c 0).coeff (a : ℕ) = c (Sum.inl a) := by
-        unfold gwInterpolantBlocks
-        simp only [dif_pos rfl]
-        rw [Polynomial.finset_sum_coeff]
-        rw [Finset.sum_eq_single a]
-        · simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow]
-        · intro b _ hba
-          rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow]
-          rw [if_neg (by exact fun h => hba (Fin.ext h.symm))]
-          ring
-        · intro h; exact absurd (Finset.mem_univ a) h
-      rw [h0, Polynomial.coeff_zero] at hcoeff
+      have hcoeff := coeff_gwBlock_zero c a
+      rw [hblock 0, Polynomial.coeff_zero] at hcoeff
       simpa using hcoeff.symm
   | inr jp =>
       obtain ⟨j, a⟩ := jp
-      -- index the `(j+1)`-st block
-      set b : Fin (s + 1) := ⟨(j : ℕ) + 1, by have := j.isLt; omega⟩ with hbdef
-      have hbne : b ≠ 0 := by
-        intro h; have : (b : ℕ) = 0 := by rw [h]; rfl
-        simp [hbdef] at this
-      have hjeq : (⟨(b : ℕ) - 1, by
-          have := j.isLt; simp only [hbdef]; omega⟩ : Fin s) = j := by
-        apply Fin.ext; simp [hbdef]
-      have hblk := hblock b
-      have hcoeff : (gwInterpolantBlocks c b).coeff (a : ℕ) = c (Sum.inr (j, a)) := by
-        unfold gwInterpolantBlocks
-        rw [dif_neg hbne]
-        simp only
-        rw [Polynomial.finset_sum_coeff]
-        rw [Finset.sum_eq_single a]
-        · rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_pos rfl, mul_one]
-          congr 2
-          rw [hjeq]
-        · intro b' _ hb'a
-          rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow]
-          rw [if_neg (by exact fun h => hb'a (Fin.ext h.symm))]
-          ring
-        · intro h; exact absurd (Finset.mem_univ a) h
-      rw [hblk, Polynomial.coeff_zero] at hcoeff
+      have hcoeff := coeff_gwBlock_succ c j a
+      rw [hblock j.succ, Polynomial.coeff_zero] at hcoeff
       simpa using hcoeff.symm
 
 /-- **BRICK-I (polynomial form).**  The same existence, packaged as an actual
@@ -286,15 +295,16 @@ nonzero `Y`-linear polynomial tuple `A : Fin (s+1) → F[X]` (the blocks of
 `Q = A₀ + ∑_j A_j Y_j`) with the GW degree budget `deg A₀ < n+k`, `deg A_j < n`,
 satisfying every agreement constraint (expressed through the coefficient
 coordinates `c` from which the blocks are assembled). -/
-theorem gw_interpolant_exists_poly {F : Type*} [Field F] {s n k : ℕ} (hn : 0 < n)
-    (agree : Fin n → GWCoeffSpace F s n k → F) :
+theorem gw_interpolant_exists_poly {F : Type*} [Field F] {s n k : ℕ}
+    (hn : 0 < n) (hk : 0 < k)
+    (agree : Fin n → GWMonomialIndex s n k → F) :
     ∃ (c : GWCoeffSpace F s n k) (A : Fin (s + 1) → F[X]),
       A ≠ 0 ∧
       A = gwInterpolantBlocks c ∧
       (A 0).natDegree < n + k ∧
       (∀ b : Fin (s + 1), b ≠ 0 → (A b).natDegree < n) ∧
       (∀ j : Fin n, ∑ i : GWMonomialIndex s n k, c i * agree j i = 0) := by
-  obtain ⟨c, hc0, hc⟩ := gw_interpolant_exists hn agree
+  obtain ⟨c, hc0, hc⟩ := gw_interpolant_exists hk agree
   refine ⟨c, gwInterpolantBlocks c, gwInterpolantBlocks_ne_zero c hc0, rfl, ?_, ?_, hc⟩
   · exact natDegree_gwBlock_zero (by omega) c
   · intro b hb; exact natDegree_gwBlock_succ hn c hb
@@ -357,7 +367,7 @@ theorem foldedSubstitution_eq_zero_of_degree_and_roots
   have hsub : roots ⊆ (foldedSubstitution A p shift).roots.toFinset := by
     intro x hx
     rw [Multiset.mem_toFinset, Polynomial.mem_roots hne]
-    exact ⟨hroots x hx⟩
+    exact hroots x hx
   have hle : roots.card ≤ (foldedSubstitution A p shift).roots.toFinset.card :=
     Finset.card_le_card hsub
   have hcard_roots :

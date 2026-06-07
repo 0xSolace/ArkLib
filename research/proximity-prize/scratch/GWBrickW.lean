@@ -62,7 +62,7 @@ open Polynomial Matrix Module Submodule
 
 namespace ArkLib.FRS.GK16.BrickW
 
-variable {F : Type*} [Field F]
+variable {F : Type} [Field F]
 
 /-! ## The substitution operator `p ↦ p(γ^j · X)` -/
 
@@ -196,7 +196,9 @@ theorem gw_solutionSet_finrank_le {s : ℕ} (A : Fin s → F[X]) (γ : F) (k : �
       ∃ q : Fin s → (gwHomogSolution A γ k),
         LinearIndependent F q := by
     -- Truncate a basis of `W₀` (of dimension ≥ s) to its first `s` members.
-    haveI : Module.Finite F (gwHomogSolution A γ k) := inferInstance
+    haveI : FiniteDimensional F (Polynomial.degreeLT F k) := inferInstance
+    haveI : FiniteDimensional F (gwHomogSolution A γ k) :=
+      Submodule.finiteDimensional_inf_right _ _
     let n := finrank F (gwHomogSolution A γ k)
     let b : Basis (Fin n) F (gwHomogSolution A γ k) := finBasis F _
     have hle : s ≤ n := hs_le
@@ -270,3 +272,10 @@ theorem gw_solutionSet_affine_finrank_le [DecidableEq F] {s : ℕ}
    gw_solutionSet_finrank_le A γ k hA hγ_sep⟩
 
 end ArkLib.FRS.GK16.BrickW
+
+-- Axiom audit (scratch only; remove before any migration).
+#print axioms ArkLib.FRS.GK16.BrickW.foldedWronskian_eq_zero_of_homogeneous
+#print axioms ArkLib.FRS.GK16.BrickW.gw_homogSolution_not_linearIndependent_of_card_s
+#print axioms ArkLib.FRS.GK16.BrickW.gw_solutionSet_finrank_le
+#print axioms ArkLib.FRS.GK16.BrickW.gw_solutionSet_affine
+#print axioms ArkLib.FRS.GK16.BrickW.gw_solutionSet_affine_finrank_le

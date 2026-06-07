@@ -1356,6 +1356,82 @@ omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
     (whirVectorSpec_toProtocolSpec_challengeIdxEquivFin (F := F) M).symm i = ⟨i, rfl⟩ :=
   rfl
 
+/-! ### WHIR RBR budget accounting adapters
+
+`ArkLib.ProofSystem.Whir.RbrBudgetAccounting` proves the `max'`/`sup` budget facts in an
+abstract `fp : Fin (M + 1) → ℕ` setting.  The adapters below instantiate that accounting to the
+actual WHIR parameter record `P.foldingParam`, so downstream soundness proofs can cite the named
+budget API instead of re-opening the inline `whir_rbr_soundness` expression.
+-/
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- The concrete WHIR RBR per-challenge budget, instantiated from
+`Issue113WHIR.epsRbr` with `fp = P.foldingParam`. -/
+noncomputable def whirRbrBudgetValue {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) : ℝ≥0 :=
+  Issue113WHIR.epsRbr (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- The final-round error is dominated by the concrete WHIR RBR budget. -/
+theorem whirRbrBudgetValue_fin_le {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) :
+    ε_fin ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin :=
+  Issue113WHIR.eps_fin_le_epsRbr (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- Every OOD-round error is dominated by the concrete WHIR RBR budget. -/
+theorem whirRbrBudgetValue_out_le {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    (i : Fin (M + 1)) :
+    ε_out i ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin :=
+  Issue113WHIR.eps_out_le_epsRbr (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin i
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- Every shift-round error is dominated by the concrete WHIR RBR budget. -/
+theorem whirRbrBudgetValue_shift_le {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    (i : Fin M) :
+    ε_shift i ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin :=
+  Issue113WHIR.eps_shift_le_epsRbr (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin i
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- Every inner fold-step error is dominated by the concrete WHIR RBR budget. -/
+theorem whirRbrBudgetValue_fold_le {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    (i : Fin (M + 1)) (j : Fin (P.foldingParam i)) :
+    ε_fold i j ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin :=
+  Issue113WHIR.eps_fold_le_epsRbr (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin i j
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- Universal-property package for the concrete WHIR RBR budget. -/
+theorem whirRbrBudgetValue_isLUB {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) :
+    (∀ i j, ε_fold i j ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) ∧
+    (∀ i, ε_out i ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) ∧
+    (∀ i, ε_shift i ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) ∧
+    (ε_fin ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) ∧
+    (∀ c, (∀ i j, ε_fold i j ≤ c) → (∀ i, ε_out i ≤ c) → (∀ i, ε_shift i ≤ c) →
+      ε_fin ≤ c → whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin ≤ c) :=
+  Issue113WHIR.epsRbr_isLUB (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin
+
 /-- Every verifier-challenge index has length one in the WHIR scratch vector spec. -/
 theorem whirVectorSpec_challengeLength (M : ℕ) (i : (whirVectorSpec M).ChallengeIdx) :
     (whirVectorSpec M).challengeLength i = 1 := by
@@ -1616,6 +1692,12 @@ end RBRSoundnessAssembly
 #print axioms whirVectorSpec_toProtocolSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_toProtocolSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_toProtocolSpec_challengeIdxEquivFin_symm_apply
+#print axioms whirRbrBudgetValue
+#print axioms whirRbrBudgetValue_fin_le
+#print axioms whirRbrBudgetValue_out_le
+#print axioms whirRbrBudgetValue_shift_le
+#print axioms whirRbrBudgetValue_fold_le
+#print axioms whirRbrBudgetValue_isLUB
 #print axioms whirVectorSpec_challengeLength
 #print axioms whirVectorSpec_challenge_eq_vector_one
 #print axioms whirVectorSpec_totalChallengeLength

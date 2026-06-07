@@ -153,6 +153,7 @@ theorem lhs_weight_eq_choose_mul_prefactor {c : ℕ} (R : F[X][X][Y]) (i i1 : �
       = (i.choose lam.parts.card) * prefactor R.natDegree i1 lam := by
   rw [prefactor_eq_countPerms]
 
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
 /-- **`B_coeff` exposes its `prefactor`–`countPerms` weight explicitly (axiom-clean).**  Unfolding
 `B_coeff` and applying `prefactor_eq_countPerms`, the genuine recursion coefficient is
 `countPerms λ • hasseCoeffRepr𝒪 …` — the same `countPerms λ` combinatorial weight that the LHS
@@ -208,5 +209,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoPartitionForm_eq_rangeForm
 #print axioms BCIKS20.HenselNumerator.countPerms_eq_factorial_of_nodup
 #print axioms BCIKS20.HenselNumerator.countPerms_lam_eq_factorial_of_nodup
+#print axioms BCIKS20.HenselNumerator.lhs_weight_eq_choose_mul_prefactor
+#print axioms BCIKS20.HenselNumerator.B_coeff_eq_countPerms_smul
 #print axioms BCIKS20.HenselNumerator.partition_filter_zero_eq_singleton
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBruno_zero_partition_inner_eq

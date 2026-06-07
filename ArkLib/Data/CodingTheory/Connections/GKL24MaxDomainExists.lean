@@ -227,6 +227,20 @@ theorem mcaBadWitness_card_first_moment {MC : Submodule F (ι → F)} {δ : ℝ�
         Nat.floor_mono (card_lineAgreeSet_ge_of_mem_mcaBadWitness (MC := MC) hγ)
     _ = (lineAgreeSet u₀ u₁ w γ).card := Nat.floor_natCast _
 
+/-- **GKL24 first-moment count, raw form: `|mcaBadWitness w| ≤ n − |common|`.**  Taking the absorbing
+domain to be the common zero-agreement set itself, whenever it is smaller than the bad-witness radius
+`⌊(1−δ)n⌋`, the bad-combiner count is at most the number of non-common coordinates.  No correlated-
+agreement rate `p` is needed — this is the most fundamental form of the count, from which the sharp
+`p·n` bound follows by `|D| ≥ (1−p)n`. -/
+theorem mcaBadWitness_card_le_of_radius {MC : Submodule F (ι → F)} {δ : ℝ≥0} {u₀ u₁ w : ι → F}
+    (hub : (Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)).card
+      < ⌊((1 - δ) * Fintype.card ι : ℝ≥0)⌋₊) :
+    (mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card
+      ≤ Fintype.card ι - (Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)).card := by
+  have hcount := mcaBadWitness_card_first_moment (MC := MC) (δ := δ) (u₀ := u₀) (u₁ := u₁) (w := w)
+    (D := Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)) (Finset.Subset.refl _)
+  exact le_trans (Nat.le_mul_of_pos_right _ (by omega)) hcount
+
 /-- **GKL24 sharp first-moment bound `|Bad¹| ≤ p·n`.**  If a correlated-agreement domain `D` at rate
 `p` (so `(1−p)·n ≤ |D|`) absorbs the common zero-agreement set, and the bad-witness radius is smaller
 (`|D| < ⌊(1−δ)·n⌋`, i.e. `δ < p`), then `|mcaBadWitness w| ≤ p·n`.  This is GKL24's sharp

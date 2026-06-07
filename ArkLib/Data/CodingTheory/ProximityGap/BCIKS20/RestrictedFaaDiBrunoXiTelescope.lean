@@ -136,4 +136,119 @@ theorem xiExp_recNum_add_lhsDen (t i1 : ℕ) {m : ℕ} (lam : Nat.Partition m)
   subst hm
   omega
 
+/-- **The surviving recursion terms have untruncated `ξ`-numerator exponent (axiom-clean).** Every
+`(i₁, λ)` summand that survives the `(t+1) ∉ λ.parts` filter on `λ ⊢ (t+1−i₁)` satisfies
+`2 ≤ 2·i₁ + σλ`, so the recursion `ξ`-exponent `2·i₁ + σλ − 2` is genuine (no `ℕ`-truncation). For
+`i₁ ≥ 1` this is immediate (`2·i₁ ≥ 2`); for `i₁ = 0` the only partition of `t+1` with `σλ = 1` is
+the single part `[t+1]`, which the filter excludes — forcing `σλ ≥ 2`. -/
+theorem two_le_two_mul_i1_add_sigmaLambda {t i1 : ℕ}
+    (lam : Nat.Partition (t + 1 - i1)) (hfilter : (t + 1) ∉ lam.parts) :
+    2 ≤ 2 * i1 + sigmaLambda lam := by
+  rcases Nat.eq_zero_or_pos i1 with hi0 | hi0
+  · -- i1 = 0: partition of `t+1`; must have at least two parts, else it is `[t+1]` (filtered out).
+    subst hi0
+    simp only [Nat.zero_sub, Nat.sub_zero, Nat.mul_zero, Nat.zero_add] at *
+    -- here `t + 1 - 0 = t + 1`
+    by_contra hlt
+    push_neg at hlt
+    -- `sigmaLambda lam < 2`, i.e. `lam.parts.card ≤ 1`.
+    have hcard : lam.parts.card ≤ 1 := by
+      rw [sigmaLambda] at hlt; omega
+    -- card 0 is impossible (sum would be 0 ≠ t+1); card 1 forces the part to be `t+1`.
+    have hsum : lam.parts.sum = t + 1 := lam.parts_sum
+    interval_cases h : lam.parts.card
+    · rw [Multiset.card_eq_zero] at h
+      rw [h] at hsum; simp at hsum
+    · obtain ⟨a, ha⟩ := Multiset.card_eq_one.mp h
+      rw [ha] at hsum hfilter
+      simp only [Multiset.sum_singleton] at hsum
+      exact hfilter (by rw [hsum]; exact Multiset.mem_singleton_self _)
+  · omega
+
+/-! ## 2. The `ξ`-power factorization in the function field `𝕃 H` -/
+
+/-- **Per-term `ξ`-power factorization (axiom-clean).** Using `ξ ≠ 0` and the pure-`ℕ` telescope
+`xiExp_recNum_add_lhsDen`, the recursion-side per-term `ξ`-power splits as the global constant
+`ξ^{2(t+1)−2}` over the LHS-shaped per-term denominator `ξ^{2(t+1−i₁)−σλ}`:
+
+  `ξ^{2·i₁ + σλ − 2} = ξ^{2·(t+1) − 2} / ξ^{2·(t+1−i₁) − σλ}`.
+
+This is the `𝕃`-level realization of the exponent telescope: the per-`(i₁,λ)` `ξ`-power is *not*
+constant, but it becomes a single global power once the LHS assembled-coefficient `ξ`-denominator is
+brought to the same side. -/
+theorem xi_pow_recNum_eq_global_div_lhsDen (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t i1 : ℕ)
+    (lam : Nat.Partition (t + 1 - i1)) (hi1 : i1 ≤ t + 1)
+    (hfilter : (t + 1) ∉ lam.parts) :
+    embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+      = embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ^ (2 * (t + 1) - 2)
+          / embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ^ (2 * (t + 1 - i1) - sigmaLambda lam) := by
+  have hξ : embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ≠ 0 :=
+    embeddingOf𝒪Into𝕃_ξ_ne_zero H x₀ R hHyp
+  have hguard : 2 ≤ 2 * i1 + sigmaLambda lam :=
+    two_le_two_mul_i1_add_sigmaLambda lam hfilter
+  have htel : (2 * i1 + sigmaLambda lam - 2) + (2 * (t + 1 - i1) - sigmaLambda lam)
+      = 2 * (t + 1) - 2 := xiExp_recNum_add_lhsDen t i1 lam rfl hi1 hguard
+  rw [eq_div_iff (pow_ne_zero _ hξ), ← pow_add, htel]
+
+/-! ## 3. The monic recursion side, `ξ`-telescoped -/
+
+/-- **Monic-`H` recursion side, fully `ξ`-telescoped (axiom-clean).** Starting from the `W`-free
+monic recursion form (`restrictedMatchRecursionPartitionForm_eq_Wfree_of_leadingCoeff_one`), the
+per-term `ξ`-powers telescope: every `ξ^{2·i₁+σλ−2}` combines with the global `1/ξ^{2(t+1)−1}` to
+yield a **single global unit `ζ · ξ⁻¹`** times a sum whose only remaining `ξ`-content is the
+per-term LHS-shaped denominator `1/ξ^{2(t+1−i₁)−σλ}`:
+
+  `restrictedMatchRecursionPartitionForm … t`
+    `= ζ · ξ⁻¹ · ∑_{i₁,λ} (⟦B_coeff⟧ · ⟦partitionProd λ βHensel⟧) / ξ^{2(t+1−i₁)−σλ}`.
+
+The global `ξ`-power genuinely collapses to a single `ξ⁻¹`; the surviving per-term denominator
+`ξ^{2(t+1−i₁)−σλ} = ξ^{∑_{l∈λ}(2l−1)}` (`sum_map_two_mul_sub_one`) is *precisely* the `ξ`-denominator
+supplied by the LHS assembled-series coefficients `coeff l (βHenselAssembled)`. Hence the `ξ`-telescope
+is a joint LHS↔RHS cancellation, after which the monic STEP-8 residual carries only the `W`-free,
+`ξ`-matched combinatorial Faà-di-Bruno data (`B_coeff`/`partitionProd`/binomial/`countPerms`). -/
+theorem restrictedMatchRecursionPartitionForm_eq_ξfree_of_leadingCoeff_one
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hlc : H.leadingCoeff = 1) :
+    restrictedMatchRecursionPartitionForm H x₀ R hHyp t
+      = ClaimA2.ζ R x₀ H
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))⁻¹
+          * (∑ i1 ∈ Finset.range (t + 2),
+                ∑ lam ∈ (Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+                          (fun lam => (t + 1) ∉ lam.parts),
+                  embeddingOf𝒪Into𝕃 H (B_coeff H x₀ R i1 lam)
+                    * embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp))
+                    / embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)
+                        ^ (2 * (t + 1 - i1) - sigmaLambda lam)) := by
+  have hξ : embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ≠ 0 :=
+    embeddingOf𝒪Into𝕃_ξ_ne_zero H x₀ R hHyp
+  set ξ := embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) with hξdef
+  -- The global numerator/denominator `ξ`-powers collapse to a single `ξ⁻¹`.
+  have hglob : ξ ^ (2 * (t + 1) - 2) / ξ ^ (2 * (t + 1) - 1) = ξ⁻¹ := by
+    rw [div_eq_iff (pow_ne_zero _ hξ), inv_mul_eq_div, eq_div_iff hξ, ← pow_succ]
+    congr 1
+    omega
+  rw [restrictedMatchRecursionPartitionForm_eq_Wfree_of_leadingCoeff_one H x₀ R hHyp t hlc]
+  -- Move the global `ζ`, `ξ⁻¹` and the per-term `ξ`-factorization through the double sum.
+  rw [mul_assoc, Finset.sum_div, Finset.mul_sum]
+  refine congrArg (fun z => ClaimA2.ζ R x₀ H * z) ?_
+  refine Finset.sum_congr rfl (fun i1 hi1mem => ?_)
+  rw [Finset.sum_div, Finset.mul_sum]
+  refine Finset.sum_congr rfl (fun lam hlam => ?_)
+  have hi1 : i1 ≤ t + 1 := by
+    have := Finset.mem_range.mp hi1mem; omega
+  have hfilter : (t + 1) ∉ lam.parts := (Finset.mem_filter.mp hlam).2
+  rw [xi_pow_recNum_eq_global_div_lhsDen H x₀ R hHyp t i1 lam hi1 hfilter]
+  -- Per-term identity, with `B`, `P` the (`ξ`-free) combinatorial core and
+  -- `dl := 2(t+1-i1) - σλ` the LHS-shaped per-term denominator exponent.
+  set B := embeddingOf𝒪Into𝕃 H (B_coeff H x₀ R i1 lam) with hBdef
+  set P := embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp)) with hPdef
+  set dl := 2 * (t + 1 - i1) - sigmaLambda lam with hdldef
+  -- LHS term: `(ξ^g / ξ^dl) * B * P / ξ^G` ; RHS term: `ξ⁻¹ * (B * P / ξ^dl)`,
+  -- where `g = 2(t+1)-2`, `G = 2(t+1)-1`, and `ξ^g/ξ^G = ξ⁻¹` by `hglob`.
+  rw [div_mul_eq_mul_div, div_mul_eq_mul_div, mul_div_assoc, mul_div_assoc,
+    mul_comm ((B * P : 𝕃 H)) _, ← mul_div_assoc, mul_div_assoc]
+  rw [div_div, mul_comm (ξ ^ dl) (ξ ^ (2 * (t + 1) - 1)), ← div_div, hglob]
+  rw [mul_div_assoc]
+
 end BCIKS20.HenselNumerator

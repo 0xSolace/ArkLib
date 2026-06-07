@@ -92,9 +92,22 @@ theorem exists_x0_evalX_ne_zero
     Polynomial.C Polynomial.C_injective Rs (fun R => R.coeff R.natDegree) hne' hcard
   exact ⟨x₀, fun R hR => evalX_ne_zero_of_leadingCoeff_eval_ne_zero (hx₀ R hR)⟩
 
+/-- **`hx0` existence with the standard `degreeX` bound.** Field-size condition stated via the
+total X-degree `∑ degreeX R` (the natural GS budget), using
+`coeff_natDegree_le_degreeX`. -/
+theorem exists_x0_evalX_ne_zero_of_sum_degreeX_lt
+    (Rs : Finset (Polynomial (Polynomial (Polynomial F))))
+    (hne : ∀ R ∈ Rs, R ≠ 0)
+    (hcard : ∑ R ∈ Rs, Polynomial.Bivariate.degreeX R < Fintype.card F) :
+    ∃ x₀ : F, ∀ R ∈ Rs, Polynomial.Bivariate.evalX (Polynomial.C x₀) R ≠ 0 := by
+  apply exists_x0_evalX_ne_zero Rs hne
+  refine lt_of_le_of_lt (Finset.sum_le_sum fun R _ => ?_) hcard
+  exact Polynomial.Bivariate.coeff_natDegree_le_degreeX R R.natDegree
+
 #print axioms ProximityGap.Genericity.exists_good_point_of_obstructions_domain
 #print axioms ProximityGap.Genericity.coeff_evalX
 #print axioms ProximityGap.Genericity.evalX_separable_of_separable
 #print axioms ProximityGap.Genericity.exists_x0_evalX_ne_zero
+#print axioms ProximityGap.Genericity.exists_x0_evalX_ne_zero_of_sum_degreeX_lt
 
 end ProximityGap.Genericity
