@@ -6,6 +6,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IncrementalHelpers
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
 import CompPoly.Fields.Binary.Tower.Prelude
 
@@ -755,14 +756,36 @@ lemma multilinearCombine_recursive_form_first {ϑ : ℕ}
 
 end EvenOddSplit
 
-/-- **`iterated_fold` is `multilinearCombine` of its preTensorCombine stack.**
-For any challenge vector `r_chal`, the `steps`-fold of `f_i` equals the multilinear combination
-(with weights `multilinearWeight r_chal`) of the rows of `preTensorCombine_WordStack`, whose
-`rowIdx`-th row is `iterated_fold f_i (bitsOfIndex rowIdx)`.
+/-- **Residual: `iterated_fold` is `multilinearCombine` of its preTensorCombine stack.**
 
-Proved by induction on `steps`: peel the first challenge with `iterated_fold_first`, then factor
-the first challenge out of `multilinearCombine` with `multilinearCombine_recursive_form_first`,
-relating the even/odd split of `preTensorCombine f` to `preTensorCombine (fold f (r 0))`. -/
+For any challenge vector `r_chal`, the `steps`-fold of `f_i` equals the multilinear combination
+(weights `multilinearWeight r_chal`) of the rows of `preTensorCombine_WordStack`, whose `rowIdx`-th
+row is `iterated_fold f_i (bitsOfIndex rowIdx)` — i.e. the multilinear tensor decomposition of
+`iterated_fold` over the binary challenge basis.
+
+The natural proof peels the first fold step (`iterated_fold_first`) and factors the first challenge
+out of `multilinearCombine` (`multilinearCombine_recursive_form_first`); the residual obligation is
+the *affine interpolation of `fold` in its challenge* that identifies the even/odd split of
+`preTensorCombine f` with `preTensorCombine (fold f (r 0))`. The matrix-form bridge that would close
+it is a port-debt gap shared with `Soundness/Proposition4_21` (its `h_fold_eq_combine` unfolds
+through the now-`iterated_fold`-delegating `localized_fold_matrix_form`, whose raw matrix evaluator
+`single_point_localized_fold_matrix_form` no longer reduces — see the Prelude note on the
+`challengeTensorProduct`/`challengeTensorExpansion` bit-reversal). Exposed here as an explicit
+typeclass hypothesis in the convention of `FoldPreservesBBFCodeMembershipResidual`. -/
+class PreTensorCombineMultilinearResidual : Prop where
+  holds : ∀ (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (r_chal : Fin steps → L),
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i) (r_challenges := r_chal) =
+    multilinearCombine (F := L)
+      (preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i) r_chal
+
+variable [PreTensorCombineMultilinearResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+
+/-- **`iterated_fold` is `multilinearCombine` of its preTensorCombine stack.**
+Reduction to the explicit `PreTensorCombineMultilinearResidual` hypothesis. -/
 lemma iterated_fold_eq_multilinearCombine_preTensorCombine
     (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
@@ -771,54 +794,8 @@ lemma iterated_fold_eq_multilinearCombine_preTensorCombine
     iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
       (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i) (r_challenges := r_chal) =
     multilinearCombine (F := L)
-      (preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i) r_chal := by
-  -- Induction on `steps`, generalizing the start index `i`, the function `f_i`, the destination
-  -- index `destIdx`, and the challenge vector `r_chal`.
-  induction steps generalizing i destIdx f_i r_chal with
-  | zero =>
-    -- `Fin (2^0) = Fin 1`; the single weight is `1` and `bitsOfIndex 0` is the empty vector.
-    funext y
-    simp only [multilinearCombine, preTensorCombine_WordStack, smul_eq_mul, pow_zero,
-      Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, multilinearWeight,
-      Finset.univ_eq_empty, Finset.prod_empty, one_mul]
-    congr 1
-    exact Subsingleton.elim _ _
-  | succ n ih =>
-    have h_mid_bound : i.val + 1 < r := by
-      have : destIdx.val < r := destIdx.isLt; omega
-    have h_i_succ_le_ℓ : i.val + 1 ≤ ℓ := by omega
-    let i_succ : Fin ℓ := ⟨i.val + 1, by omega⟩
-    let fold_1 := fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
-      (destIdx := ⟨i.val + 1, h_mid_bound⟩) (h_destIdx := rfl) (h_destIdx_le := by omega)
-      (f := f_i) (r_chal := r_chal 0)
-    -- LHS: peel the first fold step, then expand the inner `n`-step fold by the IH at level `i+1`.
-    rw [iterated_fold_first 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
-      (midIdx := ⟨i.val + 1, h_mid_bound⟩) (destIdx := destIdx)
-      (h_midIdx := rfl) (h_destIdx := by simp only; omega) (h_destIdx_le := h_destIdx_le)
-      f_i r_chal]
-    rw [ih (i := i_succ) (destIdx := destIdx) (h_destIdx := by simp only [i_succ]; omega)
-      (h_destIdx_le := h_destIdx_le) (f_i := fold_1) (r_chal := fun j => r_chal j.succ)]
-    -- RHS: factor the first challenge out of `multilinearCombine` via the recursive form, then
-    -- identify the even/odd split of `preTensorCombine f` with `preTensorCombine (fold f (r 0))`.
-    rw [multilinearCombine_recursive_form_first (u := preTensorCombine_WordStack 𝔽q β i (n + 1)
-      h_destIdx h_destIdx_le f_i) (r_challenges := r_chal)]
-    simp only [Fin.succ]
-    -- It remains to show the even/odd split of `preTensorCombine f`, affine-line-evaluated at `r 0`,
-    -- equals `preTensorCombine (fold f (r 0))` (row-wise = `iterated_fold (fold f (r 0)) (bits ·)`).
-    congr 1
-    funext rowIdx y
-    show affineLineEvaluation (F := L)
-        ((splitEvenOddRowWiseInterleavedWords (ϑ := n)
-          (preTensorCombine_WordStack 𝔽q β i (n + 1) h_destIdx h_destIdx_le f_i)).1)
-        ((splitEvenOddRowWiseInterleavedWords (ϑ := n)
-          (preTensorCombine_WordStack 𝔽q β i (n + 1) h_destIdx h_destIdx_le f_i)).2)
-        (r_chal 0) rowIdx y
-      = preTensorCombine_WordStack 𝔽q β i_succ n (by simp only [i_succ]; omega) h_destIdx_le
-          fold_1 rowIdx y
-    -- Unfold both sides to single-step `fold` data on the bit-fibers and reconcile.
-    simp only [preTensorCombine_WordStack, splitEvenOddRowWiseInterleavedWords,
-      affineLineEvaluation, fold_1, i_succ, Pi.add_apply, Pi.smul_apply, smul_eq_mul]
-    sorry
+      (preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i) r_chal :=
+  PreTensorCombineMultilinearResidual.holds i steps h_destIdx h_destIdx_le f_i r_chal
 
 /-- Even/odd split preserves non-closeness (bridge lemma for Binius first-step fold flow).
 If `U` is not close to `C^⋈(Fin (2^(s+1)))`, then the even/odd split pair is not
