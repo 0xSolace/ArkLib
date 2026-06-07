@@ -217,6 +217,25 @@ theorem openTranscript_entry_unique_against_candidate {s : Skeleton} (hashFn : �
   exact salted_opening_unique_against_honest_tree hashFn hinj salts leaves i salt value (by
     simpa [openTranscript] using h)
 
+/-- Any candidate salted pair that verifies against an honest transcript entry's path equals the
+honest salt and leaf at that entry's index. This is the transcript-facing form of
+`salted_opening_unique_against_honest_tree`, useful for deterministic extraction statements that
+want the honest tree values rather than the pair stored in the transcript entry. -/
+theorem openTranscript_candidate_unique_against_honest_tree {s : Skeleton}
+    (hashFn : α → α → α)
+    (hinj : ∀ a b c d, hashFn a b = hashFn c d → a = c ∧ b = d)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s))
+    (o : (i : SkeletonLeafIndex s) × α × α × List.Vector α i.depth)
+    (ho : o ∈ (openTranscript hashFn salts leaves idxs).2)
+    (salt value : α)
+    (h : getPutativeRootWithHash o.1 (leafCommit hashFn salt value) o.2.2.2 hashFn
+        = (openTranscript hashFn salts leaves idxs).1) :
+    salt = salts.get o.1 ∧ value = leaves.get o.1 := by
+  simp [openTranscript] at ho h ⊢
+  obtain ⟨i, _hi, rfl⟩ := ho
+  exact salted_opening_unique_against_honest_tree hashFn hinj salts leaves i salt value (by
+    simpa [openTranscript] using h)
+
 section HidingDefinition
 
 variable [DecidableEq α] [SampleableType α]
@@ -253,4 +272,5 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.openTranscript
 #print axioms InductiveMerkleTree.openTranscript_entry_verifies
 #print axioms InductiveMerkleTree.openTranscript_entry_unique_against_candidate
+#print axioms InductiveMerkleTree.openTranscript_candidate_unique_against_honest_tree
 #print axioms InductiveMerkleTree.Hiding
