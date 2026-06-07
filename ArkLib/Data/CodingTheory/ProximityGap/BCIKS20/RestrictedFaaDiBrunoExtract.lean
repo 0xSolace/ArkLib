@@ -42,6 +42,9 @@ exactly as the in-tree P2 consequence theorems do — none assumes the STEP-8 co
 * `embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget` — converts a generalized
   W-divisor target into the exact cleared-vs-un-cleared representative scaling relation, with
   order-zero carved / partition specializations.
+* `restrictedPartitionMatchAt_zero_iff_zeroClearingPolyFull_lift` — exposes the same explicit
+  polynomial-lift obstruction on the normalized partition-residual surface, with constructors and
+  projections for the carved and partition order-zero endpoints.
 * `embeddingCleared_eq_Wpow_mul_uncleared_of_target` — makes the cleared/un-cleared `eval₂` mismatch
   *quantitative*: under the STEP-8 target, the two `𝒪`-reps differ by exactly `W^{natDegreeY p}`.
 -/
@@ -630,6 +633,62 @@ theorem restrictedMatchAt_zero_iff_zeroClearingPolyFull_lift
   (restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd).trans
     (restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_lift H x₀ R)
 
+/-- Build the carved order-zero core from the explicit full-clearing polynomial-lift identity. -/
+theorem RestrictedFaaDiBrunoMatchAt.zero_of_zeroClearingPolyFull_lift
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hzero :
+      liftBivariate (H := H) (zeroClearingPolyFull H x₀ R)
+        = liftBivariate (H := H)
+            (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R)))) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 :=
+  (restrictedMatchAt_zero_iff_zeroClearingPolyFull_lift H x₀ R hHyp hd).2 hzero
+
+/-- Project the explicit full-clearing polynomial-lift identity from the carved order-zero core. -/
+theorem zeroClearingPolyFull_lift_of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+      liftBivariate (H := H) (zeroClearingPolyFull H x₀ R)
+        = liftBivariate (H := H)
+            (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))) :=
+  (restrictedMatchAt_zero_iff_zeroClearingPolyFull_lift H x₀ R hHyp hd).1 hmatch
+
+/-- The normalized partition order-zero residual is equivalent to the explicit full-clearing
+polynomial-lift identity. -/
+theorem restrictedPartitionMatchAt_zero_iff_zeroClearingPolyFull_lift
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 ↔
+      liftBivariate (H := H) (zeroClearingPolyFull H x₀ R)
+        = liftBivariate (H := H)
+            (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))) :=
+  (restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).symm.trans
+    (restrictedMatchAt_zero_iff_zeroClearingPolyFull_lift H x₀ R hHyp hd)
+
+/-- Build the normalized partition order-zero residual from the explicit full-clearing
+polynomial-lift identity. -/
+theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroClearingPolyFull_lift
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hzero :
+      liftBivariate (H := H) (zeroClearingPolyFull H x₀ R)
+        = liftBivariate (H := H)
+            (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R)))) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  (restrictedPartitionMatchAt_zero_iff_zeroClearingPolyFull_lift H x₀ R hHyp hd).2 hzero
+
+/-- Project the explicit full-clearing polynomial-lift identity from the normalized partition
+order-zero residual. -/
+theorem zeroClearingPolyFull_lift_of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+      liftBivariate (H := H) (zeroClearingPolyFull H x₀ R)
+        = liftBivariate (H := H)
+            (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))) :=
+  (restrictedPartitionMatchAt_zero_iff_zeroClearingPolyFull_lift H x₀ R hHyp hd).1 hpart
+
 /-- **W-divisor target to cleared/un-cleared scaling (axiom-clean).**  A general
 `HasseCoeffRepr𝒪UnclearedWDivTarget ... e` says the root evaluation equals the un-cleared
 representative divided by `W^e`; combining it with the proven cleared embedding identity gives the
@@ -826,3 +885,13 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_lift
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_zeroClearingPolyFull_lift
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_zeroClearingPolyFull_lift
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.zeroClearingPolyFull_lift_of_restrictedMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedPartitionMatchAt_zero_iff_zeroClearingPolyFull_lift
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroClearingPolyFull_lift
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.zeroClearingPolyFull_lift_of_partitionMatchAt_zero
