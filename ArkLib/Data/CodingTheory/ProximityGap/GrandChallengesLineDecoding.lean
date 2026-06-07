@@ -18,6 +18,7 @@ This is isolated to a separate file to avoid circular imports between `GrandChal
 namespace ProximityGap
 
 open CodingTheory
+open scoped NNReal ENNReal
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -33,6 +34,6 @@ def GrandChallenges.MCALowerWitness.ofLineDecodingTarget
     (hcov : ProximityGap.MCAForallDoubleCover (F := F) (A := F) (C : Set (ι → F)) δ)
     (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
     GrandChallenges.MCALowerWitness (C : Set (ι → F)) ε_star :=
-  GrandChallenges.MCALowerWitness.ofLe hδ_le_one (le_trans (lineDecodable_imp_epsMCA_le_target C δ a hcov) hle)
+  GrandChallenges.MCALowerWitness.ofLe (C := (C : Set (ι → F))) (ε_star := ε_star) (δ := δ) hδ_le_one (le_trans (lineDecodable_imp_epsMCA_le_target C δ a hcov) hle)
 
 end ProximityGap
