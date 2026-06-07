@@ -66,11 +66,12 @@ theorem hammingDist_ge_minDist_of_mem_closeCodewordsRel_ne
   -- both lie in the interleaved code
   have hVcode : V ∈ interleavedCodeSet (κ := Fin m) C := hV.1
   have hV'code : V' ∈ interleavedCodeSet (κ := Fin m) C := hV'.1
-  -- the interleaved code has the same minimum distance as the base code
-  have hmin : Code.minDist (interleavedCodeSet (κ := Fin m) C) = Code.minDist C := by
-    have he : Code.minDist (C ^⋈ Fin m) = Code.minDist C :=
-      minDist_eq_minDist (F := F) C
-    simpa only [interleavedCode_eq_interleavedCodeSet] using he
+  -- the interleaved code has the same minimum distance as the base code (propositional bridge,
+  -- avoiding the expensive `interleavedCodeSet`/`^⋈` defeq)
+  have hmin : Code.minDist (interleavedCodeSet (κ := Fin m) C) = Code.minDist C :=
+    (congrArg Code.minDist
+        (interleavedCode_eq_interleavedCodeSet (C := C) (κ := Fin m)).symm).trans
+      (minDist_eq_minDist (κ := Fin m) (F := F) C)
   -- distinct codewords are ≥ minDist apart
   have h := JohnsonBound.minDist_le_hammingDist_of_mem_ne
     (C := interleavedCodeSet (κ := Fin m) C) hVcode hV'code hne
@@ -131,8 +132,6 @@ private lemma closedForm_satisfies_recursion (L : ℕ∞) :
     rw [pow_succ, mul_comm]
   · intro b' r'
     simp only
-    -- (b'+1+(r'+1) choose (r'+1))·L^{r'+1} = (b'+(r'+1) choose (r'+1))·L^{r'+1}
-    --   + L·((b'+1+r') choose r')·L^{r'}, by Pascal
     have hpascal : ((b' + 1 + (r' + 1)).choose (r' + 1) : ℕ∞)
         = ((b' + (r' + 1)).choose (r' + 1) : ℕ∞) + ((b' + 1 + r').choose r' : ℕ∞) := by
       have e1 : b' + 1 + (r' + 1) = (b' + (r' + 1)) + 1 := by ring

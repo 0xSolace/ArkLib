@@ -246,6 +246,37 @@ theorem cz25DimensionCount_of_spanBound
   -- `(m + 1) * η = m·η + η ≤ (1 - τ(r₀) - η) + η = 1 - τ(r₀)`.
   nlinarith [hm]
 
+/-- **Corrected residual (CZ25 agreement half, faithful form).** Identical to
+`CZ25SpanBound` but with the per-word existential **guarded** by the non-degenerate radix
+hypothesis `0 ≤ 1 - τ(⌊1/η⌋) - η`. This guard is exactly the one the consumer already
+imposes (`δ < 0 ⟹ L = ∅`, handled by `closeCodewordsRel_eq_empty_of_neg`), and it removes
+the spurious — provably unsatisfiable — obligation that `CZ25SpanBound` carried in the
+`δ < 0` regime (see `cz25SpanBound_false_of_neg_radius`). On the non-degenerate regime this
+is equivalent to `CZ25DimensionCount` (`cz25SpanBound'_of_dimensionCount`), so it isolates
+exactly the genuine Guruswami–Wang iterative charge. -/
+def CZ25SpanBound'
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (_h : IsSubspaceDesign s τ C) (η : ℝ) (_hη : 0 < η) : Prop :=
+  ∀ f : ι → Fin s → F,
+    0 ≤ 1 - τ (Nat.floor (1 / η)) - η →
+    ∃ m : ℕ,
+      ((closeCodewordsRel ((C : Set (ι → Fin s → F))) f
+          (1 - τ (Nat.floor (1 / η)) - η)).ncard : ℝ) ≤ (m : ℝ) + 1 ∧
+      (m : ℝ) * η ≤ 1 - τ (Nat.floor (1 / η)) - η
+
+/-- **The guarded arithmetic collapse: `CZ25SpanBound' ⟹ CZ25DimensionCount`.** -/
+theorem cz25DimensionCount_of_spanBound'
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (h : IsSubspaceDesign s τ C) (η : ℝ) (hη : 0 < η)
+    (hSB : CZ25SpanBound' s τ C h η hη) :
+    CZ25DimensionCount s τ C h η hη := by
+  intro f hδ
+  obtain ⟨m, hℓ, hm⟩ := hSB f hδ
+  -- `|L| ≤ m + 1 ≤ (1 - τ(r₀))/η`.
+  refine le_trans hℓ ?_
+  rw [le_div_iff₀ hη]
+  -- `(m + 1) * η = m·η + η ≤ (1 - τ(r₀) - η) + η = 1 - τ(r₀)`.
+  nlinarith [hm]
 /-- **In-tree T3.4 [CZ25 Thm B.5] from the agreement residual.** Composing the arithmetic
 collapse with the existing reduction `subspaceDesign_list_decoding_cz25_of_dimensionCount`,
 the exact in-tree `Λ`-bound follows from `CZ25SpanBound` (the agreement half) alone — the
@@ -308,37 +339,6 @@ theorem cz25SpanBound_false_of_neg_radius
   have hnonneg : (0 : ℝ) ≤ (m : ℝ) * η := mul_nonneg (Nat.cast_nonneg m) (le_of_lt hη)
   linarith
 
-/-- **Corrected residual (CZ25 agreement half, faithful form).** Identical to
-`CZ25SpanBound` but with the per-word existential **guarded** by the non-degenerate radix
-hypothesis `0 ≤ 1 - τ(⌊1/η⌋) - η`. This guard is exactly the one the consumer already
-imposes (`δ < 0 ⟹ L = ∅`, handled by `closeCodewordsRel_eq_empty_of_neg`), and it removes
-the spurious — provably unsatisfiable — obligation that `CZ25SpanBound` carried in the
-`δ < 0` regime (see `cz25SpanBound_false_of_neg_radius`). On the non-degenerate regime this
-is equivalent to `CZ25DimensionCount` (`cz25SpanBound'_of_dimensionCount`), so it isolates
-exactly the genuine Guruswami–Wang iterative charge. -/
-def CZ25SpanBound'
-    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
-    (_h : IsSubspaceDesign s τ C) (η : ℝ) (_hη : 0 < η) : Prop :=
-  ∀ f : ι → Fin s → F,
-    0 ≤ 1 - τ (Nat.floor (1 / η)) - η →
-    ∃ m : ℕ,
-      ((closeCodewordsRel ((C : Set (ι → Fin s → F))) f
-          (1 - τ (Nat.floor (1 / η)) - η)).ncard : ℝ) ≤ (m : ℝ) + 1 ∧
-      (m : ℝ) * η ≤ 1 - τ (Nat.floor (1 / η)) - η
-
-/-- **The guarded arithmetic collapse: `CZ25SpanBound' ⟹ CZ25DimensionCount`.** -/
-theorem cz25DimensionCount_of_spanBound'
-    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
-    (h : IsSubspaceDesign s τ C) (η : ℝ) (hη : 0 < η)
-    (hSB : CZ25SpanBound' s τ C h η hη) :
-    CZ25DimensionCount s τ C h η hη := by
-  intro f hδ
-  obtain ⟨m, hℓ, hm⟩ := hSB f hδ
-  -- `|L| ≤ m + 1 ≤ (1 - τ(r₀))/η`.
-  refine le_trans hℓ ?_
-  rw [le_div_iff₀ hη]
-  -- `(m + 1) * η = m·η + η ≤ (1 - τ(r₀) - η) + η = 1 - τ(r₀)`.
-  nlinarith [hm]
 
 /-- **The corrected residual is faithful: `CZ25DimensionCount ⟹ CZ25SpanBound'`.** On the
 non-degenerate regime `δ ≥ 0`, the only valid affine-span witness is the tautological
