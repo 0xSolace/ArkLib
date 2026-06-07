@@ -329,7 +329,7 @@ section RBRSoundnessAssembly
 variable {M : ℕ}
 variable {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
 
-omit [Fintype ι] [Nonempty ι] in
+omit [SampleableType F] [Fintype ι] [Nonempty ι] in
 /-- Assemble `whir_rbr_soundness` from a concrete WHIR `VectorIOP`, its `IsSecureWithGap` proof,
 and the named per-round bounds from Theorem 5.2.
 
