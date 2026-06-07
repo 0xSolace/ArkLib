@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
+import ArkLib.Data.CodingTheory.EntropyCapacityValue
 
 /-!
 # Monotonicity of the q-ary entropy `qEntropy` below capacity
@@ -50,9 +51,22 @@ theorem qEntropy_le_qEntropy_of_le (hq : 2 ≤ q) {x y : ℝ}
     qEntropy q x ≤ qEntropy q y :=
   qEntropy_monotoneOn hq ⟨hx0, le_trans hxy hy⟩ ⟨le_trans hx0 hxy, hy⟩ hxy
 
+/-- **`qEntropy q δ ≤ 1` below capacity.** On `[0, 1 − 1/q]` the q-ary entropy is bounded by its
+capacity value `H_q(1 − 1/q) = 1` (`qEntropy_capacity_eq_one`), by monotonicity. -/
+theorem qEntropy_le_one (hq : 2 ≤ q) {δ : ℝ} (hδ0 : 0 ≤ δ) (hδ : δ ≤ 1 - 1 / (q : ℝ)) :
+    qEntropy q δ ≤ 1 := by
+  have hq0 : (0 : ℝ) < (q : ℝ) := by exact_mod_cast (show 0 < q by omega)
+  have hcap : qEntropy q (1 - 1 / (q : ℝ)) = 1 := by
+    rw [show (1 : ℝ) - 1 / (q : ℝ) = ((q : ℝ) - 1) / (q : ℝ) by field_simp]
+    exact qEntropy_capacity_eq_one hq
+  calc qEntropy q δ ≤ qEntropy q (1 - 1 / (q : ℝ)) :=
+        qEntropy_le_qEntropy_of_le hq hδ0 hδ le_rfl
+    _ = 1 := hcap
+
 end CodingTheory
 
 -- Axiom audit: depends on exactly `[propext, Classical.choice, Quot.sound]`.
 #print axioms CodingTheory.qEntropy_strictMonoOn
 #print axioms CodingTheory.qEntropy_monotoneOn
 #print axioms CodingTheory.qEntropy_le_qEntropy_of_le
+#print axioms CodingTheory.qEntropy_le_one
