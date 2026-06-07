@@ -164,7 +164,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoExtract
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5Genuine
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ScratchDvd138
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
