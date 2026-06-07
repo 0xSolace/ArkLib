@@ -6,6 +6,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.Data.Misc.Basic
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Spec
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Relations
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.UDRCongruence
 
 /-!
@@ -456,8 +457,11 @@ lemma getFiberPoint_eq_qMap_total_fiber
         (i := ⟨k.val * ϑ,
           lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (x := k.val * ϑ)
             (h := k_mul_ϑ_lt_ℓ (k := k))⟩)
-        (steps := ϑ) (h_destIdx := by rfl)
-        (h_destIdx_le := by exact k_succ_mul_ϑ_le_ℓ_₂ (k := k))
+        (steps := ϑ)
+        (h_i_add_steps := by
+          have h_le := k_succ_mul_ϑ_le_ℓ_₂ (k := k)
+          have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+          simp only [Fin.val_mk]; omega)
         (y := getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (k := k) (v := v)) u := by
   unfold getFiberPoint
   simp only [oraclePositionToDomainIndex, id_eq]
@@ -502,7 +506,7 @@ lemma logical_computeFoldedValue_eq_iterated_fold
           have h_lt : k.val * ϑ + j.val < k.val * ϑ + ϑ := by
             exact Nat.add_lt_add_left j.isLt (k.val * ϑ)
           exact lt_of_lt_of_le h_lt h_le⟩)
-      (y := getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (k := k) (v := v)) := by
+      (getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (k := k) (v := v)) := by
   simp only [logical_computeFoldedValue]
   rw [iterated_fold_eq_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := ⟨k.val * ϑ,
