@@ -139,6 +139,26 @@ theorem salted_opening_binding_pair {s : Skeleton}
       (leafCommit hashFn salt₁ value₁) (leafCommit hashFn salt₂ value₂) rootValue proof h₁ h₂
   exact hinj salt₁ value₁ salt₂ value₂ hcommit
 
+/-- **Honest salted-opening uniqueness.** If a candidate salted pair verifies against the honest
+salted root using the honest authentication path, then it is the honest salt and leaf at that
+index, assuming the compression function is collision-free.
+
+This is the salted analogue of the deterministic extractor soundness in `Extraction.lean`: the
+honest salted tree and path pin down the opened `(salt, value)` pair. -/
+theorem salted_opening_unique_against_honest_tree {s : Skeleton}
+    (hashFn : α → α → α)
+    (hinj : ∀ a b c d, hashFn a b = hashFn c d → a = c ∧ b = d)
+    (salts leaves : LeafData α s) (idx : SkeletonLeafIndex s)
+    (salt value : α)
+    (h : getPutativeRootWithHash idx (leafCommit hashFn salt value)
+        (generateProof (buildSaltedTree hashFn salts leaves) idx) hashFn
+        = (buildSaltedTree hashFn salts leaves).getRootValue) :
+    salt = salts.get idx ∧ value = leaves.get idx := by
+  apply salted_opening_binding_pair idx hashFn hinj salt (salts.get idx) value (leaves.get idx)
+    (buildSaltedTree hashFn salts leaves).getRootValue
+    (generateProof (buildSaltedTree hashFn salts leaves) idx) h
+  simpa [saltedLeaves_get] using salted_completeness hashFn salts leaves idx
+
 section HidingDefinition
 
 variable [DecidableEq α] [SampleableType α]
@@ -179,5 +199,6 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.salted_completeness
 #print axioms InductiveMerkleTree.salted_opening_binding_value
 #print axioms InductiveMerkleTree.salted_opening_binding_pair
+#print axioms InductiveMerkleTree.salted_opening_unique_against_honest_tree
 #print axioms InductiveMerkleTree.openTranscript
 #print axioms InductiveMerkleTree.Hiding
