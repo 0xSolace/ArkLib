@@ -188,6 +188,18 @@ def openTranscript {s : Skeleton} (hashFn : α → α → α)
   (tree.getRootValue,
     idxs.map (fun i => ⟨i, salts.get i, leaves.get i, generateProof tree i⟩))
 
+/-- Every opening emitted by the honest salted transcript carries the honest salt and leaf value
+for its own index. This exposes the transcript data invariant used by deterministic extraction and
+future simulator/hybrid arguments. -/
+theorem openTranscript_entry_eq_honest_pair {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    ∀ o ∈ (openTranscript hashFn salts leaves idxs).2,
+      o.2.1 = salts.get o.1 ∧ o.2.2.1 = leaves.get o.1 := by
+  intro o ho
+  simp [openTranscript] at ho ⊢
+  obtain ⟨i, _hi, rfl⟩ := ho
+  simp
+
 /-- Every opening emitted by the honest salted transcript verifies against the transcript root. This
 is the list-level packaging of `salted_completeness` used by future simulator/hybrid arguments. -/
 theorem openTranscript_entry_verifies {s : Skeleton} (hashFn : α → α → α)
@@ -270,6 +282,7 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.salted_opening_unique_against_honest_tree
 #print axioms InductiveMerkleTree.multi_salted_openings_unique_against_honest_tree
 #print axioms InductiveMerkleTree.openTranscript
+#print axioms InductiveMerkleTree.openTranscript_entry_eq_honest_pair
 #print axioms InductiveMerkleTree.openTranscript_entry_verifies
 #print axioms InductiveMerkleTree.openTranscript_entry_unique_against_candidate
 #print axioms InductiveMerkleTree.openTranscript_candidate_unique_against_honest_tree
