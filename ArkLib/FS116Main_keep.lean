@@ -142,10 +142,9 @@ theorem fs116_coupled_final
     Option.getM_map_run, Option.map_comp_lambda, optionT_monadLift_run, liftM_eq_monadLift,
     OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, monadLift_bind, monadLift_pure,
     Option.elimM, bind_assoc, pure_bind, map_bind]
-  -- leaf_collapse + optionT_run_monadLift_oc are PROVEN, but neither rw/simp applies here:
-  -- the goal's monadLift leaf is a SubSpec/liftM-coercion term, structurally different from the
-  -- lemmas' MonadLiftT-based monadLift (though defeq). Finishing needs per-leaf conv/change surgery
-  -- inside the nested-elim structure, then a probEvent congruence vs the SR game.
+  -- Build-verified to here. The remaining leaves are `simulateQ IMPL ((↑X).run)` where `↑` is a
+  -- COERCION term (not literally `@monadLift`), so no simp/rw lemma matches; closing needs
+  -- interactive per-leaf conv/change surgery in the nested-elim goal + a probEvent congruence.
   sorry
 
 end Reduction
