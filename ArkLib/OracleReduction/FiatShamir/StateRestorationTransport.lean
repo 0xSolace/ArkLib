@@ -177,12 +177,51 @@ theorem srSoundnessGame_soundnessOfFiatShamirProver
         return ⟨transcript, stmtIn⟩) := by
   simp [srSoundnessGame, soundnessOfFiatShamirProver]
 
+/-- View a fixed malicious one-message Fiat-Shamir prover execution as the corresponding
+state-restoration knowledge-soundness prover payload.
+
+The adapter replays the Fiat-Shamir prover's output step after the proof-message round, preserving
+the same final-state evolution while retaining only the output witness required by the
+state-restoration knowledge game. -/
+def knowledgeSoundnessOfFiatShamirProver
+    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
+      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    Prover.StateRestoration.KnowledgeSoundness oSpec StmtIn WitOut pSpec := do
+  let state := P.input (stmtIn, witIn)
+  let ⟨proof, state⟩ ← P.sendMessage ⟨0, by simp⟩ state
+  let ctxOut ← P.output state
+  let messages : pSpec.Messages := proof
+  return ⟨stmtIn, messages, ctxOut.2⟩
+
+/-- The state-restoration knowledge game for the Fiat-Shamir-prover adapter is exactly the single
+Fiat-Shamir proof-message computation, followed by the prover output step and the shared
+state-restoration transcript derivation. -/
+theorem srKnowledgeSoundnessGame_knowledgeSoundnessOfFiatShamirProver
+    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
+      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    srKnowledgeSoundnessGame
+        (knowledgeSoundnessOfFiatShamirProver (oSpec := oSpec) (pSpec := pSpec) P stmtIn witIn)
+      =
+      (do
+        let state := P.input (stmtIn, witIn)
+        let ⟨proof, state⟩ ←
+          P.sendMessage ⟨0, by simp⟩ state
+        let ctxOut ← P.output state
+        let messages : pSpec.Messages := proof
+        let transcript ← messages.deriveTranscriptSR (oSpec := oSpec) stmtIn
+        return ⟨transcript, stmtIn, ctxOut.2⟩) := by
+  simp [srKnowledgeSoundnessGame, knowledgeSoundnessOfFiatShamirProver]
+
 end StateRestoration
 
 end Prover
 
 #print axioms Prover.StateRestoration.soundnessOfFiatShamirProver
 #print axioms Prover.StateRestoration.srSoundnessGame_soundnessOfFiatShamirProver
+#print axioms Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver
+#print axioms Prover.StateRestoration.srKnowledgeSoundnessGame_knowledgeSoundnessOfFiatShamirProver
 
 end FiatShamirAdversaryAdapter
 
