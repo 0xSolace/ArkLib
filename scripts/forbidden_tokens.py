@@ -6,7 +6,10 @@ provided, scans only those Lean files/directories. Fails if live
 (non-comment) code contains:
   - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
   - a custom `axiom` declaration whose name is not an allowlisted, documented
-    residual (see scripts/residual_axioms.txt).
+    residual (see scripts/residual_axioms.txt), or
+  - a vacuous `theorem/lemma/def <name…residual…> : True` placebo (the #169/#171
+    larp pattern: proves nothing about its named obligation, slips past the
+    axiom check, and was used to close issues `COMPLETED`).
 
 Comment and docstring occurrences are ignored. `sorry`/`admit` are handled
 separately by scripts/sorry_census.py --fail-on-holes; this precheck runs
@@ -26,6 +29,14 @@ TOKEN_RE = re.compile(r"\b(native_decide|bv_decide)\b")
 AXIOM_RE = re.compile(
     r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*axiom\s+"
     r"([A-Za-z_][A-Za-z0-9_'.]*)"
+)
+# #169/#171 larp pattern: a `theorem/lemma <name…residual…> : True` placebo
+# proves nothing about its named obligation yet slips past the axiom check and
+# was used to close issues `COMPLETED`. Reject any vacuous `: True` declaration
+# whose name advertises a residual/keystone/conjecture obligation.
+TRUE_PLACEBO_RE = re.compile(
+    r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+|noncomputable\s+)*"
+    r"(?:theorem|lemma|def)\s+([A-Za-z_][A-Za-z0-9_'.]*)\s*:\s*True\b"
 )
 
 ALLOWLIST_PATH = Path(__file__).resolve().parent / "residual_axioms.txt"
@@ -138,6 +149,16 @@ def main() -> int:
                         f"{path}:{idx}: forbidden custom axiom declaration {name} "
                         f"(add to scripts/residual_axioms.txt only if it is a documented, "
                         f"tracked residual)"
+                    )
+            pm = TRUE_PLACEBO_RE.match(line)
+            if pm:
+                pname = pm.group(1)
+                low = pname.lower()
+                if "residual" in low or "keystone" in low or "conjecture" in low:
+                    failures.append(
+                        f"{path}:{idx}: forbidden vacuous `: True` placebo {pname} "
+                        f"(a `theorem ... : True` named like an obligation proves nothing; "
+                        f"state and discharge the real proposition, or track it honestly)"
                     )
             pos += len(line)
 
