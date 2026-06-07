@@ -215,6 +215,64 @@ theorem whirBlockVectorSpec_totalMessageLength (M : ℕ) :
   · simp [whirBlockVectorSpec_messageLength]
   · exact whirBlockVectorSpec_card_messageIdx M
 
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Converted `ProtocolSpec` challenge indices of the block-ordered WHIR skeleton are the second
+block. -/
+def whirBlockVectorSpec_toProtocolSpec_challengeIdxEquivFin (M : ℕ) :
+    ((whirBlockVectorSpec M).toProtocolSpec F).ChallengeIdx ≃ Fin (2 * M + 2) :=
+  whirBlockVectorSpec_challengeIdxEquivFin M
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Converted `ProtocolSpec` prover-message indices of the block-ordered WHIR skeleton are the
+first block. -/
+def whirBlockVectorSpec_toProtocolSpec_messageIdxEquivFin (M : ℕ) :
+    ((whirBlockVectorSpec M).toProtocolSpec F).MessageIdx ≃ Fin (2 * M + 2) :=
+  whirBlockVectorSpec_messageIdxEquivFin M
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- The converted block-ordered WHIR skeleton has the expected challenge budget. -/
+theorem whirBlockVectorSpec_toProtocolSpec_card_challengeIdx (M : ℕ) :
+    Fintype.card (((whirBlockVectorSpec M).toProtocolSpec F).ChallengeIdx) = 2 * M + 2 := by
+  rw [Fintype.card_congr
+    (whirBlockVectorSpec_toProtocolSpec_challengeIdxEquivFin (F := F) M)]
+  simp
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- The converted block-ordered WHIR skeleton has the expected prover-message budget. -/
+theorem whirBlockVectorSpec_toProtocolSpec_card_messageIdx (M : ℕ) :
+    Fintype.card (((whirBlockVectorSpec M).toProtocolSpec F).MessageIdx) = 2 * M + 2 := by
+  rw [Fintype.card_congr
+    (whirBlockVectorSpec_toProtocolSpec_messageIdxEquivFin (F := F) M)]
+  simp
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem whirBlockVectorSpec_toProtocolSpec_challengeIdxEquivFin_apply (M : ℕ)
+    (i : ((whirBlockVectorSpec M).toProtocolSpec F).ChallengeIdx) :
+    whirBlockVectorSpec_toProtocolSpec_challengeIdxEquivFin (F := F) M i =
+      whirBlockVectorSpec_challengeIdxEquivFin M i :=
+  rfl
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem whirBlockVectorSpec_toProtocolSpec_challengeIdxEquivFin_symm_apply (M : ℕ)
+    (i : Fin (2 * M + 2)) :
+    (whirBlockVectorSpec_toProtocolSpec_challengeIdxEquivFin (F := F) M).symm i =
+      (whirBlockVectorSpec_challengeIdxEquivFin M).symm i :=
+  rfl
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem whirBlockVectorSpec_toProtocolSpec_messageIdxEquivFin_apply (M : ℕ)
+    (i : ((whirBlockVectorSpec M).toProtocolSpec F).MessageIdx) :
+    whirBlockVectorSpec_toProtocolSpec_messageIdxEquivFin (F := F) M i =
+      whirBlockVectorSpec_messageIdxEquivFin M i :=
+  rfl
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem whirBlockVectorSpec_toProtocolSpec_messageIdxEquivFin_symm_apply (M : ℕ)
+    (i : Fin (2 * M + 2)) :
+    (whirBlockVectorSpec_toProtocolSpec_messageIdxEquivFin (F := F) M).symm i =
+      (whirBlockVectorSpec_messageIdxEquivFin M).symm i :=
+  rfl
+
 /-! ### The WHIR protocol-spec direction vector
 
 WHIR runs `M + 1` rounds; each round contributes **two** verifier challenges (the folding
@@ -530,6 +588,14 @@ end RBRSoundnessAssembly
 #print axioms whirBlockVectorSpec_messageLength
 #print axioms whirBlockVectorSpec_totalChallengeLength
 #print axioms whirBlockVectorSpec_totalMessageLength
+#print axioms whirBlockVectorSpec_toProtocolSpec_challengeIdxEquivFin
+#print axioms whirBlockVectorSpec_toProtocolSpec_messageIdxEquivFin
+#print axioms whirBlockVectorSpec_toProtocolSpec_card_challengeIdx
+#print axioms whirBlockVectorSpec_toProtocolSpec_card_messageIdx
+#print axioms whirBlockVectorSpec_toProtocolSpec_challengeIdxEquivFin_apply
+#print axioms whirBlockVectorSpec_toProtocolSpec_challengeIdxEquivFin_symm_apply
+#print axioms whirBlockVectorSpec_toProtocolSpec_messageIdxEquivFin_apply
+#print axioms whirBlockVectorSpec_toProtocolSpec_messageIdxEquivFin_symm_apply
 #print axioms whir_rbr_soundness_of_whirVectorSpec_secure_gap
 
 end Construction
