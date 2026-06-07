@@ -617,6 +617,7 @@ import ArkLib.ToMathlib.Claim57Supply
 import ArkLib.ToMathlib.Claim59Conditional
 import ArkLib.ToMathlib.CoeffExtract
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
+import ArkLib.ToMathlib.CountingAgreementBricks
 import ArkLib.ToMathlib.DG25CoveringRadiusProof
 import ArkLib.ToMathlib.DiscriminantSeparable
 import ArkLib.ToMathlib.EliasVolumeCertificates
