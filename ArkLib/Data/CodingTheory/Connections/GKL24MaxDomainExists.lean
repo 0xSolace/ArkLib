@@ -348,4 +348,27 @@ theorem mcaBad_card_le_sum_mcaBadWitness {MC : Submodule F (ι → F)} {δ : ℝ
   le_trans (Finset.card_le_card (mcaBad_subset_biUnion_mcaBadWitness _ δ u₀ u₁ T hT))
     Finset.card_biUnion_le
 
+/-- **Per-stack first-moment bound `|mcaBad| ≤ |T|·max(1, 2δn)`.**  Combining the witness cover
+(`mcaBad_card_le_sum_mcaBadWitness`) with the per-codeword bound
+(`mcaBadWitness_card_le_two_delta_mul_card`) over a codeword carrier `T`: the per-stack bad set has
+size at most `|T|` times the per-codeword radius `max(1, 2δn)`.  With `|T|` the list size `L`, this is
+the per-stack first-moment input of the GCXK25 list-decoding→MCA reduction (here at the in-tree `2δn`
+radius). -/
+theorem mcaBad_card_le_carrier_two_delta {MC : Submodule F (ι → F)} {δ : ℝ≥0} {u₀ u₁ : ι → F}
+    (T : Finset (ι → F)) (hT : ∀ w ∈ (MC : Set (ι → F)), w ∈ T)
+    (hTsub : ∀ w ∈ T, w ∈ (MC : Set (ι → F))) :
+    ((mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card : ℝ)
+      ≤ T.card * max 1 (2 * (δ : ℝ) * Fintype.card ι) := by
+  have h1 : ((mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card : ℝ)
+      ≤ ∑ w ∈ T, ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) := by
+    have h := mcaBad_card_le_sum_mcaBadWitness (MC := MC) (δ := δ) (u₀ := u₀) (u₁ := u₁) T hT
+    rw [← Nat.cast_sum]; exact_mod_cast h
+  refine le_trans h1 ?_
+  calc ∑ w ∈ T, ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ)
+      ≤ ∑ _w ∈ T, max 1 (2 * (δ : ℝ) * Fintype.card ι) :=
+        Finset.sum_le_sum fun w hw =>
+          mcaBadWitness_card_le_two_delta_mul_card MC δ u₀ u₁ w (hTsub w hw)
+    _ = T.card * max 1 (2 * (δ : ℝ) * Fintype.card ι) := by
+        rw [Finset.sum_const, nsmul_eq_mul]
+
 end ProximityGap
