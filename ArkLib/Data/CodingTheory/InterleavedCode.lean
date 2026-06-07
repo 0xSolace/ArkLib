@@ -732,8 +732,19 @@ theorem jointAgreement_mono {F κ ι : Type*} [Fintype ι] [DecidableEq F]
     simpa [mul_comm] using mul_le_mul_left hsub (Fintype.card ι : ℝ≥0)
   exact hmul.trans hS
 
+/-- Monotonicity of `jointAgreement` in the code: enlarging the code preserves joint agreement,
+since each agreeing codeword for the smaller code is also a codeword for the larger one.  Companion
+to `jointAgreement_mono` (monotone in the proximity radius). -/
+theorem jointAgreement_mono_code {F κ ι : Type*} [Fintype ι] [DecidableEq F]
+    {C₁ C₂ : Set (ι → F)} {δ : ℝ≥0} {W : κ → ι → F} (hC : C₁ ⊆ C₂)
+    (h : jointAgreement (F := F) (κ := κ) (ι := ι) (C := C₁) (δ := δ) (W := W)) :
+    jointAgreement (F := F) (κ := κ) (ι := ι) (C := C₂) (δ := δ) (W := W) := by
+  rcases h with ⟨S, hS, v, hv⟩
+  exact ⟨S, hS, v, fun i => ⟨hC (hv i).1, (hv i).2⟩⟩
+
 #print axioms jointAgreement_of_forall_mem
 #print axioms jointAgreement_mono
+#print axioms jointAgreement_mono_code
 
 /-- Transport joint agreement across an equivalence of coordinate domains.
 
