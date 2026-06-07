@@ -108,6 +108,34 @@ theorem epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero (C : Set (ι → A)) (δ : 
   rw [iSup_congr hzero]
   simp
 
+/-- If the MCA error vanishes, every stack has zero bad scalars. -/
+theorem forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero (C : Set (ι → A)) (δ : ℝ≥0)
+    (heps : epsMCA (F := F) C δ = 0) :
+    ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) C δ (u 0) (u 1) = 0 := by
+  classical
+  rw [epsMCA_eq_iSup_mcaBadCount] at heps
+  have hsup :
+      (⨆ u : WordStack A (Fin 2) ι,
+        (mcaBadCount (F := F) C δ (u 0) (u 1) : ℝ≥0∞)) = 0 := by
+    rcases (ENNReal.div_eq_zero_iff.mp heps) with hzero | htop
+    · exact hzero
+    · exact False.elim ((ENNReal.natCast_ne_top (Fintype.card F)) htop)
+  have hzero := (ENNReal.iSup_eq_zero.mp hsup)
+  intro u
+  have hcount :
+      (mcaBadCount (F := F) C δ (u 0) (u 1) : ℝ≥0∞) = 0 := hzero u
+  exact_mod_cast hcount
+
+/-- Vanishing MCA error is equivalent to zero bad-scalar counts for every stack. -/
+theorem epsMCA_eq_zero_iff_forall_mcaBadCount_eq_zero (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) C δ = 0 ↔
+      ∀ u : WordStack A (Fin 2) ι,
+        mcaBadCount (F := F) C δ (u 0) (u 1) = 0 := by
+  constructor
+  · exact forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero C δ
+  · exact epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero C δ
+
 /-- If no stack/scalar pair realizes the MCA bad event, then the MCA error vanishes. -/
 theorem epsMCA_eq_zero_of_forall_not_mcaEvent (C : Set (ι → A)) (δ : ℝ≥0)
     (h : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
@@ -134,6 +162,8 @@ theorem grandMCAChallenge_iff_forall_badCount_le (C : LinearCode ι F) (ε_star 
 #print axioms ProximityGap.mcaBadCount_eq_zero_of_forall_not_mcaEvent
 #print axioms ProximityGap.mcaBadCount_eq_zero_iff_forall_not_mcaEvent
 #print axioms ProximityGap.epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero
+#print axioms ProximityGap.forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero
+#print axioms ProximityGap.epsMCA_eq_zero_iff_forall_mcaBadCount_eq_zero
 #print axioms ProximityGap.epsMCA_eq_zero_of_forall_not_mcaEvent
 
 end ProximityGap

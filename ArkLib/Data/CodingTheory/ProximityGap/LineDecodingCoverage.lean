@@ -444,6 +444,29 @@ theorem epsMCA_eq_zero_of_MCAForallDoubleCover (C : Set (ι → A)) (δ : ℝ≥
     epsMCA (F := F) C δ = 0 :=
   epsMCA_eq_zero_of_forall_double_cover C δ hcov
 
+/-- Vanishing MCA error repacks as the global repaired double-cover surface. -/
+theorem MCAForallDoubleCover.of_epsMCA_eq_zero (C : Set (ι → A)) (δ : ℝ≥0)
+    (heps : epsMCA (F := F) C δ = 0) :
+    MCAForallDoubleCover (F := F) (A := A) C δ :=
+  MCAForallDoubleCover.of_forall_mcaBadCount_eq_zero C δ
+    (forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero C δ heps)
+
+/-- The global repaired double-cover surface is exact at `ε_mca = 0`. -/
+theorem epsMCA_eq_zero_iff_MCAForallDoubleCover (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) C δ = 0 ↔
+      MCAForallDoubleCover (F := F) (A := A) C δ := by
+  constructor
+  · exact MCAForallDoubleCover.of_epsMCA_eq_zero C δ
+  · exact epsMCA_eq_zero_of_MCAForallDoubleCover C δ
+
+/-- The named all-stack bad-scalar double-cover surface is exact at `ε_mca = 0`. -/
+theorem epsMCA_eq_zero_iff_badScalarDoubleCover (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) C δ = 0 ↔
+      ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+        MCABadScalarDoubleCover (F := F) (A := A) C δ (u 0) (u 1) γ := by
+  rw [epsMCA_eq_zero_iff_MCAForallDoubleCover,
+    MCAForallDoubleCover_iff_badScalarDoubleCover]
+
 #print axioms MCADoubleCoverOn
 #print axioms MCABadScalarDoubleCover
 #print axioms pairJointAgreesOn_of_MCADoubleCoverOn
@@ -469,6 +492,9 @@ theorem epsMCA_eq_zero_of_MCAForallDoubleCover (C : Set (ι → A)) (δ : ℝ≥
 #print axioms MCAForallDoubleCover.of_forall_mcaBadCount_eq_zero
 #print axioms MCAForallDoubleCover_iff_forall_mcaBadCount_eq_zero
 #print axioms epsMCA_eq_zero_of_MCAForallDoubleCover
+#print axioms MCAForallDoubleCover.of_epsMCA_eq_zero
+#print axioms epsMCA_eq_zero_iff_MCAForallDoubleCover
+#print axioms epsMCA_eq_zero_iff_badScalarDoubleCover
 
 end
 
