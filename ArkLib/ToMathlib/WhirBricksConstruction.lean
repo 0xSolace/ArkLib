@@ -490,6 +490,55 @@ noncomputable def paperTranscriptOracleProver {M : ℕ} {ιs : Fin (M + 1) → T
   receiveChallenge := fun _ T => pure (fun _ => T)
   output := fun _ => pure ((true, fun e => nomatch e), ())
 
+omit [Field F] [SampleableType F] in
+/-- A verifier-side adapter for the faithful paper-order transcript shape.
+
+The supplied `verify` computation is the real WHIR verifier logic still to be built: it receives
+the public statement and all verifier challenges, and may query the input oracle and prover-message
+oracles through ArkLib's `OracleComp` interface.  The adapter records that WHIR IOPs have no output
+oracle statements. -/
+noncomputable def paperTranscriptOracleVerifier {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (verify :
+      Unit → ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges →
+        OptionT
+          (OracleComp
+            ([]ₒ +
+              ([OracleStatement (ιs 0) F]ₒ +
+                [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)))
+          Bool) :
+    OracleVerifier []ₒ Unit (OracleStatement (ιs 0) F)
+      Bool (fun _ : Empty => Unit) ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F) where
+  verify := verify
+  embed := {
+    toFun := fun e => nomatch e
+    inj' := fun e => nomatch e
+  }
+  hEq := fun e => nomatch e
+
+omit [Field F] [SampleableType F] in
+/-- Package supplied paper-order transcript generation and verifier logic as an actual WHIR-shaped
+`VectorIOP`.
+
+This is the first `VectorIOP` constructor over the faithful Construction 5.1 `VectorSpec`.  It is
+intentionally an adapter: perfect completeness and RBR soundness still require instantiating
+`verify` with the algebraic WHIR checks and proving the corresponding security obligations. -/
+noncomputable def paperTranscriptVectorIOP {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (makeTranscript :
+      (Unit × (∀ u : Unit, OracleStatement (ιs 0) F u)) × Unit → PaperTranscriptData P d)
+    (verify :
+      Unit → ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges →
+        OptionT
+          (OracleComp
+            ([]ₒ +
+              ([OracleStatement (ιs 0) F]ₒ +
+                [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)))
+          Bool) :
+    VectorIOP Unit (OracleStatement (ιs 0) F) Unit (whirPaperTranscriptVectorSpec P d) F where
+  prover := paperTranscriptOracleProver P d makeTranscript
+  verifier := paperTranscriptOracleVerifier P d verify
+
 /-! ### Semantic WHIR per-round transcript slots
 
 Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an
