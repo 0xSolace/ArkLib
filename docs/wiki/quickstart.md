@@ -69,10 +69,10 @@ python3 -m pip install leanblueprint
 ## Important Notes
 
 - `./scripts/validate.sh` is the recommended convenience wrapper for routine local validation.
-- By default it runs the three CI verification gates (`forbidden_tokens.py` precheck,
-  `sorry_census.py --fail-on-holes`, and `axiom_audit.py`) alongside `lake build`,
-  `./scripts/check-imports.sh`, and `python3 ./scripts/check-docs-integrity.py`, so a clean
-  local `validate.sh` matches the CI gate set (issue #111 parity).
+- By default it runs the forbidden-token precheck, `lake build`, the `ArkLib/Data/**` warning
+  budget, the zero-hole sorry census, the flagship axiom audit, umbrella-import checks, docs
+  integrity checks, and knowledge-base checks, so a clean local `validate.sh` matches the CI gate set
+  (issue #111 parity).
 - The lower-level scripts remain valid when you only want one specific check.
 - `scripts/build-project.sh` is now just a compile-only helper, not the convenience wrapper.
 - `scripts/README.md` is still useful as an inventory of helper scripts.
@@ -85,8 +85,13 @@ You can still run the underlying pieces directly when debugging a specific issue
 
 ```bash
 lake build
+python3 ./scripts/forbidden_tokens.py
+python3 ./scripts/sorry_census.py --fail-on-holes
+python3 ./scripts/axiom_audit.py
 ./scripts/check-imports.sh
 python3 ./scripts/check-docs-integrity.py
+python3 ./scripts/kb/check_generated.py
+python3 ./scripts/kb/lint.py --strict-cited-pages
 ```
 
 If you specifically need to regenerate `ArkLib.lean`, use:

@@ -139,6 +139,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
+import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
 import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
@@ -204,6 +205,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityProducts
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
+import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
@@ -549,7 +551,6 @@ import ArkLib.ToMathlib.GGR11EraseDecodeTree
 import ArkLib.ToMathlib.GGR11Interleaved
 import ArkLib.ToMathlib.GGR11Reconnect
 import ArkLib.ToMathlib.GHSZ02Cor20
-import ArkLib.ToMathlib.GHSZ02LargeNProof
 import ArkLib.ToMathlib.GK16BudgetCoeff
 import ArkLib.ToMathlib.GK16Claim16Core
 import ArkLib.ToMathlib.GK16Claim16Witness
@@ -609,6 +610,7 @@ import ArkLib.ToMathlib.Section5Concrete
 import ArkLib.ToMathlib.Section5ConcreteJohnson
 import ArkLib.ToMathlib.SiegelInterpolation
 import ArkLib.ToMathlib.SpartanBricks
+import ArkLib.ToMathlib.SqSumCardSupport
 import ArkLib.ToMathlib.StraightlineRewindingBridge
 import ArkLib.ToMathlib.SubspacePolyLinearized
 import ArkLib.ToMathlib.SubstFieldCaveat
@@ -635,4 +637,3 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
-import ArkLib.ToMathlib.SqSumCardSupport
