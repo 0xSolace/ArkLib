@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
+import ArkLib.ToMathlib.HcardDischarge
 
 /-!
 # The off-centre keystone: `betaRec ⟹ CurveCoeffPolys` at every expansion centre (F1 fix)
@@ -115,6 +116,29 @@ theorem gammaLocal_eq_trunc_of_betaRec (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     tail_zero_of_betaRec_embedding_zero x₀ R H hHyp Bcoeff hH D hD k mp hcard
   exact mk_eq_trunc_of_tail_zero (αFromBeta x₀ R H hHyp Bcoeff) k htail
 
+/-- **Finite-range off-centre polynomiality of the local Hensel series.**  This is the F5-corrected
+counterpart of `gammaLocal_eq_trunc_of_betaRec`: the matching/cardinality argument is required only
+on a finite range `k ≤ t ≤ T`, while the explicit algebraic-degree datum `htailDeg` supplies the
+tail for `T < t`.  The conclusion is the same local truncation identity, still valid at every
+expansion centre and still routed through the genuine `betaRec` coefficients. -/
+theorem gammaLocal_eq_trunc_of_finite_betaRec (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
+    (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H)
+    (hH : 0 < H.natDegree) (D : ℕ) (hD : D ≥ Bivariate.totalDegree H) (k T : ℕ)
+    {matchingSet : Finset F} {root : (z : F) → rationalRoot (H_tilde' H) z}
+    (mpFin : ∀ t, k ≤ t → t ≤ T → ∀ z ∈ matchingSet,
+      BetaMatchingVanishes.MatchingPoint x₀ R H hHyp Bcoeff t z (root z))
+    (hcardFin : ∀ t, k ≤ t → t ≤ T → (↑matchingSet.card : WithBot ℕ)
+        > weight_Λ_over_𝒪 hH (betaRec x₀ R H hHyp Bcoeff t) D * H.natDegree)
+    (htailDeg : ∀ t, T < t → αFromBeta x₀ R H hHyp Bcoeff t = 0) :
+    gammaLocal x₀ R H hHyp Bcoeff
+      = ((PowerSeries.trunc k (gammaLocal x₀ R H hHyp Bcoeff) : Polynomial (𝕃 H)) :
+          PowerSeries (𝕃 H)) := by
+  have htail : ∀ t, k ≤ t → αFromBeta x₀ R H hHyp Bcoeff t = 0 :=
+    HcardDischarge.tail_zero_of_finite_card_and_degree
+      x₀ R H hHyp Bcoeff hH D hD k T mpFin hcardFin htailDeg
+  exact mk_eq_trunc_of_tail_zero (αFromBeta x₀ R H hHyp Bcoeff) k htail
+
 /-! ## Degree transport along the affine recentering -/
 
 /-- Taylor shift preserves the strict degree bound of a coefficient profile. -/
@@ -185,6 +209,56 @@ theorem curveCoeffPolys_of_betaRec_offcentre
     (Polynomial.taylor (-x₀) v₀) (Polynomial.taylor (-x₀) v₁)
     (natDegree_taylor_lt x₀ hd₀) (natDegree_taylor_lt x₀ hd₁) hPeval
 
+/-- **Finite-range off-centre keystone.**  This is the satisfiable finite-range counterpart of
+`curveCoeffPolys_of_betaRec_offcentre`: it uses `mpFin`/`hcardFin` only for `k ≤ t ≤ T` and the
+explicit tail-degree datum `htailDeg` for `T < t`, then runs the same finite Taylor-shift
+recentring argument to produce the coefficient-polynomial datum. -/
+theorem curveCoeffPolys_of_betaRec_offcentreFin
+    (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
+    (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H)
+    (hH : 0 < H.natDegree) (D : ℕ) (hD : D ≥ Bivariate.totalDegree H)
+    {k T deg : ℕ} {good : Finset F} {P : F → Polynomial F}
+    {matchingSet : Finset F} {root : (z : F) → rationalRoot (H_tilde' H) z}
+    (mpFin : ∀ t, k ≤ t → t ≤ T → ∀ z ∈ matchingSet,
+      BetaMatchingVanishes.MatchingPoint x₀ R H hHyp Bcoeff t z (root z))
+    (hcardFin : ∀ t, k ≤ t → t ≤ T → (↑matchingSet.card : WithBot ℕ)
+        > weight_Λ_over_𝒪 hH (betaRec x₀ R H hHyp Bcoeff t) D * H.natDegree)
+    (htailDeg : ∀ t, T < t → αFromBeta x₀ R H hHyp Bcoeff t = 0)
+    {Ppoly : F[X][Y]}
+    (hrep : polyToPowerSeries𝕃 H Ppoly = gammaLocal x₀ R H hHyp Bcoeff)
+    (hdegX : Polynomial.Bivariate.degreeX Ppoly ≤ 1)
+    (hPz : ∀ v₀ v₁ : F[X],
+      polyToPowerSeries𝕃 H
+          ((Polynomial.map Polynomial.C v₀)
+            + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁))
+        = ((PowerSeries.trunc k (gammaLocal x₀ R H hHyp Bcoeff) : Polynomial (𝕃 H)) :
+            PowerSeries (𝕃 H)) →
+      (∀ z ∈ good, P z =
+        ((Polynomial.map Polynomial.C (Polynomial.taylor (-x₀) v₀))
+            + (Polynomial.C Polynomial.X)
+              * (Polynomial.map Polynomial.C (Polynomial.taylor (-x₀) v₁))).eval
+            (Polynomial.C z))
+        ∧ v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1) :
+    CurveCoeffPolys k deg good P := by
+  have htrunc : gammaLocal x₀ R H hHyp Bcoeff
+      = ((PowerSeries.trunc k (gammaLocal x₀ R H hHyp Bcoeff) : Polynomial (𝕃 H)) :
+          PowerSeries (𝕃 H)) :=
+    gammaLocal_eq_trunc_of_finite_betaRec x₀ R H hHyp Bcoeff hH D hD k T
+      mpFin hcardFin htailDeg
+  obtain ⟨v₀, v₁, hPpoly⟩ :=
+    FiniteSeriesToPoly.exists_linear_decomposition_of_degreeX_le_one hdegX
+  have hlin : polyToPowerSeries𝕃 H
+      ((Polynomial.map Polynomial.C v₀)
+        + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁))
+      = ((PowerSeries.trunc k (gammaLocal x₀ R H hHyp Bcoeff) : Polynomial (𝕃 H)) :
+          PowerSeries (𝕃 H)) := by
+    rw [← hPpoly, hrep, ← htrunc]
+  obtain ⟨hPeval, hd₀, hd₁⟩ := hPz v₀ v₁ hlin
+  exact curveCoeffPolys_of_linear_representative
+    (Polynomial.taylor (-x₀) v₀) (Polynomial.taylor (-x₀) v₁)
+    (natDegree_taylor_lt x₀ hd₀) (natDegree_taylor_lt x₀ hd₁) hPeval
+
 end BetaToCurveCoeffPolys
 
 end ArkLib
@@ -195,5 +269,7 @@ end ArkLib
 #print axioms ArkLib.BetaToCurveCoeffPolys.coeff_gammaLocal
 #print axioms ArkLib.BetaToCurveCoeffPolys.mk_eq_trunc_of_tail_zero
 #print axioms ArkLib.BetaToCurveCoeffPolys.gammaLocal_eq_trunc_of_betaRec
+#print axioms ArkLib.BetaToCurveCoeffPolys.gammaLocal_eq_trunc_of_finite_betaRec
 #print axioms ArkLib.BetaToCurveCoeffPolys.natDegree_taylor_lt
 #print axioms ArkLib.BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec_offcentre
+#print axioms ArkLib.BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec_offcentreFin
