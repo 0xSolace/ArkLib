@@ -96,9 +96,8 @@ noncomputable def evalSupport (α : ι ↪ F) {deg : ℕ} (p : Polynomial.degree
 
 /-- **Support ↔ vanishing.**  A degree-`<deg` polynomial lies in the vanishing subspace on `Tᶜ`
 exactly when its evaluation support is contained in `T` — both say `p` vanishes off `T`.  This
-identifies the support-`⊆ T` codewords with `ker (evalOnS α deg Tᶜ)`, bridging the support counts to
-the actual weight distribution. -/
-omit [Fintype F] in
+identifies the support-`⊆ T` codewords with `ker (evalOnS α deg Tᶜ)`, bridging the support counts
+to the actual weight distribution. -/
 theorem mem_ker_evalOnS_compl_iff (α : ι ↪ F) (deg : ℕ) (T : Finset ι)
     (p : Polynomial.degreeLT F deg) :
     p ∈ LinearMap.ker (evalOnS α deg Tᶜ) ↔ evalSupport α p ⊆ T := by
