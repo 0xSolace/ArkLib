@@ -128,6 +128,56 @@ lemma card_agree_ge_of_mem_closeCodewordsRel
   -- From `#disagree ≤ δ·n`, get `n - #disagree ≥ n - δ·n = (1-δ)·n`.
   nlinarith [hdis]
 
+/-- **Double-counting / Fubini swap of the agreement table.** For a finite list `L` of
+codewords, the total agreement mass — summed first over list elements `c ∈ L`, then over the
+coordinates each agrees on — equals the same table summed coordinate-first:
+
+  `∑_{c ∈ L} #{i : c i = f i} = ∑_{i} #{c ∈ L : c i = f i}`.
+
+This swaps the order of the agreement double count. The right-hand side is exactly the
+per-coordinate quantity `∑_i |{c ∈ L : c i = f i}|` that the CZ25 design half
+(`sum_card_vanishing_le_design`) caps from above through the subspace-design budget; the
+left-hand side is the per-element agreement the previous lemma lower-bounds. So this is the
+bridge between the two halves of the dimension count. -/
+lemma sum_agree_swap (f : ι → α) (L : Finset (ι → α)) :
+    (∑ c ∈ L, (Finset.univ.filter (fun i => c i = f i)).card) =
+      ∑ i : ι, (L.filter (fun c => c i = f i)).card := by
+  classical
+  simp only [Finset.card_filter]
+  rw [Finset.sum_comm]
+
+/-- **Aggregate agreement lower bound over a list of close codewords.** If every codeword in
+a finite list `L` lies in `closeCodewordsRel C f δ`, the total per-element agreement mass is
+at least `|L| · (1 - δ) · n`:
+
+  `|L| · (1 - δ) · n ≤ ∑_{c ∈ L} #{i : c i = f i}`.
+
+Sums `card_agree_ge_of_mem_closeCodewordsRel` over the list. Combined with `sum_agree_swap`
+this lower-bounds the coordinate-first agreement table `∑_i #{c ∈ L : c i = f i}` that the
+design half caps — the elementary "fresh agreement mass" accounting feeding the greedy chain.
+Note the order in the filter (`c i = f i`) matches `sum_agree_swap`; we use the symmetry of
+equality to align with `card_agree_ge_of_mem_closeCodewordsRel`'s `f i = c i`. -/
+lemma sum_agree_ge_of_subset_closeCodewordsRel
+    (C : Set (ι → α)) (f : ι → α) {δ : ℝ}
+    (L : Finset (ι → α)) (hL : ∀ c ∈ L, c ∈ closeCodewordsRel C f δ) :
+    (L.card : ℝ) * ((1 - δ) * Fintype.card ι) ≤
+      ∑ c ∈ L, ((Finset.univ.filter (fun i => c i = f i)).card : ℝ) := by
+  classical
+  have hper : ∀ c ∈ L, (1 - δ) * Fintype.card ι ≤
+      ((Finset.univ.filter (fun i => c i = f i)).card : ℝ) := by
+    intro c hc
+    have h := card_agree_ge_of_mem_closeCodewordsRel C f c (hL c hc)
+    -- align `f i = c i` (lemma) with `c i = f i` (here) via filter congruence.
+    have hfilt : (Finset.univ.filter (fun i => f i = c i)).card
+        = (Finset.univ.filter (fun i => c i = f i)).card := by
+      simp only [eq_comm]
+    rwa [hfilt] at h
+  calc (L.card : ℝ) * ((1 - δ) * Fintype.card ι)
+      = ∑ _c ∈ L, ((1 - δ) * Fintype.card ι) := by
+        rw [Finset.sum_const, nsmul_eq_mul]
+    _ ≤ ∑ c ∈ L, ((Finset.univ.filter (fun i => c i = f i)).card : ℝ) :=
+        Finset.sum_le_sum hper
+
 end AgreementCount
 
 /-! ### `#print axioms` verification anchors -/
@@ -147,6 +197,11 @@ example (C : Set (ι → α)) (f c : ι → α) {δ : ℝ}
       ((Finset.univ.filter (fun i => f i = c i)).card : ℝ) :=
   card_agree_ge_of_mem_closeCodewordsRel C f c hc
 
+example (f : ι → α) (L : Finset (ι → α)) :
+    (∑ c ∈ L, (Finset.univ.filter (fun i => c i = f i)).card) =
+      ∑ i : ι, (L.filter (fun c => c i = f i)).card :=
+  sum_agree_swap f L
+
 end AxiomCheck
 
 end CodingTheory
@@ -155,3 +210,5 @@ end CodingTheory
 #print axioms CodingTheory.card_agree_eq
 #print axioms CodingTheory.card_disagree_le_of_relHammingDist_le
 #print axioms CodingTheory.card_agree_ge_of_mem_closeCodewordsRel
+#print axioms CodingTheory.sum_agree_swap
+#print axioms CodingTheory.sum_agree_ge_of_subset_closeCodewordsRel
