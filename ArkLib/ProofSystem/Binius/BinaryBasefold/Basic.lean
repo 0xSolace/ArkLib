@@ -5,7 +5,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
-import ArkLib.ProofSystem.Sumcheck.Structured
+import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 import ArkLib.Data.MvPolynomial.MultilinearComputational
 
 /-!
