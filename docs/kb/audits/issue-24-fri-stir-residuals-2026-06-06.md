@@ -57,10 +57,12 @@ accounting definitions:
 - `totalError`
 
 The module documentation explicitly marks these as accounting placeholders
-pending sequential-composition infrastructure. There is no local proof hole to
-discharge in this file; the missing work is a soundness theorem tying the
-per-round BCIKS20 proximity-gap and query-consistency quantities to the actual
-FRI verifier failure probability.
+pending sequential-composition infrastructure.  The local projection lemmas
+`roundError_sum_le_totalError`, `roundError_le_totalError`, and
+`queryError_le_totalError` record that the fold-round and query contributions
+are included in `totalError`.  The missing work is still a soundness theorem
+tying the per-round BCIKS20 proximity-gap and query-consistency quantities to
+the actual FRI verifier failure probability.
 
 The Batched FRI query surface in
 `ArkLib/ProofSystem/BatchedFri/Security.lean` is tracked separately in #14. The

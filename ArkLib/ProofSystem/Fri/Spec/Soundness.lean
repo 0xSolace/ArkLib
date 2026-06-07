@@ -71,6 +71,22 @@ noncomputable def totalError (δ : ℝ≥0) : ℝ≥0 :=
   (∑ i : Fin k, roundError k s d (ω := ω) δ i) + queryError k s d l (ω := ω)
 
 omit [DecidableEq F] [NeZero l] in
+/-- The fold-round accounting contribution is included in `totalError`. -/
+theorem roundError_sum_le_totalError (δ : ℝ≥0) :
+    (∑ i : Fin k, roundError k s d (ω := ω) δ i) ≤
+      totalError k s d l (ω := ω) δ := by
+  unfold totalError
+  exact le_add_of_nonneg_right (zero_le _)
+
+omit [DecidableEq F] [NeZero l] in
+/-- Each individual fold-round accounting contribution is included in `totalError`. -/
+theorem roundError_le_totalError (δ : ℝ≥0) (i : Fin k) :
+    roundError k s d (ω := ω) δ i ≤ totalError k s d l (ω := ω) δ := by
+  exact le_trans
+    (Finset.single_le_sum (fun _ _ => zero_le _) (Finset.mem_univ i))
+    (roundError_sum_le_totalError (k := k) (s := s) (d := d) (l := l) (ω := ω) δ)
+
+omit [DecidableEq F] [NeZero l] in
 /-- The query-phase accounting contribution is included in `totalError`.
 
 This is only a projection from the additive budget, not the deferred FRI soundness theorem. -/
