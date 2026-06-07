@@ -193,7 +193,7 @@ The wide-regime lower bound half is unconditional and kernel-verified: the expli
 two-window `3`-spike plant realizes three distinct bad scalars at the interior radius `2/n`.
 This reuses the in-tree general `t`-spike floor `epsMCA_ge_spike` with `t = 3` and the size
 lemma `spike_three_size_at_interiorJ2` (already proved in `GrandChallengeInteriorJ1.lean`).
-The interior hypothesis is `k + 4 ≤ n` (i.e. `n ≥ k + j + 2` at `j = 2`), and `3 ≤ q`. -/
+The spike plant only needs `k + 3 ≤ n` (room for the three spike windows), and `3 ≤ q`. -/
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable [Fintype F] [DecidableEq F]
@@ -206,7 +206,7 @@ This is the research note's two-window plant at `j = 2`; `3 ≤ q` and `k + 4 �
 Together with the `3×3`-minor upper-bound shape this is the lower half of the second exact
 interior row `P[2] = 3`. -/
 theorem epsMCA_interiorJ2_ge
-    (domain : ι ↪ F) {k : ℕ} (hk : k + 4 ≤ Fintype.card ι) (hq : 3 ≤ Fintype.card F) :
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 3 ≤ Fintype.card F) :
     (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤
       epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F))
         (mcaLatticePoint (Fintype.card ι)
@@ -230,7 +230,7 @@ MCA bound is to hold (`mcaSatisfies` at index `2`), then `3/q ≤ ε*` is necess
 the `3`-spike plant forces `ε_mca(C, 2/n) ≥ 3/q`.  Contrapositively, when `ε* < 3/q` the
 faithful threshold is strictly below J2. -/
 theorem mcaThreshold_lt_two_of_interiorJ2_gt
-    (domain : ι ↪ F) {k : ℕ} (hk : k + 4 ≤ Fintype.card ι) (hq : 3 ≤ Fintype.card F)
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 3 ≤ Fintype.card F)
     {ε_star : ℝ≥0}
     (hbad : (ε_star : ℝ≥0∞) < (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞))
     (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) ε_star) :
@@ -256,6 +256,59 @@ theorem mcaThreshold_lt_two_of_interiorJ2_gt
     le_trans hge hsat_j2
   exact (not_le_of_gt hbad) hchain
 
+/-- **Four-rate J2 upper bracket.**  If each prize-rate Reed-Solomon code has room for the
+three-spike plant and `ε* < 3 / |F|`, then every faithful MCA prize threshold, when it exists,
+is strictly below the J2 lattice index. -/
+theorem mcaPrizeLattice_lt_two_of_interiorJ2_gt
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hq : 3 ≤ Fintype.card F)
+    (hbad : (epsStar : ℝ≥0∞) < (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞))
+    (hne : ∀ r : Fin 4,
+      mcaThresholdExists
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j2 : Fin (Fintype.card ι + 1) := ⟨2, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        have hkr := hk r
+        omega⟩
+      mcaThreshold C epsStar (hne r) < j2 := by
+  intro r
+  simpa using
+    (mcaThreshold_lt_two_of_interiorJ2_gt
+      (F := F) domain (hk r) hq hbad (hne r))
+
+/-- **Formal-prize J2 upper bracket in the large-domain, small-field-side band.**
+For domains with at least six evaluation points, all four prize-rate degrees satisfy the
+`k + 3 ≤ n` spike window. If additionally `3 ≤ |F|` and `|F| < 3 * 2^128`, then the formal
+threshold `ε* = 2^-128` lies below `3 / |F|`, so all existing faithful MCA prize thresholds are
+strictly below J2. -/
+theorem mcaPrizeLattice_lt_two_of_card_ge_six_and_card_lt_three_mul_two_pow
+    (domain : ι ↪ F)
+    (hn : 6 ≤ Fintype.card ι)
+    (hq : 3 ≤ Fintype.card F)
+    (hcard_hi : Fintype.card F < (3 : ℕ) * 2 ^ (128 : ℕ))
+    (hne : ∀ r : Fin 4,
+      mcaThresholdExists
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j2 : Fin (Fintype.card ι + 1) := ⟨2, by omega⟩
+      mcaThreshold C epsStar (hne r) < j2 :=
+  mcaPrizeLattice_lt_two_of_interiorJ2_gt domain
+    (fun r => prizeRate_floor_add_three_le_of_card_ge_six r hn)
+    hq
+    (epsStar_lt_three_div_card_of_card_lt_three_mul_two_pow (F := F) hcard_hi)
+    hne
+
 end GrandChallengesLattice
 
 end ProximityGap
@@ -272,4 +325,6 @@ open ProximityGap.GrandChallengesLattice
 #print axioms affineSystemBadScalars_card_le_jp1_via_minor
 #print axioms epsMCA_interiorJ2_ge
 #print axioms mcaThreshold_lt_two_of_interiorJ2_gt
+#print axioms mcaPrizeLattice_lt_two_of_interiorJ2_gt
+#print axioms mcaPrizeLattice_lt_two_of_card_ge_six_and_card_lt_three_mul_two_pow
 end AxiomAudit
