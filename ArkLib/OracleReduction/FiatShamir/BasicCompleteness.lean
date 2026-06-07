@@ -171,6 +171,19 @@ theorem fiatShamir_completeness_unroll_discharged
   Reduction.fiatShamir_completeness_unroll_of_runCollapse init impl relIn relOut completenessError R
     (fun stmtIn witIn => fiatShamir_runCollapse impl R stmtIn witIn)
 
+/-- Direct discharged iff form of basic Fiat-Shamir completeness against the explicit honest
+execution. This is the theorem-facing name for `fiatShamir_completeness_unroll_discharged`. -/
+theorem fiatShamir_completeness_iff_honestExecution_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    R.fiatShamir.completeness init impl relIn relOut completenessError ↔
+      Reduction.completenessFromRun init impl relIn relOut
+        R.fiatShamirHonestExecution completenessError :=
+  fiatShamir_completeness_unroll_discharged init impl relIn relOut completenessError R
+
 /-- Basic Fiat-Shamir completeness follows from completeness of the explicit honest execution,
 without requiring callers to pass the already-proved run-collapse residual. -/
 theorem fiatShamir_completeness_of_honestExecution_discharged
@@ -261,6 +274,19 @@ theorem fiatShamir_perfectCompleteness_unroll_discharged
     Reduction.fiatShamir_perfectCompleteness_unroll init impl relIn relOut R :=
   Reduction.fiatShamir_perfectCompleteness_unroll_of_runCollapse init impl relIn relOut R
     (fun stmtIn witIn => fiatShamir_runCollapse impl R stmtIn witIn)
+
+/-- Direct discharged iff form of basic Fiat-Shamir perfect completeness against the explicit
+honest execution. This is the theorem-facing name for
+`fiatShamir_perfectCompleteness_unroll_discharged`. -/
+theorem fiatShamir_perfectCompleteness_iff_honestExecution_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    R.fiatShamir.perfectCompleteness init impl relIn relOut ↔
+      Reduction.perfectCompletenessFromRun init impl relIn relOut
+        R.fiatShamirHonestExecution :=
+  fiatShamir_perfectCompleteness_unroll_discharged init impl relIn relOut R
 
 /-- Basic Fiat-Shamir perfect completeness follows from perfect completeness of the explicit honest
 execution, using the discharged run-collapse theorem. -/
@@ -425,12 +451,14 @@ theorem fiatShamir_completeness_of_perfect_honestExecution_mono_relations_error_
 
 #print axioms fiatShamir_runCollapse
 #print axioms fiatShamir_completeness_unroll_discharged
+#print axioms fiatShamir_completeness_iff_honestExecution_discharged
 #print axioms fiatShamir_completeness_of_honestExecution_discharged
 #print axioms fiatShamir_honestExecution_completeness_of_completeness_discharged
 #print axioms fiatShamir_honestExecution_completeness_of_completeness_mono_error_discharged
 #print axioms fiatShamir_honestExecution_completeness_mono_relations_discharged
 #print axioms fiatShamir_honestExecution_completeness_mono_relations_error_discharged
 #print axioms fiatShamir_perfectCompleteness_unroll_discharged
+#print axioms fiatShamir_perfectCompleteness_iff_honestExecution_discharged
 #print axioms fiatShamir_perfectCompleteness_of_honestExecution_discharged
 #print axioms fiatShamir_honestExecution_perfectCompleteness_of_perfectCompleteness_discharged
 #print axioms fiatShamir_honestExecution_perfectCompleteness_mono_relations_discharged
