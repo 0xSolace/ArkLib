@@ -1494,6 +1494,37 @@ theorem exists_randomLinearLambdaLowerEvent_of_probability_pos
   rw [hzero] at hprob
   exact (lt_irrefl (0 : ENNReal)) hprob
 
+/-- Conversely, one good generator matrix gives positive success probability.
+
+This uses only the full support of the uniform generator-matrix distribution; it is the
+existence-to-probability direction complementary to
+`exists_randomLinearLambdaLowerEvent_of_probability_pos`. -/
+theorem randomLinearLambdaLowerProbability_pos_of_exists_event
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {ι : Type} [Fintype ι] {q k : ℕ} {δ ε ρ : ℝ}
+    {G : Matrix (Fin k) ι F}
+    (hG : randomLinearLambdaLowerEvent (F := F) (ι := ι) q k δ ε ρ G) :
+    0 < randomLinearLambdaLowerProbability F ι q k δ ε ρ := by
+  classical
+  unfold randomLinearLambdaLowerProbability
+  change 0 <
+    (PMF.map
+      (fun G : Matrix (Fin k) ι F =>
+        randomLinearLambdaLowerEvent (F := F) (ι := ι) q k δ ε ρ G)
+      (uniformRandomLinearGeneratorMatrix F k ι)) True
+  rw [PMF.apply_pos_iff, PMF.support_map]
+  exact ⟨G, mem_support_uniformRandomLinearGeneratorMatrix G, hG⟩
+
+/-- A concrete successful generator matrix supplies the named first-moment residual. -/
+theorem randomLinearLambdaLowerFirstMomentResidual_of_exists_event
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {ι : Type} [Fintype ι] {q k : ℕ} {δ ε ρ : ℝ}
+    {G : Matrix (Fin k) ι F}
+    (hG : randomLinearLambdaLowerEvent (F := F) (ι := ι) q k δ ε ρ G) :
+    randomLinearLambdaLowerFirstMomentResidual F ι q k δ ε ρ :=
+  randomLinearLambdaLowerProbability_pos_of_exists_event
+    (F := F) (ι := ι) (q := q) (k := k) (δ := δ) (ε := ε) (ρ := ρ) hG
+
 /-- A good generator matrix gives the existential code witness used by the legacy front door. -/
 theorem exists_code_of_randomLinearLambdaLowerEvent
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -2216,6 +2247,8 @@ end SubspaceDesignUpperBounds
 #print axioms CodingTheory.randomLinearLambdaLowerProbability
 #print axioms CodingTheory.randomLinearLambdaLowerFirstMomentResidual
 #print axioms CodingTheory.exists_randomLinearLambdaLowerEvent_of_probability_pos
+#print axioms CodingTheory.randomLinearLambdaLowerProbability_pos_of_exists_event
+#print axioms CodingTheory.randomLinearLambdaLowerFirstMomentResidual_of_exists_event
 #print axioms CodingTheory.exists_code_of_randomLinearLambdaLowerEvent
 #print axioms CodingTheory.exists_code_of_randomLinearLambdaLowerFirstMomentResidual
 #print axioms CodingTheory.random_linear_lambda_lower_glmrsw22_random_generator_matrix
