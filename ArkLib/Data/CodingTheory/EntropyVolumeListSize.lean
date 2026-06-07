@@ -141,7 +141,6 @@ theorem rs_lambda_ge_capacity_exponent
     have hn1 : ((Fintype.card ι : ℝ) + 1) ≠ 0 := by positivity
     rw [Real.rpow_sub hq0]
     field_simp
-    ring
   rw [heq]
   exact rs_lambda_ge_entropy_volume_div_succ α k δ hδ_pos hδ_lt hq hkcard hk0 hkn
 
