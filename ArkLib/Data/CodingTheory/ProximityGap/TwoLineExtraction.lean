@@ -50,20 +50,21 @@ theorem exists_joint_codewords_of_two_lines
   set v₀ : ι → F := w - z • v₁ with hv₀def
   have hsub : z - z' ≠ 0 := sub_ne_zero.mpr hzz'
   have hv₁mem : v₁ ∈ C := C.smul_mem _ (C.sub_mem hw hw')
-  have hv₀mem : v₀ ∈ C := C.sub_mem hw (C.smul_mem _ hv₁mem)
+  have hv₀mem : v₀ ∈ C := C.sub_mem hw (C.smul_mem z hv₁mem)
   refine ⟨v₀, hv₀mem, v₁, hv₁mem, ?_⟩
   intro i hi
   rw [Finset.mem_inter] at hi
   have e1 : w i = u₀ i + z * u₁ i := by simpa [smul_eq_mul] using hwS i hi.1
   have e2 : w' i = u₀ i + z' * u₁ i := by simpa [smul_eq_mul] using hw'S i hi.2
-  -- v₁ i = u₁ i : (z - z')⁻¹ (w i - w' i) = (z - z')⁻¹ (z - z') u₁ i = u₁ i
+  -- on `S ∩ S'`, `w i - w' i = (z - z') u₁ i`
+  have hwdiff : w i - w' i = (z - z') * u₁ i := by rw [e1, e2]; ring
+  -- v₁ i = (z - z')⁻¹ (w i - w' i) = (z - z')⁻¹ (z - z') u₁ i = u₁ i
   have hv₁i : v₁ i = u₁ i := by
-    simp only [hv₁def, Pi.smul_apply, Pi.sub_apply, smul_eq_mul, e1, e2]
-    field_simp
-    ring
-  -- v₀ i = u₀ i : w i - z · v₁ i = (u₀ i + z u₁ i) - z u₁ i = u₀ i
+    simp only [hv₁def, Pi.smul_apply, Pi.sub_apply, smul_eq_mul]
+    rw [hwdiff, inv_mul_cancel_left₀ hsub]
+  -- v₀ i = w i - z · v₁ i = (u₀ i + z u₁ i) - z u₁ i = u₀ i
   have hv₀i : v₀ i = u₀ i := by
-    simp only [hv₀def, Pi.sub_apply, Pi.smul_apply, smul_eq_mul, e1, hv₁i]
+    simp only [hv₀def, Pi.sub_apply, Pi.smul_apply, smul_eq_mul, hv₁i, e1]
     ring
   exact ⟨hv₀i, hv₁i⟩
 
