@@ -249,6 +249,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentHighDist
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentIsolation
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentLinear
+import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentListSize
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentPairCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentPairs
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
