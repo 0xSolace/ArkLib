@@ -124,6 +124,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyAdditive
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyBiUnion
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyBoundedSupport
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyCompSub
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyDecomp
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyGeneralSupport
