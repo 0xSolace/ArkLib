@@ -98,6 +98,77 @@ theorem alphaWeight_of_normalized_divWeight_cases_of_WfreeMatch
   (alphaWeight_iff_normalized_divWeight_cases_of_WfreeMatch
     H x₀ R hHyp hH D hlc hWfree).2 ⟨h0, hsucc⟩
 
+theorem alphaWeight_iff_divWeight_of_WfreeMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlc : H.leadingCoeff = 1)
+    (hWfree : RestrictedFaaDiBrunoWfreeMatch H x₀ R hHyp) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D ↔
+      DivWeightLe H x₀ R hHyp hH D :=
+  AlphaWeight.alphaWeight_iff_divWeight_of_succLift H x₀ R hHyp hH D
+    (fun t => βHensel_lift_identity_of_WfreeMatch H x₀ R hHyp hlc hWfree (t + 1))
+
+theorem divWeight_of_alphaWeight_of_WfreeMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlc : H.leadingCoeff = 1)
+    (hWfree : RestrictedFaaDiBrunoWfreeMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    DivWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_divWeight_of_WfreeMatch
+    H x₀ R hHyp hH D hlc hWfree).1 hα
+
+theorem alphaWeight_of_divWeight_of_WfreeMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlc : H.leadingCoeff = 1)
+    (hWfree : RestrictedFaaDiBrunoWfreeMatch H x₀ R hHyp)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_divWeight_of_WfreeMatch
+    H x₀ R hHyp hH D hlc hWfree).2 hdiv
+
+theorem normalized_divWeight_cases_of_alphaWeight_of_WfreeMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlc : H.leadingCoeff = 1)
+    (hWfree : RestrictedFaaDiBrunoWfreeMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+      (∃ a : 𝒪 H,
+        βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+          weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) ∧
+        ∀ t : ℕ, ∃ a : 𝒪 H,
+          βHensel H x₀ R hHyp (t + 1)
+            = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+            weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (alphaWeight_iff_normalized_divWeight_cases_of_WfreeMatch
+    H x₀ R hHyp hH D hlc hWfree).1 hα
+
+theorem normalized_divWeight_zero_of_alphaWeight_of_WfreeMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlc : H.leadingCoeff = 1)
+    (hWfree : RestrictedFaaDiBrunoWfreeMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (normalized_divWeight_cases_of_alphaWeight_of_WfreeMatch
+    H x₀ R hHyp hH D hlc hWfree hα).1
+
+theorem normalized_divWeight_succ_of_alphaWeight_of_WfreeMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D t : ℕ)
+    (hlc : H.leadingCoeff = 1)
+    (hWfree : RestrictedFaaDiBrunoWfreeMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (normalized_divWeight_cases_of_alphaWeight_of_WfreeMatch
+    H x₀ R hHyp hH D hlc hWfree hα).2 t
+
 theorem βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_WfreeMatch
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hH : 0 < H.natDegree) {D : ℕ}
@@ -353,6 +424,12 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.divWeight_clearedBaseCases_iff_alphaWeight_successors_of_WfreeMatch_fixed
 #print axioms BCIKS20.HenselNumerator.alphaWeight_iff_normalized_divWeight_cases_of_WfreeMatch
 #print axioms BCIKS20.HenselNumerator.alphaWeight_of_normalized_divWeight_cases_of_WfreeMatch
+#print axioms BCIKS20.HenselNumerator.alphaWeight_iff_divWeight_of_WfreeMatch
+#print axioms BCIKS20.HenselNumerator.divWeight_of_alphaWeight_of_WfreeMatch
+#print axioms BCIKS20.HenselNumerator.alphaWeight_of_divWeight_of_WfreeMatch
+#print axioms BCIKS20.HenselNumerator.normalized_divWeight_cases_of_alphaWeight_of_WfreeMatch
+#print axioms BCIKS20.HenselNumerator.normalized_divWeight_zero_of_alphaWeight_of_WfreeMatch
+#print axioms BCIKS20.HenselNumerator.normalized_divWeight_succ_of_alphaWeight_of_WfreeMatch
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_WfreeMatch
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_normalized_divWeight_cases_of_WfreeMatch
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_normalized_divWeight_cases_of_WfreeMatch
