@@ -92,6 +92,22 @@ theorem eqPolynomial_symm (x : σ → R) (y : σ → R) :
   funext
   ring_nf
 
+/-- **Product factorization of the equality kernel.**  The multilinear equality kernel
+`eqTilde r r' = eval r' (eqPolynomial r)` factors coordinate-wise as
+`∏ᵢ ((1 - rᵢ)(1 - r'ᵢ) + rᵢ · r'ᵢ)`.  This is the closed form used throughout sum-check soundness
+analysis. -/
+theorem eqTilde_eq_prod (r r' : σ → R) :
+    eqTilde r r' = ∏ i : σ, ((1 - r i) * (1 - r' i) + r i * r' i) := by
+  unfold eqTilde
+  rw [eqPolynomial_expanded, map_prod]
+  refine Finset.prod_congr rfl fun i _ => ?_
+  simp only [map_add, map_mul, map_sub, map_one, eval_C, eval_X]
+
+/-- **The equality kernel is symmetric.**  `eqTilde r r' = eqTilde r' r` — immediate from
+`eqPolynomial_symm`, recorded directly on `eqTilde`. -/
+theorem eqTilde_symm (r r' : σ → R) : eqTilde r r' = eqTilde r' r :=
+  eqPolynomial_symm r r'
+
 -- @[simp]
 theorem eqPolynomial_zeroOne (r : σ → Fin 2) : (eqPolynomial r : MvPolynomial σ R) =
     ∏ i : σ, if r i = 0 then 1 - X i else X i := by
