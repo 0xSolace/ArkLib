@@ -165,8 +165,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2ClearedGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2ClearedGapIdeal
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2FilterDrop
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2KeystoneReindex
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchProof
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchRoot
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicOrderZero
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfree
