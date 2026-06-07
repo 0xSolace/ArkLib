@@ -43,4 +43,23 @@ theorem reedSolomon_out_of_dom_smpl_1
         δ.coe_nonneg hbig he hdeg)
     h_nonempty
 
+/-- **STIR out-of-domain sampling for Reed–Solomon (Lemma 4.5.1, simplified form, unconditional).**
+The `(l²/2)·(degree/(q−n))^s` variant `out_of_dom_smpl_2`, made unconditional for `RS[degree]` via
+`reedSolomon_listDecodable`. -/
+theorem reedSolomon_out_of_dom_smpl_2
+    {δ : ℝ≥0} {s dX dZ degree : ℕ} [NeZero degree] {f : ι → F} {φ : ι ↪ F}
+    (h_nonempty : Nonempty (OutOfDomSmpl.domainComplement φ))
+    (hbig : Fintype.card ι < (dX + 1) * (dZ + 1))
+    (he : ⌊(δ : ℝ) * Fintype.card ι⌋₊ < Fintype.card ι)
+    (hdeg : dX + dZ * (degree - 1) < Fintype.card ι - ⌊(δ : ℝ) * Fintype.card ι⌋₊) :
+    OutOfDomSmpl.listDecodingCollisionProbability φ f δ s degree h_nonempty ≤
+      (((dZ : ℝ≥0) ^ 2 / 2))
+        * (((degree : ℝ≥0)) / (Fintype.card F - Fintype.card ι)) ^ s :=
+  OutOfDomSmpl.out_of_dom_smpl_2 (l := (dZ : ℝ≥0)) ((ReedSolomon.code φ degree : Set (ι → F))) rfl
+    (show listDecodable ((ReedSolomon.code φ degree : Set (ι → F))) (δ : ℝ) ((dZ : ℝ≥0) : ℝ) by
+      rw [NNReal.coe_natCast]
+      exact reedSolomon_listDecodable (α := φ) (k := degree) (dX := dX) (dZ := dZ)
+        δ.coe_nonneg hbig he hdeg)
+    h_nonempty
+
 end ReedSolomon
