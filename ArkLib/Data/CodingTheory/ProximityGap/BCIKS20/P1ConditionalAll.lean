@@ -317,6 +317,30 @@ theorem βHensel_weight_bound_of_structured_invariant_lift'
       (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0)
       t
 
+/-- Direct `P1Conditional` alias for the explicit-`ξ` carved-alpha structured endpoint. -/
+theorem βHensel_weight_bound_of_structured_invariant_alphaWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  AlphaWeight.βHensel_weight_bound_of_structured_invariant_alphaWeight
+    H x₀ R hHyp hH hDH hdR2 hdHR hW hRgraded hDRx0 hlift hα hξ t
+
 /-- Direct `P1Conditional` alias for the discharged-`ξ` carved-alpha structured endpoint. -/
 theorem βHensel_weight_bound_of_structured_invariant_alphaWeight'
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -335,8 +359,9 @@ theorem βHensel_weight_bound_of_structured_invariant_alphaWeight'
     (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) (t : ℕ) :
     weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
-  AlphaWeight.βHensel_weight_bound_of_structured_invariant_alphaWeight'
-    H x₀ R hHyp hH hDH hdR2 hdHR hW hRgraded hDRx0 hlift hα t
+  βHensel_weight_bound_of_structured_invariant_alphaWeight
+    H x₀ R hHyp hH hDH hdR2 hdHR hW hRgraded hDRx0 hlift hα
+      (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0) t
 
 /-- Route `DivWeightLe` through the all-prefix structured-invariant endpoint. -/
 theorem βHensel_weight_bound_of_structured_invariant_divWeight
@@ -627,6 +652,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_restrictedMatch_divWeight
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_lift
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_lift'
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_alphaWeight
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_alphaWeight'
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_divWeight
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_divWeight'
