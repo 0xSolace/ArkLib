@@ -44,6 +44,12 @@ Current source exposes both sides of that frontier as named parts:
 - `Code.jointAgreement_equiv_of_codeword_transport` proves the finite-domain
   transport part of that lift across an equivalence of coordinate domains, once
   the corresponding codeword transport hypothesis is supplied.
+- `ReedSolomon.codeword_equiv_of_eval_eq`,
+  `CosetFftDomainClass.subdomainZeroEquiv`, and
+  the Batched FRI-facing `Fri.jointAgreement_subdomainZero_to_domain` /
+  `Fri.fri_query_soundness_lift_subdomainZero_to_domain` instantiate that
+  transport for the `ω.subdomain 0` to `ω` Reed-Solomon domain change used
+  between Claim 8.2 and Claim 8.3.
 - `fri_query_soundness_of_parts` and `fri_soundness_of_parts` are small
   reassembly theorems. They do not prove the missing probabilistic bounds; they
   make the remaining obligations independently targetable.
@@ -63,8 +69,17 @@ Current source exposes both sides of that frontier as named parts:
   in `ArkLib/Data/CodingTheory/InterleavedCode.lean`.
 - `Code.jointAgreement_equiv_of_codeword_transport` transports a
   `jointAgreement` witness along an equivalence of coordinate domains, isolating
-  the remaining Reed-Solomon-specific codeword transport needed for the
-  `ω.subdomain 0` to `ω` Claim 8.3 lift.
+  the finite-coordinate bookkeeping from code-specific transport.
+- `ReedSolomon.codeword_equiv_of_eval_eq` transports RS codeword membership
+  across equivalent evaluation domains whose embeddings select the same field
+  points.
+- `CosetFftDomainClass.subdomainZeroEquiv` identifies the zeroth subdomain's
+  finite field-point type with the ambient domain.  The Batched FRI security
+  file also exposes `Fri.subdomainZeroEquiv`,
+  `Fri.reedSolomon_code_subdomainZero_transport`,
+  `Fri.jointAgreement_subdomainZero_to_domain`, and
+  `Fri.fri_query_soundness_lift_subdomainZero_to_domain` as Claim 8.3 lift
+  front doors.
 - `Fri.Spec.Soundness.queryRoundError`, `queryError`, and `totalError` are
   accounting definitions, but the FRI soundness theorem consuming them is still
   deferred to sequential-composition/query-round infrastructure.
@@ -105,9 +120,10 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_joi
    residualized virtual-oracle soundness-preservation theorem.
 2. Derive the Claim 8.2 `Code.jointAgreement` conclusion for the batched input
    stack.
-3. Prove the Reed-Solomon-specific codeword transport across the equivalence
-   between `ω.subdomain 0` and `ω`, then connect the Claim 8.2 output to Claim
-   8.3 (`fri_soundness`) and the end-to-end Batched FRI soundness statement.
+3. Connect the Claim 8.2 output through
+   `Fri.fri_query_soundness_lift_subdomainZero_to_domain`, then prove the
+   remaining sequential-composition and `totalError` accounting steps for Claim
+   8.3 (`fri_soundness`) / end-to-end Batched FRI soundness.
 
 This audit does not close the mathematical residual. It confirms that the
 current source no longer hides Claim 8.2 behind a vacuous `True` theorem and

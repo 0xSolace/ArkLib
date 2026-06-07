@@ -129,6 +129,28 @@ lemma mem_subdomain_0_iff_mem :
              mem_def,
              CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
 
+/-- The zeroth subdomain has the same finite set of field points as the ambient domain. -/
+noncomputable def subdomainZeroEquiv (ω : D) :
+    (subdomain ω 0) ≃ ω where
+  toFun x := by
+    refine ⟨x.1, ?_⟩
+    rw [mem_toFinset_iff_mem]
+    rw [← mem_subdomain_0_iff_mem]
+    rw [← mem_toFinset_iff_mem]
+    exact x.2
+  invFun x := by
+    refine ⟨x.1, ?_⟩
+    rw [mem_toFinset_iff_mem]
+    rw [mem_subdomain_0_iff_mem]
+    rw [← mem_toFinset_iff_mem]
+    exact x.2
+  left_inv x := by
+    ext
+    rfl
+  right_inv x := by
+    ext
+    rfl
+
 omit [DecidableEq F] in
 lemma mem_subdomain_n_iff_eq_pow_generator :
     x ∈ subdomain ω n ↔ x = ω 0 ^ 2 ^ n := by

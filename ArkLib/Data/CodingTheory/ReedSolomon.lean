@@ -190,6 +190,26 @@ lemma mem_code_iff_exists_polynomial {n : ℕ} {α : ι ↪ F} {f : ι → F} :
             [Polynomial.degreeLT,
              Polynomial.degree_lt_iff_coeff_zero])
 
+/-- Transport a Reed-Solomon codeword across an equivalence of evaluation domains.
+
+The hypothesis `hα` says that the two evaluation embeddings select the same field point after
+reindexing by `e`. -/
+lemma codeword_equiv_of_eval_eq
+    {F ι₁ ι₂ : Type*} [Semiring F]
+    (e : ι₁ ≃ ι₂)
+    {α₁ : ι₁ ↪ F} {α₂ : ι₂ ↪ F}
+    (hα : ∀ x : ι₁, α₂ (e x) = α₁ x)
+    {deg : ℕ} {v : ι₁ → F}
+    (hv : v ∈ code α₁ deg) :
+    (fun y : ι₂ => v (e.symm y)) ∈ code α₂ deg := by
+  rw [mem_code_iff_exists_polynomial] at hv ⊢
+  rcases hv with ⟨p, hp_deg, hv_eval⟩
+  refine ⟨p, hp_deg, ?_⟩
+  ext y
+  have hy : α₂ y = α₁ (e.symm y) := by
+    simpa using hα (e.symm y)
+  simp [hv_eval, evalOnPoints, hy]
+
 lemma mem_code_iff_exists_polynomial_of_ne_zero {n : ℕ} [ne : NeZero n] {α : ι ↪ F} {f : ι → F} :
     f ∈ code α n ↔ ∃ p : Polynomial F, p.natDegree < n ∧ f = evalOnPoints α p := by
   rw [mem_code_iff_exists_polynomial]
