@@ -96,15 +96,16 @@ theorem two_winning_same_subset_imp_lineInCode
     -- `rsEncoder a j = rsEncoder mc j - γ * rsEncoder b j = (f₁+γf₂) j - γ * f₂ j = f₁ j`.
     have hb : rsEncoder ((γ - γ')⁻¹ • (mc - mc')) j = f₂ j := by
       simp only [map_smul, map_sub, Pi.smul_apply, Pi.sub_apply, hc j hj, hc' j hj, smul_eq_mul]
-      field_simp
-      ring
+      -- `(γ-γ')⁻¹ * ((f₁+γf₂) - (f₁+γ'f₂)) = (γ-γ')⁻¹ * ((γ-γ')*f₂) = f₂`.
+      rw [show f₁ j + γ * f₂ j - (f₁ j + γ' * f₂ j) = (γ - γ') * f₂ j by ring,
+        ← mul_assoc, inv_mul_cancel₀ hd, one_mul]
     simp only [map_sub, map_smul, Pi.sub_apply, Pi.smul_apply, hc j hj, hb, smul_eq_mul]
     ring
   · intro j hj
     -- `rsEncoder b j = (γ-γ')⁻¹ * ((f₁+γf₂) - (f₁+γ'f₂)) j = (γ-γ')⁻¹ * (γ-γ') * f₂ j = f₂ j`.
     simp only [map_smul, map_sub, Pi.smul_apply, Pi.sub_apply, hc j hj, hc' j hj, smul_eq_mul]
-    field_simp
-    ring
+    rw [show f₁ j + γ * f₂ j - (f₁ j + γ' * f₂ j) = (γ - γ') * f₂ j by ring,
+      ← mul_assoc, inv_mul_cancel₀ hd, one_mul]
 
 /-- **At most one winning challenge per agreement subset, unless the line lies in the code.**
 
