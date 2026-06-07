@@ -100,4 +100,78 @@ theorem badWitnessSet_inter_supp_disjoint [NoZeroSMulDivisors F A]
     exact add_left_cancel this
   exact hne (scalar_unique_of_smul_eq hu₁ hsmul)
 
+/-- Each bad witness set, intersected with `supp(u₁)`, has at least `wt(u₁) - δ·n` coordinates
+(inclusion–exclusion against the `≥ (1-δ)n` size bound). -/
+theorem card_badWitnessSet_inter_supp_ge {C : Set (ι → A)} {δ : ℝ≥0} (hδ : δ ≤ 1)
+    {u₀ u₁ w : ι → A} {γ : F} (hγ : γ ∈ mcaBadWitness (F := F) C δ u₀ u₁ w) :
+    ((supp₁ u₁).card : ℝ) - δ * Fintype.card ι ≤
+      ((badWitnessSet C δ u₀ u₁ w γ ∩ supp₁ u₁).card : ℝ) := by
+  set S := badWitnessSet C δ u₀ u₁ w γ
+  set T := supp₁ u₁
+  -- |S ∩ T| + |S ∪ T| = |S| + |T|, and |S ∪ T| ≤ n
+  have hie : (S ∩ T).card + (S ∪ T).card = S.card + T.card :=
+    Finset.card_inter_add_card_union S T
+  have hunion : (S ∪ T).card ≤ Fintype.card ι := Finset.card_le_univ _
+  -- |S| ≥ (1-δ)n in ℝ
+  have hScardNN : ((1 - δ) * Fintype.card ι : ℝ≥0) ≤ (S.card : ℝ≥0) := (badWitnessSet_spec hγ).1
+  have hScardR : (1 - (δ : ℝ)) * Fintype.card ι ≤ (S.card : ℝ) := by
+    have := (NNReal.coe_le_coe).mpr hScardNN
+    push_cast [NNReal.coe_sub hδ] at this
+    linarith [this]
+  -- combine: |S ∩ T| = |S| + |T| - |S ∪ T| ≥ (1-δ)n + |T| - n = |T| - δn
+  have hieR : ((S ∩ T).card : ℝ) + (S ∪ T).card = S.card + T.card := by exact_mod_cast hie
+  have hunionR : ((S ∪ T).card : ℝ) ≤ Fintype.card ι := by exact_mod_cast hunion
+  nlinarith [hieR, hunionR, hScardR]
+
+open Classical in
+/-- **GKL24 first-moment bad-witness cardinality bound (#67).**
+
+For a fixed candidate codeword `w`, the bad combining scalars are capped by the Hamming weight of
+`u₁`:
+`|mcaBadWitness| · (wt(u₁) - δ·n) ≤ wt(u₁)`.  When `u₁` is far from `0` (`wt(u₁) > δ·n`) this
+forces `|mcaBadWitness| ≤ wt(u₁) / (wt(u₁) - δ·n)`.  Proven by the coordinate-injectivity / first
+moment argument: the bad witness sets are pairwise disjoint on `supp(u₁)`, their disjoint union sits
+in `supp(u₁)`, and each contributes `≥ wt(u₁) - δ·n` coordinates. -/
+theorem mcaBadWitness_card_mul_le [NoZeroSMulDivisors F A]
+    (C : Set (ι → A)) (δ : ℝ≥0) (hδ : δ ≤ 1) (u₀ u₁ w : ι → A) :
+    ((mcaBadWitness (F := F) C δ u₀ u₁ w).card : ℝ) *
+        ((supp₁ u₁).card - δ * Fintype.card ι) ≤ (supp₁ u₁).card := by
+  set bad := mcaBadWitness (F := F) C δ u₀ u₁ w with hbad
+  set T := supp₁ u₁ with hT
+  -- disjoint union of the (witness ∩ supp) sets equals the sum of cards
+  have hdisj : ∀ γ ∈ bad, ∀ γ' ∈ bad, γ ≠ γ' →
+      Disjoint (badWitnessSet C δ u₀ u₁ w γ ∩ T) (badWitnessSet C δ u₀ u₁ w γ' ∩ T) :=
+    fun γ hγ γ' hγ' hne => badWitnessSet_inter_supp_disjoint hγ hγ' hne
+  have hsum_eq : (bad.biUnion (fun γ => badWitnessSet C δ u₀ u₁ w γ ∩ T)).card =
+      ∑ γ ∈ bad, (badWitnessSet C δ u₀ u₁ w γ ∩ T).card :=
+    Finset.card_biUnion hdisj
+  -- the union sits inside T
+  have hsub : bad.biUnion (fun γ => badWitnessSet C δ u₀ u₁ w γ ∩ T) ⊆ T := by
+    intro i hi
+    rw [Finset.mem_biUnion] at hi
+    obtain ⟨γ, _, hγi⟩ := hi
+    exact (Finset.mem_inter.mp hγi).2
+  -- hence ∑ |witness ∩ T| ≤ |T|
+  have hsum_le : (∑ γ ∈ bad, (badWitnessSet C δ u₀ u₁ w γ ∩ T).card) ≤ T.card := by
+    rw [← hsum_eq]; exact Finset.card_le_card hsub
+  have hsum_leR : (∑ γ ∈ bad, ((badWitnessSet C δ u₀ u₁ w γ ∩ T).card : ℝ)) ≤ (T.card : ℝ) := by
+    have : ((∑ γ ∈ bad, (badWitnessSet C δ u₀ u₁ w γ ∩ T).card : ℕ) : ℝ) ≤ (T.card : ℝ) := by
+      exact_mod_cast hsum_le
+    push_cast at this; exact this
+  -- each term ≥ |T| - δn
+  have hterm : ∀ γ ∈ bad, ((T.card : ℝ) - δ * Fintype.card ι) ≤
+      ((badWitnessSet C δ u₀ u₁ w γ ∩ T).card : ℝ) :=
+    fun γ hγ => card_badWitnessSet_inter_supp_ge hδ hγ
+  -- sum the lower bounds: |bad|·(|T| - δn) ≤ ∑ ≤ |T|
+  have hlb : (bad.card : ℝ) * ((T.card : ℝ) - δ * Fintype.card ι) ≤
+      ∑ γ ∈ bad, ((badWitnessSet C δ u₀ u₁ w γ ∩ T).card : ℝ) := by
+    rw [← Finset.sum_const, Finset.sum_le_sum_iff_of_nonneg] <;>
+      · first
+        | exact hterm
+        | (intro γ hγ; exact hterm γ hγ)
+  calc (bad.card : ℝ) * ((T.card : ℝ) - δ * Fintype.card ι)
+      ≤ ∑ γ ∈ bad, ((badWitnessSet C δ u₀ u₁ w γ ∩ T).card : ℝ) := hlb
+    _ ≤ (T.card : ℝ) := hsum_leR
+
 end ProximityGap
+
