@@ -10,6 +10,8 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.ToMathlib.BridgeListDecodingCA
 import ArkLib.ToMathlib.Bridge2BCHKS25
 import ArkLib.ToMathlib.Bridge2BGKS20
+import ArkLib.ToMathlib.BadLineWitnessProof
+import ArkLib.ToMathlib.NearCertainBadLineProof
 import ArkLib.Data.CodingTheory.Connections.EpsMCABadGlue
 import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -44,10 +46,14 @@ implication "list-decoding ⇒ CA" cannot be tight in general.
 The CS25 deep-hole probability residual is no longer an external input: see
 `ArkLib.ToMathlib.CS25JointFar.deepHoleProbResidual_holds`, which supplies
 `DeepHoleProbResidual` from the in-tree joint-far/minimum-distance argument under the explicit
-rate condition. The remaining #22 external bridge constructors are the geometric witnesses
-`Bridge.BadLineWitness` (BCHKS25 bad-line construction) and `Bridge.NearCertainBadLine`
-(BGKS20 characteristic-2 near-certain bad-line construction). The `_of_residuals` wrappers below
-keep those witness constructors explicit while the ENNReal/CA plumbing is proven in-tree.
+rate condition.
+
+The BCHKS25/BGKS20 bridge boundaries have also been narrowed to explicit producer data:
+`ArkLib.ToMathlib.BadLineWitnessProof` assembles `Bridge.BadLineWitness` from BCHKS25
+interpolation output, and `ArkLib.ToMathlib.NearCertainBadLineProof` assembles
+`Bridge.NearCertainBadLine` from all-but-one or line-code witnesses. The wrappers below expose
+those producer surfaces at the ABF26 §5 API while keeping the remaining paper-specific data
+auditable.
 
 ## Coercion conventions
 
