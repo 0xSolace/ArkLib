@@ -85,14 +85,19 @@ theorem sq_sum_card_le_card_mul_sum_inter {κ ι : Type*} [Fintype κ] [Fintype 
     by_cases hi : x ∈ S i <;> by_cases hj : x ∈ S j <;>
       simp [hi, hj, Finset.mem_inter]
   have hident : (∑ i, ∑ j, (S i ∩ S j).card) = ∑ x : ι, (deg x) ^ 2 := by
+    have step1 : (∑ i, ∑ j, ∑ x : ι, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0))
+        = ∑ i, ∑ x : ι, ∑ j, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0) := by
+      refine Finset.sum_congr rfl fun i _ => ?_
+      rw [Finset.sum_comm]
+    have step2 : (∑ i, ∑ x : ι, ∑ j, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0))
+        = ∑ x : ι, ∑ i, ∑ j, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0) := by
+      rw [Finset.sum_comm]
     simp_rw [hinter]
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl ?_
-    intro x _
-    rw [← Finset.sum_mul_sum, ← hf x, sq]
-    refine Finset.sum_congr rfl ?_
-    intro i _
-    rw [Finset.sum_comm]
+    rw [step1, step2]
+    refine Finset.sum_congr rfl fun x _ => ?_
+    rw [← Finset.sum_mul_sum]
+    simp only [← hf x]
+    rw [sq]
   have hsum : (∑ i, (S i).card) = ∑ x : ι, deg x := sum_card_eq_sum_degree S
   rw [hsum, hident]
   have hcs := sq_sum_le_card_mul_sum_sq (s := (Finset.univ : Finset ι)) (f := deg)
