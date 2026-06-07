@@ -152,11 +152,39 @@ Y-Hasse binomial from `hasseDerivY_coeff`, the per-term values via `coeff_Q_eq_B
   + `partitionProd_coeff_assembled`, and clearing the `W`/`ξ` telescopes with
   the `ζ` sign/denominator conventions.
 THIS is the last genuinely unformalized content of P2; everything else of P2 is PROVEN. -/
+def RestrictedFaaDiBrunoMatchAt (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) : Prop :=
+  restrictedFaaDiBrunoSum H x₀ R hHyp t
+    = - (ClaimA2.ζ R x₀ H
+          * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp))
+
+/-- The all-orders carved P2 core, kept in its original equation form. -/
 def RestrictedFaaDiBrunoMatch (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) : Prop :=
   ∀ t : ℕ, restrictedFaaDiBrunoSum H x₀ R hHyp t
     = - (ClaimA2.ζ R x₀ H
           * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp))
+
+/-- The carved core is exactly its family of single-order residuals. -/
+theorem restrictedFaaDiBrunoMatch_iff_forall_at (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoMatch H x₀ R hHyp ↔
+      ∀ t : ℕ, RestrictedFaaDiBrunoMatchAt H x₀ R hHyp t :=
+  Iff.rfl
+
+/-- Projection from the all-orders carved P2 core to a fixed order. -/
+theorem RestrictedFaaDiBrunoMatch.at (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) (t : ℕ) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp t :=
+  hmatch t
+
+/-- Assemble the all-orders carved P2 core from its single-order family. -/
+theorem RestrictedFaaDiBrunoMatch.of_forallAt (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ t : ℕ, RestrictedFaaDiBrunoMatchAt H x₀ R hHyp t) :
+    RestrictedFaaDiBrunoMatch H x₀ R hHyp :=
+  hat
 
 /-- **STEP 2 — the truncated-defect cancellation, reduced to the single named core (PROVEN
 from `RestrictedFaaDiBrunoMatch`).** -/
@@ -248,7 +276,11 @@ theorem restrictedFaaDiBrunoMatch_iff_faaDiBrunoSuccSumZero
 
 -- In-file axiom audit for the carved P2 core and its conditional endpoint reductions.
 section AxiomAudit
+#print axioms RestrictedFaaDiBrunoMatchAt
 #print axioms RestrictedFaaDiBrunoMatch
+#print axioms restrictedFaaDiBrunoMatch_iff_forall_at
+#print axioms RestrictedFaaDiBrunoMatch.at
+#print axioms RestrictedFaaDiBrunoMatch.of_forallAt
 #print axioms restrictedFaaDiBrunoMatch_of_faaDiBrunoSuccSumZero
 #print axioms faaDiBrunoSuccSumZero_of_restrictedFaaDiBrunoMatch
 #print axioms restrictedFaaDiBrunoMatch_iff_faaDiBrunoSuccSumZero

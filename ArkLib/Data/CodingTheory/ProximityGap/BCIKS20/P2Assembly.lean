@@ -120,6 +120,25 @@ theorem restrictedMatch_rhs_eq_restrictedRecursionPartitionForm
       = restrictedMatchRecursionPartitionForm H x₀ R hHyp t :=
   restrictedMatch_rhs_eq_recursionPartitionForm H x₀ R hHyp t
 
+/-- Fixed-order equivalence between the carved P2 core and the normalized partition residual. -/
+theorem restrictedMatchAt_iff_partitionMatchAt (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp t ↔
+      RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t := by
+  constructor
+  · intro hmatch
+    unfold RestrictedFaaDiBrunoMatchAt at hmatch
+    unfold RestrictedFaaDiBrunoPartitionMatchAt
+    rw [← restrictedFaaDiBrunoSum_eq_restrictedPartitionForm H x₀ R hHyp t,
+      ← restrictedMatch_rhs_eq_restrictedRecursionPartitionForm H x₀ R hHyp t]
+    exact hmatch
+  · intro hpart
+    unfold RestrictedFaaDiBrunoPartitionMatchAt at hpart
+    unfold RestrictedFaaDiBrunoMatchAt
+    rw [restrictedFaaDiBrunoSum_eq_restrictedPartitionForm H x₀ R hHyp t,
+      restrictedMatch_rhs_eq_restrictedRecursionPartitionForm H x₀ R hHyp t]
+    exact hpart
+
 /-- The carved core is equivalent to the final partition-form residual. -/
 theorem restrictedMatch_iff_partitionMatch (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) :
@@ -206,6 +225,7 @@ section AxiomAudit
 #print axioms RestrictedFaaDiBrunoPartitionMatch.of_forallAt
 #print axioms restrictedFaaDiBrunoSum_eq_restrictedPartitionForm
 #print axioms restrictedMatch_rhs_eq_restrictedRecursionPartitionForm
+#print axioms restrictedMatchAt_iff_partitionMatchAt
 #print axioms restrictedMatch_iff_partitionMatch
 #print axioms RestrictedFaaDiBrunoPartitionMatch.of_restrictedMatch
 #print axioms RestrictedFaaDiBrunoMatch.of_partitionMatch
