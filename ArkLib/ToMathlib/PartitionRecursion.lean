@@ -220,6 +220,17 @@ theorem recursionStep_rel {i₁ : ℕ} (hi : i₁ ≤ t + 1)
     recursionWF.rel l (t + 1) :=
   recursionStep_parts_lt hi p hexcl l hl
 
+/-- A partition of `n` contains no part `k` strictly larger than `n`: every part is at most
+`p.parts.sum = n < k`. In the BCIKS20 A.4 recursion this discharges the `(t+1) ∉ λ.parts`
+exclusion automatically for every block whose partitioned total is `≤ t` (e.g. `λ` partitioning
+`t+1-i₁` with `i₁ ≥ 1`), so the exclusion is only nontrivial for the `i₁ = 0` outer block. -/
+theorem notMem_parts_of_lt {n k : ℕ} (p : Nat.Partition n) (h : n < k) :
+    k ∉ p.parts := by
+  intro hk
+  have hle : k ≤ p.parts.sum := Multiset.le_sum_of_mem hk
+  rw [p.parts_sum] at hle
+  omega
+
 end Nat.Partition
 
 end ArkLib
@@ -231,3 +242,4 @@ end ArkLib
 #print axioms ArkLib.Nat.Partition.eq_indiscrete_of_mem_self
 #print axioms ArkLib.Nat.Partition.card_parts_indiscrete
 #print axioms ArkLib.Nat.Partition.recursionStep_rel
+#print axioms ArkLib.Nat.Partition.notMem_parts_of_lt
