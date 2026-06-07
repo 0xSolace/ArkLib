@@ -170,6 +170,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
+import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Admissible
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Claim16Transport
 import ArkLib.Data.CodingTheory.ProximityGap.GK16DegreeBudget
