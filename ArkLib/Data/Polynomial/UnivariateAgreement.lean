@@ -6,6 +6,8 @@ Authors: ArkLib Contributors
 
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Data.Real.Basic
+import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Univariate polynomial agreement soundness (FRI / sum-check round)
