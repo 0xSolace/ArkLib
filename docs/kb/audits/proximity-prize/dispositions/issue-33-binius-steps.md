@@ -62,6 +62,23 @@ provides the general-`i` building blocks (`intermediateEvaluationPoly`, `interme
 Predominantly CompPoly-layer work. Audited under `0c5a2b2df` /
 `docs/kb/audits/issue-33-binius-branch-harvest-2026-06-06.md`.
 
+## Cleanest decoupling lever (concrete next step for 3 of the 4 Steps)
+
+`Steps/Commit`, `Steps/Relay`, `Steps/FinalSumcheck` import only `ReductionLogic` (not the
+`Soundness` umbrella). `ReductionLogic` in turn imports the broken `Soundness.Lift` for **exactly
+one** symbol: the 2-line self-contained helper `bitsOfIndex` (`Soundness/Lift.lean:41`,
+`fun j => if Nat.getBit j.val k.val = 1 then 1 else 0`). Relocating `bitsOfIndex` into a stable
+low module (e.g. a new `BinaryBasefold/BitsOfIndex.lean`, or `Basic.lean`) that both `Lift` and
+`ReductionLogic` import — and dropping `import Soundness.Lift` from `ReductionLogic` — decouples the
+entire Steps **completeness** layer from the broken Soundness lift. That should let
+`Steps/{Commit,Relay,FinalSumcheck}` compile and machine-verify 3 of the 4 step residuals without
+any soundness-layer repair. (Note: it must MOVE the def, not duplicate it — `Steps/Fold` imports
+both `ReductionLogic` and the `Soundness` umbrella, so two `Binius.BinaryBasefold.bitsOfIndex`
+definitions would collide there.) `Steps/Fold` additionally needs `Soundness.Incremental` and the
+umbrella, so it stays gated on the soundness-layer port until that lands. Not executed here because
+the clean move edits the actively-refactored (API-drifting) `Soundness/Lift.lean`, which is unsafe
+to touch concurrently in the shared multi-agent tree.
+
 ## Recommendation
 
 Keep #33 open. The Steps proofs are written, but their green-build verification is gated on a
