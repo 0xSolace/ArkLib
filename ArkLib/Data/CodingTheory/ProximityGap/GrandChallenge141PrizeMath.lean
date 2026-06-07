@@ -271,6 +271,53 @@ theorem epsMCAgsPrizeUniformConjecture_iff_uniform_epsMCAgsMassBound
   · intro hMass
     exact epsMCAgsPrizeUniformConjecture_of_uniform_epsMCAgsMassBound domain m hMass
 
+/-- The honest uniform GS-exposed prize, plus the still-explicit GS faithfulness and numeric
+clearance hypotheses, produces a one-sided lower witness at the ABF26 prize-rate radius.
+
+This is the lower-witness-facing specialization of
+`exists_uniform_epsMCAgsMassBound_of_uniformConjecture`: the uniform conjecture supplies the
+GS-exposed mass bound with one constant triple, `hclear` routes that bound to `epsStar`, and
+`hfaithful` transfers the GS-exposed error back to the abstract MCA error. No open content is
+hidden: uniformity, faithfulness, and numeric clearance are all explicit inputs. -/
+theorem exists_prize_mcaLowerWitness_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (j : Fin 4) (η δ : ℝ≥0),
+        0 < η →
+        (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ) →
+        δ ≤ 1 →
+        ∀ L : WordStack F (Fin 2) ι → Finset (ι → F),
+          FaithfulGSFamily (F := F)
+            ((ReedSolomon.code (domain := domain)
+              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                Set (ι → F))) δ L →
+          ENNReal.ofReal
+              (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+                η c₁ c₂ c₃)
+            ≤ (epsStar : ENNReal) →
+          ∃ w : GrandChallenges.MCALowerWitness
+            ((ReedSolomon.code (domain := domain)
+              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                Set (ι → F))) epsStar,
+            w.δ = δ := by
+  rcases hUniform with ⟨c₁, c₂, c₃, hbound⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro j η δ hη hδ hδ_le_one L hfaithful hclear
+  let C : Set (ι → F) :=
+    (ReedSolomon.code (domain := domain)
+      ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+  have hMassUniform : epsMCAgsMassBound (F := F) C δ L
+      (ENNReal.ofReal
+        (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+          η c₁ c₂ c₃)) :=
+    epsMCAgsMassBound_of_epsMCAgs_le C δ L (hbound j η δ hη hδ L)
+  have hMassStar : epsMCAgsMassBound (F := F) C δ L (epsStar : ENNReal) :=
+    epsMCAgsMassBound.mono hMassUniform hclear
+  refine ⟨GrandChallenges.MCALowerWitness.ofLe (C := C) (ε_star := epsStar) (δ := δ)
+    hδ_le_one ?_, rfl⟩
+  exact epsMCA_le_of_faithful_mass (F := F) C δ L hfaithful hMassStar
+
 end PerInput
 
 /-! ## 3. Explicit-constant conditional reduction (open content named, no laundering) -/
@@ -320,6 +367,7 @@ end Reduction
 #print axioms exists_uniform_epsMCAgsMassBound_of_uniformConjecture
 #print axioms epsMCAgsPrizeUniformConjecture_of_uniform_epsMCAgsMassBound
 #print axioms epsMCAgsPrizeUniformConjecture_iff_uniform_epsMCAgsMassBound
+#print axioms exists_prize_mcaLowerWitness_of_uniformConjecture
 #print axioms epsMCAgs_prizeBound_of_listSize_clears
 
 end MCAGS

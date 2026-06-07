@@ -347,6 +347,74 @@ theorem finalCheckWithClaimValueRelIn_of_secondSumcheckEval
   simp [finalCheckWithClaimValueRelIn, hTarget,
     secondSumCheckVirtualPolynomial_eval_eq_finalExpectedClaimValue]
 
+/-- Pure semantic output relation for the target-carrying final check, stated directly in terms of
+the second-sum-check endpoint instead of the algebraic `finalExpectedClaimValue`. This is the same
+relation as `finalCheckWithClaimValueRelIn`, but it is the more convenient surface for composition
+code that already carries the second-sum-check terminal target. -/
+@[reducible]
+def finalCheckWithClaimSecondSumcheckEvalRelOut :
+    Set ((FinalClaimStatement R pp × (∀ i, FinalOracleStatement R pp i)) × Unit) :=
+  { x | x.1.1.1 =
+      MvPolynomial.eval x.1.1.2.1
+        (secondSumCheckVirtualPolynomial R pp x.1.1.2.2 x.1.2) }
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The direct second-sum-check endpoint relation is exactly the semantic final expected-value
+relation. -/
+theorem finalCheckWithClaimSecondSumcheckEvalRelOut_eq_valueRelIn :
+    finalCheckWithClaimSecondSumcheckEvalRelOut R pp =
+      finalCheckWithClaimValueRelIn R pp := by
+  ext x
+  rcases x with ⟨⟨⟨target, stmt⟩, oStmt⟩, u⟩
+  cases u
+  change (target = MvPolynomial.eval stmt.1
+      (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt)) ↔
+    (((target, stmt), oStmt), ()) ∈ finalCheckWithClaimValueRelIn R pp
+  exact (finalCheckWithClaimValueRelIn_iff_secondSumcheckEval R pp target stmt oStmt).symm
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Membership in the direct second-sum-check endpoint relation is exactly endpoint equality. -/
+theorem finalCheckWithClaimSecondSumcheckEvalRelOut_iff_secondSumcheckEval
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i) :
+    (((target, stmt), oStmt), ()) ∈
+        finalCheckWithClaimSecondSumcheckEvalRelOut R pp ↔
+      target = MvPolynomial.eval stmt.1
+        (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt) :=
+  Iff.rfl
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Constructor form of `finalCheckWithClaimSecondSumcheckEvalRelOut_iff_secondSumcheckEval`. -/
+theorem finalCheckWithClaimSecondSumcheckEvalRelOut_of_secondSumcheckEval
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (hTarget : target =
+      MvPolynomial.eval stmt.1 (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt)) :
+    (((target, stmt), oStmt), ()) ∈
+      finalCheckWithClaimSecondSumcheckEvalRelOut R pp :=
+  (finalCheckWithClaimSecondSumcheckEvalRelOut_iff_secondSumcheckEval
+    R pp target stmt oStmt).2 hTarget
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Projection from the direct second-sum-check endpoint relation back to endpoint equality. -/
+theorem secondSumcheckEval_eq_of_finalCheckWithClaimSecondSumcheckEvalRelOut
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (hmem : (((target, stmt), oStmt), ()) ∈
+      finalCheckWithClaimSecondSumcheckEvalRelOut R pp) :
+    target = MvPolynomial.eval stmt.1
+      (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt) :=
+  (finalCheckWithClaimSecondSumcheckEvalRelOut_iff_secondSumcheckEval
+    R pp target stmt oStmt).1 hmem
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The direct second-sum-check endpoint relation weakens to the broad target-carrying terminal
+relation. -/
+theorem finalCheckWithClaimSecondSumcheckEvalRelOut_subset_finalCheckWithClaimRelOut :
+    finalCheckWithClaimSecondSumcheckEvalRelOut R pp ⊆ finalCheckWithClaimRelOut R pp := by
+  intro x _hx
+  trivial
+
 /-- **NAMED RESIDUAL — final target relation from the second-sum-check endpoint.** The target
 threaded into Spartan's final `CheckClaim` belongs to the pure target-carrying relation whenever it
 is the endpoint emitted by the second sum-check. -/
@@ -634,6 +702,34 @@ def composedCompletenessWithClaimValueRelResidual
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
   Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckWithClaimValueRelIn R pp)
 
+/-- Target-carrying composed completeness residual where the final output relation is stated
+directly as equality with the second-sum-check terminal endpoint. -/
+def composedCompletenessWithClaimSecondSumcheckEvalResidual
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
+  Rc.perfectCompleteness init impl
+    (spartanRelIn R pp) (finalCheckWithClaimSecondSumcheckEvalRelOut R pp)
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The second-sum-check endpoint completeness residual and the semantic value-relation residual
+are the same residual under the terminal endpoint bridge. -/
+theorem composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) :
+    composedCompletenessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl ↔
+      composedCompletenessWithClaimValueRelResidual R pp oSpec Rc init impl := by
+  unfold composedCompletenessWithClaimSecondSumcheckEvalResidual
+  unfold composedCompletenessWithClaimValueRelResidual
+  rw [finalCheckWithClaimSecondSumcheckEvalRelOut_eq_valueRelIn]
+
 omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- Completeness into the semantic target-carrying value relation implies the existing broad
 target-carrying composed completeness residual by output-relation weakening. -/
@@ -657,6 +753,23 @@ theorem composedCompletenessWithClaimResidual_of_valueRel
     (reduction := Rc.toReduction)
     (finalCheckWithClaimValueRelIn_subset_finalCheckWithClaimRelOut R pp)
     hValue
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Completeness into the second-sum-check endpoint relation implies the existing broad
+target-carrying composed completeness residual. -/
+theorem composedCompletenessWithClaimResidual_of_secondSumcheckEval
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (hEndpoint :
+      composedCompletenessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl) :
+    composedCompletenessWithClaimResidual R pp oSpec Rc init impl :=
+  composedCompletenessWithClaimResidual_of_valueRel R pp oSpec Rc init impl <|
+    (composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+      R pp oSpec Rc init impl).1 hEndpoint
 
 /-- **NAMED RESIDUAL — composed Spartan PIOP round-by-round knowledge soundness.** Discharged, once
 the composed verifier is available, by iterated `OracleVerifier.append_rbrKnowledgeSoundness`: each
@@ -713,6 +826,12 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
 #print axioms finalCheckWithClaimValueRelIn_iff_secondSumcheckEval
 #print axioms secondSumcheckEval_eq_of_finalCheckWithClaimValueRelIn
 #print axioms finalCheckWithClaimValueRelIn_of_secondSumcheckEval
+#print axioms finalCheckWithClaimSecondSumcheckEvalRelOut
+#print axioms finalCheckWithClaimSecondSumcheckEvalRelOut_eq_valueRelIn
+#print axioms finalCheckWithClaimSecondSumcheckEvalRelOut_iff_secondSumcheckEval
+#print axioms finalCheckWithClaimSecondSumcheckEvalRelOut_of_secondSumcheckEval
+#print axioms secondSumcheckEval_eq_of_finalCheckWithClaimSecondSumcheckEvalRelOut
+#print axioms finalCheckWithClaimSecondSumcheckEvalRelOut_subset_finalCheckWithClaimRelOut
 #print axioms finalCheckWithClaimValueRelResidual
 #print axioms finalCheckWithClaimValueRelResidual_holds
 #print axioms finalCheckWithClaimValueRelResidual_of_secondSumcheckTerminalEndpointResidual
@@ -730,7 +849,10 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
 #print axioms composedCompletenessWithClaimResidual
 #print axioms finalCheckWithClaimValueRelIn_subset_finalCheckWithClaimRelOut
 #print axioms composedCompletenessWithClaimValueRelResidual
+#print axioms composedCompletenessWithClaimSecondSumcheckEvalResidual
+#print axioms composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel
 #print axioms composedCompletenessWithClaimResidual_of_valueRel
+#print axioms composedCompletenessWithClaimResidual_of_secondSumcheckEval
 #print axioms composedRbrKnowledgeSoundnessWithClaimResidual
 
 end Bricks
