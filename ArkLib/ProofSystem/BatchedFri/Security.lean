@@ -741,7 +741,7 @@ structure FriQuerySoundnessParts
     query_round_acceptance_bound →
     batching_oracle_lens_reduction →
     correlated_agreement_to_jointAgreement →
-    fri_query_soundness (ω := ω) f h_agreement m_ge_3
+    fri_query_soundness (n := n) (ω := ω) f h_agreement m_ge_3
 
 /-- Reassemble Claim 8.2 from the split frontier.  This theorem is intentionally small: it makes
 the residual boundaries usable by callers while the three substantive proof ingredients remain
@@ -757,11 +757,11 @@ theorem fri_query_soundness_of_parts
     ≤ α)
   {m : ℕ}
   (m_ge_3 : m ≥ 3)
-  (parts : FriQuerySoundnessParts (ω := ω) f h_agreement m_ge_3)
+  (parts : FriQuerySoundnessParts (n := n) (ω := ω) f h_agreement m_ge_3)
   (h_query : parts.query_round_acceptance_bound)
   (h_lens : parts.batching_oracle_lens_reduction)
   (h_ca : parts.correlated_agreement_to_jointAgreement) :
-    fri_query_soundness (ω := ω) f h_agreement m_ge_3 :=
+    fri_query_soundness (n := n) (ω := ω) f h_agreement m_ge_3 :=
   parts.pieces_imply_claim h_query h_lens h_ca
 
 #print axioms Fri.FriQuerySoundnessParts
