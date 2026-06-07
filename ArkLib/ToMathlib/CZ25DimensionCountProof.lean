@@ -59,7 +59,6 @@ lemma hammingDist_eq_card_filter_ne (f c : ι → α) :
     hammingDist f c = (Finset.univ.filter (fun i => f i ≠ c i)).card := by
   classical
   rw [hammingDist]
-  congr 1
 
 /-- **Agreement count = `n − hammingDist`.** The number of block coordinates on which `f`
 and `c` *agree* is `n − hammingDist f c`. Splits the universe of coordinates into the
