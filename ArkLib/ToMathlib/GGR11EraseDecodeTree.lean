@@ -506,6 +506,46 @@ theorem lambda_le_ggr11_of_eraseDecodeTree
       ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
   lambda_le_ggr11_of_treeFrontier (treeFrontier_of_eraseDecodeTree hL H)
 
+/-- A one-close-codeword received word is witnessed by the concrete leaf tree. This packages the
+degenerate Erase-Decode construction target in the same named witness interface as the general
+Algorithm-1 residual. -/
+theorem treeWitness_of_leaf_close_le_one
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
+    {f : Matrix ι (Fin m) F}
+    (hclose :
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard ≤ 1) :
+    Nonempty (GGR11TreeWitness C δ m b r f) := by
+  exact
+    ⟨treeWitness_of_concreteEraseDecodeTree hL f EraseDecodeTree.leaf
+      (by simpa using hclose) (by simp) (by simp) (by simp)⟩
+
+/-- If every received word has at most one close interleaved codeword, the concrete leaf tree
+supplies the named GGR11 tree frontier. -/
+theorem treeFrontier_of_leaf_close_le_one
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard ≤ 1) :
+    GGR11TreeFrontier C δ m b r := by
+  intro f
+  exact treeWitness_of_leaf_close_le_one hL (H f)
+
+/-- Concrete leaf-tree frontier, exposed at the per-word GGR11 bound surface. -/
+theorem perWordBound_of_leaf_close_le_one
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard ≤ 1) :
+    GGR11PerWordBound C δ m b r :=
+  perWordBound_of_treeFrontier (treeFrontier_of_leaf_close_le_one hL H)
+
+/-- End-to-end GGR11 bound from the concrete leaf-tree frontier. -/
+theorem lambda_le_ggr11_of_leaf_close_le_one
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard ≤ 1) :
+    Lambda (Code.interleavedCodeSet (κ := Fin m) C) δ
+      ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
+  lambda_le_ggr11_of_treeFrontier (treeFrontier_of_leaf_close_le_one hL H)
+
 -- Axiom audit.
 #print axioms EraseDecodeTree.leafCount_le
 #print axioms treeWitness_of_concreteEraseDecodeTree
@@ -514,5 +554,9 @@ theorem lambda_le_ggr11_of_eraseDecodeTree
 #print axioms treeFrontier_of_eraseDecodeTree
 #print axioms perWordBound_of_eraseDecodeTree
 #print axioms lambda_le_ggr11_of_eraseDecodeTree
+#print axioms treeWitness_of_leaf_close_le_one
+#print axioms treeFrontier_of_leaf_close_le_one
+#print axioms perWordBound_of_leaf_close_le_one
+#print axioms lambda_le_ggr11_of_leaf_close_le_one
 
 end InterleavedCode.GGR11
