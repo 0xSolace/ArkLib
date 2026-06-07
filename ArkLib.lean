@@ -162,6 +162,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5Genuine
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.CollinearProximates
@@ -169,6 +170,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.Interpolation
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
+import ArkLib.Data.CodingTheory.ProximityGap.CS25BCHKSBridges
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterVanish
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BreakdownFarCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFraction
@@ -185,7 +187,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentPairCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
-import ArkLib.Data.CodingTheory.ProximityGap.CS25BCHKSBridges
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
 import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
@@ -231,8 +232,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLatticePrizeSpec
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AlgebraicBridge
-import ArkLib.Data.CodingTheory.ProximityGap.Hab25DegreeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25DegreeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Johnson
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
@@ -404,8 +405,8 @@ import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.FiatShamir.Basic
-import ArkLib.OracleReduction.FiatShamir.CompletenessUnroll
 import ArkLib.OracleReduction.FiatShamir.BasicCompleteness
+import ArkLib.OracleReduction.FiatShamir.CompletenessUnroll
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Basic
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
@@ -447,8 +448,8 @@ import ArkLib.OracleReduction.Security.TranscriptTree
 import ArkLib.OracleReduction.Security.ZeroKnowledge
 import ArkLib.OracleReduction.SimulateQ
 import ArkLib.OracleReduction.VectorIOR
-import ArkLib.ProofSystem.BatchedFri.QueryRoundProbability
 import ArkLib.ProofSystem.BatchedFri.QueryRoundAnalysis
+import ArkLib.ProofSystem.BatchedFri.QueryRoundProbability
 import ArkLib.ProofSystem.BatchedFri.QueryRoundSoundness
 import ArkLib.ProofSystem.BatchedFri.Security
 import ArkLib.ProofSystem.BatchedFri.Spec.General
