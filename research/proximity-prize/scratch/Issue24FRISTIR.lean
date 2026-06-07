@@ -265,9 +265,9 @@ theorem geom_prefix_le_real {n : ℕ} (e : ℕ → ℝ) (e₀ q : ℝ)
     `e : ℕ → ℝ≥0` decaying as `e i ≤ e₀ * qⁱ` (with `q < 1`) accumulate to ≤ `e₀ / (1 - q)`
     regardless of the round count.
 
-    PROVEN by pushing the goal through `NNReal.coe_le_coe`, `NNReal.coe_sum`,
-    `NNReal.coe_mul`, `NNReal.coe_pow`, `NNReal.coe_div`, `NNReal.coe_sub`
-    (the latter needs `q ≤ 1`, supplied), reducing to `geom_prefix_le_real`. -/
+    PROVEN by `rw [← NNReal.coe_le_coe]` then `push_cast [NNReal.coe_sub hq1.le]`
+    (the `coe_sub` rewrite needs `q ≤ 1`; `push_cast` discharges the standard
+    sum/div/mul/pow/one casts), reducing to `geom_prefix_le_real`. -/
 theorem geom_prefix_le_nnreal {n : ℕ} (e : ℕ → ℝ≥0) (e₀ q : ℝ≥0)
     (hq1 : q < 1) (hbound : ∀ i, i < n → e i ≤ e₀ * q ^ i) :
     (∑ i ∈ Finset.range n, e i) ≤ e₀ / (1 - q) := by

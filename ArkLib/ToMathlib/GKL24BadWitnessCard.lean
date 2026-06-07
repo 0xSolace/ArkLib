@@ -223,15 +223,12 @@ theorem exists_large_agree_zero_of_small_weight
       ∀ i ∈ S, u₁ i = (0 : ι → A) i := by
   refine ⟨(supp₁ u₁)ᶜ, ?_, ?_⟩
   · -- |suppᶜ| = n - |supp| ≥ n - δn = (1-δ)n
-    have hcompl : ((supp₁ u₁)ᶜ.card : ℝ) = Fintype.card ι - (supp₁ u₁).card := by
-      have : (supp₁ u₁)ᶜ.card = Fintype.card ι - (supp₁ u₁).card := by
-        rw [Finset.card_compl, Fintype.card]
-      rw [this, Nat.cast_sub (Finset.card_le_univ _)]
-      simp [Fintype.card]
-    rw [hcompl]
-    have : (1 - (δ:ℝ)) * Fintype.card ι = Fintype.card ι - δ * Fintype.card ι := by ring
-    push_cast [NNReal.coe_sub] at *
-    nlinarith [hwt]
+    have hcompl : ((supp₁ u₁)ᶜ.card : ℝ) = (Fintype.card ι : ℝ) - (supp₁ u₁).card := by
+      rw [Finset.card_compl, Nat.cast_sub (Finset.card_le_univ _)]
+      simp [Finset.card_univ]
+    rw [hcompl, show ((1 - δ) * Fintype.card ι : ℝ)
+        = (Fintype.card ι : ℝ) - δ * Fintype.card ι by ring]
+    linarith [hwt]
   · intro i hi
     simp only [Pi.zero_apply]
     by_contra hne
