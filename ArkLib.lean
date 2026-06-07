@@ -45,6 +45,7 @@ import ArkLib.Data.CodingTheory.BerlekampWelch.Condition
 import ArkLib.Data.CodingTheory.BerlekampWelch.ElocPoly
 import ArkLib.Data.CodingTheory.BerlekampWelch.Existence
 import ArkLib.Data.CodingTheory.BerlekampWelch.Sorries
+import ArkLib.Data.CodingTheory.BinomialEntropyBallBound
 import ArkLib.Data.CodingTheory.BinomialEntropyBound
 import ArkLib.Data.CodingTheory.CodeGeometry
 import ArkLib.Data.CodingTheory.Connections.EpsMCABadGlue
@@ -203,6 +204,7 @@ import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
 import ArkLib.Data.CodingTheory.RandomLinearCodeEquidistribution
 import ArkLib.Data.CodingTheory.RandomLinearCodeFirstMoment
 import ArkLib.Data.CodingTheory.RandomLinearCodeMatrixEquidist
+import ArkLib.Data.CodingTheory.RandomLinearCodeRankEquidist
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
