@@ -170,7 +170,7 @@ theorem eq_at_coord_of_mem_two_agree
 
 section DoubleCounting
 
-variable [Fintype ι]
+variable [Fintype ι] [DecidableEq F]
 
 /-- The set of coordinates seen by at least two scalars of `Z` (where `u₀, u₁` are pinned). -/
 noncomputable def doubleHitSet (Z : Finset F) (S : F → Finset ι) : Finset ι :=
@@ -220,6 +220,23 @@ theorem sum_card_le_doubleHit (Z : Finset F) (S : F → Finset ι) :
     rw [hbig]; omega
   rw [hdc, ← hsplit]
   omega
+
+/-- **The double-hit set is a joint-agreement set.**  Every coordinate seen by two scalars of `Z`
+agrees with both `v₀` and `v₁` (per-coordinate linearity), so `doubleHitSet ⊆ {i : u₀ i = v₀ i ∧
+u₁ i = v₁ i}`.  Combined with `sum_card_le_doubleHit` and `∑|S z| ≥ |Z|(1−δ)n`, this is the
+quantitative many-points correlated-agreement bound: the joint-agreement set has size
+`≥ (|Z|(1−δ) − 1)/(|Z|−1)·n → (1−δ)n`. -/
+theorem doubleHitSet_subset_joint
+    {u₀ u₁ v₀ v₁ : ι → F} {Z : Finset F} {S : F → Finset ι}
+    (hagree : ∀ z ∈ Z, ∀ j ∈ S z, u₀ j + z • u₁ j = v₀ j + z • v₁ j) :
+    doubleHitSet Z S ⊆ Finset.univ.filter (fun i => u₀ i = v₀ i ∧ u₁ i = v₁ i) := by
+  intro i hi
+  simp only [doubleHitSet, Finset.mem_filter] at hi
+  refine Finset.mem_filter.mpr ⟨Finset.mem_univ i, ?_⟩
+  -- a coordinate hit by ≥2 scalars is hit by two *distinct* ones
+  obtain ⟨z, hz, z', hz', hzz'⟩ := Finset.one_lt_card.mp (lt_of_lt_of_le one_lt_two hi.2)
+  rw [Finset.mem_filter] at hz hz'
+  exact eq_at_coord_of_mem_two_agree hagree hz.1 hz'.1 hzz' hz.2 hz'.2
 
 end DoubleCounting
 

@@ -198,6 +198,25 @@ theorem univ_filter_notMem_one_eq_empty :
   ext p
   simp
 
+/-- Adding an arbitrary part-count upper bound to the partition-of-`1` exclusion filter still
+leaves the empty finset. -/
+theorem univ_filter_card_le_and_notMem_one_eq_empty (i : ℕ) :
+    ((Finset.univ : Finset (Nat.Partition 1)).filter
+        (fun lam => lam.parts.card ≤ i ∧ 1 ∉ lam.parts)) = ∅ := by
+  classical
+  apply Finset.filter_false_of_mem
+  intro lam _
+  exact fun h => h.2 (one_mem_parts_of_one lam)
+
+/-- The P2-style filter on partitions of `0` is the singleton empty partition. -/
+theorem univ_zero_filter_card_le_and_notMem_one_eq_singleton (i : ℕ) :
+    ((Finset.univ : Finset (Nat.Partition 0)).filter
+        (fun lam => lam.parts.card ≤ i ∧ 1 ∉ lam.parts)) = {Nat.Partition.indiscrete 0} := by
+  classical
+  rw [univ_eq_singleton_indiscrete_zero]
+  ext p
+  simp
+
 /-! ### THE decreasing-measure lemma (the `i₁ = 0` case; what §6 of the DAG specifies) -/
 
 /-- **The key export for L7's well-founded recursion (`i₁ = 0` case).**
@@ -330,6 +349,8 @@ end ArkLib
 #print axioms ArkLib.Nat.Partition.eq_indiscrete_one
 #print axioms ArkLib.Nat.Partition.univ_eq_singleton_indiscrete_one
 #print axioms ArkLib.Nat.Partition.univ_filter_notMem_one_eq_empty
+#print axioms ArkLib.Nat.Partition.univ_filter_card_le_and_notMem_one_eq_empty
+#print axioms ArkLib.Nat.Partition.univ_zero_filter_card_le_and_notMem_one_eq_singleton
 #print axioms ArkLib.Nat.Partition.card_parts_indiscrete
 #print axioms ArkLib.Nat.Partition.recursionStep_rel
 #print axioms ArkLib.Nat.Partition.notMem_parts_of_lt
