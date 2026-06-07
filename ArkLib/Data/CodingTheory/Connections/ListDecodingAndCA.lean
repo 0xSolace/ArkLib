@@ -606,6 +606,74 @@ theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_badLineWitness_prop
   rs_epsCA_small_implies_lambda_lt_F_bchks25_of_badLineWitness
     domain k δ hδ_pos hδ_lt hε_ca provBadLine
 
+/-- **BCHKS25 interpolation-data connector.**  This is the same ABF26 T5.2 reduction as
+`rs_epsCA_small_implies_lambda_lt_F_bchks25_of_badLineWitness`, but with the witness producer
+written in the exact `BadLineWitnessProof.provBadLine_of_interpolation` input shape: from a
+negated list-size bound, provide BCHKS25's affine-shift output `(u, Γ)` plus the good-combiner
+fraction count `|F|/(2n) ≤ |Γ|`.
+
+All surrounding count arithmetic and CA plumbing are in-tree; the remaining paper-specific datum
+is precisely the interpolation output packaged by `interp`. -/
+theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_interpolation
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ)
+    (hδ_pos : 0 < δ)
+    (hδ_lt : (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ι)
+    (hε_ca :
+        epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            ((δ + 2 / Fintype.card ι).toNNReal)
+            ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal) <
+          ENNReal.ofReal (1 / (2 * Fintype.card ι)))
+    (interp :
+        ¬ (Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞)) →
+          Σ' u : WordStack F (Fin 2) ι,
+            PLift
+              (¬ jointProximity
+                (C := ((ReedSolomon.code domain k : Set (ι → F)))) (u := u)
+                ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)) ×'
+            Σ' Γ : Finset F,
+              PLift
+                (∀ γ ∈ Γ,
+                  δᵣ(u 0 + γ • u 1, ((ReedSolomon.code domain k : Set (ι → F)))) ≤
+                    ((δ + 2 / Fintype.card ι).toNNReal)) ×'
+              PLift ((Fintype.card F : ℝ) / (2 * Fintype.card ι) ≤ (Γ.card : ℝ))) :
+    Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞) :=
+  rs_epsCA_small_implies_lambda_lt_F_bchks25_of_badLineWitness
+    domain k δ hδ_pos hδ_lt hε_ca
+    (Bridge.provBadLine_of_interpolation
+      ((ReedSolomon.code domain k : Set (ι → F)))
+      ((δ + 2 / Fintype.card ι).toNNReal)
+      ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)
+      interp)
+
+/-- Prop-level wrapper for T5.2 from BCHKS25 interpolation data. -/
+theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_interpolation_prop
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ)
+    (hδ_pos : 0 < δ)
+    (hδ_lt : (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ι)
+    (hε_ca :
+        epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            ((δ + 2 / Fintype.card ι).toNNReal)
+            ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal) <
+          ENNReal.ofReal (1 / (2 * Fintype.card ι)))
+    (interp :
+        ¬ (Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞)) →
+          Σ' u : WordStack F (Fin 2) ι,
+            PLift
+              (¬ jointProximity
+                (C := ((ReedSolomon.code domain k : Set (ι → F)))) (u := u)
+                ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)) ×'
+            Σ' Γ : Finset F,
+              PLift
+                (∀ γ ∈ Γ,
+                  δᵣ(u 0 + γ • u 1, ((ReedSolomon.code domain k : Set (ι → F)))) ≤
+                    ((δ + 2 / Fintype.card ι).toNNReal)) ×'
+              PLift ((Fintype.card F : ℝ) / (2 * Fintype.card ι) ≤ (Γ.card : ℝ))) :
+    rs_epsCA_small_implies_lambda_lt_F_bchks25 domain k δ hδ_pos hδ_lt hε_ca :=
+  rs_epsCA_small_implies_lambda_lt_F_bchks25_of_interpolation
+    domain k δ hδ_pos hδ_lt hε_ca interp
+
 /-- **ABF26 Theorem 5.3 [CS25 Theorem 2] — honest reduction form.**
 
 The fully-proven, `sorry`-free, axiom-clean *contradiction core* of CS25 Theorem 2, with the
@@ -981,6 +1049,56 @@ theorem rs_epsCA_separation_bgks20_of_nearCertainBadLines
       ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)
       ((1 - ((1 : ℝ) / 8) ^ ((2 : ℝ) / 3)).toNNReal)
       hLossWitness)
+
+/-- **BGKS20 all-but-one connector.**  This exposes the latest producer shape at the ABF26 T5.4
+surface: for the RS code at rate `1/8`, give one stack for the main radius and one stack for the
+proximity-loss radius such that every scalar except one distinguished bad scalar makes the affine
+combination close to the code. The generic all-but-one lemma converts those data into
+`NearCertainBadLine` witnesses, and the existing residual bridge supplies the `ε_ca` lower bounds.
+
+This theorem does not hide the remaining BGKS-specific construction: the two stacks, joint-far
+proofs, and all-but-one closeness proofs are exactly the data that must come from the paper's
+characteristic-2 construction for the target RS family. -/
+theorem rs_epsCA_separation_bgks20_of_allButOne
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F] [CharP F 2]
+    (hF_eq_ι : Fintype.card F = Fintype.card ι)
+    (hF_ge : 8 ≤ Fintype.card F)
+    (domain : ι ↪ F)
+    (uMain : WordStack F (Fin 2) ι) (γMainBad : F)
+    (hMainJoint :
+      ¬ jointProximity
+        (C := ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F))))
+        (u := uMain)
+        ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal))
+    (hMainGood :
+      ∀ γ : F, γ ≠ γMainBad →
+        δᵣ(uMain 0 + γ • uMain 1,
+            ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F)))) ≤
+          ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal))
+    (uLoss : WordStack F (Fin 2) ι) (γLossBad : F)
+    (hLossJoint :
+      ¬ jointProximity
+        (C := ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F))))
+        (u := uLoss)
+        ((1 - ((1 : ℝ) / 8) ^ ((2 : ℝ) / 3)).toNNReal))
+    (hLossGood :
+      ∀ γ : F, γ ≠ γLossBad →
+        δᵣ(uLoss 0 + γ • uLoss 1,
+            ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F)))) ≤
+          ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)) :
+    rs_epsCA_separation_bgks20 hF_eq_ι hF_ge domain :=
+  rs_epsCA_separation_bgks20_of_nearCertainBadLines hF_eq_ι hF_ge domain
+    (Bridge.nearCertainBadLine_of_allButOne
+      ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F)))
+      ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)
+      ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)
+      uMain γMainBad hMainJoint hMainGood)
+    (Bridge.nearCertainBadLine_of_allButOne
+      ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F)))
+      ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)
+      ((1 - ((1 : ℝ) / 8) ^ ((2 : ℝ) / 3)).toNNReal)
+      uLoss γLossBad hLossJoint hLossGood)
 
 end ListVsCAseparation
 
