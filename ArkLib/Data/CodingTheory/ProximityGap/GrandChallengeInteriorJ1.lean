@@ -547,6 +547,46 @@ theorem epsStar_lt_three_div_card_of_card_lt_three_mul_two_pow
       < (((3 : ℕ) * 2 ^ (128 : ℕ) : ℕ) : ℝ≥0∞) := hcast
     _ = (3 : ℝ≥0∞) * (2 ^ (128 : ℕ) : ℝ≥0∞) := by push_cast; ring
 
+/-- Every ABF26 prize rate is at most `1/2`. -/
+lemma prizeRates_le_half (r : Fin 4) : prizeRates r ≤ (1 / 2 : ℝ≥0) := by
+  unfold prizeRates
+  have hpow : (2 : ℝ≥0) ^ (1 : ℕ) ≤ 2 ^ (r.val + 1) :=
+    pow_le_pow_right₀ one_le_two (by omega)
+  rw [pow_one] at hpow
+  exact div_le_div_of_nonneg_left (by norm_num) (by norm_num) hpow
+
+/-- If `6 ≤ n`, then `3 ≤ n/2`. -/
+private lemma three_le_half_mul_of_six_le {n : ℕ} (hn : 6 ≤ n) :
+    (3 : ℝ≥0) ≤ (1 / 2 : ℝ≥0) * (n : ℝ≥0) := by
+  calc (3 : ℝ≥0) = (1 / 2 : ℝ≥0) * 6 := by norm_num
+    _ ≤ (1 / 2 : ℝ≥0) * (n : ℝ≥0) := by
+        gcongr
+        exact_mod_cast hn
+
+/-- If the evaluation domain has at least six points, every ABF26 prize-rate Reed-Solomon code
+has the `k + 3 ≤ n` window needed by the exact interior-J1 theorem. -/
+lemma prizeRate_floor_add_three_le_of_card_ge_six (r : Fin 4)
+    (hn : 6 ≤ Fintype.card ι) :
+    ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι := by
+  set k := ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ with hk_def
+  have hkr : (k : ℝ≥0) ≤ (1 / 2 : ℝ≥0) * (Fintype.card ι : ℝ≥0) := by
+    rw [hk_def]
+    refine le_trans (Nat.floor_le (zero_le _)) ?_
+    gcongr
+    exact prizeRates_le_half r
+  have hcast : ((k + 3 : ℕ) : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0) := by
+    push_cast
+    calc (k : ℝ≥0) + 3
+        ≤ (1 / 2 : ℝ≥0) * (Fintype.card ι : ℝ≥0) + 3 := by gcongr
+      _ ≤ (1 / 2 : ℝ≥0) * (Fintype.card ι : ℝ≥0) +
+            (1 / 2 : ℝ≥0) * (Fintype.card ι : ℝ≥0) := by
+          gcongr
+          exact three_le_half_mul_of_six_le hn
+      _ = (Fintype.card ι : ℝ≥0) := by
+          rw [← add_mul]
+          norm_num
+  exact_mod_cast hcast
+
 /-- **Formal-prize adjacent J1/J2 field-size band.**
 
 If every prize-rate RS code has a genuine J1 window and
@@ -567,6 +607,22 @@ theorem mcaPrizeLatticeResolved_j1_of_interiorJ1_and_card_between
   exact mcaPrizeLatticeResolved_j1_of_interiorJ1_and_spikeJ2 domain hk hq3
     (two_div_card_le_epsStar_of_card_ge_two_mul_two_pow (F := F) hcard_lo)
     (epsStar_lt_three_div_card_of_card_lt_three_mul_two_pow (F := F) hcard_hi)
+
+/-- **Formal-prize adjacent J1/J2 field-size band, with prize-degree windows automatic.**
+
+For domains with at least six evaluation points, every ABF26 prize-rate degree satisfies
+`k_r + 3 ≤ n`. Thus the adjacent J1/J2 field-size band resolves the faithful MCA prize
+lattice to the constant J1 assignment without a separate degree-window hypothesis. -/
+theorem mcaPrizeLatticeResolved_j1_of_card_ge_six_and_card_between
+    (domain : ι ↪ F)
+    (hn : 6 ≤ Fintype.card ι)
+    (hcard_lo : (2 : ℕ) * 2 ^ (128 : ℕ) ≤ Fintype.card F)
+    (hcard_hi : Fintype.card F < (3 : ℕ) * 2 ^ (128 : ℕ)) :
+    mcaPrizeLatticeResolved domain
+      (fun _ : Fin 4 => ⟨1, Nat.succ_lt_succ Fintype.card_pos⟩) :=
+  mcaPrizeLatticeResolved_j1_of_interiorJ1_and_card_between domain
+    (fun r => prizeRate_floor_add_three_le_of_card_ge_six r hn)
+    hcard_lo hcard_hi
 
 end GrandChallengesLattice
 

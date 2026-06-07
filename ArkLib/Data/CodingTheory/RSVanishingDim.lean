@@ -31,7 +31,7 @@ noncomputable def evalOnS (α : ι ↪ F) (deg : ℕ) (S : Finset ι) :
     Polynomial.degreeLT F deg →ₗ[F] (S → F) where
   toFun p := fun i => (p : F[X]).eval (α (i : ι))
   map_add' p q := by ext i; simp [Submodule.coe_add, Polynomial.eval_add]
-  map_smul' c p := by ext i; simp [Submodule.coe_smul, Polynomial.eval_smul]
+  map_smul' c p := by ext i; simp [Polynomial.eval_smul]
 
 /-- **Lagrange surjectivity.** For `|S| ≤ deg`, every prescription of values on the points
 `{α i : i ∈ S}` is realised by some degree-`<deg` polynomial. -/
