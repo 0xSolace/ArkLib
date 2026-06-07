@@ -23,6 +23,7 @@ domain.
 namespace ReedSolomon.Folded
 
 open scoped Classical
+open CodingTheory
 
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
