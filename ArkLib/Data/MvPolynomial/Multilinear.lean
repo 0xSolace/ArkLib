@@ -281,7 +281,7 @@ theorem MLE_eval_scaled_sum {ι : Type*} (s : Finset ι) (z : ι → R) (g : ι 
     (r : σ → R) :
     eval r (MLE (fun x => ∑ j ∈ s, z j * g j x))
       = ∑ j ∈ s, z j * eval r (MLE (g j)) := by
-  rw [MLE_scaled_sum, eval_finset_sum]
+  rw [MLE_scaled_sum, map_sum]
   exact Finset.sum_congr rfl fun j _ => by rw [eval_mul, eval_C]
 
 end Linearity
