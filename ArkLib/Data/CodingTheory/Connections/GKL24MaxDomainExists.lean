@@ -227,4 +227,33 @@ theorem mcaBadWitness_card_first_moment {MC : Submodule F (ι → F)} {δ : ℝ�
         Nat.floor_mono (card_lineAgreeSet_ge_of_mem_mcaBadWitness (MC := MC) hγ)
     _ = (lineAgreeSet u₀ u₁ w γ).card := Nat.floor_natCast _
 
+/-- **GKL24 sharp first-moment bound `|Bad¹| ≤ p·n`.**  If a correlated-agreement domain `D` at rate
+`p` (so `(1−p)·n ≤ |D|`) absorbs the common zero-agreement set, and the bad-witness radius is smaller
+(`|D| < ⌊(1−δ)·n⌋`, i.e. `δ < p`), then `|mcaBadWitness w| ≤ p·n`.  This is GKL24's sharp
+first-moment count — the genuine external residual blocking the GCXK25 list-decoding→MCA chain: from
+the sunflower count `|B|·(⌊(1−δ)n⌋−|D|) ≤ n−|D|` with `⌊(1−δ)n⌋ > |D|` we get `|B| ≤ n−|D|`, and
+`|D| ≥ (1−p)n` gives `n−|D| ≤ p·n`. -/
+theorem mcaBadWitness_card_le_pn {MC : Submodule F (ι → F)} {δ p : ℝ≥0} {u₀ u₁ w : ι → F}
+    {D : Finset ι} (hp : p ≤ 1)
+    (hcommon : Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i) ⊆ D)
+    (hDcard : (1 - p) * Fintype.card ι ≤ (D.card : ℝ≥0))
+    (hlt : D.card < ⌊((1 - δ) * Fintype.card ι : ℝ≥0)⌋₊) :
+    ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ≥0)
+      ≤ p * Fintype.card ι := by
+  have hcount := mcaBadWitness_card_first_moment (MC := MC) (δ := δ) hcommon
+  have hk : 0 < ⌊((1 - δ) * Fintype.card ι : ℝ≥0)⌋₊ - D.card := by omega
+  have hBnat : (mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card
+      ≤ Fintype.card ι - D.card := le_trans (Nat.le_mul_of_pos_right _ hk) hcount
+  have hDle : D.card ≤ Fintype.card ι := by
+    rw [← Finset.card_univ]; exact Finset.card_le_card (Finset.subset_univ _)
+  have hcast : ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ≥0)
+      ≤ (Fintype.card ι : ℝ≥0) - (D.card : ℝ≥0) := by
+    rw [← Nat.cast_sub hDle]; exact_mod_cast hBnat
+  refine le_trans hcast ?_
+  rw [tsub_le_iff_left]
+  calc (Fintype.card ι : ℝ≥0)
+      = (p + (1 - p)) * Fintype.card ι := by rw [add_tsub_cancel_of_le hp]
+    _ = p * Fintype.card ι + (1 - p) * Fintype.card ι := by ring
+    _ ≤ p * Fintype.card ι + (D.card : ℝ≥0) := by gcongr
+
 end ProximityGap
