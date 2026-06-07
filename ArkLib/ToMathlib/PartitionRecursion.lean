@@ -126,6 +126,36 @@ theorem mem_self_iff_eq_indiscrete (ht : 0 < t) {p : Nat.Partition t} :
   rw [h, Nat.Partition.indiscrete_parts ht.ne']
   exact Multiset.mem_singleton.mpr rfl
 
+/-! ### The zero-total partition is a singleton -/
+
+/-- A partition of `0` has no parts.  This is the zero-total companion to the positive-total
+`indiscrete` characterisation above, and is useful when the BCIKS20 recursion reaches the
+`λ : Partition 0` branch. -/
+theorem parts_eq_zero_of_zero (p : Nat.Partition 0) : p.parts = 0 := by
+  rw [Multiset.eq_zero_iff_forall_notMem]
+  intro a ha
+  have hpos := p.parts_pos ha
+  have hle : a ≤ p.parts.sum := Multiset.le_sum_of_mem ha
+  rw [p.parts_sum] at hle
+  omega
+
+/-- Every partition of `0` is the empty/indiscrete partition. -/
+theorem eq_indiscrete_zero (p : Nat.Partition 0) :
+    p = Nat.Partition.indiscrete 0 := by
+  apply Nat.Partition.ext
+  rw [parts_eq_zero_of_zero p]
+  simp
+
+/-- The finite type of partitions of `0` is the singleton `{indiscrete 0}`. -/
+theorem univ_eq_singleton_indiscrete_zero :
+    (Finset.univ : Finset (Nat.Partition 0)) = {Nat.Partition.indiscrete 0} := by
+  ext p
+  constructor
+  · intro _
+    exact Finset.mem_singleton.mpr (eq_indiscrete_zero p)
+  · intro _
+    exact Finset.mem_univ p
+
 /-! ### THE decreasing-measure lemma (the `i₁ = 0` case; what §6 of the DAG specifies) -/
 
 /-- **The key export for L7's well-founded recursion (`i₁ = 0` case).**
@@ -251,6 +281,9 @@ end ArkLib
 #print axioms ArkLib.Nat.Partition.recursionStep_parts_lt
 #print axioms ArkLib.Nat.Partition.two_le_card_parts_of_ne_indiscrete
 #print axioms ArkLib.Nat.Partition.eq_indiscrete_of_mem_self
+#print axioms ArkLib.Nat.Partition.parts_eq_zero_of_zero
+#print axioms ArkLib.Nat.Partition.eq_indiscrete_zero
+#print axioms ArkLib.Nat.Partition.univ_eq_singleton_indiscrete_zero
 #print axioms ArkLib.Nat.Partition.card_parts_indiscrete
 #print axioms ArkLib.Nat.Partition.recursionStep_rel
 #print axioms ArkLib.Nat.Partition.notMem_parts_of_lt
