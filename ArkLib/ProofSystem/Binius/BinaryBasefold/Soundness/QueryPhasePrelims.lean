@@ -130,6 +130,7 @@ lemma polyToOracleFunc_eq_getFirstOracle
   have h_first_oracle := h_consistency ⟨0, by omega⟩
   dsimp only [strictOracleFoldingConsistencyProp] at h_first_oracle
   dsimp only [f₀, P₀, getFirstOracle] at h_first_oracle ⊢
+  simp only [id_eq] at h_first_oracle ⊢
   rw [h_first_oracle]
   funext y
   conv_rhs =>
