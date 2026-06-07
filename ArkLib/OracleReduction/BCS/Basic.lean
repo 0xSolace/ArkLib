@@ -364,6 +364,13 @@ def BCSOpeningSchedule.toOpeningStatements {CommitmentType : pSpec.MessageIdx �
       schedule.toOpeningStatements.drop k := by
   simp [BCSOpeningSchedule.toOpeningStatements]
 
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_reverse
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    BCSOpeningSchedule.toOpeningStatements schedule.reverse =
+      schedule.toOpeningStatements.reverse := by
+  simp [BCSOpeningSchedule.toOpeningStatements]
+
 /-- Projecting the indexed opening statements back to message indices recovers the message-index
 projection of the original typed schedule. -/
 @[simp] theorem BCSOpeningSchedule.toOpeningStatements_map_messageIdx
@@ -912,6 +919,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_append
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_take
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_drop
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_reverse
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_messageIdx
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_commitment
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_query
