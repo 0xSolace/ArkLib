@@ -39,3 +39,4 @@ ArkLib.Data.CodingTheory.GuruswamiSudan.ListSizeBound GSListSizeBound.gs_list_si
 # ── BKR06 subspace polynomial + tight family ───────────────────────────
 ArkLib.Data.CodingTheory.ListDecoding.BKR06SubspacePoly BKR06.subspacePoly_natDegree
 ArkLib.ToMathlib.SubspacePolyLinearized BKR06.bkr06_tight_family_hfamily_unconditional
+ArkLib.Data.CodingTheory.ListDecoding.Bounds CodingTheory.large_alphabet_barrier_bdg24_agl23

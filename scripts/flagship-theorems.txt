@@ -49,3 +49,4 @@ ArkLib/Data/CodingTheory/ProximityGap/GrandChallengesLattice.lean  ProximityGap.
 
 # ── BKR06 tight family (unconditional) ─────────────────────────────────
 ArkLib/ToMathlib/SubspacePolyLinearized.lean  BKR06.bkr06_tight_family_hfamily_unconditional
+ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean  CodingTheory.large_alphabet_barrier_bdg24_agl23

@@ -8,6 +8,7 @@ import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
+import ArkLib.Data.CodingTheory.ListDecoding.AGL23Barrier
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityReduction
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25DesignToLambda
 import ArkLib.Data.CodingTheory.ListDecoding.BKR06SubspacePoly
@@ -114,19 +115,20 @@ subspace-design (#53); the CZ25 §3.1 upper bounds below are tracked under **#53
 
 *EXTERNAL ADMIT, NEEDS_CLASSICAL* (`def … : Prop`; no in-tree route — genuine paper content):
 
-- `large_alphabet_barrier_bdg24_agl23` (T3.10 [BDG24, AGL23]) — alphabet-size lower bound
-  absent in-tree.
+
 - `random_linear_lambda_lower_glmrsw22` (T3.11 [GLMRSW22 Thm 4.1]) — the random generator
   matrix probability space is in-tree; the GLMRSW22 first-moment count over it is absent.
+- `random_rs_list_decoding` (T3.6 [AGL24 Thm 1.1]) — random-domain RS list-decoding
+  bound absent in-tree; the probability space is now the canonical
+  `Probability.uniformSizeSubsetOfLe`.
 
 *EXTERNAL ADMIT, COUNTING DISCHARGED — narrowed to an irreducible geometric/asymptotic core*
 (`def … : Prop` + proven `_of_residuals` reduction; the arithmetic side conditions issue #54
 asks to close where feasible are **already closed in-tree**):
 
-- `random_rs_list_decoding` (T3.6 [AGL24 Thm 1.1]) — random-domain RS list-decoding
-  bound absent in-tree; reduction proven in `random_rs_list_decoding_of_first_moment_residual`;
-  residual = the `randomRSListDecodingFirstMomentResidual` counting argument
-  (`ToMathlib/AGL24RandomRSProof.lean`).
+- `large_alphabet_barrier_bdg24_agl23` (T3.10 [BDG24, AGL23]) — reduction proven in
+  `AGL23.large_alphabet_barrier_of_counting`; residual = the `AGL23CountingExtraction`
+  geometric counting inequality.
 - `rs_lambda_superpoly_extension_bkr06` (T3.12 [BKR06 Cor 2.2]) — the roots→`q^d` cardinality
   arithmetic is discharged by `rs_lambda_superpoly_extension_bkr06_of_residuals` (via the
   proven `BKR06.subspacePoly_natDegree_ge_target` bridge) and the fiber-count form
@@ -194,9 +196,10 @@ noncomputable def random_rs_list_decoding
       ¬ (Lambda
           ((ReedSolomon.code (Probability.SizeSubset.toEmbedding L) k : Set (L → F)))
           (1 - (k : ℝ) / (n : ℝ) - η) ≤ (listBound : ℕ∞))] ≤ failure
-  -- Missing ingredient: AGL24's random-RS near-capacity list-decoding theorem. The
-  -- probability space is now in-tree (`uniformSizeSubsetOfLe`), and the external counting
-  -- argument has been strictly residualized to `randomRSListDecodingFirstMomentResidual`.
+  -- Missing ingredient: AGL24's random-RS near-capacity list-decoding theorem.  The
+  -- probability space is now in-tree (`uniformSizeSubsetOfLe`), but the proof bounding the
+  -- bad-domain probability and instantiating the paper's concrete `listBound`/`failure`
+  -- parameters is still external.
 
 end RandomReedSolomon
 
@@ -1359,14 +1362,15 @@ uses (the conclusion is a *lower* bound on `|F|`, monotone in the rate hypothesi
 
 Admitted as an external result.
 
-**STATUS: NEEDS_CLASSICAL.** The large-alphabet barrier [BDG24, AGL23] is settled
-classical list-decoding theory whose proof is unformalized anywhere; mathlib lacks the
-Reed-Solomon / generalized-Singleton / list-decoding API the argument depends on.
-Ground-up formalization task, not a port.
+**STATUS: HONEST REDUCTION AVAILABLE.** The descent from the combinatorial counting inequality
+`2^(c·n) ≤ q^(4·η·n)` to the threshold `q ≥ 2^((c/4)/η)` is fully proven, `sorry`-free and
+axiom-clean, in `AGL23.large_alphabet_barrier_of_counting`. The residual gap is isolated precisely
+to `AGL23CountingExtraction` (the AGL23 §4 subcode extraction + pigeonhole phase), taken
+here as an explicit hypothesis.
 See `research/formal/arklib-proof-research-2026-06.md`. -/
-def large_alphabet_barrier_bdg24_agl23
-    (ℓ : ℕ) (_hℓ_ge : 2 ≤ ℓ) (ρ : ℝ) (_hρ_pos : 0 < ρ) (_hρ_lt : ρ < 1) :
-    Prop :=
+theorem large_alphabet_barrier_bdg24_agl23
+    (ℓ : ℕ) (hℓ_ge : 2 ≤ ℓ) (ρ : ℝ) (hρ_pos : 0 < ρ) (hρ_lt : ρ < 1)
+    (hext : AGL23.AGL23CountingExtraction ℓ ρ) :
     ∃ α : ℝ, 0 < α ∧
       ∀ (η : ℝ), 0 < η →
         ∃ n₀ : ℕ,
@@ -1376,13 +1380,8 @@ def large_alphabet_barrier_bdg24_agl23
             n₀ ≤ Fintype.card ι →
             (Module.finrank F C : ℝ) ≥ ρ * Fintype.card ι →
             Lambda ((C : Set (ι → F))) ((ℓ : ℝ) / (ℓ + 1) * (1 - ρ - η)) ≤ (ℓ : ℕ∞) →
-            (Fintype.card F : ℝ) ≥ (2 : ℝ) ^ (α / η)
-  -- ABF26-T3.10; external statement [BDG24, AGL23].
-  -- Missing ingredient: BDG24/AGL23's large-alphabet barrier. Shows codes attaining the
-  -- generalized Singleton bound up to η-slack need |F|≥2^{α/η}. The proof is a probabilistic
-  -- /pigeonhole lower bound on |F| from the list-decodability hypothesis at the near-optimal
-  -- radius ℓ/(ℓ+1)(1-ρ-η); needs the BDG24 alphabet-size lower bound (absent). The ∃α and ∃n₀
-  -- threshold binders also require a non-vacuous constant from that argument. Genuinely external.
+            (Fintype.card F : ℝ) ≥ (2 : ℝ) ^ (α / η) :=
+  AGL23.large_alphabet_barrier_of_counting ℓ hℓ_ge ρ hρ_pos hρ_lt hext
 
 end LargeAlphabetBarrier
 
