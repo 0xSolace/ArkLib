@@ -359,6 +359,7 @@ import ArkLib.Data.Polynomial.RationalFunctionsCore
 import ArkLib.Data.Polynomial.RationalFunctionsStrong
 import ArkLib.Data.Polynomial.SplitFold
 import ArkLib.Data.Polynomial.Trivariate
+import ArkLib.Data.Polynomial.UnivariateAgreement
 import ArkLib.Data.Probability.Combinatorial
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
@@ -675,6 +676,7 @@ import ArkLib.ToMathlib.PowerSeriesNewton
 import ArkLib.ToMathlib.PowerSeriesSubstCoeff
 import ArkLib.ToMathlib.PrizeRateEliasCapacity
 import ArkLib.ToMathlib.Prop55
+import ArkLib.ToMathlib.ProximityGenericity
 import ArkLib.ToMathlib.RSPhases
 import ArkLib.ToMathlib.RatFuncDegreeCalculus
 import ArkLib.ToMathlib.RestrictedSumset
