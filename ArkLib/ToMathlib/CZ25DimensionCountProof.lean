@@ -426,6 +426,74 @@ lemma span_filter_diffs_le_code_inf_ker_of_subset_closeCodewordsRel
   have hxfilter := Submodule.mem_inf.mp (hfilter hx)
   exact Submodule.mem_inf.mpr ⟨hspanC hxfilter.1, hxfilter.2⟩
 
+/-- **Filtered recentred span dimensions obey the subspace-design budget.** If `c₀` and
+every `c ∈ L` are close codewords for a τ-subspace-design code `C`, and the full recentred
+span has dimension at most `r₀`, then the sum over coordinates of the dimensions of the
+coordinate-vanishing filtered-difference spans is bounded by the design budget for the full
+recentred span:
+
+`∑ i, dim span{c - c₀ | c ∈ L, c i - c₀ i = 0}
+  ≤ dim span{c - c₀ | c ∈ L} · τ r₀ · n`.
+
+This is still dimension-level bookkeeping; it does not assert that the filtered fiber
+cardinalities are bounded by those dimensions. That missing affine-fiber/cardinality step is
+the hard `CZ25CoordFiberCap` / Guruswami-Wang charge. -/
+lemma sum_finrank_span_filter_diffs_le_design_of_subset_closeCodewordsRel
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)) (h : IsSubspaceDesign s τ C)
+    (r₀ : ℕ) (f c₀ : ι → Fin s → F) {δ : ℝ} (L : Finset (ι → Fin s → F))
+    (hc₀ : c₀ ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hL : ∀ c ∈ L, c ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hrank :
+      Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) ≤ r₀) :
+    (∑ i : ι,
+        (Module.finrank F
+          (Submodule.span F
+            ((fun c => c - c₀) ''
+              ((L.filter (fun c => c i - c₀ i = 0)) : Set (ι → Fin s → F)))) : ℝ)) ≤
+      (Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) : ℝ) *
+        τ r₀ * Fintype.card ι := by
+  classical
+  set A : Submodule F (ι → Fin s → F) :=
+    Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F))) with hA
+  have hA_le : A ≤ C := by
+    rw [hA]
+    exact span_diffs_le_of_subset_closeCodewordsRel s C f c₀ L hc₀ hL
+  have hper : ∀ i : ι,
+      (Module.finrank F
+        (Submodule.span F
+          ((fun c => c - c₀) ''
+            ((L.filter (fun c => c i - c₀ i = 0)) : Set (ι → Fin s → F)))) : ℝ) ≤
+        (Module.finrank F
+          (↥(A ⊓
+            (LinearMap.ker
+              (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) :
+            Submodule F (ι → Fin s → F))) : ℝ) := by
+    intro i
+    have hnat := Submodule.finrank_mono
+      (span_filter_diffs_le_span_diffs_inf_ker s c₀ L i)
+    rw [← hA] at hnat
+    exact_mod_cast hnat
+  have hsum_le :
+      (∑ i : ι,
+          (Module.finrank F
+            (Submodule.span F
+              ((fun c => c - c₀) ''
+                ((L.filter (fun c => c i - c₀ i = 0)) : Set (ι → Fin s → F)))) : ℝ)) ≤
+        ∑ i : ι,
+          (Module.finrank F
+            (↥(A ⊓
+              (LinearMap.ker
+                (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) :
+              Submodule F (ι → Fin s → F))) : ℝ) :=
+    Finset.sum_le_sum (fun i _ => hper i)
+  have hdesign := h r₀ A hA_le (by simpa [hA] using hrank)
+  have hn_posR : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
+  rw [div_le_iff₀ hn_posR] at hdesign
+  refine le_trans hsum_le ?_
+  simpa [hA, mul_assoc] using hdesign
+
 end RecentredSpan
 
 /-! ### `#print axioms` verification anchors -/
@@ -471,3 +539,4 @@ end CodingTheory
 #print axioms CodingTheory.diff_mem_of_mem_closeCodewordsRel
 #print axioms CodingTheory.span_diffs_le_of_subset_closeCodewordsRel
 #print axioms CodingTheory.span_filter_diffs_le_code_inf_ker_of_subset_closeCodewordsRel
+#print axioms CodingTheory.sum_finrank_span_filter_diffs_le_design_of_subset_closeCodewordsRel
