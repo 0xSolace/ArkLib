@@ -161,7 +161,6 @@ theorem hasseEvalAtRoot_eq_singleBcoeff_of_restrictedMatchAt_zero
 
 /-- For the empty partition, the surviving `B_coeff` is just the bare un-cleared
 iterated-Hasse representative. -/
-set_option linter.unusedSectionVars false in
 theorem B_coeff_indiscrete_zero_eq_hasseCoeffRepr𝒪
     (x₀ : F) (R : F[X][X][Y]) :
     B_coeff H x₀ R 1 (Nat.Partition.indiscrete 0)
