@@ -268,6 +268,12 @@ theorem gateCheckVerifier_rbrKnowledgeSoundness :
   intro _stmtIn _witIn _prover ⟨⟨0, _⟩, hdir⟩
   exact absurd hdir (by simp)
 
+#print axioms Plonk.gateCheckVerifier_verify_eq
+#print axioms Plonk.gateCheckVerifier_mem_support_iff
+#print axioms Plonk.gateCheck_perfectCompleteness
+#print axioms Plonk.gateCheckVerifier_rbrSoundness
+#print axioms Plonk.gateCheckVerifier_rbrKnowledgeSoundness
+
 end GateCheck
 
 end Plonk

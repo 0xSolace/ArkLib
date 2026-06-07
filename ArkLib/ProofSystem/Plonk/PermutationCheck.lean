@@ -293,6 +293,12 @@ lemma permCheckVerifier_rbrKnowledgeSoundness :
   intro _stmtIn _witIn _prover ⟨⟨0, _⟩, hdir⟩
   exact absurd hdir (by simp)
 
+#print axioms Plonk.permCheckVerifier_verify_eq
+#print axioms Plonk.permCheckVerifier_mem_support_iff
+#print axioms Plonk.permCheck_perfectCompleteness
+#print axioms Plonk.permCheckVerifier_rbrSoundness
+#print axioms Plonk.permCheckVerifier_rbrKnowledgeSoundness
+
 end PermutationCheck
 
 end Plonk
