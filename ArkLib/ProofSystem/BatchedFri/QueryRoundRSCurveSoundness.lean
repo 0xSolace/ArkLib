@@ -216,6 +216,29 @@ def friRSCurveDensityInputs {t : ℕ}
         (ReedSolomon.code rsDomain (2 ^ n)).carrier) ≤ δ_fri] >
       t * ProximityGap.errorBound δ_fri (2 ^ n) rsDomain
 
+/-- The RS-curve probability-route input package is definitionally the density-route package. -/
+theorem friRSCurveDensityInputs_of_probabilityInputs
+    {t : ℕ} (f : Fin t.succ → (ω → 𝔽)) (m : ℕ)
+    (h : friRSCurveProbabilityInputs (n := n) (ω := ω) f m) :
+    friRSCurveDensityInputs (n := n) (ω := ω) f m := by
+  simpa [friRSCurveProbabilityInputs, friRSCurveDensityInputs] using h
+
+/-- The RS-curve density-route input package is definitionally the probability-route package. -/
+theorem friRSCurveProbabilityInputs_of_densityInputs
+    {t : ℕ} (f : Fin t.succ → (ω → 𝔽)) (m : ℕ)
+    (h : friRSCurveDensityInputs (n := n) (ω := ω) f m) :
+    friRSCurveProbabilityInputs (n := n) (ω := ω) f m := by
+  simpa [friRSCurveProbabilityInputs, friRSCurveDensityInputs] using h
+
+/-- The probability and density RS-curve input packages carry the same fixed-radius data. -/
+theorem friRSCurveProbabilityInputs_iff_densityInputs
+    {t : ℕ} (f : Fin t.succ → (ω → 𝔽)) (m : ℕ) :
+    friRSCurveProbabilityInputs (n := n) (ω := ω) f m ↔
+      friRSCurveDensityInputs (n := n) (ω := ω) f m := by
+  constructor
+  · exact friRSCurveDensityInputs_of_probabilityInputs (n := n) (ω := ω) f m
+  · exact friRSCurveProbabilityInputs_of_densityInputs (n := n) (ω := ω) f m
+
 /-- Density-route Claim 8.3 query-lift specialized to the Batched FRI subdomain Reed-Solomon
 polynomial-curve correlated-agreement theorem. -/
 theorem friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSCurve
@@ -360,6 +383,12 @@ set_option linter.style.longLine false in
 #print axioms Fri.fri_jointAgreement_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndRSCurve
 set_option linter.style.longLine false in
 #print axioms Fri.friRSCurveDensityInputs
+set_option linter.style.longLine false in
+#print axioms Fri.friRSCurveDensityInputs_of_probabilityInputs
+set_option linter.style.longLine false in
+#print axioms Fri.friRSCurveProbabilityInputs_of_densityInputs
+set_option linter.style.longLine false in
+#print axioms Fri.friRSCurveProbabilityInputs_iff_densityInputs
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSCurve
 set_option linter.style.longLine false in
