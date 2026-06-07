@@ -160,4 +160,19 @@ theorem badCombiner_count {D : Finset ι} {u₀ u₁ w : ι → F} {B : Finset F
     exact Finset.sdiff_subset_sdiff (Finset.subset_univ _) (Finset.Subset.refl D)
   · exact le_trans (Nat.sub_le_sub_right (hA γ hγ) D.card) (card_linePetal_ge D u₀ u₁ w γ)
 
+/-- **Bad-witness combiners have large line-agreement.**  Every `γ ∈ mcaBadWitness C δ u₀ u₁ w` has
+`|lineAgreeSet γ| ≥ (1−δ)·n`: the witnessing set `S` (size `≥ (1−δ)n` on which `w` agrees with the
+line) is contained in `lineAgreeSet γ`.  This supplies the agreement input `A = (1−δ)n` of
+`badCombiner_count`, connecting the sunflower count to the actual residual. -/
+theorem card_lineAgreeSet_ge_of_mem_mcaBadWitness
+    {MC : Submodule F (ι → F)} {δ : ℝ≥0} {u₀ u₁ w : ι → F} {γ : F}
+    (hγ : γ ∈ mcaBadWitness (MC : Set (ι → F)) δ u₀ u₁ w) :
+    ((1 - δ) * Fintype.card ι : ℝ≥0) ≤ ((lineAgreeSet u₀ u₁ w γ).card : ℝ≥0) := by
+  classical
+  simp only [mcaBadWitness, Finset.mem_filter, Finset.mem_univ, true_and] at hγ
+  obtain ⟨S, hScard, hSagree, -⟩ := hγ
+  have hSsub : S ⊆ lineAgreeSet u₀ u₁ w γ := fun i hi => by
+    rw [mem_lineAgreeSet_iff]; exact hSagree i hi
+  exact le_trans hScard (by exact_mod_cast Finset.card_le_card hSsub)
+
 end ProximityGap
