@@ -167,6 +167,39 @@ theorem one_le_Lambda_of_nonempty {ι : Type} [Fintype ι] {F : Type} [Fintype F
         unfold Lambda
         exact le_iSup (fun f => ((closeCodewordsRel C f δ).ncard : ℕ∞)) c
 
+/-- **Two-sided nonempty list-size bracket with the exact floor-radius entropy exponent.** -/
+theorem one_le_Lambda_and_Lambda_le_qEntropy_card
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (C : Code ι F) (hC : C.Nonempty) (δ : ℝ) (hδ0 : 0 ≤ δ)
+    (hr : ⌊δ * (Fintype.card ι : ℝ)⌋₊ < Fintype.card ι)
+    (hcap :
+      (⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ)
+        ≤ 1 - 1 / (Fintype.card F : ℝ)) :
+    (1 : ENNReal) ≤ (Lambda C δ : ENNReal) ∧
+      (Lambda C δ : ENNReal) ≤
+        ENNReal.ofReal (((Fintype.card ι : ℝ) + 1) *
+          (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) *
+            qEntropy (Fintype.card F)
+              ((⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ)))) := by
+  refine ⟨?_, Lambda_le_qEntropy_card C δ hr hcap⟩
+  simpa using ENat.toENNReal_mono (one_le_Lambda_of_nonempty (C := C) hC hδ0)
+
+/-- **Two-sided nonempty list-size bracket with the relaxed real-radius entropy exponent.** -/
+theorem one_le_Lambda_and_Lambda_le_qEntropy_real_radius_card
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (C : Code ι F) (hC : C.Nonempty) (δ : ℝ)
+    (hδ0 : 0 ≤ δ)
+    (hδ : δ ≤ 1 - 1 / (Fintype.card F : ℝ)) :
+    (1 : ENNReal) ≤ (Lambda C δ : ENNReal) ∧
+      (Lambda C δ : ENNReal) ≤
+        ENNReal.ofReal (((Fintype.card ι : ℝ) + 1) *
+          (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) *
+            qEntropy (Fintype.card F) δ)) := by
+  refine ⟨?_, Lambda_le_qEntropy_real_radius_card C δ hδ0 hδ⟩
+  simpa using ENat.toENNReal_mono (one_le_Lambda_of_nonempty (C := C) hC hδ0)
+
 end CodingTheory
 
 #print axioms CodingTheory.closeCodewordsRel_ncard_le_hammingBallVolume
@@ -177,3 +210,5 @@ end CodingTheory
 #print axioms CodingTheory.Lambda_le_qEntropy_real_radius_card
 #print axioms CodingTheory.listDecodable_qEntropy_real_radius_card
 #print axioms CodingTheory.one_le_Lambda_of_nonempty
+#print axioms CodingTheory.one_le_Lambda_and_Lambda_le_qEntropy_card
+#print axioms CodingTheory.one_le_Lambda_and_Lambda_le_qEntropy_real_radius_card
