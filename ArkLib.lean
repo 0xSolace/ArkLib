@@ -240,6 +240,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOneExact
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeResolutionWitness
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Core
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.ListThreshold
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Prize
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Witnesses
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLatticePrizeSpec
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AlgebraicBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
