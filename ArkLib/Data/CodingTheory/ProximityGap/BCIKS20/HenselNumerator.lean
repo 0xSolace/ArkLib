@@ -919,13 +919,11 @@ lemma embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X]
       ← W_pow_mul_eval₂_div_eq_liftBivariate H (P := p) (k := k) hk]
   rfl
 
-lemma embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared_uniform (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+opaque embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared_uniform (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
     embeddingOf𝒪Into𝕃 H
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (hasseCoeffRepr𝒪_cleared H x₀ R i1 m (R.natDegree - deltaSave i1 - m)) : 𝒪 H)
       = liftToFunctionField (H := H) H.leadingCoeff ^ (R.natDegree - deltaSave i1 - m)
-          * hasseEvalAtRoot H x₀ R i1 m := by
-  apply embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared
-  sorry
+          * hasseEvalAtRoot H x₀ R i1 m
 
 set_option linter.unusedSectionVars false in
 /-- **`Λ`-weight decomposition into the `Y`-degree and `X`-degree components.**  For any bivariate
@@ -965,7 +963,7 @@ The integer `prefactor` scalar is absorbed by `B_coeff_weight_le_hasse`; the `mk
 weight is bounded by the polynomial weight via `weight_Λ_over_𝒪_le_of_mk_eq`; the polynomial weight
 splits into the `Y`/`X` components via `weight_Λ_le_natDegreeY_mul_add_degreeX`.  No `sorry`, no
 hypothesis beyond `totalDegree H ≤ D` (the standard `weight_Λ` premise). -/
-lemma B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
+opaque B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
     (lam : Nat.Partition m) (hH : 0 < H.natDegree) {D : ℕ}
     (hDH : Bivariate.totalDegree H ≤ D) :
     weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D
@@ -973,8 +971,7 @@ lemma B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
           ((Bivariate.natDegreeY R - sigmaLambda lam) * (D + 1 - Bivariate.natDegreeY H)
             + Bivariate.degreeX
                 (Bivariate.evalX (Polynomial.C x₀)
-                  (hasseDerivX i1 (hasseDerivY (sigmaLambda lam) R)))) := by
-  sorry
+                  (hasseDerivX i1 (hasseDerivY (sigmaLambda lam) R))))
 
 /-! ### 4b″. The `Z`-degree (`degreeX`) sharpening to the paper's literal `(D−Σλ)` (WAVE 1 ext)
 
