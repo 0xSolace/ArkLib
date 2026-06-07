@@ -1,4 +1,5 @@
 import ArkLib.AGM.Basic
+import ArkLib.AGM.RepresentationLemmas
 import ArkLib.CommitmentScheme.Ajtai.Gadget
 import ArkLib.CommitmentScheme.Ajtai.GadgetNorms
 import ArkLib.CommitmentScheme.Ajtai.InnerOuter
