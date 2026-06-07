@@ -140,7 +140,7 @@ theorem linePetal_nonempty_of_ssubset_lineAgreeSet
   classical
   have hnot : ¬ lineAgreeSet u₀ u₁ w γ ⊆ D := by
     intro hsub
-    exact hstrict.2 (Finset.Subset.antisymm hstrict.1 hsub)
+    exact hstrict.2 hsub
   rw [Finset.not_subset] at hnot
   obtain ⟨i, hiA, hiD⟩ := hnot
   exact ⟨i, Finset.mem_sdiff.mpr ⟨hiA, hiD⟩⟩
