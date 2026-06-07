@@ -143,9 +143,57 @@ theorem MCABadScalarDegreeCover.not_mcaEvent
   MCABadScalarDoubleCover.not_mcaEvent C δ u₀ u₁ γ
     (MCABadScalarDoubleCover.of_degreeCover C δ u₀ u₁ γ hcov)
 
+/-- A per-stack/per-scalar scalar-degree cover family kills every repaired bad-count. -/
+theorem mcaBadCount_eq_zero_of_forall_degreeCover
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDegreeCover (F := F) (A := A) C δ (u 0) (u 1) γ) :
+    ∀ u : WordStack A (Fin 2) ι, mcaBadCount (F := F) C δ (u 0) (u 1) = 0 :=
+  MCAForallDoubleCover.forall_mcaBadCount_eq_zero C δ
+    (MCAForallDoubleCover.of_forall_degreeCover C δ hcov)
+
+/-- A per-stack/per-scalar scalar-degree cover family forces `ε_mca = 0`. -/
+theorem epsMCA_eq_zero_of_forall_degreeCover
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDegreeCover (F := F) (A := A) C δ (u 0) (u 1) γ) :
+    epsMCA (F := F) C δ = 0 :=
+  epsMCA_eq_zero_of_MCAForallDoubleCover C δ
+    (MCAForallDoubleCover.of_forall_degreeCover C δ hcov)
+
 end
 
 end ProximityGap
+
+namespace CodingTheory
+
+open ProximityGap
+open NNReal Code
+open scoped NNReal ProbabilityTheory
+
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
+
+section RepairedDegreeCoverTarget
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
+
+/-- Repaired T4.21 front door from scalar-degree cover data. -/
+theorem lineDecodable_imp_epsMCA_le_target_of_forall_degreeCover
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (hcov : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDegreeCover (F := F) (A := A) (C : Set (ι → A)) δ (u 0) (u 1) γ) :
+    epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
+        ≤ (a : ENNReal) / (Fintype.card F : ENNReal) := by
+  classical
+  exact lineDecodable_imp_epsMCA_le_target C δ a
+    (MCAForallDoubleCover.of_forall_degreeCover (C : Set (ι → A)) δ hcov)
+
+end RepairedDegreeCoverTarget
+
+end CodingTheory
 
 #print axioms ProximityGap.exists_two_scalars_of_degree_gt_one
 #print axioms ProximityGap.exists_coordinate_two_scalars_of_total_card_gt
@@ -163,3 +211,9 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.MCAForallDoubleCover.of_forall_degreeCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.MCABadScalarDegreeCover.not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.mcaBadCount_eq_zero_of_forall_degreeCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.epsMCA_eq_zero_of_forall_degreeCover
+set_option linter.style.longLine false in
+#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_forall_degreeCover
