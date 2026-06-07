@@ -86,35 +86,42 @@ theorem evalOnPoints_injOn_degreeLT [Fintype F] {α : ι ↪ F} {k : ℕ} [NeZer
   omega
 
 open Polynomial in
-/-- **Interpolant recovery (the `Y − p(X)` factorization).**  Let `(A, B)` be a Berlekamp–Welch /
-Polishchuk–Spielman interpolant for `(αᵢ, yᵢ)` — i.e. `A(αᵢ) + yᵢ·B(αᵢ) = 0` — with `deg A < k+e`,
-`deg B < e+1`.  If a degree-`< k` polynomial `p` has `eval p` within `e` errors of `y`, and
-`k + 2e ≤ n`, then `A + p·B = 0`.  Equivalently the bivariate `Q(X,Y) = A(X) + Y·B(X)` satisfies
-`Q(X, p(X)) = 0`, so `Y − p(X)` divides `Q` — the codeword polynomial is recovered as `−A/B`.  This
-is the factorization that turns interpolation existence into decoding. -/
-theorem interpolant_recovers {k e : ℕ} [NeZero k] {α : ι ↪ F} {y : ι → F} {A B p : F[X]}
-    (hA : A ∈ Polynomial.degreeLT F (k + e)) (hB : B ∈ Polynomial.degreeLT F (e + 1))
+/-- **Interpolant recovery (the `Y − p(X)` factorization), general degrees.**  Let `(A, B)` be a
+Berlekamp–Welch / Polishchuk–Spielman interpolant for `(αᵢ, yᵢ)` — `A(αᵢ) + yᵢ·B(αᵢ) = 0` — with
+`deg A < dA`, `deg B < dB`.  If a degree-`< k` polynomial `p` has `eval p` within `e` errors of `y`,
+and the degrees fit under the agreement count (`dA ≤ n−e` and `k + dB ≤ n−e+1`), then `A + p·B = 0`.
+Equivalently `Q(X,Y) = A(X) + Y·B(X)` satisfies `Q(X, p(X)) = 0`, so `Y − p(X)` divides `Q` — the
+codeword `p = −A/B` is recovered.  This is the Welch–Berlekamp / Polishchuk–Spielman factorization
+that turns interpolation existence into decoding (the locator degree `dB−1` may exceed the actual
+error count `e`). -/
+theorem interpolant_recovers {k dA dB e : ℕ} [NeZero k] {α : ι ↪ F} {y : ι → F} {A B p : F[X]}
+    (hA : A ∈ Polynomial.degreeLT F dA) (hB : B ∈ Polynomial.degreeLT F dB)
     (hp : p ∈ Polynomial.degreeLT F k)
     (hkey : ∀ i, A.eval (α i) + y i * B.eval (α i) = 0)
     (herr : (Finset.univ.filter (fun i => y i ≠ p.eval (α i))).card ≤ e)
-    (hn : k + 2 * e ≤ Fintype.card ι) :
+    (he : e < Fintype.card ι)
+    (hdA : dA ≤ Fintype.card ι - e) (hdB : k + dB ≤ Fintype.card ι - e + 1) :
     A + p * B = 0 := by
   classical
   by_contra hne
   have hkpos : 0 < k := Nat.pos_of_ne_zero (NeZero.ne k)
-  -- degree bound: `deg (A + p·B) ≤ k + e − 1`
+  -- degree bounds from the `degreeLT` memberships
   have hdp : p.natDegree ≤ k - 1 := by
     rcases eq_or_ne p 0 with rfl | h; · simp
     · have : p.natDegree < k := (natDegree_lt_iff_degree_lt h).mpr (mem_degreeLT.mp hp); omega
-  have hdB : B.natDegree ≤ e := by
+  have hdBn : B.natDegree ≤ dB - 1 := by
     rcases eq_or_ne B 0 with rfl | h; · simp
-    · have : B.natDegree < e + 1 := (natDegree_lt_iff_degree_lt h).mpr (mem_degreeLT.mp hB); omega
-  have hdA : A.natDegree ≤ k + e - 1 := by
+    · have : B.natDegree < dB := (natDegree_lt_iff_degree_lt h).mpr (mem_degreeLT.mp hB)
+      omega
+  have hdAn : A.natDegree ≤ dA - 1 := by
     rcases eq_or_ne A 0 with rfl | h; · simp
-    · have : A.natDegree < k + e := (natDegree_lt_iff_degree_lt h).mpr (mem_degreeLT.mp hA); omega
-  have hdeg : (A + p * B).natDegree ≤ k + e - 1 := by
-    refine le_trans (natDegree_add_le _ _) (max_le hdA ?_)
-    exact le_trans (natDegree_mul_le) (by omega)
+    · have : A.natDegree < dA := (natDegree_lt_iff_degree_lt h).mpr (mem_degreeLT.mp hA)
+      omega
+  -- `deg (A + p·B) ≤ max(dA−1, (k−1)+(dB−1)) ≤ n − e − 1`
+  have hdeg : (A + p * B).natDegree ≤ Fintype.card ι - e - 1 := by
+    refine le_trans (natDegree_add_le _ _) (max_le ?_ ?_)
+    · omega
+    · exact le_trans natDegree_mul_le (by omega)
   -- `A + p·B` vanishes at the `≥ n − e` agreement coordinates
   have hroot : ∀ i, y i = p.eval (α i) → (A + p * B).eval (α i) = 0 := by
     intro i hi

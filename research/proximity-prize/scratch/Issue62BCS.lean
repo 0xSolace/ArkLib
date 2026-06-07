@@ -276,8 +276,8 @@ def maxUnionBoundPr : UnionBoundPr ℝ≥0 where
   pr_union_le a b := by
     -- `max a b ≤ a + b` for nonnegative `a, b`.
     rcases le_total a b with h | h
-    · simp [max_eq_right h]; exact le_add_self
-    · simp [max_eq_left h]; exact le_add_right le_rfl
+    · rw [max_eq_right h]; exact le_add_self
+    · rw [max_eq_left h]; exact le_add_right le_rfl
 
 /-- Sanity: the union bound instantiates on the concrete model, so the abstract
 accounting is not vacuous. -/
