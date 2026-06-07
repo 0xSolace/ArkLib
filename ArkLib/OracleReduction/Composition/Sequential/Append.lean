@@ -5,6 +5,7 @@ Authors: Quang Dao
 -/
 
 import ArkLib.OracleReduction.ProtocolSpec.SeqCompose
+import ArkLib.OracleReduction.ProtocolSpec.TranscriptRecompose
 import ArkLib.OracleReduction.Security.RoundByRound
 
 /-!
