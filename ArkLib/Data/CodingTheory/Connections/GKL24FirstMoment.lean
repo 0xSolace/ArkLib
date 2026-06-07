@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.ToMathlib.Bridge2GCXK25
 import ArkLib.ToMathlib.BridgeListDecodingCA
+import ArkLib.ToMathlib.GreedyDisjointCover
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -578,6 +579,61 @@ theorem GKL24FirstMomentWitnessCoverResidual_inTree_two_delta_card
   · intro w hw
     exact mcaBadWitness_card_le_two_delta_mul_card MC δ (u 0) (u 1) w (by simpa [T] using hw)
 
+/-! ### Maximal-domain petal accounting
+
+The sharp GCXK/GKL first-moment proof does not charge bad scalars per fixed witness codeword.
+For one maximal correlated-agreement domain `D`, distinct bad scalars should produce pairwise
+disjoint nonempty *petals* inside `Dᶜ`. The hard paper lemma is the disjoint-petal construction.
+The two wrappers below provide the downstream counting once those petals are available:
+
+* pairwise-disjoint nonempty petals in `Dᶜ` give `#Γ ≤ #(Dᶜ)`;
+* if `#D ≥ (1-p)n`, then `#Γ ≤ p n`.
+-/
+
+/-- **GKL/GCXK petal accounting, complement-size form.** If every bad scalar in `Γ` has a
+nonempty petal, the petals are pairwise disjoint, and all petals live outside a domain `D`, then
+the number of scalars is at most the complement size `n - #D`. This is the pure counting half of
+the maximal-domain first-moment argument. -/
+theorem badScalars_card_le_domain_compl_of_disjoint_petals
+    (Γ : Finset F) (D : Finset ι) (petal : F → Finset ι)
+    (hdisj : (Γ : Set F).Pairwise (fun γ γ' => Disjoint (petal γ) (petal γ')))
+    (hsize : ∀ γ ∈ Γ, 1 ≤ (petal γ).card)
+    (hsub : ∀ γ ∈ Γ, petal γ ⊆ (Finset.univ \ D)) :
+    Γ.card ≤ Fintype.card ι - D.card := by
+  classical
+  have hM : (Finset.univ \ D).card ≤ Fintype.card ι - D.card := by
+    have hD : D ⊆ (Finset.univ : Finset ι) := fun i _ => Finset.mem_univ i
+    rw [Finset.card_sdiff hD, Finset.card_univ]
+  have h :=
+    GreedyDisjointCover.card_mul_le_of_disjoint_covers
+      Γ petal (Finset.univ \ D) 1 (Fintype.card ι - D.card)
+      hdisj hsize hsub hM
+  simpa using h
+
+/-- **GKL/GCXK petal accounting, first-moment real form.** If the maximal domain `D` has size at
+least `(1-p)n`, then the complement-size petal count becomes `#Γ ≤ p·n`. This is the exact
+cardinality wrapper needed after formalizing the GCXK/GKL disjoint-petal lemma for one maximal
+correlated-agreement domain. -/
+theorem badScalars_card_le_radius_mul_card_of_large_domain_disjoint_petals
+    (Γ : Finset F) (D : Finset ι) (petal : F → Finset ι) {p : ℝ}
+    (hDlarge : (1 - p) * (Fintype.card ι : ℝ) ≤ (D.card : ℝ))
+    (hdisj : (Γ : Set F).Pairwise (fun γ γ' => Disjoint (petal γ) (petal γ')))
+    (hsize : ∀ γ ∈ Γ, 1 ≤ (petal γ).card)
+    (hsub : ∀ γ ∈ Γ, petal γ ⊆ (Finset.univ \ D)) :
+    (Γ.card : ℝ) ≤ p * (Fintype.card ι : ℝ) := by
+  classical
+  have hnat :=
+    badScalars_card_le_domain_compl_of_disjoint_petals
+      Γ D petal hdisj hsize hsub
+  have hDle : D.card ≤ Fintype.card ι := by
+    calc D.card ≤ (Finset.univ : Finset ι).card := Finset.card_le_card (fun i _ => Finset.mem_univ i)
+      _ = Fintype.card ι := Finset.card_univ
+  have hcompl : (Γ.card : ℝ) ≤ (Fintype.card ι : ℝ) - (D.card : ℝ) := by
+    calc (Γ.card : ℝ) ≤ ((Fintype.card ι - D.card : ℕ) : ℝ) := by exact_mod_cast hnat
+      _ = (Fintype.card ι : ℝ) - (D.card : ℝ) := by
+          exact Nat.cast_sub hDle
+  nlinarith [hcompl, hDlarge]
+
 /-- **Per-stack bad-`γ` count from the GKL24 first-moment residual.**
 Given `GKL24FirstMomentResidual MC δ B_T b`, every concrete stack `u` has at most `B_T · b`
 bad combining scalars:
@@ -722,6 +778,8 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.GKL24FirstMomentResidual_inTree_card
 #print axioms ProximityGap.GKL24FirstMomentResidual_inTree_two_delta_card
 #print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_inTree_two_delta_card
+#print axioms ProximityGap.badScalars_card_le_domain_compl_of_disjoint_petals
+#print axioms ProximityGap.badScalars_card_le_radius_mul_card_of_large_domain_disjoint_petals
 #print axioms ProximityGap.mcaBad_card_le_of_gkl24_residual
 #print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_residual
 #print axioms ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_residual

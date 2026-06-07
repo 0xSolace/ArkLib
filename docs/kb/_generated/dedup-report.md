@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 676 files, 12471 declarations
+- `ArkLib` — 678 files, 12497 declarations
 
-## Same short-name across multiple files (417 groups)
+## Same short-name across multiple files (418 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -324,6 +324,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma RingSwitching.BatchingPhase.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:59](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L59) — Local message-query collapse for `OracleInterface.simOracle2`.
 - `lemma RingSwitching.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1415](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1415) — **`simOracle2` message-query collapse (`OracleComp` form).** Simulating, via `simOracle2 oSpec t₁ t₂
 - `lemma ToyProblem.Spec.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:718](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L718) — `simOracle2` message-query collapse (`OracleComp` form), RIGHT (message) family.
+
+### `prizeRates_le_half` (4 declarations, 4 files)
+
+- `lemma ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeDecision.lean:141](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeDecision.lean#L141) — Every prize rate is `≤ 1/2`.
+- `lemma ProximityGap.GrandChallengesLattice.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeInteriorJ1.lean:551](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeInteriorJ1.lean#L551) — Every ABF26 prize rate is at most `1/2`.
+- `lemma ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean:208](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean#L208) — Every ABF26 prize rate is at most `1/2`.
+- `lemma ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/MCASecondMoment.lean:363](../../../ArkLib/Data/CodingTheory/ProximityGap/MCASecondMoment.lean#L363) — Every prize rate is at most `1/2`.
 
 ### `completeness` (6 declarations, 3 files)
 
@@ -705,12 +712,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma ProximityGap.prizeRate_floor_add_one_le` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean:218](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean#L218) — If the evaluation domain has at least two points, each prize degree is strictly below the block leng
 - `lemma ProximityGap.prizeRate_floor_add_one_le` [ArkLib/Data/CodingTheory/ProximityGap/MCASecondMoment.lean:371](../../../ArkLib/Data/CodingTheory/ProximityGap/MCASecondMoment.lean#L371) — For `n ≥ 2`, every prize-rate degree satisfies `k_j + 1 ≤ n`.
 
-### `prizeRates_le_half` (3 declarations, 3 files)
-
-- `lemma ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeDecision.lean:141](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeDecision.lean#L141) — Every prize rate is `≤ 1/2`.
-- `lemma ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean:208](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDFourRate.lean#L208) — Every ABF26 prize rate is at most `1/2`.
-- `lemma ProximityGap.prizeRates_le_half` [ArkLib/Data/CodingTheory/ProximityGap/MCASecondMoment.lean:363](../../../ArkLib/Data/CodingTheory/ProximityGap/MCASecondMoment.lean#L363) — Every prize rate is at most `1/2`.
-
 ### `cast_id` (9 declarations, 2 files)
 
 - `theorem Prover.cast_id` [ArkLib/OracleReduction/Cast.lean:53](../../../ArkLib/OracleReduction/Cast.lean#L53) — (no docstring)
@@ -1012,6 +1013,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `structure Commitment.KeyGen` [ArkLib/CommitmentScheme/Basic.lean:49](../../../ArkLib/CommitmentScheme/Basic.lean#L49) — Key generation for a commitment scheme, producing a committer key and a verifier key.
 - `structure CommitmentScheme.KeyGen` [ArkLib/CommitmentScheme/CommitmentScheme.lean:34](../../../ArkLib/CommitmentScheme/CommitmentScheme.lean#L34) — The key-generation algorithm, returning separate keys for the committer and verifier.
+
+### `MLE_eval_eq_sum_eqTilde` (2 declarations, 2 files)
+
+- `theorem MvPolynomial.MLE_eval_eq_sum_eqTilde` [ArkLib/Data/MvPolynomial/Multilinear.lean:295](../../../ArkLib/Data/MvPolynomial/Multilinear.lean#L295) — **MLE evaluation as an eq-weighted sum over the hypercube.**  Evaluating the multilinear extension a
+- `lemma RingSwitching.MLE_eval_eq_sum_eqTilde` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1013](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1013) — **MLE evaluation as an `eq̃`-weighted hypercube sum.** Evaluating the multilinear extension `MLE f`
 
 ### `MLIOPCS` (2 declarations, 2 files)
 
@@ -2385,7 +2391,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `instance with` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDAttainment.lean:32](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDAttainment.lean#L32) — (no docstring)
 - `theorem with` [ArkLib/Data/CodingTheory/ProximityGap/PermanentlyBlocked.lean:55](../../../ArkLib/Data/CodingTheory/ProximityGap/PermanentlyBlocked.lean#L55) — (no docstring)
 
-## Near-duplicate docstrings (Jaccard ≥ 0.85, 124 cross-file pairs)
+## Near-duplicate docstrings (Jaccard ≥ 0.85, 125 cross-file pairs)
 
 Each pair has docstrings sharing a high fraction of (4+-letter) words, in different files. Most are unrelated coincidences in boilerplate; look for pairs where the *concept* matches.
 
