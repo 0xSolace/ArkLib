@@ -14,16 +14,16 @@ import Mathlib.FieldTheory.Finite.Basic
 ABF26 Grand Challenge 1 is an *upper* bound: `ε_mca(RS, δ) ≤ poly(2^m, 1/ρ)/q` for Reed–Solomon
 codes at the prize rates. This file proves the complementary *lower* side:
 
-* `epsMCA_ge_inv_card_of_mcaEvent` — a general, reusable lower bound: whenever **some** word stack
-  admits a bad scalar (`mcaEvent` fires), `epsMCA ≥ 1/|F|` (that scalar alone contributes `1/|F|`
-  to the per-stack probability, and `epsMCA` is the supremum over stacks).
-
+* `mcaEvent_prob_le_epsMCA` — the fundamental primitive: `epsMCA` dominates the bad-scalar
+  probability of *every* word stack (`epsMCA` is, by definition, the supremum of those).
+* `epsMCA_ge_inv_card_of_mcaEvent` — whenever **some** stack admits a bad scalar (`mcaEvent`
+  fires), `epsMCA ≥ 1/|F|`.
 * `MCALowerExample.epsMCA_C0_ge_half` — a concrete witness: the **zero linear code** over `ZMod 2`
   has `epsMCA ≥ 1/2`. Hence the Grand-Challenge-1 `poly/q` smallness is **false for general linear
   codes** — it genuinely requires the Reed–Solomon structure. This makes precise *why* the prize
-  hypotheses (RS code, prize rate) cannot be dropped, complementing the upper-bound development.
+  hypotheses cannot be dropped, complementing the upper-bound development.
 
-Both results are `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
+All results are `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 -/
 
 set_option linter.unusedSectionVars false
@@ -38,19 +38,24 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
 open Classical in
-/-- **General MCA lower bound.** If some stack `u` admits a bad scalar `γ₀` (`mcaEvent` fires),
-then `epsMCA ≥ 1/|F|`: that single scalar contributes `1/|F|` to the per-stack probability, and
-`epsMCA` is the supremum over stacks. -/
+/-- **MCA lower-bound primitive.** `epsMCA` dominates the bad-scalar probability of every word
+stack, since it is the supremum of those probabilities. -/
+theorem mcaEvent_prob_le_epsMCA
+    (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι) :
+    Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ] ≤ epsMCA (F := F) (A := A) C δ := by
+  unfold epsMCA
+  exact le_iSup (fun u : WordStack A (Fin 2) ι =>
+    Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) u
+
+open Classical in
+/-- **MCA lower bound from a single bad scalar.** If some stack `u` admits a bad scalar `γ₀`
+(`mcaEvent` fires), then `epsMCA ≥ 1/|F|`: that scalar contributes `1/|F|` to `u`'s bad-scalar
+probability, which `epsMCA` dominates. -/
 theorem epsMCA_ge_inv_card_of_mcaEvent
     (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι) (γ₀ : F)
     (hev : mcaEvent C δ (u 0) (u 1) γ₀) :
     (1 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ epsMCA (F := F) (A := A) C δ := by
-  have hle : Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]
-      ≤ epsMCA (F := F) (A := A) C δ := by
-    unfold epsMCA
-    exact le_iSup (fun u : WordStack A (Fin 2) ι =>
-      Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) u
-  refine le_trans ?_ hle
+  refine le_trans ?_ (mcaEvent_prob_le_epsMCA (F := F) (A := A) C δ u)
   rw [prob_uniform_eq_card_filter_div_card]
   have hmem : γ₀ ∈ Finset.filter (fun γ => mcaEvent C δ (u 0) (u 1) γ) Finset.univ := by
     simp only [Finset.mem_filter, Finset.mem_univ, true_and]; exact hev
