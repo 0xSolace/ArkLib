@@ -452,6 +452,35 @@ theorem isSquare_deg_mul_card_of_sqrtRate_mul_card_mem {deg : ℕ} {domain : ι 
     _ = (m : ℝ≥0) ^ 2 := by rw [hm]
     _ = (m * m : ℕ) := by norm_num [pow_two]
 
+omit [DecidableEq ι] [Fintype F] [DecidableEq F] in
+/-- **Converse perfect-square direction.**  If `deg · |ι|` is a Nat square, then the boundary
+square-root scale `sqrtRate · |ι|` is integral. -/
+theorem sqrtRate_mul_card_mem_of_isSquare_deg_mul_card {deg : ℕ} {domain : ι ↪ F}
+    (hdeg : deg ≤ Fintype.card ι)
+    (hsq : IsSquare (deg * Fintype.card ι)) :
+    ∃ m : ℕ, ReedSolomon.sqrtRate deg domain * Fintype.card ι = (m : ℝ≥0) := by
+  rcases hsq with ⟨m, hm⟩
+  refine ⟨m, ?_⟩
+  have hsqeq : (ReedSolomon.sqrtRate deg domain * Fintype.card ι) ^ 2
+      = (m : ℝ≥0) ^ 2 := by
+    rw [sqrtRate_mul_card_sq_eq_deg_mul_card (domain := domain) hdeg]
+    rw [hm]
+    norm_num [pow_two]
+  have hsqrt := congrArg NNReal.sqrt hsqeq
+  simpa [NNReal.sqrt_sq] using hsqrt
+
+omit [DecidableEq ι] [Fintype F] [DecidableEq F] in
+/-- **Perfect-square characterization of the lattice arithmetic.**  In the usual
+Reed–Solomon range `deg ≤ |ι|`, the square-root scale `sqrtRate · |ι|` is integral iff
+`deg · |ι|` is a Nat square. -/
+theorem sqrtRate_mul_card_mem_iff_isSquare_deg_mul_card {deg : ℕ} {domain : ι ↪ F}
+    (hdeg : deg ≤ Fintype.card ι) :
+    (∃ m : ℕ, ReedSolomon.sqrtRate deg domain * Fintype.card ι = (m : ℝ≥0))
+      ↔ IsSquare (deg * Fintype.card ι) := by
+  constructor
+  · exact isSquare_deg_mul_card_of_sqrtRate_mul_card_mem (domain := domain) hdeg
+  · exact sqrtRate_mul_card_mem_of_isSquare_deg_mul_card (domain := domain) hdeg
+
 /-! ## The strengthened keystone corollary consuming the isolated lattice residual -/
 
 omit [DecidableEq ι] in
@@ -531,5 +560,6 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.toBoundaryProbabilityResidual
 #print axioms ArkLib.BoundaryCardResidual.boundary_lattice_iff_sqrtRate_mul_card_mem
 #print axioms ArkLib.BoundaryCardResidual.isSquare_deg_mul_card_of_sqrtRate_mul_card_mem
+#print axioms ArkLib.BoundaryCardResidual.sqrtRate_mul_card_mem_iff_isSquare_deg_mul_card
 #print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
 #print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_quantization_residuals
