@@ -25,6 +25,9 @@ binomial and an `α₀^{i-|λ|}` factor) and the **RHS recursion form**
 * `restrictedFaaDiBrunoPartitionZeroPowerSum_eq_hasseEvalAtRoot` — the fixed `t = 0`
   specialization of that reabsorption, reducing the surviving LHS power sum to
   `hasseEvalAtRoot H x₀ R 1 0`.
+* `B_coeff_indiscrete_zero_eq_hasseCoeffRepr𝒪` and the order-zero RHS normal forms — the surviving
+  recursion numerator is the un-cleared `hasseCoeffRepr𝒪 H x₀ R 1 0`, and `ξ` can be expanded as
+  `W^(R.natDegree - 2) * ζ` without cancelling any factors.
 
 NO `axiom`/`admit`/`native_decide`/`sorry`. Audited in-file via `#print axioms`.
 -/
