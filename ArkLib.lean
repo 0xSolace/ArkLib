@@ -234,6 +234,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25NonDegeneratePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSCoveredFraction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSNearBound
 import ArkLib.Data.CodingTheory.ProximityGap.CS25ReedSolomonHighDist
+import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentHighDist
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentIsolation
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentLinear

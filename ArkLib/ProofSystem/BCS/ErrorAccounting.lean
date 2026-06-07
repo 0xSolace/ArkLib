@@ -567,6 +567,16 @@ theorem bcs_opening_union_bound_zero (μ : UnionBoundPr E) :
     μ.pr (μ.unionFin (Fin.elim0 : Fin 0 → E)) ≤ 0 := by
   simp [UnionBoundPr.unionFin, μ.pr_empty]
 
+/-- Single-opening opening-phase union bound. With one per-message opening failure, the composite
+opening failure is bounded by that one local opening budget. -/
+theorem bcs_opening_union_bound_one (μ : UnionBoundPr E)
+    (badOpen : E) (εOpen : ℝ≥0)
+    (hOpen : μ.pr badOpen ≤ εOpen) :
+    μ.pr (μ.unionFin (fun _ : Fin 1 => badOpen)) ≤ εOpen := by
+  have h := bcs_opening_union_bound μ (fun _ : Fin 1 => badOpen)
+    (fun _ : Fin 1 => εOpen) (fun _ => hOpen)
+  simpa using h
+
 /-- One-more-opening recurrence for the opening-phase union bound. Peeling the first opening
 failure contributes its local opening error, then recurses on the remaining opening schedule. -/
 theorem bcs_opening_union_bound_succ {m : ℕ} (μ : UnionBoundPr E)
@@ -578,6 +588,16 @@ theorem bcs_opening_union_bound_succ {m : ℕ} (μ : UnionBoundPr E)
       bcs_opening_union_bound μ badOpen εOpen hOpen
     _ = εOpen 0 + ∑ i : Fin m, εOpen i.succ := by
       rw [Fin.sum_univ_succ]
+
+/-- Relax the opening budget for the single-opening opening-phase union bound. -/
+theorem bcs_opening_union_bound_one_mono_error (μ : UnionBoundPr E)
+    (badOpen : E) (εOpen₁ εOpen₂ : ℝ≥0)
+    (hOpen : μ.pr badOpen ≤ εOpen₁)
+    (hOpen_mono : εOpen₁ ≤ εOpen₂) :
+    μ.pr (μ.unionFin (fun _ : Fin 1 => badOpen)) ≤ εOpen₂ :=
+  le_trans
+    (bcs_opening_union_bound_one μ badOpen εOpen₁ hOpen)
+    hOpen_mono
 
 /-- Relax the per-opening budgets for the one-more-opening recurrence at the opening-phase
 union-bound surface. -/
@@ -1036,7 +1056,9 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_union_bound_append_zero_right_mono_error
 #print axioms bcs_opening_union_bound
 #print axioms bcs_opening_union_bound_zero
+#print axioms bcs_opening_union_bound_one
 #print axioms bcs_opening_union_bound_succ
+#print axioms bcs_opening_union_bound_one_mono_error
 #print axioms bcs_opening_union_bound_succ_mono_error
 #print axioms bcs_opening_union_bound_append
 #print axioms bcs_opening_union_bound_append_mono_error
