@@ -612,6 +612,8 @@ theorem exists_mcaLowerWitness_of_ignoredSource_mcaConjecture (h : mcaConjecture
           w.δ = δ :=
   exists_mcaLowerWitness_of_mcaConjecture h
 
+#print axioms ProximityGap.GrandChallenges.mcaConjectureBound
+#print axioms ProximityGap.GrandChallenges.mcaConjecture
 #print axioms ProximityGap.GrandChallenges.nonempty_mcaLowerWitness_of_ignoredSource_mcaConjecture
 #print axioms ProximityGap.GrandChallenges.exists_mcaLowerWitness_of_ignoredSource_mcaConjecture
 
