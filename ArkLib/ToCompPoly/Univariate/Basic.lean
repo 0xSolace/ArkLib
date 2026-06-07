@@ -289,3 +289,5 @@ theorem degree_toPoly_ofFinCoeff_lt (N : ℕ) (c : ℕ → R) :
 end OfFinCoeff
 
 end CompPoly.CPolynomial
+-/
+-/
