@@ -162,6 +162,23 @@ noncomputable def δ_ε_correlatedAgreementAffineSpaces
       δᵣ(y.1, C) ≤ δ] > ε →
     jointAgreement (F := A) (κ := Fin (k + 1)) (ι := ι) (C := C) (W := u) (δ := δ)
 
+omit [Fintype F] in
+/-- Convert the affine-spaces correlated-agreement predicate into the concrete
+`Code.jointProximity` witness used by downstream soundness adapters.
+
+This is only the predicate/proximity-form bridge: callers must still supply the probability
+trigger required by `δ_ε_correlatedAgreementAffineSpaces`. -/
+theorem jointProximity_of_δ_ε_correlatedAgreementAffineSpaces
+    {A : Type 0} [AddCommGroup A] [Module F A] [Fintype A] [DecidableEq A]
+    {C : Set (ι → A)} {δ ε : ℝ≥0} {u : WordStack (A := A) (κ := Fin (k + 1)) (ι := ι)}
+    (h_ca : δ_ε_correlatedAgreementAffineSpaces (F := F) (k := k) C δ ε)
+    (h_prob :
+      Pr_{let y ← $ᵖ ↥(Affine.affineSubspaceAtOrigin (F := F) (u 0) (Fin.tail u))}[
+        δᵣ(y.1, C) ≤ δ] > ε) :
+    jointProximity (C := C) (u := u) δ := by
+  rw [← jointAgreement_iff_jointProximity]
+  exact h_ca u h_prob
+
 end CoreSecurityDefinitions
 
 namespace WeightedAgreement
