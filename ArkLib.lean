@@ -157,6 +157,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeInteriorGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeInteriorJ1
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeJ1Cap
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDAttainment
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDEliasCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDFourRate
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdElias
