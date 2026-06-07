@@ -470,6 +470,31 @@ theorem fiatShamir_soundness_of_stateRestoration_mono_languages
       soundnessError V hTransfer hSR
   exact Verifier.soundness.mono_languages fsInit fsImpl hSound hIn hOut
 
+/-- Basic Fiat-Shamir soundness can simultaneously transport languages and increase the target
+soundness error after applying a state-restoration transfer residual. -/
+theorem fiatShamir_soundness_of_stateRestoration_mono_languages_error
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (fsInit : ProbComp σ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    {langIn langIn' : Set StmtIn} {langOut langOut' : Set StmtOut}
+    {soundnessError₁ soundnessError₂ : ℝ≥0}
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (hTransfer :
+      fiatShamir_soundnessTransferResidual srInit srImpl fsInit fsImpl
+        langIn langOut soundnessError₁ V)
+    (hSR : Verifier.StateRestoration.soundness srInit srImpl
+      langIn langOut V soundnessError₁)
+    (hIn : langIn ⊆ langIn') (hOut : langOut' ⊆ langOut)
+    (hle : soundnessError₁ ≤ soundnessError₂) :
+    Verifier.soundness fsInit fsImpl langIn' langOut' V.fiatShamir soundnessError₂ := by
+  have hSound :
+      Verifier.soundness fsInit fsImpl langIn' langOut' V.fiatShamir soundnessError₁ :=
+    fiatShamir_soundness_of_stateRestoration_mono_languages srInit srImpl fsInit fsImpl
+      soundnessError₁ V hTransfer hSR hIn hOut
+  exact Verifier.soundness.mono_error fsInit fsImpl hSound hle
+
 /-- Residual statement for the basic Fiat-Shamir state-restoration knowledge-soundness transfer.
 
 As in `fiatShamir_soundnessTransferResidual`, this names only the semantic bridge from an
@@ -554,14 +579,43 @@ theorem fiatShamir_knowledgeSoundness_of_stateRestoration_mono_relations
       knowledgeError V hTransfer hSR
   exact Verifier.knowledgeSoundness.mono_relations fsInit fsImpl hSound hIn hOut
 
+/-- Basic Fiat-Shamir knowledge soundness can simultaneously transport relations and increase the
+target knowledge error after applying a state-restoration transfer residual. -/
+theorem fiatShamir_knowledgeSoundness_of_stateRestoration_mono_relations_error
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (fsInit : ProbComp σ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    {relIn relIn' : Set (StmtIn × WitIn)} {relOut relOut' : Set (StmtOut × WitOut)}
+    {knowledgeError₁ knowledgeError₂ : ℝ≥0}
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (hTransfer :
+      fiatShamir_knowledgeSoundnessTransferResidual srInit srImpl fsInit fsImpl
+        relIn relOut knowledgeError₁ V)
+    (hSR : Verifier.StateRestoration.knowledgeSoundness srInit srImpl
+      relIn relOut V knowledgeError₁)
+    (hIn : relIn ⊆ relIn') (hOut : relOut' ⊆ relOut)
+    (hle : knowledgeError₁ ≤ knowledgeError₂) :
+    Verifier.knowledgeSoundness fsInit fsImpl relIn' relOut' V.fiatShamir
+      knowledgeError₂ := by
+  have hSound :
+      Verifier.knowledgeSoundness fsInit fsImpl relIn' relOut' V.fiatShamir
+        knowledgeError₁ :=
+    fiatShamir_knowledgeSoundness_of_stateRestoration_mono_relations srInit srImpl fsInit fsImpl
+      knowledgeError₁ V hTransfer hSR hIn hOut
+  exact Verifier.knowledgeSoundness.mono_error fsInit fsImpl hSound hle
+
 #print axioms Reduction.fiatShamir_soundnessTransferResidual
 #print axioms Reduction.fiatShamir_soundness_of_stateRestoration
 #print axioms Reduction.fiatShamir_soundness_of_stateRestoration_mono_error
 #print axioms Reduction.fiatShamir_soundness_of_stateRestoration_mono_languages
+#print axioms Reduction.fiatShamir_soundness_of_stateRestoration_mono_languages_error
 #print axioms Reduction.fiatShamir_knowledgeSoundnessTransferResidual
 #print axioms Reduction.fiatShamir_knowledgeSoundness_of_stateRestoration
 #print axioms Reduction.fiatShamir_knowledgeSoundness_of_stateRestoration_mono_error
 #print axioms Reduction.fiatShamir_knowledgeSoundness_of_stateRestoration_mono_relations
+#print axioms Reduction.fiatShamir_knowledgeSoundness_of_stateRestoration_mono_relations_error
 
 end StateRestorationSoundness
 
@@ -686,6 +740,24 @@ theorem fiatShamir_isStatHVZK_of_HVZK_mono_relation
   (fiatShamir_isStatHVZK_of_HVZK init impl fsInit fsImpl rel ε R hTransfer hHVZK).mono_relation
     hsub
 
+/-- Basic Fiat-Shamir statistical HVZK can be restricted to a sub-relation and relaxed to a larger
+error budget after applying a simulator-transfer residual on the larger relation. -/
+theorem fiatShamir_isStatHVZK_of_HVZK_mono_relation_error
+    {τ : Type}
+    (init : ProbComp σ)
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    {rel relSub : Set (StmtIn × WitIn)} (hsub : relSub ⊆ rel) {ε₁ ε₂ : ℝ≥0}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer :
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl rel ε₁ R)
+    (hle : ε₁ ≤ ε₂)
+    (hHVZK : Reduction.isHVZK init impl rel R) :
+    Reduction.isStatHVZK fsInit fsImpl relSub R.fiatShamir ε₂ :=
+  (fiatShamir_isStatHVZK_of_HVZK_mono_relation init impl fsInit fsImpl hsub ε₁ R
+    hTransfer hHVZK).mono_error hle
+
 /-- Residual statement for the basic Fiat-Shamir *perfect* honest-verifier zero-knowledge transfer.
 
 The exact-distribution counterpart of `fiatShamir_statisticalHVZKTransferResidual` (the `ε = 0`
@@ -758,6 +830,7 @@ theorem fiatShamir_isHVZK_of_HVZK_zero
 #print axioms Reduction.fiatShamir_isStatHVZK_of_HVZK
 #print axioms Reduction.fiatShamir_isStatHVZK_of_HVZK_mono_error
 #print axioms Reduction.fiatShamir_isStatHVZK_of_HVZK_mono_relation
+#print axioms Reduction.fiatShamir_isStatHVZK_of_HVZK_mono_relation_error
 #print axioms Reduction.fiatShamir_hvzkTransferResidual
 #print axioms Reduction.fiatShamir_isHVZK_of_transfer
 #print axioms Reduction.fiatShamir_isHVZK_of_transfer_mono_relation
