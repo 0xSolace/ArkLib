@@ -7,8 +7,9 @@ provided, scans only those Lean files/directories. Fails if live
   - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
   - a custom `axiom` declaration whose name is not an allowlisted, documented
     residual (see scripts/residual_axioms.txt), or
-  - a residual-named theorem/lemma/def whose result type is `True`, which is a
-    vacuous proof placeholder rather than a residual obligation.
+  - a vacuous `theorem/lemma/def <name…obligation…> : True` placebo (the
+    #169/#171 larp pattern: proves nothing about its named obligation, slips
+    past the axiom check, and was used to close issues `COMPLETED`).
 
 Comment and docstring occurrences are ignored. `sorry`/`admit` are handled
 separately by scripts/sorry_census.py --fail-on-holes; this precheck runs
@@ -31,7 +32,7 @@ AXIOM_RE = re.compile(
     r"([A-Za-z_][A-Za-z0-9_'.]*)"
 )
 DECL_RE = re.compile(
-    r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*"
+    r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+|noncomputable\s+)*"
     r"(?:theorem|lemma|def)\s+([A-Za-z_][A-Za-z0-9_'.]*)"
 )
 TRUE_RESULT_RE = re.compile(r":\s*\(?\s*True\s*\)?\s*$", re.S)
@@ -129,8 +130,9 @@ def declaration_header_before_value(live_text: str, start: int) -> Optional[str]
     return live_text[start:next_value].strip()
 
 
-def is_residual_name(name: str) -> bool:
-    return "residual" in name.lower()
+def is_placebo_obligation_name(name: str) -> bool:
+    low = name.lower()
+    return "residual" in low or "keystone" in low or "conjecture" in low
 
 
 def main() -> int:
@@ -172,12 +174,13 @@ def main() -> int:
             dm = DECL_RE.match(line)
             if dm:
                 name = dm.group(1)
-                if is_residual_name(name):
+                if is_placebo_obligation_name(name):
                     header = declaration_header_before_value(live_text, pos)
                     if header is not None and TRUE_RESULT_RE.search(header):
                         failures.append(
-                            f"{path}:{idx}: forbidden vacuous residual declaration {name} "
-                            "with result type True"
+                            f"{path}:{idx}: forbidden vacuous `: True` placebo {name} "
+                            "(a declaration named like an obligation proves nothing; "
+                            "state and discharge the real proposition, or track it honestly)"
                         )
             pos += len(line)
 
