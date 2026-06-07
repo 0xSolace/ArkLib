@@ -15,10 +15,10 @@ yields the **covered-fraction lower bound for any linear code**
 
   `|𝒞| · |B(0,r)| ≤ |{w : Δ₀(w,𝒞) ≤ r}| · |{v∈𝒞 : Δ₀(0,v) ≤ 2r}|`,
 
-i.e. `|close| ≥ |𝒞|·V / |near|`.  In the high-distance regime `|near| = 1` and this recovers the
-exact bound `|close| ≥ |𝒞|·V`; in general the near-codeword count `|near| = ∑_{d≤2r} A_d` (bounded by
-the MDS weight enumerator `card_evalWeight_le`) controls the variance loss in the CS25 `ε_ca`
-covered-fraction argument.
+i.e. `|close| ≥ |𝒞|·V / |near|`.  In the high-distance regime `|near| = 1` and this
+recovers the exact bound `|close| ≥ |𝒞|·V`; in general the near-codeword count
+`|near| = ∑_{d≤2r} A_d` (bounded by the MDS weight enumerator `card_evalWeight_le`) controls the
+variance loss in the CS25 `ε_ca` covered-fraction argument.
 -/
 
 namespace ArkLib.CS25
