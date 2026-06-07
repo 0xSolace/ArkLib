@@ -113,7 +113,7 @@ theorem grandSum_identity_honest
   have hpt : ∀ u : Hypercube n,
       evalOnHypercube (honestMultiplicity oStmt) u = normalizedMultiplicityValue oStmt u := by
     intro u
-    simp only [honestMultiplicity, evalOnHypercube]
+    simp [honestMultiplicity, evalOnHypercube]
   simp only [hpt]
   exact grandSum_identity stmt oStmt hInput hM xChallenge
 

@@ -222,12 +222,13 @@ statement (ii) then follows by `prob_uniform_eq_card_filter_div_card`. -/
 theorem numDistinct_le_card_good_kernel
     {L : ℕ} (p : Fin L → F[X]) (a : F) (Good : F → Prop) [DecidablePred Good]
     (hGood : ∀ j : Fin L, Good (-(p j).eval a)) :
-    Code.numDistinct p a ≤ (Finset.univ.filter Good).card := by
+    CodingTheory.CS25.numDistinct p a ≤ (Finset.univ.filter Good).card := by
   classical
   -- The negated-value image has the same cardinality as `numDistinct` (negation injective).
   have hcard_eq :
-      (Finset.univ.image (fun j : Fin L => -(p j).eval a)).card = Code.numDistinct p a := by
-    rw [Code.numDistinct]
+      (Finset.univ.image (fun j : Fin L => -(p j).eval a)).card
+        = CodingTheory.CS25.numDistinct p a := by
+    rw [CodingTheory.CS25.numDistinct]
     -- `numDistinct = |image (j ↦ (p j)(a))|`; precompose with `(· ↦ −·)` and use injectivity.
     rw [show (fun j : Fin L => -(p j).eval a)
           = (fun x : F => -x) ∘ (fun j : Fin L => (p j).eval a) from rfl,
@@ -241,7 +242,7 @@ theorem numDistinct_le_card_good_kernel
     obtain ⟨j, -, rfl⟩ := hγ
     rw [Finset.mem_filter]
     exact ⟨Finset.mem_univ _, hGood j⟩
-  calc Code.numDistinct p a
+  calc CodingTheory.CS25.numDistinct p a
         = (Finset.univ.image (fun j : Fin L => -(p j).eval a)).card := hcard_eq.symm
     _ ≤ (Finset.univ.filter Good).card := Finset.card_le_card hsub
 
