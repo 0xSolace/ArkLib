@@ -568,6 +568,7 @@ import ArkLib.ToMathlib.Finset.ToListWithProof
 import ArkLib.ToMathlib.FinsetChebyshev
 import ArkLib.ToMathlib.FinsetMarkov
 import ArkLib.ToMathlib.Finsupp.Fin
+import ArkLib.ToMathlib.FractionFieldSeparable
 import ArkLib.ToMathlib.FriComplete
 import ArkLib.ToMathlib.FriCompleteCompose
 import ArkLib.ToMathlib.FrobeniusFactorHelpers
