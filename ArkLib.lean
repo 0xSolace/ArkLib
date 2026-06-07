@@ -236,6 +236,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropy
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropyDiv
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropyGen
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropyGenDiv
+import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionListSize
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringExistence
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringWitness
