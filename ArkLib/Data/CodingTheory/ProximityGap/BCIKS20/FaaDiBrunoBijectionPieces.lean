@@ -138,7 +138,33 @@ theorem countPerms_lam_eq_factorial_of_nodup {c : ℕ} (lam : Nat.Partition c)
     lam.parts.countPerms = (lam.parts.card)! :=
   countPerms_eq_factorial_of_nodup lam.parts hnd
 
-/-! ## 3. Structural skeleton of the per-order partition term count -/
+/-! ## 3. The `countPerms`–`prefactor` weight bridge between the two sides -/
+
+/-- **The LHS partition-form scalar weight carries the RHS `B_coeff` prefactor (axiom-clean).**  The
+LHS term weight `C(i,|λ|) · countPerms λ` and the RHS `B_coeff`'s combinatorial prefactor
+`prefactor R.natDegree i₁ λ` share the same `countPerms λ` content: by `prefactor_eq_countPerms`,
+`prefactor _ _ λ = countPerms λ`, so the LHS scalar weight is exactly
+`C(i,|λ|) · prefactor R.natDegree i₁ λ`.  This identifies the `countPerms`-part of the bijection
+weights on both sides — the genuine combinatorial half of the per-term match (the surviving
+discrepancy being the `Y`-Hasse binomial `C(i,|λ|)` and the `W`/`ξ`/`ζ` clearing, both algebraic). -/
+theorem lhs_weight_eq_choose_mul_prefactor {c : ℕ} (R : F[X][X][Y]) (i i1 : ℕ)
+    (lam : Nat.Partition c) :
+    (i.choose lam.parts.card) * lam.parts.countPerms
+      = (i.choose lam.parts.card) * prefactor R.natDegree i1 lam := by
+  rw [prefactor_eq_countPerms]
+
+/-- **`B_coeff` exposes its `prefactor`–`countPerms` weight explicitly (axiom-clean).**  Unfolding
+`B_coeff` and applying `prefactor_eq_countPerms`, the genuine recursion coefficient is
+`countPerms λ • hasseCoeffRepr𝒪 …` — the same `countPerms λ` combinatorial weight that the LHS
+partition form carries (`lhs_weight_eq_choose_mul_prefactor`).  Confirms the `B_coeff` scalar is
+*not* a fresh placeholder weight but exactly the value-multiset fiber count of the bijection. -/
+theorem B_coeff_eq_countPerms_smul (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
+    (lam : Nat.Partition m) :
+    B_coeff H x₀ R i1 lam
+      = lam.parts.countPerms • hasseCoeffRepr𝒪 H x₀ R i1 (sigmaLambda lam) := by
+  rw [B_coeff, prefactor_eq_countPerms]
+
+/-! ## 4. Structural skeleton of the per-order partition term count -/
 
 /-- **The inner partition filter over `Nat.Partition 0` is a singleton (axiom-clean).**  There is
 exactly one partition of `0` — the empty one — and it satisfies any `≤ i` / `(t+1) ∉ λ` constraint
