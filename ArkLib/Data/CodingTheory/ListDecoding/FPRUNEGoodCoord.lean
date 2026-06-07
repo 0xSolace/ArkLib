@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.Linarith
 
 /-!
-# FPRUNE good-coordinate existence (Chen–Zhang 2025 / arXiv 2512.08017, Lemma 3.4 existence half)
+# FPRUNE good-coordinate existence (Goyal–Guruswami 2025 / arXiv 2512.08017, Lemma 3.4 existence half)
 
 The polynomial list-decoding bound for subspace-design codes is proven via the `FPRUNE`
 algorithm, which recursively samples a **good** coordinate `i` — one that strictly drops the
@@ -38,7 +38,7 @@ Quot.sound]`).
 
 ## References
 
-- [CZ25] Chen–Zhang. Thm B.5 / Lemmas 3.4–3.5 (subspace-design route to capacity list decoding),
+- [GG25] Goyal–Guruswami. Lemmas 3.4–3.5 (subspace-design pruning route to list recovery),
   arXiv 2512.08017.
 - [ABF26] Arnon-Boneh-Fenzi. *Open Problems in List Decoding and Correlated Agreement*, §2.5.
 -/
