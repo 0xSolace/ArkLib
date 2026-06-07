@@ -125,6 +125,23 @@ theorem bcsTotalError_succ_mono_error {m : ℕ}
     _ = εOpen₂ 0 + bcsTotalError εInteraction₂ (fun i : Fin m => εOpen₂ i.succ) :=
       bcsTotalError_succ εInteraction₂ εOpen₂
 
+/-- Relax the interaction and both opening-batch budgets for the total-error append split. -/
+theorem bcsTotalError_append_mono_error {m n : ℕ}
+    {εInteraction₁ εInteraction₂ : ℝ≥0}
+    {εLeft₁ εLeft₂ : Fin m → ℝ≥0} {εRight₁ εRight₂ : Fin n → ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂)
+    (hLeft : ∀ i, εLeft₁ i ≤ εLeft₂ i)
+    (hRight : ∀ i, εRight₁ i ≤ εRight₂ i) :
+    bcsTotalError εInteraction₁ (Fin.append εLeft₁ εRight₁)
+      ≤ bcsTotalError εInteraction₂ εLeft₂ + ∑ i, εRight₂ i := by
+  calc
+    bcsTotalError εInteraction₁ (Fin.append εLeft₁ εRight₁)
+        = bcsTotalError εInteraction₁ εLeft₁ + ∑ i, εRight₁ i :=
+          bcsTotalError_append εInteraction₁ εLeft₁ εRight₁
+    _ ≤ bcsTotalError εInteraction₂ εLeft₂ + ∑ i, εRight₂ i :=
+      add_le_add (bcsTotalError_mono hInteraction hLeft)
+        (Finset.sum_le_sum fun i _ => hRight i)
+
 /-- Relax the interaction and opening budgets for the left-empty total-error append split. -/
 theorem bcsTotalError_append_zero_left_mono_error {m : ℕ}
     {εInteraction₁ εInteraction₂ : ℝ≥0}
@@ -894,6 +911,7 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcsTotalError_mono_open
 #print axioms bcsTotalError_mono
 #print axioms bcsTotalError_succ_mono_error
+#print axioms bcsTotalError_append_mono_error
 #print axioms bcsTotalError_append_zero_left_mono_error
 #print axioms bcsTotalError_append_zero_right_mono_error
 #print axioms UnionBoundPr
