@@ -189,4 +189,63 @@ theorem card_indices_mem_le_of_general_position
   rw [Fintype.card_coe, hcard] at hcardle
   omega
 
+open scoped Classical in
+/-- **Secant bound** `E(n-1) ≤ 2`: at agreement one below the length, with a genuine pencil
+(`s₀ + γ•s₁ ≠ 0`, i.e. `s₀ ∉ span{s₁}`) and MDS genericity (every 3 of the parity columns
+independent, i.e. dual distance `r ≥ 3`), there are at most 2 bad scalars — far below the
+master bound `C(n,1) = n`. -/
+theorem ncard_badScalars_singleton_le_two
+    {K M ι : Type*} [Field K] [AddCommGroup M] [Module K M] [Module.Finite K M]
+    [Fintype ι] [DecidableEq ι] [Nonempty ι] (s₀ s₁ : M) (h : ι → M)
+    (hpen : ∀ γ : K, s₀ + γ • s₁ ≠ 0)
+    (hgen : ∀ t : Finset ι, t.card = 3 → LinearIndependent K (fun i : ↥t => h ↑i)) :
+    {γ : K | ∃ i : ι, s₀ + γ • s₁ ∈ Submodule.span K {h i} ∧ s₁ ∉ Submodule.span K {h i}}.ncard
+      ≤ 2 := by
+  classical
+  set pencil := Submodule.span K ({s₀, s₁} : Set M) with hpencil
+  set B := {γ : K | ∃ i : ι, s₀ + γ • s₁ ∈ Submodule.span K {h i} ∧ s₁ ∉ Submodule.span K {h i}}
+    with hB
+  have hwit : ∀ γ ∈ B, ∃ i, s₀ + γ • s₁ ∈ Submodule.span K {h i} ∧ s₁ ∉ Submodule.span K {h i} :=
+    fun γ hγ => hγ
+  choose! wi hwin hwinot using hwit
+  have himg : ∀ γ ∈ B, wi γ ∈ Finset.univ.filter (fun i => h i ∈ pencil) := by
+    intro γ hγ
+    rw [Finset.mem_filter]
+    refine ⟨Finset.mem_univ _, ?_⟩
+    obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp (hwin γ hγ)
+    have hc0 : c ≠ 0 := fun h0 => hpen γ (by rw [h0, zero_smul] at hc; exact hc.symm)
+    have hheq : h (wi γ) = c⁻¹ • (s₀ + γ • s₁) := by
+      rw [← hc, smul_smul, inv_mul_cancel₀ hc0, one_smul]
+    rw [hheq]
+    exact pencil.smul_mem _ (add_mem (Submodule.subset_span (by simp))
+      (pencil.smul_mem _ (Submodule.subset_span (by simp))))
+  have hinj : Set.InjOn wi B := by
+    intro γ hγ γ' hγ' hww
+    by_contra hne
+    have h1 : s₀ + γ • s₁ ∈ Submodule.span K {h (wi γ)} := hwin γ hγ
+    have h2 : s₀ + γ' • s₁ ∈ Submodule.span K {h (wi γ)} := by rw [hww]; exact hwin γ' hγ'
+    have hdiff : (γ - γ') • s₁ ∈ Submodule.span K {h (wi γ)} := by
+      have hm := (Submodule.span K {h (wi γ)}).sub_mem h1 h2
+      have he : (γ - γ') • s₁ = (s₀ + γ • s₁) - (s₀ + γ' • s₁) := by rw [sub_smul]; abel
+      rw [he]; exact hm
+    have hs1 : s₁ ∈ Submodule.span K {h (wi γ)} := by
+      have hne' : γ - γ' ≠ 0 := sub_ne_zero.mpr hne
+      have hsm := (Submodule.span K {h (wi γ)}).smul_mem (γ - γ')⁻¹ hdiff
+      rwa [smul_smul, inv_mul_cancel₀ hne', one_smul] at hsm
+    exact hwinot γ hγ hs1
+  have hfin2 : Module.finrank K pencil ≤ 2 := by
+    have h1 := finrank_span_le_card (R := K) ({s₀, s₁} : Set M)
+    have h2 : ({s₀, s₁} : Set M).toFinset.card ≤ 2 := by
+      rw [Set.toFinset_insert, Set.toFinset_singleton]
+      exact (Finset.card_insert_le _ _).trans (by simp)
+    exact le_trans h1 h2
+  have hgenf : (Finset.univ.filter (fun i => h i ∈ pencil)).card ≤ 2 :=
+    card_indices_mem_le_of_general_position h pencil 2 hfin2 (fun t ht => hgen t ht)
+  calc B.ncard
+      ≤ (↑(Finset.univ.filter (fun i => h i ∈ pencil)) : Set ι).ncard :=
+        Set.ncard_le_ncard_of_injOn wi (fun γ hγ => Finset.mem_coe.mpr (himg γ hγ)) hinj
+          (Finset.finite_toSet _)
+    _ = (Finset.univ.filter (fun i => h i ∈ pencil)).card := Set.ncard_coe_finset _
+    _ ≤ 2 := hgenf
+
 end ArkLib.MCAMasterBound
