@@ -151,9 +151,9 @@ theorem eq_at_coord_of_two_scalars
     · exact sub_eq_zero.mp hb'
   refine ⟨?_, hu₁⟩
   -- back-substitute to get `u₀ᵢ = v₀ᵢ`
-  have := h
-  rw [hu₁] at this
-  linarith
+  have hh := h
+  rw [hu₁] at hh
+  linear_combination hh
 
 /-- **Many-points joint agreement on the fixed-line agreement core.**  Given a fixed codeword pair
 `(v₀, v₁)` and, for each scalar `z` in a set `Z`, an agreement set `S z` on which the affine-line
