@@ -721,7 +721,43 @@ theorem paperTranscriptSlotPayload_finalPolynomial_of_coefficients {M : ℕ}
         (paperFinalPolynomialAsPolynomial P d T).coeff k := by
   rw [paperTranscriptSlotPayload_finalPolynomial]
   ext k
-  simp [paperFinalPolynomialAsPolynomial, Fin.liftF, Fin.liftF']
+  simp [paperFinalPolynomialAsPolynomial, Fin.liftF]
+
+omit [SampleableType F] in
+/-- Coefficient consistency for the final polynomial that Construction 5.1 sends before the final
+randomness checks. -/
+structure PaperFinalPolynomialCoefficients {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) where
+  polynomial : Polynomial F
+  coeff_eq :
+    ∀ k : Fin (2 ^ P.varCount (Fin.last M)),
+      polynomial.coeff k = T.finalPolynomial k
+
+omit [Fintype F] [SampleableType F] in
+/-- The canonical final-polynomial coefficient witness obtained by interpreting the transcript's
+coefficient vector with ArkLib's polynomial interface. -/
+noncomputable def paperFinalPolynomialCoefficientsOfTranscript {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) :
+    PaperFinalPolynomialCoefficients P d T where
+  polynomial := paperFinalPolynomialAsPolynomial P d T
+  coeff_eq := paperFinalPolynomialAsPolynomial_coeff P d T
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Under final-polynomial coefficient consistency, the named payload is exactly the coefficient
+vector of the supplied final polynomial. -/
+theorem paperTranscriptSlotPayload_finalPolynomial_of_coefficientsWitness {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (final : PaperFinalPolynomialCoefficients P d T) :
+    paperTranscriptSlotPayload P d T .finalPolynomial =
+      Vector.ofFn fun k : Fin (2 ^ P.varCount (Fin.last M)) => final.polynomial.coeff k := by
+  rw [paperTranscriptSlotPayload_finalPolynomial]
+  apply Vector.ext
+  intro k hk
+  simp
+  exact (final.coeff_eq ⟨k, hk⟩).symm
 
 /-! ### Semantic WHIR per-round transcript slots
 
@@ -1285,6 +1321,9 @@ end RBRSoundnessAssembly
 #print axioms paperFinalPolynomialAsPolynomial_coeff
 #print axioms paperTranscriptSlotPayload_finalPolynomial
 #print axioms paperTranscriptSlotPayload_finalPolynomial_of_coefficients
+#print axioms PaperFinalPolynomialCoefficients
+#print axioms paperFinalPolynomialCoefficientsOfTranscript
+#print axioms paperTranscriptSlotPayload_finalPolynomial_of_coefficientsWitness
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
