@@ -32,6 +32,8 @@ exactly as the in-tree P2 consequence theorems do — none assumes the STEP-8 co
   `eval₂` target and the expanded Taylor-sum target.
 * `restrictedMatchAtZeroEval₂WDivTarget_iff_uncleared{Eval₂,}WDivTarget` — identifies the fixed
   order-zero target with the general un-cleared/W-divisor target at `(i1,m,e)=(1,0,R.natDegree)`.
+* `restrictedMatchAt_zero_iff_uncleared{Eval₂,}WDivTarget` and the partition-at-zero analogues —
+  direct iff packaging between the order-zero residual surfaces and the general W-divisor targets.
 * `HasseCoeffRepr𝒪Uncleared{Eval₂,}WDivTarget.of_…` / partition target constructors — endpoint
   adapters between the generalized order-zero W-divisor target and the carved / partition residuals.
 * `RestrictedMatchAtZero{Taylor,Eval₂}WDivTarget.of_…` / `RestrictedFaaDiBrunoPartitionMatchAt`
@@ -325,6 +327,46 @@ theorem restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedWDivTarget
   (restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedEval₂WDivTarget H x₀ R).trans
     (hasseCoeffRepr𝒪UnclearedWDivTarget_iff_eval₂WDivTarget H x₀ R 1 0 R.natDegree).symm
 
+/-- The carved order-zero P2 core is equivalent to the generalized un-cleared/W-divisor
+`eval₂` target. -/
+theorem restrictedMatchAt_zero_iff_unclearedEval₂WDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
+      HasseCoeffRepr𝒪UnclearedEval₂WDivTarget H x₀ R 1 0 R.natDegree :=
+  (restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd).trans
+    (restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedEval₂WDivTarget H x₀ R)
+
+/-- The carved order-zero P2 core is equivalent to the generalized embedded
+un-cleared/W-divisor target. -/
+theorem restrictedMatchAt_zero_iff_unclearedWDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
+      HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R 1 0 R.natDegree :=
+  (restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd).trans
+    (restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedWDivTarget H x₀ R)
+
+/-- The normalized order-zero partition residual is equivalent to the generalized
+un-cleared/W-divisor `eval₂` target. -/
+theorem restrictedPartitionMatchAt_zero_iff_unclearedEval₂WDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 ↔
+      HasseCoeffRepr𝒪UnclearedEval₂WDivTarget H x₀ R 1 0 R.natDegree :=
+  (restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).symm.trans
+    (restrictedMatchAt_zero_iff_unclearedEval₂WDivTarget H x₀ R hHyp hd)
+
+/-- The normalized order-zero partition residual is equivalent to the generalized embedded
+un-cleared/W-divisor target. -/
+theorem restrictedPartitionMatchAt_zero_iff_unclearedWDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 ↔
+      HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R 1 0 R.natDegree :=
+  (restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).symm.trans
+    (restrictedMatchAt_zero_iff_unclearedWDivTarget H x₀ R hHyp hd)
+
 /-- Project the general un-cleared/W-divisor `eval₂` target from the carved order-zero P2 core. -/
 theorem HasseCoeffRepr𝒪UnclearedEval₂WDivTarget.of_restrictedMatchAt_zero
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -557,6 +599,14 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedEval₂WDivTarget
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedWDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_unclearedEval₂WDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_unclearedWDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedPartitionMatchAt_zero_iff_unclearedEval₂WDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedPartitionMatchAt_zero_iff_unclearedWDivTarget
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedEval₂WDivTarget.of_restrictedMatchAt_zero
 set_option linter.style.longLine false in
