@@ -227,10 +227,3 @@ theorem final_check_consistency {m n : ℕ}
       = ∑ x : Fin m → Fin 2,
           eqTilde r (x : Fin m → R) * (M *ᵥ z) (finFunctionFinEquiv x) :=
   MvPolynomial.MLE_eval_eq_sum_eqTilde ((M *ᵥ z) ∘ finFunctionFinEquiv) r
-
-/-! ## Axiom audit anchors (uncomment under a working toolchain)
-
-These would each report `[propext, Classical.choice, Quot.sound]` only (no `sorryAx`), since every
-proof above reduces to the proven `MLE` API. The build environment is mid-reclone, so they are left
-commented; the proofs are hand-verified against `ArkLib/Data/MvPolynomial/Multilinear.lean`.
-
