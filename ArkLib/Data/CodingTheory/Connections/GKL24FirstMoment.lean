@@ -837,6 +837,31 @@ theorem badScalars_card_le_radius_mul_card_of_large_domain_disjoint_petals
           exact Nat.cast_sub hDle
   nlinarith [hcompl, hDlarge]
 
+/-- **Line-petal core-equality bucket bound.**  If every scalar in `Γ` strictly expands a common
+core `D`, and every pair of line-agreement domains intersects exactly in `D`, then the line
+petals give the `#Γ ≤ p·n` first-moment count once `D` has size at least `(1-p)n`.
+
+This is the local set-theory/cardinality endgame after the GCXK/GKL maximal-domain argument has
+already identified the common core for the bucket. -/
+theorem badScalars_card_le_radius_mul_card_of_linePetal_core_eq
+    (Γ : Finset F) (D : Finset ι) (u₀ u₁ : ι → F) (wOf : F → ι → F) {p : ℝ}
+    (hDlarge : (1 - p) * (Fintype.card ι : ℝ) ≤ (D.card : ℝ))
+    (hstrict : ∀ γ ∈ Γ, D ⊂ lineAgreeSet u₀ u₁ (wOf γ) γ)
+    (hcore : ∀ γ ∈ Γ, ∀ γ' ∈ Γ, γ ≠ γ' →
+      lineAgreeSet u₀ u₁ (wOf γ) γ ∩ lineAgreeSet u₀ u₁ (wOf γ') γ' = D) :
+    (Γ.card : ℝ) ≤ p * (Fintype.card ι : ℝ) := by
+  classical
+  refine
+    badScalars_card_le_radius_mul_card_of_large_domain_disjoint_petals
+      Γ D (fun γ => linePetal D u₀ u₁ (wOf γ) γ) hDlarge ?_ ?_ ?_
+  · intro γ hγ γ' hγ' hne
+    exact linePetal_disjoint_of_inter_lineAgreeSet_eq (hcore γ hγ γ' hγ' hne)
+  · intro γ hγ
+    exact Nat.succ_le_iff.mpr
+      (Finset.card_pos.mpr (linePetal_nonempty_of_ssubset_lineAgreeSet (hstrict γ hγ)))
+  · intro γ _hγ
+    exact linePetal_subset_compl D u₀ u₁ (wOf γ) γ
+
 /-- **Per-codeword bad-scalar count from a GKL/GCXK petal certificate.**  This specializes the
 generic petal accounting wrapper to the actual witness set
 `mcaBadWitness MC δ u₀ u₁ w`.  Once a large maximal domain `D` and pairwise-disjoint nonempty
@@ -1139,6 +1164,7 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.linePetal_pairwise_disjoint_of_maxCorrAgreeDomain
 #print axioms ProximityGap.badScalars_card_le_domain_compl_of_disjoint_petals
 #print axioms ProximityGap.badScalars_card_le_radius_mul_card_of_large_domain_disjoint_petals
+#print axioms ProximityGap.badScalars_card_le_radius_mul_card_of_linePetal_core_eq
 #print axioms ProximityGap.mcaBadWitness_card_le_radius_mul_card_of_large_domain_disjoint_petals
 #print axioms ProximityGap.mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain
 #print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_petal_cover
