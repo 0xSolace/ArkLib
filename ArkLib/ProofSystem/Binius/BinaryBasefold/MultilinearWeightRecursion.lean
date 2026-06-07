@@ -40,7 +40,7 @@ theorem testBit_zero_two_mul (n : ℕ) : (2 * n).testBit 0 = false := by
 /-- LSB of an odd number is `true`.  `(2*n+1).testBit 0 = true`. -/
 theorem testBit_zero_two_mul_add_one (n : ℕ) : (2 * n + 1).testBit 0 = true := by
   rw [Nat.testBit_zero]
-  simp [Nat.add_mul_mod_self_left, Nat.mul_add_mod]
+  simp
 
 /-- The `(k+1)`-th bit of `2*n` is the `k`-th bit of `n`.  `(2*n).testBit (k+1) = n.testBit k`. -/
 theorem testBit_succ_two_mul (n k : ℕ) : (2 * n).testBit (k + 1) = n.testBit k := by
@@ -102,7 +102,7 @@ theorem multilinearWeight_even {ϑ : ℕ} (r : Fin (ϑ + 1) → F) (i : Fin (2 ^
   rw [Fin.prod_univ_succ]
   -- Factor `0`: bit 0 of `2*i` is `false`, so the `if` is `1 - r 0`.
   have h0 : (2 * i.val).testBit (0 : Fin (ϑ + 1)).val = false := by
-    simpa using testBit_zero_two_mul i.val
+    simp
   rw [h0]
   -- Reindex the tail product. The rewrite closes the goal: both sides become
   -- `(1 - r 0) * (shared tail product)`.
@@ -117,7 +117,7 @@ theorem multilinearWeight_odd {ϑ : ℕ} (r : Fin (ϑ + 1) → F) (i : Fin (2 ^ 
   unfold multilinearWeight
   rw [Fin.prod_univ_succ]
   have h0 : (2 * i.val + 1).testBit (0 : Fin (ϑ + 1)).val = true := by
-    simpa using testBit_zero_two_mul_add_one i.val
+    simp
   rw [h0]
   rw [if_pos (by simp), tailProd_odd r i]
 
@@ -156,5 +156,16 @@ theorem multilinearWeight_one (c : F) :
   · unfold multilinearWeight
     rw [Fin.prod_univ_one]
     simp [Nat.testBit]
+
+#print axioms testBit_zero_two_mul
+#print axioms testBit_zero_two_mul_add_one
+#print axioms testBit_succ_two_mul
+#print axioms testBit_succ_two_mul_add_one
+#print axioms tailProd_even
+#print axioms tailProd_odd
+#print axioms multilinearWeight_even
+#print axioms multilinearWeight_odd
+#print axioms multilinearWeight_split
+#print axioms multilinearWeight_one
 
 end Issue33Binius
