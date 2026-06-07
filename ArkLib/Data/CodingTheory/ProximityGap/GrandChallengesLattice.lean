@@ -3248,13 +3248,6 @@ theorem listPrizeLatticeResolved_of_Lambda_le_and_elias_next
     (m := m) (j := (τ r).val) (ℓ := ℓ r)
     hm (hnext r) (hLambda r) (hpow r) (hvol_next r) (hne r)
 
-/-- A named ordinary-RS capacity cap plus adjacent Elias certificates resolve the faithful
-four-rate list-decoding lattice prize.
-
-This is the same theorem as `listPrizeLatticeResolved_of_Lambda_le_and_elias_next`, with the
-lower-side hypothesis packaged as `OrdinaryRSCapacityAtPrizeRates` so the remaining LD target
-has a single source-level name. -/
-
 /-- The mathematical residual for the capacity of the ordinary Reed-Solomon code at the four prize rates. -/
 theorem Lambda_reedSolomon_prizeRate_capacity_residual
     {F ι : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -3669,4 +3662,5 @@ end GrandChallengesLattice
 
 end ProximityGap
 
-#print axioms listPrizeLatticeResolved_of_ordinaryRSCapacityAtPrizeRates_and_elias_next
+#print axioms
+  ProximityGap.GrandChallengesLattice.listPrizeLatticeResolved_of_ordinaryRSCapacityAtPrizeRates_and_elias_next
