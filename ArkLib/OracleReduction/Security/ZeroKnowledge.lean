@@ -246,6 +246,80 @@ theorem isStatHVZK.mono_error
   let ⟨sim, hsim⟩ := h
   ⟨sim, hsim.mono_error hle⟩
 
+/-- **Statistical HVZK transports across both relation restriction and error relaxation.** -/
+theorem statisticalHVZK.mono_relation_error
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec} {ε₁ ε₂ : ℝ≥0}
+    (h : statisticalHVZK init impl rel reduction sim ε₁)
+    (hsub : rel' ⊆ rel) (hle : ε₁ ≤ ε₂) :
+    statisticalHVZK init impl rel' reduction sim ε₂ :=
+  (h.mono_relation hsub).mono_error hle
+
+/-- **Perfect HVZK transports to statistical HVZK on a subrelation at any error.** The same
+simulator is reused after restricting the relation. -/
+theorem perfectHVZK.statisticalHVZK_mono_relation
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec} {ε : ℝ≥0}
+    (h : perfectHVZK init impl rel reduction sim) (hsub : rel' ⊆ rel) :
+    Reduction.statisticalHVZK init impl rel' reduction sim ε :=
+  Reduction.perfectHVZK.statisticalHVZK (h.mono_relation hsub) ε
+
+/-- **Zero-error statistical HVZK converts back to perfect HVZK for the same simulator.** -/
+theorem statisticalHVZK_zero.perfectHVZK
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec}
+    (h : statisticalHVZK init impl rel reduction sim 0) :
+    Reduction.perfectHVZK init impl rel reduction sim :=
+  (perfectHVZK_iff_statisticalHVZK_zero init impl rel reduction sim).2 h
+
+/-- **Zero-error statistical HVZK transports back to perfect HVZK on a subrelation.** The same
+simulator is reused after restricting the relation. -/
+theorem statisticalHVZK_zero.perfectHVZK_mono_relation
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec}
+    (h : statisticalHVZK init impl rel reduction sim 0) (hsub : rel' ⊆ rel) :
+    Reduction.perfectHVZK init impl rel' reduction sim :=
+  (perfectHVZK_iff_statisticalHVZK_zero init impl rel' reduction sim).2
+    (h.mono_relation hsub)
+
+/-- **Existential statistical HVZK transports across both relation restriction and error
+relaxation.** The same simulator witnesses the transported statement. -/
+theorem isStatHVZK.mono_relation_error
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec} {ε₁ ε₂ : ℝ≥0}
+    (h : isStatHVZK init impl rel reduction ε₁)
+    (hsub : rel' ⊆ rel) (hle : ε₁ ≤ ε₂) :
+    isStatHVZK init impl rel' reduction ε₂ :=
+  (h.mono_relation hsub).mono_error hle
+
+/-- **Perfect HVZK existence gives statistical HVZK on any subrelation and relaxed error.** -/
+theorem isHVZK.isStatHVZK_mono_relation_error
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec} (ε : ℝ≥0)
+    (h : isHVZK init impl rel reduction) (hsub : rel' ⊆ rel) :
+    Reduction.isStatHVZK init impl rel' reduction ε :=
+  (h.mono_relation hsub).isStatHVZK ε
+
+/-- **Zero-error statistical HVZK existence transports back to perfect HVZK existence on a
+subrelation.** -/
+theorem isStatHVZK_zero.isHVZK_mono_relation
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    (h : isStatHVZK init impl rel reduction 0) (hsub : rel' ⊆ rel) :
+    Reduction.isHVZK init impl rel' reduction :=
+  (Reduction.isStatHVZK_zero.isHVZK h).mono_relation hsub
+
 end BasicLemmas
 
 section Identity
@@ -334,5 +408,12 @@ end Identity
 #print axioms isHVZK_iff_isStatHVZK_zero
 #print axioms isStatHVZK.mono_relation
 #print axioms isStatHVZK.mono_error
+#print axioms statisticalHVZK.mono_relation_error
+#print axioms perfectHVZK.statisticalHVZK_mono_relation
+#print axioms statisticalHVZK_zero.perfectHVZK
+#print axioms statisticalHVZK_zero.perfectHVZK_mono_relation
+#print axioms isStatHVZK.mono_relation_error
+#print axioms isHVZK.isStatHVZK_mono_relation_error
+#print axioms isStatHVZK_zero.isHVZK_mono_relation
 
 end Reduction

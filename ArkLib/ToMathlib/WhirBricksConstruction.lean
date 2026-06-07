@@ -11,6 +11,7 @@ import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.Data.Polynomial.Interface
 import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.RBRSoundness
+import ArkLib.ProofSystem.Whir.RbrBudgetAccounting
 
 /-!
 # WHIR VectorSpec challenge budget (scratch brick B)
@@ -540,6 +541,75 @@ noncomputable def paperTranscriptVectorIOP {M : ℕ} {ιs : Fin (M + 1) → Type
   prover := paperTranscriptOracleProver P d makeTranscript
   verifier := paperTranscriptOracleVerifier P d verify
 
+omit [Field F] [DecidableEq F] [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- Package the two semantic proof obligations for the paper-transcript adapter into the
+`VectorIOP.IsSecureWithGap` class consumed by the WHIR RBR assembly wrappers.
+
+This is pure assembly around the concrete `paperTranscriptVectorIOP`: callers still have to prove
+perfect completeness for the supplied transcript generator and RBR knowledge soundness for the
+supplied verifier logic. -/
+theorem paperTranscriptVectorIOP_isSecureWithGap_of_complete_and_rbr {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ)
+    (makeTranscript :
+      (Unit × (∀ u : Unit, OracleStatement (ιs 0) F u)) × Unit → PaperTranscriptData P d)
+    (verify :
+      Unit → ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges →
+        OptionT
+          (OracleComp
+            ([]ₒ +
+              ([OracleStatement (ιs 0) F]ₒ +
+                [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)))
+          Bool)
+    {completeRelation soundRelation :
+      Set ((Unit × ∀ i, OracleStatement (ιs 0) F i) × Unit)}
+    {ε_rbr : (whirPaperTranscriptVectorSpec P d).ChallengeIdx → ℝ≥0}
+    (hComplete :
+      (paperTranscriptVectorIOP P d makeTranscript verify).perfectCompleteness
+        (pure ()) isEmptyElim completeRelation)
+    (hRbr :
+      OracleProof.rbrKnowledgeSoundness (pure ()) isEmptyElim soundRelation
+        (paperTranscriptOracleVerifier P d verify) ε_rbr) :
+    VectorIOP.IsSecureWithGap completeRelation soundRelation ε_rbr
+      (paperTranscriptVectorIOP P d makeTranscript verify) where
+  is_complete := hComplete
+  is_rbr_knowledge_sound := hRbr
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Folding challenges for each WHIR transition, read from the paper-order transcript schedule.
+
+The first transition uses the initial sumcheck challenges.  Transition `k+1` uses the main
+sumcheck challenges from the previous main-loop slot `k`, matching Construction 5.1's challenge
+flow from one folded oracle to the next. -/
+def paperTranscriptFoldingChallenge {M : ℕ} {ιs : Fin ((M + 1) + 1) → Type}
+    [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (T : PaperTranscriptData P d) (i : Fin (M + 1)) :
+    Fin (P.foldingParam i.castSucc) → F :=
+  Fin.cases (motive := fun i : Fin (M + 1) =>
+      Fin (P.foldingParam i.castSucc) → F)
+    T.initialSumcheckChallenge
+    (fun k => T.mainSumcheckChallenge k.castSucc)
+    i
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperTranscriptFoldingChallenge_zero {M : ℕ}
+    {ιs : Fin ((M + 1) + 1) → Type}
+    [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (j : Fin (P.foldingParam 0)) :
+    paperTranscriptFoldingChallenge P d T 0 j = T.initialSumcheckChallenge j := by
+  rfl
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperTranscriptFoldingChallenge_succ {M : ℕ}
+    {ιs : Fin ((M + 1) + 1) → Type}
+    [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (i : Fin M) (j : Fin (P.foldingParam i.succ.castSucc)) :
+    paperTranscriptFoldingChallenge P d T i.succ j =
+      T.mainSumcheckChallenge i.castSucc j := by
+  rfl
+
 omit [Fintype F] [DecidableEq F] [SampleableType F] in
 /-- Domain bridge needed to state that a paper-order folded-oracle message is an actual
 `Fold.fold_k` output.
@@ -651,6 +721,53 @@ theorem paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles {M : ℕ
   rw [paperTranscriptSlotPayload_mainFoldedOracle]
   exact congrArg (packFiniteFunction (ιs i.succ)) (funext (hT i))
 
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Folded-oracle consistency using the folding challenges read from the paper transcript itself.
+
+This is the challenge-schedule-specialized form needed by the honest Construction 5.1 transcript:
+the initial transition uses `T.initialSumcheckChallenge`, and every later transition uses the
+previous main-loop `T.mainSumcheckChallenge`. -/
+def paperTranscriptHasFoldedOraclesFromTranscript {M : ℕ}
+    {ιs : Fin ((M + 1) + 1) → Type}
+    [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin ((M + 1) + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin (M + 1), ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin (M + 1)) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (hFoldLe : ∀ i : Fin (M + 1), P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d) : Prop :=
+  paperTranscriptHasFoldedOracles P d S bridge hNeg source
+    (paperTranscriptFoldingChallenge P d T) hFoldLe T
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- The transcript-derived folding-challenge predicate gives the same folded-oracle payload
+equation, with no external folding-challenge schedule left to supply. -/
+theorem paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOraclesFromTranscript {M : ℕ}
+    {ιs : Fin ((M + 1) + 1) → Type}
+    [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin ((M + 1) + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin (M + 1), ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin (M + 1)) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (hFoldLe : ∀ i : Fin (M + 1), P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (hT : paperTranscriptHasFoldedOraclesFromTranscript P d S bridge hNeg source hFoldLe T)
+    (i : Fin (M + 1)) :
+    paperTranscriptSlotPayload P d T (.mainFoldedOracle i) =
+      packFiniteFunction (ιs i.succ)
+        (paperFoldedOracleFrom P S bridge hNeg source
+          (paperTranscriptFoldingChallenge P d T) hFoldLe i) :=
+  paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles P d S bridge hNeg source
+    (paperTranscriptFoldingChallenge P d T) hFoldLe T hT i
+
 omit [SampleableType F] in
 /-- Polynomial-extension consistency for the main-loop out-of-domain replies. -/
 structure PaperOutOfDomainExtension {M : ℕ} {ιs : Fin (M + 1) → Type}
@@ -758,6 +875,189 @@ theorem paperTranscriptSlotPayload_finalPolynomial_of_coefficientsWitness {M : �
   intro k hk
   simp
   exact (final.coeff_eq ⟨k, hk⟩).symm
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Evaluation of the supplied final polynomial at one final-randomness challenge coordinate. -/
+noncomputable def paperFinalRandomnessEvaluation {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (final : PaperFinalPolynomialCoefficients P d T)
+    (j : Fin (P.repeatParam (Fin.last M))) : F :=
+  final.polynomial.eval (T.finalRandomness.get j)
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Vector of final-polynomial evaluations at all final-randomness challenge coordinates. -/
+noncomputable def paperFinalRandomnessEvaluations {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (final : PaperFinalPolynomialCoefficients P d T) :
+    Vector F (P.repeatParam (Fin.last M)) :=
+  Vector.ofFn fun j => paperFinalRandomnessEvaluation P d T final j
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperFinalRandomnessEvaluations_get {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (final : PaperFinalPolynomialCoefficients P d T)
+    (j : Fin (P.repeatParam (Fin.last M))) :
+    (paperFinalRandomnessEvaluations P d T final).get j =
+      paperFinalRandomnessEvaluation P d T final j := by
+  simp [paperFinalRandomnessEvaluations]
+
+omit [Fintype F] [SampleableType F] in
+/-- Final-randomness evaluations for the canonical polynomial reconstructed from transcript
+coefficients. -/
+noncomputable def paperFinalRandomnessEvaluationsOfTranscript {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) :
+    Vector F (P.repeatParam (Fin.last M)) :=
+  paperFinalRandomnessEvaluations P d T (paperFinalPolynomialCoefficientsOfTranscript P d T)
+
+omit [Fintype F] [SampleableType F] in
+@[simp] theorem paperFinalRandomnessEvaluationsOfTranscript_get {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (j : Fin (P.repeatParam (Fin.last M))) :
+    (paperFinalRandomnessEvaluationsOfTranscript P d T).get j =
+      (paperFinalPolynomialAsPolynomial P d T).eval (T.finalRandomness.get j) := by
+  simp [paperFinalRandomnessEvaluationsOfTranscript, paperFinalRandomnessEvaluation,
+    paperFinalPolynomialCoefficientsOfTranscript]
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Algebraic consistency data for one paper-order WHIR transcript.
+
+This bundles the three transcript facts that an honest Construction 5.1 prover must establish
+before the verifier can run the fold/OOD/final checks: folded-oracle messages are transported
+`Fold.fold_k` outputs, OOD replies are evaluations of the extension polynomials, and the final
+polynomial payload is the coefficient vector of the polynomial used for final-randomness checks. -/
+structure PaperTranscriptAlgebraicConsistency {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d) where
+  folded_oracles :
+    paperTranscriptHasFoldedOracles P d S bridge hNeg source foldChallenge hFoldLe T
+  ood_extension : PaperOutOfDomainExtension P d T
+  final_polynomial : PaperFinalPolynomialCoefficients P d T
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Final-randomness evaluations supplied by a bundled algebraically consistent transcript. -/
+noncomputable def paperTranscriptAlgebraicConsistencyFinalEvaluations {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (cons :
+      PaperTranscriptAlgebraicConsistency P d S bridge hNeg source foldChallenge hFoldLe T) :
+    Vector F (P.repeatParam (Fin.last M)) :=
+  paperFinalRandomnessEvaluations P d T cons.final_polynomial
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperTranscriptAlgebraicConsistencyFinalEvaluations_get {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (cons :
+      PaperTranscriptAlgebraicConsistency P d S bridge hNeg source foldChallenge hFoldLe T)
+    (j : Fin (P.repeatParam (Fin.last M))) :
+    (paperTranscriptAlgebraicConsistencyFinalEvaluations P d S bridge hNeg source foldChallenge
+      hFoldLe T cons).get j =
+      cons.final_polynomial.polynomial.eval (T.finalRandomness.get j) := by
+  simp [paperTranscriptAlgebraicConsistencyFinalEvaluations, paperFinalRandomnessEvaluation]
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- A bundled transcript consistency witness exposes the folded-oracle payload equation. -/
+theorem paperTranscriptSlotPayload_mainFoldedOracle_of_algebraicConsistency {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (cons :
+      PaperTranscriptAlgebraicConsistency P d S bridge hNeg source foldChallenge hFoldLe T)
+    (i : Fin M) :
+    paperTranscriptSlotPayload P d T (.mainFoldedOracle i) =
+      packFiniteFunction (ιs i.succ)
+        (paperFoldedOracleFrom P S bridge hNeg source foldChallenge hFoldLe i) :=
+  paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles P d S bridge hNeg source
+    foldChallenge hFoldLe T cons.folded_oracles i
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- A bundled transcript consistency witness exposes the OOD-reply payload equation. -/
+theorem paperTranscriptSlotPayload_mainOutOfDomainReply_of_algebraicConsistency {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (cons :
+      PaperTranscriptAlgebraicConsistency P d S bridge hNeg source foldChallenge hFoldLe T)
+    (i : Fin M) :
+    paperTranscriptSlotPayload P d T (.mainOutOfDomainReply i) =
+      singletonFieldPayload
+        ((cons.ood_extension.extensionPolynomial i).eval (T.mainOutOfDomainChallenge i)) :=
+  paperTranscriptSlotPayload_mainOutOfDomainReply_of_extension P d T cons.ood_extension i
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- A bundled transcript consistency witness exposes the final-polynomial payload equation. -/
+theorem paperTranscriptSlotPayload_finalPolynomial_of_algebraicConsistency {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (S : ∀ i : Fin (M + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin M, ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin M) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (foldChallenge : (i : Fin M) → Fin (P.foldingParam i.castSucc) → F)
+    (hFoldLe : ∀ i : Fin M, P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (cons :
+      PaperTranscriptAlgebraicConsistency P d S bridge hNeg source foldChallenge hFoldLe T) :
+    paperTranscriptSlotPayload P d T .finalPolynomial =
+      Vector.ofFn fun k : Fin (2 ^ P.varCount (Fin.last M)) =>
+        cons.final_polynomial.polynomial.coeff k :=
+  paperTranscriptSlotPayload_finalPolynomial_of_coefficientsWitness P d T cons.final_polynomial
 
 /-! ### Semantic WHIR per-round transcript slots
 
@@ -1090,6 +1390,105 @@ omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
     (whirVectorSpec_toProtocolSpec_challengeIdxEquivFin (F := F) M).symm i = ⟨i, rfl⟩ :=
   rfl
 
+/-! ### WHIR RBR budget accounting adapters
+
+`ArkLib.ProofSystem.Whir.RbrBudgetAccounting` proves the `max'`/`sup` budget facts in an
+abstract `fp : Fin (M + 1) → ℕ` setting.  The adapters below instantiate that accounting to the
+actual WHIR parameter record `P.foldingParam`, so downstream soundness proofs can cite the named
+budget API instead of re-opening the inline `whir_rbr_soundness` expression.
+-/
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- The concrete WHIR RBR per-challenge budget, instantiated from
+`Issue113WHIR.epsRbr` with `fp = P.foldingParam`. -/
+noncomputable def whirRbrBudgetValue {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) : ℝ≥0 :=
+  Issue113WHIR.epsRbr (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- The final-round error is dominated by the concrete WHIR RBR budget. -/
+theorem whirRbrBudgetValue_fin_le {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) :
+    ε_fin ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin :=
+  Issue113WHIR.eps_fin_le_epsRbr (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- Every OOD-round error is dominated by the concrete WHIR RBR budget. -/
+theorem whirRbrBudgetValue_out_le {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    (i : Fin (M + 1)) :
+    ε_out i ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin :=
+  Issue113WHIR.eps_out_le_epsRbr (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin i
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- Every shift-round error is dominated by the concrete WHIR RBR budget. -/
+theorem whirRbrBudgetValue_shift_le {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    (i : Fin M) :
+    ε_shift i ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin :=
+  Issue113WHIR.eps_shift_le_epsRbr (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin i
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- Every inner fold-step error is dominated by the concrete WHIR RBR budget. -/
+theorem whirRbrBudgetValue_fold_le {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    (i : Fin (M + 1)) (j : Fin (P.foldingParam i)) :
+    ε_fold i j ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin :=
+  Issue113WHIR.eps_fold_le_epsRbr (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin i j
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+  [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- Universal-property package for the concrete WHIR RBR budget. -/
+theorem whirRbrBudgetValue_isLUB {M : ℕ} {ιs : Fin (M + 1) → Type}
+    (P : Params ιs F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) :
+    (∀ i j, ε_fold i j ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) ∧
+    (∀ i, ε_out i ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) ∧
+    (∀ i, ε_shift i ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) ∧
+    (ε_fin ≤ whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) ∧
+    (∀ c, (∀ i j, ε_fold i j ≤ c) → (∀ i, ε_out i ≤ c) → (∀ i, ε_shift i ≤ c) →
+      ε_fin ≤ c → whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin ≤ c) :=
+  Issue113WHIR.epsRbr_isLUB (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin
+
+omit [Fintype ι] [Nonempty ι] in
+/-- Using the named WHIR RBR budget in `IsSecureWithGap` is definitionally the same as using the
+inline `ε_rbr` expression from `whir_rbr_soundness`. -/
+theorem whirSecureWithGap_namedBudget_iff_inline {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    {P : Params ιs F} {m_0 : ℕ} [Smooth (P.φ 0)] [Nonempty (ιs 0)]
+    {δ : ℝ≥0} {n : ℕ} {vPSpec : ProtocolSpec.VectorSpec n}
+    (π : VectorIOP Unit (OracleStatement (ιs 0) F) Unit vPSpec F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) :
+    VectorIOP.IsSecureWithGap (whirRelation m_0 (P.φ 0) 0)
+      (whirRelation m_0 (P.φ 0) δ)
+      (fun _ : vPSpec.ChallengeIdx => whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) π ↔
+    (let max_ε_folds : (i : Fin (M + 1)) → ℝ≥0 :=
+        fun i => (Finset.univ : Finset (Fin (P.foldingParam i))).sup (ε_fold i)
+      let ε_rbr : vPSpec.ChallengeIdx → ℝ≥0 :=
+        fun _ => ((Finset.univ : Finset (Fin (M + 1))).image max_ε_folds ∪ {ε_fin} ∪
+          (Finset.univ : Finset (Fin (M + 1))).image ε_out ∪
+          (Finset.univ : Finset (Fin M)).image ε_shift).max' (by simp)
+      VectorIOP.IsSecureWithGap (whirRelation m_0 (P.φ 0) 0)
+        (whirRelation m_0 (P.φ 0) δ) ε_rbr π) := by
+  rfl
+
 /-- Every verifier-challenge index has length one in the WHIR scratch vector spec. -/
 theorem whirVectorSpec_challengeLength (M : ℕ) (i : (whirVectorSpec M).ChallengeIdx) :
     (whirVectorSpec M).challengeLength i = 1 := by
@@ -1308,12 +1707,18 @@ end RBRSoundnessAssembly
 #print axioms paperTranscriptOracleProver
 #print axioms paperTranscriptOracleVerifier
 #print axioms paperTranscriptVectorIOP
+#print axioms paperTranscriptVectorIOP_isSecureWithGap_of_complete_and_rbr
+#print axioms paperTranscriptFoldingChallenge
+#print axioms paperTranscriptFoldingChallenge_zero
+#print axioms paperTranscriptFoldingChallenge_succ
 #print axioms PaperFoldDomainBridge
 #print axioms paperFoldDomainBridge_nextDomainEquiv_apply
 #print axioms paperFoldedOracleFrom
 #print axioms paperFoldedOracleFrom_apply
 #print axioms paperTranscriptHasFoldedOracles
 #print axioms paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles
+#print axioms paperTranscriptHasFoldedOraclesFromTranscript
+#print axioms paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOraclesFromTranscript
 #print axioms PaperOutOfDomainExtension
 #print axioms paperOutOfDomainExtension_reply
 #print axioms paperTranscriptSlotPayload_mainOutOfDomainReply_of_extension
@@ -1324,6 +1729,17 @@ end RBRSoundnessAssembly
 #print axioms PaperFinalPolynomialCoefficients
 #print axioms paperFinalPolynomialCoefficientsOfTranscript
 #print axioms paperTranscriptSlotPayload_finalPolynomial_of_coefficientsWitness
+#print axioms paperFinalRandomnessEvaluation
+#print axioms paperFinalRandomnessEvaluations
+#print axioms paperFinalRandomnessEvaluations_get
+#print axioms paperFinalRandomnessEvaluationsOfTranscript
+#print axioms paperFinalRandomnessEvaluationsOfTranscript_get
+#print axioms PaperTranscriptAlgebraicConsistency
+#print axioms paperTranscriptAlgebraicConsistencyFinalEvaluations
+#print axioms paperTranscriptAlgebraicConsistencyFinalEvaluations_get
+#print axioms paperTranscriptSlotPayload_mainFoldedOracle_of_algebraicConsistency
+#print axioms paperTranscriptSlotPayload_mainOutOfDomainReply_of_algebraicConsistency
+#print axioms paperTranscriptSlotPayload_finalPolynomial_of_algebraicConsistency
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
@@ -1334,6 +1750,13 @@ end RBRSoundnessAssembly
 #print axioms whirVectorSpec_toProtocolSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_toProtocolSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_toProtocolSpec_challengeIdxEquivFin_symm_apply
+#print axioms whirRbrBudgetValue
+#print axioms whirRbrBudgetValue_fin_le
+#print axioms whirRbrBudgetValue_out_le
+#print axioms whirRbrBudgetValue_shift_le
+#print axioms whirRbrBudgetValue_fold_le
+#print axioms whirRbrBudgetValue_isLUB
+#print axioms whirSecureWithGap_namedBudget_iff_inline
 #print axioms whirVectorSpec_challengeLength
 #print axioms whirVectorSpec_challenge_eq_vector_one
 #print axioms whirVectorSpec_totalChallengeLength

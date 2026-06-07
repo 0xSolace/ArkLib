@@ -144,6 +144,29 @@ theorem pairJointAgreesOn_of_MCADoubleCoverOn (C : Set (ι → A))
   obtain ⟨v₁, hv₁, v₂, hv₂, hcover⟩ := hcov
   exact pairJointAgreesOn_of_double_cover C S u₀ u₁ v₁ v₂ hv₁ hv₂ hcover
 
+/-- Joint agreement on `S` gives the named double-cover surface on the same set: use the
+jointly-agreeing codeword pair and the two fixed scalars `0` and `1`. -/
+theorem MCADoubleCoverOn.of_pairJointAgreesOn (C : Set (ι → A))
+    (S : Finset ι) (u₀ u₁ : ι → A)
+    (hpair : pairJointAgreesOn C S u₀ u₁) :
+    MCADoubleCoverOn (F := F) C u₀ u₁ S := by
+  obtain ⟨v₀, hv₀, v₁, hv₁, hagree⟩ := hpair
+  refine ⟨v₀, hv₀, v₁, hv₁, ?_⟩
+  intro i hi
+  rcases hagree i hi with ⟨h₀, h₁⟩
+  refine ⟨0, 1, zero_ne_one, ?_, ?_⟩
+  · simp [h₀]
+  · simp [h₀, h₁]
+
+/-- The local repaired double-cover surface is exactly the existing joint-agreement predicate
+over the same witness set. -/
+theorem MCADoubleCoverOn_iff_pairJointAgreesOn (C : Set (ι → A))
+    (S : Finset ι) (u₀ u₁ : ι → A) :
+    MCADoubleCoverOn (F := F) C u₀ u₁ S ↔ pairJointAgreesOn C S u₀ u₁ := by
+  constructor
+  · exact pairJointAgreesOn_of_MCADoubleCoverOn C S u₀ u₁
+  · exact MCADoubleCoverOn.of_pairJointAgreesOn C S u₀ u₁
+
 /-- **`mcaEvent` with an S-pinned double cover is impossible.** Given a concrete witness set
 `S` realising the `mcaEvent` body (size + line-witness + `¬ pairJointAgreesOn S`), a
 line-decoder pair `(v₁, v₂) ∈ C` doubly covering `S` contradicts the `¬ pairJointAgreesOn S`
@@ -204,6 +227,25 @@ theorem MCABadScalarDoubleCover.not_mcaEvent
   exact MCABadScalarDoubleCover.not_mcaEventBody C δ u₀ u₁ γ hcov
     ⟨S, hsize, hwit, hpair⟩ S hsize hwit hpair
 
+/-- A direct no-event certificate supplies the local bad-scalar double-cover obligation,
+vacuously. -/
+theorem MCABadScalarDoubleCover.of_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F)
+    (hno : ¬ mcaEvent C δ u₀ u₁ γ) :
+    MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ := by
+  intro hγ
+  exact False.elim (hno hγ)
+
+/-- The named local bad-scalar double-cover obligation is exact: it is equivalent to ruling out
+that scalar's `mcaEvent`. -/
+theorem MCABadScalarDoubleCover_iff_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F) :
+    MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ ↔
+      ¬ mcaEvent C δ u₀ u₁ γ := by
+  constructor
+  · exact MCABadScalarDoubleCover.not_mcaEvent C δ u₀ u₁ γ
+  · exact MCABadScalarDoubleCover.of_not_mcaEvent C δ u₀ u₁ γ
+
 /-- **Exposed repaired T4.21 hypothesis.** Every stack and every bad scalar carries the
 per-coordinate double cover that the Guruswami--Sudan interpolation route must provide. This is
 the replacement data for the refuted black-box `lineDecodable_imp_epsMCA_le_target`. -/
@@ -244,6 +286,33 @@ theorem MCAForallDoubleCover_iff_badScalarDoubleCover
   · exact MCAForallDoubleCover.to_badScalarDoubleCover C δ
   · exact MCAForallDoubleCover.of_badScalarDoubleCover C δ
 
+/-- A global repaired double-cover frontier rules out every bad scalar event directly. -/
+theorem MCAForallDoubleCover.not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDoubleCover (F := F) (A := A) C δ) :
+    ∀ (u : WordStack A (Fin 2) ι) (γ : F), ¬ mcaEvent C δ (u 0) (u 1) γ := by
+  intro u γ
+  exact (MCABadScalarDoubleCover_iff_not_mcaEvent C δ (u 0) (u 1) γ).mp
+    ((MCAForallDoubleCover.to_badScalarDoubleCover C δ hcov) u γ)
+
+/-- Repack a direct no-bad-event frontier as the global repaired double-cover surface. -/
+theorem MCAForallDoubleCover.of_forall_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hno : ∀ (u : WordStack A (Fin 2) ι) (γ : F), ¬ mcaEvent C δ (u 0) (u 1) γ) :
+    MCAForallDoubleCover (F := F) (A := A) C δ :=
+  MCAForallDoubleCover.of_badScalarDoubleCover C δ fun u γ =>
+    (MCABadScalarDoubleCover_iff_not_mcaEvent C δ (u 0) (u 1) γ).mpr (hno u γ)
+
+/-- The global repaired double-cover surface is exact: it is equivalent to ruling out every
+bad scalar event. -/
+theorem MCAForallDoubleCover_iff_forall_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) :
+    MCAForallDoubleCover (F := F) (A := A) C δ ↔
+      ∀ (u : WordStack A (Fin 2) ι) (γ : F), ¬ mcaEvent C δ (u 0) (u 1) γ := by
+  constructor
+  · exact MCAForallDoubleCover.not_mcaEvent C δ
+  · exact MCAForallDoubleCover.of_forall_not_mcaEvent C δ
+
 open Classical in
 /-- **Repaired Theorem 4.21, per-stack form.** If for the stack `(u₀, u₁)` every bad scalar's
 witness set is doubly covered by a (scalar-dependent) line-decoder pair in `C`, then no bad
@@ -275,6 +344,25 @@ theorem mcaBadCount_eq_zero_of_badScalarDoubleCover
   exact mcaBadCount_eq_zero_of_double_cover C δ u₀ u₁
     (fun γ hγ S hsize hwit hpair => by
       simpa [MCADoubleCoverOn] using hcov γ hγ S hsize hwit hpair)
+
+/-- Zero bad-scalar count repacks as the named per-scalar double-cover surface. This is vacuous
+because zero counts rule out every bad event. -/
+theorem badScalarDoubleCover_of_mcaBadCount_eq_zero
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
+    (hzero : mcaBadCount (F := F) C δ u₀ u₁ = 0) :
+    ∀ γ : F, MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ := by
+  intro γ
+  exact (MCABadScalarDoubleCover_iff_not_mcaEvent C δ u₀ u₁ γ).mpr
+    ((mcaBadCount_eq_zero_iff_forall_not_mcaEvent C δ u₀ u₁).mp hzero γ)
+
+/-- Per-stack count zero is exactly the named per-scalar double-cover surface. -/
+theorem mcaBadCount_eq_zero_iff_badScalarDoubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) :
+    mcaBadCount (F := F) C δ u₀ u₁ = 0 ↔
+      ∀ γ : F, MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ := by
+  constructor
+  · exact badScalarDoubleCover_of_mcaBadCount_eq_zero C δ u₀ u₁
+  · exact mcaBadCount_eq_zero_of_badScalarDoubleCover C δ u₀ u₁
 
 open Classical in
 /-- **Repaired Theorem 4.21, error form.** If every stack's every bad scalar's witness set is
@@ -310,17 +398,103 @@ theorem epsMCA_eq_zero_of_badScalarDoubleCover (C : Set (ι → A)) (δ : ℝ≥
     (fun u γ hγ S hsize hwit hpair => by
       simpa [MCADoubleCoverOn] using hcov u γ hγ S hsize hwit hpair)
 
+/-- Per-stack zero bad-scalar count from the global double-cover surface. -/
+theorem mcaBadCount_eq_zero_of_MCAForallDoubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
+    (hcov : MCAForallDoubleCover (F := F) (A := A) C δ) :
+    mcaBadCount (F := F) C δ u₀ u₁ = 0 := by
+  exact mcaBadCount_eq_zero_of_badScalarDoubleCover C δ u₀ u₁
+    (fun γ => by
+      simpa using
+        (MCAForallDoubleCover.to_badScalarDoubleCover C δ hcov
+          (![u₀, u₁] : WordStack A (Fin 2) ι) γ))
+
+/-- Global double-cover data gives zero bad-scalar counts for every stack. -/
+theorem MCAForallDoubleCover.forall_mcaBadCount_eq_zero
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDoubleCover (F := F) (A := A) C δ) :
+    ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) C δ (u 0) (u 1) = 0 := by
+  intro u
+  exact mcaBadCount_eq_zero_of_MCAForallDoubleCover C δ (u 0) (u 1) hcov
+
+/-- Repack zero bad-scalar counts for every stack as the global double-cover surface. This is
+vacuous exactly because zero counts rule out every bad event. -/
+theorem MCAForallDoubleCover.of_forall_mcaBadCount_eq_zero
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hzero : ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) C δ (u 0) (u 1) = 0) :
+    MCAForallDoubleCover (F := F) (A := A) C δ :=
+  MCAForallDoubleCover.of_forall_not_mcaEvent C δ fun u =>
+    (mcaBadCount_eq_zero_iff_forall_not_mcaEvent C δ (u 0) (u 1)).mp (hzero u)
+
+/-- The global repaired double-cover surface is exact: it is equivalent to zero bad-scalar
+counts for every stack. -/
+theorem MCAForallDoubleCover_iff_forall_mcaBadCount_eq_zero
+    (C : Set (ι → A)) (δ : ℝ≥0) :
+    MCAForallDoubleCover (F := F) (A := A) C δ ↔
+      ∀ u : WordStack A (Fin 2) ι, mcaBadCount (F := F) C δ (u 0) (u 1) = 0 := by
+  constructor
+  · exact MCAForallDoubleCover.forall_mcaBadCount_eq_zero C δ
+  · exact MCAForallDoubleCover.of_forall_mcaBadCount_eq_zero C δ
+
+/-- Error-level zero result from the global double-cover surface. -/
+theorem epsMCA_eq_zero_of_MCAForallDoubleCover (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDoubleCover (F := F) (A := A) C δ) :
+    epsMCA (F := F) C δ = 0 :=
+  epsMCA_eq_zero_of_forall_double_cover C δ hcov
+
+/-- Vanishing MCA error repacks as the global repaired double-cover surface. -/
+theorem MCAForallDoubleCover.of_epsMCA_eq_zero (C : Set (ι → A)) (δ : ℝ≥0)
+    (heps : epsMCA (F := F) C δ = 0) :
+    MCAForallDoubleCover (F := F) (A := A) C δ :=
+  MCAForallDoubleCover.of_forall_mcaBadCount_eq_zero C δ
+    (forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero C δ heps)
+
+/-- The global repaired double-cover surface is exact at `ε_mca = 0`. -/
+theorem epsMCA_eq_zero_iff_MCAForallDoubleCover (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) C δ = 0 ↔
+      MCAForallDoubleCover (F := F) (A := A) C δ := by
+  constructor
+  · exact MCAForallDoubleCover.of_epsMCA_eq_zero C δ
+  · exact epsMCA_eq_zero_of_MCAForallDoubleCover C δ
+
+/-- The named all-stack bad-scalar double-cover surface is exact at `ε_mca = 0`. -/
+theorem epsMCA_eq_zero_iff_badScalarDoubleCover (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) C δ = 0 ↔
+      ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+        MCABadScalarDoubleCover (F := F) (A := A) C δ (u 0) (u 1) γ := by
+  rw [epsMCA_eq_zero_iff_MCAForallDoubleCover,
+    MCAForallDoubleCover_iff_badScalarDoubleCover]
+
 #print axioms MCADoubleCoverOn
 #print axioms MCABadScalarDoubleCover
 #print axioms pairJointAgreesOn_of_MCADoubleCoverOn
+#print axioms MCADoubleCoverOn.of_pairJointAgreesOn
+#print axioms MCADoubleCoverOn_iff_pairJointAgreesOn
 #print axioms not_mcaEventBody_of_MCADoubleCoverOn
 #print axioms MCADoubleCoverOn.mono
 #print axioms MCABadScalarDoubleCover.not_mcaEventBody
 #print axioms MCABadScalarDoubleCover.not_mcaEvent
+#print axioms MCABadScalarDoubleCover.of_not_mcaEvent
+#print axioms MCABadScalarDoubleCover_iff_not_mcaEvent
 #print axioms MCAForallDoubleCover
 #print axioms MCAForallDoubleCover_iff_badScalarDoubleCover
+#print axioms MCAForallDoubleCover.not_mcaEvent
+#print axioms MCAForallDoubleCover.of_forall_not_mcaEvent
+#print axioms MCAForallDoubleCover_iff_forall_not_mcaEvent
 #print axioms mcaBadCount_eq_zero_of_badScalarDoubleCover
+#print axioms badScalarDoubleCover_of_mcaBadCount_eq_zero
+#print axioms mcaBadCount_eq_zero_iff_badScalarDoubleCover
 #print axioms epsMCA_eq_zero_of_badScalarDoubleCover
+#print axioms mcaBadCount_eq_zero_of_MCAForallDoubleCover
+#print axioms MCAForallDoubleCover.forall_mcaBadCount_eq_zero
+#print axioms MCAForallDoubleCover.of_forall_mcaBadCount_eq_zero
+#print axioms MCAForallDoubleCover_iff_forall_mcaBadCount_eq_zero
+#print axioms epsMCA_eq_zero_of_MCAForallDoubleCover
+#print axioms MCAForallDoubleCover.of_epsMCA_eq_zero
+#print axioms epsMCA_eq_zero_iff_MCAForallDoubleCover
+#print axioms epsMCA_eq_zero_iff_badScalarDoubleCover
 
 end
 
@@ -337,37 +511,19 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
-/-- **Repaired discharge of the legacy target proposition.** The old black-box statement remains a
-named `Prop`, because line-decodability alone is refuted. Once the repaired theorem's explicit
-double-cover data is supplied, however, `ε_mca(C, δ) = 0`, so the legacy target conclusion follows
-without using the false implication. -/
-theorem lineDecodable_imp_epsMCA_le_target_of_forall_double_cover
+/-- **Repaired ABF26 Theorem 4.21.** The black-box line-decodability hypothesis is false; the
+correct theorem consumes the GS multi-γ overlap-coverage data directly. -/
+theorem lineDecodable_imp_epsMCA_le_target
     (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
     (hcov : MCAForallDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ) :
-    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD := by
-  dsimp [lineDecodable_imp_epsMCA_le_target]
+    epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
+        ≤ (a : ENNReal) / (Fintype.card F : ENNReal) := by
   rw [epsMCA_eq_zero_of_forall_double_cover (F := F) (A := A) (C : Set (ι → A)) δ hcov]
   exact zero_le _
 
-/-- Same repaired target discharge, but consuming the named per-bad-scalar double-cover surface
-directly. This is the local target shape expected from a future GS extraction proof. -/
-theorem lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hcov : ∀ (u : Code.WordStack A (Fin 2) ι) (γ : F),
-      MCABadScalarDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ (u 0) (u 1) γ) :
-    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD := by
-  dsimp [lineDecodable_imp_epsMCA_le_target]
-  rw [epsMCA_eq_zero_of_badScalarDoubleCover (F := F) (A := A)
-    (C : Set (ι → A)) δ hcov]
-  exact zero_le _
-
-#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_forall_double_cover
-#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover
+#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target
 
 end RepairedTarget
 
 end CodingTheory
+

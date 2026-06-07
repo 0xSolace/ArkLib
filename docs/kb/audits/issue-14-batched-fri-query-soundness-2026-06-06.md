@@ -19,12 +19,18 @@ conclusion is the intended `Code.jointAgreement` statement for the batched
 input functions at `δ := 1 - α`.
 
 The remaining proof is not a local simplification of the declaration. The
-missing bridge is the probabilistic query-round analysis:
+basic query-round analysis is now present in two proved forms: the finite
+counting/density route in `Security.lean` and the PMF probability/detection
+route in `ArkLib/ToMathlib/FriQueryRoundProb.lean` plus
+`QueryRoundProbability.lean`. The missing bridge is now narrower and
+protocol-specific:
 
 1. Express the Batched FRI query verifier's acceptance event through
    `OracleReduction.run` for the composed batching + FRI reduction.
-2. Prove the per-query consistency bound from the query samples.
-3. Convert the consistency bound into `Code.jointAgreement` for
+2. Derive the correlated-agreement / close-probability trigger consumed by the
+   BCIKS20 affine-line and curve front doors from the Batched FRI query
+   transcript semantics, rather than supplying it as an explicit hypothesis.
+3. Convert that trigger into `Code.jointAgreement` for
    `Fₛ f : Fin t.succ → (ω.subdomain 0 → 𝔽)`.
 4. Feed Claim 8.2 into `fri_soundness` / Claim 8.3, whose conclusion uses the
    same `Code.jointAgreement` predicate on the full domain.
@@ -39,6 +45,14 @@ Current source exposes both sides of that frontier as named parts:
   `fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens`
   reassembles Claim 8.2 from those two proved pieces plus the still-open
   correlated-agreement bridge.
+- `Fri.fri_query_soundness_of_jointProximity` exposes that bridge through the
+  existing `Code.jointAgreement_iff_jointProximity` theorem.  The density-route
+  `Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity`
+  and probability-route
+  `Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJointProximity`
+  adapters reassemble the query-round/lens route with a concrete
+  `Code.jointProximity` witness rather than an arbitrary `agreementBridge :
+  Prop`.
 - `FriSoundnessParts` splits Claim 8.3 into the Claim 8.2 lift, the
   sequential-composition soundness step, and the `totalError` accounting step.
 - `Fri.batchedFRIreduction_verifier_eq_append` and
@@ -59,6 +73,11 @@ Current source exposes both sides of that frontier as named parts:
 - `Fri.friBatchPhaseErrorBound` and `Fri.friTailPhaseErrorBound` name those two
   per-phase error-bound targets directly; `Fri.friSoundnessTotalErrorAccounting_of_named_phase_bounds`
   packages them into the existing total-error accounting field.
+- `Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds`
+  and
+  `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds`
+  are the density/probability Claim 8.3 front doors that consume those named
+  phase-bound targets directly.
 - `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError`
   gives the same Claim 8.3 reassembly along the probability-space query-round
   route, with query lift, concrete sequential composition, and arithmetic
@@ -78,9 +97,18 @@ Current source exposes both sides of that frontier as named parts:
   `Fri.fri_query_soundness_lift_subdomainZero_to_domain` instantiate that
   transport for the `ω.subdomain 0` to `ω` Reed-Solomon domain change used
   between Claim 8.2 and Claim 8.3.
+- `QueryRoundProbability.lean` provides the probability-space Claim 8.2 route
+  from the proved PMF bound, including the detection complement.  The RS
+  affine-line and RS-curve wrappers route BCIKS20 CA predicates and their
+  probability triggers through the same concrete `Code.jointProximity`
+  surface; they do not derive those triggers from the protocol transcript.
+- `QueryRoundRSCurveSoundness.lean` is now the single companion module for the
+  full-domain RS-curve probability and density routes, preserving the public
+  API while keeping `QueryRoundSoundness.lean` below its line cap.
 - `fri_query_soundness_of_parts` and `fri_soundness_of_parts` are small
-  reassembly theorems. They do not prove the missing probabilistic bounds; they
-  make the remaining obligations independently targetable.
+  reassembly theorems. They do not prove the protocol-specific trigger or
+  virtual-oracle plumbing; they make the remaining obligations independently
+  targetable.
 
 ## Existing in-tree pieces
 
@@ -159,11 +187,18 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_joi
 
 1. Connect the structural Batched FRI oracle-lens package to the still
    residualized virtual-oracle soundness-preservation theorem.
-2. Derive the general Claim 8.2 `Code.jointAgreement` conclusion for the
-   batched input stack.  The all-rows-already-codewords extreme is now proved by
+2. Derive the general Claim 8.2 `Code.jointProximity`/`Code.jointAgreement`
+   conclusion for the batched input stack from the protocol-specific
+   correlated-agreement/proximity-gap trigger.  The conversion from
+   `Code.jointProximity` to the `fri_query_soundness` residual is now proved by
+   `Fri.fri_query_soundness_of_jointProximity`; both density and probability
+   query-round/lens front doors now consume that concrete proximity witness, and
+   RS affine-line / RS-curve wrappers instantiate the available BCIKS20 theorem
+   fronts when their residual hypotheses and probability triggers are supplied.
+   The all-rows-already-codewords extreme is proved by
    `Fri.fri_query_soundness_of_forall_mem` and
-   `Fri.fri_soundness_of_forall_mem`, but the real correlated-agreement bridge
-   remains open.
+   `Fri.fri_soundness_of_forall_mem`, but the real proximity-gap bridge remains
+   open.
 3. Connect the Claim 8.2 output through
    `Fri.fri_query_soundness_lift_subdomainZero_to_domain`, then prove the
    remaining generic append residual / virtual-oracle soundness preservation
@@ -175,13 +210,15 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_joi
    `Fri.friSoundnessTotalErrorAccounting` and supplied from per-phase error
    bounds by `Fri.friSoundnessTotalErrorAccounting_of_phase_bounds`.  The
    remaining per-phase targets are now named as
-   `Fri.friBatchPhaseErrorBound` and `Fri.friTailPhaseErrorBound`.  The
+   `Fri.friBatchPhaseErrorBound` and `Fri.friTailPhaseErrorBound`, with
+   density/probability wrappers that consume those names directly.  The
    probability-route wrapper
    `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError`
    combines the proved query-round probability front door with these Claim 8.3
    fields.
 
 This audit does not close the mathematical residual. It confirms that the
-current source no longer hides Claim 8.2 behind a vacuous `True` theorem and
-records the exact theorem infrastructure still needed to replace the named
-residual with a proof body.
+current source no longer hides Claim 8.2 behind a vacuous `True` theorem, has
+proved the standalone query-round counting/probability bounds, and records the
+exact protocol-specific theorem infrastructure still needed to replace the
+named residual with a proof body.

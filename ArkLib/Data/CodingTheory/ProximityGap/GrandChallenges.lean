@@ -6,7 +6,7 @@ Authors: Alexander Hicks
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
-import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
+
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ListDecodability
 
@@ -330,23 +330,7 @@ def MCALowerWitness.ofJohnsonBCHKS25
   MCALowerWitness.ofLe hδ_le_one
     (le_trans hBCHKS25 hle)
 
-/-- **Bridge from a repaired line-decoding target.** If a code satisfies the named
-line-decoding-to-MCA target at radius `δ`, and the resulting `a/|F|` bound is within
-`ε*`, then the target certifies an `MCALowerWitness`.
 
-This deliberately consumes `lineDecodable_imp_epsMCA_le_target` as an explicit hypothesis:
-the unconstrained black-box theorem shape is known to be false, so callers must first supply
-the repaired GG25/GS interpolation content needed to prove that target. -/
-def MCALowerWitness.ofLineDecodingTarget
-    (C : ModuleCode ι F F) (δ a ε_star : ℝ≥0)
-    (hδ_le_one : δ ≤ 1)
-    (hLD : CodingTheory.LineDecodable (F := F) (A := F) (C : Set (ι → F)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hTarget : CodingTheory.lineDecodable_imp_epsMCA_le_target (F := F) (A := F)
-      C δ a hLD)
-    (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
-    MCALowerWitness (C : Set (ι → F)) ε_star :=
-  MCALowerWitness.ofLe hδ_le_one (le_trans hTarget hle)
 
 /-- **Bridge from ABF26 Theorem 4.16 [BCHKS25, KK25].** A packaged near-capacity
 `ε_ca` lower-bound witness gives an MCA upper witness once its explicit lower bound clears
@@ -635,11 +619,103 @@ theorem exists_prize_mcaLowerWitness_of_ignored_mcaConjecture (h : mcaConjecture
   exact hLower (domain := domain)
     (k := ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊) (ε_star := epsStar) (δ := δ)
 
+/-- Low-output projection of `exists_prize_mcaLowerWitness_of_ignored_mcaConjecture`.
+It preserves the prize-rate `MCALowerWitness` existence and forgets only the radius equality
+payload `w.δ = δ`; the conjecture and all numeric clearance hypotheses remain explicit. -/
+theorem nonempty_prize_mcaLowerWitness_of_ignored_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (j : Fin 4) (δ : ℝ≥0),
+        let k : ℕ := ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (epsStar : ENNReal) →
+        Nonempty (MCALowerWitness (ReedSolomon.code domain k : Set (ιC → FC)) epsStar) := by
+  obtain ⟨c₁, c₂, c₃, hLower⟩ := exists_prize_mcaLowerWitness_of_ignored_mcaConjecture h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain j δ
+  dsimp only
+  intro hk hδ hδ_le_one hclear
+  rcases hLower domain j δ hk hδ hδ_le_one hclear with ⟨w, _hwδ⟩
+  exact ⟨w⟩
+
+/-- All-prize-rate packaging of `exists_prize_mcaLowerWitness_of_ignored_mcaConjecture`.
+The conjecture remains explicit; this only shares the constant triple across `j : Fin 4` and
+keeps every pointwise positivity, radius, and numeric-clearance hypothesis visible. -/
+theorem exists_prize_mcaLowerWitnesses_allRates_of_ignored_mcaConjecture
+    (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊) →
+        (∀ j : Fin 4,
+          (δ j : ℝ) <
+            1 - (⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ : ℝ) /
+              Fintype.card ιC) →
+        (∀ j : Fin 4, δ j ≤ 1) →
+        (∀ j : Fin 4,
+          ENNReal.ofReal
+              (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC)
+                ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ (δ j) c₁ c₂ c₃) ≤
+            (epsStar : ENNReal)) →
+        ∀ j : Fin 4,
+          ∃ w : MCALowerWitness
+            (ReedSolomon.code domain
+              ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ : Set (ιC → FC))
+            epsStar,
+            w.δ = δ j := by
+  obtain ⟨c₁, c₂, c₃, hLower⟩ :=
+    exists_prize_mcaLowerWitness_of_ignored_mcaConjecture h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain δ hk hδ hδ_le_one hclear j
+  exact hLower domain j (δ j) (hk j) (hδ j) (hδ_le_one j) (hclear j)
+
+/-- Low-output projection of
+`exists_prize_mcaLowerWitnesses_allRates_of_ignored_mcaConjecture`. It drops only the radius
+equalities `w.δ = δ j`, leaving the conjecture and pointwise numeric hypotheses explicit. -/
+theorem nonempty_prize_mcaLowerWitnesses_allRates_of_ignored_mcaConjecture
+    (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊) →
+        (∀ j : Fin 4,
+          (δ j : ℝ) <
+            1 - (⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ : ℝ) /
+              Fintype.card ιC) →
+        (∀ j : Fin 4, δ j ≤ 1) →
+        (∀ j : Fin 4,
+          ENNReal.ofReal
+              (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC)
+                ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ (δ j) c₁ c₂ c₃) ≤
+            (epsStar : ENNReal)) →
+        ∀ j : Fin 4,
+          Nonempty (MCALowerWitness
+            (ReedSolomon.code domain
+              ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ : Set (ιC → FC))
+            epsStar) := by
+  obtain ⟨c₁, c₂, c₃, hLower⟩ :=
+    exists_prize_mcaLowerWitnesses_allRates_of_ignored_mcaConjecture h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain δ hk hδ hδ_le_one hclear j
+  rcases hLower domain δ hk hδ hδ_le_one hclear j with ⟨w, _hwδ⟩
+  exact ⟨w⟩
+
 #print axioms ProximityGap.GrandChallenges.mcaConjectureBound
 #print axioms ProximityGap.GrandChallenges.mcaConjecture
 #print axioms ProximityGap.GrandChallenges.nonempty_mcaLowerWitness_of_ignoredSource_mcaConjecture
 #print axioms ProximityGap.GrandChallenges.exists_mcaLowerWitness_of_ignoredSource_mcaConjecture
 #print axioms ProximityGap.GrandChallenges.exists_prize_mcaLowerWitness_of_ignored_mcaConjecture
+#print axioms ProximityGap.GrandChallenges.nonempty_prize_mcaLowerWitness_of_ignored_mcaConjecture
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallenges.exists_prize_mcaLowerWitnesses_allRates_of_ignored_mcaConjecture
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallenges.nonempty_prize_mcaLowerWitnesses_allRates_of_ignored_mcaConjecture
 
 /-! ## Witness-carrying resolutions for the Grand List Decoding Challenge
 
