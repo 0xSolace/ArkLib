@@ -352,7 +352,7 @@ projection of the original typed schedule. -/
       schedule.map (fun request => request.messageIdx) := by
   induction schedule with
   | nil => rfl
-  | cons request schedule ih =>
+  | cons request schedule _ =>
       simp [BCSOpeningSchedule.toOpeningStatements]
 
 /-- Projecting the indexed opening statements back to commitments recovers the indexed commitment
@@ -397,6 +397,26 @@ projection of the original typed schedule. -/
   | cons request schedule _ =>
       cases request
       simp [BCSOpeningSchedule.toOpeningStatements, BCSOpeningRequest.toOpeningStatement]
+
+/-- Bounded lookup in the indexed opening-statement view is bounded lookup in the typed schedule
+followed by the indexed-statement conversion. -/
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_getElem
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) (idx : ℕ)
+    (hidx : idx < schedule.length) :
+    schedule.toOpeningStatements[idx]'(by
+      simpa [BCSOpeningSchedule.toOpeningStatements_length] using hidx) =
+      (⟨(schedule[idx]'hidx).messageIdx, (schedule[idx]'hidx).toOpeningStatement⟩ :
+        (i : pSpec.MessageIdx) ×
+          BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType i) := by
+  induction schedule generalizing idx with
+  | nil =>
+      cases hidx
+  | cons request schedule ih =>
+      cases idx with
+      | zero => rfl
+      | succ idx =>
+          simp [BCSOpeningSchedule.toOpeningStatements]
 
 /-- Membership in the indexed opening-statement view is exactly membership in the original typed
 schedule, transported through `BCSOpeningRequest.toOpeningStatement`. -/
@@ -818,6 +838,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_commitment
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_query
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_response
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_getElem
 #print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_iff
 #print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_of_mem
 #print axioms OracleReduction.BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements

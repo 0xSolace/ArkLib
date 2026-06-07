@@ -9,19 +9,14 @@ import ArkLib.Data.CodingTheory.HammingBallVolume
 /-!
 # Basic facts about the q-ary Hamming-ball volume
 
-Elementary monotonicity, positivity, and the whole-space ceiling for
-`CodingTheory.hammingBallVolume` (ABF26 Def 2.4), complementing the entropy-volume *bounds* in
-`EntropyVolumeBound.lean`.
-
-* `hammingBallVolume_mono` / `hammingBallVolume_real_mono` — monotone in the relative radius.
-* `one_le_hammingBallVolume` — the centre is always counted, so the volume is `≥ 1`.
-* `hammingBallVolume_le_qpow` — the volume never exceeds the whole space `q^n`.
+Monotonicity, positivity, the whole-space ceiling `Vol ≤ q^n`, and the full-space equality
+`Vol = q^n` for `δ ≥ 1`, for `CodingTheory.hammingBallVolume` (ABF26 Def 2.4) — complementing the
+entropy-volume *bounds* in `EntropyVolumeBound.lean`.
 -/
 
 namespace CodingTheory
 
-/-- **Monotonicity of the Hamming-ball volume in the relative radius.** A larger radius gives a
-larger ball: the summation range `range (⌊δ·n⌋₊+1)` only grows, and every layer is `≥ 0`. -/
+/-- **Monotonicity of the Hamming-ball volume in the relative radius.** -/
 theorem hammingBallVolume_mono (q n : ℕ) {δ₁ δ₂ : ℝ} (hδ : δ₁ ≤ δ₂) :
     hammingBallVolume q δ₁ n ≤ hammingBallVolume q δ₂ n := by
   unfold hammingBallVolume
@@ -35,8 +30,7 @@ theorem hammingBallVolume_real_mono (q n : ℕ) {δ₁ δ₂ : ℝ} (hδ : δ₁
     (hammingBallVolume q δ₁ n : ℝ) ≤ (hammingBallVolume q δ₂ n : ℝ) := by
   exact_mod_cast hammingBallVolume_mono q n hδ
 
-/-- **The Hamming-ball volume is at least one** — the centre itself (the `i = 0` layer
-`C(n,0)·(q-1)^0 = 1`) is always counted. -/
+/-- **The Hamming-ball volume is at least one** — the centre (the `i = 0` layer) is always counted. -/
 theorem one_le_hammingBallVolume (q : ℕ) (δ : ℝ) (n : ℕ) :
     1 ≤ hammingBallVolume q δ n := by
   unfold hammingBallVolume
@@ -45,8 +39,7 @@ theorem one_le_hammingBallVolume (q : ℕ) (δ : ℝ) (n : ℕ) :
         Finset.single_le_sum (f := fun i => Nat.choose n i * (q - 1) ^ i)
           (fun i _ => Nat.zero_le _) (Finset.mem_range.mpr (Nat.succ_pos _))
 
-/-- **The q-ary Hamming-ball volume never exceeds the whole space `q^n`** (for `1 ≤ q`): the partial
-layer sum is bounded by the full binomial expansion `(1+(q-1))^n = q^n`. -/
+/-- **The q-ary Hamming-ball volume never exceeds the whole space `q^n`** (for `1 ≤ q`). -/
 theorem hammingBallVolume_le_qpow (q : ℕ) (hq : 1 ≤ q) (δ : ℝ) (n : ℕ) :
     hammingBallVolume q δ n ≤ q ^ n := by
   have hfull : ∑ i ∈ Finset.range (n + 1), Nat.choose n i * (q - 1) ^ i = q ^ n := by
@@ -70,9 +63,27 @@ theorem hammingBallVolume_le_qpow (q : ℕ) (hq : 1 ≤ q) (δ : ℝ) (n : ℕ) 
       exact hzero i (by omega)
     rw [heq, hfull]
 
+/-- **Full-space ball: `Vol_q(δ,n) = q^n` for `δ ≥ 1`** (and `1 ≤ q`). The floor `⌊δ·n⌋ ≥ n`, so the
+layer sum covers all of `range (n+1)`. -/
+theorem hammingBallVolume_eq_qpow_of_one_le (q : ℕ) (hq : 1 ≤ q) {δ : ℝ} (hδ : 1 ≤ δ) (n : ℕ) :
+    hammingBallVolume q δ n = q ^ n := by
+  refine le_antisymm (hammingBallVolume_le_qpow q hq δ n) ?_
+  have hfull : ∑ i ∈ Finset.range (n + 1), Nat.choose n i * (q - 1) ^ i = q ^ n := by
+    have h := add_pow (q - 1) 1 n
+    simp only [one_pow, mul_one, Nat.cast_id] at h
+    rw [Nat.sub_add_cancel hq] at h
+    rw [h]; exact Finset.sum_congr rfl (fun i _ => by ring)
+  rw [← hfull]
+  unfold hammingBallVolume
+  apply Finset.sum_le_sum_of_subset
+  apply Finset.range_mono
+  have hle : n ≤ ⌊δ * (n : ℝ)⌋₊ :=
+    Nat.le_floor (by nlinarith [Nat.cast_nonneg (α := ℝ) n, hδ])
+  exact Nat.succ_le_succ hle
+
 end CodingTheory
 
--- Axiom audit (kernel-clean): [propext, Classical.choice, Quot.sound]
 #print axioms CodingTheory.hammingBallVolume_mono
 #print axioms CodingTheory.one_le_hammingBallVolume
 #print axioms CodingTheory.hammingBallVolume_le_qpow
+#print axioms CodingTheory.hammingBallVolume_eq_qpow_of_one_le
