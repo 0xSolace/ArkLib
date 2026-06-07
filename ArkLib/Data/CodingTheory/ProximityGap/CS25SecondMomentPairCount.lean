@@ -29,6 +29,7 @@ variable {F : Type*} [Fintype F] [DecidableEq F] [AddCommGroup F]
 
 /-- **Second moment as a pair sum (double counting).**  `∑_w (closeCount w)²` equals the sum over
 ordered codeword pairs `(c, c')` of the two-ball intersection count `#{w : close to both}`. -/
+omit [AddCommGroup F] in
 theorem sum_closeCount_sq_eq (𝒞 : Finset (ι → F)) (r : ℕ) :
     (∑ w : ι → F, (closeCount 𝒞 r w) ^ 2)
       = ∑ c ∈ 𝒞, ∑ c' ∈ 𝒞,
