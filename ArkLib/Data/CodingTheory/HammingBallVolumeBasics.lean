@@ -9,11 +9,13 @@ import ArkLib.Data.CodingTheory.HammingBallVolume
 /-!
 # Basic facts about the q-ary Hamming-ball volume
 
-Elementary monotonicity and positivity of `CodingTheory.hammingBallVolume` (ABF26 Def 2.4),
-complementing the entropy-volume *bounds* in `EntropyVolumeBound.lean`.
+Elementary monotonicity, positivity, and the whole-space ceiling for
+`CodingTheory.hammingBallVolume` (ABF26 Def 2.4), complementing the entropy-volume *bounds* in
+`EntropyVolumeBound.lean`.
 
-* `hammingBallVolume_mono` / `hammingBallVolume_real_mono` — monotonicity in the relative radius.
+* `hammingBallVolume_mono` / `hammingBallVolume_real_mono` — monotone in the relative radius.
 * `one_le_hammingBallVolume` — the centre is always counted, so the volume is `≥ 1`.
+* `hammingBallVolume_le_qpow` — the volume never exceeds the whole space `q^n`.
 -/
 
 namespace CodingTheory
@@ -43,8 +45,34 @@ theorem one_le_hammingBallVolume (q : ℕ) (δ : ℝ) (n : ℕ) :
         Finset.single_le_sum (f := fun i => Nat.choose n i * (q - 1) ^ i)
           (fun i _ => Nat.zero_le _) (Finset.mem_range.mpr (Nat.succ_pos _))
 
+/-- **The q-ary Hamming-ball volume never exceeds the whole space `q^n`** (for `1 ≤ q`): the partial
+layer sum is bounded by the full binomial expansion `(1+(q-1))^n = q^n`. -/
+theorem hammingBallVolume_le_qpow (q : ℕ) (hq : 1 ≤ q) (δ : ℝ) (n : ℕ) :
+    hammingBallVolume q δ n ≤ q ^ n := by
+  have hfull : ∑ i ∈ Finset.range (n + 1), Nat.choose n i * (q - 1) ^ i = q ^ n := by
+    have h := add_pow (q - 1) 1 n
+    simp only [one_pow, mul_one, Nat.cast_id] at h
+    rw [Nat.sub_add_cancel hq] at h
+    rw [h]; exact Finset.sum_congr rfl (fun i _ => by ring)
+  have hzero : ∀ i, n < i → Nat.choose n i * (q - 1) ^ i = 0 := by
+    intro i hi; rw [Nat.choose_eq_zero_of_lt hi, Nat.zero_mul]
+  unfold hammingBallVolume
+  rcases Nat.lt_or_ge (⌊δ * n⌋₊ + 1) (n + 1) with hlt | hge
+  · calc ∑ i ∈ Finset.range (⌊δ * n⌋₊ + 1), Nat.choose n i * (q - 1) ^ i
+        ≤ ∑ i ∈ Finset.range (n + 1), Nat.choose n i * (q - 1) ^ i :=
+          Finset.sum_le_sum_of_subset (Finset.range_mono (le_of_lt hlt))
+      _ = q ^ n := hfull
+  · have heq : ∑ i ∈ Finset.range (⌊δ * n⌋₊ + 1), Nat.choose n i * (q - 1) ^ i
+        = ∑ i ∈ Finset.range (n + 1), Nat.choose n i * (q - 1) ^ i := by
+      refine (Finset.sum_subset (Finset.range_mono hge) ?_).symm
+      intro i _ hni
+      rw [Finset.mem_range, not_lt] at hni
+      exact hzero i (by omega)
+    rw [heq, hfull]
+
 end CodingTheory
 
 -- Axiom audit (kernel-clean): [propext, Classical.choice, Quot.sound]
 #print axioms CodingTheory.hammingBallVolume_mono
 #print axioms CodingTheory.one_le_hammingBallVolume
+#print axioms CodingTheory.hammingBallVolume_le_qpow
