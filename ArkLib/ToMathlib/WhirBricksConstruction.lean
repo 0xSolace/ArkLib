@@ -329,6 +329,7 @@ section RBRSoundnessAssembly
 variable {M : ℕ}
 variable {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
 
+omit [Fintype ι] [Nonempty ι] in
 /-- Assemble `whir_rbr_soundness` from a concrete WHIR `VectorIOP`, its `IsSecureWithGap` proof,
 and the named per-round bounds from Theorem 5.2.
 
@@ -366,7 +367,7 @@ theorem whir_rbr_soundness_of_secure_gap
         Fintype (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst1 0
       let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
         Nonempty (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst2 0
-      ∀ j : Fin ((P.foldingParam 0) + 1),
+      ∀ _j : Fin ((P.foldingParam 0) + 1),
         let errStar_0 j := h.errStar 0 j (h.C 0 j) (h.Gen_α 0 j).parℓ (h.δ 0)
         ∀ j : Fin (P.foldingParam 0),
           ε_fold 0 j ≤
@@ -384,7 +385,7 @@ theorem whir_rbr_soundness_of_secure_gap
         Fintype (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst1
       let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
         Nonempty (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst2
-      ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+      ∀ i : Fin (M + 1), ∀ _j : Fin ((P.foldingParam i) + 1),
         let errStar i j := h.errStar i j (h.C i j) (h.Gen_α i j).parℓ (h.δ i)
         ∀ i : Fin (M + 1), ∀ j : Fin (P.foldingParam i),
           ε_fold i j ≤ d * (h.dist i j.castSucc) / Fintype.card F + errStar i j.succ
@@ -432,7 +433,7 @@ theorem whir_rbr_soundness_of_whirVectorSpec_secure_gap
         Fintype (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst1 0
       let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
         Nonempty (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst2 0
-      ∀ j : Fin ((P.foldingParam 0) + 1),
+      ∀ _j : Fin ((P.foldingParam 0) + 1),
         let errStar_0 j := h.errStar 0 j (h.C 0 j) (h.Gen_α 0 j).parℓ (h.δ 0)
         ∀ j : Fin (P.foldingParam 0),
           ε_fold 0 j ≤
@@ -450,7 +451,7 @@ theorem whir_rbr_soundness_of_whirVectorSpec_secure_gap
         Fintype (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst1
       let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
         Nonempty (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst2
-      ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+      ∀ i : Fin (M + 1), ∀ _j : Fin ((P.foldingParam i) + 1),
         let errStar i j := h.errStar i j (h.C i j) (h.Gen_α i j).parℓ (h.δ i)
         ∀ i : Fin (M + 1), ∀ j : Fin (P.foldingParam i),
           ε_fold i j ≤ d * (h.dist i j.castSucc) / Fintype.card F + errStar i j.succ
