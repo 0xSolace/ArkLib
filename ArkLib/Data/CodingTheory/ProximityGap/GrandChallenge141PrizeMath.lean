@@ -416,6 +416,43 @@ theorem exists_mcaPrizeLatticeResolved_with_spec_of_uniformConjecture
   exact GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses
     domain w
 
+/-- The honest uniform GS-exposed prize, plus explicit GS faithfulness and numeric clearance
+hypotheses at all four prize rates, supplies a faithful MCA prize-lattice resolution.
+
+This is the plain-existential projection of
+`exists_mcaPrizeLatticeResolved_with_spec_of_uniformConjecture`: consumers that do not need the
+selected-threshold satisfy/maximality specification can target only
+`mcaPrizeLatticeResolved`, while the uniform GS prize, faithfulness, and clearance hypotheses
+remain explicit. -/
+theorem exists_mcaPrizeLatticeResolved_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (η δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < η j) →
+        (∀ j : Fin 4,
+          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
+        (∀ j : Fin 4, δ j ≤ 1) →
+        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
+          (∀ j : Fin 4,
+            FaithfulGSFamily (F := F)
+              ((ReedSolomon.code (domain := domain)
+                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                  Set (ι → F))) (δ j) (L j)) →
+          (∀ j : Fin 4,
+            ENNReal.ofReal
+                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+                  (η j) c₁ c₂ c₃)
+              ≤ (epsStar : ENNReal)) →
+          ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+            GrandChallengesLattice.mcaPrizeLatticeResolved domain τ := by
+  rcases exists_mcaPrizeLatticeResolved_with_spec_of_uniformConjecture domain m hUniform with
+    ⟨c₁, c₂, c₃, hresolved⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro η δ hη hδ hδ_le_one L hfaithful hclear
+  rcases hresolved η δ hη hδ hδ_le_one L hfaithful hclear with ⟨τ, hτ, _⟩
+  exact ⟨τ, hτ⟩
+
 end PerInput
 
 /-! ## 3. Explicit-constant conditional reduction (open content named, no laundering) -/
@@ -469,6 +506,7 @@ end Reduction
 #print axioms exists_prize_mcaLowerWitness_of_uniformConjecture
 #print axioms exists_prize_mcaLowerWitnesses_allRates_of_uniformConjecture
 #print axioms exists_mcaPrizeLatticeResolved_with_spec_of_uniformConjecture
+#print axioms exists_mcaPrizeLatticeResolved_of_uniformConjecture
 #print axioms epsMCAgs_prizeBound_of_listSize_clears
 
 end MCAGS
