@@ -202,6 +202,37 @@ theorem bcs_union_bound {m : ℕ} (μ : UnionBoundPr E)
           exact hOpen i
     _ = bcsTotalError εInteraction εOpen := rfl
 
+/-- No-opening union bound. This is the probabilistic base case matching
+`bcsTotalError_zero`: with no committed messages, the bad event is bounded by
+the interaction-phase error alone. -/
+theorem bcs_union_bound_zero (μ : UnionBoundPr E)
+    (badInteraction : E) (εInteraction : ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction) :
+    μ.pr (μ.union badInteraction (μ.unionFin (Fin.elim0 : Fin 0 → E)))
+      ≤ εInteraction := by
+  have h := bcs_union_bound (m := 0) μ badInteraction
+    (Fin.elim0 : Fin 0 → E) εInteraction (Fin.elim0 : Fin 0 → ℝ≥0)
+    hInteraction (fun i => Fin.elim0 i)
+  simpa [bcsTotalError] using h
+
+/-- One-more-opening union-bound recurrence. This is the probabilistic companion
+to `bcsTotalError_succ`: peeling the first opening event contributes its opening
+error, then recurses on the remaining opening schedule. -/
+theorem bcs_union_bound_succ {m : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badOpen : Fin (m + 1) → E)
+    (εInteraction : ℝ≥0) (εOpen : Fin (m + 1) → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen i) :
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+      ≤ εOpen 0 + bcsTotalError εInteraction (fun i : Fin m => εOpen i.succ) := by
+  have h := bcs_union_bound (m := m + 1) μ badInteraction badOpen εInteraction εOpen
+    hInteraction hOpen
+  calc
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+        ≤ bcsTotalError εInteraction εOpen := h
+    _ = εOpen 0 + bcsTotalError εInteraction (fun i : Fin m => εOpen i.succ) :=
+        bcsTotalError_succ εInteraction εOpen
+
 /-- Batched-opening union bound for a left/right split of the committed-message openings.
 
 This is the probabilistic companion to `bcsTotalError_append`: if the opening failures have been
@@ -332,6 +363,8 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms UnionBoundPr.unionFin
 #print axioms UnionBoundPr.pr_unionFin_le
 #print axioms bcs_union_bound
+#print axioms bcs_union_bound_zero
+#print axioms bcs_union_bound_succ
 #print axioms bcs_union_bound_append
 #print axioms bcs_union_bound_append_zero_left
 #print axioms bcs_union_bound_append_zero_right
