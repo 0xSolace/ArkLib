@@ -201,6 +201,21 @@ theorem epsRbr_isLUB
    eps_fin_le_epsRbr ε_fold ε_out ε_shift ε_fin,
    fun c => epsRbr_le_of_forall_le ε_fold ε_out ε_shift ε_fin c⟩
 
+/-- Downstream projection of the WHIR RBR budget domination facts, without the LUB/tightness
+tail.  This is the shape consumed by callers that only need to route the four per-round budget
+families into the single per-challenge `ε_rbr` envelope. -/
+theorem epsRbr_dominates
+    (ε_fold : (i : Fin (M + 1)) → Fin (fp i) → ℝ≥0) (ε_out : Fin (M + 1) → ℝ≥0)
+    (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) :
+    (∀ i j, ε_fold i j ≤ epsRbr ε_fold ε_out ε_shift ε_fin) ∧
+    (∀ i, ε_out i ≤ epsRbr ε_fold ε_out ε_shift ε_fin) ∧
+    (∀ i, ε_shift i ≤ epsRbr ε_fold ε_out ε_shift ε_fin) ∧
+    ε_fin ≤ epsRbr ε_fold ε_out ε_shift ε_fin :=
+  ⟨eps_fold_le_epsRbr ε_fold ε_out ε_shift ε_fin,
+   eps_out_le_epsRbr ε_fold ε_out ε_shift ε_fin,
+   eps_shift_le_epsRbr ε_fold ε_out ε_shift ε_fin,
+   eps_fin_le_epsRbr ε_fold ε_out ε_shift ε_fin⟩
+
 /-! ## §2. The keystone+folding residual interface and the soundness reduction
 
 This is the WHIR analogue of #24 §4–§5 (`PerRoundProximityGap` + the keystone adapters),
@@ -407,6 +422,7 @@ NOT extractable math. (No declarations; pure prose, mirroring #24 §5's
 #print axioms eps_fold_le_epsRbr
 #print axioms epsRbr_le_of_forall_le
 #print axioms epsRbr_isLUB
+#print axioms epsRbr_dominates
 #print axioms soundOk_epsRbr_of_keystone
 #print axioms soundOk_of_keystone_of_forall_le
 #print axioms whirRbrShape_of_secure
