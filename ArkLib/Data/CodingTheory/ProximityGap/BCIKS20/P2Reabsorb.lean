@@ -467,56 +467,6 @@ theorem restrictedPartitionMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
       H x₀ R hHyp hd hζ⟩
 
 
-/-- **Y-degree reabsorption over a fixed range (PROVEN, char-independent).**  For any range
-`{0, …, N}` wide enough to contain the Y-degrees of `Δ_X^{i₁}(Δ_Y^m R)|_{x₀}` (shifted by `m`),
-
-  `hasseEvalAtRoot i₁ m
-     = ∑_{j ∈ range (N+1)} C(j,m) · (lift((Δ_X^{i₁}R)|_{x₀}).coeff j) · (T/W)^{j-m}`.
-
-This is exactly the LHS inner sum of `RestrictedFaaDiBrunoMatch`
-(`restrictedFaaDiBrunoSum_eq_partitionForm`, at a partition with `m = |λ|` parts, summed over the
-Y-degree `j ∈ range (Q.natDegree + 1)`): the whole Y-degree sum collapses, term for term, into the
-single embedding object `hasseEvalAtRoot`.  The out-of-window terms vanish char-independently — the
-low terms `j < m` by `C(j,m) = 0`, the high terms `j - m > deg` because
-`C(j,m) • coeff_j = (Δ_Y^m object).coeff (j-m)` (the binomial sits *inside* the Hasse coefficient
-via `evalX_hasseDeriv_Y_coeff`) which is `0` past the degree. -/
-theorem hasseEvalAtRoot_eq_fixedRange (x₀ : F) (R : F[X][X][Y]) (i1 m N : ℕ)
-    (hN : (Bivariate.evalX (Polynomial.C x₀)
-            (hasseDerivX i1 (hasseDerivY m R))).natDegree + m ≤ N) :
-    hasseEvalAtRoot H x₀ R i1 m
-      = ∑ j ∈ Finset.range (N + 1),
-          (j.choose m)
-            • (liftToFunctionField (H := H)
-                  ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff j)
-                * (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff)
-                    ^ (j - m)) := by
-  rw [hasseEvalAtRoot_eq_binomReindex]
-  refine Finset.sum_subset ?_ ?_
-  · -- the `binomReindex` window `{m, …, deg + m}` sits inside `range (N+1)`.
-    intro j hj
-    rw [Finset.mem_map] at hj
-    obtain ⟨i, hi, rfl⟩ := hj
-    rw [Finset.mem_range] at hi ⊢
-    rw [addRightEmbedding_apply]
-    omega
-  · -- the terms of `range (N+1)` outside the window vanish.
-    intro j _ hjnot
-    by_cases hjm : j < m
-    · rw [Nat.choose_eq_zero_of_lt hjm, zero_smul]
-    · have hjm' : m ≤ j := not_lt.mp hjm
-      have hgap : (Bivariate.evalX (Polynomial.C x₀)
-          (hasseDerivX i1 (hasseDerivY m R))).natDegree < j - m := by
-        by_contra h
-        rw [Nat.not_lt] at h
-        exact hjnot (Finset.mem_map.mpr
-          ⟨j - m, Finset.mem_range.mpr (by omega), by rw [addRightEmbedding_apply]; omega⟩)
-      have hjmm : j - m + m = j := by omega
-      have hcoeff := evalX_hasseDeriv_Y_coeff x₀ R i1 m (j - m)
-      rw [hjmm] at hcoeff
-      rw [← smul_mul_assoc, ← map_nsmul, ← hcoeff,
-        Polynomial.coeff_eq_zero_of_natDegree_lt hgap, map_zero, zero_mul]
-
-
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
