@@ -549,3 +549,6 @@ end Prize
 end MCAGS
 
 end ProximityGap
+
+#print axioms ProximityGap.MCAGS.epsMCAgsPrizeBound
+#print axioms ProximityGap.MCAGS.epsMCAgs_prizeBound_conjecture
