@@ -239,13 +239,13 @@ import ArkLib.Data.CodingTheory.RandomLinearCodeParallelProb
 import ArkLib.Data.CodingTheory.RandomLinearCodeRankEquidist
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleDischarge
+import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleSubspaceDesign
 import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
 import ArkLib.Data.CodingTheory.ReedSolomon.Interleaved
 import ArkLib.Data.CodingTheory.ReedSolomon.Multilinear
 import ArkLib.Data.CodingTheory.ReedSolomon.Multiplicity
 import ArkLib.Data.CodingTheory.SubspaceDesign
-import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleSubspaceDesign
 import ArkLib.Data.CompPoly.Basic
 import ArkLib.Data.Domain.CosetFftDomain.Defs
 import ArkLib.Data.Domain.CosetFftDomain.Log
@@ -552,6 +552,7 @@ import ArkLib.ToMathlib.CS25DeepHole
 import ArkLib.ToMathlib.CS25DeepHoleFinish
 import ArkLib.ToMathlib.CS25DeepHoleFinish2
 import ArkLib.ToMathlib.CS25JointFar
+import ArkLib.ToMathlib.CZ25CardFinrankBricks
 import ArkLib.ToMathlib.CZ25DimensionCountProof
 import ArkLib.ToMathlib.Claim510Conditional
 import ArkLib.ToMathlib.Claim511
