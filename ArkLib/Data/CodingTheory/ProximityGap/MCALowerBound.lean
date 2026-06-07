@@ -37,6 +37,27 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
+omit [DecidableEq ι] [Fintype F] [DecidableEq F] [Fintype A] [DecidableEq A] in
+/-- **No MCA bad scalar exists for the full code.** Since every word is a codeword of
+`Set.univ`, the two queried words themselves witness joint agreement on any candidate set. -/
+theorem not_mcaEvent_univ
+    (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F) :
+    ¬ mcaEvent (F := F) (A := A) (Set.univ : Set (ι → A)) δ u₀ u₁ γ := by
+  rintro ⟨S, hS, hw, hno⟩
+  exact hno ⟨u₀, Set.mem_univ _, u₁, Set.mem_univ _, fun i _ => ⟨rfl, rfl⟩⟩
+
+omit [DecidableEq ι] [DecidableEq F] [Fintype A] [DecidableEq A] in
+open Classical in
+/-- The bad-scalar probability for any stack against the full code is zero. -/
+theorem mcaEvent_prob_univ_eq_zero
+    (δ : ℝ≥0) (u : WordStack A (Fin 2) ι) :
+    Pr_{let γ ← $ᵖ F}[
+        mcaEvent (F := F) (A := A) (Set.univ : Set (ι → A)) δ (u 0) (u 1) γ] = 0 := by
+  rw [prob_uniform_eq_card_filter_div_card]
+  rw [Finset.filter_false_of_mem
+    (fun γ _ => not_mcaEvent_univ (F := F) (A := A) δ (u 0) (u 1) γ)]
+  simp
+
 open Classical in
 /-- **MCA lower-bound primitive.** `epsMCA` dominates the bad-scalar probability of every word
 stack, since it is the supremum of those probabilities. -/
@@ -75,12 +96,10 @@ theorem epsMCA_univ_eq_zero (δ : ℝ≥0) :
     epsMCA (F := F) (A := A) (Set.univ : Set (ι → A)) δ = 0 := by
   unfold epsMCA
   refine le_antisymm (iSup_le fun u => ?_) (zero_le _)
-  rw [prob_uniform_eq_card_filter_div_card]
-  have hfalse : ∀ γ : F, ¬ mcaEvent (Set.univ : Set (ι → A)) δ (u 0) (u 1) γ := by
-    rintro γ ⟨S, hS, hw, hno⟩
-    exact hno ⟨u 0, Set.mem_univ _, u 1, Set.mem_univ _, fun i _ => ⟨rfl, rfl⟩⟩
-  rw [Finset.filter_false_of_mem (fun γ _ => hfalse γ)]
-  simp
+  rw [mcaEvent_prob_univ_eq_zero (F := F) (A := A) δ u]
+
+#print axioms ProximityGap.not_mcaEvent_univ
+#print axioms ProximityGap.mcaEvent_prob_univ_eq_zero
 
 end ProximityGap
 
