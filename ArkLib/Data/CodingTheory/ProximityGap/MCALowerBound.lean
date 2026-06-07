@@ -302,6 +302,22 @@ theorem exists_nonzero_on_inter
   have hunion : (Sᶜ ∪ S'ᶜ).card ≤ Sᶜ.card + S'ᶜ.card := Finset.card_union_le _ _
   omega
 
+/-- **Witness injectivity from the weight condition (proximity-gap culmination).** If each scalar
+`γ ∈ T` has a witness `wf γ` agreeing with the line on `Sf γ`, and the support of the direction
+`u₁` exceeds the combined complements `|(Sf γ)ᶜ| + |(Sf γ')ᶜ|` for every pair, then the witness
+map is injective on `T`. With agreement sets of size `≥ (1-δ)n` this holds whenever
+`weight(u₁) > 2⌊δn⌋`; hence the bad-scalar count is bounded by the number of distinct close
+codewords (the RS list-decoding quantity). This composes `exists_nonzero_on_inter` into
+`mcaWitness_injOn`. -/
+theorem mcaWitness_injOn_of_support_gt [NoZeroSMulDivisors F A]
+    (u₀ u₁ : ι → A) (T : Set F) (wf : F → (ι → A)) (Sf : F → Finset ι)
+    (hagree : ∀ γ ∈ T, ∀ i ∈ Sf γ, wf γ i = u₀ i + γ • u₁ i)
+    (hsize : ∀ γ ∈ T, ∀ γ' ∈ T,
+      (Sf γ)ᶜ.card + (Sf γ')ᶜ.card < (Finset.univ.filter (fun i => u₁ i ≠ 0)).card) :
+    Set.InjOn wf T :=
+  mcaWitness_injOn u₀ u₁ T wf Sf hagree
+    (fun γ hγ γ' hγ' _ => exists_nonzero_on_inter u₁ (Sf γ) (Sf γ') (hsize γ hγ γ' hγ'))
+
 end ProximityGap
 
 namespace ProximityGap.MCALowerExample
