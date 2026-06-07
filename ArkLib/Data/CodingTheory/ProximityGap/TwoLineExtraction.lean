@@ -34,7 +34,8 @@ that development; this lemma supplies the linear-extraction half unconditionally
 
 namespace ProximityGap
 
-open Finset
+open Finset Code
+open scoped NNReal
 
 variable {ι : Type*} [DecidableEq ι] {F : Type*} [Field F]
 
@@ -71,7 +72,7 @@ theorem exists_joint_codewords_of_two_lines
 
 section JointAgreement
 
-variable [Fintype ι]
+variable [Fintype ι] [DecidableEq F]
 
 /-- **Two-line radius-`2δ` correlated agreement (complete proof chain).**  If two distinct scalars
 `z ≠ z'` each make the affine-line word agree with a codeword on a set of size `≥ (1-δ)·n`, then the
@@ -85,7 +86,7 @@ theorem jointAgreement_two_delta_of_two_lines
     (hw'S : ∀ i ∈ S', w' i = u₀ i + z' • u₁ i)
     (hScard : ((1 : ℝ) - δ) * Fintype.card ι ≤ (S.card : ℝ))
     (hS'card : ((1 : ℝ) - δ) * Fintype.card ι ≤ (S'.card : ℝ)) :
-    jointAgreement (F := F) (C := (C : Set (ι → F))) (δ := 2 * δ) (W := ![u₀, u₁]) := by
+    Code.jointAgreement (↑C : Set (ι → F)) (2 * δ) (![u₀, u₁] : Fin 2 → ι → F) := by
   classical
   obtain ⟨v₀, hv₀C, v₁, hv₁C, hagree⟩ :=
     exists_joint_codewords_of_two_lines C hzz' hw hw' hwS hw'S
@@ -100,13 +101,13 @@ theorem jointAgreement_two_delta_of_two_lines
     have hreal : ((1 : ℝ) - 2 * δ) * Fintype.card ι ≤ ((S ∩ S').card : ℝ) := by nlinarith
     -- cast the `jointAgreement` NNReal goal `(1 - 2δ)·n ≤ |S ∩ S'|` through ℝ
     have hgoal : ((1 - 2 * δ : ℝ≥0) : ℝ) * Fintype.card ι ≤ ((S ∩ S').card : ℝ) := by
-      rcases le_or_lt (2 * δ) 1 with hle | hlt
+      rcases le_total (2 * δ) 1 with hle | hge
       · have : ((1 - 2 * δ : ℝ≥0) : ℝ) = 1 - 2 * (δ : ℝ) := by
           rw [NNReal.coe_sub hle]; push_cast; ring
         rw [this]; exact hreal
       · have : ((1 - 2 * δ : ℝ≥0) : ℝ) = 0 := by
-          rw [NNReal.coe_eq_zero]; exact tsub_eq_zero_of_le hlt.le
-        rw [this]; positivity
+          rw [NNReal.coe_eq_zero]; exact tsub_eq_zero_of_le hge
+        rw [this, zero_mul]; positivity
     have : ((1 - 2 * δ : ℝ≥0) * Fintype.card ι : ℝ≥0) ≤ ((S ∩ S').card : ℝ≥0) := by
       rw [← NNReal.coe_le_coe]; push_cast; exact hgoal
     exact_mod_cast this
