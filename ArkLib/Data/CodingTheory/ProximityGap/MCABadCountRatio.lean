@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOneExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
+import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 
 /-!
 # The radius-one bad-scalar count as a ratio-image cardinality (Issue #39)
@@ -284,5 +285,37 @@ theorem mcaPrize_iff_of_cT_injOn (domain : ι ↪ F)
   unfold mcaPrize grandMCAChallengeRSrate grandMCAChallengeRS
   exact forall_congr' fun j =>
     grandMCAChallenge_iff_choose_le_of_cT_injOn domain _ (u₀ j) (hu₀ j) epsStar
+
+/-! ## Unification with the subset-sum floor
+
+For the canonical deep-hole stack `(u₀, u₁) = (deepHole_{k+1}, deepHole_k)`, the bad-ratio image
+is exactly the negated `(k+1)`-subset-sum set, so the radius-one bad count equals
+`|Σ_{k+1}(L)|`. This recovers the unconditional subset-sum floor
+(`SubsetSumRadiusOne.epsMCA_one_ge_card_subsetSums`) as an *exact* bad-scalar count, unifying the
+`badRatios` exact-value thread with the additive-combinatorics floor. -/
+
+/-- **badRatios of the deep-hole stack = negated `(k+1)`-subset-sums.** Every `(k+1)`-subset `T`
+contributes the bad ratio `-c_T(deepHole_{k+1})/c_T(deepHole_k) = -(∑_{i∈T} domain i)`
+(`cT_deepHole_succ` + `cT_deepHole`); the ratio support is all of `([n] choose k+1)`. -/
+theorem badRatios_deepHole_eq (domain : ι ↪ F) (k : ℕ) :
+    badRatios domain k (deepHole domain (k + 1)) (deepHole domain k) =
+      (subsetSumsKplus1 domain k).image (fun s => -s) := by
+  classical
+  rw [badRatios, ratioSupport_deepHole_eq, subsetSumsKplus1, Finset.image_image]
+  refine Finset.image_congr ?_
+  intro T hT
+  rw [Finset.mem_coe, Finset.mem_powersetCard] at hT
+  simp only [Function.comp]
+  rw [cT_deepHole_succ domain hT.2, cT_deepHole domain hT.2, div_one]
+
+/-- **The radius-one bad count for the deep-hole stack is exactly `|Σ_{k+1}(L)|`.** Recovers the
+unconditional subset-sum floor as an *exact* bad-scalar count via the bad-ratio image
+(negation is injective). -/
+theorem mcaBadCount_one_deepHole_eq_card_subsetSums (domain : ι ↪ F) (k : ℕ) :
+    mcaBadCount (F := F) (ReedSolomon.code domain k : Set (ι → F)) 1
+        (deepHole domain (k + 1)) (deepHole domain k) =
+      (subsetSumsKplus1 domain k).card := by
+  rw [mcaBadCount_one_eq_card_badRatios, badRatios_deepHole_eq,
+    Finset.card_image_of_injective _ neg_injective]
 
 end ProximityGap
