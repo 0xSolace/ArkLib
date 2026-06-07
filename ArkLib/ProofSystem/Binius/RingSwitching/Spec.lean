@@ -5,6 +5,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 import ArkLib.ProofSystem.Binius.RingSwitching.Prelude
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Spec
+import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 import ArkLib.ToVCVio.Oracle
 
 /-! ## Protocol Specs for Ring-Switching
@@ -54,12 +55,8 @@ def pSpecBatching : ProtocolSpec 2 :=
   ⟨![Direction.P_to_V, Direction.V_to_P],
    ![TensorAlgebra K L, Fin κ → L]⟩
 
--- Note, this one is same as pSpecFold in BinaryBasefold
-abbrev SumcheckRoundMessage : Type := FoldMessage (L := L)
-
-@[reducible]
-def pSpecSumcheckRound : ProtocolSpec 2 :=
-  ⟨![Direction.P_to_V, Direction.V_to_P], ![SumcheckRoundMessage (L := L), L]⟩
+abbrev pSpecSumcheckRound (L : Type) [Semiring L] : ProtocolSpec 2 :=
+  Sumcheck.Structured.pSpecSumcheckRound L 2
 
 def pSpecSumcheckLoop := ProtocolSpec.seqCompose (fun (_: Fin ℓ') => pSpecSumcheckRound L)
 
@@ -139,12 +136,6 @@ instance : ∀ i, SampleableType ((fullPspec κ (L:=L) (K:=K) (ℓ':=ℓ') mlIOP
 
 /-! ## Fintype & Inhabited instances for oracle specifications -/
 
-instance : ([(pSpecSumcheckRound (L:=L)).Challenge]ₒ).FiniteRange := by
-  infer_instance
-
-instance : ([(pSpecBatching κ (L:=L) (K:=K)).Challenge]ₒ).FiniteRange := by
-  infer_instance
-
 instance instInhabitedOracleSpecEmpty : (([]ₒ : OracleSpec PEmpty).Inhabited) where
   inhabited_B i := nomatch i
 
@@ -178,8 +169,8 @@ noncomputable instance instInhabitedPSpecSumcheckRoundMessage :
     · simp [pSpecSumcheckRound] at hi
   subst h0
   cases q
-  change Inhabited (SumcheckRoundMessage (L := L))
-  infer_instance
+  change Inhabited (L⦃≤ 2⦄[X])
+  exact ⟨0⟩
 
 instance instInhabitedPSpecFinalSumcheckMessage :
     [(pSpecFinalSumcheck (L:=L)).Message]ₒ.Inhabited := by
@@ -273,11 +264,21 @@ instance instInhabitedPSpecFinalSumcheck_AllChallenges : ∀ i, Inhabited ((pSpe
 
 instance instFintypePSpecFinalSumcheckChallenge :
     ([(pSpecFinalSumcheck (L:=L)).Challenge]ₒ).Fintype := by
-  infer_instance
+  refine { fintype_B := ?_ }
+  rintro ⟨⟨i, hdir⟩, _⟩
+  exact False.elim <| by
+    have hi : i = 0 := Fin.eq_zero i
+    subst i
+    simp [pSpecFinalSumcheck, pSpecFinalSumcheckStep] at hdir
 
 instance instInhabitedPSpecFinalSumcheckChallenge :
     ([(pSpecFinalSumcheck (L:=L)).Challenge]ₒ).Inhabited := by
-  infer_instance
+  refine { inhabited_B := ?_ }
+  rintro ⟨⟨i, hdir⟩, _⟩
+  exact False.elim <| by
+    have hi : i = 0 := Fin.eq_zero i
+    subst i
+    simp [pSpecFinalSumcheck, pSpecFinalSumcheckStep] at hdir
 
 end Pspec
 
