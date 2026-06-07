@@ -197,6 +197,27 @@ theorem epsCA_ge_half_inv_n_of_allButOne
   epsCA_badLine_bridge_of_residual C δ_fld δ_int
     (badLineWitness_of_allButOne C δ_fld δ_int u γ_bad hjp hgood)
 
+/-- Existential form of `badLineWitness_of_allButOne`, matching paper statements that only assert
+the presence of one excluded scalar. -/
+theorem badLineWitness_of_exists_allButOne
+    (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (hjp : ¬ jointProximity (C := C) (u := u) δ_int)
+    (hgood : ∃ γ_bad : F, ∀ γ : F,
+      γ ≠ γ_bad → δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) :
+    BadLineWitness (F := F) C δ_fld δ_int := by
+  rcases hgood with ⟨γ_bad, hgood⟩
+  exact badLineWitness_of_allButOne C δ_fld δ_int u γ_bad hjp hgood
+
+/-- BCHKS25 endpoint from an existential all-but-one bad line. -/
+theorem epsCA_ge_half_inv_n_of_exists_allButOne
+    (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (hjp : ¬ jointProximity (C := C) (u := u) δ_int)
+    (hgood : ∃ γ_bad : F, ∀ γ : F,
+      γ ≠ γ_bad → δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) :
+    ENNReal.ofReal (1 / (2 * Fintype.card ι)) ≤ epsCA (F := F) C δ_fld δ_int :=
+  epsCA_badLine_bridge_of_residual C δ_fld δ_int
+    (badLineWitness_of_exists_allButOne C δ_fld δ_int u hjp hgood)
+
 /-- **Exact-shape connector to the read-only `hBadLine` residual of ABF26 Theorem 5.2.**
 
 `rs_epsCA_small_implies_lambda_lt_F_bchks25_of_residuals` (in `Connections/ListDecodingAndCA.lean`)
@@ -223,4 +244,6 @@ end CodingTheory.Bridge
 #print axioms CodingTheory.Bridge.badLineWitness_of_allButOne
 #print axioms CodingTheory.Bridge.epsCA_badLine_bridge_of_residual
 #print axioms CodingTheory.Bridge.epsCA_ge_half_inv_n_of_allButOne
+#print axioms CodingTheory.Bridge.badLineWitness_of_exists_allButOne
+#print axioms CodingTheory.Bridge.epsCA_ge_half_inv_n_of_exists_allButOne
 #print axioms CodingTheory.Bridge.hBadLine_of_provBadLine

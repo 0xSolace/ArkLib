@@ -109,6 +109,27 @@ theorem epsCA_ge_one_sub_inv_of_allButOne
   epsCA_separation_bridge_of_residual (F := F) (A := F) C δ_fld δ_int
     (nearCertainBadLine_of_allButOne C δ_fld δ_int u γ_bad hjp hgood)
 
+/-- Existential form of `nearCertainBadLine_of_allButOne`, matching paper statements that only
+assert the presence of one excluded scalar. -/
+theorem nearCertainBadLine_of_exists_allButOne
+    (C : Set (ι → F)) (δ_fld δ_int : ℝ≥0) (u : WordStack F (Fin 2) ι)
+    (hjp : ¬ jointProximity (C := C) (u := u) δ_int)
+    (hgood : ∃ γ_bad : F, ∀ γ : F,
+      γ ≠ γ_bad → δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) :
+    NearCertainBadLine (F := F) (A := F) C δ_fld δ_int := by
+  rcases hgood with ⟨γ_bad, hgood⟩
+  exact nearCertainBadLine_of_allButOne C δ_fld δ_int u γ_bad hjp hgood
+
+/-- T5.4 endpoint from an existential all-but-one near-certain bad line. -/
+theorem epsCA_ge_one_sub_inv_of_exists_allButOne
+    (C : Set (ι → F)) (δ_fld δ_int : ℝ≥0) (u : WordStack F (Fin 2) ι)
+    (hjp : ¬ jointProximity (C := C) (u := u) δ_int)
+    (hgood : ∃ γ_bad : F, ∀ γ : F,
+      γ ≠ γ_bad → δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) :
+    ENNReal.ofReal (1 - 1 / Fintype.card F) ≤ epsCA (F := F) (A := F) C δ_fld δ_int :=
+  epsCA_separation_bridge_of_residual (F := F) (A := F) C δ_fld δ_int
+    (nearCertainBadLine_of_exists_allButOne C δ_fld δ_int u hjp hgood)
+
 /-- **General `NearCertainBadLine` producer (BGKS20 line-code construction).**
 Given a stack `u` whose row `0` traces a complete affine line that is contained in `C` —
 `u 0 + γ • u 1 ∈ C` for every `γ` in a good set `Γ` of size at least `|F| - 1` — while its row `1`
@@ -222,6 +243,8 @@ end CodingTheory.Bridge
 #print axioms CodingTheory.Bridge.not_jointProximity_zero_of_row_not_mem
 #print axioms CodingTheory.Bridge.nearCertainBadLine_of_allButOne
 #print axioms CodingTheory.Bridge.epsCA_ge_one_sub_inv_of_allButOne
+#print axioms CodingTheory.Bridge.nearCertainBadLine_of_exists_allButOne
+#print axioms CodingTheory.Bridge.epsCA_ge_one_sub_inv_of_exists_allButOne
 #print axioms CodingTheory.Bridge.nearCertainBadLine_of_line_code
 #print axioms CodingTheory.Bridge.epsCA_ge_one_sub_inv_of_line_code
 #print axioms CodingTheory.Bridge.char2_nearCertainBadLine
