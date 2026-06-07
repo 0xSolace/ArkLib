@@ -384,4 +384,28 @@ theorem epsMCA_le_two_delta_of_carrier {MC : Submodule F (ι → F)} {δ : ℝ�
   epsMCA_le_ofReal_of_forall_mcaBad_card_le _ δ
     (fun _ => mcaBad_card_le_carrier_two_delta T hT hTsub)
 
+/-- **GKL24/GCXK25 second-moment bound `|Bad²| < 1/ε`.**  In the regime where the common
+zero-agreement set is *small* (`|common| ≤ (1−p)n`) and each bad combiner's line-agreement is large
+(`≥ √(1−p+ε)·n`), the bad-witness count satisfies `|mcaBadWitness w|·ε < 1`.  This applies the
+in-tree Cauchy–Schwarz second-moment count (`GCXK25SecondMoment.card_lt_inv_of_second_moment_rs`) to
+the line-agreement sets `A_γ = lineAgreeSet γ`: their pairwise intersections all equal the common
+set (`lineAgreeSet_inter_eq`), so the small-`|common|` hypothesis supplies exactly the required
+small-pairwise-intersection bound.  Complements the first-moment `|Bad¹| ≤ p·n` (large-`|common|`
+regime): together they give the GCXK25 `p·n + 1/ε` per-codeword count. -/
+theorem mcaBadWitness_card_lt_inv_of_second_moment {MC : Submodule F (ι → F)} {δ : ℝ≥0}
+    {u₀ u₁ w : ι → F} (p ε : ℝ) (hε : 0 < ε) (hεp : ε ≤ p) (hp1 : p < 1)
+    (hn : 0 < Fintype.card ι)
+    (hSle : ∀ γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w,
+        (1 - p + ε) ^ ((1 : ℝ) / 2) * (Fintype.card ι : ℝ)
+          ≤ ((lineAgreeSet u₀ u₁ w γ).card : ℝ))
+    (hcommon : ((Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)).card : ℝ)
+        ≤ (1 - p) * (Fintype.card ι : ℝ)) :
+    ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) * ε < 1 := by
+  rcases Finset.eq_empty_or_nonempty
+      (mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w) with he | hne
+  · rw [he, Finset.card_empty, Nat.cast_zero, zero_mul]; exact one_pos
+  · exact GCXK25SecondMoment.card_lt_inv_of_second_moment_rs _
+      (fun γ => lineAgreeSet u₀ u₁ w γ) hne p ε hε hεp hp1 hn hSle
+      (fun γ _ γ' _ hne' => by rw [lineAgreeSet_inter_eq u₀ u₁ w hne']; exact hcommon)
+
 end ProximityGap
