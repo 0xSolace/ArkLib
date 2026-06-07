@@ -1456,6 +1456,45 @@ theorem frs_capacity_realBound_of_t_le (n η t cF : ℝ)
   rw [hrw]
   gcongr
 
+/-- **FRS subspace-design margin evaluation.** The folded-RS margin
+`τ_FRS(r) = s·k/n / (s − r + 1)` (the `IsSubspaceDesign` witness from T2.18 / GK16), evaluated at
+`r = t + 1` inside the design's active range `t + 1 ≤ s`, collapses the guarded `if` to its active
+branch and simplifies the denominator `s − (t+1) + 1 = s − t`:
+
+  `τ_FRS(t+1) = s·k/n / (s − t)`.
+
+Pure rewriting of the `if`-guarded definition; a building block for the T4.14 `hRadius` residual. -/
+theorem frs_tau_eval (s k : ℕ) (n : ℝ) (t : ℕ) (hts : t + 1 ≤ s) :
+    (fun r : ℕ ↦ if r ∈ Finset.Icc 1 s then
+        (s : ℝ) * (k : ℝ) / n / ((s : ℝ) - (r : ℝ) + 1) else 1) (t + 1)
+      = (s : ℝ) * (k : ℝ) / n / ((s : ℝ) - (t : ℝ)) := by
+  have hmem : (t + 1) ∈ Finset.Icc 1 s :=
+    Finset.mem_Icc.mpr ⟨Nat.le_add_left 1 t, hts⟩
+  show (if (t + 1) ∈ Finset.Icc 1 s then
+      (s : ℝ) * (k : ℝ) / n / ((s : ℝ) - ((t + 1 : ℕ) : ℝ) + 1) else 1)
+      = (s : ℝ) * (k : ℝ) / n / ((s : ℝ) - (t : ℝ))
+  rw [if_pos hmem]
+  have hden : (s : ℝ) - ((t + 1 : ℕ) : ℝ) + 1 = (s : ℝ) - (t : ℝ) := by push_cast; ring
+  rw [hden]
+
+/-- **Discharge of the T4.14 `hRadius` residual under the honest η-coupling.** The radius
+identification `(1 − ρ − η).toNNReal = (1 − τ_FRS(t+1) − 3/(2t)).toNNReal` required by
+`frs_epsMCA_capacity_gg25_of_residuals` / `_of_subspaceDesign_prop` holds whenever the proximity
+slack `η` is the explicit paper value coupling the chosen integer `t` to the capacity gap,
+`η = τ_FRS(t+1) − ρ + 3/(2t)` (with `ρ = k/n` and `τ_FRS(t+1) = s·k/n/(s−t)` via `frs_tau_eval`).
+This turns the radius residual from an external admit into a proved consequence of the η-choice —
+the radius-side analogue of `frs_capacity_realBound_of_t_le` on the bound side. Pure real
+arithmetic. -/
+theorem frs_capacity_radius_eq_of_eta (s k : ℕ) (n η : ℝ) (t : ℕ) (hts : t + 1 ≤ s)
+    (hη : η = (s : ℝ) * (k : ℝ) / n / ((s : ℝ) - (t : ℝ)) - (k : ℝ) / n + 3 / (2 * t)) :
+    ((1 - (k : ℝ) / n - η).toNNReal : ℝ≥0) =
+      (1 - (fun r : ℕ ↦ if r ∈ Finset.Icc 1 s then
+          (s : ℝ) * (k : ℝ) / n / ((s : ℝ) - (r : ℝ) + 1) else 1) (t + 1)
+          - 3 / (2 * t)).toNNReal := by
+  rw [frs_tau_eval s k n t hts]
+  congr 1
+  rw [hη]; ring
+
 /-- T4.14 Prop adapter using the honest `t ≤ 2/η` side-condition in place of the raw `hBound`
 inequality. This discharges the arithmetic residual via `frs_capacity_realBound_of_t_le`, so the
 remaining T4.14 inputs are exactly the FRS subspace-design instance (T2.18), the public T4.13
@@ -1751,5 +1790,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.linear_epsCA_sampling_dg25_mass
 #print axioms CodingTheory.linear_epsCA_ge_sampling_dg25
 #print axioms CodingTheory.linear_epsCA_ge_sampling_dg25_of_mass_bound
+#print axioms CodingTheory.frs_tau_eval
+#print axioms CodingTheory.frs_capacity_radius_eq_of_eta
 
 end CodingTheory
