@@ -162,6 +162,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2RootBridgeS5
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoExtract
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5Genuine
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ScratchDvd138
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
