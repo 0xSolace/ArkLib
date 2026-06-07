@@ -247,6 +247,15 @@ theorem redBranching_node (b : Option EraseDecodeTree) (rs : List EraseDecodeTre
       = max (redBranchingOption b) (max rs.length (redBranchingList rs)) := by
   rw [redBranching]
 
+/-- Total Red-branching budget used by closed-form bounds: the computed maximum Red out-degree,
+clamped to at least one so the GGR11 Pascal recurrence has a nonzero branching budget even for
+purely Blue/leaf trees. -/
+def redBranchingBudget (t : EraseDecodeTree) : ℕ :=
+  max 1 (redBranching t)
+
+@[simp] theorem redBranchingBudget_leaf : redBranchingBudget leaf = 1 := by
+  simp [redBranchingBudget]
+
 /-- Red-branching bounds are monotone in the allowed branching budget. -/
 theorem redBranchingLe_mono {L L' : ℕ∞} (hLL : L ≤ L') (t : EraseDecodeTree) :
     redBranchingLe L t → redBranchingLe L' t := by
@@ -381,6 +390,21 @@ Red out-degree. -/
 theorem redBranchingLe_iff_redBranching_le {L : ℕ∞} {t : EraseDecodeTree} :
     t.redBranchingLe L ↔ (t.redBranching : ℕ∞) ≤ L :=
   ⟨redBranching_le_of_redBranchingLe t, redBranchingLe_of_redBranching_le⟩
+
+/-- The total computed Red-branching budget is always nonzero. -/
+theorem one_le_redBranchingBudget (t : EraseDecodeTree) :
+    (1 : ℕ∞) ≤ (t.redBranchingBudget : ℕ∞) := by
+  exact_mod_cast Nat.le_max_left 1 t.redBranching
+
+/-- The raw computed Red out-degree is bounded by the total computed Red-branching budget. -/
+theorem redBranching_le_redBranchingBudget (t : EraseDecodeTree) :
+    (t.redBranching : ℕ∞) ≤ (t.redBranchingBudget : ℕ∞) := by
+  exact_mod_cast Nat.le_max_right 1 t.redBranching
+
+/-- Every concrete Erase-Decode tree satisfies `redBranchingLe` for its total computed budget. -/
+theorem redBranchingLe_redBranchingBudget (t : EraseDecodeTree) :
+    t.redBranchingLe (t.redBranchingBudget : ℕ∞) :=
+  redBranchingLe_mono (redBranching_le_redBranchingBudget t) t (redBranchingLe_redBranching t)
 
 end EraseDecodeTree
 
@@ -567,6 +591,23 @@ theorem EraseDecodeTree.leafCount_le_self_redBranching (t : EraseDecodeTree)
       ≤ ((t.blueDepth + t.redDepth).choose t.redDepth : ℕ∞) *
         (t.redBranching : ℕ∞) ^ t.redDepth :=
   EraseDecodeTree.leafCount_le_redBranching t t.blueDepth t.redDepth hL le_rfl le_rfl
+
+/-- A concrete tree satisfies the GGR11 leaf-count bound at its total computed Red-branching
+budget `max 1 tree.redBranching`, with no separate nonzero-budget side condition. -/
+theorem EraseDecodeTree.leafCount_le_redBranchingBudget (t : EraseDecodeTree) (b r : ℕ)
+    (hbd : t.blueDepth ≤ b) (hrd : t.redDepth ≤ r) :
+    t.leafCount ≤ ((b + r).choose r : ℕ∞) * (t.redBranchingBudget : ℕ∞) ^ r :=
+  EraseDecodeTree.leafCount_le (t.redBranchingBudget : ℕ∞)
+    (EraseDecodeTree.one_le_redBranchingBudget t) t b r hbd hrd
+    (EraseDecodeTree.redBranchingLe_redBranchingBudget t)
+
+/-- Exact-depth version of `leafCount_le_redBranchingBudget`, using the tree's own Blue/Red
+depths. -/
+theorem EraseDecodeTree.leafCount_le_self_redBranchingBudget (t : EraseDecodeTree) :
+    t.leafCount
+      ≤ ((t.blueDepth + t.redDepth).choose t.redDepth : ℕ∞) *
+        (t.redBranchingBudget : ℕ∞) ^ t.redDepth :=
+  EraseDecodeTree.leafCount_le_redBranchingBudget t t.blueDepth t.redDepth le_rfl le_rfl
 
 /-! ### Bridge to the abstract residual -/
 
@@ -1032,10 +1073,16 @@ theorem lambda_le_ggr11_of_leaf_close_le_one
 #print axioms EraseDecodeTree.leafCount_le_self
 #print axioms EraseDecodeTree.leafCount_le_redBranching
 #print axioms EraseDecodeTree.leafCount_le_self_redBranching
+#print axioms EraseDecodeTree.leafCount_le_redBranchingBudget
+#print axioms EraseDecodeTree.leafCount_le_self_redBranchingBudget
 #print axioms EraseDecodeTree.redBranchingLe_mono
 #print axioms EraseDecodeTree.redBranchingLeOption_mono
 #print axioms EraseDecodeTree.redBranchingLeList_mono
 #print axioms EraseDecodeTree.redBranchingLe_redBranching
+#print axioms EraseDecodeTree.redBranchingBudget
+#print axioms EraseDecodeTree.one_le_redBranchingBudget
+#print axioms EraseDecodeTree.redBranching_le_redBranchingBudget
+#print axioms EraseDecodeTree.redBranchingLe_redBranchingBudget
 #print axioms EraseDecodeTree.redBranchingLe_of_redBranching_le
 #print axioms EraseDecodeTree.redBranching_le_of_redBranchingLe
 #print axioms EraseDecodeTree.redBranchingLe_iff_redBranching_le
