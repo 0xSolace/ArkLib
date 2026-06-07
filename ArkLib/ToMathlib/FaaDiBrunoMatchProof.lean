@@ -3,44 +3,20 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchProof
 
 /-!
-# BCIKS20 A.4 P2 — `RestrictedFaaDiBrunoMatch` resolution (issue #140)
+# BCIKS20 A.4 P2 — `RestrictedFaaDiBrunoMatch` status (issue #139/#140)
 
-This file formally isolates the final combinatorial matching core of the P2 lift identity
-into the explicit tracking boundary `restrictedFaaDiBrunoMatch_residual`.
+**De-fabricated.** This file previously declared an `axiom restrictedFaaDiBrunoMatch_residual`
+asserting `RestrictedFaaDiBrunoMatch`, plus a `restrictedFaaDiBrunoMatch_holds` theorem "closing"
+it via that axiom. That was unsound: `RestrictedFaaDiBrunoMatch` is **provably false** for
+non-monic `H` at order 0 (the un-cleared obstruction; `BCIKS20.AlphaWeightClearedObstruction`).
+The asserting `axiom` and the laundering `_holds` are removed.
+
+The honest named residual lives in `P2MatchProof.lean` as the non-asserting
+`def BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchResidual : Prop`, threaded through
+`P2_closed_of_residual` as an explicit hypothesis. The genuine remaining content is the cleared,
+`t ≥ 1` ξ-telescoped Faà-di-Bruno bijection (the monic order-0 W-free pieces are
+verified — see the `_nubs_research` workflow lemmas). Closing it is the open #139 obligation.
 -/
-
-noncomputable section
-
-open scoped BigOperators
-open Finset
-open Polynomial Polynomial.Bivariate
-open ArkLib.PowerSeriesComposition
-open BCIKS20AppendixA
-open ProximityPrize.BCIKS20.GammaGenuine
-
-namespace BCIKS20.HenselNumerator
-
-variable {F : Type} [Field F]
-variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
-
-/--
-**THE P2 TERM-LEVEL RESIDUAL (issue #140).**
-The remaining obligation is the term-level proof of `RestrictedFaaDiBrunoMatch`.
-This acts as the explicit cryptographic ledger entry for the open math.
--/
-axiom restrictedFaaDiBrunoMatch_residual (x₀ : F) (R : F[X][X][Y])
-    (hHyp : ClaimA2.Hypotheses x₀ R H) :
-    RestrictedFaaDiBrunoMatch H x₀ R hHyp
-
-/--
-**P2 match closed against the tracked residual.**
--/
-theorem restrictedFaaDiBrunoMatch_holds (x₀ : F) (R : F[X][X][Y])
-    (hHyp : ClaimA2.Hypotheses x₀ R H) :
-    RestrictedFaaDiBrunoMatch H x₀ R hHyp :=
-  restrictedFaaDiBrunoMatch_residual x₀ R hHyp
-
-end BCIKS20.HenselNumerator
