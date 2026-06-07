@@ -39,6 +39,8 @@ weaker "tree exists" target.
 All declarations are `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 -/
 
+set_option maxHeartbeats 2000000
+
 open ListDecodable Code InterleavedCode
 
 namespace InterleavedCode.GGR11
