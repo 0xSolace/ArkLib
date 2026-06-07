@@ -100,8 +100,54 @@ theorem rs_lambda_ge_entropy_volume_div_succ
     (ReedSolomon.code α k) δ hδ_pos hδ_lt hq hk0 hkn
   rwa [hdim] at h
 
+/-- **Capacity-exponent form of the RS list-size lower bound.**
+
+The single-power form of `rs_lambda_ge_entropy_volume_div_succ`, with the two `q`-powers combined
+into the capacity exponent `n·H_q(⌊δn⌋/n) − (n − k)` (`= n·(ρ − 1 + H_q)` with `ρ = k/n`):
+
+  `|Λ(RS[α,k], δ)| ≥ q^{n·H_q(⌊δn⌋/n) − (n − k)} / (n + 1)`.
+
+This is the explicit Johnson-to-capacity LD-threshold form: the list size is super-polynomial
+exactly when the capacity exponent is positive (`H_q(⌊δn⌋/n) > 1 − ρ`). -/
+theorem rs_lambda_ge_capacity_exponent
+    (α : ι ↪ F) (k : ℕ) (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hq : 2 ≤ Fintype.card F)
+    (hkcard : k ≤ Fintype.card ι)
+    (hk0 : 0 < ⌊δ * (Fintype.card ι : ℝ)⌋₊)
+    (hkn : ⌊δ * (Fintype.card ι : ℝ)⌋₊ < Fintype.card ι) :
+    ENNReal.ofReal
+        ((Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ)
+              * qEntropy (Fintype.card F)
+                  ((⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ))
+            - ((Fintype.card ι : ℝ) - (k : ℝ)))
+          / ((Fintype.card ι : ℝ) + 1))
+      ≤ (Lambda ((ReedSolomon.code α k : Set (ι → F))) δ : ENNReal) := by
+  have hq0 : (0 : ℝ) < (Fintype.card F : ℝ) := by
+    have : 0 < Fintype.card F := by omega
+    exact_mod_cast this
+  have heq :
+      (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ)
+            * qEntropy (Fintype.card F)
+                ((⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ))
+          - ((Fintype.card ι : ℝ) - (k : ℝ)))
+        / ((Fintype.card ι : ℝ) + 1)
+      = (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ)
+            * qEntropy (Fintype.card F)
+                ((⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ)))
+        / (((Fintype.card ι : ℝ) + 1)
+            * (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) - (k : ℝ))) := by
+    have hpow : (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) - (k : ℝ)) ≠ 0 :=
+      ne_of_gt (Real.rpow_pos_of_pos hq0 _)
+    have hn1 : ((Fintype.card ι : ℝ) + 1) ≠ 0 := by positivity
+    rw [Real.rpow_sub hq0]
+    field_simp
+    ring
+  rw [heq]
+  exact rs_lambda_ge_entropy_volume_div_succ α k δ hδ_pos hδ_lt hq hkcard hk0 hkn
+
 end CodingTheory
 
 -- Axiom audit: depends on exactly `[propext, Classical.choice, Quot.sound]`.
 #print axioms CodingTheory.linear_lambda_ge_entropy_volume_div_succ
 #print axioms CodingTheory.rs_lambda_ge_entropy_volume_div_succ
+#print axioms CodingTheory.rs_lambda_ge_capacity_exponent
