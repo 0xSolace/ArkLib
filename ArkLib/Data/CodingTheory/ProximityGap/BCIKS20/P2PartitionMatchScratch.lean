@@ -1,5 +1,4 @@
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
 
 noncomputable section
 
@@ -18,9 +17,6 @@ variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 theorem restrictedFaaDiBrunoPartitionMatchAt_proof (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
     RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t := by
-  unfold RestrictedFaaDiBrunoPartitionMatchAt
-  rw [← restrictedFaaDiBrunoSum_eq_restrictedPartitionForm H x₀ R hHyp t]
-  rw [← restrictedMatch_rhs_eq_restrictedRecursionPartitionForm H x₀ R hHyp t]
   sorry
 
 end BCIKS20.HenselNumerator

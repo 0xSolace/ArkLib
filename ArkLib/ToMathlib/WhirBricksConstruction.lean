@@ -448,7 +448,7 @@ noncomputable def paperTranscriptChallenge {M : ℕ} {ιs : Fin (M + 1) → Type
     ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenge i :=
   (paperTranscriptFullTranscript P d T).challenges i
 
-omit [Field F] [SampleableType F] in
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptSlotPayload_mainFoldedOracle {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) (i : Fin M) :
@@ -456,7 +456,7 @@ omit [Field F] [SampleableType F] in
       packFiniteFunction (ιs i.succ) (T.mainFoldedOracle i) :=
   rfl
 
-omit [Field F] [SampleableType F] in
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptSlotPayload_mainOutOfDomainReply {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) (i : Fin M) :
@@ -464,7 +464,7 @@ omit [Field F] [SampleableType F] in
       singletonFieldPayload (T.mainOutOfDomainReply i) :=
   rfl
 
-omit [Field F] [SampleableType F] in
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptSlotPayload_mainShiftChallenge {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) (i : Fin M) :
@@ -1031,6 +1031,12 @@ end RBRSoundnessAssembly
 #print axioms finalRandomnessChallengePayload
 #print axioms paperTranscriptSlotPayload
 #print axioms paperTranscriptFullTranscript
+#print axioms paperTranscriptMessage
+#print axioms paperTranscriptChallenge
+#print axioms paperTranscriptSlotPayload_mainFoldedOracle
+#print axioms paperTranscriptSlotPayload_mainOutOfDomainReply
+#print axioms paperTranscriptSlotPayload_mainShiftChallenge
+#print axioms paperTranscriptOracleProver
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
