@@ -136,6 +136,24 @@ def DivWeightLe (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
         = a * (W𝒪 H) ^ (t + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t - 1)
       ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
 
+def DivWeightLe_zero (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ) : Prop :=
+  ∃ a : 𝒪 H, βHensel H x₀ R hHyp 0 = a * (W𝒪 H) ^ (0 + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * 0 - 1) ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
+
+def DivWeightLe_succ (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ) (t : ℕ) : Prop :=
+  ∃ a : 𝒪 H, βHensel H x₀ R hHyp (t + 1) = a * (W𝒪 H) ^ (t + 1 + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * (t + 1) - 1) ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
+
+theorem DivWeightLe_of_cases (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ)
+    (h0 : DivWeightLe_zero H x₀ R hHyp hH D)
+    (hsucc : ∀ t, DivWeightLe_succ H x₀ R hHyp hH D t) :
+    DivWeightLe H x₀ R hHyp hH D := by
+  intro t
+  cases t
+  · exact h0
+  · exact hsucc _
+
 /-! ### 1′. The two halves of the `𝕃 ↔ 𝒪` bridge
 
 -/
