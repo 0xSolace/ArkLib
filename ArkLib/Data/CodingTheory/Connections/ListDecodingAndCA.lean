@@ -279,6 +279,37 @@ theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card
     ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
     T hT hTsub hcard
 
+/-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — sharpened unconditional in-tree
+first-moment relaxation.**  This is the same carrier-level consumer as
+`linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card`, but with the sharper in-tree
+pairwise-witness count from `ProximityGap.epsMCA_le_ofReal_of_listFactor_two_delta`.
+
+Thus a carrier `T` of codewords with `(T.card : ℝ) ≤ B_T` gives
+
+  `ε_mca(C, 1 − √(1 − δ + η)) ≤
+    ENNReal.ofReal ((B_T · max 1 (2 · δ_mca · n)) / |F|)`,
+
+where `δ_mca = 1 − √(1 − δ + η)` is the Johnson-lifted MCA radius. This is still not the
+GCXK25/GKL24 `B_T · δ · n` first-moment theorem, but it exposes the strongest unconditional
+in-tree count currently proved at the ABF26 T5.1 boundary. -/
+theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_card
+    (C : LinearCode ι F) (δ η : ℝ)
+    (T : Finset (ι → F)) {B_T : ℝ}
+    (hT : ∀ w ∈ (C : Set (ι → F)), w ∈ T)
+    (hTsub : ∀ w ∈ T, w ∈ (C : Set (ι → F)))
+    (hcard : (T.card : ℝ) ≤ B_T) :
+    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
+        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
+      ENNReal.ofReal
+        ((B_T *
+            max 1
+              (2 * (((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal : ℝ)) *
+                (Fintype.card ι : ℝ))) /
+          Fintype.card F) :=
+  ProximityGap.epsMCA_le_ofReal_of_listFactor_two_delta C
+    ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+    T hT hTsub hcard
+
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — canonical in-tree first-moment relaxation.**
 This is the no-carrier version of `linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card`.
 Taking the carrier to be all codewords and using the proven single-codeword determinacy count gives
@@ -934,6 +965,7 @@ the public T5.1 proposition. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_card
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_univ
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_residuals_prop

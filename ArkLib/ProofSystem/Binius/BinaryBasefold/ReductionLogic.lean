@@ -354,6 +354,7 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
     -- Fact 3: Prover and verifier statements agree
     change (step.proverOut stmtIn witIn oStmtIn transcript).1.1 = step.verifierOut stmtIn transcript
     simp only [step, foldStepLogic]; simp only [Fin.mk_one, Fin.isValue, Fin.zero_eta, Fin.val_succ]
+    rfl
 
   have hOStmtOut_eq : proverOStmtOut = verifierOStmtOut := by
     change (step.proverOut stmtIn witIn oStmtIn transcript).1.2
@@ -369,7 +370,7 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
       -- Since hj holds, we have Sum.inl j = Sum.inl j', so j = j'
       simp only [hj, ↓reduceDIte] at heq
       cases heq
-      rfl
+      simp
     · rename_i heq
       -- This case is impossible: the if-then-else evaluates to Sum.inl j when hj holds
       -- So we have Sum.inl j = Sum.inr j✝, which is a contradiction
@@ -393,7 +394,7 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
       unfold sumcheckConsistencyProp
       dsimp only [verifierStmtOut, proverWitOut, proverOutput]
       simp only [step, foldStepLogic, foldVerifierStmtOut, getFoldProverFinalOutput, transcript]
-      apply projectToNextSumcheckPoly_sum_eq
+      apply Sumcheck.Structured.projectToNextSumcheckPoly_sum_eq
     · -- Part 2.2: strictOracleWitnessConsistency
       simp only [Fin.coe_castSucc] at h_relIn
       have h_oracleWitConsistency_In := h_relIn.2
@@ -412,7 +413,7 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
         constructor
         · conv_lhs =>
             rw [h_H_In]
-            rw [←projectToMidSumcheckPoly_succ]
+            rw [←Sumcheck.Structured.projectToMidSumcheckPoly_succ]
           rfl
         · conv_lhs =>
             rw [h_f_In]
@@ -586,7 +587,7 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
         commitStepLogic_embedFn, hj, dif_pos]
     rw [OracleVerifier.mkVerifierOStmtOut_inl _ _ _ _ _ _ h_embed]
     simp only [hj, dif_pos]
-    rfl
+    simp
   · -- New oracle case: embed j = Sum.inr 0
     have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j = Sum.inr ⟨0, rfl⟩ := by
@@ -1347,7 +1348,7 @@ lemma finalSumcheckStep_verifierCheck_passed
       eqTilde stmtIn.ctx.t_eval_point stmtIn.challenges *
       (witIn.f ⟨0, by simp only [zero_mem]⟩) := by
     rw [h_wit_structural_invariant.1]
-    rw [projectToMidSumcheckPoly_at_last_eval]
+    rw [Sumcheck.Structured.projectToMidSumcheckPoly_at_last_eval]
     -- ↑witIn.t = witIn.f ⟨0, ⋯⟩
     rw [h_witIn_f_0_eq_c, h_c_eq]; rfl
 
