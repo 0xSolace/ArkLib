@@ -393,7 +393,7 @@ theorem BoundaryCardQuantizationData.latticeData {k deg : ℕ} {domain : ι ↪ 
       (k := k) (deg := deg) (domain := domain) (δ := δ) :=
   h.2
 
-omit [Nonempty ι] [DecidableEq ι] in
+omit [DecidableEq ι] in
 /-- Projection of the first cardinality lower bound stored in `BoundaryCardQuantizationData`. -/
 theorem BoundaryCardQuantizationData.card_gt {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (h : BoundaryCardQuantizationData (k := k) (deg := deg) (domain := domain) (δ := δ))
@@ -406,7 +406,7 @@ theorem BoundaryCardQuantizationData.card_gt {k deg : ℕ} {domain : ι ↪ F} {
   BoundaryCardResidual.BoundaryCardLatticeData.card_gt
     h.latticeData hk u hδeq hfloor hcardPos
 
-omit [Nonempty ι] [DecidableEq ι] in
+omit [DecidableEq ι] in
 /-- Projection of the strong `(n + 1) * k` cardinality bound stored in
 `BoundaryCardQuantizationData`. -/
 theorem BoundaryCardQuantizationData.card_ge {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
@@ -421,7 +421,7 @@ theorem BoundaryCardQuantizationData.card_ge {k deg : ℕ} {domain : ι ↪ F} {
   BoundaryCardResidual.BoundaryCardLatticeData.card_ge
     h.latticeData hk u hδeq hfloor hcardPos
 
-omit [Nonempty ι] [DecidableEq ι] in
+omit [DecidableEq ι] in
 /-- Projection of the coefficient-polynomial extractor stored in `BoundaryCardQuantizationData`. -/
 theorem BoundaryCardQuantizationData.coeff_polys {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (h : BoundaryCardQuantizationData (k := k) (deg := deg) (domain := domain) (δ := δ))
