@@ -227,3 +227,15 @@ theorem final_check_consistency {m n : ℕ}
       = ∑ x : Fin m → Fin 2,
           eqTilde r (x : Fin m → R) * (M *ᵥ z) (finFunctionFinEquiv x) :=
   MvPolynomial.MLE_eval_eq_sum_eqTilde ((M *ᵥ z) ∘ finFunctionFinEquiv) r
+
+#print axioms mle_eq_zero_iff_forall_cube
+#print axioms r1cs_residual_iff_mle_zero
+#print axioms r1cs_hadamard_iff_mle_zero
+#print axioms mle'_eq_zero_iff_forall
+#print axioms mulVec_MLE_eval_eq_scaled_sum
+#print axioms mle_eval_eq_eqTilde_sum
+#print axioms final_check_consistency
+
+end Scratch114
+
+end Spartan
