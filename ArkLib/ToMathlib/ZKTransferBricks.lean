@@ -24,6 +24,8 @@ import ArkLib.OracleReduction.Security.ZeroKnowledge
     honest-transcript distribution bridge, adding the bridge error to the simulator error.
   - `statisticalHVZK.triangle_honestDist_symm`: the same transfer when the TV-distance bridge is
     stated in the opposite order.
+  - `perfectHVZK.triangle_honestDist_zero`: zero-error approximate honest-distribution transfer
+    for exact HVZK, via the statistical/perfect bridge at error `0`.
   - `perfectHVZK_of_honestDist_eq_const`: a constant simulator achieves perfect HVZK whenever the
     honest transcript distribution is `evalDist`-equal to a fixed distribution, generalizing the
     zero-round identity instance.
@@ -178,6 +180,44 @@ theorem statisticalHVZK.triangle_honestDist_symm
     rw [tvDist_comm]
     exact hdist stmtIn witIn hMem
 
+/-- **Zero-error approximate honest-distribution transfer for perfect HVZK.** If the
+honest-transcript bridge is stated as total-variation distance at most `0`, exact HVZK transfers by
+viewing perfect HVZK as statistical HVZK at error `0`, applying the triangle transfer, and returning
+through the zero-error statistical/perfect equivalence. -/
+theorem perfectHVZK.triangle_honestDist_zero
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R₁ R₂ : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec}
+    (h : perfectHVZK init impl rel R₁ sim)
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      tvDist (honestTranscriptDist init impl R₁ stmtIn witIn)
+        (honestTranscriptDist init impl R₂ stmtIn witIn) ≤ (0 : ℝ)) :
+    perfectHVZK init impl rel R₂ sim := by
+  have hstat₁ :
+      Reduction.statisticalHVZK init impl rel R₁ sim 0 :=
+    Reduction.perfectHVZK.statisticalHVZK h 0
+  have hstat :
+      Reduction.statisticalHVZK init impl rel R₂ sim (0 + 0) :=
+    Reduction.statisticalHVZK.triangle_honestDist hstat₁ hdist
+  exact (perfectHVZK_iff_statisticalHVZK_zero init impl rel R₂ sim).2 (by
+    simpa using hstat)
+
+/-- Symmetric-facing zero-error approximate honest-distribution transfer for perfect HVZK. -/
+theorem perfectHVZK.triangle_honestDist_symm_zero
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R₁ R₂ : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec}
+    (h : perfectHVZK init impl rel R₁ sim)
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      tvDist (honestTranscriptDist init impl R₂ stmtIn witIn)
+        (honestTranscriptDist init impl R₁ stmtIn witIn) ≤ (0 : ℝ)) :
+    perfectHVZK init impl rel R₂ sim :=
+  h.triangle_honestDist_zero fun stmtIn witIn hMem => by
+    rw [tvDist_comm]
+    exact hdist stmtIn witIn hMem
+
 /-- **Constant-simulator criterion for perfect HVZK.** If the honest transcript distribution is
 `evalDist`-equal to a fixed distribution `d` on every related pair, then the constant simulator
 returning `d` achieves perfect HVZK. This generalizes the zero-round identity instance, where
@@ -282,6 +322,33 @@ theorem isStatHVZK.triangle_honestDist_symm
   let ⟨sim, hsim⟩ := h
   ⟨sim, hsim.triangle_honestDist_symm hdist⟩
 
+/-- **Existential zero-error approximate honest-distribution transfer for exact HVZK.** -/
+theorem isHVZK.triangle_honestDist_zero
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R₁ R₂ : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    (h : isHVZK init impl rel R₁)
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      tvDist (honestTranscriptDist init impl R₁ stmtIn witIn)
+        (honestTranscriptDist init impl R₂ stmtIn witIn) ≤ (0 : ℝ)) :
+    isHVZK init impl rel R₂ :=
+  let ⟨sim, hsim⟩ := h
+  ⟨sim, hsim.triangle_honestDist_zero hdist⟩
+
+/-- **Existential symmetric-facing zero-error approximate honest-distribution transfer for exact
+HVZK.** -/
+theorem isHVZK.triangle_honestDist_symm_zero
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R₁ R₂ : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    (h : isHVZK init impl rel R₁)
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      tvDist (honestTranscriptDist init impl R₂ stmtIn witIn)
+        (honestTranscriptDist init impl R₁ stmtIn witIn) ≤ (0 : ℝ)) :
+    isHVZK init impl rel R₂ :=
+  let ⟨sim, hsim⟩ := h
+  ⟨sim, hsim.triangle_honestDist_symm_zero hdist⟩
+
 #print axioms perfectHVZK.congr_honestDist
 #print axioms statisticalHVZK.congr_honestDist
 #print axioms perfectHVZK.simulator_congr
@@ -289,6 +356,8 @@ theorem isStatHVZK.triangle_honestDist_symm
 #print axioms statisticalHVZK.simulator_triangle
 #print axioms statisticalHVZK.triangle_honestDist
 #print axioms statisticalHVZK.triangle_honestDist_symm
+#print axioms perfectHVZK.triangle_honestDist_zero
+#print axioms perfectHVZK.triangle_honestDist_symm_zero
 #print axioms perfectHVZK_of_honestDist_eq_const
 #print axioms statisticalHVZK_of_honestDist_eq_const
 #print axioms isHVZK_of_honestDist_eq_const
@@ -297,5 +366,7 @@ theorem isStatHVZK.triangle_honestDist_symm
 #print axioms isStatHVZK.congr_honestDist
 #print axioms isStatHVZK.triangle_honestDist
 #print axioms isStatHVZK.triangle_honestDist_symm
+#print axioms isHVZK.triangle_honestDist_zero
+#print axioms isHVZK.triangle_honestDist_symm_zero
 
 end Reduction
