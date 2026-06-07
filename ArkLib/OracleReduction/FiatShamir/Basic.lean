@@ -386,6 +386,23 @@ theorem fiatShamir_honestExecution_completeness_of_completeness
   (fiatShamir_completeness_unroll_of_runCollapse init impl relIn relOut completenessError
     R hCollapse).1 hFS
 
+/-- Transformed basic Fiat-Shamir completeness can be projected back to completeness of the explicit
+honest-execution experiment once the named run-equality residual is available. -/
+theorem fiatShamir_honestExecution_completeness_of_runEq
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hRun : ∀ stmtIn witIn,
+      fiatShamir_run_eq_honestExecution R stmtIn witIn)
+    (hFS : R.fiatShamir.completeness init impl relIn relOut completenessError) :
+    Reduction.completenessFromRun init impl relIn relOut
+      (R.fiatShamirHonestExecution) completenessError :=
+  (fiatShamir_completeness_unroll_of_runEq init impl relIn relOut completenessError
+    R hRun).1 hFS
+
 /-- Perfect completeness of the transformed one-message reduction is equivalent to perfect
 completeness of the explicit honest Fiat-Shamir execution. This is the zero-error specialization
 of `fiatShamir_completeness_unroll`, stated in the `perfectCompleteness` API. -/
@@ -477,6 +494,21 @@ theorem fiatShamir_honestExecution_perfectCompleteness_of_perfectCompleteness
       R.fiatShamirHonestExecution :=
   (fiatShamir_perfectCompleteness_unroll_of_runCollapse init impl relIn relOut R
     hCollapse).1 hFS
+
+/-- Basic Fiat-Shamir perfect completeness can be projected back to perfect completeness of the
+explicit honest-execution experiment once the named run-equality residual is available. -/
+theorem fiatShamir_honestExecution_perfectCompleteness_of_runEq
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hRun : ∀ stmtIn witIn,
+      fiatShamir_run_eq_honestExecution R stmtIn witIn)
+    (hFS : R.fiatShamir.perfectCompleteness init impl relIn relOut) :
+    Reduction.perfectCompletenessFromRun init impl relIn relOut
+      R.fiatShamirHonestExecution :=
+  (fiatShamir_perfectCompleteness_unroll_of_runEq init impl relIn relOut R hRun).1 hFS
 
 /-- Basic Fiat-Shamir completeness at a larger target error follows from honest-execution
 completeness at a smaller error after applying the run-collapse residual. -/
@@ -620,12 +652,14 @@ theorem fiatShamir_completeness_of_runEq_mono_relations_error
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution
 #print axioms Reduction.fiatShamir_completeness_of_runEq
 #print axioms Reduction.fiatShamir_honestExecution_completeness_of_completeness
+#print axioms Reduction.fiatShamir_honestExecution_completeness_of_runEq
 #print axioms Reduction.fiatShamir_perfectCompleteness_unroll
 #print axioms Reduction.fiatShamir_perfectCompleteness_unroll_of_runCollapse
 #print axioms Reduction.fiatShamir_perfectCompleteness_unroll_of_runEq
 #print axioms Reduction.fiatShamir_perfectCompleteness_of_honestExecution
 #print axioms Reduction.fiatShamir_perfectCompleteness_of_runEq
 #print axioms Reduction.fiatShamir_honestExecution_perfectCompleteness_of_perfectCompleteness
+#print axioms Reduction.fiatShamir_honestExecution_perfectCompleteness_of_runEq
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution_mono_error
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution_mono_relations
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution_mono_relations_error
