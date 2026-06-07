@@ -542,6 +542,7 @@ import ArkLib.ToMathlib.HenselDatumProducer
 import ArkLib.ToMathlib.HenselUniqueness
 import ArkLib.ToMathlib.HliftDvd
 import ArkLib.ToMathlib.IngredientCBridge
+import ArkLib.ToMathlib.KK25NearCapacityProof
 import ArkLib.ToMathlib.KStateWeaken
 import ArkLib.ToMathlib.KeystoneAssembly
 import ArkLib.ToMathlib.KeystoneCapstone

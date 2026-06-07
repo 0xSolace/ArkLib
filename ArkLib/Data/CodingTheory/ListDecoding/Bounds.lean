@@ -160,7 +160,7 @@ the external results are recorded as `def … : Prop` admit-statements with expl
 - [JH01] Theorem 2, source of T3.14.
 -/
 
-set_option linter.style.longFile 2000
+set_option linter.style.longFile 2300
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false

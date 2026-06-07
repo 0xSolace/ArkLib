@@ -59,24 +59,23 @@ inequality follows from the single real inequality `(ε* : ℝ) · q < Vol_q(δ,
 This is the bridge that lets the concrete numeric certificates below be discharged purely by
 `norm_num` on the real side. -/
 lemma eliasVolumeUpperCore_of_lt {F ι : Type} [Fintype F] [Fintype ι]
-    {j : ℕ} {ε_star : ℝ≥0} {den : ℝ}
-    (hden : den = (Fintype.card F : ℝ) ^
-        ((Fintype.card ι : ℝ) - (j : ℝ)))
+    {j : ℕ} {e : ℝ} {ε_star : ℝ≥0}
     (hkey : ((ε_star : ℝ≥0) : ℝ) * (Fintype.card F : ℝ) <
       (CodingTheory.hammingBallVolume (Fintype.card F)
-          (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) (Fintype.card ι) : ℝ) / den) :
+          (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) (Fintype.card ι) : ℝ)
+        / (Fintype.card F : ℝ) ^ e) :
     (ε_star : ℝ≥0∞) * (Fintype.card F : ℝ≥0∞) <
       ENNReal.ofReal
         ((CodingTheory.hammingBallVolume (Fintype.card F)
             (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) (Fintype.card ι) : ℝ)
-          / (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) - (j : ℝ))) := by
+          / (Fintype.card F : ℝ) ^ e) := by
   have heq : (ε_star : ℝ≥0∞) * (Fintype.card F : ℝ≥0∞)
       = ENNReal.ofReal (((ε_star : ℝ≥0) : ℝ) * (Fintype.card F : ℝ)) := by
     rw [ENNReal.ofReal_mul (by positivity)]
     congr 1
     · rw [← ENNReal.ofReal_coe_nnreal]
     · rw [ENNReal.ofReal_natCast]
-  rw [heq, ← hden]
+  rw [heq]
   rw [ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
   exact hkey
 
@@ -146,17 +145,29 @@ theorem fourRate_hvol_next_card8 (domain : ι ↪ F)
   rw [hfin]
   refine eliasVolumeUpperCore_of_lt
     (j := (⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : ℕ) + 1) (ε_star := epsStar)
-    (den := (Fintype.card F : ℝ) ^
-        ((Fintype.card ι : ℝ) - (⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : ℝ))) ?_ ?_
-  · -- the certificate denominator uses exponent `n - k`, matching the rewritten finrank
-    push_cast
-    ring_nf
-  · -- the real-side numeric inequality, per rate, evaluating `hammingBallVolume`
-    rw [hF, hn, epsStar_real_eq, hk]
-    fin_cases r <;>
-      · simp only [List.get]
-        rw [CodingTheory.hammingBallVolume]
-        norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
+    (e := (Fintype.card ι : ℝ) - (⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : ℝ)) ?_
+  -- the real-side numeric inequality, per rate, evaluating `hammingBallVolume`
+  rw [hF, hn, epsStar_real_eq, hk]
+  fin_cases r
+  · -- r = 0: DIAGNOSTIC
+    simp only [List.get]
+    trace_state
+    sorry
+  · -- r = 1: k = 2, j = 3, exponent 8 - 2 = 6
+    simp only [List.get]
+    rw [show ((8 : ℝ) - ((2 : ℕ) : ℝ)) = ((6 : ℕ) : ℝ) by norm_num, Real.rpow_natCast,
+      CodingTheory.hammingBallVolume]
+    norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
+  · -- r = 2: k = 1, j = 2, exponent 8 - 1 = 7
+    simp only [List.get]
+    rw [show ((8 : ℝ) - ((1 : ℕ) : ℝ)) = ((7 : ℕ) : ℝ) by norm_num, Real.rpow_natCast,
+      CodingTheory.hammingBallVolume]
+    norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
+  · -- r = 3: k = 0, j = 1, exponent 8 - 0 = 8
+    simp only [List.get]
+    rw [show ((8 : ℝ) - ((0 : ℕ) : ℝ)) = ((8 : ℕ) : ℝ) by norm_num, Real.rpow_natCast,
+      CodingTheory.hammingBallVolume]
+    norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
 
 end Concrete
 

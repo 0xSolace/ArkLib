@@ -1,5 +1,4 @@
 import ArkLib.Data.CodingTheory.InterleavedCode
-import ArkLib.Data.CodingTheory.Basic.LinearCode
 
 open InterleavedCode
 

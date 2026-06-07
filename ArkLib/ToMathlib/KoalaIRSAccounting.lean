@@ -150,3 +150,9 @@ theorem rsEncoder_injective : Function.Injective rsEncoder := by
   funext k; fin_cases k <;> assumption
 
 end KoalaBear
+
+theorem le_minRelHammingDistCode_rsCodeSet : (3/4 : ℚ≥0) ≤ minRelHammingDistCode rsCodeSet := by
+  -- We want to prove 3/4 ≤ minDist / 4, so 3 ≤ minDist
+  -- Then use minDist_div_card_eq_minRelHammingDistCode
+  sorry
+

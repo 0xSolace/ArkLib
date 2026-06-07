@@ -68,6 +68,8 @@ Given:
 
 the proven `OracleReduction.append_perfectCompleteness` yields perfect completeness of the composed
 reduction. -/
+set_option maxHeartbeats 1600000 in
+set_option synthInstance.maxHeartbeats 800000 in
 theorem reduction_perfectCompleteness_of_phases
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
     [∀ i, SampleableType

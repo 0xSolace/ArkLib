@@ -93,9 +93,9 @@ theorem nearCertainBadLine_of_line_code
   have hmem : u 0 + γ • u 1 ∈ C := hΓ γ hγ
   have h0 : δᵣ(u 0 + γ • u 1, C) ≤ (0 : ENNReal) := by
     have hself : δᵣ(u 0 + γ • u 1, u 0 + γ • u 1) = (0 : ℚ≥0) := by
-      simp [relHammingDist, hammingDist_self]
+      rw [relHammingDist, hammingDist_self, Nat.cast_zero, zero_div]
     refine le_trans (relDistFromCode_le_relDist_to_mem _ _ hmem) ?_
-    rw [hself]; simp
+    rw [hself, NNRat.cast_zero, ENNReal.coe_zero]
   exact le_trans h0 (by positivity)
 
 /-- **T5.4 endpoint from the line-code producer.**

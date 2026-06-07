@@ -69,29 +69,46 @@ namespace EraseDecodeTree
 subtree (if present) and all its Red subtrees. -/
 def leafCount : EraseDecodeTree → ℕ∞
   | leaf => 1
-  | node b rs => (b.elim 0 leafCount) + (rs.map leafCount).sum
+  | node none rs => (rs.attach.map (fun t => leafCount t.1)).sum
+  | node (some b) rs => leafCount b + (rs.attach.map (fun t => leafCount t.1)).sum
+decreasing_by
+  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp_arith)
+  · simp_arith
+  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp_arith)
 
 /-- Maximum number of Blue edges on any root→leaf path. -/
 def blueDepth : EraseDecodeTree → ℕ
   | leaf => 0
-  | node b rs =>
-      max (b.elim 0 (fun t => blueDepth t + 1))
-        ((rs.map blueDepth).foldr max 0)
+  | node none rs => (rs.attach.map (fun t => blueDepth t.1)).foldr max 0
+  | node (some b) rs =>
+      max (blueDepth b + 1) ((rs.attach.map (fun t => blueDepth t.1)).foldr max 0)
+decreasing_by
+  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp_arith)
+  · simp_arith
+  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp_arith)
 
 /-- Maximum number of Red edges on any root→leaf path. -/
 def redDepth : EraseDecodeTree → ℕ
   | leaf => 0
-  | node b rs =>
-      max (b.elim 0 redDepth)
-        ((rs.map (fun t => redDepth t + 1)).foldr max 0)
+  | node none rs => (rs.attach.map (fun t => redDepth t.1 + 1)).foldr max 0
+  | node (some b) rs =>
+      max (redDepth b) ((rs.attach.map (fun t => redDepth t.1 + 1)).foldr max 0)
+decreasing_by
+  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp_arith)
+  · simp_arith
+  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp_arith)
 
 /-- `redBranchingLe L t`: every node of `t` has at most `L` Red children. -/
 def redBranchingLe (L : ℕ∞) : EraseDecodeTree → Prop
   | leaf => True
-  | node b rs =>
-      (b.elim True (redBranchingLe L)) ∧
-      (rs.length : ℕ∞) ≤ L ∧
-      (∀ t ∈ rs, redBranchingLe L t)
+  | node none rs => (rs.length : ℕ∞) ≤ L ∧ (∀ t ∈ rs.attach, redBranchingLe L t.1)
+  | node (some b) rs =>
+      redBranchingLe L b ∧ (rs.length : ℕ∞) ≤ L ∧
+        (∀ t ∈ rs.attach, redBranchingLe L t.1)
+decreasing_by
+  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp_arith)
+  · simp_arith
+  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp_arith)
 
 @[simp] theorem leafCount_leaf : leafCount leaf = 1 := rfl
 
