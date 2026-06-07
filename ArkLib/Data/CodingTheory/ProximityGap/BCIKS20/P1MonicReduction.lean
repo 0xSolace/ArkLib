@@ -74,8 +74,50 @@ theorem AlphaGenuineRegularWeightLe_of_monic_of_succDivWeight
     rw [W𝒪_eq_one_of_monic H hmonic, one_pow, mul_one]
     exact ha
 
+/-- In the monic regime the proved P2 lift identity transports the P1 carved alpha regularity
+predicate to its divisibility-with-weight endpoint. -/
+theorem alphaWeight_iff_divWeight_of_monic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hmonic : H.Monic) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D ↔
+      DivWeightLe H x₀ R hHyp hH D := by
+  have hlc : H.leadingCoeff = 1 := hmonic
+  exact alphaWeight_iff_divWeight_of_succLift H x₀ R hHyp hH D
+    (fun t => (BCIKS20.HenselNumerator.P2_closed_of_leadingCoeff_one H x₀ R hHyp hlc).2 (t + 1))
+
+/-- Monic reduction of the explicit successor core directly to the P1 divisibility endpoint. -/
+theorem DivWeightLe_of_monic_of_succDivWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hmonic : H.Monic) (hd : 2 ≤ H.natDegree) (hD : D ≤ H.natDegree)
+    (hsucc : SuccDivWeightLe_of_monic H x₀ R hHyp hH D) :
+    DivWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_divWeight_of_monic H x₀ R hHyp hH hmonic).1
+    (AlphaGenuineRegularWeightLe_of_monic_of_succDivWeight
+      H x₀ R hHyp hH hmonic hd hD hsucc)
+
+/-- Normalized P1 divisibility cases obtained from the monic successor core. -/
+theorem normalized_divWeight_cases_of_monic_of_succDivWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hmonic : H.Monic) (hd : 2 ≤ H.natDegree) (hD : D ≤ H.natDegree)
+    (hsucc : SuccDivWeightLe_of_monic H x₀ R hHyp hH D) :
+      (∃ a : 𝒪 H,
+        βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+          weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) ∧
+        ∀ t : ℕ, ∃ a : 𝒪 H,
+          βHensel H x₀ R hHyp (t + 1)
+            = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+            weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  DivWeightLe.normalized_cases H x₀ R hHyp hH D
+    (DivWeightLe_of_monic_of_succDivWeight H x₀ R hHyp hH hmonic hd hD hsucc)
+
 end BCIKS20.HenselNumerator.AlphaWeight
 
 /-! ## Source audit -/
 #print axioms
   BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_of_monic_of_succDivWeight
+#print axioms
+  BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_iff_divWeight_of_monic
+#print axioms
+  BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_of_monic_of_succDivWeight
+#print axioms
+  BCIKS20.HenselNumerator.AlphaWeight.normalized_divWeight_cases_of_monic_of_succDivWeight
