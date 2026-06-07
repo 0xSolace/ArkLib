@@ -185,6 +185,36 @@ theorem whirBlockVectorSpec_card_messageIdx (M : ℕ) :
   rw [Fintype.card_congr (whirBlockVectorSpec_messageIdxEquivFin M)]
   simp
 
+/-- Every verifier-challenge payload in the block-ordered WHIR skeleton has length one. -/
+theorem whirBlockVectorSpec_challengeLength (M : ℕ)
+    (i : (whirBlockVectorSpec M).ChallengeIdx) :
+    (whirBlockVectorSpec M).challengeLength i = 1 := by
+  rfl
+
+/-- Every prover-message payload in the block-ordered WHIR skeleton has length one. -/
+theorem whirBlockVectorSpec_messageLength (M : ℕ)
+    (i : (whirBlockVectorSpec M).MessageIdx) :
+    (whirBlockVectorSpec M).messageLength i = 1 := by
+  rfl
+
+/-- The total verifier-challenge payload length of the block-ordered WHIR skeleton is `2*M+2`. -/
+theorem whirBlockVectorSpec_totalChallengeLength (M : ℕ) :
+    (whirBlockVectorSpec M).totalChallengeLength = 2 * M + 2 := by
+  classical
+  rw [ProtocolSpec.VectorSpec.totalChallengeLength]
+  trans Fintype.card (whirBlockVectorSpec M).ChallengeIdx
+  · simp [whirBlockVectorSpec_challengeLength]
+  · exact whirBlockVectorSpec_card_challengeIdx M
+
+/-- The total prover-message payload length of the block-ordered WHIR skeleton is `2*M+2`. -/
+theorem whirBlockVectorSpec_totalMessageLength (M : ℕ) :
+    (whirBlockVectorSpec M).totalMessageLength = 2 * M + 2 := by
+  classical
+  rw [ProtocolSpec.VectorSpec.totalMessageLength]
+  trans Fintype.card (whirBlockVectorSpec M).MessageIdx
+  · simp [whirBlockVectorSpec_messageLength]
+  · exact whirBlockVectorSpec_card_messageIdx M
+
 /-! ### The WHIR protocol-spec direction vector
 
 WHIR runs `M + 1` rounds; each round contributes **two** verifier challenges (the folding
@@ -496,6 +526,10 @@ end RBRSoundnessAssembly
 #print axioms whirBlockVectorSpec_messageIdxEquivFin
 #print axioms whirBlockVectorSpec_card_challengeIdx
 #print axioms whirBlockVectorSpec_card_messageIdx
+#print axioms whirBlockVectorSpec_challengeLength
+#print axioms whirBlockVectorSpec_messageLength
+#print axioms whirBlockVectorSpec_totalChallengeLength
+#print axioms whirBlockVectorSpec_totalMessageLength
 #print axioms whir_rbr_soundness_of_whirVectorSpec_secure_gap
 
 end Construction
