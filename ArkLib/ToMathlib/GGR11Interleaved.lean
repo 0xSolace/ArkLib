@@ -324,6 +324,7 @@ theorem ggr11_treeStructure_of_le_exp [Fintype F] [Nonempty ι]
   · -- Pascal: Λ^(r'+1) ≤ Λ^(r'+1) + Λ · Λ^(r')
     intro b' r'; simp only; exact le_add_right (le_refl _)
 
+set_option linter.unusedFintypeInType false in
 /-- Over a *finite* field, the elementary `m ≤ r` regime supplies the **named** GGR11 tree
 frontier, not just the anonymous `GGR11TreeStructure`.  This exposes the per-received-word
 `Nonempty (GGR11TreeWitness …)` surface (the form preferred by downstream reassembly) in the
