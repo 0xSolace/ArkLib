@@ -292,6 +292,7 @@ import ArkLib.Data.Polynomial.Trivariate
 import ArkLib.Data.Probability.Combinatorial
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
+import ArkLib.Data.Probability.RandomSubsetInclusion
 import ArkLib.Data.Probability.UniformSubset
 import ArkLib.Data.RingTheory.TowerOfAlgebra
 import ArkLib.Data.UniPoly.Basic
@@ -466,6 +467,8 @@ import ArkLib.ProofSystem.Whir.RBRSoundness
 import ArkLib.ProofSystem.ZkVMBoundary
 import ArkLib.ToCompPoly.Univariate.Basic
 import ArkLib.ToCompPoly.Univariate.Lagrange
+import ArkLib.ToMathlib.AGL23CountingProof
+import ArkLib.ToMathlib.AHIVRowSpanBridge
 import ArkLib.ToMathlib.AppendHelpers
 import ArkLib.ToMathlib.BKR06BareT312
 import ArkLib.ToMathlib.BKR06Close
@@ -495,6 +498,7 @@ import ArkLib.ToMathlib.CS25DeepHole
 import ArkLib.ToMathlib.CS25DeepHoleFinish
 import ArkLib.ToMathlib.CS25DeepHoleFinish2
 import ArkLib.ToMathlib.CS25JointFar
+import ArkLib.ToMathlib.CZ25DimensionCountProof
 import ArkLib.ToMathlib.Claim510Conditional
 import ArkLib.ToMathlib.Claim511
 import ArkLib.ToMathlib.Claim57Supply
@@ -502,14 +506,16 @@ import ArkLib.ToMathlib.Claim59Conditional
 import ArkLib.ToMathlib.CoeffExtract
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 import ArkLib.ToMathlib.DiscriminantSeparable
+import ArkLib.ToMathlib.EliasVolumeCertificates
 import ArkLib.ToMathlib.FiniteSeriesToPoly
 import ArkLib.ToMathlib.Finset.Basic
 import ArkLib.ToMathlib.Finset.ToListWithProof
 import ArkLib.ToMathlib.Finsupp.Fin
+import ArkLib.ToMathlib.FriComplete
 import ArkLib.ToMathlib.FrobeniusFactorHelpers
+import ArkLib.ToMathlib.GG25RandomRSMCAProof
 import ArkLib.ToMathlib.GGR11Interleaved
 import ArkLib.ToMathlib.GGR11Reconnect
-import ArkLib.ToMathlib.GG25RandomRSMCAProof
 import ArkLib.ToMathlib.GHSZ02Cor20
 import ArkLib.ToMathlib.GHSZ02LargeNProof
 import ArkLib.ToMathlib.GK16BudgetCoeff
@@ -545,6 +551,7 @@ import ArkLib.ToMathlib.MpFinSupply
 import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.MultiplicityDatum
 import ArkLib.ToMathlib.MvPolynomial.Equiv
+import ArkLib.ToMathlib.NearCertainBadLineProof
 import ArkLib.ToMathlib.PartitionRecursion
 import ArkLib.ToMathlib.PlaceGeometrySupply
 import ArkLib.ToMathlib.Polynomial.DegreeLT
@@ -553,6 +560,7 @@ import ArkLib.ToMathlib.Polynomial.NatDegreeOfSum
 import ArkLib.ToMathlib.PowerSeriesHenselianA
 import ArkLib.ToMathlib.PowerSeriesNewton
 import ArkLib.ToMathlib.PowerSeriesSubstCoeff
+import ArkLib.ToMathlib.PrizeRateEliasCapacity
 import ArkLib.ToMathlib.Prop55
 import ArkLib.ToMathlib.RSPhases
 import ArkLib.ToMathlib.RatFuncDegreeCalculus
@@ -569,6 +577,8 @@ import ArkLib.ToMathlib.TailDegProducer
 import ArkLib.ToMathlib.ToyProblemRewinding
 import ArkLib.ToMathlib.ToyProblemViolation
 import ArkLib.ToMathlib.ToyStep4
+import ArkLib.ToMathlib.UMSubspaceDesignProof
+import ArkLib.ToMathlib.UniformTranslationAverage
 import ArkLib.ToMathlib.WeightLambdaCalculus
 import ArkLib.ToVCVio.EvalDist.Defs.Support
 import ArkLib.ToVCVio.EvalDist.Instances.OptionT
