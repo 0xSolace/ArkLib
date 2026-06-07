@@ -65,9 +65,8 @@ theorem hammingDist_ge_minDist_of_mem_closeCodewordsRel_ne
   have hVcode : V ∈ interleavedCodeSet (κ := Fin m) C := hV.1
   have hV'code : V' ∈ interleavedCodeSet (κ := Fin m) C := hV'.1
   -- the interleaved code has the same minimum distance as the base code
-  have hmin : Code.minDist (interleavedCodeSet (κ := Fin m) C) = Code.minDist C := by
-    have he := minDist_eq_minDist (F := F) (A := F) (ι := ι) (κ := Fin m) C
-    rwa [interleavedCode_eq_interleavedCodeSet] at he
+  have hmin : Code.minDist (interleavedCodeSet (κ := Fin m) C) = Code.minDist C :=
+    minDist_eq_minDist (F := F) (A := F) (ι := ι) (κ := Fin m) C
   -- distinct codewords are ≥ minDist apart
   have h := JohnsonBound.minDist_le_hammingDist_of_mem_ne
     (C := interleavedCodeSet (κ := Fin m) C) hVcode hV'code hne
@@ -138,10 +137,10 @@ private lemma closedForm_satisfies_recursion (L : ℕ∞) :
       have e2 : b' + (r' + 1) = b' + 1 + r' := by ring
       rw [e2]
       ring
-    rw [hpascal, add_mul]
-    gcongr
-    apply le_of_eq
-    rw [pow_succ, ← mul_assoc, mul_comm]
+    have hterm : ((b' + 1 + r').choose r' : ℕ∞) * L ^ (r' + 1)
+        = L * (((b' + 1 + r').choose r' : ℕ∞) * L ^ r') := by
+      rw [pow_succ, ← mul_assoc, mul_comm]
+    rw [hpascal, add_mul, hterm]
 
 /-- **The Erase-Decode tree adds nothing: `GGR11PerWordBound → GGR11TreeStructure`.**
 

@@ -467,34 +467,40 @@ end HidingDefinition
 
 section HidingSimulator
 
-variable [DecidableEq α] [SampleableType α]
+variable [SampleableType α]
 
-/-- Replace every unopened leaf by a fixed filler value, preserving only the leaves whose
-indices appear in `idxs`. This is the leaf assignment consumed by the hiding simulator: it depends
-on the real witness only through the public opened positions. -/
+/-- Replace every unopened leaf by a fixed filler value, preserving only the leaves selected by
+`opened`. This is the leaf assignment consumed by the hiding simulator: it depends on the real
+witness only through the public opened positions. The predicate form avoids requiring decidable
+equality for `SkeletonLeafIndex`. -/
 noncomputable def openedLeafData {s : Skeleton} (filler : α)
-    (idxs : List (SkeletonLeafIndex s)) (leaves : LeafData α s) : LeafData α s :=
-  LeafData.ofFun s fun idx => if idx ∈ idxs then leaves.get idx else filler
+    (opened : SkeletonLeafIndex s → Prop) [DecidablePred opened]
+    (leaves : LeafData α s) : LeafData α s :=
+  LeafData.ofFun s fun idx => if opened idx then leaves.get idx else filler
 
 @[simp]
 theorem openedLeafData_get {s : Skeleton} (filler : α)
-    (idxs : List (SkeletonLeafIndex s)) (leaves : LeafData α s)
-    (idx : SkeletonLeafIndex s) :
-    (openedLeafData filler idxs leaves).get idx =
-      if idx ∈ idxs then leaves.get idx else filler := by
+    (opened : SkeletonLeafIndex s → Prop) [DecidablePred opened]
+    (leaves : LeafData α s) (idx : SkeletonLeafIndex s) :
+    (openedLeafData filler opened leaves).get idx =
+      if opened idx then leaves.get idx else filler := by
   simp [openedLeafData]
 
 /-- The simulator's leaf assignment is insensitive to unopened leaves. If two leaf trees agree on
-the opened indices, replacing all unopened leaves by `filler` produces the same tree. -/
+the opened predicate, replacing all unopened leaves by `filler` produces the same tree. -/
 theorem openedLeafData_eq_of_agree {s : Skeleton} (filler : α)
-    (idxs : List (SkeletonLeafIndex s)) (leaves₁ leaves₂ : LeafData α s)
-    (hagree : ∀ i ∈ idxs, leaves₁.get i = leaves₂.get i) :
-    openedLeafData filler idxs leaves₁ = openedLeafData filler idxs leaves₂ := by
+    (opened : SkeletonLeafIndex s → Prop) [DecidablePred opened]
+    (leaves₁ leaves₂ : LeafData α s)
+    (hagree : ∀ i, opened i → leaves₁.get i = leaves₂.get i) :
+    openedLeafData filler opened leaves₁ = openedLeafData filler opened leaves₂ := by
   apply (LeafData.equivIndexFun s).injective
   funext idx
-  by_cases hidx : idx ∈ idxs
-  · simp [openedLeafData_get, hidx, hagree idx hidx]
-  · simp [openedLeafData_get, hidx]
+  by_cases hidx : opened idx
+  · rw [openedLeafData_get, openedLeafData_get]
+    simp only [hidx, if_true]
+    exact hagree idx hidx
+  · rw [openedLeafData_get, openedLeafData_get]
+    simp only [hidx, if_false]
 
 /-- **Salted Merkle hiding simulator.** Given only the opened leaves (represented by
 `openedLeaves`) and public parameters, fill every unopened position with `filler`, sample the salts,
@@ -505,23 +511,25 @@ leaf input only through the opened positions. -/
 noncomputable def simulatorTranscript {s : Skeleton} (hashFn : α → α → α)
     (sampleSalts : OracleComp (spec α) (LeafData α s))
     (idxs : List (SkeletonLeafIndex s)) (filler : α)
+    (opened : SkeletonLeafIndex s → Prop) [DecidablePred opened]
     (openedLeaves : LeafData α s) :
     OracleComp (spec α)
       (α × List ((i : SkeletonLeafIndex s) × α × α × List.Vector α i.depth)) :=
   sampleSalts >>= fun salts =>
-    pure (openTranscript hashFn salts (openedLeafData filler idxs openedLeaves) idxs)
+    pure (openTranscript hashFn salts (openedLeafData filler opened openedLeaves) idxs)
 
 /-- The simulator output distribution is identical for any two witnesses that agree on the opened
 positions; this is the formal "simulator uses only opened leaves" statement. -/
 theorem simulatorTranscript_eq_of_agree {s : Skeleton} (hashFn : α → α → α)
     (sampleSalts : OracleComp (spec α) (LeafData α s))
     (idxs : List (SkeletonLeafIndex s)) (filler : α)
+    (opened : SkeletonLeafIndex s → Prop) [DecidablePred opened]
     (leaves₁ leaves₂ : LeafData α s)
-    (hagree : ∀ i ∈ idxs, leaves₁.get i = leaves₂.get i) :
-    simulatorTranscript hashFn sampleSalts idxs filler leaves₁ =
-      simulatorTranscript hashFn sampleSalts idxs filler leaves₂ := by
+    (hagree : ∀ i, opened i → leaves₁.get i = leaves₂.get i) :
+    simulatorTranscript hashFn sampleSalts idxs filler opened leaves₁ =
+      simulatorTranscript hashFn sampleSalts idxs filler opened leaves₂ := by
   unfold simulatorTranscript
-  rw [openedLeafData_eq_of_agree filler idxs leaves₁ leaves₂ hagree]
+  rw [openedLeafData_eq_of_agree filler opened leaves₁ leaves₂ hagree]
 
 /-- Real salted transcript experiment, factored out to keep the simulator/hybrid theorem readable. -/
 def realTranscriptExperiment {s : Skeleton} (hashFn : α → α → α)
@@ -537,27 +545,31 @@ opened-only leaf assignment. In the ROM proof, this premise is discharged by the
 hybrid/programming argument. -/
 def SimulationBasedHiding {s : Skeleton} (hashFn : α → α → α)
     (sampleSalts : OracleComp (spec α) (LeafData α s))
-    (idxs : List (SkeletonLeafIndex s)) : Prop :=
+    (idxs : List (SkeletonLeafIndex s))
+    (opened : SkeletonLeafIndex s → Prop) [DecidablePred opened] : Prop :=
   ∃ filler : α, ∀ leaves : LeafData α s,
     realTranscriptExperiment hashFn sampleSalts idxs leaves =
-      simulatorTranscript hashFn sampleSalts idxs filler leaves
+      simulatorTranscript hashFn sampleSalts idxs filler opened leaves
 
 /-- **Hybrid discharge of `Hiding`.** If real transcripts are distributionally equal to the
 opened-leaf simulator for every witness, then the two real transcript distributions for any pair of
 witnesses that agree on opened positions are equal. This is the formal simulator + hybrid argument
 needed to connect the construction to the existing `Hiding` predicate. -/
-theorem simulationBasedHiding_implies_Hiding {s : Skeleton}
+theorem simulationBasedHiding_implies_Hiding [DecidableEq α] {s : Skeleton}
     (hashFn : α → α → α)
     (sampleSalts : OracleComp (spec α) (LeafData α s))
     (idxs : List (SkeletonLeafIndex s))
-    (hsim : SimulationBasedHiding hashFn sampleSalts idxs) :
+    (opened : SkeletonLeafIndex s → Prop) [DecidablePred opened]
+    (hopened_subset : ∀ i, opened i → i ∈ idxs)
+    (hsim : SimulationBasedHiding hashFn sampleSalts idxs opened) :
     Hiding hashFn sampleSalts idxs := by
   rcases hsim with ⟨filler, hreal_to_sim⟩
   intro leaves₁ leaves₂ hagree
   change realTranscriptExperiment hashFn sampleSalts idxs leaves₁ =
     realTranscriptExperiment hashFn sampleSalts idxs leaves₂
   rw [hreal_to_sim leaves₁, hreal_to_sim leaves₂]
-  exact simulatorTranscript_eq_of_agree hashFn sampleSalts idxs filler leaves₁ leaves₂ hagree
+  exact simulatorTranscript_eq_of_agree hashFn sampleSalts idxs filler opened leaves₁ leaves₂
+    (fun i hi => hagree i (hopened_subset i hi))
 
 end HidingSimulator
 

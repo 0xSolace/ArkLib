@@ -323,6 +323,20 @@ theorem ggr11_treeStructure_of_le_exp [Fintype F] [Nonempty ι]
     intro r'; simp only; rw [pow_succ, mul_comm]
   · -- Pascal: Λ^(r'+1) ≤ Λ^(r'+1) + Λ · Λ^(r')
     intro b' r'; simp only; exact le_add_right (le_refl _)
+
+/-- Over a *finite* field, the elementary `m ≤ r` regime supplies the **named** GGR11 tree
+frontier, not just the anonymous `GGR11TreeStructure`.  This exposes the per-received-word
+`Nonempty (GGR11TreeWitness …)` surface (the form preferred by downstream reassembly) in the
+consistency sub-case, by routing `ggr11_treeStructure_of_le_exp` through `frontier_of_treeStructure`.
+
+As with `ggr11_treeStructure_of_le_exp`, this is the consistency sub-case `m ≤ r`; the genuine
+GGR11 content is the complementary finite `m > r` Erase-Decode construction, which remains external. -/
+theorem ggr11_treeFrontier_of_le_exp [Fintype F] [Nonempty ι]
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (hmr : m ≤ r) (hL : 1 ≤ Lambda C δ) :
+    GGR11TreeFrontier C δ m b r :=
+  frontier_of_treeStructure (ggr11_treeStructure_of_le_exp hmr hL)
+
 /-- If the base list size is infinite and the GGR11 exponent is positive, the per-word residual is
 automatic: the RHS is `⊤`. This discharges the infinite-list edge case and leaves only the finite
 list-recovery recursion as genuine external content. -/
@@ -401,6 +415,7 @@ theorem lambda_le_ggr11_of_Lambda_top
 #print axioms lambda_le_ggr11_of_treeStructure
 #print axioms lambda_le_ggr11_of_treeFrontier
 #print axioms ggr11_treeStructure_of_le_exp
+#print axioms ggr11_treeFrontier_of_le_exp
 #print axioms ggr11_perWordBound_of_Lambda_top
 #print axioms ggr11_perWordBound_of_le_exp
 #print axioms lambda_le_ggr11_of_le_exp
