@@ -94,6 +94,7 @@ theorem exists_x0_evalX_ne_zero
 
 #print axioms ProximityGap.Genericity.exists_good_point_of_obstructions_domain
 #print axioms ProximityGap.Genericity.coeff_evalX
+#print axioms ProximityGap.Genericity.evalX_separable_of_separable
 #print axioms ProximityGap.Genericity.exists_x0_evalX_ne_zero
 
 end ProximityGap.Genericity
