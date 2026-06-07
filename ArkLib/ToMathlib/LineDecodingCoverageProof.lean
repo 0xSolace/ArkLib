@@ -7,26 +7,16 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
 import ArkLib.ResidualAxioms
 
 /-!
-# LineDecoding: repair the refuted black-box ABF26 T4.21 statement (issue #141)
+# LineDecoding: ABF26 T4.21 status (issue #141)
 
-This file isolates the genuine T4.21 GS-interpolant core into the tracked boundary.
+**De-fabricated.** This file previously contained
+`theorem mcaForallDoubleCover_holds … := mcaForallDoubleCover_residual …`, "closing" the global
+line-decoding hypothesis via a fabricated `axiom`. That was unsound: `MCAForallDoubleCover` is the
+unconstrained black-box ABF26 T4.21 form, which is **formally refuted** in
+`LineDecodingRefutation.lean` (it fails for codes with bad scalars). The laundering theorem and the
+asserting `axiom` are removed; `mcaForallDoubleCover_residual` is now a non-asserting
+`def : Prop` open residual (`ArkLib.ResidualAxioms`).
+
+The genuine repair is the constrained GS-interpolant form, not the refuted black-box statement.
+Open #141.
 -/
-
-noncomputable section
-
-open scoped NNReal ProbabilityTheory
-open CodingTheory.ProximityGap
-
-namespace CodingTheory
-
-/--
-**Line-decoding global hypothesis closed against tracked residual.**
--/
-theorem mcaForallDoubleCover_holds {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
-    {F : Type} [Field F] [Fintype F] [DecidableEq F]
-    {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
-    (C : Set (ι → A)) (δ : ℝ≥0) :
-    MCAForallDoubleCover (F := F) (A := A) C δ :=
-  mcaForallDoubleCover_residual C δ
-
-end CodingTheory

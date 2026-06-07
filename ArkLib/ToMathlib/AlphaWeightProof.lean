@@ -4,29 +4,22 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightClearedObstruction
 import ArkLib.ResidualAxioms
 
 /-!
-# BCIKS20 App-A (P1) — `AlphaGenuineRegularWeightLe` resolution (issue #139)
+# BCIKS20 App-A (P1) — `AlphaGenuineRegularWeightLe` status (issue #139)
 
-This file isolates the weight-1 structured invariant into the tracked boundary.
+**De-fabricated.** This file previously contained
+`theorem alphaGenuineRegularWeightLe_holds … := alphaGenuineRegularWeightLe_residual …`, which
+"closed" the P1 weight-1 invariant via a fabricated `axiom`. That was unsound: the un-cleared
+invariant `AlphaGenuineRegularWeightLe` is **provably false** for non-monic `H`
+(`BCIKS20.AlphaWeightClearedObstruction.not_alphaGenuineRegularWeightLe`, axiom-clean), so no honest
+proof of it exists. The laundering theorem and the asserting `axiom` are removed.
+
+`alphaGenuineRegularWeightLe_residual` is now a non-asserting `def : Prop` open residual
+(`ArkLib.ResidualAxioms`). The genuine, *true* order-0 statement is the **cleared** invariant,
+already proven on `main`:
+`BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_zero_cleared_fixed` (witness `βHensel 0`,
+weight `≤ 1`). Closing all orders is the open #139 P1 obligation.
 -/
-
-noncomputable section
-
-open Polynomial BCIKS20AppendixA
-
-namespace BCIKS20.HenselNumerator
-
-variable {F : Type} [Field F]
-variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
-
-/--
-**P1 structured weight-1 invariant closed against tracked residual.**
--/
-theorem alphaGenuineRegularWeightLe_holds (x₀ : F) (R : F[X][X][Y])
-    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) :
-    AlphaGenuineRegularWeightLe x₀ R hHyp hH D :=
-  alphaGenuineRegularWeightLe_residual x₀ R hHyp hH D
-
-end BCIKS20.HenselNumerator
