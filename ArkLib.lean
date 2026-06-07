@@ -135,6 +135,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
+import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
@@ -567,6 +568,7 @@ import ArkLib.ToMathlib.L46DiffStackRS
 import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.List.Basic
+import ArkLib.ToMathlib.MCAPrizeFourRateNumerics
 import ArkLib.ToMathlib.MatchingExtractor
 import ArkLib.ToMathlib.MatchingFactorLift
 import ArkLib.ToMathlib.MpFinSupply
@@ -606,7 +608,6 @@ import ArkLib.ToMathlib.UniformTranslationAverage
 import ArkLib.ToMathlib.WeightLambdaCalculus
 import ArkLib.ToMathlib.ZKDefA
 import ArkLib.ToMathlib.ZKDefC
-import ArkLib.ToMathlib.ZKProbeC
 import ArkLib.ToVCVio.EvalDist.Defs.Support
 import ArkLib.ToVCVio.EvalDist.Instances.OptionT
 import ArkLib.ToVCVio.Lemmas
