@@ -414,6 +414,7 @@ import ArkLib.OracleReduction.Security.TranscriptTree
 import ArkLib.OracleReduction.Security.ZeroKnowledge
 import ArkLib.OracleReduction.SimulateQ
 import ArkLib.OracleReduction.VectorIOR
+import ArkLib.ProofSystem.BatchedFri.QueryRoundProbability
 import ArkLib.ProofSystem.BatchedFri.Security
 import ArkLib.ProofSystem.BatchedFri.Spec.General
 import ArkLib.ProofSystem.BatchedFri.Spec.SingleRound

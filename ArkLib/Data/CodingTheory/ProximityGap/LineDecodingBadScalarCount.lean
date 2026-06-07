@@ -55,3 +55,39 @@ set_option linter.style.longLine false in
 end
 
 end ProximityGap
+
+namespace CodingTheory
+
+open ProximityGap
+open scoped NNReal ProbabilityTheory
+
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
+
+section RepairedCountTarget
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
+
+/-- Repaired discharge of the legacy target proposition through the generic finite-count
+frontier. The named per-bad-scalar double-cover surface rules out every bad event, so the factored
+count route gives `ε_mca(C, δ) = 0`. -/
+theorem lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover_count
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hcov : ∀ (u : Code.WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ (u 0) (u 1) γ) :
+    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD := by
+  dsimp [lineDecodable_imp_epsMCA_le_target]
+  rw [epsMCA_eq_zero_of_badScalarDoubleCover_not_mcaEvent (F := F) (A := A)
+    (C : Set (ι → A)) δ hcov]
+  exact zero_le _
+
+set_option linter.style.longLine false in
+#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover_count
+
+end RepairedCountTarget
+
+end CodingTheory
