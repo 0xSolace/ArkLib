@@ -58,6 +58,7 @@ import ArkLib.Data.CodingTheory.Connections.GKL24PetalWitnessCover
 import ArkLib.Data.CodingTheory.Connections.ListDecodingAndCA
 import ArkLib.Data.CodingTheory.Connections.SmoothDomainMCAWitness
 import ArkLib.Data.CodingTheory.DivergenceOfSets
+import ArkLib.Data.CodingTheory.EntropyBallNcard
 import ArkLib.Data.CodingTheory.EntropyCapacityValue
 import ArkLib.Data.CodingTheory.EntropyConcave
 import ArkLib.Data.CodingTheory.EntropyGVBound
@@ -174,6 +175,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFraction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringExistence
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringWitness
+import ArkLib.Data.CodingTheory.ProximityGap.CS25JointProxBound
 import ArkLib.Data.CodingTheory.ProximityGap.CS25NonDegeneratePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSCoveredFraction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSNearBound
