@@ -65,7 +65,7 @@ theorem sum_sq_secondMomentCount_eq (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
             jointCoverCount δ c c') else 0 := by
     intro c
     by_cases hc : c ∈ C
-    · simp only [hc, true_and]
+    · simp only [hc, true_and, if_true]
       rw [← Finset.sum_filter]
     · simp [hc]
   simp_rw [hstep]
@@ -83,8 +83,8 @@ theorem sum_sq_secondMomentCount_eq (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
     · intro e he
       rw [Finset.mem_filter] at he ⊢
       exact ⟨mem_univ _, (ReedSolomon.code domain k).add_mem he.2 hc.2⟩
-    · intro c' _; abel
-    · intro e _; abel
+    · intro c' _; simp
+    · intro e _; simp
     · intro c' _; rw [jointCoverCount_translation δ c c']
   rw [Finset.sum_congr rfl hreindex, Finset.sum_const, smul_eq_mul]
 
