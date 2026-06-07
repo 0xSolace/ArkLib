@@ -975,12 +975,10 @@ theorem frs_is_subspaceDesign_gk16_of_admissible
 
 /-! ## Univariate Multiplicity Codes (ABF26 DA.7) -/
 
-namespace CodingTheory
-
 /-- Univariate multiplicity evaluation function `D_ux` (derivative-of-x):
 Evaluates the Hasse derivatives up to order `s-1` of a polynomial at `x`.
 This is the derivative-coded operation for `UM[F, L, k, s]`. -/
-def D_ux {ι : Type} [Fintype ι]
+noncomputable def D_ux {ι : Type} [Fintype ι]
     {F : Type} [CommSemiring F]
     (domain : ι ↪ F) (s : ℕ) : Polynomial F →ₗ[F] (ι → Fin s → F) where
   toFun p := fun x j ↦ (Polynomial.hasseDeriv j.val p).eval (domain x)
@@ -1007,7 +1005,7 @@ theorem um_is_subspaceDesign_gk16
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
     (domain : ι ↪ F) (k s : ℕ)
-    (h_residual : ArkLib.FRS.GK16.GK16DegreeBudget k s (umCode domain k s)) :
+    (h_residual : GK16DegreeBudget k s (umCode domain k s)) :
     let τ : ℕ → ℝ := fun r ↦
       if r ∈ Finset.Icc 1 s then (k - 1 : ℝ) / Fintype.card ι else 1
     IsSubspaceDesign s τ (umCode domain k s) := by
