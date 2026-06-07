@@ -3123,6 +3123,7 @@ and folds via the threaded per-round lemmas (`append_processRound_natAdd_{messag
 matched to `P₂.continueFromTo_succ_of_ne`.  This is the bulk of the right-block run assembly. -/
 theorem append_continueFromTo_right_interior
     (T₁ : FullTranscript pSpec₁) (k₀ : Fin n) (hk₀ : 0 < (k₀ : ℕ)) (j : ℕ) (hjn : (k₀ : ℕ) + j ≤ n)
+    (stmt₂ : Stmt₂) (wit₂ : Wit₂)
     (r₂ : pSpec₂.Transcript k₀.castSucc × P₂.PrvState k₀.castSucc) :
     HEq ((P₁.append P₂).continueFromTo stmt wit (Fin.natAdd m k₀).castSucc
           ⟨m + ((k₀ : ℕ) + j), by omega⟩
