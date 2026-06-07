@@ -35,12 +35,12 @@ Polynomial.coeToPowerSeries.ringHom : F[X] →+* PowerSeries F
 
 (the `X`-adic embedding `F[X] ↪ F⟦X⟧`).  Concretely:
 
-* `map_coeToPowerSeries` — `Pz.map coeToPowerSeries.ringHom = (Pz : PowerSeries F)` (the coercion
+* `map_coeToPowerSeries` — `coeToPowerSeries.ringHom Pz = (Pz : PowerSeries F)` (the coercion
   used in `MatchingDvdInput`/`HenselDatum` is exactly this ring-hom map);
-* `map_matchingFactor` — the matching factor's image: `(X − C Pz).map (mapRingHom ↑)
+* `map_matchingFactor` — the matching factor's image: `(X − C Pz).map ↑
   = X − C (↑Pz)`;
 * `matchingFactor_dvd_powerSeries_of_dvd` — divisibility transport: `(X − C Pz) ∣ Qz` over
-  `F[X][Y]` ⟹ `(X − C ↑Pz) ∣ Qz.map (mapRingHom ↑)` over `(PowerSeries F)[Y]`;
+  `F[X][Y]` ⟹ `(X − C ↑Pz) ∣ Qz.map ↑` over `(PowerSeries F)[Y]`;
 * `matchingFactor_dvd_powerSeries_of_orderM_and_count` and
   `..._of_weightedDegree` — the end-to-end forms: from the GS order-`m` graph vanishing (resp. the
   `(1,k)`-weighted-degree Johnson budget), the lifted matching factor `Y − ↑Pz` divides the lifted
@@ -70,18 +70,16 @@ variable {F : Type} [Field F] {n : ℕ}
 /-- The coercion `(p : PowerSeries F)` used by `MatchingDvdInput`/`HenselDatum` is the image of the
 canonical ring hom `Polynomial.coeToPowerSeries.ringHom : F[X] →+* PowerSeries F`. -/
 theorem map_coeToPowerSeries (p : F[X]) :
-    p.map Polynomial.coeToPowerSeries.ringHom = (p : PowerSeries F) := by
-  ext m
-  simp [Polynomial.coeToPowerSeries.ringHom, Polynomial.coeff_map, Polynomial.coeff_coe]
+    Polynomial.coeToPowerSeries.ringHom p = (p : PowerSeries F) := by
+  exact Polynomial.coeToPowerSeries.ringHom_apply
 
 /-- The image of the GS matching factor `Y − C Pz` under the coefficient-ring pushforward
-`mapRingHom (coeToPowerSeries.ringHom)` is the power-series matching factor `Y − C (↑Pz)`. -/
+`coeToPowerSeries.ringHom` is the power-series matching factor `Y − C (↑Pz)`. -/
 theorem map_matchingFactor (Pz : F[X]) :
     (Polynomial.X - Polynomial.C Pz).map
-        (Polynomial.mapRingHom Polynomial.coeToPowerSeries.ringHom)
+        Polynomial.coeToPowerSeries.ringHom
       = Polynomial.X - Polynomial.C ((Pz : PowerSeries F)) := by
-  rw [Polynomial.map_sub, Polynomial.map_X, Polynomial.map_C, Polynomial.coe_mapRingHom,
-    map_coeToPowerSeries]
+  rw [Polynomial.map_sub, Polynomial.map_X, Polynomial.map_C, map_coeToPowerSeries]
 
 /-- **The coefficient-ring divisibility transport.**  If the GS matching factor `Y − C Pz` divides
 the interpolant `Qz` over `F[X][Y]`, then the power-series matching factor `Y − C (↑Pz)` divides the
@@ -90,8 +88,8 @@ divisibility shape. -/
 theorem matchingFactor_dvd_powerSeries_of_dvd {Qz : F[X][Y]} {Pz : F[X]}
     (hdvd : (Polynomial.X - Polynomial.C Pz) ∣ Qz) :
     (Polynomial.X - Polynomial.C ((Pz : PowerSeries F))) ∣
-      Qz.map (Polynomial.mapRingHom Polynomial.coeToPowerSeries.ringHom) := by
-  have h := Polynomial.map_dvd (Polynomial.mapRingHom Polynomial.coeToPowerSeries.ringHom) hdvd
+      Qz.map Polynomial.coeToPowerSeries.ringHom := by
+  have h := Polynomial.map_dvd Polynomial.coeToPowerSeries.ringHom hdvd
   rwa [map_matchingFactor] at h
 
 /-- **End-to-end (order-`m` form).**  From the Guruswami–Sudan order-`m` graph vanishing of the
@@ -104,7 +102,7 @@ theorem matchingFactor_dvd_powerSeries_of_orderM_and_count
     (hord : ∀ i ∈ A, GuruswamiSudan.HasOrderAt Qz (ωs i) (Pz.eval (ωs i)) m)
     (hcount : (Qz.eval Pz).natDegree < m * A.card) :
     (Polynomial.X - Polynomial.C ((Pz : PowerSeries F))) ∣
-      Qz.map (Polynomial.mapRingHom Polynomial.coeToPowerSeries.ringHom) :=
+      Qz.map Polynomial.coeToPowerSeries.ringHom :=
   matchingFactor_dvd_powerSeries_of_dvd
     (MatchingExtractor.matchingFactor_dvd_of_orderM_and_count ωs Qz Pz m A hord hcount)
 
@@ -117,7 +115,7 @@ theorem matchingFactor_dvd_powerSeries_of_weightedDegree
     (hord : ∀ i ∈ A, GuruswamiSudan.HasOrderAt Qz (ωs i) (Pz.eval (ωs i)) m)
     (hwcount : natWeightedDegree Qz 1 k < m * A.card) :
     (Polynomial.X - Polynomial.C ((Pz : PowerSeries F))) ∣
-      Qz.map (Polynomial.mapRingHom Polynomial.coeToPowerSeries.ringHom) :=
+      Qz.map Polynomial.coeToPowerSeries.ringHom :=
   matchingFactor_dvd_powerSeries_of_dvd
     (MatchingExtractor.matchingFactor_dvd_of_weightedDegree ωs Qz Pz m k A hPdeg hord hwcount)
 
