@@ -541,6 +541,44 @@ noncomputable def paperTranscriptVectorIOP {M : ℕ} {ιs : Fin (M + 1) → Type
   verifier := paperTranscriptOracleVerifier P d verify
 
 omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Folding challenges for each WHIR transition, read from the paper-order transcript schedule.
+
+The first transition uses the initial sumcheck challenges.  Transition `k+1` uses the main
+sumcheck challenges from the previous main-loop slot `k`, matching Construction 5.1's challenge
+flow from one folded oracle to the next. -/
+def paperTranscriptFoldingChallenge {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (T : PaperTranscriptData P d) (i : Fin M) :
+    Fin (P.foldingParam i.castSucc) → F :=
+  match M with
+  | 0 => nomatch i
+  | n + 1 =>
+      Fin.cases (motive := fun i : Fin (n + 1) =>
+          Fin (P.foldingParam i.castSucc) → F)
+        T.initialSumcheckChallenge
+        (fun k => T.mainSumcheckChallenge k.castSucc)
+        i
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperTranscriptFoldingChallenge_zero {M : ℕ}
+    {ιs : Fin ((M + 1) + 1) → Type}
+    [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (j : Fin (P.foldingParam 0)) :
+    paperTranscriptFoldingChallenge P d T 0 j = T.initialSumcheckChallenge j := by
+  rfl
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperTranscriptFoldingChallenge_succ {M : ℕ}
+    {ιs : Fin ((M + 1) + 1) → Type}
+    [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (i : Fin M) (j : Fin (P.foldingParam i.succ)) :
+    paperTranscriptFoldingChallenge P d T i.succ j =
+      T.mainSumcheckChallenge i.castSucc j := by
+  rfl
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
 /-- Domain bridge needed to state that a paper-order folded-oracle message is an actual
 `Fold.fold_k` output.
 
