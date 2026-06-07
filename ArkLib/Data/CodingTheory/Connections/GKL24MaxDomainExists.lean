@@ -89,4 +89,28 @@ theorem corrAgreeDomain_subset_inter_card
       ≤ ((lineAgreeSet u₀ u₁ w γ ∩ lineAgreeSet u₀ u₁ w γ').card : ℝ≥0) :=
   le_trans hD.1 (by exact_mod_cast Finset.card_le_card (Finset.subset_inter hγ hγ'))
 
+/-- **Line-agreement petals are pairwise disjoint above a domain absorbing their intersection.**
+If `D` contains `lineAgreeSet γ ∩ lineAgreeSet γ'`, the petals `lineAgreeSet γ \ D` and
+`lineAgreeSet γ' \ D` are disjoint: their overlap lies in the intersection, which `D` removes.
+This is the GKL24 / GCXK25 sunflower-petal disjointness step. -/
+theorem linePetal_disjoint_of_inter_subset (D : Finset ι) (u₀ u₁ w : ι → F) {γ γ' : F}
+    (h : lineAgreeSet u₀ u₁ w γ ∩ lineAgreeSet u₀ u₁ w γ' ⊆ D) :
+    Disjoint (linePetal D u₀ u₁ w γ) (linePetal D u₀ u₁ w γ') := by
+  rw [Finset.disjoint_left]
+  intro i hi hi'
+  rw [linePetal, Finset.mem_sdiff] at hi
+  rw [linePetal, Finset.mem_sdiff] at hi'
+  exact hi.2 (h (Finset.mem_inter.mpr ⟨hi.1, hi'.1⟩))
+
+/-- **Sunflower petals for distinct bad combiners are disjoint above a domain containing the common
+zero-agreement set.**  Specialising `linePetal_disjoint_of_inter_subset` via `lineAgreeSet_inter_eq`:
+for `γ ≠ γ'`, if `D ⊇ {i : u₁ᵢ = 0 ∧ wᵢ = u₀ᵢ}` then the two petals are disjoint.  Together with
+`corrAgreeDomain_subset_inter_card` and `exists_maxCorrAgreeDomain_of_nonempty`, this assembles the
+sunflower structure of the GKL24 residual around a maximal domain. -/
+theorem linePetal_disjoint_of_common_subset (D : Finset ι) (u₀ u₁ w : ι → F) {γ γ' : F}
+    (hγ : γ ≠ γ')
+    (h : Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i) ⊆ D) :
+    Disjoint (linePetal D u₀ u₁ w γ) (linePetal D u₀ u₁ w γ') :=
+  linePetal_disjoint_of_inter_subset D u₀ u₁ w (by rw [lineAgreeSet_inter_eq u₀ u₁ w hγ]; exact h)
+
 end ProximityGap
