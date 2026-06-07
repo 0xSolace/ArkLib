@@ -293,6 +293,47 @@ theorem AlphaGenuineRegularWeightLe.of_divWeight (x₀ : F) (R : F[X][X][Y])
     AlphaGenuineRegularWeightLe H x₀ R hHyp hH D :=
   (alphaWeight_iff_divWeight H x₀ R hHyp hH D hlift).2 hdiv
 
+/-- The base case of carved regularity is equivalent to the base case of `𝒪`-divisibility, given
+the lift identity. -/
+theorem alphaWeight_zero_iff_divWeight_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :
+    AlphaGenuineRegularWeightLe_zero H x₀ R hHyp hH D ↔
+      DivWeightLe_zero H x₀ R hHyp hH D := by
+  constructor
+  · intro hα
+    obtain ⟨a, ha_eq, ha_wt⟩ := hα
+    exact ⟨a, βHensel_eq_alpha_mul_of_lift H x₀ R hHyp hH 0 ha_eq (hlift 0), ha_wt⟩
+  · intro hdiv
+    obtain ⟨a, hfact, ha_wt⟩ := hdiv
+    exact ⟨a, alpha_eq_embedding_of_fact H x₀ R hHyp 0 hfact (hlift 0), ha_wt⟩
+
+/-- Each successor case of carved regularity is equivalent to the corresponding successor case of
+`𝒪`-divisibility, given the lift identity. -/
+theorem alphaWeight_succ_iff_divWeight_succ (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (t : ℕ) :
+    AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t ↔
+      DivWeightLe_succ H x₀ R hHyp hH D t := by
+  constructor
+  · intro hα
+    obtain ⟨a, ha_eq, ha_wt⟩ := hα
+    exact
+      ⟨a, βHensel_eq_alpha_mul_of_lift H x₀ R hHyp hH (t + 1) ha_eq (hlift (t + 1)),
+        ha_wt⟩
+  · intro hdiv
+    obtain ⟨a, hfact, ha_wt⟩ := hdiv
+    exact ⟨a, alpha_eq_embedding_of_fact H x₀ R hHyp (t + 1) hfact (hlift (t + 1)), ha_wt⟩
+
 /-! ### 3. The STRUCTURED INVARIANT — PROVEN from `AlphaGenuineRegularWeightLe` + `hlift`
 
 This is the genuine forward closure: the carved link + the lift identity yield the paper's
@@ -447,6 +488,8 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_iff_divWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.of_alphaWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.of_divWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_zero_iff_divWeight_zero
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_succ_iff_divWeight_succ
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_structured
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight'
