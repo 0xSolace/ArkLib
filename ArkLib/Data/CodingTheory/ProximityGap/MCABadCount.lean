@@ -60,6 +60,16 @@ theorem mcaBadCount_eq_zero_of_forall_not_mcaEvent
   intro γ _ hγ
   exact h γ hγ
 
+/-- The full code has no bad scalars in the finite MCA bad-count model. -/
+theorem mcaBadCount_univ_eq_zero
+    (δ : ℝ≥0) (u₀ u₁ : ι → A) :
+    mcaBadCount (F := F) (A := A) (Set.univ : Set (ι → A)) δ u₀ u₁ = 0 := by
+  refine mcaBadCount_eq_zero_of_forall_not_mcaEvent
+    (F := F) (A := A) (Set.univ : Set (ι → A)) δ u₀ u₁ ?_
+  intro γ
+  rintro ⟨S, hS, hw, hno⟩
+  exact hno ⟨u₀, Set.mem_univ _, u₁, Set.mem_univ _, fun i _ => ⟨rfl, rfl⟩⟩
+
 /-- The finite bad-scalar count vanishes exactly when no scalar realizes the MCA bad event. -/
 theorem mcaBadCount_eq_zero_iff_forall_not_mcaEvent
     (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) :
@@ -159,11 +169,27 @@ theorem grandMCAChallenge_iff_forall_badCount_le (C : LinearCode ι F) (ε_star 
   have hqt : (Fintype.card F : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top _
   rw [ENNReal.div_le_iff hq0 hqt, iSup_le_iff]
 
+/-- The top/full linear code satisfies the formal Grand MCA Challenge at every threshold. This
+is the direct challenge-level endpoint form of `mcaBadCount_univ_eq_zero`: the top code has no
+bad scalars for any stack, so the radius-one finite-count criterion is immediate. -/
+theorem grandMCAChallenge_top (ε_star : ℝ≥0) :
+    grandMCAChallenge (F := F) (ι := ι) (⊤ : LinearCode ι F) ε_star := by
+  classical
+  rw [grandMCAChallenge_iff_forall_badCount_le]
+  intro u
+  rw [show (((⊤ : LinearCode ι F) : Set (ι → F)) = Set.univ) by
+    ext x
+    simp]
+  rw [mcaBadCount_univ_eq_zero]
+  simp
+
 #print axioms ProximityGap.mcaBadCount_eq_zero_of_forall_not_mcaEvent
+#print axioms ProximityGap.mcaBadCount_univ_eq_zero
 #print axioms ProximityGap.mcaBadCount_eq_zero_iff_forall_not_mcaEvent
 #print axioms ProximityGap.epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero
 #print axioms ProximityGap.forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero
 #print axioms ProximityGap.epsMCA_eq_zero_iff_forall_mcaBadCount_eq_zero
 #print axioms ProximityGap.epsMCA_eq_zero_of_forall_not_mcaEvent
+#print axioms ProximityGap.grandMCAChallenge_top
 
 end ProximityGap
