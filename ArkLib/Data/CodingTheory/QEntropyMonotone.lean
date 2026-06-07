@@ -85,6 +85,20 @@ theorem qEntropy_le_one (hq : 2 ≤ q) {δ : ℝ} (hδ0 : 0 ≤ δ) (hδ : δ �
         qEntropy_le_qEntropy_of_le hq hδ0 hδ le_rfl
     _ = 1 := hcap
 
+/-- **Floored-radius entropy is at most capacity.**  Below capacity, the lattice radius
+`⌊δ * n⌋ / n` has q-entropy at most `1`. -/
+theorem qEntropy_floor_mul_div_le_one (hq : 2 ≤ q) {n : ℕ} {δ : ℝ}
+    (hn : 0 < n) (hδ0 : 0 ≤ δ) (hδ : δ ≤ 1 - 1 / (q : ℝ)) :
+    qEntropy q ((Nat.floor (δ * n) : ℝ) / n) ≤ 1 :=
+  le_trans (qEntropy_floor_mul_div_le hq hn hδ0 hδ) (qEntropy_le_one hq hδ0 hδ)
+
+/-- Finite-domain specialization of `qEntropy_floor_mul_div_le_one`. -/
+theorem qEntropy_floor_mul_card_div_card_le_one (hq : 2 ≤ q) {ι : Type}
+    [Fintype ι] [Nonempty ι] {δ : ℝ}
+    (hδ0 : 0 ≤ δ) (hδ : δ ≤ 1 - 1 / (q : ℝ)) :
+    qEntropy q ((Nat.floor (δ * Fintype.card ι) : ℝ) / Fintype.card ι) ≤ 1 :=
+  qEntropy_floor_mul_div_le_one hq Fintype.card_pos hδ0 hδ
+
 /-- **`qEntropy q δ > 0` strictly inside `(0, 1)`.**  From Mathlib's `Real.qaryEntropy_pos`
 through the base-change bridge (division by `log q > 0` preserves strict positivity). -/
 theorem qEntropy_pos (hq : 2 ≤ q) {δ : ℝ} (hδ0 : 0 < δ) (hδ1 : δ < 1) : 0 < qEntropy q δ := by
@@ -106,3 +120,5 @@ end CodingTheory
 #print axioms CodingTheory.qEntropy_floor_mul_div_le
 #print axioms CodingTheory.qEntropy_floor_mul_card_div_card_le
 #print axioms CodingTheory.qEntropy_le_one
+#print axioms CodingTheory.qEntropy_floor_mul_div_le_one
+#print axioms CodingTheory.qEntropy_floor_mul_card_div_card_le_one
