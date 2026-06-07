@@ -82,12 +82,22 @@ theorem semanticChallengeIdx_card (M : ℕ) :
   simp [semanticChallengeIdx, hKind]
   omega
 
+/-- A concrete finite indexing for semantic WHIR verifier-challenge roles. -/
+noncomputable def semanticChallengeIdxEquivFin (M : ℕ) :
+    semanticChallengeIdx M ≃ Fin (2 * M + 2) :=
+  Fintype.equivFinOfCardEq (semanticChallengeIdx_card M)
+
 /-- The semantic WHIR skeleton has the same number of prover-message slots as verifier challenges. -/
 theorem semanticMessageIdx_card (M : ℕ) :
     Fintype.card (semanticMessageIdx M) = 2 * M + 2 := by
   have hKind : Fintype.card RoundMessageKind = 2 := by decide
   simp [semanticMessageIdx, hKind]
   omega
+
+/-- A concrete finite indexing for semantic WHIR prover-message roles. -/
+noncomputable def semanticMessageIdxEquivFin (M : ℕ) :
+    semanticMessageIdx M ≃ Fin (2 * M + 2) :=
+  Fintype.equivFinOfCardEq (semanticMessageIdx_card M)
 
 /-! ### The WHIR protocol-spec direction vector
 
@@ -385,7 +395,9 @@ end RBRSoundnessAssembly
 #print axioms whirVectorSpec_totalMessageLength
 #print axioms whir_rbr_soundness_of_secure_gap
 #print axioms semanticChallengeIdx_card
+#print axioms semanticChallengeIdxEquivFin
 #print axioms semanticMessageIdx_card
+#print axioms semanticMessageIdxEquivFin
 #print axioms whir_rbr_soundness_of_whirVectorSpec_secure_gap
 
 end Construction
