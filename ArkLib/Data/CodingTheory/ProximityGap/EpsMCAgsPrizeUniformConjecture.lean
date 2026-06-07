@@ -21,7 +21,9 @@ set_option linter.unusedSectionVars false
 
 namespace ProximityGap
 
-open NNReal
+open NNReal Code
+open scoped ProbabilityTheory BigOperators
+open MCAGS
 
 /-- The uniform `epsMCAgsPrizeUniformConjecture` asserts that there are uniform
     constants (c₁, c₂, c₃) satisfying the GS prize bound for all rates if the
@@ -43,17 +45,17 @@ theorem epsMCAgsPrizeUniformConjecture_of_listSize_clears
     (ℓ : Fin 4 → ℝ≥0 → ℝ≥0 → (WordStack F (Fin 2) ι → Finset (ι → F)) → ℕ)
     (c₁ c₂ c₃ : ℝ)
     (hcov : ∀ (j : Fin 4) (η δ : ℝ≥0) (hη : 0 < η)
-      (hδ : (δ : ℝ) ≤ RSCapacityRadius (ProximityGap.prizeRates j) η)
+      (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ))
       (L : WordStack F (Fin 2) ι → Finset (ι → F)) (u : WordStack F (Fin 2) ι),
       PivotCovering (F := F)
-        ((Code.ReedSolomon.code (domain := domain)
+        ((ReedSolomon.code (domain := domain)
           ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))) δ L u)
     (hsize : ∀ (j : Fin 4) (η δ : ℝ≥0) (hη : 0 < η)
-      (hδ : (δ : ℝ) ≤ RSCapacityRadius (ProximityGap.prizeRates j) η)
+      (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ))
       (L : WordStack F (Fin 2) ι → Finset (ι → F)) (u : WordStack F (Fin 2) ι),
       (L u).card ≤ ℓ j η δ L)
     (hclear : ∀ (j : Fin 4) (η δ : ℝ≥0) (hη : 0 < η)
-      (hδ : (δ : ℝ) ≤ RSCapacityRadius (ProximityGap.prizeRates j) η)
+      (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ))
       (L : WordStack F (Fin 2) ι → Finset (ι → F)),
       ((ℓ j η δ L : ENNReal) / (Fintype.card F : ENNReal)) ≤
         ENNReal.ofReal
