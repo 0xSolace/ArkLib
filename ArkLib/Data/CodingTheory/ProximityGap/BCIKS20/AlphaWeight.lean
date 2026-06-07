@@ -644,6 +644,43 @@ theorem βHensel_weight_bound_of_normalized_divWeight_cases (x₀ : F) (R : F[X]
   βHensel_weight_bound_of_divWeight H x₀ R hHyp hH hDH hdR2 hdHR hW
     (DivWeightLe.of_normalized_cases H x₀ R hHyp hH D h0 hsucc) hξ t
 
+/-- **(P1), directly from `DivWeightLe`, with the `ξ` side condition discharged.**  Once the
+concrete divisibility residual is supplied, the remaining `ξ`-weight input is exactly
+`ClaimA2.weight_ξ_bound` under the faithful degree regime. -/
+theorem βHensel_weight_bound_of_divWeight' (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_of_divWeight H x₀ R hHyp hH hDH hdR2 hdHR hW hdiv
+    (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0) t
+
+/-- **(P1), directly from normalized base/successor divisibility targets, with `ξ` discharged.** -/
+theorem βHensel_weight_bound_of_normalized_divWeight_cases' (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_of_normalized_divWeight_cases H x₀ R hHyp hH hDH hdR2 hdHR hW
+    h0 hsucc (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0) t
+
 /-! ### 4′. Discharging `hξ` via the PROVEN `weight_ξ_bound` (SOLE residual: `hlift` + `hα`) -/
 
 /-- **(P1)**, with `hξ` discharged by the proven `ClaimA2.weight_ξ_bound` under its regime.  The
@@ -1035,6 +1072,8 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_divWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_normalized_divWeight_cases
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_divWeight'
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_normalized_divWeight_cases'
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight'
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alpha
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alphaWeight
