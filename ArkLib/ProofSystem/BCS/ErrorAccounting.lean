@@ -327,6 +327,75 @@ theorem bcs_union_bound_append_mono_error {m n : ℕ} (μ : UnionBoundPr E)
     (bcsTotalError_mono hInteraction_mono hLeft_mono)
     (Finset.sum_le_sum fun i _ => hRight_mono i)
 
+/-- Opening-phase union bound. If each per-message opening failure is bounded by its local
+opening error, then the composite opening-failure event is bounded by the sum of those local
+errors. This isolates the query-log opening phase from the interaction-phase event. -/
+theorem bcs_opening_union_bound {m : ℕ} (μ : UnionBoundPr E)
+    (badOpen : Fin m → E) (εOpen : Fin m → ℝ≥0)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen i) :
+    μ.pr (μ.unionFin badOpen) ≤ ∑ i, εOpen i := by
+  calc
+    μ.pr (μ.unionFin badOpen) ≤ ∑ i, μ.pr (badOpen i) :=
+      μ.pr_unionFin_le badOpen
+    _ ≤ ∑ i, εOpen i := by
+      exact Finset.sum_le_sum fun i _ => hOpen i
+
+/-- Relax the per-message opening budgets after proving the composite opening-union bound. -/
+theorem bcs_opening_union_bound_mono_error {m : ℕ} (μ : UnionBoundPr E)
+    (badOpen : Fin m → E) (εOpen₁ εOpen₂ : Fin m → ℝ≥0)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.unionFin badOpen) ≤ ∑ i, εOpen₂ i := by
+  exact le_trans
+    (bcs_opening_union_bound μ badOpen εOpen₁ hOpen)
+    (Finset.sum_le_sum fun i _ => hOpen_mono i)
+
+/-- Two-phase BCS append accounting when the opening phase is already packaged as the composite
+union of all per-message opening failures. This is the direct bridge from a query-log opening
+union bound to the interaction-plus-opening compiler budget. -/
+theorem bcs_append_accounting_of_opening_bound {m : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badOpen : Fin m → E)
+    (εInteraction εOpenTotal : ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction)
+    (hOpenTotal : μ.pr (μ.unionFin badOpen) ≤ εOpenTotal) :
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+      ≤ εInteraction + εOpenTotal := by
+  calc
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+        ≤ μ.pr badInteraction + μ.pr (μ.unionFin badOpen) := μ.pr_union_le _ _
+    _ ≤ εInteraction + εOpenTotal := add_le_add hInteraction hOpenTotal
+
+/-- Two-phase BCS append accounting where the composite opening phase is generated from
+per-message opening failures and their local error bounds. -/
+theorem bcs_append_accounting_of_opening_batch {m : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badOpen : Fin m → E)
+    (εInteraction : ℝ≥0) (εOpen : Fin m → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen i) :
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+      ≤ εInteraction + ∑ i, εOpen i :=
+  bcs_append_accounting_of_opening_bound μ badInteraction badOpen
+    εInteraction (∑ i, εOpen i) hInteraction
+    (bcs_opening_union_bound μ badOpen εOpen hOpen)
+
+/-- Relax the interaction and per-message opening budgets after packaging the opening phase as a
+single composite query-log failure event. -/
+theorem bcs_append_accounting_of_opening_batch_mono_error {m : ℕ}
+    (μ : UnionBoundPr E) (badInteraction : E) (badOpen : Fin m → E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (εOpen₁ εOpen₂ : Fin m → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+      ≤ εInteraction₂ + ∑ i, εOpen₂ i :=
+  bcs_append_accounting_of_opening_bound μ badInteraction badOpen
+    εInteraction₂ (∑ i, εOpen₂ i)
+    (le_trans hInteraction hInteraction_mono)
+    (bcs_opening_union_bound_mono_error μ badOpen εOpen₁ εOpen₂
+      hOpen hOpen_mono)
+
 /-! ## 3. Specialization to the two-phase `append` shape
 
 The reduction-level `OracleReduction.BCSTransform` is literally
@@ -423,6 +492,11 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_union_bound_append_zero_right
 #print axioms bcs_union_bound_mono_error
 #print axioms bcs_union_bound_append_mono_error
+#print axioms bcs_opening_union_bound
+#print axioms bcs_opening_union_bound_mono_error
+#print axioms bcs_append_accounting_of_opening_bound
+#print axioms bcs_append_accounting_of_opening_batch
+#print axioms bcs_append_accounting_of_opening_batch_mono_error
 #print axioms bcs_append_accounting
 #print axioms bcs_append_accounting_mono_error
 #print axioms bcs_two_phase_total_eq
