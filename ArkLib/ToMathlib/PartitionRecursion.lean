@@ -115,6 +115,17 @@ theorem eq_indiscrete_of_mem_self (ht : 0 < t) {p : Nat.Partition t} (hm : t ∈
   apply Nat.Partition.ext
   rw [hpe, Nat.Partition.indiscrete_parts ht.ne']
 
+/-- A partition of `t > 0` contains the part `t` **iff** it is the trivial partition `λ^(t)`.
+The packaged biconditional of `eq_indiscrete_of_mem_self` (forward) and the singleton membership of
+`indiscrete` (reverse). With `notMem_parts_of_lt` this fully resolves the BCIKS20 A.4 exclusion
+`(t+1) ∉ λ.parts`: for a partition of total `t+1`, the only excluded term is `λ = indiscrete (t+1)`
+(the single part `[t+1]`); for any smaller total the exclusion is vacuous. -/
+theorem mem_self_iff_eq_indiscrete (ht : 0 < t) {p : Nat.Partition t} :
+    t ∈ p.parts ↔ p = Nat.Partition.indiscrete t := by
+  refine ⟨eq_indiscrete_of_mem_self ht, fun h => ?_⟩
+  rw [h, Nat.Partition.indiscrete_parts ht.ne']
+  exact Multiset.mem_singleton.mpr rfl
+
 /-! ### THE decreasing-measure lemma (the `i₁ = 0` case; what §6 of the DAG specifies) -/
 
 /-- **The key export for L7's well-founded recursion (`i₁ = 0` case).**
@@ -243,3 +254,4 @@ end ArkLib
 #print axioms ArkLib.Nat.Partition.card_parts_indiscrete
 #print axioms ArkLib.Nat.Partition.recursionStep_rel
 #print axioms ArkLib.Nat.Partition.notMem_parts_of_lt
+#print axioms ArkLib.Nat.Partition.mem_self_iff_eq_indiscrete
