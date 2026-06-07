@@ -46,3 +46,12 @@ theorem restrictedMatch_iff_assembled_eq_gammaGenuine (x₀ : F) (R : F[X][X][Y]
     rw [faaDiBrunoFullSum_eq_coeff, heq, gammaGenuine_root hHyp, map_zero]
 
 end BCIKS20.HenselNumerator
+
+
+/-- **THE P2 TERM-LEVEL RESIDUAL (issue #90).**
+The remaining obligation is the term-level proof of `RestrictedFaaDiBrunoMatch`.
+-/
+theorem restrictedFaaDiBrunoMatch_holds (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoMatch H x₀ R hHyp := by
+  sorry
