@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
 
 /-!
 # Two-line correlated-agreement extraction (proximity gap, linear codes)
