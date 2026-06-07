@@ -77,6 +77,38 @@ theorem not_jointProximity_zero_of_row_not_mem
   simp only [interleavedCodeSet] at hjp
   exact hk (hjp k)
 
+/-- **All-but-one producer for `NearCertainBadLine`.**
+If a stack is not jointly close and every scalar except one distinguished bad scalar makes the
+combined word close to `C`, then the good set `univ.erase γ_bad` supplies the
+`NearCertainBadLine` witness. -/
+theorem nearCertainBadLine_of_allButOne
+    (C : Set (ι → F)) (δ_fld δ_int : ℝ≥0) (u : WordStack F (Fin 2) ι)
+    (γ_bad : F)
+    (hjp : ¬ jointProximity (C := C) (u := u) δ_int)
+    (hgood : ∀ γ : F, γ ≠ γ_bad → δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) :
+    NearCertainBadLine (F := F) (A := F) C δ_fld δ_int := by
+  classical
+  refine ⟨u, hjp, Finset.univ.erase γ_bad, ?_, ?_⟩
+  · intro γ hγ
+    exact hgood γ (Finset.ne_of_mem_erase hγ)
+  · have hcard :
+        (Finset.univ.erase γ_bad).card = Fintype.card F - 1 := by
+      rw [Finset.card_erase_of_mem (Finset.mem_univ γ_bad), Finset.card_univ]
+    have hpos : 0 < Fintype.card F := Fintype.card_pos
+    have hcast : ((Fintype.card F - 1 : ℕ) : ℝ) = (Fintype.card F : ℝ) - 1 := by
+      norm_num [Nat.cast_sub (Nat.succ_le_of_lt hpos)]
+    rw [hcard, hcast]
+
+/-- **T5.4 endpoint from an all-but-one near-certain bad line.** -/
+theorem epsCA_ge_one_sub_inv_of_allButOne
+    (C : Set (ι → F)) (δ_fld δ_int : ℝ≥0) (u : WordStack F (Fin 2) ι)
+    (γ_bad : F)
+    (hjp : ¬ jointProximity (C := C) (u := u) δ_int)
+    (hgood : ∀ γ : F, γ ≠ γ_bad → δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) :
+    ENNReal.ofReal (1 - 1 / Fintype.card F) ≤ epsCA (F := F) (A := F) C δ_fld δ_int :=
+  epsCA_separation_bridge_of_residual (F := F) (A := F) C δ_fld δ_int
+    (nearCertainBadLine_of_allButOne C δ_fld δ_int u γ_bad hjp hgood)
+
 /-- **General `NearCertainBadLine` producer (BGKS20 line-code construction).**
 Given a stack `u` whose row `0` traces a complete affine line that is contained in `C` —
 `u 0 + γ • u 1 ∈ C` for every `γ` in a good set `Γ` of size at least `|F| - 1` — while its row `1`
@@ -188,6 +220,8 @@ end CodingTheory.Bridge
 /-! ### Axiom audit (issue #104 producer surface) -/
 
 #print axioms CodingTheory.Bridge.not_jointProximity_zero_of_row_not_mem
+#print axioms CodingTheory.Bridge.nearCertainBadLine_of_allButOne
+#print axioms CodingTheory.Bridge.epsCA_ge_one_sub_inv_of_allButOne
 #print axioms CodingTheory.Bridge.nearCertainBadLine_of_line_code
 #print axioms CodingTheory.Bridge.epsCA_ge_one_sub_inv_of_line_code
 #print axioms CodingTheory.Bridge.char2_nearCertainBadLine
