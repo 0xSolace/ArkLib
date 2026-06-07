@@ -550,6 +550,83 @@ theorem RestrictedMatchAtZeroEval₂WDivTarget.of_partitionMatch
   RestrictedMatchAtZeroEval₂WDivTarget.of_partitionMatchAt_zero H x₀ R hHyp hd
     (RestrictedFaaDiBrunoPartitionMatch.at H x₀ R hHyp hpart 0)
 
+/-! ### Order-zero STEP-8 as a single polynomial-lift identity (axiom-clean)
+
+The compact `eval₂`/W-divisor order-zero target `RestrictedMatchAtZeroEval₂WDivTarget` is reduced to
+an explicit equality of two `F[X][Y]`-polynomial lifts.  This is strictly sharper than the `eval₂`
+form: it isolates the whole remaining order-zero content into a single difference
+`zeroClearingPolyFull − evalX (C x₀) (Δ_X^1 R)` lying in the kernel of `liftBivariate` (equivalently
+in `⟨H_tilde' H⟩`), with the per-`Y`-degree mismatch factor `lc^{R.natDegree − i}` made fully
+explicit.  Both bridges below are axiom-clean and use ONLY the always-true `W`-clearing identity
+`W_pow_mul_eval₂_div_eq_liftBivariate` (valid for the full exponent `R.natDegree ≥ natDegreeY p`)
+plus `W ≠ 0`; neither uses the STEP-8 core. -/
+
+/-- The explicit `W`-power-weighted clearing polynomial for the order-zero Hasse coefficient
+`p = evalX (C x₀) (Δ_X^1 Δ_Y^0 R)`, cleared by the FULL `R.natDegree` (not `natDegreeY p`): each
+`Y`-power `i` of `p` is scaled by `lc^{R.natDegree − i}`.  Its `Y↦T` lift is exactly
+`W^{R.natDegree} · eval₂(T/W) p` by `W_pow_mul_eval₂_div_eq_liftBivariate`. -/
+def zeroClearingPolyFull (x₀ : F) (R : F[X][X][Y]) : F[X][Y] :=
+  ∑ i ∈ Finset.range (R.natDegree + 1),
+    Polynomial.C
+      ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))).coeff i
+        * H.leadingCoeff ^ (R.natDegree - i)) * Polynomial.X ^ i
+
+/-- **Order-zero STEP-8 `eval₂`/W-divisor target ⟺ the full-clearing polynomial lifts to the
+un-cleared one (axiom-clean, NO hypotheses).**  `RestrictedMatchAtZeroEval₂WDivTarget` is exactly the
+polynomial-lift identity `liftBivariate (zeroClearingPolyFull) = liftBivariate p`, with
+`p = evalX (C x₀) (Δ_X^1 R)`.  No degree or `ζ`-nonvanishing hypothesis is needed: it follows purely
+from the always-true `W`-clearing identity `W_pow_mul_eval₂_div_eq_liftBivariate` at the full
+exponent `R.natDegree ≥ natDegreeY p` together with `W ≠ 0`. -/
+theorem restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_lift
+    (x₀ : F) (R : F[X][X][Y]) :
+    RestrictedMatchAtZeroEval₂WDivTarget H x₀ R ↔
+      liftBivariate (H := H) (zeroClearingPolyFull H x₀ R)
+        = liftBivariate (H := H)
+            (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))) := by
+  set p : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R)) with hp
+  have hWne : liftToFunctionField (H := H) H.leadingCoeff ≠ 0 :=
+    liftToFunctionField_leadingCoeff_ne_zero (H := H)
+  have hpdeg : p.natDegree ≤ R.natDegree := by
+    have h1 : Bivariate.natDegreeY p ≤ Bivariate.natDegreeY R := by
+      rw [hp, hasseDerivY_zero]
+      exact (evalX_natDegreeY_le (Polynomial.C x₀) _).trans (hasseDerivX_natDegreeY_le 1 R)
+    simpa [Bivariate.natDegreeY] using h1
+  unfold RestrictedMatchAtZeroEval₂WDivTarget zeroClearingPolyFull
+  rw [← hp, ← liftBivariate_eq_eval₂_functionFieldT H p]
+  have hclear := W_pow_mul_eval₂_div_eq_liftBivariate H (P := p) (k := R.natDegree) hpdeg
+  constructor
+  · intro htarget
+    rw [htarget, mul_div_cancel₀ _ (pow_ne_zero _ hWne)] at hclear
+    exact hclear.symm
+  · intro hpoly
+    rw [hpoly] at hclear
+    rw [eq_div_iff (pow_ne_zero _ hWne), mul_comm]
+    exact hclear
+
+/-- **The actual carved order-zero P2 core ⟺ the explicit polynomial-lift identity (axiom-clean).**
+Under the standard `2 ≤ R.natDegree` regime hypothesis, the genuine carved core
+`RestrictedFaaDiBrunoMatchAt … 0` — which DOES carry `hHyp` (including
+`hHyp.dvd_evalX : H ∣ evalX (C x₀) R`) — is logically equivalent to the concrete polynomial-lift
+identity `liftBivariate (zeroClearingPolyFull) = liftBivariate (evalX (C x₀) (Δ_X^1 R))`.
+
+This is the sharpest in-tree restatement of the order-zero STEP-8 obstruction: it pins the entire
+remaining order-zero content to a single equation between two `F[X][Y]`-polynomial lifts, whose
+per-`Y`-degree mismatch factor is exactly `lc^{R.natDegree − i}`.  The equation is equivalently the
+membership of the difference `zeroClearingPolyFull − evalX (C x₀) (Δ_X^1 R)` in `⟨H_tilde' H⟩`.
+Closing it requires routing the `H ∣ evalX (C x₀) R` arithmetic into that quotient-membership — the
+genuine non-per-term global-resummation step (note the bare W-divisor target without `hHyp` is
+generically false whenever the `Y`-degree strictly drops, `natDegreeY p < R.natDegree`, since then
+the mismatch factors `lc^{R.natDegree − i} ≠ 1` survive). -/
+theorem restrictedMatchAt_zero_iff_zeroClearingPolyFull_lift
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
+      liftBivariate (H := H) (zeroClearingPolyFull H x₀ R)
+        = liftBivariate (H := H)
+            (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))) :=
+  (restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd).trans
+    (restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_lift H x₀ R)
+
 /-- **The cleared `𝒪`-rep embedding is `W^{natDegreeY p}` times the un-cleared rep embedding, GIVEN
 the STEP-8 target (axiom-clean).** Makes the cleared/un-cleared `eval₂` mismatch *quantitative*:
 under the carved STEP-8 match `HasseCoeffRepr𝒪UnclearedEval₂Target`, the two `𝒪`-reps are related by
