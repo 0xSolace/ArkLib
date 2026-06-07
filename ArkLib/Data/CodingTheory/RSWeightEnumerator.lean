@@ -68,8 +68,30 @@ theorem natCard_ker_evalOnS_general (α : ι ↪ F) (deg : ℕ) (S : Finset ι) 
       rw [eq_bot_iff, ← hbot']; exact hle
     rw [hbot]; simp
 
+/-- **Support-⊆ sum.**  Summing the support count over all `d`-element coordinate sets `T` (a
+codeword of weight `d` is supported on some such `T`, i.e. vanishes on `Tᶜ`):
+
+  `∑_{|T|=d} #{p vanishing on Tᶜ} = C(n, d) · q^{deg − (n − d)}`.
+
+There are `C(n,d)` sets `T`, each contributing the constant `q^{deg − |Tᶜ|} = q^{deg − (n − d)}`
+(`natCard_ker_evalOnS_general`).  This is the right-hand side of the MDS weight-enumerator upper
+bound `A_d ≤ C(n,d)·q^{d−(n−deg)}` (every weight-`d` codeword is counted in its own support term). -/
+theorem supportSubsetSum_eq (α : ι ↪ F) (deg d : ℕ) :
+    ∑ T ∈ (Finset.univ : Finset ι).powersetCard d,
+        Nat.card (LinearMap.ker (evalOnS α deg Tᶜ))
+      = (Fintype.card ι).choose d * (Fintype.card F) ^ (deg - (Fintype.card ι - d)) := by
+  have hconst : ∀ T ∈ (Finset.univ : Finset ι).powersetCard d,
+      Nat.card (LinearMap.ker (evalOnS α deg Tᶜ))
+        = (Fintype.card F) ^ (deg - (Fintype.card ι - d)) := by
+    intro T hT
+    rw [Finset.mem_powersetCard] at hT
+    rw [natCard_ker_evalOnS_general, Finset.card_compl, hT.2]
+  rw [Finset.sum_congr rfl hconst, Finset.sum_const, Finset.card_powersetCard, Finset.card_univ,
+    smul_eq_mul]
+
 end ArkLib.CS25
 
 -- Axiom audit.
 #print axioms ArkLib.CS25.natCard_ker_evalOnS
 #print axioms ArkLib.CS25.natCard_ker_evalOnS_general
+#print axioms ArkLib.CS25.supportSubsetSum_eq
