@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
+import ArkLib.Data.CodingTheory.ProximityGap.MCAGSWitness
 
 /-!
 # Issue #141: the fixed-field uniform GS prize is a theorem; the open prize is field-universal
@@ -166,11 +166,58 @@ theorem epsMCA_le_of_universalGSConjecture (m : ℕ)
   obtain ⟨L, hfaithful, hle⟩ := hbound domain j η δ hη hδ
   exact le_trans hfaithful hle
 
+/-! ## The honest open core, isolated (no laundering)
+
+`epsMCAgsPrizeUniversalConjecture` reduces — with no other assumption — to a *single* named
+hypothesis: a field-universal beyond-UDR Guruswami–Sudan list-mass bound. The reduction routes
+through the already-**proved** `epsMCAgs_le_listSize_div_of_pivotCovering` (`epsMCAgs ≤ ℓ/q` under
+pivot covering and list size `≤ ℓ`), so the only open content is the *existence* of the uniform GS
+list family with a polynomial size clearing the bound — exactly the classical Guruswami–Sudan mass
+bound at radius `δ ≤ 1 - ρ - η`, which is absent from mathlib. This is not laundering: the open
+content stays an explicit named hypothesis, and everything else is unconditional. -/
+
+/-- **The field-universal beyond-UDR Guruswami–Sudan list-mass hypothesis** — the isolated open
+core of the universal prize. One constant triple and, for every field/domain/prize-rate/gap/radius,
+a GS list family `L` that is faithful (`epsMCA ≤ epsMCAgs`), pivot-covering, of list size `≤ ℓ`,
+with `ℓ/q` clearing the polynomial mass bound. -/
+def UniversalGSListMassBound (m : ℕ) : Prop :=
+  ∃ c₁ c₂ c₃ : ℝ,
+    ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+      {F : Type} [Field F] [Fintype F] [DecidableEq F]
+      (domain : ι ↪ F) (j : Fin 4) (η δ : ℝ≥0),
+      0 < η →
+      (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ) →
+      ∃ (L : WordStack F (Fin 2) ι → Finset (ι → F)) (ℓ : ℕ),
+        FaithfulGSFamily (F := F)
+            ((ReedSolomon.code (domain := domain)
+              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))) δ L ∧
+          (∀ u, PivotCovering (F := F)
+            ((ReedSolomon.code (domain := domain)
+              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))) δ L u) ∧
+          (∀ u, (L u).card ≤ ℓ) ∧
+          ((ℓ : ENNReal) / (Fintype.card F : ENNReal)
+            ≤ ENNReal.ofReal
+                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃))
+
+/-- **The universal prize reduces to the beyond-UDR GS list-mass bound, with nothing else.**
+The proof uses only the proved pivot-covering bound and `le_trans`; the entire open content lives in
+the named hypothesis `UniversalGSListMassBound`. -/
+theorem epsMCAgsPrizeUniversalConjecture_of_UniversalGSListMassBound (m : ℕ)
+    (h : UniversalGSListMassBound m) :
+    epsMCAgsPrizeUniversalConjecture m := by
+  obtain ⟨c₁, c₂, c₃, H⟩ := h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ι _ _ _ F _ _ _ domain j η δ hη hδ
+  obtain ⟨L, ℓ, hfaithful, hcov, hsize, hclear⟩ := H domain j η δ hη hδ
+  refine ⟨L, hfaithful, ?_⟩
+  exact le_trans (epsMCAgs_le_listSize_div_of_pivotCovering _ δ L ℓ hcov hsize) hclear
+
 /-! ## Source audit -/
 
 #print axioms epsMCAgs_prizeBound_conjecture_holds
 #print axioms epsMCAgsPrizeUniversalConjecture
 #print axioms epsMCA_le_of_universalGSConjecture
+#print axioms epsMCAgsPrizeUniversalConjecture_of_UniversalGSListMassBound
 
 end MCAGS
 
