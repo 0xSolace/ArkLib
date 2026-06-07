@@ -205,7 +205,7 @@ theorem exists_maxCorrAgreeDomain_containing
   refine ⟨D, hD₀D, hDcorr, fun E hDE hE => ?_⟩
   have hEmem : E ∈ 𝒮 :=
     Finset.mem_filter.mpr
-      ⟨Finset.mem_powerset.mpr (Finset.subset_univ _), hE, le_trans hD₀D hDE⟩
+      ⟨Finset.mem_powerset.mpr (Finset.subset_univ _), hE, Finset.Subset.trans hD₀D hDE⟩
   exact (Finset.eq_of_subset_of_card_le hDE (hDmax E hEmem)).ge
 
 end ProximityGap
