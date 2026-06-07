@@ -218,4 +218,48 @@ theorem jointAgreement_of_common_locator {α : ι ↪ F} {k e : ℕ}
     have h := hkey₁ i; rw [eval_mul] at h
     exact mul_left_cancel₀ hEne h
 
+open Polynomial in
+/-- **BCIKS20 exact-radius proximity gap for Reed–Solomon, conditional on the shared locator.**
+If the affine-line stack `(u₀, u₁)` admits a shared Berlekamp–Welch locator `E` with codeword
+polynomials `g₀, g₁` (degree `< k`) solving both key equations, then the pair is jointly
+`δ`-close to `RS[k]` at the *full* radius `δ ≥ e/n` — `Code.jointAgreement` with the common
+agreement set `{E(αᵢ) ≠ 0}`.
+
+This packages building blocks #1–#4a; the **only** remaining ingredient for the unconditional
+BCIKS20 exact-radius theorem is the bivariate existence of such a shared `(E, g₀, g₁)` from the
+many-close-scalars hypothesis (the bivariate-interpolation core). -/
+theorem reedSolomon_jointAgreement_of_shared_locator [Fintype F]
+    {α : ι ↪ F} {k e : ℕ} [NeZero k] {u₀ u₁ : ι → F} {E g₀ g₁ : F[X]}
+    (hE0 : E ≠ 0) (hEdeg : E.natDegree ≤ e)
+    (hg₀ : g₀ ∈ Polynomial.degreeLT F k) (hg₁ : g₁ ∈ Polynomial.degreeLT F k)
+    (hkey₀ : ∀ i, E.eval (α i) * u₀ i = (E * g₀).eval (α i))
+    (hkey₁ : ∀ i, E.eval (α i) * u₁ i = (E * g₁).eval (α i))
+    (δ : ℝ≥0) (hδ1 : δ ≤ 1) (hδ : (e : ℝ) ≤ δ * Fintype.card ι) :
+    Code.jointAgreement (↑(ReedSolomon.code α k) : Set (ι → F)) δ
+      (![u₀, u₁] : Fin 2 → ι → F) := by
+  classical
+  obtain ⟨S, hScard, h₀, h₁⟩ := jointAgreement_of_common_locator hE0 hEdeg hkey₀ hkey₁
+  refine ⟨S, ?_, ![ReedSolomon.evalOnPoints α g₀, ReedSolomon.evalOnPoints α g₁], ?_⟩
+  · -- `(1 − δ)·n ≤ |S|`, since `|S| ≥ n − e` and `e ≤ δ·n`
+    have hSr : ((Fintype.card ι : ℝ) - e) ≤ (S.card : ℝ) := by
+      have := hScard
+      have hle : (Fintype.card ι : ℝ) - e ≤ ((Fintype.card ι - e : ℕ) : ℝ) := by
+        rcases le_or_lt e (Fintype.card ι) with h | h
+        · rw [Nat.cast_sub h]
+        · simp only [Nat.sub_eq_zero_of_le h.le, Nat.cast_zero]; linarith [Nat.cast_le.mpr h.le (α := ℝ)]
+      exact le_trans hle (by exact_mod_cast hScard)
+    have hgoal : ((1 - δ : ℝ≥0) : ℝ) * Fintype.card ι ≤ (S.card : ℝ) := by
+      rw [NNReal.coe_sub hδ1]; push_cast; nlinarith [hδ, hSr]
+    have : ((1 - δ : ℝ≥0) * Fintype.card ι : ℝ≥0) ≤ (S.card : ℝ≥0) := by
+      rw [← NNReal.coe_le_coe]; push_cast; exact hgoal
+    exact_mod_cast this
+  · intro j
+    fin_cases j
+    · refine ⟨Submodule.apply_mem_map _ hg₀, ?_⟩
+      intro i hi
+      simpa [ReedSolomon.evalOnPoints] using (h₀ i hi).symm
+    · refine ⟨Submodule.apply_mem_map _ hg₁, ?_⟩
+      intro i hi
+      simpa [ReedSolomon.evalOnPoints] using (h₁ i hi).symm
+
 end ReedSolomon
