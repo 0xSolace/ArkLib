@@ -88,14 +88,6 @@ theorem rsEncoder_eq_of_two_points {m m' : Fin 2 → Sextic} {j₁ j₂ : Fin 4}
     have hcast : ((j₁.val : ℕ) : Sextic) = ((j₂.val : ℕ) : Sextic) := by
       simpa [rsPoint] using hpt
     -- `j₁.val, j₂.val < 4 ≤ p`, so the casts are injective (`Fin` ext + `Nat.cast` injectivity).
-    have h4 : (4 : ℕ) ≤ KoalaBear.fieldSize ^ 6 := by
-      have : (2 : ℕ) ^ 116 ≤ KoalaBear.fieldSize ^ 6 := by
-        have := KoalaBear.card_sextic_ge
-        rwa [KoalaBear.card_sextic] at this
-      have h2 : (4 : ℕ) ≤ (2 : ℕ) ^ 116 := by norm_num
-      exact le_trans h2 this
-    -- Use that the field has characteristic `p` (`fieldSize`), `> 4`, so small casts are injective.
-    -- We pin down `j₁ = j₂` directly from `(j₁.val : Sextic) = (j₂.val : Sextic)`.
     have hlt₁ : j₁.val < 4 := j₁.isLt
     have hlt₂ : j₂.val < 4 := j₂.isLt
     apply Fin.ext
@@ -116,7 +108,7 @@ theorem rsEncoder_eq_of_two_points {m m' : Fin 2 → Sextic} {j₁ j₂ : Fin 4}
   have e₂ : m 0 + m 1 * rsPoint j₂ = m' 0 + m' 1 * rsPoint j₂ := by
     simpa [rsEncoder] using h₂
   -- Subtract: `(m 1 - m' 1)·(rsPoint j₁ - rsPoint j₂) = 0`.
-  have hsub : (m 1 - m' 1) * (rsPoint j₁ - rsPoint j₂) = 0 := by ring_nf; linear_combination e₁ - e₂
+  have hsub : (m 1 - m' 1) * (rsPoint j₁ - rsPoint j₂) = 0 := by linear_combination e₁ - e₂
   have hne : rsPoint j₁ - rsPoint j₂ ≠ 0 := sub_ne_zero.mpr hpt
   have hm1 : m 1 = m' 1 := by
     have h0 : m 1 - m' 1 = 0 := (mul_eq_zero.mp hsub).resolve_right hne
