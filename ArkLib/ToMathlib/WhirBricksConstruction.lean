@@ -175,6 +175,7 @@ noncomputable def paperTranscriptSlotIndex {M : ℕ} {ιs : Fin (M + 1) → Type
     PaperTranscriptSlot P → Fin (Fintype.card (PaperTranscriptSlot P)) :=
   Fintype.equivFin (PaperTranscriptSlot P)
 
+omit [Field F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptSlotIndex_symm_apply {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] {P : Params ιs F}
     (slot : PaperTranscriptSlot P) :
