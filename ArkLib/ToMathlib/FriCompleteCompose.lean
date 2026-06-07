@@ -71,7 +71,7 @@ reduction. -/
 set_option maxHeartbeats 4000000 in
 set_option synthInstance.maxHeartbeats 1600000 in
 theorem reduction_perfectCompleteness_of_phases
-    (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
+    (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ) [NeZero l]
     [∀ i, SampleableType
       ((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F).Challenge i)]
     [∀ i, SampleableType

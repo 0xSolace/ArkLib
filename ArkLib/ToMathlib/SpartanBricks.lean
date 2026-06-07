@@ -101,8 +101,10 @@ def finalPredicate :
     ReaderT (FinalStatement R pp)
       (OracleComp [FinalOracleStatement R pp]ₒ) Prop :=
   fun stmt => do
-    -- The linear-combination coefficients carried in the statement.
-    let r : R1CS.MatrixIdx → R := stmt.2.2.2.1
+    -- The linear-combination coefficients carried in the statement. Statement nesting:
+    -- `AfterSecondSumcheck = r_y × (AfterLinearCombination)` and
+    -- `AfterLinearCombination = (r_A,r_B,r_C) × (AfterSendEvalClaim)`, so `r = stmt.2.1`.
+    let r : R1CS.MatrixIdx → R := stmt.2.1
     -- Query the bundled evaluation-claim oracle for `(v_A, v_B, v_C)`.
     let vA ← (OracleComp.lift <| OracleSpec.query
       (spec := [FinalOracleStatement R pp]ₒ)
