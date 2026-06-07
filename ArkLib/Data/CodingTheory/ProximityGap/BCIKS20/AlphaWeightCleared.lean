@@ -213,6 +213,60 @@ theorem divWeight_clearedBaseCases_iff_successors_of_fixed
   ⟨fun hdiv => hdiv.2,
     DivWeightLe_clearedBaseCases.of_fixed_successors H x₀ R hHyp hH hd hD⟩
 
+/-- Lift the pointwise successor alpha/div-weight equivalence to the whole successor family. -/
+theorem alphaWeight_successors_iff_divWeight_successors_succLift
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1)) :
+    (∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t) ↔
+      ∀ t, DivWeightLe_succ H x₀ R hHyp hH D t := by
+  constructor
+  · intro hα t
+    exact (alphaWeight_succ_iff_divWeight_succ_of_succLift
+      H x₀ R hHyp hH D hliftSucc t).1 (hα t)
+  · intro hdiv t
+    exact (alphaWeight_succ_iff_divWeight_succ_of_succLift
+      H x₀ R hHyp hH D hliftSucc t).2 (hdiv t)
+
+/-- With the corrected alpha-side base fixed, the repaired alpha case split is equivalent to the
+div-weight successor family under successor-order lift identities. -/
+theorem alphaWeight_clearedBaseCases_iff_divWeight_successors_of_fixed_succLift
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree)
+    (hd : 2 ≤ H.natDegree) {D : ℕ} (hD : D ≤ H.natDegree)
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1)) :
+    AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D ↔
+      ∀ t, DivWeightLe_succ H x₀ R hHyp hH D t :=
+  (alphaWeight_clearedBaseCases_iff_successors_of_fixed
+    H x₀ R hHyp hH hd hD).trans
+    (alphaWeight_successors_iff_divWeight_successors_succLift
+      H x₀ R hHyp hH D hliftSucc)
+
+/-- With the corrected div-weight base fixed, the repaired div-weight case split is equivalent to
+the alpha-side successor family under successor-order lift identities. -/
+theorem divWeight_clearedBaseCases_iff_alphaWeight_successors_of_fixed_succLift
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree)
+    (hd : 2 ≤ H.natDegree) {D : ℕ} (hD : D ≤ H.natDegree)
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1)) :
+    DivWeightLe_clearedBaseCases H x₀ R hHyp hH D ↔
+      ∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t :=
+  (divWeight_clearedBaseCases_iff_successors_of_fixed H x₀ R hHyp hH hd hD).trans
+    (alphaWeight_successors_iff_divWeight_successors_succLift
+      H x₀ R hHyp hH D hliftSucc).symm
+
 end AlphaWeight
 end BCIKS20.HenselNumerator
 
@@ -236,5 +290,8 @@ namespace BCIKS20.HenselNumerator.AlphaWeight
 #print axioms alphaWeight_clearedBaseCases_iff_successors_of_fixed
 #print axioms DivWeightLe_clearedBaseCases.of_fixed_successors
 #print axioms divWeight_clearedBaseCases_iff_successors_of_fixed
+#print axioms alphaWeight_successors_iff_divWeight_successors_succLift
+#print axioms alphaWeight_clearedBaseCases_iff_divWeight_successors_of_fixed_succLift
+#print axioms divWeight_clearedBaseCases_iff_alphaWeight_successors_of_fixed_succLift
 
 end BCIKS20.HenselNumerator.AlphaWeight
