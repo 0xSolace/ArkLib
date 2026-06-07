@@ -257,6 +257,16 @@ salt and leaf value. -/
       (idxs[n]'h, salts.get (idxs[n]'h), leaves.get (idxs[n]'h)) := by
   simp [openTranscriptPayloads_openTranscript_eq]
 
+/-- Membership in the honest payload projection is exactly membership of the corresponding opened
+index, paired with its honest salt and leaf value. -/
+theorem openTranscriptPayloads_openTranscript_mem_iff {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s))
+    (payload : SkeletonLeafIndex s × α × α) :
+    payload ∈ openTranscriptPayloads (openTranscript hashFn salts leaves idxs) ↔
+      ∃ i ∈ idxs, (i, salts.get i, leaves.get i) = payload := by
+  rw [openTranscriptPayloads_openTranscript_eq]
+  simp
+
 /-- Duplicate-free requested indices give duplicate-free honest transcript payloads. -/
 theorem openTranscriptPayloads_openTranscript_nodup {s : Skeleton} (hashFn : α → α → α)
     (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s))
@@ -605,6 +615,7 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_length
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_indices
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_getElem
+#print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_mem_iff
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_nodup
 #print axioms InductiveMerkleTree.openTranscript_entries_payload_eq_of_agree
 #print axioms InductiveMerkleTree.openTranscriptPayloads_eq_of_agree
