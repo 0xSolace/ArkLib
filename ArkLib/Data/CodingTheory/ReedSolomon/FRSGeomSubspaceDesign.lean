@@ -53,4 +53,26 @@ theorem frs_geomDomain_isSubspaceDesign
     (Finset.image (geomDomainEmb γ s n hs hsn) Finset.univ)
     hL_dom hγ hadm hkLs' hkord
 
+set_option linter.unusedFintypeInType false in
+/-- **CZ25-profile T2.18 on the canonical geometric domain.**
+
+This is the C3.5-compatible profile companion to `frs_geomDomain_isSubspaceDesign`, obtained by
+monotonically widening the proved GK16 profile to
+`τ(r) = s * k / n / (s - r + 1)` on `r ∈ [s]`. No additional geometric side condition is
+introduced beyond the canonical-domain order bound. -/
+theorem frs_geomDomain_isSubspaceDesign_cz25Profile
+    (γ : F) (k s n : ℕ)
+    (hs : 0 < s) (hn : 0 < n) (hγ : γ ≠ 0) (hsn : s * n ≤ orderOf γ)
+    (hkLs : k ≤ s * n) (hkord : k ≤ orderOf γ) :
+    IsSubspaceDesign s
+      (fun r ↦ if r ∈ Finset.Icc 1 s then
+          (s : ℝ) * (k : ℝ) / Fintype.card (Fin n) / ((s : ℝ) - r + 1) else 1)
+      (frsCode (geomDomainEmb γ s n hs hsn) k s γ) := by
+  haveI : Nonempty (Fin n) := ⟨⟨0, hn⟩⟩
+  exact frs_is_subspaceDesign_cz25Profile_of_gk16Profile
+    (geomDomainEmb γ s n hs hsn) k s γ
+    (frs_geomDomain_isSubspaceDesign γ k s n hs hn hγ hsn hkLs hkord)
+
 end ReedSolomon.Folded
+
+#print axioms ReedSolomon.Folded.frs_geomDomain_isSubspaceDesign_cz25Profile
