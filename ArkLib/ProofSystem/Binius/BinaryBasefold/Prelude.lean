@@ -7,12 +7,18 @@ Authors: Chung Thai Nguyen, Quang Dao
 import ArkLib.Data.CodingTheory.BerlekampWelch.BerlekampWelch
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.Prelims
+import ArkLib.Data.Fin.BigOperators
 import CompPoly.Fields.Binary.AdditiveNTT.AdditiveNTT
 import ArkLib.Data.MvPolynomial.Multilinear
 import ArkLib.Data.MvPolynomial.RestrictDegree
 import CompPoly.Data.Vector.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
+
+theorem Fin.sum_univ_odd_even {n : ℕ} {M : Type*} [AddCommMonoid M] (f : ℕ → M) :
+    (∑ i : Fin (2 ^ n), f (2 * i)) + (∑ i : Fin (2 ^ n), f (2 * i + 1))
+    = ∑ i : Fin (2 ^ (n + 1)), f i :=
+  Fin.sum_univ_pow_two_even_add_odd f
 
 /-!
 # Binary Basefold Preliminaries
@@ -158,6 +164,19 @@ lemma fin_ℓ_steps_lt_r {h_ℓ_add_R_rate : ℓ + 𝓡 < r} (i : Fin ℓ) (step
 omit [NeZero ℓ] [NeZero r] [NeZero 𝓡] in
 lemma ℓ_lt_r {h_ℓ_add_R_rate : ℓ + 𝓡 < r}
     : ℓ < r := by omega
+
+omit [NeZero ℓ] [NeZero r] [NeZero 𝓡] in
+lemma lt_r_of_le_ℓ {h_ℓ_add_R_rate : ℓ + 𝓡 < r} {x : ℕ} (h : x ≤ ℓ) : x < r := by
+  omega
+
+omit [NeZero ℓ] [NeZero r] [NeZero 𝓡] in
+lemma lt_r_of_lt_ℓ {h_ℓ_add_R_rate : ℓ + 𝓡 < r} {x : ℕ} (h : x < ℓ) : x < r := by
+  exact lt_r_of_le_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Nat.le_of_lt h)
+
+omit [NeZero ℓ] [NeZero r] in
+lemma Sdomain_bound {x : ℕ} (h : x ≤ ℓ) : x < ℓ + 𝓡 := by
+  have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+  omega
 
 omit [NeZero ℓ] [NeZero r] [NeZero 𝓡] in
 lemma fin_r_succ_bound {h_ℓ_add_R_rate : ℓ + 𝓡 < r} (i : Fin r) (h_i : i + 1 < ℓ + 𝓡)
