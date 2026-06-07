@@ -87,7 +87,7 @@ theorem entropy_rpow_eq (hq : 2 ≤ q) (n k : ℕ) (hk0 : 0 < k) (hkn : k < n) :
     set A := Real.logb (q : ℝ) ((q : ℝ) - 1)
     set B := Real.logb (q : ℝ) ((k : ℝ) / (n : ℝ))
     set C := Real.logb (q : ℝ) ((m : ℝ) / (n : ℝ))
-    field_simp <;> ring
+    field_simp
   -- Expand `q ^ (n · H)` via the rpow split.
   rw [hexp, Real.rpow_sub hq0, Real.rpow_sub hq0,
       hpow ((q : ℝ) - 1) k hqsub0,
@@ -104,7 +104,7 @@ theorem entropy_rpow_eq (hq : 2 ≤ q) (n k : ℕ) (hk0 : 0 < k) (hkn : k < n) :
   rw [← hnn]
   -- `field_simp` fully discharges the cleared identity under some mathlib versions and
   -- leaves a polynomial goal under others; `<;> ring` is robust to both (no-op on 0 goals).
-  field_simp <;> ring
+  field_simp
 
 /-- **Per-term q-ary entropy bound (the core of ABF26 C3.8).**  For `2 ≤ q`, `0 < k`, `k < n`:
 
