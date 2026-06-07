@@ -237,6 +237,7 @@ import ArkLib.Data.CodingTheory.RandomLinearCodePairwiseProb
 import ArkLib.Data.CodingTheory.RandomLinearCodeParallelProb
 import ArkLib.Data.CodingTheory.RandomLinearCodeRankEquidist
 import ArkLib.Data.CodingTheory.ReedSolomon
+import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleDischarge
 import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
 import ArkLib.Data.CodingTheory.ReedSolomon.Interleaved
