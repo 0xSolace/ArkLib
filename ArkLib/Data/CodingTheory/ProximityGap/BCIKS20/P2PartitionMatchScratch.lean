@@ -19,8 +19,8 @@ theorem restrictedFaaDiBrunoPartitionMatchAt_proof (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
     RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t := by
   change restrictedFaaDiBrunoPartitionForm H x₀ R hHyp t = restrictedMatchRecursionPartitionForm H x₀ R hHyp t
-  rw [← restrictedFaaDiBrunoSum_eq_restrictedPartitionForm H x₀ R hHyp t]
-  rw [← restrictedMatch_rhs_eq_restrictedRecursionPartitionForm H x₀ R hHyp t]
+  rw [← restrictedFaaDiBrunoSum_eq_partitionForm H x₀ R hHyp t]
+  rw [← restrictedMatch_rhs_eq_recursionPartitionForm H x₀ R hHyp t]
   sorry
 
 end BCIKS20.HenselNumerator
