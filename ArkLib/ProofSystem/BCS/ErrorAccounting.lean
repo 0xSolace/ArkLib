@@ -125,6 +125,29 @@ theorem bcsTotalError_succ_mono_error {m : ℕ}
     _ = εOpen₂ 0 + bcsTotalError εInteraction₂ (fun i : Fin m => εOpen₂ i.succ) :=
       bcsTotalError_succ εInteraction₂ εOpen₂
 
+/-- Relax the interaction budget for the no-opening total-error base case. -/
+theorem bcsTotalError_zero_mono_error
+    {εInteraction₁ εInteraction₂ : ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂) :
+    bcsTotalError εInteraction₁ (Fin.elim0 : Fin 0 → ℝ≥0) ≤ εInteraction₂ := by
+  calc
+    bcsTotalError εInteraction₁ (Fin.elim0 : Fin 0 → ℝ≥0) = εInteraction₁ :=
+      bcsTotalError_zero εInteraction₁ (Fin.elim0 : Fin 0 → ℝ≥0)
+    _ ≤ εInteraction₂ := hInteraction
+
+/-- Relax the interaction and opening budgets for the one-opening total-error base case. -/
+theorem bcsTotalError_one_mono_error
+    {εInteraction₁ εInteraction₂ εOpen₁ εOpen₂ : ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂)
+    (hOpen : εOpen₁ ≤ εOpen₂) :
+    bcsTotalError εInteraction₁ (fun _ : Fin 1 => εOpen₁) ≤ εInteraction₂ + εOpen₂ := by
+  calc
+    bcsTotalError εInteraction₁ (fun _ : Fin 1 => εOpen₁)
+        ≤ bcsTotalError εInteraction₂ (fun _ : Fin 1 => εOpen₂) :=
+      bcsTotalError_mono hInteraction (fun _ => hOpen)
+    _ = εInteraction₂ + εOpen₂ :=
+      bcsTotalError_one εInteraction₂ (fun _ : Fin 1 => εOpen₂)
+
 /-- Relax the interaction and both opening-batch budgets for the total-error append split. -/
 theorem bcsTotalError_append_mono_error {m n : ℕ}
     {εInteraction₁ εInteraction₂ : ℝ≥0}
@@ -911,6 +934,8 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcsTotalError_mono_open
 #print axioms bcsTotalError_mono
 #print axioms bcsTotalError_succ_mono_error
+#print axioms bcsTotalError_zero_mono_error
+#print axioms bcsTotalError_one_mono_error
 #print axioms bcsTotalError_append_mono_error
 #print axioms bcsTotalError_append_zero_left_mono_error
 #print axioms bcsTotalError_append_zero_right_mono_error
