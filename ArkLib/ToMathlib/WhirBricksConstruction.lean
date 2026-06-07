@@ -1219,6 +1219,7 @@ end RBRSoundnessAssembly
 #print axioms paperFoldedOracleFrom_apply
 #print axioms paperTranscriptHasFoldedOracles
 #print axioms paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles
+#print axioms PaperOutOfDomainExtension
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
