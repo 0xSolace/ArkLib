@@ -369,6 +369,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAMasterBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMiddleBand
 import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
+import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeGuardrail
 import ArkLib.Data.CodingTheory.ProximityGap.MDSNearCountVolume
