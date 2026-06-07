@@ -37,6 +37,7 @@ set_option linter.unusedSectionVars false
 namespace ProximityGap
 
 open Finset
+open scoped NNReal
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
