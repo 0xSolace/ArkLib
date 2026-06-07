@@ -167,6 +167,14 @@ theorem one_le_Lambda_of_nonempty {ι : Type} [Fintype ι] {F : Type} [Fintype F
         unfold Lambda
         exact le_iSup (fun f => ((closeCodewordsRel C f δ).ncard : ℕ∞)) c
 
+/-- **Two-sided nonempty list-size bracket with the exact Hamming-ball volume.** -/
+theorem one_le_Lambda_and_Lambda_le_hammingBallVolume
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι] {F : Type} [Fintype F]
+    [DecidableEq F] (C : Code ι F) (hC : C.Nonempty) (δ : ℝ) (hδ : 0 ≤ δ) :
+    (1 : ℕ∞) ≤ Lambda C δ ∧
+      Lambda C δ ≤ (hammingBallVolume (Fintype.card F) δ (Fintype.card ι) : ℕ∞) := by
+  exact ⟨one_le_Lambda_of_nonempty (C := C) hC hδ, Lambda_le_hammingBallVolume C δ⟩
+
 /-- **Two-sided nonempty list-size bracket with the exact floor-radius entropy exponent.** -/
 theorem one_le_Lambda_and_Lambda_le_qEntropy_card
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
@@ -210,5 +218,6 @@ end CodingTheory
 #print axioms CodingTheory.Lambda_le_qEntropy_real_radius_card
 #print axioms CodingTheory.listDecodable_qEntropy_real_radius_card
 #print axioms CodingTheory.one_le_Lambda_of_nonempty
+#print axioms CodingTheory.one_le_Lambda_and_Lambda_le_hammingBallVolume
 #print axioms CodingTheory.one_le_Lambda_and_Lambda_le_qEntropy_card
 #print axioms CodingTheory.one_le_Lambda_and_Lambda_le_qEntropy_real_radius_card
