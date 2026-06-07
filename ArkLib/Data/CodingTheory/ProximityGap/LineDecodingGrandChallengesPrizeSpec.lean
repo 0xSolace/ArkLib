@@ -639,6 +639,38 @@ theorem exists_mcaPrizeLatticeSpec_and_brackets_ofBadScalarDoubleCover
       (δ j) epsStar (hδ_le_one j) (hcov j))
     (fun _ => rfl) whi hδhi
 
+/-- Project the selected-threshold specification and two-sided lattice brackets from zero
+bad-count data and explicit upper witnesses. -/
+theorem exists_mcaPrizeLatticeSpec_and_brackets_of_mcaBadCount_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hzero : ∀ j : Fin 4, ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) = 0)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        (∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) ∧
+          ∀ j : Fin 4, τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) :=
+  exists_mcaPrizeLatticeSpec_and_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j => MCALowerWitness.of_mcaBadCount_zero
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hzero j))
+    (fun _ => rfl) whi hδhi
+
 /-- Package repaired double-cover frontiers and explicit adjacent upper witnesses into the generic
 four-rate adjacent-witness frontier. -/
 noncomputable def mcaPrizeAdjacentWitnessFrontier_ofDoubleCover_and_upperWitnesses
@@ -1756,6 +1788,8 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_brackets_ofDoubleCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_brackets_ofBadScalarDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_brackets_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeAdjacentWitnessFrontier_ofDoubleCover_and_upperWitnesses
 set_option linter.style.longLine false in
