@@ -365,6 +365,26 @@ theorem codeword_eq_of_agree_minDist (C : Submodule F (ι → F))
     c = c' :=
   codeword_eq_of_agree C (fun a ha ha0 => minDist_le_support_of_mem C ha ha0) hc hc' hagree hScard
 
+/-- **Unique decoding: the ball of radius `< minDist/2` contains at most one codeword.**  If two
+codewords `c, c'` are each within Hamming distance `e` of a common word `f`, and `2e < minDist C`,
+then `c = c'` — the triangle inequality gives `dist(c, c') ≤ 2e < minDist`, forcing equality.  This
+is the classical unique-decoding guarantee; for `RS[n,k]` (`minDist = n−k+1`) it certifies unique
+decoding up to `⌊(n−k)/2⌋` errors. -/
+theorem eq_of_close_to_common
+    (C : Submodule F (ι → F)) {f c c' : ι → F} {e : ℕ}
+    (hc : c ∈ C) (hc' : c' ∈ C)
+    (hd : hammingDist f c ≤ e) (hd' : hammingDist f c' ≤ e)
+    (he : 2 * e < Code.minDist (C : Set (ι → F))) :
+    c = c' := by
+  by_contra hne
+  -- `minDist ≤ dist(c, c')` for distinct codewords
+  have hmin : Code.minDist (C : Set (ι → F)) ≤ hammingDist c c' :=
+    Nat.sInf_le ⟨c, hc, c', hc', hne, rfl⟩
+  -- triangle inequality: `dist(c, c') ≤ dist(c, f) + dist(f, c') ≤ 2e`
+  have htri : hammingDist c c' ≤ hammingDist c f + hammingDist f c' := hammingDist_triangle c f c'
+  rw [hammingDist_comm c f] at htri
+  omega
+
 end UniqueDecoding
 
 end ProximityGap
