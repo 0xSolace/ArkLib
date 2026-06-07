@@ -159,6 +159,140 @@ theorem fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJoi
         f m_ge_3 G δ queries l domain_size_cond h_agreement h_proximity)
 
 omit [Nontrivial 𝔽] in
+/-- Probability-route Claim 8.3 query-lift from the affine-space correlated-agreement predicate.
+
+This is the probability-route analogue of
+`friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineSpaceCA` in
+`Security.lean`: the affine-space CA predicate and its probability trigger are routed through the
+concrete `Code.jointProximity` front door. -/
+theorem friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndAffineSpaceCA
+    {t m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    (G : Finset ι) (δ_query : ℝ≥0∞) (queries l : ℕ)
+    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    {ε_ca : ℝ≥0}
+    (h_ca :
+      let C :=
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier
+      let δ_fri : ℝ≥0 :=
+        1 -
+          (let ρ_sqrt :=
+            ReedSolomon.sqrtRate
+              (2 ^ n)
+              (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+           ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+      ProximityGap.δ_ε_correlatedAgreementAffineSpaces
+        (F := 𝔽) (k := t) C δ_fri ε_ca)
+    (h_prob :
+      let C :=
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier
+      let u : Code.WordStack 𝔽 (Fin t.succ) (ω.subdomain 0) :=
+        fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)
+      let δ_fri : ℝ≥0 :=
+        1 -
+          (let ρ_sqrt :=
+            ReedSolomon.sqrtRate
+              (2 ^ n)
+              (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+           ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+      Pr_{
+        let y ← $ᵖ ↥(Affine.affineSubspaceAtOrigin (F := 𝔽) (u 0) (Fin.tail u))
+      }[δᵣ(y.1, C) ≤ δ_fri] > ε_ca) :
+    friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3 := by
+  let C :=
+    (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier
+  let u : Code.WordStack 𝔽 (Fin t.succ) (ω.subdomain 0) :=
+    fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)
+  let δ_fri : ℝ≥0 :=
+    1 -
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+  have h_proximity :
+      Code.jointProximity (C := C) (u := u) (δ := δ_fri) :=
+    ProximityGap.jointProximity_of_δ_ε_correlatedAgreementAffineSpaces
+      (F := 𝔽) (k := t) (C := C) (δ := δ_fri) (ε := ε_ca) (u := u)
+      h_ca h_prob
+  exact
+    friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJointProximity
+      (n := n) (s := s) (d := d) (ω := ω)
+      f m_ge_3 G δ_query queries l domain_size_cond h_agreement h_proximity
+
+omit [Nontrivial 𝔽] in
+/-- Probability-route Claim 8.3 residual from the affine-space correlated-agreement predicate.
+
+The remaining coding-theoretic inputs are the affine-space CA predicate and its probability
+trigger at the FRI radius; this wrapper only routes them to the existing probability-route
+soundness residual surface. -/
+theorem fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndAffineSpaceCA
+    {t l m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    (G : Finset ι) (δ_query : ℝ≥0∞) (queries : ℕ)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    {ε_ca : ℝ≥0}
+    (h_ca :
+      let C :=
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier
+      let δ_fri : ℝ≥0 :=
+        1 -
+          (let ρ_sqrt :=
+            ReedSolomon.sqrtRate
+              (2 ^ n)
+              (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+           ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+      ProximityGap.δ_ε_correlatedAgreementAffineSpaces
+        (F := 𝔽) (k := t) C δ_fri ε_ca)
+    (h_prob :
+      let C :=
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier
+      let u : Code.WordStack 𝔽 (Fin t.succ) (ω.subdomain 0) :=
+        fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)
+      let δ_fri : ℝ≥0 :=
+        1 -
+          (let ρ_sqrt :=
+            ReedSolomon.sqrtRate
+              (2 ^ n)
+              (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+           ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+      Pr_{
+        let y ← $ᵖ ↥(Affine.affineSubspaceAtOrigin (F := 𝔽) (u 0) (Fin.tail u))
+      }[δᵣ(y.1, C) ≤ δ_fri] > ε_ca) :
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3 := by
+  exact
+    fri_soundness_of_queryLift
+      (n := n) (s := s) (d := d) (ω := ω) (domain_size_cond := domain_size_cond)
+      f m_ge_3
+      (friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndAffineSpaceCA
+        (n := n) (s := s) (d := d) (ω := ω)
+        f m_ge_3 G δ_query queries l domain_size_cond h_agreement h_ca h_prob)
+
+omit [Nontrivial 𝔽] in
 /-- Raw full-domain Claim 8.2 conclusion from the proved probability-space query-round theorem
 and the Batched FRI oracle-lens piece.
 
@@ -640,7 +774,11 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJointProximity
 set_option linter.style.longLine false in
+#print axioms Fri.friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndAffineSpaceCA
+set_option linter.style.longLine false in
 #print axioms Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJointProximity
+set_option linter.style.longLine false in
+#print axioms Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndAffineSpaceCA
 set_option linter.style.longLine false in
 #print axioms Fri.fri_jointAgreement_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
 set_option linter.style.longLine false in
