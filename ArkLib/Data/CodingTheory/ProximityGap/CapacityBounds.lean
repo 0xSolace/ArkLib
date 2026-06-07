@@ -133,7 +133,11 @@ dischargeable by any in-tree upper-bound machinery):
   tracks the exact middle-band count).
 - `rs_epsCA_breakdown_cs25` (T4.17) — `≥ 1` half needs the qEntropy ↔ RS-ball-count bridge;
   the `≤ 1` half is trivial.
-- `rs_epsCA_johnson_jump_bchks25` (T4.18) — char-2 Johnson-jump witness family.
+- `rs_epsCA_johnson_jump_bchks25` (T4.18) — char-2 Johnson-jump witness family.  The
+  supremum lower bound is now reduced to an explicit good-`γ` count via
+  `johnsonJump_epsCA_lower_of_goodGamma` / `RSJohnsonJumpWitness.ofGoodGammaCount` /
+  `rs_epsCA_johnson_jump_bchks25_of_goodGamma`; only the bad word-pair and the
+  `n^{2(1-ε)}` good-combiner count remain external inputs.
 
 *BCGM25 polynomial-generator MCA* (generator-native API plus compatibility shadow):
 
@@ -842,6 +846,122 @@ theorem exists_rsJohnsonJumpWitness_of_bchks25
   exact ⟨ιC, hFintype, hNonempty, hDecEq,
     ⟨⟨domain, k, hcard_lower, hcard_upper, hminDist, heps⟩⟩⟩
 
+/-- **Good-γ front door for the T4.18 `epsCA_lower` obligation.**
+
+The hard `epsCA_lower` field of `RSJohnsonJumpWitness` asks for
+`n^{2(1-ε)} / |F| ≤ ε_ca(C, J, J')`. This lemma reduces that supremum lower bound to a
+single explicit *witness stack* `u` (not jointly `J'`-close at the internal radius) together
+with an explicit finite set `Γ` of "good combiners" whose count dominates `n^{2(1-ε)}`.
+
+It is the Johnson-jump specialization of `ProximityGap.epsCA_ge_card_good_gamma_div_card`:
+the genuinely external BCHKS25 construction must supply (i) a non-jointly-close pair of words
+and (ii) at least `n^{2(1-ε)}` scalars `γ` at which the line `u 0 + γ • u 1` is
+`J(15/16)`-close to `C`.  Given those two finite pieces of data this lemma discharges the
+`ε_ca` lower bound automatically, turning the `iSup` obligation into a `Finset.card` count.
+The supremum plumbing and `ENNReal` division monotonicity are fully proven here; only the
+existence of the bad word-pair and the good-`γ` count remain external inputs. -/
+theorem johnsonJump_epsCA_lower_of_goodGamma
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    (ε : ℝ≥0)
+    (domain : ιC ↪ FC) (k : ℕ)
+    (u : Fin 2 → ιC → FC)
+    (hjp : ¬ Code.jointProximity (C := (ReedSolomon.code domain k : Set (ιC → FC)))
+      (u := u) (johnsonJumpInternalRadius (Fintype.card ιC)))
+    (Γ : Finset FC)
+    (hΓ : ∀ γ ∈ Γ, δᵣ(u 0 + γ • u 1,
+        (ReedSolomon.code domain k : Set (ιC → FC))) ≤ johnsonJumpRadius)
+    (hcount :
+      ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - (ε : ℝ))))
+        ≤ ((Γ.card : ℝ≥0) : ENNReal)) :
+    ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
+        / (Fintype.card FC : ENNReal) ≤
+      epsCA (F := FC) (A := FC) ((ReedSolomon.code domain k : Set (ιC → FC)))
+        johnsonJumpRadius
+        (johnsonJumpInternalRadius (Fintype.card ιC)) := by
+  refine le_trans ?_
+    (ProximityGap.epsCA_ge_card_good_gamma_div_card
+      (F := FC) (A := FC)
+      ((ReedSolomon.code domain k : Set (ιC → FC)))
+      johnsonJumpRadius
+      (johnsonJumpInternalRadius (Fintype.card ιC))
+      u hjp Γ hΓ)
+  exact ENNReal.div_le_div_right hcount _
+
+/-- **Constructor for the T4.18 witness package from explicit good-γ counting data.**
+
+Assembles a full `RSJohnsonJumpWitness` from the geometric data (domain, message dimension,
+domain-size bounds, `δ_min = 15/16`) plus an explicit non-jointly-close stack `u` and a
+good-combiner set `Γ` whose count dominates `n^{2(1-ε)}`. The hard `epsCA_lower` field is
+discharged by `johnsonJump_epsCA_lower_of_goodGamma`.
+
+This is the in-tree front door for the BCHKS25 construction: a prover supplies the explicit
+char-2 RS code, the bad word-pair, and the good-combiner count, and obtains the packaged
+witness (hence the external T4.18 statement via `rs_epsCA_johnson_jump_bchks25_of_witness`)
+without re-deriving the `iSup` lower bound by hand. -/
+noncomputable def RSJohnsonJumpWitness.ofGoodGammaCount
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    (ε : ℝ≥0)
+    (domain : ιC ↪ FC) (k : ℕ)
+    (card_lower :
+      ((Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) - 1
+          ≤ (Fintype.card ιC : ℝ)))
+    (card_upper :
+      ((Fintype.card ιC : ℝ)
+          ≤ (Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) + 1))
+    (minDist_eq :
+      (Code.minDist ((ReedSolomon.code domain k : Set (ιC → FC))) : ℝ)
+          / Fintype.card ιC = (15 : ℝ) / 16)
+    (u : Fin 2 → ιC → FC)
+    (hjp : ¬ Code.jointProximity (C := (ReedSolomon.code domain k : Set (ιC → FC)))
+      (u := u) (johnsonJumpInternalRadius (Fintype.card ιC)))
+    (Γ : Finset FC)
+    (hΓ : ∀ γ ∈ Γ, δᵣ(u 0 + γ • u 1,
+        (ReedSolomon.code domain k : Set (ιC → FC))) ≤ johnsonJumpRadius)
+    (hcount :
+      ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - (ε : ℝ))))
+        ≤ ((Γ.card : ℝ≥0) : ENNReal)) :
+    RSJohnsonJumpWitness (FC := FC) ε ιC where
+  domain := domain
+  k := k
+  card_lower := card_lower
+  card_upper := card_upper
+  minDist_eq := minDist_eq
+  epsCA_lower :=
+    johnsonJump_epsCA_lower_of_goodGamma ε domain k u hjp Γ hΓ hcount
+
+/-- The packaged good-γ data directly yields the external T4.18 statement, via the witness
+package.  This is the maximal in-tree reduction of T4.18: everything except the existence of
+the bad word-pair and the good-`γ` count is now proven. -/
+theorem rs_epsCA_johnson_jump_bchks25_of_goodGamma
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    (ε : ℝ≥0) (hε : 0 < ε)
+    (domain : ιC ↪ FC) (k : ℕ)
+    (card_lower :
+      ((Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) - 1
+          ≤ (Fintype.card ιC : ℝ)))
+    (card_upper :
+      ((Fintype.card ιC : ℝ)
+          ≤ (Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) + 1))
+    (minDist_eq :
+      (Code.minDist ((ReedSolomon.code domain k : Set (ιC → FC))) : ℝ)
+          / Fintype.card ιC = (15 : ℝ) / 16)
+    (u : Fin 2 → ιC → FC)
+    (hjp : ¬ Code.jointProximity (C := (ReedSolomon.code domain k : Set (ιC → FC)))
+      (u := u) (johnsonJumpInternalRadius (Fintype.card ιC)))
+    (Γ : Finset FC)
+    (hΓ : ∀ γ ∈ Γ, δᵣ(u 0 + γ • u 1,
+        (ReedSolomon.code domain k : Set (ιC → FC))) ≤ johnsonJumpRadius)
+    (hcount :
+      ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - (ε : ℝ))))
+        ≤ ((Γ.card : ℝ≥0) : ENNReal)) :
+    rs_epsCA_johnson_jump_bchks25 (FC := FC) ε hε :=
+  rs_epsCA_johnson_jump_bchks25_of_witness ε hε
+    (RSJohnsonJumpWitness.ofGoodGammaCount ε domain k
+      card_lower card_upper minDist_eq u hjp Γ hΓ hcount)
+
 end ReedSolomon
 
 /-! ## Covering-radius sampling — ABF26 §4 ([DG25])
@@ -1302,6 +1422,9 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.rs_epsCA_johnson_jump_bchks25
 #print axioms CodingTheory.rs_epsCA_johnson_jump_bchks25_of_witness
 #print axioms CodingTheory.exists_rsJohnsonJumpWitness_of_bchks25
+#print axioms CodingTheory.johnsonJump_epsCA_lower_of_goodGamma
+#print axioms CodingTheory.RSJohnsonJumpWitness.ofGoodGammaCount
+#print axioms CodingTheory.rs_epsCA_johnson_jump_bchks25_of_goodGamma
 #print axioms CodingTheory.rs_epsCA_lower_capacity_bchks25_kk25
 #print axioms CodingTheory.rs_epsCA_lower_capacity_bchks25_kk25_of_witness
 #print axioms CodingTheory.exists_rsLowerCapacityWitness_of_bchks25_kk25
