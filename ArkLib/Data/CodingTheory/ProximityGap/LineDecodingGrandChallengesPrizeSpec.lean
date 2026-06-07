@@ -538,6 +538,75 @@ theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_of_forall_not_mcaEvent
       (δ j) epsStar (hδ_le_one j) (hno j))
     (fun _ => rfl)
 
+private theorem exists_mcaPrizeLatticeSpec_and_brackets_of_lowerWitnesses
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (w : ∀ j : Fin 4,
+      GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ :
+          Set (ι → F)) epsStar)
+    (hwδ : ∀ j : Fin 4, (w j).δ = δ j)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ :
+          Set (ι → F)) epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        (∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) ∧
+          ∀ j : Fin 4, τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  rcases exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses
+      domain δ hδ_le_one w hwδ with
+    ⟨τ, hspec, hlower⟩
+  refine ⟨τ, hspec, hlower, ?_⟩
+  intro j
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  rcases hspec j with ⟨hne, hsat, _hmax⟩
+  have hτ_le_threshold : τ j ≤ mcaThreshold C epsStar hne :=
+    le_mcaThreshold C epsStar hne hsat
+  have hthreshold_lt_upper :
+      mcaThreshold C epsStar hne < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) :=
+    mcaThreshold_lt_MCAUpperWitness C epsStar hne (whi j) (hδhi j)
+  exact lt_of_le_of_lt hτ_le_threshold hthreshold_lt_upper
+
+/-- Project the selected-threshold specification and two-sided lattice brackets from repaired
+double-cover data and explicit upper witnesses. -/
+theorem exists_mcaPrizeLatticeSpec_and_brackets_ofDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j))
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        (∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) ∧
+          ∀ j : Fin 4, τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) :=
+  exists_mcaPrizeLatticeSpec_and_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j => MCALowerWitness.ofDoubleCover
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hcov j))
+    (fun _ => rfl) whi hδhi
+
 /-- Package repaired double-cover frontiers and explicit adjacent upper witnesses into the generic
 four-rate adjacent-witness frontier. -/
 noncomputable def mcaPrizeAdjacentWitnessFrontier_ofDoubleCover_and_upperWitnesses
@@ -1463,6 +1532,8 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_brackets_ofDoubleCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeAdjacentWitnessFrontier_ofDoubleCover_and_upperWitnesses
 set_option linter.style.longLine false in
