@@ -931,6 +931,64 @@ theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valu
   (composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel
     R pp oSpec Rc init impl rbrKnowledgeError).2 hValue
 
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- RBR knowledge soundness for the broad target-carrying final-check relation implies RBR
+knowledge soundness for the semantic value relation. This direction is the RBR analogue of relation
+weakening on the terminal target: the broad relation is `Set.univ`, so any positive-probability
+semantic terminal event is also a positive-probability broad terminal event. -/
+theorem composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
+    (hResidual :
+      composedRbrKnowledgeSoundnessWithClaimResidual R pp oSpec Rc init impl
+        rbrKnowledgeError) :
+    composedRbrKnowledgeSoundnessWithClaimValueRelResidual R pp oSpec Rc init impl
+      rbrKnowledgeError := by
+  unfold composedRbrKnowledgeSoundnessWithClaimResidual at hResidual
+  unfold composedRbrKnowledgeSoundnessWithClaimValueRelResidual
+  unfold OracleVerifier.rbrKnowledgeSoundness Verifier.rbrKnowledgeSoundness at hResidual ⊢
+  rcases hResidual with ⟨WitMid, extractor, kSF, hProb⟩
+  let kSFValue :
+      Rc.verifier.toVerifier.KnowledgeStateFunction init impl
+        (spartanRelIn R pp) (finalCheckWithClaimValueRelIn R pp) extractor :=
+    { toFun := kSF.toFun
+      toFun_empty := kSF.toFun_empty
+      toFun_next := kSF.toFun_next
+      toFun_full := by
+        intro stmtIn tr witOut hValue
+        exact kSF.toFun_full stmtIn tr witOut <|
+          lt_of_lt_of_le hValue <|
+            probEvent_mono fun _ _ h =>
+              finalCheckWithClaimValueRelIn_subset_finalCheckWithClaimRelOut R pp h }
+  refine ⟨WitMid, extractor, kSFValue, ?_⟩
+  simpa [kSFValue] using hProb
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- RBR knowledge soundness for the broad target-carrying final-check relation implies RBR
+knowledge soundness for the direct second-sum-check endpoint relation. -/
+theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_residual
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
+    (hResidual :
+      composedRbrKnowledgeSoundnessWithClaimResidual R pp oSpec Rc init impl
+        rbrKnowledgeError) :
+    composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl
+      rbrKnowledgeError :=
+  composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valueRel
+    R pp oSpec Rc init impl rbrKnowledgeError <|
+      composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual
+        R pp oSpec Rc init impl rbrKnowledgeError hResidual
+
 /-! ### Axiom audit for the target-carrying final-check frontier and encoding residual -/
 
 #print axioms evalClaimValue_eq_scaled_sum
@@ -992,6 +1050,8 @@ theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valu
 #print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel
 #print axioms composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_secondSumcheckEval
 #print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valueRel
+#print axioms composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual
+#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_residual
 
 end Bricks
 
