@@ -35,7 +35,6 @@ theorem sum_div_mul_prod_eq_sum_mul_prod_erase {α : Type*} [DecidableEq α]
   intro i hi
   rw [← Finset.mul_prod_erase s den hi]
   field_simp [hden i hi]
-  ring
 
 /-- **LogUp fiber rational identity.** `∑_{u : g u = a} 1/(c + g u) = (#{u : g u = a})/(c + a)`. -/
 theorem fiber_sum_one_div_const_add_eq_card_div {β : Type*} [Fintype β] [DecidableEq K]
@@ -61,7 +60,7 @@ theorem card_someQueryOut_eq {ι : Type*} [Fintype ι] [DecidableEq ι] (G : Fin
   have htot : (univ : Finset (Fin t → ι)).card = Fintype.card ι ^ t := by
     rw [Finset.card_univ, Fintype.card_pi]; simp
   have hsplit := Finset.card_filter_add_card_filter_not
-    (univ : Finset (Fin t → ι)) (fun q : Fin t → ι => ∀ j, q j ∈ G)
+    (s := (univ : Finset (Fin t → ι))) (fun q : Fin t → ι => ∀ j, q j ∈ G)
   rw [hall, htot] at hsplit
   omega
 
