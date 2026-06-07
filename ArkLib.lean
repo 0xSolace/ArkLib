@@ -312,6 +312,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAGSLatticeResolvedSpec
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
 import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeExact
+import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMiddleBand
 import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
