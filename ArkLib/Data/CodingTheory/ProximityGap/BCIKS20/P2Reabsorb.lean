@@ -281,8 +281,7 @@ theorem restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseC
         * (embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
           / ((liftToFunctionField (H := H) H.leadingCoeff) ^ 2
               * embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))) := by
-  simp [restrictedMatchRecursionPartitionFormZeroSingleBCoeff,
-    B_coeff_indiscrete_zero_eq_hasseCoeffRepr𝒪]
+  exact restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff H x₀ R hHyp
 
 /-- The canonical single-`B_coeff` RHS target with both the numerator and `ξ` denominator
 expanded, without cancelling the `ζ` factor. -/

@@ -13,7 +13,8 @@ Both sides of the carved core `RestrictedFaaDiBrunoMatch` are now explicit parti
 proven in `P2BijectionApply`:
 
 * LHS — `restrictedFaaDiBrunoSum_eq_partitionForm`;
-* RHS — `coeff_succ_βHenselAssembled_partitionForm` / `restrictedMatch_rhs_eq_recursionPartitionForm`
+* RHS — `coeff_succ_βHenselAssembled_partitionForm` /
+  `restrictedMatch_rhs_eq_recursionPartitionForm`
   (`-ζ · coeff(t+1)(βHenselAssembled) = ζ · recSum / den`);
 * α₀-Taylor identity — `hasseEvalAtRoot_eq_taylorSum`;
 * Y-Hasse commutation — `evalX_hasseDeriv_Y_coeff`.
@@ -338,6 +339,68 @@ theorem zeroPowerSum_eq_singleBcoeff_of_restrictedMatchAt_zero
       restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp :=
   (restrictedMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff H x₀ R hHyp).1 hmatch
 
+/-- Compatibility spelling for the canonical order-zero single-`B_coeff` target. -/
+abbrev restrictedMatchRecursionPartitionFormZeroSingleBCoeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) : 𝕃 H :=
+  restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp
+
+/-- Compatibility spelling for the canonical order-zero RHS collapse. -/
+theorem restrictedMatchRecursionPartitionForm_zero_eq_single_B_coeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 =
+      restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp :=
+  restrictedMatchRecursionPartitionForm_zero_eq_singleBcoeff H x₀ R hHyp
+
+/-- Compatibility spelling for the normalized partition order-zero equivalence. -/
+theorem restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_single_B_coeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 ↔
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp :=
+  restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff H x₀ R hHyp
+
+/-- Compatibility spelling for the normalized partition order-zero constructor. -/
+theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroPowerSum_eq_single_B_coeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero :
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroPowerSum_eq_singleBcoeff H x₀ R hHyp hzero
+
+/-- Compatibility spelling for the normalized partition order-zero projection. -/
+theorem zeroPowerSum_eq_single_B_coeff_of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+    restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+      restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp :=
+  zeroPowerSum_eq_singleBcoeff_of_partitionMatchAt_zero H x₀ R hHyp hpart
+
+/-- Compatibility spelling for the carved order-zero equivalence. -/
+theorem restrictedMatchAt_zero_iff_zeroPowerSum_eq_single_B_coeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp :=
+  restrictedMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff H x₀ R hHyp
+
+/-- Compatibility spelling for the carved order-zero constructor. -/
+theorem RestrictedFaaDiBrunoMatchAt.zero_of_zeroPowerSum_eq_single_B_coeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero :
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 :=
+  RestrictedFaaDiBrunoMatchAt.zero_of_zeroPowerSum_eq_singleBcoeff H x₀ R hHyp hzero
+
+/-- Compatibility spelling for the carved order-zero projection. -/
+theorem zeroPowerSum_eq_single_B_coeff_of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+    restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+      restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp :=
+  zeroPowerSum_eq_singleBcoeff_of_restrictedMatchAt_zero H x₀ R hHyp hmatch
+
 /-- Fixed-order truncated-defect cancellation from the partition-form residual. -/
 theorem trunc_defect_cancel_assembled_of_partitionMatchAt
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
@@ -541,6 +604,14 @@ section AxiomAudit
 #print axioms restrictedMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff
 #print axioms RestrictedFaaDiBrunoMatchAt.zero_of_zeroPowerSum_eq_singleBcoeff
 #print axioms zeroPowerSum_eq_singleBcoeff_of_restrictedMatchAt_zero
+#print axioms restrictedMatchRecursionPartitionFormZeroSingleBCoeff
+#print axioms restrictedMatchRecursionPartitionForm_zero_eq_single_B_coeff
+#print axioms restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_single_B_coeff
+#print axioms RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroPowerSum_eq_single_B_coeff
+#print axioms zeroPowerSum_eq_single_B_coeff_of_partitionMatchAt_zero
+#print axioms restrictedMatchAt_zero_iff_zeroPowerSum_eq_single_B_coeff
+#print axioms RestrictedFaaDiBrunoMatchAt.zero_of_zeroPowerSum_eq_single_B_coeff
+#print axioms zeroPowerSum_eq_single_B_coeff_of_restrictedMatchAt_zero
 #print axioms RestrictedFaaDiBrunoPartitionMatch
 #print axioms restrictedPartitionMatch_iff_forall_at
 #print axioms RestrictedFaaDiBrunoPartitionMatch.at
