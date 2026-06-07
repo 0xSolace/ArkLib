@@ -77,6 +77,28 @@ theorem statisticalHVZK.simulator_congr
     statisticalHVZK init impl rel R sim' ε :=
   Reduction.statisticalHVZK.simulator_congr h hsim
 
+/-- **OracleReduction perfect HVZK simulator congruence with opposite-order equality.** -/
+theorem perfectHVZK.simulator_congr_symm
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim sim' : TranscriptSimulator oSpec StmtIn OStmtIn pSpec}
+    (h : perfectHVZK init impl rel R sim)
+    (hsim : ∀ stmtIn, evalDist (sim' stmtIn) = evalDist (sim stmtIn)) :
+    perfectHVZK init impl rel R sim' :=
+  h.simulator_congr fun stmtIn => (hsim stmtIn).symm
+
+/-- **OracleReduction statistical HVZK simulator congruence with opposite-order equality.** -/
+theorem statisticalHVZK.simulator_congr_symm
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim sim' : TranscriptSimulator oSpec StmtIn OStmtIn pSpec} {ε : ℝ≥0}
+    (h : statisticalHVZK init impl rel R sim ε)
+    (hsim : ∀ stmtIn, evalDist (sim' stmtIn) = evalDist (sim stmtIn)) :
+    statisticalHVZK init impl rel R sim' ε :=
+  h.simulator_congr fun stmtIn => (hsim stmtIn).symm
+
 /-- **A concrete OracleReduction perfect-HVZK simulator witnesses existential HVZK.** -/
 theorem perfectHVZK.isHVZK
     {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -121,6 +143,30 @@ theorem statisticalHVZK.isStatHVZK_of_simulator_congr
     (hsim : ∀ stmtIn, evalDist (sim stmtIn) = evalDist (sim' stmtIn)) :
     _root_.OracleReduction.isStatHVZK init impl rel R ε :=
   ⟨sim', h.simulator_congr hsim⟩
+
+/-- **Package an OracleReduction perfect-HVZK proof after simulator normalization in the opposite
+direction.** -/
+theorem perfectHVZK.isHVZK_of_simulator_congr_symm
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim sim' : TranscriptSimulator oSpec StmtIn OStmtIn pSpec}
+    (h : perfectHVZK init impl rel R sim)
+    (hsim : ∀ stmtIn, evalDist (sim' stmtIn) = evalDist (sim stmtIn)) :
+    _root_.OracleReduction.isHVZK init impl rel R :=
+  ⟨sim', h.simulator_congr_symm hsim⟩
+
+/-- **Package an OracleReduction statistical-HVZK proof after simulator normalization in the
+opposite direction.** -/
+theorem statisticalHVZK.isStatHVZK_of_simulator_congr_symm
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim sim' : TranscriptSimulator oSpec StmtIn OStmtIn pSpec} {ε : ℝ≥0}
+    (h : statisticalHVZK init impl rel R sim ε)
+    (hsim : ∀ stmtIn, evalDist (sim' stmtIn) = evalDist (sim stmtIn)) :
+    _root_.OracleReduction.isStatHVZK init impl rel R ε :=
+  ⟨sim', h.simulator_congr_symm hsim⟩
 
 /-- **Triangle composition of statistical HVZK at the OracleReduction API boundary.** -/
 theorem statisticalHVZK.simulator_triangle
@@ -387,10 +433,14 @@ theorem isHVZK.triangle_honestDist_symm_zero
 #print axioms statisticalHVZK.congr_honestDist
 #print axioms perfectHVZK.simulator_congr
 #print axioms statisticalHVZK.simulator_congr
+#print axioms perfectHVZK.simulator_congr_symm
+#print axioms statisticalHVZK.simulator_congr_symm
 #print axioms perfectHVZK.isHVZK
 #print axioms statisticalHVZK.isStatHVZK
 #print axioms perfectHVZK.isHVZK_of_simulator_congr
 #print axioms statisticalHVZK.isStatHVZK_of_simulator_congr
+#print axioms perfectHVZK.isHVZK_of_simulator_congr_symm
+#print axioms statisticalHVZK.isStatHVZK_of_simulator_congr_symm
 #print axioms statisticalHVZK.simulator_triangle
 #print axioms statisticalHVZK.triangle_honestDist
 #print axioms statisticalHVZK.triangle_honestDist_symm
