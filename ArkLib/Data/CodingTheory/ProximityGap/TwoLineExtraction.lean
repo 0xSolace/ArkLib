@@ -290,7 +290,7 @@ theorem minDist_le_support_of_mem (C : Submodule F (ι → F)) {a : ι → F}
     (ha : a ∈ C) (ha0 : a ≠ 0) :
     Code.minDist (C : Set (ι → F)) ≤ (Finset.univ.filter (fun i => a i ≠ 0)).card := by
   have hsupp : (Finset.univ.filter (fun i => a i ≠ 0)).card = hammingDist a 0 := by
-    rw [hammingDist]; congr 1; ext i; simp
+    rw [hammingDist]
   rw [hsupp]
   exact Nat.sInf_le ⟨a, ha, 0, C.zero_mem, ha0, rfl⟩
 
