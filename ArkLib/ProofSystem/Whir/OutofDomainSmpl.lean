@@ -8,6 +8,7 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.MvPolynomial.Multilinear
 import ArkLib.Data.Probability.Notation
+import ArkLib.ToMathlib.CountingAgreementBricks
 
 /-!
 # Out-of-domain sampling (WHIR Lemma 4.24)
@@ -175,20 +176,6 @@ private lemma uniform_event_mass {α : Type} [Fintype α] [Nonempty α]
       simp [PMF.uniformOfFintype_apply, PMF.pure_apply, h, eq_iff_iff]
   · rw [Finset.sum_const, nsmul_eq_mul]
 
-/-- Tuples satisfying `Q` in every coordinate form the `piFinset` of the per-coordinate
-solution set, so their count is `(#Q)^s`. -/
-private lemma card_filter_forall_pi {β : Type} [Fintype β] [DecidableEq β] {s : ℕ}
-    (Q : β → Prop) [DecidablePred Q] :
-    (Finset.univ.filter (fun r : Fin s → β => ∀ i, Q (r i))).card
-      = ((Finset.univ.filter Q).card) ^ s := by
-  classical
-  have h : (Finset.univ.filter (fun r : Fin s → β => ∀ i, Q (r i)))
-      = Fintype.piFinset (fun _ : Fin s => Finset.univ.filter Q) := by
-    ext r
-    simp [Fintype.mem_piFinset]
-  rw [h, Fintype.card_piFinset]
-  simp
-
 /-- Distinct smooth codewords decode to distinct univariate polynomials (the decoded
 polynomial interpolates the codeword on the domain). -/
 private lemma decodeLT_ne_of_val_ne {φ : ι ↪ F} [Smooth φ] {m : ℕ} (u u' : smoothCode φ m)
@@ -304,7 +291,7 @@ lemma oodSampling_rs_le_bound
     obtain ⟨⟨h1, h2, hpne⟩, -⟩ := hp
     rw [hSf, Set.Finite.mem_toFinset] at h1 h2
     simp only [hT]
-    refine le_trans (le_of_eq (card_filter_forall_pi (fun x : F =>
+    refine le_trans (le_of_eq (card_filter_forall_pi s (fun x : F =>
       (Lagrange.interpolate Finset.univ ⇑φ p.1).eval x
         = (Lagrange.interpolate Finset.univ ⇑φ p.2).eval x))) ?_
     exact Nat.pow_le_pow_left
