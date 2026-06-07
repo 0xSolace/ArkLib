@@ -60,3 +60,7 @@ theorem P2_closed_of_leadingCoeff_one (x₀ : F) (R : F[X][X][Y])
   P2_closed H x₀ R hHyp (restrictedFaaDiBrunoMatch_of_monic H x₀ R hHyp hlc)
 
 end BCIKS20.HenselNumerator
+
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchResidual
+#print axioms BCIKS20.HenselNumerator.P2_closed_of_residual
+#print axioms BCIKS20.HenselNumerator.P2_closed_of_leadingCoeff_one
