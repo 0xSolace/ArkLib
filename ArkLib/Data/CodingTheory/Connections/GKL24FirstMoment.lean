@@ -174,7 +174,7 @@ theorem pairJointAgreesOn_inter_lineAgreeSet_of_ne
     calc v₁ i = (γ - γ')⁻¹ * (wγ i - wγ' i) := by
           simp [v₁, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
       _ = (γ - γ')⁻¹ * ((γ - γ') * u₁ i) := by rw [hdiff]
-      _ = u₁ i := by rw [mul_assoc, inv_mul_cancel₀ hsub_ne, one_mul]
+      _ = u₁ i := by rw [← mul_assoc, inv_mul_cancel₀ hsub_ne, one_mul]
   have hv₀_i : v₀ i = u₀ i := by
     calc v₀ i = wγ i - γ * v₁ i := by
           simp [v₀, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
