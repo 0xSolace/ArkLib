@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ReedSolomon
+import ArkLib.Data.Polynomial.UnivariateAgreement
 
 /-!
 # Reed–Solomon unique decoding (concrete instantiation)
@@ -25,6 +26,7 @@ These are fully self-contained named Reed–Solomon results with no abstract hyp
 namespace ReedSolomon
 
 open ProximityGap
+open scoped Polynomial
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {F : Type*} [Field F] [DecidableEq F]
 
@@ -50,5 +52,37 @@ theorem unique_decode {α : ι ↪ F} {k : ℕ} [NeZero k] (hk : k ≤ Fintype.c
   refine eq_of_close_to_common (ReedSolomon.code α k) hc hc' hd hd' ?_
   rw [minDist_eq' hk]
   exact he
+
+/-- **Reed–Solomon evaluation injectivity.**  A degree-`< k` polynomial is determined by its
+Reed–Solomon codeword: if two polynomials of degree `< k` evaluate to the same word on the `≥ k`
+evaluation points, they are equal.  (A nonzero difference of degree `< k` would have `≥ |ι| ≥ k`
+roots — impossible.)  This is the polynomial↔codeword bijection underlying the polynomial-method
+proximity-gap arguments. -/
+theorem evalOnPoints_injOn_degreeLT [Fintype F] {α : ι ↪ F} {k : ℕ} [NeZero k]
+    (hk : k ≤ Fintype.card ι)
+    {p q : F[X]} (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k)
+    (heq : ReedSolomon.evalOnPoints α p = ReedSolomon.evalOnPoints α q) : p = q := by
+  by_contra hne
+  have hkpos : 0 < k := Nat.pos_of_ne_zero (NeZero.ne k)
+  -- both polynomials have `natDegree < k`, hence `≤ k − 1`
+  have hdeg : ∀ {r : F[X]}, r ∈ Polynomial.degreeLT F k → r.natDegree ≤ k - 1 := by
+    intro r hr
+    rcases eq_or_ne r 0 with rfl | hr0
+    · simpa using Nat.le_sub_one_of_lt hkpos
+    · have : r.natDegree < k := (Polynomial.natDegree_lt_iff_degree_lt hr0).mpr
+        (Polynomial.mem_degreeLT.mp hr)
+      omega
+  -- the agreement set over `F` contains the `|ι|` distinct evaluation points
+  have himg : Finset.univ.map α ⊆ Finset.univ.filter (fun x : F => p.eval x = q.eval x) := by
+    intro y hy
+    rw [Finset.mem_map] at hy
+    obtain ⟨x, _, rfl⟩ := hy
+    exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, congrFun heq x⟩
+  have hcard2 : Fintype.card ι ≤ (Finset.univ.filter (fun x : F => p.eval x = q.eval x)).card := by
+    calc Fintype.card ι = (Finset.univ.map α).card := by rw [Finset.card_map, Finset.card_univ]
+      _ ≤ _ := Finset.card_le_card himg
+  -- but two distinct degree-`≤ k−1` polynomials agree at `≤ k − 1` points
+  have hcard := Polynomial.card_agree_le_of_ne (hdeg hp) (hdeg hq) hne
+  omega
 
 end ReedSolomon
