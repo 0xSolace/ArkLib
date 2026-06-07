@@ -689,7 +689,7 @@ theorem badScalars_card_le_domain_compl_of_disjoint_petals
   classical
   have hM : (Finset.univ \ D).card ≤ Fintype.card ι - D.card := by
     have hD : D ⊆ (Finset.univ : Finset ι) := fun i _ => Finset.mem_univ i
-    rw [Finset.card_sdiff hD, Finset.card_univ]
+    rw [Finset.card_sdiff_of_subset hD, Finset.card_univ]
   have h :=
     GreedyDisjointCover.card_mul_le_of_disjoint_covers
       Γ petal (Finset.univ \ D) 1 (Fintype.card ι - D.card)
