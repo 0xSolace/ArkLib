@@ -38,3 +38,6 @@ Current audit pages:
   - BCS/Merkle branch-harvest note for stale `origin/merkle-tree-soundness`.
 - [`issue-75-johnson-branch-harvest-2026-06-06.md`](issue-75-johnson-branch-harvest-2026-06-06.md)
   - Johnson-bound branch-harvest note for stale `origin/dtumad/finalize-4-26`.
+- [`proximity-prize/STATUS-2026-06-07.md`](proximity-prize/STATUS-2026-06-07.md)
+  - current formal apex status, GKL24 first-moment progress, and remaining genuine
+    proximity-prize proof fronts.

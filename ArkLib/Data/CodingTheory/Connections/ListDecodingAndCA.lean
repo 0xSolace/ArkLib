@@ -259,6 +259,45 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual
         _ ≤ (L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η :=
           le_add_of_nonneg_right (by positivity))
 
+/-- **ABF26 T5.1 front door from the witness-cover GKL24 residual.** This is the
+carrier-faithful companion to `linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual`.
+The residual only asks that the chosen finite list cover the actual bad combining scalars through
+per-codeword witness sets; it does not require that list to contain every codeword of `C`.
+
+Once the GCXK/GKL first-moment proof supplies this residual at the Johnson-lifted MCA radius with
+`B_T = L²` and `b = δ·n`, the first-moment bad-count bound is padded by the nonnegative `1 / η`
+slack to match the exact ABF26 T5.1 RHS. -/
+theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual
+    (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
+    (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
+    (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
+    (hres :
+        ProximityGap.GKL24FirstMomentWitnessCoverResidual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          ((L : ℝ) ^ 2) (δ * (Fintype.card ι : ℝ))) :
+    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
+        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
+      ENNReal.ofReal
+        (((L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η) / Fintype.card F) :=
+  linear_listSize_to_epsMCA_gcxk25_of_bad_count C L δ η
+    hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ
+    (fun u => by
+      have hfirst :
+          ((ProximityGap.mcaBad (F := F) ((C : Set (ι → F)))
+              ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) (u 0) (u 1)).card : ℝ) ≤
+            (L : ℝ) ^ 2 * (δ * (Fintype.card ι : ℝ)) :=
+        ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_witnessCover_residual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          (by positivity) hres u
+      calc
+        ((ProximityGap.mcaBad (F := F) ((C : Set (ι → F)))
+              ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) (u 0) (u 1)).card : ℝ)
+            ≤ (L : ℝ) ^ 2 * (δ * (Fintype.card ι : ℝ)) := hfirst
+        _ = (L : ℝ) ^ 2 * δ * Fintype.card ι := by ring
+        _ ≤ (L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η :=
+          le_add_of_nonneg_right (by positivity))
+
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — unconditional in-tree first-moment
 relaxation.**  This is the same first-moment plumbing as
 `linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual`, but with the genuinely proven
@@ -453,6 +492,21 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual_prop
     linear_listSize_to_epsMCA_gcxk25 C L δ η
       hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ :=
   linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual C L δ η
+    hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres
+
+/-- Prop-level wrapper for T5.1 from the witness-cover GKL24 first-moment residual front door. -/
+theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual_prop
+    (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
+    (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
+    (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
+    (hres :
+        ProximityGap.GKL24FirstMomentWitnessCoverResidual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          ((L : ℝ) ^ 2) (δ * (Fintype.card ι : ℝ))) :
+    linear_listSize_to_epsMCA_gcxk25 C L δ η
+      hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ :=
+  linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual C L δ η
     hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres
 
 end ListImpliesMCA
@@ -767,7 +821,7 @@ theorem rs_epsCA_implies_lambda_extended_cs25_of_residuals
   -- We get `1 ≤ L0` from the residual's strict inequality forcing a positive count.
   have hL0pos : 1 ≤ (L0 : ℝ) := by
     by_contra hlt
-    push_neg at hlt
+    push Not at hlt
     -- L0 = 0, so the LHS of hstrict is 0; but then 0 < ε·q.
     have hL0z : L0 = 0 := by
       have : (L0 : ℝ) < 1 := hlt
@@ -781,7 +835,7 @@ theorem rs_epsCA_implies_lambda_extended_cs25_of_residuals
       exact_mod_cast Nat.ceil_eq_zero.mp this
     have hεz : ε ≤ 0 := by
       by_contra hpos
-      push_neg at hpos
+      push Not at hpos
       have : 0 < q / (1 - η) * ε := by positivity
       linarith
     have : ε * q ≤ 0 := by nlinarith [hε0, hqpos.le]
@@ -1156,6 +1210,7 @@ BGKS20 all-but-one witnesses into the public propositions. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_bad_count
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_card
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_univ
@@ -1164,4 +1219,5 @@ BGKS20 all-but-one witnesses into the public propositions. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_residuals_prop
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_bad_count_prop
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual_prop
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual_prop
 #print axioms CodingTheory.rs_epsCA_separation_bgks20_of_exists_allButOne

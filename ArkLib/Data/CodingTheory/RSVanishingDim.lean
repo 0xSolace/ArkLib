@@ -6,18 +6,22 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.LinearAlgebra.Lagrange
 
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+
 /-!
 # Reed–Solomon vanishing-set dimension (MDS weight-enumerator foundation)
 
 For an RS code `RS[F, α, deg]` and a coordinate set `S` with `|S| ≤ deg`, the degree-`<deg`
 polynomials vanishing on the points `{α i : i ∈ S}` form a subspace of dimension `deg - |S|`.
-Equivalently the evaluation map `degreeLT F deg → (S → F)` is **surjective** (Lagrange interpolation,
-since `|S| ≤ deg` distinct nodes), so by rank–nullity its kernel — the vanishing polynomials — has
-dimension `deg - |S|`, hence `q^{deg - |S|}` codewords.
+Equivalently the evaluation map `degreeLT F deg → (S → F)` is **surjective** (Lagrange
+interpolation, since `|S| ≤ deg` distinct nodes), so by rank–nullity its kernel — the vanishing
+polynomials — has dimension `deg - |S|`, hence `q^{deg - |S|}` codewords.
 
-This is the MDS information-set fact: any `s ≤ deg` coordinates can be prescribed freely.  It is the
-combinatorial foundation of the **MDS weight enumerator** `A_d` (inclusion–exclusion over the support
-set), which in turn feeds the CS25 #82 second moment `E[N²] = |C| · ∑_d A_d · I(d)`.
+This is the MDS information-set fact: any `s ≤ deg` coordinates can be prescribed freely.  It is
+the combinatorial foundation of the **MDS weight enumerator** `A_d` (inclusion–exclusion over the
+support set), which in turn feeds the CS25 #82 second moment `E[N²] = |C| · ∑_d A_d · I(d)`.
 -/
 
 open Polynomial
@@ -48,7 +52,7 @@ theorem evalOnS_surjective (α : ι ↪ F) (deg : ℕ) (S : Finset ι) (hS : S.c
       _ ≤ (deg : WithBot ℕ) := by exact_mod_cast hS
   refine ⟨⟨p, Polynomial.mem_degreeLT.mpr hdeg⟩, ?_⟩
   ext i
-  show (p : F[X]).eval (α (i : ι)) = v i
+  change (p : F[X]).eval (α (i : ι)) = v i
   rw [hp, Lagrange.eval_interpolate_at_node r hinj i.2]
   simp [hr, i.2]
 

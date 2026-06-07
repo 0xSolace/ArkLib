@@ -119,7 +119,7 @@ def parse_axioms(output: str) -> dict[str, set[str]]:
 
 def check_signature(entry: Entry, output: str) -> list[str]:
     pattern = re.compile(
-        rf"(?m)^{re.escape(entry.decl)}\s*:\s*(.*?)(?=\n'[^']+' (?:depends|does not)|\Z)",
+        rf"(?m)^{re.escape(entry.decl)}\s*(.*?)(?=\n'[^']+' (?:depends|does not)|\Z)",
         re.S,
     )
     match = pattern.search(output)
