@@ -1673,6 +1673,34 @@ theorem liftComp_liftComp {ι₁ ι₂ ι₃ : Type} {spec : OracleSpec ι₁} {
     rw [hquery t, OracleComp.liftComp_query]
     simp only [OracleQuery.cont_query, id_map, OracleQuery.input_query]
 
+/-- **Diamond collapse for nested `liftM` over `OracleComp`.**  Two composed lifts
+`spec → midSpec → superSpec` collapse to the single direct lift (expressed as `liftComp X
+superSpec`), given the per-query coherence `hco` (`fun _ => rfl` for the canonical `+`
+oracle-spec injections).  This discharges the "multiple coercion paths for the same lifted
+computation" obstruction: a goal term `liftM (liftM X)` — e.g. from unfolding `Prover.run`'s
+internal output lift, or a Fiat-Shamir empty-challenge-layer embedding — rewrites to the direct
+`liftComp X superSpec`, matching a single-lifted occurrence (which is `liftComp X superSpec` by
+`liftComp_eq_liftM`).  Proven by converting both `liftM`s to `liftComp` and applying
+`liftComp_liftComp`. -/
+theorem liftM_liftM_via_comp {ιs ιm ιp : Type} {spec : OracleSpec ιs} {midSpec : OracleSpec ιm}
+    {superSpec : OracleSpec ιp}
+    [MonadLift (OracleQuery spec) (OracleQuery midSpec)]
+    [MonadLift (OracleQuery midSpec) (OracleQuery superSpec)]
+    [MonadLift (OracleQuery spec) (OracleQuery superSpec)]
+    {α : Type} (X : OracleComp spec α)
+    (hco : ∀ t, OracleComp.liftComp
+        (liftM (spec.query t) : OracleComp midSpec (spec.Range t)) superSpec
+      = (liftM (spec.query t) : OracleComp superSpec (spec.Range t))) :
+    (liftM (liftM X : OracleComp midSpec α) : OracleComp superSpec α)
+      = OracleComp.liftComp X superSpec := by
+  rw [show (liftM X : OracleComp midSpec α) = OracleComp.liftComp X midSpec
+      from (liftComp_eq_liftM X).symm]
+  rw [show (liftM (OracleComp.liftComp X midSpec) : OracleComp superSpec α)
+      = OracleComp.liftComp (OracleComp.liftComp X midSpec) superSpec
+      from (liftComp_eq_liftM _).symm]
+  exact liftComp_liftComp hco X
+
+
 
 /-- `processRound` resolved at a message (`P_to_V`) round (mirror of the library's
 `processRound_challenge`). -/

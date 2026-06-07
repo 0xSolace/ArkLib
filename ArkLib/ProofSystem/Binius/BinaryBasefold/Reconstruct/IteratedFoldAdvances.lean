@@ -116,7 +116,7 @@ theorem fold_advances_evaluation_poly_step
   simp only
   rw [h_new_coeffs ⟨j, hj⟩]
 
-omit [Fintype L] [DecidableEq L] [CharP L 2] [NeZero ℓ] [NeZero 𝓡] in
+omit [Fintype L] [DecidableEq L] [CharP L 2] [NeZero r] [NeZero ℓ] [NeZero 𝓡] in
 /-- **Low half of the multilinear weight tensor.** For `x : Fin (2^n)` (so the top bit `n` of
 `x` is `0`), the `(n+1)`-challenge weight at index `x` factors as the `n`-challenge weight at
 `x` (over `Fin.init r`) times `(1 - r (last n))`. -/
@@ -136,7 +136,7 @@ theorem multilinearWeight_castSucc_low {n : ℕ} (r : Fin (n + 1) → L) (x : Fi
   simp only [Fin.val_castSucc, Fin.init]
   congr 1
 
-omit [Fintype L] [DecidableEq L] [CharP L 2] [NeZero ℓ] [NeZero 𝓡] in
+omit [Fintype L] [DecidableEq L] [CharP L 2] [NeZero r] [NeZero ℓ] [NeZero 𝓡] in
 /-- **High half of the multilinear weight tensor.** For `x : Fin (2^n)`, the `(n+1)`-challenge
 weight at index `2^n + x` (top bit `n` set) factors as the `n`-challenge weight at `x`
 (over `Fin.init r`) times `r (last n)`. -/
@@ -166,7 +166,7 @@ theorem multilinearWeight_castSucc_high {n : ℕ} (r : Fin (n + 1) → L) (x : F
   rw [Fin.prod_univ_castSucc]
   simp_rw [Nat.testBit_true_eq_getBit_eq_1]
   simp_rw [h_getLastBit_add_pow]
-  simp only [Fin.val_last, Fin.val_castSucc, Fin.init, ↓reduceIte]
+  simp only [Fin.val_castSucc, Fin.init, ↓reduceIte]
   congr 1
   apply Finset.prod_congr rfl
   intro k _
@@ -175,7 +175,6 @@ theorem multilinearWeight_castSucc_high {n : ℕ} (r : Fin (n + 1) → L) (x : F
   simp only [beq_iff_eq]
   have h_k_ne_n : n ≠ k.val := by omega
   simp only [h_k_ne_n, ↓reduceIte, Nat.xor_zero]
-  rfl
 
 end
 
