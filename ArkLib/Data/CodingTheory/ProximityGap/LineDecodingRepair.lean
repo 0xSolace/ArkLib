@@ -120,6 +120,17 @@ theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_double_cover
   rw [epsMCA_eq_zero_of_forall_double_cover (F := F) (A := A) (C : Set (ι → A)) δ hcov]
   exact zero_le _
 
+/-- Same repaired nondegenerate target discharge, exposed under the named global
+`MCAForallDoubleCover` surface used by downstream adapters. -/
+theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_MCAForallDoubleCover
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (hC : C ≠ ⊥) (ha : 0 < a)
+    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hcov : MCAForallDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ) :
+    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD :=
+  lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_double_cover C δ a hC ha hLD hcov
+
 /-- The strengthened nondegenerate target is discharged by named per-bad-scalar double-cover
 obligations. -/
 theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_badScalarDoubleCover
@@ -299,6 +310,8 @@ set_option linter.style.longLine false in
 #print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_target
 set_option linter.style.longLine false in
 #print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_double_cover
+set_option linter.style.longLine false in
+#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_MCAForallDoubleCover
 set_option linter.style.longLine false in
 #print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_badScalarDoubleCover
 set_option linter.style.longLine false in
