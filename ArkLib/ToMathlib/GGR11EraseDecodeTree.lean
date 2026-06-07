@@ -371,6 +371,14 @@ theorem EraseDecodeTree.leafCount_le (L : ℕ∞) (hL : 1 ≤ L) :
       _ = ((t :: ts).length : ℕ∞) * (((b + r).choose r : ℕ∞) * L ^ r) := by
           simp [Nat.cast_add, add_mul, one_mul, add_comm]
 
+/-- A concrete Erase-Decode tree satisfies the closed GGR11 leaf-count budget at its own exact
+Blue/Red depths. This is the no-slack form of `EraseDecodeTree.leafCount_le`, useful when the
+tree constructor produces the depths intrinsically rather than against prechosen budgets. -/
+theorem EraseDecodeTree.leafCount_le_self (L : ℕ∞) (hL : 1 ≤ L) (t : EraseDecodeTree)
+    (hbr : t.redBranchingLe L) :
+    t.leafCount ≤ ((t.blueDepth + t.redDepth).choose t.redDepth : ℕ∞) * L ^ t.redDepth :=
+  EraseDecodeTree.leafCount_le L hL t t.blueDepth t.redDepth le_rfl le_rfl hbr
+
 /-! ### Bridge to the abstract residual -/
 
 open Code ListDecodable
@@ -430,6 +438,34 @@ noncomputable def treeWitness_of_concreteEraseDecodeTree
                 ring
             _ ≤ (Lambda C δ) * (((b' + 1 + r').choose r' : ℕ∞) * (Lambda C δ) ^ r') :=
                 mul_le_mul' (le_refl _) (mul_le_mul' hcast (le_refl _))
+
+/-- A single concrete Erase-Decode tree supplies a named GGR11 witness at its own exact Blue/Red
+depths. This is the constructor-facing form for future Algorithm-1 tree builders: they only need
+to provide leaf domination and Red-branching, and the depth indices are read from the tree. -/
+noncomputable def treeWitness_of_concreteEraseDecodeTree_self
+    {C : Set (ι → F)} {δ : ℝ} {m : ℕ} (hL : 1 ≤ Lambda C δ)
+    (f : Matrix ι (Fin m) F) (tree : EraseDecodeTree)
+    (hdom :
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+          ≤ tree.leafCount)
+    (hbr : tree.redBranchingLe (Lambda C δ)) :
+    GGR11TreeWitness C δ m tree.blueDepth tree.redDepth f :=
+  treeWitness_of_concreteEraseDecodeTree hL f tree hdom le_rfl le_rfl hbr
+
+/-- Concrete Erase-Decode tree existence, with no preselected depth budgets, supplies some exact
+GGR11 witness indexed by the tree's own Blue/Red depths. -/
+theorem treeWitness_of_eraseDecodeTree_self
+    {C : Set (ι → F)} {δ : ℝ} {m : ℕ} (hL : 1 ≤ Lambda C δ)
+    {f : Matrix ι (Fin m) F}
+    (H : ∃ t : EraseDecodeTree,
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+          ≤ t.leafCount ∧
+      t.redBranchingLe (Lambda C δ)) :
+    ∃ b r : ℕ, Nonempty (GGR11TreeWitness C δ m b r f) := by
+  obtain ⟨tree, hdom, hbr⟩ := H
+  exact
+    ⟨tree.blueDepth, tree.redDepth,
+      ⟨treeWitness_of_concreteEraseDecodeTree_self hL f tree hdom hbr⟩⟩
 
 /-- Concrete Erase-Decode tree existence supplies the named per-word GGR11 witness.
 
@@ -571,7 +607,10 @@ theorem lambda_le_ggr11_of_leaf_close_le_one
 
 -- Axiom audit.
 #print axioms EraseDecodeTree.leafCount_le
+#print axioms EraseDecodeTree.leafCount_le_self
 #print axioms treeWitness_of_concreteEraseDecodeTree
+#print axioms treeWitness_of_concreteEraseDecodeTree_self
+#print axioms treeWitness_of_eraseDecodeTree_self
 #print axioms treeWitness_of_eraseDecodeTree
 #print axioms treeStructure_of_eraseDecodeTree
 #print axioms treeFrontier_of_eraseDecodeTree
