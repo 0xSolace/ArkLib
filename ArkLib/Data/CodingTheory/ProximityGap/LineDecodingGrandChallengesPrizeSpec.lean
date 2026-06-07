@@ -127,6 +127,224 @@ theorem exists_mcaPrizeLatticeResolved_with_spec_of_forall_not_mcaEvent
         (δ j) (hno j)]
       simp
 
+/-- Package repaired double-cover frontiers and explicit adjacent upper witnesses into the generic
+four-rate adjacent-witness frontier. -/
+noncomputable def mcaPrizeAdjacentWitnessFrontier_ofDoubleCover_and_upperWitnesses
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j))
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    MCAPrizeAdjacentWitnessFrontier (F := F) domain where
+  lower := fun j =>
+    GrandChallenges.MCALowerWitness.ofDoubleCover
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hcov j)
+  upper := whi
+  upper_le_one := hδhi
+  adjacent := by
+    intro j
+    exact hadj j
+
+/-- Repaired double-cover adjacent frontiers resolve the four-rate MCA prize via the generic
+adjacent-frontier API. -/
+theorem mcaPrizeLatticeResolved_ofDoubleCoverAdjacentFrontier
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j))
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    mcaPrizeLatticeResolved domain
+      (fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)) := by
+  simpa using
+    mcaPrizeLatticeResolved_of_adjacent_frontier domain
+      (mcaPrizeAdjacentWitnessFrontier_ofDoubleCover_and_upperWitnesses
+        domain δ hδ_le_one hcov whi hδhi hadj)
+
+/-- Package named bad-scalar double-cover frontiers and explicit adjacent upper witnesses into the
+generic four-rate adjacent-witness frontier. -/
+noncomputable def mcaPrizeAdjacentWitnessFrontier_ofBadScalarDoubleCover_and_upperWitnesses
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    MCAPrizeAdjacentWitnessFrontier (F := F) domain where
+  lower := fun j =>
+    GrandChallenges.MCALowerWitness.ofBadScalarDoubleCover
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hcov j)
+  upper := whi
+  upper_le_one := hδhi
+  adjacent := by
+    intro j
+    exact hadj j
+
+/-- Named bad-scalar double-cover adjacent frontiers resolve the four-rate MCA prize via the
+generic adjacent-frontier API. -/
+theorem mcaPrizeLatticeResolved_ofBadScalarDoubleCoverAdjacentFrontier
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    mcaPrizeLatticeResolved domain
+      (fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)) := by
+  simpa using
+    mcaPrizeLatticeResolved_of_adjacent_frontier domain
+      (mcaPrizeAdjacentWitnessFrontier_ofBadScalarDoubleCover_and_upperWitnesses
+        domain δ hδ_le_one hcov whi hδhi hadj)
+
+/-- Package zero bad-scalar count frontiers and explicit adjacent upper witnesses into the generic
+four-rate adjacent-witness frontier. -/
+noncomputable def mcaPrizeAdjacentWitnessFrontier_of_mcaBadCount_zero_and_upperWitnesses
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hzero : ∀ j : Fin 4, ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) = 0)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    MCAPrizeAdjacentWitnessFrontier (F := F) domain where
+  lower := fun j =>
+    GrandChallenges.MCALowerWitness.of_mcaBadCount_zero
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hzero j)
+  upper := whi
+  upper_le_one := hδhi
+  adjacent := by
+    intro j
+    exact hadj j
+
+/-- Zero bad-scalar count adjacent frontiers resolve the four-rate MCA prize via the generic
+adjacent-frontier API. -/
+theorem mcaPrizeLatticeResolved_of_mcaBadCount_zeroAdjacentFrontier
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hzero : ∀ j : Fin 4, ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) = 0)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    mcaPrizeLatticeResolved domain
+      (fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)) := by
+  simpa using
+    mcaPrizeLatticeResolved_of_adjacent_frontier domain
+      (mcaPrizeAdjacentWitnessFrontier_of_mcaBadCount_zero_and_upperWitnesses
+        domain δ hδ_le_one hzero whi hδhi hadj)
+
+/-- Package direct no-bad-event frontiers and explicit adjacent upper witnesses into the generic
+four-rate adjacent-witness frontier. -/
+noncomputable def mcaPrizeAdjacentWitnessFrontier_of_forall_not_mcaEvent_and_upperWitnesses
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hno : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    MCAPrizeAdjacentWitnessFrontier (F := F) domain where
+  lower := fun j =>
+    GrandChallenges.MCALowerWitness.of_forall_not_mcaEvent
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hno j)
+  upper := whi
+  upper_le_one := hδhi
+  adjacent := by
+    intro j
+    exact hadj j
+
+/-- Direct no-bad-event adjacent frontiers resolve the four-rate MCA prize via the generic
+adjacent-frontier API. -/
+theorem mcaPrizeLatticeResolved_of_forall_not_mcaEventAdjacentFrontier
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hno : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    mcaPrizeLatticeResolved domain
+      (fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)) := by
+  simpa using
+    mcaPrizeLatticeResolved_of_adjacent_frontier domain
+      (mcaPrizeAdjacentWitnessFrontier_of_forall_not_mcaEvent_and_upperWitnesses
+        domain δ hδ_le_one hno whi hδhi hadj)
+
 /-- Adjacent repaired double-cover frontiers resolve the four-rate MCA prize at the repaired
 lower-frontier lattice indices and expose the satisfy/maximality specification for those concrete
 thresholds. -/
@@ -278,6 +496,22 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeAdjacentWitnessFrontier_ofDoubleCover_and_upperWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_ofDoubleCoverAdjacentFrontier
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeAdjacentWitnessFrontier_ofBadScalarDoubleCover_and_upperWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_ofBadScalarDoubleCoverAdjacentFrontier
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeAdjacentWitnessFrontier_of_mcaBadCount_zero_and_upperWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_of_mcaBadCount_zeroAdjacentFrontier
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeAdjacentWitnessFrontier_of_forall_not_mcaEvent_and_upperWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_of_forall_not_mcaEventAdjacentFrontier
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_ofDoubleCover_and_adjacent_upperWitnesses
 set_option linter.style.longLine false in
