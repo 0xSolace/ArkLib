@@ -109,7 +109,9 @@ lemma extractSuffixFromChallenge_congr_destIdx
     (h_le' : destIdx' ≤ ℓ) :
     extractSuffixFromChallenge 𝔽q β v destIdx h_le =
     cast (by rw [h_idx_eq]) (extractSuffixFromChallenge 𝔽q β v destIdx' h_le') := by
-  subst h_idx_eq; rfl
+  subst h_idx_eq
+  rw [cast_eq]
+  exact congrArg (extractSuffixFromChallenge 𝔽q β v destIdx) (Subsingleton.elim h_le h_le')
 
 omit [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
 /-- **First Oracle Equals Polynomial Oracle Function**:
@@ -554,8 +556,11 @@ lemma iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask
       (by
         have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
         omega)
-      (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := i.val + steps)
-        (h_bound := by simp only [Fin.val_mk, zero_add]; omega) v)
+      (cast (congrArg (fun m => ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨m, by omega⟩))
+          (Nat.zero_add (i.val + steps)))
+        (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, Nat.pos_of_neZero ℓ⟩)
+          (k := i.val + steps)
+          (h_bound := by simp only [Fin.val_mk, zero_add]; omega) v))
       (extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) v ⟨i.val, by omega⟩ steps) := by
   have h_R_pos : 0 < 𝓡 := NeZero.pos 𝓡
   have h_i_le : i.val ≤ ℓ := by omega
