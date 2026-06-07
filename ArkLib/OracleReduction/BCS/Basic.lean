@@ -573,6 +573,16 @@ theorem BCSOpeningSchedule.toOpeningStatements_nodup
     (BCSOpeningRequest.indexed_toOpeningStatement_injective
       (pSpec := pSpec) (Oₘ := Oₘ) (CommitmentType := CommitmentType))
 
+/-- Duplicate-freeness is equivalent before and after conversion to indexed opening statements. -/
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_nodup_iff
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    schedule.toOpeningStatements.Nodup ↔ schedule.Nodup := by
+  rw [BCSOpeningSchedule.toOpeningStatements]
+  exact List.nodup_map_iff
+    (BCSOpeningRequest.indexed_toOpeningStatement_injective
+      (pSpec := pSpec) (Oₘ := Oₘ) (CommitmentType := CommitmentType))
+
 /-- The typed opening-log boundary for the not-yet-generic BCS compiler.
 
 The current `BCSCompiledPhases` interface still accepts an abstract opening phase.  This structure
@@ -957,6 +967,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_subset
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_injective
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nodup
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nodup_iff
 #print axioms OracleReduction.BCSOpeningLogFrontier
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.intro
