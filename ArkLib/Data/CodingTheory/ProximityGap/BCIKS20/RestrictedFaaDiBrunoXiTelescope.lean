@@ -227,11 +227,10 @@ theorem restrictedMatchRecursionPartitionForm_eq_ξfree_of_leadingCoeff_one
   have hglob : ξ ^ (2 * (t + 1) - 2) / ξ ^ (2 * (t + 1) - 1) = ξ⁻¹ := by
     rw [div_eq_iff (pow_ne_zero _ hξ), inv_mul_eq_div, eq_div_iff hξ, ← pow_succ]
     congr 1
-    omega
-  rw [restrictedMatchRecursionPartitionForm_eq_Wfree_of_leadingCoeff_one H x₀ R hHyp t hlc]
-  -- Move the global `ζ`, `ξ⁻¹` and the per-term `ξ`-factorization through the double sum.
-  rw [mul_assoc, Finset.sum_div, Finset.mul_sum]
-  refine congrArg (fun z => ClaimA2.ζ R x₀ H * z) ?_
+  rw [restrictedMatchRecursionPartitionForm_eq_Wfree_of_leadingCoeff_one H x₀ R hHyp t hlc,
+    mul_assoc]
+  -- Reduce to the inner double-sum identity `recSum / ξ^G = ξ⁻¹ · S`.
+  rw [Finset.sum_div, Finset.mul_sum]
   refine Finset.sum_congr rfl (fun i1 hi1mem => ?_)
   rw [Finset.sum_div, Finset.mul_sum]
   refine Finset.sum_congr rfl (fun lam hlam => ?_)
@@ -246,9 +245,6 @@ theorem restrictedMatchRecursionPartitionForm_eq_ξfree_of_leadingCoeff_one
   set dl := 2 * (t + 1 - i1) - sigmaLambda lam with hdldef
   -- LHS term: `(ξ^g / ξ^dl) * B * P / ξ^G` ; RHS term: `ξ⁻¹ * (B * P / ξ^dl)`,
   -- where `g = 2(t+1)-2`, `G = 2(t+1)-1`, and `ξ^g/ξ^G = ξ⁻¹` by `hglob`.
-  rw [div_mul_eq_mul_div, div_mul_eq_mul_div, mul_div_assoc, mul_div_assoc,
-    mul_comm ((B * P : 𝕃 H)) _, ← mul_div_assoc, mul_div_assoc]
-  rw [div_div, mul_comm (ξ ^ dl) (ξ ^ (2 * (t + 1) - 1)), ← div_div, hglob]
-  rw [mul_div_assoc]
-
-end BCIKS20.HenselNumerator
+  rw [div_eq_iff (pow_ne_zero _ hξ), ← hglob]
+  field_simp
+  ring

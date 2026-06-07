@@ -1432,6 +1432,29 @@ theorem whirRbrBudgetValue_isLUB {M : ℕ} {ιs : Fin (M + 1) → Type}
       ε_fin ≤ c → whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin ≤ c) :=
   Issue113WHIR.epsRbr_isLUB (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin
 
+omit [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- Using the named WHIR RBR budget in `IsSecureWithGap` is definitionally the same as using the
+inline `ε_rbr` expression from `whir_rbr_soundness`. -/
+theorem whirSecureWithGap_namedBudget_iff_inline {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    {P : Params ιs F} {m_0 : ℕ} [Smooth (P.φ 0)] [Nonempty (ιs 0)]
+    {δ : ℝ≥0} {n : ℕ} {vPSpec : ProtocolSpec.VectorSpec n}
+    (π : VectorIOP Unit (OracleStatement (ιs 0) F) Unit vPSpec F)
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) :
+    VectorIOP.IsSecureWithGap (whirRelation m_0 (P.φ 0) 0)
+      (whirRelation m_0 (P.φ 0) δ)
+      (fun _ : vPSpec.ChallengeIdx => whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) π ↔
+    (let max_ε_folds : (i : Fin (M + 1)) → ℝ≥0 :=
+        fun i => (univ : Finset (Fin (P.foldingParam i))).sup (ε_fold i)
+      let ε_rbr : vPSpec.ChallengeIdx → ℝ≥0 :=
+        fun _ => ((Finset.univ : Finset (Fin (M + 1))).image max_ε_folds ∪ {ε_fin} ∪
+          (Finset.univ : Finset (Fin (M + 1))).image ε_out ∪
+          (Finset.univ : Finset (Fin M)).image ε_shift).max' (by simp)
+      VectorIOP.IsSecureWithGap (whirRelation m_0 (P.φ 0) 0)
+        (whirRelation m_0 (P.φ 0) δ) ε_rbr π) := by
+  rfl
+
 /-- Every verifier-challenge index has length one in the WHIR scratch vector spec. -/
 theorem whirVectorSpec_challengeLength (M : ℕ) (i : (whirVectorSpec M).ChallengeIdx) :
     (whirVectorSpec M).challengeLength i = 1 := by
@@ -1698,6 +1721,7 @@ end RBRSoundnessAssembly
 #print axioms whirRbrBudgetValue_shift_le
 #print axioms whirRbrBudgetValue_fold_le
 #print axioms whirRbrBudgetValue_isLUB
+#print axioms whirSecureWithGap_namedBudget_iff_inline
 #print axioms whirVectorSpec_challengeLength
 #print axioms whirVectorSpec_challenge_eq_vector_one
 #print axioms whirVectorSpec_totalChallengeLength

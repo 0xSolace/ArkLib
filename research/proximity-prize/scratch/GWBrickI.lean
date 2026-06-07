@@ -214,12 +214,14 @@ lemma natDegree_gwBlock_succ {F : Type*} [Field F] {s n k : ℕ}
     (hn : 0 < n) (c : GWCoeffSpace F s n k) {b : Fin (s + 1)} (hb : b ≠ 0) :
     (gwInterpolantBlocks c b).natDegree < n := by
   classical
+  have hb' : (b : ℕ) ≠ 0 := fun h => hb (Fin.ext h)
+  have hjlt : (b : ℕ) - 1 < s := by have := b.isLt; omega
+  have hexpand : gwInterpolantBlocks c b
+      = ∑ a : Fin n,
+          Polynomial.C (c (Sum.inr ((⟨(b : ℕ) - 1, hjlt⟩ : Fin s), a))) * X ^ (a : ℕ) := by
+    simp only [gwInterpolantBlocks, dif_neg hb]
   have hle : (gwInterpolantBlocks c b).natDegree ≤ n - 1 := by
-    rw [show gwInterpolantBlocks c b
-        = ∑ a : Fin n, Polynomial.C (c (Sum.inr
-            ((⟨(b : ℕ) - 1, by have hb' : (b : ℕ) ≠ 0 := fun h => hb (Fin.ext h);
-              have := b.isLt; omega⟩ : Fin s), a))) * X ^ (a : ℕ) from by
-        simp only [gwInterpolantBlocks, dif_neg hb]]
+    rw [hexpand]
     apply Polynomial.natDegree_sum_le_of_forall_le
     intro a _
     calc (Polynomial.C (c (Sum.inr (_, a))) * X ^ (a : ℕ)).natDegree
@@ -341,7 +343,7 @@ content named here.
 This is exposed as a `Prop` over the interpolant data so the rest of the GW kernel
 (BRICK-W, BRICK-L) can consume BRICK-I *conditionally* on this single bookkeeping
 fact, exactly as the campaign reduces `CZ25CoordFiberCap` to `{BRICK-I, BRICK-V}`. -/
-def GWFoldedDegreeObligation {F : Type*} [Field F] {s n k : ℕ}
+def GWFoldedDegreeObligation {F : Type*} [Field F] {s : ℕ}
     (A : Fin (s + 1) → F[X]) (p : F[X]) (shift : Fin s → F[X])
     (agreeCount : ℕ) : Prop :=
   (foldedSubstitution A p shift).natDegree < agreeCount
@@ -354,10 +356,10 @@ then `R_p` must in fact be zero — a contradiction giving `R_p = 0`.  This is t
 clean linear-algebra/degree hand-off to BRICK-V; the *only* admitted analytic
 input is the named degree bookkeeping `hdeg`. -/
 theorem foldedSubstitution_eq_zero_of_degree_and_roots
-    {F : Type*} [Field F] {s n k : ℕ}
+    {F : Type*} [Field F] {s : ℕ}
     (A : Fin (s + 1) → F[X]) (p : F[X]) (shift : Fin s → F[X])
     (agreeCount : ℕ)
-    (hdeg : GWFoldedDegreeObligation (n := n) (k := k) A p shift agreeCount)
+    (hdeg : GWFoldedDegreeObligation A p shift agreeCount)
     (roots : Finset F) (hcard : agreeCount ≤ roots.card)
     (hroots : ∀ x ∈ roots, (foldedSubstitution A p shift).eval x = 0) :
     foldedSubstitution A p shift = 0 := by
@@ -379,3 +381,12 @@ theorem foldedSubstitution_eq_zero_of_degree_and_roots
   omega
 
 end CodingTheory.GWBrickI
+
+-- Axiom-cleanliness checks: the proven BRICK-I declarations rest only on the
+-- standard Lean/mathlib axioms (`propext`, `Classical.choice`, `Quot.sound`);
+-- no `sorryAx`, no new axioms.  The folded-degree obligation is a *named Prop*,
+-- not an axiom.
+#print axioms CodingTheory.GWBrickI.gw_interpolant_exists
+#print axioms CodingTheory.GWBrickI.gw_interpolant_exists_poly
+#print axioms CodingTheory.GWBrickI.gw_unknowns_gt_constraints
+#print axioms CodingTheory.GWBrickI.foldedSubstitution_eq_zero_of_degree_and_roots

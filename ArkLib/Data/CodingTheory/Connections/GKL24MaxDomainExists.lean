@@ -241,6 +241,40 @@ theorem mcaBadWitness_card_le_of_radius {MC : Submodule F (ι → F)} {δ : ℝ�
     (D := Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)) (Finset.Subset.refl _)
   exact le_trans (Nat.le_mul_of_pos_right _ (by omega)) hcount
 
+/-- **GKL24 first-moment bound, unconditional: `|mcaBadWitness w| ≤ n − |common|`.**  For *every*
+stack (with `w` a codeword), the number of bad combiners is at most the number of non-common
+coordinates.  Each bad combiner's petal `lineAgreeSet γ \ common` is nonempty — the `¬pairJointAgrees`
+clause forces the witnessing set outside the common set (otherwise `(w, 0)` would witness joint
+agreement via `pairJointAgreesOn_common`) — and distinct petals are disjoint, so the bad combiners
+inject into `univ \ common`.  This is the cleanest, hypothesis-free form of GKL24's first moment. -/
+theorem mcaBadWitness_card_le_compl_common {MC : Submodule F (ι → F)} {δ : ℝ≥0} {u₀ u₁ w : ι → F}
+    (hw : w ∈ MC) :
+    (mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card
+      ≤ Fintype.card ι - (Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)).card := by
+  classical
+  set C₀ := Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i) with hC₀
+  have hU : (Finset.univ \ C₀).card = Fintype.card ι - C₀.card := by
+    have h := Finset.card_sdiff_add_card_inter (Finset.univ : Finset ι) C₀
+    rw [Finset.univ_inter, Finset.card_univ] at h; omega
+  rw [← hU, ← mul_one (mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card]
+  refine card_mul_le_of_disjoint_petals (P := fun γ => linePetal C₀ u₀ u₁ w γ)
+    (fun γ _ γ' _ hne => linePetal_disjoint_of_common_subset C₀ u₀ u₁ w hne (Finset.Subset.refl _))
+    (fun γ _ => by
+      rw [linePetal]
+      exact Finset.sdiff_subset_sdiff (Finset.subset_univ _) (Finset.Subset.refl _))
+    (fun γ hγ => ?_)
+  rw [Nat.one_le_iff_ne_zero, Finset.card_ne_zero]
+  simp only [mcaBadWitness, Finset.mem_filter, Finset.mem_univ, true_and] at hγ
+  obtain ⟨S, _, hSagree, hSnopair⟩ := hγ
+  have hSnotsub : ¬ S ⊆ C₀ := by
+    intro hsub
+    refine hSnopair ⟨w, hw, 0, MC.zero_mem, fun i hi => ?_⟩
+    have hiC := hsub hi
+    rw [hC₀, Finset.mem_filter] at hiC
+    exact ⟨hiC.2.2, by rw [Pi.zero_apply]; exact hiC.2.1.symm⟩
+  obtain ⟨i, hiS, hiC⟩ := Finset.not_subset.mp hSnotsub
+  exact ⟨i, by rw [linePetal, Finset.mem_sdiff, mem_lineAgreeSet_iff]; exact ⟨hSagree i hiS, hiC⟩⟩
+
 /-- **GKL24 sharp first-moment bound `|Bad¹| ≤ p·n`.**  If a correlated-agreement domain `D` at rate
 `p` (so `(1−p)·n ≤ |D|`) absorbs the common zero-agreement set, and the bad-witness radius is smaller
 (`|D| < ⌊(1−δ)·n⌋`, i.e. `δ < p`), then `|mcaBadWitness w| ≤ p·n`.  This is GKL24's sharp

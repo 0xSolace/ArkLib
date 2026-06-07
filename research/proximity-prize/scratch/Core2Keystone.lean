@@ -376,6 +376,7 @@ def RoundProxGapBoundedByKeystone {k deg : ℕ} (domain : ι ↪ F) (δ : ℝ≥
     (roundErr ε_sc : ℝ≥0) : Prop :=
   roundErr ≤ (k : ℝ≥0) * errorBound δ deg domain + ε_sc
 
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] in
 /-- **§4.1 — the CA part of the round bound is genuinely the keystone (non-vacuity check).**
 
 When the sumcheck residual is zero (`ε_sc = 0`) and the round error is exactly the keystone's
@@ -388,6 +389,7 @@ theorem roundProxGap_of_keystone_no_sumcheck {k deg : ℕ} (domain : ι ↪ F) (
   unfold RoundProxGapBoundedByKeystone
   simp
 
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] in
 /-- **§4.2 — assembling the round bound from keystone + named sumcheck residual.**
 
 Given the keystone curve bound on the fold part (`hca : roundCA ≤ k · errorBound`) and a named
@@ -461,4 +463,12 @@ NON-VACUITY ASSESSMENT (honest):
   theorems-of the keystone + these named residuals.
 -/
 
+end Core2Keystone
+
+namespace Core2Keystone
+#print axioms keystone_curves_bound
+#print axioms keystone_epsPG_bound
+#print axioms perRoundProximityGap_of_correlatedAgreement
+#print axioms whirRbrKeystone_of_correlatedAgreement
+#print axioms roundProxGap_of_keystone_and_sumcheck
 end Core2Keystone

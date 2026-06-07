@@ -87,4 +87,54 @@ theorem fprune_expectation_lower
     ∀ r, η / ((r : ℕ) + η) ≤ E r :=
   fprune_potential_bound E (fun r => η / ((r : ℕ) + η)) base step
 
+/-! ## Lemma 3.4 — the one-step potential inequality (design-weighted FPRUNE sampling) -/
+
+variable [DecidableEq ι]
+
+/-- **Lemma 3.4 (one-step potential inequality), the design-weighted FPRUNE sampling.** With
+`pot x = η/(x+η)`, sampling each good coordinate `j ∈ J` with probability proportional to
+`wt_η(ℋ_j) = d_j + η` and crediting one recursion step the factor `(1-η')`, the resulting
+nonnegative combination `c_j := (d_j+η)·(1-η') / W` (where `W := ∑_{k∈J}(d_k+η)`) satisfies the
+potential step `pot r ≤ ∑_{j∈J} c_j · pot(d_j)`.
+
+The proof is the exact arithmetic: each summand `[(d_j+η)(1-η')/W]·[η/(d_j+η)]` cancels to
+`(1-η')η/W`, so the sum is `|J|·(1-η')·η/W`, and `η/(r+η) ≤ |J|(1-η')η/W` reduces to
+`W ≤ |J|·(1-η')(r+η)`, which holds termwise because every good coordinate has
+`d_j + η ≤ (1-η')(r+η)` (the FPRUNE "good" predicate). -/
+theorem fprune_one_step
+    (η η' : ℝ) (hη : 0 < η) (hη' : 0 ≤ 1 - η')
+    (r : ℕ) (J : Finset ι) (d : ι → ℕ) (hJ : J.Nonempty)
+    (hgood : ∀ j ∈ J, (d j : ℝ) + η ≤ (1 - η') * ((r : ℝ) + η)) :
+    η / ((r : ℕ) + η) ≤
+      ∑ j ∈ J, ((((d j : ℝ) + η) * (1 - η')) / (∑ k ∈ J, ((d k : ℝ) + η)))
+                  * (η / ((d j : ℕ) + η)) := by
+  set W : ℝ := ∑ k ∈ J, ((d k : ℝ) + η) with hW
+  have hposTerm : ∀ j, (0 : ℝ) < (d j : ℝ) + η := fun j =>
+    add_pos_of_nonneg_of_pos (Nat.cast_nonneg _) hη
+  have hWpos : 0 < W := by
+    rw [hW]
+    exact Finset.sum_pos (fun j _ => hposTerm j) hJ
+  -- Each summand collapses to `(1-η')·η / W`.
+  have hterm : ∀ j ∈ J,
+      ((((d j : ℝ) + η) * (1 - η')) / W) * (η / ((d j : ℕ) + η))
+        = (1 - η') * η / W := by
+    intro j _
+    have hdj : (d j : ℝ) + η ≠ 0 := ne_of_gt (hposTerm j)
+    field_simp
+    ring
+  rw [Finset.sum_congr rfl hterm, Finset.sum_const, nsmul_eq_mul]
+  -- `W ≤ |J|·(1-η')(r+η)` termwise from the good predicate.
+  have hWle : W ≤ (J.card : ℝ) * ((1 - η') * ((r : ℝ) + η)) := by
+    rw [hW]
+    calc ∑ k ∈ J, ((d k : ℝ) + η)
+        ≤ ∑ _k ∈ J, ((1 - η') * ((r : ℝ) + η)) := Finset.sum_le_sum hgood
+      _ = (J.card : ℝ) * ((1 - η') * ((r : ℝ) + η)) := by
+          rw [Finset.sum_const, nsmul_eq_mul]
+  -- Conclude `η/(r+η) ≤ |J|·(1-η')η / W`.
+  have hrη : (0 : ℝ) < (r : ℝ) + η := add_pos_of_nonneg_of_pos (Nat.cast_nonneg _) hη
+  rw [show (J.card : ℝ) * ((1 - η') * η / W) = ((J.card : ℝ) * (1 - η') * η) / W from by ring,
+      div_le_div_iff hrη hWpos]
+  -- goal: `η · W ≤ (|J|·(1-η')·η) · (r+η)`, i.e. `η` times `hWle`.
+  nlinarith [mul_le_mul_of_nonneg_left hWle (le_of_lt hη), hη, hWpos, hrη]
+
 end CodingTheory.ListDecoding

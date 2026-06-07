@@ -69,6 +69,17 @@ theorem hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_leadingCoeff_o
     H x₀ R hHyp hd hζ
     (restrictedMatchAt_zero_of_leadingCoeff_one H x₀ R hHyp hd hlc)
 
+/-- Monic order-zero closure, projected to the reabsorbed root-vs-uncleared numerator endpoint,
+using the nonvanishing packaged in `ClaimA2.Hypotheses`. -/
+theorem hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_leadingCoeff_one_of_hyp
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hlc : H.leadingCoeff = 1) :
+    hasseEvalAtRoot H x₀ R 1 0 =
+      embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+        / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree :=
+  hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_leadingCoeff_one
+    H x₀ R hHyp hd (ζ_ne_zero H x₀ R hHyp) hlc
+
 /-- Monic order-zero closure, projected to the first assembled numerator coefficient. -/
 theorem coeff_one_βHenselAssembled_eq_of_leadingCoeff_one
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -107,6 +118,8 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.zeroPowerSum_eq_single_B_coeff_of_leadingCoeff_one
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_leadingCoeff_one
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_leadingCoeff_one_of_hyp
 #print axioms BCIKS20.HenselNumerator.coeff_one_βHenselAssembled_eq_of_leadingCoeff_one
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.trunc_defect_cancel_assembled_zero_of_leadingCoeff_one
