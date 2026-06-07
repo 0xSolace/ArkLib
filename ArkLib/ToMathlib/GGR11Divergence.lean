@@ -123,9 +123,9 @@ private lemma closedForm_satisfies_recursion (L : ℕ∞) :
   · intro b'
     simp
   · intro r'
-    simp only
-    rw [Nat.choose_self, Nat.choose_self]
-    simp [pow_succ, mul_comm]
+    simp only [Nat.zero_add, Nat.choose_self, Nat.cast_one, one_mul]
+    apply le_of_eq
+    rw [pow_succ, mul_comm]
   · intro b' r'
     simp only
     -- (b'+1+(r'+1) choose (r'+1))·L^{r'+1} = (b'+(r'+1) choose (r'+1))·L^{r'+1}
@@ -138,12 +138,10 @@ private lemma closedForm_satisfies_recursion (L : ℕ∞) :
       have e2 : b' + (r' + 1) = b' + 1 + r' := by ring
       rw [e2]
       ring
-    rw [hpascal]
-    rw [add_mul]
-    apply add_le_add_left
-    rw [pow_succ]
-    ring_nf
-    rfl
+    rw [hpascal, add_mul]
+    gcongr
+    apply le_of_eq
+    rw [pow_succ, ← mul_assoc, mul_comm]
 
 /-- **The Erase-Decode tree adds nothing: `GGR11PerWordBound → GGR11TreeStructure`.**
 
