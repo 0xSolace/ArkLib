@@ -63,9 +63,21 @@ theorem qEntropy_le_one (hq : 2 ≤ q) {δ : ℝ} (hδ0 : 0 ≤ δ) (hδ : δ �
         qEntropy_le_qEntropy_of_le hq hδ0 hδ le_rfl
     _ = 1 := hcap
 
+/-- **`qEntropy q δ > 0` strictly inside `(0, 1)`.**  From Mathlib's `Real.qaryEntropy_pos`
+through the base-change bridge (division by `log q > 0` preserves strict positivity). -/
+theorem qEntropy_pos (hq : 2 ≤ q) {δ : ℝ} (hδ0 : 0 < δ) (hδ1 : δ < 1) : 0 < qEntropy q δ := by
+  have hlog : 0 < Real.log q :=
+    Real.log_pos (by exact_mod_cast (show 1 < q by omega))
+  have hpos := Real.qaryEntropy_pos (q := q) hδ0 hδ1
+  have hbridge : qEntropy q δ = Real.qaryEntropy q δ / Real.log q := by
+    rw [← qEntropy_mul_log_eq_qaryEntropy hq δ, mul_div_assoc, div_self (ne_of_gt hlog), mul_one]
+  rw [hbridge]
+  exact div_pos hpos hlog
+
 end CodingTheory
 
 -- Axiom audit: depends on exactly `[propext, Classical.choice, Quot.sound]`.
+#print axioms CodingTheory.qEntropy_pos
 #print axioms CodingTheory.qEntropy_strictMonoOn
 #print axioms CodingTheory.qEntropy_monotoneOn
 #print axioms CodingTheory.qEntropy_le_qEntropy_of_le
