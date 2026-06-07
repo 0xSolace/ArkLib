@@ -117,6 +117,27 @@ theorem restrictedFaaDiBrunoPartitionForm_zero_eq_powerSum
   rw [Finset.Nat.sum_antidiagonal_succ]
   simp
 
+/-- **Order-zero RHS branch collapse.**  At `t = 0`, the recursion branch
+`i₁ = 0, λ : Partition 1` is killed by the `1 ∉ λ.parts` filter, while the branch
+`i₁ = 1, λ : Partition 0` is the unique empty-partition term.  The recursion-side partition
+form therefore reduces to the single `B_coeff` term over the order-zero denominator. -/
+theorem restrictedMatchRecursionPartitionForm_zero_eq_single_B_coeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 =
+      ClaimA2.ζ R x₀ H
+        * (embeddingOf𝒪Into𝕃 H (B_coeff H x₀ R 1 (Nat.Partition.indiscrete 0))
+          / ((liftToFunctionField (H := H) H.leadingCoeff) ^ 2
+              * embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))) := by
+  unfold restrictedMatchRecursionPartitionForm
+  have hrange2 : Finset.range 2 = ({0, 1} : Finset ℕ) := by
+    ext n
+    simp
+    omega
+  rw [hrange2]
+  have hdefault : (default : Nat.Partition 0) = Nat.Partition.indiscrete 0 :=
+    ArkLib.Nat.Partition.eq_indiscrete_zero default
+  simp [deltaSave, sigmaLambda, hdefault]
+
 /-- The final all-orders P2 partition-form residual.  This is packaged as a family of
 single-order residuals so the remaining term-level proof can be attacked order by order. -/
 def RestrictedFaaDiBrunoPartitionMatch (x₀ : F) (R : F[X][X][Y])
@@ -379,6 +400,7 @@ section AxiomAudit
 #print axioms restrictedMatchRecursionPartitionForm
 #print axioms RestrictedFaaDiBrunoPartitionMatchAt
 #print axioms restrictedFaaDiBrunoPartitionForm_zero_eq_powerSum
+#print axioms restrictedMatchRecursionPartitionForm_zero_eq_single_B_coeff
 #print axioms RestrictedFaaDiBrunoPartitionMatch
 #print axioms restrictedPartitionMatch_iff_forall_at
 #print axioms RestrictedFaaDiBrunoPartitionMatch.at

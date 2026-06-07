@@ -664,6 +664,27 @@ structure PaperOutOfDomainExtension {M : ℕ} {ιs : Fin (M + 1) → Type}
       T.mainOutOfDomainReply i =
         (extensionPolynomial i).eval (T.mainOutOfDomainChallenge i)
 
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperOutOfDomainExtension_reply {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (ext : PaperOutOfDomainExtension P d T) (i : Fin M) :
+    T.mainOutOfDomainReply i =
+      (ext.extensionPolynomial i).eval (T.mainOutOfDomainChallenge i) :=
+  ext.reply_eq_eval i
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Under OOD-extension consistency, the named OOD-reply payload is the singleton vector containing
+the extension polynomial's evaluation at the named OOD challenge. -/
+theorem paperTranscriptSlotPayload_mainOutOfDomainReply_of_extension {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (ext : PaperOutOfDomainExtension P d T) (i : Fin M) :
+    paperTranscriptSlotPayload P d T (.mainOutOfDomainReply i) =
+      singletonFieldPayload
+        ((ext.extensionPolynomial i).eval (T.mainOutOfDomainChallenge i)) := by
+  rw [paperTranscriptSlotPayload_mainOutOfDomainReply, ext.reply_eq_eval i]
+
 /-! ### Semantic WHIR per-round transcript slots
 
 Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an
@@ -1220,6 +1241,8 @@ end RBRSoundnessAssembly
 #print axioms paperTranscriptHasFoldedOracles
 #print axioms paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles
 #print axioms PaperOutOfDomainExtension
+#print axioms paperOutOfDomainExtension_reply
+#print axioms paperTranscriptSlotPayload_mainOutOfDomainReply_of_extension
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
