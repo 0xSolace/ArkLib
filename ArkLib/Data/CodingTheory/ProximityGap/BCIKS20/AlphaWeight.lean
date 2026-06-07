@@ -896,6 +896,15 @@ theorem W𝒪_dvd_βHensel_zero_of_alpha (x₀ : F) (R : F[X][X][Y]) (hHyp : Cla
   rw [βHensel_lift_identity_zero, map_mul, ha, embeddingOf𝒪Into𝕃_W𝒪]
   simp only [Nat.mul_zero, Nat.zero_sub, pow_zero, mul_one, zero_add, pow_one]
 
+/-- The corrected cleared base target: after multiplying the obstructed `αGenuine 0 = T/W` by
+the single `W` factor, the cleared coefficient is represented by an `𝒪`-element of weight `≤ 1`. -/
+def AlphaGenuineRegularWeightLe_zero_cleared (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) : Prop :=
+  ∃ a : 𝒪 H,
+    embeddingOf𝒪Into𝕃 H a =
+        liftToFunctionField (H := H) H.leadingCoeff * αGenuine H x₀ R hHyp 0
+      ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
+
 /-- **Corrected cleared `t = 0` base witness.**  The un-cleared target
 `AlphaGenuineRegularWeightLe_zero` asks for a regular preimage of `αGenuine 0 = T/W`; that is the
 obstructed statement above.  After clearing by the single `W` factor, `βHensel 0 = mk X` itself is a
@@ -924,6 +933,13 @@ theorem alphaWeight_zero_cleared_fixed (x₀ : F) (R : F[X][X][Y])
       rw [show Bivariate.natDegreeY H = H.natDegree from rfl]
       omega
     exact_mod_cast hle
+
+/-- Package the landed cleared base witness into the corrected cleared base predicate. -/
+theorem AlphaGenuineRegularWeightLe_zero_cleared.of_fixed
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ} (hD : D ≤ H.natDegree) :
+    AlphaGenuineRegularWeightLe_zero_cleared H x₀ R hHyp hH D :=
+  alphaWeight_zero_cleared_fixed H x₀ R hHyp hH hd hD
 
 /-- **Corollary: `W𝒪 ∣ βHensel 0` is *necessary* for `AlphaGenuineRegularWeightLe`.**  If the carved
 link holds (at the `t = 0` instance), then `W𝒪` divides `βHensel 0` in `𝒪 H`.  This is the precise,
@@ -1437,7 +1453,9 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_normalized_divWeight_cases'
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight'
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alpha
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero_cleared
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_zero_cleared_fixed
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero_cleared.of_fixed
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alphaWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_zero.of_alphaWeight_zero
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero.of_divWeight_zero
