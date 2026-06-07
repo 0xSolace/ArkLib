@@ -86,6 +86,60 @@ theorem evalOnPoints_injOn_degreeLT [Fintype F] {α : ι ↪ F} {k : ℕ} [NeZer
   omega
 
 open Polynomial in
+/-- **Interpolant recovery (the `Y − p(X)` factorization).**  Let `(A, B)` be a Berlekamp–Welch /
+Polishchuk–Spielman interpolant for `(αᵢ, yᵢ)` — i.e. `A(αᵢ) + yᵢ·B(αᵢ) = 0` — with `deg A < k+e`,
+`deg B < e+1`.  If a degree-`< k` polynomial `p` has `eval p` within `e` errors of `y`, and
+`k + 2e ≤ n`, then `A + p·B = 0`.  Equivalently the bivariate `Q(X,Y) = A(X) + Y·B(X)` satisfies
+`Q(X, p(X)) = 0`, so `Y − p(X)` divides `Q` — the codeword polynomial is recovered as `−A/B`.  This
+is the factorization that turns interpolation existence into decoding. -/
+theorem interpolant_recovers {k e : ℕ} [NeZero k] {α : ι ↪ F} {y : ι → F} {A B p : F[X]}
+    (hA : A ∈ Polynomial.degreeLT F (k + e)) (hB : B ∈ Polynomial.degreeLT F (e + 1))
+    (hp : p ∈ Polynomial.degreeLT F k)
+    (hkey : ∀ i, A.eval (α i) + y i * B.eval (α i) = 0)
+    (herr : (Finset.univ.filter (fun i => y i ≠ p.eval (α i))).card ≤ e)
+    (hn : k + 2 * e ≤ Fintype.card ι) :
+    A + p * B = 0 := by
+  classical
+  by_contra hne
+  have hkpos : 0 < k := Nat.pos_of_ne_zero (NeZero.ne k)
+  -- degree bound: `deg (A + p·B) ≤ k + e − 1`
+  have hdp : p.natDegree ≤ k - 1 := by
+    rcases eq_or_ne p 0 with rfl | h; · simp
+    · have : p.natDegree < k := (natDegree_lt_iff_degree_lt h).mpr (mem_degreeLT.mp hp); omega
+  have hdB : B.natDegree ≤ e := by
+    rcases eq_or_ne B 0 with rfl | h; · simp
+    · have : B.natDegree < e + 1 := (natDegree_lt_iff_degree_lt h).mpr (mem_degreeLT.mp hB); omega
+  have hdA : A.natDegree ≤ k + e - 1 := by
+    rcases eq_or_ne A 0 with rfl | h; · simp
+    · have : A.natDegree < k + e := (natDegree_lt_iff_degree_lt h).mpr (mem_degreeLT.mp hA); omega
+  have hdeg : (A + p * B).natDegree ≤ k + e - 1 := by
+    refine le_trans (natDegree_add_le _ _) (max_le hdA ?_)
+    exact le_trans (natDegree_mul_le) (by omega)
+  -- `A + p·B` vanishes at the `≥ n − e` agreement coordinates
+  have hroot : ∀ i, y i = p.eval (α i) → (A + p * B).eval (α i) = 0 := by
+    intro i hi
+    rw [eval_add, eval_mul, ← hi, hkey i]
+  have hag_card : Fintype.card ι - e
+      ≤ (Finset.univ.filter (fun i => y i = p.eval (α i))).card := by
+    have hco : (Finset.univ.filter (fun i => y i = p.eval (α i)))
+        = (Finset.univ.filter (fun i => y i ≠ p.eval (α i)))ᶜ := by ext i; simp
+    rw [hco, Finset.card_compl]; omega
+  have hsub : (Finset.univ.filter (fun i => y i = p.eval (α i))).map α
+      ⊆ (A + p * B).roots.toFinset := by
+    intro x hx
+    rw [Finset.mem_map] at hx; obtain ⟨i, hi, rfl⟩ := hx
+    rw [Multiset.mem_toFinset, mem_roots hne, IsRoot.def]
+    exact hroot i (Finset.mem_filter.mp hi).2
+  have hle : Fintype.card ι - e ≤ (A + p * B).natDegree := by
+    calc Fintype.card ι - e
+        ≤ (Finset.univ.filter (fun i => y i = p.eval (α i))).card := hag_card
+      _ = ((Finset.univ.filter (fun i => y i = p.eval (α i))).map α).card := (Finset.card_map _).symm
+      _ ≤ (A + p * B).roots.toFinset.card := Finset.card_le_card hsub
+      _ ≤ Multiset.card (A + p * B).roots := Multiset.toFinset_card_le _
+      _ ≤ (A + p * B).natDegree := card_roots' _
+  omega
+
+open Polynomial in
 /-- **Berlekamp–Welch key-equation existence.**  If a received word `y` is within `e` Hamming
 errors of the Reed–Solomon codeword `eval f` (`f` of degree `< k`), then the Berlekamp–Welch key
 equation `E(αᵢ)·yᵢ = N(αᵢ)` has a solution with `E ≠ 0`, `deg E ≤ e`, `deg N < k + e`.  Witnessed

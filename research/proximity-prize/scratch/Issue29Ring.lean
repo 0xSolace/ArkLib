@@ -51,6 +51,8 @@ import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 
 open Polynomial Finset
+open scoped TensorProduct
+open scoped Classical
 
 namespace Issue29Ring
 
