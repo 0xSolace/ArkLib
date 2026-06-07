@@ -167,18 +167,7 @@ that repair lands (it touches `LineDecodable`'s signature and the downstream MCA
 the multi-γ coverage count stays the sole admit and the U-construction reduction above is
 machine-checked.
 
-Named target for the **false** black-box form of ABF26 Theorem 4.21.
-
-This is intentionally a proposition, not a theorem.  The old theorem-like name
-`lineDecodable_imp_epsMCA_le` was misleading: `LineDecodingRefutation.lean` proves a concrete
-counterexample to the unconstrained statement.  A usable replacement must expose the
-Guruswami--Sudan interpolation/list-size data in its hypotheses. -/
-def lineDecodable_imp_epsMCA_le_target
-    (C : ModuleCode ι F A) (δ : ℝ≥0) (a : ℝ≥0)
-    (_h : LineDecodable (F := F) ((C : Set (ι → A))) δ a
-            ((Fintype.card ι : ℝ≥0) + 1)) : Prop :=
-    epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
-        ≤ (a : ENNReal) / (Fintype.card F : ENNReal)
+-/
 
 end
 
