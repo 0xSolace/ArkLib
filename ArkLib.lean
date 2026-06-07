@@ -810,6 +810,7 @@ import ArkLib.ToMathlib.L46DiffStackRS
 import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.LineDecodingCoverageProof
 import ArkLib.ToMathlib.LinearizedKernel
+import ArkLib.ToMathlib.LinearizedProductClosure
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.LinearizedSupportStep
 import ArkLib.ToMathlib.List.Basic
