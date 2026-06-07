@@ -116,6 +116,33 @@ theorem coeff_succ_βHenselAssembled_partitionForm (x₀ : F) (R : F[X][X][Y])
   unfold βHenselAssembled
   rw [PowerSeries.coeff_mk, embed_βHensel_succ]
 
+/-- **Right-hand side of `RestrictedFaaDiBrunoMatch` in recursion partition form.**
+The carved P2 match has right-hand side
+`-ζ · coeff(t+1)(βHenselAssembled)`.  After
+`coeff_succ_βHenselAssembled_partitionForm`, this is exactly `ζ` times the positive
+`(A.1)` recursion partition sum over the global denominator.  This helper is only RHS
+normalization; the remaining P2 work is still the term-level equality with the restricted
+Faà-di-Bruno LHS. -/
+theorem restrictedMatch_rhs_eq_recursionPartitionForm (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    let recSum : 𝕃 H :=
+      ∑ i1 ∈ Finset.range (t + 2),
+        ∑ lam ∈ (Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+                  (fun lam => (t + 1) ∉ lam.parts),
+          embeddingOf𝒪Into𝕃 H (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+            * embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+            * embeddingOf𝒪Into𝕃 H (B_coeff H x₀ R i1 lam)
+            * embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp))
+    let den : 𝕃 H :=
+      (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+        * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1)
+    - (ClaimA2.ζ R x₀ H
+        * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp))
+      = ClaimA2.ζ R x₀ H * (recSum / den) := by
+  dsimp
+  rw [coeff_succ_βHenselAssembled_partitionForm]
+  ring
+
 /-- **Y-Hasse coefficient commutation.**  The middle-`X` Hasse derivative `Δ_X^{i₁}` and the
 evaluation `X ↦ x₀` commute past the outer-`Y` Hasse derivative `Δ_Y^m`, which only contributes the
 Taylor binomial via `hasseDerivY_coeff`:
@@ -167,6 +194,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.partitionProd_guard_eq
 #print axioms BCIKS20.HenselNumerator.embed_βHensel_succ
 #print axioms BCIKS20.HenselNumerator.coeff_succ_βHenselAssembled_partitionForm
+#print axioms BCIKS20.HenselNumerator.restrictedMatch_rhs_eq_recursionPartitionForm
 #print axioms BCIKS20.HenselNumerator.evalX_hasseDeriv_Y_coeff
 #print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_taylorSum
 #print axioms BCIKS20.HenselNumerator.embed_W𝒪
