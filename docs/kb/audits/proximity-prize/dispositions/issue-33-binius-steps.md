@@ -85,6 +85,29 @@ subtree (Lift interleaved-code mismatch + QueryPhasePrelims signature drift/kern
 siblings, with `Steps/Fold` also needing `Soundness.Incremental`). Both are multi-module API-drift
 ports against the refactored Binius API — not Steps-residual defects.
 
+## Concrete completion roadmap for `ReductionLogic` (1 of 8 broken modules)
+
+Adding `import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound` + `open Sumcheck.Structured`
+resolves `getSumcheckRoundPoly_sum_eq` (it exists at `SingleRound.lean:153`, just unimported).
+After that, `ReductionLogic` still has **13 errors**, including **6 substantive lemmas that do not
+exist anywhere and must be proven from scratch**:
+
+- `projectToNextSumcheckPoly_sum_eq` — round-poly marginal: `hᵢ(rᵢ) = Σ_{cube} Hᵢ₊₁` (base
+  `projectToNextSumcheckPoly` at `Sumcheck/Structured.lean:168`).
+- `projectToMidSumcheckPoly_succ` — mid-poly recursion across rounds.
+- `projectToMidSumcheckPoly_at_last_eval` — final-round mid-poly evaluation.
+- `iterated_fold_advances_evaluation_poly` — **Lemma 4.13 (general-`i`)**, the same reconstruction
+  behind `FoldPreservesBBFCodeMembershipResidual`.
+- `OracleVerifier.mkVerifierOStmtOut_inl` / `_inr` — oracle-statement embedding computation rules.
+
+Plus in-place proof repairs (`rfl`/`rewrite`/`simp` no-progress/type-mismatch/unsolved-goals at
+`:352,:371,:627,:768,:1101,:1276,:1441`). The in-place repairs and the `apply` rewrites must EDIT
+`ReductionLogic.lean`, but the shared-tree autosync reverts edits to existing files (it grabbed the
+new `BitsOfIndex.lean` but reverted the `ReductionLogic` import edit), so this work needs a
+quiescent tree (or new-file-only lemma modules). And `ReductionLogic` is only 1 of 8 broken modules;
+the 7-module `Soundness/` subtree (~60+ errors incl. kernel unknown-constant and `whnf` heartbeat
+timeouts) is required additionally for `Steps/Fold`.
+
 ## Recommendation
 
 Keep #33 open. The Steps proofs are written (no `sorry`), but green-build verification is gated on a
