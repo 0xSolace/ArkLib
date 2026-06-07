@@ -174,5 +174,38 @@ theorem mcaBadWitness_card_mul_le [NoZeroSMulDivisors F A]
       ≤ ∑ γ ∈ bad, ((badWitnessSet C δ u₀ u₁ w γ ∩ T).card : ℝ) := hlb
     _ ≤ (T.card : ℝ) := hsum_leR
 
+/-- **Per-codeword bad-witness cap (division form).**  When `u₁` is far from `0`
+(`wt(u₁) > δ·n`), the bad-scalar count for a fixed `w` is `O(1)`:
+`|mcaBadWitness| ≤ wt(u₁) / (wt(u₁) - δ·n)`. -/
+theorem mcaBadWitness_card_le_of_weight [NoZeroSMulDivisors F A]
+    (C : Set (ι → A)) (δ : ℝ≥0) (hδ : δ ≤ 1) (u₀ u₁ w : ι → A)
+    (hwt : (δ : ℝ) * Fintype.card ι < (supp₁ u₁).card) :
+    ((mcaBadWitness (F := F) C δ u₀ u₁ w).card : ℝ) ≤
+      (supp₁ u₁).card / ((supp₁ u₁).card - δ * Fintype.card ι) := by
+  have hpos : (0 : ℝ) < (supp₁ u₁).card - δ * Fintype.card ι := by linarith
+  rw [le_div_iff₀ hpos]
+  exact mcaBadWitness_card_mul_le C δ hδ u₀ u₁ w
+
+/-- **First-moment MCA bad-scalar bound (the #67 assembly).**  Combining the per-codeword cap
+above with the union-bound containment `mcaBad ⊆ ⋃_w mcaBadWitness w` over any codeword cover `T`:
+for `u₁` far from `0`, the total MCA bad-scalar count is
+
+  `|mcaBad| ≤ |T| · wt(u₁) / (wt(u₁) - δ·n)`.
+
+This is the GKL24/GCXK25 first-moment list-size bound, with the genuinely-mathematical per-codeword
+content (`mcaBadWitness_card_mul_le`) discharged in full; the only inputs are a codeword cover `T`
+and the far-from-zero condition. -/
+theorem mcaBad_card_le_of_weight [NoZeroSMulDivisors F A]
+    (C : Set (ι → A)) (δ : ℝ≥0) (hδ : δ ≤ 1) (u₀ u₁ : ι → A)
+    (T : Finset (ι → A)) (hT : ∀ w ∈ C, w ∈ T)
+    (hwt : (δ : ℝ) * Fintype.card ι < (supp₁ u₁).card) :
+    ((mcaBad (F := F) C δ u₀ u₁).card : ℝ) ≤
+      (T.card : ℝ) * ((supp₁ u₁).card / ((supp₁ u₁).card - δ * Fintype.card ι)) := by
+  have hpos : (0 : ℝ) < (supp₁ u₁).card - δ * Fintype.card ι := by linarith
+  refine mcaBad_card_le_of_per_codeword C δ u₀ u₁ T hT
+    (div_nonneg (by positivity) (le_of_lt hpos)) ?_
+  intro w _
+  exact mcaBadWitness_card_le_of_weight C δ hδ u₀ u₁ w hwt
+
 end ProximityGap
 
