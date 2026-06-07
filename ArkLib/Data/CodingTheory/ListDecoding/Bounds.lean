@@ -1513,7 +1513,7 @@ theorem randomLinearLambdaLowerProbability_pos_of_exists_event
         randomLinearLambdaLowerEvent (F := F) (ι := ι) q k δ ε ρ G)
       (uniformRandomLinearGeneratorMatrix F k ι)) True
   rw [PMF.apply_pos_iff, PMF.support_map]
-  exact ⟨G, mem_support_uniformRandomLinearGeneratorMatrix G, hG⟩
+  exact ⟨G, mem_support_uniformRandomLinearGeneratorMatrix G, propext (iff_true_intro hG)⟩
 
 /-- A concrete successful generator matrix supplies the named first-moment residual. -/
 theorem randomLinearLambdaLowerFirstMomentResidual_of_exists_event

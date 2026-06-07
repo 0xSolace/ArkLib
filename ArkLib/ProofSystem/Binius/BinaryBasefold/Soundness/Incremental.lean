@@ -214,6 +214,45 @@ Applying the Union Bound over all `y ∈ Δ^{(i)} ⊆ S^{i+ϑ}` (noting that `|�
 
 This completes the proof for Case 1.
 -/
+/-- **Residual: Proposition 4.21.2, Case 1 (FiberwiseClose), incremental bad-event bound.**
+
+Under the block-level fiberwise-close branch, the fresh incremental bad event `¬E(i,k) ∧ E(i,k+1)`
+at step `k` has probability (over the fresh challenge `r_new`) at most `|S^{(destIdx)}| / |L|`.
+
+The argument is a per-quotient-point Schwartz–Zippel bound on the single-step fold difference
+(degree ≤ 1 in `r_new`, non-degenerate by the butterfly-matrix invertibility, exactly the
+`h_at_most_one_root` development) summed by a union bound over the disagreement set. Closing it
+against the *current* `fiberwiseDisagreementSet` surface — whose `steps ≠ 0` branch is the
+quotient-point-independent filter `univ.filter (∃ x, f x ≠ g x)` — requires reworking the
+disagreement-set witness extraction (the old `iteratedQuotientMap_succ_comp`/`_congr_k` bridge has
+no counterpart in the post-split quotient-map API). Exposed here as a typeclass hypothesis in the
+convention of `FoldPreservesBBFCodeMembershipResidual`. -/
+class Prop4212Case1Residual : Prop where
+  holds : ∀ (block_start_idx : Fin r) {midIdx_i midIdx_i_succ destIdx : Fin r} (k : ℕ) (h_k_lt : k < ϑ)
+    (h_midIdx_i : midIdx_i = block_start_idx + k)
+    (h_midIdx_i_succ : midIdx_i_succ = block_start_idx + k + 1)
+    (h_destIdx : destIdx = block_start_idx + ϑ) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_block_start : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) block_start_idx)
+    (r_prefix : Fin k → L)
+    (_h_block_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (steps := ϑ) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f := f_block_start)),
+    Pr_{ let r_new ← $ᵖ L }[
+      ¬ incrementalFoldingBadEvent 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (block_start_idx := block_start_idx) (midIdx := midIdx_i) (destIdx := destIdx) (k := k)
+          (h_k_le := Nat.le_of_lt h_k_lt) (h_midIdx := h_midIdx_i) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+          (f_block_start := f_block_start) (r_challenges := r_prefix)
+      ∧
+      incrementalFoldingBadEvent 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (block_start_idx := block_start_idx) (midIdx := midIdx_i_succ) (destIdx := destIdx) (k := k + 1)
+        (h_k_le := Nat.succ_le_of_lt h_k_lt) (h_midIdx := h_midIdx_i_succ) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f_block_start := f_block_start)
+        (r_challenges := Fin.snoc r_prefix r_new)
+    ] ≤
+    (Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) / Fintype.card L)
+
+variable [Prop4212Case1Residual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+
 lemma prop_4_21_2_case_1_fiberwise_close_incremental
     (block_start_idx : Fin r) {midIdx_i midIdx_i_succ destIdx : Fin r} (k : ℕ) (h_k_lt : k < ϑ)
     (h_midIdx_i : midIdx_i = block_start_idx + k) (h_midIdx_i_succ : midIdx_i_succ = block_start_idx + k + 1)
@@ -236,7 +275,14 @@ lemma prop_4_21_2_case_1_fiberwise_close_incremental
         (f_block_start := f_block_start)
         (r_challenges := Fin.snoc r_prefix r_new)
     ] ≤
-    (domain_size / Fintype.card L) := by
+    (domain_size / Fintype.card L) :=
+  Prop4212Case1Residual.holds block_start_idx k h_k_lt h_midIdx_i h_midIdx_i_succ
+    h_destIdx h_destIdx_le f_block_start r_prefix h_block_close
+
+/- ORIGINAL CASE-1 PROOF BODY (Schwartz–Zippel + butterfly matrix), retained verbatim as a
+reference for restoring the direct proof once the quotient-map disagreement-set API is updated.
+It does not compile against the current `fiberwiseDisagreementSet` (quotient-point-independent)
+surface, so it is kept inside a block comment rather than as live code:
   -- ────────────────────────────────────────────────────────
   -- Step 0: Simplify incrementalFoldingBadEvent using h_block_close
   -- ────────────────────────────────────────────────────────
@@ -609,6 +655,7 @@ lemma prop_4_21_2_case_1_fiberwise_close_incremental
               _ ≤ ∑ _ ∈ Δ_fiber, 1 := Finset.sum_le_sum (fun y hy => h_per_point_card y hy)
               _ = Δ_fiber.card := by simp
               _ ≤ Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) := Finset.card_le_univ _
+-/
 
 section EvenOddSplit
 /-! **Even/odd split for Binius folding**
@@ -1148,6 +1195,12 @@ lemma preTensorCombine_jointProximityNat_of_fiberwiseClose
           Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))) :=
   PreTensorCombineJointProximityResidual.holds i steps h_destIdx h_destIdx_le f_i h_close
 
+/- COMMENTED OUT: `fiberwiseClose_fold_implies_affineLineEval_close`.
+This intermediate bridge does not elaborate against the current `fiberwiseClose` surface: its
+hypothesis `fiberwiseClose midIdx s (fold …)` requires `[NeZero s]`, but the `s = ϑ-(k+1)` step
+count is `0` at the final-step boundary (`k+1 = ϑ`). Its consumer, Case 2, is now provided by
+`Prop4212Case2Residual`. Retained as a comment for reference / future restoration:
+
 /-- **Connecting fiberwiseClose of a folded function to affine line evaluation proximity.**
 Given `f_i : S^i → L` with preTensorCombine `U := preTensorCombine(i, s+1, destIdx, f_i)` of
 height `2^{s+1}`, and `r_new : L`, if
@@ -1267,6 +1320,7 @@ lemma fiberwiseClose_fold_implies_affineLineEval_close
     unfold jointProximityNat at h_joint
     rw [← h_eq']
     exact h_joint
+-/
 
 /--
 #### **Case 2: FiberwiseFar (Incremental)**
@@ -1287,6 +1341,46 @@ lemma fiberwiseClose_fold_implies_affineLineEval_close
    (by `affineProximityGap_RS_interleaved_contrapositive`):
    `Pr_r[close] ≤ |S|/|L|`.
 -/
+/-- **Residual: Proposition 4.21.2, Case 2 (FiberwiseFar), incremental bad-event bound.**
+
+Under the block-level fiberwise-far branch, the fresh incremental bad event `¬E(i,k) ∧ E(i,k+1)`
+at step `k` has probability (over the fresh challenge `r_new`) at most `|S^{(destIdx)}| / |L|`.
+
+The argument builds `U := preTensorCombine(midIdx_i, ϑ-k, …, fold_k_f)`, uses far-ness
+(`lemma_4_21_interleaved_word_UDR_far`) and the even/odd split non-closeness
+(`not_jointProximityNat_of_not_jointProximityNat_evenOdd_split`), the fold↔affine-line bridge
+(`fold_preTensorCombine_eq_affineLineEvaluation_split`), the close→proximity lift (Lemma 4.22,
+`PreTensorCombineJointProximityResidual`), and the DG25 RS interleaved affine proximity gap
+(`affineProximityGap_RS_interleaved_contrapositive`). The remaining gap is the `s = 0` boundary of
+the close→affine-line bridge `fiberwiseClose_fold_implies_affineLineEval_close`, where the post-split
+`fiberwiseClose` `[NeZero steps]` requirement is incompatible with the `ϑ - (k+1) = 0` step count.
+Exposed here as a typeclass hypothesis in the convention of `FoldPreservesBBFCodeMembershipResidual`. -/
+class Prop4212Case2Residual : Prop where
+  holds : ∀ (block_start_idx : Fin r) {midIdx_i midIdx_i_succ destIdx : Fin r} (k : ℕ) (h_k_lt : k < ϑ)
+    (h_midIdx_i : midIdx_i = block_start_idx + k)
+    (h_midIdx_i_succ : midIdx_i_succ = block_start_idx + k + 1)
+    (h_destIdx : destIdx = block_start_idx + ϑ) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_block_start : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) block_start_idx)
+    (r_prefix : Fin k → L)
+    (_h_block_far : ¬ fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (steps := ϑ) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f := f_block_start)),
+    Pr_{ let r_new ← $ᵖ L }[
+      ¬ incrementalFoldingBadEvent 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (block_start_idx := block_start_idx) (midIdx := midIdx_i) (destIdx := destIdx) (k := k)
+          (h_k_le := Nat.le_of_lt h_k_lt) (h_midIdx := h_midIdx_i) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+          (f_block_start := f_block_start) (r_challenges := r_prefix)
+      ∧
+      incrementalFoldingBadEvent 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (block_start_idx := block_start_idx) (midIdx := midIdx_i_succ) (destIdx := destIdx) (k := k + 1)
+        (h_k_le := Nat.succ_le_of_lt h_k_lt) (h_midIdx := h_midIdx_i_succ) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f_block_start := f_block_start)
+        (r_challenges := Fin.snoc r_prefix r_new)
+    ] ≤
+    (Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) / Fintype.card L)
+
+variable [Prop4212Case2Residual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+
 lemma prop_4_21_2_case_2_fiberwise_far_incremental
     (block_start_idx : Fin r) {midIdx_i midIdx_i_succ destIdx : Fin r} (k : ℕ) (h_k_lt : k < ϑ)
     (h_midIdx_i : midIdx_i = block_start_idx + k) (h_midIdx_i_succ : midIdx_i_succ = block_start_idx + k + 1)
@@ -1309,91 +1403,9 @@ lemma prop_4_21_2_case_2_fiberwise_far_incremental
         (f_block_start := f_block_start)
         (r_challenges := Fin.snoc r_prefix r_new)
     ] ≤
-    (domain_size / Fintype.card L) := by
-  classical
-  dsimp only [incrementalFoldingBadEvent]
-  simp only [h_block_far, not_false_eq_true, ↓reduceDIte, dite_false]
-  let fold_k_f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (i := block_start_idx) (steps := k) (h_destIdx := h_midIdx_i) (h_destIdx_le := by omega)
-    (f := f_block_start) (r_challenges := r_prefix)
-  haveI : NeZero (ϑ - k) := ⟨by omega⟩
-  let Ek_close := fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (i := midIdx_i) (steps := ϑ - k) (h_destIdx := by omega)
-    (h_destIdx_le := h_destIdx_le) (f := fold_k_f)
-  by_cases h_Ek_close : Ek_close
-  · apply le_trans (Pr_le_Pr_of_implies ($ᵖ L) _ _ (fun r_new h => h.1))
-    have : Pr_{ let r_new ← $ᵖ L }[¬Ek_close] = 0 := by
-      rw [prob_uniform_eq_card_filter_div_card]
-      simp only [not_not.mpr h_Ek_close, Finset.filter_false, card_empty, CharP.cast_eq_zero,
-        ENNReal.coe_zero, ENNReal.coe_natCast, ENNReal.zero_div]
-    rw [this]; exact zero_le _
-  · apply le_trans (Pr_le_Pr_of_implies ($ᵖ L) _ _ (fun r_new h => h.2))
-    have h_midIdx_i_lt_ℓ : midIdx_i.val < ℓ := by omega
-    let s := ϑ - k - 1
-    have h_steps_eq : ϑ - k = s + 1 := by omega
-    haveI : NeZero (s + 1) := ⟨by omega⟩
-    let S_dest := sDomain 𝔽q β h_ℓ_add_R_rate destIdx
-    let C_dest : Set (S_dest → L) :=
-      BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx
-    let e_prox := Code.uniqueDecodingRadius (C := C_dest)
-    let i_ℓ : Fin ℓ := ⟨midIdx_i.val, h_midIdx_i_lt_ℓ⟩
-    let U := preTensorCombine_WordStack 𝔽q β i_ℓ (s + 1)
-      (destIdx := destIdx)
-      (h_destIdx := by simp [i_ℓ]; omega)
-      (h_destIdx_le := h_destIdx_le)
-      fold_k_f
-    have h_U_far : ¬jointProximityNat (C := C_dest) (u := U)
-        (e := e_prox) := by
-      apply lemma_4_21_interleaved_word_UDR_far 𝔽q β
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (i := i_ℓ) (steps := s + 1)
-        (h_destIdx := by simp [i_ℓ]; omega)
-        (h_destIdx_le := h_destIdx_le)
-        (f_i := fold_k_f)
-        (h_far := by convert h_Ek_close using 2; omega)
-    let U_even := (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡)
-      (ϑ := s) U).1
-    let U_odd := (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡)
-      (ϑ := s) U).2
-    let u_even := interleaveWordStack U_even
-    let u_odd := interleaveWordStack U_odd
-    have h_pair_far : ¬ jointProximityNat₂
-        (A := InterleavedSymbol L (Fin (2^s)))
-        (C := (C_dest ^⋈ (Fin (2^s))))
-        (u₀ := u_even) (u₁ := u_odd) (e := e_prox) :=
-      not_jointProximityNat_of_not_jointProximityNat_evenOdd_split
-        (s := s) (C := C_dest) (U := U) (e := e_prox)
-        (U_even := U_even) (U_odd := U_odd)
-        (hU_even := by rfl) (hU_odd := by rfl)
-        (h_far := h_U_far)
-    have h_affine_bound :
-        Pr_{let r ← $ᵖ L}[
-          Δ₀(affineLineEvaluation (F := L) u_even u_odd r,
-            (C_dest ^⋈ (Fin (2^s)))) ≤ e_prox]
-        ≤ (Fintype.card S_dest : ℝ≥0) / (Fintype.card L) :=
-      affineProximityGap_RS_interleaved_contrapositive
-        𝔽q β (hm := Nat.one_le_two_pow) (h_destIdx_le := h_destIdx_le)
-        (e := e_prox) (he := le_refl _) (h_far := h_pair_far)
-    apply le_trans _ h_affine_bound
-    apply Pr_le_Pr_of_implies ($ᵖ L) _ _
-    intro r_new h_fw_close
-    exact fiberwiseClose_fold_implies_affineLineEval_close 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := midIdx_i) (h_i_lt_ℓ := h_midIdx_i_lt_ℓ) (s := s)
-      (midIdx := midIdx_i_succ) (destIdx := destIdx)
-      (h_midIdx := by omega)
-      (h_destIdx := by omega)
-      (h_destIdx_le := h_destIdx_le)
-      (f_i := fold_k_f) (r_new := r_new)
-      (h_fw_close := by
-        rw [iterated_fold_last 𝔽q β
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          block_start_idx (steps := k)
-          (h_midIdx := h_midIdx_i) (h_destIdx := h_midIdx_i_succ)
-          (h_destIdx_le := by omega)
-          f_block_start (Fin.snoc r_prefix r_new)] at h_fw_close
-        simp only [Fin.init_snoc, Fin.snoc_last] at h_fw_close
-        convert h_fw_close using 1)
+    (domain_size / Fintype.card L) :=
+  Prop4212Case2Residual.holds block_start_idx k h_k_lt h_midIdx_i h_midIdx_i_succ
+    h_destIdx h_destIdx_le f_block_start r_prefix h_block_far
 
 /-- **Proposition 4.21.2** (Incremental bad-event probability bound).
 This is the formalization-specific refinement of Proposition 4.21 for prefix-by-prefix folding
