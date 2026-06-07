@@ -69,6 +69,52 @@ theorem friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLe
         pieces_imply_claim h_agreementBridge)
 
 omit [Nontrivial 𝔽] in
+/-- The proved probability-space query-round frontier supplies the Claim 8.3 full-domain
+query-lift field from a concrete subdomain `Code.jointProximity` witness.
+
+This is the probability-route analogue of the density query-lift joint-proximity adapter in
+`Security.lean`: callers provide the actual proximity witness equivalent to the Claim 8.2
+`Code.jointAgreement` conclusion rather than an arbitrary `agreementBridge : Prop`. -/
+theorem friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJointProximity
+    {t m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    (G : Finset ι) (δ : ℝ≥0∞) (queries l : ℕ)
+    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    (h_proximity :
+      Code.jointProximity
+        (C := (ReedSolomon.code
+          (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+        (u := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        (δ :=
+          1 -
+          (let ρ_sqrt :=
+            ReedSolomon.sqrtRate
+              (2 ^ n)
+              (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+           ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))) :
+    friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3 := by
+  unfold friSoundnessQueryLift
+  exact
+    fri_query_soundness_lift_subdomainZero_to_domain
+      (n := n) (ω := ω) (f := f) h_agreement m_ge_3
+      (fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJointProximity
+        (n := n) (s := s) (d := d) (ω := ω)
+        (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        h_agreement m_ge_3 G δ queries l domain_size_cond h_proximity)
+
+omit [Nontrivial 𝔽] in
 /-- Raw full-domain Claim 8.2 conclusion from the proved probability-space query-round theorem
 and the Batched FRI oracle-lens piece.
 
@@ -547,6 +593,8 @@ theorem
 
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
+set_option linter.style.longLine false in
+#print axioms Fri.friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJointProximity
 set_option linter.style.longLine false in
 #print axioms Fri.fri_jointAgreement_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
 set_option linter.style.longLine false in
