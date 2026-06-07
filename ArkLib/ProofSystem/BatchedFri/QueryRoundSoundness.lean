@@ -162,6 +162,84 @@ theorem fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSeq
       init impl lang₁ lang₂ lang₃ h_batch h_fri h_residual)
     h_total
 
+omit [Nontrivial 𝔽] in
+/-- Reassemble Claim 8.3 after discharging the probability-route query-lift and supplying the
+already-named concrete sequential-composition and total-error-accounting fields directly.
+
+This is the field-level probability-route front door: callers that already have
+`friSoundnessSequentialComposition` and `friSoundnessTotalErrorAccounting` do not need to repack
+the append residual or per-phase error bounds in the same theorem. -/
+theorem fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSoundnessFields
+    {t l m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    (G : Finset ι) (δ : ℝ≥0∞) (queries : ℕ)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    [∀ i, SampleableType ((BatchedFri.Spec.BatchingRound.batchSpec 𝔽 t).Challenge i)]
+    [∀ i, SampleableType ((Spec.pSpecFold (ω := ω) k s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ
+      Spec.QueryRound.pSpec (ω := ω) l).Challenge i)]
+    (lang₁ : Set (Unit × (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
+    (lang₃ : Set (Spec.FinalStatement 𝔽 k × (∀ i, Spec.FinalOracleStatement s (ω := ω) i)))
+    {batchError friError : ℝ≥0}
+    (h_seq :
+      friSoundnessSequentialComposition
+        (n := n) (s := s) (d := d) (ω := ω) (l := l)
+        (domain_size_cond := domain_size_cond)
+        init impl lang₁ lang₃ batchError friError)
+    (h_total :
+      friSoundnessTotalErrorAccounting
+        (n := n) (s := s) (ω := ω) (l := l) m_ge_3 batchError friError)
+    {agreementBridge : Prop}
+    (query_pieces_imply_claim :
+      QueryRound.probabilityAcceptanceBound G δ queries →
+      batchedFRIOracleLensReduction
+        (n := n) (s := s) (d := d) (ω := ω)
+        (domain_size_cond := domain_size_cond) l t →
+      agreementBridge →
+      fri_query_soundness (n := n) (ω := ω)
+        (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        (h_agreement := h_agreement) (m_ge_3 := m_ge_3))
+    (soundness_pieces_imply_claim :
+      friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3 →
+      friSoundnessSequentialComposition
+        (n := n) (s := s) (d := d) (ω := ω) (l := l)
+        (domain_size_cond := domain_size_cond)
+        init impl lang₁ lang₃ batchError friError →
+      friSoundnessTotalErrorAccounting
+        (n := n) (s := s) (ω := ω) (l := l) m_ge_3 batchError friError →
+      fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+        (domain_size_cond := domain_size_cond) f m_ge_3)
+    (h_agreementBridge : agreementBridge) :
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3 := by
+  let parts :=
+    FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
+      (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond)
+      f m_ge_3 init impl lang₁ lang₃ batchError friError
+      (friSoundnessTotalErrorAccounting
+        (n := n) (s := s) (ω := ω) (l := l) m_ge_3 batchError friError)
+      soundness_pieces_imply_claim
+  exact fri_soundness_of_parts
+    (n := n) (s := s) (d := d) (ω := ω) (l := l)
+    (domain_size_cond := domain_size_cond) f m_ge_3 parts
+    (friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
+      (n := n) (s := s) (d := d) (ω := ω)
+      (domain_size_cond := domain_size_cond)
+      f m_ge_3 G δ queries l h_agreement query_pieces_imply_claim h_agreementBridge)
+    h_seq h_total
+
 open ENNReal in
 omit [Nontrivial 𝔽] in
 /-- Reassemble Claim 8.3 after discharging the probability-route query-lift, concrete
@@ -262,6 +340,8 @@ set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
 set_option linter.style.longLine false in
 #print axioms Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialComposition
+set_option linter.style.longLine false in
+#print axioms Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSoundnessFields
 set_option linter.style.longLine false in
 #print axioms
   Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError
