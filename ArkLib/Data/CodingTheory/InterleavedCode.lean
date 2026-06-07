@@ -742,9 +742,34 @@ theorem jointAgreement_mono_code {F κ ι : Type*} [Fintype ι] [DecidableEq F]
   rcases h with ⟨S, hS, v, hv⟩
   exact ⟨S, hS, v, fun i => ⟨hC (hv i).1, (hv i).2⟩⟩
 
+/-- `jointAgreement` in per-word `∀ i, ∃ u` form: the single agreeing-codeword function (the
+`∃ v` Skolem form in the definition) is equivalent to per-word existence of an agreeing codeword on
+a common large set.  This is the normal form in which the STIR/FRI/WHIR proximity-gap conclusions
+are stated (`∃ S, |S| ≥ (1-δ)|ι| ∧ ∀ i, ∃ u ∈ C, agree on S`), so it bridges those bespoke
+conclusions to the shared `jointAgreement` API. -/
+theorem jointAgreement_iff_forall_exists {F κ ι : Type*} [Fintype ι] [DecidableEq F]
+    (C : Set (ι → F)) (δ : ℝ≥0) (W : κ → ι → F) :
+    jointAgreement (F := F) (κ := κ) (ι := ι) (C := C) (δ := δ) (W := W) ↔
+      ∃ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * (Fintype.card ι) ∧
+        ∀ i, ∃ u, u ∈ C ∧ ∀ x ∈ S, W i x = u x := by
+  classical
+  constructor
+  · rintro ⟨S, hS, v, hv⟩
+    refine ⟨S, hS, fun i => ⟨v i, (hv i).1, fun x hx => ?_⟩⟩
+    have := (hv i).2 hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at this
+    exact this.symm
+  · rintro ⟨S, hS, h⟩
+    choose u hu_mem hu_eq using h
+    refine ⟨S, hS, u, fun i => ⟨hu_mem i, ?_⟩⟩
+    intro x hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    exact (hu_eq i x hx).symm
+
 #print axioms jointAgreement_of_forall_mem
 #print axioms jointAgreement_mono
 #print axioms jointAgreement_mono_code
+#print axioms jointAgreement_iff_forall_exists
 
 /-- Transport joint agreement across an equivalence of coordinate domains.
 
