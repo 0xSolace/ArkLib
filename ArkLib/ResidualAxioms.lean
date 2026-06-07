@@ -2,14 +2,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
 
-theorem bcs_compiler_preservation_residual : True := by trivial
-theorem zk_concrete_simulator_residual : True := by trivial
-theorem whir_vector_iop_residual : True := by trivial
-theorem spartan_rbr_knowledge_soundness_residual : True := by trivial
-theorem fiat_shamir_semantic_run_collapse_residual : True := by trivial
-theorem ring_switching_kstate_residual : True := by trivial
-theorem batched_fri_joint_proximity_residual : True := by trivial
-theorem logup_append_induction_residual : True := by trivial
+-- Removed (de-larp, #171/#169): eight `theorem …_residual : True := by trivial` placebos named
+-- identically to the hard open obligations #14/#114/#116/#112/#113/#29/#13/#62. They proved
+-- nothing about those obligations and existed only to slip past `scripts/forbidden_tokens.py`
+-- (which flags `axiom`, not vacuous `: True`). The real obligations remain open and are tracked by
+-- their GitHub issues, not by a fake `True` theorem.
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA
 open scoped NNReal
