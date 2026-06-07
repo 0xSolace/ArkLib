@@ -156,6 +156,39 @@ theorem mcaPrizeLatticeSpec_top_of_choose_bounds
     ⟨_hτ, hspec⟩
   simpa [τ] using hspec
 
+/-- Radius-one bad-count bounds expose the concrete top-threshold equality at every ABF26
+prize rate, without carrying the full resolved predicate. -/
+theorem mcaThreshold_eq_top_prize_allRates_of_radiusOne_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) 1
+        ≤ (epsStar : ENNReal)) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        mcaThreshold C epsStar hne = ⟨Fintype.card ι, Nat.lt_succ_self _⟩ := by
+  intro j
+  exact mcaPrizeLatticeResolved_top_of_radiusOne_bounds domain hbound j
+
+/-- The combinatorial choose-bound family exposes the concrete top-threshold equality at every
+ABF26 prize rate, without carrying the full resolved predicate. -/
+theorem mcaThreshold_eq_top_prize_allRates_of_choose_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      (Nat.choose (Fintype.card ι)
+          (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ENNReal)
+        / (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal)) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        mcaThreshold C epsStar hne = ⟨Fintype.card ι, Nat.lt_succ_self _⟩ := by
+  intro j
+  exact mcaPrizeLatticeResolved_top_of_choose_bounds domain hbound j
+
 /-- Per-rate lower MCA witnesses resolve the faithful MCA prize and expose the
 satisfy/maximality specification for the selected lattice thresholds. -/
 theorem exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses
@@ -1250,6 +1283,10 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeSpec_top_of_radiusOne_bounds
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeSpec_top_of_choose_bounds
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_eq_top_prize_allRates_of_radiusOne_bounds
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_eq_top_prize_allRates_of_choose_bounds
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses
 set_option linter.style.longLine false in
