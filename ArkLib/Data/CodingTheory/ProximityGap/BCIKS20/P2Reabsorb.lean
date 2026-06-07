@@ -8,8 +8,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2KeystoneReindex
 /-!
 # BCIKS20 Appendix A.4 — Y-degree reabsorption toward `RestrictedFaaDiBrunoMatch`
 
-This module supplies two small, P2-independent algebraic bridges used in the term-by-term
-identification between the **LHS partition form** of `restrictedFaaDiBrunoSum`
+This module supplies P2-independent algebraic bridges used in the term-by-term identification
+between the **LHS partition form** of `restrictedFaaDiBrunoSum`
 (`restrictedFaaDiBrunoSum_eq_partitionForm`, indexed by the Y-degree `i` with a `C(i,|λ|)`
 binomial and an `α₀^{i-|λ|}` factor) and the **RHS recursion form**
 (`coeff_succ_βHenselAssembled_partitionForm`, packaging the iterated-Hasse coefficient as
@@ -67,9 +67,7 @@ Reindexing `hasseEvalAtRoot_eq_taylorSum` by `j = i + m`:
   `hasseEvalAtRoot i₁ m
      = ∑_{j ∈ {m, …, N+m}} C(j,m) · (lift((Δ_X^{i₁}R)|_{x₀}).coeff j) · (T/W)^{j-m}`,
 
-where `N = natDegreeY (Δ_X^{i₁}(Δ_Y^m R)|_{x₀})`.  This is the exact shape consumed by the LHS
-partition-form inner sum (the `C(i,|λ|)·coeff i·α₀^{i-|λ|}` terms with `m = |λ|`): the Y-degree
-sum over `j` collapses, term for term, into the single embedding object `hasseEvalAtRoot`. -/
+where `N = natDegreeY (Δ_X^{i₁}(Δ_Y^m R)|_{x₀})`. -/
 theorem hasseEvalAtRoot_eq_binomReindex (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
     hasseEvalAtRoot H x₀ R i1 m
       = ∑ j ∈ (Finset.range ((Bivariate.evalX (Polynomial.C x₀)
