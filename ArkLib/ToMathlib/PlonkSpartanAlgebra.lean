@@ -29,6 +29,9 @@ import ArkLib.Data.MvPolynomial.Multilinear
 * `MvPolynomial.sum_eval_eqPolynomial_zeroOne_dual` /
   `MvPolynomial.sum_weighted_eval_eqPolynomial_zeroOne_dual` — the corresponding dual
   `eqPolynomial` selector forms.
+* `MvPolynomial.sum_eqTilde_zeroOne` /
+  `MvPolynomial.sum_weighted_eqTilde_zeroOne` and their dual forms — the same boolean-cube
+  selector interfaces exposed directly on the in-tree `eqTilde` equality kernel.
 * `Finset.prod_fin_add_dite_split` — a product over `Fin (ℓ+κ)` that is `Fp` on the `κ`-prefix and
   `Fs` on the `ℓ`-suffix factors as `(∏ Fp)·(∏ Fs)` (#19/#29/#33/#62, dedups RingSwitching/Binius).
 -/
@@ -243,6 +246,34 @@ theorem sum_weighted_eval_eqPolynomial_zeroOne_dual {σ R : Type*} [Fintype σ]
     _ = f x := by
         simp [mul_ite]
 
+/-- The equality kernel has total mass `1` over boolean evaluation points. -/
+theorem sum_eqTilde_zeroOne {σ R : Type*} [Fintype σ] [DecidableEq σ]
+    [CommRing R] (y : σ → Fin 2) :
+    (∑ x : σ → Fin 2, eqTilde (y : σ → R) (x : σ → R)) = 1 := by
+  simpa [eqTilde] using
+    (sum_eval_eqPolynomial_zeroOne (σ := σ) (R := R) y)
+
+/-- A weighted sum against `eqTilde` selects the fixed selector-center value. -/
+theorem sum_weighted_eqTilde_zeroOne {σ R : Type*} [Fintype σ]
+    [DecidableEq σ] [CommRing R] (f : (σ → Fin 2) → R) (y : σ → Fin 2) :
+    (∑ x : σ → Fin 2, f x * eqTilde (y : σ → R) (x : σ → R)) = f y := by
+  simpa [eqTilde] using
+    (sum_weighted_eval_eqPolynomial_zeroOne (σ := σ) (R := R) f y)
+
+/-- The equality kernel has total mass `1` when summing over boolean selector centers. -/
+theorem sum_eqTilde_zeroOne_dual {σ R : Type*} [Fintype σ] [DecidableEq σ]
+    [CommRing R] (x : σ → Fin 2) :
+    (∑ y : σ → Fin 2, eqTilde (y : σ → R) (x : σ → R)) = 1 := by
+  simpa [eqTilde] using
+    (sum_eval_eqPolynomial_zeroOne_dual (σ := σ) (R := R) x)
+
+/-- A weighted sum over `eqTilde` selector centers selects the fixed evaluation point. -/
+theorem sum_weighted_eqTilde_zeroOne_dual {σ R : Type*} [Fintype σ]
+    [DecidableEq σ] [CommRing R] (f : (σ → Fin 2) → R) (x : σ → Fin 2) :
+    (∑ y : σ → Fin 2, f y * eqTilde (y : σ → R) (x : σ → R)) = f x := by
+  simpa [eqTilde] using
+    (sum_weighted_eval_eqPolynomial_zeroOne_dual (σ := σ) (R := R) f x)
+
 end MvPolynomial
 
 #print axioms Finset.prod_div_perm_eq_one_of_eq_comp
@@ -257,3 +288,7 @@ end MvPolynomial
 #print axioms MvPolynomial.sum_weighted_eval_eqPolynomial_zeroOne
 #print axioms MvPolynomial.sum_eval_eqPolynomial_zeroOne_dual
 #print axioms MvPolynomial.sum_weighted_eval_eqPolynomial_zeroOne_dual
+#print axioms MvPolynomial.sum_eqTilde_zeroOne
+#print axioms MvPolynomial.sum_weighted_eqTilde_zeroOne
+#print axioms MvPolynomial.sum_eqTilde_zeroOne_dual
+#print axioms MvPolynomial.sum_weighted_eqTilde_zeroOne_dual
