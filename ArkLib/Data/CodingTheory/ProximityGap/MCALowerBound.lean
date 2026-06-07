@@ -260,6 +260,25 @@ theorem mca_two_agree_imp_u1_vanish_on_inter [NoZeroSMulDivisors F A]
   have hz : (γ - γ') • u₁ i = 0 := by rw [sub_smul, heq, sub_self]
   exact (smul_eq_zero.mp hz).resolve_left (sub_ne_zero.mpr hne)
 
+/-- **Witness injectivity (proximity-gap count step).** Fix a stack direction `u₁` and, for each
+scalar `γ` in a set `T`, a witness `wf γ` agreeing with the line on `Sf γ`. If for every pair of
+distinct scalars `u₁` does *not* vanish identically on the agreement overlap `Sf γ ∩ Sf γ'`, then
+the witness map `wf` is injective on `T`. (Distinct scalars therefore have distinct witnesses, so
+the bad-scalar count is bounded by the number of distinct close codewords — the list-decoding
+quantity.) Direct consequence of `mca_two_agree_imp_u1_vanish_on_inter`. -/
+theorem mcaWitness_injOn [NoZeroSMulDivisors F A]
+    (u₀ u₁ : ι → A) (T : Set F) (wf : F → (ι → A)) (Sf : F → Finset ι)
+    (hagree : ∀ γ ∈ T, ∀ i ∈ Sf γ, wf γ i = u₀ i + γ • u₁ i)
+    (hnv : ∀ γ ∈ T, ∀ γ' ∈ T, γ ≠ γ' → ∃ i ∈ Sf γ ∩ Sf γ', u₁ i ≠ 0) :
+    Set.InjOn wf T := by
+  intro γ hγ γ' hγ' hww
+  by_contra hne
+  obtain ⟨i, hi, hi0⟩ := hnv γ hγ γ' hγ' hne
+  have hagree2 : ∀ j ∈ Sf γ', wf γ j = u₀ j + γ' • u₁ j := by
+    intro j hj; rw [hww]; exact hagree γ' hγ' j hj
+  exact hi0 (mca_two_agree_imp_u1_vanish_on_inter u₀ u₁ (wf γ) γ γ' hne (Sf γ) (Sf γ')
+    (hagree γ hγ) hagree2 i hi)
+
 end ProximityGap
 
 namespace ProximityGap.MCALowerExample
