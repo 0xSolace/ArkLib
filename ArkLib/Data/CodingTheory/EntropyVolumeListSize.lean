@@ -71,7 +71,37 @@ theorem linear_lambda_ge_entropy_volume_div_succ
   rw [← div_div, div_le_div_iff_of_pos_right hP, div_le_iff₀ hn1]
   nlinarith [hvol]
 
+/-- **Reed–Solomon specialization (RS codewords in a `δ`-ball).**
+
+For `RS[F, α, k]` with `q = |F| ≥ 2`, `n = |ι|`, `k ≤ n`, mode index `⌊δ·n⌋ ∈ (0, n)`:
+
+  `|Λ(RS[α,k], δ)| ≥ q^{n·H_q(⌊δn⌋/n)} / ((n+1) · q^{n−k})`.
+
+The RS instance of `linear_lambda_ge_entropy_volume_div_succ` (RS is a linear code, with
+`Module.finrank F (RS[α,k]) = k` via `ReedSolomon.dim_eq_deg_of_le'`).  This is the
+"number of RS codewords in a `δ`-ball" lower bound feeding the CS25 / Grand-LD prize lower
+bounds (issues #82, #69). -/
+theorem rs_lambda_ge_entropy_volume_div_succ
+    (α : ι ↪ F) (k : ℕ) (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hq : 2 ≤ Fintype.card F)
+    (hkcard : k ≤ Fintype.card ι)
+    (hk0 : 0 < ⌊δ * (Fintype.card ι : ℝ)⌋₊)
+    (hkn : ⌊δ * (Fintype.card ι : ℝ)⌋₊ < Fintype.card ι) :
+    ENNReal.ofReal
+        ((Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ)
+              * qEntropy (Fintype.card F)
+                  ((⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ)))
+          / (((Fintype.card ι : ℝ) + 1)
+              * (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) - (k : ℝ))))
+      ≤ (Lambda ((ReedSolomon.code α k : Set (ι → F))) δ : ENNReal) := by
+  have hdim : Module.finrank F (ReedSolomon.code α k) = k :=
+    ReedSolomon.dim_eq_deg_of_le' hkcard
+  have h := linear_lambda_ge_entropy_volume_div_succ
+    (ReedSolomon.code α k) δ hδ_pos hδ_lt hq hk0 hkn
+  rwa [hdim] at h
+
 end CodingTheory
 
 -- Axiom audit: depends on exactly `[propext, Classical.choice, Quot.sound]`.
 #print axioms CodingTheory.linear_lambda_ge_entropy_volume_div_succ
+#print axioms CodingTheory.rs_lambda_ge_entropy_volume_div_succ
