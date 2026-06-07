@@ -1,6 +1,5 @@
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
-import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
 
 -- Removed (de-larp, #171/#169): eight `theorem …_residual : True := by trivial` placebos named
 -- identically to the hard open obligations #14/#114/#116/#112/#113/#29/#13/#62. They proved
