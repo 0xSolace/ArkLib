@@ -165,10 +165,11 @@ theorem mcaBadWitness_card_mul_le [NoZeroSMulDivisors F A]
   -- sum the lower bounds: |bad|·(|T| - δn) ≤ ∑ ≤ |T|
   have hlb : (bad.card : ℝ) * ((T.card : ℝ) - δ * Fintype.card ι) ≤
       ∑ γ ∈ bad, ((badWitnessSet C δ u₀ u₁ w γ ∩ T).card : ℝ) := by
-    rw [← Finset.sum_const, Finset.sum_le_sum_iff_of_nonneg] <;>
-      · first
-        | exact hterm
-        | (intro γ hγ; exact hterm γ hγ)
+    have hconst : (bad.card : ℝ) * ((T.card : ℝ) - δ * Fintype.card ι)
+        = ∑ _γ ∈ bad, ((T.card : ℝ) - δ * Fintype.card ι) := by
+      rw [Finset.sum_const, nsmul_eq_mul]
+    rw [hconst]
+    exact Finset.sum_le_sum hterm
   calc (bad.card : ℝ) * ((T.card : ℝ) - δ * Fintype.card ι)
       ≤ ∑ γ ∈ bad, ((badWitnessSet C δ u₀ u₁ w γ ∩ T).card : ℝ) := hlb
     _ ≤ (T.card : ℝ) := hsum_leR
