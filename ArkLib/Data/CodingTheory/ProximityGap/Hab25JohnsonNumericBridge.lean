@@ -359,6 +359,27 @@ def mcaLowerWitness_of_algebraicData_algebraic_cover
   mcaLowerWitness_of_residuals domain k η δ ε_star hη hδ hδ_le_one
     (Hab25JohnsonResiduals.ofAlgebraicData_algebraic_cover A N B hB hNB hBdiv hAlg) hle
 
+/-- Natural-numerator form of `mcaLowerWitness_of_algebraicData_algebraic_cover`. -/
+def mcaLowerWitness_of_algebraicData_algebraic_cover_nat
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ ε_star : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ}
+    (hδ_le_one : δ ≤ 1)
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (N : ℕ)
+    (hNdiv : (N : ℝ) / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+    (hAlg : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      ∃ A' : Hab25JohnsonAlgebraicData domain k η δ hη hδ,
+        _root_.ProximityGap.hab25McaBadScalars domain k δ u ⊆ A'.Edis ∧
+          A'.ℓ * Fintype.card ι₀ ≤ N)
+    (hle : ENNReal.ofReal
+      (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+        ≤ (ε_star : ENNReal)) :
+    GrandChallenges.MCALowerWitness (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star :=
+  mcaLowerWitness_of_residuals domain k η δ ε_star hη hδ hδ_le_one
+    (Hab25JohnsonResiduals.ofAlgebraicData_algebraic_cover_nat A N hNdiv hAlg) hle
+
 /-- **Grand-MCA threshold existence from algebraic data plus S11 count data.** This packages
 `mcaLowerWitness_of_algebraicData_card_le` through the generic lattice threshold constructor,
 so callers with the count/numerator inputs can enter the lattice layer without manually naming
@@ -439,6 +460,30 @@ theorem mcaThresholdExists_of_algebraicData_algebraic_cover
     (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star
     (mcaLowerWitness_of_algebraicData_algebraic_cover
       hδ_le_one A N B hB hNB hBdiv hAlg hle)
+
+/-- Natural-numerator form of `mcaThresholdExists_of_algebraicData_algebraic_cover`. -/
+theorem mcaThresholdExists_of_algebraicData_algebraic_cover_nat
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ ε_star : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ}
+    (hδ_le_one : δ ≤ 1)
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (N : ℕ)
+    (hNdiv : (N : ℝ) / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+    (hAlg : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      ∃ A' : Hab25JohnsonAlgebraicData domain k η δ hη hδ,
+        _root_.ProximityGap.hab25McaBadScalars domain k δ u ⊆ A'.Edis ∧
+          A'.ℓ * Fintype.card ι₀ ≤ N)
+    (hle : ENNReal.ofReal
+      (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+        ≤ (ε_star : ENNReal)) :
+    GrandChallengesLattice.mcaThresholdExists
+      (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star :=
+  GrandChallengesLattice.mcaThresholdExists_of_MCALowerWitness
+    (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star
+    (mcaLowerWitness_of_algebraicData_algebraic_cover_nat
+      hδ_le_one A N hNdiv hAlg hle)
 
 /-- The faithful MCA threshold created from algebraic data plus S11 count data satisfies the
 MCA bound. This is the spec companion to `mcaThresholdExists_of_algebraicData_card_le`. -/
@@ -529,6 +574,34 @@ theorem mcaThreshold_spec_of_algebraicData_algebraic_cover
     (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star
     (mcaThresholdExists_of_algebraicData_algebraic_cover
       hδ_le_one A N B hB hNB hBdiv hAlg hle)
+
+/-- Natural-numerator form of `mcaThreshold_spec_of_algebraicData_algebraic_cover`. -/
+theorem mcaThreshold_spec_of_algebraicData_algebraic_cover_nat
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ ε_star : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ}
+    (hδ_le_one : δ ≤ 1)
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (N : ℕ)
+    (hNdiv : (N : ℝ) / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+    (hAlg : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      ∃ A' : Hab25JohnsonAlgebraicData domain k η δ hη hδ,
+        _root_.ProximityGap.hab25McaBadScalars domain k δ u ⊆ A'.Edis ∧
+          A'.ℓ * Fintype.card ι₀ ≤ N)
+    (hle : ENNReal.ofReal
+      (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+        ≤ (ε_star : ENNReal)) :
+    let hne := mcaThresholdExists_of_algebraicData_algebraic_cover_nat
+      hδ_le_one A N hNdiv hAlg hle
+    GrandChallengesLattice.mcaSatisfies
+      (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star
+      (GrandChallengesLattice.mcaThreshold
+        (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne) :=
+  GrandChallengesLattice.mcaThreshold_spec
+    (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star
+    (mcaThresholdExists_of_algebraicData_algebraic_cover_nat
+      hδ_le_one A N hNdiv hAlg hle)
 
 /-- The Hab25 lower witness from algebraic data plus S11 count data gives a direct lower
 bracket on the faithful MCA lattice threshold at `⌊δ * n⌋`. -/
@@ -1120,12 +1193,15 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaLowerWitness_of_algebraicData_card_le
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaLowerWitness_of_algebraicData_card_le_nat
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaLowerWitness_of_algebraicData_algebraic_cover
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaLowerWitness_of_algebraicData_algebraic_cover_nat
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdExists_of_algebraicData_card_le
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdExists_of_algebraicData_card_le_nat
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdExists_of_algebraicData_algebraic_cover
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdExists_of_algebraicData_algebraic_cover_nat
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThreshold_spec_of_algebraicData_card_le
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThreshold_spec_of_algebraicData_card_le_nat
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThreshold_spec_of_algebraicData_algebraic_cover
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThreshold_spec_of_algebraicData_algebraic_cover_nat
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.latticeIndexOf_le_mcaThreshold_of_algebraicData_card_le
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.latticeIndexOf_le_mcaThreshold_of_algebraicData_card_le_nat
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.latticeIndexOf_le_mcaThreshold_of_algebraicData_algebraic_cover
