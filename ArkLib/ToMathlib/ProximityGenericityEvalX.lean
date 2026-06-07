@@ -1,5 +1,6 @@
 import ArkLib.ToMathlib.ProximityGenericity
 import ArkLib.Data.Polynomial.Bivariate
+import ArkLib.Data.Polynomial.Trivariate
 
 /-! Closing the `hx0` existence for BCIKS20 §5 genericity (#8): a single specialization point
 `x₀ ∈ F` with `evalX (C x₀) R ≠ 0` for every `R` in a finite family of nonzero trivariate
@@ -76,6 +77,16 @@ lemma evalX_separable_of_separable {a : Polynomial F}
   rw [Polynomial.Bivariate.evalX_eq_map]
   exact h.map
 
+/-- **Z-specialization preserves separability (unconditional).** `eval_on_Z p z = p.map (…)`,
+so if `p` is Y-separable then `eval_on_Z p z` is separable for every `z` — the companion of
+`evalX_separable_of_separable` for the inner `Z`-variable, used by the §5 factorization over the
+specialized fibre. -/
+lemma eval_on_Z_separable_of_separable {z : F}
+    {p : Polynomial (Polynomial (Polynomial F))} (h : p.Separable) :
+    (Trivariate.eval_on_Z p z).Separable := by
+  rw [Trivariate.eval_on_Z_eq]
+  exact h.map
+
 /-- **`hx0` existence (#8), discharged.** For a finite family `Rs` of nonzero trivariate
 polynomials whose leading-Y-coefficient X-degrees sum to `< |F|`, there is a single `x₀ : F` with
 `evalX (C x₀) R ≠ 0` for every `R ∈ Rs`. This discharges the field-size half of `hx0` in
@@ -107,6 +118,7 @@ theorem exists_x0_evalX_ne_zero_of_sum_degreeX_lt
 #print axioms ProximityGap.Genericity.exists_good_point_of_obstructions_domain
 #print axioms ProximityGap.Genericity.coeff_evalX
 #print axioms ProximityGap.Genericity.evalX_separable_of_separable
+#print axioms ProximityGap.Genericity.eval_on_Z_separable_of_separable
 #print axioms ProximityGap.Genericity.exists_x0_evalX_ne_zero
 #print axioms ProximityGap.Genericity.exists_x0_evalX_ne_zero_of_sum_degreeX_lt
 
