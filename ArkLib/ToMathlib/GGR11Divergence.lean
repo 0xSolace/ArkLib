@@ -60,16 +60,17 @@ theorem hammingDist_ge_minDist_of_mem_closeCodewordsRel_ne
     Code.minDist C ≤ hammingDist V V' := by
   classical
   haveI : Nonempty (Fin m) := ⟨⟨0, Nat.pos_of_ne_zero (NeZero.ne m)⟩⟩
+  haveI : DecidableEq (Fin m → F) := inferInstance
   -- both lie in the interleaved code
   have hVcode : V ∈ interleavedCodeSet (κ := Fin m) C := hV.1
   have hV'code : V' ∈ interleavedCodeSet (κ := Fin m) C := hV'.1
   -- the interleaved code has the same minimum distance as the base code
   have hmin : Code.minDist (interleavedCodeSet (κ := Fin m) C) = Code.minDist C := by
-    rw [← interleavedCode_eq_interleavedCodeSet]
-    exact minDist_eq_minDist C
+    have he := minDist_eq_minDist (F := F) (A := F) (ι := ι) (κ := Fin m) C
+    rwa [interleavedCode_eq_interleavedCodeSet] at he
   -- distinct codewords are ≥ minDist apart
-  have h := minDist_le_hammingDist_of_mem_ne (C := interleavedCodeSet (κ := Fin m) C)
-    hVcode hV'code hne
+  have h := JohnsonBound.minDist_le_hammingDist_of_mem_ne
+    (C := interleavedCodeSet (κ := Fin m) C) hVcode hV'code hne
   rwa [hmin] at h
 
 /-- **Agreement-set overlap bound.**  Distinct `δ`-close interleaved codewords agree with each
