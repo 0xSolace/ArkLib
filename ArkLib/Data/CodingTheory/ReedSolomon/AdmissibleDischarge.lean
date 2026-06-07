@@ -6,9 +6,6 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
 import Mathlib.GroupTheory.OrderOfElement
 
-set_option linter.unusedDecidableInType false
-set_option linter.unusedSectionVars false
-
 /-!
 # Discharging the FRS `Admissible` side condition (ABF26 Def. 2.14, GR08)
 
@@ -135,16 +132,10 @@ theorem geomDomainFn_injective (γ : F) (s n : ℕ) (hs : 0 < s) (hsn : s * n �
     Function.Injective (geomDomainFn γ s n) := by
   intro a b hab
   unfold geomDomainFn at hab
-  have ha : s * a.val < orderOf γ := by
-    calc
-      s * a.val < s * (a.val + 1) := by rw [Nat.mul_succ]; omega
-      _ ≤ s * n := Nat.mul_le_mul_left s (Nat.succ_le_of_lt a.isLt)
-      _ ≤ orderOf γ := hsn
-  have hb : s * b.val < orderOf γ := by
-    calc
-      s * b.val < s * (b.val + 1) := by rw [Nat.mul_succ]; omega
-      _ ≤ s * n := Nat.mul_le_mul_left s (Nat.succ_le_of_lt b.isLt)
-      _ ≤ orderOf γ := hsn
+  have ha : s * a.val < orderOf γ :=
+    lt_of_lt_of_le (mul_lt_mul_of_pos_left a.isLt hs) hsn
+  have hb : s * b.val < orderOf γ :=
+    lt_of_lt_of_le (mul_lt_mul_of_pos_left b.isLt hs) hsn
   have : s * a.val = s * b.val :=
     pow_injOn_Iio_orderOf (Set.mem_Iio.mpr ha) (Set.mem_Iio.mpr hb) hab
   exact Fin.ext (Nat.eq_of_mul_eq_mul_left hs this)
