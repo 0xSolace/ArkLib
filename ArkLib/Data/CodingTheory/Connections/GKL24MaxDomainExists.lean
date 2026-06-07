@@ -256,4 +256,17 @@ theorem mcaBadWitness_card_le_pn {MC : Submodule F (ι → F)} {δ p : ℝ≥0} 
     _ = p * Fintype.card ι + (1 - p) * Fintype.card ι := by ring
     _ ≤ p * Fintype.card ι + (D.card : ℝ≥0) := by gcongr
 
+/-- **GKL24 sharp first-moment via the common set directly.**  Taking the absorbing domain to be the
+common zero-agreement set itself: if `(1−p)·n ≤ |{i : u₁ᵢ=0 ∧ wᵢ=u₀ᵢ}| < ⌊(1−δ)·n⌋`, then
+`|mcaBadWitness w| ≤ p·n`.  This is the self-contained form of GKL24's `|Bad¹| ≤ p·n`: no auxiliary
+domain is needed, only that the common agreement set is sized between the two radii. -/
+theorem mcaBadWitness_card_le_pn_of_common {MC : Submodule F (ι → F)} {δ p : ℝ≥0}
+    {u₀ u₁ w : ι → F} (hp : p ≤ 1)
+    (hlb : (1 - p) * Fintype.card ι ≤
+      ((Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)).card : ℝ≥0))
+    (hub : (Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)).card
+      < ⌊((1 - δ) * Fintype.card ι : ℝ≥0)⌋₊) :
+    ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ≥0) ≤ p * Fintype.card ι :=
+  mcaBadWitness_card_le_pn hp (Finset.Subset.refl _) hlb hub
+
 end ProximityGap
