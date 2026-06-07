@@ -230,6 +230,7 @@ import ArkLib.Data.CodingTheory.ProximityPrizeCA
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
 import ArkLib.Data.CodingTheory.QEntropyMonotone
+import ArkLib.Data.CodingTheory.RSVanishingDim
 import ArkLib.Data.CodingTheory.RandomLinearCodeEquidistribution
 import ArkLib.Data.CodingTheory.RandomLinearCodeFirstMoment
 import ArkLib.Data.CodingTheory.RandomLinearCodeFirstMomentExists
@@ -240,6 +241,7 @@ import ArkLib.Data.CodingTheory.RandomLinearCodeRankEquidist
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleDischarge
 import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleSubspaceDesign
+import ArkLib.Data.CodingTheory.ReedSolomon.FRSGeomSubspaceDesign
 import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
 import ArkLib.Data.CodingTheory.ReedSolomon.Interleaved
@@ -612,6 +614,7 @@ import ArkLib.ToMathlib.L46DiffStackRS
 import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.List.Basic
+import ArkLib.ToMathlib.MCAFirstMomentArithBricks
 import ArkLib.ToMathlib.MCAPrizeFourRateNumerics
 import ArkLib.ToMathlib.MatchingExtractor
 import ArkLib.ToMathlib.MatchingFactorLift
