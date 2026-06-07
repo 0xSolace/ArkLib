@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Core
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLineDecoding
 
 /-!
 # Faithful §1 Grand-Challenge lattice thresholds — MCA witnesses → threshold

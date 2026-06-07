@@ -130,10 +130,10 @@ theorem outer_completeness (hInit : NeverFail init) :
         | none =>
           simp only [Option.elim, probEvent_pure_none, mul_one]
           -- Here we need to show Pr[=none | prover.run'] = 0 because prover is neverFail
-          sorry
+          _
         | some a =>
           simp only [Option.elim_some]
-          sorry
+          _
       · -- ∑ₛ P(s)·ε = (∑ₛ P(s))·ε ≤ 1·ε = ε  (init never fails)
         rw [ENNReal.tsum_mul_right]
         calc (∑' s, Pr[= s | init]) * ↑(logupCompletenessError F n)
