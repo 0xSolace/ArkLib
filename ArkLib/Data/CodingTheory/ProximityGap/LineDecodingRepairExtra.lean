@@ -11,7 +11,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
 # Further repair progress for the refuted ABF26 Theorem 4.21 (issue #140)
 
 `LineDecodingRepair.lean` records the first wave of honest, axiom-clean repair progress for the
-*false* black-box `lineDecodable_imp_epsMCA_le_target`: the strengthened nondegenerate statement,
+*false* black-box form of `lineDecodable_imp_epsMCA_le_target`: counterexample-exclusion,
 counterexample-exclusion, the exact value `ε_mca(Czero, 0) = 1/|F|` (specialised to `ZMod 2`),
 and the coverage-discharge theorems.
 

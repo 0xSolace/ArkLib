@@ -10,13 +10,13 @@ import Mathlib.Algebra.Field.ZMod
 /-!
 # The black-box form of ABF26 Theorem 4.21 is *false* (statement-level refutation)
 
-`ArkLib/Data/CodingTheory/ProximityGap/LineDecoding.lean` carries the named target proposition
-`lineDecodable_imp_epsMCA_le_target`, whose docstring (the "WALL" note) explains that the
+`ArkLib/Data/CodingTheory/ProximityGap/LineDecoding.lean` formerly carried the legacy target proposition
+`lineDecodable_imp_epsMCA_le_target` (now replaced by a theorem using `MCAForallDoubleCover`), whose docstring (the "WALL" note) explained that the
 *counting reduction* of GG25 / ABF26 Theorem 4.21 cannot close the goal for a black-box
 proximity parameter `a` and an unconstrained radius `δ`, and that the faithful route needs a
 Guruswami–Sudan statement repair.
 
-This file proves the stronger fact that the conclusion of `lineDecodable_imp_epsMCA_le_target` does
+This file proves the stronger fact that the conclusion of the legacy `lineDecodable_imp_epsMCA_le_target` proposition did
 **not** follow from its hypothesis at all: there is a concrete instance where the code is
 `(δ, a, n+1)`-line-decodable yet `ε_mca(C, δ) > a / |F|`. Hence the target theorem is **not a
 theorem as stated** — it requires a hypothesis repair (a proximity bound on `δ`, e.g.
@@ -172,8 +172,8 @@ theorem epsMCA_Czero_pos :
 
 There is a concrete instance — the zero code `C = ⊥` over `F = ZMod 2`, `ι = Fin 1`,
 `δ = a = 0` — that is `(δ, a, |ι|+1)`-line-decodable yet has `ε_mca(C, δ) > a / |F|`. So the
-conclusion of `lineDecodable_imp_epsMCA_le_target` does **not** follow from its hypothesis: the
-theorem requires a hypothesis repair exposing the Guruswami--Sudan interpolation/list-size
+conclusion of the legacy `lineDecodable_imp_epsMCA_le_target` proposition did **not** follow from its hypothesis: the
+theorem required a hypothesis repair exposing the Guruswami--Sudan interpolation/list-size
 structure, not a leaf proof of the present form. -/
 theorem lineDecodable_imp_epsMCA_le_false :
     LineDecodable (F := F) ((Czero : Set (ι → A))) (0 : ℝ≥0) (0 : ℝ≥0)
