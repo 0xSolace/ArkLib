@@ -141,7 +141,7 @@ def whirBlockVectorSpec_challengeIdxEquivFin (M : ℕ) :
     omega⟩
   invFun j := ⟨⟨(2 * M + 2) + j.1, by omega⟩, by
     have hnot : ¬ (2 * M + 2) + j.1 < 2 * M + 2 := by omega
-    simp [whirBlockVectorSpec, hnot]⟩
+    simp [hnot]⟩
   left_inv i := by
     ext
     have hiUpper : i.1.1 < (2 * M + 2) + (2 * M + 2) := i.1.2
@@ -165,7 +165,7 @@ def whirBlockVectorSpec_messageIdxEquivFin (M : ℕ) :
       simp [whirBlockVectorSpec, hlt] at hv⟩
   invFun j := ⟨⟨j.1, by omega⟩, by
     have hlt : j.1 < 2 * M + 2 := j.2
-    simp [whirBlockVectorSpec, hlt]⟩
+    simp [hlt]⟩
   left_inv i := by
     ext
     simp
