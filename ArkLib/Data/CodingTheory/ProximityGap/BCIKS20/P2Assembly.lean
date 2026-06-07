@@ -109,6 +109,20 @@ theorem restrictedMatch_iff_partitionMatch (x₀ : F) (R : F[X][X][Y])
       restrictedMatch_rhs_eq_restrictedRecursionPartitionForm H x₀ R hHyp t]
     exact hpart t
 
+/-- Directional adapter from the carved restricted match to the normalized partition residual. -/
+theorem RestrictedFaaDiBrunoPartitionMatch.of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
+    RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp :=
+  (restrictedMatch_iff_partitionMatch H x₀ R hHyp).1 hmatch
+
+/-- Directional adapter from the normalized partition residual back to the carved restricted match. -/
+theorem RestrictedFaaDiBrunoMatch.of_partitionMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp) :
+    RestrictedFaaDiBrunoMatch H x₀ R hHyp :=
+  (restrictedMatch_iff_partitionMatch H x₀ R hHyp).2 hpart
+
 -- In-file axiom audit for the named P2 partition residual and its equivalence to the carved core.
 section AxiomAudit
 #print axioms restrictedFaaDiBrunoPartitionForm
@@ -117,6 +131,8 @@ section AxiomAudit
 #print axioms restrictedFaaDiBrunoSum_eq_restrictedPartitionForm
 #print axioms restrictedMatch_rhs_eq_restrictedRecursionPartitionForm
 #print axioms restrictedMatch_iff_partitionMatch
+#print axioms RestrictedFaaDiBrunoPartitionMatch.of_restrictedMatch
+#print axioms RestrictedFaaDiBrunoMatch.of_partitionMatch
 end AxiomAudit
 
 end BCIKS20.HenselNumerator
