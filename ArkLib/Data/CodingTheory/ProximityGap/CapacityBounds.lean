@@ -1197,6 +1197,20 @@ def subspaceDesign_epsMCA_gg25
   -- (cf. epsMCA_Czero_pos / lineDecodable_imp_epsMCA_le_false), so the statement stays
   -- nonvacuous. Genuinely external (the GG25 line-stitching/list-decoder pipeline is unformalized).
 
+/-- Public T4.13 wrapper from the named GG25 subspace-design MCA bound. -/
+theorem subspaceDesign_epsMCA_gg25_of_bound
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (h : IsSubspaceDesign s τ C)
+    (t : ℕ) (ht : 0 < t)
+    (hbound :
+      epsMCA (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F)))
+          ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
+        ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F)) :
+    subspaceDesign_epsMCA_gg25 s τ C h t ht := by
+  simpa [subspaceDesign_epsMCA_gg25] using hbound
+
 /-- **ABF26 Theorem 4.14 [GG25 Corollary 4.10].** Folded Reed-Solomon codes have MCA
 up to capacity. Let `η ∈ (0, 1)` and `C := FRS[F, L, k, s, ω]` be a folded RS code
 with `s > 16/η²`. Then:
@@ -1525,6 +1539,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.linear_epsCA_1_5_johnson_bgks20
 #print axioms CodingTheory.linear_epsCA_1_5_johnson_bgks20_of_bound
 #print axioms CodingTheory.subspaceDesign_epsMCA_gg25
+#print axioms CodingTheory.subspaceDesign_epsMCA_gg25_of_bound
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_residuals
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_residuals_prop
