@@ -449,34 +449,27 @@ noncomputable def paperTranscriptChallenge {M : ℕ} {ιs : Fin (M + 1) → Type
   (paperTranscriptFullTranscript P d T).challenges i
 
 omit [Field F] [SampleableType F] in
-theorem paperTranscriptFullTranscript_apply_slot_heq {M : ℕ}
-    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
-    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
-    (slot : PaperTranscriptSlot P) :
-    HEq (paperTranscriptFullTranscript P d T (paperTranscriptSlotIndex slot))
-      (paperTranscriptSlotPayload P d T slot) := by
-  rw [show slot =
-      (Fintype.equivFin (PaperTranscriptSlot P)).symm (paperTranscriptSlotIndex slot) by
-    simp [paperTranscriptSlotIndex]]
-  exact HEq.rfl
-
-omit [Field F] [SampleableType F] in
-theorem paperTranscriptMessage_mainFoldedOracle_heq {M : ℕ}
+@[simp] theorem paperTranscriptSlotPayload_mainFoldedOracle {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) (i : Fin M) :
-    HEq (paperTranscriptMessage P d T (mainFoldedOracleMessageIdx P d i))
-      (mainFoldedOraclePayload P d i (T.mainFoldedOracle i)) := by
-  simp [paperTranscriptMessage, mainFoldedOraclePayload, mainFoldedOracleMessageIdx,
-    paperMessageIdx, ProtocolSpec.FullTranscript.messages]
+    paperTranscriptSlotPayload P d T (.mainFoldedOracle i) =
+      packFiniteFunction (ιs i.succ) (T.mainFoldedOracle i) :=
+  rfl
 
 omit [Field F] [SampleableType F] in
-theorem paperTranscriptMessage_mainOutOfDomainReply_heq {M : ℕ}
+@[simp] theorem paperTranscriptSlotPayload_mainOutOfDomainReply {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) (i : Fin M) :
-    HEq (paperTranscriptMessage P d T (mainOutOfDomainReplyMessageIdx P d i))
-      (mainOutOfDomainReplyPayload P d i (T.mainOutOfDomainReply i)) := by
-  simp [paperTranscriptMessage, mainOutOfDomainReplyPayload, mainOutOfDomainReplyMessageIdx,
-    paperMessageIdx, ProtocolSpec.FullTranscript.messages]
+    paperTranscriptSlotPayload P d T (.mainOutOfDomainReply i) =
+      singletonFieldPayload (T.mainOutOfDomainReply i) :=
+  rfl
+
+omit [Field F] [SampleableType F] in
+@[simp] theorem paperTranscriptSlotPayload_mainShiftChallenge {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) (i : Fin M) :
+    paperTranscriptSlotPayload P d T (.mainShiftChallenge i) = T.mainShiftChallenge i :=
+  rfl
 
 omit [Field F] [SampleableType F] in
 /-- A prover-side adapter that emits the prover-message slots from supplied paper transcript data.

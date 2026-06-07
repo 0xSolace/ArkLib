@@ -190,25 +190,36 @@ theorem sum_card_le_doubleHit (Z : Finset F) (S : F → Finset ι) :
     simp only [hc, Finset.card_filter]
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl fun z _ => ?_
-    rw [Finset.card_eq_sum_ones, Finset.sum_filter]
-  rw [hdc, ← Finset.sum_filter_add_sum_filter_not Finset.univ (fun i => 2 ≤ c i) c]
-  have hbig : (doubleHitSet Z S) = Finset.univ.filter (fun i => 2 ≤ c i) := rfl
-  gcongr ?_ + ?_
-  · -- on doubleHitSet, c i ≤ |Z|
+    rw [← Finset.sum_filter, Finset.sum_const, smul_eq_mul, mul_one]
+    congr 1
+    ext j; simp
+  -- split the universe at the `doubleHitSet` predicate
+  have hsplit := Finset.sum_filter_add_sum_filter_not Finset.univ (fun i => 2 ≤ c i) c
+  have hbig : (doubleHitSet Z S).card = (Finset.univ.filter (fun i => 2 ≤ c i)).card := rfl
+  -- the two pieces, bounded by `|Z|` and `1` per coordinate
+  have hpart1 : (∑ i ∈ Finset.univ.filter (fun i => 2 ≤ c i), c i)
+      ≤ (doubleHitSet Z S).card * Z.card := by
+    rw [hbig]
     calc (∑ i ∈ Finset.univ.filter (fun i => 2 ≤ c i), c i)
         ≤ ∑ _i ∈ Finset.univ.filter (fun i => 2 ≤ c i), Z.card :=
           Finset.sum_le_sum fun i _ => Finset.card_filter_le _ _
-      _ = (doubleHitSet Z S).card * Z.card := by rw [Finset.sum_const, smul_eq_mul, hbig]
-  · -- off doubleHitSet, c i ≤ 1
-    calc (∑ i ∈ Finset.univ.filter (fun i => ¬ 2 ≤ c i), c i)
-        ≤ ∑ _i ∈ Finset.univ.filter (fun i => ¬ 2 ≤ c i), 1 :=
-          Finset.sum_le_sum fun i hi => by
-            simp only [Finset.mem_filter, not_le] at hi; omega
-      _ = (Finset.univ.filter (fun i => ¬ 2 ≤ c i)).card := by
-          rw [Finset.sum_const, smul_eq_mul, mul_one]
-      _ ≤ Fintype.card ι - (doubleHitSet Z S).card := by
-          rw [hbig, Finset.filter_not, Finset.card_sdiff (Finset.filter_subset _ _)]
-          simp [Finset.card_univ]
+      _ = (Finset.univ.filter (fun i => 2 ≤ c i)).card * Z.card := by
+          rw [Finset.sum_const, smul_eq_mul]
+  have hcompl : (Finset.univ.filter (fun i => 2 ≤ c i)).card
+      + (Finset.univ.filter (fun i => ¬ 2 ≤ c i)).card = Fintype.card ι := by
+    rw [Finset.filter_card_add_filter_neg_card_eq_card, Finset.card_univ]
+  have hpart2 : (∑ i ∈ Finset.univ.filter (fun i => ¬ 2 ≤ c i), c i)
+      ≤ Fintype.card ι - (doubleHitSet Z S).card := by
+    have hle : (∑ i ∈ Finset.univ.filter (fun i => ¬ 2 ≤ c i), c i)
+        ≤ (Finset.univ.filter (fun i => ¬ 2 ≤ c i)).card := by
+      calc (∑ i ∈ Finset.univ.filter (fun i => ¬ 2 ≤ c i), c i)
+          ≤ ∑ _i ∈ Finset.univ.filter (fun i => ¬ 2 ≤ c i), 1 :=
+            Finset.sum_le_sum fun i hi => by
+              simp only [Finset.mem_filter, not_le] at hi; omega
+        _ = (Finset.univ.filter (fun i => ¬ 2 ≤ c i)).card := by simp
+    rw [hbig]; omega
+  rw [hdc, ← hsplit]
+  omega
 
 end DoubleCounting
 
