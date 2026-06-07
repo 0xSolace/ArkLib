@@ -102,4 +102,8 @@ theorem linear_epsCA_ge_sampling_dg25_proof
   linear_epsCA_ge_sampling_dg25_of_mass_bound C δ δ' h_δ' hδ_pos hδ_lt
     (linear_epsCA_sampling_dg25_mass_le_epsCA C δ δ' h_δ' hδ_lt)
 
+#print axioms CodingTheory.pr_relDist_le_epsCA_of_lt_covering
+#print axioms CodingTheory.linear_epsCA_sampling_dg25_mass_le_epsCA
+#print axioms CodingTheory.linear_epsCA_ge_sampling_dg25_proof
+
 end CodingTheory

@@ -107,12 +107,16 @@ machinery); *SHADOW* = placeholder pending a canonical formalization elsewhere.
 - `rs_epsCA_bchks25_item2` (T4.9.2) — BCHKS25 RS interpolation count absent.
 - `rs_epsMCA_johnson_range_bchks25` (T4.12) — m-multiplicity RS interpolation absent (#10
   tracks the Hab25 variant).
-- `linear_epsCA_ge_sampling_dg25` (L4.19) — covering-radius sampling identity absent.
 - `subspaceDesign_epsMCA_gg25` (T4.13) — GG25 line-stitching/list-decoding pipeline; its
   list-decoding input is tracked by #53.
 - `random_rs_mca` (T4.15 [GG25 Thm 5.15]) — random-domain RS MCA up-to-capacity
   bound absent in-tree; the probability space is now the canonical
   `Probability.uniformSizeSubsetOfLe`.
+
+*PROVED COMPANION BRIDGES* (Prop front doors retained here, proof assembly in companion files):
+
+- `linear_epsCA_ge_sampling_dg25` (L4.19) — discharged by
+  `CodingTheory.linear_epsCA_ge_sampling_dg25_proof` in `DG25Sampling.lean`.
 
 *DERIVED COROLLARIES* (blocked solely on other named statements; corollary content checked
 in-tree):
@@ -842,7 +846,8 @@ end ReedSolomon
 
 /-! ## Covering-radius sampling — ABF26 §4 ([DG25])
 
-Disposition (issue #48): DIRECT PORT (covering-radius sampling identity absent in-tree).
+Disposition (issue #48, #77): Prop front door retained here; the covering-radius sampling
+identity is discharged in `DG25Sampling.lean`.
 An *upper*-witness feeder (`ε_ca` lower bound) for the Grand MCA threshold. See the
 file-level disposition ledger. -/
 
@@ -867,19 +872,17 @@ noncomputable def linear_epsCA_sampling_dg25_mass (C : LinearCode ι F) (δ : �
   `ε_ca(C, δ) ≥ ((q-1)/q) · Pr_{u ← F^n}[Δ(u, C) ≤ δ]`
 
 The probability is over a uniform word in `F^n`, expressed via the `Pr_{...}[...]`
-notation. Admitted as an external result. -/
+notation. This Prop front door is retained for downstream APIs; `DG25Sampling.lean`
+discharges it through `CodingTheory.linear_epsCA_ge_sampling_dg25_proof`. -/
 def linear_epsCA_ge_sampling_dg25
     (C : LinearCode ι F) (δ δ' : ℝ≥0)
     (_h_δ' : (δ' : ENNReal) = ⨆ u : ι → F, δᵣ(u, (C : Set (ι → F))))
     (_hδ_pos : 0 < δ) (_hδ_lt : δ < δ') : Prop :=
     linear_epsCA_sampling_dg25_mass C δ ≤
       epsCA (F := F) (A := F) ((C : Set (ι → F))) δ δ
-  -- Missing ingredient: DG25's covering-radius sampling LOWER bound. Shows
-  -- ε_ca(C,δ) ≥ ((q-1)/q)·Pr_u[Δ(u,C)≤δ] by averaging the line-proximity event over a
-  -- random base word u and a random nonzero shift; the (q-1)/q factor is the probability
-  -- the shift is nonzero. Needs: (i) wiring the uniform-word covering probability Pr_u[…]
-  -- into the epsCA sup (the DG25/ files prove a different BCIKS-style gap, not this
-  -- covering-radius sampling identity), (ii) the nonzero-shift averaging. Genuinely external.
+  -- Proof assembly is in `DG25Sampling.lean`: it chooses a word beyond the covering radius,
+  -- uses the interleaved row-distance bridge to rule out joint proximity for every base word,
+  -- averages line probabilities by uniform translation, and absorbs the `(q-1)/q` factor.
 
 /-- Wrapper from the named DG25 sampling mass bound to the external L4.19 Prop shape. -/
 theorem linear_epsCA_ge_sampling_dg25_of_mass_bound
