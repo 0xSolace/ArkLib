@@ -54,6 +54,7 @@ import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
 import ArkLib.Data.CodingTheory.Connections.ListDecodingAndCA
 import ArkLib.Data.CodingTheory.Connections.SmoothDomainMCAWitness
 import ArkLib.Data.CodingTheory.DivergenceOfSets
+import ArkLib.Data.CodingTheory.EntropyCapacityValue
 import ArkLib.Data.CodingTheory.EntropyVolumeBound
 import ArkLib.Data.CodingTheory.Erasure
 import ArkLib.Data.CodingTheory.ExtensionCodes
@@ -410,6 +411,7 @@ import ArkLib.ProofSystem.Fri.EvenAndOdd.Def
 import ArkLib.ProofSystem.Fri.EvenAndOdd.Lemmas
 import ArkLib.ProofSystem.Fri.PolySplit
 import ArkLib.ProofSystem.Fri.RoundConsistency
+import ArkLib.ProofSystem.Fri.Spec.Completeness
 import ArkLib.ProofSystem.Fri.Spec.General
 import ArkLib.ProofSystem.Fri.Spec.SingleRound
 import ArkLib.ProofSystem.Fri.Spec.Soundness
