@@ -19,3 +19,12 @@
 # residual's tracking issue below.
 
 fenziSanso_upperBound_attack_concrete_residual  # #106 Leaderboard L6.12 Fenzi-Sanso KoalaBear winning-set cardinality obligation
+gkl24_cubeRoot_mca_bound  # #84 GKL24 1.5-Johnson MCA external paper residual
+bgks20_etaMargin_ca_bound  # #84 BGKS20 eta-margin CA external paper residual
+bchks25_rs_epsCA_item2  # #87 BCHKS25 RS epsCA item 2 external paper residual
+bchks25_rs_epsMCA_johnson_range  # #85 BCHKS25 Johnson-range RS epsMCA external paper residual
+bchks25_kk25_rs_epsCA_lower_capacity  # #81 BCHKS25+KK25 near-capacity RS epsCA construction residual
+cs25_rs_epsCA_breakdown_lower  # #82 CS25 complete CA breakdown lower-bound residual
+bchks25_rs_epsCA_johnson_jump  # #83 BCHKS25 Johnson-jump witness external paper residual
+gg25_subspaceDesign_epsMCA  # #86 GG25 subspace-design MCA external paper residual
+gg25_frs_epsMCA_capacity  # #86 GG25 FRS capacity MCA external paper residual
