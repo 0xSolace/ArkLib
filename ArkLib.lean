@@ -520,7 +520,6 @@ import ArkLib.ToMathlib.AppendHelpers
 import ArkLib.ToMathlib.AveragingExistence
 import ArkLib.ToMathlib.AxiomSweep
 import ArkLib.ToMathlib.BCGM25MCAPreservation
-import ArkLib.ToMathlib.BGKS20AllButOne
 import ArkLib.ToMathlib.BKR06BareT312
 import ArkLib.ToMathlib.BKR06Close
 import ArkLib.ToMathlib.BKR06EndToEnd
