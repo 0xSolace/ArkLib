@@ -438,6 +438,51 @@ theorem bcs_append_accounting_of_opening_batch_mono_error {m : ℕ}
     (bcs_opening_union_bound_mono_error μ badOpen εOpen₁ εOpen₂
       hOpen hOpen_mono)
 
+/-- Append accounting with an empty opening batch. The interaction failure unioned with the empty
+opening phase is bounded by the interaction-phase budget alone. -/
+theorem bcs_append_accounting_of_opening_zero (μ : UnionBoundPr E)
+    (badInteraction : E) (εInteraction : ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction) :
+    μ.pr (μ.union badInteraction (μ.unionFin (Fin.elim0 : Fin 0 → E)))
+      ≤ εInteraction := by
+  have h := bcs_append_accounting_of_opening_bound μ badInteraction
+    (Fin.elim0 : Fin 0 → E) εInteraction 0 hInteraction
+    (bcs_opening_union_bound_zero μ)
+  simpa using h
+
+/-- One-more-opening recurrence at the interaction-plus-opening append-accounting surface. Peeling
+the first opening failure contributes its local opening budget and recurses over the remaining
+opening schedule. -/
+theorem bcs_append_accounting_of_opening_succ {m : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badOpen : Fin (m + 1) → E)
+    (εInteraction : ℝ≥0) (εOpen : Fin (m + 1) → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen i) :
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+      ≤ εInteraction + (εOpen 0 + ∑ i : Fin m, εOpen i.succ) := by
+  calc
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+        ≤ εInteraction + ∑ i : Fin (m + 1), εOpen i :=
+      bcs_append_accounting_of_opening_batch μ badInteraction badOpen
+        εInteraction εOpen hInteraction hOpen
+    _ = εInteraction + (εOpen 0 + ∑ i : Fin m, εOpen i.succ) := by
+      rw [Fin.sum_univ_succ]
+
+/-- Left/right opening-batch split at the interaction-plus-opening append-accounting surface. This
+packages the composite opening phase as two consecutive query-log opening batches. -/
+theorem bcs_append_accounting_of_opening_append {m n : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badLeft : Fin m → E) (badRight : Fin n → E)
+    (εInteraction : ℝ≥0) (εLeft : Fin m → ℝ≥0) (εRight : Fin n → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction)
+    (hLeft : ∀ i, μ.pr (badLeft i) ≤ εLeft i)
+    (hRight : ∀ i, μ.pr (badRight i) ≤ εRight i) :
+    μ.pr (μ.union badInteraction (μ.unionFin (Fin.append badLeft badRight)))
+      ≤ εInteraction + ((∑ i, εLeft i) + ∑ i, εRight i) :=
+  bcs_append_accounting_of_opening_bound μ badInteraction
+    (Fin.append badLeft badRight) εInteraction ((∑ i, εLeft i) + ∑ i, εRight i)
+    hInteraction (bcs_opening_union_bound_append μ badLeft badRight
+      εLeft εRight hLeft hRight)
+
 /-! ## 3. Specialization to the two-phase `append` shape
 
 The reduction-level `OracleReduction.BCSTransform` is literally
@@ -542,6 +587,9 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_append_accounting_of_opening_bound
 #print axioms bcs_append_accounting_of_opening_batch
 #print axioms bcs_append_accounting_of_opening_batch_mono_error
+#print axioms bcs_append_accounting_of_opening_zero
+#print axioms bcs_append_accounting_of_opening_succ
+#print axioms bcs_append_accounting_of_opening_append
 #print axioms bcs_append_accounting
 #print axioms bcs_append_accounting_mono_error
 #print axioms bcs_two_phase_total_eq
