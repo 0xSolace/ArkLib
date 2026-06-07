@@ -235,6 +235,43 @@ theorem appendBasis_eq_trimExponents_appendBasis {prev : List G} {target : G}
     repr.appendBasis extra = repr.trimExponents.appendBasis extra := by
   ext
   simp [appendBasis, trimExponents, List.take_take]
+private theorem zipWith_append_prod (xs ys : List G) (as bs : List (ZMod p))
+    (hlen : xs.length = as.length) :
+    ((xs ++ ys).zipWith (fun g a => g ^ a.val) (as ++ bs)).prod
+      = (xs.zipWith (fun g a => g ^ a.val) as).prod *
+        (ys.zipWith (fun g a => g ^ a.val) bs).prod := by
+  induction xs generalizing as with
+  | nil =>
+      cases as with
+      | nil => simp
+      | cons a as => simp at hlen
+  | cons x xs ih =>
+      cases as with
+      | nil => simp at hlen
+      | cons a as =>
+          simp only [List.cons_append, List.zipWith_cons_cons, List.prod_cons]
+          rw [ih as (by simpa using hlen), mul_assoc]
+
+/-- **Representation concatenation / composition.** Given representations of `t₁` over basis `prev₁`
+and `t₂` over basis `prev₂`, their concatenation represents the product `t₁ * t₂` over the
+concatenated basis `prev₁ ++ prev₂`. We require the first exponent vector to have exactly the length
+of its basis so the truncating `zipWith` does not consume the second block; this is precisely the
+length-discipline needed to glue two algebraic outputs into a representation of their product. -/
+def mul {prev₁ prev₂ : List G} {t₁ t₂ : G}
+    (r₁ : GroupRepresentation (p := p) prev₁ t₁) (r₂ : GroupRepresentation (p := p) prev₂ t₂)
+    (hlen : prev₁.length = r₁.exponents.length) :
+    GroupRepresentation (p := p) (prev₁ ++ prev₂) (t₁ * t₂) where
+  exponents := r₁.exponents ++ r₂.exponents
+  hEq := by
+    rw [zipWith_append_prod prev₁ prev₂ r₁.exponents r₂.exponents hlen, r₁.hEq, r₂.hEq]
+
+/-- The exponent vector produced by `mul` is the concatenation of the two component vectors. This is
+the bookkeeping fact that lets `mul` chain: the length-discipline hypothesis of an outer `mul`
+reduces to the component disciplines via `List.length_append`. -/
+@[simp] theorem mul_exponents {prev₁ prev₂ : List G} {t₁ t₂ : G}
+    (r₁ : GroupRepresentation (p := p) prev₁ t₁) (r₂ : GroupRepresentation (p := p) prev₂ t₂)
+    (hlen : prev₁.length = r₁.exponents.length) :
+    (r₁.mul r₂ hlen).exponents = r₁.exponents ++ r₂.exponents := rfl
 
 #print axioms GroupRepresentation.zipWith_pow_prod_mem_closure
 #print axioms GroupRepresentation.target_mem_closure
@@ -252,6 +289,8 @@ theorem appendBasis_eq_trimExponents_appendBasis {prev : List G} {target : G}
 #print axioms GroupRepresentation.appendBasis_exponents_length_le
 #print axioms GroupRepresentation.appendBasis_trimExponents_eq_self
 #print axioms GroupRepresentation.appendBasis_eq_trimExponents_appendBasis
+#print axioms GroupRepresentation.mul
+#print axioms GroupRepresentation.mul_exponents
 
 end GroupRepresentation
 
