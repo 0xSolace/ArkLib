@@ -31,6 +31,8 @@ binomial and an `α₀^{i-|λ|}` factor) and the **RHS recursion form**
 * `restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree` — after the legitimate
   `ζ`/`W` cancellation hypotheses, the fixed order-zero core is exactly the cleared-vs-uncleared
   `hasseEvalAtRoot = embedding(hasseCoeffRepr𝒪) / W^R.natDegree` obstruction.
+* `restrictedPartitionMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree` — the same obstruction
+  exposed directly at the normalized partition-residual surface.
 
 NO `axiom`/`admit`/`native_decide`/`sorry`. Audited in-file via `#print axioms`.
 -/
@@ -374,6 +376,47 @@ theorem restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
     RestrictedFaaDiBrunoMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
       H x₀ R hHyp hd hζ⟩
 
+/-- Under the legitimate nonzero/degree hypotheses, any normalized partition order-zero match
+exposes the un-cleared-over-`W ^ R.natDegree` target. -/
+theorem hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+    hasseEvalAtRoot H x₀ R 1 0 =
+      embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+        / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree :=
+  hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_restrictedMatchAt_zero
+    H x₀ R hHyp hd hζ
+    (RestrictedFaaDiBrunoMatchAt.of_partitionMatchAt H x₀ R hHyp 0 hpart)
+
+/-- The un-cleared-over-`W ^ R.natDegree` target builds the normalized partition order-zero match
+under the same explicit cancellation hypotheses. -/
+theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
+    (hzero :
+      hasseEvalAtRoot H x₀ R 1 0 =
+        embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  RestrictedFaaDiBrunoPartitionMatchAt.of_restrictedMatchAt H x₀ R hHyp 0
+    (RestrictedFaaDiBrunoMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
+      H x₀ R hHyp hd hζ hzero)
+
+/-- The normalized partition order-zero P2 residual is exactly the isolated
+un-cleared-over-`W ^ R.natDegree` target under the explicit degree/nonzero hypotheses. -/
+theorem restrictedPartitionMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 ↔
+      hasseEvalAtRoot H x₀ R 1 0 =
+        embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree :=
+  ⟨hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_partitionMatchAt_zero
+      H x₀ R hHyp hd hζ,
+    RestrictedFaaDiBrunoPartitionMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
+      H x₀ R hHyp hd hζ⟩
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
@@ -421,3 +464,9 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_partitionMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoPartitionMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedPartitionMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
