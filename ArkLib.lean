@@ -108,6 +108,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.CZ25GeomCapacity
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25SpanBoundBridge
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25SpanDimension
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25UniqueDecodingSlice
+import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEGoodCoord
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEListBound
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEPotential
 import ArkLib.Data.CodingTheory.ListDecoding.FirstMomentListBound

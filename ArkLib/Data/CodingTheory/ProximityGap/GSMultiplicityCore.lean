@@ -257,6 +257,87 @@ theorem keystone_count_of_radius
     rw [hcastA]; exact lt_of_le_of_lt hwdegR hsuff
   exact_mod_cast hlt
 
+/-! ## Radius-discharge wrappers for the BCIKS20 trivariate keystone
+
+The public BCIKS20 graph-vanishing keystone in `ListDecoding.Agreement` is intentionally
+side-condition-explicit: callers supply the strict weighted-degree/count inequality
+`natWeightedDegree (eval_on_Z Q z) 1 k < m * #A`.  The lemmas below discharge that raw count from
+the genuine Johnson-radius premise plus the transported GS weighted-degree budget, then call the
+existing keystone. -/
+
+open ProximityGap Trivariate RatFunc
+
+variable [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F]
+
+/-- **BCIKS20 graph vanishing from the Johnson radius.**
+
+This is `ProximityGap.Q_vanishes_on_close_codeword_graph` with its raw count hypothesis discharged
+by `keystone_count_of_radius`: if the agreement set has cardinality `n - dist`, the close word is
+inside the GS/Johnson radius, and the specialized interpolant has the standard weighted-degree
+budget, then `(eval_on_Z Q z).eval (Pz hS) = 0`. -/
+theorem Q_vanishes_on_close_codeword_graph_of_radius [DecidableEq (Polynomial F)]
+    {m k : ℕ} {δ : ℚ} {u₀ u₁ : Fin n → F} {Q : F[Z][X][Y]} {ωs : Fin n ↪ F}
+    {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁)
+    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
+    (A : Finset (Fin n))
+    (hA : ∀ i ∈ A, (u₀ + z • u₁) i = (Pz hS).eval (ωs i))
+    {dist : ℕ}
+    (hk : k + 1 ≤ n) (hm : 1 ≤ m) (hdist : dist ≤ n)
+    (hradius : (dist : ℝ) / n < proximity_gap_johnson k n m)
+    (hwdeg :
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k ≤
+        proximity_gap_degree_bound k n m)
+    (hcard : A.card = n - dist) :
+    (Trivariate.eval_on_Z Q z).eval (Pz hS) = 0 := by
+  have hcount :
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k < m * A.card :=
+    keystone_count_of_radius (Qz := Trivariate.eval_on_Z Q z) (m := m) (k := k)
+      (A := A) (dist := dist) hk hm hdist hradius hwdeg hcard
+  exact Q_vanishes_on_close_codeword_graph (F := F) (k := k) (z := z)
+    (h_gs := h_gs) hS hQz_ne A hA hcount
+
+/-- `pg_eval_on_Z` graph-vanishing form of
+`Q_vanishes_on_close_codeword_graph_of_radius`, matching the extraction toolbox API. -/
+theorem Q_vanishes_on_close_codeword_graph_pg_of_radius [DecidableEq (Polynomial F)]
+    {m k : ℕ} {δ : ℚ} {u₀ u₁ : Fin n → F} {Q : F[Z][X][Y]} {ωs : Fin n ↪ F}
+    {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁)
+    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
+    (A : Finset (Fin n))
+    (hA : ∀ i ∈ A, (u₀ + z • u₁) i = (Pz hS).eval (ωs i))
+    {dist : ℕ}
+    (hk : k + 1 ≤ n) (hm : 1 ≤ m) (hdist : dist ≤ n)
+    (hradius : (dist : ℝ) / n < proximity_gap_johnson k n m)
+    (hwdeg :
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k ≤
+        proximity_gap_degree_bound k n m)
+    (hcard : A.card = n - dist) :
+    (pg_eval_on_Z (F := F) Q z).eval (Pz hS) = 0 := by
+  have hvanish := Q_vanishes_on_close_codeword_graph_of_radius (F := F)
+    (h_gs := h_gs) hS hQz_ne A hA hk hm hdist hradius hwdeg hcard
+  rwa [c57_eval_on_Z_eq_pg] at hvanish
+
+/-- Matching-factor divisibility form of the radius-discharged trivariate keystone. -/
+theorem Q_graph_factor_dvd_of_radius [DecidableEq (Polynomial F)]
+    {m k : ℕ} {δ : ℚ} {u₀ u₁ : Fin n → F} {Q : F[Z][X][Y]} {ωs : Fin n ↪ F}
+    {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁)
+    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
+    (A : Finset (Fin n))
+    (hA : ∀ i ∈ A, (u₀ + z • u₁) i = (Pz hS).eval (ωs i))
+    {dist : ℕ}
+    (hk : k + 1 ≤ n) (hm : 1 ≤ m) (hdist : dist ≤ n)
+    (hradius : (dist : ℝ) / n < proximity_gap_johnson k n m)
+    (hwdeg :
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k ≤
+        proximity_gap_degree_bound k n m)
+    (hcard : A.card = n - dist) :
+    Polynomial.X - Polynomial.C (Pz hS) ∣ pg_eval_on_Z (F := F) Q z := by
+  exact Polynomial.dvd_iff_isRoot.mpr
+    (Q_vanishes_on_close_codeword_graph_pg_of_radius (F := F)
+      (h_gs := h_gs) hS hQz_ne A hA hk hm hdist hradius hwdeg hcard)
+
 end Core3GSMultiplicity
 
 end ArkLib
