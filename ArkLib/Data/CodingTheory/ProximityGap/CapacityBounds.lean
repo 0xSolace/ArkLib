@@ -5,6 +5,7 @@ Authors: Alexander Hicks
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringExistence
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.Basic.Entropy
@@ -405,7 +406,7 @@ theorem rs_epsCA_small_loss_r4_10
     (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0)
     (h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
                 / Fintype.card ι / 3 ≤ δ_fld)
-    (hγ_pos : 0 < γ) (hγ_lt : (γ : ℝ) < 1)
+    (hγ_pos : 0 < γ) (_hγ_lt : (γ : ℝ) < 1)
     (hcross : δ_fld * (Fintype.card ι : ℝ≥0) + γ <
         (Nat.floor (δ_fld * (Fintype.card ι : ℝ≥0)) : ℝ≥0) + 1)
     (hT492 : rs_epsCA_bchks25_item2 domain k δ_fld (δ_fld + γ / (Fintype.card ι : ℝ≥0))
@@ -705,6 +706,34 @@ theorem rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_covered_stack
   unfold rs_epsCA_breakdown_cs25_entropyBallLowerWitness
   exact ProximityGap.one_le_epsCA_of_line_covered
     (ReedSolomon.code domain k : Set (ι → F)) δ δ u hu hcover
+
+open Classical in
+/-- **Reduction of the #82 entropy-ball lower witness to the combined CS25 count budget.**
+
+This routes the mechanical count-budget theorem `ProximityGap.one_le_epsCA_of_counts` into the
+Reed-Solomon CS25 breakdown residual. The remaining mathematical input is exactly the CS25
+counting claim that the total far-line count plus the jointly-close stack count is below the
+total number of stacks in the entropy band. -/
+theorem rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hsum :
+      (∑ u : Code.WordStack F (Fin 2) ι,
+          (Finset.univ.filter (fun γ : F =>
+            ¬ δᵣ(u 0 + γ • u 1, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ)).card)
+        + (Finset.univ.filter (fun u : Code.WordStack F (Fin 2) ι =>
+            Code.jointProximity (C := (ReedSolomon.code domain k : Set (ι → F))) (u := u) δ)).card
+      < Fintype.card (Code.WordStack F (Fin 2) ι)) :
+    rs_epsCA_breakdown_cs25_entropyBallLowerWitness domain k δ hq_ge hδ_lo hδ_hi := by
+  unfold rs_epsCA_breakdown_cs25_entropyBallLowerWitness
+  exact ProximityGap.one_le_epsCA_of_counts
+    (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) δ hsum
 
 /-- The ABF26 T4.18 Johnson radius for the fixed relative distance `15/16`.  This is kept
 as a named expression so the existential construction and Grand-MCA adapters use the same
@@ -1411,6 +1440,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_entropyBallLowerWitness
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_of_lower_bound
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_of_entropyBallLowerWitness
+#print axioms CodingTheory.rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
 #print axioms CodingTheory.rs_epsMCA_johnson_range_boundReal
 #print axioms CodingTheory.rs_epsMCA_johnson_range_condition
