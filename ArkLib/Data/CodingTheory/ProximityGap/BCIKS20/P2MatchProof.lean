@@ -1,6 +1,15 @@
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchRoot
 
+noncomputable section
+
+open scoped BigOperators
+open Finset
+open Polynomial Polynomial.Bivariate
+open ArkLib.PowerSeriesComposition
+open BCIKS20AppendixA
+open ProximityPrize.BCIKS20.GammaGenuine
+
 namespace BCIKS20.HenselNumerator
 
 variable {F : Type} [Field F]
