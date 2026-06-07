@@ -1751,6 +1751,23 @@ def friSoundnessQueryLift
       (δ := 1 - α)
       (W := f)
 
+open ENNReal in
+omit [Nontrivial 𝔽] in
+/-- A full-domain query-lift witness closes the end-to-end `fri_soundness` residual.
+
+The remaining hard work is producing this query-lift witness from the query-round analysis and
+coding-theoretic proximity gap; once the `Code.jointAgreement` conclusion is available, the
+conditional `fri_soundness` proposition is immediate. -/
+theorem fri_soundness_of_queryLift
+    {t l m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    (h_query : friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3) :
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3 := by
+  intro _h_accepts
+  exact h_query
+
 omit [Fintype 𝔽] [Nontrivial 𝔽] in
 /-- Complete-codeword extreme of the Claim 8.3 query-lift field.
 
@@ -1772,6 +1789,73 @@ theorem friSoundnessQueryLift_of_forall_mem
     (C := (ReedSolomon.code
       (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
     (W := f) h_mem
+
+omit [Fintype 𝔽] [Nontrivial 𝔽] in
+/-- Full-domain proximity-form bridge into the Claim 8.3 query-lift field.
+
+This is the Claim 8.3 analogue of `fri_query_soundness_of_jointProximity`: callers may supply the
+proved-equivalent concrete `Code.jointProximity` witness instead of a raw `Code.jointAgreement`
+witness. -/
+theorem friSoundnessQueryLift_of_jointProximity
+    {t m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    (h_proximity :
+      Code.jointProximity
+        (C := (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
+        (u := f)
+        (δ :=
+          let ρ_sqrt :=
+            ReedSolomon.sqrtRate
+              (2 ^ n)
+              (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+          let α : ℝ≥0 := (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+          1 - α)) :
+    friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3 := by
+  unfold friSoundnessQueryLift
+  exact
+    (Code.jointAgreement_iff_jointProximity
+      (C := (ReedSolomon.code
+        (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
+      (u := f)
+      (δ :=
+        let ρ_sqrt :=
+          ReedSolomon.sqrtRate
+            (2 ^ n)
+            (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+        let α : ℝ≥0 := (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+        1 - α)).mpr h_proximity
+
+open ENNReal in
+omit [Nontrivial 𝔽] in
+/-- Full-domain proximity-form bridge into the end-to-end Claim 8.3 residual.
+
+Once the proximity-gap layer produces the concrete full-domain `Code.jointProximity` witness at the
+Claim 8.3 radius, `fri_soundness` follows directly from `friSoundnessQueryLift_of_jointProximity`.
+-/
+theorem fri_soundness_of_jointProximity
+    {t l m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    (h_proximity :
+      Code.jointProximity
+        (C := (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
+        (u := f)
+        (δ :=
+          let ρ_sqrt :=
+            ReedSolomon.sqrtRate
+              (2 ^ n)
+              (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+          let α : ℝ≥0 := (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+          1 - α)) :
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3 := by
+  exact
+    fri_soundness_of_queryLift
+      (n := n) (s := s) (d := d) (ω := ω) (domain_size_cond := domain_size_cond)
+      f m_ge_3
+      (friSoundnessQueryLift_of_jointProximity
+        (n := n) (ω := ω) f m_ge_3 h_proximity)
 
 omit [Nontrivial 𝔽] in
 /-- The proved query-density/oracle-lens front door supplies the Claim 8.3 query-lift field. -/
@@ -1855,6 +1939,51 @@ theorem friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAn
         (n := n) (s := s) (d := d) (ω := ω)
         (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
         h_agreement m_ge_3 G δ queries l domain_size_cond h_proximity)
+
+open ENNReal in
+omit [Nontrivial 𝔽] in
+/-- Density-route Claim 8.3 residual from the concrete subdomain proximity witness.
+
+This composes the concrete-proximity query-lift adapter with `fri_soundness_of_queryLift`.  It does
+not prove the proximity witness; it exposes that witness as the remaining coding-theoretic target.
+-/
+theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
+    {t l m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (queries : ℕ)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    (h_proximity :
+      Code.jointProximity
+        (C := (ReedSolomon.code
+          (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+        (u := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        (δ :=
+          1 -
+          (let ρ_sqrt :=
+            ReedSolomon.sqrtRate
+              (2 ^ n)
+              (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+           ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))) :
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3 := by
+  exact
+    fri_soundness_of_queryLift
+      (n := n) (s := s) (d := d) (ω := ω) (domain_size_cond := domain_size_cond)
+      f m_ge_3
+      (friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
+        (n := n) (s := s) (d := d) (ω := ω)
+        f m_ge_3 G δ queries l domain_size_cond h_agreement h_proximity)
 
 /-- Instantiate the Claim 8.3 frontier with the proved query-density plus Batched FRI oracle-lens
 front door.  The sequential-composition and total-error-accounting fields remain explicit. -/
@@ -2233,7 +2362,9 @@ theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequent
 #print axioms Fri.friSoundnessSequentialComposition
 #print axioms Fri.friSoundnessSequentialComposition_of_append
 #print axioms Fri.friSoundnessQueryLift
+#print axioms Fri.fri_soundness_of_queryLift
 #print axioms Fri.friSoundnessQueryLift_of_forall_mem
+#print axioms Fri.friSoundnessQueryLift_of_jointProximity
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
@@ -2241,6 +2372,8 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms Fri.FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+set_option linter.style.longLine false in
+#print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
 #print axioms Fri.friSoundnessTotalErrorAccounting
 #print axioms Fri.friBatchPhaseErrorBound
@@ -2251,6 +2384,7 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds
 #print axioms Fri.fri_soundness_of_forall_mem
+#print axioms Fri.fri_soundness_of_jointProximity
 #print axioms Fri.fri_soundness_of_parts
 
 end Soundness
@@ -2288,7 +2422,9 @@ end Fri
 #print axioms Fri.batchedFRISequentialCompositionSoundness_of_append
 #print axioms Fri.FriSoundnessParts
 #print axioms Fri.friSoundnessQueryLift
+#print axioms Fri.fri_soundness_of_queryLift
 #print axioms Fri.friSoundnessQueryLift_of_forall_mem
+#print axioms Fri.friSoundnessQueryLift_of_jointProximity
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
@@ -2296,7 +2432,10 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms Fri.FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+set_option linter.style.longLine false in
+#print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
 #print axioms Fri.friBatchPhaseErrorBound
 #print axioms Fri.friTailPhaseErrorBound
 #print axioms Fri.friSoundnessTotalErrorAccounting_of_named_phase_bounds
+#print axioms Fri.fri_soundness_of_jointProximity
 #print axioms Fri.fri_soundness_of_parts
