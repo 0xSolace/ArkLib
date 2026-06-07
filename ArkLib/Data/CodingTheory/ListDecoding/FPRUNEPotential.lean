@@ -160,7 +160,7 @@ subspace-design list-decoding bound to constructing the FPRUNE PMF and verifying
 theorem fprune_expectation_lower_of_branch
     (E : ℕ → ℝ) (η η' : ℝ) (hη : 0 < η) (hη'0 : 0 < η') (hη'1 : η' ≤ 1)
     (base : η / ((0 : ℕ) + η) ≤ E 0)
-    (branch : ∀ r, 0 < r → ∃ (J : Finset ι) (d : ι → ℕ), J.Nonempty ∧
+    (branch : ∀ (r : ℕ), 0 < r → ∃ (J : Finset ι) (d : ι → ℕ), J.Nonempty ∧
         (∀ j ∈ J, (d j : ℝ) + η ≤ (1 - η') * ((r : ℝ) + η)) ∧
         (∑ j ∈ J, ((((d j : ℝ) + η) * (1 - η')) / (∑ k ∈ J, ((d k : ℝ) + η))) * E (d j)
           ≤ E r)) :
