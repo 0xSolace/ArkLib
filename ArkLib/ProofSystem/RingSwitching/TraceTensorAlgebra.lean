@@ -17,7 +17,6 @@ and smul identities. The KState design decision is separate.
 
 open Polynomial Finset
 open scoped TensorProduct
-open scoped Classical
 
 namespace Issue29Ring
 
@@ -39,6 +38,11 @@ strong KState check `p = q` FAILS), yet they agree at the verifier's challenge `
 fails).  The whole point of the weakening: this event is *rare*, not impossible. -/
 def badPolyAgreement (r : F) (p q : F[X]) : Prop :=
   p ≠ q ∧ p.eval r = q.eval r
+
+noncomputable instance decidablePred_badPolyAgreement (p q : F[X]) :
+    DecidablePred fun r : F => badPolyAgreement r p q := by
+  classical
+  infer_instance
 
 /-- **Root-counting core (Schwartz–Zippel, finite-field form).**
 For two distinct polynomials, the set of challenges on which they agree has
@@ -194,5 +198,17 @@ end TensorAlgebra
     consumer migration) plus run-shape induction.  Honest verdict: design-blocked
     construction/plumbing, with all required math primitives proven.
 -/
+
+#print axioms card_filter_eval_eq_le_natDegree
+#print axioms decidablePred_badPolyAgreement
+#print axioms card_filter_eval_eq_le_of_degree_le
+#print axioms filter_badPolyAgreement_eq
+#print axioms card_filter_eval_eq_degree_two
+#print axioms φ₀_apply
+#print axioms φ₁_apply
+#print axioms φ₀_mul_φ₁
+#print axioms φ₀_mul_φ₁_comm
+#print axioms φ₀_smul
+#print axioms φ₁_smul
 
 end Issue29Ring
