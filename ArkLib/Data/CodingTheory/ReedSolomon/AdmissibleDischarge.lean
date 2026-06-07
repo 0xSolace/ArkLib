@@ -58,4 +58,27 @@ theorem admissible_of_orderOf_ge_of_inter
     Admissible L s ω :=
   ⟨hinter, admissible_intra_of_orderOf_ge L s ω h0 hs⟩
 
+/-- **Inter-orbit clause of `Admissible`, discharged from coset separation.** If distinct
+domain points never lie in the same `⟨ω⟩`-coset — formalized as: `β = α · ω^i` (any natural
+`i`) forces `α = β` — then no distinct pair collides under a short `ω`-shift. This is the
+genuinely domain-dependent half; it holds e.g. when the domain is a transversal of the
+`⟨ω⟩`-cosets in `Fˣ`. -/
+theorem admissible_inter_of_cosetSep
+    (L : Finset F) (s : ℕ) (ω : F)
+    (hcoset : ∀ α ∈ L, ∀ β ∈ L, ∀ i : ℕ, α * ω ^ i = β → α = β) :
+    ∀ α ∈ L, ∀ β ∈ L, α ≠ β → ∀ i : ℕ, i < s → α * ω ^ i ≠ β := by
+  intro α hα β hβ hne i _ heq
+  exact hne (hcoset α hα β hβ i heq)
+
+/-- **Full `Admissible` discharge** from the order bound (intra-orbit) plus `⟨ω⟩`-coset
+separation of the domain (inter-orbit). Together with `frs_is_subspaceDesign_gk16_of_admissible`
+this gives an unconditional FRS τ-subspace-design instantiation (ABF26 T2.18) for any nonzero,
+coset-separated domain and any `ω` with `orderOf ω ≥ s`. -/
+theorem admissible_of_orderOf_ge_of_cosetSep
+    (L : Finset F) (s : ℕ) (ω : F) (h0 : (0 : F) ∉ L) (hs : s ≤ orderOf ω)
+    (hcoset : ∀ α ∈ L, ∀ β ∈ L, ∀ i : ℕ, α * ω ^ i = β → α = β) :
+    Admissible L s ω :=
+  admissible_of_orderOf_ge_of_inter L s ω h0 hs
+    (admissible_inter_of_cosetSep L s ω hcoset)
+
 end ReedSolomon.Folded
