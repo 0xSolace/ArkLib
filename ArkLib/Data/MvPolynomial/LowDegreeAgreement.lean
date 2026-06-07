@@ -50,8 +50,11 @@ theorem lowDegree_agree_card_mul_le {p q : MvPolynomial (Fin s) F} {d : ℕ}
     (Finset.univ.filter (fun x : Fin s → F => eval x p = eval x q)).card * Fintype.card F
       ≤ d * (Fintype.card F) ^ s := by
   classical
-  have hdeg : (p - q).totalDegree ≤ d :=
-    le_trans (totalDegree_sub_le p q) (max_le hp hq)
+  have hdeg : (p - q).totalDegree ≤ d := by
+    rw [sub_eq_add_neg]
+    refine le_trans (totalDegree_add p (-q)) ?_
+    rw [totalDegree_neg]
+    exact max_le hp hq
   have hne : p - q ≠ 0 := sub_ne_zero.mpr hpq
   have hmain := lowDegree_zeros_card_mul_le hdeg hne
   have hfilter : (Finset.univ.filter (fun x : Fin s → F => eval x p = eval x q))
