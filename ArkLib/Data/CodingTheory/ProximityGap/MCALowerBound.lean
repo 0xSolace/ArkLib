@@ -241,6 +241,25 @@ theorem epsMCA_eq_one_iff (C : Set (ι → A)) (δ : ℝ≥0) :
   · rintro ⟨u, hu⟩
     exact epsMCA_eq_one_of_forall_mcaEvent C δ u hu
 
+/-- **Polynomial-method core for MCA.** If a single word `w` agrees with the line at two
+*distinct* scalars `γ ≠ γ'` (on sets `S`, `S'`), then the direction `u₁` vanishes on the overlap
+`S ∩ S'`: from `w = u₀ + γ•u₁` and `w = u₀ + γ'•u₁` there, subtracting gives `(γ - γ')•u₁ = 0`, and
+`γ ≠ γ'` forces `u₁ = 0`. This is the mechanism limiting the number of bad scalars per witness
+(two large agreement sets overlap on `≥ (1-2δ)n` coordinates), i.e. the kernel of the proximity-gap
+/ Schwartz–Zippel argument. -/
+theorem mca_two_agree_imp_u1_vanish_on_inter [NoZeroSMulDivisors F A]
+    (u₀ u₁ w : ι → A) (γ γ' : F) (hne : γ ≠ γ') (S S' : Finset ι)
+    (hS : ∀ i ∈ S, w i = u₀ i + γ • u₁ i)
+    (hS' : ∀ i ∈ S', w i = u₀ i + γ' • u₁ i) :
+    ∀ i ∈ S ∩ S', u₁ i = 0 := by
+  intro i hi
+  rw [Finset.mem_inter] at hi
+  have h1 := hS i hi.1
+  have h2 := hS' i hi.2
+  have heq : γ • u₁ i = γ' • u₁ i := add_left_cancel (h1.symm.trans h2)
+  have hz : (γ - γ') • u₁ i = 0 := by rw [sub_smul, heq, sub_self]
+  exact (smul_eq_zero.mp hz).resolve_left (sub_ne_zero.mpr hne)
+
 end ProximityGap
 
 namespace ProximityGap.MCALowerExample
