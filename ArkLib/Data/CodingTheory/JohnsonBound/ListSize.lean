@@ -264,8 +264,30 @@ theorem card_le_div
   rw [le_div_iff₀ hJohnson]
   exact card_mul_johnsonDenom_le C w d e hd he hen hdn
 
+/-- **List-decoding ball-size bound** (the form consumed downstream). In a code `C` with minimum
+pairwise Hamming distance `d`, the number of codewords within Hamming distance `e` of *any* word `w`
+is, in the Johnson regime `(n - e)² > n·(n - d)`, at most `n·d / ((n - e)² - n·(n - d))`.
+
+This is `card_le_div` applied to the ball `{c ∈ C | Δ₀(c, w) ≤ e}`: a sub-code inherits the minimum
+distance, and every element is within `e` of `w` by construction. Specialising `d` to a code's
+minimum distance (e.g. `n - k + 1` for `ReedSolomon.code` via `ReedSolomon.minDist_eq'`) yields the
+Reed–Solomon list-size at the Johnson radius — the input to the correlated-agreement "true form". -/
+theorem card_ball_le
+    (C : Finset (ι → Sigma)) (w : ι → Sigma) (d e : ℕ)
+    (hd : ∀ c ∈ C, ∀ c' ∈ C, c ≠ c' → d ≤ hammingDist c c')
+    (hen : e ≤ Fintype.card ι) (hdn : d ≤ Fintype.card ι)
+    (hJohnson : 0 < johnsonDenom (Fintype.card ι) d e) :
+    ((C.filter (fun c => hammingDist c w ≤ e)).card : ℚ)
+      ≤ (Fintype.card ι : ℚ) * d / johnsonDenom (Fintype.card ι) d e := by
+  classical
+  refine card_le_div (C.filter (fun c => hammingDist c w ≤ e)) w d e ?_ ?_ hen hdn hJohnson
+  · intro c hc c' hc' hcc
+    exact hd c (Finset.mem_filter.mp hc).1 c' (Finset.mem_filter.mp hc').1 hcc
+  · intro c hc; exact (Finset.mem_filter.mp hc).2
+
 end ArkLib.JohnsonBound
 
 /- Axiom audit. -/
 #print axioms ArkLib.JohnsonBound.card_mul_johnsonDenom_le
 #print axioms ArkLib.JohnsonBound.card_le_div
+#print axioms ArkLib.JohnsonBound.card_ball_le
