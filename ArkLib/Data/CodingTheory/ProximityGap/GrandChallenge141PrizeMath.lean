@@ -318,6 +318,43 @@ theorem exists_prize_mcaLowerWitness_of_uniformConjecture
     hδ_le_one ?_, rfl⟩
   exact epsMCA_le_of_faithful_mass (F := F) C δ L hfaithful hMassStar
 
+/-- The honest uniform GS-exposed prize supplies a four-rate family of lower witnesses with one
+shared constant triple. This is the all-prize-rate packaging of
+`exists_prize_mcaLowerWitness_of_uniformConjecture`: every open input remains explicit, but
+downstream lattice-prize code can consume the resulting `∀ j` witness family directly. -/
+theorem exists_prize_mcaLowerWitnesses_allRates_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (η δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < η j) →
+        (∀ j : Fin 4,
+          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
+        (∀ j : Fin 4, δ j ≤ 1) →
+        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
+          (∀ j : Fin 4,
+            FaithfulGSFamily (F := F)
+              ((ReedSolomon.code (domain := domain)
+                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                  Set (ι → F))) (δ j) (L j)) →
+          (∀ j : Fin 4,
+            ENNReal.ofReal
+                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+                  (η j) c₁ c₂ c₃)
+              ≤ (epsStar : ENNReal)) →
+          ∀ j : Fin 4,
+            ∃ w : GrandChallenges.MCALowerWitness
+              ((ReedSolomon.code (domain := domain)
+                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                  Set (ι → F))) epsStar,
+              w.δ = δ j := by
+  rcases exists_prize_mcaLowerWitness_of_uniformConjecture domain m hUniform with
+    ⟨c₁, c₂, c₃, hlower⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro η δ hη hδ hδ_le_one L hfaithful hclear j
+  exact hlower j (η j) (δ j) (hη j) (hδ j) (hδ_le_one j) (L j)
+    (hfaithful j) (hclear j)
+
 end PerInput
 
 /-! ## 3. Explicit-constant conditional reduction (open content named, no laundering) -/
@@ -368,6 +405,7 @@ end Reduction
 #print axioms epsMCAgsPrizeUniformConjecture_of_uniform_epsMCAgsMassBound
 #print axioms epsMCAgsPrizeUniformConjecture_iff_uniform_epsMCAgsMassBound
 #print axioms exists_prize_mcaLowerWitness_of_uniformConjecture
+#print axioms exists_prize_mcaLowerWitnesses_allRates_of_uniformConjecture
 #print axioms epsMCAgs_prizeBound_of_listSize_clears
 
 end MCAGS
