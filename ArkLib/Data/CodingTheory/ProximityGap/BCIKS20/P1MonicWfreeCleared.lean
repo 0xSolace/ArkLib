@@ -186,6 +186,36 @@ theorem alphaWeight_of_divWeight_of_WfreeMatch
   (alphaWeight_iff_divWeight_of_WfreeMatch
     H x₀ R hHyp hH D hlc hWfree).2 hdiv
 
+theorem alphaWeight_iff_divWeight_of_rangeWfreeMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlc : H.leadingCoeff = 1)
+    (hrange : RestrictedFaaDiBrunoRangeWfreeMatch H x₀ R hHyp) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D ↔
+      DivWeightLe H x₀ R hHyp hH D :=
+  alphaWeight_iff_divWeight_of_WfreeMatch H x₀ R hHyp hH D hlc
+    (RestrictedFaaDiBrunoWfreeMatch.of_rangeWfreeMatch H x₀ R hHyp hrange)
+
+theorem divWeight_of_alphaWeight_of_rangeWfreeMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlc : H.leadingCoeff = 1)
+    (hrange : RestrictedFaaDiBrunoRangeWfreeMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    DivWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_divWeight_of_rangeWfreeMatch
+    H x₀ R hHyp hH D hlc hrange).1 hα
+
+theorem alphaWeight_of_divWeight_of_rangeWfreeMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hlc : H.leadingCoeff = 1)
+    (hrange : RestrictedFaaDiBrunoRangeWfreeMatch H x₀ R hHyp)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_divWeight_of_rangeWfreeMatch
+    H x₀ R hHyp hH D hlc hrange).2 hdiv
+
 theorem normalized_divWeight_cases_of_alphaWeight_of_WfreeMatch
     (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
@@ -979,6 +1009,9 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.alphaWeight_iff_divWeight_of_WfreeMatch
 #print axioms BCIKS20.HenselNumerator.divWeight_of_alphaWeight_of_WfreeMatch
 #print axioms BCIKS20.HenselNumerator.alphaWeight_of_divWeight_of_WfreeMatch
+#print axioms BCIKS20.HenselNumerator.alphaWeight_iff_divWeight_of_rangeWfreeMatch
+#print axioms BCIKS20.HenselNumerator.divWeight_of_alphaWeight_of_rangeWfreeMatch
+#print axioms BCIKS20.HenselNumerator.alphaWeight_of_divWeight_of_rangeWfreeMatch
 #print axioms BCIKS20.HenselNumerator.normalized_divWeight_cases_of_alphaWeight_of_WfreeMatch
 #print axioms BCIKS20.HenselNumerator.normalized_divWeight_zero_of_alphaWeight_of_WfreeMatch
 #print axioms BCIKS20.HenselNumerator.normalized_divWeight_succ_of_alphaWeight_of_WfreeMatch

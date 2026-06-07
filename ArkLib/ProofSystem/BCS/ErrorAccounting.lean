@@ -125,6 +125,93 @@ theorem bcsTotalError_succ_mono_error {m : ℕ}
     _ = εOpen₂ 0 + bcsTotalError εInteraction₂ (fun i : Fin m => εOpen₂ i.succ) :=
       bcsTotalError_succ εInteraction₂ εOpen₂
 
+/-- Relax the interaction budget for the no-opening total-error base case. -/
+theorem bcsTotalError_zero_mono_error
+    {εInteraction₁ εInteraction₂ : ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂) :
+    bcsTotalError εInteraction₁ (Fin.elim0 : Fin 0 → ℝ≥0) ≤ εInteraction₂ := by
+  calc
+    bcsTotalError εInteraction₁ (Fin.elim0 : Fin 0 → ℝ≥0) = εInteraction₁ :=
+      bcsTotalError_zero εInteraction₁ (Fin.elim0 : Fin 0 → ℝ≥0)
+    _ ≤ εInteraction₂ := hInteraction
+
+/-- Relax the interaction and opening budgets for the one-opening total-error base case. -/
+theorem bcsTotalError_one_mono_error
+    {εInteraction₁ εInteraction₂ εOpen₁ εOpen₂ : ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂)
+    (hOpen : εOpen₁ ≤ εOpen₂) :
+    bcsTotalError εInteraction₁ (fun _ : Fin 1 => εOpen₁) ≤ εInteraction₂ + εOpen₂ := by
+  calc
+    bcsTotalError εInteraction₁ (fun _ : Fin 1 => εOpen₁)
+        ≤ bcsTotalError εInteraction₂ (fun _ : Fin 1 => εOpen₂) :=
+      bcsTotalError_mono hInteraction (fun _ => hOpen)
+    _ = εInteraction₂ + εOpen₂ :=
+      bcsTotalError_one εInteraction₂ (fun _ : Fin 1 => εOpen₂)
+
+/-- Relax the interaction and both opening-batch budgets for the total-error append split. -/
+theorem bcsTotalError_append_mono_error {m n : ℕ}
+    {εInteraction₁ εInteraction₂ : ℝ≥0}
+    {εLeft₁ εLeft₂ : Fin m → ℝ≥0} {εRight₁ εRight₂ : Fin n → ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂)
+    (hLeft : ∀ i, εLeft₁ i ≤ εLeft₂ i)
+    (hRight : ∀ i, εRight₁ i ≤ εRight₂ i) :
+    bcsTotalError εInteraction₁ (Fin.append εLeft₁ εRight₁)
+      ≤ bcsTotalError εInteraction₂ εLeft₂ + ∑ i, εRight₂ i := by
+  calc
+    bcsTotalError εInteraction₁ (Fin.append εLeft₁ εRight₁)
+        = bcsTotalError εInteraction₁ εLeft₁ + ∑ i, εRight₁ i :=
+          bcsTotalError_append εInteraction₁ εLeft₁ εRight₁
+    _ ≤ bcsTotalError εInteraction₂ εLeft₂ + ∑ i, εRight₂ i :=
+      add_le_add (bcsTotalError_mono hInteraction hLeft)
+        (Finset.sum_le_sum fun i _ => hRight i)
+
+/-- Relax the interaction and both opening-batch budgets while keeping the target as the full
+appended BCS total error. This is the consumer-facing companion to
+`bcsTotalError_append_mono_error` when callers do not want to split the appended schedule. -/
+theorem bcsTotalError_append_full_mono_error {m n : ℕ}
+    {εInteraction₁ εInteraction₂ : ℝ≥0}
+    {εLeft₁ εLeft₂ : Fin m → ℝ≥0} {εRight₁ εRight₂ : Fin n → ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂)
+    (hLeft : ∀ i, εLeft₁ i ≤ εLeft₂ i)
+    (hRight : ∀ i, εRight₁ i ≤ εRight₂ i) :
+    bcsTotalError εInteraction₁ (Fin.append εLeft₁ εRight₁)
+      ≤ bcsTotalError εInteraction₂ (Fin.append εLeft₂ εRight₂) := by
+  refine bcsTotalError_mono hInteraction ?_
+  intro i
+  cases i using Fin.addCases with
+  | left i => simpa [Fin.append] using hLeft i
+  | right i => simpa [Fin.append] using hRight i
+
+/-- Relax the interaction and opening budgets for the left-empty total-error append split. -/
+theorem bcsTotalError_append_zero_left_mono_error {m : ℕ}
+    {εInteraction₁ εInteraction₂ : ℝ≥0}
+    {εOpen₁ εOpen₂ : Fin m → ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂)
+    (hOpen : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    bcsTotalError εInteraction₁ (Fin.append (Fin.elim0 : Fin 0 → ℝ≥0) εOpen₁)
+      ≤ bcsTotalError εInteraction₂ εOpen₂ := by
+  calc
+    bcsTotalError εInteraction₁ (Fin.append (Fin.elim0 : Fin 0 → ℝ≥0) εOpen₁)
+        = bcsTotalError εInteraction₁ εOpen₁ :=
+          bcsTotalError_append_zero_left εInteraction₁ εOpen₁
+    _ ≤ bcsTotalError εInteraction₂ εOpen₂ :=
+      bcsTotalError_mono hInteraction hOpen
+
+/-- Relax the interaction and opening budgets for the right-empty total-error append split. -/
+theorem bcsTotalError_append_zero_right_mono_error {m : ℕ}
+    {εInteraction₁ εInteraction₂ : ℝ≥0}
+    {εOpen₁ εOpen₂ : Fin m → ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂)
+    (hOpen : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    bcsTotalError εInteraction₁ (Fin.append εOpen₁ (Fin.elim0 : Fin 0 → ℝ≥0))
+      ≤ bcsTotalError εInteraction₂ εOpen₂ := by
+  calc
+    bcsTotalError εInteraction₁ (Fin.append εOpen₁ (Fin.elim0 : Fin 0 → ℝ≥0))
+        = bcsTotalError εInteraction₁ εOpen₁ :=
+          bcsTotalError_append_zero_right εInteraction₁ εOpen₁
+    _ ≤ bcsTotalError εInteraction₂ εOpen₂ :=
+      bcsTotalError_mono hInteraction hOpen
+
 /-! ## 2. The abstract union-bound accounting
 
 We model "probability of a bad event" abstractly as an `ℝ≥0`-valued functional
@@ -362,6 +449,34 @@ theorem bcs_union_bound_append_mono_error {m n : ℕ} (μ : UnionBoundPr E)
   exact add_le_add
     (bcsTotalError_mono hInteraction_mono hLeft_mono)
     (Finset.sum_le_sum fun i _ => hRight_mono i)
+
+/-- Relax the interaction and both opening-batch budgets after applying the batched BCS union
+bound, keeping the final target as the full appended BCS total error. -/
+theorem bcs_union_bound_append_full_mono_error {m n : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badLeft : Fin m → E) (badRight : Fin n → E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (εLeft₁ εLeft₂ : Fin m → ℝ≥0) (εRight₁ εRight₂ : Fin n → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hLeft : ∀ i, μ.pr (badLeft i) ≤ εLeft₁ i)
+    (hRight : ∀ i, μ.pr (badRight i) ≤ εRight₁ i)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hLeft_mono : ∀ i, εLeft₁ i ≤ εLeft₂ i)
+    (hRight_mono : ∀ i, εRight₁ i ≤ εRight₂ i) :
+    μ.pr (μ.union badInteraction (μ.unionFin (Fin.append badLeft badRight)))
+      ≤ bcsTotalError εInteraction₂ (Fin.append εLeft₂ εRight₂) := by
+  have hOpen : ∀ i : Fin (m + n),
+      μ.pr ((Fin.append badLeft badRight) i) ≤ (Fin.append εLeft₁ εRight₁) i := by
+    intro i
+    cases i using Fin.addCases with
+    | left i => simpa [Fin.append] using hLeft i
+    | right i => simpa [Fin.append] using hRight i
+  exact bcs_union_bound_mono_error μ badInteraction (Fin.append badLeft badRight)
+    εInteraction₁ εInteraction₂ (Fin.append εLeft₁ εRight₁)
+    (Fin.append εLeft₂ εRight₂) hInteraction hOpen hInteraction_mono (by
+      intro i
+      cases i using Fin.addCases with
+      | left i => simpa [Fin.append] using hLeft_mono i
+      | right i => simpa [Fin.append] using hRight_mono i)
 
 /-- Relax the interaction and opening budgets for the left-empty generic append split. -/
 theorem bcs_union_bound_append_zero_left_mono_error {n : ℕ}
@@ -864,6 +979,12 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcsTotalError_mono_open
 #print axioms bcsTotalError_mono
 #print axioms bcsTotalError_succ_mono_error
+#print axioms bcsTotalError_zero_mono_error
+#print axioms bcsTotalError_one_mono_error
+#print axioms bcsTotalError_append_mono_error
+#print axioms bcsTotalError_append_full_mono_error
+#print axioms bcsTotalError_append_zero_left_mono_error
+#print axioms bcsTotalError_append_zero_right_mono_error
 #print axioms UnionBoundPr
 #print axioms UnionBoundPr.unionFin
 #print axioms UnionBoundPr.pr_unionFin_le
@@ -876,6 +997,7 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_union_bound_mono_error
 #print axioms bcs_union_bound_succ_mono_error
 #print axioms bcs_union_bound_append_mono_error
+#print axioms bcs_union_bound_append_full_mono_error
 #print axioms bcs_union_bound_append_zero_left_mono_error
 #print axioms bcs_union_bound_append_zero_right_mono_error
 #print axioms bcs_opening_union_bound
