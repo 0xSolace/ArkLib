@@ -273,6 +273,39 @@ reduces to the component disciplines via `List.length_append`. -/
     (hlen : prev₁.length = r₁.exponents.length) :
     (r₁.mul r₂ hlen).exponents = r₁.exponents ++ r₂.exponents := rfl
 
+private theorem map_inv_zipWith_pow (prev : List G) (exps : List (ZMod p)) :
+    (prev.zipWith (fun g a => g ^ a.val) exps).map (·⁻¹)
+      = (prev.map (·⁻¹)).zipWith (fun g a => g ^ a.val) exps := by
+  induction prev generalizing exps with
+  | nil => simp
+  | cons g prev ih =>
+      cases exps with
+      | nil => simp
+      | cons a exps =>
+          simp only [List.map_cons, List.zipWith_cons_cons]
+          rw [ih exps, inv_pow]
+
+/-- **Inverse representation.** The inverse `target⁻¹` of a represented target is itself
+representable: over the reversed list of inverted basis generators `(prev.map (·⁻¹)).reverse`, using
+the reversed exponent vector. In a general (possibly non-abelian) group, inversion reverses the
+order of the product, hence the reversal of both basis and exponents; for an abelian group this
+collapses to negating the exponents in place. Requires the exponent vector to match the basis length
+so the two reversals line up. The group-inverse counterpart to `mul`. -/
+def inv {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target)
+    (hlen : prev.length = repr.exponents.length) :
+    GroupRepresentation (p := p) ((prev.map (·⁻¹)).reverse) target⁻¹ where
+  exponents := repr.exponents.reverse
+  hEq := by
+    have hlen' : (prev.map (·⁻¹)).length = repr.exponents.length := by simpa using hlen
+    rw [← List.reverse_zipWith hlen', ← map_inv_zipWith_pow, ← List.prod_inv_reverse, repr.hEq]
+
+/-- The exponent vector produced by `inv` is the reversed input exponent vector. -/
+@[simp] theorem inv_exponents {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target)
+    (hlen : prev.length = repr.exponents.length) :
+    (repr.inv hlen).exponents = repr.exponents.reverse := rfl
+
 #print axioms GroupRepresentation.zipWith_pow_prod_mem_closure
 #print axioms GroupRepresentation.target_mem_closure
 #print axioms GroupRepresentation.one
@@ -291,6 +324,8 @@ reduces to the component disciplines via `List.length_append`. -/
 #print axioms GroupRepresentation.appendBasis_eq_trimExponents_appendBasis
 #print axioms GroupRepresentation.mul
 #print axioms GroupRepresentation.mul_exponents
+#print axioms GroupRepresentation.inv
+#print axioms GroupRepresentation.inv_exponents
 
 end GroupRepresentation
 
