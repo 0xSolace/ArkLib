@@ -288,6 +288,54 @@ def finalCheckWithClaimValueRelIn :
   { x | x.1.1.1 = finalExpectedClaimValue R pp x.1.1.2 x.1.2 }
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Membership in the pure target-carrying final-check relation is exactly equality with the
+algebraic final expected claim value. -/
+theorem finalCheckWithClaimValueRelIn_iff_finalExpectedClaimValue
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i) :
+    (((target, stmt), oStmt), ()) ∈ finalCheckWithClaimValueRelIn R pp ↔
+      target = finalExpectedClaimValue R pp stmt oStmt :=
+  Iff.rfl
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Constructor form of `finalCheckWithClaimValueRelIn_iff_finalExpectedClaimValue`. -/
+theorem finalCheckWithClaimValueRelIn_of_finalExpectedClaimValue
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (hTarget : target = finalExpectedClaimValue R pp stmt oStmt) :
+    (((target, stmt), oStmt), ()) ∈ finalCheckWithClaimValueRelIn R pp :=
+  (finalCheckWithClaimValueRelIn_iff_finalExpectedClaimValue R pp target stmt oStmt).2 hTarget
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Projection form of `finalCheckWithClaimValueRelIn_iff_finalExpectedClaimValue`. -/
+theorem finalExpectedClaimValue_eq_of_finalCheckWithClaimValueRelIn
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (hmem : (((target, stmt), oStmt), ()) ∈ finalCheckWithClaimValueRelIn R pp) :
+    target = finalExpectedClaimValue R pp stmt oStmt :=
+  (finalCheckWithClaimValueRelIn_iff_finalExpectedClaimValue R pp target stmt oStmt).1 hmem
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The pure final-check relation is equivalently target equality with the second-sum-check
+endpoint. This packages the terminal endpoint bridge as a relation-membership rewrite. -/
+theorem finalCheckWithClaimValueRelIn_iff_secondSumcheckEval
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i) :
+    (((target, stmt), oStmt), ()) ∈ finalCheckWithClaimValueRelIn R pp ↔
+      target = MvPolynomial.eval stmt.1 (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt) := by
+  rw [finalCheckWithClaimValueRelIn_iff_finalExpectedClaimValue,
+    ← secondSumCheckVirtualPolynomial_eval_eq_finalExpectedClaimValue R pp stmt oStmt]
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Projection from the pure final-check relation back to the second-sum-check endpoint equality. -/
+theorem secondSumcheckEval_eq_of_finalCheckWithClaimValueRelIn
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (hmem : (((target, stmt), oStmt), ()) ∈ finalCheckWithClaimValueRelIn R pp) :
+    target = MvPolynomial.eval stmt.1 (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt) :=
+  (finalCheckWithClaimValueRelIn_iff_secondSumcheckEval R pp target stmt oStmt).1 hmem
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- If the carried target is the second-sum-check polynomial endpoint, then it satisfies the pure
 target-carrying final-check relation. -/
 theorem finalCheckWithClaimValueRelIn_of_secondSumcheckEval
@@ -585,6 +633,11 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
 #print axioms finalCheckWithClaimRelIn
 #print axioms finalCheckWithClaimRelOut
 #print axioms finalCheckWithClaimValueRelIn
+#print axioms finalCheckWithClaimValueRelIn_iff_finalExpectedClaimValue
+#print axioms finalCheckWithClaimValueRelIn_of_finalExpectedClaimValue
+#print axioms finalExpectedClaimValue_eq_of_finalCheckWithClaimValueRelIn
+#print axioms finalCheckWithClaimValueRelIn_iff_secondSumcheckEval
+#print axioms secondSumcheckEval_eq_of_finalCheckWithClaimValueRelIn
 #print axioms finalCheckWithClaimValueRelIn_of_secondSumcheckEval
 #print axioms finalCheckWithClaimValueRelResidual
 #print axioms finalCheckWithClaimValueRelResidual_holds
