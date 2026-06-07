@@ -285,7 +285,7 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 Tighter than T4.8 (AHIV17) in the regime `δ_fld ≥ δ_min/3`. Admitted as an external
 result. -/
-theorem rs_epsCA_bchks25_item2
+def rs_epsCA_bchks25_item2
     (domain : ι ↪ F) (k : ℕ) (δ_fld δ_int : ℝ≥0)
     (_h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
                 / Fintype.card ι / 3 ≤ δ_fld)
@@ -296,8 +296,7 @@ theorem rs_epsCA_bchks25_item2
       max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
           ((δ_int : ℝ) / ((δ_int - δ_fld) * Fintype.card F))
     epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
-      ENNReal.ofReal bound := by
-  sorry
+      ENNReal.ofReal bound
   -- Missing ingredient: BCHKS25's RS CA bound in the δ_min/3-to-Johnson regime. The max{…}
   -- RHS is a two-regime analysis (interpolation term + proximity-loss term) resting on the
   -- BCHKS25 RS interpolation/multiplicity lemmas. BCKHS25/Interpolation.lean supplies the
@@ -401,6 +400,8 @@ theorem rs_epsCA_small_loss_r4_10
     (hγ_pos : 0 < γ) (hγ_lt : (γ : ℝ) < 1)
     (hcross : δ_fld * (Fintype.card ι : ℝ≥0) + γ <
         (Nat.floor (δ_fld * (Fintype.card ι : ℝ≥0)) : ℝ≥0) + 1)
+    (hT492 : rs_epsCA_bchks25_item2 domain k δ_fld (δ_fld + γ / (Fintype.card ι : ℝ≥0))
+      h_dmin (r4_10_delta_lt_nearby _ _ hγ_pos))
     (hbound :
       let δ_int : ℝ≥0 := δ_fld + γ / (Fintype.card ι : ℝ≥0)
       let n : ℝ := Fintype.card ι
@@ -420,8 +421,6 @@ theorem rs_epsCA_small_loss_r4_10
     epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_fld ≤
       ENNReal.ofReal bound := by
   intro n ρ bound
-  have hT492 := rs_epsCA_bchks25_item2 domain k δ_fld (δ_fld + γ / (Fintype.card ι : ℝ≥0))
-    h_dmin (r4_10_delta_lt_nearby _ _ hγ_pos)
   have hfloor := r4_10_floor_collapse_of_no_boundary_crossing δ_fld γ hcross
   exact rs_epsCA_small_loss_r4_10_of_residuals domain k δ_fld γ hT492 hfloor hbound
 
