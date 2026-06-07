@@ -166,26 +166,19 @@ reducing the random-linear-combination of the evaluation claims to a single eval
 The existence of these lifted reductions and the transfer of the proven sum-check security through
 `liftContext` are stated below. The actual lens (mirroring `firstChallengeOracleLens`) plus the
 discharge of the lens side conditions (`IsComplete`/`IsKnowledgeSound`/`LiftContextCoherent`) is the
-named residual; honest lenses discharge those by `rfl`/`simp`. -/
-
-/-- The boolean summation domain `Fin 2 ↪ R` (the points `{0, 1}`). -/
-def boolDomain : Fin 2 ↪ R where
-  toFun := fun b => (b : R)
-  inj' := by
-    intro a b h
-    fin_cases a <;> fin_cases b <;>
-      simp_all <;> exact (by exact_mod_cast h)
+named residual; honest lenses discharge those by `rfl`/`simp`. The summation domain is the
+canonical boolean embedding `Sumcheck.boolEmbedding R : Fin 2 ↪ R` (from `Sumcheck/Domain.lean`). -/
 
 /-- **NAMED RESIDUAL — second sum-check reduction existence.** The second sum-check oracle reduction
 for Spartan, of type
 `OracleReduction oSpec (AfterLinearCombination) … (AfterSecondSumcheck) … (Sumcheck.Spec.pSpec R 2 ℓ_n)`,
-obtained as `(Sumcheck.Spec.oracleReduction R 2 (boolDomain R) pp.ℓ_n oSpec).liftContext` along the
-Spartan lens routing `secondSumCheckVirtualPolynomial` into the sum-check oracle statement.
+obtained as `(Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).liftContext` along
+the Spartan lens routing `secondSumCheckVirtualPolynomial` into the sum-check oracle statement.
 
 Stated as a residual because constructing the routing lens — the exact analogue of
 `firstChallengeOracleLens` for the matrix/witness → ℳ(Y)-evaluation reconstruction — is a sizeable
 sub-development; once that lens `L₂` is supplied, this is
-`(Sumcheck.Spec.oracleReduction R 2 (boolDomain R) pp.ℓ_n oSpec).liftContext L₂.toContext L₂`. -/
+`(Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).liftContext L₂.toContext L₂`. -/
 def secondSumcheckResidual : Prop :=
   Nonempty (OracleReduction oSpec
     (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
