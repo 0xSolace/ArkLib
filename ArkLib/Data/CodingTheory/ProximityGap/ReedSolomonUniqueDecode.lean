@@ -340,7 +340,9 @@ theorem reedSolomon_Lambda_le [Fintype F] [Nonempty ι] {k dX dZ : ℕ} [NeZero 
     refine ⟨hcC, ?_⟩
     -- `δᵣ(f,c) ≤ δ` ⟹ `#{i : f i ≠ c i} ≤ ⌊δ·n⌋`
     have hrel : (Code.relHammingDist f c : ℝ) ≤ δ := by
-      simpa only [ListDecodable.relHammingBall, Set.mem_setOf_eq] using hcball
+      have h := hcball
+      simp only [ListDecodable.relHammingBall, Set.mem_setOf_eq] at h
+      convert h using 3
     have hn : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
     have hreleq : (Code.relHammingDist f c : ℝ) = (hammingDist f c : ℝ) / Fintype.card ι := by
       rw [Code.relHammingDist]; push_cast; ring
