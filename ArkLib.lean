@@ -621,6 +621,7 @@ import ArkLib.ToMathlib.PlaceGeometrySupply
 import ArkLib.ToMathlib.Polynomial.DegreeLT
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import ArkLib.ToMathlib.Polynomial.NatDegreeOfSum
+import ArkLib.ToMathlib.PolynomialNormalizedFactorsCard
 import ArkLib.ToMathlib.PowerSeriesHenselianA
 import ArkLib.ToMathlib.PowerSeriesNewton
 import ArkLib.ToMathlib.PowerSeriesSubstCoeff
