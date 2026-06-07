@@ -4,21 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import graph).  It does NOT close
-`RestrictedFaaDiBrunoMatch` (the antidiagonal `ab ↦ (i₁,λ)` reindex + `W`/`ξ`/`ζ` clearing remain),
-and does NOT touch the P1 `DivWeightLe` external.
--/
-
 import Mathlib
 
 /-!
 # Hasse-derivative evaluation connectives for the App-A.4 Faa-di-Bruno match (issue #9)
 
-The polynomial-level Y-Hasse commutation + the un-shifted coefficient-sum form of
-`hasseEvalAtRoot`, the P2-independent bridge the RestrictedFaaDiBrunoMatch assembly re-keys
-against. Carries the two confirmed-in-tree facts (evalX_hasseDeriv_Y_coeff, the hasseEvalAtRoot
-unfold) as explicit hypotheses to stay standalone-checkable.
+The polynomial-level Y-Hasse commutation and the un-shifted coefficient-sum form of
+`hasseEvalAtRoot` (the P2-independent bridge the RestrictedFaaDiBrunoMatch assembly re-keys
+against). The two confirmed-in-tree facts (evalX_hasseDeriv_Y_coeff, the hasseEvalAtRoot unfold)
+are carried as explicit hypotheses to keep the file standalone-checkable against pure Mathlib.
 -/
+
 
 open Polynomial Finset
 
