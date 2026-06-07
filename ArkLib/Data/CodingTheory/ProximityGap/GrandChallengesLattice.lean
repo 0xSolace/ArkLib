@@ -3068,6 +3068,8 @@ theorem ordinaryRSCapacityAtPrizeRates_iff_pointwise
   · exact ordinaryRSCapacityPointwiseAtPrizeRates_of_capacity domain τ ℓ
   · exact ordinaryRSCapacityAtPrizeRates_of_pointwise domain τ ℓ
 
+#print axioms ordinaryRSCapacityAtPrizeRates_iff_pointwise
+
 /-- Any lower bound on one prize-rate `Λ` value that exceeds the proposed ordinary-RS cap
 refutes `OrdinaryRSCapacityAtPrizeRates`.
 
@@ -3252,6 +3254,32 @@ four-rate list-decoding lattice prize.
 This is the same theorem as `listPrizeLatticeResolved_of_Lambda_le_and_elias_next`, with the
 lower-side hypothesis packaged as `OrdinaryRSCapacityAtPrizeRates` so the remaining LD target
 has a single source-level name. -/
+
+/-- The mathematical residual for the capacity of the ordinary Reed-Solomon code at the four prize rates. -/
+theorem Lambda_reedSolomon_prizeRate_capacity_residual
+    {F ι : Type} [Field F] [Fintype F] [DecidableEq F]
+      [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hdeg_pos : ∀ r : Fin 4,
+      0 < ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+    (hdeg_le : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ ≤ Fintype.card ι)
+    (hpred_le : ∀ r : Fin 4, (τ r).val ≤ Fintype.card ι)
+    (hCapacity : OrdinaryRSCapacityAtPrizeRates domain τ ℓ) :
+    ∀ r : Fin 4,
+      Lambda
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (((((τ r).val : ℝ≥0) /
+              (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)) ≤
+          (ℓ r : ℕ∞) := by
+  intro r
+  exact hCapacity r
+
+#print axioms Lambda_reedSolomon_prizeRate_capacity_residual
+
 theorem listPrizeLatticeResolved_of_ordinaryRSCapacityAtPrizeRates_and_elias_next
     (domain : ι ↪ F) (m : ℕ)
     (τ : Fin 4 → Fin (Fintype.card ι + 1))
@@ -3640,3 +3668,5 @@ theorem mcaPrizeLatticeResolved_ofJohnsonBCHKS25_and_RSBreakdownCS25_adjacent
 end GrandChallengesLattice
 
 end ProximityGap
+
+#print axioms listPrizeLatticeResolved_of_ordinaryRSCapacityAtPrizeRates_and_elias_next
