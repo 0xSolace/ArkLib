@@ -39,6 +39,9 @@ __pycache__/
 /scratch/
 /scratch*.lean
 /scratch*.py
+# Agent scratch tree under ArkLib/ — throwaway proof probes, never committed and
+# excluded from the ArkLib.lean umbrella (keeps update-lib.sh / check-imports.sh green).
+/ArkLib/Scratch/
 /patch*.py
 /*_err.txt
 /full_file.txt
