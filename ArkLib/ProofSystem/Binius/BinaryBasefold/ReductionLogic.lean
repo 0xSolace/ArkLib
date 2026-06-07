@@ -371,7 +371,7 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
       -- Since hj holds, we have Sum.inl j = Sum.inl j', so j = j'
       simp only [hj, ↓reduceDIte] at heq
       cases heq
-      simp
+      simpa [eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast]
     · rename_i heq
       -- This case is impossible: the if-then-else evaluates to Sum.inl j when hj holds
       -- So we have Sum.inl j = Sum.inr j✝, which is a contradiction
@@ -551,6 +551,15 @@ def commitStepLogic (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
       -- oStmtIn transcript
     ((stmt, oStmtOut), wit)
 
+universe u v in
+/-- Applying a casted nondependent function is the same as casting the argument backward first. -/
+theorem cast_fun_eq_fun_cast_arg {α β : Type u} {γ : Type v} {hαβ : α = β}
+    {hfun : (α → γ) = (β → γ)} (f : α → γ) (x : β) :
+    cast hfun f x = f (cast hαβ.symm x) := by
+  subst hαβ
+  cases hfun
+  rfl
+
 omit [CharP L 2] [SampleableType L] in
 /-- Helper lemma: snoc_oracle matches mkVerifierOStmtOut for commit steps.
 
@@ -588,7 +597,7 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
         commitStepLogic_embedFn, hj, dif_pos]
     rw [OracleVerifier.mkVerifierOStmtOut_inl _ _ _ _ _ _ h_embed]
     simp only [hj, dif_pos]
-    simp
+    simpa [eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast]
   · -- New oracle case: embed j = Sum.inr 0
     have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j = Sum.inr ⟨0, rfl⟩ := by
@@ -602,7 +611,7 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     have h_msg0: transcript.messages ⟨0, rfl⟩ = transcript 0 := by rfl
     rw [h_msg0]
     -- ⊢ transcript 0 (cast ⋯ x) = cast ⋯ (transcript 0) x
-    rw [cast_fun_eq_fun_cast_arg]
+    simpa [eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast, cast_fun_eq_fun_cast_arg]
     have h_j_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
       have h_lt := j.isLt
       conv_rhs at h_lt => rw [h_count_succ]
@@ -622,7 +631,7 @@ Since `getFirstOracle` extracts index 0, and `snoc_oracle` at index 0 always fal
 the "old oracle" branch (0 < toOutCodewordsCount), the first oracle is unchanged.
 -/
 lemma getFirstOracle_snoc_oracle
-    (i : Fin ℓ) {destIdx : Fin r} (h_destIdx : destIdx = i.val + 1)
+    (i : Fin ℓ) {destIdx : Fin r} (h_destIdx : destIdx = ⟨i.val + 1, by omega⟩)
     (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
       OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
     (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := destIdx)) :
@@ -768,7 +777,6 @@ lemma strictOracleFoldingConsistency_commitStep
     funext x
     dsimp only [Fin.val_last, getMidCodewords] at h_wit_f_eq
     rw [h_wit_f_eq]
-    simp only
 
     have h_idx_eq : (⟨i.val + 1, by omega⟩ : Fin r)
       = (⟨oraclePositionToDomainIndex ℓ ϑ j, by omega⟩) := by
