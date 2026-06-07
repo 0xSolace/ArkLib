@@ -118,7 +118,7 @@ theorem sq_sum_card_le_card_mul_sum_inter {κ ι : Type*} [Fintype κ] [Fintype 
 strictly more than `t` coordinates.  This is the joint pair the repaired ABF26 T4.21
 line-decoding argument extracts (issue #140), obtained from the Cauchy–Schwarz mass bound by
 averaging off the diagonal. -/
-theorem exists_pair_inter_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq ι] [DecidableEq κ]
+theorem exists_pair_inter_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq ι]
     (S : κ → Finset ι) (t : ℕ)
     (hbig : (Fintype.card κ) ^ 2 * t * Fintype.card ι + Fintype.card ι * (∑ i, (S i).card)
             < (∑ i, (S i).card) ^ 2) :
@@ -143,7 +143,7 @@ theorem exists_pair_inter_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [Decidabl
       refine le_trans (Finset.card_filter_le _ _) ?_
       rw [Finset.card_univ]
     rw [h1, one_mul]
-    exact add_le_add_left (Nat.mul_le_mul h2 (le_refl t)) _
+    exact Nat.add_le_add_left (Nat.mul_le_mul h2 (le_refl t)) _
   have hbound : (∑ i, ∑ j, (S i ∩ S j).card)
       ≤ ∑ i, ((S i).card + Fintype.card κ * t) := by
     apply Finset.sum_le_sum
