@@ -154,6 +154,12 @@ theorem hasseEvalAtRoot_eq_taylorSum (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
   refine Finset.sum_congr rfl (fun i _ => ?_)
   rw [evalX_hasseDeriv_Y_coeff, map_nsmul (liftToFunctionField (H := H)), smul_mul_assoc]
 
+/-- **Embedding of the leading-coefficient unit `W𝒪`.**  `W𝒪 = ⟦C(lc H)⟧` embeds to the
+function-field leading coefficient `W = liftToFunctionField (lc H)`.  A W-telescope ingredient. -/
+theorem embed_W𝒪 : embeddingOf𝒪Into𝕃 H (W𝒪 H) = liftToFunctionField (H := H) H.leadingCoeff := by
+  unfold W𝒪
+  rw [embeddingOf𝒪Into𝕃_mk, liftBivariate_C]
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
@@ -163,3 +169,4 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.coeff_succ_βHenselAssembled_partitionForm
 #print axioms BCIKS20.HenselNumerator.evalX_hasseDeriv_Y_coeff
 #print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_taylorSum
+#print axioms BCIKS20.HenselNumerator.embed_W𝒪
