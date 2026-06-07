@@ -385,6 +385,16 @@ theorem eq_of_close_to_common
   rw [hammingDist_comm c f] at htri
   omega
 
+/-- **The unique-decoding list is a subsingleton.**  For any word `f`, the set of codewords within
+Hamming distance `e` of `f` has at most one element whenever `2e < minDist C`.  This is the
+set-level unique-decoding guarantee — the decoding "list" up to `⌊(minDist−1)/2⌋` errors is always a
+singleton (or empty). -/
+theorem closeCodewords_subsingleton
+    (C : Submodule F (ι → F)) (f : ι → F) {e : ℕ}
+    (he : 2 * e < Code.minDist (C : Set (ι → F))) :
+    {c | c ∈ C ∧ hammingDist f c ≤ e}.Subsingleton :=
+  fun _c hc _c' hc' => eq_of_close_to_common C hc.1 hc'.1 hc.2 hc'.2 he
+
 end UniqueDecoding
 
 end ProximityGap
