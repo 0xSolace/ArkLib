@@ -445,6 +445,31 @@ theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_univ
   ProximityGap.epsMCA_le_ofReal_of_listFactor_two_delta_univ C
     ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
 
+/-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — sharp in-tree first-moment count `b = δ·n + 1`.**
+The no-carrier consumer for the sharp disjoint-charging per-codeword count. Taking the carrier to be
+all codewords gives
+
+  `ε_mca(C, 1 − √(1 − δ + η)) ≤
+    ENNReal.ofReal ((|F|^n · (δ_mca · n + 1)) / |F|)`,
+
+where `δ_mca = 1 − √(1 − δ + η)` is the Johnson-lifted MCA radius. This is the strongest
+unconditional in-tree first-moment relaxation currently at the ABF26 T5.1 boundary: it realizes
+GCXK25/GKL24's first-moment `|Bad¹| ≤ δ·n` content in tree (via the disjoint agree-domain charging
+of `ProximityGap.epsMCA_le_ofReal_of_listFactor_delta_add_one_univ`) up to the unavoidable additive
+`+1` per codeword from the degenerate single-witness case — no external hypothesis, no explicit
+carrier. -/
+theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_delta_add_one_univ
+    (C : LinearCode ι F) (δ η : ℝ) :
+    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
+        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
+      ENNReal.ofReal
+        (((Fintype.card (ι → F) : ℝ) *
+            (((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal : ℝ) *
+                (Fintype.card ι : ℝ) + 1)) /
+          Fintype.card F) :=
+  ProximityGap.epsMCA_le_ofReal_of_listFactor_delta_add_one_univ C
+    ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — canonical in-tree first-moment relaxation.**
 This is the no-carrier version of `linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card`.
 Taking the carrier to be all codewords and using the proven single-codeword determinacy count gives
@@ -1430,6 +1455,7 @@ public propositions. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_card
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_univ
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_delta_add_one_univ
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_univ
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_residuals_prop
