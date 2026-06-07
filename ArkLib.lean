@@ -144,6 +144,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Bijection
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchRoot
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reindex
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2RootBridge
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
@@ -179,7 +180,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
-import ArkLib.Data.CodingTheory.ProximityGap.EpsCAMono
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
@@ -359,6 +359,7 @@ import ArkLib.Data.Polynomial.RationalFunctionsCore
 import ArkLib.Data.Polynomial.RationalFunctionsStrong
 import ArkLib.Data.Polynomial.SplitFold
 import ArkLib.Data.Polynomial.Trivariate
+import ArkLib.Data.Polynomial.UnivariateAgreement
 import ArkLib.Data.Probability.Combinatorial
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
@@ -675,6 +676,7 @@ import ArkLib.ToMathlib.PowerSeriesNewton
 import ArkLib.ToMathlib.PowerSeriesSubstCoeff
 import ArkLib.ToMathlib.PrizeRateEliasCapacity
 import ArkLib.ToMathlib.Prop55
+import ArkLib.ToMathlib.ProximityGenericity
 import ArkLib.ToMathlib.RSPhases
 import ArkLib.ToMathlib.RatFuncDegreeCalculus
 import ArkLib.ToMathlib.RestrictedSumset

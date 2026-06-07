@@ -48,6 +48,92 @@ def OStmt (ι F : Type) : Unit → Type := fun _ => ι → F
 
 instance : OracleInterface (OStmt ι F ()) := OracleInterface.instFunction
 
+/-! ### Faithful paper transcript scaffold
+
+Construction 5.1 has more transcript structure than the RBR error-budget skeleton below: an initial
+sumcheck, per-transition folded-oracle/OOD/shift/sumcheck slots, and a final polynomial/randomness
+check.  The inductive type here records that ordered paper schedule as finite data, so the eventual
+honest prover can depend on earlier verifier challenges.  It is still syntax: the algebraic prover,
+verifier checks, completeness, and RBR soundness are separate obligations.
+-/
+
+/-- The ordered high-level transcript slots of WHIR Construction 5.1.
+
+For `i : Fin M`, `i.succ : Fin (M + 1)` denotes the transition round from the previous oracle to
+the next folded oracle.  The `mainShiftChallenge` payload represents the batch of shift samples
+plus the random linear-combination coefficient used in that transition round. -/
+inductive PaperTranscriptSlot {M : ℕ} {ιs : Fin (M + 1) → Type} (P : Params ιs F) : Type
+  | initialSumcheckMessage : Fin (P.foldingParam 0) → PaperTranscriptSlot P
+  | initialSumcheckChallenge : Fin (P.foldingParam 0) → PaperTranscriptSlot P
+  | mainFoldedOracle : Fin M → PaperTranscriptSlot P
+  | mainOutOfDomainChallenge : Fin M → PaperTranscriptSlot P
+  | mainOutOfDomainReply : Fin M → PaperTranscriptSlot P
+  | mainShiftChallenge : Fin M → PaperTranscriptSlot P
+  | mainSumcheckMessage : (i : Fin M) → Fin (P.foldingParam i.succ) → PaperTranscriptSlot P
+  | mainSumcheckChallenge : (i : Fin M) → Fin (P.foldingParam i.succ) → PaperTranscriptSlot P
+  | finalPolynomial : PaperTranscriptSlot P
+  | finalRandomness : PaperTranscriptSlot P
+  deriving DecidableEq, Fintype
+
+/-- Direction of a faithful WHIR Construction 5.1 transcript slot. -/
+def paperTranscriptSlotDirection {M : ℕ} {ιs : Fin (M + 1) → Type} {P : Params ιs F} :
+    PaperTranscriptSlot P → Direction
+  | .initialSumcheckMessage _ => Direction.P_to_V
+  | .initialSumcheckChallenge _ => Direction.V_to_P
+  | .mainFoldedOracle _ => Direction.P_to_V
+  | .mainOutOfDomainChallenge _ => Direction.V_to_P
+  | .mainOutOfDomainReply _ => Direction.P_to_V
+  | .mainShiftChallenge _ => Direction.V_to_P
+  | .mainSumcheckMessage _ _ => Direction.P_to_V
+  | .mainSumcheckChallenge _ _ => Direction.V_to_P
+  | .finalPolynomial => Direction.P_to_V
+  | .finalRandomness => Direction.V_to_P
+
+/-- Field-vector payload length of each faithful WHIR Construction 5.1 transcript slot.
+
+The `d` parameter is the paper's sumcheck-message degree budget.  Folded-oracle and final-polynomial
+messages are represented extensionally as field vectors over their evaluation domains. -/
+def paperTranscriptSlotLength {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) :
+    PaperTranscriptSlot P → ℕ
+  | .initialSumcheckMessage _ => d
+  | .initialSumcheckChallenge _ => 1
+  | .mainFoldedOracle i => Fintype.card (ιs i.succ)
+  | .mainOutOfDomainChallenge _ => 1
+  | .mainOutOfDomainReply _ => 1
+  | .mainShiftChallenge i => P.repeatParam i.succ
+  | .mainSumcheckMessage _ _ => d
+  | .mainSumcheckChallenge _ _ => 1
+  | .finalPolynomial => 2 ^ P.varCount (Fin.last M)
+  | .finalRandomness => P.repeatParam (Fin.last M)
+
+/-- The faithful paper-order WHIR transcript scaffold as a `VectorSpec`.
+
+This is the protocol shape that a Construction 5.1 `VectorIOP` should target.  It differs from the
+block-ordered skeleton below because prover messages and verifier challenges are interleaved in the
+order needed for the honest prover's state updates. -/
+noncomputable def whirPaperTranscriptVectorSpec {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) :
+    ProtocolSpec.VectorSpec (Fintype.card (PaperTranscriptSlot P)) where
+  dir := fun i =>
+    paperTranscriptSlotDirection ((Fintype.equivFin (PaperTranscriptSlot P)).symm i)
+  length := fun i =>
+    paperTranscriptSlotLength P d ((Fintype.equivFin (PaperTranscriptSlot P)).symm i)
+
+@[simp] theorem whirPaperTranscriptVectorSpec_dir {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (i : Fin (Fintype.card (PaperTranscriptSlot P))) :
+    (whirPaperTranscriptVectorSpec P d).dir i =
+      paperTranscriptSlotDirection ((Fintype.equivFin (PaperTranscriptSlot P)).symm i) :=
+  rfl
+
+@[simp] theorem whirPaperTranscriptVectorSpec_length {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (i : Fin (Fintype.card (PaperTranscriptSlot P))) :
+    (whirPaperTranscriptVectorSpec P d).length i =
+      paperTranscriptSlotLength P d ((Fintype.equivFin (PaperTranscriptSlot P)).symm i) :=
+  rfl
+
 /-! ### Semantic WHIR per-round transcript slots
 
 Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an
@@ -561,6 +647,11 @@ theorem whir_rbr_soundness_of_whirVectorSpec_secure_gap
 end RBRSoundnessAssembly
 
 #print axioms whirVectorSpec_card_challengeIdx
+#print axioms paperTranscriptSlotDirection
+#print axioms paperTranscriptSlotLength
+#print axioms whirPaperTranscriptVectorSpec
+#print axioms whirPaperTranscriptVectorSpec_dir
+#print axioms whirPaperTranscriptVectorSpec_length
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
