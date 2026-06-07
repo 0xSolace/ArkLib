@@ -56,8 +56,8 @@ theorem card_le_qEntropy_of_minDist (hq : 2 ≤ Fintype.card F) (C : Finset (ι 
       _ = ((n : ℝ) + 1) * ((C.card : ℝ) * (hammingBallVolume q δ n : ℝ)) := by ring
       _ ≤ ((n : ℝ) + 1) * (q : ℝ) ^ (n : ℝ) :=
           mul_le_mul_of_nonneg_left hsp' (by positivity)
-  rw [show (n : ℝ) * (1 - H) = (n : ℝ) - (n : ℝ) * H by ring, Real.rpow_sub hq0, mul_div_assoc,
-    le_div_iff₀ (Real.rpow_pos_of_pos hq0 _)]
+  rw [show (n : ℝ) * (1 - H) = (n : ℝ) - (n : ℝ) * H by ring, Real.rpow_sub hq0,
+    ← mul_div_assoc, le_div_iff₀ (Real.rpow_pos_of_pos hq0 _)]
   exact key
 
 end CodingTheory
