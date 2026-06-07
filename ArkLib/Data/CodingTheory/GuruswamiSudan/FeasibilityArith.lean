@@ -11,7 +11,7 @@ open Polynomial
 
 namespace GSListSizeBound
 
-variable {F : Type*} [Field F]
+variable {F : Type} [Field F]
 
 /-- **Arithmetic interpolation feasibility in the GS window `D = m·a − 1`.** If a free parameter
 `t ≤ m·a − 1` with `k·(t−1) ≤ m·a − 1` satisfies the explicit triangle inequality
