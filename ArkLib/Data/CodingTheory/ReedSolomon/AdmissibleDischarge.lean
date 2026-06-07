@@ -126,6 +126,24 @@ theorem geomDomain_cosetSep_lt (γ : F) (s n : ℕ) (hs : 0 < s) (hsn : s * n �
 theorem geomDomain_ne_zero (γ : F) (s n : ℕ) (hγ : γ ≠ 0) (i : Fin n) :
     geomDomainFn γ s n i ≠ 0 := pow_ne_zero _ hγ
 
+/-- The geometric domain is injective when `0 < s` and `s·n ≤ orderOf γ` (the exponents
+`s·i` for `i < n` are distinct residues below `orderOf γ`). -/
+theorem geomDomainFn_injective (γ : F) (s n : ℕ) (hs : 0 < s) (hsn : s * n ≤ orderOf γ) :
+    Function.Injective (geomDomainFn γ s n) := by
+  intro a b hab
+  unfold geomDomainFn at hab
+  have ha : s * a.val < orderOf γ :=
+    lt_of_lt_of_le (Nat.mul_lt_mul_of_lt_of_le (le_refl s) a.isLt hs) hsn
+  have hb : s * b.val < orderOf γ :=
+    lt_of_lt_of_le (Nat.mul_lt_mul_of_lt_of_le (le_refl s) b.isLt hs) hsn
+  have : s * a.val = s * b.val :=
+    pow_injOn_Iio_orderOf (Set.mem_Iio.mpr ha) (Set.mem_Iio.mpr hb) hab
+  exact Fin.ext (Nat.eq_of_mul_eq_mul_left hs this)
+
+/-- The geometric folded-RS domain as an `Fin n ↪ F` embedding. -/
+def geomDomainEmb (γ : F) (s n : ℕ) (hs : 0 < s) (hsn : s * n ≤ orderOf γ) : Fin n ↪ F :=
+  ⟨geomDomainFn γ s n, geomDomainFn_injective γ s n hs hsn⟩
+
 /-- **`Admissible` holds unconditionally on the canonical geometric domain.** For `γ ≠ 0` of
 order `≥ s·n` with `0 < s`, `0 < n`, the image `{γ^{s·i} : i ∈ Fin n}` is `Admissible` with fold
 length `s` and folding element `γ`. Both clauses are discharged: intra-orbit from `s ≤ orderOf γ`,

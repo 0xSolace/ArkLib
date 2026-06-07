@@ -334,6 +334,18 @@ theorem is_multilinear_iff_eq_evals_zeroOne {p : MvPolynomial σ R} :
   · rw [←h]
     exact MLE_mem_restrictDegree p.toEvalsZeroOne
 
+omit [DecidableEq R] in
+/-- **Direct uniqueness of the multilinear extension.**  A multilinear polynomial `p` that agrees
+with `evals` on the Boolean hypercube *is* the multilinear extension `MLE evals`.  This is the
+most directly-usable form of MLE uniqueness: it discharges interpolation arguments where one has
+exhibited a multilinear `p` and checked its hypercube values. -/
+theorem eq_MLE_of_isMultilinear_of_eval_eq {p : MvPolynomial σ R} (evals : (σ → Fin 2) → R)
+    (hp : p ∈ R⦃≤ 1⦄[X σ]) (heval : ∀ x : σ → Fin 2, eval (x : σ → R) p = evals x) :
+    p = MLE evals := by
+  have hte : p.toEvalsZeroOne = evals := funext heval
+  rw [← hte]
+  exact (is_multilinear_iff_eq_evals_zeroOne.mp hp).symm
+
 /-- Equivalence between multilinear polynomials and their evaluations on the Boolean hypercube -/
 def MLEEquiv : R⦃≤ 1⦄[X σ] ≃ ((σ → Fin 2) → R) where
   toFun := fun p x => MvPolynomial.eval (x : σ → R) p
