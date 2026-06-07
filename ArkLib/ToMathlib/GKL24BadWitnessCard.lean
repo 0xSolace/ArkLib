@@ -226,9 +226,8 @@ theorem exists_large_agree_zero_of_small_weight
     have hcompl : ((supp₁ u₁)ᶜ.card : ℝ) = (Fintype.card ι : ℝ) - (supp₁ u₁).card := by
       rw [Finset.card_compl, Nat.cast_sub (Finset.card_le_univ _)]
       simp [Finset.card_univ]
-    rw [hcompl, show ((1 - δ) * Fintype.card ι : ℝ)
-        = (Fintype.card ι : ℝ) - δ * Fintype.card ι by ring]
-    linarith [hwt]
+    rw [hcompl]
+    nlinarith [hwt]
   · intro i hi
     simp only [Pi.zero_apply]
     by_contra hne
