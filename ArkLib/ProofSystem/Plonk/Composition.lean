@@ -399,6 +399,64 @@ theorem plonkCheckVerifier_rbrSoundness :
   · intro _ _ _ _ _ _ i
     exact False.elim (plonkCheckPSpec_challengeIdx_false 𝓡 numWires numGates i)
 
+/-- The composed two-message Plonk verifier has zero-error round-by-round knowledge soundness. The
+round-by-round extractor keeps the gate witness as the intermediate witness and reads the final
+input witness from the first prover message of the full transcript. -/
+theorem plonkCheckVerifier_rbrKnowledgeSoundness :
+    (plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).rbrKnowledgeSoundness init impl
+        (plonkCheckRelIn 𝓡 numWires numGates)
+        (plonkCheckRelOut 𝓡 numWires numGates) 0 := by
+  refine ⟨fun _ => Fin numWires → 𝓡, {
+    eqIn := rfl
+    extractMid := fun _ _ _ witMid => witMid
+    extractOut := fun _stmt tr _ => tr.fst ⟨0, by simp⟩
+  }, {
+    toFun := fun _ stmt _tr wit => (stmt, wit) ∈ plonkCheckRelIn 𝓡 numWires numGates
+    toFun_empty := fun _ _ => by simp
+    toFun_next := fun _ _ _ _ _ _ h => h
+    toFun_full := fun cs tr _witOut hpr => by
+      rw [gt_iff_lt, probEvent_pos_iff] at hpr
+      obtain ⟨_out, hout, _houtRel⟩ := hpr
+      rw [OptionT.mem_support_iff] at hout
+      simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hout
+      obtain ⟨s, _, hout⟩ := hout
+      let w : Fin numWires → 𝓡 := tr.fst ⟨0, by simp⟩
+      let f : Fin (3 * numGates) → 𝓡 := tr.snd ⟨0, by simp⟩
+      by_cases hAccept :
+          cs.accepts w ∧ ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
+            CopyConstraintsSatisfied f cs.perm
+      · change (cs, w) ∈ plonkCheckRelIn 𝓡 numWires numGates
+        refine ⟨hAccept.1, ?_⟩
+        intro i
+        rw [← hAccept.2.1 (cs.perm i), ← hAccept.2.1 i]
+        exact hAccept.2.2 i
+      · exfalso
+        have hrun :
+            (simulateQ impl
+              ((plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+                (numGates := numGates)).run cs tr)).run' s =
+              pure none := by
+          simp only [Verifier.run, plonkCheckVerifier_verify_eq]
+          split_ifs with h
+          · exact False.elim (hAccept (by simpa using h))
+          · change (simulateQ impl (pure none : OracleComp []ₒ
+                (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+                  (Fin numWires → 𝓡))))).run' s =
+              pure none
+            rw [simulateQ_pure]
+            change Prod.fst <$> (pure none : StateT σ ProbComp
+              (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+                (Fin numWires → 𝓡)))).run s =
+              pure none
+            rw [StateT.run_pure]
+            simp [map_pure]
+        rw [hrun] at hout
+        simp at hout
+  }, ?_⟩
+  intro _stmtIn _witIn _prover i
+  exact False.elim (plonkCheckPSpec_challengeIdx_false 𝓡 numWires numGates i)
+
 #print axioms Plonk.plonkCheckVerifier_verify_eq
 #print axioms Plonk.permCheckAfterGateVerifier_verify_eq
 #print axioms Plonk.permCheckAfterGateVerifier_mem_support_iff
@@ -408,6 +466,7 @@ theorem plonkCheckVerifier_rbrSoundness :
 #print axioms Plonk.plonkCheckLangOut
 #print axioms Plonk.permCheckAfterGateVerifier_rbrSoundness
 #print axioms Plonk.plonkCheckVerifier_rbrSoundness
+#print axioms Plonk.plonkCheckVerifier_rbrKnowledgeSoundness
 
 end Composition
 
