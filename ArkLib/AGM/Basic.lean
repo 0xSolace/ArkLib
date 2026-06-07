@@ -185,6 +185,26 @@ def trimExponents {prev : List G} {target : G}
   hEq := by
     rw [zipWith_take_length_prod, repr.hEq]
 
+/-- The normalized exponent vector has no entries past the basis length. -/
+theorem trimExponents_length_le {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target) :
+    (repr.trimExponents).exponents.length ≤ prev.length := by
+  simp [trimExponents]
+
+/-- Trimming is identity for representations whose exponent vectors are already short enough. -/
+theorem trimExponents_eq_self_of_length_le {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target)
+    (h : repr.exponents.length ≤ prev.length) :
+    repr.trimExponents = repr := by
+  ext
+  simp [trimExponents, (List.take_eq_self_iff repr.exponents).2 h]
+
+/-- Trimming exponent vectors is idempotent. -/
+theorem trimExponents_idem {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target) :
+    repr.trimExponents.trimExponents = repr.trimExponents := by
+  exact trimExponents_eq_self_of_length_le repr.trimExponents (trimExponents_length_le repr)
+
 /-- **Right-side basis weakening.** An algebraically-represented target stays representable when
 the basis is extended on the right by extra generators. Because the representation format permits
 overlong exponent vectors and `zipWith` truncates, we first truncate to the original basis length,
@@ -205,6 +225,9 @@ def appendBasis {prev : List G} {target : G}
 #print axioms GroupRepresentation.singleton
 #print axioms GroupRepresentation.prependBasis
 #print axioms GroupRepresentation.trimExponents
+#print axioms GroupRepresentation.trimExponents_length_le
+#print axioms GroupRepresentation.trimExponents_eq_self_of_length_le
+#print axioms GroupRepresentation.trimExponents_idem
 #print axioms GroupRepresentation.appendBasis
 
 end GroupRepresentation
