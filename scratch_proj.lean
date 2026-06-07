@@ -22,5 +22,5 @@ lemma relDistFromCode_row_le_interleaved {κ ι A : Type*} [Fintype κ] [Fintype
       ≤ relHammingDist (Matrix.transpose u) V := by
     unfold relHammingDist
     gcongr
-    exact_mod_cast hproj
-  exact_mod_cast hrel
+  simp only [ENNReal.coe_NNRat_coe_NNReal]
+  exact ENNReal.coe_le_coe.mpr (by exact_mod_cast hrel)

@@ -2698,6 +2698,140 @@ supplies the missing per-round handle for right *challenge* rounds, completing t
 reduction set for the right block (`{send,receive}Message_natAdd`, `{send,receive}_seam`,
 `getChallenge_natAdd`). -/
 
+
+/-- **Right interior-round `processRound` reduction (message branch).**  At an interior right round
+`Fin.natAdd m k` (`k : Fin n`, `k > 0` — the `i > m` branch, *not* the seam), the appended prover's
+`processRound` on a `pure` input reduces (heterogeneously) to `P₂`'s message step on the
+state-transported input, concatenated onto the appended transcript `rInt.1`.  Mirror of the proven
+seam reduction `append_processRound_seam_message`, but *simpler*: no `P₁.output >>= P₂.input`
+threading (that only happens at the seam).  The transcript-prefix is *not* handled here — it enters
+only at the right-block run-induction assembly (via `concat_append_right`); at the round level the
+appended transcript `rInt.1` is grown directly. -/
+theorem append_processRound_natAdd_message (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .P_to_V)
+    (hDir₂ : pSpec₂.dir k = .P_to_V)
+    (rInt : (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).castSucc
+      × (P₁.append P₂).PrvState (Fin.natAdd m k).castSucc) :
+    HEq ((P₁.append P₂).processRound (Fin.natAdd m k) (pure rInt))
+      (Bind.bind
+        (liftM (P₂.sendMessage ⟨k, hDir₂⟩
+            (cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k hk) rInt.2)) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            (pSpec₂.Message ⟨k, hDir₂⟩ × P₂.PrvState k.succ))
+        (fun p => (pure
+            (rInt.1.concat (cast (append_Message_natAdd k hDir hDir₂).symm p.1),
+              cast (append_PrvState_natAdd_interior_succ (P₁ := P₁) (P₂ := P₂) k hk).symm p.2) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+                × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)))) := by
+  rw [processRound_message (P₁.append P₂) (Fin.natAdd m k) hDir (pure rInt)]
+  simp only [pure_bind]
+  refine bind_heq_congr
+    (α := (pSpec₁ ++ₚ pSpec₂).Message ⟨Fin.natAdd m k, hDir⟩
+      × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+    (α' := pSpec₂.Message ⟨k, hDir₂⟩ × P₂.PrvState k.succ)
+    (β := (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+      × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+    (β' := (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+      × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+    (by rw [append_Message_natAdd k hDir hDir₂, append_PrvState_natAdd_interior_succ k hk]) rfl ?_ ?_
+  · have hαeq : ((pSpec₁ ++ₚ pSpec₂).Message ⟨Fin.natAdd m k, hDir⟩
+          × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+        = (pSpec₂.Message ⟨k, hDir₂⟩ × P₂.PrvState k.succ) := by
+      rw [append_Message_natAdd k hDir hDir₂, append_PrvState_natAdd_interior_succ k hk]
+    show HEq (OracleComp.liftComp ((P₁.append P₂).sendMessage ⟨Fin.natAdd m k, hDir⟩ rInt.2)
+            (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+        (OracleComp.liftComp
+          (OracleComp.liftComp (P₂.sendMessage ⟨k, hDir₂⟩
+              (cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k hk) rInt.2))
+            (oSpec + [pSpec₁.Challenge]ₒ))
+          (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+    rw [liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₁.Challenge]ₒ)
+      (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
+    exact liftComp_heq_congr (spec := oSpec) (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      hαeq (append_sendMessage_natAdd k hk hDir hDir₂ rInt.2)
+  · rintro ⟨msg, ns⟩ ⟨msg', ns'⟩ hmsg
+    obtain ⟨hm, hns⟩ :=
+      prod_heq_split (append_Message_natAdd k hDir hDir₂)
+        (append_PrvState_natAdd_interior_succ k hk) hmsg
+    refine pure_heq_pure (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) rfl ?_
+    refine prodMk_heq rfl rfl ?_ ?_
+    · have : msg = cast (append_Message_natAdd k hDir hDir₂).symm msg' :=
+        eq_of_heq (hm.trans (cast_heq _ _).symm)
+      rw [this]
+    · apply heq_of_eq
+      exact eq_of_heq (hns.trans (cast_heq _ _).symm)
+
+/-- **Right interior-round `processRound` reduction (challenge branch).**  The `V_to_P` analogue of
+`append_processRound_natAdd_message`: at an interior right challenge round, the appended
+`processRound` on a `pure` input reduces to `P₂`'s `getChallenge`/`receiveChallenge` on the
+state-transported input.  Mirror of `append_processRound_seam_challenge`, simpler (no `P₁.output`). -/
+theorem append_processRound_natAdd_challenge (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .V_to_P)
+    (hDir₂ : pSpec₂.dir k = .V_to_P)
+    (rInt : (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).castSucc
+      × (P₁.append P₂).PrvState (Fin.natAdd m k).castSucc) :
+    HEq ((P₁.append P₂).processRound (Fin.natAdd m k) (pure rInt))
+      (Bind.bind
+        (liftM (pSpec₂.getChallenge ⟨k, hDir₂⟩) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (pSpec₂.Challenge ⟨k, hDir₂⟩))
+        (fun challenge =>
+          Bind.bind
+            (liftM (P₂.receiveChallenge ⟨k, hDir₂⟩
+                (cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k hk) rInt.2)) :
+              OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                (pSpec₂.Challenge ⟨k, hDir₂⟩ → P₂.PrvState k.succ))
+            (fun f => (pure
+                (rInt.1.concat (cast (append_Challenge_natAdd k hDir hDir₂).symm challenge),
+                  cast (append_PrvState_natAdd_interior_succ (P₁ := P₁) (P₂ := P₂) k hk).symm
+                    (f challenge)) :
+                OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                  ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+                    × (P₁.append P₂).PrvState (Fin.natAdd m k).succ))))) := by
+  rw [processRound_challenge' (P₁.append P₂) (Fin.natAdd m k) hDir (pure rInt)]
+  simp only [pure_bind]
+  have hChalEq : (pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m k, hDir⟩
+      = pSpec₂.Challenge ⟨k, hDir₂⟩ := append_Challenge_natAdd k hDir hDir₂
+  refine bind_heq_congr (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) hChalEq rfl ?_ ?_
+  · exact liftM_heq_congr (spec := [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) hChalEq
+      (append_getChallenge_natAdd k hDir hDir₂)
+  · rintro chalA chal₂ hchal
+    refine bind_heq_congr (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (α := (pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m k, hDir⟩
+        → (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+      (α' := pSpec₂.Challenge ⟨k, hDir₂⟩ → P₂.PrvState k.succ)
+      (β := (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+        × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+      (β' := (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.natAdd m k).succ
+        × (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+      (by rw [hChalEq, append_PrvState_natAdd_interior_succ k hk]) rfl ?_ ?_
+    · have hαeq : ((pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m k, hDir⟩
+            → (P₁.append P₂).PrvState (Fin.natAdd m k).succ)
+          = (pSpec₂.Challenge ⟨k, hDir₂⟩ → P₂.PrvState k.succ) := by
+        rw [hChalEq, append_PrvState_natAdd_interior_succ k hk]
+      show HEq (OracleComp.liftComp ((P₁.append P₂).receiveChallenge ⟨Fin.natAdd m k, hDir⟩ rInt.2)
+              (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+          (OracleComp.liftComp
+            (OracleComp.liftComp (P₂.receiveChallenge ⟨k, hDir₂⟩
+                (cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k hk) rInt.2))
+              (oSpec + [pSpec₁.Challenge]ₒ))
+            (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+      rw [liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₁.Challenge]ₒ)
+        (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
+      exact liftComp_heq_congr (spec := oSpec)
+        (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) hαeq
+        (append_receiveChallenge_natAdd k hk hDir hDir₂ rInt.2)
+    · rintro fA f₂ hf
+      refine pure_heq_pure (spec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) rfl ?_
+      refine prodMk_heq rfl rfl ?_ ?_
+      · have : chalA = cast (append_Challenge_natAdd k hDir hDir₂).symm chal₂ :=
+          eq_of_heq (hchal.trans (cast_heq _ _).symm)
+        rw [this]
+      · apply heq_of_eq
+        refine eq_of_heq (HEq.trans ?_ (cast_heq _ _).symm)
+        exact heq_app hChalEq (by rw [hChalEq, append_PrvState_natAdd_interior_succ k hk]) hf hchal
+
 /-- **Seam-peel of the right-block continuation (structural step).**  Continuing the appended
 prover's run from the seam-round state index `m` (`= (⟨m,_⟩ : Fin (m+n)).castSucc`, the state going
 INTO the seam round) to the next index `m+1` (`= (⟨m,_⟩ : Fin (m+n)).succ`) is exactly one

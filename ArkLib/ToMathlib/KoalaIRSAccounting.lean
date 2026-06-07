@@ -150,10 +150,27 @@ theorem rsEncoder_injective : Function.Injective rsEncoder := by
   obtain ⟨e0, e1⟩ := rsEncoder_agree_two_points_imp_eq (by decide : (0 : Fin 4) ≠ 1) h0 h1
   funext k; fin_cases k <;> assumption
 
-end KoalaBear
-
 theorem le_minRelHammingDistCode_rsCodeSet : (3/4 : ℚ≥0) ≤ minRelHammingDistCode rsCodeSet := by
-  -- We want to prove 3/4 ≤ minDist / 4, so 3 ≤ minDist
-  -- Then use minDist_div_card_eq_minRelHammingDistCode
-  sorry
+  have hmin : 3 ≤ Code.minDist rsCodeSet := by
+    unfold Code.minDist
+    refine le_csInf ?_ ?_
+    · let m0 : Fin 2 → Sextic := 0
+      let m1 : Fin 2 → Sextic := fun _ => 1
+      refine ⟨hammingDist (rsEncoder m0) (rsEncoder m1), ?_⟩
+      refine ⟨rsEncoder m0, Set.mem_range_self m0, rsEncoder m1, Set.mem_range_self m1, ?_, rfl⟩
+      intro h
+      have hm := rsEncoder_injective h
+      have h01 := congrFun hm 0
+      exact zero_ne_one h01
+    · rintro d ⟨u, hu, v, hv, huv, rfl⟩
+      rcases hu with ⟨m, rfl⟩
+      rcases hv with ⟨m', rfl⟩
+      exact hammingDist_rsEncoder_ge_three huv
+  rw [← NNRat.coe_le_coe]
+  rw [← minDist_div_card_eq_minRelHammingDistCode (C := rsCodeSet)]
+  have hq : (3 : ℚ) ≤ (Code.minDist rsCodeSet : ℚ) := by
+    exact_mod_cast hmin
+  norm_num [Fintype.card_fin]
+  linarith
 
+end KoalaBear
