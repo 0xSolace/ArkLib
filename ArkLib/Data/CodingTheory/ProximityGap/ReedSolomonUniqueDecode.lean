@@ -184,7 +184,7 @@ on the set `{i : E(αᵢ) ≠ 0}` — of size `≥ n − e` — **both** `u₀` 
 two-line `2δ`): the **shared** locator forces a **common** agreement set, eliminating the factor-2
 loss.  (The remaining BCIKS20 ingredient is the bivariate existence of such a shared `(E, g₀, g₁)`
 from the many-close-scalars hypothesis.) -/
-theorem jointAgreement_of_common_locator {α : ι ↪ F} {k e : ℕ}
+theorem jointAgreement_of_common_locator {α : ι ↪ F} {e : ℕ}
     {u₀ u₁ : ι → F} {E g₀ g₁ : F[X]}
     (hE0 : E ≠ 0) (hEdeg : E.natDegree ≤ e)
     (hkey₀ : ∀ i, E.eval (α i) * u₀ i = (E * g₀).eval (α i))
@@ -244,9 +244,13 @@ theorem reedSolomon_jointAgreement_of_shared_locator [Fintype F]
     have hSr : ((Fintype.card ι : ℝ) - e) ≤ (S.card : ℝ) := by
       have := hScard
       have hle : (Fintype.card ι : ℝ) - e ≤ ((Fintype.card ι - e : ℕ) : ℝ) := by
-        rcases le_or_lt e (Fintype.card ι) with h | h
+        rcases le_total e (Fintype.card ι) with h | h
         · rw [Nat.cast_sub h]
-        · simp only [Nat.sub_eq_zero_of_le h.le, Nat.cast_zero]; linarith [Nat.cast_le.mpr h.le (α := ℝ)]
+        · have : ((Fintype.card ι - e : ℕ) : ℝ) = 0 := by
+            rw [Nat.sub_eq_zero_of_le h]; simp
+          rw [this]
+          have : (Fintype.card ι : ℝ) ≤ e := by exact_mod_cast h
+          linarith
       exact le_trans hle (by exact_mod_cast hScard)
     have hgoal : ((1 - δ : ℝ≥0) : ℝ) * Fintype.card ι ≤ (S.card : ℝ) := by
       rw [NNReal.coe_sub hδ1]; push_cast; nlinarith [hδ, hSr]
@@ -255,10 +259,10 @@ theorem reedSolomon_jointAgreement_of_shared_locator [Fintype F]
     exact_mod_cast this
   · intro j
     fin_cases j
-    · refine ⟨Submodule.apply_mem_map _ hg₀, ?_⟩
+    · refine ⟨Submodule.mem_map.mpr ⟨g₀, hg₀, rfl⟩, ?_⟩
       intro i hi
       simpa [ReedSolomon.evalOnPoints] using (h₀ i hi).symm
-    · refine ⟨Submodule.apply_mem_map _ hg₁, ?_⟩
+    · refine ⟨Submodule.mem_map.mpr ⟨g₁, hg₁, rfl⟩, ?_⟩
       intro i hi
       simpa [ReedSolomon.evalOnPoints] using (h₁ i hi).symm
 
