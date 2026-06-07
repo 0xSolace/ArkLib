@@ -40,6 +40,7 @@ namespace ProximityGap
 
 open scoped NNReal
 open ListDecodable
+open ProximityGap.GrandChallengesLattice
 
 variable {F ι : Type} [Field F] [Fintype F] [DecidableEq F]
   [Fintype ι] [Nonempty ι] [DecidableEq ι]
