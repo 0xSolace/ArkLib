@@ -1100,13 +1100,58 @@ theorem rs_epsCA_separation_bgks20_of_allButOne
       ((1 - ((1 : ℝ) / 8) ^ ((2 : ℝ) / 3)).toNNReal)
       uLoss γLossBad hLossJoint hLossGood)
 
+/-- **BGKS20 existential all-but-one connector.**  Same top-level T5.4 surface as
+`rs_epsCA_separation_bgks20_of_allButOne`, but matching paper statements that only assert the
+existence of one exceptional scalar for each stack. The lower bridge converts each existential
+all-but-one hypothesis into the corresponding `NearCertainBadLine` witness. -/
+theorem rs_epsCA_separation_bgks20_of_exists_allButOne
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F] [CharP F 2]
+    (hF_eq_ι : Fintype.card F = Fintype.card ι)
+    (hF_ge : 8 ≤ Fintype.card F)
+    (domain : ι ↪ F)
+    (uMain : WordStack F (Fin 2) ι)
+    (hMainJoint :
+      ¬ jointProximity
+        (C := ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F))))
+        (u := uMain)
+        ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal))
+    (hMainGood :
+      ∃ γMainBad : F, ∀ γ : F, γ ≠ γMainBad →
+        δᵣ(uMain 0 + γ • uMain 1,
+            ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F)))) ≤
+          ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal))
+    (uLoss : WordStack F (Fin 2) ι)
+    (hLossJoint :
+      ¬ jointProximity
+        (C := ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F))))
+        (u := uLoss)
+        ((1 - ((1 : ℝ) / 8) ^ ((2 : ℝ) / 3)).toNNReal))
+    (hLossGood :
+      ∃ γLossBad : F, ∀ γ : F, γ ≠ γLossBad →
+        δᵣ(uLoss 0 + γ • uLoss 1,
+            ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F)))) ≤
+          ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)) :
+    rs_epsCA_separation_bgks20 hF_eq_ι hF_ge domain :=
+  rs_epsCA_separation_bgks20_of_nearCertainBadLines hF_eq_ι hF_ge domain
+    (Bridge.nearCertainBadLine_of_exists_allButOne
+      ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F)))
+      ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)
+      ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)
+      uMain hMainJoint hMainGood)
+    (Bridge.nearCertainBadLine_of_exists_allButOne
+      ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F)))
+      ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)
+      ((1 - ((1 : ℝ) / 8) ^ ((2 : ℝ) / 3)).toNNReal)
+      uLoss hLossJoint hLossGood)
+
 end ListVsCAseparation
 
 end CodingTheory
 
-/- Axiom audit for the ABF26 T5.1 / GCXK25 front-door wrappers.  These entries cover the
-checked plumbing from per-stack/probability residuals and the GKL24 first-moment residual into
-the public T5.1 proposition. -/
+/- Axiom audit for the ABF26 T5.1 / GCXK25 and T5.4 / BGKS20 front-door wrappers.  These entries
+cover the checked plumbing from per-stack/probability residuals, GKL24 first-moment residuals, and
+BGKS20 all-but-one witnesses into the public propositions. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_residuals
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_bad_count
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
@@ -1119,3 +1164,4 @@ the public T5.1 proposition. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_residuals_prop
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_bad_count_prop
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual_prop
+#print axioms CodingTheory.rs_epsCA_separation_bgks20_of_exists_allButOne
