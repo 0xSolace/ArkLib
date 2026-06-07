@@ -166,14 +166,16 @@ def toSection5StrictData
     (Ppoly : F[X][Y])
     (hrep : polyToPowerSeries𝕃 b.H Ppoly = γ x₀ b.R b.H b.hHyp)
     (hdegX : Polynomial.Bivariate.degreeX Ppoly ≤ 1)
-    (hPz : ∀ v₀ v₁ : F[X],
+    (hHensel : ∀ v₀ v₁ : F[X],
       γ x₀ b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
         ((Polynomial.map Polynomial.C v₀)
           + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
-      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ, P z =
+      HPzBridge.HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
+    (hdegPz : ∀ v₀ v₁ : F[X],
+      γ x₀ b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
         ((Polynomial.map Polynomial.C v₀)
-            + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)).eval (Polynomial.C z))
-        ∧ v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1) :
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+      v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1) :
     CorrelatedAgreementListDecodingClosed.Section5StrictData
       (k := k) (deg := deg) (domain := domain) (δ := δ) u P where
   x₀ := x₀
@@ -195,7 +197,7 @@ def toSection5StrictData
   Ppoly := Ppoly
   hrep := hrep
   hdegX := hdegX
-  hPz := hPz
+  hPz := HPzBridge.hPz_of_henselDatum hHensel hdegPz
 
 end GSFactorData
 
