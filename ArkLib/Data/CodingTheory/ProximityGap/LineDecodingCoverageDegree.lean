@@ -97,6 +97,52 @@ theorem not_mcaEventBody_of_scalarCover_degree_gt_one
   hpair (pairJointAgreesOn_of_scalarCover_degree_gt_one C S u₀ u₁ v₁ v₂ T
     hv₁ hv₂ hdeg hagree)
 
+/-- **Per-bad-scalar scalar-degree cover obligation.** This is the incidence-degree version of
+`MCABadScalarDoubleCover`: for every exposed bad-event witness set, it supplies a candidate
+codeword pair and a scalar-indexed coordinate cover whose degree is `> 1` on the whole witness
+set. -/
+def MCABadScalarDegreeCover (C : Set (ι → A)) (δ : ℝ≥0)
+    (u₀ u₁ : ι → A) (γ : F) : Prop :=
+  mcaEvent C δ u₀ u₁ γ →
+    ∀ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι →
+      (∃ w ∈ C, ∀ i ∈ S, w i = u₀ i + γ • u₁ i) →
+      ¬ pairJointAgreesOn C S u₀ u₁ →
+      ∃ v₁ ∈ C, ∃ v₂ ∈ C, ∃ T : F → Finset ι,
+        (∀ i ∈ S, 1 < (Finset.univ.filter (fun a : F => i ∈ T a)).card) ∧
+        (∀ (a : F) (i : ι), i ∈ T a →
+          v₁ i + a • v₂ i = u₀ i + a • u₁ i)
+
+omit [Nonempty ι] [DecidableEq F] [Fintype A] [DecidableEq A] in
+/-- A scalar-degree cover obligation supplies the named repaired bad-scalar double-cover
+obligation. -/
+theorem MCABadScalarDoubleCover.of_degreeCover
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F)
+    (hcov : MCABadScalarDegreeCover (F := F) (A := A) C δ u₀ u₁ γ) :
+    MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ := by
+  intro hγ S hsize hwit hpair
+  rcases hcov hγ S hsize hwit hpair with
+    ⟨v₁, hv₁, v₂, hv₂, T, hdeg, hagree⟩
+  exact MCADoubleCoverOn.of_scalarCover_degree_gt_one C S u₀ u₁ v₁ v₂ T
+    hv₁ hv₂ hdeg hagree
+
+/-- A per-stack/per-scalar family of scalar-degree cover obligations supplies the global repaired
+T4.21 double-cover hypothesis. -/
+theorem MCAForallDoubleCover.of_forall_degreeCover
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDegreeCover (F := F) (A := A) C δ (u 0) (u 1) γ) :
+    MCAForallDoubleCover (F := F) (A := A) C δ :=
+  MCAForallDoubleCover.of_badScalarDoubleCover C δ fun u γ =>
+    MCABadScalarDoubleCover.of_degreeCover C δ (u 0) (u 1) γ (hcov u γ)
+
+/-- A scalar-degree cover obligation rules out the corresponding MCA bad event. -/
+theorem MCABadScalarDegreeCover.not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F)
+    (hcov : MCABadScalarDegreeCover (F := F) (A := A) C δ u₀ u₁ γ) :
+    ¬ mcaEvent C δ u₀ u₁ γ :=
+  MCABadScalarDoubleCover.not_mcaEvent C δ u₀ u₁ γ
+    (MCABadScalarDoubleCover.of_degreeCover C δ u₀ u₁ γ hcov)
+
 end
 
 end ProximityGap
@@ -109,3 +155,11 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.MCADoubleCoverOn.of_scalarCover_degree_gt_one
 set_option linter.style.longLine false in
 #print axioms ProximityGap.not_mcaEventBody_of_scalarCover_degree_gt_one
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCABadScalarDegreeCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCABadScalarDoubleCover.of_degreeCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCAForallDoubleCover.of_forall_degreeCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCABadScalarDegreeCover.not_mcaEvent
