@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
 import Mathlib.Tactic.Linarith
 
@@ -178,6 +179,49 @@ noncomputable def GrandChallenges.MCALowerWitness.of_forall_gs_curve_cover
       (epsMCA_le_of_forall_gs_curve_cover C δ μ M hM hμ α hcover)
       hbudget)
 
+/-- Existential projection of the faithful GS-cover lower witness, preserving the certified
+radius. -/
+theorem GrandChallenges.exists_mcaLowerWitness_of_forall_gs_curve_cover
+    (C : Set (ι → F)) {δ ε_star : ℝ≥0}
+    (μ : ι → Set.Icc (0 : ℚ) 1) (M : ℕ) (hM : 0 < M)
+    (hμ : ∀ i, ∃ n : ℤ, (μ i).1 = (n : ℚ) / (M : ℚ))
+    (α : ℝ≥0)
+    (hδ : δ ≤ 1)
+    (hcover : ∀ u : Code.WordStack F (Fin 2) ι, ∃ v : Fin 2 → ι → F,
+      (∀ γ : F, mcaEvent C δ (u 0) (u 1) γ →
+          (α : ℝ) ≤ agree μ
+            (fun x => Curve.polynomialCurveEval (F := F) (A := F) ![u 0, u 1] γ x)
+            (fun x => Curve.polynomialCurveEval (F := F) (A := F) v γ x)) ∧
+      mu_set μ { x : ι | ∀ i, (![u 0, u 1] : Fin 2 → ι → F) i x = v i x } <
+        (α : ℝ))
+    (hbudget :
+      ((M * Fintype.card ι + 1 : ℕ) : ENNReal) / (Fintype.card F : ENNReal) ≤
+        (ε_star : ENNReal)) :
+    ∃ w : GrandChallenges.MCALowerWitness (F := F) C ε_star, w.δ = δ := by
+  refine ⟨GrandChallenges.MCALowerWitness.of_forall_gs_curve_cover
+    C μ M hM hμ α hδ hcover hbudget, rfl⟩
+
+/-- `Nonempty` projection of the faithful GS-cover lower witness. -/
+theorem GrandChallenges.nonempty_mcaLowerWitness_of_forall_gs_curve_cover
+    (C : Set (ι → F)) {δ ε_star : ℝ≥0}
+    (μ : ι → Set.Icc (0 : ℚ) 1) (M : ℕ) (hM : 0 < M)
+    (hμ : ∀ i, ∃ n : ℤ, (μ i).1 = (n : ℚ) / (M : ℚ))
+    (α : ℝ≥0)
+    (hδ : δ ≤ 1)
+    (hcover : ∀ u : Code.WordStack F (Fin 2) ι, ∃ v : Fin 2 → ι → F,
+      (∀ γ : F, mcaEvent C δ (u 0) (u 1) γ →
+          (α : ℝ) ≤ agree μ
+            (fun x => Curve.polynomialCurveEval (F := F) (A := F) ![u 0, u 1] γ x)
+            (fun x => Curve.polynomialCurveEval (F := F) (A := F) v γ x)) ∧
+      mu_set μ { x : ι | ∀ i, (![u 0, u 1] : Fin 2 → ι → F) i x = v i x } <
+        (α : ℝ))
+    (hbudget :
+      ((M * Fintype.card ι + 1 : ℕ) : ENNReal) / (Fintype.card F : ENNReal) ≤
+        (ε_star : ENNReal)) :
+    Nonempty (GrandChallenges.MCALowerWitness (F := F) C ε_star) :=
+  ⟨GrandChallenges.MCALowerWitness.of_forall_gs_curve_cover
+    C μ M hM hμ α hδ hcover hbudget⟩
+
 end ProximityGap
 
 /-! ### `#print axioms` verification anchor -/
@@ -185,3 +229,5 @@ end ProximityGap
 #print axioms ProximityGap.mcaBadCount_lt_of_gs_curve_cover
 #print axioms ProximityGap.epsMCA_le_of_forall_gs_curve_cover
 #print axioms ProximityGap.GrandChallenges.MCALowerWitness.of_forall_gs_curve_cover
+#print axioms ProximityGap.GrandChallenges.exists_mcaLowerWitness_of_forall_gs_curve_cover
+#print axioms ProximityGap.GrandChallenges.nonempty_mcaLowerWitness_of_forall_gs_curve_cover

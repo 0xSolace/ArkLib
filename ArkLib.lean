@@ -242,6 +242,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringWitness
 import ArkLib.Data.CodingTheory.ProximityGap.CS25JointProxBound
 import ArkLib.Data.CodingTheory.ProximityGap.CS25NonDegeneratePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSCoveredFraction
+import ArkLib.Data.CodingTheory.ProximityGap.CS25RSMinWeight
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSNearBound
 import ArkLib.Data.CodingTheory.ProximityGap.CS25ReedSolomonHighDist
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentAssembly
@@ -809,6 +810,7 @@ import ArkLib.ToMathlib.L46DiffStackRS
 import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.LineDecodingCoverageProof
 import ArkLib.ToMathlib.LinearizedKernel
+import ArkLib.ToMathlib.LinearizedProductClosure
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.LinearizedSupportStep
 import ArkLib.ToMathlib.List.Basic
