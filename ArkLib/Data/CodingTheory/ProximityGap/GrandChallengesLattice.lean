@@ -82,7 +82,7 @@ keep whichever shape is most convenient.
 - [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
 -/
 
-set_option linter.style.longFile 2000
+set_option linter.style.longFile 3700
 
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false

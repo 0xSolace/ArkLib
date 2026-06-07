@@ -1042,14 +1042,14 @@ lemma iterated_fold_to_const_strict
   let P₀: L⦃< 2 ^ ℓ⦄[X] := polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
     (fun ω => witIn.t.val.eval (bitsOfIndex ω))
   let f₀ := polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := 0) (P := P₀)
-  -- From strictOracleWitnessConsistency, we can construct strictFinalFoldingStateProp
+  -- From strictOracleWitnessConsistency, we can construct strictfinalSumcheckStepFoldingStateProp
   -- which contains strictFinalConstantConsistency, giving us the desired equality
   -- Extract components from h_strictOracleWitConsistency_In
   have h_wit_struct := h_strictOracleWitConsistency_In.1
   have h_strict_oracle_folding := h_strictOracleWitConsistency_In.2
   dsimp only [Fin.val_last, OracleFrontierIndex.val_mkFromStmtIdx,
     strictOracleFoldingConsistencyProp] at h_strict_oracle_folding
-  -- Construct the input for strictFinalFoldingStateProp
+  -- Construct the input for strictfinalSumcheckStepFoldingStateProp
   let stmtOut : FinalSumcheckStatementOut (L := L) (ℓ := ℓ) := {
     ctx := stmtIn.ctx,
     sumcheck_target := stmtIn.sumcheck_target,
@@ -1415,7 +1415,7 @@ lemma finalSumcheckStep_is_logic_complete :
     -- Fact 2: Output relation holds (foldStepRelOut)
     simp only [finalSumcheckStepLogic, strictRoundRelation, strictRoundRelationProp, Fin.val_last,
       Prod.mk.eta, Set.mem_setOf_eq, strictFinalSumcheckRelOut, strictFinalSumcheckRelOutProp,
-      strictFinalFoldingStateProp, exists_and_right, Subtype.exists, Fin.isValue, MessageIdx,
+      strictfinalSumcheckStepFoldingStateProp, exists_and_right, Subtype.exists, Fin.isValue, MessageIdx,
       Fin.eta, step]
     -- let r_i' := challenges ⟨1, rfl⟩
     -- rw [h_verifierOStmtOut_eq];

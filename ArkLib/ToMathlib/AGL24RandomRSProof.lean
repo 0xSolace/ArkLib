@@ -47,10 +47,12 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 Reed-Solomon code `RS[F, L, k]` is list-decodable at the near-capacity radius `1 - k/n - η`
 with list size `≤ listBound`. -/
 noncomputable def randomRSListDecodingEvent
-    (n k listBound : ℕ) (η : ℝ) (L : Probability.SizeSubset F n) : Prop :=
-  Lambda
-    ((ReedSolomon.code (Probability.SizeSubset.toEmbedding L) k : Set (L → F)))
-    (1 - (k : ℝ) / (n : ℝ) - η) ≤ (listBound : ℕ∞)
+    (n k listBound : ℕ) (η : ℝ) (L : Probability.SizeSubset F n) : Prop := by
+  classical
+  exact
+    Lambda
+      ((ReedSolomon.code (Probability.SizeSubset.toEmbedding L) k : Set (L → F)))
+      (1 - (k : ℝ) / (n : ℝ) - η) ≤ (listBound : ℕ∞)
 
 /-- The AGL24 **bad-domain** event: the sampled domain `L` *fails* the near-capacity
 list-decoding bound.  This is exactly the negation of `randomRSListDecodingEvent`. -/
