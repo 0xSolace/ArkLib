@@ -162,6 +162,7 @@ theorem hasseEvalAtRoot_eq_singleBcoeff_of_restrictedMatchAt_zero
       restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp :=
   (restrictedMatchAt_zero_iff_hasseEvalAtRoot_eq_singleBcoeff H x₀ R hHyp).1 hmatch
 
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
 /-- For the empty partition, the surviving `B_coeff` is just the bare un-cleared
 iterated-Hasse representative. -/
 theorem B_coeff_indiscrete_zero_eq_hasseCoeffRepr𝒪
