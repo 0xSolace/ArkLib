@@ -93,11 +93,10 @@ theorem nearCertainBadLine_of_line_code
   -- Each good line point is *exactly* in `C`, so its distance to `C` is `0 ≤ δ_fld`.
   have hmem : u 0 + γ • u 1 ∈ C := hΓ γ hγ
   have h0 : δᵣ(u 0 + γ • u 1, C) ≤ (0 : ENNReal) := by
-    have hself : δᵣ(u 0 + γ • u 1, u 0 + γ • u 1) = (0 : ℚ≥0) := by
-      rw [relHammingDist, hammingDist_self, Nat.cast_zero, zero_div]
-    refine le_trans (relDistFromCode_le_relDist_to_mem _ _ hmem) ?_
-    rw [hself]
-    simp only [NNRat.cast_zero, ENNReal.coe_zero]
+    have h0' : δᵣ(u 0 + γ • u 1, C) ≤ ((0 : ℝ≥0) : ENNReal) := by
+      rw [relDistFromCode_le_iff_distFromCode_le]
+      simpa [distFromCode_eq_zero_iff_mem] using hmem
+    simpa using h0'
   exact le_trans h0 (by positivity)
 
 /-- **T5.4 endpoint from the line-code producer.**
@@ -153,17 +152,21 @@ theorem char2_nearCertainBadLine (δ_fld : ℝ≥0) :
     fin_cases γ
     · -- γ = 0 : line point = u 0 = ![0,1] ∈ C
       left
-      ext i <;> fin_cases i <;> rfl
+      ext i
+      fin_cases i <;> rfl
     · -- γ = 1 : line point = u 0 + u 1 = ![1,1] ∈ C
       right
-      ext i; fin_cases i <;>
-        norm_num [char2Stack, Matrix.cons_val_zero, Matrix.cons_val_one] <;> rfl
+      ext i
+      fin_cases i
+      · norm_num [char2Stack, Matrix.cons_val_zero, Matrix.cons_val_one]
+        rfl
+      · rfl
   · -- `|Γ| = |F| = 2 ≥ |F| - 1`.
     simp only [Finset.card_univ, ZMod.card]
     norm_num
   · -- `u 1 = ![1,0] ∉ C = {![0,1], ![1,1]}`.
     simp only [char2Code, char2Stack, Set.mem_insert_iff, Set.mem_singleton_iff,
-      Matrix.cons_val_one, Matrix.head_cons]
+      Matrix.cons_val_one]
     rintro (h | h)
     · have := congrFun h 0; simp at this
     · have := congrFun h 1; simp at this
