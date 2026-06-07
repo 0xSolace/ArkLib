@@ -104,37 +104,38 @@ Given constants `c₁, c₂, c₃` for which the per-stack GS-row mass bound hol
 the conjecture `epsMCAgs_prizeBound_conjecture` follows. The open beyond-UDR content is now the
 single explicit hypothesis `hMass`; the rest is the supremum plumbing. -/
 theorem epsMCAgs_prizeBound_of_massBound
-    (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
-    (L : WordStack F (Fin 2) ι → Finset (ι → F))
-    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ))
+    (domain : ι ↪ F) (m : ℕ)
     (c₁ c₂ c₃ : ℝ)
-    (hMass : epsMCAgsMassBound (F := F)
-      ((ReedSolomon.code (domain := domain)
-        ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
-      δ L
-      (ENNReal.ofReal
-        (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃))) :
-    epsMCAgs_prizeBound_conjecture domain j m η δ hη L hδ := by
-  refine ⟨c₁, c₂, c₃, ?_⟩
-  exact epsMCAgs_le_of_massBound _ _ _ hMass
+    (hMass : ∀ (j : Fin 4) (η δ : ℝ≥0),
+      0 < η → (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ) →
+      ∀ L : WordStack F (Fin 2) ι → Finset (ι → F),
+        epsMCAgsMassBound (F := F)
+          ((ReedSolomon.code (domain := domain)
+            ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))) δ L
+          (ENNReal.ofReal
+            (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃))) :
+    epsMCAgs_prizeBound_conjecture domain m := by
+  refine ⟨c₁, c₂, c₃, fun j η δ hη hδ L => ?_⟩
+  exact epsMCAgs_le_of_massBound _ _ _ (hMass j η δ hη hδ L)
 
 /-- A GS-exposed prize-conjecture hypothesis unpacks to constants and a per-stack mass bound at
 the prize RHS. The conjecture remains an explicit input; this only converts its supremum-shaped
 conclusion into the lower-witness API's uniform mass-bound shape. -/
 theorem exists_epsMCAgsMassBound_of_prizeBound_conjecture
-    (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
-    (L : WordStack F (Fin 2) ι → Finset (ι → F))
-    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ))
-    (hPrize : epsMCAgs_prizeBound_conjecture domain j m η δ hη L hδ) :
+    (domain : ι ↪ F) (m : ℕ)
+    (hPrize : epsMCAgs_prizeBound_conjecture domain m) :
     ∃ c₁ c₂ c₃ : ℝ,
-      epsMCAgsMassBound (F := F)
-        ((ReedSolomon.code (domain := domain)
-          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
-        δ L
-        (ENNReal.ofReal
-          (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)) := by
+      ∀ (j : Fin 4) (η δ : ℝ≥0),
+        0 < η → (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ) →
+        ∀ L : WordStack F (Fin 2) ι → Finset (ι → F),
+          epsMCAgsMassBound (F := F)
+            ((ReedSolomon.code (domain := domain)
+              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))) δ L
+            (ENNReal.ofReal
+              (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)) := by
   rcases hPrize with ⟨c₁, c₂, c₃, hBound⟩
-  exact ⟨c₁, c₂, c₃, epsMCAgsMassBound_of_epsMCAgs_le _ _ _ hBound⟩
+  refine ⟨c₁, c₂, c₃, fun j η δ hη hδ L => ?_⟩
+  exact epsMCAgsMassBound_of_epsMCAgs_le _ _ _ (hBound j η δ hη hδ L)
 
 /-! ## Step 2: the Step-3 count, wired into an `epsMCAgs` bound
 

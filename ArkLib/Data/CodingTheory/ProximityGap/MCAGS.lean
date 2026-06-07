@@ -533,16 +533,17 @@ This is a named `Prop`, not a theorem: carrying it as a theorem with `sorry` wou
 open prize into `sorryAx`. Downstream formal developments should take this proposition as an
 explicit hypothesis until the beyond-UDR GS mass bound is actually proved. -/
 def epsMCAgs_prizeBound_conjecture
-    (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
-    (L : WordStack F (Fin 2) ι → Finset (ι → F))
-    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ)) : Prop :=
-    ∃ c₁ c₂ c₃ : ℝ,
-      epsMCAgs (F := F)
-        ((ReedSolomon.code (domain := domain)
-          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
-        δ L
-      ≤ ENNReal.ofReal
-          (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)
+    (domain : ι ↪ F) (m : ℕ) : Prop :=
+  ∃ c₁ c₂ c₃ : ℝ,
+    ∀ (j : Fin 4) (η δ : ℝ≥0),
+      0 < η →
+      (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ) →
+      ∀ L : WordStack F (Fin 2) ι → Finset (ι → F),
+        epsMCAgs (F := F)
+          ((ReedSolomon.code (domain := domain)
+            ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))) δ L
+        ≤ ENNReal.ofReal
+            (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)
 
 end Prize
 
