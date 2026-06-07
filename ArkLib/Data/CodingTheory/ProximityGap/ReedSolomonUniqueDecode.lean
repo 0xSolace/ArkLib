@@ -266,4 +266,31 @@ theorem reedSolomon_jointAgreement_of_shared_locator [Fintype F]
       intro i hi
       simpa [ReedSolomon.evalOnPoints] using (h₁ i hi).symm
 
+/-- **Exact-radius shared-locator corollary.**  The shared-locator theorem applies at the natural
+boundary radius `δ = e / |ι|` whenever `e ≤ |ι|` and the evaluation domain is nonempty. This is the
+same conditional BCIKS20 reconstruction as `reedSolomon_jointAgreement_of_shared_locator`, with the
+radius side conditions discharged. -/
+theorem reedSolomon_jointAgreement_of_shared_locator_exact [Fintype F]
+    {α : ι ↪ F} {k e : ℕ} [NeZero k] {u₀ u₁ : ι → F} {E g₀ g₁ : F[X]}
+    (hE0 : E ≠ 0) (hEdeg : E.natDegree ≤ e)
+    (hg₀ : g₀ ∈ Polynomial.degreeLT F k) (hg₁ : g₁ ∈ Polynomial.degreeLT F k)
+    (hkey₀ : ∀ i, E.eval (α i) * u₀ i = (E * g₀).eval (α i))
+    (hkey₁ : ∀ i, E.eval (α i) * u₁ i = (E * g₁).eval (α i))
+    (hn : 0 < Fintype.card ι) (he : e ≤ Fintype.card ι) :
+    Code.jointAgreement (↑(ReedSolomon.code α k) : Set (ι → F))
+      ((e : ℝ≥0) / (Fintype.card ι : ℝ≥0))
+      (![u₀, u₁] : Fin 2 → ι → F) := by
+  refine reedSolomon_jointAgreement_of_shared_locator
+    hE0 hEdeg hg₀ hg₁ hkey₀ hkey₁
+    ((e : ℝ≥0) / (Fintype.card ι : ℝ≥0)) ?_ ?_
+  · rw [div_le_one (by exact_mod_cast hn)]
+    exact_mod_cast he
+  · rw [NNReal.coe_div]
+    norm_num
+    rw [div_mul_cancel₀ _ (by exact_mod_cast hn.ne')]
+
+#print axioms ReedSolomon.jointAgreement_of_common_locator
+#print axioms ReedSolomon.reedSolomon_jointAgreement_of_shared_locator
+#print axioms ReedSolomon.reedSolomon_jointAgreement_of_shared_locator_exact
+
 end ReedSolomon

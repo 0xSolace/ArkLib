@@ -78,9 +78,10 @@ theorem clearingProduct_dvd_βHensel_of_alphaWeight (x₀ : F) (R : F[X][X][Y])
   obtain ⟨a, ha_eq, _⟩ := hα t
   exact clearingProduct_dvd_βHensel_of_alpha H x₀ R hHyp hH t ha_eq (hlift t)
 
-/-- **The `DivWeightLe` quotient is unique.** Any two `𝒪`-elements that both clear `βHensel t` by the
-clearing product are equal. As `𝒪 H` has no `NoZeroDivisors` instance, cancellation routes through
-the injective field embedding `embeddingOf𝒪Into𝕃` and the nonzero denominator (`den_ne_zero`). -/
+/-- **The `DivWeightLe` quotient is unique.** Any two `𝒪`-elements that both clear `βHensel t` by
+the clearing product are equal. As `𝒪 H` has no `NoZeroDivisors` instance, cancellation routes
+through the injective field embedding `embeddingOf𝒪Into𝕃` and the nonzero denominator
+(`den_ne_zero`). -/
 theorem divWeight_quotient_unique (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (t : ℕ) {a₁ a₂ : 𝒪 H}
     (h₁ : βHensel H x₀ R hHyp t
