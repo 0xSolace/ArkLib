@@ -496,6 +496,14 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
 #print axioms finalCheckWithClaim
 #print axioms finalCheckWithClaimRelIn
 #print axioms finalCheckWithClaimRelOut
+#print axioms finalCheckRelIn
+#print axioms finalCheckRelOut
+#print axioms firstSumcheckResidual
+#print axioms secondSumcheckResidual
+#print axioms spartanRelIn
+#print axioms composedPIOPResidual
+#print axioms composedCompletenessResidual
+#print axioms composedRbrKnowledgeSoundnessResidual
 #print axioms composedPIOPWithClaimResidual
 #print axioms composedCompletenessWithClaimResidual
 #print axioms composedRbrKnowledgeSoundnessWithClaimResidual
