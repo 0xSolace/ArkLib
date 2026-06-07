@@ -17,6 +17,8 @@ import Mathlib
   arguments, #113/#116).
 * `Polynomial.card_eval_disagreement_ge_of_natDegree_lt` — the complementary lower bound on
   disagreement points.
+* `Polynomial.card_filter_forall_isRoot_le` — for a nonzero polynomial of degree `< N`, at most
+  `(N-1)^s` length-`s` tuples are all roots.
 * `Finset.sum_boolCube_prod_factor_eq_prod_sum` — the boolean-hypercube identity
   `∑_{x∈{0,1}^σ} ∏ᵢ (xᵢ=0 ? aᵢ : bᵢ) = ∏ᵢ (aᵢ + bᵢ)` underlying multilinear-extension sumcheck
   folding (#13/#114).
@@ -98,6 +100,28 @@ theorem card_eval_disagreement_ge_of_natDegree_lt {F : Type*} [Field F] [Fintype
   rw [hdisagree_filter, hcard] at hsplit
   omega
 
+/-- If `p` is nonzero of degree `< N`, then at most `(N-1)^s` length-`s` tuples
+are made entirely of roots of `p`. -/
+theorem card_filter_forall_isRoot_le {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {N s : ℕ} {p : F[X]} (hp0 : p ≠ 0) (hp : p.natDegree < N) :
+    (Finset.univ.filter (fun r : Fin s → F => ∀ i, p.IsRoot (r i))).card ≤
+      (N - 1) ^ s := by
+  classical
+  have hroot_card :
+      (Finset.univ.filter (fun x : F => p.IsRoot x)).card ≤ N - 1 := by
+    have hsub : (Finset.univ.filter (fun x : F => p.IsRoot x)) ⊆ p.roots.toFinset := by
+      intro x hx
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx
+      rw [Multiset.mem_toFinset, Polynomial.mem_roots hp0]
+      exact hx
+    calc (Finset.univ.filter (fun x : F => p.IsRoot x)).card
+        ≤ p.roots.toFinset.card := Finset.card_le_card hsub
+      _ ≤ Multiset.card p.roots := Multiset.toFinset_card_le _
+      _ ≤ p.natDegree := Polynomial.card_roots' _
+      _ ≤ N - 1 := by omega
+  rw [card_filter_forall_pi (β := F) s (fun x : F => p.IsRoot x)]
+  exact Nat.pow_le_pow_left hroot_card s
+
 end Polynomial
 
 namespace Finset
@@ -119,4 +143,5 @@ end Finset
 #print axioms card_filter_exists_not_pi
 #print axioms Polynomial.card_eval_agreement_le_of_natDegree_lt
 #print axioms Polynomial.card_eval_disagreement_ge_of_natDegree_lt
+#print axioms Polynomial.card_filter_forall_isRoot_le
 #print axioms Finset.sum_boolCube_prod_factor_eq_prod_sum
