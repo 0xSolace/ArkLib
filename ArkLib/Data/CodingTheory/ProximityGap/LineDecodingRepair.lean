@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
+import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRefutation
 
 /-!
@@ -32,6 +33,8 @@ open CodingTheory ProximityGap Code
 open CodingTheory.LineDecodingRefutation
 
 set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
 
 /-! ## (A) Strengthened statement + counterexample-exclusion -/
 
@@ -54,6 +57,71 @@ def lineDecodable_imp_epsMCA_le_nondegenerate
         ≤ (a : ENNReal) / (Fintype.card F : ENNReal)
 
 end Statement
+
+/-! ## (A') Discharging the strengthened target from explicit repaired frontiers -/
+
+section RepairedDischarge
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
+
+/-- The strengthened nondegenerate target is discharged by the explicit repaired
+double-cover frontier. This composes the already-proved coverage implication with the repaired
+statement shape; it does not derive double-cover data from line-decodability. -/
+theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_double_cover
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (hC : C ≠ ⊥) (ha : 0 < a)
+    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hcov : MCAForallDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ) :
+    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD := by
+  dsimp [lineDecodable_imp_epsMCA_le_nondegenerate]
+  rw [epsMCA_eq_zero_of_forall_double_cover (F := F) (A := A) (C : Set (ι → A)) δ hcov]
+  exact zero_le _
+
+/-- The strengthened nondegenerate target is discharged by named per-bad-scalar double-cover
+obligations. -/
+theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_badScalarDoubleCover
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (hC : C ≠ ⊥) (ha : 0 < a)
+    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hcov : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ (u 0) (u 1) γ) :
+    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD := by
+  dsimp [lineDecodable_imp_epsMCA_le_nondegenerate]
+  rw [epsMCA_eq_zero_of_badScalarDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ hcov]
+  exact zero_le _
+
+/-- The strengthened nondegenerate target is discharged by per-stack zero bad-scalar counts. -/
+theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_mcaBadCount_eq_zero
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (hC : C ≠ ⊥) (ha : 0 < a)
+    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hzero : ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) (C : Set (ι → A)) δ (u 0) (u 1) = 0) :
+    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD := by
+  dsimp [lineDecodable_imp_epsMCA_le_nondegenerate]
+  rw [epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero (F := F) (A := A)
+    (C : Set (ι → A)) δ hzero]
+  exact zero_le _
+
+/-- The strengthened nondegenerate target is discharged by a direct no-bad-event frontier. -/
+theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_not_mcaEvent
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (hC : C ≠ ⊥) (ha : 0 < a)
+    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hno : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) γ) :
+    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD := by
+  dsimp [lineDecodable_imp_epsMCA_le_nondegenerate]
+  rw [epsMCA_eq_zero_of_forall_not_mcaEvent (F := F) (A := A) (C : Set (ι → A)) δ hno]
+  exact zero_le _
+
+end RepairedDischarge
 
 /-- The in-tree refutation code `Czero` is definitionally the zero submodule. -/
 theorem Czero_eq_bot : (Czero : ModuleCode ι F A) = ⊥ := rfl
@@ -183,5 +251,13 @@ theorem epsMCA_Czero_eq_half :
 end CodingTheory.LineDecodingRepair
 
 #print axioms CodingTheory.LineDecodingRepair.refutation_tuple_excluded
+set_option linter.style.longLine false in
+#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_double_cover
+set_option linter.style.longLine false in
+#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_badScalarDoubleCover
+set_option linter.style.longLine false in
+#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_mcaBadCount_eq_zero
+set_option linter.style.longLine false in
+#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_not_mcaEvent
 #print axioms CodingTheory.LineDecodingRepair.epsMCA_Czero_eq_inv_card
 #print axioms CodingTheory.LineDecodingRepair.not_mcaEvent_both
