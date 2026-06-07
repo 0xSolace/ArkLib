@@ -127,7 +127,6 @@ theorem fprune_one_step
     intro j _
     have hdj : (d j : ℝ) + η ≠ 0 := ne_of_gt (hposTerm j)
     field_simp
-    ring_nf
   rw [Finset.sum_congr rfl hterm, Finset.sum_const, nsmul_eq_mul]
   -- `W ≤ |J|·(1-η')(r+η)` termwise from the good predicate.
   have hWle : W ≤ (J.card : ℝ) * ((1 - η') * ((r : ℝ) + η)) := by
@@ -138,7 +137,7 @@ theorem fprune_one_step
           rw [Finset.sum_const, nsmul_eq_mul]
   -- Conclude `η/(r+η) ≤ |J|·(1-η')η / W`.
   have key : η / ((r : ℝ) + η) ≤ ((J.card : ℝ) * (1 - η') * η) / W := by
-    rw [div_le_div_iff hrη hWpos]
+    rw [le_div_iff₀ hWpos, div_mul_eq_mul_div, div_le_iff₀ hrη]
     -- `η · W ≤ (|J|·(1-η')·η) · (r+η)`, i.e. `η · hWle`.
     nlinarith [mul_le_mul_of_nonneg_left hWle (le_of_lt hη), hη, hWpos, hrη]
   calc η / ((r : ℕ) + η)
