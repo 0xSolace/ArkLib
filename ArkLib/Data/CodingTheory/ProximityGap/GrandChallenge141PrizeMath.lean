@@ -497,6 +497,85 @@ theorem exists_mcaPrizeLatticeSpec_of_uniformConjecture
   rcases hresolved η δ hη hδ hδ_le_one L hfaithful hclear with ⟨τ, _, hspec⟩
   exact ⟨τ, hspec⟩
 
+/-- The honest uniform GS-exposed prize, plus explicit GS faithfulness and numeric clearance,
+supplies the all-rate selected-threshold specification together with the lower lattice brackets
+`latticeIndexOf (δ j) ≤ τ j`.
+
+This strengthens the spec-only projection by keeping the lower witnesses used in the aggregation
+visible long enough to derive the per-rate lower bracket from threshold maximality. The uniform GS
+prize, faithfulness, and clearance hypotheses remain explicit. -/
+theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (η δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < η j) →
+        (∀ j : Fin 4,
+          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
+        (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1) →
+        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
+          (∀ j : Fin 4,
+            FaithfulGSFamily (F := F)
+              ((ReedSolomon.code (domain := domain)
+                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                  Set (ι → F))) (δ j) (L j)) →
+          (∀ j : Fin 4,
+            ENNReal.ofReal
+                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+                  (η j) c₁ c₂ c₃)
+              ≤ (epsStar : ENNReal)) →
+          ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+            (∀ j : Fin 4,
+              let C : Set (ι → F) :=
+                ReedSolomon.code domain
+                  ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+              ∃ _ : GrandChallengesLattice.mcaThresholdExists C epsStar,
+                GrandChallengesLattice.mcaSatisfies C epsStar (τ j) ∧
+                  ∀ i : Fin (Fintype.card ι + 1),
+                    GrandChallengesLattice.mcaSatisfies C epsStar i → i ≤ τ j) ∧
+              ∀ j : Fin 4,
+                GrandChallengesLattice.latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤
+                  τ j := by
+  rcases exists_prize_mcaLowerWitnesses_allRates_of_uniformConjecture domain m hUniform with
+    ⟨c₁, c₂, c₃, hlower⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro η δ hη hδ hδ_le_one L hfaithful hclear
+  have hw : ∀ j : Fin 4,
+      ∃ w : GrandChallenges.MCALowerWitness
+        ((ReedSolomon.code (domain := domain)
+          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+            Set (ι → F))) epsStar,
+        w.δ = δ j :=
+    hlower η δ hη hδ hδ_le_one L hfaithful hclear
+  let w : ∀ j : Fin 4,
+      GrandChallenges.MCALowerWitness
+        ((ReedSolomon.code (domain := domain)
+          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+            Set (ι → F))) epsStar :=
+    fun j => Classical.choose (hw j)
+  have hδw : ∀ j : Fin 4, (w j).δ = δ j :=
+    fun j => Classical.choose_spec (hw j)
+  rcases GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses
+      domain w with ⟨τ, _hτ, hspec⟩
+  refine ⟨τ, hspec, ?_⟩
+  intro j
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  rcases hspec j with ⟨hne, _hsat, hmax⟩
+  have hle_lower :
+      GrandChallengesLattice.latticeIndexOf (ι := ι) (w j).δ (w j).le_one ≤
+        GrandChallengesLattice.mcaThreshold C epsStar hne := by
+    exact GrandChallengesLattice.MCALowerWitness_le_mcaThreshold C epsStar hne (w j)
+  have hle_threshold :
+      GrandChallengesLattice.mcaThreshold C epsStar hne ≤ τ j := by
+    exact hmax _ (GrandChallengesLattice.mcaThreshold_spec C epsStar hne)
+  have hidx :
+      GrandChallengesLattice.latticeIndexOf (ι := ι) (w j).δ (w j).le_one =
+        GrandChallengesLattice.latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) := by
+    apply Fin.ext
+    simp [GrandChallengesLattice.latticeIndexOf_val, hδw j]
+  exact hidx ▸ le_trans hle_lower hle_threshold
+
 /-- The honest uniform GS-exposed prize, with explicit GS faithfulness and numeric clearance,
 produces a faithful MCA threshold-existence witness for a single ABF26 prize-rate code. -/
 theorem mcaThresholdExists_prize_of_uniformConjecture
@@ -628,6 +707,7 @@ end Reduction
 #print axioms exists_mcaPrizeLatticeResolved_with_spec_of_uniformConjecture
 #print axioms exists_mcaPrizeLatticeResolved_of_uniformConjecture
 #print axioms exists_mcaPrizeLatticeSpec_of_uniformConjecture
+#print axioms exists_mcaPrizeLatticeSpec_and_lower_brackets_of_uniformConjecture
 #print axioms mcaThresholdExists_prize_of_uniformConjecture
 #print axioms mcaThreshold_spec_and_lower_bracket_prize_of_uniformConjecture
 #print axioms epsMCAgs_prizeBound_of_listSize_clears
