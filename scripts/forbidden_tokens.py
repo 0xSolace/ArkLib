@@ -6,7 +6,9 @@ provided, scans only those Lean files/directories. Fails if live
 (non-comment) code contains:
   - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
   - a custom `axiom` declaration whose name is not an allowlisted, documented
-    residual (see scripts/residual_axioms.txt).
+    residual (see scripts/residual_axioms.txt), or
+  - a residual-named theorem/lemma/def whose result type is `True`, which is a
+    vacuous proof placeholder rather than a residual obligation.
 
 Comment and docstring occurrences are ignored. `sorry`/`admit` are handled
 separately by scripts/sorry_census.py --fail-on-holes; this precheck runs
@@ -18,6 +20,7 @@ from __future__ import annotations
 import re
 import sys
 from pathlib import Path
+from typing import Optional
 
 TOKEN_RE = re.compile(r"\b(native_decide|bv_decide)\b")
 # Capture the declared axiom name so it can be checked against the residual
@@ -27,6 +30,11 @@ AXIOM_RE = re.compile(
     r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*axiom\s+"
     r"([A-Za-z_][A-Za-z0-9_'.]*)"
 )
+DECL_RE = re.compile(
+    r"^\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*"
+    r"(?:theorem|lemma|def)\s+([A-Za-z_][A-Za-z0-9_'.]*)"
+)
+TRUE_RESULT_RE = re.compile(r":\s*\(?\s*True\s*\)?\s*$", re.S)
 
 ALLOWLIST_PATH = Path(__file__).resolve().parent / "residual_axioms.txt"
 
@@ -104,6 +112,27 @@ def comment_mask(text: str) -> list[bool]:
     return mask
 
 
+def live_text_with_comments_blank(text: str, mask: list[bool]) -> str:
+    """Return text with comment/docstring chars replaced by spaces."""
+    return "".join(" " if mask[i] else ch for i, ch in enumerate(text))
+
+
+def declaration_header_before_value(live_text: str, start: int) -> Optional[str]:
+    """Return the live declaration header before `:=`, capped before the next declaration."""
+    next_value = live_text.find(":=", start)
+    if next_value == -1:
+        return None
+    next_decl = re.search(r"\n\s*(?:@\[[^\]]*\]\s*)?(?:protected\s+|private\s+|scoped\s+)*"
+                          r"(?:axiom|theorem|lemma|def)\s+", live_text[start + 1:next_value])
+    if next_decl is not None:
+        return None
+    return live_text[start:next_value].strip()
+
+
+def is_residual_name(name: str) -> bool:
+    return "residual" in name.lower()
+
+
 def main() -> int:
     files, full_arklib_scan, path_errors = scan_plan(sys.argv[1:])
     if path_errors:
@@ -117,6 +146,7 @@ def main() -> int:
     for path in files:
         text = path.read_text(encoding="utf-8", errors="replace")
         mask = comment_mask(text)
+        live_text = live_text_with_comments_blank(text, mask)
         for m in TOKEN_RE.finditer(text):
             if not mask[m.start()]:
                 line = text.count("\n", 0, m.start()) + 1
@@ -139,6 +169,16 @@ def main() -> int:
                         f"(add to scripts/residual_axioms.txt only if it is a documented, "
                         f"tracked residual)"
                     )
+            dm = DECL_RE.match(line)
+            if dm:
+                name = dm.group(1)
+                if is_residual_name(name):
+                    header = declaration_header_before_value(live_text, pos)
+                    if header is not None and TRUE_RESULT_RE.search(header):
+                        failures.append(
+                            f"{path}:{idx}: forbidden vacuous residual declaration {name} "
+                            "with result type True"
+                        )
             pos += len(line)
 
     stale = sorted(allowlist - seen_allowed)
