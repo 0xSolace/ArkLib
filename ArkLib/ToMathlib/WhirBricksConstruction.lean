@@ -759,6 +759,53 @@ theorem paperTranscriptSlotPayload_finalPolynomial_of_coefficientsWitness {M : �
   simp
   exact (final.coeff_eq ⟨k, hk⟩).symm
 
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Evaluation of the supplied final polynomial at one final-randomness challenge coordinate. -/
+noncomputable def paperFinalRandomnessEvaluation {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (final : PaperFinalPolynomialCoefficients P d T)
+    (j : Fin (P.repeatParam (Fin.last M))) : F :=
+  final.polynomial.eval (T.finalRandomness.get j)
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Vector of final-polynomial evaluations at all final-randomness challenge coordinates. -/
+noncomputable def paperFinalRandomnessEvaluations {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (final : PaperFinalPolynomialCoefficients P d T) :
+    Vector F (P.repeatParam (Fin.last M)) :=
+  Vector.ofFn fun j => paperFinalRandomnessEvaluation P d T final j
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperFinalRandomnessEvaluations_get {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (final : PaperFinalPolynomialCoefficients P d T)
+    (j : Fin (P.repeatParam (Fin.last M))) :
+    (paperFinalRandomnessEvaluations P d T final).get j =
+      paperFinalRandomnessEvaluation P d T final j := by
+  simp [paperFinalRandomnessEvaluations]
+
+omit [Fintype F] [SampleableType F] in
+/-- Final-randomness evaluations for the canonical polynomial reconstructed from transcript
+coefficients. -/
+noncomputable def paperFinalRandomnessEvaluationsOfTranscript {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) :
+    Vector F (P.repeatParam (Fin.last M)) :=
+  paperFinalRandomnessEvaluations P d T (paperFinalPolynomialCoefficientsOfTranscript P d T)
+
+omit [Fintype F] [SampleableType F] in
+@[simp] theorem paperFinalRandomnessEvaluationsOfTranscript_get {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (j : Fin (P.repeatParam (Fin.last M))) :
+    (paperFinalRandomnessEvaluationsOfTranscript P d T).get j =
+      (paperFinalPolynomialAsPolynomial P d T).eval (T.finalRandomness.get j) := by
+  simp [paperFinalRandomnessEvaluationsOfTranscript, paperFinalRandomnessEvaluation,
+    paperFinalPolynomialCoefficientsOfTranscript]
+
 /-! ### Semantic WHIR per-round transcript slots
 
 Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an
@@ -1324,6 +1371,11 @@ end RBRSoundnessAssembly
 #print axioms PaperFinalPolynomialCoefficients
 #print axioms paperFinalPolynomialCoefficientsOfTranscript
 #print axioms paperTranscriptSlotPayload_finalPolynomial_of_coefficientsWitness
+#print axioms paperFinalRandomnessEvaluation
+#print axioms paperFinalRandomnessEvaluations
+#print axioms paperFinalRandomnessEvaluations_get
+#print axioms paperFinalRandomnessEvaluationsOfTranscript
+#print axioms paperFinalRandomnessEvaluationsOfTranscript_get
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
