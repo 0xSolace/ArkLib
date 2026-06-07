@@ -59,6 +59,7 @@ import ArkLib.Data.CodingTheory.EntropyCapacityValue
 import ArkLib.Data.CodingTheory.EntropyVolumeBound
 import ArkLib.Data.CodingTheory.EntropyVolumeListSize
 import ArkLib.Data.CodingTheory.EntropyVolumeUpper
+import ArkLib.Data.CodingTheory.EntropyVolumeUpperBall
 import ArkLib.Data.CodingTheory.EntropyVolumeUpperBound
 import ArkLib.Data.CodingTheory.Erasure
 import ArkLib.Data.CodingTheory.ExtensionCodes
@@ -334,8 +335,6 @@ import ArkLib.OracleReduction.Composition.Parallel.Basic
 import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
-import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
-import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.FiatShamir.Basic
@@ -459,8 +458,6 @@ import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Profile
 import ArkLib.ProofSystem.RingSwitching.Scratch
 import ArkLib.ProofSystem.RingSwitching.Spec
-import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
-import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Stir.Combine
