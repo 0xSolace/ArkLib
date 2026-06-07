@@ -280,6 +280,74 @@ theorem exists_mcaPrizeLatticeResolved_with_brackets_of_lowerWitnesses
     ⟨τ, hτ, _hspec, hlower, hupper⟩
   exact ⟨τ, hτ, hlower, hupper⟩
 
+set_option linter.unusedDecidableInType false in
+/-- A single explicit prize-rate lower MCA witness gives concrete faithful-threshold
+nonemptiness. -/
+theorem mcaThresholdExists_prize_of_lowerWitness
+    (domain : ι ↪ F) (j : Fin 4)
+    (w : MCALowerWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    mcaThresholdExists C epsStar := by
+  dsimp only
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  exact mcaThresholdExists_of_MCALowerWitness C epsStar w
+
+/-- A single explicit prize-rate lower MCA witness gives the concrete faithful threshold and its
+satisfy fact. -/
+theorem mcaThreshold_spec_prize_of_lowerWitness
+    (domain : ι ↪ F) (j : Fin 4)
+    (w : MCALowerWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      mcaSatisfies C epsStar (mcaThreshold C epsStar hne) := by
+  dsimp only
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  let hne : mcaThresholdExists C epsStar :=
+    mcaThresholdExists_of_MCALowerWitness C epsStar w
+  exact ⟨hne, mcaThreshold_spec C epsStar hne⟩
+
+set_option linter.unusedDecidableInType false in
+/-- Explicit lower MCA witnesses at all four prize rates give concrete faithful-threshold
+nonemptiness. -/
+theorem mcaThresholdExists_prize_allRates_of_lowerWitnesses
+    (domain : ι ↪ F)
+    (w : ∀ j : Fin 4,
+      MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      mcaThresholdExists C epsStar := by
+  intro j
+  exact mcaThresholdExists_prize_of_lowerWitness domain j (w j)
+
+/-- Explicit lower MCA witnesses at all four prize rates give the concrete faithful thresholds and
+their satisfy facts. -/
+theorem mcaThreshold_spec_prize_allRates_of_lowerWitnesses
+    (domain : ι ↪ F)
+    (w : ∀ j : Fin 4,
+      MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        mcaSatisfies C epsStar (mcaThreshold C epsStar hne) := by
+  intro j
+  exact mcaThreshold_spec_prize_of_lowerWitness domain j (w j)
+
 /-- A single explicit prize-rate lower MCA witness gives the concrete faithful threshold, its
 satisfy fact, and the lower lattice bracket at the witness radius. -/
 theorem mcaThreshold_spec_and_lower_bracket_prize_of_lowerWitness
@@ -1056,6 +1124,14 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_lowerWitnesses
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_brackets_of_lowerWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_prize_of_lowerWitness
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_prize_of_lowerWitness
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_prize_allRates_of_lowerWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_prize_allRates_of_lowerWitnesses
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_of_lowerWitness
 set_option linter.style.longLine false in
