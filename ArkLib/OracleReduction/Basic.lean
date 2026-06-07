@@ -522,6 +522,20 @@ def queryCostTrace {ι : Type} {spec : OracleSpec ι} {α : Type}
       let n ← queryCostTrace cost (k u)
       pure (cost t + n)
 
+@[simp] theorem queryCostTrace_pure {ι : Type} {spec : OracleSpec ι} {α : Type}
+    (cost : spec.Domain → ℕ) (a : α) :
+    queryCostTrace cost (pure a : OracleComp spec α) = pure 0 :=
+  rfl
+
+@[simp] theorem queryCostTrace_queryBind {ι : Type} {spec : OracleSpec ι} {α : Type}
+    (cost : spec.Domain → ℕ) (t : spec.Domain) (k : spec.Range t → OracleComp spec α) :
+    queryCostTrace cost (OracleComp.queryBind t k) =
+      (do
+        let u ← liftM (OracleSpec.query (spec := spec) t)
+        let n ← queryCostTrace cost (k u)
+        pure (cost t + n)) :=
+  rfl
+
 end OracleComp
 
 namespace OracleVerifier
@@ -560,6 +574,17 @@ def numQueries (stmt : StmtIn) (challenges : ∀ i, pSpec.Challenge i)
       | Sum.inl _ => 0
       | Sum.inr _ => 1)
     ((verifier.verify stmt challenges).run)
+
+theorem numQueries_eq_queryCostTrace (stmt : StmtIn) (challenges : ∀ i, pSpec.Challenge i)
+    (verifier : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec) :
+    verifier.numQueries stmt challenges =
+      OracleComp.queryCostTrace
+        (spec := oSpec + ([OStmtIn]ₒ + [pSpec.Message]ₒ))
+        (fun
+          | Sum.inl _ => 0
+          | Sum.inr _ => 1)
+        ((verifier.verify stmt challenges).run) :=
+  rfl
 
 /-- A **non-adaptive** oracle verifier is an oracle verifier that makes a **fixed** list of queries
     to the input oracle statements and the prover's messages. These queries can depend on the input
@@ -976,4 +1001,7 @@ end Classes
 
 /-! ## Axiom audit — adaptive oracle-verifier query counting. -/
 #print axioms OracleComp.queryCostTrace
+#print axioms OracleComp.queryCostTrace_pure
+#print axioms OracleComp.queryCostTrace_queryBind
 #print axioms OracleVerifier.numQueries
+#print axioms OracleVerifier.numQueries_eq_queryCostTrace
