@@ -703,6 +703,53 @@ theorem mcaThreshold_spec_and_bracket_prize_of_uniformConjecture
     simpa using hle
   · exact GrandChallengesLattice.mcaThreshold_lt_MCAUpperWitness C epsStar hne whi hδhi
 
+/-- The honest uniform GS-exposed prize, with explicit all-rate GS faithfulness, numeric clearance,
+and upper witnesses, packages threshold satisfy facts together with both lattice brackets at all
+four ABF26 prize rates. -/
+theorem mcaThreshold_spec_and_bracket_prize_allRates_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (η δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < η j) →
+        (∀ j : Fin 4,
+          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
+        (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1) →
+        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
+          (∀ j : Fin 4,
+            FaithfulGSFamily (F := F)
+              ((ReedSolomon.code (domain := domain)
+                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                  Set (ι → F))) (δ j) (L j)) →
+          (∀ j : Fin 4,
+            ENNReal.ofReal
+                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+                  (η j) c₁ c₂ c₃)
+              ≤ (epsStar : ENNReal)) →
+          (whi : ∀ j : Fin 4,
+            GrandChallenges.MCAUpperWitness
+              ((ReedSolomon.code (domain := domain)
+                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                  Set (ι → F))) epsStar) →
+          (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) →
+          ∀ j : Fin 4,
+            let C : Set (ι → F) :=
+              ReedSolomon.code domain
+                ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+            ∃ hne : GrandChallengesLattice.mcaThresholdExists C epsStar,
+              GrandChallengesLattice.mcaSatisfies C epsStar
+                (GrandChallengesLattice.mcaThreshold C epsStar hne) ∧
+                GrandChallengesLattice.latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤
+                  GrandChallengesLattice.mcaThreshold C epsStar hne ∧
+                  GrandChallengesLattice.mcaThreshold C epsStar hne <
+                    GrandChallengesLattice.latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  rcases mcaThreshold_spec_and_bracket_prize_of_uniformConjecture domain m hUniform with
+    ⟨c₁, c₂, c₃, hsingle⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro η δ hη hδ hδ_le_one L hfaithful hclear whi hδhi j
+  exact hsingle j (η j) (δ j) (hη j) (hδ j) (hδ_le_one j) (L j)
+    (hfaithful j) (hclear j) (whi j) (hδhi j)
+
 end PerInput
 
 /-! ## 3. Explicit-constant conditional reduction (open content named, no laundering) -/
@@ -762,6 +809,8 @@ end Reduction
 #print axioms mcaThresholdExists_prize_of_uniformConjecture
 #print axioms mcaThreshold_spec_and_lower_bracket_prize_of_uniformConjecture
 #print axioms mcaThreshold_spec_and_bracket_prize_of_uniformConjecture
+set_option linter.style.longLine false in
+#print axioms mcaThreshold_spec_and_bracket_prize_allRates_of_uniformConjecture
 #print axioms epsMCAgs_prizeBound_of_listSize_clears
 
 end MCAGS
