@@ -10,6 +10,30 @@ set_option linter.unusedSectionVars false
 
 namespace Logup
 
+/-- **Completeness from a complement-zero predicate and a failure bound (general, axiom-clean).**
+
+If the event's complement has probability `0` (i.e. the predicate `p` holds on *every successful*
+outcome of `mx`) and the failure probability `Pr[⊥ | mx]` is at most `err`, then the event
+probability is at least `1 - err`.  Proof: `probEvent_compl` gives
+`Pr[p] + Pr[¬p] = 1 - Pr[⊥]`; with `Pr[¬p] = 0` this is `Pr[p] = 1 - Pr[⊥] ≥ 1 - err`.
+
+This is the *probability core* of the outer LogUp completeness obligation
+(`OuterCompletenessRunResidual`): because `midRelation = Set.univ` and the honest prover/verifier
+agree on every accepting transcript, the completeness predicate `prvStmtOut = stmtOut` holds on
+every successful run (so its complement has probability `0`), and the run's failure event is exactly
+the table-pole event bounded by `probEvent_pole_le` / `probEvent_outerVerify_reject_le`.  With this
+lemma, the remaining content of `OuterCompletenessRunResidual` is exactly those two run-level
+facts (`Pr[¬p] = 0` and `probFailure ≤ logupCompletenessError`), with all probability arithmetic
+discharged. -/
+theorem probEvent_ge_one_sub_of_compl_zero {m : Type → Type} [Monad m] [HasEvalSPMF m] {α : Type}
+    (mx : m α) (p : α → Prop) (err : ℝ≥0∞)
+    (hA : Pr[fun x => ¬ p x | mx] = 0) (hB : Pr[⊥ | mx] ≤ err) :
+    Pr[p | mx] ≥ 1 - err := by
+  have key : Pr[p | mx] = 1 - Pr[⊥ | mx] := by
+    rw [← probEvent_compl mx p, hA, add_zero]
+  rw [key]
+  exact tsub_le_tsub_left hB 1
+
 section OuterCompleteness
 
 variable {ι : Type} (oSpec : OracleSpec ι)
