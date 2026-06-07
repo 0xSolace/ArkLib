@@ -597,6 +597,7 @@ import ArkLib.ToMathlib.Finsupp.Fin
 import ArkLib.ToMathlib.FractionFieldSeparable
 import ArkLib.ToMathlib.FriComplete
 import ArkLib.ToMathlib.FriCompleteCompose
+import ArkLib.ToMathlib.FriQueryRoundProb
 import ArkLib.ToMathlib.FrobeniusFactorHelpers
 import ArkLib.ToMathlib.GG25RandomRSMCAProof
 import ArkLib.ToMathlib.GGR11Divergence
