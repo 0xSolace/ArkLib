@@ -57,6 +57,40 @@ variable {k : ℕ} {s : Fin (k + 1) → ℕ+} {d : ℕ+}
 variable {ω : SmoothCosetFftDomain n F}
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
 
+/-! ### `SampleableType` for the FRI challenges
+
+The per-round protocol specs send a single field-element challenge (`F`) in the verifier→prover
+direction; the codeword/polynomial messages are in the prover→verifier direction. So every
+`ChallengeIdx` selects index `0`, whose `«Type»` is `F`, and `SampleableType F` (assumed) supplies
+the instance the completeness keystone needs. These mirror the existing `Inhabited`/`Fintype`
+challenge instances in `Fri/Spec/SingleRound.lean`. -/
+
+instance instSampleableTypeFoldChallenge {i : Fin k} :
+    ∀ j, SampleableType ((FoldPhase.pSpec s (ω := ω) i).Challenge j) := by
+  rintro ⟨j, hj⟩
+  have h_j_eq_0 : j = 0 := by
+    cases j using Fin.cases with
+    | zero => rfl
+    | succ j1 =>
+        cases j1 using Fin.cases with
+        | zero => simp [FoldPhase.pSpec] at hj
+        | succ j2 => exact j2.elim0
+  subst h_j_eq_0
+  simpa [FoldPhase.pSpec, Challenge] using (inferInstance : SampleableType F)
+
+instance instSampleableTypeFinalFoldChallenge :
+    ∀ j, SampleableType ((FinalFoldPhase.pSpec F).Challenge j) := by
+  rintro ⟨j, hj⟩
+  have h_j_eq_0 : j = 0 := by
+    cases j using Fin.cases with
+    | zero => rfl
+    | succ j1 =>
+        cases j1 using Fin.cases with
+        | zero => simp [FinalFoldPhase.pSpec] at hj
+        | succ j2 => exact j2.elim0
+  subst h_j_eq_0
+  simpa [FinalFoldPhase.pSpec, Challenge] using (inferInstance : SampleableType F)
+
 /-! ## Brick A/B: per-round perfect completeness (named residual) -/
 
 /-- **Brick A/B residual — non-final folding round.**
@@ -71,7 +105,6 @@ safety + the algebraic round-consistency identity, whose core `polyFold`/Lagrang
 `Prop` so the composition layer (bricks C, D) can be discharged unconditionally. -/
 def foldRoundPerfectCompletenessResidual
     (hInit : NeverFail init) (i : Fin k)
-    [∀ j, SampleableType ((FoldPhase.pSpec s (ω := ω) i).Challenge j)]
     (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0) : Prop :=
   OracleReduction.perfectCompleteness init impl
     (FoldPhase.inputRelation s (ω := ω) d i cond δ)
@@ -81,7 +114,6 @@ def foldRoundPerfectCompletenessResidual
 /-- **Brick A/B — non-final folding round** (reduction to its named residual). -/
 theorem foldRound_perfectCompleteness
     (hInit : NeverFail init) (i : Fin k)
-    [∀ j, SampleableType ((FoldPhase.pSpec s (ω := ω) i).Challenge j)]
     (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0)
     (hResidual : foldRoundPerfectCompletenessResidual init impl hInit i cond δ) :
     OracleReduction.perfectCompleteness init impl
@@ -98,7 +130,6 @@ the non-final residual; here the prover sends the folded polynomial in the clear
 runs a degree `guard`. -/
 def finalFoldRoundPerfectCompletenessResidual
     (hInit : NeverFail init)
-    [∀ j, SampleableType ((FinalFoldPhase.pSpec F).Challenge j)]
     (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0) : Prop :=
   OracleReduction.perfectCompleteness init impl
     (FinalFoldPhase.inputRelation s (ω := ω) d cond δ)
@@ -108,7 +139,6 @@ def finalFoldRoundPerfectCompletenessResidual
 /-- **Brick A/B — final folding round** (reduction to its named residual). -/
 theorem finalFoldRound_perfectCompleteness
     (hInit : NeverFail init)
-    [∀ j, SampleableType ((FinalFoldPhase.pSpec F).Challenge j)]
     (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0)
     (hResidual : finalFoldRoundPerfectCompletenessResidual init impl hInit cond δ) :
     OracleReduction.perfectCompleteness init impl
