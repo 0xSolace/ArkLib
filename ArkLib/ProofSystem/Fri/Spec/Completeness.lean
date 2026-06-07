@@ -28,27 +28,32 @@ variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ Pro
 /-- **Brick residual — query round.** -/
 def queryRoundPerfectCompletenessResidual
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
+    [hQueryChallenge : ∀ i, SampleableType ((QueryRound.pSpec l (ω := ω)).Challenge i)]
     (hInit : NeverFail init) (δ : ℝ≥0) : Prop :=
   OracleReduction.perfectCompleteness init impl
     (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
     (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
-    (QueryRound.queryOracleReduction s d dom_size_cond l)
+    (QueryRound.queryOracleReduction.{1} s d dom_size_cond l)
 
 /-- **Brick — query round** (reduction to its named residual). -/
 theorem queryRound_perfectCompleteness
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
     (hInit : NeverFail init) (δ : ℝ≥0)
-    (hResidual : queryRoundPerfectCompletenessResidual (k := k) (ω := ω) init impl dom_size_cond l hInit δ) :
+    [hQueryChallenge : ∀ i, SampleableType ((QueryRound.pSpec l (ω := ω)).Challenge i)]
+    (hResidual : queryRoundPerfectCompletenessResidual (k := k)
+      (hQueryChallenge := hQueryChallenge) init impl dom_size_cond l hInit δ) :
     OracleReduction.perfectCompleteness init impl
       (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
       (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
-      (QueryRound.queryOracleReduction s d dom_size_cond l) :=
+      (QueryRound.queryOracleReduction.{1} s d dom_size_cond l) :=
   hResidual
 
 /-- **Brick D residual — folding phase.** -/
 def foldPhasePerfectCompletenessResidual
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n)
     (hInit : NeverFail init) (δ : ℝ≥0)
+    [hFoldChallenge : ∀ i,
+      SampleableType ((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F).Challenge i)]
     (hRounds : ∀ i : Fin k, foldRoundPerfectCompletenessResidual (d := d) (ω := ω) init impl hInit i (round_bound dom_size_cond) δ)
     (hFinal : finalFoldRoundPerfectCompletenessResidual (d := d) (ω := ω) init impl hInit (round_bound dom_size_cond) δ) : Prop :=
   OracleReduction.perfectCompleteness init impl
@@ -62,10 +67,13 @@ theorem foldPhase_perfectCompleteness
     (hInit : NeverFail init) (δ : ℝ≥0)
     [∀ i, ∀ j, SampleableType ((FoldPhase.pSpec (ω := ω) s i).Challenge j)]
     [∀ j, SampleableType ((FinalFoldPhase.pSpec F).Challenge j)]
+    [hFoldChallenge : ∀ i,
+      SampleableType ((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F).Challenge i)]
     [OracleVerifier.Append.AppendCoherent (reductionFold k s d (ω := ω)).verifier]
     (hRounds : ∀ i : Fin k, foldRoundPerfectCompletenessResidual (d := d) (ω := ω) init impl hInit i (round_bound dom_size_cond) δ)
     (hFinal : finalFoldRoundPerfectCompletenessResidual (d := d) (ω := ω) init impl hInit (round_bound dom_size_cond) δ)
-    (hResidual : foldPhasePerfectCompletenessResidual (ω := ω) init impl dom_size_cond hInit δ hRounds hFinal) :
+    (hResidual : foldPhasePerfectCompletenessResidual
+      (hFoldChallenge := hFoldChallenge) init impl dom_size_cond hInit δ hRounds hFinal) :
     OracleReduction.perfectCompleteness init impl
       (inputRelation k s d dom_size_cond δ)
       (FinalFoldPhase.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
@@ -76,6 +84,9 @@ theorem foldPhase_perfectCompleteness
 def reductionPerfectCompletenessResidual
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
     (hInit : NeverFail init) (δ : ℝ≥0)
+    [hFoldChallenge : ∀ i,
+      SampleableType ((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F).Challenge i)]
+    [hQueryChallenge : ∀ i, SampleableType ((QueryRound.pSpec l (ω := ω)).Challenge i)]
     (hFold : OracleReduction.perfectCompleteness init impl
       (inputRelation k s d dom_size_cond δ)
       (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
@@ -83,10 +94,12 @@ def reductionPerfectCompletenessResidual
     (hQuery : OracleReduction.perfectCompleteness init impl
       (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
       (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
-      (QueryRound.queryOracleReduction s d dom_size_cond l)) : Prop :=
-  OracleReduction.appendPerfectCompletenessResidual
-    (reductionFold k s d (ω := ω))
-    (QueryRound.queryOracleReduction s d dom_size_cond l) hFold hQuery
+      (QueryRound.queryOracleReduction.{1} s d dom_size_cond l)) : Prop :=
+  OracleReduction.perfectCompleteness init impl
+    (inputRelation k s d dom_size_cond δ)
+    (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
+    ((reductionFold k s d (ω := ω)).append
+      (QueryRound.queryOracleReduction.{1} s d dom_size_cond l))
 
 set_option maxHeartbeats 1600000 in
 set_option synthInstance.maxHeartbeats 800000 in
@@ -98,22 +111,27 @@ theorem reduction_perfectCompleteness
     (hInit : NeverFail init) (δ : ℝ≥0)
     [∀ i, ∀ j, SampleableType ((FoldPhase.pSpec (ω := ω) s i).Challenge j)]
     [∀ j, SampleableType ((FinalFoldPhase.pSpec F).Challenge j)]
-    [∀ i, SampleableType ((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F).Challenge i)]
-    [∀ i, SampleableType ((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F ++ₚ QueryRound.pSpec l (ω := ω)).Challenge i)]
-    [∀ i, SampleableType ((QueryRound.pSpec l (ω := ω)).Challenge i)]
+    [hFoldChallenge : ∀ i,
+      SampleableType ((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F).Challenge i)]
+    [hQueryChallenge : ∀ i, SampleableType ((QueryRound.pSpec l (ω := ω)).Challenge i)]
     [OracleVerifier.Append.AppendCoherent (reductionFold k s d (ω := ω)).verifier]
     (hRounds : ∀ i : Fin k, foldRoundPerfectCompletenessResidual (d := d) (ω := ω) init impl hInit i (round_bound dom_size_cond) δ)
     (hFinal : finalFoldRoundPerfectCompletenessResidual (d := d) (ω := ω) init impl hInit (round_bound dom_size_cond) δ)
-    (hFoldRes : foldPhasePerfectCompletenessResidual (ω := ω) init impl dom_size_cond hInit δ hRounds hFinal)
-    (hQueryRes : queryRoundPerfectCompletenessResidual (k := k) (ω := ω) init impl dom_size_cond l hInit δ)
-    (hResidual : reductionPerfectCompletenessResidual (ω := ω) init impl dom_size_cond l hInit δ
+    (hFoldRes : foldPhasePerfectCompletenessResidual
+      (hFoldChallenge := hFoldChallenge) init impl dom_size_cond hInit δ hRounds hFinal)
+    (hQueryRes : queryRoundPerfectCompletenessResidual (k := k)
+      (hQueryChallenge := hQueryChallenge) init impl dom_size_cond l hInit δ)
+    (hResidual : reductionPerfectCompletenessResidual
+      (hFoldChallenge := hFoldChallenge) (hQueryChallenge := hQueryChallenge)
+      init impl dom_size_cond l hInit δ
       (foldPhase_perfectCompleteness init impl dom_size_cond hInit δ hRounds hFinal hFoldRes)
       (queryRound_perfectCompleteness init impl dom_size_cond l hInit δ hQueryRes)) :
     OracleReduction.perfectCompleteness init impl
       (inputRelation k s d dom_size_cond δ)
-      (outputRelation k s d dom_size_cond δ)
-      (reduction k s d dom_size_cond l) := by
-  exact reduction_perfectCompleteness_of_phases (ω := ω) init impl dom_size_cond l
+      (QueryRound.outputRelation s (ω := ω) d (round_bound dom_size_cond) δ)
+      ((reductionFold k s d (ω := ω)).append
+        (QueryRound.queryOracleReduction.{1} s d dom_size_cond l)) := by
+  exact reduction_perfectCompleteness_of_phases init impl dom_size_cond l
     (foldPhase_perfectCompleteness init impl dom_size_cond hInit δ hRounds hFinal hFoldRes)
     (queryRound_perfectCompleteness init impl dom_size_cond l hInit δ hQueryRes)
     hResidual
