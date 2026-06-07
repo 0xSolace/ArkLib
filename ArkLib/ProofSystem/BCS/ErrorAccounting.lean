@@ -125,6 +125,36 @@ theorem bcsTotalError_succ_mono_error {m : ℕ}
     _ = εOpen₂ 0 + bcsTotalError εInteraction₂ (fun i : Fin m => εOpen₂ i.succ) :=
       bcsTotalError_succ εInteraction₂ εOpen₂
 
+/-- Relax the interaction and opening budgets for the left-empty total-error append split. -/
+theorem bcsTotalError_append_zero_left_mono_error {m : ℕ}
+    {εInteraction₁ εInteraction₂ : ℝ≥0}
+    {εOpen₁ εOpen₂ : Fin m → ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂)
+    (hOpen : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    bcsTotalError εInteraction₁ (Fin.append (Fin.elim0 : Fin 0 → ℝ≥0) εOpen₁)
+      ≤ bcsTotalError εInteraction₂ εOpen₂ := by
+  calc
+    bcsTotalError εInteraction₁ (Fin.append (Fin.elim0 : Fin 0 → ℝ≥0) εOpen₁)
+        = bcsTotalError εInteraction₁ εOpen₁ :=
+          bcsTotalError_append_zero_left εInteraction₁ εOpen₁
+    _ ≤ bcsTotalError εInteraction₂ εOpen₂ :=
+      bcsTotalError_mono hInteraction hOpen
+
+/-- Relax the interaction and opening budgets for the right-empty total-error append split. -/
+theorem bcsTotalError_append_zero_right_mono_error {m : ℕ}
+    {εInteraction₁ εInteraction₂ : ℝ≥0}
+    {εOpen₁ εOpen₂ : Fin m → ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂)
+    (hOpen : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    bcsTotalError εInteraction₁ (Fin.append εOpen₁ (Fin.elim0 : Fin 0 → ℝ≥0))
+      ≤ bcsTotalError εInteraction₂ εOpen₂ := by
+  calc
+    bcsTotalError εInteraction₁ (Fin.append εOpen₁ (Fin.elim0 : Fin 0 → ℝ≥0))
+        = bcsTotalError εInteraction₁ εOpen₁ :=
+          bcsTotalError_append_zero_right εInteraction₁ εOpen₁
+    _ ≤ bcsTotalError εInteraction₂ εOpen₂ :=
+      bcsTotalError_mono hInteraction hOpen
+
 /-! ## 2. The abstract union-bound accounting
 
 We model "probability of a bad event" abstractly as an `ℝ≥0`-valued functional
@@ -864,6 +894,8 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcsTotalError_mono_open
 #print axioms bcsTotalError_mono
 #print axioms bcsTotalError_succ_mono_error
+#print axioms bcsTotalError_append_zero_left_mono_error
+#print axioms bcsTotalError_append_zero_right_mono_error
 #print axioms UnionBoundPr
 #print axioms UnionBoundPr.unionFin
 #print axioms UnionBoundPr.pr_unionFin_le
