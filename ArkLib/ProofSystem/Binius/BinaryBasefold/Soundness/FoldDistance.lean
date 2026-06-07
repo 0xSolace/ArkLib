@@ -48,7 +48,8 @@ variable [hdiv : Fact (ϑ ∣ ℓ)]
 open scoped NNReal ProbabilityTheory
 
 open Classical in
-omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 in
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡]
+  [SampleableType L] in
 /-- Pair-closeness to a concrete BBF codeword implies UDR-closeness to the BBF code. -/
 lemma UDRClose_of_pair_UDRClose_to_BBF_Codeword (i : Fin r) (h_i : i ≤ ℓ)
     (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
@@ -67,9 +68,10 @@ lemma UDRClose_of_pair_UDRClose_to_BBF_Codeword (i : Fin r) (h_i : i ≤ ℓ)
       exact Code.distFromCode_le_dist_to_mem
         (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
         (u := f) (v := g) hg
-    _ < BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) := h_pair
+    _ < BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) := by
+      simpa only [Nat.cast_ofNat, Nat.cast_mul] using (ENat.coe_lt_coe.mpr h_pair)
 
-omit [CharP L 2] [DecidableEq 𝔽q] hF₂ in
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [SampleableType L] in
 /-- Helper: global agreement of two source words is preserved by iterated folding. -/
 lemma fold_agreement_of_fiber_agreement (i : Fin ℓ) (steps : ℕ)
     {destIdx : Fin r} (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
@@ -82,7 +84,7 @@ lemma fold_agreement_of_fiber_agreement (i : Fin ℓ) (steps : ℕ)
   have hfg : f = g := funext h_agree
   rw [hfg]
 
-omit [CharP L 2] [DecidableEq 𝔽q] hF₂ in
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [SampleableType L] in
 /-- Helper: The disagreement set of the folded functions is a subset of the fiberwise disagreement set. -/
 lemma disagreement_fold_subset_fiberwiseDisagreement (i : Fin ℓ) (steps : ℕ) [NeZero steps]
     {destIdx : Fin r} (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
@@ -104,9 +106,10 @@ lemma disagreement_fold_subset_fiberwiseDisagreement (i : Fin ℓ) (steps : ℕ)
         intro hx
         exact hnone ⟨x, hx⟩)
     rw [hfg] at hy
-    simpa [disagreementSet] using hy
-  simpa [fiberwiseDisagreementSet, h_steps_ne, h_exists]
+    simp [disagreementSet] at hy
+  simp [fiberwiseDisagreementSet, h_steps_ne, h_exists]
 
+omit [CharP L 2] [SampleableType L] in
 /-- **Lemma 4.25, far branch.**
 If the source word is fiberwise far, no bad folding event occurred, and the next word is
 UDR-close, then the folded source is not pair-UDR-close to the decoded next codeword. The
@@ -118,7 +121,7 @@ lemma lemma_4_24_dist_folded_ge_of_last_noncompliant (i_star : Fin ℓ) (steps :
     (r_challenges : Fin steps → L)
     -- 1. f_next is the actual folded function
     -- 2. i* is non-compliant
-    (h_not_compliant : ¬ isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i_star, by omega⟩ steps h_destIdx h_destIdx_le
+    (_h_not_compliant : ¬ isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i_star, by omega⟩ steps h_destIdx h_destIdx_le
        f_star f_next (challenges := r_challenges))
     -- 3. No bad event occurred at i*
     (h_no_bad_event : ¬ foldingBadEvent 𝔽q β (i := ⟨i_star, by omega⟩) steps h_destIdx h_destIdx_le f_star r_challenges)
