@@ -266,13 +266,22 @@ def BoundaryCardLatticeData {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : P
             ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
               ∀ j < deg, (P z).coeff j = (B j).eval z)
 
-omit [DecidableEq ι] in
+omit [Nonempty ι] [DecidableEq ι] in
 /-- The isolated lattice-boundary residual is vacuous for `k = 0`, since its first hypothesis is
 `0 < k`. This mirrors `BoundaryDischarge.boundaryCardResidual_zero` for the sharper residual
 surface introduced in this file. -/
 theorem boundaryCardLatticeResidual_zero
     {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} :
     BoundaryCardLatticeResidual (k := 0) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk
+  omega
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- The concrete lattice-data package is also vacuous for `k = 0`, since its first hypothesis is
+`0 < k`. This is the data-level companion to `boundaryCardLatticeResidual_zero`. -/
+theorem boundaryCardLatticeData_zero
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} :
+    BoundaryCardLatticeData (k := 0) (deg := deg) (domain := domain) (δ := δ) := by
   intro hk
   omega
 
@@ -746,6 +755,7 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeResidual_zero
+#print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeData_zero
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.strictInterior
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.lattice
