@@ -39,8 +39,12 @@ theorem sum_pair_sub_eq_card_mul (𝒞 : Finset (ι → F)) (g : (ι → F) → 
     refine Finset.sum_bij' (fun c' _ => c' - c) (fun v _ => v + c) ?_ ?_ ?_ ?_ ?_
     · intro c' hc'; exact hsub c' hc' c hc
     · intro v hv; exact hadd v hv c hc
-    · intro c' _; abel_nf
-    · intro v _; abel_nf
+    · intro c' _
+      ext i
+      simp [Pi.add_apply, sub_eq_add_neg, add_comm]
+    · intro v _
+      ext i
+      simp [Pi.add_apply, Pi.sub_apply, sub_eq_add_neg, add_assoc, add_comm]
     · intro c' _; rfl
   rw [Finset.sum_congr rfl hper, Finset.sum_const, smul_eq_mul]
 
