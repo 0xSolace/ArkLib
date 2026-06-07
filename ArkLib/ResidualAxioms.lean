@@ -1,6 +1,12 @@
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
+import ArkLib.ProofSystem.Whir.RBRSoundness
+import ArkLib.OracleReduction.FiatShamir.Basic
+import ArkLib.ToMathlib.SpartanBricks
+import ArkLib.ToMathlib.OracleZKTransferBricks
+import ArkLib.OracleReduction.BCS.Basic
+import ArkLib.ToMathlib.KStateWeaken
 
 -- Removed (de-larp, #171/#169): eight `theorem …_residual : True := by trivial` placebos named
 -- identically to the hard open obligations #14/#114/#116/#112/#113/#29/#13/#62. They proved
@@ -43,18 +49,24 @@ def mcaForallDoubleCover_residual {ι : Type} [Fintype ι] [Nonempty ι] [Decida
     (C : Set (ι → A)) (δ : ℝ≥0) : Prop :=
   ProximityGap.MCAForallDoubleCover (F := F) (A := A) C δ
 
-import ArkLib.ProofSystem.Whir.RBRSoundness
-import ArkLib.OracleReduction.FiatShamir.Basic
-import ArkLib.ToMathlib.SpartanBricks
-import ArkLib.ToMathlib.OracleZKTransferBricks
-import ArkLib.OracleReduction.BCS.Basic
-import ArkLib.ToMathlib.KStateWeaken
+/-- **OPEN residual — NOT asserted.** Issue #113: WHIR Vector IOPP construction +
+perfect completeness + RBR soundness.
 
-/-- **OPEN residual — NOT asserted.** Issue #113: WHIR Vector IOPP construction + perfect completeness + RBR soundness. -/
+This is deliberately a `def : Prop`, not a theorem and not `True`. It is definitionally the
+current `WhirIOP.whir_rbr_soundness` obligation, with all parameters exposed. -/
 def whir_vector_iop_residual
-    {F : Type} [Field F] {n : ℕ} {pp : WhirIOP.PublicParams F n}
-    (rbrKnowledgeError : WhirIOP.PSpec.ChallengeIdx pp → ℝ≥0) : Prop :=
-  WhirIOP.whir_rbr_soundness pp rbrKnowledgeError
+    {F : Type} [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+    {M : ℕ} (ι : Fin (M + 1) → Type) [∀ i : Fin (M + 1), Fintype (ι i)]
+    {d dstar : ℕ} {P : WhirIOP.Params ι F} {S : ∀ i : Fin (M + 1), Finset (ι i)}
+    {hParams : WhirIOP.ParamConditions ι P} {h : WhirIOP.GenMutualCorrParams ι P S}
+    {m_0 : ℕ} (hm_0 : m_0 = P.varCount 0) {σ₀ : F}
+    {wPoly₀ : MvPolynomial (Fin (m_0 + 1)) F} {δ : ℝ≥0}
+    [ReedSolomon.Smooth (P.φ 0)] [Nonempty (ι 0)]
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) : Prop :=
+  WhirIOP.whir_rbr_soundness (F := F) (M := M) ι (d := d) (dstar := dstar)
+    (P := P) (S := S) (hParams := hParams) (h := h) hm_0 (σ₀ := σ₀)
+    (wPoly₀ := wPoly₀) (δ := δ) ε_fold ε_out ε_shift ε_fin
 
 /-- **OPEN residual — NOT asserted.** Issue #116: Fiat-Shamir semantic run-collapse. -/
 def fiat_shamir_semantic_run_collapse_residual

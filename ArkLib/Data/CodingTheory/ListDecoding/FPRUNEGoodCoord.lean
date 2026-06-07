@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.Linarith
 
 /-!
-# FPRUNE good-coordinate existence (Chen–Zhang 2025 / arXiv 2512.08017, Lemma 3.4 existence half)
+# FPRUNE good-coordinate existence (Goyal–Guruswami 2025 / arXiv 2512.08017, Lemma 3.4 existence half)
 
 The polynomial list-decoding bound for subspace-design codes is proven via the `FPRUNE`
 algorithm, which recursively samples a **good** coordinate `i` — one that strictly drops the
@@ -21,7 +21,7 @@ The combinatorial heart that the in-tree FPRUNE potential bricks consume — `fp
 `ListDecoding/FPRUNEPotential.lean`) — currently **take the nonempty good-coordinate set
 `J.Nonempty` as a hypothesis**. This file discharges that existence obligation directly from
 the subspace-design coordinate-dimension budget (`IsSubspaceDesign`, ABF26 Definition 2.16 /
-CZ25 Definition 6):
+GG25 Definition 6):
 
 * `good_filter_nonempty_of_weight_budget` — the abstract averaging principle: a finite family
   of reals with average below a threshold has a member below the threshold.
@@ -40,7 +40,7 @@ Quot.sound]`).
 
 ## References
 
-- [CZ25] Chen–Zhang. Thm B.5 / Lemmas 3.4–3.5 (subspace-design route to capacity list decoding),
+- [GG25] Goyal–Guruswami. Lemmas 3.4–3.5 (subspace-design pruning route to list recovery),
   arXiv 2512.08017.
 - [ABF26] Arnon-Boneh-Fenzi. *Open Problems in List Decoding and Correlated Agreement*, §2.5.
 -/
@@ -109,7 +109,7 @@ theorem card_good_ge_of_weight_budget {ι : Type*} [Fintype ι]
 variable {ι : Type} [Fintype ι] [Nonempty ι]
 variable {F : Type} [Field F]
 
-/-- **FPRUNE good-coordinate existence from the subspace-design budget (CZ25 Lemma 3.4,
+/-- **FPRUNE good-coordinate existence from the subspace-design budget (GG25 Lemma 3.4,
 existence half).** Let `C` be a `τ`-subspace-design code, and `ℋ ≤ C` a subspace of dimension
 `r`. Write `ℋ_i := ℋ ⊓ ker(eval_i)` and `wt_η(X) := dim X + η`. If the capacity condition
 `r·τ(r) + η < (1-η')·(r+η)` holds, then there is a coordinate `i` that is **good** for FPRUNE,
