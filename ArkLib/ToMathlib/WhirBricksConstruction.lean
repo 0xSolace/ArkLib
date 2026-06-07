@@ -82,12 +82,22 @@ theorem semanticChallengeIdx_card (M : ℕ) :
   simp [semanticChallengeIdx, hKind]
   omega
 
+/-- A concrete finite indexing for semantic WHIR verifier-challenge roles. -/
+noncomputable def semanticChallengeIdxEquivFin (M : ℕ) :
+    semanticChallengeIdx M ≃ Fin (2 * M + 2) :=
+  Fintype.equivFinOfCardEq (semanticChallengeIdx_card M)
+
 /-- The semantic WHIR skeleton has the same number of prover-message slots as verifier challenges. -/
 theorem semanticMessageIdx_card (M : ℕ) :
     Fintype.card (semanticMessageIdx M) = 2 * M + 2 := by
   have hKind : Fintype.card RoundMessageKind = 2 := by decide
   simp [semanticMessageIdx, hKind]
   omega
+
+/-- A concrete finite indexing for semantic WHIR prover-message roles. -/
+noncomputable def semanticMessageIdxEquivFin (M : ℕ) :
+    semanticMessageIdx M ≃ Fin (2 * M + 2) :=
+  Fintype.equivFinOfCardEq (semanticMessageIdx_card M)
 
 /-! ### The WHIR protocol-spec direction vector
 
@@ -161,6 +171,33 @@ theorem whirVectorSpec_toProtocolSpec_card_challengeIdx (M : ℕ) :
   change Fintype.card {i : Fin (2 * M + 2) // Direction.V_to_P = Direction.V_to_P} =
     2 * M + 2
   simp
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Challenge slots in the converted WHIR scratch `ProtocolSpec` are exactly
+`Fin (2 * M + 2)`. -/
+def whirVectorSpec_toProtocolSpec_challengeIdxEquivFin (M : ℕ) :
+    ((whirVectorSpec M).toProtocolSpec F).ChallengeIdx ≃ Fin (2 * M + 2) where
+  toFun i := i.1
+  invFun i := ⟨i, rfl⟩
+  left_inv := by
+    intro i
+    cases i
+    rfl
+  right_inv := by
+    intro i
+    rfl
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem whirVectorSpec_toProtocolSpec_challengeIdxEquivFin_apply (M : ℕ)
+    (i : ((whirVectorSpec M).toProtocolSpec F).ChallengeIdx) :
+    whirVectorSpec_toProtocolSpec_challengeIdxEquivFin (F := F) M i = i.1 :=
+  rfl
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem whirVectorSpec_toProtocolSpec_challengeIdxEquivFin_symm_apply (M : ℕ)
+    (i : Fin (2 * M + 2)) :
+    (whirVectorSpec_toProtocolSpec_challengeIdxEquivFin (F := F) M).symm i = ⟨i, rfl⟩ :=
+  rfl
 
 /-- Every verifier-challenge index has length one in the WHIR scratch vector spec. -/
 theorem whirVectorSpec_challengeLength (M : ℕ) (i : (whirVectorSpec M).ChallengeIdx) :
@@ -349,13 +386,18 @@ end RBRSoundnessAssembly
 #print axioms whirVectorSpec_messageIdx_isEmpty
 #print axioms whirVectorSpec_card_messageIdx
 #print axioms whirVectorSpec_toProtocolSpec_card_challengeIdx
+#print axioms whirVectorSpec_toProtocolSpec_challengeIdxEquivFin
+#print axioms whirVectorSpec_toProtocolSpec_challengeIdxEquivFin_apply
+#print axioms whirVectorSpec_toProtocolSpec_challengeIdxEquivFin_symm_apply
 #print axioms whirVectorSpec_challengeLength
 #print axioms whirVectorSpec_challenge_eq_vector_one
 #print axioms whirVectorSpec_totalChallengeLength
 #print axioms whirVectorSpec_totalMessageLength
 #print axioms whir_rbr_soundness_of_secure_gap
 #print axioms semanticChallengeIdx_card
+#print axioms semanticChallengeIdxEquivFin
 #print axioms semanticMessageIdx_card
+#print axioms semanticMessageIdxEquivFin
 #print axioms whir_rbr_soundness_of_whirVectorSpec_secure_gap
 
 end Construction
