@@ -348,6 +348,40 @@ theorem redBranchingLe_of_redBranching_le {L : ℕ∞} {t : EraseDecodeTree}
     t.redBranchingLe L :=
   redBranchingLe_mono h t (redBranchingLe_redBranching t)
 
+/-- The computed maximum Red out-degree is bounded by any valid recursive Red-branching budget. -/
+theorem redBranching_le_of_redBranchingLe {L : ℕ∞} (t : EraseDecodeTree) :
+    t.redBranchingLe L → (t.redBranching : ℕ∞) ≤ L := by
+  refine (EraseDecodeTree.rec
+    (motive_1 := fun t => t.redBranchingLe L → (t.redBranching : ℕ∞) ≤ L)
+    (motive_2 := fun b =>
+      redBranchingLeOption L b → (redBranchingOption b : ℕ∞) ≤ L)
+    (motive_3 := fun rs =>
+      redBranchingLeList L rs → (redBranchingList rs : ℕ∞) ≤ L)
+    ?leaf ?node ?none ?some ?nil ?cons) t
+  · intro _
+    simp
+  · intro b rs ihb ihrs hbr
+    rw [redBranchingLe_node] at hbr
+    rw [redBranching_node]
+    exact_mod_cast max_le (ihb hbr.1) (max_le hbr.2.1 (ihrs hbr.2.2))
+  · intro _
+    simp
+  · intro t iht hbr
+    rw [redBranchingLeOption_some] at hbr
+    simpa using iht hbr
+  · intro _
+    simp
+  · intro t ts iht ihts hbr
+    rw [redBranchingLeList_cons] at hbr
+    rw [redBranchingList_cons]
+    exact_mod_cast max_le (iht hbr.1) (ihts hbr.2)
+
+/-- The recursive Red-branching predicate is equivalent to bounding the computed maximum
+Red out-degree. -/
+theorem redBranchingLe_iff_redBranching_le {L : ℕ∞} {t : EraseDecodeTree} :
+    t.redBranchingLe L ↔ (t.redBranching : ℕ∞) ≤ L :=
+  ⟨redBranching_le_of_redBranchingLe t, redBranchingLe_of_redBranching_le⟩
+
 end EraseDecodeTree
 
 /-! ### Leaf-count budget theorem (GGR11 Theorem 3.6 for a real tree) -/
@@ -983,6 +1017,8 @@ theorem lambda_le_ggr11_of_leaf_close_le_one
 #print axioms EraseDecodeTree.redBranchingLeList_mono
 #print axioms EraseDecodeTree.redBranchingLe_redBranching
 #print axioms EraseDecodeTree.redBranchingLe_of_redBranching_le
+#print axioms EraseDecodeTree.redBranching_le_of_redBranchingLe
+#print axioms EraseDecodeTree.redBranchingLe_iff_redBranching_le
 #print axioms treeWitness_of_concreteEraseDecodeTree
 #print axioms treeWitness_of_concreteEraseDecodeTree_of_redBranchingLe_le
 #print axioms treeWitness_of_concreteEraseDecodeTree_of_redBranching_le
