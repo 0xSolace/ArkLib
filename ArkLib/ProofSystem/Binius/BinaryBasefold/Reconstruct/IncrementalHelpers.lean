@@ -95,9 +95,6 @@ theorem iterated_fold_first (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
       have : destIdx.val < r := destIdx.isLt; omega
     have h_midmid_bound : midIdx.val + n < r := by
       have : destIdx.val < r := destIdx.isLt; omega
-    -- The two single-step `fold` start indices coincide (`⟨i+(n+1),_⟩` = `⟨midIdx+n,_⟩`).
-    have h_start : (⟨i.val + (n + 1), h_mid_bound⟩ : Fin r) = ⟨midIdx.val + n, h_midmid_bound⟩ :=
-      Fin.ext (by omega)
     -- Peel the last step on the LHS, using the *shared* `midIdx := ⟨midIdx+n,_⟩` index.
     rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := n + 1)
       (midIdx := ⟨midIdx.val + n, h_midmid_bound⟩) (destIdx := destIdx)
@@ -109,16 +106,17 @@ theorem iterated_fold_first (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
       (midIdx := ⟨midIdx.val + n, h_midmid_bound⟩) (destIdx := destIdx)
       (h_midIdx := rfl) (h_destIdx := show destIdx.val = midIdx.val + n + 1 by omega)
       (h_destIdx_le := h_destIdx_le)]
-    -- The two inner `n`-step folds are related by the inductive hypothesis `ih`.
-    have h_ih := ih (destIdx := ⟨i.val + (n + 1), h_mid_bound⟩) (midIdx := midIdx)
-      (h_midIdx := h_midIdx) (h_destIdx := rfl) (h_destIdx_le := by omega)
-      (r_challenges := fun j => r_challenges j.castSucc)
-    -- Now both outer `fold`s share the same start index; reconcile inner fn (IH) and last challenge.
-    congr 1
-    · -- inner functions equal by IH (after reconciling the truncated challenge reindexings)
-      rw [h_ih]
-    · -- last challenges agree: `r_challenges (last (n+1))` vs `(fun j => r_challenges j.succ) (last n)`
-      simp only [Fin.succ_last]
+    -- The two inner `n`-step folds are related by the inductive hypothesis `ih`. Use the *shared*
+    -- destination index `⟨midIdx+n,_⟩` so the IH LHS matches the goal's peeled inner fold exactly.
+    have h_ih := ih (destIdx := ⟨midIdx.val + n, h_midmid_bound⟩) (midIdx := midIdx)
+      (h_midIdx := h_midIdx)
+      (h_destIdx := show midIdx.val + n = i.val + (n + 1) by omega)
+      (h_destIdx_le := show (⟨midIdx.val + n, h_midmid_bound⟩ : Fin r) ≤ ℓ by
+        show midIdx.val + n ≤ ℓ; omega)
+      (r_challenges := Fin.init r_challenges)
+    -- Both outer `fold`s now share the same start index and last challenge (`succ_last`);
+    -- reconcile the inner `n`-step fold by the IH.
+    rw [h_ih, Fin.succ_last]
 
 end
 

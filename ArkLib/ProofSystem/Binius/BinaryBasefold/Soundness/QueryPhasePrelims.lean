@@ -66,7 +66,7 @@ omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1
 /-- For a block index `k < ℓ / ϑ` (with `ϑ ∣ ℓ`), the block start `k·ϑ` is `< ℓ`. -/
 lemma k_mul_ϑ_lt_ℓ (k : Fin (ℓ / ϑ)) : k.val * ϑ < ℓ := by
   have hϑ : 0 < ϑ := Nat.pos_of_neZero ϑ
-  have h := k_succ_mul_ϑ_le_ℓ_₂ (𝔽q := 𝔽q) (β := β) (k := k)
+  have h := k_succ_mul_ϑ_le_ℓ_₂ (k := k)
   omega
 
 /-!
@@ -87,11 +87,9 @@ def extractSuffixFromChallenge (v : sDomain 𝔽q β h_ℓ_add_R_rate ⟨0, by o
   cast (by
       apply congrArg (fun i => ↥(sDomain 𝔽q β h_ℓ_add_R_rate i))
       apply Fin.eq_of_val_eq
-      simp only [zero_add])
+      simp only [Fin.val_mk, zero_add])
     (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := destIdx.val)
-      (h_bound := by
-        have := h_destIdx_le
-        simp only [zero_add]; omega) (x := v))
+      (h_bound := by simpa only [Fin.val_mk, zero_add] using h_destIdx_le) (x := v))
 
 omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] hF₂ [NeZero 𝓡] in
 /-- **Congruence Lemma for Challenge Suffixes**:
