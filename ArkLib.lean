@@ -323,6 +323,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
+import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
+import ArkLib.Data.CodingTheory.ProximityGap.Issue141Kernels
+import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingBadScalarCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCounting
@@ -543,6 +546,7 @@ import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Security.CoordinateWiseSpecialSoundness
 import ArkLib.OracleReduction.Security.EchoHVZK
 import ArkLib.OracleReduction.Security.Implications
+import ArkLib.OracleReduction.Security.Issue112Kernels
 import ArkLib.OracleReduction.Security.OracleDistribution
 import ArkLib.OracleReduction.Security.OracleZeroKnowledge
 import ArkLib.OracleReduction.Security.Rewinding
@@ -615,6 +619,7 @@ import ArkLib.ProofSystem.ConstraintSystem.Examples
 import ArkLib.ProofSystem.ConstraintSystem.Lookup
 import ArkLib.ProofSystem.ConstraintSystem.MemoryChecking
 import ArkLib.ProofSystem.ConstraintSystem.Plonk
+import ArkLib.ProofSystem.ConstraintSystem.PlonkGateIdentities
 import ArkLib.ProofSystem.ConstraintSystem.R1CS
 import ArkLib.ProofSystem.Fri.AuxLemmas
 import ArkLib.ProofSystem.Fri.Domain
@@ -651,6 +656,7 @@ import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
 import ArkLib.ProofSystem.Stir.Combine
+import ArkLib.ProofSystem.Stir.ErrorAccumulation
 import ArkLib.ProofSystem.Stir.MainThm
 import ArkLib.ProofSystem.Stir.OutOfDomSmpl
 import ArkLib.ProofSystem.Stir.ProximityBound
@@ -875,9 +881,3 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
-import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
-import ArkLib.Data.CodingTheory.ProximityGap.Issue141Kernels
-import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
-import ArkLib.OracleReduction.Security.Issue112Kernels
-import ArkLib.ProofSystem.ConstraintSystem.PlonkGateIdentities
-import ArkLib.ProofSystem.Stir.ErrorAccumulation
