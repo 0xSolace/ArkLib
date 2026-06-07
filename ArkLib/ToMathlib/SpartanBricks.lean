@@ -373,6 +373,41 @@ theorem finalCheckWithClaimSecondSumcheckEvalRelOut_eq_valueRelIn :
   exact (finalCheckWithClaimValueRelIn_iff_secondSumcheckEval R pp target stmt oStmt).symm
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Membership in the direct second-sum-check endpoint relation is exactly endpoint equality. -/
+theorem finalCheckWithClaimSecondSumcheckEvalRelOut_iff_secondSumcheckEval
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i) :
+    (((target, stmt), oStmt), ()) ∈
+        finalCheckWithClaimSecondSumcheckEvalRelOut R pp ↔
+      target = MvPolynomial.eval stmt.1
+        (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt) :=
+  Iff.rfl
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Constructor form of `finalCheckWithClaimSecondSumcheckEvalRelOut_iff_secondSumcheckEval`. -/
+theorem finalCheckWithClaimSecondSumcheckEvalRelOut_of_secondSumcheckEval
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (hTarget : target =
+      MvPolynomial.eval stmt.1 (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt)) :
+    (((target, stmt), oStmt), ()) ∈
+      finalCheckWithClaimSecondSumcheckEvalRelOut R pp :=
+  (finalCheckWithClaimSecondSumcheckEvalRelOut_iff_secondSumcheckEval
+    R pp target stmt oStmt).2 hTarget
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Projection from the direct second-sum-check endpoint relation back to endpoint equality. -/
+theorem secondSumcheckEval_eq_of_finalCheckWithClaimSecondSumcheckEvalRelOut
+    (target : R) (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (hmem : (((target, stmt), oStmt), ()) ∈
+      finalCheckWithClaimSecondSumcheckEvalRelOut R pp) :
+    target = MvPolynomial.eval stmt.1
+      (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt) :=
+  (finalCheckWithClaimSecondSumcheckEvalRelOut_iff_secondSumcheckEval
+    R pp target stmt oStmt).1 hmem
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- The direct second-sum-check endpoint relation weakens to the broad target-carrying terminal
 relation. -/
 theorem finalCheckWithClaimSecondSumcheckEvalRelOut_subset_finalCheckWithClaimRelOut :
@@ -793,6 +828,9 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
 #print axioms finalCheckWithClaimValueRelIn_of_secondSumcheckEval
 #print axioms finalCheckWithClaimSecondSumcheckEvalRelOut
 #print axioms finalCheckWithClaimSecondSumcheckEvalRelOut_eq_valueRelIn
+#print axioms finalCheckWithClaimSecondSumcheckEvalRelOut_iff_secondSumcheckEval
+#print axioms finalCheckWithClaimSecondSumcheckEvalRelOut_of_secondSumcheckEval
+#print axioms secondSumcheckEval_eq_of_finalCheckWithClaimSecondSumcheckEvalRelOut
 #print axioms finalCheckWithClaimSecondSumcheckEvalRelOut_subset_finalCheckWithClaimRelOut
 #print axioms finalCheckWithClaimValueRelResidual
 #print axioms finalCheckWithClaimValueRelResidual_holds
