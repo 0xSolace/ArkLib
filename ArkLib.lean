@@ -54,6 +54,7 @@ import ArkLib.Data.CodingTheory.CodeGeometry
 import ArkLib.Data.CodingTheory.Connections.EpsMCABadGlue
 import ArkLib.Data.CodingTheory.Connections.GCXK25SecondMoment
 import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
+import ArkLib.Data.CodingTheory.Connections.GKL24PetalWitnessCover
 import ArkLib.Data.CodingTheory.Connections.ListDecodingAndCA
 import ArkLib.Data.CodingTheory.Connections.SmoothDomainMCAWitness
 import ArkLib.Data.CodingTheory.DivergenceOfSets
@@ -133,6 +134,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.UniqueDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.GammaGenuine
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HasseEvalConnectives
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Claim57FieldDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Claim57JointAgreementWiring
@@ -502,6 +504,7 @@ import ArkLib.ProofSystem.Fri.Spec.General
 import ArkLib.ProofSystem.Fri.Spec.SingleRound
 import ArkLib.ProofSystem.Fri.Spec.Soundness
 import ArkLib.ProofSystem.Logup.Common
+import ArkLib.ProofSystem.Logup.LogupGrandSumIdentity
 import ArkLib.ProofSystem.Logup.Protocol
 import ArkLib.ProofSystem.Logup.Security.Completeness
 import ArkLib.ProofSystem.Logup.Security.OuterRun

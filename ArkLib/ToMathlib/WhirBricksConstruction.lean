@@ -270,6 +270,166 @@ noncomputable def finalRandomnessChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → T
     (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
   paperChallengeIdx P d .finalRandomness rfl
 
+/-! ### Typed payloads and full transcript assembly
+
+These constructors target the concrete payload types of
+`(whirPaperTranscriptVectorSpec P d).toProtocolSpec F`.  They are the typed bridge needed before
+writing the honest prover: folded oracles and the final polynomial are finite-domain functions
+packed as vectors, scalar OOD/sumcheck challenges are singleton vectors, and shift/final randomness
+batches keep their prescribed vector lengths.
+-/
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- A singleton field payload represented as the vector type used by `VectorSpec.toProtocolSpec`. -/
+def singletonFieldPayload (x : F) : Vector F 1 :=
+  Vector.ofFn fun _ => x
+
+omit [Field F] [SampleableType F] in
+/-- Payload for an initial sumcheck polynomial-message slot. -/
+def initialSumcheckMessagePayload {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (s : Fin (P.foldingParam 0)) (coeffs : Vector F d) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message
+      (initialSumcheckMessageIdx P d s) := by
+  simpa [initialSumcheckMessageIdx, paperMessageIdx, whirPaperTranscriptVectorSpec,
+    paperTranscriptSlotIndex] using coeffs
+
+omit [Field F] [SampleableType F] in
+/-- Payload for an initial sumcheck scalar challenge. -/
+def initialSumcheckChallengePayload {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (s : Fin (P.foldingParam 0)) (x : F) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenge
+      (initialSumcheckChallengeIdx P d s) := by
+  simpa [initialSumcheckChallengeIdx, paperChallengeIdx, whirPaperTranscriptVectorSpec,
+    paperTranscriptSlotIndex] using singletonFieldPayload x
+
+omit [Field F] [SampleableType F] in
+/-- Payload for a folded-oracle message in transition round `i`. -/
+noncomputable def mainFoldedOraclePayload {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M)
+    (f : ιs i.succ → F) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message
+      (mainFoldedOracleMessageIdx P d i) := by
+  simpa [mainFoldedOracleMessageIdx, paperMessageIdx, whirPaperTranscriptVectorSpec,
+    paperTranscriptSlotIndex] using packFiniteFunction (ιs i.succ) f
+
+omit [Field F] [SampleableType F] in
+/-- Challenge payload for an out-of-domain sample in transition round `i`. -/
+def mainOutOfDomainChallengePayload {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M)
+    (z : F) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenge
+      (mainOutOfDomainChallengeIdx P d i) := by
+  simpa [mainOutOfDomainChallengeIdx, paperChallengeIdx, whirPaperTranscriptVectorSpec,
+    paperTranscriptSlotIndex] using singletonFieldPayload z
+
+omit [Field F] [SampleableType F] in
+/-- Payload for an out-of-domain reply message in transition round `i`. -/
+def mainOutOfDomainReplyPayload {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M)
+    (y : F) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message
+      (mainOutOfDomainReplyMessageIdx P d i) := by
+  simpa [mainOutOfDomainReplyMessageIdx, paperMessageIdx, whirPaperTranscriptVectorSpec,
+    paperTranscriptSlotIndex] using singletonFieldPayload y
+
+omit [Field F] [SampleableType F] in
+/-- Challenge payload constructor for the batched shift/random-linear-combination samples. -/
+def mainShiftChallengePayload {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M)
+    (xs : Vector F (P.repeatParam i.succ)) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenge
+      (mainShiftChallengeIdx P d i) := by
+  simpa [mainShiftChallengeIdx, paperChallengeIdx, whirPaperTranscriptVectorSpec,
+    paperTranscriptSlotIndex] using xs
+
+omit [Field F] [SampleableType F] in
+/-- Payload for a main-loop sumcheck polynomial-message slot. -/
+def mainSumcheckMessagePayload {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M)
+    (s : Fin (P.foldingParam i.succ)) (coeffs : Vector F d) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message
+      (mainSumcheckMessageIdx P d i s) := by
+  simpa [mainSumcheckMessageIdx, paperMessageIdx, whirPaperTranscriptVectorSpec,
+    paperTranscriptSlotIndex] using coeffs
+
+omit [Field F] [SampleableType F] in
+/-- Challenge payload for a main-loop sumcheck scalar challenge. -/
+def mainSumcheckChallengePayload {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M)
+    (s : Fin (P.foldingParam i.succ)) (x : F) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenge
+      (mainSumcheckChallengeIdx P d i s) := by
+  simpa [mainSumcheckChallengeIdx, paperChallengeIdx, whirPaperTranscriptVectorSpec,
+    paperTranscriptSlotIndex] using singletonFieldPayload x
+
+omit [Field F] [SampleableType F] in
+/-- Payload for the final polynomial message. -/
+noncomputable def finalPolynomialPayload {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (f : Fin (2 ^ P.varCount (Fin.last M)) → F) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message
+      (finalPolynomialMessageIdx P d) := by
+  simpa [finalPolynomialMessageIdx, paperMessageIdx, whirPaperTranscriptVectorSpec,
+    paperTranscriptSlotIndex] using
+      packFiniteFunction (Fin (2 ^ P.varCount (Fin.last M))) f
+
+omit [Field F] [SampleableType F] in
+/-- Challenge payload constructor for the final randomness batch. -/
+def finalRandomnessChallengePayload {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (xs : Vector F (P.repeatParam (Fin.last M))) :
+    ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenge
+      (finalRandomnessChallengeIdx P d) := by
+  simpa [finalRandomnessChallengeIdx, paperChallengeIdx, whirPaperTranscriptVectorSpec,
+    paperTranscriptSlotIndex] using xs
+
+/-- Field data for one complete paper-order WHIR transcript.
+
+This is still not a prover.  It is the typed transcript boundary that a real prover must produce
+and the real verifier must consume. -/
+structure PaperTranscriptData {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) where
+  initialSumcheckMessage : Fin (P.foldingParam 0) → Vector F d
+  initialSumcheckChallenge : Fin (P.foldingParam 0) → F
+  mainFoldedOracle : (i : Fin M) → ιs i.succ → F
+  mainOutOfDomainChallenge : Fin M → F
+  mainOutOfDomainReply : Fin M → F
+  mainShiftChallenge : (i : Fin M) → Vector F (P.repeatParam i.succ)
+  mainSumcheckMessage : (i : Fin M) → Fin (P.foldingParam i.succ) → Vector F d
+  mainSumcheckChallenge : (i : Fin M) → Fin (P.foldingParam i.succ) → F
+  finalPolynomial : Fin (2 ^ P.varCount (Fin.last M)) → F
+  finalRandomness : Vector F (P.repeatParam (Fin.last M))
+
+omit [Field F] [SampleableType F] in
+/-- Convert typed paper transcript data into the payload for one named paper transcript slot. -/
+noncomputable def paperTranscriptSlotPayload {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (T : PaperTranscriptData P d) :
+    (slot : PaperTranscriptSlot P) → Vector F (paperTranscriptSlotLength P d slot)
+  | .initialSumcheckMessage s => T.initialSumcheckMessage s
+  | .initialSumcheckChallenge s => singletonFieldPayload (T.initialSumcheckChallenge s)
+  | .mainFoldedOracle i => packFiniteFunction (ιs i.succ) (T.mainFoldedOracle i)
+  | .mainOutOfDomainChallenge i => singletonFieldPayload (T.mainOutOfDomainChallenge i)
+  | .mainOutOfDomainReply i => singletonFieldPayload (T.mainOutOfDomainReply i)
+  | .mainShiftChallenge i => T.mainShiftChallenge i
+  | .mainSumcheckMessage i s => T.mainSumcheckMessage i s
+  | .mainSumcheckChallenge i s => singletonFieldPayload (T.mainSumcheckChallenge i s)
+  | .finalPolynomial => Vector.ofFn T.finalPolynomial
+  | .finalRandomness => T.finalRandomness
+
+omit [Field F] [SampleableType F] in
+/-- Assemble typed paper data into a full transcript for the paper-order `ProtocolSpec`. -/
+noncomputable def paperTranscriptFullTranscript {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (T : PaperTranscriptData P d) :
+    ProtocolSpec.FullTranscript ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F) :=
+  fun i => by
+    change Vector F ((whirPaperTranscriptVectorSpec P d).length i)
+    exact paperTranscriptSlotPayload P d T
+      ((Fintype.equivFin (PaperTranscriptSlot P)).symm i)
+
 /-! ### Semantic WHIR per-round transcript slots
 
 Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an
