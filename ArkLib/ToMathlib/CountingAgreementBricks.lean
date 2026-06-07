@@ -40,6 +40,9 @@ WHIR #113, Fiat-Shamir #116, sumcheck #13/#114.
 * `Polynomial.card_filter_forall_eval_eq_const_le_of_natDegree_le` /
   `Polynomial.card_filter_exists_eval_ne_const_ge_of_natDegree_le` — fixed-value count wrappers
   when callers have the simpler bound `p.natDegree ≤ D`.
+* `Polynomial.card_filter_forall_eval_eq_const_le_of_ne_C_natDegree_le` /
+  `Polynomial.card_filter_exists_eval_ne_const_ge_of_ne_C_natDegree_le` — fixed-value count
+  wrappers when callers express nonconstancy as `p ≠ C a`.
 * `Polynomial.prob_filter_forall_isRoot_le` /
   `Polynomial.prob_filter_exists_not_isRoot_ge` — uniform-tuple probability wrappers for the
   one-polynomial root and non-root counting bounds.
@@ -58,6 +61,9 @@ WHIR #113, Fiat-Shamir #116, sumcheck #13/#114.
 * `Polynomial.prob_filter_forall_eval_eq_const_le_of_natDegree_le` /
   `Polynomial.prob_filter_exists_eval_ne_const_ge_of_natDegree_le` — fixed-value probability
   wrappers from a direct degree bound on `p`.
+* `Polynomial.prob_filter_forall_eval_eq_const_le_of_ne_C_natDegree_le` /
+  `Polynomial.prob_filter_exists_eval_ne_const_ge_of_ne_C_natDegree_le` — fixed-value
+  probability wrappers from `p ≠ C a` and a direct degree bound on `p`.
 * `Finset.sum_boolCube_prod_factor_eq_prod_sum` — the boolean-hypercube identity
   `∑_{x∈{0,1}^σ} ∏ᵢ (xᵢ=0 ? aᵢ : bᵢ) = ∏ᵢ (aᵢ + bᵢ)` underlying multilinear-extension sumcheck
   folding (#13/#114).
@@ -378,6 +384,24 @@ theorem card_filter_exists_eval_ne_const_ge_of_natDegree_le {F : Type*}
   exact card_filter_exists_eval_ne_const_ge_of_sub_C_natDegree_le
     (F := F) (D := D) (s := s) (p := p) (a := a) hp0 hdeg
 
+/-- Fixed-value count from `p ≠ C a` and a direct degree bound on `p`. -/
+theorem card_filter_forall_eval_eq_const_le_of_ne_C_natDegree_le {F : Type*}
+    [Field F] [Fintype F] [DecidableEq F] {D s : ℕ} {p : F[X]} {a : F}
+    (hpC : p ≠ C a) (hp : p.natDegree ≤ D) :
+    (Finset.univ.filter (fun r : Fin s → F => ∀ i, p.eval (r i) = a)).card ≤
+      D ^ s := by
+  exact card_filter_forall_eval_eq_const_le_of_natDegree_le
+    (F := F) (D := D) (s := s) (p := p) (a := a) (sub_ne_zero_of_ne hpC) hp
+
+/-- Complementary fixed-value count from `p ≠ C a` and a direct degree bound on `p`. -/
+theorem card_filter_exists_eval_ne_const_ge_of_ne_C_natDegree_le {F : Type*}
+    [Field F] [Fintype F] [DecidableEq F] {D s : ℕ} {p : F[X]} {a : F}
+    (hpC : p ≠ C a) (hp : p.natDegree ≤ D) :
+    Fintype.card F ^ s - D ^ s ≤
+      (Finset.univ.filter (fun r : Fin s → F => ∃ i, p.eval (r i) ≠ a)).card := by
+  exact card_filter_exists_eval_ne_const_ge_of_natDegree_le
+    (F := F) (D := D) (s := s) (p := p) (a := a) (sub_ne_zero_of_ne hpC) hp
+
 /-- Uniform-tuple probability upper bound for all sampled coordinates being roots of a nonzero
 degree-`< N` polynomial. -/
 theorem prob_filter_forall_isRoot_le {F : Type*} [Field F] [Fintype F] [Nonempty F]
@@ -640,6 +664,27 @@ theorem prob_filter_exists_eval_ne_const_ge_of_natDegree_le {F : Type*}
   exact prob_filter_exists_eval_ne_const_ge_of_sub_C_natDegree_le
     (F := F) (D := D) (s := s) (p := p) (a := a) hp0 hdeg
 
+/-- Uniform-tuple fixed-value probability from `p ≠ C a` and a direct degree bound on `p`. -/
+theorem prob_filter_forall_eval_eq_const_le_of_ne_C_natDegree_le {F : Type*}
+    [Field F] [Fintype F] [Nonempty F] {D s : ℕ} {p : F[X]} {a : F}
+    (hpC : p ≠ C a) (hp : p.natDegree ≤ D) :
+    (PMF.uniformOfFintype (Fin s → F)).toOuterMeasure
+        {r : Fin s → F | ∀ i, p.eval (r i) = a}
+      ≤ ((D ^ s : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ^ s := by
+  exact prob_filter_forall_eval_eq_const_le_of_natDegree_le
+    (F := F) (D := D) (s := s) (p := p) (a := a) (sub_ne_zero_of_ne hpC) hp
+
+/-- Uniform-tuple non-fixed-value probability from `p ≠ C a` and a direct degree bound on `p`. -/
+theorem prob_filter_exists_eval_ne_const_ge_of_ne_C_natDegree_le {F : Type*}
+    [Field F] [Fintype F] [Nonempty F] {D s : ℕ} {p : F[X]} {a : F}
+    (hpC : p ≠ C a) (hp : p.natDegree ≤ D) :
+    (((Fintype.card F ^ s - D ^ s : ℕ) : ℝ≥0∞)
+        / (Fintype.card F : ℝ≥0∞) ^ s)
+      ≤ (PMF.uniformOfFintype (Fin s → F)).toOuterMeasure
+          {r : Fin s → F | ∃ i, p.eval (r i) ≠ a} := by
+  exact prob_filter_exists_eval_ne_const_ge_of_natDegree_le
+    (F := F) (D := D) (s := s) (p := p) (a := a) (sub_ne_zero_of_ne hpC) hp
+
 end Polynomial
 
 namespace Finset
@@ -674,6 +719,8 @@ end Finset
 #print axioms Polynomial.card_filter_exists_eval_ne_const_ge_of_sub_C_natDegree_le
 #print axioms Polynomial.card_filter_forall_eval_eq_const_le_of_natDegree_le
 #print axioms Polynomial.card_filter_exists_eval_ne_const_ge_of_natDegree_le
+#print axioms Polynomial.card_filter_forall_eval_eq_const_le_of_ne_C_natDegree_le
+#print axioms Polynomial.card_filter_exists_eval_ne_const_ge_of_ne_C_natDegree_le
 set_option linter.style.longLine false in
 #print axioms Polynomial.prob_filter_forall_isRoot_le
 set_option linter.style.longLine false in
@@ -698,4 +745,8 @@ set_option linter.style.longLine false in
 #print axioms Polynomial.prob_filter_forall_eval_eq_const_le_of_natDegree_le
 set_option linter.style.longLine false in
 #print axioms Polynomial.prob_filter_exists_eval_ne_const_ge_of_natDegree_le
+set_option linter.style.longLine false in
+#print axioms Polynomial.prob_filter_forall_eval_eq_const_le_of_ne_C_natDegree_le
+set_option linter.style.longLine false in
+#print axioms Polynomial.prob_filter_exists_eval_ne_const_ge_of_ne_C_natDegree_le
 #print axioms Finset.sum_boolCube_prod_factor_eq_prod_sum
