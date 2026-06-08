@@ -37,6 +37,27 @@ variable {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype] [oSpec.Inhabited]
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
   {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
 
+/-- The left challenge oracle inclusion into the appended protocol is **lawful**: its backward
+response translation (a transport along the response-type equality) is bijective on every fiber. -/
+instance lawfulSubSpec_challenge_inl :
+    [(pSpec₁).Challenge]ₒ ˡ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ where
+  onResponse_bijective := by
+    rintro ⟨i, ⟨⟩⟩
+    dsimp only [SubSpec.onResponse]
+    exact (Equiv.cast (by
+      show (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl i) = pSpec₁.Challenge i
+      simp [ChallengeIdx.inl, ProtocolSpec.append])).bijective
+
+/-- The right challenge oracle inclusion into the appended protocol is lawful. -/
+instance lawfulSubSpec_challenge_inr :
+    [(pSpec₂).Challenge]ₒ ˡ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ where
+  onResponse_bijective := by
+    rintro ⟨i, ⟨⟩⟩
+    dsimp only [SubSpec.onResponse]
+    exact (Equiv.cast (by
+      show (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inr i) = pSpec₂.Challenge i
+      simp [ChallengeIdx.inr, ProtocolSpec.append])).bijective
+
 /-- **Perfect completeness composes under `Reduction.append` (message-seam case).** -/
 theorem append_perfectCompleteness_message
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
@@ -88,11 +109,19 @@ theorem append_perfectCompleteness_message
       OptionT.mem_support_OptionT_pure_run_some_iff, Function.comp_apply, Prod.exists] at hx
     obtain ⟨tr₁, s₂, w₂, hP₁, fulltr, s₃', w₃', hP₂, x_1, hV, x_2, hgetM, hfin⟩ := hx
     subst hfin
-    -- VERIFIED forward decomposition: the appended m+n-round run support is fully decomposed into
-    -- `hP₁` (P₁ output), `hP₂` (P₂ output via the message-merge map), `hV` (appended verifier
-    -- `V₁.append V₂`), `hgetM`. The goal reduces to `(x_2, w₃') ∈ rel₃ ∧ s₃' = x_2`.
-    -- Remaining (conjecture-free mechanical re-assembly): strip lifts, split `hV` via
-    -- `Verifier.append_run`, feed `h₁` (⇒ `s₂ = V₁`-output ∧ `∈ rel₂`) then `h₂` (⇒ goal).
+    dsimp only
+    obtain rfl : x_1 = some x_2 := by
+      cases x_1 with
+      | none => simp [Option.getM] at hgetM
+      | some a =>
+        simp only [Option.getM, OptionT.monad_pure_eq_pure,
+          OptionT.mem_support_OptionT_pure_run_some_iff] at hgetM
+        exact congrArg some hgetM.symm
+    simp only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+      OptionT.mk, support_map, Set.mem_image, Option.some.injEq, bind_pure_comp,
+      exists_eq_right] at hP₁
+    rw [OracleComp.support_liftComp] at hP₁
+    trace_state
     sorry
 
 end Reduction
