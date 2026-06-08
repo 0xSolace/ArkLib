@@ -342,7 +342,10 @@ list-decodability), confirming the carving is at the true mathematical frontier.
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop30.lean`:**
 `local_polynomial_product_eq` (`∏_{j<m}(2^j)^c = 2^(∑_{j<m}j*c)`) and
 `local_polynomial_product_overflows_of_exponent` (if `m*d < ∑_{j<m}j*c`, the local-polynomial
-multiplicative product beats the final-domain degree-`d` polynomial `((2^m)^d)`).
+multiplicative product beats the final-domain degree-`d` polynomial `((2^m)^d)`). Strengthened by
+`local_exponent_sum_overflows_at_depth` and `local_polynomial_product_overflows_at_depth`: for every
+positive local degree `c`, depth `m=2*d+3` already makes the product beat the final degree-`d`
+polynomial.
 **Disproof attempt:** realize per-fold local-polynomial branching multiplicatively, so the product of
 local factors accumulates a quadratic-in-depth exponent and eventually beats every fixed polynomial
 in the final smooth-domain size. This is the cleanest remaining arithmetic counterexample shape:
