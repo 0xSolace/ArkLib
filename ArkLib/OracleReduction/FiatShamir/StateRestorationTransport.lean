@@ -1328,11 +1328,33 @@ private theorem transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
               subst z
               simp only [Prod.map_apply, id_eq]
               rw [queryLog_snd_append, queryLog_snd_singleton_inr, List.append_assoc]
-              rw [ih ([⟨⟨⟨i.castLE (by omega), hDir⟩,
-                (stmtIn, messages.take i.castSucc)⟩, response⟩] ++ tail) hpref]
-              exact popFSChallengeFromLog_cons_self
+              change (do
+                  let prevTranscript ← transcriptFromFSChallengeLogAux
+                    (StmtIn := StmtIn) (pSpec := pSpec) k messages i.castSucc
+                  let challenge ← popFSChallengeFromLog
+                    (StmtIn := StmtIn) (pSpec := pSpec) (i.castLE (by omega))
+                  pure (prevTranscript.concat challenge)).run
+                    (prefixLog.snd ++
+                      (([⟨q, response⟩] :
+                        QueryLog (fsChallengeOracle StmtIn pSpec)) ++ tail)) =
+                some (prevTranscript.concat response, tail)
+              change (((transcriptFromFSChallengeLogAux
+                    (StmtIn := StmtIn) (pSpec := pSpec) k messages i.castSucc).run
+                      (prefixLog.snd ++
+                        (([⟨q, response⟩] :
+                          QueryLog (fsChallengeOracle StmtIn pSpec)) ++ tail))).bind
+                  fun p =>
+                    (((popFSChallengeFromLog
+                      (StmtIn := StmtIn) (pSpec := pSpec) (i.castLE (by omega))).run p.2).bind
+                        fun p' => some (p.1.concat p'.1, p'.2))) =
+                some (prevTranscript.concat response, tail)
+              rw [ih (([⟨q, response⟩] :
+                QueryLog (fsChallengeOracle StmtIn pSpec)) ++ tail) hpref]
+              simp only [Option.bind_some, List.singleton_append]
+              rw [popFSChallengeFromLog_cons_self
                 (StmtIn := StmtIn) (pSpec := pSpec) ⟨i.castLE (by omega), hDir⟩
-                (stmtIn, messages.take i.castSucc) response tail
+                (stmtIn, messages.take i.castSucc) response tail]
+              rfl
           · next hDir' =>
               have hContra : Direction.V_to_P = Direction.P_to_V := hDir.symm.trans hDir'
               cases hContra
@@ -1354,22 +1376,47 @@ private theorem transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
               rcases pref with ⟨prevTranscript, prefixLog⟩
               subst z
               simp only [Prod.map_apply, id_eq, List.append_nil]
-              have hprev :
-                  (Fin.induction (pure (fun i => i.elim0))
-                    (fun i ih => do
-                      let prevTranscript ← ih
-                      match hDir : pSpec.dir (i.castLE (by omega)) with
-                      | .V_to_P => do
-                          let challenge ← popFSChallengeFromLog
-                            (StmtIn := StmtIn) (pSpec := pSpec) (i.castLE (by omega))
-                          pure (prevTranscript.concat challenge)
-                      | .P_to_V =>
-                          pure (prevTranscript.concat (messages ⟨i, hDir⟩)))
-                    i.castSucc).run (prefixLog.snd ++ tail) =
-                      some (prevTranscript, tail) := by
-                simpa [transcriptFromFSChallengeLogAux] using ih tail hpref
-              rw [hprev]
+              change (do
+                  let prevTranscript ← transcriptFromFSChallengeLogAux
+                    (StmtIn := StmtIn) (pSpec := pSpec) k messages i.castSucc
+                  pure (prevTranscript.concat (messages ⟨i, hDir⟩))).run
+                    (prefixLog.snd ++ tail) =
+                some (prevTranscript.concat (messages ⟨i, hDir⟩), tail)
+              change (((transcriptFromFSChallengeLogAux
+                    (StmtIn := StmtIn) (pSpec := pSpec) k messages i.castSucc).run
+                      (prefixLog.snd ++ tail)).bind
+                  fun p => some (p.1.concat (messages ⟨i, hDir⟩), p.2)) =
+                some (prevTranscript.concat (messages ⟨i, hDir⟩), tail)
+              rw [ih tail hpref]
               rfl
+
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- Full-transcript replay corollary for `deriveTranscriptFS.withQueryLog`: the verifier's
+slow-Fiat-Shamir challenge-log projection reconstructs every support transcript.  Extra tail
+challenge-log entries are ignored by `transcriptFromFSChallengeLog`, which returns the parsed
+transcript and discards the final parser state. -/
+private theorem transcriptFromFSChallengeLog_run_withQueryLog_snd_support
+    (stmtIn : StmtIn) (messages : pSpec.Messages)
+    (tail : QueryLog (fsChallengeOracle StmtIn pSpec))
+    {z : pSpec.FullTranscript × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)}
+    (hz : z ∈ support
+      (OracleComp.withQueryLog
+        (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages))) :
+    transcriptFromFSChallengeLog
+        (StmtIn := StmtIn) (pSpec := pSpec) messages (z.2.snd ++ tail) =
+      some z.1 := by
+  have haux :=
+    transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
+      (oSpec := oSpec) (StmtIn := StmtIn) (pSpec := pSpec)
+      stmtIn (Fin.last n) messages (Fin.last (Fin.last n)) tail (z := z)
+      (by
+        simpa [ProtocolSpec.Messages.deriveTranscriptFS,
+          ProtocolSpec.Messages.deriveTranscriptSR,
+          ProtocolSpec.MessagesUpTo.deriveTranscriptFS,
+          ProtocolSpec.MessagesUpTo.deriveTranscriptSR] using hz)
+  unfold transcriptFromFSChallengeLog
+  simpa [StateT.run'] using congrArg (Option.map Prod.fst) haux
 
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
