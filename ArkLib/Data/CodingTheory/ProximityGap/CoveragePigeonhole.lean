@@ -113,4 +113,56 @@ theorem sq_sum_card_le_card_mul_sum_inter {κ ι : Type*} [Fintype κ] [Fintype 
   have hcs := sq_sum_le_card_mul_sum_sq (s := (Finset.univ : Finset ι)) (f := deg)
   rwa [Finset.card_univ] at hcs
 
+/-- **Joint-pair existence** (GG25 multi-γ extraction).  If the agreement mass is large enough
+— precisely `(card κ)²·t·|ι| + |ι|·∑|S i| < (∑|S i|)²` — then some two *distinct* sets share
+strictly more than `t` coordinates.  This is the joint pair the repaired ABF26 T4.21
+line-decoding argument extracts (issue #140), obtained from the Cauchy–Schwarz mass bound by
+averaging off the diagonal. -/
+theorem exists_pair_inter_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq ι]
+    (S : κ → Finset ι) (t : ℕ)
+    (hbig : (Fintype.card κ) ^ 2 * t * Fintype.card ι + Fintype.card ι * (∑ i, (S i).card)
+            < (∑ i, (S i).card) ^ 2) :
+    ∃ i j, i ≠ j ∧ t < (S i ∩ S j).card := by
+  classical
+  by_contra hcon
+  push_neg at hcon
+  have hterm : ∀ i j, (S i ∩ S j).card ≤ (if i = j then (S i).card else t) := by
+    intro i j
+    by_cases h : i = j
+    · subst h; simp [Finset.inter_self]
+    · simp only [h, if_false]; exact hcon i j h
+  have hinner : ∀ i, (∑ j, (if i = j then (S i).card else t))
+      ≤ (S i).card + Fintype.card κ * t := by
+    intro i
+    rw [Finset.sum_ite]
+    simp only [Finset.sum_const, smul_eq_mul]
+    have h1 : (Finset.univ.filter (fun j => i = j)).card = 1 := by
+      rw [Finset.card_eq_one]
+      exact ⟨i, by ext j; simp [eq_comm]⟩
+    have h2 : (Finset.univ.filter (fun j => ¬ i = j)).card ≤ Fintype.card κ := by
+      refine le_trans (Finset.card_filter_le _ _) ?_
+      rw [Finset.card_univ]
+    rw [h1, one_mul]
+    exact Nat.add_le_add_left (Nat.mul_le_mul h2 (le_refl t)) _
+  have hbound : (∑ i, ∑ j, (S i ∩ S j).card)
+      ≤ ∑ i, ((S i).card + Fintype.card κ * t) := by
+    apply Finset.sum_le_sum
+    intro i _
+    exact le_trans (Finset.sum_le_sum (fun j _ => hterm i j)) (hinner i)
+  have heq2 : (∑ i, ((S i).card + Fintype.card κ * t))
+      = (∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t) := by
+    rw [Finset.sum_add_distrib]
+    congr 1
+    rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+  rw [heq2] at hbound
+  have hmass := sq_sum_card_le_card_mul_sum_inter S
+  have hchain : (∑ i, (S i).card) ^ 2
+      ≤ Fintype.card ι * ((∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t)) :=
+    le_trans hmass (Nat.mul_le_mul le_rfl hbound)
+  have heq : Fintype.card ι * ((∑ i, (S i).card) + Fintype.card κ * (Fintype.card κ * t))
+      = (Fintype.card κ) ^ 2 * t * Fintype.card ι + Fintype.card ι * (∑ i, (S i).card) := by
+    ring
+  rw [heq] at hchain
+  omega
+
 end ArkLib.Coverage
