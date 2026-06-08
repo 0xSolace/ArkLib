@@ -1298,9 +1298,25 @@ private theorem transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
                     (spec := oSpec + fsChallengeOracle StmtIn pSpec) (.inr q)) :
                     OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)
                       ((fsChallengeOracle StmtIn pSpec).Range q)).withQueryLog) at hchallenge
-              rw [OracleComp.withQueryLog_query, mem_support_bind_iff] at hchallenge
+              have hqueryEq :
+                  ((liftM (OracleSpec.query
+                      (spec := oSpec + fsChallengeOracle StmtIn pSpec) (.inr q)) :
+                      OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)
+                        ((fsChallengeOracle StmtIn pSpec).Range q)).withQueryLog)
+                    =
+                  ((liftM (OracleSpec.query
+                      (spec := oSpec + fsChallengeOracle StmtIn pSpec) (.inr q)) :
+                      OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)
+                        ((fsChallengeOracle StmtIn pSpec).Range q)) >>= fun response =>
+                    pure (response,
+                      [⟨(.inr q :
+                          (oSpec + fsChallengeOracle StmtIn pSpec).Domain), response⟩])) := by
+                simpa using
+                  (OracleComp.withQueryLog_query
+                    (spec := oSpec + fsChallengeOracle StmtIn pSpec) (.inr q))
+              rw [hqueryEq, mem_support_bind_iff] at hchallenge
               obtain ⟨response, _hresponse, hqueryPure⟩ := hchallenge
-              rw [OracleComp.withQueryLog_pure, mem_support_pure_iff] at hqueryPure
+              rw [mem_support_pure_iff] at hqueryPure
               obtain ⟨rfl, rfl⟩ := hqueryPure
               rw [support_map, Set.mem_image] at hpure
               obtain ⟨purePoint, hpurePoint, hinnerMap⟩ := hpure
@@ -1310,6 +1326,7 @@ private theorem transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
               simp only [Prod.map_apply, id_eq, List.append_nil, Prod.mk.injEq] at hinnerMap
               rcases hinnerMap with ⟨rfl, rfl⟩
               subst z
+              simp only [Prod.map_apply, id_eq]
               rw [queryLog_snd_append, queryLog_snd_singleton_inr, List.append_assoc]
               rw [ih ([⟨⟨⟨i.castLE (by omega), hDir⟩,
                 (stmtIn, messages.take i.castSucc)⟩, response⟩] ++ tail) hpref]
@@ -1337,9 +1354,22 @@ private theorem transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
               rcases pref with ⟨prevTranscript, prefixLog⟩
               subst z
               simp only [Prod.map_apply, id_eq, List.append_nil]
-              rw [queryLog_snd_append]
-              simp only [List.append_nil]
-              rw [ih tail hpref]
+              have hprev :
+                  (Fin.induction (pure (fun i => i.elim0))
+                    (fun i ih => do
+                      let prevTranscript ← ih
+                      match hDir : pSpec.dir (i.castLE (by omega)) with
+                      | .V_to_P => do
+                          let challenge ← popFSChallengeFromLog
+                            (StmtIn := StmtIn) (pSpec := pSpec) (i.castLE (by omega))
+                          pure (prevTranscript.concat challenge)
+                      | .P_to_V =>
+                          pure (prevTranscript.concat (messages ⟨i, hDir⟩)))
+                    i.castSucc).run (prefixLog.snd ++ tail) =
+                      some (prevTranscript, tail) := by
+                simpa [transcriptFromFSChallengeLogAux] using ih tail hpref
+              rw [hprev]
+              rfl
 
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
