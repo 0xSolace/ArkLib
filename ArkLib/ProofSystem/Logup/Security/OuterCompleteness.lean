@@ -629,6 +629,9 @@ theorem outer_perState_none_le
     refine nonpos_iff_eq_zero.mpr ?_
     rw [mul_eq_zero]
     right
+    rw [probEvent_eq_zero_iff]
+    intro y hy
+    extract_goal
     sorry
   · rw [if_pos hacc]
     refine le_trans (mul_le_mul_left' probEvent_le_one _) (le_of_eq ?_)

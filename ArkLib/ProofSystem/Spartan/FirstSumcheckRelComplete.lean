@@ -34,7 +34,6 @@ namespace Spartan.Spec
 variable {R : Type} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R]
   (pp : Spartan.PublicParams)
 
-omit [SampleableType R] in
 /-- **First sum-check `proj_complete`.** On any R1CS-satisfying instance, the projected inner
 sum-check instance (empty challenge, target `0`, oracle `ℱ`) satisfies the round-`0` sum-check
 relation: the Boolean-hypercube sum of `ℱ` equals the target `0`. -/
@@ -52,8 +51,7 @@ theorem firstSumcheck_proj_mem_relationRound
     ← firstSumCheckVirtualPolynomial_hypercubeSum_eq_zero_of_satisfied pp τ 𝕩 oStmt h]
   refine Finset.sum_congr rfl fun Y _ => ?_
   apply congrArg (fun pt => MvPolynomial.eval pt (firstSumCheckVirtualPolynomial pp τ 𝕩 oStmt))
-  rw [Fin.elim0_append]
   funext j
-  simp only [Function.comp_apply, Fin.cast_cast, Fin.cast_eq_self]
+  simp only [Function.comp_apply, Fin.elim0_append, Fin.cast_cast, Fin.cast_eq_self]
 
 end Spartan.Spec

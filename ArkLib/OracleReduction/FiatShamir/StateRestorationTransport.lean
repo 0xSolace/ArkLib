@@ -3040,7 +3040,9 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     Option.elimM, simulateQ_option_elimM, simulateQ_bind, simulateQ_map, simulateQ_pure,
     StateT.run_bind, StateT.run_map, map_bind, bind_assoc, pure_bind, map_eq_pure_bind,
     Option.elim_some]
-  trace_state
+  -- TODO(#116): once `fiatShamirKnowledgeExec_loggedExtractor_eq_direct` is discharged, this leaf is
+  -- closed by `probEvent_knowledgePayload_option_eq_stateRestoration` after collapsing the FS game via
+  -- that lemma; see the issue-116 roadmap.
   sorry
 
 -- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side

@@ -26,7 +26,8 @@ theorem rs_lambda_ge_elias_volume
   have hdim : Module.finrank F (ReedSolomon.code α k) = k :=
     ReedSolomon.dim_eq_deg_of_le' hkcard
   have h := linear_lambda_ge_elias_volume_eli57 (ι := ι) (F := F) (ReedSolomon.code α k) δ hδ_pos hδ_lt
-  rwa [hdim] at h
+  rw [hdim] at h
+  exact_mod_cast h
 
 lemma floor_120 : ⌊(120 / 128 : ℝ) * (128 : ℕ)⌋₊ = 120 := by norm_num
 
