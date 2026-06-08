@@ -66,5 +66,3 @@ theorem reedSolomon_johnson_list_bound (D : ι ↪ F) (k : ℕ) (w : ι → F)
   exact_mod_cast e
 
 end ArkLib.CodingTheory.ReedSolomonJohnson
-
-#print axioms ArkLib.CodingTheory.ReedSolomonJohnson.reedSolomon_johnson_list_bound
