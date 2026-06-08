@@ -124,6 +124,23 @@ theorem exists_large_list_sq (C : Finset (ι → F)) (r : ℕ) :
   rw [← Finset.mul_sum, Finset.sum_const, Finset.card_univ, smul_eq_mul] at hsum
   exact lt_irrefl _ hsum
 
+/-- **List-ambiguity threshold criterion.** If the second moment strictly exceeds the first
+(`Σ_f |Λ| < Σ_f |Λ|²`), some received word has a decoding list of size `≥ 2` (two distinct codewords
+within radius `r`). Since both moments are *exactly computable* (`first_moment`, `second_moment_linear`
+as a weight-enumerator sum), this turns "is the code list-ambiguous at radius `r`?" into a finite,
+checkable inequality — the rigorous criterion for the list threshold `δ*` (direction A for #232). No
+linearity needed. -/
+theorem exists_two_of_second_gt_first (C : Finset (ι → F)) (r : ℕ)
+    (h : (∑ f : ι → F, (lam C r f).card) < ∑ f : ι → F, (lam C r f).card ^ 2) :
+    ∃ f : ι → F, 2 ≤ (lam C r f).card := by
+  by_contra hc
+  push_neg at hc
+  have heq : (∑ f : ι → F, (lam C r f).card ^ 2) = ∑ f : ι → F, (lam C r f).card := by
+    refine Finset.sum_congr rfl (fun f _ => ?_)
+    have hf : (lam C r f).card = 0 ∨ (lam C r f).card = 1 := by have := hc f; omega
+    rcases hf with h0 | h0 <;> simp [h0]
+  omega
+
 /-- **Second-moment covering lower bound (Paley–Zygmund / Cauchy–Schwarz).** The number of received
 words with a nonempty decoding list is at least `(Σ_f |Λ|)² / (Σ_f |Λ|²) = (|C|·V(r))² / (Σ_f |Λ|²)`.
 Clearing the denominator: `(|C|·V(r))² ≤ #{f : |Λ(C,r,f)| ≥ 1} · Σ_f |Λ(C,r,f)|²`. Together with the
