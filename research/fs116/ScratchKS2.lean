@@ -41,6 +41,28 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   have h := hbound (Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver
     (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
   dsimp only
+  refine le_trans ?_ h
+  -- Step 1: rewrite the FS runWithLog+extractor exec to a run+extractor exec (logs dropped).
+  have hrun :
+      (do
+        let __discr ← runWithLog stmtIn witIn
+          { prover := prover, verifier := V.fiatShamir }
+        let extractedWitIn ←
+          liftM (fiatShamirStraightlineExtractorOfStateRestoration srExtractor stmtIn
+            __discr.1.1.2.2 __discr.1.1.1 __discr.2.1.fst __discr.2.2)
+        pure (stmtIn, extractedWitIn, __discr.1.2, __discr.1.1.2.2)) =
+      (do
+        let r ← Reduction.run stmtIn witIn
+          { prover := prover, verifier := V.fiatShamir }
+        let extractedWitIn ←
+          liftM (fiatShamirStraightlineExtractorOfStateRestoration srExtractor stmtIn
+            r.1.2.2 r.1.1 default default)
+        pure (stmtIn, extractedWitIn, r.2, r.1.2.2)) := by
+    rw [← Reduction.runWithLog_discard_logs_eq_run
+      (reduction := { prover := prover, verifier := V.fiatShamir })]
+    simp only [fiatShamirStraightlineExtractorOfStateRestoration_apply,
+      map_eq_pure_bind, bind_assoc, pure_bind]
+  rw [hrun]
   trace_state
   sorry
 
