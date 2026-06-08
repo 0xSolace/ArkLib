@@ -323,8 +323,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentShell
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
 import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop41
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop39
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop40
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop42
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop27
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop28
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop29

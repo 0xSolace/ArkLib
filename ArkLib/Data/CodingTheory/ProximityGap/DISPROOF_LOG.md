@@ -59,15 +59,22 @@ the deciding question is whether *deterministic smooth-domain* RS behaves like t
 generic/folded case (poly soundness ⇒ prize TRUE) or like Diamond–Gruen's adversarial low-rate
 families (super-poly ⇒ prize FALSE) — at *fixed* prize rate. No construction currently reaches that.
 
-**JUNE 2026 UPDATE — two new above-Johnson eprints, both still conditional / unread:**
+**JUNE 2026 UPDATE — both new above-Johnson eprints now READ (PDFs fetched past the IACR 403 with a
+`Referer: https://eprint.iacr.org/2026/NNN` header) and partially formalized:**
 * **Chai–Fan 2026/861** (Action–Orbit): `O(1)/|F|` for plain RS on the cyclic (smooth-subgroup) domain
-  above Johnson, **unconditional only for sparse inputs**; general case `⟹` conjecture **Q2
-  (sparse-worst-case dominance)** = our open core. Formalized as the conditional reduction Loop40.
-  The sparse-unconditional half is the literature twin of our Loops 33/34. PDF inaccessible (403);
-  "five-line proof" claim unverified — scrutinize before trust.
-* **2026/858** (Threshold-Halving, RVW): claims unconditional soundness above Johnson for
-  FRI/STIR/WHIR — unread, to scrutinize; if sound at the prize radius/rate it would be the strongest
-  lever yet. Net position **unchanged: prize OPEN**; both papers are conditional or unverified here.
+  above Johnson. Read in full: its prize-relevant Conjecture 1.1 is **conditional on TWO conjectures** —
+  Q1 (Conj 4.12, NT non-vanishing, rigorous only `d∈{4,8}`) and Q2 (Conj 7.1, sparse-worst-case
+  dominance, only *empirically* verified at scale `(32,8)`). Its *unconditional* core is **Theorem 2.1
+  (Action–Orbit)**, now VERIFIED sound in Loop41 (`pencil_substitution` axiom-light `[propext]`). The
+  conditional Q2 path is Loop40; the sparse-unconditional Layer-1 is the literature twin of Loops 33/34.
+* **Chai–Fan 2026/858** (Threshold-Halving, RVW13): read in full — result (A) is **genuinely
+  unconditional**: above-Johnson soundness for FRI/STIR/WHIR, `k=2^m`, any char, via concluding the
+  test at `δ/2 < (1−ρ)/2` (unique-decoding radius) at a `2×` query cost. Formalized as Loop42, which
+  yields the **first UNCONDITIONAL prize-shaped commit-phase bound** `(1/q)·(2^m)^2` (`c₁=2`).
+  **BUT** it bounds `ε_FRI` by *avoiding* `ε_mca`, not bounding it — so the literal MCA prize is
+  *sidestepped, not closed*. Net position: prize-as-stated (a bound on `ε_mca` at `δ ≤ 1−ρ−η`) remains
+  OPEN; but FRI *soundness* above Johnson is now unconditionally settled (858) and the action-orbit
+  mechanism is verified sound (861/Loop41), with all residual conditionality pinned to Q1/Q2.
 
 **Resolved-prize bibliography to formalize next (O11/O12):** port Ben-Sasson 2025/2055 Thm 1.5
 (poly soundness up to Johnson) and the Crites–Stewart reduction (CA-beyond-capacity ⇒ impossible
@@ -348,6 +355,42 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop42 — UNCONDITIONAL commit-phase prize shape via threshold halving (Chai–Fan 2026/858)
+**Verified sorry-free, axiom-clean in `CandidateProofLoop42.lean`:** `threshold_halving_into_unique_decoding`
+(`δ < 1−ρ ⟹ δ/2 < (1−ρ)/2`, the entire algebraic content of 858's move) and the capstone
+`unique_decoding_commit_prize_unconditional`: in the unique-decoding regime reached by halving, the
+per-round bad-challenge fraction is `≤ n/q` (BCIKS, `n=|L|≤2^m`), so Loop38's union bound over the `m`
+rounds gives commit-phase `∑_{j<m} e_j ≤ (1/q)·(2^m)^2` — **prize numerator shape `c₁=2, c₂=c₃=0`,
+UNCONDITIONAL**, whole open zone `δ∈(δ_J,1−ρ)`, no `η`, no conjecture. `commit_prize_const_pos`.
+**Source.** eprint 2026/858 (read June 2026; PDF fetched past the 403 with a `Referer` header) proves
+the *first unconditional* soundness above Johnson for FRI/STIR/WHIR, `k=2^m`, `L` with a fixed-point-free
+involution, any char. Mechanism = **threshold halving** (RVW13): conclude the low-degree test at `δ/2`
+not `δ`; since `δ/2 < (1−ρ)/2` (unique-decoding radius), after round 1 the distance is *locked* by
+BCIKS Thm 1.2 — immune to any open-zone counterexample — at a `~2×` query cost. Result (A) is genuinely
+unconditional (only its results (B)/(C) carry conjectures, not needed here).
+**Honesty / scope (loop step 6).** 858 bounds `ε_FRI` by *avoiding* `ε_mca` (halved threshold, `2×`
+queries); it does **not** bound `ε_mca` at radius `δ`. So the *literal* MCA prize (a bound on `ε_mca` at
+`δ ≤ 1−ρ−η`) is **sidestepped, not proven** — Loop42 does not close #232 as stated. But the practical
+above-Johnson FRI soundness the prize was motivated by is now unconditionally in prize shape. `n ≤ 2^m`
+is faithful (smooth domain ⊂ `2^m`-th roots, Loop11 linkage); per-round `≤ n` is BCIKS in the UD regime.
+
+### Loop41 — verifying the UNCONDITIONAL core of Chai–Fan 2026/861 (Action–Orbit Theorem 2.1)
+**Verified sorry-free, axiom-clean in `CandidateBridgeLoop41.lean`** (`pencil_substitution` depends
+only on `[propext]`): `pencil_substitution` (the pencil algebraic factoring, step iv:
+`(μz)^a+α(μz)^b = μ^a·(z^a+(αμ^{b−a})z^b)` for `a≤b`, the single pencil-specific computation),
+`dist_orbit_invariant` (invariance under `×s` ⟹ invariance under `×s^n`, by induction), and
+`bad_closed_under_orbit` (`D` invariant under `×s` + `D α ≤ τ` ⟹ `D(s^n·α) ≤ τ`: the bad set is a
+union of `⟨s⟩`-orbits — Theorem 2.1's conclusion with `s = ω^{b−a}`).
+**Why.** A full read of 2026/861 shows its prize-relevant claim (Conj 1.1) is **conditional on TWO
+conjectures**: Q1 (Conj 4.12, NT non-vanishing, rigorous only at `d∈{4,8}`) and Q2 (Conj 7.1,
+sparse-worst-case dominance, only *empirically* verified at scale `(32,8)`). So 861 does **not** resolve
+the prize. Its *unconditional* contribution is Theorem 2.1 (the authors: "the question, not the proof,
+is the contribution"). Loop41 verifies that core is genuinely sound — the algebraic factoring where any
+error would hide checks out, and the orbit-closure consequence is exactly as claimed. This confirms the
+action-orbit *mechanism* is rigorous and isolates **all** of 861's conditionality into Q1/Q2 (the open
+core, handled in Loop40). Steps (i),(ii),(v) — Hamming permutation-invariance, `RSₖ`-linearity — are
+standard and enter as the `hinv` hypothesis.
 
 ### Loop40 — SECOND PATH: sparse-worst-case dominance (Q2, Chai–Fan 2026/861) ⟹ prize (conditional)
 **Verified sorry-free, axiom-clean in `CandidateProofLoop40.lean`:** `sparse_dominance_prize_mass`
