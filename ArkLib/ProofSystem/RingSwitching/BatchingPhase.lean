@@ -7,6 +7,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Basic
+import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
 
@@ -570,6 +571,44 @@ lemma batchingMismatchPoly_totalDegree_le
     _ ≤ κ := by
       simpa using (Finset.card_le_univ (s := m.support))
 
+/-- If the two batched `A`-values differ, their row-decomposition mismatch polynomial is nonzero. -/
+lemma batchingMismatchPoly_nonzero_of_ne
+    (msg0 s_bar : P.A) (h_ne : msg0 ≠ s_bar) :
+    batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar ≠ 0 := by
+  have h_rows_ne :
+      (P.decomposeRows msg0) ≠
+      (P.decomposeRows s_bar) := by
+    intro h_eq
+    apply h_ne
+    calc msg0
+      _ = ∑ u, P.φ₀ (P.decomposeRows msg0 u) * P.φ₁ (P.basis u) := P.decomposeRows_spec msg0
+      _ = ∑ u, P.φ₀ (P.decomposeRows s_bar u) * P.φ₁ (P.basis u) := by simp [h_eq]
+      _ = s_bar := (P.decomposeRows_spec s_bar).symm
+  have h_diff_ne :
+      (fun u : Fin κ → Fin 2 =>
+        P.decomposeRows msg0 u -
+        P.decomposeRows s_bar u) ≠ 0 := by
+    intro h_zero
+    apply h_rows_ne
+    funext u
+    exact sub_eq_zero.mp (congrFun h_zero u)
+  intro h_poly_zero
+  apply h_diff_ne
+  funext u
+  have hu_eval_zero :
+      MvPolynomial.eval (fun i => ((u i : Fin 2) : L))
+        (batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar) = 0 := by
+    rw [h_poly_zero]
+    simp
+  have hu_eval_mle :
+      MvPolynomial.eval (fun i => ((u i : Fin 2) : L))
+        (batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar) =
+      P.decomposeRows msg0 u -
+        P.decomposeRows s_bar u := by
+    simp [batchingMismatchPoly, MvPolynomial.MLE_eval_zeroOne]
+  rw [hu_eval_mle] at hu_eval_zero
+  exact hu_eval_zero
+
 /-- If embedded evaluation mismatches `msg0`, the mismatch polynomial is nonzero. -/
 lemma batchingMismatchPoly_nonzero_of_embed_ne
     (stmt : BatchingStmtIn L ℓ)
@@ -656,6 +695,47 @@ lemma probability_bound_badBatchingEventProp [Fintype L] [DecidableEq L] [IsDoma
   change _ ≤ ((1 : ℝ≥0) : ENNReal)
   exact probEvent_le_one
 
+/-- **Sharp standalone Schwartz-Zippel bound for the bad batching event.**
+
+This does not change the public generic RBR error, which remains the always-valid unit bound until
+the verifier-run/extractor interface pins the post-challenge witness strongly enough. It packages
+the algebraic probability endgame: a bad batching event forces the nonzero multilinear mismatch
+polynomial to vanish at the sampled batching vector. -/
+lemma probability_bound_badBatchingEventProp_sharp [Fintype L] [DecidableEq L] [IsDomain L]
+    (msg0 s_bar : P.A) :
+    Pr[fun y =>
+      badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar |
+        ($ᵗ (Fin κ → L))] ≤
+      (κ : ENNReal) / (Fintype.card L : ENNReal) := by
+  classical
+  rw [probEvent_uniformSample_eq_Pr_uniform]
+  by_cases h_eq : msg0 = s_bar
+  · simp [badBatchingEventProp, h_eq]
+  · let mismatch :=
+      batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar
+    have h_nonzero : mismatch ≠ 0 := by
+      simpa [mismatch] using
+        batchingMismatchPoly_nonzero_of_ne (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar h_eq
+    have h_deg : mismatch.totalDegree ≤ κ := by
+      simpa [mismatch] using
+        batchingMismatchPoly_totalDegree_le (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar
+    have h_mono :
+        Pr_{ let y ← $ᵖ (Fin κ → L) }[
+          badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar] ≤
+        Pr_{ let y ← $ᵖ (Fin κ → L) }[MvPolynomial.eval y mismatch = 0] := by
+      exact Pr_le_Pr_of_implies ($ᵖ (Fin κ → L))
+        (fun y => badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar)
+        (fun y => MvPolynomial.eval y mismatch = 0)
+        (fun y hbad => by
+          have hdiff :
+              compute_s0 κ L K P msg0 y - compute_s0 κ L K P s_bar y = 0 :=
+            sub_eq_zero.mpr hbad.2
+          rw [batching_compute_s0_sub_eq_eval_mismatch
+            (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar y] at hdiff
+          simpa [mismatch] using hdiff)
+    exact le_trans h_mono
+      (prob_schwartz_zippel_mv_polynomial_of_totalDegree_le mismatch h_nonzero h_deg)
+
 lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L] [IsDomain L] [IsDomain K]
     (stmtOStmtIn : (BatchingStmtIn L ℓ) × (∀ j, aOStmtIn.OStmtIn j))
     (msg0 : (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).Message ⟨0, rfl⟩) :
@@ -696,3 +776,8 @@ end RingSwitching
 
 #print axioms RingSwitching.BatchingPhase.batchingReduction_perfectCompleteness_residual
 #print axioms RingSwitching.BatchingPhase.batchingReduction_perfectCompleteness
+
+/-! ### Axiom audit (issue #29 batching Schwartz-Zippel frontier) -/
+
+#print axioms RingSwitching.BatchingPhase.batchingMismatchPoly_nonzero_of_ne
+#print axioms RingSwitching.BatchingPhase.probability_bound_badBatchingEventProp_sharp
