@@ -3013,13 +3013,37 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
   let Klog :
       (Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) →
         StateT σ ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)) := fun pr =>
-    simulateQ (QueryImpl.addLift impl challengeQueryImpl)
-      ((liftM (loggedBlock pr) :
-        OptionT
-          (OracleComp
-            ((oSpec + fsChallengeOracle StmtIn pSpec) +
-              [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
-          (StmtIn × WitIn × StmtOut × WitOut)).run)
+    do
+      let z? ←
+        simulateQ
+          (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+            (challengeQueryImpl
+              (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+          (monadLift
+            (simulateQ loggingOracle (Verifier.run stmtIn pr.1 V.fiatShamir)).run).run
+      z?.elim (pure none) fun z => do
+        let stmtOut? ←
+          simulateQ
+            (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+              (challengeQueryImpl
+                (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+            z.1.getM.run
+        stmtOut?.elim (pure none) fun stmtOut => do
+          let witIn? ←
+            simulateQ
+              (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+                (challengeQueryImpl
+                  (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+              (monadLift
+                (fiatShamirStraightlineExtractorOfStateRestoration
+                  (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn pr.2.2 pr.1
+                  default z.2)).run
+          witIn?.elim (pure none) fun witIn =>
+            simulateQ
+              (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+                (challengeQueryImpl
+                  (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+              (pure (stmtIn, witIn, stmtOut, pr.2.2)).run
   let Kdir :
       (Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) →
         StateT σ ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)) := fun pr =>
@@ -3036,6 +3060,14 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
   apply stateT_option_elimM_congr
   intro pr
   dsimp [Klog, Kdir, loggedBlock, directBlock]
+  change simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+      ((liftM (loggedBlock pr) :
+        OptionT
+          (OracleComp
+            ((oSpec + fsChallengeOracle StmtIn pSpec) +
+              [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+          (StmtIn × WitIn × StmtOut × WitOut)).run) =
+    simulateQ impl (directBlock pr).run
   have hPayload :=
     fiatShamirVerifier_loggedExtractor_payload_eq_direct
       (oSpec := oSpec) (pSpec := pSpec)
