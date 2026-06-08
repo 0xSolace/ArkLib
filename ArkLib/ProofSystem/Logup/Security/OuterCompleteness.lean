@@ -663,10 +663,12 @@ theorem outer_perState_none_le
     rw [← bind_pure_comp, optionT_run_bind, OptionT.run_pure, pure_bind] at hxnone
     simp only [OptionT.run_pure, support_pure, Set.mem_singleton_iff, reduceCtorEq] at hxnone
   · rw [if_pos hacc]
-    refine le_trans (mul_le_mul' (le_refl _) (d := 1) ?_) ?_
-    · exact probEvent_le_one
-    · rw [mul_one]
-      exact le_of_eq rfl
+    -- The two `$ᵗ` factors carry non-defeq `SampleableType` instances but the same
+    -- `Fintype.card`-based value (`probOutput_uniformSample`); normalise both, then bound.
+    haveI : Fintype ((outerPSpec F n params).Challenge ⟨1, rfl⟩) := (inferInstance : Fintype F)
+    simp only [probOutput_uniformSample]
+    apply mul_le_of_le_one_right'
+    exact probEvent_le_one
 
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
