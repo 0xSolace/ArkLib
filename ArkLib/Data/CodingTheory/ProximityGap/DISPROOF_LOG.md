@@ -20,8 +20,9 @@ proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_di
 brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
 `~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
 the research ledger; treat a named lemma as in-tree API only after checking the current source file.
-Loops 27, 28, 29, 30, 31, 32, 33, 34, 35, and 36 have been restored as self-contained arithmetic
-bricks in the current checkout.
+Loops 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, and 37 are present as self-contained arithmetic
+bricks in the current checkout (`CandidateStructureLoop37.lean` added 2026-06-08, sorry-free,
+axiom-clean, indexed in `ArkLib.lean`).
 
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
@@ -337,6 +338,35 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop37 — the per-round multiplier must be GAP-independent, not merely depth-independent
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop37.lean`:**
+`const_multiplier_product_le_domain_pow` (per-round factors `a_j ≥ 0` with `a_j ≤ 2^c` accumulate to
+`∏_{j<m} a_j ≤ (2^m)^c`), `gap_budget_per_round_overflows` (if `2^c < a` then `(2^m)^c < a^m` for
+`m ≥ 1`), `exists_budget_overflowing` (for every fixed `c` there is a budget `B = 2^c+1 > 2^c`
+overflowing the degree-`c` polynomial at every positive depth), `prize_decomposition`
+(`∏_{j<m} 2^{c₁} · G = (2^m)^{c₁} · G`), and `safe_envelope` (gap-independent per-round factor times a
+one-shot nonneg gap factor `G` stays prize-shaped).
+**Hypothesis class.** The prize triple `(c₁,c₂,c₃)` is fixed *before* the field, hence before the gap
+`η`. The depth-exponential factor `(2^m)^{c₁}` is arithmetically an `m`-fold product of the *single
+universal base* `2^{c₁}`. So a per-round multiplier can ride `(2^m)^{c₁}` **only if it is bounded by a
+gap-independent constant** `2^{c₁}`.
+**Disproof attempt (the self-attack).** Take the cleanest survivor of Loop35 — "constant per-round
+multiplier" — and instantiate it with the actual capacity budget `B(ρ,η) ≈ 1/η`, which is constant in
+the depth `m`. Naively this is "depth-independent", so it looks prize-safe. **Disproof of the
+disproof:** no — `gap_budget_per_round_overflows` shows that since `B(ρ,η) → ∞` as `η → 0`, for **any**
+fixed `c₁` there is a gap small enough that `2^{c₁} < B(ρ,η)`, and then `B^m > (2^m)^{c₁}` at every
+positive depth. A per-round *gap-budget* multiplier therefore defeats every field-independent `c₁`.
+So depth-independence is **not** enough: the per-round multiplier must be independent of the gap too.
+**What this localizes.** `prize_decomposition` + `safe_envelope` give the structural verdict: the
+depth-exponential part `(2^m)^{c₁}` may carry only the gap-INDEPENDENT universal constant, while ALL
+gap dependence must live in the depth-INDEPENDENT one-shot factor `G = 1/(ρ^{c₂} η^{c₃})`. This is
+exactly the shape of the proven regimes — Johnson/Loop11 places `n² = (2^m)²` with `c₁ = 2` and pushes
+the `ℓ⁷ρ²` list budget into the denominator, paid once, never per round. So the only thing BGM/Johnson
+actually supply (a *one-shot* capacity budget) lands in `G` and is prize-safe; a genuine disproof needs
+the smooth-domain GS/proximity mechanism to charge a gap- or depth-growing budget **per round**, which
+no construction does. This sharpens Loop35: the surviving danger is not just "unbounded in `m`" but
+"unbounded in `m` OR in `1/η` as a *per-round* factor".
 
 ### Loop36 — amplified additive injections are still safe under constant blowup
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop36.lean`:**
