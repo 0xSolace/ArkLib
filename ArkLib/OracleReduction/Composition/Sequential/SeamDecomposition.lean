@@ -34,7 +34,8 @@ The constructions reuse the left-/right-half transport lemmas (`append_dir_castL
 of a restriction lies wholly in one half of the appended protocol, so — unlike `Prover.append`,
 which must case-split on `i < m`, `i = m`, `i > m` — no per-round case analysis is needed.
 
-These are axiom-clean and `sorry`-free.  The remaining steps toward `appendSoundnessResidual` are
+These are axiom-clean and contain no proof holes.  The remaining steps toward
+`appendSoundnessResidual` are
 the seam-merge identity (`P` agrees with `(Prover.fst P).append (Prover.snd P)` on its run) and the
 probabilistic union bound over the intermediate statement; both are documented in `appendSoundness`.
 -/
