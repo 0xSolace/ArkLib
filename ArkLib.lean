@@ -103,6 +103,7 @@ import ArkLib.Data.CodingTheory.JohnsonBound.ListSize
 import ArkLib.Data.CodingTheory.JohnsonBound.ReedSolomonListSize
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ListDecoding.AGL23Barrier
+import ArkLib.Data.CodingTheory.ListDecoding.AvgRadiusPlotkin
 import ArkLib.Data.CodingTheory.ListDecoding.BKR06SubspacePoly
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.General
