@@ -75,7 +75,10 @@ theorem appendRunRightResidual_holds_empty (stmt : Stmt₁) (wit : Wit₁) :
     exact eq_of_heq (ht.trans hempty.symm)
   rw [htr]
   simp only [← OracleComp.liftComp_eq_liftM, Prod.mk.eta]
-  rw [liftComp_liftComp (fun t => rfl), liftComp_liftComp (fun t => rfl)]
+  rw [liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₁.Challenge]ₒ)
+      (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl),
+    liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₂.Challenge]ₒ)
+      (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
 
 #print axioms appendRunRightResidual_holds_empty
 
