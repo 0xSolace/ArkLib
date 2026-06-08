@@ -165,4 +165,59 @@ theorem exists_pair_inter_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [Decidabl
   rw [heq] at hchain
   omega
 
+/-- **Second-moment (Johnson-type) list-size bound.**  If each of the `card κ` agreement sets
+covers at least `a` of the `|ι|` coordinates and every two *distinct* sets share at most `b`
+coordinates, then
+`card κ · a² ≤ |ι|² + card κ · |ι| · b`.
+In list-decoding terms (sets = agreement supports of codewords with a received word, `a` =
+agreement radius, `b` = pairwise agreement = `|ι| − dist`), this bounds the list size: when
+`a² > |ι| · b` it gives `(list size) ≤ |ι|²/(a² − |ι|·b)`, the second-moment / Johnson list
+bound — the combinatorial engine behind the list-decoding inputs of #138/#140/#141. -/
+theorem card_mul_sq_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq ι]
+    [Nonempty κ] (S : κ → Finset ι) (a b : ℕ)
+    (hlo : ∀ i, a ≤ (S i).card)
+    (hpair : ∀ i j, i ≠ j → (S i ∩ S j).card ≤ b) :
+    Fintype.card κ * a ^ 2 ≤ (Fintype.card ι) ^ 2 + Fintype.card κ * Fintype.card ι * b := by
+  classical
+  have hlb : Fintype.card κ * a ≤ ∑ i, (S i).card := by
+    rw [show Fintype.card κ * a = ∑ _i : κ, a by
+      rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]]
+    exact Finset.sum_le_sum (fun i _ => hlo i)
+  have hub : (∑ i, ∑ j, (S i ∩ S j).card)
+      ≤ Fintype.card κ * Fintype.card ι + Fintype.card κ * (Fintype.card κ * b) := by
+    have hterm : ∀ i j, (S i ∩ S j).card ≤ (if i = j then Fintype.card ι else b) := by
+      intro i j
+      by_cases h : i = j
+      · subst h
+        simp only [if_true, Finset.inter_self]
+        exact Finset.card_le_univ _
+      · simp only [h, if_false]; exact hpair i j h
+    have hinner : ∀ i, (∑ j, (if i = j then Fintype.card ι else b))
+        ≤ Fintype.card ι + Fintype.card κ * b := by
+      intro i
+      rw [Finset.sum_ite]
+      simp only [Finset.sum_const, smul_eq_mul]
+      have h1 : (Finset.univ.filter (fun j => i = j)).card = 1 := by
+        rw [Finset.card_eq_one]; exact ⟨i, by ext j; simp [eq_comm]⟩
+      have h2 : (Finset.univ.filter (fun j => ¬ i = j)).card ≤ Fintype.card κ := by
+        refine le_trans (Finset.card_filter_le _ _) ?_; rw [Finset.card_univ]
+      rw [h1, one_mul]
+      exact Nat.add_le_add_left (Nat.mul_le_mul h2 (le_refl b)) _
+    refine le_trans (Finset.sum_le_sum (fun i _ =>
+      le_trans (Finset.sum_le_sum (fun j _ => hterm i j)) (hinner i))) ?_
+    rw [show (∑ _i : κ, (Fintype.card ι + Fintype.card κ * b))
+        = Fintype.card κ * Fintype.card ι + Fintype.card κ * (Fintype.card κ * b) by
+      rw [Finset.sum_const, Finset.card_univ, smul_eq_mul, Nat.mul_add]]
+  have hmass := sq_sum_card_le_card_mul_sum_inter S
+  have key : (Fintype.card κ * a) ^ 2
+      ≤ Fintype.card ι *
+          (Fintype.card κ * Fintype.card ι + Fintype.card κ * (Fintype.card κ * b)) :=
+    le_trans (Nat.pow_le_pow_left hlb 2) (le_trans hmass (Nat.mul_le_mul le_rfl hub))
+  have e1 : (Fintype.card κ * a) ^ 2 = Fintype.card κ * (Fintype.card κ * a ^ 2) := by ring
+  have e2 : Fintype.card ι *
+        (Fintype.card κ * Fintype.card ι + Fintype.card κ * (Fintype.card κ * b))
+      = Fintype.card κ * ((Fintype.card ι) ^ 2 + Fintype.card κ * Fintype.card ι * b) := by ring
+  rw [e1, e2] at key
+  exact Nat.le_of_mul_le_mul_left key Fintype.card_pos
+
 end ArkLib.Coverage
