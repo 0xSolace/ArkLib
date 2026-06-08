@@ -6,6 +6,23 @@ so we zero in. Keep lemmas that *constrain* even if they don't fully disprove.
 Default assumption: my disproof is wrong — find the precise reason it fails and
 make that reason a sorry-free Lean lemma.
 
+## CORPUS INTEGRITY (verified)
+
+All 23 verified bricks (`CandidateDisproofLoop{4,5,6,7,8,12,14}`, `CandidateProofLoop{9,11,13,17}`,
+`CandidateCarvingLoop10`, `CandidateBridgeLoop{15,16}`, `CandidateDecisionLoop18`,
+`CandidateStructureLoop{19,20,21,22,23,24,25,26}`) are each **sorry-free and axiom-clean**
+(`[propext, Classical.choice, Quot.sound]`), verified individually with `lake env lean` and
+cross-checked: the dependency spine (Loop24→25, Loop21→Carving10) builds and audits clean *together*,
+and every brick lives in its own `ArkLib.ProximityGap.*Loop_n` namespace (no collisions). The whole
+proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_disproof_backup/`.
+
+**Current-checkout caveat (2026-06-08):** this checkout does not currently carry every historical
+brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
+`~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
+the research ledger; treat a named lemma as in-tree API only after checking the current source file.
+Loops 27, 28, 29, 30, 31, 32, 33, 34, 35, and 36 have been restored as self-contained arithmetic
+bricks in the current checkout.
+
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
 A web-research pass (June 2026) located the precise state of the art. **Our verified carving at the
@@ -320,6 +337,198 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop36 — amplified additive injections are still safe under constant blowup
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop36.lean`:**
+`affine_recursion_amplified` (`T(j+1)≤aT(j)+b` gives
+`T(m)≤a^mT(0)+m*b*a^m` for `a≥1,b≥0`), `pow_const_factor_eq_domain_pow`,
+`affine_recursion_exact_constant_factor`, and `affine_recursion_constant_factor_absorbed` (under
+per-fold factor `2^c`, nonnegative base, and bounded additive injection `b`, the full recurrence is
+bounded by `(T(0)+b)*(2^m)^(c+1)`).
+**Disproof attempt:** maybe additive per-fold errors are harmless when added, but later
+multiplicative folds amplify them into a super-polynomial tower. **Disproof of the disproof:** if the
+multiplicative factor has bounded exponent density (`2^c` per fold) and the additive injection is
+bounded, amplification costs only the final multiplicative factor plus the fold depth `m`; `m≤2^m`
+absorbs it into one extra polynomial degree. A real affine-recursion disproof must still force
+unbounded multiplicative exponent density or unbounded additive injections in the actual
+smooth-domain GS/proximity process.
+
+### Loop35 — unbounded exponent density is the real multiplicative danger
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop35.lean`:**
+`density_product_eq` (`((2^m)^D)=2^(m*D)`), `exponent_product_eq`,
+`exponent_density_overflows_final_degree` (if cumulative exponent is at least `m*D` and `D>d`, the
+product beats final degree `d`), `density_one_more_overflows_final_degree`, and
+`linear_spike_density_overflows_final_degree`.
+**Disproof attempt:** take the complement of Loops 31--34 seriously: force exponent density to grow
+past every fixed prize degree, for example by making the effective spike density `K*h` unbounded.
+This **would** arithmetically defeat the prize numerator. **Disproof of the disproof:** the new brick
+only gives the overflow criterion. It does not prove that faithful smooth-domain GS/proximity lists
+realize cumulative exponent `≥m*D` with unbounded `D`. Loops 31--34 say all bounded-density variants
+are absorbed; Loop35 says exactly what remains to be constructed. No such construction is known in
+the below-capacity small-gap band.
+
+### Loop34 — bounded-count linear spikes are absorbed
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop34.lean`:**
+`sparse_linear_spike_sum_le` (if the spike support has size `≤K` and each active spike is `≤m*h`,
+then the total spike mass is `≤m*(K*h)`), `sparse_linear_spike_product_eq`, and
+`sparse_linear_spike_product_le_domain_pow` (baseline `c` plus a bounded number of height-linear
+spikes is absorbed by final degree `c+K*h`).
+**Disproof attempt:** maybe a constant number of extremely tall fold levels, each as large as the
+full depth, can create a multiplicative product that beats every fixed final-domain polynomial.
+**Disproof of the disproof:** no — a bounded number of height-`O(m)` spikes only adds a constant
+amount to the exponent density, hence only raises the allowed polynomial degree. A spike-based
+counterexample must make the number of spikes or their height-density unbounded in the actual
+smooth-domain GS/proximity process. A few full-depth spikes are still prize-safe.
+
+### Loop33 — bounded sparse spikes are absorbed
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop33.lean`:**
+`sparse_spike_sum_le` (a spike function supported on `S` and bounded by height `h` contributes at
+most `m*h` over the first `m` levels), `sparse_spike_product_eq`, and
+`sparse_spike_product_le_domain_pow` (baseline exponent `c` plus bounded spikes is absorbed by the
+final-domain polynomial of degree `c+h`).
+**Disproof attempt:** force a few alarming fold levels with high-looking multiplicative exponents
+while keeping most levels harmless, hoping sparse irregularity beats every fixed polynomial in
+`2^m`. **Disproof of the disproof:** bounded spikes do not work. If spike heights are bounded by
+`h`, their total contribution is still linear in the depth and only increases the final polynomial
+degree from `c` to `c+h`. A spike-based disproof must make the spike height or average spike density
+grow without bound in the actual smooth-domain GS/proximity mechanism. Sparse scary levels are not
+enough.
+
+### Loop32 — block grouping cannot hide multiplicative exponent growth
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop32.lean`:**
+`block_exponent_product_eq` (`∏_{i<r}2^(b_i)=2^(∑_{i<r}b_i)`),
+`block_exponent_product_le_domain_pow` (if block widths sum to `m` and every block exponent is
+`≤ width_i*c`, the blocked product is at most `((2^m)^c)`), and
+`block_exponent_product_overflows_of_sum` (only total block exponent `>m*d` overflows final
+degree `d`).
+**Disproof attempt:** hide multiplicative growth by grouping fold levels into irregular blocks or by
+using spiky block factors, hoping the grouped accounting beats every fixed polynomial even when local
+average density looks bounded. **Disproof of the disproof:** no — block exponents still add. If every
+block has bounded exponent density relative to its width, then the whole product is absorbed by the
+prize numerator. Blocking/spiking only matters if the **total** block exponent has unbounded density
+in the final depth, which must be realized by the actual smooth-domain GS/proximity process. Mere
+regrouping is not a counterexample.
+
+### Loop31 — variable multiplicative exponents: only the total exponent matters
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop31.lean`:**
+`variable_exponent_product_eq` (`∏_{j<m}2^(e_j)=2^(∑_{j<m}e_j)`),
+`variable_exponent_product_le_domain_pow` (if `∑e_j≤m*c`, the product is at most the final-domain
+degree-`c` polynomial), `variable_exponent_product_le_domain_pow_of_pointwise` (bounded per-level
+exponents are prize-safe), and `variable_exponent_product_overflows_of_sum` (if `m*d<∑e_j`, the
+product beats final degree `d`).
+**Disproof attempt:** replace Loop30's rigid local factors `(2^j)^c` with adaptive or uneven factors
+`2^(e_j)` and hope the irregularity itself defeats every fixed polynomial in `2^m`.
+**Disproof of the disproof:** no — the product sees only the cumulative exponent. If the total
+exponent is linear in the depth `m`, or if every level exponent is uniformly bounded, the prize
+numerator absorbs the tower. A variable-factor disproof must prove a **superlinear cumulative
+exponent** realized by the actual smooth-domain GS/proximity process. Merely naming uneven local
+factors does not disprove the conjecture.
+
+### Loop30 — local polynomial multiplicative factors are dangerous only as a product
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop30.lean`:**
+`local_polynomial_product_eq` (`∏_{j<m}(2^j)^c = 2^(∑_{j<m}j*c)`) and
+`local_polynomial_product_overflows_of_exponent` (if `m*d < ∑_{j<m}j*c`, the local-polynomial
+multiplicative product beats the final-domain degree-`d` polynomial `((2^m)^d)`). Strengthened by
+`local_exponent_sum_overflows_at_depth` and `local_polynomial_product_overflows_at_depth`: for every
+positive local degree `c`, depth `m=2*d+3` already makes the product beat the final degree-`d`
+polynomial.
+**Disproof attempt:** realize per-fold local-polynomial branching multiplicatively, so the product of
+local factors accumulates a quadratic-in-depth exponent and eventually beats every fixed polynomial
+in the final smooth-domain size. This is the cleanest remaining arithmetic counterexample shape:
+local factors that are harmless one level at a time become dangerous when multiplied across all
+levels. **Disproof of the disproof:** the Lean brick is only conditional arithmetic. It proves no
+faithful GS/proximity mechanism whose fold levels branch independently and multiplicatively by
+`(2^j)^c`. Loops 26, 27, and 29 say additive/union-bound accumulation is prize-safe, and Loop28 says
+any polynomially bounded multiplicative product is prize-safe. Thus Loop30 narrows the target: a real
+disproof must exhibit genuinely multiplicative, per-level local-polynomial branching in the actual
+smooth-domain GS list process, not merely a product identity.
+
+### Loop29 — additive fold factors: only the sum matters
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop29.lean`:**
+`variable_additive_recursion_telescopes` (`T(j+1)≤T(j)+b_j` telescopes to
+`T(m)≤T(0)+∑_{j<m}b_j`) and `variable_additive_polynomial_of_sum_bound` (if the cumulative additive
+sum is `≤(2^m)^c`, the whole tower is bounded by base plus a polynomial in the domain size).
+**Disproof attempt:** maybe additive growth can hide in uneven per-fold spikes, even though uniform
+polynomial additive costs are absorbed by Loop27. **Disproof of the disproof:** no — additive
+recurrences care only about the cumulative sum. One large-looking fold, or any collection of folds
+whose total sum remains polynomial in `2^m`, is absorbed by the prize numerator. An additive
+counterexample must make the **sum** itself beat every polynomial in `2^m`.
+
+### Loop28 — variable fold factors: only the product matters
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop28.lean`:**
+`variable_fold_recursion_telescopes` (`T(j+1)≤a_j·T(j)` telescopes to
+`T(m)≤(∏_{j<m}a_j)·T(0)`) and `variable_fold_polynomial_of_product_bound` (if
+`∏_{j<m}a_j≤(2^m)^c`, then the whole multiplicative tower is polynomial in the domain size).
+**Disproof attempt:** use one `N`-dependent fold factor as evidence of multiplicative blowup.
+**Disproof of the disproof:** one large factor is not enough; only the cumulative product matters.
+Isolated large folds, or any polynomially bounded product of fold factors, are absorbed by the prize
+numerator. A multiplicative counterexample must force the product itself to beat every polynomial in
+`2^m`.
+
+### Loop27 — polynomial additive fold costs are still absorbed
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop27.lean`:**
+`fold_depth_mul_domain_pow_le_next_pow` (`m·(2^m)^c ≤ (2^m)^(c+1)`) and
+`additive_polynomial_step_le_next_pow` (if each fold adds at most `C·(2^m)^c`, then
+`T(m)≤B₀+C·(2^m)^(c+1)`). **Disproof attempt:** maybe the additive/union-bound model from Loop26
+still refutes the prize if every fold contributes polynomially many new close codewords. **Disproof
+of the disproof:** no — the tower depth is only `m=log₂N`, and `m` is absorbed by one extra power of
+`N=2^m`. So any **polynomial additive** per-fold cost remains prize-safe. The remaining disproof
+target is now stricter: either a super-polynomial additive contribution at some fold, or genuinely
+multiplicative branching with an `N`-growing factor.
+
+### Loop26 — additive vs multiplicative per-fold growth (narrows the disproof target)
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop26.lean`:** `additive_recursion_linear`
+(`T(j+1)≤T(j)+b` ⟹ `T(m)≤T(0)+m·b`), `additive_recursion_le_domain` (with `b≥0`, base `T(0)≤B₀`,
+and `m≤2^m`: `T(m)≤B₀+(2^m)·b` — linear in `N=2^m`, `c₁=1`). **Refinement of the crux:** Loop24/25
+used the *pessimistic multiplicative* model. But FRI/STIR soundness is a *union bound over rounds* —
+**additive** per fold. If the smooth-domain per-fold list growth is additive (`+b`), the total is
+linear in `m=log₂N` ⇒ polynomial in `2^m` ⇒ **prize TRUE with `c₁=1` and NO open scalar**. And even
+*constant-factor* multiplicative growth is fine (Loop24). So the disproof target is now strictly
+sharper: it requires the per-fold factor to be **multiplicative AND `N`-growing** simultaneously —
+not merely "not constant." The refined open question: is smooth-deterministic per-fold list growth
+additive/union-bound (TRUE) or genuinely multiplicative-with-`N`-growing-factor (FALSE)?
+
+### Loop25 — anchored recursion: the whole prize is now ONE open scalar inequality
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop25.lean`:** `recursion_anchored`
+(constant blowup `a≤2^c` + base `T(0)≤B₀` ⟹ `T(m)≤(2^m)^c·B₀`), `fold_list_le_domain_pow` (base
+`T(0)≤1` ⟹ `T(m)≤(2^m)^c`). **Base case** `T(0)≤1`: below the unique-decoding radius the list is a
+singleton (Johnson/unique decoding, in-tree `JohnsonList.johnson_unique_decoding`). Assembling Loop24's
+telescoping + this proven base: the full scale-`2^m` list is bounded by the **explicit `q`-independent
+polynomial `(2^m)^c`**, which clears the prize RHS with `c₁=c`. **Net:** every ingredient of the TRUE
+branch is now *proven* — the carving, the telescoping, the base, the RHS fit — **except one real
+number**: the per-fold blowup `a` and whether `a ≤ 2^c` for an `N`-independent `c`. The entire
+ABF26 prize is thereby reduced to a *single open scalar inequality* about the smooth-deterministic
+per-fold proximity-gap soundness. That scalar's `N`-dependence is the isolated `$1M` question (no
+published answer); it cannot be fabricated.
+
+### Loop24 — the per-fold recursion criterion: constant blowup ⟹ polynomial ⟹ prize TRUE
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop24.lean`:** `fold_recursion_telescopes`
+(`T(j+1)≤a·T(j)` ⟹ `T(m)≤aᵐ·T(0)`), `constant_blowup_polynomial` (`a≤2^c` ⟹ `aᵐ≤(2^m)^c`),
+`fold_list_polynomial_of_constant_blowup` (combined: `T(m)≤(2^m)^c·T(0)`). **The quantitative
+dichotomy of the FRI tower (Loop23):** writing `T j` for the list size at fold level `j`, the prize is
+- **TRUE** iff the per-fold blowup `a` is a *constant* (`N`-independent, `a≤2^c`): then over `m=log₂N`
+  folds the list `≤ (2^m)^c·T(0)` = **polynomial in the domain size** `2^m`, clearing the prize RHS
+  with `c₁=c` (then Loop11/13/17);
+- **FALSE** iff the per-fold blowup *grows with `N`* (`a=a(N)→∞`): then `aᵐ` is super-polynomial in
+  `2^m` ⇒ Loop8 `q`-growth.
+A single fold's single orbit is absorbed (Loop21); the open question is exactly whether the per-fold
+proximity-gap soundness blowup *stays `N`-independent across all `m` folds* for plain
+smooth-deterministic RS. This is the precise quantitative form of the FRI/STIR-to-capacity frontier.
+
+### Loop23 — the prize is SELF-SIMILAR under folding: it IS the FRI/STIR soundness frontier
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop23.lean`:** `pow_fold_mem` (the power map
+`x↦x^d` sends `μ_N` onto `μ_{N/d}` when `d∣N` — the FRI fold of the smooth domain),
+`recursive_rate_preserved` (`(k/d)/(N/d)=k/N` — the `μ_d`-invariant subcode is the **same-rate** RS
+code one scale down), `tower_depth` (`2^m/2^m=1` — the dyadic domain folds in exactly `m` levels).
+**Key identification:** the `μ_d`-invariant subcode (Loop22) on `μ_N`, through `x↦x^d`, *is the prize
+at scale `N/d`, same rate ρ* — so the smooth-domain prize is **self-similar under folding**. For `d=2`
+this is exactly the FRI fold; the whole prize is the proximity-gap soundness of the `2^m`-tower pushed
+to capacity. A `μ_d`-invariant word's list splits into the invariant sublist (= prize one level down)
++ non-invariant `μ_d`-orbits (Loop22). **So the prize is a recursion over the `m`-level tower:** TRUE
+iff per-fold orbit contributions telescope to a polynomial bound; FALSE iff they accumulate
+super-polynomially across the `m` levels (a single fold's single orbit is absorbed, Loop21). This
+identifies the prize as *precisely the open FRI/STIR/WHIR-to-capacity soundness frontier*, not a side
+issue — which is exactly why it carries the $1M and has no published resolution.
 
 ### Loop22 — the `μ_d`-invariant subcode `{Q(X^d)}`: the object the open question lives in
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop22.lean`:** `invariant_subcode_fixed`

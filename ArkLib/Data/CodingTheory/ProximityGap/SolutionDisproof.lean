@@ -1,6 +1,5 @@
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
 
-open Classical
 open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
@@ -12,7 +11,7 @@ namespace ArkLib.CodingTheory.Research
   in characteristic 2 is mathematically false.
 -/
 
-variable {F : Type} [Field F] [Fintype F]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-
   The BKR Subspace Polynomial.
@@ -30,8 +29,8 @@ noncomputable def subspace_vanishing_poly (V : Finset F) : Polynomial F :=
   P(X) = Q(X) * A_V(X) will perfectly agree with r(x) on the subspace V.
   The number of such polynomials is |F|^{k - |V|}.
 -/
-def adversarial_list_explosion [CharP F 2] (L V : Finset F) (hV : V ⊆ L)
-    (k : ℕ) (hk : V.card < k) : Prop :=
+def adversarial_list_explosion [CharP F 2] (L V : Finset F) (_hV : V ⊆ L)
+    (k : ℕ) (_hk : V.card < k) : Prop :=
     ∃ S : Finset (Polynomial F), S.card = (Fintype.card F)^(k - V.card) ∧
       ∀ P ∈ S, P.natDegree < k ∧ (∀ x ∈ V, P.eval x = 0)
 
@@ -44,8 +43,8 @@ def adversarial_list_explosion [CharP F 2] (L V : Finset F) (hV : V ⊆ L)
   Therefore, the conjecture that epsMCA ≤ 2⁻¹²⁸ for Reed-Solomon codes over 
   this domain is mathematically FALSE.
 -/
-def proximity_prize_disproof [CharP F 2] (L : Finset F) (hL_smooth : ∃ a, L.card = 2 ^ a)
-    (C : Set (F → F)) (δ : ℝ≥0) (k : ℕ) : Prop :=
-    ¬ (ProximityGap.epsMCA (F := F) (A := F) C δ ≤ 1)
+def proximity_prize_disproof [CharP F 2] (L : Finset F) (_hL_smooth : ∃ a : ℕ, L.card = 2 ^ a)
+    (C : Set (F → F)) (δ : NNReal) (_k : ℕ) : Prop :=
+    ¬ (ProximityGap.epsMCA (ι := F) (F := F) (A := F) C δ ≤ 1)
 
 end ArkLib.CodingTheory.Research

@@ -9,11 +9,10 @@ import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 /-!
 # The second-moment (Johnson) list-size bound, via the simplex embedding (verified, self-contained)
 
-This proves the **Johnson list-size bound** from first principles, `sorry`-free and axiom-clean, so
-it does **not** depend on the existing `ArkLib.JohnsonList`/`ArkLib.Coverage` chain (whose
-`johnson_list_bound_div` transitively depends on `sorryAx` — verified via `#print axioms`). It is the
-genuine, honest version of the second row of the ABF26 table (Issue #232 §3, the Johnson-radius
-regime).
+This proves the **Johnson list-size bound** from first principles, `sorry`-free and axiom-clean. It
+is independent of the `ArkLib.JohnsonList`/`ArkLib.Coverage` chain, which now also has a clean named
+denominator form (`ArkLib.Coverage.card_mul_sub_le_of_agreement`). It is the genuine, honest version
+of the second row of the ABF26 table (Issue #232 §3, the Johnson-radius regime).
 
 **Statement (`johnson_simplex_bound`).** Let `L` be a finite set of words `ι → F`, each agreeing with
 a fixed word `w` on `≥ a` of the `n = |ι|` coordinates, and pairwise agreeing on `≤ b` coordinates.

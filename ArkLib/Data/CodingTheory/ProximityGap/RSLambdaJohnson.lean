@@ -21,9 +21,11 @@ second-moment/Gram argument.)
   (`a = n − ⌊δn⌋` the agreement count), `Λ(RS[k], δ) ≤ ⌊n²/(a² − n·(k−1))⌋`.
 
 Built on the axiom-clean `ArkLib.CodingTheory.ReedSolomonJohnson.reedSolomon_johnson_list_bound`
-(second-moment Johnson bound + RS root-counting pairwise agreement `≤ k−1`) — *not* on the
-`sorryAx`-tainted `ArkLib.JohnsonList.johnson_list_bound_div`. With `a = n − e`, `d = n − k + 1`, the
-gap `n(k−1) < a²` is exactly `e < n(1 − √((k−1)/n)) ≈ n(1 − √ρ)`, the Johnson radius.
+(second-moment Johnson bound + RS root-counting pairwise agreement `≤ k−1`). The parallel
+`ArkLib.JohnsonList`/`ArkLib.Coverage` route is also axiom-clean in the current tree, but this file
+keeps the RS threshold proof on the self-contained simplex composition. With `a = n − e`,
+`d = n − k + 1`, the gap `n(k−1) < a²` is exactly
+`e < n(1 − √((k−1)/n)) ≈ n(1 − √ρ)`, the Johnson radius.
 
 This is the strongest *provable* lower edge: it traps `δ*` into the genuine open gap
 `[1 − √ρ, 1 − ρ)`. Pinning the exact value inside that gap is the open prize.

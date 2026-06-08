@@ -82,6 +82,28 @@ theorem append_perfectCompleteness_message
     Prover.append_run_msg (P₁ := R₁.prover) (P₂ := R₂.prover) stmtIn witIn hn hDir hDir₂]
   simp only [probEvent_eq_one_iff] at h₁ h₂ ⊢
   obtain ⟨hf₁, hs₁⟩ := h₁ stmtIn witIn hIn
+  obtain ⟨s₀, hs₀⟩ := support_nonempty_of_neverFails init hInit
+  rw [OptionT.probFailure_mk_bind_eq_zero_iff] at hf₁
+  replace hf₁ := hf₁.2 s₀ hs₀
+  rw [probFailure_simulateQ_iff_stateful_run'_mk (impl := impl.addLift challengeQueryImpl)
+    (hImplSupp := by
+      intro β q s'
+      cases q with | mk t f =>
+      cases t with
+      | inl i => exact hImplSupp (OracleQuery.mk i f) s'
+      | inr i =>
+        simp only [QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+          QueryImpl.addLift_def, QueryImpl.add_apply_inr]
+        have hq := support_challengeQueryImpl_run_eq (q := OracleQuery.mk i f) s'
+        rw [support_liftM]
+        simpa only [ChallengeIdx, Challenge, add_apply_inr, QueryImpl.liftTarget_apply,
+          StateT.run_map, StateT.run_monadLift, monadLift_self, bind_pure_comp, Functor.map_map,
+          support_map, Set.fmap_eq_image, toPFunctor_add, ofPFunctor_add, ofPFunctor_toPFunctor,
+          support_liftM, QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
+          liftM_map] using hq)] at hf₁
+  simp only [Reduction.run] at hf₁
+  rw [OptionT.probFailure_mk_do_bindT_eq_zero_iff] at hf₁
+  obtain ⟨_, hV₁nf⟩ := hf₁
   refine ⟨?_, ?_⟩
   · rw [OptionT.probFailure_mk_bind_eq_zero_iff]
     refine ⟨by rw [probFailure_eq_zero_iff]; exact hInit, ?_⟩
@@ -109,10 +131,23 @@ theorem append_perfectCompleteness_message
         Set.mem_iUnion, implies_true, and_self, true_and, OptionT.probFailure_mk_do_bindT_eq_zero_iff,
         HasEvalPMF.probFailure_eq_zero, probFailure_pure]
     · intro pr hpr
-      -- Reduces to `none ∉ support (V₁.append V₂).run pr.1` (the appended verifier never rejects on
-      -- the honest transcript). Provable by decomposing `hf₁` (R₁ never fails ⇒ V₁ never `none`) and
-      -- `h₂` (R₂ never fails ⇒ V₂ never `none`, valid since `hs₁` pins V₁'s output into `rel₂`),
-      -- mirroring the proven support half. The only remaining gap in the keystone.
+      rw [OptionT.mem_support_iff] at hpr
+      simp only [liftM_bind, liftM_pure, bind_pure_comp, liftM_OptionT_eq, bind_assoc,
+        OptionT.mem_support_iff, support_bind, support_map, Set.mem_iUnion, Set.mem_image,
+        Prod.exists, exists_prop, liftComp_eq_liftM] at hpr
+      dsimp only [Functor.map, OptionT.instMonad, OptionT.mk, OptionT.run] at hpr
+      simp only [OptionT.monad_bind_eq_bind, OptionT.mem_support_OptionT_bind_run_some_iff,
+        OptionT.mem_support_OptionT_pure_run_some_iff, Function.comp_apply, Prod.exists] at hpr
+      obtain ⟨tr₁, s₂, w₂, hP₁piece, hpr2⟩ := hpr
+      simp only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+        OptionT.mk, support_map, Set.mem_image, Option.some.injEq, bind_pure_comp,
+        exists_eq_right] at hP₁piece
+      rw [OracleComp.support_liftComp] at hP₁piece
+      have hV₁f := hV₁nf (tr₁, s₂, w₂) (by simpa only [OptionT.support_liftM] using hP₁piece)
+      -- `hV₁f` : V₁ never returns `none` on `tr₁` (in `verifier+getM` form). Goal: the appended
+      -- verifier never returns `none` on `pr.1 = tr₁ ++ₜ tr₂`. Decompose `hpr2` for `tr₂`; split via
+      -- `Verifier.append_run`; reduce both to `none ∉ support (·.run)`; V₁ via `hV₁f`, V₂ via
+      -- `hs₁ ((tr₁,s₂,w₂),·) ⇒ rel₂ ⇒ h₂`'s no-failure. The one remaining mechanical gap.
       sorry
   · intro x hx
     rw [support_bind_simulateQ_run'_eq_mk (hInit := hInit)
