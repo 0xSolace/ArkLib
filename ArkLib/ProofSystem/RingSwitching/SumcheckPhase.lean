@@ -771,18 +771,18 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
         explicitVCheck ∧ localizedRoundPolyCheck
       )
   | ⟨2, h2⟩ => -- After V sends r'ᵢ (post-challenge OUTPUT state)
-    let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := by decide)
+    let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := by omega)
     let r_i' := get_rᵢ' (m := ⟨2, h2⟩) (tr := tr) (hm := le_refl _)
     let stmtOut : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.succ :=
-      sumcheckVerifierStmtOut (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') i stmt h_i r_i'
+      { ctx := stmt.ctx, sumcheck_target := h_i.val.eval r_i', challenges := Fin.cons r_i' stmt.challenges }
     RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
       (stmtIdx := i.succ)
       (stmt := stmtOut) (oStmt := oStmt) (wit := witMid)
       (localChecks :=
         let explicitVCheck :=
           (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmt.sumcheck_target
-        let localizedTargetCheck := h_i.val.eval r_i' = (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := witMid.H)).val.eval r_i'
-        explicitVCheck ∧ localizedTargetCheck
+        
+        explicitVCheck
       )
 
 /-- Knowledge state function (KState) for single round -/
@@ -795,9 +795,9 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     iteratedSumcheckKStateProp κ L K P ℓ ℓ' h_l
       (i := i) (m := m) (tr := tr) (stmt := stmt) (witMid := witMid) (oStmt := oStmt)
   toFun_empty := fun _ _ => by
-    simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, Fin.coe_castSucc, cast_eq,
+    simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, Fin.val_castSucc, cast_eq,
       Set.mem_setOf_eq, iteratedSumcheckKStateProp, masterKStateProp, true_and]
-  toFun_next := fun m hDir stmtIn tr msg witMid => by
+  toFun_next := fun m hDir stmtIn tr msg witMid h_succ => by
     obtain ⟨stmt, oStmt⟩ := stmtIn
     fin_cases m
     · -- m = 0: succ = 1, castSucc = 0
