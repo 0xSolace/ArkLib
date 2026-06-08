@@ -251,6 +251,224 @@ theorem probComp_seam_union_le
 
 #print axioms probComp_seam_union_le
 
+/-- **`.run`-to-`.run'` probEvent bridge (state projection).** `probComp_seam_union_le`'s `h₁` is stated
+over the *full* `StateT` result `(simulateQ so X).run` with a predicate reading only the value component
+`r.1`, whereas `Verifier.soundness` is stated over the value-only `.run'`. Since `.run' = (·.1) <$> .run`,
+a predicate that ignores the state agrees on both: this lemma bridges the two, letting the seam's `h₁`/`h₂`
+be discharged directly from `V₁`/`V₂.soundness`. -/
+theorem probEvent_run_eq_run'_fst
+    (so : QueryImpl spec (StateT σ ProbComp)) (init : ProbComp σ)
+    {α : Type} (X : OracleComp spec α) (P : α → Prop) :
+    Pr[fun r => P r.1 | init >>= fun s => (simulateQ so X).run s]
+      = Pr[P | init >>= fun s => (simulateQ so X).run' s] := by
+  simp only [StateT.run'_eq, ← map_bind, probEvent_map, Function.comp_def]
+
+#print axioms probEvent_run_eq_run'_fst
+
+/-- **Marginalization congruence for seam `probEvent`s.** Two `OptionT`-valued computations `X`, `Y`
+that agree after projecting their value through `g` (`g <$> X = g <$> Y`) yield the *same* probability
+for any event that reads only `g` of the (successful) result. This is the device that turns the seam's
+phase-1 game (built over the prover's full output `(transcript, state, ())`) into `V₁.soundness`'s game
+(built over `Reduction.run`, whose prover output is a dummy `Stmt₂`): both share the *verifier-output
+marginal* (`Prod.snd`), so the differing — and irrelevant — prover output is averaged away. -/
+theorem probEvent_simQ_run'_congr_marginal
+    (so : QueryImpl spec (StateT σ ProbComp)) (init : ProbComp σ)
+    (X Y : OptionT (OracleComp spec) α) (g : α → β) (q : β → Prop)
+    (h : (g <$> X) = (g <$> Y)) :
+    Pr[fun o => Option.elim o False (fun a => q (g a)) |
+        init >>= fun s => (simulateQ so X.run).run' s]
+    = Pr[fun o => Option.elim o False (fun a => q (g a)) |
+        init >>= fun s => (simulateQ so Y.run).run' s] := by
+  have h' : Option.map g <$> X.run = Option.map g <$> Y.run := by
+    have := congrArg OptionT.run h
+    simpa only [OptionT.run_map] using this
+  have h'' : (Option.map g <$> simulateQ so X.run) = (Option.map g <$> simulateQ so Y.run) := by
+    rw [← simulateQ_map, ← simulateQ_map, h']
+  have key : (Option.map g <$> (init >>= fun s => (simulateQ so X.run).run' s))
+           = (Option.map g <$> (init >>= fun s => (simulateQ so Y.run).run' s)) := by
+    simp only [map_bind, StateT.run'_eq]
+    refine bind_congr (fun s => ?_)
+    have h3 := congrFun (congrArg StateT.run h'') s
+    simp only [StateT.run_map] at h3
+    have h4 := congrArg (fun z => Prod.fst <$> z) h3
+    simp only [Functor.map_map, Function.comp] at h4 ⊢
+    exact h4
+  have hpe : (fun o : Option α => Option.elim o False (fun a => q (g a)))
+      = (fun ob => Option.elim ob False q) ∘ (Option.map g) := by funext o; cases o <;> rfl
+  rw [hpe, probEvent_comp, probEvent_comp, key]
+
+#print axioms probEvent_simQ_run'_congr_marginal
+
+/-- **Two-handler `liftComp` simulation bridge.** A computation `oa` over a *sub*-oracle `I₀` can be
+either (i) lifted into a larger oracle `M₀` and simulated by a handler `h` there, or (ii) simulated
+directly by a handler `h₁` on `I₀`. If the two handlers agree *per lifted query* (`hquery`), they
+agree on *all* computations. This is the device that reconciles the message-seam phase-1 game — which
+runs the malicious prover's `pSpec₁` half under the *combined* challenge oracle
+`[(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ` (the seam factoring lifts via `OracleComp.liftComp`) — with
+`V₁.soundness`, which runs it under `pSpec₁`'s own challenge oracle. The entire (cast-heavy) content
+of that reconciliation is concentrated into the single hypothesis `hquery`; this lemma discharges the
+free-monad induction once and for all. -/
+theorem simulateQ_liftComp_run_eq_of_query
+    {ιᵢ ιₘ : Type} {I₀ : OracleSpec ιᵢ} {M₀ : OracleSpec ιₘ} {σ' : Type}
+    [MonadLiftT (OracleQuery I₀) (OracleQuery M₀)]
+    (h : QueryImpl M₀ (StateT σ' ProbComp)) (h₁ : QueryImpl I₀ (StateT σ' ProbComp))
+    (hquery : ∀ (t : I₀.Domain) (s : σ'),
+      (simulateQ h (OracleComp.liftComp (liftM (I₀.query t) : OracleComp I₀ (I₀.Range t)) M₀)).run s
+        = (h₁ t).run s)
+    {γ : Type} (oa : OracleComp I₀ γ) (s : σ') :
+    (simulateQ h (OracleComp.liftComp oa M₀)).run s = (simulateQ h₁ oa).run s := by
+  induction oa using OracleComp.inductionOn generalizing s with
+  | pure x => simp [simulateQ_pure, StateT.run_pure, OracleComp.liftComp_pure]
+  | query_bind t k ih =>
+      have hq1 : simulateQ h₁ (liftM (I₀.query t) : OracleComp I₀ (I₀.Range t)) = h₁ t := by
+        simp [simulateQ_query]
+      rw [OracleComp.liftComp_bind, simulateQ_bind, StateT.run_bind, hquery t s,
+          simulateQ_bind, StateT.run_bind, hq1]
+      refine bind_congr ?_
+      rintro ⟨a, s'⟩
+      exact ih a s'
+
+#print axioms simulateQ_liftComp_run_eq_of_query
+
+/-- **`evalDist` two-handler `liftComp` simulation bridge.** The `evalDist`-level analogue of
+`simulateQ_liftComp_run_eq_of_query`, needed when the per-query agreement holds only as a
+*distribution* equality (e.g. the seam's challenge oracle, where the two handlers sample uniformly
+from types that are equal only *propositionally* — `(pSpec₁ ++ₚ pSpec₂).Challenge (inl c) = pSpec₁.Challenge c`
+— so their `SampleableType` instances differ syntactically). `probEvent` is defined through `evalDist`,
+so this still feeds the downstream `probEvent` reconciliation. -/
+theorem evalDist_simulateQ_liftComp_run_eq_of_query
+    {ιᵢ ιₘ : Type} {I₀ : OracleSpec ιᵢ} {M₀ : OracleSpec ιₘ} {σ' : Type}
+    [MonadLiftT (OracleQuery I₀) (OracleQuery M₀)]
+    (h : QueryImpl M₀ (StateT σ' ProbComp)) (h₁ : QueryImpl I₀ (StateT σ' ProbComp))
+    (hquery : ∀ (t : I₀.Domain) (s : σ'),
+      evalDist ((simulateQ h (OracleComp.liftComp
+        (liftM (I₀.query t) : OracleComp I₀ (I₀.Range t)) M₀)).run s)
+        = evalDist ((h₁ t).run s))
+    {γ : Type} (oa : OracleComp I₀ γ) (s : σ') :
+    evalDist ((simulateQ h (OracleComp.liftComp oa M₀)).run s)
+      = evalDist ((simulateQ h₁ oa).run s) := by
+  induction oa using OracleComp.inductionOn generalizing s with
+  | pure x => simp [simulateQ_pure, StateT.run_pure, OracleComp.liftComp_pure]
+  | query_bind t k ih =>
+      have hq1 : simulateQ h₁ (liftM (I₀.query t) : OracleComp I₀ (I₀.Range t)) = h₁ t := by
+        simp [simulateQ_query]
+      rw [OracleComp.liftComp_bind, simulateQ_bind, StateT.run_bind,
+          simulateQ_bind, StateT.run_bind, hq1, evalDist_bind, evalDist_bind, hquery t s]
+      refine bind_congr ?_
+      rintro ⟨a, s'⟩
+      exact ih a s'
+
+#print axioms evalDist_simulateQ_liftComp_run_eq_of_query
+
+/-- **Transport of uniform sampling along a type equality.** If `α = β` (propositionally), the
+uniform sample on `α`, cast to `β`, has the same distribution as the uniform sample on `β` — even
+though the two `SampleableType` instances are independent. The cast is a bijection, so every output
+has equal probability on both sides. This is the arithmetic kernel of the seam's challenge-oracle
+restriction: `(pSpec₁ ++ₚ pSpec₂).Challenge (inl c)` and `pSpec₁.Challenge c` are equal types sampled
+by distinct instances, reconciled here. -/
+theorem evalDist_cast_uniformSample {α β : Type} [SampleableType α] [SampleableType β] [Finite α]
+    (h : α = β) :
+    evalDist ((fun x => (h ▸ x : β)) <$> ($ᵗ α : ProbComp α)) = evalDist ($ᵗ β : ProbComp β) := by
+  have hbij : Function.Bijective (fun x => (h ▸ x : β)) := by
+    subst h; simpa using Function.bijective_id
+  refine evalDist_ext (fun y => ?_)
+  exact probOutput_map_bijective_uniform_cross (α := α) (β := β) (fun x => (h ▸ x : β)) hbij y
+
+#print axioms evalDist_cast_uniformSample
+
+/-- **Uniform sampling pushed along a bijection.** Generalizes `evalDist_cast_uniformSample` from a
+type-equality cast to an arbitrary bijection `f : α → β`. For the seam's challenge-oracle restriction
+this is what's actually needed: the challenge `SubSpec`'s response map (`(liftM q).cont`) is a bijection
+by `LawfulSubSpec`, so the combined-oracle uniform challenge maps onto `pSpec₁`'s uniform challenge
+*without* ever naming the underlying (private) `range_challenge_append_inl` cast. -/
+theorem evalDist_map_bijective_uniformSample {α β : Type}
+    [SampleableType α] [SampleableType β] [Finite α]
+    (f : α → β) (hf : Function.Bijective f) :
+    evalDist (f <$> ($ᵗ α : ProbComp α)) = evalDist ($ᵗ β : ProbComp β) := by
+  refine evalDist_ext (fun y => ?_)
+  exact probOutput_map_bijective_uniform_cross (α := α) (β := β) f hf y
+
+#print axioms evalDist_map_bijective_uniformSample
+
+/-- **`OptionT.mk`-to-`ProbComp` `probEvent` bridge.** The soundness game is phrased as a
+`probEvent` over an `OptionT ProbComp` (the verifier may reject = fail), while the union-bound
+toolkit (`probComp_seam_union_le`) is stated at the bare `ProbComp` level with a `none`-as-failure
+predicate. This lemma converts between them: a `probEvent` of `p` over `OptionT.mk PROG` equals the
+`probEvent` over the underlying `PROG` of the lifted predicate `Option.elim · False p` (which scores
+`none`/failure as `False`). This is the first wiring step of the `appendSoundness` connect: it brings
+the soundness goal to the `ProbComp` level where `probComp_seam_union_le` applies. -/
+theorem probEvent_optionT_mk {α : Type} (PROG : ProbComp (Option α)) (p : α → Prop) :
+    Pr[p | (OptionT.mk PROG : OptionT ProbComp α)]
+      = Pr[fun o => Option.elim o False p | PROG] := by
+  classical
+  rw [probEvent_eq_tsum_indicator, probEvent_eq_tsum_indicator,
+      tsum_option _ ENNReal.summable]
+  have hnone : ({x | Option.elim x False p}.indicator (Pr[= · | PROG]) none) = 0 := by simp
+  rw [hnone, zero_add]
+  refine tsum_congr (fun a => ?_)
+  by_cases h : p a <;>
+    simp [Set.indicator_apply, OptionT.probOutput_eq, h]
+
+#print axioms probEvent_optionT_mk
+
+/-- **`simulateQ` of a lifted pure value is `pure (some ·)`.** Collapses the deterministic seam
+"combine" stage (which just pairs the two phases' transcripts/outputs via `pure`) so that the `snd`
+prover stage and the `V₁` verifier stage become adjacent — a single `evalDist_simulateQ_swap`
+then suffices for the `appendSoundness` reorder. Connect brick. -/
+theorem simQ_liftM_pure {ι : Type} {spec : OracleSpec ι} {γ τ : Type}
+    (so : QueryImpl spec (StateT τ ProbComp)) (W : γ) :
+    simulateQ so (liftM (pure W : OracleComp spec γ) : OptionT (OracleComp spec) γ).run
+      = pure (some W) := by simp
+
+/-- **`Option.elimM` on a `pure (some ·)` scrutinee reduces to the success branch.** The companion
+collapse to `simQ_liftM_pure`: once the combine stage is `pure (some W)`, its `elimM` short-circuit
+selects the continuation at `W`. Connect brick. -/
+theorem elimM_pure_some {M : Type → Type _} [Monad M] [LawfulMonad M] {α β : Type}
+    (a : α) (y : M (Option β)) (f : α → M (Option β)) :
+    Option.elimM (pure (some a)) y f = f a := by
+  rw [Option.elimM, pure_bind]; rfl
+
+#print axioms simQ_liftM_pure
+#print axioms elimM_pure_some
+
+/-- **Lifted never-failing stage collapses its `Option`-elim.** A prover phase enters the seam chain
+as `liftM X` for a plain (never-failing) `X : OracleComp`; running its `OptionT.run` and then
+`Option.elim`-ing always takes the success branch, so the whole `liftM`/elim layer is just `X >>= k`.
+This is what lets the two *prover* stages (`fst`, `snd`) be treated as plain `OracleComp` binds in the
+seam swap (`evalDist_simulateQ_swap_prefix`), while the *verifier* stages keep their genuine
+short-circuit. -/
+theorem lift_run_elim {ι : Type} {spec : OracleSpec ι} {α β : Type}
+    (X : OracleComp spec α) (k : α → OracleComp spec (Option β)) :
+    ((liftM X : OptionT (OracleComp spec) α).run >>= fun o => o.elim (pure none) k)
+      = X >>= k := by
+  simp only [OptionT.run, OptionT.lift, OptionT.mk, liftM, monadLift, MonadLift.monadLift,
+    map_eq_pure_bind, bind_assoc, pure_bind, Option.elim]
+
+#print axioms lift_run_elim
+
+/-- **Never-failing stage marginalizes in a discarded-constant bind.** If `X` never fails
+(`Pr[⊥|X]=0`), then running it and discarding its result to return a fixed `c` is distributionally
+just `pure c` — its randomness washes out. This is the probabilistic heart of the seam elim-commute:
+when the verifier `V₁` rejects (the failure branch), whether the *next* prover stage `snd` was already
+run (natural order) or skipped (union-bound order) cannot change the outcome distribution, because
+`snd` never fails and so marginalizes away. -/
+theorem evalDist_bind_const {γ δ : Type} (X : ProbComp γ) (c : δ) (hX : Pr[⊥ | X] = 0) :
+    evalDist (X >>= fun _ => (pure c : ProbComp δ)) = pure c := by
+  haveI : DecidableEq δ := Classical.decEq δ
+  have h1 : Pr[= c | X >>= fun _ => (pure c : ProbComp δ)] = 1 := by
+    rw [probOutput_bind_eq_tsum]; simp only [probOutput_pure_self, mul_one]
+    exact tsum_probOutput_eq_one' hX
+  have hsupp := (probOutput_eq_one_iff (mx := X >>= fun _ => (pure c : ProbComp δ)) (x := c)).mp h1
+  rw [show (pure c : SPMF δ) = evalDist (pure c : ProbComp δ) from (evalDist_pure c).symm]
+  apply SPMF.ext; intro o
+  rw [← probOutput_def, ← probOutput_def]
+  rcases eq_or_ne o c with rfl | ho
+  · rw [h1, probOutput_pure_self]
+  · have hmem : o ∉ support (X >>= fun _ => (pure c : ProbComp δ)) := by rw [hsupp.2]; simpa using ho
+    rw [probOutput_eq_zero_of_not_mem_support hmem, probOutput_pure]; simp [ho]
+
+#print axioms evalDist_bind_const
+
 /-- **`simulateQ` preserves the `σ`-state on its support, when every query implementation does.**
 Holds for `challengeQueryImpl` (which threads `σ` unchanged) and for empty `oSpec`. This is the
 independence ingredient for the seam swap: a state-preserving prover stage cannot affect a later
@@ -276,6 +494,32 @@ theorem simulateQ_state_preserving
     exact hs' ▸ ih u s' x hmem2
 
 #print axioms simulateQ_state_preserving
+
+/-- **`simulateQ` never fails when every query implementation never fails.** If `so` answers every
+query with a never-failing `StateT σ ProbComp` computation, then simulating any `OracleComp` under `so`
+never fails. This discharges the `hB` side-condition of the `appendSoundness` seam swap: the malicious
+prover stage, run under the honest interactive implementation (`addLift impl challengeQueryImpl`), never
+fails — provers contain no `failure`, and the challenge oracle samples uniformly. -/
+theorem simulateQ_run_neverFail
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hnf : ∀ (t : spec.Domain) (s : σ), Pr[⊥ | (so t).run s] = 0)
+    {α : Type} (X : OracleComp spec α) (s : σ) :
+    Pr[⊥ | (simulateQ so X).run s] = 0 := by
+  induction X using OracleComp.inductionOn generalizing s with
+  | pure a => simp [simulateQ_pure, StateT.run_pure]
+  | query_bind t oa ih =>
+    simp only [simulateQ_bind, simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query,
+      id_map, StateT.run_bind]
+    rw [probFailure_bind_eq_add_tsum, hnf t s]
+    simp only [zero_add]
+    rw [ENNReal.tsum_eq_zero]
+    rintro ⟨u, s'⟩
+    rw [mul_eq_zero]
+    by_cases h : (u, s') ∈ support ((so t).run s)
+    · right; exact ih u s'
+    · left; rw [probOutput_eq_zero_of_not_mem_support h]
+
+#print axioms simulateQ_run_neverFail
 
 /-- **State-fixing for a simulated bind.** When the implementation preserves `σ`, the continuation of
 a simulated bind runs from the *same* state `s` (not a threaded one), since the first stage leaves `σ`
@@ -314,6 +558,71 @@ theorem evalDist_simulateQ_swap
   exact SPMF.bind_comm _ _ _
 
 #print axioms evalDist_simulateQ_swap
+
+/-- **Seam stage swap under a common prefix.** The `appendSoundness` reorder is `snd ↔ V₁`, but both
+run *inside* the `fst` prover's continuation (each may depend on `fst`'s seam output `x`), so the
+top-level `evalDist_simulateQ_swap` does not apply directly. This generalization swaps the two
+adjacent stages `A x`, `B x` underneath an arbitrary prefix `FST`: state-fixing collapses every bind
+to the same `s`, then `bind_congr` peels the prefix and `SPMF.bind_comm` swaps the inner pair. This is
+the exact tool that turns the flat soundness chain `fst >>= snd >>= (V₁ >>= V₂)` into the
+`(fst >>= V₁) >>= (snd >>= V₂) = mx >>= my` form `probComp_seam_union_le` consumes. -/
+theorem evalDist_simulateQ_swap_prefix
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {α₀ α β γ : Type}
+    (FST : OracleComp spec α₀) (A : α₀ → OracleComp spec α) (B : α₀ → OracleComp spec β)
+    (k : α₀ → α → β → OracleComp spec γ) (s : σ) :
+    evalDist ((simulateQ so
+        (FST >>= fun x => A x >>= fun a => B x >>= fun b => k x a b)).run' s)
+      = evalDist ((simulateQ so
+        (FST >>= fun x => B x >>= fun b => A x >>= fun a => k x a b)).run' s) := by
+  rw [StateT.run'_eq, StateT.run'_eq, evalDist_map, evalDist_map]
+  congr 1
+  simp only [simulateQ_run_bind_state_fixed so hso, evalDist_bind]
+  refine bind_congr fun p => ?_
+  exact SPMF.bind_comm _ _ _
+
+#print axioms evalDist_simulateQ_swap_prefix
+
+/-- **Seam elim-commute under a common prefix (full evalDist).** After the `snd ↔ V₁` swap, the chain
+reads `… >>= fun o => Bb >>= fun b => o.elim (pure none) (C b)` — the prover stage `Bb` (= `snd`) sits
+*outside* the verifier output `o`'s short-circuit, but the union-bound form needs it *inside* the
+success branch (run only when `V₁` accepts). This lemma moves `Bb` inside the elim at the full
+`evalDist` level (so it composes with `evalDist_simulateQ_swap_prefix`): on `o = some c` both orders
+run `Bb >>= C c`; on `o = none` the natural order runs-and-discards `Bb` while the union-bound order
+skips it, and these agree because `Bb` never fails (`hB`) and so marginalizes (`evalDist_bind_const`).
+This is the final tool turning the flat soundness chain into `probComp_seam_union_le`'s `mx >>= my`. -/
+theorem elim_comm_prefix
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {α₀ γ β δ : Type}
+    (PRE : OracleComp spec α₀) (mO : α₀ → OracleComp spec (Option γ))
+    (Bb : α₀ → OracleComp spec β) (C : α₀ → β → γ → OracleComp spec (Option δ))
+    (hB : ∀ (x : α₀) (s' : σ), Pr[⊥ | (simulateQ so (Bb x)).run s'] = 0)
+    (s : σ) :
+    evalDist ((simulateQ so (PRE >>= fun x => mO x >>= fun o => Bb x >>= fun b =>
+        o.elim (pure none) (fun c => C x b c))).run' s)
+      = evalDist ((simulateQ so (PRE >>= fun x => mO x >>= fun o =>
+        o.elim (pure none) (fun c => Bb x >>= fun b => C x b c))).run' s) := by
+  rw [StateT.run'_eq, StateT.run'_eq, evalDist_map, evalDist_map]
+  congr 1
+  simp only [simulateQ_run_bind_state_fixed so hso, evalDist_bind]
+  refine bind_congr fun p => ?_
+  refine bind_congr fun q => ?_
+  cases hq : q.1 with
+  | some c => simp only [Option.elim_some, simulateQ_run_bind_state_fixed so hso, evalDist_bind]
+  | none =>
+    simp only [Option.elim_none]
+    have hp : 𝒟[(simulateQ so (pure none : OracleComp spec (Option δ))).run s]
+        = (pure (none, s) : SPMF (Option δ × σ)) := by simp
+    rw [hp, show (𝒟[(simulateQ so (Bb p.1)).run s] >>= fun _ => (pure (none, s) : SPMF (Option δ × σ)))
+        = evalDist ((simulateQ so (Bb p.1)).run s >>= fun _ => pure (none, s)) from by
+          rw [evalDist_bind]; simp]
+    exact evalDist_bind_const _ (none, s) (hB p.1 s)
+
+#print axioms elim_comm_prefix
 
 /-- **Elim-stage commute (bad-event level).** A never-failing plain stage `B` may be moved across an
 `Option`-elim short-circuit without changing the probability of a `none`-false event `badpred`: running
@@ -376,6 +685,119 @@ theorem evalDist_simulateQ_run'_state_indep
 
 #print axioms evalDist_simulateQ_run'_state_indep
 
+/-- **Seam swap as a bare `evalDist` equality (the reorder, packaged for `rw`).** The natural-order
+seam distribution `FST → SND → W1 → W2` equals the union-bound-order distribution `(FST→W1) ; (SND→W2)`.
+Unlike `probComp_seam_swap_union_le` (a `≤` whose `exact`/`apply` against a *concrete* prover/verifier
+chain triggers a `PFunctor.FreeM.mapM` `isDefEq` blow-up), this is an *equality* and so can be applied
+to a concrete goal with `rw` — keyed matching sidesteps the defeq wall. Proof: `lift_run_elim` exposes
+the run-forms, then `evalDist_simulateQ_swap_prefix` (swap `SND` past `W1`) + `elim_comm_prefix` (move
+`SND` inside `W1`'s accept branch). -/
+theorem seam_swap_evalDist_eq
+    (init : ProbComp σ) (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0) :
+    𝒟[init >>= fun s => (simulateQ so
+        (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+          W2 x a s₂).run).run' s]
+    = 𝒟[init >>= fun s => (simulateQ so
+        ((liftM FST >>= fun x => W1 x >>= fun s₂ =>
+            (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+          >>= fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s] := by
+  have h1 : (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+      W2 x a s₂ : OptionT (OracleComp spec) D).run
+    = FST >>= fun x => SND x >>= fun a => (W1 x).run >>= fun o₁ =>
+        o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run) := by
+    simp only [OptionT.run_bind, Option.elimM, lift_run_elim]
+  have h2 : (((liftM FST >>= fun x => W1 x >>= fun s₂ =>
+        (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+      >>= fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2) : OptionT (OracleComp spec) D).run
+    = FST >>= fun x => (W1 x).run >>= fun o₁ =>
+        o₁.elim (pure none) (fun s₂ => SND x >>= fun a => (W2 x a s₂).run) := by
+    simp only [OptionT.run_bind, Option.elimM, lift_run_elim, bind_assoc, OptionT.run_pure,
+      pure_bind, Option.elim_some]
+  rw [h1, h2, evalDist_bind, evalDist_bind]
+  refine bind_congr fun s => ?_
+  rw [evalDist_simulateQ_swap_prefix so hso FST SND (fun x => (W1 x).run)
+      (fun x a o₁ => o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run)) s]
+  exact elim_comm_prefix so hso FST (fun x => (W1 x).run) SND
+    (fun x a s₂ => (W2 x a s₂).run) hB s
+
+#print axioms seam_swap_evalDist_eq
+
+/-- **Seam swap as a `probEvent` equality (the `rw`/`simp`-usable form for the concrete goal).** The
+`probEvent`-level companion to `seam_swap_evalDist_eq`: any event `p` has the same probability under the
+natural-order seam chain and the union-bound-order chain. This is the form actually applied to the
+concrete `appendSoundness` goal — via `simp only [seam_swap_probEvent_eq …]` (so the higher-order
+`W2 x a s₂` is beta-reduced to match the goal's body), turning the soundness goal into
+`probComp_seam_union_le`'s shape without ever triggering the `exact`-defeq blow-up. -/
+theorem seam_swap_probEvent_eq
+    (init : ProbComp σ) (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
+    (p : Option D → Prop) :
+    Pr[p | init >>= fun s => (simulateQ so
+        (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+          W2 x a s₂).run).run' s]
+    = Pr[p | init >>= fun s => (simulateQ so
+        ((liftM FST >>= fun x => W1 x >>= fun s₂ =>
+            (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+          >>= fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s] := by
+  unfold probEvent
+  rw [seam_swap_evalDist_eq init so hso FST SND W1 W2 hB]
+
+#print axioms seam_swap_probEvent_eq
+
+/-- **Two-phase seam soundness with the snd↔V₁ reorder built in.** This is the abstract heart of
+`appendSoundness`: a malicious-prover seam chain runs the two prover phases `FST`, `SND` and the two
+verifier phases `W1` (`= V₁`), `W2` (`= V₂`) in the *natural* order `FST → SND → W1 → W2`, but the
+union bound needs the `(FST→W1) ; (SND→W2)` factorization. This lemma performs that reorder internally
+(`lift_run_elim` collapses the never-failing prover lifts; `evalDist_simulateQ_swap_prefix` swaps `SND`
+past `W1`; `elim_comm_prefix` moves `SND` inside `W1`'s accept-branch), then applies
+`probComp_seam_union_le`. The caller supplies only the two per-phase bounds `h₁` (on `FST→W1`) and
+`h₂` (on `SND→W2`) — which are exactly `V₁`/`V₂`'s soundness against the seam-restricted provers — plus
+the state-preservation `hso` and the prover-never-fails side-condition `hB` (both hold for the
+interactive challenge oracle over an empty shared spec). The result is the additive bound `e₁ + e₂`. -/
+theorem probComp_seam_swap_union_le
+    (init : ProbComp σ) (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
+    (pg : C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
+    (h₁ : Pr[fun r => ¬ Option.elim r.1 True (fun p : A × C => pg p.2)
+          | init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s] ≤ e₁)
+    (h₂ : ∀ (p : A × C) (s' : σ),
+          (some p, s') ∈ support (init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p.2 →
+          Pr[fun o => ¬ Option.elim o True qg
+            | (simulateQ so (liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s'] ≤ e₂) :
+    Pr[fun o => ¬ Option.elim o True qg
+        | init >>= fun s => (simulateQ so
+            (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+              W2 x a s₂).run).run' s] ≤ e₁ + e₂ := by
+  have key := seam_swap_evalDist_eq init so hso FST SND W1 W2 hB
+  have hmain := probComp_seam_union_le init so
+    (liftM FST >>= fun x => W1 x >>= fun s₂ => (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+    (fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2)
+    (fun p : A × C => pg p.2) qg e₁ e₂ h₁ h₂
+  unfold probEvent at hmain ⊢
+  rw [key]; exact hmain
+
+#print axioms probComp_seam_swap_union_le
+
 section AddLiftBridges
 open ProtocolSpec
 variable {ι : Type} {oSpec : OracleSpec ι} {σ : Type} {n : ℕ} {pSpec : ProtocolSpec n}
@@ -399,6 +821,22 @@ theorem addLift_state_preserving (impl : QueryImpl oSpec (StateT σ ProbComp))
     change x ∈ support ((fun a => (a, s)) <$> challengeQueryImpl t) at hx
     simp only [support_map, Set.mem_image] at hx
     obtain ⟨a, _, rfl⟩ := hx; rfl
+
+/-- **`addLift impl challengeQueryImpl` never fails when `impl` never fails.** The shared-oracle half
+(`inl`) inherits `impl`'s non-failure; the challenge half (`inr`) is a uniform sample (`$ᵗ`), which
+never fails. Combined with `simulateQ_run_neverFail`, this discharges the `hB` side-condition of
+`appendSoundness` for the honest interactive implementation (vacuous when `oSpec = []ₒ`). -/
+theorem addLift_neverFail (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (himpl : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
+    ∀ (t : (oSpec + [pSpec.Challenge]ₒ).Domain) (s : σ),
+      Pr[⊥ | ((impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp)) t).run s] = 0 := by
+  rintro (t | t) s
+  · simp only [QueryImpl.addLift_def, QueryImpl.add_apply_inl, QueryImpl.liftTarget_apply,
+      monadLift_self]
+    exact himpl t s
+  · simp [QueryImpl.addLift_def, QueryImpl.add_apply_inr, QueryImpl.liftTarget_apply,
+      StateT.run_monadLift, probFailure_map, challengeQueryImpl]
 
 /-- **`addLift impl challengeQueryImpl` is value-state-blind when `impl` is.** Discharges `hvb`. -/
 theorem addLift_value_blind (impl : QueryImpl oSpec (StateT σ ProbComp))

@@ -14,9 +14,8 @@ progress*: a radius `δ` with `ε_mca(C, δ) > ε*`, which forces any resolution
 `δ* ≤ δ`. This file constructs such a witness for Reed–Solomon from the admit-free MCA refutation
 `ProximityGap.MCANearCapacityGK.rs_mca_uptoCapacity_false_of_smallField`.
 
-> **`rs_mcaUpperWitness`**: for an RS code with `1 ≤ k ≤ n` over a field with
-> `|F| < (n−k)·2^128`, the radius `δ = 1 − (k+1)/n` is a certified `MCAUpperWitness`
-> at the prize threshold `ε* = 2^{-128}`.
+> **`rs_mcaUpperWitness`**: for an RS code with `1 ≤ k ≤ n` over a field with `|F| < (n−k)·2^128`,
+> the radius `δ = 1 − (k+1)/n` is a certified `MCAUpperWitness` at the prize threshold `ε* = 2^{-128}`.
 
 So the prize threshold `δ*` for these codes provably satisfies `δ* ≤ 1 − (k+1)/n` (strictly below
 capacity). This pins the *upper* end of the `δ*` search interval, machine-checked and axiom-clean —
@@ -25,8 +24,7 @@ genuine, if partial, progress on the positive Grand MCA Challenge's resolution d
 All results are hole-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
 ## References
-- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
-  2026. #232.
+- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*. 2026. #232.
 -/
 
 namespace ProximityGap.GrandChallenges
