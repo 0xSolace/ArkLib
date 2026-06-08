@@ -12,7 +12,7 @@ namespace ArkLib.CodingTheory.Research
   in characteristic 2 is mathematically false.
 -/
 
-variable {F : Type} [Field F] [Fintype F]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-
   The BKR Subspace Polynomial.
@@ -46,6 +46,6 @@ def adversarial_list_explosion [CharP F 2] (L V : Finset F) (hV : V ⊆ L)
 -/
 def proximity_prize_disproof [CharP F 2] (L : Finset F) (hL_smooth : ∃ a, L.card = 2 ^ a)
     (C : Set (F → F)) (δ : ℝ≥0) (k : ℕ) : Prop :=
-    ¬ (ProximityGap.epsMCA (F := F) (A := F) C δ ≤ 1)
+    ¬ (ProximityGap.epsMCA (ι := F) (F := F) (A := F) C δ ≤ 1)
 
 end ArkLib.CodingTheory.Research

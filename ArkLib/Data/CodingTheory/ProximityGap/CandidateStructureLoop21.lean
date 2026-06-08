@@ -44,9 +44,9 @@ noncomputable def rangePreimageEmbedding [Fintype G] (f : G → α) :
       _ = f (Classical.choose z.property) := congrArg f h
       _ = z.1 := hz
 
-/-- **Finite-orbit cap.** The image of a finite group action, or any finite family of symmetries, has
-cardinality at most the number of acting symmetries. In Loop 20 language, one smooth-domain symmetry
-orbit cannot be larger than the smooth group itself. -/
+/-- **Finite-orbit cap.** The image of a finite group action, or any finite family of symmetries,
+has cardinality at most the number of acting symmetries. In Loop 20 language, one smooth-domain
+symmetry orbit cannot be larger than the smooth group itself. -/
 theorem range_card_le_domain [Fintype G] (f : G → α) [Fintype (Set.range f)] :
     Fintype.card (Set.range f) ≤ Fintype.card G :=
   Fintype.card_le_of_embedding (rangePreimageEmbedding f)
