@@ -772,6 +772,67 @@ theorem reedSolomon_jointAgreement_fullRadius_of_nested_errors
       intro i hi
       simpa [ReedSolomon.evalOnPoints] using (h₁ i hi).symm
 
+omit [Fintype ι] [DecidableEq F] in
+open Polynomial in
+/-- **Two-singleton shared-locator degree lower bound.** For two distinct singleton impulse errors
+against the zero Reed-Solomon codeword, any nonzero shared locator satisfying both key equations
+must vanish at the two distinct evaluation points. Thus every such shared locator has degree at
+least two, witnessing the forced factor-2 loss for elementary shared locators. -/
+theorem reedSolomon_sharedLocator_natDegree_two_le_of_distinct_impulses
+    {α : ι ↪ F} {a b : ι} (hab : a ≠ b) {E : F[X]} (hE0 : E ≠ 0)
+    (hkey₀ : ∀ i,
+      E.eval (α i) * (if i = a then (1 : F) else 0) =
+        (E * (0 : F[X])).eval (α i))
+    (hkey₁ : ∀ i,
+      E.eval (α i) * (if i = b then (1 : F) else 0) =
+        (E * (0 : F[X])).eval (α i)) :
+    2 ≤ E.natDegree := by
+  classical
+  have hα : α a ≠ α b := by
+    intro h
+    exact hab (α.injective h)
+  have hEa : E.eval (α a) = 0 := by
+    have h := hkey₀ a
+    simpa using h
+  have hEb : E.eval (α b) = 0 := by
+    have h := hkey₁ b
+    simpa using h
+  have hsub : ({α a, α b} : Finset F) ⊆ E.roots.toFinset := by
+    intro x hx
+    rw [Finset.mem_insert, Finset.mem_singleton] at hx
+    rcases hx with rfl | rfl
+    · rw [Multiset.mem_toFinset, mem_roots hE0, IsRoot.def]
+      exact hEa
+    · rw [Multiset.mem_toFinset, mem_roots hE0, IsRoot.def]
+      exact hEb
+  have hcard : ({α a, α b} : Finset F).card = 2 := by
+    simp [hα]
+  calc
+    2 = ({α a, α b} : Finset F).card := hcard.symm
+    _ ≤ E.roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ Multiset.card E.roots := Multiset.toFinset_card_le _
+    _ ≤ E.natDegree := card_roots' E
+
+omit [Fintype ι] [DecidableEq F] in
+open Polynomial in
+/-- **No degree-one shared locator for distinct singleton impulses.** The two-singleton lower
+bound immediately rules out a nonzero shared locator of degree at most one for the two distinct
+impulse errors against zero codeword polynomials. -/
+theorem reedSolomon_no_sharedLocator_natDegree_le_one_of_distinct_impulses
+    {α : ι ↪ F} {a b : ι} (hab : a ≠ b) :
+    ¬ ∃ E : F[X], E ≠ 0 ∧ E.natDegree ≤ 1 ∧
+      (∀ i,
+        E.eval (α i) * (if i = a then (1 : F) else 0) =
+          (E * (0 : F[X])).eval (α i)) ∧
+      (∀ i,
+        E.eval (α i) * (if i = b then (1 : F) else 0) =
+          (E * (0 : F[X])).eval (α i)) := by
+  rintro ⟨E, hE0, hEdeg, hkey₀, hkey₁⟩
+  have htwo :=
+    reedSolomon_sharedLocator_natDegree_two_le_of_distinct_impulses
+      (α := α) hab hE0 hkey₀ hkey₁
+  omega
+
 omit [DecidableEq ι] in
 /-- **Degree-one decoding-curve counting bridge.** If each scalar `z ∈ Z` has a codeword on the
 degree-one polynomial family `g₀ + z • g₁` agreeing with the affine-line word `u₀ + z • u₁` on at
@@ -805,6 +866,8 @@ theorem reedSolomon_jointAgreement_of_degreeOne_decoding_curve
 #print axioms ReedSolomon.reedSolomon_sharedLocator_product_exists
 #print axioms ReedSolomon.reedSolomon_sharedLocator_of_nested_errors
 #print axioms ReedSolomon.reedSolomon_jointAgreement_fullRadius_of_nested_errors
+#print axioms ReedSolomon.reedSolomon_sharedLocator_natDegree_two_le_of_distinct_impulses
+#print axioms ReedSolomon.reedSolomon_no_sharedLocator_natDegree_le_one_of_distinct_impulses
 #print axioms ReedSolomon.reedSolomon_jointAgreement_of_shared_locator
 #print axioms ReedSolomon.reedSolomon_jointAgreement_of_shared_locator_exact
 #print axioms ReedSolomon.reedSolomon_jointAgreement_of_degreeOne_decoding_curve
