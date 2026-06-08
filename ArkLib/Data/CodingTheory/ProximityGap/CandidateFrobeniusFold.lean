@@ -49,17 +49,18 @@ lemma frobenius_noise_correlation [CharP F 2] (P : F → F) (r : F → F) (E : F
   Since the noise is correlated via `frobenius_noise_correlation`, the agreement
   fraction strictly approaches capacity (1 - R) instead of stopping at 1 - sqrt(R).
 -/
-theorem frobenius_mca_exact_match [CharP F 2] (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
-    (C : Set (F → F)) (δ : ℝ≥0) :
-    ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ := by
-  -- FLAWED: While the alphabet penalty is indeed 1, the matrix structure itself 
-  -- mathematically collapses! Evaluating Q(X, Y_0, Y_1) at (x, r(x), r(x)^2) 
-  -- algebraically reduces the polynomial to a bivariate polynomial:
-  -- Q(x, r(x), r(x)^2) = sum C_{i, j, k} x^i r(x)^{j + 2k}
-  -- This is strictly isomorphic to the classic bivariate GS polynomial Q'(X, Y).
-  -- The variables Y_1 are linearly dependent on the variables Y_0^2.
-  -- The Rank-Nullity theorem fails to provide any extra degrees of freedom, 
-  -- and the root bound violently snaps back to the Johnson Radius (1 - sqrt(R)).
-  sorry
+-- FLAWED approach (recorded, not claimed): the Frobenius-folded matrix collapses. Evaluating
+-- Q(X, Y_0, Y_1) at (x, r(x), r(x)^2) reduces to a bivariate GS polynomial (Y_1 depends on Y_0^2),
+-- so Rank-Nullity yields no extra degrees of freedom and the root bound snaps back to the Johnson
+-- radius (1 - sqrt(R)). Recorded as an open conjecture `Prop`, not a theorem.
+--
+-- Stated against a Reed–Solomon evaluation `domain : ι ↪ F` — the type
+-- `mcaPrizeLatticeResolved` requires. (An earlier revision passed a bare `Finset F`, which does
+-- not unify with `ι ↪ F` and silently failed to elaborate.)
+def frobenius_mca_exact_match {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F] [CharP F 2] (domain : ι ↪ F)
+    (_C : Set (F → F)) (_δ : ℝ≥0) : Prop :=
+  ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+    ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved domain τ
 
 end ArkLib.CodingTheory.Research

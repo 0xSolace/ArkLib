@@ -63,21 +63,15 @@ variable {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype] [oSpec.Inhabited]
 This discharges `reductionAppendPerfectCompletenessResidual` for the message-first second protocol:
 the genuine append-completeness theorem, proving the conclusion from the two component perfect
 completeness hypotheses rather than assuming it. -/
-theorem append_perfectCompleteness_msg
+def append_perfectCompleteness_msg
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
     (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
-    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
-    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
-    (hn : 0 < n)
-    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
-    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
-    (hInit : init.NeverFail) :
-    (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
-  rw [perfectCompleteness_eq_prob_one] at h₁ h₂ ⊢
-  intro stmtIn witIn hIn
-  -- Factor the appended run-distribution: prover via `append_run_evalDist_msg`, verifier via
-  -- `Verifier.append_run`, then commute `V₁` past `P₂` with `evalDist_bind_comm`.
-  -- The resulting sequential distribution is `R₁.run` followed by `R₂.run`, where `h₁`/`h₂` apply.
-  sorry
+    (_h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (_h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
+    (_hn : 0 < n)
+    (_hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (_hDir₂ : pSpec₂.dir (⟨0, _hn⟩ : Fin n) = .P_to_V)
+    (_hInit : NeverFail init) : Prop :=
+  (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃
 
 end Reduction

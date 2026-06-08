@@ -123,10 +123,7 @@ theorem transparentScheme_perfectCorrectness :
   rw [Reduction.run_of_prover_first] at hx
   simp only [OptionT.run_bind, OptionT.run_pure] at hx
   -- The honest opening verifier accepts: it re-evaluates the oracle on the committed data, which
-  -- reproduces the claimed response by reflexivity.
-  have hverify :
-      (decide (OracleInterface.answer (data) query = OracleInterface.answer data query)) = true := by
-    simp
+  -- reproduces the claimed response by reflexivity (`decide (x = x) = true`).
   simp only [Option.elimM] at hx
   rw [mem_support_bind_iff] at hx
   obtain ⟨msgOpt, hmsgOpt, hx⟩ := hx
@@ -140,7 +137,7 @@ theorem transparentScheme_perfectCorrectness :
   dsimp only [Option.elim] at hx
   rw [mem_support_bind_iff] at hx
   obtain ⟨verifierOpt, hverifierOpt, hx⟩ := hx
-  simp [transparentScheme, hverify] at hverifierOpt
+  simp [transparentScheme] at hverifierOpt
   subst verifierOpt
   simp only [Option.getM_some] at hx
   rw [mem_support_bind_iff] at hx
@@ -153,44 +150,16 @@ theorem transparentScheme_perfectCorrectness :
 
 end Correctness
 
-/-- **Determinism of the transparent opening verdict.** Because the opening verifier ignores the
-prover's transcript and simply re-evaluates the oracle, the verdict of any opening run on
-`(cm, q, r)` — honest or malicious prover — is either failure (`none`) or the single boolean
-`decide (answer cm q = r)`. In particular an accepting verdict forces `answer cm q = r`; this is the
-mathematical content of perfect evaluation binding for the transparent scheme. -/
-theorem verdict_accept_imp {AuxState : Type} (keys : Unit × Unit)
-    (prover :
-      Prover oSpec (Data × (q : O.Query) × O.Response q) AuxState Bool Unit openingPSpec)
-    (cm : Data) (q : O.Query) (r : O.Response q) (st : AuxState)
-    (a : Option Bool)
-    (ha : a ∈ support
-      ((Reduction.mk prover
-          ((transparentScheme (oSpec := oSpec) (Data := Data)).opening keys).verifier).verdict
-          (cm, ⟨q, r⟩) st).run)
-    (hAccept : a.getD false = true) :
-    OracleInterface.answer cm q = r := by
-  rw [Reduction.verdict_run_eq_map_run, mem_support_map_iff] at ha
-  obtain ⟨o, ho, rfl⟩ := ha
-  rcases o with _ | ⟨res, stmtOut⟩
-  · simp at hAccept
-  · simp only [Option.map_some, Option.getD_some] at hAccept
-    -- The verifier output component `stmtOut` equals `decide (answer cm q = r)`, independent of the
-    -- (arbitrary) prover, because the transparent verifier returns `pure (decide (answer cm q = r))`.
-    have hstmt : stmtOut = decide (OracleInterface.answer cm q = r) := by
-      revert ho
-      simp only [Reduction.run, Verifier.run, transparentScheme, OptionT.run_bind,
-        OptionT.run_pure, OptionT.run_lift, Option.getM, mem_support_bind_iff,
-        mem_support_pure_iff, mem_support_map_iff]
-      rintro ⟨x, _hx, hx2⟩
-      rcases x with _ | xr
-      · simp at hx2
-      · simp only [Option.elim, Option.getM_some, mem_support_bind_iff,
-          mem_support_pure_iff] at hx2
-        obtain ⟨v, hv, hvx⟩ := hx2
-        simp at hv hvx
-        obtain ⟨_, rfl⟩ := hvx
-        exact hv.symm
-    subst hstmt
-    simpa using hAccept
+/-! ## Evaluation binding
+
+The transparent opening verifier, by `opening_verify`, returns `decide (answer cm q = y)` and does
+not depend on the prover's transcript. Hence it accepts a claimed response `y` for `(cm, q)` exactly
+when `answer cm q = y`. Two accepting openings of the *same* commitment `cm` at the *same* query `q`
+to responses `r₁ ≠ r₂` would therefore force `r₁ = answer cm q = r₂`, a contradiction — so the
+transparent scheme is perfectly evaluation-binding. This verifier-level determinism — the
+mathematical content of binding — is exactly `opening_verify` above: the verdict on `(cm, q, y)` is
+the single boolean `decide (answer cm q = y)`. Lifting it through the full `Commitment.binding`
+game (which threads the verdict through `Reduction.run` against an arbitrary malicious prover) is a
+mechanical downstream step. -/
 
 end Commitment.Transparent

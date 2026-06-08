@@ -1,0 +1,2 @@
+import Mathlib.LinearAlgebra.Dimension.Finite
+#check Submodule.finrank_add_eq_of_isCompl

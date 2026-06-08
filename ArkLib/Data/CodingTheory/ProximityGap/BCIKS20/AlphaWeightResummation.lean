@@ -38,7 +38,7 @@ theorem not_DivWeightLe_zero_of_not_dvd_X (x₀ : F) (R : F[X][X][Y])
   have hdegC : (Polynomial.C H.leadingCoeff).degree ≤ 0 := Polynomial.degree_C_le
   have hdegAC : (A * Polynomial.C H.leadingCoeff).degree < (H_tilde' H).degree := by
     refine (Polynomial.degree_mul_le _ _).trans_lt ?_
-    have h1 : A.degree + (Polynomial.C H.leadingCoeff).degree ≤ A.degree + 0 := add_le_add_left hdegC _
+    have h1 : A.degree + (Polynomial.C H.leadingCoeff).degree ≤ A.degree + 0 := add_le_add_right hdegC _
     have h2 : A.degree + 0 = A.degree := add_zero _
     rw [h2] at h1
     exact lt_of_le_of_lt h1 hdegA
@@ -55,7 +55,7 @@ theorem not_DivWeightLe_zero_of_not_dvd_X (x₀ : F) (R : F[X][X][Y])
   have h_coeff : (Polynomial.X : F[X][Y]).coeff 1 = (A * Polynomial.C H.leadingCoeff).coeff 1 := by rw [h_X_eq]
   rw [Polynomial.coeff_X_one] at h_coeff
   rw [Polynomial.coeff_mul_C, mul_comm] at h_coeff
-  have h_div_one : H.leadingCoeff ∣ 1 := ⟨A.coeff 1, h_coeff.symm⟩
+  have h_div_one : H.leadingCoeff ∣ 1 := ⟨A.coeff 1, h_coeff⟩
   apply h_not_dvd
   exact dvd_trans h_div_one (one_dvd Polynomial.X)
 

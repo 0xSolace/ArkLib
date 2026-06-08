@@ -36,9 +36,16 @@ def mca_bound_of_pseudo_random {F : Type} [Field F] [Fintype F]
     (L : Finset F) (deg : ℕ) (C : Set (F → F)) (δ : ℝ≥0) : Prop :=
   IsPseudoRandomForPolys F L deg → ProximityGap.epsMCA C δ ≤ (deg : ℝ≥0) / L.card
 
-/-- Candidate endpoint for resolving the lattice prize through derandomization. -/
-def candidate_derandomization_mca_bound (F : Type) [Field F] [Fintype F]
-    (L : Finset F) : Prop :=
-  ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved L τ
+/-- Candidate endpoint for resolving the lattice prize through derandomization.
+
+Stated against a Reed–Solomon evaluation `domain : ι ↪ F` — the type
+`ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved` actually requires — so the
+statement type-checks. (An earlier revision passed a bare `Finset F` here, which does not unify
+with the required `ι ↪ F` and silently failed to elaborate.) This is an open conjecture recorded
+as a `Prop`, not a theorem. -/
+def candidate_derandomization_mca_bound {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F] (domain : ι ↪ F) : Prop :=
+  ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+    ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved domain τ
 
 end ArkLib.CodingTheory.Research

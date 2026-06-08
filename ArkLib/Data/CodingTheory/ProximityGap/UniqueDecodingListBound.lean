@@ -100,4 +100,72 @@ theorem agreement_card_le {D : ι ↪ F} {k : ℕ} {p q : F[X]}
     lt_of_le_of_lt (natDegree_sub_le p q) (by omega)
   omega
 
+/-! ### Sharpness: the unique-decoding threshold `2·e < d` is tight -/
+
+/-- **Sharpness, center existence.** If `x ≠ y` differ in `d = hammingDist x y` coordinates, there is
+a center `r` within Hamming distance `⌈d/2⌉ = (d+1)/2` of *both* `x` and `y`. Construction: flip `x`
+to `y`'s value on `⌊d/2⌋` of the `d` disagreement coordinates (`Finset.piecewise`). -/
+theorem exists_center_within_half {x y : ι → F} (hxy : x ≠ y) :
+    ∃ r : ι → F, hammingDist x r ≤ (hammingDist x y + 1) / 2 ∧
+                 hammingDist y r ≤ (hammingDist x y + 1) / 2 := by
+  classical
+  set S : Finset ι := Finset.univ.filter (fun i => x i ≠ y i) with hSdef
+  have hScard : S.card = hammingDist x y := by rw [hammingDist, hSdef]
+  obtain ⟨T, hTS, hTcard⟩ :=
+    Finset.exists_subset_card_eq (s := S) (n := hammingDist x y / 2)
+      (by rw [hScard]; exact Nat.div_le_self _ _)
+  refine ⟨T.piecewise y x, ?_, ?_⟩
+  · have hx : hammingDist x (T.piecewise y x) = T.card := by
+      rw [hammingDist]
+      congr 1
+      ext i
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+      constructor
+      · intro hne
+        by_cases hiT : i ∈ T
+        · exact hiT
+        · rw [Finset.piecewise_eq_of_notMem _ _ _ hiT] at hne; exact absurd rfl hne
+      · intro hiT
+        rw [Finset.piecewise_eq_of_mem _ _ _ hiT]
+        have hiS : i ∈ S := hTS hiT
+        rw [hSdef, Finset.mem_filter] at hiS
+        exact hiS.2
+    rw [hx, hTcard]; omega
+  · have hy : hammingDist y (T.piecewise y x) = (S \ T).card := by
+      rw [hammingDist]
+      congr 1
+      ext i
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_sdiff]
+      constructor
+      · intro hne
+        by_cases hiT : i ∈ T
+        · rw [Finset.piecewise_eq_of_mem _ _ _ hiT] at hne; exact absurd rfl hne
+        · rw [Finset.piecewise_eq_of_notMem _ _ _ hiT] at hne
+          refine ⟨?_, hiT⟩
+          rw [hSdef, Finset.mem_filter]
+          exact ⟨Finset.mem_univ i, Ne.symm hne⟩
+      · rintro ⟨hiS, hiT⟩
+        rw [Finset.piecewise_eq_of_notMem _ _ _ hiT]
+        rw [hSdef, Finset.mem_filter] at hiS
+        exact Ne.symm hiS.2
+    rw [hy, Finset.card_sdiff hTS, hScard, hTcard]; omega
+
+/-- **Sharpness of `listBall_card_le_one`.** Two distinct codewords `x ≠ y` (a code with minimum
+distance `d = hammingDist x y`) yield a decoding list of size `≥ 2` at radius `e = ⌈d/2⌉`, where
+`2 * e ≥ d`. So the hypothesis `2 * e < d` cannot be weakened: at `2 * e = d` the list already
+exceeds one. -/
+theorem listBall_two_at_half {x y : ι → F} (hxy : x ≠ y) :
+    ∃ (r : ι → F) (e : ℕ), hammingDist x y ≤ 2 * e ∧ 2 ≤ (listBall {x, y} r e).card := by
+  obtain ⟨r, hxr, hyr⟩ := exists_center_within_half hxy
+  refine ⟨r, (hammingDist x y + 1) / 2, by omega, ?_⟩
+  have hxmem : x ∈ listBall {x, y} r ((hammingDist x y + 1) / 2) := by
+    simp only [listBall, Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton]
+    rw [hammingDist_comm x r]
+    exact ⟨Or.inl rfl, hxr⟩
+  have hymem : y ∈ listBall {x, y} r ((hammingDist x y + 1) / 2) := by
+    simp only [listBall, Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton]
+    rw [hammingDist_comm y r]
+    exact ⟨Or.inr rfl, hyr⟩
+  exact Finset.one_lt_card.mpr ⟨x, hxmem, y, hymem, hxy⟩
+
 end ArkLib.CodingTheory.UniqueDecoding
