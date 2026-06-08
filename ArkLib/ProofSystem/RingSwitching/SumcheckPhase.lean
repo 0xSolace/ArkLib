@@ -866,14 +866,12 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
             ⟨⟨1, by decide⟩, by rfl⟩ with r_i'_def
 
       have h_oStmtOut_eq_oStmtIn : oStmtOut = oStmtIn := by
-        rw [h_oStmtOut_eq]
+        rw [← h_oStmtOut_eq]
         funext j
         simp only [MessageIdx, Function.Embedding.coeFn_mk, Sum.inl.injEq,
           OracleVerifier.mkVerifierOStmtOut_inl, cast_eq]
       rw [h_oStmtOut_eq_oStmtIn] at h_relOut
-    
-      have h_stmtOut_sumcheck_target_eq : stmtOut.sumcheck_target = h_i.val.eval r_i' := by
-        rw [h_stmtOut_eq]; rfl
+      rw [← h_stmtOut_eq] at h_relOut
       dsimp only [masterKStateProp]
       constructor
       · simpa [h_i] using h_V_check_passed
