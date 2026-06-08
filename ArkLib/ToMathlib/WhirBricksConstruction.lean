@@ -13,6 +13,8 @@ import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.RBRSoundness
 import ArkLib.ProofSystem.Whir.RbrBudgetAccounting
 
+set_option linter.style.longFile 2000
+
 /-!
 # WHIR VectorSpec challenge budget (scratch brick B)
 
@@ -468,7 +470,7 @@ noncomputable def paperTranscriptRuntimeFullTranscript {M : ℕ}
     else
       challenges ⟨i, Direction.not_V_to_P_eq_P_to_V h⟩
 
-omit [Field F] [SampleableType F] in
+omit [Field F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptRuntimeFullTranscript_messages {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
@@ -478,9 +480,13 @@ omit [Field F] [SampleableType F] in
       paperTranscriptMessage P d T i := by
   cases i with
   | mk i hi =>
-      simp [paperTranscriptRuntimeFullTranscript, hi]
+      have hi' :
+          paperTranscriptSlotDirection ((Fintype.equivFin (PaperTranscriptSlot P)).symm i)
+            = Direction.P_to_V := by
+        simpa [ProtocolSpec.VectorSpec.toProtocolSpec, whirPaperTranscriptVectorSpec] using hi
+      simp [paperTranscriptRuntimeFullTranscript, hi']
 
-omit [Field F] [SampleableType F] in
+omit [Field F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptRuntimeFullTranscript_challenges {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
@@ -489,7 +495,17 @@ omit [Field F] [SampleableType F] in
     (paperTranscriptRuntimeFullTranscript P d T challenges).challenges i = challenges i := by
   cases i with
   | mk i hi =>
-      simp [paperTranscriptRuntimeFullTranscript, hi]
+      have hi' :
+          paperTranscriptSlotDirection ((Fintype.equivFin (PaperTranscriptSlot P)).symm i)
+            = Direction.V_to_P := by
+        simpa [ProtocolSpec.VectorSpec.toProtocolSpec, whirPaperTranscriptVectorSpec] using hi
+      have hnot :
+          ¬ paperTranscriptSlotDirection ((Fintype.equivFin (PaperTranscriptSlot P)).symm i)
+            = Direction.P_to_V := by
+        intro h
+        rw [h] at hi'
+        contradiction
+      simp [paperTranscriptRuntimeFullTranscript, hnot]
 
 omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptSlotPayload_mainFoldedOracle {M : ℕ}
