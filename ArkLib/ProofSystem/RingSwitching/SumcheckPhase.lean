@@ -849,14 +849,21 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       erw [simulateQ_pure] at hmem
       simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hmem
       obtain ⟨rfl, -⟩ := hmem
-      injection heq with h_stmtOut_eq h_oStmtOut_eq
+      have h_pair_eq := Option.some.inj heq
+      injection h_pair_eq with h_stmtOut_eq h_oStmtOut_eq
       simp only [Fin.reduceLast, Fin.isValue]
 
       dsimp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp] at h_relOut
       simp only [Fin.val_succ, Set.mem_setOf_eq] at h_relOut
       dsimp only [iteratedSumcheckKStateProp]
-      set h_i : ↥L⦃≤ 2⦄[X] := tr.messages ⟨0, rfl⟩ with h_i_def
-      set r_i' : L := tr.challenges ⟨1, rfl⟩ with r_i'_def
+      set h_i : ↥L⦃≤ 2⦄[X] :=
+        (ProtocolSpec.Transcript.equivMessagesChallenges
+          (k := Fin.last 2) (pSpec := pSpecSumcheckRound L) tr).1
+            ⟨⟨0, by decide⟩, by rfl⟩ with h_i_def
+      set r_i' : L :=
+        (ProtocolSpec.Transcript.equivMessagesChallenges
+          (k := Fin.last 2) (pSpec := pSpecSumcheckRound L) tr).2
+            ⟨⟨1, by decide⟩, by rfl⟩ with r_i'_def
 
       have h_oStmtOut_eq_oStmtIn : oStmtOut = oStmtIn := by
         rw [h_oStmtOut_eq]
@@ -874,7 +881,10 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
         constructor
         · exact h_wit_struct_In
         · exact ⟨h_sumcheck_In, h_oStmtIn_compat⟩
-    · simp [map_optionT_failure', simulateQ_optionT_failure'] at hmem
+    · exfalso
+      simp [simulateQ_optionT_failure', StateT.run_pure] at hmem
+      have hval_none : val = none := congrArg Prod.fst hmem
+      exact Option.noConfusion (hval_none.symm.trans heq)
 
 /-- Extraction failure implies a witness-dependent bad sumcheck event.
   The extracted `witMid` also carries oracle compatibility at the same `oStmt`. -/

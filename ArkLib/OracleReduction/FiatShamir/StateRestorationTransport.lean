@@ -1418,6 +1418,14 @@ private theorem stateT_option_elimM_congr
   intro oa
   cases oa <;> simp [h]
 
+private theorem stateT_option_elimM_congr₂
+    {σ α β : Type} {mx my : StateT σ ProbComp (Option α)}
+    {f g : α → StateT σ ProbComp (Option β)}
+    (hmx : mx = my) (hfg : ∀ a, f a = g a) :
+    Option.elimM mx (pure none) f = Option.elimM my (pure none) g := by
+  subst my
+  exact stateT_option_elimM_congr mx f g hfg
+
 private theorem stateT_option_elimM_some_map_eq
     {σ α β : Type} (mx : StateT σ ProbComp α)
     (k : α → StateT σ ProbComp (Option β)) :
@@ -1723,25 +1731,26 @@ theorem fiatShamirKnowledgeExec_runCollapse
     intro d extractedWitIn
     simp only [OptionT.run_pure, simulateQ_pure]
   apply stateT_option_elimM_congr
-  trace_state
   intro d
-  dsimp [K]
-  simp only [QueryImpl.addLift_def]
-  rw [hLift d]
-  rw [simulateQ_optionT_bind_mk_some_run
-    (impl := impl)
-    (oa := Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1 0))
-    (k := fun transcript =>
-      (liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
-        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn))]
-  rw [stateT_option_elimM_bind_eq]
-  apply bind_congr
-  intro transcript
-  apply stateT_option_elimM_congr
-  intro extractedWitIn
-  rw [hPure d extractedWitIn]
-  simp only [OptionT.run_pure, simulateQ_pure]
-
+  dsimp [K, QueryImpl.addLift_def]
+  trans
+      Option.elimM
+        (simulateQ impl
+          (OptionT.run
+            (do
+              let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+                (oSpec := oSpec) stmtIn (d.1.1 0))
+              liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
+                OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)))
+        (pure none) fun extractedWitIn =>
+          simulateQ impl
+            (OptionT.run
+              ((pure (stmtIn, extractedWitIn, d.2, d.1.2.2)) :
+                OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                  (StmtIn × WitIn × StmtOut × WitOut)))
+  · exact stateT_option_elimM_congr₂ (hLift d) (fun extractedWitIn =>
+      hPure d extractedWitIn)
+  · rfl
 /-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
 table. This is the knowledge-soundness analogue of
 `fiatShamir_soundnessTransferResidual_canonical`. -/
@@ -1766,6 +1775,11 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   dsimp only
   simp [fiatShamirStraightlineExtractorOfStateRestoration]
   rw [probEvent_optionT_stateT_init]
+  rw [fiatShamirKnowledgeExec_runCollapse
+    (impl := fiatShamirCoupledQueryImpl
+      (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
+    (P := prover) (V := V) (srExtractor := srExtractor)
+    (stmtIn := stmtIn) (witIn := witIn)]
   refine le_trans ?_ h
   simp [Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
     Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
@@ -1775,7 +1789,8 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     StateT.run_bind, StateT.run_map,
     Verifier.fiatShamir_verify_eq,
     Reduction.fiatShamir, Prover.fiatShamir, Verifier.fiatShamir,
-    Reduction.run, Prover.run, Prover.runToRound, Prover.processRound]
+    Reduction.run, Prover.run, Prover.runToRound, Prover.processRound,
+    fiatShamirKnowledgeExec_runCollapse, QueryImpl.addLift_def]
 
 #print axioms Reduction.fiatShamirKnowledgeExec_runCollapse
 #print axioms Reduction.fiatShamir_knowledgeSoundnessTransferResidual_canonical
