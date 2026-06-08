@@ -502,6 +502,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityGap.RSLambdaJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.RSListDecodingFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.RSListSize
+import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdConditionalPin
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdGapBracket
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdJohnsonGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdJohnsonPin
