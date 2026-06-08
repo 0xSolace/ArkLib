@@ -321,6 +321,18 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop26 — additive vs multiplicative per-fold growth (narrows the disproof target)
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop26.lean`:** `additive_recursion_linear`
+(`T(j+1)≤T(j)+b` ⟹ `T(m)≤T(0)+m·b`), `additive_recursion_le_domain` (with `b≥0`, base `T(0)≤B₀`,
+and `m≤2^m`: `T(m)≤B₀+(2^m)·b` — linear in `N=2^m`, `c₁=1`). **Refinement of the crux:** Loop24/25
+used the *pessimistic multiplicative* model. But FRI/STIR soundness is a *union bound over rounds* —
+**additive** per fold. If the smooth-domain per-fold list growth is additive (`+b`), the total is
+linear in `m=log₂N` ⇒ polynomial in `2^m` ⇒ **prize TRUE with `c₁=1` and NO open scalar**. And even
+*constant-factor* multiplicative growth is fine (Loop24). So the disproof target is now strictly
+sharper: it requires the per-fold factor to be **multiplicative AND `N`-growing** simultaneously —
+not merely "not constant." The refined open question: is smooth-deterministic per-fold list growth
+additive/union-bound (TRUE) or genuinely multiplicative-with-`N`-growing-factor (FALSE)?
+
 ### Loop25 — anchored recursion: the whole prize is now ONE open scalar inequality
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop25.lean`:** `recursion_anchored`
 (constant blowup `a≤2^c` + base `T(0)≤B₀` ⟹ `T(m)≤(2^m)^c·B₀`), `fold_list_le_domain_pow` (base
