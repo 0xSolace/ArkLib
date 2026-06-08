@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.OracleReduction.FiatShamir.Basic
+import ArkLib.ToVCVio.OracleComp.Coercions.SubSpec
 
 /-!
 # Basic Fiat-Shamir State-Restoration Pre-Transport Wrappers (#116)
@@ -285,9 +286,71 @@ theorem fiatShamir_liftM_base_to_append_eq_nested
           [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α) := by
   rfl
 
+/-- The inferred `liftM` path for an `OptionT` computation over the base Fiat-Shamir oracle spec
+passes through the right-associated append before landing in the left-associated appended target.
+
+This is the elaboration path exposed by the one-message `deriveTranscriptSR` run-shape expansion. -/
+theorem fiatShamir_liftM_base_optionT_to_rightAssoc_to_append
+    (oa : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) α) :
+    (liftM oa :
+        OptionT (OracleComp
+          ((oSpec + fsChallengeOracle StmtIn pSpec) +
+            [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α)
+      =
+    (liftM
+        (liftM oa :
+          OptionT (OracleComp
+            (oSpec + (fsChallengeOracle StmtIn pSpec +
+              [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))) α) :
+        OptionT (OracleComp
+          ((oSpec + fsChallengeOracle StmtIn pSpec) +
+            [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α) := by
+  rfl
+
+/-- Specialization of `OracleComp.liftM_OptionT_add_assoc_right` to the basic Fiat-Shamir appended
+challenge spec. It collapses the right-associated lift path into the direct left-associated
+`liftComp` path on the underlying `OptionT.run`. -/
+theorem fiatShamir_liftM_rightAssoc_to_append_eq_direct
+    (oa : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) α) :
+    (liftM
+        (liftM oa :
+          OptionT (OracleComp
+            (oSpec + (fsChallengeOracle StmtIn pSpec +
+              [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))) α) :
+        OptionT (OracleComp
+          ((oSpec + fsChallengeOracle StmtIn pSpec) +
+            [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α)
+      =
+      OptionT.mk (OracleComp.liftComp oa.run
+        ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) := by
+  exact OracleComp.liftM_OptionT_add_assoc_right (spec₁ := oSpec)
+    (spec₂ := fsChallengeOracle StmtIn pSpec)
+    (spec₃ := [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)
+    oa
+
+/-- Combined Fiat-Shamir lift-path normalization for `OptionT` computations over the base
+Fiat-Shamir oracle spec: the inferred append lift is the explicit direct `liftComp` of the
+underlying `run`. -/
+theorem fiatShamir_liftM_base_optionT_to_append_eq_direct
+    (oa : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) α) :
+    (liftM oa :
+        OptionT (OracleComp
+          ((oSpec + fsChallengeOracle StmtIn pSpec) +
+            [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α)
+      =
+      OptionT.mk (OracleComp.liftComp oa.run
+        ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) := by
+  rw [fiatShamir_liftM_base_optionT_to_rightAssoc_to_append]
+  exact fiatShamir_liftM_rightAssoc_to_append_eq_direct oa
+
 end Reduction
 
 #print axioms Reduction.fiatShamir_liftM_base_to_append_eq_nested
+#print axioms Reduction.fiatShamir_liftM_base_optionT_to_rightAssoc_to_append
+#print axioms Reduction.fiatShamir_liftM_rightAssoc_to_append_eq_direct
+#print axioms Reduction.fiatShamir_liftM_base_optionT_to_append_eq_direct
 
 end FiatShamirLiftPath
 
