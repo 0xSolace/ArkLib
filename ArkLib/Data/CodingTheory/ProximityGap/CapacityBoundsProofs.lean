@@ -84,7 +84,7 @@ theorem linear_epsCA_1_5_johnson_bgks20_proven
 
 end General
 
-/-! ## §2 Reed-Solomon codes (T4.9.2, T4.12, T4.16, T4.17, T4.18) — Issues #87, #85, #81, #82, #83 -/
+/-! ## §2 Reed-Solomon codes — Issues #87, #85, #81, #82, #83 -/
 
 section ReedSolomon
 
