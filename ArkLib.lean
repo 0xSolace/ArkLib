@@ -934,6 +934,7 @@ import ArkLib.ToMathlib.SpartanBricks
 import ArkLib.ToMathlib.SpartanRBRProof
 import ArkLib.ToMathlib.SqSumCardSupport
 import ArkLib.ToMathlib.StraightlineRewindingBridge
+import ArkLib.ToMathlib.SubmoduleCardRatio
 import ArkLib.ToMathlib.SubspacePolyLinearized
 import ArkLib.ToMathlib.SubstFieldCaveat
 import ArkLib.ToMathlib.SumSubMeanSq
