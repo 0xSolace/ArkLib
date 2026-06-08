@@ -578,12 +578,8 @@ theorem outerVerifier_run_accept_eq_pure
     (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
     (tr : FullTranscript (outerPSpec F n params))
     (hacc : outerVerifyAccepts F n M stmtIn.2 (chalX F n M params tr.challenges)) :
-    ∃ v, (Verifier.run stmtIn tr (outerVerifier oSpec F n M params).toVerifier).run
-      = (pure (some v) : OracleComp oSpec
-          (Option (StmtAfterOuter F n M params
-            × (∀ i, OStmtAfterOuter F n M params i)))) := by
-  classical
-  refine ⟨(show StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i) from
+    (Verifier.run stmtIn tr (outerVerifier oSpec F n M params).toVerifier).run
+      = (pure (some (show StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i) from
           ({ xChallenge := chalX F n M params tr.challenges,
              zChallenge := (chalBatch F n M params tr.challenges).1,
              batchingScalars := (chalBatch F n M params tr.challenges).2 },
@@ -591,7 +587,10 @@ theorem outerVerifier_run_accept_eq_pure
              | Sum.inl j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ stmtIn.2 j :
                  OStmtAfterOuter F n M params i)
              | Sum.inr j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ tr.messages j :
-                 OStmtAfterOuter F n M params i))), ?_⟩
+                 OStmtAfterOuter F n M params i)))) : OracleComp oSpec
+          (Option (StmtAfterOuter F n M params
+            × (∀ i, OStmtAfterOuter F n M params i)))) := by
+  classical
   show ((outerVerifier oSpec F n M params).toVerifier.verify stmtIn tr).run = _
   unfold OracleVerifier.toVerifier
   simp only
@@ -603,6 +602,28 @@ theorem outerVerifier_run_accept_eq_pure
   refine Prod.ext rfl ?_
   funext i
   cases i <;> rfl
+
+/-- **Embedded-verifier reject collapse.** On a transcript whose `x`-challenge hits a table pole
+(`¬ outerVerifyAccepts`), the embedded verifier run fails: its `OptionT.run` is `pure none`.  The
+counterpart of `outerVerifier_run_accept_eq_pure`, used to rule out successful runs on the reject
+side of the per-state agreement step. -/
+theorem outerVerifier_run_reject_eq_none
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (tr : FullTranscript (outerPSpec F n params))
+    (hrej : ¬ outerVerifyAccepts F n M stmtIn.2 (chalX F n M params tr.challenges)) :
+    (Verifier.run stmtIn tr (outerVerifier oSpec F n M params).toVerifier).run
+      = (pure none : OracleComp oSpec
+          (Option (StmtAfterOuter F n M params
+            × (∀ i, OStmtAfterOuter F n M params i)))) := by
+  classical
+  show ((outerVerifier oSpec F n M params).toVerifier.verify stmtIn tr).run = _
+  unfold OracleVerifier.toVerifier
+  simp only
+  rw [simulateQ_outerVerify_eq]
+  rw [if_neg (show ¬ (∀ (u : Hypercube n),
+      chalX F n M params tr.challenges + evalOnHypercube (tableOracle stmtIn.2) u ≠ 0) from hrej)]
+  rw [failure_bind]
+  rfl
 
 set_option maxHeartbeats 3200000 in
 /-- **Per-(initial-state) pole bound for the simulated outer run (DEV — accept-zero pending).**
@@ -654,11 +675,10 @@ theorem outer_perState_none_le
     obtain ⟨a, _, rfl⟩ := hx
     -- The transcript built here carries `c` as its round-1 challenge (`readback`), so the embedded
     -- verifier accepts and its run is a pure `some` — leaving no `none` in the support.
-    obtain ⟨v, hv⟩ := outerVerifier_run_accept_eq_pure oSpec F n M params stmtIn _
+    rw [optionT_run_bind, outerVerifier_run_accept_eq_pure oSpec F n M params stmtIn _
       ((outerProver_transcript_challenge_readback
           (m₀ := honestMultiplicity stmtIn.2) (x := c)
-          (m₂ := honestHelpers params stmtIn.2 c) (batch := a)).1.symm ▸ hacc)
-    rw [optionT_run_bind, hv] at hxnone
+          (m₂ := honestHelpers params stmtIn.2 c) (batch := a)).1.symm ▸ hacc)] at hxnone
     simp only [liftM_pure, OptionT.run_pure, pure_bind, Option.getM] at hxnone
     rw [← bind_pure_comp, optionT_run_bind, OptionT.run_pure, pure_bind] at hxnone
     simp only [OptionT.run_pure, support_pure, Set.mem_singleton_iff, reduceCtorEq] at hxnone
@@ -669,6 +689,70 @@ theorem outer_perState_none_le
     simp only [probOutput_uniformSample]
     apply mul_le_of_le_one_right'
     exact probEvent_le_one
+
+set_option maxHeartbeats 3200000 in
+/-- **Per-(initial-state) agreement for the simulated outer run.** On every *successful* simulated
+outer run the honest prover's output statement equals the verifier's recomputed one, so the
+completeness predicate's complement has probability `0`.  Discharges the `hAgree` obligation of
+`probEvent_outerCompletenessRunComp_compl_eq_zero_of_perState`. -/
+theorem outer_perState_agree
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (witIn : WitIn F n M params)
+    (s : σ) :
+    Pr[fun ⟨⟨_, (prvStmtOut, witOut)⟩, stmtOut⟩ =>
+        ¬ ((stmtOut, witOut) ∈ midRelation F n M params ∧ prvStmtOut = stmtOut) |
+      (OptionT.mk ((simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          (((outerOracleReduction oSpec F n M params).toReduction.run stmtIn witIn).run) :
+            StateT σ ProbComp (Option (OuterCompletenessRunResult F n M params))).run' s)
+        : OptionT ProbComp (OuterCompletenessRunResult F n M params))] = 0 := by
+  classical
+  rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim, probEvent_eq_zero_iff]
+  intro o ho hbad
+  have hsub := _root_.support_simulateQ_run'_subset (impl.addLift challengeQueryImpl) _ s ho
+  cases o with
+  | none => exact hbad
+  | some result =>
+    rw [outerReduction_run_closed_form, optionT_lift_bind_run, outerProver_run_closed_form] at hsub
+    simp only [outerProver, bind_pure_comp, map_pure, bind_assoc, pure_bind, liftM_pure,
+      support_bind, OracleComp.support_liftM, Set.mem_iUnion, support_pure,
+      Set.mem_singleton_iff, exists_prop] at hsub
+    obtain ⟨i, _, i_1, hi_1, hverif⟩ := hsub
+    rw [support_map] at hi_1
+    obtain ⟨batch, _, rfl⟩ := hi_1
+    by_cases hacc : outerVerifyAccepts F n M stmtIn.2 i
+    · -- Accept: the verifier collapses to its recomputed output, which the readback agreement
+      -- (`outerProver_output_pair_eq_verifier_recompute`) shows equals the prover's output statement.
+      have hx := (outerProver_transcript_challenge_readback
+          (m₀ := honestMultiplicity stmtIn.2) (x := i)
+          (m₂ := honestHelpers params stmtIn.2 i) (batch := batch)).1
+      have hb := (outerProver_transcript_challenge_readback
+          (m₀ := honestMultiplicity stmtIn.2) (x := i)
+          (m₂ := honestHelpers params stmtIn.2 i) (batch := batch)).2
+      rw [optionT_run_bind, outerVerifier_run_accept_eq_pure oSpec F n M params stmtIn _
+          (hx.symm ▸ hacc)] at hverif
+      simp only [liftM_pure, OptionT.run_pure, pure_bind, Option.getM] at hverif
+      rw [← bind_pure_comp, optionT_run_bind, OptionT.run_pure, pure_bind] at hverif
+      simp only [OptionT.run_pure, support_pure, Set.mem_singleton_iff] at hverif
+      obtain rfl := Option.some.inj hverif
+      refine hbad ⟨Set.mem_univ _, ?_⟩
+      have hm := (outerProver_transcript_message_readback
+          (m₀ := honestMultiplicity stmtIn.2) (x := i)
+          (m₂ := honestHelpers params stmtIn.2 i) (batch := batch)).1
+      have hh := (outerProver_transcript_message_readback
+          (m₀ := honestMultiplicity stmtIn.2) (x := i)
+          (m₂ := honestHelpers params stmtIn.2 i) (batch := batch)).2
+      exact outerProver_output_pair_eq_verifier_recompute (oSpec := oSpec)
+        (oStmt := stmtIn.2) (x := i) (batch := batch)
+        (hx := hx) (hb := hb) (hm := hm) (hh := hh)
+    · -- Reject: the verifier fails, so the run has no successful (`some`) output — `hverif` is absurd.
+      have hx := (outerProver_transcript_challenge_readback
+          (m₀ := honestMultiplicity stmtIn.2) (x := i)
+          (m₂ := honestHelpers params stmtIn.2 i) (batch := batch)).1
+      rw [optionT_run_bind, outerVerifier_run_reject_eq_none oSpec F n M params stmtIn _
+          (hx.symm ▸ hacc)] at hverif
+      simp only [liftM_pure, OptionT.run_pure, pure_bind, Option.getM] at hverif
+      rw [← bind_pure_comp, failure_bind, OptionT.run_failure, support_pure] at hverif
+      simp only [Set.mem_singleton_iff, reduceCtorEq] at hverif
 
 /-- **Outer-phase completeness failure bound (now fully proved).** The standard outer-completeness
 run fails (returns `⊥`) with probability at most `logupCompletenessError`.  This discharges the
@@ -684,6 +768,31 @@ theorem outer_completenessRun_failure_le
   refine probFailure_outerCompletenessRunComp_le_of_perStateNone oSpec F n M params init impl
     stmtIn witIn (fun s => ?_)
   exact outer_perState_none_le oSpec F n M params impl stmtIn witIn s
+
+/-- **Outer LogUp run-facts residual — fully discharged.** Both run-level facts are now proved:
+complement-zero via `outer_perState_agree` (every successful run agrees) and the failure bound via
+`outer_completenessRun_failure_le` (pole event). No `sorry`, no residual hypothesis. -/
+theorem outer_completenessRunFactsResidual :
+    OuterCompletenessRunFactsResidual oSpec F n M params init impl := by
+  intro _
+  refine ⟨fun stmtIn witIn _ => ?_, fun stmtIn witIn _ => ?_⟩
+  · exact probEvent_outerCompletenessRunComp_compl_eq_zero_of_perState oSpec F n M params init impl
+      stmtIn witIn (fun s => outer_perState_agree oSpec F n M params impl stmtIn witIn s)
+  · exact outer_completenessRun_failure_le oSpec F n M params init impl stmtIn witIn
+
+/-- **Outer LogUp completeness — fully proved (no residual).** The honest outer LogUp oracle
+reduction is complete with error `logupCompletenessError F n`, for every `NeverFail` init state.
+This closes the outer-phase completeness obligation of LogUp Protocol 2 (#13) end-to-end. -/
+theorem outerOracleReduction_completeness (hInit : NeverFail init) :
+    (outerOracleReduction oSpec F n M params).completeness init impl
+      (inputRelation F n M) (midRelation F n M params) (logupCompletenessError F n) :=
+  outer_completeness_of_runFacts oSpec F n M params init impl
+    (outer_completenessRunFactsResidual oSpec F n M params init impl) hInit
+
+/-- The outer completeness residual `OuterCompletenessRunResidual` itself is now provable. -/
+theorem outerCompletenessRunResidual_proved :
+    OuterCompletenessRunResidual oSpec F n M params init impl :=
+  fun hInit => outerOracleReduction_completeness oSpec F n M params init impl hInit
 
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
@@ -712,4 +821,8 @@ end Logup
 #print axioms Logup.probEvent_outerVerify_reject_challenge_le
 #print axioms Logup.outerVerifier_run_accept_eq_pure
 #print axioms Logup.outer_perState_none_le
+#print axioms Logup.outer_perState_agree
 #print axioms Logup.outer_completenessRun_failure_le
+#print axioms Logup.outer_completenessRunFactsResidual
+#print axioms Logup.outerOracleReduction_completeness
+#print axioms Logup.outerCompletenessRunResidual_proved
