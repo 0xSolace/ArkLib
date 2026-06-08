@@ -132,9 +132,24 @@ theorem append_perfectCompleteness_message
     simp only [Prod.mk.injEq] at heq
     obtain ⟨hfull, rfl, rfl⟩ := heq
     subst hfull
-    -- Cores extracted: hP₁ : (tr₁,s₂,w₂) ∈ support (P₁.run), hP₂core : (tr₂,s₃'',w₃'') ∈
-    -- support (P₂.run s₂ w₂); hV : the appended verifier on tr₁ ++ₜ tr₂. Remaining: decompose hV
-    -- into V₁/V₂ outputs, then feed h₁ (⇒ s₂ = V₁-out ∧ ∈ rel₂) and h₂ (⇒ goal).
+    rw [Verifier.append_run] at hV
+    simp only [FullTranscript.append_fst, FullTranscript.append_snd] at hV
+    simp only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+      OptionT.mk, bind_pure_comp] at hV
+    rw [support_simulateQ_eq_OracleComp_of_superSpec (h_supp := by intro β q; rfl)] at hV
+    simp only [support_map, Set.mem_image, Option.some.injEq, OptionT.run, exists_eq_right,
+      OptionT.monad_bind_eq_bind, OptionT.mem_support_OptionT_bind_run_some_iff,
+      OptionT.mem_support_OptionT_pure_run_some_iff, Function.comp_apply, Prod.exists] at hV
+    obtain ⟨s₂', hV₁, s₃, hV₂, hV₃⟩ := hV
+    simp only [OptionT.monad_pure_eq_pure, OptionT.mem_support_OptionT_pure_run_some_iff] at hV₃
+    subst hV₃
+    -- All four component outcomes extracted (oSpec / pSpecᵢ-spec cores):
+    --   hP₁ : (tr₁,s₂,w₂) ∈ support (P₁.run stmtIn witIn)
+    --   hV₁ : some s₂' ∈ support (V₁.run stmtIn tr₁)            (V₁ output statement s₂')
+    --   hP₂core : (tr₂,s₃'',w₃'') ∈ support (P₂.run s₂ w₂)
+    --   hV₂ : some x_2 ∈ support (V₂.run s₂' tr₂)               (V₂ output statement x_2)
+    -- Remaining: feed h₁ on R₁'s outcome ((tr₁,s₂,w₂),s₂') ⇒ s₂ = s₂' ∧ (s₂',w₂) ∈ rel₂;
+    -- then h₂ on R₂'s outcome ((tr₂,s₃'',w₃''),x_2) ⇒ goal.
     sorry
 
 end Reduction
