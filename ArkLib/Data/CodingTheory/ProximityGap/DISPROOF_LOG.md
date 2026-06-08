@@ -6,6 +6,45 @@ so we zero in. Keep lemmas that *constrain* even if they don't fully disprove.
 Default assumption: my disproof is wrong — find the precise reason it fails and
 make that reason a sorry-free Lean lemma.
 
+## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
+
+A web-research pass (June 2026) located the precise state of the art. **Our verified carving at the
+Johnson threshold `η₀=√ρ−ρ` (Loop10) is exactly the boundary the literature confirms.** Key papers:
+
+* **PROVEN up to Johnson — Ben-Sasson–Carmon–Haböck–Kopparty–Saraf, eprint 2025/2055, Thm 1.3/1.5:**
+  for RS rate `ρ` and `γ < 1−√ρ` (gap `η = 1−√ρ−γ`), proximity gaps hold with *polynomial* soundness
+  `a > O_ρ(n/η⁵)`. ⇒ the large-gap side (`η > η₀`) is a **theorem** with poly soundness — matches
+  Loop9/P1 and the in-tree Hab25 (MCA up to Johnson, Haböck eprint 2025/2110, and Bordage et al.
+  2025/2051 "all polynomial generators satisfy MCA up to `1−(1+1/2m)√ρ`").
+* **Capacity conjecture is FALSE — three independent groups (Nov 2025).** BUT each misses the prize:
+  - **Crites–Stewart 2025/2046** (reduction to list-decoding): disprove the *up-to-CAPACITY* versions
+    (CA, **MCA-of-WHIR**, DEEP-FRI list-decodability) at `δ ≥ 1−ρ`. They *propose the salvageable form*
+    `δ ≤ 1−ρ−η` — i.e. exactly the prize's below-capacity regime is the proposed survivor, not refuted.
+  - **Diamond–Gruen 2025/2010**: super-poly error `err > n^{c*}/q` for every `c*` — but at **vanishing
+    rate** `ρ ≈ e·n^{1/3}/n → 0` (`k(n)=⌊e·n^{1/3}⌋`, `q=n^{c*+1}`), *not* a fixed prize rate
+    `ρ∈{1/2,1/4,1/8,1/16}`. The prize's `ρ^{−c₂}` factor is precisely what their vanishing-`ρ`
+    construction would have to beat at *fixed* `ρ`, which it does not address.
+  - **Ben-Sasson et al. 2025/2055, Thm 1.6** (impossibility, char 2, beyond Johnson): proximity loss
+    `<1/8` requires soundness `a ≥ n^{2−o(1)}` — a **quadratic** (`n²`) jump. **Loop11 shows `n²` is
+    WITHIN the prize bound** (`(2^m)^{c₁}`, `c₁=2`, under `n ≤ 2^m`). So the quadratic jump does **not**
+    disprove the polynomial-soundness prize; it is consistent with it.
+* **Near-capacity positive results exist only for FOLDED / RANDOM RS** — Goyal–Guruswami 2025/2054
+  (`(1−R−η)`-proximity gap for folded & random RS, field `≳ 1/η²`); folded-RS optimal gap via subspace
+  designs, arXiv 2601.10047 (Jan 2026). **Plain deterministic smooth-domain RS** (the prize's
+  multiplicative-subgroup domain) in the band `(1−√ρ, 1−ρ−η]` is **NOT** covered by these.
+
+**Net position of the prize** (MCA, smooth deterministic domain, *fixed* prize rate, `δ ≤ 1−ρ−η`,
+*polynomial* bound `poly(2^m,1/ρ,1/η)/q`): **genuinely open.** It is *not* settled by the Nov-2025
+disproofs — those need exact capacity (Crites–Stewart), vanishing rate (Diamond–Gruen), or give only
+quadratic-hence-allowed bounds (BCIKS 2055). The open core is precisely Loop10's small-gap band, and
+the deciding question is whether *deterministic smooth-domain* RS behaves like the
+generic/folded case (poly soundness ⇒ prize TRUE) or like Diamond–Gruen's adversarial low-rate
+families (super-poly ⇒ prize FALSE) — at *fixed* prize rate. No construction currently reaches that.
+
+**Resolved-prize bibliography to formalize next (O11/O12):** port Ben-Sasson 2025/2055 Thm 1.5
+(poly soundness up to Johnson) and the Crites–Stewart reduction (CA-beyond-capacity ⇒ impossible
+list-decoding) — the latter is a clean disproof of the *at-capacity* sibling we can make sorry-free.
+
 ## The target
 
 Live target: the field-universal, faithful GS form
