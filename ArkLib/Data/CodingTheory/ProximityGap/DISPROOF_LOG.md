@@ -321,6 +321,19 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop19 — the smooth domain's sparse annihilator: the concrete smooth-vs-generic obstruction
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop19.lean`:**
+`smooth_domain_annihilated_by_sparse` (every element of a smooth subgroup domain of size `N` is a
+root of the 2-term `X^N − 1`, via `pow_card_eq_one` pushed through the field inclusion),
+`annihilator_coeff_zero_of_mem_interior` (`X^N − 1` has zero coefficient for `0 < i < N`),
+`annihilator_leading_coeff`. **Point:** the prize domain is the root set of a **2-sparse** polynomial
+`X^N − 1` with huge symmetry (closed under `×` `N`-th roots of unity and Frobenius), whereas a
+*generic* `N`-point set has a *dense* degree-`N` annihilator and no algebraic relations. This sparsity
+is exactly what a BGM-style genericity argument assumes *absent* — so it is the concrete algebraic
+obstruction to discharging Loop17's `(BGM-for-smooth)` hypothesis, and the structural foothold a
+Diamond–Gruen-style deterministic disproof would exploit. Names the obstruction precisely; does not
+decide the prize.
+
 ### Loop18 — the prize is ONE decision; both leans hinge on it; Loop15's lean is NOT decisive
 **Verified sorry-free, axiom-clean in `CandidateDecisionLoop18.lean`:** `prize_mass_iff_listsize_le`
 (`ℓ/q ≤ (1/q)·B ↔ ℓ ≤ B`), `prize_dichotomy`, `decision_qindependent`. Both full-band reductions
