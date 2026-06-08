@@ -520,6 +520,49 @@ theorem evalDist_simulateQ_run'_state_indep
 
 #print axioms evalDist_simulateQ_run'_state_indep
 
+/-- **Seam swap as a bare `evalDist` equality (the reorder, packaged for `rw`).** The natural-order
+seam distribution `FST → SND → W1 → W2` equals the union-bound-order distribution `(FST→W1) ; (SND→W2)`.
+Unlike `probComp_seam_swap_union_le` (a `≤` whose `exact`/`apply` against a *concrete* prover/verifier
+chain triggers a `PFunctor.FreeM.mapM` `isDefEq` blow-up), this is an *equality* and so can be applied
+to a concrete goal with `rw` — keyed matching sidesteps the defeq wall. Proof: `lift_run_elim` exposes
+the run-forms, then `evalDist_simulateQ_swap_prefix` (swap `SND` past `W1`) + `elim_comm_prefix` (move
+`SND` inside `W1`'s accept branch). -/
+theorem seam_swap_evalDist_eq
+    (init : ProbComp σ) (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0) :
+    𝒟[init >>= fun s => (simulateQ so
+        (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+          W2 x a s₂).run).run' s]
+    = 𝒟[init >>= fun s => (simulateQ so
+        ((liftM FST >>= fun x => W1 x >>= fun s₂ =>
+            (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+          >>= fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s] := by
+  have h1 : (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+      W2 x a s₂ : OptionT (OracleComp spec) D).run
+    = FST >>= fun x => SND x >>= fun a => (W1 x).run >>= fun o₁ =>
+        o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run) := by
+    simp only [OptionT.run_bind, Option.elimM, lift_run_elim]
+  have h2 : (((liftM FST >>= fun x => W1 x >>= fun s₂ =>
+        (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+      >>= fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2) : OptionT (OracleComp spec) D).run
+    = FST >>= fun x => (W1 x).run >>= fun o₁ =>
+        o₁.elim (pure none) (fun s₂ => SND x >>= fun a => (W2 x a s₂).run) := by
+    simp only [OptionT.run_bind, Option.elimM, lift_run_elim, bind_assoc, OptionT.run_pure,
+      pure_bind, Option.elim_some]
+  rw [h1, h2, evalDist_bind, evalDist_bind]
+  refine bind_congr fun s => ?_
+  rw [evalDist_simulateQ_swap_prefix so hso FST SND (fun x => (W1 x).run)
+      (fun x a o₁ => o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run)) s]
+  exact elim_comm_prefix so hso FST (fun x => (W1 x).run) SND
+    (fun x a s₂ => (W2 x a s₂).run) hB s
+
+#print axioms seam_swap_evalDist_eq
+
 /-- **Two-phase seam soundness with the snd↔V₁ reorder built in.** This is the abstract heart of
 `appendSoundness`: a malicious-prover seam chain runs the two prover phases `FST`, `SND` and the two
 verifier phases `W1` (`= V₁`), `W2` (`= V₂`) in the *natural* order `FST → SND → W1 → W2`, but the
@@ -553,31 +596,7 @@ theorem probComp_seam_swap_union_le
         | init >>= fun s => (simulateQ so
             (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
               W2 x a s₂).run).run' s] ≤ e₁ + e₂ := by
-  have key : 𝒟[init >>= fun s => (simulateQ so
-        (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
-          W2 x a s₂).run).run' s]
-      = 𝒟[init >>= fun s => (simulateQ so
-        ((liftM FST >>= fun x => W1 x >>= fun s₂ =>
-            (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
-          >>= fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s] := by
-    have h1 : (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
-        W2 x a s₂ : OptionT (OracleComp spec) D).run
-      = FST >>= fun x => SND x >>= fun a => (W1 x).run >>= fun o₁ =>
-          o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run) := by
-      simp only [OptionT.run_bind, Option.elimM, lift_run_elim, bind_assoc]
-    have h2 : (((liftM FST >>= fun x => W1 x >>= fun s₂ =>
-          (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
-        >>= fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2) : OptionT (OracleComp spec) D).run
-      = FST >>= fun x => (W1 x).run >>= fun o₁ =>
-          o₁.elim (pure none) (fun s₂ => SND x >>= fun a => (W2 x a s₂).run) := by
-      simp only [OptionT.run_bind, Option.elimM, lift_run_elim, bind_assoc, OptionT.run_pure,
-        pure_bind, Option.elim_some]
-    rw [h1, h2, evalDist_bind, evalDist_bind]
-    refine bind_congr fun s => ?_
-    rw [evalDist_simulateQ_swap_prefix so hso FST SND (fun x => (W1 x).run)
-        (fun x a o₁ => o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run)) s]
-    exact elim_comm_prefix so hso FST (fun x => (W1 x).run) SND
-      (fun x a s₂ => (W2 x a s₂).run) hB s
+  have key := seam_swap_evalDist_eq init so hso FST SND W1 W2 hB
   have hmain := probComp_seam_union_le init so
     (liftM FST >>= fun x => W1 x >>= fun s₂ => (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
     (fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2)
