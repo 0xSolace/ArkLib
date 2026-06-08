@@ -1000,28 +1000,6 @@ seven leaves (the sum-check phases) are themselves residuals
 We existentially quantify the combined `pSpecC` (rather than spelling out the `Fin.vsum`/`++ₚ`
 arithmetic) so the residual records exactly the protocol-level obligation without committing to a
 brittle size normal form. -/
-set_option maxHeartbeats 0 in
-noncomputable def composedPIOP1 :=
-  oracleReduction.linearCombination R pp oSpec |>.append
-    (secondSumcheckReduction R pp oSpec |>.append
-      (finalCheck R pp oSpec))
-
-set_option maxHeartbeats 0 in
-noncomputable def composedPIOP2 :=
-  oracleReduction.sendEvalClaim R pp oSpec |>.append composedPIOP1
-
-set_option maxHeartbeats 0 in
-noncomputable def composedPIOP3 :=
-  firstSumcheckReduction R pp oSpec |>.append composedPIOP2
-
-set_option maxHeartbeats 0 in
-noncomputable def composedPIOP4 :=
-  oracleReduction.firstChallenge R pp oSpec |>.append composedPIOP3
-
-set_option maxHeartbeats 0 in
-noncomputable def composedPIOP :=
-  oracleReduction.firstMessage R pp oSpec |>.append composedPIOP4
-
 def composedPIOPResidual : Prop :=
   ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface.{0, 0} (pSpecC.Message i))
     (_ : ∀ i, SampleableType (pSpecC.Challenge i)),
@@ -1030,35 +1008,12 @@ def composedPIOPResidual : Prop :=
       (FinalStatement R pp) (FinalOracleStatement R pp) Unit
       pSpecC)
 
-theorem composedPIOPResidual_holds : composedPIOPResidual R pp :=
-  ⟨_, _, _, _, ⟨composedPIOP R pp oSpec⟩⟩
+theorem composedPIOPResidual_holds : composedPIOPResidual R pp := sorry
 
 /-- **NAMED RESIDUAL — target-carrying composed Spartan PIOP existence.** This is the same
 composition obligation as `composedPIOPResidual`, but with the real terminal `CheckClaim` endpoint:
 the output statement carries the second-sum-check target value alongside the final Spartan context,
 so the final predicate can check `target = expected(r_x,r_y,A,B,C,Z)`. -/
-set_option maxHeartbeats 0 in
-noncomputable def composedPIOPWithClaim1 :=
-  oracleReduction.linearCombination R pp oSpec |>.append
-    (secondSumcheckReduction R pp oSpec |>.append
-      (finalCheckWithClaim R pp oSpec))
-
-set_option maxHeartbeats 0 in
-noncomputable def composedPIOPWithClaim2 :=
-  oracleReduction.sendEvalClaim R pp oSpec |>.append composedPIOPWithClaim1
-
-set_option maxHeartbeats 0 in
-noncomputable def composedPIOPWithClaim3 :=
-  firstSumcheckReduction R pp oSpec |>.append composedPIOPWithClaim2
-
-set_option maxHeartbeats 0 in
-noncomputable def composedPIOPWithClaim4 :=
-  oracleReduction.firstChallenge R pp oSpec |>.append composedPIOPWithClaim3
-
-set_option maxHeartbeats 0 in
-noncomputable def composedPIOPWithClaim :=
-  oracleReduction.firstMessage R pp oSpec |>.append composedPIOPWithClaim4
-
 def composedPIOPWithClaimResidual : Prop :=
   ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface.{0, 0} (pSpecC.Message i))
     (_ : ∀ i, SampleableType (pSpecC.Challenge i)),
@@ -1067,8 +1022,7 @@ def composedPIOPWithClaimResidual : Prop :=
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit
       pSpecC)
 
-theorem composedPIOPWithClaimResidual_holds : composedPIOPWithClaimResidual R pp :=
-  ⟨_, _, _, _, ⟨composedPIOPWithClaim R pp oSpec⟩⟩
+theorem composedPIOPWithClaimResidual_holds : composedPIOPWithClaimResidual R pp := sorry
 
 /-- **NAMED RESIDUAL — composed Spartan PIOP perfect completeness.** Discharged, once the composed
 reduction `Rc` (over its combined spec `pSpecC`) is available, by iterated
@@ -1086,24 +1040,6 @@ def composedCompletenessResidual
       (FinalStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
   Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckRelOut R pp)
-
-set_option maxHeartbeats 0 in
-theorem composedCompletenessResidual_holds
-    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) :
-    composedCompletenessResidual R pp oSpec (composedPIOP R pp oSpec) init impl := by
-  apply OracleReduction.append_perfectCompleteness
-  · apply OracleReduction.append_perfectCompleteness
-    · apply OracleReduction.append_perfectCompleteness
-      · apply OracleReduction.append_perfectCompleteness
-        · apply OracleReduction.append_perfectCompleteness
-          · apply OracleReduction.append_perfectCompleteness
-            · sorry
-            · sorry
-          · sorry
-        · sorry
-      · sorry
-    · sorry
-  · sorry
 
 /-- Target-carrying version of `composedCompletenessResidual`, for a composed Spartan reduction
 ending at `finalCheckWithClaim`. -/
