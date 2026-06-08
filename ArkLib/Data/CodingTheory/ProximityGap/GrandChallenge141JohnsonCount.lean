@@ -108,6 +108,59 @@ theorem reedSolomon_affineLine_all_scalars_close_of_mem
   rw [reedSolomon_affineLine_relDistFromCode_eq_zero_of_mem hc₀ hc₁ γ]
   exact zero_le _
 
+omit [DecidableEq ι] in
+/-- **Whole-line cardinality pressure against `hwit`.** If the common-center witness hypothesis
+`hwit` is assumed for a whole affine line through two Reed-Solomon codewords, then all field
+scalars inject into the single common Johnson ball. The Johnson list-size bound therefore forces
+`|F| ≤ n (n-k+1) / johnsonDenom ... e`. This is the cardinality-pressure half of the `hwitAll`
+refutation; a concrete contradiction still requires a separate numeric instance where the right
+side is smaller than `|F|`. -/
+theorem reedSolomon_wholeLine_card_field_le_johnson_of_hwit
+    {k : ℕ} [NeZero k] {domain : ι ↪ F} (hk : k ≤ Fintype.card ι)
+    (δ : ℝ≥0) (e : ℕ) (x : ι)
+    {c₀ c₁ : ι → F}
+    (hc₀ : c₀ ∈ (ReedSolomon.code domain k : Set (ι → F)))
+    (hc₁ : c₁ ∈ (ReedSolomon.code domain k : Set (ι → F)))
+    (hx : (c₁ - c₀) x ≠ 0)
+    (w : ι → F)
+    (hen : e ≤ Fintype.card ι)
+    (hJ : 0 < ArkLib.JohnsonBound.johnsonDenom
+            (Fintype.card ι) (Fintype.card ι - k + 1) e)
+    (Cset : Finset (ι → F))
+    (hCset : (↑Cset : Set (ι → F)) = (ReedSolomon.code domain k : Set (ι → F)))
+    (hwit : ∀ γ : F, δᵣ(c₀ + γ • (c₁ - c₀),
+        (ReedSolomon.code domain k : Set (ι → F))) ≤ δ →
+      ∃ c ∈ Cset, Δ₀(c, w) ≤ e ∧ c x = c₀ x + γ * (c₁ - c₀) x) :
+    (Fintype.card F : ℚ)
+      ≤ (Fintype.card ι : ℚ) * ((Fintype.card ι - k + 1 : ℕ) : ℚ)
+          / ArkLib.JohnsonBound.johnsonDenom
+              (Fintype.card ι) (Fintype.card ι - k + 1) e := by
+  classical
+  set L : Finset (ι → F) := Cset.filter (fun c => Δ₀(c, w) ≤ e) with hL
+  have hFL_nat : Fintype.card F ≤ L.card := by
+    have hbound :
+        (Finset.univ : Finset F).card ≤ L.card := by
+      refine gsList_bad_gamma_bound L c₀ (c₁ - c₀) x hx Finset.univ ?_
+      intro γ hγ
+      have hclose :
+          δᵣ(c₀ + γ • (c₁ - c₀), (ReedSolomon.code domain k : Set (ι → F))) ≤ δ :=
+        reedSolomon_affineLine_all_scalars_close_of_mem
+          (k := k) (domain := domain) (δ := δ) hc₀ hc₁ γ
+      obtain ⟨c, hc_mem, hc_ball, hc_eq⟩ := hwit γ hclose
+      exact ⟨c, by rw [hL, Finset.mem_filter]; exact ⟨hc_mem, hc_ball⟩, hc_eq⟩
+    simpa using hbound
+  have hLJ :
+      (L.card : ℚ)
+        ≤ (Fintype.card ι : ℚ) * ((Fintype.card ι - k + 1 : ℕ) : ℚ)
+            / ArkLib.JohnsonBound.johnsonDenom
+                (Fintype.card ι) (Fintype.card ι - k + 1) e := by
+    have hball := ArkLib.JohnsonBound.rs_card_ball_le
+      (k := k) (α := domain) Cset hCset w e hk hen hJ
+    exact hball
+  have hFL_q : (Fintype.card F : ℚ) ≤ (L.card : ℚ) := by
+    exact_mod_cast hFL_nat
+  exact le_trans hFL_q hLJ
+
 /-- **T1 — the missing wiring lemma (axiom-clean).**
 
 In the up-to-Johnson regime (`0 < johnsonDenom`), the number of pencil scalars `γ` whose line
@@ -215,6 +268,7 @@ theorem rs_epsMCA_le_johnson_ceil_of_hwit
 #print axioms ProximityGap.MCAGS.reedSolomon_affineLine_mem_of_mem
 #print axioms ProximityGap.MCAGS.reedSolomon_affineLine_relDistFromCode_eq_zero_of_mem
 #print axioms ProximityGap.MCAGS.reedSolomon_affineLine_all_scalars_close_of_mem
+#print axioms ProximityGap.MCAGS.reedSolomon_wholeLine_card_field_le_johnson_of_hwit
 
 end ProximityGap.MCAGS
 
