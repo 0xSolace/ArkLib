@@ -2,6 +2,8 @@ import ArkLib.ToMathlib.WhirBricksConstruction
 
 open MvPolynomial
 open Classical
+open WhirIOP
+open WhirIOP.Construction
 
 noncomputable def whirMakeTranscript {F : Type} [Field F] {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) :
