@@ -691,6 +691,20 @@ theorem continueFromTo_heq_target {n : ℕ} {pSpec : ProtocolSpec n} {k j₁ j�
     HEq (prover.continueFromTo stmt wit k j₁ rk) (prover.continueFromTo stmt wit k j₂ rk) := by
   subst h; rfl
 
+/-- **`liftComp ∘ continueFromTo` target-index transport.**  The `liftComp`-lifted analogue of
+`continueFromTo_heq_target`: continuing to two propositionally-equal target rounds and lifting along a
+`SubSpec` is heterogeneously equal.  Used in the sequential-composition right-block assembly to align
+the `liftComp`-of-`continueFromTo` produced by the interior induction (target `⟨k₀ + j⟩`) with the
+`Fin.last` target of the run characterization.  Proved by `subst`. -/
+theorem liftComp_continueFromTo_heq_target {n : ℕ} {pSpec : ProtocolSpec n} {k j₁ j₂ : Fin (n + 1)}
+    (h : j₁ = j₂) {τ : Type} {superSpec : OracleSpec τ}
+    [MonadLiftT (OracleQuery (oSpec + [pSpec.Challenge]ₒ)) (OracleQuery superSpec)]
+    (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) (rk : pSpec.Transcript k × prover.PrvState k) :
+    HEq ((prover.continueFromTo stmt wit k j₁ rk).liftComp superSpec)
+      ((prover.continueFromTo stmt wit k j₂ rk).liftComp superSpec) := by
+  subst h; rfl
+
 /-! ### Direction-resolved single-round peels
 
 The two lemmas below resolve the `processRound` direction match into the two honest round shapes,
