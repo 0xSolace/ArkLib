@@ -1765,10 +1765,157 @@ theorem fiatShamirStraightlineExtractorOfStateRestoration_loggedVerifier_support
   rw [hparse]
   rfl
 
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
+private theorem fiatShamirProofTranscript_singleton_eta
+    (proof : Reduction.FiatShamirProofTranscript (pSpec := pSpec)) :
+    (fun | ⟨0, _⟩ => proof 0) = proof := by
+  funext i
+  rcases i with ⟨i, hi⟩
+  have hi0 : i = 0 := by omega
+  subst i
+  rfl
+
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- Running the one-message slow-Fiat-Shamir verifier under query logging, filtering for an
+accepting verifier output, and then applying the canonical log-backed straightline extractor is
+the same `OptionT` computation as deriving the transcript once, running the original verifier on
+that transcript, and applying the underlying state-restoration extractor to the same transcript.
+
+This is the continuation-level bridge needed by the canonical knowledge-soundness transfer: the
+left side preserves the verifier log long enough for the extractor to replay the verifier's
+slow-Fiat-Shamir challenge answers, while the right side is the state-restoration game shape. -/
+theorem fiatShamirVerifier_loggedExtractor_eq_direct
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : Reduction.FiatShamirProofTranscript (pSpec := pSpec))
+    (proveLog : QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)) :
+    (do
+      let z ← (liftM (OracleComp.withQueryLog (((V.fiatShamir).verify stmtIn proof).run)) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+          (Option StmtOut × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)))
+      let stmtOut ← (OptionT.mk (pure z.1) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)
+      let witIn ← fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof proveLog z.2
+      pure (witIn, stmtOut)) =
+    (do
+      let messages : pSpec.Messages := proof 0
+      let transcript ← (liftM (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) pSpec.FullTranscript)
+      let stmtOut ← (OptionT.mk (liftM (V.verify stmtIn transcript).run) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)
+      let witIn ← (liftM (srExtractor stmtIn witOut transcript default default) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)
+      pure (witIn, stmtOut)) := by
+  change (do
+      let z ← (liftM (OracleComp.withQueryLog (((V.fiatShamir).verify stmtIn proof).run)) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+          (Option StmtOut × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)))
+      let stmtOut ← (OptionT.mk (pure z.1) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)
+      let witIn ← fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof proveLog z.2
+      pure (witIn, stmtOut)).run =
+    (do
+      let messages : pSpec.Messages := proof 0
+      let transcript ← (liftM (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) pSpec.FullTranscript)
+      let stmtOut ← (OptionT.mk (liftM (V.verify stmtIn transcript).run) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)
+      let witIn ← (liftM (srExtractor stmtIn witOut transcript default default) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)
+      pure (witIn, stmtOut)).run
+  rw [fiatShamirVerifier_verify_run_eq_bind (V := V) (stmtIn := stmtIn) (proof := proof)]
+  rw [OracleComp.withQueryLog_bind]
+  simp only [OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, Option.elimM,
+    OptionT.run_pure, map_eq_pure_bind, bind_assoc, pure_bind, Option.elim_some,
+    monadLift_self]
+  dsimp only [Prod.map]
+  rw [← loggingOracle.run_simulateQ_bind_fst
+    (oa := Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0))
+    (ob := fun transcript => do
+      let stmtOut? ← (liftM (V.verify stmtIn transcript).run :
+        OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut))
+      stmtOut?.elim (pure none) fun stmtOut => do
+        let witIn? ← (liftM (srExtractor stmtIn witOut transcript default default) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn).run
+        witIn?.elim (pure none) fun witIn => pure (some (witIn, stmtOut)))]
+  change (do
+      let x ← OracleComp.withQueryLog
+        (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0))
+      let y ← OracleComp.withQueryLog
+        ((liftM (V.verify stmtIn x.1).run :
+          OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut)))
+      y.1.elim (pure none) fun stmtOut => do
+        let witIn? ←
+          (fiatShamirStraightlineExtractorOfStateRestoration
+              (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof proveLog
+              (x.2 ++ y.2)).run
+        witIn?.elim (pure none) fun witIn => pure (some (witIn, stmtOut))) =
+    (do
+      let x ← OracleComp.withQueryLog
+        (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0))
+      let stmtOut? ← (liftM (V.verify stmtIn x.1).run :
+        OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut))
+      stmtOut?.elim (pure none) fun stmtOut => do
+        let witIn? ← (liftM (srExtractor stmtIn witOut x.1 default default) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn).run
+        witIn?.elim (pure none) fun witIn => pure (some (witIn, stmtOut)))
+  apply OracleComp.bind_congr_of_forall_mem_support
+  intro x hx
+  rw [← loggingOracle.run_simulateQ_bind_fst
+    (oa := (liftM (V.verify stmtIn x.1).run :
+      OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut)))
+    (ob := fun stmtOut? =>
+      stmtOut?.elim (pure none) fun stmtOut => do
+        let witIn? ← (liftM (srExtractor stmtIn witOut x.1 default default) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn).run
+        witIn?.elim (pure none) fun witIn => pure (some (witIn, stmtOut)))]
+  change (do
+      let y ← OracleComp.withQueryLog
+        ((liftM (V.verify stmtIn x.1).run :
+          OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut)))
+      y.1.elim (pure none) fun stmtOut => do
+        let witIn? ←
+          (fiatShamirStraightlineExtractorOfStateRestoration
+              (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof proveLog
+              (x.2 ++ y.2)).run
+        witIn?.elim (pure none) fun witIn => pure (some (witIn, stmtOut))) =
+    (do
+      let y ← OracleComp.withQueryLog
+        ((liftM (V.verify stmtIn x.1).run :
+          OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut)))
+      y.1.elim (pure none) fun stmtOut => do
+        let witIn? ← (liftM (srExtractor stmtIn witOut x.1 default default) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn).run
+        witIn?.elim (pure none) fun witIn => pure (some (witIn, stmtOut)))
+  apply OracleComp.bind_congr_of_forall_mem_support
+  intro y _hy
+  cases y.1 with
+  | none => rfl
+  | some stmtOut =>
+      have hExtract :=
+        fiatShamirStraightlineExtractorOfStateRestoration_loggedTranscript_support
+          (oSpec := oSpec) (pSpec := pSpec)
+          srExtractor stmtIn witOut (proof 0) proveLog (x.2 ++ y.2) y.2.snd
+          (z := x) hx (by rw [queryLog_snd_append])
+      simp only [Option.elim_some]
+      rw [← fiatShamirProofTranscript_singleton_eta (pSpec := pSpec) proof]
+      have hRun := congrArg OptionT.run hExtract
+      exact congrArg
+        (fun oa : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option WitIn) =>
+          oa >>= fun witIn? : Option WitIn =>
+            witIn?.elim (pure none) fun witIn => pure (some (witIn, stmtOut)))
+        hRun
+
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_apply
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_loggedTranscript_support
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_loggedVerifier_support
+#print axioms Reduction.fiatShamirVerifier_loggedExtractor_eq_direct
 
 end CanonicalKnowledgeSoundnessSupport
 
