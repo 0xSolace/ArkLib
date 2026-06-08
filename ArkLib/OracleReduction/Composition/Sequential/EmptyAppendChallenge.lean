@@ -35,10 +35,10 @@ namespace ProtocolSpec
 variable {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
   [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
 
-/-- Transporting forward along `h` then back along `h.symm` is the identity. -/
-private theorem eqRec_eqRec_symm {A B : Type} (h : A = B) (y : B) :
-    h ▸ (h.symm ▸ y : A) = y := by
-  subst h; rfl
+/-- The dependent transport `fun a => h ▸ a` along any type equality `h : A = B` is surjective. -/
+private theorem eqRec_surjective {A B : Type} (h : A = B) :
+    Function.Surjective (fun a : A => h ▸ a) := by
+  subst h; exact fun y => ⟨y, rfl⟩
 
 /-- **Challenge-oracle support agreement (left embedding).** Simulating the appended challenge
 handler on a left-challenge query of `pSpec₁` (lifted along the canonical challenge sub-spec
