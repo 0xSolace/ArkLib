@@ -51,9 +51,14 @@ theorem appendRunRightResidual_holds_empty (stmt : Stmt₁) (wit : Wit₁) :
       (Fin.last (m + 0)) = pure := by
     funext rk; exact continueFromTo_self _ _ _ _ rk
   rw [hcont]
-  simp only [bind_pure]
-  simp only [run_eq_runToRound_last (prover := P₁), run_empty, append_output_empty]
-  trace_state
-  sorry
+  simp only [bind_pure, run_eq_runToRound_last (prover := P₁), run_empty, append_output_empty,
+    liftM_bind, bind_assoc]
+  apply eq_of_heq
+  have hseam := append_runToRound_seam (P₁ := P₁) (P₂ := P₂) (stmt := stmt) (wit := wit)
+  refine bind_heq_congr rfl ?_ hseam ?_
+  · rfl
+  · intro a a' ha
+    trace_state
+    sorry
 
 end Prover

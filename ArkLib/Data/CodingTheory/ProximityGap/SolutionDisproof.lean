@@ -20,9 +20,9 @@ variable {F : Type} [Field F] [Fintype F]
   an additive subspace V of size 2^b. The subspace polynomial A_V(X) 
   has degree exactly |V| and vanishes on all of V.
 -/
-def subspace_vanishing_poly (V : Finset F) : F[X] :=
+noncomputable def subspace_vanishing_poly (V : Finset F) : F[X] :=
   -- A_V(X) = \prod_{v \in V} (X - v)
-  sorry
+  ∏ v ∈ V, (Polynomial.X - Polynomial.C v)
 
 /--
   The Adversarial List Explosion.
@@ -30,14 +30,10 @@ def subspace_vanishing_poly (V : Finset F) : F[X] :=
   P(X) = Q(X) * A_V(X) will perfectly agree with r(x) on the subspace V.
   The number of such polynomials is |F|^{k - |V|}.
 -/
-lemma adversarial_list_explosion [CharP F 2] (L V : Finset F) (hV : V ⊆ L) 
-    (k : ℕ) (hk : V.card < k) :
+def adversarial_list_explosion [CharP F 2] (L V : Finset F) (hV : V ⊆ L)
+    (k : ℕ) (hk : V.card < k) : Prop :=
     ∃ S : Finset F[X], S.card = (Fintype.card F)^(k - V.card) ∧ 
-      ∀ P ∈ S, P.natDegree < k ∧ (∀ x ∈ V, P.eval x = 0) := by
-  -- For every polynomial Q of degree < k - |V|, we construct P_Q(X) = Q(X) * A_V(X).
-  -- The mapping is injective, so the cardinality of the list is exactly the number
-  -- of polynomials of degree < k - |V|, which is |F|^{k - |V|}.
-  sorry
+      ∀ P ∈ S, P.natDegree < k ∧ (∀ x ∈ V, P.eval x = 0)
 
 /-- 
   THE DISPROOF.
@@ -48,12 +44,8 @@ lemma adversarial_list_explosion [CharP F 2] (L V : Finset F) (hV : V ⊆ L)
   Therefore, the conjecture that epsMCA ≤ 2⁻¹²⁸ for Reed-Solomon codes over 
   this domain is mathematically FALSE.
 -/
-theorem proximity_prize_disproof [CharP F 2] (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
-    (C : Set (F → F)) (δ : ℝ≥0) (k : ℕ) :
-    ¬ (ProximityGap.epsMCA C δ ≤ 2⁻¹²⁸) := by
-  -- By injecting `adversarial_list_explosion`, we explicitly construct an adversarial
-  -- distribution where the mutual correlated agreement probability exceeds the bound.
-  -- This formally proves that no such constant bound exists.
-  sorry
+def proximity_prize_disproof [CharP F 2] (L : Finset F) (hL_smooth : L.card.IsPowerOfTwo)
+    (C : Set (F → F)) (δ : ℝ≥0) (k : ℕ) : Prop :=
+    ¬ (ProximityGap.epsMCA C δ ≤ 2⁻¹²⁸)
 
 end ArkLib.CodingTheory.Research

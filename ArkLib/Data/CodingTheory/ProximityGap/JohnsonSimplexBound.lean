@@ -132,14 +132,15 @@ theorem johnson_simplex_bound (L : Finset (ι → F)) (w : ι → F) (a b : ℝ)
       ≤ ((L.card : ℝ) * (Fintype.card ι : ℝ)
           + (L.card : ℝ) * ((L.card : ℝ) - 1) * b) * (Fintype.card ι : ℝ) := by
     calc ((L.card : ℝ) * a) ^ 2 ≤ (∑ c ∈ L, (agree c w : ℝ)) ^ 2 := by
-          apply pow_le_pow_left hne0 hTarget
+          rw [pow_two, pow_two]; exact mul_self_le_mul_self hne0 hTarget
       _ ≤ (∑ c ∈ L, ∑ c' ∈ L, (agree c c' : ℝ)) * (Fintype.card ι : ℝ) := hCS
-      _ ≤ _ := by apply mul_le_mul_of_nonneg_right hGram hN0
+      _ ≤ _ := mul_le_mul_of_nonneg_right hGram hN0
   rcases Nat.eq_zero_or_pos L.card with h0 | hpos
-  · rw [h0]; simp; positivity
+  · rw [h0]; simp
   · have hposR : (0 : ℝ) < (L.card : ℝ) := by exact_mod_cast hpos
     have hcancel : (L.card : ℝ) * ((L.card : ℝ) * (a ^ 2 - (Fintype.card ι : ℝ) * b))
-        ≤ (L.card : ℝ) * ((Fintype.card ι : ℝ) ^ 2) := by nlinarith [hMain, hb, hN0, hm0]
+        ≤ (L.card : ℝ) * ((Fintype.card ι : ℝ) ^ 2) := by
+      nlinarith [hMain, mul_nonneg (mul_nonneg hm0 hb) hN0]
     exact le_of_mul_le_mul_left hcancel hposR
 
 end ArkLib.CodingTheory.JohnsonSimplex

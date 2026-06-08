@@ -6,7 +6,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.QueryPhase
 import ArkLib.ProofSystem.Binius.FRIBinius.CoreInteractionPhase
-import ArkLib.ProofSystem.Binius.RingSwitching.BatchingPhase
+import ArkLib.ProofSystem.RingSwitching.BatchingPhase
 import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Security.Implications
 
