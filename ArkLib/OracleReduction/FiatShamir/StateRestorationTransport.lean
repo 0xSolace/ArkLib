@@ -1782,7 +1782,7 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self] at hCollapse
   rw [probEvent_optionT_stateT_init]
   have hCollapseRun := congrFun (congrArg StateT.run hCollapse)
-  rw [hCollapseRun]
+  simp only [hCollapseRun]
   refine le_trans ?_ h
   simp [fiatShamirAdversaryExecution,
     Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
