@@ -86,7 +86,10 @@ theorem pigeonhole_large_fibers_tight (m t : ℕ) (ht : 1 ≤ t) :
   have hfiber : ∀ y : Fin m, t ≤ (Finset.univ.filter (fun i => h i = y)).card := by
     intro y
     have hsub : (Finset.univ.image (fun j : Fin t => (⟨y.val * t + j.val, by
-        have hj := j.isLt; have hy := y.isLt; nlinarith⟩ : Fin (m * t))))
+        have hj := j.isLt; have hy := y.isLt
+        have hb : (y.val + 1) * t ≤ m * t := Nat.mul_le_mul_right _ (by omega)
+        have he : (y.val + 1) * t = y.val * t + t := by ring
+        omega⟩ : Fin (m * t))))
         ⊆ Finset.univ.filter (fun i => h i = y) := by
       intro i hi
       rw [Finset.mem_image] at hi
@@ -97,7 +100,10 @@ theorem pigeonhole_large_fibers_tight (m t : ℕ) (ht : 1 ≤ t) :
       show (y.val * t + j.val) / t = y.val
       rw [Nat.add_mul_div_left _ _ (by omega), Nat.div_eq_of_lt j.isLt, zero_add]
     calc t = (Finset.univ.image (fun j : Fin t => (⟨y.val * t + j.val, by
-              have hj := j.isLt; have hy := y.isLt; nlinarith⟩ : Fin (m * t)))).card := by
+              have hj := j.isLt; have hy := y.isLt
+              have hb : (y.val + 1) * t ≤ m * t := Nat.mul_le_mul_right _ (by omega)
+              have he : (y.val + 1) * t = y.val * t + t := by ring
+              omega⟩ : Fin (m * t)))).card := by
             rw [Finset.card_image_of_injOn, Finset.card_univ, Fintype.card_fin]
             intro a _ b _ hab
             rw [Fin.ext_iff] at hab; exact Fin.ext (by omega)
@@ -107,7 +113,11 @@ theorem pigeonhole_large_fibers_tight (m t : ℕ) (ht : 1 ≤ t) :
     rw [Finset.eq_univ_iff_forall]
     intro y
     rw [Finset.mem_image]
-    exact ⟨⟨y.val * t, by have := y.isLt; nlinarith⟩, Finset.mem_univ _, by
+    exact ⟨⟨y.val * t, by
+      have hy := y.isLt
+      have hb : (y.val + 1) * t ≤ m * t := Nat.mul_le_mul_right _ (by omega)
+      have he : (y.val + 1) * t = y.val * t + t := by ring
+      omega⟩, Finset.mem_univ _, by
       rw [hh, Fin.ext_iff]; show (y.val * t) / t = y.val; rw [Nat.mul_div_cancel _ (by omega)]⟩
   have hlarge : (Finset.univ.image h).filter
       (fun y => t ≤ (Finset.univ.filter (fun i => h i = y)).card) = Finset.univ := by
