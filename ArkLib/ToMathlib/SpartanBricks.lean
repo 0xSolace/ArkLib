@@ -297,6 +297,117 @@ theorem zEvalFromFinalOracles_simOracle0_eq_pureFold
   exact zEvalOracleFold_simOracle0 R pp stmt oStmt
     (Finset.univ : Finset (Fin (2 ^ pp.ℓ_n))).toList 0
 
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- One pure `Z(r_y)` fold step is exactly the equality-kernel coefficient times the corresponding
+entry of the R1CS vector `x || w`. In the witness branch, the witness oracle interface is evaluated
+at a Boolean point and collapses by `MvPolynomial.MLE_eval_zeroOne`. -/
+theorem zEvalPureFoldStep_eq_zTerm
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (acc : R) (yEnum : Fin (2 ^ pp.ℓ_n)) :
+    zEvalPureFoldStep R pp stmt oStmt acc yEnum =
+      acc + MvPolynomial.eval stmt.1 (MvPolynomial.eqPolynomial (boolPoint R yEnum)) *
+        R1CS.𝕫 stmt.2.2.2.2 (oStmt (.inr (.inr 0))) yEnum := by
+  classical
+  unfold zEvalPureFoldStep R1CS.𝕫
+  by_cases hy : (yEnum : ℕ) < 2 ^ pp.ℓ_n - 2 ^ pp.ℓ_w
+  · simp [hy, PublicParams.toSizeR1CS, R1CS.Size.n_x, Fin.append, Fin.addCases]
+    congr 1
+  · let e : Fin (2 ^ pp.ℓ_w) :=
+      ⟨(yEnum : ℕ) - (2 ^ pp.ℓ_n - 2 ^ pp.ℓ_w),
+        by
+          have hlt := yEnum.isLt
+          have hle : 2 ^ pp.ℓ_w ≤ 2 ^ pp.ℓ_n :=
+            Nat.pow_le_pow_of_le (by decide) pp.ℓ_w_le_ℓ_n
+          omega⟩
+    have hquery :
+        OracleInterface.answer (oStmt (.inr (.inr 0))) (boolPoint R e) =
+          oStmt (.inr (.inr 0)) e := by
+      simpa [OracleInterface.answer, boolPoint, Function.comp_apply] using
+        (MvPolynomial.MLE_eval_zeroOne
+          (R := R) (σ := Fin pp.ℓ_w)
+          (x := finFunctionFinEquiv.symm e)
+          (evals := (oStmt (.inr (.inr 0))) ∘ finFunctionFinEquiv))
+    simp [hy, PublicParams.toSizeR1CS, R1CS.Size.n_x, Fin.append, Fin.addCases]
+    simpa [e] using
+      congrArg
+        (fun z => MvPolynomial.eval stmt.1 (MvPolynomial.eqPolynomial (boolPoint R yEnum)) * z)
+        hquery
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+private theorem zEvalPureFold_list_eq_acc_add_sum
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i)
+    (xs : List (Fin (2 ^ pp.ℓ_n))) (acc : R) :
+    xs.foldl (zEvalPureFoldStep R pp stmt oStmt) acc =
+      acc + (xs.map fun yEnum =>
+        MvPolynomial.eval stmt.1 (MvPolynomial.eqPolynomial (boolPoint R yEnum)) *
+          R1CS.𝕫 stmt.2.2.2.2 (oStmt (.inr (.inr 0))) yEnum).sum := by
+  classical
+  induction xs generalizing acc with
+  | nil =>
+      simp
+  | cons y ys ih =>
+      rw [List.foldl_cons, ih, zEvalPureFoldStep_eq_zTerm R pp stmt oStmt acc y]
+      simp only [List.map_cons, List.sum_cons]
+      ring
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The oracle-free `Z(r_y)` accumulator is the finite sum over Boolean indices of equality-kernel
+coefficients times the concrete R1CS vector entries. -/
+theorem zEvalPureFold_eq_sum_zTerm
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i) :
+    zEvalPureFold R pp stmt oStmt =
+      ∑ yEnum : Fin (2 ^ pp.ℓ_n),
+        MvPolynomial.eval stmt.1 (MvPolynomial.eqPolynomial (boolPoint R yEnum)) *
+          R1CS.𝕫 stmt.2.2.2.2 (oStmt (.inr (.inr 0))) yEnum := by
+  classical
+  unfold zEvalPureFold
+  rw [zEvalPureFold_list_eq_acc_add_sum R pp stmt oStmt]
+  simp
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The oracle-free reconstruction of `Z(r_y)` equals the multilinear-extension evaluation of the
+full R1CS vector `x || w` at the verifier point `r_y`. -/
+theorem zEvalPureFold_eq_mle_z
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i) :
+    zEvalPureFold R pp stmt oStmt =
+      MvPolynomial.eval stmt.1
+        (MvPolynomial.MLE
+          ((R1CS.𝕫 stmt.2.2.2.2 (oStmt (.inr (.inr 0))) : Fin (2 ^ pp.ℓ_n) → R) ∘
+            finFunctionFinEquiv)) := by
+  classical
+  rw [zEvalPureFold_eq_sum_zTerm R pp stmt oStmt]
+  rw [MvPolynomial.MLE_eval_eq_sum_eqTilde]
+  symm
+  refine Fintype.sum_equiv (finFunctionFinEquiv (m := 2) (n := pp.ℓ_n))
+    (fun yBits : Fin pp.ℓ_n → Fin 2 =>
+      MvPolynomial.eqTilde stmt.1 (yBits : Fin pp.ℓ_n → R) *
+        R1CS.𝕫 stmt.2.2.2.2 (oStmt (.inr (.inr 0))) (finFunctionFinEquiv yBits))
+    (fun yEnum : Fin (2 ^ pp.ℓ_n) =>
+      MvPolynomial.eval stmt.1 (MvPolynomial.eqPolynomial (boolPoint R yEnum)) *
+        R1CS.𝕫 stmt.2.2.2.2 (oStmt (.inr (.inr 0))) yEnum)
+    ?_
+  intro yBits
+  simp [boolPoint, MvPolynomial.eqTilde, mul_comm]
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Honest simulation of `zEvalFromFinalOracles` computes the multilinear-extension value of the
+R1CS vector `x || w` at the final Spartan verifier point. -/
+theorem zEvalFromFinalOracles_simOracle0_eq_mle_z
+    (stmt : FinalStatement R pp)
+    (oStmt : ∀ i, FinalOracleStatement R pp i) :
+    simulateQ (OracleInterface.simOracle0 (FinalOracleStatement R pp) oStmt)
+        (zEvalFromFinalOracles R pp stmt)
+      =
+      MvPolynomial.eval stmt.1
+        (MvPolynomial.MLE
+          ((R1CS.𝕫 stmt.2.2.2.2 (oStmt (.inr (.inr 0))) : Fin (2 ^ pp.ℓ_n) → R) ∘
+            finFunctionFinEquiv)) := by
+  rw [zEvalFromFinalOracles_simOracle0_eq_pureFold, zEvalPureFold_eq_mle_z]
+
 /-- The expected terminal value after the second Spartan sum-check:
 `(r_A A(r_x,r_y) + r_B B(r_x,r_y) + r_C C(r_x,r_y)) * Z(r_y)`. -/
 noncomputable def finalExpectedClaimFromOracles
@@ -1113,6 +1224,10 @@ theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_resi
 #print axioms zEvalFromFinalOracles
 #print axioms zEvalPureFold
 #print axioms zEvalFromFinalOracles_simOracle0_eq_pureFold
+#print axioms zEvalPureFoldStep_eq_zTerm
+#print axioms zEvalPureFold_eq_sum_zTerm
+#print axioms zEvalPureFold_eq_mle_z
+#print axioms zEvalFromFinalOracles_simOracle0_eq_mle_z
 #print axioms finalExpectedClaimFromOracles
 #print axioms finalExpectedClaimValue
 #print axioms secondSumCheckVirtualPolynomial_eval_eq_finalExpectedClaimValue
