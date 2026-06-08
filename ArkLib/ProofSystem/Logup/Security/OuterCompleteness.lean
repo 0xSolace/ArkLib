@@ -519,6 +519,28 @@ theorem probEvent_outerCompletenessRunComp_compl_eq_zero_of_perState
   refine ENNReal.tsum_eq_zero.mpr (fun s => ?_)
   rw [← Verifier.StateFunction.probEvent_optionT_mk_eq_elim, hAgree s, mul_zero]
 
+/-- **`OptionT`-over-`OracleComp` run-of-lift law.** Running the `OptionT`-lift of a never-failing
+`OracleComp` maps every output to `some`. (`OptionT.lift a = OptionT.mk (some <$> a)`.) -/
+theorem optionT_run_lift {ι' : Type} {spec : OracleSpec ι'} {α : Type}
+    (a : OracleComp spec α) :
+    (liftM a : OptionT (OracleComp spec) α).run = Option.some <$> a := rfl
+
+/-- **`OptionT`-over-`OracleComp` run-of-bind law.** The base computation of an `OptionT` bind runs
+the first stage, then on `some` runs the second stage (threaded) and on `none` short-circuits. -/
+theorem optionT_run_bind {ι' : Type} {spec : OracleSpec ι'} {α β : Type}
+    (x : OptionT (OracleComp spec) α) (f : α → OptionT (OracleComp spec) β) :
+    (x >>= f).run = x.run >>= fun o =>
+      match o with | some a => (f a).run | none => pure none := rfl
+
+/-- **`OptionT` lift-bind-run collapse.** Since the lifted stage never fails, binding it then running
+collapses to running the base then the (run of the) continuation — the structural primitive for
+peeling a never-failing head off an `OptionT (OracleComp _)` run. -/
+theorem optionT_lift_bind_run {ι' : Type} {spec : OracleSpec ι'} {α β : Type}
+    (a : OracleComp spec α) (b : α → OptionT (OracleComp spec) β) :
+    ((liftM a >>= b : OptionT (OracleComp spec) β)).run = a >>= fun x => (b x).run := by
+  rw [optionT_run_bind, optionT_run_lift, ← bind_pure_comp, bind_assoc]
+  simp only [pure_bind]
+
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
     OuterCompletenessRunResidual oSpec F n M params init impl ↔
