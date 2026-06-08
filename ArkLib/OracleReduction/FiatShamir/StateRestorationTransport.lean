@@ -1499,6 +1499,59 @@ private theorem optionT_run_liftM_bind_liftOptionT_add
 
 omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
   [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- Run-level normalization for the slow Fiat-Shamir verifier: first derive the transcript from the
+one proof message, then run the original verifier on that transcript. -/
+private theorem fiatShamirVerifier_verify_run_eq_bind
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (stmtIn : StmtIn)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec))) :
+    ((V.fiatShamir).verify stmtIn proof).run =
+      (do
+        let transcript ← ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)
+        (liftM (V.verify stmtIn transcript).run :
+          OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut))) := by
+  rw [Verifier.fiatShamir_verify_eq]
+  change OptionT.run
+      (((liftM
+        (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+            pSpec.FullTranscript) >>= fun transcript =>
+        ((liftM (V.verify stmtIn transcript).run :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+            (Option StmtOut)) >>= fun v =>
+          (v.getM :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)))) =
+    (do
+      let transcript ← ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)
+      (liftM (V.verify stmtIn transcript).run :
+        OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut)))
+  have hnormalize :
+      (do
+        let transcript ← (liftM
+          (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)) :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+              pSpec.FullTranscript)
+        let v ← (liftM (V.verify stmtIn transcript).run :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) (Option StmtOut))
+        v.getM : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut) =
+      (do
+        let transcript ← (liftM
+          (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)) :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+              pSpec.FullTranscript)
+        (monadLift (V.verify stmtIn transcript) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)) := by
+    apply bind_congr
+    intro transcript
+    exact optionT_liftM_run_getM_add
+      (spec₂ := fsChallengeOracle StmtIn pSpec) (V.verify stmtIn transcript)
+  rw [hnormalize]
+  exact optionT_run_liftM_bind_liftOptionT_add
+    (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0))
+    (fun transcript => V.verify stmtIn transcript)
+
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
 /-- Any support point of the Fiat-Shamir verifier log contains, as a prefix of its
 slow-Fiat-Shamir projection, the log produced by the transcript derivation from the proof
 messages.  The log-backed parser therefore reconstructs that derived transcript from the whole
