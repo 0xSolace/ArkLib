@@ -82,5 +82,5 @@ theorem whirVectorIOP_isSecureWithGap_holds {F : Type} [Field F] [Fintype F] [De
     (εRbr : (whirPaperTranscriptVectorSpec P d).ChallengeIdx → ℝ≥0)
     (hComplete : whirVectorIOP_perfectCompleteness P d (m0 := m0))
     (hSound : whirVectorIOP_rbrKnowledgeSoundness P d δ εRbr (m0 := m0)) :
-    whirVectorIOP_isSecureWithGap P d δ εRbr :=
+    whirVectorIOP_isSecureWithGap P d δ εRbr (m0 := m0) :=
   ⟨hComplete, hSound⟩

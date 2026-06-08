@@ -125,7 +125,7 @@ theorem Wnat_card {q r : ℕ} : (Wnat k q r).card = k + 1 := by
 /-! ## Transport to `Fin n` and `ZMod p` -/
 
 /-- On the grid, the `Fin n` window has `k+1` elements (`node` is injective on nodes `< n`). -/
-theorem Wfin_card (hk : 1 ≤ k) {q r : ℕ} (hq : q < n - 2 * k) (hr : r ≤ k) :
+theorem Wfin_card {q r : ℕ} (hq : q < n - 2 * k) (hr : r ≤ k) :
     (Wfin n k q r).card = k + 1 := by
   rw [Wfin, Finset.card_image_of_injOn, Wnat_card]
   intro a ha b hb hab
@@ -159,6 +159,7 @@ theorem euclid_uniq {K q r q' r' : ℕ} (hK : 0 < K) (hr : r < K) (hr' : r' < K)
   subst hrr
   exact ⟨Nat.eq_of_mul_eq_mul_left hK (by omega), rfl⟩
 
+omit [Fact p.Prime] in
 /-- Every grid window sum is `< p`, so distinct integer sums stay distinct in `ZMod p`. -/
 theorem Wnat_sum_lt (hp : n * n ≤ p) {q r : ℕ}
     (hq : q < n - 2 * k) (hr : r ≤ k) : (∑ m ∈ Wnat k q r, m) < p := by
@@ -170,7 +171,7 @@ theorem Wnat_sum_lt (hp : n * n ≤ p) {q r : ℕ}
   have hk1n : k + 1 ≤ n := by omega
   have hnpos : 0 < n := NeZero.pos n
   have hstep : (k + 1) * (n - 1) < n * n :=
-    calc (k + 1) * (n - 1) ≤ n * (n - 1) := mul_le_mul_right' hk1n _
+    calc (k + 1) * (n - 1) ≤ n * (n - 1) := Nat.mul_le_mul_right _ hk1n
       _ < n * n := mul_lt_mul_of_pos_left (by omega) hnpos
   omega
 
@@ -227,7 +228,7 @@ theorem epsMCA_quadratic_ge (hp : n * n ≤ p) (hk : 1 ≤ k) (hn : 2 * k + 1 �
   -- windows are injective on the grid (their sums already are)
   have hwinInj : Set.InjOn win (grid : Set (ℕ × ℕ)) := by
     intro qr hqr qr' hqr' hww
-    refine sumval_injOn (p := p) hp hk hqr hqr' ?_
+    refine sumval_injOn (p := p) hp hqr hqr' ?_
     have e1 := hval qr (by simpa using hqr)
     have e2 := hval qr' (by simpa using hqr')
     simp only at e1 e2 ⊢
@@ -242,7 +243,7 @@ theorem epsMCA_quadratic_ge (hp : n * n ≤ p) (hk : 1 ≤ k) (hn : 2 * k + 1 �
     rw [family, Finset.mem_image] at hS
     obtain ⟨qr, hqr, rfl⟩ := hS
     rw [Finset.mem_product, Finset.mem_range, Finset.mem_range] at hqr
-    exact Wfin_card hk hqr.1 (by omega)
+    exact Wfin_card hqr.1 (by omega)
   -- the bad-scalar map is injective on the family
   have hinj : Set.InjOn (fun S => -(∑ i ∈ S, dom (p := p) hnp i)) (family n k : Set (Finset (Fin n))) := by
     intro S hS S' hS' hSS'
@@ -255,7 +256,7 @@ theorem epsMCA_quadratic_ge (hp : n * n ≤ p) (hk : 1 ≤ k) (hn : 2 * k + 1 �
     have hcast : (((∑ m ∈ Wnat k qr.1 qr.2, m) : ℕ) : ZMod p)
         = (((∑ m ∈ Wnat k qr'.1 qr'.2, m) : ℕ) : ZMod p) := by
       rw [← e1, ← e2]; exact neg_injective hSS'
-    have hpair := sumval_injOn (p := p) hp hk (by simpa using hqr) (by simpa using hqr')
+    have hpair := sumval_injOn (p := p) hp (by simpa using hqr) (by simpa using hqr')
       (by simpa using hcast)
     rw [hpair]
   have hbound := epsMCA_ge_of_window_family (F := ZMod p) (dom (p := p) hnp) k hk

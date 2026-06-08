@@ -171,6 +171,22 @@ line-close error too, not just `mcaEvent`. Not a disproof; a robustness strength
   disproof; isolates realizability as the sole open hypothesis.
 - **`frobenius_invariant_card_ge`** (`CandidateDisproofLoop7.lean`): the Frobenius lower bound is
   robust across the whole dominance chain — the constraint is not specific to `mcaEvent`.
+- **`linear_badcount_le_const_div_gap_of_gap_le_const_div_degree`**
+  (`CandidateDisproofLoop7.lean`): if high-degree Frobenius examples only occur with
+  `η ≤ A/d` and `#bad ≤ B·d`, their bad count is `≤ (B·A)/η`; near-capacity linear
+  orbit growth is absorbed by the prize's `η^{-c₃}` allowance.
+
+### O7 (attempted) — brute-force Frobenius witnesses in tiny tower fields
+Toy search over `GF(2^s)` for `s = 3,4,5,6` found actual full-degree bad scalars in
+Frobenius-stable RS instances: domain `{0} ∪ orbit(α)` (`n=s+1`), prize-rate degree
+`k=⌊n/2⌋`, and binary stacks with `u₀` supported at the last orbit point and `u₁` at the
+previous one. Bad counts were `3,4,7,11`.
+
+**Disproof of the disproof (O7):** the examples fire at agreement threshold `k+1`, hence
+radius `δ = 1 - (k+1)/n`; the capacity gap is `η ≈ 1/n ≈ 1/d`. The Frobenius lower bound
+then gives only linear growth in `1/η`, and Loop 7 shows such growth is absorbable by a
+single inverse-gap factor. This is evidence for the O3 mechanism, but **not** a prize
+disproof. A real disproof needs fixed positive `η` (or super-polynomial growth in `1/η`).
 
 ## Open angles not yet tried (to avoid repetition)
 
@@ -181,6 +197,5 @@ line-close error too, not just `mcaEvent`. Not a disproof; a robustness strength
   is faithful to ABF26 (whose bound carries degree/`n` factors): if the formal RHS genuinely omits a
   needed `n`, the formal statement could be false for trivial scaling reasons — but verify against
   `Errors.lean`/`MCAGS.lean` and ABF26 before claiming; I am usually wrong on formalization-fidelity.
-- O7: brute-force realizability over a tiny tower field `GF(p^s)` (small `s`) — search for a
-  Frobenius-stable `(u₀,u₁)` with a high-degree bad `γ` in the band, reusing `BruteForceSearch.lean`.
-  A found witness is evidence toward disproof; a proven absence over all small cases constrains.
+- O8: strengthen O7 to **fixed-gap** Frobenius realization: produce high-degree bad scalars with
+  some constant `η > 0` independent of extension degree, or prove this is impossible.

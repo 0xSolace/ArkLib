@@ -2,7 +2,7 @@ import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.ZMod.Basic
 import ArkLib.Data.CodingTheory.JohnsonBound.Basic
 import ArkLib.Data.CodingTheory.ReedSolomon
-import ArkLib.Data.CodingTheory.HammingWeight
+import Mathlib.InformationTheory.Hamming
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
 
 open scoped NNReal

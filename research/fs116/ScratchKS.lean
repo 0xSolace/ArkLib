@@ -37,7 +37,31 @@ private theorem stateT_option_bind_map_eq
   intro x
   cases x with
   | mk oa s' =>
-      cases oa <;> simp
+      cases oa <;> rfl
+
+private theorem scratch_probEvent_optionT_stateT_init
+    {σ α : Type} (init : ProbComp σ) (comp : StateT σ ProbComp (Option α))
+    (p : α → Prop) :
+    Pr[p | (do
+        let s ← OptionT.mk (some <$> init)
+        OptionT.mk ((fun x : Option α × σ => x.1) <$> comp.run s) : OptionT ProbComp α)] =
+      Pr[fun o : Option α => o.elim False p |
+        do
+          let s ← init
+          (fun x : Option α × σ => x.1) <$> comp.run s] := by
+  rw [show
+      (do
+        let s ← OptionT.mk (some <$> init)
+        OptionT.mk ((fun x : Option α × σ => x.1) <$> comp.run s) : OptionT ProbComp α) =
+      OptionT.mk (do
+        let s ← init
+        (fun x : Option α × σ => x.1) <$> comp.run s) by
+    apply OptionT.ext
+    simp only [OptionT.run_bind, OptionT.run_mk, Option.elimM, bind_assoc, map_bind,
+      Option.elim_some, pure_bind]
+    rw [map_eq_pure_bind]
+    simp only [bind_assoc, pure_bind, Option.elim_some]]
+  exact Verifier.StateFunction.probEvent_optionT_mk_eq_elim _ _
 
 local instance fiatShamirProverOnlyCanonicalKSScratch : ProtocolSpec.ProverOnly
     (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)) where

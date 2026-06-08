@@ -895,6 +895,27 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
 
 /-- Extraction failure implies a witness-dependent bad sumcheck event.
   The extracted `witMid` also carries oracle compatibility at the same `oStmt`. -/
+def rbrExtractionFailureEvent
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
+    {i : Fin ℓ'}
+    (kSF : (iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i).KnowledgeStateFunction init impl
+      (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.castSucc)
+      (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ)
+      (extractor := iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i))
+    (extractor : Extractor.RoundByRound []ₒ
+      (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc × (∀ j, aOStmtIn.OStmtIn j))
+      (SumcheckWitness L ℓ' i.castSucc) (SumcheckWitness L ℓ' i.succ)
+      (pSpecSumcheckRound L)
+      (iteratedSumcheckPrvState κ L K P ℓ ℓ' aOStmtIn i))
+    (j : (pSpecSumcheckRound L).ChallengeIdx)
+    (stmtIn : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc × (∀ j, aOStmtIn.OStmtIn j))
+    (transcript : Transcript j.1.castSucc (pSpecSumcheckRound L))
+    (challenge : (pSpecSumcheckRound L).Challenge j.1) : Prop :=
+  ∃ witMid : iteratedSumcheckPrvState κ L K P ℓ ℓ' aOStmtIn i j.1.succ,
+    ¬ kSF j.1.castSucc stmtIn transcript
+      (extractor.extractMid j.1 stmtIn (transcript.concat challenge) witMid) ∧
+      kSF j.1.succ stmtIn (transcript.concat challenge) witMid
+
 lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [DecidableEq L]
     (i : Fin ℓ')
     (stmtOStmtIn : (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.castSucc i)) × (∀ j, aOStmtIn.OStmtIn j))
