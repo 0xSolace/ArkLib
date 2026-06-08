@@ -16,6 +16,12 @@ cross-checked: the dependency spine (Loop24→25, Loop21→Carving10) builds and
 and every brick lives in its own `ArkLib.ProximityGap.*Loop_n` namespace (no collisions). The whole
 proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_disproof_backup/`.
 
+**Current-checkout caveat (2026-06-08):** `main` at `88ee6e9cd` does not currently carry every
+historical brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
+`~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
+the research ledger; treat a named lemma as in-tree API only after checking the current source file.
+Loops 27, 28, and 29 have been restored as self-contained arithmetic bricks in the current checkout.
+
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
 A web-research pass (June 2026) located the precise state of the art. **Our verified carving at the
@@ -330,6 +336,28 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop29 — additive fold factors: only the sum matters
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop29.lean`:**
+`variable_additive_recursion_telescopes` (`T(j+1)≤T(j)+b_j` telescopes to
+`T(m)≤T(0)+∑_{j<m}b_j`) and `variable_additive_polynomial_of_sum_bound` (if the cumulative additive
+sum is `≤(2^m)^c`, the whole tower is bounded by base plus a polynomial in the domain size).
+**Disproof attempt:** maybe additive growth can hide in uneven per-fold spikes, even though uniform
+polynomial additive costs are absorbed by Loop27. **Disproof of the disproof:** no — additive
+recurrences care only about the cumulative sum. One large-looking fold, or any collection of folds
+whose total sum remains polynomial in `2^m`, is absorbed by the prize numerator. An additive
+counterexample must make the **sum** itself beat every polynomial in `2^m`.
+
+### Loop28 — variable fold factors: only the product matters
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop28.lean`:**
+`variable_fold_recursion_telescopes` (`T(j+1)≤a_j·T(j)` telescopes to
+`T(m)≤(∏_{j<m}a_j)·T(0)`) and `variable_fold_polynomial_of_product_bound` (if
+`∏_{j<m}a_j≤(2^m)^c`, then the whole multiplicative tower is polynomial in the domain size).
+**Disproof attempt:** use one `N`-dependent fold factor as evidence of multiplicative blowup.
+**Disproof of the disproof:** one large factor is not enough; only the cumulative product matters.
+Isolated large folds, or any polynomially bounded product of fold factors, are absorbed by the prize
+numerator. A multiplicative counterexample must force the product itself to beat every polynomial in
+`2^m`.
 
 ### Loop27 — polynomial additive fold costs are still absorbed
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop27.lean`:**
