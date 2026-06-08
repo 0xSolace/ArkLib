@@ -1385,7 +1385,6 @@ section CanonicalKnowledgeSoundness
 
 set_option linter.unusedSimpArgs false
 set_option linter.unusedSectionVars false
-set_option maxHeartbeats 2000000
 
 attribute [local instance] Reduction.fiatShamirChallengeOracleInterface
 
@@ -1409,19 +1408,60 @@ private theorem stateT_option_elimM_map_eq
   | mk oa _s' =>
       cases oa <;> rfl
 
-@[simp] private theorem simulateQ_addLift_optionT_liftM_run
-    {m : ℕ} {qSpec : ProtocolSpec m} [∀ i, SampleableType (qSpec.Challenge i)]
-    {σ α : Type}
-    (impl : QueryImpl oSpec (StateT σ ProbComp))
-    (oa : OptionT (OracleComp oSpec) α) :
-    simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
-        ((liftM oa : OptionT (OracleComp (oSpec + [qSpec.Challenge]ₒ)) α).run) =
-      simulateQ impl oa.run := by
-  change
-    (simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
-        (liftM oa : OptionT (OracleComp (oSpec + [qSpec.Challenge]ₒ)) α)).run =
-      (simulateQ impl oa : OptionT (StateT σ ProbComp) α).run
-  rw [OptionT.simulateQ_addLift_liftM]
+private theorem stateT_option_elimM_congr
+    {σ α β : Type} (mx : StateT σ ProbComp (Option α))
+    (f g : α → StateT σ ProbComp (Option β))
+    (h : ∀ a, f a = g a) :
+    Option.elimM mx (pure none) f = Option.elimM mx (pure none) g := by
+  unfold Option.elimM
+  apply bind_congr
+  intro oa
+  cases oa <;> simp [h]
+
+private theorem stateT_option_elimM_congr₂
+    {σ α β : Type} {mx my : StateT σ ProbComp (Option α)}
+    {f g : α → StateT σ ProbComp (Option β)}
+    (hmx : mx = my) (hfg : ∀ a, f a = g a) :
+    Option.elimM mx (pure none) f = Option.elimM my (pure none) g := by
+  subst my
+  exact stateT_option_elimM_congr mx f g hfg
+
+private theorem stateT_option_elimM_some_map_eq
+    {σ α β : Type} (mx : StateT σ ProbComp α)
+    (k : α → StateT σ ProbComp (Option β)) :
+    Option.elimM (some <$> mx) (pure none) k = (mx >>= k) := by
+  unfold Option.elimM
+  apply StateT.ext
+  intro s
+  simp only [StateT.run_bind, StateT.run_map]
+  rw [bind_map_left]
+  apply bind_congr
+  intro x
+  cases x
+  rfl
+
+private theorem stateT_option_elimM_bind_eq
+    {σ α β γ : Type} (mx : StateT σ ProbComp α)
+    (my : α → StateT σ ProbComp (Option β))
+    (k : β → StateT σ ProbComp (Option γ)) :
+    Option.elimM (mx >>= my) (pure none) k =
+      (mx >>= fun a => Option.elimM (my a) (pure none) k) := by
+  unfold Option.elimM
+  rw [bind_assoc]
+
+private theorem simulateQ_optionT_bind_mk_some_run
+    {ι : Type} {spec : OracleSpec ι} {σ α β : Type}
+    (impl : QueryImpl spec (StateT σ ProbComp))
+    (oa : OracleComp spec α)
+    (k : α → OptionT (OracleComp spec) β) :
+    simulateQ impl (OptionT.run (do
+        let a ← OptionT.mk (some <$> oa)
+        k a)) =
+      (do
+        let a ← simulateQ impl oa
+        simulateQ impl (OptionT.run (k a))) := by
+  simp [OptionT.run_bind, OptionT.run_mk, simulateQ_option_elimM, simulateQ_map,
+    stateT_option_elimM_some_map_eq]
 
 /-- Generic bridge: a `Reduction.run`-bind equals the corresponding `runWithLog`-bind whose
 continuation only reads the run result (the query logs are discarded).  This is the no-HOU
@@ -1629,16 +1669,49 @@ theorem fiatShamirKnowledgeExec_runCollapse
               liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
                 OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)) := by
     intro d
-    exact simulateQ_add_run_liftM_left
-      (impl₁ := impl)
-      (impl₂ := QueryImpl.liftTarget (StateT σ ProbComp)
-        (challengeQueryImpl
-          (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+    let oa :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn :=
       (do
         let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
           (oSpec := oSpec) stmtIn (d.1.1 0))
         liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
           OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)
+    change
+      simulateQ
+          (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+            (challengeQueryImpl
+              (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+          (OptionT.run
+            ((liftM
+              (liftM oa :
+                OptionT
+                  (OracleComp
+                    (oSpec + (fsChallengeOracle StmtIn pSpec +
+                      [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)))
+                  WitIn)) :
+              OptionT
+                (OracleComp
+                  ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                    [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+                WitIn)) =
+        simulateQ impl (OptionT.run oa)
+    rw [OracleComp.liftM_OptionT_add_assoc_right
+      (spec₁ := oSpec) (spec₂ := fsChallengeOracle StmtIn pSpec)
+      (spec₃ := [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)
+      (oa := oa)]
+    simp only [OptionT.run_mk]
+    have hSim :=
+      simulateQ_add_liftComp_add_assoc_left
+      (impl₁₂ := impl)
+      (impl₃ := QueryImpl.liftTarget (StateT σ ProbComp)
+        (challengeQueryImpl
+          (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+      (oa := oa.run)
+    rw [OracleComp.liftComp_add_assoc_right
+      (spec₁ := oSpec) (spec₂ := fsChallengeOracle StmtIn pSpec)
+      (spec₃ := [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)
+      (oa := oa.run)] at hSim
+    exact hSim
   have hPure :
       ∀ (d : ((Reduction.FiatShamirProofTranscript (pSpec := pSpec) ×
           (StmtOut × WitOut)) × StmtOut)) (extractedWitIn : WitIn),
@@ -1657,8 +1730,27 @@ theorem fiatShamirKnowledgeExec_runCollapse
                 (StmtIn × WitIn × StmtOut × WitOut))) := by
     intro d extractedWitIn
     simp only [OptionT.run_pure, simulateQ_pure]
-  simp [K, QueryImpl.addLift_def, hLift, hPure]
-
+  apply stateT_option_elimM_congr
+  intro d
+  dsimp [K, QueryImpl.addLift_def]
+  trans
+      Option.elimM
+        (simulateQ impl
+          (OptionT.run
+            (do
+              let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+                (oSpec := oSpec) stmtIn (d.1.1 0))
+              liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
+                OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)))
+        (pure none) fun extractedWitIn =>
+          simulateQ impl
+            (OptionT.run
+              ((pure (stmtIn, extractedWitIn, d.2, d.1.2.2)) :
+                OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                  (StmtIn × WitIn × StmtOut × WitOut)))
+  · exact stateT_option_elimM_congr₂ (hLift d) (fun extractedWitIn =>
+      hPure d extractedWitIn)
+  · rfl
 /-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
 table. This is the knowledge-soundness analogue of
 `fiatShamir_soundnessTransferResidual_canonical`. -/
@@ -1683,6 +1775,11 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   dsimp only
   simp [fiatShamirStraightlineExtractorOfStateRestoration]
   rw [probEvent_optionT_stateT_init]
+  rw [fiatShamirKnowledgeExec_runCollapse
+    (impl := fiatShamirCoupledQueryImpl
+      (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
+    (P := prover) (V := V) (srExtractor := srExtractor)
+    (stmtIn := stmtIn) (witIn := witIn)]
   refine le_trans ?_ h
   simp [Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
     Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
@@ -1692,7 +1789,8 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     StateT.run_bind, StateT.run_map,
     Verifier.fiatShamir_verify_eq,
     Reduction.fiatShamir, Prover.fiatShamir, Verifier.fiatShamir,
-    Reduction.run, Prover.run, Prover.runToRound, Prover.processRound]
+    Reduction.run, Prover.run, Prover.runToRound, Prover.processRound,
+    fiatShamirKnowledgeExec_runCollapse, QueryImpl.addLift_def]
 
 #print axioms Reduction.fiatShamirKnowledgeExec_runCollapse
 #print axioms Reduction.fiatShamir_knowledgeSoundnessTransferResidual_canonical

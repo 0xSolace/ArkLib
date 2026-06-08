@@ -25,11 +25,32 @@ corroboration claim* across all three: **energy ≥ linear at every point.**
 | haystack size N (64→4096) | recall **1.0** out to N=4096 | collapses with N | **WIN** | `mqar_haystack.py` |
 | query noise σ (0→1.0) | **> linear at every σ**, but recall **degrades** 1.0→0.72→0.07 | ≈ chance | **WIN (with honest limit)** | `mqar_noise.py` |
 
+## C. Negative control — the win is structural, not token statistics (anti-Goodhart)
+
+A trained ranker could "win" by memorising token frequencies rather than learning the real
+(statement → used-premise) dependency. The structural-recovery control rules that out: train the
+*same* model two ways on the *same* tokens — once on real pairs, once on pairs whose premises are
+randomly permuted (tokens preserved, structure destroyed) — and evaluate both on the same held-out
+*true* pairs. A real win must collapse to the floor when structure is removed.
+
+| arm | R@1 | MRR | witness |
+|---|---|---|---|
+| trained on **TRUE** pairs | **0.20** | 0.3986 | `rank_control.py` |
+| trained on **SHUFFLED** pairs (structure destroyed) | 0.05 | 0.1713 | `rank_control.py` |
+| random floor | 0.05 | — | — |
+
+**Result: WIN (4× over the structure-destroyed control, = 4× floor).** Destroying the pairing
+collapses the ranker to chance, so the selector learns genuine premise structure, not token
+frequency. (Fast control config: `k=20`, held-out `n=80`, single seed; the §A headline uses the
+fuller `k=100`. Gate: true R@1 ≥ 3× max(shuffled, floor).)
+
 ## What corroborates
 - **Energy read > baseline: 5/5** — both trained-ranking tasks and all three robustness
   conditions, by wide margins (36×, 87×, and ≈chance-beating throughout). The shared
   mechanism (high-capacity associative read; modern Hopfield arXiv:2008.02217, MQAR
   arXiv:2312.04927) generalises across datasets and conditions.
+- **The premise-ranking win survives a negative control** (§C): it is structural recovery,
+  not token-frequency memorisation.
 
 ## Honest limits (reported, not hidden)
 - **Not noise-invariant.** `mqar_noise.py` shows the parameter-free read still beats
@@ -52,6 +73,7 @@ python3 bench/agent/mqar_capacity.py   # associative-recall win (instant, CPU)
 python3 bench/agent/mqar_dim.py        # capacity vs dimension   (instant)
 python3 bench/agent/mqar_haystack.py   # capacity vs haystack    (instant)
 python3 bench/agent/mqar_noise.py      # noise robustness + limit (instant)
+python3 bench/agent/rank_control.py    # structural-recovery negative control (trains 2 arms)
 ```
 
 ---

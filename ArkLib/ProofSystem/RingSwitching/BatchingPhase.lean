@@ -653,9 +653,8 @@ lemma probability_bound_badBatchingEventProp [Fintype L] [DecidableEq L] [IsDoma
       badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar |
         ($ᵗ (Fin κ → L))] ≤
       batchingRBRKnowledgeError (κ := κ) (L := L) (K := K) (P := P) ⟨1, rfl⟩ := by
-  simpa [batchingRBRKnowledgeError] using
-    (probEvent_le_one (mx := ($ᵗ (Fin κ → L))
-      (p := fun y => badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar))
+  change _ ≤ ((1 : ℝ≥0) : ENNReal)
+  exact probEvent_le_one
 
 lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L] [IsDomain L] [IsDomain K]
     (stmtOStmtIn : (BatchingStmtIn L ℓ) × (∀ j, aOStmtIn.OStmtIn j))
@@ -669,16 +668,8 @@ lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L] [IsDoma
         (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => msg0)
         (challenge := y) | ($ᵗ (Fin κ → L))] ≤
       batchingRBRKnowledgeError (κ := κ) (L := L) (K := K) (P := P) ⟨1, rfl⟩ := by
-  simpa [batchingRBRKnowledgeError] using
-    (probEvent_le_one (mx := ($ᵗ (Fin κ → L))
-      (p := fun y =>
-        rbrExtractionFailureEvent
-          (kSF := batchingKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
-            (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
-          (extractor := batchingRbrExtractor (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
-            (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
-          (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => msg0)
-          (challenge := y)))
+  change _ ≤ ((1 : ℝ≥0) : ENNReal)
+  exact probEvent_le_one
 
 /-- RBR knowledge soundness for the batching phase oracle verifier. `IsDomain K` (alongside the
 existing `IsDomain L`) is required by the round-0 knowledge-state conjunct's DP24 capstone; it
@@ -695,24 +686,8 @@ theorem batchingOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
   use batchingRbrExtractor κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)
   use batchingKnowledgeStateFunction κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn) (init:=init) (impl:=impl)
   intro stmtIn witIn prover iChal
-  simpa [batchingRBRKnowledgeError] using
-    (probEvent_le_one (mx := do
-      (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
-        (do
-          let ⟨⟨transcript, _⟩, proveQueryLog⟩ ← prover.runWithLogToRound iChal.1.castSucc stmtIn witIn
-          let challenge ← liftComp ((pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).getChallenge iChal) _
-          return (transcript, challenge, proveQueryLog))).run' (← init))
-      (p := fun x =>
-        match x with
-        | (transcript, challenge, _proveQueryLog) =>
-          ∃ witMid,
-            ¬ (batchingKnowledgeStateFunction κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)
-                (init := init) (impl := impl)).toFun iChal.1.castSucc stmtIn transcript
-                ((batchingRbrExtractor κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)).extractMid
-                  iChal.1 stmtIn (transcript.concat challenge) witMid) ∧
-              (batchingKnowledgeStateFunction κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)
-                (init := init) (impl := impl)).toFun iChal.1.succ stmtIn
-                (transcript.concat challenge) witMid))
+  change _ ≤ ((1 : ℝ≥0) : ENNReal)
+  exact probEvent_le_one
 
 end BatchingPhase
 end RingSwitching

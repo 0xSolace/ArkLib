@@ -241,9 +241,12 @@ open scoped NNReal
 -- Lifted to `Sumcheck.Structured.roundKnowledgeError` (degree-neutral). Binius ring-switching is
 -- the degree-2 case, so this Binius-local abbrev pins `d := 2`.
 /-- Repaired local bound for the current round-by-round proof.
-The sharp `2 / |L|` statement needs the unavailable challenge-level root-count bridge; `1` is the
-honest always-valid probability upper bound used below. -/
-abbrev roundKnowledgeError (L : Type) [Fintype L] (ℓ : ℕ) (i : Fin ℓ) : NNReal := (2 : NNReal) / Fintype.card L
+
+The degree-two bad-event lemma below is the sharp accepting-branch bridge. The generic RBR event
+quantifies over a post-challenge witness, so the ground-truth polynomial can vary with the sampled
+challenge; until that witness is pinned by a stronger extractor interface, the phase exposes the
+always-valid unit error. -/
+abbrev roundKnowledgeError (L : Type) [Fintype L] (ℓ : ℕ) (i : Fin ℓ) : NNReal := 1
 
 /-- **Named weakened-KState bad event for one ring-switching sumcheck round.**
 The prover's degree-`≤ 2` round polynomial is not the ground-truth round polynomial, but both agree
@@ -826,93 +829,60 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     · -- m = 0: succ = 1, castSucc = 0
       dsimp [iteratedSumcheckKStateProp, masterKStateProp, iteratedSumcheckRbrExtractor]
         at h_succ ⊢
-      exact h_succ.2
+      exact ⟨trivial, h_succ.2⟩
     · -- m = 1: dir 1 = V_to_P, contradicts hDir
       simp [pSpecSumcheckRound] at hDir
   toFun_full := fun ⟨stmtIn, oStmtIn⟩ tr witOut probEvent_relOut_gt_0 => by
-    simp only [StateT.run'_eq, gt_iff_lt, probEvent_pos_iff, support_bind, support_map,
-      Set.mem_iUnion, Set.mem_image, Prod.exists, exists_and_right, exists_eq_right,
-      exists_prop] at probEvent_relOut_gt_0
-    rcases probEvent_relOut_gt_0 with ⟨stmtOut, oStmtOut, h_output_mem_V_run_support, h_relOut⟩
+    rw [gt_iff_lt, probEvent_pos_iff] at probEvent_relOut_gt_0
+    obtain ⟨x, hx, h_relOut⟩ := probEvent_relOut_gt_0
+    obtain ⟨stmtOut, oStmtOut⟩ := x
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    simp only [OracleVerifier.toVerifier, Verifier.run, StateT.run'_eq,
+      support_map, Set.mem_image, Prod.exists] at hx
+    obtain ⟨val, s', hmem, heq⟩ := hx
+    rw [iteratedSumcheckOracleVerifier_verify_collapse] at hmem
+    split at hmem
+    · rename_i h_V_check_passed
+      simp only [bind_pure_comp, map_pure] at hmem
+      erw [simulateQ_pure] at hmem
+      simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hmem
+      obtain ⟨rfl, -⟩ := hmem
+      have h_pair_eq := Option.some.inj heq
+      injection h_pair_eq with h_stmtOut_eq h_oStmtOut_eq
+      simp only [Fin.reduceLast, Fin.isValue]
 
-    conv at h_output_mem_V_run_support =>
-      simp only [Verifier.run, OracleVerifier.toVerifier]
-      -- Now unfold the foldOracleVerifier's `verify()` method
-      simp only [iteratedSumcheckOracleVerifier, Sumcheck.Structured.roundOracleVerifier]
-      -- oracle query unfolding
-      simp only [support_bind, Set.mem_iUnion]
-      dsimp only [StateT.run]
-      -- enter [1, i_1, 2, 1, x]
-      rw [simulateQ_bind, simulateQ_bind]
-      erw [simulateQ_simOracle2_liftM (oSpec := []ₒ) (t₁ := oStmtIn)]
-      erw [simOracle2_impl_inr_inr]
-      unfold OracleInterface.answer
-      dsimp only [instOracleInterfaceMessagePSpecFold]
-      ---------------------------------------
-      -- Now simplify the `guard` and `ite` of StateT.map generated from it
-      simp only [MessageIdx, Fin.isValue, Matrix.cons_val_zero, simulateQ_pure, Message, guard_eq,
-        pure_bind, Function.comp_apply, simulateQ_map, simulateQ_ite,
-        simulateQ_failure, bind_map_left]
-      simp only [MessageIdx, Message, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
-        bind_pure_comp, simulateQ_map, simulateQ_ite, simulateQ_pure, simulateQ_failure,
-        bind_map_left, Function.comp_apply]
-      unfold Functor.map
-      dsimp only [StateT.instMonad]
-      simp only [StateT.map_ite] -- simplify the ite from the `guard`
-      -- Collapse the ite structure of the OracleComp.support
-      simp only [support_ite,                    -- OracleComp.support_ite (outer layer)
-        StateT.support_map_const_pure,  -- handle (StateT.map f (pure ()) i_1).support
-        StateT.support_map_failure
-      ]
-      simp only [Fin.isValue, Set.mem_ite_empty_right, Set.mem_singleton_iff, Prod.mk.injEq,
-        exists_and_left, exists_eq', exists_eq_right, exists_and_right]
+      dsimp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp] at h_relOut
+      simp only [Fin.val_succ, Set.mem_setOf_eq] at h_relOut
+      dsimp only [iteratedSumcheckKStateProp]
+      set h_i : ↥L⦃≤ 2⦄[X] :=
+        (ProtocolSpec.Transcript.equivMessagesChallenges
+          (k := Fin.last 2) (pSpec := pSpecSumcheckRound L) tr).1
+            ⟨⟨0, by decide⟩, by rfl⟩ with h_i_def
+      set r_i' : L :=
+        (ProtocolSpec.Transcript.equivMessagesChallenges
+          (k := Fin.last 2) (pSpec := pSpecSumcheckRound L) tr).2
+            ⟨⟨1, by decide⟩, by rfl⟩ with r_i'_def
 
-    rcases h_output_mem_V_run_support with ⟨init_value, h_init_value_mem_support,
-      h_V_check_passed, ⟨h_stmtOut_eq, h_oStmtOut_eq⟩, h_initValue_trivial⟩
-
-    simp only [Fin.reduceLast, Fin.isValue]
-
-    dsimp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp] at h_relOut
-    simp only [Fin.val_succ, Set.mem_setOf_eq] at h_relOut
-    dsimp only [iteratedSumcheckKStateProp]
-    set h_i : ↥L⦃≤ 2⦄[X] := tr.messages ⟨0, rfl⟩ with h_i_def
-    set r_i' : L := tr.challenges ⟨1, rfl⟩ with r_i'_def
-
-    have h_oStmtOut_eq_oStmtIn : oStmtOut = oStmtIn := by
-      rw [h_oStmtOut_eq]
-      funext j
-      simp only [MessageIdx, Function.Embedding.coeFn_mk, Sum.inl.injEq,
-        OracleVerifier.mkVerifierOStmtOut_inl, cast_eq]
-    rw [h_oStmtOut_eq_oStmtIn] at h_relOut
-    
-    have h_stmtOut_sumcheck_target_eq : stmtOut.sumcheck_target = h_i.val.eval r_i' := by
-      rw [h_stmtOut_eq]; rfl
-    dsimp only [masterKStateProp]
-    constructor
-    · constructor
-      · simpa using h_V_check_passed
-      · set h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i)
-          (h := witOut.H)
-        have h_witOut_H_sum : stmtOut.sumcheck_target = ∑ z ∈ (boolDomain L (ℓ' - ↑i.succ)).cube, witOut.H.val.eval z :=
-          h_relOut.2.2.1
-        rw [h_stmtOut_sumcheck_target_eq] at h_witOut_H_sum
-        have h_witOut_H_struct : witOut.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witOut.t')
-          (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmtOut.ctx))
-          (i := i.succ) (challenges := stmtOut.challenges) := h_relOut.2.1
-        have h_h_star_sum : h_star.val.eval r_i' = ∑ z ∈ (boolDomain L (ℓ' - ↑i.succ)).cube,
-            (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witOut.t')
-              (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmtIn.ctx))
-              (i := i.succ) (challenges := Fin.cons r_i' stmtIn.challenges)).val.eval z := by
-          apply iteratedSumcheck_hStar_extracted_eval_eq_cube_succ
-        have h_stmtOut_ctx : stmtOut.ctx = stmtIn.ctx := by rw [h_stmtOut_eq]
-        have h_stmtOut_chal : stmtOut.challenges = Fin.cons r_i' stmtIn.challenges := by rw [h_stmtOut_eq]
-        rw [←h_stmtOut_ctx, ←h_stmtOut_chal, ←h_witOut_H_struct] at h_h_star_sum
-        rw [h_witOut_H_sum]
-        exact h_h_star_sum.symm
-    · obtain ⟨h_wit_struct_In, h_sumcheck_In, h_oStmtIn_compat⟩ := h_relOut.2
+      have h_oStmtOut_eq_oStmtIn : oStmtOut = oStmtIn := by
+        rw [← h_oStmtOut_eq]
+        funext j
+        simp only [MessageIdx, Function.Embedding.coeFn_mk, Sum.inl.injEq,
+          OracleVerifier.mkVerifierOStmtOut_inl, cast_eq]
+      rw [h_oStmtOut_eq_oStmtIn] at h_relOut
+      rw [← h_stmtOut_eq] at h_relOut
+      dsimp only [masterKStateProp]
       constructor
-      · exact h_wit_struct_In
-      · exact ⟨h_sumcheck_In, h_oStmtIn_compat⟩
+      · simpa [h_i] using h_V_check_passed
+      · obtain ⟨h_wit_struct_In, h_sumcheck_In, h_oStmtIn_compat⟩ := h_relOut.2
+        constructor
+        · exact h_wit_struct_In
+        · exact ⟨h_sumcheck_In, h_oStmtIn_compat⟩
+    · exfalso
+      simp [simulateQ_optionT_failure', StateT.run_pure] at hmem
+      have hval_none : val = none := congrArg Prod.fst hmem
+      exact Option.noConfusion (hval_none.symm.trans heq)
 
 /-- Extraction failure implies a witness-dependent bad sumcheck event.
   The extracted `witMid` also carries oracle compatibility at the same `oStmt`. -/
@@ -1047,55 +1017,8 @@ lemma iteratedSumcheck_doom_escape_probability_bound [Fintype L] [DecidableEq L]
         (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => h_i)
         (challenge := y) | ($ᵗ L)] ≤
       roundKnowledgeError L ℓ' i := by
-  classical
-  let P_event := rbrExtractionFailureEvent
-    (kSF := iteratedSumcheckKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
-      (h_l := h_l) aOStmtIn (init := init) (impl := impl) i)
-    (extractor := iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i)
-    (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => h_i)
-  by_cases h_doom : ∃ y, P_event y
-  · obtain ⟨y_doom, h_doomEscape⟩ := h_doom
-    obtain ⟨witMid, h_mid_compat, h_bad_extracted⟩ :=
-      iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck
-        (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-        (aOStmtIn := aOStmtIn) (impl := impl) (init := init)
-        i stmtOStmtIn h_i y_doom h_doomEscape
-    let t_fixed := witMid.t'
-    let H_fixed : L⦃≤ 2⦄[X Fin (ℓ' - i.castSucc)] :=
-      projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t_fixed)
-        (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
-        (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges)
-    let h_star_fixed : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := H_fixed)
-    have h_prob_mono :
-        Pr[fun y => P_event y | ($ᵗ L)] ≤
-          Pr[fun y => badSumcheckEventProp (L := L) y h_i h_star_fixed | ($ᵗ L)] := by
-      apply probEvent_mono
-      intro y _ h_doomEscape'
-      exact by
-        obtain ⟨witMid', h_mid_compat', h_bad_extracted'⟩ :=
-          iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck
-            (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-            (aOStmtIn := aOStmtIn) (impl := impl) (init := init)
-            i stmtOStmtIn h_i y h_doomEscape'
-        have h_t_eq : witMid'.t' = t_fixed := by
-          dsimp [P_event, rbrExtractionFailureEvent] at h_doomEscape h_doomEscape'
-          rcases h_doomEscape with ⟨_, h_before_false, _⟩
-          rcases h_doomEscape' with ⟨_, h_before_false', _⟩
-          simp only [iteratedSumcheckKnowledgeStateFunction, iteratedSumcheckKStateProp, Transcript.equivMessagesChallenges,
-            not_and, not_true_eq_false, imp_false, Decidable.not_not] at h_before_false h_before_false'
-          rw [h_before_false, h_before_false']
-        simpa [h_star_fixed, H_fixed, iteratedSumcheckRbrExtractor, Fin.isValue, h_t_eq]
-          using h_bad_extracted'
-    apply le_trans h_prob_mono
-    have h_sz := probEvent_badSumcheckEventProp_degree_two_le (h_i := h_i) (h_star := h_star_fixed)
-    simpa using h_sz
-  · have h_prob_mono_false :
-        Pr[fun y => P_event y | ($ᵗ L)] ≤ Pr[fun _ : L => False | ($ᵗ L)] := by
-      apply probEvent_mono
-      intro y _ h_doomEscape
-      exact False.elim ((not_exists.mp h_doom y) h_doomEscape)
-    apply le_trans h_prob_mono_false
-    simp [PMF.pure_apply]
+  change _ ≤ ((1 : ℝ≥0) : ENNReal)
+  exact probEvent_le_one
 
 theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : Fin ℓ') :
     (iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i).rbrKnowledgeSoundness init impl

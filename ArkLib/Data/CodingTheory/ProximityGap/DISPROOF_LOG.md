@@ -16,6 +16,13 @@ cross-checked: the dependency spine (Loop24→25, Loop21→Carving10) builds and
 and every brick lives in its own `ArkLib.ProximityGap.*Loop_n` namespace (no collisions). The whole
 proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_disproof_backup/`.
 
+**Current-checkout caveat (2026-06-08):** this checkout does not currently carry every historical
+brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
+`~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
+the research ledger; treat a named lemma as in-tree API only after checking the current source file.
+Loops 27, 28, 29, 30, and 31 have been restored as self-contained arithmetic bricks in the current
+checkout.
+
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
 A web-research pass (June 2026) located the precise state of the art. **Our verified carving at the
@@ -330,6 +337,62 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop31 — variable multiplicative exponents: only the total exponent matters
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop31.lean`:**
+`variable_exponent_product_eq` (`∏_{j<m}2^(e_j)=2^(∑_{j<m}e_j)`),
+`variable_exponent_product_le_domain_pow` (if `∑e_j≤m*c`, the product is at most the final-domain
+degree-`c` polynomial), `variable_exponent_product_le_domain_pow_of_pointwise` (bounded per-level
+exponents are prize-safe), and `variable_exponent_product_overflows_of_sum` (if `m*d<∑e_j`, the
+product beats final degree `d`).
+**Disproof attempt:** replace Loop30's rigid local factors `(2^j)^c` with adaptive or uneven factors
+`2^(e_j)` and hope the irregularity itself defeats every fixed polynomial in `2^m`.
+**Disproof of the disproof:** no — the product sees only the cumulative exponent. If the total
+exponent is linear in the depth `m`, or if every level exponent is uniformly bounded, the prize
+numerator absorbs the tower. A variable-factor disproof must prove a **superlinear cumulative
+exponent** realized by the actual smooth-domain GS/proximity process. Merely naming uneven local
+factors does not disprove the conjecture.
+
+### Loop30 — local polynomial multiplicative factors are dangerous only as a product
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop30.lean`:**
+`local_polynomial_product_eq` (`∏_{j<m}(2^j)^c = 2^(∑_{j<m}j*c)`) and
+`local_polynomial_product_overflows_of_exponent` (if `m*d < ∑_{j<m}j*c`, the local-polynomial
+multiplicative product beats the final-domain degree-`d` polynomial `((2^m)^d)`). Strengthened by
+`local_exponent_sum_overflows_at_depth` and `local_polynomial_product_overflows_at_depth`: for every
+positive local degree `c`, depth `m=2*d+3` already makes the product beat the final degree-`d`
+polynomial.
+**Disproof attempt:** realize per-fold local-polynomial branching multiplicatively, so the product of
+local factors accumulates a quadratic-in-depth exponent and eventually beats every fixed polynomial
+in the final smooth-domain size. This is the cleanest remaining arithmetic counterexample shape:
+local factors that are harmless one level at a time become dangerous when multiplied across all
+levels. **Disproof of the disproof:** the Lean brick is only conditional arithmetic. It proves no
+faithful GS/proximity mechanism whose fold levels branch independently and multiplicatively by
+`(2^j)^c`. Loops 26, 27, and 29 say additive/union-bound accumulation is prize-safe, and Loop28 says
+any polynomially bounded multiplicative product is prize-safe. Thus Loop30 narrows the target: a real
+disproof must exhibit genuinely multiplicative, per-level local-polynomial branching in the actual
+smooth-domain GS list process, not merely a product identity.
+
+### Loop29 — additive fold factors: only the sum matters
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop29.lean`:**
+`variable_additive_recursion_telescopes` (`T(j+1)≤T(j)+b_j` telescopes to
+`T(m)≤T(0)+∑_{j<m}b_j`) and `variable_additive_polynomial_of_sum_bound` (if the cumulative additive
+sum is `≤(2^m)^c`, the whole tower is bounded by base plus a polynomial in the domain size).
+**Disproof attempt:** maybe additive growth can hide in uneven per-fold spikes, even though uniform
+polynomial additive costs are absorbed by Loop27. **Disproof of the disproof:** no — additive
+recurrences care only about the cumulative sum. One large-looking fold, or any collection of folds
+whose total sum remains polynomial in `2^m`, is absorbed by the prize numerator. An additive
+counterexample must make the **sum** itself beat every polynomial in `2^m`.
+
+### Loop28 — variable fold factors: only the product matters
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop28.lean`:**
+`variable_fold_recursion_telescopes` (`T(j+1)≤a_j·T(j)` telescopes to
+`T(m)≤(∏_{j<m}a_j)·T(0)`) and `variable_fold_polynomial_of_product_bound` (if
+`∏_{j<m}a_j≤(2^m)^c`, then the whole multiplicative tower is polynomial in the domain size).
+**Disproof attempt:** use one `N`-dependent fold factor as evidence of multiplicative blowup.
+**Disproof of the disproof:** one large factor is not enough; only the cumulative product matters.
+Isolated large folds, or any polynomially bounded product of fold factors, are absorbed by the prize
+numerator. A multiplicative counterexample must force the product itself to beat every polynomial in
+`2^m`.
 
 ### Loop27 — polynomial additive fold costs are still absorbed
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop27.lean`:**
