@@ -1,3 +1,3 @@
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.Data.MvPolynomial.Basic
 
-#check exists_nontrivial_solution_of_finrank_lt_finrank
+#check MvPolynomial.degrees
