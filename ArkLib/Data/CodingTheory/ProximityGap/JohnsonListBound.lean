@@ -55,16 +55,8 @@ theorem johnson_list_bound {ι F : Type*} [Fintype ι] [DecidableEq ι] [Decidab
     rw [Finset.mem_inter, hS] at hx
     simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx ⊢
     exact hx.1.trans hx.2.symm
-  have key := ArkLib.Coverage.card_mul_sq_le_of_agreement S a b hlo hpair
-  rw [Fintype.card_coe] at key
-  have htail : L.card * Fintype.card ι * b = L.card * (Fintype.card ι * b) := by
-    rw [Nat.mul_assoc]
-  rw [htail] at key
-  have hsplit : L.card * a ^ 2 =
-      L.card * (a ^ 2 - Fintype.card ι * b) + L.card * (Fintype.card ι * b) := by
-    rw [← Nat.mul_add, Nat.sub_add_cancel hgap]
-  rw [hsplit] at key
-  exact Nat.le_of_add_le_add_right key
+  have key := ArkLib.Coverage.card_mul_sub_le_of_agreement S a b hlo hpair hgap
+  simpa [Fintype.card_coe] using key
 
 /-- **Divided Johnson list bound.** Under the strict Johnson gap `|ι|·b < a²`, the
 second-moment inequality gives the direct list-size cap
