@@ -87,13 +87,17 @@ theorem rootMultiplicity_aeval_ge
   set R : MvPolynomial (Fin 2) F := aeval (fun i => X i + C (point i)) Q with hR
   -- Factorisation `Θ R = taylor x P`.
   have hfact : Θ R = Polynomial.taylor x P := by
-    rw [hR, comp_aeval_apply, hPdef, Polynomial.taylor_apply, ← Polynomial.comp_eq_aeval,
-      comp_aeval_apply]
-    congr 1
+    have hL : Θ R = aeval (fun i => Θ (X i + C (point i))) Q := by
+      rw [hR, comp_aeval_apply]
+    have hRr : Polynomial.taylor x P
+        = aeval (fun i => Polynomial.aeval (Polynomial.X + Polynomial.C x) (v i)) Q := by
+      rw [hPdef, Polynomial.taylor_apply, Polynomial.comp_eq_aeval, comp_aeval_apply]
+    rw [hL, hRr]
+    refine congrArg (fun g => aeval g Q) ?_
     funext i
     fin_cases i
     · simp [hΘ, hv, hpoint]
-    · simp [hΘ, hv, hpoint, hw, ← Polynomial.comp_eq_aeval]
+    · simp [hΘ, hv, hpoint, hw, Polynomial.comp_eq_aeval]
   -- Heart: `Tᵐ ∣ Θ R`.
   have hXmR : (Polynomial.X : Polynomial F) ^ m ∣ Θ R := by
     have hΘR : Θ R = ∑ d ∈ R.support, Θ (monomial d (coeff d R)) := by
@@ -113,9 +117,7 @@ theorem rootMultiplicity_aeval_ge
       Fin.prod_univ_two]
     -- goal: Tᵐ ∣ algebraMap _ _ (coeff d R) * (g 0 ^ d 0 * g 1 ^ d 1)
     refine Dvd.dvd.mul_left ?_ _
-    have hg0 : (fun i => if i = 0 then (Polynomial.X : Polynomial F) else w) 0 = Polynomial.X := rfl
-    have hg1 : (fun i => if i = 0 then (Polynomial.X : Polynomial F) else w) 1 = w := rfl
-    rw [hg0, hg1]
+    show (Polynomial.X : Polynomial F) ^ m ∣ Polynomial.X ^ (d 0) * w ^ (d 1)
     have h1 : (Polynomial.X : Polynomial F) ^ (d 0) * Polynomial.X ^ (d 1)
         ∣ Polynomial.X ^ (d 0) * w ^ (d 1) :=
       mul_dvd_mul_left _ (pow_dvd_pow_of_dvd hXw (d 1))
