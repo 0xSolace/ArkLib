@@ -85,6 +85,47 @@ theorem galoisAut_comp (α i j : ℕ) (hi : Odd i) (hj : Odd j)
     galoisAut_toQuotient α (i * j) (hi.mul hj), galoisAutₛ_toQuotient α j hj, galoisAutₛ_mk,
     galoisAutₛ_toQuotient α (i * j) (hi.mul hj), aeval_X_pow_aeval_X_pow]
 
+/-! ## 2-adic order kernel for `4k+1`
+
+These two lemmas are the number-theoretic heart of the `Hexp` / `traceH_mem_fixed` story:
+`4k+1 = 1 + 2^{κ+2}` has 2-adic order dividing `2^α/(2k)` in `(ℤ/2^{α+1})ˣ`, so its `±`-orbit
+`Hexp` is closed under multiplication by `4k+1`. Proven by an elementary `(A-1)(A+1)` induction
+(no lifting-the-exponent needed for the divisibility direction). -/
+
+/-- **2-adic divisibility.** For `m ≥ 1`, `2^{m+j} ∣ (1 + 2^m)^{2^j} - 1`. -/
+theorem two_pow_dvd_one_add_two_pow_pow (m j : ℕ) (hm : 1 ≤ m) :
+    (2 ^ (m + j) : ℤ) ∣ (1 + 2 ^ m) ^ (2 ^ j) - 1 := by
+  induction j with
+  | zero => simp only [pow_zero, pow_one, add_zero, add_sub_cancel_left]; exact dvd_rfl
+  | succ j ih =>
+    have hodd : Odd ((1 + 2 ^ m : ℤ) ^ (2 ^ j)) := by
+      apply Odd.pow
+      have : Even ((2 : ℤ) ^ m) := by rw [Int.even_pow]; exact ⟨even_two, by omega⟩
+      simpa [add_comm] using this.add_one
+    have h2 : (2 : ℤ) ∣ (1 + 2 ^ m) ^ (2 ^ j) + 1 := by
+      obtain ⟨t, ht⟩ := hodd; exact ⟨t + 1, by rw [ht]; ring⟩
+    have key : (1 + 2 ^ m : ℤ) ^ (2 ^ (j + 1)) - 1
+        = ((1 + 2 ^ m) ^ (2 ^ j) - 1) * ((1 + 2 ^ m) ^ (2 ^ j) + 1) := by
+      rw [pow_succ, pow_mul]; ring
+    rw [key, show m + (j + 1) = (m + j) + 1 from by ring, pow_succ]
+    exact mul_dvd_mul ih h2
+
+/-- **Order divides.** For `k = 2^κ` with `2k ∣ 2^α`, the 2-adic order of `4k+1` divides
+`2^α/(2k)`: `2^{α+1} ∣ (4k+1)^{2^α/(2k)} - 1`. This is exactly the wrap-around fact that makes
+`Hexp` closed under multiplication by `4k+1` mod `2^{α+1}`. -/
+theorem two_pow_succ_dvd_four_mul_add_one_pow (α k κ : ℕ)
+    (hk : k = 2 ^ κ) (hκ : κ + 1 ≤ α) :
+    (2 ^ (α + 1) : ℤ) ∣ (4 * k + 1) ^ (2 ^ α / (2 * k)) - 1 := by
+  subst hk
+  have hexp : 2 ^ α / (2 * 2 ^ κ) = 2 ^ (α - (κ + 1)) := by
+    rw [show 2 * 2 ^ κ = 2 ^ (κ + 1) from by rw [pow_succ]; ring,
+      Nat.pow_div (by omega) (by norm_num)]
+  rw [hexp]
+  push_cast
+  rw [show (4 * (2 : ℤ) ^ κ + 1) = 1 + 2 ^ (κ + 2) from by rw [pow_add]; ring]
+  have h := two_pow_dvd_one_add_two_pow_pow (κ + 2) (α - (κ + 1)) (by omega)
+  rwa [show (κ + 2) + (α - (κ + 1)) = α + 1 from by omega] at h
+
 /-! ## The subgroup `H` as an exponent set -/
 
 /-- The exponent set enumerating `H = ⟨σ_{-1}, σ_{4k+1}⟩` inside `(Z / 2^{α+1})ˣ`:
