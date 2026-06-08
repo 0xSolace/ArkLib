@@ -1180,6 +1180,62 @@ private theorem queryLog_snd_append
       | mk q r =>
           cases q <;> simp [QueryLog.snd]
 
+private theorem queryLog_snd_singleton_inr
+    {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    (q : spec₂.Domain) (r : spec₂.Range q) :
+    QueryLog.snd
+        ([⟨(.inr q : (spec₁ + spec₂).Domain), r⟩] :
+          QueryLog (spec₁ + spec₂)) = [⟨q, r⟩] := by
+  simp [QueryLog.snd]
+
+private theorem queryLog_snd_singleton_inl
+    {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    (q : spec₁.Domain) (r : spec₁.Range q) :
+    QueryLog.snd
+        ([⟨(.inl q : (spec₁ + spec₂).Domain), r⟩] :
+          QueryLog (spec₁ + spec₂)) = ([] : QueryLog spec₂) := by
+  simp [QueryLog.snd]
+
+private theorem queryLog_snd_cons_inr
+    {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    (q : spec₂.Domain) (r : spec₂.Range q)
+    (log : QueryLog (spec₁ + spec₂)) :
+    QueryLog.snd (⟨(.inr q : (spec₁ + spec₂).Domain), r⟩ :: log) =
+      ⟨q, r⟩ :: log.snd := by
+  simp [QueryLog.snd]
+
+private theorem queryLog_snd_cons_inl
+    {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    (q : spec₁.Domain) (r : spec₁.Range q)
+    (log : QueryLog (spec₁ + spec₂)) :
+    QueryLog.snd (⟨(.inl q : (spec₁ + spec₂).Domain), r⟩ :: log) = log.snd := by
+  simp [QueryLog.snd]
+
+private theorem queryLog_snd_inl
+    {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    (log : QueryLog spec₁) :
+    QueryLog.snd (QueryLog.inl (spec₂ := spec₂) log) = ([] : QueryLog spec₂) := by
+  induction log with
+  | nil => rfl
+  | cons entry tail ih =>
+      cases entry with
+      | mk q r =>
+          simp [QueryLog.inl, QueryLog.snd]
+
+private theorem queryLog_snd_inl_append_left
+    {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    (leftLog : QueryLog spec₁) (log : QueryLog (spec₁ + spec₂)) :
+    QueryLog.snd (QueryLog.inl (spec₂ := spec₂) leftLog ++ log) = log.snd := by
+  rw [queryLog_snd_append, queryLog_snd_inl]
+  rfl
+
+private theorem queryLog_snd_append_inl_right
+    {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    (log : QueryLog (spec₁ + spec₂)) (rightLog : QueryLog spec₁) :
+    QueryLog.snd (log ++ QueryLog.inl (spec₂ := spec₂) rightLog) = log.snd := by
+  rw [queryLog_snd_append, queryLog_snd_inl]
+  simp
+
 omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
   [∀ i, SampleableType (pSpec.Challenge i)] in
 private theorem popFSChallengeFromLog_cons_self
@@ -1642,9 +1698,55 @@ theorem fiatShamirStraightlineExtractorOfStateRestoration_log_congr
     (proof := proof) (pLog := pLog') (verifyLog := verifyLog)
     (verifyLog' := verifyLog') hVerify
 
+/-- Adding original-oracle-only entries before the verifier log does not affect the canonical
+extractor, since only the slow-Fiat-Shamir challenge projection is replayed. -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_inl_left_irrel
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (pLog verifyLog : QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))
+    (originalLog : QueryLog oSpec) :
+    fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog
+        (QueryLog.inl (spec₂ := fsChallengeOracle StmtIn pSpec) originalLog ++ verifyLog) =
+      fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog
+        verifyLog := by
+  exact fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_snd_congr
+    (srExtractor := srExtractor) (stmtIn := stmtIn) (witOut := witOut)
+    (proof := proof) (pLog := pLog)
+    (verifyLog :=
+      QueryLog.inl (spec₂ := fsChallengeOracle StmtIn pSpec) originalLog ++ verifyLog)
+    (verifyLog' := verifyLog)
+    (queryLog_snd_inl_append_left originalLog verifyLog)
+
+/-- Adding original-oracle-only entries after the verifier log does not affect the canonical
+extractor, since only the slow-Fiat-Shamir challenge projection is replayed. -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_inl_right_irrel
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (pLog verifyLog : QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))
+    (originalLog : QueryLog oSpec) :
+    fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog
+        (verifyLog ++ QueryLog.inl (spec₂ := fsChallengeOracle StmtIn pSpec) originalLog) =
+      fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog
+        verifyLog := by
+  exact fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_snd_congr
+    (srExtractor := srExtractor) (stmtIn := stmtIn) (witOut := witOut)
+    (proof := proof) (pLog := pLog)
+    (verifyLog :=
+      verifyLog ++ QueryLog.inl (spec₂ := fsChallengeOracle StmtIn pSpec) originalLog)
+    (verifyLog' := verifyLog)
+    (queryLog_snd_append_inl_right verifyLog originalLog)
+
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_proveLog_irrel
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_snd_congr
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_log_congr
+#print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_inl_left_irrel
+#print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_verifyLog_inl_right_irrel
 
 /-- Knowledge-soundness analogue of `fiatShamirAdversary_runCollapse`: collapse the
 `Reduction.runWithLog` of the transformed one-message reduction to an explicit adversary execution
