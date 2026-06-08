@@ -325,6 +325,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop27
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop28
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop29
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop30
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs

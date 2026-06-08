@@ -1385,7 +1385,6 @@ section CanonicalKnowledgeSoundness
 
 set_option linter.unusedSimpArgs false
 set_option linter.unusedSectionVars false
-set_option maxHeartbeats 2000000
 
 attribute [local instance] Reduction.fiatShamirChallengeOracleInterface
 
@@ -1408,20 +1407,6 @@ private theorem stateT_option_elimM_map_eq
   cases x with
   | mk oa _s' =>
       cases oa <;> rfl
-
-@[simp] private theorem simulateQ_addLift_optionT_liftM_run
-    {m : ℕ} {qSpec : ProtocolSpec m} [∀ i, SampleableType (qSpec.Challenge i)]
-    {σ α : Type}
-    (impl : QueryImpl oSpec (StateT σ ProbComp))
-    (oa : OptionT (OracleComp oSpec) α) :
-    simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
-        ((liftM oa : OptionT (OracleComp (oSpec + [qSpec.Challenge]ₒ)) α).run) =
-      simulateQ impl oa.run := by
-  change
-    (simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp) challengeQueryImpl)
-        (liftM oa : OptionT (OracleComp (oSpec + [qSpec.Challenge]ₒ)) α)).run =
-      (simulateQ impl oa : OptionT (StateT σ ProbComp) α).run
-  rw [OptionT.simulateQ_addLift_liftM]
 
 /-- Generic bridge: a `Reduction.run`-bind equals the corresponding `runWithLog`-bind whose
 continuation only reads the run result (the query logs are discarded).  This is the no-HOU
@@ -1629,16 +1614,55 @@ theorem fiatShamirKnowledgeExec_runCollapse
               liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
                 OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)) := by
     intro d
-    exact simulateQ_add_run_liftM_left
-      (impl₁ := impl)
-      (impl₂ := QueryImpl.liftTarget (StateT σ ProbComp)
-        (challengeQueryImpl
-          (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+    let oa :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn :=
       (do
         let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
           (oSpec := oSpec) stmtIn (d.1.1 0))
         liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
           OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)
+    change
+      simulateQ
+          (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+            (challengeQueryImpl
+              (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+          (OptionT.run
+            ((liftM
+              (liftM oa :
+                OptionT
+                  (OracleComp
+                    (oSpec + (fsChallengeOracle StmtIn pSpec +
+                      [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)))
+                  WitIn)) :
+              OptionT
+                (OracleComp
+                  ((oSpec + fsChallengeOracle StmtIn pSpec) +
+                    [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+                WitIn)) =
+        simulateQ impl (OptionT.run oa)
+    rw [OracleComp.liftM_OptionT_add_assoc_right
+      (spec₁ := oSpec) (spec₂ := fsChallengeOracle StmtIn pSpec)
+      (spec₃ := [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)
+      (oa := oa)]
+    simp only [OptionT.run_mk]
+    change
+      simulateQ
+          (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+            (challengeQueryImpl
+              (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+          (OracleComp.liftComp
+            (OracleComp.liftComp oa.run
+              (oSpec + (fsChallengeOracle StmtIn pSpec +
+                [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)))
+            ((oSpec + fsChallengeOracle StmtIn pSpec) +
+              [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) =
+        simulateQ impl oa.run
+    exact simulateQ_add_liftComp_add_assoc_left
+      (impl₁₂ := impl)
+      (impl₃ := QueryImpl.liftTarget (StateT σ ProbComp)
+        (challengeQueryImpl
+          (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+      (oa := oa.run)
   have hPure :
       ∀ (d : ((Reduction.FiatShamirProofTranscript (pSpec := pSpec) ×
           (StmtOut × WitOut)) × StmtOut)) (extractedWitIn : WitIn),

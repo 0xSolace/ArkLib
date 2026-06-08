@@ -20,7 +20,8 @@ proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_di
 historical brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
 `~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
 the research ledger; treat a named lemma as in-tree API only after checking the current source file.
-Loops 27, 28, and 29 have been restored as self-contained arithmetic bricks in the current checkout.
+Loops 27, 28, 29, and 30 have been restored as self-contained arithmetic bricks in the current
+checkout.
 
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
@@ -336,6 +337,22 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop30 — local polynomial multiplicative factors are dangerous only as a product
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop30.lean`:**
+`local_polynomial_product_eq` (`∏_{j<m}(2^j)^c = 2^(∑_{j<m}j*c)`) and
+`local_polynomial_product_overflows_of_exponent` (if `m*d < ∑_{j<m}j*c`, the local-polynomial
+multiplicative product beats the final-domain degree-`d` polynomial `((2^m)^d)`).
+**Disproof attempt:** realize per-fold local-polynomial branching multiplicatively, so the product of
+local factors accumulates a quadratic-in-depth exponent and eventually beats every fixed polynomial
+in the final smooth-domain size. This is the cleanest remaining arithmetic counterexample shape:
+local factors that are harmless one level at a time become dangerous when multiplied across all
+levels. **Disproof of the disproof:** the Lean brick is only conditional arithmetic. It proves no
+faithful GS/proximity mechanism whose fold levels branch independently and multiplicatively by
+`(2^j)^c`. Loops 26, 27, and 29 say additive/union-bound accumulation is prize-safe, and Loop28 says
+any polynomially bounded multiplicative product is prize-safe. Thus Loop30 narrows the target: a real
+disproof must exhibit genuinely multiplicative, per-level local-polynomial branching in the actual
+smooth-domain GS list process, not merely a product identity.
 
 ### Loop29 — additive fold factors: only the sum matters
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop29.lean`:**
