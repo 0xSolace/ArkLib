@@ -167,6 +167,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightAll
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightClearedObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightDivisibility
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightResummation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedFaaDiBruno
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedFaaDiBrunoProof
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearingProduct
@@ -303,6 +304,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentPairs
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
 import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomization
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateInterpolation
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateSyndrome
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
@@ -435,6 +440,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
+import ArkLib.Data.CodingTheory.ProximityGap.ProximityPrizeProof
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityGap.RSListSize
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
@@ -444,6 +450,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
+import ArkLib.Data.CodingTheory.ProximityGap._mca_research_loop
 import ArkLib.Data.CodingTheory.ProximityPrizeCA
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
