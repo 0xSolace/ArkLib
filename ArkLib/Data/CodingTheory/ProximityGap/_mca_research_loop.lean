@@ -6,14 +6,16 @@ open scoped BigOperators
 
 namespace ArkLib.CodingTheory.Research
 
-/-- The $1M Prize Conjecture: Beyond-UDR Guruswami-Sudan mass bound. -/
-theorem mcaPrize_beyond_udr_bound (domain : Type) [Fintype domain] :
-    ∃ τ, GrandChallengesLattice.mcaPrizeLatticeResolved domain τ := by
-  -- We start by choosing a specific threshold τ that lives above the UDR
-  -- but below the Guruswami-Sudan capacity limit.
-  -- This requires bridging `epsMCA` (which is a supremum over arbitrary stacks)
-  -- to the algebraic multiplicity bounds from `ArkLib.Data.CodingTheory.Guruswami`.
-  sorry
+/-- **The $1M Prize Conjecture (OPEN — honest named surface, NOT asserted).**
+
+A previous revision stated this as a `theorem … := sorry`, i.e. it *asserted* the prize via a hole —
+the fake-completion pattern banned by #169/#171/#232. It is now a non-asserting `def : Prop`: the
+*statement* that some beyond-UDR threshold `τ` makes `mcaPrizeLatticeResolved` hold, so it can be
+referenced and (eventually) proved or refuted, **without claiming it**. Discharging it would require
+bridging `epsMCA` (a supremum over arbitrary stacks) to Guruswami–Sudan multiplicity bounds — open
+research, not a formalization hole. -/
+def MCAPrizeBeyondUDRConjecture (domain : Type) [Fintype domain] : Prop :=
+  ∃ τ, GrandChallengesLattice.mcaPrizeLatticeResolved domain τ
 
 /-- Lemma bounding the density of false-positive roots for univariate polynomials. -/
 lemma root_density_bound_univ {F : Type} [Field F] [Fintype F] (p : Polynomial F) (hp : p ≠ 0) :

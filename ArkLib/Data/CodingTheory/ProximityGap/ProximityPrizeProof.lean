@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Subspace-rank and dyadic-domain sanity checks around the ABF26 prize (NOT a prize resolution)
@@ -44,7 +46,7 @@ noncomputable def mcaSubspaceRank {F : Type u} [Field F] {V : Type u} [AddCommGr
 consequence of the dimension formula `finrank (S ⊔ N) + finrank (S ⊓ N) = finrank S + finrank N`.
 This is the honest content of the previous "red-team defeat" theorem. -/
 theorem mcaSubspaceRank_sup_le
-    {F : Type u} [Field F] {V : Type u} [AddCommGroup V] [Module F V] [FiniteDimensional F V]
+    {F : Type u} [Field F] {V : Type u} [AddCommGroup V] [Module F V] [Module.Finite F V]
     (signal noise : Submodule F V) :
     mcaSubspaceRank (signal ⊔ noise) ≤ mcaSubspaceRank signal + mcaSubspaceRank noise := by
   unfold mcaSubspaceRank
@@ -54,9 +56,9 @@ theorem mcaSubspaceRank_sup_le
 /-- **Dyadic domains admit no nontrivial coprime factorization.** If `a * b = 2 ^ k` and
 `Nat.Coprime a b`, then `a = 1` or `b = 1`.
 
-Proof: every divisor of `2 ^ k` is itself a power of two (`Nat.dvd_prime_pow`), so `a = 2 ^ i` and
-`b = 2 ^ j`. If both were `> 1` then `i, j ≥ 1`, so `2 ∣ a` and `2 ∣ b`, hence `2 ∣ gcd a b = 1` —
-a contradiction.
+Proof: if both `a, b > 1`, each has a prime factor (`Nat.exists_prime_and_dvd`); that prime divides
+`2 ^ k`, hence equals `2` (`Nat.Prime.dvd_of_dvd_pow`). So `2 ∣ a` and `2 ∣ b`, giving
+`2 ∣ gcd a b = 1` — a contradiction.
 
 Cryptographic STARK evaluation domains have size `|L| = 2 ^ k`, so the bivariate "affine grid"
 folding `L ≅ L₁ × L₂` with coprime side-lengths is *vacuously unavailable*: the only coprime
@@ -67,21 +69,25 @@ theorem dyadic_factor_coprime_trivial (a b k : ℕ) (h_prod : a * b = 2 ^ k)
   by_contra h
   push_neg at h
   obtain ⟨ha, hb⟩ := h
-  have hda : a ∣ 2 ^ k := ⟨b, h_prod.symm⟩
-  have hdb : b ∣ 2 ^ k := ⟨a, by rw [mul_comm]; exact h_prod.symm⟩
-  obtain ⟨i, _, rfl⟩ := (Nat.dvd_prime_pow Nat.prime_two).mp hda
-  obtain ⟨j, _, rfl⟩ := (Nat.dvd_prime_pow Nat.prime_two).mp hdb
-  have hi : 1 ≤ i := by
-    rcases Nat.eq_zero_or_pos i with h0 | h0
-    · simp [h0] at ha
-    · exact h0
-  have hj : 1 ≤ j := by
-    rcases Nat.eq_zero_or_pos j with h0 | h0
-    · simp [h0] at hb
-    · exact h0
-  have h2a : (2 : ℕ) ∣ 2 ^ i := dvd_pow_self 2 (Nat.one_le_iff_ne_zero.mp hi)
-  have h2b : (2 : ℕ) ∣ 2 ^ j := dvd_pow_self 2 (Nat.one_le_iff_ne_zero.mp hj)
-  have hg : (2 : ℕ) ∣ Nat.gcd (2 ^ i) (2 ^ j) := Nat.dvd_gcd h2a h2b
+  -- `a, b ≠ 0` since their product `2^k` is nonzero.
+  have hab0 : a * b ≠ 0 := by rw [h_prod]; exact pow_ne_zero k (by norm_num)
+  have ha0 : a ≠ 0 := fun h0 => hab0 (by simp [h0])
+  have hb0 : b ≠ 0 := fun h0 => hab0 (by simp [h0])
+  -- `a, b > 1`, so each has a prime factor; that prime divides `2^k`, hence equals `2`.
+  have ha2 : 2 ≤ a := by omega
+  have hb2 : 2 ≤ b := by omega
+  obtain ⟨p, hp, hpa⟩ := Nat.exists_prime_and_dvd (show a ≠ 1 from ha)
+  obtain ⟨q, hq, hqb⟩ := Nat.exists_prime_and_dvd (show b ≠ 1 from hb)
+  have hpk : p ∣ 2 ^ k := hpa.trans ⟨b, h_prod.symm⟩
+  have hqk : q ∣ 2 ^ k := hqb.trans ⟨a, by rw [mul_comm]; exact h_prod.symm⟩
+  have hp2 : p = 2 := (Nat.prime_dvd_prime_iff_eq hp Nat.prime_two).mp
+    (hp.dvd_of_dvd_pow hpk)
+  have hq2 : q = 2 := (Nat.prime_dvd_prime_iff_eq hq Nat.prime_two).mp
+    (hq.dvd_of_dvd_pow hqk)
+  -- Then `2 ∣ a` and `2 ∣ b`, so `2 ∣ gcd a b = 1`, contradiction.
+  have h2a : (2 : ℕ) ∣ a := hp2 ▸ hpa
+  have h2b : (2 : ℕ) ∣ b := hq2 ▸ hqb
+  have hg : (2 : ℕ) ∣ Nat.gcd a b := Nat.dvd_gcd h2a h2b
   rw [h_coprime.gcd_eq_one] at hg
   norm_num at hg
 
