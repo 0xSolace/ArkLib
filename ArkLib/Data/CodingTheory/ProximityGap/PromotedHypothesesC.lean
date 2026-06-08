@@ -12,7 +12,7 @@ theorem h30_agreement_lower_bound (f : F → F) (S : Finset F) :
     ∃ p : Polynomial F, p.degree < (S.card : WithBot ℕ) ∧ ∀ x ∈ S, p.eval x = f x := by
   use Lagrange.interpolate S id f
   constructor
-  · exact Lagrange.degree_interpolate_lt f (Set.injOn_id ↑S)
+  · exact Lagrange.degree_interpolate_lt f (fun _ _ _ _ h => h)
   · intro x hx
-    exact Lagrange.eval_interpolate_at_node f (Set.injOn_id ↑S) hx
+    exact Lagrange.eval_interpolate_at_node f (fun _ _ _ _ h => h) hx
 
