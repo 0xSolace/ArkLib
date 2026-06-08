@@ -291,4 +291,45 @@ theorem fst_runToRound_heq (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpe
         (P.runToRound (i.castLE (show m ≤ m + n by omega)).castSucc stmt wit)
         ((Prover.fst P).runToRound i.castSucc stmt wit) hcur
 
+/-- **Right-round `sendMessage` faithfulness for `snd`** (natAdd analogue of `fst_sendMessage_left`). -/
+theorem snd_sendMessage_natAdd (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (k : Fin n)
+    (hDir' : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .P_to_V)
+    (hDir : pSpec₂.dir k = .P_to_V)
+    (state : P.PrvState (Fin.natAdd m k).castSucc) :
+    HEq (P.sendMessage ⟨Fin.natAdd m k, hDir'⟩ state)
+        ((Prover.snd P).sendMessage ⟨k, hDir⟩
+          (cast (congrArg P.PrvState
+                  (show ((Fin.natAdd m k).castSucc) = Fin.natAdd m k.castSucc from by ext; simp))
+                state)) := by
+  dsimp only [Prover.snd]
+  refine (HEq.trans (map_heq_self ?_ _ _ ?_)
+    (sendMessage_heq_congr rfl (cast_heq _ _))).symm
+  · rw [append_Message_natAdd k hDir' hDir]; congr 1
+  · rintro ⟨msg, st⟩
+    exact prodMk_heq (append_Message_natAdd k hDir' hDir).symm rfl (cast_heq _ _) HEq.rfl
+
+/-- **Right-round `receiveChallenge` faithfulness for `snd`.** -/
+theorem snd_receiveChallenge_natAdd (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (k : Fin n)
+    (hDir' : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .V_to_P)
+    (hDir : pSpec₂.dir k = .V_to_P)
+    (state : P.PrvState (Fin.natAdd m k).castSucc) :
+    HEq (P.receiveChallenge ⟨Fin.natAdd m k, hDir'⟩ state)
+        ((Prover.snd P).receiveChallenge ⟨k, hDir⟩
+          (cast (congrArg P.PrvState
+                  (show ((Fin.natAdd m k).castSucc) = Fin.natAdd m k.castSucc from by ext; simp))
+                state)) := by
+  have hChal : (pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m k, hDir'⟩
+      = pSpec₂.Challenge ⟨k, hDir⟩ := append_Challenge_natAdd k hDir' hDir
+  dsimp only [Prover.snd]
+  refine (HEq.trans (map_heq_self ?_ _ _ ?_)
+    (receiveChallenge_heq_congr rfl (cast_heq _ _))).symm
+  · rw [hChal]; congr 1
+  · intro f
+    refine Function.hfunext hChal.symm ?_
+    intro c c' hcc
+    have hc : cast hChal.symm c = c' := eq_of_heq ((cast_heq _ _).trans hcc)
+    rw [hc]
+
 end Prover
