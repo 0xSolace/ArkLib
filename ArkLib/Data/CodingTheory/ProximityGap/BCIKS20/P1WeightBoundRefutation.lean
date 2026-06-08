@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicIntegrality
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
 
 /-!
 # BCIKS20 Appendix A.4 (P1) — weight-bound obstruction for unconstrained lift direction (#138)

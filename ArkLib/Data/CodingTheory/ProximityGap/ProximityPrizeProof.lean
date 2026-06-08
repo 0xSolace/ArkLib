@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Algebra.Module.Submodule.Basic
 
 /-!
@@ -29,7 +29,7 @@ noncomputable def mcaSubspaceRank {F : Type u} [Field F] {V : Type u}
 /-- Finite-dimensional rank subadditivity for sums of subspaces. -/
 theorem mcaSubspaceRank_sup_le
     {F : Type u} [Field F] {V : Type u} [AddCommGroup V] [Module F V]
-    (signal noise : Submodule F V) :
+    [FiniteDimensional F V] (signal noise : Submodule F V) :
     mcaSubspaceRank (signal ⊔ noise) ≤ mcaSubspaceRank signal + mcaSubspaceRank noise := by
   unfold mcaSubspaceRank
   have h := Submodule.finrank_sup_add_finrank_inf_eq signal noise
@@ -38,7 +38,7 @@ theorem mcaSubspaceRank_sup_le
 /-- Backwards-compatible alias for the old candidate sanity-check name. -/
 theorem affine_folding_rank_immune_to_cancellation
     {F : Type u} [Field F] {V : Type u} [AddCommGroup V] [Module F V]
-    (signal noise : Submodule F V) :
+    [FiniteDimensional F V] (signal noise : Submodule F V) :
     mcaSubspaceRank (signal ⊔ noise) ≤ mcaSubspaceRank signal + mcaSubspaceRank noise :=
   mcaSubspaceRank_sup_le signal noise
 

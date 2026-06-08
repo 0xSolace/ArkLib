@@ -200,7 +200,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalAllCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicIntegrality
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicReduction
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWeightRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWfreeCleared
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1WeightBoundRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1XiOrderExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Bijection
@@ -319,6 +321,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateFoldedRS
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFractionalGS
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateFrobeniusFold
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateInterpolation
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateMultilinearHypercube
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateResultantCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateSubfieldProjection
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateSyndrome
@@ -407,6 +410,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseSchmidt
 import ArkLib.Data.CodingTheory.ProximityGap.Issue141Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonCapacityBound
+import ArkLib.Data.CodingTheory.ProximityGap.JohnsonInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonListBound
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingBadScalarCount
@@ -455,6 +459,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeGuardrail
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeUpperBound
+import ArkLib.Data.CodingTheory.ProximityGap.MDSMaxAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.MDSNearCountVolume
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
@@ -463,6 +468,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityProducts
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
+import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypotheses
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityPrizeProof
@@ -767,6 +773,9 @@ import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
+import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
+import ArkLib.ProofSystem.Spartan.SecondSumcheckRelIn
+import ArkLib.ProofSystem.Spartan.SecondSumcheckSimOStmt
 import ArkLib.ProofSystem.Spartan.SumcheckCubeBridge
 import ArkLib.ProofSystem.Spartan.SumcheckDegreeBound
 import ArkLib.ProofSystem.Stir.Combine
@@ -1006,4 +1015,5 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
+import ArkLib.scratch_append_pc
 import ArkLib.whir113keystone
