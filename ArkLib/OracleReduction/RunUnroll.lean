@@ -251,6 +251,27 @@ theorem probComp_seam_union_le
 
 #print axioms probComp_seam_union_le
 
+/-- **`OptionT.mk`-to-`ProbComp` `probEvent` bridge.** The soundness game is phrased as a
+`probEvent` over an `OptionT ProbComp` (the verifier may reject = fail), while the union-bound
+toolkit (`probComp_seam_union_le`) is stated at the bare `ProbComp` level with a `none`-as-failure
+predicate. This lemma converts between them: a `probEvent` of `p` over `OptionT.mk PROG` equals the
+`probEvent` over the underlying `PROG` of the lifted predicate `Option.elim · False p` (which scores
+`none`/failure as `False`). This is the first wiring step of the `appendSoundness` connect: it brings
+the soundness goal to the `ProbComp` level where `probComp_seam_union_le` applies. -/
+theorem probEvent_optionT_mk {α : Type} (PROG : ProbComp (Option α)) (p : α → Prop) :
+    Pr[p | (OptionT.mk PROG : OptionT ProbComp α)]
+      = Pr[fun o => Option.elim o False p | PROG] := by
+  classical
+  rw [probEvent_eq_tsum_indicator, probEvent_eq_tsum_indicator,
+      tsum_option _ ENNReal.summable]
+  have hnone : ({x | Option.elim x False p}.indicator (Pr[= · | PROG]) none) = 0 := by simp
+  rw [hnone, zero_add]
+  refine tsum_congr (fun a => ?_)
+  by_cases h : p a <;>
+    simp [Set.indicator_apply, OptionT.probOutput_eq, h]
+
+#print axioms probEvent_optionT_mk
+
 /-- **`simulateQ` preserves the `σ`-state on its support, when every query implementation does.**
 Holds for `challengeQueryImpl` (which threads `σ` unchanged) and for empty `oSpec`. This is the
 independence ingredient for the seam swap: a state-preserving prover stage cannot affect a later
