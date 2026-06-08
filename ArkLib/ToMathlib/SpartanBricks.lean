@@ -1001,18 +1001,26 @@ We existentially quantify the combined `pSpecC` (rather than spelling out the `F
 arithmetic) so the residual records exactly the protocol-level obligation without committing to a
 brittle size normal form. -/
 set_option maxHeartbeats 0 in
-noncomputable def composedPIOP :
-    OracleReduction oSpec
-      (Statement R pp) (OracleStatement R pp) (Witness R pp)
-      (FinalStatement R pp) (FinalOracleStatement R pp) Unit
-      _ :=
-  oracleReduction.firstMessage R pp oSpec |>.append
-    (oracleReduction.firstChallenge R pp oSpec |>.append
-      (firstSumcheckReduction R pp oSpec |>.append
-        (oracleReduction.sendEvalClaim R pp oSpec |>.append
-          (oracleReduction.linearCombination R pp oSpec |>.append
-            (secondSumcheckReduction R pp oSpec |>.append
-              (finalCheck R pp oSpec))))))
+noncomputable def composedPIOP1 :=
+  oracleReduction.linearCombination R pp oSpec |>.append
+    (secondSumcheckReduction R pp oSpec |>.append
+      (finalCheck R pp oSpec))
+
+set_option maxHeartbeats 0 in
+noncomputable def composedPIOP2 :=
+  oracleReduction.sendEvalClaim R pp oSpec |>.append composedPIOP1
+
+set_option maxHeartbeats 0 in
+noncomputable def composedPIOP3 :=
+  firstSumcheckReduction R pp oSpec |>.append composedPIOP2
+
+set_option maxHeartbeats 0 in
+noncomputable def composedPIOP4 :=
+  oracleReduction.firstChallenge R pp oSpec |>.append composedPIOP3
+
+set_option maxHeartbeats 0 in
+noncomputable def composedPIOP :=
+  oracleReduction.firstMessage R pp oSpec |>.append composedPIOP4
 
 def composedPIOPResidual : Prop :=
   ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface.{0, 0} (pSpecC.Message i))
@@ -1030,18 +1038,26 @@ composition obligation as `composedPIOPResidual`, but with the real terminal `Ch
 the output statement carries the second-sum-check target value alongside the final Spartan context,
 so the final predicate can check `target = expected(r_x,r_y,A,B,C,Z)`. -/
 set_option maxHeartbeats 0 in
-noncomputable def composedPIOPWithClaim :
-    OracleReduction oSpec
-      (Statement R pp) (OracleStatement R pp) (Witness R pp)
-      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit
-      _ :=
-  oracleReduction.firstMessage R pp oSpec |>.append
-    (oracleReduction.firstChallenge R pp oSpec |>.append
-      (firstSumcheckReduction R pp oSpec |>.append
-        (oracleReduction.sendEvalClaim R pp oSpec |>.append
-          (oracleReduction.linearCombination R pp oSpec |>.append
-            (secondSumcheckReduction R pp oSpec |>.append
-              (finalCheckWithClaim R pp oSpec))))))
+noncomputable def composedPIOPWithClaim1 :=
+  oracleReduction.linearCombination R pp oSpec |>.append
+    (secondSumcheckReduction R pp oSpec |>.append
+      (finalCheckWithClaim R pp oSpec))
+
+set_option maxHeartbeats 0 in
+noncomputable def composedPIOPWithClaim2 :=
+  oracleReduction.sendEvalClaim R pp oSpec |>.append composedPIOPWithClaim1
+
+set_option maxHeartbeats 0 in
+noncomputable def composedPIOPWithClaim3 :=
+  firstSumcheckReduction R pp oSpec |>.append composedPIOPWithClaim2
+
+set_option maxHeartbeats 0 in
+noncomputable def composedPIOPWithClaim4 :=
+  oracleReduction.firstChallenge R pp oSpec |>.append composedPIOPWithClaim3
+
+set_option maxHeartbeats 0 in
+noncomputable def composedPIOPWithClaim :=
+  oracleReduction.firstMessage R pp oSpec |>.append composedPIOPWithClaim4
 
 def composedPIOPWithClaimResidual : Prop :=
   ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface.{0, 0} (pSpecC.Message i))

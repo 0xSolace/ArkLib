@@ -598,8 +598,7 @@ theorem outerVerifier_run_accept_eq_pure
   rw [simulateQ_outerVerify_eq]
   rw [if_pos (show (∀ (u : Hypercube n),
       chalX F n M params tr.challenges + evalOnHypercube (tableOracle stmtIn.2) u ≠ 0) from hacc)]
-  simp only [pure_bind]
-  rfl
+  rw [pure_bind, OptionT.run_pure]
 
 set_option maxHeartbeats 3200000 in
 /-- **Per-(initial-state) pole bound for the simulated outer run (DEV — accept-zero pending).**
@@ -641,8 +640,7 @@ theorem outer_perState_none_le
     right
     sorry
   · rw [if_pos hacc]
-    refine mul_le_of_le_one_right (zero_le _) ?_
-    exact probEvent_le_one
+    exact le_of_le_of_eq (mul_le_mul_left' probEvent_le_one _) (mul_one _)
 
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
