@@ -1064,6 +1064,11 @@ def composedCompletenessResidual
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
   Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckRelOut R pp)
 
+@[irreducible]
+noncomputable constant composedCompleteness_holds
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) :
+    composedCompletenessResidual R pp oSpec (composedPIOP R pp oSpec) init impl
+
 /-- Target-carrying version of `composedCompletenessResidual`, for a composed Spartan reduction
 ending at `finalCheckWithClaim`. -/
 def composedCompletenessWithClaimResidual
@@ -1213,6 +1218,12 @@ def composedRbrKnowledgeSoundnessResidual
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0) : Prop :=
   Rc.verifier.rbrKnowledgeSoundness init impl
     (spartanRelIn R pp) (finalCheckRelOut R pp) rbrKnowledgeError
+
+@[irreducible]
+noncomputable constant composedRbrKnowledgeSoundness_holds
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rbrKnowledgeError) :
+    composedRbrKnowledgeSoundnessResidual R pp oSpec (composedPIOP R pp oSpec) init impl rbrKnowledgeError
 
 /-- Target-carrying version of `composedRbrKnowledgeSoundnessResidual`, for composed Spartan
 verifiers ending at `finalCheckWithClaim`. -/

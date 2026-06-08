@@ -1090,11 +1090,34 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_proved [IsDomain L]
   obtain ⟨h_V_check, _⟩ := iteratedSumcheck_round_logic_complete (κ := κ) (L := L) (K := K)
     (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) i stmtIn oStmtIn witIn
     h_relIn (Classical.arbitrary L)
+  -- The honest verifier run collapses to `pure (next-round statement, oracle statements)`: it queries
+  -- the prover message, the sum-check guard passes (logic-completeness conjunct 1), and it forwards
+  -- the unchanged oracle statements.
+  have hverify : ∀ r1 : L,
+      (iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i).toVerifier.verify (stmtIn, oStmtIn)
+          (FullTranscript.mk2 (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H) r1)
+        = (pure
+            (⟨{ sumcheck_target :=
+                  Polynomial.eval r1 ↑(getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H),
+                challenges := Fin.cons r1 stmtIn.challenges, ctx := stmtIn.ctx },
+              oStmtIn⟩ :
+              Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.succ
+                × (∀ j, aOStmtIn.OStmtIn j))
+            : OptionT (OracleComp []ₒ) _) := by
+    intro r1
+    obtain ⟨h_V_check, -⟩ := iteratedSumcheck_round_logic_complete (κ := κ) (L := L) (K := K)
+      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) i stmtIn oStmtIn witIn
+      h_relIn r1
+    simp only [OracleVerifier.toVerifier, iteratedSumcheckOracleVerifier,
+      Sumcheck.Structured.roundOracleVerifier, FullTranscript.mk2,
+      OptionT.simulateQ_bind, OptionT.simulateQ_simOracle2_liftM_query_T2, guard_eq,
+      OptionT.simulateQ_ite, OptionT.simulateQ_pure, OptionT.simulateQ_failure]
+    trace_state
+    sorry
   rw [probEvent_eq_one_iff]
   dsimp only [iteratedSumcheckOracleReduction, iteratedSumcheckOracleProver,
-    iteratedSumcheckOracleVerifier, Sumcheck.Structured.roundOracleReduction,
-    Sumcheck.Structured.roundOracleProver, Sumcheck.Structured.roundOracleVerifier,
-    OracleVerifier.toVerifier, FullTranscript.mk2]
+    Sumcheck.Structured.roundOracleReduction,
+    Sumcheck.Structured.roundOracleProver, FullTranscript.mk2]
   refine ⟨?_, ?_⟩
   -- GOAL 1: SAFETY — the honest verifier never fails (the sum-check guard passes).
   · simp only [probFailure_bind_eq_zero_iff]

@@ -646,25 +646,21 @@ theorem outer_perState_none_le
     intro y hy hynone
     subst hynone
     -- `none` survives the simulated run only if it is already in the (un-simulated) run's support.
-    have hsub := support_simulateQ_run'_subset (impl.addLift challengeQueryImpl) _ s hy
+    have hsub := _root_.support_simulateQ_run'_subset (impl.addLift challengeQueryImpl) _ s hy
     rw [support_bind] at hsub
     simp only [Set.mem_iUnion, exists_prop] at hsub
     obtain ⟨x, hx, hxnone⟩ := hsub
     rw [support_map] at hx
     obtain ⟨a, _, rfl⟩ := hx
-    -- The transcript built here carries `c` as its round-1 challenge, so the verifier accepts.
-    have hchalX : chalX F n M params
-        (Transcript.concat a
-          (Transcript.concat (honestHelpers params stmtIn.2 c)
-            (Transcript.concat c
-              (Transcript.concat (honestMultiplicity stmtIn.2) default)))).challenges = c := by
-      simp only [chalX, FullTranscript.challenges, Transcript.concat, Fin.isValue]
-      rfl
+    -- The transcript built here carries `c` as its round-1 challenge (`readback`), so the embedded
+    -- verifier accepts and its run is a pure `some` — leaving no `none` in the support.
     obtain ⟨v, hv⟩ := outerVerifier_run_accept_eq_pure oSpec F n M params stmtIn _
-      (by rw [hchalX]; exact hacc)
-    rw [optionT_run_bind, optionT_run_lift, hv] at hxnone
-    simp only [map_pure, pure_bind, OptionT.run_pure, support_pure,
-      Set.mem_singleton_iff, Option.getM, reduceCtorEq] at hxnone
+      ((outerProver_transcript_challenge_readback
+          (m₀ := honestMultiplicity stmtIn.2) (x := c)
+          (m₂ := honestHelpers params stmtIn.2 c) (batch := a)).1.symm ▸ hacc)
+    rw [optionT_run_bind, hv] at hxnone
+    simp only [optionT_run_lift, OracleComp.liftComp_pure, _root_.map_pure, pure_bind,
+      OptionT.run_pure, support_pure, Set.mem_singleton_iff, Option.getM, reduceCtorEq] at hxnone
   · rw [if_pos hacc]
     refine le_trans (mul_le_mul_left' probEvent_le_one _) (le_of_eq ?_)
     rw [mul_one]
