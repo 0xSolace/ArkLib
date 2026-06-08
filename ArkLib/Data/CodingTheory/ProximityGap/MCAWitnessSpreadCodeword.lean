@@ -27,6 +27,10 @@ pigeonhole that is unconditionally valid for `δ < 1/2`.
   overlap outruns the zero-set of `u₁` (`|ι| + #{i : u₁ i = 0} < |S₁| + |S₂|`), then `γ₁ = γ₂`.
 * `unique_bad_gamma_common_codeword` — the full-support specialization (`#{i : u₁ i = 0} = 0`, so
   the condition is just `|ι| < |S₁| + |S₂|`).
+* `overlap_subset_zeros` — two distinct line points sharing a codeword overlap only inside the
+  zero-set of `u₁`.
+* `fiber_card_packing` — **all-stacks** count: one codeword witnesses at most `(n-z)/(t-z)` bad
+  scalars (`z = #{u₁ = 0}`), via a disjoint packing of the cleaned witness sets.
 * `card_sum_gt_of_lt_half` — the `δ < 1/2` driver: two witness sets each of size `≥ (1-δ)n`
   satisfy `|ι| < |S₁| + |S₂|`.
 * `badCount_le_witnessCodeword_card` — **the reduction.** For `δ < 1/2` and a full-support line,
@@ -105,6 +109,68 @@ theorem unique_bad_gamma_common_codeword
     Finset.filter_eq_empty_iff.mpr fun i _ => hsupp i
   rw [hempty, Finset.card_empty]; omega
 
+/-- **Overlap core.** A single codeword `w` agreeing with two *distinct* line points overlaps only
+inside the zero-set of `u₁`: on `S₁ ∩ S₂`, `(γ₁ - γ₂)·u₁ = 0`, so `u₁ = 0` there. -/
+theorem overlap_subset_zeros
+    (u₀ u₁ w : ι → A) {γ₁ γ₂ : F} (hne : γ₁ ≠ γ₂) {S₁ S₂ : Finset ι}
+    (h₁ : ∀ i ∈ S₁, w i = u₀ i + γ₁ • u₁ i)
+    (h₂ : ∀ i ∈ S₂, w i = u₀ i + γ₂ • u₁ i) :
+    S₁ ∩ S₂ ⊆ Finset.univ.filter (fun i => u₁ i = 0) := by
+  intro i hi
+  rw [Finset.mem_inter] at hi
+  have hd : γ₁ - γ₂ ≠ 0 := sub_ne_zero.mpr hne
+  have e : u₀ i + γ₁ • u₁ i = u₀ i + γ₂ • u₁ i := by rw [← h₁ i hi.1, ← h₂ i hi.2]
+  have hz : (γ₁ - γ₂) • u₁ i = 0 := by rw [sub_smul, add_left_cancel e, sub_self]
+  have hu : u₁ i = 0 := by rw [← inv_smul_smul₀ hd (u₁ i), hz, smul_zero]
+  exact Finset.mem_filter.mpr ⟨Finset.mem_univ i, hu⟩
+
+/-- **Per-codeword fiber-packing bound (all stacks — no full-support assumption).** A single
+codeword `w` witnesses at most `(n - z)/(t - z)` bad scalars, where `z = #{i : u₁ i = 0}` and each
+witness set has size `≥ t > z`: the cleaned witness sets `S_γ \ zeros(u₁)` are pairwise disjoint
+(by `overlap_subset_zeros`), each of size `≥ t - z`, packed inside the `(n - z)`-element non-zero
+coordinate set. For a full-support line (`z = 0`) with `t > n/2` this gives at most one bad scalar
+per codeword, recovering `unique_bad_gamma_common_codeword`. -/
+theorem fiber_card_packing
+    (u₀ u₁ w : ι → A) (t : ℕ) (G : Finset F) (S : F → Finset ι)
+    (hSt : ∀ γ ∈ G, t ≤ (S γ).card)
+    (hagree : ∀ γ ∈ G, ∀ i ∈ S γ, w i = u₀ i + γ • u₁ i)
+    (htz : (Finset.univ.filter (fun i => u₁ i = 0)).card < t) :
+    G.card * (t - (Finset.univ.filter (fun i => u₁ i = 0)).card)
+      ≤ Fintype.card ι - (Finset.univ.filter (fun i => u₁ i = 0)).card := by
+  set Z := Finset.univ.filter (fun i => u₁ i = 0) with hZ
+  set f : F → Finset ι := fun γ => S γ \ Z with hf
+  have hdisj : (G : Set F).Pairwise (fun γ γ' => Disjoint (f γ) (f γ')) := by
+    intro γ hγ γ' hγ' hne
+    rw [Finset.disjoint_left]
+    intro i hi hi'
+    simp only [hf, Finset.mem_sdiff] at hi hi'
+    have hsub := overlap_subset_zeros u₀ u₁ w hne
+      (fun j hj => hagree γ hγ j hj) (fun j hj => hagree γ' hγ' j hj)
+    exact hi.2 (hsub (Finset.mem_inter.mpr ⟨hi.1, hi'.1⟩))
+  have hcard_f : ∀ γ ∈ G, t - Z.card ≤ (f γ).card := by
+    intro γ hγ
+    have h1 : (S γ).card ≤ (f γ).card + Z.card := by
+      simpa [hf] using Finset.card_le_card_sdiff_add_card (s := S γ) (t := Z)
+    have h2 := hSt γ hγ
+    omega
+  have hbU : (G.biUnion f) ⊆ Finset.univ \ Z := by
+    intro i hi
+    rw [Finset.mem_biUnion] at hi
+    obtain ⟨γ, _, hiγ⟩ := hi
+    simp only [hf, Finset.mem_sdiff] at hiγ ⊢
+    exact ⟨Finset.mem_univ i, hiγ.2⟩
+  have hsum : (G.biUnion f).card = ∑ γ ∈ G, (f γ).card :=
+    Finset.card_biUnion (fun x hx y hy h => hdisj hx hy h)
+  have hle : (∑ γ ∈ G, (f γ).card) ≤ Fintype.card ι - Z.card := by
+    rw [← hsum]
+    calc (G.biUnion f).card ≤ (Finset.univ \ Z).card := Finset.card_le_card hbU
+      _ = Fintype.card ι - Z.card := by
+          rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl]
+  calc G.card * (t - Z.card) = ∑ _γ ∈ G, (t - Z.card) := by
+        rw [Finset.sum_const, smul_eq_mul]
+    _ ≤ ∑ γ ∈ G, (f γ).card := Finset.sum_le_sum hcard_f
+    _ ≤ Fintype.card ι - Z.card := hle
+
 /-- **The `δ < 1/2` overlap driver.** Two witness sets each of relative size `≥ 1 - δ` jointly
 exceed `|ι|` when `δ < 1/2`, so they must overlap. -/
 theorem card_sum_gt_of_lt_half (δ : ℝ≥0) (hδ : δ < 1/2) {S₁ S₂ : Finset ι}
@@ -170,6 +236,8 @@ theorem badCount_le_witnessCodeword_card
 
 #print axioms unique_bad_gamma_common_codeword_general
 #print axioms unique_bad_gamma_common_codeword
+#print axioms overlap_subset_zeros
+#print axioms fiber_card_packing
 #print axioms card_sum_gt_of_lt_half
 #print axioms badCount_le_witnessCodeword_card
 
