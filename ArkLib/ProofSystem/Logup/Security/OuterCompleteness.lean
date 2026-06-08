@@ -1,5 +1,6 @@
 import ArkLib.ProofSystem.Logup.Security.Completeness
 import ArkLib.OracleReduction.Completeness
+import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ProofSystem.Logup.Security.OuterRun
 
 open scoped NNReal ENNReal
@@ -350,6 +351,33 @@ theorem outerProver_transcript_challenge_readback
   · simp only [chalBatch, FullTranscript.challenges, Transcript.concat, Fin.isValue]
     rfl
 
+/-- **Transcript message readback for the closed-form outer run (foundational, axiom-clean).**
+
+Sibling of `outerProver_transcript_challenge_readback` on the message side. The closed-form prover
+transcript is the 4-fold `Transcript.concat` (`Fin.snoc`) chain
+`((((default).concat m₀).concat x).concat m₂).concat batch`. The outer verifier reads the two prover
+messages off this transcript to build its output oracle statement via `embed`
+(`.multiplicity → messages ⟨0⟩`, `.helpers → messages ⟨2⟩`), while the honest prover's output oracle
+statement uses the sent messages `m₀`/`m₂` directly. This lemma settles that they coincide: each sent
+message is read back unchanged at its own round index — the message-side structural fact for the
+prover/verifier output-statement agreement (`prvStmtOut = stmtOut`) inside
+`OuterCompletenessRunFactsResidual`. Pure finite `Fin.snoc` computation (`m₂` at index `2`, and `m₀`
+at index `0` peeled through the inner `snoc`s). -/
+theorem outerProver_transcript_message_readback
+    (m₀ : (outerPSpec F n params).Message ⟨0, rfl⟩)
+    (x : (outerPSpec F n params).Challenge ⟨1, rfl⟩)
+    (m₂ : (outerPSpec F n params).Message ⟨2, rfl⟩)
+    (batch : (outerPSpec F n params).Challenge ⟨3, rfl⟩) :
+    (((((default : (outerPSpec F n params).Transcript 0).concat m₀).concat x).concat m₂).concat
+            batch).messages (⟨0, rfl⟩ : (outerPSpec F n params).MessageIdx) = m₀ ∧
+    (((((default : (outerPSpec F n params).Transcript 0).concat m₀).concat x).concat m₂).concat
+            batch).messages (⟨2, rfl⟩ : (outerPSpec F n params).MessageIdx) = m₂ := by
+  constructor
+  · simp only [FullTranscript.messages, Transcript.concat, Fin.isValue]
+    rfl
+  · simp only [FullTranscript.messages, Transcript.concat, Fin.isValue]
+    rfl
+
 set_option maxHeartbeats 3200000 in
 /-- **Outer-completeness failure bound reduced to the per-(initial-state) pole event (axiom-clean).**
 
@@ -381,6 +409,37 @@ theorem probFailure_outerCompletenessRunComp_le_of_perStateNone
     refine probEvent_bind_le_of_forall_le (fun s _ => ?_)
     rw [probEvent_eq_eq_probOutput]
     exact hPole s
+
+set_option maxHeartbeats 3200000 in
+/-- **Outer-completeness complement-zero reduced to the per-(initial-state) agreement (axiom-clean).**
+
+The completeness predicate (`midRelation = Set.univ`, so `(stmtOut, witOut) ∈ midRelation ∧
+prvStmtOut = stmtOut` collapses to `prvStmtOut = stmtOut`) has complement probability `0` on the
+standard outer run, *given* the per-initial-state fact that its complement is `0` on the simulated
+reduction run.
+
+This discharges the run-level plumbing sorry-free: the `OptionT.mk` event collapse
+(`probEvent_optionT_mk_eq_elim`) and the split over the `init` state (`probEvent_bind_eq_tsum` +
+`ENNReal.tsum_eq_zero`).  The remaining per-state obligation is that on every successful simulated run
+the honest prover's output statement equals the verifier's recomputed one — exactly the
+`outerProver_transcript_challenge_readback` / `..._message_readback` agreement. -/
+theorem probEvent_outerCompletenessRunComp_compl_eq_zero_of_perState
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (witIn : WitIn F n M params)
+    (hAgree : ∀ s : σ,
+      Pr[fun ⟨⟨_, (prvStmtOut, witOut)⟩, stmtOut⟩ =>
+          ¬ ((stmtOut, witOut) ∈ midRelation F n M params ∧ prvStmtOut = stmtOut) |
+        (OptionT.mk ((simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+            (((outerOracleReduction oSpec F n M params).toReduction.run stmtIn witIn).run) :
+              StateT σ ProbComp (Option (OuterCompletenessRunResult F n M params))).run' s)
+          : OptionT ProbComp (OuterCompletenessRunResult F n M params))] = 0) :
+    Pr[fun ⟨⟨_, (prvStmtOut, witOut)⟩, stmtOut⟩ =>
+        ¬ ((stmtOut, witOut) ∈ midRelation F n M params ∧ prvStmtOut = stmtOut) |
+      outerCompletenessRunComp oSpec F n M params init impl stmtIn witIn] = 0 := by
+  unfold outerCompletenessRunComp
+  rw [Verifier.StateFunction.probEvent_optionT_mk_eq_elim, probEvent_bind_eq_tsum]
+  refine ENNReal.tsum_eq_zero.mpr (fun s => ?_)
+  rw [← Verifier.StateFunction.probEvent_optionT_mk_eq_elim, hAgree s, mul_zero]
 
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
