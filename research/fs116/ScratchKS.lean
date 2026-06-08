@@ -8,6 +8,7 @@ open scoped NNReal
 namespace Reduction
 
 attribute [local instance] Reduction.fiatShamirChallengeOracleInterface
+attribute [local instance 10000] Reduction.fiatShamirNoChallengeSampleable
 
 variable {ι : Type} {oSpec : OracleSpec ι}
 variable {StmtIn WitIn StmtOut WitOut : Type}
@@ -186,7 +187,13 @@ theorem scratch_fiatShamirKnowledgeExec_runCollapse
                 ((pure (stmtIn, extractedWitIn, d.2, d.1.2.2)) :
                   OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
                     (StmtIn × WitIn × StmtOut × WitOut))))
-  conv_lhs => rw [fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn]
+  have hfst :
+      ((fun o => Option.map Prod.fst o) <$>
+        simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          (Reduction.runWithLog stmtIn witIn { prover := P, verifier := V.fiatShamir }).run) =
+        simulateQ impl (fiatShamirAdversaryExecution P V stmtIn witIn).run :=
+    fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn
+  rw [hfst]
   simp [K]
 
 theorem scratch_fiatShamir_knowledgeSoundnessTransferResidual_canonical

@@ -57,13 +57,9 @@ theorem list_le_one_of_min_weight {C : Finset (ι → F)}
   rw [not_le] at hgt
   obtain ⟨c, hc, c', hc', hne⟩ := Finset.one_lt_card.mp hgt
   rw [lam, Finset.mem_filter] at hc hc'
-  have hv : c' - c ∈ C := hsub c' hc'.1 c hc.1
-  have hvne : c' - c ≠ 0 := sub_ne_zero.mpr (Ne.symm hne)
-  have hwt : 2 * r < hammingNorm (-c + c') := by
-    have hdiff : (-c + c') = c' - c := by
-      ext i
-      simp [sub_eq_add_neg, add_comm]
-    simpa [hdiff] using hmin _ hv hvne
+  have hv : c - c' ∈ C := hsub c hc.1 c' hc'.1
+  have hvne : c - c' ≠ 0 := sub_ne_zero.mpr hne
+  have hwt : 2 * r < hammingNorm (c - c') := hmin _ hv hvne
   have hd : hammingDist c c' = hammingNorm (c - c') := by
     have h := hammingDist_add_right (c - c') (0 : ι → F) c'
     rw [sub_add_cancel, zero_add, hammingDist_zero_right] at h
@@ -73,7 +69,55 @@ theorem list_le_one_of_min_weight {C : Finset (ι → F)}
   rw [hd, hammingDist_comm f c'] at htri
   omega
 
+/-- **Ambiguity appears at half the minimum distance (converse).** If `C` contains `0` and a nonzero
+codeword `v` of weight `≤ 2r`, then some received word has a decoding list of size `≥ 2`. The witness
+is the explicit metric midpoint `g`: split the support `T` of `v` into `⌊wt/2⌋` coordinates where `g`
+agrees with `0` and the rest where `g` agrees with `v`; then `d(0,g) = ⌈wt/2⌉ ≤ r` and
+`d(v,g) = ⌊wt/2⌋ ≤ r`, so both `0` and `v` lie in `Λ(C,r,g)`. Together with `list_le_one_of_min_weight`
+this pins the unique→list transition **exactly** at radius `⌈d/2⌉`. -/
+theorem exists_two_of_close_codeword {C : Finset (ι → F)} (r : ℕ) {v : ι → F}
+    (h0 : (0 : ι → F) ∈ C) (hv : v ∈ C) (hvne : v ≠ 0) (hwt : hammingNorm v ≤ 2 * r) :
+    ∃ f : ι → F, 2 ≤ (lam C r f).card := by
+  classical
+  set T : Finset ι := Finset.univ.filter (fun i => v i ≠ 0) with hT
+  have hTcard : T.card = hammingNorm v := rfl
+  obtain ⟨T₀, hT₀sub, hT₀card⟩ :=
+    Finset.exists_subset_card_eq (show hammingNorm v / 2 ≤ T.card by rw [hTcard]; omega)
+  set g : ι → F := fun i => if i ∈ T₀ then 0 else v i with hg
+  -- support of g is `T \ T₀`
+  have hsupp : Finset.univ.filter (fun i => g i ≠ 0) = T \ T₀ := by
+    ext i
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_sdiff, hg, hT]
+    by_cases hi : i ∈ T₀
+    · simp only [hi, if_true, ne_eq, not_true_eq_false, false_iff, not_and, not_not]
+      intro _; exact absurd hi (by simpa using hi)
+    · simp [hi]
+  -- the disagreement set of `v` and `g` is exactly `T₀`
+  have hvg : Finset.univ.filter (fun i => v i ≠ g i) = T₀ := by
+    ext i
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, hg]
+    by_cases hi : i ∈ T₀
+    · have hvi : v i ≠ 0 := by
+        have := hT₀sub hi; rw [hT, Finset.mem_filter] at this; exact this.2
+      simp only [hi, if_true]; exact iff_of_true hvi hi
+    · simp only [hi, if_false, ne_eq, not_true_eq_false, false_iff]; exact hi
+  -- distance of `g` to `0` and to `v`
+  have hd0 : hammingDist (0 : ι → F) g ≤ r := by
+    rw [hammingDist_zero_left]
+    show (Finset.univ.filter (fun i => g i ≠ 0)).card ≤ r
+    rw [hsupp, Finset.card_sdiff hT₀sub, hTcard, hT₀card]; omega
+  have hdv : hammingDist v g ≤ r := by
+    show (Finset.univ.filter (fun i => v i ≠ g i)).card ≤ r
+    rw [hvg, hT₀card]; omega
+  refine ⟨g, ?_⟩
+  have h0mem : (0 : ι → F) ∈ lam C r g := by
+    rw [lam, Finset.mem_filter]; exact ⟨h0, hd0⟩
+  have hvmem : v ∈ lam C r g := by
+    rw [lam, Finset.mem_filter]; exact ⟨hv, hdv⟩
+  exact Finset.one_lt_card.mpr ⟨0, h0mem, v, hvmem, fun h => hvne h.symm⟩
+
 #print axioms pairBall_eq_zero
 #print axioms list_le_one_of_min_weight
+#print axioms exists_two_of_close_codeword
 
 end ArkLib.CodingTheory.ListMoments

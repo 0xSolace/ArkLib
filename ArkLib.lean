@@ -687,6 +687,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendReduction
 import ArkLib.OracleReduction.Composition.Sequential.General
+import ArkLib.OracleReduction.Composition.Sequential.N0CompScratch
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
@@ -836,6 +837,7 @@ import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
+import ArkLib.ProofSystem.Spartan.SecondSumcheckFaithful
 import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
 import ArkLib.ProofSystem.Spartan.SecondSumcheckRelIn
 import ArkLib.ProofSystem.Spartan.SecondSumcheckSimOStmt
