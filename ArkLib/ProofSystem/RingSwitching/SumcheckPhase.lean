@@ -8,6 +8,7 @@ import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.Append
+import ArkLib.Data.Probability.Notation
 import ArkLib.OracleReduction.Security.RoundByRound
 
 /-!
@@ -909,7 +910,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
     ∃ witMid : SumcheckWitness L ℓ' i.succ,
       aOStmtIn.initialCompatibility ⟨witMid.t', stmtOStmtIn.2⟩ ∧
       let witBefore : SumcheckWitness L ℓ' i.castSucc :=
-        (iteratedSumcheckRbrExtractor.{0,0,0} κ L K P ℓ ℓ' h_l aOStmtIn i).extractMid
+        (iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i).extractMid
           (m := 1) stmtOStmtIn (FullTranscript.mk2 h_i r_i') witMid
       let h_star : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := witBefore.H)
       badSumcheckEventProp r_i' h_i h_star := by
@@ -937,7 +938,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
       aOStmtIn.initialCompatibility ⟨witMid.t', stmtOStmtIn.2⟩ := by
     simpa using h_kState_after_true.2.2
   let witBefore : SumcheckWitness L ℓ' i.castSucc :=
-    (iteratedSumcheckRbrExtractor.{0,0,0} κ L K P ℓ ℓ' h_l aOStmtIn i).extractMid
+    (iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i).extractMid
       (m := 1) stmtOStmtIn (FullTranscript.mk2 h_i r_i') witMid
   have h_H_before : witBefore.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witMid.t')
         (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
