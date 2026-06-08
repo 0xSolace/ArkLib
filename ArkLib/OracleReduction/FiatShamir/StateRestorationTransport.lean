@@ -1386,7 +1386,6 @@ section CanonicalKnowledgeSoundness
 
 set_option linter.unusedSimpArgs false
 set_option linter.unusedSectionVars false
-set_option maxHeartbeats 800000
 
 attribute [local instance] Reduction.fiatShamirChallengeOracleInterface
 
@@ -1769,6 +1768,7 @@ theorem fiatShamirKnowledgeExec_runCollapse
 /-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
 table. This is the knowledge-soundness analogue of
 `fiatShamir_soundnessTransferResidual_canonical`. -/
+set_option maxHeartbeats 4000000 in
 theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
     (srImpl : QueryImpl oSpec
@@ -1796,83 +1796,12 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (stmtIn := stmtIn) (witIn := witIn)
   simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self] at hCollapse
   rw [probEvent_optionT_stateT_init]
-  have hCollapseRun := congrFun (congrArg StateT.run hCollapse)
-  have hInitCollapse :
-      (do
-        let s ← srInit
-        (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
-            QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$>
-          (simulateQ
-            (fiatShamirCoupledQueryImpl
-              (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl +
-              QueryImpl.liftTarget
-                (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp)
-                challengeQueryImpl)
-            (do
-              let d ← Reduction.runWithLog stmtIn witIn
-                { prover := prover, verifier := V.fiatShamir }
-              let extractedWitIn ←
-                liftM do
-                  let transcript ← OptionT.mk (some <$>
-                    Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1.1 0))
-                  liftM (srExtractor stmtIn d.1.1.2.2 transcript default default)
-              pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run).run s :
-        ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut))) =
-      (do
-        let s ← srInit
-        (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
-            QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$>
-          (simulateQ
-            (fiatShamirCoupledQueryImpl
-              (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
-            (do
-              let d ← fiatShamirAdversaryExecution prover V stmtIn witIn
-              let extractedWitIn ←
-                liftM do
-                  let transcript ← OptionT.mk (some <$>
-                    Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1 0))
-                  liftM (srExtractor stmtIn d.1.2.2 transcript default default)
-              pure (stmtIn, extractedWitIn, d.2, d.1.2.2)).run).run s :
-        ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut))) := by
-    apply bind_congr
-    intro s
-    exact congrArg
-      (fun mx : ProbComp
-          (Option (StmtIn × WitIn × StmtOut × WitOut) ×
-            QueryImpl (fsChallengeOracle StmtIn pSpec) Id) =>
-        (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
-            QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$> mx)
-      (hCollapseRun s)
-  change
-      Pr[fun o : Option (StmtIn × WitIn × StmtOut × WitOut) =>
-          o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut |
-        (do
-          let s ← srInit
-          (fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
-              QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1) <$>
-            (simulateQ
-              (fiatShamirCoupledQueryImpl
-                (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl +
-                QueryImpl.liftTarget
-                  (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp)
-                  challengeQueryImpl)
-              (do
-                let d ← Reduction.runWithLog stmtIn witIn
-                  { prover := prover, verifier := V.fiatShamir }
-                let extractedWitIn ←
-                  liftM do
-                    let transcript ← OptionT.mk (some <$>
-                      Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (d.1.1.1 0))
-                    liftM (srExtractor stmtIn d.1.1.2.2 transcript default default)
-                pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run).run s :
-          ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)))] ≤ ↑knowledgeError
-  have hProbCollapse :=
-    congrArg
-      (fun c : ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)) =>
-        probEvent c (fun o => o.elim False fun x =>
-          (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut))
-      hInitCollapse
-  rw [hProbCollapse]
+  rw [probEvent_stateT_run_map_congr
+    (init := srInit)
+    (f := fun x : Option (StmtIn × WitIn × StmtOut × WitOut) ×
+        QueryImpl (fsChallengeOracle StmtIn pSpec) Id => x.1)
+    (p := fun o => o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut)
+    (h := hCollapse)]
   refine le_trans ?_ h
   simp [fiatShamirAdversaryExecution,
     Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
