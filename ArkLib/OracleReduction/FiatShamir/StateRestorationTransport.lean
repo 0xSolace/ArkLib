@@ -1219,27 +1219,45 @@ private theorem transcriptFromFSChallengeLogAux_succ_p
         dir_eq_of_castLE_eq (pSpec := pSpec) k i hDir' hDir
       cases hContr
   · next hDir' =>
-      set prev :=
-        ((Fin.induction (pure fun i => i.elim0)
-            (fun i ih => do
-              let prevTranscript ← ih
-              match hDir : pSpec.dir (i.castLE (by omega)) with
-              | .V_to_P =>
-                  (fun a => prevTranscript.concat a) <$>
-                    popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec)
-                      (i.castLE (by omega))
-              | .P_to_V =>
-                  pure (prevTranscript.concat (messages ⟨i, hDir⟩)))
-            i.castSucc).run log)
-      cases prev with
-      | none => rfl
-      | some p =>
-          simp
-          congr 1
-          apply congrArg (fun msg => p.1.concat msg)
-          apply congrArg messages
-          ext
-          rfl
+      have hMsg :
+          ∀ h : pSpec.dir (i.castLE (by omega)) = Direction.P_to_V,
+            messages ⟨i, h⟩ = messages ⟨i, hDir⟩ := by
+        intro h
+        have hProof : h = hDir := Subsingleton.elim h hDir
+        cases hProof
+        rfl
+      change
+        Option.map
+          (fun p : pSpec.Transcript (i.castSucc.castLE (by omega)) ×
+              QueryLog (fsChallengeOracle StmtIn pSpec) =>
+            (Transcript.concat (messages ⟨i, hDir'⟩) p.1, p.2))
+          ((Fin.induction (pure fun i => i.elim0)
+              (fun i ih => do
+                let prevTranscript ← ih
+                match hDir : pSpec.dir (i.castLE (by omega)) with
+                | .V_to_P =>
+                    (fun a => prevTranscript.concat a) <$>
+                      popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec)
+                        (i.castLE (by omega))
+                | .P_to_V =>
+                    pure (prevTranscript.concat (messages ⟨i, hDir⟩)))
+              i.castSucc).run log) =
+          Option.map
+            (fun p : pSpec.Transcript (i.castSucc.castLE (by omega)) ×
+                QueryLog (fsChallengeOracle StmtIn pSpec) =>
+              (Transcript.concat (messages ⟨i, hDir⟩) p.1, p.2))
+            ((Fin.induction (pure fun i => i.elim0)
+                (fun i ih => do
+                  let prevTranscript ← ih
+                  match hDir : pSpec.dir (i.castLE (by omega)) with
+                  | .V_to_P =>
+                      (fun a => prevTranscript.concat a) <$>
+                        popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec)
+                          (i.castLE (by omega))
+                  | .P_to_V =>
+                      pure (prevTranscript.concat (messages ⟨i, hDir⟩)))
+                i.castSucc).run log)
+      rw [hMsg hDir']
 
 set_option maxHeartbeats 800000 in
 private theorem transcriptFromFSChallengeLogAux_run_logging
