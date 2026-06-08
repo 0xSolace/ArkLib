@@ -708,6 +708,88 @@ def rbrExtractionFailureEvent
       (extractor.extractMid j.1 stmtIn (transcript.concat challenge) witMid) ∧
       kSF j.1.succ stmtIn (transcript.concat challenge) witMid
 
+omit [SampleableType L] in
+/-- Accept-branch batching doom escape exposes the algebraic source of failure.
+
+Even before the sumcheck-consistency orientation is addressed, the raw RBR doom event does not
+directly imply `badBatchingEventProp`: the pre-challenge KState can also fail because the extracted
+large-field polynomial is not the canonical `packMLE` representative of its `unpackMLE`.
+
+This lemma packages the exact accept-branch disjunction left by the current KState design. It is a
+useful no-cheating frontier for the sharp batching route: a future proof must either carry the
+pack/compatibility invariant through round 2, or enlarge the bad event beyond `msg0 ≠ s_bar`. -/
+lemma batching_rbrExtractionFailureEvent_accept_pack_or_embed
+    [IsDomain L] [IsDomain K]
+    (stmtOStmtIn : (BatchingStmtIn L ℓ) × (∀ j, aOStmtIn.OStmtIn j))
+    (msg0 : (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).Message ⟨0, rfl⟩)
+    (y : Fin κ → L)
+    (doomEscape : rbrExtractionFailureEvent
+      (kSF := batchingKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
+        (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
+      (extractor := batchingRbrExtractor (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
+        (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
+      (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => msg0)
+      (challenge := y))
+    (hAccept : performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmtOStmtIn.1.original_claim
+      stmtOStmtIn.1.t_eval_point msg0 = true) :
+    ∃ witMid : SumcheckWitness L ℓ' 0,
+      aOStmtIn.initialCompatibility ⟨witMid.t', stmtOStmtIn.2⟩ ∧
+        (witMid.t' ≠ packMLE κ L K ℓ ℓ' h_l P.basis
+            (unpackMLE κ L K ℓ ℓ' h_l P.basis witMid.t') ∨
+          embedded_MLP_eval κ L K P ℓ ℓ' h_l witMid.t' stmtOStmtIn.1.t_eval_point ≠ msg0) := by
+  classical
+  unfold rbrExtractionFailureEvent at doomEscape
+  rcases doomEscape with ⟨witMid, hBeforeFalse, hAfterTrue⟩
+  simp only [batchingKnowledgeStateFunction] at hBeforeFalse hAfterTrue
+  unfold batchingKStateProp at hBeforeFalse hAfterTrue
+  simp only [Fin.isValue, Fin.succ_one_eq_two] at hBeforeFalse hAfterTrue
+  simp only [Transcript.concat] at hBeforeFalse hAfterTrue
+  simp only [
+    Equiv.toFun_as_coe,
+    Transcript.equivMessagesChallenges_apply,
+    Transcript.toMessagesChallenges,
+    Transcript.toMessagesUpTo,
+    Transcript.toChallengesUpTo] at hBeforeFalse
+  simp only [
+    Equiv.toFun_as_coe,
+    Transcript.equivMessagesChallenges_apply,
+    Transcript.toMessagesChallenges,
+    Transcript.toMessagesUpTo,
+    Transcript.toChallengesUpTo] at hAfterTrue
+  simp only [
+    Fin.isValue,
+    Fin.castSucc_one,
+    reduceAdd,
+    Fin.coe_ofNat_eq_mod,
+    reduceMod,
+    take_Type,
+    Fin.succ_one_eq_two,
+    not_and,
+    Fin.snoc,
+    mod_succ,
+    Order.lt_one_iff,
+    ↓reduceDIte,
+    Fin.zero_eta,
+    Fin.reduceCastLT,
+    Fin.castSucc_zero,
+    cast_eq,
+    lt_self_iff_false,
+    Fin.reduceLast,
+    Fin.mk_one] at hBeforeFalse hAfterTrue
+  simp only [batchingRbrExtractor, Fin.mk_one] at hBeforeFalse
+  rw [if_pos hAccept] at hAfterTrue
+  unfold sumcheckRoundRelationProp masterKStateProp at hAfterTrue
+  have hCompat : aOStmtIn.initialCompatibility ⟨witMid.t', stmtOStmtIn.2⟩ := by
+    simpa using hAfterTrue.2.2.2
+  refine ⟨witMid, hCompat, ?_⟩
+  by_cases hPack : witMid.t' =
+      packMLE κ L K ℓ ℓ' h_l P.basis
+        (unpackMLE κ L K ℓ ℓ' h_l P.basis witMid.t')
+  · right
+    intro hEmbed
+    exact hBeforeFalse hPack hEmbed hAccept hCompat
+  · exact Or.inl hPack
+
 /-- **Schwartz-Zippel bound for the bad batching event.** -/
 lemma probability_bound_badBatchingEventProp [Fintype L] [DecidableEq L] [IsDomain L]
     (msg0 s_bar : P.A) :
@@ -803,5 +885,6 @@ end RingSwitching
 /-! ### Axiom audit (issue #29 batching Schwartz-Zippel frontier) -/
 
 #print axioms RingSwitching.BatchingPhase.batchingMismatchPoly_nonzero_of_ne
+#print axioms RingSwitching.BatchingPhase.batching_rbrExtractionFailureEvent_accept_pack_or_embed
 #print axioms RingSwitching.BatchingPhase.compute_s0_embedded_MLP_eval_eq_sum
 #print axioms RingSwitching.BatchingPhase.probability_bound_badBatchingEventProp_sharp
