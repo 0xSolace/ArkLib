@@ -127,12 +127,15 @@ import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyBiUnion
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyBoundedSupport
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyCompSub
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyDecomp
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyFaithful
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyGeneralSupport
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyKernel
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLineSupport
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLinearMap
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLinearized
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyRank
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyRecursion
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyTop
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyTranslate
 import ArkLib.Data.CodingTheory.ListSizeVolumeBound
 import ArkLib.Data.CodingTheory.PolishchukSpielman
