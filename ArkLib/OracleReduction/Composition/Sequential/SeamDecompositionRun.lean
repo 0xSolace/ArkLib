@@ -332,4 +332,19 @@ theorem snd_receiveChallenge_natAdd (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit
     have hc : cast hChal.symm c = c' := eq_of_heq ((cast_heq _ _).trans hcc)
     rw [hc]
 
+/-- **Left-region merge.** Over the left-half round indices, `P`'s run agrees with the run of the
+append of its own seam restrictions `(fst P).append (snd P)` (both over the appended protocol, so the
+transcripts match in type; only `PrvState` differs). Transitivity of phase-1 faithfulness
+(`fst_runToRound_heq`) and the existing `append_runToRound_left`. The right-region/full merge splits
+at the seam via `runToRound_eq_bind_continueFromTo` and folds the right block using
+`append_sendMessage_natAdd` composed with `snd_sendMessage_natAdd` (both sides append-protocol, so no
+transcript-suffix mismatch). -/
+theorem merge_runToRound_castLE (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (stmt : Stmt₁) (wit : Wit₁) (j : Fin (m + 1)) :
+    HEq (P.runToRound (Fin.castLE (show m + 1 ≤ m + n + 1 by omega) j) stmt wit)
+        (((Prover.fst P).append (Prover.snd P)).runToRound
+          (Fin.castLE (show m + 1 ≤ m + n + 1 by omega) j) stmt wit) :=
+  (fst_runToRound_heq P stmt wit j).trans
+    (append_runToRound_left (P₁ := Prover.fst P) (P₂ := Prover.snd P) j).symm
+
 end Prover
