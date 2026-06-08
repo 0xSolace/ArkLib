@@ -793,4 +793,49 @@ theorem merge_runToRound (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec�
     rw [Prover.runToRound_succ, Prover.runToRound_succ]
     exact merge_processRound_any P i _ _ ih
 
+theorem merge_PrvState_last (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (hn : 0 < n) :
+    ((Prover.fst P).append (Prover.snd P)).PrvState (Fin.last (m + n))
+      = P.PrvState (Fin.last (m + n)) :=
+  (append_PrvState_last (P₁ := Prover.fst P) (P₂ := Prover.snd P) hn).trans
+    (congrArg P.PrvState (by ext; simp))
+
+theorem merge_output (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (hn : 0 < n)
+    (stA : ((Prover.fst P).append (Prover.snd P)).PrvState (Fin.last (m + n)))
+    (stP : P.PrvState (Fin.last (m + n))) (hst : HEq stA stP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).output stA) (P.output stP) := by
+  rw [append_output_last (P₁ := Prover.fst P) (P₂ := Prover.snd P) hn]
+  dsimp only [Prover.snd]
+  apply heq_of_eq
+  congr 1
+  exact eq_of_heq ((cast_heq _ _).trans hst)
+
+theorem merge_run (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (hn : 0 < n)
+    (stmt : Stmt₁) (wit : Wit₁) :
+    ((Prover.fst P).append (Prover.snd P)).run stmt wit = P.run stmt wit := by
+  apply eq_of_heq
+  unfold Prover.run
+  refine bind_heq_congr (by rw [merge_PrvState_last P hn]) rfl
+    (merge_runToRound P stmt wit (Fin.last (m + n))) ?_
+  rintro ⟨tr, st⟩ ⟨tr', st'⟩ hr
+  obtain ⟨ht, hs⟩ := prod_heq_split rfl (merge_PrvState_last P hn) hr
+  dsimp only
+  refine bind_heq_congr rfl rfl
+    (liftComp_heq_congr (spec := oSpec) (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      rfl (merge_output P hn st st' hs)) ?_
+  rintro o o' ho
+  exact pure_heq_pure rfl (prodMk_heq rfl rfl ht ho)
+
+/-- **Run-level seam factoring of an arbitrary malicious prover (message-first seam).**
+`P.run = (fst P).run >>= (snd P).run` (concatenating transcripts) — the decomposition
+`appendSoundnessResidual` needs. Combines the run merge with the proven `append_run_msg`. -/
+theorem run_seam_factor (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V) (stmt : Stmt₁) (wit : Wit₁) :
+    P.run stmt wit = (do
+      let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM ((Prover.fst P).run stmt wit)
+      let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM ((Prover.snd P).run stmt₂ wit₂)
+      return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩) :=
+  (merge_run P hn stmt wit).symm.trans
+    (append_run_msg (P₁ := Prover.fst P) (P₂ := Prover.snd P) stmt wit hn hDir hDir₂)
+
 end Prover
