@@ -1454,9 +1454,48 @@ private theorem optionT_run_liftM_bind_getM
         ((liftM oa : OptionT (OracleComp spec) α) >>= X) := by
     apply bind_congr
     intro a
-    exact optionT_lift_run_bind_getM (X a)
+    apply OptionT.ext
+    simp only [OptionT.run_bind, OptionT.run_monadLift, Option.elimM]
+    rw [map_eq_pure_bind]
+    simp only [bind_assoc, pure_bind]
+    conv_rhs => rw [← bind_pure (X a).run]
+    congr 1
+    funext o
+    cases o <;> rfl
   rw [hinner]
   exact optionT_run_liftM_bind oa X
+
+private theorem optionT_run_liftM_bind_getM_run
+    {ι : Type} {spec : OracleSpec ι} {α β : Type 0}
+    (oa : OracleComp spec α) (Y : α → OracleComp spec (Option β)) :
+    OptionT.run ((liftM oa : OptionT (OracleComp spec) α) >>= fun a =>
+        ((liftM (Y a) : OptionT (OracleComp spec) (Option β)) >>= fun o => o.getM)) =
+      (oa >>= fun a => Y a) := by
+  simpa only [OptionT.run_mk] using
+    optionT_run_liftM_bind_getM oa
+      (fun a => (OptionT.mk (Y a) : OptionT (OracleComp spec) β))
+
+private theorem optionT_liftM_run_getM_add
+    {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    {α : Type 0} (X : OptionT (OracleComp spec₁) α) :
+    ((liftM X.run : OptionT (OracleComp (spec₁ + spec₂)) (Option α)) >>= fun o =>
+        (o.getM : OptionT (OracleComp (spec₁ + spec₂)) α)) =
+      (monadLift X : OptionT (OracleComp (spec₁ + spec₂)) α) := by
+  simpa only [liftM_optionT_combined] using
+    (monadLift_optionT_lift_run_getM (spec₂ := spec₂) X)
+
+private theorem optionT_run_liftM_bind_liftOptionT_add
+    {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
+    {α β : Type 0}
+    (oa : OracleComp (spec₁ + spec₂) α)
+    (X : α → OptionT (OracleComp spec₁) β) :
+    OptionT.run ((liftM oa : OptionT (OracleComp (spec₁ + spec₂)) α) >>= fun a =>
+        (monadLift (X a) : OptionT (OracleComp (spec₁ + spec₂)) β)) =
+      (oa >>= fun a =>
+        (liftM (X a).run : OracleComp (spec₁ + spec₂) (Option β))) := by
+  simpa only [optionT_monadLift_run, liftM_eq_monadLift] using
+    optionT_run_liftM_bind oa
+      (fun a => (monadLift (X a) : OptionT (OracleComp (spec₁ + spec₂)) β))
 
 omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
   [∀ i, SampleableType (pSpec.Challenge i)] in
@@ -1494,11 +1533,44 @@ private theorem fiatShamirVerifier_verify_loggedTranscript_support
         let transcript ← ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)
         (liftM (V.verify stmtIn transcript).run :
           OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut))) := by
-    exact optionT_run_liftM_bind_getM
+    change OptionT.run
+        (((liftM
+          (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)) :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+              pSpec.FullTranscript) >>= fun transcript =>
+          ((liftM (V.verify stmtIn transcript).run :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+              (Option StmtOut)) >>= fun v =>
+            (v.getM :
+              OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)))) =
+      (do
+        let transcript ← ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)
+        (liftM (V.verify stmtIn transcript).run :
+          OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (Option StmtOut)))
+    have hnormalize :
+        (do
+          let transcript ← (liftM
+            (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)) :
+              OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                pSpec.FullTranscript)
+          let v ← (liftM (V.verify stmtIn transcript).run :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) (Option StmtOut))
+          v.getM : OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut) =
+        (do
+          let transcript ← (liftM
+            (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0)) :
+              OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                pSpec.FullTranscript)
+          (monadLift (V.verify stmtIn transcript) :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)) := by
+      apply bind_congr
+      intro transcript
+      exact optionT_liftM_run_getM_add
+        (spec₂ := fsChallengeOracle StmtIn pSpec) (V.verify stmtIn transcript)
+    rw [hnormalize]
+    exact optionT_run_liftM_bind_liftOptionT_add
       (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0))
-      (fun transcript =>
-        (OptionT.mk (liftM (V.verify stmtIn transcript).run) :
-          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut))
+      (fun transcript => V.verify stmtIn transcript)
   change z ∈ support (OracleComp.withQueryLog
       (let messages : pSpec.Messages := proof 0;
         (do
