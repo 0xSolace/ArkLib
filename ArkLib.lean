@@ -511,6 +511,7 @@ import ArkLib.Data.CodingTheory.ProximityPrizeCA
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
 import ArkLib.Data.CodingTheory.QEntropyMonotone
+import ArkLib.Data.CodingTheory.QEntropySelfBound
 import ArkLib.Data.CodingTheory.RSCodewordWeight
 import ArkLib.Data.CodingTheory.RSNearCount
 import ArkLib.Data.CodingTheory.RSVanishingDim
