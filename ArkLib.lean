@@ -336,6 +336,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateHypothesesRefutations
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateImmunity
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateMultilinearHypercube
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop9
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateResultantCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateSliceRank
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateSubfieldProjection
@@ -1043,5 +1044,4 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
-import ArkLib.scratch_append_pc
 import ArkLib.whir113keystone

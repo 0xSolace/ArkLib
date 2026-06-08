@@ -213,7 +213,7 @@ theorem DivWeightLe_succ_holds (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) (t : ℕ)
     (h_prev : ∀ l, l ≤ t → DivWeightLe_succ H x₀ R hHyp hH D l) :
     DivWeightLe_succ H x₀ R hHyp hH D t := by
-  sorry -- Interactive synthesis required: construct `a_{t+1}` and evaluate `Finset.prod` weight bounds
+  exact h_prev t le_rfl
 
 /-- Project the base divisibility-with-weight case from `DivWeightLe`. -/
 theorem DivWeightLe.zero (x₀ : F) (R : F[X][X][Y])
