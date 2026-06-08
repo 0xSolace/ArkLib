@@ -63,6 +63,31 @@ theorem support_simulateQ_liftM_eq_of_query
         support_bind, support_bind, h t]
       exact Set.iUnion₂_congr fun x _ => ih x
 
+/-- **Support-level transport across a lift, for a `Subsingleton`-state simulator, under `run'`.**
+The `run'`-evaluated form of `support_simulateQ_liftM_eq_of_query` for `StateT σ ProbComp` simulators
+with `Subsingleton σ` (the σ = Unit / public-coin setting). This is the exact shape consumed by the
+`n=0` perfect-completeness composition: the honest-execution experiment is
+`(simulateQ (impl.addLift challengeQueryImpl) (run …)).run' u`, and this lemma carries the appended
+protocol's experiment back to the component protocol's, given per-query support agreement (`oSpec`
+queries agree exactly; challenge queries via `support_simulateQ_challengeQueryImpl_append_left`). The
+`Subsingleton σ` hypothesis dissolves the verifier₁/prover₂ state-ordering obstruction via
+`simulateQ_run'_bind_of_subsingleton`. -/
+theorem support_run'_simulateQ_liftM_eq_of_query {σ : Type} [Subsingleton σ] (u : σ)
+    (impl : QueryImpl spec₂ (StateT σ ProbComp)) (impl₁ : QueryImpl spec₁ (StateT σ ProbComp))
+    (h : ∀ t, support ((simulateQ impl
+      (liftM (liftM (spec₁.query t) : OracleComp spec₁ (spec₁.Range t))
+        : OracleComp spec₂ (spec₁.Range t))).run' u) = support ((impl₁ t).run' u))
+    (oa : OracleComp spec₁ α) :
+    support ((simulateQ impl (liftM oa : OracleComp spec₂ α)).run' u)
+      = support ((simulateQ impl₁ oa).run' u) := by
+  induction oa using OracleComp.inductionOn with
+  | pure x => simp [simulateQ_pure, StateT.run'_eq, StateT.run_pure]
+  | query_bind t k ih =>
+      rw [liftM_bind, simulateQ_run'_bind_of_subsingleton,
+        simulateQ_run'_bind_of_subsingleton, simulateQ_spec_query,
+        support_bind, support_bind, h t]
+      exact Set.iUnion₂_congr fun x _ => ih x
+
 end OracleComp
 
 namespace ProtocolSpec
