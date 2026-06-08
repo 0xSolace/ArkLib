@@ -313,11 +313,11 @@ theorem pairBall_weight {v v' : ι → F} (hw : hammingNorm v = hammingNorm v') 
     exact hmem.2
   have hP2 : ∀ i, v' i = 0 → v (σ i) = 0 := by
     intro i hi
-    have hiB : i ∉ B := by rw [hB, Finset.mem_filter]; push_neg; intro _; exact hi
+    have hiB : i ∉ B := by
+      simp only [hB, Finset.mem_filter, Finset.mem_univ, true_and, ne_eq, not_not]; exact hi
     have hnotA : σ i ∉ A := e.extendSubtype_not_mem i hiB
-    rw [hA, Finset.mem_filter] at hnotA
-    push_neg at hnotA
-    exact hnotA (Finset.mem_univ _)
+    simp only [hA, Finset.mem_filter, Finset.mem_univ, true_and, ne_eq, not_not] at hnotA
+    exact hnotA
   -- the scaling that turns `v ∘ σ` into `v'`
   set u : ι → F := fun i => if v' i = 0 then 1 else v' i * (v (σ i))⁻¹ with hu_def
   have hu : ∀ i, u i ≠ 0 := by
