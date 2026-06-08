@@ -1775,11 +1775,13 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   dsimp only
   simp [fiatShamirStraightlineExtractorOfStateRestoration]
   rw [probEvent_optionT_stateT_init]
-  rw [fiatShamirKnowledgeExec_runCollapse
+  have hCollapse := fiatShamirKnowledgeExec_runCollapse
     (impl := fiatShamirCoupledQueryImpl
       (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn) srImpl)
     (P := prover) (V := V) (srExtractor := srExtractor)
-    (stmtIn := stmtIn) (witIn := witIn)]
+    (stmtIn := stmtIn) (witIn := witIn)
+  simp only [fiatShamirCoupledQueryImpl, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
+    ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl'] at hCollapse
   refine le_trans ?_ h
   simp [Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
     Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
@@ -1790,7 +1792,7 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     Verifier.fiatShamir_verify_eq,
     Reduction.fiatShamir, Prover.fiatShamir, Verifier.fiatShamir,
     Reduction.run, Prover.run, Prover.runToRound, Prover.processRound,
-    fiatShamirKnowledgeExec_runCollapse, QueryImpl.addLift_def]
+    fiatShamirKnowledgeExec_runCollapse, QueryImpl.addLift_def, hCollapse]
 
 #print axioms Reduction.fiatShamirKnowledgeExec_runCollapse
 #print axioms Reduction.fiatShamir_knowledgeSoundnessTransferResidual_canonical
