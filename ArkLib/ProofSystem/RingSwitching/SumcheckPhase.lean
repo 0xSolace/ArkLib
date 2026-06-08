@@ -50,7 +50,7 @@ source of RBR knowledge soundness error.
 
 open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial
   Module TensorProduct Nat Matrix
-open scoped NNReal
+open scoped NNReal ProbabilityTheory
 open Sumcheck.Structured
 
 namespace RingSwitching.SumcheckPhase
@@ -570,7 +570,6 @@ noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
           (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmtIn.ctx))
           (i := i.castSucc) (challenges := stmtIn.challenges)
       }
-    | ⟨2, _⟩ => witMidSucc
   extractOut := fun _ _ witOut => witOut
 
 /-- **Iterated-round verifier-run collapse (defect-#21 guard form).** Under the message-oracle
@@ -779,7 +778,7 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
         explicitVCheck ∧ localizedRoundPolyCheck
       )
   | ⟨2, h2⟩ => -- After V sends r'ᵢ (post-challenge OUTPUT state)
-    let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := by omega)
+    let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := by decide)
     let r_i' := get_rᵢ' (m := ⟨2, h2⟩) (tr := tr) (hm := le_refl _)
     let stmtOut : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.succ :=
       { ctx := stmt.ctx, sumcheck_target := h_i.val.eval r_i', challenges := Fin.cons r_i' stmt.challenges }
@@ -917,7 +916,7 @@ def rbrExtractionFailureEvent
     (j : (pSpecSumcheckRound L).ChallengeIdx)
     (stmtIn : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc × (∀ j, aOStmtIn.OStmtIn j))
     (transcript : Transcript j.1.castSucc (pSpecSumcheckRound L))
-    (challenge : (pSpecSumcheckRound L).Challenge j.1) : Prop :=
+    (challenge : (pSpecSumcheckRound L).Challenge j) : Prop :=
   ∃ witMid : iteratedSumcheckPrvState κ L K P ℓ ℓ' aOStmtIn i j.1.succ,
     ¬ kSF j.1.castSucc stmtIn transcript
       (extractor.extractMid j.1 stmtIn (transcript.concat challenge) witMid) ∧
@@ -932,7 +931,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
       (kSF := iteratedSumcheckKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
         (h_l := h_l) aOStmtIn (init := init) (impl := impl) i)
       (extractor := iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i)
-      (i := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := FullTranscript.mk1 h_i)
+      (i := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => h_i)
       (challenge := r_i')) :
     ∃ witMid : SumcheckWitness L ℓ' i.succ,
       aOStmtIn.initialCompatibility ⟨witMid.t', stmtOStmtIn.2⟩ ∧
@@ -940,7 +939,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
         (iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i).extractMid
           (m := 1) stmtOStmtIn (FullTranscript.mk2 h_i r_i') witMid
       let h_star : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := witBefore.H)
-      badSumcheckEventProp r_i' h_i h_star := by
+      badSumcheckEventProp (L := L) r_i' h_i h_star := by
   classical
   unfold rbrExtractionFailureEvent at doomEscape
   rcases doomEscape with ⟨witMid, h_kState_before_false, h_kState_after_true⟩
@@ -1017,7 +1016,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
     apply Subtype.ext at h_star_poly_eq
     rw [← h_star_poly_eq]
     exact ⟨h_star_extracted_eq.symm, h_star_struct_kState⟩
-  have h_bad_extracted : badSumcheckEventProp r_i' h_i h_star_extracted := by
+  have h_bad_extracted : badSumcheckEventProp (L := L) r_i' h_i h_star_extracted := by
     exact ⟨h_poly_ne, h_star_eval_r_i.symm⟩
   refine ⟨witMid, h_compat_after, ?_⟩
   exact h_bad_extracted
@@ -1031,19 +1030,19 @@ lemma iteratedSumcheck_doom_escape_probability_bound [Fintype L] [DecidableEq L]
     (i : Fin ℓ')
     (stmtOStmtIn : (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.castSucc i)) × (∀ j, aOStmtIn.OStmtIn j))
     (h_i : (pSpecSumcheckRound L).Message ⟨0, rfl⟩) :
-    Pr_{ let y ← $ᵖ L; pure y }[
+    Pr_{ let y ← $ᵖ L }[
       rbrExtractionFailureEvent
         (kSF := iteratedSumcheckKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
           (h_l := h_l) aOStmtIn (init := init) (impl := impl) i)
         (extractor := iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i)
-        ⟨1, rfl⟩ stmtOStmtIn (FullTranscript.mk1 h_i) ] ≤
+        ⟨1, rfl⟩ stmtOStmtIn (fun | ⟨0, _⟩ => h_i) ] ≤
       roundKnowledgeError L ℓ' i := by
   classical
   let P_event := rbrExtractionFailureEvent
     (kSF := iteratedSumcheckKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
       (h_l := h_l) aOStmtIn (init := init) (impl := impl) i)
     (extractor := iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i)
-    ⟨1, rfl⟩ stmtOStmtIn (FullTranscript.mk1 h_i)
+    ⟨1, rfl⟩ stmtOStmtIn (fun | ⟨0, _⟩ => h_i)
   by_cases h_doom : ∃ y, P_event y
   · obtain ⟨y_doom, h_doomEscape⟩ := h_doom
     obtain ⟨witMid, h_mid_compat, h_bad_extracted⟩ :=
@@ -1057,11 +1056,12 @@ lemma iteratedSumcheck_doom_escape_probability_bound [Fintype L] [DecidableEq L]
         (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmtOStmtIn.1.ctx)
         (i := i.castSucc) (challenges := stmtOStmtIn.1.challenges)
     let h_star_fixed : L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) (h := H_fixed)
-    have h_prob_mono := prob_mono (D := $ᵖ L)
-      (f := fun y => P_event y)
-      (g := fun y => badSumcheckEventProp y h_i h_star_fixed)
-      (h_imp := by
-        intro y h_doomEscape'
+    have h_prob_mono :
+        Pr[fun y => P_event y | ($ᵖ L)] ≤
+          Pr[fun y => badSumcheckEventProp (L := L) y h_i h_star_fixed | ($ᵖ L)] := by
+      apply probEvent_mono
+      intro y _ h_doomEscape'
+      exact by
         obtain ⟨witMid', h_mid_compat', h_bad_extracted'⟩ :=
           iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck
             (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
@@ -1075,16 +1075,15 @@ lemma iteratedSumcheck_doom_escape_probability_bound [Fintype L] [DecidableEq L]
             not_and, not_true_eq_false, imp_false, Decidable.not_not] at h_before_false h_before_false'
           rw [h_before_false, h_before_false']
         simpa [h_star_fixed, H_fixed, iteratedSumcheckRbrExtractor, Fin.isValue, h_t_eq]
-          using h_bad_extracted')
+          using h_bad_extracted'
     apply le_trans h_prob_mono
     have h_sz := probEvent_badSumcheckEventProp_degree_two_le (h_i := h_i) (h_star := h_star_fixed)
     simpa using h_sz
-  · have h_prob_mono_false := prob_mono (D := $ᵖ L)
-      (f := fun y => P_event y)
-      (g := fun y => False)
-      (h_imp := by
-        intro y
-        exact not_exists.mp h_doom y)
+  · have h_prob_mono_false :
+        Pr[fun y => P_event y | ($ᵖ L)] ≤ Pr[fun _ : L => False | ($ᵖ L)] := by
+      apply probEvent_mono
+      intro y _ h_doomEscape
+      exact False.elim ((not_exists.mp h_doom y) h_doomEscape)
     apply le_trans h_prob_mono_false
     simp [PMF.pure_apply]
 
@@ -1093,7 +1092,7 @@ theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : F
       (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.castSucc)
       (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ)
       (fun j => roundKnowledgeError L ℓ' i) := by
-  use fun _ => SumcheckWitness L ℓ' i.castSucc
+  use iteratedSumcheckWitMid (L := L) (ℓ' := ℓ') (i := i)
   use iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i
   use iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i
   intro stmtIn witIn prover j
