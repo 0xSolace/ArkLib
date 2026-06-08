@@ -5,7 +5,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.UniqueDecodingListBound
 
 open Finset
 open scoped NNReal
-open scoped Classical
 
 namespace ArkLib.ProximityGap.PromotedHypotheses
 
@@ -22,6 +21,7 @@ def decList (C : Finset (ι → F)) (r : ι → F) (e : ℕ) : Finset (ι → F)
 def bundleCenters (C : Finset (ι → F)) (U : Finset (ι → F)) (e : ℕ) : Finset (ι → F) :=
   Finset.univ.filter (fun c => c ∈ C ∧ (U.filter (fun u => hammingDist c u ≤ e)).Nonempty)
 
+omit [Field F] [Fintype F] [DecidableEq F] in
 theorem hyp45_list_intersection (C : Finset (ι → F)) (U V : Finset (ι → F)) (e : ℕ) (x : ι → F)
     (hxU : x ∈ U) (hxV : x ∈ V) (hclose : ∃ c ∈ C, hammingDist c x ≤ e) :
     (bundleCenters C U e ∩ bundleCenters C V e).Nonempty := by
@@ -38,11 +38,12 @@ theorem hyp45_list_intersection (C : Finset (ι → F)) (U V : Finset (ι → F)
     rw [Finset.filter_nonempty_iff]
     exact ⟨x, hxV, hc_dist⟩
 
+include hk in
 theorem hyp30_max_agreement_not_k_minus_one (v : ι → F) :
     ∃ c ∈ (ReedSolomon.code domain k : Set (ι → F)), 
       (Finset.univ.filter (fun i => c i = v i)).card ≥ k := by
   have hk' : k ≤ Finset.card (Finset.univ : Finset ι) := by rw [Finset.card_univ]; exact hk
-  obtain ⟨S, _, hS_card⟩ := Finset.exists_smaller_set Finset.univ hk'
+  obtain ⟨S, _, hS_card⟩ := Finset.exists_subset_card_eq hk'
   let f : F → F := fun x => if hx : ∃ i ∈ S, domain i = x then v (Classical.choose hx) else 0
   let p := Polynomial.Lagrange.interpolate (S.map domain.toEmbedding) id f
   let c : ι → F := fun i => p.eval (domain i)
@@ -67,16 +68,18 @@ theorem hyp30_max_agreement_not_k_minus_one (v : ι → F) :
     have h_i : Classical.choose hx = i := domain.injective h_choose_eq
     rw [dif_pos hx, h_i]
 
+omit [DecidableEq ι] [Fintype F] [DecidableEq F] in
 theorem hyp8_translation_invariance (x y c : ι → F) :
     hammingDist (x + c) (y + c) = hammingDist x y := by
   dsimp [hammingDist, dist]
   congr 1
   ext i
-  simp only [Pi.add_apply, mem_filter, mem_univ, true_and]
+  simp only [mem_filter, mem_univ, true_and]
   constructor
   · intro h heq; apply h; rw [heq]
   · intro h heq; apply h; exact add_right_cancel heq
 
+omit [DecidableEq ι] [DecidableEq F] [Fintype ι] in
 theorem hyp7_barycentric_center (c_map : F → (ι → F)) 
     (h_valid : ∀ γ : F, c_map γ ∈ (ReedSolomon.code domain k : Set (ι → F))) :
     (∑ γ : F, c_map γ) ∈ (ReedSolomon.code domain k : Set (ι → F)) := by

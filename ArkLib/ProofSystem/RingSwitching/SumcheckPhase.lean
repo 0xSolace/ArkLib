@@ -893,13 +893,11 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       · exact ⟨h_sumcheck_In, h_oStmtIn_compat⟩
 
 /-- RBR knowledge soundness for one sumcheck round under the current weak post-challenge state.
-The bound is intentionally `1` until the challenge-level root-count bridge is available. -/
-
 /-- Extraction failure implies a witness-dependent bad sumcheck event.
   The extracted `witMid` also carries oracle compatibility at the same `oStmt`. -/
 lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [DecidableEq L]
     (i : Fin ℓ')
-    (stmtOStmtIn : (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) (Fin.castSucc i)) × (∀ j, aOStmtIn.OStmtIn j))
+    (stmtOStmtIn : (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.castSucc i)) × (∀ j, aOStmtIn.OStmtIn j))
     (h_i : (pSpecSumcheckRound L).Message ⟨0, rfl⟩)
     (r_i' : L)
     (doomEscape : rbrExtractionFailureEvent
@@ -1003,7 +1001,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
   3. **Schwartz–Zippel**: Bound `Pr[badSumcheckEvent]` by `2/|L|`. -/
 lemma iteratedSumcheck_doom_escape_probability_bound [Fintype L] [DecidableEq L] [IsDomain L]
     (i : Fin ℓ')
-    (stmtOStmtIn : (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) (Fin.castSucc i)) × (∀ j, aOStmtIn.OStmtIn j))
+    (stmtOStmtIn : (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.castSucc i)) × (∀ j, aOStmtIn.OStmtIn j))
     (h_i : (pSpecSumcheckRound L).Message ⟨0, rfl⟩) :
     Pr_{ let y ← $ᵖ L; pure y }[
       rbrExtractionFailureEvent
