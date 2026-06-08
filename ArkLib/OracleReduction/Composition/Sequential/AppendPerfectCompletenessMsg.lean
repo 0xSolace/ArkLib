@@ -139,11 +139,15 @@ theorem append_perfectCompleteness_message
       simp only [OptionT.monad_bind_eq_bind, OptionT.mem_support_OptionT_bind_run_some_iff,
         OptionT.mem_support_OptionT_pure_run_some_iff, Function.comp_apply, Prod.exists] at hpr
       obtain ⟨tr₁, s₂, w₂, hP₁piece, hpr2⟩ := hpr
-      -- `hP₁piece` : the P₁ output `(tr₁,s₂,w₂)`; `hpr2` : `pr` is `(tr₁ ++ₜ tr₂, s₃, w₃)` for a P₂
-      -- output. The appended verifier never returns `none`: V₁ never-`none` (from `hV₁nf` on this
-      -- P₁ output) and, for each V₁ output `s₂'`, `hs₁ ((tr₁,s₂,w₂),s₂')` gives `(s₂',w₂)∈rel₂`, so
-      -- `h₂`'s no-failure gives V₂ never-`none`; combine via `Verifier.append_run` + OptionT-bind
-      -- `probFailure`. Conjecture-free; the one remaining mechanical gap.
+      simp only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+        OptionT.mk, support_map, Set.mem_image, Option.some.injEq, bind_pure_comp,
+        exists_eq_right] at hP₁piece
+      rw [OracleComp.support_liftComp] at hP₁piece
+      have hV₁f := hV₁nf (tr₁, s₂, w₂) (by simpa only [OptionT.support_liftM] using hP₁piece)
+      -- `hV₁f` : V₁ never returns `none` on `tr₁` (in `verifier+getM` form). Goal: the appended
+      -- verifier never returns `none` on `pr.1 = tr₁ ++ₜ tr₂`. Decompose `hpr2` for `tr₂`; split via
+      -- `Verifier.append_run`; reduce both to `none ∉ support (·.run)`; V₁ via `hV₁f`, V₂ via
+      -- `hs₁ ((tr₁,s₂,w₂),·) ⇒ rel₂ ⇒ h₂`'s no-failure. The one remaining mechanical gap.
       sorry
   · intro x hx
     rw [support_bind_simulateQ_run'_eq_mk (hInit := hInit)
