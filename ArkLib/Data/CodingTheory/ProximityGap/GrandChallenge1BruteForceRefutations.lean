@@ -20,9 +20,26 @@ theorem refute_Hyp1 : ¬ (∀ (H : F[X][Y]) (L : Finset (ι → F)), Hyp1_Result
 theorem refute_Hyp2 : ¬ (∀ (H : F[X][Y]) (L : Finset (ι → F)), Hyp2_SmoothCurveIntersection H L) := by
   sorry -- Counterexample: H = Y, L = Finset.univ. Premise holds, but L.card > totalDegree H.
 
-theorem refute_Hyp3 (hF : Fintype.card ι ≤ (Fintype.card F : ℝ) ^ (1/2 : ℝ)) : 
+theorem refute_Hyp3 (hF : Fintype.card ι ≤ (Fintype.card F : ℝ) ^ (1/2 : ℝ)) :
   ¬ (∀ (domain : ι ↪ F) (L : Finset (ι → F)), Hyp3_PuncturedSupportSparsity domain L) := by
-  sorry -- Counterexample: Crites-Stewart attack or unbounded L. L.card can be |F|^|ι| > |ι|.
+  -- |ι| ≤ |F|, so an evaluation embedding exists; feed L = univ.
+  have hq : 1 < Fintype.card F := Fintype.one_lt_card
+  have hcardF : (1 : ℝ) ≤ (Fintype.card F : ℝ) := by exact_mod_cast hq.le
+  have hsqrt : (Fintype.card F : ℝ) ^ (1/2 : ℝ) ≤ (Fintype.card F : ℝ) := by
+    calc (Fintype.card F : ℝ) ^ (1/2 : ℝ)
+        ≤ (Fintype.card F : ℝ) ^ (1 : ℝ) :=
+          Real.rpow_le_rpow_of_exponent_le hcardF (by norm_num)
+      _ = (Fintype.card F : ℝ) := Real.rpow_one _
+  have hle : Fintype.card ι ≤ Fintype.card F := by
+    have : (Fintype.card ι : ℝ) ≤ (Fintype.card F : ℝ) := le_trans hF hsqrt
+    exact_mod_cast this
+  obtain ⟨domain⟩ := Function.Embedding.nonempty_of_card_le hle
+  intro h
+  have h2 := (h domain Finset.univ) hF
+  rw [Finset.card_univ, Fintype.card_fun] at h2
+  -- h2 : Fintype.card F ^ Fintype.card ι ≤ Fintype.card ι
+  have hlt := Nat.lt_pow_self hq (n := Fintype.card ι)
+  omega
 
 theorem refute_Hyp4 : ¬ (∀ (H : F[X][Y]) (u : ι → F), Hyp4_DerivativeMultiplicityCollapse H u) := by
   sorry -- Counterexample: H = Y, eval H = 0, but H_Y = 1 ≠ 0.
