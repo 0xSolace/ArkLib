@@ -174,7 +174,7 @@ agreement radius, `b` = pairwise agreement = `|ι| − dist`), this bounds the l
 `a² > |ι| · b` it gives `(list size) ≤ |ι|²/(a² − |ι|·b)`, the second-moment / Johnson list
 bound — the combinatorial engine behind the list-decoding inputs of #138/#140/#141. -/
 theorem card_mul_sq_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq ι]
-    [Nonempty κ] (S : κ → Finset ι) (a b : ℕ)
+    [DecidableEq κ] [Nonempty κ] (S : κ → Finset ι) (a b : ℕ)
     (hlo : ∀ i, a ≤ (S i).card)
     (hpair : ∀ i j, i ≠ j → (S i ∩ S j).card ≤ b) :
     Fintype.card κ * a ^ 2 ≤ (Fintype.card ι) ^ 2 + Fintype.card κ * Fintype.card ι * b := by
