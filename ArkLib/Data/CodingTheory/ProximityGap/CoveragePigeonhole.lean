@@ -173,6 +173,32 @@ theorem card_mul_sq_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [D
   have hpos : 0 < Fintype.card κ := Fintype.card_pos_iff.mpr inferInstance
   exact Nat.le_of_mul_le_mul_left key hpos
 
+/-- **Subtracted Johnson-list denominator form.**  If each of the `card κ` agreement sets covers
+at least `a` coordinates, pairwise intersections of distinct sets have size at most `b`, and the
+Johnson denominator is nonnegative (`|ι|·b ≤ a²`), then
+
+`card κ · (a² - |ι|·b) ≤ |ι|²`.
+
+This is the consumer-facing algebraic form of `card_mul_sq_le_of_agreement`; downstream list-size
+bounds can divide by the positive denominator when the inequality is strict. -/
+theorem card_mul_sub_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι]
+    [DecidableEq ι] [Nonempty κ] (S : κ → Finset ι) (a b : ℕ)
+    (hlo : ∀ i, a ≤ (S i).card)
+    (hpair : ∀ i j, i ≠ j → (S i ∩ S j).card ≤ b)
+    (hgap : Fintype.card ι * b ≤ a ^ 2) :
+    Fintype.card κ * (a ^ 2 - Fintype.card ι * b) ≤ (Fintype.card ι) ^ 2 := by
+  have key := card_mul_sq_le_of_agreement S a b hlo hpair
+  have htail :
+      Fintype.card κ * Fintype.card ι * b = Fintype.card κ * (Fintype.card ι * b) := by
+    ring
+  rw [htail] at key
+  have hsplit : Fintype.card κ * a ^ 2 =
+      Fintype.card κ * (a ^ 2 - Fintype.card ι * b)
+        + Fintype.card κ * (Fintype.card ι * b) := by
+    rw [← Nat.mul_add, Nat.sub_add_cancel hgap]
+  rw [hsplit] at key
+  exact Nat.le_of_add_le_add_right key
+
 /-- **Joint-pair existence** (GG25 multi-γ extraction).  If the agreement mass is large enough
 — precisely `(card κ)²·t·|ι| + |ι|·∑|S i| < (∑|S i|)²` — then some two *distinct* sets share
 strictly more than `t` coordinates.  This is the joint pair the repaired ABF26 T4.21
@@ -228,3 +254,4 @@ theorem exists_pair_inter_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [Decidabl
 end ArkLib.Coverage
 
 #print axioms ArkLib.Coverage.card_mul_sq_le_of_agreement
+#print axioms ArkLib.Coverage.card_mul_sub_le_of_agreement

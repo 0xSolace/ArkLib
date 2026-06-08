@@ -15,8 +15,8 @@ Johnson radius `1 − √ρ`" regime) instantiated for the *explicit* RS codes t
 
 * `ArkLib.CodingTheory.JohnsonSimplex.johnson_simplex_bound` — the honest second-moment/Gram Johnson
   bound (a list of words pairwise agreeing on `≤ b` coordinates, each agreeing with `w` on `≥ a`, has
-  `|L|·(a² − n·b) ≤ n²`). *Self-contained and axiom-clean — unlike `ArkLib.JohnsonList`, whose
-  `johnson_list_bound_div` transitively depends on `sorryAx`.*
+  `|L|·(a² − n·b) ≤ n²`). This file keeps the RS composition on the self-contained simplex route;
+  the parallel `ArkLib.JohnsonList`/`ArkLib.Coverage` route is also axiom-clean in the current tree.
 * `ArkLib.CodingTheory.UniqueDecoding.agreement_card_le` — distinct degree-`<k` polynomials on an
   injective domain agree on `≤ k − 1` coordinates (root counting).
 
