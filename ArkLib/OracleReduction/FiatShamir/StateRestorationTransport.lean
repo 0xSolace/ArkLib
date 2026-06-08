@@ -1671,9 +1671,49 @@ theorem fiatShamirStraightlineExtractorOfStateRestoration_loggedTranscript_suppo
     stmtIn messages tail hz]
   rfl
 
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- On verifier logs produced by the one-message slow-Fiat-Shamir verifier, the canonical
+log-backed Fiat-Shamir extractor is exactly the state-restoration extractor applied to the
+transcript derived during verifier execution. -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_loggedVerifier_support
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (proveQueryLog : QueryLog (oSpec + fsChallengeOracle StmtIn pSpec))
+    {z : Option StmtOut × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)}
+    (hz : z ∈ support
+      (OracleComp.withQueryLog ((V.fiatShamir).verify stmtIn proof))) :
+    ∃ d : pSpec.FullTranscript × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec),
+      d ∈ support
+        (OracleComp.withQueryLog
+          (ProtocolSpec.Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn (proof 0))) ∧
+      fiatShamirStraightlineExtractorOfStateRestoration
+          (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut
+          proof proveQueryLog z.2 =
+        (liftM (srExtractor stmtIn witOut d.1 default default) :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn) := by
+  obtain ⟨d, hd, hparse⟩ :=
+    fiatShamirVerifier_verify_loggedTranscript_support
+      (oSpec := oSpec) (StmtIn := StmtIn) (pSpec := pSpec)
+      V stmtIn proof hz
+  refine ⟨d, hd, ?_⟩
+  unfold fiatShamirStraightlineExtractorOfStateRestoration
+  change (do
+      let transcript ← OptionT.mk (pure <|
+        transcriptFromFSChallengeLog
+          (StmtIn := StmtIn) (pSpec := pSpec) (proof 0) z.2.snd)
+      liftM (srExtractor stmtIn witOut transcript default default)) =
+    (liftM (srExtractor stmtIn witOut d.1 default default) :
+      OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)
+  rw [hparse]
+  rfl
+
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_apply
 #print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_loggedTranscript_support
+#print axioms Reduction.fiatShamirStraightlineExtractorOfStateRestoration_loggedVerifier_support
 
 end CanonicalKnowledgeSoundnessSupport
 
