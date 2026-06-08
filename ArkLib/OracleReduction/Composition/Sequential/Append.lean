@@ -3743,6 +3743,19 @@ def appendRunRightResidual (stmt : Stmt₁) (wit : Wit₁) : Prop :=
         return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩)
 
 
+/-- **EMPIRICAL ATTEMPT** at discharging `appendRunRightResidual`. Step 1 of the derived
+architecture: the residual's LHS `runToRound ⟨m⟩ ≫ continueFromTo ⟨m⟩ last` recombines (by
+`runToRound_eq_bind_continueFromTo`) into `runToRound last`, i.e. the residual LHS is exactly
+`(P₁.append P₂).run` re-expressed. This `have` verifies that recombination compiles; the remaining
+goal is the full run-factoring `(P₁.append P₂).run = P₁.run ≫ P₂.run`. -/
+theorem appendRunRight_recombine (stmt : Stmt₁) (wit : Wit₁) :
+    (Prover.runToRound (⟨m, by omega⟩ : Fin (m + n + 1)) stmt wit (P₁.append P₂)
+        >>= (P₁.append P₂).continueFromTo stmt wit ⟨m, by omega⟩ (Fin.last (m + n)))
+      = (P₁.append P₂).runToRound (Fin.last (m + n)) stmt wit := by
+  rw [← runToRound_eq_bind_continueFromTo (P₁.append P₂) stmt wit
+        (⟨m, by omega⟩ : Fin (m + n + 1)) (Fin.last (m + n))
+        (by simp only [Fin.le_def, Fin.val_last]; omega)]
+
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
 witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
