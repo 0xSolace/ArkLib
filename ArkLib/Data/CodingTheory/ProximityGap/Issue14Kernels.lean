@@ -27,7 +27,7 @@ namespace ProximityGap
 namespace Issue14
 
 open NNReal Code
-open scoped ProbabilityTheory BigOperators
+open scoped ProbabilityTheory BigOperators ENNReal
 
 /-- **Random Linear Combination (RLC).**
 Computes the RLC of a list of functions given a list of random coefficients. -/
@@ -42,7 +42,7 @@ to `C` is bounded by the typical `1 / |F|` term (ignoring list-decoding size con
 This formalizes the unproven `batched_fri_joint_proximity_residual` mathematics in isolation.
 -/
 def BatchedFRIJointProximityKernel
-    {ι F : Type} [Field F] [Fintype F] [Fintype ι]
+    {ι F : Type} [Field F] [Fintype F] [DecidableEq F] [Fintype ι]
     (domain : ι ↪ F) (ρ δ : ℝ≥0) (m : ℕ) : Prop :=
   ∀ (funcs : Fin m → (ι → F)),
     Pr_{ let alphas ←$ᵖ (Fin m → F) }[
