@@ -45,6 +45,7 @@ def algebraic_degree_immunity (L : Finset F) (k : ℕ) (h_rate : k < L.card)
   can construct an adversarial distribution that shatters the Proximity Prize bounds 
   over cyclic multiplicative subgroups.
 -/
-theorem proximity_immunity_shield : True := trivial
+def proximity_immunity_shield (L : Finset F) (k : ℕ) : Prop :=
+  ∃ A : F[X], A ≠ 0 ∧ (∀ x ∈ L, A.eval x = 0) ∧ k < A.natDegree
 
 end ArkLib.CodingTheory.Research
