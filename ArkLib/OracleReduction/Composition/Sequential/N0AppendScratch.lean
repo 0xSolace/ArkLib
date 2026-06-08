@@ -15,6 +15,12 @@ theorem append_PrvState_last_empty :
   rwa [show ((Fin.last m).castLE (by omega) : Fin (m + 0 + 1)) = Fin.last (m + 0) from by
     ext; simp] at h
 
+theorem append_Transcript_last_empty :
+    (pSpec₁ ++ₚ pSpec₂).Transcript (Fin.last (m + 0)) = pSpec₁.Transcript (Fin.last m) := by
+  have h := append_Transcript_castLE (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂) (Fin.last m)
+  rwa [show ((Fin.last m).castLE (by omega) : Fin (m + 0 + 1)) = Fin.last (m + 0) from by
+    ext; simp] at h
+
 theorem append_output_empty (state : (P₁.append P₂).PrvState (Fin.last (m + 0))) :
     (P₁.append P₂).output state
       = (do

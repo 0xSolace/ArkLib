@@ -315,6 +315,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomization
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomizationHasse
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomizationMatrix
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop4
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop5
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop6
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDomainSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateExtrapolation
@@ -1019,4 +1021,5 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
+import ArkLib.scratch_append_pc
 import ArkLib.whir113keystone
