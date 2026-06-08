@@ -11,21 +11,21 @@ namespace ProximityGap.ListDecodingUnconditionalRefute
 open scoped NNReal ENNReal
 open CodingTheory ListDecodable
 
-/-- The unconditionally-proven combinatorial volume lists-size bound for Reed-Solomon codes. -/
 theorem rs_lambda_ge_elias_volume
-    {ι F : Type} [Field F] [Fintype F] [Fintype ι] [Nonempty ι] [DecidableEq ι] [DecidableEq F]
+    {ι F : Type} [Field F] [Fintype F] [Fintype ι] [Nonempty ι]
     (α : ι ↪ F) (k : ℕ) (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hkcard : k ≤ Fintype.card ι) :
     ENNReal.ofReal (
       (hammingBallVolume (Fintype.card F) δ (Fintype.card ι) : ℝ) /
       (Fintype.card F : ℝ) ^ (Fintype.card ι - k : ℕ)
     ) ≤ (Lambda (ReedSolomon.code α k : Set (ι → F)) δ : ENNReal) := by
+  classical
   have hdim : Module.finrank F (ReedSolomon.code α k) = k :=
     ReedSolomon.dim_eq_deg_of_le' hkcard
   have h := linear_lambda_ge_elias_volume_eli57 (ι := ι) (F := F) (ReedSolomon.code α k) δ hδ_pos hδ_lt
   rwa [hdim] at h
 
-lemma floor_120 : ⌊(120 / 128 : ℝ) * 128⌋₊ = 120 := by norm_num
+lemma floor_120 : ⌊(120 / 128 : ℝ) * (128 : ℝ)⌋₊ = 120 := by norm_num
 
 /-- Unconditional refutation of the up-to-capacity list decoding bound.
 There exists a field F of size 512, domain of size 128, k=7, and δ=120/128 < 1-7/128,
@@ -48,19 +48,52 @@ theorem rs_listDecoding_unconditional_refute
   refine lt_of_lt_of_le ?_ hl
   rw [hF, Fintype.card_fin]
   
-  -- Show the strict inequality
-  have heq : hammingBallVolume 512 (120 / 128 : ℝ) 128 = 15038444377787151650375685174672066866184745648104990144801868042631311965349583186687113127436881863901183439685096266306134014845093896518687887500318643741231245706972137096355926069772282796303516592374232422397286597635243040152624139714724822095620997714592598555826889405216067258998463940758959084232627994908541115856290575725343 := by
+  have h_vol : hammingBallVolume 512 (120 / 128 : ℝ) 128 = 15038444377787151650375685174672066866184745648104990144801868042631311965349583186687113127436881863901183439685096266306134014845093896518687887500318643741231245706972137096355926069772282796303516592374232422397286597635243040152624139714724822095620997714592598555826889405216067258998463940758959084232627994908541115856290575725343 := by
     rw [hammingBallVolume, floor_120]
     decide
     
-  have heq2 : (512 : ℝ) ^ (128 - 7 : ℕ) = (512 : ℝ) ^ 121 := by norm_num
+  have h_nat_ineq : (2^1098 : ℕ) < (15038444377787151650375685174672066866184745648104990144801868042631311965349583186687113127436881863901183439685096266306134014845093896518687887500318643741231245706972137096355926069772282796303516592374232422397286597635243040152624139714724822095620997714592598555826889405216067258998463940758959084232627994908541115856290575725343 : ℕ) * 2^128 := by decide
   
-  -- The inequality we want is:
-  -- (1 / 2^128) * 512 < Vol / 512^121
-  -- Which is equivalent to:
-  -- 512 * 512^121 < Vol * 2^128
+  have h_real_ineq : (2^1098 : ℝ) < (15038444377787151650375685174672066866184745648104990144801868042631311965349583186687113127436881863901183439685096266306134014845093896518687887500318643741231245706972137096355926069772282796303516592374232422397286597635243040152624139714724822095620997714592598555826889405216067258998463940758959084232627994908541115856290575725343 : ℝ) * 2^128 := by
+    exact_mod_cast h_nat_ineq
+    
+  have h_frac_ineq : ((1:ℝ)/2^128) * 512 < (15038444377787151650375685174672066866184745648104990144801868042631311965349583186687113127436881863901183439685096266306134014845093896518687887500318643741231245706972137096355926069772282796303516592374232422397286597635243040152624139714724822095620997714592598555826889405216067258998463940758959084232627994908541115856290575725343 : ℝ) / (512:ℝ)^121 := by
+    -- We know 512 = 2^9, 512^121 = 2^1089
+    -- LHS = 2^9 / 2^128 = 2^970 / 2^1089
+    -- RHS = Vol / 2^1089
+    -- So we just need 2^970 < Vol, which is 2^1098 < Vol * 2^128
+    have h_pos1 : (0:ℝ) < 2^128 := by positivity
+    have h_pos2 : (0:ℝ) < 512^121 := by positivity
+    rw [div_lt_div_iff₀ h_pos1 h_pos2]
+    -- (1 * 512) * 512^121 < Vol * 2^128
+    -- 512^122 < Vol * 2^128
+    -- 2^1098 < Vol * 2^128
+    have h_512 : (1:ℝ) * 512 * 512^121 = 2^1098 := by norm_num
+    rwa [h_512]
+    
+  -- Now convert to ENNReal
+  have h_lift : ENNReal.ofReal (((1:ℝ)/2^128) * 512) < ENNReal.ofReal ((15038444377787151650375685174672066866184745648104990144801868042631311965349583186687113127436881863901183439685096266306134014845093896518687887500318643741231245706972137096355926069772282796303516592374232422397286597635243040152624139714724822095620997714592598555826889405216067258998463940758959084232627994908541115856290575725343:ℝ) / (512:ℝ)^121) := by
+    rw [ENNReal.ofReal_lt_ofReal_iff (by positivity)]
+    exact h_frac_ineq
+    
+  have h_lhs : (ε_star : ENNReal) * (512 : ENNReal) = ENNReal.ofReal (((1:ℝ)/2^128) * 512) := by
+    have h1 : (ε_star : ENNReal) = ENNReal.ofReal (1 / 2^128) := by
+      change (↑(1 / 2^128 : ℝ≥0) : ENNReal) = ENNReal.ofReal (1 / 2^128)
+      rw [ENNReal.ofReal_coe_nnreal]
+    have h2 : (Fintype.card F : ENNReal) = ENNReal.ofReal 512 := by
+      rw [hF]
+      change (512 : ENNReal) = ENNReal.ofReal 512
+      exact (ENNReal.ofReal_natCast 512).symm
+    rw [h1, h2, ← ENNReal.ofReal_mul (by positivity)]
+    
+  rw [h_lhs]
   
-  -- First, we evaluate the LHS and RHS to ENNReals, and pull out the ofReal
-  sorry
+  have h_rhs : ENNReal.ofReal ((15038444377787151650375685174672066866184745648104990144801868042631311965349583186687113127436881863901183439685096266306134014845093896518687887500318643741231245706972137096355926069772282796303516592374232422397286597635243040152624139714724822095620997714592598555826889405216067258998463940758959084232627994908541115856290575725343:ℝ) / (512:ℝ)^121) = ENNReal.ofReal (↑(hammingBallVolume 512 (120 / 128) 128) / (512 : ℝ) ^ (128 - 7 : ℕ)) := by
+    rw [h_vol]
+    congr 2
+    norm_num
+    
+  rw [h_rhs] at h_lift
+  exact h_lift
 
 end ProximityGap.ListDecodingUnconditionalRefute
