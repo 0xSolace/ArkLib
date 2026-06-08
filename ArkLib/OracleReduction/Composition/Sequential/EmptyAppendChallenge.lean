@@ -59,16 +59,16 @@ theorem support_simulateQ_challengeQueryImpl_append_left
   -- uniform sample, all in one pass so `support_uniformSample` fires on the reduced form. The
   -- continuation is the bijective response transport `h ▸ ·`, so its image of `Set.univ` is again
   -- `Set.univ`.
-  simp only [SubSpec.onQuery, SubSpec.onResponse, OracleQuery.input_apply, OracleQuery.cont_apply,
-    OracleSpec.query, OracleQuery.mk, Function.id_comp]
+  -- Reduce the lens projections; the continuation is then the bijective response transport `h ▸ ·`.
+  dsimp only [SubSpec.onQuery, SubSpec.onResponse, OracleQuery.input_apply, OracleQuery.cont_apply,
+    OracleSpec.query, OracleQuery.mk, Function.comp, Function.id_comp]
+  -- The inner uniform sample has full support, so the image under the (bijective) transport is all
+  -- of `Set.univ`. `@mem_support_uniformSample _ _ _` unifies its `SampleableType` instance from the
+  -- goal's term (the oracle's `.Range` form) rather than re-synthesizing it.
   apply Set.eq_univ_of_forall
   intro y
   rw [Set.mem_image]
   generalize_proofs h
-  -- The appended challenge's `SampleableType` instance is keyed on `.Challenge`; the oracle's
-  -- `.Range ⟨·, ()⟩` form is defeq, so bridge it explicitly for `mem_support_uniformSample`.
-  haveI : SampleableType ([(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.Range ⟨ChallengeIdx.inl i.fst, ()⟩) :=
-    inferInstanceAs (SampleableType ((pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl i.fst)))
-  exact ⟨h.symm ▸ y, mem_support_uniformSample _, eqRec_eqRec_symm h y⟩
+  exact ⟨h.symm ▸ y, @mem_support_uniformSample _ _ _, eqRec_eqRec_symm h y⟩
 
 end ProtocolSpec

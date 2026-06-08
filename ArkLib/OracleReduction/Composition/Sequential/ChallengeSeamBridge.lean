@@ -29,8 +29,15 @@ Key facts established here:
   `(pSpec₁ ++ₚ pSpec₂).Challenge (.inl i)` and `pSpec₁.Challenge i` are only *propositionally*
   equal, so the bridge cannot hold as a syntactic computation equality — only at the
   `evalDist`/`support` level that completeness and soundness actually consume.
+* `support_cast_uniformSample` — the support-level analogue (full support both sides), the
+  lighter closer used by the support-decomposition perfect-completeness route.
 * `simulateQ_addLift_liftM_inl` — the oSpec-query (left) half of the bridge, an exact
   computation equality.
+
+Remaining for the full keystone (see the audit doc): the inr (challenge) half of the bridge
+assembled at `evalDist`/`support` level from the atoms above, then the `Reduction.run`
+support-decomposition (perfect completeness) and the soundness union-bound over the
+intermediate statement.
 -/
 
 open OracleComp OracleSpec ProtocolSpec SubSpec
@@ -62,6 +69,18 @@ theorem evalDist_cast_uniformSample {A B : Type} [SampleableType A] [SampleableT
   exact probOutput_map_bijective_uniform_cross (α := A) (β := B)
     (cast h) (cast_bijective h) y
 
+/-- **Atom 2′ (support form): cast-transport preserves the (full) support of uniform sampling.**
+For perfect completeness only support containment is needed, and the uniform sampler has full
+support on both (propositionally equal) seam challenge types — so the transport is the identity
+on supports. This is the lighter closer used by the support-decomposition completeness route. -/
+theorem support_cast_uniformSample {A B : Type} [SampleableType A] [SampleableType B] (h : A = B) :
+    support (cast h <$> (uniformSample A)) = support (uniformSample B) := by
+  rw [support_map]
+  ext y
+  simp only [Set.mem_image]
+  refine ⟨fun _ => SampleableType.mem_support_selectElem _, fun _ => ?_⟩
+  exact ⟨cast h.symm y, SampleableType.mem_support_selectElem _, by simp⟩
+
 variable [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
   {σ : Type} {impl : QueryImpl oSpec (StateT σ ProbComp)} {α : Type}
 
@@ -79,11 +98,17 @@ theorem simulateQ_addLift_liftM_inl (t : ι) :
   rw [show (liftM (liftM (OracleSpec.query (spec := oSpec + [pSpec₁.Challenge]ₒ) (Sum.inl t))
           : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) _)
         : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _)
-      = OracleComp.liftComp
-          (liftM (OracleSpec.query (spec := oSpec + [pSpec₁.Challenge]ₒ) (Sum.inl t))
-            : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) _)
-          (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) from rfl]
-  simp only [OracleComp.liftComp_query, OracleQuery.cont_query, OracleQuery.input_query,
-    id_map, simulateQ_query, QueryImpl.add_apply_inl]
+      = liftM (liftM (OracleSpec.query (spec := oSpec + [pSpec₁.Challenge]ₒ) (Sum.inl t))
+          : OracleQuery (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) from rfl]
+  rw [OracleQuery.liftM_right_add_right_add_query]
+  simp only [simulateQ_query, OracleQuery.cont_query, OracleQuery.input_query,
+    QueryImpl.add_apply_inl]
+  exact id_map (impl t)
 
 end Prover
+
+-- Axiom audit (verified sorry-free / axiom-clean):
+#print axioms Prover.liftM_map_comm
+#print axioms Prover.evalDist_cast_uniformSample
+#print axioms Prover.simulateQ_addLift_liftM_inl
+#print axioms Prover.support_cast_uniformSample

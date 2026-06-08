@@ -574,22 +574,35 @@ theorem probEvent_outerVerify_reject_challenge_le (oStmt : ∀ i, OStmtIn F n M 
 output: its `OptionT.run` is `pure (some …)`, so it never fails (`none`). This is the verifier-side
 half of the per-state accept-zero step in `outer_perState_none_le` — a direct repackaging of the
 pole-scan collapse `simulateQ_outerVerify_eq` under the named acceptance predicate. -/
-theorem outerVerifier_run_accept_no_none
+theorem outerVerifier_run_accept_eq_pure
     (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
     (tr : FullTranscript (outerPSpec F n params))
     (hacc : outerVerifyAccepts F n M stmtIn.2 (chalX F n M params tr.challenges)) :
-    none ∉
-      support ((Verifier.run stmtIn tr (outerVerifier oSpec F n M params).toVerifier).run) := by
+    ∃ v, (Verifier.run stmtIn tr (outerVerifier oSpec F n M params).toVerifier).run
+      = (pure (some v) : OracleComp oSpec
+          (Option (StmtAfterOuter F n M params
+            × (∀ i, OStmtAfterOuter F n M params i)))) := by
   classical
-  show none ∉
-    support ((outerVerifier oSpec F n M params).toVerifier.verify stmtIn tr).run
+  refine ⟨(show StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i) from
+          ({ xChallenge := chalX F n M params tr.challenges,
+             zChallenge := (chalBatch F n M params tr.challenges).1,
+             batchingScalars := (chalBatch F n M params tr.challenges).2 },
+           fun i => match h : (outerVerifier oSpec F n M params).embed i with
+             | Sum.inl j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ stmtIn.2 j :
+                 OStmtAfterOuter F n M params i)
+             | Sum.inr j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ tr.messages j :
+                 OStmtAfterOuter F n M params i))), ?_⟩
+  show ((outerVerifier oSpec F n M params).toVerifier.verify stmtIn tr).run = _
   unfold OracleVerifier.toVerifier
   simp only
   rw [simulateQ_outerVerify_eq]
   rw [if_pos (show (∀ (u : Hypercube n),
       chalX F n M params tr.challenges + evalOnHypercube (tableOracle stmtIn.2) u ≠ 0) from hacc)]
   rw [pure_bind, OptionT.run_pure]
-  simp
+  refine congrArg (fun z => pure (some z)) ?_
+  refine Prod.ext rfl ?_
+  funext i
+  cases i <;> rfl
 
 set_option maxHeartbeats 3200000 in
 /-- **Per-(initial-state) pole bound for the simulated outer run (DEV — accept-zero pending).**
@@ -630,9 +643,28 @@ theorem outer_perState_none_le
     rw [mul_eq_zero]
     right
     rw [probEvent_eq_zero_iff]
-    intro y hy
-    extract_goal
-    sorry
+    intro y hy hynone
+    subst hynone
+    -- `none` survives the simulated run only if it is already in the (un-simulated) run's support.
+    have hsub := support_simulateQ_run'_subset (impl.addLift challengeQueryImpl) _ s hy
+    rw [support_bind] at hsub
+    simp only [Set.mem_iUnion, exists_prop] at hsub
+    obtain ⟨x, hx, hxnone⟩ := hsub
+    rw [support_map] at hx
+    obtain ⟨a, _, rfl⟩ := hx
+    -- The transcript built here carries `c` as its round-1 challenge, so the verifier accepts.
+    have hchalX : chalX F n M params
+        (Transcript.concat a
+          (Transcript.concat (honestHelpers params stmtIn.2 c)
+            (Transcript.concat c
+              (Transcript.concat (honestMultiplicity stmtIn.2) default)))).challenges = c := by
+      simp only [chalX, FullTranscript.challenges, Transcript.concat, Fin.isValue]
+      rfl
+    obtain ⟨v, hv⟩ := outerVerifier_run_accept_eq_pure oSpec F n M params stmtIn _
+      (by rw [hchalX]; exact hacc)
+    rw [optionT_run_bind, optionT_run_lift, hv] at hxnone
+    simp only [map_pure, pure_bind, OptionT.run_pure, support_pure,
+      Set.mem_singleton_iff, Option.getM, reduceCtorEq] at hxnone
   · rw [if_pos hacc]
     refine le_trans (mul_le_mul_left' probEvent_le_one _) (le_of_eq ?_)
     rw [mul_one]

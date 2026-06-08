@@ -1000,6 +1000,27 @@ seven leaves (the sum-check phases) are themselves residuals
 We existentially quantify the combined `pSpecC` (rather than spelling out the `Fin.vsum`/`++ₚ`
 arithmetic) so the residual records exactly the protocol-level obligation without committing to a
 brittle size normal form. -/
+@[irreducible]
+noncomputable def composed1 := (oracleReduction.firstMessage R pp oSpec).append (oracleReduction.firstChallenge R pp oSpec)
+
+@[irreducible]
+noncomputable def composed2 := (composed1 R pp oSpec).append (firstSumcheckReduction pp oSpec)
+
+@[irreducible]
+noncomputable def composed3 := (composed2 R pp oSpec).append (oracleReduction.sendEvalClaim R pp oSpec)
+
+@[irreducible]
+noncomputable def composed4 := (composed3 R pp oSpec).append (oracleReduction.linearCombination R pp oSpec)
+
+@[irreducible]
+noncomputable def composed5 := (composed4 R pp oSpec).append (secondSumcheckReduction pp oSpec)
+
+@[irreducible]
+noncomputable def composedPIOP := (composed5 R pp oSpec).append (finalCheck R pp oSpec)
+
+@[irreducible]
+noncomputable def composedPIOPWithClaim := (composed5 R pp oSpec).append (finalCheckWithClaim R pp oSpec)
+
 def composedPIOPResidual : Prop :=
   ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface.{0, 0} (pSpecC.Message i))
     (_ : ∀ i, SampleableType (pSpecC.Challenge i)),
@@ -1008,7 +1029,8 @@ def composedPIOPResidual : Prop :=
       (FinalStatement R pp) (FinalOracleStatement R pp) Unit
       pSpecC)
 
-theorem composedPIOPResidual_holds : composedPIOPResidual R pp oSpec := sorry
+theorem composedPIOPResidual_holds : composedPIOPResidual R pp oSpec :=
+  ⟨_, _, inferInstance, inferInstance, ⟨composedPIOP R pp oSpec⟩⟩
 
 /-- **NAMED RESIDUAL — target-carrying composed Spartan PIOP existence.** This is the same
 composition obligation as `composedPIOPResidual`, but with the real terminal `CheckClaim` endpoint:
@@ -1022,7 +1044,8 @@ def composedPIOPWithClaimResidual : Prop :=
       (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit
       pSpecC)
 
-theorem composedPIOPWithClaimResidual_holds : composedPIOPWithClaimResidual R pp oSpec := sorry
+theorem composedPIOPWithClaimResidual_holds : composedPIOPWithClaimResidual R pp oSpec :=
+  ⟨_, _, inferInstance, inferInstance, ⟨composedPIOPWithClaim R pp oSpec⟩⟩
 
 /-- **NAMED RESIDUAL — composed Spartan PIOP perfect completeness.** Discharged, once the composed
 reduction `Rc` (over its combined spec `pSpecC`) is available, by iterated
