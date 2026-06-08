@@ -993,8 +993,6 @@ theorem fiatShamir_soundness_of_stateRestoration_canonical
 
 end CanonicalSoundness
 
-<<<<<<< HEAD
-=======
 section CanonicalKnowledgeSoundnessSupport
 
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
@@ -1038,7 +1036,6 @@ theorem fiatShamirStraightlineExtractorOfStateRestoration_apply
 
 end CanonicalKnowledgeSoundnessSupport
 
->>>>>>> 2d6d6ea7b7467832627d6b38deb68224d14873dd
 /-- Basic Fiat-Shamir soundness from a transfer residual at the target error, after first relaxing
 the state-restoration soundness hypothesis to that target error. -/
 theorem fiatShamir_soundness_of_stateRestoration_pre_mono_error
