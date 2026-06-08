@@ -60,10 +60,10 @@ theorem list_le_one_of_min_weight {C : Finset (ι → F)}
   have hv : c - c' ∈ C := hsub c hc.1 c' hc'.1
   have hvne : c - c' ≠ 0 := sub_ne_zero.mpr hne
   have hwt : 2 * r < hammingNorm (c - c') := hmin _ hv hvne
-  rw [← hammingDist_eq_hammingNorm c c'] at hwt
+  have heq := hammingDist_eq_hammingNorm c c'
   have htri : hammingDist c c' ≤ hammingDist c f + hammingDist f c' :=
     hammingDist_triangle _ _ _
-  rw [hammingDist_comm f c'] at htri
+  rw [heq, hammingDist_comm f c'] at htri
   omega
 
 #print axioms pairBall_eq_zero

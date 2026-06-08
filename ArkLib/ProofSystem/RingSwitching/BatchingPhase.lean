@@ -639,8 +639,9 @@ def rbrExtractionFailureEvent
 /-- **Schwartz-Zippel bound for the bad batching event.** -/
 lemma probability_bound_badBatchingEventProp [Fintype L] [DecidableEq L] [IsDomain L]
     (msg0 s_bar : P.A) :
-    Pr_{ let y ← $ᵖ (Fin κ → L) }[
-      badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar ] ≤
+    Pr[fun y =>
+      badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar |
+        ($ᵖ (Fin κ → L))] ≤
       batchingRBRKnowledgeError (κ := κ) (L := L) (K := K) (P := P) ⟨1, rfl⟩ := by
   classical
   unfold badBatchingEventProp
@@ -707,7 +708,8 @@ lemma batching_rbrExtractionFailureEvent_imply_badBatchingEvent [Fintype L] [Dec
         (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
       (extractor := batchingRbrExtractor (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
         (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
-      ⟨1, rfl⟩ stmtOStmtIn (fun | ⟨0, _⟩ => msg0) y) :
+      (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => msg0)
+      (challenge := y)) :
     ∃ witMid : batchingWitMid L K ℓ ℓ' 2,
       aOStmtIn.initialCompatibility ⟨witMid.t', stmtOStmtIn.2⟩ ∧
       let s_bar := embedded_MLP_eval κ L K P ℓ ℓ' h_l witMid.t' stmtOStmtIn.1.t_eval_point
@@ -740,13 +742,14 @@ lemma batching_rbrExtractionFailureEvent_imply_badBatchingEvent [Fintype L] [Dec
 lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L] [IsDomain L] [IsDomain K]
     (stmtOStmtIn : (BatchingStmtIn L ℓ) × (∀ j, aOStmtIn.OStmtIn j))
     (msg0 : (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).Message ⟨0, rfl⟩) :
-    Pr_{ let y ← $ᵖ (Fin κ → L) }[
+    Pr[fun y =>
       rbrExtractionFailureEvent
         (kSF := batchingKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
           (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
         (extractor := batchingRbrExtractor (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
           (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
-        ⟨1, rfl⟩ stmtOStmtIn (fun | ⟨0, _⟩ => msg0) y ] ≤
+        (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => msg0)
+        (challenge := y) | ($ᵖ (Fin κ → L))] ≤
       batchingRBRKnowledgeError (κ := κ) (L := L) (K := K) (P := P) ⟨1, rfl⟩ := by
   classical
   let P_event := rbrExtractionFailureEvent
@@ -754,7 +757,7 @@ lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L] [IsDoma
       (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
     (extractor := batchingRbrExtractor (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
       (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
-    ⟨1, rfl⟩ stmtOStmtIn (fun | ⟨0, _⟩ => msg0)
+    (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => msg0)
   by_cases h_doom : ∃ y, P_event y
   · obtain ⟨y_doom, h_doomEscape⟩ := h_doom
     obtain ⟨witMid, _h_mid_compat, _h_bad_extracted⟩ :=

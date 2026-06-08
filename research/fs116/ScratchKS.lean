@@ -163,6 +163,29 @@ theorem scratch_fiatShamirKnowledgeExec_runCollapse
                   OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
                     (StmtIn × WitIn × StmtOut × WitOut))))
   rw [stateT_option_elimM_map_eq (f := Prod.fst) (k := K)]
+  change Option.elimM
+      ((fun o => Option.map Prod.fst o) <$>
+        simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          (Reduction.runWithLog stmtIn witIn { prover := P, verifier := V.fiatShamir }).run)
+      (pure none) K =
+    Option.elimM (simulateQ impl (fiatShamirAdversaryExecution P V stmtIn witIn).run)
+      (pure none) (fun d =>
+        Option.elimM
+          (simulateQ impl
+            (OptionT.run
+              ((liftM
+                (do
+                  let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+                    (oSpec := oSpec) stmtIn (d.1.1 0))
+                  liftM (srExtractor stmtIn d.1.2.2 transcript default default) :
+                    OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)) :
+                  OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)))
+          (pure none) fun extractedWitIn =>
+            simulateQ impl
+              (OptionT.run
+                ((pure (stmtIn, extractedWitIn, d.2, d.1.2.2)) :
+                  OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+                    (StmtIn × WitIn × StmtOut × WitOut))))
   rw [fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn]
   simp [K]
 

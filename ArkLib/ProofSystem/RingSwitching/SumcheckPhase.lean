@@ -778,7 +778,9 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
         explicitVCheck ∧ localizedRoundPolyCheck
       )
   | ⟨2, h2⟩ => -- After V sends r'ᵢ (post-challenge OUTPUT state)
-    let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := by decide)
+    let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := by
+      change 1 ≤ (2 : Nat)
+      decide)
     let r_i' := get_rᵢ' (m := ⟨2, h2⟩) (tr := tr) (hm := le_refl _)
     let stmtOut : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.succ :=
       { ctx := stmt.ctx, sumcheck_target := h_i.val.eval r_i', challenges := Fin.cons r_i' stmt.challenges }
@@ -803,15 +805,16 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       (i := i) (m := m) (tr := tr) (stmt := stmt) (witMid := witMid) (oStmt := oStmt)
   toFun_empty := fun _ _ => by
     simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, Fin.val_castSucc, cast_eq,
-      Set.mem_setOf_eq, iteratedSumcheckKStateProp, masterKStateProp, true_and]
+      Set.mem_setOf_eq, iteratedSumcheckKStateProp, masterKStateProp,
+      iteratedSumcheckRbrExtractor, true_and]
   toFun_next := fun m hDir stmtIn tr msg witMid h_succ => by
     obtain ⟨stmt, oStmt⟩ := stmtIn
     fin_cases m
     · -- m = 0: succ = 1, castSucc = 0
-      unfold iteratedSumcheckKStateProp
-      simp only [masterKStateProp, iteratedSumcheckRbrExtractor, true_and]
-      simp only [Fin.succ_mk, Fin.castSucc_mk, Fin.castAdd_mk]
-      tauto
+      dsimp [iteratedSumcheckKStateProp, masterKStateProp, iteratedSumcheckRbrExtractor]
+        at h_succ ⊢
+      simp only [Fin.succ_mk, Fin.castSucc_mk, Fin.castAdd_mk] at h_succ ⊢
+      exact h_succ.2
     · -- m = 1: dir 1 = V_to_P, contradicts hDir
       simp [pSpecSumcheckRound] at hDir
   toFun_full := fun ⟨stmtIn, oStmtIn⟩ tr witOut probEvent_relOut_gt_0 => by
@@ -912,12 +915,12 @@ def rbrExtractionFailureEvent
       (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc × (∀ j, aOStmtIn.OStmtIn j))
       (SumcheckWitness L ℓ' i.castSucc) (SumcheckWitness L ℓ' i.succ)
       (pSpecSumcheckRound L)
-      (iteratedSumcheckPrvState κ L K P ℓ ℓ' aOStmtIn i))
+      (iteratedSumcheckWitMid (L := L) (ℓ' := ℓ') (i := i)))
     (j : (pSpecSumcheckRound L).ChallengeIdx)
     (stmtIn : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc × (∀ j, aOStmtIn.OStmtIn j))
     (transcript : Transcript j.1.castSucc (pSpecSumcheckRound L))
     (challenge : (pSpecSumcheckRound L).Challenge j) : Prop :=
-  ∃ witMid : iteratedSumcheckPrvState κ L K P ℓ ℓ' aOStmtIn i j.1.succ,
+  ∃ witMid : iteratedSumcheckWitMid (L := L) (ℓ' := ℓ') (i := i) j.1.succ,
     ¬ kSF j.1.castSucc stmtIn transcript
       (extractor.extractMid j.1 stmtIn (transcript.concat challenge) witMid) ∧
       kSF j.1.succ stmtIn (transcript.concat challenge) witMid
@@ -931,7 +934,7 @@ lemma iteratedSumcheck_rbrExtractionFailureEvent_imply_badSumcheck [Fintype L] [
       (kSF := iteratedSumcheckKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
         (h_l := h_l) aOStmtIn (init := init) (impl := impl) i)
       (extractor := iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i)
-      (i := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => h_i)
+      (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => h_i)
       (challenge := r_i')) :
     ∃ witMid : SumcheckWitness L ℓ' i.succ,
       aOStmtIn.initialCompatibility ⟨witMid.t', stmtOStmtIn.2⟩ ∧
@@ -1030,19 +1033,20 @@ lemma iteratedSumcheck_doom_escape_probability_bound [Fintype L] [DecidableEq L]
     (i : Fin ℓ')
     (stmtOStmtIn : (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.castSucc i)) × (∀ j, aOStmtIn.OStmtIn j))
     (h_i : (pSpecSumcheckRound L).Message ⟨0, rfl⟩) :
-    Pr_{ let y ← $ᵖ L }[
+    Pr[fun y =>
       rbrExtractionFailureEvent
         (kSF := iteratedSumcheckKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
           (h_l := h_l) aOStmtIn (init := init) (impl := impl) i)
         (extractor := iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i)
-        ⟨1, rfl⟩ stmtOStmtIn (fun | ⟨0, _⟩ => h_i) ] ≤
+        (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => h_i)
+        (challenge := y) | ($ᵖ L)] ≤
       roundKnowledgeError L ℓ' i := by
   classical
   let P_event := rbrExtractionFailureEvent
     (kSF := iteratedSumcheckKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
       (h_l := h_l) aOStmtIn (init := init) (impl := impl) i)
     (extractor := iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i)
-    ⟨1, rfl⟩ stmtOStmtIn (fun | ⟨0, _⟩ => h_i)
+    (j := ⟨1, rfl⟩) (stmtIn := stmtOStmtIn) (transcript := fun | ⟨0, _⟩ => h_i)
   by_cases h_doom : ∃ y, P_event y
   · obtain ⟨y_doom, h_doomEscape⟩ := h_doom
     obtain ⟨witMid, h_mid_compat, h_bad_extracted⟩ :=
