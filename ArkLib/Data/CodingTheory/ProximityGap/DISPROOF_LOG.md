@@ -20,7 +20,7 @@ proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_di
 brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
 `~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
 the research ledger; treat a named lemma as in-tree API only after checking the current source file.
-Loops 27, 28, 29, 30, 31, and 32 have been restored as self-contained arithmetic bricks in the
+Loops 27, 28, 29, 30, 31, 32, and 33 have been restored as self-contained arithmetic bricks in the
 current checkout.
 
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
@@ -337,6 +337,20 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop33 — bounded sparse spikes are absorbed
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop33.lean`:**
+`sparse_spike_sum_le` (a spike function supported on `S` and bounded by height `h` contributes at
+most `m*h` over the first `m` levels), `sparse_spike_product_eq`, and
+`sparse_spike_product_le_domain_pow` (baseline exponent `c` plus bounded spikes is absorbed by the
+final-domain polynomial of degree `c+h`).
+**Disproof attempt:** force a few alarming fold levels with high-looking multiplicative exponents
+while keeping most levels harmless, hoping sparse irregularity beats every fixed polynomial in
+`2^m`. **Disproof of the disproof:** bounded spikes do not work. If spike heights are bounded by
+`h`, their total contribution is still linear in the depth and only increases the final polynomial
+degree from `c` to `c+h`. A spike-based disproof must make the spike height or average spike density
+grow without bound in the actual smooth-domain GS/proximity mechanism. Sparse scary levels are not
+enough.
 
 ### Loop32 — block grouping cannot hide multiplicative exponent growth
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop32.lean`:**
