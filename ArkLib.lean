@@ -887,6 +887,7 @@ import ArkLib.ToMathlib.SiegelInterpolation
 import ArkLib.ToMathlib.SpartanBricks
 import ArkLib.ToMathlib.SqSumCardSupport
 import ArkLib.ToMathlib.StraightlineRewindingBridge
+import ArkLib.ToMathlib.SubmoduleCardRatio
 import ArkLib.ToMathlib.SubspacePolyLinearized
 import ArkLib.ToMathlib.SubstFieldCaveat
 import ArkLib.ToMathlib.SumSubMeanSq
