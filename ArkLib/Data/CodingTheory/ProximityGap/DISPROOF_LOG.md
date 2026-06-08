@@ -358,6 +358,20 @@ MCA-of-WHIR polynomial-soundness conjecture admits no universal constant — **f
 the prize: the prize is strictly below capacity (`δ ≤ 1−ρ−η`), exactly the form Crites–Stewart
 propose as salvageable. It nails the failure at the boundary the prize's gap `η` keeps it away from.
 
+### P4 — BGM conditional: genericity ⟹ prize across the ENTIRE band (Loop17, reaches the open core)
+The one method that provably crosses `η₀` is Brakensiek–Gopi–Makam (eprint 2206.05256 / 2304.09445):
+**generic** RS of rate `ρ` is list-decodable from radius `1−ρ−η` with list size `≤ (1−ρ−η)/η`
+(capacity). At the prize radius this gives the `q`-independent budget `(1−ρ−η)/η ≤ 1/η` — polynomial
+in `1/η`, **no `n`/`q`/`(2^m)` factor**. **Verified sorry-free, axiom-clean in
+`CandidateProofLoop17.lean`:** `bgmBudget_le_inv_gap`, `bgm_prize_mass` — if `ℓ ≤ (1−ρ−η)/η` then
+`ℓ/q ≤ (1/q)·(1/η)`, the prize mass clause with `c₁=c₂=0, c₃=1`, for **every `η > 0` including the
+small-gap band** the Johnson method (Loop16) cannot touch. So the prize reduces, on the proof side,
+to one sharp hypothesis: **(BGM-for-smooth)** smooth multiplicative-subgroup RS inherits the *generic*
+BGM list bound. This is the first brick reaching into the open core; the open content is exactly
+whether *deterministic smooth* domains behave like *generic* points (BGM is proved for random/generic
+evaluation; smooth subgroups are structured). Combined with Loop15 (leans TRUE) the proof side now has
+a full-band conditional, not just the Johnson-range one.
+
 ### P3 — PROOF capstone: the large-gap prize mass clause holds (Loop13)
 **Verified sorry-free, axiom-clean in `CandidateProofLoop13.lean`:** `largegap_prize_mass` — composing
 P1 (Johnson list budget `B(ρ,η)=1/((ρ+η)²−ρ)`, `q`-independent) and P2 (`n²` fits `(2^m)²`), in the
