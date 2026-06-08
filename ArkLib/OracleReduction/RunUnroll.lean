@@ -356,6 +356,32 @@ theorem simulateQ_state_preserving
 
 #print axioms simulateQ_state_preserving
 
+/-- **`simulateQ` never fails when every query implementation never fails.** If `so` answers every
+query with a never-failing `StateT σ ProbComp` computation, then simulating any `OracleComp` under `so`
+never fails. This discharges the `hB` side-condition of the `appendSoundness` seam swap: the malicious
+prover stage, run under the honest interactive implementation (`addLift impl challengeQueryImpl`), never
+fails — provers contain no `failure`, and the challenge oracle samples uniformly. -/
+theorem simulateQ_run_neverFail
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hnf : ∀ (t : spec.Domain) (s : σ), Pr[⊥ | (so t).run s] = 0)
+    {α : Type} (X : OracleComp spec α) (s : σ) :
+    Pr[⊥ | (simulateQ so X).run s] = 0 := by
+  induction X using OracleComp.inductionOn generalizing s with
+  | pure a => simp [simulateQ_pure, StateT.run_pure]
+  | query_bind t oa ih =>
+    simp only [simulateQ_bind, simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query,
+      id_map, StateT.run_bind]
+    rw [probFailure_bind_eq_add_tsum, hnf t s]
+    simp only [zero_add]
+    rw [ENNReal.tsum_eq_zero]
+    rintro ⟨u, s'⟩
+    rw [mul_eq_zero]
+    by_cases h : (u, s') ∈ support ((so t).run s)
+    · right; exact ih u s'
+    · left; rw [probOutput_eq_zero_of_not_mem_support h]
+
+#print axioms simulateQ_run_neverFail
+
 /-- **State-fixing for a simulated bind.** When the implementation preserves `σ`, the continuation of
 a simulated bind runs from the *same* state `s` (not a threaded one), since the first stage leaves `σ`
 unchanged. This is the step that makes the seam stages commute: after fixing all states to `s`, the
@@ -656,6 +682,22 @@ theorem addLift_state_preserving (impl : QueryImpl oSpec (StateT σ ProbComp))
     change x ∈ support ((fun a => (a, s)) <$> challengeQueryImpl t) at hx
     simp only [support_map, Set.mem_image] at hx
     obtain ⟨a, _, rfl⟩ := hx; rfl
+
+/-- **`addLift impl challengeQueryImpl` never fails when `impl` never fails.** The shared-oracle half
+(`inl`) inherits `impl`'s non-failure; the challenge half (`inr`) is a uniform sample (`$ᵗ`), which
+never fails. Combined with `simulateQ_run_neverFail`, this discharges the `hB` side-condition of
+`appendSoundness` for the honest interactive implementation (vacuous when `oSpec = []ₒ`). -/
+theorem addLift_neverFail (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (himpl : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
+    ∀ (t : (oSpec + [pSpec.Challenge]ₒ).Domain) (s : σ),
+      Pr[⊥ | ((impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp)) t).run s] = 0 := by
+  rintro (t | t) s
+  · simp only [QueryImpl.addLift_def, QueryImpl.add_apply_inl, QueryImpl.liftTarget_apply,
+      monadLift_self]
+    exact himpl t s
+  · simp [QueryImpl.addLift_def, QueryImpl.add_apply_inr, QueryImpl.liftTarget_apply,
+      StateT.run_monadLift, probFailure_map, challengeQueryImpl]
 
 /-- **`addLift impl challengeQueryImpl` is value-state-blind when `impl` is.** Discharges `hvb`. -/
 theorem addLift_value_blind (impl : QueryImpl oSpec (StateT σ ProbComp))
