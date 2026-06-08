@@ -347,4 +347,38 @@ theorem merge_runToRound_castLE (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ 
   (fst_runToRound_heq P stmt wit j).trans
     (append_runToRound_left (P₁ := Prover.fst P) (P₂ := Prover.snd P) j).symm
 
+/-- **Right-interior per-round sendMessage merge** (`k > 0`): the append-of-restrictions and `P`
+agree on `sendMessage` at a right round, via `snd` as the pivot
+(`append_sendMessage_natAdd` then `snd_sendMessage_natAdd`). -/
+theorem merge_sendMessage_natAdd (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .P_to_V)
+    (hDir₂ : pSpec₂.dir k = .P_to_V)
+    (stateA : ((Prover.fst P).append (Prover.snd P)).PrvState (Fin.natAdd m k).castSucc)
+    (stateP : P.PrvState (Fin.natAdd m k).castSucc)
+    (hst : HEq stateA stateP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).sendMessage ⟨Fin.natAdd m k, hDir⟩ stateA)
+        (P.sendMessage ⟨Fin.natAdd m k, hDir⟩ stateP) := by
+  refine (append_sendMessage_natAdd (P₁ := Prover.fst P) (P₂ := Prover.snd P)
+    k hk hDir hDir₂ stateA).trans ?_
+  refine (sendMessage_heq_congr (P := Prover.snd P) rfl ?_).trans
+    (snd_sendMessage_natAdd P k hDir hDir₂ stateP).symm
+  exact (cast_heq _ _).trans (hst.trans (cast_heq _ _).symm)
+
+/-- **Right-interior per-round receiveChallenge merge** (`k > 0`). -/
+theorem merge_receiveChallenge_natAdd (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .V_to_P)
+    (hDir₂ : pSpec₂.dir k = .V_to_P)
+    (stateA : ((Prover.fst P).append (Prover.snd P)).PrvState (Fin.natAdd m k).castSucc)
+    (stateP : P.PrvState (Fin.natAdd m k).castSucc)
+    (hst : HEq stateA stateP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).receiveChallenge ⟨Fin.natAdd m k, hDir⟩ stateA)
+        (P.receiveChallenge ⟨Fin.natAdd m k, hDir⟩ stateP) := by
+  refine (append_receiveChallenge_natAdd (P₁ := Prover.fst P) (P₂ := Prover.snd P)
+    k hk hDir hDir₂ stateA).trans ?_
+  refine (receiveChallenge_heq_congr (P := Prover.snd P) rfl ?_).trans
+    (snd_receiveChallenge_natAdd P k hDir hDir₂ stateP).symm
+  exact (cast_heq _ _).trans (hst.trans (cast_heq _ _).symm)
+
 end Prover
