@@ -58,6 +58,198 @@ theorem mcaPrizeLatticeResolved.maximal
   rcases (mcaPrizeLatticeResolved_iff domain τ).mp hτ j with ⟨_, _, hmax⟩
   exact hmax i hi
 
+/-- Radius-one bad-count bounds resolve the faithful MCA prize lattice at the top index and
+expose the full satisfy/maximality specification for that concrete threshold function. -/
+theorem mcaPrizeLatticeResolved_with_spec_top_of_radiusOne_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) 1
+        ≤ (epsStar : ENNReal)) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+    mcaPrizeLatticeResolved domain τ ∧
+      ∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j := by
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+    fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+  have hτ : mcaPrizeLatticeResolved domain τ :=
+    mcaPrizeLatticeResolved_top_of_radiusOne_bounds domain hbound
+  simpa [τ] using And.intro hτ ((mcaPrizeLatticeResolved_iff domain τ).mp hτ)
+
+/-- The combinatorial choose-bound family resolves the faithful MCA prize lattice at the top
+index and exposes the full satisfy/maximality specification for that concrete threshold
+function. -/
+theorem mcaPrizeLatticeResolved_with_spec_top_of_choose_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      (Nat.choose (Fintype.card ι)
+          (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ENNReal)
+        / (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal)) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+    mcaPrizeLatticeResolved domain τ ∧
+      ∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j := by
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+    fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+  have hτ : mcaPrizeLatticeResolved domain τ :=
+    mcaPrizeLatticeResolved_top_of_choose_bounds domain hbound
+  simpa [τ] using And.intro hτ ((mcaPrizeLatticeResolved_iff domain τ).mp hτ)
+
+omit [DecidableEq ι] [DecidableEq F] in
+/-- Low-output projection of `mcaPrizeLatticeResolved_with_spec_top_of_radiusOne_bounds`: it
+keeps only the per-rate satisfy/maximality specification for the concrete all-top threshold
+function. -/
+theorem mcaPrizeLatticeSpec_top_of_radiusOne_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) 1
+        ≤ (epsStar : ENNReal)) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ _ : mcaThresholdExists C epsStar,
+        mcaSatisfies C epsStar (τ j) ∧
+          ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j := by
+  classical
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+    fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+  rcases mcaPrizeLatticeResolved_with_spec_top_of_radiusOne_bounds domain hbound with
+    ⟨_hτ, hspec⟩
+  simpa [τ] using hspec
+
+omit [DecidableEq ι] [DecidableEq F] in
+/-- Low-output projection of `mcaPrizeLatticeResolved_with_spec_top_of_choose_bounds`: it keeps
+only the per-rate satisfy/maximality specification for the concrete all-top threshold function. -/
+theorem mcaPrizeLatticeSpec_top_of_choose_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      (Nat.choose (Fintype.card ι)
+          (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ENNReal)
+        / (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal)) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ _ : mcaThresholdExists C epsStar,
+        mcaSatisfies C epsStar (τ j) ∧
+          ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j := by
+  classical
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+    fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+  rcases mcaPrizeLatticeResolved_with_spec_top_of_choose_bounds domain hbound with
+    ⟨_hτ, hspec⟩
+  simpa [τ] using hspec
+
+/-- Radius-one bad-count bounds expose the concrete top-threshold equality at every ABF26
+prize rate, without carrying the full resolved predicate. -/
+theorem mcaThreshold_eq_top_prize_allRates_of_radiusOne_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) 1
+        ≤ (epsStar : ENNReal)) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        mcaThreshold C epsStar hne = ⟨Fintype.card ι, Nat.lt_succ_self _⟩ := by
+  intro j
+  exact mcaPrizeLatticeResolved_top_of_radiusOne_bounds domain hbound j
+
+/-- The combinatorial choose-bound family exposes the concrete top-threshold equality at every
+ABF26 prize rate, without carrying the full resolved predicate. -/
+theorem mcaThreshold_eq_top_prize_allRates_of_choose_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      (Nat.choose (Fintype.card ι)
+          (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ENNReal)
+        / (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal)) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        mcaThreshold C epsStar hne = ⟨Fintype.card ι, Nat.lt_succ_self _⟩ := by
+  intro j
+  exact mcaPrizeLatticeResolved_top_of_choose_bounds domain hbound j
+
+omit [DecidableEq ι] [DecidableEq F] in
+/-- Radius-one bad-count bounds expose the all-top prize specification together with the
+endpoint lower bracket `⌊1 · n⌋ ≤ τ j` at every ABF26 prize rate. -/
+theorem mcaPrizeLatticeSpec_and_lower_brackets_top_of_radiusOne_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) 1
+        ≤ (epsStar : ENNReal)) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+    (∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ _ : mcaThresholdExists C epsStar,
+        mcaSatisfies C epsStar (τ j) ∧
+          ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+      ∀ j : Fin 4, latticeIndexOf (ι := ι) (1 : ℝ≥0) le_rfl ≤ τ j := by
+  classical
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+    fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+  have hspec := mcaPrizeLatticeSpec_top_of_radiusOne_bounds domain hbound
+  have htop : latticeIndexOf (ι := ι) (1 : ℝ≥0) le_rfl =
+      (⟨Fintype.card ι, Nat.lt_succ_self _⟩ : Fin (Fintype.card ι + 1)) := by
+    ext
+    simp [latticeIndexOf_val]
+  refine ⟨by simpa [τ] using hspec, ?_⟩
+  intro j
+  simpa [τ, htop]
+
+omit [DecidableEq ι] [DecidableEq F] in
+/-- The combinatorial choose-bound family exposes the all-top prize specification together
+with the endpoint lower bracket `⌊1 · n⌋ ≤ τ j` at every ABF26 prize rate. -/
+theorem mcaPrizeLatticeSpec_and_lower_brackets_top_of_choose_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      (Nat.choose (Fintype.card ι)
+          (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ENNReal)
+        / (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal)) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+    (∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ _ : mcaThresholdExists C epsStar,
+        mcaSatisfies C epsStar (τ j) ∧
+          ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+      ∀ j : Fin 4, latticeIndexOf (ι := ι) (1 : ℝ≥0) le_rfl ≤ τ j := by
+  classical
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+    fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+  have hspec := mcaPrizeLatticeSpec_top_of_choose_bounds domain hbound
+  have htop : latticeIndexOf (ι := ι) (1 : ℝ≥0) le_rfl =
+      (⟨Fintype.card ι, Nat.lt_succ_self _⟩ : Fin (Fintype.card ι + 1)) := by
+    ext
+    simp [latticeIndexOf_val]
+  refine ⟨by simpa [τ] using hspec, ?_⟩
+  intro j
+  simpa [τ, htop]
+
 /-- Per-rate lower MCA witnesses resolve the faithful MCA prize and expose the
 satisfy/maximality specification for the selected lattice thresholds. -/
 theorem exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses
@@ -522,6 +714,42 @@ theorem mcaThreshold_bracket_prize_allRates_of_lowerWitnesses
       domain w whi hδhi j with
     ⟨hne, _hsat, hlower, hupper⟩
   exact ⟨hne, hlower, hupper⟩
+
+/-- The ignored-source MCA conjecture gives an existential faithful four-rate MCA prize
+resolution together with the satisfy/maximality specification for the selected lattice
+thresholds. The conjecture and all numeric side conditions remain explicit; this only packages the
+existing existential aggregation with `mcaPrizeLatticeResolved_iff`. -/
+theorem exists_mcaPrizeLatticeResolved_with_spec_of_ignoredSource_mcaConjecture
+    (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊) →
+        (∀ j : Fin 4, (δ j : ℝ) <
+          1 - (⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ : ℝ) / Fintype.card ιC) →
+        (∀ j : Fin 4, δ j ≤ 1) →
+        (∀ j : Fin 4,
+          ENNReal.ofReal
+              (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC)
+                ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ (δ j) c₁ c₂ c₃) ≤
+            (epsStar : ENNReal)) →
+        ∃ τ : Fin 4 → Fin (Fintype.card ιC + 1),
+          mcaPrizeLatticeResolved domain τ ∧
+            ∀ j : Fin 4,
+              let C : Set (ιC → FC) :=
+                ReedSolomon.code domain
+                  ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊
+              ∃ _ : mcaThresholdExists C epsStar,
+                mcaSatisfies C epsStar (τ j) ∧
+                  ∀ i : Fin (Fintype.card ιC + 1),
+                    mcaSatisfies C epsStar i → i ≤ τ j := by
+  obtain ⟨c₁, c₂, c₃, hResolve⟩ :=
+    exists_mcaPrizeLatticeResolved_of_ignoredSource_mcaConjecture h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain δ hk hδ hδ1 hbound
+  rcases hResolve domain δ hk hδ hδ1 hbound with ⟨τ, hτ⟩
+  exact ⟨τ, hτ, (mcaPrizeLatticeResolved_iff domain τ).mp hτ⟩
 
 /-- Pointwise prize-rate consequences of the ignored-source MCA conjecture expose only the
 selected-threshold satisfy/maximality specification. The conjecture remains an explicit
@@ -1108,6 +1336,22 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved.satisfies
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved.maximal
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_top_of_radiusOne_bounds
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_top_of_choose_bounds
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeSpec_top_of_radiusOne_bounds
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeSpec_top_of_choose_bounds
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_eq_top_prize_allRates_of_radiusOne_bounds
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_eq_top_prize_allRates_of_choose_bounds
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeSpec_and_lower_brackets_top_of_radiusOne_bounds
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeSpec_and_lower_brackets_top_of_choose_bounds
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses
 set_option linter.style.longLine false in

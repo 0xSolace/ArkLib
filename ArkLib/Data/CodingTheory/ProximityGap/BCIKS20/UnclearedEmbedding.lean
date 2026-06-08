@@ -3,7 +3,6 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
 
 /-!
@@ -11,8 +10,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
 
 `embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared` names the **un-cleared** `Y ↦ T` embedding of the
 genuine iterated-Hasse coefficient `hasseCoeffRepr𝒪` as `eval₂ liftToFunctionField T p` with
-`p = (Δ_X^{i1} Δ_Y^{m} R)|x₀`. The companion Taylor-sum theorem expands this as the shifted
-Hasse sum with `T^i`, parallel to `hasseEvalAtRoot_eq_taylorSum` where the power is `(T/W)^i`.
+`p = (Δ_X^{i1} Δ_Y^{m} R)|x₀`. This is the sibling of `hasseEvalAtRoot` (the **cleared** `Y ↦ T/W`
+evaluation `eval₂ liftToFunctionField (T/W) p`).
 
 Together they make the BCIKS20 Appendix-A.4 STEP-8 obstruction explicit at the `eval₂` level: the
 LHS partition form collapses onto `hasseEvalAtRoot` (cleared) while `B_coeff` on the RHS carries
@@ -59,28 +58,6 @@ STEP-8 obstruction shows this equality is not available by a uniform per-term sc
 def HasseCoeffRepr𝒪UnclearedMatchesRoot (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) : Prop :=
   embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m)
     = hasseEvalAtRoot H x₀ R i1 m
-
-/-- The named un-cleared/root per-term target is exactly equality of the two shifted
-Hasse-Taylor sums, with powers `T^i` on the un-cleared side and `(T/W)^i` on the root side. -/
-theorem hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_taylorSums
-    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
-    HasseCoeffRepr𝒪UnclearedMatchesRoot H x₀ R i1 m ↔
-      (∑ i ∈ Finset.range ((Bivariate.evalX (Polynomial.C x₀)
-              (hasseDerivX i1 (hasseDerivY m R))).natDegree + 1),
-          (i + m).choose m
-            • (liftToFunctionField (H := H)
-                  ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff (i + m))
-                * (functionFieldT (H := H)) ^ i))
-        =
-        ∑ i ∈ Finset.range ((Bivariate.evalX (Polynomial.C x₀)
-              (hasseDerivX i1 (hasseDerivY m R))).natDegree + 1),
-          (i + m).choose m
-            • (liftToFunctionField (H := H)
-                  ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff (i + m))
-                * (functionFieldT (H := H)
-                    / liftToFunctionField (H := H) H.leadingCoeff) ^ i) := by
-  unfold HasseCoeffRepr𝒪UnclearedMatchesRoot
-  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared_eq_taylorSum, hasseEvalAtRoot_eq_taylorSum]
 
 /-- The same per-term target in raw `eval₂` form: `Y ↦ T` equals `Y ↦ T/W` on the specialized
 iterated-Hasse coefficient.  This is the exact false-path/mismatch surface identified in #139. -/
@@ -165,8 +142,6 @@ end BCIKS20.HenselNumerator
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared_eq_taylorSum
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedMatchesRoot
-set_option linter.style.longLine false in
-#print axioms BCIKS20.HenselNumerator.hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_taylorSums
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedEval₂Target
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedWDivTarget
 set_option linter.style.longLine false in

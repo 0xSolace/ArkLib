@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.MvPolynomial.Multilinear
 import ArkLib.ProofSystem.ConstraintSystem.R1CS
+import ArkLib.ProofSystem.Spartan.Basic
 
 /-!
 # Spartan R1CS-to-sumcheck MLE equivalences (issue #114)
@@ -156,6 +157,114 @@ theorem mle'_eq_zero_iff_forall {n : ℕ}
   · intro h x
     exact h (finFunctionFinEquiv x)
 
+/-! ### Bridge to the actual `R1CS.relation`
+
+The equivalences above are stated over abstract residual functions. The genuine reduction the first
+Spartan phase certifies is between the concrete `R1CS.relation` (the Hadamard equation
+`(A𝕫) ∘ (B𝕫) = (C𝕫)` defined in `ConstraintSystem/R1CS.lean`) and the MLE-vanishing claim the
+zero-check is run on. We bridge the two here so the abstract MLE equivalence transfers verbatim to
+the protocol-level relation. -/
+
+open Matrix in
+/-- **`R1CS.relation` ⟺ pointwise row equality.**
+
+`R1CS.relation` is the `Pi`-valued Hadamard equation `(A *ᵥ 𝕫) * (B *ᵥ 𝕫) = (C *ᵥ 𝕫)`; this
+unfolds to the pointwise statement that every row satisfies `(A𝕫)i · (B𝕫)i = (C𝕫)i`. -/
+theorem r1cs_relation_iff_forall_row {sz : R1CS.Size}
+    (stmt : Fin sz.n_x → R) (M : R1CS.MatrixIdx → Matrix (Fin sz.m) (Fin sz.n) R)
+    (wit : Fin sz.n_w → R) :
+    R1CS.relation R sz stmt M wit
+      ↔ ∀ i : Fin sz.m,
+          (M .A *ᵥ R1CS.𝕫 stmt wit) i * (M .B *ᵥ R1CS.𝕫 stmt wit) i
+            = (M .C *ᵥ R1CS.𝕫 stmt wit) i := by
+  simp only [R1CS.relation]
+  rw [funext_iff]
+  rfl
+
+open Matrix in
+/-- **`R1CS.relation` ⟺ the row residual vanishes pointwise.**
+
+Rephrasing the Hadamard equality as the vanishing of the row residual
+`(A𝕫)i · (B𝕫)i − (C𝕫)i`, which is exactly the function the zero-check / first sum-check extends. -/
+theorem r1cs_relation_iff_forall_residual {sz : R1CS.Size}
+    (stmt : Fin sz.n_x → R) (M : R1CS.MatrixIdx → Matrix (Fin sz.m) (Fin sz.n) R)
+    (wit : Fin sz.n_w → R) :
+    R1CS.relation R sz stmt M wit
+      ↔ ∀ i : Fin sz.m,
+          (M .A *ᵥ R1CS.𝕫 stmt wit) i * (M .B *ᵥ R1CS.𝕫 stmt wit) i
+            - (M .C *ᵥ R1CS.𝕫 stmt wit) i = 0 := by
+  rw [r1cs_relation_iff_forall_row]
+  exact forall_congr' fun _ => (sub_eq_zero).symm
+
+open Matrix in
+/-- The R1CS row residual on `Fin sz.m`: `(A𝕫)i · (B𝕫)i − (C𝕫)i`. -/
+def r1csResidual {sz : R1CS.Size}
+    (stmt : Fin sz.n_x → R) (M : R1CS.MatrixIdx → Matrix (Fin sz.m) (Fin sz.n) R)
+    (wit : Fin sz.n_w → R) : Fin sz.m → R :=
+  fun i => (M .A *ᵥ R1CS.𝕫 stmt wit) i * (M .B *ᵥ R1CS.𝕫 stmt wit) i
+            - (M .C *ᵥ R1CS.𝕫 stmt wit) i
+
+open Matrix in
+/-- **The R1CS zero-check reduction on the actual `R1CS.relation`.**
+
+When the row count is `sz.m = 2 ^ k`, `R1CS.relation` holds **iff** the multilinear extension `MLE'`
+of the row residual is the zero polynomial — the exact polynomial Spartan's zero-check / first
+sum-check is run on. This connects the abstract residual/MLE equivalence (`mle'_eq_zero_iff_forall`)
+to the concrete `R1CS.relation` from `ConstraintSystem/R1CS.lean`, closing the first-phase reduction
+identity at the protocol-relation level. -/
+theorem r1cs_relation_iff_mle'_residual_zero {k : ℕ} {sz : R1CS.Size} (hm : sz.m = 2 ^ k)
+    (stmt : Fin sz.n_x → R) (M : R1CS.MatrixIdx → Matrix (Fin sz.m) (Fin sz.n) R)
+    (wit : Fin sz.n_w → R) :
+    R1CS.relation R sz stmt M wit
+      ↔ MLE' (fun i : Fin (2 ^ k) =>
+            r1csResidual stmt M wit (Fin.cast hm.symm i)) = 0 := by
+  rw [r1cs_relation_iff_forall_residual, mle'_eq_zero_iff_forall]
+  constructor
+  · intro h i; exact h (Fin.cast hm.symm i)
+  · intro h i
+    have := h (Fin.cast hm i)
+    simpa [r1csResidual, Fin.cast_cast] using this
+
+open Matrix in
+/-- **The in-tree zero-check virtual polynomial is the MLE of the R1CS row residual.**
+
+`Spartan.Spec.zeroCheckVirtualPolynomial` is the concrete polynomial used by Spartan's
+`firstChallenge` virtual-oracle surface. This theorem identifies it with `MLE'` of the same row
+residual used by `r1cs_relation_iff_mle'_residual_zero`, reindexing the Boolean cube through
+`finFunctionFinEquiv`. -/
+theorem zeroCheckVirtualPolynomial_eq_mle'_r1csResidual
+    {S : Type} [CommRing S]
+    (pp : Spartan.PublicParams)
+    (stmt : Spartan.Spec.Statement.AfterFirstMessage S pp)
+    (oStmt : ∀ i, Spartan.Spec.OracleStatement.AfterFirstMessage S pp i) :
+    Spartan.Spec.zeroCheckVirtualPolynomial S pp stmt oStmt =
+      MLE' (fun i : Fin (2 ^ pp.ℓ_m) =>
+        r1csResidual stmt (fun idx => oStmt (.inl idx)) (oStmt (.inr 0)) i) := by
+  simp only [Spartan.Spec.zeroCheckVirtualPolynomial, MLE', MLE, r1csResidual,
+    Function.comp_apply]
+  exact Fintype.sum_equiv finFunctionFinEquiv.symm _ _ (by
+    intro x
+    simp)
+
+open Matrix in
+/-- **The actual Spartan zero-check polynomial vanishes exactly on satisfying R1CS instances.**
+
+This is the first-phase reduction identity stated over the real `zeroCheckVirtualPolynomial`
+surface in `Spartan.Basic`: for the matrices and witness threaded through
+`OracleStatement.AfterFirstMessage`, the R1CS relation holds iff the virtual zero-check polynomial
+is zero. -/
+theorem r1cs_relation_iff_zeroCheckVirtualPolynomial_zero
+    {S : Type} [CommRing S]
+    (pp : Spartan.PublicParams)
+    (stmt : Spartan.Spec.Statement.AfterFirstMessage S pp)
+    (oStmt : ∀ i, Spartan.Spec.OracleStatement.AfterFirstMessage S pp i) :
+    R1CS.relation S pp.toSizeR1CS stmt (fun idx => oStmt (.inl idx)) (oStmt (.inr 0))
+      ↔ Spartan.Spec.zeroCheckVirtualPolynomial S pp stmt oStmt = 0 := by
+  rw [zeroCheckVirtualPolynomial_eq_mle'_r1csResidual]
+  simpa using
+    (r1cs_relation_iff_mle'_residual_zero (R := S) (k := pp.ℓ_m)
+      (sz := pp.toSizeR1CS) rfl stmt (fun idx => oStmt (.inl idx)) (oStmt (.inr 0)))
+
 /-! ## 2. The matrix-vector / MLE scaled-sum decomposition (second sum-check input)
 
 `v_idx = MLE(M *ᵥ 𝕫)(r_x)` decomposes as `∑_j 𝕫 j · MLE(col_j)(r_x)`. This is the
@@ -192,6 +301,94 @@ theorem mulVec_MLE_eval_eq_scaled_sum {m n : ℕ}
       (z := z)
       (g := fun j (xBits : Fin m → Fin 2) => M (finFunctionFinEquiv xBits) j)
       r)
+
+/-! ## 2b. The second sum-check INPUT correctness identity (claimed sum = target)
+
+The previous lemma rewrites a *single* bundled evaluation claim `v_idx = MLE(M *ᵥ 𝕫)(r_x)` as a
+`𝕫`-weighted sum over the witness/public column index. The second sum-check then runs over the
+*Boolean hypercube* of the column variable `Y`, on the virtual polynomial
+
+  `ℳ(Y) = ∑_idx r_idx · (MLE M_idx)(r_x, Y) · (MLE 𝕫)(Y)`.
+
+Its initial claim (the "sum side" of the sum-check) is that the *sum of `ℳ` over the Boolean cube*
+equals the random-linear-combination of the bundled evaluation claims `∑_idx r_idx · v_idx` — this is
+exactly the value the linear-combination round handed to the second sum-check, and is the honest
+target the prover opens. The genuine algebraic content is below.
+
+The first foundational lemma is the structural sum-check fact, valid for *any* multilinear
+extension: summing an `MLE` over the Boolean hypercube reproduces the sum of the underlying
+evaluations (because each `MLE` collapses to its evaluation on a Boolean point). This is the
+"`∑_cube poly = ∑ evals`" primitive underlying every sum-check completeness argument; it is genuinely
+missing from the `MLE` API. -/
+
+omit [Fintype σ] [DecidableEq σ] in
+/-- **Hypercube sum of an MLE.** The sum of `MLE f` over the Boolean hypercube `σ → Fin 2` equals
+the sum of the underlying evaluations `f`. (`MLE f` agrees with `f` on every Boolean point by
+`MLE_eval_zeroOne`, so the two finite sums are termwise equal.) This is the structural sum-side
+identity that every sum-check round's claimed sum rests on. -/
+theorem MLE_hypercubeSum [Fintype σ] [DecidableEq σ] (f : (σ → Fin 2) → R) :
+    ∑ x : σ → Fin 2, MvPolynomial.eval (x : σ → R) (MLE f) = ∑ x : σ → Fin 2, f x :=
+  Finset.sum_congr rfl fun x _ => MLE_eval_zeroOne x f
+
+omit [Fintype σ] [DecidableEq σ] in
+/-- **Weighted hypercube sum of an MLE.** For an arbitrary weight `w` on the cube,
+`∑_x MLE(f)(x) · w x = ∑_x f x · w x`. Same mechanism as `MLE_hypercubeSum`: on each Boolean point
+`MLE f` collapses to `f`. This is the per-`Y` form consumed when the second sum-check's product
+`ℳ(Y)` is summed over the cube. -/
+theorem MLE_hypercubeSum_weighted [Fintype σ] [DecidableEq σ]
+    (f : (σ → Fin 2) → R) (w : (σ → Fin 2) → R) :
+    ∑ x : σ → Fin 2, MvPolynomial.eval (x : σ → R) (MLE f) * w x = ∑ x : σ → Fin 2, f x * w x :=
+  Finset.sum_congr rfl fun x _ => by rw [MLE_eval_zeroOne x f]
+
+open Matrix in
+/-- **Random-coefficient bundled claim as a hypercube sum (per matrix).** The
+random-coefficient-scaled bundled evaluation claim `c · MLE(M *ᵥ 𝕫)(r_x)` equals the `𝕫`-weighted
+Boolean-cube sum of the column-MLE evaluations at `r_x`, each scaled by `c`. This is the per-matrix
+"sum = target" content of the second sum-check: the bundled claim the linear-combination round emits
+is a sum over the column-variable cube `j` of a per-column summand. Reduces to the scaled-sum
+decomposition `mulVec_MLE_eval_eq_scaled_sum` and distributing `c`. -/
+theorem rlc_evalClaim_eq_cube_sum {m n : ℕ}
+    (M : Matrix (Fin (2 ^ m)) (Fin (2 ^ n)) R) (z : Fin (2 ^ n) → R)
+    (r_x : Fin m → R) (c : R) :
+    c * eval r_x (MLE ((M *ᵥ z) ∘ finFunctionFinEquiv))
+      = ∑ j : Fin (2 ^ n),
+          z j * (c *
+            eval r_x (MLE (fun xBits : Fin m → Fin 2 => M (finFunctionFinEquiv xBits) j))) := by
+  rw [mulVec_MLE_eval_eq_scaled_sum, Finset.mul_sum]
+  exact Finset.sum_congr rfl fun j _ => by ring
+
+open Matrix in
+/-- **Second sum-check input correctness (random linear combination of bundled claims).** The
+random-linear-combination over a finite index set `s` of bundled evaluation claims
+`∑_{idx ∈ s} coeff idx · MLE(M_idx *ᵥ 𝕫)(r_x)` — the value the linear-combination round hands to the
+second sum-check — equals the `𝕫`-weighted Boolean-cube sum over the column variable `j` of
+`∑_{idx ∈ s} coeff idx · (column-MLE of M_idx)(r_x)`.
+
+This is the honest "claimed sum = target" identity of the second sum-check: the per-`j` summand is
+exactly `(MLE 𝕫)(j) ·` (the matrix linear combination at `(r_x, j)`), summed over the cube. It is the
+aggregate of `rlc_evalClaim_eq_cube_sum` over the matrices, commuting the finite sums. Stated over a
+generic index `Finset s` (the R1CS application instantiates `s = {A, B, C}`), so it needs no
+`Fintype` instance on the matrix index type. -/
+theorem secondSumcheck_target_eq_cube_sum {ι : Type*} {m n : ℕ} (s : Finset ι)
+    (Mat : ι → Matrix (Fin (2 ^ m)) (Fin (2 ^ n)) R) (z : Fin (2 ^ n) → R)
+    (r_x : Fin m → R) (coeff : ι → R) :
+    (∑ idx ∈ s, coeff idx * eval r_x (MLE ((Mat idx *ᵥ z) ∘ finFunctionFinEquiv)))
+      = ∑ j : Fin (2 ^ n),
+          z j * (∑ idx ∈ s,
+            coeff idx *
+              eval r_x (MLE (fun xBits : Fin m → Fin 2 => Mat idx (finFunctionFinEquiv xBits) j))) := by
+  classical
+  -- Expand each summand via the per-matrix identity, then swap the two finite sums.
+  have hLHS :
+      (∑ idx ∈ s,
+          coeff idx * eval r_x (MLE ((Mat idx *ᵥ z) ∘ finFunctionFinEquiv)))
+        = ∑ idx ∈ s, ∑ j : Fin (2 ^ n),
+            z j * (coeff idx *
+              eval r_x (MLE (fun xBits : Fin m → Fin 2 => Mat idx (finFunctionFinEquiv xBits) j))) :=
+    Finset.sum_congr rfl fun idx _ => rlc_evalClaim_eq_cube_sum (Mat idx) z r_x (coeff idx)
+  rw [hLHS, Finset.sum_comm]
+  refine Finset.sum_congr rfl fun j _ => ?_
+  rw [Finset.mul_sum]
 
 /-! ## 3. The final `CheckClaim` evaluation-consistency identity
 
@@ -232,7 +429,16 @@ theorem final_check_consistency {m n : ℕ}
 #print axioms r1cs_residual_iff_mle_zero
 #print axioms r1cs_hadamard_iff_mle_zero
 #print axioms mle'_eq_zero_iff_forall
+#print axioms r1cs_relation_iff_forall_row
+#print axioms r1cs_relation_iff_forall_residual
+#print axioms r1cs_relation_iff_mle'_residual_zero
+#print axioms zeroCheckVirtualPolynomial_eq_mle'_r1csResidual
+#print axioms r1cs_relation_iff_zeroCheckVirtualPolynomial_zero
 #print axioms mulVec_MLE_eval_eq_scaled_sum
+#print axioms MLE_hypercubeSum
+#print axioms MLE_hypercubeSum_weighted
+#print axioms rlc_evalClaim_eq_cube_sum
+#print axioms secondSumcheck_target_eq_cube_sum
 #print axioms mle_eval_eq_eqTilde_sum
 #print axioms final_check_consistency
 

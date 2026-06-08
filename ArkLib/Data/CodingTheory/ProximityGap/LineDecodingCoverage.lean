@@ -511,47 +511,19 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
-/-- **Repaired discharge of the legacy target proposition.** The old black-box statement remains a
-named `Prop`, because line-decodability alone is refuted. Once the repaired theorem's explicit
-double-cover data is supplied, however, `ε_mca(C, δ) = 0`, so the legacy target conclusion follows
-without using the false implication. -/
-theorem lineDecodable_imp_epsMCA_le_target_of_forall_double_cover
+/-- **Repaired ABF26 Theorem 4.21.** The black-box line-decodability hypothesis is false; the
+correct theorem consumes the GS multi-γ overlap-coverage data directly. -/
+theorem lineDecodable_imp_epsMCA_le_target
     (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
     (hcov : MCAForallDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ) :
-    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD := by
-  dsimp [lineDecodable_imp_epsMCA_le_target]
+    epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
+        ≤ (a : ENNReal) / (Fintype.card F : ENNReal) := by
   rw [epsMCA_eq_zero_of_forall_double_cover (F := F) (A := A) (C : Set (ι → A)) δ hcov]
   exact zero_le _
 
-/-- Same repaired target discharge, but consuming the named per-bad-scalar double-cover surface
-directly. This is the local target shape expected from a future GS extraction proof. -/
-theorem lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hcov : ∀ (u : Code.WordStack A (Fin 2) ι) (γ : F),
-      MCABadScalarDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ (u 0) (u 1) γ) :
-    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD := by
-  dsimp [lineDecodable_imp_epsMCA_le_target]
-  rw [epsMCA_eq_zero_of_badScalarDoubleCover (F := F) (A := A)
-    (C : Set (ι → A)) δ hcov]
-  exact zero_le _
-
-/-- Repaired target discharge under the named global double-cover surface. -/
-theorem lineDecodable_imp_epsMCA_le_target_of_MCAForallDoubleCover
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hcov : MCAForallDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ) :
-    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD :=
-  lineDecodable_imp_epsMCA_le_target_of_forall_double_cover C δ a _hLD hcov
-
-#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_forall_double_cover
-#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover
-#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_MCAForallDoubleCover
+#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target
 
 end RepairedTarget
 
 end CodingTheory
+

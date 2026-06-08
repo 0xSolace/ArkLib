@@ -14,11 +14,9 @@ The black-box `lineDecodable_imp_epsMCA_le_target` is proven **false** in `LineD
 (the `Czero = ⊥`, `δ = a = 0` counterexample). This module records honest, axiom-clean *repair*
 progress that does NOT require the (absent) Guruswami–Sudan interpolation core:
 
-* **(A) Strengthened statement + counterexample-exclusion.**
-  `lineDecodable_imp_epsMCA_le_nondegenerate` adds the two nondegeneracy hypotheses the WALL note
-  names (`C ≠ ⊥`, `0 < a`); `refutation_tuple_excluded` proves the in-tree refuting tuple, while
-  `LineDecodable`, fails that conjunction — so the existing refutation no longer instantiates the
-  repaired form. (This does NOT prove the strengthened conclusion; that still needs GS.)
+* **(A) Counterexample-exclusion.**
+  `refutation_tuple_excluded` proves the in-tree refuting tuple satisfies `LineDecodable` but fails
+  the nondegeneracy conjunction (`C ≠ ⊥` and `0 < a`).
 
 * **(B) Exact value `ε_mca(Czero, 0) = 1/|F|`.** `epsMCA_Czero_eq_inv_card` sharpens the in-tree
   bare `0 < ε_mca` to the precise gap (`= 1/2` over `ZMod 2`), via the structural fact that the
@@ -38,141 +36,7 @@ set_option linter.unusedFintypeInType false
 
 /-! ## (A) Strengthened statement + counterexample-exclusion -/
 
-section Statement
-variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
-variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
-/-- **Strengthened (repaired) ABF26 Theorem 4.21 statement, nondegeneracy form.** Identical
-conclusion to the black-box target, but with the two nondegeneracy hypotheses the refutation's WALL
-note names as necessary: `C ≠ ⊥` and `0 < a`. A `Prop`-level statement repair — it does NOT assert
-the conclusion is provable (GS interpolation is still required), it records the strengthened *shape*
-whose hypotheses are demonstrably violated by the in-tree counterexample below. -/
-def lineDecodable_imp_epsMCA_le_nondegenerate
-    (C : ModuleCode ι F A) (δ : ℝ≥0) (a : ℝ≥0)
-    (_hC : C ≠ ⊥) (_ha : 0 < a)
-    (_h : LineDecodable (F := F) ((C : Set (ι → A))) δ a
-            ((Fintype.card ι : ℝ≥0) + 1)) : Prop :=
-    epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
-        ≤ (a : ENNReal) / (Fintype.card F : ENNReal)
-
-/-- Once the line-decodability proof and nondegeneracy hypotheses are fixed, the repaired
-nondegenerate statement has exactly the legacy target conclusion. This is a statement-shape
-bridge: it does not supply the repaired hypotheses or prove the legacy target from
-line-decodability alone. -/
-theorem lineDecodable_imp_epsMCA_le_nondegenerate_iff_target
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (hC : C ≠ ⊥) (ha : 0 < a)
-    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1)) :
-    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD ↔
-      _root_.CodingTheory.lineDecodable_imp_epsMCA_le_target
-        (F := F) (A := A) C δ a hLD := by
-  rfl
-
-/-- Project a proof of the repaired nondegenerate target to the legacy target conclusion with
-the same fixed line-decodability proof. -/
-theorem lineDecodable_imp_epsMCA_le_target_of_nondegenerate
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (hC : C ≠ ⊥) (ha : 0 < a)
-    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hrepair :
-      lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD) :
-    _root_.CodingTheory.lineDecodable_imp_epsMCA_le_target
-      (F := F) (A := A) C δ a hLD :=
-  (lineDecodable_imp_epsMCA_le_nondegenerate_iff_target C δ a hC ha hLD).mp hrepair
-
-/-- Repackage a legacy-target proof as the repaired nondegenerate target once the additional
-nondegeneracy hypotheses are fixed. -/
-theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_target
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (hC : C ≠ ⊥) (ha : 0 < a)
-    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (htarget :
-      _root_.CodingTheory.lineDecodable_imp_epsMCA_le_target
-        (F := F) (A := A) C δ a hLD) :
-    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD :=
-  (lineDecodable_imp_epsMCA_le_nondegenerate_iff_target C δ a hC ha hLD).mpr htarget
-
-end Statement
-
-/-! ## (A') Discharging the strengthened target from explicit repaired frontiers -/
-
-section RepairedDischarge
-
-variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
-variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
-
-/-- The strengthened nondegenerate target is discharged by the explicit repaired
-double-cover frontier. This composes the already-proved coverage implication with the repaired
-statement shape; it does not derive double-cover data from line-decodability. -/
-theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_double_cover
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (hC : C ≠ ⊥) (ha : 0 < a)
-    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hcov : MCAForallDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ) :
-    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD := by
-  dsimp [lineDecodable_imp_epsMCA_le_nondegenerate]
-  rw [epsMCA_eq_zero_of_forall_double_cover (F := F) (A := A) (C : Set (ι → A)) δ hcov]
-  exact zero_le _
-
-/-- Same repaired nondegenerate target discharge, exposed under the named global
-`MCAForallDoubleCover` surface used by downstream adapters. -/
-theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_MCAForallDoubleCover
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (hC : C ≠ ⊥) (ha : 0 < a)
-    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hcov : MCAForallDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ) :
-    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD :=
-  lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_double_cover C δ a hC ha hLD hcov
-
-/-- The strengthened nondegenerate target is discharged by named per-bad-scalar double-cover
-obligations. -/
-theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_badScalarDoubleCover
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (hC : C ≠ ⊥) (ha : 0 < a)
-    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hcov : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
-      MCABadScalarDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ (u 0) (u 1) γ) :
-    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD := by
-  dsimp [lineDecodable_imp_epsMCA_le_nondegenerate]
-  rw [epsMCA_eq_zero_of_badScalarDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ hcov]
-  exact zero_le _
-
-/-- The strengthened nondegenerate target is discharged by per-stack zero bad-scalar counts. -/
-theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_mcaBadCount_eq_zero
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (hC : C ≠ ⊥) (ha : 0 < a)
-    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hzero : ∀ u : WordStack A (Fin 2) ι,
-      mcaBadCount (F := F) (C : Set (ι → A)) δ (u 0) (u 1) = 0) :
-    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD := by
-  dsimp [lineDecodable_imp_epsMCA_le_nondegenerate]
-  rw [epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero (F := F) (A := A)
-    (C : Set (ι → A)) δ hzero]
-  exact zero_le _
-
-/-- The strengthened nondegenerate target is discharged by a direct no-bad-event frontier. -/
-theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_not_mcaEvent
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (hC : C ≠ ⊥) (ha : 0 < a)
-    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hno : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
-      ¬ mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) γ) :
-    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD := by
-  dsimp [lineDecodable_imp_epsMCA_le_nondegenerate]
-  rw [epsMCA_eq_zero_of_forall_not_mcaEvent (F := F) (A := A) (C : Set (ι → A)) δ hno]
-  exact zero_le _
-
-end RepairedDischarge
 
 /-- The in-tree refutation code `Czero` is definitionally the zero submodule. -/
 theorem Czero_eq_bot : (Czero : ModuleCode ι F A) = ⊥ := rfl
@@ -302,21 +166,6 @@ theorem epsMCA_Czero_eq_half :
 end CodingTheory.LineDecodingRepair
 
 #print axioms CodingTheory.LineDecodingRepair.refutation_tuple_excluded
-set_option linter.style.longLine false in
-#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_iff_target
-set_option linter.style.longLine false in
-#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_target_of_nondegenerate
-set_option linter.style.longLine false in
-#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_target
-set_option linter.style.longLine false in
-#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_double_cover
-set_option linter.style.longLine false in
-#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_MCAForallDoubleCover
-set_option linter.style.longLine false in
-#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_badScalarDoubleCover
-set_option linter.style.longLine false in
-#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_mcaBadCount_eq_zero
-set_option linter.style.longLine false in
-#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_not_mcaEvent
+
 #print axioms CodingTheory.LineDecodingRepair.epsMCA_Czero_eq_inv_card
 #print axioms CodingTheory.LineDecodingRepair.not_mcaEvent_both

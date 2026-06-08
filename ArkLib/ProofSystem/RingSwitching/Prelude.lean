@@ -900,6 +900,29 @@ lemma embedded_MLP_eval_eq_sum' (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l
     rw [show ((w : Fin ℓ' → L₀)) = (fun i => ((w i : Fin 2) : L₀)) from rfl, hpt]
 
 omit [CharP L₀ 2] in
+/-- **Generic row extraction for an embedded large-field multilinear polynomial.**
+
+For arbitrary `t' : L⦃≤1⦄[X Fin ℓ']`, the row coordinates of
+`embedded_MLP_eval t' r` extract the basis coordinates of the `t'` value at each Boolean suffix,
+weighted by the suffix equality factor. This is the raw orientation lemma behind
+`decompose_rows_packMLE'`; specializing to `t' = packMLE P.basis t` and using
+`packMLE_repr_eval` recovers the small-field evaluation form. -/
+lemma decomposeRows_embedded_MLP_eval' (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
+    (h_l : ℓ = ℓ' + κ₀) (t' : MultilinearPoly L₀ ℓ') (r : Fin ℓ → L₀)
+    (u : Fin κ₀ → Fin 2) :
+    P.decomposeRows
+        (embedded_MLP_eval κ₀ L₀ K₀ P ℓ ℓ' h_l t' r) u
+      = ∑ w : Fin ℓ' → Fin 2,
+          P.basis.repr
+              (eval (fun i => (if w i == 1 then (1 : L₀) else 0)) t'.val) u •
+            (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
+              (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r)) := by
+  rw [embedded_MLP_eval_eq_sum', P.decomposeRows_sum]
+  apply Finset.sum_congr rfl
+  intro w _
+  rw [P.decomposeRows_φ₀_mul_φ₁]
+
+omit [CharP L₀ 2] in
 /-- **Generic row recovery of `t`-evaluations** over an abstract `P` whose basis is `P.basis`.
 The row components of `ŝ = embedded_MLP_eval (packMLE P.basis t) r` carry the suffix-`eq`-weighted
 evaluations of `t`. Routes through `embedded_MLP_eval_eq_sum'`, the generic row additivity
@@ -1661,6 +1684,35 @@ theorem fixFirstVariablesOfMQP_projectToMid_step (ℓ : ℕ) [NeZero ℓ] (t m :
   -- which are equal `Fin (ℓ+1)` values (`↑i.succ = ↑i + 1 = ↑i.castSucc + 1`), hence defeq.
   rfl
 
+/-- Renaming a polynomial along the canonical `finCongr` of a (propositional) dimension equality is
+heterogeneously equal to the original (after `subst`, `finCongr` is `Equiv.refl` and `rename id` is
+the identity). -/
+private lemma rename_finCongr_heq_projectToMid {a b : ℕ} (h : a = b) (p : MvPolynomial (Fin a) L) :
+    HEq (rename (finCongr h) p) p := by
+  subst h
+  rw [finCongr_refl, Equiv.coe_refl, rename_id_apply]
+
+/-- **Structural-invariant round transition (un-renamed cast-wall form, `#29` per-round
+completeness conjunct 2).** Fixing the round-`i` survivor variable to the verifier challenge `r'`
+advances the projected sumcheck polynomial from round `i.castSucc` to round `i.succ`, *as an honest
+equality of `MvPolynomial (Fin (ℓ - i.succ)) L`*: the index types `Fin (ℓ - i.succ)` and
+`Fin (ℓ - i.castSucc - 1)` are definitionally equal (`Nat.sub_succ`), so the canonical `finCongr`
+rename produced by `fixFirstVariablesOfMQP_projectToMid_step` collapses to the identity
+(`rename_finCongr_heq_projectToMid`). This is the missing conjunct-2 algebra for the structured
+per-round completeness output relation `witnessStructuralInvariant`; the matching conjunct-3
+(sum-consistency) transition is `SumcheckPhase.getSumcheckRoundPoly_eval_eq_cube_succ`. -/
+theorem fixFirstVariablesOfMQP_projectToMid_succ (ℓ : ℕ) [NeZero ℓ]
+    (t m : MultilinearPoly L ℓ) (i : Fin ℓ) (challenges : Fin i.castSucc → L) (r' : L) :
+    fixFirstVariablesOfMQP (ℓ - ↑i.castSucc)
+        ⟨1, by have := i.2; simp only [Fin.val_castSucc]; omega⟩
+        (projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := t) (m := m)
+          (i := i.castSucc) (challenges := challenges)).val
+        (fun _ => r')
+      = (projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := t) (m := m)
+          (i := i.succ) (challenges := Fin.cons r' challenges)).val := by
+  rw [fixFirstVariablesOfMQP_projectToMid_step (L := L) (ℓ := ℓ) t m i challenges r']
+  exact eq_of_heq (rename_finCongr_heq_projectToMid _ _)
+
 /-- **Round-polynomial marginal identity (core of target (b)).** Evaluating, at `r'`, the sum over a
 finite set `S` of the partial evaluations `Polynomial.map (eval (pt x)) (finSuccEquivNth L 0 H)`
 equals the sum over `S` of the full evaluations of `H` with variable `0` fixed to `r'` (the rest set
@@ -1816,5 +1868,9 @@ theorem probEvent_badAgreement_degree_two_le {L : Type} [CommRing L] [IsDomain L
 #print axioms RingSwitching.probEvent_badAgreement_degree_two_le
 
 end SchwartzZippelRootBound
+
+/-! ### Axiom audit (issue #29 batching row-orientation frontier) -/
+
+#print axioms RingSwitching.decomposeRows_embedded_MLP_eval'
 
 end RingSwitching

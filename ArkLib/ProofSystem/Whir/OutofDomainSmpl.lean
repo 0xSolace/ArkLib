@@ -260,17 +260,34 @@ lemma oodSampling_rs_le_bound
     simp only [hP, Finset.mem_filter, Finset.mem_offDiag] at hp
     obtain ⟨⟨h1, h2, hpne⟩, -⟩ := hp
     rw [hSf, Set.Finite.mem_toFinset] at h1 h2
-    let u : smoothCode φ m := ⟨p.1, h1.1⟩
-    let u' : smoothCode φ m := ⟨p.2, h2.1⟩
-    have hdeg : ((decodeLT u : Polynomial F)).natDegree < 2 ^ m :=
-      ReedSolomon.natDegree_lt_of_mem_degreeLT (deg := 2 ^ m) (decodeLT u).2
-    have hdeg' : ((decodeLT u' : Polynomial F)).natDegree < 2 ^ m :=
-      ReedSolomon.natDegree_lt_of_mem_degreeLT (deg := 2 ^ m) (decodeLT u').2
     simp only [hT]
-    exact Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt
-      (N := 2 ^ m) (s := s)
-      (p := (decodeLT u : Polynomial F)) (q := (decodeLT u' : Polynomial F))
-      (decodeLT_ne_of_val_ne u u' hpne) hdeg hdeg'
+    have hne :
+        ((decodeLT (⟨p.1, h1.1⟩ : smoothCode φ m) : Polynomial F)) ≠
+          ((decodeLT (⟨p.2, h2.1⟩ : smoothCode φ m) : Polynomial F)) :=
+      decodeLT_ne_of_val_ne _ _ hpne
+    have hdeg_left :
+        ((decodeLT (⟨p.1, h1.1⟩ : smoothCode φ m) : Polynomial F)).natDegree < 2 ^ m := by
+      have hmem := (decodeLT (⟨p.1, h1.1⟩ : smoothCode φ m)).2
+      rw [Polynomial.mem_degreeLT] at hmem
+      by_cases hzero :
+          ((decodeLT (⟨p.1, h1.1⟩ : smoothCode φ m) : Polynomial F)) = 0
+      · rw [hzero, Polynomial.natDegree_zero]
+        positivity
+      · exact (Polynomial.natDegree_lt_iff_degree_lt hzero).mpr hmem
+    have hdeg_right :
+        ((decodeLT (⟨p.2, h2.1⟩ : smoothCode φ m) : Polynomial F)).natDegree < 2 ^ m := by
+      have hmem := (decodeLT (⟨p.2, h2.1⟩ : smoothCode φ m)).2
+      rw [Polynomial.mem_degreeLT] at hmem
+      by_cases hzero :
+          ((decodeLT (⟨p.2, h2.1⟩ : smoothCode φ m) : Polynomial F)) = 0
+      · rw [hzero, Polynomial.natDegree_zero]
+        positivity
+      · exact (Polynomial.natDegree_lt_iff_degree_lt hzero).mpr hmem
+    simpa using Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt
+      (F := F) (N := 2 ^ m) (s := s)
+      (p := (decodeLT (⟨p.1, h1.1⟩ : smoothCode φ m) : Polynomial F))
+      (q := (decodeLT (⟨p.2, h2.1⟩ : smoothCode φ m) : Polynomial F))
+      hne hdeg_left hdeg_right
   have hPm : P.card ≤ M * (M - 1) / 2 := by
     rw [Nat.le_div_iff_mul_le (by norm_num : 0 < 2)]
     have hswap : P.card = (Sf.offDiag.filter (fun p => e p.2 < e p.1)).card := by

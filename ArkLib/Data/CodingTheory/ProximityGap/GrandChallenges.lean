@@ -6,7 +6,7 @@ Authors: Alexander Hicks
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
-import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
+
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ListDecodability
 
@@ -330,23 +330,7 @@ def MCALowerWitness.ofJohnsonBCHKS25
   MCALowerWitness.ofLe hδ_le_one
     (le_trans hBCHKS25 hle)
 
-/-- **Bridge from a repaired line-decoding target.** If a code satisfies the named
-line-decoding-to-MCA target at radius `δ`, and the resulting `a/|F|` bound is within
-`ε*`, then the target certifies an `MCALowerWitness`.
 
-This deliberately consumes `lineDecodable_imp_epsMCA_le_target` as an explicit hypothesis:
-the unconstrained black-box theorem shape is known to be false, so callers must first supply
-the repaired GG25/GS interpolation content needed to prove that target. -/
-def MCALowerWitness.ofLineDecodingTarget
-    (C : ModuleCode ι F F) (δ a ε_star : ℝ≥0)
-    (hδ_le_one : δ ≤ 1)
-    (hLD : CodingTheory.LineDecodable (F := F) (A := F) (C : Set (ι → F)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hTarget : CodingTheory.lineDecodable_imp_epsMCA_le_target (F := F) (A := F)
-      C δ a hLD)
-    (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
-    MCALowerWitness (C : Set (ι → F)) ε_star :=
-  MCALowerWitness.ofLe hδ_le_one (le_trans hTarget hle)
 
 /-- **Bridge from ABF26 Theorem 4.16 [BCHKS25, KK25].** A packaged near-capacity
 `ε_ca` lower-bound witness gives an MCA upper witness once its explicit lower bound clears
@@ -521,7 +505,14 @@ convention, collapse the right-hand side to `0` and assert `ε_mca ≤ 0` (a deg
 **Source status (verified 2026-06-03).** In the current `[ABF26]` `.tex` source this
 conjecture lives inside an `\ignore{…}` block (around line 2030), i.e. it is a *draft*
 statement not rendered in the compiled paper. The term-by-term content here is faithful to
-that draft; treat it as tracking a draft conjecture, not a stable rendered theorem. -/
+that draft; treat it as tracking a draft conjecture, not a stable rendered theorem.
+
+**Open prize — keep as a named hypothesis.** This is the genuinely open ABF26 Grand Challenge 1
+prize (the beyond-UDR Guruswami–Sudan list-decoder mass bound), the uniform form with constants
+quantified *before* the `∀` over codes. Downstream developments must consume it as an explicit
+hypothesis; do not launder it into a theorem by assuming an equivalent packaged form. Its
+GS-exposed counterpart is `MCAGS.epsMCAgs_prizeBound_conjecture` /
+`GrandChallenge141PrizeMath.epsMCAgsPrizeUniformConjecture`. Tracking: Issue #141. -/
 def mcaConjecture : Prop :=
   ∃ c₁ c₂ c₃ : ℝ,
     ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]

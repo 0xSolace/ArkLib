@@ -613,6 +613,98 @@ theorem runToRound_eq_bind_continueFromTo
       refine bind_congr (fun rk => ?_)
       rw [← processRound_eq_bind]
 
+/-- **Transitivity / range-split of `continueFromTo`.**  For `k ≤ k' ≤ j`, continuing the prover's
+run from round `k` to round `j` equals continuing `k → k'` and then `k' → j`.  Proved by
+`Fin.induction` on `j` via `continueFromTo_succ_of_ne`, `processRound_eq_bind`, and `bind_assoc`
+(the `continueFromTo`-prefix analogue of `runToRound_eq_bind_continueFromTo`).  This is the split a
+sequential-composition right-block run characterization needs to peel the seam round off the interior
+rounds. -/
+theorem continueFromTo_trans (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) (k k' j : Fin (n + 1)) (hkk' : k ≤ k') (hk'j : k' ≤ j)
+    (rk : pSpec.Transcript k × prover.PrvState k) :
+    continueFromTo prover stmt wit k j rk
+      = continueFromTo prover stmt wit k k' rk >>= continueFromTo prover stmt wit k' j := by
+  induction j using Fin.induction with
+  | zero =>
+    have hk'0 : k' = 0 := le_antisymm hk'j (Fin.zero_le _)
+    have hk0 : k = 0 := le_antisymm (hkk'.trans hk'j) (Fin.zero_le _)
+    subst hk'0; subst hk0
+    simp only [continueFromTo_self, pure_bind]
+  | succ m ih =>
+    rcases eq_or_lt_of_le hk'j with heq | hlt
+    · subst heq
+      conv_rhs => rw [show (continueFromTo prover stmt wit (m.succ) (m.succ))
+                        = (fun rk => pure rk)
+                          from funext (continueFromTo_self prover stmt wit _)]
+      rw [bind_pure]
+    · have hk'm : k' ≤ m.castSucc := by rw [Fin.le_castSucc_iff]; exact hlt
+      have hne : (k : Fin (n + 1)) ≠ m.succ := ne_of_lt (lt_of_le_of_lt hkk' hlt)
+      have hne' : (k' : Fin (n + 1)) ≠ m.succ := ne_of_lt hlt
+      rw [continueFromTo_succ_of_ne prover stmt wit k m hne rk, ih hk'm]
+      have hcont : continueFromTo prover stmt wit k' m.succ
+          = fun rk => prover.processRound m (continueFromTo prover stmt wit k' m.castSucc rk) :=
+        funext (fun rk => continueFromTo_succ_of_ne prover stmt wit k' m hne' rk)
+      rw [hcont, processRound_eq_bind m prover
+            (continueFromTo prover stmt wit k k' rk >>= continueFromTo prover stmt wit k' m.castSucc),
+          bind_assoc]
+      refine bind_congr (fun rk => ?_)
+      rw [← processRound_eq_bind]
+
+/-- **Seam→`runToRound` bridge.**  `processRound 0` applied to the (pure) round-0 default state is
+exactly `runToRound 1` (i.e. `runToRound (⟨0,hn⟩.succ)`).  Glue for the sequential-composition
+right-block assembly: it turns the seam round's `processRound 0 (pure(default, input))` shape (from
+the `append_continueFromTo_seam_start_*` lemmas) into `runToRound 1`, so `runToRound_eq_bind_continueFromTo`
+can fold it with the interior `continueFromTo` into a single `runToRound`.  By `runToRound_succ` and the
+definitional `runToRound 0 = pure(default, input)`. -/
+theorem processRound_zero_pure_eq_runToRound {n : ℕ} {pSpec : ProtocolSpec n} (hn : 0 < n)
+    (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec) (s : StmtIn) (w : WitIn) :
+    prover.processRound (⟨0, hn⟩ : Fin n)
+        (pure ((default : pSpec.Transcript (⟨0, by omega⟩ : Fin (n + 1))), prover.input (s, w)))
+      = prover.runToRound (⟨0, hn⟩ : Fin n).succ s w := by
+  rw [runToRound_succ]
+  congr 1
+
+/-- **P₂-side right-block assembly.**  The seam round's `processRound 0 (pure(default, input))` bound
+with the interior continuation `continueFromTo 1 → last` is exactly `runToRound (Fin.last n)` — i.e.
+the appended right block, projected to `P₂`, reconstructs `P₂`'s full run-to-round.  Combines
+`processRound_zero_pure_eq_runToRound` (seam → `runToRound 1`) with `runToRound_eq_bind_continueFromTo`
+(`runToRound 1 >>= continueFromTo 1 last = runToRound last`). -/
+theorem processRound_zero_continueFromTo_eq_runToRound_last {n : ℕ} {pSpec : ProtocolSpec n}
+    (hn : 0 < n) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (s : StmtIn) (w : WitIn) :
+    (prover.processRound (⟨0, hn⟩ : Fin n)
+        (pure ((default : pSpec.Transcript (⟨0, by omega⟩ : Fin (n + 1))), prover.input (s, w)))
+      >>= prover.continueFromTo s w (⟨0, hn⟩ : Fin n).succ (Fin.last n))
+      = prover.runToRound (Fin.last n) s w := by
+  rw [processRound_zero_pure_eq_runToRound hn]
+  exact (runToRound_eq_bind_continueFromTo prover s w (⟨0, hn⟩ : Fin n).succ (Fin.last n)
+    (by rw [Fin.le_def, Fin.val_succ, Fin.val_last]; omega)).symm
+
+/-- **`continueFromTo` target-index transport.**  Continuing to two propositionally-equal target
+rounds is heterogeneously equal.  The non-`rw`-able bridge (the result type depends on the target, so
+in-place rewriting hits a non-type-correct motive) for aligning `Fin.last`-shaped targets with the
+`⟨k₀ + j⟩`-shaped targets produced by the right-block interior induction (`1 + (n-1) = n` is not
+definitional).  Proved by `subst`. -/
+theorem continueFromTo_heq_target {n : ℕ} {pSpec : ProtocolSpec n} {k j₁ j₂ : Fin (n + 1)}
+    (h : j₁ = j₂) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) (rk : pSpec.Transcript k × prover.PrvState k) :
+    HEq (prover.continueFromTo stmt wit k j₁ rk) (prover.continueFromTo stmt wit k j₂ rk) := by
+  subst h; rfl
+
+/-- **`liftComp ∘ continueFromTo` target-index transport.**  The `liftComp`-lifted analogue of
+`continueFromTo_heq_target`: continuing to two propositionally-equal target rounds and lifting along a
+`SubSpec` is heterogeneously equal.  Used in the sequential-composition right-block assembly to align
+the `liftComp`-of-`continueFromTo` produced by the interior induction (target `⟨k₀ + j⟩`) with the
+`Fin.last` target of the run characterization.  Proved by `subst`. -/
+theorem liftComp_continueFromTo_heq_target {n : ℕ} {pSpec : ProtocolSpec n} {k j₁ j₂ : Fin (n + 1)}
+    (h : j₁ = j₂) {τ : Type} {superSpec : OracleSpec τ}
+    [MonadLiftT (OracleQuery (oSpec + [pSpec.Challenge]ₒ)) (OracleQuery superSpec)]
+    (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) (rk : pSpec.Transcript k × prover.PrvState k) :
+    HEq ((prover.continueFromTo stmt wit k j₁ rk).liftComp superSpec)
+      ((prover.continueFromTo stmt wit k j₂ rk).liftComp superSpec) := by
+  subst h; rfl
+
 /-! ### Direction-resolved single-round peels
 
 The two lemmas below resolve the `processRound` direction match into the two honest round shapes,

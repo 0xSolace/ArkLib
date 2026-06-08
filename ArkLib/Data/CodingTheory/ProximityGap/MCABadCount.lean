@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.Probability.Instances
 
 /-!
@@ -15,12 +15,7 @@ The mutual-correlated-agreement error of a code over a finite field is, at every
 
   `ε_mca(C, δ) = (⨆ u, mcaBadCount C δ (u 0) (u 1)) / q`,
 
-where `mcaBadCount C δ u₀ u₁ := #{γ : F | mcaEvent C δ u₀ u₁ γ}`. Combined with the
-endpoint collapse (`grandMCAChallenge_iff_epsMCA_one`, Finding F6) this exhibits the
-formalized ABF26 §1 Grand MCA Challenge as a statement about a single **finite extremal
-quantity**: the challenge for `C` at threshold `ε*` holds iff every line word `u` has at
-most `ε*·q` bad scalars at radius one
-(`grandMCAChallenge_iff_forall_badCount_le`).
+where `mcaBadCount C δ u₀ u₁ := #{γ : F | mcaEvent C δ u₀ u₁ γ}`.
 
 All previously proved bounds are bounds on this count: the spike floor
 (`MCAEndpointLower`) gives `min(n-k, q)` bad scalars, the subset-sum adversary gives
@@ -59,6 +54,26 @@ theorem mcaBadCount_eq_zero_of_forall_not_mcaEvent
   rw [mcaBadCount, Finset.card_eq_zero, Finset.filter_eq_empty_iff]
   intro γ _ hγ
   exact h γ hγ
+
+/-- The full code has no bad scalars in the finite MCA bad-count model. -/
+theorem mcaBadCount_univ_eq_zero
+    (δ : ℝ≥0) (u₀ u₁ : ι → A) :
+    mcaBadCount (F := F) (A := A) (Set.univ : Set (ι → A)) δ u₀ u₁ = 0 := by
+  refine mcaBadCount_eq_zero_of_forall_not_mcaEvent
+    (F := F) (A := A) (Set.univ : Set (ι → A)) δ u₀ u₁ ?_
+  intro γ
+  rintro ⟨S, hS, hw, hno⟩
+  exact hno ⟨u₀, Set.mem_univ _, u₁, Set.mem_univ _, fun i _ => ⟨rfl, rfl⟩⟩
+
+/-- The top/full linear code has no bad scalars in the finite MCA bad-count model. This is
+the linear-code form of `mcaBadCount_univ_eq_zero`, avoiding caller-side `Set.univ` rewrites. -/
+theorem mcaBadCount_top_eq_zero
+    (δ : ℝ≥0) (u₀ u₁ : ι → F) :
+    mcaBadCount (F := F) (((⊤ : LinearCode ι F) : Set (ι → F))) δ u₀ u₁ = 0 := by
+  rw [show (((⊤ : LinearCode ι F) : Set (ι → F)) = Set.univ) by
+    ext x
+    simp]
+  exact mcaBadCount_univ_eq_zero (F := F) (A := F) δ u₀ u₁
 
 /-- The finite bad-scalar count vanishes exactly when no scalar realizes the MCA bad event. -/
 theorem mcaBadCount_eq_zero_iff_forall_not_mcaEvent
@@ -108,6 +123,13 @@ theorem epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero (C : Set (ι → A)) (δ : 
   rw [iSup_congr hzero]
   simp
 
+/-- The top/full linear code has zero MCA error at every radius. -/
+theorem epsMCA_top_eq_zero (δ : ℝ≥0) :
+    epsMCA (F := F) (A := F) (((⊤ : LinearCode ι F) : Set (ι → F))) δ = 0 :=
+  epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero
+    (((⊤ : LinearCode ι F) : Set (ι → F))) δ
+    (fun u => mcaBadCount_top_eq_zero δ (u 0) (u 1))
+
 /-- If the MCA error vanishes, every stack has zero bad scalars. -/
 theorem forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero (C : Set (ι → A)) (δ : ℝ≥0)
     (heps : epsMCA (F := F) C δ = 0) :
@@ -144,24 +166,12 @@ theorem epsMCA_eq_zero_of_forall_not_mcaEvent (C : Set (ι → A)) (δ : ℝ≥0
   epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero C δ fun u =>
     mcaBadCount_eq_zero_of_forall_not_mcaEvent C δ (u 0) (u 1) (h u)
 
-/-- **The formalized Grand MCA Challenge is a finite extremal-count statement.** For a
-linear code `C` and threshold `ε*`, the challenge predicate holds iff *every* line word
-has at most `ε*·q` bad scalars at radius one. -/
-theorem grandMCAChallenge_iff_forall_badCount_le (C : LinearCode ι F) (ε_star : ℝ≥0) :
-    grandMCAChallenge C ε_star ↔
-      ∀ u : WordStack F (Fin 2) ι,
-        (mcaBadCount (F := F) ((C : Set (ι → F))) 1 (u 0) (u 1) : ℝ≥0∞) ≤
-          (ε_star : ℝ≥0∞) * (Fintype.card F : ℝ≥0∞) := by
-  rw [grandMCAChallenge_iff_epsMCA_one, epsMCA_eq_iSup_mcaBadCount]
-  have hq0 : (Fintype.card F : ℝ≥0∞) ≠ 0 := by
-    simp only [ne_eq, Nat.cast_eq_zero]
-    exact Fintype.card_ne_zero
-  have hqt : (Fintype.card F : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top _
-  rw [ENNReal.div_le_iff hq0 hqt, iSup_le_iff]
-
 #print axioms ProximityGap.mcaBadCount_eq_zero_of_forall_not_mcaEvent
+#print axioms ProximityGap.mcaBadCount_univ_eq_zero
+#print axioms ProximityGap.mcaBadCount_top_eq_zero
 #print axioms ProximityGap.mcaBadCount_eq_zero_iff_forall_not_mcaEvent
 #print axioms ProximityGap.epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero
+#print axioms ProximityGap.epsMCA_top_eq_zero
 #print axioms ProximityGap.forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero
 #print axioms ProximityGap.epsMCA_eq_zero_iff_forall_mcaBadCount_eq_zero
 #print axioms ProximityGap.epsMCA_eq_zero_of_forall_not_mcaEvent
