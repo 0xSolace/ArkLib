@@ -1118,14 +1118,14 @@ The parser only checks the challenge-round index.  In the honest verifier log ge
 `Verifier.fiatShamir`, the query payload itself is produced by `deriveTranscriptFS`; checking the
 full payload would require unnecessary equality assumptions on messages and statements. -/
 private def popFSChallengeFromLog
-    (expected : Fin n) :
+    (expected : pSpec.ChallengeIdx) :
     StateT (QueryLog (fsChallengeOracle StmtIn pSpec)) Option
-      (pSpec.«Type» expected) := fun log =>
+      (pSpec.Challenge expected) := fun log =>
   match log with
   | [] => none
   | ⟨⟨idx, _payload⟩, response⟩ :: rest =>
-      if h : idx.1 = expected then
-        some (h ▸ (show pSpec.«Type» idx.1 from response), rest)
+      if h : idx = expected then
+        some (by cases h; exact response, rest)
       else
         none
 
@@ -1141,9 +1141,9 @@ private def transcriptFromFSChallengeLogAux
       let prevTranscript ← ih
       match hDir : pSpec.dir (i.castLE (by omega)) with
       | .V_to_P =>
-        let challenge ← popFSChallengeFromLog
-            (StmtIn := StmtIn) (pSpec := pSpec) (i.castLE (by omega))
-        pure (prevTranscript.concat challenge)
+          let challenge ← popFSChallengeFromLog
+            (StmtIn := StmtIn) (pSpec := pSpec) ⟨i.castLE (by omega), hDir⟩
+          pure (prevTranscript.concat challenge)
       | .P_to_V =>
           pure (prevTranscript.concat (messages ⟨i, hDir⟩)))
     j
@@ -1243,13 +1243,12 @@ private theorem popFSChallengeFromLog_cons_self
     (payload : (challengeOracleInterfaceSR StmtIn pSpec idx).Query)
     (response : pSpec.Challenge idx)
     (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
-    (popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec) idx.1).run
+    (popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec) idx).run
       (⟨⟨idx, payload⟩, response⟩ :: tail) =
-        some ((show pSpec.«Type» idx.1 from response), tail) := by
+        some (response, tail) := by
   unfold popFSChallengeFromLog
-  change (if h : idx.1 = idx.1 then
-      some (h ▸ (show pSpec.«Type» idx.1 from response), tail) else none) =
-    some ((show pSpec.«Type» idx.1 from response), tail)
+  change (if h : idx = idx then some (by cases h; exact response, tail) else none) =
+    some (response, tail)
   simp
 
 omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
@@ -1332,7 +1331,7 @@ private theorem transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
                   let prevTranscript ← transcriptFromFSChallengeLogAux
                     (StmtIn := StmtIn) (pSpec := pSpec) k messages i.castSucc
                   let challenge ← popFSChallengeFromLog
-                    (StmtIn := StmtIn) (pSpec := pSpec) (i.castLE (by omega))
+                    (StmtIn := StmtIn) (pSpec := pSpec) ⟨i.castLE (by omega), hDir⟩
                   pure (prevTranscript.concat challenge)).run
                     (prefixLog.snd ++
                       (([⟨q, response⟩] :
@@ -1345,7 +1344,8 @@ private theorem transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
                           QueryLog (fsChallengeOracle StmtIn pSpec)) ++ tail))).bind
                   fun p =>
                     (((popFSChallengeFromLog
-                      (StmtIn := StmtIn) (pSpec := pSpec) (i.castLE (by omega))).run p.2).bind
+                      (StmtIn := StmtIn) (pSpec := pSpec)
+                      ⟨i.castLE (by omega), hDir⟩).run p.2).bind
                         fun p' => some (p.1.concat p'.1, p'.2))) =
                 some (prevTranscript.concat response, tail)
               rw [ih (([⟨q, response⟩] :
@@ -2285,6 +2285,7 @@ set_option linter.unusedSimpArgs false
 set_option linter.unusedSectionVars false
 
 attribute [local instance] Reduction.fiatShamirChallengeOracleInterface
+attribute [local instance 10000] Reduction.fiatShamirNoChallengeSampleable
 
 local instance fiatShamirProverOnlyCanonicalKS : ProtocolSpec.ProverOnly
     (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)) where
@@ -2463,6 +2464,36 @@ theorem bind_run_eq_bind_runWithLog_fst
   rw [map_eq_pure_bind, bind_assoc]
   simp only [pure_bind]
 
+/-- Direct target execution for the canonical Fiat-Shamir knowledge-soundness comparison.
+
+The transcript is derived once, before verifier execution, and the state-restoration extractor is
+then applied to that same transcript value after the verifier.  This is the order used by the
+state-restoration knowledge-soundness game and avoids re-querying a possibly mutated challenge
+table after verifier execution. -/
+def fiatShamirKnowledgeDirectExecution
+    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
+      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+      (StmtIn × WitIn × StmtOut × WitOut) := do
+  let state := P.input (stmtIn, witIn)
+  let ⟨proofMessages, state⟩ ← P.sendMessage ⟨0, by simp⟩ state
+  let ctxOut ← P.output state
+  let proof : Reduction.FiatShamirProofTranscript (pSpec := pSpec) := fun
+    | ⟨0, _⟩ => proofMessages
+  let messages : pSpec.Messages := proof 0
+  let transcript ←
+    (liftM (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages) :
+      OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) pSpec.FullTranscript)
+  let stmtOut ← (OptionT.mk (liftM (V.verify stmtIn transcript).run) :
+    OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)
+  let extractedWitIn ←
+    (liftM (srExtractor stmtIn ctxOut.2 transcript default default) :
+      OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)
+  pure (stmtIn, extractedWitIn, stmtOut, ctxOut.2)
+
 /-- The canonical Fiat-Shamir straightline extractor induced by a state-restoration extractor does
 not depend on the prover-side query log.  It intentionally depends on the verifier-side log, because
 that log carries the exact slow-Fiat-Shamir challenges sampled during verification. -/
@@ -2585,14 +2616,13 @@ theorem fiatShamir_runWithLog_simulateQ_fst
 
 #print axioms Reduction.fiatShamir_runWithLog_simulateQ_fst
 
-/-- Collapse the full Fiat-Shamir knowledge-soundness execution, including the straightline
-extractor call, from the transformed `runWithLog` game to the explicit adversary execution over
-`oSpec + fsChallengeOracle`.
+/-- Legacy collapse for a knowledge-soundness execution that re-derives the Fiat-Shamir transcript
+after verifier execution.
 
-The proof first discards the query logs because
-`fiatShamirStraightlineExtractorOfStateRestoration` ignores them, then uses
-`fiatShamir_runWithLog_simulateQ_fst` and the generic `simulateQ`/`OptionT` lift-collapse helper to
-remove the unused one-message verifier challenge layer around the extractor. -/
+This remains useful as an explicit normalization for that computation, but the canonical
+log-backed KS transfer should target `fiatShamirKnowledgeDirectExecution` instead: that direct
+execution derives the transcript once before verifier execution and passes the same value to the
+state-restoration extractor. -/
 theorem fiatShamirKnowledgeExec_runCollapse
     {σ : Type}
     (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
