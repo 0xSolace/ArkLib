@@ -2975,8 +2975,75 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
     StateT.run_simulateQ_optiont_map, StateT.run_pure_some_bind_map,
     Option.map_comp_lambda, simulateQ_map_monadLift_getM_run,
     optionT_run_simulateQ_liftquery, OptionT.run_monadLift, monadLift_self]
-  trace_state
-  sorry
+  let directProver :
+      OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)
+        (Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) := do
+    let state := P.input (stmtIn, witIn)
+    let ⟨proofMessages, state⟩ ← P.sendMessage ⟨0, by simp⟩ state
+    let ctxOut ← P.output state
+    let proof : Reduction.FiatShamirProofTranscript (pSpec := pSpec) := fun
+      | ⟨0, _⟩ => proofMessages
+    pure ⟨proof, ctxOut⟩
+  let loggedBlock :
+      (Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) →
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+          (StmtIn × WitIn × StmtOut × WitOut) := fun pr => do
+    let z ← (liftM (OracleComp.withQueryLog (((V.fiatShamir).verify stmtIn pr.1).run)) :
+      OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+        (Option StmtOut × QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)))
+    let stmtOut ← (OptionT.mk (pure z.1) :
+      OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)
+    let extractedWitIn ←
+      fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn pr.2.2 pr.1 default z.2
+    pure (stmtIn, extractedWitIn, stmtOut, pr.2.2)
+  let directBlock :
+      (Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) →
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+          (StmtIn × WitIn × StmtOut × WitOut) := fun pr => do
+    let messages : pSpec.Messages := pr.1 0
+    let transcript ← (liftM (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages) :
+      OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) pSpec.FullTranscript)
+    let stmtOut ← (OptionT.mk (liftM (V.verify stmtIn transcript).run) :
+      OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)
+    let extractedWitIn ←
+      (liftM (srExtractor stmtIn pr.2.2 transcript default default) :
+        OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)
+    pure (stmtIn, extractedWitIn, stmtOut, pr.2.2)
+  let Klog :
+      (Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) →
+        StateT σ ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)) := fun pr =>
+    simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+      ((liftM (loggedBlock pr) :
+        OptionT
+          (OracleComp
+            ((oSpec + fsChallengeOracle StmtIn pSpec) +
+              [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ))
+          (StmtIn × WitIn × StmtOut × WitOut)).run)
+  let Kdir :
+      (Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) →
+        StateT σ ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)) := fun pr =>
+    simulateQ impl (directBlock pr).run
+  change Option.elimM
+      (some <$> simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+        (Prover.runWithLog stmtIn witIn P))
+      (pure none) (fun prLog => Klog prLog.1) =
+    Option.elimM (some <$> simulateQ impl directProver) (pure none) Kdir
+  rw [stateT_option_elimM_map_eq (f := Prod.fst) (k := Klog)]
+  simp only [Functor.map_map, Function.comp_apply, Option.map_some]
+  rw [fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
+    (impl := impl) (P := P) (stmtIn := stmtIn) (witIn := witIn)]
+  apply stateT_option_elimM_congr
+  intro pr
+  dsimp [Klog, Kdir, loggedBlock, directBlock]
+  have hPayload :=
+    fiatShamirVerifier_loggedExtractor_payload_eq_direct
+      (oSpec := oSpec) (pSpec := pSpec)
+      (V := V) (srExtractor := srExtractor) (stmtIn := stmtIn)
+      (witOut := pr.2.2) (proof := pr.1) (proveLog := default)
+  rw [hPayload]
+  exact simulateQ_addLift_fiatShamirChallenge_optionT
+    (impl := impl) (oa := directBlock pr)
 
 set_option linter.flexible false in
 /-- Canonical coupled state-restoration knowledge soundness implies basic Fiat-Shamir knowledge
