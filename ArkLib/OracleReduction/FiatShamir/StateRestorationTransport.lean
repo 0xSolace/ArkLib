@@ -1645,13 +1645,18 @@ theorem fiatShamirKnowledgeExec_runCollapse
       (spec₃ := [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)
       (oa := oa)]
     simp only [OptionT.run_mk]
-    simpa [OracleComp.liftComp_add_assoc_right] using
-      (simulateQ_add_liftComp_add_assoc_left
+    have hSim :=
+      simulateQ_add_liftComp_add_assoc_left
       (impl₁₂ := impl)
       (impl₃ := QueryImpl.liftTarget (StateT σ ProbComp)
         (challengeQueryImpl
           (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-      (oa := oa.run))
+      (oa := oa.run)
+    rw [OracleComp.liftComp_add_assoc_right
+      (spec₁ := oSpec) (spec₂ := fsChallengeOracle StmtIn pSpec)
+      (spec₃ := [(Reduction.FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)
+      (oa := oa.run)] at hSim
+    exact hSim
   have hPure :
       ∀ (d : ((Reduction.FiatShamirProofTranscript (pSpec := pSpec) ×
           (StmtOut × WitOut)) × StmtOut)) (extractedWitIn : WitIn),
@@ -1670,7 +1675,8 @@ theorem fiatShamirKnowledgeExec_runCollapse
                 (StmtIn × WitIn × StmtOut × WitOut))) := by
     intro d extractedWitIn
     simp only [OptionT.run_pure, simulateQ_pure]
-  simp [K, QueryImpl.addLift_def, hLift, hPure]
+  simp [K, QueryImpl.addLift_def, hLift, hPure, OptionT.run_bind, simulateQ_option_elimM,
+    simulateQ_pure]
 
 /-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
 table. This is the knowledge-soundness analogue of
