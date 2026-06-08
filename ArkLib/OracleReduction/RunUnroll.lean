@@ -134,7 +134,27 @@ theorem run'_simulateQ_addLift_getChallenge_bind
   rw [StateT.run'_eq, StateT.run_bind, StateT.run_monadLift]
   simp only [bind_assoc, pure_bind, map_bind, StateT.run'_eq, monadLift_self]
 
+/-- Probability form of the challenge-coherence brick: the event probability of a
+`getChallenge`-then-`k` run equals the uniform average over the challenge of `k`'s event
+probability. This is the form a protocol-specific completeness bound consumes when its acceptance
+event depends on a verifier challenge (e.g. the LogUp outer pole event in the sampled `x`). -/
+theorem probEvent_run'_simulateQ_addLift_getChallenge_bind
+    (impl : QueryImpl oSpec (StateT σ ProbComp)) (s : σ)
+    (i : pSpec.ChallengeIdx)
+    (k : pSpec.Challenge i → OracleComp (oSpec + [pSpec.Challenge]ₒ) β)
+    (p : β → Prop) :
+    Pr[p | (simulateQ (QueryImpl.addLift impl challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp))
+        ((liftM (getChallenge pSpec i) :
+            OracleComp (oSpec + [pSpec.Challenge]ₒ) (pSpec.Challenge i)) >>= k)).run' s]
+      = ∑' c : pSpec.Challenge i,
+          Pr[= c | ($ᵗ pSpec.Challenge i)] *
+            Pr[p | (simulateQ (QueryImpl.addLift impl challengeQueryImpl :
+              QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp)) (k c)).run' s] := by
+  rw [run'_simulateQ_addLift_getChallenge_bind, probEvent_bind_eq_tsum]
+
 #print axioms simulateQ_addLift_getChallenge
 #print axioms run'_simulateQ_addLift_getChallenge_bind
+#print axioms probEvent_run'_simulateQ_addLift_getChallenge_bind
 
 end ChallengeCoherence
