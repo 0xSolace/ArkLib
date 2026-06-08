@@ -226,7 +226,19 @@ theorem johnson_distance_list_bound (L : Finset (ι → F)) (f : ι → F) (d e 
   have hfinal := le_trans hdenom_le key'
   simpa [hn, hα, hβ] using hfinal
 
+/-- **Divided distance-form Johnson list bound.** Under the strict Johnson gap, the per-word
+second-moment cap gives the usual list-size quotient. -/
+theorem johnson_distance_list_bound_div (L : Finset (ι → F)) (f : ι → F) (d e : ℕ)
+    (hclose : ∀ c ∈ L, hammingDist c f ≤ e)
+    (hpair : ∀ c ∈ L, ∀ c' ∈ L, c ≠ c' → d ≤ hammingDist c c')
+    (hgap : Fintype.card ι * (Fintype.card ι - d) < (Fintype.card ι - e) ^ 2) :
+    L.card ≤ Fintype.card ι ^ 2 /
+      ((Fintype.card ι - e) ^ 2 - Fintype.card ι * (Fintype.card ι - d)) := by
+  have hmul := johnson_distance_list_bound L f d e hclose hpair (le_of_lt hgap)
+  exact (Nat.le_div_iff_mul_le (Nat.sub_pos_of_lt hgap)).2 hmul
+
 #print axioms johnson_second_moment
 #print axioms johnson_distance_list_bound
+#print axioms johnson_distance_list_bound_div
 
 end ArkLib.CodingTheory.JohnsonPerWord
