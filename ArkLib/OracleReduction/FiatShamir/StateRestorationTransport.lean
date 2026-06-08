@@ -1647,9 +1647,25 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
     refine tsum_congr (fun x_1 => ?_)
     congr 1
-    -- Leaf: reshape the LHS proof-bundling via `Option.map`, collapse the re-derived transcript via
-    -- `deriveTranscriptFS_simulateQ_run` + `simulateQ_addLift_fsChallenge_preserves_state`, then
-    -- apply `ks_payload_eq`.
+    -- Leaf goal (verified by `trace_state`), with the prefix values `a` (sendMessage), `x` (output),
+    -- `x_1` (deriveTranscriptFS, `x_1.1` = transcript) in scope:
+    --   LHS = Pr[reject/accept | verify_bundled >>= (·.elim none) (re-derive; srExtractor; payload)]
+    --   RHS = Pr[match | verify_so >>= srExtractor >>= payload]
+    -- This is EXACTLY `ks_payload_eq relIn relOut stmtIn x.1.2 mv me x_1.2`, with
+    --   mv = simulateQ srSR (liftComp (Verifier.run stmtIn x_1.1 V) …)   -- Option StmtOut
+    --   me = simulateQ srSR (liftM (srExtractor stmtIn x.1.2 x_1.1 …))   -- WitIn
+    -- after three reshapes (each backed by a proven lemma):
+    --  (1) strip the LHS proof-bundling `Prod.mk (proofFn,co) <$> monadLift (V.verify …)` via
+    --      `simulateQ_optionT_map_monadLift_run` + the verify-lift bridges (L443-499), turning
+    --      verify_bundled into `Option.map (proofFn,co) <$> mv`, so the `·.elim` collapses to
+    --      `mv >>= fun so? => so?.elim none (…)`;
+    --  (2) collapse the re-derived transcript `deriveTranscriptFS stmtIn (r.1.1 0)` — note
+    --      `r.1.1 0 = a.1.1` (the prefix messages) — to the prefix transcript `x_1.1` via
+    --      `deriveTranscriptFS_simulateQ_run` (∃t, run = pure (t, table)) +
+    --      `simulateQ_addLift_fsChallenge_preserves_state` (every state = the original table);
+    --  (3) the straightline extractor returns raw `WitIn` always-`some`
+    --      (`fiatShamirStraightlineExtractorOfStateRestoration` L1121), collapsing the `.elim`.
+    -- Then `exact ks_payload_eq relIn relOut stmtIn x.1.2 mv me x_1.2`.
     sorry
 
 end CanonicalKnowledgeSoundness
