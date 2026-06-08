@@ -409,6 +409,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HasseSchmidt
 import ArkLib.Data.CodingTheory.ProximityGap.Issue141Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
+import ArkLib.Data.CodingTheory.ProximityGap.Issue232VerifiedBricks
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonCapacityBound
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonListBound
