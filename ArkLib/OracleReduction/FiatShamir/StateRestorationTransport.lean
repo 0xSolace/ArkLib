@@ -1432,6 +1432,39 @@ theorem fiatShamir_runWithLog_bind_collapse {γ : Type}
   refine bind_congr fun a => ?_
   cases a.1 <;> rfl
 
+/-- If the shared-oracle implementation `srImpl` preserves the cached challenge-table state on every
+query, then simulating any computation over `oSpec + fsChallengeOracle` through
+`srImpl.addLift fsChallengeQueryImplState` preserves the table.  The challenge handler
+`fsChallengeQueryImplState` is read-only (`fun f => pure (f q, f)`); the shared handler is read-only
+by hypothesis.
+
+This is the cache-preservation fact the knowledge-soundness reduction needs: it lets the
+straightline extractor's re-derivation of the transcript (run after the verifier) agree with the
+state-restoration game's single derivation, since the verifier execution leaves the cached challenge
+table untouched. -/
+theorem simulateQ_addLift_fsChallenge_preserves_state {γ : Type}
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (hsrPres : ∀ (q : oSpec.Domain) (s : QueryImpl (fsChallengeOracle StmtIn pSpec) Id),
+      Prod.snd <$> (StateT.run (srImpl q) s) =
+        (pure s : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id)))
+    (Y : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) γ)
+    (s : QueryImpl (fsChallengeOracle StmtIn pSpec) Id) :
+    Prod.snd <$> (StateT.run (simulateQ (srImpl.addLift fsChallengeQueryImplState) Y) s) =
+      (pure s : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id)) := by
+  induction Y using OracleComp.inductionOn generalizing s with
+  | pure a => simp [StateT.run_pure]
+  | query_bind q k ih =>
+    rw [simulateQ_bind, StateT.run_bind, map_bind]
+    simp only [ih]
+    rw [bind_pure_comp, simulateQ_spec_query]
+    cases q with
+    | inl q_o =>
+      simp only [QueryImpl.addLift, QueryImpl.add_apply_inl, QueryImpl.liftTarget_apply]
+      simpa using hsrPres q_o s
+    | inr q_f =>
+      simp [QueryImpl.addLift, QueryImpl.add_apply_inr, fsChallengeQueryImplState, StateT.run]
+
 set_option linter.flexible false in
 theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
