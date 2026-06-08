@@ -48,7 +48,7 @@ lemma mult_ge_mul (a : σ → R) (m n : ℕ) (p q : MvPolynomial σ R)
   rw [hasseDeriv_mul, map_sum]
   apply Finset.sum_eq_zero
   intro uv huv
-  rw [Finsupp.mem_antidiagonal] at huv
+  rw [Finset.mem_antidiagonal] at huv
   have h_add : (uv.1 + uv.2).sum (fun _ v => v) = uv.1.sum (fun _ v => v) + uv.2.sum (fun _ v => v) := by
     apply Finsupp.sum_add_index' <;> simp
   rw [huv] at h_add
