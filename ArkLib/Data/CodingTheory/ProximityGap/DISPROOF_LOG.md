@@ -339,6 +339,27 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop39 — INTEGRATION CAPSTONE: BGM budget × FRI union bound ⟹ full-band prize (conditional)
+**Verified sorry-free, axiom-clean in `CandidateProofLoop39.lean`:** `bgmBudget_le_inv_gap`
+(`(1−ρ−η)/η ≤ 1/η` for `ρ ≥ 0`, `η > 0`), `bgmBudget_nonneg`, and the capstone
+`full_band_prize_mass`: if every per-round FRI/proximity event obeys `e_j ≤ L_BGM(ρ,η)/q` with
+`L_BGM(ρ,η) = (1−ρ−η)/η`, then the union-bound total error lands **exactly** on the prize RHS
+`∑_{j<m} e_j ≤ (1/q)·(2^m)^1/η`, i.e. the single constant triple `c₁=1, c₂=0, c₃=1`, for **every**
+gap `η > 0` including the small-gap band.
+**What it integrates (loop step 7).** This composes Loop17 (P4, the BGM capacity budget finite across
+the whole band), Loop38 (the real mechanism is a union bound — additive), and Loop37 (the budget is
+carried *once* into the depth-independent `1/η`, never per round). It is the first statement landing
+the prize on its own RHS *across the entire band* — not just the Johnson range — from one clean
+hypothesis, in the exact shape the FRI mechanism produces.
+**Attack.** Does the integration smuggle in an `n`/`q`/`(2^m)` factor that breaks the prize numerator?
+No: the only `(2^m)` factor is the union-bound depth `m ≤ 2^m` (`c₁=1`); the BGM budget is itself
+`q`-independent and `n`-free, landing wholly in `1/η`. Could the per-round budget force a worse `c₃`?
+No: a single `1/η`, `c₃=1`. The brick is honest-conditional: its hypothesis
+`hround : ∀ j<m, e_j ≤ L_BGM(ρ,η)/q` is **exactly (BGM-for-smooth)** — proven (BCIKS 2025/2055) in the
+Johnson range, where the prize is therefore now *unconditional* via this brick; open in the small-gap
+band. Loop39 does **not** close the prize; it certifies the open core is reduced to one hypothesis and
+that hypothesis lands the prize.
+
 ### Loop38 — the real FRI/proximity mechanism composes per-round events ADDITIVELY (union bound)
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop38.lean`:**
 `fri_union_bound` (per-round error `e_j ≤ p` ⇒ total `∑_{j<m} e_j ≤ m·p`),
