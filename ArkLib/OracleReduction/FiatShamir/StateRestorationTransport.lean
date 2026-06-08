@@ -3064,23 +3064,26 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
       (Reduction.FiatShamirProofTranscript (pSpec := pSpec) × StmtOut × WitOut) →
         StateT σ ProbComp (Option (StmtIn × WitIn × StmtOut × WitOut)) := fun pr =>
     simulateQ impl (directBlock pr).run
-  change Option.elimM
-      (some <$> simulateQ
-        (impl + QueryImpl.liftTarget (StateT σ ProbComp)
-          (challengeQueryImpl
-            (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
-        (Prover.runWithLog stmtIn witIn P))
-      (pure none) (fun prLog => Klog prLog.1) =
-    Option.elimM (some <$> simulateQ impl directProver) (pure none) Kdir
-  rw [stateT_option_elimM_map_eq (f := Prod.fst) (k := Klog)]
-  simp only [Functor.map_map, Function.comp_apply, Option.map_some]
-  have hProver :=
-    fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
-      (impl := impl) (P := P) (stmtIn := stmtIn) (witIn := witIn)
-  simp only [QueryImpl.addLift_def] at hProver
-  rw [hProver]
-  apply stateT_option_elimM_congr
-  intro pr
+  trans Option.elimM (some <$> simulateQ impl directProver) (pure none) Klog
+  · change Option.elimM
+        (some <$> simulateQ
+          (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+            (challengeQueryImpl
+              (pSpec := Reduction.FiatShamirProtocolSpec (pSpec := pSpec))))
+          (Prover.runWithLog stmtIn witIn P))
+        (pure none) (fun prLog => Klog prLog.1) =
+      Option.elimM (some <$> simulateQ impl directProver) (pure none) Klog
+    rw [stateT_option_elimM_map_eq (f := Prod.fst) (k := Klog)]
+    simp only [Functor.map_map, Function.comp_apply, Option.map_some]
+    have hProver :=
+      fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
+        (impl := impl) (P := P) (stmtIn := stmtIn) (witIn := witIn)
+    simp only [QueryImpl.addLift_def] at hProver
+    rw [hProver]
+  · change Option.elimM (some <$> simulateQ impl directProver) (pure none) Klog =
+      Option.elimM (some <$> simulateQ impl directProver) (pure none) Kdir
+    apply stateT_option_elimM_congr
+    intro pr
   dsimp [Klog, Kdir, loggedBlock, directBlock]
   change simulateQ (QueryImpl.addLift impl challengeQueryImpl)
       ((liftM (loggedBlock pr) :
