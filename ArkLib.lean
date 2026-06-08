@@ -797,6 +797,7 @@ import ArkLib.ProofSystem.Whir.MCAJohnsonTrivialRegime
 import ArkLib.ProofSystem.Whir.MCAJohnsonUniqueness
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement
 import ArkLib.ProofSystem.Whir.OutofDomainSmpl
+import ArkLib.ProofSystem.Whir.Protocol
 import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
 import ArkLib.ProofSystem.Whir.RbrBudgetAccounting
