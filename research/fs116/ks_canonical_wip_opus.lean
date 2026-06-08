@@ -80,13 +80,7 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical_wip
   dsimp only
   refine le_trans ?_ h
   simp only [fiatShamirStraightlineExtractorOfStateRestoration_log_irrel_simp]
-  rw [← bind_run_eq_bind_runWithLog_fst (red := { prover := prover, verifier := V.fiatShamir })
-    (stmt := stmtIn) (wit := witIn)
-    (F := fun r => do
-      let extractedWitIn ←
-        liftM (fiatShamirStraightlineExtractorOfStateRestoration
-          (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn r.1.2.2 r.1.1 default default)
-      pure (stmtIn, extractedWitIn, r.2, r.1.2.2))]
+  simp only [OptionT.run_bind, simulateQ_bind, Option.elimM]
   trace_state
   sorry
 

@@ -804,9 +804,7 @@ theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_restrictedMatchAt_zer
           (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree) : 𝒪 H)
       * liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree
       =
-      liftToFunctionField (H := H) H.leadingCoeff
-          ^ Bivariate.natDegreeY
-              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R)))
+      liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree
         * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0) := by
   exact embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
     H x₀ R 1 0 R.natDegree R.natDegree
@@ -824,9 +822,7 @@ theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_partitionMatchAt_zero
           (hasseCoeffRepr𝒪_cleared H x₀ R 1 0 R.natDegree) : 𝒪 H)
       * liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree
       =
-      liftToFunctionField (H := H) H.leadingCoeff
-          ^ Bivariate.natDegreeY
-              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R)))
+      liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree
         * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0) := by
   exact embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
     H x₀ R 1 0 R.natDegree R.natDegree
