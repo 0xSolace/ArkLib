@@ -116,8 +116,39 @@ theorem qEntropy_oneSub_gt (q : ℕ) (hq : 2 ≤ q) (ρ : ℝ) (hρlt : ρ < 1)
     rwa [one_div, inv_mul_cancel₀ (ne_of_gt hq0)] at h
   nlinarith [h1]
 
+/-- **Capacity exponent positive at the Singleton radius (UNCONDITIONAL).** For `q ≥ 2`, `k < n`,
+and rate `≥ 1/q` (`n ≤ q·k`), at any radius `δ` whose Hamming-ball mode lands on the Singleton
+radius (`⌊δ·n⌋ = n − k`), the capacity exponent
+
+  `n · H_q(⌊δn⌋/n) − (n − k)`
+
+is strictly positive. This is precisely `ProximityGap.ListDecodingConjectureRefutation.capExp`
+unfolded, so it discharges that file's open hypothesis at the Singleton radius: the list size lower
+bound `q^{capExp}/(n+1)` has a positive exponent there, hence grows — the up-to-capacity
+list-decoding bound is impossible. -/
+theorem capacityExponent_pos (q n k : ℕ) (hq : 2 ≤ q) (hkn : k < n) (hkq : n ≤ q * k) (δ : ℝ)
+    (hδfloor : ⌊δ * (n : ℝ)⌋₊ = n - k) :
+    0 < (n : ℝ) * qEntropy q ((⌊δ * (n : ℝ)⌋₊ : ℝ) / (n : ℝ)) - ((n : ℝ) - (k : ℝ)) := by
+  have hn0 : 0 < n := lt_of_le_of_lt (Nat.zero_le k) hkn
+  have hn0R : (0 : ℝ) < n := by exact_mod_cast hn0
+  have hqR : (2 : ℝ) ≤ q := by exact_mod_cast hq
+  have hq0 : (0 : ℝ) < q := by linarith
+  have hkR : (k : ℝ) < n := by exact_mod_cast hkn
+  have hkqR : (n : ℝ) ≤ q * k := by exact_mod_cast hkq
+  set x : ℝ := ((n : ℝ) - k) / n with hx
+  have hxe : ((⌊δ * (n : ℝ)⌋₊ : ℝ)) / (n : ℝ) = x := by
+    rw [hδfloor, hx, Nat.cast_sub (le_of_lt hkn)]
+  have hx0 : 0 < x := by rw [hx]; exact div_pos (by linarith) hn0R
+  have hxb : x ≤ ((q : ℝ) - 1) / q := by
+    rw [hx, le_div_iff₀ hq0, div_mul_eq_mul_div, div_le_iff₀ hn0R]; nlinarith [hkqR]
+  have hgt := qEntropy_gt_self q hq x hx0 hxb
+  have hnx : (n : ℝ) * x = (n : ℝ) - k := by rw [hx]; field_simp
+  rw [hxe]
+  nlinarith [mul_lt_mul_of_pos_left hgt hn0R, hnx]
+
 #print axioms binEntropy_gt_linear
 #print axioms qEntropy_gt_self
 #print axioms qEntropy_oneSub_gt
+#print axioms capacityExponent_pos
 
 end CodingTheory
