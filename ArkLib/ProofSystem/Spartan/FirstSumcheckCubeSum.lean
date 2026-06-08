@@ -86,12 +86,13 @@ theorem firstSumCheckVirtualPolynomial_mem_restrictDegree
     eqPolynomial_degreeOf τ j
   have hM : ∀ idx, degreeOf j (matVecMLE pp 𝕩 oStmt idx) ≤ 1 :=
     fun idx => (mem_restrictDegree_iff_degreeOf_le _ _).mp (matVecMLE_mem_restrictDegree pp 𝕩 oStmt idx) j
+  have hAB : degreeOf j (matVecMLE pp 𝕩 oStmt .A * matVecMLE pp 𝕩 oStmt .B) ≤ 2 :=
+    le_trans (degreeOf_mul_le j _ _) (Nat.add_le_add (hM .A) (hM .B))
+  have hsub : degreeOf j
+      (matVecMLE pp 𝕩 oStmt .A * matVecMLE pp 𝕩 oStmt .B - matVecMLE pp 𝕩 oStmt .C) ≤ 2 :=
+    le_trans (degreeOf_sub_le j _ _) (max_le hAB (le_trans (hM .C) (by omega)))
   unfold firstSumCheckVirtualPolynomial
-  refine le_trans (degreeOf_mul_le j _ _) ?_
-  refine le_trans (Nat.add_le_add hEq (degreeOf_sub_le j _ _)) ?_
-  refine le_trans (Nat.add_le_add_left (max_le (le_trans (degreeOf_mul_le j _ _)
-    (Nat.add_le_add (hM .A) (hM .B))) (hM .C)) 1) ?_
-  omega
+  exact le_trans (degreeOf_mul_le j _ _) (le_trans (Nat.add_le_add hEq hsub) (by omega))
 
 omit [IsDomain R] [Fintype R] [DecidableEq R] in
 /-- **First sum-check cube-sum identity (completeness core).** The Boolean-hypercube sum of the
@@ -113,12 +114,9 @@ theorem firstSumCheckVirtualPolynomial_hypercubeSum_eq_zeroCheckEval
   -- index `x : Fin (2 ^ ℓ_m)` used by `𝒢`.
   refine Fintype.sum_equiv finFunctionFinEquiv _ _ ?_
   intro X
-  -- LHS term at `X`: distribute `eval` over the product/difference and reduce each `M̃` on the cube.
+  -- Distribute `eval` over the product/difference on both sides; reduce each `M̃` and each `C` on
+  -- the Boolean cube. (`x = finFunctionFinEquiv X`, so `symm x = X`.)
   simp only [firstSumCheckVirtualPolynomial, matVecMLE, map_mul, map_sub, MLE_eval_zeroOne,
-    Function.comp_apply]
-  -- RHS term at `x = finFunctionFinEquiv X`: `eval τ (eqPolynomial (bits x)) · (A𝕫·B𝕫 − C𝕫)(x)`.
-  rw [map_mul, eval_C]
-  -- The `eq` weights match via symmetry; `finFunctionFinEquiv.symm (finFunctionFinEquiv X) = X`.
+    Function.comp_apply, eval_C, Equiv.symm_apply_apply]
+  -- The `eq` weights match via symmetry: `eval (X:→R) (eqPolynomial τ) = eval τ (eqPolynomial X)`.
   rw [eqPolynomial_symm]
-  simp only [Equiv.symm_apply_apply]
-  rfl
