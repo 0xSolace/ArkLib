@@ -105,7 +105,7 @@ Singleton radius `δ = 1/2`, list size strictly exceeding `ε*·|F|` (`ε* = 2^{
 theorem rs_uptoCapacity_false_rate12_n256
     {F : Type} [Field F] [Fintype F] [DecidableEq F] (α : Fin 256 ↪ F)
     (hq1 : (2:ℝ)^128 ≤ (Fintype.card F : ℝ)) (hq2 : (Fintype.card F : ℝ) ≤ 2^256) :
-    ((1 : ℝ≥0) / 2 ^ 128) * (Fintype.card F : ENNReal)
+    ENNReal.ofReal ((1 / 2 ^ 128) * (Fintype.card F : ℝ))
       < (Lambda (ReedSolomon.code α 128 : Set (Fin 256 → F)) (1/2) : ENNReal) := by
   have hcard : Fintype.card (Fin 256) = 256 := Fintype.card_fin 256
   have h2le : (2:ℝ) ≤ 2^128 := by
@@ -121,13 +121,12 @@ theorem rs_uptoCapacity_false_rate12_n256
     (by norm_num) (by norm_num) hq2N (by rw [hcard]; norm_num)
     (by rw [hfloor]; norm_num) (by rw [hfloor, hcard]; norm_num)
   rw [hfloor, hcard] at hLB
-  rw [show ((128 : ℕ) : ℝ) / ((256 : ℕ) : ℝ) = 1 / 2 from by norm_num] at hLB
-  set E : ℝ := 256 * qEntropy (Fintype.card F) (1/2) - ((256 : ℕ) - (128 : ℕ) : ℝ) with hEdef
+  norm_num at hLB
+  -- hLB : ENNReal.ofReal (q ^ (256 * qEntropy (card F) (1/2) - 128) / 257) ≤ Lambda
+  set E : ℝ := 256 * qEntropy (Fintype.card F) (1 / 2) - 128 with hEdef
   have hclosed : E * Real.log q = 256 * Real.log 2 - 128 * Real.log (q / (q - 1)) := by
     have h := capExp_half_mul_log (Fintype.card F) hq2N 256
-    rw [hEdef, hqdef]
-    push_cast
-    linear_combination h
+    rw [hEdef, hqdef]; linear_combination h
   have hover : Real.log (257 * (q / 2 ^ 128)) < E * Real.log q := by
     rw [hclosed]; exact hover_core_n256 q (by rw [hqdef]; exact hq1) (by rw [hqdef]; exact hq2)
   have hlogb : Real.logb q (257 * (q / 2 ^ 128)) < E := by
@@ -136,16 +135,7 @@ theorem rs_uptoCapacity_false_rate12_n256
   rw [show (257 : ℝ) * (q / 2 ^ 128) = 257 * ((1 / 2 ^ 128) * q) from by ring] at hlogb
   have hreal : (1 / 2 ^ 128) * q < q ^ E / 257 :=
     threshold_lt_pow_div q hqR1 257 (by norm_num) _ hεpos E hlogb
-  have e1 : ENNReal.ofReal (1 / 2 ^ 128) = ((1 : ℝ≥0) / 2 ^ 128 : ENNReal) := by
-    rw [show (1 / 2 ^ 128 : ℝ) = ((1 : ℝ≥0) / 2 ^ 128 : ℝ) from by push_cast; ring,
-      ENNReal.ofReal_coe_nnreal]
-  have hconv : ((1 : ℝ≥0) / 2 ^ 128) * (Fintype.card F : ENNReal)
-      = ENNReal.ofReal ((1 / 2 ^ 128) * q) := by
-    rw [hqdef, ENNReal.ofReal_mul (by positivity), ENNReal.ofReal_natCast, e1]
-  rw [hconv]
-  refine lt_of_lt_of_le ((ENNReal.ofReal_lt_ofReal_iff (by positivity)).mpr hreal) ?_
-  rw [show ((256 : ℕ) : ℝ) + 1 = 257 from by norm_num] at hLB
-  exact hLB
+  exact lt_of_lt_of_le ((ENNReal.ofReal_lt_ofReal_iff (by positivity)).mpr hreal) hLB
 
 #print axioms rs_uptoCapacity_false_rate12_n256
 
