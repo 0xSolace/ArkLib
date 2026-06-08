@@ -1180,6 +1180,18 @@ private theorem queryLog_snd_append
       | mk q r =>
           cases q <;> simp [QueryLog.snd]
 
+private theorem popFSChallengeFromLog_cons_self
+    (idx : pSpec.ChallengeIdx)
+    (payload : (challengeOracleInterfaceSR StmtIn pSpec idx).Query)
+    (response : pSpec.Challenge idx)
+    (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
+    (popFSChallengeFromLog (StmtIn := StmtIn) (pSpec := pSpec) idx).run
+      (⟨⟨idx, payload⟩, response⟩ :: tail) =
+        some (response, tail) := by
+  unfold popFSChallengeFromLog
+  rw [dif_pos rfl]
+  rfl
+
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
 
