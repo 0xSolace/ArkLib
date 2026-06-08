@@ -194,7 +194,7 @@ theorem card_mul_sq_le_of_agreement {κ ι : Type*} [Fintype κ] [Fintype ι] [D
             ≤ (Finset.univ : Finset ι).card := Finset.card_le_card hss
           _ = Fintype.card ι := Finset.card_univ
       · simp only [h, if_false]; exact hpair i j h
-    have hinner : ∀ i, (∑ j, (if i = j then Fintype.card ι else b))
+    have hinner : ∀ i : κ, (∑ j : κ, (if i = j then Fintype.card ι else b))
         ≤ Fintype.card ι + Fintype.card κ * b := by
       intro i
       rw [Finset.sum_ite]
