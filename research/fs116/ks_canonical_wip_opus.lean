@@ -48,6 +48,18 @@ theorem fiatShamirStraightlineExtractorOfStateRestoration_log_irrel
         (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog' vLog' :=
   rfl
 
+/-- Simp form: rewrite any log arguments to `default`. -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_log_irrel_simp
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (pLog vLog : QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)) :
+    fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog vLog =
+      fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof default default :=
+  rfl
+
 theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical_wip
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
     (srImpl : QueryImpl oSpec
@@ -67,8 +79,15 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical_wip
     (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
   dsimp only
   refine le_trans ?_ h
-  rw [fiatShamirStraightlineExtractorOfStateRestoration_log_irrel
-    (pLog' := default) (vLog' := default)]
+  simp only [fiatShamirStraightlineExtractorOfStateRestoration_log_irrel_simp]
+  rw [← bind_run_eq_bind_runWithLog_fst (red := { prover := prover, verifier := V.fiatShamir })
+    (stmt := stmtIn) (wit := witIn)
+    (F := fun r => do
+      let extractedWitIn ←
+        liftM (fiatShamirStraightlineExtractorOfStateRestoration
+          (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn r.1.2.2 r.1.1 default default)
+      pure (stmtIn, extractedWitIn, r.2, r.1.2.2))]
+  trace_state
   sorry
 
 end Reduction

@@ -746,24 +746,18 @@ representative divided by `W^e`; combining it with the proven cleared embedding 
 exact multiplicative relation
 `embedding(cleared) * W^e = W^(natDegreeY p) * embedding(uncleared)`. -/
 theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
-    (x₀ : F) (R : F[X][X][Y]) (i1 m e : ℕ)
+    (x₀ : F) (R : F[X][X][Y]) (i1 m k e : ℕ)
+    (hk : Bivariate.natDegreeY (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))) ≤ k)
     (htarget : HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R i1 m e) :
     embeddingOf𝒪Into𝕃 H
         (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m
-            (Bivariate.natDegreeY
-              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))))
-          : 𝒪 H)
+          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m k) : 𝒪 H)
       * liftToFunctionField (H := H) H.leadingCoeff ^ e
       =
-      liftToFunctionField (H := H) H.leadingCoeff
-          ^ Bivariate.natDegreeY
-              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
+      liftToFunctionField (H := H) H.leadingCoeff ^ k
         * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m) := by
   rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared
-    (H := H) (x₀ := x₀) (R := R) (i1 := i1) (m := m)
-    (k := Bivariate.natDegreeY
-      (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))) le_rfl, htarget]
+    (H := H) (x₀ := x₀) (R := R) (i1 := i1) (m := m) (k := k) hk, htarget]
   rw [mul_assoc,
     div_mul_cancel₀ _ (pow_ne_zero _ (liftToFunctionField_leadingCoeff_ne_zero (H := H)))]
 
@@ -788,6 +782,9 @@ theorem embeddingCleared_eq_uncleared_of_wDivTarget_exactDegree
       H x₀ R i1 m
       (Bivariate.natDegreeY
         (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))))
+      (Bivariate.natDegreeY
+        (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))))
+      (le_refl _)
       htarget
   rw [mul_comm
     (liftToFunctionField (H := H) H.leadingCoeff
@@ -812,7 +809,8 @@ theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_restrictedMatchAt_zer
               (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R)))
         * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0) := by
   exact embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
-    H x₀ R 1 0 R.natDegree
+    H x₀ R 1 0 R.natDegree R.natDegree
+    (hasseCoeffRepr𝒪_natDegreeY_le x₀ R 1 0)
     (HasseCoeffRepr𝒪UnclearedWDivTarget.of_restrictedMatchAt_zero
       H x₀ R hHyp hd hmatch)
 
@@ -831,7 +829,8 @@ theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_partitionMatchAt_zero
               (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R)))
         * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0) := by
   exact embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
-    H x₀ R 1 0 R.natDegree
+    H x₀ R 1 0 R.natDegree R.natDegree
+    (hasseCoeffRepr𝒪_natDegreeY_le x₀ R 1 0)
     (HasseCoeffRepr𝒪UnclearedWDivTarget.of_partitionMatchAt_zero
       H x₀ R hHyp hd hpart)
 

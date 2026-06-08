@@ -113,6 +113,123 @@ end Messages
 
 end ProtocolSpec
 
+section TranscriptDeterminism
+
+namespace ProtocolSpec
+
+variable {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι} {StmtIn : Type}
+  [∀ i, SampleableType (pSpec.Challenge i)]
+
+/-- A single challenge-oracle query, simulated through the cached challenge-table state
+implementation, is a deterministic read of the table that leaves the table unchanged.
+
+This is the per-query atom underlying the read-only determinism of the slow Fiat-Shamir transcript
+derivation: `fsChallengeQueryImplState` answers a challenge query by `fun f => pure (f q, f)`, i.e.
+it looks up the cached table without sampling or mutating it, so the shared-oracle implementation
+`srImpl` is never consulted. -/
+theorem simulateQ_addLift_fsChallenge_query_run
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (q : (fsChallengeOracle StmtIn pSpec).Domain)
+    (table : QueryImpl (fsChallengeOracle StmtIn pSpec) Id) :
+    StateT.run (simulateQ (srImpl.addLift fsChallengeQueryImplState)
+      (query (spec := fsChallengeOracle StmtIn pSpec) q :
+        OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)
+          ((fsChallengeOracle StmtIn pSpec).Range q))) table =
+        (pure (table q, table) : ProbComp ((fsChallengeOracle StmtIn pSpec).Range q ×
+          QueryImpl (fsChallengeOracle StmtIn pSpec) Id)) := by
+  rw [show (query (spec := fsChallengeOracle StmtIn pSpec) q :
+        OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)
+          ((fsChallengeOracle StmtIn pSpec).Range q))
+      = liftM (liftM (OracleSpec.query q) :
+          OracleQuery (oSpec + fsChallengeOracle StmtIn pSpec)
+            ((fsChallengeOracle StmtIn pSpec).Range q)) from rfl,
+    simulateQ_query]
+  simp only [OracleQuery.liftM_add_right_def, QueryImpl.addLift, QueryImpl.add_apply_inr,
+    QueryImpl.liftTarget_apply, fsChallengeQueryImplState, simulateQ_query, id_map']
+  rfl
+
+namespace MessagesUpTo
+
+/-- Through the cached challenge-table state implementation, the auxiliary slow Fiat-Shamir
+transcript derivation is read-only deterministic: running it leaves the table unchanged and returns
+a fixed transcript value. This is proved by induction on the round index, using
+`simulateQ_addLift_fsChallenge_query_run` at each verifier-challenge step. -/
+theorem deriveTranscriptSRAux_simulateQ_run
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
+    (j : Fin (k + 1))
+    (table : QueryImpl (fsChallengeOracle StmtIn pSpec) Id) :
+    ∃ t : pSpec.Transcript (j.castLE (by omega)),
+      StateT.run (simulateQ (srImpl.addLift fsChallengeQueryImplState)
+        (deriveTranscriptSRAux stmtIn k messages j)) table =
+        (pure (t, table) :
+          ProbComp (pSpec.Transcript (j.castLE (by omega)) ×
+            QueryImpl (fsChallengeOracle StmtIn pSpec) Id)) := by
+  induction j using Fin.induction with
+  | zero =>
+    refine ⟨fun i => i.elim0, ?_⟩
+    simp [deriveTranscriptSRAux, simulateQ_pure]
+  | succ i ih =>
+    obtain ⟨t, ht⟩ := ih
+    simp only [deriveTranscriptSRAux] at ht ⊢
+    rw [Fin.induction_succ, simulateQ_bind, StateT.run_bind, ht, pure_bind]
+    split
+    · next _hDir =>
+      rw [simulateQ_bind, StateT.run_bind, simulateQ_addLift_fsChallenge_query_run,
+        pure_bind, simulateQ_pure, StateT.run_pure]
+      exact ⟨_, rfl⟩
+    · rw [simulateQ_pure]
+      refine ⟨_, rfl⟩
+
+/-- Read-only determinism of the slow Fiat-Shamir partial-transcript derivation through the cached
+challenge-table state, specialized to the full derivation up to round `k`. -/
+theorem deriveTranscriptSR_simulateQ_run
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
+    (table : QueryImpl (fsChallengeOracle StmtIn pSpec) Id) :
+    ∃ t : pSpec.Transcript k,
+      StateT.run (simulateQ (srImpl.addLift fsChallengeQueryImplState)
+        (deriveTranscriptSR (oSpec := oSpec) stmtIn k messages)) table =
+        (pure (t, table) :
+          ProbComp (pSpec.Transcript k × QueryImpl (fsChallengeOracle StmtIn pSpec) Id)) :=
+  deriveTranscriptSRAux_simulateQ_run srImpl stmtIn k messages (Fin.last k) table
+
+end MessagesUpTo
+
+namespace Messages
+
+/-- Read-only determinism of the slow Fiat-Shamir full-transcript derivation through the cached
+challenge-table state implementation: it leaves the table unchanged and returns a fixed transcript.
+
+This is the keystone used by the knowledge-soundness transfer to collapse the redundant transcript
+derivation: the Fiat-Shamir verifier derives the transcript to check the proof, and the
+straightline extractor re-derives it from the same proof and table. -/
+theorem deriveTranscriptFS_simulateQ_run
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (stmtIn : StmtIn) (messages : pSpec.Messages)
+    (table : QueryImpl (fsChallengeOracle StmtIn pSpec) Id) :
+    ∃ t : pSpec.FullTranscript,
+      StateT.run (simulateQ (srImpl.addLift fsChallengeQueryImplState)
+        (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages)) table =
+        (pure (t, table) :
+          ProbComp (pSpec.FullTranscript × QueryImpl (fsChallengeOracle StmtIn pSpec) Id)) :=
+  MessagesUpTo.deriveTranscriptSR_simulateQ_run srImpl stmtIn (Fin.last n) messages table
+
+end Messages
+
+end ProtocolSpec
+
+#print axioms ProtocolSpec.simulateQ_addLift_fsChallenge_query_run
+#print axioms ProtocolSpec.MessagesUpTo.deriveTranscriptSRAux_simulateQ_run
+#print axioms ProtocolSpec.MessagesUpTo.deriveTranscriptSR_simulateQ_run
+#print axioms ProtocolSpec.Messages.deriveTranscriptFS_simulateQ_run
+
+end TranscriptDeterminism
+
 namespace Verifier
 
 /-- The basic Fiat-Shamir verifier can be expanded using the state-restoration transcript
