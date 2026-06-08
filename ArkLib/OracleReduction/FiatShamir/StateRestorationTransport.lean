@@ -1612,22 +1612,22 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     -- where the SR game derives it once, and the two sides treat verifier failure differently (the
     -- LHS fails through `OptionT`; the SR game keeps the `Option StmtOut` and runs `srExtractor`
     -- regardless).  Remaining: collapse the redundant `deriveTranscriptFS` via the determinism
-    -- keystone + `simulateQ_addLift_fsChallenge_preserves_state` (using `hsrPres`), then a KS
-    -- payload-eq that is an *event-probability* argument (the verifier-failure-branch randomness does
-    -- not affect the success probability).
-    simp only [fiatShamirAdversaryExecution, fiatShamirStraightlineExtractorOfStateRestoration_apply,
+    -- keystone + `simulateQ_addLift_fsChallenge_preserves_state` (using `hsrPres`), then the
+    -- event-probability `ks_payload_eq` (the verifier-reject branch does not affect success prob).
+    simp only [fiatShamirAdversaryExecution,
+      fiatShamirStraightlineExtractorOfStateRestoration_apply,
       OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, simulateQ_bind, simulateQ_map,
       simulateQ_pure, StateT.run_bind, StateT.run_map, StateT.run_pure, map_bind, bind_assoc,
       pure_bind, bind_pure_comp, Option.elimM, Functor.map_map, Function.comp]
-    -- Flatten the vacuous `some`-wraps (only the verifier can fail), giving the explicit flat goal:
-    -- LHS = sendMessage; output; derive→t1; verify(t1)→Option stmtOut; (on some) extractor derives
-    -- the transcript AGAIN (t2) and runs srExtractor; vs RHS = sendMessage; output; derive→t;
-    -- verify(t)→Option; srExtractor(t).  Remaining: collapse t2=t1 (keystone +
-    -- `simulateQ_addLift_fsChallenge_preserves_state`), then `ks_payload_eq` for the verify/extractor
-    -- leaf.
+    -- Flatten the vacuous `some`-wraps (only the verifier can fail) so BOTH sides become flat,
+    -- structurally-aligned ProbComp do-blocks: a shared sendMessage/output/derive prefix, then a
+    -- verifier run, then the extractor.  The LHS re-derives the transcript inside the extractor and
+    -- bundles the proof through the verifier-Option; the SR game reuses the prefix transcript and
+    -- keeps the verifier `Option StmtOut` flat.  Remaining: `monadLift_self`; collapse t2=t1
+    -- (keystone + cache preservation); `ks_payload_eq` at the verify/extractor leaf.
     simp only [bind_map_left, Option.elim_some, simulateQ_bind, simulateQ_map, simulateQ_pure,
-      StateT.run_bind, StateT.run_map, StateT.run_pure, bind_assoc, map_bind, pure_bind,
-      bind_pure_comp, Function.comp]
+      StateT.run'_eq, StateT.run_bind, StateT.run_map, StateT.run_pure, bind_assoc, map_bind,
+      pure_bind, bind_pure_comp, Function.comp]
     sorry
 
 end CanonicalKnowledgeSoundness
