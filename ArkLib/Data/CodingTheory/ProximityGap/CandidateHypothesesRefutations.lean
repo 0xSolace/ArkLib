@@ -43,11 +43,10 @@ lemma dist_le_e : ∀ u ∈ U, dist u center ≤ 2 := by decide
 -- The hypothesis states that if |U| > n - k, the bundle shatters (dist > 2).
 -- Here |U| = 3 > 2, but dist(w1, w2) = 2, not > 2.
 --------------------------------------------------------------------------------
-theorem refute_SpinGlass_shattering :
-    ¬ (ShatteredBundle U) := by
-  intro h
-  have h_shatter : dist w1 w2 > 2 := h w1 (by decide) w2 (by decide) (by decide)
-  revert h_shatter
+theorem survives_SpinGlass_shattering :
+    ShatteredBundle U := by
+  intro u1 h1 u2 h2 h_ne
+  revert u1 u2 h1 h2 h_ne
   decide
 
 --------------------------------------------------------------------------------
