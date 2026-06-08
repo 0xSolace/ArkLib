@@ -106,6 +106,7 @@ theorem johnson_budget_qindependent_pos
   have hsq : (Real.sqrt ρ) ^ 2 < (ρ + η) ^ 2 := by
     apply pow_lt_pow_left h1 hsqrt_nonneg; norm_num
   rw [Real.sq_sqrt (le_of_lt hρ0)] at hsq
-  positivity
+  have hden : 0 < (ρ + η) ^ 2 - ρ := by linarith
+  exact one_div_pos.mpr hden
 
 end ArkLib.ProximityGap.ProofLoop9
