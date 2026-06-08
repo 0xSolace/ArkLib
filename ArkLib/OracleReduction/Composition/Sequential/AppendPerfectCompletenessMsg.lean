@@ -66,10 +66,12 @@ private theorem probFailure_lift_run_getM {ι₁ ι₂ : Type} {spec₁ : Oracle
     {S' γ : Type} (W : OptionT (OracleComp spec₁) S') (c : γ) :
     Pr[⊥ | (do let stmtOut ← liftM W.run; let vs ← stmtOut.getM; pure (c, vs)
               : OptionT (OracleComp spec₂) (γ × S'))] = Pr[⊥ | W] := by
-  simp only [OptionT.liftM_run_getM_bind]
-  simp only [bind_pure_comp, probFailure_map]
-  rw [OptionT.probFailure_eq, OptionT.run_liftM_run, OptionT.probFailure_eq (mx := W)]
-  simp only [HasEvalPMF.probFailure_eq_zero, zero_add, OracleComp.probOutput_liftComp]
+  rw [OptionT.liftM_run_getM_bind W (fun vs => pure (c, vs)), bind_pure_comp, probFailure_map,
+    OptionT.probFailure_eq (m := OracleComp spec₂), OptionT.probFailure_eq (m := OracleComp spec₁)]
+  simp only [HasEvalPMF.probFailure_eq_zero, zero_add]
+  change probOutput (m := OracleComp spec₂) (mx := liftComp W.run spec₂) (x := none) =
+    probOutput (m := OracleComp spec₁) (mx := W.run) (x := none)
+  rw [OracleComp.probOutput_liftComp (spec := spec₁) (superSpec := spec₂) (mx := W.run) (x := none)]
 
 /-- **Perfect completeness composes under `Reduction.append` (message-seam case).** -/
 theorem append_perfectCompleteness_message
