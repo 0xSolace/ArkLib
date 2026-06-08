@@ -313,6 +313,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentShell
 import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateCarvingLoop10
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop4
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop5
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDisproofLoop6
@@ -426,6 +427,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingT421Faithful
 import ArkLib.Data.CodingTheory.ProximityGap.LinearizedPolynomialHasse
 import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingConjectureRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ListSizeMoments
+import ArkLib.Data.CodingTheory.ProximityGap.ListSizeMomentsWeight
 import ArkLib.Data.CodingTheory.ProximityGap.LogUpAppendProof
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountGrandChallenge
@@ -550,6 +552,7 @@ import ArkLib.Data.CodingTheory.ReedSolomon.Multiplicity
 import ArkLib.Data.CodingTheory.SingletonBound
 import ArkLib.Data.CodingTheory.SingletonBoundRate
 import ArkLib.Data.CodingTheory.SubspaceDesign
+import ArkLib.Data.CodingTheory.SubspaceDesign.Basic
 import ArkLib.Data.CompPoly.Basic
 import ArkLib.Data.Domain.CosetFftDomain.Defs
 import ArkLib.Data.Domain.CosetFftDomain.Log
@@ -625,6 +628,7 @@ import ArkLib.Data.Polynomial.Indicator
 import ArkLib.Data.Polynomial.Interface
 import ArkLib.Data.Polynomial.MonomialBasis
 import ArkLib.Data.Polynomial.MultinomialChainRule
+import ArkLib.Data.Polynomial.Multivariate.Interpolation
 import ArkLib.Data.Polynomial.NewtonLinearization
 import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.Polynomial.Prelims
@@ -660,6 +664,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 import ArkLib.OracleReduction.Composition.Sequential.General
+import ArkLib.OracleReduction.Composition.Sequential.N0CompScratch
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
