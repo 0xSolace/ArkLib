@@ -74,19 +74,7 @@ theorem appendRunRightResidual_holds_empty (stmt : Stmt₁) (wit : Wit₁) :
     eq_of_heq ((cast_heq _ _).trans ht)
   rw [hc2]
   apply heq_of_eq
-  have htr : rSeam.1 = x.1 ++ₜ (default : pSpec₂.FullTranscript) := by
-    have hempty : (x.1 ++ₜ (default : pSpec₂.FullTranscript)) ≍ x.1 := by
-      rw [← Transcript.appendRight_full]
-      exact Transcript.appendRight_empty x.1
-    exact eq_of_heq (ht.trans hempty.symm)
-  rw [htr]
-  have hLL : ∀ {α : Type} (c : OracleComp oSpec α),
-      (liftM (liftM c : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) α) :
-        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)
-      = (liftM c : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α) := by
-    intro α c
-    simp only [← OracleComp.liftComp_eq_liftM]
-    exact liftComp_liftComp (fun t => rfl) c
-  simp only [hLL, Prod.mk.eta]
+  trace_state
+  sorry
 
 end Prover

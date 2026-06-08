@@ -562,7 +562,7 @@ noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
           (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmtIn.ctx))
           (i := i.castSucc) (challenges := stmtIn.challenges)
       }
-    
+    | ⟨2, _⟩ => witMidSucc
   extractOut := fun _ _ witOut => witOut
 
 /-- **Iterated-round verifier-run collapse (defect-#21 guard form).** Under the message-oracle
