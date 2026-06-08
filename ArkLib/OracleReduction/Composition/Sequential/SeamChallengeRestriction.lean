@@ -132,4 +132,30 @@ theorem hquery_evalDist {ι : Type} {oSpec : OracleSpec ι}
     rw [← evalDist_map, ← evalDist_map]
     convert evalDist_pairMap_bijective_uniformSample _ s hbij using 2
 
+/-- **`evalDist` lifting of per-query agreement to whole computations.** The `evalDist`-and-`run`
+twin of VCVio's `simulateQ_liftM_eq_of_query`: if two handlers `h` (over the larger oracle `M₀`) and
+`h₁` (over the sub-oracle `I₀`) agree *per lifted query* in distribution (`hq`), then simulating any
+`I₀`-computation `oa` lifted into `M₀` under `h` agrees in distribution with simulating `oa` directly
+under `h₁`. Free-monad induction; the per-query hypothesis is discharged by `hquery_evalDist`. -/
+theorem evalDist_simulateQ_liftM_run_eq_of_query
+    {ιᵢ ιₘ : Type} {I₀ : OracleSpec ιᵢ} {M₀ : OracleSpec ιₘ} {σ' : Type}
+    [MonadLiftT (OracleComp I₀) (OracleComp M₀)]
+    (h : QueryImpl M₀ (StateT σ' ProbComp)) (h₁ : QueryImpl I₀ (StateT σ' ProbComp))
+    (hq : ∀ (t : I₀.Domain) (s : σ'),
+      evalDist ((simulateQ h (liftM (liftM (I₀.query t) :
+        OracleComp I₀ (I₀.Range t)) : OracleComp M₀)).run s) = evalDist ((h₁ t).run s))
+    {δ : Type} (oa : OracleComp I₀ δ) (s : σ') :
+    evalDist ((simulateQ h (liftM oa : OracleComp M₀)).run s)
+      = evalDist ((simulateQ h₁ oa).run s) := by
+  induction oa using OracleComp.inductionOn generalizing s with
+  | pure x => simp
+  | query_bind t k ih =>
+      have hq1 : simulateQ h₁ (liftM (I₀.query t) : OracleComp I₀ (I₀.Range t)) = h₁ t := by
+        simp [simulateQ_query]
+      rw [liftM_bind, simulateQ_bind, StateT.run_bind, simulateQ_bind, StateT.run_bind, hq1,
+          evalDist_bind, evalDist_bind, hq t s]
+      refine bind_congr ?_
+      rintro ⟨a, s'⟩
+      exact ih a s'
+
 end ArkLib.SeamChallengeRestriction

@@ -58,6 +58,20 @@ instance lawfulSubSpec_challenge_inr :
       show (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inr i) = pSpec₂.Challenge i
       simp [ChallengeIdx.inr, ProtocolSpec.append])).bijective
 
+/-- A `liftM`-then-`getM` extraction over an `OptionT` verifier run has the same failure probability
+as the verifier run itself (the block is `Prod.mk c <$> liftM W`, and `liftM`/map preserve failure).
+Lets us reduce "verifier+getM never fails" to "verifier never returns `none`". -/
+private theorem probFailure_lift_run_getM {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁}
+    {spec₂ : OracleSpec ι₂} [spec₁ ⊂ₒ spec₂] [LawfulSubSpec spec₁ spec₂]
+    [spec₁.Fintype] [spec₁.Inhabited] [spec₂.Fintype] [spec₂.Inhabited]
+    {S' γ : Type} (W : OptionT (OracleComp spec₁) S') (c : γ) :
+    Pr[⊥ | (do let stmtOut ← liftM W.run; let vs ← stmtOut.getM; pure (c, vs)
+              : OptionT (OracleComp spec₂) (γ × S'))] = Pr[⊥ | W] := by
+  simp only [OptionT.liftM_run_getM_bind]
+  simp only [bind_pure_comp, probFailure_map]
+  rw [OptionT.probFailure_eq, OptionT.probFailure_eq, OptionT.run_liftM_run]
+  simp only [HasEvalPMF.probFailure_eq_zero, zero_add, OracleComp.probOutput_liftComp]
+
 /-- **Perfect completeness composes under `Reduction.append` (message-seam case).** -/
 theorem append_perfectCompleteness_message
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
@@ -144,10 +158,7 @@ theorem append_perfectCompleteness_message
         exists_eq_right] at hP₁piece
       rw [OracleComp.support_liftComp] at hP₁piece
       have hV₁f := hV₁nf (tr₁, s₂, w₂) (by simpa only [OptionT.support_liftM] using hP₁piece)
-      -- `hV₁f` : V₁ never returns `none` on `tr₁` (in `verifier+getM` form). Goal: the appended
-      -- verifier never returns `none` on `pr.1 = tr₁ ++ₜ tr₂`. Decompose `hpr2` for `tr₂`; split via
-      -- `Verifier.append_run`; reduce both to `none ∉ support (·.run)`; V₁ via `hV₁f`, V₂ via
-      -- `hs₁ ((tr₁,s₂,w₂),·) ⇒ rel₂ ⇒ h₂`'s no-failure. The one remaining mechanical gap.
+      trace_state
       sorry
   · intro x hx
     rw [support_bind_simulateQ_run'_eq_mk (hInit := hInit)
