@@ -1,0 +1,79 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.OracleReduction.Execution
+import ArkLib.OracleReduction.Security.Basic
+
+/-!
+# Unrolled-run form of a reduction, and the ε-completeness characterization
+
+`Reduction.run` is, by construction, "run the prover, then run the verifier". This file exposes the
+*unrolled* form — run the prover round-by-round to the last round (`Prover.runToRound (Fin.last n)`),
+extract the prover output, then run the verifier — as a plain monadic equality
+(`Reduction.run_eq_unrolled`), and rewrites the (general, error-`ε`) completeness predicate through
+it (`Reduction.completeness_iff_run_unrolled`).
+
+This is the **`ε`-analogue** of the perfect-completeness unrolling
+`unroll_n_message_reduction_perfectCompleteness` (`OracleReduction/Completeness.lean`): the perfect
+version converts `Pr[…] = 1` into a *support*-level pure-logic statement (using `NeverFail` + the
+implementation support condition), which is only valid at error `0`. The version here keeps the
+`simulateQ`/`init` layer intact and merely exposes the round-by-round prover structure, so it applies
+at any error `ε` — the form needed to then compute a protocol-specific acceptance probability (e.g.
+the LogUp outer-phase pole-rejection bound) without first collapsing to `Pr = 1`.
+-/
+
+open OracleComp OracleSpec ProtocolSpec
+open scoped NNReal ENNReal
+
+namespace Reduction
+
+variable {ι : Type} {oSpec : OracleSpec ι} {StmtIn WitIn StmtOut WitOut : Type}
+  {n : ℕ} {pSpec : ProtocolSpec n} [∀ i, SampleableType (pSpec.Challenge i)]
+  {σ : Type}
+
+omit [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- **Unrolled form of `Reduction.run`.** Running a reduction equals: run the prover round-by-round
+to the last round (`runToRound (Fin.last n)`), `liftComp` the prover's output extraction, run the
+verifier on the produced transcript, and pair the prover output with the verifier's (extracted)
+output statement. A plain monadic equality, independent of any probability assumptions. -/
+theorem run_eq_unrolled (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) :
+    reduction.run stmt wit
+      = (do
+          let ⟨tr, st⟩ ← reduction.prover.runToRound (Fin.last n) stmt wit
+          let out ← liftComp (reduction.prover.output st) (oSpec + [pSpec.Challenge]ₒ)
+          let vStmt ← liftM (reduction.verifier.run stmt tr).run
+          return ((tr, out), ← vStmt.getM)) := by
+  unfold Reduction.run Prover.run
+  simp only [bind_assoc, liftM_bind, bind_pure_comp, OracleComp.liftComp_eq_liftM,
+    liftM_map, bind_map_left]
+
+/-- **`ε`-completeness via the unrolled run.** The general (error-`ε`) completeness predicate of a
+reduction is equivalent to the same acceptance-probability bound stated over the *unrolled* run
+(prover-to-last-round, output, verifier). Obtained by rewriting `Reduction.run` through
+`run_eq_unrolled` inside `completenessFromRun`; the `simulateQ`/`init` execution layer is preserved,
+so this holds at every error `ε` (unlike the perfect-only support-collapsing unroll). -/
+theorem completeness_iff_run_unrolled
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (completenessError : ℝ≥0) :
+    reduction.completeness init impl relIn relOut completenessError ↔
+      completenessFromRun init (QueryImpl.addLift impl challengeQueryImpl) relIn relOut
+        (fun stmtIn witIn => (do
+          let ⟨tr, st⟩ ← reduction.prover.runToRound (Fin.last n) stmtIn witIn
+          let out ← liftComp (reduction.prover.output st) (oSpec + [pSpec.Challenge]ₒ)
+          let vStmt ← liftM (reduction.verifier.run stmtIn tr).run
+          return ((tr, out), ← vStmt.getM) :
+            OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))
+              ((FullTranscript pSpec × StmtOut × WitOut) × StmtOut)))
+        completenessError := by
+  unfold Reduction.completeness
+  simp only [run_eq_unrolled]
+
+#print axioms run_eq_unrolled
+#print axioms completeness_iff_run_unrolled
+
+end Reduction
