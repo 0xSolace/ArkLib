@@ -29,6 +29,11 @@ and zero-knowledge transfer content remains separate.
 
 noncomputable section
 
+-- This file collects the basic Fiat-Shamir state-restoration transfer machinery (soundness,
+-- knowledge-soundness keystones, and the in-progress KS reduction-faithfulness proof) and exceeds
+-- the default 1500-line cap; the cap is raised locally rather than splitting mid-development.
+set_option linter.style.longFile 1700
+
 open ProtocolSpec OracleComp OracleSpec
 open ArkLib.FiatShamir.CompletenessAux
 open scoped NNReal
@@ -1564,10 +1569,20 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
                 (pure (stmtIn, x_2, p.2, p.1.2.2) :
                   OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
                     (StmtIn × WitIn × StmtOut × WitOut)).run) a2)]
-    -- After the bridge: LHS runs `fiatShamirAdversaryExecution` (sendMessage, output, derive,
-    -- verify) then the extractor (derive again, srExtractor); RHS is the SR knowledge game.
-    -- Remaining: unfold advExec, collapse the extractor's redundant `deriveTranscriptFS` via the
-    -- determinism keystone, and reconcile the option-payload predicates.
+    -- After the bridge: unfold `fiatShamirAdversaryExecution` and the straightline extractor so the
+    -- goal is the fully explicit reduction-faithfulness equality.  Both sides share the prover
+    -- sendMessage/output, the transcript derivation, and the verifier run; the LHS derives the
+    -- transcript twice (in `advExec` for the verifier, in the extractor for `srExtractor`)
+    -- where the SR game derives it once, and the two sides treat verifier failure differently (the
+    -- LHS fails through `OptionT`; the SR game keeps the `Option StmtOut` and runs `srExtractor`
+    -- regardless).  Remaining: collapse the redundant `deriveTranscriptFS` via the determinism
+    -- keystone + `simulateQ_addLift_fsChallenge_preserves_state` (using `hsrPres`), then a KS
+    -- payload-eq that is an *event-probability* argument (the verifier-failure-branch randomness does
+    -- not affect the success probability).
+    simp only [fiatShamirAdversaryExecution, fiatShamirStraightlineExtractorOfStateRestoration_apply,
+      OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, simulateQ_bind, simulateQ_map,
+      simulateQ_pure, StateT.run_bind, StateT.run_map, StateT.run_pure, map_bind, bind_assoc,
+      pure_bind, bind_pure_comp, Option.elimM, Functor.map_map, Function.comp]
     sorry
 
 end CanonicalKnowledgeSoundness
