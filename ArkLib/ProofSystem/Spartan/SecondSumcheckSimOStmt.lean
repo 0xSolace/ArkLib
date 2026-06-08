@@ -58,7 +58,8 @@ Spartan second sum-check lift, hence of its completeness transfer. -/
 -- The `simp` below synthesizes `DecidableEq R` from the proof-local `classical` instance (the
 -- `variable` block carries `[Fintype R]` but not `[DecidableEq R]`); upstream instance-search drift
 -- pushed that synthesis past the default `synthInstance.maxHeartbeats` (20000), so we raise it. The
--- proof is otherwise unchanged.
+-- proof is otherwise unchanged. (`[Fintype R]` is now unused in the type after the same drift.)
+omit [Fintype R] in
 set_option synthInstance.maxHeartbeats 400000 in
 theorem secondSCEvalPure_simOracle0
     (stmt : Statement.AfterLinearCombination R pp)
@@ -76,7 +77,7 @@ theorem secondSCEvalPure_simOracle0
             (oStmt (.inr (.inl idx))).toMLE) := by
     intro idx
     simp only [simulateQ_query, OracleInterface.simOracle0, OracleQuery.cont_query,
-      OracleQuery.input_query, id_map]
+      OracleQuery.input_query]
     rfl
   unfold secondSCEvalPure
   simp only [simulateQ_bind, hq, zEvalFromFinalOracles_simOracle0_eq_mle_z, simulateQ_pure]

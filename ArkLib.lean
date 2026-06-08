@@ -71,6 +71,7 @@ import ArkLib.Data.CodingTheory.EntropyVolumeBound
 import ArkLib.Data.CodingTheory.EntropyVolumeListSize
 import ArkLib.Data.CodingTheory.EntropyVolumeUpper
 import ArkLib.Data.CodingTheory.EntropyVolumeUpperBall
+import ArkLib.Data.CodingTheory.EntropyVolumeUpperBound
 import ArkLib.Data.CodingTheory.Erasure
 import ArkLib.Data.CodingTheory.ExtensionCodes
 import ArkLib.Data.CodingTheory.ExternalDebt
@@ -135,6 +136,8 @@ import ArkLib.Data.CodingTheory.ListDecoding.FirstMomentListBound
 import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
+import ArkLib.Data.CodingTheory.ListDecoding.ScratchJH02
+import ArkLib.Data.CodingTheory.ListDecoding.ScratchSeq
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyAdditive
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyBiUnion
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyBoundedSupport
@@ -468,6 +471,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarBracket
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
+import ArkLib.Data.CodingTheory.ProximityGap.MCAEventAgreeWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MCAForallDoubleCoverRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSLatticePrizeSpec
@@ -478,6 +482,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAGSWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGammaReduction
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGeneralLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
+import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeOverflowSharp
 import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
@@ -718,6 +723,7 @@ import ArkLib.MCACapacityTrivial_keep
 import ArkLib.MCAGSRefutationCore_keep
 import ArkLib.OracleReduction.BCS.BCSCompilerProof
 import ArkLib.OracleReduction.BCS.Basic
+import ArkLib.OracleReduction.BCS.FrontierBricks
 import ArkLib.OracleReduction.Basic
 import ArkLib.OracleReduction.Cast
 import ArkLib.OracleReduction.Completeness
@@ -732,6 +738,8 @@ import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendChallenge
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendReduction
 import ArkLib.OracleReduction.Composition.Sequential.General
+import ArkLib.OracleReduction.Composition.Sequential.SeamChallengeRestriction
+import ArkLib.OracleReduction.Composition.Sequential.SeamCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
@@ -884,6 +892,8 @@ import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.FirstChallengeCoherent
+import ArkLib.ProofSystem.Spartan.FirstChallengeComplete
+import ArkLib.ProofSystem.Spartan.FirstChallengeTransfer
 import ArkLib.ProofSystem.Spartan.FirstSumcheckComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckCubeSum
 import ArkLib.ProofSystem.Spartan.FirstSumcheckDegree
@@ -1067,6 +1077,7 @@ import ArkLib.ToMathlib.LinearizedRecursionStep
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.LinearizedSupportStep
 import ArkLib.ToMathlib.List.Basic
+import ArkLib.ToMathlib.LogupFractionalSum
 import ArkLib.ToMathlib.MCAFirstMomentArithBricks
 import ArkLib.ToMathlib.MCAPrizeFourRateNumerics
 import ArkLib.ToMathlib.MatchingExtractor
@@ -1142,6 +1153,5 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
-import ArkLib.scratch_n0comp
 import ArkLib.whir113keystone
 import ArkLib.Data.CodingTheory.SubspaceDesign.NormTorus

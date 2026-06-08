@@ -3027,22 +3027,8 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
   -- The LHS of `h` is exactly the probEvent of the RHS of `h_eq`.
   -- We want to prove `probEvent (goal_LHS) f ≤ probEvent (goal_RHS) g`.
   -- Since `goal_LHS = srInit >>= fun s => (RHS of h_eq).run' s`, we can rewrite.
-  have h_eq_rw : (simulateQ (fiatShamirCoupledQueryImpl srImpl) do
-      let x ← prover.sendMessage ⟨0, trivial⟩ (prover.input (stmtIn, witIn))
-      let x_1 ← prover.output x.2
-      let x ← Messages.deriveTranscriptFS stmtIn x.1
-      pure (x_1, x)) =
-      (simulateQ (fiatShamirCoupledQueryImpl srImpl) do
-      let x ←
-        runWithLog
-          (do
-            let x ← prover.sendMessage ⟨0, trivial⟩ (prover.input (stmtIn, witIn))
-            let x_1 ← prover.output x.2
-            pure (x.1, x_1))
-      let x_1 ← Messages.deriveTranscriptFS stmtIn x.1
-      pure (x.2, x_1)) := h_eq
-  rw [h_eq_rw]
-  sorry
+  rw [← h_eq]
+  exact h
 
 -- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side
 -- Fiat-Shamir challenges.  Re-deriving the transcript after verifier execution is not sound for an

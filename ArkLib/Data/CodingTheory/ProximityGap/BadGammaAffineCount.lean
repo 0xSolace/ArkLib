@@ -27,14 +27,13 @@ via the minimum-distance codeword extraction is the remaining (min-distance) ste
 The result is hole-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
 ## References
-- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
-  2026. #232.
+- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*. 2026. #232.
 - [ACFY25] WHIR; [BCIKS20] Proximity gaps for Reed–Solomon codes.
 -/
 
 namespace CodingTheory
 
-variable {ι : Type*} [Fintype ι] [Nonempty ι]
+variable {ι : Type*} [Fintype ι] [DecidableEq ι] [Nonempty ι]
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
 open Classical in
