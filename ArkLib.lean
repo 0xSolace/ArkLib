@@ -421,6 +421,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.JohnsonInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonListBound
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonPerWord
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonSimplexBound
+import ArkLib.Data.CodingTheory.ProximityGap.LineAgreementCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingBadScalarCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCounting
