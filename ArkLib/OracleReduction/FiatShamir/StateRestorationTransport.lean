@@ -2808,6 +2808,32 @@ theorem fiatShamirKnowledgeExec_runCollapse
       hPure d extractedWitIn)
   · rfl
 
+set_option linter.flexible false in
+/-- Canonical coupled state-restoration knowledge soundness implies basic Fiat-Shamir knowledge
+soundness when both games use the same sampled cached Fiat-Shamir challenge table. -/
+theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (knowledgeError : ℝ≥0)
+    (V : Verifier oSpec StmtIn StmtOut pSpec) :
+    fiatShamir_knowledgeSoundnessTransferResidual srInit srImpl srInit
+      (fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec)
+        (StmtIn := StmtIn) srImpl)
+      relIn relOut knowledgeError V := by
+  intro hSR
+  obtain ⟨srExtractor, hbound⟩ := hSR
+  refine ⟨fiatShamirStraightlineExtractorOfStateRestoration
+    (oSpec := oSpec) (pSpec := pSpec) srExtractor, ?_⟩
+  intro stmtIn witIn prover
+  have h :=
+    hbound (Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver
+      (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
+  dsimp only [Verifier.knowledgeSoundness]
+  trace_state
+  sorry
+
 -- The canonical knowledge-soundness transfer needs a log-replay comparison for the verifier-side
 -- Fiat-Shamir challenges.  Re-deriving the transcript after verifier execution is not sound for an
 -- arbitrary stateful `srImpl`, because original-oracle verifier queries may mutate the cached
