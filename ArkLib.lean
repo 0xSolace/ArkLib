@@ -871,6 +871,7 @@ import ArkLib.ProofSystem.Spartan.FirstSumcheckDegree
 import ArkLib.ProofSystem.Spartan.FirstSumcheckFaithful
 import ArkLib.ProofSystem.Spartan.FirstSumcheckMulVec
 import ArkLib.ProofSystem.Spartan.FirstSumcheckReduction
+import ArkLib.ProofSystem.Spartan.FirstSumcheckRelComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckRowSum
 import ArkLib.ProofSystem.Spartan.FirstSumcheckZeroEval
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence

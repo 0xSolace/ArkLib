@@ -63,7 +63,7 @@ noncomputable section
 
 open scoped NNReal
 
-variable (R : Type) [CommRing R] [IsDomain R] [Fintype R] (pp : PublicParams)
+variable (R : Type) [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] (pp : PublicParams)
 variable {ι : Type} (oSpec : OracleSpec ι) [SampleableType R]
 
 namespace Bricks
@@ -764,12 +764,12 @@ sub-development; once that lens `L₂` is supplied, this is
 `(Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).liftContext L₂.toContext L₂`. -/
 def secondSumcheckResidual : Prop :=
   Nonempty (OracleReduction oSpec
-    (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
+    (R × Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
     (Statement.AfterSecondSumcheck R pp) (OracleStatement.AfterSecondSumcheck R pp) Unit
     (Sumcheck.Spec.pSpec R 2 pp.ℓ_n))
 
 theorem secondSumcheckResidual_holds : secondSumcheckResidual R pp oSpec :=
-  ⟨secondSumcheckReduction R pp oSpec⟩
+  ⟨secondSumcheckReduction pp oSpec⟩
 
 /-- **NAMED RESIDUAL — first sum-check reduction existence.** Symmetric to
 `secondSumcheckResidual`, over `ℓ_m` variables on `ℱ(X)`, lifting the proven sum-check reduction
@@ -781,7 +781,7 @@ def firstSumcheckResidual : Prop :=
     (Sumcheck.Spec.pSpec R 3 pp.ℓ_m))
 
 theorem firstSumcheckResidual_holds : firstSumcheckResidual R pp oSpec :=
-  ⟨firstSumcheckReduction R pp oSpec⟩
+  ⟨firstSumcheckReduction pp oSpec⟩
 
 omit [IsDomain R] [Fintype R] [SampleableType R] in
 /-- **R1CS matrix-vector MLE decomposition.** Each bundled Spartan evaluation claim

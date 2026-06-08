@@ -583,15 +583,7 @@ theorem outerVerifier_run_accept_eq_pure
           (Option (StmtAfterOuter F n M params
             × (∀ i, OStmtAfterOuter F n M params i)))) := by
   classical
-  refine ⟨(show StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i) from
-          ({ xChallenge := chalX F n M params tr.challenges,
-             zChallenge := (chalBatch F n M params tr.challenges).1,
-             batchingScalars := (chalBatch F n M params tr.challenges).2 },
-           fun i => match h : (outerVerifier oSpec F n M params).embed i with
-             | .inl j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ stmtIn.2 j :
-                 OStmtAfterOuter F n M params i)
-             | .inr j => ((outerVerifier oSpec F n M params).hEq i ▸ h ▸ tr.messages j :
-                 OStmtAfterOuter F n M params i))), ?_⟩
+  refine ⟨_, ?_⟩
   show ((outerVerifier oSpec F n M params).toVerifier.verify stmtIn tr).run = _
   unfold OracleVerifier.toVerifier
   simp only
@@ -641,7 +633,7 @@ theorem outer_perState_none_le
     right
     sorry
   · rw [if_pos hacc]
-    exact le_of_le_of_eq (mul_le_mul_left' probEvent_le_one _) (by rw [mul_one])
+    exact le_trans (mul_le_mul_left' probEvent_le_one _) (le_of_eq (mul_one _))
 
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :

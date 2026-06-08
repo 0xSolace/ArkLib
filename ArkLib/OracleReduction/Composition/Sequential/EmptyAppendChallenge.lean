@@ -55,10 +55,11 @@ theorem support_simulateQ_challengeQueryImpl_append_left
         = liftM ((MonadLift.monadLift (([pSpec₁.Challenge]ₒ).query i))
             : OracleQuery ([(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) from rfl]
   rw [SubSpec.liftM_eq_lift, simulateQ_query, support_map, challengeQueryImpl]
-  -- Reduce the lens action: the continuation is the bijective response transport `h ▸ ·`.
-  dsimp only [OracleQuery.input_query, OracleQuery.cont_query, Function.comp, Function.id_comp]
-  rw [support_uniformSample, Set.image_univ, Set.range_eq_univ]
-  dsimp only [SubSpec.onResponse]
+  -- Unfold the lens action so the query projections reduce and the uniform sample is exposed.
+  dsimp only [SubSpec.onQuery, SubSpec.onResponse]
+  -- The inner uniform sample has full support; the continuation is the bijective response
+  -- transport `h ▸ ·`, so its image of `Set.univ` is again `Set.univ`.
+  simp only [support_uniformSample, Set.image_univ, Set.range_eq_univ]
   generalize_proofs h
   exact eqRec_surjective h
 

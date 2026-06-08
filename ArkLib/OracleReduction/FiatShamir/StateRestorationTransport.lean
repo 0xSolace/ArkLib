@@ -2941,6 +2941,8 @@ result (via `Prod.fst`) can be rebased from the logged prover run over the lifte
 the direct send/output prover execution.  Stated with an explicit continuation `g` so it can be
 applied by `rw` without higher-order unification fighting an anonymous block, and proven via
 `fiatShamirProver_runWithLog_simulateQ_fst_eq_direct` and `bind_map_left`. -/
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
 theorem fiatShamirProver_runWithLog_simulateQ_bind_factor
     {σ β : Type}
     (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
@@ -2962,7 +2964,7 @@ theorem fiatShamirProver_runWithLog_simulateQ_bind_factor
             pure ⟨proof, ctxOut⟩) >>= g) := by
   have h := fiatShamirProver_runWithLog_simulateQ_fst_eq_direct
     (impl := impl) (P := P) (stmtIn := stmtIn) (witIn := witIn)
-  simp only [QueryImpl.addLift_def] at h
+  simp only [QueryImpl.addLift_def, QueryImpl.liftTarget_self] at h
   rw [← h, bind_map_left]
 
 omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
@@ -3016,7 +3018,7 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
     Option.map_comp_lambda, simulateQ_map_monadLift_getM_run,
     optionT_run_simulateQ_liftquery, OptionT.run_monadLift, monadLift_self]
   simp only [stateT_bind_some_elim_eq]
-  rw [fiatShamirProver_runWithLog_simulateQ_bind_factor]
+  refine Eq.trans (fiatShamirProver_runWithLog_simulateQ_bind_factor impl P stmtIn witIn _) ?_
   trace_state
   sorry
 
