@@ -48,8 +48,14 @@ dimension that the list can contain. This forces the number of bad `γ` in the
 theorem epsMCA_bound_of_GeneralizedSpinGlass
     (C : LinearCode ι F) (δ : ℝ≥0) (V_crit : ℕ) (D_shatter : ℕ)
     (h_sg : GeneralizedSpinGlassHypothesis (C : Set (ι → F)) δ V_crit D_shatter) :
-    epsMCA (F := F) (A := F) (C : Set (ι → F)) δ ≤ 
+    epsMCA (F := F) (A := F) (C : Set (ι → F)) δ ≤
       ENNReal.ofReal ((V_crit : ℝ) / (Fintype.card F : ℝ)) := by
+  unfold epsMCA
+  refine iSup_le fun u => ?_
+  -- Goal: Pr_{γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ] ≤ V_crit/|F|.
+  -- To use h_sg we must connect the set of "bad" γ (those firing mcaEvent on the
+  -- affine line u 0 + γ • u 1) to the list of codewords near a fixed word, and
+  -- bound the line's bad-γ count by V_crit. No such bridge exists in scope.
   sorry -- Affine subspace dimension bounded by shattering limit V_crit
 
 /-- The ultimate bridge theorem linking Generalized Spin Glass directly to 
