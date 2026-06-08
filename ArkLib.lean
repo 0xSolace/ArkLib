@@ -202,8 +202,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalAllCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicIntegrality
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicReduction
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWeightRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWeightHolds
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWeightRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWfreeCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1XiOrderExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
@@ -331,6 +331,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop11
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop13
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop17
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop9
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop19
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs

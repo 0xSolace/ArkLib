@@ -1,5 +1,4 @@
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
-import Mathlib.Data.Polynomial.Basic
 
 open Classical
 open scoped BigOperators

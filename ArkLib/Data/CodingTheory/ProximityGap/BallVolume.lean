@@ -86,16 +86,13 @@ theorem hammingNorm_card (i : ℕ) :
     (Finset.univ.filter (fun f : ι → F => hammingNorm f = i)).card
       = (Fintype.card ι).choose i * (Fintype.card F - 1) ^ i := by
   classical
-  have hfib : (Finset.univ.filter (fun f : ι → F => hammingNorm f = i)).card
-      = ∑ S ∈ Finset.univ.powersetCard i,
-          ((Finset.univ.filter (fun f : ι → F => hammingNorm f = i)).filter
-            (fun f => Finset.univ.filter (fun j => f j ≠ 0) = S)).card :=
-    Finset.card_eq_sum_card_fiberwise (by
-      intro f hf
-      rw [Finset.mem_filter] at hf
-      rw [Finset.mem_powersetCard]
-      exact ⟨Finset.filter_subset _ _, hf.2⟩)
-  rw [hfib]
+  have H : ∀ f ∈ Finset.univ.filter (fun f : ι → F => hammingNorm f = i),
+      Finset.univ.filter (fun j => f j ≠ 0) ∈ Finset.univ.powersetCard i := by
+    intro f hf
+    rw [Finset.mem_filter] at hf
+    rw [Finset.mem_powersetCard]
+    exact ⟨Finset.filter_subset _ _, hf.2⟩
+  rw [Finset.card_eq_sum_card_fiberwise H]
   have hterm : ∀ S ∈ Finset.univ.powersetCard i,
       ((Finset.univ.filter (fun f : ι → F => hammingNorm f = i)).filter
           (fun f => Finset.univ.filter (fun j => f j ≠ 0) = S)).card
@@ -111,7 +108,8 @@ theorem hammingNorm_card (i : ℕ) :
       · exact fun h => h.2
       · intro h
         refine ⟨?_, h⟩
-        rw [hammingNorm, ← h, hS.2]
+        show (Finset.univ.filter (fun j => f j ≠ 0)).card = i
+        rw [h]; exact hS.2
     rw [hrw, support_eq_card, hS.2]
   rw [Finset.sum_congr rfl hterm, Finset.sum_const, Finset.card_powersetCard,
     Finset.card_univ, smul_eq_mul]
@@ -122,16 +120,13 @@ theorem ballVol_eq (r : ℕ) :
       = ∑ i ∈ Finset.range (r + 1),
           (Fintype.card ι).choose i * (Fintype.card F - 1) ^ i := by
   classical
-  have hfib : (Finset.univ.filter (fun f : ι → F => hammingNorm f ≤ r)).card
-      = ∑ i ∈ Finset.range (r + 1),
-          ((Finset.univ.filter (fun f : ι → F => hammingNorm f ≤ r)).filter
-            (fun f => hammingNorm f = i)).card :=
-    Finset.card_eq_sum_card_fiberwise (by
-      intro f hf
-      rw [Finset.mem_filter] at hf
-      rw [Finset.mem_range]
-      omega)
-  rw [hfib]
+  have H : ∀ f ∈ Finset.univ.filter (fun f : ι → F => hammingNorm f ≤ r),
+      hammingNorm f ∈ Finset.range (r + 1) := by
+    intro f hf
+    rw [Finset.mem_filter] at hf
+    rw [Finset.mem_range]
+    omega
+  rw [Finset.card_eq_sum_card_fiberwise H]
   refine Finset.sum_congr rfl (fun i hi => ?_)
   rw [Finset.mem_range] at hi
   have hrw : ((Finset.univ.filter (fun f : ι → F => hammingNorm f ≤ r)).filter

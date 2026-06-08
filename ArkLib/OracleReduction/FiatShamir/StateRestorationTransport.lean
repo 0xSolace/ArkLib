@@ -145,8 +145,7 @@ theorem simulateQ_addLift_fsChallenge_query_run
           OracleQuery (oSpec + fsChallengeOracle StmtIn pSpec)
             ((fsChallengeOracle StmtIn pSpec).Range q)) from rfl,
     simulateQ_query]
-  simp only [OracleQuery.liftM_add_right_def, QueryImpl.addLift, QueryImpl.add_apply_inr,
-    QueryImpl.liftTarget_apply, fsChallengeQueryImplState, simulateQ_query, id_map']
+  simp only [OracleQuery.liftM_add_right_def, QueryImpl.addLift]
   rfl
 
 namespace MessagesUpTo
