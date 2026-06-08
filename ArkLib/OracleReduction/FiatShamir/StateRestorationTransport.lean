@@ -1282,43 +1282,64 @@ private theorem transcriptFromFSChallengeLogAux_run_withQueryLog_snd_support
       · next hDir =>
           rw [OracleComp.withQueryLog_bind, mem_support_bind_iff] at hz
           obtain ⟨pref, hpref, hcont⟩ := hz
-          simp only [hDir] at hcont
           rw [support_map, Set.mem_image] at hcont
-          obtain ⟨contPoint, hcontPoint, hz_eq⟩ := hcont
-          rw [OracleComp.withQueryLog_bind, mem_support_bind_iff] at hcontPoint
-          obtain ⟨challenge, hchallenge, hpure⟩ := hcontPoint
-          rw [OracleComp.withQueryLog_query, mem_support_bind_iff] at hchallenge
-          obtain ⟨response, _hresponse, hqueryPure⟩ := hchallenge
-          rw [OracleComp.withQueryLog_pure, mem_support_pure_iff] at hqueryPure
-          obtain ⟨rfl, rfl⟩ := hqueryPure
-          rw [support_map, Set.mem_image] at hpure
-          obtain ⟨purePoint, hpurePoint, hz_eq⟩ := hpure
-          rw [OracleComp.withQueryLog_pure, mem_support_pure_iff] at hpurePoint
-          subst purePoint
-          rcases pref with ⟨prevTranscript, prefixLog⟩
-          simp only [Prod.map_apply, id_eq, List.append_nil, Prod.mk.injEq] at hz_eq
-          rcases hz_eq with ⟨rfl, hcontLog⟩
-          subst contPoint
-          simp only [Prod.map_apply, id_eq, List.append_nil] at hcontLog
-          subst z
-          rw [queryLog_snd_append, queryLog_snd_singleton_inr, List.append_assoc]
-          rw [ih ([⟨⟨⟨i.castLE (by omega), hDir⟩,
-            (stmtIn, messages.take i.castSucc)⟩, response⟩] ++ tail) hpref]
-          exact popFSChallengeFromLog_cons_self
-            (StmtIn := StmtIn) (pSpec := pSpec) ⟨i.castLE (by omega), hDir⟩
-            (stmtIn, messages.take i.castSucc) response tail
+          obtain ⟨contPoint, hcontPoint, houterEq⟩ := hcont
+          rcases contPoint with ⟨contTranscript, contLog⟩
+          split at hcontPoint
+          · next hDir' =>
+              have hDirProof : hDir' = hDir := Subsingleton.elim _ _
+              cases hDirProof
+              let q : (fsChallengeOracle StmtIn pSpec).Domain :=
+                ⟨⟨i.castLE (by omega), hDir⟩, (stmtIn, messages.take i.castSucc)⟩
+              rw [OracleComp.withQueryLog_bind, mem_support_bind_iff] at hcontPoint
+              obtain ⟨challenge, hchallenge, hpure⟩ := hcontPoint
+              change challenge ∈ support
+                ((liftM (OracleSpec.query
+                    (spec := oSpec + fsChallengeOracle StmtIn pSpec) (.inr q)) :
+                    OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)
+                      ((fsChallengeOracle StmtIn pSpec).Range q)).withQueryLog) at hchallenge
+              rw [OracleComp.withQueryLog_query, mem_support_bind_iff] at hchallenge
+              obtain ⟨response, _hresponse, hqueryPure⟩ := hchallenge
+              rw [OracleComp.withQueryLog_pure, mem_support_pure_iff] at hqueryPure
+              obtain ⟨rfl, rfl⟩ := hqueryPure
+              rw [support_map, Set.mem_image] at hpure
+              obtain ⟨purePoint, hpurePoint, hinnerMap⟩ := hpure
+              rw [OracleComp.withQueryLog_pure, mem_support_pure_iff] at hpurePoint
+              subst purePoint
+              rcases pref with ⟨prevTranscript, prefixLog⟩
+              simp only [Prod.map_apply, id_eq, List.append_nil, Prod.mk.injEq] at hinnerMap
+              rcases hinnerMap with ⟨rfl, rfl⟩
+              subst z
+              rw [queryLog_snd_append, queryLog_snd_singleton_inr, List.append_assoc]
+              rw [ih ([⟨⟨⟨i.castLE (by omega), hDir⟩,
+                (stmtIn, messages.take i.castSucc)⟩, response⟩] ++ tail) hpref]
+              exact popFSChallengeFromLog_cons_self
+                (StmtIn := StmtIn) (pSpec := pSpec) ⟨i.castLE (by omega), hDir⟩
+                (stmtIn, messages.take i.castSucc) response tail
+          · next hDir' =>
+              have hContra : Direction.V_to_P = Direction.P_to_V := hDir.symm.trans hDir'
+              cases hContra
       · next hDir =>
           rw [OracleComp.withQueryLog_bind, mem_support_bind_iff] at hz
           obtain ⟨pref, hpref, hcont⟩ := hz
-          simp only [hDir] at hcont
           rw [support_map, Set.mem_image] at hcont
-          obtain ⟨purePoint, hpurePoint, hz_eq⟩ := hcont
-          rw [OracleComp.withQueryLog_pure, mem_support_pure_iff] at hpurePoint
-          subst purePoint
-          rcases pref with ⟨prevTranscript, prefixLog⟩
-          simp only [Prod.map_apply, id_eq, List.append_nil, Prod.mk.injEq] at hz_eq
-          rcases hz_eq with ⟨rfl, rfl⟩
-          rw [ih tail hpref]
+          obtain ⟨contPoint, hcontPoint, houterEq⟩ := hcont
+          rcases contPoint with ⟨contTranscript, contLog⟩
+          split at hcontPoint
+          · next hDir' =>
+              have hContra : Direction.V_to_P = Direction.P_to_V := hDir'.symm.trans hDir
+              cases hContra
+          · next hDir' =>
+              have hDirProof : hDir' = hDir := Subsingleton.elim _ _
+              cases hDirProof
+              rw [OracleComp.withQueryLog_pure, mem_support_pure_iff] at hcontPoint
+              cases hcontPoint
+              rcases pref with ⟨prevTranscript, prefixLog⟩
+              subst z
+              simp only [Prod.map_apply, id_eq, List.append_nil]
+              rw [queryLog_snd_append]
+              simp only [List.append_nil]
+              rw [ih tail hpref]
 
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
