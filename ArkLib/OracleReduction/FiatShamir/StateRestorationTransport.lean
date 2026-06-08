@@ -2824,6 +2824,83 @@ theorem fiatShamirKnowledgeExec_runCollapse
       hPure d extractedWitIn)
   · rfl
 
+/-- Collapse the one-message transformed Fiat-Shamir prover run to its explicit send/output
+execution over `oSpec + fsChallengeOracle`. -/
+theorem fiatShamirProver_run_simulateQ_eq_direct
+    {σ : Type}
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
+      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+        (Prover.run stmtIn witIn P) =
+      simulateQ impl
+        (do
+          let state := P.input (stmtIn, witIn)
+          let ⟨proofMessages, state⟩ ← P.sendMessage ⟨0, by simp⟩ state
+          let ctxOut ← P.output state
+          let proof : Reduction.FiatShamirProofTranscript (pSpec := pSpec) := fun
+            | ⟨0, _⟩ => proofMessages
+          pure ⟨proof, ctxOut⟩) := by
+  rw [Prover.run]
+  simp only [Prover.runToRound, Prover.processRound]
+  trace_state
+  sorry
+
+omit [VCVCompatible StmtIn] [∀ i, VCVCompatible (pSpec.Challenge i)]
+  [∀ i, SampleableType (pSpec.Challenge i)] in
+/-- Collapse the log-backed Fiat-Shamir knowledge-soundness execution to the direct aborting
+state-restoration-shaped execution.  The verifier log is preserved until
+`fiatShamirVerifier_loggedExtractor_payload_eq_direct` rewrites the verifier/extractor block to a
+single transcript derivation, verifier run, and state-restoration extractor call. -/
+theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
+    {σ : Type}
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
+      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+        ((do
+          let d ← Reduction.runWithLog stmtIn witIn
+            { prover := P, verifier := V.fiatShamir }
+          let extractedWitIn ←
+            liftM (fiatShamirStraightlineExtractorOfStateRestoration
+              (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn d.1.1.2.2
+              d.1.1.1 default d.2.2)
+          pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run) =
+      simulateQ impl
+        ((do
+          let state := P.input (stmtIn, witIn)
+          let ⟨proofMessages, state⟩ ← P.sendMessage ⟨0, by simp⟩ state
+          let ctxOut ← P.output state
+          let proof : Reduction.FiatShamirProofTranscript (pSpec := pSpec) := fun
+            | ⟨0, _⟩ => proofMessages
+          let messages : pSpec.Messages := proof 0
+          let transcript ← (liftM (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn messages) :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) pSpec.FullTranscript)
+          let stmtOut ← (OptionT.mk (liftM (V.verify stmtIn transcript).run) :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) StmtOut)
+          let extractedWitIn ←
+            (liftM (srExtractor stmtIn ctxOut.2 transcript default default) :
+              OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) WitIn)
+          pure (stmtIn, extractedWitIn, stmtOut, ctxOut.2) :
+            OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec))
+              (StmtIn × WitIn × StmtOut × WitOut)).run) := by
+  rw [Reduction.runWithLog, Prover.runWithLog]
+  simp only [Verifier.fiatShamir, Verifier.run,
+    QueryImpl.addLift_def, QueryImpl.liftTarget_self, liftM_eq_monadLift,
+    OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, optionT_monadLift_run,
+    simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_addLift_liftM,
+    OptionT.simulateQ_addLift_liftM, Option.getM_map_run, Option.elimM,
+    simulateQ_option_elim, bind_assoc, pure_bind, map_bind,
+    StateT.run_simulateQ_optiont_map, StateT.run_pure_some_bind_map,
+    Option.map_comp_lambda, simulateQ_map_monadLift_getM_run,
+    optionT_run_simulateQ_liftquery, OptionT.run_monadLift]
+  trace_state
+  sorry
+
 set_option linter.flexible false in
 /-- Canonical coupled state-restoration knowledge soundness implies basic Fiat-Shamir knowledge
 soundness when both games use the same sampled cached Fiat-Shamir challenge table. -/
