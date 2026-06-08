@@ -22,8 +22,9 @@ reordering. We decompose the appended-run support via `OptionT.mem_support_Optio
 into the four `P₁/P₂/V₁/V₂` outcomes, reconstruct the `R₁`/`R₂` run outcomes, and feed `h₁`, `h₂`.
 
 The forward support-decomposition (steps 1–2 of the outline; the historically-blocking step) is
-machine-checked below to the four component outcomes; the remaining `sorry`s are the (conjecture-free)
-mechanical re-assembly (feed `h₁`/`h₂`) and the no-failure half.
+machine-checked below to the four component outcomes, followed by the (conjecture-free) mechanical
+re-assembly (feed `h₁`/`h₂`) and the no-failure half. The whole theorem is now proved with no
+`sorry` and no new axioms.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
