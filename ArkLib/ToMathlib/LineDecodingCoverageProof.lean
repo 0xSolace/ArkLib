@@ -18,13 +18,19 @@ per-instance double cover remains a genuine hypothesis supplied by the GS interp
 
 namespace CodingTheory
 
-/-- Re-export of the proven refutation: the universal T4.21 double-cover hypothesis is false. -/
+/-- The universal T4.21 double-cover hypothesis is false. Derived from the proven existential
+refutation `ProximityGap.exists_not_mcaForallDoubleCover` (a concrete zero-code / `ZMod 2`
+counterexample): a universal `MCAForallDoubleCover` instantiated at the exhibited witness would
+contradict the proven `¬ MCAForallDoubleCover` for that witness. -/
 theorem mcaForallDoubleCover_not_universal :
     ¬ (∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
          {F : Type} [Field F] [Fintype F] [DecidableEq F]
          {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
          (C : Set (ι → A)) (δ : NNReal),
-         ProximityGap.MCAForallDoubleCover (F := F) (A := A) C δ) :=
-  ProximityGap.mcaForallDoubleCover_not_universal
+         ProximityGap.MCAForallDoubleCover (F := F) (A := A) C δ) := by
+  intro h
+  obtain ⟨ι, _, _, _, F, _, _, _, A, _, _, _, _, C, δ, hC⟩ :=
+    ProximityGap.exists_not_mcaForallDoubleCover
+  exact hC (h C δ)
 
 end CodingTheory
