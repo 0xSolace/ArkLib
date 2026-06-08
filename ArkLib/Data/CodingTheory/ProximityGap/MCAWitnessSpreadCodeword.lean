@@ -303,6 +303,24 @@ theorem badCount_mul_clean_le_witnessCodeword_card_mul
     witnessCodeword_packing_bound (u₀ := u 0) (u₁ := u 1) (t := t) (G := G) (W := W)
       (w := w) (S := S) hwW hSt hagree htz
 
+omit [Nonempty ι] [DecidableEq F] in
+open Classical in
+/-- Divided all-stack bad-count packing bound. If the cleaned witness size `t-z` is positive,
+then the MCA bad-scalar count is at most the packed witness-codeword count divided by `t-z`. -/
+theorem badCount_le_witnessCodeword_card_mul_div_clean
+    (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι) (t : ℕ)
+    (hfloor : ∀ {S : Finset ι},
+      (1 - δ) * Fintype.card ι ≤ (S.card : ℝ≥0) → t ≤ S.card)
+    (htz : (Finset.univ.filter (fun i => u 1 i = 0)).card < t) :
+    (Finset.univ.filter (fun γ : F => mcaEvent C δ (u 0) (u 1) γ)).card
+      ≤ ((Finset.univ.filter (fun w : ι → A => w ∈ C ∧ ∃ S : Finset ι,
+          t ≤ S.card ∧ ∃ γ : F, ∀ i ∈ S, w i = u 0 i + γ • u 1 i)).card
+        * (Fintype.card ι - (Finset.univ.filter (fun i => u 1 i = 0)).card)) /
+          (t - (Finset.univ.filter (fun i => u 1 i = 0)).card) := by
+  have hmul :=
+    badCount_mul_clean_le_witnessCodeword_card_mul (F := F) (A := A) C δ u t hfloor htz
+  exact (Nat.le_div_iff_mul_le (Nat.sub_pos_of_lt htz)).2 hmul
+
 omit [DecidableEq ι] in
 /-- **The `δ < 1/2` overlap driver.** Two witness sets each of relative size `≥ 1 - δ` jointly
 exceed `|ι|` when `δ < 1/2`, so they must overlap. -/
@@ -376,6 +394,7 @@ theorem badCount_le_witnessCodeword_card
 #print axioms fiber_card_packing
 #print axioms witnessCodeword_packing_bound
 #print axioms badCount_mul_clean_le_witnessCodeword_card_mul
+#print axioms badCount_le_witnessCodeword_card_mul_div_clean
 #print axioms card_sum_gt_of_lt_half
 #print axioms badCount_le_witnessCodeword_card
 
