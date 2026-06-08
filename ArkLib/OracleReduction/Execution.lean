@@ -650,6 +650,20 @@ theorem continueFromTo_trans (prover : Prover oSpec StmtIn WitIn StmtOut WitOut 
       refine bind_congr (fun rk => ?_)
       rw [← processRound_eq_bind]
 
+/-- **Seam→`runToRound` bridge.**  `processRound 0` applied to the (pure) round-0 default state is
+exactly `runToRound 1` (i.e. `runToRound (⟨0,hn⟩.succ)`).  Glue for the sequential-composition
+right-block assembly: it turns the seam round's `processRound 0 (pure(default, input))` shape (from
+the `append_continueFromTo_seam_start_*` lemmas) into `runToRound 1`, so `runToRound_eq_bind_continueFromTo`
+can fold it with the interior `continueFromTo` into a single `runToRound`.  By `runToRound_succ` and the
+definitional `runToRound 0 = pure(default, input)`. -/
+theorem processRound_zero_pure_eq_runToRound {n : ℕ} {pSpec : ProtocolSpec n} (hn : 0 < n)
+    (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec) (s : StmtIn) (w : WitIn) :
+    prover.processRound (⟨0, hn⟩ : Fin n)
+        (pure ((default : pSpec.Transcript (⟨0, by omega⟩ : Fin (n + 1))), prover.input (s, w)))
+      = prover.runToRound (⟨0, hn⟩ : Fin n).succ s w := by
+  rw [runToRound_succ]
+  congr 1
+
 /-! ### Direction-resolved single-round peels
 
 The two lemmas below resolve the `processRound` direction match into the two honest round shapes,
