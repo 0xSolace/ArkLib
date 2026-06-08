@@ -52,18 +52,16 @@ theorem Lambda_interleaved_fin_one_ge [Fintype F] [Nonempty ι] [DecidableEq F]
       have hcol : (φ c).transpose k = c := by funext i; simp [hφ, Matrix.transpose_apply]
       rw [hcol]; exact hcC
     · rw [relHammingBall, Set.mem_setOf_eq] at hcball ⊢
-      have hham : hammingDist G (φ c) = hammingDist g c := by
-        unfold hammingDist
-        have hset : (Finset.univ.filter (fun i => G i ≠ (φ c) i))
-                  = (Finset.univ.filter (fun i => g i ≠ c i)) := by
-          ext i
-          simp only [Finset.mem_filter, Finset.mem_univ, true_and, hφ, hG, ne_eq,
-            funext_iff, Fin.forall_fin_one]
-        rw [hset]
-      have hrel : (Code.relHammingDist G (φ c) : ℝ) = (Code.relHammingDist g c : ℝ) := by
-        unfold Code.relHammingDist
-        rw [hham]
-      rw [hrel]; exact hcball
+      -- reduce to the (instance-uniform) distance equality inside the `convert` goal
+      convert hcball using 3
+      unfold Code.relHammingDist
+      congr 1
+      unfold hammingDist
+      congr 1
+      congr 1
+      ext i
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and, hφ, hG, ne_eq,
+        funext_iff, Fin.forall_fin_one]
   have hinj : Set.InjOn φ (closeCodewordsRel C g δ) := by
     intro a _ b _ hab
     funext i

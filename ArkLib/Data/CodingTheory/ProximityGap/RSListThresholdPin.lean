@@ -91,10 +91,8 @@ theorem rs_ld_threshold_pin_rate16
       have hone : ((1 : ℝ≥0) / 2 ^ 128) * (2 : ℝ≥0) ^ 128 = 1 := by
         rw [one_div, inv_mul_cancel₀ h2ne]
       rwa [hone] at hmul
-    calc (1 : ENNReal) = ((1 : ℝ≥0) : ENNReal) := by simp
-      _ ≤ ((((1 : ℝ≥0) / 2 ^ 128) * (Fintype.card F : ℝ≥0)) : ENNReal) := by exact_mod_cast hr
-      _ = (((1 : ℝ≥0) / 2 ^ 128 : ℝ≥0) : ENNReal) * (Fintype.card F : ENNReal) := by
-          rw [ENNReal.coe_mul, ENNReal.coe_natCast]
+    rw [← ENNReal.coe_natCast (Fintype.card F), ← ENNReal.coe_mul]
+    exact_mod_cast hr
   have hpow : ((1 : ℕ) : ENNReal) ^ (1 : ℕ) ≤
       (((1 : ℝ≥0) / 2 ^ 128 : ℝ≥0) : ENNReal) * (Fintype.card F : ENNReal) := by
     rw [Nat.cast_one, one_pow]; exact hbudget

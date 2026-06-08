@@ -60,18 +60,16 @@ theorem rs_mcaDeltaStar_bracket {n : ℕ} [NeZero n] (domain : Fin n ↪ F)
   set t : ℕ := ⌈(1 - δ) * (Fintype.card (Fin n) : ℝ≥0)⌉₊ with htdef
   have hgood : epsMCA (F := F) (A := F)
       (ReedSolomon.code domain k : Set (Fin n → F)) δ ≤ ENNReal.ofReal (1 / 2 ^ 128) := by
-    refine le_trans (epsMCA_rs_udr_le domain k (by rw [Fintype.card_fin]; exact hkn) δ htn hreg) ?_
+    refine le_trans (ProximityGap.UDRwire.epsMCA_rs_udr_le domain k
+      (by rw [Fintype.card_fin]; exact hkn) δ htn hreg) ?_
     rw [show ((2 * (Fintype.card (Fin n) - t) : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)
         = ENNReal.ofReal (((2 * (Fintype.card (Fin n) - t) : ℕ) : ℝ) / (Fintype.card F : ℝ)) from by
       rw [ENNReal.ofReal_div_of_pos hcardpos, ENNReal.ofReal_natCast, ENNReal.ofReal_natCast]]
     apply ENNReal.ofReal_le_ofReal
-    rw [div_le_iff₀ hcardpos]
-    have hFlo' : ((2 * (Fintype.card (Fin n) - t) : ℕ) : ℝ) * 2 ^ 128 ≤ (Fintype.card F : ℝ) := by
-      have := hFlo
-      rw [← htdef] at this
-      push_cast at this ⊢
-      nlinarith [this]
-    nlinarith [hFlo', (by positivity : (0 : ℝ) < (2 : ℝ) ^ 128)]
+    rw [div_le_iff₀ hcardpos,
+      show (1 : ℝ) / 2 ^ 128 * (Fintype.card F : ℝ) = (Fintype.card F : ℝ) / 2 ^ 128 from by ring,
+      le_div_iff₀ (by positivity : (0 : ℝ) < 2 ^ 128)]
+    exact_mod_cast hFlo
   exact le_mcaDeltaStar_of_good (F := F) (A := F) _ _ hδ1 hgood
 
 #print axioms rs_mcaDeltaStar_bracket

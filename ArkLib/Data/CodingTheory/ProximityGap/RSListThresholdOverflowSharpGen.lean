@@ -49,6 +49,7 @@ theorem listLatticeThreshold_lt_of_overflow
   intro t ht
   rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range] at ht
   obtain ⟨htn, htle⟩ := ht
+  rw [Code.interleavedCode_eq_interleavedCodeSet] at htle
   by_contra hjt
   push_neg at hjt
   have hjt' : (j : ℝ≥0) ≤ (t : ℝ≥0) := by exact_mod_cast hjt
@@ -61,12 +62,9 @@ theorem listLatticeThreshold_lt_of_overflow
       ≤ Lambda C (((t : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) := Lambda_mono hrad
   have hge := InterleavedCode.ListSize.Lambda_interleaved_ge (C := C) (m := m)
     (((t : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
-  have hchain : Lambda C (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
-      ≤ Lambda (InterleavedCode.interleavedCodeSet (κ := Fin m) C)
-          (((t : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) := le_trans hLmono hge
   have hle : (Lambda C (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal)
       ≤ (ε_star : ENNReal) * (Fintype.card F : ENNReal) :=
-    le_trans (by exact_mod_cast hchain) htle
+    le_trans (by exact_mod_cast (le_trans hLmono hge)) htle
   exact absurd hle (not_le.mpr hover)
 
 #print axioms listLatticeThreshold_lt_of_overflow

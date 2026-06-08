@@ -45,7 +45,8 @@ theorem rs_mcaDeltaStar_le_capacity {F : Type} [Field F] [Fintype F] [DecidableE
         (ReedSolomon.code domain k : Set (Fin n → F)) (ENNReal.ofReal (1 / 2 ^ 128))
       ≤ 1 - ((k + 1 : ℕ) : ℝ≥0) / (n : ℝ≥0) :=
   mcaDeltaStar_le_of_bad (F := F) (A := F) _ _
-    (rs_mca_uptoCapacity_false_of_smallField domain k hk1 hkn hsmall)
+    (ProximityGap.MCANearCapacityGK.rs_mca_uptoCapacity_false_of_smallField
+      domain k hk1 hkn hsmall)
 
 #print axioms rs_mcaDeltaStar_le_capacity
 

@@ -89,7 +89,7 @@ theorem rs_ld_threshold_trapped_rate12
         le_trans (by norm_num : (2 : ℕ) ^ 128 ≤ 263 * 2 ^ 128) hF1
       exact_mod_cast h
     have hq2 : (Fintype.card F : ℝ) ≤ 2 ^ 256 := by exact_mod_cast hF2
-    exact rs_uptoCapacity_false_rate12_n256 α hq1 hq2
+    exact CodingTheory.rs_uptoCapacity_false_rate12_n256 α hq1 hq2
 
 #print axioms rs_ld_threshold_trapped_rate12
 

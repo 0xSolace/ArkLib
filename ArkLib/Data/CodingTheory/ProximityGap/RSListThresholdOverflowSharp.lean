@@ -55,21 +55,26 @@ theorem listLatticeThreshold_lt_of_overflow_fin_one
   obtain ⟨htn, htle⟩ := ht
   by_contra hjt
   push_neg at hjt
+  have hjt' : (j : ℝ≥0) ≤ (t : ℝ≥0) := by exact_mod_cast hjt
   -- radius monotonicity `j/n ≤ t/n`
   have hrad : (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
       ≤ (((t : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) := by
     have h1 : ((j : ℝ≥0) / (Fintype.card ι : ℝ≥0)) ≤ ((t : ℝ≥0) / (Fintype.card ι : ℝ≥0)) := by
       gcongr
-      exact_mod_cast hjt
     exact_mod_cast h1
   have hLmono : Lambda C (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
       ≤ Lambda C (((t : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) := Lambda_mono hrad
-  have heq := InterleavedCode.ListSize.Lambda_interleaved_fin_one_eq C
-    (((t : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
-  rw [heq] at htle
+  -- the lattice's `C ^⋈ Fin 1` is defeq to `interleavedCodeSet (Fin 1) C`, so the unary equality
+  -- applies and turns the interleaved cap into the base cap
+  have heq2 : Lambda (C ^⋈ (Fin 1)) (((t : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+      = Lambda C (((t : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) :=
+    InterleavedCode.ListSize.Lambda_interleaved_fin_one_eq C _
+  have hstep : Lambda C (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+      ≤ Lambda (C ^⋈ (Fin 1)) (((t : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) := by
+    rw [heq2]; exact hLmono
   have hle : (Lambda C (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal)
       ≤ (ε_star : ENNReal) * (Fintype.card F : ENNReal) :=
-    le_trans (by exact_mod_cast hLmono) htle
+    le_trans (by exact_mod_cast hstep) htle
   exact absurd hle (not_le.mpr hover)
 
 #print axioms listLatticeThreshold_lt_of_overflow_fin_one
