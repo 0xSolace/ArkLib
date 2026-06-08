@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Group.Action.Defs
 
 /-!
 # Reducing the MCA bad-scalar count to the line's list size (#232)
@@ -60,7 +62,7 @@ theorem pigeonhole_large_fibers {ι : Type*} [Fintype ι] {κ : Type*} [Decidabl
   have h2 : (∑ y ∈ B, (Finset.univ.filter (fun i => h i = y)).card) ≤ Fintype.card ι := by
     rw [hpart]
     exact Finset.sum_le_sum_of_subset (Finset.filter_subset _ _)
-  rw [Finset.sum_const, smul_eq_mul] at h1
+  simp only [Finset.sum_const, smul_eq_mul] at h1
   rw [Nat.mul_comm]
   omega
 
