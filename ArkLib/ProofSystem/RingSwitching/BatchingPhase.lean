@@ -298,13 +298,10 @@ noncomputable def batchingRbrExtractor :
   extractOut _ _ witOut := witOut
 
 /-- RBR knowledge soundness error for the batching phase.
-The only verifier randomness is `r''`. A collision has probability related to `κ/|L|`.
-The current local theorem uses the always-valid unit bound until the DP24/SZ bridge is
-formalized. -/
+The only verifier randomness is `r''`. A nonzero multilinear mismatch of total degree at most `κ`
+can vanish with probability at most `κ / |L|`. -/
 def batchingRBRKnowledgeError (i : (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).ChallengeIdx) : ℝ≥0 :=
-  -- Repaired local bound: the sharp `κ / |L|` claim needs the missing DP24/SZ bridge from
-  -- `compute_s0` to a nonzero polynomial root count. The unit bound is always available.
-  1
+  (κ : ℝ≥0) / (Fintype.card L)
 
 def batchingKStateProp {m : Fin (2 + 1)}
     (tr : Transcript m (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)))
@@ -632,7 +629,7 @@ def rbrExtractionFailureEvent
     (stmtIn : BatchingStmtIn L ℓ × (∀ j, aOStmtIn.OStmtIn j))
     (transcript : Transcript j.1.castSucc
       (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)))
-    (challenge : (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).Challenge j.1) :
+    (challenge : (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).Challenge j) :
     Prop :=
   ∃ witMid : batchingWitMid L K ℓ ℓ' j.1.succ,
     ¬ kSF j.1.castSucc stmtIn transcript
@@ -640,26 +637,28 @@ def rbrExtractionFailureEvent
       kSF j.1.succ stmtIn (transcript.concat challenge) witMid
 
 /-- **Schwartz-Zippel bound for the bad batching event.** -/
-lemma probability_bound_badBatchingEventProp [Fintype L] [DecidableEq L]
+lemma probability_bound_badBatchingEventProp [Fintype L] [DecidableEq L] [IsDomain L]
     (msg0 s_bar : P.A) :
-    Pr_{ let y ← $ᵖ (Fin κ → L); pure y }[
+    Pr_{ let y ← $ᵖ (Fin κ → L) }[
       badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar ] ≤
-      batchingRBRKnowledgeError (κ := κ) (L := L) (K := K) (P := P) 0 := by
+      batchingRBRKnowledgeError (κ := κ) (L := L) (K := K) (P := P) ⟨1, rfl⟩ := by
   classical
   unfold badBatchingEventProp
   by_cases h_ne : msg0 ≠ s_bar
   · -- msg0 ≠ s_bar: reduce to S.eval(y) = 0, apply Schwartz-Zippel
     simp only [ne_eq, h_ne, not_false_eq_true, true_and]
     -- Rewrite compute_s0 equality as mismatch polynomial root
-    have h_mono := prob_mono (D := $ᵖ (Fin κ → L))
-      (f := fun y => compute_s0 κ L K P msg0 y = compute_s0 κ L K P s_bar y)
-      (g := fun y => MvPolynomial.eval y
-        (batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar) = 0)
-      (h_imp := by
-        intro y h_eq
-        rw [← batching_compute_s0_sub_eq_eval_mismatch (κ := κ) (L := L) (K := K) (P := P)
-          (msg0 := msg0) (s_bar := s_bar) (y := y)]
-        exact sub_eq_zero.mpr h_eq)
+    have h_mono :
+        Pr[fun y => compute_s0 κ L K P msg0 y = compute_s0 κ L K P s_bar y |
+            ($ᵖ (Fin κ → L))] ≤
+          Pr[fun y => MvPolynomial.eval y
+              (batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar) = 0 |
+            ($ᵖ (Fin κ → L))] := by
+      apply probEvent_mono
+      intro y _ h_eq
+      rw [← batching_compute_s0_sub_eq_eval_mismatch (κ := κ) (L := L) (K := K) (P := P)
+        (msg0 := msg0) (s_bar := s_bar) (y := y)]
+      exact sub_eq_zero.mpr h_eq
     apply le_trans h_mono
     have h_nonzero : batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar ≠ 0 := by
       intro h_poly_zero
@@ -699,6 +698,7 @@ lemma probability_bound_badBatchingEventProp [Fintype L] [DecidableEq L]
 
 /-- Extraction failure implies a witness-dependent bad batching event. -/
 lemma batching_rbrExtractionFailureEvent_imply_badBatchingEvent [Fintype L] [DecidableEq L]
+    [IsDomain L] [IsDomain K]
     (stmtOStmtIn : (BatchingStmtIn L ℓ) × (∀ j, aOStmtIn.OStmtIn j))
     (msg0 : (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).Message ⟨0, rfl⟩)
     (y : Fin κ → L)
@@ -707,7 +707,7 @@ lemma batching_rbrExtractionFailureEvent_imply_badBatchingEvent [Fintype L] [Dec
         (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
       (extractor := batchingRbrExtractor (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
         (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
-      ⟨1, rfl⟩ stmtOStmtIn (FullTranscript.mk1 msg0) y) :
+      ⟨1, rfl⟩ stmtOStmtIn (fun | ⟨0, _⟩ => msg0) y) :
     ∃ witMid : batchingWitMid L K ℓ ℓ' 2,
       aOStmtIn.initialCompatibility ⟨witMid.t', stmtOStmtIn.2⟩ ∧
       let s_bar := embedded_MLP_eval κ L K P ℓ ℓ' h_l witMid.t' stmtOStmtIn.1.t_eval_point
@@ -737,24 +737,24 @@ lemma batching_rbrExtractionFailureEvent_imply_badBatchingEvent [Fintype L] [Dec
   refine ⟨witMid, h_compat_mid, ?_⟩
   exact h_bad
 
-lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L]
+lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L] [IsDomain L] [IsDomain K]
     (stmtOStmtIn : (BatchingStmtIn L ℓ) × (∀ j, aOStmtIn.OStmtIn j))
     (msg0 : (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).Message ⟨0, rfl⟩) :
-    Pr_{ let y ← $ᵖ (Fin κ → L); pure y }[
+    Pr_{ let y ← $ᵖ (Fin κ → L) }[
       rbrExtractionFailureEvent
         (kSF := batchingKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
           (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
         (extractor := batchingRbrExtractor (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
           (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
-        ⟨1, rfl⟩ stmtOStmtIn (FullTranscript.mk1 msg0) y ] ≤
-      batchingRBRKnowledgeError (κ := κ) (L := L) (K := K) (P := P) 0 := by
+        ⟨1, rfl⟩ stmtOStmtIn (fun | ⟨0, _⟩ => msg0) y ] ≤
+      batchingRBRKnowledgeError (κ := κ) (L := L) (K := K) (P := P) ⟨1, rfl⟩ := by
   classical
   let P_event := rbrExtractionFailureEvent
     (kSF := batchingKnowledgeStateFunction (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
       (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
     (extractor := batchingRbrExtractor (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
       (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn))
-    ⟨1, rfl⟩ stmtOStmtIn (FullTranscript.mk1 msg0)
+    ⟨1, rfl⟩ stmtOStmtIn (fun | ⟨0, _⟩ => msg0)
   by_cases h_doom : ∃ y, P_event y
   · obtain ⟨y_doom, h_doomEscape⟩ := h_doom
     obtain ⟨witMid, _h_mid_compat, _h_bad_extracted⟩ :=
@@ -762,33 +762,34 @@ lemma batching_doom_escape_probability_bound [Fintype L] [DecidableEq L]
         (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl)
         stmtOStmtIn msg0 y_doom h_doomEscape
     let s_bar_fixed := embedded_MLP_eval κ L K P ℓ ℓ' h_l witMid.t' stmtOStmtIn.1.t_eval_point
-    have h_prob_mono := prob_mono (D := $ᵖ (Fin κ → L))
-      (f := fun y => P_event y)
-      (g := fun y =>
-        badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar_fixed)
-      (h_imp := by
-        intro y h_doomEscape'
-        obtain ⟨witMid', _h_mid_compat', h_bad_extracted'⟩ :=
-          batching_rbrExtractionFailureEvent_imply_badBatchingEvent (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
-            (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl)
-            stmtOStmtIn msg0 y h_doomEscape'
-        have h_t_eq : witMid'.t' = witMid.t' := by
-          unfold rbrExtractionFailureEvent at h_doomEscape h_doomEscape'
-          rcases h_doomEscape with ⟨_, h_before_false, _⟩
-          rcases h_doomEscape' with ⟨_, h_before_false', _⟩
-          simp only [batchingKnowledgeStateFunction, batchingKStateProp, Transcript.equivMessagesChallenges,
-            not_and, not_true_eq_false, imp_false, Decidable.not_not] at h_before_false h_before_false'
-          rw [h_before_false, h_before_false']
-        simpa [s_bar_fixed, h_t_eq] using h_bad_extracted')
+    have h_prob_mono :
+        Pr[fun y => P_event y | ($ᵖ (Fin κ → L))] ≤
+          Pr[fun y =>
+              badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P) y msg0 s_bar_fixed |
+            ($ᵖ (Fin κ → L))] := by
+      apply probEvent_mono
+      intro y _ h_doomEscape'
+      obtain ⟨witMid', _h_mid_compat', h_bad_extracted'⟩ :=
+        batching_rbrExtractionFailureEvent_imply_badBatchingEvent (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
+          (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) (init := init) (impl := impl)
+          stmtOStmtIn msg0 y h_doomEscape'
+      have h_t_eq : witMid'.t' = witMid.t' := by
+        unfold rbrExtractionFailureEvent at h_doomEscape h_doomEscape'
+        rcases h_doomEscape with ⟨_, h_before_false, _⟩
+        rcases h_doomEscape' with ⟨_, h_before_false', _⟩
+        simp only [batchingKnowledgeStateFunction, batchingKStateProp, Transcript.equivMessagesChallenges,
+          not_and, not_true_eq_false, imp_false, Decidable.not_not] at h_before_false h_before_false'
+        rw [h_before_false, h_before_false']
+      simpa [s_bar_fixed, h_t_eq] using h_bad_extracted'
     apply le_trans h_prob_mono
     exact probability_bound_badBatchingEventProp (κ := κ) (L := L) (K := K) (P := P)
       (msg0 := msg0) (s_bar := s_bar_fixed)
-  · have h_prob_mono_false := prob_mono (D := $ᵖ (Fin κ → L))
-      (f := fun y => P_event y)
-      (g := fun y => False)
-      (h_imp := by
-        intro y
-        exact not_exists.mp h_doom y)
+  · have h_prob_mono_false :
+        Pr[fun y => P_event y | ($ᵖ (Fin κ → L))] ≤
+          Pr[fun _ : Fin κ → L => False | ($ᵖ (Fin κ → L))] := by
+      apply probEvent_mono
+      intro y _ h_doomEscape
+      exact False.elim ((not_exists.mp h_doom y) h_doomEscape)
     apply le_trans h_prob_mono_false
     simp [PMF.pure_apply]
 
