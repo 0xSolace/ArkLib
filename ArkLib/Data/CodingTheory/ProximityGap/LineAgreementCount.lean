@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.JohnsonPerWord
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Card
@@ -243,5 +244,81 @@ theorem badGamma_mul_le_list_mul_weight_of_fullSupport
 
 #print axioms badGamma_mul_gap_le_list_mul_weight
 #print axioms badGamma_mul_le_list_mul_weight_of_fullSupport
+
+/-- **Johnson-ball assembly for bad scalars.** If every bad scalar is witnessed by a codeword in a
+single Johnson ball of a finite code `C` around `f`, then the line-count assembly plus the
+per-word Johnson bound cap the bad-scalar count by the Johnson quotient times the support of `u₁`.
+
+This is the next honest MCA→Johnson reduction brick: once a line's witness codewords are known to
+cluster in one below-Johnson ball, the remaining bad-scalar count is fully controlled. -/
+theorem badGamma_mul_gap_le_johnson_ball_mul_weight
+    (u₀ u₁ f : ι → F) (C : Finset (ι → F)) (a b d e : ℕ) (bad : Finset F)
+    (hwit :
+      ∀ γ ∈ bad, ∃ c ∈ C, hammingDist c f ≤ e ∧
+        a ≤ (univ.filter (fun i => u₀ i + γ * u₁ i = c i)).card)
+    (hbase :
+      ∀ c ∈ C, hammingDist c f ≤ e →
+        (univ.filter (fun i => u₁ i = 0 ∧ u₀ i = c i)).card ≤ b)
+    (hdist : ∀ c ∈ C, ∀ c' ∈ C, c ≠ c' → d ≤ hammingDist c c')
+    (hgap : Fintype.card ι * (Fintype.card ι - d) < (Fintype.card ι - e) ^ 2) :
+    bad.card * (a - b) ≤
+      (Fintype.card ι ^ 2 /
+        ((Fintype.card ι - e) ^ 2 - Fintype.card ι * (Fintype.card ι - d)))
+        * (univ.filter (fun i => u₁ i ≠ 0)).card := by
+  classical
+  set L : Finset (ι → F) := C.filter (fun c => hammingDist c f ≤ e) with hL
+  have hwitL :
+      ∀ γ ∈ bad, ∃ c ∈ L,
+        a ≤ (univ.filter (fun i => u₀ i + γ * u₁ i = c i)).card := by
+    intro γ hγ
+    obtain ⟨c, hcC, hcf, hagree⟩ := hwit γ hγ
+    refine ⟨c, ?_, hagree⟩
+    rw [hL, Finset.mem_filter]
+    exact ⟨hcC, hcf⟩
+  have hbaseL :
+      ∀ c ∈ L, (univ.filter (fun i => u₁ i = 0 ∧ u₀ i = c i)).card ≤ b := by
+    intro c hc
+    rw [hL, Finset.mem_filter] at hc
+    exact hbase c hc.1 hc.2
+  have hline := badGamma_mul_gap_le_list_mul_weight u₀ u₁ a b L bad hwitL hbaseL
+  have hjohnson :
+      L.card ≤ Fintype.card ι ^ 2 /
+        ((Fintype.card ι - e) ^ 2 - Fintype.card ι * (Fintype.card ι - d)) := by
+    refine ArkLib.CodingTheory.JohnsonPerWord.johnson_distance_list_bound_div L f d e ?_ ?_ hgap
+    · intro c hc
+      rw [hL, Finset.mem_filter] at hc
+      exact hc.2
+    · intro c hc c' hc' hne
+      rw [hL, Finset.mem_filter] at hc hc'
+      exact hdist c hc.1 c' hc'.1 hne
+  exact le_trans hline (Nat.mul_le_mul_right _ hjohnson)
+
+/-- Full-support specialization of `badGamma_mul_gap_le_johnson_ball_mul_weight`. If `u₁` has no
+zero coordinates, the always-agree baseline vanishes and the usable gap is exactly `a`. -/
+theorem badGamma_mul_le_johnson_ball_mul_weight_of_fullSupport
+    (u₀ u₁ f : ι → F) (C : Finset (ι → F)) (a d e : ℕ) (bad : Finset F)
+    (hwit :
+      ∀ γ ∈ bad, ∃ c ∈ C, hammingDist c f ≤ e ∧
+        a ≤ (univ.filter (fun i => u₀ i + γ * u₁ i = c i)).card)
+    (hdist : ∀ c ∈ C, ∀ c' ∈ C, c ≠ c' → d ≤ hammingDist c c')
+    (hgap : Fintype.card ι * (Fintype.card ι - d) < (Fintype.card ι - e) ^ 2)
+    (hsupp : ∀ i, u₁ i ≠ 0) :
+    bad.card * a ≤
+      (Fintype.card ι ^ 2 /
+        ((Fintype.card ι - e) ^ 2 - Fintype.card ι * (Fintype.card ι - d)))
+        * (univ.filter (fun i => u₁ i ≠ 0)).card := by
+  classical
+  have hbase :
+      ∀ c ∈ C, hammingDist c f ≤ e →
+        (univ.filter (fun i => u₁ i = 0 ∧ u₀ i = c i)).card ≤ 0 := by
+    intro c _hc _hcf
+    have hempty : univ.filter (fun i => u₁ i = 0 ∧ u₀ i = c i) = ∅ :=
+      Finset.filter_eq_empty_iff.mpr fun i _ hi => hsupp i hi.1
+    rw [hempty, Finset.card_empty]
+  simpa using
+    badGamma_mul_gap_le_johnson_ball_mul_weight u₀ u₁ f C a 0 d e bad hwit hbase hdist hgap
+
+#print axioms badGamma_mul_gap_le_johnson_ball_mul_weight
+#print axioms badGamma_mul_le_johnson_ball_mul_weight_of_fullSupport
 
 end ProximityGap
