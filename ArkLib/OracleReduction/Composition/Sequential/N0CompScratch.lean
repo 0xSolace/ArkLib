@@ -36,12 +36,14 @@ example
     rw [simulateQ_run'_bind_of_subsingleton, mem_support_bind_iff] at hout
     obtain ⟨p1, hp1, hout⟩ := hout
     rcases p1 with _ | pr1
-    · simp [simulateQ_pure, StateT.run'_eq] at hout
+    · simp only [Option.elim_none, simulateQ_pure, StateT.run'_eq, StateT.run_pure,
+        map_pure, support_pure, Set.mem_singleton_iff, reduceCtorEq] at hout
     · simp only [Option.elim_some] at hout
       rw [simulateQ_run'_bind_of_subsingleton, mem_support_bind_iff] at hout
       obtain ⟨p2, hp2, hout⟩ := hout
       rcases p2 with _ | pr2
-      · simp [simulateQ_pure, StateT.run'_eq] at hout
+      · simp only [Option.elim_none, simulateQ_pure, StateT.run'_eq, StateT.run_pure,
+        map_pure, support_pure, Set.mem_singleton_iff, reduceCtorEq] at hout
       · simp only [Option.elim_some] at hout
         trace_state
         sorry

@@ -93,10 +93,10 @@ theorem scratch_fiatShamirKnowledgeExec_runCollapse
           let extractedWitIn ←
             liftM do
               let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
-                (oSpec := oSpec) stmtIn (d.1.1.1 0))
-              liftM (srExtractor stmtIn d.1.1.2.2 transcript default default)
-          pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run) := by
-  rw [OptionT.run_bind, simulateQ_bind]
+                (oSpec := oSpec) stmtIn (d.1.1 0))
+              liftM (srExtractor stmtIn d.1.2.2 transcript default default)
+          pure (stmtIn, extractedWitIn, d.2, d.1.2.2)).run) := by
+  simp only [OptionT.run_bind, simulateQ_option_elimM, simulateQ_pure]
   rw [stateT_option_bind_map_eq
     (f := Prod.fst)
     (k := fun d =>
@@ -105,9 +105,9 @@ theorem scratch_fiatShamirKnowledgeExec_runCollapse
           let extractedWitIn ←
             liftM do
               let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
-                (oSpec := oSpec) stmtIn (d.1.1.1 0))
-              liftM (srExtractor stmtIn d.1.1.2.2 transcript default default)
-          pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run))]
+                (oSpec := oSpec) stmtIn (d.1.1 0))
+              liftM (srExtractor stmtIn d.1.2.2 transcript default default)
+          pure (stmtIn, extractedWitIn, d.2, d.1.2.2)).run))]
   rw [fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn]
 
 theorem scratch_fiatShamir_knowledgeSoundnessTransferResidual_canonical
