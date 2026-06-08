@@ -90,6 +90,25 @@ theorem avg_radius_plotkin (T : Finset (ι → F)) (y : ι → F) (d : ℕ)
   · simp [Finset.card_eq_zero.mp h0]
   · exact Nat.le_of_mul_le_mul_left hcomb hpos
 
+/-- **List-size bound from minimum distance.** If `T` is a set of words pairwise at Hamming
+distance `≥ d`, all within Hamming distance `r` of a center `y`, then `|T|·d ≤ 2·|T|·r + d`.
+In particular when `2r < d` (the unique/near-unique-decoding regime `r < d/2`) this forces `|T|`
+to be small: a ball of radius `r` contains few pairwise-far codewords. A direct corollary of the
+average-radius Plotkin bound — the list-decoding payoff. -/
+theorem card_le_of_pairwise_dist_in_ball (T : Finset (ι → F)) (y : ι → F) (d r : ℕ)
+    (hpair : ∀ c ∈ T, ∀ c' ∈ T, c ≠ c' → d ≤ hammingDist c c')
+    (hball : ∀ c ∈ T, hammingDist c y ≤ r) :
+    T.card * d ≤ 2 * (T.card * r) + d := by
+  have hP := avg_radius_plotkin T y d hpair
+  have hballsum : ∑ c ∈ T, hammingDist c y ≤ T.card * r := by
+    calc ∑ c ∈ T, hammingDist c y
+        ≤ ∑ _c ∈ T, r := Finset.sum_le_sum (fun c hc => hball c hc)
+      _ = T.card * r := by rw [Finset.sum_const, smul_eq_mul]
+  have key : (T.card - 1) * d ≤ 2 * (T.card * r) := le_trans hP (by gcongr)
+  have e1 : (T.card - 1) * d = T.card * d - d := by rw [Nat.sub_mul, one_mul]
+  omega
+
 end CodingTheory
 
 #print axioms CodingTheory.avg_radius_plotkin
+#print axioms CodingTheory.card_le_of_pairwise_dist_in_ball
