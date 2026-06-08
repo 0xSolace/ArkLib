@@ -76,19 +76,18 @@ theorem support_eq_card (S : Finset ι) :
     split_ifs with hi
     · exact card_filter_ne_zero
     · exact Finset.card_singleton 0
-  rw [Finset.prod_congr rfl (fun i _ => hAcard i),
-    Finset.prod_ite_mem, Finset.univ_inter, Finset.prod_const]
+  simp only [hAcard, Finset.prod_ite_mem, Finset.univ_inter, Finset.prod_const]
 
 /-- **Hamming sphere count.** `#{f : wt(f) = i} = C(n,i)·(q-1)^i`. -/
 theorem hammingNorm_card (i : ℕ) :
     (Finset.univ.filter (fun f : ι → F => hammingNorm f = i)).card
       = (Fintype.card ι).choose i * (Fintype.card F - 1) ^ i := by
   classical
-  have hfib := Finset.card_eq_sum_card_fiberwise
-    (s := Finset.univ.filter (fun f : ι → F => hammingNorm f = i))
-    (t := Finset.univ.powersetCard i)
-    (g := fun f => Finset.univ.filter (fun j => f j ≠ 0))
-    (by
+  have hfib : (Finset.univ.filter (fun f : ι → F => hammingNorm f = i)).card
+      = ∑ S ∈ Finset.univ.powersetCard i,
+          ((Finset.univ.filter (fun f : ι → F => hammingNorm f = i)).filter
+            (fun f => Finset.univ.filter (fun j => f j ≠ 0) = S)).card :=
+    Finset.card_eq_sum_card_fiberwise (by
       intro f hf
       rw [Finset.mem_filter] at hf
       rw [Finset.mem_powersetCard]
@@ -120,11 +119,11 @@ theorem ballVol_eq (r : ℕ) :
       = ∑ i ∈ Finset.range (r + 1),
           (Fintype.card ι).choose i * (Fintype.card F - 1) ^ i := by
   classical
-  have hfib := Finset.card_eq_sum_card_fiberwise
-    (s := Finset.univ.filter (fun f : ι → F => hammingNorm f ≤ r))
-    (t := Finset.range (r + 1))
-    (g := fun f => hammingNorm f)
-    (by
+  have hfib : (Finset.univ.filter (fun f : ι → F => hammingNorm f ≤ r)).card
+      = ∑ i ∈ Finset.range (r + 1),
+          ((Finset.univ.filter (fun f : ι → F => hammingNorm f ≤ r)).filter
+            (fun f => hammingNorm f = i)).card :=
+    Finset.card_eq_sum_card_fiberwise (by
       intro f hf
       rw [Finset.mem_filter] at hf
       rw [Finset.mem_range]
