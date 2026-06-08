@@ -35,6 +35,19 @@ theorem bind_run_eq_bind_runWithLog_fst
   rw [map_eq_pure_bind, bind_assoc]
   simp only [pure_bind]
 
+/-- The canonical Fiat-Shamir straightline extractor ignores its query-log arguments. -/
+theorem fiatShamirStraightlineExtractorOfStateRestoration_log_irrel
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witOut : WitOut)
+    (proof : FullTranscript (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (pLog vLog pLog' vLog' :
+      QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)) :
+    fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog vLog =
+      fiatShamirStraightlineExtractorOfStateRestoration
+        (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn witOut proof pLog' vLog' :=
+  rfl
+
 theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical_wip
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
     (srImpl : QueryImpl oSpec
@@ -54,17 +67,46 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical_wip
     (oSpec := oSpec) (pSpec := pSpec) prover stmtIn witIn)
   dsimp only
   refine le_trans ?_ h
-  simp only [fiatShamirStraightlineExtractorOfStateRestoration_apply]
-  rw [← bind_run_eq_bind_runWithLog_fst (red := { prover := prover, verifier := V.fiatShamir })
+  rw [fiatShamirStraightlineExtractorOfStateRestoration_log_irrel
+    (pLog' := default) (vLog' := default)]
+  rw [bind_run_eq_bind_runWithLog_fst (red := { prover := prover, verifier := V.fiatShamir })
     (stmt := stmtIn) (wit := witIn)
     (F := fun r => do
       let extractedWitIn ←
-        liftM (do
-          let transcript ← liftM (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn
-            (r.1.1 0))
-          liftM (srExtractor stmtIn r.1.2.2 transcript default default) :
-        OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) WitIn)
-      pure (stmtIn, extractedWitIn, r.2, r.1.2.2))]
+        liftM (fiatShamirStraightlineExtractorOfStateRestoration
+          (oSpec := oSpec) (pSpec := pSpec) srExtractor stmtIn r.1.1.2.2 r.1.1.1 default default)
+      pure (stmtIn, extractedWitIn, r.1.2, r.1.1.2.2))] <;> sorry
+  rw [show
+    (do
+        let __discr ← runWithLog stmtIn witIn
+          { prover := prover, verifier := V.fiatShamir }
+        let extractedWitIn ←
+          liftM (do
+            let transcript ← liftM (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn
+              (__discr.1.1.1 0))
+            liftM (srExtractor stmtIn __discr.1.1.2.2 transcript default default) :
+            OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) WitIn)
+        pure (stmtIn, extractedWitIn, __discr.1.2, __discr.1.1.2.2)) =
+      (Reduction.run stmtIn witIn { prover := prover, verifier := V.fiatShamir } >>=
+        fun r => do
+          let extractedWitIn ←
+            liftM (do
+              let transcript ← liftM (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn
+                (r.1.1 0))
+              liftM (srExtractor stmtIn r.1.2.2 transcript default default) :
+              OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) WitIn)
+          pure (stmtIn, extractedWitIn, r.2, r.1.2.2))
+    from (bind_run_eq_bind_runWithLog_fst
+      (red := { prover := prover, verifier := V.fiatShamir })
+      (stmt := stmtIn) (wit := witIn)
+      (F := fun r => do
+        let extractedWitIn ←
+          liftM (do
+            let transcript ← liftM (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn
+              (r.1.1 0))
+            liftM (srExtractor stmtIn r.1.2.2 transcript default default) :
+            OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) WitIn)
+        pure (stmtIn, extractedWitIn, r.2, r.1.2.2))).symm]
   trace_state
   sorry
 

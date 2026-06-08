@@ -69,6 +69,47 @@ local instance fiatShamirProverOnlyCanonicalKSScratch : ProtocolSpec.ProverOnly
     (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)) where
   prover_first' := by simp
 
+theorem scratch_fiatShamirKnowledgeExec_runCollapse
+    {σ : Type}
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
+      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec)
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+        ((do
+          let d ← Reduction.runWithLog stmtIn witIn
+            { prover := P, verifier := V.fiatShamir }
+          let extractedWitIn ←
+            liftM do
+              let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+                (oSpec := oSpec) stmtIn (d.1.1.1 0))
+              liftM (srExtractor stmtIn d.1.1.2.2 transcript default default)
+          pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run) =
+      simulateQ impl
+        ((do
+          let d ← fiatShamirAdversaryExecution P V stmtIn witIn
+          let extractedWitIn ←
+            liftM do
+              let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+                (oSpec := oSpec) stmtIn (d.1.1.1 0))
+              liftM (srExtractor stmtIn d.1.1.2.2 transcript default default)
+          pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run) := by
+  rw [OptionT.run_bind, simulateQ_bind]
+  rw [stateT_option_bind_map_eq
+    (f := Prod.fst)
+    (k := fun d =>
+      simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+        ((do
+          let extractedWitIn ←
+            liftM do
+              let transcript ← OptionT.mk (some <$> Messages.deriveTranscriptFS
+                (oSpec := oSpec) stmtIn (d.1.1.1 0))
+              liftM (srExtractor stmtIn d.1.1.2.2 transcript default default)
+          pure (stmtIn, extractedWitIn, d.1.2, d.1.1.2.2)).run))]
+  rw [fiatShamir_runWithLog_simulateQ_fst impl P V stmtIn witIn]
+
 theorem scratch_fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
     (srImpl : QueryImpl oSpec
