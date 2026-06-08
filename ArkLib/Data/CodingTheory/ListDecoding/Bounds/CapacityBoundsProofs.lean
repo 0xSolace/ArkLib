@@ -1,9 +1,9 @@
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.GKL24
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.BCHKS25
-import ArkLib.Data.CodingTheory.ListDecoding.GuruswamiSudan.Basic
-import Mathlib.Data.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.Variables
-import Mathlib.Data.Polynomial.RingDivision
+import ArkLib.Data.CodingTheory.ListDecoding.Bounds.SubstitutionMultiplicity
+import Mathlib.Algebra.MvPolynomial.Degrees
+import Mathlib.Algebra.MvPolynomial.Variables
+import Mathlib.Algebra.Polynomial.RingDivision
 
 /-!
 # Final Capacity Bound Proofs
