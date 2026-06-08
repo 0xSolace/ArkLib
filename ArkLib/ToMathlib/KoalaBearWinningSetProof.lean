@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
+import Mathlib.Data.Set.PowersetCard
 import ArkLib.ToMathlib.KoalaIRSAccounting
 
 /-!
@@ -137,6 +138,26 @@ namespace ToyProblem
 
 open scoped NNReal
 
+/-- If winning challenges inject into the four `3`-subsets of `Fin 4`, then the
+concrete winning set has cardinality at most four.
+
+This is the finite-combinatorics wrapper needed after the geometric uniqueness
+argument assigns each winning challenge to a distinguishing `3`-coordinate
+agreement set. -/
+theorem winningSet_ncard_le_four_of_injective_threeSubsets
+    (x : ViolatingInstance KoalaBear.rsCodeSet (3 / 10) 2)
+    (pick :
+      { γ : KoalaBear.Sextic //
+          γ ∈ winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂ } →
+        Set.powersetCard (Fin 4) 3)
+    (hpick : Function.Injective pick) :
+    (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard ≤ 4 := by
+  have hcard := Nat.card_le_card_of_injective pick hpick
+  have htarget : Fintype.card (Set.powersetCard (Fin 4) 3) = 4 := by
+    rw [← Nat.card_eq_fintype_card, Set.powersetCard.card]
+    norm_num
+  simpa [htarget, Nat.card_coe_set_eq] using hcard
+
 /-- The documented `|Ω| ≤ 4` obstruction is strong enough to refute the concrete
 Fenzi-Sanso leaderboard residual.
 
@@ -144,7 +165,7 @@ This theorem isolates the final arithmetic/wrapper step from the remaining
 combinatorial cap.  Once the structural lemmas above are upgraded into
 `hcap`, the old `2^70`-challenge residual closes by contradiction, since
 `4 < 2^70`. -/
-theorem not_fenziSanso_upperBound_attack_concrete_residual_of_winningSet_ncard_le_four
+theorem not_fenziSanso_concrete_residual_of_ncard_le_four
     (hcap :
       ∀ x : ViolatingInstance KoalaBear.rsCodeSet (3 / 10) 2,
         (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard ≤ 4) :
@@ -157,4 +178,5 @@ end ToyProblem
 
 #print axioms KoalaBear.two_winning_same_subset_imp_lineInCode
 #print axioms KoalaBear.winning_pair_eq_of_common_subset
-#print axioms ToyProblem.not_fenziSanso_upperBound_attack_concrete_residual_of_winningSet_ncard_le_four
+#print axioms ToyProblem.winningSet_ncard_le_four_of_injective_threeSubsets
+#print axioms ToyProblem.not_fenziSanso_concrete_residual_of_ncard_le_four

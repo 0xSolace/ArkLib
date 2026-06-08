@@ -20,8 +20,8 @@ proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_di
 brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
 `~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
 the research ledger; treat a named lemma as in-tree API only after checking the current source file.
-Loops 27, 28, 29, 30, 31, 32, 33, and 34 have been restored as self-contained arithmetic bricks in
-the current checkout.
+Loops 27, 28, 29, 30, 31, 32, 33, 34, and 35 have been restored as self-contained arithmetic bricks
+in the current checkout.
 
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
@@ -337,6 +337,20 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop35 — unbounded exponent density is the real multiplicative danger
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop35.lean`:**
+`density_product_eq` (`((2^m)^D)=2^(m*D)`), `exponent_product_eq`,
+`exponent_density_overflows_final_degree` (if cumulative exponent is at least `m*D` and `D>d`, the
+product beats final degree `d`), `density_one_more_overflows_final_degree`, and
+`linear_spike_density_overflows_final_degree`.
+**Disproof attempt:** take the complement of Loops 31--34 seriously: force exponent density to grow
+past every fixed prize degree, for example by making the effective spike density `K*h` unbounded.
+This **would** arithmetically defeat the prize numerator. **Disproof of the disproof:** the new brick
+only gives the overflow criterion. It does not prove that faithful smooth-domain GS/proximity lists
+realize cumulative exponent `≥m*D` with unbounded `D`. Loops 31--34 say all bounded-density variants
+are absorbed; Loop35 says exactly what remains to be constructed. No such construction is known in
+the below-capacity small-gap band.
 
 ### Loop34 — bounded-count linear spikes are absorbed
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop34.lean`:**
