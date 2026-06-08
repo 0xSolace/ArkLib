@@ -28,21 +28,33 @@ theorem refute_Hyp4 : ¬ (∀ (H : F[X][Y]) (u : ι → F), Hyp4_DerivativeMulti
   sorry -- Counterexample: H = Y, eval H = 0, but H_Y = 1 ≠ 0.
 
 theorem refute_Hyp5 : ¬ (∀ (H : F[X][Y]) (L : Finset (ι → F)), Hyp5_SchwartzZippelDensity H L) := by
-  sorry -- Counterexample: Trivial zero-evaluation H = 0. totalDegree = 0, but L can be non-empty.
+  intro h
+  have h1 := h 0 {0}
+  simp only [Hyp5_SchwartzZippelDensity, Bivariate.totalDegree, Polynomial.support_zero,
+    Finset.sup_empty, Nat.bot_eq_zero, Nat.zero_mul, Finset.card_singleton] at h1
 
 theorem refute_Hyp6 (hι : Fintype.card ι ≥ 2) : ¬ (∀ (L : Finset (ι → F)), Hyp6_SubSpaceEvasion L) := by
   sorry -- Counterexample: L containing two linearly independent functions.
 
 theorem refute_Hyp7 : ¬ (∀ (L : Finset (ι → F)) (k : ℕ), Hyp7_MatrixRankBound L k) := by
-  sorry -- Counterexample: Pick L to be the entire space and k = 0.
+  intro h
+  have h1 := h {0} 0
+  simp only [Hyp7_MatrixRankBound, Finset.card_singleton, pow_two, Nat.mul_zero] at h1
 
 theorem refute_Hyp8 (hι : Fintype.card ι ≥ 2) : ¬ (∀ (L : Finset (ι → F)), Hyp8_AlgebraicIndependence L) := by
   sorry -- Counterexample: Crites-Stewart capacity bounds or L = Finset.univ (size |F|^|ι| > |F|).
 
 theorem refute_Hyp9 : ¬ (∀ (H : F[X][Y]) (L : Finset (ι → F)), Hyp9_MultiplicityIntersection H L) := by
-  sorry -- Counterexample: Trivial zero-evaluation H = 0 (degX = 0), L non-empty.
+  intro h
+  have h1 := h 0 {0}
+  simp only [Hyp9_MultiplicityIntersection, Finset.card_singleton] at h1
+  have hz : Bivariate.natDegreeX (0 : F[X][Y]) = 0 := by simp [Bivariate.natDegreeX]
+  omega
 
 theorem refute_Hyp10 : ¬ (∀ (H : F[X][Y]) (L : Finset (ι → F)), Hyp10_AffineVarietyDimension H L) := by
-  sorry -- Counterexample: Trivial zero-evaluation H = 0 (degY = 0), L non-empty.
+  intro h
+  have h1 := h 0 {0}
+  simp only [Hyp10_AffineVarietyDimension, Finset.card_singleton, Bivariate.natDegreeY,
+    Polynomial.natDegree_zero] at h1
 
 end GrandChallenge1BruteForceRefutations
