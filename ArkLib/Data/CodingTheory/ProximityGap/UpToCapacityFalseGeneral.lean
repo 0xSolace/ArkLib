@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.EntropyVolumeListSize
-import ArkLib.Data.CodingTheory.ProximityGap.UpToCapacityListDecodingFalse
+import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingCapacityOverflow
 
 /-!
 # General capacity-exponent overflow ⇒ list-decoding bound is false (#232, negative side)
