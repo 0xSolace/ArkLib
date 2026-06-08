@@ -1073,33 +1073,6 @@ theorem iteratedSumcheck_round_logic_complete (i : Fin ℓ')
         (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (i := i) (t' := wit.t') (ctx := stmt.ctx)
         (challenges := stmt.challenges) (r' := r')
 
-set_option maxHeartbeats 1000000 in
-theorem probe_iteratedSumcheck_completeness [IsDomain L]
-    (hInit : NeverFail init) :
-    iteratedSumcheckOracleReduction_perfectCompleteness_residual
-      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := aOStmtIn) (init := init) (impl := impl) := by
-  classical
-  intro i
-  rw [OracleReduction.unroll_2_message_reduction_perfectCompleteness (oSpec := []ₒ)
-    (pSpec := pSpecSumcheckRound L) (init := init) (impl := impl)
-    (hInit := hInit) (hDir0 := by rfl) (hDir1 := by rfl)
-    (hImplSupp := by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])]
-  intro stmtIn oStmtIn witIn h_relIn
-  rw [probEvent_eq_one_iff]
-  dsimp only [iteratedSumcheckOracleReduction, iteratedSumcheckOracleProver,
-    iteratedSumcheckOracleVerifier, Sumcheck.Structured.roundOracleReduction,
-    Sumcheck.Structured.roundOracleProver, Sumcheck.Structured.roundOracleVerifier,
-    OracleVerifier.toVerifier, FullTranscript.mk2]
-  refine ⟨?_, ?_⟩
-  · simp only [liftComp_pure, liftM_pure, pure_bind, bind_pure_comp, Function.comp,
-      FullTranscript.mk2]
-    erw [simulateQ_bind]
-    rw [OptionT.simulateQ_simOracle2_liftM_query_T2]
-    trace_state
-    sorry
-  · sorry
-
 /-- **Schwartz-Zippel bound for the bad sumcheck extraction event.**
   Proof strategy (follows `foldStep_doom_escape_probability_bound`):
   1. **Implication**: Show that extraction failure implies the `badSumcheckEventProp`.
