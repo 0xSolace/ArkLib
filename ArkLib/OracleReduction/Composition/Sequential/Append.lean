@@ -3889,6 +3889,10 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
 #print axioms Prover.appendRight_concat_seam_challenge
 #print axioms Prover.append_processRound_seam_message_comp
 #print axioms Prover.append_processRound_seam_challenge_comp
+#print axioms Prover.append_processRound_natAdd_message_comp
+#print axioms Prover.append_processRound_natAdd_challenge_comp
+#print axioms Prover.append_continueFromTo_seam_step_message
+#print axioms Prover.append_continueFromTo_seam_step_challenge
 #print axioms Prover.append_continueFromTo_seam_step_message_appendRight
 #print axioms Prover.append_continueFromTo_seam_step_challenge_appendRight
 #print axioms Prover.liftComp_processRound_zero_message_appendRight
