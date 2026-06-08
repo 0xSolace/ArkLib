@@ -524,4 +524,87 @@ theorem merge_receiveChallenge_seam (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit
   have hc : cast hChal.symm c = c' := eq_of_heq ((cast_heq _ _).trans hcc)
   rw [hc]
 
+/-- Seam state-type eq at `castSucc`. -/
+theorem merge_PrvState_seam_castSucc (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (hn : 0 < n) :
+    ((Prover.fst P).append (Prover.snd P)).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      = P.PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc :=
+  (append_PrvState_seam_castSucc (P₁ := Prover.fst P) (P₂ := Prover.snd P) hn).trans
+    (congrArg P.PrvState (by ext; simp))
+
+/-- Seam state-type eq at `succ`. -/
+theorem merge_PrvState_seam_succ (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂))
+    (hn : 0 < n) :
+    ((Prover.fst P).append (Prover.snd P)).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ
+      = P.PrvState (⟨m, by omega⟩ : Fin (m + n)).succ :=
+  (append_PrvState_seam_succ (P₁ := Prover.fst P) (P₂ := Prover.snd P) hn).trans
+    (congrArg P.PrvState (by ext; simp))
+
+/-- **Seam-round processRound merge (message branch).** -/
+theorem merge_processRound_seam_message
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir ⟨m, by omega⟩ = .P_to_V)
+    (hDir₂ : pSpec₂.dir ⟨0, hn⟩ = .P_to_V)
+    (curA : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+        × ((Prover.fst P).append (Prover.snd P)).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc))
+    (curP : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+        × P.PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc))
+    (hcur : HEq curA curP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).processRound ⟨m, by omega⟩ curA)
+        (P.processRound ⟨m, by omega⟩ curP) := by
+  rw [processRound_message ((Prover.fst P).append (Prover.snd P)) ⟨m, by omega⟩ hDir curA,
+    processRound_message P ⟨m, by omega⟩ hDir curP]
+  refine bind_heq_congr (by rw [merge_PrvState_seam_castSucc P hn])
+    (by rw [merge_PrvState_seam_succ P hn]) hcur ?_
+  rintro ⟨t, s⟩ ⟨t', s'⟩ hr
+  obtain ⟨ht, hs⟩ := prod_heq_split rfl (merge_PrvState_seam_castSucc P hn) hr
+  dsimp only
+  refine bind_heq_congr (by rw [merge_PrvState_seam_succ P hn])
+    (by rw [merge_PrvState_seam_succ P hn])
+    (liftComp_heq_congr (spec := oSpec) (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (by rw [merge_PrvState_seam_succ P hn])
+      (merge_sendMessage_seam P hn hDir hDir₂ s s' hs)) ?_
+  rintro ⟨msg, ns⟩ ⟨msg', ns'⟩ hmsg
+  obtain ⟨hm, hns⟩ := prod_heq_split rfl (merge_PrvState_seam_succ P hn) hmsg
+  refine pure_heq_pure (by rw [merge_PrvState_seam_succ P hn]) ?_
+  refine prodMk_heq rfl (merge_PrvState_seam_succ P hn) ?_ hns
+  rw [eq_of_heq hm, eq_of_heq ht]
+
+/-- **Seam-round processRound merge (challenge branch).** -/
+theorem merge_processRound_seam_challenge
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir ⟨m, by omega⟩ = .V_to_P)
+    (hDir₂ : pSpec₂.dir ⟨0, hn⟩ = .V_to_P)
+    (curA : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+        × ((Prover.fst P).append (Prover.snd P)).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc))
+    (curP : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+        × P.PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc))
+    (hcur : HEq curA curP) :
+    HEq (((Prover.fst P).append (Prover.snd P)).processRound ⟨m, by omega⟩ curA)
+        (P.processRound ⟨m, by omega⟩ curP) := by
+  rw [processRound_challenge' ((Prover.fst P).append (Prover.snd P)) ⟨m, by omega⟩ hDir curA,
+    processRound_challenge' P ⟨m, by omega⟩ hDir curP]
+  refine bind_heq_congr (by rw [merge_PrvState_seam_castSucc P hn])
+    (by rw [merge_PrvState_seam_succ P hn]) hcur ?_
+  rintro ⟨t, s⟩ ⟨t', s'⟩ hr
+  obtain ⟨ht, hs⟩ := prod_heq_split rfl (merge_PrvState_seam_castSucc P hn) hr
+  dsimp only
+  refine bind_heq_congr rfl (by rw [merge_PrvState_seam_succ P hn]) HEq.rfl ?_
+  rintro chal chal' hchal
+  refine bind_heq_congr (by rw [merge_PrvState_seam_succ P hn])
+    (by rw [merge_PrvState_seam_succ P hn])
+    (liftComp_heq_congr (spec := oSpec) (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      (by rw [merge_PrvState_seam_succ P hn])
+      (merge_receiveChallenge_seam P hn hDir hDir₂ s s' hs)) ?_
+  rintro fA f' hf
+  refine pure_heq_pure (by rw [merge_PrvState_seam_succ P hn]) ?_
+  refine prodMk_heq rfl (merge_PrvState_seam_succ P hn) ?_ ?_
+  · rw [eq_of_heq hchal, eq_of_heq ht]
+  · refine heq_app rfl ?_ hf hchal
+    rw [merge_PrvState_seam_succ P hn]
+
 end Prover
