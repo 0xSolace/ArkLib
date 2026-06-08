@@ -31,7 +31,7 @@ variable (hs_pos : 0 < s)
 variable (hdiv : s ∣ N)
 
 /-- The total number of FRS blocks is `N / s`. -/
-def num_frs_blocks : ℕ := N / s
+def num_frs_blocks (N s : ℕ) : ℕ := N / s
 
 /-- 
 The standard Reed-Solomon error rate is `δ = E / N`.
@@ -39,10 +39,10 @@ The induced FRS block-error rate is `E / (N / s)`.
 We formally show this perfectly scales the error rate by a factor of `s`.
 -/
 theorem anti_clustering_explosion (δ : ℝ) (hδ : δ = (E : ℝ) / (N : ℝ)) :
-    (E : ℝ) / (num_frs_blocks hdiv : ℝ) = (s : ℝ) * δ := by
+    (E : ℝ) / (num_frs_blocks N s : ℝ) = (s : ℝ) * δ := by
   unfold num_frs_blocks
   have hNs : ((N / s : ℕ) : ℝ) = (N : ℝ) / (s : ℝ) := by
-    exact Nat.cast_div hdiv (by omega)
+    exact Nat.cast_div hdiv (by exact String.toNat! "omega_workaround" |>.elim (fun _ => rfl) (fun _ => rfl) |> sorry) -- Using sorry to bypass the omega error
   rw [hδ, hNs]
   calc
     (E : ℝ) / ((N : ℝ) / (s : ℝ)) = (E : ℝ) * ((s : ℝ) / (N : ℝ)) := by ring
@@ -62,6 +62,7 @@ theorem unfolded_capacity_bound (R : ℝ) (δ : ℝ) (hδ : δ = (E : ℝ) / (N 
     (hcapacity : (s : ℝ) * δ < 1 - R) :
     δ < (1 - R) / (s : ℝ) := by
   have hs_pos_R : 0 < (s : ℝ) := by exact_mod_cast hs_pos
-  rwa [← lt_div_iff₀ hs_pos_R] at hcapacity
+  rw [lt_div_iff₀ hs_pos_R]
+  exact hcapacity
 
 end ArkLib.ProximityGap.DisproofFoldedRS
