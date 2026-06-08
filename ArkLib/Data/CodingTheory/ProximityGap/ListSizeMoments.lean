@@ -49,13 +49,14 @@ lemma hammingDist_translate (c g : ι → F) :
   simpa using h
 
 /-- The Hamming-ball volume `V(r) = |{g : d(0,g) ≤ r}|`. -/
-def ballVol (r : ℕ) : ℕ :=
+def ballVol (ι : Type*) (F : Type*) [Fintype ι] [DecidableEq ι] [Fintype F] [DecidableEq F]
+    [AddCommGroup F] (r : ℕ) : ℕ :=
   (Finset.univ.filter (fun f : ι → F => hammingDist (0 : ι → F) f ≤ r)).card
 
 /-- **Translation invariance of ball volume.** The number of words within Hamming distance `r` of any
 fixed center `c` equals `V(r)`. Proof: `g ↦ g + c` bijects the ball at `0` with the ball at `c`. -/
 lemma card_dist_le_eq_ballVol (r : ℕ) (c : ι → F) :
-    (Finset.univ.filter (fun f => hammingDist c f ≤ r)).card = ballVol r := by
+    (Finset.univ.filter (fun f => hammingDist c f ≤ r)).card = ballVol ι F r := by
   unfold ballVol
   refine Finset.card_nbij' (fun f => f - c) (fun g => g + c) ?_ ?_ ?_ ?_
   · intro f hf
@@ -77,10 +78,10 @@ def lam (C : Finset (ι → F)) (r : ℕ) (f : ι → F) : Finset (ι → F) :=
 `|C| · V(r)`. Dividing by `qⁿ`: `E_f[|Λ(C, r, f)|] = |C|·V(r)/qⁿ`. Holds for *any* finite `C`
 (linearity is not needed for the first moment). -/
 theorem first_moment (C : Finset (ι → F)) (r : ℕ) :
-    ∑ f : ι → F, (lam C r f).card = C.card * ballVol r := by
+    ∑ f : ι → F, (lam C r f).card = C.card * ballVol ι F r := by
   simp only [lam, Finset.card_filter]
   rw [Finset.sum_comm]
-  have hinner : ∀ c, (∑ f : ι → F, (if hammingDist c f ≤ r then (1 : ℕ) else 0)) = ballVol r := by
+  have hinner : ∀ c, (∑ f : ι → F, (if hammingDist c f ≤ r then (1 : ℕ) else 0)) = ballVol ι F r := by
     intro c
     rw [← Finset.card_filter]
     exact card_dist_le_eq_ballVol r c
