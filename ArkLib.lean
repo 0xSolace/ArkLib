@@ -128,7 +128,9 @@ import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyBoundedSupport
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyCompSub
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyDecomp
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyGeneralSupport
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyKernel
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLineSupport
+import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLinearMap
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLinearized
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyRecursion
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyTranslate
@@ -231,6 +233,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualAffineLineRefut
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BCHKSBridges
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
+import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterShell
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterVanish
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersection
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersectionBound
@@ -377,8 +380,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAMasterBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMiddleBand
 import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
+import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeGuardrail
+import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeUpperBound
 import ArkLib.Data.CodingTheory.ProximityGap.MDSNearCountVolume
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
@@ -830,6 +835,7 @@ import ArkLib.ToMathlib.LineDecodingCoverageProof
 import ArkLib.ToMathlib.LinearizedHomogeneous
 import ArkLib.ToMathlib.LinearizedKernel
 import ArkLib.ToMathlib.LinearizedPattern
+import ArkLib.ToMathlib.LinearizedPigeonhole
 import ArkLib.ToMathlib.LinearizedProductClosure
 import ArkLib.ToMathlib.LinearizedRecursionStep
 import ArkLib.ToMathlib.LinearizedSupport

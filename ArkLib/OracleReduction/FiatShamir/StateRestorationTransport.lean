@@ -47,6 +47,30 @@ theorem fsChallengeQueryImpl'_eq_srChallengeQueryImpl' {Statement : Type} {n : �
       srChallengeQueryImpl' (Statement := Statement) (pSpec := pSpec) := by
   rfl
 
+/-- Slow Fiat-Shamir challenge query implementation with the cached challenge table state written
+directly over the Fiat-Shamir oracle alias.
+
+The existing `fsChallengeQueryImpl'` alias unfolds through the state-restoration oracle name.  This
+definition exposes the same cached-table behavior at the `fsChallengeOracle` type, so coupled
+soundness proofs can use `QueryImpl.addLift` without asking Lean to lift between the alias-expanded
+state monads. -/
+@[reducible, inline, specialize, simp]
+def fsChallengeQueryImplState {Statement : Type} {n : ℕ} {pSpec : ProtocolSpec n}
+    [∀ i, SampleableType (pSpec.Challenge i)] :
+    QueryImpl (fsChallengeOracle Statement pSpec)
+      (StateT (QueryImpl (fsChallengeOracle Statement pSpec) Id) ProbComp) :=
+  fun | ⟨i, t⟩ => fun f => pure (f ⟨i, t⟩, f)
+
+/-- The FS-state implementation is definitionally the usual cached slow-Fiat-Shamir query
+implementation after fixing the target state type to the Fiat-Shamir oracle alias. -/
+theorem fsChallengeQueryImplState_eq_fsChallengeQueryImpl' {Statement : Type} {n : ℕ}
+    {pSpec : ProtocolSpec n} [∀ i, SampleableType (pSpec.Challenge i)] :
+    fsChallengeQueryImplState (Statement := Statement) (pSpec := pSpec) =
+      (fsChallengeQueryImpl' (Statement := Statement) (pSpec := pSpec) :
+        QueryImpl (fsChallengeOracle Statement pSpec)
+          (StateT (QueryImpl (fsChallengeOracle Statement pSpec) Id) ProbComp)) := by
+  rfl
+
 namespace MessagesUpTo
 
 /-- Partial transcript derivation for slow Fiat-Shamir is definitionally the state-restoration
@@ -123,6 +147,8 @@ end Verifier
 
 #print axioms ProtocolSpec.fsChallengeOracle_eq_srChallengeOracle
 #print axioms ProtocolSpec.fsChallengeQueryImpl'_eq_srChallengeQueryImpl'
+#print axioms ProtocolSpec.fsChallengeQueryImplState
+#print axioms ProtocolSpec.fsChallengeQueryImplState_eq_fsChallengeQueryImpl'
 #print axioms ProtocolSpec.MessagesUpTo.deriveTranscriptFS_eq_deriveTranscriptSR
 #print axioms ProtocolSpec.Messages.deriveTranscriptFS_eq_deriveTranscriptSR
 #print axioms Verifier.fiatShamir_verify_eq_deriveTranscriptSR
@@ -229,6 +255,91 @@ end Prover
 #print axioms Prover.StateRestoration.srKnowledgeSoundnessGame_knowledgeSoundnessOfFiatShamirProver
 
 end FiatShamirAdversaryAdapter
+
+section FiatShamirLiftPath
+
+namespace Reduction
+
+attribute [local instance] Reduction.fiatShamirChallengeOracleInterface
+
+variable {n : ℕ}
+variable {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι} {StmtIn α : Type}
+
+/-- Directly lifting a base Fiat-Shamir-oracle computation into the appended one-message
+Fiat-Shamir protocol oracle spec is the same path as first lifting it into `OptionT` over the base
+spec and then lifting that `OptionT` computation to the appended spec.
+
+This names the lift-path coherence exposed by the #116 coupled soundness run expansion, where the
+generic one-message `Reduction.run_of_prover_first` chooses the direct source-level path but
+hand-written SR-transcript shapes naturally elaborate through the nested `OptionT` path. -/
+theorem fiatShamir_liftM_base_to_append_eq_nested
+    (oa : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) α) :
+    (liftM oa :
+        OptionT (OracleComp ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α)
+      =
+      (liftM
+        ((liftM oa :
+          OptionT (OracleComp (oSpec + fsChallengeOracle StmtIn pSpec)) α)) :
+        OptionT (OracleComp ((oSpec + fsChallengeOracle StmtIn pSpec) +
+          [(FiatShamirProtocolSpec (pSpec := pSpec)).Challenge]ₒ)) α) := by
+  rfl
+
+end Reduction
+
+#print axioms Reduction.fiatShamir_liftM_base_to_append_eq_nested
+
+end FiatShamirLiftPath
+
+section CoupledQueryImpl
+
+namespace Reduction
+
+variable {n : ℕ}
+variable {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι} {StmtIn : Type}
+  [∀ i, SampleableType (pSpec.Challenge i)]
+
+/-- The concrete query implementation used by the coupled #116 soundness proof: original oracle
+queries are interpreted by the state-restoration implementation, while Fiat-Shamir challenge
+queries read the same cached challenge table that state restoration samples as its initial state. -/
+def fiatShamirCoupledQueryImpl
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp)) :
+    QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec)
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp) :=
+  srImpl.addLift (ProtocolSpec.fsChallengeQueryImplState (Statement := StmtIn) (pSpec := pSpec))
+
+/-- Original-oracle queries through the coupled Fiat-Shamir implementation are exactly the
+state-restoration implementation queries. -/
+@[simp]
+theorem fiatShamirCoupledQueryImpl_apply_left
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (q : oSpec.Domain) :
+    fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn)
+        srImpl (.inl q) =
+      srImpl q := by
+  rfl
+
+/-- Fiat-Shamir challenge queries through the coupled implementation read the cached challenge
+table and leave it unchanged. -/
+@[simp]
+theorem fiatShamirCoupledQueryImpl_apply_right
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (q : (fsChallengeOracle StmtIn pSpec).Domain) :
+    fiatShamirCoupledQueryImpl (oSpec := oSpec) (pSpec := pSpec) (StmtIn := StmtIn)
+        srImpl (.inr q) =
+      (fun f => pure (f q, f)) := by
+  rfl
+
+end Reduction
+
+#print axioms Reduction.fiatShamirCoupledQueryImpl
+#print axioms Reduction.fiatShamirCoupledQueryImpl_apply_left
+#print axioms Reduction.fiatShamirCoupledQueryImpl_apply_right
+
+end CoupledQueryImpl
 
 namespace Reduction
 
