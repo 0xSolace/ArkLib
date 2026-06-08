@@ -326,9 +326,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentShell
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
 import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateAttackLoop46
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop41
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop43
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateBridgeLoop44
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateListDecEquivLoop47
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateMasterLoop45
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop39
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop40
@@ -406,6 +408,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdHalfDist
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdJohnsonSq
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLattice
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeListClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeOverreach
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengePrizeResolution
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOneExact
@@ -613,6 +616,8 @@ import ArkLib.Data.CodingTheory.SingletonBound
 import ArkLib.Data.CodingTheory.SingletonBoundRate
 import ArkLib.Data.CodingTheory.SubspaceDesign
 import ArkLib.Data.CodingTheory.SubspaceDesign.Basic
+import ArkLib.Data.CodingTheory.SubspaceDesign.MultiplicityTorus
+import ArkLib.Data.CodingTheory.SubspaceDesign.NormTorus
 import ArkLib.Data.CompPoly.Basic
 import ArkLib.Data.Domain.CosetFftDomain.Defs
 import ArkLib.Data.Domain.CosetFftDomain.Log
@@ -732,10 +737,13 @@ import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessHelper
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessMsg
+import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
+import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessProof
 import ArkLib.OracleReduction.Composition.Sequential.ChallengeSeamBridge
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendChallenge
+import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendCompletenessProof
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendReduction
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.SeamChallengeRestriction
@@ -766,6 +774,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.State
 import ArkLib.OracleReduction.FiatShamir.HVZKTransferReduction
 import ArkLib.OracleReduction.FiatShamir.SingleSalt
 import ArkLib.OracleReduction.FiatShamir.StateRestorationTransport
+import ArkLib.OracleReduction.FiatShamir.TestDesugar
 import ArkLib.OracleReduction.FiatShamir.ZKResidualBridge
 import ArkLib.OracleReduction.FiatShamir.ZKTransport
 import ArkLib.OracleReduction.FiatShamirRunCollapseProof
@@ -904,6 +913,7 @@ import ArkLib.ProofSystem.Spartan.FirstSumcheckRelComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckRowSum
 import ArkLib.ProofSystem.Spartan.FirstSumcheckZeroEval
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
+import ArkLib.ProofSystem.Spartan.SecondSumcheckComplete
 import ArkLib.ProofSystem.Spartan.SecondSumcheckFaithful
 import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
 import ArkLib.ProofSystem.Spartan.SecondSumcheckRelIn
@@ -1154,4 +1164,3 @@ import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
 import ArkLib.whir113keystone
-import ArkLib.Data.CodingTheory.SubspaceDesign.NormTorus

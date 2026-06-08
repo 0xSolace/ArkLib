@@ -179,6 +179,24 @@ theorem four_mul_add_one_pow_ord_mod (α k κ : ℕ) (hk : k = 2 ^ κ) (hκ : κ
   rw [Nat.ModEq, Nat.one_mod_eq_one.mpr (by omega)] at hmod
   exact hmod
 
+/-- Modular periodicity of powers: if `p^ord ≡ 1 (mod M)` then `p^n ≡ p^{n mod ord} (mod M)`. -/
+theorem pow_mod_period (p ord M n : ℕ) (h1 : p ^ ord % M = 1) (hM : 1 < M) :
+    p ^ n % M = p ^ (n % ord) % M := by
+  conv_lhs => rw [← Nat.div_add_mod n ord]
+  rw [pow_add, pow_mul, Nat.mul_mod, Nat.pow_mod, h1, one_pow,
+    Nat.one_mod_eq_one.mpr (by omega), one_mul, Nat.mod_mod]
+
+/-- Multiplication by an odd `j` is injective mod `2^{α+1}` on residues. -/
+theorem mul_mod_inj (α j x y : ℕ) (hj : Odd j) (hx : x < 2 ^ (α + 1)) (hy : y < 2 ^ (α + 1))
+    (h : j * x % 2 ^ (α + 1) = j * y % 2 ^ (α + 1)) : x = y := by
+  have hcop2 : Nat.Coprime j 2 :=
+    Nat.coprime_comm.mp ((Nat.prime_two.coprime_iff_not_dvd).mpr
+      (Nat.two_dvd_ne_zero.mpr (Nat.odd_iff.mp hj)))
+  have hcop : Nat.Coprime j (2 ^ (α + 1)) := (Nat.coprime_pow_right_iff (by omega) j 2).mpr hcop2
+  have hgcd : Nat.gcd (2 ^ (α + 1)) j = 1 := by rw [Nat.gcd_comm]; exact hcop
+  have hmod : x ≡ y [MOD 2 ^ (α + 1)] := Nat.ModEq.cancel_left_of_coprime hgcd h
+  rwa [Nat.ModEq, Nat.mod_eq_of_lt hx, Nat.mod_eq_of_lt hy] at hmod
+
 /-! ## The subgroup `H` as an exponent set -/
 
 /-- The exponent set enumerating `H = ⟨σ_{-1}, σ_{4k+1}⟩` inside `(Z / 2^{α+1})ˣ`:
@@ -188,6 +206,30 @@ def Hexp (α k : ℕ) : Finset ℕ :=
   (Finset.range (2 ^ α / (2 * k))).biUnion fun a =>
     {(4 * k + 1) ^ a % 2 ^ (α + 1),
       (2 ^ (α + 1) - (4 * k + 1) ^ a % 2 ^ (α + 1)) % 2 ^ (α + 1)}
+
+/-- Every exponent in `Hexp` is odd (`±` an odd power of the odd `4k+1`). -/
+theorem Hexp_odd (α k i : ℕ) (hi : i ∈ Hexp α k) : Odd i := by
+  simp only [Hexp, Finset.mem_biUnion, Finset.mem_insert, Finset.mem_singleton] at hi
+  obtain ⟨a, -, ha⟩ := hi
+  have hp : Odd ((4 * k + 1) ^ a) := Odd.pow ⟨2 * k, by ring⟩
+  have hM : (2 : ℕ) ∣ 2 ^ (α + 1) := dvd_pow_self 2 (by omega)
+  have hx : (4 * k + 1) ^ a % 2 ^ (α + 1) % 2 = 1 := by
+    rw [Nat.mod_mod_of_dvd _ hM]; exact Nat.odd_iff.mp hp
+  rcases ha with rfl | rfl
+  · exact Nat.odd_iff.mpr hx
+  · rw [Nat.odd_iff]
+    have hpos : 0 < (4 * k + 1) ^ a % 2 ^ (α + 1) := by
+      rcases Nat.eq_zero_or_pos ((4 * k + 1) ^ a % 2 ^ (α + 1)) with h | h
+      · rw [h] at hx; simp at hx
+      · exact h
+    rw [Nat.mod_eq_of_lt (by omega : 2 ^ (α + 1) - (4 * k + 1) ^ a % 2 ^ (α + 1) < 2 ^ (α + 1))]
+    omega
+
+/-- Every exponent in `Hexp` is a residue `< 2^{α+1}`. -/
+theorem Hexp_lt (α k i : ℕ) (hi : i ∈ Hexp α k) : i < 2 ^ (α + 1) := by
+  simp only [Hexp, Finset.mem_biUnion, Finset.mem_insert, Finset.mem_singleton] at hi
+  obtain ⟨a, -, ha⟩ := hi
+  rcases ha with rfl | rfl <;> exact Nat.mod_lt _ (by positivity)
 
 /-- `|H| = d/k = 2^α / k` (Hachi [NOZ26, §3], from `|⟨4k+1⟩| = d/(2k)` and the `±` factor).
 
