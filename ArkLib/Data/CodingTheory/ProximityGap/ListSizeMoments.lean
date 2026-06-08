@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Logic.Equiv.Fintype
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # The moment method for list size (verified, self-contained) — direction A for #232
@@ -320,19 +322,16 @@ theorem pairBall_weight {v v' : ι → F} (hw : hammingNorm v = hammingNorm v') 
   set u : ι → F := fun i => if v' i = 0 then 1 else v' i * (v (σ i))⁻¹ with hu_def
   have hu : ∀ i, u i ≠ 0 := by
     intro i
-    rw [hu_def]
-    split
+    simp only [hu_def]
+    split_ifs with hh
     · exact one_ne_zero
-    · rename_i hne
-      exact mul_ne_zero hne (inv_ne_zero (hP1 i hne))
+    · exact mul_ne_zero hh (inv_ne_zero (hP1 i hh))
   have hv' : (fun i => u i * (v ∘ σ) i) = v' := by
     funext i
     simp only [hu_def, Function.comp_apply]
-    split
-    · rename_i h0
-      rw [hP2 i h0, mul_zero, h0]
-    · rename_i hne
-      rw [mul_assoc, inv_mul_cancel₀ (hP1 i hne), mul_one]
+    split_ifs with hh
+    · rw [hP2 i hh, mul_zero, hh]
+    · rw [mul_assoc, inv_mul_cancel₀ (hP1 i hh), mul_one]
   calc (Finset.univ.filter
           (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card
       = (Finset.univ.filter
@@ -349,3 +348,7 @@ theorem pairBall_weight {v v' : ι → F} (hw : hammingNorm v = hammingNorm v') 
 end Field
 
 end ArkLib.CodingTheory.ListMoments
+
+-- axiom audit anchors
+#print axioms ArkLib.CodingTheory.ListMoments.pairBall_scale
+#print axioms ArkLib.CodingTheory.ListMoments.pairBall_weight

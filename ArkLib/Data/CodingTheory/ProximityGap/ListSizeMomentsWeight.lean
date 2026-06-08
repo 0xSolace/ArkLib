@@ -116,4 +116,58 @@ lemma pairBall_weight (v v' : ι → F) (r : ℕ)
       rw [hnmem i h, mul_zero, h]
   rw [pairBall_perm σ v r, pairBall_smul_diag d hd (v ∘ σ) r, hv']
 
+/-- **Second moment grouped by weight.** For a linear code, the list-size second moment is `|C|` times
+a sum over weights `w` of the within-fiber sums of `N` — exhibiting the dependence on the weight
+distribution explicitly. -/
+theorem second_moment_grouped_by_weight {C : Finset (ι → F)}
+    (hadd : ∀ a ∈ C, ∀ b ∈ C, a + b ∈ C) (hsub : ∀ a ∈ C, ∀ b ∈ C, a - b ∈ C) (r : ℕ) :
+    ∑ f : ι → F, (lam C r f).card ^ 2
+      = C.card • ∑ w ∈ Finset.range (Fintype.card ι + 1),
+          ∑ v ∈ C.filter (fun v => hammingDist (0 : ι → F) v = w),
+            (Finset.univ.filter
+              (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card := by
+  rw [second_moment_linear hadd hsub]
+  congr 1
+  have hmaps : ∀ v ∈ C, hammingDist (0 : ι → F) v ∈ Finset.range (Fintype.card ι + 1) := by
+    intro v _
+    rw [Finset.mem_range, Nat.lt_succ_iff]
+    unfold hammingDist
+    rw [← Finset.card_univ]
+    exact Finset.card_filter_le _ _
+  exact (Finset.sum_fiberwise_of_maps_to hmaps _).symm
+
+/-- **The list-size second moment is determined by the weight enumerator.** Two linear codes with the
+same cardinality and the same weight distribution have the same second moment. Since `N(v,r)` depends
+only on `wt(v)` (`pairBall_weight`), the within-weight fibers contribute equally — this is the exact
+sense in which direction A reduces the second moment to the weight enumerator. -/
+theorem second_moment_eq_of_weightEnum {C C' : Finset (ι → F)}
+    (hadd : ∀ a ∈ C, ∀ b ∈ C, a + b ∈ C) (hsub : ∀ a ∈ C, ∀ b ∈ C, a - b ∈ C)
+    (hadd' : ∀ a ∈ C', ∀ b ∈ C', a + b ∈ C') (hsub' : ∀ a ∈ C', ∀ b ∈ C', a - b ∈ C')
+    (hcard : C.card = C'.card)
+    (hwe : ∀ w, (C.filter (fun v => hammingDist (0 : ι → F) v = w)).card
+                = (C'.filter (fun v => hammingDist (0 : ι → F) v = w)).card)
+    (r : ℕ) :
+    ∑ f : ι → F, (lam C r f).card ^ 2 = ∑ f : ι → F, (lam C' r f).card ^ 2 := by
+  rw [second_moment_grouped_by_weight hadd hsub, second_moment_grouped_by_weight hadd' hsub', hcard]
+  congr 1
+  refine Finset.sum_congr rfl (fun w _ => ?_)
+  -- The two within-weight fibers contribute equal sums.
+  rcases (C.filter (fun v => hammingDist (0 : ι → F) v = w)).eq_empty_or_nonempty with hE | ⟨v0, hv0⟩
+  · have hE' : (C'.filter (fun v => hammingDist (0 : ι → F) v = w)) = ∅ :=
+      Finset.card_eq_zero.mp (by rw [← hwe w, hE, Finset.card_empty])
+    rw [hE, hE']; simp
+  · have hw0 : hammingDist (0 : ι → F) v0 = w := (Finset.mem_filter.mp hv0).2
+    -- On any fiber of weight `w`, every `N(v,r)` equals `N(v0,r)`; so the fiber sum is `card • N(v0)`.
+    have hconst : ∀ (D : Finset (ι → F)), (∀ v ∈ D, hammingDist (0 : ι → F) v = w) →
+        (∑ v ∈ D, (Finset.univ.filter
+            (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card)
+          = D.card • (Finset.univ.filter
+            (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v0 g ≤ r)).card := by
+      intro D hD
+      rw [← Finset.sum_const]
+      exact Finset.sum_congr rfl
+        (fun v hv => pairBall_weight v v0 r (by rw [hD v hv, hw0]))
+    rw [hconst _ (fun v hv => (Finset.mem_filter.mp hv).2),
+        hconst _ (fun v hv => (Finset.mem_filter.mp hv).2), hwe w]
+
 end ArkLib.CodingTheory.ListMoments

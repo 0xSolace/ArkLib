@@ -26,4 +26,3 @@ theorem mem_support_run_of_prover_verifier
         pure_bind, support_pure, Set.mem_singleton_iff]
 end Reduction
 
-#print axioms mem_support_run_of_prover_verifier

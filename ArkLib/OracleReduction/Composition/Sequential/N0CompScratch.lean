@@ -28,11 +28,13 @@ example
   refine ⟨?_, ?_⟩
   · sorry
   · intro out hout
-    rw [OptionT.mem_support_iff, mem_support_bind_iff] at hout
-    obtain ⟨u, _hu, hout⟩ := hout
-    simp only [OptionT.run_bind, OptionT.run_pure, bind_assoc] at hout
-    rw [simulateQ_run'_bind_of_subsingleton] at hout
+    rw [OptionT.mem_support_iff] at hout
+    simp only [OptionT.run_mk] at hout
     rw [mem_support_bind_iff] at hout
+    obtain ⟨u, _hu, hout⟩ := hout
+    simp only [OptionT.run_bind, OptionT.run_pure, bind_assoc, Option.elimM] at hout
+    rw [simulateQ_run'_bind_of_subsingleton, mem_support_bind_iff] at hout
+    obtain ⟨p1, hp1, hout⟩ := hout
     trace_state
     sorry
 

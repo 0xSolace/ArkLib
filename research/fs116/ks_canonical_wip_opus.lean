@@ -57,13 +57,14 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical_wip
   simp only [fiatShamirStraightlineExtractorOfStateRestoration_apply]
   rw [← bind_run_eq_bind_runWithLog_fst (red := { prover := prover, verifier := V.fiatShamir })
     (stmt := stmtIn) (wit := witIn)
-    (F := fun r =>
-      liftM (do
+    (F := fun r => do
+      let extractedWitIn ←
+        liftM (do
           let transcript ← liftM (Messages.deriveTranscriptFS (oSpec := oSpec) stmtIn
             (r.1.1 0))
           liftM (srExtractor stmtIn r.1.2.2 transcript default default) :
-        OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) WitIn) >>=
-        fun extractedWitIn => pure (stmtIn, extractedWitIn, r.2, r.1.2.2))]
+        OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) WitIn)
+      pure (stmtIn, extractedWitIn, r.2, r.1.2.2))]
   trace_state
   sorry
 
