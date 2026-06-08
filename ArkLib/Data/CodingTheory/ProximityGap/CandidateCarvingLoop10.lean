@@ -14,7 +14,9 @@ The proof side (Loop9/P1, and the in-tree `Hab25Johnson` port of Haböck Thm 2) 
 bound for radius **below the Johnson radius** `1 − √ρ`; the disproof reduction (Loop8/O6′) shows the
 only remaining disproof route lives **beyond** it. The two sides meet exactly at the gap value
 
-    η₀ := √ρ − ρ          (the gap-to-capacity at which the radius `1−ρ−η` equals the Johnson radius)
+    η₀ := √ρ − ρ
+
+the gap-to-capacity at which the radius `1−ρ−η` equals the Johnson radius.
 
 This file makes that carving precise and proves both regions are genuinely non-empty (so neither
 side is vacuous), turning the open prize into a single named real parameter: the **beyond-Johnson
@@ -33,8 +35,8 @@ noncomputable def johnsonGapThreshold (ρ : ℝ) : ℝ := Real.sqrt ρ - ρ
 
 /-- **The beyond-Johnson depth is exactly the radius excess over the Johnson radius.** For any
 `ρ, η`, the prize radius `1−ρ−η` exceeds the Johnson radius `1−√ρ` by precisely
-`η₀ − η = (√ρ − ρ) − η`. So "how deep into the open band" and "how far below the Johnson gap" are the
-same quantity. -/
+`η₀ − η = (√ρ − ρ) − η`. So "how deep into the open band" and
+"how far below the Johnson gap" are the same quantity. -/
 theorem prize_radius_excess_eq_depth (ρ η : ℝ) :
     (1 - ρ - η) - (1 - Real.sqrt ρ) = johnsonGapThreshold ρ - η := by
   unfold johnsonGapThreshold; ring
@@ -79,4 +81,41 @@ theorem carving_dichotomy (ρ η : ℝ) :
     (johnsonGapThreshold ρ < η) ∨ (η ≤ johnsonGapThreshold ρ) :=
   lt_or_ge (johnsonGapThreshold ρ) η
 
+/-! ## The fixed-gap disproof bar: beat every polynomial -/
+
+/-- A nonnegative-size proxy `L n` beats every polynomial in the domain parameter if, for every
+degree `d` and every positive leading constant `C`, some domain size `n` has
+`C * n^d < L n`.
+
+Loop 8 reduces fixed-rate, fixed-gap disproofs to list-size growth beyond the prize numerator.
+Once the domain parameter is tied to `2^m`, that means the necessary list-size lower bound must
+beat every polynomial in `n`, not merely grow with `n`. -/
+def BeatsEveryPolynomial (L : ℕ → ℝ) : Prop :=
+  ∀ d : ℕ, ∀ C : ℝ, 0 < C → ∃ n : ℕ, C * (n : ℝ) ^ d < L n
+
+/-- **A polynomial upper bound kills a fixed-gap list-size disproof.**
+
+If `L n ≤ C * n^d` for one polynomial with positive leading constant, then `L` does **not** beat
+every polynomial. Thus an O10-style fixed-gap disproof cannot be based on a merely polynomial
+list-size lower bound; it needs super-polynomial growth in the domain/interleaving parameter. -/
+theorem not_beatsEveryPolynomial_of_polynomial_upper
+    {L : ℕ → ℝ} {d : ℕ} {C : ℝ}
+    (hC : 0 < C) (hupper : ∀ n : ℕ, L n ≤ C * (n : ℝ) ^ d) :
+    ¬ BeatsEveryPolynomial L := by
+  intro hbeat
+  obtain ⟨n, hn⟩ := hbeat d C hC
+  exact not_lt_of_ge (hupper n) hn
+
+/-- Alias in the language of the disproof loop: if the fixed-gap necessary list-size family has
+any polynomial upper envelope, then that family cannot refute the prize numerator. -/
+theorem polynomial_upper_blocks_fixed_gap_refutation
+    {L : ℕ → ℝ} {d : ℕ} {C : ℝ}
+    (hC : 0 < C) (hupper : ∀ n : ℕ, L n ≤ C * (n : ℝ) ^ d) :
+    ¬ BeatsEveryPolynomial L :=
+  not_beatsEveryPolynomial_of_polynomial_upper hC hupper
+
 end ArkLib.ProximityGap.CarvingLoop10
+
+/-! ## Axiom audit -/
+#print axioms ArkLib.ProximityGap.CarvingLoop10.not_beatsEveryPolynomial_of_polynomial_upper
+#print axioms ArkLib.ProximityGap.CarvingLoop10.polynomial_upper_blocks_fixed_gap_refutation
