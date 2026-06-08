@@ -224,4 +224,65 @@ lemma pairBall_perm (σ : Equiv.Perm ι) (v : ι → F) (r : ℕ) :
   · intro g _; funext i; simp
   · intro h _; funext i; simp
 
+/-! ## Scaling invariance and weight-only dependence (over a field)
+
+The pair-ball count `N` is invariant under **permuting** coordinates (`pairBall_perm`) and under
+**coordinate-wise scaling** by nonzero field elements (`pairBall_scale`). Together these say `N(v,r)`
+depends only on the multiset `{nonzero}` pattern up to scaling — i.e. **only on the Hamming weight**
+`wt(v)` (`pairBall_weight`). This is the symmetry that collapses `Σ_{v∈C} N(v,r)` onto the weight
+enumerator `Σ_w A_w · N(w,r)`, completing the reduction of the second moment to `A_w` for any linear
+code (direction A for #232). -/
+
+section Field
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+variable {F : Type*} [Fintype F] [DecidableEq F] [Field F]
+
+/-- **Hamming distance is invariant under coordinate-wise scaling by units.** Multiplying both
+arguments coordinate-wise by `u` with every `u i ≠ 0` leaves the distance unchanged (a field has no
+zero divisors, so `u i · a i = u i · b i ↔ a i = b i`). -/
+lemma hammingDist_mul_left {u : ι → F} (hu : ∀ i, u i ≠ 0) (a b : ι → F) :
+    hammingDist (fun i => u i * a i) (fun i => u i * b i) = hammingDist a b := by
+  unfold hammingDist
+  congr 1
+  ext i
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and, ne_eq]
+  constructor
+  · intro h hab; exact h (by rw [hab])
+  · intro h hab; exact h (mul_left_cancel₀ (hu i) hab)
+
+/-- **Scaling invariance of the pair-ball count `N`.** `N(v, r) = N(u·v, r)` for any `u` with all
+coordinates nonzero: `g ↦ u·g` bijects, preserving both `d(0,·)` and `d(v,·)`. -/
+lemma pairBall_scale {u : ι → F} (hu : ∀ i, u i ≠ 0) (v : ι → F) (r : ℕ) :
+    (Finset.univ.filter (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist v g ≤ r)).card
+      = (Finset.univ.filter
+          (fun g => hammingDist (0 : ι → F) g ≤ r ∧ hammingDist (fun i => u i * v i) g ≤ r)).card := by
+  have huinv : ∀ i, (u i)⁻¹ ≠ 0 := fun i => inv_ne_zero (hu i)
+  refine Finset.card_nbij' (fun g i => u i * g i) (fun h i => (u i)⁻¹ * h i) ?_ ?_ ?_ ?_
+  · intro g hg
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hg ⊢
+    obtain ⟨h1, h2⟩ := hg
+    have e0 : hammingDist (fun i => u i * (0 : ι → F) i) (fun i => u i * g i)
+        = hammingDist (0 : ι → F) g := hammingDist_mul_left hu 0 g
+    have ev : hammingDist (fun i => u i * v i) (fun i => u i * g i)
+        = hammingDist v g := hammingDist_mul_left hu v g
+    simp only [Pi.zero_apply, mul_zero] at e0
+    exact ⟨e0 ▸ h1, ev ▸ h2⟩
+  · intro h hh
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hh ⊢
+    obtain ⟨h1, h2⟩ := hh
+    have e0 : hammingDist (fun i => (u i)⁻¹ * (0 : ι → F) i) (fun i => (u i)⁻¹ * h i)
+        = hammingDist (0 : ι → F) h := hammingDist_mul_left huinv 0 h
+    have ev : hammingDist (fun i => (u i)⁻¹ * ((fun j => u j * v j) i)) (fun i => (u i)⁻¹ * h i)
+        = hammingDist (fun i => u i * v i) h := hammingDist_mul_left huinv (fun i => u i * v i) h
+    simp only [Pi.zero_apply, mul_zero] at e0
+    have hvv : (fun i => (u i)⁻¹ * ((fun j => u j * v j) i)) = v := by
+      funext i; simp only; rw [← mul_assoc, inv_mul_cancel₀ (hu i), one_mul]
+    rw [hvv] at ev
+    exact ⟨e0 ▸ h1, ev ▸ h2⟩
+  · intro g _; funext i; simp only; rw [← mul_assoc, inv_mul_cancel₀ (hu i), one_mul]
+  · intro h _; funext i; simp only; rw [← mul_assoc, mul_inv_cancel₀ (hu i), one_mul]
+
+end Field
+
 end ArkLib.CodingTheory.ListMoments

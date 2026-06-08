@@ -259,11 +259,28 @@ needs the classical GS *decoder construction* (absent from mathlib). So P1 is a 
 proof** — the combinatorial `q`-independent core in the large-gap regime — exactly as partial as the
 disproof side, and meeting it at the Johnson threshold `η = √ρ−ρ`.
 
-### Synthesis: the problem is carved at the Johnson threshold `η₀ = √ρ−ρ`
+### Synthesis: the problem is carved at the Johnson threshold `η₀ = √ρ−ρ` (Loop10, verified)
 - `η > η₀` (large gap): **provable** — radius below Johnson, `q`-independent list budget (P1/Loop9).
 - `η ≤ η₀` (small gap): **open** — radius in the band `(1−√ρ, 1−ρ−η]`; disproof needs a fixed-gap
   `q`-growing list-size lower bound (O6′/Loop8), proof needs beyond-UDR GS decoding. Both partial
   sides meet exactly here; the prize lives in this band.
+
+**`CandidateCarvingLoop10.lean` (sorry-free, axiom-clean)** makes this exact:
+`below_johnson_iff_large_gap` (`1−ρ−η < 1−√ρ ↔ η₀ < η`), `prize_radius_excess_eq_depth` (the
+beyond-Johnson **depth** `ζ := η₀ − η` is *literally* the radius excess `(1−ρ−η) − (1−√ρ)`),
+`johnsonGapThreshold_pos` (open band non-empty), `provable_region_nonempty` (P1 closes a real slice
+`η ∈ (η₀, 1−ρ]`), `carving_dichotomy`. **The open prize is exactly the regime `ζ > 0`.**
+
+### In-tree proof-side state (Hab25 = Haböck Thm 2, the Johnson-range MCA bound)
+`Hab25Johnson.lean` ports Haböck ePrint 2025/2110 Thm 2: in the **Johnson range** (`δ < 1−√ρ`, i.e.
+the large-gap side `η > η₀`), `|E| ≤ (ℓ⁷/3)(ρn)²` with `ℓ=(m+½)/√ρ` (`m` = GS *multiplicity*), the
+deep GS-interpolation/discriminant/Hensel steps isolated as named residuals (`Hab25JohnsonResiduals`,
+no `sorry`). So the proof side is *reduced to named classical GS facts* up to the Johnson radius.
+**Two consequences:** (1) the bound carries `n²` → it matches the prize RHS `(2^m)^{c₁}/q` only under
+the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exactly the O9 fidelity point).
+(2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
+cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
+list-decodability), confirming the carving is at the true mathematical frontier.
 
 ## Open angles not yet tried (to avoid repetition)
 

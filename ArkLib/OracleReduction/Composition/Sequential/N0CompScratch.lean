@@ -26,3 +26,22 @@ theorem run_append_empty (stmt : Stmt₁) (wit : Wit₁) :
   unfold Reduction.run Reduction.append
   rw [Prover.append_run_empty]
   simp only [liftM_bind, bind_assoc, liftM_pure, pure_bind]
+
+variable [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+  {init : ProbComp Unit} {impl : QueryImpl oSpec (StateT Unit ProbComp)}
+  {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+
+example
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
+    (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
+  unfold perfectCompleteness at h₁ h₂ ⊢
+  rw [completeness_iff_completenessFromRun] at h₁ h₂ ⊢
+  unfold completenessFromRun at h₁ h₂ ⊢
+  intro stmt wit hmem
+  dsimp only
+  rw [run_append_empty]
+  trace_state
+  sorry
+
+end Reduction
