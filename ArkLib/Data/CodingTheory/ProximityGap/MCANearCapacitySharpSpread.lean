@@ -128,6 +128,7 @@ theorem aNode_strictMono (m k s : ℕ) {j j' : ℕ} (hj : j < j') (hj'k : j' ≤
   have hmono : gap m k s j ≤ gap m k s j' := gap_mono m k s (by omega) hj'k
   rw [aNode, aNode]; omega
 
+omit [Fact p.Prime] [NeZero n] in
 /-- Every window node is `< n` (the top gap is `≤ m = n-1-k`, the top index is `k`). -/
 theorem aNode_lt (k s : ℕ) {j : ℕ} (hj : j ≤ k) (hkn : k + 1 ≤ n) :
     aNode (n - 1 - k) k s j < n := by
@@ -174,6 +175,7 @@ theorem Wsharp_natsum (k s : ℕ) (hkn : k + 1 ≤ n) (hs : s ≤ (k + 1) * (n -
   simp only [aNode]
   rw [Finset.sum_add_distrib, gapProfile_sum (n - 1 - k) k s hs]
 
+omit [Fact p.Prime] in
 /-- The window node-sum is `< n²`, hence `< p`. -/
 theorem Wsharp_natsum_lt (hp : n * n ≤ p) (k s : ℕ) (hkn : k + 1 ≤ n) :
     (∑ i ∈ Wsharp n k s, (i : ℕ)) < p := by
