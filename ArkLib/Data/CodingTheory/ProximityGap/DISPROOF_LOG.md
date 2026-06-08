@@ -321,6 +321,20 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop15 — rate-shift bridge: prize radius = capacity of shifted rate `ρ+η` (leans TRUE)
+**Verified sorry-free, axiom-clean in `CandidateBridgeLoop15.lean`:** `prize_radius_eq_shifted_capacity`
+(`1−ρ−η = 1−(ρ+η)`), `prize_agreement_eq_shifted_rate`, `degree_buffer` (`(ρ+η)n − ρn = ηn`),
+`agreement_exceeds_dimension`. **Structural insight:** the prize is "list-decode the rate-`ρ` subcode
+at the *capacity radius of the rate-`ρ'=ρ+η` supercode*." Crites–Stewart's at-capacity disproof
+(Loop14) produces folds close to rate-`ρ'` codewords (degree `< (ρ+η)n`); but prize codewords have
+degree `< ρn`, so the witnesses live in the degree window `[ρn, (ρ+η)n)` — a buffer of `ηn` degrees
+**above** the prize code. The at-capacity disproof therefore **does not descend to the prize**; the
+gap `η` is exactly that `ηn`-degree buffer (= Loop4's wall). Since the prize demands *higher*
+agreement (`ρ'n`) against a *smaller* code (`ρn`) than the disproved supercode case, it is strictly
+*more protected* — a structural argument **leaning the prize toward TRUE**. The open core is precisely
+whether the `ηn` buffer also tames beyond-Johnson clustering (not just single-poly constructions,
+which Loop4 already handles).
+
 ### Loop14 — CLOSED (disproved): the AT-CAPACITY CA/MCA conjecture is false
 A genuine *sibling* of the prize is now completely closed as **disproved**, sorry-free and
 axiom-clean in `CandidateDisproofLoop14.lean`. Consuming the Crites–Stewart construction (eprint
