@@ -203,7 +203,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicIntegrality
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWeightRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWfreeCleared
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1WeightBoundRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1XiOrderExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Bijection

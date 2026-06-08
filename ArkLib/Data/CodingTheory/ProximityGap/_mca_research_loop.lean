@@ -1,5 +1,4 @@
-import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
-import ArkLib.Data.CodingTheory.BinomialEntropyBound
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Prize
 
 open Classical
 open scoped BigOperators
@@ -8,17 +7,19 @@ namespace ArkLib.CodingTheory.Research
 
 /-- Open beyond-UDR Guruswami-Sudan mass-bound route for the prize. -/
 def mcaPrize_beyond_udr_bound (domain : Type) [Fintype domain] : Prop :=
-  ∃ τ, GrandChallengesLattice.mcaPrizeLatticeResolved domain τ
+  ∃ τ, ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved domain τ
 
 /-- Lemma bounding the density of false-positive roots for univariate polynomials. -/
 lemma root_density_bound_univ {F : Type} [Field F] [Fintype F] (p : Polynomial F) (hp : p ≠ 0) :
     (Finset.univ.filter fun x => p.eval x = 0).card ≤ p.natDegree := by
   have h_roots := Polynomial.card_roots hp
-  have h_subset : (Finset.univ.filter fun x => p.eval x = 0).val ≤ p.roots := by
+  have h_subset : (Finset.univ.filter fun x => p.eval x = 0) ⊆ p.roots.toFinset := by
     intro x hx
-    simp only [Finset.mem_val, Finset.mem_filter, Finset.mem_univ, true_and] at hx
-    rw [Polynomial.mem_roots hp]
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hp]
     exact hx
-  exact le_trans (Multiset.card_le_of_le h_subset) h_roots
+  have h_card := Finset.card_le_card h_subset
+  have h_nodup := Multiset.toFinset_card_le p.roots
+  exact le_trans h_card (le_trans h_nodup h_roots)
 
 end ArkLib.CodingTheory.Research

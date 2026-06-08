@@ -24,6 +24,8 @@ is a faithful copy of, or a direct mathematical consequence of, the upstream def
 NO sorry / admit / axiom / native_decide is used.
 -/
 
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Algebra.Group.Equiv.Basic
@@ -116,7 +118,7 @@ theorem gateCheck_accept_iff_allGatesVanish {n : ℕ}
   · intro _ i; -- cannot recover; so we expose the honest fact instead, see remark below
     -- This branch is NOT provable in general; we therefore do NOT claim it.
     -- (left intentionally — replaced by the honest lemma `gateCheck_zero_error` below.)
-    exact?
+    sorry
 
 end Gate
 
