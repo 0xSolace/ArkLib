@@ -174,7 +174,11 @@ theorem append_perfectCompleteness_message
       · simpa only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
           OptionT.mk, bind_pure_comp, support_map, Set.mem_image, Option.some.injEq,
           exists_eq_right] using hP₁
-      · sorry -- V₁ leaf: simulateQ inl-lift strip from hV₁
+      · simp only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+          OptionT.mk, bind_pure_comp]
+        rw [support_simulateQ_eq_OracleComp_of_superSpec (h_supp := by intro β q; rfl)]
+        simpa only [support_map, Set.mem_image, Option.some.injEq, OptionT.run,
+          exists_eq_right] using hV₁
       · simp [Option.getM, OptionT.monad_pure_eq_pure,
           OptionT.mem_support_OptionT_pure_run_some_iff])
     simp only at key₁
@@ -210,7 +214,11 @@ theorem append_perfectCompleteness_message
       · simpa only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
           OptionT.mk, bind_pure_comp, support_map, Set.mem_image, Option.some.injEq,
           exists_eq_right] using hP₂core
-      · sorry -- V₂ leaf: simulateQ inl-lift strip from hV₂
+      · simp only [liftM, MonadLift.monadLift, monadLift, MonadLiftT.monadLift, OptionT.lift,
+          OptionT.mk, bind_pure_comp]
+        rw [support_simulateQ_eq_OracleComp_of_superSpec (h_supp := by intro β q; rfl)]
+        simpa only [support_map, Set.mem_image, Option.some.injEq, OptionT.run,
+          exists_eq_right] using hV₂
       · simp [Option.getM, OptionT.monad_pure_eq_pure,
           OptionT.mem_support_OptionT_pure_run_some_iff])
     simp only at key₂
