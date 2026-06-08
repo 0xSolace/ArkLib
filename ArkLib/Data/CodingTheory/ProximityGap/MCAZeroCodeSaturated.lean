@@ -70,9 +70,7 @@ theorem epsMCA_bot_eq_one_of_saturated {δ : ℝ≥0}
     have hφ : φ (↑(e.symm γ) : ι) = γ := by
       have hd : φ (↑(e.symm γ) : ι) = e ⟨(↑(e.symm γ) : ι), hi₀⟩ := dif_pos hi₀
       rw [hd]
-      conv_rhs => rw [← Equiv.apply_symm_apply e γ]
-      congr 1
-      exact Subtype.ext rfl
+      exact Equiv.apply_symm_apply e γ
     rw [← hφ]
     exact mcaEvent_slopeStack hAcard_le hi₀
   -- `Pr_γ[mcaEvent] = 1`, hence `ε_mca ≥ 1`.
@@ -81,7 +79,8 @@ theorem epsMCA_bot_eq_one_of_saturated {δ : ℝ≥0}
       (slopeStack A φ 0) (slopeStack A φ 1) γ] = 1 := by
     rw [prob_uniform_eq_card_filter_div_card,
       Finset.filter_true_of_mem (fun γ _ => hall γ), Finset.card_univ]
-    rw [ENNReal.div_self (by exact_mod_cast hcardF_pos.ne') (ENNReal.natCast_ne_top _)]
+    simp only [ENNReal.coe_natCast]
+    exact ENNReal.div_self (by exact_mod_cast hcardF_pos.ne') (ENNReal.natCast_ne_top _)
   rw [← hPr1]
   unfold epsMCA
   exact le_iSup (fun u : WordStack F (Fin 2) ι =>
