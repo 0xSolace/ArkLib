@@ -749,6 +749,7 @@ import ArkLib.OracleReduction.LiftContext.OracleStatementPreserving
 import ArkLib.OracleReduction.LiftContext.Reduction
 import ArkLib.OracleReduction.OracleInterface
 import ArkLib.OracleReduction.Prelude
+import ArkLib.OracleReduction.ProbOneBindCompose
 import ArkLib.OracleReduction.ProtocolSpec.Basic
 import ArkLib.OracleReduction.ProtocolSpec.Cast
 import ArkLib.OracleReduction.ProtocolSpec.SeqCompose

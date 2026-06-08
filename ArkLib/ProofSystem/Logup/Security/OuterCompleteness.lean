@@ -659,8 +659,10 @@ theorem outer_perState_none_le
           (m₀ := honestMultiplicity stmtIn.2) (x := c)
           (m₂ := honestHelpers params stmtIn.2 c) (batch := a)).1.symm ▸ hacc)
     rw [optionT_run_bind, hv] at hxnone
-    simp only [optionT_run_lift, OracleComp.liftComp_pure, _root_.map_pure, pure_bind,
-      OptionT.run_pure, support_pure, Set.mem_singleton_iff, Option.getM, reduceCtorEq] at hxnone
+    simp only [liftM_pure, OptionT.run_pure, pure_bind, Option.getM] at hxnone
+    rw [← bind_pure_comp, optionT_run_bind, OptionT.run_pure, pure_bind,
+      OptionT.run_pure, support_pure] at hxnone
+    simp only [Set.mem_singleton_iff, reduceCtorEq] at hxnone
   · rw [if_pos hacc]
     refine le_trans (mul_le_mul_left' probEvent_le_one _) (le_of_eq ?_)
     rw [mul_one]
