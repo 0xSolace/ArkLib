@@ -3056,6 +3056,7 @@ theorem fiatShamirKnowledgeExec_loggedExtractor_eq_direct
         (Prover.runWithLog stmtIn witIn P))
       (pure none) (fun prLog => Klog prLog.1) =
     Option.elimM (some <$> simulateQ impl directProver) (pure none) Kdir
+  trace_state
   rw [stateT_option_elimM_map_eq (f := Prod.fst) (k := Klog)]
   simp only [Functor.map_map, Function.comp_apply, Option.map_some]
   have hProver :=
