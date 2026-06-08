@@ -36,11 +36,13 @@ Contents:
   `1 − ρ^{m/(m+1)}` family interpolates Johnson→capacity; the `1 − ρ^{2/3}` candidate is the
   `m = 2` member), and `candidate_between_johnson_and_capacity`.
 * List-decoding engine — `fiber_root_card_le`, `grid_zero_count_le`, `on_curve_iff_mem_roots`,
-  `gs_list_card_le` (the GS list-size bound `|list| ≤ deg_Y(H)`), `interpolation_kernel_nontrivial`
-  (a low-degree interpolant exists by counting), `eval_zero_of_agreement_gt_degree`
-  (agreement ⇒ the codeword is a root), `natDegree_eval_le` (the explicit GS degree budget), and
-  `sudan_codeword_list_bound` (the quantitative Sudan list bound `|L| ≤ deg_Y(H)` for codewords
-  agreeing beyond `deg_X(H) + (k-1)·deg_Y(H)`) — the full combinatorial *and* quantitative GS core.
+  `gs_list_card_le` (the GS root-count bound `|roots H| ≤ deg_Y(H)`),
+  `gs_candidate_finset_card_le` (the finite candidate-list wrapper),
+  `interpolation_kernel_nontrivial` (a low-degree interpolant exists by counting),
+  `eval_zero_of_agreement_gt_degree` (agreement ⇒ the codeword is a root), `natDegree_eval_le`
+  (the explicit GS degree budget), and `sudan_codeword_list_bound` (the quantitative Sudan list
+  bound `|L| ≤ deg_Y(H)` for codewords agreeing beyond `deg_X(H) + (k-1)·deg_Y(H)`) — the full
+  combinatorial *and* quantitative GS core.
 * Multiplicities — `sum_rootMultiplicity_le`, `eval_zero_of_multiplicity_agreement`, and
   `gs_multiplicity_list_bound` (the multiplicity-`r` root counting and list bound).
 * Quantitative GS parameters — `sudan_params_feasible` (the pure-arithmetic feasibility of the GS
@@ -180,6 +182,20 @@ Decoding Challenge; the open part is the interpolation degree budget pinning `δ
 theorem gs_list_card_le (H : Polynomial (Polynomial F)) :
     H.roots.card ≤ H.natDegree :=
   Polynomial.card_roots' H
+
+/-- **Finite GS candidate-list bound.** If every candidate message polynomial in a finite family
+`Ps` lies on a nonzero interpolation curve `H`, then the candidate list has cardinality at most
+`deg_Y(H)`. This is the downstream finite-set consumer form of `gs_list_card_le`. -/
+theorem gs_candidate_finset_card_le (H : Polynomial (Polynomial F)) (hH : H ≠ 0)
+    (Ps : Finset (Polynomial F)) (hcurve : ∀ p ∈ Ps, Polynomial.eval p H = 0) :
+    Ps.card ≤ H.natDegree := by
+  classical
+  have hsub : Ps.val ⊆ H.roots := by
+    intro p hp
+    rw [← Finset.mem_def] at hp
+    rw [Polynomial.mem_roots hH]
+    exact hcurve p hp
+  exact Polynomial.card_le_degree_of_subset_roots hsub
 
 /-- **GS degree budget.** For `H ∈ F[X][Y]` whose `Y`-coefficients all have `X`-degree `≤ B`
 (`B = deg_X H`) and a message `p ∈ F[X]`, the substituted univariate `H(X, p(X)) = eval p H` has
@@ -372,5 +388,7 @@ theorem refute_naive_alg_independence_bound {ι F : Type*} [Fintype ι] [Fintype
   have hlt : Fintype.card F < Fintype.card F ^ 2 := by
     rw [pow_two]; exact lt_mul_of_one_lt_left (by omega) (by omega)
   omega
+
+#print axioms gs_candidate_finset_card_le
 
 end ArkLib.ProximityGap.Issue232Bricks
