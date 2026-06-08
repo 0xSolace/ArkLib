@@ -311,6 +311,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentPairCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentPairs
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
+import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentShell
 import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateDerandomization
