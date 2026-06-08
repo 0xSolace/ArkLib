@@ -321,6 +321,20 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### Loop24 — the per-fold recursion criterion: constant blowup ⟹ polynomial ⟹ prize TRUE
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop24.lean`:** `fold_recursion_telescopes`
+(`T(j+1)≤a·T(j)` ⟹ `T(m)≤aᵐ·T(0)`), `constant_blowup_polynomial` (`a≤2^c` ⟹ `aᵐ≤(2^m)^c`),
+`fold_list_polynomial_of_constant_blowup` (combined: `T(m)≤(2^m)^c·T(0)`). **The quantitative
+dichotomy of the FRI tower (Loop23):** writing `T j` for the list size at fold level `j`, the prize is
+- **TRUE** iff the per-fold blowup `a` is a *constant* (`N`-independent, `a≤2^c`): then over `m=log₂N`
+  folds the list `≤ (2^m)^c·T(0)` = **polynomial in the domain size** `2^m`, clearing the prize RHS
+  with `c₁=c` (then Loop11/13/17);
+- **FALSE** iff the per-fold blowup *grows with `N`* (`a=a(N)→∞`): then `aᵐ` is super-polynomial in
+  `2^m` ⇒ Loop8 `q`-growth.
+A single fold's single orbit is absorbed (Loop21); the open question is exactly whether the per-fold
+proximity-gap soundness blowup *stays `N`-independent across all `m` folds* for plain
+smooth-deterministic RS. This is the precise quantitative form of the FRI/STIR-to-capacity frontier.
+
 ### Loop23 — the prize is SELF-SIMILAR under folding: it IS the FRI/STIR soundness frontier
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop23.lean`:** `pow_fold_mem` (the power map
 `x↦x^d` sends `μ_N` onto `μ_{N/d}` when `d∣N` — the FRI fold of the smooth domain),
