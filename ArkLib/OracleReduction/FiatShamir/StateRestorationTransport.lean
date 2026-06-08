@@ -1675,8 +1675,9 @@ theorem fiatShamirKnowledgeExec_runCollapse
                 (StmtIn × WitIn × StmtOut × WitOut))) := by
     intro d extractedWitIn
     simp only [OptionT.run_pure, simulateQ_pure]
-  simp [K, QueryImpl.addLift_def, hLift, hPure, OptionT.run_bind, simulateQ_option_elimM,
-    simulateQ_pure]
+  simp [K, QueryImpl.addLift_def, hLift, hPure, OptionT.run_bind, OptionT.run_mk,
+    simulateQ_option_elimM, simulateQ_bind, simulateQ_map, simulateQ_pure, Option.elimM,
+    bind_assoc, pure_bind, map_bind]
 
 /-- Canonical basic Fiat-Shamir knowledge-soundness transfer for the shared cached challenge
 table. This is the knowledge-soundness analogue of
