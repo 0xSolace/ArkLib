@@ -70,10 +70,9 @@ theorem hyp30_max_agreement_not_k_minus_one (v : ι → F) :
     apply Finset.card_le_card
     intro i hi
     simp only [mem_filter, mem_univ, true_and]
-    apply congrArg
     have h_mem : domain i ∈ S.map domain := Finset.mem_map_of_mem domain hi
     have eval_eq := hp_eval (domain i) h_mem
-    dsimp [c]
+    change p.eval (domain i) = v i
     rw [eval_eq]
     dsimp [f]
     have hx : ∃ j ∈ S, domain j = domain i := ⟨i, hi, rfl⟩
