@@ -47,12 +47,16 @@ theorem run_empty (s : Stmt₂) (w : Wit₂) :
 theorem appendRunRightResidual_holds_empty (stmt : Stmt₁) (wit : Wit₁) :
     appendRunRightResidual (P₁ := P₁) (P₂ := P₂) stmt wit := by
   unfold appendRunRightResidual
-  have hcont : (P₁.append P₂).continueFromTo stmt wit (⟨m, by omega⟩ : Fin (m + 0 + 1))
-      (Fin.last (m + 0)) = pure := by
-    funext rk; exact continueFromTo_self _ _ _ _ rk
-  rw [hcont]
-  simp only [run_eq_runToRound_last (prover := P₁), run_empty, append_output_empty,
-    liftM_bind, bind_assoc, pure_bind]
+  have hcollapse :
+      (Prover.runToRound (⟨m, by omega⟩ : Fin (m + 0 + 1)) stmt wit (P₁.append P₂) >>=
+        (P₁.append P₂).continueFromTo stmt wit (⟨m, by omega⟩ : Fin (m + 0 + 1)) (Fin.last (m + 0)))
+      = Prover.runToRound (⟨m, by omega⟩ : Fin (m + 0 + 1)) stmt wit (P₁.append P₂) := by
+    have hcont : (P₁.append P₂).continueFromTo stmt wit (⟨m, by omega⟩ : Fin (m + 0 + 1))
+        (Fin.last (m + 0)) = pure := by
+      funext rk; exact continueFromTo_self _ _ _ _ rk
+    rw [hcont, bind_pure]
+  simp only [hcollapse, run_eq_runToRound_last (prover := P₁), run_empty, append_output_empty,
+    liftM_bind, bind_assoc]
   apply eq_of_heq
   have hseam := append_runToRound_seam (P₁ := P₁) (P₂ := P₂) (stmt := stmt) (wit := wit)
   refine bind_heq_congr rfl ?_ hseam ?_

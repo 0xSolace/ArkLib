@@ -30,7 +30,7 @@ noncomputable section
 
 open Polynomial MvPolynomial OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Module
   Binius Verifier
-open Binius.BinaryBasefold Binius.RingSwitching Binius.FRIBinius.CoreInteractionPhase
+open Binius.BinaryBasefold RingSwitching Binius.FRIBinius.CoreInteractionPhase
 
 variable (κ : ℕ) [NeZero κ]
 variable (L : Type) [Field L] [Fintype L] [DecidableEq L] [CharP L 2]

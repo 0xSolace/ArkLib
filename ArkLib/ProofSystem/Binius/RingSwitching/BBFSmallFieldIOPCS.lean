@@ -46,7 +46,7 @@ in contrast to `FRIBinius/CoreInteractionPhase.lean` which fuses the sumcheck-fo
 namespace Binius.RingSwitching.BBFSmallFieldIOPCS
 
 open Binius.BinaryBasefold Binius.BinaryBasefold.FullBinaryBasefold
-open Binius.RingSwitching Binius.RingSwitching.FullRingSwitching
+open RingSwitching RingSwitching.FullRingSwitching
 open Polynomial MvPolynomial OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Module
 open scoped NNReal
 
@@ -763,6 +763,11 @@ Ring-switching + Binary Basefold as MLIOPCS.
 This is a direct instantiation of `fullOracleReduction_perfectCompleteness` from
 `RingSwitching/General.lean` with the Binary Basefold MLIOPCS. -/
 theorem bbf_fullOracleReduction_perfectCompleteness (hInit : NeverFail init)
+    (hRounds : SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
+      (κ := κ) (L := L) (K := K) (P := β_rs) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := (bbfMLIOPCS 𝔽q β γ_repetitions
+        (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).toAbstractOStmtIn)
+      (init := init) (impl := impl))
     (hCoreSeqComposePerfectCompleteness :
       let mlIOPCS := bbfMLIOPCS 𝔽q β γ_repetitions
         (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
@@ -815,7 +820,7 @@ theorem bbf_fullOracleReduction_perfectCompleteness (hInit : NeverFail init)
     (𝓑 := 𝓑)
     (bbfMLIOPCS 𝔽q β γ_repetitions
       (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑))
-    init hInit
+    init hInit hRounds
     hCoreSeqComposePerfectCompleteness hCoreAppendPerfectCompleteness
     hBatchingCoreAppendPerfectCompleteness hFullAppendPerfectCompleteness
 
