@@ -88,7 +88,7 @@ theorem Wpoly_degree_lt (k : ℕ) (s : Finset F) (hs : s.card = k + 1) :
   set σ := ∑ x ∈ s, x with hσ
   have hBmonic : (∏ x ∈ s, (X - C x)).Monic := monic_prod_X_sub_C _ _
   have hBdeg : (∏ x ∈ s, (X - C x)).natDegree = k + 1 := by
-    rw [natDegree_prod _ _ (fun x _ => X_sub_C_ne_zero x)]; simp [natDegree_X_sub_C, hs]
+    rw [natDegree_prod _ _ (fun x _ => X_sub_C_ne_zero x)]; simp [hs]
   have hBtop : (∏ x ∈ s, (X - C x)).coeff (k + 1) = 1 := by
     have h := hBmonic.coeff_natDegree; rwa [hBdeg] at h
   have hBnext : (∏ x ∈ s, (X - C x)).coeff k = -σ := by
@@ -202,7 +202,108 @@ theorem epsMCA_ge_of_window_family [NeZero n] (domain : Fin n ↪ F) (k : ℕ) (
     (![urow0 domain k, urow1 domain k] : WordStack F (Fin 2) (Fin n)) G hmca
   rwa [hGcard] at hengine
 
+omit [DecidableEq F] in
+/-- **Sunflower-family near-capacity MCA lower bound.** Fix a base `B` of `k` coordinates and a
+disjoint tail `T`. The windows `insert i B`, for `i ∈ T`, all have size `k+1`, and their
+window-sums are distinct under the domain embedding because only the tail coordinate varies.
+Therefore `ε_mca(C, 1-(k+1)/n) ≥ |T|/|F|`. The concrete prose instance takes `B = {0,…,k-1}`
+and `T = {k,…,n-1}`, yielding the advertised `n-k` windows. -/
+theorem epsMCA_ge_of_sunflower_family [NeZero n] (domain : Fin n ↪ F)
+    (k : ℕ) (hk : 1 ≤ k) (B T : Finset (Fin n))
+    (hB : B.card = k) (hdisj : Disjoint B T) :
+    ((T.card : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)
+      ≤ epsMCA (F := F) (A := F)
+          (ReedSolomon.code (domain := domain) k : Set (Fin n → F))
+          (1 - ((k + 1 : ℕ) : ℝ≥0) / (n : ℝ≥0)) := by
+  classical
+  set 𝒮 : Finset (Finset (Fin n)) := T.image (fun i => insert i B) with h𝒮
+  have hnot_mem (i : Fin n) (hi : i ∈ T) : i ∉ B := by
+    intro hiB
+    exact (Finset.disjoint_left.mp hdisj) hiB hi
+  have hwindowInj : Set.InjOn (fun i : Fin n => insert i B) T := by
+    intro i hi j hj hij
+    have hiB : i ∉ B := hnot_mem i hi
+    have hmem : i ∈ insert j B := by
+      simpa [hij] using (Finset.mem_insert_self i B)
+    rw [Finset.mem_insert] at hmem
+    exact hmem.elim id (fun hiB' => False.elim (hiB hiB'))
+  have h𝒮card : 𝒮.card = T.card := by
+    rw [h𝒮]
+    exact Finset.card_image_of_injOn hwindowInj
+  have hcard : ∀ S ∈ 𝒮, S.card = k + 1 := by
+    intro S hS
+    rw [h𝒮, Finset.mem_image] at hS
+    rcases hS with ⟨i, hi, rfl⟩
+    simp [hnot_mem i hi, hB]
+  have hinj : Set.InjOn (fun S => -(∑ i ∈ S, domain i)) 𝒮 := by
+    intro S hS S' hS' heq
+    have hSfin : S ∈ 𝒮 := by simpa using hS
+    have hS'fin : S' ∈ 𝒮 := by simpa using hS'
+    rw [h𝒮, Finset.mem_image] at hSfin hS'fin
+    rcases hSfin with ⟨i, hi, rfl⟩
+    rcases hS'fin with ⟨j, hj, rfl⟩
+    have hiB : i ∉ B := hnot_mem i hi
+    have hjB : j ∉ B := hnot_mem j hj
+    have hsumEq : (∑ x ∈ insert i B, domain x) = ∑ x ∈ insert j B, domain x := by
+      simpa using congrArg Neg.neg heq
+    rw [Finset.sum_insert hiB, Finset.sum_insert hjB] at hsumEq
+    have hdomain : domain i = domain j := add_right_cancel hsumEq
+    have hij : i = j := domain.injective hdomain
+    subst j
+    rfl
+  have hbound := epsMCA_ge_of_window_family domain k hk 𝒮 hcard hinj
+  rwa [h𝒮card] at hbound
+
+omit [DecidableEq F] in
+/-- **Complement-tail sunflower endpoint.** The canonical tail `Finset.univ \ B` packages the
+headline finite sunflower instance directly: for any base `B` of size `k`, the disjoint complement
+tail has `n-k` coordinates, hence the window family `insert i B` gives
+`ε_mca(C, 1-(k+1)/n) ≥ (n-k)/|F|`. -/
+theorem epsMCA_ge_of_sunflower_compl [NeZero n] (domain : Fin n ↪ F)
+    (k : ℕ) (hk : 1 ≤ k) (B : Finset (Fin n)) (hB : B.card = k) :
+    (((n - k : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞))
+      ≤ epsMCA (F := F) (A := F)
+          (ReedSolomon.code (domain := domain) k : Set (Fin n → F))
+          (1 - ((k + 1 : ℕ) : ℝ≥0) / (n : ℝ≥0)) := by
+  classical
+  set T : Finset (Fin n) := (Finset.univ : Finset (Fin n)) \ B with hT
+  have hdisj : Disjoint B T := by
+    rw [hT, Finset.disjoint_left]
+    intro x hxB hxT
+    exact (Finset.mem_sdiff.mp hxT).2 hxB
+  have hbound := epsMCA_ge_of_sunflower_family domain k hk B T hB hdisj
+  have hTcard : T.card = n - k := by
+    rw [hT, Finset.card_sdiff, Finset.card_univ, Fintype.card_fin, Finset.inter_univ, hB]
+  rwa [hTcard] at hbound
+
+omit [DecidableEq F] in
+/-- **Prefix sunflower endpoint.** When `k ≤ n`, instantiate the base as the embedded prefix
+`Fin k ↪ Fin n`. This exposes the advertised finite sunflower lower bound with no caller-supplied
+base:
+`ε_mca(C, 1-(k+1)/n) ≥ (n-k)/|F|`. -/
+theorem epsMCA_ge_of_prefix_sunflower [NeZero n] (domain : Fin n ↪ F)
+    (k : ℕ) (hk : 1 ≤ k) (hkn : k ≤ n) :
+    (((n - k : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞))
+      ≤ epsMCA (F := F) (A := F)
+          (ReedSolomon.code (domain := domain) k : Set (Fin n → F))
+          (1 - ((k + 1 : ℕ) : ℝ≥0) / (n : ℝ≥0)) := by
+  classical
+  let embed : Fin k → Fin n := fun i => Fin.castLE hkn i
+  set B : Finset (Fin n) := (Finset.univ : Finset (Fin k)).image embed with hBdef
+  have hembed : Function.Injective embed := by
+    intro i j hij
+    exact Fin.ext (by simpa [embed] using congrArg Fin.val hij)
+  have hBcard : B.card = k := by
+    rw [hBdef]
+    simpa using
+      (Finset.card_image_of_injective
+        (s := (Finset.univ : Finset (Fin k))) (f := embed) hembed)
+  exact epsMCA_ge_of_sunflower_compl domain k hk B hBcard
+
 #print axioms mcaEvent_of_window
 #print axioms epsMCA_ge_of_window_family
+#print axioms epsMCA_ge_of_sunflower_family
+#print axioms epsMCA_ge_of_sunflower_compl
+#print axioms epsMCA_ge_of_prefix_sunflower
 
 end ProximityGap.MCANearCapacityGK
