@@ -216,6 +216,7 @@ for the first sum-check lift, the first-phase analogue of `secondSumcheckCoheren
       simp [firstSumcheckOracleLens, firstSumcheckStmtLens, OracleStatement.Lens.lift,
         OracleStatement.Lens.proj])
 
+omit [Fintype R] [SampleableType R] in
 /-- **`firstSumcheckResidual` discharged (degree-corrected).** The first sum-check oracle reduction
 exists, of the type the Spartan composition consumes — over `ℓ_m` variables with the **degree-`3`**
 sum-check protocol spec. (The scaffold's `firstSumcheckResidual` in `ToMathlib/SpartanBricks` declares
