@@ -73,7 +73,7 @@ theorem second_moment_eq_of_weightEnum {C C' : Finset (ι → F)}
   rcases (C.filter (fun v => hammingNorm v = w)).eq_empty_or_nonempty with hE | ⟨v0, hv0⟩
   · have hE' : (C'.filter (fun v => hammingNorm v = w)) = ∅ :=
       Finset.card_eq_zero.mp (by rw [← hwe w, hE, Finset.card_empty])
-    rw [hE, hE']; simp
+    simp only [hE, hE', Finset.sum_empty]
   · have hw0 : hammingNorm v0 = w := (Finset.mem_filter.mp hv0).2
     have hconst : ∀ (D : Finset (ι → F)), (∀ v ∈ D, hammingNorm v = w) →
         (∑ v ∈ D, (Finset.univ.filter
