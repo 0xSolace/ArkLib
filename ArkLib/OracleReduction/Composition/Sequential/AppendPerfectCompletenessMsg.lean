@@ -102,11 +102,18 @@ theorem append_perfectCompleteness_message
             support_map, Set.fmap_eq_image, toPFunctor_add, ofPFunctor_add, ofPFunctor_toPFunctor,
             support_liftM, QueryImpl.mapQuery, OracleQuery.input_apply, OracleQuery.cont_apply,
             liftM_map] using hq)]
-    -- Raw composite never-fails: provers are total; the appended verifier `V₁.append V₂` never
-    -- returns `none` on the honest transcript (from `hf₁` for V₁ and `h₂`'s no-failure for V₂,
-    -- valid since the support half pins `V₁`'s output statement into `rel₂`). Mechanical
-    -- re-decomposition mirroring the support half via `probFailure_mk_do_bindT_eq_zero_iff`.
-    sorry
+    rw [OptionT.probFailure_mk_do_bindT_eq_zero_iff]
+    refine ⟨?_, ?_⟩
+    · simp only [probFailure_liftM, probFailure_bind_eq_zero_iff, OptionT.probFailure_liftM,
+        OptionT.probFailure_lift, OptionT.probFailure_OptionT_pure, support_liftM, support_bind,
+        Set.mem_iUnion, implies_true, and_self, true_and, OptionT.probFailure_mk_do_bindT_eq_zero_iff,
+        HasEvalPMF.probFailure_eq_zero, probFailure_pure]
+    · intro pr hpr
+      -- The appended verifier `V₁.append V₂` never returns `none` on the honest transcript `pr.1`:
+      -- `hf₁` (R₁ never fails ⇒ V₁ never `none`), then `hs₁` pins V₁'s output into `rel₂`, then
+      -- `h₂`'s no-failure (R₂ never fails ⇒ V₂ never `none`). Decompose `pr` via `hpr` and split
+      -- the verifier via `Verifier.append_run`, mirroring the (proven) support half.
+      sorry
   · intro x hx
     rw [support_bind_simulateQ_run'_eq_mk (hInit := hInit)
       (impl := impl.addLift challengeQueryImpl) (hImplSupp := by
