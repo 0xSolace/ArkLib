@@ -497,6 +497,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
+import ArkLib.Data.CodingTheory.ProximityGap.RSLambdaJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.RSListDecodingFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.RSListSize
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdPin
