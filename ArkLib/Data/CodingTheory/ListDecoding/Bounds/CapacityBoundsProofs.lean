@@ -23,14 +23,12 @@ variable {F : Type} [Field F]
 lemma aeval_eval_eq (Q : MvPolynomial (Fin 2) F) (f : Polynomial F) (x : F) :
     (MvPolynomial.aeval (fun i => if i = 0 then (Polynomial.X : Polynomial F) else f) Q).eval x =
     MvPolynomial.eval (fun i => if i = 0 then x else f.eval x) Q := by
-  induction Q using MvPolynomial.induction_on with
-  | C c => simp [MvPolynomial.aeval_C, Polynomial.algebraMap_eq]
-  | add p q hp hq => simp only [map_add, hp, hq]
-  | mul_X p i hp =>
-    simp only [map_mul, hp]
-    congr 1
-    fin_cases i <;> simp only [MvPolynomial.aeval_X, MvPolynomial.eval_X, Polynomial.eval_X]
+  rw [← Polynomial.coe_aeval_eq_eval, MvPolynomial.comp_aeval_apply, ← MvPolynomial.aeval_eq_eval]
+  refine congrArg (fun g => MvPolynomial.aeval g Q) ?_
+  funext i
+  fin_cases i <;> simp
 
+set_option maxHeartbeats 1000000 in
 /-- Bounding the degree of the substituted polynomial P(X) = Q(X, f(X)). -/
 lemma natDegree_aeval_le (Q : MvPolynomial (Fin 2) F) (deg_X deg_Y : ℕ)
     (hX : MvPolynomial.degreeOf 0 Q ≤ deg_X)
@@ -56,33 +54,27 @@ lemma natDegree_aeval_le (Q : MvPolynomial (Fin 2) F) (deg_X deg_Y : ℕ)
   have hg0 : g 0 = Polynomial.X := rfl
   have hg1 : g 1 = f := rfl
   rw [hg0, hg1]
-  refine le_trans Polynomial.natDegree_mul_le ?_
-  refine le_trans (add_le_add_right (Polynomial.natDegree_C_mul_le _ _) _) ?_
-  refine le_trans Polynomial.natDegree_mul_le ?_
   have h0 : (Polynomial.X ^ m 0 : Polynomial F).natDegree ≤ m 0 := by
-    have h_pow := Polynomial.natDegree_pow_le (Polynomial.X : Polynomial F) (m 0)
-    have h_X : (Polynomial.X : Polynomial F).natDegree = 1 := Polynomial.natDegree_X
-    rw [h_X, mul_one] at h_pow
+    have h_pow : (Polynomial.X ^ m 0 : Polynomial F).natDegree ≤ m 0 * (Polynomial.X : Polynomial F).natDegree :=
+      Polynomial.natDegree_pow_le
+    rw [Polynomial.natDegree_X, mul_one] at h_pow
     exact h_pow
-  have h1 : (f ^ m 1).natDegree ≤ m 1 * f.natDegree := Polynomial.natDegree_pow_le _ _
-  have hX_m : m 0 ≤ deg_X := le_trans (MvPolynomial.le_degreeOf hm) hX
-  have hY_m : m 1 ≤ deg_Y := le_trans (MvPolynomial.le_degreeOf hm) hY
-  calc
-    (Polynomial.X ^ m 0 : Polynomial F).natDegree + (f ^ m 1).natDegree
-      ≤ m 0 + m 1 * f.natDegree := add_le_add h0 h1
-    _ ≤ deg_X + deg_Y * f.natDegree := add_le_add hX_m (Nat.mul_le_mul_right _ hY_m)
+  have h1 : (f ^ m 1).natDegree ≤ m 1 * f.natDegree := Polynomial.natDegree_pow_le
+  have hX_m : m 0 ≤ deg_X := le_trans (MvPolynomial.monomial_le_degreeOf 0 hm) hX
+  have hY_m : m 1 ≤ deg_Y := le_trans (MvPolynomial.monomial_le_degreeOf 1 hm) hY
+  calc (Polynomial.C (MvPolynomial.coeff m Q) * Polynomial.X ^ m 0 * f ^ m 1).natDegree
+      ≤ (Polynomial.C (MvPolynomial.coeff m Q) * Polynomial.X ^ m 0).natDegree
+          + (f ^ m 1).natDegree := Polynomial.natDegree_mul_le
+    _ ≤ (Polynomial.X ^ m 0 : Polynomial F).natDegree + (f ^ m 1).natDegree := by
+        gcongr; exact Polynomial.natDegree_C_mul_le _ _
+    _ ≤ m 0 + m 1 * f.natDegree := by gcongr
+    _ ≤ deg_X + deg_Y * f.natDegree := by gcongr
 
-/-- The Hasse derivative multiplicity condition implies the univariate root multiplicity bound
-upon substitution. -/
-lemma rootMultiplicity_aeval_ge (Q : MvPolynomial (Fin 2) F) (f : Polynomial F) (x : F) (m : ℕ)
-  (h_mult : ArkLib.MvPolynomial.mult_ge ![x, f.eval x] m Q) :
-  m ≤ rootMultiplicity x (MvPolynomial.aeval (fun i => if i = 0 then (X : Polynomial F) else f) Q) := by
-  sorry
 
 /-- The final list-decoding capacity bound combining GKL24 interpolation and BCHKS25 vanishing.
 Any codeword with agreement strictly greater than the list decoding radius will correspond
 to a Y-root of the interpolating polynomial Q(X,Y). -/
-theorem capacity_bound_implies_y_root
+theorem capacity_bound_implies_y_root [DecidableEq F]
     (points : Finset F)
     (f : Polynomial F)
     (received : F → F)
@@ -92,40 +84,41 @@ theorem capacity_bound_implies_y_root
     (h_agree : (points.filter (fun x => f.eval x = received x)).sum (fun x => multiplicities (x, received x)) > deg_X + deg_Y * f.natDegree) :
     ∃ Q : MvPolynomial (Fin 2) F, Q ≠ 0 ∧
       (∀ x, MvPolynomial.eval (fun i => if i = 0 then x else f.eval x) Q = 0) := by
-  let points' := points.image (fun x => (x, received x))
-  have h_dim' : (points'.sum (fun p => (multiplicities p + 1) * multiplicities p / 2)) < (deg_X + 1) * (deg_Y + 1) := by
-    rw [Finset.sum_image]
-    · exact h_dim
-    · intro x _ y _ h
-      exact Prod.mk.inj h |>.1
-  
-  obtain ⟨Q, hQ_neq, hQ_degX, hQ_degY, hQ_mult⟩ := GKL24.gkl24_interpolation_existence points' multiplicities deg_X deg_Y h_dim'
-  use Q
-  refine ⟨hQ_neq, ?_⟩
+  classical
+  have h_dim' : ((points.image (fun x => (x, received x))).sum
+      (fun p => (multiplicities p + 1) * multiplicities p / 2)) < (deg_X + 1) * (deg_Y + 1) := by
+    rw [Finset.sum_image (fun x _ y _ h => (Prod.ext_iff.mp h).1)]
+    exact h_dim
+  obtain ⟨Q, hQ_neq, hQ_degX, hQ_degY, hQ_mult⟩ :=
+    GKL24.gkl24_interpolation_existence (points.image (fun x => (x, received x)))
+      multiplicities deg_X deg_Y h_dim'
+  refine ⟨Q, hQ_neq, ?_⟩
+  set P : Polynomial F :=
+    MvPolynomial.aeval (fun i => if i = 0 then (Polynomial.X : Polynomial F) else f) Q with hPdef
+  -- The substituted polynomial `P = Q(T, f(T))` is identically zero.
+  have hP0 : P = 0 := by
+    by_cases hPne : P = 0
+    · exact hPne
+    · refine BCHKS25.bchks25_vanishing_of_multiplicity_sum_gt_degree P
+        (points.filter (fun z => f.eval z = received z))
+        (fun z => multiplicities (z, received z)) ?_ ?_
+      · -- multiplicity at each agreement point via substitution–multiplicity transfer
+        intro z hz
+        have hz_points : z ∈ points := Finset.mem_of_mem_filter z hz
+        have hz_eq : f.eval z = received z := (Finset.mem_filter.mp hz).2
+        have hz_points' : (z, f.eval z) ∈ points.image (fun x => (x, received x)) := by
+          rw [hz_eq]; exact Finset.mem_image_of_mem _ hz_points
+        have h_mult_Q := hQ_mult (z, f.eval z) hz_points'
+        have hmult_eq : multiplicities (z, received z) = multiplicities (z, f.eval z) := by rw [hz_eq]
+        show multiplicities (z, received z) ≤ Polynomial.rootMultiplicity z P
+        rw [hmult_eq]
+        exact CodingTheory.Bounds.rootMultiplicity_aeval_ge Q f z
+          (multiplicities (z, f.eval z)) (hPdef ▸ hPne) h_mult_Q
+      · -- degree bound exceeded by the agreement
+        exact lt_of_le_of_lt (natDegree_aeval_le Q deg_X deg_Y hQ_degX hQ_degY f) h_agree
   intro x
-  
-  let P := MvPolynomial.aeval (fun i => if i = 0 then (X : Polynomial F) else f) Q
-  
-  have h_vanish := BCHKS25.bchks25_vanishing_of_multiplicity_sum_gt_degree P (points.filter (fun z => f.eval z = received z)) (fun z => multiplicities (z, received z)) ?_ ?_
-  · have h_eval_zero : P.eval x = 0 := by rw [h_vanish, Polynomial.eval_zero]
-    rw [← aeval_eval_eq Q f x] at h_eval_zero
-    exact h_eval_zero
-
-  · intro z hz
-    have hz_points : z ∈ points := Finset.mem_of_mem_filter z hz
-    have hz_eq : f.eval z = received z := (Finset.mem_filter.mp hz).2
-    have hz_points' : (z, f.eval z) ∈ points' := by
-      rw [hz_eq]
-      apply Finset.mem_image_of_mem
-      exact hz_points
-    have h_mult_Q := hQ_mult (z, f.eval z) hz_points'
-    exact rootMultiplicity_aeval_ge Q f z (multiplicities (z, received z)) (by
-      have heq2 : multiplicities (z, received z) = multiplicities (z, f.eval z) := by rw [hz_eq]
-      rw [heq2]
-      exact h_mult_Q
-    )
-    
-  · have h_deg_P := natDegree_aeval_le Q deg_X deg_Y hQ_degX hQ_degY f
-    exact lt_of_le_of_lt h_deg_P h_agree
+  rw [← aeval_eval_eq Q f x]
+  show Polynomial.eval x P = 0
+  rw [hP0, Polynomial.eval_zero]
 
 end CodingTheory.Bounds.Capacity
