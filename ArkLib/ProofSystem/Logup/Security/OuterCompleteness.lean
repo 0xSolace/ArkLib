@@ -155,6 +155,35 @@ def OuterCompletenessRunFactsResidual : Prop :=
           Pr[⊥ | outerCompletenessRunComp oSpec F n M params init impl stmtIn witIn]
             ≤ (logupCompletenessError F n : ℝ≥0∞))
 
+/-- **Run-unfold brick for the 4-round outer prover (foundational, axiom-clean).**
+
+The honest outer LogUp prover runs the fixed 4-round protocol (P→V multiplicity, V→P `x`, P→V
+helpers, V→P batching).  This lemma peels its full `runToRound (Fin.last 4)` into the first
+prover step (`processRound 0` on the seeded input state — the round-0 multiplicity message)
+followed by the continuation `continueFromTo 1 → last` that folds the remaining three rounds.
+
+It is the structural front door for the still-open prover-run marginal calculation inside
+`OuterCompletenessRunFactsResidual`: with the run in this `bind` form, the round-1 `x` challenge
+is exposed at the seam so its uniform marginal can be transported to the table-pole event.
+
+Proof: the symmetric form of the generic `processRound_zero_continueFromTo_eq_runToRound_last`
+(`OracleReduction/Execution.lean`), instantiated at this protocol.  Note this is the *only*
+sound way to unfold the run here: a naive `rw` peel of `runToRound (Fin.last 4)` round-by-round
+hits a non-type-correct motive (the `Transcript`/`PrvState` types depend on the `Fin` round
+index), exactly the `Fin.succ`/`Fin.castSucc` mismatch the `continueFromTo` machinery exists to
+route around. -/
+theorem outerProver_runToRound_last_peel
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (witIn : WitIn F n M params) :
+    (outerProver oSpec F n M params).runToRound (Fin.last 4) stmtIn witIn
+      = (outerProver oSpec F n M params).processRound (⟨0, by omega⟩ : Fin 4)
+            (pure ((default : (outerPSpec F n params).Transcript (⟨0, by omega⟩ : Fin 5)),
+                   (outerProver oSpec F n M params).input (stmtIn, witIn)))
+          >>= (outerProver oSpec F n M params).continueFromTo stmtIn witIn
+                (⟨0, by omega⟩ : Fin 4).succ (Fin.last 4) :=
+  (Prover.processRound_zero_continueFromTo_eq_runToRound_last (by omega)
+    (outerProver oSpec F n M params) stmtIn witIn).symm
+
 /-- The explicit complement-zero/failure-bound run facts discharge the existing outer completeness
 run residual. -/
 theorem outer_completeness_of_runFacts
@@ -178,6 +207,81 @@ theorem outer_completeness_of_runResidual
       (inputRelation F n M) (midRelation F n M params) (logupCompletenessError F n) :=
   h hInit
 
+set_option linter.unusedSimpArgs false in
+/-- **Closed form of the outer honest prover's full run (`runToRound (Fin.last 4)`).**
+
+The outer LogUp prover has four rounds (`P→V` multiplicity, `V→P` challenge `x`, `P→V` helpers,
+`V→P` batch). Unfolding `runToRound` round-by-round (peeling with the message/challenge round
+lemmas of `Execution.lean`, chained bottom-up with `simp only` to tolerate the dependent `Fin`
+motive) reduces the entire run to a `do`-block containing **exactly two** `getChallenge` samples —
+the `x` challenge at round 1 and the `batch` challenge at round 3 — with every prover step pure.
+The final prover state is the record `(oStmt, x, batch)` carried into `outerProver.output`.
+
+This is the load-bearing prover-side structural fact for outer-phase completeness: composed with
+the verifier's pole-scan collapse (`OuterRun.lean`), it exposes that the only randomness in the
+outer phase is the two uniform challenge samples. -/
+theorem outerProver_runToRound_closed_form
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (witIn : WitIn F n M params) :
+    (outerProver oSpec F n M params).runToRound (Fin.last 4) stmtIn witIn = (do
+      let m₀ ← (outerProver oSpec F n M params).sendMessage ⟨0, rfl⟩
+                  ((outerProver oSpec F n M params).input (stmtIn, witIn))
+      let x ← (outerPSpec F n params).getChallenge ⟨1, rfl⟩
+      let r₁ ← (outerProver oSpec F n M params).receiveChallenge ⟨1, rfl⟩ m₀.2
+      let m₂ ← (outerProver oSpec F n M params).sendMessage ⟨2, rfl⟩ (r₁ x)
+      let batch ← (outerPSpec F n params).getChallenge ⟨3, rfl⟩
+      let r₃ ← (outerProver oSpec F n M params).receiveChallenge ⟨3, rfl⟩ m₂.2
+      return ⟨((default : (outerPSpec F n params).Transcript 0).concat m₀.1).concat x
+                |>.concat m₂.1 |>.concat batch, r₃ batch⟩) := by
+  -- Direction facts (all `rfl` on this fixed protocol spec).
+  have d0 : (outerPSpec F n params).dir (0 : Fin 4) = Direction.P_to_V := rfl
+  have d1 : (outerPSpec F n params).dir (1 : Fin 4) = Direction.V_to_P := rfl
+  have d2 : (outerPSpec F n params).dir (2 : Fin 4) = Direction.P_to_V := rfl
+  have d3 : (outerPSpec F n params).dir (3 : Fin 4) = Direction.V_to_P := rfl
+  -- Round 0 (message): runToRound 1 from the prover-first base.
+  have h0 := Prover.runToRound_succ_message (n := 4) (0 : Fin 4) stmtIn witIn
+    (outerProver oSpec F n M params) d0
+  simp only [Fin.castSucc_mk, Fin.succ_mk, Nat.reduceAdd,
+    Prover.runToRound_zero_of_prover_first, bind_assoc, pure_bind] at h0
+  -- Round 1 (challenge x).
+  have h1 := Prover.runToRound_succ_challenge (n := 4) (1 : Fin 4) stmtIn witIn
+    (outerProver oSpec F n M params) d1
+  simp only [Fin.castSucc_mk, Fin.succ_mk, Nat.reduceAdd, h0, bind_assoc] at h1
+  -- Round 2 (message helpers).
+  have h2 := Prover.runToRound_succ_message (n := 4) (2 : Fin 4) stmtIn witIn
+    (outerProver oSpec F n M params) d2
+  simp only [Fin.castSucc_mk, Fin.succ_mk, Nat.reduceAdd, h1, bind_assoc] at h2
+  -- Round 3 (challenge batch).
+  have h3 := Prover.runToRound_succ_challenge (n := 4) (3 : Fin 4) stmtIn witIn
+    (outerProver oSpec F n M params) d3
+  simp only [Fin.castSucc_mk, Fin.succ_mk, Nat.reduceAdd, h2, bind_assoc] at h3
+  -- `Fin.last 4 = (3 : Fin 4).succ`, so `h3` is the run to `Fin.last 4`.
+  exact h3
+
+/-- **Closed form of the outer honest prover's *full* run (`Prover.run`).**
+
+`Prover.run` is `runToRound (Fin.last 4)` followed by `output` (`run_eq_runToRound_last`). Plugging in
+the banked `outerProver_runToRound_closed_form` exposes the entire prover run as a `do`-block with
+**exactly two** `getChallenge` samples (the `x` challenge at round 1 and the `batch` challenge at
+round 3), every other prover step pure, ending in the prover's `output` step applied to the final
+state `r₃ batch`. This is the prover-side half of the simulated outer-reduction run. -/
+theorem outerProver_run_closed_form
+    (stmtIn : StmtIn F n M × (∀ i, OStmtIn F n M i))
+    (witIn : WitIn F n M params) :
+    (outerProver oSpec F n M params).run stmtIn witIn = (do
+      let m₀ ← (outerProver oSpec F n M params).sendMessage ⟨0, rfl⟩
+                  ((outerProver oSpec F n M params).input (stmtIn, witIn))
+      let x ← (outerPSpec F n params).getChallenge ⟨1, rfl⟩
+      let r₁ ← (outerProver oSpec F n M params).receiveChallenge ⟨1, rfl⟩ m₀.2
+      let m₂ ← (outerProver oSpec F n M params).sendMessage ⟨2, rfl⟩ (r₁ x)
+      let batch ← (outerPSpec F n params).getChallenge ⟨3, rfl⟩
+      let r₃ ← (outerProver oSpec F n M params).receiveChallenge ⟨3, rfl⟩ m₂.2
+      let out ← (outerProver oSpec F n M params).output (r₃ batch)
+      return ⟨((default : (outerPSpec F n params).Transcript 0).concat m₀.1).concat x
+                |>.concat m₂.1 |>.concat batch, out⟩) := by
+  rw [Prover.run_eq_runToRound_last, outerProver_runToRound_closed_form]
+  simp only [bind_assoc, pure_bind]
+
 /-- The residual is definitionally the outer completeness theorem under `NeverFail init`. -/
 theorem outerCompletenessRunResidual_iff :
     OuterCompletenessRunResidual oSpec F n M params init impl ↔
@@ -198,3 +302,5 @@ end Logup
 #print axioms Logup.outer_completeness_of_runFacts
 #print axioms Logup.outer_completeness_of_runResidual
 #print axioms Logup.outerCompletenessRunResidual_iff
+#print axioms Logup.outerProver_runToRound_closed_form
+#print axioms Logup.outerProver_run_closed_form
