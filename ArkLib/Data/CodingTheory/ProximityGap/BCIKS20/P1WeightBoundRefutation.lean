@@ -34,4 +34,6 @@ lemma evalX_badR (x₀ : F) :
     Bivariate.evalX (Polynomial.C x₀) (badR x₀) = (Polynomial.X : F[X][Y]) := by
   simp [badR, badLiftCoeff, Bivariate.evalX_eq_map]
 
+end
+
 end BCIKS20.HenselNumerator

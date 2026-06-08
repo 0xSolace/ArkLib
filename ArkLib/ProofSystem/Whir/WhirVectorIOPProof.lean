@@ -80,7 +80,8 @@ theorem whir_vector_iop_breakthrough
         (WhirIOP.whirRelation m_0 (P.φ 0) (h.δ 0)) ε_rbr π) :
     WhirIOP.whir_rbr_soundness (F := F) (M := M) ι (d := d) (dstar := dstar)
       (P := P) (S := S) (hParams := hParams) (h := h) hm_0 (σ₀ := σ₀)
-      (wPoly₀ := wPoly₀) (δ := δ) ε_fold ε_out ε_shift ε_fin :=
+      (wPoly₀ := wPoly₀) (δ := δ) ε_fold ε_out ε_shift ε_fin
+      h_fold_0 h_out h_shift h_fold_i h_fin :=
   WhirIOP.Construction.whir_rbr_soundness_of_whirVectorSpec_secure_gap
     (F := F) (M := M) (ιs := ι) (d := d) (dstar := dstar)
     (P := P) (S := S) (hParams := hParams) (h := h) hm_0
