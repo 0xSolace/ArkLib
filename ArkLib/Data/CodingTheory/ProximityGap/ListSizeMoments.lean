@@ -60,12 +60,12 @@ lemma card_dist_le_eq_ballVol (r : ℕ) (c : ι → F) :
   unfold ballVol
   refine Finset.card_nbij' (fun f => f - c) (fun g => g + c) ?_ ?_ ?_ ?_
   · intro f hf
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hf ⊢
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hf ⊢
     have : hammingDist c ((f - c) + c) = hammingDist (0 : ι → F) (f - c) := hammingDist_translate c _
     rw [sub_add_cancel] at this
     rwa [← this]
   · intro g hg
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hg ⊢
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hg ⊢
     rwa [hammingDist_translate c g]
   · intro f _; exact sub_add_cancel f c
   · intro g _; exact add_sub_cancel_right g c

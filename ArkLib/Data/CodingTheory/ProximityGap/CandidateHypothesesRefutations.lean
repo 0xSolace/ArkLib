@@ -15,7 +15,7 @@ and additive combinatorics.
 
 abbrev F := ZMod 3
 abbrev n : ℕ := 4
-abbrev k : ℕ := 2
+abbrev m : ℕ := 2
 
 def H_matrix : Matrix (Fin 2) (Fin 4) F :=
   ![![1, 0, 1, 1],
@@ -35,8 +35,8 @@ lemma w_in_C : ∀ u ∈ U, C H_matrix u := by decide
 -- The center is u0 from before (or we can just define a new center)
 def center : Fin 4 → F := ![0, 1, 0, 0]
 
--- The distance from the center to each codeword is 1
-lemma dist_le_e : ∀ u ∈ U, dist u center ≤ 1 := by decide
+-- The distance from the center to w2 is 2, so the bundle radius is 2.
+lemma dist_le_e : ∀ u ∈ U, dist u center ≤ 2 := by decide
 
 --------------------------------------------------------------------------------
 -- Refuting Hypothesis 1: Statistical Mechanics (Spin-Glass Shattering)
@@ -44,11 +44,7 @@ lemma dist_le_e : ∀ u ∈ U, dist u center ≤ 1 := by decide
 -- Here |U| = 3 > 2, but dist(w1, w2) = 2, not > 2.
 --------------------------------------------------------------------------------
 theorem refute_SpinGlass_shattering :
-    ¬ (ShatteredBundle U) := by
-  intro h
-  have h_shatter := h w1 (by decide) w2 (by decide) (by decide)
-  revert h_shatter
-  exact decide
+    ¬ (ShatteredBundle U) := by decide
 
 --------------------------------------------------------------------------------
 -- Refuting Hypothesis 2: Quantum Information (QLDPC Degeneracy)
@@ -86,8 +82,4 @@ def c4 : Fin 3 → F := ![2, 2, 2]
 -- So over n=3, weight is 3, which is not <= 2.
 theorem refute_SumProduct_escape :
     ¬ (∀ (u1 u2 : Fin 3 → F), C H_MDS u1 → C H_MDS u2 → u1 ≠ u2 → 
-      weight (fun i => u1 i * u2 i) ≤ 2) := by
-  intro h
-  have h_bound := h c3 c4 (by decide) (by decide) (by decide)
-  revert h_bound
-  exact decide
+      weight (fun i => u1 i * u2 i) ≤ 2) := by decide

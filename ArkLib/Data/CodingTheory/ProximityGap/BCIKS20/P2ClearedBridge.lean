@@ -39,11 +39,12 @@ theorem globalClearedRepresentativeResummationMatch (x₀ : F) (R : F[X][X][Y])
     refine le_trans (hasseCoeffRepr𝒪_natDegreeY_le x₀ R ab.1 lam.parts.card) ?_
     exact le_trans (Nat.sub_le _ _) (Bivariate.natDegreeY_le_natDegree R)
   have h_emb := embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared x₀ R ab.1 lam.parts.card R.natDegree h_le
-  -- h_emb : embedding = W^k * hasseEvalAtRoot
   have hw : liftToFunctionField (H := H) H.leadingCoeff ≠ 0 := liftToFunctionField_leadingCoeff_ne_zero (H := H)
   rw [h_emb]
+  rw [mul_comm (liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree)]
   rw [mul_div_assoc]
   rw [div_self (pow_ne_zero _ hw)]
   rw [mul_one]
 
 end BCIKS20.HenselNumerator
+#print axioms BCIKS20.HenselNumerator.globalClearedRepresentativeResummationMatch

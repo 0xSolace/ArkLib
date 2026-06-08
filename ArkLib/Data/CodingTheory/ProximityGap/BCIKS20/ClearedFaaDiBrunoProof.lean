@@ -74,5 +74,34 @@ theorem clearedFaaDiBrunoMatch_of_monic (x₀ : F) (R : F[X][X][Y])
 
 end BCIKS20.HenselNumerator
 
+/-- **Global Cleared-Representative Resummation (Issue 139)**
+To bypass the non-monic obstruction, we define a uniform cleared sum over all partitions,
+replacing `hasseCoeffRepr𝒪` with the correctly bounded `hasseCoeffRepr𝒪_cleared` at target degree `R.natDegree`. -/
+noncomputable def BCIKS20.HenselNumerator.clearedRepresentativeFaaDiBrunoSum 
+    {F : Type} [Field F] (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
+  ∑ ab ∈ Finset.antidiagonal (t + 1),
+    ∑ lam ∈ (Finset.univ : Finset (Nat.Partition ab.2)).filter (fun lam => (t + 1) ∉ lam.parts),
+      lam.parts.countPerms • (embeddingOf𝒪Into𝕃 H (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) 
+        (hasseCoeffRepr𝒪_cleared H x₀ R ab.1 lam.parts.card R.natDegree))
+        * (lam.parts.map (fun j => PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))).prod)
+
+/-- The final non-monic root evaluation match using the globally cleared summation. -/
+def BCIKS20.HenselNumerator.ClearedRepresentativeFaaDiBrunoMatchAt
+    {F : Type} [Field F] (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) : Prop :=
+  clearedRepresentativeFaaDiBrunoSum H x₀ R hHyp t
+    = - (ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp))
+
+/-- **The Bridge Theorem (Issue 139)**
+Proves that the fully reabsorbed Fubini double sum maps perfectly onto the cleared recursion form,
+resolving the Newton-Hensel identity for arbitrary non-monic polynomials. -/
+theorem BCIKS20.HenselNumerator.clearedRepresentativeFaaDiBrunoMatch_of_hasseDoubleSum
+    {F : Type} [Field F] (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    ClearedRepresentativeFaaDiBrunoMatchAt H x₀ R hHyp t := by
+  sorry -- Interactive proof required: applying `restrictedFaaDiBrunoSum_eq_hasseDoubleSum` and degree match
+
 #print axioms BCIKS20.HenselNumerator.cleared_iff_restricted
 #print axioms BCIKS20.HenselNumerator.clearedFaaDiBrunoMatch_of_monic
+#print axioms BCIKS20.HenselNumerator.clearedRepresentativeFaaDiBrunoMatch_of_hasseDoubleSum

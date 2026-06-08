@@ -13,7 +13,7 @@ theoretical frameworks, aiming to bound the capacity limit of Reed-Solomon codes
 -/
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
-variable {n k : ℕ} (H_matrix : Matrix (Fin (n - k)) (Fin n) F)
+variable {n m : ℕ} (H_matrix : Matrix (Fin m) (Fin n) F)
 
 -- The parity check code
 def C (x : Fin n → F) : Prop := Matrix.mulVec H_matrix x = 0
@@ -35,7 +35,7 @@ def ShatteredBundle (U : Finset (Fin n → F)) : Prop :=
   ∀ u1 ∈ U, ∀ u2 ∈ U, u1 ≠ u2 → dist u1 u2 > 2
 
 theorem hyp_SpinGlass_shattering (e : ℕ) (center : Fin n → F) 
-    (h_bundle : ∀ u ∈ U, C H_matrix u ∧ dist u center ≤ e) (h_density : U.card > n - k) :
+    (h_bundle : ∀ u ∈ U, C H_matrix u ∧ dist u center ≤ e) (h_density : U.card > m) :
     ShatteredBundle U := sorry
 
 --------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ theorem hyp_QLDPC_degeneracy (e : ℕ) (center : Fin n → F)
 --------------------------------------------------------------------------------
 theorem hyp_HasseWeil_agreement_bound (t : ℕ) (x : Fin n → F) :
     (Finset.univ.filter (fun c => C H_matrix c ∧ (Finset.univ.filter (fun i => c i = x i)).card = t)).card 
-      ≤ Fintype.card F + 1 + 2 * k * (Fintype.card F) := sorry
+      ≤ Fintype.card F + 1 + 2 * (n - m) * (Fintype.card F) := sorry
 
 --------------------------------------------------------------------------------
 -- Hypothesis 4: Additive Combinatorics (Sum-Product Correlation Limits)
