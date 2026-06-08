@@ -1628,6 +1628,17 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     simp only [bind_map_left, Option.elim_some, simulateQ_bind, simulateQ_map, simulateQ_pure,
       StateT.run'_eq, StateT.run_bind, StateT.run_map, StateT.run_pure, bind_assoc, map_bind,
       pure_bind, bind_pure_comp, Function.comp]
+    -- The prover ops are lifted by the identity `monadLift` (source and target both
+    -- `OracleComp (oSpec + fsChallengeOracle …)`), so strip it definitionally.
+    have hml : ∀ {α : Type} (x : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) α),
+        monadLift x = x := fun x => rfl
+    simp only [hml]
+    -- Both sides now share the syntactic prefix `sendMessage; output; deriveTranscriptFS`
+    -- (the impls `fsChallengeQueryImplState` and `srChallengeQueryImpl'` are defeq).  Remaining:
+    -- peel that shared prefix (`probEvent_bind_eq_tsum`), then at the verify+extractor leaf reshape
+    -- the LHS proof-bundling via `Option.map`, collapse the re-derived transcript via
+    -- `deriveTranscriptFS_simulateQ_run` + `simulateQ_addLift_fsChallenge_preserves_state`, and
+    -- apply `ks_payload_eq`.
     sorry
 
 end CanonicalKnowledgeSoundness
