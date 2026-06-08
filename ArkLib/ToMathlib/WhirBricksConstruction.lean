@@ -478,7 +478,9 @@ omit [Field F] [SampleableType F] in
       paperTranscriptMessage P d T i := by
   cases i with
   | mk i hi =>
-      simp [paperTranscriptRuntimeFullTranscript, hi]
+      simp only [FullTranscript.messages, FullTranscript.challenges,
+        paperTranscriptRuntimeFullTranscript]
+      split <;> aesop
 
 omit [Field F] [SampleableType F] in
 @[simp] theorem paperTranscriptRuntimeFullTranscript_challenges {M : ℕ}
@@ -489,7 +491,12 @@ omit [Field F] [SampleableType F] in
     (paperTranscriptRuntimeFullTranscript P d T challenges).challenges i = challenges i := by
   cases i with
   | mk i hi =>
-      simp [paperTranscriptRuntimeFullTranscript, hi]
+      simp only [FullTranscript.challenges, paperTranscriptRuntimeFullTranscript]
+      have hi' : (whirPaperTranscriptVectorSpec P d).dir i = Direction.V_to_P := hi
+      split
+      · rename_i h
+        cases h.symm.trans hi'
+      · rfl
 
 omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptSlotPayload_mainFoldedOracle {M : ℕ}
