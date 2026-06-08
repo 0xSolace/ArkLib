@@ -88,8 +88,9 @@ def dom (hnp : n ≤ p) : Fin n ↪ ZMod p where
 
 /-! ## Integer combinatorics of the staircase windows -/
 
+omit [NeZero n] in
 /-- Every node of a grid window is `< n`. -/
-theorem Wnat_lt (hk : 1 ≤ k) {q r : ℕ} (hq : q < n - 2 * k) (hr : r ≤ k) :
+theorem Wnat_lt {q r : ℕ} (hq : q < n - 2 * k) (hr : r ≤ k) :
     ∀ m ∈ Wnat k q r, m < n := by
   intro m hm
   have hqkr : q + k + r < n := by omega
@@ -111,8 +112,9 @@ theorem Wnat_sum (k q r : ℕ) :
     rw [Finset.sum_add_distrib, Finset.sum_const, Finset.card_range, smul_eq_mul, mul_comm]
   rw [this]; ring
 
+omit [NeZero n] in
 /-- A grid window has `k+1` integer nodes. -/
-theorem Wnat_card (hk : 1 ≤ k) {q r : ℕ} (hr : r ≤ k) : (Wnat k q r).card = k + 1 := by
+theorem Wnat_card {q r : ℕ} : (Wnat k q r).card = k + 1 := by
   have hdisj : Disjoint ((Finset.range k).image (fun i => q + i)) ({q + k + r} : Finset ℕ) := by
     rw [Finset.disjoint_singleton_right, Finset.mem_image]
     rintro ⟨i, hi, hcontra⟩
@@ -125,9 +127,9 @@ theorem Wnat_card (hk : 1 ≤ k) {q r : ℕ} (hr : r ≤ k) : (Wnat k q r).card 
 /-- On the grid, the `Fin n` window has `k+1` elements (`node` is injective on nodes `< n`). -/
 theorem Wfin_card (hk : 1 ≤ k) {q r : ℕ} (hq : q < n - 2 * k) (hr : r ≤ k) :
     (Wfin n k q r).card = k + 1 := by
-  rw [Wfin, Finset.card_image_of_injOn, Wnat_card hk hr]
+  rw [Wfin, Finset.card_image_of_injOn, Wnat_card]
   intro a ha b hb hab
-  have := Wnat_lt hk hq hr
+  have := Wnat_lt hq hr
   have hva : ((node a : Fin n) : ℕ) = a := node_val_of_lt (this a ha)
   have hvb : ((node b : Fin n) : ℕ) = b := node_val_of_lt (this b hb)
   rw [← hva, ← hvb, hab]
@@ -135,7 +137,7 @@ theorem Wfin_card (hk : 1 ≤ k) {q r : ℕ} (hq : q < n - 2 * k) (hr : r ≤ k)
 /-- The `ZMod p` node-sum of a grid window equals the integer sum, cast. -/
 theorem dom_sum (hnp : n ≤ p) (hk : 1 ≤ k) {q r : ℕ} (hq : q < n - 2 * k) (hr : r ≤ k) :
     (∑ i ∈ Wfin n k q r, dom (p := p) hnp i) = (((∑ m ∈ Wnat k q r, m) : ℕ) : ZMod p) := by
-  have hlt := Wnat_lt hk hq hr
+  have hlt := Wnat_lt hq hr
   rw [Wfin, Finset.sum_image (by
     intro a ha b hb hab
     have hva : ((node a : Fin n) : ℕ) = a := node_val_of_lt (hlt a ha)
@@ -208,9 +210,11 @@ spread — quadratically stronger than the sunflower family's linear `n-k`
 theorem epsMCA_quadratic_ge (hp : n * n ≤ p) (hk : 1 ≤ k) (hn : 2 * k + 1 ≤ n) :
     (((n - 2 * k) * (k + 1) : ℕ) : ℝ≥0∞) / (Fintype.card (ZMod p) : ℝ≥0∞)
       ≤ epsMCA (F := ZMod p) (A := ZMod p)
-          (ReedSolomon.code (domain := dom (p := p) (n := n) (by omega)) k : Set (Fin n → ZMod p))
+          (ReedSolomon.code
+              (domain := dom (p := p) (n := n) (by have := NeZero.pos n; nlinarith [hp])) k
+            : Set (Fin n → ZMod p))
           (1 - ((k + 1 : ℕ) : ℝ≥0) / (n : ℝ≥0)) := by
-  have hnp : n ≤ p := by omega
+  have hnp : n ≤ p := by have := NeZero.pos n; nlinarith [hp]
   set grid : Finset (ℕ × ℕ) :=
     (Finset.range (n - 2 * k)) ×ˢ (Finset.range (k + 1)) with hgrid
   set win : ℕ × ℕ → Finset (Fin n) := fun qr => Wfin n k qr.1 qr.2 with hwin
@@ -237,7 +241,7 @@ theorem epsMCA_quadratic_ge (hp : n * n ≤ p) (hk : 1 ≤ k) (hn : 2 * k + 1 �
     intro S hS
     rw [family, Finset.mem_image] at hS
     obtain ⟨qr, hqr, rfl⟩ := hS
-    rw [hgrid, Finset.mem_product, Finset.mem_range, Finset.mem_range] at hqr
+    rw [Finset.mem_product, Finset.mem_range, Finset.mem_range] at hqr
     exact Wfin_card hk hqr.1 (by omega)
   -- the bad-scalar map is injective on the family
   have hinj : Set.InjOn (fun S => -(∑ i ∈ S, dom (p := p) hnp i)) (family n k : Set (Finset (Fin n))) := by

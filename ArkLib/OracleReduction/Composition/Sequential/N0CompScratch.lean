@@ -1,6 +1,7 @@
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 
-open OracleSpec OracleComp ProtocolSpec scoped NNReal
+open OracleSpec OracleComp ProtocolSpec
+open scoped NNReal ENNReal
 
 namespace Reduction
 
@@ -12,16 +13,12 @@ variable {ι : Type} {oSpec : OracleSpec ι} {Stmt₁ Wit₁ Stmt₂ Wit₂ Stmt
   (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
   (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
 
-example
-    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
-    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
-    reductionAppendPerfectCompletenessResidual R₁ R₂ h₁ h₂ := by
-  unfold reductionAppendPerfectCompletenessResidual
-  unfold Reduction.perfectCompleteness
-  rw [completeness_iff_completenessFromRun]
-  unfold completenessFromRun
-  intro stmt wit hmem
-  trace_state
-  sorry
+-- Explore: unfold the appended reduction run via append_run_empty + Verifier.append_run.
+example (stmt : Stmt₁) (wit : Wit₁) :
+    (R₁.append R₂).run stmt wit = (do
+      let proverResult ← (R₁.prover.append R₂.prover).run stmt wit
+      let stmtOut ← liftM ((R₁.verifier.append R₂.verifier).run stmt proverResult.1).run
+      return ⟨proverResult, ← stmtOut.getM⟩) := by
+  rfl
 
 end Reduction
