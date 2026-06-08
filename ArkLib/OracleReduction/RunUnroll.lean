@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.Security.Basic
+import ArkLib.ToMathlib.OracleCompEvalDistBindComm
 
 /-!
 # Unrolled-run form of a reduction, and the ε-completeness characterization
@@ -293,5 +294,25 @@ theorem simulateQ_run_bind_state_fixed
   rw [show s' = s from simulateQ_state_preserving so hso A s ⟨a, s'⟩ hp]
 
 #print axioms simulateQ_run_bind_state_fixed
+
+/-- **Seam stage swap.** Under state-preservation, two simulated stages `A`, `B` commute
+distributionally: `simulateQ so (A >>= fun a => B >>= fun b => k a b)` has the same `run'`-distribution
+as the `B`-then-`A` order. State-fixing (`simulateQ_run_bind_state_fixed`) makes all stages run from the
+same `s`, then `SPMF.bind_comm` (unconditional) reorders. This is the `V₁↔snd` reorder used to apply
+`probComp_seam_union_le` with stages matching `V₁`/`V₂` soundness for `appendSoundness`. -/
+theorem evalDist_simulateQ_swap
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {α β γ : Type}
+    (A : OracleComp spec α) (B : OracleComp spec β) (k : α → β → OracleComp spec γ) (s : σ) :
+    evalDist ((simulateQ so (A >>= fun a => B >>= fun b => k a b)).run' s)
+      = evalDist ((simulateQ so (B >>= fun b => A >>= fun a => k a b)).run' s) := by
+  rw [StateT.run'_eq, StateT.run'_eq, evalDist_map, evalDist_map]
+  congr 1
+  simp only [simulateQ_run_bind_state_fixed so hso, evalDist_bind]
+  exact SPMF.bind_comm _ _ _
+
+#print axioms evalDist_simulateQ_swap
 
 end OptionTStateT
