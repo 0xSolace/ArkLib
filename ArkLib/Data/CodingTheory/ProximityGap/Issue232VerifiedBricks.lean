@@ -13,6 +13,8 @@ import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Card
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
 # Verified bricks for the Ethereum Proximity Prize (Issue #232)
@@ -161,6 +163,26 @@ Decoding Challenge; the open part is the interpolation degree budget pinning `δ
 theorem gs_list_card_le (H : Polynomial (Polynomial F)) :
     H.roots.card ≤ H.natDegree :=
   Polynomial.card_roots' H
+
+/-- **Interpolation existence by counting (the GS interpolation engine).** A linear map from a
+finite-dimensional `V` to `W` with `finrank W < finrank V` has a nonzero kernel vector. With
+`V =` bivariate polynomials of degree `≤ (d_X, d_Y)` (dimension `(d_X+1)(d_Y+1)`) and `f =`
+evaluation at `N` agreement points (`W = Fᴺ`), this is the Guruswami–Sudan interpolation step:
+when `(d_X+1)(d_Y+1) > N` there is a nonzero bivariate `H` vanishing at all `N` points. Pairs with
+`gs_list_card_le` to give the GS skeleton (existence + list bound); the open part is the
+agreement ⇒ root (multiplicity) step that pins which roots are genuine codewords. -/
+theorem interpolation_kernel_nontrivial {V W : Type*}
+    [AddCommGroup V] [Module F V] [AddCommGroup W] [Module F W]
+    [FiniteDimensional F V] [FiniteDimensional F W]
+    (f : V →ₗ[F] W) (h : Module.finrank F W < Module.finrank F V) :
+    ∃ v : V, v ≠ 0 ∧ f v = 0 := by
+  have hni : ¬ Function.Injective f := by
+    intro hinj
+    have := LinearMap.finrank_le_finrank_of_injective hinj
+    omega
+  rw [← LinearMap.ker_eq_bot] at hni
+  obtain ⟨v, hv_mem, hv_ne⟩ := (Submodule.ne_bot_iff _).mp hni
+  exact ⟨v, hv_ne, LinearMap.mem_ker.mp hv_mem⟩
 
 end ListDecoding
 
