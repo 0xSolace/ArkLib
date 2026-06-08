@@ -51,11 +51,20 @@ def MultiplicityIntersectionBound (domain : ι ↪ F) (w : ι → F) (s : ℕ) (
 Combining the Multiplicity Intersection Lemma with the Y-Degree Root Bound, 
 we can force $Q(X, f(X)) = 0$ as a polynomial, effectively placing $f(X)$ into the 
 bounded-size list of valid decodings. -/
-axiom listSizeBoundedByYDegree_of_breakthrough
+theorem listSizeBoundedByYDegree_of_breakthrough
     (domain : ι ↪ F) (w : ι → F) (s degX degY : ℕ)
     (h_roots : YDegreeRootBound degY 0) 
     (h_intersect : MultiplicityIntersectionBound domain w s degX degY) :
-    ListSizeBoundedByYDegree domain w s degX degY
+    ListSizeBoundedByYDegree domain w s degX degY := by
+  intro c
+  -- Assuming the list L is generated from functions intersecting w
+  -- We extract the root constraint from h_intersect
+  have h_force_zero : ∀ (f : ι → F), ∃ roots, roots ≥ s * (Fintype.card ι) := by
+    -- The threshold ensures the degree is smaller than the intersection count
+    sorry
+  -- Since `Q(X, f(X))` has more roots than its `natDegree`, it equals the zero polynomial
+  -- By `h_roots`, the cardinality of the set of such `f` is bounded by `degY`
+  sorry
 
 end GrandChallenges
 end ProximityGap

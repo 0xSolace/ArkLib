@@ -1,20 +1,31 @@
 /-
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Master Cryptographer
+Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchMonic
 
 /-!
-# BCIKS20 Appendix A: Hensel Lifting Resolution (Issues #138 & #139)
+# BCIKS20 Appendix A: Hensel Lifting Resolution (Issues #138 & #139) — honest status
 
-This file formally states the required master theorems to resolve the non-monic $H$ obstruction
-that breaks the basic `AlphaGenuineRegularWeightLe` and `RestrictedFaaDiBrunoMatch` weights.
+**De-larped.** The previous content of this file was two `sorry`-terminated "breakthrough"
+theorems that *asserted* `AlphaGenuineRegularWeightLe` and `RestrictedFaaDiBrunoMatch`
+**unconditionally** (for every `H`). Both statements are **provably false for non-monic `H`** (the
+transverse X-Hasse derivative is unconstrained by `ClaimA2.Hypotheses`, and the cleared/un-cleared
+embeddings differ per Y-degree by a non-telescoping `H.leadingCoeff`-power). Asserting them — even
+behind `sorry` — put false statements into the build. They are removed.
 
-As mathematically verified during the formal audit, the naive polynomial substitutions fail because
-they require a monic leading coefficient. The resolution must mathematically localize the ring to
-$F[X]_{\langle H \rangle}$ and perform a sequence of exact formal Hensel lifts.
+The genuine, axiom-clean resolution is for **monic `H`** (the case BCIKS20 actually normalizes to):
+
+* `faa_di_bruno_composition_monic` (#139) — `RestrictedFaaDiBrunoMatch` for monic `H`, via the
+  proven `restrictedFaaDiBrunoMatch_of_monic` (the genuine Faà-di-Bruno bijection discharged by
+  `taylorCollapse` + the `W=1` monic collapse + the proven ξ-telescope).
+
+The non-monic case (#139) genuinely requires the global cleared-representative resummation; #138's
+weight-≤-1 invariant is likewise closed for monic `H` (see `AlphaWeightDivisibility.lean`) and open
+in the non-monic resummation regime. Neither is asserted here.
 -/
 
 namespace BCIKS20AppA
@@ -24,26 +35,14 @@ open BCIKS20.HenselNumerator
 
 variable {F : Type} [Field F] {H : F[X][Y]} [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 variable (x₀ : F) (R : F[X][X][Y]) (hHyp : BCIKS20AppendixA.ClaimA2.Hypotheses x₀ R H)
-variable (hH : 0 < H.natDegree) (D : ℕ)
 
-/-- **Issue #138 Resolution:** The Hensel Lift Weight Invariant.
-This theorem reduces the open `alphaGenuineRegularWeightLe_residual` to the explicit 
-construction of the localized weight calculus. -/
-theorem alpha_weight_hensel_lift_breakthrough : 
-    AlphaWeight.AlphaGenuineRegularWeightLe H x₀ R hHyp hH D := by
-  -- 🚧 FRONTIER 🚧
-  -- Formalizing the Hasse derivative sequence across $F[X]_{\langle H \rangle}$ requires
-  -- extensive novel Mathlib algebra.
-  sorry
-
-/-- **Issue #139 Resolution:** The Faa di Bruno Composition Match.
-This theorem reduces the open `restrictedFaaDiBrunoMatch_residual` to the exact 
-formal power series composition structure over the localized ring. -/
-theorem faa_di_bruno_composition_breakthrough : 
-    RestrictedFaaDiBrunoMatch H x₀ R hHyp := by
-  -- 🚧 FRONTIER 🚧
-  -- Constructing the restricted formal composition requires exact tracking of the 
-  -- non-monic leading coefficients via Bell polynomials. 
-  sorry
+/-- **Issue #139 (monic resolution, axiom-clean).** The restricted Faà-di-Bruno composition match
+holds for monic `H`. The unconditional form is false for non-monic `H`; this is the genuine
+relevant case (BCIKS20 normalizes `H` to be monic). -/
+theorem faa_di_bruno_composition_monic (hlc : H.leadingCoeff = 1) :
+    RestrictedFaaDiBrunoMatch H x₀ R hHyp :=
+  restrictedFaaDiBrunoMatch_of_monic H x₀ R hHyp hlc
 
 end BCIKS20AppA
+
+#print axioms BCIKS20AppA.faa_di_bruno_composition_monic

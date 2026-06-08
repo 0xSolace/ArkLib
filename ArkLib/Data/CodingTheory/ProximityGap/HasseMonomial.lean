@@ -19,9 +19,10 @@ theorem hasseCoeff_monomial (i j s t : ℕ) (p x₀ y₀ : F) :
       Polynomial.eval_monomial]
   have hmid : ((t.choose j : Polynomial F) * Polynomial.monomial s p) * (Polynomial.C y₀) ^ (t - j)
       = Polynomial.monomial s ((t.choose j : F) * p * y₀ ^ (t - j)) := by
-    rw [Polynomial.C_pow, mul_assoc, Polynomial.monomial_mul_C,
+    rw [← Polynomial.C_pow,
         show (t.choose j : Polynomial F) = Polynomial.C (t.choose j : F) from
-          (Polynomial.C_natCast _).symm, Polynomial.C_mul_monomial]
+          (map_natCast Polynomial.C (t.choose j)).symm,
+        Polynomial.C_mul_monomial, Polynomial.monomial_mul_C]
     congr 1
     ring
   rw [hmid, Polynomial.hasseDeriv_monomial, Polynomial.eval_monomial]

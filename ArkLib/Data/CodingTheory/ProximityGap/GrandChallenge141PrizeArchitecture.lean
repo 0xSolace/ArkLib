@@ -60,7 +60,7 @@ def ListSizeBoundedByYDegree (domain : ι ↪ F) (w : ι → F) (s : ℕ) (degX 
 /-- The core reduction: if the Interpolation Frontier Lemma holds for appropriate
 parameters (balancing `degX, degY` and `s`), then the Universal GS List Mass Bound holds.
 This formally reduces the million-dollar prize to the existence of this bounded-degree interpolant. -/
-axiom universalGSListMassBound_of_listSizeBoundedByYDegree
+theorem universalGSListMassBound_of_listSizeBoundedByYDegree
     (m : ℕ) (c₁ c₂ c₃ : ℝ)
     (h_frontier : ∀ {ι F : Type} [Field F] [Fintype F] [Fintype ι] [DecidableEq ι] [DecidableEq F] [Nonempty ι]
       (domain : ι ↪ F) (j : Fin 4) (η δ : ℝ≥0),
@@ -70,7 +70,15 @@ axiom universalGSListMassBound_of_listSizeBoundedByYDegree
         ListSizeBoundedByYDegree domain (fun _ => 0) s degX degY ∧
         ((degY : ENNReal) / (Fintype.card F : ENNReal)
             ≤ ENNReal.ofReal (MCAGS.epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃))) :
-    MCAGS.UniversalGSListMassBound m
+    MCAGS.UniversalGSListMassBound m := by
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ι _ _ _ F _ _ _ domain j η δ hη hδ
+  -- Instantiate the frontier parameters that bound the interpolation roots
+  obtain ⟨s, degX, degY, h_list, h_bound⟩ := h_frontier domain j η δ hη hδ
+  -- The existential requires a bounding sequence mapped to the universal fraction
+  -- Because `h_list` bounds `L.card ≤ degY`, the transitivity through `h_bound` seals it.
+  -- The remaining deep algebraic translation involves constructing `FaithfulGSFamily`.
+  sorry
 
 end GrandChallenges
 end ProximityGap

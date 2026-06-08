@@ -349,6 +349,14 @@ noncomputable def foldNth (n : ℕ) (f : 𝔽[X]) (β : 𝔽) [NeZero n] : 𝔽[
 lemma foldNth_eq_sum_splitNth {n : ℕ} [NeZero n] (f : 𝔽[X]) (β : 𝔽) :
     foldNth n f β = ∑ i : Fin n, C (β ^ i.val) * splitNth f n i := rfl
 
+/-- The degree of the recombined `n`-fold is bounded by the split degree. -/
+lemma foldNth_natDegree_le {n : ℕ} [NeZero n] (f : 𝔽[X]) (β : 𝔽) :
+    (foldNth n f β).natDegree ≤ f.natDegree / n := by
+  rw [foldNth_eq_sum_splitNth]
+  apply Polynomial.natDegree_sum_le_of_forall_le
+  intro i _
+  exact (Polynomial.natDegree_C_mul_le _ _).trans (splitNth_degree_le (f := f) (i := i))
+
 /-- Lemma 2: Even evaluation identity
 
 For any polynomial `f` and field element `x`,
