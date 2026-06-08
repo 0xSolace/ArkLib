@@ -356,6 +356,32 @@ theorem evalDist_simulateQ_swap
 
 #print axioms evalDist_simulateQ_swap
 
+/-- **Seam stage swap under a common prefix.** The `appendSoundness` reorder is `snd ↔ V₁`, but both
+run *inside* the `fst` prover's continuation (each may depend on `fst`'s seam output `x`), so the
+top-level `evalDist_simulateQ_swap` does not apply directly. This generalization swaps the two
+adjacent stages `A x`, `B x` underneath an arbitrary prefix `FST`: state-fixing collapses every bind
+to the same `s`, then `bind_congr` peels the prefix and `SPMF.bind_comm` swaps the inner pair. This is
+the exact tool that turns the flat soundness chain `fst >>= snd >>= (V₁ >>= V₂)` into the
+`(fst >>= V₁) >>= (snd >>= V₂) = mx >>= my` form `probComp_seam_union_le` consumes. -/
+theorem evalDist_simulateQ_swap_prefix
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {α₀ α β γ : Type}
+    (FST : OracleComp spec α₀) (A : α₀ → OracleComp spec α) (B : α₀ → OracleComp spec β)
+    (k : α₀ → α → β → OracleComp spec γ) (s : σ) :
+    evalDist ((simulateQ so
+        (FST >>= fun x => A x >>= fun a => B x >>= fun b => k x a b)).run' s)
+      = evalDist ((simulateQ so
+        (FST >>= fun x => B x >>= fun b => A x >>= fun a => k x a b)).run' s) := by
+  rw [StateT.run'_eq, StateT.run'_eq, evalDist_map, evalDist_map]
+  congr 1
+  simp only [simulateQ_run_bind_state_fixed so hso, evalDist_bind]
+  refine bind_congr fun p => ?_
+  exact SPMF.bind_comm _ _ _
+
+#print axioms evalDist_simulateQ_swap_prefix
+
 /-- **Elim-stage commute (bad-event level).** A never-failing plain stage `B` may be moved across an
 `Option`-elim short-circuit without changing the probability of a `none`-false event `badpred`: running
 `B` before the elim (always) vs inside the `some`-branch (only on success) agree on `badpred`, since the
