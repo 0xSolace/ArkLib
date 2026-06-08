@@ -1462,8 +1462,23 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
       o.elim False (fun x => (x.1, x.2.1) ∉ relIn ∧ (x.2.2.1, x.2.2.2) ∈ relOut))
     (s := table) (h := ?perElem)) (le_of_eq ?heq)
   · intro a s' ha
-    trace_state
-    sorry
+    refine le_of_eq ?_
+    cases a with
+    | none =>
+      simp only [Option.elim_none, simulateQ_pure, StateT.run_pure, StateT.run'_eq,
+        map_pure, Functor.map_map, Function.comp]
+    | some r =>
+      simp only [Option.elim_some, fiatShamirStraightlineExtractorOfStateRestoration_apply,
+        StateT.run'_eq, liftComp_eq_liftM, bind_assoc, pure_bind, monadLift_bind, monadLift_pure,
+        map_bind, bind_pure_comp, liftM_map, liftM_optionT_combined, bind_map_left,
+        monadLift_optionT_lift_run_map_getM, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
+        liftM_eq_monadLift, OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk,
+        optionT_monadLift_run, simulateQ_bind, simulateQ_map, simulateQ_pure,
+        simulateQ_addLift_liftM, OptionT.simulateQ_addLift_liftM, Option.getM_map_run,
+        Option.elimM, simulateQ_option_elim, simulateQ_getM_run_some, OptionT.simulateQ_getM_some,
+        StateT.run_simulateQ_optiont_map, StateT.run_pure_some_bind_map, Option.map_comp_lambda,
+        simulateQ_map_monadLift_getM_run, optionT_run_simulateQ_liftquery,
+        OptionT.run_pure, StateT.run_pure, _root_.map_pure]
   · trace_state
     sorry
 
