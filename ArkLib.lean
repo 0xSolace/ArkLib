@@ -338,6 +338,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop22
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop23
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop24
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop25
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop26
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
@@ -688,7 +689,6 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 import ArkLib.OracleReduction.Composition.Sequential.EmptyAppendReduction
 import ArkLib.OracleReduction.Composition.Sequential.General
-import ArkLib.OracleReduction.Composition.Sequential.N0CompScratch
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
