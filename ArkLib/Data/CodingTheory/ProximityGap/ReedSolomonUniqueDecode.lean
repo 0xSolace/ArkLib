@@ -587,8 +587,38 @@ theorem reedSolomon_jointAgreement_of_shared_locator_exact [Fintype F]
     norm_num
     rw [div_mul_cancel₀ _ (by exact_mod_cast hn.ne')]
 
+omit [DecidableEq ι] in
+/-- **Degree-one decoding-curve counting bridge.** If each scalar `z ∈ Z` has a codeword on the
+degree-one polynomial family `g₀ + z • g₁` agreeing with the affine-line word `u₀ + z • u₁` on at
+least `(1 - δ) n` coordinates, then the joint agreement coordinates for `(u₀, u₁)` against
+`(g₀, g₁)` satisfy the standard many-points correlated-agreement count. -/
+theorem reedSolomon_jointAgreement_of_degreeOne_decoding_curve
+    {α : ι ↪ F} {u₀ u₁ : ι → F} {g₀ g₁ : F[X]} {Z : Finset F} {δ : ℝ}
+    (hZ : 2 ≤ Z.card)
+    (hcurve : ∀ z ∈ Z, (1 - δ) * Fintype.card ι ≤
+      (Finset.univ.filter
+        (fun i => u₀ i + z • u₁ i = (g₀ + z • g₁).eval (α i))).card) :
+    (Z.card : ℝ) * ((1 - δ) * Fintype.card ι) ≤
+      (Finset.univ.filter
+          (fun i => u₀ i = g₀.eval (α i) ∧ u₁ i = g₁.eval (α i))).card
+        * ((Z.card : ℝ) - 1) + Fintype.card ι := by
+  classical
+  refine ProximityGap.correlatedAgreement_card_of_linear_family
+    (F := F) (Z := Z) (S := fun z =>
+      Finset.univ.filter
+        (fun i => u₀ i + z • u₁ i = (g₀ + z • g₁).eval (α i)))
+    (u₀ := u₀) (u₁ := u₁)
+    (v₀ := fun i => g₀.eval (α i)) (v₁ := fun i => g₁.eval (α i))
+    ?_ ?_ ?_
+  · exact le_trans (by norm_num : 1 ≤ 2) hZ
+  · intro z hz j hj
+    have hmem := (Finset.mem_filter.mp hj).2
+    simpa [Polynomial.eval_add, Polynomial.eval_smul, smul_eq_mul] using hmem
+  · exact hcurve
+
 #print axioms ReedSolomon.jointAgreement_of_common_locator
 #print axioms ReedSolomon.reedSolomon_jointAgreement_of_shared_locator
 #print axioms ReedSolomon.reedSolomon_jointAgreement_of_shared_locator_exact
+#print axioms ReedSolomon.reedSolomon_jointAgreement_of_degreeOne_decoding_curve
 
 end ReedSolomon
