@@ -680,6 +680,17 @@ theorem processRound_zero_continueFromTo_eq_runToRound_last {n : ℕ} {pSpec : P
   exact (runToRound_eq_bind_continueFromTo prover s w (⟨0, hn⟩ : Fin n).succ (Fin.last n)
     (by rw [Fin.le_def, Fin.val_succ, Fin.val_last]; omega)).symm
 
+/-- **`continueFromTo` target-index transport.**  Continuing to two propositionally-equal target
+rounds is heterogeneously equal.  The non-`rw`-able bridge (the result type depends on the target, so
+in-place rewriting hits a non-type-correct motive) for aligning `Fin.last`-shaped targets with the
+`⟨k₀ + j⟩`-shaped targets produced by the right-block interior induction (`1 + (n-1) = n` is not
+definitional).  Proved by `subst`. -/
+theorem continueFromTo_heq_target {n : ℕ} {pSpec : ProtocolSpec n} {k j₁ j₂ : Fin (n + 1)}
+    (h : j₁ = j₂) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) (rk : pSpec.Transcript k × prover.PrvState k) :
+    HEq (prover.continueFromTo stmt wit k j₁ rk) (prover.continueFromTo stmt wit k j₂ rk) := by
+  subst h; rfl
+
 /-! ### Direction-resolved single-round peels
 
 The two lemmas below resolve the `processRound` direction match into the two honest round shapes,
