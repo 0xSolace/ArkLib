@@ -321,6 +321,15 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
 
+### P3 — PROOF capstone: the large-gap prize mass clause holds (Loop13)
+**Verified sorry-free, axiom-clean in `CandidateProofLoop13.lean`:** `largegap_prize_mass` — composing
+P1 (Johnson list budget `B(ρ,η)=1/((ρ+η)²−ρ)`, `q`-independent) and P2 (`n²` fits `(2^m)²`), in the
+large-gap regime (`η > √ρ−ρ`, `δ ≤ 1−ρ−η`, `2^M`-smooth domain) any GS list of size `ℓ ≤ B(ρ,η)`
+gives `ℓ/q ≤ (1/q)·(2^M)²·B(ρ,η)` — **the prize mass clause with `c₁=2` and a `q`-independent
+constant.** So the prize is *proven on the entire large-gap side*, landed on its own RHS (the GS list
+itself supplied by Hab25 Johnson-range / BCIKS 2025/2055 Thm 1.5). `largegap_prize_const_pos`: the
+bound is non-vacuous. The small-gap band `0 < η ≤ η₀` stays the open core.
+
 ### P2 / O9-repair — the Johnson-range bound lands on the prize RHS shape (Loop11)
 **Verified sorry-free, axiom-clean in `CandidateProofLoop11.lean`:** `hab25_le_prizeShape` —
 under the smooth-domain size linkage `n = |domain| ≤ 2^m`, the Haböck `n²` bound
