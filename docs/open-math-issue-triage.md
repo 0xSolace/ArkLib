@@ -15,6 +15,10 @@ scripts/residual_axioms.txt (each issue-tracked), forbidden-token gate clean.
 - **#138/#139** `embeddingOf_hasseCoeffReprO_cleared_uniform_residual` — was UNSOUND (i1=0 /
   deltaSave=1 demands natDegreeY p ≤ R.natDegree−1−m, false generically; omega counterexample);
   replaced with a correct proven lemma at k = natDegreeY p. HenselNumerator.lean now axiom-free.
+- **#138** `AlphaGenuineRegularWeightLe` / `DivWeightLe` weight-1 invariant — REFUTED under the
+  current two-field `ClaimA2.Hypotheses`. `P1MonicWeightRefutation.weight_refuted` gives a valid
+  separable monic `ZMod 3` witness where the order-1 successor quotient has
+  `Λ_𝒪 = 2 > 1`; the missing assumption is a degree/grading bound on the lift direction.
 
 ## Remaining — genuine open math (NOT closable in-session without fabrication)
 
@@ -30,7 +34,7 @@ scripts/residual_axioms.txt (each issue-tracked), forbidden-token gate clean.
 | #87 `bchks25_rs_epsCA_item2` | δ_min/3-to-Johnson RS epsCA | external paper (BCHKS25) |
 | #106 `fenziSanso_upperBound_attack_concrete_residual` | ∃ violating instance with 2^70 ≤ winningSet.ncard over KoalaBear-sextic RS | deep attack construction |
 | #116 | completeness-unroll DONE (`fiatShamir_completeness_unroll_discharged`). SR-soundness⇒soundness = the `fiatShamir_soundnessTransferResidual` (the whole FS soundness stack is gated on it). HVZK⇒ZK open. | deep formalization gap |
-| #138/#139 | `AlphaGenuineRegularWeightLe` / `DivWeightLe` / `RestrictedFaaDiBrunoMatch` (def : Prop residuals — the structured BCIKS20 App-A α/β invariant + restricted Faà-di-Bruno match) | deep formalization gap |
+| #139 | `RestrictedFaaDiBrunoMatch` (def : Prop residual — the structured BCIKS20 App-A restricted Faà-di-Bruno match) | deep formalization gap |
 | #13 | `SubPhaseSoundnessResidual` / `SubPhaseCompletenessResidual` (append composition lemmas ALREADY proven; remaining = outer LogUp + embedded-sumcheck-through-liftContext) | deep formalization gap |
 | #14 | `fri_query_soundness` — probabilistic query-round acceptance bound (Claim 8.2) | paper-length |
 | #29 | RingSwitching — 5 **design-blocked** holes (need design decisions, not pure proof) | design-blocked |

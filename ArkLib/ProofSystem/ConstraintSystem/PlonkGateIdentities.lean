@@ -26,6 +26,7 @@ NO sorry / admit / axiom / native_decide is used.
 
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Ring
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Algebra.Group.Equiv.Basic
@@ -108,8 +109,13 @@ There is no Schwartz–Zippel probability gap here — the error is exactly `0`.
 We model "the system accepts" as "every gate polynomial vanishes" and show the
 trivial equivalence. This is the honest statement of what the upstream
 `gateCheckVerifier_soundness` proves. -/
-def gateCheck_accept_iff_allGatesVanish {n : ℕ} (G : Fin n → 𝓡) : Prop :=
-    (∀ i, G i = 0) ↔ (∀ i, gateAccepts (1:𝓡) 0 0 0 (G i) 0 0 0 i.val' = G i)
+theorem gateCheck_accept_iff_allGatesVanish {n : ℕ} (G : Fin n → 𝓡) :
+    (∀ i, G i = 0) ↔ (∀ i, gateAccepts (1 : 𝓡) 0 0 0 (G i) 0 0 0) := by
+  constructor
+  · intro h i
+    simpa [gateAccepts, gateEval] using h i
+  · intro h i
+    simpa [gateAccepts, gateEval] using h i
 
 end Gate
 
