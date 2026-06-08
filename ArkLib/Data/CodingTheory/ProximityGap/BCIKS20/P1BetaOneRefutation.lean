@@ -7,36 +7,30 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
 import ArkLib.ToMathlib.PartitionRecursion
 
 /-!
-# BCIKS20 Appendix A.4 (P1) — the order-1 refutation infrastructure for `AlphaGenuineRegularWeightLe`
-(#138)
+# BCIKS20 Appendix A.4 (P1) — order-1 closed form + integrality criterion for
+`AlphaGenuineRegularWeightLe` (#138)
 
-This file lands the **verified core of the order-1 refutation** of the BCIKS20 A.4 weight-1
-regularity predicate `AlphaGenuineRegularWeightLe` / `SuccDivWeightLe_of_monic` (#138).
+This file lands two verified, axiom-clean facts about the order-1 Hensel coefficient.
 
-The `ClaimA2.Hypotheses` carried in tree have exactly two fields — `dvd_evalX` and
-`separable_evalX` — both constraining only the `X = x₀` specialization `R(s,x₀,Y)`.  **Nothing
-constrains the lift-direction `∂_u R`.**  But the genuine Hensel coefficient `αGenuine 1` depends on
-it: by the implicit function theorem `αGenuine 1 = −R_u/R_Y` at the root.  Choosing `R` whose
-`u`-derivative is a unit while `R_Y` is not makes `αGenuine 1` non-integral, so **no `𝒪`-element
-embeds to it** — refuting the predicate even for monic `H`, exactly as #139 / #140 refuted their
-carved residuals where the in-tree hypotheses are too weak.
-
-Two verified pieces:
-
-* `βHensel_one_eq` — the recursion collapses at `k = 0` (the `i₁=0` partitions of `1` are killed by
-  the `(1)∉parts` filter; `i₁=1` is the empty partition of `0`), giving
+* `βHensel_one_eq` — the `(A.1)` recursion collapses at `k = 0` (the `i₁=0` partitions of `1` are
+  killed by the `(1)∉parts` filter; `i₁=1` is the empty partition of `0`), giving
   `βHensel 1 = − hasseCoeffRepr𝒪(R, 1, 0)`.
 
-* `not_regular_alphaGenuine_one_of_not_dvd` — for monic `H`, if `βHensel 1` is not `ξ`-divisible in
-  `𝒪`, then no `𝒪`-element embeds to `αGenuine 1` (via the proven lift identity
-  `βHensel_lift_identity` and injectivity of `𝒪 ↪ 𝕃`), so `AlphaGenuineRegularWeightLe` fails —
-  independently of any weight bound.
+* `not_regular_alphaGenuine_one_of_not_dvd` — for monic `H`, **if** `βHensel 1` is not `ξ`-divisible
+  in `𝒪`, then no `𝒪`-element embeds to `αGenuine 1` (via the proven lift identity
+  `βHensel_lift_identity` and injectivity of `𝒪 ↪ 𝕃`).  An *integrality criterion*.
 
-Both are axiom-clean (`[propext, Classical.choice, Quot.sound]`).  A concrete witness (`H = Y²−s`,
-`R = Y²−s+u`, giving `βHensel 1 = −1` a unit, `ξ = mk(2Y)` a non-unit ⇒ `ξ ∤ βHensel 1`) instantiates
-these into an unconditional `¬ AlphaGenuineRegularWeightLe`; the genuine BCIKS20 predicate needs
-`ClaimA2.Hypotheses` strengthened to encode root-integrality (or the cleared restatement
-`FullyClearedWeightLe`).
+**NOT a refutation.**  An earlier draft of this file claimed these refute `AlphaGenuineRegularWeightLe`
+for monic `H` via `H = Y²−s`.  That is **wrong**: `Polynomial.Separable` is `IsCoprime f (derivative
+f)` over the coefficient ring `ℚ[X]`, and `Y²−s` has discriminant `4s`, a non-unit, so `Y²−s` is not
+`Separable` — it fails `ClaimA2.Hypotheses.separable_evalX`.  More structurally, for any *valid*
+(separable) `g = evalX(C x₀) R` one has `IsCoprime(g, g')`, so `mk(g')` is a **unit** in
+`𝒪 = F[X][Y]/(H̃')`; for monic `H`, `ξ = mk(g')`, hence **`ξ` is a unit and `ξ ∣ βHensel t` for all
+`t`** — so `αGenuine t` is always integral.  The hypothesis of
+`not_regular_alphaGenuine_one_of_not_dvd` is therefore unsatisfiable for genuine inputs; the criterion
+never fires.  Consequently the integrality half of #138 is *free* from separability, and the sole
+remaining open content is the weight bound `Λ_𝒪(αGenuine t) ≤ 1` (the Faà-di-Bruno
+cancellation-into-weight core).
 -/
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA ProximityPrize.BCIKS20.GammaGenuine
