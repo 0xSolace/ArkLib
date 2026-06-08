@@ -1812,8 +1812,11 @@ opaque fiatShamir_knowledgeSoundnessTransferResidual_canonical
     (init := srInit)
     (p := fun o => o.elim False fun x => (x.1, x.2.1) ∉ relIn ∧ x.2.2 ∈ relOut)
     (h := hCollapse)
-  refine le_trans ?_ (by
-    simpa [fiatShamirAdversaryExecution,
+  refine le_trans ?_ ?_
+  · convert (le_of_eq hProbCollapse) using 1
+    rfl
+  · refine le_trans ?_ h
+    simp [fiatShamirAdversaryExecution,
     Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS,
     Prover.StateRestoration.knowledgeSoundnessOfFiatShamirProver,
     fiatShamirCoupledQueryImpl,
@@ -1823,8 +1826,7 @@ opaque fiatShamir_knowledgeSoundnessTransferResidual_canonical
     Verifier.fiatShamir_verify_eq,
     Reduction.fiatShamir, Prover.fiatShamir, Verifier.fiatShamir,
     Reduction.run, Prover.run, Prover.runToRound, Prover.processRound,
-    QueryImpl.addLift_def] using h)
-  convert (le_of_eq hProbCollapse) using 1
+    QueryImpl.addLift_def]
 
 end CanonicalKnowledgeSoundness
 
