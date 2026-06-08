@@ -173,8 +173,8 @@ theorem support_run'_simulateQ_addLift_challenge_query_eq
       refine (support_run'_map_liftM u (challengeQueryImpl t)).trans ?_
       rw [challengeQueryImpl]
       exact support_uniformSample (pSpec₁.Challenge t.1)]
-    -- LHS: the widened `inr` query is the challenge query lifted into the appended challenge oracle;
-    -- route through `simulateQ_add_liftComp_right` to reuse the challenge support agreement.
+    -- LHS: the widened `inr` query is the challenge query lifted into the appended challenge
+    -- oracle; route through `simulateQ_add_liftComp_right` to reuse the challenge support agreement.
     simp only [StateT.run'_eq]
     rw [show (liftM (liftM ((oSpec + [pSpec₁.Challenge]ₒ).query (Sum.inr t))
           : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) _)
@@ -186,5 +186,37 @@ theorem support_run'_simulateQ_addLift_challenge_query_eq
     erw [QueryImpl.simulateQ_add_liftComp_right]
     rw [simulateQ_liftTarget, support_run'_map_liftM u]
     exact support_simulateQ_challengeQueryImpl_append_left t
+
+/-- **Marginal transport across the append seam.** A peeled marginal of the appended honest
+experiment — `liftM (liftM oa)` of a component-protocol computation `oa`, with its `OptionT.lift`
+`.run` wrapper, simulated under the appended handler and evaluated with `run' u` — has the same
+support (membership) as the component experiment `(simulateQ (impl.addLift challengeQueryImpl) oa).run' u`.
+This packages the `OptionT.lift`/`some <$>` bookkeeping together with the support transport
+(brick #7, discharged by the feeder) into the form the completeness-composition assembly consumes for
+each peeled prover/verifier stage. -/
+theorem mem_support_run'_simulateQ_liftM_lift_iff {ιₒ : Type} {oSpec : OracleSpec ιₒ}
+    {σ : Type} [Subsingleton σ] (u : σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    {α : Type} (oa : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) α) (pr : α) :
+    some pr ∈ support ((simulateQ (impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp))
+        (liftM (liftM oa : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)
+          : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α).run).run' u)
+    ↔ pr ∈ support ((simulateQ (impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [pSpec₁.Challenge]ₒ) (StateT σ ProbComp)) oa).run' u) := by
+  rw [show (liftM (liftM oa : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)
+        : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) α).run
+      = Option.some <$> (liftM oa : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α) from rfl,
+    simulateQ_map]
+  have hmap : ∀ (W : StateT σ ProbComp α),
+      ((Option.some <$> W).run' u) = Option.some <$> (W.run' u) := by
+    intro W; simp only [StateT.run'_eq, StateT.run_map, Functor.map_map, Function.comp]
+  rw [hmap, support_map,
+    OracleComp.support_run'_simulateQ_liftM_eq_of_query u (impl.addLift challengeQueryImpl)
+      (impl.addLift challengeQueryImpl)
+      (fun t => support_run'_simulateQ_addLift_challenge_query_eq u impl t) oa,
+    Set.mem_image]
+  constructor
+  · rintro ⟨a, ha, h⟩; exact (Option.some_injective _ h) ▸ ha
+  · intro h; exact ⟨pr, h, rfl⟩
 
 end ProtocolSpec
