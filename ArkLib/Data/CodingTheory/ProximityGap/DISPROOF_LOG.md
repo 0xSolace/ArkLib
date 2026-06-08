@@ -20,8 +20,8 @@ proof/disproof/structure edifice is one consistent body. Backups at `~/arklib_di
 brick named above under `ArkLib/Data/CodingTheory/ProximityGap/`; many live only in
 `~/arklib_disproof_backup/` or older quarantined paths until explicitly restored. Treat this log as
 the research ledger; treat a named lemma as in-tree API only after checking the current source file.
-Loops 27, 28, 29, 30, 31, 32, 33, 34, and 35 have been restored as self-contained arithmetic bricks
-in the current checkout.
+Loops 27, 28, 29, 30, 31, 32, 33, 34, 35, and 36 have been restored as self-contained arithmetic
+bricks in the current checkout.
 
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
@@ -337,6 +337,21 @@ the smooth-domain linkage `2^m ≍ n = |domain|` with `c₁ ≥ 2` (this is exac
 (2) GS multiplicity `m→∞` approaches but never exceeds the Johnson radius for *plain* RS, so Hab25
 cannot cross `η₀` — the small-gap band needs genuinely new beyond-Johnson math (smooth-domain
 list-decodability), confirming the carving is at the true mathematical frontier.
+
+### Loop36 — amplified additive injections are still safe under constant blowup
+**Verified sorry-free, axiom-clean in `CandidateStructureLoop36.lean`:**
+`affine_recursion_amplified` (`T(j+1)≤aT(j)+b` gives
+`T(m)≤a^mT(0)+m*b*a^m` for `a≥1,b≥0`), `pow_const_factor_eq_domain_pow`,
+`affine_recursion_exact_constant_factor`, and `affine_recursion_constant_factor_absorbed` (under
+per-fold factor `2^c`, nonnegative base, and bounded additive injection `b`, the full recurrence is
+bounded by `(T(0)+b)*(2^m)^(c+1)`).
+**Disproof attempt:** maybe additive per-fold errors are harmless when added, but later
+multiplicative folds amplify them into a super-polynomial tower. **Disproof of the disproof:** if the
+multiplicative factor has bounded exponent density (`2^c` per fold) and the additive injection is
+bounded, amplification costs only the final multiplicative factor plus the fold depth `m`; `m≤2^m`
+absorbs it into one extra polynomial degree. A real affine-recursion disproof must still force
+unbounded multiplicative exponent density or unbounded additive injections in the actual
+smooth-domain GS/proximity process.
 
 ### Loop35 — unbounded exponent density is the real multiplicative danger
 **Verified sorry-free, axiom-clean in `CandidateStructureLoop35.lean`:**
