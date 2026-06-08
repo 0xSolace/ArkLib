@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 
@@ -32,7 +33,7 @@ variable {α : Type*} [DecidableEq α]
 exactly `|A|ᵐ`. -/
 theorem accept_transcripts_card (A : Finset α) (m : ℕ) :
     (Fintype.piFinset (fun _ : Fin m => A)).card = A.card ^ m :=
-  Finset.card_piFinset_const A m
+  Fintype.card_piFinset_const A m
 
 /-- If each round's accept set has size `≤ k`, at most `kᵐ` transcripts accept on every round. -/
 theorem accept_transcripts_card_le (A : Finset α) (m k : ℕ) (hA : A.card ≤ k) :
