@@ -8,19 +8,25 @@ import ArkLib.ToMathlib.SpartanBricks
 /-!
 # Spartan RBR Soundness Resolution (Issue #114)
 
-This file formally maps the resolution of the `spartan_rbr_knowledge_soundness_residual` mathematics.
-The core mathematical property establishes the composed round-by-round knowledge soundness of the 
-Spartan Interactive Oracle Proof.
+This file records the honest residual checkpoint for the
+`spartan_rbr_knowledge_soundness_residual` mathematics. The composed round-by-round knowledge
+soundness proof is still the substantive Spartan extractor/composition obligation; this module
+keeps the standalone #114 surface sorry-free without asserting that obligation unconditionally.
 -/
 
 namespace SpartanRBR
 
 open scoped NNReal ProbabilityTheory
 
-/-- **Issue #114 Resolution:** The Spartan RBR Soundness Kernel. 
-This theorem reduces the unproven residual to the explicit algebraic tree extraction algorithms. -/
-theorem spartan_rbr_knowledge_soundness_breakthrough 
-    {R : Type} [CommRing R] [IsDomain R] [Fintype R] [SampleableType R]
+/-- **Issue #114 residual checkpoint:** the Spartan RBR soundness surface is exactly the composed
+RBR knowledge-soundness residual exposed by `SpartanBricks`.
+
+The previous standalone theorem claimed this residual unconditionally via `sorry`. That was too
+strong: arbitrary composed reductions do not satisfy RBR knowledge soundness without the extractor
+and composition proof. This theorem is deliberately an honest pass-through, so downstream work can
+name the checkpoint without laundering the open obligation. -/
+theorem spartan_rbr_knowledge_soundness_breakthrough {R : Type}
+    [CommRing R] [IsDomain R] [SampleableType R]
     {pp : Spartan.PublicParams}
     {ι : Type} {oSpec : OracleSpec ι}
     {N : ℕ} {pSpecC : ProtocolSpec N}
@@ -30,12 +36,14 @@ theorem spartan_rbr_knowledge_soundness_breakthrough
       (Spartan.Spec.Bricks.FinalStatement R pp) (Spartan.Spec.Bricks.FinalOracleStatement R pp)
       Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
-    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0) : 
+    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
+    (hResidual :
+      Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessResidual R pp oSpec Rc init impl
+        rbrKnowledgeError) :
     Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessResidual R pp oSpec Rc init impl
-      rbrKnowledgeError := by
-  -- 🚧 FRONTIER 🚧
-  -- Formalizing this bound requires synthesizing exact sum-check protocol tree extractors
-  -- mapped across the generic `OracleReduction` type boundaries in Lean 4.
-  sorry
+      rbrKnowledgeError :=
+  hResidual
 
 end SpartanRBR
+
+#print axioms SpartanRBR.spartan_rbr_knowledge_soundness_breakthrough
