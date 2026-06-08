@@ -6,6 +6,7 @@ Authors: ArkLib Team
 
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import ArkLib.Data.Polynomial.Multivariate.HasseDerivative
@@ -53,19 +54,21 @@ lemma mem_pairs_lt {i j m : ℕ} : (i, j) ∈ pairs_lt m ↔ i + j < m := by
   induction m with
   | zero => simp [pairs_lt]
   | succ m ih =>
-    rw [pairs_lt, List.mem_append, ih, List.mem_map]
     constructor
-    · rintro (h | ⟨a, ha, hEq⟩)
-      · omega
-      · rw [List.mem_range] at ha
-        rw [Prod.mk.injEq] at hEq
+    · intro h
+      rw [pairs_lt, List.mem_append] at h
+      rcases h with h | h
+      · have := ih.mp h; omega
+      · simp only [List.mem_map, List.mem_range, Prod.mk.injEq] at h
+        obtain ⟨a, ha, ha1, ha2⟩ := h
         omega
     · intro h
+      rw [pairs_lt, List.mem_append]
       rcases lt_or_ge (i + j) m with h' | h'
-      · exact Or.inl h'
-      · refine Or.inr ⟨i, ?_, ?_⟩
-        · rw [List.mem_range]; omega
-        · rw [Prod.mk.injEq]; omega
+      · exact Or.inl (ih.mpr h')
+      · right
+        simp only [List.mem_map, List.mem_range, Prod.mk.injEq]
+        exact ⟨i, by omega, rfl, by omega⟩
 
 /-- Maps a pair to a `Fin 2` multi-index. -/
 noncomputable def d_of_pair (p : ℕ × ℕ) : Fin 2 →₀ ℕ :=
@@ -111,6 +114,7 @@ lemma length_all_conds (points : List (F × F)) (multiplicities : (F × F) → �
       List.map_cons, List.sum_cons]
     have h : (pairs_lt (multiplicities p)).length = (multiplicities p + 1) * multiplicities p / 2 := by
       have h2 := length_pairs_lt (multiplicities p)
+      rw [mul_comm (multiplicities p) (multiplicities p + 1)] at h2
       omega
     rw [h]
 
@@ -148,7 +152,7 @@ lemma matrix_exists_mulVec_eq_zero_of_lt {m : ℕ} {n : Type*} [Fintype n] [Deci
     exact h_not v h_nz hv
   have hle := LinearMap.finrank_le_finrank_of_injective h_inj
   have : Fintype.card n ≤ m := by
-    simpa [Module.finrank_pi, Fintype.card_fin] using hle
+    simpa [Module.finrank_fintype_fun_eq_card, Fintype.card_fin] using hle
   omega
 
 /-- The kernel vector assembles into a nonzero polynomial. -/
@@ -156,25 +160,22 @@ lemma Q_of_v_ne_zero {deg_X deg_Y : ℕ} (v : MonomialIndex deg_X deg_Y → F) (
     (∑ mono, v mono • colMonomial deg_X deg_Y mono : MvPolynomial (Fin 2) F) ≠ 0 := by
   intro h_sum
   apply hv
-  ext mono
-  simp only [Pi.zero_apply]
-  have h_coeff := congr_arg (MvPolynomial.coeff (d_of_pair (mono.1.val, mono.2.val))) h_sum
-  simp only [colMonomial, map_sum, MvPolynomial.coeff_zero, MvPolynomial.coeff_smul] at h_coeff
-  rw [Finset.sum_eq_single mono] at h_coeff
-  · simp only [MvPolynomial.coeff_monomial, if_pos rfl, smul_eq_mul, mul_one] at h_coeff
-    exact h_coeff
-  · intro b _ hbm
-    simp only [MvPolynomial.coeff_monomial]
-    have h_neq : d_of_pair (b.1.val, b.2.val) ≠ d_of_pair (mono.1.val, mono.2.val) := by
+  funext mono0
+  have h_coeff := congr_arg (MvPolynomial.coeff (d_of_pair (mono0.1.val, mono0.2.val))) h_sum
+  simp only [colMonomial, MvPolynomial.coeff_zero, MvPolynomial.coeff_sum,
+    MvPolynomial.coeff_smul, MvPolynomial.coeff_monomial, smul_eq_mul] at h_coeff
+  rw [Finset.sum_eq_single mono0] at h_coeff
+  · simpa using h_coeff
+  · intro b _ hb
+    have hne : d_of_pair (b.1.val, b.2.val) ≠ d_of_pair (mono0.1.val, mono0.2.val) := by
       intro hc
-      apply hbm
+      apply hb
       have h0 := congrArg (fun f => (f : Fin 2 →₀ ℕ) 0) hc
       have h1 := congrArg (fun f => (f : Fin 2 →₀ ℕ) 1) hc
       simp only [d_of_pair_apply_zero, d_of_pair_apply_one] at h0 h1
       exact Prod.ext (Fin.ext h0) (Fin.ext h1)
-    rw [if_neg h_neq, smul_zero]
-  · intro h
-    simp at h
+    simp [hne]
+  · intro h; exact absurd (Finset.mem_univ mono0) h
 
 /-- Hasse derivatives are `F`-linear. -/
 lemma hasseDeriv_smul (dd : Fin 2 →₀ ℕ) (c : F) (p : MvPolynomial (Fin 2) F) :
