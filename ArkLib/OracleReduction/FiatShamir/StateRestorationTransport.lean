@@ -1159,6 +1159,43 @@ private def transcriptFromFSChallengeLog
     (k := Fin.last n) messages (Fin.last (Fin.last n))).run' log
   pure (by exact parsed)
 
+private theorem run_simulateQ_loggingOracle_query
+    {ι : Type} {spec : OracleSpec ι} (q : spec.Domain) :
+    (simulateQ loggingOracle (liftM (OracleSpec.query (spec := spec) q))).run =
+      (fun u : spec.Range q => (u, [⟨q, u⟩])) <$> (OracleSpec.query (spec := spec) q) := by
+  simpa using
+    (OracleComp.run_simulateQ_loggingOracle_query_bind
+      (spec := spec) (t := q) (mx := fun u : spec.Range q => pure u))
+
+private theorem transcriptFromFSChallengeLogAux_run_logging
+    (stmtIn : StmtIn) (k : Fin (n + 1)) (messages : pSpec.MessagesUpTo k)
+    (j : Fin (k + 1)) (tail : QueryLog (fsChallengeOracle StmtIn pSpec)) :
+    (do
+        let z ← (simulateQ (OracleSpec.loggingOracle
+          (spec := oSpec + fsChallengeOracle StmtIn pSpec))
+          (MessagesUpTo.deriveTranscriptSRAux (oSpec := oSpec) stmtIn k messages j)).run
+        pure ((transcriptFromFSChallengeLogAux
+          (StmtIn := StmtIn) (pSpec := pSpec) k messages j).run (z.2.snd ++ tail))) =
+      (fun transcript =>
+          some (transcript, tail)) <$>
+        MessagesUpTo.deriveTranscriptSRAux (oSpec := oSpec) stmtIn k messages j := by
+  revert tail
+  induction j using Fin.induction with
+  | zero =>
+      intro tail
+      simp [transcriptFromFSChallengeLogAux, MessagesUpTo.deriveTranscriptSRAux,
+        QueryLog.snd]
+  | succ i ih =>
+      intro tail
+      simp only [transcriptFromFSChallengeLogAux, MessagesUpTo.deriveTranscriptSRAux] at ih ⊢
+      rw [Fin.induction_succ]
+      simp only [simulateQ_bind, WriterT.run_bind, bind_assoc]
+      split
+      · next hDir =>
+          rw [run_simulateQ_loggingOracle_query]
+          simp [ih, QueryLog.snd, popFSChallengeFromLog]
+      · simp [ih, QueryLog.snd]
+
 /-- Canonical straightline extractor for the transformed one-message Fiat-Shamir verifier, induced
 by a state-restoration extractor for the underlying interactive verifier.
 
