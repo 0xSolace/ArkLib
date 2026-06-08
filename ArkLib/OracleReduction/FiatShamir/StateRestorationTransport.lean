@@ -688,6 +688,7 @@ section CanonicalSoundness
 
 set_option linter.unusedSimpArgs false
 set_option linter.unusedSectionVars false
+set_option maxHeartbeats 800000
 
 variable {WitIn' WitOut' : Type}
 
