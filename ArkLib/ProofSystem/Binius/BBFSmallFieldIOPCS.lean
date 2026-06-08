@@ -43,7 +43,7 @@ in contrast to `FRIBinius/CoreInteractionPhase.lean` which fuses the sumcheck-fo
 -/
 
 
-namespace Binius.RingSwitching.BBFSmallFieldIOPCS
+namespace Binius.BBFSmallFieldIOPCS
 
 open Binius.BinaryBasefold Binius.BinaryBasefold.FullBinaryBasefold
 open RingSwitching RingSwitching.FullRingSwitching
@@ -938,4 +938,4 @@ theorem bbf_fullOracleVerifier_knowledgeSoundness :
 end Composition
 
 end
-end Binius.RingSwitching.BBFSmallFieldIOPCS
+end Binius.BBFSmallFieldIOPCS

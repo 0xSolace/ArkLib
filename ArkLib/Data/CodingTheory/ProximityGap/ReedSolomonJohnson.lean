@@ -61,7 +61,10 @@ theorem reedSolomon_johnson_list_bound (D : ι ↪ F) (k : ℕ) (w : ι → F)
   obtain ⟨p, hp, rfl⟩ := hpoly c hc
   obtain ⟨q, hq, rfl⟩ := hpoly c' hc'
   have hpq : p ≠ q := fun h => hne (by rw [h])
-  have hcard := agreement_card_le hp hq hpq
-  exact_mod_cast hcard
+  have e : agree (fun i => p.eval (D i)) (fun i => q.eval (D i)) ≤ k - 1 :=
+    agreement_card_le hp hq hpq
+  exact_mod_cast e
 
 end ArkLib.CodingTheory.ReedSolomonJohnson
+
+#print axioms ArkLib.CodingTheory.ReedSolomonJohnson.reedSolomon_johnson_list_bound

@@ -700,6 +700,7 @@ import ArkLib.ProofSystem.BatchedFri.QueryRoundSoundness
 import ArkLib.ProofSystem.BatchedFri.Security
 import ArkLib.ProofSystem.BatchedFri.Spec.General
 import ArkLib.ProofSystem.BatchedFri.Spec.SingleRound
+import ArkLib.ProofSystem.Binius.BBFSmallFieldIOPCS
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Basic
 import ArkLib.ProofSystem.Binius.BinaryBasefold.BitsOfIndex
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Code
@@ -734,7 +735,6 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.Relay
 import ArkLib.ProofSystem.Binius.FRIBinius.CoreInteractionPhase
 import ArkLib.ProofSystem.Binius.FRIBinius.General
 import ArkLib.ProofSystem.Binius.FRIBinius.Prelude
-import ArkLib.ProofSystem.Binius.RingSwitching.BBFSmallFieldIOPCS
 import ArkLib.ProofSystem.Component.CheckClaim
 import ArkLib.ProofSystem.Component.DoNothing
 import ArkLib.ProofSystem.Component.NoInteraction
