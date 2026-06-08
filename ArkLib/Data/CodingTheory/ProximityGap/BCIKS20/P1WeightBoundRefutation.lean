@@ -34,6 +34,19 @@ lemma evalX_badR (x₀ : F) :
     Bivariate.evalX (Polynomial.C x₀) (badR x₀) = (Polynomial.X : F[X][Y]) := by
   simp [badR, badLiftCoeff, Bivariate.evalX_eq_map]
 
+lemma badR_hypotheses (x₀ : F) :
+    ClaimA2.Hypotheses x₀ (badR x₀) (Polynomial.X : F[X][Y]) := by
+  constructor
+  · simpa [evalX_badR] using (dvd_rfl : (Polynomial.X : F[X][Y]) ∣ Polynomial.X)
+  · simpa [evalX_badR] using (Polynomial.separable_X (R := F[X]))
+
+lemma badH_natDegree : (Polynomial.X : F[X][Y]).natDegree = 1 := by
+  rw [Polynomial.natDegree_X]
+
+lemma badH_natDegree_pos : 0 < (Polynomial.X : F[X][Y]).natDegree := by
+  rw [badH_natDegree]
+  norm_num
+
 end
 
 end BCIKS20.HenselNumerator
