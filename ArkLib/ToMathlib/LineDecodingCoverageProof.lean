@@ -11,9 +11,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAForallDoubleCoverRefutation
 The previous `mcaForallDoubleCover_holds`, backed by the unsound `axiom mcaForallDoubleCover_residual`
 (which asserted `MCAForallDoubleCover` for *all* codes/radii), has been removed: that universal claim
 is genuinely FALSE. The honest result — a `ZMod 2` counterexample — is
-`ProximityGap.mcaForallDoubleCover_not_universal` in
-`ArkLib/Data/CodingTheory/ProximityGap/MCAForallDoubleCoverRefutation.lean`, re-exported here. The
-per-instance double cover remains a genuine hypothesis supplied by the GS interpolation route.
+`ProximityGap.exists_not_mcaForallDoubleCover` in
+`ArkLib/Data/CodingTheory/ProximityGap/MCAForallDoubleCoverRefutation.lean`; here we package it as
+the `¬ ∀` form. The per-instance double cover remains a genuine hypothesis supplied by the GS
+interpolation route.
 -/
 
 namespace CodingTheory
@@ -24,7 +25,10 @@ theorem mcaForallDoubleCover_not_universal :
          {F : Type} [Field F] [Fintype F] [DecidableEq F]
          {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
          (C : Set (ι → A)) (δ : NNReal),
-         ProximityGap.MCAForallDoubleCover (F := F) (A := A) C δ) :=
-  ProximityGap.mcaForallDoubleCover_not_universal
+         ProximityGap.MCAForallDoubleCover (F := F) (A := A) C δ) := by
+  intro H
+  obtain ⟨ι, iι, nι, dι, F, fF, ftF, dF, A, ftA, dA, acA, mA, C, δ, hC⟩ :=
+    ProximityGap.exists_not_mcaForallDoubleCover
+  exact hC (@H ι iι nι dι F fF ftF dF A ftA dA acA mA C δ)
 
 end CodingTheory
