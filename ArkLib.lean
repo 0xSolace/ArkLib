@@ -470,6 +470,7 @@ import ArkLib.Data.CodingTheory.ReedSolomon.Multilinear
 import ArkLib.Data.CodingTheory.ReedSolomon.Multiplicity
 import ArkLib.Data.CodingTheory.SingletonBound
 import ArkLib.Data.CodingTheory.SingletonBoundRate
+import ArkLib.Data.CodingTheory.SpherePackingBound
 import ArkLib.Data.CodingTheory.SubspaceDesign
 import ArkLib.Data.CompPoly.Basic
 import ArkLib.Data.Domain.CosetFftDomain.Defs
