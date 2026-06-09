@@ -10,6 +10,7 @@ variable {F : Type*} [Field F]
     a polynomial of degree `< k` matching those `k` points. -/
 theorem h30_agreement_lower_bound (f : F → F) (S : Finset F) :
     ∃ p : Polynomial F, p.degree < (S.card : WithBot ℕ) ∧ ∀ x ∈ S, p.eval x = f x := by
+  classical
   use Lagrange.interpolate S id f
   constructor
   · exact Lagrange.degree_interpolate_lt f (fun _ _ _ _ h => h)
