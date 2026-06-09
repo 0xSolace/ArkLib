@@ -1120,6 +1120,7 @@ import ArkLib.ProofSystem.Fri.PolySplit
 import ArkLib.ProofSystem.Fri.RoundConsistency
 import ArkLib.ProofSystem.Fri.Spec.Completeness
 import ArkLib.ProofSystem.Fri.Spec.General
+import ArkLib.ProofSystem.Fri.Spec.PerRoundCA
 import ArkLib.ProofSystem.Fri.Spec.SingleRound
 import ArkLib.ProofSystem.Fri.Spec.Soundness
 import ArkLib.ProofSystem.Logup.Common
