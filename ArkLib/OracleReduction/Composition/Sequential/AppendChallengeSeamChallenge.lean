@@ -186,6 +186,82 @@ private theorem simulateQ_continueFromTo_right_challenge_evalDist
 
 
 
+
+set_option maxHeartbeats 1000000 in
+/-- **Simulated appended prover-run factoring at a challenge seam.** The `simulateQ` analogue of
+`Prover.append_run_evalDist_challenge`: unroll the appended run to `runToRound seam ≫ right-block ≫
+output` (`run_eq_runToRound_last` + `runToRound_eq_bind_continueFromTo`), thread the proven right-block
+commute through per seam value (state-fixed decomposition + free `hT` via `seam_transcript_appendRight`),
+then reconcile with the sequential `P₁;P₂` run by the same syntactic HEq factoring the bare keystone uses
+(`append_runToRound_seam` + `bind_heq_congr`). -/
+private theorem simulateQ_append_prover_run_evalDist
+    (P₁ : Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (P₂ : Prover oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (stmt : Stmt₁) (wit : Wit₁) (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    [instSC : ∀ i, SampleableType ((pSpec₁ ++ₚ pSpec₂).Challenge i)]
+    (s : σ) :
+    evalDist (StateT.run' (simulateQ (impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp))
+        ((P₁.append P₂).run stmt wit)) s)
+      = evalDist (StateT.run' (simulateQ (impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp))
+        (liftM (P₁.run stmt wit) >>= fun p₁ =>
+          liftM (P₂.run p₁.2.1 p₁.2.2) >>= fun p₂ =>
+          (pure ⟨p₁.1 ++ₜ p₂.1, p₂.2.1, p₂.2.2⟩ :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              (FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × Wit₃)))) s) := by
+  rw [Prover.run_eq_runToRound_last,
+    Prover.runToRound_eq_bind_continueFromTo (P₁.append P₂) stmt wit
+      (⟨m, by omega⟩ : Fin (m + n)).castSucc (Fin.last (m + n))
+      (by rw [Fin.le_def, Fin.val_castSucc, Fin.val_last]; omega), bind_assoc]
+  rw [StateT_run'_simulateQ_bind_state_fixed _ (addLift_state_preserving impl himplSP) _ _ s,
+    evalDist_bind]
+  conv_lhs =>
+    enter [2, rSeam]
+    rw [StateT_run'_simulateQ_bind_state_fixed _ (addLift_state_preserving impl himplSP) _ _ s,
+      evalDist_bind,
+      simulateQ_continueFromTo_right_challenge_evalDist P₁ P₂ stmt wit hn hDir hDir₂ himplSP
+        (cast (Prover.append_Transcript_seam_castSucc hn) rSeam.1) rSeam
+        (Prover.seam_transcript_appendRight hn rSeam.1),
+      ← evalDist_bind,
+      ← StateT_run'_simulateQ_bind_state_fixed _ (addLift_state_preserving impl himplSP) _ _ s]
+  rw [← evalDist_bind,
+    ← StateT_run'_simulateQ_bind_state_fixed _ (addLift_state_preserving impl himplSP) _ _ s]
+  refine congrArg
+    (fun X => evalDist (StateT.run' (simulateQ (impl.addLift challengeQueryImpl :
+      QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp)) X) s)) ?_
+  apply eq_of_heq
+  have hseam : HEq ((P₁.append P₂).runToRound (⟨m, by omega⟩ : Fin (m + n)).castSucc stmt wit)
+      (liftM (P₁.runToRound (Fin.last m) stmt wit) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) _) := by
+    have := Prover.append_runToRound_seam (P₁ := P₁) (P₂ := P₂) (stmt := stmt) (wit := wit)
+    rwa [show ((Fin.last m).castLE (by omega) : Fin (m + n + 1))
+        = (⟨m, by omega⟩ : Fin (m + n)).castSucc from by ext; simp] at this
+  simp only [Prover.run_eq_runToRound_last, liftM_bind, bind_assoc, liftM_pure, pure_bind,
+    bind_map_left]
+  refine Prover.bind_heq_congr
+    (by rw [Prover.append_Transcript_seam_castSucc hn, Prover.append_PrvState_seam_castSucc hn]; rfl)
+    rfl hseam (fun rSeam x hr => ?_)
+  obtain ⟨ht, hs⟩ := Prover.prod_heq_split (Prover.append_Transcript_seam_castSucc hn)
+    (Prover.append_PrvState_seam_castSucc hn) hr
+  have hc2 : cast (Prover.append_PrvState_seam_castSucc hn) rSeam.2 = x.2 :=
+    eq_of_heq ((cast_heq _ _).trans hs)
+  have hc1 : cast (Prover.append_Transcript_seam_castSucc hn) rSeam.1 = x.1 :=
+    eq_of_heq ((cast_heq _ _).trans ht)
+  rw [hc2, hc1]
+  apply heq_of_eq
+  simp only [OracleComp.liftComp_eq_liftM, Prover.append_output_last hn,
+    Transcript.appendRight_full, cast_cast, cast_eq]
+  refine bind_congr fun x_1 => bind_congr fun a => ?_
+  simp only [← OracleComp.liftComp_eq_liftM]
+  rw [Prover.liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₂.Challenge]ₒ)
+    (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
+
+
 /-- **The simulated appended honest game factors at a challenge seam (`evalDist`-level).** The
 distributional core of completeness `hGameFactor` for a `V_to_P` seam: the simulated honest game of
 `R₁.append R₂` — running its rounds under `impl.addLift challengeQueryImpl` — has the same `evalDist`
