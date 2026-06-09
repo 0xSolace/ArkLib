@@ -995,6 +995,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Soundness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructures
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.State
+import ArkLib.OracleReduction.FiatShamir.HVZKKernelInfra
 import ArkLib.OracleReduction.FiatShamir.HVZKNoChallenge
 import ArkLib.OracleReduction.FiatShamir.HVZKTransferReduction
 import ArkLib.OracleReduction.FiatShamir.ProverRunCharacterization
