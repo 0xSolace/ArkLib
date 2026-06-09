@@ -1459,3 +1459,56 @@ coordinate 1 (q-independent super-poly, residual = p_2 spread), the general-t un
 (constant-fraction-of-k depth, /q^t), the exact t=3 condition. The open prize is now a single magnitude:
 **compute/bound M2 = collisionCount of the (∑x,∑x²) count on the smooth 2^k-subgroup** — needs the
 subgroup-restricted (partial) quadratic Gauss sum, i.e. Weil-on-curves, which Mathlib does not have.
+
+### O23 / Round-8 — order-4 `⟨ω⟩`-closure concentrates BOTH `∑x` and `∑x²` at `0` (Round-7 residual closed)
+
+Round 7 (`SubsetSumNegSymmConcentration`) concentrated the FIRST coordinate `e_1 = ∑x` at the single
+target `0` (negation-symmetric `S = P ∪ −P`, `q`-independent count `C(n/2,t)`) and left the SECOND
+coordinate honestly open: `∑x² = 2∑_{g∈P} g²` *spreads* with the pair-squares `{g²}`. Round 8 closes
+that residual. The key observation: the pair-squares `{g² : g∈G}` are exactly the order-`n/2` subgroup
+`G²`, *itself* negation-closed — so the same trick recurses one level up. Packaged multiplicatively,
+both levels at once is just **closure under the order-4 element** `ω` (`ω² = −1`, `⟨ω⟩ = {1,ω,−1,−ω}`).
+
+`SubsetSumOmegaConcentration.lean` (9 lemmas, all `sorry`-free, axiom-clean `[propext,
+Classical.choice, Quot.sound]`, `lake env lean`-verified):
+
+* `omega_closed_psum_eq_zero` — **the engine.** `S.image (ω·) = S`, `ω ≠ 0`, `ω^j ≠ 1` ⟹
+  `∑_{x∈S} x^j = 0`. Proof: reindex `∑x^j = ∑(ωx)^j = ω^j∑x^j`, so `(1−ω^j)∑ = 0`. A SINGLE uniform
+  statement vanishing every power sum with `ω^j ≠ 1` — for `ω` a primitive `N`-th root it kills `p_j`
+  for all `N ∤ j`.
+* For order-4 `ω` (`ω²=−1`, char `≠2`): `ω¹=ω≠1` and `ω²=−1≠1`, so the engine gives `∑x = 0` AND
+  `∑x² = 0` for *every* `⟨ω⟩`-closed set (`omega4Closure_sum_eq_zero`, `omega4Closure_sumsq_eq_zero`).
+  Hence `e_1 = 0` and `e_2 = (e_1²−p_2)/2 = 0`: **both** symmetric functions pinned to the single
+  target `(0,0)` — the `N2(·;0,0)` fiber Round 7 could only pin on its first coordinate.
+* `omega4Closure` (`P ∪ ωP ∪ ω²P ∪ ω³P`) + `omega4Closure_image_eq` (`ω`-closed via
+  forward-subset-of-equal-card) feed the engine. `omega4_card_eq` (= `4|P|` under the free-action
+  `OmegaFree`) + `omega4Closure_injOn` give the count.
+* `card_ge_choose_two_zero` — **the headline.** Under `OmegaFree ω T` (the four `⟨ω⟩`-translates of the
+  transversal `T` pairwise disjoint), `U ↦ omega4Closure ω U` injects the `s`-subsets of `T` into the
+  size-`4s` subsets with `∑x = ∑x² = 0`, so
+
+    `C(|T|, s)  ≤  #{ S : |S| = 4s, ∑x = 0 ∧ ∑x² = 0 }  =  n2Count (omega4Closure ω T) (4s) 0 0`
+
+  (the RHS filter is *definitionally* Round-7's `n2Count G (4s) 0 0`). With `|T| = n/4` this is
+  `C(n/4, s)`: **`q`-independent** and super-polynomial — Round 7's residual coordinate `p_2`, now
+  concentrated at one target with no `/q` loss. (Complementary to the fleet's
+  `Round8_t1_full_concentration`, which handles only the `t=1` first coordinate.)
+* Non-vacuity over `ZMod 5` (`ω=2`, `2²=4=−1`, orbit `{1,2,3,4}`, `∑=∑²=0`) — genuine, not `0=0`.
+
+**The depth-collapse WALL (why this is NOT a prize counterexample, honestly).** The engine generalizes:
+closure under a primitive `2^r`-th root of unity kills `p_1,…,p_{2^r−1}`, hence `e_1,…,e_{2^r−1}`. So
+pinning the first `t` symmetric functions needs `r = ⌈log₂(t+1)⌉`. But the `⟨ω_r⟩`-orbits have size
+`2^r`, so the transversal has only `n/2^r` elements and the concentrated count is `C(n/2^r, s)`.
+Reaching the **deep interior** (agreement `≈ √(kn)`, near Johnson) forces `2^r ≈ t ≈ √(kn)−k`, i.e.
+`r ≈ m`, which **collapses** the transversal to `n/2^r = O(1)` and the count to a *constant*. This is
+the same wall, now sharp and structural: *concentration on a single target requires a symmetry group
+fixing it, and a larger symmetry (more constraints killed) partitions the ground set into bigger
+orbits and fewer free choices.* Concentration therefore works near CAPACITY (constant `t`) but cannot
+pin `δ*` in the deep interior — exactly ABF26's "no known technique past Johnson for explicit RS". The
+order-4 construction is the first verified concentration of the FULL `t=2` joint fiber; the deep
+interior remains the genuine open core.
+
+**Net.** 40 verified bricks across rounds 1–8. New this round: the order-4 `⟨ω⟩` engine vanishing all
+`ω^j ≠ 1` power sums; both-coordinate concentration of the `t=2` joint count `N2(·;0,0)` (Round-7
+residual closed); the sharp depth-collapse articulation of why single-target concentration is
+capacity-only. The deep-interior `δ*` is unmoved and unmovable by symmetry alone (proven wall).
