@@ -2306,3 +2306,36 @@ Vandermonde solution is supported on `{α,β}`), so their headline `M_true` clai
 what's broken is the middle inequality's packaging, fixed by the O37 nondegeneracy proviso
 (`c2_min_bound`). The Möbius/core method itself is sound and is now machine-checked in its
 corrected form.
+
+### O39 — transition-zone collisions are ideal-theoretic: short generators of (1−ζ)^j·𝔭; class-group obstruction appears exactly at the prize's η (nubs, 2026-06-09)
+
+`probe_transition_structure.py` (deterministic, exit 0): exhaustive collision extraction at the three
+boundary primes of O38's transition zone, testing E2(c)'s falsifiable support-floor predictions.
+**Data:** onset(16,9) p=205,553: 16 lost values = 8 distinct relations (±), ALL full-support 8/8
+(floor predicted ≥6), each with N(α) = 2p EXACTLY, each colliding exactly 2 pattern pairs.
+onset(16,5) p=43,793: same shape — 8 relations, all support-6 (floor ≥4), N = 2p. BabyBear(32,17):
+45,952 lost (matches O38 bit-exactly), only 32 distinct relations, supports {12: ×16, 14: ×16}
+(floor ≥4 — observed min 12), sampled cofactors all N = 8p = N((1−ζ)³)·p; per-relation pair
+multiplicities (2,592 at support 12) far under the proven 2^t·3^{m/2−t} cap. All checks PASS.
+**Structure:** every observed cofactor is a pure 2-power — forced, since 2 is totally ramified in
+ℚ(ζ_{2^k}) (unique norm-2 prime (1−ζ)) and every other prime ideal has norm ≥ 17. So transition
+collisions are precisely **box-short generators of the near-prime ideals (1−ζ)^j·𝔭** — the
+collision question below T(m,r) is an ideal-theoretic short-generator question, not a generic
+lattice-point question (the naive Gaussian/Fourier count predicts ≈76 relations at BabyBear and a
+diffuse support profile; reality: 32 relations in two rigid support classes — 2.4× off and
+structurally wrong).
+**The new direction this opens for the η=1/128 residual (O38 §5: "needs p ∤ N(α) arithmetic"):**
+a collision at p forces (α) = 𝔞·𝔭 with N(𝔞) ≤ (Σc²)^{m/4}/p, i.e. (i) 𝔭's ideal class must lie in
+{[𝔞]⁻¹ : N𝔞 ≤ budget}, and (ii) the principal ideal 𝔞𝔭 must admit a generator inside the {−2..2}
+difference box — the Cramer–Ducas–Peikert–Regev short-generator regime (log-unit lattice). Class
+numbers (verified, Washington/Wikipedia table): h(ℚ(ζ₁₆)) = h(ℚ(ζ₃₂)) = 1 — the probed/production
+regimes are class-trivial, every 𝔞𝔭 is principal, and collisions appear exactly when short
+generators exist (observed). But h(ℚ(ζ₆₄)) = 17 and **h(ℚ(ζ₁₂₈)) = 359,057** (h⁺ = 1): at the
+prize's η = 1/64 and 1/128 the class group is nontrivial-to-large, so the relation ideal must land
+in a constrained class AND beat the log-unit sparsity — a 1/h-flavored rarity plus CDPR-type
+geometry that norm-SIZE arguments (provably exhausted, O38 §5) cannot see. Honest status: a
+research direction with verified calibration data at h = 1, NOT a theorem; the quantitative
+question is whether class-equidistribution (Chebotarev over the Hilbert class field of ℚ(ζ₁₂₈))
+plus log-unit volume bounds give per-prime or explicit-density exactness in (2^225, 2^256).
+Next probes: m=64 (h = 17) collision census at feasible p — does the 17-fold class constraint
+visibly thin the relation set vs the h = 1 baseline?
