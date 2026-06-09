@@ -650,7 +650,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupPowerHalvingGeneral
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuadraticSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuarticHalvingRecursion
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupRepCountFiniteFieldCounterexample
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSpectrumNoImprovement
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSquaresHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetThreePowUpper

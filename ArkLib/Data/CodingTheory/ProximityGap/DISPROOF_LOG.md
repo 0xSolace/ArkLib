@@ -1634,3 +1634,23 @@ Second thrash-safe multi-agent round (read-only `lake env lean`). All 4 verified
 **Net.** Open core (list UPPER bound past Johnson for the asymptotic family) unmoved — research-grade.
 Rounds 8-10 = order-4 concentration+depth-collapse engine + concrete two-sided pin + EXACT crossover +
 joint-t2 tightness + averaging/symmetric brackets + Johnson 2nd-moment no-go. Issue stays open.
+
+### O30 / Round-9f — CORRECTION: the char-0 minimal-energy bound does NOT transfer to `F_q` (verified counterexample)
+
+Honest correction to the O28–O29 framing. The reduction `repCount ≤ 2 ⟹ E ≤ 3|G|²` (O29) is correct,
+but its hypothesis — proven in char 0 (O28) via complex conjugation — is **FALSE over `F_q`**.
+`SubgroupRepCountFiniteFieldCounterexample.lean` (axiom-clean, kernel `decide`) exhibits it:
+
+* Over `F₁₇` (`8 ∣ 16 = |F₁₇ˣ|`), the `8`-th roots of unity are `G = {1,2,4,8,9,13,15,16} = {±1,±2,±4,±8}`.
+* `repCount_F17_eighthRoots_eq_three`: `#{c∈G : c+1∈G} = 3` — the consecutive pairs `(1,2),(8,9),(15,16)`
+  are all inside `G`. So `char0_repBound_fails_over_finite_field`: `∃ t≠0, repCount G t > 2`.
+
+**Why this matters (the real correction).** The char-0 quadratic argument (a nonzero sum has ≤2
+unit-circle representations) uses `conj c = c⁻¹`, which has no `F_q` analogue — and indeed over `F_q` the
+`2^k`-subgroup has **additive coincidences** (consecutive elements) absent in char 0. So the smooth domain
+does **NOT** have minimal additive energy over `F_q`; the true `F_q` additive energy is strictly larger
+than the char-0 `3|G|²` and is the genuine open **sum-product** quantity. This is exactly why the
+deep-interior δ* problem is hard over finite fields and easy in char 0 — now demonstrated by a verified
+counterexample. The honest open core: the *true* sum-product additive-energy bound for `2^k`-subgroups
+over `F_q` (which determines whether the §7/averaging attack is defeated), NOT the char-0 value. 51
+verified bricks rounds 1–9; this one corrects the record.
