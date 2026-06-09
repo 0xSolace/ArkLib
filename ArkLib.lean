@@ -413,6 +413,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionRigidityThreeSwap
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
+import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.CosetExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.CosetRigidity
@@ -585,6 +586,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ListRecoveryInterleavedGap
 import ArkLib.Data.CodingTheory.ProximityGap.ListSizeMoments
 import ArkLib.Data.CodingTheory.ProximityGap.ListSizeMomentsConcrete
 import ArkLib.Data.CodingTheory.ProximityGap.ListSizeMomentsWeight
+import ArkLib.Data.CodingTheory.ProximityGap.ListThresholdWellDefined
 import ArkLib.Data.CodingTheory.ProximityGap.LogUpAppendProof
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountGrandChallenge
@@ -661,7 +663,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeRatesBracket
-import ArkLib.Data.CodingTheory.ProximityGap.ListThresholdWellDefined
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeScaleBracketFull
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeScaleJohnsonInstance
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypotheses
@@ -737,7 +738,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -1364,6 +1364,7 @@ import ArkLib.ToMathlib.LinearizedRecursionStep
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.LinearizedSupportStep
 import ArkLib.ToMathlib.List.Basic
+import ArkLib.ToMathlib.LocalizedPlaceEvaluation
 import ArkLib.ToMathlib.LogupFractionalSum
 import ArkLib.ToMathlib.MCAFirstMomentArithBricks
 import ArkLib.ToMathlib.MCAPrizeFourRateNumerics
