@@ -157,7 +157,7 @@ theorem append_rbrSoundness_keystone
     (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂)
     (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
     (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
-    (hInit : ∃ s, s ∈ support init) :
+    (hInit : ∃ s, s ∈ support init) (hNE : Nonempty Stmt₂) :
       (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
         (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
   obtain ⟨S₁, hS₁⟩ := h₁
@@ -174,9 +174,22 @@ theorem append_rbrSoundness_keystone
     have hiEq : i = ChallengeIdx.inl i₁ := by
       have := ChallengeIdx.sumEquiv.apply_symm_apply i
       rw [hi] at this; simpa using this.symm
-    extract_goal
+    subst hiEq
+    -- Reduce to the inner verifier's per-round bound `hS₁`, applied to the phase-1 seam prover
+    -- recast to an `Stmt₂`-output prover (`fstCast`; the dummy claim is irrelevant since the rbr
+    -- experiment touches only `runToRound`, which is output-agnostic).
+    refine le_of_eq_of_le ?phase1_transport
+      (hS₁ stmtIn hStmtIn WitIn Unit witIn (prover.fstCast hNE.some) i₁)
+    -- Remaining (`phase1_transport`): the appended phase-1 experiment over the *combined* challenge
+    -- oracle has the same event-probability as the `fstCast` experiment over `pSpec₁`'s own oracle.
+    -- The ingredients are all proven: `Prover.fstCast_runToRound` (= `fst`'s run), `phase1_body_heq`
+    -- (the body HEq), `evalDist_run'_challengeSeam_left` (combined → `pSpec₁` distribution transfer),
+    -- and `StateFunction.append.toFun`'s `dif_pos` branch (the appended state function collapses to
+    -- `S₁` on `transcript.fst` for phase-1 indices). Assembling them through a `probEvent`
+    -- run-map congruence (`OptionT.probEvent_eq_of_run_map_eq`) is the remaining work.
     sorry
-  · -- Phase 2.
+  · -- Phase 2. Mirrors Phase 1 with `Prover.snd`, `evalDist_run'_challengeSeam_right`, and the
+    -- `dif_neg` (`verify`-fed intermediate statement) branch of `StateFunction.append`.
     sorry
 
 end Verifier
