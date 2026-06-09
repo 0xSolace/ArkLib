@@ -1831,13 +1831,23 @@ inequality is `BKR06.bkr06_family_close_codewords_card_ge`, fully proven in-tree
 
 **Residual surface after this reduction** (each a named, honest hypothesis of a *proven*
 reduction — no `sorry`, no silent weakening):
-* `(a)` `hclose` — agreement-count `≥ q^v` → relative-distance `δ` conversion;
+* `(a)` `hclose` — agreement-count `≥ q^v` → relative-distance `δ` conversion
+  (**discharged** at the BKR06 extension parameters by
+  `BKR06.mem_closeCodewordsRel_of_subspace`, `ArkLib/ToMathlib/BKR06EndToEnd.lean`);
 * `(b)` `hfamily` — the pigeonhole family existence/size `q^{(α−β²)log q} ≤ |ι|`
   (subspaces of `K` of fixed dimension `v` sharing the top coefficients of their subspace
-  polynomials; counted via Gaussian binomials against the number of top-coefficient
-  patterns — left as a named residual here, see the module/PARAMETER-DEFECT note);
+  polynomials; the count is the number of dimension-`v` `𝔽_q`-subspaces of `K = 𝔽_{q^m}`,
+  whose dominant power-of-`q` factor `q^{v(m−v)}` is the leading Gaussian-binomial term)
+  — **DISCHARGED in-tree** (no longer a standing hypothesis): the subspace-enumeration count
+  is proven in `BKR06.card_dimv_subspaces_ge` (graph construction) +
+  `BKR06.bkr06_tight_family_hfamily_param_free` (linearized top-pattern pigeonhole), and the
+  family-size residual is closed in the `_of_family` conclusion shape by
+  `CodingTheory.rs_lambda_superpoly_extension_bkr06_family_discharged`
+  (`ArkLib/ToMathlib/BKR06FamilyDischarge.lean`), with the exponent bridge itself discharged
+  at the `q = 2` band by `…_family_discharged_band`;
 * the "infinitely many prime powers" sequence still lives only in the bare external `Prop`
-  `rs_lambda_superpoly_extension_bkr06`.
+  `rs_lambda_superpoly_extension_bkr06` (itself **discharged** by
+  `BKR06.rs_lambda_superpoly_extension_bkr06_proven`, `ArkLib/ToMathlib/BKR06BareT312.lean`).
 
 Compared to `_of_residuals`/`_of_injection`, this is the *first* form that can actually be
 fed by BKR06: the subspace lives in a real extension `K`, so `Module.finrank F (𝓛 i)` is
