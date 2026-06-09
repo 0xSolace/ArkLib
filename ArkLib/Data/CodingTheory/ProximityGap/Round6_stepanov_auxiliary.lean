@@ -90,6 +90,13 @@ All headline results are `sorry`-free and axiom-clean (`[propext, Classical.choi
 - Stepanov, S. A. *The number of points of a hyperelliptic curve over a finite prime field.* 1969.
 -/
 
+-- The shared `variable` block carries `[DecidableEq F]` (needed by the `classical` filter
+-- arguments of the verdict lemmas); a few auxiliary engine lemmas carry it without using it.
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+-- Several docstrings carry long mathematical prose lines (the §7 verdict narrative).
+set_option linter.style.longLine false
+
 open Polynomial BigOperators Finset
 
 namespace ArkLib.CodingTheory.Round6Stepanov
@@ -155,9 +162,9 @@ theorem stepanov_card_le_of_mult {Ψ : F[X]} (hΨ : Ψ ≠ 0) (V : Finset F) {M 
   exact h
 
 /-- **The Stepanov method as a black box.** Given a candidate set `V`, a multiplicity `M > 0`, and
-*any* auxiliary polynomial `Ψ` witnessing the two Stepanov hypotheses — `Ψ ≠ 0`, and `Ψ` vanishes to
-order `≥ M` at every point of `V` — the candidate set has size `≤ Ψ.natDegree / M`. This is the exact
-interface every Stepanov application plugs into: the *only* work in a concrete application is
+*any* auxiliary polynomial `Ψ` witnessing the two Stepanov hypotheses — `Ψ ≠ 0`, and `Ψ` vanishes
+to order `≥ M` at every point of `V` — the candidate set has size `≤ Ψ.natDegree / M`. This is the
+exact interface every Stepanov application plugs into: the *only* work in a concrete application is
 *constructing* such a `Ψ` (with small `natDegree` and large `M`) for the structured set at hand; the
 counting conclusion is then automatic. -/
 theorem stepanov_card_le_of_aux (V : Finset F) {M d : ℕ} (hM : 0 < M)
@@ -174,10 +181,10 @@ vacuous nor lossy: `Ψ = ∏_{a∈V}(X − C a)^M` itself has natDegree exactly 
 exactly `M` at each `a ∈ V`, so `stepanov_card_mul_mult_le_natDegree` holds with equality. -/
 
 /-- **The Stepanov inequality is sharp (non-vacuity).** For the auxiliary
-`Ψ = ∏_{a∈V}(X − C a)^M` with `0 < M`, the multiplicity at each `a ∈ V` is `≥ M` and the natDegree is
-exactly `|V|·M`, so `stepanov_card_mul_mult_le_natDegree` is an *equality* here: the engine is tight,
-not a vacuous over-estimate. -/
-theorem stepanov_sharp (V : Finset F) {M : ℕ} (hM : 0 < M) :
+`Ψ = ∏_{a∈V}(X − C a)^M`, the multiplicity at each `a ∈ V` is `≥ M` and the natDegree is
+exactly `|V|·M`, so `stepanov_card_mul_mult_le_natDegree` is an *equality* here: the engine is
+tight, not a vacuous over-estimate. -/
+theorem stepanov_sharp (V : Finset F) (M : ℕ) :
     let Ψ : F[X] := ∏ a ∈ V, (X - C a) ^ M
     Ψ ≠ 0 ∧ (∀ a ∈ V, M ≤ Ψ.rootMultiplicity a) ∧ Ψ.natDegree = V.card * M := by
   classical
@@ -198,17 +205,18 @@ theorem stepanov_sharp (V : Finset F) {M : ℕ} (hM : 0 < M) :
 
 /-! ## The honest verdict: Stepanov does NOT reach the joint `(e_1, e_2)` (`t = 2`) count.
 
-The engine counts **points of `F`** (roots of a univariate auxiliary). The `t = 2` open count is over
-**`(k+2)`-subsets** of `G` with `e_1 = c_1 ∧ e_2 = c_2` — points of the symmetric product, not of
-`F`. We anchor the containment and record the surviving pigeonhole floor, exactly as the additive
+The engine counts **points of `F`** (roots of a univariate auxiliary). The `t = 2` open count is
+over **`(k+2)`-subsets** of `G` with `e_1 = c_1 ∧ e_2 = c_2` — points of the symmetric product, not
+of `F`. We anchor the containment and record the surviving pigeonhole floor, exactly as the additive
 no-gos did, to mark precisely where Stepanov stalls. -/
 
 open ArkLib.ProximityGap.Round4NewtonVietaUpper
 
 /-- **The joint `(e_1, e_2)` count is bounded by the single-`e_1` subset-sum count.** Adding the
-quadratic `e_2` constraint can only shrink the fibre, so the joint count is `≤ subsetSumCount G (k+2)
-c_1`. (Re-exposed at the Round-6 namespace from the Round-5 containment, to anchor the verdict that
-the *denominator* a Stepanov upper bound would have to beat is the `e_1` fibre.) -/
+quadratic `e_2` constraint can only shrink the fibre, so the joint count is
+`≤ subsetSumCount G (k+2) c_1`. (Re-exposed at the Round-6 namespace from the Round-5 containment, to
+anchor the verdict that the *denominator* a Stepanov upper bound would have to beat is the `e_1`
+fibre.) -/
 theorem twoSymmetric_count_le_e1_fiber (G : Finset F) (k : ℕ) (c₁ c₂ : F) :
     ((G.powersetCard (k + 2)).filter
         (fun S => (∑ x ∈ S, x) = c₁ ∧ (∑ T ∈ S.powersetCard 2, ∏ x ∈ T, x) = c₂)).card
@@ -221,8 +229,9 @@ case* `≥ C(n, k+2)/q` over targets, by additive pigeonhole (`max_fiber_interio
 is super-exponential and **field-independent** at `a = k+2 ≈ n/2`. The Stepanov engine
 (`stepanov_card_mul_mult_le_natDegree`) bounds the number of **`F`-points** that are roots of a
 *univariate* auxiliary; but the `(k+2)`-subsets in the joint fibre are points of the symmetric
-product `G^{(k+2)}`, *not* field elements, so no univariate `Ψ` has them as `F`-roots and the engine's
-hypothesis is not realizable on the joint count. Hence Stepanov, in its univariate point-counting
+product `G^{(k+2)}`, *not* field elements, so no univariate `Ψ` has them as `F`-roots and the
+engine's hypothesis is not realizable on the joint count. Hence Stepanov, in its univariate
+point-counting
 form, cannot force the `t = 2` count below this pigeonhole floor: the method stalls at the
 symmetric-product / codimension-2 obstruction. We record the surviving floor. -/
 theorem stepanov_does_not_bound_e1_fiber [Fintype F] {G : Finset F} {n : ℕ} (hGcard : G.card = n)
