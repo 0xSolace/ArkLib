@@ -410,6 +410,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionRigidityThreeSwap
+import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
 import ArkLib.Data.CodingTheory.ProximityGap.CosetExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.CosetRigidity
@@ -451,11 +452,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSFullListBound
 import ArkLib.Data.CodingTheory.ProximityGap.GSHasseMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.GSInterpolationExistence
 import ArkLib.Data.CodingTheory.ProximityGap.GSJohnsonWall
-import ArkLib.Data.CodingTheory.ProximityGap.GSReachesJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityChainCompose
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
 import ArkLib.Data.CodingTheory.ProximityGap.GSPipelineAssembly
+import ArkLib.Data.CodingTheory.ProximityGap.GSReachesJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.GSRootOrderStep
 import ArkLib.Data.CodingTheory.ProximityGap.GSYDegreeListCap
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
@@ -733,7 +734,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -1409,6 +1409,7 @@ import ArkLib.ToMathlib.SpartanRBRProof
 import ArkLib.ToMathlib.SqSumCardSupport
 import ArkLib.ToMathlib.StraightlineRewindingBridge
 import ArkLib.ToMathlib.SubmoduleCardRatio
+import ArkLib.ToMathlib.SubsetSumsetSymmetry
 import ArkLib.ToMathlib.SubspacePolyLinearized
 import ArkLib.ToMathlib.SubstFieldCaveat
 import ArkLib.ToMathlib.SumSubMeanSq
