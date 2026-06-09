@@ -117,9 +117,9 @@ theorem append_soundness_msg'
             OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) _)) := by
       unfold Reduction.run Prover.run Verifier.run
       simp only [Prover.fstSound_runToRound]
-      simp only [Prover.fstSound, Prover.fst, map_bind, bind_assoc, bind_pure_comp,
-        Functor.map_map, liftM_bind, liftM_pure, liftM_map, pure_bind, id_map,
-        OptionT.liftM_run_getM_bind, Function.comp_def]
+      simp only [Prover.fstSound, Prover.fst, map_bind, map_pure, bind_assoc, bind_pure_comp,
+        bind_map_left, Functor.map_map, liftM_bind, liftM_pure, liftM_map, pure_bind, id_map,
+        id_map', id_eq, OptionT.liftM_run_getM_bind, Function.comp_def]
     sorry
   · -- Phase-2 bound: `V₂.soundness ε₂` on the phase-2 soundness prover `prover.sndSound`.
     intro p s' _ h_pg
