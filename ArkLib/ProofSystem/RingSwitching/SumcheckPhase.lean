@@ -1832,9 +1832,11 @@ instance instCoreInteractionOracleReductionAppendCoherent :
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
--- The keystone `exact` elaborates the `seqCompose`/`toReduction` dependent bridge against the
--- concrete ring-switching statement/oracle families, which is `whnf`-heavy.
-set_option maxHeartbeats 4000000 in
+-- The keystone application unifies the concrete `sumcheckLoopOracleReduction` (a `@[reducible]`
+-- `OracleReduction.seqCompose`) against the keystone conclusion, whose `OracleReduction`-level
+-- `perfectCompleteness` unfolds through `.toReduction` of the full ring-switching seqCompose — this
+-- defeq is `whnf`-heavy (slow but terminating), hence the raised heartbeat budget.
+set_option maxHeartbeats 16000000 in
 /-- **Sumcheck-loop perfect completeness (issue #29, phase 1).** The `seqCompose` of the `ℓ'`
 per-round oracle reductions (`sumcheckLoopOracleReduction = OracleReduction.seqCompose …
 iteratedSumcheckOracleReduction`) is perfectly complete from `0` to `Fin.last ℓ'`.
@@ -1881,15 +1883,15 @@ theorem sumcheckLoopOracleReduction_perfectCompleteness [IsDomain L]
     · simpa only [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound,
         ProtocolSpec.Challenge, Matrix.cons_val_one, Matrix.cons_val_fin_one] using
         (⟨(0 : L)⟩ : Inhabited L)
-  exact OracleReduction.seqCompose_pc_oracle_msg'
-    (m := ℓ') (oSpec := []ₒ)
+  refine OracleReduction.seqCompose_pc_oracle_msg'
     (Stmt := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P))
     (OStmt := fun _ => aOStmtIn.OStmtIn)
     (Wit := fun i => SumcheckWitness L ℓ' i)
-    (pSpec := fun _ => pSpecSumcheckRound L)
     (R := fun i => iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
+    (coh := fun i => instIteratedSumcheckOracleReductionAppendCoherent
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn) i)
     (rel := fun i => sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i)
-    (hSamp := hSamp) (hFin := hFin) (hInh := hInh)
+    hSamp hFin hInh
     (hValid := fun _ => ⟨by norm_num, rfl⟩)
     (hInit := hInit)
     (hImplSupp := by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])

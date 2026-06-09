@@ -29,16 +29,22 @@ the oracle locally.
 * `CommitmentType _ := Data` — transparent commitment = data.
 * `nCom _ := 1`, `pSpecCom _ := Commitment.Transparent.openingPSpec` — the one-message opening.
 
-The **interaction phase** is over `srcPSpec.renameMessage CommitmentType`; because the transparent
-commitment is the identity, this spec is the source spec. We take the interaction phase to be the
-identity reduction on the carried statement/witness (it just forwards the opening statement
-`(cm, q, y)` to the opening phase). The **opening phase** is over `srcPSpec.BCSOpeningPhase`, which
-for one message is the sequential composition of the single transparent opening `Proof`.
+Because the source has exactly one message, `srcPSpec.BCSOpeningPhase pSpecCom e` is *definitionally*
+`Commitment.Transparent.openingPSpec`, so the opening phase is exactly the transparent scheme's
+opening proof. The **interaction phase** is over `srcPSpec.renameMessage CommitmentType`; we take it
+to be a single-message "commit and forward" reduction that sends the commitment (= data) and passes
+the opening statement/witness through to the opening phase.
 
-Neither keystone is vacuous here: the input language `langIn` and the output relations are honest
-sets (`relMid`/`langMid` is "the claimed response is the honest oracle answer", `relOut`/`langOut`
-is `acceptRejectRel` / `{true}`), so completeness is a real probability-one statement and soundness a
-real `≤ ε` statement against arbitrary malicious provers.
+Neither keystone is vacuous here: the input/middle languages and the output relations are honest
+sets (`relMid`/`langMid` is "the claimed response is the honest oracle answer on the committed
+data", `relOut`/`langOut` is `acceptRejectRel` / `{true}`), so completeness is a real
+probability-one statement and soundness a real `≤ ε` statement against arbitrary malicious provers.
+
+The ambient honest-implementation side conditions (`hInit`/`hImplSupp` for completeness and
+`himplSP`/`himplNF`/`himplVB` for soundness) are taken as hypotheses, exactly as the analogous
+component-level results in this codebase (e.g. `Sumcheck.Spec.reduction_perfectCompleteness`); they
+hold for any honest interactive implementation. The cryptographic per-phase content (perfect
+completeness and perfect soundness of each phase) is proved here, not assumed.
 
 ## What is genuinely proved (no `sorry`, no vacuous hypotheses)
 
@@ -92,7 +98,188 @@ def e : (srcPSpec (Data := Data)).MessageIdx ≃ Fin 1 := Equiv.ofUnique _ _
 theorem vsum_eq_one :
     Fin.vsum (fun j => (nCom (Data := Data)) ((e (Data := Data)).symm j)) = 1 := rfl
 
-example : (0 : ℕ) < Fin.vsum (fun j => (nCom (Data := Data)) ((e (Data := Data)).symm j)) := by
-  rw [vsum_eq_one]; norm_num
+/-! ## Statement / witness types and relations
+
+The intermediate statement/witness handed from the interaction phase to the opening phase is exactly
+the opening statement `(cm, ⟨q, y⟩)` together with the `(data, decommitment)` witness. For the
+transparent scheme `cm : Data`, `decommitment : Unit`. -/
+
+/-- The opening statement carried at the interaction → opening seam: a commitment, a query, and a
+claimed response. -/
+abbrev OpeningStmt := Data × (q : O.Query) × O.Response q
+
+/-- The opening witness: the underlying data and the (trivial) decommitment. -/
+abbrev OpeningWit := Data × Unit
+
+/-- The middle relation: the claimed response is the honest oracle answer on the committed data, and
+the witness data is the committed data. This is a genuine (non-vacuous) predicate. -/
+def relMid : Set ((OpeningStmt (Data := Data)) × (OpeningWit (Data := Data))) :=
+  setOf (fun ⟨⟨cm, q, y⟩, ⟨d, _⟩⟩ => O.answer cm q = y ∧ d = cm)
+
+/-- The middle language: the claimed response is consistent with the commitment (i.e. it is the
+honest oracle answer on the committed data). A malicious opening prover cannot make the verifier
+accept a statement outside this language — that is the binding content. -/
+def langMid : Set (OpeningStmt (Data := Data)) :=
+  setOf (fun ⟨cm, q, y⟩ => O.answer cm q = y)
+
+/-- The output language: the verifier accepted. -/
+def langOut : Set Bool := setOf (· = true)
+
+/-! ## The opening phase
+
+Because the source has exactly one message, `srcPSpec.BCSOpeningPhase pSpecCom e` is *definitionally*
+`Commitment.Transparent.openingPSpec`, so the opening phase is exactly `transparentScheme.opening
+((), ())`. -/
+
+/-- The opening-phase reduction: the transparent scheme's opening proof, over
+`srcPSpec.BCSOpeningPhase pSpecCom e` (definitionally `openingPSpec`). -/
+def openingRed :
+    Reduction oSpec (OpeningStmt (Data := Data)) (OpeningWit (Data := Data)) Bool Unit
+      ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data)) (e (Data := Data))) :=
+  (Commitment.Transparent.transparentScheme (oSpec := oSpec) (Data := Data)).opening ((), ())
+
+/-- The opening phase has no verifier challenges (`openingPSpec` is a single prover message), so its
+challenge-index type is empty. -/
+instance instIsEmptyOpeningChallenge :
+    IsEmpty (((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+      (e (Data := Data))).ChallengeIdx) where
+  false := fun ⟨i, h⟩ => by
+    have hsum : (Fin.vsum fun j => (nCom (Data := Data)) ((e (Data := Data)).symm j)) = 1 :=
+      vsum_eq_one (Data := Data)
+    have hi : i.val = 0 := by have := i.isLt; omega
+    have hdir : ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+        (e (Data := Data))).dir i = Direction.P_to_V := by
+      show ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+        (e (Data := Data))).dir ⟨i.val, i.isLt⟩ = Direction.P_to_V
+      rw [show (⟨i.val, i.isLt⟩ : Fin _) = ⟨0, by omega⟩ from by ext; exact hi]
+      rfl
+    rw [h] at hdir; exact absurd hdir (by decide)
+
+instance instSampleableOpening :
+    ∀ i, SampleableType (((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+      (e (Data := Data))).Challenge i) :=
+  fun i => (instIsEmptyOpeningChallenge (Data := Data)).false i |>.elim
+
+section Security
+
+variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+
+instance instProverOnlyOpening :
+    ProverOnly ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+      (e (Data := Data))) where
+  prover_first' := rfl
+
+set_option maxHeartbeats 800000 in
+/-- **Perfect completeness of the opening phase.** For an honest opening statement (the claimed
+response is the honest oracle answer on the committed data) the transparent opening verifier returns
+`decide (answer cm q = y) = true`, so it accepts with probability one. -/
+theorem openingRed_perfectCompleteness :
+    (openingRed (oSpec := oSpec) (Data := Data)).perfectCompleteness init impl
+      (relMid (Data := Data)) acceptRejectRel := by
+  rw [Reduction.perfectCompleteness_eq_prob_one]
+  rintro ⟨cm, q, y⟩ ⟨d, u⟩ hmem
+  simp only [relMid, Set.mem_setOf_eq] at hmem
+  obtain ⟨hans, hd⟩ := hmem
+  -- The underlying `OracleComp` (the prover-first run with a constant verdict) has *only* successful
+  -- outputs, each of which accepts. This support fact is state-independent (no oracle queries).
+  have hsupp : ∀ z ∈ support
+      ((openingRed (oSpec := oSpec) (Data := Data)).run (cm, ⟨q, y⟩) (d, u)).run,
+      ∃ a, z = some a ∧
+        ((a.2, a.1.2.2) ∈ acceptRejectRel ∧ a.1.2.1 = a.2) := by
+    intro z hz
+    -- `openingRed` is *definitionally* the transparent opening over `openingPSpec`; rewrite its run
+    -- via the prover-first lemma (using the `openingPSpec` `ProverOnly` instance).
+    haveI : ProverOnly Commitment.Transparent.openingPSpec := { prover_first' := by simp }
+    have hrun := Reduction.run_of_prover_first (oSpec := oSpec)
+      (pSpec := Commitment.Transparent.openingPSpec)
+      (cm, (⟨q, y⟩ : (q : O.Query) × O.Response q)) (d, u)
+      ((Commitment.Transparent.transparentScheme (oSpec := oSpec) (Data := Data)).opening ((), ()))
+    rw [show ((openingRed (oSpec := oSpec) (Data := Data)).run (cm, ⟨q, y⟩) (d, u)).run
+        = (((Commitment.Transparent.transparentScheme (oSpec := oSpec)
+            (Data := Data)).opening ((), ())).run (cm, ⟨q, y⟩) (d, u)).run from rfl,
+        hrun] at hz
+    -- Evaluate the fully deterministic body: each `liftM (pure ·)` is `pure (some ·)`, and each
+    -- `Option.elim` on `some` selects the continuation. The verifier's verdict is
+    -- `decide (answer cm q = y) = true` by `hans`.
+    simp only [Commitment.Transparent.transparentScheme, OptionT.run_pure,
+      liftM_pure, pure_bind, Option.getM_some, hans,
+      Set.mem_singleton_iff] at hz
+    subst hz
+    exact ⟨_, rfl, by simp [acceptRejectRel], rfl⟩
+  -- Now lift the support fact through `init`-bind, `simulateQ`, and `OptionT`.
+  rw [probEvent_eq_one_iff]
+  refine ⟨?_, ?_⟩
+  · rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp only [probFailure_eq_zero, _root_.zero_add]
+    apply probOutput_eq_zero_of_not_mem_support
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _ hc
+    obtain ⟨_, hsome, _⟩ := hsupp none (_root_.support_simulateQ_run'_subset _ _ s hc)
+    cases hsome
+  · intro x hx
+    rw [OptionT.mem_support_iff, OptionT.run_mk] at hx
+    simp only [support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    obtain ⟨a, ha, hP⟩ := hsupp (some x) (_root_.support_simulateQ_run'_subset _ _ s hx)
+    cases ha
+    exact hP
+
+set_option maxHeartbeats 800000 in
+/-- **Perfect soundness of the opening phase.** The transparent opening verifier's verdict is the
+transcript-independent boolean `decide (answer cm q = y)` (`opening_verify`). Hence for any opening
+statement `(cm, ⟨q, y⟩)` *outside* `langMid` (i.e. `answer cm q ≠ y`) the verifier outputs `false`,
+which is not in `langOut`; so even an arbitrary malicious prover makes the verifier accept with
+probability `0`. This is the binding content of the transparent scheme expressed as verifier
+soundness. -/
+theorem openingRed_soundness :
+    (openingRed (oSpec := oSpec) (Data := Data)).verifier.soundness init impl
+      (langMid (Data := Data)) langOut 0 := by
+  unfold Verifier.soundness
+  intro WitIn WitOut witIn prover stmtIn hstmtIn pImpl
+  obtain ⟨cm, q, y⟩ := stmtIn
+  simp only [langMid, Set.mem_setOf_eq] at hstmtIn
+  -- The bad event `stmtOut ∈ langOut` (= `stmtOut = true`) never holds: the verdict is `false`.
+  simp only [ENNReal.coe_zero, nonpos_iff_eq_zero, probEvent_eq_zero_iff]
+  intro x hx hev
+  rw [OptionT.mem_support_iff, OptionT.run_mk] at hx
+  simp only [support_bind, Set.mem_iUnion] at hx
+  obtain ⟨s, _, hx⟩ := hx
+  -- The verifier's verdict on `(cm, ⟨q, y⟩)` is `decide (answer cm q = y)`, independent of the
+  -- transcript; since `answer cm q ≠ y`, the verdict is `false`.
+  have hverdict : x.2 = false := by
+    have key : ∀ z ∈ support
+        (((Reduction.mk prover (openingRed (oSpec := oSpec) (Data := Data)).verifier).run
+          (cm, ⟨q, y⟩) witIn)).run, ∀ a, z = some a → a.2 = false := by
+      intro z hz a hza
+      rw [Reduction.run] at hz
+      simp only [OptionT.run_bind, Option.elimM, bind_assoc] at hz
+      rw [mem_support_bind_iff] at hz
+      obtain ⟨proverResultOpt, _, hz⟩ := hz
+      cases proverResultOpt with
+      | none =>
+        simp only [Option.elim_none, support_pure, Set.mem_singleton_iff] at hz
+        rw [hz] at hza; exact absurd hza.symm (by simp)
+      | some proverResult =>
+        dsimp only [Option.elim_some] at hz
+        rw [mem_support_bind_iff] at hz
+        obtain ⟨stmtOutOpt, hstmtOut, hz⟩ := hz
+        -- The verifier verdict is `decide (answer cm q = y)`, transcript-independent.
+        rw [Verifier.run] at hstmtOut
+        simp only [openingRed, Commitment.Transparent.transparentScheme, OptionT.run_pure,
+          liftM_pure, support_pure, Set.mem_singleton_iff] at hstmtOut
+        subst hstmtOut
+        simp only [Option.getM_some, Option.elim_some, support_pure,
+          Set.mem_singleton_iff] at hz
+        subst hz
+        simp only [Option.some.injEq] at hza
+        subst hza
+        simp only [decide_eq_false_iff_not]
+        exact hstmtIn
+    exact key (some x) (_root_.support_simulateQ_run'_subset _ _ s hx) x rfl
+  rw [hverdict] at hev
+  simp only [langOut, Set.mem_setOf_eq] at hev
+  exact absurd hev (by simp)
+
+end Security
 
 end BCSTransparentEndToEnd
