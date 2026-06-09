@@ -2979,3 +2979,23 @@ shape on plain smooth-domain RS** (at the unit-syndrome received words, char 0 /
 the transfer threshold). The all-words upgrade = Conjecture 1 itself on 2-power domains;
 the descent machinery (sq_fiber_pair tower; arbitrary received words descend along the
 FRI fold) is the in-tree candidate attack and converges with the C19/Descent lane.
+
+### O50 — LAM–LEUNG AT p = 2 MACHINE-CHECKED + the UNCONDITIONAL t = 2 tower resolution
+
+The classical base case of the tower theorem is now a Lean theorem (`LamLeungTwoPow.lean`,
+axiom-clean, 0 sorry, 0 warnings):
+
+* `vanishing_sum_antipodal` — in characteristic zero, a finite set of 2^(m+1)-th roots of
+  unity with vanishing sum is closed under negation. Proof exactly as recorded in O47:
+  indicator polynomial of the exponent set, `minpoly.dvd`, `cyclotomic_eq_minpoly_rat`,
+  `cyclotomic_prime_pow_eq_geom_sum` (so Φ_{2^(m+1)} = X^{2^m}+1), explicit quotient
+  degree bound, coefficient pairing c_j = c_{j+2^m}, and ζ^{2^m} = −1.
+* `t2_resolution_unconditional` — wiring `vanishing_sum_antipodal` (at levels m+2 and m+1,
+  the latter via `IsPrimitiveRoot.pow`) into `TopLine.t2_tower_resolution`: **every finite
+  set of 2^(m+2)-th roots of unity with ∑x = ∑x² = 0 is a union of μ₄-cosets —
+  hypothesis-free, machine-checked end to end.** The first two rungs of the O48 tower are
+  now unconditional; the general-t rungs iterate the same two machine-checked pieces
+  (assembly + base case) with Newton bookkeeping, exactly as recorded in O48.
+
+(Build note: one minimal single-module `lake build` of TopDirectionLineCount was required
+for the cross-file import — 5s, no thrash.)
