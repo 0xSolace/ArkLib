@@ -177,6 +177,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyBridge
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyFullGroupClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyKernel
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyRepBound
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySidonModNeg
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingFiberConservation
@@ -202,6 +203,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.AgreementCount
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtractionResidual
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtractionVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.GoodCoeffs
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.GoodSetAggregate
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.HeavyCodeword
@@ -411,6 +413,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConcretePinF17
+import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConstantGapBelowCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactCrossoverF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarTableSmoothInstances
 import ArkLib.Data.CodingTheory.ProximityGap.EpsCAMono
@@ -433,6 +436,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSInterpolationExistence
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityChainCompose
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
+import ArkLib.Data.CodingTheory.ProximityGap.GSRootOrderStep
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
@@ -530,8 +534,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.LinearizedPolynomialHasse
 import ArkLib.Data.CodingTheory.ProximityGap.ListAroundBallIntersectionKernel
 import ArkLib.Data.CodingTheory.ProximityGap.ListBallIntersectionReduction
-import ArkLib.Data.CodingTheory.ProximityGap.GSRootOrderStep
-import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentReductionLimit
 import ArkLib.Data.CodingTheory.ProximityGap.ListCapacityFieldIndependent
 import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingCapacityOverflow
 import ArkLib.Data.CodingTheory.ProximityGap.ListDecodingConjectureRefutation
@@ -668,6 +670,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetWall
 import ArkLib.Data.CodingTheory.ProximityGap.Round9SalieQuarticReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Round9SubgroupCharExpansion
+import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentReductionLimit
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridgeOnLattice
@@ -701,7 +704,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConstantGapBelowCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
