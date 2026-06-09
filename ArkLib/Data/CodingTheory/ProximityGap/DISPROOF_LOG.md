@@ -2065,3 +2065,15 @@ per-level branch counts over the tower. PROGRAM: (1) converse-FRI descent lemma 
 (3) marginal-layer sampler at n=32 (needs ≥3-witness unions + outside, per the n=16 anatomy).
 First mechanism-level program for the open core with a fully proven base level. Scripts:
 probe_descent32.py.
+
+### O13″ — Descent Lemma formalized; the prize upper half ⟺ DEGENERACY COUNTING (Conjecture D) (nubs, 2026-06-09)
+
+`07-DESCENT.md` (research folder): the converse-FRI Descent Lemma in full rigor — c(y) =
+c_e(y²)+y·c_o(y²); per-z trichotomy B (joint pair-agreement, 2 constraints) / one-sided (one
+σ-twisted affine relation) / none; agree = 2#B+#1; pure branch = exact lift of the level-1 list
+(self-similar, verified n=32). **Overdetermination identity: constraints − unknowns ≥ ηn** — every
+beyond-rate list element is an ηn-fold cyclotomic degeneracy; ℓ(θ) = the degeneracy count.
+**Conjecture D:** per-level degeneracies ≤ poly·N₀-type subgroup counts ⟹ telescoping to the
+2^{O(H(ρ)/η)} budget. C19 = the first proven degeneracy count (16, exact). The open core is now
+ONE precisely-stated conjecture with a rigorous reduction, a proven base instance, and verified
+self-similarity — falsification target included (any level with super-N₀ degeneracies).
