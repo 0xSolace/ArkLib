@@ -1539,3 +1539,27 @@ count provably degrades to linear past `δ = 1−2ρ`, matching the [ABF26] "no 
 for the deep interior. The two genuinely open routes remain: the subgroup-restricted quadratic Gauss
 sum (SEAM B = Weil-on-curves, Mathlib lacks) and any NON-algebraic construction (outside the coset/
 pigeonhole/symmetry families now all walled). Deep-interior δ* remains OPEN. 44+ bricks.
+
+### O26 / Round-9b — the subgroup Gauss-sum SECOND MOMENT, exactly, with NO Weil bound (Parseval)
+
+Rounds 7–8 showed the prize-deciding magnitude needs the **subgroup-restricted** Gauss sum
+`η_b = ∑_{y∈G} ψ(b·y)`, and that a per-frequency `√q` bound needs Weil-on-curves (Mathlib lacks).
+`SubgroupGaussSumSecondMoment.lean` (axiom-clean) supplies the one piece that **is** fully provable
+elementarily — the *second moment* over all frequencies, via additive-character orthogonality
+(Parseval), **no Weil**:
+
+* `subgroup_gaussSum_secondMoment`: `∑_{b∈F} ‖∑_{y∈G} ψ(b·y)‖² = q·|G|`, exact. Proof: expand
+  `‖η_b‖² = η_b·conj(η_b)` (`RCLike.mul_conj`) into a double sum over `(y,y')∈G×G`, conj via
+  `starComp_apply`/`inv_apply`, swap sums, and collapse each pair by `AddChar.sum_mulShift`
+  (`∑_b ψ(b·c) = q·[c=0]`) to the diagonal `y=y'`.
+* `subgroup_gaussSum_l2_average`: hence the **average** of `‖η_b‖²` over the `q` frequencies is exactly
+  `|G|`. So the *typical* subgroup Gauss sum has size `√|G|`, **not** `√q` (since `|G|≤q`) — the
+  average-case cancellation that the collision-count second moment `M2` runs on.
+* `exists_frequency_gaussSum_sq_ge`: pigeonhole — some frequency attains `‖η_b‖²≥|G|`.
+
+**Honest scope.** This controls the subgroup Gauss sum in `L²`/average — exactly the regime that decides
+*average*-case anti-concentration of `M2` — while the **per-frequency worst case** (the deep-interior δ*
+pin) genuinely still needs Weil's bound. It is the strongest analytic statement about the subgroup Gauss
+sum reachable from Mathlib's current toolkit (character orthogonality), and it closes the *average*-case
+side of SEAM B. 45+ verified bricks rounds 1–9. Deep-interior δ* and the worst-case Gauss bound remain
+OPEN (Weil-on-curves not in Mathlib).
