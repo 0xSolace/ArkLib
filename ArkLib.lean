@@ -773,6 +773,7 @@ import ArkLib.OracleReduction.Composition.Sequential.SeamCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeMsgCompleteness
+import ArkLib.OracleReduction.Composition.Sequential.SeqComposeMsgCompletenessExplicit
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposePerfectCompletenessThreaded
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.Equiv
@@ -964,6 +965,7 @@ import ArkLib.ProofSystem.Stir.RoundCompleteness
 import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.ProofSystem.Sumcheck.Domain
 import ArkLib.ProofSystem.Sumcheck.Impl.Basic
+import ArkLib.ProofSystem.Sumcheck.Spec.Completeness
 import ArkLib.ProofSystem.Sumcheck.Spec.General
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
 import ArkLib.ProofSystem.Sumcheck.Structured
