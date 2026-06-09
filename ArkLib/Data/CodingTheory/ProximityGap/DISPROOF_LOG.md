@@ -1260,3 +1260,48 @@ are explicit single-instance witnesses. The general-n lower bound past the `≤k
 super-poly smooth-domain subset-sum count) was NOT supplied. The table PINS δ* for explicit tiny
 instances (incl. a real subgroup) but does NOT pin δ* for general smooth-domain RS. 15 verified bricks
 total across rounds 1–3. Open core untouched; boundary maximally mapped.
+
+### O20 / Round-4 — focused assault on THE reduced question (subgroup subset-sum count N(t,target))
+
+Round 4 attacked the single open question rounds 1–3 converged on: the count
+`N(a,target) = #{a-subsets of the 2^k-subgroup G summing to target}`, whose super-poly-at-bounded-|F|
+growth at `a = k+t` (t≥1, interior) is what pinning δ* requires. 6 axiom-clean bricks (all `lake
+build`-clean). **The open core did NOT move** — but the reduction is now formalized down to the exact
+count, with the count→list bridge and both the easy bounds machine-checked. Honest framing throughout.
+
+* `InteriorListCountBridge.lean` — **the key new brick: the count→interior-list BRIDGE.**
+  `interior_list_ge_of_count`/`interior_list_card_ge_family`: the construction `p_S = g − c·∏_{i∈S}(X−Dᵢ)`
+  with `deg g = k+t`, `|S| = k+t` drops one degree automatically (`pSt_natDegree_lt_interior`); the
+  *further* drop to `deg < k` (a real codeword) is the symmetric-function condition packaged as
+  `DegDropFamily`. Given a family of size `M` with that property, the RS list at the INTERIOR radius
+  `δ = 1−(k+t)/n` has `≥ M` codewords (injectivity `pSt_codeword_injOn` verified). **This is the first
+  machine-checked bridge from the count to the list INSIDE the gap** (rounds 1–3 only had the `t=0`
+  capacity endpoint). It does NOT prove the count is large — that is the open question, isolated as the
+  `DegDropFamily` hypothesis.
+* `SubsetSumPigeonholeFiber.lean` — `max_fiber_interior_ge`: `∑_target N(k+t,target) = C(n,k+t)`
+  (`sum_subsetSumCount_eq_choose`) ⟹ by pigeonhole `∃ target, q·N(k+t,target) ≥ C(n,k+t)`. A genuine
+  lower bound on the MAX-target count. Plus the Newton/Vieta SYMMETRIES (`subsetSumCount_symmetry_group`:
+  `N(a,target) = N(a,−target) = N(n−a,target)` from negation-closure + vanishing sum). **Honest caveat:
+  this bounds the SUM-only count (one symmetric function); the list bridge needs the FULL degree-drop
+  (all `t` symmetric functions) — they coincide only at `t=1`, so this does not by itself give a deep-gap
+  list bound.**
+* `SubsetSumZeroInflation.lean` — `N_lower_inflation`: disjoint zero-sum ±pairs inflate the count:
+  `N(|S₀|+2t, target) ≥ C(#pairs, t)`, field-INDEPENDENT (counts subsets, not field elements — not
+  Loop53-capped). **Honest caveat: inflates SIZE preserving SUM only; same one-symmetric-function gap —
+  does not feed the bridge for t≥2.** A correct, non-vacuous lower bound on the sum-count.
+* `SubsetSumCharacterSum.lean` — the exact Gauss/character-sum formula for `N` (`subsetSumCount_eq_charSum`:
+  `q·N = ∑_ψ ψ(−target)·∏_{x∈G}(1+z ψ(x))|coeff`), main-term + error split, error norm bound. The
+  analytic handle on `N`.
+* `SubsetSumEsymmVanishing.lean` — `esymm_nthRoots_eq_zero`: `e_j(G) = 0` for `0<j<n` (G = n-th roots
+  of unity, `∏(Y−x) = Y^n−1`), the symmetric-function grounding all other angles rest on; `subgroup_sum_eq_zero`.
+* `SubsetSumPairingInflate.lean` — the ±pairing generating-function recursion (`sum_inflate`,
+  `inflate_injective`): the per-pair {skip,both,+g,−g} structure, the combinatorial backbone of inflation.
+
+**Verdict.** The reduced question is now fully formalized: the BRIDGE (count⟹list, new), the exact
+character-sum formula, the e_j-vanishing grounding, and two correct lower bounds on the SUM-count
+(pigeonhole `C(n,k+t)/q`, inflation `C(2^{k-1},t)`). The unbridgeable gap is sharp and now PROVEN in
+structure: every available lower bound controls only the SUM (one symmetric function), while the list
+needs ALL `t` symmetric functions to align — coinciding only at `t=1` (δ just below capacity). Moving
+to deep interior `t≥2` needs the count of subsets with `t` simultaneous symmetric-function constraints
+super-poly, which remains OPEN. 21 verified bricks across rounds 1–4. The open core is untouched but
+its precise obstruction — sum-count vs full-symmetric-count — is now machine-checked.

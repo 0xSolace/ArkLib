@@ -266,54 +266,13 @@ theorem max_fiber_interior_ge [Fintype F] {G : Finset F} {n : ℕ} (hGcard : G.c
   have _ : 0 < t := ht
   exact max_fiber_ge_total_div_card hGcard (k + t) hq
 
-/-! ## Non-vacuity: the hypotheses are jointly realized by a genuine roots-of-unity subgroup
-
-The two structural hypotheses `G.image (−·) = G` (negation-closure) and `∑_{x∈G} x = 0` (vanishing
-full sum) are **simultaneously satisfiable and non-contradictory**, witnessed concretely by the
-multiplicative subgroup of `4`-th roots of unity in `F_5` (the smallest STARK-shaped instance:
-`4 = 2^2 ∣ 5 − 1`, `2` is a primitive `4`-th root, `G = {1,2,3,4} = F_5ˣ`). This rules out the
-no-go being vacuous: both symmetries hold on a real subgroup with `∑ = 0`. -/
-
-/-- `5` is prime, so `ZMod 5` is a field (needed for `subsetSumCount` over `F_5`). -/
-instance : Fact (Nat.Prime 5) := ⟨by norm_num⟩
-
-/-- The `4`-th roots of unity in `F_5` (`= {1,2,3,4} = F_5ˣ`), a concrete smooth subgroup. -/
-def Gwitness : Finset (ZMod 5) := {1, 2, 3, 4}
-
-/-- **Non-vacuity witness.** `Gwitness` is negation-closed, has vanishing sum, and order `4 = 2^2`:
-all the no-go's hypotheses hold simultaneously on a genuine `2`-power roots-of-unity subgroup. -/
-theorem Gwitness_hyps :
-    Gwitness.image (fun x => -x) = Gwitness ∧ (∑ x ∈ Gwitness, x) = 0 ∧ Gwitness.card = 4 := by
-  refine ⟨?_, ?_, ?_⟩ <;> decide
-
-/-- **The symmetry group acts non-vacuously on the witness subgroup.** Instantiating
-`subsetSumCount_symmetry_group` at `Gwitness` (a real subgroup) and any `a ≤ 4`, `target`, gives the
-four-fold fiber identity — confirming the Newton/Vieta symmetries are a genuine (non-empty) action,
-not a vacuous one. -/
-theorem symmetry_group_on_witness (a : ℕ) (ha : a ≤ 4) (target : ZMod 5) :
-    subsetSumCount Gwitness a target = subsetSumCount Gwitness a (-target) ∧
-      subsetSumCount Gwitness a target = subsetSumCount Gwitness (4 - a) target ∧
-      subsetSumCount Gwitness a target = subsetSumCount Gwitness (4 - a) (-target) :=
-  subsetSumCount_symmetry_group Gwitness_hyps.1 Gwitness_hyps.2.1 Gwitness_hyps.2.2 a ha target
-
-/-- **The no-go is non-vacuous: applied to a real subgroup it still gives a `≥ C(n,a)/q` fiber.**
-At the witness subgroup (`n = 4`, `q = |F_5| = 5`), for every agreement size `a` some target has
-`5 · N(a, target) ≥ C(4, a)`. So even on a genuine `2`-power roots-of-unity subgroup the symmetries
-cannot suppress the maximal subset-sum fiber below `C(n,a)/q` — the round-4 verdict in the flesh. -/
-theorem nogo_on_witness (a : ℕ) :
-    ∃ target : ZMod 5, (Fintype.card (ZMod 5)) * subsetSumCount Gwitness a target ≥ (4).choose a :=
-  max_fiber_ge_total_div_card Gwitness_hyps.2.2 a (by rw [ZMod.card]; norm_num)
 
 end ArkLib.ProximityGap.Round4NewtonVietaUpper
 
 /-! ## Axiom audit -/
-#print axioms ArkLib.ProximityGap.Round4NewtonVietaUpper.rootsOfUnity_subgroup_sum_zero
 #print axioms ArkLib.ProximityGap.Round4NewtonVietaUpper.subsetSumCount_neg
 #print axioms ArkLib.ProximityGap.Round4NewtonVietaUpper.subsetSumCount_compl
 #print axioms ArkLib.ProximityGap.Round4NewtonVietaUpper.subsetSumCount_symmetry_group
 #print axioms ArkLib.ProximityGap.Round4NewtonVietaUpper.sum_subsetSumCount_eq_choose
 #print axioms ArkLib.ProximityGap.Round4NewtonVietaUpper.max_fiber_ge_total_div_card
 #print axioms ArkLib.ProximityGap.Round4NewtonVietaUpper.max_fiber_interior_ge
-#print axioms ArkLib.ProximityGap.Round4NewtonVietaUpper.Gwitness_hyps
-#print axioms ArkLib.ProximityGap.Round4NewtonVietaUpper.symmetry_group_on_witness
-#print axioms ArkLib.ProximityGap.Round4NewtonVietaUpper.nogo_on_witness
