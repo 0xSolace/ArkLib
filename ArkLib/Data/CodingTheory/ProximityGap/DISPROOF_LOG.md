@@ -1995,3 +1995,23 @@ construction has agree-≥9 list EXACTLY 19 with this design. Finite ⟹ provabl
 proof would deliver the first proven marginal-layer count past Johnson on a smooth domain and
 validate the region/transversal mechanism as the upper-bound technique. The P-B program now has a
 concrete mechanism candidate instead of a mystery. Scripts: probe_h3_cfg2.py.
+
+### O32 / Rounds 15–17 — Sudan end-to-end + θ-optimization + external-claim deep-read + CA engine
+
+* `SudanListBoundFull` (R15 harvest): the COMPLETE Sudan (m=1) list bound, end to end self-contained
+  (interpolation existence via rank-nullity + (Y−Cf) ∣ Q factor extraction + Y-degree cap):
+  n < Σ_{j<D}(D−(k−1)j), D ≤ t ⟹ list ≤ (D−1)/(k−1). Radius 1−√(2ρ) (NOT Johnson; mult ≥ 2 = GS
+  proper still open in-tree). First complete algebraic list-decoding bound in the corpus.
+* `SecondMomentThetaOptimization` (R15 harvest): the missing downstream of the ORPHANED MGF kernel
+  rs_sum_jointCoverCount_mgf_le — θ-optimization over ℝ: interior optimum θ*=2ra/(b(n−2r)), entropy
+  form at θ=r/n, and S ≤ (n/r)^{2r}(exp((q−1)r) + exp((q²+q−1)r)/q^{n−k}).
+* DEEP-READ VERDICT (ePrint 2026/858/861, "FRI soundness above Johnson"): protocol-level threshold
+  halving — RVW13 half-threshold CA (≤1 bad γ at conclusion δ/2) + BCIKS distance locking after
+  round 1; ~2× queries; the OPEN-ZONE equal-threshold CA/MCA (the prize quantity) explicitly "Not
+  solved here" (their claim map). Their Thm 7: equal-threshold bad-γ count ≤ C(n,k+1) (field-indep);
+  tightness (Prop 9) needs |F| > C(n,w)² ≫ 2^256 — does NOT fit prize fields. Their Conjecture 41
+  (M ≤ ⌊(2D−1)/c⌋ at codim excess c ≥ 3, ⟹ M=O(1) at Johnson) = the live prize-shaped list
+  conjecture, UNPROVEN (empirics to n=40).
+* `CAPairExtractionEngine` (R17): their verified kernel formalized — pair_of_two_bad (two bad γ's
+  solve for the codeword pair), bad_card_le_one (RVW13 half-threshold ≤1 bad γ), bad_card_le_choose
+  (equal-threshold ≤ C(n,k+1), field-independent). All axiom-clean.
