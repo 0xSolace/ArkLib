@@ -1470,8 +1470,8 @@ theorem simulateQ_addLift_fsChallenge_preserves_state {γ : Type}
     | inr q_f =>
       simp [QueryImpl.addLift, QueryImpl.add_apply_inr, fsChallengeQueryImplState, StateT.run]
 
-/-- KS payload reconciliation.  The Fiat-Shamir game fails through the option monad when the verifier
-rejects and only then bundles the extracted witness; the state-restoration game keeps the verifier's
+/-- KS payload reconciliation.  The Fiat-Shamir game fails through the option monad when the
+verifier rejects and only then bundles the extracted witness; the state-restoration game keeps the
 `Option StmtOut` and runs the extractor `me` unconditionally.  Since `me` is independent of the
 verifier result, the two have the same success-event probability (the verifier-reject branch
 contributes nothing to either success event, and the accept branch agrees up to commuting the input
@@ -1646,14 +1646,15 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     congr 1
     -- The prefix `deriveTranscriptFS` is DETERMINISTIC (keystone): it returns `pure (t, x.2)`.  We
     -- must COLLAPSE it (not peel via `congr 1`), because the per-transcript leaf is only provable
-    -- for the deterministic transcript `t` — off-support the re-derived transcript ≠ a free `x_1.1`.
+    -- for the deterministic `t` — off-support the re-derived transcript ≠ a free `x_1.1`.
     obtain ⟨t, ht⟩ := Messages.deriveTranscriptFS_simulateQ_run srImpl stmtIn a.1.1 x.2
     rw [ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl'] at ht
-    -- LHS collapses against the simp-rewritten impl; the RHS's native `srChallengeQueryImpl'` matches
-    -- `ht` only by defeq, so collapse it via an explicit `show`.
-    conv_lhs => rw [ht]
-    rw [ht]
-    simp only [pure_bind]
+    -- Collapse the deterministic LHS derive; `simp [ht]` matches the simp-normalised LHS.
+    -- The RHS carries the SR game's native challenge impl, over `srChallengeOracle` and not
+    -- `ht`'s `fsChallengeOracle`; the two are defeq, but a freshly written native term makes
+    -- `addLift` demand a missing lift, so syntactic `rw` cannot collapse the RHS derive here.  That
+    -- collapse is deferred to a defeq-tolerant step folded into the `ks_payload_eq` reconciliation.
+    simp only [ht, pure_bind]
     -- Leaf goal (verified by `trace_state`), with prefix values `a` (sendMessage), `x` (output),
     -- `x_1` (deriveTranscriptFS, `x_1.1` = transcript) in scope:
     --   LHS = Pr[ok? | verify_bundled >>= (·.elim none) (re-derive; srExtractor; payload)]
@@ -1673,6 +1674,7 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     --  (3) the straightline extractor returns raw `WitIn` always-`some`
     --      (`fiatShamirStraightlineExtractorOfStateRestoration` L1121), collapsing the `.elim`.
     -- Then `exact ks_payload_eq relIn relOut stmtIn x.1.2 mv me x_1.2`.
+    trace_state
     sorry
 
 end CanonicalKnowledgeSoundness
