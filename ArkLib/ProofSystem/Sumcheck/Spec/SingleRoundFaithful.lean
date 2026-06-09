@@ -163,6 +163,80 @@ theorem coh_of_cubeFiber
           (((sumcheckOracleLens R n deg D oSpec i).toLens.proj (os, oos)).2 ()) pt :=
   roundFaithful_of_cubeFiber (oSpec := oSpec) i (hCubeFiber i) os oos pt
 
+/-- The `Fin.cast` / `succAbove` commutation needed to evaluate `sumPoint` at `i.succAbove k`. -/
+theorem cast_succAbove_comm (n' : ℕ) (i : Fin (n'+1)) (k : Fin n')
+    (h : n' + 1 = (n' + 1 - 1) + 1) (hk : n' = (n' + 1 - 1)) :
+    Fin.cast h (i.succAbove k) = (Fin.cast h i).succAbove (Fin.cast hk k) := by
+  by_cases hlt : k.castSucc < i
+  · have hlt' : (Fin.cast hk k).castSucc < Fin.cast h i := by
+      rw [Fin.lt_def] at hlt ⊢; simpa [Fin.coe_cast, Fin.val_castSucc] using hlt
+    rw [Fin.succAbove_of_castSucc_lt _ _ hlt, Fin.succAbove_of_castSucc_lt _ _ hlt']
+    apply Fin.ext; simp [Fin.coe_cast, Fin.val_castSucc]
+  · have hle : i ≤ k.castSucc := not_lt.mp hlt
+    have hle' : Fin.cast h i ≤ (Fin.cast hk k).castSucc := by
+      rw [Fin.le_def] at hle ⊢; simpa [Fin.coe_cast, Fin.val_castSucc] using hle
+    rw [Fin.succAbove_of_le_castSucc _ _ hle, Fin.succAbove_of_le_castSucc _ _ hle']
+    apply Fin.ext; simp [Fin.coe_cast, Fin.val_succ]
+
+/-- **`sumPoint` is exactly the `insertNth`-`append` evaluation point** used by the round
+polynomial: prior `challenges` in the `k < i` slots, `pt` at slot `i`, the survivor index `y` in the
+`k > i` slots. (This is what makes `CubeFiber` true now that the lens sums over the `n-1-i` survivor
+cube.) -/
+theorem sumPoint_eq_insertNth (n' : ℕ) (i : Fin (n'+1)) (pt : R)
+    (os : StatementRound R (n'+1) i.castSucc) (y : Fin (n' + 1 - 1 - i) → R) :
+    sumPoint R (n'+1) i pt os y
+      = Fin.insertNth i pt (Fin.append os.challenges y ∘ Fin.cast (by simp; omega)) := by
+  funext j
+  by_cases hj : j = i
+  · subst hj; simp only [sumPoint, Function.comp_apply, Fin.insertNth_apply_same]
+  · obtain ⟨k, rfl⟩ := Fin.exists_succAbove_eq hj
+    simp only [sumPoint, Function.comp_apply, Fin.insertNth_apply_succAbove]
+    rw [cast_succAbove_comm n' i k (by omega) (by omega), Fin.insertNth_apply_succAbove]
+    simp only [Fin.coe_cast]
+    by_cases hc : (k:ℕ) < (i:ℕ)
+    · rw [dif_pos hc]
+      have he : (Fin.cast (by simp; omega) k : Fin (↑(i.castSucc) + (n' + 1 - 1 - ↑i)))
+          = Fin.castAdd _ ⟨k, by simp [Fin.val_castSucc]; omega⟩ := by
+        apply Fin.ext; simp [Fin.coe_cast]
+      rw [he, Fin.append_left]
+    · rw [dif_neg hc]
+      have he : (Fin.cast (by simp; omega) k : Fin (↑(i.castSucc) + (n' + 1 - 1 - ↑i)))
+          = Fin.natAdd _ ⟨(k:ℕ) - ↑i, by simp [Fin.val_castSucc]; omega⟩ := by
+        apply Fin.ext; simp only [Fin.coe_cast, Fin.val_natAdd, Fin.val_castSucc]; omega
+      rw [he, Fin.append_right]
+
+/-- **`CubeFiber` is PROVEN** — no longer a hypothesis. The `|D|^{n-1-i}`-fold `sumPoint` sum equals
+`Polynomial.eval pt` of the round polynomial `oStmtLens.toFunA`, because (after the survivor-cube
+fix) each `sumPoint i pt os y` is exactly the `insertNth`-`append` point at which the round
+polynomial's survivor sum is evaluated (`sumPoint_eq_insertNth`). This discharges the last
+combinatorial residual `hCubeFiber`. The proof is `oSpec`-free (works directly on `oStmtLens.toFunA`,
+mirroring `answer_proj_eval_succ`'s internals without the oracle wrapper). -/
+theorem cubeFiber_holds (i : Fin n) : CubeFiber (R := R) (deg := deg) (D := D) i := by
+  cases n with
+  | zero => exact i.elim0
+  | succ n' =>
+    intro os oos pt
+    show (∑ y ∈ (univ.map D) ^ᶠ (n' + 1 - 1 - i), (oos ()).1.eval (sumPoint R (n'+1) i pt os y))
+      = Polynomial.eval pt (∑ x ∈ (univ.map D) ^ᶠ (n' - i),
+          (oos ()).val ⸨X ⦃i⦄, os.challenges, x⸩'(by simp; omega))
+    rw [Polynomial.eval_finset_sum]
+    refine Finset.sum_congr rfl (fun y _ => ?_)
+    rw [← eval_eq_eval_mv_eval_finSuccEquivNth]
+    exact congrArg (fun p => (MvPolynomial.eval p) ((oos ()).val))
+      (sumPoint_eq_insertNth n' i pt os y)
+
+/-- **Per-round round-polynomial faithfulness, UNCONDITIONALLY** — `coh_of_cubeFiber` with the
+now-proven `cubeFiber_holds`. This is exactly the `hRoundFaithful` shape `SimpleRoundCoherent.coh_of`
+consumes, with NO residual hypothesis, discharging `hPerRound` and making the per-round
+`LiftContextCoherent` (hence the multi-round sum-check oracle bridge of issue #13) unconditional. -/
+theorem coh_proven (i : Fin n) (os : StatementRound R n i.castSucc)
+    (oos : ∀ i, OracleStatement R n deg i) (pt : R) :
+    (((univ.map D) ^ᶠ (n - 1 - i)).toList).foldl
+        (fun (acc : R) y => acc + (oos ()).1.eval (sumPoint R n i pt os y)) (0 : R)
+      = OracleInterface.answer
+          (((sumcheckOracleLens R n deg D oSpec i).toLens.proj (os, oos)).2 ()) pt :=
+  coh_of_cubeFiber (fun j => cubeFiber_holds j) i os oos pt
+
 end
 
 end Sumcheck.Spec.SingleRound
