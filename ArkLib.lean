@@ -321,6 +321,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25RSMDSOptimal
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSMinDistance
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSMinWeight
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSNearBound
+import ArkLib.Data.CodingTheory.ProximityGap.CS25RSSecondMomentMGF
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSUniqueDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.CS25ReedSolomonHighDist
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentAssembly
@@ -346,6 +347,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CandidateMasterLoop45
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop39
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop40
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateProofLoop42
+import ArkLib.Data.CodingTheory.ProximityGap.CandidateResultantLiftLoop52
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop27
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop28
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateStructureLoop29
