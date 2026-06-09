@@ -39,7 +39,7 @@ single agreement set `S₀`), so each bad witness `w_γ` is forced equal to `v�
 -/
 
 open Finset ProximityGap
-open scoped NNReal ENNReal
+open scoped NNReal ENNReal BigOperators
 
 namespace ProximityGap.UDR2
 
@@ -197,5 +197,75 @@ theorem epsMCA_rs_udr2_le (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Finty
       exact mcaEvent_imp_relCloseToCode _ δ (u 0) (u 1) γ hγ.2
     calc G.card ≤ (RS_goodCoeffs (deg := k) (domain := α) u δ).card := card_le_card hGsub
       _ ≤ Fintype.card ι := hcase
+
+
+/-- **Multi-curve bad-count bound (Johnson/capacity-reaching, given the GS list cover).** Given `L`
+codeword-pairs `(v₀ j, v₁ j)` each agreeing with `(u₀,u₁)` per-coordinate on a set `S₀ j` of size
+`≥ t`, such that every bad witness `w_γ` lies on *one* of the `L` curves (`w_γ = v₀ j + γ•v₁ j`),
+the MCA bad-scalar count is `≤ L·(n-t)`.  No minimum-distance hypothesis: the witness-to-curve
+assignment is supplied by the list cover (the GS list-decoding output), so this reaches any radius
+where such a cover exists (Johnson, capacity). Each curve contributes `≤ |supp e₁ j| ≤ n-t` roots. -/
+theorem badCount_listcover_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (t L : ℕ)
+    (v₀ v₁ : Fin L → ι → F)
+    (hv₀ : ∀ j, v₀ j ∈ C) (hv₁ : ∀ j, v₁ j ∈ C)
+    (S₀ : Fin L → Finset ι) (hS₀ : ∀ j, t ≤ (S₀ j).card)
+    (hv₁S : ∀ j, ∀ i ∈ S₀ j, v₁ j i = u₁ i)
+    (G : Finset F) (S : F → Finset ι) (w : F → ι → F)
+    (hwS : ∀ γ ∈ G, ∀ i ∈ S γ, w γ i = u₀ i + γ • u₁ i)
+    (hno : ∀ γ ∈ G, ¬ pairJointAgreesOn (C : Set (ι → F)) (S γ) u₀ u₁)
+    (hcover : ∀ γ ∈ G, ∃ j, w γ = v₀ j + γ • v₁ j) :
+    G.card ≤ L * (Fintype.card ι - t) := by
+  classical
+  -- assign each bad γ to a curve j and a root coordinate i
+  -- e₀ j = u₀ - v₀ j, e₁ j = u₁ - v₁ j; e₁ j vanishes on S₀ j.
+  set e₀ : Fin L → ι → F := fun j => u₀ - v₀ j with he₀def
+  set e₁ : Fin L → ι → F := fun j => u₁ - v₁ j with he₁def
+  -- support bound per curve
+  have hsupp : ∀ j, (univ.filter (fun i => e₁ j i ≠ 0)).card ≤ Fintype.card ι - t := by
+    intro j
+    have hsub : (univ.filter (fun i => e₁ j i ≠ 0)) ⊆ (S₀ j)ᶜ := by
+      intro i hi; simp only [mem_filter, mem_univ, true_and] at hi
+      simp only [mem_compl]; intro hiS
+      exact hi (by simp only [he₁def, Pi.sub_apply, hv₁S j i hiS, sub_self])
+    calc (univ.filter (fun i => e₁ j i ≠ 0)).card ≤ (S₀ j)ᶜ.card := card_le_card hsub
+      _ = Fintype.card ι - (S₀ j).card := card_compl (S₀ j)
+      _ ≤ Fintype.card ι - t := by have := hS₀ j; omega
+  -- G ⊆ ⋃_j {γ : ∃i, e₁ j i ≠ 0 ∧ e₀ j i + γ e₁ j i = 0}
+  have hGsub : G ⊆ univ.biUnion (fun j : Fin L =>
+      univ.filter (fun γ : F => ∃ i, e₁ j i ≠ 0 ∧ e₀ j i + γ * e₁ j i = 0)) := by
+    intro γ hγ
+    obtain ⟨j, hj⟩ := hcover γ hγ
+    rw [mem_biUnion]
+    refine ⟨j, mem_univ _, ?_⟩
+    rw [mem_filter]; refine ⟨mem_univ _, ?_⟩
+    -- ¬pairJointAgreesOn gives i∈S γ with disagreement; w γ=v₀j+γv₁j and =line on S γ
+    have hexi : ∃ i ∈ S γ, ¬ (v₀ j i = u₀ i ∧ v₁ j i = u₁ i) := by
+      by_contra hcon; push Not at hcon
+      exact hno γ hγ ⟨v₀ j, hv₀ j, v₁ j, hv₁ j, fun i hi => hcon i hi⟩
+    obtain ⟨i, hiS, hidis⟩ := hexi
+    have hci := congrFun hj i
+    simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul] at hci
+    have hsi := hwS γ hγ i hiS; rw [smul_eq_mul] at hsi
+    have hc : u₀ i + γ * u₁ i = v₀ j i + γ * v₁ j i := by rw [← hsi, hci]
+    have haff : e₀ j i + γ * e₁ j i = 0 := by
+      simp only [he₀def, he₁def, Pi.sub_apply]; linear_combination hc
+    have he₁i : e₁ j i ≠ 0 := by
+      intro h0; rw [h0, mul_zero, add_zero] at haff
+      apply hidis
+      refine ⟨?_, ?_⟩
+      · have hz : u₀ i - v₀ j i = 0 := by simpa only [he₀def, Pi.sub_apply] using haff
+        exact (sub_eq_zero.mp hz).symm
+      · have hz : u₁ i - v₁ j i = 0 := by simpa only [he₁def, Pi.sub_apply] using h0
+        exact (sub_eq_zero.mp hz).symm
+    exact ⟨i, he₁i, haff⟩
+  calc G.card
+      ≤ (univ.biUnion (fun j : Fin L =>
+          univ.filter (fun γ : F => ∃ i, e₁ j i ≠ 0 ∧ e₀ j i + γ * e₁ j i = 0))).card :=
+        card_le_card hGsub
+    _ ≤ ∑ j : Fin L, (univ.filter (fun γ : F => ∃ i, e₁ j i ≠ 0 ∧ e₀ j i + γ * e₁ j i = 0)).card :=
+        card_biUnion_le
+    _ ≤ ∑ _j : Fin L, (Fintype.card ι - t) :=
+        Finset.sum_le_sum (fun j _ => le_trans (UDRwire.badGamma_le (e₀ j) (e₁ j)) (hsupp j))
+    _ = L * (Fintype.card ι - t) := by rw [Finset.sum_const, card_univ, Fintype.card_fin, smul_eq_mul]
 
 end ProximityGap.UDR2

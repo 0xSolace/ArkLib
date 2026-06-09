@@ -231,7 +231,7 @@ theorem instAppend_inr_cast (k : pSpec₂.MessageIdx) :
 /-- Per-query body emitting a query to the source message interface `O₁` (which agrees, up to the
 message-type equality `hMsg`, with the appended-spec interface at the appended message index `j`)
 into the appended-spec message oracle. Modelled on `OracleVerifier.castMessageQuery`. -/
-private def emitMessageQuery
+def emitMessageQuery
     {T₁ : Type} (O₁ : OracleInterface T₁)
     (j : (pSpec₁ ++ₚ pSpec₂).MessageIdx) (hMsg : (pSpec₁ ++ₚ pSpec₂).Message j = T₁)
     (hO : O₁ = _root_.cast (congrArg OracleInterface hMsg)
@@ -244,13 +244,13 @@ private def emitMessageQuery
     (Sum.inr (Sum.inr ⟨j, q⟩))
 
 /-- Emit a `pSpec₁`-message query into the appended message oracle at `MessageIdx.inl`. -/
-private def emitMessageInl (i : pSpec₁.MessageIdx) (q : (Oₘ₁ i).Query) :
+def emitMessageInl (i : pSpec₁.MessageIdx) (q : (Oₘ₁ i).Query) :
     OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) ((Oₘ₁ i).Response q) :=
   emitMessageQuery (oSpec := oSpec) (OStmt₁ := OStmt₁)
     (Oₘ₁ i) (MessageIdx.inl i) (Message_inl i) (instAppend_inl_cast (pSpec₂ := pSpec₂) i) q
 
 /-- Emit a `pSpec₂`-message query into the appended message oracle at `MessageIdx.inr`. -/
-private def emitMessageInr (i : pSpec₂.MessageIdx) (q : (Oₘ₂ i).Query) :
+def emitMessageInr (i : pSpec₂.MessageIdx) (q : (Oₘ₂ i).Query) :
     OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) ((Oₘ₂ i).Response q) :=
   emitMessageQuery (oSpec := oSpec) (OStmt₁ := OStmt₁)
     (Oₘ₂ i) (MessageIdx.inr i) (Message_inr i) (instAppend_inr_cast (pSpec₁ := pSpec₁) i) q
@@ -289,7 +289,7 @@ the coherence equality `hO`. The query is routed straight into `[OStmt₁]ₒ` a
 Modelled line-by-line on `emitMessageQuery` / `OracleVerifier.castMessageQuery` (`Cast.lean`): the
 `subst hSt; subst hO` collapse turns `O` into the registered source interface `Oₛ₁ k`, so the query
 and its response have exactly the oracle-spec types. -/
-private def emitOStmtQueryInl
+def emitOStmtQueryInl
     {T : Type} (O : OracleInterface T)
     (k : ιₛ₁) (hSt : OStmt₁ k = T)
     (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₛ₁ k))
@@ -305,7 +305,7 @@ prover's `pSpec₁`-message `pSpec₁.Message k` (answered, in the appended spec
 `MessageIdx.inl k`).
 The interface `O` agrees, up to `hSt : pSpec₁.Message k = T`, with `Oₘ₁ k` via `hO`.
 After collapsing the casts we delegate to the proven `emitMessageInl` router. -/
-private def emitOStmtQueryInr
+def emitOStmtQueryInr
     {T : Type} (O : OracleInterface T)
     (k : pSpec₁.MessageIdx) (hSt : pSpec₁.Message k = T)
     (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₘ₁ k))
