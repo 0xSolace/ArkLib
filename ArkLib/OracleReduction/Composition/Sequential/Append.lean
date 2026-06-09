@@ -23,7 +23,7 @@ import ArkLib.OracleReduction.Security.RoundByRound
   of the reductions being composed (with extra conditions on the extractor).
 -/
 
-set_option linter.style.longFile 3000
+set_option linter.style.longFile 5000
 
 open OracleComp OracleSpec SubSpec
 
