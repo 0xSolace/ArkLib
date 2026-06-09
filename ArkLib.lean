@@ -90,6 +90,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorDegreeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorizationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSListSizeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSOverRatFunc
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparabilityCharZero
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GuruswamiSudan
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ListSizeBound
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MonomialCount
@@ -1275,6 +1276,7 @@ import ArkLib.ToMathlib.CountingAgreementBricks
 import ArkLib.ToMathlib.DG25CoveringRadiusProof
 import ArkLib.ToMathlib.DiscriminantBadSet
 import ArkLib.ToMathlib.DiscriminantSeparable
+import ArkLib.ToMathlib.DiscriminantSeparableConverse
 import ArkLib.ToMathlib.EliasVolumeCertificates
 import ArkLib.ToMathlib.ExtractedIssueBricks
 import ArkLib.ToMathlib.FaaDiBrunoMatchProof
