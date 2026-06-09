@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Core
 
 /-!
 # The General Spike-Plant MCA Lower Bound at Lattice Index `j` (Issue #232)
@@ -64,7 +65,7 @@ set_option linter.unusedSectionVars false
 namespace ProximityGap
 
 open scoped NNReal ENNReal BigOperators
-open Code ReedSolomon
+open Code ReedSolomon GrandChallengesLattice
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
