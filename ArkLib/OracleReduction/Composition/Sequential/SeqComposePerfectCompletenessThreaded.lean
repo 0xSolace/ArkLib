@@ -26,9 +26,12 @@ the seam instances are constructed from `ChallengeOracleFintype` (`appendCombine
 on the number of trailing components — so the empty-tail case is `seqCompose` over `Fin 0`, whose length
 `Fin.vsum` is **definitionally** `0`.
 
-Status: the multi-round **message-seam** induction step is fully proven; the degenerate
-**single-component** step (`m = 0`, empty `ProtocolSpec 0` tail) is a tracked `sorry` residual —
-a pure instance-plumbing gap on the empty challenge oracle, not a mathematical gap.
+Both branches are proven (axiom-clean): the multi-round **message-seam** step via
+`append_perfectCompleteness_msg_proof`, and the degenerate **single-component** step (`m = 0`, the
+tail `seqCompose` over `Fin 0` rewritten to `Reduction.id` whose protocol is the empty literal
+`!p[]`) via `append_perfectCompleteness_empty_proof` + `Reduction.id_perfectCompleteness`.  The only
+subtlety in the empty step is the empty-protocol-append challenge oracle, whose `OracleInterface`
+(`instAppendEmptyChallengeOI`) and vacuous finiteness are introduced explicitly.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -38,6 +41,14 @@ namespace Reduction
 
 variable {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype] [oSpec.Inhabited]
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+
+/-- The challenge `OracleInterface` of an append with an **empty trailing protocol** `!p[]`.  The
+generic `ProtocolSpec.challengeOracleInterface` provides this, but it is not picked up automatically
+for the empty append (`!p[]` triggers competing empty-index instances), so it is exposed explicitly
+here.  Scoped local to the empty-seam base case of `seqCompose_perfectCompleteness_threaded`. -/
+local instance instAppendEmptyChallengeOI {k₁ : ℕ} {p₁ : ProtocolSpec k₁} :
+    ∀ i, OracleInterface ((p₁ ++ₚ (!p[] : ProtocolSpec 0)).Challenge i) :=
+  ProtocolSpec.challengeOracleInterface
 
 set_option maxHeartbeats 1000000 in
 set_option linter.unusedFintypeInType false in
@@ -70,19 +81,41 @@ theorem seqCompose_perfectCompleteness_threaded {m : ℕ}
         (seqCompose (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))))
       |>.perfectCompleteness init impl (rel 0) (rel (Fin.succ (Fin.last m)))
     rcases Nat.eq_zero_or_pos m with hm | hm
-    · -- Empty trailing seam: `m = 0`, the tail `seqCompose` is over `Fin 0`, so its length
-      -- `Fin.vsum` is definitionally `0` (`ProtocolSpec 0`); the empty keystone applies directly.
-      -- DEGENERATE single-component residual (`m = 0`): the tail `seqCompose` is over `Fin 0`,
-      -- i.e. `Reduction.id` whose protocol is the empty literal `!p[] : ProtocolSpec 0`.  The empty
-      -- keystone `append_perfectCompleteness_empty_proof (R 0) Reduction.id (h 0)
-      -- Reduction.id_perfectCompleteness hInit hImplSupp` is the intended term, but it requires the
-      -- seam instance `(oSpec + [(pSpec 0 ++ₚ !p[]).Challenge]ₒ).Fintype`, which neither synthesizes
-      -- natively nor matches `appendCombinedOracle_fintype oSpec (pSpec 0) !p[]` (the `!p[]` challenge
-      -- oracle has no `OracleInterface`/`Fintype` instance reachable through `toOracleSpec`).  This is
-      -- a pure `ProtocolSpec 0` instance-plumbing residual in the degenerate one-component case; the
-      -- substantive multi-round message-seam case (below) is fully proven.  Tracked, not laundered.
+    · -- Empty trailing seam (`m = 0`): the tail `seqCompose` over `Fin 0` is `Reduction.id`, whose
+      -- protocol is the empty literal `!p[] : ProtocolSpec 0`.  Rewrite the tail to `Reduction.id`,
+      -- then apply the empty keystone with `Reduction.id_perfectCompleteness`.  The only subtlety is
+      -- the empty-protocol-append seam instances `(oSpec + [(pSpec 0 ++ₚ !p[]).Challenge]ₒ).*`, which
+      -- need the `(pSpec 0 ++ₚ !p[]).Challenge` `OracleInterface` introduced explicitly (the generic
+      -- `challengeOracleInterface` does not get picked up automatically for the empty append) plus the
+      -- vacuous finiteness of `!p[]`'s challenges, routed through `ChallengeOracleFintype`.
       subst hm
-      sorry
+      rw [Reduction.seqCompose_zero]
+      -- left phase `pSpec 0` (uses the generic `challengeOracleInterface`):
+      haveI : (oSpec + [(pSpec 0).Challenge]ₒ).Fintype := by
+        haveI := challengeOracle_fintype (pSpec 0); infer_instance
+      haveI : (oSpec + [(pSpec 0).Challenge]ₒ).Inhabited := by
+        haveI := challengeOracle_inhabited (pSpec 0); infer_instance
+      -- right phase `!p[]`: the empty challenge oracle resolves its `OracleInterface` to
+      -- `instElim0` (empty `Fin 0` index), so its `Fintype`/`Inhabited` are constructed directly
+      -- (vacuously) rather than through `challengeOracle_fintype` (which would carry the generic
+      -- `challengeOracleInterface`, a different instance):
+      haveI : [(!p[] : ProtocolSpec 0).Challenge]ₒ.Fintype := { fintype_B := fun t => t.1.1.elim0 }
+      haveI : [(!p[] : ProtocolSpec 0).Challenge]ₒ.Inhabited := { inhabited_B := fun t => t.1.1.elim0 }
+      haveI : (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ).Fintype := inferInstance
+      haveI : (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ).Inhabited := inferInstance
+      -- combined seam `pSpec 0 ++ₚ !p[]` (`OracleInterface` from `instAppendEmptyChallengeOI`):
+      haveI : ∀ j, Fintype ((!p[] : ProtocolSpec 0).Challenge j) := fun j => j.1.elim0
+      haveI : ∀ j, Fintype ((pSpec 0 ++ₚ (!p[] : ProtocolSpec 0)).Challenge j) :=
+        appendChallenge_fintype (pSpec 0) (!p[] : ProtocolSpec 0)
+      haveI : ∀ j, Inhabited ((!p[] : ProtocolSpec 0).Challenge j) := fun j => j.1.elim0
+      haveI : ∀ j, Inhabited ((pSpec 0 ++ₚ (!p[] : ProtocolSpec 0)).Challenge j) :=
+        appendChallenge_inhabited (pSpec 0) (!p[] : ProtocolSpec 0)
+      haveI : (oSpec + [((pSpec 0) ++ₚ (!p[] : ProtocolSpec 0)).Challenge]ₒ).Fintype := by
+        haveI := challengeOracle_fintype (pSpec 0 ++ₚ (!p[] : ProtocolSpec 0)); infer_instance
+      haveI : (oSpec + [((pSpec 0) ++ₚ (!p[] : ProtocolSpec 0)).Challenge]ₒ).Inhabited := by
+        haveI := challengeOracle_inhabited (pSpec 0 ++ₚ (!p[] : ProtocolSpec 0)); infer_instance
+      refine append_perfectCompleteness_empty_proof (R 0) Reduction.id (h 0) ?_ hInit hImplSupp
+      exact Reduction.id_perfectCompleteness (init := init) (impl := impl) (rel := rel 1)
     · -- Message seam: the tail is nonempty and starts with a `P_to_V` message.
       obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hm.ne'
       haveI : ∀ j, Fintype ((ProtocolSpec.seqCompose (fun i => pSpec (Fin.succ i))).Challenge j) :=
