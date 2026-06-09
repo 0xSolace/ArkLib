@@ -320,6 +320,21 @@ theorem hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_partitionMatch
   (restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree H x₀ R hHyp hd hζ).mp
     ((restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).mpr hpart)
 
+/-- **Normalized partition order-zero residual ⟺ the uncleared-Hasse/`W^natDegree` equation.**
+The partition-sided bundling of the two directional projections above; the `P2ClearedGap`-level
+form of the central order-zero connector. -/
+theorem restrictedPartitionMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 ↔
+      hasseEvalAtRoot H x₀ R 1 0
+        = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+            / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree :=
+  ⟨hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_partitionMatchAt_zero
+      H x₀ R hHyp hd hζ,
+    RestrictedFaaDiBrunoPartitionMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
+      H x₀ R hHyp hd hζ⟩
+
 /-- **Project the uncleared-Hasse/`W^natDegree` equation directly from the carved order-zero P2
 core** (the `RestrictedFaaDiBrunoMatchAt`-sided sibling of the partition-match projection). -/
 theorem hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_restrictedMatchAt_zero
