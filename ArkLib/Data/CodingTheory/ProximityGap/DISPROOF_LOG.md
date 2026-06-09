@@ -2593,3 +2593,38 @@ Conj-41 deficiency window (equal e_1..e_{w−c}) fires iff d ≥ w−c+1 ⟹ s �
 (matches the proven c=2 phase). ONE construction = both phases of 2026/858's empirical diagram =
 the depth-collapse wall in deficiency language. OPEN CEILING: can non-lifted families beat
 C(n/d, s) in the deep window (non-cyclic deficiency at large p)? = the prize core, final form.
+### O43 — REFUTATION (verified): the "Equivalently, M_true ≤ ⌊(2D−1)/c⌋" form of Conjecture 41 is FALSE at every sufficiently large prime
+
+Closing the O42 arc: the class-syndrome dictionary turns formulation-(ii) fiber pigeonhole
+into a Conjecture-41 attack, and it lands. Construction (all integer data; exact-arithmetic
+verified at p = 1009 and p = 7919; integrality ⟹ every sufficiently large p):
+
+* Parameters: n = 14 (domain L = {0,…,13}), k = 5, D = n−k = 9, c = 3, w = D−c = 6;
+  Conjecture-41 bound ⌊(2D−1)/c⌋ = 5.
+* The integer (e₁,e₂) = (39, 589) fiber of 6-subsets of L has 10 supports spreading over
+  9 distinct e₃ values {4269, 4281, 4293, 4305, 4329, 4353, 4365, 4377, 4389}.
+* The syndrome LINE in the e₃-direction: s₁ = classSyndrome(39, 589, 4269) =
+  (0,0,0,0,0, h₀,h₁,h₂,h₃), s₂ = (0,…,0,1) (top unit vector; (s₁,s₂) independent). By the
+  Newton e/h convolution, s(γ) = s₁ + γ·s₂ is the class syndrome of (39, 589, 4269+γ), so
+  each of the 9 fiber e₃-values gives a distinct γ with a compatible support — and the
+  Vandermonde error values are ALL NONZERO at every one of them (verified): **M_true = 9 > 5
+  at p = 1009, p = 7919, and every large p**. No threshold p₀(n,k,c) of ANY size rescues
+  the "equivalently" sentence.
+* WHY the dichotomy form survives: on this line the escape clause fires TRIVIALLY —
+  s₂ = e_{D−1} pairs to zero with every Λ_E (degree w < D−1). So the clause excludes far
+  more than degenerate configurations, and **the two printed forms of Conjecture 41 are
+  inequivalent**; the M_true ≤ ⌊(2D−1)/c⌋ prediction is false as stated and must be
+  restated (e.g., restricted to lines with s₂ engaging the low syndrome window).
+* SCALING (probe, n = 14, lines through realized classes): violations persist at p = 31,
+  53, 71, 101, 151, 211 (max hits 10–19 ≫ 5) — structure, not birthday chance; the
+  mechanism is the integer fiber spread, which GROWS with n. At deployment-shaped
+  parameters the e₃-spread of (e₁,e₂)-fibers is astronomically large: adversarial
+  class-syndrome lines carry list mass far above any O(n/c) envelope. This is a LOWER-bound
+  brick for the disproof side of the prize loop: worst-case line list counts at c ≥ 3 are
+  governed by multi-symmetric fiber spreads (formulation (ii)), not by rank genericity.
+
+Caveats kept honest: this refutes the printed equivalence/Mtrue-prediction of Conjecture 41,
+NOT the paper's FRI soundness theorem (which doesn't depend on it), and NOT the dichotomy
+form (whose escape clause, however, is now shown to do unintended exclusion work). Queued
+Lean bricks: class-syndrome construction + Newton-convolution compatibility (the e/h
+identity is Mathlib-adjacent), then the fiber-line M_true lower bound as a formal theorem.
