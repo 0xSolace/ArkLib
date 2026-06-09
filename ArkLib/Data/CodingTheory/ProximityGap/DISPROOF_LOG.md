@@ -1189,3 +1189,35 @@ unbound variable can pass `lake env lean` yet **fail `lake build` and be `sorryA
 assault file (`SubgroupSpectrumNoImprovement`) was sorryAx-tainted this way; a one-line `{n : ℕ}`
 binder fix made it axiom-clean. **Always confirm with `lake build <Module>`, not bare `lean`.** (All
 Loop48–53 files were re-confirmed clean under `lake build`.)
+
+### O18 / Round-2 assault — two-sided F7 interior pin + advanced-angle cartography (4 verified bricks)
+
+A second multi-agent round (5 advanced angles the first didn't try). Open core STILL did not move, but 4
+more axiom-clean bricks landed (all `lake build`-clean, `[propext, Classical.choice, Quot.sound]`):
+
+* `ListInteriorTwoSidedF7.lean` — `interior_list_two_sided` + the reusable `pairPacking_card_le`
+  (general Fisher: `|L|·C(a,2) ≤ C(|ground|,2)` for `a`-subsets pairwise meeting in `≤1`). **The first
+  TWO-SIDED interior list-size pin in the repo**: RS[F₇,7,2] at δ=4/7 (strictly inside the gap) has list
+  size *provably in [6,7]* — a verified lower bound (∃ a 6-codeword list) AND a matching upper bound
+  (∀ such list ≤ 7). Upgrades the round-1 one-sided F7 data point to near-tight.
+* `ListIncidencePolyMethod.lean` — `poly_method_subset_incidence_bound`: the **k-uniform** Fisher
+  generalization `|L|·C(a,k) ≤ C(n,k)` via pairwise-disjoint "owned k-sets" (distinct deg-`<k` codewords
+  own disjoint k-subsets of their agreement set). Sharper than the 2nd-moment bound when `a` is close to
+  `k`; the clean polynomial-method form of the agreement ceiling.
+* `ListRecoveryInterleavedGap.lean` — `deltaStar_collapse_bracket` + `gap_present_in_interleaved`: the
+  ABF26 §5 single-code ↔ m-interleaved relationship — `IsGood C δ B ⟹ IsGood C^{≡m} δ B^m` (forward) and
+  `IsGood C^{≡m} δ B ⟹ IsGood C δ B` (backward), and the Johnson→capacity gap is *inherited* by the
+  interleaved code. Shows the two Grand Challenges do NOT collapse to the same constant bound (the `B^m`
+  blowup), a real §5 contribution.
+* `SubgroupCharacterSumNoGo.lean` — `weil_recovers_root_count_not_better`: a **proven no-go** — the
+  character-sum / Weil expansion of the subgroup agreement count recovers *exactly* the root count
+  (`= k−1` realizable for any agreement set), so Weil gives nothing past Johnson. Plus the clean
+  orthogonality/agreement-split character-sum identities.
+
+**Verdict unchanged + sharpened.** Two independent advanced techniques (polynomial method, character
+sums/Weil) join round 1's list in hitting the SAME wall: the `≤k−1` agreement ceiling is exactly the
+k-dimensional/root-count constraint, fully realizable in the smooth subgroup. The reduced open core
+(super-poly smooth-domain subset-sum past Johnson within `|F|<2^256`) did not move. The new genuine
+asset is the **two-sided F7 interior pin** — a concrete verified δ* data point, both bounds, the first
+in-repo demonstration that δ* CAN be pinned (for a tiny explicit instance) even though the general
+technique is open.
