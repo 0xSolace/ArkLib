@@ -726,6 +726,7 @@ import ArkLib.MCACapacityTrivial_keep
 import ArkLib.MCAGSRefutationCore_keep
 import ArkLib.OracleReduction.BCS.BCSCompilerProof
 import ArkLib.OracleReduction.BCS.Basic
+import ArkLib.OracleReduction.BCS.CompletenessPreservation
 import ArkLib.OracleReduction.BCS.FrontierBricks
 import ArkLib.OracleReduction.Basic
 import ArkLib.OracleReduction.Cast
@@ -735,6 +736,7 @@ import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessHelper
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessMsg
+import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOracle
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessProof
@@ -898,6 +900,7 @@ import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.FirstChallengeCoherent
+import ArkLib.ProofSystem.Spartan.FirstChallengeComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckCubeSum
 import ArkLib.ProofSystem.Spartan.FirstSumcheckDegree

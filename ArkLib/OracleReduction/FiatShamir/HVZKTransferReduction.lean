@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.OracleReduction.FiatShamir.Basic
+import ArkLib.OracleReduction.FiatShamir.BasicCompleteness
 import ArkLib.OracleReduction.Security.ZeroKnowledge
 
 /-!
@@ -48,6 +49,31 @@ single `P_to_V` message is the bundle of interactive prover messages. -/
 def msgProjFS (t : FullTranscript pSpec) :
     FullTranscript (FiatShamirProtocolSpec (pSpec := pSpec)) :=
   fun | ⟨0, _⟩ => t.messages
+
+/-- **FS-side collapse of the honest transcript distribution.**
+
+The honest Fiat-Shamir transcript distribution of the *transformed* reduction `R.fiatShamir` equals
+(as a raw `OptionT ProbComp` term) the transcript projection of the *explicit* honest execution
+`R.fiatShamirHonestExecution`, run under the same shared-oracle implementation `fsImpl` — no challenge
+oracle is appended on the right, since the honest execution already queries the Fiat-Shamir oracle
+directly. This is the honest-distribution form of the proven completeness run-collapse
+`Reduction.fiatShamir_runCollapse`, isolating the remaining `coupling` content to a statement purely
+about `R.fiatShamirHonestExecution` (whose challenges are drawn through `runToRoundFS`). -/
+theorem honestTranscriptDist_fiatShamir_eq_honestExecution
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) :
+    honestTranscriptDist fsInit fsImpl R.fiatShamir stmt wit
+      = OptionT.mk
+          (do
+            let s ← fsInit
+            (Option.map (fun r => r.1.1) <$>
+              simulateQ fsImpl (R.fiatShamirHonestExecution stmt wit).run).run' s) := by
+  unfold honestTranscriptDist
+  have hc := fiatShamir_runCollapse fsImpl R stmt wit
+  unfold Reduction.fiatShamir_runCollapseResidual at hc
+  simp only [OptionT.run_map, simulateQ_map, hc]
 
 /-- **Basic Fiat-Shamir HVZK transfer, reduced to the coupling kernel.**
 

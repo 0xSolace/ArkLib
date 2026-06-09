@@ -88,3 +88,56 @@ theorem evalDist_simulateQ_swap_under
   exact SPMF.bind_comm _ _ _
 
 end OptionTStateT
+
+namespace Prover
+
+variable {ι : Type} {oSpec : OracleSpec ι}
+  {Stmt₁ Wit₁ Stmt₂ Stmt₃ Wit₃ : Type} {m n : ℕ}
+  {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+
+/-- **Phase-1 soundness prover.** `Prover.fst P` re-typed so its output *statement* is `Stmt₂`
+(the type `V₁` outputs, junk value `default`) and its output *witness* carries the seam state
+(needed to resume in phase 2). Shares the interaction fields with `Prover.fst P`, so it reproduces
+the phase-1 transcript exactly (`runToRound` is definitionally equal). The re-typing is needed
+because `Reduction.mk (Prover.fst P) V₁` is ill-typed — a `Reduction` forces the prover and
+verifier output statements to coincide, but `Prover.fst P` outputs the seam state. Soundness sees
+only the *verifier's* output, so the junk prover statement is harmless. -/
+def fstSound [Inhabited Stmt₂]
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) :
+    Prover oSpec Stmt₁ Wit₁ Stmt₂
+      (P.PrvState (Fin.castLE (show m + 1 ≤ m + n + 1 by omega) (Fin.last m))) pSpec₁ where
+  PrvState := (Prover.fst P).PrvState
+  input := (Prover.fst P).input
+  sendMessage := (Prover.fst P).sendMessage
+  receiveChallenge := (Prover.fst P).receiveChallenge
+  output := fun state => pure (default, state)
+
+/-- **Phase-2 soundness prover.** `Prover.snd P` re-typed so its input *statement* is `Stmt₂` (the
+type `V₂` takes, ignored) and the real seam state is the input *witness*. Shares the interaction
+with `Prover.snd P`, so it reproduces `P`'s phase-2 transcript exactly. Used with `V₂` soundness
+per seam-state value (the `∀ a ∈ support` slot of `probComp_seam_union_le`). -/
+def sndSound
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) :
+    Prover oSpec Stmt₂
+      (P.PrvState (Fin.castLE (show m + 1 ≤ m + n + 1 by omega) (Fin.last m)))
+      Stmt₃ Wit₃ pSpec₂ where
+  PrvState := (Prover.snd P).PrvState
+  input := fun p => (Prover.snd P).input ⟨p.2, ()⟩
+  sendMessage := (Prover.snd P).sendMessage
+  receiveChallenge := (Prover.snd P).receiveChallenge
+  output := (Prover.snd P).output
+
+/-- `fstSound` reproduces `Prover.fst`'s per-round run (same interaction fields). -/
+@[simp] theorem fstSound_runToRound [Inhabited Stmt₂]
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (i) (stmt : Stmt₁) (wit : Wit₁) :
+    (fstSound (Stmt₂ := Stmt₂) P).runToRound i stmt wit = (Prover.fst P).runToRound i stmt wit :=
+  rfl
+
+/-- `sndSound` reproduces `Prover.snd`'s per-round run, on the seam state supplied as witness. -/
+@[simp] theorem sndSound_runToRound
+    (P : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂)) (i) (stmt : Stmt₂)
+    (wit : P.PrvState (Fin.castLE (show m + 1 ≤ m + n + 1 by omega) (Fin.last m))) :
+    (sndSound (Stmt₂ := Stmt₂) P).runToRound i stmt wit = (Prover.snd P).runToRound i wit () :=
+  rfl
+
+end Prover
