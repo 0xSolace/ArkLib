@@ -70,6 +70,7 @@ def appendToReductionResidual
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂) : Prop :=
   (R₁.append R₂).toReduction = R₁.toReduction.append R₂.toReduction
 
+omit Oₛ₃ in
 /-- **Oracle-level perfect-completeness keystone (message seam).**
 
 Perfect completeness of `R₁.append R₂` for oracle reductions, from the two component
