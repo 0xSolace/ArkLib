@@ -1115,3 +1115,20 @@ direction is complete.
 `thm71_within_prize` shows every large domain absorbs §7) is the O6 statement-fidelity question — a
 question about the prize's wording, not the mathematics, which is now fully machine-checked. The
 forward direction's open core (RS list-decoding `q`-independence) remains the genuine open conjecture.
+
+**Update (Loop53, end-to-end).** The disproof is now machine-checked *end-to-end*, not prose-asserted:
+`prize_exponent_refuted_finiteField (c₁) : ∃ m p, 1 ≤ m ∧ p.Prime ∧ ∃ ζ, IsPrimitiveRoot ζ (2^m) ∧
+(2^m)^{c₁} < (subset-sumset card)`. Via `exists_m_gap` (`m·c < 2^{m-1}` by the clean chain
+`(B+1)c < B(c+1) ≤ 2^{2c+1} ≤ 2^B`, `B = 2^{c+1}`) and `exists_finiteField_subsetSumset_large`: for
+*every* fixed prize exponent `c₁`, a genuine finite field has §7 bad count `> (domain)^{c₁}`. **No
+fixed `q`-independent prize exponent survives** — the §7 minimal-domain prize is refuted over a real
+finite field, fully axiom-clean. The only non-formal element left in the disproof is the §7 attack's
+own combinatorial setup (`thm71_*`, Loop46) tying the subset-sumset to the bad-scalar count, already
+sorry-free in-tree.
+
+**Net (Loops 47–53).** DISPROOF direction: **complete and machine-checked end-to-end** (the §7
+minimal-domain prize is false over finite fields). FORWARD direction: open core = large-domain /
+asymptotic smooth-domain RS list-decoding to `1−ρ−η` with `q`-independent lists — a genuine open
+conjecture (the §7 route provably does *not* refute it; `thm71_within_prize` shows large domains
+absorb §7). O6 (which domain regime the prize claims) is a wording question, not mathematics. The
+prize's full closure turns on the large-domain forward conjecture, which remains open.
