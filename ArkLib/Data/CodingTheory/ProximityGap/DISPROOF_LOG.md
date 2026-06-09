@@ -1813,3 +1813,19 @@ the note: "most primes" not per-prime (the residual P-A kernel — a specific pr
 differ); Siegel–Walfisz ineffectivity for the finite window (effective Lemma C, analytic denominator);
 the general-(n,m,r) lift bookkeeping + far-ness side to be written out. This is the LOWER half only;
 P-B (the 2^{O(H/η)} upper bound past Johnson) remains the open core.
+
+### O11⁗⁺ — Lift Lemma completed: the averaged lower half is a full elementary chain (nubs, 2026-06-09)
+
+The lift bookkeeping + far-ness of O11⁗ are now closed (06-AVERAGED-PA.md, Lift Lemma): for dyadic
+gap η = 1/m′ (m′ | n, ρm′ ∈ ℤ), r = ρm′+1, line (u₀,u₁) = (x^{rc}, x^{(r−1)c}), c = n/m′:
+(i) far-ness is a ONE-LINE degree count — (r−1)c = ρm′c = k exactly, so x^{(r−1)c} − ĉ₁ is nonzero
+of degree k ⟹ ≤ k < (1−δ)n agreements ⟹ the pair is automatically MCA-far at δ = 1−ρ−η;
+(ii) each r-subset Ŝ of the m′-subgroup gives the codeword witness u_Ŝ(X^c) (deg k−c < k) agreeing
+with u₀ − e₁(Ŝ)u₁ on exactly rc = (1−δ)n points ⟹ #bad λ ≥ image_p(e₁);
+(iii) with Thm D: for most primes p ≡ 1 mod n, image_p = N₀(m′, ρm′+1) EXACTLY ⟹
+ε_mca(C, 1−ρ−η) ≥ N₀/p = 2^{(log₂3)/(2η) − O(log 1/η)}/p.
+**Net: the lower half of the Grand MCA determination — for most primes, any dyadic gap, sharp
+constants — is a complete elementary chain** (cyclotomic basis count → norm/pair counting →
+Dirichlet average → lift). Honest residuals, named: per-prime exactness (a specific production
+prime could collide) + the analytic denominator (SW/GRH on the concrete window). The upper half
+(2^{O(H/η)} list bound past Johnson = the believed-true core) remains THE open problem (P-B).
