@@ -1361,3 +1361,56 @@ open t=2 question precisely. 4 axiom-clean bricks (all `lake build`-clean). The 
 list lower bound (near-capacity, not q-independent — honest) and the exact t=2 joint-symmetric condition
 (setting up the open direction). The deep-interior δ* and the t≥2 super-poly multi-esymm count remain
 open; slice-rank is now a machine-checked dead end for the symmetry-only approach to t=2.
+
+### O22 / Round-6 — t=2 reached (deeper unconditional bound), exact e_2-reduction, q-independence NO-GO
+
+Round 6 used MULTIPLICATIVE methods (slice-rank being a proven dead end) to reach t=2 and map the next
+walls. 6 axiom-clean bricks (all `lake build`-clean). **Deep-interior δ* still OPEN**, but this is the
+deepest verified interior progress yet, with two genuinely new structural results.
+
+* `ListInteriorUnconditionalT2.lean` — **`exists_interior_list_ge_unconditional_t2`: the first
+  unconditional general-n interior list LB at agreement `k+2` (one step DEEPER than round-5's t=1).**
+  Hyps ONLY `0<k, k≤n, 0<q, (k+2)²<kn` ⟹ `∃ g` deg `k+2` with `C(n,k+2) ≤ q²·#{codewords agreeing
+  ≥k+2}` at `δ=1−(k+2)/n`. Discharged via an honest F×F **double pigeonhole** over BOTH symmetric
+  targets `(c₁,c₂)`, with `g = X^k(X²−c₁X+c₂)` realizing them and `degDrop_t2_iff_two_symmetric` (a real
+  biconditional needing both top coeffs to vanish). Honest: `/q²` (weaker than t=1's `/q`), still near
+  capacity. Non-vacuity machine-checked at `k=50,n=220` (δ=0.764 inside (0.523,0.773)).
+* `SubsetSumE2PowerSumReduction.lean` — **`twoSymmetric_count_eq_e1_psum2_count`: the exact t=2
+  reduction.** Via the Newton identity `e_1² = p_2 + 2e_2` (`sq_window_sum_eq`, char-free), the joint
+  `{e_1=c₁ ∧ e_2=c₂}` count **literally equals** the `{e_1=c₁ ∧ p_2=c₁²−2c₂}` (sum, sum-of-squares)
+  count (hypothesis `(2:F)≠0`, automatic for smooth `2^k`-domains since `q` is odd). **Re-poses the
+  slice-rank-hostile pair-product `e_2` as the single-coordinate statistic `x↦x²` — the precise object a
+  2-D Gauss/Weil character sum estimates, opening the multiplicative route.** Honest: exhibits the Weil
+  target, does NOT yet bound it; the symmetry no-go survives (max fiber ≥ C(n,a)/q), magnitude as open
+  as before — only the coordinates changed.
+* `SubsetSumE2PairingInflate.lean` — `twoSymmCount_ge_squareSubsetSum` (+ `esymm2_inflate`,
+  `esymm2_union`, new): the ±pairing doubling shifts `e_2` by exactly `−∑g_i²` per pair while FIXING
+  `e_1`, reducing the t=2 lower bound to a t=1-shaped subset-sum count on the squares `{g_i²}` — collapses
+  the 2nd constraint to 1-D but lands on the same open worst-case-spread question one level down.
+* `StepanovPointCountEngine.lean` — `stepanov_card_mul_mult_le_natDegree` (+ `stepanov_sharp`): the
+  multiplicity-weighted Stepanov inequality `|V|·M ≤ deg Ψ`, a reusable tight point-counting engine.
+  Honest no-go: Stepanov counts F-points that are roots of a UNIVARIATE auxiliary; the t=2 count is over
+  (k+2)-subsets (symmetric-product points), so no univariate Ψ has them as roots — inapplicable to the
+  joint count.
+* `ListInteriorQDependenceNoGo.lean` — **`uniform_subsetSumCount_lb_le_choose`: a SHARP q-independence
+  NO-GO.** The averaging/pigeonhole method driving every round-1..6 interior bound INHERENTLY loses a
+  factor of q: any target-uniform (⟹ construction-agnostic ⟹ q-independent) lower bound `f` obeys
+  `q·f ≤ C(n,a)` (forced ≤ the average, via `∑_target N = C(n,a)`); lifted to the RS list
+  (`uniform_interior_list_lb_carries_q`). Removing `/q` is equivalent to the count CONCENTRATING on O(1)
+  targets — a non-averaging input the order-≤4 symmetry group cannot supply. **This explains why the only
+  q-independent bound (field-independent C(n,k)) lives at the EXCLUDED capacity endpoint, and pinpoints
+  *concentration* as the open door.**
+* `ListMCAWiringNoGo.lean` — `collapse_mca_bound_ge_of_list_lb` + `degenerate_stack_no_mcaEvent`:
+  connects the list track to the §5 collapse (`interiorList_eq_lineWitness`: the degenerate stack `(w,0)`
+  makes the line-witness count EXACTLY the interior-list filter, so the list LB lower-bounds the
+  collapse's uniform-L). **Honest: the tempting "list-large ⟹ ε_mca-large" is FALSE and proven false —
+  the witnessing stack fires ZERO mcaEvents, so the coupling is list ⟹ collapse-L (an INPUT to an UPPER
+  bound on ε_mca), NOT a lower bound on ε_mca. Future ε_mca lower bounds must go through bad-scalar
+  spread (distinct γ), not list-against-one-word.**
+
+**Net.** 31 verified bricks across rounds 1–6. New this round: t=2 reached unconditionally (deeper than
+the t=1 sliver, /q²), the exact `e_2`↔`(e_1,p_2)` reduction (multiplicative route opened, Weil target
+exhibited), a sharp q-independence no-go (averaging loses q; concentration is the open door), and the
+honest list↛ε_mca finding. Deep-interior δ* and the magnitude of the t≥2 count remain OPEN; the next
+genuine step is a Weil/Gauss bound on the (sum, sum-of-squares) count, for which Mathlib lacks the
+machinery.
