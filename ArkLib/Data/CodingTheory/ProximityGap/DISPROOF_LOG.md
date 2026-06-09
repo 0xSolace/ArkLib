@@ -1512,3 +1512,30 @@ interior remains the genuine open core.
 `ω^j ≠ 1` power sums; both-coordinate concentration of the `t=2` joint count `N2(·;0,0)` (Round-7
 residual closed); the sharp depth-collapse articulation of why single-target concentration is
 capacity-only. The deep-interior `δ*` is unmoved and unmovable by symmetry alone (proven wall).
+
+### O25 / Round-9 — the coset route's deep-interior NO-GO, as one explicit theorem
+
+The round-8 coset / vanishing-power-sum construction (`Round8CosetWall.lean`,
+`CosetPowerSumConcentration.lean`: closure under a primitive `N`-th root kills `p_1,…,p_{N-1}` ⟹ via
+Newton `e_1,…,e_{N-1}=0` ⟹ a depth-`(N-1)` degree-drop family, q-independent, count `C(M,r)`,
+`M=n/N` cosets, union size `a=r·N`) is the natural deepening of round-8's negation-symmetry. Round 9
+welds its scattered budget inequalities into **one explicit no-go** (`CosetWallDeepInteriorNoGo.lean`,
+axiom-clean):
+
+* `coset_count_le_card_of_deep_interior`: at constant-fraction-or-deeper interior (`t ≥ k`, agreement
+  `a=k+t ≥ 2k`, radius `δ ≤ 1−2ρ`), the budget forces `r ≤ 1` (`budget_forces_r_le_one`), so the count
+  `C(M,r) ≤ M` — **linear** in the number of cosets, NOT super-polynomial.
+* `coset_within_prize_of_deep_interior`: in prize coordinates, a coset list of size `L ≤ C(M,r) ≤ M`
+  with `M ≤ thresh` (the prize's `ε*·q` budget) stays `L ≤ thresh` — **within** the prize. Since
+  `M = n/N ≤ n ≤ 2^40` while the prize threshold `ε*·q` is astronomically larger for the relevant
+  fields, **no coset / vanishing-power-sum construction disproves the prize in the deep interior.**
+* `near_capacity_superpoly`: the contrast — near capacity (`2r ≤ M`) the SAME count is `≥ 2^r`,
+  super-poly. So the deep-interior collapse to `≤ M` is a genuine **phase transition** in the
+  construction's power at `δ = 1−2ρ`, not a vacuous bound.
+
+**Net.** This closes one entire algebraic attack family (coset/vanishing-power-sum, the natural
+deepening of the round-5..8 unconditional and q-independent bounds) at deep interior: its super-poly
+count provably degrades to linear past `δ = 1−2ρ`, matching the [ABF26] "no known technique" assessment
+for the deep interior. The two genuinely open routes remain: the subgroup-restricted quadratic Gauss
+sum (SEAM B = Weil-on-curves, Mathlib lacks) and any NON-algebraic construction (outside the coset/
+pigeonhole/symmetry families now all walled). Deep-interior δ* remains OPEN. 44+ bricks.
