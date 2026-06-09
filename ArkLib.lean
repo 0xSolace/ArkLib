@@ -925,6 +925,7 @@ import ArkLib.Data.Polynomial.UnivariateAgreement
 import ArkLib.Data.Polynomial.WeightZLinear
 import ArkLib.Data.Probability.Combinatorial
 import ArkLib.Data.Probability.Instances
+import ArkLib.Data.Probability.MarginalBound
 import ArkLib.Data.Probability.Notation
 import ArkLib.Data.Probability.RandomSubsetInclusion
 import ArkLib.Data.Probability.RandomSubsetInclusionExists
