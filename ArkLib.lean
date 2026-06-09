@@ -85,6 +85,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryBridge
 import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryHasse
 import ArkLib.Data.CodingTheory.GuruswamiSudan.FeasibilityArith
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDiscriminantOverRatFunc
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorDegreeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorizationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSListSizeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSOverRatFunc
