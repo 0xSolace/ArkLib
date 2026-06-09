@@ -551,11 +551,11 @@ theorem simulateQ_emitOStmt₂Query (V₁ : OracleVerifier oSpec Stmt₁ OStmt�
   · next k h =>
     rw [emitOStmtQueryInl_simulateQ, mkVerifierOStmtOut_inl V₁.embed V₁.hEq oStmt tr.fst i k h]
     congr 2
-    exact (eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm
+    simp only [eqRec_eq_cast, cast_cast]
   · next k h =>
     rw [emitOStmtQueryInr_simulateQ, mkVerifierOStmtOut_inr V₁.embed V₁.hEq oStmt tr.fst i k h]
     congr 2
-    exact (eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm
+    simp only [eqRec_eq_cast, cast_cast]
 
 /-- **V₂-side router collapse.** Running `V₂`'s queries through `router₂ V₁` and then the combined
 `simOracle2` is the same as running them through `V₂`'s own `simOracle2` over the oracle statements
