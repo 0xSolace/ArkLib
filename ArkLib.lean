@@ -782,6 +782,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.ValueSpreadSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
 import ArkLib.Data.CodingTheory.ProximityGap.WideRegimeDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeAllRatesJohnsonInstances
+import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
 import ArkLib.Data.CodingTheory.ProximityGap._mca_research_loop
 import ArkLib.Data.CodingTheory.ProximityPrizeCA
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
