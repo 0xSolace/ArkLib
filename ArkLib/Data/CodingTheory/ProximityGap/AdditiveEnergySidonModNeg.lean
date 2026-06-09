@@ -104,10 +104,65 @@ theorem additiveEnergy_eq_structured_sum {G : Finset F}
   exact Finset.sum_congr rfl
     (fun a ha => Finset.sum_congr rfl (fun b hb => repCount_sidonModNeg hneg hS ha hb))
 
+/-- **The sharp additive energy of a Sidon-modulo-negation set: `E(G) = 3|G|² − 3|G|`.** Evaluating
+the structured sum: per `a ∈ G` the inner sum over `b` is `|G|` at the zero-sum point `b = -a`, `1`
+at the diagonal `b = a`, and `2` on the remaining `|G| − 2` points, totalling `3|G| − 3`; the outer
+sum over the `|G|` choices of `a` gives `|G|·(3|G| − 3) = 3|G|² − 3|G| = 3|G|(|G|−1)`, the char-0
+minimal value (sharpening `AdditiveEnergyRepBound.additiveEnergy_le_three_of_repTwo`'s `≤ 3|G|²` to an
+equality, off by exactly `3|G|`). -/
+theorem additiveEnergy_eq_of_sidonModNeg {G : Finset F}
+    (h2 : (2 : F) ≠ 0) (h0 : (0 : F) ∉ G) (hneg : ∀ x ∈ G, -x ∈ G) (hS : SidonModNeg G) :
+    additiveEnergy G = 3 * G.card ^ 2 - 3 * G.card := by
+  classical
+  have hne0 : ∀ x ∈ G, x ≠ 0 := fun x hx h => h0 (h ▸ hx)
+  rw [additiveEnergy_eq_structured_sum hneg hS]
+  have hinner : ∀ a ∈ G,
+      (∑ b ∈ G, (if a + b = 0 then G.card else ({a, b} : Finset F).card)) = 3 * G.card - 3 := by
+    intro a ha
+    have ha0 : a ≠ 0 := hne0 a ha
+    have hna : -a ∈ G := hneg a ha
+    have haa : a + a ≠ 0 := fun h =>
+      ha0 ((mul_eq_zero.mp (by linear_combination h : (2 : F) * a = 0)).resolve_left h2)
+    have ha_ne : a ≠ -a := fun h =>
+      ha0 ((mul_eq_zero.mp (by linear_combination h : (2 : F) * a = 0)).resolve_left h2)
+    have hge2 : 2 ≤ G.card := by
+      have hsub : ({a, -a} : Finset F) ⊆ G := by
+        intro x hx
+        rcases Finset.mem_insert.mp hx with rfl | hx'
+        · exact ha
+        · rw [Finset.mem_singleton] at hx'; exact hx' ▸ hna
+      calc 2 = ({a, -a} : Finset F).card := (Finset.card_pair ha_ne).symm
+        _ ≤ G.card := Finset.card_le_card hsub
+    rw [Finset.sum_ite]
+    have hf0 : G.filter (fun b => a + b = 0) = {-a} := by
+      ext b; rw [Finset.mem_filter, Finset.mem_singleton]
+      exact ⟨fun h => by linear_combination h.2, fun h => ⟨h ▸ hna, by rw [h]; ring⟩⟩
+    rw [hf0, Finset.sum_const, Finset.card_singleton, one_smul]
+    set S := G.filter (fun b => ¬ a + b = 0) with hSdef
+    have haS : a ∈ S := by rw [hSdef, Finset.mem_filter]; exact ⟨ha, haa⟩
+    have hScard : S.card = G.card - 1 := by
+      have htot := Finset.card_filter_add_card_filter_not (s := G) (fun b => a + b = 0)
+      rw [hf0, Finset.card_singleton] at htot
+      rw [hSdef]; omega
+    rw [← Finset.add_sum_erase S _ haS]
+    have hfa : ({a, a} : Finset F).card = 1 := by simp
+    have hrest : (∑ b ∈ S.erase a, ({a, b} : Finset F).card) = (S.card - 1) * 2 := by
+      have hc : ∀ b ∈ S.erase a, ({a, b} : Finset F).card = 2 := fun b hb =>
+        Finset.card_pair (Ne.symm (Finset.mem_erase.mp hb).1)
+      rw [Finset.sum_congr rfl hc, Finset.sum_const, Finset.card_erase_of_mem haS, smul_eq_mul]
+    rw [hfa, hrest, hScard]
+    omega
+  rw [Finset.sum_congr rfl hinner, Finset.sum_const, smul_eq_mul]
+  rcases Nat.eq_zero_or_pos G.card with h | h
+  · rw [h]; simp
+  · have h1 : 3 ≤ 3 * G.card := by omega
+    have hsq : G.card ≤ G.card ^ 2 := Nat.le_self_pow (by norm_num) _
+    have h2' : 3 * G.card ≤ 3 * G.card ^ 2 := by omega
+    zify [h1, h2']; ring
+
 end ArkLib.ProximityGap.AdditiveEnergySidonModNeg
 
 /-! ## Axiom audit -/
-#print axioms ArkLib.ProximityGap.AdditiveEnergySidonModNeg.repCount_zero_eq_card
-#print axioms ArkLib.ProximityGap.AdditiveEnergySidonModNeg.filter_eq_pair
 #print axioms ArkLib.ProximityGap.AdditiveEnergySidonModNeg.repCount_sidonModNeg
 #print axioms ArkLib.ProximityGap.AdditiveEnergySidonModNeg.additiveEnergy_eq_structured_sum
+#print axioms ArkLib.ProximityGap.AdditiveEnergySidonModNeg.additiveEnergy_eq_of_sidonModNeg
