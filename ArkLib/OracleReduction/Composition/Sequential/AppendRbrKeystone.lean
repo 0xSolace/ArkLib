@@ -73,6 +73,28 @@ theorem prod_cast_snd_heq {A A' B B' : Type _} (hA : A = A') (hB : B = B') (a : 
     HEq ((congrArg₂ Prod hA hB ▸ (a, b) : A' × B').2) b := by
   subst hA; subst hB; rfl
 
+/-- **evalDist transport for the phase-1 experiment.** If the combined-oracle body `bodyA` is
+heterogeneously equal to `liftM oa` (the `pSpec₁`-oracle body lifted into the combined oracle),
+then the two experiments' output distributions agree (heterogeneously). Proved by `subst`ing the
+value-type equality `h` (making `bodyA = liftM oa`), then transferring the per-state distribution
+across the challenge seam with `evalDist_run'_challengeSeam_left`. -/
+theorem evalDist_init_run'_heq_of_body_heq {α β : Type} (h : α = β)
+    (bodyA : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) α)
+    (oa : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) β)
+    (hbody : HEq bodyA
+      (liftM oa : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) β)) :
+    HEq (evalDist (init >>= fun s =>
+          (simulateQ (impl.addLift (challengeQueryImpl (pSpec := pSpec₁ ++ₚ pSpec₂))
+            : QueryImpl _ (StateT σ ProbComp)) bodyA).run' s))
+        (evalDist (init >>= fun s =>
+          (simulateQ (impl.addLift (challengeQueryImpl (pSpec := pSpec₁))
+            : QueryImpl _ (StateT σ ProbComp)) oa).run' s)) := by
+  subst h
+  rw [eq_of_heq hbody]
+  apply heq_of_eq
+  rw [evalDist_bind, evalDist_bind]
+  exact bind_congr fun s => OracleReduction.evalDist_run'_challengeSeam_left impl oa s
+
 /-- **Phase-1 per-round experiment body HEq.** The appended rbr experiment body at a phase-1
 challenge index `inl i₁` — the appended prover's partial run `runToRound (inl i₁).castSucc` followed
 by sampling the appended `getChallenge (inl i₁)` under the *combined* challenge oracle — is
@@ -240,7 +262,11 @@ theorem append_rbrSoundness_keystone
           = (pSpec₁.Transcript i₁.1.castSucc × pSpec₁.Challenge i₁) := congrArg₂ Prod hTrTy hChTy
     refine probEvent_congr_heq hResTy _ _ _ _ ?hd ?hPQ
     · -- hd : the appended and `fstCast` experiments have heterogeneously-equal `evalDist`s.
-      sorry
+      -- The appended phase-1 body is `liftM` of the `fstCast` body (`phase1_body_heq` +
+      -- `fstCast_runToRound`), so the experiment distributions transfer via the challenge seam.
+      exact evalDist_init_run'_heq_of_body_heq hResTy _ _
+        ((phase1_body_heq prover stmtIn witIn i₁).trans
+          (heq_of_eq (by rw [Prover.fstCast_runToRound]; exact OracleComp.liftComp_eq_liftM _)))
     · -- hPQ : the appended state-function event corresponds to `S₁`'s under the type cast.
       rintro ⟨tr, ch⟩
       have hlt : i₁.1.val < m := i₁.1.isLt
