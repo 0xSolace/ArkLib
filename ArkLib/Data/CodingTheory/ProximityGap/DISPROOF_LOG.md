@@ -2521,3 +2521,16 @@ every observed cofactor is 2^a × (split primes ≡ 1 mod m); literature sweep v
 descent-lane transversal/balanced-overlap marginal layer is APPARENTLY NEW (no name/theorem/prior
 description found, incl. ABF26); O38's stated priority claim was consistent with the public record
 but is now framed against 2026/782 as above.
+||||||| parent of cc8699f9a (docs(#232): DISPROOF_LOG O44 — round-21 relation module + PTE convergence)
+### O44 / Round-21 — clique relation module (row side) + the PTE convergence
+
+`Conjecture41CliqueRelationModule.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified):
+nodal identity (X−α)Λ_{E_α} = Λ_W; relation_eval_zero (dependencies vanish at own nodes);
+relation_factor_sum (u_α = (X−α)v_α, Σv = 0 — nodal collapse in the domain F[X]);
+relation_factor_sum_twisted (double block: both Σv = 0 AND Σγv = 0); vCoeff_natDegree_lt (degree
+budget). WITH R20: rank [N|γN]_clique = D+c−1, ker = the twisted evaluation pencil EXACTLY (dim w+1).
+Conj 41 on its universal obstruction = the explicit pencil-degeneracy question (R19: exceptional
+p ⊆ divisors of one ℤ-det). CONVERGENCE: fleet O40/O41 — deficient triples are SUNFLOWERS; the
+non-sunflower mechanism is CYCLIC/PTE (equal e₁..e_{w−c}) = EXACTLY the rounds-4-8 multi-symmetric
+concentration object (N_t equal-esymm counts on μ_n). The c≥3 rank lemma and the t≥2 concentration
+are the SAME combinatorics — PTE solutions inside the smooth domain — approached from the two ends.
