@@ -1950,3 +1950,15 @@ pairs on a line is tiny, and a diameter argument (all of Λ(γ) pairwise agree o
 so for RS with 2a−n ≥ k the list is a singleton — the unique-decoding collapse) shows where RS
 structure must enter past that. The co-occurring-pair count for explicit smooth-domain RS in
 (Johnson, capacity) is the sharpened open kernel.
+
+### O12″ — H2-decomposition refuted: the marginal layer is balanced-overlap (nubs, 2026-06-09)
+
+Follow-up to O12/O12′ (seed-13 reproducible, n=16, BabyBear): the dense below-witness population is
+NOT union-decomposable — 0/16 agreement sets lie inside the witness union (|∪|=14/16); instead every
+dense element intersects EACH of the 3 witness sets in exactly 5–6 of its 9 points ((6,5,5)×8,
+(6,6,6)×4, (5,5,5)×4) and uses outside points. Verdicts: H1-naive and H2-decomposition both
+eliminated by explicit example; surviving facts: zero enrichment AT witness radius, and the
+marginal layer is rigidly balanced-overlap with full coefficient support. The correct upper-bound
+mechanism must engage the witnesses' mutual algebra, not agreement-set combinatorics. Next: targeted
+literature check (deep-hole / balanced-overlap phenomena in list decoding) + the witnesses' pairwise
+agreement algebra. Scripts: probe_h2.py.
