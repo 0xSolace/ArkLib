@@ -60,8 +60,8 @@ The honest Fiat-Shamir transcript distribution of the *transformed* reduction `R
 challenge oracle is appended on the right, since the honest execution already queries the
 Fiat-Shamir oracle directly. This is the honest-distribution form of the proven completeness
 run-collapse `Reduction.fiatShamir_runCollapse`, isolating the remaining `coupling` content to a
-statement purely
-about `R.fiatShamirHonestExecution` (whose challenges are drawn through `runToRoundFS`). -/
+statement purely about `R.fiatShamirHonestExecution` (whose challenges are drawn through
+`runToRoundFS`). -/
 theorem honestTranscriptDist_fiatShamir_eq_honestExecution
     (fsInit : ProbComp τ)
     (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
@@ -81,10 +81,10 @@ theorem honestTranscriptDist_fiatShamir_eq_honestExecution
   rw [OptionT.run_map, simulateQ_map]
   have hc := fiatShamir_runCollapse fsImpl R stmt wit
   unfold Reduction.fiatShamir_runCollapseResidual at hc
-  -- The two appended (vacuous) Fiat-Shamir challenge oracles use distinct but propositionally
-  -- equal `SampleableType` instances (the FS `ChallengeIdx` is empty), unified by `Subsingleton`.
-  convert congrArg (fun z => ((Option.map (fun r => r.1.1)) <$> z).run' s) hc using 6
-  exact Subsingleton.elim _ _
+  -- With the file-local vacuous `SampleableType` instance for the empty FS `ChallengeIdx`
+  -- locally disabled (`attribute [-instance]` above), the appended challenge oracle matches the
+  -- one baked into `fiatShamir_runCollapseResidual`, so `hc` applies directly.
+  exact congrArg (fun z => ((Option.map (fun r => r.1.1)) <$> z).run' s) hc
 
 /-- **Basic Fiat-Shamir HVZK transfer, reduced to the coupling kernel.**
 
@@ -119,4 +119,3 @@ end Reduction
 #print axioms Reduction.msgProjFS
 #print axioms Reduction.honestTranscriptDist_fiatShamir_eq_honestExecution
 #print axioms Reduction.fiatShamir_hvzkTransfer_of_coupling
-#print axioms Reduction.honestTranscriptDist_fiatShamir_eq_honestExecution
