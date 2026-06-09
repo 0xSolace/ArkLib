@@ -1188,6 +1188,7 @@ import ArkLib.ProofSystem.Sumcheck.Spec.SeqComposeRbrSoundness
 import ArkLib.ProofSystem.Sumcheck.Spec.SimpleRoundCoherent
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundBridge
+import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundCohWired
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundFaithful
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundFlipImp
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundFlipImpClose
