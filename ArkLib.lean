@@ -598,6 +598,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionLocalFactor
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionSpectral
+import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionSubgroupData
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionTower
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
