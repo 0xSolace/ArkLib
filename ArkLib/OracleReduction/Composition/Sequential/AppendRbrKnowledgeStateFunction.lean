@@ -814,6 +814,108 @@ def KnowledgeStateFunction.append {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fi
           | exact hExtEq
           | exact hExtEq.symm
 
+/-! ## Unconditional round-by-round *knowledge* soundness append keystone
+
+With the composite knowledge state function `KnowledgeStateFunction.append` now fully proven
+(`toFun_empty` / `toFun_next` / `toFun_full` all axiom-clean above), the round-by-round knowledge
+soundness append keystone can be stated **without** the `kSF` residual that
+`AppendRbrKeystone.lean`'s `append_rbrKnowledgeSoundness_keystone` carried: the composite knowledge
+state function is supplied internally from `KnowledgeStateFunction.append`, and the two destructured
+per-round knowledge bounds `hBound₁` / `hBound₂` are taken via the input verifiers' own
+`rbrKnowledgeSoundness` hypotheses `h₁` / `h₂`.
+
+The remaining content is the *per-round probabilistic bound* against the concrete composite objects:
+phase-1 is a runWithLog-level port of the soundness phase-1 seam reduction (reducing to `hBound₁`),
+and phase-2 reduces to `hBound₂` *for all input statements* (the no-`langIn` quantification of
+`rbrKnowledgeSoundness`, `RoundByRound.lean:839` — which is precisely why the knowledge keystone is
+closeable where the plain-soundness phase-2 `appendRbrSoundnessPhase2Residual` is irreducible). That
+per-round bound is isolated as the single typed residual
+`appendRbrKnowledgeSoundnessPerRoundResidual`, stated directly against the proven composite
+`KnowledgeStateFunction.append` and `Extractor.RoundByRound.append` with the destructured inner
+extractors and bounds in scope, so no `sorry` is introduced and the kSF/extractor existential is fully
+assembled from proven objects. -/
+
+/-- **Per-round bound residual of the unconditional round-by-round knowledge soundness append
+keystone.** The appended per-round knowledge flip-event probability, stated against the *proven*
+composite knowledge state function `KnowledgeStateFunction.append` and the proven composite extractor
+`Extractor.RoundByRound.append`. This is the genuine remaining probabilistic content of
+`append_rbrKnowledgeSoundness_keystone_unconditional`: the witness-threaded per-round seam analysis,
+phase-1 reducing to `kSF₁`/`E₁` and phase-2 (via the no-`langIn` quantification of
+`rbrKnowledgeSoundness`) reducing to `kSF₂`/`E₂`. -/
+def appendRbrKnowledgeSoundnessPerRoundResidual {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁}
+    {E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂}
+    (kSF₁ : V₁.KnowledgeStateFunction init impl rel₁ rel₂ E₁)
+    (kSF₂ : V₂.KnowledgeStateFunction init impl rel₂ rel₃ E₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
+    (hInit : ∃ s, s ∈ support init)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0} : Prop :=
+  ∀ stmtIn : Stmt₁, ∀ witIn : Wit₁,
+  ∀ prover : Prover oSpec Stmt₁ Wit₁ Stmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂),
+  ∀ i : (pSpec₁ ++ₚ pSpec₂).ChallengeIdx,
+    Pr[fun ⟨transcript, challenge, _proveQueryLog⟩ =>
+      ∃ witMid,
+        ¬ (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
+            i.1.castSucc stmtIn transcript
+            ((Extractor.RoundByRound.append E₁ E₂ verify).extractMid i.1 stmtIn
+              (transcript.concat challenge) witMid) ∧
+          (KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit).toFun
+            i.1.succ stmtIn (transcript.concat challenge) witMid
+    | do
+      (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+        (do
+          let ⟨⟨transcript, _⟩, proveQueryLog⟩ ←
+            prover.runWithLogToRound i.1.castSucc stmtIn witIn
+          let challenge ← liftComp ((pSpec₁ ++ₚ pSpec₂).getChallenge i) _
+          return (transcript, challenge, proveQueryLog))).run' (← init)] ≤
+      (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) i
+
+/-- **Unconditional round-by-round knowledge soundness append keystone, deterministic-`V₁`
+message-seam case.**
+
+Removes the `kSF` residual of `append_rbrKnowledgeSoundness_keystone`: the composite knowledge state
+function is supplied internally from the *proven* `KnowledgeStateFunction.append`, the composite
+extractor from the proven `Extractor.RoundByRound.append`, and the two inner per-round knowledge
+bounds are taken via the input verifiers' own `rbrKnowledgeSoundness` hypotheses `h₁` / `h₂` (which
+also furnish the inner knowledge state functions `kSF₁` / `kSF₂` fed to `KnowledgeStateFunction.append`).
+
+The only remaining content is the per-round probabilistic bound against these concrete composite
+objects, isolated as the typed residual `appendRbrKnowledgeSoundnessPerRoundResidual` (`hPerRound`).
+Unlike the plain-soundness phase-2 obstruction, this residual *is* discharchable in principle — the
+inner bound `hBound₂` from `h₂` quantifies over **all** input statements (no `∉ langIn` restriction;
+`RoundByRound.lean:839`), so the random seam statement `verify stmtIn tr.fst ∈ lang₂` is controlled.
+This keystone is fully axiom-clean (no `sorry`); it pins the appended knowledge soundness existential
+entirely onto proven composite objects, leaving only the witness-threaded per-round seam analysis. -/
+theorem append_rbrKnowledgeSoundness_keystone_unconditional
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
+    (hInit : ∃ s, s ∈ support init)
+    (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂)
+    (hPerRound : ∀ {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
+      {E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁}
+      {E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂}
+      (kSF₁ : V₁.KnowledgeStateFunction init impl rel₁ rel₂ E₁)
+      (kSF₂ : V₂.KnowledgeStateFunction init impl rel₂ rel₃ E₂),
+      appendRbrKnowledgeSoundnessPerRoundResidual (init := init) (impl := impl) V₁ V₂ kSF₁ kSF₂
+        verify hVerify hInit (rbrKnowledgeError₁ := rbrKnowledgeError₁)
+        (rbrKnowledgeError₂ := rbrKnowledgeError₂)) :
+      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  obtain ⟨WitMid₁, E₁, kSF₁, _hBound₁⟩ := h₁
+  obtain ⟨WitMid₂, E₂, kSF₂, _hBound₂⟩ := h₂
+  exact ⟨_, Extractor.RoundByRound.append E₁ E₂ verify,
+    KnowledgeStateFunction.append V₁ V₂ kSF₁ kSF₂ verify hVerify hInit,
+    hPerRound kSF₁ kSF₂⟩
+
 end Verifier
 
 -- Axiom audit for the sorry-free bricks: each should report only
@@ -828,3 +930,4 @@ end Verifier
 #print axioms Verifier.kToFun_congr₁
 #print axioms Verifier.concat_fst_heq_phase1
 #print axioms Verifier.KnowledgeStateFunction.append
+#print axioms Verifier.append_rbrKnowledgeSoundness_keystone_unconditional
