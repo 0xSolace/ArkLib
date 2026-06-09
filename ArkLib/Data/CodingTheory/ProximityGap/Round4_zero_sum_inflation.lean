@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Finset.Powerset
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Round 4 (Issue #232, §7 / O11 direct attack) — the zero-sum inflation LOWER bound on the
@@ -195,11 +196,9 @@ theorem inflate_injOn {S₀ : Finset G} {pairs : Finset (Finset G)} {t : ℕ}
     rw [Finset.disjoint_biUnion_right]; intro p hpT; exact hbase_disj p (hT'sub hpT)
   have hUeq : T.biUnion id = T'.biUnion id := by
     have h1 : inflate S₀ T \ S₀ = T.biUnion id := by
-      rw [inflate, Finset.union_sdiff_self_eq_union]
-      exact Finset.sdiff_eq_self_of_disjoint (hdisjU.symm)
+      rw [inflate, Finset.union_sdiff_cancel_left hdisjU]
     have h2 : inflate S₀ T' \ S₀ = T'.biUnion id := by
-      rw [inflate, Finset.union_sdiff_self_eq_union]
-      exact Finset.sdiff_eq_self_of_disjoint (hdisjU'.symm)
+      rw [inflate, Finset.union_sdiff_cancel_left hdisjU']
     rw [← h1, ← h2, heq]
   -- recover `T` and `T'` as the pairs inside their respective unions; the unions are equal
   rw [recover_T hTsub hdisj hne, recover_T hT'sub hdisj hne, hUeq]
@@ -213,7 +212,8 @@ sum is `target`. Then the number of windows of size `|S₀| + 2t` summing to `ta
 
 Each `t`-subcollection of pairs, unioned onto `S₀`, is such a window, and the assignment is injective.
 The count `C(|pairs|, t)` is **purely combinatorial** (independent of the ambient field). -/
-theorem N_lower_inflation {S₀ : Finset G} {pairs : Finset (Finset G)} {target : G} (t : ℕ)
+theorem N_lower_inflation [Fintype G] {S₀ : Finset G} {pairs : Finset (Finset G)} {target : G}
+    (t : ℕ)
     (hdisj : (pairs : Set (Finset G)).PairwiseDisjoint id)
     (hbase_disj : ∀ p ∈ pairs, Disjoint S₀ p)
     (hsize : ∀ p ∈ pairs, p.card = 2)
@@ -278,7 +278,7 @@ zero-sum pairs are available. -/
 
 section Consequences
 
-variable {G : Type*} [AddCommGroup G] [DecidableEq G]
+variable {G : Type*} [AddCommGroup G] [DecidableEq G] [Fintype G]
 
 /-- **`N(2t, 0) ≥ C(P, t)` from `P` disjoint zero-sum pairs, no base window needed.** Taking the empty
 base `S₀ = ∅` (sum `0`), the zero-sum inflation gives: the number of `2t`-element subsets of the group
@@ -311,6 +311,55 @@ theorem N_zero_lower_pos {pairs : Finset (Finset G)} (t : ℕ)
   lt_of_lt_of_le (Nat.choose_pos ht) (N_zero_lower t hdisj hsize hzero)
 
 end Consequences
+
+/-! ## 3b. Concrete realizability witness: the hypotheses are jointly satisfiable
+
+To certify that `N_lower_inflation`/`N_zero_lower` are **non-vacuous** (the pairwise-disjoint, size-2,
+zero-sum pair hypotheses are simultaneously satisfiable, not contradictory), we exhibit an explicit
+pair family in a genuine field of order coprime to `2`: in `ZMod 5`, the `±`-pairs `{1, 4}` and
+`{2, 3}` (since `-1 = 4`, `-2 = 3`) are disjoint, size-`2`, and zero-sum. This realizes
+`N_zero_lower` with `pairs.card = 2`, yielding the genuine bound `C(2, 1) = 2 ≤ N(2, 0)`. This is the
+small-field shadow of the `2^{k-1}`-pair `±`-pairing of the `2^k`-th roots of unity in the prize's
+smooth domain. -/
+
+section Realizability
+
+/-- The explicit `±`-pair family in `ZMod 5`: `{ {1,4}, {2,3} }`, the two non-trivial `±`-pairs. -/
+def zmod5Pairs : Finset (Finset (ZMod 5)) := {{1, 4}, {2, 3}}
+
+/-- The `ZMod 5` pair family is pairwise disjoint, every member has size `2` and sums to `0`. -/
+theorem zmod5Pairs_valid :
+    (zmod5Pairs : Set (Finset (ZMod 5))).PairwiseDisjoint id
+      ∧ (∀ p ∈ zmod5Pairs, p.card = 2)
+      ∧ (∀ p ∈ zmod5Pairs, ∑ x ∈ p, x = 0)
+      ∧ zmod5Pairs.card = 2 := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · -- pairwise disjoint: only two members, `{1,4}` and `{2,3}`, which are disjoint
+    simp only [zmod5Pairs, Finset.coe_insert, Finset.coe_singleton]
+    rw [Set.pairwiseDisjoint_insert]
+    refine ⟨Set.pairwiseDisjoint_singleton _ _, ?_⟩
+    intro t ht hne
+    simp only [Set.mem_singleton_iff] at ht
+    subst ht
+    simp only [id_eq]
+    decide
+  · decide
+  · decide
+  · decide
+
+/-- **Realized non-vacuous instance.** Instantiating `N_zero_lower` at the explicit `ZMod 5`
+`±`-pairing gives the genuine, non-trivial bound `2 ≤ N(2, 0)` — there are at least `C(2,1) = 2`
+two-element subsets of `ZMod 5` summing to `0` (indeed `{1,4}` and `{2,3}`). This certifies that the
+inflation hypotheses are satisfiable and the conclusion is a real statement about the subset-sum
+count `N`, not a vacuous one. -/
+theorem zmod5_inflation_realized :
+    2 ≤ (Finset.univ.filter (fun S : Finset (ZMod 5) =>
+        S.card = 2 * 1 ∧ ∑ x ∈ S, x = (0 : ZMod 5))).card := by
+  obtain ⟨hdisj, hsize, hzero, hcard⟩ := zmod5Pairs_valid
+  have h := N_zero_lower (pairs := zmod5Pairs) 1 hdisj hsize hzero
+  rwa [hcard, Nat.choose_one_right] at h
+
+end Realizability
 
 /-! ## 4. Field-budget check: the bound is NOT field-capped (the load-bearing comparison)
 
@@ -352,3 +401,5 @@ end ArkLib.ProximityGap.Round4ZeroSumInflation
 #print axioms ArkLib.ProximityGap.Round4ZeroSumInflation.N_zero_lower
 #print axioms ArkLib.ProximityGap.Round4ZeroSumInflation.N_zero_lower_pos
 #print axioms ArkLib.ProximityGap.Round4ZeroSumInflation.window_count_le_two_pow_card
+#print axioms ArkLib.ProximityGap.Round4ZeroSumInflation.zmod5Pairs_valid
+#print axioms ArkLib.ProximityGap.Round4ZeroSumInflation.zmod5_inflation_realized
