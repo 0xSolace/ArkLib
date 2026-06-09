@@ -545,13 +545,7 @@ theorem simulateQ_emitOStmt₂Query (V₁ : OracleVerifier oSpec Stmt₁ OStmt�
     (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
     simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitOStmt₂Query V₁ i q)
       = pure ((Oₛ₂ i).answer (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst i) q) := by
-  cases h : V₁.embed i with
-  | inl k =>
-    simp only [emitOStmt₂Query, mkVerifierOStmtOut, h, emitOStmtQueryInl_simulateQ]
-    trace_state
-    sorry
-  | inr k =>
-    sorry
+  sorry
 
 /-- **V₂-side router collapse.** Running `V₂`'s queries through `router₂ V₁` and then the combined
 `simOracle2` is the same as running them through `V₂`'s own `simOracle2` over the oracle statements
