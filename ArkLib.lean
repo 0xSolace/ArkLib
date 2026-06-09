@@ -126,7 +126,6 @@ import ArkLib.Data.CodingTheory.ListDecoding.Bounds.GuruswamiSudanListSize
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.RandomAndReedSolomon
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.SubspaceDesign
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds.SubstitutionMultiplicity
-import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityPropEndpoint
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityReduction
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25DesignToLambda
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25GeomCapacity
