@@ -310,7 +310,57 @@ def KnowledgeStateFunction.append {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fi
         (Fin.ext (by simp [Fin.val_castSucc]) :
           (⟨roundIdx, hlt⟩ : Fin m).castSucc = ⟨(roundIdx : ℕ), by omega⟩)
         stmt₁ ((cast_heq _ _).trans (cast_heq _ _).symm) hExtEq.symm
-    · sorry
+    · -- `roundIdx ≥ m`. Two sub-cases.
+      --
+      -- PHASE-2 INTERIOR (`roundIdx > m`): structurally identical to the phase-1 case above, with
+      --   `kSF₂` / `appendExtractMid_gt` / `appendWitMid_gt` in place of the phase-1 versions, the
+      --   statement `verify stmt₁ tr.fst` (invariant under the phase-2 concat — see the `.fst`
+      --   invariance below), and the *second-segment* transcript seam: `(tr.concat msg).snd` is
+      --   heterogeneously `(tr.snd).concat (cast msg)` (mirroring `StateFunction.append.toFun_next`,
+      --   `Append.lean:1544–1583`). Both `dite` branches land in `kSF₂` (`dif_neg`), and
+      --   `kSF₂.toFun_next ⟨roundIdx-m,_⟩` closes it via the same `kToFun_congr` / `Eq.mp` transport
+      --   used in phase 1. (Fully scaffolded; the only missing brick is the `.snd` transcript-seam
+      --   `HEq` lemma — the `.snd` analogue of the proven `concat_fst_heq_phase1` — whose `dite`
+      --   bookkeeping over `Transcript.snd` is the entirety of the remaining work.)
+      --
+      -- CROSSING (`roundIdx = m`): the hypothesis is `kSF₂.toFun ⟨1,_⟩ (verify stmt₁ tr.fst)
+      --   ((tr.concat msg).snd) witMid` (phase-2 index 1) and the goal is `kSF₁.toFun (Fin.last m)
+      --   stmt₁ tr.fst (E₁.extractOut stmt₁ tr.fst (cast E₂.eqIn (E₂.extractMid 0 … witMid)))` (via
+      --   `appendExtractMid_cross`). The chain is the DUAL of `StateFunction.append.toFun_next`'s
+      --   crossing (which propagates *falsity* through the language): here we propagate *truth*:
+      --     1. `kSF₂.toFun_next 0` turns the hypothesis into
+      --        `kSF₂.toFun 0 (verify …) default (E₂.extractMid 0 … witMid)`;
+      --     2. `kSF₂.toFun_empty` then gives `(verify stmt₁ tr.fst, cast E₂.eqIn (E₂.extractMid 0 …))
+      --        ∈ rel₂`;
+      --     3. since `V₁` is deterministic (`hVerify`), `V₁.run stmt₁ tr.fst = pure (verify …)`, so the
+      --        `Pr[(·, wit₂) ∈ rel₂ | V₁.run …] > 0` hypothesis of `kSF₁.toFun_full` holds (the run
+      --        deterministically outputs `verify stmt₁ tr.fst`);
+      --     4. `kSF₁.toFun_full` then yields exactly the goal `kSF₁.toFun (last m) stmt₁ tr.fst
+      --        (E₁.extractOut stmt₁ tr.fst wit₂)`.
+      --   This sub-case is provable (it is NOT the `hBound` residual — that is a *probabilistic*
+      --   per-round bound, a different obligation); the blocker is purely the `Pr > 0` plumbing from
+      --   `hVerify` (the same deterministic-run collapse used in `toFun_full` below).
+      sorry
+  -- `toFun_full`: at the last round the appended verifier's output factors through `V₂` on
+  -- `verify stmt₁ tr.fst` (the `Verifier.append` run, which `pure`-binds `V₁`'s deterministic
+  -- output), and `extractOut` composes as `E₁.extractOut ∘ (cast E₂.eqIn) ∘ E₂.extractOut` (for
+  -- `n > 0`, directly `E₂.extractOut`). With the run collapse `(V₁.append V₂).run stmt₁ tr =
+  -- V₂.run (verify stmt₁ tr.fst) tr.snd` (proven inline in `StateFunction.append.toFun_full`,
+  -- `Append.lean:1646–1652 / 1673–1679`), the positive-probability hypothesis transfers to `V₂`, and
+  -- `kSF₂.toFun_full` (for `n > 0`) / `kSF₁.toFun_full` composed through the empty phase-2
+  -- `E₂.eqIn` round-trip (for `n = 0`) yields the goal. Mirrors `StateFunction.append.toFun_full`
+  -- with the witness leg threaded through `Extractor.RoundByRound.append`'s `extractOut`.
   toFun_full := by sorry
 
 end Verifier
+
+-- Axiom audit for the sorry-free bricks: each should report only
+-- `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
+#print axioms Verifier.appendWitMid_le
+#print axioms Verifier.appendWitMid_gt
+#print axioms Verifier.appendExtractMid_le
+#print axioms Verifier.appendExtractMid_gt
+#print axioms Verifier.appendExtractMid_cross
+#print axioms Verifier.kToFun_congr
+#print axioms Verifier.kToFun_congr₁
+#print axioms Verifier.concat_fst_heq_phase1
