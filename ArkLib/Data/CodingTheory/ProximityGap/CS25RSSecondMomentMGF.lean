@@ -135,4 +135,33 @@ theorem rs_sum_jointCoverCount_mgf_le [Nonempty ι] (domain : ι ↪ F) (deg : �
   sum_jointCoverCount_mgf_mds_le (rsCodeFinset domain deg) δ θ hθ0 hθ1 deg
     (fun d hd => rs_offdiag_weight_bound domain deg hdeg_le d hd)
 
+/-- The unique weight-`0` Reed–Solomon codeword is `0`, so `A_0 = 1`. -/
+theorem rs_weight_zero_card (domain : ι ↪ F) (deg : ℕ) :
+    ((rsCodeFinset domain deg).filter (fun e => hammingNorm e = 0)).card = 1 := by
+  have h0 : (0 : ι → F) ∈ rsCodeFinset domain deg :=
+    (mem_rsCodeFinset _ _ _).mpr (Submodule.zero_mem _)
+  have hset : (rsCodeFinset domain deg).filter (fun e => hammingNorm e = 0) = {0} := by
+    ext v
+    simp only [Finset.mem_filter, Finset.mem_singleton, hammingNorm_eq_zero]
+    exact ⟨fun ⟨_, h⟩ => h, fun h => ⟨h ▸ h0, h⟩⟩
+  rw [hset, Finset.card_singleton]
+
+/-- **Clean unconditional RS second-moment Chernoff bound** (`A_0 = 1` substituted): for every
+`θ ∈ [0,1]`,
+
+  `θ^{2r} · ∑_{e∈RS} I(e) ≤ (1+(q−1)θ²)^n + (q·(2θ+(q−2)θ²)+(1+(q−1)θ²))^n / q^{n−deg}`.
+
+The first term is the diagonal `e=0` ball volume `V`; the second is the off-diagonal. -/
+theorem rs_sum_jointCoverCount_mgf_le_one [Nonempty ι] (domain : ι ↪ F) (deg : ℕ) [NeZero deg]
+    [Fintype (Polynomial.degreeLT F deg)] (hdeg_le : deg ≤ Fintype.card ι)
+    (δ : ℝ≥0) (θ : ℝ) (hθ0 : 0 ≤ θ) (hθ1 : θ ≤ 1) :
+    θ ^ (2 * ⌊(δ : ℝ) * (Fintype.card ι : ℝ)⌋₊)
+        * (∑ e ∈ rsCodeFinset domain deg, (jointCoverCount δ 0 e : ℝ))
+      ≤ (1 + ((Fintype.card F : ℝ) - 1) * θ ^ 2) ^ (Fintype.card ι)
+        + ((Fintype.card F : ℝ) * (2 * θ + ((Fintype.card F : ℝ) - 2) * θ ^ 2)
+            + (1 + ((Fintype.card F : ℝ) - 1) * θ ^ 2)) ^ (Fintype.card ι)
+          / (Fintype.card F : ℝ) ^ (Fintype.card ι - deg) := by
+  have h := rs_sum_jointCoverCount_mgf_le domain deg hdeg_le δ θ hθ0 hθ1
+  rwa [rs_weight_zero_card, Nat.cast_one, one_mul] at h
+
 end ArkLib.CS25
