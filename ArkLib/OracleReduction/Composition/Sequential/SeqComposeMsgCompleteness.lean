@@ -54,7 +54,9 @@ theorem seqCompose_appendValid {m : ℕ} {n : Fin m → ℕ} {pSpec : ∀ i, Pro
     -- `(seqCompose pSpec).dir 0 = (pSpec 0).dir 0 = .P_to_V` via the `Fin.vflatten` at index 0
     rw [seqCompose_succ_eq_append]
     show (append (pSpec 0) (seqCompose fun i => pSpec (Fin.succ i))).dir ⟨0, hvsum_pos⟩ = .P_to_V
-    rw [ProtocolSpec.append_dir_eq_left (pSpec 0) _ ⟨0, hpos0⟩ (by omega)]
+    rw [show (⟨0, hvsum_pos⟩ : Fin (n 0 + Fin.vsum fun i => n (Fin.succ i)))
+          = (⟨0, hpos0⟩ : Fin (n 0)).castLE (by omega) from by ext; simp,
+      Prover.append_dir_castLE]
     exact hdir0
 
 end ProtocolSpec
