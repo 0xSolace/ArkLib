@@ -2247,3 +2247,40 @@ positives). PAPER-MATH derived (docstring, queued): partial fractions ⟹ single
 = {((x−α)v_α) : Σv_α = 0, deg v_α < c−1}, rank N_clique = D, full kernel count. NEXT: (a) pencil =
 WHOLE kernel formalization, (b) the degeneracy analysis (the Vandermonde solution V_{E_α}^{-1}s₂ of a
 pencil syndrome — when all-nonzero) = the sharp remaining core of Conj 41 for cliques.
+
+### O38 — effective per-prime exactness: AM–GM norm threshold closes the P-A residuals above T(m,r) (nubs, 2026-06-09)
+
+New note `EffectivePerPrimeExactness.md` + deterministic probes `scripts/probes/probe_norm_threshold.py`
++ `probe_e1_saturation.py` (all checks PASS, exit 0; survived a 4-lens adversarial review panel —
+algebraic-NT/combinatorics/prize-fidelity/numerics — whose one major, a false `≤4·min(s,s′)`
+intermediate step in the E2 support-bound proof, was corrected pre-push with the statement intact
+and exhaustively verified tight; every figure independently reproduced, incl. a Goldilocks MITM
+re-implementation with a different reduction algorithm, bit-identical). **Theorem E1:** for nonzero α = Σ_{j<m/2} c_j ζ_m^j (m = 2^k):
+Σ_{i∈(ℤ/m)^×} |σ_i(α)|² = (m/2)·Σ_j c_j² (odd-character orthogonality), hence by AM–GM
+|N_{K/ℚ}(α)| ≤ (Σ_j c_j²)^{m/4}. **Corollary E2:** a layer-r collision of the e₁-image on
+r-subsets of the order-m subgroup forces p ≤ T(m,r) := (4·min(r, m−r))^{m/4} — so every prime
+p ≡ 1 (mod m) with p > T(m,r) has image EXACTLY N₀(m,r), char-0 fibers included; all-layers
+threshold T_all(m) = (2m)^{m/4}; support-graded version: p > (4t)^{m/4} forces collision support
+> t. Replaces the m^{m/2} sup-norm bound and KK25's φ(m)^{φ(m)} prime requirement (m=64:
+2^111.3 vs 2^192 / 2^160 — and KK's unsigned subset count C(φ(m),r) VANISHES at ρ=1/2 where
+r = m/2+1 > φ(m), while N₀ keeps the full signed count). **Corollary E3** (composed with the
+verified Lift Lemma): for EVERY prime T(m', ρm'+1) < p < 2^128·N₀(m', ρm'+1), p ≡ 1 (mod n),
+m' | n: ε_mca(RS[F_p, H_n, ρn], 1−ρ−1/m') ≥ N₀(m', ρm'+1)/p > 2^−128 — per-prime, effective,
+NO averaging, NO Siegel–Walfisz/GRH. With the δ*-existence floor (unconditional |F| > 2^128 via
+the verified ε_mca ≥ 1/|F| up-to-capacity bound; |F| ≥ 2^129 given the 2/|F| δ=0 row + monotone
+ε_mca): **δ*_C < 1 − ρ − 1/64 for ALL smooth prime fields in
+[2^129, ≈2^145–2^177] at all four prize rates**; thin η=1/128 windows are even nonempty at
+ρ=1/8 (2^194.8, 2^195.3) and ρ=1/16 (2^165.4, 2^171.7). **Verified predictions:** Goldilocks
+m=32 full image EXACT by MITM enumeration (21,523,360 at r=17; 21,523,361 at r=16). **New
+data + two corrections:** BabyBear m=32 r=17 is genuinely DEFICIENT — exact image 21,477,408
+= 99.787% of N₀ (45,952 lost): the old sampled ≈5.6M estimate was a coupon-collector artifact
+(~4× low), and the zero-fiber spot-check missed the deficiency, so production-31-bit full-image
+exactness stops at m=16. Empirical m=32 onset ∈ (2^30.9, 2^34] vs proven T ≈ 2^47.26 (~2^13–16
+loose, same shape as the exhaustive m∈{8,16} onset scans: largest deficient primes 17 / 205,553
+vs T = 144–256 / 614,656). **Open after this:** η=1/128 per-prime windows at ρ ∈ {1/2, 1/4}
+— and PROVABLY not openable by norm-size arguments: `probe_e1_saturation.py` exhibits an explicit
+admissible layer-65 difference c (support 62, Σc²=248) with log₂|N(c)| ≈ 252.4, within 2.15 bits of
+E1 — any size bound must exceed 2^252.4 ≫ the 2^228.4 ceiling, so the window needs p ∤ N(α)
+ARITHMETIC (splitting/divisibility) or a new construction, not better inequalities (E1 is
+essentially tight on the difference set). The transition zone N₀ ≲ p < T (lattice statistics of
+𝔭 ∩ {−2..2}^{m/2}); P-B untouched (descent lane O13–O13″).
