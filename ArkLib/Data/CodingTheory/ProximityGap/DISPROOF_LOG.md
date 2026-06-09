@@ -1911,3 +1911,28 @@ elements are marginal below-witness artifacts. New refined hypothesis **H2 (radi
 (odd r: C(m/2−1,(r−1)/2) — 3, 35 exact). n=32 union-sampling needs witness/dense classification
 before its ratio is meaningful (17 found vs core 35, composition unclassified). Scripts:
 probe_enrichment.py.
+
+### O31 / Rounds 14–16 (main-loop solo) — constant gap + averaging closure + smooth self-similarity
+
+Three new verified theorems (all axiom-clean, 0 sorry/warnings, on main):
+* `DeltaStarConstantGapBelowCapacity` (R14): δ* ≤ 1−ρ−ρ/127·(1±o(1)) at prize scale — the averaging
+  bound beats ε*·|F| ≤ 2^128 for t ≤ ~2k/254 (rate-1/2 needs the Pascal SHIFT C(2m,m+t) ≥
+  centralBinom(m−t); rates <1/2 use monotone C(n,k+t) ≥ centralBinom(k+t)). Witnesses n=2^20
+  (t=4063 → δ≈0.49613); extreme-parameter strict instantiation proven outright. Prize-scale bracket
+  now δ* ∈ [1−√ρ, 1−ρ−ρ/127].
+* `AveragingReachNoGo` (R14b): matching no-go — for q ≥ 2^255, C(n,k+t)·2^128 ≤ q^{t+1} once
+  t ≥ (n−127)/255 (C(n,a) ≤ 2^n). The averaging method's reach at max fields is pinned to
+  t/n ∈ [~1/258, ~1/255] — a ~1% window; the route is CLOSED as a method (R14 essentially optimal).
+* `SmoothDomainSelfSimilarity` (R16): NEW structural theorem SPECIFIC to smooth domains — for s | n,
+  Polynomial.expand lifts the scale-s list INTO the scale-n list at the SAME rate and SAME relative
+  radius (selfsimilar_list_le; power map x↦x^e has uniform e-fibers on μ_n; agreement multiplies
+  exactly by e). Consequences: prize-family worst-case list at fixed (ρ,δ) is MONOTONE in m for
+  n=2^m (small-scale δ*-table data lifts to prize scale); any future beyond-Johnson cap must respect
+  all divisor scales simultaneously. Honest: rate/radius-preserving ⟹ transfers data within the gap
+  but cannot alone decide δ*.
+
+R15 research survey (19 sourced findings, posted to #232): Mathlib PR #38606 = Lam-Leung prep
+(upstream is formalizing vanishing sums); PR #38014 = first linear-code PR; Krawtchouk/MacWilliams/
+Johnson/Weil-beyond-deg-1 absent everywhere. EXTERNAL COMPETITION: iotexproject/rs-proximity-gaps
+(ePrints 2026/861, 2026/858, May 2026) CLAIMS FRI soundness ABOVE Johnson at deployed parameters —
+their Lean is only the RVW13 halving lemma (window-dressing); paper math under adversarial deep-read.
