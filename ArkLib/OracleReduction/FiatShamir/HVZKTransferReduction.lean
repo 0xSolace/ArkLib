@@ -71,9 +71,14 @@ theorem honestTranscriptDist_fiatShamir_eq_honestExecution
             (Option.map (fun r => r.1.1) <$>
               simulateQ fsImpl (R.fiatShamirHonestExecution stmt wit).run).run' s) := by
   unfold honestTranscriptDist
+  apply OptionT.ext
+  simp only [OptionT.run_mk]
+  congr 1
+  funext s
+  rw [OptionT.run_map, simulateQ_map]
   have hc := fiatShamir_runCollapse fsImpl R stmt wit
   unfold Reduction.fiatShamir_runCollapseResidual at hc
-  simp only [OptionT.run_map, simulateQ_map, hc]
+  exact congrArg (fun z => ((Option.map (fun r => r.1.1)) <$> z).run' s) hc
 
 /-- **Basic Fiat-Shamir HVZK transfer, reduced to the coupling kernel.**
 
