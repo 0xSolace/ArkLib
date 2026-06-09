@@ -1046,3 +1046,43 @@ finite-field disproof of the prize-as-stated is the **number-theoretic lifting**
 `p ≡ 1 (mod 2^m)` (Dirichlet) and a degree-1 prime `𝔭 ∣ p`; the `2^{2^{m-1}}` distinct algebraic-
 integer sums in `ℤ[ζ]` (bounded norm) stay distinct mod `𝔭`, witnessing `F_p` with super-poly bad
 count. That lifting needs `NumberField`/Dedekind-domain machinery and is O16's residual.
+
+### O16 / Loop51 — finite-field disproof skeleton: machine-checked downstream of one lifting hom
+
+`CandidateFiniteFieldLiftLoop51.lean` (sorry-free, axiom-clean) completes the *logical* finite-field
+disproof, isolating the one number-theoretic residual.
+
+* **`ringHom_subsetSum`.** A ring hom `φ : K →+* L` commutes with subset sums: `φ(∑_{j∈S} ζ^j) =
+  ∑_{j∈S} (φ ζ)^j`.
+* **`card_subsetSumset_finiteField_ge`.** Hence the `L`-side subset-sumset of `φ ζ` is the `φ`-image
+  of the (proven `≥ 2^{2^{m-1}}`) char-0 sumset; if `φ` is *injective on those sums* (`hInj`), the
+  finite field `L` inherits the bound `≥ 2^{2^{m-1}}`.
+* **`prize_false_finiteField_of_lifting`.** Packaged with the §7 bad-count lower bound and the
+  elementary super-exponential gap `(2^m)^{c₁} < 2^{2^{m-1}}`, no fixed prize exponent survives over
+  `L`.
+
+**The sole residual (O16, genuinely number-theoretic).** `hInj` is the lifting: a prime
+`p ≡ 1 (mod 2^m)` (Dirichlet, in Mathlib as `Nat.infinite_setOf_prime_and_eq_mod`) and a reduction
+`ℤ[ζ] → F_p` injective on the `2^{2^{m-1}}` sums. Distinctness survives because each difference is a
+nonzero cyclotomic integer: equivalently `Res(f_S − f_T, Φ_{2^m}) ≠ 0` in ℤ (the diff has degree
+`< 2^{m-1} = deg Φ`, so `Φ ∤` it), and `g(ζ_p) = 0 ⟹ p ∣ Res`, so only finitely many primes are bad —
+avoidable by Dirichlet. Mathlib *has* the pieces (`RingTheory/Polynomial/Resultant`,
+`RingTheory/Norm` `norm_ne_zero_iff`, Dirichlet, cyclotomic), but assembling the existence is a large
+ANT formalization, left as the named residual. **Everything downstream of it is machine-checked.**
+
+---
+
+## Net state after Loops 47–51
+
+The #232 prize (a **$1M open research problem**) is **not closeable**; it is now pinned as
+*equivalent* to two classical problems, with all surrounding mathematics sorry-free and axiom-clean:
+
+* **Forward** (list-decoding fails ⟹ prize false): BCHKS Claim 6.2 bridge **proven** (Loop48),
+  grounded in `ReedSolomon.code`. Open core = RS list-decoding to `1−ρ−η` with `q`-independent lists.
+* **Disproof** (§7 sumset ⟹ prize false): char-2 obstruction + ±pairing **proven** (Loop49); the
+  char-0 super-exponential subset-sumset lower bound `≥ 2^{2^{m-1}}` **proven, fully concrete**
+  (Loop50); the finite-field transfer **proven** (Loop51). Open core = the number-theoretic *lifting*
+  (one injective reduction hom).
+
+Two precise, well-isolated residuals remain — one a genuine open conjecture, one a standard-but-heavy
+ANT existence. Neither is fabricated; both are clearly named.
