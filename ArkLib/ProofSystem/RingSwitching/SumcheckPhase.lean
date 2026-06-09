@@ -1416,7 +1416,7 @@ private lemma finalSumcheckVerifier_verify_collapse [IsDomain L] [IsDomain K]
           (FullTranscript.challenges tr))
       = (if stmt.sumcheck_target
             = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
-                stmt.ctx.r_batching * (FullTranscript.messages tr ⟨0, rfl⟩ : L) then
+                stmt.ctx.r_batching * (show L from FullTranscript.messages tr ⟨0, rfl⟩) then
            pure ({ t_eval_point := stmt.challenges,
                    original_claim := (FullTranscript.messages tr ⟨0, rfl⟩ : L) }
                  : MLPEvalStatement L ℓ')
@@ -1433,7 +1433,7 @@ private lemma finalSumcheckVerifier_verify_collapse [IsDomain L] [IsDomain K]
   simp only [guard_eq, apply_ite, _root_.map_pure, bind_pure_comp]
   by_cases hc : stmt.sumcheck_target
       = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
-          stmt.ctx.r_batching * (FullTranscript.messages tr ⟨0, rfl⟩ : L)
+          stmt.ctx.r_batching * (show L from FullTranscript.messages tr ⟨0, rfl⟩)
   · simp only [hc, if_true, reduceIte]
     erw [simulateQ_pure]
     rfl
@@ -1461,7 +1461,7 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
   -- Unpack relIn = masterKStateProp into the structural invariant + consistency facts.
   simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
     Set.mem_setOf_eq] at h_relIn
-  obtain ⟨h_struct, h_consist, h_compat⟩ := h_relIn
+  obtain ⟨-, h_struct, h_consist, h_compat⟩ := h_relIn
   -- `s'` is the prover's single message: `witIn.t'(challenges)`. The verifier check passes.
   have h_msg_eval : witIn.t'.val.eval stmtIn.challenges = witIn.t'.val.eval stmtIn.challenges := rfl
   have h_check : stmtIn.sumcheck_target
@@ -1482,10 +1482,7 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
     erw [finalSumcheckVerifier_verify_collapse (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
       (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) stmtIn oStmtIn
       (FullTranscript.mk1 (witIn.t'.val.eval stmtIn.challenges))]
-    have hmsg : (FullTranscript.messages (FullTranscript.mk1
-        ((witIn.t'.val.eval stmtIn.challenges : L))) ⟨0, rfl⟩ : L)
-          = witIn.t'.val.eval stmtIn.challenges := rfl
-    rw [hmsg, if_pos h_check]
+    rw [if_pos (show _ by exact h_check)]
     rfl
   rw [probEvent_eq_one_iff]
   dsimp only [finalSumcheckOracleReduction, finalSumcheckProver, FullTranscript.mk1]
