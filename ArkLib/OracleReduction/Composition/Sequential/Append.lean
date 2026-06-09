@@ -468,6 +468,33 @@ theorem challenges_snd_heq (tr : FullTranscript (pSpec₁ ++ₚ pSpec₂)) (i : 
   simp only [ChallengeIdx.inr]
   exact cast_heq _ _
 
+/-- General computation rule: simulating an `emitMessageQuery` (which routes a cast message query
+into the appended-spec message oracle at `j`) under the honest `simOracle2` answers it from `msgs j`
+(transported across the message-type equality `hMsg`). Proven by collapsing the two casts (`subst`).
+-/
+theorem emitMessageQuery_simulateQ (oStmt : ∀ i, OStmt₁ i)
+    (msgs : ∀ j, (pSpec₁ ++ₚ pSpec₂).Message j)
+    {T₁ : Type} (O₁ : OracleInterface T₁) (j : (pSpec₁ ++ₚ pSpec₂).MessageIdx)
+    (hMsg : (pSpec₁ ++ₚ pSpec₂).Message j = T₁)
+    (hO : O₁ = _root_.cast (congrArg OracleInterface hMsg)
+      (instOracleInterfaceMessageAppend (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂) j))
+    (q : O₁.Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs) (emitMessageQuery O₁ j hMsg hO q)
+      = pure (O₁.answer (hMsg ▸ msgs j) q) := by
+  subst hMsg; subst hO
+  simp only [emitMessageQuery, simulateQ_query]
+  rfl
+
+/-- Simulating `emitMessageInl i q` (the `pSpec₁`-message router) under the combined `simOracle2`
+answers it from the *first* sub-transcript's message `tr.fst.messages i`. -/
+theorem simulateQ_emitMessageInl (oStmt : ∀ i, OStmt₁ i)
+    (tr : FullTranscript (pSpec₁ ++ₚ pSpec₂)) (i : pSpec₁.MessageIdx) (q : (Oₘ₁ i).Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitMessageInl i q)
+      = pure ((Oₘ₁ i).answer (tr.fst.messages i) q) := by
+  rw [emitMessageInl, emitMessageQuery_simulateQ]
+  congr 1
+  exact eq_of_heq ((eqRec_heq _ _).trans (messages_fst_heq tr i).symm)
+
 /-- **V₁-side router collapse.** Running `V₁`'s queries through `router₁` and then the combined
 `simOracle2` (over `oStmt` and the *full* appended-transcript messages) is the same as running them
 through `V₁`'s own `simOracle2` (over `oStmt` and the *first* sub-transcript messages). -/
@@ -476,28 +503,22 @@ lemma router1_collapse (oStmt : ∀ i, OStmt₁ i) (tr : FullTranscript (pSpec�
       = OracleInterface.simOracle2 oSpec oStmt tr.fst.messages := by
   funext q
   rw [QueryImpl.apply_compose]
-  rcases q with t | (t | ⟨i, q⟩)
-  · rw [show (router₁ (Sum.inl t)) = _ from rfl, simulateQ_simOracle2_baseQuery]
-    simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inl,
-      QueryImpl.liftTarget_apply, QueryImpl.id_apply]
-  · rw [show (router₁ (Sum.inr (Sum.inl t))) = _ from rfl, simulateQ_simOracle2_leftQuery]
-    simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inr,
-      QueryImpl.add_apply_inl, QueryImpl.liftTarget_apply]
-    sorry
-  · sorry
+  rcases q with t | (t | ⟨i, q⟩) <;> dsimp only [router₁]
+  · rfl
+  · rfl
+  · rw [simulateQ_emitMessageInl]
+    exact (simulateQ_simOracle2_rightQuery oStmt tr.fst.messages ⟨i, q⟩).symm
 
 /-- **V₂-side router collapse.** Running `V₂`'s queries through `router₂ V₁` and then the combined
 `simOracle2` is the same as running them through `V₂`'s own `simOracle2` over the oracle statements
 `oStmt₂'` that `V₁` reconstructs (its `toVerifier` output oracle statements) and the *second*
 sub-transcript messages. -/
-lemma router2_collapse [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+lemma router2_collapse (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
     (oStmt : ∀ i, OStmt₁ i) (tr : FullTranscript (pSpec₁ ++ₚ pSpec₂)) :
     (OracleInterface.simOracle2 oSpec oStmt tr.messages) ∘ₛ (router₂ V₁)
       = OracleInterface.simOracle2 oSpec
-          (fun i => match h : V₁.embed i with
-            | Sum.inl j => (V₁.hEq i ▸ oStmt j : OStmt₂ i)
-            | Sum.inr j => (V₁.hEq i ▸ tr.fst.messages j : OStmt₂ i))
-          tr.snd.messages := by
+          (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst) tr.snd.messages := by
   sorry
 
 end OracleVerifier.Append
