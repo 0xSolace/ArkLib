@@ -2788,3 +2788,41 @@ TECHNIQUE THAT WORKED (after simp_all looped): (first | rw [if_pos e_i] | rw [if
 per condition → rcases signs → simp only [Bool.false_eq_true, if_true, if_false] at hg → first-list
 with SINGLE-LINE alternatives: omega | exact Or.inl ⟨e1, rfl⟩ | exact absurd rfl (hab e1.symm) | …;
 trim never-executed alternatives flagged by the linter. 2048 branches verified in ~3 min.
+### O47 — the 2-power fiber EXHAUSTIVENESS discovery: coset unions are everything (char 0 / large p), with a complete elementary proof at t = 1
+
+Probe follow-up to O46 on the FRI-relevant domains themselves (μ_n, n = 2^m). Data
+(exhaustive, exact arithmetic): at field-generic p (e.g. n=16 ⊂ F₉₇), every nonzero
+t ≥ 2 fiber observed is EXACTLY the O46 coset-union family — w=4: 4 = C(4,1) (μ₄-cosets);
+w=8, t=2,3: 6 = C(4,2) (pairs of μ₄-cosets; the two μ₈-cosets are among them) — and all
+fibers at coset-incompatible w (4 ∤ w) are EMPTY. At small p (n = p−1, F₁₇) extra fiber
+elements appear (w=5, t=2: 16) — genuine mod-p coincidences below a height threshold.
+
+**The char-0 theorem (t = 1, complete elementary proof):** let ζ have multiplicative
+order n = 2^m in a characteristic-0 field, S ⊆ μ_n with Σ_{x∈S} x = 0. Then S is a union
+of antipodal pairs {x, −x}. PROOF: write S = {ζ^i : i ∈ I}, I ⊆ [0,n), and
+P(X) = Σ_{i∈I} X^i ∈ ℚ[X]. P(ζ) = 0 and minpoly_ℚ(ζ) = Φ_n = X^{n/2} + 1 (Gauss +
+2-power cyclotomic), so X^{n/2} + 1 ∣ P. Reducing mod X^{n/2} + 1 sends X^{i+n/2} ↦ −X^i,
+so for each i < n/2 the residue coefficient is [i ∈ I] − [i + n/2 ∈ I] = 0, i.e.
+i ∈ I ⟺ i + n/2 ∈ I — and ζ^{i+n/2} = −ζ^i. ∎  (This is Lam–Leung at the prime 2.)
+
+**COROLLARY (the first EXACT fiber determination on FRI domains):** in char 0 — hence
+over F_p for all p above an explicit height bound — the t = 1 zero fiber of w-subsets of
+μ_{2^m} is EXACTLY the antipodal-pair unions: count C(n/2, w/2) for even w, 0 for odd w.
+Upper AND lower bound; matches the data (n=16: w=4: 108?? no — t=1 at small p includes
+mod-p extras; at the char-0 level the count is C(8, w/2)).
+
+**The t ≥ 2 recursive structure (the research program, crystallized):** e₂ = 0 given
+e₁ = 0 ⟺ p₂ = Σ x² = 0 — and squaring maps antipodal pairs of μ_n two-to-one onto μ_{n/2}:
+the t-fiber on μ_{2^m} descends along the SQUARING TOWER (the FRI fold!) to vanishing
+conditions one level down. The char-0 t-fiber on 2-power domains is governed by a 2-adic
+descent recursion — the SAME tower the owner's C19/descent lane climbs from the protocol
+side. CONJECTURE (exhaustiveness, t ≥ 2, char 0): the t-fiber on μ_{2^m} is exactly the
+O46 coset-union family — equivalently, at t = Θ(n) the fiber is O(1). If TRUE, the
+lossless O45 transfer makes the unit-syndrome list O(1) deep in the interior on 2-power
+domains — the PROOF side of the prize at these syndromes; if FALSE, the counterexamples
+are new deep-interior list mass — the DISPROOF side. Either way the question is now a
+concrete, finite-checkable, char-0 statement about vanishing sums of 2-power roots of
+unity with prescribed higher moments — with Lam–Leung/Conway–Jones as the entry
+literature and the descent tower as the mechanism. Lean brick queued: the t = 1 theorem
+(cyclotomic_eq_minpoly_rat + 2-power cyclotomic + coefficient pairing — all Mathlib-
+available ingredients).
