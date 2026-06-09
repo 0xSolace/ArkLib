@@ -150,6 +150,29 @@ theorem appendExtractMid_cross {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (
     exact heq_of_eq (congr_heq HEq.rfl (HEq.trans (cast_heq _ _) htrf))
 
 omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
+/-- **Phase-2 projection of the composite `extractOut`.** For `n > 0` the appended protocol's final
+round is interior to phase 2, so the appended extractor's `extractOut` defers — heterogeneously, up
+to the witness type cast — to `E₂.extractOut` on the `verify`-fed intermediate statement and the
+transcript's phase-2 tail. The `extractOut` analogue of `appendExtractMid_gt`. -/
+theorem appendExtractOut_gt {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fin (n+1)→Type}
+    (E₁ : Extractor.RoundByRound oSpec Stmt₁ Wit₁ Wit₂ pSpec₁ WitMid₁)
+    (E₂ : Extractor.RoundByRound oSpec Stmt₂ Wit₂ Wit₃ pSpec₂ WitMid₂)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hn : 0 < n) (stmt₁ : Stmt₁) (tr : (pSpec₁ ++ₚ pSpec₂).FullTranscript) (witOut : Wit₃)
+    (h : ¬ ((Fin.last (m + n) : Fin (m + n + 1)) : ℕ) ≤ m) :
+    HEq (cast (appendWitMid_gt h)
+          ((Extractor.RoundByRound.append E₁ E₂ verify).extractOut stmt₁ tr witOut))
+        (E₂.extractOut (verify stmt₁ (FullTranscript.fst tr)) (FullTranscript.snd tr) witOut) := by
+  refine HEq.trans (cast_heq _ _) ?_
+  unfold Extractor.RoundByRound.append
+  dsimp only [Fin.append, Fin.addCases, Fin.tail, Fin.castLT, Fin.cast]
+  simp only [dif_neg (show ¬ n = 0 from by omega), id_eq]
+  refine HEq.trans ?_ (HEq.refl (E₂.extractOut (verify stmt₁ (FullTranscript.fst tr))
+    (FullTranscript.snd tr) witOut))
+  rw [eq_mpr_eq_cast]
+  refine HEq.trans (cast_heq _ _) (cast_heq _ _)
+
+omit [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)] in
 /-- **Dependent congruence for a knowledge state function's `toFun`.** Two applications of a (raw)
 round-by-round knowledge `toFun` family agree (as `Prop`s) when the round indices are equal and the
 transcript and intermediate-witness arguments are heterogeneously equal. The protocol-independent
@@ -656,7 +679,140 @@ def KnowledgeStateFunction.append {WitMid₁ : Fin (m+1)→Type} {WitMid₂ : Fi
   -- `kSF₂.toFun_full` (for `n > 0`) / `kSF₁.toFun_full` composed through the empty phase-2
   -- `E₂.eqIn` round-trip (for `n = 0`) yields the goal. Mirrors `StateFunction.append.toFun_full`
   -- with the witness leg threaded through `Extractor.RoundByRound.append`'s `extractOut`.
-  toFun_full := by sorry
+  toFun_full := by
+    intro stmt₁ tr witOut hPos
+    -- The full-transcript `.fst`/`.snd` agree (over `HEq`) with the partial-transcript projections
+    -- at the last round (`min (m+n) m = m`, `(m+n) - m = n`). Copied verbatim from
+    -- `StateFunction.append.toFun_full`.
+    have hmincard : min ((Fin.last (m + n) : Fin (m + n + 1)) : ℕ) m = m := by
+      simp only [Fin.val_last]; omega
+    have hsndcard : ((Fin.last (m + n) : Fin (m + n + 1)) : ℕ) - m = n := by
+      simp only [Fin.val_last]; omega
+    have htFstHeq : ∀ (T : (pSpec₁ ++ₚ pSpec₂).FullTranscript),
+        (Transcript.fst (k := Fin.last (m + n)) T) ≍ FullTranscript.fst T := by
+      intro T
+      apply Function.hfunext (congrArg Fin hmincard)
+      intro a a' ha
+      have hval : (a : ℕ) = (a' : ℕ) := by
+        have := Fin.heq_ext_iff hmincard |>.mp ha; omega
+      simp only [Transcript.fst, FullTranscript.fst]
+      refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+      congr 1; apply Fin.ext; simp only [Fin.coe_castAdd]; omega
+    have htSndHeq : ∀ (T : (pSpec₁ ++ₚ pSpec₂).FullTranscript),
+        (Transcript.snd (k := Fin.last (m + n)) T) ≍ FullTranscript.snd T := by
+      intro T
+      apply Function.hfunext (congrArg Fin hsndcard)
+      intro a a' ha
+      have hval : (a : ℕ) = (a' : ℕ) := by
+        have := Fin.heq_ext_iff hsndcard |>.mp ha; omega
+      simp only [Transcript.snd, FullTranscript.snd]
+      rw [dif_neg (show ¬ (Fin.last (m + n)) ≤ m from by simp only [Fin.val_last]; omega)]
+      refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+      congr 1; apply Fin.ext; simp only [Fin.coe_natAdd]; omega
+    by_cases hn : n = 0
+    · -- degenerate: empty second protocol. The last round index is `m ≤ m`, so `toFun (last)`
+      -- lands in the `kSF₁` branch. The appended `extractOut` crosses through the trivial empty
+      -- phase-2 `E₂.extractOut`/`eqIn` round-trip into `E₁.extractOut`.
+      subst hn
+      rw [dif_pos (show ((Fin.last (m + 0)) : ℕ) ≤ m from by simp)]
+      -- The phase-1 prefix as a genuine full transcript.
+      set trFst : pSpec₁.FullTranscript := (FullTranscript.fst tr : pSpec₁.FullTranscript)
+        with htrFst
+      -- The appended run collapses to `V₂.run (verify stmt₁ trFst) tr.snd` (deterministic `V₁`
+      -- `pure`-binds). Copied verbatim from `StateFunction.append.toFun_full`.
+      have hrun : (V₁.append V₂).run stmt₁ tr
+          = V₂.run (verify stmt₁ trFst) (FullTranscript.snd tr) := by
+        subst hVerify
+        show (do return ← V₂.verify (← (pure (verify stmt₁ trFst))) (FullTranscript.snd tr)) = _
+        rw [pure_bind]
+        simp only [Verifier.run, bind_pure]
+      rw [hrun] at hPos
+      -- `kSF₂.toFun_full` (over the empty phase 2, `last 0`) yields the phase-2 leg, which since
+      -- `n = 0` is the round-`0` state — `kSF₂.toFun_empty` then puts `(verify …, cast eqIn …)` in
+      -- `rel₂`, supplying the `kSF₁.toFun_full` positivity via deterministic-run positivity.
+      have hPr2 := kSF₂.toFun_full (verify stmt₁ trFst) (FullTranscript.snd tr) witOut hPos
+      -- `kSF₂.toFun (last 0) … (E₂.extractOut …)`; reindex `last 0 = 0` and `tr.snd = default`.
+      have hl0 : (Fin.last 0 : Fin (0 + 1)) = (0 : Fin (0 + 1)) := by ext; simp
+      have hPr2' : kSF₂.toFun (0 : Fin (0 + 1)) (verify stmt₁ trFst) default
+          (cast (congrArg WitMid₂ hl0)
+            (E₂.extractOut (verify stmt₁ trFst) (FullTranscript.snd tr) witOut)) := by
+        refine (kToFun_congr kSF₂.toFun hl0 (verify stmt₁ trFst) ?_ ?_).mp hPr2
+        · apply Function.hfunext (by rw [hl0]); intro a _ _; exact a.elim0
+        · exact (cast_heq _ _).symm
+      -- `kSF₂.toFun_empty` then gives `(verify stmt₁ trFst, cast E₂.eqIn …) ∈ rel₂`.
+      have hMem : (verify stmt₁ trFst,
+          cast E₂.eqIn (cast (congrArg WitMid₂ hl0)
+            (E₂.extractOut (verify stmt₁ trFst) (FullTranscript.snd tr) witOut))) ∈ rel₂ :=
+        (kSF₂.toFun_empty (verify stmt₁ trFst) (cast (congrArg WitMid₂ hl0)
+          (E₂.extractOut (verify stmt₁ trFst) (FullTranscript.snd tr) witOut))).mpr hPr2'
+      -- deterministic-run positivity + `kSF₁.toFun_full` yields the phase-1 goal.
+      have hPr1 := run_pos_of_mem_rel (impl := impl) (init := init) verify hVerify hInit stmt₁ trFst
+        (cast E₂.eqIn (cast (congrArg WitMid₂ hl0)
+          (E₂.extractOut (verify stmt₁ trFst) (FullTranscript.snd tr) witOut))) hMem
+      have hFull := kSF₁.toFun_full stmt₁ trFst
+        (cast E₂.eqIn (cast (congrArg WitMid₂ hl0)
+          (E₂.extractOut (verify stmt₁ trFst) (FullTranscript.snd tr) witOut))) hPr1
+      -- Identify `hFull`'s `E₂.extractOut` argument with the one in `appendExtractOut_eq0` (peel the
+      -- redundant `cast (congrArg WitMid₂ hl0)`), then transport across the index/transcript/witness
+      -- coherences. `hFull`'s `last m`; goal's `⟨m+0,_⟩`.
+      have hcc : cast (congrArg WitMid₂ hl0)
+            (E₂.extractOut (verify stmt₁ trFst) (FullTranscript.snd tr) witOut)
+          = E₂.extractOut (verify stmt₁ trFst) (FullTranscript.snd tr) witOut :=
+        eq_of_heq (cast_heq _ _)
+      rw [hcc] at hFull
+      -- Inline the empty-phase-2 `extractOut` HEq (the `n = 0` analogue of `appendExtractOut_gt`):
+      -- the appended `extractOut` crosses immediately via `E₁.extractOut` after the trivial empty
+      -- phase-2 `E₂.extractOut`/`eqIn` round-trip.
+      have hExtEq : HEq (cast (appendWitMid_le (show ((Fin.last (m + 0)) : ℕ) ≤ m from by simp))
+            ((Extractor.RoundByRound.append E₁ E₂ verify).extractOut stmt₁ tr witOut))
+          (E₁.extractOut stmt₁ trFst
+            (cast E₂.eqIn (E₂.extractOut (verify stmt₁ trFst) (FullTranscript.snd tr) witOut))) := by
+        refine HEq.trans (cast_heq _ _) ?_
+        unfold Extractor.RoundByRound.append
+        dsimp only [Fin.append, Fin.addCases, Fin.tail, Fin.castLT, Fin.cast]
+        simp only [dif_pos (show (0 : ℕ) = 0 from rfl), id_eq]
+        refine HEq.trans ?_ (HEq.refl (E₁.extractOut stmt₁ trFst
+          (cast E₂.eqIn (E₂.extractOut (verify stmt₁ trFst) (FullTranscript.snd tr) witOut))))
+        rw [eq_mpr_eq_cast]
+        exact cast_heq _ _
+      refine Eq.mp ?_ hFull
+      exact kToFun_congr₁ kSF₁.toFun
+        (Fin.ext (by simp only [Fin.val_last]; omega) :
+          (Fin.last m) = ⟨(Fin.last (m + 0) : Fin (m + 0 + 1)), by simp only [Fin.val_last]; omega⟩)
+        stmt₁ ((htFstHeq tr).symm.trans (cast_heq _ _).symm) hExtEq.symm
+    · -- `n > 0`: last round index `m + n > m`, so `toFun (last)` lands in the `kSF₂` branch.
+      rw [dif_neg (show ¬ ((Fin.last (m + n)) : ℕ) ≤ m from by simp only [Fin.val_last]; omega)]
+      -- The appended run collapses to `V₂.run (verify stmt₁ tr.fst) tr.snd`. Copied verbatim from
+      -- `StateFunction.append.toFun_full`.
+      have hrun : (V₁.append V₂).run stmt₁ tr
+          = V₂.run (verify stmt₁ (FullTranscript.fst tr)) (FullTranscript.snd tr) := by
+        subst hVerify
+        show (do return ← V₂.verify (← (pure (verify stmt₁ (FullTranscript.fst tr)))) _) = _
+        rw [pure_bind]
+        simp only [Verifier.run, bind_pure]
+      rw [hrun] at hPos
+      -- transfer the positive-probability hypothesis to `kSF₂.toFun_full`.
+      have hPr := kSF₂.toFun_full (verify stmt₁ (FullTranscript.fst tr)) (FullTranscript.snd tr)
+        witOut hPos
+      -- `hPr : kSF₂.toFun (last n) (verify stmt₁ tr.fst) tr.snd (E₂.extractOut …)`.
+      -- The goal is `kSF₂.toFun ⟨(m+n)-m,_⟩ (verify stmt₁ <Transcript.fst tr>) <Transcript.snd tr>
+      --   (cast (appendWitMid_gt …) (append.extractOut …))`. `convert` auto-unifies the defeq legs;
+      -- the remaining goals (index / verify-statement / .snd transcript / witness) are dispatched by
+      -- the `htFstHeq`/`htSndHeq` projection agreements and `appendExtractOut_gt` (witness),
+      -- mirroring the `hNeg'` step of `StateFunction.append.toFun_full`.
+      have hExtEq : HEq (cast (appendWitMid_gt
+              (show ¬ ((Fin.last (m + n)) : ℕ) ≤ m from by simp only [Fin.val_last]; omega))
+            ((Extractor.RoundByRound.append E₁ E₂ verify).extractOut stmt₁ tr witOut))
+          (E₂.extractOut (verify stmt₁ (FullTranscript.fst tr)) (FullTranscript.snd tr) witOut) :=
+        appendExtractOut_gt E₁ E₂ verify (by omega) stmt₁ tr witOut
+          (show ¬ ((Fin.last (m + n)) : ℕ) ≤ m from by simp only [Fin.val_last]; omega)
+      convert hPr using 2 <;>
+        first
+          | (simp only [Fin.val_last]; omega)
+          | (congr 1; exact eq_of_heq (HEq.trans (cast_heq _ _) (htFstHeq tr)))
+          | exact htSndHeq tr
+          | exact hExtEq
+          | exact hExtEq.symm
 
 end Verifier
 
@@ -667,6 +823,8 @@ end Verifier
 #print axioms Verifier.appendExtractMid_le
 #print axioms Verifier.appendExtractMid_gt
 #print axioms Verifier.appendExtractMid_cross
+#print axioms Verifier.appendExtractOut_gt
 #print axioms Verifier.kToFun_congr
 #print axioms Verifier.kToFun_congr₁
 #print axioms Verifier.concat_fst_heq_phase1
+#print axioms Verifier.KnowledgeStateFunction.append
