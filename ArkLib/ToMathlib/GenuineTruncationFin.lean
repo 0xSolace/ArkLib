@@ -85,7 +85,7 @@ theorem claim58prime_genuine_fin_of_monic {x₀ : F} {R : F[X][X][Y]}
     (hlargeFin : ∀ t, k ≤ t → t ≤ T → SβLargeAt H x₀ R hHyp t)
     (htailDeg : ∀ t, T < t → αGenuine H x₀ R hHyp t = 0) :
     gammaGenuine x₀ R H hHyp
-      = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) := by
+      = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : PowerSeries (𝕃 H)) := by
   have htail : ∀ t, k ≤ t → αGenuine H x₀ R hHyp t = 0 :=
     alphaGenuine_tail_zero_of_fin H hHyp hlc hlargeFin htailDeg
   ext t
@@ -181,7 +181,7 @@ theorem SβLargeAtFin_of_graded_disc {x₀ : F} {R : F[X][X][Y]}
     exact hvanish t hkt htT z (by simpa using hz)
   have hncard : matchingSet.card ≤ Set.ncard (S_β (βHensel H x₀ R hHyp t)) := by
     have h := Set.ncard_le_ncard hsub (Set.toFinite _)
-    rwa [Set.ncard_coe_Finset] at h
+    rwa [Set.ncard_coe_finset] at h
   -- assemble the SβLargeAt witness
   refine ⟨D, hD, lt_of_lt_of_le hcard ?_⟩
   exact_mod_cast hncard
@@ -220,7 +220,7 @@ theorem gammaGenuine_eq_trunc_of_graded_disc {x₀ : F} {R : F[X][X][Y]}
     (hbig : gradedCardBudget (Bivariate.natDegreeY R) D H.natDegree Ppoly.natDegree
         + disc.natDegree < Fintype.card F) :
     gammaGenuine x₀ R H hHyp
-      = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) :=
+      = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : PowerSeries (𝕃 H)) :=
   claim58prime_genuine_fin_of_monic H hHyp hmonic.leadingCoeff
     (SβLargeAtFin_of_graded_disc H hHyp hD hH hmonic hd2 hdHD hD_Rx0 hR hvanish
       hdisc hcover hbig)

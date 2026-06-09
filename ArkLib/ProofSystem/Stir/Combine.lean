@@ -15,6 +15,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtractionVacuo
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.Probability.Notation
 import ArkLib.ProofSystem.Stir.ProximityBound
+import ArkLib.ProofSystem.Stir.ErrorBoundBridge
 import ArkLib.ToMathlib.Polynomial.EvalExt
 
 
@@ -778,9 +779,62 @@ theorem combine_theorem_of_card_le_e7
     (ProximityGap.strictCoeffPolysResidual_of_card_le_e7 hq)
     hδLt hProb
 
+
+open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
+/-- **Lemma 4.13 with the `errStar`/`proximityError` threshold** — the exact error form
+consumed by `stir_rbr_soundness`'s `ε_fold`/`ε_shift` bounds. Follows from `combine_theorem`
+since `proximityError` dominates `(M−1)·errorBound` (`mul_errorBound_le_proximityError`). -/
+theorem combine_theorem_proximityError
+    [Nonempty ι] {φ : ι ↪ F} {dstar m : ℕ} [NeZero dstar]
+    (fs : Fin m → ι → F) (degs : Fin m → ℕ) (hdegs : ∀ i, degs i ≤ dstar)
+    (δ : ℝ≥0) (hδPos : δ > 0)
+    (hStrictCoeff : ProximityGap.StrictCoeffPolysResidual
+      (k := total_terms dstar degs - 1) (deg := dstar) (domain := φ) (δ := δ))
+    (hδLt : δ < (min (1 - (ReedSolomon.sqrtRate dstar φ))
+                     (1 - (rate (code φ dstar)) - 1 / Fintype.card ι)))
+    (hProb : Pr_{ let r ← $ᵖ F}[δᵣ((combine φ dstar r fs degs), (code φ dstar)) ≤ δ] >
+      proximityError F dstar (rate (code φ dstar)) δ (m * (dstar + 1) - ∑ i, degs i)) :
+    ∃ S : Finset ι, S.card ≥ (1 - δ) * (Fintype.card ι) ∧
+      ∃ v : Fin m → ι → F, ∀ i,
+        v i ∈ (code φ (degs i)) ∧
+          S ⊆ Finset.filter (fun j => v i j = fs i j) Finset.univ := by
+  refine combine_theorem fs degs hdegs δ hδPos hStrictCoeff hδLt (lt_of_le_of_lt ?_ hProb)
+  have hb := mul_errorBound_le_proximityError (ι := ι) (F := F)
+    (deg := dstar) (m := m * (dstar + 1) - ∑ i, degs i) (domain := φ) (δ := δ)
+  refine le_trans (le_of_eq ?_) hb
+  congr 1
+  rcases le_total (∑ i, degs i) (m * (dstar + 1)) with h | h
+  · rw [Nat.cast_sub h]
+  · rw [Nat.sub_eq_zero_of_le h, Nat.cast_zero,
+      tsub_eq_zero_of_le (by exact_mod_cast h)]
+
+open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
+/-- **Lemma 4.13, `proximityError` threshold, UNCONDITIONAL small-field regime.** -/
+theorem combine_theorem_proximityError_of_card_le
+    [Nonempty ι] {φ : ι ↪ F} {dstar m : ℕ} [NeZero dstar]
+    (fs : Fin m → ι → F) (degs : Fin m → ℕ) (hdegs : ∀ i, degs i ≤ dstar)
+    (δ : ℝ≥0) (hδPos : δ > 0)
+    (hq : (Fintype.card F : ℝ≥0)
+      ≤ ((total_terms dstar degs - 1 : ℕ) : ℝ≥0) * (Fintype.card ι : ℝ≥0))
+    (hδLt : δ < (min (1 - (ReedSolomon.sqrtRate dstar φ))
+                     (1 - (rate (code φ dstar)) - 1 / Fintype.card ι)))
+    (hProb : Pr_{ let r ← $ᵖ F}[δᵣ((combine φ dstar r fs degs), (code φ dstar)) ≤ δ] >
+      proximityError F dstar (rate (code φ dstar)) δ (m * (dstar + 1) - ∑ i, degs i)) :
+    ∃ S : Finset ι, S.card ≥ (1 - δ) * (Fintype.card ι) ∧
+      ∃ v : Fin m → ι → F, ∀ i,
+        v i ∈ (code φ (degs i)) ∧
+          S ⊆ Finset.filter (fun j => v i j = fs i j) Finset.univ :=
+  combine_theorem_proximityError fs degs hdegs δ hδPos
+    (ProximityGap.strictCoeffPolysResidual_of_card_le
+      (Nat.pos_of_ne_zero (NeZero.ne dstar))
+      (lt_of_lt_of_le hδLt (min_le_left _ _)) hq)
+    hδLt hProb
+
 end Combine
 
 /- Axiom audit for the STIR combine residual front door (#24). -/
 #print axioms Combine.combine_theorem
 #print axioms Combine.combine_theorem_of_card_le
 #print axioms Combine.combine_theorem_of_card_le_e7
+#print axioms Combine.combine_theorem_proximityError
+#print axioms Combine.combine_theorem_proximityError_of_card_le
