@@ -289,6 +289,38 @@ def ChallengeIdx.sumEquiv :
     simp [ChallengeIdx.inl, ChallengeIdx.inr, hi]
     congr; omega
 
+/-! ### Splitting a joint transcript's messages/challenges across the seam
+
+A `FullTranscript (pSpec₁ ++ₚ pSpec₂)` value at an `inl`/`inr` message or challenge index agrees
+(heterogeneously, across the `Message`/`Challenge` type equality) with the corresponding
+`FullTranscript.fst`/`.snd` half. These are the transcript-level facts that make the
+sequential-composition oracle routers (`router₁`/`router₂` in `Append.lean`) answer each component
+verifier's message queries from the correct half of the joint transcript. -/
+
+/-- A joint-transcript message at an `inl` index is (heterogeneously) the first-half message. -/
+theorem messages_inl (T : FullTranscript (pSpec₁ ++ₚ pSpec₂)) (k : pSpec₁.MessageIdx) :
+    HEq (T.messages (MessageIdx.inl k)) (T.fst.messages k) := by
+  unfold FullTranscript.messages FullTranscript.fst MessageIdx.inl
+  exact (cast_heq _ _).symm
+
+/-- A joint-transcript message at an `inr` index is (heterogeneously) the second-half message. -/
+theorem messages_inr (T : FullTranscript (pSpec₁ ++ₚ pSpec₂)) (k : pSpec₂.MessageIdx) :
+    HEq (T.messages (MessageIdx.inr k)) (T.snd.messages k) := by
+  unfold FullTranscript.messages FullTranscript.snd MessageIdx.inr
+  exact (cast_heq _ _).symm
+
+/-- A joint-transcript challenge at an `inl` index is (heterogeneously) the first-half challenge. -/
+theorem challenges_inl (T : FullTranscript (pSpec₁ ++ₚ pSpec₂)) (k : pSpec₁.ChallengeIdx) :
+    HEq (T.challenges (ChallengeIdx.inl k)) (T.fst.challenges k) := by
+  unfold FullTranscript.challenges FullTranscript.fst ChallengeIdx.inl
+  exact (cast_heq _ _).symm
+
+/-- A joint-transcript challenge at an `inr` index is (heterogeneously) the second-half one. -/
+theorem challenges_inr (T : FullTranscript (pSpec₁ ++ₚ pSpec₂)) (k : pSpec₂.ChallengeIdx) :
+    HEq (T.challenges (ChallengeIdx.inr k)) (T.snd.challenges k) := by
+  unfold FullTranscript.challenges FullTranscript.snd ChallengeIdx.inr
+  exact (cast_heq _ _).symm
+
 /-- Sequential composition of a family of `ProtocolSpec`s, indexed by `i : Fin m`.
 
 Defined for definitional equality, so that:
