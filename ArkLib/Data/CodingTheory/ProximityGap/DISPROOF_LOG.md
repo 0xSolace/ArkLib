@@ -2038,3 +2038,18 @@ Net: the external race converged on our cartography (incidence cap, concentratio
 exponential); the live open kernel is now THREE equivalent formulations — (i) sharp ball-intersection
 2nd moment (our O28/O29), (ii) the t≥2 multi-esymm concentration (our O20-O22), (iii) their c≥3 rank
 lemma (Conj 41). All the same wall, none proven. Issue stays open.
+
+### O13 — C19 PROVEN at configuration; the mechanism is a 2-adic even/odd DESCENT (nubs, 2026-06-09)
+
+Complete finite verification chain (deterministic scripts probe_c19_{skeleton,count}.py):
+even/odd reduction (111/111 machine checks; witnesses `BBBBB000`, dense exactly `BBB11100`) →
+c_o = γΠ_B / c_e = I₃(v)+αΠ_B → 3×2 consistency systems → exhaustive 4480-selection enumeration →
+**EXACTLY 16 consistent = the dense count, from first principles.** With the standard
+rotation/Galois equivariance transport, C19 (every fiber-3 λ of the (16,8,5) smooth construction
+has agree-≥9 list EXACTLY 19 = 3 + 16 with the transversal design) is **proven** — the first exact
+beyond-Johnson list structure on a smooth domain. **Mechanism:** the proof is ONE step of a 2-adic
+tower descent (n → n/2 via even/odd parts, agreement → per-z both/one-sided patterns, counting →
+explicit cyclotomic linear algebra). The general P-B upper-bound attack is now concrete: iterate
+the descent; the 2^{O(H/η)} budget should emerge as a product of per-level pattern counts. This is
+the first mechanism-level candidate for the open core that has a PROVEN base case. Next: general
+descent recursion + n=32 two-step test + equivariance write-up + Lean brick (fully finite).
