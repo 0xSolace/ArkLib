@@ -198,4 +198,24 @@ theorem sum_jointCoverCount_weight_fiber (C : Finset (ι → F)) (δ : ℝ≥0) 
     exact jointCoverCount_weight_invariant δ e e₀ (by rw [he.2, he₀])
   rw [Finset.sum_congr rfl hconst, Finset.sum_const, smul_eq_mul]
 
+/-- **Weight-enumerator form of the second-moment sum.** For a code `C` with a choice of weight-`d`
+representative `rep d` for each occurring weight, the total ball-intersection splits as the
+weight-enumerator sum `∑_d A_d · I_d`, with `A_d = #{e ∈ C : wt(e) = d}` and `I_d = I(rep d)`.
+
+This is the classical weight-enumerator route to the CS25 second moment: combined with the MDS
+weight-enumerator bound `A_d ≤ C(n,d) q^{d-(n-k)}` (`RSWeightEnumerator.card_evalWeight_le`) and any
+per-weight ball-intersection bound `I_d ≤ g(d)`, it bounds `E[N²]` off-diagonal directly. -/
+theorem sum_jointCoverCount_eq_weight_enumerator (C : Finset (ι → F)) (δ : ℝ≥0)
+    (rep : ℕ → (ι → F)) (hrep : ∀ d ∈ C.image hammingNorm, hammingNorm (rep d) = d) :
+    ∑ e ∈ C, jointCoverCount δ 0 e
+      = ∑ d ∈ C.image hammingNorm,
+          (C.filter (fun e => hammingNorm e = d)).card * jointCoverCount δ 0 (rep d) := by
+  classical
+  rw [show (∑ e ∈ C, jointCoverCount δ 0 e)
+        = ∑ d ∈ C.image hammingNorm,
+            ∑ e ∈ C.filter (fun e => hammingNorm e = d), jointCoverCount δ 0 e
+      from (Finset.sum_fiberwise_of_maps_to (fun e he => Finset.mem_image_of_mem _ he) _).symm]
+  exact Finset.sum_congr rfl
+    (fun d hd => sum_jointCoverCount_weight_fiber C δ d (rep d) (hrep d hd))
+
 end ArkLib.CS25
