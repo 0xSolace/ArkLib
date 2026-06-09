@@ -1295,6 +1295,7 @@ import ArkLib.ProofSystem.Whir.MCAPairSeam
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement
 import ArkLib.ProofSystem.Whir.OutofDomainSmpl
 import ArkLib.ProofSystem.Whir.Protocol
+import ArkLib.ProofSystem.Whir.ProtocolCompleteness
 import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
 import ArkLib.ProofSystem.Whir.RbrBudgetAccounting
