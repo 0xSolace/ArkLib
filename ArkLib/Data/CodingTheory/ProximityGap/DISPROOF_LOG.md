@@ -978,3 +978,10 @@ not a cited black box. The equivalence "prize ⟺ RS list-decoding to `1−ρ−
 lists" stands on machine-checked algebra on both directions' combinatorial cores. What is left is
 genuinely the classical list-decoding question itself (O10/O12) and the §7 sumset disproof route
 (O11) — both still OPEN. The prize remains OPEN; its *reduction infrastructure* is now sorry-free.
+
+**Update (Loop48 Part D).** The bridge is now grounded in the *formalized* RS code, not just raw
+polynomials: `bridge_mem_degreeLT` shows the quotient lands in `degreeLT F (deg−1)`, and
+`bridge_eval_mem_code` concludes `evalOnPoints domain quot ∈ ReedSolomon.code domain (deg−1)` — i.e.
+the bridge maps the degree-`deg` Reed–Solomon code into the once-punctured degree-`(deg−1)` code, the
+exact "the line point is a codeword of the shifted code" content of Claim 6.2, over
+`ArkLib.Data.CodingTheory.ReedSolomon`. Sorry-free, axiom-clean.
