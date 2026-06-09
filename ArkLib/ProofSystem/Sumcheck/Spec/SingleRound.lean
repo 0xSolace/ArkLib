@@ -1157,7 +1157,7 @@ theorem oracleReduction_perfectCompleteness :
           rfl
 
 /-- Trivial round-by-round extractor (all witnesses are `Unit`). -/
-private def simpleRbrExtractor : Extractor.RoundByRound oSpec
+def simpleRbrExtractor : Extractor.RoundByRound oSpec
     (StmtIn R × (∀ i, OStmtIn R deg i)) Unit Unit (pSpec R deg) (fun _ => Unit) where
   eqIn := rfl
   extractMid := fun _ _ _ _ => ()
@@ -1166,8 +1166,12 @@ private def simpleRbrExtractor : Extractor.RoundByRound oSpec
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
 /-- The transcript-independent knowledge state function for the oracle verifier: its guard
-checks the ORACLE's `D`-sum, which is precisely the input relation. -/
-private def simpleKnowledgeStateFunction :
+checks the ORACLE's `D`-sum, which is precisely the input relation.
+
+De-privatized (#13) so the downstream plain round-by-round soundness weakening can read off its
+transcript-independence by `Iff.rfl`: its `toFun` ignores the message index, transcript, and
+mid-witness, so the per-round knowledge-flip event is identically `False`. -/
+def simpleKnowledgeStateFunction :
     ((oracleVerifier R deg D oSpec).toVerifier).KnowledgeStateFunction init impl
       (inputRelation R deg D) (outputRelation R deg)
       (simpleRbrExtractor R deg oSpec) where
