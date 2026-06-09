@@ -99,14 +99,10 @@ theorem append_soundness_msg'
     (ε₁ : ℝ≥0∞) (ε₂ : ℝ≥0∞) ?_ ?_
   · -- Phase-1 bound: `V₁.soundness ε₁` on the phase-1 soundness prover `prover.fstSound`.
     have h1_bound := h₁ _ _ witIn (Prover.fstSound prover) stmtIn hstmtIn
-    have h1_bridge : Pr[fun r => ¬ Option.elim r.1 True (fun p => p.2 ∉ lang₂) | init >>= fun s => (simulateQ pImpl (liftM (liftM (Prover.run stmtIn witIn prover.fst)) >>= fun x => liftM (V₁.run stmtIn x.1) >>= fun s₂ => (pure (x, s₂) : OptionT (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)) _)).run).run s] = Pr[(fun x => match x with | (fst, stmtOut) => stmtOut ∈ lang₂) | (OptionT.mk (init >>= fun s => (simulateQ pImpl (Reduction.run stmtIn witIn { prover := prover.fstSound, verifier := V₁ }).run).run' s) : OptionT _ _)] := sorry
-    rw [h1_bridge]
-    exact h1_bound
+    sorry
   · -- Phase-2 bound: `V₂.soundness ε₂` on the phase-2 soundness prover `prover.sndSound`.
     intro p s' _ h_pg
     have h2_bound := h₂ _ _ p.1.2.1 (Prover.sndSound prover) p.2 h_pg
-    have h2_bridge : Pr[fun o => ¬o.elim True fun d => d.2 ∉ lang₃ | ((simulateQ pImpl (do let a ← liftM ((fun x => liftM (Prover.run x.2.1 x.2.2 prover.snd)) p.1); let __do_lift ← liftM (V₂.run p.2 a.1); pure ((p.1.1 ++ₜ a.1, a.2.1, a.2.2), __do_lift)).run).run' s')] = Pr[(fun x => match x with | (fst, stmtOut) => stmtOut ∈ lang₃) | (OptionT.mk (init >>= fun s => (simulateQ pImpl (Reduction.run p.2 p.1.2.1 { prover := prover.sndSound, verifier := V₂ }).run).run' s) : OptionT _ _)] := sorry
-    rw [h2_bridge]
-    exact h2_bound
+    sorry
 
 end Verifier
