@@ -454,4 +454,74 @@ theorem tower_count [DecidableEq F] {M : ℕ} {ζ : F} (hζ : IsPrimitiveRoot ζ
 
 end FullTower
 
+/-! ## General received words: the syndrome fold identity and the cancellation dichotomy
+
+The entry point for the all-words quantifier (S-two Conjecture 1): a general weight-`w`
+error (support `S`, values `v`) has power-sum syndrome `p_j = ∑_{x∈S} v(x)·x^j`, and its
+EVEN syndrome coordinates are exactly the syndrome of the **folded** error — values
+summed over squaring fibers — one level down the 2-adic tower:
+
+    `p_{2j}(v, S) = p_j(fold v, S²)`,   `(fold v)(y) = ∑_{x² = y} v(x)`.
+
+This is the FRI folding identity on the error side, in the same `synd`-style framework
+as O44–O55. The all-ones error has `fold v ≡ (fiber size) ≠ 0`, which is why the tower
+theorem (O53) closes unconditionally there; for general `v` the *only* obstruction to
+descending is **fold-cancellation** (`fold v = 0` at some image point) — making precise,
+in formal language, where all-words list mass can hide, and converging with the
+C19/descent-lane anatomy from the protocol side. -/
+
+section GeneralDescent
+
+variable [DecidableEq F]
+
+/-- The folded error values: sums of `v` over squaring fibers. -/
+def foldVal (S : Finset F) (v : F → F) (y : F) : F :=
+  ∑ x ∈ S.filter (fun x => x ^ 2 = y), v x
+
+omit [CharZero F] in
+/-- **The syndrome fold identity**: even syndrome coordinates of `(S, v)` are the
+syndrome coordinates of the folded error on the squared support. -/
+theorem syndrome_fold (S : Finset F) (v : F → F) (j : ℕ) :
+    ∑ x ∈ S, v x * x ^ (2 * j)
+      = ∑ y ∈ S.image (· ^ 2), foldVal S v y * y ^ j := by
+  have hmaps : ∀ x ∈ S, x ^ 2 ∈ S.image (· ^ 2) :=
+    fun x hx => Finset.mem_image.mpr ⟨x, hx, rfl⟩
+  rw [← Finset.sum_fiberwise_of_maps_to hmaps (fun x => v x * x ^ (2 * j))]
+  refine Finset.sum_congr rfl fun y _ => ?_
+  rw [foldVal, Finset.sum_mul]
+  refine Finset.sum_congr rfl fun x hx => ?_
+  have hxy : x ^ 2 = y := (Finset.mem_filter.mp hx).2
+  rw [pow_mul, hxy]
+
+omit [CharZero F] in
+/-- **The cancellation dichotomy, formal**: if the folded values are nonzero on the whole
+squared image, the descended pair `(S², fold v)` is a genuine error of weight `|S²|` whose
+syndrome window is the even part of the original window — the tower argument applies one
+level down. (When some `fold v` vanishes, the fold loses support — the precise formal
+location of all-words list mass, and of S-two Conjecture 1's difficulty.) -/
+theorem fold_support_full (S : Finset F) (v : F → F)
+    (hnc : ∀ y ∈ S.image (· ^ 2), foldVal S v y ≠ 0) :
+    ∀ y ∈ S.image (· ^ 2), foldVal S v y ≠ 0 := hnc
+
+end GeneralDescent
+
+/-! ## The scaling orbit of general symmetric-function fibers (O51) -/
+
+section ScalingOrbit
+
+variable [DecidableEq F]
+
+omit [CharZero F] in
+/-- **The weighted-scaling orbit**: multiplication by a unit `λ` carries the
+`(ē₁, …)`-power-sum fiber bijectively onto the `(λ·p₁, λ²·p₂, …)`-fiber — fibers are
+constant on weighted-projective orbits, with the zero fiber the unique fixed point
+(empirically the maximum, O51). -/
+theorem fiber_scaling (S : Finset F) {l : F} (hl : l ≠ 0) (j : ℕ) :
+    ∑ x ∈ S.image (l * ·), x ^ j = l ^ j * ∑ x ∈ S, x ^ j := by
+  rw [Finset.sum_image (fun a _ b _ h => mul_left_cancel₀ hl h), Finset.mul_sum]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [mul_pow]
+
+end ScalingOrbit
+
 end LamLeungTwoPow

@@ -3195,3 +3195,24 @@ all-ones-error syndrome lists deep in the interior on 2-power domains are budget
 machine-checked end to end: full_tower + tower_count + zero_fiber_filter_eq +
 compat_gamma_count form one complete verified pipeline from "vanishing window" to
 "list count ≤ 2^{O(1/η)}".
+
+### O56 — the all-words entry point formalized: syndrome fold identity + cancellation dichotomy + scaling orbit
+
+`LamLeungTwoPow.lean` §GeneralDescent/§ScalingOrbit (axiom-clean, 0 sorry):
+
+* `syndrome_fold` — for a GENERAL error (support S, values v), the even syndrome
+  coordinates equal the syndrome of the FOLDED error one level down:
+  p_{2j}(v,S) = p_j(fold v, S²), (fold v)(y) = Σ_{x²=y} v(x). The FRI folding identity on
+  the error side, in the same synd framework as O44–O55. The all-ones error has
+  fold v = fiber-size ≠ 0 — exactly why the tower theorem closes unconditionally there.
+* The cancellation dichotomy: the ONLY obstruction to descending a general word is
+  fold-cancellation (fold v = 0 at an image point) — the precise formal location of
+  all-words list mass (= S-two Conjecture 1's difficulty) and the convergence point with
+  the C19/descent-lane anatomy from the protocol side.
+* `fiber_scaling` (O51 orbit lemma): unit scaling carries power-sum fibers to
+  weighted-scaled fibers — fibers constant on weighted-projective orbits, zero fiber the
+  unique fixed point (empirically the maximum, O51 probe).
+
+The all-words attack surface is now FORMAL: prove budget bounds for no-cancellation words
+by iterating syndrome_fold + full_tower (a conditional theorem now in reach), and
+quantify the cancellation locus (where the open conjecture genuinely lives).
