@@ -2643,3 +2643,16 @@ Grand List Challenge answer. The $1M list core = ONE precisely-stated char-0 con
 machine-checked skeleton around it. NEXT (Jun-11 agents + solo): (a) the (w=2,t=1) base case from
 R12 independence, (b) Mann's theorem partial formalization, (c) the general-family (non-clique)
 reduction to cliques/sunflowers (fleet O40).
+
+### O43 — the descent program's formalized surface is COMPLETE for the proven-on-paper layer (nubs, 2026-06-09)
+
+Seven bricks on main, all axiom-clean `[propext, Classical.choice, Quot.sound]`, leaf-file style:
+`TwistedKernel` (Lemma K rigidity) · `SubsetSumsetSymmetry` (complement symmetry) ·
+`MonomialAgreementBound` (Lift far-ness) · `DescentTrichotomy` (+ polynomial-level recomposed-
+candidate iffs — the full converse-FRI fold trichotomy) · `DisjointPairCount` (+ `AdmissibleSupport`
++ `n0_pattern_count` — the complete Theorem-A combinatorial count Σ_s C(m2,s)·2^s). Together: every
+elementary proven piece of the O11–O14 program is now Lean API. Remaining formalization (honest):
+the cyclotomic bijection (pattern count ⟷ actual subset sums in ℤ[ζ_m] — needs 2-power cyclotomic
+basis machinery; deep), C19 (symbolic/equivariance route only — native_decide forbidden), and the
+O38 AM–GM threshold (E1 orthogonality — Parseval over odd characters; medium, queued). The open
+research core (paired tower induction ⟺ classical beyond-Johnson) is unchanged.
