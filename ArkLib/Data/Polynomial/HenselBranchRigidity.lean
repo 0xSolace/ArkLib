@@ -148,7 +148,7 @@ theorem branch_eq_of_fiber_eq_of_separable {K : Type*} [Field K]
   have hc0 : Polynomial.eval (p.eval x₀) (G.map (Polynomial.evalRingHom x₀)) = 0 := by
     have h2 := Polynomial.eval₂_at_apply (p := G) (Polynomial.evalRingHom x₀) p
     rw [Polynomial.coe_evalRingHom] at h2
-    rw [Polynomial.eval_map, h2, hp, map_zero]
+    rw [Polynomial.eval_map, h2, hp, Polynomial.eval_zero]
   -- separability makes it a simple root: Bézout for `(g, g')` evaluated at the root
   obtain ⟨a, b, hab⟩ := hsep
   have hu : IsUnit (Polynomial.eval (p.eval x₀)
