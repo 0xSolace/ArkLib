@@ -87,6 +87,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.FeasibilityArith
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSAffinePair
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDecodedSeparationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDiscriminantOverRatFunc
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorAssignment
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorDegreeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorizationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegerRepresentative

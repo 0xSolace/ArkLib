@@ -124,14 +124,15 @@ theorem exists_specialized_factor_assignment
   -- pushforward of the representative product
   have hmapP : Ψ P₀ = h D * (UniqueFactorizationMonoid.factors Q).prod := by
     have h1 : Ψ P₀ = ∏ R ∈ Fs, (h (dR R) * R) ^ (cnt R) := by
-      rw [hP₀, map_prod Ψ]
+      rw [hP₀, map_prod Ψ (fun R => repR R ^ cnt R) Fs]
       refine Finset.prod_congr rfl fun R _ => ?_
-      rw [map_pow, hΨapp, hrepR R, hh]
+      rw [map_pow Ψ (repR R) (cnt R), hΨapp, hrepR R, hh]
     have h2 : ∀ R ∈ Fs,
         (h (dR R) * R) ^ (cnt R) = h ((dR R) ^ (cnt R)) * R ^ (cnt R) := by
       intro R _
-      rw [mul_pow, ← map_pow h]
-    rw [h1, Finset.prod_congr rfl h2, Finset.prod_mul_distrib, hD, ← map_prod h]
+      rw [mul_pow, ← map_pow h (dR R) (cnt R)]
+    rw [h1, Finset.prod_congr rfl h2, Finset.prod_mul_distrib, hD,
+      ← map_prod h (fun R => dR R ^ cnt R) Fs]
     congr 1
     exact (Finset.prod_multiset_count (UniqueFactorizationMonoid.factors Q)).symm
   -- the unit of the factorization is a double constant
@@ -152,24 +153,28 @@ theorem exists_specialized_factor_assignment
   have hnum_eq : φ cn = c₀ * φ cd := by
     conv_rhs => rw [← RatFunc.num_div_denom c₀]
     rw [div_mul_cancel₀ _ hcdK]
-  -- the pushforward of `Q₀`
+  -- the pushforward of `Q₀`, with the unit-resolved form of `Q`
   have hΨQ₀ : Ψ Q₀ = h d * Q := by
     rw [hΨapp, hrep, hh]
+  have hΨQ₀' : Ψ Q₀ =
+      h d * ((UniqueFactorizationMonoid.factors Q).prod * CCK c₀) := by
+    rw [hΨQ₀, hQeq]
   -- **the unit-clearing identity over `F[Z]`**
   have hkey : Polynomial.C (Polynomial.C (cn * d)) * P₀ =
       Polynomial.C (Polynomial.C (D * cd)) * Q₀ := by
     apply hΨinj
-    rw [map_mul, map_mul, hΨC, hΨC, hmapP, hΨQ₀, ← hQeq]
+    rw [map_mul Ψ (Polynomial.C (Polynomial.C (cn * d))) P₀,
+      map_mul Ψ (Polynomial.C (Polynomial.C (D * cd))) Q₀,
+      hΨC, hΨC, hmapP, hΨQ₀']
     have hcn_split : h cn = CCK c₀ * h cd := by
-      rw [hh, hnum_eq, hCCK, hh]
-      rw [map_mul, map_mul]
-    rw [map_mul h, map_mul h, hcn_split]
+      rw [hh, hnum_eq, hCCK, hh, Polynomial.C_mul, Polynomial.C_mul]
+    rw [map_mul h cn d, map_mul h D cd, hcn_split]
     ring
   -- conclude, with `bad := cn · d`
   refine ⟨repR, cn * d, mul_ne_zero hcn0 hd,
     fun R _ => ⟨dR R, hdR R, hrepR R⟩, ?_⟩
   intro z hz q hq
-  set σ : (F[X])[X][Y] →+* F[X][Y] :=
+  set σ : Polynomial (Polynomial (Polynomial F)) →+* Polynomial (Polynomial F) :=
     Polynomial.mapRingHom (Polynomial.mapRingHom (Polynomial.evalRingHom z)) with hσ
   have hσapp : ∀ p : (F[X])[X][Y],
       σ p = p.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) := fun _ => rfl
@@ -181,9 +186,10 @@ theorem exists_specialized_factor_assignment
       Polynomial.coe_evalRingHom]
   -- specialize the identity at `z`
   have hkeyz := congrArg σ hkey
-  rw [map_mul, map_mul, hσC, hσC] at hkeyz
+  rw [map_mul σ (Polynomial.C (Polynomial.C (cn * d))) P₀,
+    map_mul σ (Polynomial.C (Polynomial.C (D * cd))) Q₀, hσC, hσC] at hkeyz
   -- divisibility chase through the prime `Y − C q`
-  have hprime : Prime (Polynomial.X - Polynomial.C q : (F[X])[Y]) :=
+  have hprime : Prime (Polynomial.X - Polynomial.C q : F[X][Y]) :=
     Polynomial.prime_X_sub_C q
   have hq' : (Polynomial.X - Polynomial.C q) ∣ σ Q₀ := hq
   have h1 : (Polynomial.X - Polynomial.C q) ∣
@@ -194,7 +200,7 @@ theorem exists_specialized_factor_assignment
   · exact absurd hC (not_linear_dvd_C (by
       simpa using hz))
   · have hσP : σ P₀ = ∏ R ∈ Fs, (σ (repR R)) ^ (cnt R) := by
-      rw [hP₀, map_prod σ]
+      rw [hP₀, map_prod σ (fun R => repR R ^ cnt R) Fs]
       exact Finset.prod_congr rfl fun R _ => map_pow σ _ _
     rw [hσP] at hP
     obtain ⟨R, hRmem, hdvd⟩ := hprime.exists_mem_finset_dvd hP
