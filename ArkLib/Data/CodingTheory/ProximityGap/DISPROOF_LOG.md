@@ -1839,3 +1839,24 @@ zero-fiber spot-check (12870 = C(16,8)) — zero modular collisions.** So the Li
 lower bounds are exact verified facts at the production SNARK fields for the verified m. Open:
 asymptotic per-prime (all m at a fixed p); the analytic-denominator caveat; and P-B (the upper
 half) — unchanged. Scripts: probe_production.py, probe_m32_fiber.py in the research folder.
+
+### O29 / Round-14 — the GS-algebraic route end-to-end + THE JOHNSON WALL as a theorem
+
+5-agent GS round (all landed) + own-token root-order brick. On main `85d8a1157` (6 files, axiom-clean):
+* The COMPLETE GS pipeline: `GSInterpolationExistence` (Sudan m=1 front end, rank-nullity + exact
+  monomial count Σ_{j<D}(D−(k−1)j), ZMod 5 instance) → `GSRootOrderStep` (weighted-degree transfer +
+  factor_of_agreement: ≥D agreement ⟹ (Y−f)∣Q) → `GSYDegreeListCap` (|S| ≤ deg_Y Q via RatFunc roots,
+  cap attained with equality) → `GSPipelineAssembly` (composed, fired on a concrete instance).
+* `GSJohnsonWall` (HEADLINE): gsFeasible_iff — the GS parameter system is feasible IFF t·m > DGS =
+  ⌊√(n(k−1)m(m+1))⌋+1; the JOHNSON WALL gs_johnson_wall: t² > n(k−1) for EVERY multiplicity m (sharp
+  t²m > n(k−1)(m+1); real √(n(k−1)(1+1/m)) < t → Johnson as m→∞, never reached). Feasible witness
+  (16,2,3,5,14) just above; INFEASIBLE at t=4=Johnson. The standard GS certificate provably cannot
+  go below Johnson at any multiplicity.
+* `DerandomizationFrontier`: the explicit-vs-random gap as named Props (NOT asserted) + the correct
+  absolute-agreement puncturing monotonicity (naive relative version FALSE) + endpoints.
+
+**Net.** The open core is isolated on ALL sides by verified no-gos: moments = Johnson (O25/O28-adjacent),
+whole-space moment diagonal-dominated (SecondMomentReductionLimit), Fisher too weak (O26), and now GS
+stops exactly at Johnson (O29). Remaining: does ANY other explicit algebraic certificate beat Johnson
+for smooth-domain RS — the genuine $1M core. Fleet concurrently landed the constant-gap-below-capacity
+averaging bracket: verified two-sided δ* ∈ [1−√ρ, 1−ρ−c_ρ] at prize scale. Issue stays open.
