@@ -1649,12 +1649,11 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     -- for the deterministic `t` — off-support the re-derived transcript ≠ a free `x_1.1`.
     obtain ⟨t, ht⟩ := Messages.deriveTranscriptFS_simulateQ_run srImpl stmtIn a.1.1 x.2
     rw [ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl'] at ht
-    -- Collapse the deterministic LHS derive; `simp [ht]` matches the simp-normalised LHS.
-    -- The RHS carries the SR game's native challenge impl, over `srChallengeOracle` and not
-    -- `ht`'s `fsChallengeOracle`; the two are defeq, but a freshly written native term makes
-    -- `addLift` demand a missing lift, so syntactic `rw` cannot collapse the RHS derive here.  That
-    -- collapse is deferred to a defeq-tolerant step folded into the `ks_payload_eq` reconciliation.
+    -- Collapse the deterministic derive on both sides; `simp [ht]` matches the simp-normalised LHS,
+    -- and `erw [ht]` collapses the RHS occurrence up-to-reducible-defeq (it carries the SR game's
+    -- native challenge impl, over the `srChallengeOracle` alias of `ht`'s `fsChallengeOracle`).
     simp only [ht, pure_bind]
+    erw [ht]
     -- Leaf goal (verified by `trace_state`), with prefix values `a` (sendMessage), `x` (output),
     -- `x_1` (deriveTranscriptFS, `x_1.1` = transcript) in scope:
     --   LHS = Pr[ok? | verify_bundled >>= (·.elim none) (re-derive; srExtractor; payload)]
