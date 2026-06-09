@@ -2165,3 +2165,30 @@ partial bridges + the proven list↛ε_mca correction; 3 syndrome lens — exter
 BRACKET δ* ∈ [1−√ρ, 1−ρ−c_ρ]: left end = Sudan→multiplicity-m→walls (every known certificate stops
 at Johnson), right end = averaging at prize scale. ~31 axiom-clean files rounds 8-15. The interior
 is the open research the prize elicits; every dead end is now a theorem rather than folklore.
+
+### O35 — Lemma K + pattern rigidity LANDED as Lean bricks (`DescentKernelLemma.lean`)
+
+The queued formalization work of O13″/O14 is discharged — `DescentKernelLemma.lean`
+(axiom-clean `[propext, Classical.choice, Quot.sound]`, 0 sorry, 0 warnings,
+characteristic-free over any integral domain where applicable):
+
+* `glue e f = expand 2 e + X·expand 2 f` API: coefficient extraction (even/odd supports
+  disjoint — **no characteristic assumption**, unlike the FRI `NonBinaryField` machinery),
+  evaluation `glue(d) = e(d²) + d·f(d²)`, degree bound `< 2κ`, injectivity, and
+  `exists_glue_decomposition` (every deg-`< 2κ` polynomial is a glue with parts `< κ`).
+* `kernel_rigidity` = **Lemma K** (O14): deg-`< κ` pairs `(e,f)` with
+  `e(z) + r_z·f(z) = 0` on `≥ 2κ` square-rooted points vanish identically. Smoothness
+  (the `d² = z` parametrization) supplies unconditional kernel rigidity.
+* `solution_unique`: per-pattern solutions ≤ 1 for the inhomogeneous one-sided system.
+* `pattern_rigidity` — the **sharp weighted form**: a `(B, O₁, σ)` pattern with
+  `2|B| + |O₁| ≥ 2κ` pins `(e,f)` uniquely (roots harvested at BOTH `±y_z` for `z ∈ B`,
+  at `σ_z` for `z ∈ O₁`; total `2|B| + |O₁|` distinct roots of the glued difference).
+* `agreement_count` — the O13″ identity `#agreements = 2|B| + |O₁|` on a ±-paired domain
+  (filter-biUnion + per-pair indicator split), plus the per-`z` trichotomy bridges
+  `both_agreement_iff` / `one_sided_agreement_iff`.
+
+Net: the descent program's reduction "`ℓ(θ)` = #(consistent patterns)" is now rigorous in
+Lean at the single-level granularity — every beyond-rate list element (agreement
+`a ≥ k = 2κ` ⟹ `2|B| + |O₁| ≥ 2κ`) is uniquely determined by its pattern. Conjecture D's
+remaining content is exactly the cross-level consistency-rarity count (C19's 4480 → 16 is
+the worked instance), unchanged but now with its bookkeeping machine-checked.
