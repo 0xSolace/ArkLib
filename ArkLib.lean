@@ -384,6 +384,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionRigidityThreeSwap
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
+import ArkLib.Data.CodingTheory.ProximityGap.CosetWallDeepInteriorNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
@@ -915,6 +916,7 @@ import ArkLib.OracleReduction.SimOracleFoldlM
 import ArkLib.OracleReduction.SimulateQ
 import ArkLib.OracleReduction.VectorIOR
 import ArkLib.ProofSystem.BCS.ErrorAccounting
+import ArkLib.ProofSystem.BCS.TransparentEndToEnd
 import ArkLib.ProofSystem.BatchedFri.QueryRoundAnalysis
 import ArkLib.ProofSystem.BatchedFri.QueryRoundProbability
 import ArkLib.ProofSystem.BatchedFri.QueryRoundRSAffineLineSoundness
@@ -992,6 +994,7 @@ import ArkLib.ProofSystem.Logup.Security.Issue13Status
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessClose
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessHonest
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncond
+import ArkLib.ProofSystem.Logup.Security.LogupHonestSupport
 import ArkLib.ProofSystem.Logup.Security.LogupInitImplFacts
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessClose
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessUncond
@@ -1066,6 +1069,7 @@ import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompleteness
 import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompletenessUncond
 import ArkLib.ProofSystem.Sumcheck.Spec.OracleRbrSoundness
 import ArkLib.ProofSystem.Sumcheck.Spec.SeqComposeRbrSoundness
+import ArkLib.ProofSystem.Sumcheck.Spec.SimpleRoundCoherent
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundBridge
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRoundPlainRbr
@@ -1302,4 +1306,5 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
+import ArkLib.t3
 import ArkLib.whir113keystone
