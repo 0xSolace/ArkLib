@@ -206,8 +206,42 @@ theorem prize_exponent_refuted_finiteField (c₁ : ℕ) :
   rw [← pow_mul]
   exact Nat.pow_lt_pow_right (by norm_num) hgap
 
+/-- A linear-in-`m` budget is eventually beaten by `2^{m-1}`: `∃ m ≥ 1, m·a + (m-1)·b + k < 2^{m-1}`.
+Bounds `m·a + (m-1)·b + k ≤ m·(a+b+k)` (for `m ≥ 1`) and applies `exists_m_gap`. -/
+theorem exists_numerator_gap (a b k : ℕ) :
+    ∃ m, 1 ≤ m ∧ m * a + (m - 1) * b + k < 2 ^ (m - 1) := by
+  obtain ⟨m, hm1, hgap⟩ := exists_m_gap (a + b + k)
+  refine ⟨m, hm1, lt_of_le_of_lt ?_ hgap⟩
+  have hk : k ≤ m * k := Nat.le_mul_of_pos_left k hm1
+  have hb : (m - 1) * b ≤ m * b := Nat.mul_le_mul_right b (Nat.sub_le m 1)
+  calc m * a + (m - 1) * b + k ≤ m * a + m * b + m * k := by omega
+    _ = m * (a + b + k) := by ring
+
+/-- **O11 CLOSED: the §7 minimal-domain bad count provably exceeds the prize numerator over a finite
+field.** Loop46's `thm71_refutes_prize` left open *"whether `a > num` is realizable at a smooth
+subgroup (O11)."* It is. At the minimal domain (`ρ = 2^{-r}`, `η = 2^{1-m}`, domain `2^m`) the prize
+numerator `(2^m)^{c₁}/(ρ^{c₂} η^{c₃})` equals `2^{m·c₁} · 2^{r·c₂} · 2^{(m-1)·c₃}`, which is `2^{O(m)}`,
+while the realized §7 bad count (the subset-sumset of `2^m`-th roots of unity in `F_p`, Loop53) is
+`≥ 2^{2^{m-1}}` — doubly-exponential. So for every fixed prize triple `(c₁,c₂,c₃)` and prize rate
+`ρ = 2^{-r}`, a genuine finite field realizes `num < a`, and (via `thm71_refutes_prize`) the §7 MCA
+contribution `a/q` strictly exceeds the prize RHS `(1/q)·num`. The §7 minimal-domain prize is refuted
+in terms of the actual `ε_mca` quantity, no realizability gap. -/
+theorem badCount_exceeds_prize_numerator (c₁ c₂ c₃ r : ℕ) :
+    ∃ (m p : ℕ), 1 ≤ m ∧ p.Prime ∧ ∃ ζ : ZMod p, IsPrimitiveRoot ζ (2 ^ m) ∧
+      2 ^ (m * c₁) * 2 ^ (r * c₂) * 2 ^ ((m - 1) * c₃) <
+        (Finset.univ.image
+          (fun S : Finset (Fin (2 ^ (m - 1))) => ∑ j ∈ S, ζ ^ (j : ℕ))).card := by
+  obtain ⟨m, hm1, hgap⟩ := exists_numerator_gap c₁ c₃ (r * c₂)
+  obtain ⟨p, hpp, ζ, hζ, hcard⟩ := exists_finiteField_subsetSumset_large hm1
+  refine ⟨m, p, hm1, hpp, ζ, hζ, lt_of_lt_of_le ?_ hcard⟩
+  rw [← pow_add, ← pow_add]
+  refine Nat.pow_lt_pow_right (by norm_num) ?_
+  -- `m·c₁ + r·c₂ + (m-1)·c₃ = m·c₁ + (m-1)·c₃ + r·c₂ < 2^{m-1}`
+  omega
+
 end ArkLib.ProximityGap.FiniteFieldDisproofLoop53
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.FiniteFieldDisproofLoop53.exists_finiteField_subsetSumset_large
 #print axioms ArkLib.ProximityGap.FiniteFieldDisproofLoop53.prize_exponent_refuted_finiteField
+#print axioms ArkLib.ProximityGap.FiniteFieldDisproofLoop53.badCount_exceeds_prize_numerator
