@@ -166,6 +166,73 @@ theorem probComp_seam_swap_completeness_PABk
   have key := probComp_seam_swap_completeness init so hso FST SND W1 W2 hB pg qg e₁ e₂ h₁ h₂
   rwa [seam_natural_run_eq] at key
 
+/-! ### Soundness counterparts (none benign; `Option.elim · True`) -/
+
+/-- **Soundness swap-union with `pg` on the full intermediate context `A × C`.** The general-`pg`
+form of `probComp_seam_swap_union_le` (which fixes `pg` on the `C` component only). Same reorder
+(`seam_swap_evalDist_eq`) feeding the soundness union bound `probComp_seam_union_le` (`none` benign,
+`Option.elim · True`). The intermediate predicate sees the prover output `A` too — needed when the
+intermediate *language* membership depends on the full reduced context. -/
+theorem probComp_seam_swap_union_le' (init : ProbComp σ) (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
+    (pg : A × C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
+    (h₁ : Pr[fun r => ¬ Option.elim r.1 True pg
+          | init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s] ≤ e₁)
+    (h₂ : ∀ (p : A × C) (s' : σ),
+          (some p, s') ∈ support (init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p →
+          Pr[fun o => ¬ Option.elim o True qg
+            | (simulateQ so (liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s'] ≤ e₂) :
+    Pr[fun o => ¬ Option.elim o True qg
+        | init >>= fun s => (simulateQ so
+            (liftM FST >>= fun x => liftM (SND x) >>= fun a => W1 x >>= fun s₂ =>
+              W2 x a s₂).run).run' s] ≤ e₁ + e₂ := by
+  have key := seam_swap_evalDist_eq init so hso FST SND W1 W2 hB
+  have hmain := probComp_seam_union_le init so
+    (liftM FST >>= fun x => W1 x >>= fun s₂ => (pure (x, s₂) : OptionT (OracleComp spec) (A × C)))
+    (fun p => liftM (SND p.1) >>= fun a => W2 p.1 a p.2) pg qg e₁ e₂ h₁ h₂
+  unfold probEvent at hmain ⊢
+  rw [key]; exact hmain
+
+/-- **`P/A/B/k`-form soundness swap-union.** The soundness twin of
+`probComp_seam_swap_completeness_PABk`: `probComp_seam_swap_union_le'` restated in the plain
+`Option.elim` chain shape, so it `apply`s directly against a concrete malicious appended run once
+it has been normalized by the seam factoring. This is the front door for `Verifier.append_soundness`
+(the #433 keystone): `FST = prover.fst`, `SND = prover.snd`, `W1 = V₁`, `W2 = V₂` + assemble. -/
+theorem probComp_seam_swap_union_le_PABk (init : ProbComp σ)
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {A B C D : Type}
+    (FST : OracleComp spec A) (SND : A → OracleComp spec B)
+    (W1 : A → OptionT (OracleComp spec) C) (W2 : A → B → C → OptionT (OracleComp spec) D)
+    (hB : ∀ (x : A) (s' : σ), Pr[⊥ | (simulateQ so (SND x)).run s'] = 0)
+    (pg : A × C → Prop) (qg : D → Prop) (e₁ e₂ : ℝ≥0∞)
+    (h₁ : Pr[fun r => ¬ Option.elim r.1 True pg
+          | init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s] ≤ e₁)
+    (h₂ : ∀ (p : A × C) (s' : σ),
+          (some p, s') ∈ support (init >>= fun s => (simulateQ so
+              (liftM FST >>= fun x => W1 x >>= fun s₂ =>
+                (pure (x, s₂) : OptionT (OracleComp spec) (A × C))).run).run s) → pg p →
+          Pr[fun o => ¬ Option.elim o True qg
+            | (simulateQ so (liftM (SND p.1) >>= fun a => W2 p.1 a p.2).run).run' s'] ≤ e₂) :
+    Pr[fun o => ¬ Option.elim o True qg
+        | init >>= fun s => (simulateQ so
+            (FST >>= fun x => SND x >>= fun a => (W1 x).run >>= fun o₁ =>
+              o₁.elim (pure none) (fun s₂ => (W2 x a s₂).run))).run' s] ≤ e₁ + e₂ := by
+  have key := probComp_seam_swap_union_le' init so hso FST SND W1 W2 hB pg qg e₁ e₂ h₁ h₂
+  rwa [seam_natural_run_eq] at key
+
 end OptionTStateT
 
 namespace OracleReduction
