@@ -113,23 +113,19 @@ theorem append_perfectCompleteness_empty_proof
       rwa [← liftComp_eq_liftM, mem_support_liftComp_iff] at hz
     obtain ⟨a₄, hV₁, hmem0⟩ := (mem_support_bind_iff _ _ _).mp hmem0
     simp only [FullTranscript.append_fst] at hV₁
-    rw [OptionT.run_liftM_run, support_map,
-      support_simulateQ_eq_OracleComp_of_superSpec _ _ (fun _ => rfl), Set.mem_image] at hV₁
-    obtain ⟨vo₁, hvo₁, rfl⟩ := hV₁
-    rcases vo₁ with _ | vs₂
-    · exact absurd (none_mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) hP₁' hvo₁) h₁nf
+    replace hV₁ := mem_support_liftM_oc hV₁
+    rcases a₄ with _ | vs₂
+    · exact absurd (none_mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) hP₁' hV₁) h₁nf
     obtain ⟨hrel₂, hvs₂⟩ := h₁' ((tr₁, s₂, w₂), vs₂)
       (by rw [OptionT.mem_support_iff]
-          exact mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) vs₂ hP₁' hvo₁)
+          exact mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) vs₂ hP₁' hV₁)
     simp only at hrel₂ hvs₂; subst hvs₂
     simp only [Option.elim_some, liftM_bind, bind_assoc] at hmem0
     obtain ⟨a₅, hV₂, hmem0⟩ := (mem_support_bind_iff _ _ _).mp hmem0
     simp only [FullTranscript.append_snd] at hV₂
-    rw [OptionT.run_liftM_run, support_map,
-      support_simulateQ_eq_OracleComp_of_superSpec _ _ (fun _ => rfl), Set.mem_image] at hV₂
-    obtain ⟨vo₂, hvo₂, rfl⟩ := hV₂
-    rcases vo₂ with _ | vs₃
-    · exact absurd (none_mem_support_run_of_prover_verifier R₂ s₂ w₂ tr₂ (s₃, w₃) hP₂' hvo₂)
+    replace hV₂ := mem_support_liftM_oc hV₂
+    rcases a₅ with _ | vs₃
+    · exact absurd (none_mem_support_run_of_prover_verifier R₂ s₂ w₂ tr₂ (s₃, w₃) hP₂' hV₂)
         (h₂nf s₂ w₂ hrel₂)
     simp only [Option.elim_some, Option.getM_some, pure_bind] at hmem0
     change none ∈ support (pure (some ((tr₁ ++ₜ tr₂, s₃, w₃), vs₃)) : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Option _)) at hmem0
@@ -168,23 +164,19 @@ theorem append_perfectCompleteness_empty_proof
       rwa [← liftComp_eq_liftM, mem_support_liftComp_iff] at hz
     obtain ⟨a₄, hV₁, hx⟩ := (mem_support_bind_iff _ _ _).mp hx
     simp only [FullTranscript.append_fst] at hV₁
-    rw [OptionT.run_liftM_run, support_map,
-      support_simulateQ_eq_OracleComp_of_superSpec _ _ (fun _ => rfl), Set.mem_image] at hV₁
-    obtain ⟨vo₁, hvo₁, rfl⟩ := hV₁
-    rcases vo₁ with _ | vs₂
+    replace hV₁ := mem_support_liftM_oc hV₁
+    rcases a₄ with _ | vs₂
     · simp at hx
     obtain ⟨hrel₂, hvs₂⟩ := h₁' ((tr₁, s₂, w₂), vs₂)
       (by rw [OptionT.mem_support_iff]
-          exact mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) vs₂ hP₁' hvo₁)
+          exact mem_support_run_of_prover_verifier R₁ stmt wit tr₁ (s₂, w₂) vs₂ hP₁' hV₁)
     simp only at hrel₂ hvs₂
     subst hvs₂
     simp only [Option.elim_some, liftM_bind, bind_assoc] at hx
     obtain ⟨a₅, hV₂, hx⟩ := (mem_support_bind_iff _ _ _).mp hx
     simp only [FullTranscript.append_snd] at hV₂
-    rw [OptionT.run_liftM_run, support_map,
-      support_simulateQ_eq_OracleComp_of_superSpec _ _ (fun _ => rfl), Set.mem_image] at hV₂
-    obtain ⟨vo₂, hvo₂, rfl⟩ := hV₂
-    rcases vo₂ with _ | vs₃
+    replace hV₂ := mem_support_liftM_oc hV₂
+    rcases a₅ with _ | vs₃
     · simp at hx
     simp only [Option.elim_some, Option.getM_some, pure_bind] at hx
     change some x ∈ support (pure (some ((tr₁ ++ₜ tr₂, s₃, w₃), vs₃))
@@ -193,7 +185,7 @@ theorem append_perfectCompleteness_empty_proof
     subst hx
     obtain ⟨hrel₃, hvs₃⟩ := h₂' s₂ w₂ hrel₂ ((tr₂, s₃, w₃), vs₃)
       (by rw [OptionT.mem_support_iff]
-          exact mem_support_run_of_prover_verifier R₂ s₂ w₂ tr₂ (s₃, w₃) vs₃ hP₂' hvo₂)
+          exact mem_support_run_of_prover_verifier R₂ s₂ w₂ tr₂ (s₃, w₃) vs₃ hP₂' hV₂)
     simp only at hrel₃ hvs₃ ⊢
     exact ⟨hrel₃, hvs₃⟩
 

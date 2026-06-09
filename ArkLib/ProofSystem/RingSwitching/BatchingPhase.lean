@@ -569,10 +569,11 @@ theorem batchingReduction_perfectCompleteness
 /-- Row-expansion form of `compute_s0` on the tensor sent by the honest embedding of an arbitrary
 large-field multilinear polynomial `t'`.
 
-This packages the exact orientation currently used by the batching verifier: `compute_s0` reads
-`P.decomposeRows`, so it extracts the basis coordinates of the `t'` value in the `φ₁` factor and
-weights them by the suffix equality factor. The sharp batching RBR bridge can use this lemma to
-separate the already-proven row extraction from the remaining KState/verifier-run plumbing. -/
+This packages the orientation used by the batching verifier: `compute_s0` reads
+`P.decomposeColumns`, so it extracts the basis coordinates of the *suffix equality factor* (the
+`φ₀`/`eq` tensor factor) and weights them by `eqTilde(u, y)`, scaling the `t'` value at each
+Boolean suffix. This is the column form that matches the witness-independent batching multiplier
+`compute_A_func` — see `compute_s0_eq_sum_A_func`. -/
 lemma compute_s0_embedded_MLP_eval_eq_sum
     [IsDomain L] [IsDomain K]
     (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) (y : Fin κ → L) :
@@ -581,18 +582,43 @@ lemma compute_s0_embedded_MLP_eval_eq_sum
         eqTilde (fun i => (if u i == 1 then (1 : L) else 0)) y *
           (∑ w : Fin ℓ' → Fin 2,
             P.basis.repr
-                (eval (fun i => (if w i == 1 then (1 : L) else 0)) t'.val) u •
-              (eqTilde (fun i => (if w i == 1 then (1 : L) else 0))
-                (getEvaluationPointSuffix κ L ℓ ℓ' h_l r))) := by
+                (eqTilde (fun i => (if w i == 1 then (1 : L) else 0))
+                  (getEvaluationPointSuffix κ L ℓ ℓ' h_l r)) u •
+              (eval (fun i => (if w i == 1 then (1 : L) else 0)) t'.val)) := by
   unfold compute_s0
   apply Finset.sum_congr rfl
   intro u _
-  rw [decomposeRows_embedded_MLP_eval']
+  rw [decomposeColumns_embedded_MLP_eval']
 
-/-- Mismatch polynomial from row-decomposition difference `msg0 - s_bar`. -/
+/-- **Round-0 batching consistency (completeness keystone).** For the honest prover's tensor
+`ŝ = embedded_MLP_eval t' r`, the verifier's batched sumcheck target `compute_s0 ŝ y` equals the
+honest sumcheck value `Σ_x A_func(x)·t'(x)`, where `A_func = compute_A_func` is the verifier's
+(witness-independent) batching multiplier. This is the identity the batching perfect-completeness
+needs (`sumcheck_target = Σ_cube H` with `H = A_MLE · t'`). It holds because `compute_s0` reads the
+**column** decomposition (`decomposeColumns_embedded_MLP_eval'`), which puts `β.repr` on the
+verifier-known `eq`-factor — matching `A_func`'s structure. The proof is a `sum_comm` + `eqTilde`
+symmetry rearrangement: both sides equal `Σ_u Σ_w β.repr(eq̃(w,suffix))_u • (eq̃(u,y)·t'(w))`. -/
+lemma compute_s0_eq_sum_A_func
+    [IsDomain L] [IsDomain K]
+    (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) (y : Fin κ → L) :
+    compute_s0 κ L K P (embedded_MLP_eval κ L K P ℓ ℓ' h_l t' r) y =
+      ∑ x : Fin ℓ' → Fin 2,
+        compute_A_func κ L K P ℓ' (getEvaluationPointSuffix κ L ℓ ℓ' h_l r) y x *
+          eval (fun i => (if x i == 1 then (1 : L) else 0)) t'.val := by
+  rw [compute_s0_embedded_MLP_eval_eq_sum]
+  unfold compute_A_func
+  simp only [Finset.sum_mul, Finset.mul_sum, smul_mul_assoc, mul_smul_comm]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl (fun u _ => Finset.sum_congr rfl (fun w _ => ?_))
+  rw [eqTilde_comm (getEvaluationPointSuffix κ L ℓ ℓ' h_l r)
+    (fun i => (if w i == 1 then (1 : L) else 0))]
+
+/-- Mismatch polynomial from column-decomposition difference `msg0 - s_bar`. The batching verifier
+target `compute_s0` reads `decomposeColumns`, so the soundness mismatch test uses the same
+(faithful, by `decomposeColumns_spec`) column decomposition. -/
 noncomputable def batchingMismatchPoly (msg0 s_bar : P.A) : MvPolynomial (Fin κ) L :=
   MvPolynomial.MLE (fun u : Fin κ → Fin 2 =>
-    P.decomposeRows msg0 u - P.decomposeRows s_bar u)
+    P.decomposeColumns msg0 u - P.decomposeColumns s_bar u)
 
 /-- The mismatch polynomial evaluates to the `compute_s0` difference. -/
 lemma batching_compute_s0_sub_eq_eval_mismatch
@@ -611,7 +637,7 @@ lemma batchingMismatchPoly_totalDegree_le
   have h_mem : Poly ∈ MvPolynomial.restrictDegree (Fin κ) L 1 := by
     exact (MvPolynomial.MLE_mem_restrictDegree (σ := Fin κ) (R := L)
       (evals := fun u : Fin κ → Fin 2 =>
-        P.decomposeRows msg0 u - P.decomposeRows s_bar u))
+        P.decomposeColumns msg0 u - P.decomposeColumns s_bar u))
   have h_degOf : ∀ i : Fin κ, MvPolynomial.degreeOf i Poly ≤ 1 := by
     intro i
     exact (MvPolynomial.mem_restrictDegree_iff_degreeOf_le (p := Poly) (n := 1)).1 h_mem i
@@ -631,25 +657,26 @@ lemma batchingMismatchPoly_totalDegree_le
     _ ≤ κ := by
       simpa using (Finset.card_le_univ (s := m.support))
 
-/-- If the two batched `A`-values differ, their row-decomposition mismatch polynomial is nonzero. -/
+/-- If the two batched `A`-values differ, their column-decomposition mismatch polynomial is
+nonzero. -/
 lemma batchingMismatchPoly_nonzero_of_ne
     (msg0 s_bar : P.A) (h_ne : msg0 ≠ s_bar) :
     batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar ≠ 0 := by
-  have h_rows_ne :
-      (P.decomposeRows msg0) ≠
-      (P.decomposeRows s_bar) := by
+  have h_cols_ne :
+      (P.decomposeColumns msg0) ≠
+      (P.decomposeColumns s_bar) := by
     intro h_eq
     apply h_ne
     calc msg0
-      _ = ∑ u, P.φ₀ (P.decomposeRows msg0 u) * P.φ₁ (P.basis u) := P.decomposeRows_spec msg0
-      _ = ∑ u, P.φ₀ (P.decomposeRows s_bar u) * P.φ₁ (P.basis u) := by simp [h_eq]
-      _ = s_bar := (P.decomposeRows_spec s_bar).symm
+      _ = ∑ u, P.φ₁ (P.decomposeColumns msg0 u) * P.φ₀ (P.basis u) := P.decomposeColumns_spec msg0
+      _ = ∑ u, P.φ₁ (P.decomposeColumns s_bar u) * P.φ₀ (P.basis u) := by simp [h_eq]
+      _ = s_bar := (P.decomposeColumns_spec s_bar).symm
   have h_diff_ne :
       (fun u : Fin κ → Fin 2 =>
-        P.decomposeRows msg0 u -
-        P.decomposeRows s_bar u) ≠ 0 := by
+        P.decomposeColumns msg0 u -
+        P.decomposeColumns s_bar u) ≠ 0 := by
     intro h_zero
-    apply h_rows_ne
+    apply h_cols_ne
     funext u
     exact sub_eq_zero.mp (congrFun h_zero u)
   intro h_poly_zero
@@ -663,8 +690,8 @@ lemma batchingMismatchPoly_nonzero_of_ne
   have hu_eval_mle :
       MvPolynomial.eval (fun i => ((u i : Fin 2) : L))
         (batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar) =
-      P.decomposeRows msg0 u -
-        P.decomposeRows s_bar u := by
+      P.decomposeColumns msg0 u -
+        P.decomposeColumns s_bar u := by
     simp [batchingMismatchPoly, MvPolynomial.MLE_eval_zeroOne]
   rw [hu_eval_mle] at hu_eval_zero
   exact hu_eval_zero
@@ -678,22 +705,23 @@ lemma batchingMismatchPoly_nonzero_of_embed_ne
     batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0
       (embedded_MLP_eval κ L K P ℓ ℓ' h_l t' stmt.t_eval_point) ≠ 0 := by
   let s_bar := embedded_MLP_eval κ L K P ℓ ℓ' h_l t' stmt.t_eval_point
-  have h_rows_ne :
-      (P.decomposeRows msg0) ≠
-      (P.decomposeRows s_bar) := by
+  have h_cols_ne :
+      (P.decomposeColumns msg0) ≠
+      (P.decomposeColumns s_bar) := by
     intro h_eq
     have hs : msg0 = s_bar := by
       calc msg0
-        _ = ∑ u, P.φ₀ (P.decomposeRows msg0 u) * P.φ₁ (P.basis u) := P.decomposeRows_spec msg0
-        _ = ∑ u, P.φ₀ (P.decomposeRows s_bar u) * P.φ₁ (P.basis u) := by simp [h_eq]
-        _ = s_bar := (P.decomposeRows_spec s_bar).symm
+        _ = ∑ u, P.φ₁ (P.decomposeColumns msg0 u) * P.φ₀ (P.basis u) :=
+          P.decomposeColumns_spec msg0
+        _ = ∑ u, P.φ₁ (P.decomposeColumns s_bar u) * P.φ₀ (P.basis u) := by simp [h_eq]
+        _ = s_bar := (P.decomposeColumns_spec s_bar).symm
     exact h_embed_ne (by simpa [s_bar] using hs.symm)
   have h_diff_ne :
       (fun u : Fin κ → Fin 2 =>
-        P.decomposeRows msg0 u -
-        P.decomposeRows s_bar u) ≠ 0 := by
+        P.decomposeColumns msg0 u -
+        P.decomposeColumns s_bar u) ≠ 0 := by
     intro h_zero
-    apply h_rows_ne
+    apply h_cols_ne
     funext u
     exact sub_eq_zero.mp (congrFun h_zero u)
   intro h_poly_zero
@@ -710,8 +738,8 @@ lemma batchingMismatchPoly_nonzero_of_embed_ne
   have hu_eval_mle :
       MvPolynomial.eval (fun i => ((u i : Fin 2) : L))
         (batchingMismatchPoly (κ := κ) (L := L) (K := K) (P := P) msg0 s_bar) =
-      P.decomposeRows msg0 u -
-        P.decomposeRows s_bar u := by
+      P.decomposeColumns msg0 u -
+        P.decomposeColumns s_bar u := by
     simp [batchingMismatchPoly, MvPolynomial.MLE_eval_zeroOne]
   rw [hu_eval_mle] at hu_eval_zero
   exact hu_eval_zero
