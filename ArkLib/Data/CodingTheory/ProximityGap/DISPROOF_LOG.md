@@ -2745,3 +2745,35 @@ missing ingredient is now ONLY the integer/combinatorial fiber question past Joh
   with point-equality discharge; the multi-alternative `first` chains break parsing across lines
   (keep alternatives single-line); simp_all hits maxRecDepth at 8000 on the 6-point bash.
   Technique recorded; finishing is mechanical.
+
+### O46 — ATTACK ON THE RESIDUAL ITSELF: the coset construction — first field-independent t ≥ 2 interior fiber lower bound (Round-6 residual closed on subgroup-structured domains)
+
+The isolated O45 residual (the multi-symmetric zero-fiber count) is attacked directly and
+yields a NEW theorem (TopDirectionLineCount.lean §CosetConstruction, axiom-clean, 0 sorry):
+
+* `loc_coset` — loc(x·H) = X^d − x^d for the full d-th-roots packet H (pure scaling; the
+  aeval-rescaling proof works over any field, no characteristic condition, no Newton).
+* `loc_coset_union` — loc(⋃ᵢ xᵢH) = expand_d(∏ᵢ(X − xᵢ^d)): the locator of a union of m
+  distinct cosets is a polynomial in X^d.
+* `coset_union_esymm_zero` — hence e_j = 0 for EVERY j not divisible by d: coset unions
+  live in the multi-symmetric zero fiber at all t < d.
+* `coset_fiber_lower_bound` — THE COUNT: the zero fiber at w = m·d, any t < d, contains
+  ≥ C(|S|, m) supports (S = coset representatives; injection by coset reconstruction).
+  Numerics: F₁₃, H = {1,3,9}: the C(4,2) = 6 unions are the ENTIRE (w=6,t=2) zero fiber —
+  exhaustive there (suggesting a matching upper bound on cyclic domains, left open).
+
+Combined with O45's lossless transfer (zero_fiber_filter_eq), this is a FIELD-INDEPENDENT
+syndrome-side list lower bound at codimension excess c = t for every t ≤ d−1 — closing the
+Round-6 named residual ("multiplicative joint-symmetric count at t ≥ 2 still OPEN", q^t
+denominator) by CONCENTRATION on subgroup-structured smooth domains. Scaling: on μ_n with
+d ≈ √n the bound is C(√n, m) = exp(Ω(√n)) at t ≈ √n − 1 — super-polynomial, q-independent,
+t ≫ 2, strictly deeper than the in-tree t=1 (/q) and t=2 (/q²) averaging bounds.
+
+HONEST LIMITS (the remaining wall, sharpened): (i) t < d forces t ≤ largest-proper-divisor
+scale; on PURE 2-POWER domains d | n and d | w = n/2−t force d | t, so the construction
+provably cannot reach its own threshold there — the 2-adic obstruction matches the C19/
+descent lane's focus on 2-power towers. (ii) The prize band needs t = Θ(n); the gap
+between t ≈ √n (now CLOSED, constructively) and t = Θ(n) (open) is the exact residual.
+The open core after O46: field-independent zero-fiber bounds at t = Θ(n) on 2-power
+smooth domains — every other parameter regime of the reduction now has a machine-checked
+constructive answer.

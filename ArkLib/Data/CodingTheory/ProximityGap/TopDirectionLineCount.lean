@@ -358,4 +358,221 @@ theorem zero_fiber_instance :
 
 end PointFiber
 
+/-! ## The coset construction: a field-independent `t ≥ 2` interior fiber lower bound
+
+The first attack on the isolated residual itself. On a domain containing the full group
+`H` of `d`-th roots of unity (`loc H = X^d − 1`), the locator of a union of `m` distinct
+cosets is `∏ᵢ (X^d − xᵢ^d) = expand d (∏ᵢ (X − xᵢ^d))` — a polynomial in `X^d`, by pure
+ring identity (no characteristic condition, no Newton identities). Hence **every** union
+of `m` distinct cosets has `e₁ = ⋯ = e_{d−1} = 0`: the zero fiber at `w = m·d` and every
+`t < d` contains at least `C(#cosets, m)` supports — **field-independent**, and by
+`zero_fiber_filter_eq` this is verbatim a syndrome-side list lower bound at codimension
+excess `c = t` for every `t ≤ d−1 ≥ 2`. This closes (on subgroup-structured smooth
+domains) the Round-6 named residual "multiplicative joint-symmetric count at `t ≥ 2`
+still OPEN": the count is achieved by concentration, with no `q`-loss.
+
+Numerics: in `F₁₃` with `H = {1,3,9}` (`d = 3`), the four cosets give `C(4,2) = 6`
+unions of size 6 with `e₁ = e₂ = 0` — and these are the ENTIRE zero fiber there (an
+exhaustiveness suggestive of a matching upper bound on cyclic domains, left open).
+Scaling: on `μ_n` with `d ≈ √n`, the bound is `C(√n, w/√n) = exp(Ω(√n))` at `t ≈ √n−1` —
+super-polynomial, field-independent, `t ≫ 2` — strictly deeper than the in-tree `t = 1`
+(`/q`) and `t = 2` (`/q²`) averaging bounds. Honest limits: `t < d` forces
+`t = O(largest proper divisor)`, so pure 2-power domains at threshold `d ∣ w` block the
+construction (`d ∣ w` and `d ∣ n` force `d ∣ t`), and the prize band needs `t = Θ(n)` —
+the gap between `t ≈ √n` and `t = Θ(n)` is the remaining open core. -/
+
+section CosetConstruction
+
+lemma loc_eval_zero {E : Finset F} {x : F} (hx : x ∈ E) : (loc E).eval x = 0 := by
+  rw [loc, eval_prod]
+  exact Finset.prod_eq_zero hx (by simp)
+
+lemma loc_eval_ne_zero {E : Finset F} {x : F} (hx : x ∉ E) : (loc E).eval x ≠ 0 := by
+  rw [loc, eval_prod]
+  refine Finset.prod_ne_zero_iff.mpr fun a ha => ?_
+  simp only [eval_sub, eval_X, eval_C, sub_ne_zero]
+  exact fun hEq => hx (hEq ▸ ha)
+
+lemma mem_iff_loc_eval_zero {E : Finset F} {x : F} : x ∈ E ↔ (loc E).eval x = 0 :=
+  ⟨loc_eval_zero, fun h => by_contra fun hx => loc_eval_ne_zero hx h⟩
+
+variable [DecidableEq F]
+
+omit [DecidableEq F] in
+/-- With `loc H = X^d − 1`, membership in `H` is exactly being a `d`-th root of unity. -/
+lemma mem_iff_pow_eq_one {H : Finset F} {d : ℕ} (hH : loc H = X ^ d - 1) {x : F} :
+    x ∈ H ↔ x ^ d = 1 := by
+  rw [mem_iff_loc_eval_zero, hH]
+  simp [sub_eq_zero]
+
+omit [DecidableEq F] in
+lemma card_of_loc_eq {H : Finset F} {d : ℕ} (_hd : 0 < d) (hH : loc H = X ^ d - 1) :
+    H.card = d := by
+  have h1 := loc_natDegree H
+  rw [hH] at h1
+  rw [show (1 : F[X]) = C 1 from (map_one C).symm, natDegree_X_pow_sub_C] at h1
+  omega
+
+/-- **The coset locator identity**: `loc(x·H) = X^d − x^d`. Pure scaling, any field. -/
+lemma loc_coset {H : Finset F} {d : ℕ} (hd : 0 < d) (hH : loc H = X ^ d - 1)
+    {x : F} (hx : x ≠ 0) :
+    loc (H.image (x * ·)) = X ^ d - C (x ^ d) := by
+  have hcard := card_of_loc_eq hd hH
+  have hinj : Set.InjOn (x * ·) H := fun a _ b _ h => by
+    simpa [hx] using h
+  rw [loc, Finset.prod_image hinj]
+  have hfac : ∀ h ∈ H, (X : F[X]) - C (x * h) = C x * (C x⁻¹ * X - C h) := by
+    intro h _
+    rw [mul_sub, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hx, C_1, one_mul, ← C_mul]
+  rw [Finset.prod_congr rfl hfac, Finset.prod_mul_distrib, Finset.prod_const, hcard]
+  have haev : ∏ h ∈ H, (C x⁻¹ * X - C h)
+      = Polynomial.aeval (C x⁻¹ * X : F[X]) (loc H) := by
+    rw [loc, map_prod]
+    refine Finset.prod_congr rfl fun h _ => ?_
+    rw [map_sub, Polynomial.aeval_X, Polynomial.aeval_C]
+    rfl
+  rw [haev, hH, map_sub, map_pow, Polynomial.aeval_X, map_one, mul_pow, ← C_pow, ← C_pow,
+    mul_sub, ← mul_assoc, ← C_mul]
+  rw [show x ^ d * x⁻¹ ^ d = 1 by
+    rw [← mul_pow, mul_inv_cancel₀ hx, one_pow]]
+  rw [C_1, one_mul, mul_one]
+
+/-- Cosets with distinct `d`-th powers are disjoint. -/
+lemma coset_disjoint {H : Finset F} {d : ℕ} (hH : loc H = X ^ d - 1)
+    {x x' : F} (hne : x ^ d ≠ x' ^ d) :
+    Disjoint (H.image (x * ·)) (H.image (x' * ·)) := by
+  rw [Finset.disjoint_left]
+  rintro y hy hy'
+  obtain ⟨h, hh, rfl⟩ := Finset.mem_image.mp hy
+  obtain ⟨h', hh', heq⟩ := Finset.mem_image.mp hy'
+  apply hne
+  have e1 : (x * h) ^ d = x ^ d := by
+    rw [mul_pow, (mem_iff_pow_eq_one hH).mp hh, mul_one]
+  have e2 : (x' * h') ^ d = x' ^ d := by
+    rw [mul_pow, (mem_iff_pow_eq_one hH).mp hh', mul_one]
+  rw [← e1, ← heq, e2]
+
+/-- **The gap theorem**: the locator of a disjoint union of `m` cosets is the `d`-fold
+expansion of the locator of the `d`-th powers — every coefficient at a non-multiple of
+`d` vanishes. -/
+lemma loc_coset_union {H : Finset F} {d : ℕ} (hd : 0 < d) (hH : loc H = X ^ d - 1)
+    {T : Finset F} (hT0 : ∀ x ∈ T, x ≠ 0) (hinj : Set.InjOn (fun x : F => x ^ d) (T : Set F)) :
+    loc (T.biUnion fun x => H.image (x * ·))
+      = Polynomial.expand F d (loc (T.image (· ^ d))) := by
+  have hdisj : ∀ x ∈ T, ∀ x' ∈ T, x ≠ x' →
+      Disjoint (H.image (x * ·)) (H.image (x' * ·)) := by
+    intro x hx x' hx' hne
+    exact coset_disjoint hH fun hpow => hne (hinj hx hx' hpow)
+  rw [loc, Finset.prod_biUnion hdisj]
+  have hL : ∀ x ∈ T, ∏ y ∈ H.image (x * ·), (X - C y) = X ^ d - C (x ^ d) := by
+    intro x hx
+    exact loc_coset hd hH (hT0 x hx)
+  rw [Finset.prod_congr rfl hL, loc, map_prod, Finset.prod_image hinj]
+  refine Finset.prod_congr rfl fun x _ => ?_
+  rw [map_sub, Polynomial.expand_X, Polynomial.expand_C]
+
+/-- Coset unions sit in the multi-symmetric zero fiber: `e_j = 0` for every `j` not
+divisible by `d` with `j ≤ m·d` — in particular for all `1 ≤ j ≤ t < d`. -/
+theorem coset_union_esymm_zero {H : Finset F} {d : ℕ} (hd : 0 < d)
+    (hH : loc H = X ^ d - 1) {T : Finset F} (hT0 : ∀ x ∈ T, x ≠ 0)
+    (hinj : Set.InjOn (fun x : F => x ^ d) (T : Set F)) {j : ℕ} (hj1 : 0 < j)
+    (hjd : ¬ d ∣ j) (hjw : j ≤ (T.biUnion fun x => H.image (x * ·)).card) :
+    (T.biUnion fun x => H.image (x * ·)).val.esymm j = 0 := by
+  have hdisj : ∀ x ∈ T, ∀ x' ∈ T, x ≠ x' →
+      Disjoint (H.image (x * ·)) (H.image (x' * ·)) := by
+    intro x hx x' hx' hne
+    exact coset_disjoint hH fun hpow => hne (hinj hx hx' hpow)
+  have hcardE : d ∣ (T.biUnion fun x => H.image (x * ·)).card := by
+    rw [Finset.card_biUnion hdisj]
+    refine Finset.dvd_sum fun x hx => ?_
+    rw [Finset.card_image_of_injOn (fun a _ b _ h => by simpa [hT0 x hx] using h),
+      card_of_loc_eq hd hH]
+  have hnd : ¬ d ∣ ((T.biUnion fun x => H.image (x * ·)).card - j) := by
+    intro hdvd
+    have h2 : d ∣ ((T.biUnion fun x => H.image (x * ·)).card
+        - ((T.biUnion fun x => H.image (x * ·)).card - j)) := Nat.dvd_sub hcardE hdvd
+    rw [Nat.sub_sub_self hjw] at h2
+    exact hjd h2
+  have hco : (loc (T.biUnion fun x => H.image (x * ·))).coeff
+      ((T.biUnion fun x => H.image (x * ·)).card - j) = 0 := by
+    rw [loc_coset_union hd hH hT0 hinj, Polynomial.coeff_expand hd, if_neg hnd]
+  have hcoeff := loc_coeff_esymm (T.biUnion fun x => H.image (x * ·))
+    (k := (T.biUnion fun x => H.image (x * ·)).card - j) (by omega)
+  rw [Nat.sub_sub_self hjw] at hcoeff
+  rw [hcoeff] at hco
+  rcases mul_eq_zero.mp hco with hbad | hgood
+  · exact absurd hbad (pow_ne_zero _ (neg_ne_zero.mpr one_ne_zero))
+  · exact hgood
+
+open Classical in
+/-- **The field-independent `t ≥ 2` interior fiber lower bound** (the Round-6 named
+residual, closed on subgroup-structured domains): the multi-symmetric zero fiber at
+`w = m·d` and every `t < d` contains all `C(|S|, m)` unions of `m` distinct cosets of
+the `d`-th-roots packet `H` — concentration, with **no field-size loss**. Composed with
+`zero_fiber_filter_eq`, this is a syndrome-side list lower bound at codimension excess
+`c = t` for every `t ≤ d − 1`, on any domain containing the cosets. -/
+theorem coset_fiber_lower_bound {H : Finset F} {d : ℕ} (hd : 0 < d)
+    (hH : loc H = X ^ d - 1) {S : Finset F} (hS0 : ∀ x ∈ S, x ≠ 0)
+    (hinj : Set.InjOn (fun x : F => x ^ d) (S : Set F))
+    {D₀ : Finset F} (hsub : ∀ x ∈ S, ∀ h ∈ H, x * h ∈ D₀)
+    {m t : ℕ} (hm : 0 < m) (ht : t < d) :
+    S.card.choose m ≤ ((D₀.powersetCard (m * d)).filter
+      (fun E => ∀ j ∈ Finset.Icc 1 t, E.val.esymm j = 0)).card := by
+  rw [← Finset.card_powersetCard m S]
+  apply Finset.card_le_card_of_injOn (fun T => T.biUnion fun x => H.image (x * ·))
+  · intro T hT
+    have hT2 := Finset.mem_coe.mp hT
+    rw [Finset.mem_powersetCard] at hT2
+    obtain ⟨hTS, hTm⟩ := hT2
+    have hT0 : ∀ x ∈ T, x ≠ 0 := fun x hx => hS0 x (hTS hx)
+    have hinjT : Set.InjOn (fun x : F => x ^ d) (T : Set F) :=
+      hinj.mono (by exact_mod_cast hTS)
+    have hdisj : ∀ x ∈ T, ∀ x' ∈ T, x ≠ x' →
+        Disjoint (H.image (x * ·)) (H.image (x' * ·)) :=
+      fun x hx x' hx' hne => coset_disjoint hH fun hpow =>
+        hne (hinjT (Finset.mem_coe.mpr hx) (Finset.mem_coe.mpr hx') hpow)
+    have hcard : (T.biUnion fun x => H.image (x * ·)).card = m * d := by
+      rw [Finset.card_biUnion hdisj,
+        Finset.sum_congr rfl (fun x hx => by
+          rw [Finset.card_image_of_injOn (fun a _ b _ h => by simpa [hT0 x hx] using h),
+            card_of_loc_eq hd hH]),
+        Finset.sum_const, smul_eq_mul, hTm]
+    simp only [Finset.mem_coe, Finset.mem_filter]
+    constructor
+    · rw [Finset.mem_powersetCard]
+      refine ⟨?_, hcard⟩
+      intro y hy
+      obtain ⟨x, hx, hy2⟩ := Finset.mem_biUnion.mp hy
+      obtain ⟨h, hh, rfl⟩ := Finset.mem_image.mp hy2
+      exact hsub x (hTS hx) h hh
+    · intro j hj
+      rw [Finset.mem_Icc] at hj
+      have hmd : d ≤ m * d := Nat.le_mul_of_pos_left d hm
+      refine coset_union_esymm_zero hd hH hT0 hinjT (by omega) ?_ (by omega)
+      intro hdvd
+      have := Nat.le_of_dvd (by omega) hdvd
+      omega
+  · intro T hT T' hT' heq
+    have hTS := (Finset.mem_powersetCard.mp (Finset.mem_coe.mp hT)).1
+    have hTS' := (Finset.mem_powersetCard.mp (Finset.mem_coe.mp hT')).1
+    have hone : (1 : F) ∈ H := (mem_iff_pow_eq_one hH).mpr (one_pow d)
+    have key : ∀ (A B : Finset F), A ⊆ S → B ⊆ S →
+        (A.biUnion fun x => H.image (x * ·)) = (B.biUnion fun x => H.image (x * ·)) →
+        A ⊆ B := by
+      intro A B hAS hBS hU x hxA
+      have hxU : x ∈ B.biUnion fun x => H.image (x * ·) := by
+        rw [← hU]
+        exact Finset.mem_biUnion.mpr ⟨x, hxA, Finset.mem_image.mpr ⟨1, hone, mul_one x⟩⟩
+      obtain ⟨x', hx', hy⟩ := Finset.mem_biUnion.mp hxU
+      obtain ⟨h, hh, hxe⟩ := Finset.mem_image.mp hy
+      have hpow : x ^ d = x' ^ d := by
+        rw [← hxe, mul_pow, (mem_iff_pow_eq_one hH).mp hh, mul_one]
+      have hxx : x = x' :=
+        hinj (Finset.mem_coe.mpr (hAS hxA)) (Finset.mem_coe.mpr (hBS hx')) hpow
+      rw [hxx]
+      exact hx'
+    exact Finset.Subset.antisymm (key T T' hTS hTS' heq) (key T' T hTS' hTS heq.symm)
+
+end CosetConstruction
+
 end TopLine
