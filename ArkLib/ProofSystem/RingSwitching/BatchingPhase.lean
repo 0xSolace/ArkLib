@@ -609,7 +609,7 @@ lemma compute_s0_eq_sum_A_func
   unfold compute_A_func
   simp only [Finset.sum_mul, Finset.mul_sum, smul_mul_assoc, mul_smul_comm]
   rw [Finset.sum_comm]
-  refine Finset.sum_congr rfl (fun u _ => Finset.sum_congr rfl (fun w _ => ?_))
+  refine Finset.sum_congr rfl (fun w _ => Finset.sum_congr rfl (fun u _ => ?_))
   rw [eqTilde_comm (getEvaluationPointSuffix κ L ℓ ℓ' h_l r)
     (fun i => (if w i == 1 then (1 : L) else 0))]
 
@@ -1048,4 +1048,5 @@ end RingSwitching
 #print axioms RingSwitching.BatchingPhase.batching_rbrExtractionFailureEvent_accept_pack_or_embed
 #print axioms RingSwitching.BatchingPhase.batching_doom_accept_imply_bad_of_bridges
 #print axioms RingSwitching.BatchingPhase.compute_s0_embedded_MLP_eval_eq_sum
+#print axioms RingSwitching.BatchingPhase.compute_s0_eq_sum_A_func
 #print axioms RingSwitching.BatchingPhase.probability_bound_badBatchingEventProp_sharp
