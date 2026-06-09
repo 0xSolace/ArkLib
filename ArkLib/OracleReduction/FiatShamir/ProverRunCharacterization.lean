@@ -191,6 +191,66 @@ theorem evalWithAnswerFn_processRound
   rw [evalWithAnswerFn_bind]
   rfl
 
+/-- Evaluating a lifted empty-shared-oracle computation against any answer table is independent of
+the table — and even of which appended oracle the lift targets. (An `OracleComp []ₒ` makes no
+queries, so the answer table is never consulted.) -/
+theorem eval_liftComp_emptySpec_cross {ι₁ ι₂ : Type} {s₁ : OracleSpec ι₁} {s₂ : OracleSpec ι₂}
+    {α : Type} (oa : OracleComp []ₒ α) (f : QueryImpl ([]ₒ + s₁) Id) (g : QueryImpl ([]ₒ + s₂) Id) :
+    evalWithAnswerFn f (OracleComp.liftComp oa ([]ₒ + s₁)) =
+      evalWithAnswerFn g (OracleComp.liftComp oa ([]ₒ + s₂)) := by
+  induction oa using OracleComp.inductionOn with
+  | pure a => simp [evalWithAnswerFn]
+  | query_bind t k ih => exact PEmpty.elim t
+
+set_option maxHeartbeats 1000000 in
+/-- **Challenge-free prover-run correspondence.** When the protocol has no challenge rounds and no
+shared oracle (`oSpec = []ₒ`), the Fiat-Shamir prover run and the interactive prover run produce the
+same messages (the FS message bundle is the interactive transcript's messages via `toMessagesUpTo`),
+the same prover state, and carry the input statement — evaluated against any answer tables, since
+neither run queries a challenge oracle. The prover half of the challenge-free basic-FS HVZK coupling.
+-/
+theorem prover_correspondence [IsEmpty pSpec.ChallengeIdx]
+    (P : Prover []ₒ StmtIn WitIn StmtOut WitOut pSpec) (stmt : StmtIn) (wit : WitIn) (i : Fin (n + 1))
+    (gFS : (q : ([]ₒ + fsChallengeOracle StmtIn pSpec).Domain) →
+      ([]ₒ + fsChallengeOracle StmtIn pSpec).Range q)
+    (gInt : (q : ([]ₒ + [pSpec.Challenge]ₒ).Domain) → ([]ₒ + [pSpec.Challenge]ₒ).Range q) :
+    (evalWithAnswerFn (QueryImpl.ofFn gFS)
+        (P.runToRoundFS i stmt (P.input (stmt, wit)))).1 =
+      (evalWithAnswerFn (QueryImpl.ofFn gInt) (P.runToRound i stmt wit)).1.toMessagesUpTo ∧
+    (evalWithAnswerFn (QueryImpl.ofFn gFS)
+        (P.runToRoundFS i stmt (P.input (stmt, wit)))).2.2 =
+      (evalWithAnswerFn (QueryImpl.ofFn gInt) (P.runToRound i stmt wit)).2 ∧
+    (evalWithAnswerFn (QueryImpl.ofFn gFS)
+        (P.runToRoundFS i stmt (P.input (stmt, wit)))).2.1 = stmt := by
+  induction i using Fin.induction with
+  | zero =>
+    refine ⟨?_, ?_, ?_⟩ <;>
+      simp only [Prover.runToRoundFS, Prover.runToRound, Fin.induction_zero, evalWithAnswerFn_pure]
+    · exact Subsingleton.elim _ _
+  | succ i ih =>
+    obtain ⟨ih1, ih2, ih3⟩ := ih
+    have hd : pSpec.dir i = .P_to_V := dir_eq_PtoV_of_isEmpty_challengeIdx i
+    have hFS : P.runToRoundFS i.succ stmt (P.input (stmt, wit))
+        = P.processRoundFS i (P.runToRoundFS i.castSucc stmt (P.input (stmt, wit))) := by
+      simp only [Prover.runToRoundFS, Fin.induction_succ]
+    have hInt : P.runToRound i.succ stmt wit
+        = P.processRound i (P.runToRound i.castSucc stmt wit) := by
+      simp only [Prover.runToRound, Fin.induction_succ]
+    rw [hFS, processRoundFS_of_PtoV P i hd, hInt, processRound_of_PtoV P i hd]
+    simp only [evalWithAnswerFn_bind]
+    have hsend : evalWithAnswerFn (QueryImpl.ofFn gFS)
+          (P.sendMessage ⟨i, hd⟩ (evalWithAnswerFn (QueryImpl.ofFn gFS)
+            (P.runToRoundFS i.castSucc stmt (P.input (stmt, wit)))).2.2)
+        = evalWithAnswerFn (QueryImpl.ofFn gInt)
+          (P.sendMessage ⟨i, hd⟩ (evalWithAnswerFn (QueryImpl.ofFn gInt)
+            (P.runToRound i.castSucc stmt wit)).2) := by
+      rw [ih2]
+      exact eval_liftComp_emptySpec_cross _ _ _
+    refine ⟨?_, ?_, ?_⟩
+    · rw [hsend, ih1]; exact (toMessagesUpTo_concat hd _ _).symm
+    · exact congrArg Prod.snd hsend
+    · exact ih3
+
 end Reduction
 
 #print axioms Reduction.dir_eq_PtoV_of_isEmpty_challengeIdx
