@@ -1428,7 +1428,9 @@ import ArkLib.ToMathlib.OffcentreKeystoneAssembly
 import ArkLib.ToMathlib.OracleCompEvalDistBindComm
 import ArkLib.ToMathlib.OracleZKTransferBricks
 import ArkLib.ToMathlib.PartitionRecursion
+import ArkLib.ToMathlib.PlaceGeometryFromLocalSeries
 import ArkLib.ToMathlib.PlaceGeometrySupply
+import ArkLib.ToMathlib.PlaceSeriesCanonical
 import ArkLib.ToMathlib.PlonkSpartanAlgebra
 import ArkLib.ToMathlib.Polynomial.DegreeLT
 import ArkLib.ToMathlib.Polynomial.EvalExt
@@ -1459,6 +1461,7 @@ import ArkLib.ToMathlib.Section5Concrete
 import ArkLib.ToMathlib.Section5ConcreteJohnson
 import ArkLib.ToMathlib.SeparableLowDegree
 import ArkLib.ToMathlib.SiegelInterpolation
+import ArkLib.ToMathlib.SignedGradedSupply
 import ArkLib.ToMathlib.SpartanBricks
 import ArkLib.ToMathlib.SpartanRBRProof
 import ArkLib.ToMathlib.SqSumCardSupport
