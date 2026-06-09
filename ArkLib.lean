@@ -1347,6 +1347,7 @@ import ArkLib.ToMathlib.CoeffExtract
 import ArkLib.ToMathlib.CoeffHomDescent
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 import ArkLib.ToMathlib.CountingAgreementBricks
+import ArkLib.ToMathlib.CurveFamilyGenuine
 import ArkLib.ToMathlib.CurveFamilyHensel
 import ArkLib.ToMathlib.DG25CoveringRadiusProof
 import ArkLib.ToMathlib.DescentTrichotomy
