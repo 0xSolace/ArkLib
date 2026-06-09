@@ -8,6 +8,7 @@ import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.Append
+import ArkLib.OracleReduction.Composition.Sequential.SeqComposeOracleCompleteness
 import ArkLib.OracleReduction.Completeness
 import ArkLib.Data.Probability.Notation
 import ArkLib.OracleReduction.Security.RoundByRound
@@ -1198,6 +1199,8 @@ section FinalSumcheckStep
 ## Final Sumcheck Step
 -/
 
+variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
+
 /-- `pSpecFinalSumcheck L` is a single prover-to-verifier message (no challenge). -/
 instance : ProverOnly (pSpecFinalSumcheck L) where
   prover_first' := rfl
@@ -1828,6 +1831,71 @@ instance instCoreInteractionOracleReductionAppendCoherent :
 -/
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
+
+-- The keystone `exact` elaborates the `seqCompose`/`toReduction` dependent bridge against the
+-- concrete ring-switching statement/oracle families, which is `whnf`-heavy.
+set_option maxHeartbeats 4000000 in
+/-- **Sumcheck-loop perfect completeness (issue #29, phase 1).** The `seqCompose` of the `ℓ'`
+per-round oracle reductions (`sumcheckLoopOracleReduction = OracleReduction.seqCompose …
+iteratedSumcheckOracleReduction`) is perfectly complete from `0` to `Fin.last ℓ'`.
+
+Pure pass-through to the proven oracle-level n-ary keystone
+`OracleReduction.seqCompose_perfectCompleteness_threaded`, fed with:
+- the per-round reductions `iteratedSumcheckOracleReduction i` and the relation family
+  `fun i => sumcheckRoundRelation … i` (so `rel 0`/`rel (Fin.last ℓ')` are the loop endpoints and
+  the per-round seam `rel i.castSucc → rel i.succ` is exactly the `_proved` residual shape);
+- `hValid`: every round's protocol `pSpecSumcheckRound L = ⟨![P_to_V, V_to_P], …⟩` is nonempty and
+  opens with a `P_to_V` prover message (by `rfl`);
+- `hImplSupp` over the empty oracle spec `[]ₒ` (vacuous);
+- the per-round completeness `h i = iteratedSumcheckOracleReduction_perfectCompleteness_proved`.
+The per-round challenge `Fintype`/`Inhabited` are supplied locally (the challenge type at index `1`
+is the field `L`). -/
+theorem sumcheckLoopOracleReduction_perfectCompleteness [IsDomain L]
+    (hInit : NeverFail init) :
+    OracleReduction.perfectCompleteness
+      (oracleReduction := sumcheckLoopOracleReduction κ L K P ℓ ℓ' aOStmtIn)
+      (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
+      (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn (Fin.last ℓ'))
+      (init := init) (impl := impl) := by
+  classical
+  haveI : Nonempty L := ⟨0⟩
+  -- per-round challenge finiteness/inhabitedness: the challenge type at index `1` is the field `L`
+  -- (index `0` is a `P_to_V` message, so its `ChallengeIdx` proof is absurd).
+  -- The per-round challenge type (at index `1`) is the field `L`; index `0` is a `P_to_V` message
+  -- so its `ChallengeIdx` proof is absurd. We supply `SampleableType`/`Fintype`/`Inhabited`
+  -- explicitly (via the explicit-args keystone form), avoiding the `(fun _ => p) i`-redex instance
+  -- mismatch for the literal per-round protocol `fun _ => pSpecSumcheckRound L`.
+  have hSamp : ∀ (_ : Fin ℓ'), ∀ j, SampleableType ((pSpecSumcheckRound L).Challenge j) :=
+    fun _ j => inferInstance
+  have hFin : ∀ (_ : Fin ℓ'), ∀ j, Fintype ((pSpecSumcheckRound L).Challenge j) := fun _ j => by
+    rcases j with ⟨⟨v, hv⟩, hj⟩
+    interval_cases v
+    · exact absurd hj (by simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound])
+    · simpa only [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound,
+        ProtocolSpec.Challenge, Matrix.cons_val_one, Matrix.cons_val_fin_one] using
+        (inferInstance : Fintype L)
+  have hInh : ∀ (_ : Fin ℓ'), ∀ j, Inhabited ((pSpecSumcheckRound L).Challenge j) := fun _ j => by
+    rcases j with ⟨⟨v, hv⟩, hj⟩
+    interval_cases v
+    · exact absurd hj (by simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound])
+    · simpa only [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound,
+        ProtocolSpec.Challenge, Matrix.cons_val_one, Matrix.cons_val_fin_one] using
+        (⟨(0 : L)⟩ : Inhabited L)
+  exact OracleReduction.seqCompose_pc_oracle_msg'
+    (m := ℓ') (oSpec := []ₒ)
+    (Stmt := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P))
+    (OStmt := fun _ => aOStmtIn.OStmtIn)
+    (Wit := fun i => SumcheckWitness L ℓ' i)
+    (pSpec := fun _ => pSpecSumcheckRound L)
+    (R := fun i => iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
+    (rel := fun i => sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i)
+    (hSamp := hSamp) (hFin := hFin) (hInh := hInh)
+    (hValid := fun _ => ⟨by norm_num, rfl⟩)
+    (hInit := hInit)
+    (hImplSupp := by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])
+    (h := fun i => iteratedSumcheckOracleReduction_perfectCompleteness_proved
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := aOStmtIn) (init := init) (impl := impl) hInit i)
 
 /-- Perfect completeness for large-field reduction (Sumcheck ++ FinalSum), conditional on the
 explicit iterated-sumcheck round completeness residual. -/
