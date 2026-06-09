@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.FieldTheory.Finite.Basic
+import ArkLib.Data.CodingTheory.ProximityGap.StepanovPointCountEngine
 
 /-!
 # Frobenius reduction and the Stepanov non-vanishing wall (Issue #232, Stepanov route)
@@ -104,6 +105,35 @@ theorem exists_eval_ne_zero_of_reduceFrob_ne_zero {Ψ : F[X]} (h : reduceFrob Ψ
   push Not at hcon
   exact h ((vanishesOn_iff_reduceFrob_eq_zero Ψ).mp hcon)
 
+/-! ## The √q-shape point bound from a reduced Stepanov auxiliary. -/
+
+section PointBound
+
+variable [DecidableEq F]
+
+open ArkLib.CodingTheory.Round6Stepanov
+
+/-- **The Stepanov √q-shape point bound, via the Frobenius-reduced auxiliary.** If the reduced
+auxiliary `reduceFrob Ψ` is nonzero and vanishes to multiplicity `≥ M` at every point of a candidate
+set `V ⊆ 𝔽_q`, then `|V| · M < q`. Since `deg (reduceFrob Ψ) < q`, the counting engine yields the
+crucial *strict* bound by `q` (not the naive monomial degree) — this is precisely the form that
+turns `M ≈ √q` into `|V| ≲ √q`.
+
+The hypotheses are intrinsic to the (reduced) auxiliary — `reduceFrob Ψ ≠ 0` and a multiplicity
+lower bound — and do **not** assume anything about `|V|`, so this is an honest reduction, not a
+restatement of the conclusion. The open residual is the *construction*: producing a `Ψ` whose
+reduction is nonzero with multiplicity `M ≈ √q` at *all* `𝔽_q`-rational points of the relevant
+curve. That is the Stepanov wall this development isolates but does not cross. -/
+theorem stepanov_point_bound_via_reduceFrob {Ψ : F[X]} (hΨ : reduceFrob Ψ ≠ 0)
+    (V : Finset F) (M : ℕ)
+    (hmult : ∀ a ∈ V, M ≤ (reduceFrob Ψ).rootMultiplicity a) :
+    V.card * M < Fintype.card F :=
+  lt_of_le_of_lt
+    (stepanov_card_mul_mult_le_natDegree hΨ V M hmult)
+    (natDegree_reduceFrob_lt Ψ)
+
+end PointBound
+
 end ArkLib.CodingTheory.StepanovFrobenius
 
 /-! ## Axiom audit -/
@@ -113,4 +143,5 @@ open ArkLib.CodingTheory.StepanovFrobenius
 #print axioms natDegree_reduceFrob_lt
 #print axioms vanishesOn_iff_reduceFrob_eq_zero
 #print axioms exists_eval_ne_zero_of_reduceFrob_ne_zero
+#print axioms stepanov_point_bound_via_reduceFrob
 end AxiomAudit
