@@ -64,4 +64,21 @@ theorem close_interpolants_card_le [DecidableEq (RatFunc F)] [DecidableEq (Polyn
       h_gs hQz_ne p (hdeg p hp) (A p) (hA p hp) (hcount p hp)
   exact perZ_listSize_le (F := F) hQz_ne Ps hdvd
 
+/-- **Explicit `poly(n)` per-parameter list size.** The per-`z` count of distinct close codewords is
+bounded by the explicit Guruswami–Sudan `Y`-degree budget `D_X((k+1)/n)·n·m / k`, a `poly(n)`
+quantity: composing `close_interpolants_card_le` with the `ModifiedGuruswami` field `Q_D_Y`
+(`D_Y Q < D_X/k`). -/
+theorem close_interpolants_card_lt_explicit [DecidableEq (RatFunc F)] [DecidableEq (Polynomial F)]
+    (k : ℕ) {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
+    (Ps : Finset (Polynomial F))
+    (hdeg : ∀ p ∈ Ps, p.natDegree ≤ k)
+    (A : Polynomial F → Finset (Fin n))
+    (hA : ∀ p ∈ Ps, ∀ i ∈ A p, (u₀ + z • u₁) i = p.eval (ωs i))
+    (hcount : ∀ p ∈ Ps,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k < m * (A p).card) :
+    (Ps.card : ℝ) < D_X ((k + 1 : ℚ) / n) n m / k := by
+  refine lt_of_le_of_lt ?_ h_gs.Q_D_Y
+  exact_mod_cast close_interpolants_card_le k h_gs hQz_ne Ps hdeg A hA hcount
+
 end ProximityGap
