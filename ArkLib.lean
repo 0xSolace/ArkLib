@@ -417,6 +417,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConcretePinF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConstantGapBelowCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactCrossoverF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarTableSmoothInstances
+import ArkLib.Data.CodingTheory.ProximityGap.DerandomizationFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.EpsCAMono
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
@@ -434,13 +435,12 @@ import ArkLib.Data.CodingTheory.ProximityGap.GK16Wronskian
 import ArkLib.Data.CodingTheory.ProximityGap.GSCounting
 import ArkLib.Data.CodingTheory.ProximityGap.GSFactorExtract
 import ArkLib.Data.CodingTheory.ProximityGap.GSInterpolationExistence
+import ArkLib.Data.CodingTheory.ProximityGap.GSJohnsonWall
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityChainCompose
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
-import ArkLib.Data.CodingTheory.ProximityGap.GSRootOrderStep
-import ArkLib.Data.CodingTheory.ProximityGap.DerandomizationFrontier
-import ArkLib.Data.CodingTheory.ProximityGap.GSJohnsonWall
 import ArkLib.Data.CodingTheory.ProximityGap.GSPipelineAssembly
+import ArkLib.Data.CodingTheory.ProximityGap.GSRootOrderStep
 import ArkLib.Data.CodingTheory.ProximityGap.GSYDegreeListCap
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
@@ -537,6 +537,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepairExtra
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingT421Faithful
 import ArkLib.Data.CodingTheory.ProximityGap.LineDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.LinePairCooccurrenceBound
+import ArkLib.Data.CodingTheory.ProximityGap.LineSecondMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.LinearizedPolynomialHasse
 import ArkLib.Data.CodingTheory.ProximityGap.ListAroundBallIntersectionKernel
 import ArkLib.Data.CodingTheory.ProximityGap.ListBallIntersectionReduction
