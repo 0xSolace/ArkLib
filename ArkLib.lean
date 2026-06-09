@@ -89,6 +89,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDecodedSeparationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDiscriminantOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorDegreeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorizationOverRatFunc
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegerRepresentative
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSListSizeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparabilityCharZero
