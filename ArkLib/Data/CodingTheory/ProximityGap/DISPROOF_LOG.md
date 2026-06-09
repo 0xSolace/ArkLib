@@ -2232,3 +2232,18 @@ The O33-flagged "formalizable, companion-note-sized" c=2 worst-case bound of ePr
 Net: the verified codimension ladder now reads c≥w (unique decoding) → incidence/Fisher
 cap → GS walls at Johnson → **c=2 core-elimination (this)** → c≥3 = Conjecture 41 ≈ the
 prize's open core, starting exactly one codimension above what is now machine-checked.
+
+### O37 / Round-20 — clique double-block kernel = twisted evaluation pencil (NEW theorem)
+
+`Conjecture41CliqueKernelStructure.lean` (main-loop solo, axiom-clean, strict-verified): DUALITY
+⟨Λ_{E_α}X^r, ev_β⟩ = β^r·Λ_{E_α}(β) (locators/vertex-evaluations dual system under the coefficient
+pairing); clique_kernel_mem — the twisted evaluation pencil (s₁,s₂) = (−Σγ(β)b(β)ev_β, Σb(β)ev_β)
+satisfies ALL (w+1)c kernel conditions of [N|γN] at EVERY c over EVERY field;
+evalSyndrome_family_injective — pencil dim = w+1 exactly. CONSEQUENCE: the universal obstruction is
+UNCONDITIONALLY rank-deficient (rank ≤ 2D−(w+1) always) — Conj 41's full-rank branch ALWAYS fails on
+cliques; the conjecture = its degeneracy branch = "the twisted pencil contains no nondegenerate
+syndrome at p > p₀". Pencil syndromes = syndromes of errors supported on W (Remark-31 false
+positives). PAPER-MATH derived (docstring, queued): partial fractions ⟹ single-block relation module
+= {((x−α)v_α) : Σv_α = 0, deg v_α < c−1}, rank N_clique = D, full kernel count. NEXT: (a) pencil =
+WHOLE kernel formalization, (b) the degeneracy analysis (the Vandermonde solution V_{E_α}^{-1}s₂ of a
+pencil syndrome — when all-nonzero) = the sharp remaining core of Conj 41 for cliques.
