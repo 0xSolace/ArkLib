@@ -2375,3 +2375,19 @@ program's rigorous ingredients are now formalized API. Remaining formalization q
 pattern-count combinatorics (medium), C19 (needs the symbolic/equivariance route — `decide` at
 p≈2³¹ infeasible and `native_decide` is forbidden by the repo gate; honest path is the cyclotomic
 consistency argument, future work).
+
+### O39 / Round-14c — the per-line heavy-decode-set bound (second-moment method)
+
+Solo orthogonal line (per-line second-moment, rounds 14/14b/14c), distinct from the swarm's
+Johnson/list-decoding/clique combinatorics. LineHeavySetBound.lean (axiom-clean): the per-line
+quantitative "few bad points" side of the proximity-gap dichotomy.
+* `heavyLineSet_card_mul_sq_le`: `#{γ : |Λ(γ,a)| ≥ L}·L² ≤ ∑_γ|Λ(γ,a)|²` (Markov on squares over
+  the line — clean Finset sum_le_sum on the heavy subset).
+* `heavyLineSet_card_bound`: composing with the proven `line_second_moment_bound` (2a>n regime =
+  the whole ρ=1/2 prize window): `#{γ:|Λ(γ,a)|≥L}·L²·(2a−d) ≤ (∑_γ|Λ|)·(2a−d) + (|C|²−|C|)·2(n−d)`.
+
+So heavily-decoding line points fall off as 1/L² against a second moment whose off-diagonal is a
+distance-uniform per-pair CONSTANT (the round-14 gain), not the past-Johnson-blowing
+ball-intersection volume. This is the per-line object δ* is read from. Open: bound the per-line
+first moment M=∑_γ|Λ| uniformly (empirically field-independent ~poly(n), round-14 probe) and the
+pair count past birthday for ADVERSARIAL lines — where smooth-domain RS structure must enter.
