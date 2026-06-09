@@ -1,5 +1,6 @@
 import ArkLib.AGM.Basic
 import ArkLib.AGM.RepresentationLemmas
+import ArkLib.AxiomCheck62Tmp
 import ArkLib.CommitmentScheme.Ajtai.Gadget
 import ArkLib.CommitmentScheme.Ajtai.GadgetNorms
 import ArkLib.CommitmentScheme.Ajtai.InnerOuter
@@ -821,6 +822,7 @@ import ArkLib.OracleReduction.Cast
 import ArkLib.OracleReduction.Completeness
 import ArkLib.OracleReduction.Composition.Parallel.Basic
 import ArkLib.OracleReduction.Composition.Sequential.Append
+import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeSeam
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessHelper
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessNonPerfect
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompleteness
