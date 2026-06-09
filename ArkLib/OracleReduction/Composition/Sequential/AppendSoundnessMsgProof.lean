@@ -119,7 +119,14 @@ theorem append_soundness_msg'
       simp only [Prover.fstSound_runToRound]
       simp only [Prover.fstSound, Prover.fst, map_bind, map_pure, bind_assoc, bind_pure_comp,
         bind_map_left, Functor.map_map, liftM_bind, liftM_pure, liftM_map, pure_bind, id_map,
-        id_map', id_eq, OptionT.liftM_run_getM_bind, Function.comp_def]
+        id_map', id_eq, Function.comp_def]
+      -- Residual: identical runToRound on both sides; the verifier leg differs only by the
+      -- bare getM-cancel (`liftM W = liftM W.run >>= getM`), the `f := pure` case of the lemma.
+      refine bind_congr fun a => ?_
+      have hgm := OptionT.liftM_run_getM_bind (V₁.verify stmtIn a.1)
+        (pure : Stmt₂ → OptionT (OracleComp (oSpec + [pSpec₁.Challenge]ₒ)) Stmt₂)
+      simp only [bind_pure] at hgm
+      exact hgm.symm
     sorry
   · -- Phase-2 bound: `V₂.soundness ε₂` on the phase-2 soundness prover `prover.sndSound`.
     intro p s' _ h_pg
