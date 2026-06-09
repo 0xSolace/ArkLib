@@ -69,6 +69,67 @@ theorem statistic_injOn_two (h2 : (2 : F) ≠ 0) (G : Finset F) :
   simp only [Finset.sum_pair hxy, Finset.sum_pair hxy', Prod.mk.injEq] at h
   exact two_set_inj h2 hxy hxy' h.1 h.2
 
+private lemma sum_split (g : F → F) (S S' : Finset F) :
+    ∑ x ∈ S, g x = ∑ x ∈ S \ S', g x + ∑ x ∈ S ∩ S', g x := by
+  rw [← Finset.sum_union (Finset.disjoint_sdiff_inter S S'), Finset.sdiff_union_inter]
+
+/-- **No low-order collisions.** Two equal-size subsets `S, S'` (`2 ≠ 0`) with the same sum AND same
+sum-of-squares that differ in at most 2 elements must be EQUAL. Hence two *distinct* equal-statistic
+equal-size subsets satisfy `|S \ S'| ≥ 3` (so `|S △ S'| ≥ 6`): the `(∑x, ∑x²)` statistic has no
+collisions of small symmetric difference — `m=1` is impossible, `m=2` is killed by `two_set_inj`.
+This structurally confines the collision-count off-diagonal to symmetric difference `≥ 6`. -/
+theorem no_low_order_collision (h2 : (2 : F) ≠ 0) {S S' : Finset F}
+    (hcard : S.card = S'.card)
+    (hsum : ∑ x ∈ S, x = ∑ x ∈ S', x)
+    (hsq : ∑ x ∈ S, x ^ 2 = ∑ x ∈ S', x ^ 2)
+    (hsmall : (S \ S').card ≤ 2) : S = S' := by
+  classical
+  have hcardD : (S \ S').card = (S' \ S).card := Finset.card_sdiff_eq_card_sdiff_iff.mpr hcard
+  have hsumD : ∑ x ∈ S \ S', x = ∑ x ∈ S' \ S, x := by
+    have e1 := sum_split (fun x => x) S S'
+    have e2 := sum_split (fun x => x) S' S
+    rw [Finset.inter_comm S' S] at e2
+    rw [e1, e2] at hsum; simpa using hsum
+  have hsqD : ∑ x ∈ S \ S', x ^ 2 = ∑ x ∈ S' \ S, x ^ 2 := by
+    have e1 := sum_split (fun x => x ^ 2) S S'
+    have e2 := sum_split (fun x => x ^ 2) S' S
+    rw [Finset.inter_comm S' S] at e2
+    rw [e1, e2] at hsq; simpa using hsq
+  have hdisj : Disjoint (S \ S') (S' \ S) := by
+    rw [Finset.disjoint_left]; intro a ha hb
+    rw [Finset.mem_sdiff] at ha hb; exact ha.2 hb.1
+  have hzero : (S \ S').card = 0 := by
+    rcases Nat.lt_or_ge (S \ S').card 1 with h0 | h1
+    · omega
+    rcases Nat.lt_or_ge (S \ S').card 2 with h1' | h2'
+    · exfalso
+      have hD1 : (S \ S').card = 1 := by omega
+      have hD'1 : (S' \ S).card = 1 := by rw [← hcardD]; exact hD1
+      obtain ⟨u, hu⟩ := Finset.card_eq_one.mp hD1
+      obtain ⟨v, hv⟩ := Finset.card_eq_one.mp hD'1
+      rw [hu, hv] at hsumD; simp only [Finset.sum_singleton] at hsumD
+      subst hsumD
+      have hmemu : u ∈ S \ S' := by rw [hu]; simp
+      have hmemu' : u ∈ S' \ S := by rw [hv]; simp
+      exact (Finset.disjoint_left.mp hdisj hmemu) hmemu'
+    · exfalso
+      have hD2 : (S \ S').card = 2 := by omega
+      have hD'2 : (S' \ S).card = 2 := by rw [← hcardD]; exact hD2
+      obtain ⟨u1, u2, hu12, hu⟩ := Finset.card_eq_two.mp hD2
+      obtain ⟨v1, v2, hv12, hv⟩ := Finset.card_eq_two.mp hD'2
+      rw [hu, hv] at hsumD hsqD
+      rw [Finset.sum_pair hu12, Finset.sum_pair hv12] at hsumD
+      rw [Finset.sum_pair hu12, Finset.sum_pair hv12] at hsqD
+      have heq := two_set_inj h2 hu12 hv12 hsumD hsqD
+      rw [← hu, ← hv] at heq
+      have hne : (S \ S').Nonempty := by rw [hu]; exact ⟨u1, by simp⟩
+      obtain ⟨w, hw⟩ := hne
+      have hw' : w ∈ S' \ S := heq ▸ hw
+      exact (Finset.disjoint_left.mp hdisj hw) hw'
+  rw [Finset.card_eq_zero, Finset.sdiff_eq_empty_iff_subset] at hzero
+  exact Finset.eq_of_subset_of_card_le hzero (by rw [hcard])
+
 end ArkLib.ProximityGap.A2Injective
 
 #print axioms ArkLib.ProximityGap.A2Injective.statistic_injOn_two
+#print axioms ArkLib.ProximityGap.A2Injective.no_low_order_collision
