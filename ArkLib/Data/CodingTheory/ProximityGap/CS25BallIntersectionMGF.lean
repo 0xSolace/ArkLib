@@ -222,4 +222,21 @@ theorem jointCoverCount_mgf_le (δ : ℝ≥0) (e : ι → F) (θ : ℝ) (hθ0 : 
     simp_rw [hpow]
     rw [mgf_factor θ e, prod_value θ e]
 
+/-- **Second-moment Chernoff bound.** Summing the per-`e` MGF bound over a code `C` gives
+
+  `θ^{2r} · ∑_{e∈C} I(e) ≤ ∑_{e∈C} (1+(q−1)θ²)^{n−wt(e)}·(2θ+(q−2)θ²)^{wt(e)}`,    `∀ θ ∈ [0,1]`,
+
+i.e. `θ^{2r}` times the CS25 second-moment off-diagonal is at most the code's **homogeneous weight
+enumerator** `W_C(X,Y) = ∑_{e∈C} X^{wt(e)} Y^{n−wt(e)}` evaluated at `X = 2θ+(q−2)θ²`,
+`Y = 1+(q−1)θ²`.  This reduces the (tight, all-field) second moment to the weight enumerator — a
+classical, well-studied object (for RS/MDS codes given in closed form by MacWilliams) — and an
+optimization over `θ ∈ [0,1]`. -/
+theorem sum_jointCoverCount_mgf_le (C : Finset (ι → F)) (δ : ℝ≥0) (θ : ℝ)
+    (hθ0 : 0 ≤ θ) (hθ1 : θ ≤ 1) :
+    θ ^ (2 * ⌊(δ : ℝ) * (Fintype.card ι : ℝ)⌋₊) * (∑ e ∈ C, (jointCoverCount δ 0 e : ℝ))
+      ≤ ∑ e ∈ C, ((1 + ((Fintype.card F : ℝ) - 1) * θ ^ 2) ^ (Fintype.card ι - hammingNorm e)
+          * (2 * θ + ((Fintype.card F : ℝ) - 2) * θ ^ 2) ^ (hammingNorm e)) := by
+  rw [Finset.mul_sum]
+  exact Finset.sum_le_sum (fun e _ => jointCoverCount_mgf_le δ e θ hθ0 hθ1)
+
 end ArkLib.CS25
