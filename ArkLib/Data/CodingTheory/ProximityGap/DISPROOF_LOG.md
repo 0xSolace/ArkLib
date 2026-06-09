@@ -1798,3 +1798,18 @@ monotonicity fails since 2(k+t)>n); crossover Lstar·q^t < C(n,k+t) under 258t+1
 Witnesses at n=2^20 (t=4063 rate-1/2 → δ ≈ 0.49613; t=2063 rate-1/4), extreme-parameter strict
 instantiation proven outright. Prize-scale bracket now: δ* ∈ [1−√ρ, 1−ρ−ρ/127]. Remaining open side =
 past-Johnson list cap (research core).
+
+### O11⁗ — averaged P-A WRITTEN UP: exact images at moderate primes, window-level numbers (nubs, 2026-06-09)
+
+Full careful write-up at `/home/nubs/proximity-research/06-AVERAGED-PA.md` (Theorems A–D + Corollary E):
+**A** exact char-0 image/fiber formulas (triple data-verified). **B** any modular collision forces
+p | N(α), 0<|N(α)|≤m^{m/2} (coeffs ≤2 in the half-basis). **C** pair counting: ≤ 5^{m/2}·(m/2)log_P m
+collision-bearing primes in [P,2P]. **D** for P ≥ 5^{m/2}·m²·φ(n)·polylog, all but O(1/m) of primes
+p ≡ 1 mod n in [P,2P] give image EXACTLY N₀(m,r) ≈ 3^{m/2}, all r simultaneously. **E (window
+numbers):** m=128, n=2⁴⁰, p ≈ 2²⁰³ < 2²⁵⁶: most such primes give ≈ 2^{101} bad scalars at the KK
+radius (η ≈ 1/64) ≫ the breach threshold 2^{203−128} = 2^{75} ⟹ **δ\*_C < 1−ρ−1/64 for most such
+codes** — consistent with (and below) the S-two-conditional crossover η* ≈ 1/35. Honest caveats in
+the note: "most primes" not per-prime (the residual P-A kernel — a specific production prime could
+differ); Siegel–Walfisz ineffectivity for the finite window (effective Lemma C, analytic denominator);
+the general-(n,m,r) lift bookkeeping + far-ness side to be written out. This is the LOWER half only;
+P-B (the 2^{O(H/η)} upper bound past Johnson) remains the open core.
