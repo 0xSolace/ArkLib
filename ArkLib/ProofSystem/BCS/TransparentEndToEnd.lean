@@ -441,7 +441,8 @@ theorem hOpeningFirstDir :
 
 theorem hSeamDir :
     (((srcPSpec (Data := Data)).renameMessage (CommitmentType (Data := Data))) ++ₚ
-        ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data)) (e (Data := Data)))).dir
+        ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data))
+          (e (Data := Data)))).dir
       (⟨1, by have := vsum_eq_one (Data := Data); omega⟩ :
         Fin (1 + Fin.vsum (fun j => (nCom (Data := Data)) ((e (Data := Data)).symm j))))
       = .P_to_V := rfl
@@ -513,7 +514,8 @@ theorem transparentBCS_perfectCompleteness
     (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
       Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
         = support (liftM q : OracleComp oSpec β)) :
-    (OracleReduction.BCSTransform (e (Data := Data)) (interactionRed (oSpec := oSpec) (Data := Data))
+    (OracleReduction.BCSTransform (e (Data := Data))
+        (interactionRed (oSpec := oSpec) (Data := Data))
         (openingRed (oSpec := oSpec) (Data := Data))).perfectCompleteness init impl
       (relMid (Data := Data)) acceptRejectRel := by
   -- All challenge-augmented oracle specs are finite/inhabited: every challenge family is empty.
