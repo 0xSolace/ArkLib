@@ -613,6 +613,75 @@ lemma compute_s0_eq_sum_A_func
   rw [eqTilde_comm (getEvaluationPointSuffix κ L ℓ ℓ' h_l r)
     (fun i => (if w i == 1 then (1 : L) else 0))]
 
+/-- **Round-0 batching sumcheck consistency (completeness keystone, abstract multiplier).** For the
+honest prover's embedded tensor `ŝ = embedded_MLP_eval t' r`, the batched sumcheck target
+`compute_s0 ŝ y` equals the honest sumcheck consistency sum `∑_{x ∈ {0,1}^ℓ'} H(x)` over the
+Boolean hypercube, where `H = projectToMidSumcheckPoly t' m 0` is the round-0 sumcheck polynomial
+of the product `m · t'`, provided the multiplier `m` matches `compute_A_func` on Boolean inputs.
+
+This is the `sumcheckConsistencyProp (boolDomain L _) (compute_s0 …) H` conjunct of the batching
+output relation — the conjunct made *provable* exactly by the column orientation of `compute_s0`
+(`compute_s0_eq_sum_A_func`). Proof: the cube sum reindexes to the Boolean hypercube (pinned
+`boolEmbedding`, with `Field L` from the finite domain), `projectToMidSumcheckPoly … 0` evaluates
+to `(m · t')` (the `i = 0` case of `fixFirstVariablesOfMQP_eval` fixes no variables), and
+`eval (m·t') = (eval m)·(eval t') = A_func · t'` summand-wise. The batching analog of
+`iteratedSumcheck_round_logic_complete`. -/
+theorem batching_consistency_of_multpoly [IsDomain L] [IsDomain K]
+    (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) (y : Fin κ → L)
+    (m : MultilinearPoly L ℓ')
+    (hm : ∀ b : Fin ℓ' → Fin 2,
+      eval (fun i => (if b i == 1 then (1 : L) else 0)) m.val
+        = compute_A_func κ L K P ℓ' (getEvaluationPointSuffix κ L ℓ ℓ' h_l r) y b) :
+    compute_s0 κ L K P (embedded_MLP_eval κ L K P ℓ ℓ' h_l t' r) y
+      = ∑ x ∈ (boolDomain L (ℓ' - (0 : Fin (ℓ' + 1)).val)).cube,
+          (projectToMidSumcheckPoly ℓ' t' m 0 Fin.elim0).val.eval x := by
+  letI : Field L := Fintype.fieldOfDomain L
+  rw [show (boolDomain L (ℓ' - (0 : Fin (ℓ' + 1)).val)).cube
+      = (univ.map (boolEmbedding L)) ^ᶠ (ℓ' - (0 : Fin (ℓ' + 1)).val) from rfl,
+    RingSwitching.boolHypercube_sum_pinned (boolEmbedding L) (by
+      intro c; rcases Fin.exists_fin_two.mp ⟨c, rfl⟩ with h | h <;> rw [h] <;> simp)]
+  rw [compute_s0_eq_sum_A_func]
+  refine Finset.sum_congr rfl (fun b _ => ?_)
+  have hproj : (projectToMidSumcheckPoly ℓ' t' m 0 Fin.elim0).val.eval
+        (fun j => (if b j == 1 then (1 : L) else 0))
+      = (m.val * t'.val).eval (fun j => (if b j == 1 then (1 : L) else 0)) := by
+    rw [projectToMidSumcheckPoly_eq_fixVars]
+    erw [fixFirstVariablesOfMQP_eval]
+    refine congrArg (fun g => eval g (m.val * t'.val)) ?_
+    funext i
+    simp only [Equiv.trans_apply, finCongr_apply]
+    rcases hsym : finSumFinEquiv.symm (Fin.cast (by simp) i) with j | j
+    · simp only [Sum.elim_inl]
+      have hji : j = i := by
+        have hi := congrArg finSumFinEquiv hsym
+        rw [Equiv.apply_symm_apply] at hi
+        apply Fin.ext
+        have hval := congrArg Fin.val hi
+        simpa [finSumFinEquiv_apply_left] using hval.symm
+      rw [hji]
+    · exact j.elim0
+  rw [MvPolynomial.eval_mul, hm b] at hproj
+  exact hproj.symm
+
+/-- **Round-0 batching sumcheck consistency (honest instance).** The hypothesis-free form: with the
+honest multiplier `m = compute_A_MLE` (the multilinear extension of `compute_A_func`), the Boolean
+agreement hypothesis holds by `MLE_eval_zeroOne`, so the batched target equals the honest sumcheck
+sum. This is exactly the consistency conjunct of `sumcheckRoundRelation 0` for the honest batching
+output `(stmtOut with sumcheck_target = compute_s0 ŝ y, witOut.H = projectToMidSumcheckPoly t' A_MLE 0)`. -/
+theorem batching_consistency_honest [IsDomain L] [IsDomain K]
+    (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) (y : Fin κ → L) :
+    compute_s0 κ L K P (embedded_MLP_eval κ L K P ℓ ℓ' h_l t' r) y
+      = ∑ x ∈ (boolDomain L (ℓ' - (0 : Fin (ℓ' + 1)).val)).cube,
+          (projectToMidSumcheckPoly ℓ' t'
+            (compute_A_MLE κ L K P ℓ' (getEvaluationPointSuffix κ L ℓ ℓ' h_l r) y)
+            0 Fin.elim0).val.eval x := by
+  apply batching_consistency_of_multpoly
+  intro b
+  have hcoe : (fun i => (if b i == 1 then (1 : L) else 0)) = (fun i => ((b i : Fin 2) : L)) := by
+    funext i; rcases Fin.exists_fin_two.mp ⟨b i, rfl⟩ with h | h <;> rw [h] <;> simp
+  rw [hcoe, compute_A_MLE]
+  exact MvPolynomial.MLE_eval_zeroOne b _
+
 /-- Mismatch polynomial from column-decomposition difference `msg0 - s_bar`. The batching verifier
 target `compute_s0` reads `decomposeColumns`, so the soundness mismatch test uses the same
 (faithful, by `decomposeColumns_spec`) column decomposition. -/
@@ -1049,4 +1118,6 @@ end RingSwitching
 #print axioms RingSwitching.BatchingPhase.batching_doom_accept_imply_bad_of_bridges
 #print axioms RingSwitching.BatchingPhase.compute_s0_embedded_MLP_eval_eq_sum
 #print axioms RingSwitching.BatchingPhase.compute_s0_eq_sum_A_func
+#print axioms RingSwitching.BatchingPhase.batching_consistency_of_multpoly
+#print axioms RingSwitching.BatchingPhase.batching_consistency_honest
 #print axioms RingSwitching.BatchingPhase.probability_bound_badBatchingEventProp_sharp
