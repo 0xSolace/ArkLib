@@ -61,6 +61,18 @@ theorem transcript_fst_heq {k : Fin (m + n + 1)} (hk : (k : ℕ) ≤ m)
   unfold ProtocolSpec.Transcript.fst
   exact HEq.trans (cast_heq _ _) (hidx ▸ HEq.rfl)
 
+/-- **Projection of a product type-cast (first component).** Casting `(a, b)` along a product of
+type equalities and projecting commutes with `a` (heterogeneously). With the type equalities as
+free variables, `subst` discharges it. -/
+theorem prod_cast_fst_heq {A A' B B' : Type _} (hA : A = A') (hB : B = B') (a : A) (b : B) :
+    HEq ((congrArg₂ Prod hA hB ▸ (a, b) : A' × B').1) a := by
+  subst hA; subst hB; rfl
+
+/-- **Projection of a product type-cast (second component).** -/
+theorem prod_cast_snd_heq {A A' B B' : Type _} (hA : A = A') (hB : B = B') (a : A) (b : B) :
+    HEq ((congrArg₂ Prod hA hB ▸ (a, b) : A' × B').2) b := by
+  subst hA; subst hB; rfl
+
 /-- **Phase-1 per-round experiment body HEq.** The appended rbr experiment body at a phase-1
 challenge index `inl i₁` — the appended prover's partial run `runToRound (inl i₁).castSucc` followed
 by sampling the appended `getChallenge (inl i₁)` under the *combined* challenge oracle — is
@@ -225,7 +237,7 @@ theorem append_rbrSoundness_keystone
     have hResTy :
         ((pSpec₁ ++ₚ pSpec₂).Transcript (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc
             × (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁))
-          = (pSpec₁.Transcript i₁.1.castSucc × pSpec₁.Challenge i₁) := by rw [hTrTy, hChTy]
+          = (pSpec₁.Transcript i₁.1.castSucc × pSpec₁.Challenge i₁) := congrArg₂ Prod hTrTy hChTy
     refine probEvent_congr_heq hResTy _ _ _ _ ?hd ?hPQ
     · -- hd : the appended and `fstCast` experiments have heterogeneously-equal `evalDist`s.
       sorry
@@ -240,10 +252,23 @@ theorem append_rbrSoundness_keystone
         rw [Fin.val_succ, hval]; omega
       simp only [StateFunction.append_toFun_le V₁ V₂ S₁ S₂ verify hVerify hInit hcs,
           StateFunction.append_toFun_le V₁ V₂ S₁ S₂ verify hVerify hInit hsu]
-      -- Remaining: index coherence `⟨(inl i₁).castSucc.val, _⟩ = i₁.castSucc` (vals agree) and the
-      -- transcript coherence `(append_toFun_le cast).mp tr.fst = (hResTy ▸ (tr, ch)).1` (the phase-1
-      -- truncation equals the type-cast; buried in `StateFunction.append`'s `toFun_next` proof).
-      sorry
+      have hiCS : (⟨((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc).val, by omega⟩ : Fin (m + 1))
+          = i₁.1.castSucc := Fin.ext (by simp [Fin.val_castSucc, hval])
+      have hiSU : (⟨((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.succ).val, by omega⟩ : Fin (m + 1))
+          = i₁.1.succ := Fin.ext (by simp [Fin.val_succ, hval])
+      refine iff_of_eq ?_
+      congr 1
+      · -- `¬ A₁ = ¬ A₂`: dependent congruence of `S₁.toFun · stmtIn ·` over index + transcript.
+        refine congrArg Not (eq_of_heq (dcongr_heq ?_ (fun _ _ _ => rfl) (fun _ _ => hiCS ▸ HEq.rfl)))
+        exact (cast_heq _ _).trans
+          (HEq.trans (transcript_fst_heq hcs tr) (prod_cast_fst_heq hTrTy hChTy tr ch).symm)
+      · -- `B₁ = B₂`
+        refine eq_of_heq (dcongr_heq ?_ (fun _ _ _ => rfl) (fun _ _ => hiSU ▸ HEq.rfl))
+        refine (cast_heq _ _).trans
+          (HEq.trans (transcript_fst_heq hsu (Transcript.concat ch tr)) ?_)
+        -- `concat ch tr ≍ concat (hResTy ▸ (tr,ch)).2 (hResTy ▸ (tr,ch)).1` via `concat_heq`.
+        exact Prover.concat_heq i₁.1 (prod_cast_fst_heq hTrTy hChTy tr ch).symm
+          (prod_cast_snd_heq hTrTy hChTy tr ch).symm
   · -- Phase 2. Mirrors Phase 1 with `Prover.snd`, `evalDist_run'_challengeSeam_right`, and the
     -- `dif_neg` (`verify`-fed intermediate statement) branch of `StateFunction.append`.
     sorry
