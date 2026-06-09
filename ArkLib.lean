@@ -899,6 +899,7 @@ import ArkLib.ProofSystem.Logup.Security.Completeness
 import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
 import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
 import ArkLib.ProofSystem.Logup.Security.OuterRun
+import ArkLib.ProofSystem.Logup.Security.OuterSoundness
 import ArkLib.ProofSystem.Logup.Security.Soundness
 import ArkLib.ProofSystem.Logup.Security.SoundnessConverse
 import ArkLib.ProofSystem.Logup.Security.SubPhaseSplit

@@ -192,49 +192,7 @@ theorem grandSumCheckPoly_eq_zero_of_good_lookup
 
 end SoundnessConverse
 
-/-! ## The current soundness decomposition is degenerate
 
-`Security/Soundness.lean` threads the **intermediate** language `midLanguage = Set.univ` between the
-outer phase and the embedded sumcheck. That choice makes the two-way soundness split *structurally
-unable* to carry the real soundness content, in two opposite ways recorded below.
-
-* `SumcheckSoundnessResidual` is **vacuously true**: its honest-input language is
-  `midLanguage = Set.univ`, and `Verifier.soundness` only quantifies over `stmtIn ∉ langIn`. There is
-  no `stmtIn ∉ Set.univ`, so the obligation holds for *every* error — it carries no information.
-  (Proved as `sumcheckSoundnessResidual_holds`.)
-
-* `OuterSoundnessResidual` is correspondingly **too strong**: its accepting language is
-  `midLanguage = Set.univ`, so it demands `Pr[outerVerifier outputs into Set.univ] ≤
-  outerSoundnessError`, i.e. `Pr[outerVerifier accepts] ≤ outerSoundnessError`. But the outer verifier
-  only performs the pole `guard`, which accepts with probability `≈ 1`; the small algebraic error
-  `outerSoundnessError` cannot bound it. So this half is unprovable as stated.
-
-The genuine LogUp soundness argument needs a **nontrivial** `midLanguage`: the set of intermediate
-statements whose embedded-sumcheck *claim is true*. With that relation, the SZ obstruction
-`grandSumCheckPoly_ne_zero_of_bad_lookup` above bounds `Pr[bad input ↦ true claim]` (the outer half),
-and the sumcheck soundness bounds `Pr[false claim ↦ accept]` (the sumcheck half). Both then carry
-real content. This is the architectural fix the soundness residual surface still needs; the algebraic
-heart of the outer half is now in hand. -/
-
-section Degeneracy
-
-variable {ι : Type} (oSpec : OracleSpec ι)
-variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)]
-  [SampleableType F]
-variable (n M : ℕ) (params : ProtocolParams M)
-variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
-
-/-- **The sumcheck soundness half is vacuous.** Because `midLanguage = Set.univ`, the honest-input
-side of `SumcheckSoundnessResidual` quantifies over `stmtIn ∉ Set.univ`, of which there are none, so
-the residual holds for *every* error term. This discharges the second conjunct of
-`SubPhaseSoundnessResidual` unconditionally — but, as the section docstring explains, only because the
-chosen `midLanguage` is degenerate, not because real sumcheck soundness has been established. -/
-theorem sumcheckSoundnessResidual_holds (sumcheckSoundnessError : ℝ≥0) :
-    SumcheckSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError := by
-  intro WitIn WitOut witIn prover stmtIn hstmtIn
-  exact absurd (Set.mem_univ _) hstmtIn
-
-end Degeneracy
 
 end Logup
 
@@ -243,4 +201,3 @@ end Logup
 #print axioms Logup.lookupMultiplicityCount_natCast_ne_zero
 #print axioms Logup.grandSumCheckPoly_ne_zero_of_bad_lookup
 #print axioms Logup.grandSumCheckPoly_eq_zero_of_good_lookup
-#print axioms Logup.sumcheckSoundnessResidual_holds
