@@ -1120,17 +1120,20 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_proved [IsDomain L]
     erw [OptionT.simulateQ_bind]
     erw [OptionT.simulateQ_simOracle2_liftM_query_T2]
     erw [optionT_bind_pure_some]
-    rw [OptionT.simulateQ_ite, OptionT.simulateQ_pure, OptionT.simulateQ_failure]
-    simp only [OracleInterface.answer, OracleInterface.instDefault, ReaderT.run, h_V_check,
-      if_true]
-    erw [optionT_bind_pure_some]
-    rfl
+    erw [OptionT.simulateQ_bind]
+    simp only [OptionT.simulateQ_ite, OptionT.simulateQ_pure, OptionT.simulateQ_failure]
+    split_ifs with hc
+    · erw [optionT_bind_pure_some]
+      erw [OptionT.simulateQ_pure]
+      erw [pure_bind]
+      rfl
+    · exact (hc h_V_check).elim
   rw [probEvent_eq_one_iff]
   dsimp only [iteratedSumcheckOracleReduction, iteratedSumcheckOracleProver,
     Sumcheck.Structured.roundOracleReduction,
     Sumcheck.Structured.roundOracleProver, FullTranscript.mk2]
   simp only [liftComp_pure, liftM_pure, pure_bind, bind_pure_comp, Function.comp, hverify,
-    liftComp_pure, map_pure]
+    liftComp_pure, _root_.map_pure]
   refine ⟨?_, ?_⟩
   · -- No failure: a uniform challenge sample followed by `pure`.
     rw [probFailure_bind_eq_zero_iff]
@@ -1150,8 +1153,10 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_proved [IsDomain L]
     obtain ⟨_, h_rel_out⟩ := iteratedSumcheck_round_logic_complete (κ := κ) (L := L) (K := K)
       (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) i stmtIn oStmtIn witIn
       h_relIn i_1
-    obtain rfl : x_1 = _ := by grind [OptionT.mem_support_iff, OracleComp.support_liftComp,
-      support_pure, mem_support_pure_iff]
+    change x_1 ∈ _root_.support (pure _ : OptionT (OracleComp _) _) at hx1
+    simp only [OptionT.mem_support_iff, OptionT.run_pure, support_pure, Set.mem_preimage,
+      Set.mem_singleton_iff, Option.some.injEq] at hx1
+    subst hx1
     exact ⟨h_rel_out, rfl, rfl⟩
 
 /-- **Schwartz-Zippel bound for the bad sumcheck extraction event.**
