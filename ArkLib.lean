@@ -1375,6 +1375,7 @@ import ArkLib.ToMathlib.MCAPrizeFourRateNumerics
 import ArkLib.ToMathlib.MatchingExtractor
 import ArkLib.ToMathlib.MatchingFactorLift
 import ArkLib.ToMathlib.MatchingGeometryProducers
+import ArkLib.ToMathlib.MonomialAgreementBound
 import ArkLib.ToMathlib.MpFinSupply
 import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.MultiplicityDatum
