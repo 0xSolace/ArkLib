@@ -679,6 +679,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Round8CosetWall
 import ArkLib.Data.CodingTheory.ProximityGap.Round9SalieQuarticReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Round9SubgroupCharExpansion
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentReductionLimit
+import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothDomainSelfSimilarity
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
@@ -713,8 +714,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
-import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -724,6 +723,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumSecondMomentCollision
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumSquaringBijection
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumZeroInflation
+import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.UDRBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.UniqueDecodingListBound
