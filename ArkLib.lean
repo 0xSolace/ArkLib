@@ -524,7 +524,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArithmetic
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
-import ArkLib.Data.CodingTheory.ProximityGap.Hab25NumericEdge
 import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMultiplicityBridge
@@ -719,6 +718,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonStirOutOfDom
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityBaseCasePairs
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityGeneralT1
+import ArkLib.Data.CodingTheory.ProximityGap.RigiditySunflowerCore
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityTriplesSunflower
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityWindowHalving
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergy
@@ -764,7 +764,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.RigiditySunflowerCore
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -1432,6 +1431,7 @@ import ArkLib.ToMathlib.MatchingFactorLift
 import ArkLib.ToMathlib.MatchingGeometryProducers
 import ArkLib.ToMathlib.MatchingPointFromLocalSeries
 import ArkLib.ToMathlib.MonomialAgreementBound
+import ArkLib.ToMathlib.MpFinFromLocalSeries
 import ArkLib.ToMathlib.MpFinSupply
 import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.MultiplicityDatum
