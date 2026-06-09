@@ -143,6 +143,20 @@ private theorem phase1_body_heq
       refine Prover.pure_heq_pure (by rw [hTrTy, hChTy]) ?_
       exact Prover.prodMk_heq hTrTy hChTy htr hc
 
+/-- **Phase-1 projection of the appended state function.** On a round index lying in the first
+protocol (`roundIdx.val ≤ m`), `StateFunction.append` is definitionally `S₁` evaluated on the
+transcript's phase-1 truncation — the `dif_pos` branch of its `toFun`. -/
+theorem StateFunction.append_toFun_le
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    (S₁ : V₁.StateFunction init impl lang₁ lang₂) (S₂ : V₂.StateFunction init impl lang₂ lang₃)
+    (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩) (hInit : ∃ s, s ∈ support init)
+    {roundIdx : Fin (m + n + 1)} (h : roundIdx.val ≤ m) (stmt₁ : Stmt₁)
+    (transcript : (pSpec₁ ++ₚ pSpec₂).Transcript roundIdx) :
+    (StateFunction.append init impl V₁ V₂ S₁ S₂ verify hVerify hInit).toFun roundIdx stmt₁ transcript
+      = S₁.toFun ⟨roundIdx, by omega⟩ stmt₁ (by simpa [h] using transcript.fst) := by
+  simp only [StateFunction.append, dif_pos h]
+
 /-- **Round-by-round soundness append keystone, deterministic-`V₁` message-seam case.**
 Discharges `Verifier.appendRbrSoundnessResidual` for the deterministic-`V₁` message-seam case.
 
