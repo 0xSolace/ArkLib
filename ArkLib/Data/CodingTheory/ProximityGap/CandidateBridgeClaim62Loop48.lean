@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.CandidateListDecEquivLoop47
+import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Degree.Operations
 
@@ -178,6 +179,50 @@ theorem prize_false_of_listDecoding_failure_full
     False :=
   prize_false_of_listDecoding_failure_bridged (manyValues_arith hLq hqL hAD) hbridge hprize hq
 
+/-! ## Part D — grounding the bridge in the *formalized* Reed–Solomon code
+
+The algebraic core above is about raw polynomials. Here we connect it to the repository's actual RS
+code `ReedSolomon.code domain deg = (degreeLT F deg).map (evalOnPoints domain)`, confirming the bridge
+maps the degree-`deg` code into the degree-`(deg−1)` ("once-punctured") code — exactly Claim 6.2's
+"the line point is a codeword of the shifted code". -/
+
+/-- **The bridge quotient drops a degree class: `degreeLT deg → degreeLT (deg−1)`.**
+If `c` has degree `< deg` then the bridge quotient `(c − c(α))/(X − α)` has degree `< deg − 1`. -/
+theorem bridge_mem_degreeLT (c : F[X]) (α : F) {deg : ℕ}
+    (hc : c ∈ Polynomial.degreeLT F deg)
+    {quot : F[X]} (hbridge : c - C (c.eval α) = (X - C α) * quot) :
+    quot ∈ Polynomial.degreeLT F (deg - 1) := by
+  rw [Polynomial.mem_degreeLT] at hc ⊢
+  by_cases hq0 : quot = 0
+  · simp only [hq0, Polynomial.degree_zero]; exact bot_lt_iff_ne_bot.mpr (by simp)
+  rcases Nat.eq_zero_or_pos c.natDegree with hcd | hcd
+  · -- `c` is a constant: `c − C (c.eval α) = 0`, forcing `quot = 0`, contradiction
+    exfalso
+    have hCeq : c = C (c.coeff 0) := Polynomial.eq_C_of_natDegree_eq_zero hcd
+    have hzero : c - C (c.eval α) = 0 := by
+      rw [hCeq]; simp [Polynomial.eval_C]
+    rw [hzero] at hbridge
+    have := (mul_eq_zero.mp hbridge.symm).resolve_left (X_sub_C_ne_zero α)
+    exact hq0 this
+  · -- non-constant case: `natDegree quot < natDegree c ≤ deg − 1`
+    have hlt := bridge_quotient_natDegree_lt c α hcd hbridge
+    have hcne : c ≠ 0 := fun h => by simp [h] at hcd
+    have hcdeg : c.natDegree < deg := by
+      have := hc; rw [Polynomial.degree_eq_natDegree hcne, Nat.cast_lt] at this; exact this
+    rw [Polynomial.degree_eq_natDegree hq0, Nat.cast_lt]
+    omega
+
+/-- **Claim 6.2 over the formalized RS code: the bridge maps `code domain deg` into
+`code domain (deg − 1)`.** Concretely, for a codeword polynomial `c` of degree `< deg` and any domain
+point `α`, the evaluation of the bridge quotient is a genuine codeword of the once-punctured RS code.
+This is the precise statement that "the line `{f + z·g}` meets the code at `z = c(α)`", phrased over
+`ArkLib.Data.CodingTheory.ReedSolomon`. -/
+theorem bridge_eval_mem_code {ι : Type*} (domain : ι ↪ F) (c : F[X]) (α : F) {deg : ℕ}
+    (hc : c ∈ Polynomial.degreeLT F deg)
+    {quot : F[X]} (hbridge : c - C (c.eval α) = (X - C α) * quot) :
+    ReedSolomon.evalOnPoints domain quot ∈ ReedSolomon.code domain (deg - 1) :=
+  Submodule.mem_map_of_mem (bridge_mem_degreeLT c α hc hbridge)
+
 end ArkLib.ProximityGap.BridgeClaim62Loop48
 
 /-! ## Axiom audit -/
@@ -188,3 +233,5 @@ end ArkLib.ProximityGap.BridgeClaim62Loop48
 #print axioms ArkLib.ProximityGap.BridgeClaim62Loop48.manyValues_arith
 #print axioms ArkLib.ProximityGap.BridgeClaim62Loop48.prize_false_of_listDecoding_failure_bridged
 #print axioms ArkLib.ProximityGap.BridgeClaim62Loop48.prize_false_of_listDecoding_failure_full
+#print axioms ArkLib.ProximityGap.BridgeClaim62Loop48.bridge_mem_degreeLT
+#print axioms ArkLib.ProximityGap.BridgeClaim62Loop48.bridge_eval_mem_code
