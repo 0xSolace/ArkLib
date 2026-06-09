@@ -1633,20 +1633,27 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     have hml : ∀ {α : Type} (x : OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) α),
         monadLift x = x := fun x => rfl
     simp only [hml]
-    -- Unify the two (defeq) challenge-oracle impls so the shared prefix is syntactically identical.
+    -- Unify the two (defeq) challenge-oracle impls so the shared prefix is syntactically identical
+    -- on the LHS; this also pins `pSpec` for the keystone application below.
     simp only [ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl']
-    -- Peel the shared prefix `sendMessage; output; deriveTranscriptFS` term-by-term: the prefix is
-    -- now identical on both sides, so each `Pr[= · | prefixStep]` factor matches and only the
-    -- verify+extractor leaf remains.
+    -- Peel the shared prefix `sendMessage; output` term-by-term; each `Pr[= · | prefixStep]` factor
+    -- matches and only the verify+extractor leaf remains.
     rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
     refine tsum_congr (fun a => ?_)
     congr 1
     rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
     refine tsum_congr (fun x => ?_)
     congr 1
-    rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
-    refine tsum_congr (fun x_1 => ?_)
-    congr 1
+    -- The prefix `deriveTranscriptFS` is DETERMINISTIC (keystone): it returns `pure (t, x.2)`.  We
+    -- must COLLAPSE it (not peel via `congr 1`), because the per-transcript leaf is only provable
+    -- for the deterministic transcript `t` — off-support the re-derived transcript ≠ a free `x_1.1`.
+    obtain ⟨t, ht⟩ := Messages.deriveTranscriptFS_simulateQ_run srImpl stmtIn a.1.1 x.2
+    rw [ProtocolSpec.fsChallengeQueryImplState_eq_srChallengeQueryImpl'] at ht
+    -- LHS collapses against the simp-rewritten impl; the RHS's native `srChallengeQueryImpl'` matches
+    -- `ht` only by defeq, so collapse it via an explicit `show`.
+    conv_lhs => rw [ht]
+    rw [ht]
+    simp only [pure_bind]
     -- Leaf goal (verified by `trace_state`), with prefix values `a` (sendMessage), `x` (output),
     -- `x_1` (deriveTranscriptFS, `x_1.1` = transcript) in scope:
     --   LHS = Pr[ok? | verify_bundled >>= (·.elim none) (re-derive; srExtractor; payload)]
