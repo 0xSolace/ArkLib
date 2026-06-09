@@ -985,3 +985,26 @@ polynomials: `bridge_mem_degreeLT` shows the quotient lands in `degreeLT F (deg�
 the bridge maps the degree-`deg` Reed–Solomon code into the once-punctured degree-`(deg−1)` code, the
 exact "the line point is a codeword of the shifted code" content of Claim 6.2, over
 `ArkLib.Data.CodingTheory.ReedSolomon`. Sorry-free, axiom-clean.
+
+### O14 / Loop49 — the §7 subgroup lives in large characteristic; ±pairing governs the sumset
+
+Sharpening O11 (the §7 disproof route), `CandidateSubgroupSumsetLoop49.lean` (sorry-free, axiom-clean):
+
+* **Char-2 obstruction (`orderOf_odd_of_char_two`, `no_even_order_element_char_two`).** In a finite
+  field of characteristic 2, `|Fˣ| = |F| − 1 = 2^k − 1` is *odd*, so every unit has odd order and
+  there is **no** multiplicative subgroup of order `2^m` (`m ≥ 1`). The §7 attack's smooth subgroup is
+  therefore forced into *large characteristic* `p ≡ 1 (mod 2^m)` — the actual STARK regime — where
+  `G` is the group of `2^m`-th roots of unity in `F_p`.
+* **±pairing (`neg_pow_eq_one_of_even`, `nthRoots_set_neg_closed`, `neg_one_mem_nthRoots`).** Because
+  `2^m` is even, `(−x)^{2^m} = x^{2^m}`: the `2^m`-th roots are negation-closed, with `−1` the
+  order-2 element. So `G` partitions into `2^{m-1}` pairs `{g, −g}`. By Lam–Leung this is the *only*
+  prime-power-`2` vanishing relation among roots of unity.
+* **Reduction.** Two `ℓ`-subset sums coincide iff their signed difference is a vanishing `{−1,0,1}`-
+  sum of `2^m`-th roots; by Lam–Leung these are spanned by the ±pairing. The distinct-sum count is
+  then pinned between the pairing ceiling `3^{2^{m-1}}` and the cross-pair distinctness lower bound —
+  **both super-polynomial in `2^m`** at fixed gap. So O11 leans toward **disproof of the
+  minimal-domain prize** (consistent with `thm71_no_fixed_exponent`), modulo formalizing the
+  Lam–Leung distinctness — the next residual — and re-opens the O6 statement-fidelity question.
+
+Honest caveat: the vanishing power-sums `∑ g^j = 0` are *Vieta* identities in the field (roots of
+`X^{2^m} − 1`), **not** group facts (`∑_{a ∈ ℤ/2} a = 1 ≠ 0`) — flagged in the file, not over-claimed.
