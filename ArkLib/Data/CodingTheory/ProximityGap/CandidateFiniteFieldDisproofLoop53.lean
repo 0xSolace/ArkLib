@@ -239,9 +239,33 @@ theorem badCount_exceeds_prize_numerator (c₁ c₂ c₃ r : ℕ) :
   -- `m·c₁ + r·c₂ + (m-1)·c₃ = m·c₁ + (m-1)·c₃ + r·c₂ < 2^{m-1}`
   omega
 
+/-! ## The field-size barrier — why this disproof is *minimal-domain only* (an honest delimiter)
+
+The prize fixes `|F| < 2^256`. The bad count realized above is a *subset-sumset*, whose elements live
+in `F_p`, so it is **capped by `p = |F_p|`**. The doubly-exponential `2^{2^{N-1}}` lower bound only
+*bites* while it is below the field size; once the domain is large enough that `2^{2^{N-1}} ≥ p`
+(`N = 2^{k-1}` for a domain of size `2^k`, so already `k ≥ 9` under `|F| < 2^256`), the realized bad
+count is pinned at `≤ p`, a *bounded* quantity — and the prize numerator, growing with the domain,
+absorbs it. This is the concrete, field-size form of `thm71_within_prize`: it is **structurally why no
+roots-of-unity / §7 construction can disprove the *large-domain* prize**, and hence why pinning `δ*`
+needs a genuinely different (super-poly-in-`n`-at-bounded-`|F|`) mechanism that is open. -/
+
+/-- **Field-size cap on the realized bad count.** The subset-sumset over `F_p` has at most `p`
+elements (its values are field elements). So the doubly-exponential `2^{2^{N-1}}` lower bound is only
+meaningful when `p` is at least that large; at large domains under `|F| < 2^256` the bad count is
+capped at `p` and the prize is not refuted by this construction. -/
+theorem subsetSumset_card_le_field {p : ℕ} [Fact p.Prime] {n : ℕ} (ζ : ZMod p) :
+    (Finset.univ.image
+      (fun S : Finset (Fin n) => ∑ j ∈ S, ζ ^ (j : ℕ))).card ≤ p := by
+  classical
+  calc (Finset.univ.image (fun S : Finset (Fin n) => ∑ j ∈ S, ζ ^ (j : ℕ))).card
+      ≤ Fintype.card (ZMod p) := Finset.card_le_univ _
+    _ = p := ZMod.card p
+
 end ArkLib.ProximityGap.FiniteFieldDisproofLoop53
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.FiniteFieldDisproofLoop53.exists_finiteField_subsetSumset_large
 #print axioms ArkLib.ProximityGap.FiniteFieldDisproofLoop53.prize_exponent_refuted_finiteField
 #print axioms ArkLib.ProximityGap.FiniteFieldDisproofLoop53.badCount_exceeds_prize_numerator
+#print axioms ArkLib.ProximityGap.FiniteFieldDisproofLoop53.subsetSumset_card_le_field
