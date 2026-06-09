@@ -718,6 +718,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonStirOutOfDom
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityBaseCasePairs
+import ArkLib.Data.CodingTheory.ProximityGap.RigidityFullWindow
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityGeneralT1
 import ArkLib.Data.CodingTheory.ProximityGap.RigiditySunflowerCore
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityTriplesSunflower
@@ -765,7 +766,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.RigidityFullWindow
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -1162,8 +1162,8 @@ import ArkLib.ProofSystem.Logup.Security.LogupSoundnessUncond
 import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
 import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
 import ArkLib.ProofSystem.Logup.Security.OuterMarginalBound
-import ArkLib.ProofSystem.Logup.Security.OuterRun
 import ArkLib.ProofSystem.Logup.Security.OuterRestSupport
+import ArkLib.ProofSystem.Logup.Security.OuterRun
 import ArkLib.ProofSystem.Logup.Security.OuterRunSamplesChallenge
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessReal
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessSharp
@@ -1494,6 +1494,7 @@ import ArkLib.ToMathlib.TailDegProducer
 import ArkLib.ToMathlib.ToyProblemRewinding
 import ArkLib.ToMathlib.ToyProblemViolation
 import ArkLib.ToMathlib.ToyStep4
+import ArkLib.ToMathlib.TruncatedLocalRoot
 import ArkLib.ToMathlib.TwistedKernel
 import ArkLib.ToMathlib.UMSubspaceDesignProof
 import ArkLib.ToMathlib.UniformTranslationAverage
