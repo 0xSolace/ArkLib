@@ -39,6 +39,16 @@ namespace Spartan.Spec
 variable {R : Type} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R]
   [VCVCompatible R] (pp : Spartan.PublicParams) {ι : Type} (oSpec : OracleSpec ι)
 
+/-- The `RandomQuery` challenge type over the multilinear polynomial oracle is `SampleableType`:
+its `OracleInterface.Query` is definitionally `Fin n → R`, sampleable from `[SampleableType R]`.
+Registered at file scope (keyed on `n`) so the `firstChallenge` completeness transfer synthesizes
+it canonically — the synthesis does not see through the `OracleInterface.Query` projector on its
+own, and a body-local `haveI` made the instance non-canonical and diverged `liftContext`'s
+unification. -/
+instance instSampleableTypeQueryMvPolynomial {n : ℕ} :
+    SampleableType (OracleInterface.Query (MvPolynomial (Fin n) R)) :=
+  inferInstanceAs (SampleableType (Fin n → R))
+
 /-- **Outer input relation of the `firstChallenge` phase.** The R1CS instance is satisfied: the
 public input `𝕩` (the `AfterFirstMessage` statement is exactly `𝕩`) together with the matrix oracles
 `A, B, C` and the witness oracle `𝕨` satisfy `(A𝕫)·(B𝕫) = C𝕫`. -/
@@ -104,6 +114,7 @@ theorem firstChallenge_perfectCompleteness
     (outerRelOut := firstChallengeRelOut (R := R) pp)
     (innerRelOut := RandomQuery.relOut (MvPolynomial (Fin pp.ℓ_m) R))
     rfl
-    (RandomQuery.oracleReduction_completeness oSpec (MvPolynomial (Fin pp.ℓ_m) R))
+    (RandomQuery.oracleReduction_completeness (init := init) (impl := impl) oSpec
+      (MvPolynomial (Fin pp.ℓ_m) R))
 
 end Spartan.Spec
