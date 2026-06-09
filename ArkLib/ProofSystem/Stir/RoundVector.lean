@@ -27,6 +27,7 @@ variable {ι : Type} [Fintype ι] [DecidableEq ι]
 /-- **The vector spec of one STIR fold round**: the verifier sends a length-`1` field-vector
 challenge, then the prover sends the folded oracle as a length-`|ι|` vector. This is the
 `VectorSpec` counterpart of `Round.pSpec`. -/
+@[reducible]
 def stirRoundVSpec (ι F : Type) [Fintype ι] : ProtocolSpec.VectorSpec 2 :=
   ⟨!v[.V_to_P, .P_to_V], !v[1, Fintype.card ι]⟩
 
