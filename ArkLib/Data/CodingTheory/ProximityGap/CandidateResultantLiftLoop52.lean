@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.RingTheory.Polynomial.Resultant.Basic
 import Mathlib.Data.ZMod.Basic
+import Mathlib.NumberTheory.LSeries.PrimesInAP
 import Mathlib.Tactic
 
 /-!
@@ -104,8 +105,48 @@ theorem resultant_int_ne_zero_of_isCoprime_rat (g h : Polynomial ℤ)
   rw [hmap, hz] at hne
   simp at hne
 
+/-- **A prime `p ≡ 1 (mod q)` avoiding any fixed nonzero integer `R`.** By Dirichlet there are
+infinitely many primes `≡ 1 (mod q)`; choosing one larger than `|R|` guarantees `p ∤ R`. Applied with
+`q = 2^m` (so `ζ` exists in `F_p`) and `R = ∏ Res_ℤ(f_S − f_T, Φ)` (the collision product), this is
+the prime at which **no** subset-sum collision occurs. -/
+theorem exists_prime_eq_one_mod_not_dvd {q : ℕ} (hq : 2 ≤ q) (R : ℤ) (hR : R ≠ 0) :
+    ∃ p : ℕ, p.Prime ∧ (p : ZMod q) = 1 ∧ ¬ (p : ℤ) ∣ R := by
+  haveI : NeZero q := ⟨by omega⟩
+  obtain ⟨p, hpgt, hpp, hpmod⟩ :=
+    Nat.forall_exists_prime_gt_and_eq_mod (q := q) (a := 1) isUnit_one R.natAbs
+  refine ⟨p, hpp, hpmod, ?_⟩
+  intro hdvd
+  -- `p ∣ R ⟹ p ≤ |R| = R.natAbs`, contradicting `p > R.natAbs`
+  have hpos : 0 < R.natAbs := Int.natAbs_pos.mpr hR
+  have hpdvd : p ∣ R.natAbs := by
+    have := Int.natAbs_dvd_natAbs.mpr hdvd
+    simpa using this
+  have hle : p ≤ R.natAbs := Nat.le_of_dvd hpos hpdvd
+  omega
+
+/-- **Consolidation: a prime `≡ 1 (mod q)` at which no member of a finite family shares a root with
+`h`.** Given polynomials `gs i`, each coprime to `h` over `ℚ`, the product `R = ∏ Res_ℤ(gs i, h)` is a
+nonzero integer; a Dirichlet prime `p ≡ 1 (mod q)` with `p ∤ R` then satisfies `p ∤ Res_ℤ(gs i, h)`
+for every `i`. Combined (via `prime_dvd_resultant_of_common_root`) this is exactly "no collision at
+`p`": no `gs i` shares a root with `h` mod `p`. This is the form the §7 finite-field disproof consumes
+with `h = Φ_{2^m}`, `gs = {f_S − f_T}`. -/
+theorem exists_good_prime_no_common_resultant {ι : Type*} [Fintype ι]
+    {q : ℕ} (hq : 2 ≤ q) (h : Polynomial ℤ) (gs : ι → Polynomial ℤ)
+    (hcop : ∀ i, IsCoprime ((gs i).map (Int.castRingHom ℚ)) (h.map (Int.castRingHom ℚ))) :
+    ∃ p : ℕ, p.Prime ∧ (p : ZMod q) = 1 ∧
+      ∀ i, ¬ (p : ℤ) ∣ Polynomial.resultant (gs i) h := by
+  classical
+  set R : ℤ := ∏ i, Polynomial.resultant (gs i) h with hR
+  have hRne : R ≠ 0 :=
+    Finset.prod_ne_zero_iff.mpr fun i _ => resultant_int_ne_zero_of_isCoprime_rat _ _ (hcop i)
+  obtain ⟨p, hpp, hpmod, hpndvd⟩ := exists_prime_eq_one_mod_not_dvd hq R hRne
+  refine ⟨p, hpp, hpmod, fun i hdvd => hpndvd ?_⟩
+  exact hR ▸ hdvd.trans (Finset.dvd_prod_of_mem _ (Finset.mem_univ i))
+
 end ArkLib.ProximityGap.ResultantLiftLoop52
 
 /-! ## Axiom audit -/
+#print axioms ArkLib.ProximityGap.ResultantLiftLoop52.exists_good_prime_no_common_resultant
 #print axioms ArkLib.ProximityGap.ResultantLiftLoop52.prime_dvd_resultant_of_common_root
 #print axioms ArkLib.ProximityGap.ResultantLiftLoop52.resultant_int_ne_zero_of_isCoprime_rat
+#print axioms ArkLib.ProximityGap.ResultantLiftLoop52.exists_prime_eq_one_mod_not_dvd
