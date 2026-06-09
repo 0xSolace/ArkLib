@@ -2089,3 +2089,15 @@ Capacity side: capacity_crossover (R14) 2^128·q^4063 < C(2^20, 2^19+4063). NET:
 repeated filter-card pattern rewrites ALL instances at once (don't list it twice);
 sq_sum_le_card_mul_sum_sq works over ℕ directly (Semiring+LinearOrder+IsStrictOrderedRing);
 Finset.sum_ite_mem + univ_inter for indicator sums; push_neg deprecated → push Not.
+
+### O14 — KERNEL LEMMA proven: smoothness kills σ-twisted kernels; D ⟹ consistency-rarity only (nubs, 2026-06-09)
+
+**Lemma K (3-line proof, in research-folder 05-LOG Entry 18):** deg<κ pairs (e,f) with
+e(z) = −σ_z y_z f(z) on |O| ≥ 2κ tower points are zero — substitute z = d²: e(d²)+d·f(d²) has
+degree ≤ 2κ−1 but ≥ 2κ distinct roots σ_z y_z. Unconditional (no genericity). Consequences:
+per-pattern solutions ≤ 1 in the overdetermined regime forced by the ηn-overdetermination identity;
+hence ℓ(θ) = #consistent (B,O,σ) patterns — **Conjecture D is now purely inhomogeneous
+consistency-rarity** (cyclotomic identity counting; C19's exhaustive 4480→16 is the worked
+instance). This is the mechanism-level answer to "what randomness supplies that smoothness must
+replace": the d²=z parametrization supplies unconditional kernel rigidity. Lean brick queued
+(pure degree counting).
