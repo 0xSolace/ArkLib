@@ -2826,3 +2826,18 @@ unity with prescribed higher moments — with Lam–Leung/Conway–Jones as the 
 literature and the descent tower as the mechanism. Lean brick queued: the t = 1 theorem
 (cyclotomic_eq_minpoly_rat + 2-power cyclotomic + coefficient pairing — all Mathlib-
 available ingredients).
+
+### O49 / Round-25 — GENERAL t=1 RIGIDITY (all w, uniform — the case ladder is dead)
+
+`RigidityGeneralT1.lean` (main-loop solo, axiom-clean, 0 warnings, strict-verified):
+disjoint_equal_sum_antipodal — disjoint equal-sum sets of 2N-th roots are UNIONS OF ANTIPODAL PAIRS,
+at every support size, with NO case analysis. Engine: each index carries ≤ 2 signed points ⟹ fibers
+∅/singleton/antipodal-pair with contributions {0,±1} (fiber_trichotomy); Finset integer bridge
+(bridgeF) equates contributions; singleton fiber ⟹ identical signed point in both sets ⟹
+disjointness violation. SUBSUMES R23+R24 (no w=4,5,... bashes ever). CONSEQUENCE: disjoint equal-e₁
+families = EXACTLY the d=2 lifts (Λ_A ∈ F[X²], R22 structure) — floor = ceiling at t=1, all w. THE
+FULL WINDOW RECURSES: equal e_1..e_t of lifts ⟹ equal e_1..e_{⌊t/2⌋} of squares in μ_N
+(independence inherited); ⌈log₂(t+1)⌉ halvings exhaust any window ⟹ 2^k-lift structure. REMAINING
+for full Step 2 (now MECHANICAL, no new math for the disjoint case): (a) recursion assembly through
+R22's expand machinery, (b) shared-vertex/sunflower-core reduction (divide by the common locator
+factor — top-window agreement of products with common factor passes to cofactors).
