@@ -153,4 +153,37 @@ theorem appendToReductionResidual_proof
   (appendToReductionResidual_iff_verifier R₁ R₂).mpr
     (oracleVerifier_append_toVerifier R₁.verifier R₂.verifier)
 
+variable [oSpec.Fintype] [oSpec.Inhabited]
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel₁ : Set ((Stmt₁ × ∀ i, OStmt₁ i) × Wit₁)}
+    {rel₂ : Set ((Stmt₂ × ∀ i, OStmt₂ i) × Wit₂)}
+    {rel₃ : Set ((Stmt₃ × ∀ i, OStmt₃ i) × Wit₃)}
+
+/-- **Oracle-level append perfect completeness — UNCONDITIONAL (message seam).** Perfect
+completeness of `R₁.append R₂` from the two component perfect-completenesses and the message-seam
+direction/`NeverFail`/support facts, with the residual bridge now discharged internally
+(`appendToReductionResidual_proof`). This is the keystone consumers (#29/#114/#62/#13) need:
+no `appendToReductionResidual`/`hBridge` hypothesis remains. -/
+theorem append_perfectCompleteness_keystone
+    [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
+    (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β))
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₁.Challenge]ₒ).Fintype] [(oSpec + [pSpec₁.Challenge]ₒ).Inhabited]
+    [(oSpec + [pSpec₂.Challenge]ₒ).Fintype] [(oSpec + [pSpec₂.Challenge]ₒ).Inhabited] :
+    (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ :=
+  append_perfectCompleteness_msg_proof R₁ R₂ h₁ h₂ hn hDir hDir₂ hInit hImplSupp
+    (appendToReductionResidual_proof R₁ R₂)
+
 end OracleReduction
