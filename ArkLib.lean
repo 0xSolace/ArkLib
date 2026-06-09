@@ -918,6 +918,7 @@ import ArkLib.ProofSystem.Logup.Security.SubPhaseSplit
 import ArkLib.ProofSystem.Logup.Security.SumcheckCompleteness
 import ArkLib.ProofSystem.Logup.Security.SumcheckSoundness
 import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckBridge
+import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckLiftCoherent
 import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckPolynomial
 import ArkLib.ProofSystem.Plonk.Basic
 import ArkLib.ProofSystem.Plonk.Composition
