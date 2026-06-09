@@ -1030,6 +1030,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Soundness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructures
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.State
+import ArkLib.OracleReduction.FiatShamir.HVZKKernelClose
 import ArkLib.OracleReduction.FiatShamir.HVZKKernelInfra
 import ArkLib.OracleReduction.FiatShamir.HVZKNoChallenge
 import ArkLib.OracleReduction.FiatShamir.HVZKTransferReduction
@@ -1200,6 +1201,7 @@ import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.Composition
 import ArkLib.ProofSystem.Spartan.FirstChallengeCoherent
 import ArkLib.ProofSystem.Spartan.FirstChallengeComplete
+import ArkLib.ProofSystem.Spartan.FirstSumcheckBridgeFree
 import ArkLib.ProofSystem.Spartan.FirstSumcheckComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckCubeSum
 import ArkLib.ProofSystem.Spartan.FirstSumcheckDegree
@@ -1350,10 +1352,14 @@ import ArkLib.ToMathlib.Claim57Supply
 import ArkLib.ToMathlib.Claim59Conditional
 import ArkLib.ToMathlib.CoeffExtract
 import ArkLib.ToMathlib.CoeffHomDescent
+import ArkLib.ToMathlib.ConditionDiscProduct
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 import ArkLib.ToMathlib.CountingAgreementBricks
 import ArkLib.ToMathlib.CurveFamilyGenuine
 import ArkLib.ToMathlib.CurveFamilyHensel
+import ArkLib.ToMathlib.CurveFamilyLines
+import ArkLib.ToMathlib.CurveFamilyZLinear
+import ArkLib.ToMathlib.CurveHenselDatumProducers
 import ArkLib.ToMathlib.DG25CoveringRadiusProof
 import ArkLib.ToMathlib.DescentTrichotomy
 import ArkLib.ToMathlib.DiscriminantBadSet
@@ -1392,6 +1398,7 @@ import ArkLib.ToMathlib.GK16Structural
 import ArkLib.ToMathlib.GKL24BadWitnessCard
 import ArkLib.ToMathlib.GKL24FirstMomentProb
 import ArkLib.ToMathlib.GSFactorData
+import ArkLib.ToMathlib.GSGradedBundle
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.GenuineMonicCapstone
 import ArkLib.ToMathlib.GenuineTruncationFin
