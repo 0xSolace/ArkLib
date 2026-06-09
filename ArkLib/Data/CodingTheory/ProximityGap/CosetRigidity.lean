@@ -105,6 +105,35 @@ theorem subset_pow_fiber_of_esymm_zero {S : Finset F} {h : ℕ} (hh : 0 < h) (hc
   obtain ⟨c, hc⟩ := all_pow_eq_of_esymm_zero hh hcard hesymm
   exact ⟨c, fun x hx => hc x hx⟩
 
+/-- **Forward direction.** The root set of `X^h - c` (when it has `h` distinct roots) has its first
+`h-1` elementary symmetric functions all zero — its characteristic polynomial is literally `X^h - c`,
+whose middle coefficients vanish (Vieta: `coeff_eq_esymm_roots_of_card`). Together with
+`all_pow_eq_of_esymm_zero` this characterizes the vanishing-statistic `h`-subsets as *exactly* the
+complete `h`-th-root fibers — the cosets of `μ_h`. Over `μ_n` these are the `n/h` cosets, so the
+`a = h` slice of `CosetPowerSumConcentration.exists_many_vanishing_powersum_subsets` is exact. -/
+theorem esymm_roots_X_pow_sub_C_eq_zero {h : ℕ} (hh : 0 < h) (c : F)
+    (hcard : Multiset.card (X ^ h - C c).roots = h) :
+    ∀ j, 1 ≤ j → j ≤ h - 1 → (X ^ h - C c).roots.esymm j = 0 := by
+  intro j hj1 hjh
+  have hne : (h : ℕ) ≠ 0 := by omega
+  have hdeg : (X ^ h - C c : F[X]).natDegree = h := natDegree_X_pow_sub_C
+  have hlc : (X ^ h - C c : F[X]).leadingCoeff = 1 := (monic_X_pow_sub_C c hne).leadingCoeff
+  have hcard' : Multiset.card (X ^ h - C c).roots = (X ^ h - C c).natDegree := by
+    rw [hdeg]; exact hcard
+  have hk : h - j ≤ (X ^ h - C c : F[X]).natDegree := by rw [hdeg]; omega
+  have hv := Polynomial.coeff_eq_esymm_roots_of_card hcard' hk
+  rw [hdeg, hlc, one_mul] at hv
+  have hjj : h - (h - j) = j := by omega
+  rw [hjj] at hv
+  have hcoeff0 : (X ^ h - C c : F[X]).coeff (h - j) = 0 := by
+    rw [coeff_sub, coeff_X_pow, coeff_C]
+    have h1 : h - j ≠ h := by omega
+    have h2 : ¬ (h - j = 0) := by omega
+    simp only [h1, if_false, h2, if_false, sub_zero]
+  rw [hcoeff0] at hv
+  have hunit : ((-1 : F) ^ j) ≠ 0 := by apply pow_ne_zero; norm_num
+  exact (mul_eq_zero.mp hv.symm).resolve_left hunit
+
 end ArkLib.ProximityGap.Rigidity
 
 #print axioms ArkLib.ProximityGap.Rigidity.all_pow_eq_of_esymm_zero
