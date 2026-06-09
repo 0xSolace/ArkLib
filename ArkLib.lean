@@ -282,6 +282,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersectionBudget
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersectionDecaySum
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersectionEntropy
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersectionGlobal
+import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersectionMGF
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallIntersectionWeightInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BreakdownFarCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BudgetArith
