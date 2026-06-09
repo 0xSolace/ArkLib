@@ -214,6 +214,72 @@ theorem branch_evalAt_injOn {K : Type*} [Field K] {G : K[X][Y]} {x₀ : K}
   intro p hp p' hp' hfib
   exact branch_eq_of_fiber_eq_of_separable hsep hp hp' hfib
 
+/-! ## Branch existence and per-factor fiber counting -/
+
+/-- Specializing a polynomial branch: if `p` is a polynomial root of `G : R[X][Y]`, then
+`p.eval x₀` is a root of the specialization `G(x₀, ·)`. -/
+lemma eval_specialization_eq_zero {G : R[X][Y]} {x₀ : R} {p : R[X]}
+    (hp : Polynomial.eval p G = 0) :
+    Polynomial.eval (p.eval x₀) (G.map (Polynomial.evalRingHom x₀)) = 0 := by
+  have h2 := Polynomial.eval₂_at_apply (p := G) (Polynomial.evalRingHom x₀) p
+  rw [Polynomial.coe_evalRingHom] at h2
+  rw [Polynomial.eval_map, h2, hp, Polynomial.eval_zero]
+
+/-- **Unique Hensel branch through a simple fiber point (existence + uniqueness).** If `c` is
+a simple root of the specialization `G(x₀,·)`, there is a **unique** power-series branch
+`γ ∈ R⟦T⟧` through `(x₀, c)`: `constantCoeff γ = c` and `γ` is a root of the recentered
+factor `G.map (recenter x₀)`. This is the abstract S6 Hensel lift at the good point,
+assembled from the in-tree existence and uniqueness engines. -/
+theorem existsUnique_branch_series {G : R[X][Y]} {x₀ c : R}
+    (hroot : Polynomial.eval c (G.map (Polynomial.evalRingHom x₀)) = 0)
+    (hu : IsUnit (Polynomial.eval c
+      (Polynomial.derivative (G.map (Polynomial.evalRingHom x₀))))) :
+    ∃! γ : PowerSeries R, PowerSeries.constantCoeff γ = c ∧
+      Polynomial.eval γ (G.map (recenter x₀)) = 0 := by
+  have hQ₀ : ProximityPrize.HenselSeriesCoeff.Q₀ (G.map (recenter x₀)) =
+      G.map (Polynomial.evalRingHom x₀) := by
+    rw [ProximityPrize.HenselSeriesCoeff.Q₀, Polynomial.map_map, constantCoeff_comp_recenter]
+  have hc0 : Polynomial.eval c
+      (ProximityPrize.HenselSeriesCoeff.Q₀ (G.map (recenter x₀))) = 0 := by
+    rw [hQ₀]; exact hroot
+  have hu' : IsUnit (Polynomial.eval c (Polynomial.derivative
+      (ProximityPrize.HenselSeriesCoeff.Q₀ (G.map (recenter x₀))))) := by
+    rw [hQ₀]; exact hu
+  obtain ⟨γ, hγc, hγ⟩ :=
+    ProximityPrize.HenselSeriesCoeff.exists_powerSeries_root_seriesCoeff hc0 hu'
+  refine ⟨γ, ⟨hγc, hγ⟩, ?_⟩
+  rintro γ' ⟨hγ'c, hγ'⟩
+  exact ProximityPrize.HenselSeriesCoeff.root_unique_seriesCoeff
+    (by rw [hγ'c, hγc]) (by rw [hγ'c]; exact hu') hγ' hγ
+
+/-- **Per-factor fiber count.** At a point `x₀` where the specialization of `G` is separable
+and nonzero, any finite set of polynomial branches of `G` injects (via `p ↦ p.eval x₀`,
+branch rigidity) into the roots of `G(x₀,·)`, hence has at most `deg_Y G(x₀,·)` elements —
+the S6 per-factor list-size bookkeeping. -/
+theorem card_branches_le_natDegree {K : Type*} [Field K] {G : K[X][Y]} {x₀ : K}
+    (hsep : (G.map (Polynomial.evalRingHom x₀)).Separable)
+    (hG0 : G.map (Polynomial.evalRingHom x₀) ≠ 0)
+    (Ps : Finset K[X]) (hPs : ∀ p ∈ Ps, (Polynomial.X - Polynomial.C p) ∣ G) :
+    Ps.card ≤ (G.map (Polynomial.evalRingHom x₀)).natDegree := by
+  classical
+  have himg : ∀ p ∈ Ps,
+      p.eval x₀ ∈ (G.map (Polynomial.evalRingHom x₀)).roots.toFinset := by
+    intro p hp
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots']
+    exact ⟨hG0, eval_specialization_eq_zero (Polynomial.dvd_iff_isRoot.mp (hPs p hp))⟩
+  have hinj : Set.InjOn (fun p : K[X] => p.eval x₀) Ps := fun p hp p' hp' h =>
+    branch_eq_of_fiber_eq_of_separable hsep (hPs p hp) (hPs p' hp') h
+  calc Ps.card
+      = (Ps.image (fun p => p.eval x₀)).card := (Finset.card_image_of_injOn hinj).symm
+    _ ≤ (G.map (Polynomial.evalRingHom x₀)).roots.toFinset.card := by
+        refine Finset.card_le_card ?_
+        intro y hy
+        obtain ⟨p, hp, rfl⟩ := Finset.mem_image.mp hy
+        exact himg p hp
+    _ ≤ Multiset.card (G.map (Polynomial.evalRingHom x₀)).roots :=
+        Multiset.toFinset_card_le _
+    _ ≤ (G.map (Polynomial.evalRingHom x₀)).natDegree := Polynomial.card_roots' _
+
 end ProximityPrize.HenselBranchRigidity
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -223,3 +289,5 @@ end ProximityPrize.HenselBranchRigidity
 #print axioms ProximityPrize.HenselBranchRigidity.branch_eq_of_fiber_eq_of_separable
 #print axioms ProximityPrize.HenselBranchRigidity.branch_eq_of_fiber_eq_expand
 #print axioms ProximityPrize.HenselBranchRigidity.branch_evalAt_injOn
+#print axioms ProximityPrize.HenselBranchRigidity.existsUnique_branch_series
+#print axioms ProximityPrize.HenselBranchRigidity.card_branches_le_natDegree
