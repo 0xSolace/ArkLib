@@ -396,7 +396,7 @@ lemma simulateQ_simOracle2_baseQuery {ιₒ : Type} {spec : OracleSpec ιₒ}
     {κ₂ : Type} {U₂ : κ₂ → Type} [∀ i, OracleInterface (U₂ i)]
     (u₁ : ∀ i, U₁ i) (u₂ : ∀ i, U₂ i) (qb : spec.Domain) :
     simulateQ (OracleInterface.simOracle2 spec u₁ u₂)
-      (liftM (spec.query qb) : OracleComp (spec + ([U₁]ₒ + [U₂]ₒ)) _)
+      (query (spec := spec + ([U₁]ₒ + [U₂]ₒ)) (Sum.inl qb))
       = (liftM (spec.query qb) : OracleComp spec _) := by
   change simulateQ (OracleInterface.simOracle2 spec u₁ u₂)
       (liftM ((spec + ([U₁]ₒ + [U₂]ₒ)).query (Sum.inl qb))) = _
@@ -410,13 +410,13 @@ lemma simulateQ_simOracle2_leftQuery {ιₒ : Type} {spec : OracleSpec ιₒ}
     {κ₂ : Type} {U₂ : κ₂ → Type} [∀ i, OracleInterface (U₂ i)]
     (u₁ : ∀ i, U₁ i) (u₂ : ∀ i, U₂ i) (qs : ([U₁]ₒ).Domain) :
     simulateQ (OracleInterface.simOracle2 spec u₁ u₂)
-      (liftM (([U₁]ₒ).query qs) : OracleComp (spec + ([U₁]ₒ + [U₂]ₒ)) _)
+      (query (spec := spec + ([U₁]ₒ + [U₂]ₒ)) (Sum.inr (Sum.inl qs)))
       = (pure (OracleInterface.answer (u₁ qs.1) qs.2) : OracleComp spec _) := by
   change simulateQ (OracleInterface.simOracle2 spec u₁ u₂)
       (liftM ((spec + ([U₁]ₒ + [U₂]ₒ)).query (Sum.inr (Sum.inl qs)))) = _
   rw [simulateQ_spec_query]
   simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inr,
-    QueryImpl.liftTarget_apply]
+    QueryImpl.add_apply_inl, QueryImpl.liftTarget_apply]
   change liftM (OracleInterface.simOracle0 U₁ u₁ qs) = _
   simp only [OracleInterface.simOracle0]
   rfl
@@ -427,7 +427,7 @@ lemma simulateQ_simOracle2_rightQuery {ιₒ : Type} {spec : OracleSpec ιₒ}
     {κ₂ : Type} {U₂ : κ₂ → Type} [∀ i, OracleInterface (U₂ i)]
     (u₁ : ∀ i, U₁ i) (u₂ : ∀ i, U₂ i) (qm : ([U₂]ₒ).Domain) :
     simulateQ (OracleInterface.simOracle2 spec u₁ u₂)
-      (liftM (([U₂]ₒ).query qm) : OracleComp (spec + ([U₁]ₒ + [U₂]ₒ)) _)
+      (query (spec := spec + ([U₁]ₒ + [U₂]ₒ)) (Sum.inr (Sum.inr qm)))
       = (pure (OracleInterface.answer (u₂ qm.1) qm.2) : OracleComp spec _) := by
   change simulateQ (OracleInterface.simOracle2 spec u₁ u₂)
       (liftM ((spec + ([U₁]ₒ + [U₂]ₒ)).query (Sum.inr (Sum.inr qm)))) = _
@@ -492,8 +492,7 @@ theorem simulateQ_emitMessageInl (oStmt : ∀ i, OStmt₁ i)
     simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitMessageInl i q)
       = pure ((Oₘ₁ i).answer (tr.fst.messages i) q) := by
   rw [emitMessageInl, emitMessageQuery_simulateQ]
-  congr 1
-  exact eq_of_heq ((eqRec_heq _ _).trans (messages_fst_heq tr i).symm)
+  congr 1 <;> exact eq_of_heq ((eqRec_heq _ _).trans (messages_fst_heq tr i).symm)
 
 /-- **V₁-side router collapse.** Running `V₁`'s queries through `router₁` and then the combined
 `simOracle2` (over `oStmt` and the *full* appended-transcript messages) is the same as running them
@@ -506,8 +505,7 @@ lemma router1_collapse (oStmt : ∀ i, OStmt₁ i) (tr : FullTranscript (pSpec�
   rcases q with t | (t | ⟨i, q⟩) <;> dsimp only [router₁]
   · rfl
   · rfl
-  · rw [simulateQ_emitMessageInl]
-    exact (simulateQ_simOracle2_rightQuery oStmt tr.fst.messages ⟨i, q⟩).symm
+  · exact simulateQ_emitMessageInl oStmt tr i q
 
 /-- **V₂-side router collapse.** Running `V₂`'s queries through `router₂ V₁` and then the combined
 `simOracle2` is the same as running them through `V₂`'s own `simOracle2` over the oracle statements
