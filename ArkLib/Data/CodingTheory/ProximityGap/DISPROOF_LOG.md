@@ -1008,3 +1008,29 @@ Sharpening O11 (the §7 disproof route), `CandidateSubgroupSumsetLoop49.lean` (s
 
 Honest caveat: the vanishing power-sums `∑ g^j = 0` are *Vieta* identities in the field (roots of
 `X^{2^m} − 1`), **not** group facts (`∑_{a ∈ ℤ/2} a = 1 ≠ 0`) — flagged in the file, not over-claimed.
+
+### O15 / Loop50 — PROVEN super-exponential subset-sumset lower bound; char-0 disproof settled
+
+`CandidateSubsetSumLowerLoop50.lean` (sorry-free, axiom-clean) proves the decisive half of O11 and
+**corrects an over-optimism in Loop49**.
+
+* **`subsetSum_injective_of_noRelation`.** If a family `v : Fin N → K` admits no nonzero `{−1,0,1}`-
+  (equiv. integer-) relation `∑ j (g j) v j = 0`, the subset-sum map `S ↦ ∑_{j∈S} v j` is *injective*
+  (two equal sums ⟹ indicator difference is a vanishing relation ⟹ subsets equal).
+* **`card_subsetSumset_ge` / `card_subsetSumset_len_eq`.** Hence `|sumset| ≥ 2^N` and the size-`ℓ`
+  sumset has *exactly* `C(N, ℓ)` elements.
+* **Application.** For a primitive `2^m`-th root `ζ`, `Φ_{2^m} = X^{2^{m-1}}+1` has degree
+  `φ(2^m)=2^{m-1}`, so the power basis `{1,ζ,…,ζ^{2^{m-1}-1}}` is `ℤ`-independent. With `N = 2^{m-1}`:
+  `|G^{(+ℓ)}| ≥ C(2^{m-1}, ℓ)` — **super-exponential in the domain `2^m`**. With
+  `thm71_no_fixed_exponent` (Loop46) this **disproves the minimal-domain prize over any field where
+  the power basis stays independent** (char 0, or `F_q` with `ord_{2^m}(q)=2^{m-1}`, i.e. `Φ_{2^m}`
+  irreducible).
+
+**Loop49 correction (honest).** Loop49 leaned "both ends super-poly ⟹ disproof" *unconditionally*.
+That is **wrong for the STARK prime-field regime** `q ≡ 1 (mod 2^m)`: there `ζ ∈ F_q`, the power basis
+collapses, and the subset sums are **capped by `q`**. The proven lower bound holds only in the
+power-independent regime. The genuine remaining gap is a **lifting**: the `C(2^{m-1},ℓ)` distinct
+algebraic-integer sums in `ℤ[ζ]` have bounded norm, so a large prime `p ≡ 1 (mod 2^m)` (Dirichlet,
+infinitely many) admits a degree-1 prime `𝔭 ∣ p` keeping them distinct mod `𝔭` — witnessing a finite
+field with super-poly bad count, hence the finite-field disproof. The combinatorial core is proven;
+the lifting is O16's residual.
