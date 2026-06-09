@@ -116,6 +116,76 @@ private theorem simulateQ_continueFromTo_seam_challenge_evalDist
             (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1)))),
         cast (Prover.append_PrvState_seam_succ (P₁ := P₁) (P₂ := P₂) hn).symm (f challenge))) s
 
+
+/-- **State-fixed `simulateQ` bind decomposition (`run'` level).** For a state-preserving handler, the
+`run'`-distribution of a simulated bind factors as the bind of the factors' `run'`-distributions
+(both run from the same fixed state `s`). The `run'`-level companion of `simulateQ_run_bind_state_fixed`,
+used to thread per-stage `evalDist` equalities (e.g. the seam commute) through the surrounding run. -/
+theorem StateT_run'_simulateQ_bind_state_fixed {ιₒ : Type} {spec : OracleSpec ιₒ} {σ : Type}
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {α β : Type} (a : OracleComp spec α) (k : α → OracleComp spec β) (s : σ) :
+    StateT.run' (simulateQ so (a >>= k)) s
+      = StateT.run' (simulateQ so a) s >>= fun x => StateT.run' (simulateQ so (k x)) s := by
+  rw [StateT.run'_eq, simulateQ_run_bind_state_fixed so hso a k s, map_bind]
+  conv_rhs => rw [StateT.run'_eq, bind_map_left]
+  refine bind_congr fun p => ?_
+  rw [StateT.run'_eq]
+
+set_option maxHeartbeats 1000000 in
+/-- **Simulated right-block commute at a challenge seam.** The `simulateQ` analogue of
+`Prover.append_continueFromTo_right_challenge_evalDist`: split the right block at the seam successor
+(`continueFromTo_trans`), thread the proven seam commute through the interior via the state-fixed
+decomposition, then fold via the syntactic, direction-agnostic
+`append_right_block_from_seam_boundary_heq`. -/
+private theorem simulateQ_continueFromTo_right_challenge_evalDist
+    (P₁ : Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (P₂ : Prover oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (stmt : Stmt₁) (wit : Wit₁) (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    [instSC : ∀ i, SampleableType ((pSpec₁ ++ₚ pSpec₂).Challenge i)]
+    (T₁ : FullTranscript pSpec₁)
+    (rSeam : (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)
+    (hT : rSeam.1 =
+      Transcript.appendRight T₁
+        (default : pSpec₂.Transcript (⟨0, by omega⟩ : Fin (n + 1))))
+    (s : σ) :
+    evalDist (StateT.run' (simulateQ (impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp))
+        (Prover.continueFromTo (P₁.append P₂) stmt wit
+          (⟨m, by omega⟩ : Fin (m + n)).castSucc (Fin.last (m + n)) rSeam)) s)
+      = evalDist (StateT.run' (simulateQ (impl.addLift challengeQueryImpl :
+        QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp))
+        ((liftM (P₁.output (cast (Prover.append_PrvState_seam_castSucc hn) rSeam.2)) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Stmt₂ × Wit₂)) >>= fun ctx =>
+          ((fun p => (Transcript.appendRight T₁ p.1,
+              cast (Prover.append_PrvState_last (P₁ := P₁) (P₂ := P₂) hn).symm p.2)) <$>
+            OracleComp.liftComp (P₂.runToRound (Fin.last n) ctx.1 ctx.2)
+              (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              ((pSpec₁ ++ₚ pSpec₂).Transcript (Fin.last (m + n))
+                × (P₁.append P₂).PrvState (Fin.last (m + n)))))) s) := by
+  rw [Prover.continueFromTo_trans (P₁.append P₂) stmt wit
+    (⟨m, by omega⟩ : Fin (m + n)).castSucc (⟨m, by omega⟩ : Fin (m + n)).succ (Fin.last (m + n))
+    (by rw [Fin.le_def, Fin.val_castSucc, Fin.val_succ]; omega)
+    (by rw [Fin.le_def, Fin.val_succ, Fin.val_last]; omega) rSeam]
+  rw [StateT_run'_simulateQ_bind_state_fixed _ (addLift_state_preserving impl himplSP) _ _ s,
+    evalDist_bind,
+    simulateQ_continueFromTo_seam_challenge_evalDist P₁ P₂ stmt wit hn hDir hDir₂ himplSP T₁ rSeam hT s,
+    ← evalDist_bind,
+    ← StateT_run'_simulateQ_bind_state_fixed _ (addLift_state_preserving impl himplSP) _ _ s]
+  exact congrArg
+    (fun X => evalDist (StateT.run' (simulateQ (impl.addLift challengeQueryImpl :
+      QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp)) X) s))
+    (eq_of_heq (Prover.append_right_block_from_seam_boundary_heq stmt wit hn T₁ rSeam))
+
+
+
 /-- **The simulated appended honest game factors at a challenge seam (`evalDist`-level).** The
 distributional core of completeness `hGameFactor` for a `V_to_P` seam: the simulated honest game of
 `R₁.append R₂` — running its rounds under `impl.addLift challengeQueryImpl` — has the same `evalDist`
@@ -217,25 +287,5 @@ theorem append_completeness_challenge_via_seamFactor
     (fun stmt wit _ =>
       append_game_factor_challenge R₁ R₂ stmt wit hn hDir hDir₂ himplSP himplNF)
     hStage1Bridge hStage2Bridge hTot
-
-end Reduction
-
-namespace Reduction
-
-/-- **State-fixed `simulateQ` bind decomposition (`run'` level).** For a state-preserving handler, the
-`run'`-distribution of a simulated bind factors as the bind of the factors' `run'`-distributions
-(both run from the same fixed state `s`). The `run'`-level companion of `simulateQ_run_bind_state_fixed`,
-used to thread per-stage `evalDist` equalities (e.g. the seam commute) through the surrounding run. -/
-theorem StateT_run'_simulateQ_bind_state_fixed {ιₒ : Type} {spec : OracleSpec ιₒ} {σ : Type}
-    (so : QueryImpl spec (StateT σ ProbComp))
-    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
-      x ∈ support ((so t).run s) → x.2 = s)
-    {α β : Type} (a : OracleComp spec α) (k : α → OracleComp spec β) (s : σ) :
-    StateT.run' (simulateQ so (a >>= k)) s
-      = StateT.run' (simulateQ so a) s >>= fun x => StateT.run' (simulateQ so (k x)) s := by
-  rw [StateT.run'_eq, simulateQ_run_bind_state_fixed so hso a k s, map_bind]
-  conv_rhs => rw [StateT.run'_eq, bind_map_left]
-  refine bind_congr fun p => ?_
-  rw [StateT.run'_eq]
 
 end Reduction
