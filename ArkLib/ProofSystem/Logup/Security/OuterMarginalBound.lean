@@ -67,6 +67,26 @@ theorem outer_bad_accept_le_outerSoundnessError_sharp
     (probEvent_bind_le_prob_uniform mx k q (midSoundnessLanguageSharp oStmt) hunif hsupp) ?_
   exact outerSoundness_sharp_le_outerSoundnessError (params := params) stmt oStmt hBad hcard
 
+/-- **The outer run-marginal, comap form (measure core of `hOuter`, carried-challenge shape).**
+
+The variant of `outer_bad_accept_le_outerSoundnessError_sharp` matching the shape produced by
+decomposing the outer run around the round-1 challenge query: the first stage outputs a state
+*carrying* the drawn challenge (extracted by `f`), rather than the bare challenge. -/
+theorem outer_bad_accept_le_outerSoundnessError_sharp_comap
+    {α β : Type} {m : Type → Type v} [Monad m] [HasEvalSPMF m]
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i)
+    (hBad : ¬ (((stmt, oStmt), ()) ∈ inputRelation F n M))
+    (hcard : 2 ^ n < Fintype.card F)
+    (mx : m α) (f : α → F) (k : α → m β) (q : β → Prop)
+    (hunif : ∀ x : F, Pr[ fun a => f a = x | mx] ≤ (Fintype.card F : ℝ≥0∞)⁻¹)
+    (hsupp : ∀ a : α, f a ∉ midSoundnessLanguageSharp oStmt → Pr[ q | k a] = 0) :
+    Pr[ q | mx >>= k] ≤ (outerSoundnessError F n M params : ℝ≥0∞) := by
+  classical
+  refine le_trans
+    (probEvent_bind_le_prob_uniform_comap mx f k q (midSoundnessLanguageSharp oStmt)
+      hunif hsupp) ?_
+  exact outerSoundness_sharp_le_outerSoundnessError (params := params) stmt oStmt hBad hcard
+
 end OuterMarginalBound
 
 end Logup
@@ -74,3 +94,4 @@ end Logup
 /-! ### Axiom audit (issue #13 outer run-marginal measure core) -/
 
 #print axioms Logup.outer_bad_accept_le_outerSoundnessError_sharp
+#print axioms Logup.outer_bad_accept_le_outerSoundnessError_sharp_comap
