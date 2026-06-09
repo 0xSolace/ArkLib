@@ -3,7 +3,11 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-Issue #304 — §6 matching-geometry producers for the keystone assembly
+import ArkLib.ToMathlib.PlaceGeometrySupply
+import ArkLib.ToMathlib.BetaInputSupply
+
+/-!
+# Issue #304 — §6 matching-geometry producers for the keystone assembly
 (`KeystoneAssembly.section5DataFin_of_producers` items `mpPoint` / `hcardFin`).
 
 What is proven here (all axiom-clean, no sorry):
@@ -34,8 +38,6 @@ What is proven here (all axiom-clean, no sorry):
   `section5DataFin_of_producers` shape (`T := Ppoly.natDegree`).
 -/
 
-import ArkLib.ToMathlib.PlaceGeometrySupply
-import ArkLib.ToMathlib.BetaInputSupply
 
 set_option linter.style.longLine false
 
