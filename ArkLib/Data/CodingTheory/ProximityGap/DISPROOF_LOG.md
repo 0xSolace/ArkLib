@@ -2447,3 +2447,16 @@ so the two round-14 regime facts meet with no gap.
 |closePairs| = the w≤2(n−a) slice of the MDS/RS weight enumerator (tiny for high-distance codes) —
 the genuine RS object where smooth-domain structure must enter the prize. Per-line chain rounds
 14/14b/14c/14d/14e now: pair-cooc → first/second moment → heavy-set → close-pair sharpening.
+
+### O43 / Round-14f — per-line unique decoding above the unique-decoding radius (capstone)
+
+LineUniqueDecode.lean (axiom-clean) — the per-line chain's capstone. When 2(n−a) < d (the code's
+min distance), closePairs=∅ ⟹ off-diagonal of the per-line second moment vanishes ⟹ ∑_γ|Λ|²=∑_γ|Λ|
+(line_sq_sum_eq); termwise |Λ|≤|Λ|² over ℕ forces |Λ(γ)|²=|Λ(γ)| ⟹ |Λ(γ)|∈{0,1}. So EVERY line
+point decodes to ≤1 codeword — per-line unique decoding, NO linearity/RS needed.
+* closePairs_empty_of_minDist, line_uniqueDecode_of_minDist, lineList_subsingleton_of_minDist.
+For RS (MDS, d=n−k+1): hypothesis 2(n−a)<n−k+1 ⟺ a>(n+k−1)/2 = the classical half-min-distance
+radius, now PER LINE. Per-line chain (rounds 14–14f) complete: pair-cooc → first/second moment →
+heavy-set → close-pair sharpening → unique-decode capstone, all axiom-clean. The interior δ*
+window (Johnson, capacity) is BELOW this radius — the open prize is the gap between a>(n+k−1)/2
+(here, trivial) and the Johnson/capacity interior, where |closePairs|>0 and RS structure enters.
