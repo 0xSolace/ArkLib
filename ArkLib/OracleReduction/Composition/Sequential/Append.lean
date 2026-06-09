@@ -346,14 +346,16 @@ condition `AppendCoherent V₁` (the same kind of side condition resolved by
 def emitOStmt₂Query (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
     (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
-    OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) ((Oₛ₂ i).Response q) := by
-  -- Case on how `V₁.embed` derives `OStmt₂ i`.
-  cases h : V₁.embed i with
-  | inl k =>
-      exact emitOStmtQueryInl (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
+    OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) ((Oₛ₂ i).Response q) :=
+  -- Case on how `V₁.embed` derives `OStmt₂ i`. Stated as a term-level `match h : …` (rather than a
+  -- tactic `cases`) so the `simulateQ_emitOStmt₂Query` reduction `split`s cleanly in tandem with the
+  -- `mkVerifierOStmtOut` match (no opaque `Eq.ndrec` wrapper to reconcile).
+  match h : V₁.embed i with
+  | Sum.inl k =>
+      emitOStmtQueryInl (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
         (Oₛ₂ i) k (hEqInl V₁ i k h) (coh.hCohInl i k h) q
-  | inr k =>
-      exact emitOStmtQueryInr (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
+  | Sum.inr k =>
+      emitOStmtQueryInr (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
         (Oₛ₂ i) k (hEqInr V₁ i k h) (coh.hCohInr i k h) q
 
 /-- Router carrying `V₂`'s oracle context into the appended-spec oracle context: `oSpec` passes
@@ -516,6 +518,62 @@ theorem simulateQ_emitMessageInr (oStmt : ∀ i, OStmt₁ i)
   rw [emitMessageInr, emitMessageQuery_simulateQ]
   congr 1 <;> exact eq_of_heq ((eqRec_heq _ _).trans (messages_snd_heq tr i).symm)
 
+/-- Simulating `emitOStmtQueryInl` (the `V₁.embed i = .inl k` branch: an `OStmt₁ k` query) under the
+combined `simOracle2` answers it from `oStmt k` (transported across the type equality `hSt`). -/
+theorem emitOStmtQueryInl_simulateQ (oStmt : ∀ i, OStmt₁ i)
+    (msgs : ∀ j, (pSpec₁ ++ₚ pSpec₂).Message j)
+    {T : Type} (O : OracleInterface T) (k : ιₛ₁) (hSt : OStmt₁ k = T)
+    (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₛ₁ k)) (q : O.Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+        (emitOStmtQueryInl (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂) O k hSt hO q)
+      = pure (O.answer (hSt ▸ oStmt k) q) := by
+  subst hSt; subst hO
+  show simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+      (query (spec := oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ))
+        (Sum.inr (Sum.inl ⟨k, q⟩))) = _
+  exact simulateQ_simOracle2_leftQuery oStmt msgs ⟨k, q⟩
+
+/-- Simulating `emitOStmtQueryInr` (the `V₁.embed i = .inr k` branch: `V₁`'s output oracle is the
+`pSpec₁`-message `k`) under the combined `simOracle2` answers it from `tr.fst.messages k`. -/
+theorem emitOStmtQueryInr_simulateQ (oStmt : ∀ i, OStmt₁ i)
+    (tr : FullTranscript (pSpec₁ ++ₚ pSpec₂))
+    {T : Type} (O : OracleInterface T) (k : pSpec₁.MessageIdx) (hSt : pSpec₁.Message k = T)
+    (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₘ₁ k)) (q : O.Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages)
+        (emitOStmtQueryInr (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂) O k hSt hO q)
+      = pure (O.answer (hSt ▸ tr.fst.messages k) q) := by
+  subst hSt; subst hO
+  show simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages)
+      (emitMessageInl (OStmt₁ := OStmt₁) (pSpec₂ := pSpec₂) k q) = _
+  exact simulateQ_emitMessageInl oStmt tr k q
+
+/-- **`emitOStmt₂Query` computation rule.** Simulating `V₁`'s output-oracle query router under the
+combined `simOracle2` answers it from `V₁`'s reconstructed `toVerifier` output oracle statement
+`mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst i`. The `match h : V₁.embed i` in `emitOStmt₂Query`
+and the one in `mkVerifierOStmtOut` `split` in tandem; each branch reduces via
+`emitOStmtQueryInl/Inr_simulateQ`, and the residual answer-argument equality is two casts of the same
+value through equal (by UIP) type equalities `OStmt₁ k = OStmt₂ i` / `pSpec₁.Message k = OStmt₂ i`,
+closed by normalising the `▸` casts (`eqRec_eq_cast` + `cast_cast`). -/
+theorem simulateQ_emitOStmt₂Query (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (oStmt : ∀ i, OStmt₁ i) (tr : FullTranscript (pSpec₁ ++ₚ pSpec₂))
+    (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitOStmt₂Query V₁ i q)
+      = pure ((Oₛ₂ i).answer
+          (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst i) q) := by
+  unfold emitOStmt₂Query mkVerifierOStmtOut
+  split <;> rename_i k h
+  · rw [emitOStmtQueryInl_simulateQ]
+    congr 1; congr 1
+    simp only [eqRec_eq_cast, cast_cast]
+    trace_state
+    sorry
+  · rw [emitOStmtQueryInr_simulateQ]
+    congr 1; congr 1
+    simp only [eqRec_eq_cast, cast_cast]
+    trace_state
+    sorry
+
 /-- **V₂-side router collapse.** Running `V₂`'s queries through `router₂ V₁` and then the combined
 `simOracle2` is the same as running them through `V₂`'s own `simOracle2` over the oracle statements
 `oStmt₂'` that `V₁` reconstructs (its `toVerifier` output oracle statements) and the *second*
@@ -526,11 +584,13 @@ lemma router2_collapse (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OSt
     (OracleInterface.simOracle2 oSpec oStmt tr.messages) ∘ₛ (router₂ V₁)
       = OracleInterface.simOracle2 oSpec
           (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst) tr.snd.messages := by
-  -- NOTE: the earlier proof referenced the undefined identifiers `OracleComp.simOracle_append`
-  -- and `SimOracle.append`, which broke the whole `OracleReduction.Composition.Sequential` build
-  -- cone (this is scaffolding for `OracleVerifier.append`, gated on the `sorryAx`
-  -- `simulateQ_emitOStmt₂Query`). Reduced to `sorry` to restore the build; see issue #62/#13.
-  sorry
+  funext q
+  rw [QueryImpl.apply_compose]
+  rcases q with t | (⟨i, q⟩ | ⟨i, q⟩) <;> dsimp only [router₂]
+  · rfl
+  · trace_state
+    sorry
+  · sorry
 
 end OracleVerifier.Append
 

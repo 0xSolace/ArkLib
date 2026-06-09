@@ -96,3 +96,4 @@ theorem oracleReduction_perfectCompleteness_of_toReduction_eq
 end Sumcheck.Spec
 
 #print axioms Sumcheck.Spec.oracleReduction_perfectCompleteness
+#print axioms Sumcheck.Spec.oracleReduction_perfectCompleteness_of_toReduction_eq
