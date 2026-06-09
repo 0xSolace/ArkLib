@@ -48,8 +48,6 @@ is the field-universal beyond-Johnson core — separate from and beyond this kno
 * `gammaGenuine_isPoly_of_monic` — the packaged "`γ ∈ L[X]` of X-degree `< n+1`" existential form.
 -/
 
-set_option linter.style.longLine false
-
 noncomputable section
 
 open scoped BigOperators
