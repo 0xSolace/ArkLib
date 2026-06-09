@@ -337,4 +337,40 @@ theorem unconditional_errStar_envelope_large_mult
     hs0 hs1 hδ0 hδ hparl (by positivity) ?_
   exact cond_holds_large_mult m n hm hnle
 
+/-- **Fully unconditional η-phrased envelope.** Choosing the multiplicity budget `M ≥ 31` large
+enough that the block length fits (`n ≤ 2^M`) and forcing the gap parameter small
+(`η ≤ √ρ₊/(2M)`), the realized BCHKS multiplicity `m = max(⌈√ρ₊/(2η)⌉, 3)` satisfies `m ≥ M ≥ 31`,
+so the side condition `(COND)` is discharged by `cond_holds_large_mult` and the BCHKS25 T4.6
+Johnson-range MCA bound is *unconditionally* ≤ the ABF26 §4.5 conjectural `errStar` at the realized
+multiplicity. No `(COND)` hypothesis remains — only the small-η budget. This is the η-link
+(`multiplicity_ge_target`) composed with the large-multiplicity discharge (`poly_le_two_pow`). -/
+theorem unconditional_errStar_envelope_small_eta
+    (n M : ℕ) (s δ parl η : ℝ)
+    (hM31 : 31 ≤ M) (hn : 1 ≤ n) (hMn : n ≤ 2 ^ M)
+    (hη : 0 < η) (hsη : η ≤ s / (2 * M))
+    (hs0 : 0 < s) (hs1 : s < 1) (hδ0 : 0 ≤ δ) (hδ : δ < 1 - s) (hparl : 1 ≤ parl - 1) :
+    ∃ mz : ℕ, 31 ≤ mz ∧
+      ((max ⌈s / (2 * η)⌉ 3 : ℤ) : ℝ) = (mz : ℝ) ∧
+      bchksBound ((mz : ℝ) + 1 / 2) (n : ℝ) δ s ≤ errStarNum ((2 : ℝ) ^ (2 * mz)) parl s δ := by
+  set mzZ : ℤ := max ⌈s / (2 * η)⌉ 3 with hmzZ
+  have h3 : (3 : ℤ) ≤ mzZ := le_max_right _ _
+  set mz : ℕ := mzZ.toNat with hmz
+  have hcastZ : (mz : ℤ) = mzZ := Int.toNat_of_nonneg (by omega)
+  have hcastR : (mz : ℝ) = (mzZ : ℝ) := by exact_mod_cast hcastZ
+  have hmaxR : (mzZ : ℝ) = max ((⌈s / (2 * η)⌉ : ℤ) : ℝ) 3 := by
+    rw [hmzZ, Int.cast_max]; norm_num
+  have hMle : ((M : ℤ) : ℝ) ≤ (mzZ : ℝ) := by
+    rw [hmaxR]
+    exact multiplicity_ge_target s η (M : ℤ) hη hs0 (by exact_mod_cast (by omega : 1 ≤ M)) (by
+      rw [Int.cast_natCast]; exact hsη)
+  have hMmz : M ≤ mz := by
+    have : (M : ℝ) ≤ (mz : ℝ) := by rw [hcastR]; exact_mod_cast hMle
+    exact_mod_cast this
+  have hmz31 : 31 ≤ mz := le_trans hM31 hMmz
+  have hMn' : n ≤ 2 ^ mz := le_trans hMn (Nat.pow_le_pow_right (by norm_num) hMmz)
+  refine ⟨mz, hmz31, hcastR.symm, ?_⟩
+  exact conditional_errStar_envelope (mz : ℝ) (n : ℝ) s δ parl ((2 : ℝ) ^ (2 * mz))
+    (by exact_mod_cast (by omega : 3 ≤ mz)) (by exact_mod_cast hn)
+    hs0 hs1 hδ0 hδ hparl (by positivity) (cond_holds_large_mult mz n hmz31 hMn')
+
 end ConditionalErrStarEnvelope
