@@ -61,6 +61,28 @@ theorem transcript_fst_heq {k : Fin (m + n + 1)} (hk : (k : ℕ) ≤ m)
   unfold ProtocolSpec.Transcript.fst
   exact HEq.trans (cast_heq _ _) (hidx ▸ HEq.rfl)
 
+/-- **A phase-2 message leaves the phase-1 truncation unchanged.** For a round index `j ≥ m`
+(into the second protocol), appending a message and taking the phase-1 truncation equals the
+phase-1 truncation of the original transcript — the appended element sits past the first `m`
+rounds, so `Fin.snoc` leaves positions `< m` untouched. -/
+theorem transcript_concat_fst {j : Fin (m + n)} (hj : m ≤ (j : ℕ))
+    (msg : (pSpec₁ ++ₚ pSpec₂).«Type» j)
+    (tr : (pSpec₁ ++ₚ pSpec₂).Transcript j.castSucc) :
+    HEq (ProtocolSpec.Transcript.fst (ProtocolSpec.Transcript.concat msg tr))
+        (ProtocolSpec.Transcript.fst tr) := by
+  have hsize : (↑(⟨min (↑j.succ) m, by omega⟩ : Fin (m + 1)) : ℕ)
+      = ↑(⟨min (↑j.castSucc) m, by omega⟩ : Fin (m + 1)) := by
+    simp only [Fin.val_succ, Fin.val_castSucc]; omega
+  refine Function.hfunext (congrArg Fin hsize) (fun a a' ha => ?_)
+  have hva : (a : ℕ) = (a' : ℕ) := by have := (Fin.heq_ext_iff hsize).mp ha; omega
+  have halt : (a : ℕ) < (j : ℕ) := by have := a.isLt; simp only [Fin.val_mk] at this; omega
+  simp only [ProtocolSpec.Transcript.fst, ProtocolSpec.Transcript.concat]
+  refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+  rw [Fin.snoc, dif_pos (show ((⟨a.val, by omega⟩ : Fin ((j : ℕ) + 1)) : ℕ) < (j : ℕ) from by
+    simp only [Fin.val_mk]; exact halt)]
+  exact (Fin.ext (by simpa using hva) : ((⟨a.val, by omega⟩ : Fin ((j : ℕ) + 1)).castLT
+    (by simp only [Fin.val_mk]; exact halt)) = ⟨a'.val, by omega⟩) ▸ HEq.rfl
+
 /-- **Projection of a product type-cast (first component).** Casting `(a, b)` along a product of
 type equalities and projecting commutes with `a` (heterogeneously). With the type equalities as
 free variables, `subst` discharges it. -/
