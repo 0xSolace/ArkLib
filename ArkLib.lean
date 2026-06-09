@@ -83,12 +83,15 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryBridge
 import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryHasse
 import ArkLib.Data.CodingTheory.GuruswamiSudan.FeasibilityArith
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSListSizeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GuruswamiSudan
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ListSizeBound
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MonomialCount
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MultiplicityInterpolation
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ToPolyDegree
+import ArkLib.Data.CodingTheory.GuruswamiSudan.TrivariateDivisibility
+import ArkLib.Data.CodingTheory.GuruswamiSudan.TrivariateFeasibility
 import ArkLib.Data.CodingTheory.GuruswamiSudan.TrivariateInterpolation
 import ArkLib.Data.CodingTheory.HammingBallBasics
 import ArkLib.Data.CodingTheory.HammingBallEntropyUpperBound
@@ -544,6 +547,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeUpperBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroUpperBound
 import ArkLib.Data.CodingTheory.ProximityGap.MDSMaxAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.MDSNearCountVolume
+import ArkLib.Data.CodingTheory.ProximityGap.MatchingDomainUniqueness
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
