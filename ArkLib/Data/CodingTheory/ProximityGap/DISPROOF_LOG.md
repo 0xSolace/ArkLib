@@ -1829,3 +1829,13 @@ constants — is a complete elementary chain** (cyclotomic basis count → norm/
 Dirichlet average → lift). Honest residuals, named: per-prime exactness (a specific production
 prime could collide) + the analytic denominator (SW/GRH on the concrete window). The upper half
 (2^{O(H/η)} list bound past Johnson = the believed-true core) remains THE open problem (P-B).
+
+### O11⁗⁺⁺ — per-prime exactness VERIFIED at production primes (nubs, 2026-06-09)
+
+The O11⁗ "most primes" caveat is now closed for the primes that matter, by finite verification
+(exhaustive DP = proof per triple): **BabyBear 15·2²⁷+1, KoalaBear 127·2²⁴+1, Goldilocks
+2⁶⁴−2³²+1 all have e₁-image EXACTLY N₀ at m=8 (41) and m=16 (3281), and pass the m=32 MITM
+zero-fiber spot-check (12870 = C(16,8)) — zero modular collisions.** So the Lift-Lemma bad-scalar
+lower bounds are exact verified facts at the production SNARK fields for the verified m. Open:
+asymptotic per-prime (all m at a fixed p); the analytic-denominator caveat; and P-B (the upper
+half) — unchanged. Scripts: probe_production.py, probe_m32_fiber.py in the research folder.
