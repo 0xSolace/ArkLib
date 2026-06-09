@@ -244,4 +244,75 @@ theorem relation_core_reduction {T E₁ E₂ E₃ : Finset F}
 
 end Triple
 
+/-! ## The cyclic (equal-symmetric-functions / PTE) deficiency mechanism
+
+The probe suggested by `triple_kernel_trivial_of_spread` (search the core-reduced zone)
+finds, empirically, that in the square case `w = 2c` the only deficiencies among spread
+triples with a COMMON point are the trivial evaluation-syndrome collapses — but triples
+with equal elementary symmetric functions `e₁, …, e_{w−c}` (Prouhet–Tarry–Escott style)
+are deficient with EMPTY triple intersection, via an explicit cyclic relation. Verified
+witness over ℚ (exact arithmetic, kernel dimension 1):
+
+  `E₁ = {0,1,5,8,12,21}, E₂ = {0,2,3,10,11,21}, E₃ = {1,2,3,6,15,20}`
+  (equal `e₁ = 47, e₂ = 767, e₃ = 5317`; pairwise intersection sizes `(2,1,2)`;
+  triple intersection empty; `c = 3`, `w = 6`).
+
+Because the relation has integer coefficients, the family survives reduction mod every
+sufficiently large prime: **no effective characteristic threshold alone removes c ≥ 3
+point-level rank coincidences** — a Conjecture-41-style rank lemma must absorb
+equal-esymm families through its degeneracy escape clause or the `γ`-twist. This also
+welds open-core formulation (iii) (the rank lemma) to formulation (ii) (multi-symmetric
+concentration): rank deficiency is *driven by* `e₁..e_{w−c}` coincidences. -/
+
+section Cyclic
+
+/-- The cyclic identity: a pure ring fact, the engine of all equal-window deficiencies. -/
+theorem cyclic_relation (A B C' : F[X]) :
+    A * (B - C') + B * (C' - A) + C' * (A - B) = 0 := by ring
+
+lemma mem_iff_loc_eval_zero {E : Finset F} {x : F} : x ∈ E ↔ (loc E).eval x = 0 :=
+  ⟨loc_eval_zero, fun h => by_contra fun hx => loc_eval_ne_zero hx h⟩
+
+/-- The locator determines the support. -/
+lemma loc_injective {E E' : Finset F} (h : loc E = loc E') : E = E' := by
+  ext x
+  rw [mem_iff_loc_eval_zero, mem_iff_loc_eval_zero, h]
+
+lemma natDegree_sub_lt_of_coeff_eq {A B : F[X]} {c : ℕ} (hc : 0 < c)
+    (h : ∀ k, c ≤ k → A.coeff k = B.coeff k) : (A - B).natDegree < c := by
+  by_cases h0 : A - B = 0
+  · simpa [h0] using hc
+  · rw [Polynomial.natDegree_lt_iff_degree_lt h0, Polynomial.degree_lt_iff_coeff_zero]
+    intro m hm
+    have hm' : c ≤ m := by exact_mod_cast hm
+    simp [coeff_sub, h m hm']
+
+/-- **The cyclic (PTE) deficiency mechanism.** Three pairwise-distinct supports whose
+locators agree in every coefficient of degree `≥ c` — by Vieta, exactly: equal elementary
+symmetric functions `e₁, …, e_{w−c}` — admit the explicit nontrivial relation with all
+multipliers of degree `< c`:
+
+  `Λ₁·(Λ₂−Λ₃) + Λ₂·(Λ₃−Λ₁) + Λ₃·(Λ₁−Λ₂) = 0`.
+
+Combined with `triple_kernel_trivial_of_spread`, this pins the deficiency landscape of
+Conjecture 41's triple case: deficiency forces sunflower concentration OR top-window
+symmetric-function coincidence — and the latter is realizable with empty triple
+intersection and spread pairwise intersections over ℚ (see the section docstring witness),
+hence over every large prime. -/
+theorem cyclic_deficiency {E₁ E₂ E₃ : Finset F} {c : ℕ} (hc : 0 < c)
+    (hne : E₂ ≠ E₃)
+    (h12 : ∀ k, c ≤ k → (loc E₁).coeff k = (loc E₂).coeff k)
+    (h13 : ∀ k, c ≤ k → (loc E₁).coeff k = (loc E₃).coeff k) :
+    ∃ P₁ P₂ P₃ : F[X], P₁ ≠ 0 ∧
+      P₁.natDegree < c ∧ P₂.natDegree < c ∧ P₃.natDegree < c ∧
+      loc E₁ * P₁ + loc E₂ * P₂ + loc E₃ * P₃ = 0 := by
+  refine ⟨loc E₂ - loc E₃, loc E₃ - loc E₁, loc E₁ - loc E₂,
+    sub_ne_zero.mpr fun h => hne (loc_injective h), ?_, ?_, ?_,
+    cyclic_relation _ _ _⟩
+  · exact natDegree_sub_lt_of_coeff_eq hc fun k hk => (h12 k hk).symm.trans (h13 k hk)
+  · exact natDegree_sub_lt_of_coeff_eq hc fun k hk => (h13 k hk).symm
+  · exact natDegree_sub_lt_of_coeff_eq hc fun k hk => h12 k hk
+
+end Cyclic
+
 end NormalRank

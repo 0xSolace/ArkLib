@@ -2460,3 +2460,32 @@ radius, now PER LINE. Per-line chain (rounds 14–14f) complete: pair-cooc → f
 heavy-set → close-pair sharpening → unique-decode capstone, all axiom-clean. The interior δ*
 window (Johnson, capacity) is BELOW this radius — the open prize is the gap between a>(n+k−1)/2
 (here, trivial) and the Johnson/capacity interior, where |closePairs|>0 and RS structure enters.
+### O41 — falsify-first on Conj 41's triple case: the CYCLIC/PTE deficiency mechanism (new theorem + verified ℚ witness)
+
+Executed the probe O40 isolated (search the core-reduced zone). Findings (exact-arithmetic
+verified, then formalized in `NormalRankSharpThreshold.lean` §Cyclic, axiom-clean):
+
+1. **Empirical dichotomy at the square case w = 2c (probe, 1500 random spread triples, ℚ):**
+   among pairwise-spread triples, untwisted point-level deficiency occurred EXACTLY when the
+   triple intersection was nonempty (231/231 deficient with T ≠ ∅; 1269/1269 full rank with
+   T = ∅ in the random ensemble). Mechanism for T ≠ ∅: all 3c normals are multiples of
+   (X−t) — the trivial evaluation-syndrome collapse (M_true = 0 artifact; same device as the
+   O37-addendum refutation). So the plain-rank "12% deficiency" of the first probe was
+   entirely this artifact — consistent with 2026/858's Remark 31/36 data.
+2. **But the clean "T = ∅ ⟹ full rank" conjecture is FALSE — the cyclic/PTE mechanism:**
+   `cyclic_deficiency` (new theorem): three pairwise-distinct supports with equal
+   e₁,…,e_{w−c} (locator coefficients agreeing above degree c) admit the explicit relation
+   Λ₁(Λ₂−Λ₃) + Λ₂(Λ₃−Λ₁) + Λ₃(Λ₁−Λ₂) = 0 with all multipliers deg < c and ≠ 0.
+   Verified ℚ-witness at c = 3, w = 6: E₁={0,1,5,8,12,21}, E₂={0,2,3,10,11,21},
+   E₃={1,2,3,6,15,20} — equal e₁=47, e₂=767, e₃=5317, pairwise intersections (2,1,2),
+   triple intersection EMPTY, kernel dim 1 over ℚ (two independent exact computations).
+3. **Consequences for the open core:** (i) integer-coefficient relations survive mod every
+   large p ⟹ NO effective characteristic threshold p₀ alone removes c ≥ 3 point-level rank
+   coincidences — any Conjecture-41-style lemma must absorb equal-esymm families via its
+   degeneracy escape clause or the γ-twist (the twisted [N|γN] object with distinct γᵢ is
+   NOT directly refuted; that remains the live conjecture). (ii) The mechanism WELDS
+   open-core formulation (iii) (rank lemma) to formulation (ii) (multi-symmetric
+   concentration): deficiency at codim c is DRIVEN by e₁..e_{w−c} coincidences — PTE-type
+   subset families are the dictionary. Conj 41's triple landscape after O40+O41:
+   sunflower-concentrated OR equal-esymm — both now theorem-level, with the quantitative
+   count above them still the prize.
