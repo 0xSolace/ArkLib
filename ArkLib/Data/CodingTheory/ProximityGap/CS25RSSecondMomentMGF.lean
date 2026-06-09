@@ -164,4 +164,24 @@ theorem rs_sum_jointCoverCount_mgf_le_one [Nonempty ι] (domain : ι ↪ F) (deg
   have h := rs_sum_jointCoverCount_mgf_le domain deg hdeg_le δ θ hθ0 hθ1
   rwa [rs_weight_zero_card, Nat.cast_one, one_mul] at h
 
+/-- **Directly-usable second-moment bound for Reed–Solomon** (divided form). For `0 < θ ≤ 1`,
+
+  `∑_{e∈RS} I(e) ≤ ((1+(q−1)θ²)^n + (q·(2θ+(q−2)θ²)+(1+(q−1)θ²))^n / q^{n−deg}) / θ^{2r}`.
+
+Since `∑_{e∈RS} I(e) = E[N²]/|RS|` (`CS25SecondMomentAssembly`), this is an explicit upper bound on
+the CS25 second moment for every `θ ∈ (0,1]`; the optimal `θ` gives the second-moment exponent fed to
+the Paley–Zygmund / `ε_ca` capacity-breakdown argument. -/
+theorem rs_sum_jointCoverCount_le [Nonempty ι] (domain : ι ↪ F) (deg : ℕ) [NeZero deg]
+    [Fintype (Polynomial.degreeLT F deg)] (hdeg_le : deg ≤ Fintype.card ι)
+    (δ : ℝ≥0) (θ : ℝ) (hθ0 : 0 < θ) (hθ1 : θ ≤ 1) :
+    (∑ e ∈ rsCodeFinset domain deg, (jointCoverCount δ 0 e : ℝ))
+      ≤ ((1 + ((Fintype.card F : ℝ) - 1) * θ ^ 2) ^ (Fintype.card ι)
+          + ((Fintype.card F : ℝ) * (2 * θ + ((Fintype.card F : ℝ) - 2) * θ ^ 2)
+              + (1 + ((Fintype.card F : ℝ) - 1) * θ ^ 2)) ^ (Fintype.card ι)
+            / (Fintype.card F : ℝ) ^ (Fintype.card ι - deg))
+        / θ ^ (2 * ⌊(δ : ℝ) * (Fintype.card ι : ℝ)⌋₊) := by
+  have hpow : 0 < θ ^ (2 * ⌊(δ : ℝ) * (Fintype.card ι : ℝ)⌋₊) := by positivity
+  rw [le_div_iff₀ hpow, mul_comm]
+  exact rs_sum_jointCoverCount_mgf_le_one domain deg hdeg_le δ θ hθ0.le hθ1
+
 end ArkLib.CS25
