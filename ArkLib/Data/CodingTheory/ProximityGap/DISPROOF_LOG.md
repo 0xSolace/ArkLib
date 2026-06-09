@@ -2112,3 +2112,16 @@ Conjecture D's genuine content: the cross-level paired induction (list + correla
 bounds simultaneously down the tower; pattern entropy vs cyclotomic rarity). Proven structure
 retained: Lemma K uniqueness, the pattern⟷element bijection, C19's arithmetic-rarity instance.
 This is the precise missing fact of the upper half, stated as sharply as it can be.
+
+### O15 — definitive framing: prize upper half ⟺ classical beyond-Johnson RS list decoding (nubs, 2026-06-09)
+
+Both bridge directions are now formal and cited: BCIKS 2055 Thm 1.9 (gaps beyond LDR_{F,D,q} are
+impossible with soundness < 1/(2n) — "list decoding beyond Johnson is a prerequisite") and GG25
+Thm 3.5 (line-decodability ⟹ MCA). **So the Grand MCA upper half ⟺ poly list-decodability of
+smooth-domain RS past Johnson — the classical open problem since GS99.** Anchors: JH01/BSKR06
+negatives are subspace/subfield-domain; KK25 negatives live at the capacity edge only (2^{O(1/η)}
+is constant-in-n at fixed η); random-domain positives (RW13…AGL24) don't cover deterministic
+smooth. The middle band for 2-power multiplicative domains is open BOTH ways. Conjecture D = that
+classical question; our proven smooth-domain machinery (N₀/Lift/C19/Descent/Kernel/circularity)
+is the new equipment. This is the sharpest honest statement of where the $1M sits — and why no
+formalization shortcut exists: the missing fact is a famous open problem, now with named footholds.
