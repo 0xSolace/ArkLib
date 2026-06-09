@@ -46,6 +46,31 @@ noncomputable def matchingPoint_of_localSeries {x₀ : F} {R : F[X][X][Y]}
         exact coeff_localSeries_mul hHyp z root hx t)
       one_ne_zero hx haP_coeff)
 
+/-- **The GS-handshake variant: per-`(t,z)` MatchingPoint from the GS matching-factor
+divisibility.** Identical to `matchingPoint_of_localSeries`, but the proximate-root fact
+arrives as the divisibility `(Y − C aP) ∣ f` — the exact shape of the GS matching-factor
+cargo — converted by `dvd_iff_isRoot`. -/
+noncomputable def matchingPoint_of_localSeries_dvd {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : Hypotheses x₀ R H)
+    (hξ : ξ x₀ R H hHyp ≠ 0) (hlc : H.leadingCoeff = 1)
+    (z : F) (root : rationalRoot (H_tilde' H) z)
+    (hx : (π_z z root) (ξ x₀ R H hHyp) ≠ 0)
+    (aP : PowerSeries F)
+    (hdvd : (Polynomial.X - Polynomial.C aP) ∣
+      ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z root hx))))
+    (haP_cong : aP - PowerSeries.C ((π_z z root)
+        (BCIKS20.HenselNumerator.βHensel H x₀ R hHyp 0))
+      ∈ Ideal.span {(PowerSeries.X : PowerSeries F)})
+    (hsep : ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z root hx))).Separable)
+    (t : ℕ) (haP_coeff : PowerSeries.coeff t aP = 0) :
+    BetaMatchingVanishes.MatchingPoint x₀ R H hHyp
+      (BetaRecGenuineBridge.BcoeffSigned H x₀ R) t z root :=
+  matchingPoint_of_localSeries hHyp hξ hlc z root hx aP
+    (Polynomial.dvd_iff_isRoot.mp hdvd) haP_cong hsep t haP_coeff
+
 end ArkLib
 
 #print axioms ArkLib.matchingPoint_of_localSeries
+#print axioms ArkLib.matchingPoint_of_localSeries_dvd
