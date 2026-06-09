@@ -1217,6 +1217,7 @@ import ArkLib.ProofSystem.Spartan.FirstSumcheckRelComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckRowSum
 import ArkLib.ProofSystem.Spartan.FirstSumcheckZeroEval
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
+import ArkLib.ProofSystem.Spartan.SecondSumcheckBridgeFree
 import ArkLib.ProofSystem.Spartan.SecondSumcheckComplete
 import ArkLib.ProofSystem.Spartan.SecondSumcheckFaithful
 import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
