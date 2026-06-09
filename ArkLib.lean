@@ -879,6 +879,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessMs
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOracle
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
+import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDistChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendSeamBridges
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessMsgProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessProof
