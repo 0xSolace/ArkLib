@@ -2360,3 +2360,18 @@ Together with O36 (clique beachhead), O37 (c=2 elimination + min-packaging refut
 worst case (O37, corrected), universal clique obstruction (O36) — the open core is Conj 41's
 QUANTITATIVE rank statement (how many supports can be simultaneously deficient on a flat),
 one step above everything verified here.
+
+### O39 — O38 independently re-verified; four descent-program Lean bricks landed (nubs, 2026-06-09)
+
+(1) **O38 verification:** independently re-ran both O38 probes on a fresh checkout —
+`probe_norm_threshold.py` + `probe_e1_saturation.py`: **ALL PASS, zero failures (240.9s)**; the
+E1 odd-character orthogonality identity also checks by hand. The effective per-prime exactness
+(AM–GM threshold T(m,r)) stands verified from two seats. (2) **Lean bricks now on main** (all
+axiom-clean `[propext, Classical.choice, Quot.sound]`, leaf files): `TwistedKernel.lean` (kernel
+rigidity — Lemma K), `SubsetSumsetSymmetry.lean` (complement symmetry, any AddCommGroup),
+`MonomialAgreementBound.lean` (Lift-Lemma far-ness count), `DescentTrichotomy.lean` (value-level
+converse-FRI fold: unique even/odd components + both/one-sided agreement iffs). The descent
+program's rigorous ingredients are now formalized API. Remaining formalization queue: the N₀
+pattern-count combinatorics (medium), C19 (needs the symbolic/equivariance route — `decide` at
+p≈2³¹ infeasible and `native_decide` is forbidden by the repo gate; honest path is the cyclotomic
+consistency argument, future work).
