@@ -76,26 +76,11 @@ variable {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype] [oSpec.Inhabited]
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
   {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
 
-/-- **Perfect completeness composes under `Reduction.append` (message-seam case).**
-
-This discharges `reductionAppendPerfectCompletenessResidual` for the message-first second protocol:
-the genuine append-completeness theorem, proving the conclusion from the two component perfect
-completeness hypotheses rather than assuming it. -/
-def append_perfectCompleteness_msg
-    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
-    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
-    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
-    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
-    (hn : 0 < n)
-    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
-    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
-    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
-    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
-    (hInit : NeverFail init)
-    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
-      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
-        = support (liftM q : OracleComp oSpec β)) :
-    Prop :=
-  (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃
+-- NOTE: The placebo `def append_perfectCompleteness_msg : … := (R₁.append R₂).perfectCompleteness …`
+-- (which merely restated the goal as a `Prop`-valued def, ignoring its own hypotheses) was removed.
+-- The genuine, axiom-clean append perfect-completeness keystone is the *theorem*
+-- `Reduction.append_perfectCompleteness_message` (in `AppendPerfectCompletenessMsg.lean`), with the
+-- oracle-level wrapper `Reduction.append_perfectCompleteness_msg_proof`
+-- (in `AppendPerfectCompletenessProof.lean`). Use those.
 
 end Reduction
