@@ -524,4 +524,79 @@ theorem fiber_scaling (S : Finset F) {l : F} (hl : l ≠ 0) (j : ℕ) :
 
 end ScalingOrbit
 
+/-! ## The valued-descent toolkit: odd fold and weight conservation
+
+Completing the general-word descent step: a window-vanishing valued error `(S, v)`
+descends to TWO folded systems — the even fold (`syndrome_fold`) and the odd fold
+(`syndrome_fold_odd` below, values `∑_{x²=y} v(x)·x`) — and the support can at most halve
+(`sq_image_card`: squaring fibers have size ≤ 2). Under no-cancellation both folds are
+genuine errors of half-scale weight with halved windows: the quantitative valued
+descent, every piece machine-checked. The cancellation locus (some fold value = 0)
+remains the exact home of S-two Conjecture 1. -/
+
+section ValuedDescent
+
+variable [DecidableEq F]
+
+/-- The odd-fold values: `∑_{x²=y} v(x)·x`. -/
+def foldValOdd (S : Finset F) (v : F → F) (y : F) : F :=
+  ∑ x ∈ S.filter (fun x => x ^ 2 = y), v x * x
+
+omit [CharZero F] in
+/-- **The odd syndrome fold identity**: odd syndrome coordinates of `(S, v)` are the
+syndrome coordinates of the odd-folded error on the squared support. -/
+theorem syndrome_fold_odd (S : Finset F) (v : F → F) (j : ℕ) :
+    ∑ x ∈ S, v x * x ^ (2 * j + 1)
+      = ∑ y ∈ S.image (· ^ 2), foldValOdd S v y * y ^ j := by
+  have hmaps : ∀ x ∈ S, x ^ 2 ∈ S.image (· ^ 2) :=
+    fun x hx => Finset.mem_image.mpr ⟨x, hx, rfl⟩
+  rw [← Finset.sum_fiberwise_of_maps_to hmaps (fun x => v x * x ^ (2 * j + 1))]
+  refine Finset.sum_congr rfl fun y _ => ?_
+  rw [foldValOdd, Finset.sum_mul]
+  refine Finset.sum_congr rfl fun x hx => ?_
+  have hxy : x ^ 2 = y := (Finset.mem_filter.mp hx).2
+  rw [pow_add, pow_mul, hxy, pow_one]
+  ring
+
+omit [CharZero F] in
+/-- **Weight conservation**: squaring fibers have size at most 2, so the support at most
+halves down the tower: `|S| ≤ 2·|S²|`. -/
+theorem sq_image_card (S : Finset F) :
+    S.card ≤ 2 * (S.image (· ^ 2)).card := by
+  classical
+  have hcover : S ⊆ (S.image (· ^ 2)).biUnion
+      (fun y => S.filter (fun x => x ^ 2 = y)) := by
+    intro x hx
+    exact Finset.mem_biUnion.mpr
+      ⟨x ^ 2, Finset.mem_image.mpr ⟨x, hx, rfl⟩, Finset.mem_filter.mpr ⟨hx, rfl⟩⟩
+  calc S.card ≤ ((S.image (· ^ 2)).biUnion
+        (fun y => S.filter (fun x => x ^ 2 = y))).card := Finset.card_le_card hcover
+    _ ≤ ∑ y ∈ S.image (· ^ 2), (S.filter (fun x => x ^ 2 = y)).card :=
+        Finset.card_biUnion_le
+    _ ≤ ∑ _y ∈ S.image (· ^ 2), 2 := by
+        refine Finset.sum_le_sum fun y _ => ?_
+        -- a fiber has at most the 2 square roots of y
+        by_cases hfe : (S.filter (fun x => x ^ 2 = y)).Nonempty
+        · obtain ⟨x₀, hx₀⟩ := hfe
+          have hx₀y : x₀ ^ 2 = y := (Finset.mem_filter.mp hx₀).2
+          have hsub : S.filter (fun x => x ^ 2 = y) ⊆ {x₀, -x₀} := by
+            intro x hx
+            have hxy : x ^ 2 = y := (Finset.mem_filter.mp hx).2
+            have hfac : (x - x₀) * (x + x₀) = 0 := by
+              linear_combination hxy - hx₀y
+            rcases mul_eq_zero.mp hfac with h | h
+            · exact Finset.mem_insert.mpr (Or.inl (by linear_combination h))
+            · exact Finset.mem_insert.mpr (Or.inr (Finset.mem_singleton.mpr
+                (by linear_combination h)))
+          calc (S.filter (fun x => x ^ 2 = y)).card
+              ≤ ({x₀, -x₀} : Finset F).card := Finset.card_le_card hsub
+            _ ≤ 2 := Finset.card_insert_le _ _ |>.trans (by simp)
+        · rw [Finset.not_nonempty_iff_eq_empty.mp hfe]
+          simp
+    _ = 2 * (S.image (· ^ 2)).card := by
+        rw [Finset.sum_const, smul_eq_mul]
+        ring
+
+end ValuedDescent
+
 end LamLeungTwoPow

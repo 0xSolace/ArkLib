@@ -3216,3 +3216,25 @@ compat_gamma_count form one complete verified pipeline from "vanishing window" t
 The all-words attack surface is now FORMAL: prove budget bounds for no-cancellation words
 by iterating syndrome_fold + full_tower (a conditional theorem now in reach), and
 quantify the cancellation locus (where the open conjecture genuinely lives).
+
+### O57 — the valued-descent toolkit complete: odd fold + weight conservation
+
+`LamLeungTwoPow.lean` §ValuedDescent (axiom-clean, 0 sorry): a window-vanishing valued
+error (S, v) descends to TWO half-window folded systems —
+
+* `syndrome_fold_odd`: p_{2j+1}(v,S) = p_j(foldOdd v, S²), foldOdd(y) = Σ_{x²=y} v(x)·x
+  (with O56's even fold: the complete C19-style even/odd error decomposition, formal);
+* `sq_image_card`: |S| ≤ 2·|S²| (squaring fibers ≤ 2; the support at most halves per
+  level — weight conservation down the tower, char-free).
+
+With O56: the quantitative valued-descent step is fully machine-checked. Under
+no-cancellation both folds are genuine half-scale errors with halved windows; the
+cancellation locus (a fold value = 0) remains the exact formal home of S-two Conj 1 —
+both folds must SIMULTANEOUSLY cancel for mass to vanish (even AND odd: v(x)+v(−x) = 0
+and v(x)x − v(−x)x = 0 ⟹ v(x) = v(−x) = 0 when char ≠ 2!): wait — even fold at pair
+{x,−x}: v(x)+v(−x); odd: (v(x)−v(−x))x. BOTH zero ⟺ v(x) = v(−x) = 0 (char ≠ 2, x ≠ 0).
+**So full fiber cancellation in BOTH folds is impossible for a genuine error** — list
+mass cannot vanish entirely; it can only MOVE between the even and odd branches. This is
+the formal seed of the branch-accounting that the C19/descent lane tracks, and the next
+provable target: per-level branch-mass conservation ⟹ a window-vs-weight tradeoff for
+ALL valued errors.
