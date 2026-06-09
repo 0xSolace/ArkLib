@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.ProofSystem.Logup.Security.LogupSoundnessUncond
+import ArkLib.ProofSystem.Logup.Security.LogupSoundnessMsgSeam
 
 /-!
 # LogUp Protocol 2 — issue #13 final status (single documentation entry point)
@@ -142,6 +142,35 @@ theorem issue13_soundness_of_residual (sumcheckSoundnessError : ℝ≥0)
       (logupSoundnessError F n M params sumcheckSoundnessError) :=
   logup_soundness_uncond_of_residual oSpec F n M params init impl sumcheckSoundnessError h
 
+/-- **Issue #13 — LogUp Protocol 2 soundness with the append blocker CLOSED (message seam).**
+
+The plain-verifier append-soundness residual `hPlainAppend` of `issue13_soundness` is no longer a
+hypothesis: LogUp's outer → sumcheck seam is a prover message (the embedded sumcheck opens with the
+round-0 univariate polynomial), so the proven unconditional message-seam keystone
+`Verifier.append_soundness_msg` discharges it (`LogupSoundnessMsgSeam.lean`).  The honest soundness
+residual surface of issue #13 is now `{hOuter, hSumcheck}` plus `0 < n` and the three standard
+honest-`impl` side conditions.  A straight re-export of `logup_soundness_msgSeam`. -/
+theorem issue13_soundness_msgSeam (sumcheckSoundnessError : ℝ≥0)
+    (hn : 0 < n)
+    (hOuter :
+      (outerVerifier oSpec F n M params).soundness init impl
+        (inputRelation F n M).language (midSoundnessProtocolLanguage F n M params)
+        (outerSoundnessError F n M params))
+    (hSumcheck :
+      (sumcheckVerifier oSpec F n M params).soundness init impl
+        (midSoundnessProtocolLanguage F n M params) outputRelation.language
+        sumcheckSoundnessError)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (logupVerifier oSpec F n M params).soundness init impl
+      (inputRelation F n M).language outputRelation.language
+      (logupSoundnessError F n M params sumcheckSoundnessError) :=
+  logup_soundness_msgSeam oSpec F n M params init impl sumcheckSoundnessError hn
+    hOuter hSumcheck himplSP himplNF himplVB
+
 /-! ### Issue #13 completeness — residual `SubPhaseCompletenessResidual` + append residual
 
 The finer five-hypothesis surface `{hInit, hHonest, hPerRound, hImplSupp, hAppend}` is delivered by
@@ -182,4 +211,5 @@ end Logup
 /- Axiom audit for the issue #13 final-status entry points. -/
 #print axioms Logup.issue13_soundness
 #print axioms Logup.issue13_soundness_of_residual
+#print axioms Logup.issue13_soundness_msgSeam
 #print axioms Logup.issue13_completeness
