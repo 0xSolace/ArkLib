@@ -84,6 +84,7 @@ variable {F : Type*} [Field F] [DecidableEq F]
 
 /-! ## 1. The `e_1 = 0` concentration: a negation-symmetric set of nonzero elements sums to `0`. -/
 
+omit [DecidableEq F] in
 /-- **The negation involution is fixed-point-free off `0` when `char F ≠ 2`.** If `(2 : F) ≠ 0` and
 `a ≠ 0` then `−a ≠ a` (else `a + a = 2·a = 0` forces `a = 0`). This is the char-`≠ 2` input that makes
 the `±`-pairing genuine (in char 2 every element is its own negation and the pairing collapses). -/
@@ -131,12 +132,11 @@ theorem negClosure_neg_closed (P : Finset F) :
   rw [Finset.image_id']
   exact Finset.union_comm _ _
 
-/-- **`negClosure P` is disjoint into `P` and `−P` when `P` avoids `0` and `char F ≠ 2`.** If
-`(2 : F) ≠ 0` and `0 ∉ P`, then `P` and `P.image (−·)` are disjoint: an element `x ∈ P ∩ (−P)` would
-be `x = −y` with `x, y ∈ P`, and the `±`-pairing being genuine (char `≠ 2`) plus `0 ∉ P` rules out
-`x = −x`. Concretely we use: `P` consists of pair-representatives, so it meets each `±`-pair once.
-We state the version actually needed — that the size doubles — via a transversal hypothesis below. -/
-theorem negClosure_card_eq_two_mul (h2 : (2 : F) ≠ 0) {P : Finset F}
+/-- **`negClosure P` has size `2·|P|` when `P` meets each `±`-pair once.** Given the disjointness
+`Disjoint P (P.image (−·))` (i.e. `P ∩ (−P) = ∅`, the transversal property `P` inherits from the
+half-set `H`), the size of `P ∪ (−P)` is `|P| + |−P| = 2|P|` (negation is injective). Char-free:
+the `±`-pairing being genuine is encoded in the disjointness hypothesis. -/
+theorem negClosure_card_eq_two_mul {P : Finset F}
     (hdisj : Disjoint P (P.image (fun x => -x))) :
     (negClosure P).card = 2 * P.card := by
   classical
@@ -191,8 +191,7 @@ theorem negClosure_injOn_subset_transversal {H : Finset F}
     have h1 : P ∩ H = P := Finset.inter_eq_left.mpr hP
     have h2 : (P.image (fun x => -x)) ∩ H = ∅ := by
       rw [← Finset.disjoint_iff_inter_eq_empty]
-      exact (Finset.disjoint_of_subset_left (Finset.image_subset_image hP)
-        (Finset.disjoint_comm.mp hHdisj))
+      exact (Finset.disjoint_of_subset_left (Finset.image_subset_image hP) hHdisj.symm)
     rw [h1, h2, Finset.union_empty]
   have := hrecover P₁ hP₁
   rw [heq, hrecover P₂ hP₂] at this
@@ -214,28 +213,29 @@ incurs. With `|H| = n/2` and `t` fixed, `C(n/2, t)` is super-polynomial in `n`. 
 theorem negSymm_card_ge_choose (h2 : (2 : F) ≠ 0) {H : Finset F}
     (hHdisj : Disjoint H (H.image (fun x => -x))) (hH0 : (0 : F) ∉ H) (t : ℕ) :
     H.card.choose t ≤
-      ((negClosure H).powersetCard (2 * t)).filter (fun S => ∑ x ∈ S, x = 0
-        ∧ S.image (fun x => -x) = S).card := by
+      (((negClosure H).powersetCard (2 * t)).filter (fun S => ∑ x ∈ S, x = 0
+        ∧ S.image (fun x => -x) = S)).card := by
   classical
   -- map a `t`-subset `P ⊆ H` to `negClosure P`.
   rw [← Finset.card_powersetCard t H]
   apply Finset.card_le_card_of_injOn (fun P => negClosure P)
   · -- maps into the target filter
     intro P hP
-    rw [Finset.mem_powersetCard] at hP
+    rw [Finset.mem_coe, Finset.mem_powersetCard] at hP
     obtain ⟨hPsub, hPcard⟩ := hP
-    rw [Finset.mem_filter, Finset.mem_powersetCard]
+    rw [Finset.mem_coe, Finset.mem_filter, Finset.mem_powersetCard]
     -- `0 ∉ P` (since `P ⊆ H` and `0 ∉ H`), and `0 ∉ −P` (else `0 = −p`, `p = 0 ∈ P ⊆ H`).
     have hP0 : (0 : F) ∉ P := fun h => hH0 (hPsub h)
     have hP0neg : (0 : F) ∉ negClosure P := by
       unfold negClosure
       rw [Finset.mem_union]
-      push_neg
+      push Not
       refine ⟨hP0, ?_⟩
       rw [Finset.mem_image]
-      push_neg
+      push Not
       intro x hx hxe
-      exact hP0 (by rwa [neg_eq_zero] at hxe ▸ hx)
+      rw [neg_eq_zero] at hxe
+      exact hP0 (hxe ▸ hx)
     -- disjointness `Disjoint P (−P)` from `H`'s transversal property
     have hPdisj : Disjoint P (P.image (fun x => -x)) :=
       Finset.disjoint_of_subset_left hPsub
@@ -245,7 +245,7 @@ theorem negSymm_card_ge_choose (h2 : (2 : F) ≠ 0) {H : Finset F}
       unfold negClosure
       exact Finset.union_subset_union hPsub (Finset.image_subset_image hPsub)
     · -- card `= 2t`
-      rw [negClosure_card_eq_two_mul h2 hPdisj, hPcard]
+      rw [negClosure_card_eq_two_mul hPdisj, hPcard]
     · -- sum `= 0`
       exact negClosure_sum_eq_zero h2 hP0neg
     · -- negation-closed
@@ -253,7 +253,8 @@ theorem negSymm_card_ge_choose (h2 : (2 : F) ≠ 0) {H : Finset F}
   · -- injective on `t`-subsets of `H`
     intro P₁ hP₁ P₂ hP₂ heq
     rw [Finset.mem_coe, Finset.mem_powersetCard] at hP₁ hP₂
-    exact negClosure_injOn_subset_transversal hHdisj hP₁.1 hP₂.1 heq
+    exact negClosure_injOn_subset_transversal hHdisj
+      (Set.mem_setOf_eq ▸ hP₁.1) (Set.mem_setOf_eq ▸ hP₂.1) heq
 
 /-- **The concentration bound in `subsetSumCount` form (the headline crack at the open door).** With
 the same transversal hypotheses, the **single** subset-sum fiber at `target = 0` of the
@@ -269,7 +270,7 @@ the fixed target `0` already carries `C(n/2,t)` with no `/q`. (The negation-symm
 theorem subsetSumCount_zero_ge_choose_half (h2 : (2 : F) ≠ 0) {H : Finset F}
     (hHdisj : Disjoint H (H.image (fun x => -x))) (hH0 : (0 : F) ∉ H) (t : ℕ) :
     H.card.choose t ≤
-      ((negClosure H).powersetCard (2 * t)).filter (fun S => ∑ x ∈ S, x = 0).card := by
+      (((negClosure H).powersetCard (2 * t)).filter (fun S => ∑ x ∈ S, x = 0)).card := by
   classical
   refine le_trans (negSymm_card_ge_choose h2 hHdisj hH0 t) ?_
   apply Finset.card_le_card
@@ -289,15 +290,17 @@ C(n,2t)/q` (which is `q`-dependent and at an *unknown* target), this concentrati
 the first of the two coordinates. We record the `q`-independence as the plain statement that the
 bound has no `q` factor. -/
 theorem negSymm_bound_q_independent (h2 : (2 : F) ≠ 0) {H : Finset F}
-    (hHdisj : Disjoint H (H.image (fun x => -x))) (hH0 : (0 : F) ∉ H) (t : ℕ)
-    [Fintype F] :
+    (hHdisj : Disjoint H (H.image (fun x => -x))) (hH0 : (0 : F) ∉ H) (t : ℕ) :
     ∃ b : ℕ, b = H.card.choose t ∧
-      b ≤ ((negClosure H).powersetCard (2 * t)).filter (fun S => ∑ x ∈ S, x = 0).card ∧
+      b ≤ (((negClosure H).powersetCard (2 * t)).filter (fun S => ∑ x ∈ S, x = 0)).card ∧
       -- the bound `b` does not depend on `q = |F|`: it equals `C(|H|, t)`, a `q`-free quantity.
       True :=
   ⟨H.card.choose t, rfl, subsetSumCount_zero_ge_choose_half h2 hHdisj hH0 t, trivial⟩
 
 /-! ## 7. Non-vacuity: a concrete transversal with a genuinely large concentrated count. -/
+
+/-- `13` is prime, so `ZMod 13` is a field (needed for the concrete `negClosure` witness). -/
+instance : Fact (Nat.Prime 13) := ⟨by norm_num⟩
 
 /-- **Non-vacuity (the bound is genuine, not `0 ≤ …`).** Over `F = ZMod 13` (`13` prime, `(2:ZMod 13)
 ≠ 0`), take `H = {1, 2, 3}` — three nonzero elements no two of which are negatives of each other
@@ -311,18 +314,26 @@ theorem nonvacuous_zmod13 :
     Disjoint ({1, 2, 3} : Finset (ZMod 13)) (({1, 2, 3} : Finset (ZMod 13)).image (fun x => -x)) ∧
     (0 : ZMod 13) ∉ ({1, 2, 3} : Finset (ZMod 13)) ∧
     ({1, 2, 3} : Finset (ZMod 13)).card = 3 := by
-  refine ⟨by decide, by decide, by decide, by decide⟩
+  have hA : (2 : ZMod 13) ≠ 0 := by decide
+  have hB : Disjoint ({1, 2, 3} : Finset (ZMod 13))
+      (({1, 2, 3} : Finset (ZMod 13)).image (fun x => -x)) := by decide
+  have hC : (0 : ZMod 13) ∉ ({1, 2, 3} : Finset (ZMod 13)) := by decide
+  have hD : ({1, 2, 3} : Finset (ZMod 13)).card = 3 := by decide
+  exact ⟨hA, hB, hC, hD⟩
 
 /-- **The concrete `ZMod 13` instance yields the non-vacuous concentrated bound `3 ≤ fiber`.**
 Feeding `nonvacuous_zmod13` to `negSymm_card_ge_choose` at `t = 2`: `C(3,2) = 3` negation-symmetric
 size-4 subsets, all with `∑ x = 0`. So the single `e_1 = 0` fiber has `≥ 3` elements — a genuine,
 nonzero, `q`-independent concentration witness. -/
 theorem concrete_concentration_zmod13 :
-    3 ≤ ((negClosure ({1, 2, 3} : Finset (ZMod 13))).powersetCard (2 * 2)).filter
-        (fun S => ∑ x ∈ S, x = 0 ∧ S.image (fun x => -x) = S).card := by
-  have h := negSymm_card_ge_choose (F := ZMod 13) (by decide)
-    (H := {1, 2, 3}) (by decide) (by decide) 2
-  simpa using h
+    3 ≤ (((negClosure ({1, 2, 3} : Finset (ZMod 13))).powersetCard (2 * 2)).filter
+        (fun S => ∑ x ∈ S, x = 0 ∧ S.image (fun x => -x) = S)).card := by
+  obtain ⟨hA, hB, hC, hD⟩ := nonvacuous_zmod13
+  have h := negSymm_card_ge_choose (F := ZMod 13) hA (H := {1, 2, 3}) hB hC 2
+  rw [hD] at h
+  -- `Nat.choose 3 2 = 3`
+  norm_num at h
+  exact h
 
 end ArkLib.CodingTheory.Round7Concentration
 

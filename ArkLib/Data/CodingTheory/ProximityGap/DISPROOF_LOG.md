@@ -1414,3 +1414,48 @@ exhibited), a sharp q-independence no-go (averaging loses q; concentration is th
 honest list↛ε_mca finding. Deep-interior δ* and the magnitude of the t≥2 count remain OPEN; the next
 genuine step is a Weil/Gauss bound on the (sum, sum-of-squares) count, for which Mathlib lacks the
 machinery.
+
+### O23 / Round-7 — prize dichotomy reduced to ONE scalar (M2), quadratic Gauss sum landed, concentration cracked on coordinate 1
+
+Round 7 attacked the round-6 seams (the (sum,sum-of-squares) count N2, concentration, Weil). No
+breakthrough — deep-interior δ* and N2 q-independence stay OPEN — but the **most precise cartography
+yet**: the entire prize dichotomy is reduced to one uncomputed scalar, the missing Weil input is
+supplied, and concentration cracked on the first of two coordinates. 6 axiom-clean bricks (all `lake
+build`-clean).
+
+* `SubsetSumSecondMomentCollision.lean` + `SubsetSumPaleyZygmundDichotomy.lean` — **the prize dichotomy
+  reduced to ONE scalar.** `N2_secondMoment_eq_collisionCount`: `∑_{c₁,c₂} N2(a;c₁,c₂)² = collisionCount`
+  (= #pairs of a-subsets with equal (∑x,∑x²)), exact. `support_card_ge_choose_sq_div_secondMoment` +
+  Paley–Zygmund: integer Cauchy-Schwarz `C(n,a)² ≤ |support|·M2` and the two-sided sandwich
+  `C(n,a) ≤ collisionCount ≤ C(n,a)²`. **Net: small M2 (≈C²/q²) ⟺ N2 anti-concentrated ⟺ prize survives
+  the averaging attack; large M2 (≳C²) ⟺ concentration possible.** The whole prize-deciding question is
+  now the single uncomputed magnitude `M2 = collisionCount`.
+* `QuadraticGaussSumMagnitude.lean` — **`norm_sum_addChar_bsq`: the quadratic Gauss sum, exact `‖∑_{x∈F}
+  ψ(b x²)‖ = √q`** (b≠0, char≠2), via Mathlib `gaussSum_sq`. The ONE Weil-type cancellation Mathlib
+  proves — the missing analytic ingredient rounds 1–6 never had (round 4 stopped at a cancellation-free
+  triangle envelope). Honest limit (`subgroup_quadratic_sum_is_partial`): this is the FULL-FIELD sum;
+  N2's generating function is a PRODUCT over the SUBGROUP (a partial Gauss sum needing Weil-on-curves,
+  which Mathlib lacks). The bridge full-field→subgroup is exactly the open gap.
+* `SubsetSumNegSymmConcentration.lean` — **`negSymm_card_ge_choose`: concentration CRACKED on coordinate
+  1.** Negation-symmetric subsets (`S = −S`) FORCE `e_1 = ∑x = 0` (the single known target —
+  concentrated!), with a q-independent, field-independent, super-poly count `C(n/2, t)` — beating every
+  prior round's `/q` averaging floor *on that coordinate*. Honest delimiter (`negClosure_psum2_eq_two_mul`):
+  the SECOND coordinate `p_2 = 2∑g²` still spreads freely (the 3 negation-symmetric e₁=0 subsets land on
+  3 distinct p₂), so the joint N2 stays small. The residual is now exactly the `p_2` spread on
+  negation-symmetric families.
+* `ListInteriorUnconditionalGeneralT.lean` — **`exists_interior_list_ge_unconditional_t`: the general-t
+  unconditional interior bound, subsuming rounds 5–6.** For ANY t with `(k+t)²<kn`: `∃ g` deg k+t with
+  `C(n,k+t) ≤ q^t·#{codewords agreeing ≥k+t}` at `δ=1−(k+t)/n`, via a coordinate-free top-t-coefficient-
+  vector pigeonhole (no Vieta/Newton bookkeeping). **Reaches DEEP interior — t up to ~√(kn)−k, a constant
+  fraction of k** (non-vacuous at k=100,t=40,n=400). Honest: `/q^t` (strictly worse per added depth);
+  confirms the `q^t` wall is structural to pigeonhole/averaging (matches `ListInteriorQDependenceNoGo`).
+* `ListInteriorT3ThreeSymmetric.lean` — `degDrop_t3_iff_three_symmetric` (exact t=3 condition) +
+  `cube_window_sum_eq` (Newton `e_1³=p_3+3e_1e_2−3e_3`, new) + `threeSymmetric_count_eq_moment_count`
+  (recoordinatize to the 3-D moment fiber `(∑x,∑x²,∑x³)`). The general-t `(e_1..e_t)⟺(p_1..p_t)` pattern.
+
+**Net.** 37 verified bricks across rounds 1–7. New: the prize dichotomy reduced to one scalar M2
+(small⟹survives, large⟹concentration), the quadratic Gauss sum (√q, the Weil input), concentration on
+coordinate 1 (q-independent super-poly, residual = p_2 spread), the general-t unconditional bound
+(constant-fraction-of-k depth, /q^t), the exact t=3 condition. The open prize is now a single magnitude:
+**compute/bound M2 = collisionCount of the (∑x,∑x²) count on the smooth 2^k-subgroup** — needs the
+subgroup-restricted (partial) quadratic Gauss sum, i.e. Weil-on-curves, which Mathlib does not have.
