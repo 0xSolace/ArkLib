@@ -32,6 +32,26 @@ open ProtocolSpec OracleComp OracleSpec
 
 set_option linter.unusedSectionVars false
 
+namespace ProtocolSpec
+
+/-- Extracting the messages of a transcript extended by a `P_to_V` message equals extending the
+extracted messages by that message: `toMessagesUpTo` commutes with `concat` on message rounds.
+(`Transcript.concat` is `Fin.snoc`; `MessagesUpTo.concat` is `Fin.dconcat`; these agree.) -/
+theorem toMessagesUpTo_concat {n : ℕ} {pSpec : ProtocolSpec n} {m : Fin n}
+    (h : pSpec.dir m = .P_to_V)
+    (T : Transcript m.castSucc pSpec) (msg : pSpec.Message ⟨m, h⟩) :
+    (Transcript.concat msg T).toMessagesUpTo = MessagesUpTo.concat T.toMessagesUpTo h msg := by
+  funext j
+  obtain ⟨i, hi⟩ := j
+  simp only [Transcript.toMessagesUpTo, Transcript.concat, MessagesUpTo.concat,
+    MessagesUpTo.concat']
+  revert hi
+  induction i using Fin.lastCases with
+  | last => intro _; simp [Fin.snoc_last, Fin.dconcat_last]
+  | cast k => intro _; simp [Fin.snoc_castSucc, Fin.dconcat_castSucc]
+
+end ProtocolSpec
+
 namespace Reduction
 
 variable {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι}
