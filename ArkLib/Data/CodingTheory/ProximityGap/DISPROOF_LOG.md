@@ -2628,3 +2628,18 @@ NOT the paper's FRI soundness theorem (which doesn't depend on it), and NOT the 
 form (whose escape clause, however, is now shown to do unintended exclusion work). Queued
 Lean bricks: class-syndrome construction + Newton-convolution compatibility (the e/h
 identity is Mathlib-adjacent), then the fiber-line M_true lower bound as a formal theorem.
+
+### O46 — THE RIGIDITY PATHWAY: a complete conditional architecture for the list core
+
+Four steps; three VERIFIED: (1✅ R22) constructive floor — lift families realize the deficiency
+window iff d ≥ w−c+1, O(1) at deployment/exponential at capacity; (2 OPEN = the residue) char-0
+LINEAR-WINDOW RIGIDITY: families of w-subsets of μ_n pairwise sharing e_1..e_t, t = Θ(n), over ℂ
+are lift-structured — Mann/Conway–Jones-type; at n=2^m the in-tree power-basis independence (R12)
+reduces small cases to finite sign/index combinatorics; base case (w=2,t=1) = equal-sum pairs are
+antipodal-only, formalizable NOW from in-tree machinery; (3✅ R19) large-p transfer via integer
+certificates (det_map_zmod_ne_zero); (4✅ R20+R21) clique rank structure (kernel = twisted pencil;
+deficiency = PTE). CONSEQUENCE: steps 2+3+4+1 ⟹ Conj 41's M = O(1) at Johnson at deployment ⟹ the
+Grand List Challenge answer. The $1M list core = ONE precisely-stated char-0 conjecture with a
+machine-checked skeleton around it. NEXT (Jun-11 agents + solo): (a) the (w=2,t=1) base case from
+R12 independence, (b) Mann's theorem partial formalization, (c) the general-family (non-clique)
+reduction to cliques/sunflowers (fleet O40).
