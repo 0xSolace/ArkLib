@@ -125,6 +125,62 @@ def langMid : Set (OpeningStmt (Data := Data)) :=
 /-- The output language: the verifier accepted. -/
 def langOut : Set Bool := setOf (· = true)
 
+/-! ## The interaction phase
+
+A single-message "commit and forward" reduction over `srcPSpec.renameMessage CommitmentType` (whose
+unique message type is `Data` — the commitment). The prover commits to the data (transparently, the
+identity) and forwards the opening statement/witness to the opening phase; the verifier returns its
+input statement unchanged. -/
+
+/-- The interaction-phase prover: commit to the data (= the statement's commitment component) and
+forward the input statement/witness. -/
+def interactionProver :
+    Prover oSpec (OpeningStmt (Data := Data)) (OpeningWit (Data := Data))
+      (OpeningStmt (Data := Data)) (OpeningWit (Data := Data))
+      ((srcPSpec (Data := Data)).renameMessage (CommitmentType (Data := Data))) where
+  PrvState := fun _ => (OpeningStmt (Data := Data)) × (OpeningWit (Data := Data))
+  input := fun ctx => ctx
+  sendMessage := fun ⟨0, _⟩ => fun st => pure (st.1.1, st)
+  receiveChallenge := fun ⟨i, h⟩ => by
+    have : i = 0 := Fin.eq_zero i
+    subst this
+    nomatch h
+  output := fun st => pure st
+
+/-- The interaction-phase verifier: return the input statement unchanged. -/
+def interactionVerifier :
+    Verifier oSpec (OpeningStmt (Data := Data)) (OpeningStmt (Data := Data))
+      ((srcPSpec (Data := Data)).renameMessage (CommitmentType (Data := Data))) where
+  verify := fun stmt _ => pure stmt
+
+/-- The interaction-phase reduction. -/
+def interactionRed :
+    Reduction oSpec (OpeningStmt (Data := Data)) (OpeningWit (Data := Data))
+      (OpeningStmt (Data := Data)) (OpeningWit (Data := Data))
+      ((srcPSpec (Data := Data)).renameMessage (CommitmentType (Data := Data))) where
+  prover := interactionProver
+  verifier := interactionVerifier
+
+/-- The renamed interaction spec has a single prover message (no verifier challenges). -/
+instance instIsEmptyInteractionChallenge :
+    IsEmpty (((srcPSpec (Data := Data)).renameMessage
+      (CommitmentType (Data := Data))).ChallengeIdx) where
+  false := fun ⟨i, h⟩ => by
+    have hi : i = 0 := Fin.eq_zero i
+    subst hi
+    have hdir : ((srcPSpec (Data := Data)).renameMessage
+        (CommitmentType (Data := Data))).dir 0 = Direction.P_to_V := rfl
+    rw [h] at hdir; exact absurd hdir (by decide)
+
+instance instSampleableInteraction :
+    ∀ i, SampleableType (((srcPSpec (Data := Data)).renameMessage
+      (CommitmentType (Data := Data))).Challenge i) :=
+  fun i => (instIsEmptyInteractionChallenge (Data := Data)).false i |>.elim
+
+instance instProverOnlyInteraction :
+    ProverOnly ((srcPSpec (Data := Data)).renameMessage (CommitmentType (Data := Data))) where
+  prover_first' := rfl
+
 /-! ## The opening phase
 
 Because the source has exactly one message, `srcPSpec.BCSOpeningPhase pSpecCom e` is *definitionally*
@@ -280,6 +336,113 @@ theorem openingRed_soundness :
   simp only [langOut, Set.mem_setOf_eq] at hev
   exact absurd hev (by simp)
 
+set_option maxHeartbeats 800000 in
+/-- **Perfect completeness of the interaction phase.** The "commit and forward" reduction sends the
+commitment and returns the input statement/witness unchanged; the verifier forwards the statement.
+Hence for any `(stmt, wit) ∈ relMid` the output `(stmt, wit)` is again in `relMid`, with probability
+one. -/
+theorem interactionRed_perfectCompleteness :
+    (interactionRed (oSpec := oSpec) (Data := Data)).perfectCompleteness init impl
+      (relMid (Data := Data)) (relMid (Data := Data)) := by
+  rw [Reduction.perfectCompleteness_eq_prob_one]
+  intro stmt wit hmem
+  -- The reduction is prover-first; its run forwards the statement/witness deterministically.
+  have hsupp : ∀ z ∈ support
+      ((interactionRed (oSpec := oSpec) (Data := Data)).run stmt wit).run,
+      ∃ a, z = some a ∧ ((a.2, a.1.2.2) ∈ relMid (Data := Data) ∧ a.1.2.1 = a.2) := by
+    intro z hz
+    rw [Reduction.run_of_prover_first stmt wit
+      (interactionRed (oSpec := oSpec) (Data := Data))] at hz
+    simp only [interactionRed, interactionProver, interactionVerifier, Verifier.run,
+      OptionT.run_pure, liftM_pure, pure_bind, Option.getM_some,
+      Set.mem_singleton_iff] at hz
+    subst hz
+    exact ⟨_, rfl, hmem, rfl⟩
+  rw [probEvent_eq_one_iff]
+  refine ⟨?_, ?_⟩
+  · rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp only [probFailure_eq_zero, _root_.zero_add]
+    apply probOutput_eq_zero_of_not_mem_support
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _ hc
+    obtain ⟨_, hsome, _⟩ := hsupp none (_root_.support_simulateQ_run'_subset _ _ s hc)
+    cases hsome
+  · intro x hx
+    rw [OptionT.mem_support_iff, OptionT.run_mk] at hx
+    simp only [support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    obtain ⟨a, ha, hP⟩ := hsupp (some x) (_root_.support_simulateQ_run'_subset _ _ s hx)
+    cases ha
+    exact hP
+
+set_option maxHeartbeats 800000 in
+/-- **Perfect soundness of the interaction phase.** The interaction verifier returns its input
+statement unchanged, so for any malicious prover and any `stmtIn ∉ langMid` the output statement
+equals `stmtIn ∉ langMid`; the bad event has probability `0`. -/
+theorem interactionRed_soundness :
+    (interactionRed (oSpec := oSpec) (Data := Data)).verifier.soundness init impl
+      (langMid (Data := Data)) (langMid (Data := Data)) 0 := by
+  unfold Verifier.soundness
+  intro WitIn WitOut witIn prover stmtIn hstmtIn pImpl
+  simp only [ENNReal.coe_zero, nonpos_iff_eq_zero, probEvent_eq_zero_iff]
+  intro x hx hev
+  apply hstmtIn
+  rw [OptionT.mem_support_iff, OptionT.run_mk] at hx
+  simp only [support_bind, Set.mem_iUnion] at hx
+  obtain ⟨s, _, hx⟩ := hx
+  -- The verifier returns `stmtIn`, so the output statement `x.2` equals `stmtIn`.
+  have hverdict : x.2 = stmtIn := by
+    have key : ∀ z ∈ support
+        (((Reduction.mk prover (interactionRed (oSpec := oSpec) (Data := Data)).verifier).run
+          stmtIn witIn)).run, ∀ a, z = some a → a.2 = stmtIn := by
+      intro z hz a hza
+      rw [Reduction.run] at hz
+      simp only [OptionT.run_bind, Option.elimM, bind_assoc] at hz
+      rw [mem_support_bind_iff] at hz
+      obtain ⟨proverResultOpt, _, hz⟩ := hz
+      cases proverResultOpt with
+      | none =>
+        simp only [Option.elim_none, support_pure, Set.mem_singleton_iff] at hz
+        rw [hz] at hza; exact absurd hza.symm (by simp)
+      | some proverResult =>
+        dsimp only [Option.elim_some] at hz
+        rw [mem_support_bind_iff] at hz
+        obtain ⟨stmtOutOpt, hstmtOut, hz⟩ := hz
+        rw [Verifier.run] at hstmtOut
+        simp only [interactionRed, interactionVerifier, OptionT.run_pure, liftM_pure,
+          support_pure, Set.mem_singleton_iff] at hstmtOut
+        subst hstmtOut
+        simp only [Option.getM_some, Option.elim_some, support_pure,
+          Set.mem_singleton_iff] at hz
+        subst hz
+        simp only [Option.some.injEq] at hza
+        subst hza
+        rfl
+    exact key (some x) (_root_.support_simulateQ_run'_subset _ _ s hx) x rfl
+  rwa [hverdict] at hev
+
 end Security
+
+/-! ## Structural seam facts
+
+Both keystones consume the same two direction facts: the interaction → opening seam round, and the
+opening phase's first round, are prover messages. -/
+
+theorem hn_pos :
+    (0 : ℕ) < Fin.vsum (fun j => (nCom (Data := Data)) ((e (Data := Data)).symm j)) := by
+  rw [vsum_eq_one]; norm_num
+
+theorem hOpeningFirstDir :
+    ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data)) (e (Data := Data))).dir
+      (⟨0, hn_pos (Data := Data)⟩ :
+        Fin (Fin.vsum (fun j => (nCom (Data := Data)) ((e (Data := Data)).symm j))))
+      = .P_to_V := rfl
+
+theorem hSeamDir :
+    (((srcPSpec (Data := Data)).renameMessage (CommitmentType (Data := Data))) ++ₚ
+        ((srcPSpec (Data := Data)).BCSOpeningPhase (pSpecCom (Data := Data)) (e (Data := Data)))).dir
+      (⟨1, by have := vsum_eq_one (Data := Data); omega⟩ :
+        Fin (1 + Fin.vsum (fun j => (nCom (Data := Data)) ((e (Data := Data)).symm j))))
+      = .P_to_V := rfl
 
 end BCSTransparentEndToEnd
