@@ -104,9 +104,14 @@ theorem append_soundness_msg'
     rw [OptionTStateT.probEvent_run_eq_run'_fst (P :=
       fun (o : Option (_ × Stmt₂)) => ¬ Option.elim o True fun p => p.2 ∉ lang₂)]
     refine le_of_eq_of_le ?_ h1_bound
-    -- Remaining: the clean bridge+marg equality (no whnf): predicate-convert + probEvent_optionT_mk +
-    -- evalDist_challengeSeam_bridge_left (combined→pSpec₁ oracle) + probEvent_simQ_run_congr_marginal
-    -- (marginalize fstSound dummy output via Prod.snd) + fstSound_runToRound.
+    rw [probEvent_optionT_mk]
+    rw [show (fun o : Option ((FullTranscript pSpec₁ × _) × Stmt₂) =>
+          ¬ Option.elim o True (fun p => p.2 ∉ lang₂))
+        = (fun o => Option.elim o False (fun p => p.2 ∈ lang₂)) from by
+          funext o; cases o with | none => simp | some d => simp only [Option.elim_some, not_not]]
+    -- Narrowed to the bridge+marg core: LHS over pImpl[combined] on the lifted phase-1 body,
+    -- RHS over pImpl[pSpec₁] on Reduction.run {fstSound}. Close via evalDist_challengeSeam_bridge_left
+    -- (oracle) then probEvent_simQ_run'_congr_marginal with g := Prod.snd (output marginal).
     sorry
   · -- Phase-2 bound: `V₂.soundness ε₂` on the phase-2 soundness prover `prover.sndSound`.
     intro p s' _ h_pg
