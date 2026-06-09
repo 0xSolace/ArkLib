@@ -489,6 +489,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseMultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.HasseSchmidt
 import ArkLib.Data.CodingTheory.ProximityGap.HybridConcentrationDepthNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.InteriorListCountBridge
+import ArkLib.Data.CodingTheory.ProximityGap.InteriorThresholdBracket
 import ArkLib.Data.CodingTheory.ProximityGap.Issue141Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue232VerifiedBricks
