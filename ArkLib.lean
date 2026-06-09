@@ -1115,6 +1115,7 @@ import ArkLib.ProofSystem.Sumcheck.Impl.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.Completeness
 import ArkLib.ProofSystem.Sumcheck.Spec.General
 import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompleteness
+import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompletenessThreaded
 import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompletenessUncond
 import ArkLib.ProofSystem.Sumcheck.Spec.OracleRbrSoundness
 import ArkLib.ProofSystem.Sumcheck.Spec.SeqComposeRbrSoundness
