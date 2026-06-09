@@ -449,6 +449,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSInterpolationExistence
 import ArkLib.Data.CodingTheory.ProximityGap.GSJohnsonWall
 import ArkLib.Data.CodingTheory.ProximityGap.GSHasseMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.GSFullListBound
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeRatesBracket
 import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityChainCompose
