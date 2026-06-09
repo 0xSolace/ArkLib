@@ -1268,6 +1268,7 @@ import ArkLib.ProofSystem.ToyProblem.Spec.SimplifiedIOR
 import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.FoldRound
 import ArkLib.ProofSystem.Whir.Folding
+import ArkLib.ProofSystem.Whir.Hab25WhirBridge
 import ArkLib.ProofSystem.Whir.KeystoneReduction
 import ArkLib.ProofSystem.Whir.KeystoneSmallField
 import ArkLib.ProofSystem.Whir.MCAAffineLineGenerator
