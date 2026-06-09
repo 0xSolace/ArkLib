@@ -433,6 +433,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
+import ArkLib.Data.CodingTheory.ProximityGap.GeneralSpikeLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141JohnsonCount
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeArchitecture
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeKernels
@@ -705,6 +706,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.UniqueDecodingListBound
 import ArkLib.Data.CodingTheory.ProximityGap.UpToCapacityFalseGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.UpToCapacityListDecodingFalse
 import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
+import ArkLib.Data.CodingTheory.ProximityGap.WideRegimeDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap._mca_research_loop
 import ArkLib.Data.CodingTheory.ProximityPrizeCA
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
