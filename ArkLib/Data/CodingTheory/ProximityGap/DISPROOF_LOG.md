@@ -2919,3 +2919,63 @@ squares). COMPLETE STEP-2 CHAIN (every component verified): core division (R27) 
 halving (R26) iterated (R28) → 2^k-lift petals (R22): equal-window families in μ_{2N} = SUNFLOWERS
 with lift petals, all sizes/windows, char 0. REMAINING ASSEMBLY: hclosure de-oracling
 (μ-enumeration bridge) + the Conj-41/δ* composition through R20/21 + R19.
+
+### O49 — LITERATURE INGESTED (~/Desktop/math) + residual (i) RESOLVED: the effective char-0 → F_p transfer theorem
+
+**Library now local (~/Desktop/math), key results marked:**
+* `9511209v1` Lam–Leung 2000: lengths of vanishing sums of m-th roots = ℕp₁+⋯+ℕp_r — the
+  general-n base-case classification (our p=2 case is the m=2^k instance).
+* `mann1965` Mann: irreducible rational-coefficient relation of length k ⟹ common order
+  divides ∏_{p≤k} p. `trigonometric…` Conway–Jones Thm 5: order Q squarefree with
+  **Σ_{p|Q}(p−2) ≤ k−2** (best possible) — independently re-derives our antipodal base case
+  (2-power roots ⟹ Q | 2 ⟹ pairs).
+* `487` Zannier survey: Dvornicich–Zannier generalization to algebraic coefficients
+  (bounded degree d ⟹ effective order bound) — the tool if the tower argument ever needs
+  coefficients beyond ℚ.
+* `mvs-21jul20` Christie–Dykema–Klep: complete classification of minimal vanishing sums of
+  weight ≤ 21 — finite tables for small-case sanity checks of the tower theorem.
+* `0704.1747v3` Aliev–Smyth: explicit bounds on maximal torsion cosets on subvarieties of
+  G_m^n — the count of structural solution families of e₁=⋯=e_t=0 (our fiber IS a torsion
+  locus; their bound caps how many coset families can ever appear at any level).
+* `9911094v1` Krick–Pardo–Sombra + `ASENS_2013` D'Andrea–Krick–Sombra: arithmetic
+  Nullstellensätze with explicit height bounds — the generic char-0 ⟹ mod-p transfer
+  machine (we use a sharper elementary route below, but these give the template for any
+  future statement not amenable to direct norms).
+* `2020-654` BCIKS, `2025-2055` BCHKS (ε*-loss formulation; beyond-LDR impossibility),
+  `2025-2054` GG25 (Def 1.1 proximity gaps; **Thm 3.4: (ℓ,δ,a,t)-curve-decodability ⟹
+  correlated agreement; Thm 3.5: threshold a = ℓn+1 ⟹ MUTUAL correlated agreement** — the
+  exact quantifier bridges), `2026-532` S-two (App. A **Conjecture 1**: ℓ(θ) ≤ c₁·2^{c₂H(ρ)/η}
+  up to the Elias radius r_E = 1−ρ−Θ(1/log p) [CS25 cap]; **Conjecture 2**: line-decodability
+  with a = ℓ(θ)n + o(n)), `2026-861` Chai–Fan, `2604.09724` Kambiré/Krachun–Kazanin
+  (near-capacity failure over prime fields — the disproof-side anchor), `2304.09445` AGGLZ
+  (random RS capacity), `2025-2010` Diamond–Gruen (sharp ball-volume estimates).
+* `1.pdf`/`13299D` Washington, Introduction to Cyclotomic Fields — norm machinery reference.
+
+**RESIDUAL (i) RESOLVED — Theorem (effective transfer, complete elementary proof):**
+Let n | p−1, fix a generator g of μ_n(F_p) and a primitive n-th root ζ ∈ ℂ; reduction
+red : ℤ[ζ] → F_p, ζ ↦ g, is an order-preserving bijection μ_n(ℂ) → μ_n(F_p). For a w-subset
+S ⊆ μ_n(F_p) with lift S̃, e_j(S) = red(e_j(S̃)). If e_j(S̃) ≠ 0 then N(e_j(S̃)) ∈ ℤ∖{0} and,
+since e_j(S̃) is a sum of C(w,j) products of roots of unity (each of modulus 1 in every
+archimedean embedding), |N(e_j(S̃))| ≤ C(w,j)^{φ(n)}. Hence p ∤ N for
+
+    p > C(w, ⌊w/2⌋)^{φ(n)}     (crude:  p > 2^{w·φ(n)} = 2^{wn/2} for n = 2^m),
+
+and then e_j(S) = 0 ⟺ e_j(S̃) = 0 for every j ≤ t. **Conclusion: for all such p, the
+F_p-fiber equals the char-0 fiber — by the O48 tower theorem, exactly the coset unions,
+count C(n/d, w/d).** The threshold is explicit and the proof is the same AM–GM/triangle
+norm trick as the in-tree effective P-A lane (O38-nubs) — the two lanes now share one
+engine. Sharpness side: extra solutions at p = 17, n = 16 (O47 data) show a threshold is
+necessary; Krachun–Kazanin's construction (2604.09724) lives at polynomial p — so the
+exponential-vs-polynomial threshold question is precisely where the disproof side still
+breathes. (A poly-p₀ version would need the fiber equations' integer values to be
+smooth-number-free — a different, genuinely analytic question, correctly flagged by both
+2026/858's p₀ and our O43 refutation of its printed form.)
+
+**Residual (ii) mapped to the live conjecture with exact bridge citations:** GG25 Thm 3.5
+turns line-decodability (threshold ℓn+1) into mutual correlated agreement; S-two Conj 2
+reduces it to Conj 1 (worst-case list ℓ(θ) over ALL received words). Our O48 corollary —
+fiber ≤ 2^{2/η} at t = ηn — is **the first proven instance of the Conjecture-1 budget
+shape on plain smooth-domain RS** (at the unit-syndrome received words, char 0 / p above
+the transfer threshold). The all-words upgrade = Conjecture 1 itself on 2-power domains;
+the descent machinery (sq_fiber_pair tower; arbitrary received words descend along the
+FRI fold) is the in-tree candidate attack and converges with the C19/Descent lane.
