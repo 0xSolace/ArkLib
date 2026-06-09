@@ -669,6 +669,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityProducts
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.NormalRankSharpThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
+import ArkLib.Data.CodingTheory.ProximityGap.PTEFamilyConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeRatesBracket
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeScaleBracketFull
@@ -746,7 +747,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.PTEFamilyConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
@@ -1308,6 +1308,7 @@ import ArkLib.ToMathlib.Claim511
 import ArkLib.ToMathlib.Claim57Supply
 import ArkLib.ToMathlib.Claim59Conditional
 import ArkLib.ToMathlib.CoeffExtract
+import ArkLib.ToMathlib.CoeffHomDescent
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 import ArkLib.ToMathlib.CountingAgreementBricks
 import ArkLib.ToMathlib.DG25CoveringRadiusProof
