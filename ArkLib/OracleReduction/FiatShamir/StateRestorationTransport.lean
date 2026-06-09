@@ -1654,6 +1654,17 @@ theorem fiatShamir_knowledgeSoundnessTransferResidual_canonical
     -- native challenge impl, over the `srChallengeOracle` alias of `ht`'s `fsChallengeOracle`).
     simp only [ht, pure_bind]
     erw [ht]
+    simp only [Option.elim_some, fiatShamirStraightlineExtractorOfStateRestoration_apply,
+      StateT.run'_eq, liftComp_eq_liftM, bind_assoc, pure_bind, monadLift_bind, monadLift_pure,
+      map_bind, bind_pure_comp, liftM_map, liftM_optionT_combined, bind_map_left,
+      monadLift_optionT_lift_run_map_getM, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
+      liftM_eq_monadLift, OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk,
+      optionT_monadLift_run, simulateQ_bind, simulateQ_map, simulateQ_pure,
+      simulateQ_addLift_liftM, OptionT.simulateQ_addLift_liftM, Option.getM_map_run,
+      Option.elimM, simulateQ_option_elim, simulateQ_getM_run_some, OptionT.simulateQ_getM_some,
+      StateT.run_simulateQ_optiont_map, StateT.run_pure_some_bind_map, Option.map_comp_lambda,
+      simulateQ_map_monadLift_getM_run, optionT_run_simulateQ_liftquery,
+      OptionT.run_pure, StateT.run_pure, _root_.map_pure]
     -- Leaf goal (verified by `trace_state`), with prefix values `a` (sendMessage), `x` (output),
     -- `x_1` (deriveTranscriptFS, `x_1.1` = transcript) in scope:
     --   LHS = Pr[ok? | verify_bundled >>= (·.elim none) (re-derive; srExtractor; payload)]
