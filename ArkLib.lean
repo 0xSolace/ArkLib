@@ -637,6 +637,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovPointCountEngine
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuarticHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSpectrumNoImprovement
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSquaresHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetThreePowUpper
