@@ -268,4 +268,109 @@ theorem conditional_errStar_envelope_of_cond
   conditional_errStar_envelope m n s δ parl (2 ^ (2 * mexp)) hm hn hs0 hs1 hδ0 hδ hparl
     (by positivity) hcond
 
+/-! ## Discharging the side condition: the envelope is unconditional for large multiplicity
+
+The side condition `(COND): 26·m⁵·n ≤ K = 2^{2m}` is a *polynomial ≤ exponential* statement, so it
+holds automatically once the multiplicity `m` is large relative to the block length `n`. The lemmas
+below prove this for `m ≥ 31`, `n ≤ 2^m`, removing the side condition entirely in that regime. -/
+
+/-- **Step lemma.** `(k+1)^5 ≤ 2·k^5` for `k ≥ 31`: the quintic grows slowly enough that doubling
+`k^5` dominates a unit increment of `k`. The threshold `31` comes from
+`5k⁴+10k³+10k²+5k+1 ≤ 31k⁴ ≤ k·k⁴ = k⁵`. -/
+lemma succ_pow_five_le (k : ℕ) (hk : 31 ≤ k) : (k + 1) ^ 5 ≤ 2 * k ^ 5 := by
+  have hk1 : 1 ≤ k := by omega
+  have a3 : k ^ 3 ≤ k ^ 4 := Nat.pow_le_pow_right hk1 (by norm_num)
+  have a2 : k ^ 2 ≤ k ^ 4 := Nat.pow_le_pow_right hk1 (by norm_num)
+  have a1 : k ≤ k ^ 4 := by
+    calc k = k ^ 1 := (pow_one k).symm
+      _ ≤ k ^ 4 := Nat.pow_le_pow_right hk1 (by norm_num)
+  have a0 : 1 ≤ k ^ 4 := Nat.one_le_pow _ _ (by omega)
+  have hsum : 5 * k ^ 4 + 10 * k ^ 3 + 10 * k ^ 2 + 5 * k + 1 ≤ 31 * k ^ 4 := by linarith
+  have h31 : 31 * k ^ 4 ≤ k ^ 5 := by
+    calc 31 * k ^ 4 ≤ k * k ^ 4 := Nat.mul_le_mul_right _ (by omega)
+      _ = k ^ 5 := by ring
+  have key : 5 * k ^ 4 + 10 * k ^ 3 + 10 * k ^ 2 + 5 * k + 1 ≤ k ^ 5 := le_trans hsum h31
+  have e : (k + 1) ^ 5 = k ^ 5 + (5 * k ^ 4 + 10 * k ^ 3 + 10 * k ^ 2 + 5 * k + 1) := by ring
+  rw [e, two_mul]
+  exact Nat.add_le_add_left key _
+
+/-- **Polynomial ≪ exponential threshold.** `26·m⁵ ≤ 2^m` for every `m ≥ 31`. Induction from the
+base `26·31⁵ = 744357926 ≤ 2147483648 = 2³¹` via `succ_pow_five_le`. -/
+theorem poly_le_two_pow (m : ℕ) (hm : 31 ≤ m) : 26 * m ^ 5 ≤ 2 ^ m := by
+  induction m, hm using Nat.le_induction with
+  | base => norm_num
+  | succ k hk ih =>
+    calc 26 * (k + 1) ^ 5 ≤ 26 * (2 * k ^ 5) := Nat.mul_le_mul_left _ (succ_pow_five_le k hk)
+      _ = 2 * (26 * k ^ 5) := by ring
+      _ ≤ 2 * 2 ^ k := Nat.mul_le_mul_left _ ih
+      _ = 2 ^ (k + 1) := by rw [pow_succ]; ring
+
+/-- **The multiplicity-domination side condition `(COND)` holds unconditionally for `m ≥ 31`,
+`n ≤ 2^m`.** I.e. `26·m⁵·n ≤ 2^{2m}` (`= K`, the ABF26 §4.5 conjecture numerator). The exponential
+`K = 2^{2m} = 2^m · 2^m` absorbs both the polynomial multiplicity factor `26·m⁵ ≤ 2^m` and the
+block length `n ≤ 2^m`. -/
+theorem cond_holds_large_mult (m n : ℕ) (hm : 31 ≤ m) (hnle : n ≤ 2 ^ m) :
+    26 * (m : ℝ) ^ 5 * (n : ℝ) ≤ (2 : ℝ) ^ (2 * m) := by
+  have ht : 26 * m ^ 5 ≤ 2 ^ m := poly_le_two_pow m hm
+  have h1 : 26 * m ^ 5 * n ≤ 2 ^ m * 2 ^ m := Nat.mul_le_mul ht hnle
+  have h2 : (2 : ℕ) ^ m * 2 ^ m = 2 ^ (2 * m) := by rw [← pow_add]; ring_nf
+  rw [h2] at h1
+  calc 26 * (m : ℝ) ^ 5 * (n : ℝ) = ((26 * m ^ 5 * n : ℕ) : ℝ) := by push_cast; ring
+    _ ≤ ((2 ^ (2 * m) : ℕ) : ℝ) := by exact_mod_cast h1
+    _ = (2 : ℝ) ^ (2 * m) := by push_cast; ring
+
+/-- **Unconditional Johnson-range envelope (large multiplicity).** For multiplicity `m ≥ 31` and
+block length `n ≤ 2^m`, on the Johnson range `s = √ρ₊ ∈ (0,1)`, gap `δ ∈ [0, 1−s)`, interleaving
+`parℓ ≥ 2`, the BCHKS25 T4.6 Johnson-range MCA bound is *unconditionally* dominated by the ABF26
+§4.5 conjectural `errStar` (with `K = 2^{2m}`):
+
+  `bchksBound (m+½) n δ s  ≤  errStarNum (2^{2m}) parℓ s δ`.
+
+This removes the `(COND)` hypothesis from `conditional_errStar_envelope` in the natural
+`n ≤ 2^{multiplicity}` regime: the BCHKS bound provably *witnesses* the conjecture bound there. -/
+theorem unconditional_errStar_envelope_large_mult
+    (m n : ℕ) (s δ parl : ℝ) (hm : 31 ≤ m) (hn : 1 ≤ n) (hnle : n ≤ 2 ^ m)
+    (hs0 : 0 < s) (hs1 : s < 1) (hδ0 : 0 ≤ δ) (hδ : δ < 1 - s) (hparl : 1 ≤ parl - 1) :
+    bchksBound ((m : ℝ) + 1 / 2) (n : ℝ) δ s ≤ errStarNum ((2 : ℝ) ^ (2 * m)) parl s δ := by
+  refine conditional_errStar_envelope (m : ℝ) (n : ℝ) s δ parl ((2 : ℝ) ^ (2 * m))
+    (by exact_mod_cast (by omega : 3 ≤ m)) (by exact_mod_cast hn)
+    hs0 hs1 hδ0 hδ hparl (by positivity) ?_
+  exact cond_holds_large_mult m n hm hnle
+
+/-- **Fully unconditional η-phrased envelope.** Choosing the multiplicity budget `M ≥ 31` large
+enough that the block length fits (`n ≤ 2^M`) and forcing the gap parameter small
+(`η ≤ √ρ₊/(2M)`), the realized BCHKS multiplicity `m = max(⌈√ρ₊/(2η)⌉, 3)` satisfies `m ≥ M ≥ 31`,
+so the side condition `(COND)` is discharged by `cond_holds_large_mult` and the BCHKS25 T4.6
+Johnson-range MCA bound is *unconditionally* ≤ the ABF26 §4.5 conjectural `errStar` at the realized
+multiplicity. No `(COND)` hypothesis remains — only the small-η budget. This is the η-link
+(`multiplicity_ge_target`) composed with the large-multiplicity discharge (`poly_le_two_pow`). -/
+theorem unconditional_errStar_envelope_small_eta
+    (n M : ℕ) (s δ parl η : ℝ)
+    (hM31 : 31 ≤ M) (hn : 1 ≤ n) (hMn : n ≤ 2 ^ M)
+    (hη : 0 < η) (hsη : η ≤ s / (2 * M))
+    (hs0 : 0 < s) (hs1 : s < 1) (hδ0 : 0 ≤ δ) (hδ : δ < 1 - s) (hparl : 1 ≤ parl - 1) :
+    ∃ mz : ℕ, 31 ≤ mz ∧
+      ((max ⌈s / (2 * η)⌉ 3 : ℤ) : ℝ) = (mz : ℝ) ∧
+      bchksBound ((mz : ℝ) + 1 / 2) (n : ℝ) δ s ≤ errStarNum ((2 : ℝ) ^ (2 * mz)) parl s δ := by
+  set mzZ : ℤ := max ⌈s / (2 * η)⌉ 3 with hmzZ
+  have h3 : (3 : ℤ) ≤ mzZ := le_max_right _ _
+  set mz : ℕ := mzZ.toNat with hmz
+  have hcastZ : (mz : ℤ) = mzZ := Int.toNat_of_nonneg (by omega)
+  have hcastR : (mz : ℝ) = (mzZ : ℝ) := by exact_mod_cast hcastZ
+  have hmaxR : (mzZ : ℝ) = max ((⌈s / (2 * η)⌉ : ℤ) : ℝ) 3 := by
+    rw [hmzZ, Int.cast_max]; norm_num
+  have hMle : ((M : ℤ) : ℝ) ≤ (mzZ : ℝ) := by
+    rw [hmaxR]
+    exact multiplicity_ge_target s η (M : ℤ) hη hs0 (by exact_mod_cast (by omega : 1 ≤ M)) (by
+      rw [Int.cast_natCast]; exact hsη)
+  have hMmz : M ≤ mz := by
+    have : (M : ℝ) ≤ (mz : ℝ) := by rw [hcastR]; exact_mod_cast hMle
+    exact_mod_cast this
+  have hmz31 : 31 ≤ mz := le_trans hM31 hMmz
+  have hMn' : n ≤ 2 ^ mz := le_trans hMn (Nat.pow_le_pow_right (by norm_num) hMmz)
+  refine ⟨mz, hmz31, hcastR.symm, ?_⟩
+  exact conditional_errStar_envelope (mz : ℝ) (n : ℝ) s δ parl ((2 : ℝ) ^ (2 * mz))
+    (by exact_mod_cast (by omega : 3 ≤ mz)) (by exact_mod_cast hn)
+    hs0 hs1 hδ0 hδ hparl (by positivity) (cond_holds_large_mult mz n hmz31 hMn')
+
 end ConditionalErrStarEnvelope
