@@ -7,10 +7,15 @@ pp.unicode.fun = true
 autoImplicit = false
 weak.linter.mathlibStandardSet = true
 weak.linter.style.longFile = 1500
+# Mathlib #38396 made the `style.header` linter run in downstream projects. It flags ArkLib's
+# existing copyright-range headers / missing module docstrings (which were fine on rc2). Opt out
+# of this one Mathlib-internal style linter rather than churn dozens of file headers.
+weak.linter.style.header = false
 
 [moreServerOptions]
 linter.mathlibStandardSet = true
 linter.style.longFile = 1500
+linter.style.header = false
 
 [[require]]
 name = "VCVio"
@@ -25,7 +30,7 @@ rev = "5d3a160ed751b9227af90adb9da41d0eae2e0238"
 [[require]]
 name = "«doc-gen4»"
 git = "https://github.com/leanprover/doc-gen4"
-rev = "v4.29.0"
+rev = "v4.30.0"
 
 [[require]]
 name = "checkdecls"
@@ -36,6 +41,13 @@ rev = "lean4.18.0"
 name = "CompPoly"
 git = "https://github.com/lalalune/CompPoly"
 rev = "bb0959d50751995ec32e6c4597f9446ecd42f970"
+
+# Force Mathlib v4.30.0 (final). Listed last so this pin governs the transitive graph
+# (lalalune dep forks pin Mathlib at rc2 revs; this overrides them to the final tag).
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.30.0"
 
 [[lean_lib]]
 name = "ArkLib"
