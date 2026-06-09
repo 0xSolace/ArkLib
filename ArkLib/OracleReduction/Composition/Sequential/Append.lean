@@ -526,21 +526,11 @@ lemma router2_collapse (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OSt
     (OracleInterface.simOracle2 oSpec oStmt tr.messages) ∘ₛ (router₂ V₁)
       = OracleInterface.simOracle2 oSpec
           (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst) tr.snd.messages := by
-  ext i q
-  simp only [OracleInterface.simOracle2, OracleComp.simOracle_append,
-    SimOracle.append, Sum.elim_comp_inl, Sum.elim_comp_inr]
-  cases i
-  · -- Left context (oSpec) passes through unmodified
-    rename_i i
-    unfold router₂
-    simp only [OracleComp.simOracle_append, SimOracle.append, Sum.elim_comp_inl,
-      OracleInterface.simOracle2, pure_bind]
-  · -- Right context (OStmt₂) queries are simulated via emitOStmt₂Query
-    rename_i i
-    unfold router₂
-    simp only [OracleComp.simOracle_append, SimOracle.append, Sum.elim_comp_inr,
-      OracleInterface.simOracle2, bind_pure_comp, bind_assoc, pure_bind]
-    exact simulateQ_emitOStmt₂Query V₁ oStmt tr i q
+  -- NOTE: the earlier proof referenced the undefined identifiers `OracleComp.simOracle_append`
+  -- and `SimOracle.append`, which broke the whole `OracleReduction.Composition.Sequential` build
+  -- cone (this is scaffolding for `OracleVerifier.append`, gated on the `sorryAx`
+  -- `simulateQ_emitOStmt₂Query`). Reduced to `sorry` to restore the build; see issue #62/#13.
+  sorry
 
 end OracleVerifier.Append
 
