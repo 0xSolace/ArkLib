@@ -78,6 +78,18 @@ theorem subsetSum_injective_of_noRelation {N : ℕ} (v : Fin N → K)
   by_cases hjS : j ∈ S <;> by_cases hjT : j ∈ T <;>
     simp_all
 
+/-- **Textbook form: `ℤ`-linear independence ⟹ distinct subset sums.** The cyclotomic power basis
+`{1, ζ, …, ζ^{φ(n)-1}}` is `ℤ`-linearly independent, so this is the form the application consumes:
+`LinearIndependent ℤ v` gives `hrel` directly (a vanishing integer combination is a vanishing
+`zsmul`-combination, killed by independence). -/
+theorem subsetSum_injective_of_linearIndependent {N : ℕ} (v : Fin N → K)
+    (hli : LinearIndependent ℤ v) :
+    Function.Injective (fun S : Finset (Fin N) => ∑ j ∈ S, v j) := by
+  apply subsetSum_injective_of_noRelation
+  intro g hg
+  rw [Fintype.linearIndependent_iff] at hli
+  exact hli g (by simpa [zsmul_eq_mul] using hg)
+
 /-- **`≥ 2^N` distinct subset sums.** The image of the subset-sum map has cardinality `2^N`, since the
 map is injective and there are `2^N` subsets of `Fin N`. -/
 theorem card_subsetSumset_ge {N : ℕ} [DecidableEq K] (v : Fin N → K)
@@ -98,9 +110,20 @@ theorem card_subsetSumset_len_eq {N : ℕ} [DecidableEq K] (ℓ : ℕ) (v : Fin 
   rw [Finset.card_image_of_injective _ hinj, Finset.card_powersetCard, Finset.card_univ,
     Fintype.card_fin]
 
+/-- **`≥ 2^N` distinct subset sums from `ℤ`-linear independence** — the form instantiated by the
+cyclotomic power basis at `N = φ(2^m) = 2^{m-1}`, yielding `|G^{(+)}| ≥ 2^{2^{m-1}}`. -/
+theorem card_subsetSumset_ge_of_linearIndependent {N : ℕ} [DecidableEq K] (v : Fin N → K)
+    (hli : LinearIndependent ℤ v) :
+    2 ^ N ≤ (Finset.univ.image (fun S : Finset (Fin N) => ∑ j ∈ S, v j)).card := by
+  have hinj := subsetSum_injective_of_linearIndependent v hli
+  rw [Finset.card_image_of_injective _ hinj, Finset.card_univ, Fintype.card_finset,
+    Fintype.card_fin]
+
 end ArkLib.ProximityGap.SubsetSumLowerLoop50
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.subsetSum_injective_of_noRelation
+#print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.subsetSum_injective_of_linearIndependent
+#print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.card_subsetSumset_ge_of_linearIndependent
 #print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.card_subsetSumset_ge
 #print axioms ArkLib.ProximityGap.SubsetSumLowerLoop50.card_subsetSumset_len_eq
