@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessSeamTransfer
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
+import ArkLib.ToVCVio.EvalDist.Instances.OptionT
 
 /-!
 # Round-by-round (knowledge) soundness append keystone — `appendRbr*SoundnessResidual` discharge
@@ -199,9 +200,36 @@ theorem append_rbrSoundness_keystone
     -- The ingredients are all proven: `Prover.fstCast_runToRound` (= `fst`'s run), `phase1_body_heq`
     -- (the body HEq), `evalDist_run'_challengeSeam_left` (combined → `pSpec₁` distribution transfer),
     -- and `StateFunction.append.toFun`'s `dif_pos` branch (the appended state function collapses to
-    -- `S₁` on `transcript.fst` for phase-1 indices). Assembling them through a `probEvent`
-    -- run-map congruence (`OptionT.probEvent_eq_of_run_map_eq`) is the remaining work.
-    sorry
+    -- `S₁` on `transcript.fst` for phase-1 indices). Assembled through `probEvent_congr_heq`.
+    have hidxCS : ((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc : Fin (m + n + 1))
+        = i₁.1.castSucc.castLE (by omega) := by ext; simp [ChallengeIdx.inl]
+    have hTrTy : (pSpec₁ ++ₚ pSpec₂).Transcript (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc
+        = pSpec₁.Transcript i₁.1.castSucc := by
+      rw [hidxCS]; exact Prover.append_Transcript_castLE i₁.1.castSucc
+    have hChTy : (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁)
+        = pSpec₁.Challenge i₁ := by simp [ChallengeIdx.inl, ProtocolSpec.append]
+    have hResTy :
+        ((pSpec₁ ++ₚ pSpec₂).Transcript (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc
+            × (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁))
+          = (pSpec₁.Transcript i₁.1.castSucc × pSpec₁.Challenge i₁) := by rw [hTrTy, hChTy]
+    refine probEvent_congr_heq hResTy _ _ _ _ ?hd ?hPQ
+    · -- hd : the appended and `fstCast` experiments have heterogeneously-equal `evalDist`s.
+      sorry
+    · -- hPQ : the appended state-function event corresponds to `S₁`'s under the type cast.
+      rintro ⟨tr, ch⟩
+      have hlt : i₁.1.val < m := i₁.1.isLt
+      have hval : ((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1).val = i₁.1.val := by
+        simp [ChallengeIdx.inl, Fin.coe_castAdd]
+      have hcs : ((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.castSucc).val ≤ m := by
+        rw [Fin.val_castSucc, hval]; omega
+      have hsu : ((ChallengeIdx.inl (pSpec₂ := pSpec₂) i₁).1.succ).val ≤ m := by
+        rw [Fin.val_succ, hval]; omega
+      simp only [StateFunction.append_toFun_le V₁ V₂ S₁ S₂ verify hVerify hInit hcs,
+          StateFunction.append_toFun_le V₁ V₂ S₁ S₂ verify hVerify hInit hsu]
+      -- Remaining: index coherence `⟨(inl i₁).castSucc.val, _⟩ = i₁.castSucc` (vals agree) and the
+      -- transcript coherence `(append_toFun_le cast).mp tr.fst = (hResTy ▸ (tr, ch)).1` (the phase-1
+      -- truncation equals the type-cast; buried in `StateFunction.append`'s `toFun_next` proof).
+      sorry
   · -- Phase 2. Mirrors Phase 1 with `Prover.snd`, `evalDist_run'_challengeSeam_right`, and the
     -- `dif_neg` (`verify`-fed intermediate statement) branch of `StateFunction.append`.
     sorry
