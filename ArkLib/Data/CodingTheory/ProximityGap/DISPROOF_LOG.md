@@ -1740,3 +1740,19 @@ Conditional answer formula: `δ*_C = 1−ρ−Θ(H(ρ)/(log₂|F| − 128 − lo
 prove `ℓ(θ) ≤ 2^{O(H(ρ)/η)}` for plain deterministic smooth-domain RS in (Johnson, Elias)** —
 known for random codes and random/folded RS (GG 2025/2054); the gap is what smoothness must
 supply in place of randomness. Next: dissect GG25/KK25's use of randomness.
+
+### O29 / Round-13b (main-loop, no agents) — the linear-code collapse of the ball-intersection 2nd moment
+
+After the agent session limit, proved directly (BallIntersectionSecondMomentLinear.lean, axiom-clean):
+for a subtraction-closed (linear) code C, ∑_{c,c'∈C}|B(c,r)∩B(c',r)| = |C|·∑_{e∈C}|B(0,r)∩B(e,r)|
+(translation invariance Δ(x−z,y−z)=Δ(x,y) via hammingDist_comp + reindex c'↦c'−c), and the triangle
+cutoff wt(e)>2r ⟹ B(0,r)∩B(e,r)=∅. Combined with the #82-kernel identity (O28), the full chain is:
+
+   ∑_w |Λ(w,r)|²  =  ∑_{c,c'∈C}|B(c)∩B(c')|  =  |C| · ∑_{e∈C, wt(e)≤2r} |B(0,r)∩B(e,r)|.
+
+So the open core is now reduced to the cleanest possible object: the OFF-DIAGONAL sum
+∑_{e∈C, wt(e)≤2r}|B(0,r)∩B(e,r)| = (MDS weight enumerator A_w, w≤2r) × (ball-intersection volumes
+I(w,r)=|B(0,r)∩B(e,r)|). The sharp bound on THIS is exactly the CS25/#82 research kernel (the crude
+I≤V(r) bound is provably too weak past Johnson — H(2δ)>H(δ) blowup). Multi-paper, not session-achievable.
+GOTCHA: hammingBall is a def ⟹ membership lemmas don't auto-fire (simp shows raw Quot.lift); add a
+`@[simp] mem_hammingBall` lemma and destructure with `Finset.mem_inter.mp`/`mem_hammingBall.mp`, not simp.
