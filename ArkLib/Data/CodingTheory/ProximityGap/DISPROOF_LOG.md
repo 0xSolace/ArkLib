@@ -2015,3 +2015,26 @@ concrete mechanism candidate instead of a mystery. Scripts: probe_h3_cfg2.py.
 * `CAPairExtractionEngine` (R17): their verified kernel formalized — pair_of_two_bad (two bad γ's
   solve for the codeword pair), bad_card_le_one (RVW13 half-threshold ≤1 bad γ), bad_card_le_choose
   (equal-threshold ≤ C(n,k+1), field-independent). All axiom-clean.
+
+### O33 — §7 phase-diagram convergence analysis (2026/858 deep-read, part 2)
+
+Full §7 read. The codimension-excess phase diagram (D = n−k, c = D−w, list radius w):
+* c ≥ w (unique decoding): M ≤ 1 — in-tree in equivalent forms.
+* incidence bound (c < w): M ≤ C(n,d)/C(w,d), d = w−c — **this is EXACTLY our in-tree
+  FisherPastJohnsonCap k-uniform bound (round 11)**: independent convergence on the same theorem,
+  including the same honest finding (valid past Johnson, too lossy at prize scale).
+* c = 2: their Möbius/core bound M ≤ min(p, 2C(n,w−1)) is PROVEN (Berlekamp error-locator + degree-2
+  elimination per (w−1)-core — formalizable, companion-note-sized); the EXPONENTIAL worst case
+  0.66·1.36^n is EMPIRICAL ONLY (R²-fit to n=24, no theorem; their §8 open item). Their peak prime
+  p ≈ √C(n,w) sits exactly at the averaging floor — the empirical 1.36^n is far ABOVE the floor,
+  i.e. unproven worst-case CONCENTRATION (matches our round-6/7 concentration-door cartography).
+* c ≥ 3: Conjecture 41 (rank lemma: M ≤ ⌊(2D−1)/c⌋, linear) — predicts M = O(1) at Johnson; the
+  deployment regime c = Θ(n). UNPROVEN (exhaustive to n=15, empirics to n=40; rank-deficient
+  triples DO exist at c=2 from n=11 — translate families with a divisibility criterion — and none
+  found at c ≥ 3). **Conjecture 41 ≈ the prize's Grand List Challenge**, reformulated as a ℚ-rank
+  statement on integer constraint matrices from elementary-symmetric coefficients of point subsets.
+
+Net: the external race converged on our cartography (incidence cap, concentration door, near-capacity
+exponential); the live open kernel is now THREE equivalent formulations — (i) sharp ball-intersection
+2nd moment (our O28/O29), (ii) the t≥2 multi-esymm concentration (our O20-O22), (iii) their c≥3 rank
+lemma (Conj 41). All the same wall, none proven. Issue stays open.
