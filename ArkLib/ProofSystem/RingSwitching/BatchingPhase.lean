@@ -7,6 +7,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Basic
+import ArkLib.OracleReduction.Completeness
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
@@ -565,6 +566,121 @@ theorem batchingReduction_perfectCompleteness
     (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
     (init := init) (impl := impl) :=
   hBatching
+
+/-- Discharge of `batchingReduction_perfectCompleteness_residual` (work in progress). -/
+theorem batchingReduction_perfectCompleteness_proved [IsDomain L] [IsDomain K]
+    (hInit : NeverFail init) :
+    batchingReduction_perfectCompleteness_residual
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := aOStmtIn) (init := init) (impl := impl) := by
+  classical
+  unfold batchingReduction_perfectCompleteness_residual
+  rw [OracleReduction.unroll_2_message_reduction_perfectCompleteness (oSpec := []ₒ)
+    (pSpec := pSpecBatching (κ := κ) (L := L) (K := K) (P := P)) (init := init) (impl := impl)
+    (hInit := hInit) (hDir0 := by rfl) (hDir1 := by rfl)
+    (hImplSupp := by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])]
+  intro stmtIn oStmtIn witIn h_relIn
+  rw [probEvent_eq_one_iff]
+  dsimp only [batchingOracleReduction, oracleProver,
+    OracleVerifier.toVerifier, FullTranscript.mk2]
+  refine ⟨?_, ?_⟩
+  · -- SAFETY: the batching verifier returns `failureState` (a value) on bad check, never `none`.
+    simp only [probFailure_bind_eq_zero_iff]
+    conv_lhs =>
+      simp only [liftComp_eq_liftM, liftM_pure, probFailure_eq_zero]
+    rw [true_and]
+    intro inputState hInputState_mem_support
+    simp only [Fin.isValue, Message, Matrix.cons_val_zero, Fin.succ_zero_eq_one, ChallengeIdx,
+      Challenge, liftComp_eq_liftM, liftM_pure, support_pure, Set.mem_singleton_iff]
+      at hInputState_mem_support
+    conv_lhs =>
+      simp only [liftM, monadLift, MonadLift.monadLift]
+      simp only [ChallengeIdx, Challenge, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_zero,
+        liftComp_eq_liftM, OptionT.probFailure_lift, HasEvalPMF.probFailure_eq_zero]
+    rw [true_and]
+    intro r_i' h_r_i'_mem_query_1_support
+    conv =>
+      enter [1]
+      simp only [probFailure_eq_zero_iff]
+      simp only [liftM, monadLift, MonadLift.monadLift]
+      simp only [ChallengeIdx, Challenge, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_zero,
+        Fin.succ_one_eq_two, Message, Fin.succ_zero_eq_one, Fin.castSucc_one, liftComp_eq_liftM,
+        OptionT.probFailure_lift, HasEvalPMF.probFailure_eq_zero]
+    rw [true_and]
+    intro h_receive_challenge_fn h_receive_challenge_fn_mem_support
+    conv =>
+      enter [1]
+      simp only [probFailure_eq_zero_iff]
+      simp only [liftM, monadLift, MonadLift.monadLift]
+      simp only [ChallengeIdx, Challenge, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_zero,
+        Fin.succ_one_eq_two, Message, Fin.succ_zero_eq_one, Fin.castSucc_one, liftComp_eq_liftM,
+        OptionT.probFailure_lift, HasEvalPMF.probFailure_eq_zero]
+    rw [true_and]
+    intro h_prover_final_output h_prover_final_output_support
+    -- The batching verifier collapses to a `pure` value (`stmtOut` or `failureState`), so it never
+    -- fails: rewrite the simulated verifier body with `oracleVerifier_verify_collapse`, then both
+    -- `ite` branches are `pure` (no `failure`), so the whole run never produces `none`.
+    refine ⟨?_, ?_⟩
+    · rw [oracleVerifier_verify_collapse]
+      split <;>
+        simp only [pure_bind, OptionT.probFailure_liftComp_of_OracleComp_Option, OptionT.run_pure,
+          probFailure_pure, probOutput_pure, reduceCtorEq, add_zero, zero_add, if_false]
+    · intro x _
+      simp only [probFailure_pure]
+  · -- CORRECTNESS: every honest output lies in the round-0 relation.
+    -- The input relation gives the verifier check passes, so the verifier collapses to the accept
+    -- statement; the prover's deterministic outputs match it; the relation conjuncts are then
+    -- `rfl`/`h_relIn` except the sumcheck consistency `compute_s0 = ∑_cube (A_MLE · t')`.
+    obtain ⟨h_t'_eq, h_claim_eq, h_compat⟩ := h_relIn
+    have h_check : performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmtIn.original_claim
+        stmtIn.t_eval_point
+        (embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point) = true := by
+      rw [h_t'_eq]
+      exact (performCheckOriginalEvaluation_packMLE_iff P ℓ ℓ' h_l stmtIn.original_claim witIn.t
+        stmtIn.t_eval_point).mpr h_claim_eq
+    intro x hx_mem_support
+    rcases x with ⟨⟨prvStmtOut, prvOStmtOut⟩, ⟨verStmtOut, verOStmtOut⟩, witOut⟩
+    simp only
+    -- Collapse the verifier everywhere in the support, then peel the deterministic `pure` binds.
+    simp only [oracleVerifier_verify_collapse] at hx_mem_support
+    simp only [support_bind, support_pure, Set.mem_iUnion, Set.mem_singleton_iff, exists_prop,
+      Prod.exists] at hx_mem_support
+    simp only [OptionT.support_liftM, OracleComp.support_liftComp, support_pure,
+      Set.mem_singleton_iff, Prod.mk.injEq, FullTranscript.mk2, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.cons_val_fin_one, exists_eq_left, exists_eq_left',
+      exists_and_left, exists_and_right, h_check, if_true, ite_true, eq_self_iff_true,
+      true_and, and_true] at hx_mem_support
+    obtain ⟨a, b, ⟨rfl, rfl⟩, i, -, i_1, hi_1, a_1, bb, b_1, h__discr1,
+      a_2, b_2, h_ver, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩ := hx_mem_support
+    -- Pin the receive-challenge function and the prover's deterministic output.
+    simp only [Set.mem_singleton_iff, support_pure] at hi_1
+    subst hi_1
+    simp only [Set.mem_singleton_iff, support_pure, Prod.mk.injEq] at h__discr1
+    obtain ⟨⟨rfl, rfl⟩, rfl⟩ := h__discr1
+    -- Pin the verifier's deterministic output: the check passes (`h_check`), so it accepts and
+    -- passes the oracle statements through unchanged (`embed = Sum.inl`).
+    simp only [FullTranscript.mk2, FullTranscript.messages, FullTranscript.challenges,
+      Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one, h_check, if_true,
+      ite_true, pure_bind, oracleVerifier, OracleComp.support_liftComp, support_pure,
+      Set.mem_singleton_iff, Prod.mk.injEq] at h_ver
+    obtain ⟨rfl, rfl⟩ := h_ver
+    -- The remaining obligations: the round-0 relation (whose only non-`rfl` conjunct is the
+    -- sumcheck consistency `compute_s0 = ∑_cube (A_MLE · t')`), and prover/verifier output equality.
+    refine ⟨?_, rfl, rfl⟩
+    simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
+      witnessStructuralInvariant, Set.mem_setOf_eq]
+    refine ⟨trivial, trivial, ?_, h_compat⟩
+    -- The sumcheck-consistency identity (DP24 §2.5): the batched verifier target `s₀` equals the
+    -- Boolean-cube sum of the round-0 sumcheck polynomial `A_MLE · t'`.
+    show compute_s0 κ L K P (embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point) i
+      = ∑ x ∈ (boolDomain L (ℓ' - (0 : Fin (ℓ' + 1)))).cube,
+          (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witIn.t')
+            (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly
+              { t_eval_point := stmtIn.t_eval_point, original_claim := stmtIn.original_claim,
+                s_hat := embedded_MLP_eval κ L K P ℓ ℓ' h_l witIn.t' stmtIn.t_eval_point,
+                r_batching := i })
+            0 Fin.elim0).val.eval x
+    sorry
 
 /-- Row-expansion form of `compute_s0` on the tensor sent by the honest embedding of an arbitrary
 large-field multilinear polynomial `t'`.
