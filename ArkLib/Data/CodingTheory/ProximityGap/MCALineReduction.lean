@@ -127,9 +127,9 @@ theorem exists_close_of_mcaEvent (C : Set (ι → F)) (δ : ℝ≥0) (hδ : δ �
     rw [Nat.cast_sub hSle]; linarith
   exact le_trans (by exact_mod_cast Nat.cast_le.mpr hdist) hkey
 
+open Classical in
 /-- **Count of bad `γ` ≤ N_line · M.** Combining `exists_close_of_mcaEvent` (bad event ⟹ some
 codeword close) with `card_exists_close_le` (union bound + line-ball). -/
-open Classical in
 theorem card_mcaEvent_le (C : Finset (ι → F)) (δ : ℝ≥0) (hδ : δ ≤ 1) (u₀ u₁ : ι → F)
     (hR : ⌊(δ : ℝ) * (Fintype.card ι : ℝ)⌋₊ < (univ.filter (fun i => u₁ i ≠ 0)).card) :
     (Finset.univ.filter (fun γ : F => mcaEvent (↑C) δ u₀ u₁ γ)).card
@@ -153,6 +153,7 @@ theorem mcaEvent_pr_le (C : Finset (ι → F)) (δ : ℝ≥0) (u₀ u₁ : ι �
   simp only [ENNReal.coe_natCast]
   gcongr
 
+open Classical in
 /-- **MCA grand-challenge reduction (per non-degenerate stack).**
 For a word-stack `(u₀, u₁)` with non-degenerate second row (`⌊δ·n⌋ < |supp u₁|`),
 
@@ -160,7 +161,6 @@ For a word-stack `(u₀, u₁)` with non-degenerate second row (`⌊δ·n⌋ < |
 
 Taking `⨆` over stacks bounds `ε_mca(C, δ)`; the conjecture then follows from any uniform
 `N_line ≤ poly(n)` (the open list-decoding-up-to-capacity input). -/
-open Classical in
 theorem mcaEvent_pr_le_Nline (C : Finset (ι → F)) (δ : ℝ≥0) (hδ : δ ≤ 1) (u₀ u₁ : ι → F)
     (hR : ⌊(δ : ℝ) * (Fintype.card ι : ℝ)⌋₊ < (univ.filter (fun i => u₁ i ≠ 0)).card) :
     Pr_{let γ ← $ᵖ F}[mcaEvent (↑C) δ u₀ u₁ γ]
