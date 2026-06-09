@@ -1086,3 +1086,32 @@ The #232 prize (a **$1M open research problem**) is **not closeable**; it is now
 
 Two precise, well-isolated residuals remain — one a genuine open conjecture, one a standard-but-heavy
 ANT existence. Neither is fabricated; both are clearly named.
+
+### O16 / Loop53 — the finite-field lifting CLOSED: super-exponential §7 subset-sumset over a real F_p
+
+The O16 residual is **discharged**. `CandidateFiniteFieldDisproofLoop53.lean` (sorry-free, axiom-clean)
+proves, with **no remaining hypothesis**:
+
+> `exists_finiteField_subsetSumset_large`: for every `m ≥ 1` there is a prime `p` and a primitive
+> `2^m`-th root of unity `ζ ∈ F_p` whose subset-sumset over `Fin (2^{m-1})` has `≥ 2^{2^{m-1}}`
+> elements — **super-exponential in the domain `2^m`**.
+
+**Assembly.** The seven Loop52 pillars (resultant common-root ⟹ `p ∣ Res`; coprime ⟹ `Res ≠ 0`;
+Dirichlet good prime; consolidation; difference–cyclotomic coprimality; primitive-root existence) plus
+the polynomial bookkeeping `f_S = ∑_{j∈S} X^j` (coeff/degree/injectivity/eval/leading-coeff). For each
+ordered pair `(S,T)` the difference `f_S − f_T` is coprime to `Φ_{2^m}` over `ℚ`; a Dirichlet prime
+`p ≡ 1 (mod 2^m)` avoids all `Res(f_S − f_T, Φ)`; `F_p` then has a primitive root `ζ` (a root of
+`Φ mod p`); a collision `f_S(ζ)=f_T(ζ)` would make `ζ` a common root of `f_S − f_T` and `Φ`, forcing
+`p ∣ Res` — contradiction. So the subset sums are distinct, and the image has `2^{2^{m-1}}` elements.
+
+**What this closes.** Combined with `thm71_no_fixed_exponent` (Loop46), the §7 bad count
+`a = |G^{(+ℓ)}| ≥ C(2^{m-1}, ℓ)` (super-polynomial in the domain `2^m`) at the minimal domain over a
+genuine **finite field** — so **no fixed prize triple `(c₁,c₂,c₃)` survives**: the §7 minimal-domain
+prize-as-stated is **disproven over finite fields, not merely in characteristic 0**. The disproof
+direction is complete.
+
+**Remaining honesty (O6).** This refutes the *minimal-domain* reading (`2^m = |domain| = |E| = 2/η`,
+`c = 1`). Whether the prize is *claimed* at the minimal domain or only asymptotically (where
+`thm71_within_prize` shows every large domain absorbs §7) is the O6 statement-fidelity question — a
+question about the prize's wording, not the mathematics, which is now fully machine-checked. The
+forward direction's open core (RS list-decoding `q`-independence) remains the genuine open conjecture.
