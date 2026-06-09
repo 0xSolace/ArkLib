@@ -761,6 +761,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumSquaringBijection
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumZeroInflation
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
+import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TwoSidedBracketPrizeScale
 import ArkLib.Data.CodingTheory.ProximityGap.UDRBadCount

@@ -2656,3 +2656,35 @@ the cyclotomic bijection (pattern count ⟷ actual subset sums in ℤ[ζ_m] — 
 basis machinery; deep), C19 (symbolic/equivariance route only — native_decide forbidden), and the
 O38 AM–GM threshold (E1 orthogonality — Parseval over odd characters; medium, queued). The open
 research core (paired tower induction ⟺ classical beyond-Johnson) is unchanged.
+### O44 — O43 FULLY FORMALIZED: TopDirectionLineCount.lean — decoupling theorem + machine-checked Conjecture-41 violation witness (0 sorry, axiom-clean END TO END)
+
+The queued O43 Lean bricks are DONE, and the formalization SIMPLIFIED the math — no
+Newton/h-machinery needed. `TopDirectionLineCount.lean` (all axiom-clean
+`[propext, Classical.choice, Quot.sound]`, 0 sorry, 0 warnings):
+
+* `top_line_compat_iff` — **the decoupling theorem**: on a top-unit-direction line, the
+  codim-c compatibility of a weight-w support (w+c = N) ⟺ (c−1) γ-FREE window equations
+  + the explicit assignment γ = −⟨X^{c−1}Λ_E, s₁⟩ (because ⟨X^rΛ_E, u_top⟩ = [r = c−1]
+  by monicity/degree). Line compatibility = fiber membership + a value map.
+* `compat_gamma_count` / `conj41_count_lower_bound` — M_compat(s₁, u_top) ≥ #distinct
+  last-window values over the γ-free fiber; >⌊(2N−1)/c⌋ distinct values ⟹ the
+  Conjecture-41 bound is exceeded.
+* `loc_coeff_esymm` — the Vieta bridge: locator coefficients = signed elementary
+  symmetric functions (the formal (ii)⟷(iii) dictionary).
+* `escape_clause_trivial` — ⟨Λ_E, u_top⟩ = 0 for every short support, by degree: the
+  formal content of the two-printed-forms inequivalence.
+* **`conj41_violation_witness`** — the END-TO-END machine-checked violation: over
+  ZMod 17 (D = 9, c = 3, w = 6, domain = the whole field, s₁ = unitVec 5, where the
+  γ-free system is literally e₁(E) = 0 ∧ e₂(E) = 0 and γ = e₃(E)): the six explicit
+  supports {0,6,8,11,12,14}, {0,3,10,11,13,14}, {0,5,8,9,13,16}, {0,2,3,7,10,12},
+  {0,1,2,3,13,15}, {0,2,4,6,9,13} realize six distinct γ-values {1,…,6}, so the
+  compatible-parameter count on ONE line is > 5 = ⌊(2D−1)/c⌋. All esymm side conditions
+  discharged by kernel `decide`. (The full e₁ = e₂ = 0 fiber at p = 17 actually spreads
+  over 16 distinct e₃ values — more than three times the conjectured bound.)
+
+With O44 the entire O40–O43 arc is formal: sunflower structure, cyclic/PTE mechanism,
+equal-window collapse, decoupling, count lower bound, escape-clause triviality, and a
+kernel-checked counterexample instance to the per-line bound of Conjecture 41's M_true
+form. The remaining open object of #232 is unchanged and explicitly bounded: the
+field-independent fiber-size question itself (= δ* in the gap), now reachable from BOTH
+formulations through one machine-checked dictionary.
