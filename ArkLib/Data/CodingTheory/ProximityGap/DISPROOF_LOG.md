@@ -1984,3 +1984,14 @@ touching the outside region. Realized 16 ≪ transversal shape space ⟹ strong 
 ℓ(θ) ≤ N₀-core × poly ⟹ the 2^{O(H(ρ)/η)} budget SURVIVES. Trajectory: H1 refuted → H2 refuted →
 H3′ live with exact single-configuration support. Next: second configuration + n=32 test, then the
 transversal-count proof attempt (finite algebra, Lean-able if it holds). Scripts: probe_h3.py.
+
+### O12⁗ — the fiber-3 marginal design replicates EXACTLY; C19 is theorem-shaped (nubs, 2026-06-09)
+
+Second, fully deterministic fiber-3 configuration (max-fiber λ, no randomness) reproduces O12‴'s
+structure EXACTLY: list 19 = 3 + 16, region lattice [4,4,4,2,2], 16/16 dense = {2,2,2,2,1}
+transversals, witness-agreement multiplicities (6,5,5)×8/(6,6,6)×4/(5,5,5)×4 — all
+configuration-independent. **Conjecture C19:** every fiber-3 λ of the (16, 8, 5) smooth
+construction has agree-≥9 list EXACTLY 19 with this design. Finite ⟹ provable ⟹ Lean-able; its
+proof would deliver the first proven marginal-layer count past Johnson on a smooth domain and
+validate the region/transversal mechanism as the upper-bound technique. The P-B program now has a
+concrete mechanism candidate instead of a mystery. Scripts: probe_h3_cfg2.py.
