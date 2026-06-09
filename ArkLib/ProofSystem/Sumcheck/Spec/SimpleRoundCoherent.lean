@@ -65,6 +65,8 @@ exactly that one named residual**, and `coh_of` packages the `∀ i`-form consum
 open OracleComp OracleSpec OracleInterface ProtocolSpec Finset
 open OracleVerifier.LiftContext
 
+set_option linter.unusedSectionVars false
+
 namespace Sumcheck.Spec.SingleRound
 
 noncomputable section
@@ -93,7 +95,7 @@ theorem simulateQ_simOracle_query_sumcheck
         (OracleComp.lift (OracleSpec.query
             (show [OracleStatement R n deg]ₒ.Domain from ⟨(), pt⟩)) :
           OracleComp (oSpec + [OracleStatement R n deg]ₒ) R)
-      = pure (OracleInterface.answer (oos ()) pt) := by
+      = pure ((oos ()).1.eval pt) := by
   erw [simulateQ_spec_query]
   rfl
 
@@ -108,13 +110,32 @@ theorem simOStmt_run_simOracle (i : Fin n)
         (((sumcheckOracleLens R n deg D oSpec i).simOStmt
           (show [Simple.OStmtIn R deg]ₒ.Domain from ⟨(), pt⟩)).run os)
       = pure ((((univ.map D) ^ᶠ (n - 1)).toList).foldl
-          (fun (acc : R) y => acc + OracleInterface.answer (oos ()) (sumPoint R n i pt os y))
+          (fun (acc : R) y => acc + (oos ()).1.eval (sumPoint R n i pt os y))
           (0 : R)) := by
-  simp only [sumcheckOracleLens, ReaderT.run, ReaderT.mk]
+  have hstep : ∀ (acc : R) (y : Fin (n - 1) → R),
+      simulateQ (simOracle oSpec oos)
+          (do
+            let resp ← (OracleComp.lift <| OracleSpec.query
+              (spec := [OracleStatement R n deg]ₒ)
+              (show [OracleStatement R n deg]ₒ.Domain from ⟨(), sumPoint R n i pt os y⟩) :
+              OracleComp (oSpec + [OracleStatement R n deg]ₒ) R)
+            pure (acc + resp))
+        = pure (acc + (oos ()).1.eval (sumPoint R n i pt os y)) := by
+    intro acc y
+    rw [simulateQ_bind, simulateQ_simOracle_query_sumcheck, pure_bind, simulateQ_pure]
+  show simulateQ (simOracle oSpec oos)
+      ((((univ.map D) ^ᶠ (n - 1)).toList).foldlM
+        (fun (acc : R) y =>
+          (do
+            let resp ← (OracleComp.lift <| OracleSpec.query
+              (spec := [OracleStatement R n deg]ₒ)
+              (show [OracleStatement R n deg]ₒ.Domain from ⟨(), sumPoint R n i pt os y⟩) :
+              OracleComp (oSpec + [OracleStatement R n deg]ₒ) R)
+            pure (acc + resp)))
+        (0 : R))
+    = _
   rw [simulateQ_simOracle_foldlM oos _
-    (fun (acc : R) y => acc + OracleInterface.answer (oos ()) (sumPoint R n i pt os y))]
-  intro acc y
-  rw [simulateQ_bind, simulateQ_simOracle_query_sumcheck, pure_bind, simulateQ_pure]
+    (fun (acc : R) y => acc + (oos ()).1.eval (sumPoint R n i pt os y)) _ _ hstep]
 
 /-- **`LiftContextCoherent` for the single-round Simple sum-check lens (issue #13, design note
 #433).** The virtual-oracle reconstruction `sumcheckOracleLens.simOStmt` is coherent with the inner
@@ -134,7 +155,7 @@ explicit named hypothesis (no `sorry`). -/
     (hRoundFaithful : ∀ (os : StatementRound R n i.castSucc)
         (oos : ∀ i, OracleStatement R n deg i) (pt : R),
       (((univ.map D) ^ᶠ (n - 1)).toList).foldl
-          (fun (acc : R) y => acc + OracleInterface.answer (oos ()) (sumPoint R n i pt os y)) (0 : R)
+          (fun (acc : R) y => acc + (oos ()).1.eval (sumPoint R n i pt os y)) (0 : R)
         = OracleInterface.answer
             (((sumcheckOracleLens R n deg D oSpec i).toLens.proj (os, oos)).2 ()) pt) :
     OracleVerifier.LiftContextCoherent (sumcheckOracleLens R n deg D oSpec i)
@@ -159,11 +180,11 @@ explicit named hypothesis (no `sorry`). -/
 This is the shape consumed by `Sumcheck.Spec.SingleRound.perRound_of` (`SingleRoundBridge.lean`).
 The structural plumbing is fully discharged; the input is exactly the per-round round-polynomial
 faithfulness `hRoundFaithful`. -/
-def coh_of
+@[reducible] def coh_of
     (hRoundFaithful : ∀ (i : Fin n) (os : StatementRound R n i.castSucc)
         (oos : ∀ i, OracleStatement R n deg i) (pt : R),
       (((univ.map D) ^ᶠ (n - 1)).toList).foldl
-          (fun (acc : R) y => acc + OracleInterface.answer (oos ()) (sumPoint R n i pt os y)) (0 : R)
+          (fun (acc : R) y => acc + (oos ()).1.eval (sumPoint R n i pt os y)) (0 : R)
         = OracleInterface.answer
             (((sumcheckOracleLens R n deg D oSpec i).toLens.proj (os, oos)).2 ()) pt) :
     ∀ i, OracleVerifier.LiftContextCoherent (sumcheckOracleLens R n deg D oSpec i)
