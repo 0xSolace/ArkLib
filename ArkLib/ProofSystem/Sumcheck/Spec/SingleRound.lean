@@ -1297,10 +1297,11 @@ prior `challenges` (for the `j < i` slots) and the summation index `y` (for the 
 the `∑ x ∈ (univ.map D) ^ᶠ (n - i), poly ⸨X ⦃i⦄, challenges, x⸩` shape of `oStmtLens.toFunA`, so the
 routing answers the inner univariate query exactly by the value `toFunA` would expose. -/
 def sumPoint (i : Fin n) (pt : R) (stmtIn : StatementRound R n i.castSucc)
-    (y : Fin (n - 1) → R) : Fin n → R :=
+    (y : Fin (n - 1 - i) → R) : Fin n → R :=
   let h : n = n - 1 + 1 := by have := i.isLt; omega
   ((Fin.cast h i).insertNth pt
-    (fun k => if hk : (k : ℕ) < (i : ℕ) then stmtIn.challenges ⟨k, by simpa using hk⟩ else y k))
+    (fun k => if hk : (k : ℕ) < (i : ℕ) then stmtIn.challenges ⟨k, by simpa using hk⟩
+      else y ⟨(k : ℕ) - (i : ℕ), by have := k.isLt; omega⟩))
     ∘ Fin.cast h
 
 /-- The concrete sum-check **oracle-routing lens** instantiating the new
@@ -1332,7 +1333,7 @@ noncomputable def sumcheckOracleLens (i : Fin n) :
   simOStmt := fun q =>
     match q with
     | ⟨(), pt⟩ => ReaderT.mk fun stmtIn =>
-      (((univ.map D) ^ᶠ (n - 1)).toList).foldlM
+      (((univ.map D) ^ᶠ (n - 1 - i)).toList).foldlM
         (fun (acc : R) y => do
           let resp ← (OracleComp.lift <| OracleSpec.query
             (spec := [OracleStatement R n deg]ₒ)
