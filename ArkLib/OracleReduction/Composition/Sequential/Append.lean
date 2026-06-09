@@ -545,13 +545,14 @@ theorem simulateQ_emitOStmt₂Query (V₁ : OracleVerifier oSpec Stmt₁ OStmt�
     (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
     simulateQ (OracleInterface.simOracle2 oSpec oStmt tr.messages) (emitOStmt₂Query V₁ i q)
       = pure ((Oₛ₂ i).answer (mkVerifierOStmtOut V₁.embed V₁.hEq oStmt tr.fst i) q) := by
-  unfold emitOStmt₂Query
-  split
-  · next k h =>
+  cases h : V₁.embed i with
+  | inl k =>
+    simp only [emitOStmt₂Query, h]
     rw [emitOStmtQueryInl_simulateQ, mkVerifierOStmtOut_inl V₁.embed V₁.hEq oStmt tr.fst i k h]
     congr 1
     exact eq_of_heq ((eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm)
-  · next k h =>
+  | inr k =>
+    simp only [emitOStmt₂Query, h]
     rw [emitOStmtQueryInr_simulateQ, mkVerifierOStmtOut_inr V₁.embed V₁.hEq oStmt tr.fst i k h]
     congr 1
     exact eq_of_heq ((eqRec_heq _ _).trans ((eqRec_heq _ _).trans (eqRec_heq _ _)).symm)
