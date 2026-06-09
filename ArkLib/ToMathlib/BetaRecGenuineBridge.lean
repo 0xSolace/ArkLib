@@ -154,11 +154,14 @@ theorem betaRec_BcoeffSigned_eq_βHensel (x₀ : F) (R : F[X][X][Y])
             betaRec x₀ R H hHyp (BcoeffSigned H x₀ R) l.1 ^ (p.parts.count l.1))
             = partitionProd p
                 (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0) := by
-          rw [partitionProd_guard_eq H x₀ R hHyp k i₁ p hnotmem,
-            partitionProd_eq_prod_count,
-            Finset.prod_attach (s := p.parts.toFinset)
-              (f := fun l => betaRec x₀ R H hHyp (BcoeffSigned H x₀ R) l
-                ^ (p.parts.count l))]
+          rw [partitionProd_guard_eq H x₀ R hHyp k i₁ p hnotmem]
+          rw [partitionProd_eq_prod_count (M := 𝒪 H) p (βHensel H x₀ R hHyp)]
+          rw [show (∏ l ∈ p.parts.toFinset.attach,
+              betaRec x₀ R H hHyp (BcoeffSigned H x₀ R) l.1 ^ (p.parts.count l.1))
+            = ∏ l ∈ p.parts.toFinset,
+              betaRec x₀ R H hHyp (BcoeffSigned H x₀ R) l ^ (p.parts.count l) from
+            Finset.prod_attach p.parts.toFinset
+              (fun l => betaRec x₀ R H hHyp (BcoeffSigned H x₀ R) l ^ p.parts.count l)]
           refine Finset.prod_congr rfl fun l hl => ?_
           rw [ih l (recursionStep_lt p hexcl (Multiset.mem_toFinset.mp hl))]
         rw [hprod, BcoeffSigned_apply, W_O_eq_W𝒪, betaWExp_eq_deltaSave,
