@@ -1096,7 +1096,6 @@ import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
 import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
 import ArkLib.ProofSystem.Logup.Security.OuterRun
 import ArkLib.ProofSystem.Logup.Security.OuterRunSamplesChallenge
-import ArkLib.ProofSystem.Logup.Security.OuterSoundness
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessReal
 import ArkLib.ProofSystem.Logup.Security.RbrToSoundBridge
 import ArkLib.ProofSystem.Logup.Security.Soundness
