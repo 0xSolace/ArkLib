@@ -182,6 +182,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyRepBound
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySidonModNeg
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingFiberConservation
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingListLowerBoundRS
+import ArkLib.Data.CodingTheory.ProximityGap.AveragingReachNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.BWMatrix
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.GoodCoeffs
@@ -535,6 +536,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepair
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepairExtra
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingT421Faithful
 import ArkLib.Data.CodingTheory.ProximityGap.LineDichotomy
+import ArkLib.Data.CodingTheory.ProximityGap.LinePairCooccurrenceBound
 import ArkLib.Data.CodingTheory.ProximityGap.LinearizedPolynomialHasse
 import ArkLib.Data.CodingTheory.ProximityGap.ListAroundBallIntersectionKernel
 import ArkLib.Data.CodingTheory.ProximityGap.ListBallIntersectionReduction
@@ -708,7 +710,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
-import ArkLib.Data.CodingTheory.ProximityGap.AveragingReachNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPaleyZygmundDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumPigeonholeFiber
