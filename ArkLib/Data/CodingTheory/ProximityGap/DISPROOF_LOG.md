@@ -4598,3 +4598,7 @@ iterating this wiring through the O81 chain (each deeper window kills one more d
 level and the rung multiplies the reassembled coset order) — every constituent
 machine-checked; remaining = the general-t induction bookkeeping. Ops note: two
 working-tree wipes beaten this pass by commit-before-compile + /tmp content blocks.
+
+### O106 — THE COPRIME GATE OPENS: `minpoly ℚ(ζ_m) ζ_r = Φ_r` for ANY coprime m, r — the O105-addendum lemma is a theorem
+
+`CoprimePacketMinpoly.lean` (Mathlib-only, axiom-clean ×2, 0 sorry, 0 warnings, first-shot compile): `minpoly_adjoin_coprime_eq_cyclotomic` — coprime cyclotomic extensions never split each other's cyclotomics, at FULL generality (any `0 < m`, `0 < r` coprime; the prime-power hypothesis of `CRTPacketMinpoly` was never load-bearing — its totient-tower pinch runs verbatim on `Nat.totient_mul hco`). Plus `minpoly_adjoin_coprime_prime_eq_geom`: the `Σ_{t<r} X^(t·1)` slice-engine shape at prime `r`. The pqr ℚ-classification route of the O105 addendum is now pure composition: slice at base `m = pq`, reduce fiber differences to the 2-var ℚ-classification, integrate.
