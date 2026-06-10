@@ -86,7 +86,7 @@ theorem logup_soundness_pointwiseSumcheck (sumcheckSoundnessError : ℝ≥0) (hn
   have hOracle : OracleVerifier.appendSoundnessResidual (init := init) (impl := impl)
       (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params)
       hOuter hSumcheck :=
-    OracleVerifier.oracleAppendSoundnessResidual_of_plain
+    OracleVerifier.oracleAppendSoundnessResidual_of_plain.{0, 0}
       (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params)
       hOuter hSumcheck hPlainAppend
   exact OracleVerifier.append_soundness.{0, 0}
