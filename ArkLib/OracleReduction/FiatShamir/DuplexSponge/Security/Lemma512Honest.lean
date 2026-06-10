@@ -107,6 +107,52 @@ theorem hasForwardCapacityBeforeHash_of_first
   obtain ⟨jHash, hhash, _hfirst, jPerm, hlt, stateIn, stateOut, hperm, hcap⟩ := h
   exact ⟨jHash, hhash, jPerm, hlt, stateIn, stateOut, hperm, hcap⟩
 
+/-- Inversion of `redundantEntryDS` at a forward-permutation slot: the redundancy certificate
+is an earlier forward entry with either the same state pair or the reversed state pair. -/
+private lemma redundantEntryDS_forward_inversion
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (idx : Fin tr.length)
+    (stateIn stateOut : CanonicalSpongeState U)
+    (hval : tr[idx] =
+      (⟨Sum.inr (Sum.inl stateIn), stateOut⟩ :
+        (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+          (duplexSpongeChallengeOracle StmtIn U).Range t))
+    (hred : tr.redundantEntryDS idx) :
+    ∃ j' : Fin tr.length, j' < idx ∧
+      (tr[j'] = (⟨Sum.inr (Sum.inl stateIn), stateOut⟩ :
+          (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+            (duplexSpongeChallengeOracle StmtIn U).Range t) ∨
+        tr[j'] = (⟨Sum.inr (Sum.inl stateOut), stateIn⟩ :
+          (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+            (duplexSpongeChallengeOracle StmtIn U).Range t)) := by
+  unfold redundantEntryDS at hred
+  rw [hval] at hred
+  exact hred
+
+/-- A redundant forward entry that shares a target capacity has an earlier forward replacement
+that still shares that capacity, possibly on the opposite side after the state pair is reversed. -/
+theorem redundant_forward_capacity_prior
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (idx : Fin tr.length)
+    {capSeg : Vector U SpongeSize.C} {stateIn stateOut : CanonicalSpongeState U}
+    (hval : tr[idx] =
+      (⟨Sum.inr (Sum.inl stateIn), stateOut⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)))
+    (hred : tr.redundantEntryDS idx)
+    (hcap : stateOut.capacitySegment = capSeg ∨ stateIn.capacitySegment = capSeg) :
+    ∃ j' : Fin tr.length, j' < idx ∧
+      ∃ stateIn' stateOut' : CanonicalSpongeState U,
+        tr[j'] =
+          (⟨Sum.inr (Sum.inl stateIn'), stateOut'⟩ :
+            OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+        (stateOut'.capacitySegment = capSeg ∨ stateIn'.capacitySegment = capSeg) := by
+  obtain ⟨j', hj', hcase⟩ :=
+    redundantEntryDS_forward_inversion tr idx stateIn stateOut hval hred
+  refine ⟨j', hj', ?_⟩
+  rcases hcase with hsame | hrev
+  · exact ⟨stateIn, stateOut, hsame, hcap⟩
+  · rcases hcap with hout | hin
+    · exact ⟨stateOut, stateIn, hrev, Or.inr hout⟩
+    · exact ⟨stateOut, stateIn, hrev, Or.inl hin⟩
+
 /-- Inversion of `redundantEntryDS` at a hash slot: the redundancy certificate is an earlier
 copy of the same hash entry. -/
 private lemma redundantEntryDS_hash_inversion
@@ -735,6 +781,7 @@ theorem lemma5_12_honest :
 
 end DuplexSpongeFS.Sponge316
 
+#print axioms DuplexSpongeFS.Sponge316.redundant_forward_capacity_prior
 #print axioms DuplexSpongeFS.Sponge316.hasInvEntry_implies_E
 #print axioms DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem
 #print axioms DuplexSpongeFS.Sponge316.not_inv_getElem?_of_not_E
