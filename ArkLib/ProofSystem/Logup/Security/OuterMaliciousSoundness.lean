@@ -345,7 +345,6 @@ theorem outerVerifier_rbrSoundness_mid :
       rw [ENNReal.coe_div (by exact_mod_cast Fintype.card_ne_zero), ENNReal.coe_natCast,
         ENNReal.coe_natCast]
       gcongr
-      exact_mod_cast hfle
   · exact absurd hdir (by exact fun h => by cases h)
   · -- round 3: the (z, λ) Schwartz–Zippel flip
     have herr : outerMidRbrError F n M params ⟨⟨3, hiv⟩, hdir⟩
@@ -365,9 +364,7 @@ theorem outerVerifier_rbrSoundness_mid :
       (inferInstance : DecidableEq (BatchingChallenge F n params.numGroups))
     haveI : Fintype ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩) :=
       (inferInstance : Fintype (BatchingChallenge F n params.numGroups))
-    haveI : Nonempty ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩) :=
-      (inferInstance : Nonempty (BatchingChallenge F n params.numGroups))
-    -- name the prefix data
+    simp only [probOutput_uniformSample]
     set mult : MultilinearOracle F n := show MultilinearOracle F n from t ⟨0, by norm_num⟩
       with hmult
     set x : F := show F from t ⟨1, by norm_num⟩ with hxdef
@@ -376,7 +373,6 @@ theorem outerVerifier_rbrSoundness_mid :
     by_cases hguard : ∀ u : Hypercube n,
         x + evalOnHypercube (tableOracle stmtIn.2) u ≠ 0
     case neg =>
-      -- the pole guard fails: the final state cannot hold, the flip event is empty
       refine le_trans (le_of_eq ?_) (zero_le _)
       rw [ENNReal.tsum_eq_zero]
       intro c
@@ -396,7 +392,6 @@ theorem outerVerifier_rbrSoundness_mid :
     case pos =>
       by_cases hxbad : x ∈ outerBadChallenges params stmtIn.2 mult
       case pos =>
-        -- the state at round 3 is already true: no flip possible
         refine le_trans (le_of_eq ?_) (zero_le _)
         rw [ENNReal.tsum_eq_zero]
         intro c
@@ -412,19 +407,19 @@ theorem outerVerifier_rbrSoundness_mid :
         unfold outerMidStateFunction outerMidState
         exact Or.inr (Or.inr ⟨by norm_num, by norm_num, hxbad⟩)
       case neg =>
-        -- the genuine SZ flip: the claim is not identically zero, count its zero set
         have hNot := claim_not_identicallyZero params stmtIn.1 stmtIn.2 hBad mult x
           hguard hxbad helpers
         have hcount := card_filter_claimZero_mul_card_le (F := F)
           (Fact.out : (-1 : F) ≠ 1) (canonicalGroups params) stmtIn.2 mult helpers x hNot
-        refine le_trans (tsum_uniform_mem_le
-          (C := (outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩)
-          (mem := Finset.univ.filter
+        set Z : Finset ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩) :=
+          Finset.univ.filter
             (fun c : (outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩ =>
               (∑ u : Hypercube n, qOnHypercube (canonicalGroups params) stmtIn.2 mult helpers
                 x (show BatchingChallenge F n params.numGroups from c).1
-                (show BatchingChallenge F n params.numGroups from c).2 u) = 0))
-          _ ?hg3 ?hgle3) ?_
+                (show BatchingChallenge F n params.numGroups from c).2 u) = 0) with hZ
+        refine le_trans (tsum_le_card_mul_of_support_subset Z _
+          ((Fintype.card ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩) : ℝ≥0∞))⁻¹
+          ?hg3 ?hgle3) ?_
         case hg3 =>
           intro c hc
           rw [mul_eq_zero]
@@ -435,18 +430,21 @@ theorem outerVerifier_rbrSoundness_mid :
           simp only [StateT.run'_eq, StateT.run_pure, _root_.map_pure, support_pure,
             Set.mem_singleton_iff] at hy
           subst hy
-          simp only [outerMidStateFunction] at hyes
-          unfold outerMidState at hyes
+          unfold outerMidStateFunction outerMidState at hyes
           obtain h | ⟨h4x, hgx, hclaim⟩ | ⟨h1x, h3, -⟩ := hyes
           · exact hStmtIn h
-          · refine hc (Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩)
-            exact hclaim
+          · refine hc ?_
+            rw [hZ]
+            exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hclaim⟩
           · exact absurd h3 (by norm_num)
         case hgle3 =>
           intro c
-          refine le_trans (mul_le_mul' le_rfl probEvent_le_one) ?_
-      simp
-        · -- the counting bound: card·q ≤ (n+1)·q^(n+K) ⟹ card/q^(n+K) ≤ (n+1)/q
+          calc (Fintype.card ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩) : ℝ≥0∞)⁻¹
+                * _ ≤ (Fintype.card
+                  ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩) : ℝ≥0∞)⁻¹ * 1 := by
+                gcongr; exact probEvent_le_one
+            _ = _ := mul_one _
+        · -- counting: |Z|·q ≤ (n+1)·q^(n+K) ⟹ |Z|/q^(n+K) ≤ (n+1)/q
           have hcardC : Fintype.card
               ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩)
               = Fintype.card F ^ (n + params.numGroups) := by
@@ -456,45 +454,38 @@ theorem outerVerifier_rbrSoundness_mid :
               _ = Fintype.card F ^ (n + params.numGroups) := by
                   rw [Fintype.card_prod, Fintype.card_fun, Fintype.card_fun,
                     Fintype.card_fin, Fintype.card_fin, ← pow_add]
-          rw [hcardC]
-          rw [ENNReal.coe_div (by exact_mod_cast Fintype.card_ne_zero), ENNReal.coe_natCast,
-            ENNReal.coe_natCast]
-          have hq0 : (0 : ℝ≥0) < (Fintype.card F : ℝ≥0) := by
-            exact_mod_cast Fintype.card_pos
-          have hnn : ((Finset.univ.filter _).card : ℝ≥0)
-              / ((Fintype.card F : ℝ≥0) ^ (n + params.numGroups))
-              ≤ ((n + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
-            rw [div_le_div_iff₀ (by positivity) hq0]
-            have hcfle : (Finset.univ.filter
-              (fun c : (outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩ =>
-                (∑ u : Hypercube n, qOnHypercube (canonicalGroups params) stmtIn.2 mult helpers
-                  x (show BatchingChallenge F n params.numGroups from c).1
-                  (show BatchingChallenge F n params.numGroups from c).2 u) = 0)).card
-              ≤ (Finset.univ.filter
+          have hcfle : Z.card ≤ (Finset.univ.filter
                 (fun p : (Fin n → F) × (Fin params.numGroups → F) =>
                   (∑ u : Hypercube n, qOnHypercube (canonicalGroups params) stmtIn.2 mult helpers
-                    x p.1 p.2 u) = 0)).card :=
-            Finset.card_le_card_of_injOn
+                    x p.1 p.2 u) = 0)).card := by
+            rw [hZ]
+            exact Finset.card_le_card_of_injOn
               (fun c => show BatchingChallenge F n params.numGroups from c)
               (fun c hc => Finset.mem_filter.mpr
                 ⟨Finset.mem_univ _, (Finset.mem_filter.mp hc).2⟩)
               (fun a _ b _ h => h)
-          calc ((Finset.univ.filter _).card : ℝ≥0) * (Fintype.card F : ℝ≥0)
-                = (((Finset.univ.filter _).card * Fintype.card F : ℕ) : ℝ≥0) := by push_cast; ring
+          have hZq : (Z.card * Fintype.card F : ℕ)
+              ≤ (n + 1) * Fintype.card F ^ (n + params.numGroups) :=
+            le_trans (Nat.mul_le_mul_right _ hcfle) hcount
+          rw [hcardC, ← div_eq_mul_inv, Nat.cast_pow]
+          have hq0 : (0 : ℝ≥0) < (Fintype.card F : ℝ≥0) := by
+            exact_mod_cast Fintype.card_pos
+          have hnn : (Z.card : ℝ≥0) / ((Fintype.card F : ℝ≥0) ^ (n + params.numGroups))
+              ≤ ((n + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
+            rw [div_le_div_iff₀ (by positivity) hq0]
+            calc (Z.card : ℝ≥0) * (Fintype.card F : ℝ≥0)
+                = ((Z.card * Fintype.card F : ℕ) : ℝ≥0) := by push_cast; ring
               _ ≤ (((n + 1) * Fintype.card F ^ (n + params.numGroups) : ℕ) : ℝ≥0) := by
-                  exact_mod_cast le_trans (Nat.mul_le_mul_right _ hcfle) hcount
+                  exact_mod_cast hZq
               _ = ((n + 1 : ℕ) : ℝ≥0) * ((Fintype.card F : ℝ≥0) ^ (n + params.numGroups)) := by
                   push_cast; ring
-          calc ((Finset.univ.filter _).card : ℝ≥0∞) / ((Fintype.card F : ℝ≥0∞) ^ (n + params.numGroups))
-              = (((Finset.univ.filter _).card : ℝ≥0)
-                  / ((Fintype.card F : ℝ≥0) ^ (n + params.numGroups)) : ℝ≥0) := by
+          calc (Z.card : ℝ≥0∞) / ((Fintype.card F : ℝ≥0∞) ^ (n + params.numGroups))
+              = (((Z.card : ℝ≥0) / ((Fintype.card F : ℝ≥0) ^ (n + params.numGroups)) : ℝ≥0)
+                  : ℝ≥0∞) := by
                 rw [ENNReal.coe_div (by positivity), ENNReal.coe_pow, ENNReal.coe_natCast,
                   ENNReal.coe_natCast]
-            _ ≤ (((n + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) : ℝ≥0) := by
+            _ ≤ ((((n + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) : ℝ≥0) : ℝ≥0∞) := by
                 exact_mod_cast hnn
-            _ = ((n + 1 : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
-                rw [ENNReal.coe_div (by exact_mod_cast Fintype.card_ne_zero),
-                  ENNReal.coe_natCast, ENNReal.coe_natCast]
 
 end RbrMain
 
