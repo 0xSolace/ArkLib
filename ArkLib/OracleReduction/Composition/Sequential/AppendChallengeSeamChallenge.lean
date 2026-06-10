@@ -133,6 +133,46 @@ theorem StateT_run'_simulateQ_bind_state_fixed {ιₒ : Type} {spec : OracleSpec
   refine bind_congr fun p => ?_
   rw [StateT.run'_eq]
 
+
+set_option maxHeartbeats 1000000 in
+/-- **OptionT-bind lifting of a `run'`-marginal equality.** If two `oSpec`-computations `A`, `B` have
+the same simulated `run'`-distribution from every state, then prepending either (via `liftM`) to a
+common OptionT continuation `K` gives the same simulated `run'`-distribution. The OptionT/`liftM`
+companion of `StateT_run'_simulateQ_bind_state_fixed`, used to lift the prover-run factoring through the
+verifier tail of `Reduction.run`. -/
+theorem evalDist_simulateQ_liftM_bind_run_congr {ιₒ : Type} {spec : OracleSpec ιₒ} {σ : Type}
+    (so : QueryImpl spec (StateT σ ProbComp))
+    (hso : ∀ (t : spec.Domain) (s : σ) (x : spec.Range t × σ),
+      x ∈ support ((so t).run s) → x.2 = s)
+    {γ δ : Type} (A B : OracleComp spec γ) (K : γ → OptionT (OracleComp spec) δ) (s : σ)
+    (hAB : ∀ s', evalDist (StateT.run' (simulateQ so A) s')
+      = evalDist (StateT.run' (simulateQ so B) s')) :
+    evalDist (StateT.run' (simulateQ so ((liftM A : OptionT (OracleComp spec) γ) >>= K).run) s)
+      = evalDist (StateT.run' (simulateQ so ((liftM B : OptionT (OracleComp spec) γ) >>= K).run) s) := by
+  rw [simulateQ_run'_optionT_bind_run, simulateQ_run'_optionT_bind_run]
+  have key : ∀ (X : OracleComp spec γ),
+      evalDist ((simulateQ so (liftM X : OptionT (OracleComp spec) γ).run).run s
+          >>= fun p => p.1.elim (pure none) (fun a => (simulateQ so (K a).run).run' p.2))
+        = evalDist (StateT.run' (simulateQ so X) s) >>=
+            fun a => evalDist ((simulateQ so (K a).run).run' s) := by
+    intro X
+    have hrun : (simulateQ so (liftM X : OptionT (OracleComp spec) γ).run).run s
+        = (simulateQ so X).run s >>= fun q => pure (some q.1, q.2) := by
+      rw [show (liftM X : OptionT (OracleComp spec) γ).run = some <$> X from rfl, simulateQ_map,
+        StateT.run_map, map_eq_bind_pure_comp]
+      rfl
+    rw [hrun, bind_assoc]
+    have hstep : ((simulateQ so X).run s >>= fun q =>
+          pure (some q.1, q.2) >>= fun p => p.1.elim (pure none)
+            (fun a => (simulateQ so (K a).run).run' p.2))
+        = (simulateQ so X).run s >>= fun q => (simulateQ so (K q.1).run).run' s := by
+      refine bind_congr_of_forall_mem_support _ (fun q hq => ?_)
+      rw [pure_bind, Option.elim_some,
+        show q.2 = s from simulateQ_state_preserving so hso X s q hq]
+    rw [hstep, evalDist_bind, StateT.run'_eq, evalDist_map, bind_map_left]
+  rw [key A, key B, hAB]
+
+
 set_option maxHeartbeats 1000000 in
 /-- **Simulated right-block commute at a challenge seam.** The `simulateQ` analogue of
 `Prover.append_continueFromTo_right_challenge_evalDist`: split the right block at the seam successor
@@ -313,11 +353,27 @@ theorem append_game_factor_challenge
   simp only [gameOf]
   rw [evalDist_bind, evalDist_bind]
   refine bind_congr fun s => ?_
-  -- The seam-challenge swap under simulation. The appended run's seam `getChallenge` sits before the
-  -- `P₁.output` replay; `evalDist_simulateQ_swap_prefix` (state-preserving) commutes them to the
-  -- natural order, matching the bare `Prover.append_run_evalDist_challenge` reorder lifted through
-  -- `simulateQ`.
-  sorry
+  -- Unfold the appended `Reduction.run` to `liftM (P₁.append P₂).run ≫ verifier-tail` (no *syntactic*
+  -- prover factoring — false at a challenge seam); the seam reorder is the proven distributional
+  -- prover factoring `simulateQ_append_prover_run_evalDist`, lifted through the verifier tail by
+  -- `evalDist_simulateQ_liftM_bind_run_congr`, then refold to the natural chain.
+  simp only [Reduction.run, Reduction.append, Verifier.append, Verifier.run, liftM_bind,
+    bind_assoc, OptionT.liftM_run_getM_bind, liftM_pure, pure_bind,
+    FullTranscript.append_fst, FullTranscript.append_snd]
+  rw [evalDist_simulateQ_liftM_bind_run_congr (impl.addLift challengeQueryImpl)
+    (addLift_state_preserving impl himplSP)
+    ((R₁.prover.append R₂.prover).run stmt wit)
+    (liftM (R₁.prover.run stmt wit) >>= fun p₁ =>
+      liftM (R₂.prover.run p₁.2.1 p₁.2.2) >>= fun p₂ =>
+      (pure ⟨p₁.1 ++ₜ p₂.1, p₂.2.1, p₂.2.2⟩ :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+          (FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × Wit₃)))
+    _ s
+    (fun s' => simulateQ_append_prover_run_evalDist R₁.prover R₂.prover stmt wit hn hDir hDir₂
+      himplSP s')]
+  simp only [liftM_bind, bind_assoc, liftM_pure, pure_bind, FullTranscript.append_fst,
+    FullTranscript.append_snd]
+  rfl
 
 /-- **Challenge-seam append completeness (`hGameFactor` discharged via the seam-challenge swap).**
 The challenge-seam analogue of `append_completeness_msg_via_seamFactor`: threads
