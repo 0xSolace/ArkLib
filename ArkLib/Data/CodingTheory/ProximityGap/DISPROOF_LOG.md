@@ -5141,3 +5141,41 @@ under exponentially fewer syndrome conditions than originally formalized — k+1
 checks where 2^{k+1}−1 were assumed needed. For protocol design (FRI-style 2-power
 domains): the same interior list guarantee from a logarithmic number of power-sum
 constraints.
+
+### O129 — THE INCIDENCE LABORATORY: the exactness theorem + the first measurements of the sole surviving channel (nubs, 2026-06-10)
+
+Scope claimed as the complement of lalalune's 07:11Z lane 2 (comment 4667894636): dense
+layers, slice spread of differences, cross-level persistence, union-bound loss.
+`scripts/probes/incidence/` (probe + RESULTS-INCIDENCE.md + published run log +
+exactness/ artifacts); the production kernel gains an `#ifndef A` guard so
+`-DA=17` emits both layers (the 17-layer was previously unreproducible from the tree).
+
+**THE EXACTNESS THEOREM (computational char-0 proof, second-seat audited):** over
+ℤ[ζ₃₂], every witness–dense difference vanishes on μ₃₂ exactly on T_w ∩ T_t. At a
+split prime the law holds iff p divides none of 13,219 explicit norms (all < 2.2·10²⁴);
+BabyBear and 3·2³⁰+1 divide none — proven twice. NOT anatomy-forced: fails at all 20
+split primes 97..2113 at the generic ~6.7/p rate, counterexamples explicit; the
+certificate's bad-prime predictions match the sweep failures exactly. Structural
+lemmas (the e_w-even lever, d = P(x²)+x·Q(x²), Q = −e₃·F): dense words have e₃ ≠ 0;
+a full fiber dies iff z ∈ S ∩ B — **the cross-pair incidence geometry IS the
+intersection lattice of the 35 fiber-subsets with the 580 B-blocks**; accidental
+collisions are always single zeros with live partner (0 dead-fiber accidents in
+~10,800 observed extras across 20 primes).
+
+**Measurements (gates passed; run-2 reproduces run-1 exactly on the deterministic
+census):** cross 35×1344: zero excess 47,040/47,040; 4,072 distinct L1 dead loci,
+mean multiplicity 11.55, max 144 — the union bound's loss, measured for the first
+time; multiplicity menu low-mass concentrated at {2,4} (the menu's fourth appearance)
+with a rich even tail. Dense-dense (12,000 sample): excess ≈ 0.2% — exact cyclotomic
+identities (pairs sharing two q-roots collide at their antipodes), identified
+per-pair; 32 pairs have EMPTY L1 locus; all 672 negation pairs drop a full tower
+level (spread (1,2,4), population-complete check). n=16 reference: same shape,
+refined values (persistence).
+
+**Where this leaves the channel:** the witness–dense incidence is now COMBINATORIAL
+(the S∩B lattice) — counting arguments can consume it directly; the open mechanisms,
+sharply: the non-negation sub-maximal tail, the dense-dense q-root identities as a
+family, the conceptual "why" of char-0 nonvanishing (free roots of N = P²−YQ² avoid
+μ₁₆), and the iff-direction Galois stability (sketched, empirically exact). Honest
+scope: one word, one radius pair; the theorem covers all split primes for THIS
+configuration.
