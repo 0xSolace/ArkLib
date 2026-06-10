@@ -1681,6 +1681,7 @@ import ArkLib.ToMathlib.STIRCombineDegree
 import ArkLib.ToMathlib.SbetaPackaging
 import ArkLib.ToMathlib.SecondMomentCountBricks
 import ArkLib.ToMathlib.SecondMomentProb
+import ArkLib.ToMathlib.Section5BundleAssembler
 import ArkLib.ToMathlib.Section5Concrete
 import ArkLib.ToMathlib.Section5ConcreteJohnson
 import ArkLib.ToMathlib.Section5StrictDataFinOn
