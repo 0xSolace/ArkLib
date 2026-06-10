@@ -102,6 +102,28 @@ decreasing_by
       List.length_eraseIdx_add_one hlt
     omega)
 
+/-- `removeRedundantEntryDS` is a fixpoint on traces already satisfying `NoRedundantEntryDS`. -/
+theorem removeRedundantEntryDS_eq_self_of_noRedundantEntryDS
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : log.NoRedundantEntryDS) :
+    removeRedundantEntryDS log = ⟨log, h⟩ := by
+  have hnone : ¬ ∃ idx : Fin log.length, log.redundantEntryDS idx := not_exists.mpr h
+  rw [removeRedundantEntryDS]
+  simp [hnone]
+
+/-- First-projection form of `removeRedundantEntryDS_eq_self_of_noRedundantEntryDS`. -/
+theorem removeRedundantEntryDS_fst_eq_self_of_noRedundantEntryDS
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : log.NoRedundantEntryDS) :
+    (removeRedundantEntryDS log).1 = log := by
+  rw [removeRedundantEntryDS_eq_self_of_noRedundantEntryDS log h]
+
+/-- Subtype fixpoint form for the canonical output of `removeRedundantEntryDS`. -/
+theorem removeRedundantEntryDS_eq_self
+    (base : {log : QueryLog (duplexSpongeChallengeOracle StmtIn U) | log.NoRedundantEntryDS}) :
+    removeRedundantEntryDS base.1 = base := by
+  cases base with
+  | mk log h =>
+      exact removeRedundantEntryDS_eq_self_of_noRedundantEntryDS log h
+
 namespace BadEventDS
 
 variable (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (state : CanonicalSpongeState U)
@@ -193,6 +215,25 @@ def combined : Prop :=
   capacitySegmentDup trace ∨ notFunction trace
 
 alias E := combined
+
+/-- The combined bad event only depends on the deduplicated base trace. -/
+theorem E_removeRedundantEntryDS_iff :
+    E (removeRedundantEntryDS trace).1 ↔ E trace := by
+  let base := removeRedundantEntryDS trace
+  have hbase : removeRedundantEntryDS base.1 = base := removeRedundantEntryDS_eq_self base
+  constructor
+  · intro h
+    unfold E combined capacitySegmentDup capacitySegmentDupHash
+      capacitySegmentDupPerm capacitySegmentDupPermInv notFunction at h ⊢
+    dsimp only at h ⊢
+    rw [hbase] at h
+    simpa [base] using h
+  · intro h
+    unfold E combined capacitySegmentDup capacitySegmentDupHash
+      capacitySegmentDupPerm capacitySegmentDupPermInv notFunction at h ⊢
+    dsimp only at h ⊢
+    rw [hbase]
+    simpa [base] using h
 
 /-!
 We define supplementary collision events (forward-forward, backward-backward, and mixed collisions)
