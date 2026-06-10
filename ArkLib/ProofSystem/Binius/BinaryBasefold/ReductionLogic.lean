@@ -639,9 +639,7 @@ private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_lt
   have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
       Sum.inl ⟨j.val, hj⟩ := by
-    change (commitStepLogic_embed 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (ϑ := ϑ) i hCR) j = Sum.inl ⟨j.val, hj⟩
-    simp only [commitStepLogic_embed, Function.Embedding.coeFn_mk,
+    simp only [commitStepLogic, commitStepLogic_embed, Function.Embedding.coeFn_mk,
       commitStepLogic_embedFn, hj, dif_pos]
   rw [OracleVerifier.mkVerifierOStmtOut_inl _ _ _ _ _ _ h_embed]
   simp only [hj, dif_pos, eqRec_eq_cast, cast_cast]
@@ -680,9 +678,7 @@ private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_not_lt
   have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
       Sum.inr ⟨0, rfl⟩ := by
-    change (commitStepLogic_embed 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (ϑ := ϑ) i hCR) j = Sum.inr ⟨0, rfl⟩
-    simp only [commitStepLogic_embed, Function.Embedding.coeFn_mk,
+    simp only [commitStepLogic, commitStepLogic_embed, Function.Embedding.coeFn_mk,
       commitStepLogic_embedFn, hj, dif_neg, not_false_eq_true]
     rfl
   rw [OracleVerifier.mkVerifierOStmtOut_inr _ _ _ _ _ _ h_embed]
