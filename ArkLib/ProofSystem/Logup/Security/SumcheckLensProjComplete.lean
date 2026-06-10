@@ -168,12 +168,6 @@ theorem SumcheckLensProjComplete_holds_of_honest
     (F := F) (n := n) (M := M) (params := params) (hSigns := (Fact.out : (-1 : F) ≠ 1))
     stmtIn₀ oStmtIn₀ stmtIn.1 hInput htable
 
-/-- **Wiring check: the discharged `hProj` plugs into `sumcheckCompletenessResidual_holds`.**
-
-This confirms `SumcheckLensProjComplete_holds_of_honest` has exactly the shape required by the
-`hProj` argument of `Logup.sumcheckCompletenessResidual_holds`, so the embedded sum-check phase is
-perfectly complete on the honest-prover support given the (separately supplied) inner oracle-level
-completeness `hInner` and the honest-support data `hHonest`. -/
 /-- **`SumcheckCompletenessResidual` from the inner completeness alone (issue #13, de-larped).**
 
 With `hProj` now a theorem (`SumcheckLensProjComplete_unconditional`, by construction from the
@@ -192,6 +186,12 @@ theorem sumcheckCompletenessResidual_of_inner
   sumcheckCompletenessResidual_holds oSpec F n M params init impl
     (SumcheckLensProjComplete_unconditional F n M params) hInner
 
+/-- **Wiring check: the discharged `hProj` plugs into `sumcheckCompletenessResidual_holds`.**
+
+This confirms `SumcheckLensProjComplete_holds_of_honest` has exactly the shape required by the
+`hProj` argument of `Logup.sumcheckCompletenessResidual_holds`, so the embedded sum-check phase is
+perfectly complete on the honest-prover support given the (separately supplied) inner oracle-level
+completeness `hInner` and the honest-support data `hHonest`. -/
 theorem sumcheckCompletenessResidual_of_honest
     {ι : Type} (oSpec : OracleSpec ι) [oSpec.Fintype]
     [SampleableType F]
