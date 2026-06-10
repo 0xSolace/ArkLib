@@ -89,7 +89,45 @@ theorem qsum_vanishing_forall (hSigns : (-1 : F) ≠ 1)
   · intro habs
     exact absurd (Finset.mem_univ k) habs
 
+/-- **Batching-binding, step 2a (pointwise helper unbinding).** A vanishing domain-identity term
+at a pole-free row forces the prover's helper value to equal the honest partial-fraction value:
+`helpers k u = helperValue k u`. Cancellation of the nonzero denominator product against
+`helperValue_mul_denominatorProduct`. -/
+theorem helpers_eq_helperValue_of_DIT_zero
+    (groups : PartialSumGroups M K)
+    (oStmt : ∀ i, OStmtIn F n M i) (multiplicity : MultilinearOracle F n)
+    (helpers : HelperMessages F n K) (x : F) (k : Fin K) (u : Hypercube n)
+    (hden : ∀ i ∈ groups k, termPhi oStmt x i u ≠ 0)
+    (hDIT : domainIdentityTerm groups oStmt multiplicity helpers x k u = 0) :
+    evalOnHypercube (helpers k) u = helperValue groups oStmt multiplicity x k u := by
+  have hprod : denominatorProduct groups oStmt x k u ≠ 0 := by
+    unfold denominatorProduct
+    exact Finset.prod_ne_zero_iff.mpr hden
+  have hclear := helperValue_mul_denominatorProduct groups oStmt multiplicity x k u hden
+  unfold domainIdentityTerm at hDIT
+  rw [sub_eq_zero] at hDIT
+  rw [← hclear] at hDIT
+  exact mul_right_cancel₀ hprod hDIT
+
+/-- **Batching-binding, step 2b (mass transfer).** If every domain-identity term vanishes at a
+pole-free challenge, the helper mass equals the total honest partial-fraction mass: the prover's
+claimed helpers carry exactly the grand rational sum. -/
+theorem helper_mass_eq_grand_sum_of_DIT_zero
+    (groups : PartialSumGroups M K)
+    (oStmt : ∀ i, OStmtIn F n M i) (multiplicity : MultilinearOracle F n)
+    (helpers : HelperMessages F n K) (x : F)
+    (hden : ∀ (k : Fin K) (u : Hypercube n), ∀ i ∈ groups k, termPhi oStmt x i u ≠ 0)
+    (hDIT : ∀ (k : Fin K) (u : Hypercube n),
+      domainIdentityTerm groups oStmt multiplicity helpers x k u = 0) :
+    (∑ k : Fin K, ∑ u : Hypercube n, evalOnHypercube (helpers k) u)
+      = ∑ k : Fin K, ∑ u : Hypercube n, helperValue groups oStmt multiplicity x k u := by
+  refine Finset.sum_congr rfl (fun k _ => Finset.sum_congr rfl (fun u _ => ?_))
+  exact helpers_eq_helperValue_of_DIT_zero groups oStmt multiplicity helpers x k u
+    (hden k u) (hDIT k u)
+
 end Logup
 
 #print axioms Logup.qsum_affine_in_batch
 #print axioms Logup.qsum_vanishing_forall
+#print axioms Logup.helpers_eq_helperValue_of_DIT_zero
+#print axioms Logup.helper_mass_eq_grand_sum_of_DIT_zero
