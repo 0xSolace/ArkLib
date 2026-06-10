@@ -617,7 +617,101 @@ theorem commitStep_inr_transport_heq
     (h_embed ▸ transcript.messages ⟨0, rfl⟩)).trans ?_
   simp
 
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
+private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_lt
+    (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
+    (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
+      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (newOracle : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (domainIdx := ⟨i.val + 1, by omega⟩))
+    (transcript : FullTranscript (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
+    (h_transcript_eq : transcript.messages ⟨0, rfl⟩ = newOracle)
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.succ))
+    (hj : j.val < toOutCodewordsCount ℓ ϑ i.castSucc) :
+    snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle j =
+    OracleVerifier.mkVerifierOStmtOut (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed
+      (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript j := by
+  dsimp only [snoc_oracle]
+  simp only [hCR, ↓reduceDIte]
+  have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
+      Sum.inl ⟨j.val, hj⟩ := by
+    simp only [commitStepLogic, commitStepLogic_embed, Function.Embedding.coeFn_mk,
+      commitStepLogic_embedFn, hj, dif_pos]
+  rw [OracleVerifier.mkVerifierOStmtOut_inl _ _ _ _ _ _ h_embed]
+  simp only [hj, dif_pos, eqRec_eq_cast, cast_cast]
+  apply eq_of_heq
+  refine HEq.trans ?_ (cast_heq _ (oStmtIn ⟨j.val, hj⟩)).symm
+  have hidx : (⟨j.val, by omega⟩ :
+      Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) = ⟨j.val, hj⟩ := by
+    ext
+    rfl
+  cases hidx
+  rfl
+
 set_option maxHeartbeats 5000000 in
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
+private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_not_lt
+    (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
+    (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
+      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (newOracle : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (domainIdx := ⟨i.val + 1, by omega⟩))
+    (transcript : FullTranscript (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
+    (h_transcript_eq : transcript.messages ⟨0, rfl⟩ = newOracle)
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.succ))
+    (hj : ¬ j.val < toOutCodewordsCount ℓ ϑ i.castSucc) :
+    snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle j =
+    OracleVerifier.mkVerifierOStmtOut (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed
+      (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript j := by
+  dsimp only [snoc_oracle]
+  simp only [hCR, ↓reduceDIte]
+  have h_count_succ :
+      toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
+    simp only [toOutCodewordsCount_succ_eq, hCR, ↓reduceIte]
+  have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
+      Sum.inr ⟨0, rfl⟩ := by
+    simp only [commitStepLogic, commitStepLogic_embed, Function.Embedding.coeFn_mk,
+      commitStepLogic_embedFn, hj, dif_neg, not_false_eq_true]
+    rfl
+  rw [OracleVerifier.mkVerifierOStmtOut_inr _ _ _ _ _ _ h_embed]
+  simp only [hj, dif_neg, not_false_eq_true]
+  have h_j_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
+    have h_lt := j.isLt
+    conv_rhs at h_lt => rw [h_count_succ]
+    omega
+  have h_j_mul : j.val * ϑ = i.val + 1 := by
+    rw [h_j_eq]
+    exact toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR
+  have h_i_succ_lt_r : i.val + 1 < r := by
+    have hRpos : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+    have hi_le : i.val + 1 ≤ ℓ := Nat.succ_le_of_lt i.isLt
+    omega
+  have h_j_mul_lt_r : j.val * ϑ < r := by
+    rw [h_j_mul]
+    exact h_i_succ_lt_r
+  have h_domain_j :
+      ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨j.val * ϑ, h_j_mul_lt_r⟩) =
+        ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + 1, h_i_succ_lt_r⟩) := by
+    have h_fin : (⟨j.val * ϑ, h_j_mul_lt_r⟩ : Fin r) =
+        ⟨i.val + 1, h_i_succ_lt_r⟩ := by
+      apply Fin.eq_of_val_eq
+      exact h_j_mul
+    exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
+  rw [h_transcript_eq]
+  funext y
+  dsimp only [commitStepLogic, commitStepHEq, commitStepLogic_embed, commitStepLogic_embedFn,
+    Function.Embedding.coeFn_mk, OracleStatement, pSpecCommit, Message]
+  simp only [eqRec_eq_cast, cast_cast]
+  simpa using (cast_fun_cast_arg_apply (hαβ := h_domain_j) (f := newOracle) y)
+
 omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
 /-- Helper lemma: snoc_oracle matches mkVerifierOStmtOut for commit steps.
 
@@ -642,65 +736,13 @@ private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed
       (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript j := by
-  dsimp only [snoc_oracle]
-  simp only [hCR, ↓reduceDIte]
-  have h_count_succ :
-      toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
-    simp only [toOutCodewordsCount_succ_eq, hCR, ↓reduceIte]
   by_cases hj : j.val < toOutCodewordsCount ℓ ϑ i.castSucc
-  · -- Old oracle case: embed j = Sum.inl.
-    have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
-        Sum.inl ⟨j.val, hj⟩ := by
-      simp only [commitStepLogic, commitStepLogic_embed, Function.Embedding.coeFn_mk,
-        commitStepLogic_embedFn, hj, dif_pos]
-    rw [OracleVerifier.mkVerifierOStmtOut_inl _ _ _ _ _ _ h_embed]
-    simp only [hj, dif_pos, eqRec_eq_cast, cast_cast]
-    apply eq_of_heq
-    refine HEq.trans ?_ (cast_heq _ (oStmtIn ⟨j.val, hj⟩)).symm
-    have hidx : (⟨j.val, by omega⟩ :
-        Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) = ⟨j.val, hj⟩ := by
-      ext
-      rfl
-    cases hidx
-    rfl
-  · -- New oracle case: embed j = Sum.inr 0.
-    have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
-        Sum.inr ⟨0, rfl⟩ := by
-      simp only [commitStepLogic, commitStepLogic_embed, Function.Embedding.coeFn_mk,
-        commitStepLogic_embedFn, hj, dif_neg, not_false_eq_true]
-      rfl
-    rw [OracleVerifier.mkVerifierOStmtOut_inr _ _ _ _ _ _ h_embed]
-    simp only [hj, dif_neg, not_false_eq_true]
-    have h_j_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
-      have h_lt := j.isLt
-      conv_rhs at h_lt => rw [h_count_succ]
-      omega
-    have h_j_mul : j.val * ϑ = i.val + 1 := by
-      rw [h_j_eq]
-      exact toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR
-    have h_i_succ_lt_r : i.val + 1 < r := by
-      have hRpos : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
-      have hi_le : i.val + 1 ≤ ℓ := Nat.succ_le_of_lt i.isLt
-      omega
-    have h_j_mul_lt_r : j.val * ϑ < r := by
-      rw [h_j_mul]
-      exact h_i_succ_lt_r
-    have h_domain_j :
-        ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨j.val * ϑ, h_j_mul_lt_r⟩) =
-          ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + 1, h_i_succ_lt_r⟩) := by
-      have h_fin : (⟨j.val * ϑ, h_j_mul_lt_r⟩ : Fin r) =
-          ⟨i.val + 1, h_i_succ_lt_r⟩ := by
-        apply Fin.eq_of_val_eq
-        exact h_j_mul
-      exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
-    rw [h_transcript_eq]
-    funext y
-    dsimp only [commitStepLogic, commitStepHEq, commitStepLogic_embed, commitStepLogic_embedFn,
-      Function.Embedding.coeFn_mk, OracleStatement, pSpecCommit, Message]
-    simp only [eqRec_eq_cast, cast_cast]
-    simpa using (cast_fun_cast_arg_apply (hαβ := h_domain_j) (f := newOracle) y)
+  · exact snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_lt 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR oStmtIn newOracle transcript
+      h_transcript_eq j hj
+  · exact snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_not_lt 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR oStmtIn newOracle transcript
+      h_transcript_eq j hj
 
 omit [CharP L 2] [SampleableType L] in
 lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
