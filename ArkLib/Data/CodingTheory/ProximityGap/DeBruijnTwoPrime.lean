@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib
 
-set_option linter.style.longFile 2700
+set_option linter.style.longFile 2900
 
 /-!
 # Issue #232 — the two-prime de Bruijn structure: the CRT double-slice theorems (O67–O68)
@@ -2561,5 +2561,135 @@ theorem windowed_coset_cover_p {p q : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : 
     (fun z hz => by rw [mul_comm]; exact hS z hz) hwin x hx
 
 end GeneralWindowedLaw
+
+/-! ## The designated-first-peel export: decomposition choice puts a chosen orbit in the spectrum
+
+The enabling lemma of the joint (mixed-window) law: if `x ∈ S` has its full `μ_q`-orbit
+inside `S`, then there is a decomposition of `S` whose spectrum CONTAINS `x^q` (with all
+export properties) — peel `x`'s `q`-packet first; the remainder still vanishes (packets
+sum to zero) and decomposes by O77; the export of the extended derivation inserts `x^q`
+into the spectrum. This converts "x is `μ_q`-closed" (a dead end when `q ≤ t`) into "the
+`q`-side recursion applies to `x`" — the move the joint induction needs in its
+both-closed case. -/
+
+section FirstPeel
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The designated-first-peel export**: a full `μ_q`-orbit can be sent into the
+spectrum. -/
+theorem first_peel_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hsum : ∑ z ∈ S, z = 0)
+    {x : F} (hx : x ∈ S) (hxorb : ∀ g : F, g ^ q = 1 → g * x ∈ S) :
+    ∃ R : Finset F,
+      (∀ r ∈ R, ∃ w ∈ S, w ^ q = r ∧ ∀ g : F, g ^ q = 1 → g * w ∈ S) ∧
+      (∀ e : ℕ, ¬ p ∣ e →
+        ∑ y ∈ S, y ^ (q * e) = (q : F) * ∑ r ∈ R, r ^ e) ∧
+      x ^ q ∈ R := by
+  classical
+  haveI : NeZero p := ⟨hp.pos.ne'⟩
+  haveI : NeZero q := ⟨hq.pos.ne'⟩
+  have hζq0 : ζq ≠ 0 := prim_ne_zero hζq (pow_pos hq.pos _)
+  have hωq : IsPrimitiveRoot (ζq ^ (q ^ b)) q :=
+    hζq.pow (pow_pos hq.pos _) (by rw [pow_succ])
+  -- x's μ_q-orbit as a Finset
+  set P : Finset F := S.filter (fun y => ∃ g : F, g ^ q = 1 ∧ y = g * x) with hPdef
+  have hxP : x ∈ P := by
+    rw [hPdef]
+    exact Finset.mem_filter.mpr ⟨hx, 1, one_pow q, (one_mul x).symm⟩
+  have hPsub : P ⊆ S := Finset.filter_subset _ _
+  have hPmem : ∀ g : F, g ^ q = 1 → g * x ∈ P := by
+    intro g hg
+    rw [hPdef]
+    exact Finset.mem_filter.mpr ⟨hxorb g hg, g, hg, rfl⟩
+  have hx0 : x ≠ 0 := by
+    intro h0
+    have := hS x hx
+    rw [h0, zero_pow (Nat.mul_pos (pow_pos hp.pos _) (pow_pos hq.pos _)).ne'] at this
+    exact zero_ne_one this
+  -- P = image of μ_q-roots; card q; common q-th power x^q; sum zero
+  have hPimg : P = (Finset.range q).image (fun k => (ζq ^ (q ^ b)) ^ k * x) := by
+    apply Finset.Subset.antisymm
+    · intro y hy
+      obtain ⟨-, g, hg, rfl⟩ := Finset.mem_filter.mp (hPdef ▸ hy)
+      obtain ⟨k, hk, hkg⟩ := hωq.eq_pow_of_pow_eq_one hg
+      exact Finset.mem_image.mpr ⟨k, Finset.mem_range.mpr hk, by rw [hkg]⟩
+    · intro y hy
+      obtain ⟨k, hk, rfl⟩ := Finset.mem_image.mp hy
+      refine hPdef ▸ Finset.mem_filter.mpr ⟨?_, (ζq ^ (q ^ b)) ^ k, ?_, rfl⟩
+      · refine hxorb _ ?_
+        rw [← pow_mul, ← pow_mul,
+          show q ^ b * (k * q) = q ^ (b + 1) * k from by rw [pow_succ']; ring,
+          pow_mul, hζq.pow_eq_one, one_pow]
+      · rw [← pow_mul, ← pow_mul,
+          show q ^ b * (k * q) = q ^ (b + 1) * k from by rw [pow_succ']; ring,
+          pow_mul, hζq.pow_eq_one, one_pow]
+  have hPcommon : ∀ y ∈ P, y ^ q = x ^ q := by
+    intro y hy
+    obtain ⟨-, g, hg, rfl⟩ := Finset.mem_filter.mp (hPdef ▸ hy)
+    rw [mul_pow, hg, one_mul]
+  have hPinj : Set.InjOn (fun k => (ζq ^ (q ^ b)) ^ k * x) (Finset.range q : Set ℕ) := by
+    intro k1 hk1 k2 hk2 hke
+    have hke' : (ζq ^ (q ^ b)) ^ k1 = (ζq ^ (q ^ b)) ^ k2 :=
+      mul_right_cancel₀ hx0 hke
+    exact hωq.pow_inj (Finset.mem_range.mp (Finset.mem_coe.mp hk1))
+      (Finset.mem_range.mp (Finset.mem_coe.mp hk2)) hke'
+  have hPcard : P.card = q := by
+    rw [hPimg, Finset.card_image_of_injOn hPinj, Finset.card_range]
+  have hPsum : ∑ y ∈ P, y = 0 := by
+    rw [hPimg, Finset.sum_image (fun k1 hk1 k2 hk2 h =>
+      hPinj (Finset.mem_coe.mpr hk1) (Finset.mem_coe.mpr hk2) h)]
+    exact prime_packet_sum_zero hq hωq x
+  -- the remainder vanishes and is torsion
+  set S' : Finset F := S \ P with hS'def
+  have hS'sum : ∑ z ∈ S', z = 0 := by
+    have hsd := Finset.sum_sdiff (f := fun y : F => y) hPsub
+    rw [hPsum, add_zero] at hsd
+    rw [hS'def, hsd]
+    exact hsum
+  have hS'tor : ∀ z ∈ S', z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1 :=
+    fun z hz => hS z (Finset.mem_sdiff.mp hz).1
+  -- decompose the remainder and export it
+  have hPU' := two_prime_packet_decomposition hp hq hpq hζp hζq hS'tor hS'sum
+  obtain ⟨R', hR'orbit, hR'dich, hR'transfer⟩ :=
+    packetUnion_full_export hp hq hpq hζp hζq hPU'
+  -- the assembled spectrum: insert x^q
+  have hfresh : x ^ q ∉ R' := by
+    intro hmem
+    obtain ⟨w, hwS', hwq, horbit⟩ := hR'orbit (x ^ q) hmem
+    have hw0 : w ≠ 0 := by
+      intro h0
+      rw [h0, zero_pow hq.pos.ne'] at hwq
+      exact pow_ne_zero q hx0 hwq.symm
+    have hg : (x / w) ^ q = 1 := by
+      rw [div_pow, hwq, div_self (pow_ne_zero q hx0)]
+    have hxS' : x ∈ S' := by
+      have := horbit (x / w) hg
+      rwa [div_mul_cancel₀ x hw0] at this
+    exact (Finset.mem_sdiff.mp hxS').2 hxP
+  refine ⟨insert (x ^ q) R', ?_, ?_, Finset.mem_insert_self _ _⟩
+  · intro r hr
+    rcases Finset.mem_insert.mp hr with rfl | hrR
+    · exact ⟨x, hx, rfl, hxorb⟩
+    · obtain ⟨w, hwS', hwq, horbit⟩ := hR'orbit r hrR
+      exact ⟨w, (Finset.mem_sdiff.mp hwS').1, hwq,
+        fun g hg => (Finset.mem_sdiff.mp (horbit g hg)).1⟩
+  · intro e hpe
+    have hPsume : ∑ y ∈ P, y ^ (q * e) = (q : F) * (x ^ q) ^ e := by
+      have hPcommon' : ∀ y ∈ P, y ^ (q * e) = (x ^ q) ^ e := by
+        intro y hy
+        rw [pow_mul, hPcommon y hy]
+      rw [Finset.sum_congr rfl hPcommon', Finset.sum_const, hPcard, nsmul_eq_mul]
+    have hsplit : ∑ y ∈ S, y ^ (q * e)
+        = ∑ y ∈ S', y ^ (q * e) + ∑ y ∈ P, y ^ (q * e) := by
+      rw [hS'def]
+      exact (Finset.sum_sdiff (f := fun y : F => y ^ (q * e)) hPsub).symm
+    rw [hsplit, hR'transfer e hpe, hPsume, Finset.sum_insert hfresh, mul_add]
+    ring
+
+end FirstPeel
 
 end DeBruijnTwoPrime
