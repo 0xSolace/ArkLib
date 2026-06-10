@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib
 
-set_option linter.style.longFile 3300
+set_option linter.style.longFile 3400
 
 /-!
 # Issue #232 — the two-prime de Bruijn structure: the CRT double-slice theorems (O67–O68)
@@ -3039,5 +3039,67 @@ theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
       rw [Finset.sum_union hdis, hTtr e hqe, hPsum, add_zero]
 
 end BilateralExport
+
+/-! ## The set-form law and the two-prime budget below `p`
+
+From the divisor-form coverage (O117): a windowed set IS the union of its members'
+alive covering cosets — the set-level law — and is therefore DETERMINED by which alive
+cosets it contains: the windowed family injects into the power set of alive cosets,
+giving the two-prime analogue of the 2-power budget (`tower_count`/O55) in the
+below-`p` regime. -/
+
+section BelowPBudget
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The set-form law below `p`**: a windowed set equals the union of the alive full
+cosets it contains. -/
+theorem windowed_eq_union_alive_below_p {p q : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {a b m t : ℕ} (hm : m ≤ b) (htp : t < p) (htq : t < q ^ (m + 1))
+    {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hwin : ∀ c, c ≤ m → ∑ z ∈ S, z ^ (q ^ c) = 0) :
+    ∀ x ∈ S, ∃ d : ℕ, d ∣ p ^ (a + 1) * q ^ (b + 1) ∧ t < d ∧
+      x ∈ S.filter (fun y => ∀ h : F, h ^ d = 1 → h * y ∈ S) := by
+  intro x hx
+  obtain ⟨d, hdvd, htd, hcov⟩ :=
+    windowed_coset_cover_below_p hp hq hpq hm htp htq hζp hζq hS hwin x hx
+  exact ⟨d, hdvd, htd, Finset.mem_filter.mpr ⟨hx, hcov⟩⟩
+
+/-- **The recovery injection**: a windowed set is determined by its trace on the alive
+cosets — concretely, `S` is recovered from the data `x ↦ (d_x, coset of x)`; the
+counting consequence is that the windowed family injects into the set of functions from
+the (finite) alive-coset family to `Bool`. We package the budget as: two windowed sets
+with the same alive-coset trace are equal. -/
+theorem windowed_determined_by_alive_trace {p q : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {a b m t : ℕ} (hm : m ≤ b) (htp : t < p) (htq : t < q ^ (m + 1))
+    {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S₁ S₂ : Finset F}
+    (hS₁ : ∀ z ∈ S₁, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hS₂ : ∀ z ∈ S₂, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hwin₁ : ∀ c, c ≤ m → ∑ z ∈ S₁, z ^ (q ^ c) = 0)
+    (hwin₂ : ∀ c, c ≤ m → ∑ z ∈ S₂, z ^ (q ^ c) = 0)
+    -- equal traces: for every alive divisor d and every point y, the full μ_d-coset of
+    -- y lies in S₁ iff it lies in S₂
+    (htrace : ∀ d : ℕ, d ∣ p ^ (a + 1) * q ^ (b + 1) → t < d → ∀ y : F,
+      ((∀ h : F, h ^ d = 1 → h * y ∈ S₁) ↔ (∀ h : F, h ^ d = 1 → h * y ∈ S₂))) :
+    S₁ = S₂ := by
+  apply Finset.Subset.antisymm
+  · intro x hx
+    obtain ⟨d, hdvd, htd, hcov⟩ :=
+      windowed_coset_cover_below_p hp hq hpq hm htp htq hζp hζq hS₁ hwin₁ x hx
+    have hcov₂ := (htrace d hdvd htd x).mp hcov
+    have := hcov₂ 1 (one_pow d)
+    rwa [one_mul] at this
+  · intro x hx
+    obtain ⟨d, hdvd, htd, hcov⟩ :=
+      windowed_coset_cover_below_p hp hq hpq hm htp htq hζp hζq hS₂ hwin₂ x hx
+    have hcov₁ := (htrace d hdvd htd x).mpr hcov
+    have := hcov₁ 1 (one_pow d)
+    rwa [one_mul] at this
+
+end BelowPBudget
 
 end DeBruijnTwoPrime
