@@ -1419,6 +1419,7 @@ import ArkLib.ProofSystem.Spartan.ComposedCompletenessTwoLeaves
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessWithClaimFinal
 import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeFinal
 import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeSoundness
+import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeWithClaimFinal
 import ArkLib.ProofSystem.Spartan.Composition
 import ArkLib.ProofSystem.Spartan.FinalCheckLeafComplete
 import ArkLib.ProofSystem.Spartan.FinalCheckRbrKnowledgeLeaf
