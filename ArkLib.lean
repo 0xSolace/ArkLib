@@ -100,6 +100,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantSlopedCurve
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegree
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeCurve
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeGraded
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeTight
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSLargeCharSeparable
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSListSizeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSOverRatFunc
@@ -114,8 +115,10 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.Hab25FactorWeld
 import ArkLib.Data.CodingTheory.GuruswamiSudan.Hab25S4Wire
 import ArkLib.Data.CodingTheory.GuruswamiSudan.Hab25SeparableSupply
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ListSizeBound
+import ArkLib.Data.CodingTheory.GuruswamiSudan.MCAEventDecodedBridge
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MonomialCount
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MultiplicityInterpolation
+import ArkLib.Data.CodingTheory.GuruswamiSudan.PerPairCoverData
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ToPolyDegree
 import ArkLib.Data.CodingTheory.GuruswamiSudan.TrivariateDivisibility
 import ArkLib.Data.CodingTheory.GuruswamiSudan.TrivariateFeasibility
@@ -1218,6 +1221,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Backtrack
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BadEvents
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BadEventsPaper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BirthdayBound
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BirthdayBoundPaper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BudgetCover
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Completeness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemma
@@ -1344,8 +1348,10 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorClosest
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorCodeDistance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDisagreement
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDistance
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorFar
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorFiber
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorHamming
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorInjectivity
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorSurjectivity
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorUDR
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorWitness
