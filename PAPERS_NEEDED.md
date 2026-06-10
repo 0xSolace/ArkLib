@@ -33,8 +33,16 @@ Triage agents append precise per-residual needs at the bottom as they find them.
 | 19 | CS25 / KK25 capacity-false papers | (triage to pin ids) | MCA capacity documentation |
 
 ## How to deliver
-Drop PDFs in `~/papers/arklib/` (any filenames). Items already on disk: unknown — agents will
-check `blueprint/src` citations first and strike through rows that turn out to be unneeded.
+Drop PDFs in `~/papers/arklib/`.
+
+**STATUS 2026-06-10 06:00 — 17 of 19 FETCHED automatically** (all open-access items: every IACR
+ePrint above incl. 2026/858+861 and 2025/2046+1184, ECCC TR25-169, arXiv 2604.09724, the Thaler
+book — all verified valid PDFs in `~/papers/arklib/`). Still needed from the user (paywalled):
+1. **Guruswami–Sudan 1998/99** — DOI 10.1109/18.782097 (IEEE T-IT 45(6):1757–1767). Free
+   author copies 404'd; any university access works.
+2. **de Bruijn 1953** — "On the factorisation of cyclic groups", Indag. Math. 15, 370–377.
+3. (Only if triage agents request it) **CS25** — the near-capacity epsCA breakdown paper; pin
+   the exact identifier first (agents: add it here when found).
 
 ---
 ## Per-residual additions (appended by triage/build agents)
