@@ -3616,3 +3616,15 @@ deg < k and all 2^ℓ slices vanishing on a prescribed ≥ n/2^ℓ − w common 
 each slice has degree < k/2^ℓ + O(1) and ≤ k/2^ℓ roots to spend. The counting question
 (C19's 3 + 16 anatomy as the worked instance) is the surviving frontier; the structural
 half of O69's sentence is machine-checked.
+### O70 — the CRT DOUBLE-SLICE ENGINE: the de Bruijn route's per-prime machinery machine-checked (weighted, any base field) + the brief's literal invariance REFUTED
+
+New brick `ArkLib/Data/CodingTheory/ProximityGap/CRTDoubleSlice.lean` (axiom-clean, 0 sorry, non-vacuity witnessed in-file), the O67-mapped elementary double-slice route executed:
+
+* `packet_slice_coeff` — O66's packet slice lemma over ANY semiring of coefficients (was ℚ-only): multiples `G·R` of the geometric packet, `deg R < q`, have all `p` slices equal to `R`.
+* `slice_of_packet_minpoly` — **the engine**: over ANY base field `K` with `minpoly K η = Σ_{t<p} X^{tq}`, every vanishing `K`-weighted sum `Σ_{e<pq} a_e η^e = 0` has μ-shift invariant slices `a_{iq+s} = a_{i'q+s}`. The O66 mechanism is linear — the 0/1 restriction was never load-bearing.
+* `weighted_vanishing_slice_rat` — `K = ℚ` instantiation: rational-weighted Lam–Leung slices at every prime power (O66's closure = the indicator special case).
+* `crt_fiber_slice` — the **CRT double-slice, fiber-sum form**: a vanishing double sum `Σ_{(j,c)∈I} ξ^j η^c` over a coprime exponent grid (ξ ∈ K, η packet-minimal over K) has μ_q-shift invariant fiber sums `A(c) = Σ_{(j,c)∈I} ξ^j ∈ K` — `A(i·q^{b-1}+s)` independent of `i < q`. This is exactly "apply O66 at the second prime with ℤ[ζ_{p^a}]-valued weights", with the minpoly-over-K hypothesis carried explicitly (satisfiable: discharged at `K = ℚ` in-file).
+
+REFUTATION en route: the naive form of the double-slice claim — vanishing (even minimal) sums are membership-invariant under BOTH μ_p and μ_q exponent shifts — is FALSE (a μ_3-packet at n = 6 is not μ_2-closed). The correct CRT invariant is fiber-SUM invariance at each prime. Falsify-first probe (`probe_crt_double_slice.py`, exact integer arithmetic mod cyclotomics): weighted slice ⟺ vanishing at n = 8, 9 (0/20 000 mismatches each); fiber-sum invariance EXHAUSTIVE over all 2^n subsets at n = 12 (100/100 vanishing, 0 violations) and n = 18 (1000/1000), both primes — and a measured bonus: 0 non-vanishing subsets are invariant at either size, i.e. **double fiber-sum invariance ⟺ vanishing** empirically (one-direction trivially: invariance ⟹ packets sum to 0).
+
+What remains for full de Bruijn (named): (1) discharge the packet-minpoly hypothesis over `K = ℚ(ζ_{p^a})` — cyclotomic irreducibility over the coprime cyclotomic extension via `φ(p^a q^b) = φ(p^a)φ(q^b)` + the tower formula (`IsCyclotomicExtension.Rat.finrank` + `Module.finrank_mul_finrank`); (2) the exponent bijection `μ_{p^a} × μ_{q^b} ≃ μ_n` converting subset sums of μ_n into grid double sums (ZMod.chineseRemainder bookkeeping); (3) the positivity/disjointness step — indicator fiber sums force DISJOINT rotated packets — the genuinely de Bruijn part.
