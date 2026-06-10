@@ -348,6 +348,45 @@ theorem jbt_hash_no_prior
   simpa using DuplexSpongeFS.Backtrack.BacktrackSequence.index_hash_no_prior
     (trace := tr) (state := state) (seq := seq) (j := j) hj
 
+/-- A hash trace slot with no earlier copy of the same hash entry is not redundant under the
+duplex-sponge dedup predicate. -/
+theorem not_redundantEntryDS_hash_of_no_prior
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (idx : Fin tr.length)
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (hidx : tr[idx] =
+      (⟨Sum.inl stmt, capSeg⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)))
+    (hfirst : ∀ j : Fin tr.length, j.val < idx.val →
+      tr[j] ≠
+        (⟨Sum.inl stmt, capSeg⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U))) :
+    ¬ tr.redundantEntryDS idx := by
+  intro hred
+  unfold redundantEntryDS at hred
+  rw [hidx] at hred
+  obtain ⟨j, hjlt, hj⟩ := hred
+  exact hfirst j hjlt hj
+
+/-- The hash index carried by any `J_BT` payload is not itself removed by one step of the
+duplex-sponge dedup predicate: it is the first occurrence of its concrete hash anchor. -/
+theorem jbt_hash_not_redundant
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (p : Sigma fun seq : DuplexSpongeFS.Backtrack.BacktrackSequence tr state =>
+      DuplexSpongeFS.Backtrack.BacktrackIndexList tr seq)
+    (hp : p ∈ DuplexSpongeFS.Backtrack.J_BT S) :
+    ¬ tr.redundantEntryDS p.2.1 := by
+  refine not_redundantEntryDS_hash_of_no_prior (tr := tr) (idx := p.2.1)
+    (stmt := p.1.stmt)
+    (capSeg := Vector.drop (p.1.inputState[0]'(by
+      rw [p.1.inputState_length_eq_outputState_length_succ]
+      exact Nat.succ_pos _)) SpongeSize.R) ?_ ?_
+  · have hget := jbt_hash_getElem? tr state S p hp
+    rw [List.getElem?_eq_getElem p.2.1.isLt] at hget
+    exact Option.some.inj hget
+  · intro j hj
+    exact jbt_hash_no_prior tr state S p hp j hj
+
 /-- Off `E`, a nonterminal `J_BT` permutation-index payload points to the forward
 permutation query for that chain step. -/
 theorem jbt_perm_forward_getElem?_of_not_E
@@ -514,6 +553,7 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.forward_getElem?_of_not_E_of_perm_or_inv
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_getElem?
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_no_prior
+#print axioms DuplexSpongeFS.Sponge316.jbt_hash_not_redundant
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_forward_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_no_prior_of_lt
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_outputState_nonempty
