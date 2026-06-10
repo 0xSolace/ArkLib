@@ -467,6 +467,9 @@ theorem minDist_eq' {ι : Type*} [Fintype ι] {F : Type*} [Field F] [DecidableEq
       simp
     omega
 
+@[deprecated (since := "2026-06-10")] alias minDist := minDist_eq
+@[deprecated (since := "2026-06-10")] alias minDist' := minDist_eq'
+
 /-- Reed-Solomon codes are maximum distance separable (MDS). -/
 lemma isMDS_code {ι : Type} [Fintype ι] {F : Type*} [Field F] [DecidableEq F]
   {α : ι ↪ F} [NeZero n] (h : n ≤ Fintype.card ι) : LinearCode.IsMDS (ReedSolomon.code α n) := by
