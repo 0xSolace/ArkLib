@@ -1951,6 +1951,7 @@ import ArkLib.ToMathlib.SectionNewtonGradingSupply
 import ArkLib.ToMathlib.SectionNewtonPlaceReading
 import ArkLib.ToMathlib.SectionNewtonRecentre
 import ArkLib.ToMathlib.SectionNewtonWindow
+import ArkLib.ToMathlib.SectionNewtonWindowSharp
 import ArkLib.ToMathlib.SectionNewtonXiSupply
 import ArkLib.ToMathlib.SectionXiDivisibility
 import ArkLib.ToMathlib.SectionXiUnit
