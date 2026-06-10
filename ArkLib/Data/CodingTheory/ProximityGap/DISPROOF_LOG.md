@@ -3420,3 +3420,24 @@ prime power. The mixed-radix analogue of full_tower (per-prime coset assembly vi
 Conway–Jones-style structure at composite levels) is the natural continuation —
 on M31-style domains (n = 2^a·3^b·…) this is the route to the S-two-deployment analogue
 of the O61 capstone.
+
+### O67 — the mixed-radix base case verified (de Bruijn structure) + program statement
+
+Falsify-first probe for the mixed-radix tower (the M31/S-two-deployment continuation):
+EXHAUSTIVE verification at n = 12 and n = 18 (two-prime smooth, 2^a·3^b) that EVERY
+vanishing subset sum of μ_n over ℂ decomposes into disjoint rotated full prime packets
+(μ₂-pairs and μ₃-triples): 99/99 at n = 12, 999/999 at n = 18, zero violations. This is
+the subset-sum instance of de Bruijn's theorem (On the factorisation of cyclic groups,
+Indag. Math. 1953: vanishing sums of n-th roots for n with at most two prime divisors
+are ℕ-combinations of rotated prime-packet sums) — the correct mixed-radix analogue of
+the O50/O66 base cases. (At ≥ 3 primes Conway–Jones exotic minimal sums appear; M31-type
+deployment domains are two-prime, so de Bruijn suffices there.)
+
+MIXED-RADIX PROGRAM (mapped, both pillars + base now identified): O65 general-radix fold
+identities (machine-checked) + O66 prime-power packet closure (machine-checked) +
+de Bruijn two-prime structure (verified numerically; paper to add to ~/Desktop/math —
+N.G. de Bruijn, "On the factorisation of cyclic groups", Indag. Math. 15 (1953) 370-377)
+⟹ the two-prime full_tower analogue ⟹ the M31-domain capstone. Formalization route for
+de Bruijn: group-ring ℤ[ℤ_n] ideal structure, or the elementary double-slice argument
+(apply O66's packet_mul_coeff at BOTH primes via CRT exponent coordinates) — the latter
+is the in-framework candidate.
