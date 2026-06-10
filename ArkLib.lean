@@ -601,6 +601,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25DegreeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ErrStarArith
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25FiberPigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25FiberSupply
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25FoldFiberCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25GradedNumericEdge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Johnson
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArith
