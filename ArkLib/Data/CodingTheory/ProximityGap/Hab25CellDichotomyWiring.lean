@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSCellProduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonCountWiring
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25AffineCapture
 
 /-!
 # Cells to dichotomy bundles — the GS production wired into the Johnson endgame
@@ -113,8 +115,65 @@ theorem badCount_le_of_cell_improvement
   rw [hEdis, hAT] at h
   exact h
 
+/-- **The per-cell dichotomy, discharged on the 3-intersection window.**  On
+`2·n + k ≤ 3·t` the per-cell input of `exists_dichotomyData_of_cell_improvement` holds
+outright: singleton cells take the small branch (`T ≥ 1`); cells with two or more scalars
+are affinely pinned by the antecedent-free window pencil
+(`exists_pencil_of_decode_family_window`), each member is then affine-captured at the
+pencil pair (`McaDecode.affineCaptured`), and capture yields the improvement
+(`affineCaptured_improve`) at the uniform difference words. -/
+theorem cell_improvement_of_window
+    {n k : ℕ} [NeZero n] {domain : Fin n ↪ F₀} {δ : ℝ≥0}
+    {u : WordStack F₀ (Fin 2) (Fin n)} (hk : 0 < k)
+    (hwin : 2 * Fintype.card (Fin n) + k
+      ≤ 3 * ⌈(1 - δ) * (Fintype.card (Fin n) : ℝ≥0)⌉₊)
+    {T : ℕ} (hT : 1 ≤ T) :
+    ∀ (R : (F₀[X])[X][Y]) (E : Finset F₀) (P : F₀ → F₀[X]),
+      Irreducible R →
+      (∀ γ ∈ E, ∃ d : McaDecode domain k δ u γ, d.P = P γ) →
+      (∀ γ ∈ E, (Polynomial.X - Polynomial.C (P γ)) ∣
+          R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+      E.card ≤ T ∨ ∃ d₀ d₁ : Fin n → F₀, ∀ z ∈ E,
+        ∃ x ∈ disagreeSet d₀ d₁, affineGap d₀ d₁ z x = 0 := by
+  intro R E P _ hdec _
+  by_cases h2 : 1 < E.card
+  · right
+    obtain ⟨v₀, v₁, hd0, hd1, hPaff⟩ :=
+      exists_pencil_of_decode_family_window hk E P hdec hwin h2
+    refine ⟨fun i => v₀.eval (domain i) - u 0 i,
+      fun i => v₁.eval (domain i) - u 1 i, fun z hz => ?_⟩
+    obtain ⟨d, hdP⟩ := hdec z hz
+    have hcap : AffineCaptured domain k δ u z (v₀, v₁) :=
+      d.affineCaptured (by rw [hdP]; exact hPaff z hz)
+    exact affineCaptured_improve hd0 hd1 hcap
+  · exact Or.inl (le_trans (by omega) hT)
+
+open Classical in
+/-- **The dichotomy bundle on the window, hypothesis-free.**  On the 3-intersection
+window, every word stack admits a `Hab25JohnsonDichotomyData` bundle from the in-tree GS
+cell production — the full [BCIKS20] §5 pipeline (interpolation → cells → pencil →
+capture → improvement) executed end-to-end with no production hypothesis. -/
+theorem exists_dichotomyData_of_window
+    {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀)
+    (η δ : ℝ≥0) (hη : 0 < η) (hδr : InJohnsonRange domain k η δ)
+    (u : WordStack F₀ (Fin 2) (Fin n))
+    (hk1 : 1 < k) (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hwin : 2 * Fintype.card (Fin n) + k
+      ≤ 3 * ⌈(1 - δ) * (Fintype.card (Fin n) : ℝ≥0)⌉₊)
+    (T : ℕ) (hT1 : 1 ≤ T)
+    (hT : n * (GuruswamiSudan.constraintIndices m).card * gs_degree_bound k n m ≤ T) :
+    ∃ A : Hab25JohnsonDichotomyData domain k η δ hη hδr,
+      A.Edis = Finset.univ.filter (fun γ : F₀ =>
+        mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀))) δ (u 0) (u 1) γ) ∧
+      A.T = T :=
+  exists_dichotomyData_of_cell_improvement domain η δ hη hδr u hk1 hkn hm hδ1 hδJ T hT
+    (cell_improvement_of_window (lt_trans Nat.zero_lt_one hk1) hwin hT1)
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit -/
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_dichotomyData_of_cell_improvement
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.badCount_le_of_cell_improvement
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.cell_improvement_of_window
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_dichotomyData_of_window
