@@ -4722,7 +4722,7 @@ The O109 forward, gated with full design in the O109a entry, executed same-sessi
 
 **STATE OF THE CLASSIFICATION PROGRAM AFTER O97→O109 (one session, fourteen generations):** every assembly-shaped item is now PROVEN — there is no designed-but-unproven item left anywhere in the de Bruijn/counting lanes. The complete machine-checked map: two-prime theory total (indicator + weighted iffs, window law, tower, budgets, span) and SHARP (O105); three-prime and general-arity LINEAR theory total (ℚ at all squarefree n, ℤ at pqr); the positivity boundary pinned from both sides. The open residue is exclusively research mathematics with no known proofs to formalize: (1) Lam–Leung's positivity induction (the span theorem's ℕ-content at 3+ primes — its linear half is now THIS theorem); (2) the t > 1 window law at 3+ prime moduli; (3) the O99 incidence geometry; (4) δ*. Each sits directly on a formalized boundary.
 
-### O116 — the WINDOW FIBER-COUNT LAW lands in Lean: the block-trace iff on the O106 predicate — F_n(t) ≅ F_m(t)^(n/m) at set level (the O111 Lean layer; nubs, 2026-06-10)
+### O117 — the WINDOW FIBER-COUNT LAW lands in Lean: the block-trace iff on the O106 predicate — F_n(t) ≅ F_m(t)^(n/m) at set level (the O111 Lean layer; nubs, 2026-06-10; renumbered from O116 — it raced the fable lane's packing-law O116)
 
 `WindowFiberCount.lean` (axiom-clean ×5, 0 sorry, 0 warnings, namespace `DeBruijnWindowedLaw`): O107's named next (ii), the probe layer O111 made exact, now a theorem.
 
