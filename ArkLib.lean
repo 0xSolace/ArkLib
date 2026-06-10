@@ -1,5 +1,6 @@
 import ArkLib.AGM.Basic
 import ArkLib.AGM.RepresentationLemmas
+import ArkLib.AxiomCheck62FrontD
 import ArkLib.AxiomCheck62Tmp
 import ArkLib.CommitmentScheme.Ajtai.Gadget
 import ArkLib.CommitmentScheme.Ajtai.GadgetNorms
