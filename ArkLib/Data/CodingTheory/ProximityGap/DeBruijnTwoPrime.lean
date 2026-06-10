@@ -1723,4 +1723,57 @@ theorem deep_spectrum_mu_p_closed {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
 
 end ChainEndpoint
 
+/-! ## The upward rung: coset structure lifts through the q-th power map
+
+The reconstruction move of the windowed law: if every point of the `μ_A`-orbit of `x^q`
+(one level down) is covered by a full `μ_q`-orbit inside `S` mapping onto it, then `x`
+itself is `μ_{q·A}`-closed in `S` — the coset order MULTIPLIES up the chain. The proof
+is three lines of arithmetic: for `h^{qA} = 1`, the point `(h·x)^q = h^q·x^q` lies over
+the `μ_A`-orbit point `h^q·x^q` (since `(h^q)^A = 1`), the lift gives `w ∈ S` with the
+same `q`-th power up to nothing — `(h·x/w)^q = 1` — and the lifted `μ_q`-orbit absorbs
+the discrepancy. Iterating this rung up the O81 chain against the O82 endpoint is the
+assembly of the full windowed law. -/
+
+section UpwardRung
+
+/-- **The coset lift**: spectrum-level `μ_A`-orbit coverage at `x^q` gives
+`μ_{q·A}`-closure at `x`. Characteristic-free and root-free: pure arithmetic of the
+power map. -/
+theorem coset_lift {q A : ℕ} (hq : 0 < q) (hA : 0 < A) {S : Finset F} {x : F}
+    (hx0 : x ≠ 0)
+    (hlift : ∀ g : F, g ^ A = 1 →
+      ∃ w ∈ S, w ^ q = g * x ^ q ∧ (∀ g' : F, g' ^ q = 1 → g' * w ∈ S)) :
+    ∀ h : F, h ^ (q * A) = 1 → h * x ∈ S := by
+  intro h hh
+  have hgA : (h ^ q) ^ A = 1 := by
+    rw [← pow_mul]
+    exact hh
+  obtain ⟨w, hwS, hwq, horbit⟩ := hlift (h ^ q) hgA
+  have hw0 : w ≠ 0 := by
+    intro h0
+    rw [h0, zero_pow hq.ne'] at hwq
+    have hx0q : x ^ q ≠ 0 := pow_ne_zero _ hx0
+    have hh0 : h ≠ 0 := by
+      intro hh0
+      rw [hh0, zero_pow (by positivity : q * A ≠ 0)] at hh
+      exact zero_ne_one hh
+    exact (mul_ne_zero (pow_ne_zero _ hh0) hx0q) hwq.symm
+  have hg' : ((h * x) / w) ^ q = 1 := by
+    rw [div_pow, mul_pow, ← hwq, div_self (pow_ne_zero _ hw0)]
+  have := horbit ((h * x) / w) hg'
+  rwa [div_mul_cancel₀ (h * x) hw0] at this
+
+/-- The first iteration: spectrum `μ_q`-orbit coverage gives `μ_{q²}`-closure — the
+window-kills-`μ_q`, `μ_{q²}`-replaces-it reassembly that the verified mixed-radix law
+(O70) describes at `t ≥ q`. -/
+theorem coset_lift_sq {q : ℕ} (hq : 0 < q) {S : Finset F} {x : F} (hx0 : x ≠ 0)
+    (hlift : ∀ g : F, g ^ q = 1 →
+      ∃ w ∈ S, w ^ q = g * x ^ q ∧ (∀ g' : F, g' ^ q = 1 → g' * w ∈ S)) :
+    ∀ h : F, h ^ (q ^ 2) = 1 → h * x ∈ S := by
+  intro h hh
+  refine coset_lift hq hq hx0 hlift h ?_
+  rwa [← pow_two]
+
+end UpwardRung
+
 end DeBruijnTwoPrime
