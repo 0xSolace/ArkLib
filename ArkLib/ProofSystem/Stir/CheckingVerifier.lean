@@ -11,7 +11,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtractionVacuo
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
 import ArkLib.ToVCVio.Simulation
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
 
 /-!
 # Issue #301 (STIR): the CHECKING multi-round verifier
@@ -72,7 +72,15 @@ HONESTY NOTES:
   correspondingly degenerates to consistency at a challenge-derived in-domain point. This is
   inherited from the landed `stirRoundVectorProver`/`stirMultiRoundProver` model.
 * The implication (Johnson-CA + per-round gap accounting ⟹ rbr knowledge soundness of this
-  verifier) is NOT proven; it is isolated as `stirCheckingCABridge`. No fabrication.
+  verifier) is NOT proven in the general (large-field) regime; it is isolated as
+  `stirCheckingCABridge`. No fabrication.
+* SMALL-FIELD REGIME (#301 Part B): in `|F| ≤ (m−1)·|ι|` with `δ ≤ (1−ρ)/2`, the prescribed
+  proximity error `err⋆` is ≥ 1 (`one_le_proximityError_of_card_le`), so the rbr-soundness
+  residual AND the bridge are discharged outright (`stirCheckingRbrSoundness_of_small_field`,
+  `stirCheckingCABridge_of_small_field`) and `stir_main_of_checkingIOP_small_field` consumes
+  NO soundness residual at all. This is the same vacuity that makes
+  `STIR.proximity_gap_of_card_le` unconditional; it carries no security content for
+  `secpar > 0` (the `hε` leg then pins `secpar = 0`).
 -/
 
 set_option linter.unusedSimpArgs false
@@ -1724,3 +1732,9 @@ end StirIOP
 #print axioms StirIOP.stir_main_of_checkingIOP_card_le
 #print axioms StirIOP.stir_main_of_checkingIOP_card_le_e7
 #print axioms StirIOP.stir_main_of_checkingIOP_large
+#print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_one_le_first
+#print axioms StirIOP.MultiRound.one_le_proximityError_of_card_le
+#print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_small_field
+#print axioms StirIOP.MultiRound.stirCheckingCABridge_of_small_field
+#print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap_small_field
+#print axioms StirIOP.stir_main_of_checkingIOP_small_field
