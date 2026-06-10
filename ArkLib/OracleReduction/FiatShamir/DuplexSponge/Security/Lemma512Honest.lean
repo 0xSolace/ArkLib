@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundations
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 1900
 
 /-!
 # #316 — Duplex-Sponge Fiat-Shamir: discharge of the M2a honest bad-event residual
@@ -1450,6 +1450,83 @@ def HasPriorReversedForwardAnchor
       ∃ j : Fin tr.length, j.val < (p.2.2 pairIdx).val ∧
         tr[j] = forwardEntry (p.1.outputState[pairIdx.val]'hpair) (p.1.inputState[pairIdx])
 
+/-- A `J_BT` nonterminal forward anchor is redundant under the in-tree `redundantEntryDS`
+predicate. Off `E`, this is equivalent to the prior same-direction reversed-forward obstruction
+above: the same-forward case is excluded by the `J_BT` first-occurrence lemma, and inverse entries
+are excluded by M2a. -/
+def HasRedundantForwardAnchor
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state) : Prop :=
+  ∃ p ∈ DuplexSpongeFS.Backtrack.J_BT S,
+    ∃ (pairIdx : Fin p.1.inputState.length) (_hpair : pairIdx.val < p.1.outputState.length),
+      ∃ hidx : (p.2.2 pairIdx).val < tr.length,
+        tr.redundantEntryDS ⟨(p.2.2 pairIdx).val, hidx⟩
+
+/-- A prior same-direction reversed-forward entry makes the corresponding `J_BT` forward anchor
+redundant under the current dedup predicate. -/
+theorem hasRedundantForwardAnchor_of_prior_reverse
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hrev : HasPriorReversedForwardAnchor tr state S) :
+    HasRedundantForwardAnchor tr state S := by
+  obtain ⟨p, hp, pairIdx, hpair, j, hj, hentry⟩ := hrev
+  have hperm :=
+    jbt_perm_forward_getElem?_of_not_E
+      (tr := tr) h (state := state) (S := S) (p := p) (hp := hp)
+      (pairIdx := pairIdx) (hpair := hpair)
+  have hidx : (p.2.2 pairIdx).val < tr.length :=
+    (List.getElem?_eq_some_iff.mp hperm).1
+  let idx : Fin tr.length := ⟨(p.2.2 pairIdx).val, hidx⟩
+  have hcur : tr[idx] =
+      forwardEntry (p.1.inputState[pairIdx]) (p.1.outputState[pairIdx.val]'hpair) := by
+    have hget := hperm
+    rw [List.getElem?_eq_getElem idx.isLt] at hget
+    simpa [idx, forwardEntry] using Option.some.inj hget
+  refine ⟨p, hp, pairIdx, hpair, hidx, ?_⟩
+  unfold redundantEntryDS
+  rw [hcur]
+  exact ⟨j, by simpa [idx] using hj, Or.inr hentry⟩
+
+/-- Conversely, off `E`, every redundant `J_BT` forward anchor is redundant for the only reason
+not already ruled out by the `J_BT` first-occurrence lemma: a prior same-direction reversed-forward
+entry. -/
+theorem prior_reverse_of_hasRedundantForwardAnchor_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hredAnchor : HasRedundantForwardAnchor tr state S) :
+    HasPriorReversedForwardAnchor tr state S := by
+  obtain ⟨p, hp, pairIdx, hpair, hidx, hred⟩ := hredAnchor
+  let idx : Fin tr.length := ⟨(p.2.2 pairIdx).val, hidx⟩
+  have hperm :=
+    jbt_perm_forward_getElem?_of_not_E
+      (tr := tr) h (state := state) (S := S) (p := p) (hp := hp)
+      (pairIdx := pairIdx) (hpair := hpair)
+  have hcur : tr[idx] =
+      forwardEntry (p.1.inputState[pairIdx]) (p.1.outputState[pairIdx.val]'hpair) := by
+    have hget := hperm
+    rw [List.getElem?_eq_getElem idx.isLt] at hget
+    simpa [idx, forwardEntry] using Option.some.inj hget
+  obtain ⟨j, hj, hcase⟩ :=
+    redundantEntryDS_forward_inversion tr idx
+      (p.1.inputState[pairIdx]) (p.1.outputState[pairIdx.val]'hpair) hcur hred
+  rcases hcase with hsame | hreverse
+  · have hno := jbt_perm_no_prior_of_lt
+      (tr := tr) (state := state) (S := S) (p := p) hp
+      (pairIdx := pairIdx) (hpair := hpair) j (by simpa [idx] using hj)
+    exact False.elim ((hno.1) (by simpa [forwardEntry] using hsame))
+  · exact ⟨p, hp, pairIdx, hpair, j, by simpa [idx] using hj, hreverse⟩
+
+/-- Off `E`, the prior-reversed-forward obstruction is exactly the statement that some
+nonterminal `J_BT` forward anchor is redundant under `redundantEntryDS`. -/
+theorem hasPriorReversedForwardAnchor_iff_hasRedundantForwardAnchor_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state) :
+    HasPriorReversedForwardAnchor tr state S ↔ HasRedundantForwardAnchor tr state S := by
+  constructor
+  · exact hasRedundantForwardAnchor_of_prior_reverse (tr := tr) h (state := state) (S := S)
+  · exact prior_reverse_of_hasRedundantForwardAnchor_of_not_E
+      (tr := tr) h (state := state) (S := S)
+
 /-- Off `E`, an honest permutation-ordering witness either gives the strengthened raw
 first-forward predicate needed by the dedup transport, or it exhibits the precise prior reversed
 forward obstruction not covered by `jbt_perm_no_prior_of_lt`. -/
@@ -1516,6 +1593,17 @@ theorem not_e_time_p_honest_of_not_E_of_no_prior_reverse
   · exact h (E_of_base_hasForwardCapacityBeforeForwardOutput (tr := tr)
       (hasForwardCapacityBeforeForwardOutput_removeRedundant_of_first tr hfirst))
   · exact hNoRev hrev
+
+/-- Equivalent conditional permutation-timing half of M2c, phrased directly as the missing
+dedup invariant: no nonterminal `J_BT` forward anchor may be redundant. -/
+theorem not_e_time_p_honest_of_not_E_of_no_redundant_forward_anchor
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hNoRed : ¬ HasRedundantForwardAnchor tr state S) :
+    ¬ DuplexSpongeFS.KeyLemmaFoundations.E_time_p_honest tr state S :=
+  not_e_time_p_honest_of_not_E_of_no_prior_reverse (tr := tr) h (state := state) (S := S)
+    (fun hrev => hNoRed
+      (hasRedundantForwardAnchor_of_prior_reverse (tr := tr) h (state := state) (S := S) hrev))
 
 /-- Off `E`, an honest hash-ordering witness gives concrete raw trace entries: the anchoring
 hash query and the first forward permutation query, with the permutation entry earlier in the
@@ -1721,10 +1809,20 @@ set_option linter.style.longLine false in
 #print axioms
   DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasForwardCapacityBeforeForwardOutput_of_not_E
 set_option linter.style.longLine false in
+#print axioms DuplexSpongeFS.Sponge316.hasRedundantForwardAnchor_of_prior_reverse
+set_option linter.style.longLine false in
+#print axioms DuplexSpongeFS.Sponge316.prior_reverse_of_hasRedundantForwardAnchor_of_not_E
+set_option linter.style.longLine false in
+#print axioms
+  DuplexSpongeFS.Sponge316.hasPriorReversedForwardAnchor_iff_hasRedundantForwardAnchor_of_not_E
+set_option linter.style.longLine false in
 #print axioms
   DuplexSpongeFS.Sponge316.e_time_p_honest_raw_hasFirstForwardCapacityBeforeForwardOutput_or_prior_reverse_of_not_E
 set_option linter.style.longLine false in
 #print axioms DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_no_prior_reverse
+set_option linter.style.longLine false in
+#print axioms
+  DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_no_redundant_forward_anchor
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_capacity_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasForwardCapacityBeforeHash_of_not_E
