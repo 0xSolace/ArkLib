@@ -1578,6 +1578,7 @@ import ArkLib.ProofSystem.Whir.ProtocolCompleteness
 import ArkLib.ProofSystem.Whir.ProtocolSoundness
 import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
+import ArkLib.ProofSystem.Whir.RBRSoundnessCheckedBridge
 import ArkLib.ProofSystem.Whir.RbrBudgetAccounting
 import ArkLib.ProofSystem.Whir.SchwartzZippelCore
 import ArkLib.ProofSystem.Whir.ThresholdKSF
