@@ -212,36 +212,47 @@ protocol's challenge spaces.
     is discharged, and downstream security statements consume explicit assumptions rather than
     hidden holes.
 
-    The first honest bad-event implication from the CO25 M2 backtracking analysis is also
-    discharged. ArkLib proves that, off the combined bad event $E$, no backtrack chain step is
-    anchored by an inverse-permutation entry; the proof factors through concrete trace-index
-    payloads for the $J_{\mathrm{BT}}$ hash and permutation indices
-    (\texttt{jbt\_hash\_getElem?} and
-    \texttt{jbt\_perm\_forward\_getElem?\_of\_not\_E}).
-    \lean{DuplexSpongeFS.Sponge316.lemma5_12_honest}
-
-    The full CO25 Lemma 5.1 hybrid total-variation proof for DSFS remains an explicit
-    post-grant security-hardening target. The current in-tree decomposition is more precise
-    than the original residual list. The dispatcher and simulated-witness budget obligations,
-    together with the honest inverse-entry implication (M2a), are closed:
+    The dispatcher and simulated-witness budget obligations of CO25 Lemma~5.1 are closed:
     \[
     \begin{gathered}
     \mathsf{SimulatedProverChallengeBudgetResidual},\quad
     \mathsf{SimulatedProverSharedBudgetResidual},\\
     \mathsf{D2sQueryStepGSpecBudgetResidual},\quad
-    \mathsf{D2fOuterImplSharedBudgetResidual},\quad
-    \mathsf{Lemma5\_12HonestResidual}.
+    \mathsf{D2fOuterImplSharedBudgetResidual}.
     \end{gathered}
     \]
     They are proven in \lean{DuplexSpongeFS.SimulatorBudgets.d2sQueryStepGSpecBudget},
     \lean{DuplexSpongeFS.SimulatorBudgets.d2fOuterImplSharedBudget},
-    \lean{DuplexSpongeFS.SimulatorBudgets.simulatedProverChallengeBudget},
-    \lean{DuplexSpongeFS.SimulatorBudgets.simulatedProverSharedBudget}, and
-    \lean{DuplexSpongeFS.Sponge316.lemma5_12_honest}. The birthday-bound assembly still
-    consumes the honest-event M2 interfaces explicitly through
-    \lean{DuplexSpongeFS.BirthdayBound.honestBad_birthday_of_residuals}.
+    \lean{DuplexSpongeFS.SimulatorBudgets.simulatedProverChallengeBudget}, and
+    \lean{DuplexSpongeFS.SimulatorBudgets.simulatedProverSharedBudget}.
 
-    The remaining eager-surface frontier is:
+    \textbf{Statement-fidelity audit (2026-06-10).} A source audit against CO25
+    \S5.6 found two transcription defects in the bad-event layer: the dedup procedure
+    \texttt{redundantEntryDS} uses \emph{same-direction swapped} certificates where CO25
+    Definition~5.5 uses \emph{opposite-direction} ones (B2), and the fifth disjunct of
+    $E_{p^{-1}}$ anchors on the \emph{answer} capacity at $j' \le j$ — self-firing at
+    $j' = j$ — where CO25 Eq.~26 anchors on the \emph{input} capacity (B1). Three
+    machine-checked falseness records pin the consequences at the source: the eager
+    Lemma~5.8 birthday residual is false as stated
+    (\lean{DuplexSpongeFS.Sponge314.K1.lemma5_8EagerBirthdayResidual_false}; a single
+    $p^{-1}$ query fires $E$ with probability $1$), and the honest M2 fork and timing
+    residuals are false as stated (\texttt{Lemma514ForkFalse.lean},
+    \texttt{Lemma516TimePFalse.lean}). The previously recorded discharge of the honest
+    inverse-entry implication (M2a, \lean{DuplexSpongeFS.Sponge316.lemma5_12_honest}) is an
+    artifact of B1: the combined event fires on any trace containing an inverse entry, so
+    the implication is trivially true over the deviant event. The CO25-faithful repaired
+    event together with re-proofs of the M2 block over it is the active repair lane
+    (issue~\#314).
+
+    \textbf{Hybrid ladder.} The CO25 \S5.8 ladder is formalized on the eager surface with
+    the \texttt{tr}$_i$ memo present in every hybrid (CO25 \S5.4 D2SQuery Item~3) and the
+    $\mathrm{Hyb}_3$ oracle keyed on the \emph{salted} statement per CO25 Eq.~55, with the
+    salt erased only in the line-4 log projection. The theorem
+    \lean{DuplexSpongeFS.KeyLemmaAssembly.keyLemmaEager_of_hybSteps} reduces
+    \(\mathsf{KeyLemmaEagerResidual}\) to the four hybrid-step residuals alone, and
+    \lean{DuplexSpongeFS.KeyLemmaAssembly.keyLemmaEager_of_steps_strictSplit} replaces the
+    Claim 5.24 residual by its (salted) strict replay split. The remaining eager-surface
+    frontier is:
     \[
     \begin{gathered}
     \mathsf{Hyb01StepResidual},\quad
@@ -249,17 +260,19 @@ protocol's challenge spaces.
     \mathsf{Hyb23StepResidual},\quad
     \mathsf{Hyb34StepResidual},\\
     \mathsf{Lemma5\_14HonestResidual},\quad
-    \mathsf{Lemma5\_16HonestResidual},\quad
     \mathsf{Lemma5\_8EagerBirthdayResidual}.
     \end{gathered}
     \]
-    The theorem \lean{DuplexSpongeFS.KeyLemmaAssembly.keyLemmaEager_of_hybSteps} reduces
-    \(\mathsf{KeyLemmaEagerResidual}\) to the four hybrid-step residuals alone, and
-    \lean{DuplexSpongeFS.KeyLemmaAssembly.keyLemmaEager_of_steps_strictSplit} replaces the
-    Claim 5.24 residual by its strict replay split. The legacy
-    \(\mathsf{DuplexSpongeFS.KeyLemmaResidual}\) remains on the older i.i.d.-oracle statement
-    surface and uses the over-strong \(\eta^\star\) denominator exponent; the repaired eager
-    surface is the active closeout path.
+    \textbf{Scope decision ($\delta$).} The unsalted eager endpoint matches CO25 only at
+    salt size $\delta = 0$: for $\delta \ge 1$ a salt-grinding prover separates the salted
+    $\mathrm{Hyb}_3$ from the salt-erasing $\mathrm{Hyb}_4$ witness by more than the
+    Claim~5.24 budget (CO25 itself keeps the salted endpoint $\mathsf{FS}[\mathsf{IP},
+    \delta_\star]$ throughout Lemma~5.1). The eager key lemma is therefore scoped to
+    $\delta = 0$; the $\delta > 0$ statement requires a salted re-key of the
+    $\mathrm{Hyb}_4$ endpoint, recorded as post-grant hardening. The legacy
+    \(\mathsf{DuplexSpongeFS.KeyLemmaResidual}\) remains on the older i.i.d.-oracle
+    statement surface with an over-strong \(\eta^\star\) exponent and is superseded by the
+    eager surface; it is kept only as a named historical interface.
     \lean{DuplexSpongeFS.KeyLemmaFoundations.KeyLemmaStatementEager}
     \lean{DuplexSpongeFS.KeyLemmaFoundations.KeyLemmaEagerResidual}
     \lean{DuplexSpongeFS.KeyLemmaHybrids.Hyb01StepResidual}
