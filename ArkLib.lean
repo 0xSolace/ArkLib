@@ -1271,6 +1271,7 @@ import ArkLib.ProofSystem.Stir.Quotienting
 import ArkLib.ProofSystem.Stir.RoundCompleteness
 import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.ProofSystem.Stir.RoundVector
+import ArkLib.ProofSystem.Stir.RoundVectorCompleteness
 import ArkLib.ProofSystem.Sumcheck.Domain
 import ArkLib.ProofSystem.Sumcheck.Impl.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.Completeness
