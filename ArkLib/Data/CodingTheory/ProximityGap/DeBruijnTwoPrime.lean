@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib
 
-set_option linter.style.longFile 2900
+set_option linter.style.longFile 2700
 
 /-!
 # Issue #232 — the two-prime de Bruijn structure: the CRT double-slice theorems (O67–O68)
@@ -2540,7 +2540,9 @@ theorem windowed_coset_cover_q {p q : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : 
             ⟨w, hwS, by rw [hwq], horbit⟩)
         intro h hh
         refine hlift h ?_
-        rw [show q * q ^ (m + 1) = q ^ (m + 1 + 1) from by rw [pow_succ']]
+        rw [show q * q ^ (m + 1) = q ^ (m + 1 + 1) from by
+          rw [pow_succ', pow_succ']
+          ring]
         exact hh
 
 end GeneralWindowedLaw

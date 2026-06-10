@@ -4859,3 +4859,22 @@ The identification O121 used implicitly, closed as an iff. `PackingClassCSP.lean
 `PartialDFTClosure.lean` (axiom-clean ×3): `partial_dft_mu_p_closed` — for any prime `p ∣ n`, power sums vanishing at every `1 ≤ j < n` with `p ∤ j` force `μ_p`-closure of `T ⊆ μ_n`; with O97's converse, an exact iff (`partial_dft_iff`). Fourier mechanism: `dft_point_mass` (the phased row sums recover the indicator, `Σ_j (ζ^{n−a})^j·S_j = n·𝟙_T(ζ^a)` — the O113 double sum factored as a reusable lemma) compared at `e₀` and `(e₀ + n/p) % n`: the `p ∣ j` rows carry equal phases unconditionally (`p·e₁ ≡ p·e₀ [MOD n]`, with the inverse-free cancellation `ζ^{X}·ζ^{pua} = 1` at both points), the `p ∤ j` rows die by the window; membership is shift-invariant, iterate.
 
 **The window hierarchy at `n = pqr` now has machine-checked content at FOUR strata**: t=1 ℚ-components (O109), single gcd-exponents (O112 nonneg counts), dense coprime-complement windows (this — at n=30, all odd j force antipodal closure; all 3∤j force μ₃-closure; all 5∤j force μ₅-closure), and the full window (O113) — coset strata dead (O111). **The open interpolation is now pinned between explicit formalized bounds**: the dense window (φ-complement size, sufficient — this) versus single exponents (O112, count-level only) — the open question is the SPARSE sufficient window at 3+ primes, whose two-prime answer {q^c} (O97) used the packet mechanism O105 removed. Note the dense law also gives a SECOND proof route for O97-type closure at any modulus when the full coprime-complement window is available — the two-prime sparse law remains strictly stronger on its turf.
+### O115 — THE GENERAL-t WINDOWED LAW, q-DIRECTION: windowed_coset_cover_q (the reassembly induction COMPLETE)
+
+`DeBruijnTwoPrime.windowed_coset_cover_q` + `packetUnion_full_export` (axiom-clean,
+0 sorry; my lane): **for EVERY window depth m ≤ b+1: a two-prime vanishing set with
+q-power window {q^0, ..., q^m} has every element μ_{q^c·p}-covered (some c ≤ m) or
+μ_{q^{m+1}}-covered** — the complete d-coset reassembly in the q-direction at every
+window depth. m = 0 is the de Bruijn cover; m = 1 the trichotomy; general m the full law.
+
+Proof = the induction the arc was built for: full export (orbit + dichotomy + complete
+transfer, ONE spectrum), the spectrum inherits the depth-(m−1) window (transfer at
+e = q^c, p ∤ q^c), the inductive hypothesis reassembles the spectrum one level down,
+and the upward rung (coset_lift) multiplies the recovered coset order by q. Floor case
+b = 0 handled by the prime-power slice closure (the deep-spectrum block inlined).
+
+This is the O70-verified mixed-radix law's q-direction IN FULL GENERALITY as a
+machine-checked theorem. Remaining for the complete two-sided law: the symmetric
+p-direction (role swap, mechanical) and mixed windows (both prime directions
+simultaneously — the joint induction); then O73's base hypotheses discharge and the
+mixed tower goes fully unconditional on M31-style domains.
