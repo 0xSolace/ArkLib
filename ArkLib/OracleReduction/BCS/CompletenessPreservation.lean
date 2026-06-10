@@ -30,12 +30,14 @@ variable {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι}
     {CommitmentType : pSpec.MessageIdx → Type}
     {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
-/-- **Challenge sampleability transfers across the `BCSTransform` defeq.** `pSpec.BCSTransform`
-is definitionally the append `renameMessage ++ₚ BCSOpeningPhase`, so its per-round challenge
-sampleability is exactly the append's — but synthesis won't cross that defeq on its own. Registering
-it as an instance lets `perfectCompleteness` (and any caller) synthesize the requirement directly in
-the signature, rather than only inside a proof body. -/
-instance BCSTransform_challenge_sampleable {e : pSpec.MessageIdx ≃ Fin m}
+/-- Challenge sampler for the BCS-transformed spec. `ProtocolSpec.BCSTransform pSpecCom
+CommitmentType e` is *definitionally* `(pSpec.renameMessage CommitmentType) ++ₚ
+(pSpec.BCSOpeningPhase pSpecCom e)`, so a `SampleableType` for each phase's challenges (the append
+form) is, by `rfl`, a `SampleableType` for the transformed spec's challenges. Providing this as an
+instance lets `perfectCompleteness` over the `BCSTransform`-form spec synthesize *the same* instance
+the append composition theorem uses, so the two line up syntactically. -/
+local instance instSampleableTypeBCSTransformChallenge
+    (e : pSpec.MessageIdx ≃ Fin m) {CommitmentType : pSpec.MessageIdx → Type}
     [∀ i, SampleableType ((pSpec.renameMessage CommitmentType).Challenge i)]
     [∀ i, SampleableType ((pSpec.BCSOpeningPhase pSpecCom e).Challenge i)] :
     ∀ i, SampleableType ((pSpec.BCSTransform pSpecCom CommitmentType e).Challenge i) :=
@@ -76,8 +78,17 @@ theorem BCSTransform_perfectCompleteness
     [(oSpec + [(pSpec.BCSOpeningPhase pSpecCom e).Challenge]ₒ).Fintype]
     [(oSpec + [(pSpec.BCSOpeningPhase pSpecCom e).Challenge]ₒ).Inhabited] :
     (OracleReduction.BCSTransform e interaction opening).perfectCompleteness init impl relIn relOut := by
-  unfold OracleReduction.BCSTransform
-  exact Reduction.append_perfectCompleteness_msg_proof interaction opening h_int h_open hn hDir hDir₂
-    hInit hImplSupp
+  -- `OracleReduction.BCSTransform e interaction opening` is, by definition, the sequential
+  -- composition `Reduction.append interaction opening` over the append spec
+  -- `(pSpec.renameMessage CommitmentType) ++ₚ (pSpec.BCSOpeningPhase pSpecCom e)`. Apply the
+  -- composition completeness theorem with the two phase specs supplied *explicitly* (so the
+  -- elaborator never has to whnf-unfold `ProtocolSpec.BCSTransform` to recover them), leaving only a
+  -- `rfl`-defeq between the goal's `BCSTransform`-form reduction and `interaction.append opening`.
+  exact @Reduction.append_perfectCompleteness_msg_proof ι oSpec _ _
+    StmtIn WitIn StmtMid WitMid StmtOut WitOut
+    n (Fin.vsum (fun j => nCom (e.symm j)))
+    (pSpec.renameMessage CommitmentType) (pSpec.BCSOpeningPhase pSpecCom e) _ _
+    σ init impl relIn relMid relOut
+    interaction opening h_int h_open hn hDir hDir₂ hInit hImplSupp _ _ _ _ _ _
 
 end OracleReduction

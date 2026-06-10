@@ -17,6 +17,8 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
   agent wiki and bibliography.
 - [`arklib-zkvm-boundary.md`](arklib-zkvm-boundary.md) - boundary between ArkLib proof-system
   verification and a whole-zkVM end-to-end theorem.
+- [`tower-fiber-theory.md`](tower-fiber-theory.md) - the #232 tower-fiber formal corpus
+  (O35-O63): file map, the theory in one paragraph, recurring Lean gotchas.
 - [`coding-theory-conventions.md`](coding-theory-conventions.md) - theorem-naming pattern,
   notation, type conventions, and tagged-sorry style used in
   `ArkLib/Data/CodingTheory/`.
@@ -28,6 +30,12 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
   lower/upper bound, how `securityGap` is computed, and the current 64/116 anchors.
 - [`honesty-audit.md`](honesty-audit.md) - playbook for finding unproven-but-presented-as-proven
   content: the laundering patterns the CI gates miss, how to detect them, and confirmed findings.
+- [`additive-energy-attack.md`](additive-energy-attack.md) - the machine-checked reduction chain
+  taking the Proximity Prize (#232) down to the additive energy of the smooth `2^k`-subgroup: file
+  map, the sharp `E=3|G|(|G|-1)` theorem, the prize-regime anti-concentration data, and the single
+  named open (Weil/sum-product) root.
+- [`stir-issue-301.md`](stir-issue-301.md) - STIR #301 scratchpad: source trail, local theorem
+  map, proof status, and the honest residuals for `stir_main` / `stir_rbr_soundness`.
 
 ## Maintenance Contract
 

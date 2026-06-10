@@ -32,10 +32,9 @@ components, evaluated definitionally). Membership in `innerSumcheckRelIn`
 `Logup.logupSumcheckRelationInput F n M params (Fact.out) stmt oStmt`, i.e. the round-`0`
 sum-check claim "`Σ over the sign-hypercube of the LogUp sum-check polynomial = target(=0)`".
 
-Because `midRelation = Set.univ`, the `(stmtIn, witIn) ∈ midRelation` premise carries **no**
-information about the transcript: the obligation, read literally, asks the LogUp grand-sum claim to
-vanish on the hypercube for *every* outer statement-oracle pair. That is **not** unconditionally
-true — it is exactly the honest algebraic content. Two genuine ingredients are needed and are
+With the corrected claim-true `midRelation` (`{p | logupOuterSumcheckClaim … = 0}`, issue #13),
+the `(stmtIn, witIn) ∈ midRelation` premise **is** the zero-sum claim, so the obligation closes
+unconditionally (`SumcheckLensProjComplete_unconditional` below). Two ingredients drive the proof,
 provided by the in-tree, already-proven bridge:
 
 * **Row-agreement** (`logupSumcheckPolynomialRowsAgree_of_signsDistinct`): the packaged sum-check
@@ -43,18 +42,23 @@ provided by the in-tree, already-proven bridge:
   `(-1 : F) ≠ 1` (supplied here by the ambient `Fact`), and is discharged inside this file.
 
 * **Zero-sum** (`logupOuterSumcheckClaim … = 0`): the LogUp grand-sum claim vanishes on the
-  hypercube. This holds only on the honest-prover support. It is therefore threaded as the explicit
-  named hypothesis `hClaimZero` of the main theorem. The companion theorem
-  `SumcheckLensProjComplete_holds_of_honest` *discharges* `hClaimZero` on the honest oracles using
-  the proven `logupSumcheckRelationInput_of_honest` (which itself rests on
-  `honest_helper_sum_zero_of_inputRelation_all` / the grand-sum identity), under the standard
-  honest-support side conditions (`inputRelation` membership + table pole-freeness).
+  hypercube. This is exactly the `midRelation` membership premise of `SumcheckLensProjComplete`,
+  so it is supplied by the obligation itself — no extra hypothesis.
 
 The bridge from row-agreement + zero-sum to the `relationRound 0` membership is the proven
 `Logup.logupSumcheckRelationInput_of_rowsAgree`.
 
-No `sorry` / `admit`. The only residual sub-hypothesis is `hClaimZero` (the honest zero-sum), and we
-additionally show it is discharged on the honest-prover support.
+**Removed conditional forms (issue #13, dmvt audit).** The historical conditional variants
+(`SumcheckLensProjComplete_holds` with a *globally* quantified `hClaimZero`, and
+`…_holds_of_honest` / `sumcheckCompletenessResidual_of_honest` with the *globally* quantified
+honest-support package `hHonest`) had **unsatisfiable** hypotheses: they quantified over **all**
+after-outer statements `stmtIn`, but a `stmtIn` whose `.multiplicity` oracle is corrupted has no
+honest preimage (the `.input`-slot equations force the preimage, which then pins
+`honestMultiplicity`), and an adversarial `xChallenge` falsifies pole-freeness. Any theorem
+consuming them was uninstantiable. They have been deleted; the unconditional theorem strictly
+supersedes them.
+
+No `sorry` / `admit`, and no residual sub-hypothesis: `SumcheckLensProjComplete` is a theorem.
 -/
 
 open OracleComp ProtocolSpec
@@ -67,7 +71,7 @@ variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)
 variable (n M : ℕ)
 variable (params : ProtocolParams M)
 
-local instance : Inhabited F := ⟨0⟩
+local instance instInhabitedFieldSumcheckLensProjComplete : Inhabited F := ⟨0⟩
 
 omit [Fintype F] [DecidableEq F] in
 /-- **Key defeq.** The lens projection of an outer transcript `stmtIn = (stmt, oStmt)`, paired with
@@ -89,84 +93,36 @@ theorem lensProj_mem_innerRel_iff_relationInput
   Iff.rfl
 
 omit [Fintype F] [DecidableEq F] in
-/-- **`SumcheckLensProjComplete` holds, given the honest zero-sum claim.**
+/-- **`SumcheckLensProjComplete` holds unconditionally (issue #13, de-larped).**
 
-The genuine honest content — that the LogUp grand-sum claim vanishes on the hypercube — is taken as
-the named hypothesis `hClaimZero` (necessary because `midRelation = Set.univ` provides no
-constraint; the residual is only required on the honest-prover support). Everything else is proven:
-row-agreement is unconditional from `(-1 : F) ≠ 1` (the ambient `Fact`), and the bridge to
-`relationRound 0` is `logupSumcheckRelationInput_of_rowsAgree`. -/
-theorem SumcheckLensProjComplete_holds
-    (hClaimZero :
-      ∀ (stmtIn : StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)),
-        logupOuterSumcheckClaim F n M params stmtIn.1 stmtIn.2 = 0) :
+With the corrected claim-true `midRelation` (`{p | logupOuterSumcheckClaim … = 0}`, matching the
+soundness-side `midLanguage`), the `(stmtIn, witIn) ∈ midRelation` premise *is* the zero-sum claim,
+so the projection obligation closes by construction: row-agreement is unconditional from
+`(-1 : F) ≠ 1` (the ambient `Fact`), and `logupSumcheckRelationInput_of_rowsAgree` bridges
+row-agreement + the claim to the round-`0` relation membership. No honest-support hypothesis, no
+`hClaimZero` — the `proj_complete` half of the lens completeness is now a theorem. -/
+theorem SumcheckLensProjComplete_unconditional :
     SumcheckLensProjComplete F n M params := by
-  intro stmtIn _witIn _hMid
+  intro stmtIn _witIn hMid
   -- Reduce the lens-projected membership to the round-`0` input relation (definitional).
   rw [lensProj_mem_innerRel_iff_relationInput F n M params stmtIn _witIn]
-  -- Discharge it from unconditional row-agreement + the honest zero-sum claim.
+  -- `hMid` *is* the zero-sum claim for the corrected `midRelation`; bridge via row-agreement.
   exact logupSumcheckRelationInput_of_rowsAgree
     (F := F) (n := n) (M := M) (params := params)
     (logupSumcheckPolynomialRowsAgree_of_signsDistinct
       (F := F) (n := n) (M := M) (params := params) (Fact.out : (-1 : F) ≠ 1)
       stmtIn.1 stmtIn.2)
-    (hClaimZero stmtIn)
+    hMid
 
-/-- **`SumcheckLensProjComplete` holds on the honest-prover support.**
+/-- **`SumcheckCompletenessResidual` from the inner completeness alone (issue #13, de-larped).**
 
-The honest zero-sum claim `hClaimZero` is *discharged* here from the standard honest-support data:
-for every projected outer transcript there is an underlying input `(stmtIn₀, oStmtIn₀)` in
-`inputRelation`, the retained oracles are the honest ones built from it, and the verifier's sampled
-`xChallenge` avoids all table poles. Under these conditions the zero-sum is the proven
-`logupSumcheckRelationInput_of_honest` content (grand-sum identity ⇒ helper-sum `= 0`).
-
-This makes the honest-support restriction explicit: the named hypothesis `hHonest` packages exactly
-"the outer phase ran honestly and the pole event did not occur", which is the support on which the
-LogUp completeness proof invokes this projection. -/
-theorem SumcheckLensProjComplete_holds_of_honest
-    (hHonest :
-      ∀ (stmtIn : StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)),
-        ∃ (stmtIn₀ : StmtIn F n M) (oStmtIn₀ : ∀ i, OStmtIn F n M i),
-          (((stmtIn₀, oStmtIn₀), ()) ∈ inputRelation F n M) ∧
-          (∀ u : Hypercube n,
-            stmtIn.1.xChallenge + evalOnHypercube (tableOracle oStmtIn₀) u ≠ 0) ∧
-          stmtIn.2 =
-            (fun
-              | .input i => oStmtIn₀ i
-              | .multiplicity => honestMultiplicity oStmtIn₀
-              | .helpers => honestHelpers params oStmtIn₀ stmtIn.1.xChallenge)) :
-    SumcheckLensProjComplete F n M params := by
-  intro stmtIn _witIn _hMid
-  rw [lensProj_mem_innerRel_iff_relationInput F n M params stmtIn _witIn]
-  obtain ⟨stmtIn₀, oStmtIn₀, hInput, htable, hoStmt⟩ := hHonest stmtIn
-  -- Rewrite the projected oracle statements to the honest ones, then invoke the proven honest
-  -- round-`0` input relation.
-  rw [hoStmt]
-  exact logupSumcheckRelationInput_of_honest
-    (F := F) (n := n) (M := M) (params := params) (hSigns := (Fact.out : (-1 : F) ≠ 1))
-    stmtIn₀ oStmtIn₀ stmtIn.1 hInput htable
-
-/-- **Wiring check: the discharged `hProj` plugs into `sumcheckCompletenessResidual_holds`.**
-
-This confirms `SumcheckLensProjComplete_holds_of_honest` has exactly the shape required by the
-`hProj` argument of `Logup.sumcheckCompletenessResidual_holds`, so the embedded sum-check phase is
-perfectly complete on the honest-prover support given the (separately supplied) inner oracle-level
-completeness `hInner` and the honest-support data `hHonest`. -/
-theorem sumcheckCompletenessResidual_of_honest
+With `hProj` now a theorem (`SumcheckLensProjComplete_unconditional`, by construction from the
+corrected claim-true `midRelation`), the embedded sum-check completeness residual needs only the
+inner multi-round oracle sum-check completeness `hInner` — no honest-support hypothesis. -/
+theorem sumcheckCompletenessResidual_of_inner
     {ι : Type} (oSpec : OracleSpec ι) [oSpec.Fintype]
     [SampleableType F]
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
-    (hHonest :
-      ∀ (stmtIn : StmtAfterOuter F n M params × (∀ i, OStmtAfterOuter F n M params i)),
-        ∃ (stmtIn₀ : StmtIn F n M) (oStmtIn₀ : ∀ i, OStmtIn F n M i),
-          (((stmtIn₀, oStmtIn₀), ()) ∈ inputRelation F n M) ∧
-          (∀ u : Hypercube n,
-            stmtIn.1.xChallenge + evalOnHypercube (tableOracle oStmtIn₀) u ≠ 0) ∧
-          stmtIn.2 =
-            (fun
-              | .input i => oStmtIn₀ i
-              | .multiplicity => honestMultiplicity oStmtIn₀
-              | .helpers => honestHelpers params oStmtIn₀ stmtIn.1.xChallenge))
     (hInner :
       (logupConcreteSumcheckOracleReduction oSpec F n M params
           (Fact.out : (-1 : F) ≠ 1)).perfectCompleteness init impl
@@ -174,13 +130,12 @@ theorem sumcheckCompletenessResidual_of_honest
         (innerSumcheckRelOut F n M params)) :
     SumcheckCompletenessResidual oSpec F n M params init impl :=
   sumcheckCompletenessResidual_holds oSpec F n M params init impl
-    (SumcheckLensProjComplete_holds_of_honest F n M params hHonest) hInner
+    (SumcheckLensProjComplete_unconditional F n M params) hInner
 
 end SumcheckLensProjComplete
 
 end Logup
 
 #print axioms Logup.lensProj_mem_innerRel_iff_relationInput
-#print axioms Logup.SumcheckLensProjComplete_holds
-#print axioms Logup.SumcheckLensProjComplete_holds_of_honest
-#print axioms Logup.sumcheckCompletenessResidual_of_honest
+#print axioms Logup.SumcheckLensProjComplete_unconditional
+#print axioms Logup.sumcheckCompletenessResidual_of_inner

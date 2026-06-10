@@ -1,4 +1,6 @@
-import Mathlib
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Subspace Designs
@@ -50,7 +52,8 @@ lemma intersectionMultiplicity_mono [FiniteDimensional F V] {W₁ W₂ : Submodu
 -- Key geometric lemma: Dimension of intersection bound
 lemma finrank_inf_le_finrank_inf_add_finrank_sub [FiniteDimensional F V]
     {W W' : Submodule F V} (h : W' ≤ W) (H_i : Submodule F V) :
-    Module.finrank F ↥(H_i ⊓ W) ≤ Module.finrank F ↥(H_i ⊓ W') + (Module.finrank F W - Module.finrank F W') := by
+    Module.finrank F ↥(H_i ⊓ W) ≤
+      Module.finrank F ↥(H_i ⊓ W') + (Module.finrank F W - Module.finrank F W') := by
   have eq1 : Module.finrank F ↥((H_i ⊓ W) ⊔ W') + Module.finrank F ↥((H_i ⊓ W) ⊓ W') =
       Module.finrank F ↥(H_i ⊓ W) + Module.finrank F W' :=
     Submodule.finrank_sup_add_finrank_inf_eq (H_i ⊓ W) W'
@@ -69,7 +72,9 @@ lemma finrank_inf_le_finrank_inf_add_finrank_sub [FiniteDimensional F V]
 -- Bounding intersection multiplicity for larger spaces
 lemma intersectionMultiplicity_bound [FiniteDimensional F V]
     {W W' : Submodule F V} (h : W' ≤ W) :
-    intersectionMultiplicity H W ≤ intersectionMultiplicity H W' + Fintype.card ι * (Module.finrank F W - Module.finrank F W') := by
+    intersectionMultiplicity H W ≤
+      intersectionMultiplicity H W' +
+        Fintype.card ι * (Module.finrank F W - Module.finrank F W') := by
   unfold intersectionMultiplicity
   calc
     (∑ i : ι, Module.finrank F ↥(H i ⊓ W))
@@ -77,7 +82,9 @@ lemma intersectionMultiplicity_bound [FiniteDimensional F V]
         apply Finset.sum_le_sum
         intro i _
         exact finrank_inf_le_finrank_inf_add_finrank_sub h (H i)
-    _ = (∑ i : ι, Module.finrank F ↥(H i ⊓ W')) + ∑ i : ι, (Module.finrank F W - Module.finrank F W') := by
+    _ = (∑ i : ι, Module.finrank F ↥(H i ⊓ W')) +
+          ∑ i : ι, (Module.finrank F W - Module.finrank F W') := by
         exact Finset.sum_add_distrib
-    _ = (∑ i : ι, Module.finrank F ↥(H i ⊓ W')) + Fintype.card ι * (Module.finrank F W - Module.finrank F W') := by
+    _ = (∑ i : ι, Module.finrank F ↥(H i ⊓ W')) +
+          Fintype.card ι * (Module.finrank F W - Module.finrank F W') := by
         simp

@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
 import ArkLib.ProofSystem.Spartan.SecondSumcheckRelIn
+import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SecondSumcheckFaithful
 
 /-!
@@ -35,11 +36,17 @@ The outer input relation `secondSumcheckRelIn` therefore pins that carried targe
 -/
 
 open MvPolynomial OracleComp Sumcheck
+open scoped NNReal
 
 namespace Spartan.Spec
 
 variable {R : Type} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [SampleableType R]
   (pp : Spartan.PublicParams) {ι : Type} (oSpec : OracleSpec ι)
+
+/-- `StatementRound` is inhabited over a ring: zero target, zero challenges. Needed by the
+`liftContext` round-by-round knowledge-soundness transfer machinery. -/
+local instance {n : ℕ} {i : Fin (n + 1)} : Inhabited (Sumcheck.Spec.StatementRound R n i) :=
+  ⟨⟨0, fun _ => 0⟩⟩
 
 /-- **Outer input relation of the second sum-check phase.** Two conjuncts:
 * the R1CS instance is satisfied (public input `𝕩 = stmt.2.2.2`, matrices `A,B,C` and witness `𝕨`
@@ -120,25 +127,41 @@ theorem secondSumcheck_perfectCompleteness
     rfl h_inner
 
 
-theorem secondSumcheck_rbrKnowledgeSoundness
+/-- **Second sum-check phase round-by-round soundness (issue #114) — honest pullback transport.**
+
+The lifted second sum-check phase inherits the inner sum-check's rbr soundness, with the *pullback*
+input language (the inner claim `∑_cube ℳ = target` read through the lens projection — which, by
+`secondSC_relationRound_zero`, pins the carried target to the honest random linear combination) and
+the canonically *transported* output language, at the same per-round errors.
+
+DESIGN NOTE (replaces the previously-sorried `secondSumcheck_rbrKnowledgeSoundness`): the
+knowledge-soundness route via `Extractor.Lens.IsKnowledgeSound` with the R1CS-carrying
+`secondSumcheckRelIn` is **provably unusable** — its `lift_knowledgeSound` field demands the FALSE
+implication "inner cube-sum claim ⟹ R1CS satisfiability" (a bare relation implication with `Unit`
+witnesses). The honest phase-local security statement is this *soundness* transport on the claim
+languages; with `Unit` witnesses throughout the Spartan PIOP, composed knowledge soundness
+coincides with composed soundness over the claim-language chain, with the R1CS content entering at
+the `FirstChallenge` (τ-sampling) phase boundary. -/
+theorem secondSumcheck_rbrSoundness
     {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
-    (rbrKnowledgeError : (Sumcheck.Spec.pSpec R 2 pp.ℓ_n).ChallengeIdx → ℝ≥0)
+    (innerLangIn : Set (Sumcheck.Spec.StatementRound R pp.ℓ_n 0 ×
+      ∀ i, Sumcheck.Spec.OracleStatement R pp.ℓ_n 2 i))
+    (innerLangOut : Set (Sumcheck.Spec.StatementRound R pp.ℓ_n (Fin.last pp.ℓ_n) ×
+      ∀ i, Sumcheck.Spec.OracleStatement R pp.ℓ_n 2 i))
+    (rbrSoundnessError : (Sumcheck.Spec.pSpec R 2 pp.ℓ_n).ChallengeIdx → ℝ≥0)
     (h_inner :
-      (Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier.rbrKnowledgeSoundness
-        init impl
-        (Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (0 : Fin (pp.ℓ_n + 1)))
-        (Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (Fin.last pp.ℓ_n))
-        rbrKnowledgeError) :
-    (secondSumcheckReduction pp oSpec).verifier.rbrKnowledgeSoundness init impl
-      (secondSumcheckRelIn (R := R) pp) (secondSumcheckRelOut (R := R) pp) rbrKnowledgeError := by
+      (Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier.rbrSoundness
+        init impl innerLangIn innerLangOut rbrSoundnessError) :
+    (secondSumcheckReduction pp oSpec).verifier.rbrSoundness init impl
+      ((secondSumcheckOracleLens pp oSpec).toLens.proj ⁻¹' innerLangIn)
+      ((secondSumcheckOracleLens pp oSpec).toLens.transportedLangOut innerLangOut
+        ((Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R)
+            pp.ℓ_n oSpec).verifier.toVerifier.compatStatement
+          (secondSumcheckOracleLens pp oSpec).toLens))
+      rbrSoundnessError := by
   haveI := secondSumcheckCoherent (R := R) pp oSpec
-  exact OracleVerifier.liftContext_rbr_knowledgeSoundness
-    (V := (Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier)
-    (stmtLens := secondSumcheckOracleLens pp oSpec)
-    (outerRelIn := secondSumcheckRelIn (R := R) pp)
-    (innerRelIn := Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (0 : Fin (pp.ℓ_n + 1)))
-    (outerRelOut := secondSumcheckRelOut (R := R) pp)
-    (innerRelOut := Sumcheck.Spec.relationRound R pp.ℓ_n 2 (boolEmbedding R) (Fin.last pp.ℓ_n))
-    h_inner
+  exact OracleVerifier.liftContext_rbrSoundness_pullback
+    (Sumcheck.Spec.oracleReduction R 2 (boolEmbedding R) pp.ℓ_n oSpec).verifier
+    (subset_refl _) h_inner
 
 end Spartan.Spec

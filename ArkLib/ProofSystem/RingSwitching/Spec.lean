@@ -129,6 +129,59 @@ instance instInhabitedOracleSpecEmpty : (([]ₒ : OracleSpec PEmpty).Inhabited) 
 instance instFintypeOracleSpecEmpty : (([]ₒ : OracleSpec PEmpty).Fintype) where
   fintype_B i := nomatch i
 
+/-- Per-index finiteness of the sumcheck-round challenges (the challenge at index `1` is `L`;
+index `0` is a `P_to_V` message). Feeds the n-ary `seqCompose`/append challenge instances. -/
+instance instFintypeSumcheckRoundChallengeIdx :
+    ∀ j, Fintype ((pSpecSumcheckRound (L:=L)).Challenge j) := fun j => by
+  rcases j with ⟨⟨v, hv⟩, hj⟩
+  interval_cases v
+  · exact absurd hj (by simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound])
+  · simpa only [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound,
+      ProtocolSpec.Challenge, Matrix.cons_val_one, Matrix.cons_val_fin_one] using
+      (inferInstance : Fintype L)
+
+/-- Per-index inhabitedness of the sumcheck-round challenges. -/
+instance instInhabitedSumcheckRoundChallengeIdx :
+    ∀ j, Inhabited ((pSpecSumcheckRound (L:=L)).Challenge j) := fun j => by
+  rcases j with ⟨⟨v, hv⟩, hj⟩
+  interval_cases v
+  · exact absurd hj (by simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound])
+  · simpa only [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound,
+      ProtocolSpec.Challenge, Matrix.cons_val_one, Matrix.cons_val_fin_one] using
+      (⟨(0 : L)⟩ : Inhabited L)
+
+/-- Per-index finiteness of the final-sumcheck challenges (vacuous: single `P_to_V` message). -/
+instance instFintypeFinalSumcheckChallengeIdx :
+    ∀ j, Fintype ((pSpecFinalSumcheck (L:=L)).Challenge j) := fun j => by
+  rcases j with ⟨⟨v, hv⟩, hj⟩
+  interval_cases v
+  · exact absurd hj (by simp [pSpecFinalSumcheck])
+
+/-- Per-index inhabitedness of the final-sumcheck challenges (vacuous). -/
+instance instInhabitedFinalSumcheckChallengeIdx :
+    ∀ j, Inhabited ((pSpecFinalSumcheck (L:=L)).Challenge j) := fun j => by
+  rcases j with ⟨⟨v, hv⟩, hj⟩
+  interval_cases v
+  · exact absurd hj (by simp [pSpecFinalSumcheck])
+
+/-- Per-index finiteness of the batching challenges (the challenge at index `1` is `Fin κ → L`). -/
+instance instFintypeBatchingChallengeIdx :
+    ∀ j, Fintype ((pSpecBatching κ L K P).Challenge j) := fun j => by
+  rcases j with ⟨⟨v, hv⟩, hj⟩
+  interval_cases v
+  · exact absurd hj (by simp [pSpecBatching])
+  · simpa only [pSpecBatching, ProtocolSpec.Challenge, Matrix.cons_val_one,
+      Matrix.cons_val_fin_one] using (inferInstance : Fintype (Fin κ → L))
+
+/-- Per-index inhabitedness of the batching challenges. -/
+instance instInhabitedBatchingChallengeIdx :
+    ∀ j, Inhabited ((pSpecBatching κ L K P).Challenge j) := fun j => by
+  rcases j with ⟨⟨v, hv⟩, hj⟩
+  interval_cases v
+  · exact absurd hj (by simp [pSpecBatching])
+  · simpa only [pSpecBatching, ProtocolSpec.Challenge, Matrix.cons_val_one,
+      Matrix.cons_val_fin_one] using (⟨fun _ => (0 : L)⟩ : Inhabited (Fin κ → L))
+
 instance instFintypePSpecSumcheckRoundChallenge :
     ([(pSpecSumcheckRound (L:=L)).Challenge]ₒ).Fintype := by
   refine { fintype_B := ?_ }
@@ -164,15 +217,17 @@ instance instFintypePSpecFinalSumcheckChallenge :
     ([(pSpecFinalSumcheck (L:=L)).Challenge]ₒ).Fintype := by
   refine { fintype_B := ?_ }
   rintro ⟨⟨i, hi⟩, q⟩
-  obtain rfl : i = 0 := Subsingleton.elim i 0
-  simp [pSpecFinalSumcheck] at hi
+  exact absurd hi (by
+    obtain rfl : i = 0 := by omega
+    simp [pSpecFinalSumcheck])
 
 instance instInhabitedPSpecFinalSumcheckChallenge :
     ([(pSpecFinalSumcheck (L:=L)).Challenge]ₒ).Inhabited := by
   refine { inhabited_B := ?_ }
   rintro ⟨⟨i, hi⟩, q⟩
-  obtain rfl : i = 0 := Subsingleton.elim i 0
-  simp [pSpecFinalSumcheck] at hi
+  exact absurd hi (by
+    obtain rfl : i = 0 := by omega
+    simp [pSpecFinalSumcheck])
 
 /-- The challenge oracle of the batching phase (round 1, type `Fin κ → L`). -/
 instance instOracleInterfaceChallengePSpecBatching :

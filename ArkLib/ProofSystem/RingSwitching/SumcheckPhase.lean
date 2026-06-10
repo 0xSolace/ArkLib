@@ -8,6 +8,7 @@ import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.Append
+import ArkLib.OracleReduction.Composition.Sequential.SeqComposeOracleCompleteness
 import ArkLib.OracleReduction.Completeness
 import ArkLib.Data.Probability.Notation
 import ArkLib.OracleReduction.Security.RoundByRound
@@ -594,7 +595,7 @@ passing it `pure`s the accept statement (next-round target `h_i(r')`, challenges
 `BatchingPhase.oracleVerifier_verify_collapse`; the message query collapses via
 `simulateQ_simOracle2_query` (+ `answer_instDefault'`), then `guard_eq`/`apply_ite` exposes the
 `if`. `msgs ⟨0,_⟩` is the round univariate `h_i`, `chals ⟨1,_⟩` is the verifier challenge `r'`. -/
-private lemma iteratedSumcheckOracleVerifier_verify_collapse (i : Fin ℓ')
+lemma iteratedSumcheckOracleVerifier_verify_collapse (i : Fin ℓ')
     (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
     (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (tr : FullTranscript (pSpecSumcheckRound L)) :
@@ -1198,6 +1199,8 @@ section FinalSumcheckStep
 ## Final Sumcheck Step
 -/
 
+variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
+
 /-- `pSpecFinalSumcheck L` is a single prover-to-verifier message (no challenge). -/
 instance : ProverOnly (pSpecFinalSumcheck L) where
   prover_first' := rfl
@@ -1404,7 +1407,7 @@ deterministic `if`: on the step-9 check passing it `pure`s the forwarded MLP-eva
 `{t_eval_point := challenges, original_claim := s'}` (`s'` the prover's message), and on a failed
 check it emits `failure` (defect-#21) — so the reject branch has *no* support element. This is the
 1-message analog of `iteratedSumcheckOracleVerifier_verify_collapse`. -/
-private lemma finalSumcheckVerifier_verify_collapse [IsDomain L] [IsDomain K]
+lemma finalSumcheckVerifier_verify_collapse [IsDomain L] [IsDomain K]
     (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.last ℓ'))
     (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (tr : FullTranscript (pSpecFinalSumcheck L)) :
@@ -1413,7 +1416,7 @@ private lemma finalSumcheckVerifier_verify_collapse [IsDomain L] [IsDomain K]
           (FullTranscript.challenges tr))
       = (if stmt.sumcheck_target
             = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
-                stmt.ctx.r_batching * (FullTranscript.messages tr ⟨0, rfl⟩ : L) then
+                stmt.ctx.r_batching * (show L from FullTranscript.messages tr ⟨0, rfl⟩) then
            pure ({ t_eval_point := stmt.challenges,
                    original_claim := (FullTranscript.messages tr ⟨0, rfl⟩ : L) }
                  : MLPEvalStatement L ℓ')
@@ -1427,10 +1430,10 @@ private lemma finalSumcheckVerifier_verify_collapse [IsDomain L] [IsDomain K]
   erw [OptionT.run_bind_lift]
   erw [pure_bind]
   rw [answer_instDefault']
-  simp only [guard_eq, apply_ite, map_pure, bind_pure_comp]
+  simp only [guard_eq, apply_ite, _root_.map_pure, bind_pure_comp]
   by_cases hc : stmt.sumcheck_target
       = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
-          stmt.ctx.r_batching * (FullTranscript.messages tr ⟨0, rfl⟩)
+          stmt.ctx.r_batching * (show L from FullTranscript.messages tr ⟨0, rfl⟩)
   · simp only [hc, if_true, reduceIte]
     erw [simulateQ_pure]
     rfl
@@ -1458,14 +1461,14 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
   -- Unpack relIn = masterKStateProp into the structural invariant + consistency facts.
   simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
     Set.mem_setOf_eq] at h_relIn
-  obtain ⟨h_struct, h_consist, h_compat⟩ := h_relIn
+  obtain ⟨-, h_struct, h_consist, h_compat⟩ := h_relIn
   -- `s'` is the prover's single message: `witIn.t'(challenges)`. The verifier check passes.
   have h_msg_eval : witIn.t'.val.eval stmtIn.challenges = witIn.t'.val.eval stmtIn.challenges := rfl
   have h_check : stmtIn.sumcheck_target
       = compute_final_eq_value κ L K P ℓ ℓ' h_l stmtIn.ctx.t_eval_point stmtIn.challenges
           stmtIn.ctx.r_batching * witIn.t'.val.eval stmtIn.challenges :=
     finalSumcheck_check_of_relIn (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ')
-      (h_l := h_l) (aOStmtIn := aOStmtIn) stmtIn witIn h_struct h_consist
+      (h_l := h_l) stmtIn witIn h_struct h_consist
   -- Collapse the deterministic prover/verifier run to a `pure`.
   have hverify :
       (finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn).toVerifier.verify (stmtIn, oStmtIn)
@@ -1479,15 +1482,12 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
     erw [finalSumcheckVerifier_verify_collapse (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ)
       (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) stmtIn oStmtIn
       (FullTranscript.mk1 (witIn.t'.val.eval stmtIn.challenges))]
-    have hmsg : (FullTranscript.messages (FullTranscript.mk1
-        ((witIn.t'.val.eval stmtIn.challenges : L))) ⟨0, rfl⟩ : L)
-          = witIn.t'.val.eval stmtIn.challenges := rfl
-    rw [hmsg, if_pos h_check]
+    rw [if_pos (show _ by exact h_check)]
     rfl
   rw [probEvent_eq_one_iff]
   dsimp only [finalSumcheckOracleReduction, finalSumcheckProver, FullTranscript.mk1]
   simp only [liftComp_pure, liftM_pure, pure_bind, bind_pure_comp, Function.comp, hverify,
-    _root_.map_pure, map_pure]
+    _root_.map_pure]
   refine ⟨?_, ?_⟩
   · -- No failure: the run is `pure`.
     rw [probFailure_map]
