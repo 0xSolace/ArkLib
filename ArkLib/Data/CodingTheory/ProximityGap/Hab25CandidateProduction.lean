@@ -185,12 +185,11 @@ theorem curve_pin_of_node_agreement {n L k : ℕ} (hk : 0 < k) {domain : Fin n �
     rw [Finset.sup_lt_iff (WithBot.bot_lt_coe _)]
     intro j _
     refine lt_of_le_of_lt ?_ (lagrangeCurveTuple_degree_lt domain u T j)
-    calc (Polynomial.C (γ ^ (j : ℕ)) * lagrangeCurveTuple domain u T j).degree
-        ≤ (Polynomial.C (γ ^ (j : ℕ))).degree + (lagrangeCurveTuple domain u T j).degree :=
-          Polynomial.degree_mul_le _ _
-      _ ≤ 0 + (lagrangeCurveTuple domain u T j).degree :=
-          add_le_add_right Polynomial.degree_C_le _
-      _ = (lagrangeCurveTuple domain u T j).degree := zero_add _
+    have hCsmul : Polynomial.C (γ ^ (j : ℕ)) * lagrangeCurveTuple domain u T j =
+        (γ ^ (j : ℕ)) • lagrangeCurveTuple domain u T j := by
+      rw [Polynomial.smul_eq_C_mul]
+    rw [hCsmul]
+    exact Polynomial.degree_smul_le _ _
   have hq : ∑ j : Fin L, Polynomial.C (γ ^ (j : ℕ)) * lagrangeCurveTuple domain u T j
       = Lagrange.interpolate T (fun t => domain t)
         (fun t => ∑ j : Fin L, γ ^ (j : ℕ) • u j t) := by
