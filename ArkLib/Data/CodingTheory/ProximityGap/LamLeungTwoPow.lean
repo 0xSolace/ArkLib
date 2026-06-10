@@ -1393,4 +1393,109 @@ theorem vanishing_sum_mu_p_closed {p m : ℕ} (hp : p.Prime) {ζ : F}
 
 end PrimePowerBase
 
+/-! ## The coefficient-general slice theorem: the de Bruijn engine
+
+Upgrading the O66 machinery from subset indicators to ARBITRARY ℚ-coefficients: any
+vanishing ℚ-linear combination of `p^(m+1)`-th roots of unity has all `p` of its
+coefficient slices equal. This is exactly the engine the two-prime (de Bruijn) induction
+needs: the CRT double-slice argument applies this theorem at one prime with coefficients
+in the other prime's cyclotomic field, and the slice DIFFERENCES it produces carry
+`{−1,0,1}` coefficients — outside the subset world, inside this one. -/
+
+section CoefficientSlices
+
+/-- **The coefficient-general prime-power slice theorem**. -/
+theorem vanishing_coeff_slices {p m : ℕ} (hp : p.Prime) {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (p ^ (m + 1)))
+    (c : ℕ → ℚ)
+    (hsum : ∑ e ∈ Finset.range (p ^ (m + 1)), (c e : F) * ζ ^ e = 0) :
+    ∀ s < p ^ m, ∀ i < p, ∀ i' < p, c (i * p ^ m + s) = c (i' * p ^ m + s) := by
+  classical
+  set n := p ^ (m + 1) with hn
+  set q := p ^ m with hq
+  have hppos : 0 < p := hp.pos
+  have hqpos : 0 < q := by positivity
+  have hnq : n = p * q := by rw [hn, hq]; ring
+  have hnpos : 0 < n := by rw [hn]; positivity
+  set P : ℚ[X] := ∑ e ∈ Finset.range n, Polynomial.C (c e) * X ^ e with hP
+  have hPcoeff : ∀ j < n, P.coeff j = c j := by
+    intro j hj
+    rw [hP, Polynomial.finset_sum_coeff]
+    rw [Finset.sum_congr rfl (fun e _ => by
+      rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow])]
+    rw [Finset.sum_eq_single j (fun e _ hej => by
+      rw [if_neg (fun h => hej h.symm), mul_zero]) (fun h =>
+      absurd (Finset.mem_range.mpr hj) h)]
+    rw [if_pos rfl, mul_one]
+  have hPζ : Polynomial.aeval ζ P = 0 := by
+    rw [hP, map_sum]
+    rw [Finset.sum_congr rfl (fun e _ => by
+      rw [map_mul, Polynomial.aeval_C, map_pow, Polynomial.aeval_X])]
+    exact hsum
+  have hdvd : (∑ i ∈ Finset.range p, (X : ℚ[X]) ^ (i * q)) ∣ P := by
+    have hmin := minpoly.dvd ℚ ζ hPζ
+    rw [← Polynomial.cyclotomic_eq_minpoly_rat hζ (by positivity)] at hmin
+    have hcyc : Polynomial.cyclotomic (p ^ (m + 1)) ℚ
+        = ∑ i ∈ Finset.range p, (X : ℚ[X]) ^ (i * q) := by
+      rw [Polynomial.cyclotomic_prime_pow_eq_geom_sum hp]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      rw [← pow_mul, hq, mul_comm]
+    rwa [hn, hcyc] at hmin
+  intro s hs i hi i' hi'
+  have hb : ∀ j < p, j * q + s < n := by
+    intro j hj
+    rw [hnq]
+    have h1 : (j + 1) * q ≤ p * q := Nat.mul_le_mul_right q (by omega)
+    have : j * q + q ≤ p * q := by
+      calc j * q + q = (j + 1) * q := by ring
+      _ ≤ p * q := h1
+    omega
+  rw [← hPcoeff _ (hb i hi), ← hPcoeff _ (hb i' hi')]
+  obtain ⟨R, hR⟩ := hdvd
+  by_cases hP0 : P = 0
+  · simp [hP0]
+  have hR0 : R ≠ 0 := fun h => hP0 (by rw [hR, h, mul_zero])
+  have hG : (∑ i ∈ Finset.range p, (X : ℚ[X]) ^ (i * q)) ≠ 0 := by
+    intro h
+    have := congrArg (fun Q : ℚ[X] => Q.coeff 0) h
+    simp only [Polynomial.finset_sum_coeff] at this
+    rw [Finset.sum_eq_single 0 (fun j _ hj => by
+      rw [Polynomial.coeff_X_pow]
+      rw [if_neg (by
+        intro h0
+        rcases Nat.mul_eq_zero.mp h0.symm with h | h
+        · exact hj h
+        · omega)]) (fun h0 => absurd (Finset.mem_range.mpr hppos) h0)] at this
+    simp at this
+  have hdegP : P.natDegree < n := by
+    rw [hP]
+    have hle : (∑ e ∈ Finset.range n, Polynomial.C (c e) * (X : ℚ[X]) ^ e).natDegree
+        ≤ n - 1 :=
+      Polynomial.natDegree_sum_le_of_forall_le _ _ fun e he => by
+        refine le_trans (Polynomial.natDegree_C_mul_le _ _) ?_
+        rw [Polynomial.natDegree_X_pow]
+        have := Finset.mem_range.mp he
+        omega
+    omega
+  have hdegR : R.natDegree < q := by
+    have hmul := Polynomial.natDegree_mul hG hR0
+    rw [← hR] at hmul
+    have hGlow : (p - 1) * q ≤ (∑ i ∈ Finset.range p, (X : ℚ[X]) ^ (i * q)).natDegree := by
+      apply Polynomial.le_natDegree_of_ne_zero
+      rw [Polynomial.finset_sum_coeff]
+      rw [Finset.sum_eq_single (p - 1) (fun j hj hjne => by
+        rw [Polynomial.coeff_X_pow, if_neg (fun h => hjne (by
+          have := Nat.eq_of_mul_eq_mul_right hqpos h
+          omega))]) (fun h0 => absurd (Finset.mem_range.mpr (by omega)) h0)]
+      rw [Polynomial.coeff_X_pow, if_pos rfl]
+      norm_num
+    have hcount : (p - 1) * q + q = n := by
+      rw [hnq]
+      calc (p - 1) * q + q = ((p - 1) + 1) * q := by ring
+      _ = p * q := by congr 1; omega
+    omega
+  rw [hR, packet_mul_coeff hqpos hdegR hi hs, packet_mul_coeff hqpos hdegR hi' hs]
+
+end CoefficientSlices
+
 end LamLeungTwoPow
