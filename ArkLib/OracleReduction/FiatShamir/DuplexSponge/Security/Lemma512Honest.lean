@@ -888,6 +888,140 @@ theorem jbt_time_h_first_perm_forward_getElem?_of_not_E
     (tr := tr) h (state := state) (S := S) (p := p) (hp := hp)
     (pairIdx := pairIdx) (hpair := hpair)
 
+/-- In an `E_time_p_honest` witness, the successor pair index cannot be the terminal sentinel:
+otherwise the current nonterminal permutation index would have to be after `tr.length`. -/
+theorem jbt_time_p_next_outputState_bound
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (p : Sigma fun seq : DuplexSpongeFS.Backtrack.BacktrackSequence tr state =>
+      DuplexSpongeFS.Backtrack.BacktrackIndexList tr seq)
+    (hp : p ∈ DuplexSpongeFS.Backtrack.J_BT S)
+    (ix : Fin p.1.outputState.length)
+    (hgt : (p.2.2 ⟨ix.val, by
+        have := p.1.inputState_length_eq_outputState_length_succ
+        omega⟩).val >
+      (p.2.2 ⟨ix.val + 1, by
+        have := p.1.inputState_length_eq_outputState_length_succ
+        omega⟩).val) :
+    ix.val + 1 < p.1.outputState.length := by
+  classical
+  unfold DuplexSpongeFS.Backtrack.J_BT at hp
+  rw [Finset.mem_image] at hp
+  obtain ⟨seq, _hseq, hp_eq⟩ := hp
+  subst p
+  by_contra hnot
+  let curIdx : Fin seq.inputState.length := ⟨ix.val, by
+    rw [seq.inputState_length_eq_outputState_length_succ]
+    exact Nat.lt_succ_of_lt ix.isLt⟩
+  have hcurSome :=
+    DuplexSpongeFS.Backtrack.BacktrackSequence.index_perm_getElem?_of_lt
+      (trace := tr) (state := state) (seq := seq)
+      (pairIdx := curIdx) (hpair := by simp [curIdx])
+  have hcurLt : ((DuplexSpongeFS.Backtrack.BacktrackSequence.Index tr state seq).2 curIdx).val
+      < tr.length := by
+    rcases hcurSome with hcurSome | hcurSome
+    · exact (List.getElem?_eq_some_iff.mp hcurSome).1
+    · exact (List.getElem?_eq_some_iff.mp hcurSome).1
+  have hnext :
+      ((DuplexSpongeFS.Backtrack.BacktrackSequence.Index tr state seq).2 ⟨ix.val + 1, by
+        rw [seq.inputState_length_eq_outputState_length_succ]
+        exact Nat.succ_lt_succ ix.isLt⟩).val = tr.length := by
+    dsimp [DuplexSpongeFS.Backtrack.BacktrackSequence.Index]
+    simp [hnot]
+  have hgt' :
+      ((DuplexSpongeFS.Backtrack.BacktrackSequence.Index tr state seq).2 curIdx).val >
+        ((DuplexSpongeFS.Backtrack.BacktrackSequence.Index tr state seq).2 ⟨ix.val + 1, by
+          rw [seq.inputState_length_eq_outputState_length_succ]
+          exact Nat.succ_lt_succ ix.isLt⟩).val := by
+    simpa [curIdx] using hgt
+  omega
+
+/-- Off `E`, an honest permutation-ordering witness gives adjacent raw forward permutation
+entries: the successor chain step appears earlier in the raw trace. -/
+theorem e_time_p_honest_raw_adjacent_forward_witness_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hTime : DuplexSpongeFS.KeyLemmaFoundations.E_time_p_honest tr state S) :
+    ∃ p ∈ DuplexSpongeFS.Backtrack.J_BT S,
+    ∃ (curIdx nextIdx : Fin p.1.inputState.length)
+      (hcur : curIdx.val < p.1.outputState.length)
+      (hnext : nextIdx.val < p.1.outputState.length),
+      nextIdx.val = curIdx.val + 1 ∧
+      (p.2.2 nextIdx).val < (p.2.2 curIdx).val ∧
+      GetElem?.getElem? tr (p.2.2 curIdx).val =
+        some (⟨Sum.inr (Sum.inl p.1.inputState[curIdx]),
+          p.1.outputState[curIdx.val]'hcur⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+      GetElem?.getElem? tr (p.2.2 nextIdx).val =
+        some (⟨Sum.inr (Sum.inl p.1.inputState[nextIdx]),
+          p.1.outputState[nextIdx.val]'hnext⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  unfold DuplexSpongeFS.KeyLemmaFoundations.E_time_p_honest at hTime
+  obtain ⟨p, hp, ix, hgt⟩ := hTime
+  have hnextBound :=
+    jbt_time_p_next_outputState_bound (tr := tr) (state := state) (S := S)
+      (p := p) hp ix hgt
+  let curIdx : Fin p.1.inputState.length := ⟨ix.val, by
+    rw [p.1.inputState_length_eq_outputState_length_succ]
+    exact Nat.lt_succ_of_lt ix.isLt⟩
+  let nextIdx : Fin p.1.inputState.length := ⟨ix.val + 1, by
+    rw [p.1.inputState_length_eq_outputState_length_succ]
+    exact Nat.lt_succ_of_lt hnextBound⟩
+  have hcur : curIdx.val < p.1.outputState.length := by
+    simp [curIdx]
+  have hnext : nextIdx.val < p.1.outputState.length := by
+    simpa [nextIdx] using hnextBound
+  have hcurPerm :=
+    jbt_perm_forward_getElem?_of_not_E
+      (tr := tr) h (state := state) (S := S) (p := p) (hp := hp)
+      (pairIdx := curIdx) (hpair := hcur)
+  have hnextPerm :=
+    jbt_perm_forward_getElem?_of_not_E
+      (tr := tr) h (state := state) (S := S) (p := p) (hp := hp)
+      (pairIdx := nextIdx) (hpair := hnext)
+  refine ⟨p, hp, curIdx, nextIdx, hcur, hnext, ?_, ?_, hcurPerm, hnextPerm⟩
+  · simp [curIdx, nextIdx]
+  · simpa [curIdx, nextIdx] using hgt
+
+/-- Off `E`, an honest permutation-ordering witness gives the raw adjacent-forward capacity
+shape before any dedup transport: the earlier successor input capacity equals the later current
+output capacity. -/
+theorem e_time_p_honest_raw_forward_capacity_witness_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hTime : DuplexSpongeFS.KeyLemmaFoundations.E_time_p_honest tr state S) :
+    ∃ p ∈ DuplexSpongeFS.Backtrack.J_BT S,
+    ∃ (curIdx nextIdx : Fin p.1.inputState.length)
+      (hcur : curIdx.val < p.1.outputState.length)
+      (hnext : nextIdx.val < p.1.outputState.length),
+      nextIdx.val = curIdx.val + 1 ∧
+      (p.2.2 nextIdx).val < (p.2.2 curIdx).val ∧
+      GetElem?.getElem? tr (p.2.2 curIdx).val =
+        some (⟨Sum.inr (Sum.inl p.1.inputState[curIdx]),
+          p.1.outputState[curIdx.val]'hcur⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+      GetElem?.getElem? tr (p.2.2 nextIdx).val =
+        some (⟨Sum.inr (Sum.inl p.1.inputState[nextIdx]),
+          p.1.outputState[nextIdx.val]'hnext⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+      (p.1.outputState[curIdx.val]'hcur).capacitySegment =
+        p.1.inputState[nextIdx].capacitySegment := by
+  obtain ⟨p, hp, curIdx, nextIdx, hcur, hnext, hsucc, hlt, hcurPerm, hnextPerm⟩ :=
+    e_time_p_honest_raw_adjacent_forward_witness_of_not_E
+      (tr := tr) h (state := state) (S := S) hTime
+  refine ⟨p, hp, curIdx, nextIdx, hcur, hnext, hsucc, hlt, hcurPerm, hnextPerm, ?_⟩
+  let outIdx : Fin p.1.outputState.length := ⟨curIdx.val, hcur⟩
+  have hcap := p.1.capacitySegment_output_eq_input outIdx
+  have houtNext : outIdx.val + 1 < p.1.outputState.length := by
+    simpa [outIdx, hsucc] using hnext
+  have hnextEq :
+      nextIdx = ⟨outIdx.val + 1, by
+        rw [p.1.inputState_length_eq_outputState_length_succ]
+        exact Nat.lt_succ_of_lt houtNext⟩ := by
+    apply Fin.ext
+    simpa [outIdx] using hsucc
+  simpa [outIdx, hnextEq] using hcap
+
 /-- Off `E`, an honest hash-ordering witness gives concrete raw trace entries: the anchoring
 hash query and the first forward permutation query, with the permutation entry earlier in the
 trace. This is the raw-trace payload needed before the dedup collision step of M2c. -/
@@ -1078,6 +1212,9 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_no_prior_of_lt
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_outputState_nonempty
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_first_perm_forward_getElem?_of_not_E
+#print axioms DuplexSpongeFS.Sponge316.jbt_time_p_next_outputState_bound
+#print axioms DuplexSpongeFS.Sponge316.e_time_p_honest_raw_adjacent_forward_witness_of_not_E
+#print axioms DuplexSpongeFS.Sponge316.e_time_p_honest_raw_forward_capacity_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_capacity_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasForwardCapacityBeforeHash_of_not_E
