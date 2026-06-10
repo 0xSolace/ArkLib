@@ -624,6 +624,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.IntegerThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.InteriorListCountBridge
 import ArkLib.Data.CodingTheory.ProximityGap.InteriorThresholdBracket
 import ArkLib.Data.CodingTheory.ProximityGap.InterleavedListMCACollapse
+import ArkLib.Data.CodingTheory.ProximityGap.InterleavingStabilityMCA
 import ArkLib.Data.CodingTheory.ProximityGap.Issue141Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue232VerifiedBricks
