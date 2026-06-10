@@ -4163,3 +4163,18 @@ O90 closed with "what remains is WIRING: run the recursion down the digits". Thi
 * Teeth: 1 + i ≠ 0 DERIVED from the headline (hypothetical vanishing of the non-closed {0,1} at n = 4 contradicts decidable non-closure).
 
 **Where the open core moves (HOLD, wall named):** the full two-prime assembly (n = p^a q^b ⟹ S = S_p ⊔ S_q with S_p +n/p-closed, S_q +n/q-closed) is induction + this base + O87's squarefree dichotomy, EXCEPT one missing analytic brick: **THREAD-SPLIT** — for p² ∣ n, a vanishing sum at ζ_n splits into p vanishing thread sums at ζ_n^p (ℚ(ζ_{n/p})-linear independence of 1, ζ, …, ζ^{p-1}, i.e. minpoly ℚ⟮ζ^p⟯ ζ = X^p − ζ^p). The probe verifies it as an exhaustive IFF at 12, 18; no in-tree brick proves it. The path is concrete and CRTPacketMinpoly-shaped: divisibility by the monic binomial + tower degree bound via `Nat.totient_mul_of_prime_of_dvd` (φ(n) = p·φ(n/p) for p² ∣ n) + `linearIndependent_pow` (Mathlib RingTheory/PowerBasis.lean:415) for the coefficient extraction; then the lift bookkeeping (packets lift to packets, both types, as the probe's decomposer executes). That single brick + induction completes Theorem de Bruijn 1953 two-prime in-tree.
+
+### O80 — THE SPECTRAL SYNDROME TRANSFER: the full window descends in one theorem
+
+`DeBruijnTwoPrime.packetUnion_spectral_transfer` (axiom-clean, 0 sorry): ONE spectrum R
+carries the ENTIRE syndrome window — for EVERY exponent e with p ∤ e,
+
+    Σ_{y∈S} y^{q·e} = q · Σ_{r∈R} r^e.
+
+Supersedes O79 (its e = 1 case): μ_p-packets die at every exponent q·e with p ∤ e
+(ω_p^{qe} primitive via Coprime.mul_left of the two coprimalities), μ_q-packets each
+contribute q·(z^q)^e with the SAME spectrum point for all e, and the orbit argument
+keeps R collision-free. Consequence: a window of S at {q·e : e ≤ w, p ∤ e} is a window
+of R at {e ≤ w, p ∤ e} one q-level down — THE complete recursion step of the windowed
+two-prime law. The full windowed law is now: iterate (b+1 times), apply the prime-power
+endpoint (O66), and stack the p-side climb — every ingredient machine-checked.
