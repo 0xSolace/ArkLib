@@ -1064,7 +1064,7 @@ theorem stirCheckingRbrSoundness_of_card_le [DecidableEq ι]
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le φ deg δ hδ hq)
-    (PerRoundProximityGap.refl ProxGapBound)
+    (fun _ => rfl)
 
 /-- RBR knowledge soundness of the checking verifier in the sharp vacuous regime
 `|F| ≤ deg^2 * 10^7`, conditional only on the protocol-level CA bridge. -/
@@ -1077,7 +1077,7 @@ theorem stirCheckingRbrSoundness_of_card_le_e7 [DecidableEq ι]
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le_e7 φ deg δ hq)
-    (PerRoundProximityGap.refl ProxGapBound)
+    (fun _ => rfl)
 
 /-- RBR knowledge soundness of the checking verifier from the #304 large-sector residual family,
 conditional only on the protocol-level checking bridge. -/
@@ -1092,7 +1092,7 @@ theorem stirCheckingRbrSoundness_of_large [DecidableEq ι]
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_large φ deg δ hLarge)
-    (PerRoundProximityGap.refl ProxGapBound)
+    (fun _ => rfl)
 
 /-- **The checking IOPP is `IsSecureWithGap`**, with the completeness leg PROVEN
 (`stirCheckingIOP_perfectCompleteness`) and the soundness leg consumed as the named
@@ -1270,7 +1270,7 @@ theorem stir_rbr_soundness_of_checkingIOP_card_le
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le (P.φ 0) (degree ι P 0) (Dist.δ 0)
       hδsqrt hq)
-    (PerRoundProximityGap.refl ProxGapBound)
+    (fun _ => rfl)
     hfold hrest
 
 /-- **Lemma 5.4 through the CHECKING IOPP, sharp vacuous CA discharge**: as
@@ -1314,7 +1314,7 @@ theorem stir_rbr_soundness_of_checkingIOP_card_le_e7
     ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le_e7 (P.φ 0) (degree ι P 0) (Dist.δ 0) hq)
-    (PerRoundProximityGap.refl ProxGapBound)
+    (fun _ => rfl)
     hfold hrest
 
 /-- **Lemma 5.4 through the CHECKING IOPP, large-sector CA discharge**: as
@@ -1361,7 +1361,7 @@ theorem stir_rbr_soundness_of_checkingIOP_large
     ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_large (P.φ 0) (degree ι P 0) (Dist.δ 0) hLarge)
-    (PerRoundProximityGap.refl ProxGapBound)
+    (fun _ => rfl)
     hfold hrest
 
 /-- **Theorem 5.1 through the CHECKING IOPP**: `stir_main` discharged with
@@ -1389,7 +1389,7 @@ theorem stir_main_of_checkingIOP_CA
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (-Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -1422,7 +1422,7 @@ theorem stir_main_of_checkingIOP_card_le
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) = secpar / (- Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -1431,7 +1431,7 @@ theorem stir_main_of_checkingIOP_card_le
   stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le φ degree δ hδsqrt hq)
-    (PerRoundProximityGap.refl ProxGapBound)
+    (fun _ => rfl)
     hε hM hLen hQin hQpf
 
 /-- **Theorem 5.1 through the CHECKING IOPP, sharp vacuous CA discharge**: as
@@ -1453,7 +1453,7 @@ theorem stir_main_of_checkingIOP_card_le_e7
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) = secpar / (- Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -1462,7 +1462,7 @@ theorem stir_main_of_checkingIOP_card_le_e7
   stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_card_le_e7 φ degree δ hq)
-    (PerRoundProximityGap.refl ProxGapBound)
+    (fun _ => rfl)
     hε hM hLen hQin hQpf
 
 /-- **Theorem 5.1 through the CHECKING IOPP, large-sector CA discharge**: as
@@ -1487,7 +1487,7 @@ theorem stir_main_of_checkingIOP_large
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) = secpar / (- Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -1496,7 +1496,7 @@ theorem stir_main_of_checkingIOP_large
   stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
     ProxGapBound ProxGapBound hBridge
     (strictCoeffPolysResidual_all_of_large φ degree δ hLarge)
-    (PerRoundProximityGap.refl ProxGapBound)
+    (fun _ => rfl)
     hε hM hLen hQin hQpf
 
 end CheckingFrontDoors

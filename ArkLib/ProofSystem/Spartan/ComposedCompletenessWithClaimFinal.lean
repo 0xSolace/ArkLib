@@ -19,6 +19,7 @@ namespace Spartan.Spec.Bricks
 
 set_option maxHeartbeats 4000000
 set_option synthInstance.maxHeartbeats 4000000
+set_option synthInstance.maxSize 512
 set_option linter.unusedSectionVars false
 
 variable {R : Type 0} [CommRing R] [IsDomain R] [Fintype R] [DecidableEq R] [Inhabited R]

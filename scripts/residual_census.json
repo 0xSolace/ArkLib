@@ -1609,6 +1609,14 @@
    "line": 78,
    "providers": [
     {
+     "name": "Logup.issue13_sumcheckSoundnessResidual_projClosed",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Logup/Security/Issue13Status.lean",
+     "line": 226,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
      "name": "Logup.sumcheckSoundnessResidual_holds_of_rbr",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Logup/Security/RbrToSoundBridge.lean",
@@ -1629,6 +1637,14 @@
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Logup/Security/SumcheckSoundnessLift.lean",
      "line": 193,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "Logup.sumcheckSoundnessResidual_pointwise",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Logup/Security/SumcheckSoundnessPointwise.lean",
+     "line": 129,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -1813,13 +1829,13 @@
    "name": "stirCheckingRbrSoundnessResidual",
    "fq_name": "StirIOP.MultiRound.stirCheckingRbrSoundnessResidual",
    "file": "ArkLib/ProofSystem/Stir/CheckingVerifier.lean",
-   "line": 948,
+   "line": 953,
    "providers": [
     {
      "name": "StirIOP.MultiRound.stirCheckingRbrSoundness_of_CA",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Stir/CheckingVerifier.lean",
-     "line": 977,
+     "line": 982,
      "conditional_on_residuals": [
       "StrictCoeffPolysResidual"
      ],
@@ -1829,7 +1845,7 @@
      "name": "StirIOP.MultiRound.stirCheckingRbrSoundness_of_card_le",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Stir/CheckingVerifier.lean",
-     "line": 1036,
+     "line": 1057,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -1837,7 +1853,15 @@
      "name": "StirIOP.MultiRound.stirCheckingRbrSoundness_of_card_le_e7",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Stir/CheckingVerifier.lean",
-     "line": 1050,
+     "line": 1071,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "StirIOP.MultiRound.stirCheckingRbrSoundness_of_large",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Stir/CheckingVerifier.lean",
+     "line": 1084,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -2115,7 +2139,15 @@
      "name": "Spartan.Spec.Bricks.composedCompletenessResidual_proven",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Spartan/ComposedCompletenessFinal.lean",
-     "line": 78,
+     "line": 88,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "Spartan.Spec.Bricks.composedCompletenessResidual_of_two_leaves",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Spartan/ComposedCompletenessTwoLeaves.lean",
+     "line": 46,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -2148,7 +2180,7 @@
      "name": "Spartan.Spec.Bricks.composedCompletenessWithClaimResidual_proven",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Spartan/ComposedCompletenessWithClaimFinal.lean",
-     "line": 29,
+     "line": 30,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
