@@ -1669,6 +1669,7 @@ import ArkLib.ToMathlib.OrderZeroAgreementSupply
 import ArkLib.ToMathlib.PartitionRecursion
 import ArkLib.ToMathlib.PerPlaceSeparabilitySupply
 import ArkLib.ToMathlib.PerZProximateRoot
+import ArkLib.ToMathlib.PigeonholeTruncationCapstone
 import ArkLib.ToMathlib.PlaceGeometryFromLocalSeries
 import ArkLib.ToMathlib.PlaceGeometrySupply
 import ArkLib.ToMathlib.PlaceSeriesCanonical
