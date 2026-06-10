@@ -5037,3 +5037,21 @@ theorems stand.
 ### O116 — LAM–LEUNG REDUCED TO MINIMAL VANISHING SUMS: the positivity kernel isolated
 
 `MinimalVanishingReduction.lean` (axiom-clean ×4, Mathlib-only): `exists_minimal_vanishing_subweight` (every nonzero vanishing ℕ-weight dominates a minimal one — strong induction on the total), `span_of_minimal_span` (peel minimal sums; differences of vanishing weights vanish; totals strictly drop), `lam_leung_iff_minimal` (the ℕ-span law ⟺ its restriction to MINIMAL weights). With O110 (squarefree reduction) + O104 (two-prime base): **Lam–Leung's theorem is now equivalent to the single statement "minimal vanishing sums at squarefree n with ≥3 primes have weight in ℕp₁+…+ℕp_k"** — exactly the Conway–Jones (Acta Arith. 30 (1976)) / Lam–Leung §3–5 minimal-sum structure theory, the last unformalized ingredient. The O105 witness is such a minimal sum (weight 6 = 3+3 ✓ in span, as predicted).
+
+### O123 — THE SET-FORM LAW + ALIVE-TRACE DETERMINATION: the two-prime budget mechanism below p
+
+Two theorems (axiom-clean, 0 sorry; my lane), the counting payoff of O117:
+
+* `windowed_eq_union_alive_below_p` — the set-form law: every element of a windowed set
+  lies in the filter of its own alive covering coset — S IS the union of the alive full
+  cosets it contains.
+* `windowed_determined_by_alive_trace` — THE BUDGET MECHANISM: two windowed sets with
+  the same alive-coset trace (the same full alive cosets through every point) are EQUAL
+  — the windowed family injects into the alive-coset trace data. This is the two-prime
+  below-p analogue of the 2-power recovery injection (tower_count, O55): the counting
+  form |F_n(t)| ≤ #(alive-coset traces) follows for any concrete instantiation.
+
+With O117 (coverage), O123 (determination), and the O70 tables (exact counts), the
+below-p regime of the two-prime mixed-radix theory now has the full arc: law, set form,
+and budget mechanism — all machine-checked. The above-p regime keeps its two candidate
+engines (O122); the bilateral identities stand ready.
