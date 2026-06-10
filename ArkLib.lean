@@ -1653,6 +1653,7 @@ import ArkLib.ToMathlib.GSSurfaceHtailPigeonhole
 import ArkLib.ToMathlib.GSSurfaceKeystone
 import ArkLib.ToMathlib.GSSurfaceSupply
 import ArkLib.ToMathlib.GSSurfaceTailSupply
+import ArkLib.ToMathlib.GSSurfaceTaylorRepair
 import ArkLib.ToMathlib.GammaCoeffRecursion
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.GenuineMonicCapstone
