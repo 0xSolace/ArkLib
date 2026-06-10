@@ -1506,6 +1506,7 @@ import ArkLib.ProofSystem.Stir.RoundCompleteness
 import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.ProofSystem.Stir.RoundVector
 import ArkLib.ProofSystem.Stir.RoundVectorCompleteness
+import ArkLib.ProofSystem.Stir.SpotCheckBound
 import ArkLib.ProofSystem.Stir.TailCompleteness
 import ArkLib.ProofSystem.Stir.VSpecBridge
 import ArkLib.ProofSystem.Stir.VectorBridge
