@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.ProofSystem.Whir.CheckedVerifier
+import ArkLib.Data.Probability.MarginalBound
 
 /-!
 # The Schwartz–Zippel core for the WHIR checked verifier (#302)
@@ -87,6 +88,52 @@ theorem card_listEval_eq_le (cs cs' : List F)
 
 end Whir302SZ
 
+-- ## The probability-side accounting
+
+section Probability
+
+open OracleComp OracleSpec ProbabilityTheory
+open scoped ENNReal NNReal
+
+namespace Whir302SZ
+
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {β : Type} {m : Type → Type v} [Monad m] [HasEvalSPMF m]
+
+/-- **The per-round salvage probability bound** (the quantitative WHIR flip estimate): in any
+game that draws a challenge `r` whose marginal is dominated by uniform-on-`F` and then runs a
+continuation whose success forces the salvage equation `listEval cs r = listEval cs' r` for two
+genuinely different chains, the success probability is at most `max(len cs, len cs') / |F|`. -/
+theorem probEvent_salvage_le (mx : m F) (k : F → m β) (q : β → Prop)
+    (cs cs' : List F)
+    (hne : listPoly cs ≠ listPoly cs') (hcs : cs ≠ []) (hcs' : cs' ≠ [])
+    (hunif : ∀ x : F, Pr[= x | mx] ≤ (Fintype.card F : ℝ≥0∞)⁻¹)
+    (hsalvage : ∀ x : F, ¬ (Whir302Checked.listEval cs x = Whir302Checked.listEval cs' x) →
+      Pr[ q | k x] = 0) :
+    Pr[ q | mx >>= k]
+      ≤ ((max cs.length cs'.length : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
+  classical
+  refine le_trans
+    (probEvent_bind_le_uniform_marginal mx k q
+      {x : F | Whir302Checked.listEval cs x = Whir302Checked.listEval cs' x}
+      hunif hsalvage) ?_
+  apply ENNReal.div_le_div_right
+  have hcard := card_listEval_eq_le cs cs' hne hcs hcs'
+  have hfilter : (Finset.univ.filter
+        (· ∈ {x : F | Whir302Checked.listEval cs x = Whir302Checked.listEval cs' x}))
+      = (Finset.univ.filter
+        (fun r : F => Whir302Checked.listEval cs r = Whir302Checked.listEval cs' r)) := by
+    apply Finset.filter_congr
+    intro x _
+    simp [Set.mem_setOf_eq]
+  rw [hfilter]
+  exact_mod_cast hcard
+
+end Whir302SZ
+
+end Probability
+
 #print axioms Whir302SZ.listPoly_eval
 #print axioms Whir302SZ.listPoly_natDegree_lt
 #print axioms Whir302SZ.card_listEval_eq_le
+#print axioms Whir302SZ.probEvent_salvage_le
