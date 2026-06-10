@@ -92,7 +92,7 @@ private lemma hasInvEntry_eraseIdx
     have hkeep : (tr.eraseIdx idx.val)[j'.val]? = tr[j'.val]? :=
       List.getElem?_eraseIdx_of_lt hj'idx
     have hhit : tr[j'.val]? = some tr[j'] := by
-      rw [List.getElem?_eq_getElem j'.isLt]
+      simpa only [List.get_eq_getElem] using List.getElem?_eq_getElem (l := tr) j'.isLt
     rcases hcase with hc | hc
     · exact ⟨sOut, sIn, mem_of_getElem?' (by rw [hkeep, hhit, hc])⟩
     · exact ⟨sIn, sOut, mem_of_getElem?' (by rw [hkeep, hhit, hc])⟩
@@ -154,7 +154,7 @@ private lemma capacitySegmentDupPermInv_of_inv_mem
   obtain ⟨j, hj, hje⟩ := hmem
   unfold capacitySegmentDupPermInv
   exact ⟨⟨j, hj⟩, sIn.capacitySegment, ⟨sOut, sIn, hje, rfl⟩,
-    Or.inr (Or.inr (Or.inr (Or.inr ⟨⟨j, hj⟩, le_refl _, sOut, sIn, hje, rfl⟩)))⟩
+    Or.inr (Or.inr (Or.inr (Or.inr ⟨⟨j, hj⟩, le_refl _, sIn, sOut, hje, rfl⟩)))⟩
 
 /-- **Keystone**: an inverse-permutation entry anywhere in the *raw* trace fires the
 combined bad event `E`. Contrapositive: off `E`, the trace contains no `p⁻¹` entries at

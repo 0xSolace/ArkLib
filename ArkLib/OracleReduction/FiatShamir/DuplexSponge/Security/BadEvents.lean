@@ -153,7 +153,7 @@ def capacitySegmentDupPermInv : Prop :=
         (∃ j' ≤ j, ∃ stateIn3 stateOut3, baseTrace[j'] = ⟨.inr <|.inl stateIn3, stateOut3⟩ ∧
           stateIn3.capacitySegment = capSeg) ∨
         (∃ j' ≤ j, ∃ stateIn4 stateOut4, baseTrace[j'] = ⟨.inr <|.inr stateOut4, stateIn4⟩ ∧
-          stateOut4.capacitySegment = capSeg)
+          CanonicalSpongeState.capacitySegment stateIn4 = capSeg)
       )
 
 alias E_pinv := capacitySegmentDupPermInv
