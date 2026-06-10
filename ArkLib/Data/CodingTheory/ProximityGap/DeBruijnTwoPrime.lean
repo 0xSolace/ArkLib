@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
 
 /-!
 # Issue #232 — the two-prime de Bruijn structure: the CRT double-slice theorems (O67–O68)
@@ -1522,6 +1522,7 @@ section IteratedDescent
 variable [DecidableEq F] [CharZero F]
 
 /-- **The iterated spectral transfer**: the descent chain to depth `m`. -/
+omit [DecidableEq F] in
 theorem iterated_spectral_transfer {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
     (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
     (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
@@ -1534,6 +1535,7 @@ theorem iterated_spectral_transfer {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
         (∀ r ∈ R, r ^ (p ^ (a + 1) * q ^ (b + 1 - m)) = 1) ∧
         (∀ e : ℕ, ¬ p ∣ e →
           ((q : F)) ^ m * ∑ r ∈ R, r ^ e = ∑ y ∈ S, y ^ (q ^ m * e)) := by
+  classical
   intro m
   induction m with
   | zero =>
@@ -1624,5 +1626,104 @@ theorem iterated_spectral_transfer {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
             ring
 
 end IteratedDescent
+
+/-! ## The symmetric p-side chain and the chain endpoint
+
+The `p`-side descent is the same theorem with the prime roles swapped (the
+decomposition object is symmetric). And at the bottom of the `q`-side chain
+(`m = b + 1`) the spectrum lives in the pure prime-power level `μ_{p^(a+1)}`, where the
+membership-slice machinery closes it under `μ_p` — the chain's endpoint structure. -/
+
+section ChainEndpoint
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The symmetric `p`-side iterated transfer**: swap the prime roles. -/
+omit [DecidableEq F] in
+theorem iterated_spectral_transfer_p {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hsum : ∑ z ∈ S, z = 0)
+    (hwin : ∀ c, 1 ≤ c → c ≤ a → ∑ z ∈ S, z ^ (p ^ c) = 0) :
+    ∀ m, m ≤ a + 1 →
+      ∃ R : Finset F,
+        (∀ r ∈ R, ∃ w ∈ S, w ^ (p ^ m) = r) ∧
+        (∀ r ∈ R, r ^ (q ^ (b + 1) * p ^ (a + 1 - m)) = 1) ∧
+        (∀ e : ℕ, ¬ q ∣ e →
+          ((p : F)) ^ m * ∑ r ∈ R, r ^ e = ∑ y ∈ S, y ^ (p ^ m * e)) :=
+  iterated_spectral_transfer hq hp (Ne.symm hpq) hζq hζp
+    (fun z hz => by rw [mul_comm]; exact hS z hz) hsum hwin
+
+/-- **The chain endpoint**: with the full `q`-power window (through `q^(b+1)`), the
+deepest spectrum is a vanishing subset of the prime-power level `μ_{p^(a+1)}`, closed
+under every `p`-th root of unity. -/
+omit [DecidableEq F] in
+theorem deep_spectrum_mu_p_closed {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hsum : ∑ z ∈ S, z = 0)
+    (hwin : ∀ c, 1 ≤ c → c ≤ b + 1 → ∑ z ∈ S, z ^ (q ^ c) = 0) :
+    ∃ R : Finset F,
+      (∀ r ∈ R, ∃ w ∈ S, w ^ (q ^ (b + 1)) = r) ∧
+      (∀ r ∈ R, r ^ (p ^ (a + 1)) = 1) ∧
+      (∑ r ∈ R, r = 0) ∧
+      (∀ x ∈ R, ∀ g : F, g ^ p = 1 → g * x ∈ R) := by
+  classical
+  obtain ⟨R, hRpow, hRtor, hRtransfer⟩ :=
+    iterated_spectral_transfer hp hq hpq hζp hζq hS hsum
+      (fun c hc1 hcb => hwin c hc1 (by omega)) (b + 1) le_rfl
+  have hRtor' : ∀ r ∈ R, r ^ (p ^ (a + 1)) = 1 := by
+    intro r hr
+    have := hRtor r hr
+    rwa [Nat.sub_self, pow_zero, mul_one] at this
+  have hRsum : ∑ r ∈ R, r = 0 := by
+    have h1 := hRtransfer 1 (fun hdvd => hp.one_lt.ne' (Nat.dvd_one.mp hdvd))
+    rw [mul_one] at h1
+    have hwm := hwin (b + 1) (by omega) le_rfl
+    have hq0 : ((q : F)) ^ (b + 1) ≠ 0 :=
+      pow_ne_zero _ (by exact_mod_cast hq.pos.ne')
+    have := h1.trans hwm
+    rcases mul_eq_zero.mp this with h | h
+    · exact absurd h hq0
+    · simpa using h
+  refine ⟨R, hRpow, hRtor', hRsum, ?_⟩
+  -- μ_p-closure from the membership slices at the prime-power level
+  have hslices := mu_p_membership_slices (m := a) hp hζp hRtor' hRsum
+  haveI : NeZero p := ⟨hp.pos.ne'⟩
+  have hωp : IsPrimitiveRoot (ζp ^ (p ^ a)) p :=
+    hζp.pow (pow_pos hp.pos _) (by rw [pow_succ])
+  intro x hx g hg
+  obtain ⟨k, hk, hkg⟩ := hωp.eq_pow_of_pow_eq_one hg
+  -- box coordinates of x at the prime-power level
+  obtain ⟨u, hu, hux⟩ := hζp.eq_pow_of_pow_eq_one (hRtor' x hx)
+  obtain ⟨i, s, rfl, hs⟩ : ∃ i' s', u = i' * p ^ a + s' ∧ s' < p ^ a :=
+    ⟨u / p ^ a, u % p ^ a, (Nat.div_add_mod' u (p ^ a)).symm,
+      Nat.mod_lt _ (pow_pos hp.pos a)⟩
+  have hi : i < p := by
+    by_contra hge
+    push Not at hge
+    have h1 : p * p ^ a ≤ i * p ^ a := Nat.mul_le_mul_right _ hge
+    have h2 : i * p ^ a + s < p ^ (a + 1) := hu
+    rw [pow_succ'] at h2
+    omega
+  set i2 := (k + i) % p with hi2
+  have hi2p : i2 < p := Nat.mod_lt _ hp.pos
+  have hgx : g * x = ζp ^ (i2 * p ^ a + s) := by
+    rw [← hkg, ← hux, ← pow_mul, ← pow_add]
+    have hsplit : k + i = p * ((k + i) / p) + (k + i) % p := (Nat.div_add_mod _ p).symm
+    have hdecomp : p ^ a * k + (i * p ^ a + s)
+        = p ^ (a + 1) * ((k + i) / p) + (i2 * p ^ a + s) := by
+      calc p ^ a * k + (i * p ^ a + s) = (k + i) * p ^ a + s := by ring
+      _ = (p * ((k + i) / p) + (k + i) % p) * p ^ a + s := by rw [← hsplit]
+      _ = (p * p ^ a) * ((k + i) / p) + (((k + i) % p) * p ^ a + s) := by ring
+      _ = p ^ (a + 1) * ((k + i) / p) + (i2 * p ^ a + s) := by
+          rw [← pow_succ', hi2]
+    rw [hdecomp, pow_add, pow_mul, hζp.pow_eq_one, one_pow, one_mul]
+  rw [hgx]
+  exact (hslices s hs i2 hi2p i hi).mpr (by rwa [hux])
+
+end ChainEndpoint
 
 end DeBruijnTwoPrime

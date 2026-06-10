@@ -4236,3 +4236,22 @@ weight filter IS the surviving counting question (O70's frontier). Iterating dow
 tower multiplies the constraints: each level divides out another locator. Next named
 step: the union/incidence count — how many loci can a single f serve, and the
 finite-field cardinality corollary `#{f : slices vanish on Z} = q^{max(0, k−2|Z|)}`.
+
+### O82 — THE SYMMETRIC P-SIDE CHAIN + THE CHAIN ENDPOINT (both halves meet Lam–Leung)
+
+Two theorems (axiom-clean, 0 sorry):
+
+* `iterated_spectral_transfer_p` — the p-side descent chain as a role-swap instantiation
+  of O81 (the decomposition object is symmetric; only the torsion exponent needs
+  mul_comm). Both prime directions of the windowed law now have complete descent chains.
+* `deep_spectrum_mu_p_closed` — THE CHAIN ENDPOINT: with the full q-power window
+  (through q^(b+1)), the deepest spectrum R_{b+1} is a vanishing subset of the PURE
+  prime-power level μ_{p^(a+1)}, and it is CLOSED under every p-th root of unity —
+  the O81 chain welded to the prime-power membership-slice machinery
+  (mu_p_membership_slices + the box/wrap bookkeeping). The descent now lands on a
+  STRUCTURED object: a μ_p-closed vanishing set, i.e. a union of μ_p-cosets (full_tower
+  shape) at the bottom of the two-prime tower.
+
+The windowed law's remaining open half is now exactly ONE move: upward reconstruction
+(lift the endpoint/spectrum structure back through the chain to the d-coset reassembly
+of S that the O70-verified law describes).
