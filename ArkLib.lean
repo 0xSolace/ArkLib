@@ -1320,6 +1320,7 @@ import ArkLib.ProofSystem.Logup.Security.LogupClearedGrandSum
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessClose
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessEmptyOracle
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessFinal
+import ArkLib.ProofSystem.Logup.Security.LogupCompletenessMsgSeam
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncond
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncondSumcheck
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessWired
