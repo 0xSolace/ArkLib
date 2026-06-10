@@ -29,20 +29,22 @@ proven completeness components plus the honest-implementation side conditions. T
 its `OptionT.run`, is exactly `liftM` of `Rᵢ.run`'s own-oracle `OptionT.run`, which the proven
 challenge-seam transfer reconciles distributionally with `gameOf Rᵢ`.
 
-## What is proven here (no `sorry`)
+## What is proven here (no `sorry`, axiom-clean: `[propext, Classical.choice, Quot.sound]`)
 
 * `appendStage₁_run_eq_liftM` / `appendStage₂_run_eq_liftM` — the `OptionT.run` of the phase-`i`
-  stage body equals `liftM` of the `OptionT.run` of `Rᵢ.run` (across the challenge seam).
-* `Reduction.appendStage1Bridge` — the discharged `hStage1Bridge` (via the proven
-  `OracleReduction.evalDist_run'_challengeSeam_left`).
-* `Reduction.appendStage2Bridge` — the discharged `hStage2Bridge`. The transcript-merge marginal is
-  *proven* here: the completeness `goodOf` predicate examines only the statement/witness/output
-  marginals of the seam output, not the (merged) transcript, so the merge is invisible to it.
-* `Reduction.append_game_neverFail` — the discharged `hTot` (via `simulateQ_run_neverFail`).
-* `Reduction.append_completeness_msg` — the message-seam non-perfect append completeness with the
-  three challenge-seam residuals discharged: from the component completenesses `h₁`/`h₂` and the
-  honest-implementation side conditions, the appended reduction is complete with additive error
-  `e₁ + e₂`. This is the keystone fully discharging the completeness `hAppend` for issue #13.
+  stage body, run under the *combined* challenge oracle, equals `liftM` (across the `pSpecᵢ`
+  challenge seam) of the `OptionT.run` of `Rᵢ.run`'s own-oracle run (with, for phase 2, the
+  transcript-merge `<$>` post-map). These are the two `OptionT.run`-level seam-transfer bricks for
+  the completeness append — the completeness analogues of the soundness append's
+  `evalDist_run'_challengeSeam_left/right` (`AppendSoundnessSeamTransfer.lean`).
+
+## What remains (NOT yet in this file)
+
+The per-phase `evalDist` bridges (`appendStage1Bridge`/`appendStage2Bridge` discharging
+`hStage1Bridge`/`hStage2Bridge`), `append_game_neverFail` (`hTot`), and the assembled
+`append_completeness_msg` are the *next* layer: they compose the two `run_eq_liftM` bricks above with
+the proven challenge-seam `evalDist` transfers and `append_completeness_msg_via_seamFactor`. They are
+not written here yet; this file currently provides only the two run-level bricks they consume.
 -/
 
 open OracleComp OracleSpec ProtocolSpec OptionTStateT
@@ -160,10 +162,11 @@ theorem appendStage₁_run_eq_liftM
     simp only [Option.elim_some]
     -- Reduce to the verify-leg `.run` equality (continuation identical on both sides). The
     -- appendStage₁ leg lifts `verify` directly `oSpec → combined`; the `liftM (R₁.run)` leg lifts it
-    -- `oSpec → pSpec₁ → combined`. `OracleReduction.hcoh` reconciles them at the `OptionT` level.
-    have hco := OracleReduction.hcoh (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂)
-      (R₁.verifier.verify stmt tr)
-    exact congrArg (· >>= _) (congrArg OptionT.run hco)
+    -- `oSpec → pSpec₁ → combined`. Both lifts normalize to the same `simulateQ`-of-`simulateQ` term.
+    congr 1
+    simp only [liftM, MonadLiftT.monadLift, MonadLift.monadLift, OptionT.run_mk]
+    rw [← QueryImpl.simulateQ_compose]
+    rfl
 
 /-- **The `OptionT.run` of the phase-2 stage body equals `liftM` of `R₂.run`'s `OptionT.run`.**
 `appendStage₂ R₁ R₂ a` (the `P₂ → V₂` leg from a phase-1 success `a`, run under the *combined*
@@ -186,24 +189,29 @@ theorem appendStage₂_run_eq_liftM
   rw [← liftM_optionT_run_eq_seam_right'
     ((fun r : (FullTranscript pSpec₂ × Stmt₃ × Wit₃) × Stmt₃ =>
         ((a.1.1 ++ₜ r.1.1, r.1.2.1, r.1.2.2), r.2)) <$> R₂.run a.2 a.1.2.2)]
-  rw [show (R₂.run a.2 a.1.2.2 : OptionT (OracleComp (oSpec + [pSpec₂.Challenge]ₒ)) _)
-      = OptionT.mk (Reduction.run a.2 a.1.2.2 R₂).run from rfl]
+  -- Drop to the `OptionT`-level key identity, which carries the transcript-merge `<$>`.
+  refine congrArg OptionT.run ?_
+  -- Unfold `R₂.run` and turn the merge `<$>` into the trailing `pure (merge …)` continuation
+  -- (`map_eq_pure_bind`), exposing the prover→verify→pure chain on the RHS.
   rw [Reduction_run_def]
+  simp only [map_eq_pure_bind, bind_assoc]
   unfold appendStage₂
   rw [hag]
-  simp only [OptionT.run_mk, map_bind, map_pure, liftM_bind, liftM_pure, OptionT.run_bind,
-    OptionT.run_pure, lift_oc_optionT_coh_right', Option.elimM, bind_assoc, OptionT.run_map]
-  refine bind_congr fun o₁ => ?_
-  cases o₁ with
-  | none => rfl
-  | some x =>
-    obtain ⟨tr, so, wo⟩ := x
-    simp only [Option.elim_some]
-    -- Reduce to the verify-leg `.run` equality; the continuation `pure (merged …)` is identical on
-    -- both sides. `hcoh_right'` reconciles the direct (`oSpec → combined`) and two-step
-    -- (`oSpec → pSpec₂ → combined`) verify-leg lifts at the `OptionT` level.
-    have hco := hcoh_right' (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂)
-      (R₂.verifier.verify a.2 tr)
-    exact congrArg (· >>= _) (congrArg OptionT.run hco)
+  -- Collapse the trailing `pure`-bind on the RHS, distribute the seam-`liftM` over the prover→verify
+  -- bind chain (`liftM_bind`/`liftM_pure`), then reconcile the prover legs (`lift_oc_optionT_coh_right'`)
+  -- and verify legs (`hcoh_right'`) — both at the `OptionT` level.
+  simp only [pure_bind, liftM_bind, liftM_pure, lift_oc_optionT_coh_right']
+  -- Prover legs now match; the verify legs differ only by the direct (`MonadLift.monadLift`) vs
+  -- two-step (`liftM ∘ liftM`) seam lift, reconciled by `hcoh_right'`.
+  refine bind_congr fun a_1 => ?_
+  -- The continuation `pure (merge …)` is identical on both sides; the verify legs differ only by the
+  -- direct (`MonadLift.monadLift`) vs two-step (`liftM ∘ liftM`) seam lift. Drop to `.run`, split the
+  -- bind, and normalize both lift routes to the common `simulateQ`-of-`simulateQ` term.
+  apply OptionT.ext
+  simp only [OptionT.run_bind]
+  congr 1
+  simp only [liftM, MonadLiftT.monadLift, MonadLift.monadLift, OptionT.run_mk]
+  rw [← QueryImpl.simulateQ_compose]
+  rfl
 
 end Reduction
