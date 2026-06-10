@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
+import ArkLib.Data.CodingTheory.ProximityGap.MCAUDRBound
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25Johnson
 
 /-!
 # The Johnson numeric bound dominates the unique-decoding error
@@ -99,6 +101,40 @@ theorem card_div_card_le_johnsonBoundReal
 
 end CodingTheory
 
+namespace CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
+
+open CodingTheory.ProximityGap.Hab25Core.Hab25Johnson
+open _root_.ProximityGap _root_.ProximityGap.UDRwire _root_.Code
+open scoped NNReal ENNReal
+
+variable {ι₀ : Type} [Fintype ι₀] [Nonempty ι₀] [DecidableEq ι₀]
+variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
+
+/-- **The first unconditional instance of the numeric edge.**  Below the unique-decoding
+radius (in the regime of `epsMCA_rs_udr_le_full`), `JohnsonNumericBound` holds outright:
+the unconditional UD error `|ι|/|F|` never exceeds the Johnson budget
+(`card_div_card_le_johnsonBoundReal`).  No production hypothesis. -/
+theorem johnsonNumericBound_of_udr_window
+    (domain : ι₀ ↪ F₀) (k : ℕ) [NeZero k] (η δ : ℝ≥0)
+    (hk : k ≤ Fintype.card ι₀)
+    (hδ : δ ≤ relativeUniqueDecodingRadius
+      ((ReedSolomon.code domain k : Submodule F₀ (ι₀ → F₀)) : Set (ι₀ → F₀)))
+    (hreg : 2 * (Fintype.card ι₀ - ⌈(1 - δ) * (Fintype.card ι₀ : ℝ≥0)⌉₊)
+      < Fintype.card ι₀ - k + 1) :
+    JohnsonNumericBound domain k η δ := by
+  unfold JohnsonNumericBound
+  refine le_trans (epsMCA_rs_udr_le_full domain k hk δ hδ hreg) ?_
+  have h1 : (Fintype.card ι₀ : ℝ≥0∞) / (Fintype.card F₀ : ℝ≥0∞)
+      = ENNReal.ofReal ((Fintype.card ι₀ : ℝ) / (Fintype.card F₀ : ℝ)) := by
+    rw [ENNReal.ofReal_div_of_pos (by exact_mod_cast Fintype.card_pos),
+      ENNReal.ofReal_natCast, ENNReal.ofReal_natCast]
+  rw [h1]
+  exact ENNReal.ofReal_le_ofReal
+    (CodingTheory.card_div_card_le_johnsonBoundReal domain k η δ hk)
+
+end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
+
 /-! ## Axiom audit -/
 #print axioms CodingTheory.hab25_formula_ge_n_div_q
 #print axioms CodingTheory.card_div_card_le_johnsonBoundReal
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_udr_window
