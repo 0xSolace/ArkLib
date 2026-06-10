@@ -1,0 +1,87 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArith
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonCountWiring
+
+/-!
+# The Hab25 Johnson discharge site (#302)
+
+This module is the designated landing site for the unconditional below-Johnson numeric
+edge `johnsonNumericBound_holds` ([Hab25] Theorem 2 for smooth Reed–Solomon codes).  It
+records, as theorems, the two *exact* remaining obligations — each a single per-stack
+construction hypothesis away from the unconditional statement:
+
+* `johnsonNumericBound_holds_of_capture_production` — via the affine-capture funnel
+  (`johnsonNumericBound_of_affine_capture_of_list_shape`): a per-stack list of at most
+  `L` low-degree pairs capturing every bad scalar.  The per-scalar capture is already
+  in-tree (`BCIKS20.Claim510Capture.affineCaptured_of_pencil_proximity`); what remains
+  is its per-stack aggregation over the GS surface.
+* `johnsonNumericBound_holds_of_dichotomy_production` — via the dichotomy funnel
+  (`johnsonNumericBound_of_forall_dichotomy`): a per-stack dichotomy bundle within a
+  budget `B` satisfying the Johnson arithmetic.
+
+When either producer lands, the unconditional `johnsonNumericBound_holds` is this file's
+theorem with the hypothesis replaced by the producer call.
+
+## References
+
+* [Hab25] U. Haböck, *A note on mutual correlated agreement for Reed–Solomon codes*,
+  ePrint 2025/2110.
+* [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon
+  Codes*, ePrint 2020/654.
+-/
+
+namespace CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
+
+open CodingTheory.ProximityGap.Hab25Core.Hab25Johnson
+open Polynomial _root_.ProximityGap Code
+open scoped NNReal ENNReal
+
+variable {ι₀ : Type} [Fintype ι₀] [Nonempty ι₀] [DecidableEq ι₀]
+variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
+
+/-- **The capture-production obligation.**  The unconditional numeric edge, conditional
+on exactly one input: for each word stack, a list of at most `L` low-degree pairs whose
+members capture every `mcaEvent`-bad scalar.  Everything else — the funnel from capture
+lists to `JohnsonNumericBound` — is in-tree and axiom-clean. -/
+theorem johnsonNumericBound_holds_of_capture_production
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0) (L : ℕ)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ)
+    (hk : k ≤ Fintype.card ι₀)
+    (hL : (L : ℝ) ≤ (hab25M (Fintype.card ι₀) k η + 1/2) /
+      hab25RhoPlus (Fintype.card ι₀) k ^ ((1 : ℝ) / 2))
+    (hproduce : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      ∃ pairs : Finset (F₀[X] × F₀[X]), pairs.card ≤ L ∧
+        (∀ ab ∈ pairs, ab.1.natDegree < k ∧ ab.2.natDegree < k) ∧
+        ∀ γ ∈ hab25McaBadScalars domain k δ u,
+          ∃ ab ∈ pairs, AffineCaptured domain k δ u γ ab) :
+    JohnsonNumericBound domain k η δ :=
+  johnsonNumericBound_of_affine_capture_of_list_shape domain k η δ L hη hδ hk hL hproduce
+
+open Classical in
+/-- **The dichotomy-production obligation.**  The unconditional numeric edge, conditional
+on exactly one input: for each word stack, a dichotomy bundle covering its bad scalars
+within a budget `B` satisfying the Johnson arithmetic. -/
+theorem johnsonNumericBound_holds_of_dichotomy_production
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ) (B : ℕ)
+    (hdata : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      ∃ A : Hab25JohnsonDichotomyData domain k η δ hη hδ,
+        (Finset.univ.filter
+          (fun γ : F₀ =>
+            mcaEvent (ReedSolomon.code domain k : Set (ι₀ → F₀)) δ (u 0) (u 1) γ)
+          ⊆ A.Edis) ∧
+        A.ℓ * max A.T (Fintype.card ι₀) ≤ B)
+    (harith : (B : ℝ≥0∞) / (Fintype.card F₀ : ℝ≥0∞)
+      ≤ ENNReal.ofReal (johnsonBoundReal domain k η δ)) :
+    JohnsonNumericBound domain k η δ :=
+  johnsonNumericBound_of_forall_dichotomy domain k η δ hη hδ B hdata harith
+
+end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
+
+/-! ## Axiom audit -/
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_holds_of_capture_production
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_holds_of_dichotomy_production
