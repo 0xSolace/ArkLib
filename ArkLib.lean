@@ -1050,6 +1050,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaHybrids
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lookahead
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.ProverTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.RunCollapse
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.SimulatorBudgets
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Soundness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructures
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
