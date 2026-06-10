@@ -325,6 +325,78 @@ theorem hasFirstPermCapacityBeforeForwardOutputPaper_current_not_redundant
     not_redundantEntryDSPaper_forward_of_no_prior tr jCur hcur hfirst⟩
 
 
+/-- Natural-index form of `HasFirstPermCapacityBeforeForwardOutputPaper`, for the recursive
+`eraseIdx` proof where indices shift left. The guard and the prior witness are both
+direction-aware, matching the paper certificates. -/
+private def HasFirstPermCapacityBeforeForwardOutputPaperNat
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) : Prop :=
+  ∃ iCur iPrev : ℕ,
+    ∃ curIn curOut prevIn prevOut : CanonicalSpongeState U,
+      iPrev < iCur ∧
+      tr[iCur]? = some (forwardEntryP curIn curOut) ∧
+      (tr[iPrev]? = some (forwardEntryP prevIn prevOut) ∨
+        tr[iPrev]? = some (inverseEntryP prevOut prevIn)) ∧
+      (prevOut.capacitySegment = curOut.capacitySegment ∨
+        prevIn.capacitySegment = curOut.capacitySegment) ∧
+      ∀ j, j < iCur →
+        tr[j]? ≠ some (forwardEntryP curIn curOut) ∧
+          tr[j]? ≠ some (inverseEntryP curOut curIn)
+
+/-- Convert the public finite-index paper witness into the natural-index form. -/
+private lemma firstPermNatPaper_of_first
+    {tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (h : HasFirstPermCapacityBeforeForwardOutputPaper tr) :
+    HasFirstPermCapacityBeforeForwardOutputPaperNat tr := by
+  obtain ⟨jCur, curIn, curOut, hcur, hfirst,
+    jPrev, hlt, prevIn, prevOut, hprev, hcap⟩ := h
+  have hcur? : tr[jCur.val]? = some (forwardEntryP curIn curOut) := by
+    rw [List.getElem?_eq_getElem jCur.isLt]
+    simpa only [List.get_eq_getElem] using congrArg some hcur
+  have hprev? : tr[jPrev.val]? = some (forwardEntryP prevIn prevOut) ∨
+      tr[jPrev.val]? = some (inverseEntryP prevOut prevIn) := by
+    rcases hprev with hf | hi
+    · exact Or.inl (by
+        rw [List.getElem?_eq_getElem jPrev.isLt]
+        simpa only [List.get_eq_getElem] using congrArg some hf)
+    · exact Or.inr (by
+        rw [List.getElem?_eq_getElem jPrev.isLt]
+        simpa only [List.get_eq_getElem] using congrArg some hi)
+  have hfirstNat : ∀ j, j < jCur.val →
+      tr[j]? ≠ some (forwardEntryP curIn curOut) ∧
+        tr[j]? ≠ some (inverseEntryP curOut curIn) := by
+    intro j hj
+    have hjlen : j < tr.length := lt_trans hj jCur.isLt
+    constructor
+    · intro hsome
+      have hraw : tr.get ⟨j, hjlen⟩ = forwardEntryP curIn curOut := by
+        rw [List.getElem?_eq_getElem hjlen] at hsome
+        exact Option.some.inj hsome
+      exact (hfirst ⟨j, hjlen⟩ hj).1 hraw
+    · intro hsome
+      have hraw : tr.get ⟨j, hjlen⟩ = inverseEntryP curOut curIn := by
+        rw [List.getElem?_eq_getElem hjlen] at hsome
+        exact Option.some.inj hsome
+      exact (hfirst ⟨j, hjlen⟩ hj).2 hraw
+  exact ⟨jCur.val, jPrev.val, curIn, curOut, prevIn, prevOut, hlt,
+    hcur?, hprev?, hcap, hfirstNat⟩
+
+/-- Convert the natural-index witness back to the broad paper shape. -/
+private lemma hasPermCapacityBeforeForwardOutputPaper_of_firstPermNat
+    {tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (h : HasFirstPermCapacityBeforeForwardOutputPaperNat tr) :
+    HasPermCapacityBeforeForwardOutputPaper tr := by
+  obtain ⟨iCur, iPrev, curIn, curOut, prevIn, prevOut,
+    hlt, hcur, hprev, hcap, _hfirst⟩ := h
+  obtain ⟨hCurLt, hCurEq⟩ := List.getElem?_eq_some_iff.mp hcur
+  rcases hprev with hf | hi
+  · obtain ⟨hPrevLt, hPrevEq⟩ := List.getElem?_eq_some_iff.mp hf
+    exact ⟨⟨iCur, hCurLt⟩, curIn, curOut, hCurEq,
+      ⟨iPrev, hPrevLt⟩, hlt, prevIn, prevOut, Or.inl hPrevEq, hcap⟩
+  · obtain ⟨hPrevLt, hPrevEq⟩ := List.getElem?_eq_some_iff.mp hi
+    exact ⟨⟨iCur, hCurLt⟩, curIn, curOut, hCurEq,
+      ⟨iPrev, hPrevLt⟩, hlt, prevIn, prevOut, Or.inr hPrevEq, hcap⟩
+
+
 end DuplexSpongeFS.Sponge316
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
