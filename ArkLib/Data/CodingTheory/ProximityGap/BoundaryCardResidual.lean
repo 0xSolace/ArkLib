@@ -199,7 +199,11 @@ omit [DecidableEq ι] in
 For every stack `u`, this says that a strict sub-radius `δ' < δ` with the same integer distance
 level as `δ` already has the desired `jointAgreement` conclusion whenever its good-coefficient set
 is nonempty.  This is the non-lattice input consumed by `boundaryCardResidual_of_not_lattice`;
-the exact lattice endpoint is tracked separately by `BoundaryCardLatticeResidual`. -/
+the exact lattice endpoint is tracked separately by `BoundaryCardLatticeResidual`.
+
+**REFUTED — false in general** (axiom-clean, in-tree):
+`BoundaryCardStrictInteriorRefutation.not_boundaryCardStrictInteriorResidual`.  Retained only
+as an explicit assumption surface for older adapters; do not try to discharge it. -/
 def BoundaryCardStrictInteriorResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
   ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
     δ' < δ →
@@ -405,7 +409,11 @@ theorem boundaryCardLatticeData_zero
 
 omit [DecidableEq ι] in
 /-- The exact residual package produced by the boundary quantization split: the strict-interior
-supply for non-lattice boundary levels, plus the genuine lattice endpoint residual. -/
+supply for non-lattice boundary levels, plus the genuine lattice endpoint residual.
+
+**REFUTED — false in general** (axiom-clean, in-tree):
+`BoundaryCardResidualRefutation.not_boundaryCardQuantizationResiduals` (each conjunct is also
+separately refuted).  Retained only as an explicit assumption surface for older adapters. -/
 def BoundaryCardQuantizationResiduals {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
   BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ) ∧
   BoundaryCardLatticeResidual (k := k) (deg := deg) (domain := domain) (δ := δ)

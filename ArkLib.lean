@@ -542,7 +542,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141JohnsonCount
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeArchitecture
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeKernels
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMathLowOutput
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeProof
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141Progress
@@ -1220,7 +1219,6 @@ import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Security.CoordinateWiseSpecialSoundness
 import ArkLib.OracleReduction.Security.EchoHVZK
 import ArkLib.OracleReduction.Security.Implications
-import ArkLib.OracleReduction.Security.Issue112Kernels
 import ArkLib.OracleReduction.Security.OracleDistribution
 import ArkLib.OracleReduction.Security.OracleZeroKnowledge
 import ArkLib.OracleReduction.Security.Rewinding

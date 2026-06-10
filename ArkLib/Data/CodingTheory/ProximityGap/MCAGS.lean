@@ -561,9 +561,17 @@ theorem epsMCAgs_prizeBound_of_uniform_listSize
     epsMCAgs_prizeBound_conjecture domain m :=
   h_reduction h_listSize
 
-/-- **The genuine uniform open prize form.** 
-The beyond-UDR Guruswami-Sudan mass bound, stated with universal constants 
-across all domains, rates, and parameters. -/
+/-- **REFUTED — this ∀-`L` fully-uniform statement is FALSE** (it is NOT the genuine open
+prize form: the formalization dropped the FAITHFUL clause on `L`).
+
+Unconditionally refuted in-tree, axiom-clean: `not_uniformEpsMCAgsPrizeBoundConjecture`
+(`MCAGSPrizeRefutation.lean`; duplicate record in `MCAGSRefutationCore_keep.lean`) — a
+non-faithful `L = {w₀}` forces `epsMCAgs = 1` over `ZMod p` for `p > 2^(c₂+c₃)`, beating any
+candidate constants.  Kept ONLY as the documented-false statement; the genuinely open
+faithful field-universal surface is `epsMCAgsPrizeUniversalConjecture`.
+
+(Historical statement: the beyond-UDR Guruswami-Sudan mass bound with universal constants
+across all domains, rates, and parameters — but quantified over *all* `L`, faithful or not.) -/
 def uniformEpsMCAgsPrizeBoundConjecture : Prop :=
   ∃ c₁ c₂ c₃ : ℝ,
     ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
