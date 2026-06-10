@@ -3091,7 +3091,6 @@ With the O49 effective transfer (`p > C(w,⌊w/2⌋)^{φ(n)}`), the count is unc
 production-scale primes. What remains of the prize core is unchanged and shared: extending
 from unit syndromes to ALL received words (the MCA quantifier) — Conjecture D / the
 classical band.
-=======
 
 ### O52 — the GENERIC TOWER RUNG machine-checked: μ_d-coset unions climb to μ_{2d}
 
