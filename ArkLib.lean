@@ -1569,6 +1569,7 @@ import ArkLib.ProofSystem.Stir.RoundCompleteness
 import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.ProofSystem.Stir.RoundVector
 import ArkLib.ProofSystem.Stir.RoundVectorCompleteness
+import ArkLib.ProofSystem.Stir.SeamComposition
 import ArkLib.ProofSystem.Stir.SpotCheckBound
 import ArkLib.ProofSystem.Stir.SubUnitRbr
 import ArkLib.ProofSystem.Stir.SwitchAttack
@@ -1868,6 +1869,7 @@ import ArkLib.ToMathlib.MatchingFactorLift
 import ArkLib.ToMathlib.MatchingGeometryProducers
 import ArkLib.ToMathlib.MatchingGeometryProducersOn
 import ArkLib.ToMathlib.MatchingPointFromLocalSeries
+import ArkLib.ToMathlib.MinimalSurfaceChain
 import ArkLib.ToMathlib.MonicIrreducibleFactorization
 import ArkLib.ToMathlib.MonicResidualBoundary
 import ArkLib.ToMathlib.MonomialAgreementBound
