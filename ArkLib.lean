@@ -568,6 +568,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Claim1
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ConjectureGlue
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellProduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25DegreeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ErrStarArith
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Johnson
@@ -1256,6 +1257,7 @@ import ArkLib.ProofSystem.Logup.Common
 import ArkLib.ProofSystem.Logup.LogupGrandSumIdentity
 import ArkLib.ProofSystem.Logup.Protocol
 import ArkLib.ProofSystem.Logup.SZTotalDegree
+import ArkLib.ProofSystem.Logup.Security.BatchingSZ
 import ArkLib.ProofSystem.Logup.Security.BridgeAndAppendResiduals
 import ArkLib.ProofSystem.Logup.Security.Completeness
 import ArkLib.ProofSystem.Logup.Security.Issue13Status
@@ -1726,11 +1728,11 @@ import ArkLib.ToMathlib.TwistedKernel
 import ArkLib.ToMathlib.UMSubspaceDesignProof
 import ArkLib.ToMathlib.UniformTranslationAverage
 import ArkLib.ToMathlib.WeightLambdaCalculus
-import ArkLib.ToMathlib.XiOrderInterp
 import ArkLib.ToMathlib.WhirBricksConstruction
 import ArkLib.ToMathlib.WindowDualRS
 import ArkLib.ToMathlib.XDegreeBudgetProbe
 import ArkLib.ToMathlib.XiCertReduction
+import ArkLib.ToMathlib.XiOrderInterp
 import ArkLib.ToMathlib.ZKConcreteSimulatorProof
 import ArkLib.ToMathlib.ZKDefA
 import ArkLib.ToMathlib.ZKTransferBricks
