@@ -49,4 +49,19 @@ theorem challenge_hStage1Bridge
   rw [← StateT.run'_eq]
   exact OracleReduction.evalDist_run'_challengeSeam_left impl ((R₁.run stmt wit).run) s
 
+/-- **Challenge-seam `hTot` discharge.** The appended simulated honest game never *samples* a
+failure: `init` never fails (`hInit`) and the simulated run never fails (`simulateQ_run_neverFail`
+from the never-failing honest implementation `addLift_neverFail`). -/
+theorem challenge_hTot
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (hInit : NeverFail init)
+    (stmt : Stmt₁) (wit : Wit₁) :
+    Pr[⊥ | gameOf init impl (R₁.append R₂) stmt wit] = 0 := by
+  rw [gameOf, probFailure_bind_eq_zero_iff]
+  refine ⟨by rwa [probFailure_eq_zero_iff], fun s _ => ?_⟩
+  rw [StateT.run'_eq, probFailure_map]
+  exact simulateQ_run_neverFail _ (addLift_neverFail impl himplNF) _ s
+
 end Reduction
