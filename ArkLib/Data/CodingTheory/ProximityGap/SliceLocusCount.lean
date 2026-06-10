@@ -366,4 +366,59 @@ theorem card_polysDegLT_slices_vanishing (h2 : (2 : F) ≠ 0) {k : ℕ} (Z : Fin
     · show oddSlice (C (2:F)⁻¹ * _) = p.2
       rw [oddSlice_C_mul, oddSlice_build, C_inv_two_mul_two h2]
 
+
+/-! ## The level-1 union bound: the incidence template -/
+
+/-- **The level-1 union bound** (the incidence template): low-evaluation-weight
+polynomials are covered by the per-locus spaces over size-`s` loci, so their number is
+at most `C(|D²|, s) · q^(k − 2s)` where `s = |D²| − w`. As a pure number this is
+classically subsumed (MDS weight distributions are exact); its value is as the
+machine-checked template the tower iteration instantiates per level. -/
+theorem low_weight_count_le {D : Finset F} (hneg : ∀ x ∈ D, -x ∈ D)
+    (h0 : (0 : F) ∉ D) (h2 : (2 : F) ≠ 0) {k w s : ℕ}
+    (hs : s + w = (D.image (· ^ 2)).card) (h2s : 2 * s ≤ k) :
+    ((polysDegLT (F := F) k).filter
+        (fun f => (D.filter (fun x => f.eval x ≠ 0)).card ≤ w)).card
+      ≤ ((D.image (· ^ 2)).powersetCard s).card * Fintype.card F ^ (k - 2 * s) := by
+  -- every low-weight f's slices vanish on some size-s locus
+  have hcover : (polysDegLT (F := F) k).filter
+        (fun f => (D.filter (fun x => f.eval x ≠ 0)).card ≤ w)
+      ⊆ ((D.image (· ^ 2)).powersetCard s).biUnion
+          (fun Z => (polysDegLT (F := F) k).filter (fun f =>
+            (∀ z ∈ Z, (evenSlice f).eval z = 0) ∧ (∀ z ∈ Z, (oddSlice f).eval z = 0))) := by
+    intro f hf
+    obtain ⟨hfd, hfw⟩ := Finset.mem_filter.mp hf
+    obtain ⟨Zf, hePoly, hoPoly, hZsub, hZcard, heq, hoq, _⟩ :=
+      low_weight_slice_structure hneg h0 h2 f
+    -- |Zf| ≥ |D²| − w = s
+    have hZge : s ≤ Zf.card := by omega
+    obtain ⟨Z, hZZf, hZcard'⟩ := Finset.exists_subset_card_eq hZge
+    refine Finset.mem_biUnion.mpr ⟨Z, ?_, ?_⟩
+    · exact Finset.mem_powersetCard.mpr ⟨hZZf.trans hZsub, hZcard'⟩
+    · refine Finset.mem_filter.mpr ⟨hfd, ?_, ?_⟩
+      · intro z hz
+        have hzZf : z ∈ Zf := hZZf hz
+        rw [heq, eval_mul, TopLine.loc_eval_zero hzZf, zero_mul]
+      · intro z hz
+        have hzZf : z ∈ Zf := hZZf hz
+        rw [hoq, eval_mul, TopLine.loc_eval_zero hzZf, zero_mul]
+  calc ((polysDegLT (F := F) k).filter
+        (fun f => (D.filter (fun x => f.eval x ≠ 0)).card ≤ w)).card
+      ≤ (((D.image (· ^ 2)).powersetCard s).biUnion
+          (fun Z => (polysDegLT (F := F) k).filter (fun f =>
+            (∀ z ∈ Z, (evenSlice f).eval z = 0) ∧ (∀ z ∈ Z, (oddSlice f).eval z = 0)))).card :=
+        Finset.card_le_card hcover
+    _ ≤ ∑ Z ∈ (D.image (· ^ 2)).powersetCard s,
+          ((polysDegLT (F := F) k).filter (fun f =>
+            (∀ z ∈ Z, (evenSlice f).eval z = 0) ∧ (∀ z ∈ Z, (oddSlice f).eval z = 0))).card :=
+        Finset.card_biUnion_le
+    _ = ∑ Z ∈ (D.image (· ^ 2)).powersetCard s, Fintype.card F ^ (k - 2 * Z.card) := by
+        refine Finset.sum_congr rfl fun Z hZ => ?_
+        have hZc : Z.card = s := (Finset.mem_powersetCard.mp hZ).2
+        exact card_polysDegLT_slices_vanishing h2 Z (by omega)
+    _ = ((D.image (· ^ 2)).powersetCard s).card * Fintype.card F ^ (k - 2 * s) := by
+        rw [Finset.sum_congr rfl fun Z hZ => by
+          rw [(Finset.mem_powersetCard.mp hZ).2]]
+        rw [Finset.sum_const, smul_eq_mul]
+
 end LamLeungTwoPow
