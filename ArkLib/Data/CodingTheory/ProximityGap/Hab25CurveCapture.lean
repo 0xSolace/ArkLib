@@ -75,7 +75,7 @@ lemma gapPoly_coeff {L : ℕ} (d : Fin L → ι₀ → F₀) (x : ι₀) (j₀ :
   · rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_pos rfl, mul_one]
   · intro j _ hne
     rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow,
-      if_neg (fun hc => hne (Fin.ext hc)), mul_zero]
+      if_neg (fun hc => hne (Fin.ext hc.symm)), mul_zero]
   · intro habs
     exact absurd (Finset.mem_univ _) habs
 
