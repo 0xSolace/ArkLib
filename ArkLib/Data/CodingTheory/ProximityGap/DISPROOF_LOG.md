@@ -4579,3 +4579,22 @@ Probe-falsified first (`scripts/probes/probe_weighted_window_law.py`, exact ℤ[
 **O105 addendum — the next provable gate past the refutation, named (dimension-checked):** what survives at squarefree `pqr` is the ℚ/ℤ-classification WITHOUT positivity: `Σ W_{ijk}·ξ^i·η^j·θ^k = 0 ⟺ W_{ijk} = A(j,k) + B(i,k) + C(i,j)` (each component constant in one coordinate; ℚ-valued — O105 kills the ℕ-form). Dimension check passes: `pqr − φ(pqr) = pq+pr+qr−p−q−r+1` = dim of the sum of the three fiber-function spaces. Route, gated on ONE new lemma: (i) generalize `CRTPacketMinpoly.minpoly_adjoin_primitiveRoot_eq_packet` from prime-power base roots to ANY coprime base — `minpoly ℚ⟮ζ_m⟯ ζ_r = Φ_r` for `Coprime m r` (same totient-tower pinch, `Nat.totient_mul` replaces the prime-power split); (ii) the K-coefficient slice at Φ_r forces the θ-fibers' 2-var sums equal; (iii) the ℚ-valued 2-var classification is O100's modular equation with NO shift needed (negatives allowed: `a_i := W_{i0}−W_{00}`, `b_j := W_{0j}`); (iv) integrate the per-pair differences into the three-component form. Past that, the ℕ-content at 3+ primes (Lam–Leung's actual span theorem) remains research — the refutation shows it cannot factor through packets.
 
 **Shared-index hazard (same day, fixed in 17bae3b3e):** bare `git commit` commits the WHOLE index — in this multi-session repo it carried a concurrent lane's staged deletion (`AppendRbrKnowledgeSeamZero.lean`, a landed #114 achievement) into my O105 commit. Restored from 387ba340c. **Future commits: always `git commit -- <my files>` with explicit pathspec.**
+### O110 — THE FIRST REASSEMBLY: the window-{1,q} trichotomy (the windowed law's shape, proven)
+
+`DeBruijnTwoPrime.two_prime_window_trichotomy` + `packetUnion_dichotomy_spectrum`
+(axiom-clean, 0 sorry; my lane — the dichotomy export strengthens the spectral
+construction with: every x ∈ S is μ_p-closed in S or x^q ∈ spectrum):
+
+**With window {1, q}, every element of a two-prime vanishing set is μ_p-, μ_{q²}-, or
+μ_{pq}-covered inside S** — the d-coset reassembly over the divisors d ∈ {p, q², pq}
+exceeding q: EXACTLY the O70-verified law shape at t = q, now a theorem. Wiring:
+decomposition (O77) + dichotomy–spectrum export + spectrum vanishes (transfer e=1 +
+window, char 0) + COVER (O76) applied to the spectrum one level down + the upward rung
+(O83) at A = p and A = q converting spectrum-level row/column coverage of x^q into
+μ_{pq}/μ_{q²} closure at x.
+
+The reassembly engine is PROVEN at its first nontrivial window. The general-t law =
+iterating this wiring through the O81 chain (each deeper window kills one more divisor
+level and the rung multiplies the reassembled coset order) — every constituent
+machine-checked; remaining = the general-t induction bookkeeping. Ops note: two
+working-tree wipes beaten this pass by commit-before-compile + /tmp content blocks.
