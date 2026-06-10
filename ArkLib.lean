@@ -1569,6 +1569,7 @@ import ArkLib.ToMathlib.GKL24FirstMomentProb
 import ArkLib.ToMathlib.GSFactorData
 import ArkLib.ToMathlib.GSGradedBundle
 import ArkLib.ToMathlib.GSLineInputSupply
+import ArkLib.ToMathlib.GSSurfaceSupply
 import ArkLib.ToMathlib.GammaCoeffRecursion
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.GenuineMonicCapstone
@@ -1704,6 +1705,8 @@ import ArkLib.ToMathlib.UniformTranslationAverage
 import ArkLib.ToMathlib.WeightLambdaCalculus
 import ArkLib.ToMathlib.WhirBricksConstruction
 import ArkLib.ToMathlib.WindowDualRS
+import ArkLib.ToMathlib.XDegreeBudgetProbe
+import ArkLib.ToMathlib.XiCertReduction
 import ArkLib.ToMathlib.ZKConcreteSimulatorProof
 import ArkLib.ToMathlib.ZKDefA
 import ArkLib.ToMathlib.ZKTransferBricks
