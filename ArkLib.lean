@@ -474,6 +474,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreePQ
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTowerWiring
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrimeAssembly
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedCardTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedSquarefree
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedSquarefreeExp
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedTwoPrime
