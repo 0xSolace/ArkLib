@@ -881,6 +881,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUpperReduction
 import ArkLib.Data.CodingTheory.ProximityGap.ThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeFiberCountLaw
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeIntClassification
+import ArkLib.Data.CodingTheory.ProximityGap.ThreeGenPackingObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimePacketRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeRatClassification
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeWindowObstruction
