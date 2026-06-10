@@ -4291,3 +4291,26 @@ degree-`<k` error range over exactly `q^(k−2|Z|)` candidates; with O94's
 union-over-loci/incidence structure versus the weight filter (how many loci, how much
 overlap, what fraction of each per-locus space meets weight ≤ w). Queued capstone: the
 f-level product count via `recompose_slices`.
+
+### O96 — the per-locus budget is an EQUALITY: #{f : deg < k, both slices vanish on Z} = q^(k−2|Z|) (nubs, 2026-06-10)
+
+`SliceLocusCount.lean` extended with the f-level capstone (axiom-clean, 0 warnings):
+
+- Slice C-linearity (`evenSlice_C_mul`/`oddSlice_C_mul`), the build identities
+  (`evenSlice_build`/`oddSlice_build`: slices of
+  `expand 2 E + X·expand 2 O` are `2E`/`2O`), `expand_comp_neg_X`, sharp odd
+  degree budget (`natDegree_oddSlice_le'` ≤ (deg−1)/2), zero-slice lemmas.
+- `card_polysDegLT_slices_vanishing` — **the count**: `f ↦ (evenSlice f, oddSlice f)`
+  is an explicit bijection (two-sided inverse via `recompose_slices` and the build
+  identities, char ≠ 2) from the both-slices-vanish-on-Z space onto the product of
+  per-slice locus spaces, so the per-locus budget of the O94 skeleton is EXACTLY
+  `q^((k+1)/2 − |Z|) · q^(k/2 − |Z|) = q^(k − 2|Z|)`.
+
+Status of the counting program: structure (O94) + per-slice count (O95) + f-level
+count (this) are all equalities; combined with O70's forced locus size `|Z| ≥ n/2 − w`,
+each list-relevant error sits in an explicitly counted space of size
+`q^(k − n + 2w)` per locus at level 1. The surviving open content of the all-words
+question is purely the LOCUS INCIDENCE: how the per-locus spaces overlap across the
+$\binom{n/2}{·}$ loci and how the weight filter cuts them — and its iteration down
+the tower. Every other term in the Conjecture-D sentence is now a theorem with an
+exact constant.
