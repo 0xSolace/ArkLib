@@ -1361,6 +1361,7 @@ import ArkLib.ProofSystem.Stir.Complexity
 import ArkLib.ProofSystem.Stir.ErrorAccumulation
 import ArkLib.ProofSystem.Stir.ErrorBoundBridge
 import ArkLib.ProofSystem.Stir.FullChain
+import ArkLib.ProofSystem.Stir.InitRbrSoundness
 import ArkLib.ProofSystem.Stir.MainThm
 import ArkLib.ProofSystem.Stir.MultiRound
 import ArkLib.ProofSystem.Stir.MultiRoundAssembly
