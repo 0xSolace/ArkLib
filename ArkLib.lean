@@ -582,6 +582,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25AffineCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AlgebraicBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25BranchDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25BranchPinning
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CandidateProduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernel
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellWiring
@@ -613,6 +614,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseMultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.HasseSchmidt
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWeilBoundInstances
 import ArkLib.Data.CodingTheory.ProximityGap.HybridConcentrationDepthNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.IntSquarefreeClassification
 import ArkLib.Data.CodingTheory.ProximityGap.IntegerThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.InteriorListCountBridge
 import ArkLib.Data.CodingTheory.ProximityGap.InteriorThresholdBracket
@@ -1406,6 +1408,7 @@ import ArkLib.ProofSystem.Spartan.FirstSumcheckRowSum
 import ArkLib.ProofSystem.Spartan.FirstSumcheckZeroEval
 import ArkLib.ProofSystem.Spartan.LinearCombinationComplete
 import ArkLib.ProofSystem.Spartan.PhaseCompletenessLeaves
+import ArkLib.ProofSystem.Spartan.PrependRLCDeterminism
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
 import ArkLib.ProofSystem.Spartan.SecondSumcheckBridgeFree
 import ArkLib.ProofSystem.Spartan.SecondSumcheckComplete
@@ -1420,7 +1423,6 @@ import ArkLib.ProofSystem.Spartan.SpartanSumcheckUnconditional
 import ArkLib.ProofSystem.Spartan.SumcheckCubeBridge
 import ArkLib.ProofSystem.Spartan.SumcheckDegreeBound
 import ArkLib.ProofSystem.Spartan.SumcheckDeterminismWitnesses
-import ArkLib.ProofSystem.Spartan.PrependRLCDeterminism
 import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SumcheckRbrKSResidualAnalysis
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
