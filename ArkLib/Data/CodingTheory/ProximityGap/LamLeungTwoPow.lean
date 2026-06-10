@@ -1541,4 +1541,149 @@ theorem nonvanishing_of_unpaired {m : ℕ} {ζ : F}
 
 end KernelCharacterization
 
+/-! ## The valued 2-power windowed law: window-invariance modulo `2^(m−k)`
+
+The multiplicity-door base case of the valued-fold frontier: a ℚ-coefficient vector on
+`μ_{2^(m+1)}`-exponents whose 2-power window `{2^0, …, 2^k}` vanishes is invariant on
+exponent classes modulo `2^(m−k)` — the valued analogue of `full_tower`. Induction on
+`k`: the `j = 0` relation gives antipodal symmetry (O74), under which the folded vector
+`c₁(s) = c(s) + c(s + 2^m) = 2·c(s)` inherits the shallower window at the halved level;
+the inductive congruence-invariance of `c₁` pulls back through the antipodal reduction.
+For integer multiplicity vectors (contracted folds of windowed sets, branch-weight
+profiles) this pins the structure completely at 2-power levels. -/
+
+section ValuedWindowedLaw
+
+/-- **The valued 2-power windowed law** (congruence-invariance form). -/
+theorem windowed_coeff_congr_invariant {k : ℕ} :
+    ∀ {m : ℕ}, k ≤ m → ∀ {ζ : F}, IsPrimitiveRoot ζ (2 ^ (m + 1)) →
+    ∀ (c : ℕ → ℚ),
+    (∀ j, j ≤ k → ∑ e ∈ Finset.range (2 ^ (m + 1)), (c e : F) * ζ ^ (2 ^ j * e) = 0) →
+    ∀ e e', e < 2 ^ (m + 1) → e' < 2 ^ (m + 1) →
+      e % 2 ^ (m - k) = e' % 2 ^ (m - k) → c e = c e' := by
+  induction k with
+  | zero =>
+    intro m _ ζ hζ c hwin e e' he he' hmod
+    have h0 := hwin 0 le_rfl
+    simp only [pow_zero, one_mul] at h0
+    have hsym := (vanishing_iff_antipodal_coeffs hζ c).mp h0
+    rw [Nat.sub_zero] at hmod
+    -- e ≡ e' mod 2^m with both < 2^{m+1}: equal or differ by exactly 2^m
+    rcases Nat.lt_or_ge e (2 ^ m) with hlow | hhigh
+    · rcases Nat.lt_or_ge e' (2 ^ m) with hlow' | hhigh'
+      · -- both low: e = e'
+        rw [Nat.mod_eq_of_lt hlow, Nat.mod_eq_of_lt hlow'] at hmod
+        rw [hmod]
+      · -- e low, e' high: e' = e + 2^m
+        have he'm : e' - 2 ^ m < 2 ^ m := by
+          have : (2:ℕ) ^ (m + 1) = 2 ^ m + 2 ^ m := by ring
+          omega
+        have hmod' : e' % 2 ^ m = e' - 2 ^ m := by
+          rw [Nat.mod_eq_sub_mod hhigh', Nat.mod_eq_of_lt he'm]
+        rw [Nat.mod_eq_of_lt hlow, hmod'] at hmod
+        have : e' = e + 2 ^ m := by omega
+        rw [this]
+        exact hsym e hlow
+    · rcases Nat.lt_or_ge e' (2 ^ m) with hlow' | hhigh'
+      · have hem : e - 2 ^ m < 2 ^ m := by
+          have : (2:ℕ) ^ (m + 1) = 2 ^ m + 2 ^ m := by ring
+          omega
+        have hmod'' : e % 2 ^ m = e - 2 ^ m := by
+          rw [Nat.mod_eq_sub_mod hhigh, Nat.mod_eq_of_lt hem]
+        rw [hmod'', Nat.mod_eq_of_lt hlow'] at hmod
+        have : e = e' + 2 ^ m := by omega
+        rw [this]
+        exact (hsym e' hlow').symm
+      · -- both high: e − 2^m = e' − 2^m
+        have hem : e - 2 ^ m < 2 ^ m := by
+          have : (2:ℕ) ^ (m + 1) = 2 ^ m + 2 ^ m := by ring
+          omega
+        have he'm : e' - 2 ^ m < 2 ^ m := by
+          have : (2:ℕ) ^ (m + 1) = 2 ^ m + 2 ^ m := by ring
+          omega
+        have h1 : e % 2 ^ m = e - 2 ^ m := by
+          rw [Nat.mod_eq_sub_mod hhigh, Nat.mod_eq_of_lt hem]
+        have h2 : e' % 2 ^ m = e' - 2 ^ m := by
+          rw [Nat.mod_eq_sub_mod hhigh', Nat.mod_eq_of_lt he'm]
+        rw [h1, h2] at hmod
+        have : e = e' := by omega
+        rw [this]
+  | succ k IH =>
+    intro m hkm ζ hζ c hwin e e' he he' hmod
+    have h0 := hwin 0 (Nat.zero_le _)
+    simp only [pow_zero, one_mul] at h0
+    have hsym := (vanishing_iff_antipodal_coeffs hζ c).mp h0
+    obtain ⟨m', rfl⟩ : ∃ m', m = m' + 1 := ⟨m - 1, by omega⟩
+    have hζ2 : IsPrimitiveRoot (ζ ^ 2) (2 ^ (m' + 1)) := by
+      refine hζ.pow (pow_pos two_pos _) ?_
+      rw [pow_succ']
+    set c₁ : ℕ → ℚ := fun s => c s + c (s + 2 ^ (m' + 1)) with hc₁
+    have hfold : ∀ j, j ≤ k →
+        ∑ s ∈ Finset.range (2 ^ (m' + 1)), (c₁ s : F) * (ζ ^ 2) ^ (2 ^ j * s) = 0 := by
+      intro j hj
+      have hrel := hwin (j + 1) (by omega)
+      have hsplit : (2:ℕ) ^ (m' + 1 + 1) = 2 ^ (m' + 1) + 2 ^ (m' + 1) := by ring
+      rw [hsplit, Finset.sum_range_add] at hrel
+      have hterm : ∀ s ∈ Finset.range (2 ^ (m' + 1)),
+          (c (2 ^ (m' + 1) + s) : F) * ζ ^ (2 ^ (j + 1) * (2 ^ (m' + 1) + s))
+            = (c (s + 2 ^ (m' + 1)) : F) * ζ ^ (2 ^ (j + 1) * s) := by
+        intro s _
+        rw [Nat.add_comm (2 ^ (m' + 1)) s]
+        congr 1
+        rw [Nat.mul_add, pow_add]
+        have hkill : ζ ^ (2 ^ (j + 1) * 2 ^ (m' + 1)) = 1 := by
+          rw [show (2:ℕ) ^ (j + 1) * 2 ^ (m' + 1) = 2 ^ (m' + 1 + 1) * 2 ^ j from by
+            rw [← pow_add, ← pow_add]
+            congr 1
+            omega]
+          rw [pow_mul, hζ.pow_eq_one, one_pow]
+        rw [show 2 ^ (j + 1) * s + 2 ^ (j + 1) * 2 ^ (m' + 1)
+            = 2 ^ (j + 1) * 2 ^ (m' + 1) + 2 ^ (j + 1) * s from by ring]
+        rw [pow_add, hkill, one_mul]
+      rw [Finset.sum_congr rfl hterm, ← Finset.sum_add_distrib] at hrel
+      calc ∑ s ∈ Finset.range (2 ^ (m' + 1)), (c₁ s : F) * (ζ ^ 2) ^ (2 ^ j * s)
+          = ∑ s ∈ Finset.range (2 ^ (m' + 1)),
+              ((c s : F) * ζ ^ (2 ^ (j + 1) * s)
+                + (c (s + 2 ^ (m' + 1)) : F) * ζ ^ (2 ^ (j + 1) * s)) := by
+            refine Finset.sum_congr rfl fun s _ => ?_
+            rw [hc₁]
+            push_cast
+            rw [← pow_mul, show 2 * (2 ^ j * s) = 2 ^ (j + 1) * s from by
+              rw [pow_succ']; ring]
+            ring
+        _ = 0 := hrel
+    have hIH := IH (m := m') (by omega) hζ2 c₁ hfold
+    -- antipodal reduction to the lower half, then the IH congruence
+    have hreduce : ∀ x, x < 2 ^ (m' + 1 + 1) → c x = c (x % 2 ^ (m' + 1)) := by
+      intro x hx
+      rcases Nat.lt_or_ge x (2 ^ (m' + 1)) with hlow | hhigh
+      · rw [Nat.mod_eq_of_lt hlow]
+      · have hxm : x - 2 ^ (m' + 1) < 2 ^ (m' + 1) := by
+          have : (2:ℕ) ^ (m' + 1 + 1) = 2 ^ (m' + 1) + 2 ^ (m' + 1) := by ring
+          omega
+        rw [Nat.mod_eq_sub_mod hhigh, Nat.mod_eq_of_lt hxm]
+        have := hsym (x - 2 ^ (m' + 1)) hxm
+        rw [show x - 2 ^ (m' + 1) + 2 ^ (m' + 1) = x from by omega] at this
+        exact this.symm
+    have hhalf : ∀ s, s < 2 ^ (m' + 1) → c s = c₁ s / 2 := by
+      intro s hsl
+      rw [hc₁, ← hsym s hsl]
+      ring
+    have hmodsub : m' + 1 - (k + 1) = m' - k := by omega
+    rw [hmodsub] at hmod
+    have hdvd : (2:ℕ) ^ (m' - k) ∣ 2 ^ (m' + 1) := pow_dvd_pow 2 (by omega)
+    have hē : (e % 2 ^ (m' + 1)) % 2 ^ (m' - k) = (e' % 2 ^ (m' + 1)) % 2 ^ (m' - k) := by
+      rw [Nat.mod_mod_of_dvd _ hdvd, Nat.mod_mod_of_dvd _ hdvd]
+      exact hmod
+    have hēlt : e % 2 ^ (m' + 1) < 2 ^ (m' + 1) := Nat.mod_lt _ (pow_pos two_pos _)
+    have hē'lt : e' % 2 ^ (m' + 1) < 2 ^ (m' + 1) := Nat.mod_lt _ (pow_pos two_pos _)
+    calc c e = c (e % 2 ^ (m' + 1)) := hreduce e he
+    _ = c₁ (e % 2 ^ (m' + 1)) / 2 := hhalf _ hēlt
+    _ = c₁ (e' % 2 ^ (m' + 1)) / 2 := by
+        rw [hIH (e % 2 ^ (m' + 1)) (e' % 2 ^ (m' + 1)) hēlt hē'lt hē]
+    _ = c (e' % 2 ^ (m' + 1)) := (hhalf _ hē'lt).symm
+    _ = c e' := (hreduce e' he').symm
+
+end ValuedWindowedLaw
+
 end LamLeungTwoPow
