@@ -5073,3 +5073,23 @@ multiplicities; the upgrade = the law at the contracted level lifted by the rung
 re-enters the valued theory — the same frontier as the branch-count program — revealing
 the two remaining objects are CLOSER KIN than they appeared: both are valued-fold
 structure questions. One frontier, not two.
+
+### O125 — THE VALUED 2-POWER WINDOWED LAW: the multiplicity door opens
+
+`LamLeungTwoPow.windowed_coeff_congr_invariant` (axiom-clean, 0 sorry; my lane): a
+ℚ-coefficient vector on μ_{2^(m+1)}-exponents whose 2-POWER WINDOW {2^0, …, 2^k}
+vanishes is INVARIANT on exponent classes modulo 2^(m−k) — the VALUED analogue of
+full_tower, by induction on k: the j = 0 relation gives antipodal symmetry (O74), the
+folded vector c₁(s) = 2·c(s) inherits the shallower window at the halved level
+(fold-of-window identity), and the inductive congruence-invariance pulls back through
+antipodal reduction.
+
+WHY THIS MATTERS — the unified frontier (O124) just yielded its base case from the
+multiplicity door: INTEGER multiplicity vectors (contracted folds of windowed sets;
+branch-weight profiles of windowed valued errors) at 2-power levels are CONSTANT on
+μ_{2^{k+1}}-coset classes. Consequences queued: (i) branch-weight profiles of deep
+windowed errors on 2-power towers are coset-constant — a RIGIDITY constraint directly
+on the branch-count program's objects; (ii) the contracted-fold upgrade at full-q
+contractions (two-prime side) now has its target lemma. The window {2^j} is SPARSE
+(only k+1 exponents for a 2^{m−k}-resolution conclusion — exponentially fewer than the
+full window): the valued law is stronger than its subset shadow.
