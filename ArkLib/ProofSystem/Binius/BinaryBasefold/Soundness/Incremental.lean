@@ -6,6 +6,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.IncrementalCase1
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IncrementalHelpers
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDistance
@@ -251,6 +252,17 @@ class Prop4212Case1Residual : Prop where
         (r_challenges := Fin.snoc r_prefix r_new)
     ] ≤
     (Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) / Fintype.card L)
+
+/-- **The Case-1 residual is discharged** (issue #317): the content is proven in
+`Soundness/IncrementalCase1.lean` (`prop_4_21_2_case_1_residual_holds` — per-quotient-point
+Schwartz–Zippel via the bottom fiber peel `qMap_total_fiber_succ_peel_first` + union bound). -/
+instance : Prop4212Case1Residual (r := r) (L := L) (𝔽q := 𝔽q) (β := β)
+    (ℓ := ℓ) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) where
+  holds := by
+    intro block_start_idx midIdx_i midIdx_i_succ destIdx k h_k_lt h_midIdx_i
+      h_midIdx_i_succ h_destIdx h_destIdx_le f_block_start r_prefix h_block_close
+    exact prop_4_21_2_case_1_residual_holds 𝔽q β block_start_idx k h_k_lt h_midIdx_i
+      h_midIdx_i_succ h_destIdx h_destIdx_le f_block_start r_prefix h_block_close
 
 variable [Prop4212Case1Residual (r := r) (L := L) (𝔽q := 𝔽q) (β := β)
   (ℓ := ℓ) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
