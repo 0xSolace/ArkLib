@@ -1173,6 +1173,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.AbortAnalysis
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Backtrack
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BadEvents
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BirthdayBound
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BudgetCover
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Completeness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemma
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaAssembly
