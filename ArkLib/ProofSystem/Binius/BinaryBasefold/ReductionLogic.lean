@@ -379,7 +379,8 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
   let hRelOut : step.completeness_relOut ((verifierStmtOut, verifierOStmtOut), proverWitOut) := by
     -- Fact 2: Output relation holds (strictFoldStepRelOut)
     simp only [step, foldStepLogic, strictFoldStepRelOut, strictFoldStepRelOutProp, Set.mem_setOf_eq]
-    let r_i' := challenges ⟨1, rfl⟩
+    let r_i' : L := by
+      simpa [ProtocolSpec.Challenge, pSpecFold] using challenges ⟨⟨1, by omega⟩, by rfl⟩
     simp only [Fin.val_succ]
     constructor
     · -- Part 2.1: sumcheck consistency
@@ -406,11 +407,19 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
         · rw [h_H_In]
           apply Subtype.ext
           dsimp only [projectToNextSumcheckPoly]
-          simpa only [Fin.val_castSucc] using
-            (RingSwitching.fixFirstVariablesOfMQP_projectToMid_succ (L := L) (ℓ := ℓ)
-              (t := witIn.t) (m := mp.multpoly stmtIn.ctx) (i := i)
-              (challenges := stmtIn.challenges)
-              (r' := transcript.challenges ⟨⟨1, by omega⟩, by rfl⟩))
+          change
+            RingSwitching.fixFirstVariablesOfMQP (ℓ - ↑i.castSucc)
+                ⟨1, by have := i.isLt; simp only [Fin.val_castSucc]; omega⟩
+                (projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := witIn.t)
+                  (m := mp.multpoly stmtIn.ctx) (i := i.castSucc)
+                  (challenges := stmtIn.challenges)).val
+                (fun _ => r_i') =
+              (projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := witIn.t)
+                (m := mp.multpoly stmtIn.ctx) (i := i.succ)
+                (challenges := Fin.cons r_i' stmtIn.challenges)).val
+          exact RingSwitching.fixFirstVariablesOfMQP_projectToMid_succ (L := L) (ℓ := ℓ)
+            (t := witIn.t) (m := mp.multpoly stmtIn.ctx) (i := i)
+            (challenges := stmtIn.challenges) (r' := r_i')
         · conv_lhs =>
             rw [h_f_In]
             rw [←getMidCodewords_succ]
@@ -427,7 +436,9 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
           dsimp only [foldStepLogic, Fin.isValue, MessageIdx, Fin.is_lt, Fin.eta,
             Lean.Elab.WF.paramLet, Matrix.cons_val_zero, Fin.zero_eta, Matrix.cons_val_one,
             Fin.mk_one, Fin.val_succ, verifierStmtOut, step]
-          simp [Fin.rtake, Fin.natAdd, Fin.cons, Fin.val_castSucc]
+          simpa [Fin.rtake, Fin.natAdd, Fin.cons, Fin.val_castSucc, r_i', transcript,
+            FullTranscript.mk2, ProtocolSpec.Challenge, pSpecFold] using
+              (Fin.cons_succ (α := fun _ => L) r_i' stmtIn.challenges j)
         rw! (castMode := .all) [h_oracleIdx_eq] at h_oracle_folding_In
         simp at h_oracle_folding_In ⊢
         rw [h_challenges_eq]

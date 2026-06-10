@@ -5,6 +5,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Basic
+import ArkLib.Data.Fin.Tuple.TakeDrop
 
 /-! ## Binary Basefold relations and bad-event layer -/
 
@@ -766,7 +767,9 @@ def strictOracleWitnessConsistency
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmt wit
   let strictOracleFoldingConsistency: Prop := strictOracleFoldingConsistencyProp 𝔽q β
     (t := wit.t) (i := oracleIdx.val)
-    (challenges := Fin.take (m := oracleIdx.val) (v := stmt.challenges)
+    -- Statement challenges are stored newest-first via `Fin.cons`. When the oracle frontier lags
+    -- behind the statement, oracle consistency uses the oldest synchronized suffix.
+    (challenges := Fin.rtake (m := oracleIdx.val) (v := stmt.challenges)
     (h := by simp only [Fin.val_fin_le, OracleFrontierIndex.val_le_i]))
     (oStmt := oStmt)
   witnessStructuralInvariant ∧ strictOracleFoldingConsistency
