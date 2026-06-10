@@ -1704,6 +1704,7 @@ import ArkLib.ToMathlib.MatchingFactorLift
 import ArkLib.ToMathlib.MatchingGeometryProducers
 import ArkLib.ToMathlib.MatchingGeometryProducersOn
 import ArkLib.ToMathlib.MatchingPointFromLocalSeries
+import ArkLib.ToMathlib.MonicIrreducibleFactorization
 import ArkLib.ToMathlib.MonomialAgreementBound
 import ArkLib.ToMathlib.MpFinFromLocalSeries
 import ArkLib.ToMathlib.MpFinSupply
@@ -1762,6 +1763,7 @@ import ArkLib.ToMathlib.Section5ConcreteJohnson
 import ArkLib.ToMathlib.Section5GlobalAssembler
 import ArkLib.ToMathlib.Section5StrictDataFinOn
 import ArkLib.ToMathlib.SectionBaseRational
+import ArkLib.ToMathlib.SectionFromSurface
 import ArkLib.ToMathlib.SectionFactor
 import ArkLib.ToMathlib.SectionXiDivisibility
 import ArkLib.ToMathlib.SectionXiUnit
