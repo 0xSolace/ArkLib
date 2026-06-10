@@ -19,14 +19,29 @@ consumer map + degeneracy check), cross-checked in the orchestrator loop. Classi
 | 1 | `FinalSumcheckStepLogicCompleteResidual` | ReductionLogic.lean:1694 | provable as stated (#327) | one weld: `iterated_fold (getLastOracle) (final ϑ block) = const (t(challenges))` via FinalOracleBridge → `iterated_fold_transitivity` → `getFoldingChallenges_append_finalBlock` → `getMidCodewords_last_apply_eq_eval`; then `IsStronglyComplete` assembly along the retained skeleton |
 | 2 | `Prop4212Case1Residual` | Soundness/Incremental.lean:230 | provable as stated (post per-fiber migration) | one new brick (`qMap_total_fiber_succ_peel_first`, bottom/LSB fiber peel) + per-y affine SZ + union bound; probability layer (`Pr_le_Pr_of_implies`, `prob_uniform_eq_card_filter_div_card`) exists |
 | 3 | `Prop4212Case2Residual` | Soundness/Incremental.lean:1852 | weld-distance | all 5 chain deps proven incl. the full DG25 layer; remaining: residual #4 + the `s = 0` boundary of the close→affine-line bridge |
-| 4 | `PreTensorCombineJointProximityResidual` | Soundness/Incremental.lean:1659 | provable (medium) | Lemma 4.22 fiber-projection distance counting: `Δ₀(⋈\|preTensor f, ⋈\|preTensor g) ≤ Δ₀(f,g)`-shaped bound through the fiber re-indexing |
+| 4 | `PreTensorCombineJointProximityResidual` | Soundness/Incremental.lean:1659 | **FALSE as stated** (audit w/ counterexample) | the hypothesis `fiberwiseClose` is degenerate (source-level Hamming UDR `2·Δ₀(f,C^{(i)}) < d_i`, steps/destIdx phantom) — ~`2^steps`× too weak for the destination-UDR conclusion. Counterexample at ℓ=1, 𝓡=1, r=3, ϑ=1, L=F₈: single-point error f satisfies `2·1 < 3 = d_0` but its fold-at-1 row is non-constant, so the stack is not within interleaved `UDR(C^{(1)}) = 0`. Repair: redefine `fiberwiseClose` honestly (per-fiber distance vs **destination** threshold, = DP24 Def 4.20's split), re-prove `UDRClose_of_fiberwiseClose` (each bad fiber ≤ 2^steps points: `2Δ₀ ≤ 2^steps(d_dest−1) = d_i−1 < d_i`), then the close branch is deterministic counting (column-locality via `iterated_fold_eq_matrix_form` + `Finset.card_le_card`), no proximity gap needed |
 | 5 | `Prop421Case1FiberwiseCloseResidual` | Soundness/Proposition4_21.lean:68 | provable as stated (medium) | ONE new lemma: tensor bit-order bridge `(challengeTensorProduct n r).get = challengeTensorExpansion n (r ∘ Fin.rev)`; then `single_point_localized_fold_matrix_form_eq_iterated_fold` + `foldMatrix_det_ne_zero` + `prob_schwartz_zippel_mv_polynomial` (all proven) |
 | 6 | `Prop421Case2FiberwiseFarResidual` | Soundness/Proposition4_21.lean:440 | weld-distance | same DG25 chain as #3, telescoped over steps |
 | 7 | `FoldPreservesBBFCodeMembershipResidual` | Code.lean:1039 | provable (medium, ~300–450 lines) | general-level-`i` novel-basis reconstruction: degree + triangularity of `intermediateNovelBasisX` (CompPoly has defs, no degree lemmas); level-0 template exists verbatim in CompPoly NovelPolynomialBasis.lean:1382–1545 |
 | 8 | `PreviousSuffixFiberAlignmentResidual` | Soundness/QueryPhasePrelims.lean:571 | provable (easy) | complete old proof exists (QueryPhase.lean:317–395) against the outdated CompPoly `iteratedQuotientMap` signature; re-state + port |
 | 9 | `ExtractMLPCorrectnessResidual` | Relations.lean:239 | provable (medium plumbing) | Berlekamp–Welch decoder soundness/completeness transported across the `sDomain` enumeration |
 
-**Headline: none of the 9 is open mathematics.** Every statement is either DP24/Basefold
+**Update (same day, audit wave 2): residual #4 is FALSE as stated** — see its row; this
+*partially refutes H-K2 below* exactly as the hypothesis-ledger protocol intends: the UDR-only
+`fiberwiseClose` surface is sound for Case 1 (only `f̄`'s existence is consumed) but genuinely
+too weak for the close→interleaved-proximity lift, where DP24's fiberwise-distance hypothesis
+(threshold at the **destination** distance `d_{i+ϑ}/2`, Def 4.20) is load-bearing. Additional
+wave-2 audit results: `Prop421Case2FiberwiseFarResidual` is provable as stated but **hard** (the
+real missing brick is `¬fiberwiseClose → interleaved farness`, via per-fiber injectivity +
+an interleaved-code dimension-count bijection + exactly-tight Nat arithmetic — all of which
+simplify to the paper's Lemma 4.22 if the honest `fiberwiseClose` redefinition lands first); the
+blast-radius audit recommends **redefining the legacy `fiberwiseDisagreementSet` in place**
+(keep the `steps = 0` arm; replace the degenerate else-branch with the per-fiber predicate) —
+only 3 live proofs depend on the degenerate body, and the redefinition repairs the two type
+mismatches keeping `QueryPhaseSoundness.lean` red today.
+
+**Headline: none of the 9 is open mathematics** (with #4 false-as-stated and repaired by the
+honest-surface alignment, whose repaired form is again textbook DP24). Every statement is either DP24/Basefold
 textbook content or pure mechanization debt. The two soundness-theory walls that COULD have been
 open — fold-matrix nonsingularity and the affine proximity gap — are already discharged in-tree
 (`FoldDetDischarge.lean`; `ArkLib/Data/CodingTheory/ProximityGap/DG25/` is sorry-free,
