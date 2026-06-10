@@ -5033,3 +5033,7 @@ gap-divisor factorization theorem for X^n − 1 (top-coefficient gap t ⟹ facto
 into X^d − γ factors, d > t) — classical in flavor, possibly cleaner. Both are genuine
 formalization arcs. The bilateral export + mixed identity (O119/O120) and all earlier
 theorems stand.
+
+### O116 — LAM–LEUNG REDUCED TO MINIMAL VANISHING SUMS: the positivity kernel isolated
+
+`MinimalVanishingReduction.lean` (axiom-clean ×4, Mathlib-only): `exists_minimal_vanishing_subweight` (every nonzero vanishing ℕ-weight dominates a minimal one — strong induction on the total), `span_of_minimal_span` (peel minimal sums; differences of vanishing weights vanish; totals strictly drop), `lam_leung_iff_minimal` (the ℕ-span law ⟺ its restriction to MINIMAL weights). With O110 (squarefree reduction) + O104 (two-prime base): **Lam–Leung's theorem is now equivalent to the single statement "minimal vanishing sums at squarefree n with ≥3 primes have weight in ℕp₁+…+ℕp_k"** — exactly the Conway–Jones (Acta Arith. 30 (1976)) / Lam–Leung §3–5 minimal-sum structure theory, the last unformalized ingredient. The O105 witness is such a minimal sum (weight 6 = 3+3 ✓ in span, as predicted).
