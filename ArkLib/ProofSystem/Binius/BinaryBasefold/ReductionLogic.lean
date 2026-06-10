@@ -585,6 +585,12 @@ theorem cast_fun_eq_fun_cast_arg_rev {α β : Type u} {γ : Type v} {hαβ : α 
   cases hfun
   rfl
 
+theorem fun_heq_cast_arg {α β : Type u} {γ : Type v} (hαβ : α = β)
+    (f : β → γ) :
+    HEq (fun x : α => f (cast hαβ x)) f := by
+  subst hαβ
+  rfl
+
 omit [CharP L 2] [SampleableType L] in
 /-- Helper lemma: snoc_oracle matches mkVerifierOStmtOut for commit steps.
 
@@ -642,15 +648,33 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       have h_lt := j.isLt
       conv_rhs at h_lt => rw [h_count_succ]
       omega
-    rw [← h_transcript_eq]
-    funext x
-    convert rfl using 1
-    · simp only [eqRec_eq_cast, cast_cast]
-      apply congrFun
-      apply eq_of_heq
-      refine HEq.trans (cast_heq _ (transcript.messages ⟨0, rfl⟩)) ?_
-      refine HEq.trans ?_ (cast_heq _ (fun y => transcript.messages ⟨0, rfl⟩ y)).symm
-      rfl
+    have h_domain_succ :
+        ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.succ.val, by omega⟩) =
+          ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + 1, by omega⟩) := by
+      have h_fin : (⟨i.succ.val, by omega⟩ : Fin r) = ⟨i.val + 1, by omega⟩ := by
+        apply Fin.eq_of_val_eq
+        rfl
+      exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
+    apply eq_of_heq
+    refine HEq.trans (cast_heq _ (fun y => newOracle (cast _ y))) ?_
+    refine HEq.trans (fun_heq_cast_arg h_domain_succ newOracle) ?_
+    refine HEq.trans (heq_of_eq h_transcript_eq.symm) ?_
+    symm
+    let msgCast :
+        (match (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+            (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j with
+          | Sum.inl k => OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+              ϑ i.castSucc k
+          | Sum.inr k => (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Message k) :=
+      h_embed ▸ transcript.messages ⟨0, rfl⟩
+    have h_msgCast_heq : HEq msgCast (transcript.messages ⟨0, rfl⟩) := by
+      dsimp only [msgCast]
+      exact eqRec_heq h_embed.symm (transcript.messages ⟨0, rfl⟩)
+    refine HEq.trans
+      (eqRec_heq ((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j)
+        .symm msgCast) ?_
+    exact h_msgCast_heq
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
