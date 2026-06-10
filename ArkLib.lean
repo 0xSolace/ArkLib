@@ -1329,6 +1329,7 @@ import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncondSumcheck
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessWired
 import ArkLib.ProofSystem.Logup.Security.LogupHonestSupport
 import ArkLib.ProofSystem.Logup.Security.LogupInitImplFacts
+import ArkLib.ProofSystem.Logup.Security.LogupResidualDischarge
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessClose
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessMsgSeam
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessPointwise

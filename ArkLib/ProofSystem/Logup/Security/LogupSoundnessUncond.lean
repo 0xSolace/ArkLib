@@ -237,7 +237,15 @@ theorem logup_soundness_uncond (sumcheckSoundnessError : ℝ≥0)
 
 Packages the three remaining obligations of `logup_soundness_uncond` (the corrected outer half, the
 sumcheck half, and the plain-verifier append residual) into one existential `Prop` and re-derives the
-headline. This is the consumer-facing "smallest residual set" entry point. -/
+headline. This is the consumer-facing "smallest residual set" entry point.
+
+**DEPRECATED / UNINSTANTIABLE IN THE TYPICAL REGIME (audit 2026-06-10).** The first conjunct
+(`hOuter` at `midSoundnessProtocolLanguage` with the paper error `outerSoundnessError`) is refuted
+in the typical (small-support, large-field) regime by
+`prob_midSoundnessLanguage_ge_compl_support` (`OuterSoundnessSharp.lean`); this bundle and its
+consumer `logup_soundness_uncond_of_residual` are vacuously conditional there.  Live routes:
+`logup_soundness_end_to_end` (`OuterMaliciousSoundness.lean`) and
+`outerVerifier_soundness_sharp` (`OuterRbrSoundness.lean`). -/
 def LogupSoundnessUncondResidual (sumcheckSoundnessError : ℝ≥0) : Prop :=
   ∃ _hOuter :
       (outerVerifier oSpec F n M params).soundness init impl

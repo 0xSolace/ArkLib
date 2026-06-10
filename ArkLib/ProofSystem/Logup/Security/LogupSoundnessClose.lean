@@ -166,7 +166,17 @@ theorem logup_soundness_full (sumcheckSoundnessError : ℝ≥0)
 
 Bundles the three obligations of `logup_soundness_full` into one `Prop` (dependent on the two
 soundness proofs, since the append residual is indexed by them) and re-derives the headline. This is
-the consumer-facing "one residual" front door for the corrected #13 soundness close. -/
+the consumer-facing "one residual" front door for the corrected #13 soundness close.
+
+**DEPRECATED / UNINSTANTIABLE IN THE TYPICAL REGIME (audit 2026-06-10).** The first conjunct
+(`hOuter` at `midSoundnessProtocolLanguage` with the paper error `outerSoundnessError`) is refuted
+in the typical (small-support, large-field) regime by the tree's own
+`prob_midSoundnessLanguage_ge_compl_support` (`OuterSoundnessSharp.lean`): the cleared-over-`univ`
+check polynomial has `|F| − |supp|` spurious roots, so a uniform challenge lands in the language
+with probability `≈ 1 ≫ outerSoundnessError`.  This bundle (and its consumer
+`logup_soundness_full_of_residual`) is therefore vacuously conditional there.  Live routes:
+`logup_soundness_end_to_end` (`OuterMaliciousSoundness.lean`, hOuter@`midLanguage` discharged) and
+the sharp-language route `outerVerifier_soundness_sharp` (`OuterRbrSoundness.lean`). -/
 def LogupSoundnessFullResidual (sumcheckSoundnessError : ℝ≥0) : Prop :=
   ∃ hOuter :
       (outerVerifier oSpec F n M params).soundness init impl
