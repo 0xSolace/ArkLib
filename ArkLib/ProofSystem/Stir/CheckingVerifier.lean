@@ -613,6 +613,55 @@ theorem checkingBool_true_implies_final_in_code
   simp only [Bool.and_eq_true, decide_eq_true_eq] at h
   exact h.2
 
+open scoped Classical in
+/-- Exact decomposition of the checking predicate into its mathematical checks: the initial
+fold query agrees, every sampled adjacent-round pair agrees at the out and shift challenges, and
+the final message is a Reed-Solomon codeword. -/
+theorem checkingBool_eq_true_iff
+    (oStmt : ∀ i, OracleStatement ι F i)
+    (msgs : ∀ j, ((stirMultiVSpec M ι).toProtocolSpec F).Message j)
+    (chals : ((stirMultiVSpec M ι).toProtocolSpec F).Challenges) :
+    checkingBool M φ deg oStmt msgs chals = true ↔
+      inputAns oStmt (queryPoint φ (chalFE chals (outChalIdx M 0)))
+        = msgAns msgs (msgIdx M 0)
+            (msgPos M (msgIdx M 0) (queryPoint φ (chalFE chals (outChalIdx M 0)))) ∧
+      (∀ j : Fin M,
+        (msgAns msgs (msgIdx M j.castSucc)
+            (msgPos M (msgIdx M j.castSucc)
+              (queryPoint φ (chalFE chals (outChalIdx M j.succ))))
+          = msgAns msgs (msgIdx M j.succ)
+            (msgPos M (msgIdx M j.succ)
+              (queryPoint φ (chalFE chals (outChalIdx M j.succ))))) ∧
+        (msgAns msgs (msgIdx M j.castSucc)
+            (msgPos M (msgIdx M j.castSucc)
+              (queryPoint φ (chalFE chals (shiftChalIdx M j))))
+          = msgAns msgs (msgIdx M j.succ)
+            (msgPos M (msgIdx M j.succ)
+              (queryPoint φ (chalFE chals (shiftChalIdx M j)))))) ∧
+      (fun x : ι =>
+        (((List.finRange (Fintype.card ι)).map (fun k =>
+          msgAns msgs (msgIdx M (Fin.last M))
+            (Fin.cast (stirMultiVSpec_length_msg (msgIdx M (Fin.last M))) k))).getD
+          ((Fintype.equivFin ι x : Fin (Fintype.card ι)) : ℕ) 0))
+        ∈ ReedSolomon.code φ deg := by
+  constructor
+  · intro h
+    exact ⟨checkingBool_true_implies_fold_check
+        (M := M) (φ := φ) (deg := deg) oStmt msgs chals h,
+      ⟨fun j => checkingBool_true_implies_round_consistency
+        (M := M) (φ := φ) (deg := deg) oStmt msgs chals h j,
+      checkingBool_true_implies_final_in_code
+        (M := M) (φ := φ) (deg := deg) oStmt msgs chals h⟩⟩
+  · intro h
+    unfold checkingBool
+    simp only [Bool.and_eq_true, decide_eq_true_eq]
+    refine ⟨⟨h.1, ?_⟩, h.2.2⟩
+    apply List.all_eq_true.mpr
+    intro b hb
+    simp only [List.mem_map] at hb
+    rcases hb with ⟨j, _hj, rfl⟩
+    simpa only [Bool.and_eq_true, decide_eq_true_eq] using h.2.1 j
+
 end HonestChecks
 
 /-! ### Completeness of the checking IOP -/
@@ -1334,6 +1383,7 @@ end StirIOP
 #print axioms StirIOP.MultiRound.checkingBool_true_implies_out_consistency
 #print axioms StirIOP.MultiRound.checkingBool_true_implies_shift_consistency
 #print axioms StirIOP.MultiRound.checkingBool_true_implies_final_in_code
+#print axioms StirIOP.MultiRound.checkingBool_eq_true_iff
 #print axioms StirIOP.MultiRound.checkingVerifier_toVerifier_verify
 #print axioms StirIOP.MultiRound.checkingVerifier_support_iff
 #print axioms StirIOP.MultiRound.checkingVerifier_acceptance_iff_checkingBool

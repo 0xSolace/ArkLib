@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.ProofSystem.Spartan.Composition
+import ArkLib.ProofSystem.Spartan.ComposedCompletenessLeaves
+import ArkLib.ProofSystem.Spartan.FirstSumcheckBridgeFree
 
 /-!
 # `linearCombination` phase perfect completeness, parametric in the input relation (#114)
@@ -26,7 +28,17 @@ proves exactly that:
   require the underlying pair in `rel`);
 * `linearCombination_perfectCompleteness_of` — the parametric leaf perfect completeness. The
   five-leaves consumer's `h₅` is the instance `rel := relE` for whatever `relE` the `sendEvalClaim`
-  leaf provides, with `relF := linearCombinationRelOutOf relE`.
+  leaf provides, with `relF := linearCombinationRelOutOf relE`;
+* `linearCombinationRelOutOf_sendEvalClaimBF_subset_prependRLCTargetRelIn` — the seam weld: on the
+  canonical chain (`relE := sendEvalClaimRelOut … (firstSumcheckRelOutBF …)`, exactly what the
+  proven `sendEvalClaim_perfectCompleteness` emits from the consumer-pinned `relD`), the natural
+  pushforward `relF` refines `prependRLCTargetRelIn` — the input relation of the proven
+  downstream `prependRLCTarget_perfectCompleteness_secondSumcheckRelInBF`;
+* `linearCombination_perfectCompleteness_sendEvalClaimBF` — the consumer-endpoint `h₅` instance:
+  perfectly complete from `sendEvalClaimRelOut … (firstSumcheckRelOutBF …)` into
+  `prependRLCTargetRelIn`, so `h₄`/`h₅`/`h₆` of `composedCompletenessResidual_of_five_leaves` now
+  chain with `relE := sendEvalClaimRelOut … (firstSumcheckRelOutBF …)` and
+  `relF := prependRLCTargetRelIn`.
 -/
 
 open MvPolynomial OracleComp OracleSpec OracleQuery OracleInterface ProtocolSpec
@@ -135,7 +147,45 @@ theorem linearCombination_perfectCompleteness_of
     · funext i
       rcases i with j | j <;> rfl
 
+/-! ## The h₅ seam weld for the canonical chain -/
+
+/-- **Seam weld (h₅ → h₆).** On the canonical relation chain of
+`composedCompletenessResidual_of_five_leaves` — `relE := sendEvalClaimRelOut … (firstSumcheckRelOutBF …)`,
+the output the proven `sendEvalClaim_perfectCompleteness` emits from the consumer-pinned
+`firstSumcheckRelOutBF` — the natural pushforward output relation of the `linearCombination`
+phase refines `prependRLCTargetRelIn`, the input relation of the proven honest RLC-target
+adapter completeness. The R1CS conjunct transports verbatim (the phase passes statement and
+oracles through); the recorded function-level eval-claim honesty gives the pointwise form by
+`congrFun`. -/
+theorem linearCombinationRelOutOf_sendEvalClaimBF_subset_prependRLCTargetRelIn :
+    linearCombinationRelOutOf (R := R) pp
+        (sendEvalClaimRelOut R pp (firstSumcheckRelOutBF (R := R) pp))
+      ⊆ Bricks.prependRLCTargetRelIn (R := R) pp := by
+  rintro x ⟨hR1CS, hHonest⟩
+  exact ⟨hR1CS, fun idx => congrFun hHonest idx⟩
+
+/-- **Consumer-endpoint form of the `linearCombination` leaf completeness** (`h₅` of
+`composedCompletenessResidual_of_five_leaves`): perfectly complete from
+`sendEvalClaimRelOut … (firstSumcheckRelOutBF …)` (the proven `sendEvalClaim` leaf output at the
+consumer-pinned `relD`) into `prependRLCTargetRelIn` (the proven input of
+`prependRLCTarget_perfectCompleteness_secondSumcheckRelInBF`). With this, hypotheses `h₄`, `h₅`,
+`h₆` of the five-leaves consumer chain at
+`relE := sendEvalClaimRelOut … (firstSumcheckRelOutBF …)`, `relF := prependRLCTargetRelIn`. -/
+theorem linearCombination_perfectCompleteness_sendEvalClaimBF
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)} :
+    (oracleReduction.linearCombination R pp oSpec).perfectCompleteness init impl
+      (sendEvalClaimRelOut R pp (firstSumcheckRelOutBF (R := R) pp))
+      (Bricks.prependRLCTargetRelIn (R := R) pp) := by
+  have h := linearCombination_perfectCompleteness_of pp oSpec
+    (σ := σ) (init := init) (impl := impl)
+    (sendEvalClaimRelOut R pp (firstSumcheckRelOutBF (R := R) pp))
+  unfold OracleReduction.perfectCompleteness Reduction.perfectCompleteness at h ⊢
+  exact Reduction.completeness_relOut_mono init impl
+    (linearCombinationRelOutOf_sendEvalClaimBF_subset_prependRLCTargetRelIn pp) h
+
 end Spartan.Spec
 
--- Axiom check
+-- Axiom checks
 #print axioms Spartan.Spec.linearCombination_perfectCompleteness_of
+#print axioms Spartan.Spec.linearCombinationRelOutOf_sendEvalClaimBF_subset_prependRLCTargetRelIn
+#print axioms Spartan.Spec.linearCombination_perfectCompleteness_sendEvalClaimBF

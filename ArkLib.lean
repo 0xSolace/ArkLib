@@ -1281,6 +1281,7 @@ import ArkLib.ProofSystem.Spartan.ComposedCompletenessLeaves
 import ArkLib.ProofSystem.Spartan.Composition
 import ArkLib.ProofSystem.Spartan.FirstChallengeCoherent
 import ArkLib.ProofSystem.Spartan.FirstChallengeComplete
+import ArkLib.ProofSystem.Spartan.FirstChallengeLeaf
 import ArkLib.ProofSystem.Spartan.FirstSumcheckBridgeFree
 import ArkLib.ProofSystem.Spartan.FirstSumcheckComplete
 import ArkLib.ProofSystem.Spartan.FirstSumcheckCubeSum
