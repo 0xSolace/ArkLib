@@ -647,14 +647,28 @@ def Lemma5_12HonestResidual (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop
     ¬ E tr → ¬ E_inv_honest tr state S
 
 /-- M2b residual — CO25 Lemma 5.14 (honest form): off `E` the backtrack family has at most
-one maximal sequence, `¬E(tr) → ¬E_fork(tr, s)`. -/
+one maximal sequence, `¬E(tr) → ¬E_fork(tr, s)`.
+
+**Audit status (2026-06-10)**: OPEN, and at risk from the `redundantEntryDS` deviation
+from CO25 Def. 5.5 (same-direction swapped certificates instead of opposite-direction) —
+the sibling `Lemma5_16HonestResidual` is REFUTED as stated for exactly this reason
+(`Lemma516TimePFalse.lean`). Repair `redundantEntryDS` before attempting a discharge. -/
 def Lemma5_14HonestResidual (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
   ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (S : Backtrack.S_BT tr state),
     ¬ E tr → ¬ E_fork_honest tr state S
 
 /-- M2c residual — CO25 Lemma 5.16 (honest form): off `E` all chain queries appear in trace
-order, `¬E(tr) → ¬E_time(tr, s)`. -/
+order, `¬E(tr) → ¬E_time(tr, s)`.
+
+**Audit status (2026-06-10): REFUTED as stated** —
+`DuplexSpongeFS.Sponge316.TimePCounter.lemma5_16HonestResidual_false`
+(`Lemma516TimePFalse.lean`, axiom-clean) exhibits a 4-entry trace where `E_time_p_honest`
+fires while `E` is absent, exploiting the `redundantEntryDS` deviation from CO25 Def. 5.5
+(same-direction swapped certificate instead of the paper's opposite-direction `p⁻¹` one).
+The TRUE `E_{time,h}` half is proven in `Lemma516HashHalf.lean`
+(`lemma5_16_honest_hash_half`). Do NOT add this residual as a hypothesis expecting a
+future discharge; repair `redundantEntryDS` first. -/
 def Lemma5_16HonestResidual (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
   ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (S : Backtrack.S_BT tr state),

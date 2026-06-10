@@ -48,7 +48,19 @@ variable {StmtIn : Type} {n : ℕ} {pSpec : ProtocolSpec n}
 
 /-- The definition of a redundant entry in a duplex sponge challenge oracle trace
 (Definition 5.5 in [CO25]).
-An entry is redundant if it represents a duplicate query that has been answered in a prior step. -/
+An entry is redundant if it represents a duplicate query that has been answered in a prior step.
+
+**Audit warning (2026-06-10): deviates from CO25 Def. 5.5.** The paper's swapped
+certificate for a permutation entry is the *opposite-direction* entry
+(`(p, x, y)` redundant given earlier `(p⁻¹, y, x)`, and vice versa); the two swapped
+disjuncts below instead use the *same direction* with the state pair reversed
+(`(p, y, x)` resp. `(p⁻¹, x, y)`). Machine-checked consequence: the M2c honest residual
+`Lemma5_16HonestResidual` is FALSE against this definition
+(`Lemma516TimePFalse.lemma5_16HonestResidual_false`), and the `Lemma5_14HonestResidual`
+fork analysis carries the same risk. Repairing this definition (swap `.inl ↦ .inr` in the
+second disjunct of the forward arm and `.inr ↦ .inl` in the inverse arm) changes the
+meaning of `E`; downstream proofs in `Lemma512Honest.lean` use the current certificates
+and must be reworked together with the repair. -/
 def redundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (idx : Fin log.length) : Prop :=
   match log[idx] with
