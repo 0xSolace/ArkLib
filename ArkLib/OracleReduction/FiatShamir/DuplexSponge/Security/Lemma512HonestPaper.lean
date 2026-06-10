@@ -715,6 +715,193 @@ def HasFirstHashPermCapNatPaper (tr : QueryLog (duplexSpongeChallengeOracle Stmt
       (sOut.capacitySegment = capSeg ∨ sIn.capacitySegment = capSeg)
 
 
+/-- Broad (no-firstness) hash-anchored collision shape, paper semantics. -/
+def HasHashPermCapBeforeHashPaper (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (stmt : StmtIn) (capSeg : Vector U SpongeSize.C) : Prop :=
+  ∃ jh jp : ℕ, jp < jh ∧
+    tr[jh]? = some (hashEntryP stmt capSeg) ∧
+    ∃ sIn sOut : CanonicalSpongeState U,
+      (tr[jp]? = some (forwardEntryP sIn sOut) ∨
+        tr[jp]? = some (inverseEntryP sOut sIn)) ∧
+      (sOut.capacitySegment = capSeg ∨ sIn.capacitySegment = capSeg)
+
+private lemma hasHashPermCapBeforeHashPaper_of_nat
+    {tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (h : HasFirstHashPermCapNatPaper tr stmt capSeg) :
+    HasHashPermCapBeforeHashPaper tr stmt capSeg := by
+  obtain ⟨jh, jp, hlt, hhash, _hfirst, sIn, sOut, hperm, hcap⟩ := h
+  exact ⟨jh, jp, hlt, hhash, sIn, sOut, hperm, hcap⟩
+
+/-- **One-step preservation (paper)**: erasing one paper-redundant entry preserves the
+first-hash collision shape. Erasing the hash anchor is impossible (first occurrence is never
+paper-redundant); erasing the permutation witness re-anchors through the direction-disjunctive
+capacity priors (strictly below the witness, hence still below the anchor); all other erasures
+shift indices. -/
+private lemma firstHashPermNatPaper_eraseIdx
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (idx : Fin tr.length) (hred : tr.redundantEntryDSPaper idx)
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (hP : HasFirstHashPermCapNatPaper tr stmt capSeg) :
+    HasFirstHashPermCapNatPaper (tr.eraseIdx idx.val) stmt capSeg := by
+  classical
+  obtain ⟨jh, jp, hlt, hhash, hfirst, sIn, sOut, hperm, hcap⟩ := hP
+  by_cases hEraseHash : idx.val = jh
+  · -- the anchor is first-occurrence, hence not paper-redundant: contradiction
+    have hidxVal : tr[idx] = hashEntryP stmt capSeg := by
+      have : tr[idx.val]? = some (hashEntryP stmt capSeg) := by simpa [hEraseHash] using hhash
+      rw [List.getElem?_eq_getElem idx.isLt] at this
+      exact Option.some.inj this
+    have hfirstFin : ∀ j : Fin tr.length, j.val < idx.val →
+        tr[j] ≠ hashEntryP stmt capSeg := by
+      intro j hj hbad
+      have : tr[j.val]? = some (hashEntryP stmt capSeg) := by
+        rw [List.getElem?_eq_getElem j.isLt]
+        simpa only [List.get_eq_getElem] using congrArg some hbad
+      exact (hfirst j.val (by omega)) this
+    exact absurd hred
+      (not_redundantEntryDSPaper_hash_of_no_prior tr idx hidxVal hfirstFin)
+  · let jh' := if idx.val < jh then jh - 1 else jh
+    have hhash' : (tr.eraseIdx idx.val)[jh']? = some (hashEntryP stmt capSeg) := by
+      by_cases hidxh : idx.val < jh
+      · have hge : idx.val ≤ jh - 1 := by omega
+        simp only [jh', hidxh, ↓reduceIte]
+        rw [List.getElem?_eraseIdx_of_ge hge, show jh - 1 + 1 = jh by omega, hhash]
+      · have : jh < idx.val := by omega
+        simp only [jh', hidxh, ↓reduceIte]
+        rw [List.getElem?_eraseIdx_of_lt this, hhash]
+    have hfirst' : ∀ k, k < jh' → (tr.eraseIdx idx.val)[k]? ≠ some (hashEntryP stmt capSeg) := by
+      intro k hk hsome
+      by_cases hidxh : idx.val < jh
+      · by_cases hkIdx : k < idx.val
+        · have : tr[k]? = some (hashEntryP stmt capSeg) := by
+            rw [List.getElem?_eraseIdx_of_lt hkIdx] at hsome
+            exact hsome
+          exact (hfirst k (by simp [jh', hidxh] at hk; omega)) this
+        · have : tr[k + 1]? = some (hashEntryP stmt capSeg) := by
+            have hge : idx.val ≤ k := by omega
+            rw [List.getElem?_eraseIdx_of_ge hge] at hsome
+            exact hsome
+          exact (hfirst (k + 1) (by simp [jh', hidxh] at hk; omega)) this
+      · have hjhIdx : jh < idx.val := by omega
+        have hkIdx : k < idx.val := by simp [jh', hidxh] at hk; omega
+        have : tr[k]? = some (hashEntryP stmt capSeg) := by
+          rw [List.getElem?_eraseIdx_of_lt hkIdx] at hsome
+          exact hsome
+        exact (hfirst k (by simpa [jh', hidxh] using hk)) this
+    by_cases hErasePerm : idx.val = jp
+    · -- the witness is erased: re-anchor strictly below it, in whichever direction it held
+      rcases hperm with hf | hi
+      · have hidxVal : tr[idx] = forwardEntryP sIn sOut := by
+          have : tr[idx.val]? = some (forwardEntryP sIn sOut) := by
+            simpa [hErasePerm] using hf
+          rw [List.getElem?_eq_getElem idx.isLt] at this
+          exact Option.some.inj this
+        obtain ⟨j', hj', sIn', sOut', hentry, hcap'⟩ :=
+          redundantPaper_forward_capacity_prior
+            (tr := tr) (idx := idx) (capSeg := capSeg)
+            (stateIn := sIn) (stateOut := sOut)
+            (by simpa [forwardEntryP] using hidxVal) hred hcap
+        have hkeep : (tr.eraseIdx idx.val)[j'.val]? = tr[j'.val]? :=
+          List.getElem?_eraseIdx_of_lt (by exact hj')
+        have hperm' : (tr.eraseIdx idx.val)[j'.val]? = some (forwardEntryP sIn' sOut') ∨
+            (tr.eraseIdx idx.val)[j'.val]? = some (inverseEntryP sOut' sIn') := by
+          rcases hentry with hfe | hie
+          · exact Or.inl (by
+              rw [hkeep, List.getElem?_eq_getElem j'.isLt]
+              simpa [forwardEntryP, List.get_eq_getElem] using congrArg some hfe)
+          · exact Or.inr (by
+              rw [hkeep, List.getElem?_eq_getElem j'.isLt]
+              simpa [inverseEntryP, List.get_eq_getElem] using congrArg some hie)
+        have hj'v : j'.val < idx.val := hj'
+        refine ⟨jh', j'.val, ?_, hhash', hfirst', sIn', sOut', hperm', hcap'⟩
+        by_cases hidxh : idx.val < jh
+        · simp only [jh', hidxh, ↓reduceIte]; omega
+        · simp only [jh', hidxh, ↓reduceIte]; omega
+      · have hidxVal : tr[idx] = inverseEntryP sOut sIn := by
+          have : tr[idx.val]? = some (inverseEntryP sOut sIn) := by
+            simpa [hErasePerm] using hi
+          rw [List.getElem?_eq_getElem idx.isLt] at this
+          exact Option.some.inj this
+        obtain ⟨j', hj', sIn', sOut', hentry, hcap'⟩ :=
+          redundantPaper_inverse_capacity_prior
+            (tr := tr) (idx := idx) (capSeg := capSeg)
+            (stateOut := sOut) (stateIn := sIn)
+            (by simpa [inverseEntryP] using hidxVal) hred hcap
+        have hkeep : (tr.eraseIdx idx.val)[j'.val]? = tr[j'.val]? :=
+          List.getElem?_eraseIdx_of_lt (by exact hj')
+        have hperm' : (tr.eraseIdx idx.val)[j'.val]? = some (forwardEntryP sIn' sOut') ∨
+            (tr.eraseIdx idx.val)[j'.val]? = some (inverseEntryP sOut' sIn') := by
+          rcases hentry with hfe | hie
+          · exact Or.inl (by
+              rw [hkeep, List.getElem?_eq_getElem j'.isLt]
+              simpa [forwardEntryP, List.get_eq_getElem] using congrArg some hfe)
+          · exact Or.inr (by
+              rw [hkeep, List.getElem?_eq_getElem j'.isLt]
+              simpa [inverseEntryP, List.get_eq_getElem] using congrArg some hie)
+        have hj'v : j'.val < idx.val := hj'
+        refine ⟨jh', j'.val, ?_, hhash', hfirst', sIn', sOut', hperm', hcap'⟩
+        by_cases hidxh : idx.val < jh
+        · simp only [jh', hidxh, ↓reduceIte]; omega
+        · simp only [jh', hidxh, ↓reduceIte]; omega
+    · -- neither witness erased: shift indices, preserving the witness's direction
+      let jp' := if idx.val < jp then jp - 1 else jp
+      have hperm' : (tr.eraseIdx idx.val)[jp']? = some (forwardEntryP sIn sOut) ∨
+          (tr.eraseIdx idx.val)[jp']? = some (inverseEntryP sOut sIn) := by
+        by_cases hidxp : idx.val < jp
+        · have hge : idx.val ≤ jp - 1 := by omega
+          rcases hperm with hf | hi
+          · exact Or.inl (by
+              simp only [jp', hidxp, ↓reduceIte]
+              rw [List.getElem?_eraseIdx_of_ge hge, show jp - 1 + 1 = jp by omega, hf])
+          · exact Or.inr (by
+              simp only [jp', hidxp, ↓reduceIte]
+              rw [List.getElem?_eraseIdx_of_ge hge, show jp - 1 + 1 = jp by omega, hi])
+        · have : jp < idx.val := by omega
+          rcases hperm with hf | hi
+          · exact Or.inl (by
+              simp only [jp', hidxp, ↓reduceIte]
+              rw [List.getElem?_eraseIdx_of_lt this, hf])
+          · exact Or.inr (by
+              simp only [jp', hidxp, ↓reduceIte]
+              rw [List.getElem?_eraseIdx_of_lt this, hi])
+      have hlt' : jp' < jh' := by
+        by_cases hidxh : idx.val < jh
+        · by_cases hidxp : idx.val < jp
+          · simp [jh', jp', hidxh, hidxp]; omega
+          · simp [jh', jp', hidxh, hidxp]; omega
+        · have hidxp : ¬ idx.val < jp := by omega
+          simp [jh', jp', hidxh, hidxp]; omega
+      exact ⟨jh', jp', hlt', hhash', hfirst', sIn, sOut, hperm', hcap⟩
+
+/-- **Fixpoint preservation (paper)**: dedup carries the first-hash collision shape to the broad
+base-trace shape. -/
+private lemma firstHashPermNatPaper_removeRedundant :
+    ∀ (N : ℕ) (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)), tr.length ≤ N →
+      ∀ {stmt : StmtIn} {capSeg : Vector U SpongeSize.C},
+        HasFirstHashPermCapNatPaper tr stmt capSeg →
+          HasHashPermCapBeforeHashPaper (removeRedundantEntryDSPaper tr).1 stmt capSeg := by
+  intro N
+  induction N with
+  | zero =>
+      intro tr hlen stmt capSeg hP
+      obtain ⟨jh, _jp, _hlt, hhash, _⟩ := hP
+      have hlen0 : tr.length = 0 := Nat.le_zero.mp hlen
+      rw [List.length_eq_zero_iff.mp hlen0] at hhash
+      simp at hhash
+  | succ N ih =>
+      intro tr hlen stmt capSeg hP
+      rw [removeRedundantEntryDSPaper]
+      split
+      · rename_i hex
+        refine ih _ ?_ (firstHashPermNatPaper_eraseIdx tr (Classical.choose hex)
+          (Classical.choose_spec hex) hP)
+        have hlt := (Classical.choose hex).isLt
+        have hsucc := List.length_eraseIdx_add_one hlt
+        omega
+      · exact hasHashPermCapBeforeHashPaper_of_nat hP
+
+
 end DuplexSpongeFS.Sponge316
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
