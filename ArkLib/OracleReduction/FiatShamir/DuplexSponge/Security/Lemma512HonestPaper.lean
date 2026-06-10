@@ -902,6 +902,44 @@ private lemma firstHashPermNatPaper_removeRedundant :
       · exact hasHashPermCapBeforeHashPaper_of_nat hP
 
 
+/-- **The hash-anchored keystone (paper semantics)**: a raw first-occurrence hash collision
+forces the paper capacity-collision event `E_h` — each direction/side combination of the
+transported permutation witness lands in one of `capacitySegmentDupHash`'s disjuncts. -/
+theorem e_h_of_hasFirstHashPermCapNatPaper
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (h : HasFirstHashPermCapNatPaper tr stmt capSeg) :
+    BadEventDSPaper.E_h tr := by
+  have hbase := firstHashPermNatPaper_removeRedundant tr.length tr le_rfl h
+  obtain ⟨jh, jp, hlt, hhash, sIn, sOut, hperm, hcap⟩ := hbase
+  obtain ⟨hjh_lt, hjh⟩ := List.getElem?_eq_some_iff.mp hhash
+  unfold BadEventDSPaper.E_h BadEventDSPaper.capacitySegmentDupHash
+  refine ⟨⟨jh, hjh_lt⟩, capSeg, stmt, hjh, ?_⟩
+  rcases hperm with hf | hi
+  · obtain ⟨hjp_lt, hjp⟩ := List.getElem?_eq_some_iff.mp hf
+    rcases hcap with hout | hin
+    · -- prior forward, output side: disjunct 2
+      exact ⟨⟨jp, hjp_lt⟩, hlt, stmt, Or.inr (Or.inl ⟨sIn, sOut, hjp, hout⟩)⟩
+    · -- prior forward, input side: disjunct 4
+      exact ⟨⟨jp, hjp_lt⟩, hlt, stmt,
+        Or.inr (Or.inr (Or.inr (Or.inl ⟨sIn, sOut, hjp, hin⟩)))⟩
+  · obtain ⟨hjp_lt, hjp⟩ := List.getElem?_eq_some_iff.mp hi
+    rcases hcap with hout | hin
+    · -- prior inverse, output side: disjunct 5
+      exact ⟨⟨jp, hjp_lt⟩, hlt, stmt,
+        Or.inr (Or.inr (Or.inr (Or.inr ⟨sOut, sIn, hjp, hout⟩)))⟩
+    · -- prior inverse, input side: disjunct 3
+      exact ⟨⟨jp, hjp_lt⟩, hlt, stmt, Or.inr (Or.inr (Or.inl ⟨sOut, sIn, hjp, hin⟩))⟩
+
+/-- The hash-anchored keystone composed into the combined paper bad event `E`. -/
+theorem e_of_hasFirstHashPermCapNatPaper
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (h : HasFirstHashPermCapNatPaper tr stmt capSeg) :
+    BadEventDSPaper.E tr :=
+  Or.inl (Or.inl (e_h_of_hasFirstHashPermCapNatPaper tr h))
+
+
 end DuplexSpongeFS.Sponge316
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
@@ -918,3 +956,4 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.e_p_of_hasFirstPermCapacityBeforeForwardOutputPaper
 #print axioms DuplexSpongeFS.Sponge316.e_of_hasFirstPermCapacityBeforeForwardOutputPaper
 #print axioms DuplexSpongeFS.Sponge316.not_redundantEntryDSPaper_hash_of_no_prior
+#print axioms DuplexSpongeFS.Sponge316.e_of_hasFirstHashPermCapNatPaper
