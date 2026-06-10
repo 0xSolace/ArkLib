@@ -3902,3 +3902,26 @@ Workflow lane completed + main-loop audited (compiles, all 14 theorems axiom-cle
   binomial-norm threshold, e_j of a lifted subset vanishes mod p IFF it vanishes in
   characteristic zero — THE O49 EFFECTIVE TRANSFER AS A LEAN THEOREM. With O53/O55/O61:
   the tower theory's F_p instances are now unconditional above an explicit, formal bound.
+
+### O87 — THE n=32 CENSUS: ℓ₃₂(w,18) = 35 — the structured core EXACTLY exhausts the beyond-Johnson list; Conjecture D maximally confirmed at the canonical word (nubs, 2026-06-10)
+
+`scripts/probes/n32census/` (kernel + postpass + RESULTS.md, commit 655d2dd21): the descent
+program's named decisive computation (07-DESCENT; claimed #232 c-4666108014), executed as a full
+C(32,17) = 565,722,720 finite-difference functional sweep over the canonical max-fiber word on
+X¹⁸ + λX¹⁶ (BabyBear, ρ = 1/2, a = 18 = witness level, radius 0.4375 ≫ Johnson 0.293, η = 1/16).
+**Result: ℓ₃₂(w,18) = 35 EXACTLY = the constructed u_S(X²) witness family, 35/35 — ZERO dense
+enrichment at the witness level at n=32 scale** (Entry-11's n=16 finding holds one scale up);
+agreement histogram {18: 35}; cross-foots exact (630 emissions = 35·C(18,17); per-chunk swept
+counts = C(31−i₀,16), total = C(32,17)). One notch below: **ℓ₃₂(w,17) = 35 + 1,344 = 1,379**
+(pass-accounting + the audit's DIRECT independent enumeration: 1,344 distinct, one subset each,
+disjoint, all full-support — 0 all-even forced by parity). Notch-enrichment 39.4 vs n=16's 6.33 —
+polynomial-consistent (H3′). First O63 2-adic spread chart of a real beyond-Johnson list: all 35
+in depth-1 class (0); depth-3 splits {4 mod-8 classes ×32, 2 classes ×3}. Thresholds: 35 ≪
+32·3280 = 104,960 (D-falsification line) and = 0.05% of the c=1 budget 2¹⁶ — **D is NOT
+falsified; it is maximally confirmed here.** Rigor gates: n=16 calibration reproduced C19's
+19 = 3+16 bit-exactly BEFORE n=32 was believed; the max-fiber λ tie-class is rigorously the
+μ₁₆-orbit of g₀^((p−1)/4) (x ↦ ux isomorphism ⟹ count tie-independent; a second tie value run
+end-to-end gave the identical 35); adversarial audit with a from-scratch independent kernel
+(different algorithm) re-verified every element and reproduced the coverage hashes. For the
+branch-count distribution (O59/O61/O63): this is the first complete level-2 data point — the
+distribution at the canonical word is maximally concentrated on the structured classes.
