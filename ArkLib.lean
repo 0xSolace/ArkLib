@@ -1253,7 +1253,6 @@ import ArkLib.ProofSystem.Logup.Security.Issue13Status
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessClose
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessEmptyOracle
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessFinal
-import ArkLib.ProofSystem.Logup.Security.LogupCompletenessHonest
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncond
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessUncondSumcheck
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessWired
@@ -1690,6 +1689,7 @@ import ArkLib.ToMathlib.TailDegProducer
 import ArkLib.ToMathlib.ToyProblemRewinding
 import ArkLib.ToMathlib.ToyProblemViolation
 import ArkLib.ToMathlib.ToyStep4
+import ArkLib.ToMathlib.TAffinePlaceReading
 import ArkLib.ToMathlib.TruncatedLocalRoot
 import ArkLib.ToMathlib.TwistedKernel
 import ArkLib.ToMathlib.UMSubspaceDesignProof
