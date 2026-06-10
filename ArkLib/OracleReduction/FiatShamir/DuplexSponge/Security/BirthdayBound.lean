@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundations
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Honest
 import VCVio.OracleComp.QueryTracking.Birthday
 
 /-!
@@ -378,6 +378,24 @@ theorem probEvent_honestBad_le_probEvent_E
   · exact h14 (tr z) (st z) S hE h
   · exact h16 (tr z) (st z) S hE h
 
+/-- R1e, deduped timing route — **honest timing events over the deduplicated base trace are
+dominated by raw `E`**. This is the usable replacement boundary for the refuted raw
+`Lemma5_16HonestResidual`: once the timing event is stated on `(removeRedundantEntryDS tr).1`,
+the fixed-trace M2c closure from `Sponge316` applies under the original raw `¬ E tr`
+hypothesis because `E` itself is defined over the same deduplicated base trace. -/
+theorem probEvent_dedupTimeHonest_le_probEvent_E
+    {β : Type} (game : ProbComp β)
+    (tr : β → QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (st : β → CanonicalSpongeState U) :
+    Pr[ fun z => ∃ S : Backtrack.S_BT (removeRedundantEntryDS (tr z)).1 (st z),
+        E_time_honest (removeRedundantEntryDS (tr z)).1 (st z) S | game]
+      ≤ Pr[ fun z => E (tr z) | game] := by
+  refine probEvent_mono'' fun z hz => ?_
+  obtain ⟨S, hS⟩ := hz
+  by_contra hE
+  exact (Sponge316.not_e_time_honest_removeRedundantEntryDS_of_not_E_raw
+    (tr := tr z) (state := st z) (S := S) hE) hS
+
 end HonestBadEvents
 
 /-! ## R1f — the open instantiation gap, and the assembly that consumes it -/
@@ -453,6 +471,26 @@ theorem honestBad_birthday_of_residuals
   exact probEvent_honestBad_le_probEvent_E h12 h14 h16 _
     (fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) => z.2) (fun _ => st₀)
 
+/-- R1 assembly, deduped timing lane — assuming the eager birthday residual for raw `E`, the
+probability of an honest timing event over the deduplicated logged trace is bounded by
+`lemma5_8Bound`. This avoids consuming the refuted raw `Lemma5_16HonestResidual`. -/
+theorem dedupTimeHonest_birthday_of_residual
+    (h58 : Lemma5_8EagerBirthdayResidual StmtIn U)
+    {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ)
+    (hT : IsTotalQueryBound P T) (st₀ : CanonicalSpongeState U) :
+    (Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) =>
+        ∃ S : Backtrack.S_BT (removeRedundantEntryDS z.2).1 st₀,
+          E_time_honest (removeRedundantEntryDS z.2).1 st₀ S |
+      do
+        let c ← (D_DS StmtIn U).sample
+        simulateQ ((D_DS StmtIn U).toImpl c)
+          ((simulateQ loggingOracle P).run)]).toReal
+      ≤ lemma5_8Bound U T := by
+  refine le_trans (ENNReal.toReal_mono
+    (ne_top_of_le_ne_top ENNReal.one_ne_top probEvent_le_one) ?_) (h58 P T hT)
+  exact probEvent_dedupTimeHonest_le_probEvent_E _
+    (fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) => z.2) (fun _ => st₀)
+
 end EagerInstantiation
 
 end DuplexSpongeFS.BirthdayBound
@@ -466,4 +504,6 @@ end DuplexSpongeFS.BirthdayBound
 #print axioms DuplexSpongeFS.BirthdayBound.birthday_toReal_le_lemma5_8Bound
 #print axioms DuplexSpongeFS.BirthdayBound.hit_toReal_le_capacityRatio
 #print axioms DuplexSpongeFS.BirthdayBound.probEvent_honestBad_le_probEvent_E
+#print axioms DuplexSpongeFS.BirthdayBound.probEvent_dedupTimeHonest_le_probEvent_E
 #print axioms DuplexSpongeFS.BirthdayBound.honestBad_birthday_of_residuals
+#print axioms DuplexSpongeFS.BirthdayBound.dedupTimeHonest_birthday_of_residual
