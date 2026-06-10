@@ -4922,3 +4922,31 @@ all regimes t < min over the larger prime — the verified law is now FULLY form
 Remaining for the all-t form: the bigraded assembly (both primes ≤ t), where the
 transfer's p∤e puncture requires the two-dimensional spectrum analysis — mapped, with
 first_peel_export (O116) resolving its stall case.
+
+### O118 — THE BIGRADED WALL DISSOLVES: syndrome resolution by valuation induction (route, complete)
+
+The all-t law's blocking system (one mixed identity, two spectrum unknowns per exponent
+— O117's wall) RESOLVES. The engine, now precisely mapped:
+
+1. PURE-POWER nested syndromes always resolve: a spectrum R's pure p-power syndrome
+   Σ_R r^{p^j} unwinds via R's OWN p-side transfer (q ∤ p^{j-1} — valid) down to plain
+   sums of deeper spectra = S-window values at product exponents ≤ t. Symmetrically for
+   pure q-powers via q-descents.
+2. MIXED nested syndromes resolve by INDUCTION ON THE p-ADIC VALUATION: for R's mixed
+   exponent e = q^α p^β (α, β ≥ 1), S's mixed identity p·Σ_{T_S} τ^{qe/p} + q·Σ_R r^e =
+   Σ_S y^{qe} = 0 (qe ≤ t, FULL window) links R's unknown to T_S's at exponent
+   q^{α+1} p^{β−1} — valuation drops by one. At β = 1 the partner is PURE q^{α+1},
+   resolved independently by (1), which PINS the mixed unknown. Regress terminates.
+3. CONSEQUENCE: every nested spectrum inherits the FULL window scaled by its descent
+   multiplier (q^{#q-steps} p^{#p-steps}·Σ_U u^e = resolved S-syndromes). The J(t)
+   induction then runs with full windows at every level — my proven q-direction law's
+   skeleton with no puncture — yielding THE COMPLETE O70 LAW: window [1,t] ⟹ every
+   element μ_d-covered, d | n, d > t, at ALL t.
+
+Formal shape: strong induction on (descent depth, p-adic valuation of exponent),
+mutually through the nested spectra; the first_peel (O116) and full export machinery
+carry the per-element coverage exactly as in windowed_coset_cover_q. The alternating-
+induction and pointwise-weld doors stay closed (recorded); THIS is the open road.
+Formalization = the next arc (nested-spectrum invariant + the valuation induction +
+re-run of the J-induction); every constituent pattern already exists in
+DeBruijnTwoPrime.lean.
