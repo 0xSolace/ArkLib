@@ -4732,3 +4732,12 @@ The O109 forward, gated with full design in the O109a entry, executed same-sessi
 * Congruence engine extracted (`trace_congr`/`trace_congr_mem`): `Nat.ModEq.mul_left_cancel'` + `cancel_left_of_coprime` after factoring the gcd — reusable for any future block-collapse argument.
 
 **Named remaining (bookkeeping, not research):** the literal cardinality export `|F_n(t)| = |F_m(t)|^(n/m)` as a `Fintype.card` statement (an `Equiv` between the fiber subtype and `Fin (n/m) → fiber subtype` via the iff + trace/lift inverses), and the `m = lcm(Dmin)` instantiation of interface (H). With O106 (the law) + O107/O112 (spectra) + this (the count structure), the two-prime windowed program is closed at every named surface.
+
+### O110 — LAM–LEUNG REDUCED TO THE SQUAREFREE BASE: the square-descent half of the span theorem is a theorem; ≤2-prime moduli CLOSED
+
+Correction to the residue bookkeeping: Lam–Leung's ℕ-span theorem is PUBLISHED mathematics (J. Algebra 224 (2000)), not open research — only unformalized. Its square-descent half is provable today via O101 and is now landed. `LamLeungSquarefreeReduction.lean` (axiom-clean ×3, 0 sorry):
+
+* `lam_leung_span_descent` — the `p² ∣ n` step: threads vanish (O101), per-thread weights lie in the span (hypothesis at level `m`), the total is the thread-sum (`nat_digit_sum`), and `primeFactors (p·m) = primeFactors m` when `p ∣ m`.
+* `lam_leung_of_squarefree` — **the reduction**: the ℕ-span law at every squarefree level implies it at EVERY level (strong induction stripping prime squares, `Nat.squarefree_iff_prime_squarefree`).
+
+**Consequence (composition, no new proof needed): Lam–Leung is now CLOSED at every modulus with at most two distinct primes** — prime powers via the descent to `n = p` (rigidity gives weight ∈ ℕp), and all `p^a·q^b` via the descent to the squarefree base `pq` where O104 lands it. The remaining formalization residue of the span theorem is EXACTLY the squarefree base with ≥ 3 distinct primes — where the packet route is dead (O105), the linear scaffolding is done (O109), and the published route is Lam–Leung's minimal-vanishing-sum induction (§4–5 of the paper): a real formalization project with a known proof, precisely gated, NOT open mathematics. The honest open-research residue on this lane is therefore only: the t>1 window law at 3+ primes (no literature), the O99 incidence geometry, and δ*.
