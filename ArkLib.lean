@@ -1684,6 +1684,7 @@ import ArkLib.ToMathlib.GSSurfaceEntry
 import ArkLib.ToMathlib.GSSurfaceHtailPigeonhole
 import ArkLib.ToMathlib.GSSurfaceKeystone
 import ArkLib.ToMathlib.GSSurfaceMatchingLane
+import ArkLib.ToMathlib.GSSurfaceRadicalSupply
 import ArkLib.ToMathlib.GSSurfaceSupply
 import ArkLib.ToMathlib.GSSurfaceTailSupply
 import ArkLib.ToMathlib.GSSurfaceTaylorRepair
