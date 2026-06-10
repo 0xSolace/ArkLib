@@ -54,7 +54,8 @@ namespace Logup
 section HonestSupport
 
 variable {ι : Type} (oSpec : OracleSpec ι)
-variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [SampleableType F]
+variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)]
+  [SampleableType F]
 variable (n M : ℕ)
 variable (params : ProtocolParams M)
 
@@ -64,7 +65,7 @@ local instance instInhabitedFieldLogupHonestSupport : Inhabited F := ⟨0⟩
 
 /-! ### Step 1: the honest prover's output oracle map *is* the honest form (structural) -/
 
-omit [SampleableType F] in
+omit [Fact ((-1 : F) ≠ 1)] [SampleableType F] in
 /-- **The honest LogUp prover emits the honest-form oracle map by construction.**
 
 The honest outer prover's `output` step (`outerProver.output`, `Protocol.lean`) on the final state
@@ -88,7 +89,7 @@ theorem honestProver_output_oStmtOut_eq_honestForm
 
 /-! ### Step 2: the honest-form body is genuinely satisfied on honest outputs -/
 
-omit [SampleableType F] in
+omit [Fact ((-1 : F) ≠ 1)] [SampleableType F] in
 /-- **The honest-support property holds on every honest prover output (no assumption).**
 
 For a genuine `inputRelation` input `(stmt₀, oStmt₀)` and a challenge `x` *off the table poles*, the
