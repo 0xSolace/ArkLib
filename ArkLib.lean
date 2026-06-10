@@ -1684,6 +1684,7 @@ import ArkLib.ToMathlib.SecondMomentCountBricks
 import ArkLib.ToMathlib.SecondMomentProb
 import ArkLib.ToMathlib.Section5BundleAssembler
 import ArkLib.ToMathlib.Section5Concrete
+import ArkLib.ToMathlib.SectionFactor
 import ArkLib.ToMathlib.Section5ConcreteJohnson
 import ArkLib.ToMathlib.Section5StrictDataFinOn
 import ArkLib.ToMathlib.SeparableLowDegree
