@@ -2754,7 +2754,9 @@ theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
         ∑ y ∈ S, y ^ (q * e) = (q : F) * ∑ r ∈ R, r ^ e) ∧
       (∀ e : ℕ, p ∣ e →
         ∑ y ∈ S, y ^ (q * e)
-          = (q : F) * ∑ r ∈ R, r ^ e + (p : F) * ∑ τ ∈ T, τ ^ (q * e / p)) := by
+          = (q : F) * ∑ r ∈ R, r ^ e + (p : F) * ∑ τ ∈ T, τ ^ (q * e / p)) ∧
+      (∀ e : ℕ, ¬ q ∣ e →
+        ∑ y ∈ S, y ^ (p * e) = (p : F) * ∑ τ ∈ T, τ ^ e) := by
   classical
   haveI : NeZero p := ⟨hp.pos.ne'⟩
   haveI : NeZero q := ⟨hq.pos.ne'⟩
@@ -2768,9 +2770,9 @@ theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
   | empty =>
     exact ⟨∅, ∅, fun r hr => absurd hr (Finset.notMem_empty r),
       fun τ hτ => absurd hτ (Finset.notMem_empty τ),
-      fun e _ => by simp, fun e _ => by simp⟩
+      fun e _ => by simp, fun e _ => by simp, fun e _ => by simp⟩
   | @addP S₀ s j t hsub hnot IH =>
-    obtain ⟨R, T, hRorb, hTorb, hRtr, hMix⟩ := IH
+    obtain ⟨R, T, hRorb, hTorb, hRtr, hMix, hTtr⟩ := IH
     set P : Finset F := (Finset.range p).image
       (fun i'' => ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)) with hPdef
     set τ₀ : F := (ζp ^ s * ζq ^ (j * q ^ b + t)) ^ p with hτ₀
@@ -2853,7 +2855,7 @@ theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
       rw [hPdef, Finset.card_image_of_injOn (fun x1 hx1 x2 hx2 h =>
         hinj x1 (Finset.mem_coe.mp hx1) x2 (Finset.mem_coe.mp hx2) h),
         Finset.card_range]
-    refine ⟨R, insert τ₀ T, ?_, ?_, ?_, ?_⟩
+    refine ⟨R, insert τ₀ T, ?_, ?_, ?_, ?_, ?_⟩
     · intro r hr
       obtain ⟨w, hw, hwq, horbit⟩ := hRorb r hr
       exact ⟨w, Finset.mem_union_left _ hw, hwq,
@@ -2901,8 +2903,17 @@ theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
         Finset.sum_insert hfresh, mul_add]
       have hdiv2 : q * (p * e') / p = q * e' := hdiv
       ring
+    · -- the mirror T-transfer: the new p-packet contributes p·τ₀^e
+      intro e hqe
+      have hPsum : ∑ y ∈ P, y ^ (p * e) = (p : F) * τ₀ ^ e := by
+        have hcom : ∀ y ∈ P, y ^ (p * e) = τ₀ ^ e := by
+          intro y hy
+          rw [pow_mul, hcommon y hy]
+        rw [Finset.sum_congr rfl hcom, Finset.sum_const, hPcard, nsmul_eq_mul]
+      rw [Finset.sum_union hdis, hTtr e hqe, hPsum, Finset.sum_insert hfresh, mul_add]
+      ring
   | @addQ S₀ s i t hsub hnot IH =>
-    obtain ⟨R, T, hRorb, hTorb, hRtr, hMix⟩ := IH
+    obtain ⟨R, T, hRorb, hTorb, hRtr, hMix, hTtr⟩ := IH
     set P : Finset F := (Finset.range q).image
       (fun j'' => ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) with hPdef
     set z₀ : F := ζp ^ (i * p ^ a + s) * ζq ^ t with hz₀
@@ -2980,7 +2991,7 @@ theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
         have := horbit (z₀ / w) hg
         rwa [div_mul_cancel₀ z₀ hw0] at this
       exact (Finset.disjoint_left.mp hdis hz₀S) hz₀P
-    refine ⟨insert (z₀ ^ q) R, T, ?_, ?_, ?_, ?_⟩
+    refine ⟨insert (z₀ ^ q) R, T, ?_, ?_, ?_, ?_, ?_⟩
     · intro r hr
       rcases Finset.mem_insert.mp hr with rfl | hrR
       · exact ⟨z₀, Finset.mem_union_right _ hz₀P, rfl,
@@ -3005,6 +3016,27 @@ theorem packetUnion_bilateral_export {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
       rw [Finset.sum_union hdis, hMix (p * e') ⟨e', rfl⟩, hPsum,
         Finset.sum_insert hfresh, mul_add]
       ring
+    · -- the mirror T-transfer: the q-packet dies at p·e when q ∤ e
+      intro e hqe
+      have hωqe : IsPrimitiveRoot ((ζq ^ (q ^ b)) ^ (p * e)) q := by
+        refine hωq.pow_of_coprime _ ?_
+        have hpq' : Nat.Coprime p q := (Nat.coprime_primes hp hq).mpr hpq
+        have heq' : Nat.Coprime e q := by
+          rcases Nat.coprime_or_dvd_of_prime hq e with h | h
+          · exact h.symm
+          · exact absurd h hqe
+        exact Nat.Coprime.mul_left hpq' heq'
+      have hPsum : ∑ y ∈ P, y ^ (p * e) = 0 := by
+        rw [hPdef, Finset.sum_image hinj]
+        have hterm : ∀ j'' ∈ Finset.range q,
+            (ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) ^ (p * e)
+              = ((ζq ^ (q ^ b)) ^ (p * e)) ^ j''
+                * ((ζp ^ (i * p ^ a + s)) ^ (p * e) * (ζq ^ t) ^ (p * e)) := by
+          intro j'' _
+          ring
+        rw [Finset.sum_congr rfl hterm]
+        exact prime_packet_sum_zero hq hωqe _
+      rw [Finset.sum_union hdis, hTtr e hqe, hPsum, add_zero]
 
 end BilateralExport
 
