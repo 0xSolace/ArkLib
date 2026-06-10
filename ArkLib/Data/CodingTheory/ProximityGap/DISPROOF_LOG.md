@@ -4838,3 +4838,12 @@ The identification O121 used implicitly, closed as an iff. `PackingClassCSP.lean
 * `csp_family_card` — a CSP-satisfying family's union realizes the full mass `Σ_{(d,r) ∈ F} d` — feasibility transfers to exact mass realization in one `card_biUnion`.
 
 **Where every landed law now sits**: O119 = the 2-type CSP is interval-capacity-solvable (iff); O121 = a triangle of `gcd ∣ 2` constraints is infeasible (2-coloring); O116's CRT obstruction = the single `gcd = 1` edge. The open exact `k`-type law is feasibility of these CSPs — Berger–Felzenbaum–Fraenkel disjoint-covering-systems combinatorics over the divisor-gcd lattice, now with a clean machine-checked interface: any future feasibility criterion proves a packing law by composing with `packing_iff_csp`, zero geometry required. Structure constants probe-verified exhaustively (probe_two_gen_capacity.py check (A), n ∈ {12,…,36}, all divisor and base pairs).
+
+### O122 — M1 IS A THEOREM: the agreement-spectrum first moment in Lean — mean coset list sizes are domain-independent (the O120 named target; nubs, 2026-06-10)
+
+`AgreementMomentOne.lean` (axiom-clean ×2, 0 sorry, 0 warnings): the O120 closed form, machine-checked at full generality.
+
+* `card_exact_agreement` — **the generic exact-agreement count** (ToMathlib-grade): functions `u : α → β` agreeing with a fixed `f` on EXACTLY `j` coordinates number `C(|α|, j)·(|β|−1)^(|α|−j)`. Route: partition by the agreement set (`powersetCard` biUnion); each fiber IS a `piFinset` of singletons (on the set) and punctured codomains (off it) — `Fintype.card_piFinset` + `prod_ite` close it.
+* `sum_agreement_spectrum` — **M1**: `Σ_{u : D → F} a_j(u) = q^k·C(|D|, j)·(q−1)^(|D|−j)` where `a_j(u) = #{p : deg < k, p agrees with u on exactly j points of D}` — for EVERY `|D|`-point domain. Double counting (`Finset.sum_comm` after `card_filter`), the generic count per codeword, `card_polysDegLT` for the codeword total. The mean coset list size `E_u[ℓ(u, w)] = q^{k−n}·Σ_{j ≥ n−w} C(n,j)(q−1)^{n−j}` is now a corollary-shaped consequence.
+
+**Where this aims:** with M1 in-tree, the O120 reframing is half-formal: domain-independence of the FIRST moment is a theorem; M2 (through the distance distribution) is the next named brick (needs the MDS weight enumerator in-tree — itself a worthy classical target); Chebyshev via M2 would give the first machine-checked nontrivial max-list bound. δ*'s domain-dependence provably cannot appear before the second moment.
