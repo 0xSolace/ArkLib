@@ -286,6 +286,205 @@ theorem hasHashEntry_removeRedundant_of_mem
     HasHashEntry (removeRedundantEntryDS tr).1 stmt capSeg :=
   hasHashEntry_removeRedundant tr.length tr le_rfl h
 
+/-- Private shorthand for a concrete hash query-answer entry. -/
+private def hashEntry (stmt : StmtIn) (capSeg : Vector U SpongeSize.C) :
+    OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+  ⟨Sum.inl stmt, capSeg⟩
+
+/-- Private shorthand for a concrete forward permutation query-answer entry. -/
+private def forwardEntry (stateIn stateOut : CanonicalSpongeState U) :
+    OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+  ⟨Sum.inr (Sum.inl stateIn), stateOut⟩
+
+/-- Natural-index form of `HasFirstHashForwardCapacityBeforeHash`, used for the recursive
+`eraseIdx` proof where indices may shift left. -/
+private def HasFirstHashForwardCapacityBeforeHashNat
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (stmt : StmtIn) (capSeg : Vector U SpongeSize.C) : Prop :=
+  ∃ iHash iPerm : ℕ, ∃ stateIn stateOut : CanonicalSpongeState U,
+    iPerm < iHash ∧
+      tr[iHash]? = some (hashEntry stmt capSeg) ∧
+      tr[iPerm]? = some (forwardEntry stateIn stateOut) ∧
+      (stateOut.capacitySegment = capSeg ∨ stateIn.capacitySegment = capSeg) ∧
+      ∀ j, j < iHash → tr[j]? ≠ some (hashEntry stmt capSeg)
+
+/-- Convert the public finite-index first-hash witness into the private natural-index form. -/
+private lemma firstNat_of_first
+    {tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (h : HasFirstHashForwardCapacityBeforeHash tr stmt capSeg) :
+    HasFirstHashForwardCapacityBeforeHashNat tr stmt capSeg := by
+  obtain ⟨jHash, hhash, hfirst, jPerm, hlt, stateIn, stateOut, hperm, hcap⟩ := h
+  have hhash? : tr[jHash.val]? = some (hashEntry stmt capSeg) := by
+    rw [List.getElem?_eq_getElem jHash.isLt]
+    simpa [hashEntry] using congrArg some hhash
+  have hperm? : tr[jPerm.val]? = some (forwardEntry stateIn stateOut) := by
+    rw [List.getElem?_eq_getElem jPerm.isLt]
+    simpa [forwardEntry] using congrArg some hperm
+  have hfirstNat : ∀ j, j < jHash.val → tr[j]? ≠ some (hashEntry stmt capSeg) := by
+    intro j hj hsome
+    have hjlen : j < tr.length := lt_trans hj jHash.isLt
+    have hraw : tr.get ⟨j, hjlen⟩ =
+        (⟨Sum.inl stmt, capSeg⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+      rw [List.getElem?_eq_getElem hjlen] at hsome
+      exact Option.some.inj hsome
+    exact hfirst ⟨j, hjlen⟩ hj hraw
+  exact ⟨jHash.val, jPerm.val, stateIn, stateOut, hlt, hhash?, hperm?, hcap, hfirstNat⟩
+
+/-- Convert the private natural-index witness back to the public base-trace collision shape. -/
+private lemma hasForwardCapacityBeforeHash_of_firstNat
+    {tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (h : HasFirstHashForwardCapacityBeforeHashNat tr stmt capSeg) :
+    HasForwardCapacityBeforeHash tr stmt capSeg := by
+  obtain ⟨iHash, iPerm, stateIn, stateOut, hlt, hhash, hperm, hcap, _hfirst⟩ := h
+  obtain ⟨hHashLt, hHashEq⟩ := List.getElem?_eq_some_iff.mp hhash
+  obtain ⟨hPermLt, hPermEq⟩ := List.getElem?_eq_some_iff.mp hperm
+  refine ⟨⟨iHash, hHashLt⟩, ?_, ⟨iPerm, hPermLt⟩, hlt,
+    stateIn, stateOut, ?_, hcap⟩
+  · simpa [hashEntry] using hHashEq
+  · simpa [forwardEntry] using hPermEq
+
+/-- Hash-slot inversion for the private `hashEntry` shorthand. -/
+private lemma redundantEntryDS_hashEntry_inversion
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (idx : Fin tr.length)
+    (stmt : StmtIn) (capSeg : Vector U SpongeSize.C)
+    (hval : tr[idx] = hashEntry stmt capSeg)
+    (hred : tr.redundantEntryDS idx) :
+    ∃ j' : Fin tr.length, j' < idx ∧ tr[j'] = hashEntry stmt capSeg := by
+  unfold hashEntry at hval ⊢
+  unfold redundantEntryDS at hred
+  rw [hval] at hred
+  exact hred
+
+/-- **One-step preservation**: erasing one redundant entry preserves the strengthened
+forward-before-first-hash shape. -/
+private lemma firstNat_eraseIdx
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (idx : Fin tr.length) (hred : tr.redundantEntryDS idx)
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (hP : HasFirstHashForwardCapacityBeforeHashNat tr stmt capSeg) :
+    HasFirstHashForwardCapacityBeforeHashNat (tr.eraseIdx idx.val) stmt capSeg := by
+  classical
+  obtain ⟨iHash, iPerm, stateIn, stateOut, hlt, hhash, hperm, hcap, hfirst⟩ := hP
+  by_cases hEraseHash : idx.val = iHash
+  · have hidx? : tr[idx.val]? = some (hashEntry stmt capSeg) := by
+      simpa [hEraseHash] using hhash
+    have hidxVal : tr[idx] = hashEntry stmt capSeg := by
+      rw [List.getElem?_eq_getElem idx.isLt] at hidx?
+      exact Option.some.inj hidx?
+    obtain ⟨j', hj', hjeq⟩ :=
+      redundantEntryDS_hashEntry_inversion tr idx stmt capSeg hidxVal hred
+    have hprior? : tr[j'.val]? = some (hashEntry stmt capSeg) := by
+      rw [List.getElem?_eq_getElem j'.isLt]
+      simpa only [List.get_eq_getElem] using congrArg some hjeq
+    exact False.elim (hfirst j'.val (by omega) hprior?)
+  · let iHash' := if idx.val < iHash then iHash - 1 else iHash
+    have hhash' : (tr.eraseIdx idx.val)[iHash']? = some (hashEntry stmt capSeg) := by
+      by_cases hidxHash : idx.val < iHash
+      · have hge : idx.val ≤ iHash - 1 := by omega
+        simp only [iHash', hidxHash, ↓reduceIte]
+        rw [List.getElem?_eraseIdx_of_ge hge, show iHash - 1 + 1 = iHash by omega, hhash]
+      · have hHashIdx : iHash < idx.val := by omega
+        simp only [iHash', hidxHash, ↓reduceIte]
+        rw [List.getElem?_eraseIdx_of_lt hHashIdx, hhash]
+    have hfirst' : ∀ j, j < iHash' →
+        (tr.eraseIdx idx.val)[j]? ≠ some (hashEntry stmt capSeg) := by
+      intro j hj hsome
+      by_cases hidxHash : idx.val < iHash
+      · by_cases hjIdx : j < idx.val
+        · have hraw : tr[j]? = some (hashEntry stmt capSeg) := by
+            rw [List.getElem?_eraseIdx_of_lt hjIdx] at hsome
+            exact hsome
+          exact hfirst j (by simp [iHash', hidxHash] at hj; omega) hraw
+        · have hraw : tr[j + 1]? = some (hashEntry stmt capSeg) := by
+            have hge : idx.val ≤ j := by omega
+            rw [List.getElem?_eraseIdx_of_ge hge] at hsome
+            exact hsome
+          exact hfirst (j + 1) (by simp [iHash', hidxHash] at hj; omega) hraw
+      · have hHashIdx : iHash < idx.val := by omega
+        have hjIdx : j < idx.val := by simp [iHash', hidxHash] at hj; omega
+        have hraw : tr[j]? = some (hashEntry stmt capSeg) := by
+          rw [List.getElem?_eraseIdx_of_lt hjIdx] at hsome
+          exact hsome
+        exact hfirst j (by simpa [iHash', hidxHash] using hj) hraw
+    by_cases hErasePerm : idx.val = iPerm
+    · have hidx? : tr[idx.val]? = some (forwardEntry stateIn stateOut) := by
+        simpa [hErasePerm] using hperm
+      have hidxVal : tr[idx] = forwardEntry stateIn stateOut := by
+        rw [List.getElem?_eq_getElem idx.isLt] at hidx?
+        exact Option.some.inj hidx?
+      obtain ⟨j', hj', stateIn', stateOut', hentry, hcap'⟩ :=
+        redundant_forward_capacity_prior
+          (tr := tr) (idx := idx) (capSeg := capSeg)
+          (stateIn := stateIn) (stateOut := stateOut)
+          (by simpa [forwardEntry] using hidxVal) hred hcap
+      have hkeep : (tr.eraseIdx idx.val)[j'.val]? = tr[j'.val]? :=
+        List.getElem?_eraseIdx_of_lt (by exact hj')
+      have hperm' : (tr.eraseIdx idx.val)[j'.val]? =
+          some (forwardEntry stateIn' stateOut') := by
+        rw [hkeep, List.getElem?_eq_getElem j'.isLt]
+        simpa [forwardEntry, List.get_eq_getElem] using congrArg some hentry
+      refine ⟨iHash', j'.val, stateIn', stateOut', ?_, hhash', hperm', hcap', hfirst'⟩
+      by_cases hidxHash : idx.val < iHash
+      · simp [iHash', hidxHash]; omega
+      · omega
+    · let iPerm' := if idx.val < iPerm then iPerm - 1 else iPerm
+      have hperm' : (tr.eraseIdx idx.val)[iPerm']? = some (forwardEntry stateIn stateOut) := by
+        by_cases hidxPerm : idx.val < iPerm
+        · have hge : idx.val ≤ iPerm - 1 := by omega
+          simp only [iPerm', hidxPerm, ↓reduceIte]
+          rw [List.getElem?_eraseIdx_of_ge hge, show iPerm - 1 + 1 = iPerm by omega, hperm]
+        · have hPermIdx : iPerm < idx.val := by omega
+          simp only [iPerm', hidxPerm, ↓reduceIte]
+          rw [List.getElem?_eraseIdx_of_lt hPermIdx, hperm]
+      have hlt' : iPerm' < iHash' := by
+        by_cases hidxHash : idx.val < iHash
+        · by_cases hidxPerm : idx.val < iPerm
+          · simp [iHash', iPerm', hidxHash, hidxPerm]; omega
+          · simp [iHash', iPerm', hidxHash, hidxPerm]; omega
+        · have hHashIdx : iHash < idx.val := by omega
+          have hidxPerm : ¬ idx.val < iPerm := by omega
+          simp [iHash', iPerm', hidxHash, hidxPerm]; omega
+      exact ⟨iHash', iPerm', stateIn, stateOut, hlt', hhash', hperm', hcap, hfirst'⟩
+
+/-- **Fixpoint preservation**: dedup preserves the first-hash forward-capacity collision shape
+as the base-trace shape used by `capacitySegmentDupHash`. -/
+private lemma firstNat_removeRedundant :
+    ∀ (N : ℕ) (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)), tr.length ≤ N →
+      ∀ {stmt : StmtIn} {capSeg : Vector U SpongeSize.C},
+        HasFirstHashForwardCapacityBeforeHashNat tr stmt capSeg →
+          HasForwardCapacityBeforeHash (removeRedundantEntryDS tr).1 stmt capSeg := by
+  intro N
+  induction N with
+  | zero =>
+      intro tr hlen stmt capSeg hP
+      obtain ⟨iHash, _iPerm, _stateIn, _stateOut, _hlt, hhash, _hperm, _hcap, _hfirst⟩ := hP
+      have hlen0 : tr.length = 0 := Nat.le_zero.mp hlen
+      rw [List.length_eq_zero_iff.mp hlen0] at hhash
+      simp [hashEntry] at hhash
+  | succ N ih =>
+      intro tr hlen stmt capSeg hP
+      rw [removeRedundantEntryDS]
+      split
+      · rename_i hex
+        refine ih _ ?_ (firstNat_eraseIdx tr (Classical.choose hex)
+          (Classical.choose_spec hex) hP)
+        have hlt := (Classical.choose hex).isLt
+        have hsucc := List.length_eraseIdx_add_one hlt
+        omega
+      · exact hasForwardCapacityBeforeHash_of_firstNat hP
+
+/-- Public dedup bridge for the M2c hash-timing path: the strengthened raw first-hash witness
+survives `removeRedundantEntryDS` as the base-trace `HasForwardCapacityBeforeHash` shape. -/
+theorem hasForwardCapacityBeforeHash_removeRedundant_of_first
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (h : HasFirstHashForwardCapacityBeforeHash tr stmt capSeg) :
+    HasForwardCapacityBeforeHash (removeRedundantEntryDS tr).1 stmt capSeg :=
+  firstNat_removeRedundant tr.length tr le_rfl (firstNat_of_first h)
+
 /-- Inversion of `redundantEntryDS` at an inverse-permutation slot: the redundancy
 certificate is an earlier inverse entry (same or reversed). -/
 private lemma redundantEntryDS_inv_inversion
@@ -810,6 +1009,31 @@ theorem e_time_h_honest_raw_hasFirstHashForwardCapacityBeforeHash_of_not_E
   refine ⟨p.1.stmt, capSeg, p.2.1, hhash_get, hfirst, jPerm, hlt,
     p.1.inputState[pairIdx], p.1.outputState[pairIdx.val]'hpair, hperm_get, Or.inr hcap⟩
 
+/-- Off `E`, the raw first-hash timing witness transports through DSFS dedup to a base-trace
+`HasForwardCapacityBeforeHash` witness. -/
+theorem e_time_h_honest_dedup_hasForwardCapacityBeforeHash_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (hTime : DuplexSpongeFS.KeyLemmaFoundations.E_time_h_honest tr state S) :
+    ∃ stmt capSeg, HasForwardCapacityBeforeHash (removeRedundantEntryDS tr).1 stmt capSeg := by
+  obtain ⟨stmt, capSeg, hfirst⟩ :=
+    e_time_h_honest_raw_hasFirstHashForwardCapacityBeforeHash_of_not_E
+      (tr := tr) h (state := state) (S := S) hTime
+  exact ⟨stmt, capSeg, hasForwardCapacityBeforeHash_removeRedundant_of_first tr hfirst⟩
+
+/-- Hash-timing half of M2c: off the combined bad event `E`, the honest hash out-of-order event
+cannot occur. The remaining `E_time_p_honest` half is separate. -/
+theorem not_e_time_h_honest_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state) :
+    ¬ DuplexSpongeFS.KeyLemmaFoundations.E_time_h_honest tr state S := by
+  intro hTime
+  obtain ⟨stmt, capSeg, hbase⟩ :=
+    e_time_h_honest_dedup_hasForwardCapacityBeforeHash_of_not_E
+      (tr := tr) h (state := state) (S := S) hTime
+  exact h (E_of_base_hasForwardCapacityBeforeHash
+    (tr := tr) (stmt := stmt) (capSeg := capSeg) hbase)
+
 /-- **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual`
 holds: off the combined bad event `E`, no BackTrack chain step is anchored by an
 inverse-permutation entry (CO25 Lemma 5.12, honest form over `Backtrack.S_BT`). -/
@@ -826,6 +1050,7 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.redundant_forward_capacity_prior
 #print axioms DuplexSpongeFS.Sponge316.hasInvEntry_implies_E
 #print axioms DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem
+#print axioms DuplexSpongeFS.Sponge316.hasForwardCapacityBeforeHash_removeRedundant_of_first
 #print axioms DuplexSpongeFS.Sponge316.not_inv_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.forward_getElem?_of_not_E_of_perm_or_inv
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_getElem?
@@ -843,6 +1068,8 @@ end DuplexSpongeFS.Sponge316
 
 namespace DuplexSpongeFS.Sponge316
 #print axioms e_time_h_honest_raw_hasFirstHashForwardCapacityBeforeHash_of_not_E
+#print axioms e_time_h_honest_dedup_hasForwardCapacityBeforeHash_of_not_E
+#print axioms not_e_time_h_honest_of_not_E
 end DuplexSpongeFS.Sponge316
 
 #print axioms DuplexSpongeFS.Sponge316.lemma5_12_honest
