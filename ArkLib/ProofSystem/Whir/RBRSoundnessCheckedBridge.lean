@@ -23,13 +23,18 @@ is therefore discharged, and the front door reduces to exactly two named gates:
 
 * `hChallengeCard` — the challenge-cardinality pin
   `card ((whirPaperTranscriptVectorSpec P d').ChallengeIdx) = 2 * M + 2`.
-  HONESTY: the paper-faithful transcript shape *unbundles* the per-round sumcheck
-  challenges (one slot per fold step), so its challenge count is
-  `foldingParam 0 + 2 * M + ∑ i < M, foldingParam (i + 1)`, which equals `2 * M + 2`
-  exactly when the folding parameters sum to `2` (e.g. `M = 1` with unit folds). The
-  front door's `2 * M + 2` pin reflects the aggregated vector-challenge reading of
-  Construction 5.1; this hypothesis records the mismatch *as a named obligation* rather
-  than papering over it.
+  HONESTY (count corrected 2026-06-10, machine-checked in `ChallengeCardPin.lean`): the
+  paper-faithful transcript shape *unbundles* the per-round sumcheck challenges, and its
+  exact challenge count is `(∑ i, foldingParam i) + 2 * M + 1`
+  (`card_challengeIdx_whirPaperTranscriptVectorSpec` — an earlier version of this note
+  omitted the `finalRandomness` slot). Hence the pin holds **iff `∑ foldingParam = 1`**
+  (`whirPaper_challengeCard_eq_iff`), which under `[∀ i, Fact (0 < foldingParam i)]`
+  forces the single-iteration unit-fold instance `M = 0`, `foldingParam 0 = 1`
+  (`M_eq_zero_of_paramsSum_eq_one`) — NOT "params summing to 2". The front door's
+  `2 * M + 2` pin reflects the aggregated vector-challenge reading of Construction 5.1;
+  this hypothesis records the mismatch *as a named obligation* rather than papering over
+  it, and the general-`M` reconciliation requires an aggregated-vector-challenge
+  transcript construction or a pin restatement.
 * `hSound` — round-by-round knowledge soundness of the checked verifier at the WHIR
   budget. This is the genuine open soundness mathematics (the MCA Cor 4.11 / folding
   L4.20–4.23 chain, conditional today on `mca_johnson_bound_CONJECTURE` in the `√ρ`
