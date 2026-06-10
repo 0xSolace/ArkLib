@@ -473,6 +473,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreePQ
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTowerWiring
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrimeAssembly
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWeightedSquarefree
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConcretePinF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConstantGapBelowCapacity
@@ -1260,6 +1261,7 @@ import ArkLib.ProofSystem.Logup.SZTotalDegree
 import ArkLib.ProofSystem.Logup.Security.BatchingSZ
 import ArkLib.ProofSystem.Logup.Security.BridgeAndAppendResiduals
 import ArkLib.ProofSystem.Logup.Security.Completeness
+import ArkLib.ProofSystem.Logup.Security.ConsistentClaimCore
 import ArkLib.ProofSystem.Logup.Security.Issue13Status
 import ArkLib.ProofSystem.Logup.Security.LogupBatchingBinding
 import ArkLib.ProofSystem.Logup.Security.LogupClaimBatchAffine
