@@ -70,23 +70,21 @@ theorem liftedRound_run_failure {n : ℕ} (i : Fin n)
     hSumBad tr
   -- Commute `toVerifier` through the lift (proven coherence), expose the projected Simple run.
   have hcomm := OracleVerifier.liftContext_toVerifier_comm
-    (stmtLens := sumcheckOracleLens R n deg D oSpec i)
+    (stmtLens := SingleRound.sumcheckOracleLens R n deg D oSpec i)
     (V := (SingleRound.Simple.oracleReduction R deg D oSpec).verifier)
     (coh := SingleRound.coh_proven_inst i)
   show (((SingleRound.Simple.oracleReduction R deg D oSpec).verifier.liftContext
-      (sumcheckOracleLens R n deg D oSpec i)).toVerifier).run (stmt, oStmt) tr = _
+      (SingleRound.sumcheckOracleLens R n deg D oSpec i)).toVerifier).run (stmt, oStmt) tr = _
   rw [hcomm]
   -- Unfold the lifted run: Simple's run on the projection, post-composed with the lift.
-  show ((SingleRound.Simple.oracleReduction R deg D oSpec).verifier.toVerifier.verify
-      ((sumcheckOracleLens R n deg D oSpec i).toLens.proj (stmt, oStmt)) tr) >>= _ = _
-  have hproj_eq : (sumcheckOracleLens R n deg D oSpec i).toLens.proj (stmt, oStmt)
-      = ((SingleRound.oStmtLens R n deg D i).proj (stmt, oStmt)).1
-        |> (fun t => (t, ((SingleRound.oStmtLens R n deg D i).proj (stmt, oStmt)).2)) := rfl
-  rw [hproj_eq]
-  have : (SingleRound.Simple.oracleReduction R deg D oSpec).verifier.toVerifier.verify
-      ((((SingleRound.oStmtLens R n deg D i).proj (stmt, oStmt)).1,
-        ((SingleRound.oStmtLens R n deg D i).proj (stmt, oStmt)).2)) tr = failure := hSimpleFail
-  rw [this]
+  -- (`sumcheckOracleLens.toLens = oStmtLens` and `run = verify` definitionally; structure eta
+  -- identifies the projected pair with its component re-pairing.)
+  show (((SingleRound.Simple.oracleReduction R deg D oSpec).verifier.toVerifier).run
+      ((SingleRound.oStmtLens R n deg D i).proj (stmt, oStmt)) tr) >>= _ = _
+  have hSimpleFail' : (((SingleRound.Simple.oracleReduction R deg D oSpec).verifier.toVerifier).run
+      ((SingleRound.oStmtLens R n deg D i).proj (stmt, oStmt)) tr)
+      = (failure : OptionT (OracleComp oSpec) _) := hSimpleFail
+  rw [hSimpleFail']
   exact optionT_failure_bind oSpec _
 
 /-- **(D) The composed sum-check verifier rejects bad round-`0` claims outright.** -/
@@ -106,15 +104,12 @@ theorem composedSumcheck_run_failure {n' : ℕ}
   show ((SingleRound.oracleVerifier R (n' + 1) deg D oSpec 0).toVerifier.verify
       (stmt, oStmt) _) >>= _ = _
   have h0 : ((SingleRound.oracleVerifier R (n' + 1) deg D oSpec 0).toVerifier).run
-      (stmt, oStmt) (ProtocolSpec.FullTranscript.fst tr) = failure := by
-    refine liftedRound_run_failure oSpec R deg D 0 stmt oStmt ?_ _
-    have h00 : ((0 : Fin (n' + 1)).castSucc : Fin (n' + 2)) = 0 := rfl
-    rw [h00]
-    exact hBad
+      (stmt, oStmt) (ProtocolSpec.FullTranscript.fst (show ((SingleRound.pSpec R deg) ++ₚ (ProtocolSpec.seqCompose (fun _ : Fin n' => SingleRound.pSpec R deg))).FullTranscript from tr)) = failure := by
+    exact liftedRound_run_failure oSpec R deg D 0 stmt oStmt hBad _
   rw [show (SingleRound.oracleVerifier R (n' + 1) deg D oSpec 0).toVerifier.verify
-      (stmt, oStmt) (ProtocolSpec.FullTranscript.fst tr)
+      (stmt, oStmt) (ProtocolSpec.FullTranscript.fst (show ((SingleRound.pSpec R deg) ++ₚ (ProtocolSpec.seqCompose (fun _ : Fin n' => SingleRound.pSpec R deg))).FullTranscript from tr))
       = ((SingleRound.oracleVerifier R (n' + 1) deg D oSpec 0).toVerifier).run
-        (stmt, oStmt) (ProtocolSpec.FullTranscript.fst tr) from rfl]
+        (stmt, oStmt) (ProtocolSpec.FullTranscript.fst (show ((SingleRound.pSpec R deg) ++ₚ (ProtocolSpec.seqCompose (fun _ : Fin n' => SingleRound.pSpec R deg))).FullTranscript from tr)) from rfl]
   rw [h0]
   exact optionT_failure_bind oSpec _
 
