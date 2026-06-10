@@ -233,6 +233,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightResummation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.BCoeffVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510AffinePair
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Agreement
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Arith
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Bundle
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Capture
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510EndToEnd
@@ -1554,6 +1555,7 @@ import ArkLib.ProofSystem.Stir.ProximityGapSmallField
 import ArkLib.ProofSystem.Stir.Quotienting
 import ArkLib.ProofSystem.Stir.RbrFrontDoor
 import ArkLib.ProofSystem.Stir.RealBudgetRbr
+import ArkLib.ProofSystem.Stir.RepWire
 import ArkLib.ProofSystem.Stir.Round3Block
 import ArkLib.ProofSystem.Stir.Round3Completeness
 import ArkLib.ProofSystem.Stir.Round3Compose
@@ -1931,6 +1933,7 @@ import ArkLib.ToMathlib.SectionNewtonFunctorial
 import ArkLib.ToMathlib.SectionNewtonGamma
 import ArkLib.ToMathlib.SectionNewtonGradingSupply
 import ArkLib.ToMathlib.SectionNewtonPlaceReading
+import ArkLib.ToMathlib.SectionNewtonWindow
 import ArkLib.ToMathlib.SectionNewtonXiSupply
 import ArkLib.ToMathlib.SectionXiDivisibility
 import ArkLib.ToMathlib.SectionXiUnit
