@@ -782,6 +782,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroCodeUpperBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAZeroUpperBound
 import ArkLib.Data.CodingTheory.ProximityGap.MDSMaxAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.MDSNearCountVolume
+import ArkLib.Data.CodingTheory.ProximityGap.MannFiberCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MatchingDomainUniqueness
 import ArkLib.Data.CodingTheory.ProximityGap.MinimalVanishingReduction
 import ArkLib.Data.CodingTheory.ProximityGap.MixedGaussSumCompleteSquare
@@ -1503,6 +1504,7 @@ import ArkLib.ProofSystem.Stir.ChainCompleteness
 import ArkLib.ProofSystem.Stir.ChainProof
 import ArkLib.ProofSystem.Stir.ChainRbrIndicator
 import ArkLib.ProofSystem.Stir.ChainVSpecCount
+import ArkLib.ProofSystem.Stir.ChainVectorObject
 import ArkLib.ProofSystem.Stir.CheckedFinalBlock
 import ArkLib.ProofSystem.Stir.CheckingRbrTightnessCore
 import ArkLib.ProofSystem.Stir.CheckingVerifier
@@ -1871,6 +1873,7 @@ import ArkLib.ToMathlib.ProtocolCountingBricks
 import ArkLib.ToMathlib.ProximityGenericity
 import ArkLib.ToMathlib.ProximityGenericityEvalX
 import ArkLib.ToMathlib.RSPhases
+import ArkLib.ToMathlib.RadicalAssembler
 import ArkLib.ToMathlib.RadicalBranch
 import ArkLib.ToMathlib.RatFuncDegreeCalculus
 import ArkLib.ToMathlib.RationalRootSupply
