@@ -454,6 +454,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CollisionRigidityThreeSwap
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
+import ArkLib.Data.CodingTheory.ProximityGap.CoprimePacketMinpoly
 import ArkLib.Data.CodingTheory.ProximityGap.CosetExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.CosetRigidity
@@ -789,6 +790,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdStrictRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdSubcapacityRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSListThresholdTrappedRate12
 import ArkLib.Data.CodingTheory.ProximityGap.RSMDSListBound
+import ArkLib.Data.CodingTheory.ProximityGap.RatWeightedSquarefreeGrid
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonStirOutOfDom
@@ -862,6 +864,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUDExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUpperReduction
 import ArkLib.Data.CodingTheory.ProximityGap.ThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimePacketRefutation
+import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeRatClassification
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeSyndromeBudget
