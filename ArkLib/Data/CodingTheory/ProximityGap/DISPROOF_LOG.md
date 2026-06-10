@@ -4002,3 +4002,17 @@ O84 closed the extraction on 3(n−t) < d and left the window (d/(3n), (d−1)/(
 **Bricks (`CountingGapConjecture.lean`, axiom-clean [propext, Classical.choice, Quot.sound], 0 sorry, 0 warnings):** `GapCountingBoundFullWindow` — the natural conjecture named as the falsified surface (probe-cited, never to be assumed); `InteriorCountingBound` — the surviving conjecture on 2(n−t)+2 ≤ d; `interiorCountingBound_of_gapCountingBoundFullWindow` (refuted ⟹ surviving monotonicity); `epsMCA_le_of_interiorCountingBound` — the consumer: the surviving conjecture gives ε_mca ≤ (2(n−t)+1)/|F| on its window via `epsMCA_le_of_badCount_le`, extending O84's proven shape from 3(n−t) < d to the full strict interior; `gap_trichotomy` + `top_slice_iff_odd` — the UD side splits exactly into {proven O84} ⊔ {surviving interior} ⊔ {refuted odd-d top}, and the refuted slice exists iff d is odd; `interior_window_extends_proven` — the conjecture window strictly extends the proven one (e=3, d=9).
 
 **Where the open core sits:** the gap of O84 is now split. Below the unique-decoding radius (2(n−t) ≤ d−2) the honest open conjecture is `InteriorCountingBound` — unrefuted by 1,263 adversarial stacks, and the only known violation mechanism is provably unavailable. AT the radius (d odd) the bound is dead: the truth is 2(n−t)+2 exactly at the two exhaustible points, ~n at e=1, and in general coupled to Λ₂(2δ) (O85's conversion is the right shape). Closing `InteriorCountingBound` needs a per-line argument that a single decode family plus stragglers stays ≤ 2(n−t)+1 without the affine law — the probe says the wall is real but thin.
+
+### O75 — branch-entropy probe: generic words carry O(1) deep-interior lists (unfalsified)
+
+Falsify-first probe (docs/kb/mixed-tower-probes/branch_entropy_probe.py; n = 16, k = 3
+over F₉₇, full 97³ codeword enumeration, 60 trials per agreement level mixing planted-
+error and uniform-random received words): at agreements a = 5, 6, 7 (all BEYOND the
+Johnson agreement √48 ≈ 6.9 at a = 5, 6), the maximum observed list is 3, 1, 1 — and the
+support-descent size sequences are pairing-free (11→7→4→2→1: generic halving, no
+antipodal structure). Conclusion: generic and planted words carry O(1) deep-interior
+lists; ALL observed list mass concentrates at the structured (class-syndrome/coset)
+words already characterized by the tower theory — consistent with, and unfalsifying,
+the branch-entropy accounting in which rigid leaf data (O74) plus tree-shape counting
+bounds the list. The worst case is provably NOT found by sampling; it is the structured
+chart, which is exactly where O45–O74 live.
