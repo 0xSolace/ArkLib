@@ -1815,6 +1815,7 @@ import ArkLib.ToMathlib.ProtocolCountingBricks
 import ArkLib.ToMathlib.ProximityGenericity
 import ArkLib.ToMathlib.ProximityGenericityEvalX
 import ArkLib.ToMathlib.RSPhases
+import ArkLib.ToMathlib.RadicalBranch
 import ArkLib.ToMathlib.RatFuncDegreeCalculus
 import ArkLib.ToMathlib.RationalRootSupply
 import ArkLib.ToMathlib.RestrictedSumset
