@@ -621,7 +621,8 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
         Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) = ⟨j.val, hj⟩ := by
       ext
       rfl
-    rw [hidx]
+    cases hidx
+    rfl
   · -- New oracle case: embed j = Sum.inr 0
     have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j = Sum.inr ⟨0, rfl⟩ := by
@@ -630,24 +631,17 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       rfl
     rw [OracleVerifier.mkVerifierOStmtOut_inr _ _ _ _ _ _ h_embed]
     simp only [hj, dif_neg, not_false_eq_true]
-    rw [← h_transcript_eq]
-    funext x
-    have h_msg0: transcript.messages ⟨0, rfl⟩ = transcript 0 := by rfl
-    rw [h_msg0]
-    -- ⊢ transcript 0 (cast ⋯ x) = cast ⋯ (transcript 0) x
-    convert rfl using 2 <;> simp [commitStepLogic, commitStepHEq, commitStepLogic_embed,
-      commitStepLogic_embedFn, Function.Embedding.coeFn_mk, hj, OracleStatement]
     have h_j_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
       have h_lt := j.isLt
       conv_rhs at h_lt => rw [h_count_succ]
       omega
-    -- Show: oraclePositionToDomainIndex j = j.val * ϑ
-    have h_idx_eq : (⟨i.val + 1, by omega⟩ : Fin r)
-      = (⟨oraclePositionToDomainIndex ℓ ϑ j, by omega⟩) := by
-      apply Fin.eq_of_val_eq
-      simp only [h_j_eq]
-      rw [toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR]
-    rw [h_idx_eq]
+    simp only [eqRec_eq_cast, cast_cast]
+    apply eq_of_heq
+    refine HEq.trans ?_ (HEq.trans (heq_of_eq h_transcript_eq.symm)
+      (cast_heq _ (transcript.messages ⟨0, rfl⟩)).symm)
+    simpa [commitStepLogic, commitStepHEq, commitStepLogic_embed,
+      commitStepLogic_embedFn, Function.Embedding.coeFn_mk, hj, h_j_eq, OracleStatement] using
+      (cast_heq _ newOracle)
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
