@@ -1720,6 +1720,7 @@ import ArkLib.ToMathlib.L13Milestone
 import ArkLib.ToMathlib.L46DiffStackRS
 import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.L46GSWitnessRS
+import ArkLib.ToMathlib.LatticeFrontierReduction
 import ArkLib.ToMathlib.LineDecodingCoverageProof
 import ArkLib.ToMathlib.LinearizedHomogeneous
 import ArkLib.ToMathlib.LinearizedKernel
