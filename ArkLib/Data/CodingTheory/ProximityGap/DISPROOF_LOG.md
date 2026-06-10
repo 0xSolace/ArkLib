@@ -4119,3 +4119,20 @@ Two complement bricks around the O87 disjointness landing, both queued by the in
 **Literature note (this session's sweep, June 2026):** no public Lean/Isabelle/mathlib formalization of de Bruijn 1953 or Lam–Leung exists (GitHub code search + web) — the in-tree ledger (O66→O91) appears to be the first machine-checked de Bruijn-type theory of vanishing sums of roots of unity. (Adjacent: arXiv 2008.11268, updated Dec 2025, classifies minimal vanishing sums to weight ≤ 21 — weight-bounded, not subset-shaped.)
 
 **Where the de Bruijn frontier sits now:** with O77 (the full `PacketUnion` decomposition on the value surface) and O90 (the packet-combination descent engine) landed in parallel, the necessity side of de Bruijn is complete at every `p^a·q^b`; these two bricks supply the EXPONENT-surface (`ZMod`) statements the consumers use — the general-`(a,b)` fiber slice and the squarefree two-sided equivalence — plus the factorization-free sufficiency engine (the O76 cover entry records that cover alone does NOT imply vanishing; shift-closure does). Remaining mechanical step, named by O77: wire `PacketUnion` into O73's (`MixedRadixTower`) closure-hypothesis format to make the conditional tower's first rung unconditional.
+
+### O79 — THE Q-POWER DESCENT: the q-packet spectrum drops one level (the windowed engine)
+
+`DeBruijnTwoPrime.packetUnion_qpow_descent` (axiom-clean, 0 sorry): on any PacketUnion,
+Σ_{y∈S} y^q = q · Σ_{r∈R} r where R is a COLLISION-FREE spectrum (each r the common
+q-th power of a full μ_q-orbit inside S). μ_p-packets die at exponent q (the twisted
+packet sum, ω_p^q still primitive — pow_of_coprime); μ_q-packets each contribute q·z^q
+(rep power is j-independent: ζq^{q^{b+1}} = 1); collisions are impossible by the ORBIT
+ARGUMENT (equal q-th powers differ by a q-th root of unity, which would place the new
+rep inside an old packet — contradicting peel disjointness).
+
+Consequence (char 0): a window condition at exponent q forces Σ_R r = 0 — the spectrum
+R is a vanishing subset of μ_{p^(a+1)·q^b}, ONE q-LEVEL DOWN, and the de Bruijn
+decomposition applies again. This is the recursion engine of the windowed two-prime law
+(O70): windows kill μ_q-packets level by level, exactly as the verified law predicts.
+The remaining assembly: iterate the descent b+1 times and stack with the p-side climb —
+mechanical given this engine + O77/O78.
