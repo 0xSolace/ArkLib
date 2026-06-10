@@ -87,5 +87,28 @@ theorem append_rbrKnowledgeSoundness_subsingleton [Subsingleton σ]
 
 end OracleVerifier
 
+namespace Verifier
+
+variable {ι : Type} {oSpec : OracleSpec ι} {Stmt₁ Stmt₂ Stmt₃ : Type}
+    {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+
+/-- **Pure verifiers compose to a pure verifier.** The `Verifier.append` of two deterministic-total
+(`pure`) verifiers is itself deterministic-total, with the composed `verify` function feeding `v₁`'s
+output on the transcript's first half into `v₂` on the second half. This is the determinism-witness
+combinator: it builds the `hVerify` input of the rbr (knowledge) soundness append keystones for
+*composite* left verifiers (e.g. RingSwitching's `batchingCore = batching ++ coreInteraction`) from
+the components' witnesses. -/
+theorem append_pure_pure
+    (v₁ : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
+    (v₂ : Stmt₂ → pSpec₂.FullTranscript → Stmt₃) :
+    Verifier.append (oSpec := oSpec) ⟨fun stmt tr => pure (v₁ stmt tr)⟩
+        ⟨fun stmt tr => pure (v₂ stmt tr)⟩
+      = ⟨fun stmt tr => pure (v₂ (v₁ stmt tr.fst) tr.snd)⟩ := by
+  unfold Verifier.append
+  congr 1
+
+end Verifier
+
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms OracleVerifier.append_rbrKnowledgeSoundness_subsingleton
+#print axioms Verifier.append_pure_pure
