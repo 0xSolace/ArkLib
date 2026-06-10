@@ -4950,3 +4950,18 @@ induction and pointwise-weld doors stay closed (recorded); THIS is the open road
 Formalization = the next arc (nested-spectrum invariant + the valuation induction +
 re-run of the J-induction); every constituent pattern already exists in
 DeBruijnTwoPrime.lean.
+
+### O119 — THE BILATERAL EXPORT + THE MIXED IDENTITY machine-checked (O118 brick 1)
+
+`DeBruijnTwoPrime.packetUnion_bilateral_export` (axiom-clean, 0 sorry; my lane): one
+decomposition, BOTH spectra — R (μ_q-packet q-th powers) and T (μ_p-packet p-th powers),
+each with its orbit property — the clean R-transfer at p ∤ e, AND **the mixed identity**:
+
+    Σ_S y^{q·e} = q·Σ_R r^e + p·Σ_T τ^{q·e/p}     (p ∣ e)
+
+— at punctured exponents both packet types survive: μ_q-packets contribute through the
+common q-th power, μ_p-packets through the common p-th power (their μ_p-orbit collapses
+at any exponent divisible by p). Freshness of both insertions by the respective orbit
+arguments. This is the equation the O118 valuation induction consumes; next bricks:
+the symmetric q∤e' T-transfer conjunct (mirror), then the valuation-induction window
+inheritance, then the puncture-free J(t) re-run = THE COMPLETE O70 LAW.
