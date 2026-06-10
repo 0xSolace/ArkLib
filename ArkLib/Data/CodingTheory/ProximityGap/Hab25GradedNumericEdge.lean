@@ -208,9 +208,10 @@ theorem graded_budget_le_ell_budget {n k m : ℕ} (η : ℝ≥0)
   have hcast : (((DY + 1) * (GuruswamiSudan.constraintIndices m).card * DY : ℕ) : ℝ) =
       (y + 1) * c * y := by push_cast; ring
   rw [hcast, rpow_three_halves_eq_sqrt_cube hρp0.le]
-  rw [le_div_iff₀ (by rw [← hsp]; positivity)]
-  rw [← hsp, ← hM]
-  linarith [hcore]
+  rw [le_div_iff₀ (mul_pos (by norm_num) (pow_pos hsppos 3))]
+  calc (y + 1) * c * y * (3 * sp ^ 3)
+      = 3 * sp ^ 3 * ((y + 1) * c * y) := by ring
+    _ ≤ 2 * (M + 1 / 2) ^ 5 := hcore
 
 /-- **The `hNdiv` comparison at the graded budget, proven outright** — the exact shape
 consumed by `johnsonNumericBound_of_K4_graded`. -/
