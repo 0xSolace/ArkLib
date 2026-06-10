@@ -1,7 +1,7 @@
 export const meta = {
   name: 'arklib-debt-wave1',
   description: 'Build wave 1: prove S/M provable residuals + repair bit-rot + delete dead surfaces',
-  phases: [{ title: 'Wave1', detail: '9 parallel build agents on classified worklists' }],
+  phases: [{ title: 'Wave1', detail: '10 parallel build agents on classified worklists' }, { title: 'Wave2', detail: 'L-effort clusters + open-research conditionality audit' }],
 }
 
 const PRE = `You are a Lean 4 prover in /Users/shawwalters/ethereumroadmap/upstream/lean-research/ArkLib (Lean4+Mathlib+VCVio). MISSION: discharge your assigned residual-named Props for real. Rules:
@@ -48,4 +48,27 @@ const results = await parallel(jobs.map(([label, job]) => () =>
     { label: 'wave1:' + label, phase: 'Wave1', schema: SCHEMA })
 ))
 
-return { results: results.map((r, i) => ({ job: jobs[i][0], report: r })) }
+phase('Wave2')
+
+const wave1Summary = results.map((r, i) => {
+  if (!r) return jobs[i][0] + ': DIED (no report)'
+  return jobs[i][0] + ': done=' + JSON.stringify(r.done) + ' partial=' + JSON.stringify(r.partial) + ' notes=' + (r.notes || '').slice(0, 400)
+}).join('\n')
+
+const wave2Jobs = [
+  ['L-bciks20-cone', `YOUR SCOPE (wave 2, L-effort): the Data/CodingTheory 'provable' L items — read audit/triage-2026-06-10.json report scope 'Data/CodingTheory' and attack every status=='provable' item not closed by wave 1, prioritizing those whose route says the bricks are already proven (e.g. BoundaryCardLatticeThresholdResidual via LatticeCoeffPolyExtraction; diffStackMCAResidualBelowUDR RS-form via GSWitnessLowerBound + L46DiffStackRS machinery; CS25BreakdownBelowConjectureBound's in-tree reduction layers). Make each remaining open core ONE named Prop with everything else proven around it.`],
+  ['L-fiatshamir-deep', `YOUR SCOPE (wave 2, L-effort): remaining DuplexSponge CO25 items from the triage 'OracleReduction' report not closed by wave 1 (deep legs of Lemma 5.8/5.14/5.16, Hyb hybrids, any remaining KeyLemma residuals). Build on whatever wave 1's fiatshamir-co25 agent landed (check git log --grep=audit-wave1).`],
+  ['L-binius-prop4212', `YOUR SCOPE (wave 2, L-effort): the Binius L items — Prop4212Case1Residual / Prop4212Case2Residual and any of the 13 residual classes wave 1 left open (check git log + grep for new instances). Routes in the triage 'Binius' report; DP24 2024/504 sections cited per item.`],
+  ['L-append-seams', `YOUR SCOPE (wave 2, L-effort): remaining OracleReduction seam L items — appendSoundnessResidual challenge-seam general case and any append/seqCompose pass-throughs that wave 1's keystone landings now make dischargeable wholesale (re-grep the pass-through list in the triage 'interfaces-passthroughs' report; each newly-provable pass-through should become a real theorem or be deleted in favor of the proven form).`],
+  ['open-research-audit', `YOUR SCOPE (wave 2): the ~20 status=='open-research' items across all triage reports. For EACH: (1) verify every in-tree consumer takes it as an explicit hypothesis/conditional (grep consumers; no consumer may present it as established); (2) verify the def's docstring says OPEN with the precise open core and paper refs (fix if stale — comment-only edits are safe); (3) confirm no *_holds theorem secretly discharges a vacuous reformulation (the #141 epsMCAgsPrizeUniformConjecture pattern — if you find another vacuously-true-as-stated 'open' Prop, prove it and re-point the docs at the genuinely open form, exactly as GrandChallenge141UniformVacuity.lean did); (4) append any missing paper to PAPERS_NEEDED.md. Commit per file. This is the honest end-state pass: open math stays open, but nothing pretends.`],
+]
+
+const results2 = await parallel(wave2Jobs.map(([label, job]) => () =>
+  agent(PRE + '\n\nWAVE 1 OUTCOME SUMMARY (build on it, do not redo):\n' + wave1Summary + '\n\nYOUR ASSIGNMENT:\n' + job + '\n\nWork the list, commit+push each verified item, return the structured report.',
+    { label: 'wave2:' + label, phase: 'Wave2', schema: SCHEMA })
+))
+
+return {
+  wave1: results.map((r, i) => ({ job: jobs[i][0], report: r })),
+  wave2: results2.map((r, i) => ({ job: wave2Jobs[i][0], report: r })),
+}
