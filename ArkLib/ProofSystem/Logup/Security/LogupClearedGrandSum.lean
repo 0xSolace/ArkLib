@@ -109,6 +109,97 @@ theorem clearedGrandSumPoly_ne_zero_of_bad_lookup
     rw [Finset.mem_erase] at hb
     exact hb.1 (by linear_combination hb0)
 
+/-- The cleared grand-sum polynomial over a finite value set `V` (the actual pole locations):
+clearing the prover-side rational identity over `∏_{a∈V}(X+a)` instead of all of `F`. Its degree
+is `≤ |V| − 1`, which for `V` = table ∪ column values gives the paper budget `(M+1)·2ⁿ − 1`. -/
+noncomputable def clearedGrandSumPolyOn (V : Finset F) (oStmt : ∀ i, OStmtIn F n M i)
+    (mult : MultilinearOracle F n) : Polynomial F :=
+  ∑ a ∈ V,
+    Polynomial.C
+      ((∑ u ∈ (Finset.univ : Finset (Hypercube n)).filter
+          (fun u => evalOnHypercube (tableOracle oStmt) u = a),
+            evalOnHypercube mult u)
+        - (lookupMultiplicityCount oStmt a : F)) *
+      ∏ b ∈ V.erase a, (Polynomial.X + Polynomial.C b)
+
+/-- Degree bound: the `V`-cleared polynomial has degree `≤ |V| − 1` (each summand is a constant
+times a product of `|V| − 1` monic linear factors). For `V` = table ∪ column values this is the
+paper budget `(M+1)·2ⁿ − 1`. -/
+theorem natDegree_clearedGrandSumPolyOn_le (V : Finset F)
+    (oStmt : ∀ i, OStmtIn F n M i) (mult : MultilinearOracle F n) :
+    (clearedGrandSumPolyOn V oStmt mult).natDegree ≤ V.card - 1 := by
+  unfold clearedGrandSumPolyOn
+  refine Polynomial.natDegree_sum_le_of_forall_le _ _ (fun a ha => ?_)
+  calc (Polynomial.C
+        ((∑ u ∈ (Finset.univ : Finset (Hypercube n)).filter
+            (fun u => evalOnHypercube (tableOracle oStmt) u = a),
+              evalOnHypercube mult u)
+          - (lookupMultiplicityCount oStmt a : F)) *
+        ∏ b ∈ V.erase a, (Polynomial.X + Polynomial.C b)).natDegree
+      ≤ (Polynomial.C _).natDegree
+          + (∏ b ∈ V.erase a, (Polynomial.X + Polynomial.C b)).natDegree :=
+        Polynomial.natDegree_mul_le
+    _ ≤ 0 + ∑ b ∈ V.erase a, (Polynomial.X + Polynomial.C b).natDegree :=
+        Nat.add_le_add (le_of_eq (Polynomial.natDegree_C _)) (Polynomial.natDegree_prod_le _ _)
+    _ = ∑ b ∈ V.erase a, 1 := by
+        rw [zero_add]
+        exact Finset.sum_congr rfl (fun b _ => Polynomial.natDegree_X_add_C b)
+    _ = (V.erase a).card := by rw [Finset.sum_const, smul_eq_mul, mul_one]
+    _ = V.card - 1 := Finset.card_erase_of_mem ha
+
+/-- **The `V`-cleared soundness anchor.** For a bad lookup with the column-only value inside `V`
+and `V` avoiding spurious cancellation (`-a₀` distinct from the other values' negations is
+automatic), the `V`-cleared polynomial is nonzero for every adversarial multiplicity — by the
+same residue evaluation at `−a₀` as the all-values version. -/
+theorem clearedGrandSumPolyOn_ne_zero_of_bad_lookup (V : Finset F)
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i)
+    (mult : MultilinearOracle F n)
+    (hBad : ¬ (((stmt, oStmt), ()) ∈ inputRelation F n M))
+    (hV : ∀ a₀ : F, lookupMultiplicityCount oStmt a₀ ≠ 0 →
+      tableMultiplicityCount oStmt a₀ = 0 → a₀ ∈ V) :
+    clearedGrandSumPolyOn V oStmt mult ≠ 0 := by
+  obtain ⟨a₀, hlook, htab⟩ := bad_lookup_exists_column_only_value stmt oStmt hBad
+  have ha₀V : a₀ ∈ V := hV a₀ (by omega) htab
+  intro hzero
+  have heval : (clearedGrandSumPolyOn V oStmt mult).eval (-a₀) = 0 := by rw [hzero]; simp
+  unfold clearedGrandSumPolyOn at heval
+  rw [Polynomial.eval_finset_sum] at heval
+  have hterms : ∀ a ∈ V, a ≠ a₀ →
+      (Polynomial.C
+        ((∑ u ∈ (Finset.univ : Finset (Hypercube n)).filter
+            (fun u => evalOnHypercube (tableOracle oStmt) u = a),
+              evalOnHypercube mult u)
+          - (lookupMultiplicityCount oStmt a : F)) *
+        ∏ b ∈ V.erase a, (Polynomial.X + Polynomial.C b)).eval (-a₀) = 0 := by
+    intro a _ hne
+    rw [Polynomial.eval_mul, Polynomial.eval_prod]
+    have hzero' : (∏ b ∈ V.erase a, ((Polynomial.X + Polynomial.C b).eval (-a₀))) = 0 := by
+      refine Finset.prod_eq_zero (Finset.mem_erase.mpr ⟨hne.symm, ha₀V⟩) ?_
+      rw [Polynomial.eval_add, Polynomial.eval_X, Polynomial.eval_C]
+      ring
+    rw [hzero', mul_zero]
+  rw [Finset.sum_eq_single_of_mem a₀ ha₀V hterms] at heval
+  have hfiber : (Finset.univ : Finset (Hypercube n)).filter
+      (fun u => evalOnHypercube (tableOracle oStmt) u = a₀) = ∅ := by
+    rw [Finset.filter_eq_empty_iff]
+    intro u _ hu
+    have hcard : 0 < tableMultiplicityCount oStmt a₀ := by
+      unfold tableMultiplicityCount
+      rw [Finset.card_pos]
+      exact ⟨u, Finset.mem_filter.mpr ⟨Finset.mem_univ u, hu⟩⟩
+    omega
+  rw [Polynomial.eval_mul, Polynomial.eval_C, hfiber, Finset.sum_empty, zero_sub] at heval
+  rcases mul_eq_zero.mp heval with hc | hprod
+  · rw [neg_eq_zero] at hc
+    exact lookupMultiplicityCount_natCast_ne_zero stmt oStmt a₀ hlook hc
+  · rw [Polynomial.eval_prod, Finset.prod_eq_zero_iff] at hprod
+    obtain ⟨b, hb, hb0⟩ := hprod
+    rw [Finset.mem_erase] at hb
+    rw [Polynomial.eval_add, Polynomial.eval_X, Polynomial.eval_C] at hb0
+    exact hb.1 (by linear_combination hb0)
+
 end Logup
 
 #print axioms Logup.clearedGrandSumPoly_ne_zero_of_bad_lookup
+#print axioms Logup.natDegree_clearedGrandSumPolyOn_le
+#print axioms Logup.clearedGrandSumPolyOn_ne_zero_of_bad_lookup
