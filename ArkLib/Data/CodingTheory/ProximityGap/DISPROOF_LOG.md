@@ -5129,3 +5129,15 @@ the LIST/BUDGET applications, sparse windows mean the unit-syndrome budget (O61)
 under 2-power-only syndrome conditions — a much weaker verifier obligation; (iii) the
 non-2-power window exponents are REDUNDANT for the fiber structure at 2-power domains —
 a fact the O70 tables hinted at (plateaus) and is now a theorem.
+
+### O128 — THE SPARSE BUDGET: 2^{#classes} from k+1 syndrome conditions (sparse_tower_count)
+
+`LamLeungTwoPow.sparse_tower_count` (axiom-clean, 0 sorry, first-try compile): the
+recovery-injection budget — #{w-subsets of D₀ with the SPARSE window Σ x^{2^j} = 0,
+j ≤ k} ≤ 2^{#(2^{k+1}-power classes)} — with full_tower_sparse (O127) supplying the
+closure. The complete sparse chain now stands: O125 (valued law) → O126 (rigidity) →
+O127 (sparse tower) → O128 (sparse budget): the entire 2-power list-budget theory holds
+under exponentially fewer syndrome conditions than originally formalized — k+1 verifier
+checks where 2^{k+1}−1 were assumed needed. For protocol design (FRI-style 2-power
+domains): the same interior list guarantee from a logarithmic number of power-sum
+constraints.
