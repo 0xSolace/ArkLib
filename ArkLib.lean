@@ -471,6 +471,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnIndicatorDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnIntRelations
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnIntWindowedLaw
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnPrimePower
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreeIff
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreePQ
