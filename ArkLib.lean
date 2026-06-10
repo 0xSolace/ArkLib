@@ -467,6 +467,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DerandomizationFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.DescentKernelLemma
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.EpsCAMono
+import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAInterleavedJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAInterleavedList
 import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAInterleavedUD
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
@@ -1034,6 +1035,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDe
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeOracleLift
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgePhase2ReconcileProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeStateFunction
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrSoundnessPhase2Proof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRightPartialProjections
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDistChallenge
@@ -1105,6 +1107,7 @@ import ArkLib.OracleReduction.FiatShamir.ZKResidualBridge
 import ArkLib.OracleReduction.FiatShamir.ZKTransport
 import ArkLib.OracleReduction.FiatShamirRunCollapseProof
 import ArkLib.OracleReduction.LiftContext.Coherence
+import ArkLib.OracleReduction.LiftContext.HonestKnowledgeLens
 import ArkLib.OracleReduction.LiftContext.Lens
 import ArkLib.OracleReduction.LiftContext.OracleReduction
 import ArkLib.OracleReduction.LiftContext.OracleStatementPreserving
@@ -1294,6 +1297,7 @@ import ArkLib.ProofSystem.Spartan.SpartanSumcheckUnconditional
 import ArkLib.ProofSystem.Spartan.SumcheckCubeBridge
 import ArkLib.ProofSystem.Spartan.SumcheckDegreeBound
 import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
+import ArkLib.ProofSystem.Spartan.SumcheckRbrKSResidualAnalysis
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.BlockCompleteness
 import ArkLib.ProofSystem.Stir.CheckingVerifier
