@@ -386,7 +386,8 @@ theorem jbt_perm_no_prior_of_lt
           p.1.outputState[pairIdx.val]'hpair⟩ :
           OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
       tr.get j ≠
-        (⟨Sum.inr (Sum.inr (p.1.outputState[pairIdx.val]'hpair)), p.1.inputState[pairIdx]⟩ :
+        (⟨Sum.inr (Sum.inr (p.1.outputState[pairIdx.val]'hpair)),
+          p.1.inputState[pairIdx]⟩ :
           OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
   classical
   unfold DuplexSpongeFS.Backtrack.J_BT at hp
