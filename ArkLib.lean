@@ -1714,6 +1714,7 @@ import ArkLib.ToMathlib.SecondMomentProb
 import ArkLib.ToMathlib.Section5BundleAssembler
 import ArkLib.ToMathlib.Section5Concrete
 import ArkLib.ToMathlib.Section5ConcreteJohnson
+import ArkLib.ToMathlib.Section5GlobalAssembler
 import ArkLib.ToMathlib.Section5StrictDataFinOn
 import ArkLib.ToMathlib.SectionBaseRational
 import ArkLib.ToMathlib.SectionFactor
