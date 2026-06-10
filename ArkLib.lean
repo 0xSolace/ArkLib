@@ -1767,6 +1767,7 @@ import ArkLib.ToMathlib.WeightLambdaCalculus
 import ArkLib.ToMathlib.WhirBricksConstruction
 import ArkLib.ToMathlib.WindowDualRS
 import ArkLib.ToMathlib.XDegreeBudgetProbe
+import ArkLib.ToMathlib.XiAtIncidenceSupply
 import ArkLib.ToMathlib.XiCertReduction
 import ArkLib.ToMathlib.XiOrderInterp
 import ArkLib.ToMathlib.ZKConcreteSimulatorProof
