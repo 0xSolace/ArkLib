@@ -701,6 +701,21 @@ theorem not_redundantEntryDS_hash_of_no_prior
   obtain ⟨j, hjlt, hj⟩ := hred
   exact hfirst j hjlt hj
 
+/-- The strong forward-before-hash predicate carries exactly the nonredundancy proof needed for
+its hash anchor: the anchor is a hash entry and no earlier slot contains the same hash entry. -/
+theorem hasFirstHashForwardCapacityBeforeHash_hash_not_redundant
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (h : HasFirstHashForwardCapacityBeforeHash tr stmt capSeg) :
+    ∃ jHash : Fin tr.length,
+      tr[jHash] =
+        (⟨Sum.inl stmt, capSeg⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) ∧
+      ¬ tr.redundantEntryDS jHash := by
+  obtain ⟨jHash, hhash, hfirst, _jPerm, _hlt, _stateIn, _stateOut, _hperm, _hcap⟩ := h
+  exact ⟨jHash, hhash,
+    not_redundantEntryDS_hash_of_no_prior (tr := tr) (idx := jHash) hhash hfirst⟩
+
 /-- The hash index carried by any `J_BT` payload is not itself removed by one step of the
 duplex-sponge dedup predicate: it is the first occurrence of its concrete hash anchor. -/
 theorem jbt_hash_not_redundant
@@ -1055,6 +1070,7 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.forward_getElem?_of_not_E_of_perm_or_inv
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_getElem?
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_no_prior
+#print axioms DuplexSpongeFS.Sponge316.hasFirstHashForwardCapacityBeforeHash_hash_not_redundant
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_not_redundant
 #print axioms DuplexSpongeFS.Sponge316.E_of_base_hash_after_forward_capacity
 #print axioms DuplexSpongeFS.Sponge316.E_of_base_hasForwardCapacityBeforeHash

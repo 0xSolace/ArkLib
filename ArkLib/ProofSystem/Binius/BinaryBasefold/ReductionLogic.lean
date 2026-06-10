@@ -577,6 +577,21 @@ theorem fun_heq_cast_arg {α β : Type u} {γ : Type v} (hαβ : α = β)
   subst hαβ
   rfl
 
+universe uιᵢ uιₒ in
+theorem verifier_inr_transport_heq {n : ℕ} {pSpec : ProtocolSpec n}
+    {ιₛᵢ : Type uιᵢ} {ιₛₒ : Type uιₒ}
+    {OStmtIn : ιₛᵢ → Type*} {OStmtOut : ιₛₒ → Type*}
+    (embed : ιₛₒ ↪ ιₛᵢ ⊕ pSpec.MessageIdx)
+    (hEq : ∀ i, OStmtOut i = match embed i with
+      | Sum.inl j => OStmtIn j
+      | Sum.inr j => pSpec.Message j)
+    {idx : ιₛₒ} {msgIdx : pSpec.MessageIdx}
+    (h : embed idx = Sum.inr msgIdx) (x : pSpec.Message msgIdx) :
+    HEq ((hEq idx ▸ h ▸ x : OStmtOut idx)) x := by
+  cases h
+  cases hEq idx
+  rfl
+
 omit [CharP L 2] [SampleableType L] in
 /-- Helper lemma: snoc_oracle matches mkVerifierOStmtOut for commit steps.
 
@@ -648,22 +663,12 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     refine HEq.trans (fun_heq_cast_arg h_domain_succ newOracle) ?_
     refine HEq.trans (heq_of_eq h_transcript_eq.symm) ?_
     symm
-    have h_msg_type :
-        (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Type
-            (↑(⟨0, rfl⟩ :
-              (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).MessageIdx)) =
-          (match (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-              (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j with
-            | Sum.inl j => (OracleStatement 𝔽q β (ϑ := ϑ)
-                (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc) j
-            | Sum.inr j => (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Message j) := by
-      rw [h_embed]
-    convert ((cast_heq
-        (((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j).symm)
-        (cast h_msg_type (transcript.messages ⟨0, rfl⟩))).trans
-        (cast_heq h_msg_type (transcript.messages ⟨0, rfl⟩))) using 1
-    · rfl
+    exact verifier_inr_transport_heq
+      (embed := (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed)
+      (hEq := (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq)
+      (idx := j) (msgIdx := ⟨0, rfl⟩) h_embed (transcript.messages ⟨0, rfl⟩)
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
