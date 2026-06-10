@@ -86,6 +86,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryBridge
 import ArkLib.Data.CodingTheory.GuruswamiSudan.DictionaryHasse
 import ArkLib.Data.CodingTheory.GuruswamiSudan.FeasibilityArith
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSAffinePair
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSCellProduction
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSCurveTuple
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDecodedSeparationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSDiscriminantOverRatFunc
@@ -94,6 +95,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorDegreeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSFactorizationOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegerRepresentative
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSIntegralFactorAssignment
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegree
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSListSizeOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSOverRatFunc
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparabilityCharZero
@@ -465,6 +467,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnIndicatorDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnPrimePower
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreeIff
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreePQ
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTowerWiring
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnTwoPrimeAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
@@ -570,6 +573,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArithmetic
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25WindowCount
 import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMultiplicityBridge
@@ -845,6 +849,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.UpToCapacityFalseGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.UpToCapacityListDecodingFalse
 import ArkLib.Data.CodingTheory.ProximityGap.ValueSpreadSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
+import ArkLib.Data.CodingTheory.ProximityGap.WeightedPrimePowerPacket
 import ArkLib.Data.CodingTheory.ProximityGap.WideRegimeDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
@@ -1096,15 +1101,20 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Preliminaries
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.AbortAnalysis
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Backtrack
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BadEvents
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BirthdayBound
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Completeness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemma
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaAssembly
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundations
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaHybrids
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lookahead
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.ProverTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.RunCollapse
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.SimulatorBudgets
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Soundness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructures
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.VerifierReplay
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.State
 import ArkLib.OracleReduction.FiatShamir.HVZKCanonicalClose
 import ArkLib.OracleReduction.FiatShamir.HVZKCoupling
@@ -1337,6 +1347,7 @@ import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SumcheckRbrKSResidualAnalysis
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.BlockCompleteness
+import ArkLib.ProofSystem.Stir.BlocksCompleteness
 import ArkLib.ProofSystem.Stir.CheckingVerifier
 import ArkLib.ProofSystem.Stir.Combine
 import ArkLib.ProofSystem.Stir.Complexity
@@ -1355,11 +1366,13 @@ import ArkLib.ProofSystem.Stir.ProximityGapSmallField
 import ArkLib.ProofSystem.Stir.Quotienting
 import ArkLib.ProofSystem.Stir.RbrFrontDoor
 import ArkLib.ProofSystem.Stir.Round3Block
+import ArkLib.ProofSystem.Stir.Round3Completeness
 import ArkLib.ProofSystem.Stir.Round3Compose
 import ArkLib.ProofSystem.Stir.RoundCompleteness
 import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.ProofSystem.Stir.RoundVector
 import ArkLib.ProofSystem.Stir.RoundVectorCompleteness
+import ArkLib.ProofSystem.Stir.VectorBridge
 import ArkLib.ProofSystem.Sumcheck.Domain
 import ArkLib.ProofSystem.Sumcheck.Impl.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.Completeness
@@ -1465,6 +1478,9 @@ import ArkLib.ToMathlib.BetaWeightInductionExcl
 import ArkLib.ToMathlib.BigOperators.Fin
 import ArkLib.ToMathlib.BivariateDegreeToolkit
 import ArkLib.ToMathlib.BoundaryDischarge
+import ArkLib.ToMathlib.BoundaryHalfState
+import ArkLib.ToMathlib.BranchCertificates
+import ArkLib.ToMathlib.BranchSeparationUnsat
 import ArkLib.ToMathlib.Bridge2BCHKS25
 import ArkLib.ToMathlib.Bridge2BGKS20
 import ArkLib.ToMathlib.Bridge2GCXK25
@@ -1493,9 +1509,13 @@ import ArkLib.ToMathlib.CurveFamilyLines
 import ArkLib.ToMathlib.CurveFamilyRoundConsumers
 import ArkLib.ToMathlib.CurveFamilyZLinear
 import ArkLib.ToMathlib.CurveHenselDatumProducers
+import ArkLib.ToMathlib.CurveHenselSupply
 import ArkLib.ToMathlib.CurveSeriesTruncReading
 import ArkLib.ToMathlib.CyclotomicPatternInjectivity
 import ArkLib.ToMathlib.DG25CoveringRadiusProof
+import ArkLib.ToMathlib.DecodedCapstonesCorrected
+import ArkLib.ToMathlib.DecodedProximateRoot
+import ArkLib.ToMathlib.DecodedRootSupply
 import ArkLib.ToMathlib.DescentTrichotomy
 import ArkLib.ToMathlib.DiscriminantBadSet
 import ArkLib.ToMathlib.DiscriminantSeparable
@@ -1539,6 +1559,7 @@ import ArkLib.ToMathlib.GSLineInputSupply
 import ArkLib.ToMathlib.GammaCoeffRecursion
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.GenuineMonicCapstone
+import ArkLib.ToMathlib.GenuinePpolyConverter
 import ArkLib.ToMathlib.GenuineTruncationFin
 import ArkLib.ToMathlib.GradedHteleArith
 import ArkLib.ToMathlib.GreedyDisjointCover

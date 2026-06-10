@@ -4292,17 +4292,88 @@ union-over-loci/incidence structure versus the weight filter (how many loci, how
 overlap, what fraction of each per-locus space meets weight ≤ w). Queued capstone: the
 f-level product count via `recompose_slices`.
 
-### O83 — THE UPWARD RUNG: coset structure lifts through the power map (coset_lift)
+### O96 — the per-locus budget is an EQUALITY: #{f : deg < k, both slices vanish on Z} = q^(k−2|Z|) (nubs, 2026-06-10)
 
-`DeBruijnTwoPrime.coset_lift` + `coset_lift_sq` (axiom-clean, 0 sorry, char-free,
-root-free): if every point of the μ_A-orbit of x^q (one level down) is covered by a
-full μ_q-orbit inside S mapping onto it, then x is μ_{q·A}-closed in S — THE COSET
-ORDER MULTIPLIES UP THE CHAIN. Three-line core: (h·x)^q lies over the μ_A-orbit point
-h^q·x^q; the lift gives w ∈ S with the same q-th power; (h·x/w)^q = 1 and the lifted
-μ_q-orbit absorbs the discrepancy. (A = 0 hole closed with 0 < A; a concurrent agent's
-omit-before-docstring ordering on three earlier theorems repaired in passing.)
+`SliceLocusCount.lean` extended with the f-level capstone (axiom-clean, 0 warnings):
 
-The windowed law's assembly set is now COMPLETE: descent (O81/O82 both primes),
-endpoint structure (O82), upward rung (O83). The full t-general law = wiring these
-three around the spectral orbit data — the d-coset reassembly of the O70-verified
-tables, with every constituent machine-checked.
+- Slice C-linearity (`evenSlice_C_mul`/`oddSlice_C_mul`), the build identities
+  (`evenSlice_build`/`oddSlice_build`: slices of
+  `expand 2 E + X·expand 2 O` are `2E`/`2O`), `expand_comp_neg_X`, sharp odd
+  degree budget (`natDegree_oddSlice_le'` ≤ (deg−1)/2), zero-slice lemmas.
+- `card_polysDegLT_slices_vanishing` — **the count**: `f ↦ (evenSlice f, oddSlice f)`
+  is an explicit bijection (two-sided inverse via `recompose_slices` and the build
+  identities, char ≠ 2) from the both-slices-vanish-on-Z space onto the product of
+  per-slice locus spaces, so the per-locus budget of the O94 skeleton is EXACTLY
+  `q^((k+1)/2 − |Z|) · q^(k/2 − |Z|) = q^(k − 2|Z|)`.
+
+Status of the counting program: structure (O94) + per-slice count (O95) + f-level
+count (this) are all equalities; combined with O70's forced locus size `|Z| ≥ n/2 − w`,
+each list-relevant error sits in an explicitly counted space of size
+`q^(k − n + 2w)` per locus at level 1. The surviving open content of the all-words
+question is purely the LOCUS INCIDENCE: how the per-locus spaces overlap across the
+$\binom{n/2}{·}$ loci and how the weight filter cuts them — and its iteration down
+the tower. Every other term in the Conjecture-D sentence is now a theorem with an
+exact constant.
+### O95 — THE O94 CLASSIFICATION LANDS ON THE TOWER SURFACE: the t=1 stratum of the mixed-radix law unconditional in tower language + the M31 smooth domain (nubs, 2026-06-10)
+
+**Inventory (the consumers, measured exactly).** The 2-power capstone chain is O53 `full_tower` (power-sum window `j < 2^s` ⟹ `μ_{2^s}`-closure) feeding O61 `unit_syndrome_list_budget`. Its two-prime analogue is the O70 divisor-coset law (window `t` ⟹ disjoint rotated `μ_d`-cosets, `d ∣ n`, `d > t`), whose closure consequence at `t ≥ q^b` is exactly the `hBasep/hBaseq` family of `MixedRadixTower.two_prime_tower_conditional` (O73). VERDICT on dischargeability: `debruijn_two_prime` is the `t = 1` stratum ONLY — and at `t = 1` uniform `μ_p`-closure is FALSE (rotated `μ_q`-packet), so NO `hBase` instance at a genuinely two-prime level is dischargeable from it; the discharge demands the `t > 1` window law, which O94 itself names as open mathematics (item ii). What IS dischargeable — and was not in tree — is the entire `t = 1` layer in the tower's own field-surface closure language.
+
+**Falsify-first probe (`scripts/probes/probe_debruijn_tower_wiring.py`, exact ℤ[x]/Φ_n, exit 0, cold re-executed):** the two target shapes hold on ALL 1,001,100 vanishing subsets — exhaustive `n = 12` (100), `n = 18` (1000), FULL MITM census `n = 36` (1,000,000; the O70 count reproduced): pointwise dichotomy failures 0/0/0, cardinality-law failures 0/0/0. Both negative controls live: vanishing-but-not-`μ_2`-closed = 36/488/737,856 (>0 at every level — the wall is real), dichotomy-without-vanishing = 384/9648 (the corollary is one-way, not an iff — the statement does not over-claim).
+
+**Bricks (`DeBruijnTowerWiring.lean`, new file, 350 lines, exit 0, 0 sorry, 0 warnings, axiom-clean [propext, Classical.choice, Quot.sound] ×7):**
+* `expSet` + `mem/image/sum/card_expSet` — the `Finset F` ⟷ `Finset ℕ` discrete-log bridge: `T ⊆ μ_n` is the injective image of its exponent set (`eq_pow_of_pow_eq_one` + `pow_inj`), sums and cardinalities transport.
+* `packet_absorb` — the absorption engine: a canonical exponent `d`-packet inside `T` absorbs the full field coset `μ_d·y` (the O94 lift map run in reverse; wraparound killed by `ζ^n = 1`).
+* `vanishing_packet_dichotomy` — **the headline**: char 0, `T ⊆ μ_{p^a·q^b}`, `Σ_{y∈T} y = 0` ⟹ every `y ∈ T` carries its FULL `μ_p`-coset or its FULL `μ_q`-coset inside `T` — in exactly the closure language (`∀ g, g^p = 1 → g*y ∈ T`) of `mixed_rung_conditional`. The sharp `t = 1` two-prime analogue of `full_tower`'s first rung.
+* `vanishing_card_two_prime` — **Lam–Leung at two primes on the field surface**: `|T| ∈ ℕp + ℕq` (O94's corollary promise cashed in-tree via `IsPacket.card_eq` + `card_biUnion`).
+* `rung_base_dichotomy` — the dichotomy instantiated at every level `n/p^k` (`k < a`) in `prime_climb_conditional`'s own indexing: the climb's base layer is now unconditionally classified at every height (q-side symmetric).
+* `m31_smooth_dichotomy` / `m31_smooth_card` — **the M31 landing**: `|F_{2^31−1}^×| = 2^31−2 = 2·3²·7·11·31·151·331`, so the two-prime-smooth multiplicative domain is `μ_18`, `18 = 2^1·3^2` — both theorems specialized there. (Census check: the in-tree M31 surface `MCAJohnsonEnvelope` (`31 ≤ M`, `n ≤ 2^M`) is the 2-adic circle side `2^31 = q+1` — pure 2-power, already covered by O53/O61; the multiplicative side is what this file covers.)
+* Teeth at ℂ: the dichotomy FIRED on `{1, −1} ⊆ μ_18`; **negative control kernel-checked**: `{1, 5, 9}` at `n = 12` vanishes (O94 converse on a one-packet decomposition) yet `(1+6) % 12 = 7 ∉ {1,5,9}` (decide) — sum vanishing can NEVER discharge `hBase(w = 2)`.
+
+**Where the open core moves:** the M31-domain capstone now has its base layer welded — what separates `two_prime_tower_conditional` from unconditional is ONE named statement, the `t > 1` window law (O70's exhaustively verified `F_n(t)` divisor-coset law: window `1..t` ⟹ components `d > t`, hence `μ_p`-closure at `t ≥ q^b`). That is genuinely new mathematics (no literature; the weighted/multiplicity de Bruijn theory is the visible route: window exponents `j` with `gcd(j,n) > 1` produce ℕ-weighted vanishing sums at lower levels, needing the Lam–Leung ℕ-span theorem rather than the indicator form). Honest next bricks: (i) the weighted prime-power packet theorem (the ℕ-coefficient generalization of O66 `packet_mul_coeff` — assembly-adjacent); (ii) the `β = 1` windowed law at level `p^α·q` window `q+1` as the first genuinely two-prime rung; (iii) with (ii), `prime_climb_conditional` goes unconditional on `n = 2^a·3` — the first unconditional mixed-radix tower instance.
+
+### O96-erratum — the capstone section was dropped from the O96 commit by a merge error; restored (nubs, 2026-06-10)
+
+The O96 commit (`feat: f-level per-locus count`) landed only the helper layer — a
+namespace-surgery bug excluded the capstone block (`C_inv_two_mul_two`, zero-slice and
+membership lemmas, `build_mem`, and `card_polysDegLT_slices_vanishing` itself). The
+post-push diff verification caught it within minutes. This commit restores the full
+section (compiles clean, all axiom-clean); the O96 entry's mathematical description is
+accurate for the NOW-present content.
+
+### O97 — the level-1 union bound: the incidence template, machine-checked (nubs, 2026-06-10)
+
+`SliceLocusCount.lean`: `low_weight_count_le` — for a negation-closed domain (char ≠ 2,
+`0 ∉ D`), with `s = |D²| − w`, `2s ≤ k`:
+
+    #{f : deg f < k, weight ≤ w}  ≤  C(|D²|, s) · q^(k − 2s).
+
+Proof = the now-complete level-1 pipeline composed end-to-end: every low-weight `f`
+forces a dead locus of size ≥ s (O94 structure theorem), it contains a size-s sub-locus
+(subsets of dead loci are dead), and each per-locus space counts exactly `q^(k−2s)`
+(O96 capstone); union over `C(|D²|, s)` loci.
+
+HONEST SCOPE: as a pure number this is classically subsumed (RS is MDS; weight
+distributions are exact via MacWilliams) — and the classical exactness does NOT resolve
+the list question (lists are cliques around an arbitrary word, not balls at 0), so
+neither does this bound alone. Its value: (1) the first machine-checked
+weight-distribution-type bound through the slice route, (2) the TEMPLATE every tower
+level instantiates — the iterated version's gain must come from cross-level interaction
+of the loci (the genuinely open incidence), and now every ingredient of that sentence is
+a formal object in-tree. Level-1 story complete: structure (O94) + per-slice count (O95)
++ f-level equality (O96) + union bound (this). Next frontier, named precisely: the
+incidence/clique structure — pairwise difference loci of LIST configurations (around a
+word, not 0) and the cross-level locus interaction down the tower.
+### O96 — THE WEIGHTED PRIME-POWER PACKET THEOREM (O95's named brick (i)): the ℕ-coefficient de Bruijn/Lam–Leung classification at p^(a+1) is a theorem — and the O90 engine needed ZERO new divisibility content
+
+O95 closed naming the route to the t > 1 window law through the weighted theory, brick (i) being "the weighted prime-power packet theorem (assembly-adjacent)". The brief's CHECK-FIRST question is answered YES and machine-checked: O90's `packet_dvd_iff_slice_replication` never assumed {0,1} coefficients — the indicator restriction in O92 was an instantiation, not a hypothesis — so the ℕ-weighted theorem at a prime power is the same engine run on a weight polynomial.
+
+**Falsify-first probe (`scripts/probes/probe_weighted_packets.py`, exact ℤ[X] mod Φ_n, exit 0, cold re-executed):** (A) the weighted iff (vanish ⟺ p^a-periodic weight), the ℕ-combination reconstruction, and the weight law p ∣ |w| EXHAUSTIVELY at n = 4 (weights ≤ 3; 16 vanishing), 8 (≤ 2; 81), 9 (≤ 2; 27) — vanishing counts are EXACTLY (W+1)^(p^a), the pure replication freedom — plus 2000 planted replicated weights at n = 27 (all vanish) with single-increment toggles (all non-vanishing). Negative control alive at every level: p ∣ |w| WITHOUT vanishing exists — the weight law is one-way. (B) **the brief's two-prime question answered in shape**: at n = 12, ALL 2025 vanishing weight vectors (entries ≤ 2, exhaustive over 3^12 = 531441 masks) ARE ℕ-combinations of rotated full prime packets — the packet-combination form does NOT fail under weighted mixtures (1272 genuine mixtures, 768 forcing a combination coefficient ≥ 2 — outside the indicator theory, still decomposable); weight law |w| ∈ ℕ2+ℕ3 violations 0; n = 18 planted ℕ-combinations all vanish + re-decompose, toggles all non-vanishing. Census echo: 2025 = 45², the thread-split product law |van₁₂| = |van₆|² reproduced on the weighted surface.
+
+**Bricks (`WeightedPrimePowerPacket.lean`, new file, 419 lines, exit 0, 0 sorry, 0 warnings, axiom-clean [propext, Classical.choice, Quot.sound] ×10):**
+* `weightPoly` + coeff/degree/aeval lemmas — the weight-function → polynomial bridge (`indicatorPoly` is the special case w = 1_S); `cyclotomic_dvd_weightPoly_of_vanishing` — the O92 entry point, coefficient-agnostic, stated at EVERY n for composite-level weighted wiring.
+* `weight_replicated_of_vanishing` / `vanishing_of_weight_replicated` / `debruijn_prime_power_weighted` — **the headline iff**: Σ_e w(e)·ζ^e = 0 at n = p^(a+1) ⟺ w(e + p^a) = w(e) for ALL e — the weight function is p^a-periodic, i.e. the sum is an ℕ-combination of rotated full μ_p-packets with multiplicities w(s). Forward = one-shot O90 slice replication on `weightPoly` (digit bookkeeping verbatim from O92); converse = shift-reindexing of the full Fintype sum (`Equiv.sum_comp`).
+* `vanishing_weight_eq_packet_combination` — **the literal Lam–Leung ℕ-span structure**: weightPoly w = Σ_{s<p^a} C(w s)·X^s·Φ_{p^(a+1)}, combination coefficients literally the weights — nonnegative, no sign correction.
+* `total_weight_eq_p_mul` / `prime_dvd_total_weight` — **the Lam–Leung weight law at a prime power, exact form**: Σ_e w(e) = p·Σ_{s<p^a} w(s), hence |w| ∈ ℕp — evaluation of the combination at X = 1 via `eval_one_cyclotomic_prime_pow` (Φ_{p^(a+1)}(1) = p), no combinatorial bijection needed.
+* Teeth at ℂ on GENUINELY weighted data (weights ≥ 2, outside the indicator theory): converse PRODUCES 2 + 2ζ₄² = 0 from the decidably 2-periodic weight (2,0,2,0); forward REFUTES vanishing of (2,0,1,0) (2 ≠ 1 from weighted structure alone); the weight law REFUTES vanishing of the odd-total weight (0,1,0,0) (2 ∤ 1) — all three conclusions discriminate.
+
+**Where the open core moves (the (c) verdict, honest):** the two-prime weighted STRUCTURE law survives the probe intact (de Bruijn 1953's full ℕ-statement, not just the indicator case — no weighted-mixture counterexample exists at n = 12 exhaustively), so the in-tree target is real, but its assembly is NOT free: (1) weighted THREAD-SPLIT transports — O93's engine (`minpoly_adjoin_pow_prime_eq_binomial`, `natDegree_minpoly_adjoin_pow_prime`) is coefficient-free and the K-linear-independence argument accepts weighted thread sums verbatim; only the consumer statement is indicator-bound (bookkeeping). (2) The genuine wall is the **weighted SQUAREFREE base at n = pq**: periodicity fails there (the probe's 1272 mixtures), so the statement is ℕ-cone membership — every ℕ-point of the packet lattice kernel is an ℕ-combination of the p+q rotated packets — de Bruijn's Lemma-1 cone argument, no in-tree analogue (O87's dichotomy is its indicator shadow). With (1)+(2), this pass's prime-power base completes the weighted two-prime theorem by the O94 induction shape, and O95's brick (ii) (the β = 1 windowed law at p^α·q, window q+1) becomes consumable.
