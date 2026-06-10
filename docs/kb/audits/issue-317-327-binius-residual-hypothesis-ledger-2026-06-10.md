@@ -212,3 +212,26 @@ independent estimate of the Case-1 drop probability. *Prove-out:* NOT scheduled 
 - Case 2 / JointProximity / ExtractMLP: audits re-running; prove lanes follow.
 - Issue threads carry the same maps: #327 comment 2026-06-10 (afternoon), #317 comment
   2026-06-10 (afternoon).
+
+## F. Convergence update (same day, evening)
+
+- **#327 CLOSED** (`77c3227c0`): `FinalSumcheckStepLogicCompleteResidual` deleted; direct proof.
+  New machinery in `Reconstruct/FinalConstantWeld.lean` — notably `iteratedRefineCoeffs_comp`,
+  the coefficient-level fold-composition law (composes folds in coefficient space through
+  `iterated_fold_advances_evaluation_poly_nat`, avoiding sDomain cast transport entirely; this
+  is the recommended idiom for ALL future fold-chain welds).
+- **Case 1 incremental content landed** (`Soundness/IncrementalCase1.lean`, axiom-clean):
+  Brick A `qMap_total_fiber_succ_peel_first` + per-fiber SZ + union bound +
+  `prop_4_21_2_case_1_residual_holds`. Instance wiring follows the Incremental.lean rebuild.
+- **Honest-surface repair LANDED CONVERGENTLY by a parallel lane** (`d300cae24`): exactly the
+  H-K2-refutation-driven repair — `fiberwiseDistance` is now `sInf` of `pair_fiberwiseDistance`
+  over the code (the `:= 0` stub is gone), `fiberwiseClose` is the honest conjunction
+  (source-UDR ∧ per-fiber distance < destination threshold), and the previously-FALSE
+  `PreTensorCombineJointProximityResidual` is **deleted and replaced by a proof**
+  (`preTensorCombine_jointProximityNat_of_fiberwiseClose`, 8 new PreTensor*.lean modules).
+  `FoldPreservesBBFCodeMembershipResidual` is also **discharged** (`fold_preserves_BBF_Code_membership`
+  proven via the `qMap = C·(X²−X)` route). H-K1/H-K3/H-K5's content is subsumed by this landing.
+- **Remaining live residual classes** (5): `Prop4212Case1Residual` (content proven; wiring),
+  `Prop4212Case2Residual` (gap = only the `s = 0`/`k+1 = ϑ` boundary; the `s > 0` bridge
+  `fiberwiseClose_fold_implies_affineLineEval_close_pos` is landed), `Prop421Case1/Case2`
+  (block level), `ExtractMLPCorrectnessResidual`, `PreviousSuffixFiberAlignmentResidual`.
