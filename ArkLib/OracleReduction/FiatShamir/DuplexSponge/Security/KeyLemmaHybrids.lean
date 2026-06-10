@@ -777,6 +777,7 @@ def Hyb34StepResidual [SampleableType U]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
     [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     [SampleableType (OracleFamily (fsChallengeOracle StmtIn pSpec))]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp) : Prop :=
   ∀ (V : Verifier oSpec StmtIn StmtOut pSpec)
     (P : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)

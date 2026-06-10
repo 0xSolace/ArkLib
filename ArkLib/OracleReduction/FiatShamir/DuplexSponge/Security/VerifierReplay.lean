@@ -937,6 +937,7 @@ theorem hyb34Step_of_strictSplit [SampleableType U]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)]
     [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     [SampleableType (OracleFamily (fsChallengeOracle StmtIn pSpec))]
+    [SampleableType (OracleFamily (fsChallengeOracle (StmtIn × Salt) pSpec))]
     (oImpl : QueryImpl oSpec ProbComp)
     (εA εB : ℕ → ℕ → ℕ → ℕ → ℝ)
     (hA : ∀ (V : Verifier oSpec StmtIn StmtOut pSpec)
