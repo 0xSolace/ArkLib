@@ -1456,6 +1456,7 @@ import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompletenessUncond
 import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompletenessUncondCorrect
 import ArkLib.ProofSystem.Sumcheck.Spec.OracleRbrSoundness
 import ArkLib.ProofSystem.Sumcheck.Spec.RbrKnowledgeSoundnessNary
+import ArkLib.ProofSystem.Sumcheck.Spec.RbrKnowledgeSoundnessOracle
 import ArkLib.ProofSystem.Sumcheck.Spec.SeqComposeRbrSoundness
 import ArkLib.ProofSystem.Sumcheck.Spec.SimpleRoundCoherent
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
