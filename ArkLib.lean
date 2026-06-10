@@ -845,6 +845,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUpperReduction
 import ArkLib.Data.CodingTheory.ProximityGap.ThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
+import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeSyndromeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeWindowLaw
 import ArkLib.Data.CodingTheory.ProximityGap.TwoSidedBracketPrizeScale
 import ArkLib.Data.CodingTheory.ProximityGap.UDRBadCount
@@ -1684,9 +1685,9 @@ import ArkLib.ToMathlib.SecondMomentCountBricks
 import ArkLib.ToMathlib.SecondMomentProb
 import ArkLib.ToMathlib.Section5BundleAssembler
 import ArkLib.ToMathlib.Section5Concrete
-import ArkLib.ToMathlib.SectionFactor
 import ArkLib.ToMathlib.Section5ConcreteJohnson
 import ArkLib.ToMathlib.Section5StrictDataFinOn
+import ArkLib.ToMathlib.SectionFactor
 import ArkLib.ToMathlib.SeparableLowDegree
 import ArkLib.ToMathlib.SiegelInterpolation
 import ArkLib.ToMathlib.SignedGradedSupply
