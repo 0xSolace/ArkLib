@@ -1246,6 +1246,7 @@ import ArkLib.ProofSystem.Logup.Security.LogupHonestSupport
 import ArkLib.ProofSystem.Logup.Security.LogupInitImplFacts
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessClose
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessMsgSeam
+import ArkLib.ProofSystem.Logup.Security.LogupSoundnessPointwise
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessUncond
 import ArkLib.ProofSystem.Logup.Security.MarginalBridgeProof
 import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
