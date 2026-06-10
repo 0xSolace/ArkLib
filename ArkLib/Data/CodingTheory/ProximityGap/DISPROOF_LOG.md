@@ -3277,3 +3277,22 @@ is exactly the BRANCH-COUNT DISTRIBUTION: how many branches can stay (window-)al
 each depth. Everything else around it — conservation, tradeoff, fold identities, the
 unit-syndrome case (full tower + count), the class-syndrome chart, the effective
 transfer — is theorem.
+
+### O60 — THE NEWTON BRIDGE: esymm windows ⟺ power-sum windows (the last internal seam welded)
+
+`LamLeungTwoPow.lean` §NewtonBridge (axiom-clean, 0 sorry):
+
+* `newton_step` — Mathlib's MvPolynomial Newton recurrence instantiated on any finite
+  subset of F (σ = ↥S, aeval at coordinates; psum/esymm instantiation identities proven).
+* `psum_window_of_esymm_window` (characteristic-free) and `esymm_window_of_psum_window`
+  (char 0, divides by k) — both DIRECT, no induction: every cross term of the recurrence
+  carries a window-interior factor.
+* `esymm_window_iff_psum_window` — THE BRIDGE: the syndrome-side pipeline (O44–O46, esymm
+  windows at unit syndromes) and the tower pipeline (O53–O59, power-sum windows = all-ones
+  -error syndromes) describe the SAME fibers, formally.
+
+The full #232 formal corpus is now ONE connected machine-checked theory: unit-syndrome
+lists = esymm fibers (O45) = psum fibers (O60) = coset unions (O53) of count ≤ 2^{O(1/η)}
+(O55), transferring to F_p (O49), with general words governed by the fold identities
+(O56/O57), mass conservation (O58), and the window-weight tradeoff (O59). Open content:
+the branch-count distribution (= S-two Conj 1 on these domains), surrounded.

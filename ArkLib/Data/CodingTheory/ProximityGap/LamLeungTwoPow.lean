@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
 import Mathlib.Tactic
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
 
@@ -782,5 +783,95 @@ theorem window_forces_weight {S : Finset F} {v : F → F} {t : ℕ}
   · exact hP0 h
 
 end WindowWeight
+
+/-! ## The Newton bridge: elementary-symmetric windows ⟺ power-sum windows
+
+The last internal seam of the pipeline: the syndrome-side results (O44–O46, esymm form)
+and the tower results (O53–O59, power-sum form) describe the same fibers. Both
+directions are DIRECT consequences of the instantiated Newton recurrence — every cross
+term of `p_k = ±k·e_k − Σ (±e_a·p_{k−a})` carries a factor with index strictly inside
+the window, so window vanishing on either side collapses the recurrence to its diagonal
+term. `esymm → psum` is characteristic-free; `psum → esymm` divides by `k`
+(characteristic zero). -/
+
+section NewtonBridge
+
+omit [CharZero F] in
+/-- The Newton recurrence instantiated on a finite subset of `F`. -/
+lemma newton_step (S : Finset F) (k : ℕ) (hk : 0 < k) :
+    ∑ x ∈ S, x ^ k
+      = (-1) ^ (k + 1) * (k : F) * S.val.esymm k
+        - ∑ a ∈ (Finset.antidiagonal k).filter (fun a => a.1 ∈ Set.Ioo 0 k),
+            (-1) ^ a.1 * S.val.esymm a.1 * ∑ x ∈ S, x ^ a.2 := by
+  classical
+  have hmv := MvPolynomial.psum_eq_mul_esymm_sub_sum (σ := {x // x ∈ S}) (R := F) k hk
+  have happ := congrArg (MvPolynomial.aeval (fun i : {x // x ∈ S} => (i : F))) hmv
+  have hpsum : ∀ m : ℕ, MvPolynomial.aeval (fun i : {x // x ∈ S} => (i : F))
+      (MvPolynomial.psum {x // x ∈ S} F m) = ∑ x ∈ S, x ^ m := by
+    intro m
+    rw [MvPolynomial.psum, map_sum, Finset.univ_eq_attach,
+      ← Finset.sum_attach S (fun x => x ^ m)]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    simp
+  have hesymm : ∀ m : ℕ, MvPolynomial.aeval (fun i : {x // x ∈ S} => (i : F))
+      (MvPolynomial.esymm {x // x ∈ S} F m) = S.val.esymm m := by
+    intro m
+    rw [MvPolynomial.aeval_esymm_eq_multiset_esymm]
+    congr 1
+    rw [Finset.univ_eq_attach]
+    have hval : (S.attach.val : Multiset {x // x ∈ S}) = S.val.attach := rfl
+    rw [hval]
+    exact (Multiset.attach_map_val' S.val (fun x => x)).trans (Multiset.map_id' S.val)
+  simp only [hpsum, hesymm, map_sub, map_mul, map_pow, map_neg, map_one, map_natCast,
+    map_sum] at happ
+  exact happ
+
+omit [CharZero F] in
+/-- esymm-window vanishing implies power-sum-window vanishing (characteristic-free). -/
+theorem psum_window_of_esymm_window {S : Finset F} {t : ℕ}
+    (he : ∀ j ∈ Finset.Icc 1 t, S.val.esymm j = 0) :
+    ∀ j ∈ Finset.Icc 1 t, ∑ x ∈ S, x ^ j = 0 := by
+  intro k hk
+  rw [Finset.mem_Icc] at hk
+  rw [newton_step S k (by omega), he k (Finset.mem_Icc.mpr hk)]
+  rw [Finset.sum_eq_zero (fun a ha => ?_)]
+  · ring
+  · obtain ⟨hanti, hIoo⟩ := Finset.mem_filter.mp ha
+    obtain ⟨h1, h2⟩ := hIoo
+    rw [he a.1 (Finset.mem_Icc.mpr ⟨by omega, by omega⟩)]
+    ring
+
+/-- power-sum-window vanishing implies esymm-window vanishing (characteristic zero). -/
+theorem esymm_window_of_psum_window {S : Finset F} {t : ℕ}
+    (hp : ∀ j ∈ Finset.Icc 1 t, ∑ x ∈ S, x ^ j = 0) :
+    ∀ j ∈ Finset.Icc 1 t, S.val.esymm j = 0 := by
+  intro k hk
+  rw [Finset.mem_Icc] at hk
+  have hstep := newton_step S k (by omega)
+  rw [hp k (Finset.mem_Icc.mpr hk)] at hstep
+  rw [Finset.sum_eq_zero (fun a ha => ?_), sub_zero] at hstep
+  · -- 0 = (−1)^(k+1) · k · e_k forces e_k = 0
+    have hk0 : ((k : F)) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
+    have hu : ((-1 : F)) ^ (k + 1) ≠ 0 := pow_ne_zero _ (neg_ne_zero.mpr one_ne_zero)
+    rcases mul_eq_zero.mp hstep.symm with h | h
+    · rcases mul_eq_zero.mp h with h' | h'
+      · exact absurd h' hu
+      · exact absurd h' hk0
+    · exact h
+  · obtain ⟨hanti, hIoo⟩ := Finset.mem_filter.mp ha
+    obtain ⟨h1, h2⟩ := hIoo
+    have hsum := Finset.mem_antidiagonal.mp hanti
+    rw [hp a.2 (Finset.mem_Icc.mpr ⟨by omega, by omega⟩)]
+    ring
+
+/-- **The Newton bridge** (characteristic zero): the esymm window and the power-sum
+window define the SAME fiber — the O44–O46 syndrome pipeline and the O53–O59 tower
+pipeline are formally welded. -/
+theorem esymm_window_iff_psum_window {S : Finset F} {t : ℕ} :
+    (∀ j ∈ Finset.Icc 1 t, S.val.esymm j = 0) ↔
+    (∀ j ∈ Finset.Icc 1 t, ∑ x ∈ S, x ^ j = 0) :=
+  ⟨psum_window_of_esymm_window, esymm_window_of_psum_window⟩
+
+end NewtonBridge
 
 end LamLeungTwoPow
