@@ -170,6 +170,87 @@ theorem exists_dichotomyData_of_window
   exists_dichotomyData_of_cell_improvement domain η δ hη hδr u hk1 hkn hm hδ1 hδJ T hT
     (cell_improvement_of_window (lt_trans Nat.zero_lt_one hk1) hwin hT1)
 
+/-- **K4 smallness on the window.**  On the 3-intersection window, every decode-family
+cell is small outright (`≤ n ≤ T`): a pinned cell's members are all affine-captured at
+the window pencil, so the cell embeds in an improving set, which `factorImprove_card_le_n`
+bounds by `n`.  This discharges the `hK4` input of `bad_card_le_numeric`. -/
+theorem hK4_of_window
+    {n k : ℕ} [NeZero n] {domain : Fin n ↪ F₀} {δ : ℝ≥0}
+    {u : WordStack F₀ (Fin 2) (Fin n)} (hk : 0 < k)
+    (hwin : 2 * Fintype.card (Fin n) + k
+      ≤ 3 * ⌈(1 - δ) * (Fintype.card (Fin n) : ℝ≥0)⌉₊)
+    {T : ℕ} (hTn : n ≤ T) :
+    ∀ (E : Finset F₀) (P : F₀ → F₀[X]) (R : (F₀[X])[X][Y]),
+      Irreducible R →
+      (∀ γ ∈ E, ∃ d : McaDecode domain k δ u γ, d.P = P γ) →
+      (∀ γ ∈ E, (Polynomial.X - Polynomial.C (P γ)) ∣
+        R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+      E.card ≤ T := by
+  intro E P R _ hdec _
+  by_cases h2 : 1 < E.card
+  · obtain ⟨v₀, v₁, hd0, hd1, hPaff⟩ :=
+      exists_pencil_of_decode_family_window hk E P hdec hwin h2
+    have himp : ∀ z ∈ E,
+        ∃ x ∈ disagreeSet (fun i => v₀.eval (domain i) - u 0 i)
+          (fun i => v₁.eval (domain i) - u 1 i),
+        affineGap (fun i => v₀.eval (domain i) - u 0 i)
+          (fun i => v₁.eval (domain i) - u 1 i) z x = 0 := by
+      intro z hz
+      obtain ⟨d, hdP⟩ := hdec z hz
+      exact affineCaptured_improve hd0 hd1
+        (d.affineCaptured (by rw [hdP]; exact hPaff z hz))
+    have hcard := factorImprove_card_le_n
+      (fun i => v₀.eval (domain i) - u 0 i)
+      (fun i => v₁.eval (domain i) - u 1 i) E himp
+    exact le_trans (by simpa using hcard) hTn
+  · have h1 : E.card ≤ 1 := by omega
+    have hn1 : 1 ≤ n := Nat.one_le_iff_ne_zero.mpr (NeZero.ne n)
+    omega
+
+open Classical in
+/-- **The uniform per-stack numeric count on the window** — `bad_card_le_numeric` with its
+`hK4` input discharged by the window pencil: every stack's bad scalars number at most
+`(D/(k-1) + 1) · T`, with no production hypothesis. -/
+theorem bad_card_le_numeric_of_window
+    {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀)
+    (u : WordStack F₀ (Fin 2) (Fin n)) (δ : ℝ≥0) (T : ℕ)
+    (hk1 : 1 < k) (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hwin : 2 * Fintype.card (Fin n) + k
+      ≤ 3 * ⌈(1 - δ) * (Fintype.card (Fin n) : ℝ≥0)⌉₊)
+    (hTn : n ≤ T)
+    (hT0 : n * (GuruswamiSudan.constraintIndices m).card * gs_degree_bound k n m ≤ T) :
+    (Finset.univ.filter (fun γ : F₀ =>
+      mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+        δ (u 0) (u 1) γ)).card ≤
+      (gs_degree_bound k n m / (k - 1) + 1) * T :=
+  bad_card_le_numeric domain u δ T hk1 hkn hm hδ1 hδJ hT0
+    (fun E P R hR hdec hdvd =>
+      hK4_of_window (lt_trans Nat.zero_lt_one hk1) hwin hTn E P R hR hdec hdvd)
+
+open Classical in
+/-- **The window numeric instance via the full pipeline.**  On the 3-intersection window,
+`JohnsonNumericBound` holds through the complete GS machinery — interpolation, cells,
+pencil, capture, count — with the explicit budget `B = (D/(k-1)+1)·T`, given only the
+arithmetic side condition `B/|F| ≤ johnsonBoundReal`. -/
+theorem johnsonNumericBound_of_window_numeric
+    {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀)
+    (η δ : ℝ≥0) (T : ℕ)
+    (hk1 : 1 < k) (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hwin : 2 * Fintype.card (Fin n) + k
+      ≤ 3 * ⌈(1 - δ) * (Fintype.card (Fin n) : ℝ≥0)⌉₊)
+    (hTn : n ≤ T)
+    (hT0 : n * (GuruswamiSudan.constraintIndices m).card * gs_degree_bound k n m ≤ T)
+    (harith : (((gs_degree_bound k n m / (k - 1) + 1) * T : ℕ) : ℝ≥0∞)
+        / (Fintype.card F₀ : ℝ≥0∞)
+      ≤ ENNReal.ofReal (johnsonBoundReal domain k η δ)) :
+    JohnsonNumericBound domain k η δ :=
+  johnsonNumericBound_of_badCount_le domain k η δ
+    ((gs_degree_bound k n m / (k - 1) + 1) * T)
+    (fun u => bad_card_le_numeric_of_window domain u δ T hk1 hkn hm hδ1 hδJ hwin hTn hT0)
+    harith
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit -/
@@ -177,3 +258,6 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.badCount_le_of_cell_improvement
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.cell_improvement_of_window
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_dichotomyData_of_window
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.hK4_of_window
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.bad_card_le_numeric_of_window
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_window_numeric
