@@ -198,6 +198,39 @@ lemma sum_fiberSet {L : Type*} [Semiring L] (ξ : L) (N : ℕ) (I : Finset (ℕ 
       = ∑ j ∈ Finset.range N, if (j, c) ∈ I then ξ ^ j else 0 := by
   rw [fiberSet, Finset.sum_filter]
 
+/-- **Global form of the prime indicator dichotomy.**  If every pair of columns is
+related by the squarefree indicator dichotomy, then either all columns are literally
+equal, or every column is empty/full.  This isolates the finite combinatorial split
+used by the squarefree de Bruijn theorem. -/
+lemma equal_fibers_or_empty_full_of_pairwise_dichotomy {p q : ℕ}
+    {I : Finset (ℕ × ℕ)}
+    (hdich : ∀ c < q, ∀ c' < q,
+      fiberSet p I c = fiberSet p I c'
+        ∨ (fiberSet p I c = Finset.range p ∧ fiberSet p I c' = ∅)
+        ∨ (fiberSet p I c = ∅ ∧ fiberSet p I c' = Finset.range p)) :
+    (∀ c < q, ∀ c' < q, fiberSet p I c = fiberSet p I c')
+      ∨ (∀ c < q, fiberSet p I c = ∅ ∨ fiberSet p I c = Finset.range p) := by
+  classical
+  by_cases hall : ∀ c < q, ∀ c' < q, fiberSet p I c = fiberSet p I c'
+  · exact Or.inl hall
+  · right
+    push Not at hall
+    obtain ⟨c₀, hc₀, c₁, hc₁, hne⟩ := hall
+    have hempty : ∃ c₂, c₂ < q ∧ fiberSet p I c₂ = ∅ := by
+      rcases hdich c₀ hc₀ c₁ hc₁ with h | ⟨_, h⟩ | ⟨h, _⟩
+      · exact absurd h hne
+      · exact ⟨c₁, hc₁, h⟩
+      · exact ⟨c₀, hc₀, h⟩
+    obtain ⟨c₂, hc₂, hc₂e⟩ := hempty
+    intro c hc
+    rcases hdich c hc c₂ hc₂ with h | h | h
+    · left
+      exact h.trans hc₂e
+    · right
+      exact h.1
+    · left
+      exact h.1
+
 /-- Shifting the second CRT coordinate cyclically adds `p` to the encoded exponent:
 `g(j, (c+1) % q) = g(j, c) + p` in `ZMod (p·q)`. -/
 lemma gridMap_snd_succ {p q : ℕ} (j c : ℕ) :
@@ -237,6 +270,63 @@ lemma gridMap_fst_succ {p q : ℕ} (j c : ℕ) :
   rw [Nat.cast_add, Nat.cast_add, hmain]
   push_cast
   ring
+
+/-! ## From fiber geometry to coset closure -/
+
+/-- **Equal columns give `+p`-closure.**  This is the pure CRT bookkeeping half of the
+squarefree de Bruijn proof: if every column fiber of the exponent grid is the same
+subset of `[0,p)`, then moving one step in the second CRT coordinate keeps the exponent
+inside `S`, i.e. `S` is a union of full `μ_q`-packets. -/
+lemma closed_add_p_of_equal_fibers {p q : ℕ} (hppos : 0 < p) (hqpos : 0 < q)
+    (hcop : Nat.Coprime p q) {S : Finset (ZMod (p * q))} {I : Finset (ℕ × ℕ)}
+    (hmemI : ∀ x : ℕ × ℕ, x ∈ I ↔
+      x ∈ Finset.range p ×ˢ Finset.range q ∧ CRTExponentGridSum.gridMap p q x ∈ S)
+    (hall : ∀ c < q, ∀ c' < q, fiberSet p I c = fiberSet p I c') :
+    ∀ e ∈ S, e + ((p : ℕ) : ZMod (p * q)) ∈ S := by
+  intro e he
+  obtain ⟨⟨j, c⟩, hx, hxe⟩ := CRTExponentGridSum.gridMap_surj hppos hqpos hcop e
+  rw [Finset.mem_product, Finset.mem_range, Finset.mem_range] at hx
+  have hxI : (j, c) ∈ I := (hmemI (j, c)).mpr
+    ⟨Finset.mem_product.mpr ⟨Finset.mem_range.mpr hx.1, Finset.mem_range.mpr hx.2⟩,
+      hxe ▸ he⟩
+  have hjcol : j ∈ fiberSet p I c := mem_fiberSet.mpr ⟨hx.1, hxI⟩
+  have hceq : fiberSet p I c = fiberSet p I ((c + 1) % q) :=
+    hall c hx.2 _ (Nat.mod_lt _ hqpos)
+  have hxI' : (j, (c + 1) % q) ∈ I := (mem_fiberSet.mp (hceq ▸ hjcol)).2
+  have hS' : CRTExponentGridSum.gridMap p q (j, (c + 1) % q) ∈ S :=
+    ((hmemI _).mp hxI').2
+  rw [← hxe, ← gridMap_snd_succ]
+  exact hS'
+
+/-- **Empty/full columns give `+q`-closure.**  Once every column fiber is either empty
+or all of `[0,p)`, any occupied exponent lies in a full vertical packet, so stepping in
+the first CRT coordinate keeps the exponent inside `S`. -/
+lemma closed_add_q_of_empty_or_full_fibers {p q : ℕ} (hppos : 0 < p) (hqpos : 0 < q)
+    (hcop : Nat.Coprime p q) {S : Finset (ZMod (p * q))} {I : Finset (ℕ × ℕ)}
+    (hmemI : ∀ x : ℕ × ℕ, x ∈ I ↔
+      x ∈ Finset.range p ×ˢ Finset.range q ∧ CRTExponentGridSum.gridMap p q x ∈ S)
+    (hef : ∀ c < q, fiberSet p I c = ∅ ∨ fiberSet p I c = Finset.range p) :
+    ∀ e ∈ S, e + ((q : ℕ) : ZMod (p * q)) ∈ S := by
+  intro e he
+  obtain ⟨⟨j, c⟩, hx, hxe⟩ := CRTExponentGridSum.gridMap_surj hppos hqpos hcop e
+  rw [Finset.mem_product, Finset.mem_range, Finset.mem_range] at hx
+  have hxI : (j, c) ∈ I := (hmemI (j, c)).mpr
+    ⟨Finset.mem_product.mpr ⟨Finset.mem_range.mpr hx.1, Finset.mem_range.mpr hx.2⟩,
+      hxe ▸ he⟩
+  have hjcol : j ∈ fiberSet p I c := mem_fiberSet.mpr ⟨hx.1, hxI⟩
+  have hfull : fiberSet p I c = Finset.range p := by
+    rcases hef c hx.2 with h | h
+    · rw [h] at hjcol
+      exact absurd hjcol (Finset.notMem_empty j)
+    · exact h
+  have hj' : (j + 1) % p ∈ fiberSet p I c := by
+    rw [hfull]
+    exact Finset.mem_range.mpr (Nat.mod_lt _ hppos)
+  have hxI' : ((j + 1) % p, c) ∈ I := (mem_fiberSet.mp hj').2
+  have hS' : CRTExponentGridSum.gridMap p q ((j + 1) % p, c) ∈ S :=
+    ((hmemI _).mp hxI').2
+  rw [← hxe, ← gridMap_fst_succ]
+  exact hS'
 
 /-! ## The headline -/
 
@@ -305,58 +395,13 @@ theorem debruijn_squarefree_two_prime {L : Type*} [Field L] [CharZero L]
       x ∈ Finset.range p ×ˢ Finset.range q ∧ CRTExponentGridSum.gridMap p q x ∈ S := by
     intro x
     rw [hIdef, CRTExponentGridSum.gridSet, Finset.mem_filter]
-  by_cases hall : ∀ c < q, ∀ c' < q, fiberSet p I c = fiberSet p I c'
+  rcases equal_fibers_or_empty_full_of_pairwise_dichotomy hdich with hall | hef
   · -- all fibers equal as sets: S is closed under `+p`
     left
-    intro e he
-    obtain ⟨⟨j, c⟩, hx, hxe⟩ := CRTExponentGridSum.gridMap_surj hppos hqpos hcop e
-    rw [Finset.mem_product, Finset.mem_range, Finset.mem_range] at hx
-    have hxI : (j, c) ∈ I := (hmemI (j, c)).mpr
-      ⟨Finset.mem_product.mpr ⟨Finset.mem_range.mpr hx.1, Finset.mem_range.mpr hx.2⟩,
-        hxe ▸ he⟩
-    have hjcol : j ∈ fiberSet p I c := mem_fiberSet.mpr ⟨hx.1, hxI⟩
-    have hceq : fiberSet p I c = fiberSet p I ((c + 1) % q) :=
-      hall c hx.2 _ (Nat.mod_lt _ hqpos)
-    have hxI' : (j, (c + 1) % q) ∈ I := (mem_fiberSet.mp (hceq ▸ hjcol)).2
-    have hS' : CRTExponentGridSum.gridMap p q (j, (c + 1) % q) ∈ S :=
-      ((hmemI _).mp hxI').2
-    rw [← hxe, ← gridMap_snd_succ]
-    exact hS'
-  · -- two fibers differ: every fiber sum is zero, every fiber empty or full,
-    -- S is closed under `+q`
+    exact closed_add_p_of_equal_fibers hppos hqpos hcop hmemI hall
+  · -- otherwise every fiber is empty/full, so S is closed under `+q`
     right
-    push Not at hall
-    obtain ⟨c₀, hc₀, c₁, hc₁, hne⟩ := hall
-    have hempty : ∃ c₂, c₂ < q ∧ fiberSet p I c₂ = ∅ := by
-      rcases hdich c₀ hc₀ c₁ hc₁ with h | ⟨_, h⟩ | ⟨h, _⟩
-      · exact absurd h hne
-      · exact ⟨c₁, hc₁, h⟩
-      · exact ⟨c₀, hc₀, h⟩
-    obtain ⟨c₂, hc₂, hc₂e⟩ := hempty
-    have hef : ∀ c < q, fiberSet p I c = ∅ ∨ fiberSet p I c = Finset.range p := by
-      intro c hc
-      refine vanishing_indicator_empty_or_full hp hξ (fiberSet_subset p I c) ?_
-      rw [sum_fiberSet, hfib c hc c₂ hc₂, ← sum_fiberSet, hc₂e, Finset.sum_empty]
-    intro e he
-    obtain ⟨⟨j, c⟩, hx, hxe⟩ := CRTExponentGridSum.gridMap_surj hppos hqpos hcop e
-    rw [Finset.mem_product, Finset.mem_range, Finset.mem_range] at hx
-    have hxI : (j, c) ∈ I := (hmemI (j, c)).mpr
-      ⟨Finset.mem_product.mpr ⟨Finset.mem_range.mpr hx.1, Finset.mem_range.mpr hx.2⟩,
-        hxe ▸ he⟩
-    have hjcol : j ∈ fiberSet p I c := mem_fiberSet.mpr ⟨hx.1, hxI⟩
-    have hfull : fiberSet p I c = Finset.range p := by
-      rcases hef c hx.2 with h | h
-      · rw [h] at hjcol
-        exact absurd hjcol (Finset.notMem_empty j)
-      · exact h
-    have hj' : (j + 1) % p ∈ fiberSet p I c := by
-      rw [hfull]
-      exact Finset.mem_range.mpr (Nat.mod_lt _ hppos)
-    have hxI' : ((j + 1) % p, c) ∈ I := (mem_fiberSet.mp hj').2
-    have hS' : CRTExponentGridSum.gridMap p q ((j + 1) % p, c) ∈ S :=
-      ((hmemI _).mp hxI').2
-    rw [← hxe, ← gridMap_fst_succ]
-    exact hS'
+    exact closed_add_q_of_empty_or_full_fibers hppos hqpos hcop hmemI hef
 
 /-! ## Non-vacuity witnesses
 
@@ -417,6 +462,9 @@ end DeBruijnIndicatorDisjointness
 #print axioms DeBruijnIndicatorDisjointness.coeffs_all_eq_of_vanishing_prime
 #print axioms DeBruijnIndicatorDisjointness.equal_indicator_sums_dichotomy
 #print axioms DeBruijnIndicatorDisjointness.vanishing_indicator_empty_or_full
+#print axioms DeBruijnIndicatorDisjointness.equal_fibers_or_empty_full_of_pairwise_dichotomy
 #print axioms DeBruijnIndicatorDisjointness.gridMap_snd_succ
 #print axioms DeBruijnIndicatorDisjointness.gridMap_fst_succ
+#print axioms DeBruijnIndicatorDisjointness.closed_add_p_of_equal_fibers
+#print axioms DeBruijnIndicatorDisjointness.closed_add_q_of_empty_or_full_fibers
 #print axioms DeBruijnIndicatorDisjointness.debruijn_squarefree_two_prime
