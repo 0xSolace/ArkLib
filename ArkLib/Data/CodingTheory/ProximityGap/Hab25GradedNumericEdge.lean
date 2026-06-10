@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArithmetic
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4Seam
 
 /-!
@@ -55,7 +56,9 @@ lemma constraintIndices_card_le (m : ℕ) :
     (GuruswamiSudan.constraintIndices m).card ≤ m * m := by
   unfold GuruswamiSudan.constraintIndices
   refine le_trans (Finset.card_filter_le _ _) ?_
-  rw [Finset.card_product, Finset.card_range]
+  rw [show (Finset.range m).product (Finset.range m) =
+      Finset.range m ×ˢ Finset.range m from rfl,
+    Finset.card_product, Finset.card_range]
 
 /-- **The division-free arithmetic core** of the graded Johnson numeric edge:
 `3·sp³·((y+1)·c·y) ≤ 2·(M+½)⁵` in the `√`-substituted variables. -/
@@ -93,7 +96,15 @@ theorem graded_budget_core {y c r sp M : ℝ}
         exact mul_le_mul_of_nonneg_left hprod (by positivity)
     _ = (3 * (15 / 14) ^ 3 * (7 / 6) * (61 / 42) * (9 / 10)) *
           (M ^ 2 * (M + 1 / 2) ^ 2) := by ring
-    _ ≤ 2 * (M + 1 / 2) ^ 5 := by nlinarith [sq_nonneg M, sq_nonneg (M + 1 / 2)]
+    _ ≤ 6 * (M ^ 2 * (M + 1 / 2) ^ 2) := by
+        refine mul_le_mul_of_nonneg_right (by norm_num) (by positivity)
+    _ ≤ 2 * (M + 1 / 2) ^ 5 := by
+        have hcube : 6 * M ^ 2 ≤ 2 * (M + 1 / 2) ^ 3 := by nlinarith
+        have h := mul_le_mul_of_nonneg_right hcube (sq_nonneg (M + 1 / 2))
+        calc 6 * (M ^ 2 * (M + 1 / 2) ^ 2)
+            = 6 * M ^ 2 * (M + 1 / 2) ^ 2 := by ring
+          _ ≤ 2 * (M + 1 / 2) ^ 3 * (M + 1 / 2) ^ 2 := h
+          _ = 2 * (M + 1 / 2) ^ 5 := by ring
 
 variable {ι₀ : Type} [Fintype ι₀] [Nonempty ι₀] [DecidableEq ι₀]
 variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
@@ -126,11 +137,7 @@ theorem graded_budget_le_ell_budget {n k m : ℕ} (η : ℝ≥0)
   have hr2 : r ^ 2 = (k : ℝ) / (n : ℝ) := Real.sq_sqrt hρ0
   have hρp0 : 0 < ρp := hab25RhoPlus_pos hn0 k
   have hsp0 : 0 ≤ sp := Real.sqrt_nonneg _
-  have hsp2 : sp ^ 2 = ρp := Real.sq_sqrt hρp0.le
   have hM3 : (3 : ℝ) ≤ M := hab25M_ge_three n k η
-  have hm3 : 3 ≤ m := by
-    have : ((3 : ℕ) : ℝ) ≤ (m : ℝ) := by rw [hmM]; exact_mod_cast hM3
-    exact_mod_cast this
   -- (i) the fold-degree bound `y·r ≤ (7/6)(M+½)`
   have hDmul : (DY : ℝ) * ((k : ℝ) - 1) ≤ (gs_degree_bound k n m : ℝ) := by
     have h := Nat.div_mul_le_self (gs_degree_bound k n m) (k - 1)
@@ -143,22 +150,20 @@ theorem graded_budget_le_ell_budget {n k m : ℕ} (η : ℝ≥0)
     refine le_trans (Nat.floor_le (by positivity)) (le_of_eq ?_)
     have hq : ((((k : ℚ) / (n : ℚ) : ℚ)) : ℝ) = (k : ℝ) / (n : ℝ) := by push_cast; ring
     rw [hq, hr]
-    push_cast
-    ring
   have hyr : y * r ≤ (7 / 6) * (M + 1 / 2) := by
-    -- `y·r·(k−1) ≤ D·r·… ≤ (m+½)·r²·n = (m+½)·k` and `6k ≤ 7(k−1)`
     have hk1R : (0 : ℝ) < (k : ℝ) - 1 := by
       have : (1 : ℝ) < (k : ℝ) := by exact_mod_cast (by omega : 1 < k)
       linarith
     have h1 : y * ((k : ℝ) - 1) * r ≤ (((m : ℝ) + 1 / 2) * r * n) * r := by
       refine mul_le_mul_of_nonneg_right (le_trans hDmul hDle) hr0.le
+    have hrr : r * r = (k : ℝ) / (n : ℝ) := by
+      have h := hr2
+      rw [pow_two] at h
+      exact h
     have h2 : (((m : ℝ) + 1 / 2) * r * n) * r = ((m : ℝ) + 1 / 2) * (k : ℝ) := by
-      have : r * r = (k : ℝ) / (n : ℝ) := by
-        have := hr2
-        nlinarith [this]
       calc (((m : ℝ) + 1 / 2) * r * n) * r
           = ((m : ℝ) + 1 / 2) * n * (r * r) := by ring
-        _ = ((m : ℝ) + 1 / 2) * n * ((k : ℝ) / (n : ℝ)) := by rw [this]
+        _ = ((m : ℝ) + 1 / 2) * n * ((k : ℝ) / (n : ℝ)) := by rw [hrr]
         _ = ((m : ℝ) + 1 / 2) * (k : ℝ) := by field_simp
     have h3 : 6 * (k : ℝ) ≤ 7 * ((k : ℝ) - 1) := by
       have : (7 : ℝ) ≤ (k : ℝ) := by exact_mod_cast hk7
@@ -166,8 +171,9 @@ theorem graded_budget_le_ell_budget {n k m : ℕ} (η : ℝ≥0)
     have h4 : y * ((k : ℝ) - 1) * r ≤ ((m : ℝ) + 1 / 2) * (k : ℝ) := by
       rw [← h2]; exact h1
     have hy0 : (0 : ℝ) ≤ y := Nat.cast_nonneg _
-    rw [hmM] at h4 ⊢
-    nlinarith [mul_nonneg hy0 hr0.le]
+    rw [hmM] at h4
+    nlinarith [mul_nonneg hy0 hr0.le,
+      mul_pos hk1R (show (0 : ℝ) < M + 1 / 2 by linarith)]
   -- (ii) `r ≤ (2/7)(M+½)`
   have hrM : r ≤ (2 / 7) * (M + 1 / 2) := by
     have : (2 / 7 : ℝ) * (M + 1 / 2) ≥ 1 := by nlinarith
@@ -177,12 +183,10 @@ theorem graded_budget_le_ell_budget {n k m : ℕ} (η : ℝ≥0)
     have hρple : ρp ≤ (225 / 196) * ((k : ℝ) / (n : ℝ)) := by
       rw [hρp]
       unfold hab25RhoPlus
-      rw [div_add_div_same]
-      rw [div_le_div_iff₀ hnR hnR]
-      have : (196 : ℝ) * ((k : ℝ) + 1) ≤ 225 * (k : ℝ) := by
-        have : (7 : ℝ) ≤ (k : ℝ) := by exact_mod_cast hk7
-        linarith
-      nlinarith
+      rw [← add_div, ← mul_div_assoc]
+      have h7 : (7 : ℝ) ≤ (k : ℝ) := by exact_mod_cast hk7
+      gcongr
+      linarith
     have h1 : sp ≤ Real.sqrt ((225 / 196) * ((k : ℝ) / (n : ℝ))) :=
       Real.sqrt_le_sqrt hρple
     have h2 : Real.sqrt ((225 / 196) * ((k : ℝ) / (n : ℝ))) = (15 / 14) * r := by
@@ -193,16 +197,14 @@ theorem graded_budget_le_ell_budget {n k m : ℕ} (η : ℝ≥0)
   -- (iv) `c ≤ M²`
   have hcM : c ≤ M ^ 2 := by
     have h1 : c ≤ ((m : ℝ)) * ((m : ℝ)) := by
-      have := constraintIndices_card_le m
-      exact_mod_cast this
+      rw [hc]
+      exact_mod_cast constraintIndices_card_le m
     rw [hmM] at h1
     nlinarith
   -- the core, then divide
   have hcore := graded_budget_core (Nat.cast_nonneg DY) (Nat.cast_nonneg _)
-    hr0 hsp0 hM3 hcM (by rw [← hr]; exact hρ) hyr hrM hspr
-  have hsp3pos : (0 : ℝ) < sp ^ 3 := by
-    have : 0 < sp := Real.sqrt_pos.mpr hρp0
-    positivity
+    hr0 hsp0 hM3 hcM hρ hyr hrM hspr
+  have hsppos : (0 : ℝ) < sp := Real.sqrt_pos.mpr hρp0
   have hcast : (((DY + 1) * (GuruswamiSudan.constraintIndices m).card * DY : ℕ) : ℝ) =
       (y + 1) * c * y := by push_cast; ring
   rw [hcast, rpow_three_halves_eq_sqrt_cube hρp0.le]
@@ -228,7 +230,8 @@ theorem graded_budget_div_le_johnsonBoundReal {n k m : ℕ} [NeZero n]
     ((DY + 1) * (GuruswamiSudan.constraintIndices m).card * DY)
     (by rw [hcardn]; exact hL)
   have hshape : (DY + 1) * (GuruswamiSudan.constraintIndices m).card * DY *
-      Fintype.card (Fin n) = (DY + 1) * (n * (GuruswamiSudan.constraintIndices m).card * DY) := by
+      Fintype.card (Fin n) =
+      (DY + 1) * (n * (GuruswamiSudan.constraintIndices m).card * DY) := by
     rw [hcardn]; ring
   rwa [hshape] at h
 
