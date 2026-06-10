@@ -1172,6 +1172,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaAssembly
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundations
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaHybrids
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Honest
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516HashHalf
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lookahead
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.ProverTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.RunCollapse
@@ -1388,7 +1389,6 @@ import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.ComposedCompleteness
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessFinal
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessLeaves
-import ArkLib.ProofSystem.Spartan.ComposedCompletenessProven
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessTwoLeaves
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessWithClaimFinal
 import ArkLib.ProofSystem.Spartan.ComposedRbrKnowledgeSoundness
@@ -1418,6 +1418,7 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckReduction
 import ArkLib.ProofSystem.Spartan.SecondSumcheckRelIn
 import ArkLib.ProofSystem.Spartan.SecondSumcheckSimOStmt
 import ArkLib.ProofSystem.Spartan.SendEvalClaimComplete
+import ArkLib.ProofSystem.Spartan.ShortPhaseKnowledgeLeaves
 import ArkLib.ProofSystem.Spartan.SpartanRBRProof
 import ArkLib.ProofSystem.Spartan.SpartanRBRWithClaimProof
 import ArkLib.ProofSystem.Spartan.SpartanSumcheckUnconditional
