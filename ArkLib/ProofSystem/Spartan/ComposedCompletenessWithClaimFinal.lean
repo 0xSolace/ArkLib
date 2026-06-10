@@ -36,7 +36,8 @@ theorem composedCompletenessWithClaimResidual_proven
       x ∈ support ((impl t).run s) → x.2 = s)
     (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0) :
     composedCompletenessWithClaimResidual R pp oSpec (composedPIOPWithClaim_Rc pp oSpec) init impl := by
-  have h_base := composedCompletenessResidual_proven R pp oSpec hm hn hInit hImplSupp himplSP himplNF
+  have h_base := composedCompletenessResidual_proven (R := R) pp oSpec hm hn hInit hImplSupp
+    himplSP himplNF
   have h_claim := prependClaim_perfectCompleteness (R := R) (pp := pp) (oSpec := oSpec)
     (init := init) (impl := impl) (finalCheckRelOut R pp)
   unfold composedCompletenessWithClaimResidual
