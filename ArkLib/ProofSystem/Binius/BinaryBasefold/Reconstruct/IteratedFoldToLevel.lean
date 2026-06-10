@@ -113,8 +113,32 @@ lemma getMidCodewords_last_apply_eq_eval
   intro x _
   congr
 
+/-- The final mid-codeword at the canonical zero point is the multilinear evaluation. -/
+lemma getMidCodewords_last_zero_eq_eval
+    (t : MultilinearPoly L ℓ) (challenges : Fin ℓ → L) :
+    getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := Fin.last ℓ) t challenges ⟨0, by simp only [Fin.val_last, zero_mem]⟩ =
+      t.val.eval challenges :=
+  getMidCodewords_last_apply_eq_eval 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (t := t) (challenges := challenges) (y := ⟨0, by simp only [Fin.val_last, zero_mem]⟩)
+
+/-- After all `ℓ` folds, the honest mid-codeword is constant on the final domain. -/
+lemma getMidCodewords_last_is_constant
+    (t : MultilinearPoly L ℓ) (challenges : Fin ℓ → L)
+    (x y : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨Fin.last ℓ, by omega⟩)) :
+    getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := Fin.last ℓ) t challenges x =
+    getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := Fin.last ℓ) t challenges y := by
+  rw [getMidCodewords_last_apply_eq_eval 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (t := t) (challenges := challenges) (y := x),
+    getMidCodewords_last_apply_eq_eval 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (t := t) (challenges := challenges) (y := y)]
+
 #print axioms intermediateEvaluationPoly_last_iteratedRefineCoeffs_eval
 #print axioms getMidCodewords_last_apply_eq_eval
+#print axioms getMidCodewords_last_zero_eq_eval
+#print axioms getMidCodewords_last_is_constant
 
 end
 
