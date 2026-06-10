@@ -36,6 +36,10 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
   named open (Weil/sum-product) root.
 - [`stir-issue-301.md`](stir-issue-301.md) - STIR #301 scratchpad: source trail, local theorem
   map, proof status, and the honest residuals for `stir_main` / `stir_rbr_soundness`.
+- [`issue-329-tight-rbrks-patterns.md`](issue-329-tight-rbrks-patterns.md) - the target-carrying
+  lift patterns from the Spartan tight rbr-KS campaign: why dropped lift data forces per-round
+  error 1, the oracle-pinning keystone's two consumption directions, the kernel-leaf shape, the
+  conjoin-at-unchanged-error recipe, guarded-terminal honesty, and the assembly mechanics.
 
 ## Maintenance Contract
 
