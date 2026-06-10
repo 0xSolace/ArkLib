@@ -1631,6 +1631,7 @@ import ArkLib.ToMathlib.GKL24FirstMomentProb
 import ArkLib.ToMathlib.GSFactorData
 import ArkLib.ToMathlib.GSGradedBundle
 import ArkLib.ToMathlib.GSLineInputSupply
+import ArkLib.ToMathlib.GSSurfaceDegSupply
 import ArkLib.ToMathlib.GSSurfaceEntry
 import ArkLib.ToMathlib.GSSurfaceKeystone
 import ArkLib.ToMathlib.GSSurfaceSupply
