@@ -32,26 +32,18 @@ section SecurityRelations
 -- (moved to Basic.lean) declarations canonicalized in Basic: removed duplicates here.
 -- NOTE: `getMidCodewords` (in `Basic.lean`) folds from level 0 over `steps := i.val` using
 -- the new-API `iterated_fold` (`steps : ℕ`, `{destIdx : Fin r}`, `h_destIdx`/`h_destIdx_le`).
--- This lemma is stated against that same new-API signature (one extra fold step,
--- `steps := 1`, `destIdx := ⟨i.val + 1, _⟩`) so that it stays in sync with
--- `Basic.getMidCodewords` (issue #37: the legacy `Fin (ℓ+1)`-stepped signature is now
--- `iterated_fold_steps`, Prelude-internal only).  Proof route (#32 handoff item (c)): peel
--- the last step on both sides with the new-API peel `iterated_fold_last` at the shared mid
--- index, then reconcile — `Fin.init_snoc`/`Fin.snoc_last` on the challenge vectors and
--- `iterated_fold_zero_steps` for the right-hand inner zero-step fold (whose index
--- transport is definitional by proof irrelevance).  `Eq.trans` instances are used
--- instead of `rw` because the `↑(i.succ)`/`↑i.castSucc` step-count indices only reduce to
--- `i.val + 1`/`i.val` definitionally, which keyed rewriting cannot see.
+-- Public statement challenges are accumulated in the sumcheck `Fin.cons` convention, while
+-- `getMidCodewords` reverses that tuple before passing it to the fold recursion. This successor
+-- lemma is therefore stated in `Fin.cons` form, matching `foldVerifierStmtOut` and
+-- `getFoldProverFinalOutput`; internally `Fin.cons_comp_rev` turns that into the chronological
+-- `Fin.snoc` form needed by `iterated_fold_last`.
 set_option maxHeartbeats 1000000 in
 seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
 lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     (challenges : Fin i.castSucc → L) (r_i' : L) :
   (getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := i.succ) (t := t)
-    -- `n`/`α` pinned so every later `Fin.init`/`Fin.last` occurrence (all at `n = i.val`,
-    -- from the peel) shares this snoc's exact spelling — mixed defeq-but-not-syntactic
-    -- motives otherwise make `init_snoc`/`snoc_last` unusable.
-    (challenges := Fin.snoc (n := i.val) (α := fun _ => L) challenges r_i')) =
+    (challenges := Fin.cons r_i' challenges)) =
   (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := ⟨i, by omega⟩)
     (steps := 1)
@@ -62,11 +54,6 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
       (i := i.castSucc) (t := t) (challenges := challenges))
     (r_challenges := fun _ => r_i'))
   := by
-  -- Peel the last of the left-hand steps.  The step count is instantiated as
-  -- `i.val + 1` (defeq to `↑(i.succ)`): the statement's `Fin.snoc challenges r_i'` was
-  -- elaborated at index `n := i.val` (whnf of `↑(i.succ)` against `Fin (?n + 1)`), so the
-  -- peel's `Fin.init`/`Fin.last` must sit at `i.val` too — `init_snoc`/`snoc_last` have a
-  -- single `n`, and defeq-but-not-syntactic index mixes make them unusable.
   refine Eq.trans
     (iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
       (midIdx := ⟨i.val, by omega⟩)
@@ -99,13 +86,15 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     -- zero-step fold is the definitional transport of `getMidCodewords i.castSucc`.
     funext z
     rw [iterated_fold_zero_steps]
-    have hch := Fin.init_snoc (n := i.val) (α := fun _ => L) (x := r_i') (p := challenges)
+    have hch := Fin.init_snoc (n := i.val) (α := fun _ => L) (x := r_i')
+      (p := challenges ∘ Fin.rev)
     -- `hch` is a closed equation, so `simp only [hch]` matches first-order (the general
     -- `Fin.init_snoc` cannot fire: `Fin.snoc`'s dependent motive is not an HO pattern).
-    simp only [hch]
+    simp only [Fin.cons_comp_rev, hch]
     rfl
   · -- Challenge: `snoc challenges r_i' (last _) = r_i'` (the right side beta-reduces).
-    exact Fin.snoc_last (n := i.val) (α := fun _ => L) (x := r_i') (p := challenges)
+    simpa only [Fin.cons_comp_rev] using
+      (Fin.snoc_last (n := i.val) (α := fun _ => L) (x := r_i') (p := challenges ∘ Fin.rev))
 
 section FoldStepLogic
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context}
