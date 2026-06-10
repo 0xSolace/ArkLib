@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeWindowLaw
+import ArkLib.Data.CodingTheory.ProximityGap.LamLeungTwoPow
 
 /-!
 # Issue #232 — The two-prime SYNDROME LIST BUDGET (the O61 consumer on `μ_{p^a·q^b}`)
@@ -118,7 +119,34 @@ theorem m31_syndrome_budget [DecidableEq F] [CharZero F] {ζ : F}
   norm_num at h
   exact h
 
+open Classical in
+/-- **The literal O61 consumer on `μ_18`**: unit-syndrome-compatible supports
+(`TopLine.CompatC` at the unit vector, syndrome length `8`) over any
+`D₀ ⊆ μ_18` number at most `2^|D₀^9|` per cardinality — the
+`unit_syndrome_list_budget` shape transported from the 2-power tower (O61) to the
+M31 multiplicative two-prime domain: CompatC ⟷ esymm window (O45
+`zero_fiber_filter_eq`) ⟷ power-sum window (O60 Newton bridge) → the O98 count. -/
+theorem m31_unit_syndrome_budget [DecidableEq F] [CharZero F] {ζ : F}
+    (hζ : IsPrimitiveRoot ζ 18) {D₀ : Finset F} (hD₀ : ∀ x ∈ D₀, x ^ 18 = 1)
+    {w N : ℕ} (hw : w + 8 = N) (hcw : 8 ≤ w) :
+    ((D₀.powersetCard w).filter (fun E =>
+        TopLine.CompatC (TopLine.unitVec (w - 1)) N 8 E)).card
+      ≤ 2 ^ (D₀.image (· ^ 9)).card := by
+  rw [TopLine.zero_fiber_filter_eq hw (by norm_num) hcw D₀]
+  refine le_trans (le_of_eq ?_) (m31_syndrome_budget hζ hD₀ w)
+  congr 1
+  refine Finset.filter_congr fun E _ => ?_
+  constructor
+  · intro he j hj1 hj2
+    exact LamLeungTwoPow.psum_window_of_esymm_window he j
+      (Finset.mem_Icc.mpr ⟨hj1, by omega⟩)
+  · intro hp
+    refine LamLeungTwoPow.esymm_window_of_psum_window fun j hj => ?_
+    obtain ⟨h1, h2⟩ := Finset.mem_Icc.mp hj
+    exact hp j h1 (by omega)
+
 end TwoPrimeSyndromeBudget
 
 #print axioms TwoPrimeSyndromeBudget.two_prime_tower_count
 #print axioms TwoPrimeSyndromeBudget.m31_syndrome_budget
+#print axioms TwoPrimeSyndromeBudget.m31_unit_syndrome_budget
