@@ -591,6 +591,25 @@ theorem verifier_inr_transport_heq {n : ℕ} {pSpec : ProtocolSpec n}
   exact cast_heq _ x
 
 omit [CharP L 2] [SampleableType L] in
+theorem commitStep_inr_transport_heq
+    (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
+    (transcript : FullTranscript (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.succ))
+    (h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
+        Sum.inr ⟨0, rfl⟩) :
+    HEq ((((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j) ▸ h_embed ▸
+        transcript.messages ⟨0, rfl⟩ :
+          OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ j))
+      (transcript.messages ⟨0, rfl⟩) := by
+  refine (eqRec_heq (φ := fun T : Type => T)
+    (((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j).symm)
+    (h_embed ▸ transcript.messages ⟨0, rfl⟩)).trans ?_
+  simp
+
+omit [CharP L 2] [SampleableType L] in
 /-- Helper lemma: snoc_oracle matches mkVerifierOStmtOut for commit steps.
 
 This proves that when we add a new oracle via `snoc_oracle`, the result matches what the verifier
@@ -661,12 +680,9 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     refine HEq.trans (fun_heq_cast_arg h_domain_succ newOracle) ?_
     refine HEq.trans (heq_of_eq h_transcript_eq.symm) ?_
     symm
-    refine (eqRec_heq (φ := fun T : Type => T)
-      (((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j).symm)
-      (h_embed ▸ transcript.messages ⟨0, rfl⟩)).trans ?_
-    rw [eqRec_eq_cast]
-    apply cast_heq
+    let h_transport := commitStep_inr_transport_heq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (𝓑 := 𝓑) (mp := mp) i hCR transcript j h_embed
+    exact h_transport
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
