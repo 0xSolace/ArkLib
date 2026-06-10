@@ -185,7 +185,7 @@ def BacktrackSequence.Index (trace : QueryLog (duplexSpongeChallengeOracle StmtI
 theorem BacktrackSequence.index_hash_getElem?
     (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state) :
-    trace[(BacktrackSequence.Index trace state seq).1.val]? =
+    GetElem?.getElem? trace (BacktrackSequence.Index trace state seq).1.val =
       some (⟨.inl seq.stmt,
         Vector.drop (seq.inputState[0]'(by
           rw [seq.inputState_length_eq_outputState_length_succ]
@@ -212,11 +212,12 @@ theorem BacktrackSequence.index_perm_getElem?_of_lt
     (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state)
     (pairIdx : Fin seq.inputState.length) (hpair : pairIdx.val < seq.outputState.length) :
-    trace[((BacktrackSequence.Index trace state seq).2 pairIdx).val]? =
-        some (⟨.inr (.inl seq.inputState[pairIdx]), seq.outputState[⟨pairIdx.val, hpair⟩]⟩ :
+    GetElem?.getElem? trace ((BacktrackSequence.Index trace state seq).2 pairIdx).val =
+        some (⟨.inr (.inl seq.inputState[pairIdx]),
+          seq.outputState[pairIdx.val]'hpair⟩ :
           duplexSpongeTraceEntry) ∨
-      trace[((BacktrackSequence.Index trace state seq).2 pairIdx).val]? =
-        some (⟨.inr (.inr seq.outputState[⟨pairIdx.val, hpair⟩]), seq.inputState[pairIdx]⟩ :
+      GetElem?.getElem? trace ((BacktrackSequence.Index trace state seq).2 pairIdx).val =
+        some (⟨.inr (.inr (seq.outputState[pairIdx.val]'hpair)), seq.inputState[pairIdx]⟩ :
           duplexSpongeTraceEntry) := by
   classical
   let outputIdx : Fin seq.outputState.length := ⟨pairIdx.val, hpair⟩

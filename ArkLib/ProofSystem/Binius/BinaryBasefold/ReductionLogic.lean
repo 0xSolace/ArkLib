@@ -316,7 +316,6 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
   {n : ℕ} {deg : ℕ} {m : ℕ} {D : Fin m ↪ R}
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-omit [SampleableType L] in
 /-- The Main Lemma: Binary Folding satisfies Strong Completeness.
 
 This proves that for any valid input satisfying `roundRelation`, the honest prover-verifier
@@ -327,6 +326,7 @@ interaction correctly computes the sumcheck polynomial and updates the witness t
 - Output relation: Uses `badEventExistsProp_succ_preserved` for bad events, and preservation lemmas
   (e.g., `witnessStructuralInvariant_succ_preserved`) otherwise.
 - Agreement: Prover and verifier agree on output statements and oracles. -/
+omit [SampleableType L] in
 lemma foldStep_is_logic_complete (i : Fin ℓ) :
     (foldStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
       (mp := mp) i).IsStronglyComplete := by
@@ -424,12 +424,15 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
           dsimp only [foldStepLogic, Fin.isValue, MessageIdx, Fin.is_lt, Fin.eta,
             Lean.Elab.WF.paramLet, Matrix.cons_val_zero, Fin.zero_eta, Matrix.cons_val_one,
             Fin.mk_one, Fin.val_succ, verifierStmtOut, step]
-          simpa [Fin.rtake, Fin.natAdd, Fin.cons, Fin.val_castSucc, r_i', transcript,
-            FullTranscript.mk2, ProtocolSpec.Challenge, pSpecFold] using
-              (Fin.cons_succ (α := fun _ => L) r_i' stmtIn.challenges j)
+          simp only [Fin.rtake, Fin.natAdd, Fin.val_castSucc]
+          change Fin.cons
+              ((step.honestProverTranscript stmtIn witIn oStmtIn challenges).challenges
+                ⟨⟨1, by omega⟩, by rfl⟩)
+              stmtIn.challenges j.succ = stmtIn.challenges j
+          simp only [Fin.cons_succ]
         rw! (castMode := .all) [h_oracleIdx_eq] at h_oracle_folding_In
         simp at h_oracle_folding_In ⊢
-        rw [h_challenges_eq]
+        rw! (castMode := .all) [h_challenges_eq]
         exact h_oracle_folding_In
 
   -- Prove the four required facts
@@ -559,7 +562,6 @@ theorem cast_fun_eq_fun_cast_arg {α β : Type u} {γ : Type v} {hαβ : α = β
   cases hfun
   rfl
 
-omit [CharP L 2] [SampleableType L] in
 /-- Helper lemma: snoc_oracle matches mkVerifierOStmtOut for commit steps.
 
 This proves that when we add a new oracle via `snoc_oracle`, the result matches what the verifier
@@ -570,6 +572,7 @@ The key insight:
 - For index `j = toOutCodewordsCount ℓ ϑ i.castSucc`: embed maps to `Sum.inr 0`
   (new oracle from message)
 -/
+omit [CharP L 2] [SampleableType L] in
 lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
@@ -668,7 +671,7 @@ lemma strictOracleFoldingConsistency_commitStep
     (challenges : (pSpecCommit 𝔽q β i).Challenges)
     (h_wit_struct_In : witnessStructuralInvariant 𝔽q β (mp := mp) stmtIn witIn)
     (h_oracle_folding_In : strictOracleFoldingConsistencyProp 𝔽q β (t := witIn.t) (i := i.castSucc)
-      (challenges := Fin.take (m := i)
+      (challenges := Fin.rtake (m := i)
         (v := stmtIn.challenges) (h := by
           simp only [Fin.val_succ, le_add_iff_nonneg_right, zero_le]))
       (oStmt := oStmtIn)) :
@@ -680,7 +683,7 @@ lemma strictOracleFoldingConsistency_commitStep
       oStmtIn transcript
     strictOracleFoldingConsistencyProp 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := i.succ)
-      (challenges := Fin.take (m := i.val + 1)
+      (challenges := Fin.rtake (m := i.val + 1)
         (v := verifierStmtOut.challenges) (h := by simp only [Fin.val_succ, le_refl]))
       (oStmt := verifierOStmtOut) (t := witIn.t)
     := by
@@ -973,13 +976,13 @@ def finalSumcheckStepLogic :
   ⟩
   hEq := fun oracleIdx => by simp only [Fin.eta]
 
-omit [SampleableType L] in
 /-- **Strict version**: When folding the last oracle to level `ℓ` (final sumcheck),
 the iterated fold of the last oracle equals the constant function.
 
 This is the strict version that uses exact equality instead of UDR codewords.
 It is used in the final sumcheck step to show that the folding chain correctly
 terminates at the constant function. -/
+omit [SampleableType L] in
 lemma iterated_fold_to_const_strict
     (stmtIn : Statement (SumcheckBaseContext L ℓ) (Fin.last ℓ))
     (witIn : Witness 𝔽q β (Fin.last ℓ))
