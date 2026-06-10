@@ -1645,6 +1645,7 @@ import ArkLib.ToMathlib.GSGradedBundle
 import ArkLib.ToMathlib.GSLineInputSupply
 import ArkLib.ToMathlib.GSSurfaceDegSupply
 import ArkLib.ToMathlib.GSSurfaceEntry
+import ArkLib.ToMathlib.GSSurfaceHtailPigeonhole
 import ArkLib.ToMathlib.GSSurfaceKeystone
 import ArkLib.ToMathlib.GSSurfaceSupply
 import ArkLib.ToMathlib.GSSurfaceTailSupply
