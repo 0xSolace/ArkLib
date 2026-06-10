@@ -648,6 +648,318 @@ theorem debruijn_int_three_prime_squarefree [CharZero L] {p q r : ℕ}
 
 end ThreePrime
 
+/-! ## Stage 5 (O110) — THE FULL RELATION THEOREM: every modulus
+
+The Rédei–de Bruijn–Schoenberg theorem (Schoenberg 1964, *Mathematika* 11;
+Rédei 1959): the lattice of ℤ-relations among the `n`-th roots of unity is
+spanned by the rotated full prime packets — at EVERY `n`, with no smoothness
+restriction.  Strong induction on `n`, peeling the least prime `r = minFac n`:
+
+* `r² ∣ n` — the non-coprime descent: the ℤ-thread split (the O93/O101 split,
+  transported to ℤ by the shift trick) makes all `r` threads vanish one level
+  down; the O103 digit identities lift the inductive packet combinations back.
+* `r ∥ n` — the coprime descent: the Stage-3 equal-thread-sums split welds the
+  threads; differences vanish at level `n/r`, the inductive combinations
+  reassemble through the CRT mod-identities, and the welded thread becomes the
+  `μ_r`-packet direction. -/
+
+section FullRelationTheorem
+
+/-- The ℤ-coefficient non-coprime thread split (the O93/O101 split for ℤ
+weights, by the shift trick from the ℕ-weighted version). -/
+lemma int_thread_vanishing_of_vanishing [CharZero L] {r m : ℕ} (hr : r.Prime)
+    (hm : 0 < m) (hrm : r ∣ m) {ζ : L} (hζ : IsPrimitiveRoot ζ (r * m))
+    (w : ℕ → ℤ)
+    (hsum : ∑ e ∈ Finset.range (r * m), (w e : L) * ζ ^ e = 0) :
+    ∀ i < r, ∑ k ∈ Finset.range m, (w (i + r * k) : L) * (ζ ^ r) ^ k = 0 := by
+  classical
+  have hn : 0 < r * m := Nat.mul_pos hr.pos hm
+  have hm1 : 1 < m := lt_of_lt_of_le hr.one_lt (Nat.le_of_dvd hm hrm)
+  have hn1 : 1 < r * m := lt_of_lt_of_le hm1 (Nat.le_mul_of_pos_left m hr.pos)
+  have hζm : IsPrimitiveRoot (ζ ^ r) m := hζ.pow hn rfl
+  -- the shift
+  set c : ℕ := (Finset.range (r * m)).sup (fun e => (w e).natAbs) with hc
+  have hbound : ∀ e < r * m, 0 ≤ w e + c := by
+    intro e he
+    have h1 : (w e).natAbs ≤ c :=
+      Finset.le_sup (f := fun e => (w e).natAbs) (Finset.mem_range.mpr he)
+    omega
+  have hcast : ∀ e < r * m, (((w e + c).toNat : ℕ) : ℤ) = w e + c :=
+    fun e he => Int.toNat_of_nonneg (hbound e he)
+  have husum : ∑ e ∈ Finset.range (r * m),
+      (((w e + c).toNat : ℕ) : L) * ζ ^ e = 0 := by
+    have hgeom : ∑ e ∈ Finset.range (r * m), ζ ^ e = 0 :=
+      hζ.geom_sum_eq_zero hn1
+    calc ∑ e ∈ Finset.range (r * m), (((w e + c).toNat : ℕ) : L) * ζ ^ e
+        = ∑ e ∈ Finset.range (r * m), ((w e : L) + (c : L)) * ζ ^ e := by
+          refine Finset.sum_congr rfl fun e he => ?_
+          congr 1
+          have h := congrArg (fun z : ℤ => (z : L)) (hcast e (Finset.mem_range.mp he))
+          push_cast at h
+          exact h
+      _ = (∑ e ∈ Finset.range (r * m), (w e : L) * ζ ^ e)
+          + (c : L) * ∑ e ∈ Finset.range (r * m), ζ ^ e := by
+          simp only [add_mul]
+          rw [Finset.sum_add_distrib, Finset.mul_sum]
+      _ = 0 := by rw [hsum, hgeom, mul_zero, add_zero]
+  -- the ℕ-weighted split fires; the shift's thread contribution is geometric, zero
+  have hth := WeightedThreadSplit.weighted_thread_vanishing_of_vanishing hr hm hrm
+    hζ (fun e => (w e + c).toNat) husum
+  intro i hi
+  have h := hth i hi
+  have hthread_geom : ∑ k ∈ Finset.range m, (ζ ^ r) ^ k = 0 :=
+    hζm.geom_sum_eq_zero hm1
+  have hexpand : ∑ k ∈ Finset.range m, (((w (i + r * k) + c).toNat : ℕ) : L)
+      * (ζ ^ r) ^ k
+      = (∑ k ∈ Finset.range m, (w (i + r * k) : L) * (ζ ^ r) ^ k)
+        + (c : L) * ∑ k ∈ Finset.range m, (ζ ^ r) ^ k := by
+    rw [Finset.mul_sum, ← Finset.sum_add_distrib]
+    refine Finset.sum_congr rfl fun k hk => ?_
+    have hlt : i + r * k < r * m := by
+      have hk' := Finset.mem_range.mp hk
+      calc i + r * k < r + r * k := by omega
+        _ = r * (k + 1) := by ring
+        _ ≤ r * m := Nat.mul_le_mul_left r (by omega)
+    have hcc := congrArg (fun z : ℤ => (z : L)) (hcast _ hlt)
+    push_cast at hcc
+    rw [hcc]
+    ring
+  rw [hexpand, hthread_geom, mul_zero, add_zero] at h
+  exact h
+
+/-- **The converse half at every modulus**: a ℤ-combination of `μ_p`-packet
+directions (`p` ranging over the prime factors) kills the root sum. -/
+lemma int_vanishing_of_combination {n : ℕ} (hn : 0 < n) {ζ : L}
+    (hζ : IsPrimitiveRoot ζ n) (A : ℕ → ℕ → ℤ) (w : ℕ → ℤ)
+    (hw : ∀ e < n, w e = ∑ p ∈ n.primeFactors, A p (e % (n / p))) :
+    ∑ e ∈ Finset.range n, (w e : L) * ζ ^ e = 0 := by
+  have hswap : ∑ e ∈ Finset.range n, (w e : L) * ζ ^ e
+      = ∑ p ∈ n.primeFactors,
+          ∑ e ∈ Finset.range n, (A p (e % (n / p)) : L) * ζ ^ e := by
+    rw [Finset.sum_comm]
+    refine Finset.sum_congr rfl fun e he => ?_
+    rw [hw e (Finset.mem_range.mp he)]
+    push_cast
+    rw [Finset.sum_mul]
+  rw [hswap]
+  refine Finset.sum_eq_zero fun p hp => ?_
+  exact packet_part_eq_zero_int (Nat.prime_of_mem_primeFactors hp).one_lt
+    (Nat.dvd_of_mem_primeFactors hp) hn hζ (A p)
+
+/-- **The forward half at every modulus** (the strong induction): a vanishing
+ℤ-weighted root sum is a ℤ-combination of prime-packet directions. -/
+theorem int_combination_of_vanishing [CharZero L] :
+    ∀ n, 0 < n → ∀ ζ : L, IsPrimitiveRoot ζ n → ∀ w : ℕ → ℤ,
+      (∑ e ∈ Finset.range n, (w e : L) * ζ ^ e = 0) →
+      ∃ A : ℕ → ℕ → ℤ, ∀ e < n, w e = ∑ p ∈ n.primeFactors, A p (e % (n / p)) := by
+  intro n
+  induction n using Nat.strong_induction_on with
+  | _ n IH =>
+    intro hn ζ hζ w hsum
+    rcases Nat.lt_or_ge n 2 with hn1 | hn2
+    · -- n = 1: the sum IS w 0
+      have hne : n = 1 := by omega
+      subst hne
+      refine ⟨0, fun e he => ?_⟩
+      interval_cases e
+      have hw0 : w 0 = 0 := by
+        have h := hsum
+        simp at h
+        exact h
+      simp [hw0]
+    · -- n ≥ 2: peel the least prime
+      set r : ℕ := n.minFac with hrdef
+      have hr : r.Prime := Nat.minFac_prime (by omega)
+      have hrn : r ∣ n := Nat.minFac_dvd n
+      set m : ℕ := n / r with hmdef
+      have hnm : n = r * m := (Nat.mul_div_cancel' hrn).symm
+      have hm : 0 < m := Nat.div_pos (Nat.le_of_dvd hn hrn) hr.pos
+      have hmlt : m < n := by
+        rw [hnm]
+        calc m = 1 * m := (one_mul m).symm
+          _ < r * m := by
+              exact Nat.mul_lt_mul_of_lt_of_le hr.one_lt le_rfl hm
+      by_cases hrm : r ∣ m
+      · -- NON-COPRIME descent: r² ∣ n
+        rw [hnm] at hζ hsum
+        have hζm : IsPrimitiveRoot (ζ ^ r) m := hζ.pow (Nat.mul_pos hr.pos hm) rfl
+        have hth := int_thread_vanishing_of_vanishing hr hm hrm hζ w hsum
+        -- IH per thread
+        have hthreads : ∀ i, ∃ Ai : ℕ → ℕ → ℤ, i < r →
+            ∀ k < m, w (i + r * k)
+              = ∑ p ∈ m.primeFactors, Ai p (k % (m / p)) := by
+          intro i
+          by_cases hi : i < r
+          · obtain ⟨Ai, hAi⟩ := IH m hmlt hm (ζ ^ r) hζm
+              (fun k => w (i + r * k)) (hth i hi)
+            exact ⟨Ai, fun _ => hAi⟩
+          · exact ⟨0, fun hcon => absurd hcon hi⟩
+        choose A hA using hthreads
+        -- prime factors agree: r ∣ m
+        have hpf : n.primeFactors = m.primeFactors := by
+          rw [hnm, Nat.primeFactors_mul hr.pos.ne' hm.ne',
+            Nat.Prime.primeFactors hr]
+          exact Finset.union_eq_right.mpr
+            (Finset.singleton_subset_iff.mpr
+              (Nat.mem_primeFactors.mpr ⟨hr, hrm, hm.ne'⟩))
+        -- the O103 digit lift
+        refine ⟨fun p x => A (x % r) p (x / r), fun e he => ?_⟩
+        rw [hnm] at he
+        have hi : e % r < r := Nat.mod_lt _ hr.pos
+        have hk : e / r < m := Nat.div_lt_of_lt_mul he
+        have hsplitE : e % r + r * (e / r) = e := Nat.mod_add_div e r
+        have hmain := hA (e % r) hi (e / r) hk
+        rw [hsplitE] at hmain
+        rw [hmain, hpf]
+        refine Finset.sum_congr rfl fun p hp => ?_
+        have hpm : p ∣ m := Nat.dvd_of_mem_primeFactors hp
+        have hnp : n / p = r * (m / p) := by
+          rw [hnm]
+          exact Nat.mul_div_assoc r hpm
+        have hd1 : (e % (r * (m / p))) % r = e % r :=
+          Nat.mod_mod_of_dvd e (dvd_mul_right r (m / p))
+        have hd2 : (e % (r * (m / p))) / r = (e / r) % (m / p) :=
+          Nat.mod_mul_right_div_self e r (m / p)
+        dsimp only
+        rw [hnp, hd1, hd2]
+      · -- COPRIME descent: r ∥ n
+        have hco : Nat.Coprime m r := ((hr.coprime_iff_not_dvd).mpr hrm).symm
+        have hnm' : n = m * r := by rw [hnm]; ring
+        rw [hnm'] at hζ hsum
+        have hζm : IsPrimitiveRoot (ζ ^ crt m r hco 1 0) m :=
+          isPrimitiveRoot_crt_left hm hr.pos hco hζ
+        have hth := coprime_thread_sums_eq hr hm hco hζ w hsum
+        -- thread differences vanish at level m
+        have hdiffsum : ∀ i < r,
+            ∑ k ∈ Finset.range m,
+              ((w (crt m r hco k i) - w (crt m r hco k (r - 1)) : ℤ) : L)
+                * (ζ ^ crt m r hco 1 0) ^ k = 0 := by
+          intro i hi
+          have h := sub_eq_zero.mpr (hth i hi)
+          rw [← Finset.sum_sub_distrib] at h
+          calc ∑ k ∈ Finset.range m,
+              ((w (crt m r hco k i) - w (crt m r hco k (r - 1)) : ℤ) : L)
+                * (ζ ^ crt m r hco 1 0) ^ k
+              = ∑ k ∈ Finset.range m,
+                  ((w (crt m r hco k i) : L) * (ζ ^ crt m r hco 1 0) ^ k
+                    - (w (crt m r hco k (r - 1)) : L)
+                      * (ζ ^ crt m r hco 1 0) ^ k) := by
+                refine Finset.sum_congr rfl fun k _ => ?_
+                push_cast
+                ring
+            _ = 0 := h
+        -- IH per thread difference
+        have hthreads : ∀ i, ∃ Ai : ℕ → ℕ → ℤ, i < r →
+            ∀ k < m, w (crt m r hco k i) - w (crt m r hco k (r - 1))
+              = ∑ p ∈ m.primeFactors, Ai p (k % (m / p)) := by
+          intro i
+          by_cases hi : i < r
+          · obtain ⟨Ai, hAi⟩ := IH m hmlt hm (ζ ^ crt m r hco 1 0) hζm
+              (fun k => w (crt m r hco k i) - w (crt m r hco k (r - 1)))
+              (hdiffsum i hi)
+            exact ⟨Ai, fun _ => hAi⟩
+          · exact ⟨0, fun hcon => absurd hcon hi⟩
+        choose A hA using hthreads
+        -- prime factors: `n` adds the new prime `r`
+        have hrnotm : r ∉ m.primeFactors :=
+          fun hmem => hrm (Nat.dvd_of_mem_primeFactors hmem)
+        have hpf : n.primeFactors = insert r m.primeFactors := by
+          rw [hnm', Nat.primeFactors_mul hm.ne' hr.pos.ne',
+            Nat.Prime.primeFactors hr, Finset.union_comm, ← Finset.insert_eq]
+        have hnr : n / r = m := hmdef.symm
+        -- assemble: the welded thread is the μ_r-packet direction
+        refine ⟨fun p x => if p = r then w (crt m r hco x (r - 1))
+          else A (x % r) p (x % (m / p)), fun e he => ?_⟩
+        rw [hnm'] at he
+        have hi : e % r < r := Nat.mod_lt _ hr.pos
+        have hk : e % m < m := Nat.mod_lt _ hm
+        have hround : crt m r hco (e % m) (e % r) = e :=
+          crt_roundtrip hm hr.pos hco he
+        have hmain := hA (e % r) hi (e % m) hk
+        rw [hround] at hmain
+        have hmain2 : w e - w (crt m r hco (e % m) (r - 1))
+            = ∑ p ∈ m.primeFactors, A (e % r) p (e % (m / p)) := by
+          rw [hmain]
+          refine Finset.sum_congr rfl fun p hp => ?_
+          rw [Nat.mod_mod_of_dvd e
+            (Nat.div_dvd_of_dvd (Nat.dvd_of_mem_primeFactors hp))]
+        rw [hpf, Finset.sum_insert hrnotm]
+        have hrterm : (fun p x => if p = r then w (crt m r hco x (r - 1))
+            else A (x % r) p (x % (m / p))) r (e % (n / r))
+            = w (crt m r hco (e % m) (r - 1)) := by
+          dsimp only
+          rw [if_pos rfl, hnr]
+        have hgoalsum : ∑ p ∈ m.primeFactors,
+            (fun p x => if p = r then w (crt m r hco x (r - 1))
+              else A (x % r) p (x % (m / p))) p (e % (n / p))
+            = ∑ p ∈ m.primeFactors, A (e % r) p (e % (m / p)) := by
+          refine Finset.sum_congr rfl fun p hp => ?_
+          have hpr : p ≠ r := fun h => hrnotm (h ▸ hp)
+          have hpm : p ∣ m := Nat.dvd_of_mem_primeFactors hp
+          have hnp : n / p = m / p * r := by
+            rw [hnm', mul_comm m r, Nat.mul_div_assoc r hpm, mul_comm]
+          dsimp only
+          rw [if_neg hpr, hnp,
+            Nat.mod_mod_of_dvd e (dvd_mul_left r (m / p)),
+            Nat.mod_mod_of_dvd e (dvd_mul_right (m / p) r)]
+        rw [hrterm, hgoalsum]
+        omega
+
+/-- **THE RÉDEI–DE BRUIJN–SCHOENBERG RELATION THEOREM** (Schoenberg 1964,
+Mathematika 11, Thm 1; Rédei 1959): for EVERY `n ≥ 1` and primitive `n`-th root
+of unity `ζ` in a characteristic-zero field, a ℤ-combination of `n`-th roots of
+unity vanishes **iff** the weight is a ℤ-combination of rotated full prime
+packets — `w e = Σ_{p ∣ n prime} A_p(e % (n/p))`.  No smoothness restriction:
+this is the full classification of vanishing integer sums of roots of unity. -/
+theorem redei_debruijn_schoenberg [CharZero L] {n : ℕ} (hn : 0 < n)
+    {ζ : L} (hζ : IsPrimitiveRoot ζ n) (w : ℕ → ℤ) :
+    (∑ e ∈ Finset.range n, (w e : L) * ζ ^ e = 0) ↔
+      ∃ A : ℕ → ℕ → ℤ, ∀ e < n,
+        w e = ∑ p ∈ n.primeFactors, A p (e % (n / p)) :=
+  ⟨int_combination_of_vanishing n hn ζ hζ w,
+    fun ⟨A, hA⟩ => int_vanishing_of_combination hn hζ A w hA⟩
+
+/-! ## Teeth (fired at `ℂ`, `n = 4`): a packet certificate produces the genuine
+vanishing sum `1 + i² = 0`; the singleton weight `δ₀` is refuted. -/
+
+private lemma exp_quarter_primitive :
+    IsPrimitiveRoot (Complex.exp (2 * Real.pi * Complex.I / 4)) 4 :=
+  Complex.isPrimitiveRoot_exp 4 (by norm_num)
+
+private lemma primeFactors_four : (4 : ℕ).primeFactors = {2} := by
+  rw [show (4 : ℕ) = 2 ^ 2 by norm_num,
+    Nat.primeFactors_pow _ (by norm_num), Nat.Prime.primeFactors Nat.prime_two]
+
+/-- The packet weight on `{0, 2}` at `n = 4` (the `μ_2`-packet). -/
+private def wPacket : ℕ → ℤ := fun e => if e = 0 ∨ e = 2 then 1 else 0
+
+/-- Converse fired: the `μ_2`-packet weight on `{0, 2}` at `n = 4` vanishes. -/
+example : ∑ e ∈ Finset.range 4,
+    (wPacket e : ℂ) * Complex.exp (2 * Real.pi * Complex.I / 4) ^ e = 0 := by
+  refine (redei_debruijn_schoenberg (by norm_num) exp_quarter_primitive
+    wPacket).mpr ⟨fun _ x => if x = 0 then 1 else 0, ?_⟩
+  intro e he
+  rw [primeFactors_four, Finset.sum_singleton]
+  interval_cases e <;> decide
+
+/-- The singleton weight `δ₀`. -/
+private def wSingle : ℕ → ℤ := fun e => if e = 0 then 1 else 0
+
+/-- Forward fired (with teeth): the singleton weight `δ₀` cannot vanish —
+its packet decomposition would force `w 0 = w 2`. -/
+example : ¬ (∑ e ∈ Finset.range 4,
+    (wSingle e : ℂ) * Complex.exp (2 * Real.pi * Complex.I / 4) ^ e = 0) := by
+  intro hcon
+  obtain ⟨A, hA⟩ := (redei_debruijn_schoenberg (by norm_num)
+    exp_quarter_primitive wSingle).mp hcon
+  have h0 := hA 0 (by norm_num)
+  have h2 := hA 2 (by norm_num)
+  rw [primeFactors_four, Finset.sum_singleton] at h0 h2
+  norm_num [wSingle] at h0 h2
+  omega
+
+end FullRelationTheorem
+
 end DeBruijnIntRelations
 
 #print axioms DeBruijnIntRelations.int_sum_split
@@ -656,3 +968,6 @@ end DeBruijnIntRelations
 #print axioms DeBruijnIntRelations.minpoly_adjoin_coprime_eq_cyclotomic
 #print axioms DeBruijnIntRelations.coprime_thread_sums_eq
 #print axioms DeBruijnIntRelations.debruijn_int_three_prime_squarefree
+#print axioms DeBruijnIntRelations.int_thread_vanishing_of_vanishing
+#print axioms DeBruijnIntRelations.int_combination_of_vanishing
+#print axioms DeBruijnIntRelations.redei_debruijn_schoenberg
