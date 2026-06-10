@@ -605,6 +605,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25GradedNumericEdge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Johnson
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArith
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArithmetic
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonEllBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4FiberReduction
