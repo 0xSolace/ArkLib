@@ -614,11 +614,14 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       simp only [commitStepLogic, commitStepLogic_embed, Function.Embedding.coeFn_mk,
         commitStepLogic_embedFn, hj, dif_pos]
     rw [OracleVerifier.mkVerifierOStmtOut_inl _ _ _ _ _ _ h_embed]
-    simp only [hj, dif_pos]
-    cases h_embed
-    simpa [commitStepLogic, commitStepHEq, commitStepLogic_embed,
-      commitStepLogic_embedFn, Function.Embedding.coeFn_mk, hj,
-      OracleStatement, eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast]
+    simp only [hj, dif_pos, eqRec_eq_cast, cast_cast]
+    apply eq_of_heq
+    refine HEq.trans ?_ (cast_heq _ (oStmtIn ⟨j.val, hj⟩)).symm
+    have hidx : (⟨j.val, by omega⟩ :
+        Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) = ⟨j.val, hj⟩ := by
+      ext
+      rfl
+    rw [hidx]
   · -- New oracle case: embed j = Sum.inr 0
     have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j = Sum.inr ⟨0, rfl⟩ := by
