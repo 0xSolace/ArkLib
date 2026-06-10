@@ -1271,6 +1271,7 @@ import ArkLib.ProofSystem.Logup.Security.LogupSoundnessUncond
 import ArkLib.ProofSystem.Logup.Security.MarginalBridgeProof
 import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
 import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
+import ArkLib.ProofSystem.Logup.Security.OuterMaliciousClaim
 import ArkLib.ProofSystem.Logup.Security.OuterMarginalBound
 import ArkLib.ProofSystem.Logup.Security.OuterRbrSoundness
 import ArkLib.ProofSystem.Logup.Security.OuterRestSupport
@@ -1383,6 +1384,7 @@ import ArkLib.ProofSystem.Stir.RoundCompleteness
 import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.ProofSystem.Stir.RoundVector
 import ArkLib.ProofSystem.Stir.RoundVectorCompleteness
+import ArkLib.ProofSystem.Stir.TailCompleteness
 import ArkLib.ProofSystem.Stir.VectorBridge
 import ArkLib.ProofSystem.Sumcheck.Domain
 import ArkLib.ProofSystem.Sumcheck.Impl.Basic
