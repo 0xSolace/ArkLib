@@ -591,6 +591,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Claim1
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ConjectureGlue
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CoordinateUpgradeWeld
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCaptureUD
@@ -1637,6 +1638,7 @@ import ArkLib.ToMathlib.ClosedBoundaryFaithfulFloorCell
 import ArkLib.ToMathlib.CoeffExtract
 import ArkLib.ToMathlib.CoeffHomDescent
 import ArkLib.ToMathlib.ConditionDiscProduct
+import ArkLib.ToMathlib.CoordinateKillBudget
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 import ArkLib.ToMathlib.CountingAgreementBricks
 import ArkLib.ToMathlib.CurveFamilyGenuine
