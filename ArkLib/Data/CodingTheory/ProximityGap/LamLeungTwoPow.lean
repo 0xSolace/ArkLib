@@ -1637,9 +1637,7 @@ theorem windowed_coeff_congr_invariant {k : ℕ} :
             congr 1
             omega]
           rw [pow_mul, hζ.pow_eq_one, one_pow]
-        rw [show 2 ^ (j + 1) * s + 2 ^ (j + 1) * 2 ^ (m' + 1)
-            = 2 ^ (j + 1) * 2 ^ (m' + 1) + 2 ^ (j + 1) * s from by ring]
-        rw [pow_add, hkill, one_mul]
+        rw [hkill, mul_one]
       rw [Finset.sum_congr rfl hterm, ← Finset.sum_add_distrib] at hrel
       calc ∑ s ∈ Finset.range (2 ^ (m' + 1)), (c₁ s : F) * (ζ ^ 2) ^ (2 ^ j * s)
           = ∑ s ∈ Finset.range (2 ^ (m' + 1)),
@@ -1667,7 +1665,8 @@ theorem windowed_coeff_congr_invariant {k : ℕ} :
         exact this.symm
     have hhalf : ∀ s, s < 2 ^ (m' + 1) → c s = c₁ s / 2 := by
       intro s hsl
-      rw [hc₁, ← hsym s hsl]
+      simp only [hc₁]
+      rw [← hsym s hsl]
       ring
     have hmodsub : m' + 1 - (k + 1) = m' - k := by omega
     rw [hmodsub] at hmod
