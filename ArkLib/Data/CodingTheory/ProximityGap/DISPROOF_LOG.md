@@ -5208,3 +5208,56 @@ lifts from Z-weights to ℕ-weights (multisets): window 1..t vanishing ⟹ ℕ-u
 Corrected A4 (the formalization target): **the prime-power multiset window law**, with the
 two-prime case conditional on K5 and the 3-prime case FALSE as stated (needs the Lam–Leung
 weight-bound correction). The A3 boundary-counting bridge only needs the prime-power case.
+
+### O130 — THE GENERAL RUNG LAW: the O108 antipodal-balance engine derives every 2-power scale; blind n=64 forecast survives two independent enumerations; the r=5 stratum TURN-ON falsifies "marginal = (s/2−1,3)" as a law (nubs, 2026-06-10)
+
+Full dossier: `scripts/probes/genlaw/RESULTS-GENERAL-LAW.md`. Three blind agents
+(generalizer / independent verifier / adversarial audit with a third implementation),
+calibration-gated on C19 at s = 8 before any new scale was believed.
+
+* **Witness layer, theorem grade for all 2-power s:** ℓ(w, s+2) = `C(s/2−1, s/4)` exactly —
+  even-r death + the r=0 balance forcing (fiber s/4 in, 3s/4 out, s/4 free pairs). Rungs:
+  3, 35, 6,435, 300,540,195. Nothing above agree-(s+2).
+* **Marginal layer, derived for all 2-power s and ALL odd r:** the same 3-line reduction
+  lands antipodal balance of `{xᵢxⱼ} ⊎ O_z ⊎ B_z ⊎ {−z*}` for every odd r ≥ 3 (not just
+  r = 3), L4/L6 hold for all odd r, so `marginal(s) = 2·Σ_{r odd≥3} N_r(s)` with N_r per-s
+  finite censuses. N₃ structure (L1 parity-purity, complete E1–E4 taxonomy, the 13-type
+  universal node geometry h/v/k/σ) proven general; machine-asserted identical at s = 8/16/32.
+* **The engine re-derives C19's 16 at s = 8 with NO fix** (exact (B,O,σ) set equality vs a
+  fresh full C(16,9) field census) — and what calibration killed is instructive: the
+  "perfect 7×8 split" and "pairwise = m" census patterns are m = 8 coincidences, not law.
+* **Blind n=64 forecast vs truth: EXACT.** r=3 stratum forecast 764,544 classes / 1,529,088
+  elements; the verifier's independent enumeration (different algorithm, calibrated on the
+  O108-proven s=16 truth) and the audit's third implementation (per-axis DP) both return
+  **764,544 with exact element-set equality**. ε-split 373,440/391,104; B-menu {2,4} third
+  rung (703,656 = 642,768×2 + 60,888×4); dual-B 14,520+46,368; 300 constructive BabyBear
+  codewords agree-exactly-33 + 50/50 negative controls fail; 24+24 audit samples at two
+  split primes.
+* **THE FINDING — strata turn on with s:** N₅(8) = N₅(16) = 0 but **N₅(32) = 99,512**
+  (pattern (14,5); 199,024 elements) — the verifier's r=3-only "total" was the incomplete
+  one and the audit adjudicated FOR the forecast (its own sweep + 30/30 assumption-free
+  raw-brute classes + 24 field samples). New structure: B-multiplicity all 1, five new
+  z*-slot types, new event E5 (product–product antipodal pairs), **L3 breaks** (2,784
+  classes put a product on the −z* fiber). s=32 marginal total **1,728,112** =
+  2·(764,544 + 99,512), proven for r ≤ 11 (exhaustive C sweeps; r=11 = 1.32×10¹¹ configs).
+* **Level-4 anchors (corrected s=64 kernel, Python-revalidated):** N₃(64) =
+  244,593,584,640; N₅(64) = 141,450,979,280; N₅/N₃ grows 0 → 0 → 0.13 → 0.58, so
+  marginal(128-domain) ≥ 772,089,127,840 is a LOWER bound — r ≥ 7 plausibly activates.
+
+**Honest residuals:** (1) the r ≥ 13 tail at s = 32 is unswept (≥ 1.4×10¹² configs) — the
+1,728,112 is conditional on it; the r=5 turn-on proves "predicted 0" is genuine
+extrapolation; r=13 (~18 core-h) feasible, recommended; the real fix is a structural
+exclusion theorem. (2) All counts are char-0; BabyBear is below the transfer threshold —
+mod-p rests on spot checks; the feasible falsifier is the 864,056 char-0 configs mod p via
+norm divisibility. (3) Census closed forms beyond m = 16 are fits; r=5 taxonomy charted,
+not derived. (4) 32-bit O-mask UB porting trap in `sweep32*.c` at s = 64 — use
+`genlaw/audit/audit_sweep64.c`. (5) The multiset Lam–Leung Lean brick written for this run
+was found **subsumed in-tree on rebase** (`vanishing_iff_antipodal_coeffs` is the stronger
+ℚ-iff; `LamLeungMultisetAntipodal` has the element-level multiset form) — landed as
+`genlaw/audit/redundant_MultisetLamLeung.lean.txt` (compiles, axiom-clean) purely as the
+independent confirmation it turned out to be. Same lesson as O38: re-sync before claiming.
+
+**Where the open core moves:** the per-level law of the descent program is now an ENGINE +
+per-s censuses, verified to three rungs and forecast-validated at the fourth; the named
+opens are the odd-r tail exclusion theorem, the r ≥ 5 taxonomy derivation, and the per-prime
+transfer at n ≥ 64.
