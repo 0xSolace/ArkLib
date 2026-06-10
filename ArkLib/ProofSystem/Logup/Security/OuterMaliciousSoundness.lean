@@ -6,6 +6,8 @@ Authors: ArkLib Contributors
 import ArkLib.ProofSystem.Logup.Security.OuterVerifierSupport
 import ArkLib.ProofSystem.Logup.Security.OuterMaliciousClaim
 import ArkLib.ProofSystem.Logup.Security.Soundness
+import ArkLib.ProofSystem.Logup.Security.MarginalBridgeProof
+import ArkLib.ProofSystem.Logup.Security.LogupSoundnessPointwise
 
 open OracleComp OracleSpec ProtocolSpec
 open scoped BigOperators NNReal ENNReal
@@ -309,13 +311,13 @@ theorem outerVerifier_rbrSoundness_mid :
         Set.mem_singleton_iff] at hx
       subst hx
       unfold outerMidStateFunction outerMidState at hyes
-      rcases hyes with h | ⟨h, -⟩ | ⟨-, -, hmem⟩
+      obtain h | ⟨h, -⟩ | ⟨h1, hle, hmem⟩ := hyes
       · exact hStmtIn h
       · exact absurd h (by norm_num)
       · exact hc (Finset.mem_filter.mpr ⟨Finset.mem_univ _, hmem⟩)
     case hgle =>
       intro c
-      exact le_trans (mul_le_mul' le_rfl probEvent_le_one) (by rw [mul_one])
+      exact le_trans (mul_le_mul' le_rfl probEvent_le_one) (le_of_eq (mul_one _))
     · -- card bound: |bad| ≤ (M+1)·2ⁿ − 1; identify card C = card F
       have hcardC : Fintype.card ((outerPSpec F n params).Challenge ⟨⟨1, hiv⟩, hdir⟩)
           = Fintype.card F := Fintype.card_congr (Equiv.cast rfl)
@@ -374,7 +376,7 @@ theorem outerVerifier_rbrSoundness_mid :
         Set.mem_singleton_iff] at hy
       subst hy
       unfold outerMidStateFunction outerMidState at hyes
-      rcases hyes with h | ⟨-, hg, -⟩ | ⟨-, h3, -⟩
+      obtain h | ⟨h4x, hg, -⟩ | ⟨h1x, h3, -⟩ := hyes
       · exact hStmtIn h
       · exact hguard hg
       · exact absurd h3 (by norm_num)
@@ -422,14 +424,14 @@ theorem outerVerifier_rbrSoundness_mid :
           subst hy
           simp only [outerMidStateFunction] at hyes
           unfold outerMidState at hyes
-          rcases hyes with h | ⟨-, -, hclaim⟩ | ⟨-, h3, -⟩
+          obtain h | ⟨h4x, hgx, hclaim⟩ | ⟨h1x, h3, -⟩ := hyes
           · exact hStmtIn h
           · refine hc (Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩)
             exact hclaim
           · exact absurd h3 (by norm_num)
         case hgle3 =>
           intro c
-          exact le_trans (mul_le_mul' le_rfl probEvent_le_one) (by rw [mul_one])
+          exact le_trans (mul_le_mul' le_rfl probEvent_le_one) (le_of_eq (mul_one _))
         · -- the counting bound: card·q ≤ (n+1)·q^(n+K) ⟹ card/q^(n+K) ≤ (n+1)/q
           have hcardC : Fintype.card
               ((outerPSpec F n params).Challenge ⟨⟨3, hiv⟩, hdir⟩)
@@ -457,8 +459,8 @@ theorem outerVerifier_rbrSoundness_mid :
               ≤ (Finset.univ.filter
                 (fun p : (Fin n → F) × (Fin params.numGroups → F) =>
                   (∑ u : Hypercube n, qOnHypercube (canonicalGroups params) stmtIn.2 mult helpers
-                    x p.1 p.2 u) = 0)).card := by
-            refine Finset.card_le_card_of_injOn
+                    x p.1 p.2 u) = 0)).card :=
+            Finset.card_le_card_of_injOn
               (fun c => show BatchingChallenge F n params.numGroups from c)
               (fun c hc => Finset.mem_filter.mpr
                 ⟨Finset.mem_univ _, (Finset.mem_filter.mp hc).2⟩)
@@ -557,16 +559,24 @@ theorem outerVerifier_soundness_mid
     have h2n : (0 : ℝ≥0) < ((Fintype.card F - 2 ^ n : ℕ) : ℝ≥0) := by
       exact_mod_cast Nat.sub_pos_of_lt hpole
     refine add_le_add ?_ ?_
-    · gcongr
-      · exact_mod_cast Nat.sub_le _ _
-    · gcongr
-      exact_mod_cast Nat.succ_le_succ hnK
+    · first
+      | (gcongr
+         · exact h2n
+         · exact_mod_cast Nat.sub_le _ _)
+      | (gcongr
+         exact_mod_cast Nat.sub_le _ _)
+      | gcongr
+    · first
+      | (gcongr
+         exact_mod_cast Nat.succ_le_succ hnK)
+      | gcongr
   exact Verifier.soundness.mono_error init impl h hle
 
 /-- **Issue #13 LogUp soundness — END-TO-END.** The full LogUp verifier is sound with the
 paper error, with every protocol obligation discharged; only standard runtime side
 conditions on the shared-oracle implementation remain as hypotheses. -/
-theorem logup_soundness_end_to_end (sumcheckSoundnessError : ℝ≥0) (hn : 0 < n)
+theorem logup_soundness_end_to_end [oSpec.Fintype] [oSpec.Inhabited]
+    (sumcheckSoundnessError : ℝ≥0) (hn : 0 < n)
     (hpole : 2 ^ n < Fintype.card F) (hnK : n ≤ params.numGroups)
     (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
       x ∈ support ((impl t).run s) → x.2 = s)
@@ -576,7 +586,7 @@ theorem logup_soundness_end_to_end (sumcheckSoundnessError : ℝ≥0) (hn : 0 < 
     (logupVerifier oSpec F n M params).soundness init impl
       (inputRelation F n M).language outputRelation.language
       (logupSoundnessError F n M params sumcheckSoundnessError) :=
-  logup_soundness_pointwiseSumcheck oSpec F n M params init impl sumcheckSoundnessError hn
+  logup_soundness_pointwiseSumcheck oSpec F n M params sumcheckSoundnessError hn
     (outerVerifier_soundness_mid oSpec F n M params init impl hpole hnK
       himplSP himplNF himplVB)
     himplSP himplNF himplVB
