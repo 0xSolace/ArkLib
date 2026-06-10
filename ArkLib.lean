@@ -1215,6 +1215,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaAssembly
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundations
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaHybrids
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Honest
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512HonestPaper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514ForkFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516HashHalf
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516TimePFalse
