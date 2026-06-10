@@ -6,6 +6,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
+import ArkLib.ProofSystem.Binius.BinaryBasefold.FoldDetDischarge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
 
 /-!
@@ -66,7 +67,6 @@ used by the adjacent Binius soundness files while preserving the theorem stateme
 class Prop421Case1FiberwiseCloseResidual : Prop where
   holds : ∀ (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    [FoldMatrixDetNeZeroResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
     (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
     (_h_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := h_destIdx)
@@ -93,7 +93,6 @@ The bad event here is: `Δ⁽ⁱ⁾(f⁽ⁱ⁾, f̄⁽ⁱ⁾) ⊄ Δ(fold(f⁽�
 -/
 lemma prop_4_21_case_1_fiberwise_close (i : Fin ℓ) (steps : ℕ) [NeZero steps]
     {destIdx : Fin r} (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    [FoldMatrixDetNeZeroResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
     (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
     (h_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)) :
@@ -481,7 +480,6 @@ Proof strategy:
 -/
 lemma prop_4_21_bad_event_probability (i : Fin ℓ) (steps : ℕ) [NeZero steps]
     {destIdx : Fin r} (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    [FoldMatrixDetNeZeroResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
     (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩) :
     let domain_size := Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx)
     Pr_{ let r_challenges ←$ᵖ (Fin steps → L) }[

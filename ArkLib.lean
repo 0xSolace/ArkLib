@@ -463,6 +463,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.CosetWallDeepInteriorNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.CountingGapConjecture
 import ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
+import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBadCount
+import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBound
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRCoefficients
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
@@ -471,6 +473,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnIndicatorDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnIntRelations
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnIntWindowedLaw
+import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnLamLeungReduction
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnPrimePower
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreeIff
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreePQ
@@ -824,6 +828,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentReductionLimit
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SingleClassWeight
+import ArkLib.Data.CodingTheory.ProximityGap.SliceLevelTwoCount
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusCount
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusUnionBudget
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothDomainSelfSimilarity
@@ -875,10 +880,14 @@ import ArkLib.Data.CodingTheory.ProximityGap.TheoremQAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUDExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUpperReduction
 import ArkLib.Data.CodingTheory.ProximityGap.ThreadSplit
+import ArkLib.Data.CodingTheory.ProximityGap.ThreeGenPackingObstruction
+import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeFiberCountLaw
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeIntClassification
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimePacketRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeRatClassification
+import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeWindowObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
+import ArkLib.Data.CodingTheory.ProximityGap.TwoGenPackingCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeSyndromeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeWindowLaw
@@ -1456,6 +1465,7 @@ import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompletenessUncond
 import ArkLib.ProofSystem.Sumcheck.Spec.OracleCompletenessUncondCorrect
 import ArkLib.ProofSystem.Sumcheck.Spec.OracleRbrSoundness
 import ArkLib.ProofSystem.Sumcheck.Spec.RbrKnowledgeSoundnessNary
+import ArkLib.ProofSystem.Sumcheck.Spec.RbrKnowledgeSoundnessOracle
 import ArkLib.ProofSystem.Sumcheck.Spec.SeqComposeRbrSoundness
 import ArkLib.ProofSystem.Sumcheck.Spec.SimpleRoundCoherent
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
@@ -1606,10 +1616,12 @@ import ArkLib.ToMathlib.DiscriminantBadSet
 import ArkLib.ToMathlib.DiscriminantSeparable
 import ArkLib.ToMathlib.DiscriminantSeparableConverse
 import ArkLib.ToMathlib.DisjointPairCount
+import ArkLib.ToMathlib.DoubleAssignmentChain
 import ArkLib.ToMathlib.EliasVolumeCertificates
 import ArkLib.ToMathlib.EmbeddingCoefficientCommutation
 import ArkLib.ToMathlib.ExtractedIssueBricks
 import ArkLib.ToMathlib.FaaDiBrunoMatchProof
+import ArkLib.ToMathlib.FactorAssignmentPigeonhole
 import ArkLib.ToMathlib.FactorPigeonhole
 import ArkLib.ToMathlib.FaithfulCurveExtraction
 import ArkLib.ToMathlib.FaithfulFrontierComposition
@@ -1647,8 +1659,10 @@ import ArkLib.ToMathlib.GSSurfaceDegSupply
 import ArkLib.ToMathlib.GSSurfaceEntry
 import ArkLib.ToMathlib.GSSurfaceHtailPigeonhole
 import ArkLib.ToMathlib.GSSurfaceKeystone
+import ArkLib.ToMathlib.GSSurfaceMatchingLane
 import ArkLib.ToMathlib.GSSurfaceSupply
 import ArkLib.ToMathlib.GSSurfaceTailSupply
+import ArkLib.ToMathlib.GSSurfaceTaylorRepair
 import ArkLib.ToMathlib.GammaCoeffRecursion
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.GenuineMonicCapstone

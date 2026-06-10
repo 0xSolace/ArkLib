@@ -483,4 +483,172 @@ theorem isWindowCosetUnion_iff_traceBlocks_lcm {n t : ℕ} (hn : 0 < n)
   isWindowCosetUnion_iff_traceBlocks hn lcm_minWindowDivisors_dvd
     lcm_minWindowDivisors_pos (gcd_lcm_minWindowDivisors_gt hn) hSn
 
+/-! ## The literal count: `|F_n(t)| = |F_m(t)|^(n/m)` -/
+
+open Classical in
+/-- The window fiber as a finite family: window coset unions inside `[0, n)`. -/
+noncomputable def windowFiber (n t : ℕ) : Finset (Finset ℕ) :=
+  (Finset.range n).powerset.filter fun S => IsWindowCosetUnion n t S
+
+lemma mem_windowFiber {n t : ℕ} {S : Finset ℕ} :
+    S ∈ windowFiber n t ↔ S ⊆ Finset.range n ∧ IsWindowCosetUnion n t S := by
+  classical
+  simp [windowFiber, Finset.mem_powerset]
+
+/-- Tracing a lift on its own block recovers the set. -/
+lemma traceBlock_liftBlock_self {g c : ℕ} (hc : c < g) (T : Finset ℕ) :
+    traceBlock g c (liftBlock g c T) = T := by
+  have hg0 : 0 < g := by omega
+  ext e'
+  rw [mem_traceBlock hc, mem_liftBlock]
+  constructor
+  · rintro ⟨e'', he'', heq⟩
+    have : e' = e'' := by
+      have hge : g * e' = g * e'' := by omega
+      exact Nat.eq_of_mul_eq_mul_left hg0 hge
+    rwa [this]
+  · intro he'
+    exact ⟨e', he', rfl⟩
+
+/-- Tracing a lift on a different block is empty. -/
+lemma traceBlock_liftBlock_ne {g c c' : ℕ} (hc : c < g) (hc' : c' < g)
+    (hne : c ≠ c') (T : Finset ℕ) :
+    traceBlock g c (liftBlock g c' T) = ∅ := by
+  ext e'
+  simp only [Finset.notMem_empty, iff_false]
+  rw [mem_traceBlock hc, mem_liftBlock]
+  rintro ⟨e'', _, heq⟩
+  have h1 : (c + g * e') % g = c := by
+    rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hc]
+  have h2 : (c' + g * e'') % g = c' := by
+    rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hc']
+  rw [heq, h2] at h1
+  exact hne h1.symm
+
+/-- A set inside `[0, n)` is the union of the lifts of its block traces. -/
+lemma biUnion_liftBlock_traceBlock {n m : ℕ} (hm : m ∣ n) (hm0 : 0 < m)
+    (hn : 0 < n) (S : Finset ℕ) :
+    (Finset.univ : Finset (Fin (n / m))).biUnion
+      (fun c => liftBlock (n / m) c.val (traceBlock (n / m) c.val S)) = S := by
+  set g := n / m with hgdef
+  have hg0 : 0 < g := Nat.div_pos (Nat.le_of_dvd hn hm) hm0
+  ext e
+  rw [Finset.mem_biUnion]
+  constructor
+  · rintro ⟨c, _, hmem⟩
+    obtain ⟨e', he', rfl⟩ := mem_liftBlock.mp hmem
+    exact (mem_traceBlock c.isLt).mp he'
+  · intro he
+    have hcblock : e % g < g := Nat.mod_lt _ hg0
+    refine ⟨⟨e % g, hcblock⟩, Finset.mem_univ _, ?_⟩
+    rw [mem_liftBlock]
+    refine ⟨e / g, (mem_traceBlock hcblock).mpr ?_, (Nat.mod_add_div e g).symm⟩
+    rwa [Nat.mod_add_div e g]
+
+/-- Block traces of a set inside `[0, n)` live inside `[0, m)`. -/
+lemma traceBlock_subset_range {n m : ℕ} (hm : m ∣ n) {c : ℕ}
+    (hc : c < n / m) {S : Finset ℕ} (hSn : S ⊆ Finset.range n) :
+    traceBlock (n / m) c S ⊆ Finset.range m := by
+  set g := n / m
+  have hgm : g * m = n := Nat.div_mul_cancel hm
+  intro e' he'
+  have hmem := (mem_traceBlock hc).mp he'
+  have hen : c + g * e' < n := Finset.mem_range.mp (hSn hmem)
+  rw [Finset.mem_range]
+  by_contra hge
+  have : g * m ≤ g * e' := Nat.mul_le_mul_left _ (by omega)
+  omega
+
+/-- Lifts of sets inside `[0, m)` live inside `[0, n)`. -/
+lemma liftBlock_subset_range {n m : ℕ} (hm : m ∣ n) {c : ℕ}
+    (hc : c < n / m) {T : Finset ℕ} (hTm : T ⊆ Finset.range m) :
+    liftBlock (n / m) c T ⊆ Finset.range n := by
+  set g := n / m
+  have hgm : g * m = n := Nat.div_mul_cancel hm
+  intro e he
+  obtain ⟨e', he', rfl⟩ := mem_liftBlock.mp he
+  have he'm : e' < m := Finset.mem_range.mp (hTm he')
+  rw [Finset.mem_range]
+  calc c + g * e' < g + g * e' := by omega
+    _ = g * (e' + 1) := by ring
+    _ ≤ g * m := Nat.mul_le_mul_left _ (by omega)
+    _ = n := hgm
+
+/-- **THE FIBER-COUNT LAW, literal form**: under interface `(H)`,
+`|F_n(t)| = |F_m(t)|^(n/m)` — the block-trace map is a bijection onto the
+`(n/m)`-fold product of level-`m` fibers. -/
+theorem card_windowFiber {n m t : ℕ} (hn : 0 < n) (hm : m ∣ n) (hm0 : 0 < m)
+    (hH : ∀ d, d ∣ n → t < d → t < Nat.gcd d m) :
+    (windowFiber n t).card = (windowFiber m t).card ^ (n / m) := by
+  classical
+  set g := n / m with hgdef
+  have hg0 : 0 < g := Nat.div_pos (Nat.le_of_dvd hn hm) hm0
+  have hcard : ((Fintype.piFinset fun _ : Fin g => windowFiber m t).card)
+      = (windowFiber m t).card ^ g := by
+    rw [Fintype.card_piFinset_const]
+  rw [← hcard]
+  apply Finset.card_bij
+    (i := fun S _ => fun c : Fin g => traceBlock g c.val S)
+  · -- maps into the product of level-m fibers
+    intro S hS
+    obtain ⟨hSn, hSw⟩ := mem_windowFiber.mp hS
+    rw [Fintype.mem_piFinset]
+    intro c
+    rw [mem_windowFiber]
+    exact ⟨traceBlock_subset_range hm c.isLt hSn,
+      isWindowCosetUnion_traceBlock hn hm hm0 hH hSw c.isLt⟩
+  · -- injective: a set is recovered from its traces
+    intro S₁ hS₁ S₂ hS₂ heq
+    have h1 := biUnion_liftBlock_traceBlock hm hm0 hn S₁
+    have h2 := biUnion_liftBlock_traceBlock hm hm0 hn S₂
+    rw [← h1, ← h2]
+    congr 1
+    funext c
+    rw [show traceBlock g c.val S₁ = traceBlock g c.val S₂ from congrFun heq c]
+  · -- surjective: assemble from any tuple of level-m fibers
+    intro F hF
+    rw [Fintype.mem_piFinset] at hF
+    set S : Finset ℕ := (Finset.univ : Finset (Fin g)).biUnion
+      (fun c => liftBlock g c.val (F c)) with hSdef
+    have hSn : S ⊆ Finset.range n := by
+      intro e he
+      obtain ⟨c, _, hmem⟩ := Finset.mem_biUnion.mp he
+      exact liftBlock_subset_range hm c.isLt
+        (mem_windowFiber.mp (hF c)).1 hmem
+    have htrace : ∀ c : Fin g, traceBlock g c.val S = F c := by
+      intro c
+      ext e'
+      rw [mem_traceBlock c.isLt, hSdef, Finset.mem_biUnion]
+      constructor
+      · rintro ⟨c', _, hmem⟩
+        obtain ⟨e'', he'', heq⟩ := mem_liftBlock.mp hmem
+        have h1 : (c.val + g * e') % g = c.val := by
+          rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt c.isLt]
+        have h2 : (c'.val + g * e'') % g = c'.val := by
+          rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt c'.isLt]
+        rw [heq, h2] at h1
+        have hcc : c = c' := Fin.ext h1.symm
+        subst hcc
+        have hge : g * e' = g * e'' := by omega
+        have he : e' = e'' := Nat.eq_of_mul_eq_mul_left hg0 hge
+        rwa [he]
+      · intro he'
+        exact ⟨c, Finset.mem_univ _, mem_liftBlock.mpr ⟨e', he', rfl⟩⟩
+    refine ⟨S, ?_, funext htrace⟩
+    rw [mem_windowFiber]
+    refine ⟨hSn, ?_⟩
+    refine isWindowCosetUnion_of_traceBlocks hn hm hm0
+      (fun e he => Finset.mem_range.mp (hSn he)) ?_
+    intro c hc
+    rw [htrace ⟨c, hc⟩]
+    exact (mem_windowFiber.mp (hF ⟨c, hc⟩)).2
+
+/-- The fiber-count law at the canonical modulus `lcm(Dmin)`. -/
+theorem card_windowFiber_lcm {n t : ℕ} (hn : 0 < n) :
+    (windowFiber n t).card
+      = (windowFiber ((minWindowDivisors n t).lcm id) t).card
+        ^ (n / (minWindowDivisors n t).lcm id) :=
+  card_windowFiber hn lcm_minWindowDivisors_dvd lcm_minWindowDivisors_pos
+    (gcd_lcm_minWindowDivisors_gt hn)
+
 end DeBruijnWindowedLaw

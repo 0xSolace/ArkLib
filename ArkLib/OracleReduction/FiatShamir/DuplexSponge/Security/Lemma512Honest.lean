@@ -92,7 +92,7 @@ private lemma hasInvEntry_eraseIdx
     have hkeep : (tr.eraseIdx idx.val)[j'.val]? = tr[j'.val]? :=
       List.getElem?_eraseIdx_of_lt hj'idx
     have hhit : tr[j'.val]? = some tr[j'] := by
-      rw [List.getElem?_eq_getElem j'.isLt]
+      simpa only [List.get_eq_getElem] using List.getElem?_eq_getElem (l := tr) j'.isLt
     rcases hcase with hc | hc
     · exact ⟨sOut, sIn, mem_of_getElem?' (by rw [hkeep, hhit, hc])⟩
     · exact ⟨sIn, sOut, mem_of_getElem?' (by rw [hkeep, hhit, hc])⟩
@@ -154,7 +154,7 @@ private lemma capacitySegmentDupPermInv_of_inv_mem
   obtain ⟨j, hj, hje⟩ := hmem
   unfold capacitySegmentDupPermInv
   exact ⟨⟨j, hj⟩, sIn.capacitySegment, ⟨sOut, sIn, hje, rfl⟩,
-    Or.inr (Or.inr (Or.inr (Or.inr ⟨⟨j, hj⟩, le_refl _, sOut, sIn, hje, rfl⟩)))⟩
+    Or.inr (Or.inr (Or.inr (Or.inr ⟨⟨j, hj⟩, le_refl _, sIn, sOut, hje, rfl⟩)))⟩
 
 /-- **Keystone**: an inverse-permutation entry anywhere in the *raw* trace fires the
 combined bad event `E`. Contrapositive: off `E`, the trace contains no `p⁻¹` entries at
@@ -171,6 +171,19 @@ theorem not_hasInvEntry_of_not_E
     ¬ HasInvEntry tr :=
   fun hinv => h (hasInvEntry_implies_E tr hinv)
 
+/-- Index form of `not_hasInvEntry_of_not_E`: off `E`, no trace slot can be an inverse
+permutation entry. This is the form consumed by the `J_BT` first-occurrence payloads in the
+honest backtrack timing/fork analyses. -/
+theorem not_inv_getElem?_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    {i : ℕ} {sOut sIn : CanonicalSpongeState U}
+    (hentry : tr[i]? =
+      some (⟨Sum.inr (Sum.inr sOut), sIn⟩ :
+        (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+          (duplexSpongeChallengeOracle StmtIn U).Range t)) :
+    False :=
+  not_hasInvEntry_of_not_E tr h ⟨sOut, sIn, mem_of_getElem?' hentry⟩
+
 /-- **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual`
 holds: off the combined bad event `E`, no BackTrack chain step is anchored by an
 inverse-permutation entry (CO25 Lemma 5.12, honest form over `Backtrack.S_BT`). -/
@@ -185,4 +198,5 @@ theorem lemma5_12_honest :
 end DuplexSpongeFS.Sponge316
 
 #print axioms DuplexSpongeFS.Sponge316.hasInvEntry_implies_E
+#print axioms DuplexSpongeFS.Sponge316.not_inv_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.lemma5_12_honest

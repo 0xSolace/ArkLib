@@ -1130,7 +1130,12 @@ def BBF_SumcheckMultiplierParam : SumcheckMultiplierParam L ℓ (SumcheckBaseCon
 
 API migration: now uses the new-API `iterated_fold` (`steps : ℕ`, `{destIdx : Fin r}`,
 `h_destIdx`/`h_destIdx_le`) — `steps := i.val`, `destIdx := ⟨i, _⟩` — instead of the legacy
-`Fin (ℓ + 1)`-stepped `iterated_fold`. The result already lands at `OracleFunction ⟨i, _⟩`. -/
+`Fin (ℓ + 1)`-stepped `iterated_fold`. The result already lands at `OracleFunction ⟨i, _⟩`.
+
+`Statement.challenges` follow the structured sumcheck convention: each new verifier challenge is
+stored with `Fin.cons`, so index `0` is the newest challenge. The fold recursion consumes
+challenges chronologically from level `0` upward, so this definition reverses the statement tuple
+before passing it to `iterated_fold`. -/
 def getMidCodewords {i : Fin (ℓ + 1)} (t : L⦃≤ 1⦄[X Fin ℓ]) -- original polynomial t
     (challenges : Fin i → L) : (sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i, by omega⟩) → L) :=
   let P₀ : L⦃< 2^ℓ⦄[X] := polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval ω)
@@ -1142,7 +1147,7 @@ def getMidCodewords {i : Fin (ℓ + 1)} (t : L⦃≤ 1⦄[X Fin ℓ]) -- origina
     (h_destIdx := by simp only [Fin.val_zero, Nat.zero_add])
     (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
     (f := f₀)
-    (r_challenges := challenges)
+    (r_challenges := challenges ∘ Fin.rev)
 
 /-! `SumcheckContextIncluded_Relations`: Sumcheck context is passed as a
 parameters in the following relations --/
