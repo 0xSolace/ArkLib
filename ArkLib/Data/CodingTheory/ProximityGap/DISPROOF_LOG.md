@@ -4756,3 +4756,14 @@ O109 closed squarefree three primes; this pass removes every restriction. `DeBru
 ### O111 — the O70 divisor-coset window law is FALSE at three primes: the statement-level obstruction, kernel-checked
 
 The window-law residue redteamed at the statement level. `ThreePrimeWindowObstruction.lean` (axiom-clean, Mathlib+O105 only): `divisor_coset_law_fails_three_primes` — the O105 witness `{5,6,12,18,24,25}` at `n = 30` vanishes, yet through its point `5` NO full `μ_d`-coset lies inside the set for ANY `1 < d ∣ 30` (a `decide` over `Nat.divisors 30`). So the O70 form of the window law — windowed-vanishing subsets decompose into `μ_d`-cosets, `d > t` — fails at three primes ALREADY at `t = 1`: its very statement, not merely its proof, has no 3+-prime extension. Any 3+-prime window law must be reformulated — the candidate surface is the O109 ℚ-component form with windowed power sums constraining the components. The window-law residue is now: *find and prove the correct 3+-prime statement* — with its impossibility boundary formalized.
+
+### O118 — the LEVEL-2 COUNTING LAW in Lean: tower profiles reduce to level-1 merged sets — the O115 positive residue formalized (nubs, 2026-06-10)
+
+`SliceLevelTwoCount.lean` (axiom-clean ×4, 0 sorry, 0 warnings, namespace `LamLeungTwoPow`): the law the O115 census verified on all 65,536 joint profiles, now a theorem with no new counting machinery — exactly as the census predicted.
+
+* `card_polysDegLT_slices_vanishing_asym` — **the missing primitive**: per-slice loci can differ — `#{f : deg < k, evenSlice ⊨ S_e, oddSlice ⊨ S_o} = q^((k+1)/2 − |S_e|)·q^(k/2 − |S_o|)` (the O96 build-bijection with independent factors).
+* `slices_eval_sq_zero_iff` — **the O115 mechanism as an iff**: both slices of `h` vanish at `v²` ⟺ `h(v) = h(−v) = 0` (char ≠ 2, `v ≠ 0`) — forced level-2 deadness IS the antipodal-pair shadow of level-1 deadness; the lemma behind `pairs(Z₁) ⊆ Z₂` and `√Z₂ ⊆ Z₁`.
+* `mergedLocus Z₁ V = Z₁ ∪ V ∪ (−V)` + `vanish_mergedLocus_iff` — the constraint transport.
+* `card_level_two_profile` — **the headline**: the joint (level-1 `Z₁`, level-2 `{v² : v ∈ V_e}/{v² : v ∈ V_o}`) per-profile count equals the asymmetric count at the merged sets — an exact q-power; dimensions multiply iff the merged unions are disjoint, each overlap refunds one dimension (the censused refund, now structural).
+
+**Where this leaves Conjecture D:** with O109 (level 1 = classical MDS), O115 (tower budgets never beat level 1), and this brick (the exact per-profile law at level 2), the counting side of the fold tower is CLOSED — all that survives is the incidence/inclusion–exclusion channel over locus overlaps and the anticorrelation structure, both genuinely open.
