@@ -42,8 +42,11 @@ discharging `stir_main` / `stir_rbr_soundness`.
 - Acceptance of `checkingBool` is now decomposed into reusable checked facts:
   `checkingBool_true_implies_fold_check`,
   `checkingBool_true_implies_round_consistency` (with out/shift projections), and
-  `checkingBool_true_implies_final_in_code`. These are the local verifier facts the
-  protocol-level bridge must feed into the probabilistic CA/proximity-gap argument.
+  `checkingBool_true_implies_final_in_code`. The bidirectional theorem
+  `checkingBool_eq_true_iff` now gives the exact local spec of the checker: fold agreement,
+  all sampled out/shift adjacent-round agreements, and final Reed-Solomon membership. These
+  are the local verifier facts the protocol-level bridge must feed into the probabilistic
+  CA/proximity-gap argument.
 - The same facts are now exposed at verifier-support level:
   `checkingVerifier_support_iff`,
   `checkingVerifier_acceptance_iff_checkingBool`,
@@ -85,6 +88,8 @@ discharging `stir_main` / `stir_rbr_soundness`.
 Targeted checks used while avoiding a full rebuild:
 
 - `lake env lean ArkLib/ProofSystem/Stir/MainThm.lean`
+  - Last run after checker-local changes: passed, with only pre-existing unused-variable
+    warnings and standard axiom prints for `stir_main` / `stir_rbr_soundness`.
 - `lake build ArkLib.ProofSystem.Stir.RbrFrontDoor`
 - `lake build ArkLib.ProofSystem.Stir.MultiRoundAssembly`
 - `lake env lean ArkLib/ProofSystem/Stir/CheckingVerifier.lean`
@@ -92,6 +97,14 @@ Targeted checks used while avoiding a full rebuild:
     axioms are only `[propext, Classical.choice, Quot.sound]`.
   - Re-run after adding the exact support/acceptance equivalence: passed with the same axiom
     footprint.
+  - Re-run after adding `checkingBool_eq_true_iff`: passed with the same axiom footprint.
+
+## Cleanup Notes
+
+- Removed a stray post-namespace block of attempted `sorry` theorems
+  (`stirCheckingCABridge_holds`, `stir_main_thm`, `stir_rbr_soundness_thm`) from
+  `CheckingVerifier.lean`. It was outside the namespace, did not elaborate, and would have
+  fabricated precisely the CA/RBR bridge that issue #301 says not to fabricate.
 - `lake build ArkLib.ProofSystem.Stir.FullChain ArkLib.ProofSystem.Stir.ProximityGapProof ArkLib.ProofSystem.Stir.ProximityGapSmallField`
 - Earlier context also checked `Round3Block`, `Round3Compose`, `FullChain`,
   `ProximityGapProof`, and `ProximityGapSmallField`.

@@ -1507,4 +1507,122 @@ theorem packetUnion_spectral_transfer {p q a b : ℕ} (hp : p.Prime) (hq : q.Pri
 
 end SpectralTransfer
 
+/-! ## The iterated spectral transfer: the full descent chain in one theorem
+
+Stacking O77 (decompose) and O80 (transfer) `m` times: given the `q`-power window
+`Σ_S y^{q^c} = 0` for `1 ≤ c ≤ b`, the `m`-th spectrum `R_m` exists at level
+`μ_{p^(a+1)·q^(b+1−m)}` — every element a `q^m`-th power of an element of `S` — and
+carries the entire window with factor `q^m`:
+`(q:F)^m · Σ_{r∈R_m} r^e = Σ_{y∈S} y^{q^m·e}` for every `p ∤ e`. At `m = b+1` the chain
+bottoms out in the prime-power level `μ_{p^(a+1)}`, where the Lam–Leung machinery
+applies. This is the windowed two-prime law's descent half, fully assembled. -/
+
+section IteratedDescent
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The iterated spectral transfer**: the descent chain to depth `m`. -/
+theorem iterated_spectral_transfer {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hsum : ∑ z ∈ S, z = 0)
+    (hwin : ∀ c, 1 ≤ c → c ≤ b → ∑ z ∈ S, z ^ (q ^ c) = 0) :
+    ∀ m, m ≤ b + 1 →
+      ∃ R : Finset F,
+        (∀ r ∈ R, ∃ w ∈ S, w ^ (q ^ m) = r) ∧
+        (∀ r ∈ R, r ^ (p ^ (a + 1) * q ^ (b + 1 - m)) = 1) ∧
+        (∀ e : ℕ, ¬ p ∣ e →
+          ((q : F)) ^ m * ∑ r ∈ R, r ^ e = ∑ y ∈ S, y ^ (q ^ m * e)) := by
+  intro m
+  induction m with
+  | zero =>
+    intro _
+    refine ⟨S, fun r hr => ⟨r, hr, by rw [pow_zero, pow_one]⟩, ?_, ?_⟩
+    · intro r hr
+      rw [Nat.sub_zero]
+      exact hS r hr
+    · intro e _
+      rw [pow_zero, one_mul]
+      refine Finset.sum_congr rfl fun y _ => ?_
+      rw [pow_zero, one_mul]
+  | succ m IH =>
+    intro hm1
+    have hm : m ≤ b := by omega
+    obtain ⟨R, hRpow, hRtor, hRtransfer⟩ := IH (by omega)
+    -- R vanishes: e = 1 of the carried transfer + the window at c = m (or hsum at m = 0)
+    have hRsum : ∑ r ∈ R, r = 0 := by
+      have h1 := hRtransfer 1 (by
+        intro hdvd
+        exact hp.one_lt.ne' (Nat.dvd_one.mp hdvd))
+      rw [mul_one] at h1
+      have hwm : ∑ y ∈ S, y ^ (q ^ m) = 0 := by
+        rcases Nat.eq_zero_or_pos m with rfl | hmpos
+        · rw [pow_zero]
+          simpa using hsum
+        · exact hwin m hmpos hm
+      have hq0 : ((q : F)) ^ m ≠ 0 := pow_ne_zero _ (by
+        exact_mod_cast hq.pos.ne')
+      have := h1.trans hwm
+      rcases mul_eq_zero.mp this with h | h
+      · exact absurd h hq0
+      · simpa using h
+    -- the level-(a, b−m) primitive root and torsion for R
+    have hlevel : b + 1 - m = (b - m) + 1 := by omega
+    have hζq' : IsPrimitiveRoot (ζq ^ (q ^ m)) (q ^ ((b - m) + 1)) := by
+      have : IsPrimitiveRoot (ζq ^ (q ^ m)) (q ^ (b + 1 - m)) := by
+        refine hζq.pow (pow_pos hq.pos _) ?_
+        rw [← pow_add]
+        congr 1
+        omega
+      rwa [hlevel] at this
+    have hRtor' : ∀ r ∈ R, r ^ (p ^ (a + 1) * q ^ ((b - m) + 1)) = 1 := by
+      intro r hr
+      have := hRtor r hr
+      rwa [hlevel] at this
+    -- decompose R and apply the spectral transfer one level down
+    have hPU := two_prime_packet_decomposition (a := a) (b := b - m) hp hq hpq
+      hζp hζq' hRtor' hRsum
+    obtain ⟨R', hR'orbit, hR'transfer⟩ :=
+      packetUnion_spectral_transfer (a := a) (b := b - m) hp hq hpq hζp hζq' hPU
+    refine ⟨R', ?_, ?_, ?_⟩
+    · -- q^(m+1)-th powers of S elements
+      intro r' hr'
+      obtain ⟨w, hwR, hwq, _⟩ := hR'orbit r' hr'
+      obtain ⟨w₀, hw₀S, hw₀pow⟩ := hRpow w hwR
+      refine ⟨w₀, hw₀S, ?_⟩
+      rw [← hwq, ← hw₀pow, ← pow_mul, pow_succ]
+    · -- torsion one level further down
+      intro r' hr'
+      obtain ⟨w, hwR, hwq, _⟩ := hR'orbit r' hr'
+      have hwtor := hRtor' w hwR
+      have hbm : b + 1 - (m + 1) = b - m := by omega
+      rw [hbm, ← hwq, ← pow_mul]
+      calc w ^ (q * (p ^ (a + 1) * q ^ (b - m)))
+          = (w ^ (p ^ (a + 1) * q ^ ((b - m) + 1))) := by
+            congr 1
+            rw [pow_succ]
+            ring
+        _ = 1 := hwtor
+    · -- the carried transfer composes
+      intro e hpe
+      have hqe : ¬ p ∣ q * e := by
+        intro hdvd
+        rcases (Nat.Prime.dvd_mul hp).mp hdvd with h | h
+        · exact absurd ((Nat.prime_dvd_prime_iff_eq hp hq).mp h) hpq
+        · exact hpe h
+      have hstep := hR'transfer e hpe
+      have hcarry := hRtransfer (q * e) hqe
+      calc ((q : F)) ^ (m + 1) * ∑ r ∈ R', r ^ e
+          = ((q : F)) ^ m * ((q : F) * ∑ r ∈ R', r ^ e) := by ring
+        _ = ((q : F)) ^ m * ∑ r ∈ R, r ^ (q * e) := by rw [← hstep]
+        _ = ∑ y ∈ S, y ^ (q ^ m * (q * e)) := hcarry
+        _ = ∑ y ∈ S, y ^ (q ^ (m + 1) * e) := by
+            refine Finset.sum_congr rfl fun y _ => ?_
+            congr 1
+            rw [pow_succ]
+            ring
+
+end IteratedDescent
+
 end DeBruijnTwoPrime

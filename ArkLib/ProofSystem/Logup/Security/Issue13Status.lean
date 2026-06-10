@@ -7,6 +7,7 @@ import ArkLib.ProofSystem.Logup.Security.LogupSoundnessMsgSeam
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessWired
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessSharp
 import ArkLib.ProofSystem.Logup.Security.SumcheckCompletenessUncond
+import ArkLib.ProofSystem.Logup.Security.SumcheckSoundnessProjClosed
 import ArkLib.ProofSystem.Logup.Security.SumcheckSoundnessWired
 
 /-!
@@ -51,6 +52,10 @@ hypotheses, not hidden `sorryAx` placeholders.
 * `Logup.issue13_soundness_msgSeam_wiredRoundAppend` — the same soundness close with the inner
   multi-round sumcheck RBR fact further reduced to per-round RBR soundness plus the binary append-RBR
   keystone.
+
+* `Logup.issue13_sumcheckSoundnessResidual_projClosed` — the historical embedded-sumcheck
+  `SumcheckSoundnessResidual` with the lens projection algebra closed at the canonical round-0
+  sumcheck language.
 
 * `Logup.issue13_completeness_wired` — completeness with the outer half, embedded-sumcheck inner
   completeness, and the general non-perfect append blocker closed; it takes the honest support and
@@ -209,6 +214,32 @@ theorem issue13_soundness_msgSeam_wiredSumcheck [oSpec.Fintype]
       (midSoundnessProtocolLanguage F n M params) sumcheckSoundnessError
       hError hProj hInnerRbr himplSP himplNF himplVB)
     himplSP himplNF himplVB
+
+/-- **Issue #13 — historical embedded-sumcheck soundness with projection CLOSED.**
+
+This re-exports `sumcheckSoundnessResidual_holds_projClosed`: the `hProj` lens-projection algebra is
+no longer a hypothesis for the historical `SumcheckSoundnessResidual`.  It is discharged at the
+canonical inner input language
+`logupSumcheckInputLanguage F n M params (Fact.out : (-1 : F) ≠ 1)`, i.e. the generic sumcheck
+round-0 relation.  The remaining inputs are the union-bound error equation, the inner multi-round
+RBR theorem into `Set.univ`, and the standard honest-`impl` marginal-bridge side conditions. -/
+theorem issue13_sumcheckSoundnessResidual_projClosed [oSpec.Fintype]
+    (sumcheckSoundnessError : ℝ≥0)
+    {rbrSoundnessError : (logupSumcheckPSpec F n M params).ChallengeIdx → ℝ≥0}
+    (hError : sumcheckSoundnessError = ∑ i, rbrSoundnessError i)
+    (hInnerRbr :
+      (logupConcreteSumcheckOracleReduction oSpec F n M params
+          (Fact.out : (-1 : F) ≠ 1)).verifier.rbrSoundness init impl
+        (logupSumcheckInputLanguage F n M params (Fact.out : (-1 : F) ≠ 1))
+        (Set.univ) rbrSoundnessError)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    SumcheckSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError :=
+  sumcheckSoundnessResidual_holds_projClosed oSpec F n M params init impl
+    sumcheckSoundnessError hError hInnerRbr himplSP himplNF himplVB
 
   /-- **Issue #13 — language-generic message-seam soundness with inner sumcheck RBR assembled.**
 
@@ -460,6 +491,7 @@ end Logup
 #print axioms Logup.issue13_soundness_of_residual
 #print axioms Logup.issue13_soundness_msgSeam
 #print axioms Logup.issue13_soundness_msgSeam_wiredSumcheck
+#print axioms Logup.issue13_sumcheckSoundnessResidual_projClosed
 #print axioms Logup.issue13_soundness_msgSeam_anyMid_wiredRoundAppend
 #print axioms Logup.issue13_soundness_msgSeam_wiredRoundAppend
 #print axioms Logup.issue13_soundness_msgSeam_sharp_wiredRoundAppend

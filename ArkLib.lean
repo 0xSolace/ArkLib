@@ -1040,6 +1040,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessPr
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKeystone
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeEmpty
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDet
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDetEmpty
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeOracleLift
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgePhase2ReconcileProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeStateFunction
@@ -1068,6 +1069,7 @@ import ArkLib.OracleReduction.Composition.Sequential.SeamDecomposition
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRun
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRunPartial
 import ArkLib.OracleReduction.Composition.Sequential.SeamDecompositionRunWithLog
+import ArkLib.OracleReduction.Composition.Sequential.SeqComposeFailingDet
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeMsgCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposeOracleCompleteness
 import ArkLib.OracleReduction.Composition.Sequential.SeqComposePerfectCompletenessThreaded
@@ -1257,6 +1259,7 @@ import ArkLib.ProofSystem.Logup.Security.SubPhaseSplit
 import ArkLib.ProofSystem.Logup.Security.SumcheckCompleteness
 import ArkLib.ProofSystem.Logup.Security.SumcheckCompletenessClose
 import ArkLib.ProofSystem.Logup.Security.SumcheckCompletenessUncond
+import ArkLib.ProofSystem.Logup.Security.SumcheckComposedRejection
 import ArkLib.ProofSystem.Logup.Security.SumcheckLensProjComplete
 import ArkLib.ProofSystem.Logup.Security.SumcheckLensProjSound
 import ArkLib.ProofSystem.Logup.Security.SumcheckRejectionCore
@@ -1280,6 +1283,7 @@ import ArkLib.ProofSystem.RingSwitching.SumcheckDeterminism
 import ArkLib.ProofSystem.RingSwitching.SumcheckLoopPC
 import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
+import ArkLib.ProofSystem.RingSwitching.WiringInstances
 import ArkLib.ProofSystem.Spartan.Basic
 import ArkLib.ProofSystem.Spartan.ComposedCompleteness
 import ArkLib.ProofSystem.Spartan.ComposedCompletenessFinal
