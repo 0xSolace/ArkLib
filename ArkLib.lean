@@ -795,6 +795,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SingleClassWeight
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusCount
+import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusUnionBudget
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothDomainSelfSimilarity
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothFiberCount
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
@@ -1115,6 +1116,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemma
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaAssembly
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundations
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaHybrids
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Honest
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lookahead
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.ProverTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.RunCollapse
@@ -1194,6 +1196,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.BitsOfIndex
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Code
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.CoreInteractionPhase
+import ArkLib.ProofSystem.Binius.BinaryBasefold.FoldDetSplit
 import ArkLib.ProofSystem.Binius.BinaryBasefold.General
 import ArkLib.ProofSystem.Binius.BinaryBasefold.MultilinearWeightRecursion
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Prelude
@@ -1501,7 +1504,6 @@ import ArkLib.ToMathlib.BranchCertificates
 import ArkLib.ToMathlib.BranchCollapse
 import ArkLib.ToMathlib.BranchSeparationUnsat
 import ArkLib.ToMathlib.BranchValuePigeonhole
-import ArkLib.ToMathlib.CentreVanishingSupply
 import ArkLib.ToMathlib.Bridge2BCHKS25
 import ArkLib.ToMathlib.Bridge2BGKS20
 import ArkLib.ToMathlib.Bridge2GCXK25
@@ -1515,6 +1517,7 @@ import ArkLib.ToMathlib.CS25DeepHoleFinish2
 import ArkLib.ToMathlib.CS25JointFar
 import ArkLib.ToMathlib.CZ25CardFinrankBricks
 import ArkLib.ToMathlib.CZ25DimensionCountProof
+import ArkLib.ToMathlib.CentreVanishingSupply
 import ArkLib.ToMathlib.Claim510Conditional
 import ArkLib.ToMathlib.Claim511
 import ArkLib.ToMathlib.Claim57Supply
