@@ -555,7 +555,7 @@ def commitStepLogic (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
       -- oStmtIn transcript
     ((stmt, oStmtOut), wit)
 
-universe u v in
+universe u v
 /-- Applying a casted nondependent function is the same as casting the argument backward first. -/
 theorem cast_fun_eq_fun_cast_arg {α β : Type u} {γ : Type v} {hαβ : α = β}
     {hfun : (α → γ) = (β → γ)} (f : α → γ) (x : β) :
