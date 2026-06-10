@@ -139,11 +139,99 @@ theorem redundantPaper_inverse_capacity_prior
   · exact Or.inr hinv
   · exact Or.inl hfwd
 
+
 end DuplexSpongeFS
 
 end QueryLog
 
 end OracleSpec
+
+/-! ## Dedup transports (hash anchors) -/
+
+namespace DuplexSpongeFS.Sponge316
+
+open OracleSpec OracleSpec.QueryLog
+
+variable {StmtIn : Type} {U : Type} [SpongeUnit U] [SpongeSize]
+
+private lemma mem_of_getElem?' {α : Type _} {l : List α} {i : ℕ} {a : α}
+    (h : l[i]? = some a) : a ∈ l := by
+  obtain ⟨hlt, rfl⟩ := List.getElem?_eq_some_iff.mp h
+  exact List.getElem_mem hlt
+
+private lemma hasHashEntry_eraseIdxPaper
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (idx : Fin tr.length) (hred : tr.redundantEntryDSPaper idx)
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (hP : HasHashEntry tr stmt capSeg) :
+    HasHashEntry (tr.eraseIdx idx.val) stmt capSeg := by
+  classical
+  unfold HasHashEntry at hP ⊢
+  by_cases hval : tr[idx] =
+      (⟨Sum.inl stmt, capSeg⟩ :
+        (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+          (duplexSpongeChallengeOracle StmtIn U).Range t)
+  · obtain ⟨j', hj', hentry⟩ :=
+      redundantEntryDSPaper_hash_inversion tr idx stmt capSeg hval hred
+    have hj'idx : j'.val < idx.val := hj'
+    have hkeep : (tr.eraseIdx idx.val)[j'.val]? = tr[j'.val]? :=
+      List.getElem?_eraseIdx_of_lt hj'idx
+    have hhit : tr[j'.val]? = some tr[j'] := by
+      simpa only [List.get_eq_getElem] using List.getElem?_eq_getElem (l := tr) j'.isLt
+    exact mem_of_getElem?' (by rw [hkeep, hhit, hentry])
+  · rw [List.mem_iff_getElem] at hP
+    obtain ⟨p, hp, hpe⟩ := hP
+    have hpne : p ≠ idx.val := by
+      intro hcontr
+      apply hval
+      calc tr[idx] = tr[p]'hp := by
+            subst hcontr; rfl
+        _ = _ := hpe
+    have hp? : tr[p]? = some
+        (⟨Sum.inl stmt, capSeg⟩ :
+          (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+            (duplexSpongeChallengeOracle StmtIn U).Range t) := by
+      rw [List.getElem?_eq_getElem hp, hpe]
+    rcases Nat.lt_or_ge p idx.val with hlt | hge
+    · exact mem_of_getElem?' (i := p) (by rw [List.getElem?_eraseIdx_of_lt hlt, hp?])
+    · have hgt : idx.val < p := lt_of_le_of_ne hge (Ne.symm hpne)
+      exact mem_of_getElem?' (i := p - 1) (by
+        rw [List.getElem?_eraseIdx_of_ge (by omega), show p - 1 + 1 = p by omega, hp?])
+
+/-- **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete
+hash entries. -/
+private lemma hasHashEntry_removeRedundantPaper :
+    ∀ (N : ℕ) (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)), tr.length ≤ N →
+      ∀ {stmt : StmtIn} {capSeg : Vector U SpongeSize.C},
+        HasHashEntry tr stmt capSeg → HasHashEntry (removeRedundantEntryDSPaper tr).1 stmt capSeg := by
+  intro N
+  induction N with
+  | zero =>
+      intro tr hlen stmt capSeg hP
+      rw [List.length_eq_zero_iff.mp (Nat.le_zero.mp hlen)] at hP
+      simp [HasHashEntry] at hP
+  | succ N ih =>
+      intro tr hlen stmt capSeg hP
+      rw [removeRedundantEntryDSPaper]
+      split
+      · rename_i hex
+        refine ih _ ?_ (hasHashEntry_eraseIdxPaper tr (Classical.choose hex)
+          (Classical.choose_spec hex) hP)
+        have hlt := (Classical.choose hex).isLt
+        have hsucc := List.length_eraseIdx_add_one hlt
+        omega
+      · exact hP
+
+/-- Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the
+deduplicated trace still contains that same hash entry. -/
+theorem hasHashEntry_removeRedundantPaper_of_mem
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (h : HasHashEntry tr stmt capSeg) :
+    HasHashEntry (removeRedundantEntryDSPaper tr).1 stmt capSeg :=
+  hasHashEntry_removeRedundantPaper tr.length tr le_rfl h
+
+end DuplexSpongeFS.Sponge316
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms OracleSpec.QueryLog.redundantEntryDSPaper_forward_inversion
@@ -151,3 +239,4 @@ end OracleSpec
 #print axioms OracleSpec.QueryLog.redundantEntryDSPaper_hash_inversion
 #print axioms OracleSpec.QueryLog.redundantPaper_forward_capacity_prior
 #print axioms OracleSpec.QueryLog.redundantPaper_inverse_capacity_prior
+#print axioms DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem
