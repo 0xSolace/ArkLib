@@ -1506,6 +1506,7 @@ import ArkLib.ToMathlib.SecondMomentCountBricks
 import ArkLib.ToMathlib.SecondMomentProb
 import ArkLib.ToMathlib.Section5Concrete
 import ArkLib.ToMathlib.Section5ConcreteJohnson
+import ArkLib.ToMathlib.Section5StrictDataFinOn
 import ArkLib.ToMathlib.SeparableLowDegree
 import ArkLib.ToMathlib.SiegelInterpolation
 import ArkLib.ToMathlib.SignedGradedSupply
