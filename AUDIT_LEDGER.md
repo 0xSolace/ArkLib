@@ -84,10 +84,12 @@ Raw classification data: `audit/triage-2026-06-10.json`.
 ### [PROVABLE (L)] BoundaryCardLatticeThresholdResidual + boundaryCardLatticeThresholdResidual_of_extraction
 - loc: `BoundaryLatticeThresholdLeaf.lean:196,206`
 - The O76-corrected lattice leaf (Pr > k·(n+1)/|F| replaces bare 0<card). Reduces (proven) to LatticeCoeffPolyExtraction = BCIKS20 §5 coefficient-polynomial extraction at the exact lattice endpoint. Same open core as StrictCoeffPolysResidual.
+- **UPDATE (audit-wave1, commit f472e7d6f):** one layer deeper — `ToMathlib/LatticeFrontierReduction.lean`: LatticeCoeffPolyExtraction (and the threshold residual outright, `boundaryCardLatticeThresholdResidual_of_countFrontier`) now reduces to the count-triggered structured frontier producer `CountFrontierProducer` (no strict-Johnson guards, consumable at the exact endpoint); closed-boundary keystone assembly takes frontier producers on BOTH branches (`correlatedAgreementCurves_closedBoundary_assembly_of_frontier`). The bare exists-B extraction no longer appears as a separate residual shape.
 - papers: BCIKS20 §5-6
-### [PROVABLE (M)] diffStackMCAResidualBelowUDR + _of_epsCA_ge
+### [DISCHARGED 2026-06-10] diffStackMCAResidualBelowUDR + _of_epsCA_ge
 - loc: `ProximityGap/Errors.lean:1597,1632`
-- Brick _of_epsCA_ge PROVEN (verified). Residual = ABF26 L4.6 hard direction; abstract-code form documented FALSE (kernel-refuted double-coverage), RS form discharges via the named Prop GSWitnessLowerBound (ToMathlib/L46GSLowerBound.lean) with RS witness machinery in ToMathlib/L46DiffStackRS.lean. Remaining input = the BCIKS20-style GS witness existence for RS.
+- Brick _of_epsCA_ge PROVEN (verified). Residual = ABF26 L4.6 hard direction; abstract-code form documented FALSE (kernel-refuted double-coverage), RS form discharges via the named Prop GSWitnessLowerBound (ToMathlib/L46GSLowerBound.lean) with RS witness machinery in ToMathlib/L46DiffStackRS.lean.
+- **UPDATE (audit-wave1, commit 5daf73e6f):** the GS witness is now CONSTRUCTED in `ToMathlib/L46GSWitnessRS.lean` (`gsWitnessLowerBound_rs_holds`, BCIKS20 Prop 1.1-style (m+1)-point pencil, axiom-clean). RS discharges are UNCONDITIONAL modulo the explicit arithmetic regime `deg + 2*floor(delta*n) < n` (which strictly implies UDR): `diffStackMCAResidualBelowUDR_rs_unconditional`, `epsMCA_eq_epsCA_below_udr_rs_unconditional` (ABF26 L4.6 for RS). Abstract-code form stays FALSE (documented).
 - papers: ABF26 §4.6; BCIKS20/ACFY25/Hab25
 ### [PROVABLE (L)] CS25BreakdownBelowConjectureBound + not_mcaConjecture_of_cs25BreakdownBelowBound
 - loc: `ProximityGap/MCAConjectureRefutation.lean:47,62`
@@ -195,6 +197,7 @@ Raw classification data: `audit/triage-2026-06-10.json`.
 ### [PROVABLE (M)] MonicHighYResidual (structure)
 - loc: `ArkLib/ToMathlib/GSGradedBundle.lean:283`
 - Per-bundle named GS-factor input: (i) H monic in Y, (ii) 2 <= deg_Y R. DISCHARGED at the witness bundle (FaithfulFrontierWitness.lean:121 theorem residualw — grep-verified) and the hmonic half at unit-leadingCoeff endpoints (BranchCollapse.lean:133 monic_bundle_of_isUnit_leadingCoeff). General discharge for arbitrary normalizedFactors bundles is the A.4 monicization/clearDenomY wall; hd2 is intentionally per-bundle (the deg_Y<=1 affine branch is handled separately). Honest end-state: keep as per-bundle data field; proven consumer section5DataOffcentreFin_of_gradedBundle_residual pins it as exactly the remaining gap.
+- **UPDATE (audit-wave1, commit 882d85173):** boundary pinned in `ToMathlib/MonicResidualBoundary.lean`: FULL residual (both halves) proven at unit-leadingCoeff bundles (`monicHighYResidual_of_isUnit_leadingCoeff`, graded consumer-ready form `monicHighYResidual_graded_of_isUnit_leadingCoeff`); sharpness kernel-checked (`exists_monic_associated_iff_isUnit_leadingCoeff`, `no_monic_associate_bundle_of_not_isUnit_leadingCoeff`: NO associate-class transport can monicize a non-unit-lc factor; `isUnit_of_separable_C_mul`: non-unit rescaling kills the bundle's separable_evalX). Remaining general case = genuinely the A.4 `Y -> Y/lc` substitution, now a kernel-checked wall, not a docstring claim.
 - papers: BCIKS20 SS5 / Hab25 A.4
 ### [PROVABLE (L)] PerZResidual (structure)
 - loc: `ArkLib/ToMathlib/GSLineInputSupply.lean:216`
@@ -242,7 +245,7 @@ Raw classification data: `audit/triage-2026-06-10.json`.
 - Unconditional in its regime: the boundary residual only fires on the branch not(delta < 1-sqrt(rho)); under strict radius the branch is unreachable (absurd). Legitimate branch-vacuity, lets faithful strict-regime producers fill both WHIR RoundKeystoneData residual fields.
 ### [PROVEN] L46 RS bricks (diffStackMCAResidualBelowUDR_rs:94, _of_two_mul_lt_card_sub:133, diffStackResidual_of_gsWitness L46GSLowerBound:187)
 - loc: `ArkLib/ToMathlib/L46DiffStackRS.lean:94,133; L46GSLowerBound.lean:187`
-- All three proven axiom-clean: ABF26 Lemma 4.6 hard direction below unique-decoding radius reduced to the single named witness Prop GSWitnessLowerBound C delta floor(delta*n) (L46GSLowerBound.lean:108, def only — no in-tree construction). The witness itself is BCIKS20 Prop 1.1-style deep-hole+GS-list construction: known math, provable (M/L), NOT the #232 prize regime (UDR, not past-Johnson).
+- All three proven axiom-clean: ABF26 Lemma 4.6 hard direction below unique-decoding radius reduced to the single named witness Prop GSWitnessLowerBound C delta floor(delta*n) (L46GSLowerBound.lean:108). **UPDATE (audit-wave1, commit 5daf73e6f): witness now CONSTRUCTED** in `ToMathlib/L46GSWitnessRS.lean` (`gsWitnessLowerBound_rs_holds`); the RS L4.6 chain is unconditional modulo the explicit regime `deg + 2*floor(delta*n) < n`. NOT the #232 prize regime (UDR, not past-Johnson).
 ### [PROVEN] BatchingConsistencyResidual (def) + batchingConsistencyResidual_sum
 - loc: `ArkLib/ToMathlib/RSPhases.lean:128,133`
 - Self-discharging: batchingConsistencyResidual_sum proves the residual by rfl at the canonical honest value; proven consumer batchingConsistency_of_residual in-file via sum_cube_MLE_mul. NOTE: zero consumers outside RSPhases.lean (file imported only by root ArkLib.lean) — RingSwitching (#29) wiring candidate or deletion candidate; not laundering, just unconsumed.

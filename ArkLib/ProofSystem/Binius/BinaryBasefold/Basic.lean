@@ -1131,10 +1131,13 @@ lemma getFoldingChallenges_tail_castSucc_eq_of_le (i : Fin ℓ)
   funext cId
   let idxOld : Fin i.castSucc := ⟨k + cId.val, by
     have hc : cId.val < ϑ := cId.isLt
+    have h_old' : k + ϑ ≤ i.val := by
+      simpa only [Fin.val_castSucc] using h_old
     omega⟩
   let idxNew : Fin i.succ := ⟨k + cId.val, by
     have hc : cId.val < ϑ := cId.isLt
-    simp only [Fin.val_succ]
+    have h_new' : k + ϑ ≤ i.val + 1 := by
+      simpa only [Fin.val_succ] using h_new
     omega⟩
   change foldOrderChallenges (ℓ := ℓ) (Fin.tail challenges) idxOld =
     foldOrderChallenges (ℓ := ℓ) challenges idxNew

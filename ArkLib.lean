@@ -543,7 +543,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141JohnsonCount
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeArchitecture
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeKernels
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMathLowOutput
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeProof
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141Progress

@@ -269,24 +269,31 @@ namespace FoldPhase
 --     roundConsistent cond f f' x₀
 
 /-- The FRI non-final folding round input relation, with proximity parameter `0 < δ`,
-    for the `i`-th round. The latest oracle codeword (the round-`i` evaluation
-    commitment, indexed at `Fin.last i.castSucc.val`) is δ-close to the Reed-Solomon
-    code on the round-`i` evaluation domain at the witness's degree bound. -/
+    for the `i`-th round. Two conditions:
+    1. **Proximity:** the latest oracle codeword (the round-`i` evaluation
+       commitment, indexed at `Fin.last i.castSucc.val`) is δ-close to the Reed-Solomon
+       code on the round-`i` evaluation domain at the witness's degree bound.
+    2. **Witness binding (honest-prover invariant):** the latest oracle codeword *is* the
+       evaluation of the witness polynomial on the round-`i` domain. This is the input-side
+       mirror of `outputRelation` clause (3); without it, `outputRelation` clause (2)
+       (exact `polyFold` provenance from the round-`i` oracle) is unsatisfiable for δ-close
+       non-codeword oracles, and per-round perfect completeness is provably false. -/
 def inputRelation (_cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
     Set
       (
         (Statement F i.castSucc × (∀ j, OracleStatement s ω i.castSucc j)) ×
         Witness F s d i.castSucc.castSucc
       ) :=
-  fun ⟨⟨_, ostmt⟩, _⟩ =>
+  fun ⟨⟨_, ostmt⟩, w⟩ =>
     let N := ∑ j' ∈ finRangeTo (k + 1) (Fin.last i.castSucc.val).val, (s j').1
     let dom := ω.subdomain N
     let f : Fin (2 ^ (n - N)) → F :=
       fun idx => ostmt (Fin.last i.castSucc.val)
         ⟨dom idx, Finset.mem_image.mpr ⟨idx, Finset.mem_univ _, rfl⟩⟩
-    0 < δ ∧
+    (0 < δ ∧
       δᵣ(f, (_root_.ReedSolomon.code (↑dom : Fin (2 ^ (n - N)) ↪ F)
-        (2 ^ ((∑ j', (s j').1) - N) * d.1) : Set _)) ≤ ↑δ
+        (2 ^ ((∑ j', (s j').1) - N) * d.1) : Set _)) ≤ ↑δ) ∧
+    (∀ (idx : Fin (2 ^ (n - N))), f idx = w.1.eval (dom idx : F))
 
 /-- The FRI non-final folding round output relation, with proximity parameter `0 < δ`,
     for the `i`-th round. After folding, the round-`(i+1)` codeword must satisfy:
@@ -422,12 +429,19 @@ def foldProver :
     ⟨
       ⟨
         chals,
+        -- The output oracle list keeps **all** `i + 1` input oracles (indices `0, …, i`) and
+        -- appends the freshly committed codeword (evaluations of the folded polynomial) at the
+        -- new index `i + 1`. This matches the verifier's `embed` routing
+        -- (`Sum.inl` for `j.val ≤ i`, `Sum.inr` (the round message) for `j.val = i + 1`);
+        -- an earlier version dropped the round-`i` oracle (`j.1 < i.1`), which made the
+        -- prover's and verifier's output oracles disagree at index `i` and perfect
+        -- completeness provably false.
         fun j ↦
-          if h : j.1 < i.1
+          if h : j.1 < i.1 + 1
           then by
             simpa [OracleStatement] using o ⟨j.1, by
               rw [Fin.val_castSucc]
-              exact Nat.lt_add_right 1 h
+              exact h
             ⟩
           else fun x ↦ p.1.eval x.1
       ⟩,
@@ -577,10 +591,14 @@ namespace FinalFoldPhase
 --       let β := f'.eval (s₀.1.1 ^ (2 ^ s));
 --         RoundConsistency.roundConsistencyCheck x₀ pts β
 
-/-- Input relation for the final folding round, with proximity parameter `0 < δ`. The
-    round-`k` codeword (the last folding round's commit, indexed at `Fin.last k`) is
-    δ-close to the Reed-Solomon code on the round-`k` evaluation domain at the
-    pre-final-fold witness's degree bound. -/
+/-- Input relation for the final folding round, with proximity parameter `0 < δ`. Two conditions
+    (mirroring `FoldPhase.inputRelation`):
+    1. **Proximity:** the round-`k` codeword (the last folding round's commit, indexed at
+       `Fin.last k`) is δ-close to the Reed-Solomon code on the round-`k` evaluation domain at
+       the pre-final-fold witness's degree bound.
+    2. **Witness binding (honest-prover invariant):** the round-`k` codeword *is* the evaluation
+       of the witness polynomial on the round-`k` domain (needed for `outputRelation`
+       clause (2), the exact `polyFold` provenance). -/
 def inputRelation (_cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) :
     Set
       (
@@ -590,15 +608,16 @@ def inputRelation (_cond : ∑ i, (s i).1 ≤ n) [DecidableEq F] (δ : ℝ≥0) 
         ) ×
         Witness F s d (Fin.last k).castSucc
       ) :=
-  fun ⟨⟨_, ostmt⟩, _⟩ =>
+  fun ⟨⟨_, ostmt⟩, w⟩ =>
     let N := ∑ j' ∈ finRangeTo (k + 1) (Fin.last (Fin.last k).val).val, (s j').1
     let dom := ω.subdomain N
     let f : Fin (2 ^ (n - N)) → F :=
       fun idx => ostmt (Fin.last (Fin.last k).val)
         ⟨dom idx, Finset.mem_image.mpr ⟨idx, Finset.mem_univ _, rfl⟩⟩
-    0 < δ ∧
+    (0 < δ ∧
       δᵣ(f, (_root_.ReedSolomon.code (↑dom : Fin (2 ^ (n - N)) ↪ F)
-        (2 ^ ((∑ j', (s j').1) - N) * d.1) : Set _)) ≤ ↑δ
+        (2 ^ ((∑ j', (s j').1) - N) * d.1) : Set _)) ≤ ↑δ) ∧
+    (∀ (idx : Fin (2 ^ (n - N))), f idx = w.1.eval (dom idx : F))
 
 /-- Output relation for the final folding round. After the final round the prover
     sends a polynomial in the clear (the final oracle entry at index

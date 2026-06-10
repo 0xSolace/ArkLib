@@ -730,6 +730,7 @@ omit r ℓ 𝓡 [NeZero r] 𝔽q β γ_repetitions [Field 𝔽q] [Fintype 𝔽q]
 
 /- Factor the **first** challenge (LSB): `multilinearCombine u r` equals
 `multilinearCombine (affineLineEval U_even U_odd (r 0)) (fun j => r (j+1))`. -/
+set_option linter.flexible false in
 theorem multilinearCombine_recursive_form_first {A : Type*} [AddCommMonoid A] [Module L A]
     {ι : Type*} {ϑ : ℕ}
     (u : (Fin (2 ^ (ϑ + 1))) → ι → A) (r_challenges : Fin (ϑ + 1) → L) :
@@ -1135,9 +1136,16 @@ lemma not_jointProximityNat_of_not_jointProximityNat_evenOdd_split
           exact h_row_val.symm
         have hRes₀ := congrFun hRes0 ⟨rowIdx.val / 2, by omega⟩
         dsimp [splitEvenOddRowWiseInterleavedWords] at hRes₀
-        simp [v_rowwise_finmap, h_even, VSplit_even_rowwise, VSplit_rowwise]
         have hRes₀' := hRes₀
-        simp only [h_row_eq] at hRes₀' ⊢
+        simp only [h_row_eq] at hRes₀'
+        have hvrow :
+            v_rowwise_finmap rowIdx colIdx =
+              vSplit colIdx 0 ⟨rowIdx.val / 2, by omega⟩ := by
+          dsimp [v_rowwise_finmap, VSplit_even_rowwise, VSplit_rowwise]
+          rw [dif_pos h_even]
+          rfl
+        change U rowIdx colIdx = v_rowwise_finmap rowIdx colIdx
+        rw [hvrow]
         exact hRes₀'
       · have h_row_val : rowIdx.val = 2 * (rowIdx.val / 2) + 1 := by
           have h_divmod := Nat.mod_add_div rowIdx.val 2
@@ -1148,9 +1156,16 @@ lemma not_jointProximityNat_of_not_jointProximityNat_evenOdd_split
           exact h_row_val.symm
         have hRes₁ := congrFun hRes1 ⟨rowIdx.val / 2, by omega⟩
         dsimp [splitEvenOddRowWiseInterleavedWords] at hRes₁
-        simp [v_rowwise_finmap, h_even, VSplit_odd_rowwise, VSplit_rowwise]
         have hRes₁' := hRes₁
-        simp only [h_row_eq] at hRes₁' ⊢
+        simp only [h_row_eq] at hRes₁'
+        have hvrow :
+            v_rowwise_finmap rowIdx colIdx =
+              vSplit colIdx 1 ⟨rowIdx.val / 2, by omega⟩ := by
+          dsimp [v_rowwise_finmap, VSplit_odd_rowwise, VSplit_rowwise]
+          rw [dif_neg h_even]
+          rfl
+        change U rowIdx colIdx = v_rowwise_finmap rowIdx colIdx
+        rw [hvrow]
         exact hRes₁'
 
 set_option maxHeartbeats 8000000 in
@@ -1584,6 +1599,9 @@ lemma iterated_fold_eq_multilinearCombine_preTensorCombine
           (A := L) (ι := sDomain 𝔽q β h_ℓ_add_R_rate destIdx)
           (u := U) (r_challenges := r_chal)
         rw [hrec]
+        change multilinearCombine (F := L) V (fun j : Fin n => r_chal j.succ) =
+          multilinearCombine (F := L) (affineLineEvaluation U_even U_odd (r_chal 0))
+            (fun j : Fin n => r_chal j.succ)
         rw [hsplit]
 
 /-- **Residual: fiberwise closeness lifts to interleaved-word proximity (Lemma 4.22).**
