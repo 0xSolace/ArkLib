@@ -92,7 +92,40 @@ theorem csp_family_card {n : ℕ} (hn : 0 < n) {F : Finset (ℕ × ℕ)}
     (Nat.div_pos (Nat.le_of_dvd hn hpd) (Nat.pos_of_dvd_of_pos hpd hn))
     ⟨p.2, hpr, rfl⟩
 
+/-- A CSP-satisfying family of cosets is a window-coset union as soon as every
+chosen divisor lies past the window threshold.  This is the direct bridge from
+packing feasibility to the `IsWindowCosetUnion` surface used by the window laws. -/
+theorem csp_family_isWindowCosetUnion {n t : ℕ} (hn : 0 < n)
+    {F : Finset (ℕ × ℕ)} (hF : ∀ p ∈ F, ValidMember n p)
+    (hgt : ∀ p ∈ F, t < p.1)
+    (hcsp : ∀ p ∈ F, ∀ q ∈ F, p ≠ q → p.1 ≠ q.1 →
+        p.2 % Nat.gcd (n / p.1) (n / q.1)
+          ≠ q.2 % Nat.gcd (n / p.1) (n / q.1)) :
+    IsWindowCosetUnion n t (F.biUnion fun p => cosetOf n p.1 p.2) := by
+  classical
+  have hdisj := (packing_iff_csp hn hF).mpr hcsp
+  refine ⟨F.image (fun p => cosetOf n p.1 p.2), ?_, ?_, ?_⟩
+  · intro P hP
+    obtain ⟨p, hp, rfl⟩ := Finset.mem_image.mp hP
+    obtain ⟨hpd, hpr⟩ := hF p hp
+    exact ⟨p.1, hpd, hgt p hp, ⟨p.2, hpr, rfl⟩⟩
+  · intro P hP Q hQ hne
+    obtain ⟨p, hp, rfl⟩ := Finset.mem_image.mp (Finset.mem_coe.mp hP)
+    obtain ⟨q, hq, rfl⟩ := Finset.mem_image.mp (Finset.mem_coe.mp hQ)
+    have hpq : p ≠ q := by
+      intro h
+      exact hne (by rw [h])
+    exact hdisj p hp q hq hpq
+  · ext x
+    simp only [Finset.mem_biUnion, Finset.mem_image, id_eq]
+    constructor
+    · rintro ⟨p, hp, hx⟩
+      exact ⟨cosetOf n p.1 p.2, ⟨p, hp, rfl⟩, hx⟩
+    · rintro ⟨P, ⟨p, hp, rfl⟩, hx⟩
+      exact ⟨p, hp, hx⟩
+
 end PackingClassCSP
 
 #print axioms PackingClassCSP.packing_iff_csp
 #print axioms PackingClassCSP.csp_family_card
+#print axioms PackingClassCSP.csp_family_isWindowCosetUnion
