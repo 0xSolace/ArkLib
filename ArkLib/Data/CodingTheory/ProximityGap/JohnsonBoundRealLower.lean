@@ -138,3 +138,37 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.hab25_formula_ge_n_div_q
 #print axioms CodingTheory.card_div_card_le_johnsonBoundReal
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_udr_window
+
+namespace CodingTheory
+
+open scoped NNReal
+
+/-- The pure-real core of the tight `harith` closure: with `y = x·s ≤ 3(M+1/2)`,
+`s ≤ 1`, `12 ≤ M`, the canonical budget `(x+1)·(c·x+1)` fits inside
+`(2/3)·(M+1/2)⁵/s³` (all per-`n`). -/
+theorem harith_core_real {x s c M : ℝ}
+    (hx0 : 0 ≤ x) (hs0 : 0 < s) (hs1 : s ≤ 1)
+    (hM : 12 ≤ M) (hc : c ≤ M * (M + 1) / 2)
+    (hc0 : 0 ≤ c) (hy : x * s ≤ 3 * (M + 1/2)) :
+    (x + 1) * (c * x + 1) ≤ (2/3) * (M + 1/2) ^ 5 / s ^ 3 := by
+  have hM0 : (0 : ℝ) < M + 1/2 := by linarith
+  have hkey : ((x + 1) * (c * x + 1)) * s ^ 3 ≤ (2/3) * (M + 1/2) ^ 5 := by
+    have h1 : (x + 1) * s ≤ 3 * (M + 1/2) + 1 := by nlinarith
+    have h2 : (c * x + 1) * s ≤ (3/2) * (M + 1/2) ^ 3 + 1 := by nlinarith
+    have hs3 : s ^ 3 ≤ s * s := by nlinarith
+    have hxs : 0 ≤ (x + 1) * s := by positivity
+    have hcs : 0 ≤ (c * x + 1) * s := by positivity
+    calc ((x + 1) * (c * x + 1)) * s ^ 3
+        ≤ ((x + 1) * s) * ((c * x + 1) * s) * s := by nlinarith [sq_nonneg s, mul_nonneg hx0 hc0]
+      _ ≤ (3 * (M + 1/2) + 1) * ((3/2) * (M + 1/2) ^ 3 + 1) * 1 := by
+          have hAB : ((x + 1) * s) * ((c * x + 1) * s)
+              ≤ (3 * (M + 1/2) + 1) * ((3/2) * (M + 1/2) ^ 3 + 1) :=
+            mul_le_mul h1 h2 hcs (by linarith)
+          have hABnn : 0 ≤ ((x + 1) * s) * ((c * x + 1) * s) := mul_nonneg hxs hcs
+          nlinarith [mul_le_mul_of_nonneg_left hs1 hABnn]
+      _ ≤ (2/3) * (M + 1/2) ^ 5 := by nlinarith [pow_pos hM0 3, pow_pos hM0 5, sq_nonneg (M + 1/2)]
+  have hs3p : (0 : ℝ) < s ^ 3 := by positivity
+  rw [le_div_iff₀ hs3p]
+  exact hkey
+
+end CodingTheory
