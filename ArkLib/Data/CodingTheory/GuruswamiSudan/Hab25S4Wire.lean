@@ -20,7 +20,6 @@ open Polynomial Polynomial.Bivariate
 
 attribute [local instance] Classical.propDecidable
 
-set_option maxHeartbeats 400000 in
 /-- Wiring of the separable specialization hypothesis (`hnosq`) using `Hab25SeparableSupply`. -/
 theorem exists_specialized_factor_assignment_charZero {F : Type} [Field F] [CharZero F]
     {Q : (RatFunc F)[X][Y]} {d : F[X]} {Q₀ : (F[X])[X][Y]}

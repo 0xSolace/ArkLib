@@ -10,7 +10,10 @@ formalization has two layers.  The paper-level theorem statements
 \texttt{StirIOP.stir\_main} and \texttt{StirIOP.stir\_rbr\_soundness} are front doors.  The
 protocol layer builds single-round, multi-round, and checking-verifier objects and proves their
 completeness.  The remaining soundness work is isolated as named correlated-agreement and
-round-by-round bridge residuals.
+round-by-round bridge residuals.  The live implementation tracker is
+\href{https://github.com/lalalune/ArkLib/issues/301}{STIR issue \#301}; this blueprint records
+that tracker's current Lean state and should not be read as unconditional closure of the paper
+soundness theorem.
 
 \subsection{Tools for Reed--Solomon codes}\label{sec:stir_tools}
 
@@ -241,5 +244,7 @@ round-by-round bridge residuals.
     objects and completeness are represented in Lean, the paper front doors are wired to those
     objects, and the remaining unconditional soundness work is explicitly named.  The checker is
     still a single-domain model: its folds are identity folds of the current code, so paper-STIR's
-    full degree-reduction behavior is not yet represented as an unconditional theorem.
+    full degree-reduction behavior is not yet represented as an unconditional theorem.  The
+    front doors above are therefore conditional on the stated bridge, correlated-agreement, and
+    complexity legs.
 \end{remark}

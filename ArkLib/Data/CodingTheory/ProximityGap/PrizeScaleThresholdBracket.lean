@@ -47,9 +47,10 @@ variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
 /-- The in-tree Reed–Solomon code at prize scale (`n = 2²⁰`, degree `< 2¹⁹`), as a `Finset` of
 words (the carrier for the `maxList`/`aStar` machinery). -/
-open Classical in
 noncomputable def rsCodeF (D : Fin (2 ^ 20) ↪ F) : Finset (Fin (2 ^ 20) → F) :=
-  Finset.univ.filter (· ∈ ReedSolomon.code D (2 ^ 19))
+  by
+    classical
+    exact Finset.univ.filter (· ∈ ReedSolomon.code D (2 ^ 19))
 
 /-- The two agreement counts in play (`ListThresholdWellDefined.agree` and the Round-4/5
 `agreeCount`) are the same number — the underlying filters differ only in their `Decidable`
@@ -58,7 +59,6 @@ theorem agree_eq_agreeCount (c w : Fin (2 ^ 20) → F) :
     agree c w = agreeCount c w := by
   unfold agree agreeCount
   congr 1
-  exact Finset.filter_congr_decidable _
 
 /-- **Upper side: the RS worst-case list at agreement `750000` is `≤ 91`.**  Every listed codeword
 is the evaluation of a unique degree-`< 2¹⁹` polynomial; the polynomial pullback of the list is
@@ -147,7 +147,7 @@ theorem ninetyone_mul_q_lt_choose (q : ℕ) (hq : q ≤ 2 ^ 256) :
     exact Nat.le_of_mul_le_mul_right hineq (by norm_num)
   -- 4^(2¹⁹) ≤ 2²⁰ · C(2²⁰, 2¹⁹)  (central binomial)
   have hcb : 4 ^ (2 ^ 19) ≤ 2 ^ 20 * (2 ^ 20).choose (2 ^ 19) := by
-    have h := Nat.four_pow_le_mul_central_binom (2 ^ 19) (by norm_num)
+    have h := Nat.four_pow_le_two_mul_self_mul_centralBinom (2 ^ 19) (by norm_num)
     -- h : 4 ^ (2^19) ≤ 2 * 2^19 * centralBinom (2^19)
     have hcb_eq : Nat.centralBinom (2 ^ 19) = (2 ^ 20).choose (2 ^ 19) := by
       rw [Nat.centralBinom]
@@ -175,8 +175,7 @@ theorem ninetyone_mul_q_lt_choose (q : ℕ) (hq : q ≤ 2 ^ 256) :
     exact Nat.lt_of_mul_lt_mul_left hbig
   calc 91 * q ≤ 91 * 2 ^ 256 := Nat.mul_le_mul_left _ hq
     _ < 2 ^ 7 * 2 ^ 256 := by
-        apply Nat.mul_lt_mul_right (by positivity)
-        norm_num
+        exact (Nat.mul_lt_mul_right (2 ^ 256)).2 (by norm_num)
     _ = 2 ^ 263 := by rw [← pow_add]
     _ < (2 ^ 20).choose (2 ^ 19 + 1) := hC
 

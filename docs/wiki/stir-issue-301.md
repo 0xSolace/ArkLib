@@ -60,13 +60,23 @@ discharging `stir_main` / `stir_rbr_soundness`.
   `stirCheckingRbrSoundnessResidual`, which is exactly the remaining RBR knowledge-soundness
   theorem for the checking verifier, and the bridge residual `stirCheckingCABridge`, which
   isolates the STIR/BCIKS correlated-agreement plus per-round accounting proof.
-- `CheckingVerifier.lean` also has a small-field route:
+- `CheckingVerifier.lean` has a CA-small-field route:
   `strictCoeffPolysResidual_all_of_card_le` discharges the whole positive-width
   `StrictCoeffPolysResidual` family from `|F| <= |ι|` and
   `δ < 1 - sqrtRate`, using the in-tree vacuous-regime BCIKS theorem. The front doors
   `stir_rbr_soundness_of_checkingIOP_card_le` and `stir_main_of_checkingIOP_card_le`
   consume that route, so in this regime the remaining soundness hypothesis is only the
   protocol-level checking bridge `stirCheckingCABridge`.
+- `CheckingVerifier.lean` also has the stronger small-field unconditional route:
+  `one_le_proximityError_of_card_le` proves the STIR proximity error is at least `1` under
+  `|F| <= (m - 1) * |ι|` and `δ <= (1 - ρ) / 2`; hence
+  `stirCheckingRbrSoundness_of_small_field`,
+  `stirCheckingCABridge_of_small_field`,
+  `stirCheckingIOP_isSecureWithGap_small_field`,
+  `stir_rbr_soundness_of_checkingIOP_small_field`, and
+  `stir_main_of_checkingIOP_small_field` consume no Johnson-CA residual, no bridge residual, and
+  no per-round-gap keystone. This is vacuous-budget security: for positive `secpar`, the `hε`
+  upper bound conflicts with an `ε_rbr` lower bound at least `1`.
 - The sharp vacuous route is also wired:
   `strictCoeffPolysResidual_all_of_card_le_e7`,
   `stir_rbr_soundness_of_checkingIOP_card_le_e7`, and
@@ -122,6 +132,23 @@ Targeted checks used while avoiding a full rebuild:
   - Re-run after adding `checkingBool_eq_true_iff`: passed with the same axiom footprint.
   - Re-run after `PerRoundProximityGap.refl`, inequality `hQin` alignment, and the large-sector
     route: passed; all printed checking front doors use only standard axioms.
+  - Re-run after adding `stir_rbr_soundness_of_checkingIOP_small_field`: passed; the new axiom
+    print reports only `[propext, Classical.choice, Quot.sound]`.
+- `lake build ArkLib.ProofSystem.Stir.CheckingVerifier`
+  - Passed after adding `stir_rbr_soundness_of_checkingIOP_small_field`.
+  - Re-run after normalizing `(-Real.log ...)` spacing: passed. Build replayed cached
+    dependencies and reported only unrelated pre-existing warnings; the `- Real.log` whitespace
+    warnings are gone.
+- `lake env lean ArkLib/ProofSystem/Stir/MainThm.lean`
+  - Re-run after the new checking front door: passed, with the same pre-existing unused-variable
+    warnings and standard axiom prints for `stir_main` / `stir_rbr_soundness`.
+  - Re-run after normalizing `(-Real.log ...)` spacing in the canonical `stir_main` statement:
+    passed with the same unused-variable warnings.
+- `rg -n -g '*.lean' -- "- Real\\.log" ArkLib/ProofSystem/Stir`
+  - Clean after normalizing the `hQin` spacing in `MainThm.lean` and `CheckingVerifier.lean`.
+- `rg -n "\\bsorry\\b|\\badmit\\b|^\\s*axiom\\b|^\\s*opaque\\b" ArkLib/ProofSystem/Stir ArkLib/Data/CodingTheory/ProximityGap/BCIKS20 -g '*.lean'`
+  - Latest scan found no actual `sorry` / `admit` proof steps in these targets; hits were
+    documentation comments, axiom-audit text, or ordinary words such as "admits".
 
 ## Cleanup Notes
 
@@ -151,7 +178,10 @@ Landed inventory (all axiom-clean, on `main`):
 - Vector wire format: block kit (`VectorBridge.lean`), chain-composable mid variants
   (`VectorBridgeMid.lean`), assembled chain + `2(M+1)+2` budget (`VectorChain.lean`),
   and the packaging bridge (`VSpecBridge.lean`: `VectorSpec.vsAppend`/`vsSeqCompose` +
-  `toProtocolSpec` commutation + `stirChainVSpec_toProtocolSpec`).
+  `toProtocolSpec` commutation + `stirChainVSpec_toProtocolSpec` +
+  `stirChainVSpec_toProtocolSpec_card_challengeIdx`).  The literal `VectorSpec` budget
+  theorems live in `ChainVSpecCount.lean`
+  (`stirChainVSpec_card_challengeIdx`, `stirChainVSpec_card_messageIdx`).
 - Soundness track: init-block RBR at error 0 (`InitRbrSoundness.lean`), chain RBR composition
   through the first seam for a generic tail (`InitAppendRbr.lean`), block RBR budgets + THE
   FOLD SEAM consuming the residual-free Lemma 4.13 (`BlockRbrBudgets.lean`:
@@ -182,4 +212,30 @@ Landed inventory (all axiom-clean, on `main`):
 pointwise interface-equality side condition `hOₘ` between the append-derived message
 interfaces (`instOracleInterfaceMessageAppend` route) and the `toProtocolSpec` ones
 (`instOracleInterfaceMessageToProtocolSpec`); both reduce to `instVector` per slot but not
-definitionally — needs the index-case lemma (castAdd/natAdd split). Staged in scratch.
+definitionally — needs the index-case lemma (castAdd/natAdd split). Latest probe:
+`OracleReduction.cast` works after importing `ArkLib.OracleReduction.Cast`, and the only
+remaining goal is exactly
+`instStirVecFullMsgInterface M i = dcast ... (VectorSpec.instOracleInterfaceMessageToProtocolSpec
+...)`; `simp` does not close it after unfolding because the append side becomes nested
+`Fin.fappend₂` / `Fin.fconcat₂` cases.
+One generic route was probed for `VectorSpec.toProtocolSpec_vsAppend`: splitting by
+`MessageIdx.sumEquiv.symm` leaves left/right goals where `Fin.fappend₂_left/right` reduce the
+append side to a casted `fun h => OracleInterface.instVector`; the remaining obstacle is
+normalizing that casted proof argument and the transported vector length on the RHS.  The existing
+`OracleVerifier.Append.instAppend_inl_heq` / `instAppend_inr_heq` lemmas are the closest local
+template (`dcongr_heq` over the direction proof).
+
+### 2026-06-10 packaging validation
+
+- `lake env lean ArkLib/ProofSystem/Stir/VSpecBridge.lean`
+  - Passed after renaming the protocol-spec count theorem to
+    `stirChainVSpec_toProtocolSpec_card_challengeIdx`; axiom audit reports only
+    `[propext, Classical.choice, Quot.sound]`.
+  - Existing warning remains on `stirChainVSpec_toProtocolSpec` for unused section variables.
+- `lake build ArkLib.ProofSystem.Stir.VSpecBridge`
+  - Passed after the rename; build replayed cached dependencies and reported existing
+    style/unused-instance warnings in the vector packaging stack.
+- `lake env lean ArkLib/ProofSystem/Stir/ChainVSpecCount.lean`
+  - Passed after refreshing the `VSpecBridge` `.olean`; the earlier duplicate-name failure was
+    caused by the protocol-spec count theorem colliding with the existing literal-`VectorSpec`
+    theorem `stirChainVSpec_card_challengeIdx`.

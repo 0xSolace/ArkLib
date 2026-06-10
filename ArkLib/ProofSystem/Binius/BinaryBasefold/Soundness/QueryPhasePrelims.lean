@@ -524,11 +524,15 @@ lemma logical_computeFoldedValue_eq_iterated_fold
           exact lt_of_lt_of_le h_lt h_le⟩)
       (getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (k := k) (v := v)) := by
   simp only [logical_computeFoldedValue]
-  rw [iterated_fold_eq_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+  rw [logical_queryFiberPoints_eq_fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    oStmt k v]
+  exact single_point_localized_fold_matrix_form_eq_iterated_fold 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := ⟨k.val * ϑ,
       lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (x := k.val * ϑ)
         (h := k_mul_ϑ_lt_ℓ (k := k))⟩) (steps := ϑ)
     (h_destIdx := by rfl) (h_destIdx_le := by exact k_succ_mul_ϑ_le_ℓ_₂ (k := k))
+    (h_i_lt := by exact k_mul_ϑ_lt_ℓ (k := k))
     (f := oStmt ⟨k.val, by
       simp only [toOutCodewordsCount, Fin.val_last, lt_self_iff_false, ↓reduceIte, add_zero,
         Fin.is_lt]⟩)
@@ -537,10 +541,8 @@ lemma logical_computeFoldedValue_eq_iterated_fold
         have h_le : k.val * ϑ + ϑ ≤ ℓ := k_succ_mul_ϑ_le_ℓ_₂ (k := k)
         have h_lt : k.val * ϑ + j.val < k.val * ϑ + ϑ := by
           exact Nat.add_lt_add_left j.isLt (k.val * ϑ)
-        exact lt_of_lt_of_le h_lt h_le⟩)]
-  simp [localized_fold_matrix_form, single_point_localized_fold_matrix_form,
-    logical_queryFiberPoints_eq_fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      oStmt k v]
+        exact lt_of_lt_of_le h_lt h_le⟩)
+    (y := getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (k := k) (v := v))
 
 end LogicalOracleVerification
 

@@ -2545,6 +2545,21 @@ theorem windowed_coset_cover_q {p q : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : 
           ring]
         exact hh
 
+/-- **The general-`t` windowed coset cover, `p`-direction** — the role-swap
+instantiation: with `p`-power window of depth `m`, every element is
+`μ_{p^c·q}`-covered (some `c ≤ m`) or `μ_{p^{m+1}}`-covered. -/
+theorem windowed_coset_cover_p {p q : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q)
+    {b : ℕ} {ζq : F} (hζq : IsPrimitiveRoot ζq (q ^ (b + 1))) :
+    ∀ m : ℕ, ∀ a : ℕ, m ≤ a + 1 → ∀ ζp : F, IsPrimitiveRoot ζp (p ^ (a + 1)) →
+      ∀ S : Finset F, (∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1) →
+      (∀ c, c ≤ m → ∑ z ∈ S, z ^ (p ^ c) = 0) →
+      ∀ x ∈ S,
+        (∃ c, c ≤ m ∧ ∀ h : F, h ^ (p ^ c * q) = 1 → h * x ∈ S) ∨
+        (∀ h : F, h ^ (p ^ (m + 1)) = 1 → h * x ∈ S) := by
+  intro m a hm ζp hζp S hS hwin x hx
+  exact windowed_coset_cover_q hq hp (Ne.symm hpq) hζq m a hm ζp hζp S
+    (fun z hz => by rw [mul_comm]; exact hS z hz) hwin x hx
+
 end GeneralWindowedLaw
 
 end DeBruijnTwoPrime

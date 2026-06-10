@@ -124,7 +124,7 @@ theorem mcaEvent_false_of_exact_pair
     (hexact : ∀ i, g₀ i = u₀ i ∧ g₁ i = u₁ i) :
     ¬ mcaEvent (A := F) C δ u₀ u₁ γ :=
   MCAJohnsonClustering.mcaEvent_false_of_degreeOne_curve C δ u₀ u₁ γ g₀ g₁ hg₀ hg₁
-    (fun S _ _ => fun i _ => hexact i)
+    (fun _ _ _ => fun i _ => hexact i)
 
 /-- **`LineWitnessClustering C δ 0` from a uniform exact decoding curve.** If every stack `u` admits
 an *exact* codeword pair `(g₀ u, g₁ u) ∈ C` agreeing with `(u 0, u 1)` everywhere, and the second
@@ -254,7 +254,7 @@ theorem exists_exact_decodingCurve_RS (k DZ : ℕ)
   have : x ∈ (Finset.univ.filter (fun x => ¬(g₀ x = u₀ x ∧ g₁ x = u₁ x))) :=
     Finset.mem_filter.mpr ⟨Finset.mem_univ _, hne⟩
   rw [hempty] at this
-  exact absurd this (Finset.notMem_empty x)
+  simp at this
 
 end ReedSolomonExistence
 

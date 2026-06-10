@@ -140,13 +140,15 @@ theorem foldMatrixNat_det_ne_zero (i : Fin r) (steps : ℕ)
       · exact ih (by omega) (by omega) _
       · exact ih (by omega) (by omega) _
 
-/-- **`FoldMatrixDetNeZeroResidual` discharged.** -/
-instance instFoldMatrixDetNeZeroResidual :
-    FoldMatrixDetNeZeroResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) where
-  holds i destIdx steps h_destIdx h_destIdx_le y := by
-    rw [foldMatrix]
-    exact foldMatrixNat_det_ne_zero 𝔽q β i steps _
-      (by have : (destIdx : ℕ) ≤ ℓ := h_destIdx_le; omega) _
+/-- Fold matrices are nonsingular in the new `{destIdx}` API. -/
+theorem foldMatrix_det_ne_zero (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
+    (foldMatrix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) y).det ≠ 0 := by
+  rw [foldMatrix]
+  exact foldMatrixNat_det_ne_zero 𝔽q β i steps _
+    (by have : (destIdx : ℕ) ≤ ℓ := h_destIdx_le; omega) _
 
 end
 

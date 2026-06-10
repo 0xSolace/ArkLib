@@ -77,8 +77,9 @@ HONESTY NOTES:
 * SMALL-FIELD REGIME (#301 Part B): in `|F| ≤ (m−1)·|ι|` with `δ ≤ (1−ρ)/2`, the prescribed
   proximity error `err⋆` is ≥ 1 (`one_le_proximityError_of_card_le`), so the rbr-soundness
   residual AND the bridge are discharged outright (`stirCheckingRbrSoundness_of_small_field`,
-  `stirCheckingCABridge_of_small_field`) and `stir_main_of_checkingIOP_small_field` consumes
-  NO soundness residual at all. This is the same vacuity that makes
+  `stirCheckingCABridge_of_small_field`); the public
+  `stir_rbr_soundness_of_checkingIOP_small_field` and `stir_main_of_checkingIOP_small_field`
+  front doors consume NO soundness residual at all. This is the same vacuity that makes
   `STIR.proximity_gap_of_card_le` unconditional; it carries no security content for
   `secpar > 0` (the `hε` leg then pins `secpar = 0`).
 -/
@@ -1510,6 +1511,58 @@ theorem stir_rbr_soundness_of_checkingIOP_large
     (PerRoundProximityGap.refl ProxGapBound)
     hfold hrest
 
+/-- **Lemma 5.4 through the CHECKING IOPP, small-field UNCONDITIONAL soundness discharge**
+(#301 Part B): `stir_rbr_soundness` discharged through `π := stirCheckingIOP` in the regime
+`|F| ≤ (m−1)·|ι₀|` and the unique-decoding branch `δ₀ ≤ (1−ρ₀)/2`, with NO
+correlated-agreement residual, NO checking bridge, and NO per-round-gap keystone. The lower-bound
+hypothesis `hεlb` says the fold-round error budget dominates the vacuous `err⋆ ≥ 1` threshold;
+the usual `hfold`/`hrest` hypotheses are still the statement's advertised per-round upper
+bounds. -/
+theorem stir_rbr_soundness_of_checkingIOP_small_field
+    {M : ℕ} (ι : Fin (M + 1) → Type) [∀ i : Fin (M + 1), Fintype (ι i)]
+    {s : ℕ} {P : Params ι F}
+    [h_nonempty : ∀ i : Fin (M + 1), Nonempty (ι i)]
+    {hParams : ParamConditions ι P} {Dist : Distances M}
+    {Codes : CodeParams ι P Dist} [NeZero (degree ι P 0)]
+    (hδ₀ : Dist.δ 0 < (1 - Bstar (rate (code (P.φ 0) P.deg))))
+    (hδᵢ : ∀ {j : Fin (M + 1)}, j ≠ 0 →
+        Dist.δ j < (1 - rate (code (P.φ j) (degree ι P j))
+          - 1 / Fintype.card (ι j) : ℝ) ∧
+        Dist.δ j < (1 - Bstar (rate (code (P.φ j) (degree ι P j)))))
+    (ε_fold : ℝ≥0) (ε_out : Fin M → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    {m : ℕ}
+    (hδudr : Dist.δ 0 ≤
+      (1 - (LinearCode.rate (code (P.φ 0) (degree ι P 0)) : ℝ≥0)) / 2)
+    (hq : (Fintype.card F : ℝ≥0) ≤ ((m : ℝ≥0) - 1) * (Fintype.card (ι 0) : ℝ≥0))
+    (hεlb :
+      proximityError F (degree ι P 0)
+        (LinearCode.rate (code (P.φ 0) (degree ι P 0))) (Dist.δ 0) m ≤ ε_fold)
+    (hfold : ε_fold ≤ proximityError F (P.deg / P.foldingParam 0)
+      (rate (code (P.φ 0) P.deg)) (Dist.δ 0) (P.repeatParam 0))
+    (hrest : ∀ j : Fin M,
+        (ε_out j ≤ ((Dist.l j.succ : ℝ) ^ 2 / 2) *
+          ((degree ι P j.succ : ℝ) / (Fintype.card F - Fintype.card (ι j.succ))) ^ s)
+        ∧
+        (ε_shift j ≤
+          (1 - Dist.δ j.castSucc) ^ (P.repeatParam j.castSucc) +
+           proximityError F (degree ι P j.succ) (rate (code (P.φ j.succ) (degree ι P j.succ)))
+            (Dist.δ j.succ) (P.repeatParam j.castSucc) + s +
+           proximityError F ((degree ι P j.succ) / P.foldingParam j.succ)
+            (rate (code (P.φ j.succ) (degree ι P j.succ)))
+            (Dist.δ j.succ) (P.repeatParam j.succ))
+        ∧
+        ε_fin ≤ (1 - Dist.δ (Fin.last M)) ^ (P.repeatParam (Fin.last M))) :
+    stir_rbr_soundness (s := s) (hParams := hParams) (Codes := Codes)
+      ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin :=
+  stir_rbr_soundness_of_secure_vectorIOP (hParams := hParams) (Codes := Codes)
+    ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin
+    (stirCheckingIOP M (P.φ 0) (degree ι P 0))
+    (stirCheckingIOP_isSecureWithGap_small_field M (P.φ 0) (degree ι P 0) (Dist.δ 0)
+      hδudr hq
+      (fun _ => ({ε_fold} ∪ {ε_fin} ∪ univ.image ε_out ∪ univ.image ε_shift).max' (by simp))
+      (fun i _hi => le_trans hεlb (Finset.le_max' _ _ (by simp))))
+    hfold hrest
+
 /-- **Theorem 5.1 through the CHECKING IOPP**: `stir_main` discharged with
 `π := stirCheckingIOP` via the landed `stir_main_of_secure_vectorIOP` wiring. The
 completeness leg is PROVEN; the soundness leg is consumed via the named CA residuals through
@@ -1568,7 +1621,7 @@ theorem stir_main_of_checkingIOP_card_le
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (-Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -1599,7 +1652,7 @@ theorem stir_main_of_checkingIOP_card_le_e7
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (-Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -1633,7 +1686,7 @@ theorem stir_main_of_checkingIOP_large
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (-Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -1675,7 +1728,7 @@ theorem stir_main_of_checkingIOP_small_field
     (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
     (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
     (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
-    (hQin : (qNumtoInput : ℝ) ≥ secpar / (- Real.log (1 - δ)))
+    (hQin : (qNumtoInput : ℝ) ≥ secpar / (-Real.log (1 - δ)))
     (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
       (cₖ k) * ((Real.log degree) +
         secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
@@ -1728,6 +1781,7 @@ end StirIOP
 #print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_card_le
 #print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_card_le_e7
 #print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_large
+#print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_small_field
 #print axioms StirIOP.stir_main_of_checkingIOP_CA
 #print axioms StirIOP.stir_main_of_checkingIOP_card_le
 #print axioms StirIOP.stir_main_of_checkingIOP_card_le_e7

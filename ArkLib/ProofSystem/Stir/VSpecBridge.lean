@@ -110,6 +110,12 @@ theorem stirChainVSpec_toProtocolSpec (M : ℕ) :
   rw [toProtocolSpec_vsAppend, toProtocolSpec_vsAppend, toProtocolSpec_vsAppend,
     toProtocolSpec_vsSeqCompose]
 
+/-- The `toProtocolSpec` image of the single literal vector spec has the same `2(M+1)+2` challenge
+count as the compound full vector chain. -/
+theorem stirChainVSpec_toProtocolSpec_card_challengeIdx (M : ℕ) :
+    Fintype.card (((stirChainVSpec ι F M).toProtocolSpec F).ChallengeIdx) = 2 * (M + 1) + 2 := by
+  rw [stirChainVSpec_toProtocolSpec, stirFullVector_card_challengeIdx]
+
 end Round3
 
 end StirIOP
@@ -117,3 +123,4 @@ end StirIOP
 #print axioms ProtocolSpec.VectorSpec.toProtocolSpec_vsAppend
 #print axioms ProtocolSpec.VectorSpec.toProtocolSpec_vsSeqCompose
 #print axioms StirIOP.Round3.stirChainVSpec_toProtocolSpec
+#print axioms StirIOP.Round3.stirChainVSpec_toProtocolSpec_card_challengeIdx

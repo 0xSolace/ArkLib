@@ -671,7 +671,8 @@ lemma query_phase_step_preserves_fold
     have h_eq := single_point_localized_fold_matrix_form_eq_iterated_fold 𝔽q β
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := midIdx) (steps := ϑ)
       (destIdx := ⟨k * ϑ + ϑ, by omega⟩) (h_destIdx := by simp only [Nat.add_right_cancel_iff]; rfl)
-      (h_destIdx_le := by omega) (f := f_mid) (y := y_left) (r_challenges :=
+      (h_destIdx_le := by omega) (h_i_lt := by dsimp only [midIdx]; exact k_mul_ϑ_lt_ℓ (k := k))
+      (f := f_mid) (y := y_left) (r_challenges :=
         fun j => stmtIn.challenges ⟨k.val * ϑ + j.val, by simp only [Fin.val_last]; omega⟩)
     conv_lhs => rw [h_eq]
     dsimp only [f_mid]

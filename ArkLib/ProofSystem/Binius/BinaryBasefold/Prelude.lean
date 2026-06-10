@@ -1898,8 +1898,9 @@ The definitions below are the canonical entry points consumed by `Code`, `Compli
 `Relations`, `QueryPhase`, and the `Soundness/*` modules. They are stated against
 `(steps : ℕ) {destIdx : Fin r} (h_destIdx) (h_destIdx_le)` (the post-split convention) and are
 built on top of the legacy `*_steps`/`*_legacy`/`foldMatrixNat`/`localized_fold_eval` machinery
-above. `challengeTensorExpansion` is `multilinearWeight`; the raw single-point matrix expression
-below unfolds to `challengeTensorExpansion steps r ᵥ* foldMatrix … y ⬝ᵥ fiberEvaluations … f y`.
+above. `challengeTensorExpansion` remains the multilinear-weight tensor used by the soundness
+polynomial layer; the raw single-point matrix expression below uses the legacy fold-order tensor,
+whose row order matches `foldMatrixNat`.
 -/
 
 /-- **Challenge tensor expansion** `⨂_{j}(1 - r_j, r_j)` as a function `Fin (2^n) → L`. This is
@@ -1916,15 +1917,12 @@ lemma challengeTensorExpansion_one (c : L) :
     simp [Fin.prod_univ_one, Nat.testBit]
 
 -- NOTE: the entrywise identity `challengeTensorProduct.get idx = challengeTensorExpansion idx`
--- that a previous pass kept as an assumed bridge here is *false as stated*: the legacy
--- `challengeTensorProduct` recursion places the last challenge in the LSB (`idx % 2` selects
--- `r (last n)`), whereas `challengeTensorExpansion = multilinearWeight` places it in the MSB
--- (`testBit idx j` ↔ challenge `j`). Concretely, for `n = 2`, `challengeTensorProduct rc 2 =
--- (1 - r₁) * r₀` while `challengeTensorExpansion rc 2 = (1 - r₀) * r₁`; they are related by a
--- *bit-reversal* permutation of the index, not the identity. The exported oracle-level
--- `localized_fold_matrix_form` below therefore delegates to `iterated_fold`; relating the raw
--- `single_point_localized_fold_matrix_form` to the legacy proved matrix evaluator still requires
--- reconciling that bit-reversal across the tensor vector, the fold matrix rows, and the fiber index.
+-- is *false as stated*: the legacy `challengeTensorProduct` recursion places the last challenge in
+-- the LSB (`idx % 2` selects `r (last n)`), whereas
+-- `challengeTensorExpansion = multilinearWeight` places it in the MSB (`testBit idx j` ↔ challenge
+-- `j`). The single-point matrix evaluator therefore uses `challengeTensorProduct` directly; the
+-- multilinear-weight tensor remains available as `challengeTensorExpansion` for the soundness
+-- polynomial basis.
 
 /-- The (in-range) arithmetic bound `i.val + steps < ℓ + 𝓡` derived from a destination index
 `destIdx.val = i.val + steps` with `destIdx ≤ ℓ`. Shared by the new-API matrix/fiber definitions
@@ -1959,34 +1957,6 @@ noncomputable def foldMatrix (i : Fin r) {destIdx : Fin r} (steps : ℕ)
   foldMatrixNat 𝔽q β i steps (newAPI_i_add_steps_lt h_destIdx h_destIdx_le)
     (newAPI_liftPoint 𝔽q β h_destIdx h_destIdx_le y)
 
-/-- **Explicit residual for fold-matrix nonsingularity.**
-
-The soundness proof of Proposition 4.21 needs every new-API fold matrix `M_y` to be nonsingular.
-This should ultimately follow from the AdditiveNTT quotient-fiber basis change, but the current
-API only exposes the matrix evaluator. Naming the residual keeps the dependency visible instead of
-leaving downstream files to reference an undeclared constant. -/
-class FoldMatrixDetNeZeroResidual : Prop where
-  holds : ∀ (i : Fin r) {destIdx : Fin r} (steps : ℕ)
-    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx),
-    (foldMatrix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
-      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) y).det ≠ 0
-
-/-- Fold matrices are nonsingular, reduced to the explicit `FoldMatrixDetNeZeroResidual`.
-
-This theorem preserves the public name expected by the Binius soundness layer while making the
-remaining AdditiveNTT matrix-invertibility obligation a theorem-scope typeclass hypothesis. -/
-theorem foldMatrix_det_ne_zero (i : Fin r) {destIdx : Fin r} (steps : ℕ)
-    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    [FoldMatrixDetNeZeroResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
-    (foldMatrix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
-      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) y).det ≠ 0 :=
-  FoldMatrixDetNeZeroResidual.holds i steps h_destIdx h_destIdx_le y
-
-#print axioms FoldMatrixDetNeZeroResidual
-#print axioms foldMatrix_det_ne_zero
-
 /-- **Fiber evaluations** `[f(x_0), …, f(x_{2^steps-1})]` of `f` over the iterated-quotient fiber
 of `y` (canonical new-API). `f : S⁽ⁱ⁾ → L`, `y : S⁽ᵈᵉˢᵗ⁾` (lifted to the legacy `⟨i + steps, _⟩`
 index by its underlying value). Equals `fiberEvaluationMapping` composed with the index lift. -/
@@ -2000,15 +1970,17 @@ noncomputable def fiberEvaluations (i : Fin r) {destIdx : Fin r} (steps : ℕ)
       (y := newAPI_liftPoint 𝔽q β h_destIdx h_destIdx_le y) idx)
 
 /-- **Single-point localized fold matrix form** (canonical new-API):
-`challengeTensorExpansion steps r ⬝ᵥ (foldMatrix … y *ᵥ fiber_eval_mapping)`. The `Soundness/*`
-proofs `unfold` this to exactly the `challengeTensorExpansion … ⬝ᵥ foldMatrix … *ᵥ …` shape. -/
+the fold-order challenge tensor dotted with `(foldMatrix … y *ᵥ fiber_eval_mapping)`. The tensor is
+`challengeTensorProduct`, not `challengeTensorExpansion`, because `foldMatrixNat` peels the last fold
+step into the low row bit. -/
 noncomputable def single_point_localized_fold_matrix_form (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (r_challenges : Fin steps → L)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx)
     (fiber_eval_mapping : Fin (2 ^ steps) → L) : L :=
   let challenge_vec : Fin (2 ^ steps) → L :=
-    challengeTensorExpansion (L := L) steps r_challenges
+    fun idx => (challengeTensorProduct (L := L) (ℓ := ℓ) (𝓡 := 𝓡) (r := r)
+      steps r_challenges).get idx
   let fold_mat : Matrix (Fin (2 ^ steps)) (Fin (2 ^ steps)) L :=
     foldMatrix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
       h_destIdx h_destIdx_le y
@@ -2052,6 +2024,36 @@ lemma iterated_fold_eq_iterated_fold_steps (i : Fin r) (steps : ℕ)
   -- destIdx`; here `destIdx = ⟨i+steps,_⟩`, so `hidx = rfl` and the `cast` is `cast rfl`.
   unfold iterated_fold
   simp only [cast_eq]
+
+set_option maxHeartbeats 1000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- The `{destIdx}` single-point matrix evaluator is the legacy localized-fold evaluator when the
+destination is the canonical `i + steps` index. -/
+private lemma single_point_localized_fold_matrix_form_eq_localized_fold_eval (i : Fin ℓ)
+    (steps : ℕ) (h_i_add_steps : i.val + steps ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (r_challenges : Fin steps → L)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i.val + steps, by omega⟩) :
+    single_point_localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := steps) (destIdx := ⟨i.val + steps, by omega⟩)
+      (h_destIdx := rfl) (h_destIdx_le := by omega) (r_challenges := r_challenges)
+      (y := y)
+      (fiber_eval_mapping := fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (steps := steps) (destIdx := ⟨i.val + steps, by omega⟩)
+        (h_destIdx := rfl) (h_destIdx_le := by omega) (f := f) (y := y)) =
+    localized_fold_eval 𝔽q β i (steps := steps) (h_i_add_steps := h_i_add_steps)
+      f r_challenges y := by
+  unfold single_point_localized_fold_matrix_form localized_fold_eval
+    localized_fold_matrix_form_legacy fiberEvaluations fiberEvaluationMapping foldMatrix foldMatrix_steps
+  have hy_lift :
+      newAPI_liftPoint 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := (⟨i, by omega⟩ : Fin r)) (destIdx := ⟨i.val + steps, by omega⟩)
+        (steps := steps) (h_destIdx := rfl) (h_destIdx_le := by omega) y = y := by
+    exact Subtype.ext rfl
+  rw [hy_lift]
+  rw [Vector.dotProduct_eq_root_dotProduct]
+  unfold _root_.dotProduct
+  simp only [Vector.get_ofFn]
 
 set_option maxHeartbeats 1000000 in
 seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
@@ -2121,6 +2123,91 @@ theorem iterated_fold_last (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
   -- reindexings (`castSucc`-of-`mk` vs `mk`-of-`castSucc`), the `Fin.last` instances,
   -- and the subtype re-`mk` of `y` are all definitional.
   rfl
+
+set_option maxHeartbeats 1000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- **Lemma 4.9 (new-API single-point form).** When the source index is an actual quotient level
+`i < ℓ`, the raw single-point matrix evaluator over the fiber evaluations of `f` equals the
+`steps`-fold of `f`. -/
+theorem single_point_localized_fold_matrix_form_eq_iterated_fold
+    (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (h_i_lt : i.val < ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (r_challenges : Fin steps → L)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
+    single_point_localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps) (destIdx := destIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) (r_challenges := r_challenges) (y := y)
+      (fiber_eval_mapping := fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (steps := steps) (destIdx := destIdx) (h_destIdx := h_destIdx)
+        (h_destIdx_le := h_destIdx_le) (f := f) (y := y)) =
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
+      (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f := f) (r_challenges := r_challenges) y := by
+  rcases i with ⟨iVal, hiVal⟩
+  simp only [Fin.val_mk] at h_destIdx h_i_lt
+  let iℓ : Fin ℓ := ⟨iVal, h_i_lt⟩
+  have hsrc : (⟨iℓ, by omega⟩ : Fin r) = (⟨iVal, hiVal⟩ : Fin r) :=
+    Fin.eq_of_val_eq rfl
+  cases hsrc
+  rcases destIdx with ⟨destVal, hdestVal⟩
+  simp only [Fin.val_mk] at h_destIdx h_destIdx_le
+  have hdest :
+      (⟨destVal, hdestVal⟩ : Fin r) =
+        (⟨iℓ.val + steps, by
+          have hlt : iℓ.val + steps < ℓ + 𝓡 := by
+            have hle : iℓ.val + steps ≤ ℓ := by
+              rw [← h_destIdx]
+              exact h_destIdx_le
+            exact Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡))
+          exact Nat.lt_trans hlt h_ℓ_add_R_rate⟩ : Fin r) := by
+    exact Fin.eq_of_val_eq (by simpa [iℓ] using h_destIdx)
+  cases hdest
+  calc
+    single_point_localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := (⟨iℓ, by omega⟩ : Fin r)) (steps := steps)
+        (destIdx := ⟨iℓ.val + steps, by omega⟩)
+        (h_destIdx := rfl) (h_destIdx_le := by omega) (r_challenges := r_challenges)
+        (y := y)
+        (fiber_eval_mapping := fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := (⟨iℓ, by omega⟩ : Fin r)) (steps := steps)
+          (destIdx := ⟨iℓ.val + steps, by omega⟩)
+          (h_destIdx := rfl) (h_destIdx_le := by omega) (f := f) (y := y))
+        = localized_fold_eval 𝔽q β iℓ (steps := steps)
+            (h_i_add_steps := by
+              have hle : iℓ.val + steps ≤ ℓ := by
+                simpa using h_destIdx_le
+              exact hle)
+            f r_challenges y := by
+          exact single_point_localized_fold_matrix_form_eq_localized_fold_eval 𝔽q β iℓ
+            (steps := steps) (h_i_add_steps := by simpa using h_destIdx_le)
+            (f := f) (r_challenges := r_challenges) (y := y)
+    _ = iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := (⟨iℓ, by omega⟩ : Fin r)) (steps := ⟨steps, by
+            have hle : iℓ.val + steps ≤ ℓ := by simpa using h_destIdx_le
+            omega⟩)
+          (h_i_add_steps := by
+            have hle : iℓ.val + steps ≤ ℓ := by simpa using h_destIdx_le
+            exact Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡)))
+          (f := f) (r_challenges := r_challenges) y := by
+        exact (iterated_fold_steps_eq_matrix_form 𝔽q β iℓ (steps := steps)
+          (h_i_add_steps := by simpa using h_destIdx_le)
+          (f := f) (r_challenges := r_challenges) (y := y)).symm
+    _ = iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := (⟨iℓ, by omega⟩ : Fin r)) (steps := steps)
+          (destIdx := ⟨iℓ.val + steps, by omega⟩) (h_destIdx := rfl)
+          (h_destIdx_le := by omega) (f := f) (r_challenges := r_challenges) y := by
+        exact (iterated_fold_eq_iterated_fold_steps 𝔽q β
+          (i := (⟨iℓ, by omega⟩ : Fin r)) (steps := steps)
+          (h_steps := by
+            have hle : iℓ.val + steps ≤ ℓ := by simpa using h_destIdx_le
+            omega)
+          (h_i_add_steps := by
+            have hle : iℓ.val + steps ≤ ℓ := by simpa using h_destIdx_le
+            exact Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡)))
+          (h_destIdx_le := by omega) (f := f) (r_challenges := r_challenges)
+          (y := y)).symm
 
 /-- **Lemma 4.9 (new-API).** The exported new-API localized fold form is definitionally the
 new-API iterated fold. The raw matrix expression is kept separately as

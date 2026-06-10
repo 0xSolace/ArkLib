@@ -659,7 +659,7 @@ surface, so it is kept inside a block comment rather than as live code:
 -/
 
 section EvenOddSplit
-/-! **Even/odd split for Binius folding**
+/- **Even/odd split for Binius folding**
 
 The Binius protocol folds out the **least significant bit** (dimension `i`) first.
 `splitHalfRowWiseInterleavedWords` splits by the **most significant bit**, which
@@ -670,27 +670,71 @@ equivalence we need an **even/odd split** that factors the **first** challenge:
 
 Then `affineLineEvaluation(U_even, U_odd, r_new)` correctly folds dimension `i` first. -/
 
-variable {A : Type*} [AddCommMonoid A] [Module L A] {ι : Type*}
+/- Even/odd split: separate rows by LSB. `U_even[j] = U[2j]`, `U_odd[j] = U[2j+1]`. -/
+omit r ℓ 𝓡 [NeZero r] 𝔽q β γ_repetitions [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 [SampleableType L] hdiv in
+private theorem splitEvenOddRowWiseInterleavedWords_even_lt {ϑ : ℕ} (j : Fin (2 ^ ϑ)) :
+    2 * j.val < 2 ^ (ϑ + 1) := by
+  have hpow : 2 * (2 ^ ϑ) = 2 ^ (ϑ + 1) := by rw [Nat.pow_succ']
+  rw [← hpow]
+  exact Nat.mul_lt_mul_of_pos_left j.isLt (by decide)
 
-/-- Even/odd split: separate rows by LSB. `U_even[j] = U[2j]`, `U_odd[j] = U[2j+1]`. -/
-def splitEvenOddRowWiseInterleavedWords {ϑ : ℕ}
+omit r ℓ 𝓡 [NeZero r] 𝔽q β γ_repetitions [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 [SampleableType L] hdiv in
+private theorem splitEvenOddRowWiseInterleavedWords_odd_lt {ϑ : ℕ} (j : Fin (2 ^ ϑ)) :
+    2 * j.val + 1 < 2 ^ (ϑ + 1) := by
+  have hpow : 2 * (2 ^ ϑ) = 2 ^ (ϑ + 1) := by rw [Nat.pow_succ']
+  rw [← hpow]
+  have hsucc : j.val + 1 ≤ 2 ^ ϑ := Nat.succ_le_of_lt j.isLt
+  calc
+    2 * j.val + 1 < 2 * (j.val + 1) := by
+      rw [Nat.mul_add, Nat.mul_one]
+      simp
+    _ ≤ 2 * (2 ^ ϑ) := Nat.mul_le_mul_left 2 hsucc
+
+omit r ℓ 𝓡 [NeZero r] 𝔽q β γ_repetitions [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 [SampleableType L] hdiv in
+def splitEvenOddRowWiseInterleavedWords {A : Type*} {ι : Type*} {ϑ : ℕ}
     (u : (Fin (2 ^ (ϑ + 1))) → ι → A) :
     ((Fin (2 ^ ϑ)) → ι → A) × ((Fin (2 ^ ϑ)) → ι → A) := by
-  have h : ∀ j : Fin (2 ^ ϑ), 2 * j.val < 2 ^ (ϑ + 1) := fun j => by omega
-  let u_even : (Fin (2 ^ ϑ)) → ι → A := fun j => u ⟨2 * j.val, h j⟩
+  let u_even : (Fin (2 ^ ϑ)) → ι → A := fun j =>
+    u ⟨2 * j.val, splitEvenOddRowWiseInterleavedWords_even_lt j⟩
   let u_odd : (Fin (2 ^ ϑ)) → ι → A := fun j =>
-    u ⟨2 * j.val + 1, by calc 2 * j.val + 1 < 2 * (2 ^ ϑ) := by omega
-      _ = 2 ^ (ϑ + 1) := by ring⟩
+    u ⟨2 * j.val + 1, splitEvenOddRowWiseInterleavedWords_odd_lt j⟩
   exact ⟨u_even, u_odd⟩
 
-/-- Factor the **first** challenge (LSB): `multilinearCombine u r` equals
+/- First projection of the even/odd split. -/
+omit r ℓ 𝓡 [NeZero r] 𝔽q β γ_repetitions [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 [SampleableType L] hdiv in
+@[simp] theorem splitEvenOddRowWiseInterleavedWords_fst_apply {A : Type*} {ι : Type*} {ϑ : ℕ}
+    (u : (Fin (2 ^ (ϑ + 1))) → ι → A) (j : Fin (2 ^ ϑ)) :
+    (splitEvenOddRowWiseInterleavedWords (ϑ := ϑ) u).1 j =
+    u ⟨2 * j.val, splitEvenOddRowWiseInterleavedWords_even_lt j⟩ := by
+  unfold splitEvenOddRowWiseInterleavedWords
+  rfl
+
+/- Second projection of the even/odd split. -/
+omit r ℓ 𝓡 [NeZero r] 𝔽q β γ_repetitions [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 [SampleableType L] hdiv in
+@[simp] theorem splitEvenOddRowWiseInterleavedWords_snd_apply {A : Type*} {ι : Type*} {ϑ : ℕ}
+    (u : (Fin (2 ^ (ϑ + 1))) → ι → A) (j : Fin (2 ^ ϑ)) :
+    (splitEvenOddRowWiseInterleavedWords (ϑ := ϑ) u).2 j =
+    u ⟨2 * j.val + 1, splitEvenOddRowWiseInterleavedWords_odd_lt j⟩ := by
+  unfold splitEvenOddRowWiseInterleavedWords
+  rfl
+
+/- Factor the **first** challenge (LSB): `multilinearCombine u r` equals
 `multilinearCombine (affineLineEval U_even U_odd (r 0)) (fun j => r (j+1))`. -/
-lemma multilinearCombine_recursive_form_first {ϑ : ℕ}
+theorem multilinearCombine_recursive_form_first {A : Type*} [AddCommMonoid A] [Module L A]
+    {ι : Type*} {ϑ : ℕ}
     (u : (Fin (2 ^ (ϑ + 1))) → ι → A) (r_challenges : Fin (ϑ + 1) → L) :
-    let U_even := (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡)
-      (ϑ := ϑ) u).1
-    let U_odd := (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡)
-      (ϑ := ϑ) u).2
+    let U_even := (splitEvenOddRowWiseInterleavedWords (ϑ := ϑ) u).1
+    let U_odd := (splitEvenOddRowWiseInterleavedWords (ϑ := ϑ) u).2
     let r_tail : Fin ϑ → L := fun j => r_challenges (Fin.succ j)
     multilinearCombine (F := L) u r_challenges =
     multilinearCombine (F := L) (affineLineEvaluation (F := L) U_even U_odd (r_challenges 0)) r_tail := by
@@ -795,14 +839,205 @@ lemma multilinearCombine_recursive_form_first {ϑ : ℕ}
     intro x; omega
   simp [h_even_lt, h_odd_lt]
   rw [← Finset.sum_add_distrib]
-  apply Finset.sum_congr rfl
+  refine Finset.sum_congr rfl ?_
   intro x _
-  rw [affineLineEvaluation, Pi.add_apply, Pi.smul_apply]
-  simp only [Word, Pi.smul_apply, Pi.add_apply, smul_add]
-  rw [←smul_assoc, ←smul_assoc]
-  rw [smul_eq_mul, smul_eq_mul]
+  rw [affineLineEvaluation]
+  simp only [Pi.add_apply, Pi.smul_apply, smul_add, smul_smul]
 
 end EvenOddSplit
+
+set_option linter.unnecessarySimpa false in
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [SampleableType L] in
+private lemma fold_linear_combination
+    (i : Fin r) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
+    (f₀ f₁ : sDomain 𝔽q β h_ℓ_add_R_rate i → L)
+    (a b r_chal : L) :
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+      (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f := fun x => a * f₀ x + b * f₁ x) (r_chal := r_chal) =
+    fun y =>
+      a * fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+        (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f := f₀) (r_chal := r_chal) y +
+      b * fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+        (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f := f₁) (r_chal := r_chal) y := by
+  cases destIdx with
+  | mk destVal destBound =>
+      simp only at h_destIdx h_destIdx_le
+      subst destVal
+      funext y
+      unfold fold fold_legacy
+      simp only [cast_eq]
+      ring_nf
+
+set_option linter.unnecessarySimpa false in
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [SampleableType L] in
+private lemma fold_affine_binary_challenges
+    (i : Fin r) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
+    (f : sDomain 𝔽q β h_ℓ_add_R_rate i → L)
+    (r_new : L) :
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+      (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f := f) (r_chal := r_new) =
+    fun y =>
+      (1 - r_new) * fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+        (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f := f) (r_chal := 0) y +
+      r_new * fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+        (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f := f) (r_chal := 1) y := by
+  cases destIdx with
+  | mk destVal destBound =>
+      simp only at h_destIdx h_destIdx_le
+      subst destVal
+      funext y
+      unfold fold fold_legacy
+      simp only [cast_eq]
+      ring_nf
+
+set_option linter.unnecessarySimpa false in
+omit [SampleableType L] in
+private lemma iterated_fold_linear_combination
+    (i : Fin r) (steps : ℕ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f₀ f₁ : sDomain 𝔽q β h_ℓ_add_R_rate i → L)
+    (a b : L) (r_chal : Fin steps → L) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) steps
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f := fun x => a * f₀ x + b * f₁ x) (r_challenges := r_chal) =
+    fun y =>
+      a * iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) steps
+        (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f := f₀) (r_challenges := r_chal) y +
+      b * iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) steps
+        (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f := f₁) (r_challenges := r_chal) y := by
+  induction steps generalizing i destIdx f₀ f₁ a b with
+  | zero =>
+      funext y
+      rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)]
+      rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)]
+      rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)]
+  | succ n ih =>
+      let midIdx : Fin r := ⟨i.val + n, by
+        have hle : i.val + (n + 1) ≤ ℓ := by
+          rw [← h_destIdx]
+          exact h_destIdx_le
+        exact lt_r_of_le_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (by omega)⟩
+      funext y
+      rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (steps := n) (midIdx := midIdx) (destIdx := destIdx)
+        (h_midIdx := by change midIdx.val = i.val + n; simp [midIdx])
+        (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f := fun x => a * f₀ x + b * f₁ x) (r_challenges := r_chal)]
+      rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (steps := n) (midIdx := midIdx) (destIdx := destIdx)
+        (h_midIdx := by change midIdx.val = i.val + n; simp [midIdx])
+        (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f := f₀) (r_challenges := r_chal)]
+      rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (steps := n) (midIdx := midIdx) (destIdx := destIdx)
+        (h_midIdx := by change midIdx.val = i.val + n; simp [midIdx])
+        (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f := f₁) (r_challenges := r_chal)]
+      have hih := ih (i := i) (destIdx := midIdx)
+        (h_destIdx := by change midIdx.val = i.val + n; simp [midIdx])
+        (h_destIdx_le := by
+          change midIdx.val ≤ ℓ
+          have hle : i.val + (n + 1) ≤ ℓ := by
+            rw [← h_destIdx]
+            exact h_destIdx_le
+          simp [midIdx]
+          omega)
+        (f₀ := f₀) (f₁ := f₁) (a := a) (b := b) (r_chal := Fin.init r_chal)
+      rw [hih]
+      exact congrFun (fold_linear_combination 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := midIdx) (destIdx := destIdx)
+        (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
+        (f₀ := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := i) (steps := n)
+          (h_destIdx := by change midIdx.val = i.val + n; simp [midIdx])
+          (h_destIdx_le := by
+            change midIdx.val ≤ ℓ
+            have hle : i.val + (n + 1) ≤ ℓ := by
+              rw [← h_destIdx]
+              exact h_destIdx_le
+            simp [midIdx]
+            omega)
+          (f := f₀) (r_challenges := Fin.init r_chal))
+        (f₁ := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := i) (steps := n)
+          (h_destIdx := by change midIdx.val = i.val + n; simp [midIdx])
+          (h_destIdx_le := by
+            change midIdx.val ≤ ℓ
+            have hle : i.val + (n + 1) ≤ ℓ := by
+              rw [← h_destIdx]
+              exact h_destIdx_le
+            simp [midIdx]
+            omega)
+          (f := f₁) (r_challenges := Fin.init r_chal))
+        (a := a) (b := b) (r_chal := r_chal (Fin.last n))) y
+
+omit [NeZero r] [Fintype L] [DecidableEq L] [CharP L 2] [DecidableEq 𝔽q]
+  hF₂ h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [SampleableType L] in
+private lemma bitsOfIndex_even_zero {steps : ℕ} (j : Fin (2 ^ steps)) :
+    bitsOfIndex (L := L)
+      (⟨2 * j.val, splitEvenOddRowWiseInterleavedWords_even_lt j⟩ : Fin (2 ^ (steps + 1)))
+      (0 : Fin (steps + 1)) = 0 := by
+  have hbit : Nat.getBit 0 (2 * j.val) = 0 := Nat.getBit_zero_of_two_mul (n := j.val)
+  simp [bitsOfIndex, hbit]
+
+omit [NeZero r] [Fintype L] [DecidableEq L] [CharP L 2] [DecidableEq 𝔽q]
+  hF₂ h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [SampleableType L] in
+private lemma bitsOfIndex_odd_zero {steps : ℕ} (j : Fin (2 ^ steps)) :
+    bitsOfIndex (L := L)
+      (⟨2 * j.val + 1, splitEvenOddRowWiseInterleavedWords_odd_lt j⟩ :
+        Fin (2 ^ (steps + 1)))
+      (0 : Fin (steps + 1)) = 1 := by
+  have hbit : Nat.getBit 0 (2 * j.val + 1) = 1 := by
+    unfold Nat.getBit
+    simp [Nat.and_one_is_mod]
+  simp [bitsOfIndex, hbit]
+
+omit [NeZero r] [Fintype L] [DecidableEq L] [CharP L 2] [DecidableEq 𝔽q]
+  hF₂ h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [SampleableType L] in
+private lemma bitsOfIndex_even_tail {steps : ℕ} (j : Fin (2 ^ steps)) :
+    (fun k : Fin steps =>
+      bitsOfIndex (L := L)
+        (⟨2 * j.val, splitEvenOddRowWiseInterleavedWords_even_lt j⟩ :
+          Fin (2 ^ (steps + 1))) k.succ) =
+    bitsOfIndex (L := L) j := by
+  funext k
+  unfold bitsOfIndex
+  have h_getBit :
+      Nat.getBit (k.val + 1) (2 * j.val) = Nat.getBit k.val j.val :=
+    Nat.getBit_eq_succ_getBit_of_mul_two (n := j.val) (k := k.val)
+  have h_succ : (↑k.succ : ℕ) = k.val + 1 := by simp [Fin.succ]
+  rw [h_succ, h_getBit]
+
+omit [NeZero r] [Fintype L] [DecidableEq L] [CharP L 2] [DecidableEq 𝔽q]
+  hF₂ h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [SampleableType L] in
+private lemma bitsOfIndex_odd_tail {steps : ℕ} (j : Fin (2 ^ steps)) :
+    (fun k : Fin steps =>
+      bitsOfIndex (L := L)
+        (⟨2 * j.val + 1, splitEvenOddRowWiseInterleavedWords_odd_lt j⟩ :
+          Fin (2 ^ (steps + 1))) k.succ) =
+    bitsOfIndex (L := L) j := by
+  funext k
+  unfold bitsOfIndex
+  have h_getBit :
+      Nat.getBit (k.val + 1) (2 * j.val + 1) = Nat.getBit k.val j.val := by
+    simpa [Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using
+      Nat.getBit_eq_succ_getBit_of_mul_two_add_one (n := j.val) (k := k.val)
+  have h_succ : (↑k.succ : ℕ) = k.val + 1 := by simp [Fin.succ]
+  rw [h_succ, h_getBit]
 
 /-- **Residual: `iterated_fold` is `multilinearCombine` of its preTensorCombine stack.**
 
@@ -856,9 +1091,9 @@ lemma not_jointProximityNat_of_not_jointProximityNat_evenOdd_split
     (U_even : WordStack (A := L) (κ := Fin (2 ^ s)) (ι := ι))
     (U_odd : WordStack (A := L) (κ := Fin (2 ^ s)) (ι := ι))
     (hU_even : U_even =
-      (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡) (ϑ := s) U).1 := by rfl)
+      (splitEvenOddRowWiseInterleavedWords (ϑ := s) U).1 := by rfl)
     (hU_odd : U_odd =
-      (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡) (ϑ := s) U).2 := by rfl)
+      (splitEvenOddRowWiseInterleavedWords (ϑ := s) U).2 := by rfl)
     (h_far : ¬ jointProximityNat (C := C) (u := U) (e := e)) :
     ¬ jointProximityNat₂ (A := InterleavedSymbol L (Fin (2^s)))
       (C := (C ^⋈ (Fin (2^s))))
@@ -921,13 +1156,13 @@ lemma not_jointProximityNat_of_not_jointProximityNat_evenOdd_split
       dsimp only [v_IC]
       have hRes0 :
           interleaveWordStack
-              ((splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡) (ϑ := s) U).1)
+              ((splitEvenOddRowWiseInterleavedWords (ϑ := s) U).1)
               colIdx
             = vSplit colIdx 0 := by
         exact congrFun (h_agree_outside_D colIdx h_colIdx_notin_D) 0
       have hRes1 :
           interleaveWordStack
-              ((splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡) (ϑ := s) U).2)
+              ((splitEvenOddRowWiseInterleavedWords (ϑ := s) U).2)
               colIdx
             = vSplit colIdx 1 := by
         exact congrFun (h_agree_outside_D colIdx h_colIdx_notin_D) 1
@@ -959,43 +1194,8 @@ lemma not_jointProximityNat_of_not_jointProximityNat_evenOdd_split
         simp only [h_row_eq] at hRes₁' ⊢
         exact hRes₁'
 
-/-- **Residual: one fold step on preTensorCombine = affine line evaluation on even/odd split.**
-
-The direct proof below used to expand multilinear-combine recursion, `bitsOfIndex`, and the first
-fold step simultaneously; on the current split quotient-map API it is too brittle and kernel-times
-out. The named residual keeps the bridge explicit for the incremental far-case restoration path. -/
-class FoldPreTensorCombineAffineSplitResidual : Prop where
-  holds : ∀ (i : Fin ℓ) (steps : ℕ) [NeZero steps] {midIdx destIdx : Fin r}
-    (h_midIdx : midIdx.val = i.val + 1)
-    (h_destIdx : destIdx.val = i.val + (steps + 1))
-    (h_destIdx_le : destIdx ≤ ℓ)
-    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      ⟨i, by omega⟩)
-    (r_new : L),
-    let h_midIdx_lt_ℓ : midIdx.val < ℓ := by
-      have := NeZero.pos steps; omega
-    let U := preTensorCombine_WordStack 𝔽q β i (steps + 1)
-      (destIdx := destIdx) (h_destIdx := h_destIdx)
-      (h_destIdx_le := h_destIdx_le) f_i
-    let U_even := (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡)
-      (ϑ := steps) U).1
-    let U_odd := (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡)
-      (ϑ := steps) U).2
-    let fold_1_f := fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      ⟨i, by omega⟩ (destIdx := midIdx) (h_destIdx := h_midIdx)
-      (h_destIdx_le := by omega) f_i r_new
-    let midIdx_fin_ℓ : Fin ℓ := ⟨midIdx.val, h_midIdx_lt_ℓ⟩
-    let V := preTensorCombine_WordStack 𝔽q β midIdx_fin_ℓ steps
-      (destIdx := destIdx)
-      (h_destIdx := by simp [midIdx_fin_ℓ]; omega)
-      (h_destIdx_le := h_destIdx_le) (by exact fold_1_f)
-    interleaveWordStack V =
-      affineLineEvaluation (F := L)
-        (interleaveWordStack U_even) (interleaveWordStack U_odd) r_new
-
-variable [FoldPreTensorCombineAffineSplitResidual (r := r) (L := L) (𝔽q := 𝔽q) (β := β)
-  (ℓ := ℓ) (𝓡 := 𝓡) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-
+set_option maxHeartbeats 8000000 in
+-- This theorem expands nested `preTensorCombine`, `interleaveWordStack`, and fold definitions.
 /-- **One fold step on preTensorCombine = affine line evaluation on even/odd split.**
 Given `f_i : S^i → L` and its preTensorCombine WordStack `U` of height `2^(steps+1)`,
 using the **even/odd split** (LSB-first, see `splitEvenOddRowWiseInterleavedWords`):
@@ -1014,26 +1214,82 @@ lemma fold_preTensorCombine_eq_affineLineEvaluation_split
     (r_new : L) :
     let h_midIdx_lt_ℓ : midIdx.val < ℓ := by
       have := NeZero.pos steps; omega
-    let U := preTensorCombine_WordStack 𝔽q β i (steps + 1)
+    let U := preTensorCombine_WordStack (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+      𝔽q β i (steps + 1)
       (destIdx := destIdx) (h_destIdx := h_destIdx)
       (h_destIdx_le := h_destIdx_le) f_i
-    let U_even := (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡)
-      (ϑ := steps) U).1
-    let U_odd := (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡)
-      (ϑ := steps) U).2
-    let fold_1_f := fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    let U_even := (splitEvenOddRowWiseInterleavedWords (ϑ := steps) U).1
+    let U_odd := (splitEvenOddRowWiseInterleavedWords (ϑ := steps) U).2
+    let fold_1_f := fold (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+      𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       ⟨i, by omega⟩ (destIdx := midIdx) (h_destIdx := h_midIdx)
       (h_destIdx_le := by omega) f_i r_new
     let midIdx_fin_ℓ : Fin ℓ := ⟨midIdx.val, h_midIdx_lt_ℓ⟩
-    let V := preTensorCombine_WordStack 𝔽q β midIdx_fin_ℓ steps
+    let V := preTensorCombine_WordStack (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+      𝔽q β midIdx_fin_ℓ steps
       (destIdx := destIdx)
       (h_destIdx := by simp [midIdx_fin_ℓ]; omega)
       (h_destIdx_le := h_destIdx_le) (by exact fold_1_f)
     interleaveWordStack V =
       affineLineEvaluation (F := L)
         (interleaveWordStack U_even) (interleaveWordStack U_odd) r_new := by
-  exact FoldPreTensorCombineAffineSplitResidual.holds (𝔽q := 𝔽q) (β := β)
-    i steps h_midIdx h_destIdx h_destIdx_le f_i r_new
+  dsimp only
+  funext y rowIdx
+  unfold interleaveWordStack affineLineEvaluation preTensorCombine_WordStack
+  simp only [Matrix.transpose_apply, Pi.add_apply, Pi.smul_apply]
+  rw [splitEvenOddRowWiseInterleavedWords_fst_apply
+    (u := fun rowIdx : Fin (2 ^ (steps + 1)) =>
+      iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (steps := steps + 1)
+        (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f := f_i) (r_challenges := bitsOfIndex (L := L) rowIdx))
+    (j := rowIdx)]
+  rw [splitEvenOddRowWiseInterleavedWords_snd_apply
+    (u := fun rowIdx : Fin (2 ^ (steps + 1)) =>
+      iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (steps := steps + 1)
+        (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+        (f := f_i) (r_challenges := bitsOfIndex (L := L) rowIdx))
+    (j := rowIdx)]
+  rw [iterated_fold_first (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+    𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := ⟨i, by omega⟩) (midIdx := midIdx) (destIdx := destIdx)
+    (steps := steps) (h_midIdx := h_midIdx) (h_destIdx := h_destIdx)
+    (h_destIdx_le := h_destIdx_le) (f := f_i)
+    (r_challenges := bitsOfIndex (L := L)
+      (⟨2 * rowIdx.val, splitEvenOddRowWiseInterleavedWords_even_lt rowIdx⟩ :
+        Fin (2 ^ (steps + 1))))]
+  rw [iterated_fold_first (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+    𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := ⟨i, by omega⟩) (midIdx := midIdx) (destIdx := destIdx)
+    (steps := steps) (h_midIdx := h_midIdx) (h_destIdx := h_destIdx)
+    (h_destIdx_le := h_destIdx_le) (f := f_i)
+    (r_challenges := bitsOfIndex (L := L)
+      (⟨2 * rowIdx.val + 1, splitEvenOddRowWiseInterleavedWords_odd_lt rowIdx⟩ :
+        Fin (2 ^ (steps + 1))))]
+  rw [bitsOfIndex_even_zero (L := L) (steps := steps) rowIdx,
+    bitsOfIndex_odd_zero (L := L) (steps := steps) rowIdx,
+    bitsOfIndex_even_tail (L := L) (steps := steps) rowIdx,
+    bitsOfIndex_odd_tail (L := L) (steps := steps) rowIdx]
+  rw [fold_affine_binary_challenges (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+    𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := ⟨i, by omega⟩) (destIdx := midIdx)
+    (h_destIdx := h_midIdx) (h_destIdx_le := by omega)
+    (f := f_i) (r_new := r_new)]
+  rw [iterated_fold_linear_combination (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+    𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := midIdx) (steps := steps) (destIdx := destIdx)
+    (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
+    (f₀ := fold (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+      𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (destIdx := midIdx)
+      (h_destIdx := h_midIdx) (h_destIdx_le := by omega) (f := f_i) (r_chal := 0))
+    (f₁ := fold (r := r) (L := L) (ℓ := ℓ) (𝓡 := 𝓡)
+      𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (destIdx := midIdx)
+      (h_destIdx := h_midIdx) (h_destIdx_le := by omega) (f := f_i) (r_chal := 1))
+    (a := 1 - r_new) (b := r_new) (r_chal := bitsOfIndex (L := L) rowIdx)]
+  simp [smul_eq_mul]
 
 section Fin1Interleaving
 variable {A : Type*} [DecidableEq A] {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -1070,41 +1326,37 @@ lemma distFromCode_fin1_eq [DecidableEq (Fin 1 → A)] (u : ι → Fin 1 → A) 
 
 end Fin1Interleaving
 
-omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [SampleableType L] in
-/-- One fold is affine in its challenge between the two binary challenge rows. -/
-lemma fold_affine_binary_rows
+omit [SampleableType L] in
+private lemma preTensorCombine_step1_row_zero
     (i : Fin ℓ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
     (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-    (r_new : L) :
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate destIdx) :
+    (preTensorCombine_WordStack 𝔽q β i 1 h_destIdx h_destIdx_le f_i) 0 y =
     fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
-      (destIdx := destIdx) (h_destIdx := h_destIdx)
-      (h_destIdx_le := h_destIdx_le) f_i r_new =
-    affineLineEvaluation (F := L)
-      (fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
-        (destIdx := destIdx) (h_destIdx := h_destIdx)
-        (h_destIdx_le := h_destIdx_le) f_i 0)
-      (fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
-        (destIdx := destIdx) (h_destIdx := h_destIdx)
-        (h_destIdx_le := h_destIdx_le) f_i 1)
-      r_new := by
-  have h_destIdx_eq :
-      destIdx =
-        (⟨i.val + 1, by
-          have hle : i.val + 1 ≤ ℓ := Nat.succ_le_of_lt i.isLt
-          have hlt : i.val + 1 < ℓ + 𝓡 :=
-            Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡))
-          exact Nat.lt_trans hlt h_ℓ_add_R_rate⟩ : Fin r) :=
-    Fin.eq_of_val_eq h_destIdx
-  subst h_destIdx_eq
-  funext y
-  unfold affineLineEvaluation
-  simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul]
-  unfold fold
-  simp only [cast_eq]
-  unfold fold_legacy
-  simp only
-  ring_nf
+      (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      f_i 0 y := by
+  unfold preTensorCombine_WordStack
+  rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := ⟨i, by omega⟩) (steps := 0)
+    (midIdx := ⟨i, by omega⟩) (destIdx := destIdx)
+    (h_midIdx := by change i.val = i.val + 0; omega)
+    (h_destIdx := by change destIdx.val = i.val + 0 + 1; omega)
+    (h_destIdx_le := h_destIdx_le)]
+  rw [show
+    (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+      (steps := 0) (destIdx := ⟨i, by omega⟩)
+      (h_destIdx := by change i.val = i.val + 0; omega)
+      (h_destIdx_le := by change i.val ≤ ℓ; omega) (f := f_i)
+      (r_challenges := Fin.init (bitsOfIndex (L := L) (0 : Fin (2 ^ 1))))) = f_i from by
+    funext z
+    rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩)
+      (h_destIdx := by change i.val = i.val; rfl)
+      (h_destIdx_le := by change i.val ≤ ℓ; omega)]
+    rfl]
+  have hbit : Nat.getBit 0 0 = 0 := by simp [Nat.getBit]
+  simp [bitsOfIndex, hbit]
 
 omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [SampleableType L] in
 /-- One fold is additive in the oracle function being folded. -/
@@ -1172,32 +1424,61 @@ lemma fold_smul_input
   ring_nf
 
 omit [SampleableType L] in
-/-- The binary row `0` of one-step `preTensorCombine` is the fold at challenge `0`. -/
-lemma iterated_fold_one_bits_zero
+private lemma preTensorCombine_step1_row_one
     (i : Fin ℓ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
-    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩) :
-    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ 1
-      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)
-      (r_challenges := bitsOfIndex (L := L) (0 : Fin (2 ^ 1))) =
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate destIdx) :
+    (preTensorCombine_WordStack 𝔽q β i 1 h_destIdx h_destIdx_le f_i) 1 y =
     fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
-      (destIdx := destIdx) (h_destIdx := h_destIdx)
-      (h_destIdx_le := h_destIdx_le) f_i 0 := by
-  have hfirst := iterated_fold_first (𝔽q := 𝔽q) (β := β)
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (i := ⟨i, by omega⟩) (midIdx := destIdx) (destIdx := destIdx) (steps := 0)
-    (h_midIdx := h_destIdx) (h_destIdx := by simpa using h_destIdx)
-    (h_destIdx_le := h_destIdx_le) (f := f_i)
-    (r_challenges := bitsOfIndex (L := L) (0 : Fin (2 ^ 1)))
-  rw [hfirst]
-  funext y
-  rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (i := destIdx) (h_destIdx := rfl) (h_destIdx_le := h_destIdx_le)]
-  have hbit : bitsOfIndex (L := L) (0 : Fin (2 ^ 1)) (0 : Fin 1) = 0 := by
-    rw [bitsOfIndex_apply_of_getBit_ne_one]
-    decide
-  rw [hbit]
-  simp only [eq_mp_eq_cast, cast_eq]
+      (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      f_i 1 y := by
+  unfold preTensorCombine_WordStack
+  rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := ⟨i, by omega⟩) (steps := 0)
+    (midIdx := ⟨i, by omega⟩) (destIdx := destIdx)
+    (h_midIdx := by change i.val = i.val + 0; omega)
+    (h_destIdx := by change destIdx.val = i.val + 0 + 1; omega)
+    (h_destIdx_le := h_destIdx_le)]
+  rw [show
+    (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+      (steps := 0) (destIdx := ⟨i, by omega⟩)
+      (h_destIdx := by change i.val = i.val + 0; omega)
+      (h_destIdx_le := by change i.val ≤ ℓ; omega) (f := f_i)
+      (r_challenges := Fin.init (bitsOfIndex (L := L) (1 : Fin (2 ^ 1))))) = f_i from by
+    funext z
+    rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩)
+      (h_destIdx := by change i.val = i.val; rfl)
+      (h_destIdx_le := by change i.val ≤ ℓ; omega)]
+    rfl]
+  have hbit : Nat.getBit 0 1 = 1 := by simp [Nat.getBit]
+  simp [bitsOfIndex, hbit]
+
+set_option linter.unnecessarySimpa false in
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] [SampleableType L] in
+private lemma fold_eq_affine_binary_challenges
+    (i : Fin ℓ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (r_new : L) (y : sDomain 𝔽q β h_ℓ_add_R_rate destIdx) :
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+      (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      f_i r_new y =
+    (1 - r_new) * fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+      (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      f_i 0 y +
+    r_new * fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+      (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      f_i 1 y := by
+  have hdest : destIdx = (⟨i.val + 1, by
+      have hle : i.val + 1 ≤ ℓ := by simpa [h_destIdx] using h_destIdx_le
+      exact lt_r_of_le_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) hle⟩ : Fin r) := by
+    exact Fin.eq_of_val_eq h_destIdx
+  subst hdest
+  unfold fold fold_legacy
+  simp only [cast_eq]
+  ring_nf
 
 omit [SampleableType L] in
 /-- The binary row `1` of one-step `preTensorCombine` is the fold at challenge `1`. -/
@@ -1239,30 +1520,12 @@ lemma fold_eq_multilinearCombine_preTensorCombine_step1
     fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
       (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) f_i r_new
     = multilinearCombine (F := L) U (fun (_ : Fin 1) => r_new) := by
-  rw [fold_affine_binary_rows (𝔽q := 𝔽q) (β := β)
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
-    (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
-    (f_i := f_i) (r_new := r_new)]
+  dsimp only
   funext y
-  unfold affineLineEvaluation multilinearCombine preTensorCombine_WordStack
-  simp only [Nat.reducePow, Fin.sum_univ_two, Pi.add_apply, Pi.smul_apply, smul_eq_mul]
-  have hweight0 :
-      multilinearWeight (F := L) (fun (_ : Fin 1) => r_new) (0 : Fin 2) = 1 - r_new := by
-    unfold multilinearWeight
-    rw [Fin.prod_univ_one]
-    simp [Nat.testBit]
-  have hweight1 :
-      multilinearWeight (F := L) (fun (_ : Fin 1) => r_new) (1 : Fin 2) = r_new := by
-    unfold multilinearWeight
-    rw [Fin.prod_univ_one]
-    simp [Nat.testBit]
-  rw [hweight0, hweight1]
-  rw [congrFun (iterated_fold_one_bits_zero (𝔽q := 𝔽q) (β := β)
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
-    (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f_i := f_i)) y]
-  rw [congrFun (iterated_fold_one_bits_one (𝔽q := 𝔽q) (β := β)
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
-    (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f_i := f_i)) y]
+  rw [fold_eq_affine_binary_challenges 𝔽q β i h_destIdx h_destIdx_le f_i r_new y]
+  rw [← preTensorCombine_step1_row_zero 𝔽q β i h_destIdx h_destIdx_le f_i y,
+    ← preTensorCombine_step1_row_one 𝔽q β i h_destIdx h_destIdx_le f_i y]
+  simp [multilinearCombine, multilinearWeight]
 
 /-- **Residual: fiberwise closeness lifts to interleaved-word proximity (Lemma 4.22).**
 
@@ -1349,10 +1612,8 @@ lemma fiberwiseClose_fold_implies_affineLineEval_close
     let U := preTensorCombine_WordStack 𝔽q β i_ℓ (s + 1)
       (destIdx := destIdx) (h_destIdx := by simp [i_ℓ]; omega)
       (h_destIdx_le := h_destIdx_le) f_i
-    let U_even := (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡)
-      (ϑ := s) U).1
-    let U_odd := (splitEvenOddRowWiseInterleavedWords (r := r) (ℓ := ℓ) (𝓡 := 𝓡)
-      (ϑ := s) U).2
+    let U_even := (splitEvenOddRowWiseInterleavedWords (ϑ := s) U).1
+    let U_odd := (splitEvenOddRowWiseInterleavedWords (ϑ := s) U).2
     let C_dest : Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L) :=
       BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx
     Δ₀(affineLineEvaluation (F := L)
@@ -1564,7 +1825,6 @@ lemma prop_4_21_2_incremental_bad_event_probability
 
 #print axioms Prop4212Case1Residual
 #print axioms prop_4_21_2_case_1_fiberwise_close_incremental
-#print axioms FoldPreTensorCombineAffineSplitResidual
 #print axioms fold_preTensorCombine_eq_affineLineEvaluation_split
 #print axioms fold_eq_multilinearCombine_preTensorCombine_step1
 #print axioms PreTensorCombineJointProximityResidual

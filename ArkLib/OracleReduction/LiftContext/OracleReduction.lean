@@ -324,6 +324,7 @@ theorem liftContext_rbr_soundness
   rw [liftContext_toVerifier_comm]
   exact V.toVerifier.liftContext_rbr_soundness h (lens := lens.toLens)
 
+set_option linter.unusedSectionVars false in
 /-- Lifting the oracle verifier preserves round-by-round knowledge soundness, assuming the lens
   satisfies its knowledge-soundness conditions and the oracle-routing lens is coherent with its
   value-level lens (`LiftContextCoherent`, #433).

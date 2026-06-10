@@ -309,17 +309,6 @@ theorem foldMatrixNat_det_ne_zero (i : Fin r) (steps : ℕ)
         (ih (by omega) (by omega) (foldZ 𝔽q β i n h y 0)))
       (ih (by omega) (by omega) (foldZ 𝔽q β i n h y 1))
 
-set_option maxHeartbeats 4000000 in
-/-- **Issue #317: `FoldMatrixDetNeZeroResidual` DISCHARGED.**  Every new-API fold matrix is
-nonsingular: `foldMatrix` is definitionally `foldMatrixNat` at the lifted point, whose
-determinant is nonzero by the block-factorization induction. -/
-instance instFoldMatrixDetNeZero :
-    FoldMatrixDetNeZeroResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) where
-  holds i {destIdx} steps h_destIdx h_destIdx_le y := by
-    have hle : i.val + steps ≤ ℓ := by rw [← h_destIdx]; exact h_destIdx_le
-    unfold foldMatrix
-    exact foldMatrixNat_det_ne_zero 𝔽q β i steps _ hle _
-
 end
 
 end Weld
@@ -331,4 +320,3 @@ end Binius.BinaryBasefold.DetNeZero
 #print axioms Binius.BinaryBasefold.DetNeZero.foldMatrixNat_succ_eq
 #print axioms Binius.BinaryBasefold.DetNeZero.foldZ_sub_ne_zero
 #print axioms Binius.BinaryBasefold.DetNeZero.foldMatrixNat_det_ne_zero
-#print axioms Binius.BinaryBasefold.DetNeZero.instFoldMatrixDetNeZero

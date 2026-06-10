@@ -6,6 +6,8 @@ Authors: ArkLib Contributors
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessMsgSeam
 import ArkLib.ProofSystem.Logup.Security.LogupSoundnessPointwise
 import ArkLib.ProofSystem.Logup.Security.LogupCompletenessWired
+import ArkLib.ProofSystem.Logup.Security.LogupCompletenessFinal
+import ArkLib.ProofSystem.Logup.Security.OuterMaliciousSoundness
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessSharp
 import ArkLib.ProofSystem.Logup.Security.SumcheckCompletenessUncond
 import ArkLib.ProofSystem.Logup.Security.SumcheckSoundnessProjClosed
@@ -39,6 +41,17 @@ hypotheses, not hidden `sorryAx` placeholders.
 
 ## Headline entry points
 
+* `Logup.issue13_soundness_end_to_end` — the current end-to-end LogUp Protocol 2 soundness
+  capstone.  The outer malicious-prover algebra, lifted embedded-sumcheck rejection, and
+  message-seam append composition are all discharged; the only assumptions left are
+  non-degeneracy/cardinality facts and the standard state-preserving / never-failing /
+  value-blind shared-oracle implementation conditions.
+
+* `Logup.issue13_completeness_final` — the current end-to-end LogUp Protocol 2 completeness
+  capstone.  The outer pole-rejection half, embedded-sumcheck completeness, and non-perfect append
+  composition are all discharged; the theorem assumes only the standard init/support and
+  honest-implementation side conditions.
+
 * `Logup.issue13_soundness` — the headline LogUp Protocol 2 soundness, reduced to the **minimal**
   named residual set `{hOuter, hSumcheck, hPlainAppend}` (a straight re-export of
   `logup_soundness_uncond`). The deep oracle routing of the append seam has been discharged by the
@@ -52,8 +65,8 @@ hypotheses, not hidden `sorryAx` placeholders.
   conditions.
 
 * `Logup.issue13_soundness_msgSeam_wiredRoundAppend` — the same soundness close with the inner
-  multi-round sumcheck RBR fact further reduced to per-round RBR soundness plus the binary append-RBR
-  keystone.
+  multi-round sumcheck RBR fact further reduced to per-round RBR soundness plus the binary
+  append-RBR keystone.
 
 * `Logup.issue13_soundness_pointwiseSumcheck` — soundness over the historical zero-claim
   `midLanguage` with the embedded sumcheck and append seam discharged pointwise; its only protocol
@@ -91,6 +104,56 @@ instances (`instOuterPSpecChallengeSampleable`) used when stating `outerVerifier
 the outer/sumcheck completeness obligations — matching the local instances used throughout the
 LogUp security development. -/
 local instance instInhabitedFieldIssue13 : Inhabited F := ⟨0⟩
+
+/-! ### Issue #13 capstones — end-to-end soundness and completeness -/
+
+/-- **Issue #13 — LogUp Protocol 2 soundness, end-to-end.**
+
+This is the strongest current soundness headline: the outer malicious-prover RBR theorem,
+pointwise embedded-sumcheck rejection, and LogUp message-seam append composition are all wired.
+There are no `SubPhaseSoundnessResidual` / `SumcheckSoundnessResidual` / append residual
+hypotheses left.  The remaining hypotheses are standard semantic side conditions:
+
+* `hn` — a nonempty Boolean cube;
+* `hpole` — a field large enough to make the pole denominator nonzero;
+* `hnK` — enough batching groups for the `(z, lambda)` Schwartz-Zippel budget; and
+* `himplSP` / `himplNF` / `himplVB` — state-preserving, never-failing, value-blind shared-oracle
+  implementation assumptions. -/
+theorem issue13_soundness_end_to_end [oSpec.Fintype] [oSpec.Inhabited]
+    (sumcheckSoundnessError : ℝ≥0) (hn : 0 < n)
+    (hpole : 2 ^ n < Fintype.card F) (hnK : n ≤ params.numGroups)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (logupVerifier oSpec F n M params).soundness init impl
+      (inputRelation F n M).language outputRelation.language
+      (logupSoundnessError F n M params sumcheckSoundnessError) :=
+  logup_soundness_end_to_end oSpec F n M params init impl
+    sumcheckSoundnessError hn hpole hnK himplSP himplNF himplVB
+
+/-- **Issue #13 — LogUp Protocol 2 completeness, end-to-end.**
+
+The outer completeness half, embedded-sumcheck completeness half, and non-perfect message-seam
+append composition are discharged.  In particular this theorem does not consume the historical
+`SubPhaseCompletenessResidual`, `SumcheckCompletenessResidual`, or append-completeness residual
+front doors. -/
+theorem issue13_completeness_final [oSpec.Fintype] [oSpec.Inhabited]
+    (hn : 0 < n)
+    (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β))
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (logupOracleReduction oSpec F n M params).completeness init impl
+      (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
+  logup_completeness_final oSpec F n M params init impl hn hInit hImplSupp
+    himplSP himplNF himplVB
 
 /-! ### Issue #13 soundness — minimal residual `{hOuter, hSumcheck, hPlainAppend}` -/
 
@@ -509,6 +572,8 @@ end Issue13
 end Logup
 
 /- Axiom audit for the issue #13 final-status entry points. -/
+#print axioms Logup.issue13_soundness_end_to_end
+#print axioms Logup.issue13_completeness_final
 #print axioms Logup.issue13_soundness
 #print axioms Logup.issue13_soundness_of_residual
 #print axioms Logup.issue13_soundness_msgSeam

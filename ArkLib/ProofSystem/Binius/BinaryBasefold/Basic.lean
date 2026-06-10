@@ -8,6 +8,8 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 import ArkLib.Data.MvPolynomial.MultilinearComputational
 
+set_option linter.style.longFile 1800
+
 /-!
 # Binius binary Basefold: oracle bookkeeping
 
@@ -28,6 +30,81 @@ open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomi
 open scoped NNReal
 open ReedSolomon Code BerlekampWelch
 open Finset AdditiveNTT Polynomial MvPolynomial Nat Matrix
+
+/-- Statement challenges are stored in the structured-sumcheck order: the newest challenge is at
+index `0`. The folding operators consume challenges in chronological fold order, so this helper
+exposes the fold-order view of a statement challenge vector. -/
+def foldOrderChallenges {ℓ : ℕ} {L : Type} {i : Fin (ℓ + 1)}
+    (challenges : Fin i → L) : Fin i → L :=
+  fun j => challenges (Fin.rev j)
+
+@[simp]
+lemma foldOrderChallenges_cons {ℓ : ℕ} {L : Type} (i : Fin ℓ)
+    (challenges : Fin i.castSucc → L) (r_i' : L) :
+    foldOrderChallenges (ℓ := ℓ) (L := L) (i := i.succ)
+      (Fin.cons (α := fun _ => L) r_i' challenges) =
+    (fun j : Fin i.succ =>
+        Fin.snoc (n := i.val) (α := fun _ => L)
+          (foldOrderChallenges (ℓ := ℓ) (L := L) (i := i.castSucc) challenges) r_i' j) := by
+  funext j
+  induction j using Fin.lastCases with
+  | last =>
+      simp [foldOrderChallenges]
+  | cast k =>
+      simp [foldOrderChallenges, Fin.rev_castSucc]
+
+/-- Extract the challenge vector belonging to an older oracle frontier from a later statement.
+
+If `stmtIdx = oracleIdx + d`, the newest `d` statement challenges are not yet reflected in the
+oracle frontier. Since statement vectors are newest-first, the older frontier is the suffix beginning
+at offset `d`. -/
+def olderStmtChallenges {ℓ : ℕ} {L : Type} {stmtIdx oracleIdx : Fin (ℓ + 1)}
+    (h_le : oracleIdx.val ≤ stmtIdx.val) (challenges : Fin stmtIdx → L) :
+    Fin oracleIdx → L :=
+  fun j => challenges ⟨stmtIdx.val - oracleIdx.val + j.val, by
+    have hj : j.val < oracleIdx.val := j.isLt
+    omega⟩
+
+@[simp]
+lemma olderStmtChallenges_self {ℓ : ℕ} {L : Type} {i : Fin (ℓ + 1)}
+    (challenges : Fin i → L) :
+    olderStmtChallenges (ℓ := ℓ) (oracleIdx := i) (stmtIdx := i) (by rfl) challenges =
+      challenges := by
+  funext j
+  simp only [olderStmtChallenges, Nat.sub_self, zero_add, Fin.eta]
+
+@[simp]
+lemma olderStmtChallenges_cons_castSucc {ℓ : ℕ} {L : Type} (i : Fin ℓ)
+    (challenges : Fin i.castSucc → L) (r_i' : L) :
+    olderStmtChallenges (ℓ := ℓ) (stmtIdx := i.succ) (oracleIdx := i.castSucc)
+      (by simp only [Fin.val_succ, Fin.val_castSucc]; omega)
+      (Fin.cons (α := fun _ => L) r_i' challenges) =
+      challenges := by
+  funext j
+  simp only [olderStmtChallenges, Fin.val_succ, Fin.val_castSucc]
+  let idx : Fin i.succ := ⟨i.val + 1 - i.val + j.val, by
+      have hval : i.val + 1 - i.val + j.val = j.val + 1 := by
+        rw [Nat.add_sub_cancel_left]
+        exact Nat.add_comm 1 j.val
+      simpa only [hval, Fin.val_succ] using j.succ.isLt⟩
+  have hidx : idx = j.succ := by
+    apply Fin.ext
+    simp only [idx, Fin.val_succ]
+    rw [Nat.add_sub_cancel_left]
+    exact Nat.add_comm 1 j.val
+  change (Fin.cons (n := i.val) (α := fun _ => L) r_i' challenges) idx = challenges j
+  exact Eq.trans (congrArg (Fin.cons (n := i.val) (α := fun _ => L) r_i' challenges) hidx)
+    (Fin.cons_succ (n := i.val) (α := fun _ => L) r_i' challenges j)
+
+@[simp]
+lemma olderStmtChallenges_succ_castSucc {ℓ : ℕ} {L : Type} (i : Fin ℓ)
+    (challenges : Fin i.succ → L) :
+    olderStmtChallenges (ℓ := ℓ) (stmtIdx := i.succ) (oracleIdx := i.castSucc)
+      (by simp only [Fin.val_succ, Fin.val_castSucc]; omega) challenges =
+      Fin.tail challenges := by
+  rw [← Fin.cons_self_tail challenges]
+  exact olderStmtChallenges_cons_castSucc i (Fin.tail challenges)
+    (challenges ⟨0, by simp only [Fin.val_succ]; omega⟩)
 
 section OracleStatementIndex
 variable (ℓ : ℕ) (ϑ : ℕ) [NeZero ℓ] [NeZero ϑ] [hdiv : Fact (ϑ ∣ ℓ)]
@@ -1029,20 +1106,63 @@ section SecurityRelations
 /-- Helper to get the k-th challenge slice for folding -/
 def getFoldingChallenges (i : Fin (ℓ + 1)) (challenges : Fin i → L)
     (k : ℕ) (h : k + ϑ ≤ i) : Fin ϑ → L :=
-  fun cId => challenges ⟨k + cId, by omega⟩
+  fun cId => foldOrderChallenges (ℓ := ℓ) challenges ⟨k + cId, by omega⟩
 
 omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
   [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] hdiv in
-lemma getFoldingChallenges_init_succ_eq (i : Fin ℓ)
-    (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) (challenges : Fin i.succ → L)
-    (h : ↑j * ϑ + ϑ ≤ ↑i.castSucc) :
-    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) i.castSucc (Fin.init challenges) (↑j * ϑ)
-      (h := by omega) =
-    getFoldingChallenges (r := r) (𝓡 := 𝓡) i.succ challenges (↑j * ϑ)
-      (h := by simp only [Fin.val_succ]; simp only [Fin.coe_castSucc] at h; omega) := by
+lemma getFoldingChallenges_proof_irrel (i : Fin (ℓ + 1)) (challenges : Fin i → L)
+    (k : ℕ) (h h' : k + ϑ ≤ i) :
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) i challenges k h =
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) i challenges k h' := by
+  funext cId
   unfold getFoldingChallenges
-  ext cId
-  simp only [Fin.init, Fin.coe_castSucc, Fin.castSucc_mk, Fin.val_succ]
+  congr 1
+
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
+  [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] hdiv in
+lemma getFoldingChallenges_older_castSucc_eq (i : Fin ℓ)
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) (challenges : Fin i.succ → L)
+    (h_old : ↑j * ϑ + ϑ ≤ ↑i.castSucc)
+    (h_new : ↑j * ϑ + ϑ ≤ ↑i.succ) :
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) i.castSucc
+      (olderStmtChallenges (ℓ := ℓ) (stmtIdx := i.succ) (oracleIdx := i.castSucc)
+        (by simp only [Fin.val_succ, Fin.val_castSucc]; omega) challenges) (↑j * ϑ)
+      (h := h_old) =
+  getFoldingChallenges (r := r) (𝓡 := 𝓡) i.succ challenges (↑j * ϑ)
+      (h := h_new) := by
+  rw [olderStmtChallenges_succ_castSucc]
+  unfold getFoldingChallenges
+  funext cId
+  have hle : j.val * ϑ + ϑ ≤ i.val := by
+    simpa only [Fin.val_castSucc] using h_old
+  let idxOld : Fin i.castSucc := ⟨j.val * ϑ + cId.val, by omega⟩
+  let idxNew : Fin i.succ := ⟨j.val * ϑ + cId.val, by
+    simp only [Fin.val_succ]
+    omega⟩
+  change foldOrderChallenges (ℓ := ℓ) (Fin.tail challenges) idxOld =
+    foldOrderChallenges (ℓ := ℓ) challenges idxNew
+  have hidx : idxNew = idxOld.castSucc := by
+    apply Fin.ext
+    rfl
+  rw [hidx]
+  unfold foldOrderChallenges
+  have hrev : idxOld.castSucc.rev = idxOld.rev.succ := Fin.rev_castSucc idxOld
+  exact (show Fin.tail challenges idxOld.rev = challenges idxOld.rev.succ from rfl).trans
+    (congrArg challenges hrev).symm
+
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
+  [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] hdiv in
+lemma getFoldingChallenges_tail_castSucc_eq (i : Fin ℓ)
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) (challenges : Fin i.succ → L)
+    (h_old : ↑j * ϑ + ϑ ≤ ↑i.castSucc)
+    (h_new : ↑j * ϑ + ϑ ≤ ↑i.succ) :
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) i.castSucc
+      (Fin.tail challenges) (↑j * ϑ) (h := h_old) =
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) i.succ challenges (↑j * ϑ)
+      (h := h_new) := by
+  rw [← olderStmtChallenges_succ_castSucc (i := i) (challenges := challenges)]
+  exact getFoldingChallenges_older_castSucc_eq (r := r) (𝓡 := 𝓡) (ϑ := ϑ)
+    i j challenges h_old h_new
 
 def getNextOracle (i : Fin (ℓ + 1))
     (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i) j)
@@ -1086,7 +1206,9 @@ omit [CharP L 2] in
 lemma oracleFoldingConsistencyProp_relay_preserved (i : Fin ℓ)
     (hNCR : ¬ isCommitmentRound ℓ ϑ i) (challenges : Fin i.succ → L)
     (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
-    oracleFoldingConsistencyProp 𝔽q β i.castSucc (Fin.init challenges) oStmt ↔
+    oracleFoldingConsistencyProp 𝔽q β i.castSucc
+      (olderStmtChallenges (ℓ := ℓ) (stmtIdx := i.succ) (oracleIdx := i.castSucc)
+        (by simp only [Fin.val_succ, Fin.val_castSucc]; omega) challenges) oStmt ↔
     oracleFoldingConsistencyProp 𝔽q β i.succ challenges
       (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
   have h_oracle_size_eq: toOutCodewordsCount ℓ ϑ i.castSucc =
@@ -1102,8 +1224,17 @@ lemma oracleFoldingConsistencyProp_relay_preserved (i : Fin ℓ)
       rw [h_oracle_size_eq]
       exact hj
     have h' := h j' hj'
-    simpa [oracleFoldingConsistencyProp, mapOStmtOutRelayStep, j', h_oracle_size_eq,
-      getFoldingChallenges_init_succ_eq] using h'
+    simp only [olderStmtChallenges_succ_castSucc] at h'
+    have h_next_old :=
+      oracle_block_k_next_le_i (ℓ := ℓ) (ϑ := ϑ) (i := i.castSucc) (j := j') (hj := hj')
+    have h_next_new : ↑j' * ϑ + ϑ ≤ ↑i.succ := by
+      exact Nat.le_trans h_next_old (by simp only [Fin.val_castSucc, Fin.val_succ]; omega)
+    rw [getFoldingChallenges_tail_castSucc_eq (r := r) (𝓡 := 𝓡) (ϑ := ϑ)
+      (i := i) (j := j') (challenges := challenges)
+      (h_old := h_next_old) (h_new := h_next_new)] at h'
+    simpa [oracleFoldingConsistencyProp, mapOStmtOutRelayStep, getNextOracle, j',
+      h_oracle_size_eq, getFoldingChallenges_older_castSucc_eq,
+      getFoldingChallenges_tail_castSucc_eq, getFoldingChallenges_proof_irrel] using h'
   · intro h j hj
     let j' : Fin (toOutCodewordsCount ℓ ϑ i.succ) := ⟨j.val, by
       rw [← h_oracle_size_eq]
@@ -1113,8 +1244,18 @@ lemma oracleFoldingConsistencyProp_relay_preserved (i : Fin ℓ)
       rw [← h_oracle_size_eq]
       exact hj
     have h' := h j' hj'
-    simpa [oracleFoldingConsistencyProp, mapOStmtOutRelayStep, j', h_oracle_size_eq,
-      getFoldingChallenges_init_succ_eq] using h'
+    have h_next_old :=
+      oracle_block_k_next_le_i (ℓ := ℓ) (ϑ := ϑ) (i := i.castSucc) (j := j) (hj := hj)
+    have h_next_new : ↑j * ϑ + ϑ ≤ ↑i.succ := by
+      exact Nat.le_trans h_next_old (by simp only [Fin.val_castSucc, Fin.val_succ]; omega)
+    simp only [j'] at h'
+    rw [← getFoldingChallenges_tail_castSucc_eq (r := r) (𝓡 := 𝓡) (ϑ := ϑ)
+      (i := i) (j := j) (challenges := challenges)
+      (h_old := h_next_old) (h_new := h_next_new)] at h'
+    simpa [oracleFoldingConsistencyProp, mapOStmtOutRelayStep, getNextOracle, j',
+      h_oracle_size_eq, olderStmtChallenges_succ_castSucc,
+      getFoldingChallenges_older_castSucc_eq, getFoldingChallenges_tail_castSucc_eq,
+      getFoldingChallenges_proof_irrel] using h'
 
 def BBF_eq_multiplier (r : Fin ℓ → L) : MultilinearPoly L ℓ :=
   ⟨MvPolynomial.eqPolynomial r, by simp only [eqPolynomial_mem_restrictDegree]⟩
@@ -1147,7 +1288,7 @@ def getMidCodewords {i : Fin (ℓ + 1)} (t : L⦃≤ 1⦄[X Fin ℓ]) -- origina
     (h_destIdx := by simp only [Fin.val_zero, Nat.zero_add])
     (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
     (f := f₀)
-    (r_challenges := challenges ∘ Fin.rev)
+    (r_challenges := foldOrderChallenges (ℓ := ℓ) challenges)
 
 /-! `SumcheckContextIncluded_Relations`: Sumcheck context is passed as a
 parameters in the following relations --/
@@ -1272,7 +1413,9 @@ lemma nonDoomedFoldingProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isCommitment
     (challenges : Fin i.succ → L)
     (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
     :
-    nonDoomedFoldingProp 𝔽q β i.castSucc (Fin.init challenges) oStmt ↔
+    nonDoomedFoldingProp 𝔽q β i.castSucc
+      (olderStmtChallenges (ℓ := ℓ) (stmtIdx := i.succ) (oracleIdx := i.castSucc)
+        (by simp only [Fin.val_succ, Fin.val_castSucc]; omega) challenges) oStmt ↔
     nonDoomedFoldingProp 𝔽q β i.succ challenges (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
   -- Both sides reduce to `True` via their bad-event disjunct, since both statement indices are
   -- `< ℓ`.
@@ -1285,7 +1428,10 @@ lemma nonDoomedFoldingProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isCommitment
   · intro _
     refine Or.inr ?_
     exact badEventExistsProp_of_lt 𝔽q β (stmtIdx := i.castSucc) (oracleIdx := i.castSucc)
-      (oStmt := oStmt) (challenges := Fin.init challenges)
+      (oStmt := oStmt)
+      (challenges := olderStmtChallenges (ℓ := ℓ) (stmtIdx := i.succ)
+        (oracleIdx := i.castSucc)
+        (by simp only [Fin.val_succ, Fin.val_castSucc]; omega) challenges)
       (h_lt := by simp only [Fin.coe_castSucc]; omega) (h_eq := rfl)
 
 def oracleWitnessConsistency
@@ -1301,7 +1447,8 @@ def oracleWitnessConsistency
   let firstOracleConsistency: Prop := firstOracleWitnessConsistencyProp 𝔽q β
     wit.t (getFirstOracle 𝔽q β oStmt)
   let oracleFoldingConsistency: Prop := oracleFoldingConsistencyProp 𝔽q β oracleIdx
-    (challenges := Fin.take (m := oracleIdx) (v := stmt.challenges) (h := by omega))
+    (challenges := olderStmtChallenges (ℓ := ℓ) (stmtIdx := stmtIdx) (oracleIdx := oracleIdx)
+      h_le stmt.challenges)
     (oStmt := oStmt)
   witnessStructuralInvariant ∧ sumCheckConsistency ∧ firstOracleConsistency ∧
     oracleFoldingConsistency
@@ -1327,23 +1474,9 @@ lemma oracleWitnessConsistency_relay_preserved
     -- now the two `firstOracle…` conjuncts are syntactically identical; isolate the folding props.
     congr 1  -- peel sumcheckConsistency (rfl)
     congr 1  -- peel firstOracleConsistency (now rfl)
-    have h_size : toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ := by
-      simp only [toOutCodewordsCount_succ_eq ℓ ϑ i, hNCR, ↓reduceIte]
-    apply propext
-    unfold oracleFoldingConsistencyProp
-    constructor
-    · intro h j hj
-      have hj' : (⟨j.val, by rw [h_size]; exact j.isLt⟩ :
-          Fin (toOutCodewordsCount ℓ ϑ i.castSucc)).val + 1 <
-          toOutCodewordsCount ℓ ϑ i.castSucc := by simp only; rw [h_size]; exact hj
-      have := h ⟨j.val, by rw [h_size]; exact j.isLt⟩ hj'
-      convert this using 2 <;> try (simp only [Fin.val_castSucc, Fin.val_succ]; rfl)
-    · intro h j hj
-      have hj' : (⟨j.val, by rw [← h_size]; exact j.isLt⟩ :
-          Fin (toOutCodewordsCount ℓ ϑ i.succ)).val + 1 <
-          toOutCodewordsCount ℓ ϑ i.succ := by simp only; rw [← h_size]; exact hj
-      have := h ⟨j.val, by rw [← h_size]; exact j.isLt⟩ hj'
-      convert this using 2 <;> try (simp only [Fin.val_castSucc, Fin.val_succ]; rfl)
+    simpa [olderStmtChallenges_self] using
+      propext (oracleFoldingConsistencyProp_relay_preserved 𝔽q β i hNCR
+        stmt.challenges oStmt)
 
 -- Per-block relay preservation: `foldingBadEventAtBlock` depends on the oracle index only through
 -- `oStmt j` (its `f_i` input). The RHS block index is `Fin.cast h_size j`, so `j.val` is preserved
@@ -1410,7 +1543,8 @@ def masterKStateProp (stmtIdx : Fin (ℓ + 1))
   let oracleWitnessConsistency: Prop := oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β
     stmtIdx oracleIdx h_le stmt wit oStmt
   let badEventExists := badEventExistsProp (ϑ := ϑ) 𝔽q β oracleIdx
-    (challenges := Fin.take (m := oracleIdx) (v := stmt.challenges) (h := by omega))
+    (challenges := olderStmtChallenges (ℓ := ℓ) (stmtIdx := stmtIdx) (oracleIdx := oracleIdx)
+      h_le stmt.challenges)
     (oStmt := oStmt)
   localChecks ∧ (badEventExists ∨ oracleWitnessConsistency)
 
@@ -1473,8 +1607,10 @@ def foldStepRelOutProp (i : Fin ℓ)
     if isCommitmentRound ℓ ϑ i then
       -- commit-round (weak) form: bad event at `stmtIdx := oracleIdx := i.castSucc`
       badEventExistsProp (ϑ := ϑ) 𝔽q β (stmtIdx := i.castSucc) (oracleIdx := i.castSucc)
-        (challenges := Fin.take (m := i.castSucc) (v := stmt.challenges) (h := by
-          simp only [Fin.coe_castSucc, Fin.val_succ]; omega)) (oStmt := oStmt)
+        (challenges := olderStmtChallenges (ℓ := ℓ) (stmtIdx := i.succ)
+          (oracleIdx := i.castSucc)
+          (by simp only [Fin.coe_castSucc, Fin.val_succ]; omega) stmt.challenges)
+        (oStmt := oStmt)
     else
       -- non-commitment (relay) form: bad event at the statement index `i.succ`
       badEventExistsProp (ϑ := ϑ) 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.castSucc)

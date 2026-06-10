@@ -24,14 +24,15 @@ open ProximityPrize.BCIKS20.GammaGenuine BCIKS20.HenselNumerator
 
 namespace ArkLib.RawGS304
 
-variable {F : Type} [Field F] {ι : Type} [Fintype ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+  {ι : Type} [Fintype ι]
 
 /-- **Claim 5.9 (TruncReadingOn).** The local series truncation matches the curve
 specialization. -/
 theorem claim59_trunc_reading_on
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (u : WordStack F (Fin (k + 1)) ι) (P : F → Polynomial F)
-    {H : F[X][Y]} [Fact (Irreducible H)] [hPos : Fact (0 < H.natDegree)]
+    {H : F[X][Y]} [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
     {R : F[X][X][Y]} (hHyp : BCIKS20AppendixA.ClaimA2.Hypotheses (0 : F) R H) (n : ℕ) (c : ℕ → F[X])
     (hfiber : ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
       Polynomial.evalEval z ((P z).eval 0) H = 0)
