@@ -3513,3 +3513,32 @@ slices must share large root loci at every depth simultaneously. The all-words q
 slices are simultaneously root-coherent at every depth. C19's 3 + 16 anatomy is the
 worked instance. The conservation + dual-RS + slice bricks make every term in that
 sentence formal.
+### O70 — the SMALL-GOOD-SET SECTOR of StrictCoeffPolysResidual is FREE: the §5 residual is equivalent to its large-sector restriction
+
+**Brick (axiom-clean, 0 sorry, 0 warnings):**
+`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean` —
+`strictCoeffPolysResidual_iff_large`: the issue-#304 strict Johnson extraction residual
+([BCIKS20] §5) holds **iff** its restriction `StrictCoeffPolysResidualLarge` adding the
+hypothesis `k + 1 < (RS_goodCoeffsCurve u δ).card` holds.  The complementary sector
+`|S| ≤ k + 1` is discharged UNCONDITIONALLY for every decoded family `P` — no probability,
+Johnson, GS, or counting input — by pure Lagrange interpolation
+(`exists_coeff_interpolant_of_card_le`: any target function on ≤ k+1 field points is matched
+by a polynomial of `natDegree < k + 1`; built on Mathlib's `Lagrange.interpolate` +
+`degree_interpolate_lt`).  Keystone front door included:
+`correlatedAgreement_affine_curves_of_largeResidual` reaches BCIKS20 Theorem 1.5 from the
+large-sector residual + `BoundaryProbabilityResidual` alone.
+
+**Probe (`probe_strict_coeff_smallset.py`, GF(13), 4000 + 2000 trials):** small-set claim
+4000/4000 PASS; the control at `|S| = k + 2` fails for 1861/2000 generic coefficient
+functions (expected ≈ (p−1)/p · 2000 = 1846) — the cutoff is EXACTLY `k + 1`, so the
+reduction strips precisely the contentless sector and nothing more.
+
+**Moral for the producer lanes:** every `betaRec`/Hensel/curve-extraction producer
+(`KeystoneStrictResidual`, `CurveFamilyHensel`, `FaithfulCurveExtraction`,
+`OffcentreKeystoneAssembly`, `StrictCoeffProducer`) now gets `k + 1 < |goodSet|` as a free
+hypothesis: their "matching set is large" counting demands are only ever invoked in a regime
+where the good set is itself large, which is exactly the regime BCIKS20 §5's
+Guruswami–Sudan counting addresses.  The genuinely open per-`(u, P)` content (Claim 5.9 base
+reading, tail vanishing, GS cargo) is untouched — but its demanded domain just shrank to
+where the paper's argument actually lives.
+
