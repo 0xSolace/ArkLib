@@ -1269,6 +1269,7 @@ import ArkLib.ProofSystem.Logup.Security.MarginalBridgeProof
 import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
 import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
 import ArkLib.ProofSystem.Logup.Security.OuterMarginalBound
+import ArkLib.ProofSystem.Logup.Security.OuterRbrSoundness
 import ArkLib.ProofSystem.Logup.Security.OuterRestSupport
 import ArkLib.ProofSystem.Logup.Security.OuterRun
 import ArkLib.ProofSystem.Logup.Security.OuterRunSamplesChallenge
