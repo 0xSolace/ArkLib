@@ -204,40 +204,66 @@ protocol's challenge spaces.
     \uses{def:fiat_shamir_challenge_oracle_interface, def:duplex_sponge_challenge_oracle}
 \end{definition}
 
-\begin{remark}[What Is Proved Versus Residualized]
+\begin{remark}[Grant Closeout Status and Residual Frontier]
     The executable duplex-sponge specification, codec layer, salted variants, trace/prover
     transformation infrastructure, run-collapse completeness bridge, and the canonical
-    Fiat-Shamir transfer theorems are machine checked.
+    Fiat-Shamir transfer theorems are machine checked. This is the grant-closeout scope for
+    the DSFS specification: the construction is formalized, its executable completeness bridge
+    is discharged, and downstream security statements consume explicit assumptions rather than
+    hidden holes.
 
     The first honest bad-event implication from the CO25 M2 backtracking analysis is also
-    discharged.  ArkLib proves that, off the combined bad event $E$, no backtrack chain step is
+    discharged. ArkLib proves that, off the combined bad event $E$, no backtrack chain step is
     anchored by an inverse-permutation entry; the proof factors through concrete trace-index
     payloads for the $J_{\mathrm{BT}}$ hash and permutation indices
     (\texttt{jbt\_hash\_getElem?} and
     \texttt{jbt\_perm\_forward\_getElem?\_of\_not\_E}).
     \lean{DuplexSpongeFS.Sponge316.lemma5_12_honest}
 
-    The full CO25 Lemma 5.1 hybrid proof for DSFS remains an explicit post-grant security
-    hardening assumption, not a hidden proof hole. After the M2a discharge, the strict residual
-    surface is:
+    The full CO25 Lemma 5.1 hybrid total-variation proof for DSFS remains an explicit
+    post-grant security-hardening target. The current in-tree decomposition is more precise
+    than the original residual list. The dispatcher and simulated-witness budget obligations,
+    together with the honest inverse-entry implication (M2a), are closed:
     \[
     \begin{gathered}
-    \mathsf{DuplexSpongeFS.KeyLemmaResidual},\\
-    \mathsf{Lemma5\_14HonestResidual},\quad
-    \mathsf{Lemma5\_16HonestResidual},\\
     \mathsf{SimulatedProverChallengeBudgetResidual},\quad
     \mathsf{SimulatedProverSharedBudgetResidual},\\
-    \mathsf{KeyLemmaEagerResidual},\\
     \mathsf{D2sQueryStepGSpecBudgetResidual},\quad
-    \mathsf{D2fOuterImplSharedBudgetResidual}.
+    \mathsf{D2fOuterImplSharedBudgetResidual},\quad
+    \mathsf{Lemma5\_12HonestResidual}.
     \end{gathered}
     \]
-    These residuals express the remaining CO25 Section 5 hybrid-game proof obligations:
-    dispatcher query budgets, the M2b/M2c honest backtrack implications, simulated-prover
-    budgets, and the final eager-oracle key lemma. They are deliberately exposed as named
-    propositions consumed by downstream DSFS soundness reductions.
+    They are proven in \lean{DuplexSpongeFS.SimulatorBudgets.d2sQueryStepGSpecBudget},
+    \lean{DuplexSpongeFS.SimulatorBudgets.d2fOuterImplSharedBudget},
+    \lean{DuplexSpongeFS.SimulatorBudgets.simulatedProverChallengeBudget},
+    \lean{DuplexSpongeFS.SimulatorBudgets.simulatedProverSharedBudget}, and
+    \lean{DuplexSpongeFS.Sponge316.lemma5_12_honest}. The birthday-bound assembly still
+    consumes the honest-event M2 interfaces explicitly through
+    \lean{DuplexSpongeFS.BirthdayBound.honestBad_birthday_of_residuals}.
+
+    The remaining eager-surface frontier is:
+    \[
+    \begin{gathered}
+    \mathsf{Hyb01StepResidual},\quad
+    \mathsf{Hyb12StepResidual},\quad
+    \mathsf{Hyb23StepResidual},\quad
+    \mathsf{Hyb34StepResidual},\\
+    \mathsf{Lemma5\_14HonestResidual},\quad
+    \mathsf{Lemma5\_16HonestResidual},\quad
+    \mathsf{Lemma5\_8EagerBirthdayResidual}.
+    \end{gathered}
+    \]
+    The theorem \lean{DuplexSpongeFS.KeyLemmaAssembly.keyLemmaEager_of_hybSteps} reduces
+    \(\mathsf{KeyLemmaEagerResidual}\) to the four hybrid-step residuals alone, and
+    \lean{DuplexSpongeFS.KeyLemmaAssembly.keyLemmaEager_of_steps_strictSplit} replaces the
+    Claim 5.24 residual by its strict replay split. The legacy
+    \(\mathsf{DuplexSpongeFS.KeyLemmaResidual}\) remains on the older i.i.d.-oracle statement
+    surface and uses the over-strong \(\eta^\star\) denominator exponent; the repaired eager
+    surface is the active closeout path.
     \lean{DuplexSpongeFS.KeyLemmaFoundations.KeyLemmaStatementEager}
     \lean{DuplexSpongeFS.KeyLemmaFoundations.KeyLemmaEagerResidual}
-    \lean{DuplexSpongeFS.KeyLemmaFoundations.D2sQueryStepGSpecBudgetResidual}
-    \lean{DuplexSpongeFS.KeyLemmaFoundations.D2fOuterImplSharedBudgetResidual}
+    \lean{DuplexSpongeFS.KeyLemmaHybrids.Hyb01StepResidual}
+    \lean{DuplexSpongeFS.KeyLemmaHybrids.Hyb12StepResidual}
+    \lean{DuplexSpongeFS.KeyLemmaHybrids.Hyb23StepResidual}
+    \lean{DuplexSpongeFS.KeyLemmaHybrids.Hyb34StepResidual}
 \end{remark}

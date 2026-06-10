@@ -48,7 +48,7 @@ complementary shapes that the CO25 §5.6 analysis needs and VCVio lacks:
 - `birthday_toReal_le_lemma5_8Bound` / `hit_toReal_le_capacityRatio` (R1d): the ENNReal
   outputs of the generic bricks, over any answer space at least as large as the capacity
   space `|U|^C`, are dominated by the real-valued CO25 bounds.
-- `probEvent_honestBad_le_probEvent_E` (R1e): **modulo the M2 residuals**
+- `probEvent_honestBad_le_probEvent_E` (R1e): **modulo the M2 residual interfaces**
   (`Lemma5_12/5_14/5_16HonestResidual`), the honest CO25 bad events
   `E_inv/E_fork/E_time` over `Backtrack.S_BT` are dominated — for *any* trace
   distribution — by the single trace event `E` (CO25 §5.6), reducing their probability

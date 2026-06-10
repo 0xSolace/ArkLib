@@ -15,7 +15,9 @@ import ArkLib.OracleReduction.Security.OracleDistribution
 This module lands the bounded foundations layer of the bricks decomposition for
 `DuplexSpongeFS.KeyLemmaResidual` (CO25, Lemma 5.1): proven game/budget/numeric level
 lemmas that the §5.8 hybrid argument consumes, the repaired *eager* statement surface, and
-named `*Residual : Prop` definitions for the genuinely open research core.
+named `*Residual : Prop` interfaces for the remaining security-analysis obligations. Several
+interfaces defined here are discharged downstream; they remain here so all consumers share one
+stable statement surface.
 
 ## Proven bricks (no `sorry`, axiom-clean)
 
@@ -58,14 +60,16 @@ named `*Residual : Prop` definitions for the genuinely open research core.
   `D2SAlgo^f(𝒜)` re-associated onto the coin-equipped witness spec with abort collapsed —
   plus the canonical coin realization `coinUnitImpl` (M5) with proven zero-budget lemmas.
 
-## Open core (named `*Residual : Prop`, NOT proven)
+## Residual interfaces and current status
 
 - `D2sQueryStepGSpecBudgetResidual` (F4), `D2fOuterImplSharedBudgetResidual` (F4b):
-  per-step budget of the §5.4 dispatcher (branch-tree analysis over five handlers).
+  per-step and shared-budget dispatcher obligations, both proven in `SimulatorBudgets`.
 - `SimulatedProverChallengeBudgetResidual` (M1c), `SimulatedProverSharedBudgetResidual` (M1d):
-  the budget conjuncts of Lemma 5.1 for the `d2sAlgo` witness.
+  the budget conjuncts of Lemma 5.1 for the `d2sAlgo` witness, both proven in
+  `SimulatorBudgets`.
 - `Lemma5_12HonestResidual` / `Lemma5_14HonestResidual` / `Lemma5_16HonestResidual` (M2):
-  `¬E ⇒ ¬E_inv / ¬E_fork / ¬E_time` with the honest definitions.
+  `¬E ⇒ ¬E_inv / ¬E_fork / ¬E_time` with the honest definitions. M2a is proven by
+  `Sponge316.lemma5_12_honest`; M2b/M2c remain open.
 - `KeyLemmaEagerResidual` (R4): the full quantified CO25 Lemma 5.1 on the eager surface
   (requires the Hyb₀–Hyb₄ ladder, Claims 5.21–5.24, and the §5.7 abort analysis).
 -/
@@ -634,10 +638,9 @@ section HonestBadEventResiduals
 
 open OracleSpec.QueryLog OracleSpec.QueryLog.BadEventDS
 
-/-- M2a residual — CO25 Lemma 5.12 (honest form): off the combined bad event `E`, no
-BackTrack chain step is anchored by an inverse-permutation entry,
-`¬E(tr) → ¬E_inv(tr, s)`. Open: requires a `lemma_5_10`-genre case analysis relating
-`S_BT` chain links to the dedup'd-trace collision events. -/
+/-- M2a residual interface — CO25 Lemma 5.12 (honest form): off the combined bad event `E`,
+no BackTrack chain step is anchored by an inverse-permutation entry,
+`¬E(tr) → ¬E_inv(tr, s)`. Discharged in `Lemma512Honest.lean`. -/
 def Lemma5_12HonestResidual (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Prop :=
   ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (S : Backtrack.S_BT tr state),
@@ -913,11 +916,11 @@ noncomputable def simulatedProverSalted
         (Salt := Salt) unitImpl)
       ((d2sAlgo (T_H := T_H) (T_P := T_P) (Salt := Salt) 𝒜).run)
 
-/-- M1c residual — challenge budget of the witness (Lemma 5.1 conjunct (b)): the simulated
+/-- M1c residual interface — challenge budget of the witness (Lemma 5.1 conjunct (b)): the simulated
 prover makes at most `θ★ = tₚ` FS-challenge queries, provided the malicious prover makes at
-most `tₚ` forward-perm queries and the coin realization makes no challenge queries.
-Open: composes F3b with the per-step `gᵢ` budget of `d2sQueryStep` (F4 residual) and the
-bridge budget F5 through the `d2fRaw` `simulateQ` pipeline. -/
+most `tₚ` forward-perm queries and the coin realization makes no challenge queries. This is
+proven in `SimulatorBudgets` from F3b, F4, and the F5 bridge budget through the `d2fRaw`
+`simulateQ` pipeline. -/
 def SimulatedProverChallengeBudgetResidual
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)] : Prop :=
@@ -932,9 +935,9 @@ def SimulatedProverChallengeBudgetResidual
       (fun j => isFSChallengeCoinIdx j = true)
       (θStar tₕ tₚ tₚᵢ)
 
-/-- M1d residual — shared budget of the witness (Lemma 5.1 conjunct (a)): `oSpec` queries are
-forwarded 1:1 (`QueryImpl.id` summand of `d2fOuterImpl`), provided the coin realization makes
-no shared queries. Open: composes F3b with the F4b residual. -/
+/-- M1d residual interface — shared budget of the witness (Lemma 5.1 conjunct (a)): `oSpec`
+queries are forwarded 1:1 (`QueryImpl.id` summand of `d2fOuterImpl`), provided the coin
+realization makes no shared queries. This is proven in `SimulatorBudgets` from F3b and F4b. -/
 def SimulatedProverSharedBudgetResidual [DecidableEq ι]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U]
     [Inhabited (StmtIn × FSSaltedProof pSpec Salt)] : Prop :=
@@ -980,7 +983,7 @@ def KeyLemmaEagerResidual
 
 end EagerSurface
 
-/-! ## F4 residuals — §5.4 dispatcher per-step budgets (branch-tree analysis, open) -/
+/-! ## F4 residual interfaces — §5.4 dispatcher per-step budgets -/
 
 section DispatcherBudgetResiduals
 
@@ -990,10 +993,11 @@ variable {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι}
   [codec : Codec pSpec U] {δ : ℕ}
   [∀ i, Fintype (pSpec.Message i)] [∀ i, DecidableEq (pSpec.Message i)]
 
-/-- F4 residual — per-step `gᵢ`-budget of the §5.4 dispatcher: `d2sQueryStep` makes at most
-one `gSpec` query, and only on a forward-perm query (CO25 §5.4 Item 4(e)i); the
-hash/permInv/no-result branches make none. Open: requires unfolding the five-handler branch
-tree (including the `𝒰(Σ)`-sampler helpers) through the `StateT`/`OptionT` runs. -/
+/-- F4 residual interface — per-step `gᵢ`-budget of the §5.4 dispatcher:
+`d2sQueryStep` makes at most one `gSpec` query, and only on a forward-perm query
+(CO25 §5.4 Item 4(e)i); the hash/permInv/no-result branches make none. Proven in
+`SimulatorBudgets` by unfolding the five-handler branch tree (including the `𝒰(Σ)`-sampler
+helpers) through the `StateT`/`OptionT` runs. -/
 def D2sQueryStepGSpecBudgetResidual
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] : Prop :=
   ∀ (qq : (duplexSpongeChallengeOracle StmtIn U).Domain)
@@ -1005,11 +1009,11 @@ def D2sQueryStepGSpecBudgetResidual
       (fun j => j.isLeft = true)
       (match qq with | .inr (.inl _) => 1 | _ => 0)
 
-/-- F4b residual — shared-budget forwarding of the composed outer implementation: per source
-query, `d2fOuterImpl` makes at most one `oSpec` query at index `i`, and only when the source
-query itself is the `oSpec` query at `i` (the `QueryImpl.id` summand forwards 1:1; the
-duplex-sponge summand lands in a spec without `oSpec`). Open: needs a lift-budget lemma for
-the `addLift` embedding plus the F4 branch-tree analysis. -/
+/-- F4b residual interface — shared-budget forwarding of the composed outer implementation:
+per source query, `d2fOuterImpl` makes at most one `oSpec` query at index `i`, and only when
+the source query itself is the `oSpec` query at `i` (the `QueryImpl.id` summand forwards 1:1;
+the duplex-sponge summand lands in a spec without `oSpec`). Proven in `SimulatorBudgets` from
+the explicit `addLift` run-shapes plus the F4 branch-tree analysis. -/
 def D2fOuterImplSharedBudgetResidual [DecidableEq ι]
     (T_H T_P : Type) [LawfulTraceNablaImpl T_H T_P StmtIn U] : Prop :=
   ∀ {κ : Type} (challengeSpec : OracleSpec κ) (M : Type)

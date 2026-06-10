@@ -54,9 +54,11 @@ Open residuals **on the eager key-lemma critical path** (each one consumed by
 Open residuals **off the critical path** (bad-event bookkeeping for the §5.6 analysis,
 feeding the Claim 5.21/5.24 trace arguments):
 
-5. `KeyLemmaFoundations.Lemma5_12HonestResidual` / `Lemma5_14HonestResidual` /
-   `Lemma5_16HonestResidual` (M2) — `¬E ⇒ ¬E_*honest` backtrack case analyses;
-   consumed by `BirthdayBound.probEvent_honestBad_le_probEvent_E` and
+5. `KeyLemmaFoundations.Lemma5_14HonestResidual` /
+   `Lemma5_16HonestResidual` (M2b/M2c) — the remaining `¬E ⇒ ¬E_*honest`
+   backtrack case analyses. `Lemma5_12HonestResidual` (M2a) is discharged by
+   `Sponge316.lemma5_12_honest`; the birthday-bound assembly still consumes the M2
+   interfaces through `BirthdayBound.probEvent_honestBad_le_probEvent_E` and
    `BirthdayBound.honestBad_birthday_of_residuals`.
 6. `BirthdayBound.Lemma5_8EagerBirthdayResidual` — see item 1.
 
