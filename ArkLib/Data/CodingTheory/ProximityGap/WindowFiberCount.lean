@@ -420,4 +420,67 @@ theorem isWindowCosetUnion_iff_traceBlocks {n m t : ℕ} (hn : 0 < n) (hm : m �
   ⟨fun h _ hc => isWindowCosetUnion_traceBlock hn hm hm0 hH h hc,
     isWindowCosetUnion_of_traceBlocks hn hm hm0 hSn⟩
 
+/-! ## The canonical instantiation: `m = lcm(Dmin)` -/
+
+/-- The divisibility-minimal divisors of `n` exceeding `t` (O70's `Dmin`). -/
+def minWindowDivisors (n t : ℕ) : Finset ℕ :=
+  n.divisors.filter fun d => t < d ∧ ∀ d' ∈ n.divisors, t < d' → d' ∣ d → d' = d
+
+/-- Every divisor of `n` exceeding `t` is a multiple of a minimal one. -/
+lemma exists_minWindowDivisor_dvd {n t : ℕ} (hn : 0 < n) :
+    ∀ d, d ∣ n → t < d → ∃ d₀ ∈ minWindowDivisors n t, d₀ ∣ d := by
+  intro d₁
+  induction d₁ using Nat.strong_induction_on with
+  | _ d ih =>
+    intro hd htd
+    by_cases hmin : ∀ d' ∈ n.divisors, t < d' → d' ∣ d → d' = d
+    · refine ⟨d, Finset.mem_filter.mpr ⟨Nat.mem_divisors.mpr ⟨hd, hn.ne'⟩,
+        htd, hmin⟩, dvd_rfl⟩
+    · push Not at hmin
+      obtain ⟨d', hd'mem, htd', hd'd, hne⟩ := hmin
+      have hd'lt : d' < d :=
+        lt_of_le_of_ne (Nat.le_of_dvd (by omega) hd'd) hne
+      obtain ⟨d₀, hd₀, hdvd⟩ :=
+        ih d' hd'lt (Nat.dvd_of_mem_divisors hd'mem) htd'
+      exact ⟨d₀, hd₀, hdvd.trans hd'd⟩
+
+lemma lcm_minWindowDivisors_dvd {n t : ℕ} :
+    (minWindowDivisors n t).lcm id ∣ n :=
+  Finset.lcm_dvd fun _ hd =>
+    Nat.dvd_of_mem_divisors (Finset.mem_filter.mp hd).1
+
+lemma lcm_minWindowDivisors_pos {n t : ℕ} :
+    0 < (minWindowDivisors n t).lcm id := by
+  rw [Nat.pos_iff_ne_zero]
+  intro h0
+  rw [Finset.lcm_eq_zero_iff] at h0
+  obtain ⟨d, hd, hd0⟩ := h0
+  have := (Finset.mem_filter.mp hd).2.1
+  simp only [id] at hd0
+  omega
+
+/-- `m = lcm(Dmin)` satisfies the divisor-gcd interface `(H)`. -/
+lemma gcd_lcm_minWindowDivisors_gt {n t : ℕ} (hn : 0 < n) :
+    ∀ d, d ∣ n → t < d → t < Nat.gcd d ((minWindowDivisors n t).lcm id) := by
+  intro d hd htd
+  obtain ⟨d₀, hd₀mem, hd₀d⟩ := exists_minWindowDivisor_dvd hn d hd htd
+  have ht0 : t < d₀ := (Finset.mem_filter.mp hd₀mem).2.1
+  have hdvd : d₀ ∣ Nat.gcd d ((minWindowDivisors n t).lcm id) :=
+    Nat.dvd_gcd hd₀d (by simpa using Finset.dvd_lcm hd₀mem)
+  have hgcd0 : 0 < Nat.gcd d ((minWindowDivisors n t).lcm id) :=
+    Nat.gcd_pos_of_pos_left _ (by omega)
+  exact lt_of_lt_of_le ht0 (Nat.le_of_dvd hgcd0 hdvd)
+
+/-- **The fiber-count law at the canonical modulus `m = lcm(Dmin)`** — the
+O70/O111 law's exact instantiation: the window fiber at `n` is the product of
+the window fibers at `lcm(Dmin)` over the `n/lcm(Dmin)` blocks. -/
+theorem isWindowCosetUnion_iff_traceBlocks_lcm {n t : ℕ} (hn : 0 < n)
+    {S : Finset ℕ} (hSn : ∀ e ∈ S, e < n) :
+    IsWindowCosetUnion n t S ↔
+      ∀ c < n / (minWindowDivisors n t).lcm id,
+        IsWindowCosetUnion ((minWindowDivisors n t).lcm id) t
+          (traceBlock (n / (minWindowDivisors n t).lcm id) c S) :=
+  isWindowCosetUnion_iff_traceBlocks hn lcm_minWindowDivisors_dvd
+    lcm_minWindowDivisors_pos (gcd_lcm_minWindowDivisors_gt hn) hSn
+
 end DeBruijnWindowedLaw
