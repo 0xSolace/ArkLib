@@ -3669,3 +3669,14 @@ The probe (probe_qline_upper.py, fresh point q=97,n=12,m=2,s=6,r=3,k=4 -- differ
 - C1 re-measures badGamma_affine_card_le (engine RHS) over 200 random error pairs; the Q-line line-close census drops 18 to 0 just past the witness radius a = rm = 6.
 
 The numerical gap (headline): on this family the LOWER half forces eps_mca at least C(s,r)/q equal 20/97 about 0.206 at delta = 1 - rm/n = 0.5, while the UPPER engine gives eps_mca at most n/q equal 12/97 about 0.124 in unique decoding delta below (n-k+1)/2n = 0.375. The unpinned window is delta in (0.375, 0.5] -- exactly the Johnson-to-capacity gap, with the two halves now on one surface. At cryptographic q, n/q (upper) and C(s,r)/q (lower) straddle eps-star = 2^-128, so delta-star is the crossover radius. The single remaining wall to close the window unconditionally is hroot for evalCode (the min-distance extraction = the proximity-gap core).
+### O72-addendum — record correction: O69's `weight_ge_live_image` never landed as Lean
+
+Cold audit (2026-06-10) of commit 2dcc9cfd9 (O69): the commit message and the O69 entry
+announce a depth-1 brick `weight_ge_live_image` in `FoldPolynomialSlices.lean`, but
+`git log -S weight_ge_live_image` shows the name only ever appeared in DISPROOF_LOG text —
+no Lean theorem of that name exists anywhere in history. The mathematical content is now
+actually kernel-checked (stronger, at every depth) by `IteratedSliceRootCoherence.lean`
+(`live_card_le_weight` / `dead_card_ge`, O72), so the gap is closed — but the O69 record
+overstated what had landed. Lesson for the swarm: an announced brick is not a brick;
+grep the tree, not the log.
+
