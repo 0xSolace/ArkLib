@@ -387,6 +387,33 @@ theorem jbt_hash_not_redundant
   · intro j hj
     exact jbt_hash_no_prior tr state S p hp j hj
 
+/-- If the deduplicated trace has a hash entry and a strictly earlier forward permutation entry
+sharing the hash capacity on either side, then the combined bad event fires through
+`capacitySegmentDupHash`. This packages the exact `E_h` constructor needed after the raw M2c
+timing witness has been transported through dedup. -/
+theorem E_of_base_hash_after_forward_capacity
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    {jHash jPerm : Fin (removeRedundantEntryDS tr).1.length}
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    {stateIn stateOut : CanonicalSpongeState U}
+    (hlt : jPerm < jHash)
+    (hhash : (removeRedundantEntryDS tr).1[jHash] =
+      (⟨Sum.inl stmt, capSeg⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)))
+    (hperm : (removeRedundantEntryDS tr).1[jPerm] =
+      (⟨Sum.inr (Sum.inl stateIn), stateOut⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)))
+    (hcap : stateOut.capacitySegment = capSeg ∨ stateIn.capacitySegment = capSeg) :
+    BadEventDS.E tr := by
+  left
+  left
+  unfold capacitySegmentDupHash
+  rcases hcap with hOut | hIn
+  · exact ⟨jHash, capSeg, stmt, hhash, jPerm, hlt, stmt,
+      Or.inr (Or.inl ⟨stateIn, stateOut, hperm, hOut⟩)⟩
+  · exact ⟨jHash, capSeg, stmt, hhash, jPerm, hlt, stmt,
+      Or.inr (Or.inr (Or.inr (Or.inl ⟨stateIn, stateOut, hperm, hIn⟩)))⟩
+
 /-- Off `E`, a nonterminal `J_BT` permutation-index payload points to the forward
 permutation query for that chain step. -/
 theorem jbt_perm_forward_getElem?_of_not_E
@@ -588,6 +615,7 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_getElem?
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_no_prior
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_not_redundant
+#print axioms DuplexSpongeFS.Sponge316.E_of_base_hash_after_forward_capacity
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_forward_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_no_prior_of_lt
 #print axioms DuplexSpongeFS.Sponge316.jbt_time_h_outputState_nonempty
