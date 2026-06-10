@@ -4991,3 +4991,24 @@ The constructive engine of the packing tree program (O122's named next). `Packin
 * Tooth: `cosetOf 12 6 1 = ⋃_{i<3} cosetOf 12 2 (1+2i)` and `= {1,3,5,7,9,11}`, kernel-checked.
 
 **Both directions of the natural-DCS splitting tree are now theorems**: O106's `isPacket_merge` (a packet of fattened bases merges into one bigger coset) is the upward rung; this is the downward rung. Consequence: any TREE-REALIZABLE modulus multiset (recursive prime splitting from the root) yields an explicit packing by iterating `cosetOf_subdivide` — the constructive half of the candidate exact `k`-generator law (`probe_packing_tree_law.py`: packable ⟺ the completed multiset `{n/d × a_d} ∪ {n}^{n−vol}` is tree-realizable; Berger–Felzenbaum–Fraenkel naturality is the necessity side, the genuinely open research half).
+### O121 — O118's INHERITANCE STEP REFUTED (own-route falsification) + the corrected road
+
+Falsify-first applied to my own O118 route before formalizing it:
+
+* THE GAP (found by hand): the valuation induction's base case fails as linear algebra —
+  the two mixed identities at S-exponent pq (q-side at e = p; p-side at e' = q) are THE
+  SAME EQUATION: the pair (Σ_R r^p, Σ_T τ^q) is genuinely underdetermined by S's
+  syndromes alone.
+* THE REFUTATION (numerical probe, docs/kb/mixed-tower-probes/inherit_probe.py): window
+  inheritance FullWindow R q t is FALSE for general decompositions — S = μ₁₂ (full
+  window through t = 11!) admits MIXED decompositions (2- and 3-packets interleaved)
+  whose spectra violate the inherited window: Σ_R r³ ≠ 0, Σ_T τ² ≠ 0. Spectrum windows
+  are DECOMPOSITION-DEPENDENT.
+* THE ILLUMINATION: μ₁₂'s PURE decompositions inherit perfectly (all-2-packets ⟹ R = μ₆
+  exactly, all windows ✓). Inheritance is a property of ADAPTED decompositions, not all.
+* THE CORRECTED ROAD: the J(t) induction must run per-element with CHOSEN decompositions
+  — exactly the first_peel_export resource (O116): peel the element's own orbit first
+  and control the spectrum along ITS chain only. The bilateral export (O119/O120) stays
+  valid and useful (the identities are true; only universal window inheritance dies).
+  Corrected next brick: the adapted-decomposition spectrum-window lemma — what window
+  does the FIRST-PEELED spectrum inherit along the peeled element's chain?
