@@ -435,7 +435,7 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
                 stmtIn.challenges := by
           dsimp only [foldStepLogic, verifierStmtOut, step]
           simpa [OracleFrontierIndex.val_mkFromStmtIdxCastSuccOfSucc] using
-            (fin_rtake_cons_const (transcript.challenges ⟨1, by omega⟩)
+            (fin_rtake_cons_const (transcript.challenges ⟨⟨1, by omega⟩, by rfl⟩)
               stmtIn.challenges)
         rw! (castMode := .all) [h_oracleIdx_eq] at h_oracle_folding_In
         simp at h_oracle_folding_In ⊢
@@ -615,9 +615,10 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
         commitStepLogic_embedFn, hj, dif_pos]
     rw [OracleVerifier.mkVerifierOStmtOut_inl _ _ _ _ _ _ h_embed]
     simp only [hj, dif_pos]
+    cases h_embed
     simpa [commitStepLogic, commitStepHEq, commitStepLogic_embed,
       commitStepLogic_embedFn, Function.Embedding.coeFn_mk, hj,
-      eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast]
+      OracleStatement, eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast]
   · -- New oracle case: embed j = Sum.inr 0
     have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j = Sum.inr ⟨0, rfl⟩ := by
@@ -631,9 +632,8 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     have h_msg0: transcript.messages ⟨0, rfl⟩ = transcript 0 := by rfl
     rw [h_msg0]
     -- ⊢ transcript 0 (cast ⋯ x) = cast ⋯ (transcript 0) x
-    simpa [commitStepLogic, commitStepHEq, commitStepLogic_embed,
-      commitStepLogic_embedFn, Function.Embedding.coeFn_mk, hj,
-      eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast, cast_fun_eq_fun_cast_arg]
+    convert rfl using 2 <;> simp [commitStepLogic, commitStepHEq, commitStepLogic_embed,
+      commitStepLogic_embedFn, Function.Embedding.coeFn_mk, hj, OracleStatement]
     have h_j_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
       have h_lt := j.isLt
       conv_rhs at h_lt => rw [h_count_succ]

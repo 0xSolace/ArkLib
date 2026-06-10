@@ -153,6 +153,53 @@ def fiberwiseDisagreementSet (i : Fin r) {destIdx : Fin r} (steps : ℕ)
   else
     Finset.univ.filter fun _y => ∃ x, f x ≠ g x
 
+/-- Honest per-fiber disagreement set.
+
+Unlike the legacy `fiberwiseDisagreementSet`, the positive-step predicate depends on the
+quotient point `y`: `y` is bad exactly when some point in the iterated quotient fiber over
+`y` has different `f` and `g` values. This is the surface needed by the Proposition 4.21
+case-1 union-bound argument. -/
+def fiberwiseDisagreementSetPerFiber (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :
+  Finset ((sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :=
+  Finset.univ.filter fun y =>
+    ∃ idx : Fin (2 ^ steps),
+      fiberEvaluations 𝔽q β (i := i) (destIdx := destIdx) (steps := steps)
+        h_destIdx h_destIdx_le f y idx ≠
+      fiberEvaluations 𝔽q β (i := i) (destIdx := destIdx) (steps := steps)
+        h_destIdx h_destIdx_le g y idx
+
+@[simp]
+lemma mem_fiberwiseDisagreementSetPerFiber
+    (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
+    y ∈ fiberwiseDisagreementSetPerFiber 𝔽q β (i := i) (destIdx := destIdx)
+      (steps := steps) h_destIdx h_destIdx_le f g ↔
+      ∃ idx : Fin (2 ^ steps),
+        fiberEvaluations 𝔽q β (i := i) (destIdx := destIdx) (steps := steps)
+          h_destIdx h_destIdx_le f y idx ≠
+        fiberEvaluations 𝔽q β (i := i) (destIdx := destIdx) (steps := steps)
+          h_destIdx h_destIdx_le g y idx := by
+  simp [fiberwiseDisagreementSetPerFiber]
+
+lemma fiberwiseDisagreementSetPerFiber_subset_legacy_of_ne_zero
+    (i : Fin r) {destIdx : Fin r} (steps : ℕ) (h_steps : steps ≠ 0)
+    (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :
+    fiberwiseDisagreementSetPerFiber 𝔽q β (i := i) (destIdx := destIdx)
+      (steps := steps) h_destIdx h_destIdx_le f g ⊆
+    fiberwiseDisagreementSet 𝔽q β (i := i) (destIdx := destIdx)
+      (steps := steps) h_destIdx h_destIdx_le f g := by
+  intro y hy
+  rw [mem_fiberwiseDisagreementSetPerFiber] at hy
+  rcases hy with ⟨idx, hne⟩
+  simp [fiberwiseDisagreementSet, h_steps]
+  unfold fiberEvaluations at hne
+  exact ⟨_, hne⟩
+
 lemma fiberwiseDisagreementSet_congr_sourceDomain_index (sourceIdx₁ sourceIdx₂ : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_sourceIdx_eq : sourceIdx₁ = sourceIdx₂)
   (h_destIdx : destIdx = sourceIdx₁.val + steps) (h_destIdx_le : destIdx ≤ ℓ)

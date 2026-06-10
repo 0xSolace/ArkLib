@@ -249,6 +249,69 @@ theorem jbt_perm_forward_getElem?_of_not_E
     (DuplexSpongeFS.Backtrack.BacktrackSequence.index_perm_getElem?_of_lt
       (trace := tr) (state := state) (seq := seq) (pairIdx := pairIdx) (hpair := hpair))
 
+/-- A `J_BT` payload witnessing the hash-after-first-permutation timing condition cannot be
+the empty chain: in the empty case the first-chain index is the sentinel `tr.length`, while the
+hash index is a genuine trace index. -/
+theorem jbt_time_h_outputState_nonempty
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (p : Sigma fun seq : DuplexSpongeFS.Backtrack.BacktrackSequence tr state =>
+      DuplexSpongeFS.Backtrack.BacktrackIndexList tr seq)
+    (hp : p ∈ DuplexSpongeFS.Backtrack.J_BT S)
+    (hgt : p.2.1.val > (p.2.2 ⟨0, by
+      have := p.1.inputState_length_eq_outputState_length_succ
+      omega⟩).val) :
+    0 < p.1.outputState.length := by
+  classical
+  unfold DuplexSpongeFS.Backtrack.J_BT at hp
+  rw [Finset.mem_image] at hp
+  obtain ⟨seq, _hseq, hp_eq⟩ := hp
+  subst p
+  by_contra hnot
+  have hidx :
+      ((DuplexSpongeFS.Backtrack.BacktrackSequence.Index tr state seq).2 ⟨0, by
+        have := seq.inputState_length_eq_outputState_length_succ
+        omega⟩).val = tr.length := by
+    dsimp [DuplexSpongeFS.Backtrack.BacktrackSequence.Index]
+    simp [hnot]
+  have hhash_lt : (DuplexSpongeFS.Backtrack.BacktrackSequence.Index tr state seq).1.val
+      < tr.length :=
+    (DuplexSpongeFS.Backtrack.BacktrackSequence.Index tr state seq).1.isLt
+  have hgt' :
+      (DuplexSpongeFS.Backtrack.BacktrackSequence.Index tr state seq).1.val >
+        ((DuplexSpongeFS.Backtrack.BacktrackSequence.Index tr state seq).2 ⟨0, by
+          have := seq.inputState_length_eq_outputState_length_succ
+          omega⟩).val := by
+    simpa using hgt
+  omega
+
+/-- Off `E`, the first chain index in a hash-after-first-permutation `J_BT` payload is the
+forward permutation query for the first chain step. -/
+theorem jbt_time_h_first_perm_forward_getElem?_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (p : Sigma fun seq : DuplexSpongeFS.Backtrack.BacktrackSequence tr state =>
+      DuplexSpongeFS.Backtrack.BacktrackIndexList tr seq)
+    (hp : p ∈ DuplexSpongeFS.Backtrack.J_BT S)
+    (hgt : p.2.1.val > (p.2.2 ⟨0, by
+      have := p.1.inputState_length_eq_outputState_length_succ
+      omega⟩).val) :
+    ∃ (pairIdx : Fin p.1.inputState.length) (hpair : pairIdx.val < p.1.outputState.length),
+      pairIdx.val = 0 ∧
+      GetElem?.getElem? tr (p.2.2 pairIdx).val =
+        some (⟨Sum.inr (Sum.inl p.1.inputState[pairIdx]),
+          p.1.outputState[pairIdx.val]'hpair⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  let pairIdx : Fin p.1.inputState.length := ⟨0, by
+    rw [p.1.inputState_length_eq_outputState_length_succ]
+    exact Nat.succ_pos _⟩
+  have hpair : pairIdx.val < p.1.outputState.length := by
+    simpa [pairIdx] using jbt_time_h_outputState_nonempty tr state S p hp hgt
+  refine ⟨pairIdx, hpair, rfl, ?_⟩
+  simpa using jbt_perm_forward_getElem?_of_not_E
+    (tr := tr) h (state := state) (S := S) (p := p) (hp := hp)
+    (pairIdx := pairIdx) (hpair := hpair)
+
 /-- **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual`
 holds: off the combined bad event `E`, no BackTrack chain step is anchored by an
 inverse-permutation entry (CO25 Lemma 5.12, honest form over `Backtrack.S_BT`). -/
@@ -267,4 +330,6 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.forward_getElem?_of_not_E_of_perm_or_inv
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_getElem?
 #print axioms DuplexSpongeFS.Sponge316.jbt_perm_forward_getElem?_of_not_E
+#print axioms DuplexSpongeFS.Sponge316.jbt_time_h_outputState_nonempty
+#print axioms DuplexSpongeFS.Sponge316.jbt_time_h_first_perm_forward_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.lemma5_12_honest
