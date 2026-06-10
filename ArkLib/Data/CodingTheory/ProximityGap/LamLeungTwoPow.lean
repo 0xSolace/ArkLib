@@ -1802,4 +1802,80 @@ theorem contracted_multiplicity_invariant {m s k : ℕ} (hsk : s + k ≤ m) {ζ 
 
 end MultiplicityRigidity
 
+/-! ## The sparse tower theorem: full_tower from exponentially fewer conditions
+
+O126 at depth `s = 0`: the indicator of a subset is its own depth-0 multiplicity
+vector, so the rigidity law applies — and yields `full_tower`'s coset-union conclusion
+from ONLY the 2-power window `{2^0, …, 2^k}` (`k+1` exponents) instead of the full
+window `[1, 2^(k+1))` (`2^(k+1) − 1` exponents): the original pillar of the session,
+strengthened exponentially in hypothesis by its newest theorem. -/
+
+section SparseTower
+
+variable [DecidableEq F] [CharZero F]
+
+/-- **The sparse tower theorem**: 2-power window alone forces `μ_{2^(k+1)}`-closure. -/
+theorem full_tower_sparse {m k : ℕ} (hk : k ≤ m) {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (2 ^ (m + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (2 ^ (m + 1)) = 1)
+    (hwin : ∀ j, j ≤ k → ∑ z ∈ S, z ^ (2 ^ j) = 0) :
+    ∀ x ∈ S, ∀ h : F, h ^ (2 ^ (k + 1)) = 1 → h * x ∈ S := by
+  classical
+  haveI : NeZero ((2:ℕ) ^ (k + 1)) := ⟨(pow_pos two_pos _).ne'⟩
+  -- depth-0 rigidity: the indicator is invariant mod 2^(m−k)
+  have hrig := contracted_multiplicity_invariant (m := m) (s := 0) (k := k)
+    (by omega) hζ hS (fun j hj => by
+      have := hwin j hj
+      rwa [Nat.zero_add] at this)
+  simp only [pow_zero, pow_one] at hrig
+  -- the μ_{2^(k+1)}-roots are powers of ζ^(2^(m−k))
+  have hωk : IsPrimitiveRoot (ζ ^ (2 ^ (m - k))) (2 ^ (k + 1)) := by
+    refine hζ.pow (pow_pos two_pos _) ?_
+    rw [← pow_add]
+    congr 1
+    omega
+  intro x hx h hh
+  obtain ⟨i, hi, hig⟩ := hωk.eq_pow_of_pow_eq_one hh
+  obtain ⟨e, he, hex⟩ := hζ.eq_pow_of_pow_eq_one (hS x hx)
+  -- h·x = ζ^{e + i·2^(m−k) mod 2^(m+1)}, same residue mod 2^(m−k)
+  set e2 := (e + i * 2 ^ (m - k)) % 2 ^ (m + 1) with he2
+  have he2lt : e2 < 2 ^ (m + 1) := Nat.mod_lt _ (pow_pos two_pos _)
+  have hhx : h * x = ζ ^ e2 := by
+    rw [← hig, ← hex, ← pow_mul, ← pow_add]
+    rw [show i * 2 ^ (m - k) + e = e + i * 2 ^ (m - k) from by ring]
+    conv_lhs => rw [← Nat.div_add_mod (e + i * 2 ^ (m - k)) (2 ^ (m + 1))]
+    rw [pow_add, pow_mul, hζ.pow_eq_one, one_pow, one_mul, he2]
+  have hdvd : (2:ℕ) ^ (m - k) ∣ 2 ^ (m + 1) := pow_dvd_pow 2 (by omega)
+  have hres : e2 % 2 ^ (m - k) = e % 2 ^ (m - k) := by
+    rw [he2, Nat.mod_mod_of_dvd _ hdvd, Nat.add_mul_mod_self_right]
+  -- indicator invariance: the filter cards at e2 and e agree
+  have hcards := hrig e2 e he2lt he hres
+  -- the filter at exponent f is {ζ^f} ∩ S: card 1 iff ζ^f ∈ S
+  have hcard_mem : ∀ f, f < 2 ^ (m + 1) →
+      ((S.filter (fun y => y = ζ ^ f)).card = 1 ↔ ζ ^ f ∈ S) := by
+    intro f hf
+    constructor
+    · intro h1
+      obtain ⟨y, hy⟩ := Finset.card_eq_one.mp h1
+      have : y ∈ S.filter (fun y => y = ζ ^ f) := hy ▸ Finset.mem_singleton_self y
+      obtain ⟨hyS, rfl⟩ := Finset.mem_filter.mp this
+      exact hyS
+    · intro hmem
+      rw [Finset.card_eq_one]
+      refine ⟨ζ ^ f, Finset.eq_singleton_iff_unique_mem.mpr
+        ⟨Finset.mem_filter.mpr ⟨hmem, rfl⟩, ?_⟩⟩
+      intro y hy
+      exact (Finset.mem_filter.mp hy).2
+  -- conclude membership transfer
+  have hxmem : ζ ^ e ∈ S := by rwa [hex]
+  have hc_e : (S.filter (fun y => y = ζ ^ e)).card = 1 := (hcard_mem e he).mpr hxmem
+  have hc_e2 : (S.filter (fun y => y = ζ ^ e2)).card = 1 := by
+    rw [show (S.filter (fun y => y = ζ ^ e2)).card
+        = (S.filter (fun y => y = ζ ^ e)).card from hcards]
+    exact hc_e
+  rw [hhx]
+  exact (hcard_mem e2 he2lt).mp hc_e2
+
+end SparseTower
+
 end LamLeungTwoPow
