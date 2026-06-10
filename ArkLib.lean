@@ -233,8 +233,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightResummation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.BCoeffVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510AffinePair
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Agreement
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Bundle
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Capture
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510EndToEnd
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Improve
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Kill
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510SliceAffine
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Supply
@@ -603,6 +605,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25BranchPinning
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CandidateProduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernel
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellDichotomyWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Claim1
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ConjectureGlue
@@ -1336,6 +1339,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDisagreement
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDistance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorFiber
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorHamming
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorSurjectivity
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorUDR
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorWitness
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Bridge
