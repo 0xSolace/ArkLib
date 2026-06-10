@@ -3925,3 +3925,25 @@ end-to-end gave the identical 35); adversarial audit with a from-scratch indepen
 (different algorithm) re-verified every element and reproduced the coverage hashes. For the
 branch-count distribution (O59/O61/O63): this is the first complete level-2 data point — the
 distribution at the canonical word is maximally concentrated on the structured classes.
+
+### O73 — THE CONDITIONAL TWO-PRIME TOWER (MixedRadixTower.lean): the mixed-radix skeleton complete
+
+Workflow lane (taken over and audited by the main loop; compiles, all theorems
+axiom-clean, 0 sorry — the file's two 'sorry' grep hits are docstring prose):
+
+* `mu_mul_closure`, `pow_fiber_coset/card/sum_pow`, `descended_window` — the radix-d
+  descent toolkit at every exponent (windows descend through the d-th-power map, char 0).
+* `mixed_rung_conditional` + `prime_climb_conditional` — one rung and the stacked
+  prime-power climb, conditional on the packet base case at each level (named hypotheses).
+* `coprime_mu_closure_combine` — THE COPRIME WELD: closure under μ_A and μ_B for coprime
+  A, B gives closure under μ_{AB} (CRT at the closure level).
+* `two_prime_tower_conditional` — the headline: on n = p^a·q^b-torsion domains, window
+  vanishing forces μ_d-closure for the divisor-coset structure, conditional on de Bruijn
+  base hypotheses — standing to O71's double-slice brick exactly as t2_tower_resolution
+  stood to the Lam–Leung brick before O50 discharged it.
+* `base_case_level_one`, `base_case_window_ge_level`, `window_forces_empty` — base-case
+  hypotheses discharged unconditionally in the degenerate regimes.
+
+The O70-verified law now has its formal skeleton; what separates conditional from
+unconditional is finishing O71's double-slice into the full packet decomposition (finite
+bookkeeping on the doubly-sliced pattern).
