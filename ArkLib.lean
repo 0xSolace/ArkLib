@@ -1287,6 +1287,7 @@ import ArkLib.ProofSystem.Logup.Security.MarginalBridgeProof
 import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
 import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
 import ArkLib.ProofSystem.Logup.Security.OuterMaliciousClaim
+import ArkLib.ProofSystem.Logup.Security.OuterMaliciousSoundness
 import ArkLib.ProofSystem.Logup.Security.OuterMarginalBound
 import ArkLib.ProofSystem.Logup.Security.OuterRbrSoundness
 import ArkLib.ProofSystem.Logup.Security.OuterRestSupport
