@@ -9,7 +9,8 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.BitsOfIndex
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToMidLastEval
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToMidSucc
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToNextSumEq
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IteratedFoldAdvances
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.FinalOracleBridge
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IteratedFoldToLevel
 import ArkLib.ToVCVio.Oracle
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.OracleReduction.Completeness
@@ -35,6 +36,7 @@ import ArkLib.Data.Misc.Basic
 -/
 
 set_option maxHeartbeats 400000
+set_option linter.style.longFile 1800
 set_option linter.unusedDecidableInType false
 set_option linter.unusedFintypeInType false
 namespace Binius.BinaryBasefold.CoreInteraction
@@ -69,6 +71,47 @@ variable {ℓ 𝓡 ϑ : ℕ} (γ_repetitions : ℕ) [NeZero ℓ] [NeZero 𝓡] [
 variable {h_ℓ_add_R_rate : ℓ + 𝓡 < r} -- ℓ ∈ {1, ..., r-1}
 variable {𝓑 : Fin 2 ↪ L}
 variable [hdiv : Fact (ϑ ∣ ℓ)]
+
+omit [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [SampleableType L]
+  [NeZero r] [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] hdiv in
+/-- Successor-index form of `getFoldingChallenges_rtake_self`, matching commit-step goals. -/
+lemma getFoldingChallenges_rtake_self_succ (i : Fin ℓ)
+    (challenges : Fin i.succ → L) (k : ℕ)
+    (h h' : k + ϑ ≤ i.succ)
+    (hr : i.val + 1 ≤ i.val + 1) :
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) i.succ
+      (Fin.rtake (n := i.val + 1) (α := fun _ : Fin (i.val + 1) => L)
+        (m := i.val + 1) (v := challenges) (h := hr)) k h =
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) i.succ challenges k h' := by
+  have hrtake :
+      Fin.rtake (n := i.val + 1) (α := fun _ : Fin (i.val + 1) => L)
+        (m := i.val + 1) (v := challenges) (h := hr) =
+      challenges := by
+    have hhr : hr = (by omega : i.val + 1 ≤ i.val + 1) := Subsingleton.elim _ _
+    rw [hhr]
+    exact Fin.rtake_self' challenges
+  rw [hrtake]
+
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] in
+/-- `iterated_fold` is proof-irrelevant in its destination equality and bound proofs. -/
+lemma iterated_fold_proof_irrel {i : Fin r} {steps : ℕ} {destIdx : Fin r}
+    (h_destIdx h_destIdx' : destIdx.val = i.val + steps)
+    (h_destIdx_le h_destIdx_le' : destIdx ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (r_challenges : Fin steps → L) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps) (destIdx := destIdx)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f := f) (r_challenges := r_challenges) =
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps) (destIdx := destIdx)
+      (h_destIdx := h_destIdx') (h_destIdx_le := h_destIdx_le')
+      (f := f) (r_challenges := r_challenges) := by
+  have h_eq : h_destIdx = h_destIdx' := Subsingleton.elim _ _
+  have h_le_eq : h_destIdx_le = h_destIdx_le' := Subsingleton.elim _ _
+  subst h_eq
+  subst h_le_eq
+  rfl
 
 section GenericLogic
 
@@ -577,39 +620,6 @@ theorem fun_heq_cast_arg {α β : Type u} {γ : Type v} (hαβ : α = β)
   subst hαβ
   rfl
 
-theorem cast_fun_cast_arg_apply {α β : Type u} {γ : Type v} {hαβ : α = β}
-    {hfun : (α → γ) = (β → γ)} (f : β → γ) (x : β) :
-    cast hfun (fun y : α => f (cast hαβ y)) x = f x := by
-  subst hαβ
-  cases hfun
-  rfl
-
-theorem cast_fun_cast_arg_eq_fun_cast {α β : Type u} {γ : Type v} {hαβ : α = β}
-    {hfun₁ : (α → γ) = (α → γ)} {hfun₂ : (β → γ) = (α → γ)}
-    (f : β → γ) (x : α) :
-    cast hfun₁ (fun y : α => f (cast hαβ y)) x = cast hfun₂ f x := by
-  subst hαβ
-  cases hfun₁
-  cases hfun₂
-  rfl
-
-theorem id_cast_fun_cast_arg_eq_fun_cast {α β : Type u} {γ : Type v} {hαβ : α = β}
-    {hfun₁ : (α → γ) = (α → γ)} {hfun₂ : (β → γ) = (α → γ)}
-    (f : β → γ) (x : α) :
-    id (cast hfun₁ (fun y : α => f (cast hαβ y))) x = cast hfun₂ f x := by
-  exact cast_fun_cast_arg_eq_fun_cast (hαβ := hαβ) (hfun₁ := hfun₁) (hfun₂ := hfun₂) f x
-
-theorem id_cast_fun_cast_arg_eq_fun_cast_of_cast {α β : Type u} {γ : Type v}
-    {hαβ hcast : α = β}
-    {hfun₁ : (α → γ) = (α → γ)} {hfun₂ : (β → γ) = (α → γ)}
-    (f : β → γ) (x : α) :
-    id (cast hfun₁ (fun y : α => f (cast hcast y))) x = cast hfun₂ f x := by
-  subst hαβ
-  cases hcast
-  cases hfun₁
-  cases hfun₂
-  rfl
-
 theorem verifier_inr_transport_heq {n : ℕ} {pSpec : ProtocolSpec n}
     {ιₛᵢ ιₛₒ : Type}
     {OStmtIn : ιₛᵢ → Type} {OStmtOut : ιₛₒ → Type}
@@ -623,43 +633,24 @@ theorem verifier_inr_transport_heq {n : ℕ} {pSpec : ProtocolSpec n}
   rw [eqRec_eq_cast]
   exact cast_heq _ x
 
-set_option maxHeartbeats 5000000 in
 omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
-theorem commitStep_inr_transport_heq
-    (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
-    (transcript : FullTranscript (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
-    (j : Fin (toOutCodewordsCount ℓ ϑ i.succ))
-    (h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
-        Sum.inr ⟨0, rfl⟩) :
-    HEq ((((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j) ▸ h_embed ▸
-        transcript.messages ⟨0, rfl⟩ :
-          OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ j))
-      (transcript.messages ⟨0, rfl⟩) := by
-  refine (eqRec_heq (φ := fun T : Type => T)
-    (((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j).symm)
-    (h_embed ▸ transcript.messages ⟨0, rfl⟩)).trans ?_
-  simp
-
-omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
-private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_lt
+/-- Old-oracle branch of the commit-step `snoc_oracle`/verifier-output agreement.
+For old frontier indices, both constructions route to the same input oracle. -/
+lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_old
     (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
       OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
     (newOracle : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (domainIdx := ⟨i.val + 1, by omega⟩))
     (transcript : FullTranscript (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
-    (h_transcript_eq : transcript.messages ⟨0, rfl⟩ = newOracle)
     (j : Fin (toOutCodewordsCount ℓ ϑ i.succ))
     (hj : j.val < toOutCodewordsCount ℓ ϑ i.castSucc) :
     snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle j =
-    OracleVerifier.mkVerifierOStmtOut (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed
-      (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript j := by
+        (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle j =
+      OracleVerifier.mkVerifierOStmtOut (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed
+        (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript j := by
   dsimp only [snoc_oracle]
   simp only [hCR, ↓reduceDIte]
   have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
@@ -678,9 +669,10 @@ private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_lt
   cases hidx
   rfl
 
-set_option maxHeartbeats 5000000 in
 omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
-private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_not_lt
+/-- New-oracle branch of the commit-step `snoc_oracle`/verifier-output agreement.
+The `snoc_oracle` side is now a direct cast of the transcript message oracle. -/
+lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_new
     (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
       OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
@@ -691,16 +683,11 @@ private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_not_lt
     (j : Fin (toOutCodewordsCount ℓ ϑ i.succ))
     (hj : ¬ j.val < toOutCodewordsCount ℓ ϑ i.castSucc) :
     snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle j =
-    OracleVerifier.mkVerifierOStmtOut (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed
-      (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript j := by
-  dsimp only [snoc_oracle]
-  simp only [hCR, ↓reduceDIte]
-  have h_count_succ :
-      toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
-    simp only [toOutCodewordsCount_succ_eq, hCR, ↓reduceIte]
+        (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle j =
+      OracleVerifier.mkVerifierOStmtOut (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed
+        (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript j := by
   have h_embed : (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed j =
       Sum.inr ⟨0, rfl⟩ := by
@@ -708,35 +695,29 @@ private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_not_lt
       commitStepLogic_embedFn, hj, dif_neg, not_false_eq_true]
     rfl
   rw [OracleVerifier.mkVerifierOStmtOut_inr _ _ _ _ _ _ h_embed]
-  simp only [hj, dif_neg, not_false_eq_true]
-  have h_j_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
-    have h_lt := j.isLt
-    conv_rhs at h_lt => rw [h_count_succ]
-    omega
-  have h_j_mul : j.val * ϑ = i.val + 1 := by
-    rw [h_j_eq]
-    exact toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR
-  have h_i_succ_lt_r : i.val + 1 < r := by
-    have hRpos : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
-    have hi_le : i.val + 1 ≤ ℓ := Nat.succ_le_of_lt i.isLt
-    omega
-  have h_j_mul_lt_r : j.val * ϑ < r := by
-    rw [h_j_mul]
-    exact h_i_succ_lt_r
-  have h_domain_j :
-      ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨j.val * ϑ, h_j_mul_lt_r⟩) =
-        ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + 1, h_i_succ_lt_r⟩) := by
-    have h_fin : (⟨j.val * ϑ, h_j_mul_lt_r⟩ : Fin r) =
-        ⟨i.val + 1, h_i_succ_lt_r⟩ := by
-      apply Fin.eq_of_val_eq
-      exact h_j_mul
-    exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
-  rw [h_transcript_eq]
-  funext y
-  dsimp only [commitStepLogic, commitStepHEq, commitStepLogic_embed, commitStepLogic_embedFn,
-    Function.Embedding.coeFn_mk, OracleStatement, pSpecCommit, Message]
-  simp only [eqRec_eq_cast, cast_cast]
-  simpa using (cast_fun_cast_arg_apply (hαβ := h_domain_j) (f := newOracle) y)
+  apply eq_of_heq
+  have h_snoc :
+      HEq (snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle j)
+        newOracle := by
+    exact snoc_oracle_new_heq_of_commit 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (h_destIdx := by rfl)
+      (i := i) hCR oStmtIn newOracle j hj
+  have h_msg : HEq newOracle (transcript.messages ⟨0, rfl⟩) :=
+    heq_of_eq h_transcript_eq.symm
+  have h_transport :
+      HEq ((((commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq j) ▸
+          h_embed ▸ transcript.messages ⟨0, rfl⟩ :
+            OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ j))
+        (transcript.messages ⟨0, rfl⟩) := by
+    exact verifier_inr_transport_heq
+      (embed := (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed)
+      (hTypes := (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).hEq)
+      h_embed (transcript.messages ⟨0, rfl⟩)
+  exact h_snoc.trans (h_msg.trans h_transport.symm)
 
 omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
 /-- Helper lemma: snoc_oracle matches mkVerifierOStmtOut for commit steps.
@@ -749,28 +730,6 @@ The key insight:
 - For index `j = toOutCodewordsCount ℓ ϑ i.castSucc`: embed maps to `Sum.inr 0`
   (new oracle from message)
 -/
-private lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply
-    (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
-    (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
-      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
-    (newOracle : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := ⟨i.val + 1, by omega⟩))
-    (transcript : FullTranscript (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
-    (h_transcript_eq : transcript.messages ⟨0, rfl⟩ = newOracle)
-    (j : Fin (toOutCodewordsCount ℓ ϑ i.succ)) :
-    snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn newOracle j =
-    OracleVerifier.mkVerifierOStmtOut (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR).embed
-      (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript j := by
-  by_cases hj : j.val < toOutCodewordsCount ℓ ϑ i.castSucc
-  · exact snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_lt 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR oStmtIn newOracle transcript
-      h_transcript_eq j hj
-  · exact snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply_of_not_lt 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR oStmtIn newOracle transcript
-      h_transcript_eq j hj
-
-omit [CharP L 2] [SampleableType L] in
 lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
@@ -786,9 +745,13 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       (commitStepLogic (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (𝓑 := 𝓑) i hCR).hEq oStmtIn transcript := by
   funext j
-  exact snoc_oracle_eq_mkVerifierOStmtOut_commitStep_apply 𝔽q β
-    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i hCR oStmtIn newOracle transcript
-    h_transcript_eq j
+  by_cases hj : j.val < toOutCodewordsCount ℓ ϑ i.castSucc
+  · exact snoc_oracle_eq_mkVerifierOStmtOut_commitStep_old 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
+      i hCR oStmtIn newOracle transcript j hj
+  · exact snoc_oracle_eq_mkVerifierOStmtOut_commitStep_new 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
+      i hCR oStmtIn newOracle transcript h_transcript_eq j hj
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
@@ -822,6 +785,7 @@ lemma commitStep_j_is_last (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
   conv_rhs at hj => rw [h_count_succ]
   omega
 
+omit [SampleableType L] in
 lemma strictOracleFoldingConsistency_commitStep
     (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (stmtIn : Statement (L := L) Context i.succ)
@@ -830,7 +794,9 @@ lemma strictOracleFoldingConsistency_commitStep
     (challenges : (pSpecCommit 𝔽q β i).Challenges)
     (h_wit_struct_In : witnessStructuralInvariant 𝔽q β (mp := mp) stmtIn witIn)
     (h_oracle_folding_In : strictOracleFoldingConsistencyProp 𝔽q β (t := witIn.t) (i := i.castSucc)
-      (challenges := Fin.tail stmtIn.challenges)
+      (challenges := Fin.rtake (m := i)
+        (v := stmtIn.challenges) (h := by
+          simp only [Fin.val_succ, le_add_iff_nonneg_right, zero_le]))
       (oStmt := oStmtIn)) :
     let step := (commitStepLogic 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) (mp := mp) i (hCR := hCR))
@@ -840,67 +806,61 @@ lemma strictOracleFoldingConsistency_commitStep
       oStmtIn transcript
     strictOracleFoldingConsistencyProp 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := i.succ)
-      (challenges := verifierStmtOut.challenges)
+      (challenges := Fin.rtake (m := i.val + 1)
+        (v := verifierStmtOut.challenges) (h := by simp only [Fin.val_succ, le_refl]))
       (oStmt := verifierOStmtOut) (t := witIn.t)
     := by
-  -- Key observations:
-  -- 1. (mkFromStmtIdxCastSuccOfSucc i).val = i.castSucc.val = i.val
-  -- 2. (mkFromStmtIdx i.succ).val = i.succ.val = i.val + 1
-  -- 3. toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1
-  --    (when isCommitmentRound)
-  -- 4. verifierStmtOut = stmtIn (commit step doesn't change statement)
-  -- 5. verifierOStmtOut extends oStmtIn with the new oracle witIn.f
+  let step := (commitStepLogic 𝔽q β (ϑ := ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) (mp := mp) i (hCR := hCR))
+  let transcript := step.honestProverTranscript stmtIn witIn oStmtIn challenges
+  let verifierStmtOut := step.verifierOut stmtIn transcript
+  let verifierOStmtOut := OracleVerifier.mkVerifierOStmtOut step.embed step.hEq
+    oStmtIn transcript
+  let P₀ : L⦃< 2 ^ ℓ⦄[X] :=
+    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
+      (fun ω => witIn.t.val.eval (statementOrderBitsOfIndex ω))
+  let f₀ := polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (domainIdx := 0) (P := P₀)
 
-  -- Simplify the step definitions
-  intro step transcript verifierStmtOut verifierOStmtOut
-  let proverOutput := step.proverOut stmtIn witIn oStmtIn transcript
-  let proverStmtOut := proverOutput.1.1
-  let proverOStmtOut := proverOutput.1.2
-  let proverWitOut := proverOutput.2
-
-  let P₀: L⦃< 2 ^ ℓ⦄[X] := polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => witIn.t.val.eval (bitsOfIndex ω))
-  let f₀ := polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := 0) (P := P₀)
-
-  -- Statement doesn't change in commit step
-  have h_stmt_eq : verifierStmtOut = stmtIn := by
-    dsimp only [step, commitStepLogic, verifierStmtOut]
-
-  have h_wit_f_eq : witIn.f = getMidCodewords 𝔽q β witIn.t stmtIn.challenges := h_wit_struct_In.2
-
-  -- Oracle extension: verifierOStmtOut = snoc_oracle oStmtIn witIn.f
-  have h_OStmtOut_eq : verifierOStmtOut = snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl) oStmtIn (newOracleFn := witIn.f) := by
-    rw [snoc_oracle_eq_mkVerifierOStmtOut_commitStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hCR oStmtIn witIn.f transcript]
-    · rfl
-  -- Also establish that transcript message equals witIn.f
-  have h_transcript_eq : transcript.messages ⟨0, rfl⟩ = witIn.f := by
-    dsimp only [transcript, step, commitStepLogic]
+  have h_wit_f_eq : witIn.f = getMidCodewords 𝔽q β witIn.t stmtIn.challenges :=
+    h_wit_struct_In.2
+  have h_oracle_folding_tail :
+      strictOracleFoldingConsistencyProp 𝔽q β (t := witIn.t) (i := i.castSucc)
+        (challenges := Fin.tail stmtIn.challenges) (oStmt := oStmtIn) := by
+    convert h_oracle_folding_In using 2
+    exact (show Fin.rtake (n := i.val + 1) (α := fun _ : Fin (i.val + 1) => L)
+        (m := i.val) (v := stmtIn.challenges) (h := by omega) =
+        Fin.tail stmtIn.challenges by
+      rw [← Fin.cons_self_tail stmtIn.challenges]
+      exact fin_rtake_cons_const (stmtIn.challenges ⟨0, Nat.succ_pos i.val⟩)
+        (Fin.tail stmtIn.challenges)).symm
+  have h_OStmtOut_eq : verifierOStmtOut = snoc_oracle 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by rfl)
+      oStmtIn (newOracleFn := witIn.f) := by
+    rw [snoc_oracle_eq_mkVerifierOStmtOut_commitStep 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) (mp := mp)
+      i hCR oStmtIn witIn.f transcript (by rfl)]
   have h_challenges_eq : stmtIn.challenges = verifierStmtOut.challenges := by rfl
+  have h_rtake_full (h : i.val + 1 ≤ i.val + 1) :
+      Fin.rtake (n := i.val + 1) (α := fun _ : Fin (i.val + 1) => L)
+        (m := i.val + 1) (v := stmtIn.challenges) (h := h) =
+      stmtIn.challenges := by
+    simpa using (Fin.rtake_self' (v := stmtIn.challenges))
 
-  -- Expand strictOracleFoldingConsistencyProp - goal is ∀ j, verifierOStmtOut j = iterated_fold ...
   simp only [strictOracleFoldingConsistencyProp]
   intro j
-
-  -- The output oracle count is one more than input
-  have h_count_succ : toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
+  have h_count_succ :
+      toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
     simp only [toOutCodewordsCount_succ_eq, hCR, ↓reduceIte]
-
-  -- Case analysis: old oracle vs new oracle
   have h_j_bound : j.val < toOutCodewordsCount ℓ ϑ i.succ := j.isLt
   by_cases hj : j.val < toOutCodewordsCount ℓ ϑ i.castSucc
-  · -- Case A: Old oracle (j < old count)
-    -- verifierOStmtOut j = oStmtIn j (from snoc_oracle)
-    have h_verifier_eq_old : verifierOStmtOut j = oStmtIn ⟨j.val, hj⟩ := by
+  · have h_verifier_eq_old : verifierOStmtOut j = oStmtIn ⟨j.val, hj⟩ := by
       rw [h_OStmtOut_eq]
       dsimp only [snoc_oracle]
-      simp only [hj, hCR, ↓reduceDIte, dif_pos]
+      simp only [hj, ↓reduceDIte]
+    change verifierOStmtOut j = _
     rw [h_verifier_eq_old]
-    -- Use input hypothesis: oStmtIn j = iterated_fold ... (with challenges from i.castSucc)
-    have h_old_eq := h_oracle_folding_In ⟨j.val, hj⟩
-    rw [h_old_eq]
-    -- Show that iterated_fold with challenges from i.castSucc equals iterated_fold with
-    -- challenges from i.succ
-    -- when j * ϑ < i.val (which holds since j < toOutCodewordsCount i.castSucc)
     have h_old_steps_bound : j.val * ϑ ≤ i.val := by
       have hle := toCodewordsCount_mul_ϑ_le_i ℓ ϑ i.castSucc ⟨j.val, hj⟩
       simpa only [Fin.val_castSucc, i.isLt, ↓reduceIte] using hle
@@ -919,70 +879,114 @@ lemma strictOracleFoldingConsistency_commitStep
           (by
             simp only [zero_add, Fin.val_succ]
             omega))
+    have h_old_eq := h_oracle_folding_tail ⟨j.val, hj⟩
     rw [← h_challenges_eq]
-    rw [h_chal_tail]
-  · -- Case B: New oracle (j = toOutCodewordsCount i.castSucc)
+    have h_chal_full :
+        getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := j.val * ϑ) i.succ
+            (Fin.rtake (n := i.val + 1) (α := fun _ : Fin (i.val + 1) => L)
+              (m := i.val + 1) (v := stmtIn.challenges)
+              (h := by exact le_rfl)) 0 (h := by
+              simp only [zero_add, Fin.val_succ]
+              omega) =
+          getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := j.val * ϑ) i.succ
+            stmtIn.challenges 0 (h := by
+              simp only [zero_add, Fin.val_succ]
+              omega) := by
+      exact getFoldingChallenges_rtake_self_succ (r := r) (𝓡 := 𝓡)
+        (ϑ := j.val * ϑ) (i := i) (challenges := stmtIn.challenges) (k := 0)
+        (h := by
+          simp only [zero_add, Fin.val_succ]
+          omega)
+        (h' := by
+          simp only [zero_add, Fin.val_succ]
+          omega)
+        (hr := by exact le_rfl)
+    have h_chal_eq :
+        getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := j.val * ϑ) i.castSucc
+            (Fin.tail stmtIn.challenges) 0 (h := by
+              simpa only [zero_add, Fin.val_castSucc] using h_old_steps_bound) =
+          getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := j.val * ϑ) i.succ
+            (Fin.rtake (n := i.val + 1) (α := fun _ : Fin (i.val + 1) => L)
+              (m := i.val + 1) (v := stmtIn.challenges)
+              (h := by exact le_rfl)) 0 (h := by
+              simp only [zero_add, Fin.val_succ]
+              omega) :=
+      h_chal_tail.trans h_chal_full.symm
+    exact h_old_eq.trans (by
+      rw [h_chal_eq]
+      simp only [Fin.val_mk]
+      apply iterated_fold_proof_irrel)
+  · change verifierOStmtOut j = _
     rw [h_OStmtOut_eq]
     dsimp only [snoc_oracle]
     simp only [hj, ↓reduceDIte, hCR]
     have h_j_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by omega
-    -- verifierOStmtOut j is the cast version of witIn.f (from snoc_oracle)
-    -- The domain indices match: oraclePositionToDomainIndex j = i.val + 1 when j is the new oracle
     have h_domain_idx_eq : (oraclePositionToDomainIndex (positionIdx := j)).val = i.val + 1 := by
       simp only [h_j_eq]
       exact toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR
-    -- Use witness structural invariant: witIn.f = getMidCodewords witIn.t stmtIn.challenges
-    have h_steps_eq : (toOutCodewordsCount ℓ ϑ i.castSucc) * ϑ = i.val + 1 := by
-      exact toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR
-
     funext x
     dsimp only [Fin.val_last, getMidCodewords] at h_wit_f_eq
     rw [h_wit_f_eq]
+    rw [← h_challenges_eq]
+    have h_new_steps_eq : j.val * ϑ = i.val + 1 := by
+      simpa only [oraclePositionToDomainIndex, Fin.val_mk] using h_domain_idx_eq
 
-    have h_idx_eq : (⟨i.val + 1, by omega⟩ : Fin r)
-      = (⟨oraclePositionToDomainIndex ℓ ϑ j, by omega⟩) := by
-      apply Fin.eq_of_val_eq
-      simp only [h_j_eq]
-      rw [toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR]
-
-    have h_cast_elim := iterated_fold_congr_dest_index 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
+    have h_cast_elim := iterated_fold_congr_dest_index 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
       (steps := i.succ)
       (destIdx := ⟨oraclePositionToDomainIndex ℓ ϑ j, by omega⟩)
       (destIdx' := ⟨i.succ, by simp only [Fin.val_succ]; omega⟩)
       (h_destIdx := by
-        simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, Fin.val_succ, zero_add]; exact h_domain_idx_eq
-      )
+        simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, Fin.val_succ, zero_add]
+        exact h_domain_idx_eq)
       (h_destIdx_le := by simp only [oracle_index_le_ℓ])
-      (h_destIdx_eq_destIdx' := by simp only [Fin.val_succ, Fin.mk.injEq]; exact h_domain_idx_eq)
+      (h_destIdx_eq_destIdx' := by
+        simp only [Fin.val_succ, Fin.mk.injEq]
+        exact h_domain_idx_eq)
       (f := f₀)
-      (r_challenges := stmtIn.challenges)
+      (r_challenges := foldOrderChallenges stmtIn.challenges)
     dsimp only [f₀, P₀] at h_cast_elim
     unfold polyToOracleFunc at h_cast_elim
-    simp only [←h_cast_elim]
+    rw [cast_fun_eq_fun_cast_arg (hαβ := by
+      apply congrArg (fun idx => (sDomain 𝔽q β h_ℓ_add_R_rate idx : Type))
+      exact Fin.eq_of_val_eq h_new_steps_eq.symm)]
+    have h_first := (h_cast_elim x).symm
+    refine h_first.trans ?_
     unfold getFoldingChallenges
-    -- simp only [Fin.val_succ, zero_add, Fin.take_apply, Fin.castLE_refl]
-    rw [←h_challenges_eq]
-    unfold polyToOracleFunc
 
-    have h_cast_elim2 := iterated_fold_congr_steps_index 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
+    have h_cast_elim2 := iterated_fold_congr_steps_index 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
       (steps := i.succ) (steps' := j.val * ϑ)
       (destIdx := ⟨oraclePositionToDomainIndex ℓ ϑ j, by omega⟩)
-      (h_steps_eq_steps' := by exact h_domain_idx_eq.symm) (h_destIdx := by simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, Fin.val_succ, zero_add]; exact h_domain_idx_eq)
-      (h_destIdx_le := by simp only [oracle_index_le_ℓ]) -- simp only [h_k_steps_eq, h_k, tsub_le_iff_right,
-      (f := f₀) (r_challenges := stmtIn.challenges)
+      (h_steps_eq_steps' := by exact h_domain_idx_eq.symm)
+      (h_destIdx := by
+        simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, Fin.val_succ, zero_add]
+        exact h_domain_idx_eq)
+      (h_destIdx_le := by simp only [oracle_index_le_ℓ])
+      (f := f₀) (r_challenges := foldOrderChallenges stmtIn.challenges)
     dsimp only [f₀, P₀] at h_cast_elim2
     unfold polyToOracleFunc at h_cast_elim2
     rw [h_cast_elim2]
     dsimp only [Fin.val_succ, Fin.take_apply, Fin.castLE_refl]
     congr 1
     dsimp only [oraclePositionToDomainIndex] at h_domain_idx_eq
-    have h_challenges_eq_take : (fun cIdx : Fin (j.val * ϑ) => stmtIn.challenges ⟨cIdx.val, by
-      simp only [Fin.val_succ]; rw [h_domain_idx_eq.symm]; exact cIdx.isLt⟩) = (fun cIdx : Fin (j.val * ϑ) => stmtIn.challenges ⟨0 + cIdx.val, by
-        simp only [zero_add, Fin.val_succ]; rw [h_domain_idx_eq.symm]; exact cIdx.isLt⟩) := by
+    have h_challenges_eq_take :
+        (fun cIdx : Fin (j.val * ϑ) =>
+          foldOrderChallenges (ℓ := ℓ) (L := L) (i := i.succ)
+            stmtIn.challenges ⟨cIdx.val, by
+          simpa only [Fin.val_succ, h_domain_idx_eq] using cIdx.isLt⟩) =
+        (fun cIdx : Fin (j.val * ϑ) =>
+          foldOrderChallenges (ℓ := ℓ) (L := L) (i := i.succ)
+          (Fin.rtake (n := i.val + 1) (α := fun _ : Fin (i.val + 1) => L)
+            (m := i.val + 1) (v := stmtIn.challenges)
+            (h := by exact le_rfl)) ⟨0 + cIdx.val, by
+          simpa only [zero_add, Fin.val_succ, h_domain_idx_eq] using cIdx.isLt⟩) := by
+      rw [h_rtake_full]
       funext cId
       simp only [Fin.val_succ, zero_add]
-    rw [h_challenges_eq_take]
+    simpa using h_challenges_eq_take
 
+omit [SampleableType L] in
 /-- Commit step logic is strongly complete.
 The key insight is that the commit step just extends the oracle without changing the statement,
 and the verifier always accepts (no verification check). -/
@@ -1021,7 +1025,9 @@ lemma commitStep_is_logic_complete (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ
       = OracleVerifier.mkVerifierOStmtOut step.embed step.hEq oStmtIn transcript
     conv_lhs => dsimp only [step, commitStepLogic]
     dsimp only [transcript, step]
-    rw [snoc_oracle_eq_mkVerifierOStmtOut_commitStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]; rfl
+    rw [snoc_oracle_eq_mkVerifierOStmtOut_commitStep 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) (mp := mp)
+      i hCR oStmtIn witIn.f transcript (by rfl)]
 
   have h_first_oracle_eq : (getFirstOracle 𝔽q β verifierOStmtOut)
     = (getFirstOracle 𝔽q β oStmtIn) := by
@@ -1150,6 +1156,141 @@ def finalSumcheckStepLogic :
     exact h_ab_eq
   ⟩
   hEq := fun oracleIdx => by simp only [Fin.eta]
+
+omit [Fintype L] [DecidableEq L] [CharP L 2] [SampleableType L] [NeZero ℓ] in
+/-- At `Fin.last ℓ`, sumcheck consistency is the single empty-variable evaluation. -/
+lemma sumcheckConsistency_at_last_simplifies
+    (target : L) (H : L⦃≤ 2⦄[X Fin (ℓ - Fin.last ℓ)])
+    (h_cons : sumcheckConsistencyProp (𝓑 := 𝓑) target H) :
+    target = H.val.eval (fun _ => (0 : L)) := by
+  simp only [Fin.val_last] at H h_cons ⊢
+  simp only [sumcheckConsistencyProp] at h_cons
+  haveI : IsEmpty (Fin 0) := Fin.isEmpty
+  rw [Finset.sum_eq_single (a := fun _ => 0)
+    (h₀ := fun b _ hb_ne => by
+      exfalso
+      apply hb_ne
+      funext i
+      simp only [tsub_self] at i
+      exact i.elim0)
+    (h₁ := fun h_not_mem => by
+      exfalso
+      apply h_not_mem
+      simp only [Fintype.mem_piFinset]
+      intro i
+      simp only [tsub_self] at i
+      exact i.elim0)] at h_cons
+  exact h_cons
+
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
+/-- The final sumcheck verifier check follows from sumcheck consistency, witness structure, and the
+final codeword evaluation identity. -/
+lemma finalSumcheckStep_verifierCheck_passed_of_finalCodeword
+    (stmtIn : Statement (SumcheckBaseContext L ℓ) (Fin.last ℓ))
+    (witIn : Witness 𝔽q β (Fin.last ℓ))
+    (oStmtIn : ∀ j, OracleStatement 𝔽q β ϑ (Fin.last ℓ) j)
+    (challenges : (pSpecFinalSumcheckStep (L := L)).Challenges)
+    (h_sumcheck_cons : sumcheckConsistencyProp (𝓑 := 𝓑) stmtIn.sumcheck_target witIn.H)
+    (h_wit_struct : witnessStructuralInvariant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (mp := BBF_SumcheckMultiplierParam) (stmt := stmtIn) (wit := witIn))
+    (h_final_codeword :
+      witIn.f ⟨0, by simp only [zero_mem]⟩ = witIn.t.val.eval stmtIn.challenges) :
+    (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (𝓑 := 𝓑)).verifierCheck stmtIn
+        ((finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (𝓑 := 𝓑)).honestProverTranscript stmtIn witIn oStmtIn challenges) := by
+  have h_target_eq_H_eval :
+      stmtIn.sumcheck_target = witIn.H.val.eval (fun _ => (0 : L)) :=
+    sumcheckConsistency_at_last_simplifies (L := L) (ℓ := ℓ) (𝓑 := 𝓑)
+      stmtIn.sumcheck_target witIn.H h_sumcheck_cons
+  have h_proj_eval :
+      (projectToMidSumcheckPoly ℓ witIn.t
+        (m := (BBF_SumcheckMultiplierParam (L := L) (ℓ := ℓ)).multpoly stmtIn.ctx)
+        (Fin.last ℓ) stmtIn.challenges).val.eval (fun _ => (0 : L)) =
+      ((BBF_SumcheckMultiplierParam (L := L) (ℓ := ℓ)).multpoly stmtIn.ctx).val.eval
+        stmtIn.challenges * witIn.t.val.eval stmtIn.challenges := by
+    apply Sumcheck.Structured.projectToMidSumcheckPoly_at_last_eval
+  have h_eq : stmtIn.sumcheck_target =
+      eqTilde stmtIn.ctx.t_eval_point stmtIn.challenges *
+        witIn.f ⟨0, by simp only [zero_mem]⟩ := by
+    calc
+      stmtIn.sumcheck_target
+          = witIn.H.val.eval (fun _ => (0 : L)) := h_target_eq_H_eval
+      _ = (projectToMidSumcheckPoly ℓ witIn.t
+            (m := (BBF_SumcheckMultiplierParam (L := L) (ℓ := ℓ)).multpoly stmtIn.ctx)
+            (Fin.last ℓ) stmtIn.challenges).val.eval (fun _ => (0 : L)) := by
+            rw [h_wit_struct.1]
+      _ = ((BBF_SumcheckMultiplierParam (L := L) (ℓ := ℓ)).multpoly stmtIn.ctx).val.eval
+            stmtIn.challenges * witIn.t.val.eval stmtIn.challenges := h_proj_eval
+      _ = eqTilde stmtIn.ctx.t_eval_point stmtIn.challenges *
+            witIn.t.val.eval stmtIn.challenges := by
+            rfl
+      _ = eqTilde stmtIn.ctx.t_eval_point stmtIn.challenges *
+            witIn.f ⟨0, by simp only [zero_mem]⟩ := by
+            rw [h_final_codeword]
+  dsimp [finalSumcheckStepLogic, FullTranscript.mk1] at h_eq ⊢
+  exact h_eq
+
+omit [SampleableType L] in
+/-- The final folded codeword value sent by the honest prover is the multilinear polynomial
+evaluation at the statement challenges. -/
+lemma finalSumcheckStep_final_codeword_eq_eval
+    (stmtIn : Statement (SumcheckBaseContext L ℓ) (Fin.last ℓ))
+    (witIn : Witness 𝔽q β (Fin.last ℓ))
+    (h_wit_struct : witnessStructuralInvariant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (mp := BBF_SumcheckMultiplierParam) (stmt := stmtIn) (wit := witIn)) :
+    witIn.f ⟨0, by simp only [zero_mem]⟩ = witIn.t.val.eval stmtIn.challenges := by
+  rw [h_wit_struct.2]
+  exact getMidCodewords_last_apply_eq_eval 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (t := witIn.t) (challenges := stmtIn.challenges)
+    (y := ⟨0, by simp only [Fin.val_last, zero_mem]⟩)
+
+omit [SampleableType L] in
+/-- The final sumcheck verifier check follows directly from sumcheck consistency and witness
+structure. -/
+lemma finalSumcheckStep_verifierCheck_passed
+    (stmtIn : Statement (SumcheckBaseContext L ℓ) (Fin.last ℓ))
+    (witIn : Witness 𝔽q β (Fin.last ℓ))
+    (oStmtIn : ∀ j, OracleStatement 𝔽q β ϑ (Fin.last ℓ) j)
+    (challenges : (pSpecFinalSumcheckStep (L := L)).Challenges)
+    (h_sumcheck_cons : sumcheckConsistencyProp (𝓑 := 𝓑) stmtIn.sumcheck_target witIn.H)
+    (h_wit_struct : witnessStructuralInvariant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (mp := BBF_SumcheckMultiplierParam) (stmt := stmtIn) (wit := witIn)) :
+    (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (𝓑 := 𝓑)).verifierCheck stmtIn
+        ((finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (𝓑 := 𝓑)).honestProverTranscript stmtIn witIn oStmtIn challenges) := by
+  exact finalSumcheckStep_verifierCheck_passed_of_finalCodeword 𝔽q β
+    (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
+    (stmtIn := stmtIn) (witIn := witIn) (oStmtIn := oStmtIn) (challenges := challenges)
+    (h_sumcheck_cons := h_sumcheck_cons) (h_wit_struct := h_wit_struct)
+    (h_final_codeword := finalSumcheckStep_final_codeword_eq_eval 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (stmtIn := stmtIn) (witIn := witIn)
+      (h_wit_struct := h_wit_struct))
+
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
+/-- The oracle-folding part of the final relation output is exactly the synchronized final-round
+input consistency. The remaining relation-out obligation is the final constant fold. -/
+lemma finalSumcheckStep_strictOracleFoldingConsistency_out
+    (stmtIn : Statement (SumcheckBaseContext L ℓ) (Fin.last ℓ))
+    (witIn : Witness 𝔽q β (Fin.last ℓ))
+    (oStmtIn : ∀ j, OracleStatement 𝔽q β ϑ (Fin.last ℓ) j)
+    (h_strictOracleWitConsistency_In : strictOracleWitnessConsistency 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := SumcheckBaseContext L ℓ)
+      (mp := BBF_SumcheckMultiplierParam) (stmtIdx := Fin.last ℓ)
+      (oracleIdx := OracleFrontierIndex.mkFromStmtIdx (Fin.last ℓ)) (stmt := stmtIn)
+      (wit := witIn) (oStmt := oStmtIn)) :
+    strictOracleFoldingConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (t := witIn.t) (i := Fin.last ℓ) (challenges := stmtIn.challenges)
+      (oStmt := oStmtIn) := by
+  simpa [strictOracleWitnessConsistency, olderStmtChallenges_self] using
+    h_strictOracleWitConsistency_In.2
+
+/-
+The two direct final-step helper proofs below are stale after the challenge-order migration and have
+no live callers. The public final-step completeness theorem is the explicit
+`FinalSumcheckStepLogicCompleteResidual` surface below; keep these helper sketches out of the active
+elaboration path until the full direct proof is restored.
 
 omit [SampleableType L] in
 /-- **Strict version**: When folding the last oracle to level `ℓ` (final sumcheck),
@@ -1527,6 +1668,7 @@ lemma finalSumcheckStep_verifierCheck_passed
     witIn.f ⟨0, by simp only [Fin.val_last, zero_mem]⟩
   rw [←h_H_eval_at_zero_eq_mul]
   exact h_sumcheck_cons
+-/
 
 /- Final sumcheck step logic is strongly complete.
 **Key Proof Obligations:**
@@ -1555,12 +1697,14 @@ class FinalSumcheckStepLogicCompleteResidual : Prop where
       (𝓑 := 𝓑)).IsStronglyComplete
 
 variable [FinalSumcheckStepLogicCompleteResidual 𝔽q β
-  (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+  (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)]
 
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
 lemma finalSumcheckStep_is_logic_complete :
     (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (𝓑 := 𝓑)).IsStronglyComplete := by
   exact FinalSumcheckStepLogicCompleteResidual.holds (𝔽q := 𝔽q) (β := β)
+    (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
 /-
   intro stmtIn witIn oStmtIn challenges h_relIn
   let step := (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)

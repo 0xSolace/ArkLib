@@ -1797,6 +1797,29 @@ theorem not_e_time_honest_of_not_E_of_noRedundantEntryDS
   · exact not_e_time_h_honest_of_not_E tr h state S hHash
   · exact not_e_time_p_honest_of_not_E_of_noRedundantEntryDS tr h state S hNoRed hPerm
 
+/-- Full timing closure on the deduplicated base trace produced by `removeRedundantEntryDS`. -/
+theorem not_e_time_honest_removeRedundantEntryDS_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U)
+    (S : DuplexSpongeFS.Backtrack.S_BT (removeRedundantEntryDS tr).1 state)
+    (h : ¬ BadEventDS.E (removeRedundantEntryDS tr).1) :
+    ¬ DuplexSpongeFS.KeyLemmaFoundations.E_time_honest
+      (removeRedundantEntryDS tr).1 state S :=
+  not_e_time_honest_of_not_E_of_noRedundantEntryDS
+    (tr := (removeRedundantEntryDS tr).1) h state S (removeRedundantEntryDS tr).2
+
+/-- Full timing closure on the deduplicated base trace, discharged from the raw-trace
+`¬ E tr` hypothesis because `E` itself is defined over the same deduplicated base trace. -/
+theorem not_e_time_honest_removeRedundantEntryDS_of_not_E_raw
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U)
+    (S : DuplexSpongeFS.Backtrack.S_BT (removeRedundantEntryDS tr).1 state)
+    (h : ¬ BadEventDS.E tr) :
+    ¬ DuplexSpongeFS.KeyLemmaFoundations.E_time_honest
+      (removeRedundantEntryDS tr).1 state S :=
+  not_e_time_honest_removeRedundantEntryDS_of_not_E tr state S
+    (fun hE => h ((BadEventDS.E_removeRedundantEntryDS_iff tr).mp hE))
+
 /-- Conditional full M2c assembly: a global exclusion of the prior reversed-forward obstruction
 is enough to discharge `Lemma5_16HonestResidual`. -/
 theorem lemma5_16_honest_of_no_prior_reverse
@@ -1903,6 +1926,10 @@ set_option linter.style.longLine false in
 #print axioms DuplexSpongeFS.Sponge316.not_e_time_p_honest_of_not_E_of_noRedundantEntryDS
 set_option linter.style.longLine false in
 #print axioms DuplexSpongeFS.Sponge316.not_e_time_honest_of_not_E_of_noRedundantEntryDS
+set_option linter.style.longLine false in
+#print axioms DuplexSpongeFS.Sponge316.not_e_time_honest_removeRedundantEntryDS_of_not_E
+set_option linter.style.longLine false in
+#print axioms DuplexSpongeFS.Sponge316.not_e_time_honest_removeRedundantEntryDS_of_not_E_raw
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_forward_capacity_witness_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.e_time_h_honest_raw_hasForwardCapacityBeforeHash_of_not_E

@@ -739,7 +739,8 @@ def strictOracleFoldingConsistencyProp (t : MultilinearPoly L ℓ) (i : Fin (ℓ
   -- `polynomialFromNovelCoeffsF₂` evaluated on `S⁽⁰⁾`. This keeps `f₀` definitionally the same as
   -- `getMidCodewords`'s base function and drops the (mid-refactor) CompPoly dependency here.
   let P₀ : L⦃< 2 ^ ℓ⦄[X] :=
-    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval ω)
+    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
+      (fun ω => t.val.eval (statementOrderBitsOfIndex ω))
   let f₀ : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 :=
     fun y => P₀.val.eval y.val
   ∀ (j : Fin (toOutCodewordsCount ℓ ϑ i)),
@@ -820,13 +821,13 @@ def strictfinalSumcheckStepFoldingStateProp (t : MultilinearPoly L ℓ) {h_le : 
   let f_k : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) curDomainIdx :=
     getLastOracle (h_destIdx := h_destIdx_eq) (oracleFrontierIdx := Fin.last ℓ)
       𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (oStmt := oStmt)
-  let finalChallenges : Fin ϑ → L := fun cId => stmt.challenges ⟨k + cId, by
-    rw [h_k]
-    have h_le : ϑ ≤ ℓ := by apply Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) (hdiv.out)
-    have h_cId : cId.val < ϑ := cId.isLt
-    have h_last : (Fin.last ℓ).val = ℓ := rfl
-    omega
-  ⟩
+  let finalChallenges : Fin ϑ → L :=
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) (i := Fin.last ℓ)
+      stmt.challenges k (h := by
+        rw [h_k, Fin.val_last]
+        have h_le : ϑ ≤ ℓ := by
+          apply Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) (hdiv.out)
+        omega)
   let destDomainIdx : Fin r := ⟨k + ϑ, by omega⟩
   let strictFinalConstantConsistency: Prop :=
     (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := curDomainIdx) (steps := ϑ)

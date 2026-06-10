@@ -8,7 +8,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 import ArkLib.Data.MvPolynomial.MultilinearComputational
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 1900
 
 /-!
 # Binius binary Basefold: oracle bookkeeping
@@ -30,6 +30,18 @@ open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomi
 open scoped NNReal
 open ReedSolomon Code BerlekampWelch
 open Finset AdditiveNTT Polynomial MvPolynomial Nat Matrix
+
+/-- Binary expansion of an index as a challenge vector. -/
+def bitsOfIndex {L : Type} [Field L] {n : ℕ} (k : Fin (2 ^ n)) : Fin n → L :=
+  fun j => if Nat.getBit j.val k.val = 1 then 1 else 0
+
+/-- Binary expansion of an index in statement-variable order.
+
+The fold recursion consumes challenges in chronological order, while structured-sumcheck statements
+store them newest-first. This helper converts a fold-order binary index into the corresponding
+statement-order Boolean evaluation point. -/
+def statementOrderBitsOfIndex {L : Type} [Field L] {n : ℕ} (k : Fin (2 ^ n)) : Fin n → L :=
+  fun j => bitsOfIndex (L := L) k (Fin.rev j)
 
 /-- Statement challenges are stored in the structured-sumcheck order: the newest challenge is at
 index `0`. The folding operators consume challenges in chronological fold order, so this helper
@@ -986,23 +998,18 @@ def snoc_oracle {i : Fin ℓ} {destIdx : Fin r}
           exact Nat.lt_of_le_of_ne hi_succ_le_ℓ hi_succ_ne_ℓ
         rw [toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hi]
         rfl
-      by
-        simp only [OracleStatement]
-        simp_rw [h_commit_round]
-        have h_idx : destIdx = ⟨j.val * ϑ, by omega⟩ := by
+      have h_domain :
+          ↥(sDomain 𝔽q β h_ℓ_add_R_rate destIdx) =
+            ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.succ.val, by omega⟩) := by
+        have h_fin : destIdx = (⟨i.succ.val, by omega⟩ : Fin r) := by
           apply Fin.eq_of_val_eq
           rw [h_destIdx]
-          exact h_commit_round.symm
-        have h_domain :
-            ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.succ.val, by omega⟩) =
-              ↥(sDomain 𝔽q β h_ℓ_add_R_rate destIdx) := by
-          have h_fin : (⟨i.succ.val, by omega⟩ : Fin r) = destIdx := by
-            apply Fin.eq_of_val_eq
-            rw [h_destIdx]
-            simp only [Fin.val_mk]
-            omega
-          exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
-        exact fun y => newOracleFn (cast h_domain y)
+          rfl
+        exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
+      cast (by
+        simp only [OracleFunction, OracleStatement]
+        simp_rw [h_commit_round]
+        exact congrArg (fun D : Type => D → L) h_domain) newOracleFn
     else by
       simp only [OracleStatement]
       have h := toOutCodewordsCount_succ_eq ℓ ϑ i
@@ -1033,6 +1040,22 @@ def snoc_oracle {i : Fin ℓ} {destIdx : Fin r}
           rw [h_count_eq]
           exact j.isLt
         linarith -- hj_lt and hj
+
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
+lemma snoc_oracle_new_heq_of_commit {i : Fin ℓ} {destIdx : Fin r}
+    (h_destIdx : destIdx = ⟨i.val + 1, by omega⟩)
+    (hCR : isCommitmentRound ℓ ϑ i)
+    (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
+      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.succ))
+    (hj : ¬ j.val < toOutCodewordsCount ℓ ϑ i.castSucc) :
+    HEq (snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      h_destIdx oStmtIn newOracleFn j) newOracleFn := by
+  subst h_destIdx
+  unfold snoc_oracle
+  simp only [hCR, hj, ↓reduceDIte]
+  exact cast_heq _ newOracleFn
 
 def take_snoc_oracle (i : Fin ℓ)
     (oStmtIn : (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) →
@@ -1117,6 +1140,51 @@ lemma getFoldingChallenges_proof_irrel (i : Fin (ℓ + 1)) (challenges : Fin i �
   funext cId
   unfold getFoldingChallenges
   congr 1
+
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
+  [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L]
+  β hβ_lin_indep h_β₀_eq_1 [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 in
+/-- Splitting the full final-round fold-order challenge vector at the last oracle block recovers
+the prefix challenge slice followed by the final block challenge slice. -/
+lemma getFoldingChallenges_append_finalBlock
+    (challenges : Fin (Fin.last ℓ) → L) :
+    Fin.append
+      (getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ℓ - ϑ)
+        (i := Fin.last ℓ) challenges 0 (h := by
+          simp only [zero_add, Fin.val_last]
+          omega))
+      (getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ)
+        (i := Fin.last ℓ) challenges (ℓ - ϑ) (h := by
+          simp only [Fin.val_last]
+          have h_le : ϑ ≤ ℓ := Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) hdiv.out
+          omega)) =
+    fun cIdx : Fin ((ℓ - ϑ) + ϑ) =>
+      foldOrderChallenges (ℓ := ℓ) (L := L) (i := Fin.last ℓ) challenges
+        ⟨cIdx.val, by
+          simp only [Fin.val_last]
+          have h_le : ϑ ≤ ℓ := Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) hdiv.out
+          omega⟩ := by
+  funext cIdx
+  by_cases h : cIdx.val < ℓ - ϑ
+  · have hcIdx : cIdx = Fin.castAdd ϑ ⟨cIdx.val, h⟩ := by
+      apply Fin.ext
+      simp
+    rw [hcIdx, Fin.append_left]
+    dsimp only [getFoldingChallenges]
+    congr 1
+    apply Fin.ext
+    simp
+  · have h_le : ℓ - ϑ ≤ cIdx.val := Nat.le_of_not_gt h
+    let j : Fin ϑ := ⟨cIdx.val - (ℓ - ϑ), by
+      have hϑ : ϑ ≤ ℓ := Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ) hdiv.out
+      omega⟩
+    have hcIdx : cIdx = Fin.natAdd (ℓ - ϑ) j := by
+      apply Fin.ext
+      simp only [j, Fin.val_natAdd]
+      omega
+    rw [hcIdx, Fin.append_right]
+    dsimp only [getFoldingChallenges]
+    congr 1
 
 omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
   [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] hdiv in
@@ -1311,7 +1379,9 @@ challenges chronologically from level `0` upward, so this definition reverses th
 before passing it to `iterated_fold`. -/
 def getMidCodewords {i : Fin (ℓ + 1)} (t : L⦃≤ 1⦄[X Fin ℓ]) -- original polynomial t
     (challenges : Fin i → L) : (sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i, by omega⟩) → L) :=
-  let P₀ : L⦃< 2^ℓ⦄[X] := polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval ω)
+  let P₀ : L⦃< 2^ℓ⦄[X] :=
+    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
+      (fun ω => t.val.eval (statementOrderBitsOfIndex ω))
   let f₀ : (sDomain 𝔽q β h_ℓ_add_R_rate 0) → L := fun x => P₀.val.eval x.val
   iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := 0)
@@ -1344,7 +1414,9 @@ def sumcheckConsistencyProp {k : ℕ} (sumcheckTarget : L) (H : MultiquadraticPo
     evaluated on the initial domain S^(0), must be close within unique decoding radius to f^(0) -/
 def firstOracleWitnessConsistencyProp (t : MultilinearPoly L ℓ)
     (f₀ : sDomain 𝔽q β h_ℓ_add_R_rate 0 → L) : Prop :=
-  let P₀ : L⦃< 2 ^ ℓ⦄[X] := polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval ω)
+  let P₀ : L⦃< 2 ^ ℓ⦄[X] :=
+    polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega)
+      (fun ω => t.val.eval (statementOrderBitsOfIndex ω))
   -- The constraint: P_0 evaluated on S^(0) is close within unique decoding radius to f^(0)
   -- API migration: `BBF_CodeDistance` now lives in `Code.lean` keyed on `𝔽q β (h_ℓ_add_R_rate)`
   -- and a `Fin r` index (no explicit `ℓ 𝓡`).
