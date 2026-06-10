@@ -584,6 +584,15 @@ theorem cast_fun_cast_arg_apply {α β : Type u} {γ : Type v} {hαβ : α = β}
   cases hfun
   rfl
 
+theorem cast_fun_cast_arg_eq_fun_cast {α β : Type u} {γ : Type v} {hαβ : α = β}
+    {hfun₁ : (α → γ) = (α → γ)} {hfun₂ : (β → γ) = (α → γ)}
+    (f : β → γ) (x : α) :
+    cast hfun₁ (fun y : α => f (cast hαβ y)) x = cast hfun₂ f x := by
+  subst hαβ
+  cases hfun₁
+  cases hfun₂
+  rfl
+
 theorem verifier_inr_transport_heq {n : ℕ} {pSpec : ProtocolSpec n}
     {ιₛᵢ ιₛₒ : Type}
     {OStmtIn : ιₛᵢ → Type} {OStmtOut : ιₛₒ → Type}
