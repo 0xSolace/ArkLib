@@ -77,6 +77,20 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
   have hdest_lt : i.val + 1 < r := by omega
   have hdest_le : (⟨i.val + 1, hdest_lt⟩ : Fin r) ≤ ℓ := by
     simp only [Fin.mk_le_mk, Fin.val_mk]; omega
+  have hrev :
+      Fin.cons r_i' challenges ∘ Fin.rev =
+        Fin.snoc (challenges ∘ Fin.rev) r_i' :=
+    Fin.cons_comp_rev (n := i.val) (α := L) r_i' challenges
+  have hinit :
+      Fin.init (Fin.cons r_i' challenges ∘ Fin.rev) = challenges ∘ Fin.rev :=
+    (congrArg Fin.init hrev).trans
+      (Fin.init_snoc (n := i.val) (α := fun _ => L) (x := r_i')
+        (p := challenges ∘ Fin.rev))
+  have hlast :
+      (Fin.cons r_i' challenges ∘ Fin.rev) (Fin.last i.val) = r_i' :=
+    (congrFun hrev (Fin.last i.val)).trans
+      (Fin.snoc_last (n := i.val) (α := fun _ => L) (x := r_i')
+        (p := challenges ∘ Fin.rev))
   refine congrArg₂ (fun g c =>
     fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := ⟨i.val, hmid_lt⟩)
@@ -86,15 +100,10 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     -- zero-step fold is the definitional transport of `getMidCodewords i.castSucc`.
     funext z
     rw [iterated_fold_zero_steps]
-    have hch := Fin.init_snoc (n := i.val) (α := fun _ => L) (x := r_i')
-      (p := challenges ∘ Fin.rev)
-    -- `hch` is a closed equation, so `simp only [hch]` matches first-order (the general
-    -- `Fin.init_snoc` cannot fire: `Fin.snoc`'s dependent motive is not an HO pattern).
-    simp only [Fin.cons_comp_rev, hch]
+    rw [hinit]
     rfl
   · -- Challenge: `snoc challenges r_i' (last _) = r_i'` (the right side beta-reduces).
-    simpa only [Fin.cons_comp_rev] using
-      (Fin.snoc_last (n := i.val) (α := fun _ => L) (x := r_i') (p := challenges ∘ Fin.rev))
+    exact hlast
 
 section FoldStepLogic
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context}
