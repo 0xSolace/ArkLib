@@ -198,8 +198,59 @@ theorem clearedGrandSumPolyOn_ne_zero_of_bad_lookup (V : Finset F)
     rw [Polynomial.eval_add, Polynomial.eval_X, Polynomial.eval_C] at hb0
     exact hb.1 (by linear_combination hb0)
 
+/-- Generic clearing: a finite sum of fractions with nonvanishing denominators vanishes iff its
+cleared numerator does. -/
+theorem sum_div_eq_zero_iff_cleared (V : Finset F) (r : F → F) (x : F)
+    (hden : ∀ a ∈ V, x + a ≠ 0) :
+    (∑ a ∈ V, r a / (x + a)) = 0 ↔
+      (∑ a ∈ V, r a * ∏ b ∈ V.erase a, (x + b)) = 0 := by
+  classical
+  have hprod : (∏ a ∈ V, (x + a)) ≠ 0 := Finset.prod_ne_zero_iff.mpr hden
+  constructor
+  · intro h
+    have hmul := congrArg (· * ∏ a ∈ V, (x + a)) h
+    simp only [zero_mul] at hmul
+    rw [Finset.sum_mul] at hmul
+    rw [← hmul]
+    refine Finset.sum_congr rfl (fun a ha => ?_)
+    rw [← Finset.mul_prod_erase V _ ha]
+    rw [div_mul_eq_mul_div, mul_comm (x + a) (∏ b ∈ V.erase a, (x + b)), ← mul_assoc,
+      mul_div_assoc, div_self (hden a ha), mul_one]
+  · intro h
+    have key : (∑ a ∈ V, r a / (x + a)) * ∏ a ∈ V, (x + a) = 0 := by
+      rw [Finset.sum_mul]
+      rw [← h]
+      refine Finset.sum_congr rfl (fun a ha => ?_)
+      rw [← Finset.mul_prod_erase V _ ha]
+      rw [div_mul_eq_mul_div, mul_comm (x + a) (∏ b ∈ V.erase a, (x + b)), ← mul_assoc,
+        mul_div_assoc, div_self (hden a ha), mul_one]
+    exact (mul_eq_zero.mp key).resolve_right hprod
+
+/-- **The eval-clearing bridge.** At a pole-free point `x`, the value-indexed rational residue sum
+vanishes iff the `V`-cleared grand-sum polynomial vanishes at `x`. -/
+theorem residue_sum_eq_zero_iff_clearedGrandSumPolyOn_eval (V : Finset F)
+    (oStmt : ∀ i, OStmtIn F n M i) (mult : MultilinearOracle F n) (x : F)
+    (hden : ∀ a ∈ V, x + a ≠ 0) :
+    (∑ a ∈ V,
+        ((∑ u ∈ (Finset.univ : Finset (Hypercube n)).filter
+            (fun u => evalOnHypercube (tableOracle oStmt) u = a),
+              evalOnHypercube mult u)
+          - (lookupMultiplicityCount oStmt a : F)) / (x + a)) = 0 ↔
+      (clearedGrandSumPolyOn V oStmt mult).eval x = 0 := by
+  rw [sum_div_eq_zero_iff_cleared V _ x hden]
+  unfold clearedGrandSumPolyOn
+  rw [Polynomial.eval_finset_sum]
+  constructor <;> intro h <;> [skip; skip] <;>
+  · rw [← h]
+    refine Finset.sum_congr rfl (fun a ha => ?_)
+    rw [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_prod]
+    refine congrArg _ (Finset.prod_congr rfl (fun b _ => ?_))
+    rw [Polynomial.eval_add, Polynomial.eval_X, Polynomial.eval_C]
+
 end Logup
 
 #print axioms Logup.clearedGrandSumPoly_ne_zero_of_bad_lookup
 #print axioms Logup.natDegree_clearedGrandSumPolyOn_le
 #print axioms Logup.clearedGrandSumPolyOn_ne_zero_of_bad_lookup
+#print axioms Logup.sum_div_eq_zero_iff_cleared
+#print axioms Logup.residue_sum_eq_zero_iff_clearedGrandSumPolyOn_eval
