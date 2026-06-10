@@ -193,11 +193,16 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
   set bad : Finset F₀ := Finset.univ.filter (fun γ : F₀ =>
     _root_.ProximityGap.mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
       δ (u 0) (u 1) γ) with hbad
-  -- the uniform decode family, by choice
-  set P : F₀ → F₀[X] := fun γ =>
-    if hγ : γ ∈ bad then
-      ((exists_mcaDecode_of_mcaEvent (Finset.mem_filter.mp hγ).2).some).P
-    else 0 with hP
+  -- the uniform decode family, by choice (kept behind opaque `choose` fvars — embedding
+  -- choice terms in `dite` branches sends later unifications into whnf blowup)
+  have hex : ∀ γ : F₀, ∃ p : F₀[X],
+      γ ∈ bad → ∃ d : McaDecode domain k δ u γ, d.P = p := by
+    intro γ
+    by_cases hγ : γ ∈ bad
+    · obtain ⟨d⟩ := exists_mcaDecode_of_mcaEvent (Finset.mem_filter.mp hγ).2
+      exact ⟨d.P, fun _ => ⟨d, rfl⟩⟩
+    · exact ⟨0, fun h => absurd h hγ⟩
+  choose P hPdec using hex
   -- the factor assignment for the non-degenerate scalars
   have hassign : ∀ γ ∈ bad,
       Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 →
@@ -205,18 +210,27 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
         (Polynomial.X - Polynomial.C (P γ)) ∣
           R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) := by
     intro γ hγ hz
+    obtain ⟨d, hd⟩ := hPdec γ hγ
     have hdvd : (Polynomial.X - Polynomial.C (P γ)) ∣
         Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) := by
-      simp only [hP]
-      rw [dif_pos hγ]
-      exact mcaDecode_matching_dvd domain hQ hrep hkn hm hδ1 hδJ _ hz
+      rw [← hd]
+      exact mcaDecode_matching_dvd domain hQ hrep hkn hm hδ1 hδJ d hz
     exact exists_integral_factor_assignment hQ₀0 γ (P γ) hdvd
   -- the cells: `none` is the degenerate cell, `some R` the factor cells
-  set assign : F₀ → Option ((F₀[X])[X][Y]) := fun γ =>
-    if h : γ ∈ bad ∧
-        Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 then
-      some ((hassign γ h.1 h.2).choose)
-    else none with hassigndef
+  have hex2 : ∀ γ : F₀, ∃ ij : Option ((F₀[X])[X][Y]),
+      ((γ ∈ bad ∧ Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0) →
+        ∃ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset, ij = some R ∧
+          (Polynomial.X - Polynomial.C (P γ)) ∣
+            R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) ∧
+      (¬ (γ ∈ bad ∧ Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0) →
+        ij = none) := by
+    intro γ
+    by_cases h : γ ∈ bad ∧
+        Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0
+    · obtain ⟨R, hR, hdvd⟩ := hassign γ h.1 h.2
+      exact ⟨some R, fun _ => ⟨R, hR, rfl, hdvd⟩, fun hc => absurd h hc⟩
+    · exact ⟨none, fun hc => absurd hc h, fun _ => rfl⟩
+  choose assign hassignpos hassignneg using hex2
   set Index : Finset (Option ((F₀[X])[X][Y])) :=
     insert none ((UniqueFactorizationMonoid.factors Q₀).toFinset.image some) with hIndex
   set Ecell : Option ((F₀[X])[X][Y]) → Finset F₀ :=
@@ -233,19 +247,19 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
     have hγbad : γ ∈ bad := hγ
     rw [Finset.mem_biUnion]
     refine ⟨assign γ, ?_, ?_⟩
-    · simp only [hassigndef, hIndex]
-      split_ifs with h
-      · exact Finset.mem_insert_of_mem
-          (Finset.mem_image_of_mem _ (hassign γ h.1 h.2).choose_spec.1)
-      · exact Finset.mem_insert_self _ _
+    · simp only [hIndex]
+      by_cases h : γ ∈ bad ∧
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0
+      · obtain ⟨R, hR, hEq, _⟩ := hassignpos γ h
+        rw [hEq]
+        exact Finset.mem_insert_of_mem (Finset.mem_image_of_mem _ hR)
+      · rw [hassignneg γ h]
+        exact Finset.mem_insert_self _ _
     · exact Finset.mem_filter.mpr ⟨hγbad, rfl⟩
   · -- K1: the uniform decode family, on every cell
     intro ij _ γ hγ
     have hγ' : γ ∈ bad.filter (fun γ' => assign γ' = ij) := hγ
-    have hγbad : γ ∈ bad := (Finset.mem_filter.mp hγ').1
-    refine ⟨(exists_mcaDecode_of_mcaEvent (Finset.mem_filter.mp hγbad).2).some, ?_⟩
-    simp only [hP]
-    rw [dif_pos hγbad]
+    exact hPdec γ (Finset.mem_filter.mp hγ').1
   · -- the degenerate cell is indexed
     simp only [hIndex]
     exact Finset.mem_insert_self _ _
@@ -254,12 +268,12 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
     intro γ hγ
     have hγ' : γ ∈ bad.filter (fun γ' => assign γ' = none) := hγ
     obtain ⟨hγbad, hass⟩ := Finset.mem_filter.mp hγ'
-    simp only [hassigndef] at hass
     rw [Finset.mem_filter]
     refine ⟨Finset.mem_univ _, ?_⟩
     by_contra hz
-    rw [dif_pos ⟨hγbad, hz⟩] at hass
-    exact Option.some_ne_none _ hass
+    obtain ⟨R, _, hEq, _⟩ := hassignpos γ ⟨hγbad, hz⟩
+    rw [hass] at hEq
+    exact Option.noConfusion hEq
   · -- every factor cell carries one irreducible factor of `Q₀`
     intro ij hij hne
     simp only [hIndex, Finset.mem_insert] at hij
@@ -270,14 +284,12 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
       intro γ hγ
       have hγ' : γ ∈ bad.filter (fun γ' => assign γ' = some R) := hγ
       obtain ⟨hγbad, hass⟩ := Finset.mem_filter.mp hγ'
-      simp only [hassigndef] at hass
       by_cases hz : Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0
-      · rw [dif_pos ⟨hγbad, hz⟩] at hass
-        have hRR : (hassign γ hγbad hz).choose = R := Option.some.inj hass
-        have hspec := (hassign γ hγbad hz).choose_spec.2
-        rwa [hRR] at hspec
-      · rw [dif_neg (fun hc => hz hc.2)] at hass
-        exact absurd hass.symm (Option.some_ne_none _)
+      · obtain ⟨R', hR', hEq, hdvd⟩ := hassignpos γ ⟨hγbad, hz⟩
+        rw [hass] at hEq
+        rwa [Option.some.inj hEq] at hdvd
+      · rw [hassignneg γ (fun hc => hz hc.2)] at hass
+        exact Option.noConfusion hass
 
 /-- **The K1-complete count**: composing the cell production with a per-cell K4 pinning
 input (any decode-family cell whose members' matching factors all divide one specialized
