@@ -4884,3 +4884,24 @@ mixed tower goes fully unconditional on M31-style domains.
 `IntSquarefreeClassification.lean` (axiom-clean): `int_squarefree_classification` — for INTEGER weights at every squarefree `n` (arbitrary arity): `Σ_{e<n} w_e·ζ^e = 0 ⟺ ∃ A : ℕ → ℕ → ℤ, w e = Σ_{p ∈ primeFactors n} A p (e % (n/p))` — Schoenberg's theorem (the vanishing lattice is packet-spanned over ℤ) at full squarefree generality. The O109 strong induction reruns with ℤ-weights and is SIMPLER there: fiber differences stay ℤ, so the IH applies with no rational detour (the construction was always manifestly integral — `A p y = w(section(0,y))` + IH decode); only the K-coefficient transport changes (`map_intCast` for `map_ratCast`). Converse = the ℤ-cast packet regroup.
 
 **The coefficient trilogy at squarefree moduli is COMPLETE**: ℚ-components always (O109), ℤ-components always (this), ℕ-components exactly up to two distinct primes (O103 positive / O105 impossible at three) — every coefficient ring's classification settled at every squarefree modulus, with the ℕ/ℤ defect at ≥3 primes being precisely the content of Lam–Leung's positivity induction for the total weight. The surviving open items on the lane are unchanged: the sparse-window interpolation (bracketed O112/O114), Lam–Leung's positivity finish (published proof, all scaffolding now in place), O99 incidence, δ*.
+
+### O116 — P-DIRECTION LAW + THE DESIGNATED FIRST PEEL (the joint law's enabling pair)
+
+Two theorems (axiom-clean, 0 sorry; my lane):
+
+* `windowed_coset_cover_p` — the general-t law in the p-direction (role-swap
+  instantiation of O115; both prime directions now complete).
+* `first_peel_export` — **decomposition choice as a theorem**: if x ∈ S has its full
+  μ_q-orbit inside S, there is a decomposition of S whose spectrum CONTAINS x^q, with
+  the orbit property and the complete transfer. Construction: x's orbit is a full
+  q-packet (filter = image of μ_q-roots, card q, common power x^q, sum zero); peel it
+  FIRST — the remainder vanishes and decomposes by O77; the export of the extended
+  derivation inserts x^q, fresh by the orbit argument.
+
+WHY THIS MATTERS: the joint (full O70) law's strong induction has one problematic case —
+x both μ_p- and μ_q-closed with pq ≤ t, where both fixed dichotomies can stall. The
+first peel converts "x is μ_q-closed" into "the q-side recursion applies to x"
+unconditionally. With the floor-division arithmetic (window t transfers to window ⌊t/q⌋
+one level down; the rung multiplies d' > ⌊t/q⌋ into q·d' > t), ALL ingredients of the
+full mixed-window law are now machine-checked; remaining = the strong-induction
+assembly J(t) itself.
