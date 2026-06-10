@@ -254,7 +254,7 @@ theorem exists_exact_decodingCurve_RS (k DZ : ℕ)
   have : x ∈ (Finset.univ.filter (fun x => ¬(g₀ x = u₀ x ∧ g₁ x = u₁ x))) :=
     Finset.mem_filter.mpr ⟨Finset.mem_univ _, hne⟩
   rw [hempty] at this
-  exact absurd this (Finset.not_mem_empty x)
+  exact absurd this (Finset.notMem_empty x)
 
 end ReedSolomonExistence
 
