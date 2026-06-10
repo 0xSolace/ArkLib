@@ -1766,6 +1766,22 @@ theorem not_e_time_h_honest_of_not_E
   exact h (E_of_base_hasForwardCapacityBeforeHash
     (tr := tr) (stmt := stmt) (capSeg := capSeg) hbase)
 
+/-- Conditional full M2c assembly: a global exclusion of the prior reversed-forward obstruction
+is enough to discharge `Lemma5_16HonestResidual`. -/
+theorem lemma5_16_honest_of_no_prior_reverse
+    (hNoRev :
+      ∀ (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+        (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state),
+        ¬ BadEventDS.E tr → ¬ HasPriorReversedForwardAnchor tr state S) :
+    DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual StmtIn U := by
+  unfold DuplexSpongeFS.KeyLemmaFoundations.Lemma5_16HonestResidual
+  intro tr state S hE hTime
+  unfold DuplexSpongeFS.KeyLemmaFoundations.E_time_honest at hTime
+  rcases hTime with hHash | hPerm
+  · exact not_e_time_h_honest_of_not_E tr hE state S hHash
+  · exact not_e_time_p_honest_of_not_E_of_no_prior_reverse
+      tr hE state S (hNoRev tr state S hE) hPerm
+
 /-- **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual`
 holds: off the combined bad event `E`, no BackTrack chain step is anchored by an
 inverse-permutation entry (CO25 Lemma 5.12, honest form over `Backtrack.S_BT`). -/
@@ -1831,6 +1847,7 @@ namespace DuplexSpongeFS.Sponge316
 #print axioms e_time_h_honest_raw_hasFirstHashForwardCapacityBeforeHash_of_not_E
 #print axioms e_time_h_honest_dedup_hasForwardCapacityBeforeHash_of_not_E
 #print axioms not_e_time_h_honest_of_not_E
+#print axioms lemma5_16_honest_of_no_prior_reverse
 end DuplexSpongeFS.Sponge316
 
 #print axioms DuplexSpongeFS.Sponge316.lemma5_12_honest
