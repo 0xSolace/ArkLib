@@ -3706,3 +3706,13 @@ O76 left the corrected boundary obligation — carry the §5 threshold `Pr[good 
 **Probe (`probe_boundary_threshold_floorcell.py`, exit 0):** the corrected statement survives 4 non-lattice points — q=5/n=4/k=1 EXHAUSTIVE (390,625 stacks, threshold fired on 60,625, 0 violations), q=13/n=6, q=257/n=6, q=13/n=4/k=2 (sampled random + 3 adversarial families; 0 violations). The hunt used the monotonicity reduction: violation at any floor-matched δ' ⟺ violation at the cell minimum j/n. Measured TIGHTNESS: the maximum good count among no-jointAgreement stacks equals `k·n` EXACTLY at three points (4/6/8) — the transported threshold saturates at the cell minimum and cannot be lowered. Negative control: at `deg = 0` errorBound monotonicity is FALSE (Johnson value degenerates to 0), so `0 < deg` in the in-tree lemma is load-bearing.
 
 **Where the open core sits:** the corrected route is now fully plumbed — step functions (in-tree), errorBound monotonicity (in-tree), floor-cell threshold transport + monotone-ε export (this entry). The single remaining input is the genuine §5 strict-interior producer (`δ_ε_correlatedAgreementCurves` at one strict radius per cell, the BCIKS20 Steps 5–7 content), plus the genuinely-square lattice branch behind `BoundaryCardLatticeData`.
+
+### O68 — the coefficient-general slice theorem: the de Bruijn engine machine-checked
+
+`LamLeungTwoPow.vanishing_coeff_slices` (axiom-clean, 0 sorry): ANY vanishing
+ℚ-coefficient combination of p^(m+1)-th roots of unity has all p coefficient slices
+equal. Upgrades O66 from subset indicators to arbitrary coefficients — exactly the engine
+the two-prime (de Bruijn) CRT double-slice induction needs, whose slice differences carry
+{−1,0,1} coefficients. The mixed-radix third pillar now has its core mechanism formal;
+what remains of de Bruijn is the CRT bookkeeping (apply this at prime 1 with coefficients
+in prime 2's field, then descend).
