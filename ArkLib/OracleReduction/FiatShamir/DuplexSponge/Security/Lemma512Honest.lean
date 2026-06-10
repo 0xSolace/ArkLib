@@ -53,6 +53,104 @@ private lemma mem_of_getElem?' {α : Type _} {l : List α} {i : ℕ} {a : α}
   obtain ⟨hlt, rfl⟩ := List.getElem?_eq_some_iff.mp h
   exact List.getElem_mem hlt
 
+/-- The trace contains a concrete hash entry. -/
+def HasHashEntry (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (stmt : StmtIn) (capSeg : Vector U SpongeSize.C) : Prop :=
+  (⟨Sum.inl stmt, capSeg⟩ :
+    (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+      (duplexSpongeChallengeOracle StmtIn U).Range t) ∈ tr
+
+/-- Inversion of `redundantEntryDS` at a hash slot: the redundancy certificate is an earlier
+copy of the same hash entry. -/
+private lemma redundantEntryDS_hash_inversion
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (idx : Fin tr.length)
+    (stmt : StmtIn) (capSeg : Vector U SpongeSize.C)
+    (hval : tr[idx] =
+      (⟨Sum.inl stmt, capSeg⟩ :
+        (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+          (duplexSpongeChallengeOracle StmtIn U).Range t))
+    (hred : tr.redundantEntryDS idx) :
+    ∃ j' : Fin tr.length, j' < idx ∧
+      tr[j'] = (⟨Sum.inl stmt, capSeg⟩ :
+        (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+          (duplexSpongeChallengeOracle StmtIn U).Range t) := by
+  unfold redundantEntryDS at hred
+  rw [hval] at hred
+  exact hred
+
+/-- **One-step preservation**: erasing a redundant entry preserves a concrete hash entry. -/
+private lemma hasHashEntry_eraseIdx
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (idx : Fin tr.length) (hred : tr.redundantEntryDS idx)
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (hP : HasHashEntry tr stmt capSeg) :
+    HasHashEntry (tr.eraseIdx idx.val) stmt capSeg := by
+  classical
+  unfold HasHashEntry at hP ⊢
+  by_cases hval : tr[idx] =
+      (⟨Sum.inl stmt, capSeg⟩ :
+        (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+          (duplexSpongeChallengeOracle StmtIn U).Range t)
+  · obtain ⟨j', hj', hentry⟩ :=
+      redundantEntryDS_hash_inversion tr idx stmt capSeg hval hred
+    have hj'idx : j'.val < idx.val := hj'
+    have hkeep : (tr.eraseIdx idx.val)[j'.val]? = tr[j'.val]? :=
+      List.getElem?_eraseIdx_of_lt hj'idx
+    have hhit : tr[j'.val]? = some tr[j'] := by
+      simpa only [List.get_eq_getElem] using List.getElem?_eq_getElem (l := tr) j'.isLt
+    exact mem_of_getElem?' (by rw [hkeep, hhit, hentry])
+  · rw [List.mem_iff_getElem] at hP
+    obtain ⟨p, hp, hpe⟩ := hP
+    have hpne : p ≠ idx.val := by
+      intro hcontr
+      apply hval
+      calc tr[idx] = tr[p]'hp := by
+            subst hcontr; rfl
+        _ = _ := hpe
+    have hp? : tr[p]? = some
+        (⟨Sum.inl stmt, capSeg⟩ :
+          (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+            (duplexSpongeChallengeOracle StmtIn U).Range t) := by
+      rw [List.getElem?_eq_getElem hp, hpe]
+    rcases Nat.lt_or_ge p idx.val with hlt | hge
+    · exact mem_of_getElem?' (i := p) (by rw [List.getElem?_eraseIdx_of_lt hlt, hp?])
+    · have hgt : idx.val < p := lt_of_le_of_ne hge (Ne.symm hpne)
+      exact mem_of_getElem?' (i := p - 1) (by
+        rw [List.getElem?_eraseIdx_of_ge (by omega), show p - 1 + 1 = p by omega, hp?])
+
+/-- **Fixpoint preservation**: the dedup procedure `removeRedundantEntryDS` preserves concrete
+hash entries. -/
+private lemma hasHashEntry_removeRedundant :
+    ∀ (N : ℕ) (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)), tr.length ≤ N →
+      ∀ {stmt : StmtIn} {capSeg : Vector U SpongeSize.C},
+        HasHashEntry tr stmt capSeg → HasHashEntry (removeRedundantEntryDS tr).1 stmt capSeg := by
+  intro N
+  induction N with
+  | zero =>
+      intro tr hlen stmt capSeg hP
+      rw [List.length_eq_zero_iff.mp (Nat.le_zero.mp hlen)] at hP
+      simp [HasHashEntry] at hP
+  | succ N ih =>
+      intro tr hlen stmt capSeg hP
+      rw [removeRedundantEntryDS]
+      split
+      · rename_i hex
+        refine ih _ ?_ (hasHashEntry_eraseIdx tr (Classical.choose hex)
+          (Classical.choose_spec hex) hP)
+        have hlt := (Classical.choose hex).isLt
+        have hsucc := List.length_eraseIdx_add_one hlt
+        omega
+      · exact hP
+
+/-- Public dedup bridge for hash anchors: if the raw trace contains a concrete hash entry, the
+deduplicated trace still contains that same hash entry. -/
+theorem hasHashEntry_removeRedundant_of_mem
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    {stmt : StmtIn} {capSeg : Vector U SpongeSize.C}
+    (h : HasHashEntry tr stmt capSeg) :
+    HasHashEntry (removeRedundantEntryDS tr).1 stmt capSeg :=
+  hasHashEntry_removeRedundant tr.length tr le_rfl h
+
 /-- Inversion of `redundantEntryDS` at an inverse-permutation slot: the redundancy
 certificate is an earlier inverse entry (same or reversed). -/
 private lemma redundantEntryDS_inv_inversion
@@ -360,6 +458,7 @@ theorem lemma5_12_honest :
 end DuplexSpongeFS.Sponge316
 
 #print axioms DuplexSpongeFS.Sponge316.hasInvEntry_implies_E
+#print axioms DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundant_of_mem
 #print axioms DuplexSpongeFS.Sponge316.not_inv_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.forward_getElem?_of_not_E_of_perm_or_inv
 #print axioms DuplexSpongeFS.Sponge316.jbt_hash_getElem?
