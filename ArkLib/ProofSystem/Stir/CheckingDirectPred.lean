@@ -188,6 +188,153 @@ theorem stirCheckingPred_zero (δ : ℝ≥0)
     · simp only [Fin.val_zero] at h3
       omega
 
+/-! ## Index-congruence helpers (proof-irrelevant transport across `Fin` equalities) -/
+
+lemma trMsg_congr_idx {m : Fin (3 * M + 3 + 1)}
+    (tr : Transcript m ((stirMultiVSpec M ι).toProtocolSpec F))
+    {j j' : Fin (M + 1)} (e : j = j')
+    (h : 3 * j.val + 1 < m.val) (h' : 3 * j'.val + 1 < m.val) :
+    trMsg M tr j h = trMsg M tr j' h' := by subst e; rfl
+
+lemma trMsgFn_congr_idx {m : Fin (3 * M + 3 + 1)}
+    (tr : Transcript m ((stirMultiVSpec M ι).toProtocolSpec F))
+    {j j' : Fin (M + 1)} (e : j = j')
+    (h : 3 * j.val + 1 < m.val) (h' : 3 * j'.val + 1 < m.val) :
+    trMsgFn M tr j h = trMsgFn M tr j' h' := by subst e; rfl
+
+/-! ## The hConcatMsg leg -/
+
+/-- **Appending a prover message cannot repair a broken state.**  The interesting case is the
+last-committed-codeword conjunct: on the extended prefix the new message is the last one, and
+the pending-pair conjunct forces it to EQUAL the previous message, transferring its codeword
+membership back. -/
+theorem stirCheckingPred_concat (δ : ℝ≥0)
+    (m : Fin (3 * M + 3))
+    (hdir : ((stirMultiVSpec M ι).toProtocolSpec F).dir m = .P_to_V)
+    (stmtIn : Unit × ∀ i, OracleStatement ι F i)
+    (tr : Transcript m.castSucc ((stirMultiVSpec M ι).toProtocolSpec F))
+    (msg : ((stirMultiVSpec M ι).toProtocolSpec F).Type m)
+    (h : stirCheckingPred M φ deg δ m.succ stmtIn (tr.concat msg)) :
+    stirCheckingPred M φ deg δ m.castSucc stmtIn tr := by
+  rcases h with hclose | hsurv
+  · exact Or.inl hclose
+  refine Or.inr ?_
+  obtain ⟨h3, hbind, hpair, hpend, hlast⟩ := hsurv
+  -- the round is a message round: `m.val = 3·jv + 1`
+  have hmod : (m : ℕ) % 3 = 1 := by
+    have hd := hdir
+    rw [show ((stirMultiVSpec M ι).toProtocolSpec F).dir m = (stirMultiVSpec M ι).dir m
+      from rfl, stirVSpec_dir_eq_msg_iff] at hd
+    exact hd
+  obtain ⟨jv, hjv⟩ : ∃ jv, (m : ℕ) = 3 * jv + 1 := ⟨(m : ℕ) / 3, by omega⟩
+  have hjvM : jv ≤ M := by have := m.isLt; omega
+  have hsv : (m.succ : ℕ) = 3 * jv + 2 := by simp [Fin.val_succ, hjv]
+  have hcv : (m.castSucc : ℕ) = 3 * jv + 1 := by simp [Fin.val_castSucc, hjv]
+  have hjv1 : 1 ≤ jv := by
+    rw [hsv] at h3
+    omega
+  -- generic seam equations
+  have eqChal : ∀ (i : ((stirMultiVSpec M ι).toProtocolSpec F).ChallengeIdx)
+      (hh : (i.1 : Fin _).val < m.castSucc.val) (hh' : (i.1 : Fin _).val < m.succ.val),
+      trChalFE M (tr.concat msg) i hh' = trChalFE M tr i hh :=
+    fun i hh hh' => trChalFE_concat M tr msg i hh hh'
+  have eqMsgFn : ∀ (j : Fin (M + 1))
+      (hh : 3 * j.val + 1 < m.castSucc.val) (hh' : 3 * j.val + 1 < m.succ.val),
+      trMsgFn M (tr.concat msg) j hh' = trMsgFn M tr j hh :=
+    fun j hh hh' => trMsgFn_concat M tr msg j hh hh'
+  refine ⟨by omega, ?_, ?_, ?_, ?_⟩
+  · -- binding: pure seam transfer (reads at rounds 1 and 2, both committed since jv ≥ 1)
+    simp only at hbind ⊢
+    rw [← eqChal (outChalIdx M 0)
+        (by simp only [outChalIdx_val, Fin.val_zero]; omega)
+        (by simp only [outChalIdx_val, Fin.val_zero]; omega),
+      ← eqMsgFn 0 (by simp only [Fin.val_zero]; omega) (by simp only [Fin.val_zero]; omega)]
+    exact hbind
+  · -- committed pair checks: seam transfer (all inputs committed strictly before the seam)
+    intro j hc
+    have hc' : 3 * j.val + 5 < (m.succ : ℕ) := by omega
+    obtain ⟨ha, hb⟩ := hpair j hc'
+    constructor
+    · simp only at ha ⊢
+      rw [← eqChal (outChalIdx M j.succ)
+          (by simp only [outChalIdx_val, Fin.val_succ]; omega)
+          (by simp only [outChalIdx_val, Fin.val_succ]; omega),
+        ← eqMsgFn j.castSucc
+          (by simp only [Fin.val_castSucc]; omega) (by simp only [Fin.val_castSucc]; omega),
+        ← eqMsgFn j.succ
+          (by simp only [Fin.val_succ]; omega) (by simp only [Fin.val_succ]; omega)]
+      exact ha
+    · simp only at hb ⊢
+      rw [← eqChal (shiftChalIdx M j)
+          (by simp only [shiftChalIdx_val]; omega) (by simp only [shiftChalIdx_val]; omega),
+        ← eqMsgFn j.castSucc
+          (by simp only [Fin.val_castSucc]; omega) (by simp only [Fin.val_castSucc]; omega),
+        ← eqMsgFn j.succ
+          (by simp only [Fin.val_succ]; omega) (by simp only [Fin.val_succ]; omega)]
+      exact hb
+  · -- pending pairs: vacuous on the shorter prefix (the window `3j'+4 < 3jv+1 ≤ 3j'+5`
+    -- is empty)
+    intro j' hp hle
+    omega
+  · -- last committed codeword: the transfer through the pending pair
+    intro j0 h1 h2
+    -- `j0 = jv − 1`
+    have hj0 : j0.val = jv - 1 := by omega
+    -- the new message (index `jv`) is the last committed one on the extended prefix
+    have hjvFin : jv < M + 1 := by omega
+    have hjvlt : 3 * (⟨jv, hjvFin⟩ : Fin (M + 1)).val + 1 < (m.succ : ℕ) := by
+      simp only [Fin.val_mk]
+      omega
+    have hlastNew : trMsgFn M (tr.concat msg) ⟨jv, hjvFin⟩ hjvlt
+        ∈ ReedSolomon.code φ deg := by
+      refine hlast ⟨jv, hjvFin⟩ hjvlt ?_
+      simp only [Fin.val_mk]
+      omega
+    -- the pending pair `(jv−1, jv)` on the extended prefix forces equality
+    have hj'Fin : jv - 1 < M := by omega
+    set jpr : Fin M := ⟨jv - 1, hj'Fin⟩ with hjpr
+    have hpendEq : trMsg M (tr.concat msg) jpr.castSucc
+        (by simp only [hjpr, Fin.val_castSucc, Fin.val_mk]; omega)
+        = trMsg M (tr.concat msg) jpr.succ
+            (by simp only [hjpr, Fin.val_succ, Fin.val_mk]; omega) := by
+      refine hpend jpr ?_ ?_
+      · simp only [hjpr, Fin.val_mk]
+        omega
+      · simp only [hjpr, Fin.val_mk]
+        omega
+    -- identify the Fin indices
+    have hcastEq : jpr.castSucc = j0 := by
+      apply Fin.ext
+      simp only [hjpr, Fin.val_castSucc, Fin.val_mk]
+      omega
+    have hsuccEq : jpr.succ = (⟨jv, hjvFin⟩ : Fin (M + 1)) := by
+      apply Fin.ext
+      simp only [hjpr, Fin.val_succ, Fin.val_mk]
+      omega
+    -- transfer: target message = (seam) extended-prefix `j0` = (pending) extended-prefix
+    -- `jv` ∈ code
+    have e1 : trMsgFn M tr j0 (by omega)
+        = trMsgFn M (tr.concat msg) j0 (by omega) :=
+      (eqMsgFn j0 (by omega) (by omega)).symm
+    have e2 : trMsgFn M (tr.concat msg) j0 (by omega)
+        = trMsgFn M (tr.concat msg) jpr.castSucc
+            (by simp only [hjpr, Fin.val_castSucc, Fin.val_mk]; omega) :=
+      trMsgFn_congr_idx M (tr.concat msg) hcastEq.symm _ _
+    have e3 : trMsgFn M (tr.concat msg) jpr.castSucc
+          (by simp only [hjpr, Fin.val_castSucc, Fin.val_mk]; omega)
+        = trMsgFn M (tr.concat msg) jpr.succ
+            (by simp only [hjpr, Fin.val_succ, Fin.val_mk]; omega) := by
+      unfold trMsgFn
+      funext x
+      rw [hpendEq]
+    have e4 : trMsgFn M (tr.concat msg) jpr.succ
+          (by simp only [hjpr, Fin.val_succ, Fin.val_mk]; omega)
+        = trMsgFn M (tr.concat msg) ⟨jv, hjvFin⟩ hjvlt :=
+      trMsgFn_congr_idx M (tr.concat msg) hsuccEq _ _
+    rw [show trMsgFn M tr j0 h1 = trMsgFn M tr j0 (by omega) from rfl,
+      e1, e2, e3, e4]
+    exact hlastNew
+
 end DirectPred
 
 end MultiRound
@@ -198,3 +345,4 @@ end StirIOP
 #print axioms StirIOP.MultiRound.DirectPred.stirCheckingPred_zero
 #print axioms StirIOP.MultiRound.DirectPred.trVec_concat
 #print axioms StirIOP.MultiRound.DirectPred.trMsgFn_concat
+#print axioms StirIOP.MultiRound.DirectPred.stirCheckingPred_concat
