@@ -1936,6 +1936,7 @@ import ArkLib.ToMathlib.SectionFromSurface
 import ArkLib.ToMathlib.SectionGlobalLift
 import ArkLib.ToMathlib.SectionNewtonCleared
 import ArkLib.ToMathlib.SectionNewtonFunctorial
+import ArkLib.ToMathlib.SectionNewtonGSData
 import ArkLib.ToMathlib.SectionNewtonGamma
 import ArkLib.ToMathlib.SectionNewtonGradingSupply
 import ArkLib.ToMathlib.SectionNewtonPlaceReading
