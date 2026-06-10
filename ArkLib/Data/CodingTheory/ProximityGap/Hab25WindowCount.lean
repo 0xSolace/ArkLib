@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArithmetic
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 
 /-!
@@ -76,8 +77,48 @@ theorem johnsonNumericBound_of_window (domain : ι₀ ↪ F₀) (k : ℕ) (η δ
   JohnsonNumericBound.of_card_le_nat domain k η δ (Fintype.card ι₀) hNdiv
     (fun u => badScalars_card_le_of_window domain δ u hk hwin)
 
+/-- The Hab25 `ℓ`-budget is at least `1` whenever `k + 1 ≤ n`: `ρ₊ ≤ 1` makes the
+denominator `3·ρ₊^{3/2} ≤ 3`, while `m ≥ 3` makes the numerator `2(m+½)⁵ ≥ 1050`. -/
+lemma hab25_ell_budget_ge_one {n k : ℕ} (hn : 0 < n) (hkn : k + 1 ≤ n) (η : ℝ≥0) :
+    (1 : ℝ) ≤ 2 * (hab25M n k η + 1 / 2) ^ 5 /
+      (3 * hab25RhoPlus n k ^ ((3 : ℝ) / 2)) := by
+  have hρpos := hab25RhoPlus_pos hn k
+  have hρ1 : hab25RhoPlus n k ≤ 1 := by
+    rw [hab25RhoPlus, ← add_div, div_le_one (by exact_mod_cast hn)]
+    exact_mod_cast hkn
+  have hρ32 : hab25RhoPlus n k ^ ((3 : ℝ) / 2) ≤ 1 :=
+    Real.rpow_le_one hρpos.le hρ1 (by norm_num)
+  have hρ32pos : (0 : ℝ) < hab25RhoPlus n k ^ ((3 : ℝ) / 2) :=
+    Real.rpow_pos_of_pos hρpos _
+  have hm := hab25M_ge_three n k η
+  have hm5 : ((7 : ℝ) / 2) ^ 5 ≤ (hab25M n k η + 1 / 2) ^ 5 :=
+    pow_le_pow_left₀ (by norm_num) (by linarith) 5
+  rw [le_div_iff₀ (by positivity)]
+  nlinarith
+
+/-- **The numeric comparison holds outright**: `n / |F| ≤ johnsonBoundReal` whenever
+`k + 1 ≤ n` — the `L = 1` case of the closed-form numeric edge. -/
+theorem card_div_le_johnsonBoundReal (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0)
+    (hkn : k + 1 ≤ Fintype.card ι₀) :
+    (Fintype.card ι₀ : ℝ) / (Fintype.card F₀ : ℝ) ≤ johnsonBoundReal domain k η δ := by
+  have h := nat_mul_card_div_le_johnsonBoundReal domain k η δ 1
+    (by simpa using hab25_ell_budget_ge_one Fintype.card_pos hkn η)
+  simpa using h
+
+/-- **The `JohnsonNumericBound` residual, fully discharged on the window**: only the
+window inequality and `k + 1 ≤ n` remain — no numeric side condition. -/
+theorem johnsonNumericBound_of_window' (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0)
+    (hk : 0 < k) (hkn : k + 1 ≤ Fintype.card ι₀)
+    (hwin : 2 * Fintype.card ι₀ + k ≤ 3 * ⌈(1 - δ) * (Fintype.card ι₀ : ℝ≥0)⌉₊) :
+    JohnsonNumericBound domain k η δ :=
+  johnsonNumericBound_of_window domain k η δ hk hwin
+    (card_div_le_johnsonBoundReal domain k η δ hkn)
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit — all kernel-clean. -/
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.badScalars_card_le_of_window
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_window
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.hab25_ell_budget_ge_one
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.card_div_le_johnsonBoundReal
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_window'
