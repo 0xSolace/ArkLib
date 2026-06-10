@@ -231,6 +231,67 @@ theorem hasHashEntry_removeRedundantPaper_of_mem
     HasHashEntry (removeRedundantEntryDSPaper tr).1 stmt capSeg :=
   hasHashEntry_removeRedundantPaper tr.length tr le_rfl h
 
+/-! ## Paper-semantics collision shapes (direction-aware guards)
+
+The legacy first-occurrence guards exclude "the same pair up to *same-direction* reversal" —
+shaped around the buggy certificate. Under `redundantEntryDSPaper` the certificates preserve the
+pair and flip the *direction*, so the guards must exclude the same forward pair and the
+opposite-direction (inverse) pair, and prior capacity witnesses may sit on either direction. -/
+
+private def hashEntryP (stmt : StmtIn) (capSeg : Vector U SpongeSize.C) :
+    OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+  ⟨Sum.inl stmt, capSeg⟩
+
+private def forwardEntryP (stateIn stateOut : CanonicalSpongeState U) :
+    OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+  ⟨Sum.inr (Sum.inl stateIn), stateOut⟩
+
+private def inverseEntryP (stateOut stateIn : CanonicalSpongeState U) :
+    OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U) :=
+  ⟨Sum.inr (Sum.inr stateOut), stateIn⟩
+
+/-- Direction-agnostic prior-permutation capacity shape: some permutation entry (either
+direction) strictly before the tracked forward output shares the target capacity on either side
+of its pair. The paper-semantics analogue of `HasForwardCapacityBeforeForwardOutput`. -/
+def HasPermCapacityBeforeForwardOutputPaper
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) : Prop :=
+  ∃ jCur : Fin tr.length,
+    ∃ stateIn stateOut : CanonicalSpongeState U,
+      tr[jCur] = forwardEntryP stateIn stateOut ∧
+      ∃ jPrev : Fin tr.length, jPrev < jCur ∧
+        ∃ prevIn prevOut : CanonicalSpongeState U,
+          (tr[jPrev] = forwardEntryP prevIn prevOut ∨
+            tr[jPrev] = inverseEntryP prevOut prevIn) ∧
+          (prevOut.capacitySegment = stateOut.capacitySegment ∨
+            prevIn.capacitySegment = stateOut.capacitySegment)
+
+/-- Paper-semantics first-occurrence collision shape: the tracked forward entry has no prior copy
+of its pair **in either direction** (matching `redundantEntryDSPaper`'s certificates), and some
+strictly earlier permutation entry (either direction) shares its output capacity. -/
+def HasFirstPermCapacityBeforeForwardOutputPaper
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) : Prop :=
+  ∃ jCur : Fin tr.length,
+    ∃ stateIn stateOut : CanonicalSpongeState U,
+      tr[jCur] = forwardEntryP stateIn stateOut ∧
+      (∀ j : Fin tr.length, j.val < jCur.val →
+        tr[j] ≠ forwardEntryP stateIn stateOut ∧
+          tr[j] ≠ inverseEntryP stateOut stateIn) ∧
+      ∃ jPrev : Fin tr.length, jPrev < jCur ∧
+        ∃ prevIn prevOut : CanonicalSpongeState U,
+          (tr[jPrev] = forwardEntryP prevIn prevOut ∨
+            tr[jPrev] = inverseEntryP prevOut prevIn) ∧
+          (prevOut.capacitySegment = stateOut.capacitySegment ∨
+            prevIn.capacitySegment = stateOut.capacitySegment)
+
+/-- Forgetting the first-occurrence guard leaves the broad paper shape. -/
+theorem hasPermCapacityBeforeForwardOutputPaper_of_first
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (h : HasFirstPermCapacityBeforeForwardOutputPaper tr) :
+    HasPermCapacityBeforeForwardOutputPaper tr := by
+  obtain ⟨jCur, stateIn, stateOut, hcur, _hfirst, jPrev, hlt, prevIn, prevOut, hprev, hcap⟩ := h
+  exact ⟨jCur, stateIn, stateOut, hcur, jPrev, hlt, prevIn, prevOut, hprev, hcap⟩
+
+
 end DuplexSpongeFS.Sponge316
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
@@ -240,3 +301,4 @@ end DuplexSpongeFS.Sponge316
 #print axioms OracleSpec.QueryLog.redundantPaper_forward_capacity_prior
 #print axioms OracleSpec.QueryLog.redundantPaper_inverse_capacity_prior
 #print axioms DuplexSpongeFS.Sponge316.hasHashEntry_removeRedundantPaper_of_mem
+#print axioms DuplexSpongeFS.Sponge316.hasPermCapacityBeforeForwardOutputPaper_of_first
