@@ -39,6 +39,7 @@ theorem refute_Hyp5_proof : refute_Hyp5 (ι := ι) (F := F) := by
   have h1 := h 0 {0}
   simp only [Hyp5_SchwartzZippelDensity, Bivariate.totalDegree, Polynomial.support_zero,
     Finset.sup_empty, Nat.bot_eq_zero, Nat.zero_mul, Finset.card_singleton] at h1
+  omega
 
 /-- **Hyp7 refuted.** Taking `k = 0` collapses the bound `L.card ≤ k²` to `L.card ≤ 0`,
 impossible for the nonempty list `{0}`. -/
@@ -46,13 +47,15 @@ theorem refute_Hyp7_proof : refute_Hyp7 (ι := ι) (F := F) := by
   intro h
   have h1 := h {0} 0
   simp only [Hyp7_MatrixRankBound, Finset.card_singleton, pow_two, Nat.mul_zero] at h1
+  omega
 
 /-- **Hyp9 refuted.** `Bivariate.natDegreeX 0 = 0`, so `L.card ≤ natDegreeX H` fails on `{0}`. -/
 theorem refute_Hyp9_proof : refute_Hyp9 (ι := ι) (F := F) := by
   intro h
   have h1 := h 0 {0}
   simp only [Hyp9_MultiplicityIntersection, Finset.card_singleton] at h1
-  have hz : Bivariate.natDegreeX (0 : F[X][Y]) = 0 := by simp [Bivariate.natDegreeX]
+  have hz : Bivariate.natDegreeX (0 : F[X][Y]) = 0 := by
+    simp [Bivariate.natDegreeX, Bivariate.degreeX]
   omega
 
 /-- **Hyp10 refuted.** `Bivariate.natDegreeY 0 = 0`, so `L.card ≤ natDegreeY H` fails on `{0}`. -/
@@ -61,6 +64,7 @@ theorem refute_Hyp10_proof : refute_Hyp10 (ι := ι) (F := F) := by
   have h1 := h 0 {0}
   simp only [Hyp10_AffineVarietyDimension, Finset.card_singleton, Bivariate.natDegreeY,
     Polynomial.natDegree_zero] at h1
+  omega
 
 /-- **Hyp8 refuted.** The whole message space has `|ι → F| = |F|^|ι|` elements, which exceeds
 `|F|` once `|ι| ≥ 2` (as `|F| ≥ 2` for a field). -/
@@ -117,5 +121,13 @@ theorem refute_Hyp3_proof (hF : (Fintype.card ι : ℝ) ≤ (Fintype.card F : �
   rw [Finset.card_univ, Fintype.card_fun] at h2
   have hlt := Nat.lt_pow_self hq (n := Fintype.card ι)
   omega
+
+#print axioms refute_Hyp3_proof
+#print axioms refute_Hyp5_proof
+#print axioms refute_Hyp6_proof
+#print axioms refute_Hyp7_proof
+#print axioms refute_Hyp8_proof
+#print axioms refute_Hyp9_proof
+#print axioms refute_Hyp10_proof
 
 end GrandChallenge1BruteForceRefutations
