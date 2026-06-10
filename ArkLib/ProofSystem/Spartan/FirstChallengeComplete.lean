@@ -87,6 +87,7 @@ instance firstChallengeLensComplete :
     simp only [firstChallengeRelIn, Set.mem_setOf_eq] at hRelIn
     simpa only [firstChallengeRelOut, Set.mem_setOf_eq] using hRelIn
 
+set_option maxHeartbeats 0 in
 /-- **`firstChallenge` phase perfect completeness (issue #114), unconditional.** The Spartan
 `firstChallenge` oracle reduction is perfectly complete from `firstChallengeRelIn` to
 `firstChallengeRelOut`.
@@ -94,11 +95,6 @@ instance firstChallengeLensComplete :
 The protocol implementation is behaviorally the old `RandomQuery` lift, but the concrete reduction
 is now the direct `firstChallengeProver`/`firstChallengeVerifier` pair. Proving completeness against
 that run avoids the heavy deep-lens normalization while preserving the same semantic endpoints. -/
-instance instFirstChallengeVerifierOnly :
-    VerifierOnly (⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ : ProtocolSpec 1) where
-  verifier_first' := by simp
-
-set_option maxHeartbeats 0
 theorem firstChallenge_perfectCompleteness
     {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)} :
     (oracleReduction.firstChallenge R pp oSpec).perfectCompleteness init impl
