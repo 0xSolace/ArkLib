@@ -329,7 +329,7 @@ theorem exists_cell_production {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀
       obtain rfl : R' = R := Option.some.inj hEq
       refine ⟨hR', ?_⟩
       intro γ hγ
-      have hγ' : γ ∈ bad.filter (fun γ' => assign γ' = some R) := hγ
+      have hγ' : γ ∈ bad.filter (fun γ' => assign γ' = some R') := hγ
       obtain ⟨hγbad, hass⟩ := Finset.mem_filter.mp hγ'
       by_cases hz : Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0
       · obtain ⟨R'', hR'', hEq2, hdvd⟩ := hassignpos γ ⟨hγbad, hz⟩
@@ -449,10 +449,10 @@ lemma card_posDegree_factors_le {R : Type} [CommRing R] [IsDomain R]
       intro h
       rw [h, zero_mul] at hu
       exact hp hu.symm
-    calc ((UniqueFactorizationMonoid.factors p).prod).natDegree
-        = ((UniqueFactorizationMonoid.factors p).prod * u).natDegree := by
-          rw [Polynomial.natDegree_mul hprod0 (Units.ne_zero u), hud, add_zero]
-      _ = p.natDegree := by rw [hu]
+    have hmul : ((UniqueFactorizationMonoid.factors p).prod *
+        (u : Polynomial R)).natDegree = p.natDegree := by rw [hu]
+    rw [Polynomial.natDegree_mul hprod0 (Units.ne_zero u), hud, add_zero] at hmul
+    exact le_of_eq hmul
   refine le_trans ?_ (le_trans (le_of_eq hsum) hdegp)
   rw [Finset.sum_multiset_map_count]
   calc ((UniqueFactorizationMonoid.factors p).toFinset.filter
