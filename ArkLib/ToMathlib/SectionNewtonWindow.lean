@@ -77,11 +77,16 @@ theorem specializedGamma_eq_of_root {z : F} (hz : ξ.eval z ≠ 0)
     have h := congrArg constantCoeff hroot
     rw [constantCoeff_eval, hseed, map_zero] at h
     exact h
-  refine root_unique_seriesCoeff (QA.map (PowerSeries.map (placeMap ξ hz))) ?_ ?_ ?_ hroot
-  · rw [constantCoeff_γ, hseed]
-  · rw [constantCoeff_γ]
+  show γ (QA.map (PowerSeries.map (placeMap ξ hz))) (v.eval z) = γ'
+  have hccγ : constantCoeff (γ (QA.map (PowerSeries.map (placeMap ξ hz))) (v.eval z))
+      = constantCoeff γ' := by
+    rw [constantCoeff_γ, hseed]
+  have huγ : IsUnit (Polynomial.eval
+      (constantCoeff (γ (QA.map (PowerSeries.map (placeMap ξ hz))) (v.eval z)))
+      (Polynomial.derivative (Q₀ (QA.map (PowerSeries.map (placeMap ξ hz)))))) := by
+    rw [constantCoeff_γ]
     exact hu
-  · exact isRoot_gamma _ _ hc0 hu
+  exact root_unique_seriesCoeff hccγ huγ (isRoot_gamma _ _ hc0 hu) hroot
 
 /-- On the matching set the specialized root is the **coerced decoded polynomial**: its
 coefficients die from the decoded degree bound on. -/
