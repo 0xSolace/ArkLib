@@ -138,19 +138,14 @@ def stir_main
   ∧ ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
     (cₖ k) * ((Real.log degree) +
       secpar * (Real.log ((Real.log degree) / Real.log (1/rate (code φ degree)))))
-  -- STATUS (audit 2026-06-04): open proof. Full STIR IOPP construction theorem.
-  -- This requires (a) constructing an actual `VectorIOP π` object — a complete prover/verifier
-  -- protocol with `M+1` fold/query rounds — and (b) proving `IsSecureWithGap`. No IOPP
-  -- construction infrastructure exists in ProofSystem/Stir/: `Quotienting`/`OutOfDomSmpl` provide
-  -- only algebraic lemmas (polynomial degree/vanishing/distance bounds), not protocol objects,
-  -- and `VectorIOP` appears nowhere in the directory except in this statement and
-  -- `stir_rbr_soundness`. The soundness argument moreover consumes the proximity-gap / fold
-  -- machinery (`Combine.combine_theorem`, `STIR.proximity_gap`), which is `sorryAx`-tainted in
-  -- the required √ρ regime via `correlatedAgreement_affine_curves` (see ProximityGap.lean for the
-  -- full chain). Honest residual: this is a major protocol-formalisation effort gated on (1) the
-  -- list-decoding-regime CA open proof at AffineLines/Main.lean:40, and (2) building the IOPP
-  -- object
-  -- + round-by-round soundness assembly from scratch. Not closeable from current harvest material.
+  -- STATUS (audit 2026-06-10): front-door statement. The mechanical protocol shape now exists:
+  -- `MultiRoundAssembly.lean` constructs `stirMultiRoundIOP`, proves perfect completeness for
+  -- its shell verifier, and exposes `stir_main_of_secure_vectorIOP` / `stir_main_of_residuals`.
+  -- `CheckingVerifier.lean` adds a non-shell verifier, proves its perfect completeness, and
+  -- routes this theorem through checking-IOP front doors. What remains open is the checking
+  -- verifier's RBR soundness bridge (`stirCheckingCABridge`) plus the numeric complexity legs.
+  -- The soundness argument also still consumes the BCIKS/STIR proximity-gap machinery in the
+  -- Johnson / sqrt-rho regime, through explicit residuals rather than hidden proof holes.
 
 end MainTheorem
 
@@ -213,7 +208,7 @@ def stir_rbr_soundness
       -- Because of the difference in indexing between the paper and the code, we essentially have
       -- `j = i - 1` compared to the paper.
       -- `ε_out_{j+1} ≤ l_{j+1}²/2 * (degree_{j+1}/ |F| - |ι_{j+1}|)^s`
-      ∀ {j : Fin M} (hⱼ : j.val ≠ 0),
+      ∀ j : Fin M,
         ε_out j ≤ ((Dist.l j.succ : ℝ) ^ 2 / 2) *
           ((degree ι P j.succ : ℝ) / (Fintype.card F - Fintype.card (ι j.succ))) ^ s
         ∧
@@ -232,15 +227,13 @@ def stir_rbr_soundness
         ∧
         -- `ε_fin ≤ (1 - δ_M)^repeatParam_M`
         ε_fin ≤ (1 - Dist.δ (Fin.last M)) ^ (P.repeatParam (Fin.last M))
-  -- STATUS (audit 2026-06-04): open proof. Lemma 5.4, round-by-round soundness of the STIR
-  -- IOPP. Same blockers as `stir_main`: requires constructing the `VectorIOP π` object and the
-  -- per-round soundness bounds (ε_fold/ε_out/ε_shift/ε_fin). The ε_fold and ε_shift bounds are
-  -- stated in terms of `proximityError` (= the fold/combine proximity gap), whose underlying
-  -- result `Combine.combine_theorem` is `sorryAx`-tainted in the √ρ regime via
-  -- `correlatedAgreement_affine_curves` (open proof in BCIKS20/Curves.lean; the whole
-  -- lines→spaces→curves CA tree is proven only for `δ ≤ relUDR`, see ProximityGap.lean). No IOPP
-  -- construction scaffolding exists yet. Honest residual: gated on AffineLines/Main.lean:40
-  -- (list-decoding regime) plus the full per-round protocol-soundness assembly.
+  -- STATUS (audit 2026-06-10): front-door statement. `MultiRoundSpec.lean`, `FullChain.lean`,
+  -- and `MultiRoundAssembly.lean` now realize the `2 * M + 2` challenge shape and provide
+  -- conditional witnesses for this existential. `CheckingVerifier.lean` instantiates those
+  -- witnesses with a real verifier and proven completeness; the remaining unconditional Lemma
+  -- 5.4 content is the round-by-round knowledge-soundness bridge. The per-round `proximityError`
+  -- obligations remain tied to the explicit BCIKS/STIR proximity-gap residuals in the Johnson /
+  -- sqrt-rho list-decoding regime.
 
 end RBRSoundness
 

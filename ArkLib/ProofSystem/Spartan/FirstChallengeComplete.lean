@@ -89,11 +89,15 @@ instance firstChallengeLensComplete :
 
 The transfer is `OracleReduction.liftContext_perfectCompleteness` applied to the (closed, unconditional)
 inner `RandomQuery.oracleReduction_completeness`, the coherence instance
-`firstChallenge_liftContextCoherent` (#433), and `firstChallengeLensComplete`, with `hStmt = rfl`. -/
+`firstChallenge_liftContextCoherent` (#433), and `firstChallengeLensComplete`, with `hStmt = rfl`.
+The lift defeq is heavy (deep lens normalization): unlimited heartbeats, verified to terminate. -/
+set_option maxHeartbeats 0 in
 theorem firstChallenge_perfectCompleteness
     {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)} :
     (oracleReduction.firstChallenge R pp oSpec).perfectCompleteness init impl
       (firstChallengeRelIn (R := R) pp) (firstChallengeRelOut (R := R) pp) := by
+  haveI : SampleableType (OracleInterface.Query (MvPolynomial (Fin pp.ℓ_m) R)) :=
+    inferInstanceAs (SampleableType (Fin pp.ℓ_m → R))
   haveI := firstChallenge_liftContextCoherent (R := R) pp oSpec
   exact OracleReduction.liftContext_perfectCompleteness
     (R := RandomQuery.oracleReduction oSpec (MvPolynomial (Fin pp.ℓ_m) R))

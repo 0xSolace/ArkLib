@@ -454,6 +454,8 @@ theorem prependRLCTarget_run
   rw [prependRLCTargetProver_run]
   simp only [liftM_pure, pure_bind]
   rw [simulateQ_prependRLCTargetVerifier]
+  simp only [OptionT.run_map, OptionT.run_pure, OptionT.run_mk, liftM_pure, pure_bind,
+    bind_pure_comp, _root_.map_pure, Option.map_some, Option.getM, Option.bind_some]
   rfl
 
 /-- **The honest RLC-target adapter is perfectly complete.** From an input where the bundled

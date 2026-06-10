@@ -7,6 +7,7 @@ Authors: ArkLib Contributors
 import ArkLib.ProofSystem.Stir.MultiRoundAssembly
 import ArkLib.ProofSystem.Stir.ErrorAccumulation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.CoeffExtractionVacuous
 import ArkLib.ToVCVio.Simulation
 
 /-!
@@ -41,12 +42,19 @@ prover but a *forwarding shell* verifier (`verify := pure true`). This file buil
   bridge residual states that it follows from the EXISTING Johnson-CA residuals
   (`ProximityGap.StrictCoeffPolysResidual`, the §5/Johnson-regime correlated-agreement
   extraction) plus the per-round accounting keystone
-  (`ArkLib.ProofSystem.Stir.ErrorAccumulation.PerRoundProximityGap`). NEITHER is proven here —
-  the bridge is the genuine open protocol-soundness math of #301.
+  (`ArkLib.ProofSystem.Stir.ErrorAccumulation.PerRoundProximityGap`). The general bridge is the
+  genuine open protocol-soundness math of #301.
 * `stir_rbr_soundness_of_checkingIOP_CA` / `stir_main_of_checkingIOP_CA` — the headline
   existentials discharged through the landed `…_of_secure_vectorIOP` front doors, with the
   completeness leg PROVEN (this file) and the soundness leg consumed via
   (CA residuals + bridge residual).
+* `strictCoeffPolysResidual_all_of_card_le` plus
+  `stir_rbr_soundness_of_checkingIOP_card_le` / `stir_main_of_checkingIOP_card_le` — the
+  small-field route: `|F| ≤ |ι|` discharges the full positive-width
+  `StrictCoeffPolysResidual` family via the in-tree vacuous-regime BCIKS theorem, leaving only
+  the protocol-level checking bridge.
+* `…_card_le_e7` variants — the same discharge through the sharp vacuous-regime bound
+  `|F| ≤ deg² * 10⁷`.
 
 HONESTY NOTES:
 * The checking verifier's checks are *real* (they constrain the prover's messages: a prover whose
@@ -57,7 +65,7 @@ HONESTY NOTES:
   correspondingly degenerates to consistency at a challenge-derived in-domain point. This is
   inherited from the landed `stirRoundVectorProver`/`stirMultiRoundProver` model.
 * The implication (Johnson-CA + per-round gap accounting ⟹ rbr knowledge soundness of this
-  verifier) is NOT proven; it is isolated as `stirCheckingCABridgeResidual`. No fabrication.
+  verifier) is NOT proven; it is isolated as `stirCheckingCABridge`. No fabrication.
 -/
 
 set_option linter.unusedSimpArgs false
@@ -514,6 +522,80 @@ theorem checkingBool_true_implies_fold_check
   exact h.1.1
 
 open scoped Classical in
+/-- An accepting decision forces every sampled inter-round consistency check. For each shifted
+round `j`, the verifier has compared the `j`-th and `(j+1)`-st prover messages at both sampled
+points: the out challenge for the next message and the shift challenge between the messages. -/
+theorem checkingBool_true_implies_round_consistency
+    (oStmt : ∀ i, OracleStatement ι F i)
+    (msgs : ∀ j, ((stirMultiVSpec M ι).toProtocolSpec F).Message j)
+    (chals : ((stirMultiVSpec M ι).toProtocolSpec F).Challenges)
+    (h : checkingBool M φ deg oStmt msgs chals = true)
+    (j : Fin M) :
+    (msgAns msgs (msgIdx M j.castSucc)
+        (msgPos M (msgIdx M j.castSucc)
+          (queryPoint φ (chalFE chals (outChalIdx M j.succ))))
+      = msgAns msgs (msgIdx M j.succ)
+        (msgPos M (msgIdx M j.succ)
+          (queryPoint φ (chalFE chals (outChalIdx M j.succ))))) ∧
+    (msgAns msgs (msgIdx M j.castSucc)
+        (msgPos M (msgIdx M j.castSucc)
+          (queryPoint φ (chalFE chals (shiftChalIdx M j))))
+      = msgAns msgs (msgIdx M j.succ)
+        (msgPos M (msgIdx M j.succ)
+          (queryPoint φ (chalFE chals (shiftChalIdx M j))))) := by
+  unfold checkingBool at h
+  simp only [Bool.and_eq_true, decide_eq_true_eq] at h
+  have hall := h.1.2
+  let b :=
+    (let xa := queryPoint φ (chalFE chals (outChalIdx M j.succ))
+     let xb := queryPoint φ (chalFE chals (shiftChalIdx M j))
+     let va := msgAns msgs (msgIdx M j.castSucc) (msgPos M (msgIdx M j.castSucc) xa)
+     let vb := msgAns msgs (msgIdx M j.succ) (msgPos M (msgIdx M j.succ) xa)
+     let vc := msgAns msgs (msgIdx M j.castSucc) (msgPos M (msgIdx M j.castSucc) xb)
+     let vd := msgAns msgs (msgIdx M j.succ) (msgPos M (msgIdx M j.succ) xb)
+     decide (va = vb) && decide (vc = vd))
+  have hb : b = true := by
+    apply (List.all_eq_true.mp hall)
+    simp only [List.mem_map]
+    exact ⟨j, List.mem_finRange j, rfl⟩
+  dsimp [b] at hb
+  simpa only [Bool.and_eq_true, decide_eq_true_eq] using hb
+
+open scoped Classical in
+/-- Out-challenge projection of `checkingBool_true_implies_round_consistency`. -/
+theorem checkingBool_true_implies_out_consistency
+    (oStmt : ∀ i, OracleStatement ι F i)
+    (msgs : ∀ j, ((stirMultiVSpec M ι).toProtocolSpec F).Message j)
+    (chals : ((stirMultiVSpec M ι).toProtocolSpec F).Challenges)
+    (h : checkingBool M φ deg oStmt msgs chals = true)
+    (j : Fin M) :
+    msgAns msgs (msgIdx M j.castSucc)
+        (msgPos M (msgIdx M j.castSucc)
+          (queryPoint φ (chalFE chals (outChalIdx M j.succ))))
+      = msgAns msgs (msgIdx M j.succ)
+        (msgPos M (msgIdx M j.succ)
+          (queryPoint φ (chalFE chals (outChalIdx M j.succ)))) :=
+  (checkingBool_true_implies_round_consistency
+    (M := M) (φ := φ) (deg := deg) oStmt msgs chals h j).1
+
+open scoped Classical in
+/-- Shift-challenge projection of `checkingBool_true_implies_round_consistency`. -/
+theorem checkingBool_true_implies_shift_consistency
+    (oStmt : ∀ i, OracleStatement ι F i)
+    (msgs : ∀ j, ((stirMultiVSpec M ι).toProtocolSpec F).Message j)
+    (chals : ((stirMultiVSpec M ι).toProtocolSpec F).Challenges)
+    (h : checkingBool M φ deg oStmt msgs chals = true)
+    (j : Fin M) :
+    msgAns msgs (msgIdx M j.castSucc)
+        (msgPos M (msgIdx M j.castSucc)
+          (queryPoint φ (chalFE chals (shiftChalIdx M j))))
+      = msgAns msgs (msgIdx M j.succ)
+        (msgPos M (msgIdx M j.succ)
+          (queryPoint φ (chalFE chals (shiftChalIdx M j)))) :=
+  (checkingBool_true_implies_round_consistency
+    (M := M) (φ := φ) (deg := deg) oStmt msgs chals h j).2
+
+open scoped Classical in
 /-- An accepting decision **forces the final low-degree check**: the function read off the
 final prover message must be a Reed-Solomon codeword. -/
 theorem checkingBool_true_implies_final_in_code
@@ -577,6 +659,154 @@ theorem checkingVerifier_toVerifier_verify (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
           fun i : Empty => i.elim) := by
   dsimp only [OracleVerifier.toVerifier, stirCheckingVerifier]
   erw [simulateQ_lift_checkingComp, pure_bind]
+
+open scoped Classical in
+/-- Exact support characterization of the checking verifier: for a fixed transcript, the verifier
+has one deterministic output, whose Boolean component is precisely `checkingBool`. -/
+theorem checkingVerifier_support_iff
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
+    (stmtIn : Unit × ∀ i, OracleStatement ι F i)
+    (tr : FullTranscript ((stirMultiVSpec M ι).toProtocolSpec F))
+    (out : Bool × (∀ _ : Empty, Unit)) :
+    out ∈ _root_.support ((stirCheckingVerifier M φ deg).toVerifier.verify stmtIn tr) ↔
+      out = (checkingBool M φ deg stmtIn.2 tr.messages tr.challenges,
+        fun i : Empty => i.elim) := by
+  rw [checkingVerifier_toVerifier_verify]
+  simp only [support_pure, Set.mem_singleton_iff]
+
+open scoped Classical in
+/-- On the support of the deterministic checking verifier, accepting is equivalent to the raw
+checking predicate being true. -/
+theorem checkingVerifier_acceptance_iff_checkingBool
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
+    (stmtIn : Unit × ∀ i, OracleStatement ι F i)
+    (tr : FullTranscript ((stirMultiVSpec M ι).toProtocolSpec F))
+    (out : Bool × (∀ _ : Empty, Unit))
+    (hout : out ∈ _root_.support ((stirCheckingVerifier M φ deg).toVerifier.verify stmtIn tr)) :
+    out.1 = true ↔ checkingBool M φ deg stmtIn.2 tr.messages tr.challenges = true := by
+  have hout_eq := (checkingVerifier_support_iff M φ deg stmtIn tr out).mp hout
+  constructor
+  · intro hacc
+    rw [hout_eq] at hacc
+    simpa using hacc
+  · intro hbool
+    rw [hout_eq]
+    simpa using hbool
+
+open scoped Classical in
+/-- If a value in the support of `toVerifier.verify` is accepting, then the transcript's
+raw checking predicate is true. This is the verifier-level form consumed by soundness
+arguments, as opposed to the lower-level `checkingBool` statement. -/
+theorem checkingVerifier_acceptance_implies_checkingBool
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
+    (stmtIn : Unit × ∀ i, OracleStatement ι F i)
+    (tr : FullTranscript ((stirMultiVSpec M ι).toProtocolSpec F))
+    (out : Bool × (∀ _ : Empty, Unit))
+    (hout : out ∈ _root_.support ((stirCheckingVerifier M φ deg).toVerifier.verify stmtIn tr))
+    (hacc : out.1 = true) :
+    checkingBool M φ deg stmtIn.2 tr.messages tr.challenges = true := by
+  exact (checkingVerifier_acceptance_iff_checkingBool M φ deg stmtIn tr out hout).mp hacc
+
+open scoped Classical in
+/-- Verifier-level accepting transcripts force the round-0 fold-query check. -/
+theorem checkingVerifier_acceptance_implies_fold_check
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
+    (stmtIn : Unit × ∀ i, OracleStatement ι F i)
+    (tr : FullTranscript ((stirMultiVSpec M ι).toProtocolSpec F))
+    (out : Bool × (∀ _ : Empty, Unit))
+    (hout : out ∈ _root_.support ((stirCheckingVerifier M φ deg).toVerifier.verify stmtIn tr))
+    (hacc : out.1 = true) :
+    inputAns stmtIn.2 (queryPoint φ (chalFE tr.challenges (outChalIdx M 0)))
+      = msgAns tr.messages (msgIdx M 0)
+          (msgPos M (msgIdx M 0) (queryPoint φ (chalFE tr.challenges (outChalIdx M 0)))) := by
+  exact checkingBool_true_implies_fold_check (M := M) (φ := φ) (deg := deg)
+    stmtIn.2 tr.messages tr.challenges
+    (checkingVerifier_acceptance_implies_checkingBool M φ deg stmtIn tr out hout hacc)
+
+open scoped Classical in
+/-- Verifier-level accepting transcripts force every sampled inter-round consistency check. -/
+theorem checkingVerifier_acceptance_implies_round_consistency
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
+    (stmtIn : Unit × ∀ i, OracleStatement ι F i)
+    (tr : FullTranscript ((stirMultiVSpec M ι).toProtocolSpec F))
+    (out : Bool × (∀ _ : Empty, Unit))
+    (hout : out ∈ _root_.support ((stirCheckingVerifier M φ deg).toVerifier.verify stmtIn tr))
+    (hacc : out.1 = true)
+    (j : Fin M) :
+    (msgAns tr.messages (msgIdx M j.castSucc)
+        (msgPos M (msgIdx M j.castSucc)
+          (queryPoint φ (chalFE tr.challenges (outChalIdx M j.succ))))
+      = msgAns tr.messages (msgIdx M j.succ)
+        (msgPos M (msgIdx M j.succ)
+          (queryPoint φ (chalFE tr.challenges (outChalIdx M j.succ))))) ∧
+    (msgAns tr.messages (msgIdx M j.castSucc)
+        (msgPos M (msgIdx M j.castSucc)
+          (queryPoint φ (chalFE tr.challenges (shiftChalIdx M j))))
+      = msgAns tr.messages (msgIdx M j.succ)
+        (msgPos M (msgIdx M j.succ)
+          (queryPoint φ (chalFE tr.challenges (shiftChalIdx M j))))) := by
+  exact checkingBool_true_implies_round_consistency (M := M) (φ := φ) (deg := deg)
+    stmtIn.2 tr.messages tr.challenges
+    (checkingVerifier_acceptance_implies_checkingBool M φ deg stmtIn tr out hout hacc) j
+
+open scoped Classical in
+/-- Out-challenge projection of `checkingVerifier_acceptance_implies_round_consistency`. -/
+theorem checkingVerifier_acceptance_implies_out_consistency
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
+    (stmtIn : Unit × ∀ i, OracleStatement ι F i)
+    (tr : FullTranscript ((stirMultiVSpec M ι).toProtocolSpec F))
+    (out : Bool × (∀ _ : Empty, Unit))
+    (hout : out ∈ _root_.support ((stirCheckingVerifier M φ deg).toVerifier.verify stmtIn tr))
+    (hacc : out.1 = true)
+    (j : Fin M) :
+    msgAns tr.messages (msgIdx M j.castSucc)
+        (msgPos M (msgIdx M j.castSucc)
+          (queryPoint φ (chalFE tr.challenges (outChalIdx M j.succ))))
+      = msgAns tr.messages (msgIdx M j.succ)
+        (msgPos M (msgIdx M j.succ)
+          (queryPoint φ (chalFE tr.challenges (outChalIdx M j.succ)))) := by
+  exact checkingBool_true_implies_out_consistency (M := M) (φ := φ) (deg := deg)
+    stmtIn.2 tr.messages tr.challenges
+    (checkingVerifier_acceptance_implies_checkingBool M φ deg stmtIn tr out hout hacc) j
+
+open scoped Classical in
+/-- Shift-challenge projection of `checkingVerifier_acceptance_implies_round_consistency`. -/
+theorem checkingVerifier_acceptance_implies_shift_consistency
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
+    (stmtIn : Unit × ∀ i, OracleStatement ι F i)
+    (tr : FullTranscript ((stirMultiVSpec M ι).toProtocolSpec F))
+    (out : Bool × (∀ _ : Empty, Unit))
+    (hout : out ∈ _root_.support ((stirCheckingVerifier M φ deg).toVerifier.verify stmtIn tr))
+    (hacc : out.1 = true)
+    (j : Fin M) :
+    msgAns tr.messages (msgIdx M j.castSucc)
+        (msgPos M (msgIdx M j.castSucc)
+          (queryPoint φ (chalFE tr.challenges (shiftChalIdx M j))))
+      = msgAns tr.messages (msgIdx M j.succ)
+        (msgPos M (msgIdx M j.succ)
+          (queryPoint φ (chalFE tr.challenges (shiftChalIdx M j)))) := by
+  exact checkingBool_true_implies_shift_consistency (M := M) (φ := φ) (deg := deg)
+    stmtIn.2 tr.messages tr.challenges
+    (checkingVerifier_acceptance_implies_checkingBool M φ deg stmtIn tr out hout hacc) j
+
+open scoped Classical in
+/-- Verifier-level accepting transcripts force the final low-degree check. -/
+theorem checkingVerifier_acceptance_implies_final_in_code
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
+    (stmtIn : Unit × ∀ i, OracleStatement ι F i)
+    (tr : FullTranscript ((stirMultiVSpec M ι).toProtocolSpec F))
+    (out : Bool × (∀ _ : Empty, Unit))
+    (hout : out ∈ _root_.support ((stirCheckingVerifier M φ deg).toVerifier.verify stmtIn tr))
+    (hacc : out.1 = true) :
+    (fun x : ι =>
+      (((List.finRange (Fintype.card ι)).map (fun k =>
+        msgAns tr.messages (msgIdx M (Fin.last M))
+          (Fin.cast (stirMultiVSpec_length_msg (msgIdx M (Fin.last M))) k))).getD
+        ((Fintype.equivFin ι x : Fin (Fintype.card ι)) : ℕ) 0))
+      ∈ ReedSolomon.code φ deg := by
+  exact checkingBool_true_implies_final_in_code (M := M) (φ := φ) (deg := deg)
+    stmtIn.2 tr.messages tr.challenges
+    (checkingVerifier_acceptance_implies_checkingBool M φ deg stmtIn tr out hout hacc)
 
 set_option maxHeartbeats 1600000 in
 /-- **Perfect completeness of the checking (M+1)-round STIR Vector IOPP**, for arbitrary
@@ -706,6 +936,79 @@ theorem stirCheckingRbrSoundness_of_CA (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (δ
     stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
   hBridge hCA hPR
 
+omit [SampleableType F] in
+/-- All strict coefficient-polynomial residuals needed by the checking bridge are discharged in
+the vacuous small-field regime `|F| ≤ |ι|`. For any positive curve width `k`, this implies
+`|F| ≤ k * |ι|`, so the existing BCIKS20 small-field theorem
+`strictCoeffPolysResidual_of_card_le` applies. -/
+theorem strictCoeffPolysResidual_all_of_card_le [DecidableEq ι]
+    (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg φ)
+    (hq : (Fintype.card F : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0)) :
+    ∀ k : ℕ, 0 < k →
+      ProximityGap.StrictCoeffPolysResidual (ι := ι) (F := F)
+        (k := k) (deg := deg) (domain := φ) (δ := δ) := by
+  intro k hk
+  refine ProximityGap.strictCoeffPolysResidual_of_card_le
+    (k := k) (deg := deg) (domain := φ) (δ := δ)
+    (Nat.pos_of_ne_zero (NeZero.ne deg)) hδ ?_
+  have hk1_nat : 1 ≤ k := Nat.succ_le_iff.mpr hk
+  have hk1 : (1 : ℝ≥0) ≤ (k : ℝ≥0) := by exact_mod_cast hk1_nat
+  have hmul : (Fintype.card ι : ℝ≥0) * 1 ≤ (Fintype.card ι : ℝ≥0) * k :=
+    mul_le_mul_right hk1 (Fintype.card ι : ℝ≥0)
+  exact le_trans hq (by simpa [one_mul, mul_comm] using hmul)
+
+omit [SampleableType F] in
+/-- The sharp vacuous-regime counterpart of `strictCoeffPolysResidual_all_of_card_le`: if
+`|F| ≤ deg^2 * 10^7`, then for every positive curve width `k` we have
+`|F| ≤ k * deg^2 * 10^7`, so `strictCoeffPolysResidual_of_card_le_e7` discharges the full
+positive-width strict coefficient-polynomial residual family. -/
+theorem strictCoeffPolysResidual_all_of_card_le_e7 [DecidableEq ι]
+    (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0)
+    (hq : (Fintype.card F : ℝ≥0) ≤ ((deg ^ 2 * 10 ^ 7 : ℕ) : ℝ≥0)) :
+    ∀ k : ℕ, 0 < k →
+      ProximityGap.StrictCoeffPolysResidual (ι := ι) (F := F)
+        (k := k) (deg := deg) (domain := φ) (δ := δ) := by
+  intro k hk
+  refine ProximityGap.strictCoeffPolysResidual_of_card_le_e7
+    (k := k) (deg := deg) (domain := φ) (δ := δ) ?_
+  have hk1_nat : 1 ≤ k := Nat.succ_le_iff.mpr hk
+  have hk1 : (1 : ℝ≥0) ≤ (k : ℝ≥0) := by exact_mod_cast hk1_nat
+  have hmul :
+      (((deg ^ 2 * 10 ^ 7 : ℕ) : ℝ≥0) * 1) ≤
+        (((deg ^ 2 * 10 ^ 7 : ℕ) : ℝ≥0) * k) :=
+    mul_le_mul_right hk1 (((deg ^ 2 * 10 ^ 7 : ℕ) : ℝ≥0))
+  exact le_trans hq (by simpa [one_mul, mul_comm] using hmul)
+
+/-- RBR knowledge soundness of the checking verifier in the small-field regime, conditional only
+on the protocol-level CA bridge. The BCIKS20 strict-coefficient residual family is discharged by
+`strictCoeffPolysResidual_all_of_card_le`; the per-round equality keystone is reflexive by choosing
+the accounting errors to be the proximity-gap bounds. -/
+theorem stirCheckingRbrSoundness_of_card_le [DecidableEq ι]
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0)
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (ProxGapBound : Fin (M + 1) → ℝ≥0)
+    (hBridge : stirCheckingCABridge M φ deg δ ε_rbr ProxGapBound ProxGapBound)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg φ)
+    (hq : (Fintype.card F : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0)) :
+    stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
+  stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
+    (strictCoeffPolysResidual_all_of_card_le φ deg δ hδ hq)
+    (fun _ => rfl)
+
+/-- RBR knowledge soundness of the checking verifier in the sharp vacuous regime
+`|F| ≤ deg^2 * 10^7`, conditional only on the protocol-level CA bridge. -/
+theorem stirCheckingRbrSoundness_of_card_le_e7 [DecidableEq ι]
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0)
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (ProxGapBound : Fin (M + 1) → ℝ≥0)
+    (hBridge : stirCheckingCABridge M φ deg δ ε_rbr ProxGapBound ProxGapBound)
+    (hq : (Fintype.card F : ℝ≥0) ≤ ((deg ^ 2 * 10 ^ 7 : ℕ) : ℝ≥0)) :
+    stirCheckingRbrSoundnessResidual M φ deg δ ε_rbr :=
+  stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr ProxGapBound ProxGapBound hBridge
+    (strictCoeffPolysResidual_all_of_card_le_e7 φ deg δ hq)
+    (fun _ => rfl)
+
 /-- **The checking IOPP is `IsSecureWithGap`**, with the completeness leg PROVEN
 (`stirCheckingIOP_perfectCompleteness`) and the soundness leg consumed as the named
 checking-verifier residual. -/
@@ -730,6 +1033,34 @@ theorem stirCheckingIOP_isSecureWithGap_of_CA (M : ℕ) (φ : ι ↪ F) (deg : �
       (stirCheckingIOP M φ deg) :=
   stirCheckingIOP_isSecureWithGap M φ deg δ ε_rbr
     (stirCheckingRbrSoundness_of_CA M φ deg δ ε_rbr e ProxGapBound hBridge hCA hPR)
+
+/-- `IsSecureWithGap` for the checking IOPP in the small-field regime, with the BCIKS20
+strict-coefficient residual family discharged. The only remaining soundness hypothesis is the
+protocol-level checking bridge. -/
+theorem stirCheckingIOP_isSecureWithGap_of_card_le [DecidableEq ι]
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0)
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (ProxGapBound : Fin (M + 1) → ℝ≥0)
+    (hBridge : stirCheckingCABridge M φ deg δ ε_rbr ProxGapBound ProxGapBound)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg φ)
+    (hq : (Fintype.card F : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0)) :
+    IsSecureWithGap (stirRelation deg φ 0) (stirRelation deg φ δ) ε_rbr
+      (stirCheckingIOP M φ deg) :=
+  stirCheckingIOP_isSecureWithGap M φ deg δ ε_rbr
+    (stirCheckingRbrSoundness_of_card_le M φ deg δ ε_rbr ProxGapBound hBridge hδ hq)
+
+/-- `IsSecureWithGap` for the checking IOPP in the sharp vacuous regime
+`|F| ≤ deg^2 * 10^7`, with the BCIKS20 strict-coefficient residual family discharged. -/
+theorem stirCheckingIOP_isSecureWithGap_of_card_le_e7 [DecidableEq ι]
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ) [NeZero deg] (δ : ℝ≥0)
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (ProxGapBound : Fin (M + 1) → ℝ≥0)
+    (hBridge : stirCheckingCABridge M φ deg δ ε_rbr ProxGapBound ProxGapBound)
+    (hq : (Fintype.card F : ℝ≥0) ≤ ((deg ^ 2 * 10 ^ 7 : ℕ) : ℝ≥0)) :
+    IsSecureWithGap (stirRelation deg φ 0) (stirRelation deg φ δ) ε_rbr
+      (stirCheckingIOP M φ deg) :=
+  stirCheckingIOP_isSecureWithGap M φ deg δ ε_rbr
+    (stirCheckingRbrSoundness_of_card_le_e7 M φ deg δ ε_rbr ProxGapBound hBridge hq)
 
 end Soundness
 
@@ -795,6 +1126,98 @@ theorem stir_rbr_soundness_of_checkingIOP_CA
       e ProxGapBound hBridge hCA hPR)
     hfold hrest
 
+/-- **Lemma 5.4 through the CHECKING IOPP, small-field CA discharge**: the same checking front
+door as `stir_rbr_soundness_of_checkingIOP_CA`, but the BCIKS20 strict-coefficient residual family
+is discharged by `strictCoeffPolysResidual_all_of_card_le` under `|F| ≤ |ι₀|`. The remaining
+soundness hypothesis is the protocol-level checking bridge. -/
+theorem stir_rbr_soundness_of_checkingIOP_card_le
+    {M : ℕ} (ι : Fin (M + 1) → Type) [∀ i : Fin (M + 1), Fintype (ι i)]
+    [DecidableEq (ι 0)]
+    {s : ℕ} {P : Params ι F}
+    [h_nonempty : ∀ i : Fin (M + 1), Nonempty (ι i)]
+    {hParams : ParamConditions ι P} {Dist : Distances M}
+    {Codes : CodeParams ι P Dist} [NeZero (degree ι P 0)]
+    (hδ₀ : Dist.δ 0 < (1 - Bstar (rate (code (P.φ 0) P.deg))))
+    (hδᵢ : ∀ {j : Fin (M + 1)}, j ≠ 0 →
+        Dist.δ j < (1 - rate (code (P.φ j) (degree ι P j))
+          - 1 / Fintype.card (ι j) : ℝ) ∧
+        Dist.δ j < (1 - Bstar (rate (code (P.φ j) (degree ι P j)))))
+    (ε_fold : ℝ≥0) (ε_out : Fin M → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    (ProxGapBound : Fin (M + 1) → ℝ≥0)
+    (hBridge : stirCheckingCABridge M (P.φ 0) (degree ι P 0) (Dist.δ 0)
+      (fun _ => ({ε_fold} ∪ {ε_fin} ∪ univ.image ε_out ∪ univ.image ε_shift).max' (by simp))
+      ProxGapBound ProxGapBound)
+    (hδsqrt : Dist.δ 0 < 1 - ReedSolomon.sqrtRate (degree ι P 0) (P.φ 0))
+    (hq : (Fintype.card F : ℝ≥0) ≤ (Fintype.card (ι 0) : ℝ≥0))
+    (hfold : ε_fold ≤ proximityError F (P.deg / P.foldingParam 0)
+      (rate (code (P.φ 0) P.deg)) (Dist.δ 0) (P.repeatParam 0))
+    (hrest : ∀ j : Fin M,
+        (ε_out j ≤ ((Dist.l j.succ : ℝ) ^ 2 / 2) *
+          ((degree ι P j.succ : ℝ) / (Fintype.card F - Fintype.card (ι j.succ))) ^ s)
+        ∧
+        (ε_shift j ≤
+          (1 - Dist.δ j.castSucc) ^ (P.repeatParam j.castSucc) +
+           proximityError F (degree ι P j.succ) (rate (code (P.φ j.succ) (degree ι P j.succ)))
+            (Dist.δ j.succ) (P.repeatParam j.castSucc) + s +
+           proximityError F ((degree ι P j.succ) / P.foldingParam j.succ)
+            (rate (code (P.φ j.succ) (degree ι P j.succ)))
+            (Dist.δ j.succ) (P.repeatParam j.succ))
+        ∧
+        ε_fin ≤ (1 - Dist.δ (Fin.last M)) ^ (P.repeatParam (Fin.last M))) :
+    stir_rbr_soundness (s := s) (hParams := hParams) (Codes := Codes)
+      ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin :=
+  stir_rbr_soundness_of_checkingIOP_CA (hParams := hParams) (Codes := Codes)
+    ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin
+    ProxGapBound ProxGapBound hBridge
+    (strictCoeffPolysResidual_all_of_card_le (P.φ 0) (degree ι P 0) (Dist.δ 0)
+      hδsqrt hq)
+    (fun _ => rfl)
+    hfold hrest
+
+/-- **Lemma 5.4 through the CHECKING IOPP, sharp vacuous CA discharge**: as
+`stir_rbr_soundness_of_checkingIOP_card_le`, but using the `|F| ≤ deg₀² * 10⁷` BCIKS discharge. -/
+theorem stir_rbr_soundness_of_checkingIOP_card_le_e7
+    {M : ℕ} (ι : Fin (M + 1) → Type) [∀ i : Fin (M + 1), Fintype (ι i)]
+    [DecidableEq (ι 0)]
+    {s : ℕ} {P : Params ι F}
+    [h_nonempty : ∀ i : Fin (M + 1), Nonempty (ι i)]
+    {hParams : ParamConditions ι P} {Dist : Distances M}
+    {Codes : CodeParams ι P Dist} [NeZero (degree ι P 0)]
+    (hδ₀ : Dist.δ 0 < (1 - Bstar (rate (code (P.φ 0) P.deg))))
+    (hδᵢ : ∀ {j : Fin (M + 1)}, j ≠ 0 →
+        Dist.δ j < (1 - rate (code (P.φ j) (degree ι P j))
+          - 1 / Fintype.card (ι j) : ℝ) ∧
+        Dist.δ j < (1 - Bstar (rate (code (P.φ j) (degree ι P j)))))
+    (ε_fold : ℝ≥0) (ε_out : Fin M → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    (ProxGapBound : Fin (M + 1) → ℝ≥0)
+    (hBridge : stirCheckingCABridge M (P.φ 0) (degree ι P 0) (Dist.δ 0)
+      (fun _ => ({ε_fold} ∪ {ε_fin} ∪ univ.image ε_out ∪ univ.image ε_shift).max' (by simp))
+      ProxGapBound ProxGapBound)
+    (hq : (Fintype.card F : ℝ≥0) ≤ (((degree ι P 0) ^ 2 * 10 ^ 7 : ℕ) : ℝ≥0))
+    (hfold : ε_fold ≤ proximityError F (P.deg / P.foldingParam 0)
+      (rate (code (P.φ 0) P.deg)) (Dist.δ 0) (P.repeatParam 0))
+    (hrest : ∀ j : Fin M,
+        (ε_out j ≤ ((Dist.l j.succ : ℝ) ^ 2 / 2) *
+          ((degree ι P j.succ : ℝ) / (Fintype.card F - Fintype.card (ι j.succ))) ^ s)
+        ∧
+        (ε_shift j ≤
+          (1 - Dist.δ j.castSucc) ^ (P.repeatParam j.castSucc) +
+           proximityError F (degree ι P j.succ) (rate (code (P.φ j.succ) (degree ι P j.succ)))
+            (Dist.δ j.succ) (P.repeatParam j.castSucc) + s +
+           proximityError F ((degree ι P j.succ) / P.foldingParam j.succ)
+            (rate (code (P.φ j.succ) (degree ι P j.succ)))
+            (Dist.δ j.succ) (P.repeatParam j.succ))
+        ∧
+        ε_fin ≤ (1 - Dist.δ (Fin.last M)) ^ (P.repeatParam (Fin.last M))) :
+    stir_rbr_soundness (s := s) (hParams := hParams) (Codes := Codes)
+      ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin :=
+  stir_rbr_soundness_of_checkingIOP_CA (hParams := hParams) (Codes := Codes)
+    ι hδ₀ hδᵢ ε_fold ε_out ε_shift ε_fin
+    ProxGapBound ProxGapBound hBridge
+    (strictCoeffPolysResidual_all_of_card_le_e7 (P.φ 0) (degree ι P 0) (Dist.δ 0) hq)
+    (fun _ => rfl)
+    hfold hrest
+
 /-- **Theorem 5.1 through the CHECKING IOPP**: `stir_main` discharged with
 `π := stirCheckingIOP` via the landed `stir_main_of_secure_vectorIOP` wiring. The
 completeness leg is PROVEN; the soundness leg is consumed via the named CA residuals through
@@ -832,6 +1255,70 @@ theorem stir_main_of_checkingIOP_CA
       e ProxGapBound hBridge hCA hPR)
     hε hM hLen hQin hQpf
 
+/-- **Theorem 5.1 through the CHECKING IOPP, small-field CA discharge**: `stir_main` through
+`π := stirCheckingIOP`, with the strict BCIKS20 coefficient residual family discharged under
+`|F| ≤ |ι|`. The remaining soundness hypothesis is the protocol-level checking bridge. -/
+theorem stir_main_of_checkingIOP_card_le
+    {M : ℕ} (secpar : ℕ)
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {φ : ι ↪ F} {degree : ℕ} [hsmooth : Smooth φ] [NeZero degree]
+    {k proofLen qNumtoInput qNumtoProofstr : ℕ}
+    (hk : ∃ p, k = 2 ^ p) (hkGe : k ≥ 4)
+    (δ : ℝ≥0) (hδub : δ < 1 - 1.05 * Real.sqrt (degree / Fintype.card ι))
+    (hF : Fintype.card F ≤
+          secpar * 2 ^ secpar * degree ^ 2 * (Fintype.card ι) ^ (7 / 2) /
+            Real.log (1 / rate (code φ degree)))
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (ProxGapBound : Fin (M + 1) → ℝ≥0)
+    (hBridge : stirCheckingCABridge M φ degree δ ε_rbr ProxGapBound ProxGapBound)
+    (hδsqrt : δ < 1 - ReedSolomon.sqrtRate degree φ)
+    (hq : (Fintype.card F : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0))
+    (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
+    (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
+    (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
+    (hQin : qNumtoInput = secpar / (- Real.log (1 - δ)))
+    (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
+      (cₖ k) * ((Real.log degree) +
+        secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
+    stir_main (M := M) (proofLen := proofLen) (qNumtoInput := qNumtoInput)
+      (qNumtoProofstr := qNumtoProofstr) secpar hk hkGe δ hδub hF :=
+  stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
+    ProxGapBound ProxGapBound hBridge
+    (strictCoeffPolysResidual_all_of_card_le φ degree δ hδsqrt hq)
+    (fun _ => rfl)
+    hε hM hLen hQin hQpf
+
+/-- **Theorem 5.1 through the CHECKING IOPP, sharp vacuous CA discharge**: as
+`stir_main_of_checkingIOP_card_le`, but using the `|F| ≤ degree² * 10⁷` BCIKS discharge. -/
+theorem stir_main_of_checkingIOP_card_le_e7
+    {M : ℕ} (secpar : ℕ)
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {φ : ι ↪ F} {degree : ℕ} [hsmooth : Smooth φ] [NeZero degree]
+    {k proofLen qNumtoInput qNumtoProofstr : ℕ}
+    (hk : ∃ p, k = 2 ^ p) (hkGe : k ≥ 4)
+    (δ : ℝ≥0) (hδub : δ < 1 - 1.05 * Real.sqrt (degree / Fintype.card ι))
+    (hF : Fintype.card F ≤
+          secpar * 2 ^ secpar * degree ^ 2 * (Fintype.card ι) ^ (7 / 2) /
+            Real.log (1 / rate (code φ degree)))
+    (ε_rbr : (stirMultiVSpec M ι).ChallengeIdx → ℝ≥0)
+    (ProxGapBound : Fin (M + 1) → ℝ≥0)
+    (hBridge : stirCheckingCABridge M φ degree δ ε_rbr ProxGapBound ProxGapBound)
+    (hq : (Fintype.card F : ℝ≥0) ≤ ((degree ^ 2 * 10 ^ 7 : ℕ) : ℝ≥0))
+    (hε : ∀ i, ε_rbr i ≤ (1 : ℚ≥0) / (2 ^ secpar))
+    (hM : ∃ c > 0, M ≤ c * (Real.log degree / Real.log k))
+    (hLen : ∃ cₖ : ℕ → ℝ, proofLen ≤ (Fintype.card ι) + (cₖ k) * (Real.log degree))
+    (hQin : qNumtoInput = secpar / (- Real.log (1 - δ)))
+    (hQpf : ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
+      (cₖ k) * ((Real.log degree) +
+        secpar * (Real.log ((Real.log degree) / Real.log (1 / rate (code φ degree)))))) :
+    stir_main (M := M) (proofLen := proofLen) (qNumtoInput := qNumtoInput)
+      (qNumtoProofstr := qNumtoProofstr) secpar hk hkGe δ hδub hF :=
+  stir_main_of_checkingIOP_CA secpar hk hkGe δ hδub hF ε_rbr
+    ProxGapBound ProxGapBound hBridge
+    (strictCoeffPolysResidual_all_of_card_le_e7 φ degree δ hq)
+    (fun _ => rfl)
+    hε hM hLen hQin hQpf
+
 end CheckingFrontDoors
 
 end StirIOP
@@ -843,11 +1330,32 @@ end StirIOP
 #print axioms StirIOP.MultiRound.mem_of_relDistFromCode_le_zero
 #print axioms StirIOP.MultiRound.checkingBool_honest
 #print axioms StirIOP.MultiRound.checkingBool_true_implies_fold_check
+#print axioms StirIOP.MultiRound.checkingBool_true_implies_round_consistency
+#print axioms StirIOP.MultiRound.checkingBool_true_implies_out_consistency
+#print axioms StirIOP.MultiRound.checkingBool_true_implies_shift_consistency
 #print axioms StirIOP.MultiRound.checkingBool_true_implies_final_in_code
 #print axioms StirIOP.MultiRound.checkingVerifier_toVerifier_verify
+#print axioms StirIOP.MultiRound.checkingVerifier_support_iff
+#print axioms StirIOP.MultiRound.checkingVerifier_acceptance_iff_checkingBool
+#print axioms StirIOP.MultiRound.checkingVerifier_acceptance_implies_checkingBool
+#print axioms StirIOP.MultiRound.checkingVerifier_acceptance_implies_fold_check
+#print axioms StirIOP.MultiRound.checkingVerifier_acceptance_implies_round_consistency
+#print axioms StirIOP.MultiRound.checkingVerifier_acceptance_implies_out_consistency
+#print axioms StirIOP.MultiRound.checkingVerifier_acceptance_implies_shift_consistency
+#print axioms StirIOP.MultiRound.checkingVerifier_acceptance_implies_final_in_code
 #print axioms StirIOP.MultiRound.stirCheckingIOP_perfectCompleteness
 #print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_CA
+#print axioms StirIOP.MultiRound.strictCoeffPolysResidual_all_of_card_le
+#print axioms StirIOP.MultiRound.strictCoeffPolysResidual_all_of_card_le_e7
+#print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_card_le
+#print axioms StirIOP.MultiRound.stirCheckingRbrSoundness_of_card_le_e7
 #print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap
 #print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap_of_CA
+#print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap_of_card_le
+#print axioms StirIOP.MultiRound.stirCheckingIOP_isSecureWithGap_of_card_le_e7
 #print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_CA
+#print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_card_le
+#print axioms StirIOP.stir_rbr_soundness_of_checkingIOP_card_le_e7
 #print axioms StirIOP.stir_main_of_checkingIOP_CA
+#print axioms StirIOP.stir_main_of_checkingIOP_card_le
+#print axioms StirIOP.stir_main_of_checkingIOP_card_le_e7

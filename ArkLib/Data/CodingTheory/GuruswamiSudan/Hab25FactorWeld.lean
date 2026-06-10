@@ -530,6 +530,30 @@ theorem decoded_root_eq_affine_of_claiming_linear
   obtain ⟨hrepR, haffine, hz⟩ := hlin R hR hclaim
   exact ⟨R, hR, decoded_root_eq_affine_of_linear_rep hrepR haffine hz hclaim⟩
 
+/-- **Fixed linear claiming factor gives cellwise affine pinning.** This packages
+`decoded_root_eq_affine_of_linear_rep` in the exact family shape consumed downstream by the
+Hab25/WHIR capture kernel: if every decoded root `P z` in a cell is claimed by one fixed
+linear `K`-level factor whose affine pair is `(a, b)`, and the factor denominator survives
+throughout the cell, then the whole decoded-polynomial family is pinned as
+`P z = a + z·b` with the supplied degree bounds. -/
+theorem decoded_family_affine_pinning_of_fixed_linear_rep
+    {rep : (F[X])[X][Y]} {dR : F[X]} {p : (RatFunc F)[X]} {a b : F[X]}
+    {Ecell : Finset F} {P : F → F[X]} {k : ℕ}
+    (ha : a.natDegree < k) (hb : b.natDegree < k)
+    (hrepR : rep.map (Polynomial.mapRingHom (algebraMap F[X] (RatFunc F))) =
+      Polynomial.C (Polynomial.C (algebraMap F[X] (RatFunc F) dR)) *
+        (Polynomial.X - Polynomial.C p))
+    (haffine : p = a.map (algebraMap F (RatFunc F)) +
+      Polynomial.C RatFunc.X * b.map (algebraMap F (RatFunc F)))
+    (hden : ∀ z ∈ Ecell, dR.eval z ≠ 0)
+    (hclaim : ∀ z ∈ Ecell,
+      (Polynomial.X - Polynomial.C (P z)) ∣
+        rep.map (Polynomial.mapRingHom (Polynomial.evalRingHom z))) :
+    ∃ v₀ v₁ : F[X], v₀.natDegree < k ∧ v₁.natDegree < k ∧
+      ∀ z ∈ Ecell, P z = v₀ + Polynomial.C z * v₁ := by
+  refine ⟨a, b, ha, hb, fun z hz => ?_⟩
+  exact decoded_root_eq_affine_of_linear_rep hrepR haffine (hden z hz) (hclaim z hz)
+
 end GuruswamiSudan.OverRatFunc
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -544,3 +568,4 @@ end GuruswamiSudan.OverRatFunc
 #print axioms GuruswamiSudan.OverRatFunc.affine_specialization_dvd_rep
 #print axioms GuruswamiSudan.OverRatFunc.claiming_factor_of_affine_constant
 #print axioms GuruswamiSudan.OverRatFunc.decoded_root_eq_affine_of_claiming_linear
+#print axioms GuruswamiSudan.OverRatFunc.decoded_family_affine_pinning_of_fixed_linear_rep

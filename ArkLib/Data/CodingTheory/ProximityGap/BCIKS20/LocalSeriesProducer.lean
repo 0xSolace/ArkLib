@@ -386,7 +386,7 @@ noncomputable def localSeriesDatumOn_of_rawGS
     htrunc := fun z hz => htrunc z hz _,
     hdvd := fun z hz =>
       matching_dvd_loc_of_specialized_dvd_centred hHyp z _ _ (hdvdRaw z hz),
-    hcong := fun z hz => hcong_of_fiber_monic hHyp hlc hfiber hz }
+    hcong := fun _ hz => hcong_of_fiber_monic hHyp hlc hfiber hz }
 
 /-- **The producer from a single Claim-5.7 incidence cell covering the good set.**  If
 every good `z` lies in one `(factor, fiber-component)` cell of `claim57_pigeonhole` at
