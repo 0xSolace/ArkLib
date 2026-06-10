@@ -3103,4 +3103,27 @@ theorem windowed_determined_by_alive_trace {p q : ℕ} (hp : p.Prime) (hq : q.Pr
 
 end BelowPBudget
 
+/-! ## Coverage monotonicity and the upgrade question
+
+Coverage is divisor-monotone (`μ_d`-coverage implies `μ_{d'}`-coverage for every
+`d' ∣ d`), so the directional laws' existentials certify a coverage IDEAL; the all-`t`
+law asks whether the window forces this ideal to reach above `t`. The missing engine is
+the UPGRADE: small certified coverage + full window ⟹ alive coverage — with the
+contracted-fold (valued, general-radix) route as the mapped candidate. -/
+
+section CoverageMono
+
+omit [CharZero F] in
+/-- Coverage is divisor-monotone: a full `μ_d`-coset inside `S` contains the full
+`μ_{d'}`-coset for every divisor `d' ∣ d`. -/
+theorem coverage_mono {S : Finset F} {x : F} {d d' : ℕ} (hdvd : d' ∣ d)
+    (hcov : ∀ h : F, h ^ d = 1 → h * x ∈ S) :
+    ∀ h : F, h ^ d' = 1 → h * x ∈ S := by
+  intro h hh
+  obtain ⟨k, rfl⟩ := hdvd
+  refine hcov h ?_
+  rw [pow_mul, hh, one_pow]
+
+end CoverageMono
+
 end DeBruijnTwoPrime
