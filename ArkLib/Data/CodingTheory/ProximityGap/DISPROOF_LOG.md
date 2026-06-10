@@ -4029,3 +4029,23 @@ and hypothesis-free. Honest scope: cover is necessary, NOT sufficient (overlappi
 packets break the vanishing sum); the exact O70 law is the disjoint-decomposition
 refinement — the remaining finite combinatorial step between cover and the full
 characterization (and thence the discharge of O73's base hypotheses).
+
+### O77 — DE BRUIJN 1953, COMPLETE: the full two-prime packet decomposition machine-checked
+
+`DeBruijnTwoPrime.two_prime_packet_decomposition` (axiom-clean, 0 sorry, by hand):
+**a finite subset of μ_{p^(a+1)·q^(b+1)} (p ≠ q primes, characteristic zero) with
+vanishing sum IS a disjoint union of full μ_p- and μ_q-packets** — the `PacketUnion`
+inductive built packet-by-packet, each peel disjoint from the rest by construction.
+
+Proof: peeling induction over the O76 cover — a full prime packet sums to zero
+(`prime_packet_sum_zero`, geometric series), so removing the packet supplied by the
+cover dichotomy preserves the vanishing sum and strictly drops cardinality; strong
+induction finishes. Plumbing: CRT box coordinates (box_pair_surj/inj), the
+nonlinear-cancellation index arithmetic, and the new-Mathlib card_sdiff intersection
+form.
+
+This completes the de Bruijn third pillar END TO END: O68 engine → O71 double-slice
+(linear disjointness proven) → O76 cover → O77 decomposition. The t = 1 instance of the
+O70 mixed-radix law is now an unconditional theorem; connecting PacketUnion to O73's
+closure-hypothesis format (mechanical) makes the first rung of the mixed tower
+unconditional. The mixed-radix program's three pillars are all formal.

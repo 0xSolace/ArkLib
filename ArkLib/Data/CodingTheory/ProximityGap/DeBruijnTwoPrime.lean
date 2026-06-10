@@ -733,4 +733,222 @@ theorem two_prime_packet_cover {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
 
 end PacketCover
 
+/-! ## THE FULL TWO-PRIME DE BRUIJN DECOMPOSITION: peeling induction over the cover
+
+The complete theorem: a vanishing subset of `μ_{p^(a+1)·q^(b+1)}` IS a disjoint union of
+full `μ_p`- and `μ_q`-packets. A full packet sums to zero, so peeling the packet supplied
+by `two_prime_packet_cover` preserves the vanishing sum; strong induction on cardinality
+finishes, with disjointness structural (each peel removes its packet before recursing).
+De Bruijn's 1953 theorem at the subset level, machine-checked, hypothesis-free — the
+`t = 1` instance of the O70-verified mixed-radix law. -/
+
+section FullDecomposition
+
+variable [DecidableEq F]
+
+/-- `S` is a disjoint union of full `μ_p`- and `μ_q`-packets in the `(ζp, ζq)` box. -/
+inductive PacketUnion (p q a b : ℕ) (ζp ζq : F) : Finset F → Prop
+  | empty : PacketUnion p q a b ζp ζq ∅
+  | addP {S : Finset F} (s j t : ℕ) :
+      PacketUnion p q a b ζp ζq S →
+      (∀ i'' < p, ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t) ∉ S) →
+      PacketUnion p q a b ζp ζq
+        (S ∪ (Finset.range p).image
+          (fun i'' => ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)))
+  | addQ {S : Finset F} (s i t : ℕ) :
+      PacketUnion p q a b ζp ζq S →
+      (∀ j'' < q, ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t) ∉ S) →
+      PacketUnion p q a b ζp ζq
+        (S ∪ (Finset.range q).image
+          (fun j'' => ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)))
+
+omit [DecidableEq F] in
+/-- A full prime packet of roots of unity (times any constant) sums to zero. -/
+lemma prime_packet_sum_zero {r : ℕ} (hr : r.Prime) {ω : F}
+    (hω : IsPrimitiveRoot ω r) (z : F) :
+    ∑ k ∈ Finset.range r, ω ^ k * z = 0 := by
+  rw [← Finset.sum_mul]
+  have hω1 : ω ≠ 1 := by
+    intro h
+    have h2 := hω.pow_ne_one_of_pos_of_lt (l := 1) one_ne_zero hr.one_lt
+    rw [pow_one] at h2
+    exact h2 h
+  have hgeom : (ω - 1) * ∑ k ∈ Finset.range r, ω ^ k = ω ^ r - 1 := by
+    rw [mul_comm]
+    exact geom_sum_mul ω r
+  rw [hω.pow_eq_one, sub_self] at hgeom
+  rcases mul_eq_zero.mp hgeom with h | h
+  · exact absurd (by linear_combination h) hω1
+  · rw [h, zero_mul]
+
+omit [DecidableEq F] in
+/-- Box coordinate bound: `i < r → s < B → i·B + s < r·B`. -/
+lemma coord_bound {i r s B : ℕ} (hi : i < r) (hs : s < B) : i * B + s < r * B := by
+  have h1 : (i + 1) * B ≤ r * B := Nat.mul_le_mul_right _ (by omega)
+  have h2 : i * B + B = (i + 1) * B := by ring
+  omega
+
+variable [CharZero F]
+
+/-- **THE FULL TWO-PRIME DE BRUIJN DECOMPOSITION** (unconditional, characteristic zero):
+a finite subset of `μ_{p^(a+1)·q^(b+1)}` with vanishing sum is a disjoint union of full
+`μ_p`- and `μ_q`-packets. -/
+theorem two_prime_packet_decomposition {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
+    (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
+    {S : Finset F} (hS : ∀ z ∈ S, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1)
+    (hsum : ∑ z ∈ S, z = 0) :
+    PacketUnion p q a b ζp ζq S := by
+  classical
+  have hcop : Nat.Coprime (p ^ (a + 1)) (q ^ (b + 1)) :=
+    Nat.Coprime.pow _ _ ((Nat.coprime_primes hp hq).mpr hpq)
+  have hpa : 0 < p ^ a := pow_pos hp.pos a
+  have hqb : 0 < q ^ b := pow_pos hq.pos b
+  have hsuccp : p ^ (a + 1) = p * p ^ a := by rw [pow_succ']
+  have hsuccq : q ^ (b + 1) = q * q ^ b := by rw [pow_succ']
+  have hωp : IsPrimitiveRoot (ζp ^ (p ^ a)) p :=
+    hζp.pow (pow_pos hp.pos _) (by rw [pow_succ])
+  have hωq : IsPrimitiveRoot (ζq ^ (q ^ b)) q :=
+    hζq.pow (pow_pos hq.pos _) (by rw [pow_succ])
+  suffices H : ∀ n (T : Finset F), T.card = n →
+      (∀ z ∈ T, z ^ (p ^ (a + 1) * q ^ (b + 1)) = 1) → (∑ z ∈ T, z = 0) →
+      PacketUnion p q a b ζp ζq T from H S.card S rfl hS hsum
+  intro n
+  induction n using Nat.strong_induction_on with
+  | _ n IH =>
+    intro T hcard hT hsumT
+    rcases Finset.eq_empty_or_nonempty T with rfl | ⟨z, hz⟩
+    · exact PacketUnion.empty
+    obtain ⟨u, hu, v, hv, huv⟩ := box_pair_surj hζp hζq hcop
+      (pow_pos hp.pos _) (pow_pos hq.pos _) (hT z hz)
+    obtain ⟨i, s, rfl, hs⟩ : ∃ i' s', u = i' * p ^ a + s' ∧ s' < p ^ a :=
+      ⟨u / p ^ a, u % p ^ a, (Nat.div_add_mod' u (p ^ a)).symm, Nat.mod_lt _ hpa⟩
+    obtain ⟨j, t, rfl, ht⟩ : ∃ j' t', v = j' * q ^ b + t' ∧ t' < q ^ b :=
+      ⟨v / q ^ b, v % q ^ b, (Nat.div_add_mod' v (q ^ b)).symm, Nat.mod_lt _ hqb⟩
+    rw [hsuccp] at hu
+    rw [hsuccq] at hv
+    have hi : i < p := by
+      by_contra hge
+      push Not at hge
+      have := Nat.mul_le_mul_right (p ^ a) hge
+      omega
+    have hj : j < q := by
+      by_contra hge
+      push Not at hge
+      have := Nat.mul_le_mul_right (q ^ b) hge
+      omega
+    have hzmem : ζp ^ (i * p ^ a + s) * ζq ^ (j * q ^ b + t) ∈ T := by rwa [huv]
+    rcases two_prime_packet_cover hp hq hpq hζp hζq hT hsumT s hs i hi t ht j hj hzmem
+      with hFull | hFull
+    · -- peel the μ_p-packet
+      set P : Finset F := (Finset.range p).image
+        (fun i'' => ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)) with hPdef
+      have hPsub : P ⊆ T := by
+        intro y hy
+        obtain ⟨i'', hi'', rfl⟩ := Finset.mem_image.mp hy
+        exact hFull i'' (Finset.mem_range.mp hi'')
+      have hinj : ∀ x1 ∈ Finset.range p, ∀ x2 ∈ Finset.range p,
+          ζp ^ (x1 * p ^ a + s) * ζq ^ (j * q ^ b + t)
+            = ζp ^ (x2 * p ^ a + s) * ζq ^ (j * q ^ b + t) → x1 = x2 := by
+        intro x1 hx1 x2 hx2 hxe
+        have h1 := coord_bound (Finset.mem_range.mp hx1) hs
+        have h2 := coord_bound (Finset.mem_range.mp hx2) hs
+        have h3 := coord_bound hj ht
+        have heq := (box_pair_inj hζp hζq hcop (by omega) (by omega) (by omega) (by omega)
+          hxe).1
+        have hmul : x1 * p ^ a = x2 * p ^ a := by omega
+        exact Nat.eq_of_mul_eq_mul_right hpa hmul
+      have hPcard : P.card = p := by
+        rw [hPdef, Finset.card_image_of_injOn (fun x1 hx1 x2 hx2 h =>
+          hinj x1 (Finset.mem_coe.mp hx1) x2 (Finset.mem_coe.mp hx2) h),
+          Finset.card_range]
+      have hPsum : ∑ y ∈ P, y = 0 := by
+        rw [hPdef, Finset.sum_image hinj]
+        have hterm : ∀ i'' ∈ Finset.range p,
+            ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t)
+              = (ζp ^ (p ^ a)) ^ i'' * (ζp ^ s * ζq ^ (j * q ^ b + t)) := by
+          intro i'' _
+          rw [pow_add, ← pow_mul, mul_comm i'' (p ^ a), pow_mul]
+          ring
+        rw [Finset.sum_congr rfl hterm]
+        exact prime_packet_sum_zero hp hωp _
+      have hT'sum : ∑ y ∈ T \ P, y = 0 := by
+        have hsd := Finset.sum_sdiff (f := fun y : F => y) hPsub
+        rw [hPsum, add_zero] at hsd
+        rw [hsd]
+        exact hsumT
+      have hT'card : (T \ P).card < n := by
+        have hPT : P ∩ T = P := Finset.inter_eq_left.mpr hPsub
+        rw [Finset.card_sdiff, hPT, hPcard, ← hcard]
+        have hple : p ≤ T.card := by
+          rw [← hPcard]
+          exact Finset.card_le_card hPsub
+        have := hp.pos
+        omega
+      have hIH := IH (T \ P).card hT'card (T \ P) rfl
+        (fun y hy => hT y (Finset.mem_sdiff.mp hy).1) hT'sum
+      have hnotmem : ∀ i'' < p,
+          ζp ^ (i'' * p ^ a + s) * ζq ^ (j * q ^ b + t) ∉ T \ P := by
+        intro i'' hi'' hmem
+        exact (Finset.mem_sdiff.mp hmem).2
+          (Finset.mem_image.mpr ⟨i'', Finset.mem_range.mpr hi'', rfl⟩)
+      have hassemble := PacketUnion.addP (S := T \ P) s j t hIH hnotmem
+      rwa [← hPdef, Finset.sdiff_union_of_subset hPsub] at hassemble
+    · -- peel the μ_q-packet (mirror)
+      set P : Finset F := (Finset.range q).image
+        (fun j'' => ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)) with hPdef
+      have hPsub : P ⊆ T := by
+        intro y hy
+        obtain ⟨j'', hj'', rfl⟩ := Finset.mem_image.mp hy
+        exact hFull j'' (Finset.mem_range.mp hj'')
+      have hinj : ∀ x1 ∈ Finset.range q, ∀ x2 ∈ Finset.range q,
+          ζp ^ (i * p ^ a + s) * ζq ^ (x1 * q ^ b + t)
+            = ζp ^ (i * p ^ a + s) * ζq ^ (x2 * q ^ b + t) → x1 = x2 := by
+        intro x1 hx1 x2 hx2 hxe
+        have h1 := coord_bound (Finset.mem_range.mp hx1) ht
+        have h2 := coord_bound (Finset.mem_range.mp hx2) ht
+        have h3 := coord_bound hi hs
+        have heq := (box_pair_inj hζp hζq hcop (by omega) (by omega) (by omega) (by omega)
+          hxe).2
+        have hmul : x1 * q ^ b = x2 * q ^ b := by omega
+        exact Nat.eq_of_mul_eq_mul_right hqb hmul
+      have hPcard : P.card = q := by
+        rw [hPdef, Finset.card_image_of_injOn (fun x1 hx1 x2 hx2 h =>
+          hinj x1 (Finset.mem_coe.mp hx1) x2 (Finset.mem_coe.mp hx2) h),
+          Finset.card_range]
+      have hPsum : ∑ y ∈ P, y = 0 := by
+        rw [hPdef, Finset.sum_image hinj]
+        have hterm : ∀ j'' ∈ Finset.range q,
+            ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t)
+              = (ζq ^ (q ^ b)) ^ j'' * (ζp ^ (i * p ^ a + s) * ζq ^ t) := by
+          intro j'' _
+          rw [pow_add (a := ζq), ← pow_mul, mul_comm j'' (q ^ b), pow_mul]
+          ring
+        rw [Finset.sum_congr rfl hterm]
+        exact prime_packet_sum_zero hq hωq _
+      have hT'sum : ∑ y ∈ T \ P, y = 0 := by
+        have hsd := Finset.sum_sdiff (f := fun y : F => y) hPsub
+        rw [hPsum, add_zero] at hsd
+        rw [hsd]
+        exact hsumT
+      have hT'card : (T \ P).card < n := by
+        have hPT : P ∩ T = P := Finset.inter_eq_left.mpr hPsub
+        rw [Finset.card_sdiff, hPT, hPcard, ← hcard]
+        have hqle : q ≤ T.card := by
+          rw [← hPcard]
+          exact Finset.card_le_card hPsub
+        have := hq.pos
+        omega
+      have hIH := IH (T \ P).card hT'card (T \ P) rfl
+        (fun y hy => hT y (Finset.mem_sdiff.mp hy).1) hT'sum
+      have hnotmem : ∀ j'' < q,
+          ζp ^ (i * p ^ a + s) * ζq ^ (j'' * q ^ b + t) ∉ T \ P := by
+        intro j'' hj'' hmem
+        exact (Finset.mem_sdiff.mp hmem).2
+          (Finset.mem_image.mpr ⟨j'', Finset.mem_range.mpr hj'', rfl⟩)
+      have hassemble := PacketUnion.addQ (S := T \ P) s i t hIH hnotmem
+      rwa [← hPdef, Finset.sdiff_union_of_subset hPsub] at hassemble
+
+end FullDecomposition
+
 end DeBruijnTwoPrime
