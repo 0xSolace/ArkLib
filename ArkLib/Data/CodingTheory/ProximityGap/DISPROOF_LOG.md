@@ -3572,3 +3572,47 @@ chain (needs the per-round stack ↔ pair-generator identification); NOT wireabl
 #301 rbr soundness (forwarding-shell verifier — residual likely false as stated; needs the
 checking verifier + #304 core) and the ℓ-ary (parℓ > 2) seam extension (mechanical per
 Hab25 but new formalization, not plumbing).
+### O70 — ITERATED SLICE ROOT-COHERENCE PROVEN: O69's "Conjecture D in elementary form" closes at every depth; the one missing brick was branch LOCALITY, not conservation
+
+O69 left as the named open core the iterated weight/dead-locus tradeoff — "low weight
+forces the alive slices to share large root loci at every depth simultaneously" — with
+depth 1 claimed and depth ℓ probed-but-unproven. (Bookkeeping correction: the depth-1
+brick `weight_ge_live_image` announced for `FoldPolynomialSlices.lean` in O69/commit
+`2dcc9cfd9` never actually landed — the commit contains only the conservation, dual-RS
+and census artifacts; no Lean occurrence exists in history. The statement below now
+supplies it at every depth, including 1.)
+
+**`ArkLib/Data/CodingTheory/ProximityGap/IteratedSliceRootCoherence.lean` (axiom-clean,
+0 sorry, 0 warnings):**
+
+* `branchVal_eq_zero_of_fiber_vanish` — **branch locality**, the brick the induction
+  actually needed: the depth-ℓ branch value at `y` reads the error only on the iterated
+  fiber `{x ∈ S : x^(2^ℓ) = y}`. (Conservation says mass cannot vanish in every branch;
+  locality says it cannot APPEAR outside its fiber — the two directions are independent,
+  and the tradeoff is locality's, not conservation's.)
+* `live_card_le_weight` / `dead_card_ge` — **iterated weight transport,
+  hypothesis-free** (any S, any valued v, no char, no negation-closure): the depth-ℓ
+  live set has size ≤ w, since iterated fibers are disjoint and a live point's fiber
+  must carry support; dually ALL 2^ℓ branch values vanish simultaneously on
+  ≥ |iterSq S ℓ| − w points.
+* `branchSlice` / `branchVal_polyeval` — the **iterated slice law**: on a tower
+  negation-closed through depth ℓ, branch values of a polynomial error are evaluations
+  of the iterated coefficient slices (even fold ↦ `evenSlice`, odd fold ↦ `X·oddSlice`,
+  the O63 ⌈e/2⌉ exponent code), proved by induction over the depth-1 law.
+* `iterated_slice_root_coherence` (+ `_div` with `|iterSq D ℓ|·2^ℓ = |D|` exact) —
+  **the theorem**: a weight-w polynomial error's 2^ℓ iterated slices share a common
+  root locus of size ≥ |D|/2^ℓ − w in the depth-ℓ domain. Every depth, every ℓ-level
+  2-smooth tower, any field of odd characteristic.
+
+Falsify-first probe (`probe_sliceroots_iterated.py`, adversarial: minimal-weight words,
+fiber-aligned supports at the alive(ℓ)=1 boundary 2^ℓ | n−w, coset supports, sparse
+single-residue coefficients): 1572 per-depth cases up to (p,n) = (769,256), 0 violations,
+0 slice-law mismatches; the bound is TIGHT (live = min(w, n/2^ℓ)) in 902/1572 cases.
+
+**Where the open core moves:** the root-coherence CONSTRAINT is now a theorem, so the
+all-words question is no longer "prove the slices cohere" but "count the low-degree f
+whose slices realize the forced coherence" — i.e. bound the number of f with
+deg < k and all 2^ℓ slices vanishing on a prescribed ≥ n/2^ℓ − w common locus, where
+each slice has degree < k/2^ℓ + O(1) and ≤ k/2^ℓ roots to spend. The counting question
+(C19's 3 + 16 anatomy as the worked instance) is the surviving frontier; the structural
+half of O69's sentence is machine-checked.
