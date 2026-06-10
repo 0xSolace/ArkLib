@@ -622,6 +622,122 @@ example : ¬ (∀ j, 1 ≤ j → j ≤ 3 → ∑ e ∈ ({0, 6} : Finset ℕ),
   have := hPd.card_eq (Nat.div_pos (Nat.le_of_dvd (by norm_num) hdn) hd0)
   omega
 
+/-! ## The weight spectrum: 0/1 codewords of the window (dual-RS / BCH) code
+
+The window fiber `{S ⊆ [0,n) : Σ_{e∈S} ζ^{je} = 0, 1 ≤ j ≤ t}` is exactly the
+set of 0/1-supported codewords of the cyclic code with zeros `ζ, ζ², …, ζ^t` —
+a BCH-style dual-RS constraint on the smooth domain.  The windowed law pins
+their weights exactly:
+
+* every nonzero weight is a **sum of divisors of `n` exceeding `t`**;
+* the minimum nonzero weight is the **least divisor of `n` exceeding `t`** —
+  achieved by any single canonical coset.
+
+The classical BCH/designed-distance bound gives only `weight ≥ t + 1`; on smooth
+domains the 0/1 minimum weight jumps to the next divisor, strictly past BCH
+whenever `t + 1` is not itself a divisor (e.g. `n = 72`, `t = 9`: BCH gives
+`≥ 10`, the windowed law gives exactly `12`). -/
+
+/-- **Weight spectrum**: the cardinality of a window coset union is a sum of
+divisors of `n` exceeding `t` (the multiset of its coset sizes). -/
+theorem IsWindowCosetUnion.card_eq_sum {n t : ℕ} {S : Finset ℕ} (hn : 0 < n)
+    (h : IsWindowCosetUnion n t S) :
+    ∃ m : Multiset ℕ, (∀ d ∈ m, d ∣ n ∧ t < d) ∧ S.card = m.sum := by
+  classical
+  obtain ⟨Ps, hpk, hdisj, rfl⟩ := h
+  refine ⟨Ps.val.map Finset.card, ?_, ?_⟩
+  · intro d hd
+    obtain ⟨P, hP, rfl⟩ := Multiset.mem_map.mp hd
+    obtain ⟨d', hd'n, htd', hPd'⟩ := hpk P hP
+    have hcd : P.card = d' :=
+      hPd'.card_eq (Nat.div_pos (Nat.le_of_dvd hn hd'n) (by omega))
+    rw [hcd]
+    exact ⟨hd'n, htd'⟩
+  · rw [Finset.card_biUnion (fun x hx y hy hxy => hdisj hx hy hxy)]
+    simp only [id_eq]
+    exact Finset.sum_eq_multiset_sum Ps Finset.card
+
+/-- **The exact 0/1 minimum-weight bound**: a nonempty window coset union has at
+least `d₀` elements, for `d₀` any lower bound on the divisors of `n` exceeding
+`t`. -/
+theorem IsWindowCosetUnion.le_card_of_nonempty {n t d₀ : ℕ} {S : Finset ℕ}
+    (hn : 0 < n) (h : IsWindowCosetUnion n t S) (hne : S.Nonempty)
+    (hmin : ∀ d, d ∣ n → t < d → d₀ ≤ d) : d₀ ≤ S.card := by
+  obtain ⟨Ps, hpk, hdisj, rfl⟩ := h
+  obtain ⟨x, hx⟩ := hne
+  obtain ⟨P, hP, hxP⟩ := Finset.mem_biUnion.mp hx
+  obtain ⟨d, hdn, htd, hPd⟩ := hpk P hP
+  have hcd : P.card = d :=
+    hPd.card_eq (Nat.div_pos (Nat.le_of_dvd hn hdn) (by omega))
+  calc d₀ ≤ d := hmin d hdn htd
+    _ = P.card := hcd.symm
+    _ ≤ (Ps.biUnion id).card :=
+        Finset.card_le_card fun y hy => Finset.mem_biUnion.mpr ⟨P, hP, hy⟩
+
+/-- **Sharpness**: every divisor `d₀ ∣ n` with `t < d₀` is achieved as the
+weight of a window-`t`-vanishing set — the canonical coset over base `0`. -/
+theorem window_min_weight_sharp {L : Type*} [Field L] {n t d₀ : ℕ} (hn : 0 < n)
+    (hd₀ : d₀ ∣ n) (htd : t < d₀) {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
+    (∀ j, 1 ≤ j → j ≤ t → ∑ e ∈ cosetOf n d₀ 0, ζ ^ (j * e) = 0)
+      ∧ (cosetOf n d₀ 0).card = d₀ := by
+  have hbase : 0 < n / d₀ := Nat.div_pos (Nat.le_of_dvd hn hd₀) (by omega)
+  have hpk : IsPacket n d₀ (cosetOf n d₀ 0) := ⟨0, hbase, rfl⟩
+  refine ⟨window_vanishes_of_isWindowCosetUnion hn hζ
+    ⟨{cosetOf n d₀ 0}, ?_, ?_, ?_⟩, hpk.card_eq hbase⟩
+  · intro P hP
+    rw [Finset.mem_singleton] at hP
+    subst hP
+    exact ⟨d₀, hd₀, htd, hpk⟩
+  · rw [Finset.coe_singleton]
+    exact Set.pairwiseDisjoint_singleton _ _
+  · rw [Finset.singleton_biUnion]
+    rfl
+
+/-- **The 0/1 BCH-window weight spectrum on smooth two-prime domains**: every
+window-`t`-vanishing subset has cardinality a sum of divisors of `n = p^a·q^b`
+exceeding `t`. -/
+theorem window_weight_spectrum_two_prime {L : Type*} [Field L] [CharZero L]
+    {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q)
+    {ζ : L} (hζ : IsPrimitiveRoot ζ (p ^ a * q ^ b))
+    {S : Finset ℕ} (hS : ∀ e ∈ S, e < p ^ a * q ^ b)
+    {t : ℕ} (htn : t < p ^ a * q ^ b)
+    (hwin : ∀ j, 1 ≤ j → j ≤ t → ∑ e ∈ S, ζ ^ (j * e) = 0) :
+    ∃ m : Multiset ℕ, (∀ d ∈ m, d ∣ p ^ a * q ^ b ∧ t < d) ∧ S.card = m.sum :=
+  ((windowed_two_prime hp hq hpq hζ hS htn).mp hwin).card_eq_sum (by omega)
+
+/-- **The exact 0/1 minimum weight on smooth two-prime domains**: a nonempty
+window-`t`-vanishing subset has at least `d₀` elements whenever `d₀` lower-bounds
+the divisors of `n` exceeding `t`; with `window_min_weight_sharp`, the minimum
+0/1-codeword weight of the window code is EXACTLY the least divisor of `n`
+exceeding `t` — strictly past the BCH designed-distance bound `t + 1` between
+divisors. -/
+theorem window_min_weight_two_prime {L : Type*} [Field L] [CharZero L]
+    {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q)
+    {ζ : L} (hζ : IsPrimitiveRoot ζ (p ^ a * q ^ b))
+    {S : Finset ℕ} (hS : ∀ e ∈ S, e < p ^ a * q ^ b)
+    {t : ℕ} (htn : t < p ^ a * q ^ b)
+    (hwin : ∀ j, 1 ≤ j → j ≤ t → ∑ e ∈ S, ζ ^ (j * e) = 0)
+    (hne : S.Nonempty) {d₀ : ℕ}
+    (hmin : ∀ d, d ∣ p ^ a * q ^ b → t < d → d₀ ≤ d) :
+    d₀ ≤ S.card :=
+  ((windowed_two_prime hp hq hpq hζ hS htn).mp hwin).le_card_of_nonempty
+    (by omega) hne hmin
+
+/-- The BCH-beating instance, concretely: at `n = 72 = 2³·3²` with window
+`t = 9`, every nonempty window-vanishing 0/1 set has weight `≥ 12` (the least
+divisor of `72` exceeding `9`), while the designed-distance bound is only `10`. -/
+example {L : Type*} [Field L] [CharZero L] {ζ : L}
+    (hζ : IsPrimitiveRoot ζ (2 ^ 3 * 3 ^ 2))
+    {S : Finset ℕ} (hS : ∀ e ∈ S, e < 2 ^ 3 * 3 ^ 2)
+    (hwin : ∀ j, 1 ≤ j → j ≤ 9 → ∑ e ∈ S, ζ ^ (j * e) = 0)
+    (hne : S.Nonempty) : 12 ≤ S.card := by
+  refine window_min_weight_two_prime Nat.prime_two Nat.prime_three (by norm_num)
+    hζ hS (by norm_num) hwin hne ?_
+  intro d hdvd hgt
+  norm_num at hdvd
+  have hle : d ≤ 72 := Nat.le_of_dvd (by norm_num) hdvd
+  interval_cases d <;> revert hdvd <;> decide
+
 end DeBruijnWindowedLaw
 
 #print axioms DeBruijnWindowedLaw.isPacket_pow_sum_eq_zero
@@ -632,3 +748,8 @@ end DeBruijnWindowedLaw
 #print axioms DeBruijnWindowedLaw.windowed_law
 #print axioms DeBruijnWindowedLaw.levelDecomposes_of_dvd_two_prime
 #print axioms DeBruijnWindowedLaw.windowed_two_prime
+#print axioms DeBruijnWindowedLaw.IsWindowCosetUnion.card_eq_sum
+#print axioms DeBruijnWindowedLaw.IsWindowCosetUnion.le_card_of_nonempty
+#print axioms DeBruijnWindowedLaw.window_min_weight_sharp
+#print axioms DeBruijnWindowedLaw.window_weight_spectrum_two_prime
+#print axioms DeBruijnWindowedLaw.window_min_weight_two_prime
