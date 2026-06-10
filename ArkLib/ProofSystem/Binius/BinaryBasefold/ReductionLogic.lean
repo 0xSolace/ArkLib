@@ -429,26 +429,12 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
         have h_oracleIdx_eq : (OracleFrontierIndex.mkFromStmtIdx i.castSucc).val
           = (OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i).val := by rfl
         have h_challenges_eq :
-            Fin.rtake (m := (OracleFrontierIndex.mkFromStmtIdxCastSuccOfSucc i).val)
-              (v := verifierStmtOut.challenges)
-              (h := by simp only [Fin.val_fin_le, OracleFrontierIndex.val_le_i]) =
-                stmtIn.challenges := by
+            Fin.tail verifierStmtOut.challenges = stmtIn.challenges := by
           dsimp only [foldStepLogic, verifierStmtOut, step]
-          simpa [OracleFrontierIndex.val_mkFromStmtIdxCastSuccOfSucc] using
-            (fin_rtake_cons_const (transcript.challenges ⟨⟨1, by omega⟩, by rfl⟩)
-              stmtIn.challenges)
+          rfl
         rw! (castMode := .all) [h_oracleIdx_eq] at h_oracle_folding_In
         simp at h_oracle_folding_In ⊢
-        have h_challenges_eq' :
-            Fin.rtake (m := i) (v := verifierStmtOut.challenges)
-              (h := by simp only [Fin.val_succ, le_add_iff_nonneg_right, zero_le]) =
-                stmtIn.challenges := by
-          simpa using h_challenges_eq
-        change strictOracleFoldingConsistencyProp 𝔽q β (t := witIn.t) (i := i.castSucc)
-          (challenges := Fin.rtake (m := i) (v := verifierStmtOut.challenges)
-            (h := by simp only [Fin.val_succ, le_add_iff_nonneg_right, zero_le]))
-          (oStmt := oStmtIn)
-        rw! (castMode := .all) [h_challenges_eq']
+        rw! (castMode := .all) [h_challenges_eq]
         exact h_oracle_folding_In
 
   -- Prove the four required facts
