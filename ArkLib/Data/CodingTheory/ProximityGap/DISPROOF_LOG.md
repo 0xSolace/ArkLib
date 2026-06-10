@@ -3327,3 +3327,14 @@ With full_tower (O53): **closure under μ_{2^s} ⟺ vanishing power-sum window j
 characterization, both directions machine-checked. The tower theory is COMPLETE as
 stated: structure (O53), converse (O62), count (O55), bridge (O60), transfer (O45/O49),
 capstone (O61).
+
+### O63 — the TWO-SIDED budget + the corpus wiki page
+
+* `LamLeungTwoPow.two_sided_unit_syndrome_budget` (axiom-clean, 0 sorry): the SAME
+  unit-syndrome compatibility list is bounded below by the coset count C(#reps, m) (O46)
+  and above by the power-class budget 2^{#classes} (O61) — matching exponential scales
+  (C(n/d, w/d) vs 2^{n/d} on μ_n): the interior unit-syndrome list pinned from both
+  sides in one machine-checked statement.
+* `docs/wiki/tower-fiber-theory.md` — the stable map of the O35–O63 corpus (file table,
+  one-paragraph theory, recurring Lean gotchas), per the repo guardrail that stable
+  guidance must not live only in ephemeral notes.

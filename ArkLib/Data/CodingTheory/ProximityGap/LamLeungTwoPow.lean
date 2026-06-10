@@ -996,4 +996,43 @@ theorem closed_pow_sum_vanish {S : Finset F} {d : ℕ} {ξ : F}
 
 end TowerConverse
 
+/-! ## The two-sided budget: matching lower and upper bounds on one list object -/
+
+section TwoSided
+
+variable [DecidableEq F]
+
+open Classical in
+/-- **The two-sided unit-syndrome budget**: on a domain containing the `2^s`-coset
+structure, the SAME compatibility list is bounded below by the coset-union count
+(`C(#reps, m)`, O46) and above by the power-class budget (`2^{#classes}`, O61) —
+the interior unit-syndrome list is pinned between two machine-checked bounds of
+matching exponential scale (`C(n/d, w/d)` vs `2^{n/d}` on `μ_n`). -/
+theorem two_sided_unit_syndrome_budget {M s : ℕ} {ζ : F}
+    (hζ : IsPrimitiveRoot ζ (2 ^ M)) (hsM : s ≤ M) (hs0 : 0 < s)
+    {H Srep D₀ : Finset F}
+    (hH : TopLine.loc H = Polynomial.X ^ (2 ^ s) - 1)
+    (hS0 : ∀ x ∈ Srep, x ≠ 0)
+    (hinj : Set.InjOn (fun x : F => x ^ (2 ^ s)) (Srep : Set F))
+    (hsub : ∀ x ∈ Srep, ∀ h ∈ H, x * h ∈ D₀)
+    (hD₀ : ∀ x ∈ D₀, x ^ (2 ^ M) = 1)
+    {m N : ℕ} (hm : 0 < m) (hw : m * 2 ^ s + (2 ^ s - 1) = N)
+    (hcw : 2 ^ s - 1 ≤ m * 2 ^ s) :
+    Srep.card.choose m
+      ≤ ((D₀.powersetCard (m * 2 ^ s)).filter (fun E =>
+          TopLine.CompatC (TopLine.unitVec (m * 2 ^ s - 1)) N (2 ^ s - 1) E)).card
+    ∧ ((D₀.powersetCard (m * 2 ^ s)).filter (fun E =>
+          TopLine.CompatC (TopLine.unitVec (m * 2 ^ s - 1)) N (2 ^ s - 1) E)).card
+      ≤ 2 ^ (D₀.image (· ^ (2 ^ s))).card := by
+  have hc0 : 0 < 2 ^ s - 1 := by
+    have : (2:ℕ) ^ 1 ≤ 2 ^ s := Nat.pow_le_pow_right (by norm_num) hs0
+    omega
+  constructor
+  · rw [TopLine.zero_fiber_filter_eq hw hc0 hcw D₀]
+    exact TopLine.coset_fiber_lower_bound (by positivity) hH hS0 hinj hsub hm
+      (by omega : 2 ^ s - 1 < 2 ^ s)
+  · exact unit_syndrome_list_budget hζ hsM hD₀ hw hs0 hcw
+
+end TwoSided
+
 end LamLeungTwoPow
