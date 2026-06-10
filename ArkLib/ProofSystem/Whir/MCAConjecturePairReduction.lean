@@ -54,6 +54,8 @@ no comparison or plumbing hypotheses left:
   surfaces with the probability premise discharged by a concrete large cell.
 * `decode_family_affine_pinning_of_rawGSCargo` / `hsteps57_of_rawGSCargo` — the same
   bridge from the raw GS cargo bundle produced by the local-series/Hensel lane.
+* `hsteps57_of_rawGSCargo_cell_card_gt` — the raw-cargo Claim-1 capture front door with
+  the probability premise discharged from a concrete large cell.
 * `mca_johnson_bound_CONJECTURE_pair_of_coeff_polys_cells` — the same result from
   BCIKS-style coefficient-polynomial data on each large cell; the curve assembly theorem
   specializes at `Fin 2` to affine pinning.
@@ -710,6 +712,102 @@ theorem hsteps57_of_rawGSCargo
   exact decode_family_affine_pinning_of_rawGSCargo
     (φ := φ) hInput u hprob hJ hsqrt P Ecell hsubset hPgood
 
+omit [Nonempty ι] [DecidableEq ι] in
+/-- **Affine pinning from raw GS cargo plus a large cell.** This is the cardinality-facing
+producer wrapper: the selected cell supplies the strict-residual probability premise through
+`prob_close_curve_gt_of_cell_card_gt`, and the raw cargo supplies the §5 local-series data. -/
+theorem decode_family_affine_pinning_of_rawGSCargo_cell_card_gt
+    {deg : ℕ} [NeZero deg] (φ : ι ↪ F) {δ : ℝ≥0}
+    (hInput : ∀ (_hk : 0 < 1) (u' : Code.WordStack F (Fin 2) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u' t,
+          ReedSolomon.code φ deg) ≤ δ] >
+          (((1 : ℕ) : ENNReal) *
+            (_root_.ProximityGap.errorBound δ deg φ : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code φ deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg φ →
+      ∀ P' : F → F[X],
+        (∀ z ∈ _root_.ProximityGap.RS_goodCoeffsCurve
+            (k := 1) (deg := deg) (domain := φ) u' δ,
+          (P' z).natDegree < deg ∧
+            δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u' t, (P' z).eval ∘ φ) ≤ δ) →
+        ArkLib.RawGS304.RawGSCargo
+          (k := 1) (deg := deg) (domain := φ) (δ := δ) u' P')
+    (u : Code.WordStack F (Fin 2) ι)
+    (hJ :
+      (1 - (LinearCode.rate (ReedSolomon.code φ deg) : ℝ≥0)) / 2 < δ)
+    (hsqrt : δ < 1 - ReedSolomon.sqrtRate deg φ)
+    (P : F → F[X]) (Ecell : Finset F)
+    (hsubset : Ecell ⊆
+      _root_.ProximityGap.RS_goodCoeffsCurve
+        (k := 1) (deg := deg) (domain := φ) u δ)
+    (hcard : (_root_.ProximityGap.errorBound δ deg φ : ENNReal) *
+      (Fintype.card F : ENNReal) < (Ecell.card : ENNReal))
+    (hPgood : ∀ z ∈ _root_.ProximityGap.RS_goodCoeffsCurve
+        (k := 1) (deg := deg) (domain := φ) u δ,
+      (P z).natDegree < deg ∧
+        δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t, (P z).eval ∘ φ) ≤ δ) :
+    ∃ v₀ v₁ : F[X], v₀.natDegree < deg ∧ v₁.natDegree < deg ∧
+      ∀ γ ∈ Ecell, P γ = v₀ + Polynomial.C γ * v₁ := by
+  classical
+  have hprob := prob_close_curve_gt_of_cell_card_gt
+    (φ := φ) (deg := deg) (δ := δ)
+    (η := _root_.ProximityGap.errorBound δ deg φ) u Ecell hsubset hcard
+  have hprob' :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code φ deg) ≤ δ] >
+          (((1 : ℕ) : ENNReal) *
+            (_root_.ProximityGap.errorBound δ deg φ : ENNReal)) := by
+    simpa using hprob
+  exact decode_family_affine_pinning_of_rawGSCargo
+    (φ := φ) hInput u hprob' hJ hsqrt P Ecell hsubset hPgood
+
+/-- **Claim-1 capture from raw GS cargo plus a large cell.** This is the closest current
+producer-facing K4 surface to the BCIKS20/Haböck Step-5–7 narrative: a concrete large cell
+inside the good-coefficient curve set supplies the probability mass, while `RawGSCargo`
+contains exactly the local-series/Hensel data still needed by the strict-residual producer. -/
+theorem hsteps57_of_rawGSCargo_cell_card_gt
+    {deg T : ℕ} [NeZero deg] (φ : ι ↪ F) {δ : ℝ≥0}
+    (hInput : ∀ (_hk : 0 < 1) (u' : Code.WordStack F (Fin 2) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u' t,
+          ReedSolomon.code φ deg) ≤ δ] >
+          (((1 : ℕ) : ENNReal) *
+            (_root_.ProximityGap.errorBound δ deg φ : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code φ deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg φ →
+      ∀ P' : F → F[X],
+        (∀ z ∈ _root_.ProximityGap.RS_goodCoeffsCurve
+            (k := 1) (deg := deg) (domain := φ) u' δ,
+          (P' z).natDegree < deg ∧
+            δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u' t, (P' z).eval ∘ φ) ≤ δ) →
+        ArkLib.RawGS304.RawGSCargo
+          (k := 1) (deg := deg) (domain := φ) (δ := δ) u' P')
+    (u : Code.WordStack F (Fin 2) ι)
+    (hJ :
+      (1 - (LinearCode.rate (ReedSolomon.code φ deg) : ℝ≥0)) / 2 < δ)
+    (hsqrt : δ < 1 - ReedSolomon.sqrtRate deg φ)
+    (P : F → F[X]) (Ecell : Finset F)
+    (hsubset : Ecell ⊆
+      _root_.ProximityGap.RS_goodCoeffsCurve
+        (k := 1) (deg := deg) (domain := φ) u δ)
+    (hcard : (_root_.ProximityGap.errorBound δ deg φ : ENNReal) *
+      (Fintype.card F : ENNReal) < (Ecell.card : ENNReal))
+    (hPgood : ∀ z ∈ _root_.ProximityGap.RS_goodCoeffsCurve
+        (k := 1) (deg := deg) (domain := φ) u δ,
+      (P z).natDegree < deg ∧
+        δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t, (P z).eval ∘ φ) ≤ δ)
+    (hdec : ∀ γ ∈ Ecell, ∃ d : McaDecode φ deg δ u γ, d.P = P γ) :
+    T < Ecell.card →
+      ∃ a b : F[X], a.natDegree < deg ∧ b.natDegree < deg ∧
+        ∀ γ ∈ Ecell, AffineCaptured φ deg δ u γ (a, b) := by
+  refine hsteps57_of_decode_family_pinning (domain := φ) (k := deg)
+    (δ := δ) (u := u) Ecell T P hdec ?_
+  intro _hlarge
+  exact decode_family_affine_pinning_of_rawGSCargo_cell_card_gt
+    (φ := φ) hInput u hJ hsqrt P Ecell hsubset hcard hPgood
+
 open Classical in
 /-- **The literal pair-case Johnson conjecture from coefficient-polynomial cells.**
 BCIKS-style strict coefficient data says that every coefficient of the decoded family
@@ -784,4 +882,6 @@ end MutualCorrAgreement
 #print axioms MutualCorrAgreement.hsteps57_of_strictCoeffPolysResidualLarge_cell_card_gt
 #print axioms MutualCorrAgreement.decode_family_affine_pinning_of_rawGSCargo
 #print axioms MutualCorrAgreement.hsteps57_of_rawGSCargo
+#print axioms MutualCorrAgreement.decode_family_affine_pinning_of_rawGSCargo_cell_card_gt
+#print axioms MutualCorrAgreement.hsteps57_of_rawGSCargo_cell_card_gt
 #print axioms MutualCorrAgreement.mca_johnson_bound_CONJECTURE_pair_of_coeff_polys_cells
