@@ -1420,6 +1420,7 @@ import ArkLib.ProofSystem.Spartan.SpartanSumcheckUnconditional
 import ArkLib.ProofSystem.Spartan.SumcheckCubeBridge
 import ArkLib.ProofSystem.Spartan.SumcheckDegreeBound
 import ArkLib.ProofSystem.Spartan.SumcheckDeterminismWitnesses
+import ArkLib.ProofSystem.Spartan.PrependRLCDeterminism
 import ArkLib.ProofSystem.Spartan.SumcheckPhaseRbr
 import ArkLib.ProofSystem.Spartan.SumcheckRbrKSResidualAnalysis
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
