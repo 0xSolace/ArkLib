@@ -99,6 +99,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparabilityCharZero
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparableContraction
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSeparableCoreDescent
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSpecializedConditions
+import ArkLib.Data.CodingTheory.GuruswamiSudan.GSSquarefreePart
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GuruswamiSudan
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ListSizeBound
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MonomialCount
@@ -995,6 +996,7 @@ import ArkLib.OracleReduction.Cast
 import ArkLib.OracleReduction.Completeness
 import ArkLib.OracleReduction.Composition.Parallel.Basic
 import ArkLib.OracleReduction.Composition.Sequential.Append
+import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeKeystoneOracle
 import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeSeam
 import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeSeamChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessHelper
