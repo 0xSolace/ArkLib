@@ -210,4 +210,160 @@ theorem oddSlice_build (E O : F[X]) :
     rw [map_mul, map_ofNat]
   rw [h2, contract_expand (p := 2) (by norm_num)]
 
+
+/-! ## The bijection and the count (restored: dropped from the previous commit by a
+merge error — the O96 ledger entry describes this content) -/
+
+theorem C_inv_two_mul_two (h2 : (2 : F) ≠ 0) (p : F[X]) :
+    C (2 : F)⁻¹ * (2 * p) = p := by
+  have h2C : (2 : F[X]) = C (2 : F) := (map_ofNat (C : F →+* F[X]) 2).symm
+  rw [h2C, ← mul_assoc, ← C_mul, inv_mul_cancel₀ h2, C_1, one_mul]
+
+theorem evenSlice_zero : evenSlice (0 : F[X]) = 0 := by
+  rw [evenSlice, zero_comp, add_zero]
+  ext n
+  rw [coeff_contract (by norm_num : (2:ℕ) ≠ 0), coeff_zero, coeff_zero]
+
+theorem oddSlice_zero : oddSlice (0 : F[X]) = 0 := by
+  rw [oddSlice, zero_comp, sub_zero, divX_zero]
+  ext n
+  rw [coeff_contract (by norm_num : (2:ℕ) ≠ 0), coeff_zero, coeff_zero]
+
+theorem natDegree_oddSlice_le' (f : F[X]) :
+    (oddSlice f).natDegree ≤ (f.natDegree - 1) / 2 := by
+  refine le_trans (natDegree_contract_two_le _) (Nat.div_le_div_right ?_)
+  rw [natDegree_divX_eq_natDegree_tsub_one]
+  apply Nat.sub_le_sub_right
+  refine le_trans (natDegree_sub_le _ _) (max_le le_rfl ?_)
+  calc (f.comp (-X)).natDegree ≤ f.natDegree * (-X : F[X]).natDegree := natDegree_comp_le
+    _ ≤ f.natDegree := by rw [natDegree_neg, natDegree_X, mul_one]
+
+theorem oddSlice_ne_zero_natDegree_pos {f : F[X]} (h : oddSlice f ≠ 0) :
+    1 ≤ f.natDegree := by
+  by_contra hlt
+  push Not at hlt
+  interval_cases hdeg : f.natDegree
+  · -- f is a constant: f = C (f.coeff 0)
+    have hconst : f = C (f.coeff 0) := Polynomial.eq_C_of_natDegree_eq_zero hdeg
+    apply h
+    rw [hconst, oddSlice]
+    have : (C (f.coeff 0) : F[X]).comp (-X) = C (f.coeff 0) := C_comp
+    rw [this, sub_self, divX_zero]
+    ext n
+    rw [coeff_contract (by norm_num : (2:ℕ) ≠ 0), coeff_zero, coeff_zero]
+
+
+variable [Fintype F] [DecidableEq F]
+
+theorem evenSlice_mem {k : ℕ} {f : F[X]} (hf : f ∈ polysDegLT k) :
+    evenSlice f ∈ polysDegLT ((k + 1) / 2) := by
+  rw [mem_polysDegLT] at hf ⊢
+  by_cases hf0 : f = 0
+  · subst hf0
+    rw [evenSlice_zero, degree_zero]
+    exact WithBot.bot_lt_coe _
+  · have hk : f.natDegree < k := (natDegree_lt_iff_degree_lt hf0).mpr hf
+    by_cases he0 : evenSlice f = 0
+    · rw [he0, degree_zero]; exact WithBot.bot_lt_coe _
+    · rw [← natDegree_lt_iff_degree_lt he0]
+      have := natDegree_evenSlice_le f
+      omega
+  -- need: natDegree f / 2 < (k+1)/2 given natDegree f < k : omega handles
+
+theorem oddSlice_mem {k : ℕ} {f : F[X]} (hf : f ∈ polysDegLT k) :
+    oddSlice f ∈ polysDegLT (k / 2) := by
+  rw [mem_polysDegLT] at hf ⊢
+  by_cases ho0 : oddSlice f = 0
+  · rw [ho0, degree_zero]; exact WithBot.bot_lt_coe _
+  · have h1 : 1 ≤ f.natDegree := oddSlice_ne_zero_natDegree_pos ho0
+    have hf0 : f ≠ 0 := fun h => by simp [h, oddSlice_zero] at ho0
+    have hk : f.natDegree < k := (natDegree_lt_iff_degree_lt hf0).mpr hf
+    rw [← natDegree_lt_iff_degree_lt ho0]
+    have := natDegree_oddSlice_le' f
+    omega
+
+theorem build_mem {k : ℕ} {E O : F[X]}
+    (hE : E ∈ polysDegLT ((k + 1) / 2)) (hO : O ∈ polysDegLT (k / 2)) :
+    C (2 : F)⁻¹ * (Polynomial.expand F 2 E + X * Polynomial.expand F 2 O)
+      ∈ polysDegLT k := by
+  rw [mem_polysDegLT] at hE hO ⊢
+  set G : F[X] := Polynomial.expand F 2 E + X * Polynomial.expand F 2 O with hG
+  by_cases ha : (2:F)⁻¹ = 0
+  · rw [ha, map_zero, zero_mul, degree_zero]
+    exact WithBot.bot_lt_coe _
+  have hdeq : (C (2:F)⁻¹ * G).degree = G.degree := by
+    rw [degree_mul, degree_C ha, zero_add]
+  rw [hdeq, hG]
+  refine lt_of_le_of_lt (degree_add_le _ _) (max_lt ?_ ?_)
+  · by_cases hE0 : E = 0
+    · subst hE0; rw [map_zero, degree_zero]; exact WithBot.bot_lt_coe _
+    · have hEd : E.natDegree < (k + 1) / 2 := (natDegree_lt_iff_degree_lt hE0).mpr hE
+      have hexp0 : Polynomial.expand F 2 E ≠ 0 := by
+        intro h
+        apply hE0
+        have hc := congrArg (Polynomial.contract 2) h
+        rwa [contract_expand (p := 2) (by norm_num), show Polynomial.contract 2 (0 : F[X]) = 0
+          from by ext n; rw [coeff_contract (by norm_num : (2:ℕ) ≠ 0)]; simp] at hc
+      rw [← natDegree_lt_iff_degree_lt hexp0, natDegree_expand]
+      omega
+  · by_cases hO0 : O = 0
+    · subst hO0; rw [map_zero, mul_zero, degree_zero]; exact WithBot.bot_lt_coe _
+    · have hOd : O.natDegree < k / 2 := (natDegree_lt_iff_degree_lt hO0).mpr hO
+      have hexp0 : Polynomial.expand F 2 O ≠ 0 := by
+        intro h
+        apply hO0
+        have hc := congrArg (Polynomial.contract 2) h
+        rwa [contract_expand (p := 2) (by norm_num), show Polynomial.contract 2 (0 : F[X]) = 0
+          from by ext n; rw [coeff_contract (by norm_num : (2:ℕ) ≠ 0)]; simp] at hc
+      have hX0 : (X : F[X]) * Polynomial.expand F 2 O ≠ 0 := mul_ne_zero X_ne_zero hexp0
+      rw [← natDegree_lt_iff_degree_lt hX0, natDegree_mul X_ne_zero hexp0,
+        natDegree_X, natDegree_expand]
+      omega
+
+/-- **The f-level per-locus count**: degree-`< k` polynomials whose BOTH coefficient
+slices vanish on a prescribed `|Z|`-point locus number exactly `q^(k − 2|Z|)`. -/
+theorem card_polysDegLT_slices_vanishing (h2 : (2 : F) ≠ 0) {k : ℕ} (Z : Finset F)
+    (hZ : 2 * Z.card ≤ k) :
+    ((polysDegLT (F := F) k).filter (fun f =>
+        (∀ z ∈ Z, (evenSlice f).eval z = 0) ∧ (∀ z ∈ Z, (oddSlice f).eval z = 0))).card
+      = Fintype.card F ^ (k - 2 * Z.card) := by
+  have hsplit : k - 2 * Z.card = ((k + 1) / 2 - Z.card) + (k / 2 - Z.card) := by omega
+  rw [hsplit, pow_add,
+    ← card_polysDegLT_vanishing (F := F) (d := (k + 1) / 2) Z (by omega),
+    ← card_polysDegLT_vanishing (F := F) (d := k / 2) Z (by omega),
+    ← Finset.card_product]
+  refine Finset.card_bij' (fun f _ => (evenSlice f, oddSlice f))
+    (fun p _ => C (2 : F)⁻¹ * (Polynomial.expand F 2 p.1 + X * Polynomial.expand F 2 p.2))
+    ?_ ?_ ?_ ?_
+  · -- i maps into the product
+    intro f hf
+    obtain ⟨hfd, hfe, hfo⟩ := Finset.mem_filter.mp hf
+    exact Finset.mem_product.mpr
+      ⟨Finset.mem_filter.mpr ⟨evenSlice_mem hfd, hfe⟩,
+       Finset.mem_filter.mpr ⟨oddSlice_mem hfd, hfo⟩⟩
+  · -- j maps into the filtered space
+    intro p hp
+    obtain ⟨hp1, hp2⟩ := Finset.mem_product.mp hp
+    obtain ⟨hp1d, hp1z⟩ := Finset.mem_filter.mp hp1
+    obtain ⟨hp2d, hp2z⟩ := Finset.mem_filter.mp hp2
+    refine Finset.mem_filter.mpr ⟨build_mem hp1d hp2d, ?_, ?_⟩
+    · intro z hz
+      rw [evenSlice_C_mul, evenSlice_build, C_inv_two_mul_two h2]
+      exact hp1z z hz
+    · intro z hz
+      rw [oddSlice_C_mul, oddSlice_build, C_inv_two_mul_two h2]
+      exact hp2z z hz
+  · -- left inverse: j (i f) = f
+    intro f _
+    show C (2:F)⁻¹ * (Polynomial.expand F 2 (evenSlice f)
+      + X * Polynomial.expand F 2 (oddSlice f)) = f
+    rw [recompose_slices f, C_inv_two_mul_two h2]
+  · -- right inverse: i (j p) = p
+    intro p _
+    refine Prod.ext ?_ ?_
+    · show evenSlice (C (2:F)⁻¹ * _) = p.1
+      rw [evenSlice_C_mul, evenSlice_build, C_inv_two_mul_two h2]
+    · show oddSlice (C (2:F)⁻¹ * _) = p.2
+      rw [oddSlice_C_mul, oddSlice_build, C_inv_two_mul_two h2]
+
 end LamLeungTwoPow

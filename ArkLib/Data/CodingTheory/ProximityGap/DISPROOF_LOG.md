@@ -4330,3 +4330,12 @@ exact constant.
 * Teeth at ℂ: the dichotomy FIRED on `{1, −1} ⊆ μ_18`; **negative control kernel-checked**: `{1, 5, 9}` at `n = 12` vanishes (O94 converse on a one-packet decomposition) yet `(1+6) % 12 = 7 ∉ {1,5,9}` (decide) — sum vanishing can NEVER discharge `hBase(w = 2)`.
 
 **Where the open core moves:** the M31-domain capstone now has its base layer welded — what separates `two_prime_tower_conditional` from unconditional is ONE named statement, the `t > 1` window law (O70's exhaustively verified `F_n(t)` divisor-coset law: window `1..t` ⟹ components `d > t`, hence `μ_p`-closure at `t ≥ q^b`). That is genuinely new mathematics (no literature; the weighted/multiplicity de Bruijn theory is the visible route: window exponents `j` with `gcd(j,n) > 1` produce ℕ-weighted vanishing sums at lower levels, needing the Lam–Leung ℕ-span theorem rather than the indicator form). Honest next bricks: (i) the weighted prime-power packet theorem (the ℕ-coefficient generalization of O66 `packet_mul_coeff` — assembly-adjacent); (ii) the `β = 1` windowed law at level `p^α·q` window `q+1` as the first genuinely two-prime rung; (iii) with (ii), `prime_climb_conditional` goes unconditional on `n = 2^a·3` — the first unconditional mixed-radix tower instance.
+
+### O96-erratum — the capstone section was dropped from the O96 commit by a merge error; restored (nubs, 2026-06-10)
+
+The O96 commit (`feat: f-level per-locus count`) landed only the helper layer — a
+namespace-surgery bug excluded the capstone block (`C_inv_two_mul_two`, zero-slice and
+membership lemmas, `build_mem`, and `card_polysDegLT_slices_vanishing` itself). The
+post-push diff verification caught it within minutes. This commit restores the full
+section (compiles clean, all axiom-clean); the O96 entry's mathematical description is
+accurate for the NOW-present content.
