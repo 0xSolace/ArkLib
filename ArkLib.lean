@@ -791,6 +791,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PackingClassCSP
 import ArkLib.Data.CodingTheory.ProximityGap.PackingSubdivision
 import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
+import ArkLib.Data.CodingTheory.ProximityGap.PrimePowerMultisetWindow
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeAllRatesJohnsonInstances
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeRatesBracket
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeScaleBracketFull
@@ -1459,6 +1460,7 @@ import ArkLib.ProofSystem.Stir.ChainCompleteness
 import ArkLib.ProofSystem.Stir.ChainProof
 import ArkLib.ProofSystem.Stir.ChainRbrIndicator
 import ArkLib.ProofSystem.Stir.ChainVSpecCount
+import ArkLib.ProofSystem.Stir.CheckedFinalBlock
 import ArkLib.ProofSystem.Stir.CheckingVerifier
 import ArkLib.ProofSystem.Stir.Combine
 import ArkLib.ProofSystem.Stir.Complexity
