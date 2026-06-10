@@ -1491,6 +1491,7 @@ import ArkLib.ProofSystem.Stir.VectorBridge
 import ArkLib.ProofSystem.Stir.VectorBridgeMid
 import ArkLib.ProofSystem.Stir.VectorChain
 import ArkLib.ProofSystem.Stir.VectorChainCompleteness
+import ArkLib.ProofSystem.Stir.WindowCAFeed
 import ArkLib.ProofSystem.Sumcheck.Domain
 import ArkLib.ProofSystem.Sumcheck.Impl.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.Completeness
@@ -1856,6 +1857,7 @@ import ArkLib.ToMathlib.TruncatedLocalRoot
 import ArkLib.ToMathlib.TwistedKernel
 import ArkLib.ToMathlib.UMSubspaceDesignProof
 import ArkLib.ToMathlib.UnifiedExtractionTarget
+import ArkLib.ToMathlib.UnifiedProducerWindowGlue
 import ArkLib.ToMathlib.UniformTranslationAverage
 import ArkLib.ToMathlib.WeightLambdaCalculus
 import ArkLib.ToMathlib.WhirBricksConstruction
