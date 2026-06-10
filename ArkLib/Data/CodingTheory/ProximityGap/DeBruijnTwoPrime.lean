@@ -1522,7 +1522,6 @@ section IteratedDescent
 variable [DecidableEq F] [CharZero F]
 
 /-- **The iterated spectral transfer**: the descent chain to depth `m`. -/
-omit [DecidableEq F] in
 theorem iterated_spectral_transfer {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
     (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
     (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
@@ -1639,7 +1638,6 @@ section ChainEndpoint
 variable [DecidableEq F] [CharZero F]
 
 /-- **The symmetric `p`-side iterated transfer**: swap the prime roles. -/
-omit [DecidableEq F] in
 theorem iterated_spectral_transfer_p {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
     (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
     (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))
@@ -1658,7 +1656,6 @@ theorem iterated_spectral_transfer_p {p q a b : ℕ} (hp : p.Prime) (hq : q.Prim
 /-- **The chain endpoint**: with the full `q`-power window (through `q^(b+1)`), the
 deepest spectrum is a vanishing subset of the prime-power level `μ_{p^(a+1)}`, closed
 under every `p`-th root of unity. -/
-omit [DecidableEq F] in
 theorem deep_spectrum_mu_p_closed {p q a b : ℕ} (hp : p.Prime) (hq : q.Prime)
     (hpq : p ≠ q) {ζp ζq : F} (hζp : IsPrimitiveRoot ζp (p ^ (a + 1)))
     (hζq : IsPrimitiveRoot ζq (q ^ (b + 1)))

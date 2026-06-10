@@ -4291,3 +4291,18 @@ degree-`<k` error range over exactly `q^(k−2|Z|)` candidates; with O94's
 union-over-loci/incidence structure versus the weight filter (how many loci, how much
 overlap, what fraction of each per-locus space meets weight ≤ w). Queued capstone: the
 f-level product count via `recompose_slices`.
+
+### O83 — THE UPWARD RUNG: coset structure lifts through the power map (coset_lift)
+
+`DeBruijnTwoPrime.coset_lift` + `coset_lift_sq` (axiom-clean, 0 sorry, char-free,
+root-free): if every point of the μ_A-orbit of x^q (one level down) is covered by a
+full μ_q-orbit inside S mapping onto it, then x is μ_{q·A}-closed in S — THE COSET
+ORDER MULTIPLIES UP THE CHAIN. Three-line core: (h·x)^q lies over the μ_A-orbit point
+h^q·x^q; the lift gives w ∈ S with the same q-th power; (h·x/w)^q = 1 and the lifted
+μ_q-orbit absorbs the discrepancy. (A = 0 hole closed with 0 < A; a concurrent agent's
+omit-before-docstring ordering on three earlier theorems repaired in passing.)
+
+The windowed law's assembly set is now COMPLETE: descent (O81/O82 both primes),
+endpoint structure (O82), upward rung (O83). The full t-general law = wiring these
+three around the spectral orbit data — the d-coset reassembly of the O70-verified
+tables, with every constituent machine-checked.
