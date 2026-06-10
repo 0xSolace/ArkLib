@@ -1269,6 +1269,7 @@ import ArkLib.ProofSystem.Stir.ProximityGapProof
 import ArkLib.ProofSystem.Stir.ProximityGapSmallField
 import ArkLib.ProofSystem.Stir.Quotienting
 import ArkLib.ProofSystem.Stir.Round3Block
+import ArkLib.ProofSystem.Stir.Round3Compose
 import ArkLib.ProofSystem.Stir.RoundCompleteness
 import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.ProofSystem.Stir.RoundVector
