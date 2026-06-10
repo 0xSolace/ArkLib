@@ -3113,7 +3113,6 @@ contracted-fold (valued, general-radix) route as the mapped candidate. -/
 
 section CoverageMono
 
-omit [CharZero F] in
 /-- Coverage is divisor-monotone: a full `μ_d`-coset inside `S` contains the full
 `μ_{d'}`-coset for every divisor `d' ∣ d`. -/
 theorem coverage_mono {S : Finset F} {x : F} {d d' : ℕ} (hdvd : d' ∣ d)
