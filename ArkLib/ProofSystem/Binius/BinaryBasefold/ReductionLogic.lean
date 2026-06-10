@@ -636,12 +636,9 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       conv_rhs at h_lt => rw [h_count_succ]
       omega
     simp only [eqRec_eq_cast, cast_cast]
-    apply eq_of_heq
-    refine HEq.trans ?_ (HEq.trans (heq_of_eq h_transcript_eq.symm)
-      (cast_heq _ (transcript.messages ⟨0, rfl⟩)).symm)
-    simpa [commitStepLogic, commitStepHEq, commitStepLogic_embed,
-      commitStepLogic_embedFn, Function.Embedding.coeFn_mk, hj, h_j_eq, OracleStatement] using
-      (cast_heq _ newOracle)
+    funext x
+    rw [h_transcript_eq]
+    rfl
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
