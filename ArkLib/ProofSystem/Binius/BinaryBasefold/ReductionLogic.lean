@@ -44,6 +44,19 @@ open Sumcheck.Structured
 open Binius.BinaryBasefold
 open scoped NNReal
 
+/-- Taking the rightmost `n` entries after consing one value drops the cons head. -/
+theorem fin_rtake_cons_const {n : ℕ} {α : Type*} (x : α) (v : Fin n → α) :
+    Fin.rtake (n := n + 1) (α := fun _ : Fin (n + 1) => α)
+      (m := n) (v := Fin.cons x v) (h := Nat.le_succ n) = v := by
+  funext i
+  simp [Fin.rtake, Fin.natAdd]
+  rw [show (⟨1 + i.val, by omega⟩ : Fin (n + 1)) = i.succ by
+    ext
+    simp only [Fin.val_succ]
+    omega
+  ]
+  exact Fin.cons_succ (α := fun _ => α) x v i
+
 variable {r : ℕ} [NeZero r]
 variable {L : Type} [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
   [SampleableType L]
@@ -420,9 +433,10 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
               (v := verifierStmtOut.challenges)
               (h := by simp only [Fin.val_fin_le, OracleFrontierIndex.val_le_i]) =
                 stmtIn.challenges := by
-          ext j
-          simp [Fin.rtake, Fin.natAdd, foldStepLogic, verifierStmtOut, step,
-            OracleFrontierIndex.val_mkFromStmtIdxCastSuccOfSucc]
+          dsimp only [foldStepLogic, verifierStmtOut, step]
+          simpa [OracleFrontierIndex.val_mkFromStmtIdxCastSuccOfSucc] using
+            (fin_rtake_cons_const (transcript.challenges ⟨1, by omega⟩)
+              stmtIn.challenges)
         rw! (castMode := .all) [h_oracleIdx_eq] at h_oracle_folding_In
         simp at h_oracle_folding_In ⊢
         have h_challenges_eq' :

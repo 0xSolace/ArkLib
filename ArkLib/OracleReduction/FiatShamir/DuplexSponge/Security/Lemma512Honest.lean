@@ -206,6 +206,49 @@ theorem forward_getElem?_of_not_E_of_perm_or_inv
   · exact hforward
   · exact False.elim (not_inv_getElem?_of_not_E tr h hinv)
 
+/-- `J_BT` hash-index payloads point to the recorded hash query for their sequence. -/
+theorem jbt_hash_getElem?
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (p : Sigma fun seq : DuplexSpongeFS.Backtrack.BacktrackSequence tr state =>
+      DuplexSpongeFS.Backtrack.BacktrackIndexList tr seq)
+    (hp : p ∈ DuplexSpongeFS.Backtrack.J_BT S) :
+    GetElem?.getElem? tr p.2.1.val =
+      some (⟨Sum.inl p.1.stmt,
+        Vector.drop (p.1.inputState[0]'(by
+          rw [p.1.inputState_length_eq_outputState_length_succ]
+          exact Nat.succ_pos _)) SpongeSize.R⟩ :
+          OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  classical
+  unfold DuplexSpongeFS.Backtrack.J_BT at hp
+  rw [Finset.mem_image] at hp
+  obtain ⟨seq, _hseq, hp_eq⟩ := hp
+  subst p
+  simpa using DuplexSpongeFS.Backtrack.BacktrackSequence.index_hash_getElem?
+    (trace := tr) (state := state) (seq := seq)
+
+/-- Off `E`, a nonterminal `J_BT` permutation-index payload points to the forward
+permutation query for that chain step. -/
+theorem jbt_perm_forward_getElem?_of_not_E
+    (tr : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (h : ¬ BadEventDS.E tr)
+    (state : CanonicalSpongeState U) (S : DuplexSpongeFS.Backtrack.S_BT tr state)
+    (p : Sigma fun seq : DuplexSpongeFS.Backtrack.BacktrackSequence tr state =>
+      DuplexSpongeFS.Backtrack.BacktrackIndexList tr seq)
+    (hp : p ∈ DuplexSpongeFS.Backtrack.J_BT S)
+    (pairIdx : Fin p.1.inputState.length) (hpair : pairIdx.val < p.1.outputState.length) :
+    GetElem?.getElem? tr (p.2.2 pairIdx).val =
+      some (⟨Sum.inr (Sum.inl p.1.inputState[pairIdx]),
+        p.1.outputState[pairIdx.val]'hpair⟩ :
+        OracleSpec.duplexSpongeTraceEntry (StartType := StmtIn) (U := U)) := by
+  classical
+  unfold DuplexSpongeFS.Backtrack.J_BT at hp
+  rw [Finset.mem_image] at hp
+  obtain ⟨seq, _hseq, hp_eq⟩ := hp
+  subst p
+  simpa using forward_getElem?_of_not_E_of_perm_or_inv (tr := tr) h
+    (DuplexSpongeFS.Backtrack.BacktrackSequence.index_perm_getElem?_of_lt
+      (trace := tr) (state := state) (seq := seq) (pairIdx := pairIdx) (hpair := hpair))
+
 /-- **M2a discharged** — `DuplexSpongeFS.KeyLemmaFoundations.Lemma5_12HonestResidual`
 holds: off the combined bad event `E`, no BackTrack chain step is anchored by an
 inverse-permutation entry (CO25 Lemma 5.12, honest form over `Backtrack.S_BT`). -/
@@ -222,4 +265,6 @@ end DuplexSpongeFS.Sponge316
 #print axioms DuplexSpongeFS.Sponge316.hasInvEntry_implies_E
 #print axioms DuplexSpongeFS.Sponge316.not_inv_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.forward_getElem?_of_not_E_of_perm_or_inv
+#print axioms DuplexSpongeFS.Sponge316.jbt_hash_getElem?
+#print axioms DuplexSpongeFS.Sponge316.jbt_perm_forward_getElem?_of_not_E
 #print axioms DuplexSpongeFS.Sponge316.lemma5_12_honest

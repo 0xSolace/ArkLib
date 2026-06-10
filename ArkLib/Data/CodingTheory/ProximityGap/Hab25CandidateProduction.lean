@@ -106,7 +106,7 @@ theorem exists_rich_coordinates {α : Type} {n : ℕ} (E : Finset α) (A : α �
   have hpoorlb : ∀ t ∈ poor, M + 1 ≤ (E.filter (fun γ => t ∉ A γ)).card := by
     intro t ht
     rw [hpoor, Finset.mem_filter] at ht
-    have hpart := Finset.filter_card_add_filter_neg_card_eq_card
+    have hpart := Finset.card_filter_add_card_filter_not
       (s := E) (p := fun γ => t ∈ A γ)
     omega
   have hpoorcount : poor.card * (M + 1) ≤ e * E.card :=
@@ -126,7 +126,7 @@ theorem exists_rich_coordinates {α : Type} {n : ℕ} (E : Finset α) (A : α �
     omega
   have hrichcard : k ≤ (Finset.univ \ poor).card := by
     have h1 : (Finset.univ \ poor).card = n - poor.card := by
-      rw [Finset.card_sdiff (Finset.subset_univ poor), Finset.card_univ, Fintype.card_fin]
+      rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl, Fintype.card_fin]
     omega
   obtain ⟨T, hTsub, hTcard⟩ := Finset.exists_subset_card_eq hrichcard
   refine ⟨T, hTcard, ?_⟩
@@ -134,7 +134,7 @@ theorem exists_rich_coordinates {α : Type} {n : ℕ} (E : Finset α) (A : α �
   have htpoor : t ∉ poor := (Finset.mem_sdiff.mp (hTsub ht)).2
   rw [hpoor, Finset.mem_filter] at htpoor
   push Not at htpoor
-  exact not_lt.mp (htpoor (Finset.mem_univ t))
+  exact htpoor (Finset.mem_univ t)
 
 /-! ## The Claim 5.9 interpolation step: `k` node values pin the curve -/
 
@@ -217,7 +217,7 @@ lemma decode_witness_card_ge {n : ℕ} {δ : ℝ≥0} {e : ℕ} {S : Finset (Fin
       _ ≤ (S.card : ℝ≥0) := hcard
   have h2 : (n : ℝ≥0) ≤ (S.card : ℝ≥0) + δ * n := tsub_le_iff_right.mp h1
   have h3 : (n : ℝ≥0) ≤ (S.card : ℝ≥0) + (e : ℝ≥0) :=
-    le_trans h2 (add_le_add_left hδe _)
+    le_trans h2 (add_le_add le_rfl hδe)
   have h4 : (n : ℝ≥0) ≤ ((S.card + e : ℕ) : ℝ≥0) := by
     push_cast
     exact h3
@@ -271,7 +271,7 @@ theorem capture_on_rich_subcell {n L k : ℕ} (hk : 0 < k) (hkn : k ≤ n)
       exact Finset.mem_biUnion.mpr ⟨t, htT, Finset.mem_filter.mpr ⟨hγE, htn⟩⟩
     have hperT : ∀ t ∈ T, (E.filter (fun γ => t ∉ A γ)).card ≤ M := by
       intro t ht
-      have hpart := Finset.filter_card_add_filter_neg_card_eq_card
+      have hpart := Finset.card_filter_add_card_filter_not
         (s := E) (p := fun γ => t ∈ A γ)
       have hr := hrich t ht
       omega
