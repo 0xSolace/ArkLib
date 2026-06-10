@@ -1010,6 +1010,7 @@ import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
 import ArkLib.MCACapacityTrivial_keep
 import ArkLib.MCAGSRefutationCore_keep
+import ArkLib.MCAJohnsonSmallField_keep
 import ArkLib.OracleReduction.BCS.AppendSoundnessMsg
 import ArkLib.OracleReduction.BCS.BCSCompilerProof
 import ArkLib.OracleReduction.BCS.Basic
@@ -1245,6 +1246,7 @@ import ArkLib.ProofSystem.Logup.Security.OuterSoundnessReal
 import ArkLib.ProofSystem.Logup.Security.OuterSoundnessSharp
 import ArkLib.ProofSystem.Logup.Security.OuterVerifierSupport
 import ArkLib.ProofSystem.Logup.Security.RbrToSoundBridge
+import ArkLib.ProofSystem.Logup.Security.SingleRoundPlainSoundnessZero
 import ArkLib.ProofSystem.Logup.Security.Soundness
 import ArkLib.ProofSystem.Logup.Security.SoundnessConverse
 import ArkLib.ProofSystem.Logup.Security.SubPhaseSplit
