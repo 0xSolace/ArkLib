@@ -156,8 +156,503 @@ theorem debruijn_int_two_prime [CharZero L] {p q a b : ℕ}
     rw [hdivq] at hB0
     rw [hsplit, hA0, hB0, add_zero]
 
+/-! ## Stage 2 (O109b) — the coprime cyclotomic minpoly at GENERAL orders
+
+The two-prime descent (O93/O94) split threads at a prime whose SQUARE divides the
+level; the coprime analogue needs the linear disjointness of `ℚ(ζ_M)` and
+`ℚ(ζ_N)` for coprime `M, N` at arbitrary orders.  The proof of
+`DeBruijnTwoPrime.minpoly_adjoin_primitiveRoot_eq_packet` never used prime-power
+structure — this is its honest generalization, same engine: divisibility
+`minpoly ∣ Φ_N` pinched against the totient tower bound. -/
+
+section CoprimeMinpoly
+
+open Polynomial IntermediateField Module
+
+/-- Roots of unity are integral over any base field of the ambient field.
+(Provenance: `CRTPacketMinpoly.isIntegral_of_pow_eq_one`.) -/
+private lemma isIntegral_of_pow_eq_one {K L : Type*} [Field K] [Field L] [Algebra K L]
+    {x : L} {m : ℕ} (hm : 0 < m) (hx : x ^ m = 1) : IsIntegral K x :=
+  ⟨X ^ m - 1, by simpa using monic_X_pow_sub_C (1 : K) hm.ne', by simp [hx]⟩
+
+/-- **The coprime cyclotomic minpoly, general orders**: for coprime `M, N ≥ 1` and
+primitive roots `ξ` (`M`-th), `η` (`N`-th) in a characteristic-zero field, the
+minimal polynomial of `η` over `ℚ⟮ξ⟯` is `Φ_N` — linear disjointness of coprime
+cyclotomic extensions, with no prime-power restriction.  (Generalizes
+`DeBruijnTwoPrime.minpoly_adjoin_primitiveRoot_eq_packet`, whose proof is
+order-agnostic.) -/
+theorem minpoly_adjoin_coprime_eq_cyclotomic [CharZero L] {M N : ℕ}
+    (hM : 0 < M) (hN : 0 < N) (hco : Nat.Coprime M N)
+    {ξ η : L} (hξ : IsPrimitiveRoot ξ M) (hη : IsPrimitiveRoot η N) :
+    minpoly ℚ⟮ξ⟯ η = Polynomial.cyclotomic N ℚ⟮ξ⟯ := by
+  classical
+  have hn : 0 < M * N := Nat.mul_pos hM hN
+  -- integrality of the three roots involved
+  have hintξ : IsIntegral ℚ ξ := isIntegral_of_pow_eq_one hM hξ.pow_eq_one
+  have hintηK : IsIntegral ℚ⟮ξ⟯ η := isIntegral_of_pow_eq_one hN hη.pow_eq_one
+  -- `ξ * η` is a primitive `(M * N)`-th root of unity (coprime orders multiply)
+  have h1 : orderOf ξ = M := hξ.eq_orderOf.symm
+  have h2 : orderOf η = N := hη.eq_orderOf.symm
+  have horder : orderOf (ξ * η) = M * N := by
+    rw [(Commute.all ξ η).orderOf_mul_eq_mul_orderOf_of_coprime
+      (by rw [h1, h2]; exact hco), h1, h2]
+  have hζ : IsPrimitiveRoot (ξ * η) (M * N) :=
+    horder ▸ IsPrimitiveRoot.orderOf (ξ * η)
+  have hintζ : IsIntegral ℚ (ξ * η) := isIntegral_of_pow_eq_one hn hζ.pow_eq_one
+  -- absolute degrees over ℚ, via unconditional rationals-cyclotomic irreducibility
+  have hrkK : finrank ℚ ℚ⟮ξ⟯ = M.totient := by
+    rw [IntermediateField.adjoin.finrank hintξ, ← cyclotomic_eq_minpoly_rat hξ hM,
+      natDegree_cyclotomic]
+  have hrkZ : finrank ℚ ℚ⟮ξ * η⟯ = (M * N).totient := by
+    rw [IntermediateField.adjoin.finrank hintζ, ← cyclotomic_eq_minpoly_rat hζ hn,
+      natDegree_cyclotomic]
+  -- finite dimensionality up the tower
+  haveI : FiniteDimensional ℚ ℚ⟮ξ⟯ := IntermediateField.adjoin.finiteDimensional hintξ
+  haveI : FiniteDimensional ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ :=
+    IntermediateField.adjoin.finiteDimensional hintηK
+  haveI : FiniteDimensional ℚ ℚ⟮ξ⟯⟮η⟯ := Module.Finite.trans ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯
+  -- `ξ * η` lives in `ℚ⟮ξ⟯⟮η⟯`
+  have hξE : ξ ∈ ℚ⟮ξ⟯⟮η⟯ := by
+    have h := ℚ⟮ξ⟯⟮η⟯.algebraMap_mem ⟨ξ, mem_adjoin_simple_self ℚ ξ⟩
+    simpa using h
+  have hηE : η ∈ ℚ⟮ξ⟯⟮η⟯ := mem_adjoin_simple_self ℚ⟮ξ⟯ η
+  have hsub : ∀ {x : L}, x ∈ ℚ⟮ξ * η⟯ → x ∈ ℚ⟮ξ⟯⟮η⟯ := by
+    intro x hx
+    have hle : ℚ⟮ξ * η⟯ ≤ (ℚ⟮ξ⟯⟮η⟯).restrictScalars ℚ := by
+      rw [adjoin_le_iff]
+      intro y hy
+      rw [Set.mem_singleton_iff] at hy
+      subst hy
+      exact mul_mem hξE hηE
+    exact hle hx
+  -- ℚ-linear embedding `ℚ⟮ξ * η⟯ ↪ ℚ⟮ξ⟯⟮η⟯` gives the degree lower bound
+  let f : ℚ⟮ξ * η⟯ →ₗ[ℚ] ℚ⟮ξ⟯⟮η⟯ :=
+    { toFun := fun x => ⟨x.1, hsub x.2⟩
+      map_add' := fun _ _ => rfl
+      map_smul' := fun _ _ => rfl }
+  have hinj : Function.Injective f := fun x y hxy => by
+    have h1 := congrArg Subtype.val hxy
+    exact Subtype.ext h1
+  have hle : finrank ℚ ℚ⟮ξ * η⟯ ≤ finrank ℚ ℚ⟮ξ⟯⟮η⟯ :=
+    LinearMap.finrank_le_finrank_of_injective hinj
+  have htower : finrank ℚ ℚ⟮ξ⟯ * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ = finrank ℚ ℚ⟮ξ⟯⟮η⟯ :=
+    Module.finrank_mul_finrank ℚ ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯
+  -- the totient tower bound: `φ(N) ≤ natDegree (minpoly ℚ⟮ξ⟯ η)`
+  have hdeg_ge : N.totient ≤ (minpoly ℚ⟮ξ⟯ η).natDegree := by
+    have hmul : M.totient * N.totient ≤ M.totient * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := by
+      calc M.totient * N.totient
+          = (M * N).totient := (Nat.totient_mul hco).symm
+        _ = finrank ℚ ℚ⟮ξ * η⟯ := hrkZ.symm
+        _ ≤ finrank ℚ ℚ⟮ξ⟯⟮η⟯ := hle
+        _ = finrank ℚ ℚ⟮ξ⟯ * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := htower.symm
+        _ = M.totient * finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ := by rw [hrkK]
+    have h2 : N.totient ≤ finrank ℚ⟮ξ⟯ ℚ⟮ξ⟯⟮η⟯ :=
+      Nat.le_of_mul_le_mul_left hmul (Nat.totient_pos.mpr hM)
+    rwa [IntermediateField.adjoin.finrank hintηK] at h2
+  -- divisibility: `minpoly ℚ⟮ξ⟯ η ∣ Φ_N` over `ℚ⟮ξ⟯`
+  have hdvd : minpoly ℚ⟮ξ⟯ η ∣ cyclotomic N ℚ⟮ξ⟯ := by
+    apply minpoly.dvd
+    rw [aeval_def, ← eval_map, map_cyclotomic]
+    exact hη.isRoot_cyclotomic hN
+  -- monic divisor of matching degree: the minimal polynomial IS the cyclotomic
+  exact (Polynomial.eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic hintηK)
+    (cyclotomic.monic _ _) hdvd (by rwa [natDegree_cyclotomic])).symm
+
+/-- The degree extraction: `[ℚ(ζ_M)(ζ_N) : ℚ(ζ_M)] = φ(N)` for coprime orders. -/
+theorem natDegree_minpoly_adjoin_coprime [CharZero L] {M N : ℕ}
+    (hM : 0 < M) (hN : 0 < N) (hco : Nat.Coprime M N)
+    {ξ η : L} (hξ : IsPrimitiveRoot ξ M) (hη : IsPrimitiveRoot η N) :
+    (minpoly ℚ⟮ξ⟯ η).natDegree = N.totient := by
+  rw [minpoly_adjoin_coprime_eq_cyclotomic hM hN hco hξ hη, natDegree_cyclotomic]
+
+end CoprimeMinpoly
+
+/-! ## Stage 3 (O109b) — the coprime thread split: EQUAL thread sums
+
+At a coprime product `n = m·r` (`r` prime), the CRT box `[0,m) × [0,r)` carries
+the exponents, and a vanishing ℤ-weighted sum forces all `r` CRT thread sums (at
+level `m`) to be EQUAL — not zero, as in the non-coprime O93 split: the minpoly
+of the `r`-side root over `ℚ(ζ_m)` is `Φ_r` (degree `r−1`, Stage 2), so
+`1, ζ_r, …, ζ_r^{r−2}` are independent and the relation `Σ_i ζ_r^i = 0` welds
+the last thread to the others. -/
+
+section CoprimeThreadSplit
+
+open IntermediateField
+
+/-- The canonical CRT representative: the unique `e < m·r` with `e ≡ k [MOD m]`
+and `e ≡ i [MOD r]`. -/
+def crt (m r : ℕ) (hco : Nat.Coprime m r) (k i : ℕ) : ℕ :=
+  (Nat.chineseRemainder hco k i : ℕ) % (m * r)
+
+lemma crt_lt {m r : ℕ} (hm : 0 < m) (hr : 0 < r) (hco : Nat.Coprime m r)
+    (k i : ℕ) : crt m r hco k i < m * r :=
+  Nat.mod_lt _ (Nat.mul_pos hm hr)
+
+lemma crt_modEq_left {m r : ℕ} (hco : Nat.Coprime m r) (k i : ℕ) :
+    crt m r hco k i ≡ k [MOD m] :=
+  (((Nat.mod_modEq _ (m * r)).of_dvd (dvd_mul_right m r))).trans
+    (Nat.chineseRemainder hco k i).2.1
+
+lemma crt_modEq_right {m r : ℕ} (hco : Nat.Coprime m r) (k i : ℕ) :
+    crt m r hco k i ≡ i [MOD r] :=
+  (((Nat.mod_modEq _ (m * r)).of_dvd (dvd_mul_left r m))).trans
+    (Nat.chineseRemainder hco k i).2.2
+
+/-- CRT uniqueness below the modulus. -/
+lemma crt_unique {m r : ℕ} (hm : 0 < m) (hr : 0 < r) (hco : Nat.Coprime m r)
+    {e k i : ℕ} (he : e < m * r) (hk : e ≡ k [MOD m]) (hi : e ≡ i [MOD r]) :
+    crt m r hco k i = e := by
+  have hmod : crt m r hco k i ≡ e [MOD m * r] :=
+    (Nat.modEq_and_modEq_iff_modEq_mul hco).mp
+      ⟨(crt_modEq_left hco k i).trans hk.symm,
+        (crt_modEq_right hco k i).trans hi.symm⟩
+  have h1 : crt m r hco k i % (m * r) = e % (m * r) := hmod
+  rwa [Nat.mod_eq_of_lt (crt_lt hm hr hco k i), Nat.mod_eq_of_lt he] at h1
+
+/-- The CRT roundtrip: `crt (e % m) (e % r) = e` for `e < m·r`. -/
+lemma crt_roundtrip {m r : ℕ} (hm : 0 < m) (hr : 0 < r) (hco : Nat.Coprime m r)
+    {e : ℕ} (he : e < m * r) : crt m r hco (e % m) (e % r) = e :=
+  crt_unique hm hr hco he (Nat.mod_modEq e m).symm (Nat.mod_modEq e r).symm
+
+/-- A root of `x^n = 1` sees exponents only through their residues mod `n`. -/
+lemma pow_eq_pow_of_modEq {x : L} {n a b : ℕ} (hx : x ^ n = 1)
+    (h : a ≡ b [MOD n]) : x ^ a = x ^ b := by
+  have hred : ∀ c : ℕ, x ^ c = x ^ (c % n) := by
+    intro c
+    conv_lhs => rw [← Nat.div_add_mod c n]
+    rw [pow_add, pow_mul, hx, one_pow, one_mul]
+  rw [hred a, hred b, h]
+
+/-- The `r`-side CRT root `ζ^{crt 0 1}` is a primitive `r`-th root of unity. -/
+lemma isPrimitiveRoot_crt_right {m r : ℕ} (_hm : 0 < m) (_hr : 0 < r)
+    (hco : Nat.Coprime m r) {ζ : L} (hζ : IsPrimitiveRoot ζ (m * r)) :
+    IsPrimitiveRoot (ζ ^ crt m r hco 0 1) r := by
+  constructor
+  · -- (ζ^u)^r = 1: m ∣ u so m·r ∣ u·r
+    rw [← pow_mul, hζ.pow_eq_one_iff_dvd]
+    have hmu : m ∣ crt m r hco 0 1 :=
+      (Nat.modEq_zero_iff_dvd).mp (crt_modEq_left hco 0 1)
+    exact mul_dvd_mul_right hmu r
+  · -- order exactly r: u ≡ 1 mod r
+    intro l hl
+    rw [← pow_mul, hζ.pow_eq_one_iff_dvd] at hl
+    have hrl : r ∣ crt m r hco 0 1 * l := dvd_trans (dvd_mul_left r m) hl
+    have hu1 : crt m r hco 0 1 ≡ 1 [MOD r] := crt_modEq_right hco 0 1
+    have hcong : crt m r hco 0 1 * l ≡ l [MOD r] := by
+      calc crt m r hco 0 1 * l ≡ 1 * l [MOD r] := hu1.mul_right l
+        _ = l := one_mul l
+    exact (Nat.modEq_zero_iff_dvd).mp
+      ((hcong.symm.trans (Nat.modEq_zero_iff_dvd.mpr hrl)))
+
+/-- The `m`-side CRT root `ζ^{crt 1 0}` is a primitive `m`-th root of unity. -/
+lemma isPrimitiveRoot_crt_left {m r : ℕ} (_hm : 0 < m) (_hr : 0 < r)
+    (hco : Nat.Coprime m r) {ζ : L} (hζ : IsPrimitiveRoot ζ (m * r)) :
+    IsPrimitiveRoot (ζ ^ crt m r hco 1 0) m := by
+  constructor
+  · rw [← pow_mul, hζ.pow_eq_one_iff_dvd]
+    have hrv : r ∣ crt m r hco 1 0 :=
+      (Nat.modEq_zero_iff_dvd).mp (crt_modEq_right hco 1 0)
+    obtain ⟨c, hc⟩ := hrv
+    exact ⟨c, by rw [hc]; ring⟩
+  · intro l hl
+    rw [← pow_mul, hζ.pow_eq_one_iff_dvd] at hl
+    have hml : m ∣ crt m r hco 1 0 * l := dvd_trans (dvd_mul_right m r) hl
+    have hv1 : crt m r hco 1 0 ≡ 1 [MOD m] := crt_modEq_left hco 1 0
+    have hcong : crt m r hco 1 0 * l ≡ l [MOD m] := by
+      calc crt m r hco 1 0 * l ≡ 1 * l [MOD m] := hv1.mul_right l
+        _ = l := one_mul l
+    exact (Nat.modEq_zero_iff_dvd).mp
+      ((hcong.symm.trans (Nat.modEq_zero_iff_dvd.mpr hml)))
+
+/-- The CRT power identity: `ζ^{crt k i} = (ζ^v)^k · (ζ^u)^i` with
+`v = crt 1 0`, `u = crt 0 1`. -/
+lemma pow_crt_eq {m r : ℕ} (_hm : 0 < m) (_hr : 0 < r) (hco : Nat.Coprime m r)
+    {ζ : L} (hζ : IsPrimitiveRoot ζ (m * r)) (k i : ℕ) :
+    ζ ^ crt m r hco k i = (ζ ^ crt m r hco 1 0) ^ k * (ζ ^ crt m r hco 0 1) ^ i := by
+  rw [← pow_mul, ← pow_mul, ← pow_add]
+  refine pow_eq_pow_of_modEq hζ.pow_eq_one ?_
+  refine (Nat.modEq_and_modEq_iff_modEq_mul hco).mp ⟨?_, ?_⟩
+  · -- mod m: crt k i ≡ k, v ≡ 1, u ≡ 0
+    calc crt m r hco k i ≡ k [MOD m] := crt_modEq_left hco k i
+      _ = 1 * k + 0 * i := by ring
+      _ ≡ crt m r hco 1 0 * k + crt m r hco 0 1 * i [MOD m] :=
+          (((crt_modEq_left hco 1 0).symm.mul_right k).add
+            ((crt_modEq_left hco 0 1).symm.mul_right i))
+  · -- mod r: crt k i ≡ i, v ≡ 0, u ≡ 1
+    calc crt m r hco k i ≡ i [MOD r] := crt_modEq_right hco k i
+      _ = 0 * k + 1 * i := by ring
+      _ ≡ crt m r hco 1 0 * k + crt m r hco 0 1 * i [MOD r] :=
+          (((crt_modEq_right hco 1 0).symm.mul_right k).add
+            ((crt_modEq_right hco 0 1).symm.mul_right i))
+
+/-- The CRT regrouping of a ℤ-weighted root sum into `r`-side threads of
+`m`-side sums. -/
+lemma int_sum_crt_regroup {m r : ℕ} (hm : 0 < m) (hr : 0 < r)
+    (hco : Nat.Coprime m r) {ζ : L} (hζ : IsPrimitiveRoot ζ (m * r)) (w : ℕ → ℤ) :
+    ∑ e ∈ Finset.range (m * r), (w e : L) * ζ ^ e
+      = ∑ i ∈ Finset.range r, (ζ ^ crt m r hco 0 1) ^ i *
+          ∑ k ∈ Finset.range m, (w (crt m r hco k i) : L)
+            * (ζ ^ crt m r hco 1 0) ^ k := by
+  have hrhs : ∑ i ∈ Finset.range r, (ζ ^ crt m r hco 0 1) ^ i *
+      ∑ k ∈ Finset.range m, (w (crt m r hco k i) : L) * (ζ ^ crt m r hco 1 0) ^ k
+      = ∑ x ∈ Finset.range r ×ˢ Finset.range m,
+          (w (crt m r hco x.2 x.1) : L) * ζ ^ crt m r hco x.2 x.1 := by
+    rw [Finset.sum_product]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    rw [Finset.mul_sum]
+    refine Finset.sum_congr rfl fun k _ => ?_
+    rw [pow_crt_eq hm hr hco hζ k i]
+    ring
+  rw [hrhs]
+  refine Finset.sum_nbij' (i := fun e => ((e % r, e % m) : ℕ × ℕ))
+    (j := fun x => crt m r hco x.2 x.1) ?_ ?_ ?_ ?_ ?_
+  · intro e he
+    rw [Finset.mem_product]
+    exact ⟨Finset.mem_range.mpr (Nat.mod_lt _ hr),
+      Finset.mem_range.mpr (Nat.mod_lt _ hm)⟩
+  · intro x hx
+    rw [Finset.mem_product] at hx
+    exact Finset.mem_range.mpr (crt_lt hm hr hco _ _)
+  · intro e he
+    exact crt_roundtrip hm hr hco (Finset.mem_range.mp he)
+  · intro x hx
+    rw [Finset.mem_product, Finset.mem_range, Finset.mem_range] at hx
+    have h1 : crt m r hco x.2 x.1 % r = x.1 := by
+      have := crt_modEq_right hco x.2 x.1
+      rwa [Nat.ModEq, Nat.mod_eq_of_lt hx.1] at this
+    have h2 : crt m r hco x.2 x.1 % m = x.2 := by
+      have := crt_modEq_left hco x.2 x.1
+      rwa [Nat.ModEq, Nat.mod_eq_of_lt hx.2] at this
+    show (crt m r hco x.2 x.1 % r, crt m r hco x.2 x.1 % m) = x
+    rw [h1, h2]
+  · intro e he
+    rw [crt_roundtrip hm hr hco (Finset.mem_range.mp he)]
+
+/-- **O109b — the coprime equal-thread-sums split**: a vanishing ℤ-weighted sum
+at a coprime product `m·r` (`r` prime) has all `r` of its CRT thread sums at
+level `m` EQUAL.  (The coprime analogue of the O93 thread split, where thread
+sums vanish; here `Φ_r` has degree `r−1` over `ℚ(ζ_m)` — Stage 2 — and the
+missing dimension is exactly the relation `Σ_i ζ_r^i = 0` welding the threads.) -/
+theorem coprime_thread_sums_eq [CharZero L] {m r : ℕ} (hr : r.Prime) (hm : 0 < m)
+    (hco : Nat.Coprime m r) {ζ : L} (hζ : IsPrimitiveRoot ζ (m * r)) (w : ℕ → ℤ)
+    (hsum : ∑ e ∈ Finset.range (m * r), (w e : L) * ζ ^ e = 0) :
+    ∀ i < r,
+      ∑ k ∈ Finset.range m, (w (crt m r hco k i) : L) * (ζ ^ crt m r hco 1 0) ^ k
+        = ∑ k ∈ Finset.range m,
+            (w (crt m r hco k (r - 1)) : L) * (ζ ^ crt m r hco 1 0) ^ k := by
+  classical
+  set ζm : L := ζ ^ crt m r hco 1 0 with hζm
+  set ζr : L := ζ ^ crt m r hco 0 1 with hζr
+  have hprim_m : IsPrimitiveRoot ζm m := isPrimitiveRoot_crt_left hm hr.pos hco hζ
+  have hprim_r : IsPrimitiveRoot ζr r := isPrimitiveRoot_crt_right hm hr.pos hco hζ
+  set S : ℕ → L := fun i => ∑ k ∈ Finset.range m,
+    (w (crt m r hco k i) : L) * ζm ^ k with hS
+  -- the regrouped relation and the geometric relation
+  have hrel0 : ∑ i ∈ Finset.range r, ζr ^ i * S i = 0 := by
+    rw [← int_sum_crt_regroup hm hr.pos hco hζ w]
+    exact hsum
+  have hgeom : ∑ i ∈ Finset.range r, ζr ^ i = 0 :=
+    hprim_r.geom_sum_eq_zero hr.one_lt
+  -- subtract the last thread from every thread
+  have hdiff : ∑ i ∈ Finset.range r, ζr ^ i * (S i - S (r - 1)) = 0 := by
+    have hexpand : ∑ i ∈ Finset.range r, ζr ^ i * (S i - S (r - 1))
+        = (∑ i ∈ Finset.range r, ζr ^ i * S i)
+          - (∑ i ∈ Finset.range r, ζr ^ i) * S (r - 1) := by
+      rw [Finset.sum_mul, ← Finset.sum_sub_distrib]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      ring
+    rw [hexpand, hrel0, hgeom, zero_mul, sub_zero]
+  -- the top term is zero; the relation lives on `i < r − 1`
+  have hsplit : r = (r - 1) + 1 := (Nat.succ_pred_eq_of_pos hr.pos).symm
+  have hdiff' : ∑ i ∈ Finset.range (r - 1), ζr ^ i * (S i - S (r - 1)) = 0 := by
+    have h := hdiff
+    rw [hsplit, Finset.sum_range_succ] at h
+    simp only [Nat.add_sub_cancel] at h
+    rwa [sub_self, mul_zero, add_zero] at h
+  -- thread differences are `ℚ(ζ_m)`-coefficients
+  set g : ℚ⟮ζm⟯ := AdjoinSimple.gen ℚ ζm with hg
+  have hcoe : algebraMap ℚ⟮ζm⟯ L g = ζm := AdjoinSimple.algebraMap_gen ℚ ζm
+  set D : ℕ → ℚ⟮ζm⟯ := fun i => ∑ k ∈ Finset.range m,
+    ((w (crt m r hco k i) - w (crt m r hco k (r - 1)) : ℤ) : ℚ⟮ζm⟯) * g ^ k with hD
+  have hmap : ∀ i, algebraMap ℚ⟮ζm⟯ L (D i) = S i - S (r - 1) := by
+    intro i
+    rw [hD, map_sum, hS]
+    rw [← Finset.sum_sub_distrib]
+    refine Finset.sum_congr rfl fun k _ => ?_
+    rw [map_mul, map_pow, hcoe, map_intCast]
+    push_cast
+    ring
+  -- the K-linear relation on `1, ζr, …, ζr^{r−2}`
+  have hdeg : (minpoly ℚ⟮ζm⟯ ζr).natDegree = r - 1 := by
+    rw [natDegree_minpoly_adjoin_coprime hm hr.pos hco hprim_m hprim_r,
+      Nat.totient_prime hr]
+  have hLI : LinearIndependent ℚ⟮ζm⟯ fun i : Fin (r - 1) => ζr ^ (i : ℕ) := by
+    have h := linearIndependent_pow (K := ℚ⟮ζm⟯) ζr
+    rwa [hdeg] at h
+  have hrel : ∑ i : Fin (r - 1), D i.val • ζr ^ (i : ℕ) = 0 := by
+    calc ∑ i : Fin (r - 1), D i.val • ζr ^ (i : ℕ)
+        = ∑ i ∈ Finset.range (r - 1), D i • ζr ^ i :=
+          Fin.sum_univ_eq_sum_range (fun i => D i • ζr ^ i) (r - 1)
+      _ = ∑ i ∈ Finset.range (r - 1), ζr ^ i * (S i - S (r - 1)) := by
+          refine Finset.sum_congr rfl fun i _ => ?_
+          rw [Algebra.smul_def, hmap, mul_comm]
+      _ = 0 := hdiff'
+  -- coefficient extraction
+  intro i hi
+  rcases Nat.lt_or_ge i (r - 1) with hilt | hige
+  · have hzero : D i = 0 :=
+      Fintype.linearIndependent_iff.mp hLI (fun j => D j.val) hrel ⟨i, hilt⟩
+    have h := congrArg (algebraMap ℚ⟮ζm⟯ L) hzero
+    rw [map_zero, hmap] at h
+    have := sub_eq_zero.mp h
+    rw [hS] at this
+    exact this
+  · have hieq : i = r - 1 := by omega
+    rw [hieq]
+
+end CoprimeThreadSplit
+
+/-! ## Stage 4 (O109c) — the ℤ-relation theorem at squarefree three-prime moduli
+
+The assembly: split the `r`-threads off by the coprime equal-thread-sums theorem,
+classify each thread difference at the two-prime level `p·q` (Stage 1), and fold
+the thread index back through the CRT mod-identities.  The ℕ-cone analogue is
+FALSE here (O105's witness at `n = 30`) — the ℤ-module statement is exactly the
+structure that survives past two primes (Schoenberg/Rédei). -/
+
+section ThreePrime
+
+/-- **O109c — THE ℤ-RELATION THEOREM AT SQUAREFREE THREE-PRIME MODULI**
+(Schoenberg/Rédei at `n = p·q·r`): a ℤ-combination of `pqr`-th roots of unity
+vanishes **iff** the weight is a ℤ-combination of rotated full prime packets —
+`w e = A (e % qr) + B (e % pr) + C (e % pq)`. -/
+theorem debruijn_int_three_prime_squarefree [CharZero L] {p q r : ℕ}
+    (hp : p.Prime) (hq : q.Prime) (hr : r.Prime)
+    (hpq : p ≠ q) (hpr : p ≠ r) (hqr : q ≠ r)
+    {ζ : L} (hζ : IsPrimitiveRoot ζ (p * q * r)) (w : ℕ → ℤ) :
+    (∑ e ∈ Finset.range (p * q * r), (w e : L) * ζ ^ e = 0) ↔
+      ∃ A B C : ℕ → ℤ, ∀ e < p * q * r,
+        w e = A (e % (q * r)) + B (e % (p * r)) + C (e % (p * q)) := by
+  classical
+  have hm : 0 < p * q := Nat.mul_pos hp.pos hq.pos
+  have hn : 0 < p * q * r := Nat.mul_pos hm hr.pos
+  have hco : Nat.Coprime (p * q) r :=
+    Nat.coprime_mul_iff_left.mpr
+      ⟨(Nat.coprime_primes hp hr).mpr hpr, (Nat.coprime_primes hq hr).mpr hqr⟩
+  have hdivp : (p * q * r) / p = q * r := by
+    have hform : p * q * r = p * (q * r) := by ring
+    rw [hform, Nat.mul_div_cancel_left _ hp.pos]
+  have hdivq : (p * q * r) / q = p * r := by
+    have hform : p * q * r = q * (p * r) := by ring
+    rw [hform, Nat.mul_div_cancel_left _ hq.pos]
+  have hdivr : (p * q * r) / r = p * q := by
+    rw [Nat.mul_div_cancel _ hr.pos]
+  constructor
+  · -- FORWARD: thread split + two-prime classification + reassembly
+    intro hsum
+    set v : ℕ := crt (p * q) r hco 1 0 with hv
+    set ζm : L := ζ ^ v with hζmdef
+    have hζm : IsPrimitiveRoot ζm (p * q) :=
+      isPrimitiveRoot_crt_left hm hr.pos hco hζ
+    -- equal thread sums
+    have hth := coprime_thread_sums_eq hr hm hco hζ w hsum
+    -- each thread difference vanishes at level p*q
+    have hdiffsum : ∀ i < r,
+        ∑ k ∈ Finset.range (p * q),
+          ((w (crt (p * q) r hco k i) - w (crt (p * q) r hco k (r - 1)) : ℤ) : L)
+            * ζm ^ k = 0 := by
+      intro i hi
+      have h := sub_eq_zero.mpr (hth i hi)
+      rw [← Finset.sum_sub_distrib] at h
+      calc ∑ k ∈ Finset.range (p * q),
+            ((w (crt (p * q) r hco k i) - w (crt (p * q) r hco k (r - 1)) : ℤ) : L)
+              * ζm ^ k
+          = ∑ k ∈ Finset.range (p * q),
+              ((w (crt (p * q) r hco k i) : L) * ζm ^ k
+                - (w (crt (p * q) r hco k (r - 1)) : L) * ζm ^ k) := by
+            refine Finset.sum_congr rfl fun k _ => ?_
+            push_cast
+            ring
+        _ = 0 := h
+    -- classify each thread difference by the two-prime theorem (a = b = 1)
+    have hζm' : IsPrimitiveRoot ζm (p ^ 1 * q ^ 1) := by
+      rw [pow_one, pow_one]
+      exact hζm
+    have hthreads : ∀ i, ∃ Ai Bi : ℕ → ℤ, i < r →
+        ∀ k < p * q,
+          w (crt (p * q) r hco k i) - w (crt (p * q) r hco k (r - 1))
+            = Ai (k % q) + Bi (k % p) := by
+      intro i
+      by_cases hi : i < r
+      · obtain ⟨Ai, Bi, hABi⟩ :=
+          (debruijn_int_two_prime hp hq hpq one_pos one_pos hζm'
+            (fun k => w (crt (p * q) r hco k i)
+              - w (crt (p * q) r hco k (r - 1)))).mp
+            (by
+              have h := hdiffsum i hi
+              rw [pow_one, pow_one]
+              exact h)
+        refine ⟨Ai, Bi, fun _ k hk => ?_⟩
+        have h := hABi k (by rw [pow_one, pow_one]; exact hk)
+        simpa using h
+      · exact ⟨0, 0, fun hcon => absurd hcon hi⟩
+    choose A B hAB using hthreads
+    -- the three packet-direction coefficient functions
+    refine ⟨fun x => A (x % r) (x % q), fun x => B (x % r) (x % p),
+      fun x => w (crt (p * q) r hco x (r - 1)), fun e he => ?_⟩
+    -- the CRT coordinates of e
+    have hi : e % r < r := Nat.mod_lt _ hr.pos
+    have hk : e % (p * q) < p * q := Nat.mod_lt _ hm
+    have hround : crt (p * q) r hco (e % (p * q)) (e % r) = e :=
+      crt_roundtrip hm hr.pos hco he
+    have hmain := hAB (e % r) hi (e % (p * q)) hk
+    rw [hround] at hmain
+    -- mod collapses
+    have h1 : (e % (p * q)) % q = e % q :=
+      Nat.mod_mod_of_dvd e (dvd_mul_left q p)
+    have h2 : (e % (p * q)) % p = e % p :=
+      Nat.mod_mod_of_dvd e (dvd_mul_right p q)
+    have h3 : (e % (q * r)) % q = e % q :=
+      Nat.mod_mod_of_dvd e (dvd_mul_right q r)
+    have h4 : (e % (q * r)) % r = e % r :=
+      Nat.mod_mod_of_dvd e (dvd_mul_left r q)
+    have h5 : (e % (p * r)) % p = e % p :=
+      Nat.mod_mod_of_dvd e (dvd_mul_right p r)
+    have h6 : (e % (p * r)) % r = e % r :=
+      Nat.mod_mod_of_dvd e (dvd_mul_left r p)
+    dsimp only
+    rw [h3, h4, h5, h6]
+    rw [h1, h2] at hmain
+    omega
+  · -- CONVERSE: three coset-combination kills
+    rintro ⟨A, B, C, hABC⟩
+    have hsplit : ∑ e ∈ Finset.range (p * q * r), (w e : L) * ζ ^ e
+        = (∑ e ∈ Finset.range (p * q * r), (A (e % (q * r)) : L) * ζ ^ e)
+          + (∑ e ∈ Finset.range (p * q * r), (B (e % (p * r)) : L) * ζ ^ e)
+          + ∑ e ∈ Finset.range (p * q * r), (C (e % (p * q)) : L) * ζ ^ e := by
+      rw [← Finset.sum_add_distrib, ← Finset.sum_add_distrib]
+      refine Finset.sum_congr rfl fun e he => ?_
+      rw [hABC e (Finset.mem_range.mp he)]
+      push_cast
+      ring
+    have hA0 := packet_part_eq_zero_int hp.one_lt
+      (dvd_mul_of_dvd_left (dvd_mul_right p q) r) hn hζ A
+    have hB0 := packet_part_eq_zero_int hq.one_lt
+      (dvd_mul_of_dvd_left (dvd_mul_left q p) r) hn hζ B
+    have hC0 := packet_part_eq_zero_int hr.one_lt (dvd_mul_left r (p * q)) hn hζ C
+    rw [hdivp] at hA0
+    rw [hdivq] at hB0
+    rw [hdivr] at hC0
+    rw [hsplit, hA0, hB0, hC0, add_zero, add_zero]
+
+end ThreePrime
+
 end DeBruijnIntRelations
 
 #print axioms DeBruijnIntRelations.int_sum_split
 #print axioms DeBruijnIntRelations.packet_part_eq_zero_int
 #print axioms DeBruijnIntRelations.debruijn_int_two_prime
+#print axioms DeBruijnIntRelations.minpoly_adjoin_coprime_eq_cyclotomic
+#print axioms DeBruijnIntRelations.coprime_thread_sums_eq
+#print axioms DeBruijnIntRelations.debruijn_int_three_prime_squarefree
