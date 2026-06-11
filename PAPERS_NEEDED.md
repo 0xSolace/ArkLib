@@ -9,7 +9,7 @@ included). The ONLY two items not obtained are paywalled and currently believed 
 
 | Paper | Identifier | Why it can wait |
 |---|---|---|
-| Guruswami–Sudan 1999 (journal version) | DOI 10.1109/18.782097 | the ePrint/author copy content is already reflected in-tree (`GuruswamiSudan/`); only exact constants would need checking |
+| Guruswami–Sudan 1999 (journal version) | DOI 10.1109/18.782097 | **OBTAINED 2026-06-10** (`~/arklib-paper-pdfs/guruswami1999.pdf`); the ePrint/author copy content is already reflected in-tree (`GuruswamiSudan/`); exact constants now checkable |
 | de Bruijn 1953 (asymptotic methods note) | n/a (paywalled archive) | cited once for a classical asymptotic; the in-tree de Bruijn lemmas were proven directly |
 
 If you can obtain those two, drop them in `~/papers/arklib/`; nothing is currently blocked
