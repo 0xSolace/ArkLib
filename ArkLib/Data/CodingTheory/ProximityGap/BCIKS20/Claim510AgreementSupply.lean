@@ -163,6 +163,134 @@ theorem hagree_of_decoded {x₀ : F} {R : F[X][X][Y]}
     (hbase j z hz) hR (e j)]
   exact hfold j z hz
 
+/-! ## The monic `ξ`-nonvanishing suppliers (free legs) -/
+
+/-- For monic `H`, `ξ` is a unit of `𝒪`, so every place reading is nonzero — the `hx` legs
+are FREE. -/
+theorem pi_z_xi_ne_zero_of_monic {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : Hypotheses x₀ R H) (hlc : H.leadingCoeff = 1)
+    (z : F) (root : rationalRoot (H_tilde' H) z) :
+    (π_z z root) (ξ x₀ R H hHyp) ≠ 0 :=
+  ((BCIKS20.HenselNumerator.isUnit_ξ_of_monic (H := H) x₀ R hHyp hlc).map (π_z z root)).ne_zero
+
+/-- `𝒪 H` is nontrivial: `H̃'` has positive degree, so its span is proper. -/
+theorem nontrivial_𝒪 : Nontrivial (𝒪 H) := by
+  refine Ideal.Quotient.nontrivial ?_
+  rw [Ne, Ideal.span_singleton_eq_top]
+  intro hu
+  have hdeg := Polynomial.natDegree_eq_zero_of_isUnit hu
+  rw [natDegree_H_tilde' (Fact.out (p := 0 < H.natDegree))] at hdeg
+  have hH := Fact.out (p := 0 < H.natDegree)
+  omega
+
+/-- For monic `H`, `ξ ≠ 0` outright. -/
+theorem xi_ne_zero_of_monic {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : Hypotheses x₀ R H) (hlc : H.leadingCoeff = 1) :
+    ξ x₀ R H hHyp ≠ 0 :=
+  haveI := nontrivial_𝒪 (H := H)
+  (BCIKS20.HenselNumerator.isUnit_ξ_of_monic (H := H) x₀ R hHyp hlc).ne_zero
+
+/-! ## The grand composition: hlin from GS-side data only -/
+
+variable [Fintype F] [DecidableEq F]
+
+/-- **THE GRAND COMPOSITION — hlin from GS-side data only.**  `H.natDegree = 1` from:
+the GS surface factor `(Y′ − C w) ∣ R` (degree `< n`), the base-point geometry on the
+truncation and heavy sets, `R.Separable`, the §6 discriminant counting, the graded degree
+budgets, the Prop-5.5 genuine representative, the fold readings at `n` injective nodes, the
+`ξ`-weight bound, and the heavy cardinality at the explicit `killBudget`.  Every hypothesis
+is a named, finitely-checkable GS-side fact: **the agreement leg (Seam B) and the
+truncation leg are both produced by the decoded lane from THE SAME surface data**; the
+`π_z(ξ) ≠ 0` legs are free (monic `ξ`-unit).  No open mathematical input remains. -/
+theorem natDegree_eq_one_of_decoded_fold {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : Hypotheses x₀ R H)
+    {D n : ℕ} (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree)
+    (hmonic : H.Monic) (hd2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHD : H.natDegree ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hRgrade : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    {Ppoly : F[X][Y]}
+    (hrepG : polyToPowerSeries𝕃 H Ppoly
+      = ProximityPrize.BCIKS20.GammaGenuine.gammaGenuine x₀ R H hHyp)
+    (root : (z : F) → rationalRoot (H_tilde' H) z)
+    {w : F[X][Y]} (hdeg : w.natDegree < n)
+    (hdvd : (Polynomial.X - Polynomial.C w) ∣ R)
+    (hR : R.Separable)
+    -- the truncation lane: the §6 discriminant cover with base-point geometry
+    {truncSet : Finset F}
+    (hbaseT : ∀ z ∈ truncSet, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    {disc : F[X]} (hdisc : disc ≠ 0)
+    (hcover : ∀ z : F, disc.eval z ≠ 0 → z ∈ truncSet)
+    (hbig : gradedCardBudget (Bivariate.natDegreeY R) D H.natDegree Ppoly.natDegree
+        + disc.natDegree < Fintype.card F)
+    -- the agreement lane: heavy sets with base-point geometry and fold readings
+    (e : Fin n → F) (he : Function.Injective e) (u₀ u₁ : Fin n → F)
+    (matchingSet : Fin n → Finset F)
+    (hbaseA : ∀ j, ∀ z ∈ matchingSet j, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    (hfold : ∀ j, ∀ z ∈ matchingSet j,
+      (w.eval (Polynomial.C (e j) + Polynomial.C x₀)).eval z = u₀ j + z * u₁ j)
+    -- the numerics
+    {xw : ℕ}
+    (hξw : weight_Λ_over_𝒪 hH (ξ x₀ R H hHyp) D ≤ (WithBot.some xw : WithBot ℕ))
+    (hcard : ∀ j, BCIKS20.Claim510Supply.killBudget n D H.natDegree
+        (Bivariate.natDegreeY R) xw * H.natDegree < (matchingSet j).card) :
+    H.natDegree = 1 := by
+  have hlc : H.leadingCoeff = 1 := hmonic.leadingCoeff
+  have hξ : ξ x₀ R H hHyp ≠ 0 := xi_ne_zero_of_monic hHyp hlc
+  -- the coefficient tail from the decoded truncation capstone
+  have htail : ∀ t, n ≤ t → αGenuine H x₀ R hHyp t = 0 :=
+    BCIKS20.Claim59Lagrange.alphaGenuine_tail_zero_of_trunc H hHyp
+      (ArkLib.DecodedProximateRoot.gammaGenuine_eq_trunc_of_decoded hHyp hξ hD hH hmonic
+        hd2 hdHD hD_Rx0 hRgrade hrepG root
+        (fun z _ => pi_z_xi_ne_zero_of_monic hHyp hlc z (root z))
+        hdeg hdvd hbaseT hR hdisc hcover hbig)
+  -- the agreement from Seam B
+  have hagree := hagree_of_decoded hHyp hξ hlc e u₀ u₁ matchingSet root
+    (fun z => pi_z_xi_ne_zero_of_monic hHyp hlc z (root z))
+    hdeg hdvd hbaseA hR hfold
+  -- the weight bound from the kill-budget supply
+  have hweight := fun j => BCIKS20.Claim510Supply.weight_killTarget_le H x₀ R hHyp hD hH
+    hmonic hd2 hdHD hD_Rx0 hRgrade hξw n (e j) (u₀ j) (u₁ j)
+  exact BCIKS20.Claim510Supply.natDegree_eq_one_of_heavy_agreement H x₀ R hHyp hlc
+    htail e he u₀ u₁ hD matchingSet hagree hweight hcard
+
+/-- **hlin, GS-side contradiction form**: no `Y`-degree ≥ 2 monic branch admits the
+decoded-fold package. -/
+theorem false_of_decoded_fold_of_two_le {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : Hypotheses x₀ R H) (hdeg2 : 2 ≤ H.natDegree)
+    {D n : ℕ} (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree)
+    (hmonic : H.Monic) (hd2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHD : H.natDegree ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hRgrade : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    {Ppoly : F[X][Y]}
+    (hrepG : polyToPowerSeries𝕃 H Ppoly
+      = ProximityPrize.BCIKS20.GammaGenuine.gammaGenuine x₀ R H hHyp)
+    (root : (z : F) → rationalRoot (H_tilde' H) z)
+    {w : F[X][Y]} (hdeg : w.natDegree < n)
+    (hdvd : (Polynomial.X - Polynomial.C w) ∣ R)
+    (hR : R.Separable)
+    {truncSet : Finset F}
+    (hbaseT : ∀ z ∈ truncSet, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    {disc : F[X]} (hdisc : disc ≠ 0)
+    (hcover : ∀ z : F, disc.eval z ≠ 0 → z ∈ truncSet)
+    (hbig : gradedCardBudget (Bivariate.natDegreeY R) D H.natDegree Ppoly.natDegree
+        + disc.natDegree < Fintype.card F)
+    (e : Fin n → F) (he : Function.Injective e) (u₀ u₁ : Fin n → F)
+    (matchingSet : Fin n → Finset F)
+    (hbaseA : ∀ j, ∀ z ∈ matchingSet j, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    (hfold : ∀ j, ∀ z ∈ matchingSet j,
+      (w.eval (Polynomial.C (e j) + Polynomial.C x₀)).eval z = u₀ j + z * u₁ j)
+    {xw : ℕ}
+    (hξw : weight_Λ_over_𝒪 hH (ξ x₀ R H hHyp) D ≤ (WithBot.some xw : WithBot ℕ))
+    (hcard : ∀ j, BCIKS20.Claim510Supply.killBudget n D H.natDegree
+        (Bivariate.natDegreeY R) xw * H.natDegree < (matchingSet j).card) :
+    False := by
+  have h1 := natDegree_eq_one_of_decoded_fold hHyp hD hH hmonic hd2 hdHD hD_Rx0 hRgrade
+    hrepG root hdeg hdvd hR hbaseT hdisc hcover hbig e he u₀ u₁ matchingSet hbaseA hfold
+    hξw hcard
+  omega
+
 end BCIKS20.Claim510AgreementSupply
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -171,3 +299,5 @@ end BCIKS20.Claim510AgreementSupply
 #print axioms BCIKS20.Claim510AgreementSupply.pi_z_aPre_eq_taylor_coeff
 #print axioms BCIKS20.Claim510AgreementSupply.aPre_sum_eq_decode_eval
 #print axioms BCIKS20.Claim510AgreementSupply.hagree_of_decoded
+#print axioms BCIKS20.Claim510AgreementSupply.natDegree_eq_one_of_decoded_fold
+#print axioms BCIKS20.Claim510AgreementSupply.false_of_decoded_fold_of_two_le
