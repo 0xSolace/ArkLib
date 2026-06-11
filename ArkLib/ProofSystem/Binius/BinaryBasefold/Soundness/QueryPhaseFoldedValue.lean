@@ -77,6 +77,15 @@ lemma logical_computeFoldedValue_eq_iterated_fold
     (getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) (i := Fin.last ℓ)
         stmt.challenges (k := k.val * ϑ) (h := k_succ_mul_ϑ_le_ℓ_₂ (k := k)))
     (getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (k := k) (v := v))
+  -- The only congruence residue is the challenge-batch slot: `logical_computeFoldedValue`
+  -- writes it as a `foldOrderChallenges` lambda while the bridge lemma packages the same
+  -- function as `getFoldingChallenges`; they agree definitionally (delta + proof irrelevance).
+  all_goals
+    first
+      | rfl
+      | (simp only [getFoldingChallenges, foldOrderChallenges])
+      | (funext cId; simp only [getFoldingChallenges, foldOrderChallenges])
+      | (simp [getFoldingChallenges, foldOrderChallenges])
 
 end QueryPhase
 

@@ -119,12 +119,40 @@ lemma polyToOracleFunc_eq_getFirstOracle
     ⟨y.val, h_firstIdx_zero.symm ▸ y.property⟩
   change f₀ y = oStmt ⟨0, h_pos⟩ y0
   rw [h_first_oracle]
+  -- The three side conditions below are stated against whatever normal form the
+  -- `strictOracleFoldingConsistencyProp` instance currently exposes (`↑⟨0, _⟩ * ϑ` vs `0 * ϑ`
+  -- vs `0`); sibling refactors keep shifting that normal form, so each proof is a `first`
+  -- ladder over the defeq-equivalent shapes instead of a single brittle `simp only`.
   rw [iterated_fold_congr_steps_index 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps' := 0)
-      (h_destIdx := by simp only [Fin.val_mk, zero_mul, Fin.val_zero, add_zero]; rfl)
-      (h_destIdx_le := by simp only [zero_mul, zero_le])
-      (h_steps_eq_steps' := by simp only [zero_mul])]
+      (h_destIdx := by
+        first
+          | (simp only [Fin.val_mk, zero_mul, Fin.val_zero, add_zero]; rfl)
+          | (simp only [Fin.val_mk, zero_mul, Fin.val_zero, add_zero])
+          | (simp only [oraclePositionToDomainIndex, Fin.val_mk, Fin.val_zero, zero_mul,
+              add_zero, zero_add])
+          | rfl
+          | omega)
+      (h_destIdx_le := by
+        first
+          | (simp only [zero_mul, zero_le])
+          | (simp only [oraclePositionToDomainIndex, Fin.val_mk, zero_mul, zero_le])
+          | (simp only [oraclePositionToDomainIndex, Fin.val_mk, zero_mul];
+              exact Nat.zero_le _)
+          | exact Nat.zero_le _
+          | simp)
+      (h_steps_eq_steps' := by
+        first
+          | (simp only [zero_mul])
+          | (simp only [Fin.val_mk, zero_mul])
+          | exact Nat.zero_mul _
+          | simp)]
   rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
-      (h_destIdx := by simp only [firstIdx, j0, Fin.val_mk, zero_mul, Fin.val_zero])]
+      (h_destIdx := by
+        first
+          | (simp only [firstIdx, j0, Fin.val_mk, zero_mul, Fin.val_zero])
+          | (simp only [oraclePositionToDomainIndex, Fin.val_mk, Fin.val_zero, zero_mul])
+          | rfl
+          | simp)]
   have h_y0_to_y :
       (cast (congrArg (fun j => (sDomain 𝔽q β h_ℓ_add_R_rate j : Type))
         h_firstIdx_zero) y0) = y := by
