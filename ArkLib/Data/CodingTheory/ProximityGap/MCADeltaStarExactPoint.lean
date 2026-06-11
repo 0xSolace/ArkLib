@@ -4,69 +4,65 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.MCAThresholdLedger
-import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpread
-import ArkLib.Data.CodingTheory.ReedSolomon
+import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 
 /-!
-# The first machine-checked exact `δ*` point: `mcaDeltaStar(RS[F₅,(1,2,4,3),2], 2/5) = 1/4`
+# R1 (#357): the first machine-checked exact `δ*` value — `mcaDeltaStar(RS[F₅, F₅ˣ, 2], 2/5) = 1/4`
 
-The Grand MCA Challenge (#357) asks for the exact threshold
-`δ*(C, ε*) = sup {δ | ε_mca(C, δ) ≤ ε*}`. The literature only ever *bounds* `ε_mca`; no exact
-value of `mcaDeltaStar` has ever been certified for any code, by anyone, in any proof format.
-This file produces the first one, at toy scale, for a genuine smooth-domain Reed–Solomon code:
+The `δ*` campaign (#357) asks for the exact MCA threshold
+`mcaDeltaStar C ε* = sSup {δ ≤ 1 | ε_mca(C, δ) ≤ ε*}` of explicit smooth-domain Reed–Solomon
+codes. The literature only ever *bounds* `ε_mca`; no exact value of the threshold functional has
+been certified for any code, by anyone, in any proof format. This file produces the first one,
+at toy scale, for a **genuine smooth-domain RS code**: the full multiplicative group
+`F₅ˣ = ⟨2⟩` (size `n = 4 = 2²`, a smooth domain) with dimension `k = 2`, i.e. rate `ρ = 1/2`
+(a production rate). The result:
 
-  `mcaDeltaStar (RS[F₅, (1,2,4,3), 2]) (2/5) = 1/4`,
+  `mcaDeltaStar (RS[F₅, ⟨2⟩, 2]) (2/5) = 1/4`.
 
-where the domain `(1,2,4,3)` is the multiplicative group `F₅ˣ` (a smooth, 4 = 2²-element
-subgroup), `k = 2` (rate `ρ = 1/2`), and the error target is `ε* = 2/5`.
+The two halves, exactly as the bracket engine (`MCAThresholdLedger`) demands:
 
-## The two halves
+* **Good side — new general theory** (`epsMCA_le_inv_card_of_small_radius`): at any radius
+  below the granularity `1/n`, the witness set in `mcaEvent` is forced to be all of `ι`; then
+  two distinct bad scalars are *algebraically contradictory* for **every** linear code:
+  subtracting the two on-line codewords gives `(γ−γ')•u₁ ∈ C`, hence `u₁ ∈ C`, hence
+  `u₀ ∈ C`, hence the pair `(u₀, u₁)` is jointly explained on `univ` — contradiction. So each
+  stack has at most one bad scalar and `ε_mca(C, δ) ≤ 1/|F|` with no computation at all. With
+  the matching one-scalar witness (`epsMCA_eq_inv_card_of_small_radius`):
+  **every proper linear code has `ε_mca(C, δ) = 1/|F|` exactly for `δ·n < 1`** — the exact
+  MCA error of the sub-granularity regime, in full generality (generalizes
+  `MCAZeroCodeExact.epsMCA_bot_eq_inv_card` from the zero code to all proper submodule codes).
+* **Bad side — explicit witness spread** (`epsMCA_rs_quarter_ge`): the stack
+  `u₀ = (0,0,0,1)`, `u₁ = (0,0,1,1)` over the domain enumeration `(1,2,4,3) = (2⁰,2¹,2²,2³)`
+  has **four** of the five scalars bad at `δ = 1/4`, each with its own witness set varying
+  with `γ` (as `MCAWitnessSpread.unique_bad_gamma_common_witness` mandates):
+  `γ=0 ↦ S={0,1,2}`, `γ=2 ↦ S={0,2,3}`, `γ=3 ↦ S={1,2,3}`, `γ=4 ↦ S={0,1,3}`, so
+  `ε_mca(C, 1/4) ≥ 4/5 > 2/5`.
 
-* **Good half (general theorem, no computation).** For *every* linear code `C ⊆ (ι → A)` over
-  *every* finite field `F`, and every radius `δ` with `δ·n < 1` (`n = |ι|`): the witness set in
-  `mcaEvent` is forced to be all of `ι`, and then two distinct bad scalars are algebraically
-  contradictory (`unique_bad_gamma_common_witness`), so
+Ground truth (exact-arithmetic probe, two independent engines, plus an in-session exhaustive
+re-enumeration over all `5⁸` stacks): `ε_mca(C, δ)` is the step function `1/5` on `[0, 1/4)`
+and `4/5` on `[1/4, 1]`, and the maximizing stack at `δ = 1/4` is exactly the one used here.
+With `ε* = 2/5` (any `ε* ∈ [1/5, 4/5)` gives the same threshold): `mcaGoodRadii = [0, 1/4)`
+and `δ* = 1/4` — note the supremum is **not attained** (`deltaStar_not_good`): `δ*` can sit at
+a jump of `ε_mca`. At this scale and `ε*`, the pinned value `1/4 = (1−ρ)/2` is the
+unique-decoding radius — the first data point of the "where in the window does `δ*` sit" curve.
 
-    `ε_mca(C, δ) ≤ 1/|F|`    (`epsMCA_le_inv_card_of_subunit`).
-
-  This generalizes `MCAZeroCode.badScalar_card_le_one_bot` (zero code, `δ = 0`) to all
-  submodule codes at all sub-unit-granularity radii, and yields the universal bracket
-  `1/n ≤ mcaDeltaStar(C, ε*)` whenever `1/|F| ≤ ε*` (`inv_card_le_mcaDeltaStar`).
-
-* **Bad half (explicit stack).** At `δ = 1/4` the stack `u₀ = (0,0,0,1)`, `u₁ = (0,0,1,1)`
-  has **four** of the five scalars bad: `γ ∈ {0, 2, 3, 4}`. The second row `u₁` is at distance
-  `2` from the code (no codeword agrees with it on any 3 of the 4 points — `decide`), so the
-  `¬ pairJointAgreesOn` clause holds for *every* witness set of size `≥ 3`; explicit
-  line-codewords realize the closeness clause for each of the four scalars. Hence
-  `ε_mca(C, 1/4) ≥ 4/5 > 2/5` (`epsMCA_RS5_quarter_ge`).
-
-Combining through the bracket engine (`le_mcaDeltaStar_of_good` / `mcaDeltaStar_le_of_bad`):
-`δ* = 1/4` exactly. Note `ε_mca` jumps from `≤ 1/5` to `≥ 4/5` *at* `1/4`: the supremum is not
-attained, and at this scale with this `ε*`, `δ*` equals the unique-decoding radius
-`(1-ρ)/2 = 1/4`.
-
-Ground truth (pre-registered, two-engine validated): the exact probe ladder
-(`scripts/probes/probe_exact_epsmca_ladder.py`) computes `ε_mca(δ) = 1/5` on `[0, 1/4)` and
-`4/5` on `[1/4, 1]` for this instance.
-
-Everything is axiom-clean (`propext`, `Classical.choice`, `Quot.sound`), no `sorry`, no
-`native_decide`.
+All results are `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
 ## References
-
-- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
-  ePrint 2026/680. Issue #357.
+- Issue #357 (the δ* campaign; hypothesis R1), [ABF26] ePrint 2026/680.
+- Probe: `scripts/probes/probe_exact_epsmca_ladder.py` (syndrome-reduced exact `ε_mca`).
 -/
 
+set_option autoImplicit false
 set_option linter.unusedSectionVars false
 
 open scoped NNReal ENNReal ProbabilityTheory
 open ProximityGap Code
-open ProximityGap.MCAThresholdLedger ProximityGap.MCAWitnessSpread
+open ProximityGap.MCAThresholdLedger
 
 namespace ProximityGap.MCADeltaStarExactPoint
 
-/-! ## Part 1 — the general sub-unit-radius collapse (no computation, every linear code) -/
+/-! ## Part 1 — general theory: the exact MCA error below the granularity radius -/
 
 section General
 
@@ -74,56 +70,73 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
-/-- At a sub-unit radius (`δ·n < 1`), the `mcaEvent` witness-set size constraint
-`|S| ≥ (1-δ)·n > n-1` forces `S = univ`. -/
-theorem witness_eq_univ_of_subunit {δ : ℝ≥0}
+/-- Below the granularity radius (`δ·n < 1`), the `mcaEvent` witness-set size clause
+`|S| ≥ (1−δ)·n` forces `S = univ`. -/
+theorem witness_eq_univ_of_small_radius {δ : ℝ≥0}
     (hδ : δ * (Fintype.card ι : ℝ≥0) < 1) {S : Finset ι}
     (hS : (S.card : ℝ≥0) ≥ (1 - δ) * (Fintype.card ι : ℝ≥0)) :
     S = Finset.univ := by
-  apply Finset.eq_univ_of_card
-  refine le_antisymm (Finset.card_le_univ S) ?_
-  by_contra hlt
-  push_neg at hlt
-  -- `S.card + 1 ≤ n` in ℕ, hence in ℝ≥0.
-  have hcast : (S.card : ℝ≥0) + 1 ≤ (Fintype.card ι : ℝ≥0) := by
-    exact_mod_cast Nat.succ_le_of_lt hlt
-  -- `(1-δ)·n = n - δ·n ≤ S.card` gives `n ≤ S.card + δ·n`.
-  have hexp : (Fintype.card ι : ℝ≥0) - δ * (Fintype.card ι : ℝ≥0) ≤ (S.card : ℝ≥0) := by
-    calc (Fintype.card ι : ℝ≥0) - δ * (Fintype.card ι : ℝ≥0)
-        = ((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0) := by rw [tsub_mul, one_mul]
-      _ ≤ (S.card : ℝ≥0) := hS
-  have hup : (Fintype.card ι : ℝ≥0) ≤ (S.card : ℝ≥0) + δ * (Fintype.card ι : ℝ≥0) :=
-    tsub_le_iff_right.mp hexp
-  -- Chain: `n ≤ S.card + δn < S.card + 1 ≤ n`.
-  have : (Fintype.card ι : ℝ≥0) < (Fintype.card ι : ℝ≥0) :=
-    lt_of_le_of_lt hup (lt_of_lt_of_le (add_lt_add_of_le_of_lt le_rfl hδ) hcast)
-  exact lt_irrefl _ this
+  have hn1 : 1 ≤ Fintype.card ι := Fintype.card_pos
+  -- δ < 1, so the truncated subtraction is honest
+  have hδ1 : δ < 1 := by
+    by_contra hge
+    push Not at hge
+    have : (1 : ℝ≥0) ≤ δ * (Fintype.card ι : ℝ≥0) := by
+      calc (1 : ℝ≥0) = 1 * 1 := (one_mul 1).symm
+        _ ≤ δ * (Fintype.card ι : ℝ≥0) := by
+            exact mul_le_mul hge (by exact_mod_cast hn1) zero_le_one (zero_le δ)
+    exact absurd hδ (not_lt.mpr this)
+  -- move to ℝ
+  have hSR : ((1 - δ : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ) ≤ (S.card : ℝ) := by
+    exact_mod_cast hS
+  rw [NNReal.coe_sub hδ1.le, NNReal.coe_one] at hSR
+  have hδR : (δ : ℝ) * (Fintype.card ι : ℝ) < 1 := by exact_mod_cast hδ
+  have hgt : (Fintype.card ι : ℝ) - 1 < (S.card : ℝ) := by nlinarith
+  have hle : Fintype.card ι ≤ S.card := by
+    have : (Fintype.card ι : ℝ) < (S.card : ℝ) + 1 := by linarith
+    exact_mod_cast Nat.lt_succ_iff.mp (by exact_mod_cast this)
+  exact Finset.eq_univ_of_card S (le_antisymm (Finset.card_le_univ S) hle)
 
 open Classical in
-/-- **At most one bad scalar per stack at sub-unit radius, for every linear code.** The witness
-set is forced to `univ` (`witness_eq_univ_of_subunit`); two firing scalars then share the single
-witness set, and `unique_bad_gamma_common_witness` pins them equal. Generalizes
-`MCAZeroCode.badScalar_card_le_one_bot` from the zero code at `δ = 0` to every submodule code at
-every radius below the `1/n` granularity. -/
-theorem badScalar_card_le_one_of_subunit (C : Submodule F (ι → A)) {δ : ℝ≥0}
+/-- **At most one bad scalar per stack, for every linear code, below the granularity radius.**
+Two distinct bad scalars `γ ≠ γ'` both force their (univ) witness lines into `C`; subtracting
+gives `(γ−γ')•u₁ ∈ C`, hence `u₁ ∈ C`, hence `u₀ ∈ C`, hence the pair is jointly explained on
+`univ` — contradicting badness. Generalizes `MCAZeroCode.badScalar_card_le_one_bot` from the
+zero code to arbitrary submodule codes. -/
+theorem badScalar_card_le_one_of_small_radius (C : Submodule F (ι → A)) {δ : ℝ≥0}
     (hδ : δ * (Fintype.card ι : ℝ≥0) < 1) (u : WordStack A (Fin 2) ι) :
-    (Finset.filter (fun γ : F => mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) γ)
-      Finset.univ).card ≤ 1 := by
+    (Finset.filter (fun γ : F =>
+        mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) γ) Finset.univ).card ≤ 1 := by
   rw [Finset.card_le_one]
   intro γ hγ γ' hγ'
   rw [Finset.mem_filter] at hγ hγ'
-  obtain ⟨S, hS, hline, hno⟩ := hγ.2
-  obtain ⟨S', hS', hline', _⟩ := hγ'.2
-  have hSu : S = Finset.univ := witness_eq_univ_of_subunit hδ hS
-  have hS'u : S' = Finset.univ := witness_eq_univ_of_subunit hδ hS'
-  subst hSu
-  subst hS'u
-  exact unique_bad_gamma_common_witness C Finset.univ (u 0) (u 1) hno hline hline'
+  obtain ⟨S, hS, ⟨w, hwmem, hweq⟩, hno⟩ := hγ.2
+  obtain ⟨S', hS', ⟨w', hwmem', hweq'⟩, _⟩ := hγ'.2
+  have hSuniv : S = Finset.univ := witness_eq_univ_of_small_radius hδ hS
+  have hS'univ : S' = Finset.univ := witness_eq_univ_of_small_radius hδ hS'
+  by_contra hne
+  -- the two on-line codewords
+  have hw_eq : w = u 0 + γ • u 1 := funext fun i => by
+    rw [hweq i (hSuniv ▸ Finset.mem_univ i)]; rfl
+  have hw'_eq : w' = u 0 + γ' • u 1 := funext fun i => by
+    rw [hweq' i (hS'univ ▸ Finset.mem_univ i)]; rfl
+  have m1 : u 0 + γ • u 1 ∈ C := hw_eq ▸ hwmem
+  have m2 : u 0 + γ' • u 1 ∈ C := hw'_eq ▸ hwmem'
+  -- subtract: (γ − γ')•u₁ ∈ C, hence u₁ ∈ C, hence u₀ ∈ C
+  have hsub : (γ - γ') • u 1 ∈ C := by
+    have h := C.sub_mem m1 m2
+    rwa [add_sub_add_left_eq_sub, ← sub_smul] at h
+  have hu1 : u 1 ∈ C := by
+    have h := C.smul_mem (γ - γ')⁻¹ hsub
+    rwa [inv_smul_smul₀ (sub_ne_zero.mpr hne)] at h
+  have hu0 : u 0 ∈ C := by
+    have h := C.sub_mem m1 (C.smul_mem γ hu1)
+    rwa [add_sub_cancel_right] at h
+  exact hno ⟨u 0, hu0, u 1, hu1, fun i _ => ⟨rfl, rfl⟩⟩
 
 open Classical in
-/-- **The sub-unit-radius MCA collapse.** For every linear code over every finite field, at
-every radius `δ` with `δ·n < 1`:  `ε_mca(C, δ) ≤ 1/|F|`. -/
-theorem epsMCA_le_inv_card_of_subunit (C : Submodule F (ι → A)) {δ : ℝ≥0}
+/-- **Upper half:** every linear code has `ε_mca(C, δ) ≤ 1/|F|` below the granularity radius. -/
+theorem epsMCA_le_inv_card_of_small_radius (C : Submodule F (ι → A)) {δ : ℝ≥0}
     (hδ : δ * (Fintype.card ι : ℝ≥0) < 1) :
     epsMCA (F := F) (A := A) (C : Set (ι → A)) δ ≤ 1 / (Fintype.card F : ℝ≥0∞) := by
   unfold epsMCA
@@ -131,238 +144,270 @@ theorem epsMCA_le_inv_card_of_subunit (C : Submodule F (ι → A)) {δ : ℝ≥0
   rw [prob_uniform_eq_card_filter_div_card]
   simp only [ENNReal.coe_natCast]
   gcongr
-  exact_mod_cast badScalar_card_le_one_of_subunit C hδ u
+  exact_mod_cast badScalar_card_le_one_of_small_radius C hδ u
 
-/-- **Universal lower bracket: `1/n ≤ δ*` for every linear code,** as soon as the error target
-clears the `1/|F|` floor. Every radius strictly below `1/n` is good, so the supremum of good
-radii is at least `1/n`. -/
-theorem inv_card_le_mcaDeltaStar (C : Submodule F (ι → A)) {εstar : ℝ≥0∞}
-    (hε : 1 / (Fintype.card F : ℝ≥0∞) ≤ εstar) :
-    ((Fintype.card ι : ℝ≥0))⁻¹ ≤ mcaDeltaStar (F := F) (A := A) (C : Set (ι → A)) εstar := by
-  by_contra hcon
-  push_neg at hcon
-  obtain ⟨δ, hδ1, hδ2⟩ := exists_between hcon
-  have hn : (0 : ℝ≥0) < (Fintype.card ι : ℝ≥0) := by
-    exact_mod_cast Fintype.card_pos
-  have hδn : δ * (Fintype.card ι : ℝ≥0) < 1 := by
-    have := mul_lt_mul_of_pos_right hδ2 hn
-    rwa [inv_mul_cancel₀ (ne_of_gt hn)] at this
-  have hδ1' : δ ≤ 1 := by
-    have hmul : δ * 1 ≤ δ * (Fintype.card ι : ℝ≥0) := by
-      apply mul_le_mul_of_nonneg_left _ (zero_le δ)
-      exact_mod_cast Fintype.card_pos
-    have hlt1 : δ < 1 :=
-      calc δ = δ * 1 := (mul_one δ).symm
-        _ ≤ δ * (Fintype.card ι : ℝ≥0) := hmul
-        _ < 1 := hδn
-    exact hlt1.le
-  have hgood := le_mcaDeltaStar_of_good (F := F) (A := A) (C : Set (ι → A)) εstar hδ1'
-    (le_trans (epsMCA_le_inv_card_of_subunit C hδn) hε)
-  exact absurd (lt_of_le_of_lt hgood hδ1) (lt_irrefl _)
+open Classical in
+/-- **The exact MCA error of the sub-granularity regime:** every **proper** linear code has
+`ε_mca(C, δ) = 1/|F|` exactly, for every radius `δ` with `δ·n < 1`. The lower half fires
+`mcaEvent` at `γ₀ = 1` on the stack `(c − v, v)` for `v ∉ C` — here with `c = 0`. -/
+theorem epsMCA_eq_inv_card_of_small_radius (C : Submodule F (ι → A)) {δ : ℝ≥0}
+    (hδ : δ * (Fintype.card ι : ℝ≥0) < 1) (hC : (C : Set (ι → A)) ≠ Set.univ) :
+    epsMCA (F := F) (A := A) (C : Set (ι → A)) δ = 1 / (Fintype.card F : ℝ≥0∞) := by
+  refine le_antisymm (epsMCA_le_inv_card_of_small_radius C hδ) ?_
+  obtain ⟨v, hv⟩ : ∃ v, v ∉ (C : Set (ι → A)) := by
+    by_contra h
+    push Not at h
+    exact hC (Set.eq_univ_of_forall h)
+  refine epsMCA_ge_inv_card_of_mcaEvent (F := F) (A := A) (C : Set (ι → A)) δ
+    ![-v, v] 1 ⟨Finset.univ, ?_, ⟨0, C.zero_mem, fun i _ => ?_⟩, ?_⟩
+  · rw [Finset.card_univ]
+    calc (1 - δ) * (Fintype.card ι : ℝ≥0) ≤ 1 * (Fintype.card ι : ℝ≥0) := by
+          gcongr
+          exact tsub_le_self
+      _ = (Fintype.card ι : ℝ≥0) := one_mul _
+  · show (0 : ι → A) i = (![-v, v] : WordStack A (Fin 2) ι) 0 i
+      + (1 : F) • (![-v, v] : WordStack A (Fin 2) ι) 1 i
+    simp [Matrix.cons_val_zero, Matrix.cons_val_one]
+  · rintro ⟨v₀, _hv₀, v₁, hv₁, hagree⟩
+    apply hv
+    have hv1eq : v₁ = v := funext fun i => (hagree i (Finset.mem_univ i)).2
+    rwa [hv1eq] at hv₁
 
 end General
 
-/-! ## Part 2 — the concrete instance `RS[F₅, (1,2,4,3), 2]` -/
+/-! ## Part 2 — the concrete smooth-domain RS code `RS[F₅, ⟨2⟩, 2]` -/
 
-section RS5
+section Concrete
+
+abbrev F5 := ZMod 5
 
 instance : Fact (Nat.Prime 5) := ⟨by decide⟩
 
-/-- The base field `F₅ = ZMod 5`. -/
-abbrev F5 : Type := ZMod 5
+/-- The smooth evaluation domain: the full multiplicative group `F₅ˣ = ⟨2⟩` of size
+`n = 4 = 2²`, enumerated as successive powers of the generator `2`. -/
+def gdom : Fin 4 → F5 := ![1, 2, 4, 3]
 
-/-- The smooth evaluation domain: the multiplicative group `F₅ˣ` enumerated as the orbit of the
-generator `2`: `(2⁰, 2¹, 2², 2³) = (1, 2, 4, 3)`. A `4 = 2²`-element (smooth) subgroup. -/
-def domainVec : Fin 4 → F5 := ![1, 2, 4, 3]
+/-- The domain really is the cyclic 2-power group `⟨2⟩`: `gdom i = 2^i`. -/
+theorem gdom_powers : ∀ i : Fin 4, gdom i = 2 ^ (i : ℕ) := by decide
 
-lemma domainVec_injective : Function.Injective domainVec := by decide
+/-- The domain enumeration is injective (4 distinct points). -/
+theorem gdom_injective : Function.Injective gdom := by decide
 
-/-- The domain as an embedding. -/
-def domain5 : Fin 4 ↪ F5 := ⟨domainVec, domainVec_injective⟩
+/-- `RS[F₅, ⟨2⟩, 2]`: evaluations of polynomials of degree `< 2` on the smooth domain.
+Dimension `k = 2`, block length `n = 4`, rate `ρ = 1/2` (a production rate). -/
+def rsC : Submodule F5 (Fin 4 → F5) where
+  carrier := {w | ∃ a b : F5, ∀ i, w i = a + b * gdom i}
+  add_mem' := by
+    rintro w w' ⟨a, b, h⟩ ⟨a', b', h'⟩
+    exact ⟨a + a', b + b', fun i => by
+      show w i + w' i = _
+      rw [h i, h' i]; ring⟩
+  zero_mem' := ⟨0, 0, fun i => by simp⟩
+  smul_mem' := by
+    rintro c w ⟨a, b, h⟩
+    exact ⟨c * a, c * b, fun i => by
+      show c * w i = _
+      rw [h i]; ring⟩
 
-/-- The Reed–Solomon code `RS[F₅, (1,2,4,3), 2]`: evaluations of polynomials of degree `< 2`
-(rate `ρ = 1/2`). -/
-noncomputable def RS5 : Submodule F5 (Fin 4 → F5) := ReedSolomon.code domain5 2
+theorem mem_rsC_iff (w : Fin 4 → F5) :
+    w ∈ (rsC : Set (Fin 4 → F5)) ↔ ∃ a b : F5, ∀ i, w i = a + b * gdom i := Iff.rfl
 
-/-- Membership in `RS5` is evaluation of an affine polynomial: `v ∈ RS5` iff
-`v i = a·xᵢ + b` for some slope/intercept `a, b ∈ F₅`. -/
-lemma mem_RS5_iff {v : Fin 4 → F5} :
-    v ∈ RS5 ↔ ∃ a b : F5, ∀ i, v i = a * domainVec i + b := by
-  constructor
-  · intro hv
-    have hv' : v ∈ ReedSolomon.code domain5 2 := hv
-    rw [ReedSolomon.mem_code_iff_exists_polynomial_of_ne_zero] at hv'
-    obtain ⟨p, hdeg, rfl⟩ := hv'
-    obtain ⟨a, b, rfl⟩ :=
-      Polynomial.exists_eq_X_add_C_of_natDegree_le_one (Nat.lt_succ_iff.mp hdeg)
-    exact ⟨a, b, fun i => by
-      simp [ReedSolomon.evalOnPoints, domain5]⟩
-  · rintro ⟨a, b, hv⟩
-    show v ∈ ReedSolomon.code domain5 2
-    rw [ReedSolomon.mem_code_iff_exists_polynomial_of_ne_zero]
-    refine ⟨Polynomial.C a * Polynomial.X + Polynomial.C b, ?_, ?_⟩
-    · have h1 : (Polynomial.C a * Polynomial.X).natDegree ≤ 1 :=
-        le_trans (Polynomial.natDegree_C_mul_le a Polynomial.X) Polynomial.natDegree_X_le
-      have h2 : (Polynomial.C b : Polynomial F5).natDegree = 0 := Polynomial.natDegree_C b
-      have h3 := Polynomial.natDegree_add_le (Polynomial.C a * Polynomial.X)
-        (Polynomial.C b : Polynomial F5)
-      omega
-    · funext i
-      rw [hv i]
-      simp [ReedSolomon.evalOnPoints, domain5]
+/-- The witness-spread stack (probe-discovered, the unique maximizer at `δ = 1/4`). -/
+def u0 : Fin 4 → F5 := ![0, 0, 0, 1]
 
-/-- First row of the extremal stack: `u₀ = (0,0,0,1)`. -/
-def u0vec : Fin 4 → F5 := ![0, 0, 0, 1]
+def u1 : Fin 4 → F5 := ![0, 0, 1, 1]
 
-/-- Second row of the extremal stack: `u₁ = (0,0,1,1)` — at distance 2 from `RS5`. -/
-def u1vec : Fin 4 → F5 := ![0, 0, 1, 1]
-
-/-- The stack `(u₀, u₁)` as a `WordStack`. -/
-def ustack : WordStack F5 (Fin 2) (Fin 4) := fun k => if k = 0 then u0vec else u1vec
-
-@[simp] lemma ustack_zero : ustack 0 = u0vec := rfl
-
-@[simp] lemma ustack_one : ustack 1 = u1vec := by
-  show (if (1 : Fin 2) = 0 then u0vec else u1vec) = u1vec
-  norm_num
-
-/-- **`u₁` is 2-far from the code**: no affine polynomial agrees with `u₁ = (0,0,1,1)` on any
-3 of the 4 domain points. Kernel-checked over all `5² · 2⁴` cases. -/
-lemma u1_far : ∀ a b : F5, ∀ S : Finset (Fin 4), 3 ≤ S.card →
-    ¬ (∀ i ∈ S, a * domainVec i + b = u1vec i) := by decide
-
-/-- The `¬ pairJointAgreesOn` clause holds for **every** witness set of size `≥ 3`: a joint
-pair would in particular give a codeword agreeing with `u₁` on `S`, contradicting `u1_far`. -/
-lemma not_pairJoint_RS5 (S : Finset (Fin 4)) (hS : 3 ≤ S.card) :
-    ¬ pairJointAgreesOn (RS5 : Set (Fin 4 → F5)) S u0vec u1vec := by
-  rintro ⟨v₀, _hv₀, v₁, hv₁, hag⟩
-  obtain ⟨a, b, hab⟩ := mem_RS5_iff.mp hv₁
-  exact u1_far a b S hS (fun i hi => by rw [← hab i]; exact (hag i hi).2)
-
-/-- The witness-size clause at `δ = 1/4`, `n = 4`: a 3-element set qualifies. -/
-lemma card_cond {S : Finset (Fin 4)} (hS : S.card = 3) :
+/-- The membership clause of `mcaEvent`'s witness sets at `δ = 1/4`, `n = 4`: card `3`
+suffices (`(1 − 1/4) · 4 ≤ 3`). -/
+theorem card_clause {S : Finset (Fin 4)} (hS : S.card = 3) :
     (S.card : ℝ≥0) ≥ ((1 : ℝ≥0) - 1/4) * (Fintype.card (Fin 4) : ℝ≥0) := by
-  have hsub : ((1 : ℝ≥0) - 1/4) ≤ 3/4 := tsub_le_iff_right.mpr (by norm_num)
-  calc ((1 : ℝ≥0) - 1/4) * (Fintype.card (Fin 4) : ℝ≥0)
-      ≤ (3/4) * (Fintype.card (Fin 4) : ℝ≥0) :=
-        mul_le_mul_of_nonneg_right hsub (zero_le _)
-    _ = 3 := by rw [Fintype.card_fin]; norm_num
-    _ ≤ (S.card : ℝ≥0) := by rw [hS]; norm_num
+  rw [hS, Fintype.card_fin]
+  calc ((1 : ℝ≥0) - 1/4) * (4 : ℕ) ≤ (3/4 : ℝ≥0) * (4 : ℕ) := by
+        gcongr
+        exact tsub_le_iff_right.mpr (by norm_num)
+    _ ≤ ((3 : ℕ) : ℝ≥0) := by
+        push_cast
+        norm_num
 
-/-- `mcaEvent` fires at `γ = 0`: the zero codeword agrees with the line
-`u₀ + 0·u₁ = (0,0,0,1)` on `S = {0,1,2}`. -/
-lemma mcaEvent_RS5_g0 :
-    mcaEvent (F := F5) (RS5 : Set (Fin 4 → F5)) (1/4) u0vec u1vec (0 : F5) := by
-  refine ⟨{0, 1, 2}, card_cond (by decide), ⟨0, RS5.zero_mem, ?_⟩,
-    not_pairJoint_RS5 _ (by decide)⟩
-  intro i hi
-  fin_cases hi <;> decide
+/-! ### The four bad scalars at `δ = 1/4`, each with its own witness set
 
-/-- `mcaEvent` fires at `γ = 2`: the codeword `x ↦ 4x + 1` agrees with the line
-`u₀ + 2·u₁ = (0,0,2,3)` on `S = {0,2,3}`. -/
-lemma mcaEvent_RS5_g2 :
-    mcaEvent (F := F5) (RS5 : Set (Fin 4 → F5)) (1/4) u0vec u1vec (2 : F5) := by
-  refine ⟨{0, 2, 3}, card_cond (by decide),
-    ⟨fun i => 4 * domainVec i + 1, mem_RS5_iff.mpr ⟨4, 1, fun _ => rfl⟩, ?_⟩,
-    not_pairJoint_RS5 _ (by decide)⟩
-  intro i hi
-  fin_cases hi <;> decide
+`γ = 1` is the unique good scalar: the line point `(0,0,1,2)` agrees with no codeword on any
+3-subset (probe-verified; not needed for the pin). -/
 
-/-- `mcaEvent` fires at `γ = 3`: the codeword `x ↦ 4x + 2` agrees with the line
-`u₀ + 3·u₁ = (0,0,3,4)` on `S = {1,2,3}`. -/
-lemma mcaEvent_RS5_g3 :
-    mcaEvent (F := F5) (RS5 : Set (Fin 4 → F5)) (1/4) u0vec u1vec (3 : F5) := by
-  refine ⟨{1, 2, 3}, card_cond (by decide),
-    ⟨fun i => 4 * domainVec i + 2, mem_RS5_iff.mpr ⟨4, 2, fun _ => rfl⟩, ?_⟩,
-    not_pairJoint_RS5 _ (by decide)⟩
-  intro i hi
-  fin_cases hi <;> decide
+/-- `γ = 0`, witness `S = {0,1,2}`, on-line codeword `0`; no pair: `u₁` is not interpolable
+on `S` (`a+b=0, a+2b=0 ⟹ a=b=0`, but `u₁` needs value `1` at `gdom 2 = 4`). -/
+theorem mcaEvent_g0 :
+    mcaEvent (F := F5) (rsC : Set (Fin 4 → F5)) (1/4) u0 u1 0 := by
+  refine ⟨{0, 1, 2}, card_clause (by decide), ⟨0, rsC.zero_mem, by decide⟩, ?_⟩
+  rintro ⟨v₀, _, v₁, ⟨a, b, h⟩, hagree⟩
+  have e0 : a + b * gdom 0 = u1 0 := by rw [← h 0]; exact (hagree 0 (by decide)).2
+  have e1 : a + b * gdom 1 = u1 1 := by rw [← h 1]; exact (hagree 1 (by decide)).2
+  have e2 : a + b * gdom 2 = u1 2 := by rw [← h 2]; exact (hagree 2 (by decide)).2
+  clear h
+  revert e0 e1 e2
+  revert a b
+  decide
 
-/-- `mcaEvent` fires at `γ = 4`: the zero codeword agrees with the line
-`u₀ + 4·u₁ = (0,0,4,0)` on `S = {0,1,3}`. -/
-lemma mcaEvent_RS5_g4 :
-    mcaEvent (F := F5) (RS5 : Set (Fin 4 → F5)) (1/4) u0vec u1vec (4 : F5) := by
-  refine ⟨{0, 1, 3}, card_cond (by decide), ⟨0, RS5.zero_mem, ?_⟩,
-    not_pairJoint_RS5 _ (by decide)⟩
-  intro i hi
-  fin_cases hi <;> decide
+/-- `γ = 2`, witness `S = {0,2,3}`, on-line codeword `1 + 4·x`; no pair: `u₀` is not
+interpolable on `S`. -/
+theorem mcaEvent_g2 :
+    mcaEvent (F := F5) (rsC : Set (Fin 4 → F5)) (1/4) u0 u1 2 := by
+  refine ⟨{0, 2, 3}, card_clause (by decide),
+    ⟨fun i => 1 + 4 * gdom i, ⟨1, 4, fun _ => rfl⟩, by decide⟩, ?_⟩
+  rintro ⟨v₀, ⟨a, b, h⟩, v₁, _, hagree⟩
+  have e0 : a + b * gdom 0 = u0 0 := by rw [← h 0]; exact (hagree 0 (by decide)).1
+  have e2 : a + b * gdom 2 = u0 2 := by rw [← h 2]; exact (hagree 2 (by decide)).1
+  have e3 : a + b * gdom 3 = u0 3 := by rw [← h 3]; exact (hagree 3 (by decide)).1
+  clear h
+  revert e0 e2 e3
+  revert a b
+  decide
 
-/-- The bad-scalar set at `δ = 1/4`: four of the five field elements. -/
-def badG : Finset F5 := {0, 2, 3, 4}
+/-- `γ = 3`, witness `S = {1,2,3}`, on-line codeword `2 + 4·x`; no pair: `u₀` is not
+interpolable on `S`. -/
+theorem mcaEvent_g3 :
+    mcaEvent (F := F5) (rsC : Set (Fin 4 → F5)) (1/4) u0 u1 3 := by
+  refine ⟨{1, 2, 3}, card_clause (by decide),
+    ⟨fun i => 2 + 4 * gdom i, ⟨2, 4, fun _ => rfl⟩, by decide⟩, ?_⟩
+  rintro ⟨v₀, ⟨a, b, h⟩, v₁, _, hagree⟩
+  have e1 : a + b * gdom 1 = u0 1 := by rw [← h 1]; exact (hagree 1 (by decide)).1
+  have e2 : a + b * gdom 2 = u0 2 := by rw [← h 2]; exact (hagree 2 (by decide)).1
+  have e3 : a + b * gdom 3 = u0 3 := by rw [← h 3]; exact (hagree 3 (by decide)).1
+  clear h
+  revert e1 e2 e3
+  revert a b
+  decide
 
-/-- **The bad half: `ε_mca(RS5, 1/4) ≥ 4/5`.** Four of five scalars fire `mcaEvent` on the
-explicit stack `(u₀, u₁) = ((0,0,0,1), (0,0,1,1))`. -/
-theorem epsMCA_RS5_quarter_ge :
-    (4 : ℝ≥0∞) / 5 ≤ epsMCA (F := F5) (A := F5) (RS5 : Set (Fin 4 → F5)) (1/4) := by
-  have h := epsMCA_ge_card_div_of_mcaEvent_set (F := F5) (A := F5)
-    (RS5 : Set (Fin 4 → F5)) (1/4) ustack badG (by
-      intro γ hγ
-      fin_cases hγ
-      · exact mcaEvent_RS5_g0
-      · exact mcaEvent_RS5_g2
-      · exact mcaEvent_RS5_g3
-      · exact mcaEvent_RS5_g4)
-  have hG4 : badG.card = 4 := by decide
-  have hF5 : Fintype.card F5 = 5 := ZMod.card 5
-  rw [hG4, hF5] at h
-  simpa using h
+/-- `γ = 4`, witness `S = {0,1,3}`, on-line codeword `0`; no pair: `u₀` is not interpolable
+on `S`. -/
+theorem mcaEvent_g4 :
+    mcaEvent (F := F5) (rsC : Set (Fin 4 → F5)) (1/4) u0 u1 4 := by
+  refine ⟨{0, 1, 3}, card_clause (by decide), ⟨0, rsC.zero_mem, by decide⟩, ?_⟩
+  rintro ⟨v₀, ⟨a, b, h⟩, v₁, _, hagree⟩
+  have e0 : a + b * gdom 0 = u0 0 := by rw [← h 0]; exact (hagree 0 (by decide)).1
+  have e1 : a + b * gdom 1 = u0 1 := by rw [← h 1]; exact (hagree 1 (by decide)).1
+  have e3 : a + b * gdom 3 = u0 3 := by rw [← h 3]; exact (hagree 3 (by decide)).1
+  clear h
+  revert e0 e1 e3
+  revert a b
+  decide
 
-/-- **The good half: `ε_mca(RS5, δ) ≤ 1/5` for every `δ < 1/4`,** by the general sub-unit
-collapse (no computation: `4·δ < 1` forces the witness to `univ`). -/
-theorem epsMCA_RS5_le_fifth {δ : ℝ≥0} (hδ : δ < 1/4) :
-    epsMCA (F := F5) (A := F5) (RS5 : Set (Fin 4 → F5)) δ ≤ 1/5 := by
-  have hδn : δ * (Fintype.card (Fin 4) : ℝ≥0) < 1 := by
+open Classical in
+/-- At least 4 of the 5 scalars are bad at `δ = 1/4` for the spread stack. -/
+theorem badScalar_card_ge_four :
+    4 ≤ (Finset.filter (fun γ : F5 =>
+        mcaEvent (F := F5) (rsC : Set (Fin 4 → F5)) (1/4) u0 u1 γ) Finset.univ).card := by
+  have hsub : ({0, 2, 3, 4} : Finset F5) ⊆ Finset.filter (fun γ : F5 =>
+      mcaEvent (F := F5) (rsC : Set (Fin 4 → F5)) (1/4) u0 u1 γ) Finset.univ := by
+    intro γ hγ
+    fin_cases hγ
+    · exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, mcaEvent_g0⟩
+    · exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, mcaEvent_g2⟩
+    · exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, mcaEvent_g3⟩
+    · exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, mcaEvent_g4⟩
+  calc (4 : ℕ) = ({0, 2, 3, 4} : Finset F5).card := by decide
+    _ ≤ _ := Finset.card_le_card hsub
+
+open Classical in
+/-- **Bad side:** `ε_mca(RS[F₅, ⟨2⟩, 2], 1/4) ≥ 4/5`. (Probe ground truth: equality.) -/
+theorem epsMCA_rs_quarter_ge :
+    (4 : ℝ≥0∞) / 5 ≤ epsMCA (F := F5) (A := F5) (rsC : Set (Fin 4 → F5)) (1/4) := by
+  refine le_trans ?_
+    (mcaEvent_prob_le_epsMCA (F := F5) (A := F5) (rsC : Set (Fin 4 → F5)) (1/4) ![u0, u1])
+  have h0 : (![u0, u1] : WordStack F5 (Fin 2) (Fin 4)) 0 = u0 := rfl
+  have h1 : (![u0, u1] : WordStack F5 (Fin 2) (Fin 4)) 1 = u1 := rfl
+  rw [h0, h1, prob_uniform_eq_card_filter_div_card]
+  simp only [ENNReal.coe_natCast]
+  have hcard : (Fintype.card F5 : ℝ≥0∞) = 5 := by
+    rw [ZMod.card]; norm_num
+  rw [hcard]
+  gcongr
+  exact_mod_cast badScalar_card_ge_four
+
+/-! ### The pin: both brackets meet at `1/4` -/
+
+/-- **Upper bracket:** `δ* ≤ 1/4`, since `ε_mca(C, 1/4) ≥ 4/5 > 2/5 = ε*`. -/
+theorem mcaDeltaStar_rs_le_quarter :
+    mcaDeltaStar (F := F5) (A := F5) (rsC : Set (Fin 4 → F5)) (2/5 : ℝ≥0∞) ≤ 1/4 := by
+  refine MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _ (lt_of_lt_of_le ?_ epsMCA_rs_quarter_ge)
+  exact ENNReal.div_lt_div_right (by norm_num) (by norm_num) (by norm_num)
+
+/-- **Lower bracket:** `1/4 ≤ δ*`: every `δ < 1/4` is below the granularity radius `1/n`,
+so `ε_mca(C, δ) ≤ 1/5 ≤ 2/5 = ε*`; conclude by density of `ℝ≥0`. -/
+theorem quarter_le_mcaDeltaStar_rs :
+    (1/4 : ℝ≥0) ≤ mcaDeltaStar (F := F5) (A := F5) (rsC : Set (Fin 4 → F5)) (2/5 : ℝ≥0∞) := by
+  by_contra hlt
+  push Not at hlt
+  obtain ⟨c, hc1, hc2⟩ := exists_between hlt
+  have hcsmall : c * (Fintype.card (Fin 4) : ℝ≥0) < 1 := by
     rw [Fintype.card_fin]
-    have h4 := mul_lt_mul_of_pos_right hδ (show (0 : ℝ≥0) < 4 by norm_num)
-    calc δ * ((4 : ℕ) : ℝ≥0) = δ * 4 := by norm_num
-      _ < (1/4) * 4 := h4
-      _ = 1 := by norm_num
-  have h := epsMCA_le_inv_card_of_subunit (F := F5) (A := F5) RS5 hδn
-  have hF5 : Fintype.card F5 = 5 := ZMod.card 5
-  rw [hF5] at h
-  simpa using h
-
-/-- **THE FIRST MACHINE-CHECKED EXACT `δ*` VALUE FOR ANY CODE.**
-
-For the smooth-domain Reed–Solomon code `RS[F₅, (1,2,4,3), 2]` (rate `1/2`) at error target
-`ε* = 2/5`:
-
-  `mcaDeltaStar = 1/4`  **exactly**.
-
-Lower bracket: every `δ < 1/4` is good (`ε_mca ≤ 1/5 ≤ 2/5`, the sub-unit collapse). Upper
-bracket: `δ = 1/4` is bad (`ε_mca ≥ 4/5 > 2/5`, the explicit four-scalar stack). The supremum
-of good radii is therefore exactly `1/4` — and it is *not attained*: `ε_mca` jumps from `1/5`
-to `4/5` at `δ* = 1/4 = (1-ρ)/2`, the unique-decoding radius. -/
-theorem mcaDeltaStar_RS5_eq_quarter :
-    mcaDeltaStar (F := F5) (A := F5) (RS5 : Set (Fin 4 → F5)) (2/5 : ℝ≥0∞) = 1/4 := by
-  refine le_antisymm ?_ ?_
-  · -- Upper bracket via the bad point at `δ = 1/4`.
-    refine mcaDeltaStar_le_of_bad (F := F5) (A := F5) (RS5 : Set (Fin 4 → F5)) (2/5) ?_
-    refine lt_of_lt_of_le ?_ epsMCA_RS5_quarter_ge
-    rw [ENNReal.div_lt_iff (by norm_num) (by norm_num),
-      ENNReal.div_mul_cancel (by norm_num) (by norm_num)]
+    calc c * (4 : ℕ) < (1/4 : ℝ≥0) * (4 : ℕ) := by
+          have h4 : (0 : ℝ≥0) < ((4 : ℕ) : ℝ≥0) := by norm_num
+          exact mul_lt_mul_of_pos_right hc2 h4
+      _ = 1 := by push_cast; norm_num
+  have hgood : epsMCA (F := F5) (A := F5) (rsC : Set (Fin 4 → F5)) c ≤ (2/5 : ℝ≥0∞) := by
+    refine le_trans (epsMCA_le_inv_card_of_small_radius rsC hcsmall) ?_
+    have hcard : (Fintype.card F5 : ℝ≥0∞) = 5 := by rw [ZMod.card]; norm_num
+    rw [hcard]
+    exact ENNReal.div_le_div_right (by norm_num) 5
+  have hquarter_le_one : (1/4 : ℝ≥0) ≤ 1 := by
+    rw [div_le_one (by norm_num : (0 : ℝ≥0) < 4)]
     norm_num
-  · -- Lower bracket: every `δ < 1/4` is good, so the sup is at least `1/4`.
-    by_contra hcon
-    push_neg at hcon
-    obtain ⟨δ, hδ1, hδ2⟩ := exists_between hcon
-    have hgood := le_mcaDeltaStar_of_good (F := F5) (A := F5)
-      (RS5 : Set (Fin 4 → F5)) (2/5) (le_trans hδ2.le
-        (by rw [div_le_one (by norm_num : (0 : ℝ≥0) < 4)]; norm_num))
-      (le_trans (epsMCA_RS5_le_fifth hδ2)
-        (ENNReal.div_le_div_right (by norm_num) 5))
-    exact absurd (lt_of_le_of_lt hgood hδ1) (lt_irrefl _)
+  have hle : c ≤ mcaDeltaStar (F := F5) (A := F5) (rsC : Set (Fin 4 → F5)) (2/5 : ℝ≥0∞) :=
+    MCAThresholdLedger.le_mcaDeltaStar_of_good _ _
+      (le_of_lt (lt_of_lt_of_le hc2 hquarter_le_one)) hgood
+  exact absurd (lt_of_le_of_lt hle hc1) (lt_irrefl _)
 
-end RS5
+/-- **THE PIN — the first machine-checked exact `δ*` value for any code:**
+`mcaDeltaStar (RS[F₅, ⟨2⟩, 2]) (2/5) = 1/4`. A genuine smooth-domain RS code (domain
+`⟨2⟩ = F₅ˣ`, `n = 4 = 2²`), rate `ρ = 1/2`; both bracket halves meet. At this scale and
+`ε*`, `δ* = (1−ρ)/2` — the unique-decoding radius. -/
+theorem mcaDeltaStar_rs_F5_eq_quarter :
+    mcaDeltaStar (F := F5) (A := F5) (rsC : Set (Fin 4 → F5)) (2/5 : ℝ≥0∞) = 1/4 :=
+  le_antisymm mcaDeltaStar_rs_le_quarter quarter_le_mcaDeltaStar_rs
+
+/-- The supremum is **not attained**: `δ* = 1/4` is itself a bad radius
+(`ε_mca(C, δ*) ≥ 4/5 > 2/5`). `δ*` sits exactly at a jump of the step function `ε_mca`. -/
+theorem deltaStar_not_good :
+    (2/5 : ℝ≥0∞) < epsMCA (F := F5) (A := F5) (rsC : Set (Fin 4 → F5))
+      (mcaDeltaStar (F := F5) (A := F5) (rsC : Set (Fin 4 → F5)) (2/5 : ℝ≥0∞)) := by
+  rw [mcaDeltaStar_rs_F5_eq_quarter]
+  refine lt_of_lt_of_le ?_ epsMCA_rs_quarter_ge
+  exact ENNReal.div_lt_div_right (by norm_num) (by norm_num) (by norm_num)
+
+/-- The code is proper, so the general exact sub-granularity value applies:
+`ε_mca(C, δ) = 1/5` exactly for every `δ < 1/4` — the good-side step of the ladder is not
+just a bound but the exact value. -/
+theorem rsC_proper : (rsC : Set (Fin 4 → F5)) ≠ Set.univ := by
+  intro h
+  have hmem : u1 ∈ (rsC : Set (Fin 4 → F5)) := h ▸ Set.mem_univ u1
+  obtain ⟨a, b, hab⟩ := hmem
+  have e0 := hab 0
+  have e1 := hab 1
+  have e2 := hab 2
+  clear h
+  clear hab
+  revert e0 e1 e2
+  revert a b
+  decide
+
+/-- The exact step-function value on the good side: `ε_mca(C, δ) = 1/5` for `δ·4 < 1`. -/
+theorem epsMCA_rs_eq_fifth_of_small {δ : ℝ≥0} (hδ : δ * (Fintype.card (Fin 4) : ℝ≥0) < 1) :
+    epsMCA (F := F5) (A := F5) (rsC : Set (Fin 4 → F5)) δ = 1 / 5 := by
+  have h := epsMCA_eq_inv_card_of_small_radius rsC hδ rsC_proper
+  rwa [show (Fintype.card F5 : ℝ≥0∞) = 5 by rw [ZMod.card]; norm_num] at h
+
+end Concrete
 
 /-! ## Source audit -/
 
-#print axioms witness_eq_univ_of_subunit
-#print axioms badScalar_card_le_one_of_subunit
-#print axioms epsMCA_le_inv_card_of_subunit
-#print axioms inv_card_le_mcaDeltaStar
-#print axioms epsMCA_RS5_quarter_ge
-#print axioms epsMCA_RS5_le_fifth
-#print axioms mcaDeltaStar_RS5_eq_quarter
+#print axioms witness_eq_univ_of_small_radius
+#print axioms badScalar_card_le_one_of_small_radius
+#print axioms epsMCA_le_inv_card_of_small_radius
+#print axioms epsMCA_eq_inv_card_of_small_radius
+#print axioms epsMCA_rs_quarter_ge
+#print axioms mcaDeltaStar_rs_F5_eq_quarter
+#print axioms deltaStar_not_good
+#print axioms epsMCA_rs_eq_fifth_of_small
 
 end ProximityGap.MCADeltaStarExactPoint
