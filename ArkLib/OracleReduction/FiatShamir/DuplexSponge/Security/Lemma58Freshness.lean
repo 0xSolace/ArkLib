@@ -277,6 +277,56 @@ theorem swapKey_cached_after_consistent_permInv {c : DSCache StmtIn U}
     rw [stepCache_noop_permInv (by rw [hf]; rfl) a]
     exact List.find?_isSome.mpr ⟨w, hwmem, by simp [ha]⟩
 
+/-! ## Exact record caching under consistency -/
+
+/-- After a consistent hash step, the exact logged hash answer is cached. -/
+theorem hashRecord_cached_after_consistent {c : DSCache StmtIn U}
+    {q : StmtIn} {u : Vector U SpongeSize.C}
+    (hc : entryConsistent c (⟨.inl q, u⟩ : DSEntry StmtIn U)) :
+    (stepCache c ⟨.inl q, u⟩).1 q = some u := by
+  rcases hq : c.1 q with _ | u'
+  · exact stepCache_caches_fresh_hash c hq
+  · have hu : u = u' := hc u' hq
+    rw [stepCache_noop_hash (by rw [hq]; rfl) u, hu, hq]
+
+/-- After a consistent forward step, the exact pair `(input, output)` is cached. -/
+theorem pairRecord_cached_after_consistent_perm {c : DSCache StmtIn U}
+    {a b : CanonicalSpongeState U}
+    (hc : entryConsistent c (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U)) :
+    (a, b) ∈ (stepCache c ⟨.inr (.inl a), b⟩).2 := by
+  rcases hf : c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.1 = a) with _ | w
+  · exact stepCache_caches_fresh_perm c (b := b) hf
+  · obtain ⟨w1, w2⟩ := w
+    have hwa : w1 = a := by
+      have := List.find?_some hf
+      simpa using this
+    have hb : b = w2 := hc (w1, w2) hf
+    have hwmem : (w1, w2) ∈ c.2 := List.mem_of_find?_eq_some hf
+    rw [stepCache_noop_perm (by rw [hf]; rfl) b]
+    cases hwa
+    cases hb
+    exact hwmem
+
+/-- After a consistent inverse step, the exact pair `(answer, query)` is cached. -/
+theorem pairRecord_cached_after_consistent_permInv {c : DSCache StmtIn U}
+    {b a : CanonicalSpongeState U}
+    (hc : entryConsistent c (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U)) :
+    (a, b) ∈ (stepCache c ⟨.inr (.inr b), a⟩).2 := by
+  rcases hf : c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.2 = b) with _ | w
+  · exact stepCache_caches_fresh_permInv c (a := a) hf
+  · obtain ⟨w1, w2⟩ := w
+    have hwb : w2 = b := by
+      have := List.find?_some hf
+      simpa using this
+    have ha : a = w1 := hc (w1, w2) hf
+    have hwmem : (w1, w2) ∈ c.2 := List.mem_of_find?_eq_some hf
+    rw [stepCache_noop_permInv (by rw [hf]; rfl) a]
+    cases hwb
+    cases ha
+    exact hwmem
+
 /-! ## `isSome`-persistence through the fold (item (iii) assembly consumers) -/
 
 /-- A cached hash key stays cached through any fold suffix (`isSome` form). -/
@@ -564,6 +614,9 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.key_cached_after_step_permInv
 #print axioms DuplexSpongeFS.EagerLazyDS.swapKey_cached_after_consistent_perm
 #print axioms DuplexSpongeFS.EagerLazyDS.swapKey_cached_after_consistent_permInv
+#print axioms DuplexSpongeFS.EagerLazyDS.hashRecord_cached_after_consistent
+#print axioms DuplexSpongeFS.EagerLazyDS.pairRecord_cached_after_consistent_perm
+#print axioms DuplexSpongeFS.EagerLazyDS.pairRecord_cached_after_consistent_permInv
 #print axioms DuplexSpongeFS.EagerLazyDS.hashKey_isSome_foldl_mono
 #print axioms DuplexSpongeFS.EagerLazyDS.pairKey_isSome_foldl_mono
 #print axioms DuplexSpongeFS.EagerLazyDS.consistentFrom_eraseIdx_of_noop
