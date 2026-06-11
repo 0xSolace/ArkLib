@@ -247,3 +247,21 @@ collapses to the floor in O(log) steps, never banding the interior window. Confi
 or ε-coupled map with an interior attractor), which is not the 858 map. Parked unless a non-collapsing
 transfer is found.
 
+## 9. PROGRESS: family interior pin (high-rate), and the low-rate wall localized
+
+Landed `mcaDeltaStar_family_interior_pin` (axiom-clean): a PARAMETRIC interior δ* pin
+`mcaDeltaStar(C, C(n,t+1)/q) = 1−t/n` for every upper-half code (`n≤2t`), conditional on one named
+extremal-layer hypothesis; the good side (sharp LYM ceiling) is unconditional. This reduces the
+high-rate interior-pin programme to a single per-family extremal-stack obligation.
+
+**The localized wall (honest):** this family is HIGH rate (`k+1 ≥ n/2`). At LOW rate (the deployed
+prize, `ρ ≤ 1/2`, `k+1 < n/2`), the LYM ceiling caps `ε_mca ≤ C(n,⌊n/2⌋)/q`, but the extremal-stack
+construction only attains `C(n,k+1)/q ≪ C(n,⌊n/2⌋)/q` — **the brackets do not meet**: the LYM
+antichain bound is *loose by an exponential factor* at low rate. This is exactly the 25-year wall,
+now pinned to a precise statement: **the open low-rate problem is to replace the LYM/antichain
+ceiling with a sharp one** — i.e. prove that the bad-scalar witnesses, though they *could* form a
+middle-layer antichain combinatorially, are *algebraically forced* to a much smaller layer for RS
+codes. No technique does this (it is the beyond-Johnson list-decoding count in disguise). The
+high-rate family pin is the proof-of-concept that the bracket-meet machinery works whenever a sharp
+ceiling is available; the low-rate sharp ceiling is the genuine open core.
+
