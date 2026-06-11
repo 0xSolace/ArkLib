@@ -290,6 +290,78 @@ theorem logupCompletenessBrickResidual_holds
   rw [Prover.append_dir_natAdd]
   exact hdir
 
+/-! ### `AppendCompletenessResidual` — direct unconditional providers (issue #13)
+
+`Logup.AppendCompletenessResidual` (`SubPhaseSplit.lean`) is *indexed* by the two sub-phase
+completeness proofs (`hOuter`, `hSumcheck`) that `OracleReduction.append_completeness` consumes.
+The providers above (`appendCompletenessResidual_wired`, the seam variants) take those residuals
+as **hypothesis binders**, so the residual stays census-open even though the combined fact
+`logupCompletenessBrickResidual_holds` is a proven, axiom-clean theorem producing exactly the
+existential `∃ hOuter hSumcheck, AppendCompletenessResidual … hOuter hSumcheck`.
+
+The two theorems below close that gap with **direct, unconditional providers** of the named
+residual itself, from **only** the standard side-condition set
+`{hn, hInit, hImplSupp, himplSP, himplNF, himplVB}` — the same set as the headline
+`logup_completeness_final`, all instantiated by the concrete `ZMod 5` witness in
+`LogupCompletenessFinal.lean`. No census residual appears as a hypothesis.
+
+There is no weakening and no new mathematics: the underlying Prop
+`OracleReduction.appendCompletenessResidual R₁ R₂ h₁ h₂ :=
+(R₁.append R₂).completeness init impl rel₁ rel₃ (e₁ + e₂)` does **not** depend on the proof
+arguments `h₁`/`h₂` (they index the statement for threading into `append_completeness` but are
+unused in the body), so one instance is definitionally every instance.
+
+NOTE (history): this content previously lived in `LogupAppendCompletenessUncond.lean` (PRs #355,
+#356) and was twice deleted by mass cleanup/regen commits (5a9c37a16, 1d1bd5c86) that mistook the
+standalone leaf for a superseded surface — each deletion re-opened the census item. It is NOT
+superseded: no other unconditional provider of `AppendCompletenessResidual` exists. It now lives
+here, next to its source theorem, so module-level prunes keep it. -/
+
+/-- **`AppendCompletenessResidual` — unconditional (issue #13).** The non-perfect
+outer⊕sumcheck append-composition completeness brick, instantiated at the two in-tree proven
+sub-phase providers, from **only** the standard data / honest-implementation side conditions
+(the same set as `logup_completeness_final`, all discharged by the concrete `ZMod 5` witness).
+No sub-phase residual is consumed as a hypothesis: the proof destructures the proven
+`logupCompletenessBrickResidual_holds` and uses that the residual's body does not depend on its
+proof indices. -/
+theorem appendCompletenessResidual_unconditional
+    (hn : 0 < n) (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β))
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    AppendCompletenessResidual oSpec F n M params init impl
+      (outerCompletenessResidual_of_neverFail oSpec F n M params init impl hInit)
+      (sumcheckCompletenessResidual_unconditional oSpec F n M params init impl
+        hInit hImplSupp) := by
+  obtain ⟨hO, hS, hA⟩ := logupCompletenessBrickResidual_holds oSpec F n M params init impl
+    hn hInit hImplSupp himplSP himplNF himplVB
+  -- `AppendCompletenessResidual … h₁ h₂` does not depend on `h₁`/`h₂`: definitional transport.
+  exact hA
+
+/-- **`AppendCompletenessResidual` at arbitrary proof indices.** The residual's body ignores its
+two proof arguments, so the unconditional instance above provides it at *every* pair
+`hOuter`/`hSumcheck`. Convenience form for consumers holding their own sub-phase proofs. -/
+theorem appendCompletenessResidual_forall
+    (hn : 0 < n) (hInit : NeverFail init)
+    (hImplSupp : ∀ {β} (q : OracleQuery oSpec β) s,
+      Prod.fst <$> support ((QueryImpl.mapQuery impl q).run s)
+        = support (liftM q : OracleComp oSpec β))
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s'))
+    (hOuter : OuterCompletenessResidual oSpec F n M params init impl)
+    (hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl) :
+    AppendCompletenessResidual oSpec F n M params init impl hOuter hSumcheck :=
+  appendCompletenessResidual_unconditional oSpec F n M params init impl
+    hn hInit hImplSupp himplSP himplNF himplVB
+
 end Wired
 
 end Logup
@@ -299,3 +371,5 @@ end Logup
 #print axioms Logup.appendCompletenessResidual_wired
 #print axioms Logup.logup_completeness_wired
 #print axioms Logup.logupCompletenessBrickResidual_holds
+#print axioms Logup.appendCompletenessResidual_unconditional
+#print axioms Logup.appendCompletenessResidual_forall
