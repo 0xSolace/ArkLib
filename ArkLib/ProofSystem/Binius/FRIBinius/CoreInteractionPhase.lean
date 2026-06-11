@@ -5,6 +5,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.CoreInteractionPhase
+import ArkLib.ProofSystem.Binius.BinaryBasefold.ExtractMLPCorrectness
 import ArkLib.ProofSystem.Binius.BinaryBasefold.ReductionLogic
 import ArkLib.ProofSystem.Binius.FRIBinius.Prelude
 
@@ -1470,9 +1471,9 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
           compute_A_MLE_eval_eq_final_eq_value κ L K (β := booleanHypercubeBasis κ L K β)
             ℓ ℓ' h_l stmtIn.ctx.t_eval_point stmtIn.challenges stmtIn.ctx.r_batching
         have h_sumcheck_target_eq : stmtIn.sumcheck_target =
-            (MvPolynomial.eval stmtIn.challenges
-              ((RingSwitching_SumcheckMultParam κ L K
-                (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l).multpoly stmtIn.ctx).val) *
+          (MvPolynomial.eval stmtIn.challenges
+            ((RingSwitching_SumcheckMultParam κ L K
+              (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l).multpoly stmtIn.ctx).val) *
             (MvPolynomial.eval stmtIn.challenges (revIndexMLP tpoly).val) := by
           calc
             stmtIn.sumcheck_target
@@ -1494,9 +1495,9 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
         simp only [Fin.mk_zero', h_extractMLP, Fin.coe_ofNat_eq_mod, Fin.val_last,
           OracleFrontierIndex.val_mkFromStmtIdx]
         have h_close_first :=
-          BinaryBasefold.CoreInteraction.firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency
-            K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (stmtOut := stmtOut)
-            (oStmt := oStmtIn) hConsistent
+          BinaryBasefold.CoreInteraction.firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency K β
+            (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+            (stmtOut := stmtOut) (oStmt := oStmtIn) hConsistent
         have hUDR : 2 * Code.distFromCode (u := getFirstOracle K β oStmtIn)
             (C := BBF_Code K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (0 : Fin (2 ^ κ))) <
           (BBF_CodeDistance K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)

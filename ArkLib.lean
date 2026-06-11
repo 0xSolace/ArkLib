@@ -1796,6 +1796,7 @@ import ArkLib.ToMathlib.Claim511
 import ArkLib.ToMathlib.Claim57Supply
 import ArkLib.ToMathlib.Claim59Conditional
 import ArkLib.ToMathlib.Claim59GroundLine
+import ArkLib.ToMathlib.Claim59GroundLineWiring
 import ArkLib.ToMathlib.ClearedGammaDefect
 import ArkLib.ToMathlib.ClosedBoundaryFaithfulFloorCell
 import ArkLib.ToMathlib.CoeffExtract

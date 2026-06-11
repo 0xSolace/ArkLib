@@ -6,9 +6,13 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Basic
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.SuffixFiberAlignment
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Discharge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Incremental
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorMultilinear
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Assembly
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.FoldDistance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.BadBlocks
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
