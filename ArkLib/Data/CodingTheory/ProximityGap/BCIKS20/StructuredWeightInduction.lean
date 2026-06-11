@@ -1093,6 +1093,60 @@ theorem βHensel_weight_bound_anchored_loose_of_i1zero (x₀ : F) (R : F[X][X][Y
   unfold structuredBound at h
   exact h
 
+/-! ## The order-1 value lemma (finding 14's audit artifact) -/
+
+/-- **`β₁ = −B_{1,∅}` (exact value).** At order 1 the (A.1) sum has exactly one surviving
+cell — `i1 = 1` with the empty partition (the `i1 = 0` cell is the excluded indiscrete
+`λ^{(1)}`) — so `βHensel 1 = −B_coeff 1 ∅`. This is the precise object finding 14's
+normalization audit tests: the (P2) lift identity at `t = 1` is an explicit statement
+about this single coefficient. -/
+theorem βHensel_one (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    βHensel H x₀ R hHyp 1
+      = - B_coeff H x₀ R 1 (default : Nat.Partition 0) := by
+  rw [show (1 : ℕ) = 0 + 1 from rfl, βHensel_succ]
+  congr 1
+  rw [Finset.sum_range_succ, Finset.sum_range_one]
+  -- the `i1 = 0` cell: the only partition of 1 is the excluded indiscrete one
+  have h0 : (Finset.univ : Finset (Nat.Partition (0 + 1 - 0))).filter
+      (fun lam => (0 + 1) ∉ lam.parts) = ∅ := by
+    refine Finset.filter_eq_empty_iff.mpr ?_
+    intro lam _
+    refine not_not_intro ?_
+    have huniq : lam = (Nat.Partition.indiscrete 1 : Nat.Partition (0 + 1 - 0)) :=
+      Subsingleton.elim (α := Nat.Partition 1) lam _
+    rw [huniq,
+      show ((Nat.Partition.indiscrete 1 : Nat.Partition (0 + 1 - 0))).parts = {1} from
+        Nat.Partition.indiscrete_parts one_ne_zero]
+    exact Multiset.mem_singleton_self 1
+  -- the `i1 = 1` cell: the unique empty partition survives
+  have h1 : (Finset.univ : Finset (Nat.Partition (0 + 1 - 1))).filter
+      (fun lam => (0 + 1) ∉ lam.parts) = Finset.univ := by
+    refine Finset.filter_true_of_mem ?_
+    intro lam _
+    have hp : lam.parts = 0 :=
+      Nat.Partition.partition_zero_parts (p := lam)
+    rw [hp]
+    simp
+  have huniv : (Finset.univ : Finset (Nat.Partition (0 + 1 - 1)))
+      = {(Nat.Partition.indiscrete 0 : Nat.Partition (0 + 1 - 1))} := by
+    refine Finset.eq_singleton_iff_unique_mem.mpr ⟨Finset.mem_univ _, fun x _ => ?_⟩
+    exact Subsingleton.elim (α := Nat.Partition 0) x _
+  rw [h0, h1, Finset.sum_empty, zero_add, huniv, Finset.sum_singleton]
+  -- evaluate the surviving term: all four factors but `B` are `1`
+  have hδ : deltaSave 1 = 0 := by rw [deltaSave]; simp
+  have hσ : ∀ lam : Nat.Partition (0 + 1 - 1), sigmaLambda lam = 0 := fun lam => by
+    rw [sigmaLambda, Nat.Partition.partition_zero_parts (p := lam)]
+    rfl
+  have hprod : ∀ lam : Nat.Partition (0 + 1 - 1), partitionProd lam
+      (fun l => if _h : l < 0 + 1 then βHensel H x₀ R hHyp l else 0) = 1 := fun lam => by
+    rw [partitionProd, Nat.Partition.partition_zero_parts (p := lam)]
+    rfl
+  rw [hδ, hσ, hprod]
+  norm_num
+  first
+  | rfl
+  | exact congrArg _ (Subsingleton.elim _ _)
+
 /-! ## D-monotonicity: converting the anchored bound to any larger weight parameter
 
 The anchored engine runs at the per-factor parameter `D₀ = d_H + degW`; downstream
@@ -1253,6 +1307,7 @@ theorem βHensel_weight_bound_of_cell_budgets (x₀ : F) (R : F[X][X][Y])
 #print axioms anchoredSuccTerm_discharge
 #print axioms βHensel_weight_bound_anchored_of_i1zero
 #print axioms βHensel_weight_bound_anchored_loose_of_i1zero
+#print axioms βHensel_one
 #print axioms weight_Λ_mono_D
 #print axioms weight_Λ_over_𝒪_mono_D
 #print axioms βHensel_weight_bound_at_of_anchored
