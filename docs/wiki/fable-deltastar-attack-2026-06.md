@@ -563,3 +563,35 @@ in particular it is NOT the Johnson radius.
 
 Red-team/self-correction logged per the honesty discipline: a coarse-grid reading was sharpened by a
 finer exact probe and the overstated locus ("Johnson") retracted.
+## 20. N2 disposition: folding preserves RATE but ε_mca is NOT a clean self-similar recursion
+
+N2 (folding/renormalization fixed point) analyzed against the repo's FRI substrate
+(`Fri/PolySplit.foldα`, `Fri/Spec/SingleRound.foldProver`, `Fri/Spec/Soundness`). The squaring fold
+`x↦x²` (available since `2^μ | n`) maps `RS[⟨h⟩, n, k] → RS[⟨h²⟩, n/2, k/2]` via the even/odd
+degree split — **rate `ρ = k/n` is preserved** (both halve). So self-similarity is *a priori*
+plausible (the proximity-gap regime is rate-indexed, and rate is fold-invariant).
+
+**But the clean self-similar form is REFUTED by a base-case argument:** if `ε_mca(C, δ) =
+ε_mca(fold_α C, δ)` (identity recursion), then `δ*` is fold-invariant and equals the value at the
+fold base case. Full `μ`-fold folding drives the degree to `k/2^μ = ρ·m` on a domain of size `m`
+(the smallest smooth factor) — a degenerate small/low-degree code whose `δ*` is the pigeonhole/
+field-dependent value (§19), NOT the high-rate window interior. An identity recursion would therefore
+force the deployed high-rate `δ*` down to that degenerate base value — contradicting both the KKH26
+ceiling lower bound (`kkh26_epsMCA_lower_bound`) and the strictly-high-rate localization (§18). So:
+
+- **ε_mca is NOT fold-invariant** as a clean identity; the fold recursion carries a *non-trivial
+  transfer operator* `T` with `ε_mca(C,δ) = T(ε_mca(fold C, ·))(δ)`, and `δ*` is a fixed point of `T`,
+  not a fold-base constant. `T` is exactly the per-round FRI proximity-gap map — and bounding it above
+  Johnson is the same open analysis as regime III (FRI's beyond-Johnson soundness is itself open /
+  conjectural; the repo's FRI soundness is up-to-Johnson / list-decoding-gated).
+- **Genuine residual insight (the paperworthy nugget):** the MCA threshold's fold-COVARIANCE (the
+  transfer `T`, not invariance) is a well-posed structural object the project does not yet have. A
+  from-scratch `ε_mca(C, ·)` ⟷ `ε_mca(fold_α C, ·)` covariance lemma would be a real symmetry result
+  (independent of solving `δ*`), and is the concrete formalization target N2 yields. It does NOT pin
+  `δ*` (the fixed-point equation for `T` above Johnson = the wall), but it is a clean new direction.
+
+**Disposition:** N2 clean-form **REFUTED** (no identity self-similarity; base-case contradiction);
+residual **fold-covariance transfer `T`** identified as a genuine, formalizable structural symmetry
+whose fixed-point analysis nonetheless reduces to the regime-III wall. 6 of 9 hypotheses now settled
+(R1,R2,S1,S3,N2 refuted/inconclusive; N1 confirmed-gated); surviving: N3 (variance, saturation-
+degenerate), S2 (next-layer sums, §13-caveated), R3 (capacity-edge, coupled to the wall).
