@@ -28,14 +28,11 @@ consolidation, and its status.
    close-set pinning reuses Lemma 5.4 exactly where a fresh argument would have duplicated
    its instance construction.
 
-## Documented refactor debt (not done this pass — import-order or ownership constraints)
+## Documented refactor debt (import-order or ownership constraints)
 
-6. **Thm 5.7's inline properness block** (`GG25ExactPreservation.lean`) predates the
-   extraction in item 3; replacing it with a call to
-   `curveExplainSubmodule_ne_top_of_no_witness` would invert the current import direction
-   (`GG25WeightedTransfer` imports `GG25ExactPreservation`). Consolidation = move the lemma
-   into `GG25ExactPreservation.lean` and rewrite 5.7's `hproper` to consume it. Mechanical;
-   touches two of my files only.
+6. **Thm 5.7's inline properness block** — **DONE** (second pass): the lemma now lives in
+   `GG25ExactPreservation.lean` and both 5.7 and 5.8 consume it; the ~40-line inline clone is
+   deleted. Both files rebuild axiom-clean.
 7. **`relationRound_last_iff` (deg-3, `TightMidLeaves.lean:97`) vs
    `relationRound_last_iff_deg` (deg-generic, `TightFinalLeaf.lean:55`)** — the generic lives
    *later* in the import chain; dedup requires moving the generic into `TightMidLeaves` (or a
