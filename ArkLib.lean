@@ -847,6 +847,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCABadScalarSpreadBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandThreeCoredCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandThreeInfra
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandThreeAssembly
+import ArkLib.Data.CodingTheory.ProximityGap.MCABandThreeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoRS
