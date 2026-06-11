@@ -67,6 +67,71 @@ theorem βHensel_weight_bound_zero_structured (x₀ : F) (R : F[X][X][Y])
   have hdY : Bivariate.natDegreeY H = H.natDegree := rfl
   omega
 
+/-- **The REBASED structured invariant value** (finding 12's anchor catch: the tight
+anchor is infeasible for the monisized `H̃`, so the monic route uses the rebased constant
+`D + 1 − d_H` in place of `1`): `(D+1−d_H) + (t+1)·deg(W) + e_t·Λ_ξ-budget`. The proven
+`structured_weight_collapse_rebased` collapses exactly this into the loose target. -/
+noncomputable def structuredBoundRebased (H : F[X][Y]) (R : F[X][X][Y]) (D t : ℕ) : ℕ :=
+  (D + 1 - Bivariate.natDegreeY H) + (t + 1) * (H.leadingCoeff).natDegree
+    + (2 * t - 1) * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))
+
+/-- **The rebased base case — EXACT at every anchor `D ≥ totalDegree H`** (no tightness
+hypothesis; finding 1's rep computation): `Λ(β₀) = Λ(rep Y) = D + 1 − d_H ≤
+structuredBoundRebased 0`. This is the base case compatible with the monisized `H̃`
+(where the tight anchor of `βHensel_weight_bound_zero_structured` is infeasible). -/
+theorem βHensel_weight_bound_zero_rebased (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ} (hDH : Bivariate.totalDegree H ≤ D) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp 0) D
+      ≤ WithBot.some (structuredBoundRebased H R D 0) := by
+  rw [βHensel_zero]
+  refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH rfl) ?_
+  have hweq : weight_Λ (Polynomial.X : F[X][Y]) H D
+      = WithBot.some (D + 1 - Bivariate.natDegreeY H) := by
+    rw [weight_Λ, Polynomial.support_X (by norm_num)]
+    simp
+  rw [hweq]
+  refine WithBot.coe_le_coe.mpr ?_
+  unfold structuredBoundRebased
+  omega
+
+/-- **The rebased structured induction** — `βHensel_weight_bound_structured`'s skeleton
+with the rebased invariant: usable at EVERY anchor `D ≥ totalDegree H` (in particular at
+the monisized `H̃`, where the tight-anchor variant cannot be instantiated). -/
+theorem βHensel_weight_bound_rebased (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ} (hDH : Bivariate.totalDegree H ≤ D)
+    (hterm : ∀ (k : ℕ)
+      (_hIH : ∀ l, l < k + 1 →
+        weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+          ≤ WithBot.some (structuredBoundRebased H R D l))
+      (i1 : ℕ) (_hi1 : i1 ∈ Finset.range (k + 2))
+      (lam : Nat.Partition (k + 1 - i1)) (_hlam : (k + 1) ∉ lam.parts),
+        weight_Λ_over_𝒪 hH
+            ((W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+              * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+              * B_coeff H x₀ R i1 lam
+              * partitionProd lam
+                  (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
+          ≤ WithBot.some (structuredBoundRebased H R D (k + 1)))
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some (structuredBoundRebased H R D t) := by
+  classical
+  induction t using Nat.strong_induction_on with
+  | _ t hIH =>
+    match t with
+    | 0 => exact βHensel_weight_bound_zero_rebased x₀ R hHyp hH hDH
+    | (k + 1) =>
+        rw [βHensel_succ]
+        refine le_trans (weight_Λ_over_𝒪_neg H hH hDH _) ?_
+        refine le_trans (weight_Λ_over_𝒪_sum_le H hH hDH _ _) ?_
+        refine Finset.sup_le (fun i1 hi1 => ?_)
+        refine le_trans (weight_Λ_over_𝒪_sum_le H hH hDH _ _) ?_
+        refine Finset.sup_le (fun lam hlam => ?_)
+        exact hterm k (fun l hl => hIH l (by omega)) i1 hi1 lam
+          (Finset.mem_filter.mp hlam).2
+
 /-- **The structured per-term obligation** — the provable form of the per-term wall: the
 `(A.1)` recursion term at order `k + 1`, bounded by the structured invariant, **given the
 structured IH** for all lower orders. Findings 3+7 verify its arithmetic by hand (the `2k`
@@ -441,6 +506,8 @@ theorem structuredSuccTermBound_of_B_budget (x₀ : F) (R : F[X][X][Y])
 #print axioms structuredSuccTermBound_of_B_budget
 #print axioms nsmul_coe_withBot
 #print axioms structuredSuccTermBound_of_budgets
+#print axioms βHensel_weight_bound_zero_rebased
+#print axioms βHensel_weight_bound_rebased
 #print axioms βHensel_weight_bound_zero_structured
 #print axioms βHensel_weight_bound_structured
 
