@@ -50,7 +50,7 @@ theorem epsMCACurve_le_of_badCount_le
   gcongr
   exact_mod_cast h u
 
-omit [DecidableEq F] [DecidableEq ι] in
+omit [DecidableEq F] [DecidableEq ι] [Nonempty ι] in
 open Classical in
 /-- **Curve-UDR stage 3: the Reed–Solomon curve MCA bound in the curve unique-decoding regime.**
 For the Reed–Solomon code of degree `k` and any arity `L ≥ 2`, in the regime

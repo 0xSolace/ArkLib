@@ -34,6 +34,89 @@ namespace ArkLib.ProximityGap.CurveUDR
 variable {F : Type} [Field F] [DecidableEq F]
 variable {ι : Type} [Fintype ι]
 
+/-- The coordinate polynomial of a degree-`<L` error stack. Its roots are exactly the scalars
+where the curve error vanishes at coordinate `i`. -/
+noncomputable def coordinatePoly {L : ℕ} (e : Fin L → ι → F) (i : ι) : F[X] :=
+  ∑ k : Fin L, Polynomial.C (e k i) * Polynomial.X ^ (k : ℕ)
+
+omit [DecidableEq F] [Fintype ι] in
+theorem coordinatePoly_eval {L : ℕ} (e : Fin L → ι → F) (i : ι) (γ : F) :
+    (coordinatePoly e i).eval γ = ∑ k : Fin L, γ ^ (k : ℕ) * e k i := by
+  rw [coordinatePoly, Polynomial.eval_finset_sum]
+  exact Finset.sum_congr rfl (fun k _ => by
+    rw [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_pow, Polynomial.eval_X]
+    ring)
+
+attribute [simp] coordinatePoly_eval
+
+omit [DecidableEq F] [Fintype ι] in
+theorem coordinatePoly_ne_zero_of_exists {L : ℕ} (e : Fin L → ι → F) (i : ι)
+    (hi : ∃ k : Fin L, e k i ≠ 0) :
+    coordinatePoly e i ≠ 0 := by
+  obtain ⟨k, hk⟩ := hi
+  intro hzero
+  apply hk
+  have hcoeff := congrArg (fun p : F[X] => Polynomial.coeff p (k : ℕ)) hzero
+  simp only [coordinatePoly, Polynomial.finset_sum_coeff, Polynomial.coeff_C_mul,
+    Polynomial.coeff_X_pow, Polynomial.coeff_zero] at hcoeff
+  rw [Finset.sum_eq_single k] at hcoeff
+  · simpa using hcoeff
+  · intro b _ hbk
+    rw [if_neg (fun h => hbk ((Fin.ext h).symm)), mul_zero]
+  · intro hkmem
+    exact absurd (Finset.mem_univ k) hkmem
+
+omit [DecidableEq F] [Fintype ι] in
+theorem coordinatePoly_natDegree_le {L : ℕ} (e : Fin L → ι → F) (i : ι) :
+    (coordinatePoly e i).natDegree ≤ L - 1 := by
+  rw [coordinatePoly]
+  refine Polynomial.natDegree_sum_le_of_forall_le _ _ (fun k _ => ?_)
+  refine le_trans (Polynomial.natDegree_C_mul_le _ _) ?_
+  rw [Polynomial.natDegree_X_pow]
+  omega
+
+/-- A finite-set root count for curve-error coordinates. The pair bad-gamma bound is the
+degree-one shadow of this statement; here each bad scalar is charged to a coordinate whose
+error polynomial is nonzero, and each such coordinate contributes at most `L - 1` roots. -/
+theorem curveBadGammaOn_le (G : Finset F) {L : ℕ} (e : Fin L → ι → F) :
+    (G.filter (fun γ : F => ∃ i, (∃ k : Fin L, e k i ≠ 0) ∧
+      ∑ k : Fin L, γ ^ (k : ℕ) * e k i = 0)).card
+      ≤ (L - 1) * (univ.filter (fun i => ∃ k : Fin L, e k i ≠ 0)).card := by
+  classical
+  set supp : Finset ι := univ.filter (fun i => ∃ k : Fin L, e k i ≠ 0) with hsupp
+  have hsub :
+      G.filter (fun γ : F => ∃ i, (∃ k : Fin L, e k i ≠ 0) ∧
+        ∑ k : Fin L, γ ^ (k : ℕ) * e k i = 0)
+        ⊆ supp.biUnion (fun i => (coordinatePoly e i).roots.toFinset) := by
+    intro γ hγ
+    simp only [mem_filter] at hγ
+    rcases hγ with ⟨_hγG, i, hi, hroot⟩
+    rw [Finset.mem_biUnion]
+    refine ⟨i, ?_, ?_⟩
+    · rw [hsupp]
+      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hi⟩
+    · rw [Multiset.mem_toFinset, Polynomial.mem_roots']
+      refine ⟨coordinatePoly_ne_zero_of_exists e i hi, ?_⟩
+      rw [Polynomial.IsRoot, coordinatePoly_eval, hroot]
+  calc
+    (G.filter (fun γ : F => ∃ i, (∃ k : Fin L, e k i ≠ 0) ∧
+      ∑ k : Fin L, γ ^ (k : ℕ) * e k i = 0)).card
+        ≤ (supp.biUnion (fun i => (coordinatePoly e i).roots.toFinset)).card :=
+          card_le_card hsub
+    _ ≤ ∑ i ∈ supp, ((coordinatePoly e i).roots.toFinset).card :=
+          Finset.card_biUnion_le
+    _ ≤ ∑ _i ∈ supp, (L - 1) := by
+        refine Finset.sum_le_sum (fun i hi => ?_)
+        have hisupp : ∃ k : Fin L, e k i ≠ 0 := by
+          rw [hsupp] at hi
+          exact (Finset.mem_filter.mp hi).2
+        calc ((coordinatePoly e i).roots.toFinset).card
+            ≤ Multiset.card (coordinatePoly e i).roots := Multiset.toFinset_card_le _
+          _ ≤ (coordinatePoly e i).natDegree := Polynomial.card_roots' _
+          _ ≤ L - 1 := coordinatePoly_natDegree_le e i
+    _ = (L - 1) * (univ.filter (fun i => ∃ k : Fin L, e k i ≠ 0)).card := by
+        rw [hsupp, Finset.sum_const, smul_eq_mul, mul_comm]
+
 /-- Local copy of the iterated inclusion–exclusion intersection bound. -/
 private theorem card_inf_ge' {κ : Type} [DecidableEq ι] (s : Finset κ) (A : κ → Finset ι) :
     (∑ i ∈ s, (A i).card : ℤ) - (s.card - 1) * (Fintype.card ι : ℤ)
@@ -91,7 +174,7 @@ theorem curveBadCount_udr_le (C : Submodule F (ι → F)) (L : ℕ) (hL : 2 ≤ 
       have h := card_inf_ge' nodes S
       have hsum : (L * t : ℤ) ≤ ∑ γ ∈ nodes, ((S γ).card : ℤ) := by
         calc (L * t : ℤ) = ∑ _γ ∈ nodes, (t : ℤ) := by
-              rw [Finset.sum_const, hnodes]; push_cast; ring
+              rw [Finset.sum_const, hnodes]; ring
           _ ≤ ∑ γ ∈ nodes, ((S γ).card : ℤ) := by
               refine Finset.sum_le_sum (fun γ hγ => ?_)
               exact_mod_cast hSt γ (hsub hγ)
@@ -99,7 +182,6 @@ theorem curveBadCount_udr_le (C : Submodule F (ι → F)) (L : ℕ) (hL : 2 ≤ 
         push_cast; rfl
       rw [hnodes] at h
       have htn' : (t : ℤ) ≤ n := by exact_mod_cast (le_of_lt htn)
-      push_cast at h ⊢
       nlinarith [h, hsum]
     -- the interpolating codeword-curve through the nodes
     obtain ⟨c, hcC, hcAgree⟩ := exists_curve_coeffs C L nodes hnodes w
@@ -221,56 +303,13 @@ theorem curveBadCount_udr_le (C : Submodule F (ι → F)) (L : ℕ) (hL : 2 ≤ 
             exact_mod_cast this
     -- the union of per-coordinate root sets
     have hcount : G.card ≤ (L - 1) * (univ.filter (fun i => ∃ k : Fin L, e k i ≠ 0)).card := by
-      have hGsub2 : G ⊆ (univ.filter (fun i => ∃ k : Fin L, e k i ≠ 0)).biUnion
-          (fun i => (∑ k : Fin L, Polynomial.C (e k i) * Polynomial.X ^ (k : ℕ)).roots.toFinset)
-          := by
-        intro γ hγ
-        have hmem := hGsub hγ
-        simp only [mem_filter, hγ, true_and] at hmem
-        obtain ⟨i, ⟨k, hk⟩, hroot⟩ := hmem
-        rw [Finset.mem_biUnion]
-        refine ⟨i, Finset.mem_filter.mpr ⟨Finset.mem_univ _, ⟨k, hk⟩⟩, ?_⟩
-        rw [Multiset.mem_toFinset, Polynomial.mem_roots']
-        · refine ⟨?_, ?_⟩
-          · intro habs
-            apply hk
-            have := congrArg (fun p => Polynomial.coeff p (k : ℕ)) habs
-            simp only [Polynomial.finset_sum_coeff, Polynomial.coeff_C_mul,
-              Polynomial.coeff_X_pow, Polynomial.coeff_zero] at this
-            rw [Finset.sum_eq_single k] at this
-            · simpa using this
-            · intro b _ hbk
-              rw [if_neg (fun h => hbk ((Fin.ext h).symm)), mul_zero]
-            · intro habs2; exact absurd (Finset.mem_univ k) habs2
-          · rw [Polynomial.IsRoot]
-            rw [Polynomial.eval_finset_sum]
-            rw [← hroot]
-            exact Finset.sum_congr rfl (fun j _ => by
-              rw [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_pow,
-                Polynomial.eval_X]; ring)
-      calc G.card ≤ ((univ.filter (fun i => ∃ k : Fin L, e k i ≠ 0)).biUnion
-            (fun i => (∑ k : Fin L, Polynomial.C (e k i)
-              * Polynomial.X ^ (k : ℕ)).roots.toFinset)).card :=
-            card_le_card hGsub2
-        _ ≤ ∑ i ∈ univ.filter (fun i => ∃ k : Fin L, e k i ≠ 0),
-              ((∑ k : Fin L, Polynomial.C (e k i)
-                * Polynomial.X ^ (k : ℕ)).roots.toFinset).card :=
-            Finset.card_biUnion_le
-        _ ≤ ∑ _i ∈ univ.filter (fun i => ∃ k : Fin L, e k i ≠ 0), (L - 1) := by
-            refine Finset.sum_le_sum (fun i _ => ?_)
-            calc ((∑ k : Fin L, Polynomial.C (e k i)
-                  * Polynomial.X ^ (k : ℕ)).roots.toFinset).card
-                ≤ Multiset.card (∑ k : Fin L, Polynomial.C (e k i)
-                    * Polynomial.X ^ (k : ℕ)).roots := Multiset.toFinset_card_le _
-              _ ≤ (∑ k : Fin L, Polynomial.C (e k i)
-                    * Polynomial.X ^ (k : ℕ)).natDegree := Polynomial.card_roots' _
-              _ ≤ L - 1 := by
-                  refine Polynomial.natDegree_sum_le_of_forall_le _ _ (fun k _ => ?_)
-                  refine le_trans (Polynomial.natDegree_C_mul_le _ _) ?_
-                  rw [Polynomial.natDegree_X_pow]
-                  omega
-        _ = (L - 1) * (univ.filter (fun i => ∃ k : Fin L, e k i ≠ 0)).card := by
-            rw [Finset.sum_const, smul_eq_mul, mul_comm]
+      calc
+        G.card
+            ≤ (G.filter (fun γ : F => ∃ i, (∃ k : Fin L, e k i ≠ 0) ∧
+                ∑ k : Fin L, γ ^ (k : ℕ) * e k i = 0)).card :=
+              card_le_card hGsub
+        _ ≤ (L - 1) * (univ.filter (fun i => ∃ k : Fin L, e k i ≠ 0)).card :=
+              curveBadGammaOn_le G e
     calc G.card ≤ (L - 1) * (univ.filter (fun i => ∃ k : Fin L, e k i ≠ 0)).card := hcount
       _ ≤ (L - 1) * (L * (n - t)) := Nat.mul_le_mul_left _ hsuppCard
   · -- fewer than L scalars: trivial bound
