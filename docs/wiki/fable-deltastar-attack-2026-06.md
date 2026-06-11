@@ -927,3 +927,33 @@ subgroup (`n=16`, `DeltaStarConcretePinF17`). The DEPLOYED asymptotic (`n→∞`
 one TRUE, validated, named sum-product estimate `N ≪ |G|^{3/2}`, whose formalization route (Stepanov)
 is partially built and genus-gated. The gap is formalization machinery, not mathematical truth and not
 a no-go. No fabrication.
+## 29. RED-TEAM of §28-brick: the gcd-degree assembly is CIRCULAR (= E(G)); genuine path is Stepanov
+
+Self-red-teaming `addEnergy_le_sum_gcd_degree_sq` (E(G) ≤ Σ_c (deg gcd(Xⁿ−1,(c−X)ⁿ−1))²): for the
+**deployed** smooth subgroup (`n=2^μ`, `p` odd ⟹ `gcd(n,p)=1` ⟹ `Xⁿ−1` SEPARABLE), the gcd is
+squarefree, so `deg gcd(Xⁿ−1,(c−X)ⁿ−1) = #common roots = #{z : zⁿ=1 ∧ (c−z)ⁿ=1} = r(c)` EXACTLY
+(not just `≥`). Hence `Σ_c (deg gcd_c)² = Σ_c r(c)² = E(G)`: **the inequality I proved is an
+equality** — it re-expresses the energy, it does NOT reduce it. The gcd-degree route is circular for
+bounding E(G).
+
+**What stands / what's corrected:**
+- STANDS (valid reusable infrastructure, axiom-clean): the Mathlib energy bridge (`addEnergy_eq_mathlib`),
+  the moment identity (`addEnergy_eq_sum_repFilter_sq`), the representation-form connector
+  (`repFilter_card_eq`), the polynomial-root bricks (`representationCount_le`, the gcd-roots subset).
+  These are genuine and correct.
+- CORRECTED: `addEnergy_le_sum_gcd_degree_sq` is true but VACUOUS-as-a-reduction (= E(G) for the
+  separable case); it does not advance the sum-product bound. The gcd-degree manipulation is not the
+  productive HBK path.
+- REDIRECT: the genuine Heath-Brown–Konyagin path bounds E(G) DIRECTLY via the **Stepanov auxiliary
+  polynomial** (`StepanovHighMultVanisher.exists_highMult_vanisher` — already in-tree, proven): assume
+  E(G) large ⟹ the additive quadruples force a nonzero low-degree polynomial vanishing to high order
+  on a large set ⟹ degree contradiction (`GK16RootCounting.sum_rootMultiplicity_le_natDegree`). This
+  is a DIFFERENT polynomial than the gcd — the multiplicity argument, not the common-root count — and
+  it is the hard multi-page construction. The representation bricks remain valid scaffolding but the
+  bound itself requires the Stepanov multiplicity argument.
+
+**Honest status:** the energy API + moment identity + Mathlib bridge are solid reusable infrastructure;
+the gcd-degree reduction is circular (honest retraction of its advancing-value). The open core
+`E(G) ≪ |G|^{5/2}` requires the Stepanov auxiliary-multiplicity construction, which has no clean
+single-brick on-ramp beyond the in-tree `exists_highMult_vanisher`. No fabrication; circularity caught
+by self-red-team per the honesty discipline (cf. §19).
