@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysExceptional
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellStrictExtraction
 
 /-!
 # BCIKS20 §5 — share-form (Prop-5.5-faithful) strict coefficient-polynomial residual
@@ -55,7 +56,9 @@ namespace ProximityGap
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
 
+open Polynomial Polynomial.Bivariate
 open NNReal Finset Function ProbabilityTheory
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 open scoped BigOperators LinearCode ProbabilityTheory ENNReal
 open Code
 
@@ -90,6 +93,87 @@ def StrictCoeffPolysResidualShare {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥
             T + ℓ * G'.card ∧
           (∀ j < deg, (B j).natDegree < k + 1) ∧
             ∀ z ∈ G', ∀ j < deg, (P z).coeff j = (B j).eval z
+
+/-- **Cell-decomposition supplier for the share residual.**  The SK2 cell theorem
+`strict_coeffPolys_of_heavy_cell` is exactly a producer for `StrictCoeffPolysResidualShare`:
+when the good set is larger than the degenerate budget `T`, the supplied section-linked
+cell decomposition gives the share subset; when it is not, the empty subset already satisfies
+the share inequality. -/
+theorem strictCoeffPolysResidualShare_of_cell_decomposition
+    {n k deg : ℕ} [NeZero n] {domain : Fin n ↪ F} {δ : ℝ≥0} {ℓ T : ℕ}
+    (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) (Fin n)),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+              (P z).eval ∘ domain) ≤ δ) →
+        T < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+        ∃ (Idx : Type) (_ : DecidableEq Idx)
+          (Index : Finset (Option Idx)) (Ecell : Option Idx → Finset F)
+          (Rof : Idx → (F[X])[X][Y]) (wof : Idx → F[X][Y]) (Bw : ℕ)
+          (Tset : Idx → Finset (Fin n)) (Sset : Idx → Fin n → Finset F),
+          Index.card ≤ ℓ + 1 ∧
+            none ∈ Index ∧
+            RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ ⊆
+              Index.biUnion Ecell ∧
+            Index.biUnion Ecell ⊆
+              RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ ∧
+            (Ecell none).card ≤ T ∧
+            (∀ R, some R ∈ Index → Irreducible (Rof R)) ∧
+            (∀ R, some R ∈ Index → ∀ γ ∈ Ecell (some R),
+              (Polynomial.X - Polynomial.C (P γ)) ∣
+                (Rof R).map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) ∧
+            (∀ R, some R ∈ Index →
+              (Polynomial.X - Polynomial.C (wof R)) ∣ Rof R) ∧
+            (∀ R, some R ∈ Index → ∀ i, ((wof R).coeff i).natDegree ≤ Bw) ∧
+            (∀ R, some R ∈ Index → (wof R).natDegree < (Tset R).card) ∧
+            (∀ R, some R ∈ Index → ∀ t ∈ Tset R, Sset R t ⊆ Ecell (some R)) ∧
+            (∀ R, some R ∈ Index → ∀ t ∈ Tset R, max Bw k < (Sset R t).card) ∧
+            ∀ R, some R ∈ Index → ∀ t ∈ Tset R, ∀ z ∈ Sset R t,
+              (P z).eval (domain t) = (foldSectionAt u t).eval z) :
+    StrictCoeffPolysResidualShare (k := k) (deg := deg) (domain := domain) (δ := δ)
+      ℓ T := by
+  classical
+  intro hk u hprob hJ hsqrt P hP
+  set G : Finset F := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ
+    with hG
+  by_cases hbig : T < G.card
+  · obtain ⟨Idx, hIdxDec, Index, Ecell, Rof, wof, Bw, Tset, Sset, hIndexCard, hnone,
+      hcover, hcellsGood, hnoneCard, hRirr, hdvdP, hwdvd, hB, hT, hSE, hScard,
+      hagree⟩ := hInput hk u hprob hJ hsqrt P hP (by simpa [hG] using hbig)
+    letI : DecidableEq Idx := hIdxDec
+    have hcoverG : G ⊆ Index.biUnion Ecell := by
+      simpa [hG] using hcover
+    have hcellsGoodG : Index.biUnion Ecell ⊆ G := by
+      simpa [hG] using hcellsGood
+    have hLk : k + 1 - 1 ≤ k := by omega
+    obtain ⟨G', hcount, hG'cells, B, hBdeg, hBid⟩ :=
+      BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_heavy_cell
+        (domain := domain) (u := u) (G := G) (Index := Index) (Ecell := Ecell)
+        (P := P) (hIdx := hIndexCard) (hnone := hnone) (hcover := hcoverG)
+        (hnoneCard := hnoneCard) (hbig := hbig) (Rof := Rof) (hRirr := hRirr)
+        (hdvdP := hdvdP) (wof := wof) (hLk := hLk)
+        (hwdvd := hwdvd) (hB := hB) (Tset := Tset) (hT := hT)
+        (Sset := Sset) (hSE := hSE) (hScard := hScard) (hagree := hagree)
+    refine ⟨B, G', ?_, hcount, (fun j _ => hBdeg j), ?_⟩
+    · intro z hz
+      exact hcellsGoodG (hG'cells hz)
+    · intro z hz j _
+      exact hBid z hz j
+  · refine ⟨fun _ => (0 : Polynomial F), (∅ : Finset F), ?_, ?_, ?_, ?_⟩
+    · exact Finset.empty_subset G
+    · have hle : G.card ≤ T := Nat.le_of_not_lt hbig
+      simpa using hle
+    · intro j _
+      simp
+    · intro z hz
+      cases hz
 
 /-- The original (full-good-set) residual implies the share residual at every positive
 share `ℓ` and every budget `T`, with `G′ = good`. -/
@@ -332,6 +416,7 @@ end ProximityGap
 
 /-! ## Axiom audit — all kernel-clean. -/
 #print axioms ProximityGap.StrictCoeffPolysResidualShare
+#print axioms ProximityGap.strictCoeffPolysResidualShare_of_cell_decomposition
 #print axioms ProximityGap.strictCoeffPolysResidualShare_of_strictCoeffPolysResidual
 #print axioms ProximityGap.strictCoeffPolysResidualShare_of_exc
 #print axioms ProximityGap.RS_jointAgreement_of_prob_gt_share

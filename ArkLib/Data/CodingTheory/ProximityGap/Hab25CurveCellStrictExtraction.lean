@@ -296,7 +296,7 @@ theorem strict_coeffPolys_of_cell {n L : ℕ} {domain : Fin n ↪ F₀}
 /-- **The heavy factor cell exists (pigeonhole)**: in any cell decomposition of the good
 set with the degenerate cell bounded by `T < |G|` and `≤ ℓ` factor cells, some factor
 cell carries at least a `1/ℓ` share of the non-degenerate mass. -/
-theorem exists_heavy_factor_cell {Idx : Type} [DecidableEq Idx]
+theorem exists_heavy_factor_cell {Idx : Type} [DecidableEq F₀] [DecidableEq Idx]
     (G : Finset F₀) (Index : Finset (Option Idx))
     (Ecell : Option Idx → Finset F₀) {ℓ T : ℕ}
     (hIdx : Index.card ≤ ℓ + 1) (hnone : none ∈ Index)
@@ -341,7 +341,7 @@ good set, some factor cell of `1/ℓ` mass carries the FULL strict coefficient-p
 family.  This is the exact shape of BCIKS20 Proposition 5.5 (a `≥ |S|/2D_Y`-style subset
 on one curve), with the curve's coefficient polynomials literally the cell surface's
 coefficients. -/
-theorem strict_coeffPolys_of_heavy_cell {n L : ℕ} {domain : Fin n ↪ F₀}
+theorem strict_coeffPolys_of_heavy_cell {n L : ℕ} [DecidableEq F₀] {domain : Fin n ↪ F₀}
     {u : WordStack F₀ (Fin L) (Fin n)}
     (G : Finset F₀)
     {Idx : Type} [DecidableEq Idx]
