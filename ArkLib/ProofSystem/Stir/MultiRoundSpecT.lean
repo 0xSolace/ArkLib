@@ -102,7 +102,8 @@ theorem chalCoordT_one [SampleableType F] {M : ℕ} [Nonempty ι]
 
 section CheckingT
 
-open OracleSpec OracleComp OracleInterface STIR ReedSolomon
+open OracleSpec OracleComp OracleInterface STIR ReedSolomon NNReal WhirIOP.Construction
+open scoped NNReal
 
 variable [Nonempty ι] [SampleableType F]
 
@@ -324,6 +325,40 @@ noncomputable def stirCheckingVerifierT :
   embed := ⟨fun i => i.elim, fun i => i.elim⟩
   hEq := fun i => i.elim
 
+/-- **The t-repetition multi-round STIR prover**: verbatim the landed honest prover — it
+already reads only coordinate `0` of each vector challenge (`dite` on length positivity),
+so its strategy is chalLen-agnostic; messages do not depend on `t` at all. -/
+noncomputable def stirMultiRoundProverT (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (t : ℕ) :
+    OracleProver []ₒ Unit (OracleStatement ι F) Unit Bool (fun _ : Empty => Unit) Unit
+      ((stirMultiVSpecT M ι t).toProtocolSpec F) where
+  PrvState := fun _ => ((Unit × (∀ i, OracleStatement ι F i)) × Unit) × F
+  input := fun x => (x, 0)
+  receiveChallenge := fun i st => pure (fun r =>
+    (st.1, if h : 0 < (stirMultiVSpecT M ι t).length i.1 then r.get ⟨0, h⟩ else 0))
+  sendMessage := fun i st => pure
+    ⟨Vector.cast (stirMultiVSpecT_length_msg i)
+      (packFiniteFunction ι
+        (Combine.combine φ deg st.2 (fun _ : Fin 1 => st.1.1.2 ()) (fun _ : Fin 1 => deg))),
+     st⟩
+  output := fun _ => pure ((true, isEmptyElim), ())
+
+/-- **The t-repetition checking STIR Vector IOPP**: the honest folding prover with the
+t-point checking verifier. -/
+noncomputable def stirCheckingIOPT (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (t : ℕ) :
+    VectorIOP Unit (OracleStatement ι F) Unit (stirMultiVSpecT M ι t) F where
+  prover := stirMultiRoundProverT M φ deg t
+  verifier := stirCheckingVerifierT M φ deg t
+
+/-- The t-repetition rbr knowledge-soundness residual — the A1 soundness target, to be
+discharged by the door-die predicate with PRODUCT flip bounds
+(`((|F|−D)/|F|)ᵗ` at the binding challenges via
+`TightnessCore.pass_count_ge` × `ProductMarginal.probEvent_uniform_vector_bind_le`). -/
+noncomputable def stirCheckingRbrSoundnessResidualT
+    (M : ℕ) (φ : ι ↪ F) (deg : ℕ) (t : ℕ) (δ : ℝ≥0)
+    (ε_rbr : ((stirMultiVSpecT M ι t).toProtocolSpec F).ChallengeIdx → ℝ≥0) : Prop :=
+  OracleProof.rbrKnowledgeSoundness (pure ()) isEmptyElim
+    (stirRelation deg φ δ) (stirCheckingIOPT M φ deg t).verifier ε_rbr
+
 end CheckingT
 
 end MultiRound
@@ -336,3 +371,4 @@ end StirIOP
 #print axioms StirIOP.MultiRound.chalCoordT_one
 #print axioms StirIOP.MultiRound.simulateQ_checkingCompT
 #print axioms StirIOP.MultiRound.stirCheckingVerifierT
+#print axioms StirIOP.MultiRound.stirCheckingIOPT
