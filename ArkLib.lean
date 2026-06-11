@@ -674,7 +674,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25ConjectureGlue
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CoordinateUpgradeWeld
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveBudgetDischarge
-import ArkLib.Data.CodingTheory.ProximityGap.Hab25MatchingSetSupply
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCaptureUD
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CurveCellGivenFamily
@@ -701,6 +700,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4FiberReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4Seam
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25LaneBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25LinearFactorCapture
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25MatchingSetSupply
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25RichCoordinateGate
@@ -1317,6 +1317,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Completeness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.EagerLazyDS
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb23Bricks
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb23FreshPath
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb23TableComap
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb34LogShapeFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Hyb4ChallengeEntry
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemma
@@ -1814,13 +1815,6 @@ import ArkLib.ProofSystem.Whir.ThresholdKSFMulti
 import ArkLib.ProofSystem.Whir.WhirVectorIOPProof
 import ArkLib.ProofSystem.ZkVMBoundary
 import ArkLib.ResidualAxioms
-import ArkLib.Scratch.HBoundArith
-import ArkLib.Scratch.Issue13Attempt
-import ArkLib.Scratch.JR_degree_attempt
-import ArkLib.Scratch.JR_target
-import ArkLib.Scratch.P2BijectionImage
-import ArkLib.Scratch.P2BijectionPieces
-import ArkLib.Scratch.P2BijectionSum
 import ArkLib.ToCompPoly.Univariate.Basic
 import ArkLib.ToCompPoly.Univariate.Lagrange
 import ArkLib.ToMathlib.AGL23CountingProof
@@ -1951,7 +1945,6 @@ import ArkLib.ToMathlib.GGR11Interleaved
 import ArkLib.ToMathlib.GGR11Reconnect
 import ArkLib.ToMathlib.GGR11TreeConstruction
 import ArkLib.ToMathlib.GHSZ02Cor20
-import ArkLib.ToMathlib.GHSZ02LargeNProof
 import ArkLib.ToMathlib.GK16BudgetCoeff
 import ArkLib.ToMathlib.GK16Claim16Core
 import ArkLib.ToMathlib.GK16Claim16Witness
