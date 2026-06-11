@@ -504,6 +504,171 @@ theorem johnsonNumericBound_of_window_closed
   rw [hcard] at h
   exact h
 
+
+open Classical in
+/-- **The tight numeric count from the per-cell disjunct** — day-22's dichotomy route
+merged with day-28's live-index bound: under `himpr` (small-or-improving, the
+[Hab25] Claim 1 shape), every stack's bad scalars number at most
+`(D/(k-1)+1) · max T n`. -/
+theorem badCount_le_numeric_tight_of_himpr
+    {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀)
+    (u : WordStack F₀ (Fin 2) (Fin n)) (δ : ℝ≥0) (T : ℕ)
+    (hk1 : 1 < k) (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hT0 : n * (GuruswamiSudan.constraintIndices m).card
+      * (gs_degree_bound k n m / (k - 1)) ≤ T)
+    (himpr : ∀ (R : (F₀[X])[X][Y]) (E : Finset F₀) (P : F₀ → F₀[X]),
+      Irreducible R →
+      (∀ γ ∈ E, ∃ d : McaDecode domain k δ u γ, d.P = P γ) →
+      (∀ γ ∈ E, (Polynomial.X - Polynomial.C (P γ)) ∣
+          R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+      E.card ≤ T ∨ ∃ d₀ d₁ : Fin n → F₀, ∀ z ∈ E,
+        ∃ x ∈ disagreeSet d₀ d₁, affineGap d₀ d₁ z x = 0) :
+    (Finset.univ.filter (fun γ : F₀ =>
+      mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+        δ (u 0) (u 1) γ)).card
+      ≤ (gs_degree_bound k n m / (k - 1) + 1) * max T (Fintype.card (Fin n)) := by
+  classical
+  obtain ⟨Q₀, h0, hcond, hcard⟩ :=
+    GuruswamiSudan.OverRatFunc.ZDegree.gs_existence_over_ratfunc_zDegree_card_div
+      (F := F₀) k m domain (u 0) (u 1) hk1 (NeZero.ne n) hm
+  have hrep : Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) =
+      Polynomial.C (Polynomial.C (algebraMap F₀[X] (RatFunc F₀) (1 : F₀[X]))) *
+        Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) := by
+    simp
+  obtain ⟨Index, Ecell, P, hIdx, hcover, hdec, hnone, hnonecard, hfactor⟩ :=
+    exists_cell_production domain u δ
+      (n * (GuruswamiSudan.constraintIndices m).card * (gs_degree_bound k n m / (k - 1)))
+      hcond hrep h0 hkn hm hδ1 hδJ (degenerate_card_bound_of_filter hcard)
+  have hφinj : Function.Injective
+      (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) :=
+    Polynomial.map_injective _ (IsFractionRing.injective F₀[X] (RatFunc F₀))
+  have hydeg : Q₀.natDegree ≤ gs_degree_bound k n m / (k - 1) := by
+    have hnat : Polynomial.Bivariate.natWeightedDegree
+        (Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀)))) 1 (k - 1)
+        ≤ gs_degree_bound k n m := by
+      have h := hcond.Q_deg
+      rw [Polynomial.Bivariate.weightedDegree_eq_natWeightedDegree] at h
+      exact_mod_cast h
+    have h1 := GuruswamiSudan.natDegree_le_of_natWeightedDegree (by omega) hnat
+    rwa [Polynomial.natDegree_map_eq_of_injective hφinj] at h1
+  set Index' : Finset (Option ((F₀[X])[X][Y])) :=
+    Index.filter (fun ij => ij = none ∨ (Ecell ij).Nonempty) with hI'
+  have hcover' : (Finset.univ.filter (fun γ : F₀ =>
+      mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+        δ (u 0) (u 1) γ)) ⊆ Index'.biUnion Ecell := by
+    intro γ hγ
+    obtain ⟨ij, hij, hγcell⟩ := Finset.mem_biUnion.mp (hcover hγ)
+    exact Finset.mem_biUnion.mpr
+      ⟨ij, Finset.mem_filter.mpr ⟨hij, Or.inr ⟨γ, hγcell⟩⟩, hγcell⟩
+  have hI'card : Index'.card ≤ gs_degree_bound k n m / (k - 1) + 1 := by
+    have hsub : Index' ⊆ insert none
+        (((UniqueFactorizationMonoid.factors Q₀).toFinset.filter
+          (fun q => 1 ≤ q.natDegree)).image some) := by
+      intro ij hij
+      obtain ⟨hijIdx, hcase⟩ := Finset.mem_filter.mp hij
+      match ij with
+      | none => exact Finset.mem_insert_self _ _
+      | some R =>
+        rcases hcase with h | hne
+        · exact absurd h (by simp)
+        · refine Finset.mem_insert_of_mem (Finset.mem_image.mpr ⟨R, ?_, rfl⟩)
+          obtain ⟨hRfac, hRdata⟩ := hfactor R hijIdx
+          refine Finset.mem_filter.mpr ⟨hRfac, ?_⟩
+          obtain ⟨γ, hγ⟩ := hne
+          obtain ⟨hQγ, hdvdγ⟩ := hRdata γ hγ
+          have hRdvd : R ∣ Q₀ :=
+            UniqueFactorizationMonoid.dvd_of_mem_factors (Multiset.mem_toFinset.mp hRfac)
+          have hRγ0 : R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 := by
+            intro habs
+            obtain ⟨S, hS⟩ := hRdvd
+            apply hQγ
+            rw [hS, Polynomial.map_mul, habs, zero_mul]
+          have h1 := Polynomial.natDegree_le_of_dvd hdvdγ hRγ0
+          rw [Polynomial.natDegree_X_sub_C] at h1
+          exact le_trans h1 (Polynomial.natDegree_map_le)
+    calc Index'.card
+        ≤ (insert none
+            (((UniqueFactorizationMonoid.factors Q₀).toFinset.filter
+              (fun q => 1 ≤ q.natDegree)).image some)).card :=
+          Finset.card_le_card hsub
+      _ ≤ (((UniqueFactorizationMonoid.factors Q₀).toFinset.filter
+              (fun q => 1 ≤ q.natDegree)).image some).card + 1 :=
+          Finset.card_insert_le _ _
+      _ ≤ ((UniqueFactorizationMonoid.factors Q₀).toFinset.filter
+              (fun q => 1 ≤ q.natDegree)).card + 1 :=
+          Nat.add_le_add_right Finset.card_image_le 1
+      _ ≤ Q₀.natDegree + 1 := Nat.add_le_add_right (card_posDegree_factors_le h0) 1
+      _ ≤ gs_degree_bound k n m / (k - 1) + 1 := Nat.add_le_add_right hydeg 1
+  have hcell : ∀ ij ∈ Index', (Ecell ij).card ≤ max T (Fintype.card (Fin n)) := by
+    intro ij hij
+    have hijIdx := (Finset.mem_filter.mp hij).1
+    match ij with
+    | none => exact le_trans (le_trans hnonecard hT0) (le_max_left _ _)
+    | some R =>
+        obtain ⟨hRfac, hRdata⟩ := hfactor R hijIdx
+        have hRirr : Irreducible R :=
+          UniqueFactorizationMonoid.irreducible_of_factor R
+            (Multiset.mem_toFinset.mp hRfac)
+        rcases himpr R (Ecell (some R)) P hRirr
+          (fun γ hγ => hdec (some R) hijIdx γ hγ)
+          (fun γ hγ => (hRdata γ hγ).2) with hsmall | ⟨d₀, d₁, himp⟩
+        · exact le_trans hsmall (le_max_left _ _)
+        · exact le_trans (factorImprove_card_le_n d₀ d₁ (Ecell (some R)) himp)
+            (le_max_right _ _)
+  calc (Finset.univ.filter (fun γ : F₀ =>
+        mcaEvent ((ReedSolomon.code domain k : Set (Fin n → F₀)))
+          δ (u 0) (u 1) γ)).card
+      ≤ (Index'.biUnion Ecell).card := Finset.card_le_card hcover'
+    _ ≤ ∑ ij ∈ Index', (Ecell ij).card := Finset.card_biUnion_le
+    _ ≤ ∑ _ij ∈ Index', max T (Fintype.card (Fin n)) := Finset.sum_le_sum hcell
+    _ = Index'.card * max T (Fintype.card (Fin n)) := by
+        rw [Finset.sum_const, smul_eq_mul]
+    _ ≤ (gs_degree_bound k n m / (k - 1) + 1) * max T (Fintype.card (Fin n)) :=
+        Nat.mul_le_mul_right _ hI'card
+
+open Classical in
+/-- **The gate-shaped conditional.**  Modulo the single per-cell disjunct production
+(the [BCIKS20] Claim 5.7 assembly), the numeric edge holds at the canonical tight
+parameters with the arithmetic fully discharged — the unconditional
+`johnsonNumericBound_holds` is this theorem with `himpr` replaced by the assembly. -/
+theorem johnsonNumericBound_holds_of_himpr
+    {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀) (η δ : ℝ≥0)
+    (hk2 : 2 ≤ k) (hkn : k + 1 ≤ n) (hm12 : 12 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hmle : (m : ℝ) ≤
+      max (⌈((((k : ℝ) / Fintype.card (Fin n) + 1 / Fintype.card (Fin n)))
+          ^ ((1 : ℝ) / 2)) / (2 * (η : ℝ))⌉ : ℝ) 3)
+    (himpr : ∀ (u : WordStack F₀ (Fin 2) (Fin n))
+      (R : (F₀[X])[X][Y]) (E : Finset F₀) (P : F₀ → F₀[X]),
+      Irreducible R →
+      (∀ γ ∈ E, ∃ d : McaDecode domain k δ u γ, d.P = P γ) →
+      (∀ γ ∈ E, (Polynomial.X - Polynomial.C (P γ)) ∣
+          R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+      E.card ≤ max (n * (GuruswamiSudan.constraintIndices m).card
+          * (gs_degree_bound k n m / (k - 1))) n
+        ∨ ∃ d₀ d₁ : Fin n → F₀, ∀ z ∈ E,
+          ∃ x ∈ disagreeSet d₀ d₁, affineGap d₀ d₁ z x = 0) :
+    JohnsonNumericBound domain k η δ := by
+  have hk1 : 1 < k := lt_of_lt_of_le one_lt_two hk2
+  have hm1 : 1 ≤ m := le_trans (by norm_num) hm12
+  have hcard : Fintype.card (Fin n) = n := Fintype.card_fin n
+  set T : ℕ := max (n * (GuruswamiSudan.constraintIndices m).card
+    * (gs_degree_bound k n m / (k - 1))) n with hTdef
+  refine johnsonNumericBound_of_badCount_le domain k η δ
+    ((gs_degree_bound k n m / (k - 1) + 1) * T) (fun u => ?_) ?_
+  · have h := badCount_le_numeric_tight_of_himpr domain u δ T hk1 (by omega) hm1
+      hδ1 hδJ (le_max_left _ _) (himpr u)
+    have hTn : max T (Fintype.card (Fin n)) = T := by
+      rw [max_eq_left]
+      rw [hcard]
+      exact le_max_right _ _
+    rwa [hTn] at h
+  · have h := ProximityGapArithWrapper.harith_tight_closed domain k m η δ hk2
+      (by rw [hcard]; omega) hm12 (by rw [hcard] at hmle ⊢; exact hmle)
+    rw [hcard] at h
+    exact h
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit -/
@@ -519,3 +684,5 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.badCount_le_numeric_tight_of_window
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_window_numeric_tight
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_window_closed
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.badCount_le_numeric_tight_of_himpr
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_holds_of_himpr
