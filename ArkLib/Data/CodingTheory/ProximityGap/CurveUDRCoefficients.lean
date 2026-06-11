@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib
-import ArkLib.Data.CodingTheory.ProximityGap.MCAUDRBound
 
 /-!
 # Curve-UDR stage 1: codeword-curve coefficient extraction (issues #302/#301/#304)
@@ -30,8 +29,8 @@ open Finset Polynomial
 
 namespace ArkLib.ProximityGap.CurveUDR
 
-variable {F : Type} [Field F] [DecidableEq F]
-variable {ι : Type} [Fintype ι] [DecidableEq ι]
+variable {F : Type} [Field F]
+variable {ι : Type}
 
 /-- **Curve-coefficient extraction (stage 1 of the curve-UDR bound).** Given `L` codewords
 indexed by `L` distinct scalar nodes, the degree-`<L` interpolating curve through them (taken
