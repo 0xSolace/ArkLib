@@ -369,6 +369,51 @@ theorem epsMCA_le_card_div_of_forced_pred
   epsMCA_le_card_div_of_forced_codimOne C δ
     (fun T hT => eq_univ_or_eq_univ_erase_of_pred_le T (hforce T hT))
 
+open Classical in
+/-- At the first granularity radius, the MCA witness-size clause is exactly `|S| ≥ |ι| - 1`.
+This is the arithmetic specialization behind the first-jump witness-count upper bound. -/
+theorem granularity_card_clause :
+    ((1 : ℝ≥0) - 1 / (Fintype.card ι : ℝ≥0)) * (Fintype.card ι : ℝ≥0)
+      = ((Fintype.card ι - 1 : ℕ) : ℝ≥0) := by
+  have hn : 0 < Fintype.card ι := Fintype.card_pos
+  have hne : (Fintype.card ι : ℝ≥0) ≠ 0 := by
+    exact_mod_cast hn.ne'
+  have hinv : (1 / (Fintype.card ι : ℝ≥0)) * (Fintype.card ι : ℝ≥0) = 1 := by
+    rw [one_div, inv_mul_cancel₀ hne]
+  have hpred : ((Fintype.card ι - 1 : ℕ) : ℝ≥0) + 1 =
+      (Fintype.card ι : ℝ≥0) := by
+    exact_mod_cast Nat.succ_pred_eq_of_pos hn
+  rw [tsub_mul, one_mul, hinv, ← hpred, add_tsub_cancel_right]
+
+open Classical in
+/-- **First-granularity bad-count upper bound.** At radius `δ = 1/|ι|`, every legal witness
+has size at least `|ι| - 1`, so the codimension-one witness barrier gives at most `|ι|` bad
+scalars for any stack and any linear code. -/
+theorem badScalar_card_le_card_of_granularity_radius
+    (C : Submodule F (ι → A)) (u : WordStack A (Fin 2) ι) :
+    (Finset.filter
+      (fun γ : F =>
+        mcaEvent (F := F) (C : Set (ι → A))
+          (1 / (Fintype.card ι : ℝ≥0)) (u 0) (u 1) γ)
+      Finset.univ).card ≤ Fintype.card ι :=
+  badScalar_card_le_card_of_forced_pred C (1 / (Fintype.card ι : ℝ≥0))
+    (fun T hT => by
+      rw [granularity_card_clause] at hT
+      exact_mod_cast hT) u
+
+open Classical in
+/-- **First-granularity MCA upper bound.** For any linear code,
+`ε_mca(C, 1/|ι|) ≤ |ι|/|F|`. This is the generic upper half expected at the first jump:
+proving a matching stack with `|ι|` bad scalars is now the only remaining code-specific work. -/
+theorem epsMCA_le_card_div_of_granularity_radius (C : Submodule F (ι → A)) :
+    epsMCA (F := F) (A := A) (C : Set (ι → A))
+        (1 / (Fintype.card ι : ℝ≥0))
+      ≤ (Fintype.card ι : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
+  epsMCA_le_card_div_of_forced_pred C (1 / (Fintype.card ι : ℝ≥0))
+    (fun T hT => by
+      rw [granularity_card_clause] at hT
+      exact_mod_cast hT)
+
 #print axioms pairJointAgreesOn_iff_split
 #print axioms epsMCA_ge_card_div_of_mcaEvent_set
 #print axioms unique_bad_gamma_common_witness
@@ -381,5 +426,8 @@ theorem epsMCA_le_card_div_of_forced_pred
 #print axioms epsMCA_le_inv_card_of_forced_univ
 #print axioms epsMCA_le_card_div_of_forced_codimOne
 #print axioms epsMCA_le_card_div_of_forced_pred
+#print axioms granularity_card_clause
+#print axioms badScalar_card_le_card_of_granularity_radius
+#print axioms epsMCA_le_card_div_of_granularity_radius
 
 end ProximityGap.MCAWitnessSpread
