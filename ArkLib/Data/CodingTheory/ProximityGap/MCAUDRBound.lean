@@ -61,15 +61,17 @@ theorem badCount_udr_le (C : Submodule F (ι → F)) (u₀ u₁ : ι → F) (d t
   exact UDR.badCount_udr_le C u₀ u₁ d t htn hmd hreg G S w hSt hwC hwS
     (fun γ hγ hpair => hno γ hγ ((pairJoint_iff_pairJointAgreesOn C (S γ) u₀ u₁).mp hpair))
 
+omit [DecidableEq ι] [Nonempty ι] [Fintype F] in
 /-- RS minimum-distance, agreement form: degree-`<k` codewords disagreeing on `< n − k + 1`
 coordinates are equal (via `ReedSolomon.code_eq_of_agree`). -/
 theorem rs_min_dist (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintype.card ι) :
     ∀ a ∈ (ReedSolomon.code α k : Set (ι → F)), ∀ b ∈ (ReedSolomon.code α k : Set (ι → F)),
       (univ.filter (fun i => a i ≠ b i)).card < Fintype.card ι - k + 1 → a = b := by
+  classical
   intro a ha b hb hdis
   refine ReedSolomon.code_eq_of_agree hk ha hb (S := univ.filter (fun i => a i = b i))
     (fun i hi => (mem_filter.mp hi).2) ?_
-  have hpart := Finset.filter_card_add_filter_neg_card_eq_card (s := (univ : Finset ι))
+  have hpart := Finset.card_filter_add_card_filter_not (s := (univ : Finset ι))
     (p := fun i => a i = b i)
   rw [Finset.card_univ] at hpart
   have hpart' : (univ.filter (fun i => a i = b i)).card
@@ -77,6 +79,7 @@ theorem rs_min_dist (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintype.car
   have hk1 : 1 ≤ k := Nat.one_le_iff_ne_zero.mpr (NeZero.ne k)
   omega
 
+omit [DecidableEq ι] [DecidableEq F] in
 open Classical in
 /-- **Connected UDR MCA bound for Reed–Solomon (from scratch, no admit).** For `RS[F,α,k]` with
 `k ≤ n` and the unique-decoding regime `3(n − ⌈(1-δ)n⌉) < n − k + 1`,
@@ -85,16 +88,21 @@ theorem epsMCA_rs_udr_le (α : ι ↪ F) (k : ℕ) [NeZero k] (hk : k ≤ Fintyp
     (htn : ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊ < Fintype.card ι)
     (hreg : 3 * (Fintype.card ι - ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊) < Fintype.card ι - k + 1) :
     epsMCA (F := F) (A := F) (ReedSolomon.code α k : Set (ι → F)) δ
-      ≤ (2 * (Fintype.card ι - ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊) : ℕ) / (Fintype.card F : ℝ≥0∞) := by
+      ≤ ((2 * (Fintype.card ι - ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊) : ℕ)
+          : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
   set t : ℕ := ⌈(1 - δ) * (Fintype.card ι : ℝ≥0)⌉₊ with htdef
   have hmd := rs_min_dist α k hk
   apply epsMCA_le_of_badCount_le (F := F) (A := F) (ReedSolomon.code α k : Set (ι → F)) δ
     (2 * (Fintype.card ι - t))
   intro u
   set G : Finset F :=
-    univ.filter (fun γ : F => mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ) with hGdef
+    univ.filter (fun γ : F =>
+      mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ) with hGdef
   set S : F → Finset ι := fun γ =>
-    if h : mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ then h.choose else ∅ with hSdef
+    if h : mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ then
+      h.choose
+    else
+      ∅ with hSdef
   set w : F → ι → F := fun γ =>
     if h : mcaEvent (ReedSolomon.code α k : Set (ι → F)) δ (u 0) (u 1) γ
       then (h.choose_spec.2.1).choose else 0 with hwdef
@@ -241,6 +249,7 @@ theorem badCount_udr_le_jointAgreement (C : Submodule F (ι → F)) (u₀ u₁ :
     _ ≤ (univ.filter (fun i => e₁ i ≠ 0)).card := UDR.badGammaOn_le G e₀ e₁
     _ ≤ Fintype.card ι - t := hsupp
 
+omit [DecidableEq ι] in
 open Code Classical in
 /-- **Full-UDR MCA bound for Reed–Solomon.** For `RS[F, α, k]` with `k ≤ n`, *below the unique-
 decoding radius* (`δ ≤ relUDR`) and in the regime `2(n − ⌈(1−δ)n⌉) < n − k + 1`,
