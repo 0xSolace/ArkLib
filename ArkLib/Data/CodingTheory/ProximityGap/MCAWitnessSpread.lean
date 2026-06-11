@@ -281,6 +281,46 @@ theorem badScalar_card_le_card_of_forced_codimOne
   exact hcard
 
 open Classical in
+/-- A finite subset of a nonempty finite type with cardinality at least `n - 1` is either the
+whole type or the complement of one point. This is the pure combinatorial classifier behind the
+codimension-one witness barrier. -/
+theorem eq_univ_or_eq_univ_erase_of_pred_le (T : Finset ι)
+    (hT : Fintype.card ι - 1 ≤ T.card) :
+    T = Finset.univ ∨ ∃ i : ι, T = Finset.univ.erase i := by
+  have hcard_le : T.card ≤ Fintype.card ι := Finset.card_le_univ T
+  rcases lt_or_eq_of_le hcard_le with hlt | hcard_eq
+  · right
+    have hcard : T.card = Fintype.card ι - 1 := by omega
+    have hcompl_card : Tᶜ.card = 1 := by
+      rw [Finset.card_compl, hcard]
+      omega
+    obtain ⟨i, hi⟩ := Finset.card_eq_one.mp hcompl_card
+    refine ⟨i, ?_⟩
+    have hT : T = ({i} : Finset ι)ᶜ := by
+      calc
+        T = Tᶜᶜ := by simp
+        _ = ({i} : Finset ι)ᶜ := by rw [hi]
+    rw [hT, Finset.compl_singleton]
+  · left
+    exact Finset.eq_univ_of_card T hcard_eq
+
+open Classical in
+/-- Cardinal-threshold form of `badScalar_card_le_card_of_forced_codimOne`. It is enough to
+know that every legal witness has size at least `|ι| - 1`; the finite-set classifier turns that
+into the universal/all-but-one dichotomy. -/
+theorem badScalar_card_le_card_of_forced_pred
+    (C : Submodule F (ι → A)) (δ : ℝ≥0)
+    (hforce : ∀ T : Finset ι,
+      ((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0) ≤ (T.card : ℝ≥0) →
+        Fintype.card ι - 1 ≤ T.card)
+    (u : WordStack A (Fin 2) ι) :
+    (Finset.filter
+      (fun γ : F => mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) γ)
+      Finset.univ).card ≤ Fintype.card ι :=
+  badScalar_card_le_card_of_forced_codimOne C δ
+    (fun T hT => eq_univ_or_eq_univ_erase_of_pred_le T (hforce T hT)) u
+
+open Classical in
 /-- **Probability form of the forced-universal-witness barrier.** If every legal `mcaEvent`
 witness set is forced to be all coordinates, then the MCA error is at most the unconditional
 floor `1/|F|` for any linear code. The only way to exceed this floor is therefore a genuine
@@ -316,6 +356,19 @@ theorem epsMCA_le_card_div_of_forced_codimOne
   gcongr
   exact_mod_cast badScalar_card_le_card_of_forced_codimOne C δ hforce u
 
+open Classical in
+/-- Cardinal-threshold form of `epsMCA_le_card_div_of_forced_codimOne`: if every legal witness
+has size at least `|ι| - 1`, then `ε_mca ≤ |ι| / |F|`. -/
+theorem epsMCA_le_card_div_of_forced_pred
+    (C : Submodule F (ι → A)) (δ : ℝ≥0)
+    (hforce : ∀ T : Finset ι,
+      ((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0) ≤ (T.card : ℝ≥0) →
+        Fintype.card ι - 1 ≤ T.card) :
+    epsMCA (F := F) (A := A) (C : Set (ι → A)) δ
+      ≤ (Fintype.card ι : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
+  epsMCA_le_card_div_of_forced_codimOne C δ
+    (fun T hT => eq_univ_or_eq_univ_erase_of_pred_le T (hforce T hT))
+
 #print axioms pairJointAgreesOn_iff_split
 #print axioms epsMCA_ge_card_div_of_mcaEvent_set
 #print axioms unique_bad_gamma_common_witness
@@ -323,7 +376,10 @@ theorem epsMCA_le_card_div_of_forced_codimOne
 #print axioms common_witness_badGamma_set_card_le_one
 #print axioms badScalar_card_le_one_of_forced_univ
 #print axioms badScalar_card_le_card_of_forced_codimOne
+#print axioms eq_univ_or_eq_univ_erase_of_pred_le
+#print axioms badScalar_card_le_card_of_forced_pred
 #print axioms epsMCA_le_inv_card_of_forced_univ
 #print axioms epsMCA_le_card_div_of_forced_codimOne
+#print axioms epsMCA_le_card_div_of_forced_pred
 
 end ProximityGap.MCAWitnessSpread
