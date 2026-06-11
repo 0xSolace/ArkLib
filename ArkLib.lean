@@ -38,6 +38,7 @@ import ArkLib.Data.Classes.HasSize
 import ArkLib.Data.Classes.Initialize
 import ArkLib.Data.Classes.Serde
 import ArkLib.Data.Classes.Slice
+import ArkLib.Data.CodingTheory.AGL24AgreementForcing
 import ArkLib.Data.CodingTheory.AGL24AgreementHypergraph
 import ArkLib.Data.CodingTheory.AGL24ConditionalAssembly
 import ArkLib.Data.CodingTheory.AGL24DeletionRobustness
