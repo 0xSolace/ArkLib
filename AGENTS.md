@@ -39,6 +39,26 @@ Start with [`README.md`](README.md) for project overview.
 - Promote recurring agent learnings into [`docs/wiki/`](docs/wiki/README.md); do not let stable
   guidance live only in ephemeral notes.
 
+## Active Challenge: Proximity Gap Grand Challenge (#334)
+
+If you are working on the Proximity Prize / proximity-gap formalization (issue #334, successor
+to #232), read the dedicated agent guide **before** touching that cone — it has the build recipe
+you need to avoid clogging the machine:
+
+- [`ArkLib/Data/CodingTheory/ProximityGap/CLAUDE.md`](ArkLib/Data/CodingTheory/ProximityGap/CLAUDE.md)
+  (auto-loaded in that directory; `AGENTS.md` there is a copy): build/concurrency/honesty rules,
+  the #334 ledger, substrate API map, references, and pitfall catalogue.
+- **Fast iteration (mandatory):** that cone is 808 files; `lake build` traces a 3000+-job graph
+  (~2-3 min even no-op) and takes the build lock (serializes all agents). Instead run
+  `scripts/pg-warm.sh` ONCE (pre-builds the substrate oleans), then iterate per-attempt with
+  `scripts/pg-iterate.sh <file>` (= `lake env lean`, ~30-75s, **no lock → fully parallel**).
+- **Start here:** `ArkLib/Data/CodingTheory/ProximityGap/Frontier/` — minimal-import,
+  compile-verified scaffolds for the actionable open targets (`B3` Thorner-Zaman s=128, `B2`
+  curve-decodability, `A5` equivariance pin) + `_TEMPLATE` + `README`.
+- **Open-residual map (whole project):**
+  [`docs/wiki/residual-census.md`](docs/wiki/residual-census.md) — 37 discharged / 25 reduced /
+  41 deep-open; the "named residual" convention is modularity, not incompleteness.
+
 ## Deeper Docs
 
 - [`docs/wiki/README.md`](docs/wiki/README.md) - hub and maintenance rules.
