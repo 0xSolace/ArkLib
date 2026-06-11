@@ -530,6 +530,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CensusExtremalFloor
 import ArkLib.Data.CodingTheory.ProximityGap.CensusLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerDescent
 import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerFinite
+import ArkLib.Data.CodingTheory.ProximityGap.ChordConverseCore
 import ArkLib.Data.CodingTheory.ProximityGap.ChordFamilyCount
 import ArkLib.Data.CodingTheory.ProximityGap.ClassChartBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Collapse
