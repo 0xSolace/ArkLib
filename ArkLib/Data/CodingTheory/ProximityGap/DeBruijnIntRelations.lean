@@ -185,7 +185,7 @@ theorem natDegree_minpoly_adjoin_coprime [CharZero L] {M N : ℕ}
     (hM : 0 < M) (hN : 0 < N) (hco : Nat.Coprime M N)
     {ξ η : L} (hξ : IsPrimitiveRoot ξ M) (hη : IsPrimitiveRoot η N) :
     (minpoly ℚ⟮ξ⟯ η).natDegree = N.totient := by
-  rw [minpoly_adjoin_coprime_eq_cyclotomic hM hN hco hξ hη, natDegree_cyclotomic]
+  exact CoprimePacketMinpoly.natDegree_minpoly_adjoin_coprime hM hN hco hξ hη
 
 end CoprimeMinpoly
 

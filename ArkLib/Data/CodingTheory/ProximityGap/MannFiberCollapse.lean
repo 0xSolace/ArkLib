@@ -70,8 +70,8 @@ lemma m_pos (hpm : ¬ p ∣ m) : 0 < m :=
 /-! ## The tower count: `[ℚ(ζ_m)(ζ_p) : ℚ(ζ_m)] = p - 1` -/
 
 /-- **The coprime cyclotomic tower degree**: adjoining `ζ_p = ζ^m` to
-`ℚ(ζ_m) = ℚ⟮ζ^p⟯` has degree exactly `p - 1` — totient multiplicativity at the
-coprime split, against the two absolute degrees from `cyclotomic_eq_minpoly_rat`. -/
+`ℚ(ζ_m) = ℚ⟮ζ^p⟯` has degree exactly `p - 1`, by the shared coprime minpoly
+degree theorem. -/
 theorem finrank_adjoin_zetaP (hp : p.Prime) (hpm : ¬ p ∣ m)
     (hζ : IsPrimitiveRoot ζ (p * m)) :
     Module.finrank ℚ⟮ζ ^ p⟯ ℚ⟮ζ ^ p⟯⟮ζ ^ m⟯ = p - 1 := by
@@ -82,8 +82,8 @@ theorem finrank_adjoin_zetaP (hp : p.Prime) (hpm : ¬ p ∣ m)
   have hcop : Nat.Coprime m p := ((Nat.Prime.coprime_iff_not_dvd hp).mpr hpm).symm
   have hint : IsIntegral ℚ⟮ζ ^ p⟯ (ζ ^ m) := (hζp.isIntegral hp.pos).tower_top
   rw [IntermediateField.adjoin.finrank hint,
-    CoprimePacketMinpoly.minpoly_adjoin_coprime_eq_cyclotomic hm hp.pos hcop hζm hζp,
-    natDegree_cyclotomic, Nat.totient_prime hp]
+    CoprimePacketMinpoly.natDegree_minpoly_adjoin_coprime hm hp.pos hcop hζm hζp,
+    Nat.totient_prime hp]
 
 /-- **The linear-disjointness brick**: `Φ_p` remains the minimal polynomial of
 `ζ_p = ζ^m` over the coprime cyclotomic field `ℚ(ζ_m) = ℚ⟮ζ^p⟯`. -/
