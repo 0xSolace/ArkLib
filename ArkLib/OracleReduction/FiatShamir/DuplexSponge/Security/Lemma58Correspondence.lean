@@ -709,6 +709,78 @@ theorem foldl_stepCache_fwdNodup (c : DSCache StmtIn U) (L : List (DSEntry StmtI
       rw [List.foldl_cons]
       exact ih (stepCache c e) hna' (stepCache_fwdNodup c e hnc h)
 
+/-! ## Pair provenance and the consistency glue (piece A2c) -/
+
+/-- **Pair provenance (one step)**: a pair in the cache after a step was already there or
+was inserted by the step's entry, whose key-pair then matches it. No hypotheses. -/
+theorem stepCache_pair_provenance (c : DSCache StmtIn U) (e : DSEntry StmtIn U)
+    {p : CanonicalSpongeState U × CanonicalSpongeState U} (hp : p ∈ (stepCache c e).2) :
+    p ∈ c.2 ∨ (entryFwdKey e = some p.1 ∧ entryInvKey e = some p.2) := by
+  rcases e with ⟨t, ans⟩
+  rcases t with q | a' | b'
+  · rcases hcq : c.1 q with _ | u <;>
+      · left; simpa [stepCache, hcq] using hp
+  · rcases hf : c.2.find? (fun w => w.1 = a') with _ | w
+    · simp only [stepCache, hf, List.concat_eq_append, List.mem_append,
+        List.mem_singleton] at hp
+      rcases hp with hp | hp
+      · exact Or.inl hp
+      · subst hp; exact Or.inr ⟨rfl, rfl⟩
+    · left; simpa [stepCache, hf] using hp
+  · rcases hf : c.2.find? (fun w => w.2 = b') with _ | w
+    · simp only [stepCache, hf, List.concat_eq_append, List.mem_append,
+        List.mem_singleton] at hp
+      rcases hp with hp | hp
+      · exact Or.inl hp
+      · subst hp; exact Or.inr ⟨rfl, rfl⟩
+    · left; simpa [stepCache, hf] using hp
+
+/-- **Pair provenance (whole fold)**: a pair in the final cache was in the start cache or
+inserted by some log entry whose key-pair matches it. -/
+theorem foldl_pair_provenance (c : DSCache StmtIn U) (L : List (DSEntry StmtIn U))
+    {p : CanonicalSpongeState U × CanonicalSpongeState U}
+    (hp : p ∈ (L.foldl stepCache c).2) :
+    p ∈ c.2 ∨ ∃ e ∈ L, entryFwdKey e = some p.1 ∧ entryInvKey e = some p.2 := by
+  induction L generalizing c with
+  | nil => exact Or.inl hp
+  | cons e ℓ ih =>
+      rw [List.foldl_cons] at hp
+      rcases ih (stepCache c e) hp with hp' | ⟨e', he', hk'⟩
+      · rcases stepCache_pair_provenance c e hp' with h'' | h''
+        · exact Or.inl h''
+        · exact Or.inr ⟨e, List.mem_cons_self, h''⟩
+      · exact Or.inr ⟨e', List.mem_cons_of_mem _ he', hk'⟩
+
+/-- A consistent forward hit puts the entry's exact pair in the cache: if the running cache
+already holds the forward key `a` and the entry `⟨inr (inl a), b⟩` is consistent with it,
+then `(a, b)` is itself a cached pair. -/
+theorem consistent_fwd_hit_pair_mem (c : DSCache StmtIn U) (a b : CanonicalSpongeState U)
+    (hcons : entryConsistent c (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U))
+    (hhit : hasFwdKey c a) :
+    (a, b) ∈ c.2 := by
+  obtain ⟨w, hw, hwa⟩ := hhit
+  rcases hf : c.2.find? (fun w => w.1 = a) with _ | w₀
+  · exact absurd ((List.find?_eq_none).mp hf w hw) (by simp [hwa])
+  · have hmem₀ : w₀ ∈ c.2 := List.mem_of_find?_eq_some hf
+    have hkey₀ : w₀.1 = a := by simpa using List.find?_some hf
+    have hb : b = w₀.2 := hcons w₀ hf
+    have : (a, b) = w₀ := Prod.ext hkey₀.symm hb
+    rw [this]; exact hmem₀
+
+/-- **Piece (A2c)**: in a fold from empty over `L`, a consistent forward entry
+`⟨inr (inl a), b⟩` whose forward key is already cached has an earlier same-class entry in
+`L`. -/
+theorem fwd_hit_sameClass_mem (L : List (DSEntry StmtIn U)) (a b : CanonicalSpongeState U)
+    (hcons : entryConsistent (L.foldl stepCache ((∅, []) : DSCache StmtIn U))
+      (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U))
+    (hhit : hasFwdKey (L.foldl stepCache ((∅, []) : DSCache StmtIn U)) a) :
+    ∃ e' ∈ L, sameClass (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U) e' := by
+  have hpair : (a, b) ∈ (L.foldl stepCache ((∅, []) : DSCache StmtIn U)).2 :=
+    consistent_fwd_hit_pair_mem _ a b hcons hhit
+  rcases foldl_pair_provenance (∅, []) L hpair with hp | ⟨e', he', hf', hi'⟩
+  · simp at hp
+  · exact ⟨e', he', sameClass_of_entryKeys hf' hi'⟩
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -783,6 +855,10 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.mem_imp_sameClass_mem_removeRedundant
 #print axioms DuplexSpongeFS.EagerLazyDS.stepCache_fwdNodup
 #print axioms DuplexSpongeFS.EagerLazyDS.foldl_stepCache_fwdNodup
+#print axioms DuplexSpongeFS.EagerLazyDS.stepCache_pair_provenance
+#print axioms DuplexSpongeFS.EagerLazyDS.foldl_pair_provenance
+#print axioms DuplexSpongeFS.EagerLazyDS.consistent_fwd_hit_pair_mem
+#print axioms DuplexSpongeFS.EagerLazyDS.fwd_hit_sameClass_mem
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
