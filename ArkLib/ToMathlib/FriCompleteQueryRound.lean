@@ -11,11 +11,11 @@ import ArkLib.OracleReduction.Composition.Sequential.ChallengeOracleFintype
 /-!
 # FRI query round: the repaired perfect-completeness statement, PROVEN (issue #341)
 
-`queryRoundPerfectCompletenessResidual` is **suspected false as stated** (in-tree audit note,
-`Fri/Spec/Completeness.lean`): the query verifier guards round-consistency for *every* round
-`i : Fin (k+1)`, but the stated input relation constrains only the last fold, so inconsistent
-early oracles are relation members that the verifier rejects.  The prescribed repair is to
-thread a full-chain consistency invariant through the relation.
+`queryRoundPerfectCompletenessFalseAsStated` is the historical false query surface (in-tree
+audit note, `Fri/Spec/Completeness.lean`): the query verifier guards round-consistency for
+*every* round `i : Fin (k+1)`, but the stated input relation constrains only the last fold, so
+inconsistent early oracles are relation members that the verifier rejects.  The prescribed
+repair is to thread a full-chain consistency invariant through the relation.
 
 This module implements that repair with the invariant stated **in the checker's own
 currency** — `queryCheckerAccepts`: the compiled query verifier never fails on the statement,

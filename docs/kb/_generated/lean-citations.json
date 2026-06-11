@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 351,
+    "files_with_citations": 352,
     "keys_cited": 30,
-    "total_citation_edges": 398
+    "total_citation_edges": 399
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -275,6 +275,9 @@
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffProducer.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StructuredWeightInduction.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Supply.lean": [
@@ -1225,6 +1228,7 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShare.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffProducer.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StructuredWeightInduction.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Supply.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/VandermondeAgreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/WeightedAgreement.lean",

@@ -64,7 +64,6 @@ Categories (all require focused, often multi-session, work):
 - `appendToReductionResidual`
 - `duplexSpongeFiatShamirSalted_runCollapseResidual`
 - `queryRoundChainDeliveryResidual`
-- `queryRoundPerfectCompletenessResidual`
 - `r1csResidual`
 - `stirCheckingRbrSoundnessResidual`
 - `stirMultiRoundRbrSoundnessResidual`

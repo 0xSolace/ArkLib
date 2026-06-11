@@ -206,6 +206,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEListBound
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEPotential
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNERealStep
 import ArkLib.Data.CodingTheory.ListDecoding.FirstMomentListBound
+import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.ListDecoding.JH02
@@ -238,7 +239,6 @@ import ArkLib.Data.CodingTheory.PolishchukSpielman.Resultant
 import ArkLib.Data.CodingTheory.Prelims
 import ArkLib.Data.CodingTheory.ProximityCA
 import ArkLib.Data.CodingTheory.ProximityGap
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StructuredWeightInduction
 import ArkLib.Data.CodingTheory.ProximityGap.«141Architecture»
 import ArkLib.Data.CodingTheory.ProximityGap.«141JohnsonCount»
 import ArkLib.Data.CodingTheory.ProximityGap.«141Kernels»
@@ -408,6 +408,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysShare
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysShareOr
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffProducer
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StructuredCollapseRebased
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StructuredWeightInduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Supply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.TailWiring
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ThresholdInterface
@@ -540,6 +541,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
 import ArkLib.Data.CodingTheory.ProximityGap.CoprimePacketMinpoly
+import ArkLib.Data.CodingTheory.ProximityGap.CosetCliqueBoundary
 import ArkLib.Data.CodingTheory.ProximityGap.CosetExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.CosetRigidity
@@ -2120,6 +2122,7 @@ import ArkLib.ToMathlib.GGR11EraseDecodeTree
 import ArkLib.ToMathlib.GGR11Interleaved
 import ArkLib.ToMathlib.GGR11Reconnect
 import ArkLib.ToMathlib.GGR11TreeConstruction
+import ArkLib.ToMathlib.GHSZ02Cor20
 import ArkLib.ToMathlib.GK16BudgetCoeff
 import ArkLib.ToMathlib.GK16Claim16Core
 import ArkLib.ToMathlib.GK16Claim16Witness

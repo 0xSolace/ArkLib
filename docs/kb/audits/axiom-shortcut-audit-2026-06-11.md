@@ -88,8 +88,9 @@ shortcut surfaces.
 ### Proof Systems
 
 - #341 tracks FRI query-round residuals:
-  - `Fri.Spec.Completeness.queryRoundPerfectCompletenessResidual`
-    (`ArkLib/ProofSystem/Fri/Spec/Completeness.lean:49`)
+  - historical false surface:
+    `Fri.Spec.Completeness.queryRoundPerfectCompletenessFalseAsStated`
+    (`ArkLib/ProofSystem/Fri/Spec/Completeness.lean:51`)
   - `Fri.Spec.Completeness.queryRoundChainDeliveryResidual`
     (`ArkLib/ToMathlib/FriCompleteQueryRound.lean:177`)
 - #337 tracks the remaining Logup residuals:
