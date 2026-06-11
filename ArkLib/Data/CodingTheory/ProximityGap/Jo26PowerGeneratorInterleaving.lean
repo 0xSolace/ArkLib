@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.InterleavingStabilityMCA
+import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorMCA
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 
 /-!
@@ -291,6 +292,19 @@ theorem epsMCAP_interleaved_eq (C : Submodule F (ι → A)) {parℓ : ℕ}
   le_antisymm (epsMCAP_interleaved_le_epsMCAP C exp t δ)
     (epsMCAP_le_epsMCAP_interleaved C exp t δ)
 
+/-- **Power-generator exactness fence.**  The generic generator-MCA layer, specialized to
+the Reed-Solomon power generator `γ ↦ (γ ^ exp j)_j`, agrees after row-wise interleaving
+with the original in-tree `epsMCAP` error.  This is the power-generator analogue of the
+affine-line fence in `Jo26GeneratorMCA.lean`: the generic framework adds no hidden
+interleaving loss on the canonical power-generator surface. -/
+theorem epsMCAGen_powGen_interleaved_eq_epsMCAP (C : Submodule F (ι → A)) {parℓ : ℕ}
+    (exp : Fin parℓ → ℕ) (t : ℕ) [NeZero t] (δ : ℝ≥0) :
+    ProximityGap.Jo26Gen.epsMCAGen (F := F) (A := Fin t → A) (Ω := F) (ℓ := parℓ)
+        (fun γ : F => fun j : Fin parℓ => γ ^ exp j)
+        ((C : Set (ι → A))^⋈ (Fin t)) δ
+      = epsMCAP (F := F) (A := A) (C : Set (ι → A)) exp δ := by
+  rw [ProximityGap.Jo26Gen.epsMCAGen_powGen_eq_epsMCAP, epsMCAP_interleaved_eq]
+
 /-! ### The [Jo26] Theorem 4.2 factor bound, as a corollary of equality -/
 
 /-- **[Jo26] Theorem 4.2 factor bound (power-generator case), from exact invariance.**
@@ -345,4 +359,5 @@ end ProximityGapP
 #print axioms ProximityGapP.epsMCAP_le_epsMCAP_interleaved
 #print axioms ProximityGapP.epsMCAP_interleaved_le_epsMCAP
 #print axioms ProximityGapP.epsMCAP_interleaved_eq
+#print axioms ProximityGapP.epsMCAGen_powGen_interleaved_eq_epsMCAP
 #print axioms ProximityGapP.epsMCAP_interleaved_le_factor
