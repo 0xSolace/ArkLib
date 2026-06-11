@@ -6668,3 +6668,32 @@ and the structured induction (step 2 of the order), the chain to
 `JohnsonDischargeStatement` and the exact δ* pin is fully specified arithmetic + one
 structured induction whose cancellation mechanism the paper provides (line 3962) and the
 in-tree per-term lemmas support.
+
+**O154 V1 dive, finding 3 — THE STRUCTURED CANCELLATION VERIFIED BY HAND (monic case):
+the per-term ξ-exponents collapse to EXACTLY `2k`, independent of `i1` and the partition;
+the per-term lemma reduces to `Λ(B_coeff i1 λ) ≤ (d_R − m)·B₀` — precisely the shape of
+the PROVEN Hasse Y-degree drop.** The computation (monic `H`: `degW = 0`,
+`B₀ := D+1−d_H`, `Lξ := (d_R−1)·B₀` from the proven `weight_ξ_bound`, noting
+`(d_R−1)(D−d_H+1) = (d_R−1)·B₀`):
+
+* Structured IH (re-baselined, monic): `Λ(β_l) ≤ B₀ + (2l−1)·Lξ`.
+* Partition product over `λ ⊢ k+1−i1` with `m` parts:
+  `Λ(∏ β_part) ≤ Σ_parts [B₀ + (2·part−1)Lξ] = m·B₀ + (2(k+1−i1) − m)·Lξ`.
+* ξ-power: `Λ(ξ^{2i1+m−2}) ≤ (2i1+m−2)·Lξ`; W-powers free (monic).
+* **The cancellation:** total ξ-coefficient
+  `(2i1+m−2) + (2(k+1−i1)−m) = 2k` — all `i1` and `m` dependence cancels. This is
+  exactly the mechanism the wave-5 diagnosis said the loose IH destroys and the
+  structured IH restores.
+* Per-term total: `Λ(term) ≤ Λ(B_coeff) + m·B₀ + 2k·Lξ`. Target at order `k+1`:
+  `B₀ + (2k+1)·Lξ`. **Residual need: `Λ(B_coeff i1 λ) ≤ (d_R − m)·B₀`** — for the
+  Hasse-coefficient factor, whose Y-degree drop with the derivative order is the PROVEN
+  wave-4 `hasseCoeffRepr𝒪_natDegreeY_le`; what remains is its Λ-form (Y-degree drop ×
+  `B₀` + X-degree bookkeeping against `D ≥ totalDegree(evalX x₀ R)`).
+* Step-2 base case: exact (`Λ(β₀) = B₀`, finding 1). Step-1 collapse: PROVEN
+  (`structured_weight_collapse_rebased`).
+
+**The Johnson endgame is therefore: (E1) the Λ-form of the Hasse coefficient bound
+(`Λ(B_coeff i1 λ) ≤ (d_R − m)·B₀`, from the proven Y-degree drop + X-degree bookkeeping);
+(E2) assemble the strong induction (the calculus lemmas `_sum_le`/`_mul`/`_pow` are
+proven; the cancellation is the arithmetic above); (E3) wiring.** Every constant is now
+pinned; the remaining work is transcription-grade.
