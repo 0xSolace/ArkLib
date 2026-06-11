@@ -6,7 +6,6 @@ documented as open research with the paper trail.
 
 | subsystem | sorry/admit | native_decide | axioms | residual-named |
 |---|---|---|---|---|
-| ToVCVio | 3 | 0 | 0 | 0 |
 | MCACapacityTrivial_keep | 0 | 0 | 0 | 1 |
 | MCAGSRefutationCore_keep | 0 | 0 | 0 | 1 |
 | ToMathlib | 0 | 0 | 0 | 94 |
@@ -16,11 +15,10 @@ documented as open research with the paper trail.
 | ProofSystem/Stir | 0 | 0 | 0 | 8 |
 | ProofSystem/Spartan | 0 | 0 | 0 | 16 |
 | ProofSystem/Sumcheck | 0 | 0 | 0 | 2 |
-| ProofSystem/Binius | 0 | 0 | 0 | 5 |
 | Data/CodingTheory | 0 | 0 | 0 | 181 |
-| OracleReduction/Composition | 0 | 0 | 0 | 39 |
+| OracleReduction/Composition | 0 | 0 | 0 | 41 |
 | OracleReduction/FiatShamir | 0 | 0 | 0 | 55 |
-| **TOTAL** | **3** | **0** | **0** | **482** |
+| **TOTAL** | **0** | **0** | **0** | **479** |
 
 
 ## Data/CodingTheory
@@ -235,6 +233,8 @@ documented as open research with the paper trail.
 - `ArkLib/OracleReduction/Composition/Sequential/Append.lean:1217` def **appendRbrKnowledgeSoundnessResidual**
 - `ArkLib/OracleReduction/Composition/Sequential/Append.lean:4124` def **appendRunRightResidual**
 - `ArkLib/OracleReduction/Composition/Sequential/Append.lean:4150` theorem **appendRunRightResidual_holds_msg**
+- `ArkLib/OracleReduction/Composition/Sequential/AppendCompletenessEmptyErr.lean:155` theorem **reductionAppendCompletenessResidual_holds**
+- `ArkLib/OracleReduction/Composition/Sequential/AppendCompletenessEmptyErr.lean:187` theorem **appendCompletenessResidual_holds**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendCompletenessMsgKeystone.lean:290` theorem **appendCompletenessResidual_msg**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendKnowledgeOracleTransport.lean:66` theorem **appendKnowledgeSoundnessResidual_of_plain**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessMsg.lean:392` theorem **reductionAppendPerfectCompletenessResidual_of_message**
@@ -320,15 +320,6 @@ documented as open research with the paper trail.
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:502` theorem **lemma5_16HonestResidual_false**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:147` theorem **lemma5_8EagerBirthdayResidual_false**
 
-## ProofSystem/Binius
-
-### residual-named declarations
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Incremental.lean:232` class **Prop4212Case1Residual**
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Incremental.lean:1981` class **Prop4212Case2Residual**
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean:68` class **Prop421Case1FiberwiseCloseResidual**
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean:440` class **Prop421Case2FiberwiseFarResidual**
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean:571` class **PreviousSuffixFiberAlignmentResidual**
-
 ## ProofSystem/Fri
 
 ### residual-named declarations
@@ -357,13 +348,13 @@ documented as open research with the paper trail.
 - `ArkLib/ProofSystem/Logup/Security/LogupSoundnessUncond.lean:117` theorem **oracleAppendSoundnessResidual_of_plain**
 - `ArkLib/ProofSystem/Logup/Security/LogupSoundnessUncond.lean:166` theorem **logupAppendSoundnessResidual_of_plain**
 - `ArkLib/ProofSystem/Logup/Security/LogupSoundnessUncond.lean:249` def **LogupSoundnessUncondResidual**
-- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:141` def **OuterCompletenessRunResidual**
-- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:151` def **OuterCompletenessRunFactsResidual**
-- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:211` theorem **outer_completeness_of_runResidual**
-- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:813` theorem **outer_completenessRunFactsResidual**
-- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:831` theorem **outerCompletenessRunResidual_proved**
-- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:840` theorem **subPhaseCompletenessResidual_of_sumcheck**
-- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:847` theorem **outerCompletenessRunResidual_iff**
+- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:139` def **OuterCompletenessRunResidual**
+- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:149` def **OuterCompletenessRunFactsResidual**
+- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:209` theorem **outer_completeness_of_runResidual**
+- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:811` theorem **outer_completenessRunFactsResidual**
+- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:829` theorem **outerCompletenessRunResidual_proved**
+- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:838` theorem **subPhaseCompletenessResidual_of_sumcheck**
+- `ArkLib/ProofSystem/Logup/Security/OuterCompleteness.lean:845` theorem **outerCompletenessRunResidual_iff**
 - `ArkLib/ProofSystem/Logup/Security/OuterRunSamplesChallenge.lean:185` theorem **outerSoundnessResidual_real_of_marginal**
 - `ArkLib/ProofSystem/Logup/Security/OuterSoundnessReal.lean:466` theorem **outerSoundnessResidual_real_of_runUnfolding**
 - `ArkLib/ProofSystem/Logup/Security/RbrToSoundBridge.lean:264` theorem **sumcheckSoundnessResidual_holds_of_rbr**
@@ -420,7 +411,7 @@ documented as open research with the paper trail.
 - `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:1031` theorem **strictCoeffPolysResidual_all_of_card_le_e7**
 - `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:1053` theorem **strictCoeffPolysResidual_all_of_large**
 - `ArkLib/ProofSystem/Stir/MultiRoundAssembly.lean:224` def **stirMultiRoundRbrSoundnessResidual**
-- `ArkLib/ProofSystem/Stir/MultiRoundSpecT.lean:356` def **stirCheckingRbrSoundnessResidualT**
+- `ArkLib/ProofSystem/Stir/MultiRoundSpecT.lean:357` def **stirCheckingRbrSoundnessResidualT**
 - `ArkLib/ProofSystem/Stir/RepWire.lean:1417` def **stirCheckingRepRbrSoundnessResidual**
 - `ArkLib/ProofSystem/Stir/WindowCAFeed.lean:62` theorem **strictCoeffPolysResidual_all_of_window**
 
@@ -531,35 +522,28 @@ documented as open research with the paper trail.
 - `ArkLib/ToMathlib/SpartanBricks.lean:1060` theorem **composedPIOPWithClaimResidual_of_reduction**
 - `ArkLib/ToMathlib/SpartanBricks.lean:1077` def **composedCompletenessResidual**
 - `ArkLib/ToMathlib/SpartanBricks.lean:1097` def **composedCompletenessWithClaimResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1117` def **composedCompletenessWithClaimValueRelResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1128` def **composedCompletenessWithClaimSecondSumcheckEvalResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1141` theorem **composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1157` theorem **composedCompletenessWithClaimValueRelResidual_of_secondSumcheckEval**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1173` theorem **composedCompletenessWithClaimSecondSumcheckEvalResidual_of_valueRel**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1189` theorem **composedCompletenessWithClaimResidual_of_valueRel**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1213` theorem **composedCompletenessWithClaimResidual_of_secondSumcheckEval**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1234` def **composedRbrKnowledgeSoundnessResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1254` def **composedRbrKnowledgeSoundnessWithClaimResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1267` def **composedRbrKnowledgeSoundnessWithClaimValueRelResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1280` def **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1294` theorem **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1313` theorem **composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_secondSumcheckEval**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1332` theorem **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valueRel**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1353` theorem **composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1388` theorem **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_residual**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1502` theorem **composedCompletenessResidual_of_perfectCompleteness**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1515` theorem **composedCompletenessWithClaimResidual_of_perfectCompleteness**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1534` theorem **composedRbrKnowledgeSoundnessResidual_of_rbrKnowledgeSoundness**
-- `ArkLib/ToMathlib/SpartanBricks.lean:1549` theorem **composedRbrKnowledgeSoundnessWithClaimResidual_of_rbrKnowledgeSoundness**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1130` def **composedCompletenessWithClaimValueRelResidual**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1141` def **composedCompletenessWithClaimSecondSumcheckEvalResidual**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1154` theorem **composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1170` theorem **composedCompletenessWithClaimValueRelResidual_of_secondSumcheckEval**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1186` theorem **composedCompletenessWithClaimSecondSumcheckEvalResidual_of_valueRel**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1202` theorem **composedCompletenessWithClaimResidual_of_valueRel**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1226` theorem **composedCompletenessWithClaimResidual_of_secondSumcheckEval**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1247` def **composedRbrKnowledgeSoundnessResidual**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1267` def **composedRbrKnowledgeSoundnessWithClaimResidual**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1280` def **composedRbrKnowledgeSoundnessWithClaimValueRelResidual**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1293` def **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1307` theorem **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1326` theorem **composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_secondSumcheckEval**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1345` theorem **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valueRel**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1366` theorem **composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_residual**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1401` theorem **composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_residual**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1515` theorem **composedCompletenessResidual_of_perfectCompleteness**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1528` theorem **composedCompletenessWithClaimResidual_of_perfectCompleteness**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1547` theorem **composedRbrKnowledgeSoundnessResidual_of_rbrKnowledgeSoundness**
+- `ArkLib/ToMathlib/SpartanBricks.lean:1562` theorem **composedRbrKnowledgeSoundnessWithClaimResidual_of_rbrKnowledgeSoundness**
 - `ArkLib/ToMathlib/SurfaceFactorProduction.lean:210` def **graphHypothesesOfResiduals**
 - `ArkLib/ToMathlib/UnifiedExtractionTarget.lean:96` theorem **strictCoeffPolysResidualLarge_of_producer**
 - `ArkLib/ToMathlib/UnifiedProducerWindowGlue.lean:325` theorem **strictCoeffPolysResidualLarge_of_window**
 - `ArkLib/ToMathlib/UnifiedProducerWindowGlue.lean:335` theorem **strictCoeffPolysResidual_of_window**
 - `ArkLib/ToMathlib/UnifiedProducerWindowGlue.lean:380` theorem **strictCoeffPolysResidual_all_of_floor_eq_zero**
-
-## ToVCVio
-
-### sorry / admit
-- `ArkLib/ToVCVio/LazyPermBridge.lean:833` in `evalDist_simulateQ_lazyPermImpl_run'`
-- `ArkLib/ToVCVio/LazyPermBridge.lean:834` in `evalDist_simulateQ_lazyPermImpl_run'`
-- `ArkLib/ToVCVio/LazyPermBridge.lean:835` in `evalDist_simulateQ_lazyPermImpl_run'`
