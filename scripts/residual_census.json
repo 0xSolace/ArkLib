@@ -1,8 +1,8 @@
 {
  "summary": {
-  "total": 91,
+  "total": 92,
   "open": 49,
-  "discharged": 42,
+  "discharged": 43,
   "refuted": 0,
   "by_top_dir": {
    "(root)": {
@@ -18,9 +18,9 @@
     "refuted": 0
    },
    "OracleReduction": {
-    "total": 38,
+    "total": 39,
     "open": 22,
-    "discharged": 16,
+    "discharged": 17,
     "refuted": 0
    },
    "ProofSystem": {
@@ -2237,6 +2237,50 @@
    "status": "open"
   },
   {
+   "name": "appendRunRightDistResidual",
+   "fq_name": "Prover.appendRunRightDistResidual",
+   "file": "ArkLib/OracleReduction/Composition/Sequential/AppendRunEvalDist.lean",
+   "line": 53,
+   "providers": [
+    {
+     "name": "Prover.appendRunRightDistResidual_holds_msg",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendRunEvalDist.lean",
+     "line": 104,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
+      "hDir",
+      "hDir₂",
+      "hn"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "Prover.appendRunRightDistResidual_holds_challenge",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendRunEvalDistChallenge.lean",
+     "line": 266,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [
+      "hDir",
+      "hDir₂",
+      "hn"
+     ],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "Prover.appendRunRightDistResidual_holds",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendRunEvalDistChallenge.lean",
+     "line": 347,
+     "conditional_on_residuals": [],
+     "extra_explicit_binders": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
+  },
+  {
    "name": "fiatShamir_runCollapseResidual",
    "fq_name": "Reduction.fiatShamir_runCollapseResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/Basic.lean",
@@ -4031,14 +4075,6 @@
    "kind": "def",
    "file": "ArkLib/Data/CodingTheory/ProximityGap/MCAConjectureRefutation.lean",
    "line": 120,
-   "reason": "name does not end in `Residual`"
-  },
-  {
-   "name": "appendRunRightResidualDist",
-   "fq_name": "Prover.appendRunRightResidualDist",
-   "kind": "def",
-   "file": "ArkLib/OracleReduction/Composition/Sequential/AppendRunEvalDist.lean",
-   "line": 53,
    "reason": "name does not end in `Residual`"
   },
   {

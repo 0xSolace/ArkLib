@@ -14,17 +14,17 @@ always check this census before treating a `*Residual` name as open proof debt.
 
 ## Summary
 
-- **Total strict residuals:** 91
+- **Total strict residuals:** 92
 - **Open:** 49
-- **Discharged:** 42
+- **Discharged:** 43
 - **Refuted:** 0
-- **Residual-like near misses:** 43 (listed below and in `scripts/residual_census.json`)
+- **Residual-like near misses:** 42 (listed below and in `scripts/residual_census.json`)
 
 | top-level directory | total | open | discharged | refuted |
 |---|---:|---:|---:|---:|
 | `(root)` | 1 | 0 | 1 | 0 |
 | `Data` | 24 | 17 | 7 | 0 |
-| `OracleReduction` | 38 | 22 | 16 | 0 |
+| `OracleReduction` | 39 | 22 | 17 | 0 |
 | `ProofSystem` | 16 | 8 | 8 | 0 |
 | `ToMathlib` | 12 | 2 | 10 | 0 |
 
@@ -103,7 +103,6 @@ proof debt and naming drift.
 - `ProximityGap.diffStackMCAResidualBelowUDR` — `ArkLib/Data/CodingTheory/ProximityGap/Errors.lean:1597` — `def`; name does not end in `Residual`
 - `CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaLowerWitness_of_residuals` — `ArkLib/Data/CodingTheory/ProximityGap/Hab25Johnson.lean:429` — `def`; name does not end in `Residual`
 - `ProximityGap.GrandChallenges.CS25BreakdownLowerResidualUniversal` — `ArkLib/Data/CodingTheory/ProximityGap/MCAConjectureRefutation.lean:120` — `def`; name does not end in `Residual`
-- `Prover.appendRunRightResidualDist` — `ArkLib/OracleReduction/Composition/Sequential/AppendRunEvalDist.lean:53` — `def`; name does not end in `Residual`
 - `DuplexSpongeFS.Sponge316.Lemma5_12HonestResidualPaper` — `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:658` — `def`; name does not end in `Residual`
 - `DuplexSpongeFS.Sponge316.Lemma5_14HonestResidualPaper` — `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:666` — `def`; name does not end in `Residual`
 - `DuplexSpongeFS.Sponge316.Lemma5_16HonestResidualPaper` — `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistencyPaper.lean:676` — `def`; name does not end in `Residual`
@@ -146,6 +145,7 @@ None.
 - `ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual` — `ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:271`
 - `Prover.appendRunRightResidual` — `ArkLib/OracleReduction/Composition/Sequential/Append.lean:4134`
 - `OracleReduction.appendToReductionResidual` — `ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessOracle.lean:67`
+- `Prover.appendRunRightDistResidual` — `ArkLib/OracleReduction/Composition/Sequential/AppendRunEvalDist.lean:53`
 - `Reduction.fiatShamir_runCollapseResidual` — `ArkLib/OracleReduction/FiatShamir/Basic.lean:303`
 - `Reduction.fiatShamir_soundnessTransferResidual` — `ArkLib/OracleReduction/FiatShamir/Basic.lean:893`
 - `Reduction.fiatShamir_knowledgeSoundnessTransferResidual` — `ArkLib/OracleReduction/FiatShamir/Basic.lean:1002`

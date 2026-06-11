@@ -1126,6 +1126,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyFermat65537
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyTowerF17
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumAntiConc
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment

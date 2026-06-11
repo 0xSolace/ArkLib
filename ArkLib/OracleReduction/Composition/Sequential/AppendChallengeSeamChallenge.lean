@@ -191,7 +191,7 @@ set_option maxHeartbeats 1600000 in
 /-- **Simulated analogue of `Prover.append_run_evalDist_challenge` (per-seed, under the honest
 state-preserving implementation).** The appended prover's run, simulated under
 `impl.addLift challengeQueryImpl` from any seed `s`, has the same `run'`-distribution as the
-sequential `P₁.run ≫ P₂.run`. Mirrors the bare `appendRunRightResidualDist_holds_challenge`:
+sequential `P₁.run ≫ P₂.run`. Mirrors the bare `appendRunRightDistResidual_holds_challenge`:
 the seam-split backbone and the final fold are syntactic; the per-seam right-block replacement is
 `simulateQ_continueFromTo_right_challenge_evalDist`, threaded through
 `evalDist_simulateQ_run'_bind`. -/
@@ -237,7 +237,7 @@ private theorem simulateQ_append_run_challenge_evalDist
       ← evalDist_simulateQ_run'_bind _ hso]
   rw [← evalDist_simulateQ_run'_bind _ hso]
   -- The appended LHS is now the message-discharge shape; close by the same syntactic factoring as
-  -- the bare `appendRunRightResidualDist_holds_challenge` ending, under the simulated `evalDist`.
+  -- the bare `appendRunRightDistResidual_holds_challenge` ending, under the simulated `evalDist`.
   refine congrArg (fun X => evalDist (StateT.run'
       (simulateQ (impl.addLift challengeQueryImpl :
         QueryImpl (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (StateT σ ProbComp)) X) s)) ?_
