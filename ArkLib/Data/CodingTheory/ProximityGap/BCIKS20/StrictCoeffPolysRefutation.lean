@@ -70,7 +70,7 @@ theorem fold_constStack (w : ι → F) (k : ℕ) (z : F) :
 /-- Every parameter is good for the constant stack at a `δ`-close-to-code word. -/
 theorem goodCoeffsCurve_constStack_eq_univ {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     {w : ι → F} {c₁ : Polynomial F} (hdeg1 : c₁.natDegree < deg)
-    (hw1 : (δᵣ(w, fun x => c₁.eval (domain x)) : ℝ≥0∞) ≤ (δ : ℝ≥0∞)) :
+    (hw1 : (δᵣ(w, c₁.eval ∘ ⇑domain) : ℝ≥0) ≤ δ) :
     RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) (constStack w k) δ
       = Finset.univ := by
   apply Finset.eq_univ_of_forall
@@ -79,48 +79,61 @@ theorem goodCoeffsCurve_constStack_eq_univ {k deg : ℕ} {domain : ι ↪ F} {δ
   refine ⟨Finset.mem_univ z, ?_⟩
   rw [fold_constStack]
   calc δᵣ(w, (ReedSolomon.code domain deg : Set (ι → F)))
-      ≤ (δᵣ(w, fun x => c₁.eval (domain x)) : ℝ≥0∞) :=
+      ≤ ((δᵣ(w, c₁.eval ∘ ⇑domain) : ℚ≥0) : ℝ≥0∞) :=
         relDistFromCode_le_relDist_to_mem w _
           (ReedSolomon.mem_code_of_polynomial_of_natDegree_lt_of_eval c₁ hdeg1
             (fun i => rfl))
-    _ ≤ (δ : ℝ≥0∞) := hw1
+    _ ≤ (δ : ℝ≥0∞) := by
+        rw [ENNReal.coe_NNRat_coe_NNReal]
+        exact_mod_cast hw1
 
 /-- The §5 probability for the constant stack is `1`. -/
 theorem prob_constStack_eq_one {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     {w : ι → F} {c₁ : Polynomial F} (hdeg1 : c₁.natDegree < deg)
-    (hw1 : (δᵣ(w, fun x => c₁.eval (domain x)) : ℝ≥0∞) ≤ (δ : ℝ≥0∞)) :
+    (hw1 : (δᵣ(w, c₁.eval ∘ ⇑domain) : ℝ≥0) ≤ δ) :
     Pr_{
       let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • constStack w k t,
         ReedSolomon.code domain deg) ≤ δ] = 1 := by
   classical
-  have hgood : ∀ z : F,
-      δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • constStack w k t,
-        ReedSolomon.code domain deg) ≤ δ := by
-    intro z
-    have := goodCoeffsCurve_constStack_eq_univ (k := k) (deg := deg) (domain := domain)
-      (δ := δ) hdeg1 hw1
-    have hz : z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain)
-        (constStack w k) δ := by
-      rw [this]
-      exact Finset.mem_univ z
-    rw [RS_goodCoeffsCurve, Finset.mem_filter] at hz
-    exact hz.2
-  -- a sure event has probability one
-  simp only [Bind.bind, PMF.bind, PMF.uniformOfFintype_apply, pure, PMF.pure_apply,
-    eq_iff_iff]
-  simp only [DFunLike.coe]
-  have hone : ∀ z : F, (if True ↔ δᵣ(∑ t : Fin (k + 1),
-      (z ^ (t : ℕ)) • constStack w k t, ReedSolomon.code domain deg) ≤ δ
-        then (1 : ENNReal) else 0) = 1 := by
-    intro z
-    rw [if_pos (iff_of_true trivial (hgood z))]
-  calc (∑' z : F, ((Fintype.card F : ENNReal))⁻¹ * _) = _ := rfl
-    _ = 1 := by
-      simp only [hone, mul_one]
-      rw [ENNReal.tsum_const]
-      rw [ENNReal.nsmul_eq_mul, ENNReal.mul_inv_cancel]
-      · exact_mod_cast Fintype.card_ne_zero
-      · exact ENNReal.natCast_ne_top _
+  set P : F → Prop := fun z : F =>
+    δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • constStack w k t,
+      ReedSolomon.code domain deg) ≤ δ with hPdef
+  have hgoodall : Finset.filter P Finset.univ = Finset.univ := by
+    have hgood := goodCoeffsCurve_constStack_eq_univ (k := k) (deg := deg)
+      (domain := domain) (δ := δ) hdeg1 hw1
+    rw [RS_goodCoeffsCurve] at hgood
+    exact hgood
+  -- the probability is the good-set ratio (the `GoodCoeffs` computation, verbatim)
+  have hPr :
+      Pr_{ let z ← $ᵖ F }[ P z ] =
+        ((Finset.filter (α := F) P Finset.univ).card : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
+    simp only [Bind.bind, PMF.bind, PMF.uniformOfFintype_apply, pure, PMF.pure_apply,
+      eq_iff_iff, mul_ite, mul_one, mul_zero, ENNReal.coe_natCast]
+    simp only [DFunLike.coe, true_iff]
+    rw [
+      tsum_eq_sum (α := ENNReal) (β := F)
+        (f := fun a => if P a then (↑(Fintype.card F))⁻¹ else 0)
+        (s := Finset.filter P Finset.univ)
+        (hf := fun b => by
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+          intro hb
+          simp only [hb, if_false])
+    ]
+    rw [Finset.sum_ite]
+    simp only [Finset.sum_const_zero, add_zero]
+    rw [Finset.sum_const]
+    rw [nsmul_eq_mul']
+    rw [mul_comm]
+    conv_lhs =>
+      rw [← div_eq_mul_inv]
+    have h_card_eq : {x ∈ Finset.filter P Finset.univ | P x} = Finset.filter P Finset.univ := by
+      ext x
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+      rw [and_self_iff]
+    rw [h_card_eq]
+  show Pr_{ let z ← $ᵖ F }[ P z ] = 1
+  rw [hPr, hgoodall, Finset.card_univ]
+  exact ENNReal.div_self (by exact_mod_cast Fintype.card_ne_zero) ENNReal.coe_ne_top
 
 /-! ## The attack -/
 
@@ -130,8 +143,8 @@ theorem not_strictCoeffPolysResidual_of_attack_data {k deg : ℕ} {domain : ι �
     {c₁ c₂ : Polynomial F} (hc12 : c₁ ≠ c₂)
     (hdeg1 : c₁.natDegree < deg) (hdeg2 : c₂.natDegree < deg)
     {w : ι → F}
-    (hw1 : (δᵣ(w, fun x => c₁.eval (domain x)) : ℝ≥0∞) ≤ (δ : ℝ≥0∞))
-    (hw2 : (δᵣ(w, fun x => c₂.eval (domain x)) : ℝ≥0∞) ≤ (δ : ℝ≥0∞))
+    (hw1 : (δᵣ(w, c₁.eval ∘ ⇑domain) : ℝ≥0) ≤ δ)
+    (hw2 : (δᵣ(w, c₂.eval ∘ ⇑domain) : ℝ≥0) ≤ δ)
     (hk : 0 < k)
     (hsmall : ((k : ℝ≥0∞) * (errorBound δ deg domain : ℝ≥0∞)) < 1)
     (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
@@ -161,9 +174,11 @@ theorem not_strictCoeffPolysResidual_of_attack_data {k deg : ℕ} {domain : ι �
       · by_cases hzz : z = z₀ <;> simp [hP, hzz, hdeg1, hdeg2]
       · rw [fold_constStack]
         by_cases hzz : z = z₀
-        · simp only [hP, hzz, if_pos rfl]
+        · have : P z = c₂ := by simp [hP, hzz]
+          rw [this]
           exact hw2
-        · simp only [hP, if_neg hzz]
+        · have : P z = c₁ := by simp [hP, hzz]
+          rw [this]
           exact hw1)
   -- pin each coefficient polynomial on the parameters away from `z₀`
   have hpin : ∀ j < deg, B j = Polynomial.C (c₁.coeff j) := by
@@ -177,8 +192,8 @@ theorem not_strictCoeffPolysResidual_of_attack_data {k deg : ℕ} {domain : ι �
         rw [hgood]
         exact Finset.mem_univ z
       have h := hBeval z hzgood j hj
-      rw [hP] at h
-      simp only [if_neg hzne] at h
+      have hPz : P z = c₁ := by simp [hP, hzne]
+      rw [hPz] at h
       rw [Polynomial.eval_sub, Polynomial.eval_C, ← h]
       ring
     have hdegB : (B j - Polynomial.C (c₁.coeff j)).natDegree
@@ -206,8 +221,8 @@ theorem not_strictCoeffPolysResidual_of_attack_data {k deg : ℕ} {domain : ι �
         rw [hgood]
         exact Finset.mem_univ z₀
       have h := hBeval z₀ hz₀good j hj
-      rw [hP] at h
-      simp only [if_pos rfl] at h
+      have hPz₀ : P z₀ = c₂ := by simp [hP]
+      rw [hPz₀] at h
       rw [h, hpin j hj, Polynomial.eval_C]
     · push_neg at hj
       rw [Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le hdeg2 hj),
@@ -222,8 +237,8 @@ theorem not_strictCanonicalCoeffPolysResidual_of_attack_data {k deg : ℕ}
     {c₁ c₂ : Polynomial F} (hc12 : c₁ ≠ c₂)
     (hdeg1 : c₁.natDegree < deg) (hdeg2 : c₂.natDegree < deg)
     {w : ι → F}
-    (hw1 : (δᵣ(w, fun x => c₁.eval (domain x)) : ℝ≥0∞) ≤ (δ : ℝ≥0∞))
-    (hw2 : (δᵣ(w, fun x => c₂.eval (domain x)) : ℝ≥0∞) ≤ (δ : ℝ≥0∞))
+    (hw1 : (δᵣ(w, c₁.eval ∘ ⇑domain) : ℝ≥0) ≤ δ)
+    (hw2 : (δᵣ(w, c₂.eval ∘ ⇑domain) : ℝ≥0) ≤ δ)
     (hk : 0 < k)
     (hsmall : ((k : ℝ≥0∞) * (errorBound δ deg domain : ℝ≥0∞)) < 1)
     (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
@@ -249,29 +264,15 @@ theorem not_strictCanonicalCoeffPolysResidual_of_attack_data {k deg : ℕ}
     rw [hgood]
     exact Finset.mem_univ z₀
   -- two valid decoded families that disagree at `z₀`
-  have hdec1 : ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain)
-      (constStack w k) δ,
-      (c₁.natDegree < deg ∧
-        δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • constStack w k t,
-          (fun x => c₁.eval (domain x))) ≤ δ) := by
-    intro z _
+  have h1 := huniq (fun _ => c₁) (fun z _ => by
     refine ⟨hdeg1, ?_⟩
     rw [fold_constStack]
-    exact hw1
-  have hdec2 : ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain)
-      (constStack w k) δ,
-      (c₂.natDegree < deg ∧
-        δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • constStack w k t,
-          (fun x => c₂.eval (domain x))) ≤ δ) := by
-    intro z _
+    exact hw1) z₀ hz₀good
+  have h2 := huniq (fun _ => c₂) (fun z _ => by
     refine ⟨hdeg2, ?_⟩
     rw [fold_constStack]
-    exact hw2
-  have h1 := huniq (fun _ => c₁) (fun z hz => by
-    simpa using hdec1 z hz) z₀ hz₀good
-  have h2 := huniq (fun _ => c₂) (fun z hz => by
-    simpa using hdec2 z hz) z₀ hz₀good
-  exact hc12 (h1.symm.trans h2)
+    exact hw2) z₀ hz₀good
+  exact hc12 (h1.trans h2.symm)
 
 end ProximityGap
 
