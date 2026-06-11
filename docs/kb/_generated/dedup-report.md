@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2148 files, 27617 declarations
+- `ArkLib` — 2153 files, 27661 declarations
 
-## Same short-name across multiple files (806 groups)
+## Same short-name across multiple files (807 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -179,7 +179,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `Witness` (6 declarations, 6 files)
 
 - `def BatchedFri.Spec.Witness` [ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean:54](../../../ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean#L54) — The Batched FRI protocol has as witness for each batched polynomial that is supposed to correspond t
-- `structure Binius.BinaryBasefold.Witness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:881](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L881) — The round witness for round `i` of `t ∈ L[≤ 2][X Fin ℓ]` and `Hᵢ(Xᵢ, ..., Xₗ₋₁) := h(r₀', ..., rᵢ₋₁'
+- `structure Binius.BinaryBasefold.Witness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:898](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L898) — The round witness for round `i` of `t ∈ L[≤ 2][X Fin ℓ]` and `Hᵢ(Xᵢ, ..., Xₗ₋₁) := h(r₀', ..., rᵢ₋₁'
 - `def R1CS.Witness` [ArkLib/ProofSystem/ConstraintSystem/R1CS.lean:51](../../../ArkLib/ProofSystem/ConstraintSystem/R1CS.lean#L51) — (no docstring)
 - `def Fri.Spec.Witness` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:110](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L110) — The FRI protocol has as witness the polynomial that is supposed to correspond to the codeword in the
 - `abbrev Spartan.Spec.Witness` [ArkLib/ProofSystem/Spartan/Basic.lean:64](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L64) — This unfolds to `𝕨 : Fin 2 ^ ℓ_w → R`
@@ -737,13 +737,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `finalSumcheckKStateProp` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1874](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1874) — (no docstring)
+- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1649](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1649) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKStateProp` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1359](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1359) — (no docstring)
 - `def RingSwitching.SumcheckPhase.finalSumcheckKStateProp` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1536](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1536) — (no docstring)
 
 ### `finalSumcheckKnowledgeStateFunction` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1904](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1904) — (no docstring)
+- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1680](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1680) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1399](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1399) — The knowledge state function for the final sumcheck step
 - `def RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1573](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1573) — The knowledge state function for the final sumcheck step
 
@@ -755,13 +755,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `finalSumcheckOracleReduction_perfectCompleteness` (3 declarations, 3 files)
 
-- `theorem Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:142](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L142) — (no docstring)
+- `theorem Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:141](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L141) — (no docstring)
 - `theorem Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1129](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1129) — Perfect completeness for the final sumcheck step
 - `theorem RingSwitching.SumcheckPhase.finalSumcheckOracleReduction_perfectCompleteness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1450](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1450) — **Final-sumcheck perfect completeness — proven.** The single-message final sumcheck reduction is per
 
 ### `finalSumcheckOracleVerifier_rbrKnowledgeSoundness` (3 declarations, 3 files)
 
-- `theorem Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:2106](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L2106) — (no docstring)
+- `theorem Binius.BinaryBasefold.CoreInteraction.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1882](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1882) — (no docstring)
 - `theorem Binius.FRIBinius.CoreInteractionPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1620](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1620) — Round-by-round knowledge soundness for the final sumcheck step
 - `theorem RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1706](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1706) — Round-by-round knowledge soundness for the final sumcheck step
 
@@ -773,7 +773,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `finalSumcheckRbrExtractor` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1831](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1831) — (no docstring)
+- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1606](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1606) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1320](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1320) — The round-by-round extractor for the final sumcheck step
 - `def RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1516](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1516) — The round-by-round extractor for the final sumcheck step
 
@@ -1558,7 +1558,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `FinalSumcheckWit` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.CoreInteraction.FinalSumcheckWit` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1825](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1825) — (no docstring)
+- `def Binius.BinaryBasefold.CoreInteraction.FinalSumcheckWit` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:1600](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L1600) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.FinalSumcheckWit` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1314](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1314) — (no docstring)
 
 ### `G_eighth_roots` (2 declarations, 2 files)
@@ -1701,6 +1701,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `abbrev OracleReduction.TranscriptSimulator` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:38](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L38) — Transcript simulators for oracle reductions are simulators for the associated non-oracle reduction,
 - `def Reduction.TranscriptSimulator` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:62](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L62) — A transcript simulator produces, from the input statement alone, a distribution over full transcript
+
+### `UDRClose_of_fin_eq` (2 declarations, 2 files)
+
+- `theorem Binius.BinaryBasefold.UDRClose_of_fin_eq` [ArkLib/ProofSystem/Binius/BinaryBasefold/Reconstruct/UDRCongruence.lean:52](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Reconstruct/UDRCongruence.lean#L52) — **UDR-closeness congruence under domain-index equality.** If the domain indices `i, j : Fin r` are e
+- `theorem Binius.BinaryBasefold.CoreInteraction.UDRClose_of_fin_eq` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:756](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L756) — Transport `UDRClose` across an index equality and a heterogeneous function equality.
 
 ### `Verifier.run` (2 declarations, 2 files)
 
@@ -2396,7 +2401,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `finalSumcheckKnowledgeError` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:319](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L319) — (no docstring)
+- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean:206](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/FinalSumcheck.lean#L206) — (no docstring)
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1309](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1309) — RBR knowledge error for the final sumcheck step
 
 ### `finalSumcheckStepLogic` (2 declarations, 2 files)
@@ -2971,12 +2976,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `masterKStateCore` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.masterKStateCore` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1666](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1666) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
+- `def Binius.BinaryBasefold.masterKStateCore` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1688](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1688) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
 - `def RingSwitching.masterKStateCore` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:459](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L459) — (no docstring)
 
 ### `masterKStateProp` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1680](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1680) — (no docstring)
+- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1702](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1702) — (no docstring)
 - `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:467](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L467) — (no docstring)
 
 ### `mcaBad` (2 declarations, 2 files)
@@ -3686,7 +3691,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `sumcheckConsistencyProp` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.sumcheckConsistencyProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1435](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1435) — Sumcheck consistency: the claimed sumcheck target equals the sum of `H` over the boolean hypercube o
+- `def Binius.BinaryBasefold.sumcheckConsistencyProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1457](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1457) — Sumcheck consistency: the claimed sumcheck target equals the sum of `H` over the boolean hypercube o
 - `def Sumcheck.Structured.sumcheckConsistencyProp` [ArkLib/ProofSystem/Sumcheck/Structured.lean:212](../../../ArkLib/ProofSystem/Sumcheck/Structured.lean#L212) — Sumcheck consistency: the claimed sum equals the actual polynomial evaluation sum over the evaluatio
 
 ### `sumcheckConsistency_at_last_simplifies` (2 declarations, 2 files)
@@ -3891,7 +3896,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `witnessStructuralInvariant` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1427](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1427) — This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
+- `def Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1449](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1449) — This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
 - `def RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:452](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L452) — This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 
 ### `witness_list_card_seven` (2 declarations, 2 files)
@@ -4524,7 +4529,7 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.BinaryBasefold.hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/PreTensorFar.lean:162](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/PreTensorFar.lean#L162) vs `Binius.BinaryBasefold.hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps_farLift` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Prop421Case2FarLift.lean:321](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Prop421Case2FarLift.lean#L321)
     - a: Source Hamming distance is bounded by the number of bad quotient fibers times the fiber size. Local
     - b: Source Hamming distance is bounded by the number of bad quotient fibers times the fiber size. Local
-- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1427](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1427) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:452](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L452)
+- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1449](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1449) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:452](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L452)
     - a: This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
     - b: This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1309](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1309) vs `RingSwitching.SumcheckPhase.finalSumcheckRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1513](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1513)

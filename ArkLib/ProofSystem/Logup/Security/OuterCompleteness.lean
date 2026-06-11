@@ -119,7 +119,7 @@ example {ι : Type} {oSpec : OracleSpec ι} {α β γ : Type} (pr : α) (sv : β
   · rw [if_pos h, if_pos h]; rfl
   · rw [if_neg h, if_neg h]; rfl
 
-lemma OptionT_collapse_lemma {ι : Type} {oSpec : OracleSpec ι} {α β γ : Type} (pr : α) (sv : β) (e : γ) (P : Prop) [Decidable P] :
+lemma optionT_liftM_run_getM_collapse {ι : Type} {oSpec : OracleSpec ι} {α β γ : Type} (pr : α) (sv : β) (e : γ) (P : Prop) [Decidable P] :
     (do
       let stmtOut ← (liftM (((fun a => (a, e)) <$> (if P then pure sv else (failure : OptionT (OracleComp oSpec) β))).run)
           : OptionT (OracleComp oSpec) (Option (β × γ)))
@@ -854,7 +854,7 @@ end OuterCompleteness
 end Logup
 
 /- Axiom audit for the honest outer completeness frontier. -/
-#print axioms Logup.OptionT_collapse_lemma
+#print axioms Logup.optionT_liftM_run_getM_collapse
 #print axioms Logup.OuterCompletenessRunResidual
 #print axioms Logup.OuterCompletenessRunFactsResidual
 #print axioms Logup.completenessFromRun_of_compl_zero_failure_bound

@@ -195,7 +195,7 @@ instance finalOracleStatementInterface :
         return cast (by simp [h]) (st pt) }
 
 @[simp]
-lemma range_lem₁ {i : Fin (k + 1)} (q) :
+lemma finalOracleStatement_range_nonfinal {i : Fin (k + 1)} (q) :
     [FinalOracleStatement s ω]ₒ.Range ⟨⟨i.1, Nat.lt_succ_of_lt i.2⟩, q⟩ = F := by
   unfold OracleSpec.Range FinalOracleStatement OracleInterface.toOracleSpec
   unfold OracleInterface.Query OracleInterface.Response
@@ -203,7 +203,7 @@ lemma range_lem₁ {i : Fin (k + 1)} (q) :
   simp [Nat.ne_of_lt i.2]
 
 @[simp]
-lemma range_lem₂ (q) :
+lemma finalOracleStatement_range_final (q) :
     [FinalOracleStatement s ω]ₒ.Range ⟨(Fin.last (k + 1)), q⟩ = CompPoly.CPolynomial F := by
   unfold OracleSpec.Range FinalOracleStatement OracleInterface.toOracleSpec
   unfold OracleInterface.Query OracleInterface.Response
@@ -211,7 +211,7 @@ lemma range_lem₂ (q) :
   simp
 
 @[simp]
-lemma query_lem (j) :
+lemma finalOracleStatementInterface_query (j) :
     (finalOracleStatementInterface (ω := ω) s j).Query =
       if j = k + 1 then Unit else (ω.subdomain (∑ j' ∈ finRangeTo _ j.1, s j')).toFinset := by
   rfl
@@ -856,7 +856,7 @@ instance instFinalFoldVerifierAppendCoherent :
     · -- `Query`: `finalOracleStatementInterface … j` reduces (else) to the codeword carrier.
       apply eq_of_heq
       refine HEq.trans ?_ (finalFold_query_cast hM.symm (instOracleInterfaceOracleStatement s a)).symm
-      rw [query_lem, if_neg hne]
+      rw [finalOracleStatementInterface_query, if_neg hne]
       obtain ⟨jv, hjv⟩ := j; obtain ⟨av, hav⟩ := a
       simp only [] at hja; subst hja; rfl
     · -- `toOC`: descend through `OracleContext`/spec/impl, collapsing the `rfl`-casts.
@@ -900,7 +900,7 @@ instance instFinalFoldVerifierAppendCoherent :
     · -- `Query`: both `Unit`.
       apply eq_of_heq
       refine HEq.trans ?_ (finalFold_query_cast hMsg (instOracleInterfaceMessagePSpec ⟨1, by simp⟩)).symm
-      rw [query_lem, if_pos hcond]; rfl
+      rw [finalOracleStatementInterface_query, if_pos hcond]; rfl
     · -- `toOC`: both `instDefault` over `CompPoly.CPolynomial F`.
       refine HEq.trans ?_ (finalFold_toOC_cast hMsg (instOracleInterfaceMessagePSpec ⟨1, by simp⟩)).symm
       have hM : FinalOracleStatement (ω := ω) s j = (pSpec F).Message ⟨1, by simp⟩ := by
