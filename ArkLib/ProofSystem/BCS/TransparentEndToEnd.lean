@@ -530,6 +530,26 @@ theorem phases_realizationFrontier :
   exact ⟨interactionRealizesOracleMessages_holds (oSpec := oSpec) (Data := Data),
     openingRealizesQueryLog_holds (oSpec := oSpec) (Data := Data)⟩
 
+/-- The transparent end-to-end phases in **proof-carrying** form (issue #342): the semantic
+realization payloads (`interactionRealizesOracleMessages` / `openingRealizesQueryLog`) come
+packaged with their proofs, so no consumer can treat them as unconstrained payload data. -/
+def phasesLawful :
+    OracleReduction.BCSCompiledPhasesLawful (oSpec := oSpec) (pSpec := srcPSpec (Data := Data))
+      (pSpecCom := pSpecCom (Data := Data))
+      (StmtIn := OpeningStmt (Data := Data)) (WitIn := OpeningWit (Data := Data))
+      (StmtOut := Bool) (WitOut := Unit)
+      (StmtMid := OpeningStmt (Data := Data)) (WitMid := OpeningWit (Data := Data))
+      (CommitmentType (Data := Data)) (e (Data := Data)) where
+  toBCSCompiledPhases := phases (oSpec := oSpec) (Data := Data)
+  interaction_realization_holds :=
+    interactionRealizesOracleMessages_holds (oSpec := oSpec) (Data := Data)
+  opening_realization_holds := openingRealizesQueryLog_holds (oSpec := oSpec) (Data := Data)
+
+/-- The lawful packaging projects back to the original phases (sanity seam). -/
+theorem phasesLawful_toBCSCompiledPhases :
+    (phasesLawful (oSpec := oSpec) (Data := Data)).toBCSCompiledPhases
+      = phases (oSpec := oSpec) (Data := Data) := rfl
+
 section Final
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -615,3 +635,8 @@ theorem transparentBCS_soundness [Inhabited Data] [Inhabited O.Query]
 end Final
 
 end BCSTransparentEndToEnd
+
+#print axioms BCSTransparentEndToEnd.phases_realizationFrontier
+#print axioms BCSTransparentEndToEnd.phasesLawful
+#print axioms BCSTransparentEndToEnd.transparentBCS_perfectCompleteness
+#print axioms BCSTransparentEndToEnd.transparentBCS_soundness
