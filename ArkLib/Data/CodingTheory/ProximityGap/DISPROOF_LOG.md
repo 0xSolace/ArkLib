@@ -5290,3 +5290,18 @@ against the committed certificate.
 Pending on the session-limit reset: G1 (menu law), G2+G3 (n=64 blind), G5 (beat the
 union bound), A3 (λ-family rigidity). Inline A2 pre-observation (c ≈ 11 from summary
 data) recorded in HYPOTHESES.md before the lane ran — the discipline held.
+
+### O132 — G1 CONFIRMED: the incidence menu law (nubs, 2026-06-11)
+
+Third verdict of the pre-registered batch (rungs/HYPOTHESES.md), derived and verified
+inline. **The cross-pair locus-multiplicity menu is a theorem**: for a dense element
+with block B, the loci over the 35 witnesses are Z_J = (B∩{z*}) ∪ ⋃_{i∈J} b_i with
+multiplicity exactly C(m₀, 4−|J|) (m₀ = number of B-empty antipodal pairs; disjoint
+blocks ⟹ the locus determines the trace; completions free). Aggregate evenness is
+forced: negation fixes squares ⟹ ν-paired elements share B ⟹ every aggregate
+multiplicity carries the B-census {2,4} factors — the menu IS the B-census convolved
+with the C(m₀, 4−|J|) kernel. Verified: analytic == measured in ALL 40 entries
+(mass 47,040, distinct loci 4,072; lane_g1_menu_law.py on kernel-regenerated data).
+General-s form: C(m₀, s/4−|J|) — the incidence menu at every rung is now closed-form
+given the B-census, which O130's engine produces. Batch state: G1 ✓ A1 ✓ A2 ✓;
+G2+G3, G5, A3 pending the session-limit reset.
