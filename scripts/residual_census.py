@@ -16,12 +16,14 @@ each as:
                covers `: <Name>Residual ...` providers, including ones proved
                by anonymous constructor `⟨...⟩`), or a `<name>_holds*` /
                `<name>_proved*` theorem whose result mentions the residual.
-               Providers whose own hypotheses consume a census residual are
-               recorded but do NOT count as a discharge (a conditional
-               reduction is not a proof).  When several census residuals
-               share a last name across namespaces, a provider is narrowed
-               via its qualified result head or namespace affinity; if it
-               stays ambiguous it is recorded but does not discharge.
+               Providers whose own hypotheses consume a census residual, or
+               whose explicit non-instance binders are extra assumptions not
+               appearing in the provided residual instance, are recorded but do
+               NOT count as a discharge (a conditional reduction is not a
+               proof).  When several census residuals share a last name across
+               namespaces, a provider is narrowed via its qualified result head
+               or namespace affinity; if it stays ambiguous it is recorded but
+               does not discharge.
   refuted    — a concrete declaration proves a negated instance of the residual
                (for example `theorem ..._false : ¬ FooResidual ...`).  This is
                not a discharge; it means the statement surface is known false
@@ -165,6 +167,19 @@ def result_head(result: str) -> str:
     return m.group(0) if m else ""
 
 
+def split_top_level_once(text: str, sep: str) -> tuple[str, str] | None:
+    """Split at the first top-level separator inside one binder group."""
+    depth = 0
+    for i, c in enumerate(text):
+        if c in OPEN_BRACKETS:
+            depth += 1
+        elif c in CLOSE_BRACKETS:
+            depth = max(0, depth - 1)
+        elif c == sep and depth == 0:
+            return text[:i], text[i + 1 :]
+    return None
+
+
 def is_ident_char(c: str) -> bool:
     return c.isalnum() or c in "_'"
 
@@ -182,6 +197,112 @@ def mentions_word(text: str, word: str) -> bool:
         if not is_ident_char(before) and not is_ident_char(after) and after != ".":
             return True
         start = idx + 1
+
+
+def binder_groups(binders: str) -> list[tuple[str, str, str]]:
+    """Return top-level binder groups as (open delimiter, content, close delimiter)."""
+    close_for = {"(": ")", "{": "}", "[": "]", "⦃": "⦄"}
+    groups: list[tuple[str, str, str]] = []
+    i = 0
+    while i < len(binders):
+        opener = None
+        if binders.startswith("⦃", i):
+            opener = "⦃"
+            close = "⦄"
+            start = i
+        elif binders[i] in "({[":
+            opener = binders[i]
+            close = close_for[opener]
+            start = i
+        if opener is None:
+            i += 1
+            continue
+        depth = 0
+        j = i
+        while j < len(binders):
+            if binders.startswith("⦃", j):
+                depth += 1
+                j += 1
+            elif binders.startswith("⦄", j):
+                depth = max(0, depth - 1)
+                if depth == 0 and close == "⦄":
+                    groups.append((opener, binders[start + 1 : j], close))
+                    i = j + 1
+                    break
+                j += 1
+            else:
+                c = binders[j]
+                if c in OPEN_BRACKETS:
+                    depth += 1
+                elif c in CLOSE_BRACKETS:
+                    depth = max(0, depth - 1)
+                    if depth == 0 and c == close:
+                        groups.append((opener, binders[start + 1 : j], close))
+                        i = j + 1
+                        break
+                j += 1
+        else:
+            i += 1
+    return groups
+
+
+def binder_names_and_type(content: str) -> tuple[list[str], str] | None:
+    """Names and type introduced by a binder group with a top-level type colon."""
+    split = split_top_level_once(content, ":")
+    if split is None:
+        return None
+    names, typ = split
+    out: list[str] = []
+    for tok in re.findall(r"[^\s,]+", names):
+        tok = tok.strip()
+        tok = tok.strip("(){}[]⦃⦄")
+        if not tok or tok == "_" or tok.startswith("_"):
+            continue
+        if any(ch in tok for ch in ":=<>|\\/"):
+            continue
+        out.append(tok)
+    return out, typ.strip()
+
+
+def looks_like_proof_assumption(names: list[str], typ: str) -> bool:
+    """Heuristic for explicit binders that are hypotheses rather than data.
+
+    We intentionally do not classify every explicit binder absent from a result
+    as conditional: Lean result heads often omit inferred type/data parameters.
+    Instead, we flag binders whose names or types look proof-like.
+    """
+    typ_flat = " ".join(typ.split())
+    if any(name.startswith("h") or name.startswith("H") for name in names):
+        return not (typ_flat.startswith("Type") or typ_flat.startswith("Sort"))
+    # Keep this conservative: function/relation data parameters often contain
+    # `∀`, `→`, or even bounded polynomial notation.  Residual dependencies are
+    # tracked separately by exact name, so this field is just for obvious
+    # hypothesis binders whose names do not appear in the residual instance.
+    proof_markers = ["Prop", "¬"]
+    return any(marker in typ_flat for marker in proof_markers)
+
+
+def extra_explicit_binders(binders: str, result: str) -> list[str]:
+    """Proof-like explicit/implicit non-instance binders not used in the result type.
+
+    These are proof/data assumptions for a candidate provider rather than
+    parameters of the residual instance it provides.  Square-bracket instance
+    binders are ignored because they are typeclass search side conditions.
+    """
+    extras: list[str] = []
+    for opener, content, _close in binder_groups(binders):
+        if opener == "[":
+            continue
+        parsed = binder_names_and_type(content)
+        if parsed is None:
+            continue
+        names, typ = parsed
+        if not looks_like_proof_assumption(names, typ):
+            continue
+        for name in names:
+            if not mentions_word(result, name):
+                extras.append(name)
+    return sorted(set(extras))
 
 
 def lower_first(name: str) -> str:
@@ -356,6 +477,7 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
         head_full = result_head(d["result"])
         head_last = head_full.rsplit(".", 1)[-1]
         result_no_forall = strip_forall_prefix(d["result"])
+        extra_binders = extra_explicit_binders(d["binders"], d["result"])
 
         targets: set[str] = set()
         if head_last in by_name:
@@ -380,6 +502,7 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
                         "file": d["file"],
                         "line": d["line"],
                         "conditional_on_residuals": consumed,
+                        "extra_explicit_binders": extra_binders,
                         "ambiguous_name_match": ambiguous,
                     }
                 )
@@ -405,6 +528,7 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
                             "file": d["file"],
                             "line": d["line"],
                             "conditional_on_residuals": consumed,
+                            "extra_explicit_binders": extra_binders,
                             "ambiguous_name_match": ambiguous,
                         }
                     )
@@ -418,6 +542,7 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
                 p["file"],
                 p["line"],
                 tuple(p["conditional_on_residuals"]),
+                tuple(p["extra_explicit_binders"]),
                 p["ambiguous_name_match"],
             )
             if key in seen:
@@ -432,12 +557,16 @@ def find_providers(all_decls: list[dict], residuals: list[dict]) -> None:
         concrete = [
             p
             for p in r["providers"]
-            if not p["conditional_on_residuals"] and not p["ambiguous_name_match"]
+            if not p["conditional_on_residuals"]
+            and not p["extra_explicit_binders"]
+            and not p["ambiguous_name_match"]
         ]
         concrete_refutations = [
             p
             for p in r["refutations"]
-            if not p["conditional_on_residuals"] and not p["ambiguous_name_match"]
+            if not p["conditional_on_residuals"]
+            and not p["extra_explicit_binders"]
+            and not p["ambiguous_name_match"]
         ]
         if concrete:
             r["status"] = "discharged"
@@ -527,7 +656,15 @@ def main() -> int:
             conds = sorted(
                 {c for p in r["providers"] for c in p["conditional_on_residuals"]}
             )
-            extra = f"  [only conditional providers, on: {', '.join(conds)}]" if conds else ""
+            binders = sorted(
+                {b for p in r["providers"] for b in p.get("extra_explicit_binders", [])}
+            )
+            notes = []
+            if conds:
+                notes.append(f"residual deps: {', '.join(conds)}")
+            if binders:
+                notes.append(f"extra assumptions: {', '.join(binders)}")
+            extra = f"  [only conditional providers, {'; '.join(notes)}]" if notes else ""
             print(f"  {r['fq_name']}  ({r['file']}:{r['line']}){extra}")
     refuted_rows = [r for r in residuals if r["status"] == "refuted"]
     if refuted_rows:
@@ -535,7 +672,9 @@ def main() -> int:
         for r in refuted_rows:
             refs = [
                 p for p in r["refutations"]
-                if not p["conditional_on_residuals"] and not p["ambiguous_name_match"]
+                if not p["conditional_on_residuals"]
+                and not p["extra_explicit_binders"]
+                and not p["ambiguous_name_match"]
             ]
             ref_labels = [f"{p['name']} ({p['file']}:{p['line']})" for p in refs]
             extra = f"  [refuted by: {', '.join(ref_labels)}]" if refs else ""
