@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.Data.CodingTheory.ProximityGap.StackJointAgreement
 import Mathlib
 
 /-!
@@ -19,9 +19,9 @@ weighted interleaving bound of [Jo26] Theorem 4.2:
 
 ## Main definitions
 
-* `stackJointAgreesOn` — `ℓ`-ary joint agreement of a word stack with a tuple of
-  codewords on a position set `S`; generalizes `pairJointAgreesOn` (the `ℓ = 2` case,
-  bridged by `stackJointAgreesOn_two_iff`).
+* `stackJointAgreesOn` — imported row-index-general joint agreement of a word stack with a
+  tuple of codewords on a position set `S`; generalizes `pairJointAgreesOn` (the `ℓ = 2`
+  case, bridged by `stackJointAgreesOn_two_iff`).
 * `mcaWitnessG` / `mcaEventG` — [Jo26] Definition 2.6: `T ⊆ [n]` is a `G`-MCA witness for
   `(f, ω)` iff `|T| ≥ (1−δ)·n`, the combination `∑ⱼ Gⱼ(ω)·fⱼ` agrees with a codeword on
   `T`, and the stack does **not** jointly agree with codewords on `T`.  The combination
@@ -63,35 +63,6 @@ set_option linter.unusedSectionVars false
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
-
-/-! ### `ℓ`-ary joint agreement -/
-
-/-- The stack `f = (f₀, …, f_{ℓ−1})` **jointly agrees** with a tuple of codewords of `C`
-on every position in `S`: there is `cs : Fin ℓ → (ι → A)` with each `cs j ∈ C` and
-`cs j i = f j i` for all `i ∈ S`, `j`.  This is the `ℓ`-ary generalization of
-`pairJointAgreesOn` (recovered at `ℓ = 2` by `stackJointAgreesOn_two_iff`), i.e. the
-condition `Δ_T((f₁|_T, …, f_ℓ|_T), C_T^ℓ) = 0` of [Jo26] Definition 2.6. -/
-def stackJointAgreesOn (C : Set (ι → A)) (S : Finset ι) {l : ℕ}
-    (f : Fin l → ι → A) : Prop :=
-  ∃ cs : Fin l → ι → A, (∀ j, cs j ∈ C) ∧ ∀ i ∈ S, ∀ j, cs j i = f j i
-
-/-- At `ℓ = 2`, stack joint agreement is exactly `pairJointAgreesOn` on the two rows. -/
-theorem stackJointAgreesOn_two_iff (C : Set (ι → A)) (S : Finset ι)
-    (u : Fin 2 → ι → A) :
-    stackJointAgreesOn C S u ↔ pairJointAgreesOn C S (u 0) (u 1) := by
-  constructor
-  · rintro ⟨cs, hcs, hag⟩
-    exact ⟨cs 0, hcs 0, cs 1, hcs 1, fun i hi => ⟨hag i hi 0, hag i hi 1⟩⟩
-  · rintro ⟨v₀, hv₀, v₁, hv₁, hag⟩
-    refine ⟨![v₀, v₁], ?_, ?_⟩
-    · intro j
-      fin_cases j
-      · simpa using hv₀
-      · simpa using hv₁
-    · intro i hi j
-      fin_cases j
-      · simpa using (hag i hi).1
-      · simpa using (hag i hi).2
 
 /-! ### Generator MCA ([Jo26] Definition 2.6) -/
 
