@@ -1017,3 +1017,18 @@ this direct `M`-probe all agree, and `M ≪ √n` is empirically true. The deplo
 solely on the Bourgain sum-product bound for `M` (not in Mathlib; insufficient for Weil §23 and
 Stepanov §30). The prize is open-but-true-looking: the math says `δ*` is pinned, the formalization
 needs the Bourgain estimate. No fabrication; this validates (does not prove) the open target.
+## 32. REFUTED: the 2^k tower squaring-descent route to M (no elementary recursion)
+
+Fresh hypothesis on the open core (a 2^k-specific elementary route the general Bourgain argument
+lacks): since μ_{2^k} is closed under squaring, maybe the solution set `sol_k = {u∈μ_n : 1+u∈μ_n}`
+descends under `u↦u²` into the smaller-level set `sol_{k-1}` (μ_{2^{k-1}} = squares), giving an
+elementary recursion `M_k ≲ M_{k-1}` ⟹ `M` provably small. **REFUTED** (`probe_bgk_tower.py`): at
+`k=7, p=65537`, `M_k=9` but `{u² : u∈sol_k} ⊄ sol_{k-1}` — squaring does NOT descend the solution set
+(`(1+u)² = 1+2u+u²` need not have `1+u²∈μ`). So there is no clean tower recursion; the cross-term
+`2u` breaks the descent. (Also: `M=0` for all tested `k` except `k=7`, which is the Fermat prime
+`65537=2^16+1` with special structure.)
+
+**Net:** one more elementary route to `M ≪ √n` closed by a machine countermodel. The squaring/tower
+structure of `μ_{2^k}` does NOT linearize the additive constraint `1+u∈μ` — confirming (yet again)
+that the genuine tool is the Bourgain sum-product estimate, not an elementary 2^k-tower descent. The
+open core stands; no fabrication, hypothesis refuted per the prove-or-refute discipline.
