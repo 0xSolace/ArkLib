@@ -291,6 +291,98 @@ theorem strict_coeffPolys_of_cell {n L : ℕ} {domain : Fin n ↪ F₀}
   rw [decode_eq_surface_map hRirr hwdvd γ (P γ) (hdvdP γ hγ), Polynomial.coeff_map]
   rfl
 
+/-! ## SK2: the Prop-5.5-faithful subset form (pigeonhole over the cells) -/
+
+/-- **The heavy factor cell exists (pigeonhole)**: in any cell decomposition of the good
+set with the degenerate cell bounded by `T < |G|` and `≤ ℓ` factor cells, some factor
+cell carries at least a `1/ℓ` share of the non-degenerate mass. -/
+theorem exists_heavy_factor_cell {Idx : Type} [DecidableEq Idx]
+    (G : Finset F₀) (Index : Finset (Option Idx))
+    (Ecell : Option Idx → Finset F₀) {ℓ T : ℕ}
+    (hIdx : Index.card ≤ ℓ + 1) (hnone : none ∈ Index)
+    (hcover : G ⊆ Index.biUnion Ecell)
+    (hnoneCard : (Ecell none).card ≤ T)
+    (hbig : T < G.card) :
+    ∃ R : Idx, some R ∈ Index ∧ G.card ≤ T + ℓ * (Ecell (some R)).card := by
+  classical
+  set Fac : Finset (Option Idx) := Index.erase none with hFac
+  have hFacCard : Fac.card ≤ ℓ := by
+    have h : Fac.card = Index.card - 1 := by
+      rw [hFac]
+      exact Finset.card_erase_of_mem hnone
+    omega
+  -- the cover bound
+  have hsum : G.card ≤ (Ecell none).card + ∑ ij ∈ Fac, (Ecell ij).card := by
+    calc G.card ≤ (Index.biUnion Ecell).card := Finset.card_le_card hcover
+      _ ≤ ∑ ij ∈ Index, (Ecell ij).card := Finset.card_biUnion_le
+      _ = (Ecell none).card + ∑ ij ∈ Fac, (Ecell ij).card := by
+          rw [hFac, ← Finset.add_sum_erase _ _ hnone]
+  -- the factor cells are nonempty as a family (else |G| ≤ T)
+  have hFacNe : Fac.Nonempty := by
+    by_contra hne
+    rw [Finset.not_nonempty_iff_eq_empty] at hne
+    rw [hne, Finset.sum_empty] at hsum
+    omega
+  -- the maximal factor cell
+  obtain ⟨ij₀, hij₀, hmax⟩ := Finset.exists_max_image Fac (fun ij => (Ecell ij).card) hFacNe
+  have hsum2 : ∑ ij ∈ Fac, (Ecell ij).card ≤ ℓ * (Ecell ij₀).card := by
+    calc ∑ ij ∈ Fac, (Ecell ij).card
+        ≤ ∑ _ij ∈ Fac, (Ecell ij₀).card := Finset.sum_le_sum (fun ij hij => hmax ij hij)
+      _ = Fac.card * (Ecell ij₀).card := by rw [Finset.sum_const, smul_eq_mul]
+      _ ≤ ℓ * (Ecell ij₀).card := Nat.mul_le_mul_right _ hFacCard
+  -- ij₀ is a `some`
+  obtain ⟨hij₀mem, hij₀ne⟩ := Finset.mem_erase.mp hij₀
+  obtain ⟨R, rfl⟩ := Option.ne_none_iff_exists'.mp hij₀mem
+  exact ⟨R, hij₀ne, by omega⟩
+
+/-- **THE PROP-5.5-FAITHFUL SUBSET EXTRACTION (#304, SK2)**: composing the cell pigeonhole
+with the elementary per-cell extraction — in any section-linked cell decomposition of the
+good set, some factor cell of `1/ℓ` mass carries the FULL strict coefficient-polynomial
+family.  This is the exact shape of BCIKS20 Proposition 5.5 (a `≥ |S|/2D_Y`-style subset
+on one curve), with the curve's coefficient polynomials literally the cell surface's
+coefficients. -/
+theorem strict_coeffPolys_of_heavy_cell {n L : ℕ} {domain : Fin n ↪ F₀}
+    {u : WordStack F₀ (Fin L) (Fin n)}
+    (G : Finset F₀)
+    {Idx : Type} [DecidableEq Idx]
+    (Index : Finset (Option Idx)) (Ecell : Option Idx → Finset F₀) (P : F₀ → F₀[X])
+    {ℓ T : ℕ}
+    (hIdx : Index.card ≤ ℓ + 1) (hnone : none ∈ Index)
+    (hcover : G ⊆ Index.biUnion Ecell)
+    (hnoneCard : (Ecell none).card ≤ T)
+    (hbig : T < G.card)
+    -- the per-factor-cell data: the factor, the surface, and the heavy coordinates
+    (Rof : Idx → (F₀[X])[X][Y])
+    (hRirr : ∀ R, some R ∈ Index → Irreducible (Rof R))
+    (hdvdP : ∀ R, some R ∈ Index → ∀ γ ∈ Ecell (some R),
+      (Polynomial.X - Polynomial.C (P γ)) ∣
+        (Rof R).map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)))
+    (wof : Idx → F₀[X][Y]) {Bw k : ℕ} (hLk : L - 1 ≤ k)
+    (hwdvd : ∀ R, some R ∈ Index →
+      (Polynomial.X - Polynomial.C (wof R)) ∣ Rof R)
+    (hB : ∀ R, some R ∈ Index → ∀ i, ((wof R).coeff i).natDegree ≤ Bw)
+    (Tset : Idx → Finset (Fin n))
+    (hT : ∀ R, some R ∈ Index → (wof R).natDegree < (Tset R).card)
+    (Sset : Idx → Fin n → Finset F₀)
+    (hSE : ∀ R, some R ∈ Index → ∀ t ∈ Tset R, Sset R t ⊆ Ecell (some R))
+    (hScard : ∀ R, some R ∈ Index → ∀ t ∈ Tset R, max Bw k < (Sset R t).card)
+    (hagree : ∀ R, some R ∈ Index → ∀ t ∈ Tset R, ∀ z ∈ Sset R t,
+      (P z).eval (domain t) = (foldSectionAt u t).eval z) :
+    ∃ G' : Finset F₀, G.card ≤ T + ℓ * G'.card ∧ G' ⊆ Index.biUnion Ecell ∧
+      ∃ B : ℕ → F₀[X],
+        (∀ j, (B j).natDegree < k + 1) ∧
+        ∀ γ ∈ G', ∀ j, (P γ).coeff j = (B j).eval γ := by
+  classical
+  obtain ⟨R, hR, hRcount⟩ := exists_heavy_factor_cell G Index Ecell hIdx hnone hcover
+    hnoneCard hbig
+  obtain ⟨B, hBdeg, hBmatch⟩ := strict_coeffPolys_of_cell (domain := domain) (u := u)
+    (hRirr R hR) (hwdvd R hR) hLk (hB R hR)
+    (Ecell (some R)) P (hdvdP R hR)
+    (Tset R) (hT R hR) (Sset R) (hSE R hR) (hScard R hR) (hagree R hR)
+  refine ⟨Ecell (some R), hRcount, ?_, B, hBdeg, hBmatch⟩
+  intro γ hγ
+  exact Finset.mem_biUnion.mpr ⟨some R, hR, hγ⟩
+
 end BCIKS20.CurveCellStrictExtraction
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -298,3 +390,5 @@ end BCIKS20.CurveCellStrictExtraction
 #print axioms BCIKS20.CurveCellStrictExtraction.foldSection_eq_of_heavy
 #print axioms BCIKS20.CurveCellStrictExtraction.surface_coeff_natDegree_le
 #print axioms BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_cell
+#print axioms BCIKS20.CurveCellStrictExtraction.exists_heavy_factor_cell
+#print axioms BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_heavy_cell
