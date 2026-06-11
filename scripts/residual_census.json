@@ -3609,7 +3609,7 @@
    "name": "DeepHoleProbResidual",
    "fq_name": "CodingTheory.CS25.DeepHole.DeepHoleProbResidual",
    "file": "ArkLib/ToMathlib/CS25DeepHoleFinish.lean",
-   "line": 262,
+   "line": 264,
    "providers": [
     {
      "name": "CodingTheory.CS25.DeepHole.deepHoleProbResidual_of_jointFar",
@@ -3627,7 +3627,7 @@
      "name": "CodingTheory.CS25.DeepHole.deepHoleProbResidual_holds",
      "kind": "theorem",
      "file": "ArkLib/ToMathlib/CS25JointFar.lean",
-     "line": 203,
+     "line": 205,
      "conditional_on_residuals": [],
      "extra_explicit_binders": [
       "hkS",
