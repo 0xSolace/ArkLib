@@ -82,13 +82,14 @@ theorem localSeries_eq_aPDecoded {x₀ : F} {R : F[X][X][Y]}
     {w : F[X][Y]}
     (hdvd : (Polynomial.X - Polynomial.C w) ∣ R)
     (hbase : (w.eval (Polynomial.C x₀)).eval z = root.1)
-    (hR : R.Separable) :
+    (hsepZ : ((R.map (coeffHom_loc x₀ hHyp)).map
+      (PowerSeries.map (π_hat_z hHyp z root hx))).Separable) :
     localSeries hHyp z root hx = aPDecoded hHyp z root hx w := by
   set g := placeGeometry_of_localSeries hHyp hξ hlc z root hx
     (aPDecoded hHyp z root hx w)
     (Polynomial.dvd_iff_isRoot.mp (aPDecoded_dvd hHyp z root hx hdvd))
     (aPDecoded_cong hHyp z root hx hbase)
-    (specialized_separable_of_R_separable hHyp z root hx hR) with hg
+    hsepZ with hg
   exact ArkLib.IngredientC.specialization_eq_proximate_root_of_hensel
     g.f g.haβ_root g.haP_root g.haβ_cong g.haP_cong g.hderiv
 
@@ -102,11 +103,12 @@ theorem pi_z_aPre_eq_taylor_coeff {x₀ : F} {R : F[X][X][Y]}
     {w : F[X][Y]}
     (hdvd : (Polynomial.X - Polynomial.C w) ∣ R)
     (hbase : (w.eval (Polynomial.C x₀)).eval z = root.1)
-    (hR : R.Separable) (t : ℕ) :
+    (hsepZ : ((R.map (coeffHom_loc x₀ hHyp)).map
+      (PowerSeries.map (π_hat_z hHyp z root hx))).Separable) (t : ℕ) :
     (π_z z root) (BCIKS20.Claim510Supply.aPre H x₀ R hHyp hlc t)
       = ((Polynomial.taylor (Polynomial.C x₀) w).coeff t).eval z := by
   rw [pi_z_aPre_eq_coeff_localSeries hHyp hlc z root hx t,
-    localSeries_eq_aPDecoded hHyp hξ hlc z root hx hdvd hbase hR,
+    localSeries_eq_aPDecoded hHyp hξ hlc z root hx hdvd hbase hsepZ,
     coeff_aPDecoded hHyp z root hx w t]
 
 /-- **The node sum collapses to the decoded surface's value**: with the degree bound
@@ -120,7 +122,8 @@ theorem aPre_sum_eq_decode_eval {x₀ : F} {R : F[X][X][Y]}
     {w : F[X][Y]} {n : ℕ} (hdeg : w.natDegree < n)
     (hdvd : (Polynomial.X - Polynomial.C w) ∣ R)
     (hbase : (w.eval (Polynomial.C x₀)).eval z = root.1)
-    (hR : R.Separable) (e : F) :
+    (hsepZ : ((R.map (coeffHom_loc x₀ hHyp)).map
+      (PowerSeries.map (π_hat_z hHyp z root hx))).Separable) (e : F) :
     ∑ t ∈ Finset.range n,
         (π_z z root) (BCIKS20.Claim510Supply.aPre H x₀ R hHyp hlc t) * e ^ t
       = (w.eval (Polynomial.C e + Polynomial.C x₀)).eval z := by
@@ -129,7 +132,7 @@ theorem aPre_sum_eq_decode_eval {x₀ : F} {R : F[X][X][Y]}
         = (((Polynomial.taylor (Polynomial.C x₀) w).coeff t)
             * (Polynomial.C e) ^ t).eval z := by
     intro t _
-    rw [pi_z_aPre_eq_taylor_coeff hHyp hξ hlc z root hx hdvd hbase hR t,
+    rw [pi_z_aPre_eq_taylor_coeff hHyp hξ hlc z root hx hdvd hbase hsepZ t,
       Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_C]
   rw [Finset.sum_congr rfl hsum, ← Polynomial.eval_finset_sum]
   congr 1
@@ -150,7 +153,9 @@ theorem hagree_of_decoded {x₀ : F} {R : F[X][X][Y]}
     {w : F[X][Y]} (hdeg : w.natDegree < n)
     (hdvd : (Polynomial.X - Polynomial.C w) ∣ R)
     (hbase : ∀ j, ∀ z ∈ matchingSet j, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
-    (hR : R.Separable)
+    (hsepZ : ∀ j, ∀ z ∈ matchingSet j,
+      ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z (root z) (hx z)))).Separable)
     (hfold : ∀ j, ∀ z ∈ matchingSet j,
       (w.eval (Polynomial.C (e j) + Polynomial.C x₀)).eval z = u₀ j + z * u₁ j) :
     ∀ j, ∀ z ∈ matchingSet j, ∃ r : rationalRoot (H_tilde' H) z,
@@ -160,7 +165,7 @@ theorem hagree_of_decoded {x₀ : F} {R : F[X][X][Y]}
   intro j z hz
   refine ⟨root z, ?_⟩
   rw [aPre_sum_eq_decode_eval hHyp hξ hlc z (root z) (hx z) hdeg hdvd
-    (hbase j z hz) hR (e j)]
+    (hbase j z hz) (hsepZ j z hz) (e j)]
   exact hfold j z hz
 
 /-! ## The monic `ξ`-nonvanishing suppliers (free legs) -/
@@ -215,7 +220,7 @@ theorem natDegree_eq_one_of_decoded_fold {x₀ : F} {R : F[X][X][Y]}
     (root : (z : F) → rationalRoot (H_tilde' H) z)
     {w : F[X][Y]} (hdeg : w.natDegree < n)
     (hdvd : (Polynomial.X - Polynomial.C w) ∣ R)
-    (hR : R.Separable)
+    (hR : R.Separable)  -- (truncation lane only; agreement lane takes the SLICED form)
     -- the truncation lane: the §6 discriminant cover with base-point geometry
     {truncSet : Finset F}
     (hbaseT : ∀ z ∈ truncSet, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
@@ -227,6 +232,10 @@ theorem natDegree_eq_one_of_decoded_fold {x₀ : F} {R : F[X][X][Y]}
     (e : Fin n → F) (he : Function.Injective e) (u₀ u₁ : Fin n → F)
     (matchingSet : Fin n → Finset F)
     (hbaseA : ∀ j, ∀ z ∈ matchingSet j, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    (hsepZ : ∀ j, ∀ z ∈ matchingSet j,
+      ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z (root z)
+          (pi_z_xi_ne_zero_of_monic hHyp hmonic.leadingCoeff z (root z))))).Separable)
     (hfold : ∀ j, ∀ z ∈ matchingSet j,
       (w.eval (Polynomial.C (e j) + Polynomial.C x₀)).eval z = u₀ j + z * u₁ j)
     -- the numerics
@@ -247,7 +256,7 @@ theorem natDegree_eq_one_of_decoded_fold {x₀ : F} {R : F[X][X][Y]}
   -- the agreement from Seam B
   have hagree := hagree_of_decoded hHyp hξ hlc e u₀ u₁ matchingSet root
     (fun z => pi_z_xi_ne_zero_of_monic hHyp hlc z (root z))
-    hdeg hdvd hbaseA hR hfold
+    hdeg hdvd hbaseA hsepZ hfold
   -- the weight bound from the kill-budget supply
   have hweight := fun j => BCIKS20.Claim510Supply.weight_killTarget_le H x₀ R hHyp hD hH
     hmonic hd2 hdHD hD_Rx0 hRgrade hξw n (e j) (u₀ j) (u₁ j)
@@ -279,6 +288,10 @@ theorem false_of_decoded_fold_of_two_le {x₀ : F} {R : F[X][X][Y]}
     (e : Fin n → F) (he : Function.Injective e) (u₀ u₁ : Fin n → F)
     (matchingSet : Fin n → Finset F)
     (hbaseA : ∀ j, ∀ z ∈ matchingSet j, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    (hsepZ : ∀ j, ∀ z ∈ matchingSet j,
+      ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z (root z)
+          (pi_z_xi_ne_zero_of_monic hHyp hmonic.leadingCoeff z (root z))))).Separable)
     (hfold : ∀ j, ∀ z ∈ matchingSet j,
       (w.eval (Polynomial.C (e j) + Polynomial.C x₀)).eval z = u₀ j + z * u₁ j)
     {xw : ℕ}
@@ -287,8 +300,8 @@ theorem false_of_decoded_fold_of_two_le {x₀ : F} {R : F[X][X][Y]}
         (Bivariate.natDegreeY R) xw * H.natDegree < (matchingSet j).card) :
     False := by
   have h1 := natDegree_eq_one_of_decoded_fold hHyp hD hH hmonic hd2 hdHD hD_Rx0 hRgrade
-    hrepG root hdeg hdvd hR hbaseT hdisc hcover hbig e he u₀ u₁ matchingSet hbaseA hfold
-    hξw hcard
+    hrepG root hdeg hdvd hR hbaseT hdisc hcover hbig e he u₀ u₁ matchingSet hbaseA hsepZ
+    hfold hξw hcard
   omega
 
 end BCIKS20.Claim510AgreementSupply
