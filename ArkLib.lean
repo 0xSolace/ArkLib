@@ -523,6 +523,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
 import ArkLib.Data.CodingTheory.ProximityGap.CoprimePacketMinpoly
 import ArkLib.Data.CodingTheory.ProximityGap.CosetExactCount
+import ArkLib.Data.CodingTheory.ProximityGap.CosetSplittingFloor
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.CosetRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.CosetVanishingDichotomy
