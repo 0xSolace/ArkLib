@@ -19,6 +19,7 @@ greedy/uncrossing construction of the crossing-orientation must draw on; it also
 brick 21's vertex-degree bound as the `T = {j}` case.)
 
 * `twoCellPartition` — the partition `{T, Tᶜ}` of a proper nonempty subset;
+* `edgeCrosses` / `borderEdges` — named cut-crossing objects;
 * `wpc_border_ge` — **the cut supply**: `k ≤ #{i | eᵢ touches both T and Tᶜ}`.
 -/
 
@@ -27,6 +28,23 @@ open Finset
 namespace AGL24
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/-- A single edge crosses the cut `T` when it touches `T` and is not contained in `T`. -/
+def edgeCrosses (E T : Finset V) : Prop :=
+  (E ∩ T).Nonempty ∧ ¬ E ⊆ T
+
+/-- The edges crossing the cut `T`: they touch `T` and are not contained in `T`. -/
+noncomputable def borderEdges {ι : Type*} [Fintype ι] (e : ι → Finset V)
+    (T : Finset V) : Finset ι := by
+  classical
+  exact Finset.univ.filter (fun i => (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T)
+
+omit [Fintype V] in
+@[simp] theorem mem_borderEdges {ι : Type*} [Fintype ι] (e : ι → Finset V)
+    (T : Finset V) (i : ι) :
+    i ∈ borderEdges e T ↔ edgeCrosses (e i) T := by
+  classical
+  simp [borderEdges, edgeCrosses]
 
 /-- The two-cell partition `{T, univ \ T}` of a proper nonempty subset `T`. -/
 def twoCellPartition (T : Finset V) (hT : T.Nonempty) (hTne : T ≠ Finset.univ) :
@@ -68,10 +86,10 @@ def twoCellPartition (T : Finset V) (hT : T.Nonempty) (hTne : T ≠ Finset.univ)
 /-- **The cut supply** (the necessary side of Frank's orientation theorem): every proper
 nonempty vertex subset of a `k`-weakly-partition-connected family is crossed by at least `k`
 edges. -/
-theorem wpc_border_ge {ι : Type*} [Fintype ι] [DecidableEq ι] {k : ℕ}
+theorem wpc_border_ge {ι : Type*} [Fintype ι] {k : ℕ}
     (e : ι → Finset V) (T : Finset V) (hT : T.Nonempty) (hTne : T ≠ Finset.univ)
     (h : WeaklyPartitionConnected k (Finset.univ : Finset V) e) :
-    k ≤ (Finset.univ.filter (fun i => (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T)).card := by
+    k ≤ (borderEdges e T).card := by
   classical
   have hP := h (twoCellPartition T hT hTne)
   -- The partition has two parts.
@@ -137,10 +155,11 @@ theorem wpc_border_ge {ι : Type*} [Fintype ι] [DecidableEq ι] {k : ℕ}
   _ ≤ ∑ i, ((touchedCells (twoCellPartition T hT hTne) (e i ∩ Finset.univ)).card - 1) := hP
   _ ≤ ∑ i, (if (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T then 1 else 0) :=
       Finset.sum_le_sum fun i _ => hper i
-  _ = (Finset.univ.filter (fun i => (e i ∩ T).Nonempty ∧ ¬ e i ⊆ T)).card := by
-      rw [Finset.card_filter]
+  _ = (borderEdges e T).card := by
+      rw [borderEdges, Finset.card_filter]
 
 end AGL24
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
+#print axioms AGL24.mem_borderEdges
 #print axioms AGL24.wpc_border_ge
