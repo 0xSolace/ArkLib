@@ -230,6 +230,90 @@ theorem exists_heavy_factor_cell_of_given_family {n k m L : ℕ} [NeZero n]
       (Multiset.mem_toFinset.mp hRmem),
     Ecell (some R), hsubG _, hRcount, hRdvd⟩
 
+/-- **Given-family heavy cell + global branch ⇒ strict coefficient-polynomial share.**
+This is the direct SK4-to-SK1 weld: SK4 supplies one heavy factor cell for the given
+decode family `P`; if the selected factor carries the global `branchOfCurveTuple` divisor
+and the selected cell has the fold-agreement mass required by SK1, then that share already
+carries the coefficient-polynomial family demanded by the Prop-5.5/share surface.
+
+The theorem deliberately keeps the branch construction, heavy-coordinate supplier, and
+degenerate-budget producer as hypotheses. -/
+theorem strict_coeffPolys_of_given_family_heavy_global_branch {n k m L : ℕ} [NeZero n]
+    (domain : Fin n ↪ F₀)
+    (u : WordStack F₀ (Fin L) (Fin n)) (δ : ℝ≥0) (T : ℕ)
+    (hk : 0 < k) (hL : 0 < L) (hLk : L - 1 ≤ k)
+    {Q : (RatFunc F₀)[X][Y]} {dd : F₀[X]} {Q₀ : (F₀[X])[X][Y]}
+    (hQ : GuruswamiSudan.Conditions k m (gs_degree_bound k n m)
+      (liftedDomain domain) (curveFold (fun j i => u j i)) Q)
+    (hrep : Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) =
+      Polynomial.C (Polynomial.C (algebraMap F₀[X] (RatFunc F₀) dd)) * Q)
+    (hQ₀0 : Q₀ ≠ 0)
+    (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hbadz : ∀ S : Finset F₀,
+      (∀ z ∈ S, Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0) →
+      S.card ≤ T)
+    (G : Finset F₀) (P : F₀ → F₀[X])
+    (hPdec : ∀ γ ∈ G, ∃ d : McaDecodeCurve domain k δ u γ, d.P = P γ)
+    (hbig : T < G.card)
+    (Tset : (F₀[X])[X][Y] → Finset (Fin n))
+    (hTcard : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      (Tset R).card = k)
+    (hbranch : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      (Polynomial.X - Polynomial.C
+        (branchOfCurveTuple (fun j : Fin L => lagrangeCurveTuple domain u (Tset R) j))) ∣
+          R)
+    (hEbig : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      ∀ E : Finset F₀, E ⊆ G →
+        (∀ γ ∈ E,
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 ∧
+            (Polynomial.X - Polynomial.C (P γ)) ∣
+              R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+        max (L - 1) k < E.card)
+    (hagree : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      ∀ E : Finset F₀, E ⊆ G →
+        (∀ γ ∈ E,
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 ∧
+            (Polynomial.X - Polynomial.C (P γ)) ∣
+              R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+        ∀ t ∈ Tset R, ∀ z ∈ E,
+          (P z).eval (domain t) = (foldSectionAt u t).eval z) :
+    ∃ G' : Finset F₀,
+      G' ⊆ G ∧
+      G.card ≤ T + (UniqueFactorizationMonoid.factors Q₀).toFinset.card * G'.card ∧
+      ∃ B : ℕ → F₀[X],
+        (∀ j, (B j).natDegree < k + 1) ∧
+        ∀ γ ∈ G', ∀ j, (P γ).coeff j = (B j).eval γ := by
+  classical
+  obtain ⟨R, hRmem, hRirr, G', hG'sub, hcount, hRdvd⟩ :=
+    exists_heavy_factor_cell_of_given_family domain u δ T hQ hrep hQ₀0 hkn hm hδ1 hδJ
+      hbadz G P hPdec hbig
+  let w : F₀[X][Y] :=
+    branchOfCurveTuple (fun j : Fin L => lagrangeCurveTuple domain u (Tset R) j)
+  have hwdvd : (Polynomial.X - Polynomial.C w) ∣ R := by
+    simpa [w] using hbranch R hRmem
+  have hB : ∀ i, (w.coeff i).natDegree ≤ L - 1 := by
+    intro i
+    have h := branchOfCurveTuple_coeff_natDegree_lt hL
+      (fun j : Fin L => lagrangeCurveTuple domain u (Tset R) j) i
+    simp [w] at h ⊢
+    omega
+  have hwdeg : w.natDegree < (Tset R).card := by
+    have ha : ∀ j : Fin L,
+        (lagrangeCurveTuple domain u (Tset R) j).natDegree < k := fun j =>
+      lagrangeCurveTuple_natDegree_lt hk domain u (hTcard R hRmem) j
+    have hpHat := branchOfCurveTuple_natDegree_lt hk ha
+    rw [hTcard R hRmem]
+    simpa [w] using hpHat
+  obtain ⟨B, hBdeg, hBmatch⟩ :=
+    BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_cell
+      (domain := domain) (u := u) hRirr hwdvd hLk hB G' P
+      (fun γ hγ => (hRdvd γ hγ).2) (Tset R) hwdeg
+      (fun _t => G') (fun _t _ht => subset_rfl)
+      (fun _t _ht => hEbig R hRmem G' hG'sub hRdvd)
+      (fun t ht z hz => hagree R hRmem G' hG'sub hRdvd t ht z hz)
+  exact ⟨G', hG'sub, hcount, B, hBdeg, hBmatch⟩
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -239,3 +323,5 @@ open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
 #print axioms exists_heavy_factor_cell_mem
 open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
 #print axioms exists_heavy_factor_cell_of_given_family
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
+#print axioms strict_coeffPolys_of_given_family_heavy_global_branch
