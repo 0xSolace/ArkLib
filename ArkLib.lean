@@ -717,6 +717,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26AsymptoticCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26BadLineConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26EntropyForm
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldQuotientStack
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldTransport
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26PolyFieldCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26StratifiedSpread
