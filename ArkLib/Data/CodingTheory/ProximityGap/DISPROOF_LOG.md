@@ -6175,3 +6175,20 @@ Assembly of the profile law (O147) with the in-tree census-size certificates:
   whose 1/log n came from the prime-threshold coupling, not from the census itself. If the
   true counts collapse at large p below 2^128, δ* recedes toward the floor accordingly. The
   prize question, under the profile law, IS this count.
+
+### O148 — THE TAKE-OVER ROW IS COMPLETELY PINNED: census = 16 = n at EVERY prime, zero surplus (2026-06-11, #357)
+
+`probe_o148_takeover_row_pinned.py` (exact). Completing O147: surplus at the take-over
+row ((X⁹,X⁸) @ a = 7, (16,4)) can only occur at primes dividing a band-minor cyclotomic
+norm; the candidate set is `{17, 97, 113, 193, 241, 257, 337, 353, 401, 433, 449, 577,
+641, 977, 1489, 6833}` (16 primes, max 6833; float-embedded norms — exact-integer
+recomputation is the named follow-up). Per-prime verification at **all 16 candidates**
+plus clean controls (1009, 1361): pinned census = **16 = n and line-subsets = 16 at every
+single prime**. The rank-match never completes — the surplus layer of this row is EMPTY.
+
+**Net law: `census_MCA((X⁹,X⁸) @ a=7, p) = n` for every prime `p ≡ 1 (mod 16)`** — one
+rotation orbit of `−ζ⁴` (O147), no exceptions, no exceptional primes. The strongest and
+cleanest flat-numerator law in the programme; with `census_le_epsMCA` it gives
+`ε_mca ≥ n/p` at `δ = 9/16` (mid-window!) for every field — and under the corrected
+(excess) extremality it is exact there. The take-over family is rigid in the strongest
+sense: its MCA badness is a single characteristic-zero orbit, invisible to field choice.
