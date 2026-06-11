@@ -210,6 +210,94 @@ theorem stirSwitchProver_sendMessage (M : ℕ) (deg : ℕ)
       ⟨Vector.cast (stirMultiVSpec_length_msg i)
         (packFiniteFunction ι (fun _ : ι => (0 : F))), ()⟩ := rfl
 
+/-- The all-zero message family (what the switch prover commits at every round). -/
+noncomputable def zeroMsgs (M : ℕ) :
+    ∀ j, ((stirMultiVSpec M ι).toProtocolSpec F).Message j :=
+  fun j => Vector.cast (stirMultiVSpec_length_msg j)
+    (packFiniteFunction ι (fun _ : ι => (0 : F)))
+
+/-- Every oracle answer of the all-zero messages is `0`. -/
+theorem msgAns_zeroMsgs (M : ℕ)
+    (j : ((stirMultiVSpec M ι).toProtocolSpec F).MessageIdx)
+    (k : Fin ((stirMultiVSpec M ι).length j.1)) :
+    msgAns (zeroMsgs M) j k = 0 := by
+  unfold msgAns zeroMsgs
+  rw [answer_honest_pack]
+
+open scoped Classical in
+/-- **The switch-prover acceptance characterization (Boolean level)**: against the all-zero
+messages, the checking verifier's decision reduces to the single round-2 binding check
+`f (queryPoint φ r₂) = 0` — every consistency check compares `0 = 0`, and the final message
+IS the zero codeword. -/
+theorem checkingBool_zeroMsgs_iff (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
+    (oStmt : ∀ i, OracleStatement ι F i)
+    (chals : ((stirMultiVSpec M ι).toProtocolSpec F).Challenges) :
+    checkingBool M φ deg oStmt (zeroMsgs M) chals = true ↔
+      oStmt () (queryPoint φ (chalFE chals (outChalIdx M 0))) = 0 := by
+  unfold checkingBool
+  simp only [Bool.and_eq_true, decide_eq_true_eq, List.all_eq_true, List.mem_map]
+  constructor
+  · rintro ⟨⟨hbind, -⟩, -⟩
+    rw [show inputAns oStmt (queryPoint φ (chalFE chals (outChalIdx M 0)))
+        = oStmt () (queryPoint φ (chalFE chals (outChalIdx M 0))) from rfl,
+      msgAns_zeroMsgs] at hbind
+    exact hbind
+  · intro hf
+    refine ⟨⟨?_, ?_⟩, ?_⟩
+    · rw [show inputAns oStmt (queryPoint φ (chalFE chals (outChalIdx M 0)))
+        = oStmt () (queryPoint φ (chalFE chals (outChalIdx M 0))) from rfl,
+        msgAns_zeroMsgs]
+      exact hf
+    · rintro b ⟨j, -, rfl⟩
+      simp only [msgAns_zeroMsgs, Bool.and_eq_true, decide_eq_true_eq, and_self]
+    · have hzero : (fun x : ι =>
+          (((List.finRange (Fintype.card ι)).map (fun k =>
+            msgAns (zeroMsgs M) (msgIdx M (Fin.last M))
+              (Fin.cast (stirMultiVSpec_length_msg (msgIdx M (Fin.last M))) k))).getD
+            ((Fintype.equivFin ι x : Fin (Fintype.card ι)) : ℕ) 0)) = fun _ => (0 : F) := by
+        funext x
+        rw [List.getD_eq_getElem _ _ (by
+          simp only [List.length_map, List.length_finRange]
+          exact (Fintype.equivFin ι x).isLt)]
+        rw [List.getElem_map, msgAns_zeroMsgs]
+      rw [hzero]
+      exact Submodule.zero_mem _
+
+open TightnessCore in
+open scoped Classical in
+/-- **THE COUNTING FENCE**: on the far word of `exists_far_word_at_exact_distance` (or any
+word vanishing on all off-image query points with `≤ D` nonzero positions), the all-zero
+strategy is accepted at `≥ |F| − D` of the `|F|` round-2 challenge values — the Boolean-level
+content of the switch-prover attack.  The probability-game lift (every valid rbr budget
+family has `Σᵢ εᵢ ≥ 1 − D/|F|`) additionally needs the generic rbr→soundness union-bound
+chain rule, which is NOT yet in-tree; this counting core is the unconditional part. -/
+theorem accept_count_ge_of_far_word (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
+    [DecidableEq ι]
+    (oStmt : ∀ i, OracleStatement ι F i)
+    (hoff : ∀ r : F, r ∉ Set.range φ → oStmt () (queryPoint φ r) = 0)
+    (chalsOf : F → ((stirMultiVSpec M ι).toProtocolSpec F).Challenges)
+    (hchalsOf : ∀ r, chalFE (chalsOf r) (outChalIdx M 0) = r) :
+    Fintype.card F
+        - (Finset.univ.filter (fun x : ι => ¬ oStmt () x = 0)).card
+      ≤ (Finset.univ.filter (fun r : F =>
+          checkingBool M φ deg oStmt (zeroMsgs M) (chalsOf r) = true)).card := by
+  have hiff : ∀ r : F,
+      (checkingBool M φ deg oStmt (zeroMsgs M) (chalsOf r) = true) ↔
+        oStmt () (queryPoint φ r) = (fun _ : ι => (0 : F)) (queryPoint φ r) := by
+    intro r
+    rw [checkingBool_zeroMsgs_iff, hchalsOf]
+  have hcount := pass_count_ge φ (oStmt ()) (fun _ => (0 : F))
+    (fun r hr => hoff r hr)
+  calc Fintype.card F - (Finset.univ.filter (fun x : ι => ¬ oStmt () x = 0)).card
+      = Fintype.card F
+          - (Finset.univ.filter (fun x : ι => ¬ oStmt () x = (fun _ : ι => (0:F)) x)).card := rfl
+    _ ≤ (Finset.univ.filter (fun r : F =>
+          oStmt () (queryPoint φ r) = (fun _ : ι => (0 : F)) (queryPoint φ r))).card := hcount
+    _ = (Finset.univ.filter (fun r : F =>
+          checkingBool M φ deg oStmt (zeroMsgs M) (chalsOf r) = true)).card := by
+        apply Finset.card_nbij' id id <;> intro r hr <;>
+          simp_all [Finset.mem_filter, hiff]
+
 end SwitchProver
 
 end TightnessCore
@@ -224,3 +312,5 @@ end StirIOP
 #print axioms StirIOP.MultiRound.TightnessCore.off_image_queryPoint_const
 #print axioms StirIOP.MultiRound.TightnessCore.exists_far_word_at_exact_distance
 #print axioms StirIOP.MultiRound.TightnessCore.stirSwitchProver
+#print axioms StirIOP.MultiRound.TightnessCore.checkingBool_zeroMsgs_iff
+#print axioms StirIOP.MultiRound.TightnessCore.accept_count_ge_of_far_word
