@@ -116,7 +116,7 @@ lemma pi_z_wSection {z : F} (root : rationalRoot (H_tilde' H) z) (a b : F) :
     π_z z root (wSection H a b) = a + z * b := by
   unfold wSection
   rw [π_z_mk, Polynomial.evalEval_C]
-  simp [mul_comm]
+  simp only [Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_X, Polynomial.eval_C]
 
 /-- The section has weight `≤ 1` (`Y`-degree `0`, ground degree `≤ 1`). -/
 lemma weight_wSection_le {D : ℕ} (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree)
