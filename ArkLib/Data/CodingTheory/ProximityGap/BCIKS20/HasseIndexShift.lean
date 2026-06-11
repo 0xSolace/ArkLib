@@ -160,6 +160,121 @@ theorem hasseCoeffRepr𝒪_weight_le_of_shape
         = hasseCoeffRepr𝒪 H x₀ R i1 m)) ?_
   exact weight_Λ_le_of_shape hDY hsupp hshape hDQ
 
+/-! ## The three-layer shape supplier (finding 9): the per-cell B-budget value -/
+
+/-- **Constant-evaluation degree bound:** evaluating the middle `X`-layer at the constant
+`C x₀` keeps the inner degree within the shape budget: if `deg (q.coeff i) ≤ B − i` for
+all `i`, then `deg (q.eval (C x₀)) ≤ B`. -/
+theorem eval_constX_natDegree_le_of_shape {x₀ : F} {q : Polynomial (Polynomial F)} {B : ℕ}
+    (hshape : ∀ i, (q.coeff i).natDegree ≤ B - i) :
+    (q.eval (Polynomial.C x₀)).natDegree ≤ B := by
+  rw [Polynomial.eval_eq_sum_range]
+  refine Polynomial.natDegree_sum_le_of_forall_le _ _ ?_
+  intro i _
+  refine le_trans (Polynomial.natDegree_mul_le) ?_
+  have h1 : ((Polynomial.C x₀ : Polynomial F) ^ i).natDegree = 0 := by
+    rw [Polynomial.natDegree_pow, Polynomial.natDegree_C]
+    ring
+  rw [h1]
+  have h2 := hshape i
+  omega
+
+/-- **The composed three-layer shape drop** (finding 9): if `R`'s trivariate coefficients
+satisfy the total-degree shape `deg_Z ((R.coeff n).coeff i) ≤ D_R − n − i`, then the
+specialized iterated Hasse polynomial — exactly the `hasseCoeffRepr` payload of the
+`(i1, λ)` cell with `m = σ(λ)` — satisfies
+`deg_Z ((evalX (C x₀) (Δ_X^{i1} Δ_Y^{m} R)).coeff n) ≤ (D_R − m − i1) − n`: the budget
+drops by `m + i1` through the two Hasse shifts, and the constant evaluation collapses the
+`X`-layer within budget. -/
+theorem specializedHasse_coeff_natDegree_le_of_total {x₀ : F} {R : F[X][X][Y]} {DR : ℕ}
+    (htotal : ∀ n i, ((R.coeff n).coeff i).natDegree ≤ DR - n - i)
+    (i1 m n : ℕ) :
+    ((Polynomial.Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX i1 (hasseDerivY m R))).coeff n).natDegree
+      ≤ (DR - m - i1) - n := by
+  have hcomm : (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+      (hasseDerivX i1 (hasseDerivY m R))).coeff n
+      = Polynomial.eval (Polynomial.C x₀) ((hasseDerivX i1 (hasseDerivY m R)).coeff n) := by
+    rw [Polynomial.Bivariate.evalX_eq_map, Polynomial.coeff_map]
+    rfl
+  rw [hcomm, hasseDerivX_coeff]
+  refine eval_constX_natDegree_le_of_shape ?_
+  intro i
+  -- the `X`-layer Hasse shift drops the budget by `i1`
+  rw [Polynomial.hasseDeriv_coeff]
+  refine le_trans (Polynomial.natDegree_mul_le) ?_
+  have hc1 : ((((i + i1).choose i1 : ℕ) : Polynomial F)).natDegree = 0 :=
+    Polynomial.natDegree_natCast _
+  -- the `Y`-layer Hasse shift drops the budget by `m` (binomial scalar is degree-free)
+  have hc2 : (((hasseDerivY m R).coeff n).coeff (i + i1)).natDegree
+      ≤ ((R.coeff (n + m)).coeff (i + i1)).natDegree := by
+    rw [hasseDerivY_coeff, ← nsmul_eq_mul, Polynomial.coeff_smul]
+    exact Polynomial.natDegree_smul_le _ _
+  have hc3 := htotal (n + m) (i + i1)
+  omega
+
+/-- **The vanishing tail of the specialized Hasse polynomial:** if `R`'s trivariate
+monomials vanish beyond total budget `D_R`, every `Y`-coefficient of
+`evalX (C x₀) (Δ_X^{i1} Δ_Y^{m} R)` beyond index `D_R − m − i1` is zero — the support
+genuinely lives inside the dropped budget (the `hDQ` input of item (d)). -/
+theorem specializedHasse_coeff_eq_zero_of_vanish {x₀ : F} {R : F[X][X][Y]} {DR : ℕ}
+    (hvanish : ∀ n i, DR < n + i → ((R.coeff n).coeff i) = 0)
+    (i1 m : ℕ) {n : ℕ} (hn : DR - m - i1 < n) :
+    (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX i1 (hasseDerivY m R))).coeff n = 0 := by
+  have hcomm : (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+      (hasseDerivX i1 (hasseDerivY m R))).coeff n
+      = Polynomial.eval (Polynomial.C x₀) ((hasseDerivX i1 (hasseDerivY m R)).coeff n) := by
+    rw [Polynomial.Bivariate.evalX_eq_map, Polynomial.coeff_map]
+    rfl
+  rw [hcomm, hasseDerivX_coeff]
+  have hz : Polynomial.hasseDeriv i1 ((hasseDerivY m R).coeff n) = 0 := by
+    refine Polynomial.ext fun i => ?_
+    have hinner : ((hasseDerivY m R).coeff n).coeff (i + i1) = 0 := by
+      rw [hasseDerivY_coeff, ← nsmul_eq_mul, Polynomial.coeff_smul,
+        hvanish (n + m) (i + i1) (by omega), smul_zero]
+    rw [Polynomial.hasseDeriv_coeff, hinner, mul_zero, Polynomial.coeff_zero]
+  rw [hz, Polynomial.eval_zero]
+
+/-- **The per-cell B-budget VALUE** (finding 9's `nB`, fully composed): under the
+total-degree shape and vanishing of `R` at budget `D_R`, the iterated Hasse coefficient
+representative of the `(i1, λ)` cell (with `m = σ(λ)`) satisfies
+
+`Λ_𝒪(hasseCoeffRepr𝒪 x₀ R i1 m) ≤ (D_R − m − i1) + (d_{R,Y} − m) · (D − d_H)`,
+
+composing the proven item (d) with the three-layer shape drop, the vanishing tail, and
+the in-tree `Y`-cap. This is the concrete `nB` the capstone's `hbudget` hypothesis
+consumes for every cell. -/
+theorem hasseCoeffRepr𝒪_weight_le_of_total
+    {H : F[X][Y]} (hH : 0 < H.natDegree) {D : ℕ}
+    (hD : Polynomial.Bivariate.totalDegree H ≤ D)
+    (hDY : Polynomial.Bivariate.natDegreeY H ≤ D)
+    (x₀ : F) (R : F[X][X][Y]) {DR : ℕ}
+    (htotal : ∀ n i, ((R.coeff n).coeff i).natDegree ≤ DR - n - i)
+    (hvanish : ∀ n i, DR < n + i → ((R.coeff n).coeff i) = 0)
+    (i1 m : ℕ) :
+    weight_Λ_over_𝒪 hH (hasseCoeffRepr𝒪 H x₀ R i1 m) D
+      ≤ WithBot.some ((DR - m - i1)
+          + (Polynomial.Bivariate.natDegreeY R - m)
+            * (D - Polynomial.Bivariate.natDegreeY H)) := by
+  refine hasseCoeffRepr𝒪_weight_le_of_shape hH hD hDY x₀ R i1 m ?_ ?_ ?_
+  · -- the support cap `dT = d_{R,Y} − m` via the in-tree `Y`-cap
+    intro j hj
+    have h1 : j ≤ (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX i1 (hasseDerivY m R))).natDegree :=
+      Polynomial.le_natDegree_of_mem_supp j hj
+    have h2 := hasseCoeffRepr𝒪_natDegreeY_le x₀ R i1 m
+    exact le_trans h1 h2
+  · -- the three-layer shape drop supplies `DQ = D_R − m − i1`
+    intro j _
+    exact specializedHasse_coeff_natDegree_le_of_total htotal i1 m j
+  · -- the vanishing tail supplies the support-within-budget cap
+    intro j hj
+    by_contra hcon
+    push_neg at hcon
+    exact (Polynomial.mem_support_iff.mp hj)
+      (specializedHasse_coeff_eq_zero_of_vanish hvanish i1 m (by omega))
+
 /-! ## Source audit -/
 
 #print axioms hasseDerivY_coeff
