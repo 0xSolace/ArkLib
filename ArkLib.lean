@@ -41,7 +41,6 @@ import ArkLib.Data.Classes.Slice
 import ArkLib.Data.CodingTheory.AGL24AgreementHypergraph
 import ArkLib.Data.CodingTheory.AGL24DeterministicChain
 import ArkLib.Data.CodingTheory.AGL24KernelVector
-import ArkLib.Data.CodingTheory.AGL24ListDecodingBridge
 import ArkLib.Data.CodingTheory.AGL24ReducedIntersectionMatrix
 import ArkLib.Data.CodingTheory.AGL24SubfamilyTransport
 import ArkLib.Data.CodingTheory.AGL24UnionBound
@@ -719,6 +718,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26AsymptoticCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26BadLineConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26EntropyForm
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26ParsevalThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26PolyFieldCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26StratifiedSpread
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26SumsOfRootsOfUnity
@@ -1307,7 +1307,6 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516TimePFals
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58CacheProvenance
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Correspondence
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58EagerFalse
-import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Extraction
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Flag
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Freshness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.LiftCoherence
@@ -1638,6 +1637,7 @@ import ArkLib.ProofSystem.Spartan.TightRLCKernel
 import ArkLib.ProofSystem.Spartan.TightSeamBridge
 import ArkLib.ProofSystem.Spartan.TightSecondBinding
 import ArkLib.ProofSystem.Spartan.TightSecondCompleteness
+import ArkLib.ProofSystem.Spartan.TightTerminalToValueRel
 import ArkLib.ProofSystem.Spartan.ZeroCheckComplete
 import ArkLib.ProofSystem.Stir.BlockCompleteness
 import ArkLib.ProofSystem.Stir.BlockRbrBudgets
