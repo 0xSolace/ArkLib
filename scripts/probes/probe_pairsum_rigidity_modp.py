@@ -110,4 +110,61 @@ for k in (2, 3, 4):
 # V1 + sharpness. thresholds: n=8 -> 4^4 = 256; n=16 -> 4^8 = 65536.
 run_spectrum(3, 2000, 256)
 run_spectrum(4, 66000, 65536)
+
+# V4: THE SHARP SPECTRUM LAW (pair_sum_collision_dvd_resultant): every violating prime
+# divides the nonzero integer resultant Res(R_tuple, Phi_{2^k}), Phi_{2^k} = X^h + 1.
+def resultant(f, g):
+    """Exact integer resultant via fraction-free Bareiss on the Sylvester matrix.
+    f, g: coefficient lists, low degree first."""
+    while f and f[-1] == 0:
+        f = f[:-1]
+    while g and g[-1] == 0:
+        g = g[:-1]
+    m, n = len(f) - 1, len(g) - 1
+    N = m + n
+    M = [[0] * N for _ in range(N)]
+    for r in range(n):
+        for c, a in enumerate(reversed(f)):
+            M[r][r + c] = a
+    for r in range(m):
+        for c, a in enumerate(reversed(g)):
+            M[n + r][r + c] = a
+    # Bareiss
+    sign, prev = 1, 1
+    for c in range(N - 1):
+        piv = next((r for r in range(c, N) if M[r][c] != 0), None)
+        if piv is None:
+            return 0
+        if piv != c:
+            M[c], M[piv] = M[piv], M[c]
+            sign = -sign
+        for r in range(c + 1, N):
+            for cc in range(c + 1, N):
+                M[r][cc] = (M[r][cc] * M[c][c] - M[r][c] * M[c][cc]) // prev
+            M[r][c] = 0
+        prev = M[c][c]
+    return sign * M[N - 1][N - 1]
+
+def check_sharp_spectrum(k, pmax):
+    n = 1 << k
+    h = n // 2
+    phi = [1] + [0] * (h - 1) + [1]          # X^h + 1
+    hits = 0
+    for p in range(n + 1, pmax):
+        if not isprime(p) or (p - 1) % n != 0:
+            continue
+        v = violations_at_prime(p, n)
+        if not v:
+            continue
+        for (a, b, s) in v:
+            R = list(fold_poly(n, a[0], a[1], b[0], b[1]))
+            res = resultant(R, phi)
+            assert res != 0, (p, a, b)
+            assert res % p == 0, (p, a, b, res)
+            hits += 1
+    print(f"n={n}: V4 PASS — all {hits} violations divide their nonzero "
+          f"Res(R, X^{h}+1)")
+
+check_sharp_spectrum(3, 300)
+check_sharp_spectrum(4, 400)
 print("ALL PASS")

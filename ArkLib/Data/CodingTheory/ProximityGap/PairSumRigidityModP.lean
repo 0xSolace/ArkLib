@@ -323,6 +323,106 @@ theorem pair_sums_ne_modp {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : 1 ≤ k)
   fun hsum =>
     hne (pair_sum_rigidity_modp hk hg hi hj hi' hj' hij hij' hnaij hp hsum)
 
+/-! ## The sharp spectrum law: violating primes divide the collision resultant
+
+The uniform threshold `4^(2^(k−1))` is crude; the *true* violation spectrum is governed by
+cyclotomic norms: any prime exhibiting a collision divides the **nonzero** integer
+resultant `Res(pairSumFolded, Φ_{2^k})` — so the violating primes at each scale form an
+explicit finite set, and `p ∤ Res` is a per-instance criterion valid at **every** `p > 4`
+(no size threshold). Probe V4 verifies both halves on every measured violation
+(n = 8: 8 violations at p = 17; n = 16: 448 violations at {17, 97, 113, 257, 337}). -/
+
+open ArkLib.ProximityGap.ResultantLiftLoop52
+
+/-- Each fold indicator has absolute value at most `1`. -/
+theorem natAbs_ind_le_one (k a t : ℕ) : (ind k a t).natAbs ≤ 1 := by
+  unfold ind
+  split <;> split <;> simp
+
+/-- Every coefficient of the folded relation has absolute value at most `4`. -/
+theorem natAbs_coeff_pairSumFolded_le (k i j i' j' t : ℕ) :
+    ((pairSumFolded k i j i' j').coeff t).natAbs ≤ 4 := by
+  rw [pairSumFolded_coeff]
+  split
+  · unfold foldCoeff
+    calc (ind k i t + ind k j t - ind k i' t - ind k j' t).natAbs
+        ≤ (ind k i t + ind k j t - ind k i' t).natAbs + (ind k j' t).natAbs :=
+          Int.natAbs_sub_le _ _
+      _ ≤ ((ind k i t + ind k j t).natAbs + (ind k i' t).natAbs)
+          + (ind k j' t).natAbs := by
+          gcongr
+          exact Int.natAbs_sub_le _ _
+      _ ≤ (((ind k i t).natAbs + (ind k j t).natAbs) + (ind k i' t).natAbs)
+          + (ind k j' t).natAbs := by
+          gcongr
+          exact Int.natAbs_add_le _ _
+      _ ≤ ((1 + 1) + 1) + 1 :=
+          add_le_add (add_le_add (add_le_add (natAbs_ind_le_one k i t)
+            (natAbs_ind_le_one k j t)) (natAbs_ind_le_one k i' t))
+            (natAbs_ind_le_one k j' t)
+  · simp
+
+/-- The leading coefficient of a nonzero folded relation survives mod any prime `p > 4`. -/
+theorem leadingCoeff_pairSumFolded_ne_zero_mod {p : ℕ} [Fact p.Prime] (hp4 : 4 < p)
+    {k i j i' j' : ℕ} (hR0 : pairSumFolded k i j i' j' ≠ 0) :
+    (((pairSumFolded k i j i' j').leadingCoeff : ℤ) : ZMod p) ≠ 0 := by
+  intro h0
+  rw [ZMod.intCast_zmod_eq_zero_iff_dvd] at h0
+  have hlc0 : (pairSumFolded k i j i' j').leadingCoeff ≠ 0 :=
+    Polynomial.leadingCoeff_ne_zero.mpr hR0
+  have hdvd : p ∣ ((pairSumFolded k i j i' j').leadingCoeff).natAbs := by
+    have := Int.natAbs_dvd_natAbs.mpr h0
+    simpa using this
+  have hle : p ≤ ((pairSumFolded k i j i' j').leadingCoeff).natAbs :=
+    Nat.le_of_dvd (Int.natAbs_pos.mpr hlc0) hdvd
+  have hb := natAbs_coeff_pairSumFolded_le k i j i' j'
+    (pairSumFolded k i j i' j').natDegree
+  rw [Polynomial.coeff_natDegree] at hb
+  omega
+
+/-- **THE SHARP SPECTRUM LAW.** A mod-`p` pair-sum collision not forced in characteristic
+zero makes `p` a divisor of the **nonzero** integer resultant
+`Res(pairSumFolded, Φ_{2^k})`: the violating primes at each scale are exactly contained in
+an explicit finite set of cyclotomic-norm divisors (O141-species), with no size threshold
+beyond `p > 4`. -/
+theorem pair_sum_collision_dvd_resultant {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : 1 ≤ k)
+    {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ k)) {i j i' j' : ℕ}
+    (hi : i < 2 ^ k) (hj : j < 2 ^ k) (hi' : i' < 2 ^ k) (hj' : j' < 2 ^ k)
+    (hij : i ≠ j) (hij' : i' ≠ j') (hnaij : j ≠ (i + 2 ^ (k - 1)) % 2 ^ k)
+    (hp4 : 4 < p)
+    (hne : ¬ ((i = i' ∧ j = j') ∨ (i = j' ∧ j = i')))
+    (hsum : g ^ i + g ^ j = g ^ i' + g ^ j') :
+    (p : ℤ) ∣ Polynomial.resultant (pairSumFolded k i j i' j') (cyclotomic (2 ^ k) ℤ)
+      ∧ Polynomial.resultant (pairSumFolded k i j i' j') (cyclotomic (2 ^ k) ℤ) ≠ 0 := by
+  have hR0 : pairSumFolded k i j i' j' ≠ 0 :=
+    pairSumFolded_ne_zero hk hi hj hi' hj' hij hij' hnaij hne
+  refine ⟨?_, resultant_int_ne_zero_of_isCoprime_rat _ _
+    (diff_coprime_cyclotomic_rat hk _ (pairSumFolded_natDegree_lt k i j i' j') hR0)⟩
+  apply prime_dvd_resultant_of_common_root (α := g)
+  · exact leadingCoeff_pairSumFolded_ne_zero_mod hp4 hR0
+  · rw [(cyclotomic.monic (2 ^ k) ℤ).leadingCoeff]
+    simp
+  · unfold Polynomial.IsRoot
+    rw [pairSumFolded_eval hk hg hi hj hi' hj']
+    linear_combination hsum
+  · rw [Polynomial.map_cyclotomic_int]
+    exact hg.isRoot_cyclotomic (by positivity)
+
+/-- **The per-instance sharp criterion**: at any prime `p > 4` with `p ∤ Res`, distinct
+non-antipodal pairs have distinct sums — the threshold-free replacement of
+`pair_sums_ne_modp`, decidable per scale by one integer-resultant computation. -/
+theorem pair_sums_ne_of_not_dvd_resultant {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : 1 ≤ k)
+    {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ k)) {i j i' j' : ℕ}
+    (hi : i < 2 ^ k) (hj : j < 2 ^ k) (hi' : i' < 2 ^ k) (hj' : j' < 2 ^ k)
+    (hij : i ≠ j) (hij' : i' ≠ j') (hnaij : j ≠ (i + 2 ^ (k - 1)) % 2 ^ k)
+    (hp4 : 4 < p)
+    (hnd : ¬ (p : ℤ) ∣ Polynomial.resultant (pairSumFolded k i j i' j')
+      (cyclotomic (2 ^ k) ℤ))
+    (hne : ¬ ((i = i' ∧ j = j') ∨ (i = j' ∧ j = i'))) :
+    g ^ i + g ^ j ≠ g ^ i' + g ^ j' :=
+  fun hsum => hnd (pair_sum_collision_dvd_resultant hk hg hi hj hi' hj' hij hij'
+    hnaij hp4 hne hsum).1
+
 /-! ## Source audit -/
 
 #print axioms pairSumFolded_eval
@@ -330,5 +430,7 @@ theorem pair_sums_ne_modp {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : 1 ≤ k)
 #print axioms pairSumFolded_ne_zero
 #print axioms pair_sum_rigidity_modp
 #print axioms pair_sums_ne_modp
+#print axioms pair_sum_collision_dvd_resultant
+#print axioms pair_sums_ne_of_not_dvd_resultant
 
 end ArkLib.ProximityGap.PairSumRigidityModP
