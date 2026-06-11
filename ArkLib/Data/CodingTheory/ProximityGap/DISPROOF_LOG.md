@@ -6977,3 +6977,36 @@ not `(D+1−d_H)`) is the SHARP one and closes i1 ≥ 1.** Audit details:
   `i1 + δ − 1 = 0` at i1 = 0 is paired with the untwisted B, the paper-vs-tree term
   normalization differs by exactly one W and the in-tree per-term TARGET may differ
   accordingly — audit `βHensel_succ` against (A.1) at i1 = 0 specifically).
+
+**O154 V1 dive, finding 12 (T-b audit + a critical anchor catch) — the tight anchor
+`D ≤ d_H + degW` is INFEASIBLE for the monisized `H̃` (its coefficients carry Z-content:
+`totalDegree H̃ ≫ d_H̃`), so the monic route MUST use the rebased frame
+(`structured_weight_collapse_rebased`, proven for exactly this); and in BOTH frames the
+i1 = 0 budget remains the one open node, now characterized to its root.** The audit:
+
+* `βHensel_succ` (read verbatim): the tree's recursion carries the UNTWISTED `B_coeff`
+  with the `W^{i1+δ−1}` prefactor — at `i1 = 0` the prefactor is `W⁰` and the paper's
+  δ-saving must live in the B-form, which the untwisted tree object does not carry.
+* **Anchor catch (new):** `βHensel_weight_bound_zero_structured`'s hypothesis
+  `D ≤ d_H + degW` requires `D ≤ d_H` for monic `H` — but `D ≥ totalDegree H̃ > d_H̃`
+  for the monisized polynomial (W-twisted coefficients have Z-content). The
+  tight-anchor base case CANNOT be instantiated at `H̃`; the rebased base
+  (`Λ(β₀) = D+1−d_H` exactly, finding 1) with the rebased collapse (proven) is the
+  correct monic-route pair. The base-case lemma needs its rebased variant stated
+  (one-line proof from the same rep computation).
+* **The per-monomial sup is tight at the top** (computed): the shape bound at `j = dT`
+  is exactly `DQ − dT`, and the weight `DQ + j·w` is increasing in `j`, so the sup IS
+  `DQ + dT·w` — the W-divisibility of the top coefficient cannot reduce the untwisted
+  sup (it bounds `deg c_top` from BELOW). The saving is genuinely and only a property
+  of the twisted clearing (`A·W^{d−δ−Σλ}`-form), confirming finding 11.
+* **The i1 = 0 node, at its root:** EITHER the per-term target at `i1 = 0` differs from
+  the engine's uniform target by one `Λ_W` (if the tree's normalization is audited
+  against the lift identity and found to carry the missing `W` on the TARGET side — the
+  monic lift identity is proven, so this audit is mechanical for monic), OR the twisted
+  `_cleared` form must replace `B_coeff` at `i1 = 0` in the recursion's weight pass
+  (its embedding identity is proven; its Λ-bound is one new lemma). Both are bounded
+  tasks; the first is a `#check`-level comparison of proven identities.
+
+Net state: the per-term wall is a theorem for ALL cells except `i1 = 0`, whose resolution
+is one identity-comparison plus possibly one Λ-bound — with every surrounding object
+(embedding identities, rep computations, collapse variants) already proven.
