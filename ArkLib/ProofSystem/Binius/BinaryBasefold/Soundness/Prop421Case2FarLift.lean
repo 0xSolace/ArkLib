@@ -466,7 +466,7 @@ lemma hammingDist_le_pair_fiberwiseDistance_mul_two_pow_steps
       simpa [fiberSet] using h
   exact hNat
 
-lemma pairUDRClose_of_pairFiberwiseClose
+lemma pairUDRClose_of_pairFiberwiseClose_farLift
     (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
@@ -631,7 +631,7 @@ lemma fiberwiseClose_of_jointProximityNat
       h_destIdx h_destIdx_le f_i g := by
     unfold pair_fiberwiseClose
     omega
-  have hpair_udr := pairUDRClose_of_pairFiberwiseClose 𝔽q β
+  have hpair_udr := pairUDRClose_of_pairFiberwiseClose_farLift 𝔽q β
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
     (steps := steps) h_destIdx h_destIdx_le (f := f_i) (g := g)
     (h_fw_dist_lt := hpair_close)

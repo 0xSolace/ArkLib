@@ -24,14 +24,18 @@ the near-capacity list-decoding target.  Here we:
   `≤ listBound`.
 * `randomRSBadDomainEvent` — its negation, the **bad-domain** event whose probability AGL24 bounds.
 * `randomRSBadDomainProbability` — `Pr[bad-domain]` under `uniformSizeSubsetOfLe`.
-* `randomRSListDecodingFirstMomentResidual` — the single genuine external input named precisely:
-  the AGL24 first-moment bound `Pr[bad-domain] ≤ failure`.
-* `random_rs_list_decoding_of_first_moment_residual` — the in-tree **reduction**: the named residual
-  discharges the existing front-door `random_rs_list_decoding` Prop, axiom-clean.
+* `random_rs_list_decoding_of_badDomainProbability_bound` — the in-tree **reduction** from the
+  exact bad-domain probability bound `Pr[bad-domain] ≤ failure` to the existing front-door
+  `random_rs_list_decoding` Prop.
+* `randomRSBadDomainCountBound` — the remaining AGL24 first-moment obligation after the
+  probability-space accounting is discharged: a pure bad-domain counting inequality over
+  size-`n` domains.
+* `random_rs_list_decoding_of_badDomainCountBound` — the in-tree **reduction** from that pure
+  count-bound obligation to the front-door statement.
 
-This does **not** prove the AGL24 first-moment probability bound itself; it pins that to a single
-explicit residual hypothesis and proves the front-door reduction, exactly as the GLMRSW22 endpoint
-does.  Everything here is axiom-clean (`[propext, Classical.choice, Quot.sound]`).
+This does **not** prove the AGL24 first-moment counting bound itself; it pins the missing paper
+input to the pure `randomRSBadDomainCountBound` inequality and proves the probability and front-door
+reductions in-tree.  Everything here is axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 -/
 
 namespace CodingTheory
@@ -69,17 +73,6 @@ noncomputable def randomRSBadDomainProbability
     Pr_{let L ← Probability.uniformSizeSubsetOfLe F n hn}[
       randomRSBadDomainEvent (F := F) n k listBound η L]
 
-/-- Pointwise AGL24 first-moment residual at fixed field, length, degree, list bound, and gap:
-the random-domain bad-domain probability is at most the target `failure`.
-
-The paper [AGL24 Thm 1.1] proves this concrete bound via a first-moment / counting argument over
-the size-`n` subset sample space.  This residual names the exact probability input needed by
-ArkLib's `random_rs_list_decoding` front door. -/
-noncomputable def randomRSListDecodingFirstMomentResidual
-    (F : Type) [Field F] [Fintype F] [DecidableEq F]
-    (n k listBound : ℕ) (η : ℝ) (failure : ENNReal) (hn : n ≤ Fintype.card F) : Prop :=
-  randomRSBadDomainProbability F n k listBound η hn ≤ failure
-
 /-- The bad-domain probability is exactly the front-door failure probability inside
 `random_rs_list_decoding`.  Bridges the named `randomRSBadDomainEvent`/`...Probability` surface to
 the literal `Pr_{…}[¬ …]` expression in the existing front-door definition. -/
@@ -95,24 +88,24 @@ theorem randomRSBadDomainProbability_eq_front_door
             (1 - (k : ℝ) / (n : ℝ) - η) ≤ (listBound : ℕ∞))] := by
   rfl
 
-/-- **In-tree reduction (issue #95).** The named AGL24 first-moment residual
-(`randomRSListDecodingFirstMomentResidual`, i.e. `Pr[bad-domain] ≤ failure`) discharges the existing
-front-door `random_rs_list_decoding` proposition.
+/-- **In-tree reduction (issue #346).** The exact AGL24 bad-domain probability bound
+`Pr[bad-domain] ≤ failure` discharges the existing front-door `random_rs_list_decoding`
+proposition.
 
 This is the random-RS analogue of `exists_code_of_randomLinearLambdaLowerFirstMomentResidual` for
-the GLMRSW22 endpoint: the genuine external content is isolated to the single residual hypothesis,
-and the front-door reduction is proven in-tree, axiom-clean. -/
-theorem random_rs_list_decoding_of_first_moment_residual
+the GLMRSW22 endpoint: the front-door reduction is proven in-tree and the remaining AGL24 content
+is pushed below the probability-space layer by `randomRSBadDomainCountBound`. -/
+theorem random_rs_list_decoding_of_badDomainProbability_bound
     (F : Type) [Field F] [Fintype F] [DecidableEq F]
     (n k listBound : ℕ) (η : ℝ) (failure : ENNReal)
     (hn_pos : 0 < n) (hn : n ≤ Fintype.card F)
-    (hres : randomRSListDecodingFirstMomentResidual F n k listBound η failure hn) :
+    (hprob : randomRSBadDomainProbability F n k listBound η hn ≤ failure) :
     random_rs_list_decoding F n k listBound η failure hn_pos hn := by
   -- `random_rs_list_decoding` unfolds (definitionally, modulo the `by classical; exact`) to the
-  -- literal `Pr[¬ Lambda-bound] ≤ failure`; the residual is exactly that, repackaged through the
+  -- literal `Pr[¬ Lambda-bound] ≤ failure`; `hprob` is exactly that, repackaged through the
   -- bad-domain probability bridge.
-  rw [randomRSListDecodingFirstMomentResidual, randomRSBadDomainProbability_eq_front_door] at hres
-  simpa [random_rs_list_decoding] using hres
+  rw [randomRSBadDomainProbability_eq_front_door] at hprob
+  simpa [random_rs_list_decoding] using hprob
 
 /-- Direct probability-bound wrapper for the AGL24 random-RS front door.
 
@@ -129,9 +122,9 @@ theorem random_rs_list_decoding_of_prob_bound
         randomRSBadDomainEvent (F := F) n k listBound η L] ≤ failure) :
     random_rs_list_decoding F n k listBound η failure hn_pos hn := by
   classical
-  exact random_rs_list_decoding_of_first_moment_residual F n k listBound η failure hn_pos hn
+  exact random_rs_list_decoding_of_badDomainProbability_bound F n k listBound η failure hn_pos hn
     (by
-      simpa [randomRSListDecodingFirstMomentResidual, randomRSBadDomainProbability] using hprob)
+      simpa [randomRSBadDomainProbability] using hprob)
 
 end RandomReedSolomonResidual
 
@@ -171,37 +164,43 @@ theorem randomRSBadDomainProbability_eq_badCount_div
   simp_rw [hpt]
   rw [← Finset.mul_sum, Finset.sum_boole, div_eq_mul_inv, mul_comm]
 
-/-- **The AGL24 residual from the bad-domain count (the new reduction layer).**  The
-probabilistic first-moment residual follows from the purely combinatorial counting inequality
-`#bad / C(|F|, n) ≤ failure`; the PMF accounting is discharged in-tree.  What remains open is
-exactly the AGL24 Thm 1.1 counting estimate — a statement with no probability space left. -/
-theorem randomRSListDecodingFirstMomentResidual_of_badCount
+/-- **The remaining AGL24 first-moment obligation for issue #346.**  At fixed field, length,
+degree, list bound, and gap, the number of bad size-`n` evaluation domains is at most a
+`failure` fraction of all size-`n` domains.
+
+This is the paper-level counting estimate from [AGL24, Thm. 1.1] after ArkLib discharges the
+uniform PMF accounting in `randomRSBadDomainProbability_eq_badCount_div`.  It is deliberately a
+counting statement with no probability space and no theorem-shaped placeholder. -/
+def randomRSBadDomainCountBound
+    (F : Type) [Field F] [Fintype F] [DecidableEq F]
+    (n k listBound : ℕ) (η : ℝ) (failure : ENNReal) : Prop :=
+  ((Finset.univ.filter
+      (fun L : Probability.SizeSubset F n =>
+        randomRSBadDomainEvent (F := F) n k listBound η L)).card : ENNReal)
+    / ((Fintype.card F).choose n : ENNReal) ≤ failure
+
+/-- The exact bad-domain probability bound follows from the pure AGL24 bad-domain count bound.
+The PMF accounting is discharged in-tree; what remains is the named counting input
+`randomRSBadDomainCountBound`. -/
+theorem randomRSBadDomainProbability_bound_of_badDomainCountBound
     (F : Type) [Field F] [Fintype F] [DecidableEq F]
     (n k listBound : ℕ) (η : ℝ) (failure : ENNReal) (hn : n ≤ Fintype.card F)
-    (hcount :
-      ((Finset.univ.filter
-          (fun L : Probability.SizeSubset F n =>
-            randomRSBadDomainEvent (F := F) n k listBound η L)).card : ENNReal)
-        / ((Fintype.card F).choose n : ENNReal) ≤ failure) :
-    randomRSListDecodingFirstMomentResidual F n k listBound η failure hn := by
-  show randomRSBadDomainProbability F n k listBound η hn ≤ failure
+    (hcount : randomRSBadDomainCountBound F n k listBound η failure) :
+    randomRSBadDomainProbability F n k listBound η hn ≤ failure := by
   rw [randomRSBadDomainProbability_eq_badCount_div]
-  exact hcount
+  simpa [randomRSBadDomainCountBound] using hcount
 
-/-- **Front door from the bad-domain count**: the counting inequality alone discharges
-`random_rs_list_decoding`. -/
-theorem random_rs_list_decoding_of_badCount
+/-- **Front door from the bad-domain count**: the named counting inequality alone discharges
+`random_rs_list_decoding`, with the probability-space accounting verified in-tree. -/
+theorem random_rs_list_decoding_of_badDomainCountBound
     (F : Type) [Field F] [Fintype F] [DecidableEq F]
     (n k listBound : ℕ) (η : ℝ) (failure : ENNReal)
     (hn_pos : 0 < n) (hn : n ≤ Fintype.card F)
-    (hcount :
-      ((Finset.univ.filter
-          (fun L : Probability.SizeSubset F n =>
-            randomRSBadDomainEvent (F := F) n k listBound η L)).card : ENNReal)
-        / ((Fintype.card F).choose n : ENNReal) ≤ failure) :
+    (hcount : randomRSBadDomainCountBound F n k listBound η failure) :
     random_rs_list_decoding F n k listBound η failure hn_pos hn :=
-  random_rs_list_decoding_of_first_moment_residual F n k listBound η failure hn_pos hn
-    (randomRSListDecodingFirstMomentResidual_of_badCount F n k listBound η failure hn hcount)
+  random_rs_list_decoding_of_badDomainProbability_bound F n k listBound η failure hn_pos hn
+    (randomRSBadDomainProbability_bound_of_badDomainCountBound
+      F n k listBound η failure hn hcount)
 
 end CountingLayer
 
@@ -210,13 +209,13 @@ end CountingLayer
 #print axioms randomRSListDecodingEvent
 #print axioms randomRSBadDomainEvent
 #print axioms randomRSBadDomainProbability
-#print axioms randomRSListDecodingFirstMomentResidual
 #print axioms randomRSBadDomainProbability_eq_front_door
-#print axioms random_rs_list_decoding_of_first_moment_residual
+#print axioms random_rs_list_decoding_of_badDomainProbability_bound
 #print axioms random_rs_list_decoding_of_prob_bound
 #print axioms random_rs_list_decoding
 #print axioms randomRSBadDomainProbability_eq_badCount_div
-#print axioms randomRSListDecodingFirstMomentResidual_of_badCount
-#print axioms random_rs_list_decoding_of_badCount
+#print axioms randomRSBadDomainCountBound
+#print axioms randomRSBadDomainProbability_bound_of_badDomainCountBound
+#print axioms random_rs_list_decoding_of_badDomainCountBound
 
 end CodingTheory

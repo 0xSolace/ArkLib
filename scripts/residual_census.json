@@ -1,12 +1,12 @@
 {
  "summary": {
-  "total": 103,
-  "open": 26,
-  "discharged": 77,
+  "total": 105,
+  "open": 27,
+  "discharged": 78,
   "by_top_dir": {
    "Data": {
-    "total": 20,
-    "open": 8,
+    "total": 21,
+    "open": 9,
     "discharged": 12
    },
    "OracleReduction": {
@@ -16,17 +16,25 @@
    },
    "ProofSystem": {
     "total": 22,
-    "open": 7,
-    "discharged": 15
+    "open": 6,
+    "discharged": 16
    },
    "ToMathlib": {
-    "total": 20,
-    "open": 1,
+    "total": 21,
+    "open": 2,
     "discharged": 19
    }
   }
  },
  "residuals": [
+  {
+   "name": "RIMFullRankFailureProbResidual",
+   "fq_name": "AGL24.RIMFullRankFailureProbResidual",
+   "file": "ArkLib/Data/CodingTheory/AGL24UnionBound.lean",
+   "line": 79,
+   "providers": [],
+   "status": "open"
+  },
   {
    "name": "GKL24FirstMomentResidual",
    "fq_name": "ProximityGap.GKL24FirstMomentResidual",
@@ -957,6 +965,14 @@
      "line": 54,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
+    },
+    {
+     "name": "Reduction.reductionAppendCompletenessResidual_total_pos",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/Composition/Sequential/AppendResidualDischargesSeams.lean",
+     "line": 142,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
     }
    ],
    "status": "discharged"
@@ -1070,7 +1086,7 @@
      "name": "Verifier.appendRbrKnowledgeSoundnessResidual_challenge_subsingleton",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/Composition/Sequential/AppendResidualDischargesSeams.lean",
-     "line": 50,
+     "line": 51,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -1078,7 +1094,7 @@
      "name": "Verifier.appendRbrKnowledgeSoundnessResidual_failingDet_subsingleton",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/Composition/Sequential/AppendResidualDischargesSeams.lean",
-     "line": 79,
+     "line": 80,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -1086,7 +1102,7 @@
      "name": "Verifier.appendRbrKnowledgeSoundnessResidual_failingDet_empty",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/Composition/Sequential/AppendResidualDischargesSeams.lean",
-     "line": 104,
+     "line": 105,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -1379,6 +1395,14 @@
      "ambiguous_name_match": false
     },
     {
+     "name": "Reduction.fiatShamir_runCollapseResidual_holds",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/FiatShamir/RunEqHonestExecution.lean",
+     "line": 155,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
      "name": "FiatShamirCollapse.fiat_shamir_collapse_breakthrough",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/FiatShamirRunCollapseProof.lean",
@@ -1620,7 +1644,7 @@
    "name": "Hyb4ChallengeEntryResidual",
    "fq_name": "DuplexSpongeFS.Hyb34LogShapeFalse.Hyb4ChallengeEntryResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Hyb34LogShapeFalse.lean",
-   "line": 645,
+   "line": 649,
    "providers": [],
    "status": "open"
   },
@@ -1852,13 +1876,13 @@
    "name": "KeyLemmaEagerSaltedResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.KeyLemmaEagerSaltedResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 706,
+   "line": 714,
    "providers": [
     {
      "name": "DuplexSpongeFS.KeyLemmaSalted.keyLemmaEagerSalted_of_steps",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-     "line": 735,
+     "line": 744,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -1869,7 +1893,7 @@
    "name": "queryRoundPerfectCompletenessResidual",
    "fq_name": "Fri.Spec.Completeness.queryRoundPerfectCompletenessResidual",
    "file": "ArkLib/ProofSystem/Fri/Spec/Completeness.lean",
-   "line": 44,
+   "line": 49,
    "providers": [],
    "status": "open"
   },
@@ -1877,7 +1901,7 @@
    "name": "foldPhasePerfectCompletenessResidual",
    "fq_name": "Fri.Spec.Completeness.foldPhasePerfectCompletenessResidual",
    "file": "ArkLib/ProofSystem/Fri/Spec/Completeness.lean",
-   "line": 67,
+   "line": 72,
    "providers": [
     {
      "name": "Fri.Spec.Completeness.foldPhasePerfectCompletenessResidual_holds",
@@ -1894,13 +1918,13 @@
    "name": "reductionPerfectCompletenessResidual",
    "fq_name": "Fri.Spec.Completeness.reductionPerfectCompletenessResidual",
    "file": "ArkLib/ProofSystem/Fri/Spec/Completeness.lean",
-   "line": 103,
+   "line": 108,
    "providers": [
     {
      "name": "Fri.Spec.Completeness.reductionPerfectCompletenessResidual_holds",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Fri/Spec/Completeness.lean",
-     "line": 134,
+     "line": 139,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -2368,8 +2392,17 @@
    "fq_name": "StirIOP.MultiRound.stirMultiRoundRbrSoundnessResidual",
    "file": "ArkLib/ProofSystem/Stir/MultiRoundAssembly.lean",
    "line": 224,
-   "providers": [],
-   "status": "open"
+   "providers": [
+    {
+     "name": "StirIOP.MultiRound.stirMultiRoundRbrSoundnessResidual_indicator",
+     "kind": "theorem",
+     "file": "ArkLib/ProofSystem/Stir/ShellRbrIndicator.lean",
+     "line": 57,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "stirCheckingRepRbrSoundnessResidual",
@@ -2490,6 +2523,14 @@
     }
    ],
    "status": "discharged"
+  },
+  {
+   "name": "queryRoundChainDeliveryResidual",
+   "fq_name": "Fri.Spec.Completeness.queryRoundChainDeliveryResidual",
+   "file": "ArkLib/ToMathlib/FriCompleteQueryRound.lean",
+   "line": 178,
+   "providers": [],
+   "status": "open"
   },
   {
    "name": "BatchingConsistencyResidual",
@@ -3136,7 +3177,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb01StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 583,
+   "line": 590,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -3144,7 +3185,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb12StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 605,
+   "line": 612,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -3152,7 +3193,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb23StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 628,
+   "line": 635,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -3160,7 +3201,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb34StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 648,
+   "line": 655,
    "reason": "name does not end in `Residual`"
   },
   {

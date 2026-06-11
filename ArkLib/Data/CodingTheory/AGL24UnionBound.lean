@@ -26,11 +26,11 @@ interface for the probabilistic core:
   certificate machinery of §3 (Algorithms 1–2, Lemmas 3.2–3.12) — the campaign's
   research-grade core, honestly named rather than absorbed.
 
-The two remaining wiring steps to the in-tree front door
-(`randomRSListDecodingFirstMomentResidual`) are catalogued on the issue: (a) the
-order-isomorphism transport of Lemma 2.3's vertex subset `J` onto `Fin (t+1)` to weld
-Lemmas 2.3 + 2.8 pointwise; (b) the distribution bridge from distinct-tuple sampling to
-`uniformSizeSubsetOfLe` (domain-permutation invariance of list-decodability).
+The two remaining wiring steps to the in-tree front door (`randomRSBadDomainCountBound` in
+`ArkLib.ToMathlib.AGL24RandomRSProof`) are catalogued on issue #346: (a) the order-isomorphism
+transport of Lemma 2.3's vertex subset `J` onto `Fin (t+1)` to weld Lemmas 2.3 + 2.8 pointwise;
+(b) the distribution bridge from distinct-tuple sampling to `uniformSizeSubsetOfLe`
+(domain-permutation invariance of list-decodability).
 -/
 
 open Finset
