@@ -5963,3 +5963,24 @@ ceiling chain stay: the classification as a THEOREM (the Lam–Leung bridge — 
 char-0 vanishing of e₁ forces antipodal-closure, which plus the band forces fiber towers),
 the per-prime halo quantification (one orbit — provable?), and beyond-two-monomial
 extremality.
+
+### O145 — the a = 4 char-0 census closed form: N₄(n) = n(n−3)/4, all solutions antipodal-structured (blind n=64 forecast confirmed); the a = 8 layer decomposes 70 = 64 + 6 (2026-06-11, #357)
+
+`probe_o145_a4_closed_form.py` (exact, asserts green). The first closed form of the
+two-layer law's field-independent layer:
+
+* **N₄(n) = n(n−3)/4** — derivation: every solution is `A = {x, −x} ∪ {s, t}` with
+  `st = x²` (cross terms vanish on the antipodal pair); count `(n/2)·(n−2)/2` minus the
+  `n/4` double-counted two-pair solutions `{±x, ±ix}`. Matches the measured census at
+  n = 8, 16, 32 (10/52/232) and the **blind n = 64 forecast (976)** verified by exhaustive
+  scan; zero antipodal-free solutions at every scale (the ansatz is COMPLETE).
+* The (16,8) layer (70 solutions) decomposes structurally as **64** (three antipodal pairs
+  + a unit-sum pair `{s,t}` with `st = x²+y²+z²`) **+ 6** (four antipodal pairs with
+  `Σxᵢ² = 0` — the pure Lam–Leung configurations; these 6 are exactly the solutions whose
+  complement is again a solution). General-a closed form: OPEN (the `70 = C(8,4)`
+  numerology is a coincidence of the decomposition, not a binomial structure).
+
+Combined with O144's parity law, the field-independent layer of the depth-1 window census
+is now: empty at `a ≡ 2 (mod 4)` (all production dims), and explicitly counted at
+`a = 4` — the first two rungs of the vanishing-locus classification the K4/Lam–Leung lane
+predicted would govern the window.
