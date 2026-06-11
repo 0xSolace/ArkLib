@@ -513,11 +513,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.CensusClassificationCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.CensusConditionalPin
-import ArkLib.Data.CodingTheory.ProximityGap.CensusExcess
-import ArkLib.Data.CodingTheory.ProximityGap.CensusExcessLadder
 import ArkLib.Data.CodingTheory.ProximityGap.CensusExtremalFloor
 import ArkLib.Data.CodingTheory.ProximityGap.CensusLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerDescent
+import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerFinite
 import ArkLib.Data.CodingTheory.ProximityGap.ClassChartBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Collapse
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionLemma
@@ -570,6 +569,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConcretePinF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConstantGapBelowCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactCrossoverF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactPinF5
+import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarSecondPinF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarTableSmoothInstances
 import ArkLib.Data.CodingTheory.ProximityGap.DerandomizationFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.DescentKernelLemma
@@ -689,6 +689,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniformShareBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniqueRichFactor
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WindowCount
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WitnessMassWiring
+import ArkLib.Data.CodingTheory.ProximityGap.HaloFreeThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.HalvingWindowExit
 import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
 import ArkLib.Data.CodingTheory.ProximityGap.HasseMonomial
@@ -870,6 +871,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonClustering
 import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonDegreeOne
 import ArkLib.Data.CodingTheory.ProximityGap.MCAJumpValueExact
+import ArkLib.Data.CodingTheory.ProximityGap.MCALYMCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeOverflowSharp
 import ArkLib.Data.CodingTheory.ProximityGap.MCALineReduction
@@ -901,6 +903,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAUniformCover
 import ArkLib.Data.CodingTheory.ProximityGap.MCAUpToCapacityFalse
 import ArkLib.Data.CodingTheory.ProximityGap.MCAUpperWitnessSunflower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAValueBracket
+import ArkLib.Data.CodingTheory.ProximityGap.MCAWindowInteriorExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessCountEngine
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpread
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpreadCodeword
@@ -962,7 +965,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumMagnitude
 import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
 import ArkLib.Data.CodingTheory.ProximityGap.QuotientDeepCore
 import ArkLib.Data.CodingTheory.ProximityGap.RSAveragingDeltaStarUpper
-import ArkLib.Data.CodingTheory.ProximityGap.RSCheckMatrixBridge
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityGap.RSLambdaJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.RSListDecodingCapacityGap
@@ -1020,11 +1022,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusCount
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusUnionBudget
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothDomainSelfSimilarity
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothFiberCount
+import ArkLib.Data.CodingTheory.ProximityGap.SmoothLadderInstance
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridgeOnLattice
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
 import ArkLib.Data.CodingTheory.ProximityGap.SparseDeviationExtremality
-import ArkLib.Data.CodingTheory.ProximityGap.SmoothLadderInstance
 import ArkLib.Data.CodingTheory.ProximityGap.SplittingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.StackJointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovFrobeniusReduction
@@ -1082,9 +1084,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumZeroInflation
 import ArkLib.Data.CodingTheory.ProximityGap.SubspaceAvoidance
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
-import ArkLib.Data.CodingTheory.ProximityGap.SumPolynomialAPI
 import ArkLib.Data.CodingTheory.ProximityGap.TakeoverCountermodel
-import ArkLib.Data.CodingTheory.ProximityGap.TakeoverExcessBridge
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUDExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.TheoremQUpperReduction
