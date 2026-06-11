@@ -24,6 +24,36 @@ Loops 27 through 38 are present as self-contained arithmetic bricks in the curre
 (`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
 axiom-clean, indexed in `ArkLib.lean`).
 
+## #357 R2 refutation — KKH26 one-fold strict shrink fails at even cofactor (2026-06-11)
+
+**Attempt.** Use binary/Fri fold transport to make the KKH26 near-capacity ceiling strictly
+stronger down a smooth tower: fold the explicit bad-line exponents
+`e₀ = r*m`, `e₁ = (r-1)*m`, and hope the bad family is not KKH-shaped at the next level.
+
+**Disproof of the cheap form.** Under the exponent fold rule used in the in-tree probes
+(`c = e mod 2`, `e ↦ (e+c)/2`), an even cofactor is invariant:
+
+```lean
+ArkLib.ProximityGap.KKH26.fold_same_KKH_pair_once_of_even_cofactor
+```
+
+proves that `r*(2*m)` and `(r-1)*(2*m)` both take branch `0` and fold to
+`r*m`, `(r-1)*m`.  Thus one fold does **not** strictly shrink the KKH26 bad-line family whenever
+the cofactor is even; it transports the same family one level down.  The finite cross-check
+`scripts/probes/probe_kkh26_fold_transport.py` verifies the same law over `32,512` `(r,m)` cells
+and shows the first split occurs exactly after the `2`-adic cofactor is exhausted.  The
+complementary Lean brick
+
+```lean
+ArkLib.ProximityGap.KKH26.foldBranches_split_once_of_odd_cofactor
+```
+
+records that odd cofactors force the two exponents into opposite branches.
+
+**Remaining target.** R2 survives only in a narrower form: a bottom-level odd-cofactor statement,
+or a fold transport that changes the KKH split parameter `s` rather than merely halving `m`.
+Do not repeat the "single fold strictly shrinks every KKH scale" claim.
+
 ## LITERATURE FRONTIER (2025–2026) — where the prize actually sits
 
 A web-research pass (June 2026) located the precise state of the art. **Our verified carving at the
@@ -5372,6 +5402,12 @@ flight); the k=2 rigidity theorem; the affine-invariance lemma; the spectral-gap
 theorem; the (k,r) = (2,4) cross-ratio cell of the moduli law (next falsifier);
 the ΔM3 closed form written as mathematics.
 
+**#357 N3 regression landed:** `scripts/probes/moments/probe_m3_spectral_gap_regression.py`
+now validates the stored exact subgroup spectra without recomputing M3: H5 mean pinning,
+the exact A5 normalizer big-spike set, and the `n=16` spectral gap
+`t₂ ∉ {4,5,6}` at `q=113,257`.  This is not the Weil proof; it is the stable finite target
+that the spectral-gap theorem must explain.
+
 ### O134 — THE PER-PRIME FALSIFIER FINDS THE TRANSFER FAILING: +11/+54 spurious marginal codewords at BabyBear/p₂ at n=64 — the char-0 counts are exact, the per-prime lists carry a measured prime-specific surplus; PLUS the witness-layer count formalized in-tree (nubs, 2026-06-11)
 
 Two deliverables (full dossiers: `scripts/probes/genlaw/falsifier/RESULTS.md`, new module
@@ -5417,7 +5453,7 @@ CALIBRATED correction theory (char-0 count + p|N(α) surplus), not a conjecture;
 reduction and the marginal-layer (r ≥ 3) counting laws are the remaining formalization
 targets on this front.
 
-### N3 (#357 campaign) — halving-map renormalization bands REFUTED at kill-check
+### R3 (#357 campaign) — halving-map renormalization bands REFUTED at kill-check
 Idea: iterate 2026/858's threshold-halving `T : δ ↦ δ/2` on the window `(1−√ρ, 1−ρ)`;
 hoped fixpoint bands force δ* to a band edge.
 **Refuted (one inequality):** `(1−ρ)/2 ≤ 1−√ρ` (it is `(1−√ρ)² ≥ 0`), so the FIRST
@@ -5428,27 +5464,27 @@ does (which is precisely why 858 works as a protocol trick and says nothing abou
 `ε_mca` in the window). → verified as `halving_exits_window` /
 `halving_orbit_never_returns` (`HalvingWindowExit.lean`, axiom-clean).
 
-### K1 (#357 R2) — "fold strictly shrinks the KKH26 bad family" REFUTED; covariance is EXACT
-Probe `probe_kkh26_fold_transport.py` (p=17, chain n=16→8→4, r=3, w=3): the KKH26 stack
-`(x^{rm}/(x^m−w), 1/(x^m−w))` is FIBER-EVEN at even m, so the FRI fold acts on it
-β-independently and sends it to the same construction at (n/2, m/2), same w — verified
-for ALL β at both even-m levels. The exact bad-γ sets are EQUAL down the chain at
-matched relative δ ({10,12,13,16} at δ=1/4, 3/8). The ceiling neither improves nor
-degrades down the tower: the construction is a fold FIXED POINT. Terminal m=1: the
-fold is β-dependent and exactly ONE challenge — β = −w — kills the structure
-(folded u₁ = (w+β)/(y²−w²) ≡ 0), so the bad line survives terminal folding except
-w.p. 1/q. K1's strict-improvement is dead; the self-similarity is the keepable lemma
-(formalization queued).
+### S3/N1 (#357 campaign) — the naive AFFINE orbit-count law REFUTED; the maximizer set is ONE PROJECTIVE orbit (exhaustive at RS[F₅,⟨2⟩,2]); the projective symmetry layer formalized
 
-### S2(b) (#357) — MissingLine-as-stated REFUTED at the Johnson radius; holds below
-Probes `probe_missing_line_search.py` + `probe_missing_line_rungs.py` +
-`probe_defeater_exactness.py` (exhaustive up to codeword translation): the obstruction
-hitting number H(U) obeys H ≤ 2 ≤ q on every below-Johnson rung tested
-(F₃/F₅ × n∈{3,4} × k∈{1,2}, l∈{2,3}), but at (F₃, n=4, k=1, |T|≥2) — which is
-δ = 1/2 = EXACTLY Johnson for ρ=1/4 — a defeater stack ((1,3),(9,13)) reaches
-H = 4 > q = 3. Same code strictly below Johnson (|T|≥3): H ≤ 2 again. So:
-**ObstructionBound is Johnson-gated** — refined conjecture S2(b′): it holds for all
-δ < 1−√ρ. The defeater does NOT break exactness: at δ = Johnson both interleaved and
-base saturate (9/9 bad seeds), so `epsMCAG` exactness survives and the obstruction
-bound is sufficient-not-necessary. No strict interleaving separation found (old K2
-still witness-less).
+The S3 dossier conjectured the ε_mca-maximizer set is a single orbit of the affine symmetry
+group (translation × rotation × scaling × shear, now formal in `MCAEquivariance.lean`).
+**Refuted, exhaustively**: at RS[F₅,⟨2⟩,2], δ = 1/4, the maximizer set has 100,000 stacks but
+the affine orbit of the probe stack has exactly 50,000. The row swap is NOT a repair: it is
+not even bad-count-preserving (4 → 3 on the seed; the affine γ-line is not swap-invariant).
+
+**The true law (verified, then formalized):** the maximizer set is exactly TWO disjoint
+affine orbits of 50,000, fused into ONE orbit by the non-affine GL₂ element
+`(u₀,u₁) ↦ (u₁, u₀+u₁)` — i.e. one *projective* orbit. Mechanism: the MCA pencil is a
+projective line with `|F|+1` slots; the affine γ-census misses the `[0:1]` (∞) slot; the
+affine group is precisely the stabilizer of ∞, so one projective orbit splits into affine
+orbits indexed by the ∞-slot position. Constraint lemmas (axiom-clean,
+`MCAProjectiveEquivariance.lean`): `mcaEventProj` (homogeneous event),
+`pairJointAgreesOn_row_mix_iff` (the no-explanation clause is GL₂-invariant),
+`mcaEventProj_row_mix` (GL₂ equivariance), `mcaEventProj_smul` (projective well-definedness),
+`badSlotCount_eq_affine_add_infty` (affine census = projective census − ∞ indicator).
+
+Consequences: (a) any orbit-count/flat-numerator law must be stated on `|F|+1` projective
+slots — affine counts drift by ±1 inside one structure class, which is now explained, not
+anomalous; (b) N1's structured-extremality conjecture survives its first decisive audit in
+projective form: at the R1 rung there are NO unstructured maximizers — the maximizer set is
+one projective orbit exactly.
