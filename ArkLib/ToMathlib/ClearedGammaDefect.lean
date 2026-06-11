@@ -118,6 +118,7 @@ lemma pi_z_wSection {z : F} (root : rationalRoot (H_tilde' H) z) (a b : F) :
 lemma weight_wSection_le {D : ℕ} (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree)
     (a b : F) :
     weight_Λ_over_𝒪 hH (wSection H a b) D ≤ (WithBot.some 1 : WithBot ℕ) := by
+  unfold wSection
   refine (weight_Λ_over_𝒪_C_le hD hH (Polynomial.C a + Polynomial.X * Polynomial.C b)).trans ?_
   refine WithBot.coe_le_coe.mpr ?_
   refine (Polynomial.natDegree_add_le _ _).trans ?_
@@ -131,6 +132,7 @@ lemma weight_wSection_le {D : ℕ} (hD : Bivariate.totalDegree H ≤ D) (hH : 0 
 lemma weight_scalar𝒪_le {D : ℕ} (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree)
     (c : F) :
     weight_Λ_over_𝒪 hH (scalar𝒪 H c) D ≤ (WithBot.some 0 : WithBot ℕ) := by
+  unfold scalar𝒪
   refine (weight_Λ_over_𝒪_C_le hD hH (Polynomial.C c)).trans ?_
   rw [Polynomial.natDegree_C]
 
@@ -169,10 +171,13 @@ theorem embed_betaCleared (hlc : H.leadingCoeff = 1) (x₀ x : F) (R : F[X][X][Y
   rw [map_sum, Finset.sum_mul]
   refine Finset.sum_congr rfl (fun t ht => ?_)
   have htk : t ≤ k := Nat.lt_succ_iff.mp (Finset.mem_range.mp ht)
+  have hpow : (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)
+      * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (eClear k - eClear t)
+      = (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (eClear k) := by
+    rw [← pow_add, eClear_add_sub htk]
   rw [map_mul, map_mul, map_pow, embed_scalar𝒪,
     βHensel_lift_identity H x₀ R hHyp hzero t, hlc, map_one, one_pow, mul_one,
-    map_pow, ← map_pow fieldTo𝕃 (x - x₀) t]
-  rw [mul_assoc, ← pow_add, eClear_add_sub htk]
+    map_pow, ← hpow]
   ring
 
 /-- **The defect embedding identity (monic).**
@@ -241,8 +246,11 @@ theorem pi_z_betaDefect_eq_zero (x₀ x a b : F) (R : F[X][X][Y])
             * (π_z z root (ClaimA2.ξ x₀ R H hHyp)) ^ (eClear k) := by
     intro t ht
     have htk : t ≤ k := Nat.lt_succ_iff.mp (Finset.mem_range.mp ht)
-    rw [map_mul, map_mul, map_pow, pi_z_scalar𝒪, hread t ht, mul_assoc, ← pow_add,
-      eClear_add_sub htk]
+    have hpow : ((π_z z root) (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)
+        * ((π_z z root) (ClaimA2.ξ x₀ R H hHyp)) ^ (eClear k - eClear t)
+        = ((π_z z root) (ClaimA2.ξ x₀ R H hHyp)) ^ (eClear k) := by
+      rw [← pow_add, eClear_add_sub htk]
+    rw [map_mul, map_mul, map_pow, pi_z_scalar𝒪, hread t ht, ← hpow]
     ring
   rw [Finset.sum_congr rfl hsum, map_mul, map_pow, pi_z_wSection, ← Finset.sum_mul]
   have heval : ∑ t ∈ Finset.range (k + 1), p.coeff t * (x - x₀) ^ t = p.eval (x - x₀) :=
@@ -291,7 +299,7 @@ theorem gammaEvalTrunc_eq_ground_of_large (hlc : H.leadingCoeff = 1)
   -- Step 1: every place of `S` is a vanishing place of the defect.
   have hT : (↑S : Set F) ⊆ S_β (betaDefect H x₀ x a b R hHyp k) := by
     intro z hz
-    obtain ⟨root, p, hpdeg, hread, hmatch⟩ := hS (by exact_mod_cast hz)
+    obtain ⟨root, p, hpdeg, hread, hmatch⟩ := hS (Finset.mem_coe.mp hz)
     exact ⟨root, pi_z_betaDefect_eq_zero H x₀ x a b R hHyp k root p hpdeg hread hmatch⟩
   -- Step 2: the counting beats the weight; Lemma A.1 kills the defect's embedding.
   have hwt := weight_betaDefect_le H hD hH x₀ x a b R hHyp k wβ bξ N hwβ hbξ hN1 hN2

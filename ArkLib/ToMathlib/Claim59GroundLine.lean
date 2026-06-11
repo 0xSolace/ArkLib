@@ -126,8 +126,10 @@ theorem claim59_groundLine (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypothese
   letI : Algebra F (𝕃 H) := (fieldTo𝕃 (H := H)).toAlgebra
   -- The shifted coordinate set: `k+1` distinct base points.
   set s : Finset F := xs.image (fun x => x - x₀) with hs
+  have hsub_inj : Function.Injective (fun x : F => x - x₀) := fun a b h => by
+    simpa using congrArg (· + x₀) h
   have hscard : s.card = k + 1 := by
-    rw [hs, Finset.card_image_of_injective xs (sub_left_injective), hxs]
+    rw [hs, Finset.card_image_of_injective xs hsub_inj, hxs]
   -- Fire the interpolation at the shifted line data.
   obtain ⟨v₀, v₁, hv₀, hv₁, hrep⟩ :=
     ArkLib.GroundLine.groundLine_of_eval_groundLine
