@@ -49,6 +49,7 @@ import ArkLib.Data.CodingTheory.AGL24DeterministicChain
 import ArkLib.Data.CodingTheory.AGL24DualSpan
 import ArkLib.Data.CodingTheory.AGL24EvalToSymbolic
 import ArkLib.Data.CodingTheory.AGL24ExtensionLift
+import ArkLib.Data.CodingTheory.AGL24FrankInterface
 import ArkLib.Data.CodingTheory.AGL24FrontDoorBridge
 import ArkLib.Data.CodingTheory.AGL24GenericZeroPattern
 import ArkLib.Data.CodingTheory.AGL24GrandAssembly
@@ -839,6 +840,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCACurveEvent
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarBracket
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarExactPoint
+import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarFullBand
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarHighRateFamily
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarSandwich
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEigenstackOrbitLaw
