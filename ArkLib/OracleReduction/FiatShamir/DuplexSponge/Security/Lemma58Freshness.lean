@@ -295,6 +295,55 @@ theorem pairKey_isSome_foldl_mono (c : DSCache StmtIn U) (ℓ : List (DSEntry St
   rcases List.find?_isSome.mp h with ⟨w, hwmem, hwp⟩
   exact List.find?_isSome.mpr ⟨w, foldl_stepCache_pair_mono c ℓ hwmem, hwp⟩
 
+/-! ## The eraseIdx transport pair (item (iii) assembly): erasing a no-op step preserves
+consistency forwards and anchoredness backwards. -/
+
+/-- Erasing a no-op entry preserves consistency. -/
+theorem consistentFrom_eraseIdx_of_noop (c₀ : DSCache StmtIn U)
+    (log : List (DSEntry StmtIn U)) (k : ℕ) (hk : k < log.length)
+    (hnoop : stepCache ((log.take k).foldl stepCache c₀) log[k]
+      = (log.take k).foldl stepCache c₀)
+    (h : ConsistentFrom c₀ log) :
+    ConsistentFrom c₀ (log.eraseIdx k) := by
+  induction log generalizing c₀ k with
+  | nil => exact absurd hk (by simp)
+  | cons e ℓ ih =>
+      obtain ⟨he, hℓ⟩ := h
+      cases k with
+      | zero =>
+          simp only [List.take_zero, List.foldl_nil, List.getElem_cons_zero] at hnoop
+          rw [List.eraseIdx_cons_zero]
+          rwa [hnoop] at hℓ
+      | succ k =>
+          have hk' : k < ℓ.length := by simpa using hk
+          rw [List.eraseIdx_cons_succ]
+          refine ⟨he, ih (stepCache c₀ e) k hk' ?_ hℓ⟩
+          simpa [List.take_succ_cons, List.foldl_cons] using hnoop
+
+/-- Erasing a no-op entry reflects anchoredness: a collision in the erased log is a
+collision in the original. -/
+theorem anchoredFrom_of_eraseIdx_of_noop (c₀ : DSCache StmtIn U)
+    (log : List (DSEntry StmtIn U)) (k : ℕ) (hk : k < log.length)
+    (hnoop : stepCache ((log.take k).foldl stepCache c₀) log[k]
+      = (log.take k).foldl stepCache c₀)
+    (hA : AnchoredFrom c₀ (log.eraseIdx k)) :
+    AnchoredFrom c₀ log := by
+  induction log generalizing c₀ k with
+  | nil => exact absurd hk (by simp)
+  | cons e ℓ ih =>
+      cases k with
+      | zero =>
+          simp only [List.take_zero, List.foldl_nil, List.getElem_cons_zero] at hnoop
+          rw [List.eraseIdx_cons_zero] at hA
+          exact Or.inr (by rwa [hnoop])
+      | succ k =>
+          have hk' : k < ℓ.length := by simpa using hk
+          rw [List.eraseIdx_cons_succ] at hA
+          rcases hA with hcol | hA
+          · exact Or.inl hcol
+          · refine Or.inr (ih (stepCache c₀ e) k hk' ?_ hA)
+            simpa [List.take_succ_cons, List.foldl_cons] using hnoop
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -312,3 +361,5 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.swapKey_cached_after_consistent_permInv
 #print axioms DuplexSpongeFS.EagerLazyDS.hashKey_isSome_foldl_mono
 #print axioms DuplexSpongeFS.EagerLazyDS.pairKey_isSome_foldl_mono
+#print axioms DuplexSpongeFS.EagerLazyDS.consistentFrom_eraseIdx_of_noop
+#print axioms DuplexSpongeFS.EagerLazyDS.anchoredFrom_of_eraseIdx_of_noop
