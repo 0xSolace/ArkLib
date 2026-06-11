@@ -1672,6 +1672,7 @@ import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.ProofSystem.Stir.RoundVector
 import ArkLib.ProofSystem.Stir.RoundVectorCompleteness
 import ArkLib.ProofSystem.Stir.SeamComposition
+import ArkLib.ProofSystem.Stir.ShellRbrIndicator
 import ArkLib.ProofSystem.Stir.SpotCheckBound
 import ArkLib.ProofSystem.Stir.SubUnitRbr
 import ArkLib.ProofSystem.Stir.SwitchAttack
