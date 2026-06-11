@@ -43,15 +43,11 @@ consolidation, and its status.
    regenerated `TightComposedCompleteness.lean`) — all `private`, so consolidation = a shared
    public `SpartanDirFacts.lean` + three import swaps. The clones are proof-identical by
    construction (two were generated from the first); drift risk is low but nonzero.
-9. **Inline `⊥ ≠ ⊤` proofs** (the all-ones-vector argument) appear in
-   `Jo26GeneratorDichotomy.lean` and `GG25ExactPreservation.lean` — both could use
-   `bot_ne_top` once a `Nontrivial (Fin s → F)` instance is threaded (needs `1 ≤ s` locally);
-   a 3-line shared lemma `Submodule.bot_ne_top_of_pos` parameterized on `0 < s` would serve
-   both.
-10. **The 6-phase `ComposedTightRbrKnowledge.lean` vs the 8-phase `TightComposedFull.lean`**
-    — the 6-phase file is a strict ancestor of the 8-phase apex; its endpoint (`tightRelG`)
-    is now interior to the full chain. Candidate for deprecation-by-docstring pointing at the
-    apex (not deletion: it documents the shorter assembly pattern).
+9. **Inline `⊥ ≠ ⊤` proofs** — **DONE** (third pass): both sites now use
+   `haveI : Nonempty (Fin s) := ⟨⟨0, hs⟩⟩; exact bot_ne_top` (Mathlib's lattice lemma; the
+   `Nontrivial (Submodule F (Fin s → F))` instance synthesizes through `Function.nontrivial`).
+10. **The 6-phase vs 8-phase chains** — **DONE** (third pass): deprecation-by-docstring
+    landed on `ComposedTightRbrKnowledge.lean`, pointing new consumers at the apex pair.
 
 ## Method note
 
