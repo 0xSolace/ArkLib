@@ -1292,6 +1292,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516TimePFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58EagerFalse
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Flag
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Correspondence
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lookahead
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEvents
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEventsCoincidence

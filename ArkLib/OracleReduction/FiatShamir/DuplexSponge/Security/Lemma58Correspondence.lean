@@ -1,0 +1,234 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Flag
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEvents
+
+/-!
+# The log–cache–flag correspondence (CO25 Lemma 5.8, the support-level carrier)
+
+The engine output (`Lemma58Flag.lean`) bounds the probability of the ghost flag; the paper
+event `EPaper` lives on the *query log* of the logged run. This file connects them at the
+support level. The three log-indexed folds:
+
+* `stepCache` / `cacheOfLog` — the cache is a deterministic fold of the log (first
+  occurrence wins; hits change nothing);
+* `ConsistentFrom` — every logged answer agrees with the cache at its position (the lazy
+  oracle memoizes, so its logs are consistent);
+* `AnchoredFrom` — some logged step was fresh and its sampled answer's capacity hit an
+  existing slot or its own query's capacity (`collisionStep`).
+
+The master run induction (`support_flagged_logged`) shows every support element of the
+flagged run of the logged program satisfies: final cache = fold of the log, the log is
+consistent, and the final flag is *exactly* `initial ∨ AnchoredFrom`. The pure
+combinatorial part (`¬Anchored ∧ Consistent → ¬EPaper`, via the dedup characterization)
+follows in this file's later sections.
+
+Axiom-clean: `[propext, Classical.choice, Quot.sound]` (see `#print axioms` at EOF).
+-/
+
+open OracleComp OracleSpec
+open scoped ENNReal NNReal
+
+namespace DuplexSpongeFS.EagerLazyDS
+
+variable {StmtIn : Type} {U : Type} [SpongeUnit U] [SpongeSize]
+  [DecidableEq StmtIn]
+  [SampleableType (Vector U SpongeSize.C)]
+  [DecidableEq (CanonicalSpongeState U)] [Inhabited (CanonicalSpongeState U)]
+  [Fintype StmtIn] [Fintype U] [DecidableEq U]
+  [SampleableType (StmtIn → Vector U SpongeSize.C)]
+  [SampleableType (Equiv.Perm (CanonicalSpongeState U))]
+
+/-- A single log entry of the combined oracle. -/
+abbrev DSEntry (StmtIn U : Type) [SpongeUnit U] [SpongeSize] : Type :=
+  (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+    (duplexSpongeChallengeOracle StmtIn U).Range t
+
+/-- Fold one log entry onto a cache: first occurrence caches, repeats change nothing. -/
+def stepCache (c : DSCache StmtIn U) : DSEntry StmtIn U → DSCache StmtIn U
+  | ⟨.inl q, u⟩ =>
+      match c.1 q with
+      | none => (c.1.cacheQuery q u, c.2)
+      | some _ => c
+  | ⟨.inr (.inl a), b⟩ =>
+      match c.2.find? (fun w => w.1 = a) with
+      | none => (c.1, c.2.concat (a, b))
+      | some _ => c
+  | ⟨.inr (.inr b), a⟩ =>
+      match c.2.find? (fun w => w.2 = b) with
+      | none => (c.1, c.2.concat (a, b))
+      | some _ => c
+
+/-- A log entry agrees with a cache: if its query is cached, the logged answer is the
+cached one. -/
+def entryConsistent (c : DSCache StmtIn U) : DSEntry StmtIn U → Prop
+  | ⟨.inl q, u⟩ => ∀ u', c.1 q = some u' → u = u'
+  | ⟨.inr (.inl a), b⟩ => ∀ w, c.2.find? (fun w => w.1 = a) = some w → b = w.2
+  | ⟨.inr (.inr b), a⟩ => ∀ w, c.2.find? (fun w => w.2 = b) = some w → a = w.1
+
+/-- The whole log is consistent with the running cache. -/
+def ConsistentFrom (c : DSCache StmtIn U) : List (DSEntry StmtIn U) → Prop
+  | [] => True
+  | e :: ℓ => entryConsistent c e ∧ ConsistentFrom (stepCache c e) ℓ
+
+/-- Some entry of the log is an anchored collision against the running cache. -/
+def AnchoredFrom (c : DSCache StmtIn U) : List (DSEntry StmtIn U) → Prop
+  | [] => False
+  | e :: ℓ => collisionStep e.1 c e.2 ∨ AnchoredFrom (stepCache c e) ℓ
+
+/-- **The per-step support facts**: each reachable one-step outcome of the flagged oracle
+has the folded cache, a consistent entry, and the exact flag update. -/
+theorem lazyDSImplFlagged_step_support
+    (t : (duplexSpongeChallengeOracle StmtIn U).Domain) (s : DSCache StmtIn U × Prop) :
+    ∀ us ∈ support ((lazyDSImplFlagged t).run s),
+      us.2.1 = stepCache s.1 ⟨t, us.1⟩ ∧ entryConsistent s.1 ⟨t, us.1⟩ ∧
+        (us.2.2 ↔ (s.2 ∨ collisionStep t s.1 us.1)) := by
+  classical
+  obtain ⟨⟨ch, cp⟩, fl⟩ := s
+  intro us hus
+  rw [lazyDSImplFlagged_run] at hus
+  simp only [support_map, Set.mem_image] at hus
+  obtain ⟨w, hw, rfl⟩ := hus
+  refine ⟨?_, ?_, Iff.rfl⟩ <;> rcases t with q | sIn | sOut
+  · -- hash arm, cache shape
+    rcases hcq : ch q with _ | u
+    · rw [lazyDSImpl_run_hash, QueryImpl.withCaching_run_none _ hcq, Functor.map_map] at hw
+      have hw' : w ∈ support ((fun a => (a, (ch.cacheQuery q a, cp))) <$>
+          ($ᵗ (Vector U SpongeSize.C))) := hw
+      simp only [support_map, Set.mem_image] at hw'
+      obtain ⟨u, _, rfl⟩ := hw'
+      simp [stepCache, hcq]
+    · rw [lazyDSImpl_run_hash, QueryImpl.withCaching_run_some _ hcq, map_pure] at hw
+      have hw2 : w = ((u : Vector U SpongeSize.C), ((ch, cp) : DSCache StmtIn U)) := hw
+      subst hw2
+      simp [stepCache, hcq]
+  · rcases hcfind : cp.find? (fun w => w.1 = sIn) with _ | w₀
+    · rw [lazyDSImpl_run_fwd, LazyPermBridge.lazyPermImpl_run_inl_none cp hcfind,
+        Functor.map_map] at hw
+      have hw' : w ∈ support ((fun b => (b, (ch, cp.concat (sIn, b)))) <$>
+          LazyPermBridge.sampleUnused (LazyPermBridge.unusedValuesList cp)) := hw
+      simp only [support_map, Set.mem_image] at hw'
+      obtain ⟨b, _, rfl⟩ := hw'
+      simp [stepCache, hcfind]
+    · rw [lazyDSImpl_run_fwd, LazyPermBridge.lazyPermImpl_run_inl_some cp hcfind,
+        map_pure] at hw
+      have hw2 : w = ((w₀.2 : CanonicalSpongeState U), ((ch, cp) : DSCache StmtIn U)) := hw
+      subst hw2
+      simp [stepCache, hcfind]
+  · rcases hcfind : cp.find? (fun w => w.2 = sOut) with _ | w₀
+    · rw [lazyDSImpl_run_inv, LazyPermBridge.lazyPermImpl_run_inr_none cp hcfind,
+        Functor.map_map] at hw
+      have hw' : w ∈ support ((fun a => (a, (ch, cp.concat (a, sOut)))) <$>
+          LazyPermBridge.sampleUnused (LazyPermBridge.unusedKeysList cp)) := hw
+      simp only [support_map, Set.mem_image] at hw'
+      obtain ⟨a, _, rfl⟩ := hw'
+      simp [stepCache, hcfind]
+    · rw [lazyDSImpl_run_inv, LazyPermBridge.lazyPermImpl_run_inr_some cp hcfind,
+        map_pure] at hw
+      have hw2 : w = ((w₀.1 : CanonicalSpongeState U), ((ch, cp) : DSCache StmtIn U)) := hw
+      subst hw2
+      simp [stepCache, hcfind]
+  · -- hash arm, consistency
+    rcases hcq : ch q with _ | u
+    · intro u' hu'
+      replace hu' : ch q = some u' := hu'
+      rw [hcq] at hu'
+      exact absurd hu' (by simp)
+    · rw [lazyDSImpl_run_hash, QueryImpl.withCaching_run_some _ hcq, map_pure] at hw
+      have hw2 : w = ((u : Vector U SpongeSize.C), ((ch, cp) : DSCache StmtIn U)) := hw
+      subst hw2
+      intro u' hu'
+      replace hu' : ch q = some u' := hu'
+      rw [hcq] at hu'
+      exact Option.some_inj.mp hu'
+  · rcases hcfind : cp.find? (fun w => w.1 = sIn) with _ | w₀
+    · intro w' hw'
+      replace hw' : cp.find? (fun w => w.1 = sIn) = some w' := hw'
+      rw [hcfind] at hw'
+      exact absurd hw' (by simp)
+    · rw [lazyDSImpl_run_fwd, LazyPermBridge.lazyPermImpl_run_inl_some cp hcfind,
+        map_pure] at hw
+      have hw2 : w = ((w₀.2 : CanonicalSpongeState U), ((ch, cp) : DSCache StmtIn U)) := hw
+      subst hw2
+      intro w' hw'
+      replace hw' : cp.find? (fun w => w.1 = sIn) = some w' := hw'
+      rw [hcfind] at hw'
+      rw [Option.some_inj.mp hw']
+  · rcases hcfind : cp.find? (fun w => w.2 = sOut) with _ | w₀
+    · intro w' hw'
+      replace hw' : cp.find? (fun w => w.2 = sOut) = some w' := hw'
+      rw [hcfind] at hw'
+      exact absurd hw' (by simp)
+    · rw [lazyDSImpl_run_inv, LazyPermBridge.lazyPermImpl_run_inr_some cp hcfind,
+        map_pure] at hw
+      have hw2 : w = ((w₀.1 : CanonicalSpongeState U), ((ch, cp) : DSCache StmtIn U)) := hw
+      subst hw2
+      intro w' hw'
+      replace hw' : cp.find? (fun w => w.2 = sOut) = some w' := hw'
+      rw [hcfind] at hw'
+      rw [Option.some_inj.mp hw']
+
+/-- **The master run correspondence**: every support element of the flagged run of the
+logged program has its final cache equal to the fold of its log, a consistent log, and a
+final flag exactly `initial ∨ AnchoredFrom`. -/
+theorem support_flagged_logged {α : Type}
+    (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α)
+    (c₀ : DSCache StmtIn U) (fl₀ : Prop) :
+    ∀ xs ∈ support ((simulateQ lazyDSImplFlagged
+        ((simulateQ loggingOracle P).run)).run (c₀, fl₀)),
+      xs.2.1 = xs.1.2.foldl stepCache c₀ ∧
+      ConsistentFrom c₀ xs.1.2 ∧
+      (xs.2.2 ↔ (fl₀ ∨ AnchoredFrom c₀ xs.1.2)) := by
+  induction P using OracleComp.inductionOn generalizing c₀ fl₀ with
+  | pure a =>
+      intro xs hxs
+      rw [show ((simulateQ loggingOracle (pure a :
+            OracleComp (duplexSpongeChallengeOracle StmtIn U) α)).run)
+          = pure (a, ([] : QueryLog (duplexSpongeChallengeOracle StmtIn U))) from by
+        simp [simulateQ_pure]] at hxs
+      rw [simulateQ_pure, StateT.run_pure] at hxs
+      have hxs2 : xs = ((a, ([] : QueryLog (duplexSpongeChallengeOracle StmtIn U))),
+          (c₀, fl₀)) := by
+        have hxs' : xs ∈ support ((pure ((a,
+            ([] : QueryLog (duplexSpongeChallengeOracle StmtIn U))),
+            (c₀, fl₀)) : ProbComp _)) := hxs
+        rw [support_pure] at hxs'
+        exact hxs'
+      subst hxs2
+      exact ⟨rfl, trivial, by tauto⟩
+  | query_bind t k ih =>
+      intro xs hxs
+      rw [OracleComp.run_simulateQ_loggingOracle_query_bind] at hxs
+      rw [simulateQ_bind, StateT.run_bind] at hxs
+      rw [show (simulateQ lazyDSImplFlagged
+            (liftM ((duplexSpongeChallengeOracle StmtIn U).query t))).run (c₀, fl₀)
+          = (lazyDSImplFlagged t).run (c₀, fl₀) from by
+        refine congrArg (fun z => StateT.run z (c₀, fl₀)) ?_
+        simp only [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query,
+          id_map]] at hxs
+      obtain ⟨us, hus, hxs2⟩ := (mem_support_bind_iff _ _ _).1 hxs
+      obtain ⟨hcache, hcons, hflag⟩ := lazyDSImplFlagged_step_support t (c₀, fl₀) us hus
+      rw [simulateQ_map, StateT.run_map] at hxs2
+      simp only [support_map, Set.mem_image] at hxs2
+      obtain ⟨w, hw, rfl⟩ := hxs2
+      obtain ⟨ih1, ih2, ih3⟩ := ih us.1 us.2.1 us.2.2 w hw
+      refine ⟨?_, ⟨hcons, ?_⟩, ?_⟩
+      · rw [List.foldl_cons, ← hcache]
+        exact ih1
+      · rw [← hcache]
+        exact ih2
+      · rw [show AnchoredFrom c₀
+            ((⟨t, us.1⟩ : DSEntry StmtIn U) :: w.1.2)
+            = (collisionStep t c₀ us.1 ∨ AnchoredFrom (stepCache c₀ ⟨t, us.1⟩) w.1.2)
+          from rfl, ← hcache]
+        rw [ih3, hflag]
+        tauto
+
+end DuplexSpongeFS.EagerLazyDS
+
+/-! ## Axiom audit — kernel-clean. -/
+#print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_support
+#print axioms DuplexSpongeFS.EagerLazyDS.support_flagged_logged
