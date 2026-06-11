@@ -60,3 +60,12 @@ campaign on this repository. Maintained alongside the work; newest entries last.
   per-stack assembly (production × decomposition × wire) and the production's four
   parameterized inputs (residual bundle instance, Claim-5.11 numerics, factor
   Z-budget descent, one counting comparison).
+
+- Entry 3: the unconditional path is fully enumerated. The per-stack GS bundle has an
+  in-tree producer with parameter-only side conditions; its box construction carries an
+  explicit inner-degree cap that the new divisor-descent lemma transports to every
+  factor. The top level splits per stack on the size of the close-proximity set: small
+  sets close by direct counting (bad scalars inject into close ones), large sets
+  activate the surface production's largeness conditions and close by the one-pair
+  capture. Remaining: the dichotomy assembly, the residual-bundle input check, and the
+  final statement.
