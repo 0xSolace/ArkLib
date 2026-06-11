@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.Jo26MarkedCurveDecodability
+import ArkLib.Data.CodingTheory.ProximityGap.GG25MarkedCurve
 import Mathlib.LinearAlgebra.Lagrange
 
 /-!
@@ -29,6 +29,10 @@ Lagrange interpolation through the codeword values there.  The interpolating cur
 boundary.  The remaining T2 legs (Lemma 5.4 non-covering + the Theorem 5.5 converse) and the
 T3 covering transfer (Theorem 5.7) are follow-ups; nothing here claims them.
 -/
+
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
 
 open Finset Code Polynomial
 open scoped NNReal
@@ -109,13 +113,13 @@ theorem markedCurveDecodable_interpolation (M : Submodule F (ι → A)) (ℓ : �
   calc b = B.card := hBcard.symm
     _ ≤ _ := Finset.card_le_card fun β hβ => Finset.mem_filter.mpr
         ⟨hBsub hβ,
-         funext fun i => (lagrangeCurve_eval (hBcard ▸ hbl) hβ i).symm⟩
+         _root_.funext fun i => (lagrangeCurve_eval (hBcard ▸ hbl) hβ i).symm⟩
 
 /-- The unmarked corollary of [Jo26] Lemma 5.2, via the easy direction of Theorem 5.5. -/
 theorem curveDecodable_interpolation (M : Submodule F (ι → A)) (ℓ : ℕ) (δ : ℝ≥0)
     {a b : ℕ} (hbl : b ≤ ℓ + 1) (hab : b ≤ a) :
     CurveDecodable (F := F) (M : Set (ι → A)) ℓ δ a b :=
-  CurveDecodable.of_marked (markedCurveDecodable_interpolation M ℓ δ hbl hab)
+  curveDecodable_of_marked (markedCurveDecodable_interpolation M ℓ δ hbl hab)
 
 end ProximityGap
 
