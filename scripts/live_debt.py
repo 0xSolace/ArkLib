@@ -27,6 +27,9 @@ KNOWN_DISCHARGED = {
         'stirCheckingRbrSoundness_genuine (SubUnitRbr.lean, at the genuine stirEpsStar budget)',
     'stirCheckingRepRbrSoundnessResidual':
         'stirCheckingRepRbrSoundness_genuine (RepWire.lean, at the (.)^t stirEpsStarRep budget)',
+    'MonicHighYResidual':
+        'residualw (FaithfulFrontierWitness.lean — per-bundle interface, witness instance '
+        'proven) + general-monic boundary half (882d85173)',
 }
 
 # Honest non-proof end-states (documented obstruction / suspected-false / documented-dead).
