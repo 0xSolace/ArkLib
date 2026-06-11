@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureReconcile
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25LaneBridge
 import ArkLib.ToMathlib.ZAffineDecomposition
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonDischarge
 
 /-!
 # The capture wire — from the lane's close decode to `AffineCaptured`
@@ -27,6 +28,7 @@ one-pair capture list for every word stack.
 namespace CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 open _root_.ProximityGap Code Polynomial
+open CodingTheory.ProximityGap.Hab25Core.Hab25Johnson
 open scoped NNReal
 
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -129,9 +131,98 @@ theorem affineCaptured_of_pz_affine
     have := (Finset.mem_filter.mp hi).2
     simpa using this.symm
 
+
+open Classical in
+/-- **The numeric edge from per-stack pencil coherence.**  If every word stack's lane
+decode collapses to a single affine pencil on the close-proximity set (the surface-factor
+production's conclusion through the Z-affine decomposition), the below-Johnson numeric
+edge holds at the rational radius — via the one-pair capture list. -/
+theorem johnsonNumericBound_of_pencil_coherence
+    {n k : ℕ} [NeZero n] (ωs : Fin n ↪ F) (δq : ℚ) (η : ℝ≥0)
+    (hδq0 : 0 ≤ δq)
+    (hη : 0 < η)
+    (hδr : InJohnsonRange ωs (k + 1) η (Real.toNNReal (δq : ℝ)))
+    (hk2n : k + 2 ≤ n)
+    (hreg : ((k + 1 : ℕ) : ℝ)
+      + 2 * ((Real.toNNReal (δq : ℝ) : ℝ≥0) : ℝ) * Fintype.card (Fin n)
+      < Fintype.card (Fin n))
+    (hpencil : ∀ u : WordStack F (Fin 2) (Fin n),
+      ∃ A₀ A₁ : F[X], A₀.natDegree < k + 1 ∧ A₁.natDegree < k + 1 ∧
+        ∀ γ ∈ _root_.ProximityGap.coeffs_of_close_proximity
+            (F := F) k ωs δq (u 0) (u 1),
+          ∀ hγ : γ ∈ _root_.ProximityGap.coeffs_of_close_proximity
+            (F := F) k ωs δq (u 0) (u 1),
+          _root_.ProximityGap.Pz (n := n) (k := k) (ωs := ωs) (δ := δq)
+            (u₀ := u 0) (u₁ := u 1) hγ = A₀ + Polynomial.C γ * A₁) :
+    JohnsonNumericBound ωs (k + 1) η (Real.toNNReal (δq : ℝ)) := by
+  classical
+  set δ : ℝ≥0 := Real.toNNReal (δq : ℝ) with hδdef
+  have hδle : (δ : ℝ) ≤ (δq : ℝ) := by
+    rw [hδdef, Real.coe_toNNReal _ (by exact_mod_cast hδq0)]
+  refine johnsonNumericBound_holds_of_capture_production ωs (k + 1) η δ 1 hη hδr
+    (by simp only [Fintype.card_fin]; omega) ?_ ?_
+  · -- `1 ≤ (M + 1/2)/√ρ₊`: the multiplicity is at least 3 and the rate factor at most 1
+    have hM : (3 : ℝ) ≤ hab25M (Fintype.card (Fin n)) (k + 1) η := le_max_right _ _
+    have hρ0 : (0 : ℝ) < hab25RhoPlus (Fintype.card (Fin n)) (k + 1) := by
+      rw [hab25RhoPlus]
+      have hn0 : (0 : ℝ) < (Fintype.card (Fin n) : ℝ) := by
+        have : 0 < Fintype.card (Fin n) := Fintype.card_pos
+        exact_mod_cast this
+      positivity
+    have hρ1 : hab25RhoPlus (Fintype.card (Fin n)) (k + 1) ≤ 1 := by
+      rw [hab25RhoPlus]
+      have hcard : Fintype.card (Fin n) = n := Fintype.card_fin n
+      rw [hcard]
+      have hn0 : (0 : ℝ) < (n : ℝ) := by
+        have : 0 < n := by omega
+        exact_mod_cast this
+      rw [show ((k + 1 : ℕ) : ℝ) / (n : ℝ) + 1 / (n : ℝ)
+          = (((k + 1 : ℕ) : ℝ) + 1) / n by ring, div_le_one hn0]
+      push_cast
+      have : (k : ℝ) + 2 ≤ (n : ℝ) := by exact_mod_cast hk2n
+      linarith
+    have hs1 : hab25RhoPlus (Fintype.card (Fin n)) (k + 1) ^ ((1 : ℝ) / 2) ≤ 1 := by
+      calc hab25RhoPlus (Fintype.card (Fin n)) (k + 1) ^ ((1 : ℝ) / 2)
+          ≤ 1 ^ ((1 : ℝ) / 2) := Real.rpow_le_rpow hρ0.le hρ1 (by norm_num)
+        _ = 1 := Real.one_rpow _
+    have hs0 : (0 : ℝ) < hab25RhoPlus (Fintype.card (Fin n)) (k + 1) ^ ((1 : ℝ) / 2) :=
+      Real.rpow_pos_of_pos hρ0 _
+    rw [le_div_iff₀ hs0]
+    push_cast
+    nlinarith
+  · -- the one-pair capture list per stack
+    intro u
+    obtain ⟨A₀, A₁, hd₀, hd₁, hcoh⟩ := hpencil u
+    refine ⟨{(A₀, A₁)}, by simp, ?_, ?_⟩
+    · intro ab hab
+      rw [Finset.mem_singleton] at hab
+      subst hab
+      exact ⟨hd₀, hd₁⟩
+    · intro γ hγbad
+      refine ⟨(A₀, A₁), Finset.mem_singleton_self _, ?_⟩
+      -- the bad scalar is close
+      have hγclose : γ ∈ _root_.ProximityGap.coeffs_of_close_proximity
+          (F := F) k ωs δq (u 0) (u 1) :=
+        hab25McaBadScalars_subset_coeffs_of_close_proximity ωs δ δq hδle u hγbad
+      -- the `mcaEvent` witness
+      have hbad : mcaEvent ((ReedSolomon.code ωs (k + 1) : Set (Fin n → F)))
+          δ (u 0) (u 1) γ := by
+        have := hγbad
+        rw [hab25McaBadScalars, Finset.mem_filter] at this
+        exact this.2
+      -- the lane decode is the pencil, and it is `δq`-close
+      have hPz := _root_.ProximityGap.Pz_relDist_le
+        (n := n) (k := k) (ωs := ωs) (δ := δq) (u₀ := u 0) (u₁ := u 1) hγclose
+      rw [hcoh γ hγclose hγclose] at hPz
+      have hclose : ((relHammingDist (u 0 + γ • u 1)
+          (fun i => (A₀ + Polynomial.C γ * A₁).eval (ωs i)) : ℚ≥0) : ℚ) ≤ δq := by
+        exact_mod_cast hPz
+      exact affineCaptured_of_pz_affine hd₀ hd₁ hbad hclose hreg
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit -/
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.agreement_card_real_of_relDist_le
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.agreement_card_of_relDist_le
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.affineCaptured_of_pz_affine
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_pencil_coherence
