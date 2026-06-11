@@ -6,6 +6,8 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellPencilJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellDichotomyWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonDischarge
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.SlicedComposition
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Supply
 
 /-!
 # The Johnson discharge from ONE named residual: the per-cell §5 package (#357, #348)
@@ -164,8 +166,100 @@ theorem johnsonDischargeStatement_of_packageSupply
     (hsupply n k m hNZ F₀ hF hFin hDec domain δ hk2 hkn hm12 hδ1) u R E P
     hRirr hdec hdvdR
 
+/-- **The smart constructor: `CellPackage` from surface + root data.**  The `htail`
+leg is DERIVED (the sliced `gammaGenuine` truncation chain) and the `hweight` leg is
+DERIVED (`weight_killTarget_le` at the uniform `killBudget`), so the remaining residual
+is exactly: the GS surface facts, the Y-root divisor `w` with its branch, and the
+matching-set/heavy-set loci with their sizes. -/
+noncomputable def CellPackage.ofSurfaceRoot [Fintype F₀] [DecidableEq F₀] {n : ℕ}
+    [NeZero n] {domain : Fin n ↪ F₀} {k : ℕ} {δ : ℝ≥0}
+    {u : WordStack F₀ (Fin 2) (Fin n)} {R : (F₀[X])[X][Y]}
+    {H : F₀[X][Y]} [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+    (x₀ : F₀) (hHyp : Hypotheses x₀ R H) (hmonic : H.Monic)
+    {D : ℕ} (hD : Bivariate.totalDegree H ≤ D) (hd2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHD : H.natDegree ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hRgrade : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    {Ppoly : F₀[X][Y]}
+    (hrepG : polyToPowerSeries𝕃 H Ppoly
+      = ProximityPrize.BCIKS20.GammaGenuine.gammaGenuine x₀ R H hHyp)
+    (root : (z : F₀) → rationalRoot (H_tilde' H) z)
+    {w : F₀[X][Y]} (hwdeg : w.natDegree < n)
+    (hwdvd : (Polynomial.X - Polynomial.C w) ∣ R)
+    {truncSet : Finset F₀}
+    (hbaseT : ∀ z ∈ truncSet, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    (hsepT : ∀ z ∈ truncSet,
+      ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z (root z)
+          (BCIKS20.Claim510AgreementSupply.pi_z_xi_ne_zero_of_monic hHyp
+            hmonic.leadingCoeff z (root z))))).Separable)
+    {disc : F₀[X]} (hdisc : disc ≠ 0)
+    (hcover : ∀ z : F₀, disc.eval z ≠ 0 → z ∈ truncSet)
+    (hbig : gradedCardBudget (Bivariate.natDegreeY R) D H.natDegree Ppoly.natDegree
+        + disc.natDegree < Fintype.card F₀)
+    (e : Fin n → F₀) (he : Function.Injective e) (u₀ u₁ : Fin n → F₀)
+    (matchingSet : Fin n → Finset F₀)
+    (hbaseA : ∀ j, ∀ z ∈ matchingSet j, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    (hsepA : ∀ j, ∀ z ∈ matchingSet j,
+      ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z (root z)
+          (BCIKS20.Claim510AgreementSupply.pi_z_xi_ne_zero_of_monic hHyp
+            hmonic.leadingCoeff z (root z))))).Separable)
+    (hfold : ∀ j, ∀ z ∈ matchingSet j,
+      (w.eval (Polynomial.C (e j) + Polynomial.C x₀)).eval z = u₀ j + z * u₁ j)
+    {xw : ℕ}
+    (hξw : weight_Λ_over_𝒪 (Fact.out (p := 0 < H.natDegree))
+      (ξ x₀ R H hHyp) D ≤ (WithBot.some xw : WithBot ℕ))
+    (hcard : ∀ j, BCIKS20.Claim510Supply.killBudget n D H.natDegree
+        (Bivariate.natDegreeY R) xw * H.natDegree < (matchingSet j).card)
+    (S₀ : Finset F₀)
+    (hbase₀ : ∀ z ∈ S₀, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    (hsep₀ : ∀ z ∈ S₀,
+      ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z (root z)
+          (BCIKS20.Claim510AgreementSupply.pi_z_xi_ne_zero_of_monic hHyp
+            hmonic.leadingCoeff z (root z))))).Separable)
+    {Bw : ℕ} (hBw : ∀ t, ((Polynomial.taylor (Polynomial.C x₀) w).coeff t).natDegree ≤ Bw)
+    (hS₀ : max Bw 1 < S₀.card) :
+    CellPackage domain k δ u R H where
+  x₀ := x₀
+  hHyp := hHyp
+  hmonic := hmonic
+  htail := BCIKS20.Claim59Lagrange.alphaGenuine_tail_zero_of_trunc H hHyp
+    (BCIKS20.Claim510SlicedComposition.gammaGenuine_eq_trunc_of_decoded_sliced hHyp
+      (BCIKS20.Claim510AgreementSupply.xi_ne_zero_of_monic hHyp hmonic.leadingCoeff)
+      hD (Fact.out) hmonic hd2 hdHD hD_Rx0 hRgrade hrepG root
+      (fun z _ => BCIKS20.Claim510AgreementSupply.pi_z_xi_ne_zero_of_monic hHyp
+        hmonic.leadingCoeff z (root z))
+      hwdeg hwdvd hbaseT (fun z hz => hsepT z hz) hdisc hcover hbig)
+  e := e
+  he := he
+  u₀ := u₀
+  u₁ := u₁
+  D := D
+  hD := hD
+  matchingSet := matchingSet
+  root := root
+  w := w
+  hwdeg := hwdeg
+  hwdvd := hwdvd
+  hbaseA := hbaseA
+  hsepA := hsepA
+  hfold := hfold
+  W := BCIKS20.Claim510Supply.killBudget n D H.natDegree (Bivariate.natDegreeY R) xw
+  hweight := fun j => BCIKS20.Claim510Supply.weight_killTarget_le H x₀ R hHyp hD
+    (Fact.out) hmonic hd2 hdHD hD_Rx0 hRgrade hξw n (e j) (u₀ j) (u₁ j)
+  hcard := hcard
+  S₀ := S₀
+  hbase₀ := hbase₀
+  hsep₀ := hsep₀
+  Bw := Bw
+  hBw := hBw
+  hS₀ := hS₀
+
 end BCIKS20.CellPencilJohnson
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms BCIKS20.CellPencilJohnson.himpr_of_cellPackageSupply
 #print axioms BCIKS20.CellPencilJohnson.johnsonDischargeStatement_of_packageSupply
+#print axioms BCIKS20.CellPencilJohnson.CellPackage.ofSurfaceRoot
