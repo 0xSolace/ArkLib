@@ -13,10 +13,10 @@ documented as open research with the paper trail.
 | ProofSystem/Stir | 0 | 0 | 0 | 3 |
 | ProofSystem/Spartan | 0 | 0 | 0 | 18 |
 | ProofSystem/Sumcheck | 0 | 0 | 0 | 1 |
-| Data/CodingTheory | 0 | 0 | 0 | 190 |
+| Data/CodingTheory | 0 | 0 | 0 | 192 |
 | OracleReduction/Composition | 0 | 0 | 0 | 46 |
 | OracleReduction/FiatShamir | 0 | 0 | 0 | 59 |
-| **TOTAL** | **0** | **0** | **0** | **485** |
+| **TOTAL** | **0** | **0** | **0** | **487** |
 
 
 ## Data/CodingTheory
@@ -170,6 +170,8 @@ documented as open research with the paper trail.
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShare.lean:102` theorem **strictCoeffPolysShareResidual_of_cell_decomposition**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShare.lean:180` theorem **strictCoeffPolysShareResidual_of_strictCoeffPolysResidual**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShare.lean:195` theorem **strictCoeffPolysShareResidual_of_exc**
+- `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShareOr.lean:54` def **StrictCoeffPolysResidualShareOr**
+- `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShareOr.lean:78` theorem **strictCoeffPolysResidualShareOr_of_share**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffProducer.lean:426` theorem **strictCoeffPolysResidual_of_localSeriesDatumOn**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffProducer.lean:450` theorem **strictCoeffPolysLargeResidual_of_localSeriesDatumOn**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:1815` class **Claim57Residuals**
