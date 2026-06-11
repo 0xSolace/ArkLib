@@ -74,7 +74,26 @@ theorem tvDist_le_probEvent_of_identicalOffBad
         rw [← two_mul, mul_div_assoc]
         simp [ENNReal.mul_div_cancel two_ne_zero ENNReal.ofNat_ne_top]
 
+/-- **Boolean-flag form** (the shape the hybrid games expose): if two `SPMF` games agree on
+every output where a decidable bad-flag `f` is `false`, have equal flag-`true` probability and
+equal failure mass, then their TV distance is bounded by the flag-`true` probability. -/
+theorem tvDist_le_probOutput_true_of_identicalOffFlag
+    (p q : SPMF α) (f : α → Bool)
+    (h_eq : ∀ x, f x = false → Pr[= x | p] = Pr[= x | q])
+    (h_flag : Pr[= true | f <$> p] = Pr[= true | f <$> q])
+    (h_fail : p.toPMF none = q.toPMF none) :
+    SPMF.tvDist p q ≤ (Pr[= true | f <$> p]).toReal := by
+  have hbridge : ∀ r : SPMF α, Pr[= true | f <$> r] = Pr[ fun x => f x = true | r] := by
+    intro r
+    rw [← probEvent_eq_eq_probOutput, probEvent_map]; rfl
+  rw [hbridge p]
+  refine tvDist_le_probEvent_of_identicalOffBad p q (fun x => f x = true) ?_ ?_ h_fail
+  · intro x hx
+    exact h_eq x (by simpa using hx)
+  · rw [← hbridge p, ← hbridge q]; exact h_flag
+
 end SPMF
 
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms SPMF.tvDist_le_probEvent_of_identicalOffBad
+#print axioms SPMF.tvDist_le_probOutput_true_of_identicalOffFlag
