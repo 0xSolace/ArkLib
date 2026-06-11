@@ -6643,3 +6643,28 @@ this session (`weight_Λ` = sup over Y-monomials of `deg·(D+1−d_H) + deg_X(co
   cancellation that the loose IH destroyed (wave-5 diagnosis) is exactly restored by
   carrying the `(2t−1)`-exponent structure, as the paper prescribes (line 3962).
   Re-baselined per-term lemma = the corrected W1, now with the cancellation available.
+
+**O154 V1 dive, finding 2 — THE RE-BASELINED COLLAPSE IS VERIFIED (hand proof, ready for
+transcription): `(D+1−d_H) + (t+1)·degW + (2t−1)·(d_R−1)·(D−d_H+1) ≤ (2t+1)·d_R·D` under
+`1 ≤ d_H ≤ d_R`, `2 ≤ d_R`, `degW + d_H ≤ D`.** The slack chain (each step ℕ-safe):
+
+1. `(D−d_H+1) ≤ D` (from `d_H ≥ 1`), so the ξ-term
+   `(2t−1)(d_R−1)(D−d_H+1) ≤ (2t−1)(d_R−1)D`.
+2. Budget identity: `(2t+1)·d_R·D − (2t−1)·(d_R−1)·D = D·[(2t+1)d_R − (2t−1)d_R + (2t−1)]
+   = D·(2d_R + 2t − 1) ≥ D·(2t+3)` (from `d_R ≥ 2`).
+3. Remaining LHS: `(D+1−d_H) + (t+1)·degW ≤ D + (t+1)·D = (t+2)·D` (from `d_H ≥ 1` and
+   `degW ≤ D − d_H ≤ D`).
+4. `(t+2)·D ≤ (2t+3)·D` ✓ — with slack `(t+1)·D`, so the bound is robust to the
+   ℕ-truncation edge cases (`t = 0`: `(2t−1) = 0` in ℕ kills the ξ-term entirely and the
+   check is `(D+1−d_H) + degW ≤ d_R·D`, which holds by `degW ≤ D−d_H` and `2d_H ≥ 1`).
+
+Transcription target: `structured_weight_collapse_rebased` next to
+`structured_weight_collapse` (HenselNumerator ~1445), same `exact_mod_cast` shape, `omega`
+or `nlinarith` closes after the four `Nat.sub`-guards are introduced
+(`Nat.sub_le`, `Nat.le_sub_of_add_le`). Then
+`βHensel_weight_bound_of_structured_weight_rebased` is the same two-line `refine
+hstructured.trans ?_` proof. With finding 1 (the t = 0 base = the rep computation, exact)
+and the structured induction (step 2 of the order), the chain to
+`JohnsonDischargeStatement` and the exact δ* pin is fully specified arithmetic + one
+structured induction whose cancellation mechanism the paper provides (line 3962) and the
+in-tree per-term lemmas support.
