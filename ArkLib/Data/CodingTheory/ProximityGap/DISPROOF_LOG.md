@@ -6888,3 +6888,34 @@ transcription with zero unknowns).** With `w := D − d_H`, `degW = w` (tight an
   `βHensel_weight_bound_structured` fires (assembled), the collapse fires (proven),
   the kill-target chain fires (assembled), `JohnsonDischargeStatement` falls, and
   `kkh26_deltaStar_pin_of_interior_ceiling` pins δ* exactly.
+
+**O154 V1 dive, finding 9 — the B-budget instantiation computed: the generic
+three-layer shape closes i1 ≥ 1 EXACTLY; the i1 = 0 case is pinned to one precise
+mechanism question (the W-extraction in 𝒪).** The computation, against the threaded
+theorem's `hreduced`:
+
+* **Generic shape supplier:** if `R`'s three-layer coefficients satisfy the total-degree
+  shape `deg_Z((R.coeff n).coeff i) ≤ D_R − n − i` (the GS interpolant's budget,
+  `gs_existence_over_ratfunc_zDegree_div` shape), then through `Δ_Y^m` (Y-shift, item (a)),
+  `Δ_X^{i1}` (X-shift, same mechanism on the middle layer), and `evalX (C x₀)`
+  (constant evaluation: max over X-indices, deg_Z preserved), the specialized Hasse
+  polynomial has the item-(d) shape with `DQ = D_R − m − i1`, `dT = d_R − m`. Hence
+  `nB = (D_R − m − i1) + (d_R − m)·(D − d_H)`.
+* **Case i1 ≥ 1 (δ = 0):** `hreduced` LHS − RHS `= d_H − i1 − d_R < 0` ✓ — closes with
+  room, using only `D_R ≤ D` and `d_H ≤ d_R`. The B-budget for all these cells is pure
+  plumbing of the generic supplier.
+* **Case i1 = 0 (δ = 1):** the crude bound leaves deficit `D − d_R ≥ 0`. Finding 7's
+  W-credit (item (b): `W ∣` top coefficient) must enter — but the naive reading is wrong:
+  W-divisibility RAISES `deg_Z(top coeff)`, it does not lower the sup. **The precise open
+  mechanism question:** how the paper extracts the W — three candidate routes:
+  (R-a) the canonical rep `p %ₘ H̃` has T-degree ≤ d_H − 1 < d_R − m generically — if the
+  reduction's weight bookkeeping (the proven `weight_Λ_modByMonic_le` is one-directional)
+  can be sharpened on the top monomial, `dT` drops to `d_H − 1` and the case closes;
+  (R-b) in 𝒪, write `mk p = W𝒪 · mk q + mk r` (peel the W-divisible top): then
+  `Λ(mk p) ≤ max(Λ(W) + Λ(q-part), Λ(r))` via the calculus — the W joins the budget as
+  the paper's `(t+1)Λ(W)` term (this is the paper's actual `α_t`-route bookkeeping);
+  (R-c) recheck whether the i1 = 0 cell even needs the full generic `nB` — the paper's
+  (A.1) at i1 = 0 has `ξ^{m−2}` not `ξ^{2i1+m−2}` and `W^0`; a sharper per-cell audit of
+  the exponent bookkeeping may show the engine's `hreduced` is stronger than needed here.
+  **Next session: decide R-a/R-b/R-c (read the paper's i1 = 0 term handling, fulltext
+  3990–4080), then the B-budget brick closes and the chain wires.**
