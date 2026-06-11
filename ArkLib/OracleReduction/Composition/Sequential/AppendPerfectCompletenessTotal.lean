@@ -8,6 +8,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessEm
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOracle
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOracleChallenge
+import ArkLib.OracleReduction.Composition.Sequential.AppendSeamBridges3
 
 /-!
 # Total (seam-agnostic) append perfect completeness
@@ -26,6 +27,7 @@ Side conditions are the union of the keystones': `hInit`/`hImplSupp` (msg + empt
 -/
 
 open OracleComp OracleSpec ProtocolSpec
+open scoped NNReal
 
 namespace Reduction
 
@@ -180,3 +182,50 @@ end OracleReduction
 #print axioms Reduction.reductionAppendPerfectCompletenessResidual_holds
 #print axioms OracleReduction.append_perfectCompleteness_total
 #print axioms OracleReduction.appendPerfectCompletenessResidual_holds
+
+namespace Reduction
+
+variable {ι : Type} {oSpec : OracleSpec ι} [oSpec.Fintype] [oSpec.Inhabited]
+  {Stmt₁ Wit₁ Stmt₂ Wit₂ Stmt₃ Wit₃ : Type}
+  {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+  [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+  {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+  {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+
+/-- **Seam-agnostic append completeness with additive error, for a nonempty trailing protocol.**
+The error-ful analogue of `append_perfectCompleteness_total` over the message/challenge split
+(`append_completeness_msg` from `AppendSeamBridges3`, `append_completeness_challenge` from
+`AppendPerfectCompletenessChallenge`). The `n = 0` (empty trailing) error-ful case is NOT yet
+covered: the perfect empty keystone's support-based proof does not generalize, and the empty
+game-factoring for the union-bound engine has not been built — hence the `0 < n` hypothesis
+(every concrete ArkLib consumer to date has a nonempty trailing protocol). -/
+theorem append_completeness_total_pos
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    {e₁ e₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ e₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ e₂)
+    (hn : 0 < n)
+    (hInit : NeverFail init)
+    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
+    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
+      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
+    (R₁.append R₂).completeness init impl rel₁ rel₃ (e₁ + e₂) := by
+  have hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n))
+      = pSpec₂.dir (⟨0, hn⟩ : Fin n) := by
+    rw [show (⟨m, by omega⟩ : Fin (m + n)) = Fin.natAdd m ⟨0, hn⟩ from by ext; simp,
+      Prover.append_dir_natAdd]
+  cases hd : pSpec₂.dir (⟨0, hn⟩ : Fin n) with
+  | V_to_P =>
+    exact append_completeness_challenge R₁ R₂ h₁ h₂ hn (hDir.trans hd) hd
+      himplSP himplNF himplVB hInit
+  | P_to_V =>
+    exact append_completeness_msg R₁ R₂ h₁ h₂ hn (hDir.trans hd) hd
+      hInit.probFailure_eq_zero himplSP himplNF himplVB
+
+end Reduction
+
+-- Axiom audit (error-ful positive-seam total): only [propext, Classical.choice, Quot.sound].
+#print axioms Reduction.append_completeness_total_pos
