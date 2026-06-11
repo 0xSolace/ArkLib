@@ -49,6 +49,7 @@ import ArkLib.Data.CodingTheory.AGL24DualSpan
 import ArkLib.Data.CodingTheory.AGL24EvalToSymbolic
 import ArkLib.Data.CodingTheory.AGL24FrontDoorBridge
 import ArkLib.Data.CodingTheory.AGL24GenericZeroPattern
+import ArkLib.Data.CodingTheory.AGL24GrandAssembly
 import ArkLib.Data.CodingTheory.AGL24KernelAgreement
 import ArkLib.Data.CodingTheory.AGL24KernelVector
 import ArkLib.Data.CodingTheory.AGL24ListDecodingBridge
@@ -278,6 +279,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Improve
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Kill
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510SliceAffine
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510SlicedComposition
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510SlicedComposition.wip
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Supply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Weld
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim57Pigeonhole
@@ -704,6 +706,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25RichCoordinateGate
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ShareGoodSetWeld
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25SlackWeld
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25SlackWeldFence
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniformShareBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25UniqueRichFactor
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WindowCount
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WitnessMassWiring
@@ -849,6 +852,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacityQuadratic
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacitySharpSpread
 import ArkLib.Data.CodingTheory.ProximityGap.MCANearCapacitySpreadOptimal
 import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
+import ArkLib.Data.CodingTheory.ProximityGap.MCAResearchLoop
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAThresholdLedger
@@ -1207,6 +1211,8 @@ import ArkLib.Data.UniPoly.Basic
 import ArkLib.Interaction.Oracle.Core
 import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
+import ArkLib.MCACapacityTrivial
+import ArkLib.MCAGSRefutationCore
 import ArkLib.OracleReduction.BCS.AppendSoundnessMsg
 import ArkLib.OracleReduction.BCS.BCSCompilerProof
 import ArkLib.OracleReduction.BCS.Basic
@@ -1468,9 +1474,14 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Assembly
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Discharge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2FarLift
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Probability
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition421
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseFirstOracle
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseFoldBridge
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseFoldedValue
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseHelpers
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSuffix
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.SuffixAlignCore
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.SuffixFiberAlignment
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Spec
