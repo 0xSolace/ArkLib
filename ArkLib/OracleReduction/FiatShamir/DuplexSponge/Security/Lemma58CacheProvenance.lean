@@ -50,7 +50,7 @@ variable {StmtIn : Type} {U : Type} [SpongeUnit U] [SpongeSize]
 /-! ## Persistence: `stepCache` never deletes -/
 
 /-- A cached hash record survives one fold step. -/
-theorem stepCache_hash_mono (c : DSCache StmtIn U) (e : DSEntry StmtIn U)
+theorem stepCache_hash_mono' (c : DSCache StmtIn U) (e : DSEntry StmtIn U)
     {q : StmtIn} {u : Vector U SpongeSize.C} (h : c.1 q = some u) :
     (stepCache c e).1 q = some u := by
   rcases e with ⟨t, ans⟩
@@ -105,7 +105,7 @@ theorem foldl_stepCache_hash_mono (c : DSCache StmtIn U)
     (ℓ.foldl stepCache c).1 q = some u := by
   induction ℓ generalizing c with
   | nil => exact h
-  | cons e ℓ ih => exact ih (stepCache c e) (stepCache_hash_mono c e h)
+  | cons e ℓ ih => exact ih (stepCache c e) (stepCache_hash_mono' c e h)
 
 /-- Permutation pairs persist through any fold suffix. -/
 theorem foldl_stepCache_pair_mono (c : DSCache StmtIn U)
@@ -272,7 +272,7 @@ theorem mem_slotList_of_pair_snd {c : DSCache StmtIn U}
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
-#print axioms DuplexSpongeFS.EagerLazyDS.stepCache_hash_mono
+#print axioms DuplexSpongeFS.EagerLazyDS.stepCache_hash_mono'
 #print axioms DuplexSpongeFS.EagerLazyDS.stepCache_pair_mono
 #print axioms DuplexSpongeFS.EagerLazyDS.foldl_stepCache_hash_mono
 #print axioms DuplexSpongeFS.EagerLazyDS.foldl_stepCache_pair_mono
