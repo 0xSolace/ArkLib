@@ -155,3 +155,31 @@ N1 · N3 · (unification-bet) · S1 · R1 · S3 · R2 · S2 · R3 · N2 · A5.
 
 Every refutation is a constraint lemma in `DISPROOF_LOG.md`. Survivors get red-teamed and promoted.
 If all 9 die, regenerate 3+3+3 and continue. **Start: the M3 reduction + A5 exact point.**
+
+## 7. Results log (proven / refuted, brick by brick)
+
+### N1 — REFUTED at all feasible scales (`scripts/probes/probe_n1_energy_vs_badcount.py`)
+**Verdict: the pencil energy E₂ does NOT govern the bad-scalar count, so `δ* = F(E₂/n²)` fails.**
+Probe (exact, syndrome-reduced ε_mca over the worst line; cross-checked monotone): across 8
+feasible `(p,n,k)` instances, smooth-subgroup and random-subset domains of *equal* `n,k` have
+**identical** bad-scalar counts at every tested radius — even when E₂ differs by up to 10× (e.g.
+`(13,4,2)`: smooth E₂=10 vs random E₂=1, both bad count 4; `(11,5,3)`: E₂=20 vs 4, both bad 5).
+6/8 cases show "different E₂, same bad count"; the other 2 had equal E₂ and equal bad count. The
+bad count is determined by `(n,k,δ)` alone at this scale, **independent of E₂**.
+
+*The learning (a real constraint on the search):* the only known domain-separating invariant
+(E₂ = the M3 second-moment energy) controls the agreement *spectrum moments* but **not the
+extremal bad count** that sets δ\*. This is the average→worst-case wall manifesting at the pencil
+level: E₂ is an L²/average quantity; δ\* is a sup over received words. *Any future use of the
+pencil structure for δ\* must target an extremal/higher-order invariant, not the energy sum.*
+The proven `E₂ = Θ(n³)` separation (`MobiusPencilEnergy.lean`) stands as a spectrum-moment fact —
+it is simply not the δ\*-controlling one. **Constraint for the ledger:** `ε_mca` is not a function
+of E₂ (two domains, same field, E₂ differing, same ε_mca).
+
+### N1′ (refinement, promoted to the slate) — the EXTREMAL pencil invariant
+Since the *sum* E₂ is moment-blind, the refined conjecture is that δ\* tracks an **extremal**
+pencil quantity — `maxₚ t₂(φ)` over the full k=3 pencil family, or the M3 *third*-moment census
+`Σ_φ t₂(φ)³` (where the dossier's smooth/random separation actually lives), not the second moment.
+This is the "thin-strip / higher-moment" escape (K3/H1) re-aimed: target the sup, not the average.
+*Next probe:* does `maxₚ t₂` or the M3 cubic census predict the bad count where E₂ failed?
+

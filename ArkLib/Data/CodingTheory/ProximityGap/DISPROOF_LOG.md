@@ -6042,3 +6042,12 @@ first staircase bands are astronomically below threshold, so the staircase NEVER
 the crossing there; the correction matters only at toy scales/tiny ε*). The named surface
 should still be restated as the two-family max for honesty. Red-team cycle 1 verdict:
 **the candidate pin survives, with a corrected and sharper conjecture.**
+
+## Fable N1 (pencil-energy law) — REFUTED at scale (2026-06-11)
+Hypothesis: δ*(H) = F(E₂(H)/n²), E₂ = Σ_b t₂(b)² (Möbius pencil energy).
+Refutation: `scripts/probes/probe_n1_energy_vs_badcount.py` — exact ε_mca bad-count is
+DOMAIN-INDEPENDENT (smooth=random at equal n,k,δ) across 8 feasible instances, while E₂ varies
+up to 10×. So ε_mca is not a function of E₂; the energy is moment-blind to the extremal bad count.
+Constraint lemma target: ∃ two domains, same field, E₂ differing, ε_mca equal. The proven
+E₂=Θ(n³) smooth separation (MobiusPencilEnergy.lean) is a spectrum-moment fact, not δ*-controlling.
+Refinement N1′: target the EXTREMAL pencil invariant (max t₂ / M3 third moment), not the sum.
