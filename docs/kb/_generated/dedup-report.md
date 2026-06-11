@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2286 files, 29210 declarations
+- `ArkLib` — 2323 files, 29516 declarations
 
-## Same short-name across multiple files (1234 groups)
+## Same short-name across multiple files (1244 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -359,6 +359,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma MixedRadixTower.packet_mul_coeff` [ArkLib/Data/CodingTheory/ProximityGap/MixedRadixTower.lean:510](../../../ArkLib/Data/CodingTheory/ProximityGap/MixedRadixTower.lean#L510) — Slices of a geometric-packet multiple: if `deg R < q` then `(Σ_{i<p} X^{iq} · R).coeff (iq + s) = R.
 - `lemma PacketCombinationDivisibility.packet_mul_coeff` [ArkLib/Data/CodingTheory/ProximityGap/PacketCombinationDivisibility.lean:132](../../../ArkLib/Data/CodingTheory/ProximityGap/PacketCombinationDivisibility.lean#L132) — Slices of a packet multiple (generic-ring form of `CRTDoubleSlice.packet_slice_coeff`): if `natDegre
 
+### `phi` (4 declarations, 4 files)
+
+- `def CodingTheory.Bounds.phi` [ArkLib/Data/CodingTheory/ListDecoding/Bounds/GuruswamiSudanListSize.lean:48](../../../ArkLib/Data/CodingTheory/ListDecoding/Bounds/GuruswamiSudanListSize.lean#L48) — Explicit `F`-algebra retraction of `psi`, sending `Y ↦ X₁` and coefficients `g(X) ↦ g(X₀)`.
+- `def ArkLib.CodingTheory.JohnsonSimplex.phi` [ArkLib/Data/CodingTheory/ProximityGap/JohnsonSimplexBound.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/JohnsonSimplexBound.lean#L42) — The q-ary simplex embedding: `φ(x)(i,c) = 1` if `x i = c`, else `0`.
+- `def ProximityGap.MCAZeta8Census.phi` [ArkLib/Data/CodingTheory/ProximityGap/MCAZeta8Census.lean:69](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAZeta8Census.lean#L69) — Evaluation of a coordinate vector at `ζ`.
+- `def Logup.phi` [ArkLib/ProofSystem/Logup/Common.lean:685](../../../ArkLib/ProofSystem/Logup/Common.lean#L685) — The denominator term `φᵢ(u)` from Protocol 2.
+
 ### `reduction_completeness` (4 declarations, 4 files)
 
 - `theorem CheckClaim.reduction_completeness` [ArkLib/ProofSystem/Component/CheckClaim.lean:71](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L71) — The `CheckClaim` reduction satisfies perfect completeness with respect to the predicate as the input
@@ -464,6 +471,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Spartan.Spec.Bricks.vsum_two_pos` [ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeSoundness.lean:84](../../../ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeSoundness.lean#L84) — Positivity of two-step round counts.
 - `theorem Spartan.Spec.Bricks.vsum_two_pos` [ArkLib/ProofSystem/Spartan/SpartanDirFacts.lean:34](../../../ArkLib/ProofSystem/Spartan/SpartanDirFacts.lean#L34) — Positivity of two-step round counts.
 
+### `for` (4 declarations, 4 files)
+
+- `theorem for` [ArkLib/Data/CodingTheory/ProximityGap/BandExactness.lean:13](../../../ArkLib/Data/CodingTheory/ProximityGap/BandExactness.lean#L13) — (no docstring)
+- `theorem for` [ArkLib/Data/CodingTheory/ProximityGap/CosetSplittingFloor.lean:12](../../../ArkLib/Data/CodingTheory/ProximityGap/CosetSplittingFloor.lean#L12) — (no docstring)
+- `theorem for` [ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessProof.lean:14](../../../ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessProof.lean#L14) — (no docstring)
+- `theorem for` [ArkLib/ProofSystem/Logup/Security/Soundness.lean:46](../../../ArkLib/ProofSystem/Logup/Security/Soundness.lean#L46) — (no docstring)
+
 ### `mem_of_getElem` (4 declarations, 4 files)
 
 - `lemma DuplexSpongeFS.Sponge316.mem_of_getElem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean:54](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/HonestConsistency.lean#L54) — Membership from an `getElem?`-hit.
@@ -546,6 +560,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Domain.CosetFftDomainClass.toFinset` [ArkLib/Data/Domain/CosetFftDomain/Defs.lean:242](../../../ArkLib/Data/Domain/CosetFftDomain/Defs.lean#L242) — (no docstring)
 - `abbrev Domain.CosetFftDomain.toFinset` [ArkLib/Data/Domain/CosetFftDomain/Defs.lean:258](../../../ArkLib/Data/Domain/CosetFftDomain/Defs.lean#L258) — (no docstring)
 - `abbrev Domain.FftDomain.toFinset` [ArkLib/Data/Domain/FftDomain/Defs.lean:126](../../../ArkLib/Data/Domain/FftDomain/Defs.lean#L126) — (no docstring)
+
+### `F17` (3 declarations, 3 files)
+
+- `abbrev ProximityGap.DeltaStarSecondPin.F17` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean:49](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarSecondPinF17.lean#L49) — (no docstring)
+- `abbrev ProximityGap.HalfPairSliceExact.F17` [ArkLib/Data/CodingTheory/ProximityGap/HalfPairSliceExact.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/HalfPairSliceExact.lean#L54) — (no docstring)
+- `abbrev ProximityGap.SmoothWindowSaturation.F17` [ArkLib/Data/CodingTheory/ProximityGap/SmoothWindowSaturation.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/SmoothWindowSaturation.lean#L54) — (no docstring)
 
 ### `G_card` (3 declarations, 3 files)
 
@@ -974,12 +994,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma ArkLib.CodingTheory.TinyInteriorK3.p5_deg` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF11K3.lean:147](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF11K3.lean#L147) — (no docstring)
 - `lemma ArkLib.CodingTheory.Round3SmoothF17.p5_deg` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF17Subgroup.lean:157](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF17Subgroup.lean#L157) — (no docstring)
 
-### `phi` (3 declarations, 3 files)
-
-- `def CodingTheory.Bounds.phi` [ArkLib/Data/CodingTheory/ListDecoding/Bounds/GuruswamiSudanListSize.lean:48](../../../ArkLib/Data/CodingTheory/ListDecoding/Bounds/GuruswamiSudanListSize.lean#L48) — Explicit `F`-algebra retraction of `psi`, sending `Y ↦ X₁` and coefficients `g(X) ↦ g(X₀)`.
-- `def ArkLib.CodingTheory.JohnsonSimplex.phi` [ArkLib/Data/CodingTheory/ProximityGap/JohnsonSimplexBound.lean:42](../../../ArkLib/Data/CodingTheory/ProximityGap/JohnsonSimplexBound.lean#L42) — The q-ary simplex embedding: `φ(x)(i,c) = 1` if `x i = c`, else `0`.
-- `def Logup.phi` [ArkLib/ProofSystem/Logup/Common.lean:685](../../../ArkLib/ProofSystem/Logup/Common.lean#L685) — The denominator term `φᵢ(u)` from Protocol 2.
-
 ### `pow_mod_eq` (3 declarations, 3 files)
 
 - `lemma CRTExponentGridSum.pow_mod_eq` [ArkLib/Data/CodingTheory/ProximityGap/CRTExponentGridSum.lean:71](../../../ArkLib/Data/CodingTheory/ProximityGap/CRTExponentGridSum.lean#L71) — Exponent reduction: if `ζ ^ n = 1` then `ζ ^ (m % n) = ζ ^ m`.
@@ -1207,12 +1221,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Spartan.Spec.Bricks.composedPSpec_dir_seam` [ArkLib/ProofSystem/Spartan/ComposedCompleteness.lean:428](../../../ArkLib/ProofSystem/Spartan/ComposedCompleteness.lean#L428) — Seam-direction fact for `firstMessage ▷ sfx1`: the combined spec (= `composedPSpec`) at the seam ind
 - `theorem Spartan.Spec.Bricks.composedPSpec_dir_seam` [ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeSoundness.lean:223](../../../ArkLib/ProofSystem/Spartan/ComposedRbrKnowledgeSoundness.lean#L223) — Seam-direction fact for `firstMessage ▷ sfx1`: the combined spec (= `composedPSpec`) at the seam ind
 - `theorem Spartan.Spec.Bricks.composedPSpec_dir_seam` [ArkLib/ProofSystem/Spartan/SpartanDirFacts.lean:171](../../../ArkLib/ProofSystem/Spartan/SpartanDirFacts.lean#L171) — Seam-direction fact for `firstMessage ▷ sfx1`: the combined spec (= `composedPSpec`) at the seam ind
-
-### `for` (3 declarations, 3 files)
-
-- `theorem for` [ArkLib/Data/CodingTheory/ProximityGap/CosetSplittingFloor.lean:12](../../../ArkLib/Data/CodingTheory/ProximityGap/CosetSplittingFloor.lean#L12) — (no docstring)
-- `theorem for` [ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessProof.lean:14](../../../ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessProof.lean#L14) — (no docstring)
-- `theorem for` [ArkLib/ProofSystem/Logup/Security/Soundness.lean:46](../../../ArkLib/ProofSystem/Logup/Security/Soundness.lean#L46) — (no docstring)
 
 ### `prizeRate_floor_add_one_le` (3 declarations, 3 files)
 
@@ -1676,6 +1684,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def OracleSpec.QueryLog.NoRedundantEntryDSPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean:57](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BadEventsPaper.lean#L57) — A trace has no paper-redundant entries.
 - `def DuplexSpongeFS.Paper.NoRedundantEntryDSPaper` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/PaperBadEvents.lean:67](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/PaperBadEvents.lean#L67) — No entry of the trace is paper-redundant.
+
+### `NoWeightLE` (2 declarations, 2 files)
+
+- `def ProximityGap.MCAStaircaseMaster.NoWeightLE` [ArkLib/Data/CodingTheory/ProximityGap/MCAStaircaseMaster.lean:53](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAStaircaseMaster.lean#L53) — Parameterized distance hypothesis: no nonzero codeword on `≤ m` points.
+- `def ProximityGap.SpikeFloor.NoWeightLE` [ArkLib/Data/CodingTheory/ProximityGap/UniversalSpikeFloor.lean:49](../../../ArkLib/Data/CodingTheory/ProximityGap/UniversalSpikeFloor.lean#L49) — No nonzero codeword is supported on `≤ j` positions (minimum distance `> j`).
 
 ### `OStmt` (2 declarations, 2 files)
 
@@ -2355,6 +2368,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Core2Keystone.epsRbr_le_of_forall_le` [ArkLib/ProofSystem/Whir/KeystoneReduction.lean:278](../../../ArkLib/ProofSystem/Whir/KeystoneReduction.lean#L278) — **§3.2 — antitone transport to a dominating budget (the keystone budget is tight).** The `epsRbr` bu
 - `theorem Issue113WHIR.epsRbr_le_of_forall_le` [ArkLib/ProofSystem/Whir/RbrBudgetAccounting.lean:158](../../../ArkLib/ProofSystem/Whir/RbrBudgetAccounting.lean#L158) — **Tightness / universal property: `ε_rbr` is the SMALLEST uniform per-challenge bound.** If a candid
 
+### `epsStar` (2 declarations, 2 files)
+
+- `def ProximityGap.epsStar` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallenges.lean:137](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallenges.lean#L137) — **ABF26 §1 negligibility threshold** `ε* := 2^(-128)`.
+- `def ProximityGap.MCAWindowInteriorPin.epsStar` [ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorPin.lean:47](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAWindowInteriorPin.lean#L47) — The interior threshold `ε* = 5/11 = C(5,4)/q`, between the good-side ceiling `C(5,4)/q` and the bad
+
 ### `eqPoly_evalC_eq_C_eval` (2 declarations, 2 files)
 
 - `theorem Spartan.Spec.eqPoly_evalC_eq_C_eval` [ArkLib/ProofSystem/Spartan/SecondSumcheckReduction.lean:41](../../../ArkLib/ProofSystem/Spartan/SecondSumcheckReduction.lean#L41) — (no docstring)
@@ -2454,6 +2472,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `abbrev DuplexSpongeFS.NARG.failureProbabilityFamily` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Basic.lean:142](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Basic.lean#L142) — Paper-facing alias for CO25 Definition 3.7 with explicit security parameter `λ`.
 - `def Verifier.failureProbabilityFamily` [ArkLib/OracleReduction/Security/Rewinding.lean:249](../../../ArkLib/OracleReduction/Security/Rewinding.lean#L249) — CO25 Definition 3.7 with the security parameter `λ` made explicit as an external index.
+
+### `family` (2 declarations, 2 files)
+
+- `def ProximityGap.MCANearCapacityQuadratic.family` [ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityQuadratic.lean:181](../../../ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityQuadratic.lean#L181) — The staircase window family `{ W(q,r) : 0 ≤ q < n-2k, 0 ≤ r ≤ k }` as a `Finset` of windows.
+- `theorem family` [ArkLib/Data/CodingTheory/ProximityGap/MCAStaircaseExact.lean:33](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAStaircaseExact.lean#L33) — (no docstring)
 
 ### `fiatShamir_completeness_of_runEq` (2 declarations, 2 files)
 
@@ -2764,6 +2787,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.SeqComposeRbrKnowledge.idxToSigma_inr` [ArkLib/OracleReduction/Composition/Sequential/SeqComposeRbrKnowledgeProof.lean:96](../../../ArkLib/OracleReduction/Composition/Sequential/SeqComposeRbrKnowledgeProof.lean#L96) — `seqComposeChallengeIdxToSigma` along the `inr` embedding of a tail challenge index: the first compo
 - `theorem ArkLib.SeqComposeRbrSoundness.idxToSigma_inr` [ArkLib/ProofSystem/Sumcheck/Spec/SeqComposeRbrSoundness.lean:118](../../../ArkLib/ProofSystem/Sumcheck/Spec/SeqComposeRbrSoundness.lean#L118) — `seqComposeChallengeIdxToSigma` along the `inr` embedding of a tail challenge index: the first compo
+
+### `ind` (2 declarations, 2 files)
+
+- `def ArkLib.JohnsonBound.ind` [ArkLib/Data/CodingTheory/JohnsonBound/ListSize.lean:77](../../../ArkLib/Data/CodingTheory/JohnsonBound/ListSize.lean#L77) — `0/1` indicator (in `ℚ`) that `c` agrees with `w` at coordinate `i`.
+- `def ArkLib.ProximityGap.PairSumRigidityModP.ind` [ArkLib/Data/CodingTheory/ProximityGap/PairSumRigidityModP.lean:69](../../../ArkLib/Data/CodingTheory/ProximityGap/PairSumRigidityModP.lean#L69) — The signed fold indicator: exponent `a < 2^k` contributes `+1` at `t = a` (low half) or `−1` at `t =
 
 ### `inflate` (2 declarations, 2 files)
 
@@ -3165,6 +3193,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ProximityGap.DeltaStarExactPin.mcaEvent_g4` [ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean:182](../../../ArkLib/Data/CodingTheory/ProximityGap/DeltaStarExactPinF5.lean#L182) — `γ = 4` is bad, witness set `{0,1,3}`, interpolating codeword `0`.
 - `theorem ProximityGap.MCADeltaStarExactPoint.mcaEvent_g4` [ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean:283](../../../ArkLib/Data/CodingTheory/ProximityGap/MCADeltaStarExactPoint.lean#L283) — `γ = 4`, witness `S = {0,1,3}`, on-line codeword `0`; no pair: `u₀` is not interpolable on `S`.
 
+### `mcaEvent_spike` (2 declarations, 2 files)
+
+- `lemma ProximityGap.SpikeLower.mcaEvent_spike` [ArkLib/Data/CodingTheory/ProximityGap/MCAEndpointLower.lean:238](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAEndpointLower.lean#L238) — **Core spike lemma.** For each `j`, `mcaEvent C δ u₀ u₁ (g j)` holds, provided `t + k ≤ n` and `(1 -
+- `theorem ProximityGap.SpikeFloor.mcaEvent_spike` [ArkLib/Data/CodingTheory/ProximityGap/UniversalSpikeFloor.lean:113](../../../ArkLib/Data/CodingTheory/ProximityGap/UniversalSpikeFloor.lean#L113) — **The `j`-spike certificate.**  At `γ = −aₗ` the spike stack fires `mcaEvent`.
+
 ### `mem_C_iff` (2 declarations, 2 files)
 
 - `theorem JohnsonBound.FamilyRefutation.mem_C_iff` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean:49](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean#L49) — Membership in `C` is membership in the explicit three-element set.
@@ -3394,6 +3427,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.ProximityGap.Round8PrizeSurvives.pair_rigidity` [ArkLib/Data/CodingTheory/ProximityGap/CollisionRigidityThreeSwap.lean:112](../../../ArkLib/Data/CodingTheory/ProximityGap/CollisionRigidityThreeSwap.lean#L112) — **Pair rigidity (the field input).** If `(2 : F) ≠ 0` and two `2`-element sets `{x₁,x₂}`, `{y₁,y₂}`
 - `theorem Round23Rigidity.pair_rigidity` [ArkLib/Data/CodingTheory/ProximityGap/RigidityBaseCasePairs.lean:157](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityBaseCasePairs.lean#L157) — **THE BASE-CASE RIGIDITY THEOREM.** Over a `CharZero` field with the half basis independent: if `sva
+
+### `pairing` (2 declarations, 2 files)
+
+- `def Round20CliqueKernel.pairing` [ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueKernelStructure.lean:68](../../../ArkLib/Data/CodingTheory/ProximityGap/Conjecture41CliqueKernelStructure.lean#L68) — The coefficient pairing `⟨P, s⟩ = ∑_{j<D} P_j·s_j` between polynomials and syndromes.
+- `def ProximityGap.MCACircuitPropagation.pairing` [ArkLib/Data/CodingTheory/ProximityGap/MCACircuitPropagation.lean:50](../../../ArkLib/Data/CodingTheory/ProximityGap/MCACircuitPropagation.lean#L50) — The syndrome pairing of a dual vector against a word.
 
 ### `paperTranscriptVectorIOP_pureTrue_perfectCompleteness` (2 declarations, 2 files)
 
@@ -3945,6 +3983,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem StirIOP.Round.unroll_2_message_VP` [ArkLib/ProofSystem/Stir/RoundCompleteness.lean:55](../../../ArkLib/ProofSystem/Stir/RoundCompleteness.lean#L55) — (no docstring)
 - `theorem WhirIOP.FoldRound.unroll_2_message_VP` [ArkLib/ProofSystem/Whir/FoldRound.lean:65](../../../ArkLib/ProofSystem/Whir/FoldRound.lean#L65) — (no docstring)
 
+### `urow` (2 declarations, 2 files)
+
+- `def ProximityGap.SmoothWindowSaturation.urow` [ArkLib/Data/CodingTheory/ProximityGap/SmoothWindowSaturation.lean:62](../../../ArkLib/Data/CodingTheory/ProximityGap/SmoothWindowSaturation.lean#L62) — Row 0 of the saturating stack: `x ↦ x⁴` (the order-4 coset indicator).
+- `def ProximityGap.TakeoverCountermodel.urow` [ArkLib/Data/CodingTheory/ProximityGap/TakeoverCountermodel.lean:96](../../../ArkLib/Data/CodingTheory/ProximityGap/TakeoverCountermodel.lean#L96) — Row 0 of the take-over stack: `x ↦ x⁹`.
+
 ### `urow0` (2 declarations, 2 files)
 
 - `def ProximityGap.MCANearCapacityGK.urow0` [ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityGeneralRate.lean:121](../../../ArkLib/Data/CodingTheory/ProximityGap/MCANearCapacityGeneralRate.lean#L121) — First row `u₀ i = (domain i)ᵏ⁺¹`.
@@ -3984,6 +4027,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def KZG.verifyOpening` [ArkLib/CommitmentScheme/KZG/Basic.lean:69](../../../ArkLib/CommitmentScheme/KZG/Basic.lean#L69) — To verify a KZG opening `opening` for a commitment `commitment` at point `z` with claimed evaluation
 - `def InductiveMerkleTree.verifyOpening` [ArkLib/CommitmentScheme/MerkleTree/Batch.lean:101](../../../ArkLib/CommitmentScheme/MerkleTree/Batch.lean#L101) — Verify one packaged opening against a claimed root, in `OracleComp (spec α)`.
+
+### `vrow` (2 declarations, 2 files)
+
+- `def ProximityGap.SmoothWindowSaturation.vrow` [ArkLib/Data/CodingTheory/ProximityGap/SmoothWindowSaturation.lean:65](../../../ArkLib/Data/CodingTheory/ProximityGap/SmoothWindowSaturation.lean#L65) — Row 1: `x ↦ x²`.
+- `def ProximityGap.TakeoverCountermodel.vrow` [ArkLib/Data/CodingTheory/ProximityGap/TakeoverCountermodel.lean:99](../../../ArkLib/Data/CodingTheory/ProximityGap/TakeoverCountermodel.lean#L99) — Row 1: `x ↦ x⁸` (the coset indicator: `±1` on the two `μ₈`-cosets).
 
 ### `weight_Λ_over_𝒪_add_le` (2 declarations, 2 files)
 
@@ -4044,6 +4092,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.CodingTheory.TinyInteriorK3.witness_list_card_seven` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF11K3.lean:168](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF11K3.lean#L168) — **The list has exactly seven elements.** All seven explicit codewords are pairwise distinct.
 - `theorem ArkLib.CodingTheory.Round3SmoothF17.witness_list_card_seven` [ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF17Subgroup.lean:177](../../../ArkLib/Data/CodingTheory/ProximityGap/ListInteriorPinF17Subgroup.lean#L177) — **The list has exactly seven elements.** All seven explicit smooth-domain codewords are pairwise dis
+
+### `zrow` (2 declarations, 2 files)
+
+- `def ProximityGap.MCABandThreeExact.zrow` [ArkLib/Data/CodingTheory/ProximityGap/MCABandThreeExact.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/MCABandThreeExact.lean#L60) — The triple-spike first row.
+- `def ProximityGap.MCAStaircaseExact.zrow` [ArkLib/Data/CodingTheory/ProximityGap/MCAStaircaseExact.lean:58](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAStaircaseExact.lean#L58) — The `b`-spike first row.
 
 ### `AnchoredFrom` (2 declarations, 2 files)
 
@@ -6611,7 +6664,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean:188](../../../ArkLib/ToMathlib/BCIKS20GlobalAssembler.lean#L188) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/XiCertReduction.lean:219](../../../ArkLib/ToMathlib/XiCertReduction.lean#L219) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 
-## Near-duplicate docstrings (Jaccard ≥ 0.85, 241 cross-file pairs)
+## Near-duplicate docstrings (Jaccard ≥ 0.85, 240 cross-file pairs)
 
 Each pair has docstrings sharing a high fraction of (4+-letter) words, in different files. Most are unrelated coincidences in boilerplate; look for pairs where the *concept* matches.
 

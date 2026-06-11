@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandThreeInfra
+import ArkLib.Data.CodingTheory.ProximityGap.MCAHalfDistanceStaircase
 
 /-!
 # Round 4 / R4.2 (#357): the band-3 collapse theorem — `b = 3` of the corrected general law

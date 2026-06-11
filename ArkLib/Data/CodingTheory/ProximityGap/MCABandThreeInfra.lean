@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandThreeCoredCollapse
-import ArkLib.Data.CodingTheory.ProximityGap.MCAHalfDistanceGeneralRefuted
 
 /-!
-# Round 3 (#357): band-3 collapse infrastructure (`d ≥ 7`) — puncture extraction and the extension engine
+# Round 3 (#357): band-3 collapse infrastructure (`d ≥ 7`)
+
+Puncture extraction and the extension engine.
 
 The doubled-column refutation fixed the general-code collapse boundary at `d ≥ 2b + 1`.
 This file proves the `b = 3` case: **every linear code with no nonzero codeword supported on
@@ -33,7 +34,7 @@ All results are `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.
 
 ## References
 - Issue #357 (round 3; the staircase programme), `MCABandThreeCoredCollapse.lean`,
-  `MCAHalfDistanceGeneralRefuted.lean` (the `d = 2b` counterexample making this sharp).
+  and `MCAHalfDistanceGeneralRefuted.lean` (the `d = 2b` counterexample making this sharp).
 -/
 
 set_option autoImplicit false
@@ -149,6 +150,61 @@ theorem ext_at (C : Submodule F (ι → A)) (hC : NoWeightLE6 C)
   rw [hwb_eq]
   module
 
+/-- A `≤ 2`-point set containing two distinct points is exactly that pair. -/
+theorem eq_pair_of_card_le_two {s : Finset ι} {x y : ι} (hxy : x ≠ y)
+    (hx : x ∈ s) (hy : y ∈ s) (hcard : s.card ≤ 2) :
+    s = {x, y} := by
+  have hsub : ({x, y} : Finset ι) ⊆ s := by
+    intro z hz
+    rw [Finset.mem_insert, Finset.mem_singleton] at hz
+    rcases hz with rfl | rfl
+    · exact hx
+    · exact hy
+  have hpair : ({x, y} : Finset ι).card = 2 := by
+    simp [hxy]
+  exact (Finset.eq_of_subset_of_card_le hsub (by simpa [hpair] using hcard)).symm
+
+/-- In a four-family of `≤ 2`-point punctures, two distinct deep points force two of the
+puncture sets to equal the same pair `{x, y}`.
+
+This is the pure pigeonhole brick in the band-3 dichotomy: if both `x` and `y` occur in
+at least three of the four puncture sets, then at least two indices contain both, and the
+`≤ 2` bound makes both punctures exactly `{x, y}`. -/
+theorem exists_two_pair_punctures_of_two_deep (P : Fin 4 → Finset ι) {x y : ι}
+    (hxy : x ≠ y) (hcard : ∀ a, (P a).card ≤ 2)
+    (hxdeep : 3 ≤ ((Finset.univ : Finset (Fin 4)).filter (fun a => x ∈ P a)).card)
+    (hydeep : 3 ≤ ((Finset.univ : Finset (Fin 4)).filter (fun a => y ∈ P a)).card) :
+    ∃ a b : Fin 4, a ≠ b ∧ P a = {x, y} ∧ P b = {x, y} := by
+  let X : Finset (Fin 4) := (Finset.univ : Finset (Fin 4)).filter (fun a => x ∈ P a)
+  let Y : Finset (Fin 4) := (Finset.univ : Finset (Fin 4)).filter (fun a => y ∈ P a)
+  have hXdeep : 3 ≤ X.card := by simpa [X] using hxdeep
+  have hYdeep : 3 ≤ Y.card := by simpa [Y] using hydeep
+  have hUle : (X ∪ Y).card ≤ 4 := by
+    calc
+      (X ∪ Y).card ≤ (Finset.univ : Finset (Fin 4)).card := by
+        apply Finset.card_le_card
+        intro a _
+        exact Finset.mem_univ a
+      _ = 4 := by decide
+  have hinter : 1 < (X ∩ Y).card := by
+    have hsum := Finset.card_union_add_card_inter X Y
+    omega
+  obtain ⟨a, ha, b, hb, hab⟩ := Finset.one_lt_card.mp hinter
+  have hxa : x ∈ P a := by
+    have haX : a ∈ X := (Finset.mem_inter.mp ha).1
+    exact (Finset.mem_filter.mp haX).2
+  have hya : y ∈ P a := by
+    have haY : a ∈ Y := (Finset.mem_inter.mp ha).2
+    exact (Finset.mem_filter.mp haY).2
+  have hxb : x ∈ P b := by
+    have hbX : b ∈ X := (Finset.mem_inter.mp hb).1
+    exact (Finset.mem_filter.mp hbX).2
+  have hyb : y ∈ P b := by
+    have hbY : b ∈ Y := (Finset.mem_inter.mp hb).2
+    exact (Finset.mem_filter.mp hbY).2
+  exact ⟨a, b, hab, eq_pair_of_card_le_two hxy hxa hya (hcard a),
+    eq_pair_of_card_le_two hxy hxb hyb (hcard b)⟩
+
 /-- Four distinct elements from `3 < card`. -/
 theorem exists_four_of_three_lt {s : Finset F} (h : 3 < s.card) :
     ∃ a b c d, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ d ∈ s ∧
@@ -179,6 +235,8 @@ The `Fin 4` case bookkeeping is mechanical; this file lands the four load-bearin
 #print axioms band3_puncture
 #print axioms extract3
 #print axioms ext_at
+#print axioms eq_pair_of_card_le_two
+#print axioms exists_two_pair_punctures_of_two_deep
 #print axioms exists_four_of_three_lt
 
 end ProximityGap.MCABandThreeInfra
