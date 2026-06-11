@@ -178,6 +178,40 @@ theorem exists_far_word_at_exact_distance (φ : ι ↪ F) (deg e : ℕ) (xJunk :
       by_cases hx : x ∈ S <;> simp [hx]
     omega
 
+/-! ## The switch prover (the attack object) -/
+
+section SwitchProver
+
+open OracleSpec OracleComp ProtocolSpec OracleInterface WhirIOP.Construction
+
+variable [SampleableType F]
+
+/-- **The switch prover**: ignores its input and every challenge, and sends the packed ZERO
+codeword at every message round.  Against the checking verifier on the far word of
+`exists_far_word_at_exact_distance` (support avoiding the junk point), every consistency
+check compares equal messages, the final message IS a codeword, and the only live check is
+the round-2 binding — which passes on `≥ |F| − (e+1)` challenges (`pass_count_ge`).  The
+night assembly computes its acceptance probability and derives the budget lower bound. -/
+noncomputable def stirSwitchProver (M : ℕ) (deg : ℕ) :
+    OracleProver []ₒ Unit (OracleStatement ι F) Unit Bool (fun _ : Empty => Unit) Unit
+      ((stirMultiVSpec M ι).toProtocolSpec F) where
+  PrvState := fun _ => Unit
+  input := fun _ => ()
+  receiveChallenge := fun _ _ => pure (fun _ => ())
+  sendMessage := fun i _ => pure
+    ⟨Vector.cast (stirMultiVSpec_length_msg i)
+      (packFiniteFunction ι (fun _ : ι => (0 : F))), ()⟩
+  output := fun _ => pure ((true, isEmptyElim), ())
+
+/-- The switch prover's message at every round is the packed zero word. -/
+theorem stirSwitchProver_sendMessage (M : ℕ) (deg : ℕ)
+    (i : ((stirMultiVSpec M ι).toProtocolSpec F).MessageIdx) (st : Unit) :
+    (stirSwitchProver (ι := ι) (F := F) M deg).sendMessage i st = pure
+      ⟨Vector.cast (stirMultiVSpec_length_msg i)
+        (packFiniteFunction ι (fun _ : ι => (0 : F))), ()⟩ := rfl
+
+end SwitchProver
+
 end TightnessCore
 
 end MultiRound
@@ -189,3 +223,4 @@ end StirIOP
 #print axioms StirIOP.MultiRound.TightnessCore.fail_subset_image
 #print axioms StirIOP.MultiRound.TightnessCore.off_image_queryPoint_const
 #print axioms StirIOP.MultiRound.TightnessCore.exists_far_word_at_exact_distance
+#print axioms StirIOP.MultiRound.TightnessCore.stirSwitchProver
