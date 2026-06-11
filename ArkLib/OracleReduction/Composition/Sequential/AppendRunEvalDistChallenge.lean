@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.Composition.Sequential.AppendRunEvalDist
+import ArkLib.OracleReduction.Composition.Sequential.EmptyAppend
 
 /-!
 # Challenge-seam discharge of the distributional run-factoring residual
@@ -336,4 +337,31 @@ theorem append_run_evalDist_challenge
               (FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × Wit₃)) :=
   append_run_evalDist stmt wit (appendRunRightResidualDist_holds_challenge stmt wit hn hDir hDir₂)
 
+/-- **Seam-agnostic discharge of the distributional run-factoring residual.** Total case split:
+empty trailing protocol (the syntactic residual holds, `appendRunRightResidual_holds_empty`,
+and `evalDist` is `congrArg`), message seam (`appendRunRightResidualDist_holds_msg`), or
+challenge seam (`appendRunRightResidualDist_holds_challenge`). With this, the named
+distributional residual holds for *every* pair of provers — the syntactic
+`appendRunRightResidual` remains genuinely FALSE at challenge seams (see the challenge
+discharge's docstring), so the distributional form is the honest live statement. -/
+theorem appendRunRightResidualDist_holds
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Fintype]
+    [(oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).Inhabited]
+    (stmt : Stmt₁) (wit : Wit₁) :
+    appendRunRightResidualDist (P₁ := P₁) (P₂ := P₂) stmt wit := by
+  rcases Nat.eq_zero_or_pos n with hn | hn
+  · subst hn
+    exact congrArg evalDist (appendRunRightResidual_holds_empty (P₁ := P₁) (P₂ := P₂) stmt wit)
+  · have hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n))
+        = pSpec₂.dir (⟨0, hn⟩ : Fin n) := by
+      rw [show (⟨m, by omega⟩ : Fin (m + n)) = Fin.natAdd m ⟨0, hn⟩ from by ext; simp,
+        Prover.append_dir_natAdd]
+    cases hd : pSpec₂.dir (⟨0, hn⟩ : Fin n) with
+    | V_to_P => exact appendRunRightResidualDist_holds_challenge stmt wit hn (hDir.trans hd) hd
+    | P_to_V => exact appendRunRightResidualDist_holds_msg stmt wit hn (hDir.trans hd) hd
+
 end Prover
+
+
+-- Axiom audit (seam-agnostic total): only [propext, Classical.choice, Quot.sound].
+#print axioms Prover.appendRunRightResidualDist_holds
