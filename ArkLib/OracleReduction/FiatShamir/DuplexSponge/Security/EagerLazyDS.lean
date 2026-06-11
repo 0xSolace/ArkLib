@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.ToVCVio.LazyPermBridge
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundations
 
 /-!
 # The combined lazy duplex-sponge oracle (brick 4C-1)
@@ -588,9 +589,96 @@ theorem evalDist_simulateQ_lazyDSImpl_run'
 
 end Master
 
+/-! ## The connectors (brick 4C-3): the eager `D_DS` game equals the lazy game -/
+
+section Connectors
+
+variable [Fintype U] [DecidableEq U]
+variable [Finite StmtIn]
+  [SampleableType (StmtIn → Vector U SpongeSize.C)]
+  [SampleableType (Equiv.Perm (CanonicalSpongeState U))]
+  [SampleableType (StmtIn → Vector U SpongeSize.C)]
+  [SampleableType (Equiv.Perm (CanonicalSpongeState U))]
+  [Nonempty (StmtIn → Vector U SpongeSize.C)]
+  [Nonempty (Equiv.Perm (CanonicalSpongeState U))]
+  [Fintype (StmtIn → Vector U SpongeSize.C)]
+  [Fintype (Vector U SpongeSize.C)] [Nonempty (Vector U SpongeSize.C)]
+
+/-- A pure (carrier-determined) implementation simulates to the deterministic evaluation. -/
+private lemma simulateQ_pureFn_eq {ι : Type} {spec : OracleSpec ι} {α : Type}
+    (f : (t : spec.Domain) → spec.Range t) (P : OracleComp spec α) :
+    (simulateQ (fun t => (pure (f t) : ProbComp (spec.Range t))) P : ProbComp α)
+      = pure (evalWithAnswerFn (QueryImpl.ofFn f) P) := by
+  induction P using OracleComp.inductionOn with
+  | pure a => rw [simulateQ_pure, evalWithAnswerFn_pure]
+  | query_bind t k ih =>
+      rw [simulateQ_bind, evalWithAnswerFn_bind]
+      have hq : (simulateQ (fun t => (pure (f t) : ProbComp (spec.Range t)))
+            (liftM (spec.query t)) : ProbComp (spec.Range t)) = pure (f t) := by
+        simp only [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query, id_map]
+      rw [hq, pure_bind, ih (f t)]
+      rfl
+
+/-- The `D_DS` carrier implementation is the joint overlay at empty caches. -/
+private lemma dsImpl_eq_overlay (c : (StmtIn → Vector U SpongeSize.C) ×
+    Equiv.Perm (CanonicalSpongeState U)) :
+    (fun t => ((DuplexSpongeFS.KeyLemmaFoundations.D_DS StmtIn U).toImpl c t
+      : ProbComp ((duplexSpongeChallengeOracle StmtIn U).Range t)))
+      = (fun t => pure (dsOverlayFn ∅ [] c.1 c.2 t)) := by
+  funext t
+  rcases t with q | sIn | sOut
+  · show (pure (c.1 q) : ProbComp _) = pure (OracleComp.tableExtending ∅ c.1 q)
+    rw [OracleComp.tableExtending_empty]
+  · show (pure (c.2 sIn) : ProbComp _)
+        = pure (LazyPermBridge.permExtending [] c.2 sIn)
+    rfl
+  · show (pure (c.2.symm sOut) : ProbComp _)
+        = pure ((LazyPermBridge.permExtending [] c.2).symm sOut)
+    rfl
+
+set_option maxHeartbeats 800000 in
+/-- **The `D_DS` eager game equals the combined lazy game (4C-3)**: sampling the duplex
+sponge carrier once and answering through it has the distribution of the lazy memoizing
+oracle from empty caches. The Lemma 5.8 analysis can therefore run against the lazy side. -/
+theorem evalDist_DDS_eq_lazyDSImpl {α : Type}
+    (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) :
+    evalDist (do
+      let c ← (DuplexSpongeFS.KeyLemmaFoundations.D_DS StmtIn U).sample
+      simulateQ ((DuplexSpongeFS.KeyLemmaFoundations.D_DS StmtIn U).toImpl c) P)
+      = evalDist ((simulateQ lazyDSImpl P).run' (∅, ([] :
+          List (CanonicalSpongeState U × CanonicalSpongeState U)))) := by
+  classical
+  rw [evalDist_simulateQ_lazyDSImpl_run' P ∅ [] (by simp) (by simp)]
+  have hsample : ((DuplexSpongeFS.KeyLemmaFoundations.D_DS StmtIn U).sample
+      : ProbComp _) = (do
+        let g ← $ᵗ (StmtIn → Vector U SpongeSize.C)
+        let π ← $ᵗ (Equiv.Perm (CanonicalSpongeState U))
+        pure (g, π)) := rfl
+  have hprog : (do
+      let c ← (DuplexSpongeFS.KeyLemmaFoundations.D_DS StmtIn U).sample
+      simulateQ ((DuplexSpongeFS.KeyLemmaFoundations.D_DS StmtIn U).toImpl c) P)
+      = (do
+        let g ← $ᵗ (StmtIn → Vector U SpongeSize.C)
+        let π ← $ᵗ (Equiv.Perm (CanonicalSpongeState U))
+        pure (evalWithAnswerFn (QueryImpl.ofFn (dsOverlayFn ∅ [] g π)) P)) := by
+    rw [hsample, bind_assoc]
+    refine congrArg (fun F => ($ᵗ _) >>= F) (funext fun g => ?_)
+    rw [bind_assoc]
+    refine congrArg (fun F => ($ᵗ _) >>= F) (funext fun π => ?_)
+    rw [pure_bind]
+    have := simulateQ_pureFn_eq (dsOverlayFn ∅ [] g π) P
+    rw [show ((DuplexSpongeFS.KeyLemmaFoundations.D_DS StmtIn U).toImpl (g, π)
+        : QueryImpl _ ProbComp) = (fun t => pure (dsOverlayFn ∅ [] g π t)) from
+      dsImpl_eq_overlay (g, π)]
+    exact this
+  rw [hprog]
+
+end Connectors
+
 end DuplexSpongeFS.EagerLazyDS
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms DuplexSpongeFS.EagerLazyDS.evalDist_uniformSample_swap
 #print axioms DuplexSpongeFS.EagerLazyDS.dsOverlayFn_cacheQuery_of_none
 #print axioms DuplexSpongeFS.EagerLazyDS.toPMF_two_sample
 #print axioms DuplexSpongeFS.EagerLazyDS.evalDist_simulateQ_lazyDSImpl_run'
+#print axioms DuplexSpongeFS.EagerLazyDS.evalDist_DDS_eq_lazyDSImpl
