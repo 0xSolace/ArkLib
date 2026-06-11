@@ -6393,3 +6393,49 @@ staircase (`MCAStaircaseRS`/`BandExactness`) hypotheses `3(b−1)+k ≤ n`-ish a
 the strip above is genuinely explosive; (d) `MonomialDomination` gains its sharpest live
 falsifier: the pencil stacks are non-monomial 9-sparse words — whether a monomial pair
 matches count n/(b−1) at the strip cells is now the decisive check.
+
+### O154 — THE JOHNSON-DISCHARGE ATTACK MAP, verified node by node: everything reduced to Claim 5.10's extension-field pinning; two elementarization routes proven to fail at exactly 2δ (2026-06-11, goal: Johnson with no Props)
+
+Full audit of the Johnson cone (the #302 siege), node status verified by reading each
+file's theorems and axiom blocks:
+
+* **PROVEN end-to-end:** the funnels (`johnsonNumericBound_of_surface` ← `hsurface`),
+  K1 cell production (`exists_cell_production` / `bad_card_le_of_cell_production`),
+  the decoded bridge (`mcaEvent_decoded_data`), richness concentration
+  (`Hab25UniqueRichFactor`: rich budgeted irreducible factor unique and an associate of
+  `Y − C w`), the coordinate weld (`coordinateUpgrade_of_assigned_factor_rich`,
+  `global_branch_of_assigned_factor_rich`), the slack weld
+  (`global_branch_of_witnessed_subcell`), the S5/Appendix-A plumbing
+  (`RationalFunctions{Core,Strong}` sorry-free), the budget supply
+  (`factorBudgetIndex_*`), and the deployed-regime capstone reduction
+  (`kkh26_deltaStar_pin_of_interior_ceiling`: δ* = 1 − r/2^μ EXACTLY conditional on ONE
+  surface, `InteriorCeiling`).
+* **THE OPEN CORE (everything converges here):** the K4/assignment-coherence node = the
+  paper's Claim 5.10 *extension-field* step (eprint 2020/654 pp. 24–27): per-coordinate
+  agreement counts pin the identity `γ(x) = w(x, Z)` in `L = Frac(F[Z,X]/R)`, retroactively
+  pinning disagreeing scalars, interpolating the branch in `L` scalar-free. The slack
+  weld's additive `k·M` route is REGIME-WRONG at Johnson (`M ≈ δ/(1−ρ)·|E|` makes
+  `k·M ≥ |E|`); the paper's multiplicative Claim-5.11 count is the required form.
+* **Elementarization no-gos (proven/probed this session):**
+  (i) pairwise difference quotients: `D(γ,γ')` is `2δ`-close to `u₁`; uniqueness needs
+  `2δ <` UDR — dies at `δ ≥ (1−ρ)/4`, far below Johnson;
+  (ii) the saturation route (per-coordinate `g_ω(Z) := R(Z, ω, u₀(ω)+Z·u₁(ω))` ≡ 0 at
+  high-mass coordinates — the fold IS the section, no pHat interpolation needed) pins the
+  *witnessed* incidences but branch disambiguation at unwitnessed coordinates reverts to
+  pairwise quotients — the same `2δ` wall;
+  (iii) the bare many-specializations-have-roots claim is FALSE
+  (`Y² − (Z² + c)`, `−c` a non-residue: `(p−1)/2` specializations with roots, no rational
+  root) — the fold-agreement hypothesis is load-bearing, so any proof MUST use it;
+  (iv) the staircase/rigid-relation technique is SHARP at `3j` (the degenerate-pencil
+  explosion: `n/(b−1)` bad scalars for `d ∈ [2b−1, 3b−3]`) — no elementary collapse
+  reaches Johnson.
+* **The formalization target, precisely:** BCIKS20 Claim 5.10's `L`-valued root argument
+  on the in-tree Appendix-A substrate (`H_tilde` monisization, `RationalFunctionsCore`
+  regular rings): the decode-value functions `γ ↦ P(γ)(ω)` at the top coordinates define
+  ONE algebraic function (branch of `R`) because the agreement mass exceeds the branch
+  separation budget (Claim 5.11's multiplicative count) — the "γ-is-a-root" core. All
+  surrounding machinery is in place; this single argument discharges, in order:
+  `CoordinateUpgrade` (unconditionally) → `hsurface` → `johnsonNumericBound_holds` →
+  `JohnsonDischargeStatement` → the Johnson floor with no Props → with the in-tree KKH26
+  ceiling, the unconditional bracket `[1−√ρ−η, KKH26 rows]`, and with `InteriorCeiling`
+  the exact deployed-regime pin.
