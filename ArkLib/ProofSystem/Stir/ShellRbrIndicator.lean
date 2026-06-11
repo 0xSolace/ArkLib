@@ -18,7 +18,7 @@ challenge and `0` everywhere else — the statement-constant threshold state fun
 (`pred := the input relation`, transcript-independent) through
 `ThresholdKSF.rbrKnowledgeSoundness_indicator`.
 
-* **`stirMultiRoundRbrSoundnessResidual_indicator`** — the residual HOLDS at
+* **`stirMultiRoundRbrSoundness_indicator`** — the residual HOLDS at
   `fun i => if i = foldChalIdx then 1 else 0`;
 * `stirMultiRoundIOP_isSecureWithGap_indicator` — the secure-with-gap package at that
   budget through the existing general wiring.
@@ -54,7 +54,7 @@ def foldChalIdx (M : ℕ) : ((stirMultiVSpec M ι).toProtocolSpec F).ChallengeId
 
 /-- **The shell residual at the honest indicator budget** (`1` at the fold challenge,
 `0` elsewhere): the statement-constant threshold state function discharges it. -/
-theorem stirMultiRoundRbrSoundnessResidual_indicator (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
+theorem stirMultiRoundRbrSoundness_indicator (M : ℕ) (φ : ι ↪ F) (deg : ℕ)
     (δ : ℝ≥0) :
     stirMultiRoundRbrSoundnessResidual M φ deg δ
       (fun i => if i = foldChalIdx (F := F) (ι := ι) M then 1 else 0) := by
@@ -76,12 +76,12 @@ theorem stirMultiRoundIOP_isSecureWithGap_indicator (M : ℕ) (φ : ι ↪ F) (d
       (fun i => if i = foldChalIdx (F := F) (ι := ι) M then 1 else 0)
       (stirMultiRoundIOP M φ deg) :=
   stirMultiRoundIOP_isSecureWithGap M φ deg δ _
-    (stirMultiRoundRbrSoundnessResidual_indicator M φ deg δ)
+    (stirMultiRoundRbrSoundness_indicator M φ deg δ)
 
 end MultiRound
 
 end StirIOP
 
 /-! ## Axiom audit — all kernel-clean. -/
-#print axioms StirIOP.MultiRound.stirMultiRoundRbrSoundnessResidual_indicator
+#print axioms StirIOP.MultiRound.stirMultiRoundRbrSoundness_indicator
 #print axioms StirIOP.MultiRound.stirMultiRoundIOP_isSecureWithGap_indicator
