@@ -197,6 +197,90 @@ theorem badScalar_card_le_one_of_forced_univ
   exact unique_bad_gamma_common_witness C Finset.univ (u 0) (u 1) hno hclose hclose'
 
 open Classical in
+/-- **Forced codimension-one witness barrier.** If the radius/cardinality side condition forces
+every legal `mcaEvent` witness set to be either all coordinates or all coordinates except one,
+then every stack has at most `|ι|` bad scalars.
+
+Each bad scalar chooses one legal witness set.  Universal witnesses collapse the whole bad set to
+one scalar by `unique_bad_gamma_common_witness`; otherwise, an all-but-one witness is charged to
+its omitted coordinate.  Two scalars charged to the same omitted coordinate share the same witness
+set, so the common-witness uniqueness lemma identifies them. -/
+theorem badScalar_card_le_card_of_forced_codimOne
+    (C : Submodule F (ι → A)) (δ : ℝ≥0)
+    (hforce : ∀ T : Finset ι,
+      ((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0) ≤ (T.card : ℝ≥0) →
+        T = Finset.univ ∨ ∃ i : ι, T = Finset.univ.erase i)
+    (u : WordStack A (Fin 2) ι) :
+    (Finset.filter
+      (fun γ : F => mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) γ)
+      Finset.univ).card ≤ Fintype.card ι := by
+  let B : Finset F :=
+    Finset.filter
+      (fun γ : F => mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) γ)
+      Finset.univ
+  let i₀ : ι := Classical.choice ‹Nonempty ι›
+  let event : B → Prop := fun γ =>
+    mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) (γ : F)
+  have event_spec : ∀ γ : B, event γ := by
+    intro γ
+    exact (Finset.mem_filter.mp γ.property).2
+  let S : B → Finset ι := fun γ => Classical.choose (event_spec γ)
+  have S_spec : ∀ γ : B,
+      (S γ).card ≥ ((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0) ∧
+      (∃ w ∈ C, ∀ i ∈ S γ, w i = u 0 i + (γ : F) • u 1 i) ∧
+      ¬ pairJointAgreesOn (C : Set (ι → A)) (S γ) (u 0) (u 1) := by
+    intro γ
+    exact Classical.choose_spec (event_spec γ)
+  have key_exists : ∀ γ : B, ∃ i : ι, S γ = Finset.univ ∨ S γ = Finset.univ.erase i := by
+    intro γ
+    rcases hforce (S γ) (S_spec γ).1 with h | ⟨i, hi⟩
+    · exact ⟨i₀, Or.inl h⟩
+    · exact ⟨i, Or.inr hi⟩
+  let key : B → ι := fun γ =>
+    Classical.choose (key_exists γ)
+  have key_spec : ∀ γ : B, S γ = Finset.univ ∨ S γ = Finset.univ.erase (key γ) := by
+    intro γ
+    exact Classical.choose_spec (key_exists γ)
+  have key_inj : Function.Injective key := by
+    intro γ γ' hkey
+    apply Subtype.ext
+    rcases key_spec γ with hγuniv | hγerase
+    · rcases key_spec γ' with hγ'univ | hγ'erase
+      ·
+        have hcloseγ : ∃ w ∈ C, ∀ i ∈ Finset.univ, w i = u 0 i + (γ : F) • u 1 i := by
+          obtain ⟨w, hwC, hw⟩ := (S_spec γ).2.1
+          exact ⟨w, hwC, fun i hi => hw i (by simp [hγuniv])⟩
+        have hcloseγ' : ∃ w ∈ C, ∀ i ∈ Finset.univ, w i = u 0 i + (γ' : F) • u 1 i := by
+          obtain ⟨w, hwC, hw⟩ := (S_spec γ').2.1
+          exact ⟨w, hwC, fun i hi => hw i (by simp [hγ'univ])⟩
+        exact unique_bad_gamma_common_witness C Finset.univ (u 0) (u 1)
+          (by simpa [hγuniv] using (S_spec γ).2.2) hcloseγ hcloseγ'
+      ·
+        have hcloseγ : ∃ w ∈ C, ∀ i ∈ S γ', w i = u 0 i + (γ : F) • u 1 i := by
+          obtain ⟨w, hwC, hw⟩ := (S_spec γ).2.1
+          exact ⟨w, hwC, fun i hi => hw i (by rw [hγuniv]; exact Finset.mem_univ i)⟩
+        exact unique_bad_gamma_common_witness C (S γ') (u 0) (u 1)
+          (S_spec γ').2.2 hcloseγ (S_spec γ').2.1
+    · rcases key_spec γ' with hγ'univ | hγ'erase
+      ·
+        have hcloseγ' : ∃ w ∈ C, ∀ i ∈ S γ, w i = u 0 i + (γ' : F) • u 1 i := by
+          obtain ⟨w, hwC, hw⟩ := (S_spec γ').2.1
+          exact ⟨w, hwC, fun i hi => hw i (by rw [hγ'univ]; exact Finset.mem_univ i)⟩
+        exact unique_bad_gamma_common_witness C (S γ) (u 0) (u 1)
+          (S_spec γ).2.2 (S_spec γ).2.1 hcloseγ'
+      ·
+        have hSsame : S γ' = S γ := by
+          rw [hγ'erase, hγerase, hkey]
+        have hcloseγ' : ∃ w ∈ C, ∀ i ∈ S γ, w i = u 0 i + (γ' : F) • u 1 i := by
+          obtain ⟨w, hwC, hw⟩ := (S_spec γ').2.1
+          exact ⟨w, hwC, fun i hi => hw i (by simpa [hSsame] using hi)⟩
+        exact unique_bad_gamma_common_witness C (S γ) (u 0) (u 1)
+          (S_spec γ).2.2 (S_spec γ).2.1 hcloseγ'
+  have hcard := Fintype.card_le_of_injective key key_inj
+  rw [← Fintype.card_coe B]
+  exact hcard
+
+open Classical in
 /-- **Probability form of the forced-universal-witness barrier.** If every legal `mcaEvent`
 witness set is forced to be all coordinates, then the MCA error is at most the unconditional
 floor `1/|F|` for any linear code. The only way to exceed this floor is therefore a genuine
@@ -213,12 +297,33 @@ theorem epsMCA_le_inv_card_of_forced_univ
   gcongr
   exact_mod_cast badScalar_card_le_one_of_forced_univ C δ hforce u
 
+open Classical in
+/-- **Probability form of the forced codimension-one witness barrier.** If every legal
+`mcaEvent` witness set is forced to be either all coordinates or all-but-one coordinate, then
+the MCA error is at most `|ι|/|F|`. This is the abstract upper-bound half of the second
+granularity band. -/
+theorem epsMCA_le_card_div_of_forced_codimOne
+    (C : Submodule F (ι → A)) (δ : ℝ≥0)
+    (hforce : ∀ T : Finset ι,
+      ((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0) ≤ (T.card : ℝ≥0) →
+        T = Finset.univ ∨ ∃ i : ι, T = Finset.univ.erase i) :
+    epsMCA (F := F) (A := A) (C : Set (ι → A)) δ
+      ≤ (Fintype.card ι : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
+  unfold epsMCA
+  refine iSup_le fun u => ?_
+  rw [prob_uniform_eq_card_filter_div_card]
+  simp only [ENNReal.coe_natCast]
+  gcongr
+  exact_mod_cast badScalar_card_le_card_of_forced_codimOne C δ hforce u
+
 #print axioms pairJointAgreesOn_iff_split
 #print axioms epsMCA_ge_card_div_of_mcaEvent_set
 #print axioms unique_bad_gamma_common_witness
 #print axioms common_witness_badGamma_card_le_one
 #print axioms common_witness_badGamma_set_card_le_one
 #print axioms badScalar_card_le_one_of_forced_univ
+#print axioms badScalar_card_le_card_of_forced_codimOne
 #print axioms epsMCA_le_inv_card_of_forced_univ
+#print axioms epsMCA_le_card_div_of_forced_codimOne
 
 end ProximityGap.MCAWitnessSpread
