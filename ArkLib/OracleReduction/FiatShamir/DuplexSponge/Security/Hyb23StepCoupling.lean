@@ -107,7 +107,7 @@ theorem stepCoupling_hit
           Salt gq).run memo).run) := by
   rw [d2sCodecBridgeImplMemo_run_hit gq memo r hl,
     gImplDecodedChallengeMemo_run_hit gq memo r hl]
-  simp
+  exact (simulateQ_pure _ _).trans (simulateQ_pure _ _).symm
 
 /-- **H23-8, miss case**: on a memo miss at a decode-success key, both simulated runs are
 the same table value followed by the same `ψ⁻¹` sample and the same memo insert. -/
@@ -144,20 +144,39 @@ theorem stepCoupling_miss
             (bridgeMemoEntry (Salt := Salt) gq resp))) := by
     rw [d2sCodecBridgeImplMemo_run_miss gq memo hl,
       d2sCodecBridgeImpl_run_parse_success (Salt := Salt) gq hp]
-    simp [bind_assoc]
+    refine (bind_assoc _ _ _).trans ?_
+    refine bind_congr fun challenge => ?_
+    refine (bind_assoc _ _ _).trans ?_
+    refine bind_congr fun resp => ?_
+    exact (pure_bind _ _)
   rw [hL, gImplDecodedChallengeMemo_run_miss gq memo hl]
   -- push the simulations through the shared shape
-  simp [tableQueryImpl, QueryImpl.add_apply_inl, bind_assoc]
+  simp only [bind_pure_comp]
+  rw [show (query (spec := D2SChallengePlusUnitOracle (U := U)
+        (fsChallengeOracle (StmtIn × Salt) pSpec))
+      (.inl (betaKey (Salt := Salt) (StmtIn := StmtIn) gq mb)) :
+      OracleComp _ (pSpec.Challenge gq.1))
+    = liftM (OracleSpec.query (Sum.inl (betaKey (Salt := Salt) (StmtIn := StmtIn) gq mb)))
+    from rfl]
+  rw [show (query (spec := D2SChallengePlusUnitOracle (U := U)
+        (eSpec (U := U) StmtIn pSpec δ)) (.inl gq) :
+      OracleComp _ (pSpec.Challenge gq.1))
+    = liftM (OracleSpec.query (Sum.inl gq)) from rfl]
+  refine ((simulateQ_bind _ _ _).trans ?_).trans (Eq.symm (simulateQ_bind _ _ _))
+  rw [simulateQ_query, simulateQ_query]
   have hbk : betaTable (Salt := Salt) (δ := δ) f gq
       = f (betaKey (Salt := Salt) (StmtIn := StmtIn) gq mb) := by
     rw [betaTable_apply_of_isSome (Salt := Salt) f gq hsome]
     unfold betaKeyOf
     rw [show (hybEncodedMessagesBefore? (pSpec := pSpec) (U := U) gq.1 gq.2.2.2).get hsome
       = mb from hkey]
-  rw [hbk]
-  refine bind_congr fun challenge => ?_
-  rw [simulateQ_uniformDeserializePreimage_left_agnostic
-    (tableQueryImpl f) (tableQueryImpl (betaTable (Salt := Salt) (δ := δ) f)) W challenge]
+  show ((tableQueryImpl f (betaKey (Salt := Salt) (StmtIn := StmtIn) gq mb)) >>= _)
+    = ((tableQueryImpl (betaTable (Salt := Salt) (δ := δ) f) gq) >>= _)
+  simp only [tableQueryImpl, hbk]
+  refine ((pure_bind _ _).trans ?_).trans (Eq.symm (pure_bind _ _))
+  refine ((simulateQ_map _ _ _).trans ?_).trans (Eq.symm (simulateQ_map _ _ _))
+  exact congrArg _ (simulateQ_uniformDeserializePreimage_left_agnostic
+    (tableQueryImpl f) (tableQueryImpl (betaTable (Salt := Salt) (δ := δ) f)) W _)
 
 /-- **H23-8 — the per-query step coupling**: pointwise in `f`, at every decode-success
 key and equal memos, the two memoized realizations simulate identically when `Hyb₂` reads
