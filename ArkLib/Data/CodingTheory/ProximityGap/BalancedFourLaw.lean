@@ -59,9 +59,11 @@ namespace ArkLib.ProximityGap.WindowTwoLayer
 
 open Multiset
 
-variable {G : Type*} [AddCommGroup G] [DecidableEq G]
-
 /-! ## Pair sums and balance -/
+
+section Monoid
+
+variable {G : Type*} [AddCommMonoid G] [DecidableEq G]
 
 /-- The multiset of pairwise sums of a multiset (sums of its 2-element sub-multisets). -/
 def pairSums (s : Multiset G) : Multiset G :=
@@ -100,6 +102,10 @@ theorem pairSums_four (a b c d : G) :
   simp only [Multiset.count_add, Multiset.insert_eq_cons, Multiset.count_cons,
     Multiset.count_singleton]
   ring
+
+end Monoid
+
+variable {G : Type*} [AddCommGroup G] [DecidableEq G]
 
 /-! ## Balance toolkit -/
 
