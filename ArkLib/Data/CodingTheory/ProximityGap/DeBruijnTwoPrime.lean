@@ -85,7 +85,7 @@ section CoefficientSlicesOver
 
 /-- Slices of a geometric-packet multiple: if `deg R < q` then
 `(Σ_{i<p} X^(iq) · R).coeff (iq + s) = R.coeff s` for `i < p`, `s < q`.
-(Provenance: `LamLeungTwoPow.packet_mul_coeff`, with `ℚ` generalized to `K`.) -/
+(Wrapper around `CRTDoubleSlice.packet_slice_coeff`.) -/
 lemma packet_mul_coeff {K : Type*} [Field K] {p q : ℕ} (_hq : 0 < q) {R : K[X]}
     (hR : R.natDegree < q) {i s : ℕ} (hi : i < p) (hs : s < q) :
     ((∑ i ∈ Finset.range p, (Polynomial.X : K[X]) ^ (i * q)) * R).coeff (i * q + s)
@@ -98,8 +98,8 @@ engine): if `Φ_{p^(m+1)}` is still the minimal polynomial of the primitive `p^(
 root `ζ ∈ F` over the coefficient field `K` (hypothesis `hmin`), then any vanishing
 `K`-linear combination of `ζ^e`, `e < p^(m+1)`, has all `p` of its length-`p^m`
 coefficient slices equal.
-(Provenance: body mirrors `LamLeungTwoPow.vanishing_coeff_slices`, `ℚ ↝ K`, with
-`cyclotomic_eq_minpoly_rat` replaced by `hmin`.) -/
+(Wrapper around `CRTDoubleSlice.slice_of_packet_minpoly`, with `hmin` first rewritten
+to the geometric packet form of the prime-power cyclotomic.) -/
 theorem vanishing_coeff_slices_over (K : Type*) [Field K] [Algebra K F]
     {p m : ℕ} (hp : p.Prime) {ζ : F}
     (_hζ : IsPrimitiveRoot ζ (p ^ (m + 1)))
@@ -369,7 +369,7 @@ distinct primes `p ≠ q`, `0 < b`, a primitive `p^a`-th root `ξ` and a primiti
 `q^b`-th root `η` in a characteristic-zero field `L`, the minimal polynomial of `η`
 over `ℚ⟮ξ⟯ = ℚ(ζ_{p^a})` is the geometric packet `Σ_{t<q} X^(t·q^(b-1))` — i.e.
 `Φ_{q^b}` remains irreducible over the coprime cyclotomic extension.
-(Provenance: `CRTPacketMinpoly.minpoly_adjoin_primitiveRoot_eq_packet`.) -/
+(Wrapper around `CRTPacketMinpoly.minpoly_adjoin_primitiveRoot_eq_packet`.) -/
 theorem minpoly_adjoin_primitiveRoot_eq_packet
     {L : Type*} [Field L] [CharZero L] {p q a b : ℕ}
     (hp : p.Prime) (hq : q.Prime) (hpq : p ≠ q) (hb : 0 < b)
