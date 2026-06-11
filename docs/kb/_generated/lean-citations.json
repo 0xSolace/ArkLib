@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 351,
+    "files_with_citations": 353,
     "keys_cited": 30,
-    "total_citation_edges": 398
+    "total_citation_edges": 400
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -1021,6 +1021,9 @@
     "ArkLib/ToMathlib/SectionFromSurface.lean": [
       "BCIKS20"
     ],
+    "ArkLib/ToMathlib/SectionNewtonCapstone.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/ToMathlib/SectionNewtonCleared.lean": [
       "BCIKS20"
     ],
@@ -1040,6 +1043,9 @@
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/SectionNewtonPlaceReading.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/SectionNewtonReadback.lean": [
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/SectionNewtonRecentre.lean": [
@@ -1397,6 +1403,7 @@
       "ArkLib/ToMathlib/SectionBaseRational.lean",
       "ArkLib/ToMathlib/SectionFactor.lean",
       "ArkLib/ToMathlib/SectionFromSurface.lean",
+      "ArkLib/ToMathlib/SectionNewtonCapstone.lean",
       "ArkLib/ToMathlib/SectionNewtonCleared.lean",
       "ArkLib/ToMathlib/SectionNewtonClearedSharp.lean",
       "ArkLib/ToMathlib/SectionNewtonFunctorial.lean",
@@ -1404,6 +1411,7 @@
       "ArkLib/ToMathlib/SectionNewtonGamma.lean",
       "ArkLib/ToMathlib/SectionNewtonGradingSupply.lean",
       "ArkLib/ToMathlib/SectionNewtonPlaceReading.lean",
+      "ArkLib/ToMathlib/SectionNewtonReadback.lean",
       "ArkLib/ToMathlib/SectionNewtonRecentre.lean",
       "ArkLib/ToMathlib/SectionNewtonWindow.lean",
       "ArkLib/ToMathlib/SectionNewtonWindowSharp.lean",

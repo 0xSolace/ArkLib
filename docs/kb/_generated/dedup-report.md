@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2205 files, 28332 declarations
+- `ArkLib` — 2211 files, 28385 declarations
 
-## Same short-name across multiple files (1211 groups)
+## Same short-name across multiple files (1212 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -1086,6 +1086,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Concrete.zeta` [ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean:209](../../../ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean#L209) — The explicit primitive `2^m`-th root of unity `exp(2πi/2^m)` in `ℂ`.
 - `def ArkLib.ProximityGap.SubgroupQuadraticSecondMoment.zeta` [ArkLib/Data/CodingTheory/ProximityGap/SubgroupQuadraticSecondMoment.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/SubgroupQuadraticSecondMoment.lean#L54) — The quadratic subgroup Gauss sum at frequency `b`: `ζ_b = ∑_{x∈G} ψ(b·x²)`.
 
+### `MarkedCurveDecodable` (3 declarations, 3 files)
+
+- `def ProximityGap.CurveDec.MarkedCurveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/CurveDecodability.lean:121](../../../ArkLib/Data/CodingTheory/ProximityGap/CurveDecodability.lean#L121) — **[Jo26] Definition 5.1: marked curve decodability.**  Same data, but quantified over an arbitrary *
+- `def ProximityGap.MarkedCurveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/GG25MarkedCurve.lean:59](../../../ArkLib/Data/CodingTheory/ProximityGap/GG25MarkedCurve.lean#L59) — **[Jo26] Definition 5.1 (marked curve decodability).** For every stack, every codeword-valued `f`, a
+- `def ProximityGap.MarkedCurveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/Jo26MarkedCurveDecodability.lean:50](../../../ArkLib/Data/CodingTheory/ProximityGap/Jo26MarkedCurveDecodability.lean#L50) — **[Jo26] Definition 5.1 (marked curve decodability).** `C` is marked `(ℓ, δ, a, b)`-curve-decodable
+
 ### `card_le_natDegreeY_of_sub_C_dvd` (3 declarations, 3 files)
 
 - `theorem R14.card_le_natDegreeY_of_sub_C_dvd` [ArkLib/Data/CodingTheory/ProximityGap/GSYDegreeListCap.lean:45](../../../ArkLib/Data/CodingTheory/ProximityGap/GSYDegreeListCap.lean#L45) — **Y-degree list cap.**  If `Q ≠ 0` in `(F[X])[Y]` and every `f` in the finite set `S ⊆ F[X]` gives a
@@ -1600,11 +1606,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem MvPolynomial.MLE_eval_eq_sum_eqTilde` [ArkLib/Data/MvPolynomial/Multilinear.lean:319](../../../ArkLib/Data/MvPolynomial/Multilinear.lean#L319) — **MLE evaluation as an eq-weighted sum over the hypercube.**  Evaluating the multilinear extension a
 - `lemma RingSwitching.MLE_eval_eq_sum_eqTilde` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1079](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1079) — **MLE evaluation as an `eq̃`-weighted hypercube sum.** Evaluating the multilinear extension `MLE f`
-
-### `MarkedCurveDecodable` (2 declarations, 2 files)
-
-- `def ProximityGap.CurveDec.MarkedCurveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/CurveDecodability.lean:121](../../../ArkLib/Data/CodingTheory/ProximityGap/CurveDecodability.lean#L121) — **[Jo26] Definition 5.1: marked curve decodability.**  Same data, but quantified over an arbitrary *
-- `def ProximityGap.MarkedCurveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/GG25MarkedCurve.lean:59](../../../ArkLib/Data/CodingTheory/ProximityGap/GG25MarkedCurve.lean#L59) — **[Jo26] Definition 5.1 (marked curve decodability).** For every stack, every codeword-valued `f`, a
 
 ### `MessageIdx` (2 declarations, 2 files)
 
@@ -3783,6 +3784,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem GSMultInterp.toPoly_add` [ArkLib/Data/CodingTheory/GuruswamiSudan/DictionaryBridge.lean:48](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/DictionaryBridge.lean#L48) — `toPoly` is additive in the coefficient vector.
 - `theorem UniPoly.toPoly_add` [ArkLib/Data/UniPoly/Basic.lean:854](../../../ArkLib/Data/UniPoly/Basic.lean#L854) — `UniPoly` addition is mapped to `Polynomial` addition
+
+### `totient_two_pow'` (2 declarations, 2 files)
+
+- `lemma ArkLib.ProximityGap.KKH26.totient_two_pow'` [ArkLib/Data/CodingTheory/ProximityGap/KKH26ParsevalThreshold.lean:254](../../../ArkLib/Data/CodingTheory/ProximityGap/KKH26ParsevalThreshold.lean#L254) — (no docstring)
+- `theorem ArkLib.ProximityGap.ResultantLiftLoop52.totient_two_pow'` [ArkLib/Data/CodingTheory/ProximityGap/ResultantLiftLoop52.lean:129](../../../ArkLib/Data/CodingTheory/ProximityGap/ResultantLiftLoop52.lean#L129) — (no docstring)
 
 ### `two_ne_zero_zmod13` (2 declarations, 2 files)
 
