@@ -96,6 +96,7 @@ import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
 import ArkLib.Data.CodingTheory.Connections.GKL24MaxDomainExists
 import ArkLib.Data.CodingTheory.Connections.GKL24PetalWitnessCover
 import ArkLib.Data.CodingTheory.Connections.ListDecodingAndCA
+import ArkLib.Data.CodingTheory.Connections.ProximityPrizeConnectiveTissue
 import ArkLib.Data.CodingTheory.Connections.SmoothDomainMCAWitness
 import ArkLib.Data.CodingTheory.DivergenceOfSets
 import ArkLib.Data.CodingTheory.EntropyBallNcard
