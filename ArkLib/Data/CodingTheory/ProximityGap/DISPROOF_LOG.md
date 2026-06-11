@@ -5571,3 +5571,53 @@ the upper-bracket question for this radius family is *computable* from the subse
 census alone. Next falsifiers: (i) the n = 8 rung (orbit-reduced decide via the landed
 descent engine); (ii) the (12,6) flat numerator 12 across p ∈ {13,37,61} vs the census of
 the matching (r, m) shape.
+### S2(b) (#357 campaign) — universal MissingLine/ObstructionBound REFUTED at the Johnson radius; phase transition of the obstruction-hitting number
+Idea: every 2-column stack misses a line (`MissingLine C δ G U` for all U), so the
+covering lemma kills the Jo26 A(q,s) factor for every generator unconditionally.
+**Probe arc (all exhaustive mod exact symmetries — per-row codeword translation,
+per-row scaling, row swap; engines cross-validated):**
+* F₅ rungs (`probe_missing_line_f5_rungs.py`): n=3 k∈{1,2} and the smooth n=4
+  domain ⟨2⟩=F₅* k∈{2,3} — H(U) ≤ 2 everywhere; the F₃ sharper law `H ≤ l` survives
+  the field axis and the length axis.
+* l=3 rungs (`probe_missing_line_l3.py`): 3-row stacks at r = n−k = 2 still have
+  H = 2 — the ROW law `H ≤ l` is not the binding quantity; the syndrome law `H ≤ r`
+  takes over.
+* Decisive rungs (`probe_missing_line_heavy_fast.py`, memoized engine, 7.6M stacks
+  in ~10s): at n=4, k=1 (r=3): δ=1/4 (sub-Johnson, 2 witness levels) → H = 2; at
+  δ=1/2 = 1−√ρ (Johnson, 3 levels) → **H = 4**, killing `H ≤ l` (2), `H ≤ r` (3) and
+  `H ≤ #levels` (3) simultaneously. Over small fields the q-bound itself falls:
+  F₂ n=4 δ=1/2: H = 3 > q = 2; F₃ n=4 δ=1/2: H = 4 > q = 3
+  (`verify_missing_line_defeater.py`: independent tuple-semantics engine, MATCH).
+**Refuted in Lean (`MissingLineDefeater.lean`, axiom-clean):** the F₂ defeater is
+fully rigid — stack rows (e₀,e₁),(e₁,e₀+e₂) over the 4-coordinate repetition code at
+its Johnson radius δ=1/2 has three bad seeds (0,1),(1,0),(1,1) whose UNIQUE witnesses
+{0,2},{2,3},{0,1} pin the three distinct lines of F₂² as obstructions
+(kernel-checked cores), overflowing every ≤ q=2 dominating family:
+`missingLine_defeated`, `not_forall_missingLine`, `obstructionBound_defeated`.
+**What survives:** every sub-Johnson rung still has H ≤ 2 — the re-aimed S2(b) is
+"MissingLine below Johnson", with a measured phase transition AT Johnson as the
+obstruction-side mirror of the global δ* wall; the sibling S2(b') one-row reduction
+(`Jo26ObstructionRowCount.lean`) localizes exactly this gating one dimension down,
+and these defeaters certify its `≤ q−1` direction-count hypothesis is TIGHT (it
+genuinely fails at Johnson over small fields). Exactness itself is NOT refuted (the
+route is sufficient, not necessary); whether epsMCAG interleaving exactness fails at
+the defeater configs is the named follow-up probe.
+### S1 (#357 campaign) — common sum-polynomial API landed; unification bridge, not yet a δ* pin
+
+`SumPolynomialAPI.lean` now names the finite-window coefficient surface shared by three
+previously separate proof lanes:
+
+* `coeffPoly n c = Σ_{i<n} C(c_i) X^i` and `rootSum x n c = Σ_{i<n} c_i x^i`
+  with coefficient/evaluation/map lemmas.
+* KKH26 signed data are this API with `{−1,0,1}` coefficients:
+  `sumPoly_eq_coeffPoly`, `sVal_eq_rootSum`.
+* Witness-layer multiplicities are this API with nonnegative integer coefficients:
+  `layer_rootSum_vanishing_iff` packages the Lam-Leung antipodal-balance criterion through
+  `rootSum`.
+* de Bruijn prime-power indicators are this API with `{0,1}` rational coefficients:
+  `indicatorPoly_eq_coeffPoly`.
+
+Interpretation for the δ* campaign: S1's "same mathematics" claim is now theorem-shaped
+in-tree at the coefficient-surface level.  What remains open is the hard analytic transfer:
+the RS agreement-to-layer reduction, the marginal-layer laws beyond the balanced witness
+layer, and the per-prime norm-divisibility surplus correction.
