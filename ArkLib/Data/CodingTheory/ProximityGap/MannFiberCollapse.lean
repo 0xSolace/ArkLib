@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.CRTDoubleSlice
 import ArkLib.Data.CodingTheory.ProximityGap.CoprimePacketMinpoly
 
 /-!
@@ -27,7 +28,8 @@ convention `ζ_p := ζ^m`, `ζ_m := ζ^p` for `ζ` a primitive `n`-th root:
   `1, ζ_p, …, ζ_p^{p-2}` are linearly independent over `ℚ(ζ_m)`.
 * `relationCoeffs_eq` — **the forcing lemma**: any `ℚ(ζ_m)`-relation
   `∑_{i<p} a_i ζ_p^i = 0` has all coefficients EQUAL (`a_i = a_0`): a degree-`< p`
-  annihilating polynomial is a constant multiple of `Φ_p = 1 + X + … + X^{p-1}`.
+  annihilating polynomial is a constant multiple of `Φ_p = 1 + X + … + X^{p-1}`;
+  equivalently, this is `CRTDoubleSlice.slice_of_packet_minpoly` at packet width `1`.
 * `fiber_collapse_iff` — **MANN'S FIBER COLLAPSE**: for `ℕ`-weights `w i j` on the
   CRT grid `μ_p × μ_m`, the sum `∑_{i<p} ∑_{j<m} w i j · ζ^{i·m + j·p}` vanishes
   **iff** all `p` fiber projections `S_i := ∑_j w i j · (ζ^p)^j ∈ ℚ(ζ_m)` coincide.
@@ -104,54 +106,20 @@ theorem relationCoeffs_eq (hp : p.Prime) (hpm : ¬ p ∣ m)
     (hζ : IsPrimitiveRoot ζ (p * m)) (a : ℕ → ℚ⟮ζ ^ p⟯)
     (hrel : ∑ i ∈ Finset.range p, (a i : L) * (ζ ^ m) ^ i = 0) :
     ∀ i < p, a i = a 0 := by
-  haveI : Fact p.Prime := ⟨hp⟩
-  set g : Polynomial ℚ⟮ζ ^ p⟯ := ∑ i ∈ Finset.range p, C (a i) * X ^ i with hg
-  have hcoeff : ∀ i < p, g.coeff i = a i := by
-    intro i hi
-    rw [hg, finset_sum_coeff]
-    simp only [coeff_C_mul, coeff_X_pow, mul_ite, mul_one, mul_zero]
-    rw [Finset.sum_ite_eq (Finset.range p) i a]
-    exact if_pos (Finset.mem_range.mpr hi)
-  have haev : aeval (ζ ^ m) g = 0 := by
-    rw [hg, map_sum]
-    simpa only [map_mul, aeval_C, map_pow, aeval_X,
-      IntermediateField.algebraMap_apply] using hrel
-  have hdvd : cyclotomic p ℚ⟮ζ ^ p⟯ ∣ g := by
-    rw [← minpoly_pow_eq_cyclotomic hp hpm hζ]
-    exact minpoly.dvd _ _ haev
-  have hcyccoeff : ∀ j < p, (cyclotomic p ℚ⟮ζ ^ p⟯).coeff j = 1 := by
-    intro j hj
-    rw [cyclotomic_prime, finset_sum_coeff]
-    simp only [coeff_X_pow]
-    rw [Finset.sum_ite_eq (Finset.range p) j fun _ => (1 : ℚ⟮ζ ^ p⟯)]
-    exact if_pos (Finset.mem_range.mpr hj)
-  rcases eq_or_ne g 0 with hg0 | hg0
-  · intro i hi
-    have h1 := hcoeff i hi
-    have h2 := hcoeff 0 hp.pos
-    rw [hg0, coeff_zero] at h1 h2
-    rw [← h1, ← h2]
-  · obtain ⟨s, hs⟩ := hdvd
-    have hcycne : (cyclotomic p ℚ⟮ζ ^ p⟯) ≠ 0 := (cyclotomic.monic p _).ne_zero
-    have hsne : s ≠ 0 := by rintro rfl; rw [mul_zero] at hs; exact hg0 hs
-    have hdeg : g.natDegree ≤ p - 1 := by
-      rw [hg]
-      refine natDegree_sum_le_of_forall_le _ _ fun i hi => ?_
-      refine (natDegree_C_mul_le _ _).trans ?_
-      rw [natDegree_X_pow]
-      have := Finset.mem_range.mp hi
-      omega
-    have hdegs : s.natDegree = 0 := by
-      have h1 : g.natDegree = (p - 1) + s.natDegree := by
-        rw [hs, natDegree_mul hcycne hsne, natDegree_cyclotomic, Nat.totient_prime hp]
-      omega
-    obtain ⟨c, hc⟩ := natDegree_eq_zero.mp hdegs
-    intro i hi
-    have h1 := hcoeff i hi
-    have h0 := hcoeff 0 hp.pos
-    rw [hs, ← hc, coeff_mul_C, hcyccoeff i hi, one_mul] at h1
-    rw [hs, ← hc, coeff_mul_C, hcyccoeff 0 hp.pos, one_mul] at h0
-    rw [← h1, ← h0]
+  have hm : 0 < m := m_pos hpm
+  have hn : 0 < p * m := Nat.mul_pos hp.pos hm
+  have hζm : IsPrimitiveRoot (ζ ^ p) m := hζ.pow hn rfl
+  have hζp : IsPrimitiveRoot (ζ ^ m) p := hζ.pow hn (mul_comm p m)
+  have hcop : Nat.Coprime m p := ((Nat.Prime.coprime_iff_not_dvd hp).mpr hpm).symm
+  have hmin : minpoly ℚ⟮ζ ^ p⟯ (ζ ^ m)
+      = ∑ t ∈ Finset.range p, (X : Polynomial ℚ⟮ζ ^ p⟯) ^ (t * 1) :=
+    CoprimePacketMinpoly.minpoly_adjoin_coprime_prime_eq_geom hm hp hcop hζm hζp
+  have hsum : ∑ e ∈ Finset.range (p * 1), a e • (ζ ^ m) ^ e = 0 := by
+    simpa [Algebra.smul_def, IntermediateField.algebraMap_apply] using hrel
+  intro i hi
+  have h := CRTDoubleSlice.slice_of_packet_minpoly hmin hsum (i := i) (i' := 0) (s := 0)
+    hi hp.pos Nat.one_pos
+  simpa using h
 
 /-- **THE INDEPENDENCE BRICK (K5)**: `1, ζ_p, ζ_p^2, …, ζ_p^{p-2}` are linearly
 independent over the coprime cyclotomic field `ℚ(ζ_m)` — here `ζ_p := ζ^m`,
