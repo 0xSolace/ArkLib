@@ -256,12 +256,44 @@ structure AbstractOStmtIn where
   -- The abstract initial compatibility relation, which along with
   -- MLPEvalRelation, forms the initial input relation for the MLIOPCS.
   initialCompatibility : (MultilinearPoly L ℓ') × (∀ j, OStmtIn j) → Prop
+  /-- The *strict* (completeness-side) initial compatibility relation. Concrete oracle-code
+  instantiations (e.g. Binary Basefold) need **two** compatibility tracks: a relaxed one
+  (unique-decoding-radius closeness) that round-by-round knowledge extraction can actually land
+  in, and a strict one (exact codeword equality) that the honest prover satisfies and that
+  perfect completeness genuinely requires — perfect completeness w.r.t. the *relaxed* input
+  relation is false for such schemes (a δ-close-but-unequal committed oracle is caught by the
+  proximity test with positive probability). Defaults to `initialCompatibility`, so abstract
+  developments and single-track instantiations are unaffected. -/
+  strictInitialCompatibility : (MultilinearPoly L ℓ') × (∀ j, OStmtIn j) → Prop :=
+    initialCompatibility
 
 def AbstractOStmtIn.toRelInput (aOStmtIn : AbstractOStmtIn L ℓ') :
     Set (((MLPEvalStatement L ℓ') × (∀ j, aOStmtIn.OStmtIn j)) × (WitMLP L ℓ')) :=
   {input |
     MLPEvalRelation L ℓ' aOStmtIn.ιₛᵢ aOStmtIn.OStmtIn input
     ∧ aOStmtIn.initialCompatibility ⟨input.2.t, input.1.2⟩}
+
+/-- Strict-track input relation: `MLPEvalRelation` plus the strict initial compatibility.
+This is the input relation against which the abstract opening's *perfect completeness* is
+stated (the relaxed `toRelInput` remains the knowledge-soundness relation). -/
+def AbstractOStmtIn.toStrictRelInput (aOStmtIn : AbstractOStmtIn L ℓ') :
+    Set (((MLPEvalStatement L ℓ') × (∀ j, aOStmtIn.OStmtIn j)) × (WitMLP L ℓ')) :=
+  {input |
+    MLPEvalRelation L ℓ' aOStmtIn.ιₛᵢ aOStmtIn.OStmtIn input
+    ∧ aOStmtIn.strictInitialCompatibility ⟨input.2.t, input.1.2⟩}
+
+/-- The strict variant of an `AbstractOStmtIn`: same oracle data, with the strict
+compatibility installed as the (single-track) compatibility. Instantiating the generic
+ring-switching phase relations/bricks at `aOStmtIn.strictVariant` yields the strict-track
+(completeness-side) relation chain for free; all data projections are definitionally those
+of `aOStmtIn`. -/
+@[reducible]
+def AbstractOStmtIn.strictVariant (aOStmtIn : AbstractOStmtIn L ℓ') : AbstractOStmtIn L ℓ' :=
+  { aOStmtIn with initialCompatibility := aOStmtIn.strictInitialCompatibility }
+
+@[simp]
+lemma AbstractOStmtIn.strictVariant_toRelInput (aOStmtIn : AbstractOStmtIn L ℓ') :
+    aOStmtIn.strictVariant.toRelInput = aOStmtIn.toStrictRelInput := rfl
 
 structure MLIOPCS extends (AbstractOStmtIn L ℓ') where
   /-- Protocol specification -/
@@ -276,12 +308,19 @@ structure MLIOPCS extends (AbstractOStmtIn L ℓ') where
     (WitIn := WitMLP L ℓ') (WitOut := Unit)
     (pSpec := pSpec)
   -- Security properties
+  /-- Perfect completeness of the opening, w.r.t. the **strict** input relation and under
+  `NeverFail init`. Both deviations from the former field are forced by instantiability:
+  without the `NeverFail` guard the statement is false for any failing `init` (the failure
+  mass caps the acceptance probability below 1), and w.r.t. the relaxed `toRelInput` it is
+  false for code-based openings (a δ-close-but-unequal committed oracle is rejected with
+  positive probability by the proximity test). -/
   perfectCompleteness : ∀ {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)},
+    NeverFail init →
     OracleReduction.perfectCompleteness (oSpec:=[]ₒ)
       (StmtIn:=MLPEvalStatement L ℓ') (OStmtIn:=OStmtIn)
       (StmtOut:=Bool) (OStmtOut:=fun _: Empty => Unit)
       (WitIn:=WitMLP L ℓ') (WitOut:=Unit) (pSpec:=pSpec) (init:=init) (impl:=impl)
-      (relIn := toAbstractOStmtIn.toRelInput)
+      (relIn := toAbstractOStmtIn.toStrictRelInput)
       (relOut := acceptRejectOracleRel)
       (oracleReduction := oracleReduction)
   -- RBR knowledge error function for the MLIOPCS
