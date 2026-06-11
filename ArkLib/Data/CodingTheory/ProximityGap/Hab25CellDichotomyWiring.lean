@@ -8,6 +8,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonCountWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AffineCapture
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeTight
+import ArkLib.Data.CodingTheory.ProximityGap.JohnsonBoundRealLower
 
 /-!
 # Cells to dichotomy bundles — the GS production wired into the Johnson endgame
@@ -475,6 +476,34 @@ theorem johnsonNumericBound_of_window_numeric_tight
       hwin hTn hT)
     harith
 
+
+open Classical in
+/-- **The window instance, fully closed.**  On the 3-intersection window with `2 ≤ k`,
+`k + 1 ≤ n`, and multiplicity `12 ≤ m` below the Johnson multiplicity, the numeric edge
+holds with NO side conditions: the count comes from the complete GS pipeline at the tight
+budget, and the arithmetic from `harith_tight_closed`. -/
+theorem johnsonNumericBound_of_window_closed
+    {n k m : ℕ} [NeZero n] (domain : Fin n ↪ F₀) (η δ : ℝ≥0)
+    (hk2 : 2 ≤ k) (hkn : k + 1 ≤ n) (hm12 : 12 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hwin : 2 * Fintype.card (Fin n) + k
+      ≤ 3 * ⌈(1 - δ) * (Fintype.card (Fin n) : ℝ≥0)⌉₊)
+    (hmle : (m : ℝ) ≤
+      max (⌈((((k : ℝ) / Fintype.card (Fin n) + 1 / Fintype.card (Fin n)))
+          ^ ((1 : ℝ) / 2)) / (2 * (η : ℝ))⌉ : ℝ) 3) :
+    JohnsonNumericBound domain k η δ := by
+  have hk1 : 1 < k := lt_of_lt_of_le one_lt_two hk2
+  have hm1 : 1 ≤ m := le_trans (by norm_num) hm12
+  have hcard : Fintype.card (Fin n) = n := Fintype.card_fin n
+  refine johnsonNumericBound_of_window_numeric_tight domain η δ
+    (max (n * (GuruswamiSudan.constraintIndices m).card
+      * (gs_degree_bound k n m / (k - 1))) n)
+    hk1 (by omega) hm1 hδ1 hδJ hwin (le_max_right _ _) (le_max_left _ _) ?_
+  have h := ProximityGapArithWrapper.harith_tight_closed domain k m η δ hk2
+    (by rw [hcard]; omega) hm12 (by rw [hcard] at hmle ⊢; exact hmle)
+  rw [hcard] at h
+  exact h
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit -/
@@ -489,3 +518,4 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.exists_dichotomyData_of_window_div
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.badCount_le_numeric_tight_of_window
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_window_numeric_tight
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.johnsonNumericBound_of_window_closed
