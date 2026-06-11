@@ -637,6 +637,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonEllBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4FiberReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25K4Seam
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25LaneBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25LinearFactorCapture
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
@@ -825,6 +826,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PTEFamilyConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.PacketCombinationDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.PackingClassCSP
 import ArkLib.Data.CodingTheory.ProximityGap.PackingSubdivision
+import ArkLib.Data.CodingTheory.ProximityGap.PackingTreeSufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PrimePowerMultisetWindow
@@ -1000,6 +1002,7 @@ import ArkLib.Data.CodingTheory.RSCodewordWeight
 import ArkLib.Data.CodingTheory.RSNearCount
 import ArkLib.Data.CodingTheory.RSVanishingDim
 import ArkLib.Data.CodingTheory.RSWeightEnumerator
+import ArkLib.Data.CodingTheory.RSWeightEnumeratorExact
 import ArkLib.Data.CodingTheory.RandomLinearCodeCodewordCount
 import ArkLib.Data.CodingTheory.RandomLinearCodeEquidistribution
 import ArkLib.Data.CodingTheory.RandomLinearCodeFirstMoment
@@ -1125,6 +1128,7 @@ import ArkLib.Data.Probability.MarginalBound
 import ArkLib.Data.Probability.Notation
 import ArkLib.Data.Probability.PrUnionBound
 import ArkLib.Data.Probability.ProductMarginal
+import ArkLib.Data.Probability.ProductMarginalBound
 import ArkLib.Data.Probability.RandomSubsetInclusion
 import ArkLib.Data.Probability.RandomSubsetInclusionExists
 import ArkLib.Data.Probability.TensorSchwartzZippel
@@ -1327,6 +1331,8 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.BitsOfIndex
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Code
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.CoreInteractionPhase
+import ArkLib.ProofSystem.Binius.BinaryBasefold.ExtractMLPCorrectness
+import ArkLib.ProofSystem.Binius.BinaryBasefold.FiberDependence
 import ArkLib.ProofSystem.Binius.BinaryBasefold.FoldDetDischarge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.FoldDetSplit
 import ArkLib.ProofSystem.Binius.BinaryBasefold.General
@@ -1358,6 +1364,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorFar
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorFiber
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorHamming
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorInjectivity
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorMultilinear
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorSurjectivity
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorUDR
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorWitness
@@ -1368,6 +1375,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.SuffixAlignCore
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.SuffixFiberAlignment
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Spec
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.Commit
@@ -1477,6 +1485,7 @@ import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.ProofSystem.RingSwitching.SumcheckDeterminism
 import ArkLib.ProofSystem.RingSwitching.SumcheckLoopPC
 import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
+import ArkLib.ProofSystem.RingSwitching.SumcheckRoundCompleteness
 import ArkLib.ProofSystem.RingSwitching.TraceTensorAlgebra
 import ArkLib.ProofSystem.RingSwitching.WiringInstances
 import ArkLib.ProofSystem.Spartan.Basic
@@ -1513,6 +1522,7 @@ import ArkLib.ProofSystem.Spartan.MidChainWithTarget
 import ArkLib.ProofSystem.Spartan.PhaseCompletenessLeaves
 import ArkLib.ProofSystem.Spartan.PrependRLCDeterminism
 import ArkLib.ProofSystem.Spartan.R1CSMleEquivalence
+import ArkLib.ProofSystem.Spartan.RLCKernelBound
 import ArkLib.ProofSystem.Spartan.RbrKnowledgeWiring
 import ArkLib.ProofSystem.Spartan.SecondSumcheckBridgeFree
 import ArkLib.ProofSystem.Spartan.SecondSumcheckComplete
@@ -1697,6 +1707,7 @@ import ArkLib.ToMathlib.BKR06Injection
 import ArkLib.ToMathlib.BKR06Pigeonhole
 import ArkLib.ToMathlib.BKR06TightFamily
 import ArkLib.ToMathlib.BadLineWitnessProof
+import ArkLib.ToMathlib.BetaDropIn
 import ArkLib.ToMathlib.BetaIdentify
 import ArkLib.ToMathlib.BetaInputSupply
 import ArkLib.ToMathlib.BetaMatchingVanishes
@@ -1745,6 +1756,7 @@ import ArkLib.ToMathlib.ConditionDiscProduct
 import ArkLib.ToMathlib.CoordinateKillBudget
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 import ArkLib.ToMathlib.CountingAgreementBricks
+import ArkLib.ToMathlib.CoverageSelection
 import ArkLib.ToMathlib.CurveFamilyGenuine
 import ArkLib.ToMathlib.CurveFamilyHensel
 import ArkLib.ToMathlib.CurveFamilyLines
@@ -1824,6 +1836,7 @@ import ArkLib.ToMathlib.GenuinePpolyConverter
 import ArkLib.ToMathlib.GenuineTruncationFin
 import ArkLib.ToMathlib.GradedHteleArith
 import ArkLib.ToMathlib.GreedyDisjointCover
+import ArkLib.ToMathlib.GroundLineInterpolation
 import ArkLib.ToMathlib.HPzBridge
 import ArkLib.ToMathlib.HasseDerivNumeratorConcrete
 import ArkLib.ToMathlib.HasseDerivNumeratorGeneral
@@ -1859,6 +1872,7 @@ import ArkLib.ToMathlib.L46GSWitnessRS
 import ArkLib.ToMathlib.LatticeFrontierReduction
 import ArkLib.ToMathlib.LineDecodingCoverageProof
 import ArkLib.ToMathlib.LinearCentreCertificates
+import ArkLib.ToMathlib.LinearFormKernelCard
 import ArkLib.ToMathlib.LinearizedHomogeneous
 import ArkLib.ToMathlib.LinearizedKernel
 import ArkLib.ToMathlib.LinearizedPattern
@@ -1936,6 +1950,7 @@ import ArkLib.ToMathlib.ResultantDegreeBound
 import ArkLib.ToMathlib.RewindingExtractor
 import ArkLib.ToMathlib.SPMFBindComm
 import ArkLib.ToMathlib.STIRCombineDegree
+import ArkLib.ToMathlib.SbetaExclusion
 import ArkLib.ToMathlib.SbetaPackaging
 import ArkLib.ToMathlib.SecondMomentCountBricks
 import ArkLib.ToMathlib.SecondMomentProb

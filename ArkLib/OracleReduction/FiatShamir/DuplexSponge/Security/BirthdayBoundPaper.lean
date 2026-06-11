@@ -122,9 +122,32 @@ theorem honestBad_birthday_of_paperResidual
   exact probEvent_honestBad_le_probEvent_EPaper _
     (fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) => z.2) (fun _ => st₀)
 
+/-- **Claim 5.21 specialization** — the repaired Lemma 5.8 paper residual bounds the honest
+bad events by the exact `claim5_21Bound` consumed by the `Hyb₀ → Hyb₁` step, after
+instantiating the total query budget at the CO25 trace length
+`T = tₕ + 1 + tₚ + L + tₚᵢ`. -/
+theorem honestBad_claim5_21Bound_of_paperResidual
+    (h58 : Lemma5_8EagerPaperResidual StmtIn U)
+    {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α)
+    (tₕ tₚ tₚᵢ L : ℕ)
+    (hT : IsTotalQueryBound P (tₕ + 1 + tₚ + L + tₚᵢ))
+    (st₀ : CanonicalSpongeState U) :
+    (Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) =>
+        ∃ S : Backtrack.S_BT z.2 st₀,
+          E_inv_honest z.2 st₀ S ∨ E_fork_honest z.2 st₀ S ∨ E_time_honest z.2 st₀ S |
+      do
+        let c ← (D_DS StmtIn U).sample
+        simulateQ ((D_DS StmtIn U).toImpl c)
+          ((simulateQ loggingOracle P).run)]).toReal
+      ≤ claim5_21Bound U tₕ tₚ tₚᵢ L := by
+  simpa [BirthdayBound.lemma5_8Bound_eq_claim5_21Bound] using
+    honestBad_birthday_of_paperResidual (StmtIn := StmtIn) (U := U) h58 P
+      (tₕ + 1 + tₚ + L + tₚᵢ) hT st₀
+
 end EagerInstantiation
 
 end DuplexSpongeFS.BirthdayBoundPaper
 
 #print axioms DuplexSpongeFS.BirthdayBoundPaper.probEvent_honestBad_le_probEvent_EPaper
 #print axioms DuplexSpongeFS.BirthdayBoundPaper.honestBad_birthday_of_paperResidual
+#print axioms DuplexSpongeFS.BirthdayBoundPaper.honestBad_claim5_21Bound_of_paperResidual
