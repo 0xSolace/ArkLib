@@ -18,7 +18,7 @@ A comment/string-stripped scan of `ArkLib/**/*.lean` found:
 - Live `sorry` / `admit` tokens: **0**.
 - Live `theorem` / `lemma` / `def` / `abbrev` / `instance` declarations with a top-level
   `: True`, `True :=`, or `:= True` shape: **0**.
-- Remaining `def` / `abbrev` / `class ... : Prop` declarations: **90**. These are not all
+- Remaining `def` / `abbrev` / `class ... : Prop` declarations: **91**. These are not all
   dishonest: many are genuine bad-event predicates, conjecture statements, or refutation/spec
   predicates. The audit job is to distinguish those from residual obligations that still need
   proof.
@@ -31,7 +31,8 @@ Current issue routing for the residual-shaped surface:
   [#316](https://github.com/lalalune/ArkLib/issues/316).
 - Proximity/coding-theory residuals and conjecture/spec predicates:
   [#334](https://github.com/lalalune/ArkLib/issues/334), with BCIKS20 core work also in
-  [#304](https://github.com/lalalune/ArkLib/issues/304).
+  [#304](https://github.com/lalalune/ArkLib/issues/304). The latest clean-origin scan includes
+  `Hab25JohnsonDischarge.lean:53` `JohnsonDischargeStatement` in this bucket.
 - Spartan residual Props: [#329](https://github.com/lalalune/ArkLib/issues/329).
 - WHIR soundness work: [#302](https://github.com/lalalune/ArkLib/issues/302); current direct
   WHIR shortcut scan has no `def/class ... : Prop` hit under `ArkLib/ProofSystem/Whir`.
