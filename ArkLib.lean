@@ -832,6 +832,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCACurveEvent
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarBracket
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarExactPoint
+import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarHighRateFamily
 import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarSandwich
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
