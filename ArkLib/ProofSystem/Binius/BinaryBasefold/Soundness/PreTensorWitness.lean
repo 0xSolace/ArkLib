@@ -95,6 +95,4 @@ lemma preTensorCombine_exists_close_interleavedCodeword_of_fiberwiseClose
 
 end
 
-#print axioms Binius.BinaryBasefold.preTensorCombine_exists_close_interleavedCodeword_of_fiberwiseClose
-
 end Binius.BinaryBasefold

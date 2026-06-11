@@ -2386,13 +2386,6 @@ lemma prop_4_21_2_incremental_bad_event_probability
       (h_destIdx_le := h_destIdx_le) (f_block_start := f_block_start)
       (r_prefix := r_prefix) (h_block_far := h_block_close)
 
-#print axioms prop_4_21_2_case_1_fiberwise_close_incremental
-#print axioms fold_preTensorCombine_eq_affineLineEvaluation_split
-#print axioms fold_eq_multilinearCombine_preTensorCombine_step1
-#print axioms preTensorCombine_jointProximityNat_of_fiberwiseClose
-#print axioms prop_4_21_2_case_2_fiberwise_far_incremental
-#print axioms prop_4_21_2_incremental_bad_event_probability
-
 end
 
 end Binius.BinaryBasefold

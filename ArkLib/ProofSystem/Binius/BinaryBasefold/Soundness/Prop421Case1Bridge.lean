@@ -141,7 +141,3 @@ lemma foldDiff_zero_iff (i : Fin r) {destIdx : Fin r} (steps : ℕ)
 end
 
 end Binius.BinaryBasefold
-
-#print axioms Binius.BinaryBasefold.foldDiff_eq_dotProduct_mulVec
-#print axioms Binius.BinaryBasefold.foldDiff_coeff_ne_zero
-#print axioms Binius.BinaryBasefold.foldDiff_zero_iff

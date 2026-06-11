@@ -314,9 +314,3 @@ end
 end Weld
 
 end Binius.BinaryBasefold.DetNeZero
-
-/-! ### Axiom audit (issue #317 fold-matrix nonsingularity) -/
-
-#print axioms Binius.BinaryBasefold.DetNeZero.foldMatrixNat_succ_eq
-#print axioms Binius.BinaryBasefold.DetNeZero.foldZ_sub_ne_zero
-#print axioms Binius.BinaryBasefold.DetNeZero.foldMatrixNat_det_ne_zero

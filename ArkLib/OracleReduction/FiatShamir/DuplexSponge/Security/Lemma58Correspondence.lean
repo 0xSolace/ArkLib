@@ -952,6 +952,109 @@ theorem noRedundant_raw_no_earlier_sameClass
   refine h ⟨p, hp⟩ ((redundantEntryDSPaper_iff_sameClass log ⟨p, hp⟩).mpr ?_)
   exact ⟨⟨q, by omega⟩, hq, hcl⟩
 
+/-! ## Dedup positions are first occurrences (assembly step w1, the recursion crux) -/
+
+/-- The `getElem?` position map of `eraseIdx`: deleting index `i` shifts later positions by
+one, for all indices. -/
+theorem getElem?_eraseIdx_map {α : Type*} (l : List α) (i x : ℕ) :
+    (l.eraseIdx i)[x]? = l[if x < i then x else x + 1]? := by
+  rcases lt_or_ge x (l.eraseIdx i).length with hx | hx
+  · rw [List.getElem?_eq_getElem hx, List.getElem_eraseIdx hx]
+    split <;> rw [List.getElem?_eq_getElem]
+  · rw [List.getElem?_eq_none hx]
+    rcases lt_or_ge i l.length with hi | hi
+    · rw [List.length_eraseIdx_of_lt hi] at hx
+      exact (List.getElem?_eq_none (by split <;> omega)).symm
+    · rw [List.eraseIdx_of_length_le hi] at hx
+      exact (List.getElem?_eq_none (by split <;> omega)).symm
+
+open DuplexSpongeFS.Paper in
+/-- **Dedup positions are first occurrences.** There is an order embedding `f` of the dedup
+base trace into the raw log such that each base entry sits at a raw position with no earlier
+same-class raw entry. The well-founded recursion over `removeRedundantEntryDSPaper`. -/
+theorem removeRedundant_firstOcc
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) :
+    ∃ f : ℕ ↪o ℕ,
+      (∀ ix, (removeRedundantEntryDSPaper log).1[ix]? = log[f ix]?) ∧
+      (∀ ix p (e ep : DSEntry StmtIn U),
+        (removeRedundantEntryDSPaper log).1[ix]? = some e → log[p]? = some ep →
+        p < f ix → ¬ sameClass e ep) := by
+  letI : Decidable (∃ idx : Fin log.length,
+      DuplexSpongeFS.Paper.redundantEntryDSPaper log idx) := Classical.propDecidable _
+  by_cases h : ∃ idx : Fin log.length, redundantEntryDSPaper log idx
+  · set i := (Classical.choose h).val with hi
+    have hilt : i < log.length := (Classical.choose h).isLt
+    obtain ⟨f', hf'eq, hf'fo⟩ := removeRedundant_firstOcc (log.eraseIdx i)
+    have hbase : removeRedundantEntryDSPaper log
+        = removeRedundantEntryDSPaper (log.eraseIdx i) := by
+      conv_lhs => rw [removeRedundantEntryDSPaper, dif_pos h]
+    let gEmb : ℕ ↪o ℕ := OrderEmbedding.ofStrictMono (fun j => if j < i then j else j + 1)
+      (by intro a b hab; dsimp only; split <;> split <;> omega)
+    have hgEmb : ∀ x, gEmb x = if x < i then x else x + 1 := fun _ => rfl
+    have hmapval : ∀ x, (log.eraseIdx i)[x]? = log[gEmb x]? := by
+      intro x; rw [getElem?_eraseIdx_map, hgEmb]
+    refine ⟨f'.trans gEmb, ?_, ?_⟩
+    · intro ix; rw [hbase, hf'eq ix]; exact hmapval (f' ix)
+    · intro ix p e ep hbe hlogp hpf
+      rw [hbase] at hbe
+      have core : ∀ r r' er, gEmb r' = r → log[r]? = some er → r' < f' ix →
+          ¬ sameClass e er := by
+        intro r r' er hgr hlogr hr'f
+        have hlog'r : (log.eraseIdx i)[r']? = some er := by rw [hmapval r', hgr]; exact hlogr
+        exact hf'fo ix r' e er hbe hlog'r hr'f
+      intro hcl
+      have hpf' : p < (if f' ix < i then f' ix else f' ix + 1) := by rw [← hgEmb]; exact hpf
+      rcases eq_or_ne p i with rfl | hpi
+      · have hred : redundantEntryDSPaper log (Classical.choose h) := Classical.choose_spec h
+        obtain ⟨q, hq, hqcl⟩ :=
+          (redundantEntryDSPaper_iff_sameClass log (Classical.choose h)).mp hred
+        have hqi : (q : ℕ) < i := hq
+        have hf'ge : i ≤ f' ix := by by_contra hlt; push_neg at hlt; rw [if_pos hlt] at hpf'; omega
+        have hqf : (q : ℕ) < f' ix := by omega
+        have hlogi : log[i]? = some ep := hlogp
+        have hlogq : log[(q : ℕ)]? = some (log[(q : ℕ)]'(by omega)) :=
+          List.getElem?_eq_getElem (by omega)
+        have hepi : ep = log[i]'hilt := by
+          rw [List.getElem?_eq_getElem hilt] at hlogi; exact (Option.some_inj.mp hlogi).symm
+        have hgq : gEmb (q : ℕ) = (q : ℕ) := by rw [hgEmb, if_pos hqi]
+        have hclq : sameClass e (log[(q : ℕ)]'(by omega)) := by
+          refine sameClass_trans hcl ?_; rw [hepi]; exact hqcl
+        exact core (q : ℕ) (q : ℕ) (log[(q : ℕ)]'(by omega)) hgq hlogq hqf hclq
+      · set p' := if p < i then p else p - 1 with hp'def
+        have hgp : gEmb p' = p := by
+          rw [hgEmb]
+          rcases lt_or_ge p i with hlt | hge
+          · rw [hp'def, if_pos hlt, if_pos hlt]
+          · have hgt : i < p := lt_of_le_of_ne hge (Ne.symm hpi)
+            rw [hp'def, if_neg (by omega : ¬ p < i), if_neg (by omega : ¬ p - 1 < i)]; omega
+        have hp'f : p' < f' ix := by
+          have : gEmb p' < gEmb (f' ix) := by rw [hgp, hgEmb]; exact hpf'
+          exact gEmb.lt_iff_lt.mp this
+        exact core p p' ep hgp hlogp hp'f hcl
+  · have hnr : NoRedundantEntryDSPaper log := fun idx => not_exists.mp h idx
+    have hself : removeRedundantEntryDSPaper log = ⟨log, hnr⟩ :=
+      removeRedundantEntryDSPaper_eq_self_of_noRedundantEntryDSPaper log hnr
+    refine ⟨OrderEmbedding.ofStrictMono id strictMono_id, ?_, ?_⟩
+    · intro ix; rw [hself]
+    · intro ix p e ep hbe hlogp hpf
+      rw [hself] at hbe
+      have hix : ix < log.length := by
+        rw [List.getElem?_eq_some_iff] at hbe; exact hbe.1
+      have hp : p < log.length := by
+        rw [List.getElem?_eq_some_iff] at hlogp; exact hlogp.1
+      have he : e = log[ix]'hix := by
+        rw [List.getElem?_eq_getElem hix] at hbe; exact (Option.some_inj.mp hbe).symm
+      have hep : ep = log[p]'hp := by
+        rw [List.getElem?_eq_getElem hp] at hlogp; exact (Option.some_inj.mp hlogp).symm
+      rw [he, hep]
+      exact noRedundant_raw_no_earlier_sameClass hnr (by simpa using hpf) hix
+termination_by log.length
+decreasing_by
+  have hlt : (Classical.choose h).val < log.length := (Classical.choose h).isLt
+  have heq : (log.eraseIdx (Classical.choose h).val).length + 1 = log.length :=
+    List.length_eraseIdx_add_one hlt
+  omega
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -1039,6 +1142,8 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_entry_fresh
 #print axioms DuplexSpongeFS.EagerLazyDS.base_raw_split
 #print axioms DuplexSpongeFS.EagerLazyDS.noRedundant_raw_no_earlier_sameClass
+#print axioms DuplexSpongeFS.EagerLazyDS.getElem?_eraseIdx_map
+#print axioms DuplexSpongeFS.EagerLazyDS.removeRedundant_firstOcc
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new

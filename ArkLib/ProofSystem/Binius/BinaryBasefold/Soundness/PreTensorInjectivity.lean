@@ -82,8 +82,6 @@ lemma fold_legacy_binary_inj (i : Fin r) (h_i : i.val + 1 < ℓ + 𝓡) (h_le : 
 end
 end Binius.BinaryBasefold
 
-#print axioms Binius.BinaryBasefold.fold_legacy_binary_inj
-
 namespace Binius.BinaryBasefold
 noncomputable section
 open Finset AdditiveNTT Polynomial Nat
@@ -233,7 +231,3 @@ lemma fiber_agree_of_binary_folds_agree (s : ℕ) (iv : ℕ) (hiv : iv < r)
 
 end
 end Binius.BinaryBasefold
-
-#print axioms Binius.BinaryBasefold.bitsOfIndex_combine_castSucc
-#print axioms Binius.BinaryBasefold.bitsOfIndex_combine_last
-#print axioms Binius.BinaryBasefold.fiber_agree_of_binary_folds_agree

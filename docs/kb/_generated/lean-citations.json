@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 348,
+    "files_with_citations": 347,
     "keys_cited": 30,
-    "total_citation_edges": 395
+    "total_citation_edges": 394
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -572,7 +572,7 @@
     "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/FoldDistance.lean": [
       "DP24"
     ],
-    "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition421.lean": [
+    "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean": [
       "DP24"
     ],
     "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean": [
@@ -1054,9 +1054,6 @@
     "ArkLib/ToMathlib/SignedGradedSupply.lean": [
       "BCIKS20"
     ],
-    "ArkLib/ToMathlib/SlicedCompositionInstance.lean": [
-      "BCIKS20"
-    ],
     "ArkLib/ToMathlib/StraightlineRewindingBridge.lean": [
       "AFK22"
     ],
@@ -1401,7 +1398,6 @@
       "ArkLib/ToMathlib/SectionXiDivisibility.lean",
       "ArkLib/ToMathlib/SectionXiUnit.lean",
       "ArkLib/ToMathlib/SignedGradedSupply.lean",
-      "ArkLib/ToMathlib/SlicedCompositionInstance.lean",
       "ArkLib/ToMathlib/SurfaceFactorProduction.lean",
       "ArkLib/ToMathlib/TAffinePlaceReading.lean",
       "ArkLib/ToMathlib/TailDegProducer.lean",
@@ -1449,7 +1445,7 @@
       "ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/BadBlocks.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/FoldDistance.lean",
-      "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition421.lean",
+      "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhaseSoundness.lean",
       "ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness.lean",

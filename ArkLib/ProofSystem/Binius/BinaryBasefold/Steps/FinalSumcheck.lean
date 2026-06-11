@@ -716,7 +716,7 @@ private theorem firstOracleDecoded_eq_f₀
 
 set_option maxHeartbeats 2000000 in
 -- This zero-step oracle identification needs extra heartbeats for the dependent cast cleanup.
-omit [SampleableType L] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
+omit [SampleableType L] [NeZero 𝓡] in
 private theorem finalOracleRaw_zero_heq_getFirstOracle
     (oStmtOut : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       ϑ (Fin.last ℓ) j)
@@ -1553,10 +1553,20 @@ lemma extracted_t_poly_eval_eq_final_constant
   --  iterated_fold 𝔽q β lastDomainIdx ϑ ⋯ ⋯
     -- (iterated_fold 𝔽q β 0 k ⋯ ⋯ f₀ preFinalChallenges) finalChallenges
   rw [iterated_fold_transitivity 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := (0 : Fin r)) (steps₁ := k) (steps₂ := ϑ)
+    (midIdx := lastDomainIdx) (destIdx := finalDomainIdx)
+    (h_midIdx := by simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, zero_add]; rfl)
+    (h_midIdx_le := by
+      dsimp only [lastDomainIdx]
+      simpa using Nat.sub_le ℓ ϑ)
     (h_destIdx := by
-      rw [h_k]; dsimp only [finalDomainIdx];
-      simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, zero_add]; omega
+      dsimp only [finalDomainIdx]
+      simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, zero_add]
     )
+    (h_destIdx_le := by
+      dsimp only [finalDomainIdx]
+      simp only
+      omega)
   ] at h_f_final_virtual_eq
   have h_congr_steps := iterated_fold_congr_steps_index 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := 0) (steps := k + ϑ) (destIdx := finalDomainIdx)

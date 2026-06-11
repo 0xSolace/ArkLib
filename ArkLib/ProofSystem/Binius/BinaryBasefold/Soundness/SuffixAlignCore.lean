@@ -280,9 +280,3 @@ lemma cast_iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask_core
 end
 
 end Binius.BinaryBasefold
-
-#print axioms Binius.BinaryBasefold.iteratedQuotientMap_val_eq_qMap_total_fiber_extractMiddleFinMask
-#print axioms Binius.BinaryBasefold.cast_iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask_core
-#print axioms Binius.BinaryBasefold.suffixLiftIdx_val
-#print axioms Binius.BinaryBasefold.val_of_cast_sDomain
-#print axioms Binius.BinaryBasefold.sDomain_repr_congr

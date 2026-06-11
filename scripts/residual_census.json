@@ -1,12 +1,12 @@
 {
  "summary": {
   "total": 104,
-  "open": 26,
-  "discharged": 78,
+  "open": 27,
+  "discharged": 77,
   "by_top_dir": {
    "Data": {
-    "total": 21,
-    "open": 9,
+    "total": 20,
+    "open": 8,
     "discharged": 12
    },
    "OracleReduction": {
@@ -16,25 +16,17 @@
    },
    "ProofSystem": {
     "total": 22,
-    "open": 6,
-    "discharged": 16
+    "open": 7,
+    "discharged": 15
    },
    "ToMathlib": {
-    "total": 20,
-    "open": 1,
+    "total": 21,
+    "open": 2,
     "discharged": 19
    }
   }
  },
  "residuals": [
-  {
-   "name": "RIMFullRankFailureProbResidual",
-   "fq_name": "AGL24.RIMFullRankFailureProbResidual",
-   "file": "ArkLib/Data/CodingTheory/AGL24UnionBound.lean",
-   "line": 79,
-   "providers": [],
-   "status": "open"
-  },
   {
    "name": "GKL24FirstMomentResidual",
    "fq_name": "ProximityGap.GKL24FirstMomentResidual",
@@ -1876,13 +1868,13 @@
    "name": "KeyLemmaEagerSaltedResidual",
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.KeyLemmaEagerSaltedResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 714,
+   "line": 706,
    "providers": [
     {
      "name": "DuplexSpongeFS.KeyLemmaSalted.keyLemmaEagerSalted_of_steps",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-     "line": 744,
+     "line": 735,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -2392,17 +2384,8 @@
    "fq_name": "StirIOP.MultiRound.stirMultiRoundRbrSoundnessResidual",
    "file": "ArkLib/ProofSystem/Stir/MultiRoundAssembly.lean",
    "line": 224,
-   "providers": [
-    {
-     "name": "StirIOP.MultiRound.stirMultiRoundRbrSoundnessResidual_indicator",
-     "kind": "theorem",
-     "file": "ArkLib/ProofSystem/Stir/ShellRbrIndicator.lean",
-     "line": 57,
-     "conditional_on_residuals": [],
-     "ambiguous_name_match": false
-    }
-   ],
-   "status": "discharged"
+   "providers": [],
+   "status": "open"
   },
   {
    "name": "stirCheckingRepRbrSoundnessResidual",
@@ -2425,13 +2408,13 @@
    "name": "K4GradedFactorCellResidual",
    "fq_name": "MutualCorrAgreement.K4GradedFactorCellResidual",
    "file": "ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean",
-   "line": 46,
+   "line": 39,
    "providers": [
     {
      "name": "MutualCorrAgreement.K4GradedFactorCellResidual_of_component",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean",
-     "line": 87,
+     "line": 74,
      "conditional_on_residuals": [
       "K4ComponentResidual"
      ],
@@ -2444,9 +2427,26 @@
    "name": "K4ComponentResidual",
    "fq_name": "MutualCorrAgreement.K4ComponentResidual",
    "file": "ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean",
-   "line": 64,
+   "line": 51,
    "providers": [],
    "status": "open"
+  },
+  {
+   "name": "randomRSListDecodingFirstMomentResidual",
+   "fq_name": "CodingTheory.randomRSListDecodingFirstMomentResidual",
+   "file": "ArkLib/ToMathlib/AGL24RandomRSProof.lean",
+   "line": 78,
+   "providers": [
+    {
+     "name": "CodingTheory.randomRSListDecodingFirstMomentResidual_of_badCount",
+     "kind": "theorem",
+     "file": "ArkLib/ToMathlib/AGL24RandomRSProof.lean",
+     "line": 178,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    }
+   ],
+   "status": "discharged"
   },
   {
    "name": "DeepHoleProbResidual",
@@ -2754,7 +2754,7 @@
      "name": "Spartan.Spec.Bricks.composedCompletenessWithClaimResidual_proven",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Spartan/ComposedCompletenessWithClaimFinal.lean",
-     "line": 93,
+     "line": 90,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -2796,14 +2796,6 @@
    "line": 1130,
    "providers": [
     {
-     "name": "Spartan.Spec.Bricks.composedCompletenessWithClaimValueRelResidual_proven",
-     "kind": "theorem",
-     "file": "ArkLib/ProofSystem/Spartan/ComposedCompletenessWithClaimFinal.lean",
-     "line": 203,
-     "conditional_on_residuals": [],
-     "ambiguous_name_match": false
-    },
-    {
      "name": "Spartan.Spec.Bricks.composedCompletenessWithClaimValueRelResidual_of_secondSumcheckEval",
      "kind": "theorem",
      "file": "ArkLib/ToMathlib/SpartanBricks.lean",
@@ -2814,7 +2806,7 @@
      "ambiguous_name_match": false
     }
    ],
-   "status": "discharged"
+   "status": "open"
   },
   {
    "name": "composedCompletenessWithClaimSecondSumcheckEvalResidual",
@@ -2822,14 +2814,6 @@
    "file": "ArkLib/ToMathlib/SpartanBricks.lean",
    "line": 1141,
    "providers": [
-    {
-     "name": "Spartan.Spec.Bricks.composedCompletenessWithClaimSecondSumcheckEvalResidual_proven",
-     "kind": "theorem",
-     "file": "ArkLib/ProofSystem/Spartan/ComposedCompletenessWithClaimFinal.lean",
-     "line": 237,
-     "conditional_on_residuals": [],
-     "ambiguous_name_match": false
-    },
     {
      "name": "Spartan.Spec.Bricks.composedCompletenessWithClaimSecondSumcheckEvalResidual_iff_valueRel",
      "kind": "theorem",
@@ -3176,7 +3160,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb01StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 590,
+   "line": 583,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -3184,7 +3168,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb12StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 612,
+   "line": 605,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -3192,7 +3176,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb23StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 635,
+   "line": 628,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -3200,7 +3184,7 @@
    "fq_name": "DuplexSpongeFS.KeyLemmaSalted.Hyb34StepResidualS",
    "kind": "def",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaSalted.lean",
-   "line": 655,
+   "line": 648,
    "reason": "name does not end in `Residual`"
   },
   {

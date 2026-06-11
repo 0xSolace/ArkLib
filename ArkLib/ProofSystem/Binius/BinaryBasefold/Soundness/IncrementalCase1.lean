@@ -831,10 +831,3 @@ theorem prop_4_21_2_case_1_residual_holds
 end
 
 end Binius.BinaryBasefold
-
-#print axioms Binius.BinaryBasefold.qMap_total_fiber_succ_peel_first
-#print axioms Binius.BinaryBasefold.fiberEvaluations_peel_first
-#print axioms Binius.BinaryBasefold.card_filter_fold_eq_le_one
-#print axioms Binius.BinaryBasefold.pr_le_card_div_of_witness
-#print axioms Binius.BinaryBasefold.delta_subset_Dk_of_k_eq_zero
-#print axioms Binius.BinaryBasefold.prop_4_21_2_case_1_residual_holds

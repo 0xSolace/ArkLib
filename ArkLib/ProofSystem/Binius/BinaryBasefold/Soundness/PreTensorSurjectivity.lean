@@ -161,6 +161,3 @@ lemma exists_codeword_preTensorCombine_eq_of_rows_mem
 
 end
 end Binius.BinaryBasefold
-
-#print axioms Binius.BinaryBasefold.iteratedRefineCoeffs_bitsOfIndex
-#print axioms Binius.BinaryBasefold.exists_codeword_preTensorCombine_eq_of_rows_mem

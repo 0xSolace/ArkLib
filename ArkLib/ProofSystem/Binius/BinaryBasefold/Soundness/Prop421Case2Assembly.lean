@@ -188,7 +188,3 @@ lemma prop421Case2_probability_bound_of_bridges
 end
 
 end Binius.BinaryBasefold
-
-#print axioms Binius.BinaryBasefold.BBF_Code_nontrivial
-#print axioms Binius.BinaryBasefold.UDRClose_iff_dist_le_udr
-#print axioms Binius.BinaryBasefold.prop421Case2_probability_bound_of_bridges

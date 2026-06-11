@@ -253,9 +253,3 @@ lemma prop421Case1_probability_bound
 end
 
 end Binius.BinaryBasefold
-
-#print axioms Binius.BinaryBasefold.ctpAux_get_eq_tensorWeight_eval
-#print axioms Binius.BinaryBasefold.challengeTensorProduct_get_eq_tensorWeight_eval
-#print axioms Binius.BinaryBasefold.dotProduct_challengeTensor_eq_tensorComb_eval
-#print axioms Binius.BinaryBasefold.per_point_fold_collision_prob_le
-#print axioms Binius.BinaryBasefold.prop421Case1_probability_bound
