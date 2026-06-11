@@ -1266,6 +1266,47 @@ theorem base_hash_anchored
   have := anchoredFrom_of_split ((∅, []) : DSCache StmtIn U) L₁ (log[f j]) L₂ hcol
   rwa [← hsplit] at this
 
+/-! ## Fresh entries cache their data (slot-persistence foundations) -/
+
+/-- A fresh forward entry's pair ends up in the final fold cache. -/
+theorem fresh_fwd_inserts (c : DSCache StmtIn U)
+    (L₁ : List (DSEntry StmtIn U)) (a b : CanonicalSpongeState U)
+    (L₂ : List (DSEntry StmtIn U))
+    (hfresh : ¬ hasFwdKey (L₁.foldl stepCache c) a) :
+    (a, b) ∈ ((L₁ ++ (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U) :: L₂).foldl stepCache c).2 := by
+  rw [List.foldl_append, List.foldl_cons]
+  set c1 := L₁.foldl stepCache c with hc1
+  have hfind : c1.2.find? (fun w => w.1 = a) = none := find?_fst_none_of_not_hasFwdKey hfresh
+  have hstep : (stepCache c1 (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U)).2 = c1.2.concat (a, b) := by
+    simp [stepCache, hfind]
+  have hmem : (a, b) ∈ (stepCache c1 (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U)).2 := by
+    rw [hstep, List.concat_eq_append]; exact List.mem_append_right _ (List.mem_singleton.mpr rfl)
+  exact (foldl_stepCache_perm_sublist (stepCache c1 (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U)) L₂).subset hmem
+
+/-- A fresh inverse entry's pair ends up in the final fold cache. -/
+theorem fresh_inv_inserts (c : DSCache StmtIn U)
+    (L₁ : List (DSEntry StmtIn U)) (a b : CanonicalSpongeState U)
+    (L₂ : List (DSEntry StmtIn U))
+    (hfresh : ¬ hasInvKey (L₁.foldl stepCache c) b) :
+    (a, b) ∈ ((L₁ ++ (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U) :: L₂).foldl stepCache c).2 := by
+  rw [List.foldl_append, List.foldl_cons]
+  set c1 := L₁.foldl stepCache c with hc1
+  have hfind : c1.2.find? (fun w => w.2 = b) = none := find?_snd_none_of_not_hasInvKey hfresh
+  have hstep : (stepCache c1 (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U)).2 = c1.2.concat (a, b) := by
+    simp [stepCache, hfind]
+  have hmem : (a, b) ∈ (stepCache c1 (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U)).2 := by
+    rw [hstep, List.concat_eq_append]; exact List.mem_append_right _ (List.mem_singleton.mpr rfl)
+  exact (foldl_stepCache_perm_sublist (stepCache c1 (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U)) L₂).subset hmem
+
+/-- A cached hash answer is a slot. -/
+theorem mem_slotList_of_hash_cached (c : DSCache StmtIn U)
+    {q : StmtIn} {u : Vector U SpongeSize.C} (h : c.1 q = some u) :
+    u ∈ slotList c := by
+  classical
+  refine List.mem_append_left _ ?_
+  rw [List.mem_filterMap]
+  exact ⟨q, by rw [Finset.mem_toList]; exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, by rw [h]; rfl⟩, h⟩
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -1362,6 +1403,9 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.foldl_hash_provenance
 #print axioms DuplexSpongeFS.EagerLazyDS.hash_entry_fresh
 #print axioms DuplexSpongeFS.EagerLazyDS.base_hash_anchored
+#print axioms DuplexSpongeFS.EagerLazyDS.fresh_fwd_inserts
+#print axioms DuplexSpongeFS.EagerLazyDS.fresh_inv_inserts
+#print axioms DuplexSpongeFS.EagerLazyDS.mem_slotList_of_hash_cached
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
