@@ -142,6 +142,42 @@ theorem evalDist_sampleUnused_run (xs : List X) (hnd : xs.Nodup) (hxs : xs ≠ [
         simp
 
 
+/-! ## Step exposures (public, for cross-file consumers) -/
+
+lemma lazyPermImpl_run_inl_none (cp : List (X × X)) {a : X}
+    (hc : cp.find? (fun p => p.1 = a) = none) :
+    (lazyPermImpl ((.inl a : X ⊕ X))).run cp
+      = (fun b => (b, cp.concat (a, b))) <$> sampleUnused (unusedValuesList cp) := by
+  show (match cp.find? (fun p => p.1 = a) with
+    | some p => (pure (p.2, cp) : ProbComp (X × List (X × X)))
+    | none => (fun b => (b, cp.concat (a, b))) <$> sampleUnused (unusedValuesList cp)) = _
+  rw [hc]
+
+lemma lazyPermImpl_run_inl_some (cp : List (X × X)) {a : X} {p : X × X}
+    (hc : cp.find? (fun p => p.1 = a) = some p) :
+    (lazyPermImpl ((.inl a : X ⊕ X))).run cp = (pure (p.2, cp) : ProbComp _) := by
+  show (match cp.find? (fun p => p.1 = a) with
+    | some p => (pure (p.2, cp) : ProbComp (X × List (X × X)))
+    | none => (fun b => (b, cp.concat (a, b))) <$> sampleUnused (unusedValuesList cp)) = _
+  rw [hc]
+
+lemma lazyPermImpl_run_inr_none (cp : List (X × X)) {b : X}
+    (hc : cp.find? (fun p => p.2 = b) = none) :
+    (lazyPermImpl ((.inr b : X ⊕ X))).run cp
+      = (fun a => (a, cp.concat (a, b))) <$> sampleUnused (unusedKeysList cp) := by
+  show (match cp.find? (fun p => p.2 = b) with
+    | some p => (pure (p.1, cp) : ProbComp (X × List (X × X)))
+    | none => (fun a => (a, cp.concat (a, b))) <$> sampleUnused (unusedKeysList cp)) = _
+  rw [hc]
+
+lemma lazyPermImpl_run_inr_some (cp : List (X × X)) {b : X} {p : X × X}
+    (hc : cp.find? (fun p => p.2 = b) = some p) :
+    (lazyPermImpl ((.inr b : X ⊕ X))).run cp = (pure (p.1, cp) : ProbComp _) := by
+  show (match cp.find? (fun p => p.2 = b) with
+    | some p => (pure (p.1, cp) : ProbComp (X × List (X × X)))
+    | none => (fun a => (a, cp.concat (a, b))) <$> sampleUnused (unusedKeysList cp)) = _
+  rw [hc]
+
 /-! ## The permutation overlay (`tableExtending` analogue)
 
 `permExtending c π` corrects `π` to agree with every cached pair by **pre-composition**
@@ -1026,29 +1062,6 @@ lemma permutationOracle_eq_sumSpec :
   rcases t with a | b <;> rfl
 
 end MasterInduction
-
-/- WIP (4B master induction — design in memory; statement+pure case verified in-session):
-/-- **The eager–lazy permutation bridge**: simulating against the lazy memoizing oracle
-from a realizable cache has the same distribution as drawing one uniform extension of the
-cache and answering eagerly through it. Induction on the computation; cache hits are
-deterministic on both sides, and fresh queries are exactly the chain rules of
-`LazyPermMarginal`. -/
-theorem evalDist_simulateQ_lazyPermImpl_run'
-    {α : Type} (oa : OracleComp ((X ⊕ X) →ₒ X) α)
-    (c : List (X × X)) (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
-    (hne : (extendsFinset c).Nonempty) :
-    (evalDist ((simulateQ lazyPermImpl oa).run' c)).run
-      = (PMF.uniformOfFinset (extendsFinset c) hne).bind
-          (fun π => (evalDist (simulateQ (eagerPermImpl π) oa)).run) := by
-  classical
-  induction oa using OracleComp.inductionOn generalizing c with
-  | pure a =>
-      simp only [simulateQ_pure, StateT.run'_eq, StateT.run_pure]
-      refine Eq.symm (PMF.bind_const _ _)
-  | query_bind t oa ih =>
-      sorry
-
--/
 
 end Facts
 
