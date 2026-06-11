@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Zify
 
 /-!
 # The chord-family count: `n(n−4)` / `n(n−8)` parametrized solutions per class
@@ -622,6 +623,103 @@ theorem chord_param_count_even :
 
 end Even
 
+/-! ## The grand total: the family count over all classes -/
+
+section Total
+
+/-- Odd numbers in `[1, 2h')` number exactly `h'`. -/
+theorem card_odd_Ico (h' : ℕ) :
+    ((Finset.Ico 1 (2 * h')).filter (fun d => d % 2 = 1)).card = h' := by
+  have himg : (Finset.Ico 1 (2 * h')).filter (fun d => d % 2 = 1)
+      = (Finset.range h').image (fun k => 2 * k + 1) := by
+    ext x
+    simp only [Finset.mem_filter, Finset.mem_Ico, Finset.mem_image, Finset.mem_range]
+    constructor
+    · rintro ⟨⟨h1, h2⟩, hp⟩
+      exact ⟨x / 2, by omega, by omega⟩
+    · rintro ⟨k, hk, rfl⟩
+      omega
+  rw [himg, Finset.card_image_of_injective _ (fun a b h => by omega),
+    Finset.card_range]
+
+/-- Even numbers in `[1, 2h')` number exactly `h' − 1`. -/
+theorem card_even_Ico (h' : ℕ) :
+    ((Finset.Ico 1 (2 * h')).filter (fun d => ¬ d % 2 = 1)).card = h' - 1 := by
+  have himg : (Finset.Ico 1 (2 * h')).filter (fun d => ¬ d % 2 = 1)
+      = (Finset.range (h' - 1)).image (fun k => 2 * k + 2) := by
+    ext x
+    simp only [Finset.mem_filter, Finset.mem_Ico, Finset.mem_image, Finset.mem_range]
+    constructor
+    · rintro ⟨⟨h1, h2⟩, hp⟩
+      exact ⟨x / 2 - 1, by omega, by omega⟩
+    · rintro ⟨k, hk, rfl⟩
+      omega
+  rw [himg, Finset.card_image_of_injective _ (fun a b h => by omega),
+    Finset.card_range]
+
+/-- **THE FAMILY GRAND TOTAL.** Summing the parametrized chord-law counts over all
+non-antipodal classes `d ∈ [1, 2^(m−1))`: exactly `2^(m−1)·(2^m − 4)²` ordered
+solutions — i.e. **`n(n−4)²/2` ordered, `n(n−4)²/8` unordered family triples**, the
+probe-exact closed form of the slanted family layer, now a theorem at every scale. -/
+theorem chord_family_grand_total (hm : 2 ≤ m) :
+    ∑ d ∈ Finset.Ico 1 (2 ^ (m - 1)),
+      ((univ : Finset (ZMod (2 ^ m) × ZMod (2 ^ m))).filter (fun p =>
+        p.2 ∉ exclusions m d p.1
+        ∧ 2 * p.2 ≠ 2 * p.1 + (d : ZMod (2 ^ m))
+        ∧ 2 * p.2 ≠ 2 * p.1 + (d : ZMod (2 ^ m))
+            + ((2 ^ (m - 1) : ℕ) : ZMod (2 ^ m)))).card
+      = 2 ^ (m - 1) * (2 ^ m - 4) ^ 2 := by
+  have h1 : 1 ≤ m := by omega
+  have hsplitN : 2 ^ (m - 1) + 2 ^ (m - 1) = 2 ^ m := by
+    have h := pow_succ 2 (m - 1)
+    rw [Nat.sub_add_cancel h1] at h
+    omega
+  have hq2 : 2 ^ (m - 2) + 2 ^ (m - 2) = 2 ^ (m - 1) := by
+    have h := pow_succ 2 (m - 2)
+    rw [show m - 2 + 1 = m - 1 from by omega] at h
+    omega
+  have hq0 : 0 < 2 ^ (m - 2) := Nat.two_pow_pos _
+  -- per-class evaluation
+  have hsum : ∀ d ∈ Finset.Ico 1 (2 ^ (m - 1)),
+      ((univ : Finset (ZMod (2 ^ m) × ZMod (2 ^ m))).filter (fun p =>
+        p.2 ∉ exclusions m d p.1
+        ∧ 2 * p.2 ≠ 2 * p.1 + (d : ZMod (2 ^ m))
+        ∧ 2 * p.2 ≠ 2 * p.1 + (d : ZMod (2 ^ m))
+            + ((2 ^ (m - 1) : ℕ) : ZMod (2 ^ m)))).card
+      = if d % 2 = 1 then 2 ^ m * (2 ^ m - 4) else 2 ^ m * (2 ^ m - 8) := by
+    intro d hd
+    rw [Finset.mem_Ico] at hd
+    by_cases hpar : d % 2 = 1
+    · rw [if_pos hpar]
+      exact chord_param_count_odd hm hpar
+    · rw [if_neg hpar]
+      exact chord_param_count_even hm (by omega) (by omega) (by omega) (by omega)
+  rw [Finset.sum_congr rfl hsum, Finset.sum_ite, Finset.sum_const, Finset.sum_const,
+    smul_eq_mul, smul_eq_mul]
+  have hIco : (2 ^ (m - 1) : ℕ) = 2 * 2 ^ (m - 2) := by omega
+  rw [hIco, card_odd_Ico, card_even_Ico]
+  -- the closing arithmetic, exact through truncated subtraction
+  rcases (show m = 2 ∨ 3 ≤ m from by omega) with rfl | hm3
+  · decide
+  · have h8 : 8 ≤ 2 ^ m := by
+      calc (8 : ℕ) = 2 ^ 3 := by norm_num
+        _ ≤ 2 ^ m := Nat.pow_le_pow_right (by norm_num) hm3
+    have h2k : 2 ≤ 2 ^ (m - 2) := by
+      calc (2 : ℕ) = 2 ^ 1 := by norm_num
+        _ ≤ 2 ^ (m - 2) := Nat.pow_le_pow_right (by norm_num) (by omega)
+    zify [h8, by omega, h2k, show (4 : ℕ) ≤ 2 ^ m from by omega,
+      show (1 : ℕ) ≤ 2 ^ (m - 2) from by omega]
+    have hn4 : (2 ^ m : ℤ) = 4 * 2 ^ (m - 2) := by
+      have : ((2 ^ m : ℕ) : ℤ) = ((4 * 2 ^ (m - 2) : ℕ) : ℤ) := by
+        congr 1
+        omega
+      push_cast at this
+      exact_mod_cast this
+    rw [hn4]
+    ring
+
+end Total
+
 /-! ## Source audit -/
 
 #print axioms oddCast_ne_double
@@ -630,5 +728,6 @@ end Even
 #print axioms double_eq_zero_iff
 #print axioms card_exclusionsEven
 #print axioms chord_param_count_even
+#print axioms chord_family_grand_total
 
 end ArkLib.ProximityGap.ChordFamilyCount
