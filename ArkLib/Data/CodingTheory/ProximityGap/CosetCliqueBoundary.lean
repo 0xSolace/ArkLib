@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialStripExplosion
+import ArkLib.Data.CodingTheory.ProximityGap.StripEdgeDeltaStar
 
 /-!
 # The coset-clique boundary law: `ε_mca ≥ n/|F|` on the rows below the strip (#357)
@@ -398,6 +399,65 @@ theorem mcaDeltaStar_le_of_undersized_boundary [Nonempty (Fin n)]
   MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _
     (lt_of_lt_of_le hε (clique_eps_ge ζ hord hb2 hbn hk_lo hk_hi hbn2))
 
+open Classical in
+/-- **Exact δ\* at the boundary-row codes — the widest pinned `ε*`-band in the tree.**
+For `b ∣ n` with `b ≤ 4` (so the master collapse covers every band below the boundary),
+the boundary-row dimension `k = n − 2b + 2`, and every `ε* ∈ [(b−1)/|F|, n/|F|)`:
+
+  `mcaDeltaStar(RS[F, μ_n, k], ε*) = (b−1)/n` —
+
+good below by the staircase collapse at bands `1, …, b−1` (`ε_mca ≤ (b−1)/q ≤ ε*`),
+bad at the edge by the coset-clique certificate (`ε_mca ≥ n/q > ε*`).  At `b = 3`
+the pinned band `[2/q, n/q)` spans `n − 2` granularity steps — the staircase jumps
+from `2/q` directly to `≥ n/q` at the boundary radius, with no intermediate steps. -/
+theorem mcaDeltaStar_eq_boundary [Nonempty (Fin n)] (hord : orderOf ζ = n)
+    (hb2 : 2 ≤ b) (hb4 : b ≤ 4) (hbn : b ∣ n) (hbn2 : 2 * b < n)
+    (hk : k = n - 2 * b + 2) {εstar : ℝ≥0∞}
+    (hlo : ((b - 1 : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ εstar)
+    (hhi : εstar < ((n : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)) :
+    MCAThresholdLedger.mcaDeltaStar (F := F) (A := F)
+      (evalCode (smoothDom ζ n) k : Set (Fin n → F)) εstar
+      = ((b : ℝ≥0) - 1) / (n : ℝ≥0) := by
+  have hinj : Function.Injective (smoothDom ζ n) := smoothDom_injective ζ hord
+  have hk_lo : n - 2 * b + 2 ≤ k := le_of_eq hk.symm
+  have hk_hi : k ≤ n - b := by omega
+  have hnpos : 0 < n := by omega
+  refine le_antisymm
+    (mcaDeltaStar_le_of_undersized_boundary ζ hord hb2 hbn hk_lo hk_hi hbn2 hhi) ?_
+  by_contra h
+  push_neg at h
+  obtain ⟨c', hc1, hc2⟩ := exists_between h
+  have hgood : epsMCA (F := F) (A := F)
+      (evalCode (smoothDom ζ n) k : Set (Fin n → F)) c' ≤ εstar := by
+    refine le_trans (MCAStaircaseMaster.epsMCA_le_div_card_of_dist _ (b - 1)
+      (by omega)
+      (ProximityGap.StripEdgeDeltaStar.evalCode_noWeightLE (smoothDom ζ n) hinj
+        (by omega : 3 * (b - 1 - 1) + k ≤ n) (by omega))
+      (by rw [Fintype.card_fin]; omega) ?_) ?_
+    · -- c'·n < b − 1 from c' < (b−1)/n
+      rw [Fintype.card_fin]
+      have hb1cast : ((b : ℝ≥0) - 1) = ((b - 1 : ℕ) : ℝ≥0) := by
+        rw [← NNReal.coe_inj]
+        push_cast [Nat.cast_sub (by omega : 1 ≤ b),
+          NNReal.coe_sub (by exact_mod_cast (by omega : 1 ≤ b) : (1 : ℝ≥0) ≤ (b : ℝ≥0))]
+        ring
+      calc c' * (n : ℝ≥0) < (((b : ℝ≥0) - 1) / (n : ℝ≥0)) * n := by
+            have hn0 : (0 : ℝ≥0) < (n : ℝ≥0) := by exact_mod_cast hnpos
+            exact mul_lt_mul_of_pos_right hc2 hn0
+        _ = ((b - 1 : ℕ) : ℝ≥0) := by
+            rw [hb1cast]
+            field_simp
+    · -- (b−1)/q ≤ ε*
+      exact_mod_cast hlo
+  have hcle : c' ≤ 1 := by
+    refine le_of_lt (lt_of_lt_of_le hc2 ?_)
+    rw [div_le_one (by exact_mod_cast hnpos : (0 : ℝ≥0) < (n : ℝ≥0))]
+    calc (b : ℝ≥0) - 1 ≤ (b : ℝ≥0) := tsub_le_self
+      _ ≤ (n : ℝ≥0) := by exact_mod_cast (by omega : b ≤ n)
+  have hle := MCAThresholdLedger.le_mcaDeltaStar_of_good (F := F) (A := F)
+    (evalCode (smoothDom ζ n) k : Set (Fin n → F)) εstar hcle hgood
+  exact absurd hle (not_le.mpr hc1)
+
 end Boundary
 
 end ProximityGap.CosetCliqueBoundary
@@ -407,3 +467,4 @@ end ProximityGap.CosetCliqueBoundary
 #print axioms ProximityGap.CosetCliqueBoundary.clique_mcaEvent
 #print axioms ProximityGap.CosetCliqueBoundary.clique_eps_ge
 #print axioms ProximityGap.CosetCliqueBoundary.mcaDeltaStar_le_of_undersized_boundary
+#print axioms ProximityGap.CosetCliqueBoundary.mcaDeltaStar_eq_boundary
