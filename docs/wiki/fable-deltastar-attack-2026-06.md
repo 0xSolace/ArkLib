@@ -183,3 +183,34 @@ pencil quantity — `maxₚ t₂(φ)` over the full k=3 pencil family, or the M3
 This is the "thin-strip / higher-moment" escape (K3/H1) re-aimed: target the sup, not the average.
 *Next probe:* does `maxₚ t₂` or the M3 cubic census predict the bad count where E₂ failed?
 
+### DOMAIN-BLINDNESS — a structural finding (kills the domain-separation hypothesis class)
+**The worst-line MCA bad-scalar count is DOMAIN-INDEPENDENT at every tested scale.**
+`scripts/probes/probe_domain_blindness.py` (optimized: precompute ext(syndrome,S) once/domain):
+- `(11,5,3)`: **complete enumeration of ALL 252 five-subsets** of `F_11^*` → bad count is
+  `{δ=0.15: 1, δ=0.25: 5, δ=0.35: 5, δ=0.45: 5}` for *every single domain*, zero exceptions,
+  smooth subgroup included.
+- `(13,4,3)`: all 120 four-subsets → bad count `1` everywhere.
+
+**Consequence (a hard constraint, not a hypothesis):** `δ*(C)` is a function of `(n,k,δ)` alone
+at these scales — `δ*(smooth) = δ*(random)`. The smooth multiplicative structure does **not** move
+the worst-case threshold; it only changes the *spectrum moments* (M2/M3/E₂), which the bad count
+is blind to. This **refutes the entire domain-separation hypothesis class** — N1 (energy law), N1′
+(extremal pencil), S3 (gap = energy deficit), and the C1 "δ\* domain separation" framing. The
+proven `E₂ = Θ(n³)` smooth separation (`MobiusPencilEnergy.lean`) is real but is a *moment* fact
+with **no δ\*-consequence**.
+
+**This is exactly the dossier's central coupling, now empirically sharp:** because δ\* is
+domain-blind, it equals the explicit-RS list-decoding threshold (a domain-independent count) — so
+pinning it past Johnson IS the 25-year open problem, with no smooth-domain shortcut. The honest
+research conclusion: **no domain-specific invariant can pin δ\* in the interior.** The viable
+hypotheses are the *domain-blind* ones (R2 ceiling-tightness, R3 interpolation, S1 transfer
+fixpoint, the unification bet on the bad-set *shape* rather than the domain). The next slate must
+drop the census-separation angle entirely and attack the domain-blind list-count directly.
+
+**Caveat on scale (red-team of the finding itself):** these are tiny fields (`p ≤ 13`, `n ≤ 5`)
+where the radius window `(1−√ρ, 1−ρ)` is narrow and integer-quantized; the M3 separation the
+probe campaign reported is a *third-moment* effect that may only surface the bad-count difference
+at larger `n` (the `t₂ ≈ n/2` regime needs `n ≫ k`). The finding is "domain-blind at small scale";
+strengthening it to all scales, or finding the first `n` where a domain *does* differ, is the
+decisive follow-up probe (feasible up to `n ≈ 8` with the optimized engine + better S-pruning).
+
