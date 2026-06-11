@@ -256,6 +256,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.A3InstanceCore
 import ArkLib.Data.CodingTheory.ProximityGap.A3ProportionalityTrap
 import ArkLib.Data.CodingTheory.ProximityGap.A4CensusValue
 import ArkLib.Data.CodingTheory.ProximityGap.A5CensusValue
+import ArkLib.Data.CodingTheory.ProximityGap.A8CosetStructure
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyBridge
@@ -1126,6 +1127,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyFermat65537
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyTowerF17
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupPowerHalvingGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuadraticHalving
