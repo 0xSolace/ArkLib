@@ -77,6 +77,35 @@ def RIMRankDeficitSet {t k : ℕ} (e : ι → Finset (Fin (t + 1))) :
   {α | ∃ v : Fin t × Fin k → F, v ≠ 0 ∧
       ((RIM F e).map (MvPolynomial.eval α)).mulVec v = 0}
 
+omit [Fintype ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
+/-- Rank deficit forces every square RIM minor determinant to vanish after evaluation. This
+is the deterministic bridge from kernel witnesses to the polynomial zero events priced by
+the §3 reveal/root-counting machinery. -/
+theorem RIMRankDeficitSet_subset_detZero {t k : ℕ}
+    (e : ι → Finset (Fin (t + 1))) (rows : Fin t × Fin k → RIMRowIdx e) :
+    RIMRankDeficitSet (F := F) (k := k) e ⊆
+      {α | MvPolynomial.eval α (((RIM F e).submatrix rows id).det) = 0} := by
+  intro α hα
+  obtain ⟨v, hvne, hker⟩ := hα
+  have hsq :
+      (((RIM F e).map (MvPolynomial.eval α)).submatrix rows id).mulVec v = 0 := by
+    funext c
+    exact congrFun hker (rows c)
+  have hdet_eval :
+      (((RIM F e).map (MvPolynomial.eval α)).submatrix rows id).det = 0 :=
+    Matrix.exists_mulVec_eq_zero_iff.mp ⟨v, hvne, hsq⟩
+  have hmap : ((RIM F e).map (MvPolynomial.eval α)).submatrix rows
+        (id : Fin t × Fin k → Fin t × Fin k)
+      = ((RIM F e).submatrix rows
+          (id : Fin t × Fin k → Fin t × Fin k)).map (MvPolynomial.eval α) := rfl
+  rw [hmap] at hdet_eval
+  rw [show (((RIM F e).submatrix rows
+        (id : Fin t × Fin k → Fin t × Fin k)).map (MvPolynomial.eval α)).det
+      = MvPolynomial.eval α (((RIM F e).submatrix rows
+        (id : Fin t × Fin k → Fin t × Fin k)).det) from by
+    rw [← RingHom.mapMatrix_apply, ← RingHom.map_det]] at hdet_eval
+  exact hdet_eval
+
 /-- **The [AGL24] Lemma 3.1 interface** (the honest residual for the §3 certificate
 machinery): under the evaluation-point distribution `D`, for every
 `(k + ⌈εn⌉)`-weakly-partition-connected `n`-edge hypergraph on `t + 1 ≥ 2` vertices, the
@@ -111,5 +140,6 @@ end AGL24
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms AGL24.card_hypergraphs
 #print axioms AGL24.card_hypergraphs_le
+#print axioms AGL24.RIMRankDeficitSet_subset_detZero
 #print axioms AGL24.measure_RIMRankDeficitSet_le_iff
 #print axioms AGL24.toOuterMeasure_map_RIMRankDeficitSet
