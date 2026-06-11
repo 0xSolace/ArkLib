@@ -325,6 +325,26 @@ theorem mem_of_mem_removeRedundantEntryDSPaper
     e ∈ log :=
   (removeRedundantEntryDSPaper_sublist log).subset he
 
+open DuplexSpongeFS.Paper in
+/-- A `NoRedundantEntryDSPaper` trace is pairwise class-distinct: no later entry shares a
+class with any earlier one. -/
+theorem noRedundant_pairwise_classDistinct
+    {base : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (h : NoRedundantEntryDSPaper base)
+    (i j : Fin base.length) (hij : i < j) :
+    ¬ sameClass base[j] base[i] := by
+  intro hcl
+  exact h j ((redundantEntryDSPaper_iff_sameClass base j).mpr ⟨i, hij, hcl⟩)
+
+open DuplexSpongeFS.Paper in
+/-- The dedup output is pairwise class-distinct. -/
+theorem removeRedundantEntryDSPaper_pairwise_classDistinct
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (i j : Fin (removeRedundantEntryDSPaper log).1.length) (hij : i < j) :
+    ¬ sameClass (removeRedundantEntryDSPaper log).1[j]
+        (removeRedundantEntryDSPaper log).1[i] :=
+  noRedundant_pairwise_classDistinct (removeRedundantEntryDSPaper log).2 i j hij
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -384,6 +404,8 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_support
 #print axioms DuplexSpongeFS.EagerLazyDS.support_flagged_logged
 #print axioms DuplexSpongeFS.EagerLazyDS.redundantEntryDSPaper_iff_sameClass
+#print axioms DuplexSpongeFS.EagerLazyDS.noRedundant_pairwise_classDistinct
+#print axioms DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_pairwise_classDistinct
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_sublist
 #print axioms DuplexSpongeFS.EagerLazyDS.mem_of_mem_removeRedundantEntryDSPaper
 #print axioms DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction
