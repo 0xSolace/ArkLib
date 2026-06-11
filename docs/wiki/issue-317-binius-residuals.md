@@ -65,12 +65,11 @@ or `PreTensorCombineJointProximityResidual` class remains in the current working
   close-case source disagreement set. Targeted checks:
   - `lake build ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance:olean`
   - `lake build ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21:olean`
-- `PreviousSuffixFiberAlignmentResidual`: still live in the current tree. Current scratch work in
-  `.codex-scratch-issue317-query-geometry.lean` shows the mathematical target is the old
-  `iteratedQuotientMap`/`qMap_total_fiber` coefficient theorem, but the production proof must
-  handle the explicit cast from the zero-source quotient index `0 + k` to the canonical `k`
-  suffix. The stale downstream theorem in `QueryPhase.lean` has the right proof idea but no longer
-  matches the current `qMap_total_fiber` API.
+- `PreviousSuffixFiberAlignmentResidual`: proved in
+  `Soundness/SuffixFiberAlignment.lean` as `instPreviousSuffixFiberAlignmentResidual`. The
+  aggregate `Soundness.lean` now imports that discharge module so the instance is available from
+  the public soundness entry point. This still needs a clean focused build after the current
+  long-running Lean jobs finish.
 - `FinalSumcheckStepLogicCompleteResidual`: still live in the current tree. The verifier-check
   half is already factored as `finalSumcheckStep_verifierCheck_passed`; the relation-out half is
   isolated to the final constant consistency proof. The promising local bridge is
@@ -83,8 +82,10 @@ or `PreTensorCombineJointProximityResidual` class remains in the current working
   `extractMLP_zero_eq_some_revIndexMLP_iff`, and the actually consumed uniqueness consequence is
   available as residual-free `firstOracleWitnessConsistencyProp_unique'`.
   `Steps/Fold.lean` and `BBFSmallFieldIOPCS.lean` have been moved off the false residual for
-  their local uniqueness lemmas; extraction-to-consistency call sites still need a statement-level
-  correction to use the reversed-index theorem honestly.
+  their local uniqueness lemmas. `Steps/FinalSumcheck.lean` and
+  `FRIBinius/CoreInteractionPhase.lean` now also use the corrected `revIndexMLP` witness and the
+  UDR-guarded forward theorem instead of the false iff. The old theorem remains only in
+  `Relations.lean` as a documented false residual/obstruction surface.
 - `FoldPreservesBBFCodeMembershipResidual`: discharged in `Code.lean`. The final proof avoids the
   brittle intermediate novel-basis round trip: it shows the binary quotient map is a nonzero scalar
   multiple of `X^2 - X`, decomposes any polynomial of degree `< 2m` as
@@ -112,16 +113,25 @@ or `PreTensorCombineJointProximityResidual` class remains in the current working
 
 ## Open Math/Definition Notes
 
-- `Prop4212Case1Residual` remains. The intended DP24 proof is a per-quotient-point
-  Schwartz--Zippel argument. The bad-event definitions now expose the needed per-fiber witness via
-  `fiberwiseDisagreementSetPerFiber`.
-- `Prop421Case1FiberwiseCloseResidual` and `Prop421Case2FiberwiseFarResidual` remain as the
-  non-incremental Proposition 4.21 case wrappers.
+- `Prop4212Case1Residual` has an in-tree instance in `Soundness/Incremental.lean`, backed by
+  `Soundness/IncrementalCase1.lean`.
+- `Prop421Case1FiberwiseCloseResidual` is discharged in
+  `Soundness/Prop421Case1Discharge.lean`, and `Soundness.lean` now re-exports that module.
+- `Prop421Case2FiberwiseFarResidual` has a new attempted discharge path:
+  `Soundness/PreTensorFar.lean` now packages the Lemma 4.22 contrapositive
+  (`not_jointProximityNat_of_not_fiberwiseClose`), and `Soundness/Prop421Case2Assembly.lean`
+  installs `instProp421Case2FiberwiseFarResidual` from the proven fold/pre-tensor bridge plus the
+  far-lift. This is mathematically the intended DG25 route, but it has not yet completed a focused
+  Lean build in the saturated local environment.
 - `Prop4212Case2Residual` remains the incremental fiberwise-far case; the missing bridge is the
-  DG25 affine/interleaved proximity gap instantiated against the Binary Basefold stack after the
-  now-proven pre-tensor joint proximity lemma.
+  one-step DG25 affine/interleaved proximity gap instantiated against the Binary Basefold suffix
+  stack. `Incremental.lean` already has both the positive remaining-step bridge
+  `fiberwiseClose_fold_implies_affineLineEval_close_pos` and the final-boundary bridge
+  `UDRClose_fold_implies_affineLineEval_close_zero`; the remaining assembly is to derive far of
+  the current suffix from `¬E_k`, split the suffix pre-tensor stack, and map `E_{k+1}` into the
+  affine-line close event before applying the existing RS interleaved affine gap.
 - `PreviousSuffixFiberAlignmentResidual`, `ExtractMLPCorrectnessResidual`, and
-  `FinalSumcheckStepLogicCompleteResidual` remain live in the current tree. For
+  `FinalSumcheckStepLogicCompleteResidual` remain theorem-scope surfaces in the current tree. For
   `ExtractMLPCorrectnessResidual`, do not try to instantiate the old iff: use the corrected
   `revIndexMLP` theorem or replace downstream statements that expect unreversed output.
 - The next geometry lemma is the first-step analogue of

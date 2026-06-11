@@ -103,11 +103,11 @@ lemma lookupEncodedMessageAlphaHat?_toList
   rw [findSome?_filterMap]
   refine findSome?_eq_some_of_unique
     (Finset.mem_toList.mpr (Finset.mem_univ j)) ?_ ?_
-  · simp only [dif_pos hj, Option.some_bind, dif_pos rfl]
+  · simp only [dif_pos hj, Option.bind_some, dif_pos rfl]
   · intro x _ hxj
     by_cases hxlt : x.1.1 < k.1
-    · simp only [dif_pos hxlt, Option.some_bind, dif_neg hxj]
-    · simp only [dif_neg hxlt, Option.none_bind]
+    · simp only [dif_pos hxlt, Option.bind_some, dif_neg hxj]
+    · simp only [dif_neg hxlt, Option.bind_none]
 
 /-! ## `decodeMessagePhiInv?` success characterization -/
 

@@ -5,6 +5,9 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Incremental
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorFar
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Contrapositive
 
 /-!
@@ -21,8 +24,8 @@ arithmetic, and the ENNReal cast algebra — and packages the result as
 `prop421Case2_probability_bound_of_bridges`, conditional on exactly the two statement-level inputs still
 being produced by other active lanes:
 
-1. **the fold/tensor bridge** (`iterated_fold_eq_multilinearCombine_preTensorCombine`, already
-   proven in `Soundness/Incremental.lean`, not imported here while that file is in flux), and
+1. **the fold/tensor bridge** (`iterated_fold_eq_multilinearCombine_preTensorCombine`, proved
+   in `Soundness/Incremental.lean`), and
 2. **the Lemma 4.22 far-lift** (the `PreTensor*` lane): a fiberwise-far oracle's pre-tensor
    stack is NOT jointly proximate to the interleaved destination code at unique decoding
    radius.
@@ -185,6 +188,19 @@ lemma UDRClose_iff_dist_le_udr (i : Fin r) (h_i : i ≤ ℓ)
   push_cast
   exact le_of_eq (by rw [mul_div_assoc])
 
+/-- **Proposition 4.21, Case 2 discharged.** The probabilistic DG25 assembly is fed by the
+proved fold/pre-tensor bridge and the contrapositive Lemma 4.22 far-lift. -/
+instance instProp421Case2FiberwiseFarResidual :
+    Prop421Case2FiberwiseFarResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) where
+  holds := prop421Case2_probability_bound_of_bridges 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (hBridge := fun i steps h_destIdx h_destIdx_le f_i r_chal =>
+        iterated_fold_eq_multilinearCombine_preTensorCombine 𝔽q β
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f_i r_chal)
+      (hFarLift := fun i steps h_destIdx h_destIdx_le f_i h_far =>
+        not_jointProximityNat_of_not_fiberwiseClose 𝔽q β
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f_i h_far)
+
 end
 
 end Binius.BinaryBasefold
@@ -192,3 +208,4 @@ end Binius.BinaryBasefold
 #print axioms Binius.BinaryBasefold.BBF_Code_nontrivial
 #print axioms Binius.BinaryBasefold.UDRClose_iff_dist_le_udr
 #print axioms Binius.BinaryBasefold.prop421Case2_probability_bound_of_bridges
+#print axioms Binius.BinaryBasefold.instProp421Case2FiberwiseFarResidual

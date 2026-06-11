@@ -152,6 +152,108 @@ lemma fiberwiseDistance_le_of_jointProximityNat
     exact_mod_cast h3
   omega
 
+/-- A destination-radius bound on the fiberwise distance is enough to recover both conjuncts
+of `fiberwiseClose`. The source UDR conjunct follows by choosing a closest source codeword
+and applying the fiberwise-to-Hamming bound. -/
+lemma fiberwiseClose_of_fiberwiseDistance_le_uniqueDecodingRadius
+    (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (h_le_udr :
+      fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (destIdx := destIdx) (steps := steps)
+        (by simpa using h_destIdx) h_destIdx_le f_i ≤
+      Code.uniqueDecodingRadius
+        (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+          Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))) :
+    fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := by
+        simpa using h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i) := by
+  classical
+  have h_destIdx_fin : destIdx = (⟨i, by omega⟩ : Fin r).val + steps := by
+    simpa using h_destIdx
+  set C_dest : Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L) :=
+    BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx with hC_dest
+  have h_dist_pos : 0 < ‖C_dest‖₀ := by
+    have h_pos : 0 <
+        BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx := by
+      simp [BBF_CodeDistance_eq (L := L) 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx) (h_i := h_destIdx_le)]
+    simpa [C_dest, BBF_CodeDistance] using h_pos
+  haveI : NeZero ‖C_dest‖₀ := NeZero.of_pos h_dist_pos
+  have h_dest_lt :
+      2 * fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := ⟨i, by omega⟩) (destIdx := destIdx) (steps := steps)
+          h_destIdx_fin h_destIdx_le f_i <
+        BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx) := by
+    have h' := (Code.UDRClose_iff_two_mul_proximity_lt_d_UDR (C := C_dest)).1 (by
+      simpa [C_dest] using h_le_udr)
+    simpa [C_dest, BBF_CodeDistance] using h'
+  obtain ⟨g, hg_mem, hg_min⟩ : ∃ g ∈
+      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (⟨i, by omega⟩ : Fin r)),
+      fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := ⟨i, by omega⟩) (destIdx := destIdx) (steps := steps)
+        h_destIdx_fin h_destIdx_le f_i =
+        (fiberwiseDisagreementSet 𝔽q β (⟨i, by omega⟩ : Fin r) steps
+          h_destIdx_fin h_destIdx_le f_i g).card := by
+    exact exists_fiberwiseClosestCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := (⟨i, by omega⟩ : Fin r)) (destIdx := destIdx) (steps := steps)
+      h_destIdx_fin h_destIdx_le f_i
+  have h_pair_close : pair_fiberwiseClose 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := (⟨i, by omega⟩ : Fin r))
+      (destIdx := destIdx) (steps := steps) (h_destIdx := h_destIdx_fin)
+      (h_destIdx_le := h_destIdx_le) (f := f_i) (g := g) := by
+    dsimp only [pair_fiberwiseClose, pair_fiberwiseDistance]
+    norm_cast
+    rwa [← hg_min]
+  have h_pair_udr := pairUDRClose_of_pairFiberwiseClose 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := (⟨i, by omega⟩ : Fin r))
+    (destIdx := destIdx) (steps := steps) (h_destIdx := h_destIdx_fin)
+    (h_destIdx_le := h_destIdx_le) (f := f_i) (g := g)
+    (h_fw_dist_lt := h_pair_close)
+  have h_source_lt :
+      2 * Δ₀(f_i, (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (⟨i, by omega⟩ : Fin r))) <
+        BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := (⟨i, by omega⟩ : Fin r)) := by
+    calc
+      2 * Δ₀(f_i, (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (⟨i, by omega⟩ : Fin r))) ≤
+          2 * Δ₀(f_i, g) := by
+        rw [ENat.mul_le_mul_left_iff (ha := by
+            simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true])
+          (h_top := by simp only [ne_eq, ENat.ofNat_ne_top, not_false_eq_true])]
+        exact Code.distFromCode_le_dist_to_mem
+          (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+            (⟨i, by omega⟩ : Fin r)) (u := f_i) (v := g) hg_mem
+      _ < _ := by
+        simpa [pair_UDRClose] using h_pair_udr
+  exact ⟨h_source_lt, h_dest_lt⟩
+
+/-- Lemma 4.22, contrapositive form used by Proposition 4.21 case 2 assembly. -/
+lemma not_jointProximityNat_of_not_fiberwiseClose
+    (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (h_far : ¬ fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) (f := f_i)) :
+    ¬ jointProximityNat
+      (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+        Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))
+      (u := preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i)
+      (Code.uniqueDecodingRadius
+        (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+          Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))) := by
+  intro h_joint
+  have h_le := fiberwiseDistance_le_of_jointProximityNat 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f_i
+    (Code.uniqueDecodingRadius
+      (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+        Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))) h_joint
+  exact h_far (fiberwiseClose_of_fiberwiseDistance_le_uniqueDecodingRadius 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f_i h_le)
+
 end
 end Binius.BinaryBasefold
 

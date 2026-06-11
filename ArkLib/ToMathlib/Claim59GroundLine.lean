@@ -185,6 +185,23 @@ theorem claim59_curve_collapse (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypot
   BCIKS20.ZLinearClosureAudit.natDegree_eq_one_of_gammaGenuine_paperZ_linear H hHyp
     (claim59_paperZ_linear H x₀ R hHyp k xs hxs u₀ u₁ hcoord htail)
 
+/-- **The `hrepT`-mootness export (the contrapositive of the collapse).**  At any branch of
+`Y`-degree `≥ 2`, the §5 counting package is **unsatisfiable**: no `k+1`-coordinate family of
+ground-line values with tail vanishing exists.  Consequence for the architecture: the open
+"`hrepT` ab initio at `d_H = 2`" converter loop (`LocalSeriesCorrected` honest residual) is
+not on the end-to-end path — a branch that reaches the §5 counting thresholds has `d_H = 1`,
+where the ground representative is satisfiable and the off-centre bundles are non-empty. -/
+theorem counting_package_empty_of_two_le_natDegree (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hd2 : 2 ≤ H.natDegree) (k : ℕ) :
+    ¬ ∃ (xs : Finset F) (u₀ u₁ : F → F), xs.card = k + 1
+      ∧ (∀ x ∈ xs,
+          gammaEvalTrunc H x₀ x R hHyp k
+            = fieldTo𝕃 (u₀ x) + liftToFunctionField (H := H) Polynomial.X * fieldTo𝕃 (u₁ x))
+      ∧ (∀ t, k < t → αGenuine H x₀ R hHyp t = 0) := by
+  rintro ⟨xs, u₀, u₁, hxs, hcoord, htail⟩
+  have h1 := claim59_curve_collapse H x₀ R hHyp k xs hxs u₀ u₁ hcoord htail
+  omega
+
 /-- The in-tree T-form Claim 5.9 target follows (ground line ⊆ `{1,T}`-span, `c₁ = 0`). -/
 theorem claim59_T_target (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (k : ℕ) (xs : Finset F) (hxs : xs.card = k + 1) (u₀ u₁ : F → F)
@@ -270,6 +287,7 @@ section AxiomAudit
 #print axioms ArkLib.Claim59GroundLine.claim59_groundLine
 #print axioms ArkLib.Claim59GroundLine.claim59_paperZ_linear
 #print axioms ArkLib.Claim59GroundLine.claim59_curve_collapse
+#print axioms ArkLib.Claim59GroundLine.counting_package_empty_of_two_le_natDegree
 #print axioms ArkLib.Claim59GroundLine.claim59_T_target
 #print axioms ArkLib.Claim59GroundLine.claim59_alphaWeightLe
 #print axioms ArkLib.Claim59GroundLine.claim59_of_counting

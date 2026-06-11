@@ -35,7 +35,9 @@ Proof architecture (a dependent transplant of the VCVio proof):
    sampleable types is uniform (the `evalDist` form of
    `probOutput_map_bijective_uniform_cross`).
 3. The comap factors as (restriction to `Set.range e`) ∘ (reindex + per-range transport),
-   where the second leg is a bijection by injectivity + a cardinality computation.
+   where the second leg is the explicit `Equiv`
+   `(piCongrLeft _ eqv).symm.trans (piCongrRight re)` for the index reindexing
+   `eqv : ιA ≃ {b // b ∈ Set.range e}`.
 
 Note on finiteness hypotheses: `Finite ιB` (and per-range `Fintype`/`Nonempty` for `specB`)
 are required by this proof route. At call sites where the ambient index type is infinite
@@ -54,9 +56,10 @@ section UniformFamilyComap
 `f : α → β`, mapping the uniform sample on `α` through `f` gives the uniform distribution
 on `β`. -/
 lemma evalDist_map_bijective_uniformSample {α β : Type} [SampleableType α] [SampleableType β]
-    (f : α → β) (hf : Function.Bijective f) :
-    𝒟[f <$> ($ᵗ α)] = 𝒟[$ᵗ β] :=
-  evalDist_ext fun y => probOutput_map_bijective_uniform_cross f hf y
+    [Finite α] (f : α → β) (hf : Function.Bijective f) :
+    𝒟[f <$> ($ᵗ α)] = 𝒟[$ᵗ β] := by
+  refine evalDist_ext fun y => ?_
+  exact probOutput_map_bijective_uniform_cross α f hf y
 
 /-- **Restricting a uniform dependent answer table to a subdomain is uniform.**
 
@@ -141,18 +144,6 @@ theorem evalDist_uniformFamily_comap_injective
   -- Reindex + per-range transport from the restricted block to `specA` tables.
   set J : ((s : {b // p b}) → specB.Range s.1) → ((q : ιA) → specA.Range q) :=
     fun k q => re q (k ⟨e q, Set.mem_range_self q⟩) with hJ
-  -- `J` is injective.
-  have hJinj : Function.Injective J := by
-    intro k k' hkk'
-    funext s
-    obtain ⟨a, ha⟩ := s.2
-    have h1 : re a (k ⟨e a, Set.mem_range_self a⟩) = re a (k' ⟨e a, Set.mem_range_self a⟩) :=
-      congrFun hkk' a
-    have h2 : k ⟨e a, Set.mem_range_self a⟩ = k' ⟨e a, Set.mem_range_self a⟩ :=
-      (re a).injective h1
-    have hs : (⟨e a, Set.mem_range_self a⟩ : {b // p b}) = s := Subtype.ext ha
-    rw [← hs]
-    exact h2
   -- Index reindexing equivalence `ιA ≃ {b // p b}`, with `eqv a = ⟨e a, _⟩` definitionally.
   have heqv_left : ∀ a : ιA, (Set.mem_range_self (f := e) a).choose = a := fun a =>
     he (Set.mem_range_self (f := e) a).choose_spec
@@ -161,22 +152,25 @@ theorem evalDist_uniformFamily_comap_injective
       invFun := fun s => s.2.choose
       left_inv := heqv_left
       right_inv := fun s => Subtype.ext s.2.choose_spec } with heqv
-  -- Cardinalities of the two function spaces agree.
-  have hcard : Fintype.card ((s : {b // p b}) → specB.Range s.1)
-      = Fintype.card ((q : ιA) → specA.Range q) := by
-    rw [Fintype.card_pi, Fintype.card_pi]
-    exact (Fintype.prod_equiv eqv
-      (fun a : ιA => Fintype.card (specA.Range a))
-      (fun s : {b // p b} => Fintype.card (specB.Range s.1))
-      (fun a => (Fintype.card_congr (re a)).symm)).symm
-  have hJbij : Function.Bijective J :=
-    (Fintype.bijective_iff_injective_and_card J).mpr ⟨hJinj, hcard⟩
+  -- `J` is the forward map of an explicit dependent Pi equivalence: first reindex the
+  -- restricted table along `eqv`, then transport each response through `re`.
+  let K : ((s : {b // p b}) → specB.Range s.1) ≃ ((q : ιA) → specA.Range q) :=
+    (Equiv.piCongrLeft (fun s : {b // p b} => specB.Range s.1) eqv).symm.trans
+      (Equiv.piCongrRight re)
+  have hJ_eq : J = K := by
+    funext k q
+    simp [J, K, Equiv.piCongrLeft, Equiv.piCongrLeft', eqv]
+  have hJbij : Function.Bijective J := by
+    rw [hJ_eq]
+    exact K.bijective
   -- Factor the comap through the restricted block, then transport along `J`.
   have hfactor :
       (do let g ← $ᵗ ((q : ιB) → specB.Range q); pure (fun q : ιA => re q (g (e q))))
-        = J <$> (do let g ← $ᵗ ((q : ιB) → specB.Range q);
+        = J <$> (do
+            let g ← $ᵗ ((q : ιB) → specB.Range q)
             pure (fun s : {b // p b} => g s.1)) := by
-    simp only [map_bind, map_pure]
+    simp only [bind_pure_comp, Functor.map_map]
+    rfl
   rw [hfactor, evalDist_map, evalDist_uniformFamily_restrict_subtype p, ← evalDist_map]
   exact evalDist_map_bijective_uniformSample J hJbij
 
