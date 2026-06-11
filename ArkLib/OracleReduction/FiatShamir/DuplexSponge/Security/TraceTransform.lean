@@ -140,23 +140,28 @@ noncomputable def decodeMessagesPrefixStepPhiInv
     (encodedList :
       List (Sigma fun msgIdx : pSpec.MessageIdx => Vector U (messageSize msgIdx)))
     (j : Fin n) (messages : pSpec.MessagesUpTo j.castSucc) :
-    Option (pSpec.MessagesUpTo j.succ) := by
-  exact
-    match hDir : pSpec.dir j with
-    | .P_to_V =>
-        let msgIdx : pSpec.MessageIdx := ⟨j, hDir⟩
-        match lookupEncodedMessageAlphaHat? (pSpec := pSpec) encodedList msgIdx with
+    Option (pSpec.MessagesUpTo j.succ) :=
+  -- `dite` rather than an eq-binder `match` on the direction: the `dif_pos`/`dif_neg`
+  -- equation lemmas hand the branch its hypothesis verbatim, so downstream step equations
+  -- (`Hyb23Bricks.decodeMessagesPrefixStepPhiInv_pToV`/`_vToP`) rewrite cleanly — the
+  -- eq-binder form left `Eq.trans`-mangled proofs inside the compiled matcher that no
+  -- tactic could align (see the issue #316 H23 notes).
+  if hDir : pSpec.dir j = .P_to_V then
+    match lookupEncodedMessageAlphaHat? (pSpec := pSpec) encodedList ⟨j, hDir⟩ with
+    | none => none
+    | some encodedMsg =>
+        match decodeMessagePhiInv?
+            (pSpec := pSpec) (U := U) ⟨j, hDir⟩ encodedMsg with
         | none => none
-        | some encodedMsg =>
-            match decodeMessagePhiInv?
-                (pSpec := pSpec) (U := U) msgIdx encodedMsg with
-            | none => none
-            | some msg =>
-                some
-                  (ProtocolSpec.MessagesUpTo.concat
-                    (pSpec := pSpec) messages hDir msg)
-    | .V_to_P =>
-        some (ProtocolSpec.MessagesUpTo.extend (pSpec := pSpec) messages hDir)
+        | some msg =>
+            some
+              (ProtocolSpec.MessagesUpTo.concat
+                (pSpec := pSpec) messages hDir msg)
+  else
+    some (ProtocolSpec.MessagesUpTo.extend (pSpec := pSpec) messages (by
+      cases hd : pSpec.dir j with
+      | P_to_V => exact absurd hd hDir
+      | V_to_P => rfl))
 
 /-- Implements the full `φ⁻¹` map over a structured prefix of encoded messages up to round `i`.
 Walks the rounds `0..i-1` and iteratively applies `decodeMessagesPrefixStepPhiInv` to return

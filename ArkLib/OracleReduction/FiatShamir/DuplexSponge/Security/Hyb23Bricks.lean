@@ -235,11 +235,7 @@ lemma decodeMessagesPrefixStepPhiInv_vToP
     decodeMessagesPrefixStepPhiInv (pSpec := pSpec) (U := U) encodedList j mb
       = some (MessagesUpTo.extend mb hdir) := by
   unfold decodeMessagesPrefixStepPhiInv
-  split
-  · rename_i heq
-    rw [hdir] at heq
-    simp at heq
-  · rfl
+  rw [dif_neg (by simp [hdir])]
 
 /-- Step equation at a message round: look up the encoded block and apply `φ_j⁻¹`. -/
 lemma decodeMessagesPrefixStepPhiInv_pToV
@@ -247,15 +243,19 @@ lemma decodeMessagesPrefixStepPhiInv_pToV
       Vector U (messageSize msgIdx)))
     (j : Fin n) (hdir : pSpec.dir j = .P_to_V) (mb : pSpec.MessagesUpTo j.castSucc) :
     decodeMessagesPrefixStepPhiInv (pSpec := pSpec) (U := U) encodedList j mb
-      = match lookupEncodedMessageAlphaHat? (pSpec := pSpec) (U := U)
-            encodedList ⟨j, hdir⟩ with
-        | none => none
-        | some encodedMsg =>
-            match decodeMessagePhiInv? (pSpec := pSpec) (U := U) ⟨j, hdir⟩ encodedMsg with
-            | none => none
-            | some msg => some (MessagesUpTo.concat mb hdir msg) := by
+      = (lookupEncodedMessageAlphaHat? (pSpec := pSpec) (U := U)
+            encodedList ⟨j, hdir⟩).bind fun encodedMsg =>
+          (decodeMessagePhiInv? (pSpec := pSpec) (U := U) ⟨j, hdir⟩ encodedMsg).map
+            fun msg => MessagesUpTo.concat mb hdir msg := by
   unfold decodeMessagesPrefixStepPhiInv
-  simp [hdir]
+  rw [dif_pos hdir]
+  cases lookupEncodedMessageAlphaHat? (pSpec := pSpec) (U := U) encodedList ⟨j, hdir⟩ with
+  | none => simp
+  | some encodedMsg =>
+      simp only [Option.bind_some]
+      cases decodeMessagePhiInv? (pSpec := pSpec) (U := U) ⟨j, hdir⟩ encodedMsg with
+      | none => simp
+      | some msg => simp
 
 /-! ## H23-2 — the parser succeeds on codec-image inputs -/
 
@@ -293,6 +293,7 @@ lemma decodePrefixBuild_isSome_of_inImage
         dsimp only
         obtain ⟨m, hm⟩ := Option.isSome_iff_exists.mp
           (decodeMessagePhiInv?_isSome_of_exists (h ⟨j, hdir⟩ hjlt))
+        simp only [Option.bind_some]
         rw [hm]
         simp
 
@@ -394,12 +395,13 @@ lemma decodePrefixBuild_serialize_eq
           simp only [Fin.val_succ] at hk
           omega
         rw [lookupEncodedMessageAlphaHat?_toList em ⟨j₀, hdir⟩ hj₀lt] at hbuild
-        dsimp only at hbuild
+        simp only [Option.bind_some] at hbuild
         cases hdec : decodeMessagePhiInv? (pSpec := pSpec) (U := U) ⟨j₀, hdir⟩
             (em ⟨⟨j₀, hdir⟩, hj₀lt⟩) with
         | none => rw [hdec] at hbuild; simp at hbuild
         | some msg =>
           rw [hdec] at hbuild
+          simp only [Option.map_some] at hbuild
           have hmb : mb = MessagesUpTo.concat mb₀ hdir msg := (Option.some.inj hbuild).symm
           subst hmb
           rcases Nat.lt_succ_iff_lt_or_eq.mp hjk with hlt | heq
