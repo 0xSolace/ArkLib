@@ -300,6 +300,53 @@ Per-hypothesis discipline: constraints → new direction → why nobody has done
   code-stability lemma); the finite sup as `Finset.sup` over representatives; `decide` or
   explicit case analysis at p = 5.
 
+## Wave-2 status — 2026-06-10/11 (take-over verification pass)
+
+All four wave-2 lanes LANDED (committed in `2dc721701`, imports registered); independent
+re-verification of the compile/axiom state in progress (targeted `lake build` of the edited
+chain takes hours under fleet CPU contention; per-file `lake env lean` re-checks follow).
+Per-lane outcome:
+
+- **A2 LANDED — `KKH26StratifiedSpread.lean`**: `sVal_inj_cross_strata` (cross-stratum
+  injectivity at the SAME threshold `p > s^{s/2}`, ℓ¹ budget `r₁+r₂ ≤ s` — the one new
+  resultant step), `exists_realizing_subset` (stratum realization via fresh antipodal
+  classes; feasibility `(r−2j)+j ≤ s/2`), headline `kkh26_stratified_count`
+  (`∑_{j feasible} 2^{r−2j}·C(s/2, r−2j) ≤ #r-sums`, no `r ≤ s/2` restriction), and the
+  upgraded consumers `kkh26_stratified_epsMCA_lower_bound` /
+  `kkh26_stratified_mcaDeltaStar_le` with radius relaxed to `r ≤ 2^μ` — the bracket now
+  reaches BELOW δ = 1/2. Probe anchors (41 at (8,4); 25 at (8,6)) kernel-checked by `decide`.
+- **A4 LANDED — `DeepQuotientTransfer.lean`** (+ `QuotientDeepCore.lean`): `deepU0/deepU1`,
+  `deep_quotient_line_codeword` (divided-difference quotient step),
+  `deepU1_not_extendable` (joint-pair refusal above the budget `|S| ≥ D·m+1` — the
+  load-bearing clause the probe's boundary diagnostic identified),
+  `deep_quotient_mcaEvent`, headline `deep_quotient_epsMCA_lower_bound`
+  (distinct `ĉ(w)` values ⟹ `ε_mca ≥ L/p`). The BCIKS20 Lemma-3 separation supply stays a
+  hypothesis (honest; the KKH26 instantiation supplies it explicitly).
+- **K5 LANDED — `CurveDecodability.lean`**: `CurveDecodable` ([GG25] Def 3.1, first
+  formalization) + `MarkedCurveDecodable` ([Jo26] Def 5.1), `curveDecodable_of_marked`
+  (easy half), `relHammingDist_rowComb_le` (Lemma 5.6), **`markedCurveDecodable_interleaved`
+  / `curveDecodable_interleaved` ([Jo26] Thm 5.7, unconditional)** reusing the wave-1
+  covering lemma; `markedCurveDecodable_of_interpolation` (Lemma 5.2);
+  original⟹marked ([Jo26] Thm 5.5) conditional on the named `FarWordSupply` predicate
+  (Lemma 5.4's counting input) with `farWordSupply_of_far_pair` as a sufficient condition.
+  B2's "needs GG25 Def 3.1 from scratch" is now unblocked: any future GG25-style result
+  imports the definition and inherits interleaving stability.
+- **TZ wiring LANDED — `KKH26SumsOfRootsOfUnity.lean` (+227 lines, additive),
+  `KKH26WitnessSpread.lean` (+173, additive), `KKH26PolyFieldCeiling.lean` (new)**: the
+  divisibility route (`collisionResultant`, `kkh26_lemma1_of_not_dvd`,
+  `kkh26_mcaDeltaStar_le_of_not_dvd`) and the composition
+  `kkh26_mcaDeltaStar_le_of_TZ` — the [KKH26] δ* ceiling at polynomial field size
+  `p = Θ(n^β)`, conditional on exactly the named `TZPrimeSupply` ([TZ24] Cor 3.1).
+  B3 is complete: explicit-threshold route unconditional, polynomial-field route priced
+  at one named analytic external.
+
+**Issue #334 B-residual scoreboard after wave 2:** B1 done (wave 1) · B2 opener done (K5;
+the [Jo26] curve-decodability half is formalized, the [GG25] *theorems* remain external
+predicates by design) · B3 done (K3+K4+TZ wiring) · B4 still blocked on literature (the
+LD⇒MCA collapse direction; the converse engine is A4, in-tree). A-side (the δ* breakthrough)
+remains blocked on literature by construction — the bracket substrate is strictly stronger
+now (stratified ceiling + polynomial-field conditional + transfer engine).
+
 ## Unification observations
 1. **The covering lemma is the load-bearing wall of the whole Jo26 layer**:
    `exists_nonzero_notMem_of_proper_family` (in-tree) IS Lemma 3.2, drives K1 (exactness),
