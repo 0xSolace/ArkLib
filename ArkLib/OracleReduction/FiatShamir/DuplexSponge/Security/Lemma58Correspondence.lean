@@ -294,6 +294,37 @@ lemma redundantEntryDSPaper_iff_sameClass
       · exact ⟨j', hj', Or.inl hcl⟩
       · exact ⟨j', hj', Or.inr hcl⟩
 
+/-! ## Dedup recursion infrastructure (sublist + membership transport) -/
+
+open DuplexSpongeFS.Paper in
+/-- The paper dedup output is a sublist of its input (each step erases one entry). -/
+theorem removeRedundantEntryDSPaper_sublist
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) :
+    (removeRedundantEntryDSPaper log).1.Sublist log := by
+  letI : Decidable (∃ idx : Fin log.length,
+      DuplexSpongeFS.Paper.redundantEntryDSPaper log idx) := Classical.propDecidable _
+  rw [removeRedundantEntryDSPaper]
+  by_cases h : ∃ idx : Fin log.length, redundantEntryDSPaper log idx
+  · rw [dif_pos h]
+    exact (removeRedundantEntryDSPaper_sublist
+      (log.eraseIdx (Classical.choose h).val)).trans (List.eraseIdx_sublist _ _)
+  · rw [dif_neg h]
+termination_by log.length
+decreasing_by
+  exact (by
+    have hlt : (Classical.choose h).val < log.length := (Classical.choose h).isLt
+    have heq : (log.eraseIdx (Classical.choose h).val).length + 1 = log.length :=
+      List.length_eraseIdx_add_one hlt
+    omega)
+
+open DuplexSpongeFS.Paper in
+/-- Every entry of the dedup'd base trace was already an entry of the original log. -/
+theorem mem_of_mem_removeRedundantEntryDSPaper
+    {log : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    {e : DSEntry StmtIn U} (he : e ∈ (removeRedundantEntryDSPaper log).1) :
+    e ∈ log :=
+  (removeRedundantEntryDSPaper_sublist log).subset he
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -353,4 +384,6 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_support
 #print axioms DuplexSpongeFS.EagerLazyDS.support_flagged_logged
 #print axioms DuplexSpongeFS.EagerLazyDS.redundantEntryDSPaper_iff_sameClass
+#print axioms DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_sublist
+#print axioms DuplexSpongeFS.EagerLazyDS.mem_of_mem_removeRedundantEntryDSPaper
 #print axioms DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction
