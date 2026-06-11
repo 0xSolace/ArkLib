@@ -540,6 +540,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
 import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.GG25CurveDecodability
+import ArkLib.Data.CodingTheory.ProximityGap.GG25ExactPreservation
 import ArkLib.Data.CodingTheory.ProximityGap.GG25MarkedCurve
 import ArkLib.Data.CodingTheory.ProximityGap.GG25NonCovering
 import ArkLib.Data.CodingTheory.ProximityGap.GG25SmallWitness
@@ -678,7 +679,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Issue14Kernels
 import ArkLib.Data.CodingTheory.ProximityGap.Issue232VerifiedBricks
 import ArkLib.Data.CodingTheory.ProximityGap.Issue244Refutation
 import ArkLib.Data.CodingTheory.ProximityGap.IteratedSliceRootCoherence
-import ArkLib.Data.CodingTheory.ProximityGap.Jo26DichotomySharpness
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26GeneratorMCA
 import ArkLib.Data.CodingTheory.ProximityGap.Jo26InterleavingBound
@@ -1176,6 +1176,7 @@ import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeKeystoneOracle
 import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeSeam
 import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeSeamChallenge
+import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessEmptyErr
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessHelper
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessMsgKeystone
 import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessNonPerfect
@@ -1188,7 +1189,6 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessMs
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOracle
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessOracleChallenge
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessProof
-import ArkLib.OracleReduction.Composition.Sequential.AppendCompletenessEmptyErr
 import ArkLib.OracleReduction.Composition.Sequential.AppendPerfectCompletenessTotal
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKeystone
 import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeChallenge
