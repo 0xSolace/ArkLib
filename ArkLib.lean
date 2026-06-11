@@ -2249,6 +2249,7 @@ import ArkLib.ToMathlib.MinimalSurfaceChain
 import ArkLib.ToMathlib.MonicIrreducibleFactorization
 import ArkLib.ToMathlib.MonicResidualBoundary
 import ArkLib.ToMathlib.MonomialAgreementBound
+import ArkLib.ToMathlib.MonomialShiftDivisibility
 import ArkLib.ToMathlib.MpFinFromLocalSeries
 import ArkLib.ToMathlib.MpFinSupply
 import ArkLib.ToMathlib.MpProducer
