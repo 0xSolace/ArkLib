@@ -6723,3 +6723,35 @@ B-coefficient budget overshoots the cancellation headroom by `≈ D − d_R + m`
   degrees.** Finding 3's exponent cancellation (exactly `2k`) is verified and stands;
   only the B-budget bookkeeping is open. The proven artifacts
   (`structured_weight_collapse_rebased`, the calculus, the drops) are unaffected.
+
+**O154 V1 dive, finding 5 (R1 RESOLVED) — the finding-4 discrepancy is EXPLAINED by the
+paper's frame: the weight machinery runs over the ORIGINAL NON-MONIC `H` with
+`Λ(W) = D − d_H` TIGHT (the paper's t = 0 base literally reads "β₀ = T mod H̃ and indeed
+Λ(T) = Λ(W) + 1", fulltext 3978) — the `(t+1)·Λ(W)` terms ARE the X-degree credit; monic
+routing zeroes them and creates the deficit.** Full R1 extraction (fulltext 3820–3990):
+
+* The paper's Λ is identical to in-tree `weight_Λ` (`Λ(Z) = 1`, `Λ(T) = D+1−d`, sup over
+  monomials; H̃-reduction never increases weight) — no normalization diff.
+* But `d := deg_Y H` and `D ≥ total (Y,Z)-degree of H` for the ORIGINAL factor `H`
+  (`W := leadingCoeff H`, `Λ(W) ≤ D − d_H`), and the base-case identity
+  `Λ(T) = Λ(W) + 1` forces `Λ(W) = D − d_H` — i.e. `D` is anchored tight to `H`'s total
+  degree, with the leading coefficient carrying the maximal Z-degree. The "1"-based
+  structured invariant `Λ(β_t) ≤ 1 + (t+1)Λ(W) + e_t·Λ(ξ)` is THEN correct: at `t = 0`
+  it is exact, and the W-terms absorb precisely the `B₀ − 1 = D − d_H` per occurrence
+  that finding 4 found missing.
+* Claim A.2's chain (fulltext 3966–3970):
+  `Λ(β_t) ≤ ((d−1)·e_t + t + 1)(D − d_H + 1) − t < (2t+1)·d·D` — the collapse the
+  in-tree `structured_weight_collapse` mirrors, all in the original-H frame.
+* §5's telescoping application (fulltext 1788–1797): `Λ(β_t·W^{k−t}·ξ^{e_k−e_t})`
+  collapses to `1 + (k+1)Λ(W) + e_k Λ(ξ)` — the per-term cancellation INCLUDING W-powers,
+  which is finding 3's computation with the W-credit restored.
+* **Corrected formalization frame (the final one): work over the ORIGINAL `H` (non-monic),
+  `D` anchored tight, the W/ξ-exponent structured invariant exactly as Claim A.2 states
+  it. The monic in-tree artifacts (`assembledSeries_isRoot_of_monic` etc.) remain valid
+  for the ROOT identities (where they were proven); the WEIGHT bookkeeping must thread
+  the genuine `W` — which the in-tree `FaaDiBrunoSuccSumZeroResidual` general form and
+  the `βHensel` infrastructure already parametrize. Finding-3's cancellation redone with
+  W-terms: W-exponent total telescopes identically (the (5.16) display), so the per-term
+  lemma's residual becomes `Λ(B_coeff) ≤ (d_R − m)·(B₀ − 1) + bounded`, matching the
+  PROVEN Y-drop + the now-available W-credit. The endgame stands, in the corrected frame:
+  (E1′) per-term with W-credit, (E2′) Claim-A.2 induction assembly, (E3) wiring.**
