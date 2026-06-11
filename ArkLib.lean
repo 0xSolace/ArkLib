@@ -2066,6 +2066,7 @@ import ArkLib.ToMathlib.SectionXiUnit
 import ArkLib.ToMathlib.SeparableLowDegree
 import ArkLib.ToMathlib.SiegelInterpolation
 import ArkLib.ToMathlib.SignedGradedSupply
+import ArkLib.ToMathlib.SlicedCompositionInstance
 import ArkLib.ToMathlib.SpartanBricks
 import ArkLib.ToMathlib.SpartanRBRProof
 import ArkLib.ToMathlib.SqSumCardSupport
