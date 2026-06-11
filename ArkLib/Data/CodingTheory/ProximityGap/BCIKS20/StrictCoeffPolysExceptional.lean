@@ -183,6 +183,18 @@ theorem strictCoeffPolysExcResidual_of_strictCoeffPolysResidual
   obtain ⟨B, hBdeg, hBid⟩ := h hk u hprob hJ hsqrt P hP
   exact ⟨B, ∅, by simp, hBdeg, fun z hz _ j hj => hBid z hz j hj⟩
 
+/-- **Exceptional-budget monotonicity**: a larger exceptional budget is a weaker promise —
+the same coefficient polynomials and the same exceptional set witness the residual at any
+budget `b' ≥ b`. Lets producers discharge at their natural sharp budget while consumers
+quote any convenient looser one. -/
+theorem strictCoeffPolysExcResidual_mono
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} {b b' : ℕ} (hbb : b ≤ b')
+    (h : StrictCoeffPolysExcResidual (k := k) (deg := deg) (domain := domain) (δ := δ) b) :
+    StrictCoeffPolysExcResidual (k := k) (deg := deg) (domain := domain) (δ := δ) b' := by
+  intro hk u hprob hJ hsqrt P hP
+  obtain ⟨B, E, hEcard, hBdeg, hBid⟩ := h hk u hprob hJ hsqrt P hP
+  exact ⟨B, E, le_trans hEcard hbb, hBdeg, hBid⟩
+
 /-- At budget `b = 0` the exceptional-set residual is the original residual: the
 exceptional set is forced empty. -/
 theorem strictCoeffPolysResidual_of_strictCoeffPolysExcResidual_zero
@@ -486,3 +498,4 @@ end ProximityGap
 #print axioms ProximityGap.RS_jointAgreement_of_prob_gt_strict_johnson_exc
 #print axioms ProximityGap.correlatedAgreement_affine_curves_of_strict_coeff_polys_exc
 #print axioms ProximityGap.correlatedAgreement_affine_curves_strict_of_strict_coeff_polys_exc
+
