@@ -126,6 +126,40 @@ theorem weight_Λ_le_of_shape {H : F[X][Y]} {f : F[X][Y]} {dT DQ D : ℕ}
         have := Nat.mul_le_mul_right w h1
         omega
 
+/-! ## Item (d): the assembled Hasse-coefficient weight bound -/
+
+open BCIKS20AppendixA
+
+/-- **The assembled `𝒪`-weight bound for the iterated Hasse coefficient** (E1′'s B-bound,
+composing the proven `weight_Λ_over_𝒪_le_of_mk_eq` reduction-monotonicity with the
+joint-monomial estimate): under the support cap and total-degree shape of the specialized
+Hasse polynomial, `Λ_𝒪(hasseCoeffRepr𝒪 x₀ R i1 m) ≤ DQ + dT·(D − d_H)`. With the proven
+`Y`-drop (`hasseCoeffRepr𝒪_natDegreeY_le`) supplying `dT = d_R − m` and the index-shift
+drop (`hasseDerivY_coeff_natDegree_le_of_total`) supplying the shape, this is finding 7's
+`Λ(B) ≤ (D_R − m) + (d_R − m)·Λ_W` instance. -/
+theorem hasseCoeffRepr𝒪_weight_le_of_shape
+    {H : F[X][Y]} (hH : 0 < H.natDegree) {D : ℕ}
+    (hD : Polynomial.Bivariate.totalDegree H ≤ D)
+    (hDY : Polynomial.Bivariate.natDegreeY H ≤ D)
+    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) {dT DQ : ℕ}
+    (hsupp : ∀ j ∈ (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX i1 (hasseDerivY m R))).support, j ≤ dT)
+    (hshape : ∀ j ∈ (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX i1 (hasseDerivY m R))).support,
+      ((Polynomial.Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX i1 (hasseDerivY m R))).coeff j).natDegree ≤ DQ - j)
+    (hDQ : ∀ j ∈ (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX i1 (hasseDerivY m R))).support, j ≤ DQ) :
+    weight_Λ_over_𝒪 hH (hasseCoeffRepr𝒪 H x₀ R i1 m) D
+      ≤ WithBot.some (DQ + dT * (D - Polynomial.Bivariate.natDegreeY H)) := by
+  refine le_trans
+    (weight_Λ_over_𝒪_le_of_mk_eq hD hH (rfl :
+      (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+        (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+          (hasseDerivX i1 (hasseDerivY m R))) : 𝒪 H)
+        = hasseCoeffRepr𝒪 H x₀ R i1 m)) ?_
+  exact weight_Λ_le_of_shape hDY hsupp hshape hDQ
+
 /-! ## Source audit -/
 
 #print axioms hasseDerivY_coeff
@@ -133,5 +167,6 @@ theorem weight_Λ_le_of_shape {H : F[X][Y]} {f : F[X][Y]} {dT DQ D : ℕ}
 #print axioms hasseDerivY_coeff_natDegree_le_of_total
 #print axioms leadingCoeff_dvd_evalX_hasseDerivY_top
 #print axioms weight_Λ_le_of_shape
+#print axioms hasseCoeffRepr𝒪_weight_le_of_shape
 
 end BCIKS20.HenselNumerator
