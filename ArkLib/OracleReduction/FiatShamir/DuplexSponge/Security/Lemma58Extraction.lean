@@ -290,6 +290,118 @@ theorem anchored_of_permInv_anchor
       exact mem_slotList_of_pair_snd
         (pairRecord_take_of_le (by exact_mod_cast hlt) _ hrec)
 
+/-! ## The `E_p` anchor arm -/
+
+/-- **The `E_p` arm anchors a collision** (CO25 Eq. 25 over a certified consistent
+list): a forward entry whose answer capacity coincides with any of the five earlier-
+component capacities fires `collisionStep` at its index, hence `AnchoredFrom`. -/
+theorem anchored_of_perm_anchor
+    {base : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
+    (hnr : Paper.NoRedundantEntryDSPaper base)
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) base)
+    {j : Fin base.length} {stateIn stateOut : CanonicalSpongeState U}
+    {capSeg : Vector U SpongeSize.C}
+    (hj : base[j] = ⟨.inr (.inl stateIn), stateOut⟩)
+    (hcap : stateOut.capacitySegment = capSeg)
+    (hcoin :
+      (∃ j' < j, ∃ stmt', base[j'] = ⟨.inl stmt', capSeg⟩) ∨
+      (∃ j' < j, ∃ sIn1 sOut1, base[j'] = ⟨.inr (.inl sIn1), sOut1⟩ ∧
+        sOut1.capacitySegment = capSeg) ∨
+      (∃ j' ≤ j, ∃ sOut2 sIn2, base[j'] = ⟨.inr (.inr sOut2), sIn2⟩ ∧
+        sIn2.capacitySegment = capSeg) ∨
+      (∃ j' ≤ j, ∃ sIn3 sOut3, base[j'] = ⟨.inr (.inl sIn3), sOut3⟩ ∧
+        sIn3.capacitySegment = capSeg) ∨
+      (∃ j' ≤ j, ∃ sOut4 sIn4, base[j'] = ⟨.inr (.inr sOut4), sIn4⟩ ∧
+        sOut4.capacitySegment = capSeg)) :
+    AnchoredFrom ((∅, []) : DSCache StmtIn U) base := by
+  classical
+  -- the anchor is certificate-fresh
+  have hfresh := fresh_at_firstOfClass_perm hcons
+    (firstOfClassAt_of_noRedundant hnr j) hj
+  -- fire the positional collision at `j`
+  refine anchoredFrom_of_at ((∅, []) : DSCache StmtIn U) base j ?_
+  rw [hj]
+  refine ⟨hfresh, ?_⟩
+  -- the hit conjunct, per disjunct
+  rcases hcoin with ⟨j', hj'lt, stmt', hj'⟩ | ⟨j', hj'lt, sIn1, sOut1, hj', hc1⟩ |
+    ⟨j', hj'le, sOut2, sIn2, hj', hc2⟩ | ⟨j', hj'le, sIn3, sOut3, hj', hc3⟩ |
+    ⟨j', hj'le, sOut4, sIn4, hj', hc4⟩
+  · -- earlier hash entry with answer capSeg
+    refine Or.inl ?_
+    have hfresh' := fresh_at_firstOfClass_hash hcons
+      (firstOfClassAt_of_noRedundant hnr j') hj'
+    have hrec : ((base.take (j'.val + 1)).foldl stepCache
+        ((∅, []) : DSCache StmtIn U)).1 stmt' = some capSeg := by
+      rw [foldl_take_succ_eq base j' j'.isLt,
+        show (base[(j' : ℕ)]'j'.isLt) = base[j'] from rfl, hj']
+      exact stepCache_caches_fresh_hash _ hfresh'
+    rw [hcap]
+    exact mem_slotList_of_hash
+      (hashRecord_take_of_le (by exact_mod_cast hj'lt) _ hrec)
+  · -- earlier forward entry, answer capacity
+    refine Or.inl ?_
+    have hfresh' := fresh_at_firstOfClass_perm hcons
+      (firstOfClassAt_of_noRedundant hnr j') hj'
+    have hrec : (sIn1, sOut1) ∈ ((base.take (j'.val + 1)).foldl stepCache
+        ((∅, []) : DSCache StmtIn U)).2 := by
+      rw [foldl_take_succ_eq base j' j'.isLt,
+        show (base[(j' : ℕ)]'j'.isLt) = base[j'] from rfl, hj']
+      exact stepCache_caches_fresh_perm _ hfresh'
+    rw [hcap, ← hc1]
+    exact mem_slotList_of_pair_snd
+      (pairRecord_take_of_le (by exact_mod_cast hj'lt) _ hrec)
+  · -- inverse entry at j' ≤ j, answer capacity (j' = j is a constructor clash)
+    rcases eq_or_lt_of_le hj'le with heq | hlt
+    · subst heq
+      rw [hj] at hj'
+      simp at hj'
+    · refine Or.inl ?_
+      have hfresh' := fresh_at_firstOfClass_permInv hcons
+        (firstOfClassAt_of_noRedundant hnr j') hj'
+      have hrec : (sIn2, sOut2) ∈ ((base.take (j'.val + 1)).foldl stepCache
+          ((∅, []) : DSCache StmtIn U)).2 := by
+        rw [foldl_take_succ_eq base j' j'.isLt,
+          show (base[(j' : ℕ)]'j'.isLt) = base[j'] from rfl, hj']
+        exact stepCache_caches_fresh_permInv _ hfresh'
+      rw [hcap, ← hc2]
+      exact mem_slotList_of_pair_fst
+        (pairRecord_take_of_le (by exact_mod_cast hlt) _ hrec)
+  · -- forward entry at j' ≤ j, query capacity (j' = j is the self-anchor)
+    rcases eq_or_lt_of_le hj'le with heq | hlt
+    · subst heq
+      rw [hj] at hj'
+      have hs : sIn3 = stateIn := by
+        simpa using congrArg (fun e : DSEntry StmtIn U => e.1) hj'.symm
+      refine Or.inr ?_
+      rw [hcap, ← hc3, hs]
+    · refine Or.inl ?_
+      have hfresh' := fresh_at_firstOfClass_perm hcons
+        (firstOfClassAt_of_noRedundant hnr j') hj'
+      have hrec : (sIn3, sOut3) ∈ ((base.take (j'.val + 1)).foldl stepCache
+          ((∅, []) : DSCache StmtIn U)).2 := by
+        rw [foldl_take_succ_eq base j' j'.isLt,
+          show (base[(j' : ℕ)]'j'.isLt) = base[j'] from rfl, hj']
+        exact stepCache_caches_fresh_perm _ hfresh'
+      rw [hcap, ← hc3]
+      exact mem_slotList_of_pair_fst
+        (pairRecord_take_of_le (by exact_mod_cast hlt) _ hrec)
+  · -- inverse entry at j' ≤ j, query capacity (j' = j is a constructor clash)
+    rcases eq_or_lt_of_le hj'le with heq | hlt
+    · subst heq
+      rw [hj] at hj'
+      simp at hj'
+    · refine Or.inl ?_
+      have hfresh' := fresh_at_firstOfClass_permInv hcons
+        (firstOfClassAt_of_noRedundant hnr j') hj'
+      have hrec : (sIn4, sOut4) ∈ ((base.take (j'.val + 1)).foldl stepCache
+          ((∅, []) : DSCache StmtIn U)).2 := by
+        rw [foldl_take_succ_eq base j' j'.isLt,
+          show (base[(j' : ℕ)]'j'.isLt) = base[j'] from rfl, hj']
+        exact stepCache_caches_fresh_permInv _ hfresh'
+      rw [hcap, ← hc4]
+      exact mem_slotList_of_pair_snd
+        (pairRecord_take_of_le (by exact_mod_cast hlt) _ hrec)
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -302,3 +414,4 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.hashRecord_take_of_le
 #print axioms DuplexSpongeFS.EagerLazyDS.pairRecord_take_of_le
 #print axioms DuplexSpongeFS.EagerLazyDS.anchored_of_permInv_anchor
+#print axioms DuplexSpongeFS.EagerLazyDS.anchored_of_perm_anchor
