@@ -515,7 +515,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.CensusClassificationCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.CensusConditionalPin
 import ArkLib.Data.CodingTheory.ProximityGap.CensusExtremalFloor
 import ArkLib.Data.CodingTheory.ProximityGap.CensusLowerBound
-import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerDescent
 import ArkLib.Data.CodingTheory.ProximityGap.ClassChartBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Collapse
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionLemma
@@ -528,6 +527,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CosetExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.CosetRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.CosetSplittingFloor
+import ArkLib.Data.CodingTheory.ProximityGap.SplittingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.CosetVanishingDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.CosetWallDeepInteriorNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.CountingGapConjecture
@@ -835,6 +835,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCABadScalarSpreadBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoRS
+import ArkLib.Data.CodingTheory.ProximityGap.MCAHalfDistanceStaircase
 import ArkLib.Data.CodingTheory.ProximityGap.MCABracket
 import ArkLib.Data.CodingTheory.ProximityGap.MCAConjectureRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCACurveEvent
@@ -860,7 +861,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAGSWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGammaReduction
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGeneralLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
-import ArkLib.Data.CodingTheory.ProximityGap.MCAHalfDistanceStaircase
 import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonClustering
 import ArkLib.Data.CodingTheory.ProximityGap.MCAJohnsonDegreeOne
