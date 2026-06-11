@@ -383,6 +383,69 @@ theorem strict_coeffPolys_of_heavy_cell {n L : ℕ} [DecidableEq F₀] {domain :
   intro γ hγ
   exact Finset.mem_biUnion.mpr ⟨some R, hR, hγ⟩
 
+/-- **Global-branch cells feed the Prop-5.5 subset extraction.**  This is the consumer-side
+adapter from the existing branch-production lane to `strict_coeffPolys_of_heavy_cell`: if
+each factor cell already carries a global section branch
+`Y - branchOfCurveTuple(T_R)` and enough scalars in that cell agree with the corresponding
+fold sections at the selected coordinates, then the heavy-cell coefficient-polynomial
+subset follows directly.  The theorem does not construct the branches; it only packages
+their degree and agreement consequences into the SK2 heavy-cell interface. -/
+theorem strict_coeffPolys_of_heavy_cell_of_global_branches {n L k : ℕ}
+    [Finite F₀] [DecidableEq F₀] (hk : 0 < k) (hL : 0 < L) (hLk : L - 1 ≤ k)
+    {domain : Fin n ↪ F₀} {u : WordStack F₀ (Fin L) (Fin n)}
+    (G : Finset F₀)
+    {Idx : Type}
+    (Index : Finset (Option Idx)) (Ecell : Option Idx → Finset F₀) (P : F₀ → F₀[X])
+    {ℓ T : ℕ}
+    (hIdx : Index.card ≤ ℓ + 1) (hnone : none ∈ Index)
+    (hcover : G ⊆ Index.biUnion Ecell)
+    (hnoneCard : (Ecell none).card ≤ T)
+    (hbig : T < G.card)
+    (Rof : Idx → (F₀[X])[X][Y])
+    (hRirr : ∀ R, some R ∈ Index → Irreducible (Rof R))
+    (hdvdP : ∀ R, some R ∈ Index → ∀ γ ∈ Ecell (some R),
+      (Polynomial.X - Polynomial.C (P γ)) ∣
+        (Rof R).map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)))
+    (Tset : Idx → Finset (Fin n))
+    (hTcard : ∀ R, some R ∈ Index → (Tset R).card = k)
+    (hbranch : ∀ R, some R ∈ Index →
+      (Polynomial.X - Polynomial.C
+        (branchOfCurveTuple (fun j : Fin L => lagrangeCurveTuple domain u (Tset R) j))) ∣
+          Rof R)
+    (hEbig : ∀ R, some R ∈ Index → max (L - 1) k < (Ecell (some R)).card)
+    (hagree : ∀ R, some R ∈ Index → ∀ t ∈ Tset R, ∀ z ∈ Ecell (some R),
+      (P z).eval (domain t) = (foldSectionAt u t).eval z) :
+    ∃ G' : Finset F₀, G.card ≤ T + ℓ * G'.card ∧ G' ⊆ Index.biUnion Ecell ∧
+      ∃ B : ℕ → F₀[X],
+        (∀ j, (B j).natDegree < k + 1) ∧
+        ∀ γ ∈ G', ∀ j, (P γ).coeff j = (B j).eval γ := by
+  classical
+  letI : Fintype F₀ := Fintype.ofFinite F₀
+  letI : DecidableEq Idx := Classical.decEq Idx
+  let wof : Idx → F₀[X][Y] :=
+    fun R => branchOfCurveTuple (fun j : Fin L => lagrangeCurveTuple domain u (Tset R) j)
+  refine strict_coeffPolys_of_heavy_cell (domain := domain) (u := u) G Index Ecell P
+    hIdx hnone hcover hnoneCard hbig Rof hRirr hdvdP wof (Bw := L - 1) (k := k)
+    hLk hbranch ?_ Tset ?_ (fun R _ => Ecell (some R)) ?_ ?_ ?_
+  · intro R _hR i
+    have h := branchOfCurveTuple_coeff_natDegree_lt hL
+      (fun j : Fin L => lagrangeCurveTuple domain u (Tset R) j) i
+    simp [wof] at h ⊢
+    omega
+  · intro R hR
+    have ha : ∀ j : Fin L,
+        (lagrangeCurveTuple domain u (Tset R) j).natDegree < k := fun j =>
+      lagrangeCurveTuple_natDegree_lt hk domain u (hTcard R hR) j
+    have hpHat := branchOfCurveTuple_natDegree_lt hk ha
+    rw [hTcard R hR]
+    exact hpHat
+  · intro R _hR _t _ht
+    exact subset_rfl
+  · intro R hR _t _ht
+    exact hEbig R hR
+  · intro R hR t ht z hz
+    exact hagree R hR t ht z hz
+
 end BCIKS20.CurveCellStrictExtraction
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -392,3 +455,4 @@ end BCIKS20.CurveCellStrictExtraction
 #print axioms BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_cell
 #print axioms BCIKS20.CurveCellStrictExtraction.exists_heavy_factor_cell
 #print axioms BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_heavy_cell
+#print axioms BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_heavy_cell_of_global_branches
