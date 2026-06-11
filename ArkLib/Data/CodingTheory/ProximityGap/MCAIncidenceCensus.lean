@@ -136,6 +136,25 @@ theorem dependent_of_slanted (h6 : Distinct6 a a' b b' c c') {ζ w : F} {i j d :
   rw [hva, hva', hvb, hvb', hvc, hvc']
   linear_combination (ζ ^ i * ζ ^ d + ζ ^ i - ζ ^ j * ζ ^ d - ζ ^ j) * hw
 
+/-- **The horizontal stratum is exactly the exponent-sum classes (upper half,
+unconditional).** Two root-of-unity pairs share their product **iff** their exponent sums
+agree modulo the order. With `dependent_of_equal_products`, the horizontal census at every
+scale is exactly `Σ_s C(η_s, 3)` over exponent-sum classes — no field-size threshold
+enters the horizontal stratum. -/
+theorem equal_products_iff_same_class {ζ : F} {n : ℕ} (hζ : IsPrimitiveRoot ζ n)
+    (hn : 0 < n) {i j i' j' : ℕ} :
+    (ζ ^ i) * (ζ ^ j) = (ζ ^ i') * (ζ ^ j') ↔ (i + j) % n = (i' + j') % n := by
+  constructor
+  · intro h
+    have hred : ∀ A : ℕ, ζ ^ A = ζ ^ (A % n) := by
+      intro A
+      conv_lhs => rw [← Nat.div_add_mod A n]
+      rw [pow_add, pow_mul, hζ.pow_eq_one, one_pow, one_mul]
+    rw [← pow_add, ← pow_add, hred (i + j), hred (i' + j')] at h
+    exact hζ.pow_inj (Nat.mod_lt _ hn) (Nat.mod_lt _ hn) h
+  · intro h
+    exact equal_products_of_exponent_sum_mod hζ.pow_eq_one h
+
 /-! ## Source audit -/
 
 #print axioms dependent_of_equal_products
@@ -143,5 +162,6 @@ theorem dependent_of_slanted (h6 : Distinct6 a a' b b' c c') {ζ w : F} {i j d :
 #print axioms equal_products_of_exponent_sum_mod
 #print axioms dependent_of_antipodal_triple
 #print axioms dependent_of_slanted
+#print axioms equal_products_iff_same_class
 
 end ProximityGap.MCAIncidenceCensus
