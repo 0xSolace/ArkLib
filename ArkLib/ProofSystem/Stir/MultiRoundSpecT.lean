@@ -49,6 +49,7 @@ variable {ι : Type} [Fintype ι]
 
 /-- **The t-repetition STIR multi-round wire shape**: `3M + 3` rounds, message length
 `|ι|`, challenge length `t`. -/
+@[reducible]
 def stirMultiVSpecT (M : ℕ) (ι : Type) [Fintype ι] (t : ℕ) :
     ProtocolSpec.VectorSpec (3 * M + 3) :=
   stirVSpec M (fun _ => Fintype.card ι) t
