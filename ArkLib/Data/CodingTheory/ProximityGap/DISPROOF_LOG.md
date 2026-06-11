@@ -5261,3 +5261,32 @@ independent confirmation it turned out to be. Same lesson as O38: re-sync before
 per-s censuses, verified to three rungs and forecast-validated at the fourth; the named
 opens are the odd-r tail exclusion theorem, the r ≥ 5 taxonomy derivation, and the per-prime
 transfer at n ≥ 64.
+
+### O131 — incidence rungs, batch verdicts: the moments bridge is an identity; the certificate has an exact Galois law (nubs, 2026-06-11)
+
+Pre-registered batch (rungs/HYPOTHESES.md, claim #334 comment 4675343864). Two lanes in:
+
+**A1 PROVEN (hypothesis honestly corrected in transit):** pair-overlap content is NOT in
+the agreement-spectrum moments (all a_j moments are single-codeword sums) — it lives in
+the TRANSPOSED spectrum M_t(σ) = #{p : σ ⊆ T_p}: for all r, t,
+Σ_σ C(M_t(σ), r) = Σ_{r-subsets R} C(|∩_{p∈R} T_p|, t) (one double count). r=2 makes the
+t-th binomial moment of O129's pair-overlap distribution equal the second binomial
+moment of the dual spectrum. Verified exactly at C19 (nine instances; F1=174, P2=922,
+P3=3240). With the exactness law, |T∩T′| = n − d_H(p,p′) — the dual spectrum's pair
+content is distance-geometry-determined with zero slack wherever exactness holds; at C19
+this replaces the worst-case pair cap 1,197 by the true 922 (23% tightening). Bonus: the
+3 witness–witness C19 pairs (outside O129's theorem) measured: zero excess.
+
+**A2 CONFIRMED — the bad-prime law is exact Galois arithmetic:**
+c = Σ 16/|Stab| / 13,219 = **11.0918**; mechanism: witness values always lie in
+ℤ[ζ₁₆] (even exponents ⟹ σ₁₇-fixed; 7,796 orbits). Corrected law matches the sweep
+aggregate at z = +0.05 (generic 16 rejected, z = −28.7); beyond the sweep it is an upper
+bound — the deficit is forced (1−ζ)^≥20 divisibility + extreme norm smoothness. The
+residue-degree law (v_p ≡ 0 mod ord₃₂(p), 0/1,142 violations) PROVES exponent-1 bad
+primes must split — the empirical pattern is now a theorem-shaped statement awaiting a
+two-line proof from ideal factorization. Artifacts: rungs/laneA2/, fully cross-checked
+against the committed certificate.
+
+Pending on the session-limit reset: G1 (menu law), G2+G3 (n=64 blind), G5 (beat the
+union bound), A3 (λ-family rigidity). Inline A2 pre-observation (c ≈ 11 from summary
+data) recorded in HYPOTHESES.md before the lane ran — the discipline held.
