@@ -1085,3 +1085,27 @@ The mutually-falsifying partner (K4 zero-slack census) is the next check; K1 is 
 *proven strictly-better ceiling* requires the level-(μ-1) survivor count vs native construction and a
 bracket instantiation — the next concrete step, not yet a δ* edge-move. No fabrication; pre-registered
 probe, exact arithmetic, result recorded per the §7 disproof discipline.
+## 35. #357 §5 K1/K4 mutually-falsifying pair RESOLVED: K4-zero-slack dies, K1 lives
+
+Per #357 §5, K1 (fold-transport) and the K4 zero-slack census check are mutually falsifying — "run
+both, one must die." Both now run (pre-registered, exact):
+
+- **K1 (§34):** SURVIVES — bad line NOT fold-invariant (antipodal collapse kills ≥1 bad line every
+  case); survivor law `C(2^{μ-1},r)·2^r`.
+- **K4 zero-slack (`scripts/probes/probe_k4_slack.py`, 8/8): DIES.** The bad-scalar count
+  `#{distinct r-subset sums of G_μ}` is FAR below the census-extremal `C(s,r)` — slack `> 0` always,
+  large (e.g. `p=97,s=16,r=4`: `97` distinct vs `C(16,4)=1820`, slack `1723`). The count saturates at
+  `~p` (subset sums mod p fill the residues), not the structured maximum ⟹ the bad line is **NOT
+  census-extremal / has large slack**.
+
+**Verdict:** the pair resolves consistently — K4-zero-slack is the one that died, K1 is promoted to
+LIVE. The bad line has room (slack) to be improved by fold-transport, and the improvement mechanism is
+the antipodal collapse (§34), which is the σ-involution fixed-point structure (§33–34 BGK↔Möbius). So
+fold-transport (K1) is a genuine live candidate for a μ-dependent ceiling, NOT killed by census
+extremality.
+
+**Honest scope:** two pre-registered cheap falsifiers run with exact arithmetic; K1 passed both (its
+own + the mutual partner), advancing it from untested to live with the survivor law + slack measured.
+This does NOT yet prove a strictly-better ceiling (needs the level-(μ-1) survivor bracket
+instantiation) — that's the next concrete step. No δ* edge-move yet; genuine actionable-direction
+progress per the issue's own protocol. No fabrication.
