@@ -294,9 +294,63 @@ lemma redundantEntryDSPaper_iff_sameClass
       · exact ⟨j', hj', Or.inl hcl⟩
       · exact ⟨j', hj', Or.inr hcl⟩
 
+/-! ## Assembly: the paper bound conditional on the dedup reduction -/
+
+open DuplexSpongeFS.Paper in
+/-- The dedup reduction (the one remaining pure-combinatorics obligation): a log consistent
+with the empty cache that satisfies the paper bad event `EPaper` contains an anchored
+collision against the empty cache. -/
+abbrev EPaperReduction (StmtIn U : Type) [SpongeUnit U] [SpongeSize]
+    [DecidableEq StmtIn] [DecidableEq (CanonicalSpongeState U)]
+    [Fintype StmtIn] [Fintype U] : Prop :=
+  ∀ (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)),
+    ConsistentFrom ((∅, []) : DSCache StmtIn U) log →
+    EPaper log →
+    AnchoredFrom ((∅, []) : DSCache StmtIn U) log
+
+open DuplexSpongeFS.Paper in
+/-- **The eager paper bound, conditional on the dedup reduction.** For any `T`-query
+adversary, the probability that the logged trace of the eager lazy carrier exhibits
+`EPaper`, in real form, is at most `(7T² − 3T)/(2|U|^C)`. -/
+theorem probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction
+    (hred : EPaperReduction StmtIn U)
+    {α : Type} (P : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ)
+    (hT : IsTotalQueryBound P T) :
+    (Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) => EPaper z.2 |
+        (simulateQ lazyDSImpl ((simulateQ loggingOracle P).run)).run'
+          ((∅, ([] : List (CanonicalSpongeState U × CanonicalSpongeState U))))]).toReal
+      ≤ DuplexSpongeFS.BirthdayBound.lemma5_8Bound U T := by
+  classical
+  set Q := (simulateQ loggingOracle P).run with hQ
+  have hQbound : IsTotalQueryBound Q T :=
+    (OracleComp.isTotalQueryBound_run_simulateQ_loggingOracle_iff P T).mpr hT
+  -- Step 1: rewrite the EPaper probability as an EPaper-on-logged-value probability of the
+  -- flagged run, via `run'` and the forgetting bridge.
+  have heq : Pr[ fun z : α × QueryLog (duplexSpongeChallengeOracle StmtIn U) =>
+        EPaper z.2 |
+        (simulateQ lazyDSImpl Q).run'
+          ((∅, ([] : List (CanonicalSpongeState U × CanonicalSpongeState U))))]
+      = Pr[ fun xs : (α × QueryLog (duplexSpongeChallengeOracle StmtIn U))
+              × (DSCache StmtIn U × Prop) => EPaper xs.1.2 |
+          (simulateQ lazyDSImplFlagged Q).run ((∅, []), False)] := by
+    rw [StateT.run'_eq, probEvent_map,
+      lazyDSImpl_run_map_flagged Q (∅, []) False, probEvent_map]
+    rfl
+  rw [heq]
+  -- Step 2: monotone step `EPaper xs.1.2 → final flag`, then the engine output.
+  refine le_trans (ENNReal.toReal_mono ?_ (probEvent_mono fun xs hxs hEP => ?_))
+    (probEvent_flag_final_toReal_le_lemma5_8Bound Q T hQbound)
+  · -- the flag probability is finite
+    exact ne_of_lt (lt_of_le_of_lt probEvent_le_one ENNReal.one_lt_top)
+  · -- the support fact: a consistent EPaper log forces the final flag
+    obtain ⟨_, hcons, hflag⟩ := support_flagged_logged P (∅, []) False xs hxs
+    rw [hflag]
+    exact Or.inr (hred xs.1.2 hcons hEP)
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_support
 #print axioms DuplexSpongeFS.EagerLazyDS.support_flagged_logged
 #print axioms DuplexSpongeFS.EagerLazyDS.redundantEntryDSPaper_iff_sameClass
+#print axioms DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction
