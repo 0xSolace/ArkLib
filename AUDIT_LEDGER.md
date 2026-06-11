@@ -8,18 +8,18 @@ documented as open research with the paper trail.
 |---|---|---|---|---|
 | MCACapacityTrivial_keep | 0 | 0 | 0 | 1 |
 | MCAGSRefutationCore_keep | 0 | 0 | 0 | 1 |
-| ToMathlib | 0 | 0 | 0 | 91 |
+| ToMathlib | 0 | 0 | 0 | 98 |
 | ProofSystem/Fri | 0 | 0 | 0 | 4 |
 | ProofSystem/Logup | 0 | 0 | 0 | 50 |
 | ProofSystem/Whir | 0 | 0 | 0 | 25 |
-| ProofSystem/Stir | 0 | 0 | 0 | 6 |
+| ProofSystem/Stir | 0 | 0 | 0 | 7 |
 | ProofSystem/Spartan | 0 | 0 | 0 | 16 |
 | ProofSystem/Sumcheck | 0 | 0 | 0 | 2 |
-| ProofSystem/Binius | 0 | 0 | 0 | 9 |
-| Data/CodingTheory | 0 | 0 | 0 | 178 |
-| OracleReduction/Composition | 0 | 0 | 0 | 31 |
-| OracleReduction/FiatShamir | 0 | 0 | 0 | 38 |
-| **TOTAL** | **0** | **0** | **0** | **452** |
+| ProofSystem/Binius | 0 | 0 | 0 | 3 |
+| Data/CodingTheory | 0 | 0 | 0 | 181 |
+| OracleReduction/Composition | 0 | 0 | 0 | 34 |
+| OracleReduction/FiatShamir | 0 | 0 | 0 | 48 |
+| **TOTAL** | **0** | **0** | **0** | **470** |
 
 
 ## Data/CodingTheory
@@ -163,6 +163,9 @@ documented as open research with the paper trail.
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean:133` theorem **strictCoeffPolysResidualLarge_of_residual**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean:142` theorem **strictCoeffPolysResidual_iff_large**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffLargeReduction.lean:150` theorem **correlatedAgreement_affine_curves_of_largeResidual**
+- `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean:155` def **StrictCoeffPolysResidualExc**
+- `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean:176` theorem **strictCoeffPolysResidualExc_of_strictCoeffPolysResidual**
+- `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysExceptional.lean:186` theorem **strictCoeffPolysResidual_of_strictCoeffPolysResidualExc_zero**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffProducer.lean:426` theorem **strictCoeffPolysResidual_of_localSeriesDatumOn**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffProducer.lean:450` theorem **strictCoeffPolysResidualLarge_of_localSeriesDatumOn**
 - `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:1815` class **Claim57Residuals**
@@ -242,6 +245,9 @@ documented as open research with the paper trail.
 - `ArkLib/OracleReduction/Composition/Sequential/AppendRbrKnowledgeStateFunction.lean:1226` def **appendRbrKnowledgeSoundnessPhase2Residual**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendRbrSoundnessOracleLift.lean:91` theorem **appendRbrSoundnessResidual_msg_subsingleton**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendRbrSoundnessPhase2Proof.lean:639` theorem **appendRbrSoundnessResidual_msg_subsingleton**
+- `ArkLib/OracleReduction/Composition/Sequential/AppendResidualDischarges.lean:54` theorem **reductionAppendCompletenessResidual_msg**
+- `ArkLib/OracleReduction/Composition/Sequential/AppendResidualDischarges.lean:93` theorem **appendRbrKnowledgeSoundnessResidual_msg_subsingleton**
+- `ArkLib/OracleReduction/Composition/Sequential/AppendResidualDischarges.lean:138` theorem **appendPerfectCompletenessResidual_msg**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendRunEvalDist.lean:53` def **appendRunRightResidualDist**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendRunEvalDist.lean:104` theorem **appendRunRightResidualDist_holds_msg**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendRunEvalDistChallenge.lean:265` theorem **appendRunRightResidualDist_holds_challenge**
@@ -272,37 +278,41 @@ documented as open research with the paper trail.
 - `ArkLib/OracleReduction/FiatShamir/ZKResidualBridge.lean:55` theorem **fiatShamir_hvzkTransferResidual_of_statisticalHVZKTransferResidual_zero**
 - `ArkLib/OracleReduction/FiatShamir/ZKResidualBridge.lean:68` theorem **fiatShamir_statisticalHVZKTransferResidual_zero_of_hvzkTransferResidual**
 - `ArkLib/OracleReduction/FiatShamir/ZKResidualBridge.lean:81` theorem **fiatShamir_hvzkTransferResidual_iff_statisticalHVZKTransferResidual_zero**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBound.lean:461` def **Lemma5_8EagerBirthdayResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBound.lean:470` def **Lemma5_8EagerBirthdayResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean:91` def **Lemma5_8EagerPaperResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean:108` theorem **honestBad_birthday_of_paperResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean:129` theorem **honestBad_claim5_21Bound_of_paperResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Completeness.lean:200` def **duplexSpongeFiatShamir_runCollapseResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Completeness.lean:212` def **duplexSpongeFiatShamirSalted_runCollapseResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemma.lean:241` def **KeyLemmaResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:644` def **Lemma5_12HonestResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:656` def **Lemma5_14HonestResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:672` def **Lemma5_16HonestResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:938` def **SimulatedProverChallengeBudgetResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:955` def **SimulatedProverSharedBudgetResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:975` def **KeyLemmaEagerResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:1015` def **D2sQueryStepGSpecBudgetResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:1031` def **D2fOuterImplSharedBudgetResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemma.lean:245` def **KeyLemmaResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:630` def **Lemma5_12HonestResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:647` def **Lemma5_14HonestResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:663` def **Lemma5_16HonestResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:929` def **SimulatedProverChallengeBudgetResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:946` def **SimulatedProverSharedBudgetResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:966` def **KeyLemmaEagerResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:1006` def **D2sQueryStepGSpecBudgetResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaFoundations.lean:1022` def **D2fOuterImplSharedBudgetResidual**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean:709` def **Hyb01StepResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean:730` def **Hyb12StepResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean:752` def **Hyb23StepResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean:771` def **Hyb34StepResidual**
-- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:594` theorem **lemma5_14HonestResidual_false**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean:731` def **Hyb12StepResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean:754` def **Hyb23StepResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/KeyLemmaHybrids.lean:773` def **Hyb34StepResidual**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:658` def **Lemma5_12HonestResidualPaper**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:666` def **Lemma5_14HonestResidualPaper**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512HonestPaper.lean:675` def **Lemma5_16HonestResidualPaper**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:441` theorem **lemma5_12HonestResidualPaper_holds**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma512PaperCascade.lean:508` theorem **lemma5_16HonestResidualPaper_holds**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514ForkFalse.lean:639` theorem **lemma5_14HonestResidual_false**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma514PaperFork.lean:705` theorem **lemma5_14HonestResidualPaper_holds**
 - `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma516TimePFalse.lean:502` theorem **lemma5_16HonestResidual_false**
+- `ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58EagerFalse.lean:147` theorem **lemma5_8EagerBirthdayResidual_false**
 
 ## ProofSystem/Binius
 
 ### residual-named declarations
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Code.lean:1039` class **FoldPreservesBBFCodeMembershipResidual**
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean:1694` class **FinalSumcheckStepLogicCompleteResidual**
+- `ArkLib/ProofSystem/Binius/BinaryBasefold/ExtractMLPCorrectness.lean:749` theorem **extractMLPCorrectnessResidual_ell_eq_one**
 - `ArkLib/ProofSystem/Binius/BinaryBasefold/Relations.lean:239` class **ExtractMLPCorrectnessResidual**
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Incremental.lean:230` class **Prop4212Case1Residual**
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Incremental.lean:1659` class **PreTensorCombineJointProximityResidual**
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Incremental.lean:1852` class **Prop4212Case2Residual**
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean:68` class **Prop421Case1FiberwiseCloseResidual**
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Proposition4_21.lean:440` class **Prop421Case2FiberwiseFarResidual**
-- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean:571` class **PreviousSuffixFiberAlignmentResidual**
+- `ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/Incremental.lean:2085` class **Prop4212Case2Residual**
 
 ## ProofSystem/Fri
 
@@ -394,6 +404,7 @@ documented as open research with the paper trail.
 - `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:1031` theorem **strictCoeffPolysResidual_all_of_card_le_e7**
 - `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:1053` theorem **strictCoeffPolysResidual_all_of_large**
 - `ArkLib/ProofSystem/Stir/MultiRoundAssembly.lean:224` def **stirMultiRoundRbrSoundnessResidual**
+- `ArkLib/ProofSystem/Stir/RepWire.lean:1417` def **stirCheckingRepRbrSoundnessResidual**
 - `ArkLib/ProofSystem/Stir/WindowCAFeed.lean:62` theorem **strictCoeffPolysResidual_all_of_window**
 
 ## ProofSystem/Sumcheck
@@ -427,7 +438,7 @@ documented as open research with the paper trail.
 - `ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean:74` theorem **K4GradedFactorCellResidual_of_component**
 - `ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean:94` theorem **mca_johnson_bound_CONJECTURE_holds_of_rawGSCargo**
 - `ArkLib/ProofSystem/Whir/MCAJohnsonBound.lean:176` theorem **mca_johnson_bound_CONJECTURE_pair_of_K4_graded_closed**
-- `ArkLib/ProofSystem/Whir/MCAJohnsonSmallField.lean:28` theorem **mca_johnson_bound_CONJECTURE_smallField**
+- `ArkLib/ProofSystem/Whir/MCAJohnsonSmallField.lean:29` theorem **mca_johnson_bound_CONJECTURE_smallField**
 - `ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean:319` def **mca_johnson_bound_CONJECTURE**
 - `ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean:371` def **mca_capacity_bound_CONJECTURE**
 
@@ -462,9 +473,16 @@ documented as open research with the paper trail.
 - `ArkLib/ToMathlib/FaithfulFrontierComposition.lean:298` theorem **strictCoeffPolysResidual_of_faithful_frontier**
 - `ArkLib/ToMathlib/FriComplete.lean:106` def **foldRoundPerfectCompletenessResidual**
 - `ArkLib/ToMathlib/FriComplete.lean:131` def **finalFoldRoundPerfectCompletenessResidual**
-- `ArkLib/ToMathlib/FriCompletePerRound.lean:113` theorem **foldRoundPerfectCompletenessResidual_holds**
+- `ArkLib/ToMathlib/FriCompleteFinalRound.lean:125` theorem **finalFoldRoundPerfectCompletenessResidual_holds**
+- `ArkLib/ToMathlib/FriCompletePerRound.lean:137` theorem **foldRoundPerfectCompletenessResidual_holds**
 - `ArkLib/ToMathlib/GSGradedBundle.lean:283` structure **MonicHighYResidual**
 - `ArkLib/ToMathlib/GSLineInputSupply.lean:216` structure **PerZResidual**
+- `ArkLib/ToMathlib/GSSurfaceKeystone.lean:341` theorem **strictCoeffPolysResidual_of_GS_surface**
+- `ArkLib/ToMathlib/GSSurfaceKeystone.lean:363` theorem **strictCoeffPolysResidualLarge_of_GS_surface**
+- `ArkLib/ToMathlib/GSSurfaceMatchingLane.lean:192` theorem **strictCoeffPolysResidual_of_matching_lane**
+- `ArkLib/ToMathlib/GSSurfaceMatchingLane.lean:217` theorem **strictCoeffPolysResidualLarge_of_matching_lane**
+- `ArkLib/ToMathlib/GSSurfaceTaylorRepair.lean:137` theorem **strictCoeffPolysResidual_of_GS_surface_taylor**
+- `ArkLib/ToMathlib/GSSurfaceTaylorRepair.lean:160` theorem **strictCoeffPolysResidualLarge_of_GS_surface_taylor**
 - `ArkLib/ToMathlib/KeystoneStrictResidual.lean:411` theorem **strictCoeffPolysResidual_of_betaRec**
 - `ArkLib/ToMathlib/KeystoneStrictResidual.lean:428` theorem **strictCoeffPolysResidual_of_betaRec_offcentre**
 - `ArkLib/ToMathlib/KeystoneStrictResidual.lean:445` theorem **strictCoeffPolysResidual_of_betaRec_offcentreFin**
