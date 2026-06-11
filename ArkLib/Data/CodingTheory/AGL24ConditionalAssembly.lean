@@ -18,6 +18,8 @@ rank-deficit probability — **conditional on the named Lemma 3.1 interface**
 (`RIMFullRankFailureProbResidual`), which is the campaign's remaining research core.
 
 * `rankDeficitEvent` — the per-hypergraph bad event in embedding space;
+* `rankDeficitEvent_toOuterMeasure_eq_map` — the exact PMF-map pullback from the raw
+  evaluation-function event to the embedding-space event;
 * `failure_subset_union` — the deterministic inclusion (the pointwise implication of brick 9
   re-packaged as an event inclusion into the finite union over weakly-partition-connected
   hypergraphs);
@@ -37,6 +39,25 @@ def rankDeficitEvent (k : ℕ) {t : ℕ} (e : ι → Finset (Fin (t + 1))) :
     Set (ι ↪ F) :=
   {φ | ∃ v : Fin t × Fin k → F, v ≠ 0 ∧
     ((RIM F e).map (MvPolynomial.eval (fun i => φ i))).mulVec v = 0}
+
+/-- The embedding-space rank-deficit event is the pullback of the raw evaluation-function
+event. -/
+theorem rankDeficitEvent_eq_preimage (k : ℕ) {t : ℕ}
+    (e : ι → Finset (Fin (t + 1))) :
+    rankDeficitEvent k e =
+      (fun φ : ι ↪ F => fun i => φ i) ⁻¹'
+        RIMRankDeficitSet (F := F) (k := k) e := by
+  rfl
+
+/-- Exact outer-measure transport for the embedding-space rank-deficit event. -/
+theorem rankDeficitEvent_toOuterMeasure_eq_map (D : PMF (ι ↪ F)) (k : ℕ) {t : ℕ}
+    (e : ι → Finset (Fin (t + 1))) :
+    D.toOuterMeasure (rankDeficitEvent k e)
+      = (D.map (fun φ i => φ i)).toOuterMeasure
+          (RIMRankDeficitSet (F := F) (k := k) e) := by
+  rw [toOuterMeasure_map_RIMRankDeficitSet (F := F) (D := D)
+    (f := fun φ i => φ i) (e := e)]
+  rfl
 
 /-- The (finite) index of the union: a raw vertex-count parameter `t < L + 2` (the chain's
 output `t ≤ L` embeds with **no dependent cast**) together with a weakly-partition-connected
@@ -99,12 +120,14 @@ theorem conditional_failure_bound {k L : ℕ} (hL : 1 ≤ L) {r : ℝ} (hr : 0 �
         unfold RIMFullRankFailureProbResidual at h
         -- The mapped-PMF event pulls back to the embedding-space event.
         rw [PMF.toOuterMeasure_map_apply] at h
-        exact h
+        simpa [rankDeficitEvent, RIMRankDeficitSet] using h
   _ = (Fintype.card (WpcIndex ι k L) : ENNReal) * bound := by
         rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
 
 end AGL24
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
+#print axioms AGL24.rankDeficitEvent_eq_preimage
+#print axioms AGL24.rankDeficitEvent_toOuterMeasure_eq_map
 #print axioms AGL24.failure_subset_union
 #print axioms AGL24.conditional_failure_bound

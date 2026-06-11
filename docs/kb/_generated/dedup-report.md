@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2153 files, 27641 declarations
+- `ArkLib` — 2164 files, 27709 declarations
 
-## Same short-name across multiple files (799 groups)
+## Same short-name across multiple files (809 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -252,7 +252,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `reduction_perfectCompleteness` (5 declarations, 4 files)
 
 - `theorem DoNothing.reduction_perfectCompleteness` [ArkLib/ProofSystem/Component/DoNothing.lean:52](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L52) — The `DoNothing` reduction satisfies perfect completeness for any relation.
-- `theorem Fri.Spec.Completeness.reduction_perfectCompleteness` [ArkLib/ProofSystem/Fri/Spec/Completeness.lean:167](../../../ArkLib/ProofSystem/Fri/Spec/Completeness.lean#L167) — **Brick D — composed FRI reduction perfect completeness.** The honest FRI protocol is perfectly comp
+- `theorem Fri.Spec.Completeness.reduction_perfectCompleteness` [ArkLib/ProofSystem/Fri/Spec/Completeness.lean:113](../../../ArkLib/ProofSystem/Fri/Spec/Completeness.lean#L113) — **Brick D — composed FRI reduction perfect completeness.** The honest FRI protocol is perfectly comp
 - `theorem Sumcheck.Spec.reduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/Completeness.lean:87](../../../ArkLib/ProofSystem/Sumcheck/Spec/Completeness.lean#L87) — **Full multi-round sum-check perfect completeness (`Reduction` level).** Assembled from the per-roun
 - `theorem Sumcheck.Spec.SingleRound.Simple.reduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:742](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L742) — Perfect completeness for the (non-oracle) reduction
 - `theorem Sumcheck.Spec.SingleRound.reduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1785](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1785) — (no docstring)
@@ -2083,6 +2083,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ProximityPrize.HenselExistence.constantCoeff_γ` [ArkLib/Data/Polynomial/HenselExistence.lean:231](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L231) — The constant coefficient of the Newton root is the prescribed root `c`.
 - `theorem ProximityPrize.HenselSeriesCoeff.constantCoeff_γ` [ArkLib/Data/Polynomial/HenselSeriesCoeff.lean:307](../../../ArkLib/Data/Polynomial/HenselSeriesCoeff.lean#L307) — The constant coefficient of the Newton root is the prescribed root `c`.
 
+### `constraintMapCurve_eq_mulVec` (2 declarations, 2 files)
+
+- `theorem GuruswamiSudan.OverRatFunc.ZDegree.constraintMapCurve_eq_mulVec` [ArkLib/Data/CodingTheory/GuruswamiSudan/GSCurveInterpolantZDegree.lean:95](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GSCurveInterpolantZDegree.lean#L95) — The matrix `gsMatrixZCurve`, mapped into `K = F(Z)`, represents `constraintMap` for the curve fold o
+- `theorem GuruswamiSudan.OverRatFunc.ZDegree.Curve.constraintMapCurve_eq_mulVec` [ArkLib/Data/CodingTheory/GuruswamiSudan/GSInterpolantZDegreeCurve.lean:101](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GSInterpolantZDegreeCurve.lean#L101) — The matrix `gsMatrixZCurve`, mapped into `K = F(Z)`, represents `constraintMap` for the `L`-ary curv
+
 ### `coord` (2 declarations, 2 files)
 
 - `def CodingTheory.ExtensionFieldPresentation.coord` [ArkLib/Data/CodingTheory/ExtensionCodes.lean:100](../../../ArkLib/Data/CodingTheory/ExtensionCodes.lean#L100) — The `j`-th coordinate `φᵢ : F →ₗ[B] B` of an extension-field presentation, as a `B`-linear map.
@@ -2479,6 +2484,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem RingSwitching.SumcheckPhase.getSumcheckRoundPoly_eval_eq_sum_snoc` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:297](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L297) — **Target (b): `getSumcheckRoundPoly` value as a cube sum (LAST-variable/`snoc` form, defect-#20 repa
 - `theorem Sumcheck.Structured.getSumcheckRoundPoly_eval_eq_sum_snoc` [ArkLib/ProofSystem/Sumcheck/Structured/SingleRound.lean:117](../../../ArkLib/ProofSystem/Sumcheck/Structured/SingleRound.lean#L117) — **Round-univariate evaluation as a survivor-cube sum (last-variable / `snoc` form).** Evaluating the
+
+### `gsMatrixZCurve` (2 declarations, 2 files)
+
+- `def GuruswamiSudan.OverRatFunc.ZDegree.gsMatrixZCurve` [ArkLib/Data/CodingTheory/GuruswamiSudan/GSCurveInterpolantZDegree.lean:58](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GSCurveInterpolantZDegree.lean#L58) — The `L`-ary curve-fold Guruswami–Sudan constraint system as a matrix over `F[Z]` (the inner `F[X]` i
+- `def GuruswamiSudan.OverRatFunc.ZDegree.Curve.gsMatrixZCurve` [ArkLib/Data/CodingTheory/GuruswamiSudan/GSInterpolantZDegreeCurve.lean:68](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GSInterpolantZDegreeCurve.lean#L68) — The `L`-ary curve-fold Guruswami–Sudan constraint system as a matrix over `F[Z]` (the inner `F[X]` i
 
 ### `gs_list_size_bound` (2 declarations, 2 files)
 
@@ -3970,6 +3980,31 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.XiCertReduction.derivative_eval_centreFold_isUnit` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:110](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L110) — **Separability makes the derivative reading along the surface a UNIT**: `IsCoprime Q (∂_Y Q)` evalua
 - `theorem ArkLib.XiCertReduction.derivative_eval_centreFold_isUnit` [ArkLib/ToMathlib/XiCertReduction.lean:141](../../../ArkLib/ToMathlib/XiCertReduction.lean#L141) — **Separability makes the derivative reading along the surface a UNIT**: `IsCoprime Q (∂_Y Q)` evalua
 
+### `dsfs_hLHS` (2 declarations, 2 files)
+
+- `theorem Reduction.dsfs_hLHS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:197](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L197) — The annotated (assoc-routed) lift equals the direct lift, for every computation: the DS-hLHS. Induct
+- `theorem Reduction.dsfs_hLHS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:202](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L202) — The annotated (assoc-routed) lift equals the direct lift, for every computation: the DS-hLHS. Induct
+
+### `dsfs_hLHS₂` (2 declarations, 2 files)
+
+- `theorem Reduction.dsfs_hLHS₂` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:256](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L256) — Annotated lift through `OptionT (OracleComp base)` (the third path) = direct lift.
+- `theorem Reduction.dsfs_hLHS₂` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:261](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L261) — Annotated lift through `OptionT (OracleComp base)` (the third path) = direct lift.
+
+### `dsfs_lift_query_bridge_inl` (2 declarations, 2 files)
+
+- `theorem Reduction.dsfs_lift_query_bridge_inl` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:166](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L166) — Bridge: annotated vs direct lift of a single left-side query.
+- `theorem Reduction.dsfs_lift_query_bridge_inl` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:171](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L171) — Bridge: annotated vs direct lift of a single left-side query.
+
+### `dsfs_lift_query_bridge_inl₂` (2 declarations, 2 files)
+
+- `theorem Reduction.dsfs_lift_query_bridge_inl₂` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:226](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L226) — Bridge: annotated vs direct lift of a single left-side query.
+- `theorem Reduction.dsfs_lift_query_bridge_inl₂` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:232](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L232) — Bridge: annotated vs direct lift of a single left-side query.
+
+### `dsfs_lift_query_bridge_inr` (2 declarations, 2 files)
+
+- `theorem Reduction.dsfs_lift_query_bridge_inr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:65](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L65) — Bridge: annotated (assoc-routed) vs direct lift of a single right-side query.
+- `theorem Reduction.dsfs_lift_query_bridge_inr` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:70](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L70) — Bridge: annotated (assoc-routed) vs direct lift of a single right-side query.
+
 ### `ehQ` (2 declarations, 2 files)
 
 - `def MvPolynomial.ehQ` [ArkLib/ToMathlib/RestrictedSumset.lean:218](../../../ArkLib/ToMathlib/RestrictedSumset.lean#L218) — **The Erdős–Heilbronn polynomial** for a padded sumset `C'`.
@@ -4100,6 +4135,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ArkLib.JohnsonBound.johnsonDenom` [ArkLib/Data/CodingTheory/JohnsonBound/ListSize.lean:159](../../../ArkLib/Data/CodingTheory/JohnsonBound/ListSize.lean#L159) — The **Johnson denominator** `(n - e)² - n·(n - d)`. The Johnson regime is where it is positive.
 - `def ArkLib.JohnsonBound.johnsonDenom` [ArkLib/Data/CodingTheory/ProximityGap/Issue244Refutation.lean:11](../../../ArkLib/Data/CodingTheory/ProximityGap/Issue244Refutation.lean#L11) — (no docstring)
 
+### `lemma5_8EagerPaperResidual_holds` (2 declarations, 2 files)
+
+- `theorem DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean:177](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean#L177) — **The CO25 Lemma 5.8 eager-paper residual is now a theorem** (no hypothesis): the lazy `EPaper` boun
+- `theorem DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean:46](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean#L46) — **The repaired Lemma 5.8 eager residual holds**: the lazy-side bound `probEvent_EPaper_toReal_le_lem
+
 ### `listPoly` (2 declarations, 2 files)
 
 - `def Whir302SZ.listPoly` [ArkLib/ProofSystem/Whir/SchwartzZippelCore.lean:25](../../../ArkLib/ProofSystem/Whir/SchwartzZippelCore.lean#L25) — The polynomial whose Horner evaluation is `listEval`.
@@ -4174,6 +4214,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma RingSwitching.SumcheckPhase.optionT_bind_pure_some` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1080](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1080) — `OptionT.bind` of an honest `pure (some a)` reduces to the continuation at `a`. Used to collapse the
 - `lemma RingSwitching.SumcheckPhase.optionT_bind_pure_some` [ArkLib/ProofSystem/RingSwitching/SumcheckRoundCompleteness.lean:69](../../../ArkLib/ProofSystem/RingSwitching/SumcheckRoundCompleteness.lean#L69) — `OptionT.bind` of an honest `pure (some a)` reduces to the continuation at `a`. Used to collapse the
+
+### `optionT_liftM_run_add_left'` (2 declarations, 2 files)
+
+- `theorem Reduction.optionT_liftM_run_add_left'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:41](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L41) — Run-characterization of the composite lift (left-inclusion).
+- `theorem Reduction.optionT_liftM_run_add_left'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:46](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L46) — Run-characterization of the composite lift (left-inclusion).
+
+### `optionT_liftM_run_assoc_path'` (2 declarations, 2 files)
+
+- `theorem Reduction.optionT_liftM_run_assoc_path'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:48](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L48) — (no docstring)
+- `theorem Reduction.optionT_liftM_run_assoc_path'` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:53](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L53) — (no docstring)
 
 ### `pairUDRClose_of_pairFiberwiseClose` (2 declarations, 2 files)
 
@@ -4413,7 +4463,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/Section5GlobalAssembler.lean:188](../../../ArkLib/ToMathlib/Section5GlobalAssembler.lean#L188) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 - `theorem ArkLib.XiCertReduction.xi_ne_zero` [ArkLib/ToMathlib/XiCertReduction.lean:219](../../../ArkLib/ToMathlib/XiCertReduction.lean#L219) — **`ξ ≠ 0` holds unconditionally** (from `embeddingOf𝒪Into𝕃_ξ_ne_zero`): the `hξ` hypothesis of the t
 
-## Near-duplicate docstrings (Jaccard ≥ 0.85, 191 cross-file pairs)
+## Near-duplicate docstrings (Jaccard ≥ 0.85, 194 cross-file pairs)
 
 Each pair has docstrings sharing a high fraction of (4+-letter) words, in different files. Most are unrelated coincidences in boilerplate; look for pairs where the *concept* matches.
 
@@ -4627,6 +4677,12 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `R12.linearIndependent_pow_le` [ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean:62](../../../ArkLib/Data/CodingTheory/ProximityGap/LamLeungUnconditionalGeneral.lean#L62) vs `R12J.linearIndependent_pow_le` [ArkLib/Data/CodingTheory/ProximityGap/JointT2Unconditional.lean:93](../../../ArkLib/Data/CodingTheory/ProximityGap/JointT2Unconditional.lean#L93)
     - a: UNCONDITIONAL: over a field `K`, the first `N` powers of `ζ` are `K`-linearly independent whenever `
     - b: UNCONDITIONAL: over a field `K`, the first `N` powers of `ζ` are `K`-linearly independent whenever `
+- **1.00** `Reduction.dsfs_lift_query_bridge_inl` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:166](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L166) vs `Reduction.dsfs_lift_query_bridge_inl₂` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:232](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L232)
+    - a: Bridge: annotated vs direct lift of a single left-side query.
+    - b: Bridge: annotated vs direct lift of a single left-side query.
+- **1.00** `Reduction.dsfs_lift_query_bridge_inl` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean:171](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/RunEqHonest.lean#L171) vs `Reduction.dsfs_lift_query_bridge_inl₂` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean:226](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/LiftCoherence.lean#L226)
+    - a: Bridge: annotated vs direct lift of a single left-side query.
+    - b: Bridge: annotated vs direct lift of a single left-side query.
 - **1.00** `Reduction.hcoh_right` [ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges.lean:147](../../../ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges.lean#L147) vs `Reduction.hcoh_right'` [ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges2.lean:130](../../../ArkLib/OracleReduction/Composition/Sequential/AppendSeamBridges2.lean#L130)
     - a: **`OptionT`-level lift transitivity through the `pSpec₂` challenge seam.** The `pSpec₂` analogue of
     - b: **`OptionT`-level lift transitivity through the `pSpec₂` challenge seam.** The `pSpec₂` analogue of
@@ -4651,10 +4707,4 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Round26Recursion.squares_disjoint` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:131](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L131) vs `Round28FullWindow.squares_disjoint` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:133](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L133)
     - a: **Disjointness descends to the squares:** if `A, B` are antipodally closed and disjoint, then `A²` a
     - b: **Disjointness descends to the squares:** if `A, B` are antipodally closed and disjoint, then `A²` a
-- **1.00** `Round26Recursion.squares_fiber` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:76](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L76) vs `Round28FullWindow.squares_fiber` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:78](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L78)
-    - a: On an antipodally-closed set, the squaring map is exactly two-to-one: each fiber is the antipodal pa
-    - b: On an antipodally-closed set, the squaring map is exactly two-to-one: each fiber is the antipodal pa
-- **1.00** `Round26Recursion.window_halving_step` [ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean:161](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityWindowHalving.lean#L161) vs `Round28FullWindow.window_halving_step` [ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean:163](../../../ArkLib/Data/CodingTheory/ProximityGap/RigidityFullWindow.lean#L163)
-    - a: **THE WINDOW-HALVING STEP (the full-window recursion engine).** Let `A, B` be antipodally closed (su
-    - b: **THE WINDOW-HALVING STEP (the full-window recursion engine).** Let `A, B` be antipodally closed (su
 

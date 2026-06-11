@@ -1,8 +1,8 @@
 {
  "summary": {
-  "total": 108,
+  "total": 105,
   "open": 26,
-  "discharged": 82,
+  "discharged": 79,
   "by_top_dir": {
    "Data": {
     "total": 25,
@@ -15,9 +15,9 @@
     "discharged": 32
    },
    "ProofSystem": {
-    "total": 22,
+    "total": 19,
     "open": 6,
-    "discharged": 16
+    "discharged": 13
    },
    "ToMathlib": {
     "total": 20,
@@ -34,6 +34,14 @@
    "line": 45,
    "providers": [
     {
+     "name": "AGL24.symbolicFullRank_of_pinning",
+     "kind": "theorem",
+     "file": "ArkLib/Data/CodingTheory/AGL24AppendixAssembly.lean",
+     "line": 129,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
      "name": "AGL24.symbolicFullRankResidual_of_evaluated_witness",
      "kind": "theorem",
      "file": "ArkLib/Data/CodingTheory/AGL24EvalToSymbolic.lean",
@@ -48,7 +56,7 @@
    "name": "RIMFullRankFailureProbResidual",
    "fq_name": "AGL24.RIMFullRankFailureProbResidual",
    "file": "ArkLib/Data/CodingTheory/AGL24UnionBound.lean",
-   "line": 79,
+   "line": 88,
    "providers": [],
    "status": "open"
   },
@@ -1749,13 +1757,21 @@
    "name": "Lemma5_8EagerPaperResidual",
    "fq_name": "DuplexSpongeFS.BirthdayBoundPaper.Lemma5_8EagerPaperResidual",
    "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean",
-   "line": 92,
+   "line": 93,
    "providers": [
     {
      "name": "DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_of_lazy",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean",
-     "line": 152,
+     "line": 153,
+     "conditional_on_residuals": [],
+     "ambiguous_name_match": false
+    },
+    {
+     "name": "DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds",
+     "kind": "theorem",
+     "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/BirthdayBoundPaper.lean",
+     "line": 177,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     },
@@ -1763,7 +1779,7 @@
      "name": "DuplexSpongeFS.BirthdayBoundPaper.lemma5_8EagerPaperResidual_holds",
      "kind": "theorem",
      "file": "ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Reduction.lean",
-     "line": 165,
+     "line": 46,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -2069,40 +2085,6 @@
    "line": 49,
    "providers": [],
    "status": "open"
-  },
-  {
-   "name": "foldPhasePerfectCompletenessResidual",
-   "fq_name": "Fri.Spec.Completeness.foldPhasePerfectCompletenessResidual",
-   "file": "ArkLib/ProofSystem/Fri/Spec/Completeness.lean",
-   "line": 72,
-   "providers": [
-    {
-     "name": "Fri.Spec.Completeness.foldPhasePerfectCompletenessResidual_holds",
-     "kind": "theorem",
-     "file": "ArkLib/ToMathlib/FriCompleteFoldPhase.lean",
-     "line": 223,
-     "conditional_on_residuals": [],
-     "ambiguous_name_match": false
-    }
-   ],
-   "status": "discharged"
-  },
-  {
-   "name": "reductionPerfectCompletenessResidual",
-   "fq_name": "Fri.Spec.Completeness.reductionPerfectCompletenessResidual",
-   "file": "ArkLib/ProofSystem/Fri/Spec/Completeness.lean",
-   "line": 108,
-   "providers": [
-    {
-     "name": "Fri.Spec.Completeness.reductionPerfectCompletenessResidual_holds",
-     "kind": "theorem",
-     "file": "ArkLib/ProofSystem/Fri/Spec/Completeness.lean",
-     "line": 139,
-     "conditional_on_residuals": [],
-     "ambiguous_name_match": false
-    }
-   ],
-   "status": "discharged"
   },
   {
    "name": "SubPhaseCompletenessResidual",
@@ -2569,27 +2551,10 @@
    "line": 224,
    "providers": [
     {
-     "name": "StirIOP.MultiRound.stirMultiRoundRbrSoundnessResidual_indicator",
+     "name": "StirIOP.MultiRound.stirMultiRoundRbrSoundness_indicator",
      "kind": "theorem",
      "file": "ArkLib/ProofSystem/Stir/ShellRbrIndicator.lean",
      "line": 57,
-     "conditional_on_residuals": [],
-     "ambiguous_name_match": false
-    }
-   ],
-   "status": "discharged"
-  },
-  {
-   "name": "stirCheckingRepRbrSoundnessResidual",
-   "fq_name": "StirIOP.MultiRound.stirCheckingRepRbrSoundnessResidual",
-   "file": "ArkLib/ProofSystem/Stir/RepWire.lean",
-   "line": 1417,
-   "providers": [
-    {
-     "name": "StirIOP.MultiRound.stirCheckingRepRbrSoundness_genuine",
-     "kind": "theorem",
-     "file": "ArkLib/ProofSystem/Stir/RepWire.lean",
-     "line": 1424,
      "conditional_on_residuals": [],
      "ambiguous_name_match": false
     }
@@ -3219,6 +3184,14 @@
    "reason": "name does not end in `Residual`"
   },
   {
+   "name": "StrictCoeffPolysResidualShareOr",
+   "fq_name": "ProximityGap.StrictCoeffPolysResidualShareOr",
+   "kind": "def",
+   "file": "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/StrictCoeffPolysShareOr.lean",
+   "line": 54,
+   "reason": "name does not end in `Residual`"
+  },
+  {
    "name": "BoundaryCardLatticeSubResiduals",
    "fq_name": "ArkLib.Issue64Boundary.BoundaryCardLatticeSubResiduals",
    "kind": "def",
@@ -3431,7 +3404,7 @@
    "fq_name": "StirIOP.MultiRound.stirCheckingRbrSoundnessResidualT",
    "kind": "def",
    "file": "ArkLib/ProofSystem/Stir/MultiRoundSpecT.lean",
-   "line": 357,
+   "line": 360,
    "reason": "name does not end in `Residual`"
   },
   {
@@ -3439,7 +3412,7 @@
    "fq_name": "Sumcheck.Spec.oracleReductionToReductionResidual",
    "kind": "abbrev",
    "file": "ArkLib/ProofSystem/Sumcheck/Spec/OracleCompleteness.lean",
-   "line": 66,
+   "line": 69,
    "reason": "declared as `abbrev`, not `def`"
   },
   {
