@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.RunUnroll
+import ArkLib.OracleReduction.Security.RoundByRound
 
 /-!
 # State collapse: reducing arbitrary-state implementations to `Unit`-state ones
@@ -174,9 +175,137 @@ theorem probEvent_init_bind_le_of_forall_collapse_le
     Pr[p | do (simulateQ impl X).run (← init)] ≤ ε := by
   exact probEvent_bind_le_of_forall_le fun s₀ _ => h s₀
 
+/-! ## Transfer of round-by-round knowledge soundness through the collapse
+
+At a point-mass initial state `pure s₀`, round-by-round knowledge soundness against `impl` is
+**equivalent** to round-by-round knowledge soundness against the collapsed (`Unit`-state, hence
+`Subsingleton`-state) implementation. This converts every `[Subsingleton σ]` seam keystone into
+an arbitrary-`σ` statement at point-mass initialization. -/
+
+section RbrTransfer
+
+open ProtocolSpec
+
+variable {StmtIn WitIn StmtOut WitOut : Type} {n : ℕ} {pSpec : ProtocolSpec n}
+  [∀ i, SampleableType (pSpec.Challenge i)]
+  {oSpec : OracleSpec ι}
+
+/-- The collapse commutes with adding the (state-blind) lifted challenge oracle. -/
+theorem collapseState_addLift
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (cQI : QueryImpl [pSpec.Challenge]ₒ ProbComp) (s₀ : σ) :
+    ((collapseState impl s₀).addLift cQI :
+        QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT Unit ProbComp))
+      = collapseState (impl.addLift cQI) s₀ := by
+  funext t
+  rcases t with t | t
+  · rfl
+  · refine StateT.ext fun u => ?_
+    simp [collapseState, QueryImpl.addLift_def, QueryImpl.liftTarget_apply, StateT.run_lift,
+      StateT.run'_eq, StateT.run_liftM, map_bind, bind_assoc]
+
+/-- Pinned-state probability identity in the `OptionT.mk`-wrapped form used by
+`KnowledgeStateFunction.toFun_full`. -/
+theorem probEvent_optionT_mk_collapseState
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (hso : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    {α : Type} (X : OracleComp oSpec (Option α)) (s₀ : σ) (p : α → Prop) :
+    Pr[p | (OptionT.mk do
+        (simulateQ (collapseState impl s₀) X).run' (← (pure () : ProbComp Unit)) :
+      OptionT ProbComp α)]
+      = Pr[p | (OptionT.mk do (simulateQ impl X).run' (← (pure s₀ : ProbComp σ)) :
+          OptionT ProbComp α)] := by
+  simp only [pure_bind]
+  rw [OptionTStateT.probEvent_optionT_mk, OptionTStateT.probEvent_optionT_mk]
+  exact probEvent_congr_evalDist
+    (evalDist_simulateQ_run'_collapseState impl hso X s₀ ()) _
+
+variable {WitMid : Fin (n + 1) → Type}
+
+/-- Transfer a knowledge state function from the pinned original implementation to the
+collapsed implementation (only `toFun_full` mentions the implementation). -/
+def _root_.Verifier.KnowledgeStateFunction.collapse
+    {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
+    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
+    {extractor : Extractor.RoundByRound oSpec StmtIn WitIn WitOut pSpec WitMid}
+    {impl : QueryImpl oSpec (StateT σ ProbComp)} {s₀ : σ}
+    (hso : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (kSF : verifier.KnowledgeStateFunction (pure s₀) impl relIn relOut extractor) :
+    verifier.KnowledgeStateFunction (pure ()) (collapseState impl s₀) relIn relOut
+      extractor where
+  toFun := kSF.toFun
+  toFun_empty := kSF.toFun_empty
+  toFun_next := kSF.toFun_next
+  toFun_full := fun stmtIn tr witOut h => kSF.toFun_full stmtIn tr witOut (by
+    rwa [probEvent_optionT_mk_collapseState impl hso] at h)
+
+/-- Transfer a knowledge state function from the collapsed implementation back to the pinned
+original. -/
+def _root_.Verifier.KnowledgeStateFunction.ofCollapse
+    {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
+    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
+    {extractor : Extractor.RoundByRound oSpec StmtIn WitIn WitOut pSpec WitMid}
+    {impl : QueryImpl oSpec (StateT σ ProbComp)} {s₀ : σ}
+    (hso : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s)
+    (kSF : verifier.KnowledgeStateFunction (pure ()) (collapseState impl s₀) relIn relOut
+      extractor) :
+    verifier.KnowledgeStateFunction (pure s₀) impl relIn relOut extractor where
+  toFun := kSF.toFun
+  toFun_empty := kSF.toFun_empty
+  toFun_next := kSF.toFun_next
+  toFun_full := fun stmtIn tr witOut h => kSF.toFun_full stmtIn tr witOut (by
+    rwa [probEvent_optionT_mk_collapseState impl hso])
+
+/-- **Round-by-round knowledge soundness transfers through the state collapse** (point-mass
+initial state): soundness against the original state-preserving implementation pinned at `s₀`
+is equivalent to soundness against the `Unit`-state collapsed implementation. Apply the
+`[Subsingleton σ]` keystones on the right-hand side. -/
+theorem rbrKnowledgeSoundness_collapseState_iff
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (verifier : Verifier oSpec StmtIn StmtOut pSpec)
+    (rbrKnowledgeError : pSpec.ChallengeIdx → ℝ≥0)
+    (impl : QueryImpl oSpec (StateT σ ProbComp)) (s₀ : σ)
+    (hso : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
+      x ∈ support ((impl t).run s) → x.2 = s) :
+    Verifier.rbrKnowledgeSoundness (pure s₀) impl relIn relOut verifier rbrKnowledgeError
+      ↔ Verifier.rbrKnowledgeSoundness (pure ()) (collapseState impl s₀) relIn relOut
+          verifier rbrKnowledgeError := by
+  have hkey : ∀ {α : Type} (X : OracleComp (oSpec + [pSpec.Challenge]ₒ) α) (p : α → Prop),
+      Pr[p | do
+        (simulateQ ((collapseState impl s₀).addLift challengeQueryImpl :
+          QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT Unit ProbComp)) X).run'
+          (← (pure () : ProbComp Unit))]
+      = Pr[p | do
+        (simulateQ (impl.addLift challengeQueryImpl :
+          QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp)) X).run'
+          (← (pure s₀ : ProbComp σ))] := by
+    intro α X p
+    simp only [pure_bind]
+    rw [collapseState_addLift impl challengeQueryImpl s₀]
+    exact probEvent_congr_evalDist
+      (evalDist_simulateQ_run'_collapseState (impl.addLift challengeQueryImpl)
+        (OptionTStateT.addLift_state_preserving impl hso) X s₀ ()) p
+  constructor
+  · rintro ⟨WitMid, extractor, kSF, hbound⟩
+    refine ⟨WitMid, extractor, kSF.collapse hso, ?_⟩
+    intro stmtIn witIn prover i
+    rw [hkey]
+    exact hbound stmtIn witIn prover i
+  · rintro ⟨WitMid, extractor, kSF, hbound⟩
+    refine ⟨WitMid, extractor, kSF.ofCollapse hso, ?_⟩
+    intro stmtIn witIn prover i
+    rw [← hkey]
+    exact hbound stmtIn witIn prover i
+
+end RbrTransfer
+
 end StateCollapse
 
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms StateCollapse.evalDist_simulateQ_run'_collapseState
 #print axioms StateCollapse.probEvent_simulateQ_run'_collapseState
 #print axioms StateCollapse.probEvent_init_bind_le_of_forall_collapse_le
+#print axioms StateCollapse.rbrKnowledgeSoundness_collapseState_iff
