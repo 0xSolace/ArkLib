@@ -5657,3 +5657,35 @@ where exact computation exists: (5,4,2), (13,4,2), (17,4,2) (where the constrain
 empty and this reduces to the proven `badScalar_iff_subsetSum`), and (12,6) × three fields.
 Formalization target: `badScalar_iff_constrainedSubsetSum` (same monic-root-forcing proof,
 esymm coefficients via Vieta); the KKH26CensusLaw file's law is the k = a−1 special case.
+
+### O139 — first exact census data INSIDE the window: the adjacent-pair family saturates small fields above Johnson, goes field-dependent mid-window, and DIES at δ = 0.5625 for p ≥ 97 (2026-06-11, #357)
+
+`probe_o139_window_interior_census.py` (exact): rate 1/4 (n = 16, k = 4), window
+(0.5, 0.75); the O138 constrained census `{−e₁(A) : A ∈ C(μ₁₆,a), e₂ = … = e_{a−4} = 0}`
+at the window radii δ = 1 − a/16:
+
+* **a = 5 (δ = 0.6875):** a = k+1 ⟹ NO constraints — every 5-subset qualifies and the
+  census **saturates the field** (= p) at p ∈ {17, 97, 113, 193}: for the explicit stack
+  `(X⁵, X⁴)`, EVERY scalar is bad above Johnson at small fields (and the direction row is
+  never explainable, so this is genuine mcaEvent badness): an explicit, machine-checked
+  witness for why the prize must fix |F| large. At huge p the census is ≤ C(16,5) = 4368 —
+  and the unconstrained a = k+1 census is exactly the in-tree t = 1 sliver object
+  (`ListInteriorUnconditionalT1`): the two lanes meet.
+* **a = 6 (δ = 0.625):** one constraint (e₂ = 0) — the census goes **field-dependent and
+  non-monotone**: (p, #qualifying, census) = (17, 480, 17), (97, 80, 32), (113, 48, 48),
+  (193, 16, 16). The qualifying count decays toward ~n at large p (Weil-type fluctuation
+  in between — the e₂ = 0 condition is a curve count over subsets).
+* **a = 7 (δ = 0.5625):** two constraints (e₂ = e₃ = 0) — the census is **EMPTY at every
+  p ≥ 97** (only p = 17 retains 32 qualifying subsets). The adjacent-pair family
+  contributes NOTHING below δ = 0.625 at large fields: the first measured **family death
+  radius inside the window**, δ_death(16, 4) ∈ (0.5625, 0.625].
+
+Reading: along the adjacent-pair family the census interpolates from the exponential t = 1
+sliver at capacity down to EMPTY mid-window — the constraints `e₂ = … = e_{a−k} = 0` over
+subgroup subsets are a *vanishing-power-sum* system whose solvability threshold IS this
+family's contribution to δ*. Whether OTHER stacks (higher monomials with cofactor freedom,
+rational/DEEP shapes) take over below the death radius is now THE precise extremality
+question; the (12,6) scan pattern (adjacent pair uniquely maximal, higher shapes strictly
+smaller) suggests not. Next: the (16,4,a=7) higher-monomial scan; death-radius scaling in n
+at fixed rate (does δ_death → Johnson, capacity, or an interior limit? — this is a direct
+empirical probe OF δ* itself for the conjecturally-extremal family).
