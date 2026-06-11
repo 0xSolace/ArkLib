@@ -1327,6 +1327,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Flag
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Freshness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma58Reduction
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.LiftCoherence
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.RunEqHonest
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lookahead
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEvents
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.PaperBadEventsCoincidence
