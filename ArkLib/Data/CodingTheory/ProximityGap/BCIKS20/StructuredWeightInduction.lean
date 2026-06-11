@@ -206,8 +206,122 @@ theorem structuredSuccTermBound_of_budgets (x₀ : F) (R : F[X][X][Y])
   rw [hsum]
   exact WithBot.coe_le_coe.mpr harith
 
+/-! ## The closing inequality (transcription step (iv), finding 8) -/
+
+/-- **The closing `ℕ`-inequality** (finding 8's bookkeeping): the engine's `harith`
+hypothesis follows from the single reduced need `nB + (m−1) + (δ+m−2)·degW ≤ Lξ` — the
+exponent totals collapse (`ξ`-total `= 2k` for every case; `W`-total `= k+δ+m`), and the
+excess `(δ+m−1)`-fold `degW`/unit mass is paid from the `Lξ` headroom. Truncation safety:
+`i1 = 0` forces `m ≥ 2` (the surviving-partition fact), `m ≤ S` (parts are positive). -/
+theorem harith_of_reduced {i1 k m δ degW Lξ nB : ℕ}
+    (hδ : δ = if i1 = 0 then 1 else 0)
+    (hm2 : i1 = 0 → 2 ≤ m)
+    (hm1 : 1 ≤ m)
+    (hi1k : i1 ≤ k + 1)
+    (hmS : m ≤ k + 1 - i1)
+    (hreduced : nB + (m - 1) + (δ + m - 2) * degW ≤ Lξ) :
+    (i1 + δ - 1) * degW + (2 * i1 + m - 2) * Lξ + nB
+        + (m + ((k + 1 - i1) + m) * degW + (2 * (k + 1 - i1) - m) * Lξ)
+      ≤ 1 + (k + 2) * degW + (2 * (k + 1) - 1) * Lξ := by
+  rcases Nat.eq_zero_or_pos i1 with hi0 | hi1pos
+  · -- `i1 = 0`, `δ = 1`
+    subst hi0
+    have hδ1 : δ = 1 := by simpa using hδ
+    subst hδ1
+    have hm2' : 2 ≤ m := hm2 rfl
+    -- truncations: (0+1−1) = 0; (0+m−2) = m−2; S = k+1; (2(k+1)−m) genuine since m ≤ k+1
+    have h1 : (0 + 1 - 1) * degW = 0 := by norm_num
+    have h2 : 2 * 0 + m - 2 = m - 2 := by omega
+    have h3 : k + 1 - 0 = k + 1 := by omega
+    rw [h1, h2, h3]
+    have hred : nB + (m - 1) + (1 + m - 2) * degW ≤ Lξ := hreduced
+    have hexp : (1 : ℕ) + m - 2 = m - 1 := by omega
+    rw [hexp] at hred
+    -- ξ-total: (m−2) + (2(k+1)−m) = 2k; target ξ: 2(k+1)−1 = 2k+1
+    have hxi : (m - 2) + (2 * (k + 1) - m) = 2 * k := by omega
+    have htgt : 2 * (k + 1) - 1 = 2 * k + 1 := by omega
+    rw [htgt]
+    -- W-total: (k+1+m); excess over (k+2) is (m−1)
+    have hWsplit : ((k + 1) + m) * degW = (k + 2) * degW + (m - 1) * degW := by
+      have : (k + 1) + m = (k + 2) + (m - 1) := by omega
+      rw [this, add_mul]
+    have hLsplit : (2 * k + 1) * Lξ = 2 * k * Lξ + Lξ := by ring
+    have hxisplit : (m - 2) * Lξ + (2 * (k + 1) - m) * Lξ = 2 * k * Lξ := by
+      rw [← add_mul, hxi]
+    -- assemble
+    calc 0 + (m - 2) * Lξ + nB + (m + ((k + 1) + m) * degW + (2 * (k + 1) - m) * Lξ)
+        = (nB + (m - 1) + (m - 1) * degW) + 1 + (k + 2) * degW
+            + ((m - 2) * Lξ + (2 * (k + 1) - m) * Lξ) := by
+          rw [hWsplit]
+          omega
+      _ = (nB + (m - 1) + (m - 1) * degW) + 1 + (k + 2) * degW + 2 * k * Lξ := by
+          rw [hxisplit]
+      _ ≤ Lξ + 1 + (k + 2) * degW + 2 * k * Lξ := by
+          have := hred
+          omega
+      _ = 1 + (k + 2) * degW + (2 * k * Lξ + Lξ) := by ring
+      _ = 1 + (k + 2) * degW + (2 * k + 1) * Lξ := by rw [← hLsplit]
+  · -- `i1 ≥ 1`, `δ = 0`
+    have hδ0 : δ = 0 := by
+      rw [hδ]
+      simp [Nat.pos_iff_ne_zero.mp hi1pos]
+    subst hδ0
+    have h1 : i1 + 0 - 1 = i1 - 1 := by omega
+    rw [h1]
+    have hred : nB + (m - 1) + (0 + m - 2) * degW ≤ Lξ := hreduced
+    have hexp : (0 : ℕ) + m - 2 = m - 2 := by omega
+    rw [hexp] at hred
+    have htgt : 2 * (k + 1) - 1 = 2 * k + 1 := by omega
+    rw [htgt]
+    -- W-total: (i1−1) + (k+1−i1+m) = k+m; excess over (k+2) requires care at m ≤ 1:
+    -- for m = 1 the W-total is k+1 ≤ k+2 outright and the ξ-headroom is untouched.
+    have hxi : (2 * i1 + m - 2) + (2 * (k + 1 - i1) - m) = 2 * k := by omega
+    have hxisplit : (2 * i1 + m - 2) * Lξ + (2 * (k + 1 - i1) - m) * Lξ
+        = 2 * k * Lξ := by rw [← add_mul, hxi]
+    have hWtotal : (i1 - 1) * degW + ((k + 1 - i1) + m) * degW
+        = (k + m) * degW := by
+      rw [← add_mul]
+      congr 1
+      omega
+    rcases Nat.lt_or_ge m 2 with hmlt | hmge
+    · -- m = 1: W-total = k+1 ≤ k+2, ξ untouched, reduced gives nB ≤ Lξ
+      have hm1' : m = 1 := by omega
+      subst hm1'
+      have hWle : (k + 1) * degW ≤ (k + 2) * degW :=
+        Nat.mul_le_mul_right _ (by omega)
+      have hnB : nB ≤ Lξ := by
+        have := hred
+        omega
+      calc (i1 - 1) * degW + (2 * i1 + 1 - 2) * Lξ + nB
+            + (1 + ((k + 1 - i1) + 1) * degW + (2 * (k + 1 - i1) - 1) * Lξ)
+          = (k + 1) * degW + 2 * k * Lξ + nB + 1 := by
+            rw [← hxisplit]
+            have := hWtotal
+            omega
+        _ ≤ (k + 2) * degW + 2 * k * Lξ + Lξ + 1 := by
+            have := hWle
+            have := hnB
+            omega
+        _ = 1 + (k + 2) * degW + (2 * k + 1) * Lξ := by ring
+    · -- m ≥ 2: split the W-excess (m−2)·degW and pay from Lξ
+      have hWsplit : (k + m) * degW = (k + 2) * degW + (m - 2) * degW := by
+        have : k + m = (k + 2) + (m - 2) := by omega
+        rw [this, add_mul]
+      calc (i1 - 1) * degW + (2 * i1 + m - 2) * Lξ + nB
+            + (m + ((k + 1 - i1) + m) * degW + (2 * (k + 1 - i1) - m) * Lξ)
+          = (nB + (m - 1) + (m - 2) * degW) + 1 + (k + 2) * degW + 2 * k * Lξ := by
+            rw [← hxisplit]
+            have h := hWtotal
+            have h2 := hWsplit
+            omega
+        _ ≤ Lξ + 1 + (k + 2) * degW + 2 * k * Lξ := by
+            have := hred
+            omega
+        _ = 1 + (k + 2) * degW + (2 * k + 1) * Lξ := by ring
+
 /-! ## Source audit -/
 
+#print axioms harith_of_reduced
 #print axioms nsmul_coe_withBot
 #print axioms structuredSuccTermBound_of_budgets
 #print axioms βHensel_weight_bound_zero_structured
