@@ -235,6 +235,30 @@ theorem monomialDomination_refuted_of_monomial_bound (hmono : MonomialBoundaryBo
       _ = 4 := by rw [ENNReal.div_mul_cancel h17 h17']
   exact absurd h74 (by norm_num)
 
+/-! ## The surviving v4 surface -/
+
+/-- **The corrected domination surface (v4): monomial domination off the boundary rows.**
+The agreement row `a` has band `b = n − a + 1`; the row is *off-boundary* when the
+code's distance budget clears twice the band (`2b ≤ n − k + 1`, i.e. `k + n + 1 ≤ 2a`).
+The refutation above lives exactly on the excluded rows (`a = 6`, `k = 4`, `n = 8`:
+`k + n + 1 = 13 > 12 = 2a`).  Off the boundary rows the monomial family has survived
+every falsifier run to date (binomial attacks, random stacks, floor bands, the pencil
+strip — whose extremal stacks are themselves monomial — and the `3 ∣ n` boundary ties). -/
+def MonomialDominationOffBoundary {n : ℕ} (dom : Fin n → F17)
+    (C : Set (Fin n → F17)) (k ac : ℕ) : Prop :=
+  ∀ a : ℕ, ac < a → a ≤ n → k + n + 1 ≤ 2 * a →
+    epsMCA (F := F17) (A := F17) C (1 - (a : ℝ≥0) / (n : ℝ≥0))
+      ≤ ProximityGap.MonomialDominationPin.monomialEps dom C
+          (1 - (a : ℝ≥0) / (n : ℝ≥0))
+
+/-- v4 weakens v3: the off-boundary surface follows from full domination.  (The converse
+fails — by this file's refutation — which is precisely the content of the correction.) -/
+theorem offBoundary_of_monomialDomination {n k ac : ℕ} (dom : Fin n → F17)
+    (C : Set (Fin n → F17))
+    (h : ProximityGap.MonomialDominationPin.MonomialDomination dom C ac) :
+    MonomialDominationOffBoundary dom C k ac :=
+  fun a hac han _ => h a hac han
+
 end ProximityGap.MonomialDominationBoundaryRefuted
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
