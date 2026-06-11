@@ -229,6 +229,106 @@ lemma lazyPermImpl_run_inr_some (cp : List (X × X)) {b : X} {p : X × X}
     | none => (fun a => (a, cp.concat (a, b))) <$> sampleUnused (unusedKeysList cp)) = _
   rw [hc]
 
+/-! ## The flavored variant (direction-tagged cache, for the birthday accounting)
+
+The accounting's bad event must anchor on the *sampled* (answer) component of each cache
+pair, which the bare pair list cannot recover. The flavored implementation records a tag
+(`true` = created by an inverse query, i.e. the key was sampled); it forgets to the plain
+implementation by projecting tags away. -/
+
+/-- The direction-tagged lazy permutation oracle: identical sampling to `lazyPermImpl`,
+with each fresh pair recorded together with its creation direction. -/
+noncomputable def lazyPermImplFlavored :
+    QueryImpl ((X ⊕ X) →ₒ X) (StateT (List ((X × X) × Bool)) ProbComp) :=
+  fun t c =>
+    match t with
+    | .inl a =>
+        match (c.map Prod.fst).find? (fun p => p.1 = a) with
+        | some p => pure (p.2, c)
+        | none => (fun b => (b, c.concat ((a, b), false))) <$>
+            sampleUnused (unusedValuesList (c.map Prod.fst))
+    | .inr b =>
+        match (c.map Prod.fst).find? (fun p => p.2 = b) with
+        | some p => pure (p.1, c)
+        | none => (fun a => (a, c.concat ((a, b), true))) <$>
+            sampleUnused (unusedKeysList (c.map Prod.fst))
+
+/-- **The forgetting bridge**: projecting the tags away maps the flavored run onto the
+plain run, state and all. -/
+theorem lazyPermImpl_run_map_flavored {α : Type}
+    (oa : OracleComp ((X ⊕ X) →ₒ X) α) (c : List ((X × X) × Bool)) :
+    (simulateQ lazyPermImpl oa).run (c.map Prod.fst)
+      = (fun (p : α × List ((X × X) × Bool)) => (p.1, p.2.map Prod.fst)) <$>
+          (simulateQ lazyPermImplFlavored oa).run c := by
+  induction oa using OracleComp.inductionOn generalizing c with
+  | pure a =>
+      rw [simulateQ_pure, simulateQ_pure, StateT.run_pure, StateT.run_pure, map_pure]
+  | query_bind t k ih =>
+      rw [simulateQ_bind, simulateQ_bind, StateT.run_bind, StateT.run_bind]
+      rw [show (simulateQ lazyPermImpl (liftM (((X ⊕ X) →ₒ X).query t))).run (c.map Prod.fst)
+          = (lazyPermImpl t).run (c.map Prod.fst) from by
+        refine congrArg (fun z => StateT.run z (c.map Prod.fst)) ?_
+        simp only [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query, id_map]]
+      rw [show (simulateQ lazyPermImplFlavored (liftM (((X ⊕ X) →ₒ X).query t))).run c
+          = (lazyPermImplFlavored t).run c from by
+        refine congrArg (fun z => StateT.run z c) ?_
+        simp only [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query, id_map]]
+      rcases t with a | b
+      · rcases hc : (c.map Prod.fst).find? (fun p => p.1 = a) with _ | p
+        · rw [lazyPermImpl_run_inl_none (c.map Prod.fst) hc,
+            show (lazyPermImplFlavored ((.inl a : X ⊕ X))).run c
+              = (fun b => (b, c.concat ((a, b), false))) <$>
+                  sampleUnused (unusedValuesList (c.map Prod.fst)) from by
+            show (match (c.map Prod.fst).find? (fun p => p.1 = a) with
+              | some p => (pure (p.2, c) : ProbComp _)
+              | none => (fun b => (b, c.concat ((a, b), false))) <$>
+                  sampleUnused (unusedValuesList (c.map Prod.fst))) = _
+            rw [hc]]
+          rw [bind_map_left, bind_map_left, map_bind]
+          refine congrArg _ (funext fun b => ?_)
+          have hmapconcat : (c.concat ((a, b), false)).map Prod.fst
+              = (c.map Prod.fst).concat (a, b) := by
+            simp [List.concat_eq_append]
+          rw [← hmapconcat]
+          exact ih b (c.concat ((a, b), false))
+        · rw [lazyPermImpl_run_inl_some (c.map Prod.fst) hc,
+            show (lazyPermImplFlavored ((.inl a : X ⊕ X))).run c
+              = (pure (p.2, c) : ProbComp _) from by
+            show (match (c.map Prod.fst).find? (fun p => p.1 = a) with
+              | some p => (pure (p.2, c) : ProbComp _)
+              | none => (fun b => (b, c.concat ((a, b), false))) <$>
+                  sampleUnused (unusedValuesList (c.map Prod.fst))) = _
+            rw [hc]]
+          rw [pure_bind, pure_bind]
+          exact ih p.2 c
+      · rcases hc : (c.map Prod.fst).find? (fun p => p.2 = b) with _ | p
+        · rw [lazyPermImpl_run_inr_none (c.map Prod.fst) hc,
+            show (lazyPermImplFlavored ((.inr b : X ⊕ X))).run c
+              = (fun a => (a, c.concat ((a, b), true))) <$>
+                  sampleUnused (unusedKeysList (c.map Prod.fst)) from by
+            show (match (c.map Prod.fst).find? (fun p => p.2 = b) with
+              | some p => (pure (p.1, c) : ProbComp _)
+              | none => (fun a => (a, c.concat ((a, b), true))) <$>
+                  sampleUnused (unusedKeysList (c.map Prod.fst))) = _
+            rw [hc]]
+          rw [bind_map_left, bind_map_left, map_bind]
+          refine congrArg _ (funext fun a => ?_)
+          have hmapconcat : (c.concat ((a, b), true)).map Prod.fst
+              = (c.map Prod.fst).concat (a, b) := by
+            simp [List.concat_eq_append]
+          rw [← hmapconcat]
+          exact ih a (c.concat ((a, b), true))
+        · rw [lazyPermImpl_run_inr_some (c.map Prod.fst) hc,
+            show (lazyPermImplFlavored ((.inr b : X ⊕ X))).run c
+              = (pure (p.1, c) : ProbComp _) from by
+            show (match (c.map Prod.fst).find? (fun p => p.2 = b) with
+              | some p => (pure (p.1, c) : ProbComp _)
+              | none => (fun a => (a, c.concat ((a, b), true))) <$>
+                  sampleUnused (unusedKeysList (c.map Prod.fst))) = _
+            rw [hc]]
+          rw [pure_bind, pure_bind]
+          exact ih p.1 c
+
 /-! ## The permutation overlay (`tableExtending` analogue)
 
 `permExtending c π` corrects `π` to agree with every cached pair by **pre-composition**
@@ -1127,4 +1227,5 @@ end LazyPermBridge
 #print axioms LazyPermBridge.pmf_absorb
 #print axioms LazyPermBridge.pmf_absorb_inv
 #print axioms LazyPermBridge.evalDist_simulateQ_lazyPermImpl_run'
+#print axioms LazyPermBridge.lazyPermImpl_run_map_flavored
 #print axioms LazyPermBridge.map_permExtending_uniform_fintype
