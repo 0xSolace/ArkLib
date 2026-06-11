@@ -40,6 +40,7 @@ import ArkLib.Data.Classes.Serde
 import ArkLib.Data.Classes.Slice
 import ArkLib.Data.CodingTheory.AGL24AgreementHypergraph
 import ArkLib.Data.CodingTheory.AGL24DeterministicChain
+import ArkLib.Data.CodingTheory.AGL24FrontDoorBridge
 import ArkLib.Data.CodingTheory.AGL24KernelVector
 import ArkLib.Data.CodingTheory.AGL24ListDecodingBridge
 import ArkLib.Data.CodingTheory.AGL24RSInstance
