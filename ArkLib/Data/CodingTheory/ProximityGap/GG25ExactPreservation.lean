@@ -121,6 +121,52 @@ theorem rowCombine_eq_sum_rows {s : ℕ} (lam : Fin s → F) (w : ι → Fin s �
   rw [Finset.sum_apply]
   exact Finset.sum_congr rfl fun k _ => rfl
 
+/-- **Properness under failure** (the standard-basis reassembly of [Jo26] Theorems 5.7/5.8,
+extracted): if no interleaved marked witness of size `b` exists for `(U, f, A₀)`, then every
+`V_B` at a `b`-subset `B ⊆ A₀` is a proper subspace. -/
+theorem curveExplainSubmodule_ne_top_of_no_witness
+    (C : Submodule F (ι → A)) {ℓ s : ℕ} {a b : ℕ}
+    {U : Fin (ℓ + 1) → ι → Fin s → A} {f : F → ι → Fin s → A} {A₀ : Finset F}
+    (hfail : ∀ cs : Fin (ℓ + 1) → ι → Fin s → A,
+      (∀ j, cs j ∈ rowwiseCode (C : Set (ι → A)) s) →
+      (A₀.filter (fun α => f α = fun i =>
+        ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • cs j i)).card < b)
+    {B : Finset F} (hB : B ∈ A₀.powersetCard b) :
+    (curveExplainSubmodule C (ℓ := ℓ) f B) ≠ ⊤ := by
+  classical
+  intro htop
+  rw [Finset.mem_powersetCard] at hB
+  have hek : ∀ k : Fin s, ∃ h : Fin (ℓ + 1) → ι → A, (∀ j, h j ∈ C) ∧
+      ∀ α ∈ B, rowCombine (A := A) (Pi.single k (1 : F)) (f α)
+        = fun i => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • h j i := by
+    intro k
+    have : Pi.single k (1 : F) ∈ curveExplainSubmodule C (ℓ := ℓ) f B := by
+      rw [htop]; trivial
+    exact this
+  choose h hhC hhag using hek
+  set cs : Fin (ℓ + 1) → ι → Fin s → A := fun j i k => h k j i with hcs
+  have hrow : ∀ (k : Fin s) (α : F) (i : ι),
+      rowCombine (A := A) (Pi.single k (1 : F)) (f α) i = f α i k := by
+    intro k α i
+    unfold rowCombine
+    rw [Finset.sum_eq_single k]
+    · simp
+    · intro m _ hm
+      rw [Pi.single_eq_of_ne hm, zero_smul]
+    · simp
+  have hlt := hfail cs (fun j => fun k => hhC k j)
+  refine absurd ?_ (Nat.not_le.mpr hlt)
+  refine le_trans (le_of_eq hB.2.symm) (Finset.card_le_card ?_)
+  intro α hα
+  rw [Finset.mem_filter]
+  refine ⟨hB.1 hα, ?_⟩
+  funext i k
+  have := congrFun (hhag k α hα) i
+  rw [hrow k α i] at this
+  rw [this]
+  rw [Finset.sum_apply]
+  exact Finset.sum_congr rfl fun j _ => rfl
+
 set_option maxHeartbeats 1000000 in
 /-- **[Jo26] Theorem 5.7 (exact preservation of curve decodability).** If `C` is **marked**
 `(ℓ, δ, a, b)`-curve-decodable and `C(a, b) ≤ q`, then the `s`-fold interleaving `C^{≡s}` is
@@ -135,41 +181,10 @@ theorem markedCurveDecodable_interleaved_of_choose_le
   intro U f hf A₀ hcard hδ
   by_contra hfail
   push Not at hfail
-  -- Every V_B is proper: a full V_B reassembles an interleaved witness from the e_k's.
+  -- Every V_B is proper under failure (the shared standard-basis reassembly lemma).
   have hproper : ∀ B ∈ A₀.powersetCard b,
-      (curveExplainSubmodule C (ℓ := ℓ) f B) ≠ ⊤ := by
-    intro B hB htop
-    rw [Finset.mem_powersetCard] at hB
-    have hek : ∀ k : Fin s, ∃ h : Fin (ℓ + 1) → ι → A, (∀ j, h j ∈ C) ∧
-        ∀ α ∈ B, rowCombine (A := A) (Pi.single k (1 : F)) (f α)
-          = fun i => ∑ j : Fin (ℓ + 1), α ^ (j : ℕ) • h j i := by
-      intro k
-      have : Pi.single k (1 : F) ∈ curveExplainSubmodule C (ℓ := ℓ) f B := by
-        rw [htop]; trivial
-      exact this
-    choose h hhC hhag using hek
-    set cs : Fin (ℓ + 1) → ι → Fin s → A := fun j i k => h k j i with hcs
-    have hrow : ∀ (k : Fin s) (α : F) (i : ι),
-        rowCombine (A := A) (Pi.single k (1 : F)) (f α) i = f α i k := by
-      intro k α i
-      unfold rowCombine
-      rw [Finset.sum_eq_single k]
-      · simp
-      · intro m _ hm
-        rw [Pi.single_eq_of_ne hm, zero_smul]
-      · simp
-    have hlt := hfail cs (fun j => fun k => hhC k j)
-    refine absurd ?_ (Nat.not_le.mpr hlt)
-    refine le_trans (le_of_eq hB.2.symm) (Finset.card_le_card ?_)
-    intro α hα
-    rw [Finset.mem_filter]
-    refine ⟨hB.1 hα, ?_⟩
-    funext i k
-    have := congrFun (hhag k α hα) i
-    rw [hrow k α i] at this
-    rw [this]
-    rw [Finset.sum_apply]
-    exact Finset.sum_congr rfl fun j _ => rfl
+      (curveExplainSubmodule C (ℓ := ℓ) f B) ≠ ⊤ := fun B hB =>
+    curveExplainSubmodule_ne_top_of_no_witness (a := a) (U := U) C hfail hB
   -- Coverage: the marked base property puts every λ in some V_B.
   have hcover : ∀ lam : Fin s → F, ∃ B ∈ A₀.powersetCard b,
       lam ∈ curveExplainSubmodule C (ℓ := ℓ) f B := by
