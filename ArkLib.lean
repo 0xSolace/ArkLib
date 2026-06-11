@@ -216,7 +216,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyResultantProduct
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySidonModNeg
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySixDvd
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyThreeDvd
-import ArkLib.Data.CodingTheory.ProximityGap.AffineBlockKernels
 import ArkLib.Data.CodingTheory.ProximityGap.AgreementMomentOne
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingFiberConservation
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingListLowerBoundRS
@@ -629,6 +628,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureReconcile
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureWire
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellDichotomyWiring
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellPencilJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25CellWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Claim1
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25ConjectureGlue
@@ -1585,7 +1585,6 @@ import ArkLib.ProofSystem.Spartan.SecondSumcheckWithTargetComplete
 import ArkLib.ProofSystem.Spartan.SendEvalClaimComplete
 import ArkLib.ProofSystem.Spartan.ShortPhaseKnowledgeLeaves
 import ArkLib.ProofSystem.Spartan.ShortPhaseRbrKnowledgeLeaves
-import ArkLib.ProofSystem.Spartan.SpartanDirFacts
 import ArkLib.ProofSystem.Spartan.SpartanRBRProof
 import ArkLib.ProofSystem.Spartan.SpartanRBRWithClaimProof
 import ArkLib.ProofSystem.Spartan.SpartanSumcheckUnconditional
