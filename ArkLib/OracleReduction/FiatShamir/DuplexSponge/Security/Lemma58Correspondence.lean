@@ -1562,6 +1562,33 @@ theorem anchored_of_E_pinv
       have hq : sO = q := Sum.inr.inj (Sum.inr.inj (congrArg Sigma.fst hbeq))
       exact Or.inr (by rw [hcapseg, ← hc5, hq])
   
+open DuplexSpongeFS.Paper in
+/-- **E_func arm.** A function violation among dedup entries is impossible in a non-anchored
+consistent log: the earlier entry caches the forward key, contradicting the freshness of the
+later forward base entry. (The contradiction yields `AnchoredFrom` vacuously.) -/
+theorem anchored_of_E_func
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) log)
+    (hEf : notFunctionPaper log) :
+    AnchoredFrom ((∅, []) : DSCache StmtIn U) log := by
+  obtain ⟨f, hf, hfo⟩ := removeRedundant_firstOcc log
+  obtain ⟨j, sIn, sOut, hbj, j', hj'j, sO1, hor⟩ := hEf
+  -- base[j] = ⟨inr inl sIn, sOut⟩ is fresh at f j: ¬ hasFwdKey at its prefix fold
+  obtain ⟨hpj, hsplit, hbjf, _⟩ := base_raw_split log f hf j j.isLt
+  have he : log[f j] = (⟨.inr (.inl sIn), sOut⟩ : DSEntry StmtIn U) := by rw [hbjf]; exact hbj
+  have hcons' : ConsistentFrom ((∅, []) : DSCache StmtIn U)
+      (log.take (f j) ++ log[f j] :: log.drop (f j + 1)) := by rw [← hsplit]; exact hcons
+  have hnr : ∀ e' ∈ log.take (f j), ¬ sameClass (log[f j]) e' := by
+    intro e' he'; rw [hbjf]; exact base_no_earlier_sameClass log f hf hfo j j.isLt e' he'
+  have hfresh : ¬ hasFwdKey ((log.take (f j)).foldl stepCache ((∅, []) : DSCache StmtIn U)) sIn :=
+    fwd_entry_fresh (log.take (f j)) (log[f j]) (log.drop (f j + 1)) sIn sOut he hcons' hnr
+  -- but the earlier entry caches the forward key sIn
+  have hkey : hasFwdKey ((log.take (f j)).foldl stepCache ((∅, []) : DSCache StmtIn U)) sIn := by
+    rcases hor with hb' | ⟨sO2, hb'⟩
+    · exact ⟨(sIn, sO1), base_earlier_fwd_slots log hcons f hf hfo j j' hj'j j.isLt sIn sO1 hb', rfl⟩
+    · exact ⟨(sIn, sO2), base_earlier_inv_slots log hcons f hf hfo j j' hj'j j.isLt sIn sO2 hb', rfl⟩
+  exact absurd hkey hfresh
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -1575,6 +1602,18 @@ abbrev EPaperReduction (StmtIn U : Type) [SpongeUnit U] [SpongeSize]
     ConsistentFrom ((∅, []) : DSCache StmtIn U) log →
     EPaper log →
     AnchoredFrom ((∅, []) : DSCache StmtIn U) log
+
+open DuplexSpongeFS.Paper in
+/-- **`EPaperReduction` is a theorem.** A consistent log exhibiting the paper bad event
+`EPaper` is anchored. The full disjunct case-bash over the four CO25 §5.6 arms. -/
+theorem ePaperReduction_holds : EPaperReduction StmtIn U := by
+  intro log hcons hEP
+  rcases hEP with (hh | hp | hpinv) | hfunc
+  · exact anchored_of_E_h log hcons hh
+  · exact anchored_of_E_p log hcons hp
+  · exact anchored_of_E_pinv log hcons hpinv
+  · exact anchored_of_E_func log hcons hfunc
+
 
 open DuplexSpongeFS.Paper in
 /-- **The eager paper bound, conditional on the dedup reduction.** For any `T`-query
@@ -1668,6 +1707,8 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.anchored_of_E_h
 #print axioms DuplexSpongeFS.EagerLazyDS.anchored_of_E_p
 #print axioms DuplexSpongeFS.EagerLazyDS.anchored_of_E_pinv
+#print axioms DuplexSpongeFS.EagerLazyDS.anchored_of_E_func
+#print axioms DuplexSpongeFS.EagerLazyDS.ePaperReduction_holds
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
