@@ -5,9 +5,9 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BirthdayBound
-import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.ConsistencyPaper
-import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.ForkPaper
-import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.HashPaper
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma512Paper
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma514Paper
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lemma516Paper
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.EagerLazyDS
 
 /-!
