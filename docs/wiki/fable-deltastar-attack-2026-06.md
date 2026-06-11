@@ -686,3 +686,38 @@ active list-decoding witnesses = the explicit-RS list count = the wall. The most
 ANALYTIC route is **N2' (Weil char-sum on the smooth subgroup)** — the only candidate technique not
 yet reduced to a no-go, and exactly the recognized 25-yr-hard frontier. No fresh hypothesis escapes to
 a pin; the reframing sharpens WHY (the max is a simultaneous-activation = list-decoding question).
+## 23. CORRECTION to §22 + CARTOGRAPHY COMPLETE: the Weil route is already a machine-checked no-go
+
+**Retraction:** §22 flagged N2' (Weil character-sum on the smooth subgroup) as "the only route not
+reduced to a no-go." That is WRONG. The substrate already contains the sorry-free, axiom-clean no-go
+`ProximityGap.SubgroupCharacterSumNoGo.weil_recovers_root_count_not_better` (built on
+`SubgroupSpectrumNoImprovement`). I missed it in §22; correcting now per the honesty discipline.
+
+**What the existing no-go proves (verified, not conjectural):** the agreement count has the EXACT
+character-sum identity (`charSum_agreement_split`, sorry-free in ℂ):
+`q · #{i : c i = w i} = n + Σ_{ψ≠0} Σ_i ψ((c−w) i)`. The remainder `R = Σ_{ψ≠0} Σ_i ψ(g i)` is the
+only place an improvement could come from. The full Weil bound gives `|Σ_i ψ(g i)| ≤ (k−1)√q` —
+exactly the `√q` = Johnson-scale fluctuation. And `weil_recovers_root_count_not_better` exhibits,
+sorry-free, a genuine degree-`<k` polynomial (root set = any `(k−1)`-subset of the subgroup, the
+`gPoly` vanisher) for which `R` ATTAINS `q·(k−1) − n`, so `q·agreement = n + R` reproduces
+`agreement = k − 1` EXACTLY. The character sum "carries no information beyond the root count"; Weil
+controls precisely the `√q` term and gives NOTHING in the open interior `(1−√ρ, 1−ρ)`. Beating
+Johnson would need a *super-polynomial* cancellation in `R` over the structured subgroup that Weil
+provably cannot supply.
+
+**The cartography is now COMPLETE (the deep reason the wall is 25-yr open):** the two standard
+toolkits for the above-Johnson explicit-RS list count BOTH provably collapse onto the Johnson radius —
+machine-verified from the repo's own no-go bricks:
+- **Combinatorial** (LYM antichain / witness-set counting / sunflower): tight at Johnson, vacuous
+  above; the algebraic GS-curve coupling is invisible to it (§17 no-go).
+- **Analytic** (Weil / character-sum / Gauss-sum): the identity is exact, Weil = the `√q` Johnson
+  fluctuation, worst case realized inside the subgroup ⟹ recovers `agreement = k−1` exactly, nothing
+  above (`weil_recovers_root_count_not_better`, this §).
+- Folding/renormalization = non-trivial transfer whose fixed point is the same wall (§20); subset
+  spectra (additive §10 / multiplicative §16) are bad-side/per-stack, blind to the max (§13).
+
+**Honest terminus (complete):** every route across two full hypothesis rounds — combinatorial,
+analytic-Weil, folding, spectral — is a verified no-go or provably reduces to the regime-III wall.
+The prize demands a genuinely NEW technique beyond both Johnson-saturating toolkits; that is exactly
+the content of "25-yr open, no known technique," now grounded in the project's own machine-checked
+no-go bricks rather than asserted. No fabrication; the §22 overclaim is retracted.
