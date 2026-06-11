@@ -6755,3 +6755,30 @@ routing zeroes them and creates the deficit.** Full R1 extraction (fulltext 3820
   lemma's residual becomes `Λ(B_coeff) ≤ (d_R − m)·(B₀ − 1) + bounded`, matching the
   PROVEN Y-drop + the now-available W-credit. The endgame stands, in the corrected frame:
   (E1′) per-term with W-credit, (E2′) Claim-A.2 induction assembly, (E3) wiring.**
+
+**O154 V1 dive, finding 6 (partial retraction of finding 1) — in the paper's original-H
+frame the IN-TREE structured invariant is SATISFIABLE at t = 0 exactly: finding 1's
+unsatisfiability is a property of MONIC ROUTING ONLY.** With `W = leadingCoeff H`
+(non-monic) and the tight anchor `Λ(W) = D − d_H`:
+
+  `Λ(β₀) = Λ(T) = D + 1 − d_H = 1 + Λ(W)` ✓ (the paper's base identity, exact),
+
+so the in-tree `1 + (t+1)·deg(W) + …` structured form and its PROVEN collapse
+(`structured_weight_collapse`) are correct as stated — for the original `H`. The
+monic-frame variant (`structured_weight_collapse_rebased`, proven this session) remains
+the correct collapse if monic routing is ever used with the consumers' large `D`.
+
+**The definitive Johnson endgame (consolidating findings 1–6):** work in the paper's frame
+(original non-monic `H`, `D ≥ totalDegree H` with the leading coefficient carrying
+`deg_Z W = D − d_H`, the in-tree structured invariant + proven collapse). Remaining:
+(E1′) the per-term weight bound with the structured IH — finding 3's exponent cancellation
+(2k, verified) extends verbatim with the W-powers telescoping per the paper's (5.16); the
+B_coeff residual gets the W-credit; consume the proven `B_coeff_weight_le_hasse` +
+`hasseCoeffRepr𝒪_natDegreeY_le`;
+(E2′) assemble the strong induction (`βHensel_weight_bound` is already shaped for exactly
+this hterm — feed it the structured-IH per-term lemma);
+(E3) wiring (kill-target weights → `exists_pinning_pair_of_heavy_agreement` →
+`bad_card_le_of_cell_production` → `hsurface` → `johnsonNumericBound_holds` →
+`JohnsonDischargeStatement` → bracket → `kkh26_deltaStar_pin_of_interior_ceiling`).
+Every claim above is traced to a paper line or an in-tree theorem name; no step rests on
+an unverified guess. The remaining work is the E1′/E2′ formalization and E3 wiring.
