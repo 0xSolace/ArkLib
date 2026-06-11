@@ -5943,3 +5943,27 @@ either derived or classified; the census is the sole non-generic input** — whi
 precisely the premise of the census-conditional δ* pin. Remaining staged: A3-s16, A4
 (flag tower), A5 (turn-on predictor), G4 (rank cap) — specified in HYPOTHESES.md for
 any seat.
+
+### O144 — THE PARITY LAW of the char-0 layer: |A| mod 4 governs the depth-1 vanishing locus (one-line F₂ proof); production dimensions are char-0-clean at EVERY smooth scale, uniformly (2026-06-11, #357)
+
+`probe_o144_parity_law.py` + `o144_char0_n32.c` (exact, asserts green; the C scan covers
+all 64,512,240 ten-subsets of μ₃₂):
+
+* a ≡ 0 (mod 4): char-0 layer NONZERO and growing — (8,4): 10, (16,4): 52, (32,4): 232,
+  (16,8): 70;
+* a ≡ 2 (mod 4): char-0 layer EMPTY everywhere measured — (8,6), (16,6), (16,10), (32,10).
+
+**The law, with proof.** The ring map `ℤ[ζ_{2^m}] → F₂`, `ζ ↦ 1` (well-defined since
+`Φ_{2^m}(1) = 2`) sends `e₂(A) ↦ C(|A|,2) mod 2`; so `e₂(A) = 0` forces `C(a,2)` even,
+i.e. `a ≡ 0, 1 (mod 4)`. The depth-1 census row sits at `a = k + 2`, so **every production
+dimension `k ≡ 0 (mod 4)` (in particular all `k = 2^j, j ≥ 2`) has an EMPTY char-0 layer
+at every smooth scale `n = 2^m`** — no enumeration, uniform in n. The `k ≡ 2 (mod 4)`
+dimensions (e.g. the (8,2) instance with its 10 solutions) are the only ones with a
+persistent field-independent layer.
+
+**Consequence (with O141's threshold, being formalized in `WindowTwoLayerThreshold.lean`):**
+at production dimensions the adjacent-pair family's depth-1 mid-window row is clean at
+every prime above an explicit threshold, for every smooth domain size — the first
+uniform-in-n cleanliness statement inside the window, and it is fully formalizable with
+zero kernel enumeration (the parity argument is the `X := 1, mod 2` evaluation of the
+folded e₂ polynomial).
