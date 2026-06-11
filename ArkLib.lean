@@ -849,6 +849,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
 import ArkLib.Data.CodingTheory.ProximityGap.MCAResearchLoop
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
+import ArkLib.Data.CodingTheory.ProximityGap.MCASyndromeFactorization
 import ArkLib.Data.CodingTheory.ProximityGap.MCAThresholdLedger
 import ArkLib.Data.CodingTheory.ProximityGap.MCAUDR2Bound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAUDRBound
