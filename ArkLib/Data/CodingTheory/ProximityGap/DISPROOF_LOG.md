@@ -6009,3 +6009,36 @@ agreement-matched census is the s = a slice, the take-over is the s = n/2+1 slic
 its own flat-n law (one crossing point per λ ∈ ±μ_n). Until the excess census law is
 formalized, the campaign has NO standing upper-extremality hypothesis; G2-3's "two named
 surfaces" must use the excess-aware surface or die to this countermodel.
+
+### O146 — RED TEAM: CensusUpperExtremal REFUTED AS STATED (double-spike witness at a = n−1) and CORRECTED: the profile is the MAX of two proven families (sparse-spike staircase ∨ census); the corrected form survives every exact data point (2026-06-11, #357 red-team cycle 1)
+
+Red-team attack on the census-crossing pin at the non-2-power ladder instances:
+
+* **The refutation (exact):** at (7,6,3) AND (13,6,3), agreement a = 5 (= n−1) has
+  adjacent-pair census **0** but exact max-bad over ALL stacks **2** — the census is not
+  extremal at this rung. Witness extracted (syndrome-reduced exact scan): the **double
+  spike** u₀ = 1_{x₅}, u₁ = 1_{x₄,x₅}: bad γ ∈ {0, −1}, each line a 1-sparse word vanishing
+  on n−1 points. This is precisely the mechanism of the just-landed **universal second
+  band** (`ε_mca = 2/|F|` exactly on `1 ≤ δ·n < 2` for EVERY linear code of distance ≥ 4) —
+  a field-independent staircase near δ = 0, orthogonal to the census mechanism.
+* **The correction:** the extremality conjecture becomes
+  **`ε_mca(C, 1 − a/n) · q = max(staircase band value at a, adjacent-pair census at a)`** —
+  the sparse-spike staircase dominates at a ∈ {n, n−1, …} (δ·n small), the census takes over
+  at the crossing scale. Both families are PROVEN lower bounds (universal bands; census law
+  + `census_le_epsMCA`); only the upper half ("nothing beats the max") remains the named
+  surface.
+* **The corrected form survives every exactly-computed instance:**
+  (5,4,2): {a=4: max(1,1)=1 ✓, a=3: max(·,4)=4 ✓};
+  (13,4,2)/(17,4,2): {1,4} ✓; (12,6) @ 13/37/61: a=9: max(·,12)=12 ✓;
+  (7,6,3): {a=6: max(1,1)=1 ✓, a=5: max(2,0)=2 ✓, a=4: max(·,7)=7 ✓};
+  (13,6,3): {1, 2, 13} ✓. No exact data point deviates from the two-family max.
+* Bonus: the small-field saturations (census = p at (7,6,3) a=4 and (13,6,3) a=4) again
+  match max-bad exactly — saturation is census-driven, not spike-driven.
+
+**Consequence for the conditional pin:** `mcaDeltaStar_eq_of_censusCrossing'` remains valid
+verbatim wherever the crossing agreement sits BELOW the staircase rungs (a_c ≤ n − 2 and
+the staircase value at a > a_c also ≤ ε*·q — at production parameters ε*·q ≈ 2^128 the
+first staircase bands are astronomically below threshold, so the staircase NEVER decides
+the crossing there; the correction matters only at toy scales/tiny ε*). The named surface
+should still be restated as the two-family max for honesty. Red-team cycle 1 verdict:
+**the candidate pin survives, with a corrected and sharper conjecture.**
