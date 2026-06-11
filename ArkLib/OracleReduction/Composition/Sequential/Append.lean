@@ -1171,6 +1171,16 @@ theorem append_soundness
       (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) :=
   hResidual
 
+/-- **NAMED RESIDUAL — same PROVEN OBSTRUCTION as `Verifier.appendKnowledgeSoundnessResidual`
+(issue #340 disposition).** The oracle-level straightline knowledge-soundness append.  The
+direct seam-decomposition route is blocked by the identical phase-1 oracle-access obstruction
+(the phase-1 component guarantee cannot be stated against the appended-run event, since a
+phase-1 prover has no access to `pSpec₂`'s challenges — see the audit note on the non-oracle
+residual above); this oracle form additionally reduces to the non-oracle one through
+`toVerifier`, so it inherits the obstruction.  The honest composition route is round-by-round:
+`OracleVerifier.appendRbrKnowledgeSoundnessResidual` is discharged
+(`AppendRbrKnowledgeOracleLift.lean`).  Do NOT take this residual as a hypothesis expecting a
+future direct discharge. -/
 def appendKnowledgeSoundnessResidual
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
