@@ -155,3 +155,14 @@ rungs/laneA2/ (orbit data, rate-law tables, factorizations, all cross-checked ag
 the committed certificate exactly).
 
 ## A3 / G1 / G2+G3 / G5 — PENDING (session limit 2026-06-11 ~03:40 UTC; re-queue after reset)
+
+## G1 — VERDICT: CONFIRMED, all 40 entries exact (2026-06-11, inline)
+**The menu law is a theorem.** Per dense element with block B: cross-pair loci over the
+35 witnesses are Z_J = (B∩{z*}) ∪ ⋃_{i∈J} b_i for traces J ⊆ N(B), with multiplicity
+exactly **C(m₀, 4−|J|)** (m₀ = B-empty pairs; proof: disjoint blocks make the locus
+determine I∩N, completions free among empty pairs). Aggregate evenness: negation fixes
+squares, so t and ν(t) carry the SAME B — every aggregate multiplicity inherits the
+B-census {2,4} factors. Verification (lane_g1_menu_law.py, on kernel-regenerated data):
+analytic aggregate == measured menu in ALL 40 entries; total 47,040; distinct 4,072.
+General-s form: multiplicity C(m₀, s/4−|J|) over the s/2−1 pair-blocks — the incidence
+menu at every rung is B-census convolution with this kernel.
