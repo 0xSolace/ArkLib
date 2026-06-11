@@ -120,8 +120,96 @@ theorem βHensel_weight_bound_structured (x₀ : F) (R : F[X][X][Y])
         exact hterm k (fun l hl => hIH l (by omega)) i1 hi1 lam
           (Finset.mem_filter.mp hlam).2
 
+/-! ## The per-term decomposition engine (transcription step (iii)) -/
+
+/-- `ℕ`-scalar action on `WithBot ℕ` coerces: `n • (x : WithBot ℕ) = ↑(n * x)`. -/
+theorem nsmul_coe_withBot (n x : ℕ) :
+    n • (WithBot.some x : WithBot ℕ) = WithBot.some (n * x) := by
+  induction n with
+  | zero => simp
+  | succ k ih =>
+      rw [succ_nsmul, ih]
+      have : WithBot.some (k * x) + WithBot.some x = WithBot.some (k * x + x) := rfl
+      rw [this]
+      congr 1
+      ring
+
+/-- **The per-term decomposition engine.** `StructuredSuccTermBound` reduces to pure
+`ℕ`-arithmetic: given a ξ-weight budget (`weight_ξ_bound`'s output), a B-coefficient
+budget (the E1′ inventory's output), and the closing inequality (finding 8's
+hand-verified bookkeeping), the per-term bound holds. All weight-calculus steps —
+the three `_mul_le` splits, the two `_pow_le` powers, `_W`, and the PROVEN structured
+partition product — are discharged here once and for all. -/
+theorem structuredSuccTermBound_of_budgets (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (k : ℕ)
+    (hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+        ≤ WithBot.some (structuredBound H R D l))
+    (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts)
+    {Lξ nB : ℕ}
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D ≤ WithBot.some Lξ)
+    (hB : weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D ≤ WithBot.some nB)
+    (hξDef : Lξ = (Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))
+    (harith :
+      (i1 + deltaSave i1 - 1) * (H.leadingCoeff).natDegree
+        + (2 * i1 + sigmaLambda lam - 2) * Lξ
+        + nB
+        + (sigmaLambda lam
+            + ((k + 1 - i1) + sigmaLambda lam) * (H.leadingCoeff).natDegree
+            + (2 * (k + 1 - i1) - sigmaLambda lam) * Lξ)
+      ≤ structuredBound H R D (k + 1)) :
+    StructuredSuccTermBound x₀ R hHyp hH D k hIH i1 hi1 lam hlam := by
+  unfold StructuredSuccTermBound
+  -- three multiplicative splits
+  refine le_trans (weight_Λ_over_𝒪_mul_le H hH hDH _ _) ?_
+  refine le_trans (add_le_add (weight_Λ_over_𝒪_mul_le H hH hDH _ _) le_rfl) ?_
+  refine le_trans (add_le_add
+    (add_le_add (weight_Λ_over_𝒪_mul_le H hH hDH _ _) le_rfl) le_rfl) ?_
+  -- bound the four factors
+  have hW : weight_Λ_over_𝒪 hH ((W𝒪 H) ^ (i1 + deltaSave i1 - 1)) D
+      ≤ WithBot.some ((i1 + deltaSave i1 - 1) * (H.leadingCoeff).natDegree) := by
+    refine le_trans (weight_Λ_over_𝒪_pow_le H hH hDH _ _) ?_
+    refine le_trans (nsmul_le_nsmul_right (weight_Λ_over_𝒪_W H hH hDH) _) ?_
+    rw [nsmul_coe_withBot]
+  have hXi : weight_Λ_over_𝒪 hH
+      ((ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)) D
+      ≤ WithBot.some ((2 * i1 + sigmaLambda lam - 2) * Lξ) := by
+    refine le_trans (weight_Λ_over_𝒪_pow_le H hH hDH _ _) ?_
+    refine le_trans (nsmul_le_nsmul_right hξ _) ?_
+    rw [nsmul_coe_withBot]
+  have hPi : weight_Λ_over_𝒪 hH
+      (partitionProd lam (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
+      ≤ WithBot.some (sigmaLambda lam
+          + ((k + 1 - i1) + sigmaLambda lam) * (H.leadingCoeff).natDegree
+          + (2 * (k + 1 - i1) - sigmaLambda lam) * Lξ) := by
+    refine partitionProd_βHensel_weight_structured_le H x₀ R hHyp hH hDH k i1
+      (H.leadingCoeff).natDegree Lξ ?_ lam hlam
+    intro l hl
+    have := hIH l hl
+    unfold structuredBound at this
+    rwa [← hξDef] at this
+  refine le_trans (add_le_add (add_le_add (add_le_add hW hXi) hB) hPi) ?_
+  have hsum : (WithBot.some ((i1 + deltaSave i1 - 1) * (H.leadingCoeff).natDegree)
+        + WithBot.some ((2 * i1 + sigmaLambda lam - 2) * Lξ)
+        + WithBot.some nB
+        + WithBot.some (sigmaLambda lam
+            + ((k + 1 - i1) + sigmaLambda lam) * (H.leadingCoeff).natDegree
+            + (2 * (k + 1 - i1) - sigmaLambda lam) * Lξ))
+      = WithBot.some ((i1 + deltaSave i1 - 1) * (H.leadingCoeff).natDegree
+          + (2 * i1 + sigmaLambda lam - 2) * Lξ
+          + nB
+          + (sigmaLambda lam
+              + ((k + 1 - i1) + sigmaLambda lam) * (H.leadingCoeff).natDegree
+              + (2 * (k + 1 - i1) - sigmaLambda lam) * Lξ)) := rfl
+  rw [hsum]
+  exact WithBot.coe_le_coe.mpr harith
+
 /-! ## Source audit -/
 
+#print axioms nsmul_coe_withBot
+#print axioms structuredSuccTermBound_of_budgets
 #print axioms βHensel_weight_bound_zero_structured
 #print axioms βHensel_weight_bound_structured
 
