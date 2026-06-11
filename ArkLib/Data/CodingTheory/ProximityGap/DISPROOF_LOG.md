@@ -6562,3 +6562,25 @@ audit:
   the mathematics; W2 is wiring. After W1+W2: `JohnsonDischargeStatement` proven, the
   bracket unconditional, and `kkh26_deltaStar_pin_of_interior_ceiling` pins the
   deployed-regime δ* exactly.
+
+**O154 route-correction — W1-AS-STATED IS DOCUMENTED UNPROVABLE (wave-5 diagnosis in-file:
+the loose IH destroys the partition cancellation); the CORRECT final target is the
+STRUCTURED invariant via the PROVEN monic lift identity, and its collapse theorem is
+ALREADY PROVEN.** The decisive chain for monic `H` (= the `H_tilde` regime):
+
+* `βHensel_weight_bound_of_structured_weight` (PROVEN, line 1430): the structured
+  invariant `Λ(β_t) ≤ 1 + (t+1)·deg(W) + (2t−1)·(d_R−1)·(D−d_H+1)` implies the loose
+  target `(2t+1)·d_R·D` — the collapse arithmetic is done.
+* For monic `H`: `deg(W) = deg(1) = 0`, and the lift identity
+  `β_t = α_t · W^{t+1} · ξ^{2t−1}` is PROVEN (`LiftIdentityAt.of_leadingCoeff_one`). Via
+  the proven weight calculus (`_mul`/`_pow`): `Λ(β_t) ≤ Λ(α_t) + (2t−1)·Λ(ξ)`.
+* **Hence the FINAL TARGET, exactly two computable weight bounds (paper line 4276's
+  "easier way", now with every surrounding piece proven):**
+  (V1) `Λ(α_t) ≤ 1` — the genuine Hensel coefficients have unit weight (γ = Σ α_t z^t is
+  a root of monic `H̃`, Y-weight 1; for monic H, `alphaGenuine_regular_of_monic` already
+  gives integrality — the weight refinement is the remaining step);
+  (V2) `Λ(ξ) ≤ (d_R−1)·(D−d_H+1)` — the weight of the explicit element ξ (for monic H,
+  `ξ = ζ`, the discriminant-type element; a direct computation in the proven calculus).
+  Then: structured invariant → (proven collapse) → loose bound → kill-target weights →
+  `exists_pinning_pair_of_heavy_agreement` → … → `JohnsonDischargeStatement` → the exact
+  δ* pin. The recursion wall is BYPASSED, exactly as the paper prescribes.
