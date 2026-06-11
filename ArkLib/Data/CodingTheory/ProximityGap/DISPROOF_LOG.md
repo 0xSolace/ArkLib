@@ -6341,3 +6341,15 @@ holds at template scale (B = 3, sparse sweep (17,8,3)). CONJECTURE: true thresho
 d ≥ 2j; the 3(j−1) in the proof is an artifact of chaining through triples — a
 2j-route needs a different identification argument (the j=2 proof avoids chaining
 entirely). Template caveat: d=6 B=3 is wt≤2-restricted; heavier stacks unswept.
+
+### CORRECTION to the above (#357 round 19): 2j-sharpness conjecture REFUTED — 3b−2 is THE law, RS included
+The "2j conjectured sharp" note above is dead: the perfect-square pencil identity
+(rA² − hAB + pB² = ρλ²T^{f+2(b−1)}, #357 comment ~157, probe_mds_pencil_explosion.py)
+produces band-b explosions at every d ≤ 3b−3 for GENUINE RS codes (exact scans:
+RS[F₁₇,μ₈,3] d=6 band-3 count 4 > 3; RS[F₁₉,μ₁₈,10] d=9 band-4 count 6 > 4; smooth
+domains supply n/(b−1) bad scalars via μ_{b−1}-cosets). My (17,8,3) template sweep
+(B=3) was wt≤2-narrowness — the pencil stacks have richer syndrome-series structure.
+The master staircase threshold f(b) = 3b−2 (proven in UniversalStaircaseCollapse +
+the fleet's MCAStaircaseMaster) is sharp at every b, for every linear code INCLUDING
+MDS/RS. The MDS/general separation hoped for in the half-distance round does not
+exist at the staircase level.
