@@ -1996,6 +1996,7 @@ import ArkLib.ToMathlib.SubspacePolyLinearized
 import ArkLib.ToMathlib.SubstFieldCaveat
 import ArkLib.ToMathlib.SumSubMeanSq
 import ArkLib.ToMathlib.SupportSqBound
+import ArkLib.ToMathlib.SurfaceFactorProduction
 import ArkLib.ToMathlib.TAffinePlaceReading
 import ArkLib.ToMathlib.TailDegProducer
 import ArkLib.ToMathlib.ToyProblemRewinding
