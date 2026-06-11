@@ -6051,3 +6051,30 @@ up to 10×. So ε_mca is not a function of E₂; the energy is moment-blind to t
 Constraint lemma target: ∃ two domains, same field, E₂ differing, ε_mca equal. The proven
 E₂=Θ(n³) smooth separation (MobiusPencilEnergy.lean) is a spectrum-moment fact, not δ*-controlling.
 Refinement N1′: target the EXTREMAL pencil invariant (max t₂ / M3 third moment), not the sum.
+
+### O147 — the two-layer law EXTENDS to the excess census; the CA/MCA gap localizes on coset witnesses; the take-over flat-n numerator is one rotation orbit of char-0 pinned scalars (2026-06-11, #357)
+
+`probe_o147_excess_census_two_layer.py` (exact char-0 in ℚ(ζ₁₆) + mod-97; asserts green).
+The hand-off question from the take-over comment ("does the norm machinery extend to the
+excess system?") — answered, with three structural verdicts at the take-over instance
+((X⁹, X⁸) over μ₁₆, k = 4, a = 7, excess 2):
+
+1. **Subset census is pure layer-1**: 464 qualifying 7-subsets in char 0 AND mod 97 —
+   the two-layer law extends verbatim to the excess band system (surplus primes are again
+   norm divisors of the band minors).
+2. **The CA/MCA gap is exactly the coset-witness layer**: 16 of the 464 subsets carry a
+   full γ-LINE (band system rank 1) — and they are precisely the sixteen 7-subsets of the
+   two parity classes (the index-2 subgroup and its coset). On those witnesses `X⁸ ≡ ±1`
+   and `X⁹ ≡ ±X`, so both rows are codewords there — the stack is jointly explainable and
+   `mcaEvent` cannot fire. The γ-lines are CA-bad but MCA-invisible: a fully worked,
+   machine-checked instance of the CA ≠ MCA separation *inside* a census computation.
+3. **The flat-n law of the take-over family is a one-orbit char-0 law**: the remaining
+   448 subsets pin γ, with exactly 16 = n distinct pinned values — and the 16 values form
+   a SINGLE rotation orbit `{−ζ^{4+j} : j}` (γ₀ = −ζ⁴). Field-independence of the measured
+   16-at-every-prime is explained: the values are characteristic-zero constants reduced
+   mod p.
+
+**Consequence for the excess-census ledger:** census(MCA, excess row) = (pinned char-0
+γ-census, one orbit here) + (finite-spectrum surplus); the band system alone OVERCOUNTS by
+the explainable coset layer — any future excess-census ledger entry needs the
+explainability filter, not just band solvability.
