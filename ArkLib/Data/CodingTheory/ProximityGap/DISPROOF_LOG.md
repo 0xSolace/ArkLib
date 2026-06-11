@@ -5984,3 +5984,28 @@ Combined with O144's parity law, the field-independent layer of the depth-1 wind
 is now: empty at `a ≡ 2 (mod 4)` (all production dims), and explicitly counted at
 `a = 4` — the first two rungs of the vanishing-locus classification the K4/Lam–Leung lane
 predicted would govern the window.
+
+### Red team round 2 (#357 campaign) — CensusUpperExtremalFloor FALSIFIED by take-over at the death radius; the extremality conjecture corrected to the EXCESS census
+The floor repair survived hours. Running its registered falsifier (the higher-monomial
+scan at the death rung; `probe_takeover_death_radius.py`, all 120 monomial pairs over
+μ₁₆ ⊆ F_p, exact affine-in-λ method, certificates re-verified by an independent fitter):
+**at (16,4), a=7 — where the adjacent census is EMPTY — the half-order pair (X⁹, X⁸)
+carries exactly 16 = n bad scalars, and the bad set is the domain μ₁₆ itself,
+field-independently (p = 97 and 193). At a=8 (Johnson agreement) it beats the adjacent
+pair 16-to-1.**
+**Mechanism (closed-form, verified):** coset splitting — on μ₁₆, x⁸ = ±1 on the two
+μ₈-cosets, so x⁹ + λx⁸ = ±(x+λ) is piecewise linear; witnesses with six points on one
+coset plus the crossing point are explained by ±(X+λ); every λ ∈ μ₁₆ is bad. The
+CS25/KK25 splitting mechanism IS the take-over family below the adjacent death radius.
+**Machine-checked (`TakeoverCountermodel.lean`, axiom-clean):** `census_16_4_7_empty`
+(kernel decide over all C(16,7) = 11440 subsets — the O139/O141 emptiness, now formal at
+this instance), two certificate events (λ=1, λ=8 with explicit linear explanations and
+the cubic-vs-constant no-joint argument), `takeover_falsifies`: ε_mca ≥ 2/97 > 1/97 =
+(census+1)/|F| — CensusUpperExtremalFloor is FALSE at (16,4)/F₉₇ for every crossing < 7.
+**What survives:** the pin engine (census-function agnostic), census_le_epsMCA (slice
+lower bounds), the radius quantization. **What must change:** the upper-extremality
+target is the EXCESS census — bad counts of (X^s, X^{s−1}) for all s ≥ a; the
+agreement-matched census is the s = a slice, the take-over is the s = n/2+1 slice with
+its own flat-n law (one crossing point per λ ∈ ±μ_n). Until the excess census law is
+formalized, the campaign has NO standing upper-extremality hypothesis; G2-3's "two named
+surfaces" must use the excess-aware surface or die to this countermodel.
