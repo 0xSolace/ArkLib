@@ -5800,3 +5800,31 @@ explicit prime set with Fermat-flavored maxima (`4097 = 2¹²+1`, `18433`), (dep
 nothing, at any prime. The mid-window δ* question for this family is purely the arithmetic
 of cyclotomic norms of subset power sums — and the `max_A |N(e_j(A))|` growth in `n` is
 the quantity that prices everything (Mahler-measure / lacunary thread, #357 §5).
+
+### O143 — THE TWO-LAYER LAW of the window census: char-0 vanishing sums + finite-spectrum char-p surplus; the #232 Lam–Leung lane and the O134 surplus mechanism are the two halves of one decomposition (2026-06-11, #357)
+
+`probe_o143_two_layer_law.py` (exact, asserts green). The unification of
+O134 + O138–O142:
+
+  `census_p(n, k, row) = (char-0 layer mod p) + (surplus layer)`,
+
+where the **char-0 layer** is the classical vanishing-power-sum locus over `μ_n`
+(Lam–Leung / de Bruijn — the #232 machinery, now appearing *inside* the window census) and
+the **surplus layer** is nonzero only for `p` in the finite norm spectrum `S(n,k)` (O141).
+Measured instances:
+
+* `(8,4)`: both layers empty — the row is clean at EVERY prime (max norm 1);
+* `(8,2)`: pure char-0 layer — 10 subsets (two `μ₄`-cosets with `e₁ = 0` + eight
+  near-antipodal configs), 9 distinct `e₁` values; `S = ∅` (max norm 16 = 2⁴ has no
+  prime ≡ 1 mod 8). Verified `#qual = 10`, `census = 9` at all of
+  p ∈ {17, 41, 73, 89, 97, 113, 233, 1009} — field-independent, exactly the char-0 layer;
+* `(16,4)`, `(16,8)`: char-0 EMPTY — pure surplus layer on 17 explicit primes each
+  (O141/O142).
+
+**Why this matters for δ\*.** The window-interior badness of the candidate-extremal family
+is now a sum of two *computable, scan-free* objects: a field-independent census governed by
+vanishing-sums classification (nonzero only when `n/k` is large relative to constraint
+depth — present at rate 1/4, n = 8; absent at every n = 16 row), and a field-exceptional
+finite-prime layer priced by cyclotomic norm growth. The S1 unification thesis (KKH26
+census ≡ de Bruijn vanishing sums) is no longer a conjecture about analogy — the window
+census literally *contains* the vanishing-sums locus as its field-independent layer.
