@@ -41,6 +41,7 @@ import ArkLib.Data.Classes.Slice
 import ArkLib.Data.CodingTheory.AGL24AgreementHypergraph
 import ArkLib.Data.CodingTheory.AGL24DeterministicChain
 import ArkLib.Data.CodingTheory.AGL24KernelVector
+import ArkLib.Data.CodingTheory.AGL24ListDecodingBridge
 import ArkLib.Data.CodingTheory.AGL24ReducedIntersectionMatrix
 import ArkLib.Data.CodingTheory.AGL24SubfamilyTransport
 import ArkLib.Data.CodingTheory.AGL24UnionBound
