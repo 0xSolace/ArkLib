@@ -722,13 +722,7 @@ theorem exists_perPairFactorData_of_cell_improvement
           Nat.add_le_add_right Finset.card_image_le 1
       _ ≤ Q₀.natDegree + 1 := Nat.add_le_add_right (card_posDegree_factors_le h0) 1
       _ ≤ gs_degree_bound k n m / (k - 1) + 1 := Nat.add_le_add_right hydeg 1
-  refine ⟨{ Idx := Option ((F₀[X])[X][Y])
-    decIdx := inferInstance
-    Index := Index'
-    hYbound := hI'card
-    Efactor := Ecell
-    hcover := hcover'
-    hdichotomy := ?_ }⟩
+  refine ⟨⟨Option ((F₀[X])[X][Y]), inferInstance, Index', hI'card, Ecell, hcover', ?_⟩⟩
   intro ij hij
   have hijIdx := (Finset.mem_filter.mp hij).1
   match ij with
