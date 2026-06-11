@@ -591,6 +591,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConstantGapBelowCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactCrossoverF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactPinF5
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarSecondPinF17
+import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarSecondPinF17Maximal
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarSecondPinF17Widened
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarTableSmoothInstances
 import ArkLib.Data.CodingTheory.ProximityGap.DerandomizationFrontier
