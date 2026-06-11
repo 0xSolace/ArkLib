@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffProducer
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RemainingCore
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim57Pigeonhole
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Pigeonhole
 import ArkLib.ToMathlib.ConditionDiscProduct
 import ArkLib.ToMathlib.RationalRootSupply
 

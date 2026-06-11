@@ -119,12 +119,9 @@ lemma polyToOracleFunc_eq_getFirstOracle
     ⟨y.val, h_firstIdx_zero.symm ▸ y.property⟩
   change f₀ y = oStmt ⟨0, h_pos⟩ y0
   rw [h_first_oracle]
-  rw [iterated_fold_congr_steps_index 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps' := 0)
-      (h_destIdx := by simp only [Nat.zero_mod, zero_mul, Fin.coe_ofNat_eq_mod, add_zero])
-      (h_destIdx_le := by simpa only [Fin.val_mk, zero_mul] using Nat.zero_le ℓ)
-      (h_steps_eq_steps' := by simp only [zero_mul])]
+  simp only [zero_mul]
   rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
-      (h_destIdx := by simp only [Nat.zero_mod, zero_mul, Fin.coe_ofNat_eq_mod])]
+      (h_destIdx := by simp only [firstIdx, j0, Fin.val_mk, zero_mul, Fin.val_zero])]
   have h_y0_to_y :
       (cast (congrArg (fun j => (sDomain 𝔽q β h_ℓ_add_R_rate j : Type))
         h_firstIdx_zero) y0) = y := by

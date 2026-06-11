@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonArith
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonCountWiring
 import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Arith
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Arith
 
 /-!
 # The Hab25 Johnson discharge site (#302)

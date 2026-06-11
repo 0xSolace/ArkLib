@@ -411,7 +411,7 @@ def bbfAbstractOStmtIn : AbstractOStmtIn L ℓ' where
 instance largeFieldInvocationCtxLens_complete :
   (largeFieldInvocationCtxLens 𝔽q β).toContext.IsComplete
     (outerRelIn := (bbfAbstractOStmtIn 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)).toStrictRelInput)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)).toRelInput)
     (innerRelIn := strictRoundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β
       (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) (0 : Fin (ℓ' + 1)))
     (outerRelOut := acceptRejectOracleRel)
@@ -446,7 +446,7 @@ theorem largeFieldInvocationOracleReduction_perfectCompleteness (hInit : NeverFa
     OracleReduction.perfectCompleteness
     (oracleReduction := largeFieldInvocationOracleReduction 𝔽q β γ_repetitions (𝓑 := 𝓑))
     (relIn := (bbfAbstractOStmtIn 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)).toStrictRelInput)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)).toRelInput)
     (relOut := acceptRejectOracleRel)
     (init := init)
     (impl := impl) := by
@@ -454,7 +454,7 @@ theorem largeFieldInvocationOracleReduction_perfectCompleteness (hInit : NeverFa
     (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) (ℓ := ℓ')
   letI : (largeFieldInvocationCtxLens 𝔽q β).toContext.IsComplete
       (outerRelIn := (bbfAbstractOStmtIn 𝔽q β
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)).toStrictRelInput)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)).toRelInput)
       (innerRelIn := strictRoundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β
         (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) (0 : Fin (ℓ' + 1)))
       (outerRelOut := acceptRejectOracleRel)
@@ -473,7 +473,7 @@ theorem largeFieldInvocationOracleReduction_perfectCompleteness (hInit : NeverFa
       (R := innerReduction)
       (lens := largeFieldInvocationCtxLens 𝔽q β)
       (outerRelIn := (bbfAbstractOStmtIn 𝔽q β
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)).toStrictRelInput)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)).toRelInput)
       (innerRelIn := strictRoundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β
         (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) (0 : Fin (ℓ' + 1)))
       (outerRelOut := acceptRejectOracleRel)
@@ -758,7 +758,7 @@ theorem bbf_fullOracleReduction_perfectCompleteness (hInit : NeverFail init) :
         (𝓑 := 𝓑)
         (bbfMLIOPCS 𝔽q β γ_repetitions
           (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)))
-      (relIn := BatchingPhase.strictBatchingInputRelation
+      (relIn := BatchingPhase.batchingInputRelation
         κ L K β_rs ℓ ℓ' h_l
         (bbfMLIOPCS 𝔽q β γ_repetitions
           (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).toAbstractOStmtIn)

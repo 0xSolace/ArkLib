@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.ToMathlib.GSSurfaceSupply
 import ArkLib.Data.CodingTheory.GuruswamiSudan.Hab25SeparableSupply
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Claim57FieldDischarge
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.FieldDischarge
 
 /-!
 # Issues #301/#302/#304 — producers for the two open `GSSurfaceSupply` nodes

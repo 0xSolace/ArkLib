@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.ToMathlib.Section5GlobalAssembler
+import ArkLib.ToMathlib.BCIKS20GlobalAssembler
 
 set_option linter.style.longLine false
 set_option linter.unusedSectionVars false

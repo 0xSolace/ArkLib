@@ -124,6 +124,12 @@ pre-split `Fin (ℓ + 1)` form is recovered by coercing the level into `Fin r`. 
 abbrev OracleFunction (domainIdx : Fin r) : Type _ :=
   sDomain 𝔽q β h_ℓ_add_R_rate domainIdx → L
 
+omit [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 in
+/-- Domain carriers at propositionally equal indices are equal types. -/
+lemma sDomain_eq_of_eq {i j : Fin r} (h : i = j) :
+    (↥(sDomain 𝔽q β h_ℓ_add_R_rate i) : Type) = ↥(sDomain 𝔽q β h_ℓ_add_R_rate j) := by
+  rw [h]
+
 omit [NeZero ℓ] in
 lemma fin_ℓ_lt_ℓ_add_one (i : Fin ℓ) : i < ℓ + 1 :=
   Nat.lt_of_lt_of_le i.isLt (Nat.le_succ ℓ)

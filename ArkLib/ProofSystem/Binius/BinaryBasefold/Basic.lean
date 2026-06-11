@@ -1126,13 +1126,10 @@ lemma take_snoc_oracle_eq_oStmtIn (i : Fin ℓ)
 /-- Extract the first oracle f^(0) from oracle statements -/
 def getFirstOracle {i : Fin (ℓ + 1)}
     (oStmt : (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i j)) :
-    sDomain 𝔽q β h_ℓ_add_R_rate 0 → L := by
-  let rawf₀ := oStmt ⟨0, by
-    letI := instNeZeroNatToOutCodewordsCount ℓ ϑ i
-    exact pos_of_neZero (toOutCodewordsCount ℓ ϑ i)
-  ⟩
-  simp only [OracleStatement, zero_mul, Fin.mk_zero'] at rawf₀
-  exact rawf₀
+    sDomain 𝔽q β h_ℓ_add_R_rate 0 → L :=
+  fun y =>
+    oStmt ⟨0, (instNeZeroNatToOutCodewordsCount ℓ ϑ i).pos⟩
+      ⟨y.val, by simpa only [Fin.val_mk, zero_mul, Nat.zero_mod] using y.property⟩
 
 omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
 /-- The first oracle is preserved when appending a new oracle.

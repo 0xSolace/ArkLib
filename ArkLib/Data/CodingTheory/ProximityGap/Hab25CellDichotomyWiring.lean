@@ -9,7 +9,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25CaptureKernelUD
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AffineCapture
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GSInterpolantZDegreeTight
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonBoundRealLower
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Claim510Bundle
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Bundle
 
 /-!
 # Cells to dichotomy bundles — the GS production wired into the Johnson endgame

@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Claim57FieldDischarge
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.FieldDischarge
 
 /-!
 # Claim 5.7 residuals over the *descended* factor set (BCIKS20 §5, Finding F10 fix)
