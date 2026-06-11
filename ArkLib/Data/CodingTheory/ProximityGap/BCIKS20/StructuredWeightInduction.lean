@@ -499,10 +499,428 @@ theorem structuredSuccTermBound_of_B_budget (x₀ : F) (R : F[X][X][Y])
     rw [hδdef] at this
     exact this
 
+/-! ## The closing inequality, rebased (B₀-weighted; subsumes the `B₀ = 1` case) -/
+
+/-- **The generalized closing inequality** (finding 12's rebased frame): with the rebased
+IH constant `B₀` (the structured case is `B₀ = 1`; the monisized-`H̃` case is
+`B₀ = D+1−d_H`), the per-term bound at order `k+1` follows from the single reduced need
+`nB + (m−1)·B₀ + (δ+m−2)·degW ≤ Lξ`. Same exponent collapses as `harith_of_reduced`
+(ξ-total `2k`, W-total `k+δ+m`); the `B₀`-mass `m·B₀` splits as `(m−1)·B₀ + B₀` with the
+excess paid from `Lξ` via the reduced need. -/
+theorem harith_of_reduced_general {i1 k m δ degW Lξ nB B0 : ℕ}
+    (hδ : δ = if i1 = 0 then 1 else 0)
+    (hm2 : i1 = 0 → 2 ≤ m)
+    (hm1 : 1 ≤ m)
+    (hi1k : i1 ≤ k + 1)
+    (hmS : m ≤ k + 1 - i1)
+    (hreduced : nB + (m - 1) * B0 + (δ + m - 2) * degW ≤ Lξ) :
+    (i1 + δ - 1) * degW + (2 * i1 + m - 2) * Lξ + nB
+        + (m * B0 + ((k + 1 - i1) + m) * degW + (2 * (k + 1 - i1) - m) * Lξ)
+      ≤ B0 + (k + 2) * degW + (2 * (k + 1) - 1) * Lξ := by
+  have htgt : 2 * (k + 1) - 1 = 2 * k + 1 := by omega
+  rw [htgt]
+  rcases Nat.eq_zero_or_pos i1 with hi0 | hi1pos
+  · -- `i1 = 0`, `δ = 1`
+    subst hi0
+    have hδ1 : δ = 1 := by simpa using hδ
+    subst hδ1
+    have hm2' : 2 ≤ m := hm2 rfl
+    have h1 : (0 : ℕ) + 1 - 1 = 0 := by omega
+    have h2 : 2 * 0 + m - 2 = m - 2 := by omega
+    have h3 : k + 1 - 0 = k + 1 := by omega
+    rw [h1, h2, h3]
+    have hred : nB + (m - 1) * B0 + (m - 1) * degW ≤ Lξ := by
+      have := hreduced
+      have hexp : (1 : ℕ) + m - 2 = m - 1 := by omega
+      rwa [hexp] at this
+    have hxisplit : (m - 2) * Lξ + (2 * (k + 1) - m) * Lξ = 2 * k * Lξ := by
+      rw [← add_mul]
+      congr 1
+      omega
+    have hWsplit : ((k + 1) + m) * degW = (k + 2) * degW + (m - 1) * degW := by
+      have : (k + 1) + m = (k + 2) + (m - 1) := by omega
+      rw [this, add_mul]
+    have hB0split : m * B0 = (m - 1) * B0 + B0 := by
+      conv_lhs => rw [show m = (m - 1) + 1 from by omega]
+      rw [add_mul, one_mul]
+    calc 0 * degW + (m - 2) * Lξ + nB
+          + (m * B0 + ((k + 1) + m) * degW + (2 * (k + 1) - m) * Lξ)
+        = m * B0 + (((k + 1) + m) * degW
+            + ((m - 2) * Lξ + (2 * (k + 1) - m) * Lξ) + nB) := by ring
+      _ = ((m - 1) * B0 + B0) + (((k + 2) * degW + (m - 1) * degW)
+            + 2 * k * Lξ + nB) := by rw [hWsplit, hB0split, hxisplit]
+      _ = (nB + (m - 1) * B0 + (m - 1) * degW) + B0 + (k + 2) * degW + 2 * k * Lξ := by
+          ring
+      _ ≤ Lξ + B0 + (k + 2) * degW + 2 * k * Lξ := by
+          have := hred
+          omega
+      _ ≤ B0 + (k + 2) * degW + (2 * k + 1) * Lξ := by
+          have : (2 * k + 1) * Lξ = 2 * k * Lξ + Lξ := by ring
+          omega
+  · -- `i1 ≥ 1`, `δ = 0`
+    have hδ0 : δ = 0 := by
+      rw [hδ]
+      simp [Nat.pos_iff_ne_zero.mp hi1pos]
+    subst hδ0
+    have h1 : i1 + 0 - 1 = i1 - 1 := by omega
+    rw [h1]
+    have hxisplit : (2 * i1 + m - 2) * Lξ + (2 * (k + 1 - i1) - m) * Lξ
+        = 2 * k * Lξ := by
+      rw [← add_mul]
+      congr 1
+      omega
+    have hWtotal : (i1 - 1) * degW + ((k + 1 - i1) + m) * degW
+        = (k + m) * degW := by
+      rw [← add_mul]
+      congr 1
+      omega
+    rcases Nat.lt_or_ge m 2 with hmlt | hmge
+    · -- `m = 1`
+      have hm1' : m = 1 := by omega
+      subst hm1'
+      have hred : nB ≤ Lξ := by
+        have := hreduced
+        omega
+      have hWle : (k + 1) * degW ≤ (k + 2) * degW :=
+        Nat.mul_le_mul_right _ (by omega)
+      calc (i1 - 1) * degW + (2 * i1 + 1 - 2) * Lξ + nB
+            + (1 * B0 + ((k + 1 - i1) + 1) * degW + (2 * (k + 1 - i1) - 1) * Lξ)
+          = (k + 1) * degW + 2 * k * Lξ + nB + B0 := by
+            rw [← hxisplit]
+            have := hWtotal
+            omega
+        _ ≤ (k + 2) * degW + 2 * k * Lξ + Lξ + B0 := by
+            have := hWle
+            have := hred
+            omega
+        _ ≤ B0 + (k + 2) * degW + (2 * k + 1) * Lξ := by
+            have : (2 * k + 1) * Lξ = 2 * k * Lξ + Lξ := by ring
+            omega
+    · -- `m ≥ 2`
+      have hred : nB + (m - 1) * B0 + (m - 2) * degW ≤ Lξ := by
+        have := hreduced
+        have hexp : (0 : ℕ) + m - 2 = m - 2 := by omega
+        rwa [hexp] at this
+      have hWsplit : (k + m) * degW = (k + 2) * degW + (m - 2) * degW := by
+        have : k + m = (k + 2) + (m - 2) := by omega
+        rw [this, add_mul]
+      have hB0split : m * B0 = (m - 1) * B0 + B0 := by
+        conv_lhs => rw [show m = (m - 1) + 1 from by omega]
+        rw [add_mul, one_mul]
+      have hW2 : (i1 - 1) * degW + ((k + 1 - i1) + m) * degW
+          = (k + 2) * degW + (m - 2) * degW := by
+        rw [← add_mul]
+        have : (i1 - 1) + ((k + 1 - i1) + m) = (k + 2) + (m - 2) := by omega
+        rw [this, add_mul]
+      calc (i1 - 1) * degW + (2 * i1 + m - 2) * Lξ + nB
+            + (m * B0 + ((k + 1 - i1) + m) * degW + (2 * (k + 1 - i1) - m) * Lξ)
+          = ((i1 - 1) * degW + ((k + 1 - i1) + m) * degW)
+              + ((2 * i1 + m - 2) * Lξ + (2 * (k + 1 - i1) - m) * Lξ)
+              + nB + m * B0 := by ring
+        _ = ((k + 2) * degW + (m - 2) * degW) + 2 * k * Lξ + nB
+              + ((m - 1) * B0 + B0) := by rw [hW2, hxisplit, hB0split]
+        _ = (nB + (m - 1) * B0 + (m - 2) * degW) + B0 + (k + 2) * degW + 2 * k * Lξ := by
+            ring
+        _ ≤ Lξ + B0 + (k + 2) * degW + 2 * k * Lξ := by
+            have := hred
+            omega
+        _ ≤ B0 + (k + 2) * degW + (2 * k + 1) * Lξ := by
+            have : (2 * k + 1) * Lξ = 2 * k * Lξ + Lξ := by ring
+            omega
+
+/-- **The generalized top boundary** `i1 = k+1` (empty partition, `m = 0`): reduces to
+`nB ≤ Lξ` with slack `B₀ + 2·degW`. -/
+theorem harith_of_reduced_top_general {k degW Lξ nB B0 : ℕ} (hnB : nB ≤ Lξ) :
+    ((k + 1) + 0 - 1) * degW + (2 * (k + 1) + 0 - 2) * Lξ + nB
+        + (0 * B0 + ((k + 1 - (k + 1)) + 0) * degW + (2 * (k + 1 - (k + 1)) - 0) * Lξ)
+      ≤ B0 + (k + 2) * degW + (2 * (k + 1) - 1) * Lξ := by
+  have h1 : (k + 1) + 0 - 1 = k := by omega
+  have h2 : 2 * (k + 1) + 0 - 2 = 2 * k := by omega
+  have h3 : k + 1 - (k + 1) = 0 := by omega
+  rw [h1, h2, h3]
+  have htgt : 2 * (k + 1) - 1 = 2 * k + 1 := by omega
+  rw [htgt]
+  have hW : k * degW ≤ (k + 2) * degW := Nat.mul_le_mul_right _ (by omega)
+  calc k * degW + 2 * k * Lξ + nB + (0 * B0 + 0 * degW + 0 * Lξ)
+      = k * degW + 2 * k * Lξ + nB := by ring_nf
+    _ ≤ (k + 2) * degW + 2 * k * Lξ + Lξ + B0 := by
+        have := hW
+        have := hnB
+        omega
+    _ ≤ B0 + (k + 2) * degW + (2 * k + 1) * Lξ := by
+        have : (2 * k + 1) * Lξ = 2 * k * Lξ + Lξ := by ring
+        omega
+
+/-! ## The rebased per-term apparatus: sum evaluation, partition product, threading -/
+
+/-- **The `B₀`-generic structured telescoping** (mirrors the in-tree
+`sum_map_structured`): for positive parts,
+`∑_{l ∈ parts} (B₀ + (l+1)·w + (2l−1)·x) = card·B₀ + (sum+card)·w + (2·sum−card)·x`. -/
+theorem sum_map_structured_general (ms : Multiset ℕ) (B0 w x : ℕ)
+    (hpos : ∀ l ∈ ms, 1 ≤ l) :
+    (ms.map (fun l => B0 + (l + 1) * w + (2 * l - 1) * x)).sum
+      = Multiset.card ms * B0 + (ms.sum + Multiset.card ms) * w
+        + (2 * ms.sum - Multiset.card ms) * x := by
+  induction ms using Multiset.induction_on with
+  | empty => simp
+  | cons a s ih =>
+      have ha : 1 ≤ a := hpos a (Multiset.mem_cons_self a s)
+      have hs : ∀ l ∈ s, 1 ≤ l := fun l hl => hpos l (Multiset.mem_cons_of_mem hl)
+      rw [Multiset.map_cons, Multiset.sum_cons, ih hs, Multiset.sum_cons,
+        Multiset.card_cons]
+      have hcard_le : Multiset.card s ≤ s.sum := by
+        have h := Multiset.sum_map_le_sum_map (s := s) (fun _ => 1) id
+          (fun l hl => hs l hl)
+        simpa using h
+      have hsplit1 : (Multiset.card s + 1) * B0 = Multiset.card s * B0 + B0 := by
+        rw [add_mul, one_mul]
+      have hsplit2 : (a + s.sum + (Multiset.card s + 1)) * w
+          = (a + 1) * w + (s.sum + Multiset.card s) * w := by
+        rw [← add_mul]
+        congr 1
+        omega
+      have hsplit3 : (2 * (a + s.sum) - (Multiset.card s + 1)) * x
+          = (2 * a - 1) * x + (2 * s.sum - Multiset.card s) * x := by
+        rw [← add_mul]
+        congr 1
+        omega
+      rw [hsplit1, hsplit2, hsplit3]
+      ring
+
+/-- **The rebased structured partition-product bound** (mirrors the in-tree
+`partitionProd_βHensel_weight_structured_le` with the `B₀`-generic IH): given
+`hIH : ∀ l < k+1, Λ_𝒪(β_l) ≤ B₀ + (l+1)·wW + (2l−1)·xξ`, the partition product is
+`≤ Σλ·B₀ + ((k+1−i1)+Σλ)·wW + (2(k+1−i1)−Σλ)·xξ`. -/
+theorem partitionProd_βHensel_weight_rebased_le (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (k i1 : ℕ) (B0 wW xξ : ℕ)
+    (hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+        ≤ WithBot.some (B0 + (l + 1) * wW + (2 * l - 1) * xξ))
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts) :
+    weight_Λ_over_𝒪 hH
+        (partitionProd lam (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
+      ≤ WithBot.some
+          (sigmaLambda lam * B0 + ((k + 1 - i1) + sigmaLambda lam) * wW
+            + (2 * (k + 1 - i1) - sigmaLambda lam) * xξ) := by
+  classical
+  have hcongr : partitionProd lam
+      (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)
+      = partitionProd lam (fun l => βHensel H x₀ R hHyp l) := by
+    exact partitionProd_surviving_guard lam hlam (fun l => βHensel H x₀ R hHyp l) 0
+  rw [hcongr]
+  refine le_trans (partitionProd_weight_le H hH hDH lam
+    (fun l => βHensel H x₀ R hHyp l)) ?_
+  have hkey : (lam.parts.map (fun l => weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D)).sum
+      ≤ WithBot.some
+          ((lam.parts.map (fun l => B0 + (l + 1) * wW + (2 * l - 1) * xξ)).sum) := by
+    have hmem : ∀ l ∈ lam.parts,
+        weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+          ≤ WithBot.some (B0 + (l + 1) * wW + (2 * l - 1) * xξ) :=
+      fun l hl => hIH l (surviving_parts_lt lam hlam hl)
+    revert hmem
+    generalize lam.parts = ms
+    intro hmem
+    induction ms using Multiset.induction_on with
+    | empty => simp
+    | cons a s ih =>
+        rw [Multiset.map_cons, Multiset.sum_cons, Multiset.map_cons, Multiset.sum_cons,
+          WithBot.coe_add]
+        refine add_le_add (hmem a (Multiset.mem_cons_self a s)) ?_
+        exact ih (fun l hl => hmem l (Multiset.mem_cons_of_mem hl))
+  refine le_trans hkey ?_
+  rw [sum_map_structured_general lam.parts B0 wW xξ (fun l hl => lam.parts_pos hl)]
+  rw [lam.parts_sum, sigmaLambda, show Multiset.card lam.parts = lam.parts.card from rfl]
+
+/-- **The threaded REBASED per-term theorem**: the `hterm` obligation of
+`βHensel_weight_bound_rebased` holds given only the ξ-budget (= the proven
+`weight_ξ_bound`), a B-budget, and the rebased reduced need
+`nB + (m−1)·B₀ + (δ+m−2)·degW ≤ Lξ` (finding 12's frame; partition facts derived
+inline; both `harith` boundaries covered). -/
+theorem rebasedSuccTermBound_of_B_budget (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (k : ℕ)
+    (hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+        ≤ WithBot.some (structuredBoundRebased H R D l))
+    (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts)
+    {nB : ℕ}
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+      ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+    (hB : weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D ≤ WithBot.some nB)
+    (hreduced : nB + (sigmaLambda lam - 1) * (D + 1 - Bivariate.natDegreeY H)
+        + (deltaSave i1 + sigmaLambda lam - 2) * (H.leadingCoeff).natDegree
+      ≤ (Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) :
+    weight_Λ_over_𝒪 hH
+        ((W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+          * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+          * B_coeff H x₀ R i1 lam
+          * partitionProd lam
+              (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
+      ≤ WithBot.some (structuredBoundRebased H R D (k + 1)) := by
+  classical
+  have hi1le : i1 ≤ k + 1 := by
+    have := Finset.mem_range.mp hi1
+    omega
+  -- decompose the term and bound the four factors
+  refine le_trans (weight_Λ_over_𝒪_mul_le H hH hDH _ _) ?_
+  refine le_trans (add_le_add (weight_Λ_over_𝒪_mul_le H hH hDH _ _) le_rfl) ?_
+  refine le_trans (add_le_add
+    (add_le_add (weight_Λ_over_𝒪_mul_le H hH hDH _ _) le_rfl) le_rfl) ?_
+  have hW : weight_Λ_over_𝒪 hH ((W𝒪 H) ^ (i1 + deltaSave i1 - 1)) D
+      ≤ WithBot.some ((i1 + deltaSave i1 - 1) * (H.leadingCoeff).natDegree) := by
+    refine le_trans (weight_Λ_over_𝒪_pow_le H hH hDH _ _) ?_
+    exact nsmul_withBot_le _ _ (weight_Λ_over_𝒪_W H hH hDH)
+  have hXi : weight_Λ_over_𝒪 hH
+      ((ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)) D
+      ≤ WithBot.some ((2 * i1 + sigmaLambda lam - 2)
+          * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) := by
+    refine le_trans (weight_Λ_over_𝒪_pow_le H hH hDH _ _) ?_
+    exact nsmul_withBot_le _ _ hξ
+  have hPi : weight_Λ_over_𝒪 hH
+      (partitionProd lam (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
+      ≤ WithBot.some (sigmaLambda lam * (D + 1 - Bivariate.natDegreeY H)
+          + ((k + 1 - i1) + sigmaLambda lam) * (H.leadingCoeff).natDegree
+          + (2 * (k + 1 - i1) - sigmaLambda lam)
+              * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) := by
+    refine partitionProd_βHensel_weight_rebased_le x₀ R hHyp hH hDH k i1
+      (D + 1 - Bivariate.natDegreeY H) (H.leadingCoeff).natDegree
+      ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) ?_ lam hlam
+    intro l hl
+    have := hIH l hl
+    unfold structuredBoundRebased at this
+    exact this
+  refine le_trans (add_le_add (add_le_add (add_le_add hW hXi) hB) hPi) ?_
+  have hsum : (WithBot.some ((i1 + deltaSave i1 - 1) * (H.leadingCoeff).natDegree)
+        + WithBot.some ((2 * i1 + sigmaLambda lam - 2)
+            * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+        + WithBot.some nB
+        + WithBot.some (sigmaLambda lam * (D + 1 - Bivariate.natDegreeY H)
+            + ((k + 1 - i1) + sigmaLambda lam) * (H.leadingCoeff).natDegree
+            + (2 * (k + 1 - i1) - sigmaLambda lam)
+                * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))))
+      = WithBot.some ((i1 + deltaSave i1 - 1) * (H.leadingCoeff).natDegree
+          + (2 * i1 + sigmaLambda lam - 2)
+              * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))
+          + nB
+          + (sigmaLambda lam * (D + 1 - Bivariate.natDegreeY H)
+              + ((k + 1 - i1) + sigmaLambda lam) * (H.leadingCoeff).natDegree
+              + (2 * (k + 1 - i1) - sigmaLambda lam)
+                  * ((Bivariate.natDegreeY R - 1)
+                      * (D - Bivariate.natDegreeY H + 1)))) := rfl
+  rw [hsum]
+  refine WithBot.coe_le_coe.mpr ?_
+  unfold structuredBoundRebased
+  -- dispatch by partition shape through the generalized closing inequalities
+  rcases Nat.eq_or_lt_of_le hi1le with htop | hlt
+  · -- `i1 = k+1`: empty partition
+    subst htop
+    have hm0 : sigmaLambda lam = 0 := by
+      rw [sigmaLambda]
+      by_contra hne
+      obtain ⟨a, ha⟩ := Multiset.card_pos_iff_exists_mem.mp (Nat.pos_of_ne_zero hne)
+      have hpos := lam.parts_pos ha
+      have hsum' := lam.parts_sum
+      have hle : a ≤ lam.parts.sum := Multiset.le_sum_of_mem ha
+      omega
+    have hδ : deltaSave (k + 1) = 0 := by
+      rw [deltaSave]
+      simp
+    rw [hm0, hδ]
+    have hred : nB ≤ (Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1) := by
+      have := hreduced
+      omega
+    exact harith_of_reduced_top_general hred
+  · -- `i1 ≤ k`: nonempty partition
+    have hpos : 0 < k + 1 - i1 := by omega
+    have hm1 : 1 ≤ sigmaLambda lam := by
+      rw [sigmaLambda]
+      by_contra hne
+      have hempty : lam.parts = 0 := Multiset.card_eq_zero.mp (by omega)
+      have hsum' := lam.parts_sum
+      rw [hempty] at hsum'
+      simp at hsum'
+      omega
+    have hm2 : i1 = 0 → 2 ≤ sigmaLambda lam := by
+      intro hi0
+      subst hi0
+      by_contra hne
+      have hm1' : Multiset.card lam.parts = 1 := by
+        rw [sigmaLambda] at hm1 hne
+        omega
+      obtain ⟨a, ha⟩ := Multiset.card_eq_one.mp hm1'
+      have hsum' := lam.parts_sum
+      rw [ha] at hsum'
+      simp at hsum'
+      apply hlam
+      rw [ha]
+      have hone : a = k + 1 := by omega
+      rw [hone] at *
+      exact Multiset.mem_singleton_self _
+    have hmS : sigmaLambda lam ≤ k + 1 - i1 := by
+      rw [sigmaLambda]
+      calc Multiset.card lam.parts
+          = (lam.parts.map (fun _ => 1)).sum := by simp
+        _ ≤ (lam.parts.map id).sum := Multiset.sum_map_le_sum_map _ _
+            (fun l hl => lam.parts_pos hl)
+        _ = lam.parts.sum := by simp
+        _ = k + 1 - i1 := lam.parts_sum
+    have hδdef : deltaSave i1 = if i1 = 0 then 1 else 0 := by
+      rw [deltaSave]
+    refine harith_of_reduced_general hδdef hm2 hm1 hi1le hmS ?_
+    have := hreduced
+    rwa [hδdef] at this
+
+/-! ## The capstone composition: (P1) conditional only on the per-cell B-budgets -/
+
+/-- **The (P1) weight bound, conditional ONLY on the per-cell B-coefficient budgets.**
+Composes the entire rebased apparatus: the proven `ClaimA2.weight_ξ_bound` supplies the
+ξ-budget; the per-cell budget hypothesis supplies `nB` with the rebased reduced need;
+`rebasedSuccTermBound_of_B_budget` (the threaded per-term theorem) discharges every cell;
+`βHensel_weight_bound_rebased` (the assembled induction) closes the invariant; and the
+in-tree `βHensel_weight_bound_of_structured_weight_rebased` collapses it into the loose
+Claim-A.2 target `(2t+1)·d_R·D` consumed by the kill-target/Claim-5.10 chain. -/
+theorem βHensel_weight_bound_of_cell_budgets (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hWdeg : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hbudget : ∀ (k i1 : ℕ), i1 ∈ Finset.range (k + 2) →
+      ∀ lam : Nat.Partition (k + 1 - i1), (k + 1) ∉ lam.parts →
+      ∃ nB : ℕ,
+        weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D ≤ WithBot.some nB ∧
+        nB + (sigmaLambda lam - 1) * (D + 1 - Bivariate.natDegreeY H)
+            + (deltaSave i1 + sigmaLambda lam - 2) * (H.leadingCoeff).natDegree
+          ≤ (Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
+  refine βHensel_weight_bound_of_structured_weight_rebased H x₀ R hHyp hH hdR2 hdHR hWdeg t ?_
+  have hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+      ≤ WithBot.some
+        ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) :=
+    ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hD_Rx0
+  have hcore := βHensel_weight_bound_rebased x₀ R hHyp hH hDH
+    (fun k hIH i1 hi1 lam hlam => by
+      obtain ⟨nB, hB, hred⟩ := hbudget k i1 hi1 lam hlam
+      exact rebasedSuccTermBound_of_B_budget x₀ R hHyp hH hDH k hIH i1 hi1 lam hlam
+        hξ hB hred) t
+  unfold structuredBoundRebased at hcore
+  exact hcore
+
 /-! ## Source audit -/
 
 #print axioms harith_of_reduced
 #print axioms harith_of_reduced_top
+#print axioms harith_of_reduced_general
+#print axioms harith_of_reduced_top_general
+#print axioms sum_map_structured_general
+#print axioms partitionProd_βHensel_weight_rebased_le
+#print axioms rebasedSuccTermBound_of_B_budget
+#print axioms βHensel_weight_bound_of_cell_budgets
 #print axioms structuredSuccTermBound_of_B_budget
 #print axioms nsmul_coe_withBot
 #print axioms structuredSuccTermBound_of_budgets
