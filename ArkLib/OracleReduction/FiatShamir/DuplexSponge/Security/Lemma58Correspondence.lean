@@ -1486,6 +1486,45 @@ theorem anchored_of_E_h
         (base_earlier_inv_slots log hcons f hf hfo j j' hj'j j.isLt sI4 sO4 hb')).2
   exact base_hash_anchored log hcons f hf hfo j j.isLt stmt capSeg hbj hcap
 
+open DuplexSpongeFS.Paper in
+/-- **E_p arm.** A forward-permutation capacity duplicate anchors the consistent log. -/
+theorem anchored_of_E_p
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) log)
+    (hEp : capacitySegmentDupPermPaper log) :
+    AnchoredFrom ((∅, []) : DSCache StmtIn U) log := by
+  obtain ⟨f, hf, hfo⟩ := removeRedundant_firstOcc log
+  obtain ⟨j, capSeg, ⟨sI, sO, hbj, hcapseg⟩, hdisj⟩ := hEp
+  -- anchor on base[j] = ⟨inr inl sI, sO⟩, answer cap sO.cap = capSeg
+  refine base_fwd_anchored log hcons f hf hfo j j.isLt sI sO hbj ?_
+  -- produce: sO.cap ∈ slotList (take f j) ∨ sO.cap = sI.cap
+  rcases hdisj with ⟨j', hj'j, stmt', hb'⟩ | ⟨j', hj'j, sI1, sO1, hb', hc1⟩
+    | ⟨j', hj'j, sO2, sI2, hb', hc2⟩ | ⟨j', hj'j, sI3, sO3, hb', hc3⟩
+    | ⟨j', hj'j, sO4, sI4, hb', hc4⟩
+  · refine Or.inl ?_; rw [hcapseg]
+    exact base_earlier_hash_slot log hcons f hf hfo j j' hj'j j.isLt stmt' capSeg hb'
+  · refine Or.inl ?_; rw [hcapseg]
+    exact hc1 ▸ (mem_slotList_of_mem_perm _
+      (base_earlier_fwd_slots log hcons f hf hfo j j' hj'j j.isLt sI1 sO1 hb')).2
+  · rcases lt_or_eq_of_le hj'j with hlt | heq
+    · refine Or.inl ?_; rw [hcapseg]
+      exact hc2 ▸ (mem_slotList_of_mem_perm _
+        (base_earlier_inv_slots log hcons f hf hfo j j' hlt j.isLt sI2 sO2 hb')).1
+    · exact absurd (hbj.symm.trans (heq ▸ hb')) (by simp)
+  · rcases lt_or_eq_of_le hj'j with hlt | heq
+    · refine Or.inl ?_; rw [hcapseg]
+      exact hc3 ▸ (mem_slotList_of_mem_perm _
+        (base_earlier_fwd_slots log hcons f hf hfo j j' hlt j.isLt sI3 sO3 hb')).1
+    · have hbeq : (⟨.inr (.inl sI), sO⟩ : DSEntry StmtIn U) = ⟨.inr (.inl sI3), sO3⟩ :=
+        hbj.symm.trans (heq ▸ hb')
+      have hsI : sI = sI3 := Sum.inl.inj (Sum.inr.inj (congrArg Sigma.fst hbeq))
+      exact Or.inr (by rw [hcapseg, ← hc3, hsI])
+  · rcases lt_or_eq_of_le hj'j with hlt | heq
+    · refine Or.inl ?_; rw [hcapseg]
+      exact hc4 ▸ (mem_slotList_of_mem_perm _
+        (base_earlier_inv_slots log hcons f hf hfo j j' hlt j.isLt sI4 sO4 hb')).2
+    · exact absurd (hbj.symm.trans (heq ▸ hb')) (by simp)
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -1590,6 +1629,7 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.base_earlier_inv_slots
 #print axioms DuplexSpongeFS.EagerLazyDS.base_earlier_hash_slot
 #print axioms DuplexSpongeFS.EagerLazyDS.anchored_of_E_h
+#print axioms DuplexSpongeFS.EagerLazyDS.anchored_of_E_p
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
