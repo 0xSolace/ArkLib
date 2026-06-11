@@ -1252,6 +1252,7 @@ import ArkLib.OracleReduction.DecisionTail
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.FiatShamir.Basic
+import ArkLib.OracleReduction.FiatShamir.RunEqHonestExecution
 import ArkLib.OracleReduction.FiatShamir.BasicCompleteness
 import ArkLib.OracleReduction.FiatShamir.ChallengeOracleSampling
 import ArkLib.OracleReduction.FiatShamir.CompletenessUnroll
