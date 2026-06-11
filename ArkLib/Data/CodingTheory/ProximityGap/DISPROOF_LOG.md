@@ -6853,3 +6853,38 @@ the "common 2-plane" of the boundary probes = the (G, xG) fraction plane. Probes
 band-3 values n − [3∤n] at n = 6,8,10,12; band-4 = 12 = n at (13,μ₁₂,6). At 2-power n
 every 2-power band's boundary row carries n/q. Constraint for future sup-side work:
 any collapse-type theorem at d ≤ 2b−1 must exclude b | n smooth domains.
+
+**O154 V1 dive, finding 8 — THE PER-TERM RESIDUAL CLOSES IN BOTH δ-CASES (complete
+hand-verification of `StructuredSuccTermBound`; the per-term Lean proof is now pure
+transcription with zero unknowns).** With `w := D − d_H`, `degW = w` (tight anchor),
+`Lξ = (d_R−1)(w+1)`, `m := sigmaLambda lam = parts.card`, `S := parts.sum = k+1−i1`,
+`δ := deltaSave i1`:
+
+* **Structured partition sum:** `Σ_parts [1 + (part+1)·degW + (2·part−1)·Lξ]
+  = m + (S+m)·degW + (2S−m)·Lξ` (parts ≥ 1 makes every truncation safe; the new multiset
+  evaluation lemma needed is the structured analogue of the in-tree
+  `sum_map_two_mul_succ`).
+* **Truncation-safety at the boundary:** for `i1 = 0`, `hlam : (k+1) ∉ parts` forces
+  `m ≥ 2` (a one-part partition of `k+1` would have part `= k+1`), so
+  `2·i1 + m − 2 ≥ 0` is safe; for `i1 ≥ 1` it is safe outright.
+* **Totals:** ξ-coefficient `= 2k` (finding 3); W-coefficient `= k + δ + m`. Against the
+  target `structuredBound(k+1) = 1 + (k+2)·degW + (2k+1)·Lξ`, the residual need is
+  `Λ(B) + (m−1) + (δ+m−2)·degW ≤ Lξ`.
+* **Case `i1 ≥ 1` (δ = 0):** item-(d) B-bound `Λ(B) ≤ (D−m) + (d_R−m)·w` gives
+  LHS − RHS `= d_H − d_R ≤ 0` ✓ (`d_H ≤ d_R` since `H ∣ R(x₀)`, in-tree
+  `evalX_natDegree_le` + divisibility).
+* **Case `i1 = 0` (δ = 1):** the W-divisibility credit (item (b),
+  `leadingCoeff_dvd_evalX_hasseDerivY_top` — note `i1 = 0` means NO X-Hasse, exactly the
+  case (b) covers) improves the B-bound's dominant term by `w`:
+  `Λ(B) ≤ (D−m) + (d_R−m−1)·w`, and the need reduces to `D ≤ w + d_R ⟺ d_H ≤ d_R` ✓.
+* **Transcription plan for `StructuredSuccTermBound` (final):** (i) the structured
+  partition-sum evaluation lemma (multiset, mirrors `sum_map_two_mul_succ`);
+  (ii) the structured analogue of `partitionProd_βHensel_weight_le` (pattern-copy:
+  guard rewrite + multiset bound + structured IH + (i)); (iii) decompose the term via
+  `_mul_le`, bound `W`-power (`_pow_le` + `_W`), `ξ`-power (`_pow_le` +
+  `weight_ξ_bound`), `B` (item (d) + shape hypotheses from the GS budgets, with the
+  item-(b) credit at `i1 = 0`); (iv) the ℕ-bookkeeping above (omega/nlinarith, both
+  δ-cases). All four steps have proven templates in-tree. After it:
+  `βHensel_weight_bound_structured` fires (assembled), the collapse fires (proven),
+  the kill-target chain fires (assembled), `JohnsonDischargeStatement` falls, and
+  `kkh26_deltaStar_pin_of_interior_ceiling` pins δ* exactly.
