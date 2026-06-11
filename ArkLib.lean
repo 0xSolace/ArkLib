@@ -42,6 +42,7 @@ import ArkLib.Data.CodingTheory.AGL24AgreementHypergraph
 import ArkLib.Data.CodingTheory.AGL24DeterministicChain
 import ArkLib.Data.CodingTheory.AGL24KernelVector
 import ArkLib.Data.CodingTheory.AGL24ListDecodingBridge
+import ArkLib.Data.CodingTheory.AGL24RSInstance
 import ArkLib.Data.CodingTheory.AGL24ReducedIntersectionMatrix
 import ArkLib.Data.CodingTheory.AGL24SubfamilyTransport
 import ArkLib.Data.CodingTheory.AGL24UnionBound
@@ -719,7 +720,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26AsymptoticCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26BadLineConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26EntropyForm
-import ArkLib.Data.CodingTheory.ProximityGap.KKH26ParsevalThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26PolyFieldCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26StratifiedSpread
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26SumsOfRootsOfUnity
