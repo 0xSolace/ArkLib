@@ -831,6 +831,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCADeltaStarSandwich
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEquivariance
+import ArkLib.Data.CodingTheory.ProximityGap.MCAExactProfile
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEventAgreeWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MCAForallDoubleCoverRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
