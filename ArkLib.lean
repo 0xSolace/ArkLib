@@ -1001,6 +1001,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SmoothFiberCount
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SmoothMomentBridgeOnLattice
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
+import ArkLib.Data.CodingTheory.ProximityGap.SparseDeviationExtremality
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovFrobeniusReduction
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovHasseInterface
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovHighMultVanisher
