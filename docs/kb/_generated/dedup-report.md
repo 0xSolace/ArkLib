@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2252 files, 28890 declarations
+- `ArkLib` — 2256 files, 28914 declarations
 
 ## Same short-name across multiple files (1227 groups)
 
@@ -2298,6 +2298,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ProximityGap.epsCA_le_one` [ArkLib/Data/CodingTheory/ProximityGap/Errors.lean:247](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean#L247) — The CA error is bounded by the total probability mass.
 - `theorem CodingTheory.Bridge.epsCA_le_one` [ArkLib/ToMathlib/BridgeListDecodingCA.lean:65](../../../ArkLib/ToMathlib/BridgeListDecodingCA.lean#L65) — **`ε_ca ≤ 1`.** The correlated-agreement error is a supremum of values each of which is either `0` o
+
+### `epsMCA_le_card_div_at_granularity` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAAntichainEngine.epsMCA_le_card_div_at_granularity` [ArkLib/Data/CodingTheory/ProximityGap/MCAAntichainEngine.lean:179](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAAntichainEngine.lean#L179) — **The tight granularity cap:** `ε_mca(C, 1/n) ≤ n/q` for every linear code.
+- `theorem ProximityGap.MCAWitnessCountEngine.epsMCA_le_card_div_at_granularity` [ArkLib/Data/CodingTheory/ProximityGap/MCAWitnessCountEngine.lean:208](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAWitnessCountEngine.lean#L208) — **Sharper granularity cap:** the universal witness in the raw `n + 1` witness-family count does not
 
 ### `epsMCAgs_badList_eq_one` (2 declarations, 2 files)
 
@@ -6179,11 +6184,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.RadicalWire304.split_canonical_radical` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:118](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L118) — **K4 split (the canonical radical split)**: at the bundle's own monic `H`, the RADICAL of the fiber
 - `theorem ArkLib.RadicalWire304.split_canonical_radical` [ArkLib/ToMathlib/RadicalAssembler.lean:137](../../../ArkLib/ToMathlib/RadicalAssembler.lean#L137) — **K4 split (the canonical radical split)**: at the bundle's own monic `H`, the RADICAL of the fiber
-
-### `stackJointAgreesOn` (2 declarations, 2 files)
-
-- `def ProximityGap.stackJointAgreesOn` [ArkLib/Data/CodingTheory/ProximityGap/GeneratorMCA.lean:74](../../../ArkLib/Data/CodingTheory/ProximityGap/GeneratorMCA.lean#L74) — The stack `f = (f₀, …, f_{ℓ−1})` **jointly agrees** with a tuple of codewords of `C` on every positi
-- `def ProximityGap.stackJointAgreesOn` [ArkLib/Data/CodingTheory/ProximityGap/MCACurveEvent.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/MCACurveEvent.lean#L54) — **`L`-ary joint agreement on a set** (the `L`-row generalization of `pairJointAgreesOn`): there is a
 
 ### `step3` (2 declarations, 2 files)
 
