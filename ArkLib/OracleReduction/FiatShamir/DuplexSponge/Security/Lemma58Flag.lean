@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.EagerLazyDS
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.BirthdayBound
 
 /-!
 # The ghost-flagged lazy oracle (CO25 Lemma 5.8, the answer-anchored accounting carrier)
@@ -451,6 +452,144 @@ theorem lazyDSImplFlagged_step_bad
       · exact hfl h'
       · exact absurd (hcfind.symm.trans h'.1) (by simp)
 
+/-! ## The engine application and the Gauss-sum arithmetic -/
+
+lemma dsCacheSize_empty :
+    dsCacheSize ((∅, ([] : List (CanonicalSpongeState U × CanonicalSpongeState U)))
+      : DSCache StmtIn U) = 0 := by
+  classical
+  simp [dsCacheSize]
+
+/-- **The accumulated flag bound**: a `T`-query computation, run from the empty cache with
+the flag down, ends flagged with probability at most `∑_{i<T} (2i+1)·|U|^R/(|U|^N − i)`. -/
+theorem probEvent_flag_final_le_sum {α : Type}
+    (oa : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ)
+    (hT : IsTotalQueryBound oa T) :
+    Pr[ fun xs : α × (DSCache StmtIn U × Prop) => xs.2.2 |
+        (simulateQ lazyDSImplFlagged oa).run
+          ((∅, ([] : List (CanonicalSpongeState U × CanonicalSpongeState U))), False)]
+      ≤ ∑ i ∈ Finset.range T, lemma58StepBound U i := by
+  have h := DuplexSpongeFS.BirthdayBound.probEvent_simulateQ_stateT_le_sum_of_step
+    (impl := lazyDSImplFlagged) (bad := fun s : DSCache StmtIn U × Prop => s.2)
+    (size := fun s : DSCache StmtIn U × Prop => dsCacheSize s.1)
+    (ε := lemma58StepBound U) lemma58StepBound_monotone
+    (fun t s hs => lazyDSImplFlagged_step_bad t s hs)
+    (fun t s _ => lazyDSImplFlagged_step_size t s) T hT
+    ((∅, []), False) not_false
+  simpa [dsCacheSize_empty] using h
+
+lemma sum_range_two_mul_add_one (T : ℕ) :
+    ∑ i ∈ Finset.range T, (2 * i + 1) = T ^ 2 := by
+  induction T with
+  | zero => simp
+  | succ n ih => rw [Finset.sum_range_succ, ih]; ring
+
+/-- The Gauss-sum domination: below half the state space, the accumulated step bounds sum
+to at most `2T²/|U|^C`. -/
+theorem sum_lemma58StepBound_le {T : ℕ}
+    (h2T : 2 * T ≤ Fintype.card (CanonicalSpongeState U)) :
+    ∑ i ∈ Finset.range T, lemma58StepBound U i
+      ≤ ((2 * T ^ 2 : ℕ) : ℝ≥0∞) / ((Fintype.card U ^ SpongeSize.C : ℕ) : ℝ≥0∞) := by
+  classical
+  have hNE : Nonempty U := ⟨0⟩
+  have hcu0 : (Fintype.card U : ℝ≥0∞) ≠ 0 := Nat.cast_ne_zero.mpr Fintype.card_ne_zero
+  have hcut : (Fintype.card U : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top _
+  set B : ℕ := Fintype.card (CanonicalSpongeState U) with hB
+  have hterm : ∀ i ∈ Finset.range T, lemma58StepBound U i
+      ≤ (((2 * (2 * i + 1)) : ℕ) : ℝ≥0∞) * (Fintype.card U : ℝ≥0∞) ^ SpongeSize.R
+        / (B : ℝ≥0∞) := by
+    intro i hi
+    have hiT : i < T := Finset.mem_range.mp hi
+    have hiB : 2 * i ≤ B := by omega
+    have hhalf : B ≤ 2 * (B - i) := by omega
+    unfold lemma58StepBound
+    rw [show ((Fintype.card (CanonicalSpongeState U) : ℝ≥0∞) - (i : ℕ))
+        = (((B - i : ℕ)) : ℝ≥0∞) from (ENNReal.natCast_sub B i).symm]
+    rw [← ENNReal.mul_div_mul_left
+      ((2 * (i : ℝ≥0∞) + 1) * (Fintype.card U : ℝ≥0∞) ^ SpongeSize.R)
+      (((B - i : ℕ)) : ℝ≥0∞) (two_ne_zero) (ENNReal.ofNat_ne_top)]
+    refine ENNReal.div_le_div (le_of_eq ?_) ?_
+    · push_cast
+      ring
+    · calc (B : ℝ≥0∞) = (((B : ℕ)) : ℝ≥0∞) := rfl
+        _ ≤ (((2 * (B - i) : ℕ)) : ℝ≥0∞) := by exact_mod_cast hhalf
+        _ = 2 * (((B - i : ℕ)) : ℝ≥0∞) := by push_cast; ring
+  refine le_trans (Finset.sum_le_sum hterm) (le_of_eq ?_)
+  simp only [div_eq_mul_inv]
+  rw [← Finset.sum_mul, ← Finset.sum_mul]
+  have hsum : ∑ i ∈ Finset.range T, (((2 * (2 * i + 1)) : ℕ) : ℝ≥0∞)
+      = ((2 * T ^ 2 : ℕ) : ℝ≥0∞) := by
+    rw [← Nat.cast_sum]
+    congr 1
+    rw [← Finset.mul_sum, sum_range_two_mul_add_one]
+  rw [hsum]
+  have hBval : (B : ℝ≥0∞)
+      = (Fintype.card U : ℝ≥0∞) ^ SpongeSize.R
+          * (Fintype.card U : ℝ≥0∞) ^ SpongeSize.C := by
+    rw [hB, card_vector_pow, Nat.cast_pow, ← pow_add, SpongeSize.R_plus_C_eq_N]
+  rw [hBval, Nat.cast_pow,
+    ENNReal.mul_inv (Or.inl (pow_ne_zero _ hcu0)) (Or.inl (ENNReal.pow_ne_top hcut)),
+    show ((2 * T ^ 2 : ℕ) : ℝ≥0∞) * (Fintype.card U : ℝ≥0∞) ^ SpongeSize.R
+        * (((Fintype.card U : ℝ≥0∞) ^ SpongeSize.R)⁻¹
+            * (((Fintype.card U : ℝ≥0∞) ^ SpongeSize.C))⁻¹)
+      = ((Fintype.card U : ℝ≥0∞) ^ SpongeSize.R
+          * ((Fintype.card U : ℝ≥0∞) ^ SpongeSize.R)⁻¹)
+        * (((2 * T ^ 2 : ℕ) : ℝ≥0∞)
+            * (((Fintype.card U : ℝ≥0∞) ^ SpongeSize.C))⁻¹) from by ring,
+    ENNReal.mul_inv_cancel (pow_ne_zero _ hcu0) (ENNReal.pow_ne_top hcut), one_mul]
+
+open DuplexSpongeFS.BirthdayBound in
+/-- **The complete engine output for CO25 Lemma 5.8**: the final flag probability of any
+`T`-query computation, in real form, is at most `(7T² − 3T)/(2|U|^C)` — unconditionally
+(beyond half the state space the bound exceeds `1`). -/
+theorem probEvent_flag_final_toReal_le_lemma5_8Bound {α : Type}
+    (oa : OracleComp (duplexSpongeChallengeOracle StmtIn U) α) (T : ℕ)
+    (hT : IsTotalQueryBound oa T) :
+    (Pr[ fun xs : α × (DSCache StmtIn U × Prop) => xs.2.2 |
+        (simulateQ lazyDSImplFlagged oa).run
+          ((∅, ([] : List (CanonicalSpongeState U × CanonicalSpongeState U))), False)]).toReal
+      ≤ lemma5_8Bound U T := by
+  have hNE : Nonempty U := ⟨0⟩
+  have hcardU : (1 : ℕ) ≤ Fintype.card U := Fintype.card_pos
+  have hpowC : (0 : ℝ) < (Fintype.card U : ℝ) ^ SpongeSize.C := by positivity
+  rcases Nat.eq_zero_or_pos T with rfl | hT1
+  · -- `T = 0`: the sum is empty, the flag stays down
+    have h0 : Pr[ fun xs : α × (DSCache StmtIn U × Prop) => xs.2.2 |
+        (simulateQ lazyDSImplFlagged oa).run
+          ((∅, ([] : List (CanonicalSpongeState U × CanonicalSpongeState U))), False)] = 0 :=
+      le_antisymm (by simpa using probEvent_flag_final_le_sum oa 0 hT) (zero_le _)
+    rw [h0]
+    simp [lemma5_8Bound]
+  rcases Nat.le_total (2 * T) (Fintype.card (CanonicalSpongeState U)) with h2T | h2T
+  · -- small `T`: the Gauss sum applies
+    have h := le_trans (probEvent_flag_final_le_sum oa T hT) (sum_lemma58StepBound_le h2T)
+    have hfin : ((2 * T ^ 2 : ℕ) : ℝ≥0∞) / ((Fintype.card U ^ SpongeSize.C : ℕ) : ℝ≥0∞)
+        ≠ ⊤ := by
+      refine ENNReal.div_ne_top (ENNReal.natCast_ne_top _) ?_
+      exact Nat.cast_ne_zero.mpr (by positivity)
+    refine le_trans (ENNReal.toReal_mono hfin h) ?_
+    rw [ENNReal.toReal_div, ENNReal.toReal_natCast, ENNReal.toReal_natCast]
+    unfold lemma5_8Bound
+    rw [div_le_div_iff₀ (by positivity) (by positivity)]
+    push_cast
+    have hTR : (1 : ℝ) ≤ (T : ℝ) := by exact_mod_cast hT1
+    have hTT : (0 : ℝ) ≤ 3 * (T : ℝ) ^ 2 - 3 * T := by nlinarith
+    nlinarith [mul_nonneg hTT hpowC.le]
+  · -- large `T`: the bound exceeds one
+    have hple : (Pr[ fun xs : α × (DSCache StmtIn U × Prop) => xs.2.2 |
+        (simulateQ lazyDSImplFlagged oa).run ((∅, []), False)]).toReal ≤ 1 :=
+      le_trans (ENNReal.toReal_mono ENNReal.one_ne_top probEvent_le_one) (by simp)
+    refine le_trans hple ?_
+    unfold lemma5_8Bound
+    rw [le_div_iff₀ (by positivity)]
+    have hCN : Fintype.card U ^ SpongeSize.C ≤ Fintype.card (CanonicalSpongeState U) := by
+      rw [card_vector_pow]
+      exact Nat.pow_le_pow_right hcardU (by have := SpongeSize.R_plus_C_eq_N (sz := ‹_›); omega)
+    have hC2T : Fintype.card U ^ SpongeSize.C ≤ 2 * T := le_trans hCN h2T
+    have hTR : (1 : ℝ) ≤ (T : ℝ) := by exact_mod_cast hT1
+    have hCR : (Fintype.card U : ℝ) ^ SpongeSize.C ≤ 2 * T := by exact_mod_cast hC2T
+    nlinarith [sq_nonneg ((T : ℝ) - 1)]
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -460,3 +599,6 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.card_capacityFiber_preimage
 #print axioms DuplexSpongeFS.EagerLazyDS.slotList_length_le
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_bad
+#print axioms DuplexSpongeFS.EagerLazyDS.probEvent_flag_final_le_sum
+#print axioms DuplexSpongeFS.EagerLazyDS.sum_lemma58StepBound_le
+#print axioms DuplexSpongeFS.EagerLazyDS.probEvent_flag_final_toReal_le_lemma5_8Bound
