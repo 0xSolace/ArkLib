@@ -563,6 +563,84 @@ theorem pmf_absorb {α : Type} (c : List (X × X)) (a : X)
     show (fun π => ψ (permExtending c π)) = ψ ∘ (permExtending c) from rfl,
     ← PMF.map_comp, map_permExtending_uniform_fintype c hkeys hvals]
 
+/-- **The miss-case absorption, inverse direction**: drawing a fresh unused *key* and
+overlaying the grown cache is the overlay of the original cache — the inverse chain rule
+composed with the overlay pushforward. -/
+theorem pmf_absorb_inv {α : Type} (c : List (X × X)) (b : X)
+    (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
+    (hb : b ∉ c.map Prod.snd) (hne : (extendsFinset c).Nonempty)
+    (ψ : Equiv.Perm X → α) :
+    (PMF.uniformOfFinset (unusedFinset (c.map Prod.swap))
+        (unusedFinset_nonempty (c.map Prod.swap) b
+          (by simpa [List.map_map, Function.comp_def] using hvals)
+          (by simpa [List.map_map, Function.comp_def] using hkeys)
+          (by simpa [List.map_map, Function.comp_def] using hb))).bind (fun a =>
+      ((PMF.uniformOfFintype (Equiv.Perm X)).map
+        (fun π => ψ (permExtending (c.concat (a, b)) π))))
+      = (PMF.uniformOfFintype (Equiv.Perm X)).map
+          (fun π => ψ (permExtending c π)) := by
+  classical
+  have hgrow : ∀ a, a ∉ c.map Prod.fst →
+      (((c.concat (a, b)).map Prod.fst).Nodup ∧ ((c.concat (a, b)).map Prod.snd).Nodup) := by
+    intro a ha
+    constructor
+    · simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+      rw [List.nodup_append]
+      exact ⟨hkeys, List.nodup_singleton _, by
+        intro x hx y hy
+        simp only [List.mem_singleton] at hy
+        subst hy
+        exact fun h => ha (h ▸ hx)⟩
+    · simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil]
+      rw [List.nodup_append]
+      exact ⟨hvals, List.nodup_singleton _, by
+        intro x hx y hy
+        simp only [List.mem_singleton] at hy
+        subst hy
+        exact fun h => hb (h ▸ hx)⟩
+  rw [LazyPermMarginal.bind_congr_support _ _
+    (fun a =>
+      if h : (extendsFinset (c.concat (a, b))).Nonempty then
+        (PMF.uniformOfFinset (extendsFinset (c.concat (a, b))) h).map ψ
+      else (PMF.uniformOfFinset (extendsFinset c) hne).map ψ)
+    (by
+      intro a ha
+      rw [PMF.mem_support_uniformOfFinset_iff, mem_unusedFinset] at ha
+      have haK : a ∉ c.map Prod.fst := by
+        simpa [List.map_map, Function.comp_def] using ha
+      obtain ⟨hk', hv'⟩ := hgrow a haK
+      have hpos : (extendsFinset (c.concat (a, b))).Nonempty := by
+        have := extendsFinset_append_nonempty [] (c.concat (a, b))
+          (by simpa using hk') (by simpa using hv') (by simp)
+        simpa using this
+      dsimp only
+      rw [dif_pos hpos,
+        show (fun π => ψ (permExtending (c.concat (a, b)) π))
+          = ψ ∘ (permExtending (c.concat (a, b))) from rfl, ← PMF.map_comp,
+        map_permExtending_uniform_fintype (c.concat (a, b)) hk' hv'])]
+  have hpull : (PMF.uniformOfFinset (unusedFinset (c.map Prod.swap))
+      (unusedFinset_nonempty (c.map Prod.swap) b
+        (by simpa [List.map_map, Function.comp_def] using hvals)
+        (by simpa [List.map_map, Function.comp_def] using hkeys)
+        (by simpa [List.map_map, Function.comp_def] using hb))).bind (fun a =>
+        (if h : (extendsFinset (c.concat (a, b))).Nonempty then
+          (PMF.uniformOfFinset (extendsFinset (c.concat (a, b))) h).map ψ
+        else (PMF.uniformOfFinset (extendsFinset c) hne).map ψ))
+      = ((PMF.uniformOfFinset (unusedFinset (c.map Prod.swap))
+          (unusedFinset_nonempty (c.map Prod.swap) b
+            (by simpa [List.map_map, Function.comp_def] using hvals)
+            (by simpa [List.map_map, Function.comp_def] using hkeys)
+            (by simpa [List.map_map, Function.comp_def] using hb))).bind (fun a =>
+            if h : (extendsFinset (c.concat (a, b))).Nonempty then
+              PMF.uniformOfFinset (extendsFinset (c.concat (a, b))) h
+            else PMF.uniformOfFinset (extendsFinset c) hne)).map ψ := by
+    rw [PMF.map_bind]
+    refine congrArg _ (funext fun a => ?_)
+    split_ifs <;> rfl
+  rw [hpull, ← uniformOfFinset_extends_step_inv c b hkeys hvals hb hne,
+    show (fun π => ψ (permExtending c π)) = ψ ∘ (permExtending c) from rfl,
+    ← PMF.map_comp, map_permExtending_uniform_fintype c hkeys hvals]
+
 end PMFAbsorption
 
 /- WIP (4B master induction — design in memory; statement+pure case verified in-session):
@@ -599,4 +677,5 @@ end LazyPermBridge
 #print axioms LazyPermBridge.map_onestep_uniform
 #print axioms LazyPermBridge.map_permExtending_uniform
 #print axioms LazyPermBridge.pmf_absorb
+#print axioms LazyPermBridge.pmf_absorb_inv
 #print axioms LazyPermBridge.map_permExtending_uniform_fintype
