@@ -70,9 +70,101 @@ theorem subfamily_not_all_equal {L t k : ℕ} {F : Type*} [Field F]
     absurd (hσ hc) (by simp [Fin.ext_iff])
   exact hσne (hdistinct h)
 
+
+/-! ## The weak-partition-connectivity transport -/
+
+variable {L t k : ℕ}
+
+/-- The pushforward of a partition of `univ : Finset (Fin (t+1))` along an injective map into
+`Fin (L+1)` with image `J`: a partition of `J`. -/
+def Finpartition.pushforward {J : Finset (Fin (L + 1))}
+    (σ : Fin (t + 1) → Fin (L + 1)) (hσ : Function.Injective σ)
+    (himg : Finset.univ.image σ = J)
+    (P' : Finpartition (Finset.univ : Finset (Fin (t + 1)))) : Finpartition J where
+  parts := P'.parts.image (Finset.image σ)
+  supIndep := by
+    rw [Finset.supIndep_iff_pairwiseDisjoint]
+    intro c₁ hc₁ c₂ hc₂ hne
+    obtain ⟨p₁, hp₁, rfl⟩ := Finset.mem_image.mp hc₁
+    obtain ⟨p₂, hp₂, rfl⟩ := Finset.mem_image.mp hc₂
+    have hpne : p₁ ≠ p₂ := fun h => hne (by rw [h])
+    have hdisj := (Finset.supIndep_iff_pairwiseDisjoint.mp P'.supIndep) hp₁ hp₂ hpne
+    exact (Finset.disjoint_image hσ).mpr hdisj
+  sup_parts := by
+    ext y
+    simp only [Finset.mem_sup, Finset.mem_image, id]
+    constructor
+    · rintro ⟨c, ⟨p, _, rfl⟩, hyc⟩
+      obtain ⟨x, _, rfl⟩ := Finset.mem_image.mp hyc
+      rw [← himg]
+      exact Finset.mem_image.mpr ⟨x, Finset.mem_univ x, rfl⟩
+    · intro hy
+      rw [← himg] at hy
+      obtain ⟨x, _, rfl⟩ := Finset.mem_image.mp hy
+      obtain ⟨p, hp, hxp⟩ := P'.exists_mem (Finset.mem_univ x)
+      exact ⟨p.image σ, ⟨p, hp, rfl⟩, Finset.mem_image.mpr ⟨x, hxp, rfl⟩⟩
+  bot_notMem := by
+    intro hmem
+    obtain ⟨p, hp, hpe⟩ := Finset.mem_image.mp hmem
+    have hp0 : p = ∅ := Finset.image_eq_empty.mp hpe
+    rw [hp0] at hp
+    exact P'.bot_notMem hp
+
+/-- **The weak-partition-connectivity transport**: if the restriction of the edge family to
+`J` is `k`-weakly-partition-connected, so is its `σ`-preimage family on the full vertex set
+`Fin (t+1)` (for `σ` injective with image `J`). -/
+theorem weaklyPartitionConnected_preimage {ι' : Type*} [Fintype ι'] [DecidableEq ι']
+    (e : ι' → Finset (Fin (L + 1))) {J : Finset (Fin (L + 1))}
+    (σ : Fin (t + 1) → Fin (L + 1)) (hσ : Function.Injective σ)
+    (himg : Finset.univ.image σ = J)
+    (hwpc : WeaklyPartitionConnected k J e) :
+    WeaklyPartitionConnected k (Finset.univ : Finset (Fin (t + 1)))
+      (fun i => (e i).preimage σ hσ.injOn) := by
+  classical
+  intro P'
+  set P := Finpartition.pushforward σ hσ himg P' with hP
+  have himg_inj : Function.Injective (Finset.image σ) := Finset.image_injective hσ
+  have hcard : P.parts.card = P'.parts.card := by
+    rw [hP]
+    exact Finset.card_image_of_injective _ himg_inj
+  have htouched : ∀ i : ι',
+      (touchedCells P (e i ∩ J)).card
+        = (touchedCells P' ((e i).preimage σ hσ.injOn ∩ Finset.univ)).card := by
+    intro i
+    rw [show touchedCells P (e i ∩ J)
+        = (touchedCells P' ((e i).preimage σ hσ.injOn ∩ Finset.univ)).image
+            (Finset.image σ) from ?_]
+    · rw [Finset.card_image_of_injective _ himg_inj]
+    ext c
+    simp only [touchedCells, Finset.mem_image, Finset.mem_filter]
+    constructor
+    · rintro ⟨hc, x, hx⟩
+      obtain ⟨p, hp, rfl⟩ := Finset.mem_image.mp hc
+      refine ⟨p, ⟨hp, ?_⟩, rfl⟩
+      rw [Finset.mem_inter] at hx
+      obtain ⟨hxe, hxp⟩ := hx
+      obtain ⟨x0, hx0p, rfl⟩ := Finset.mem_image.mp hxp
+      refine ⟨x0, Finset.mem_inter.mpr ⟨Finset.mem_inter.mpr ⟨?_, Finset.mem_univ x0⟩, hx0p⟩⟩
+      rw [Finset.mem_preimage]
+      exact (Finset.mem_inter.mp hxe).1
+    · rintro ⟨p, ⟨hp, x0, hx0⟩, rfl⟩
+      rw [Finset.mem_inter, Finset.mem_inter] at hx0
+      obtain ⟨⟨hx0e, -⟩, hx0p⟩ := hx0
+      rw [Finset.mem_preimage] at hx0e
+      refine ⟨Finset.mem_image.mpr ⟨p, hp, rfl⟩, σ x0, Finset.mem_inter.mpr ⟨?_, ?_⟩⟩
+      · refine Finset.mem_inter.mpr ⟨hx0e, ?_⟩
+        rw [← himg]
+        exact Finset.mem_image.mpr ⟨x0, Finset.mem_univ x0, rfl⟩
+      · exact Finset.mem_image.mpr ⟨x0, hx0p, rfl⟩
+  calc k * (P'.parts.card - 1) = k * (P.parts.card - 1) := by rw [hcard]
+  _ ≤ ∑ i, ((touchedCells P (e i ∩ J)).card - 1) := hwpc P
+  _ = ∑ i, ((touchedCells P' ((e i).preimage σ hσ.injOn ∩ Finset.univ)).card - 1) :=
+      Finset.sum_congr rfl fun i _ => by rw [htouched i]
+
 end AGL24
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms AGL24.agreementEdge_comp
 #print axioms AGL24.agreementEdge_comp_inter
 #print axioms AGL24.subfamily_not_all_equal
+#print axioms AGL24.weaklyPartitionConnected_preimage
