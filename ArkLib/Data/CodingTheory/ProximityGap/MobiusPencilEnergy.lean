@@ -154,6 +154,12 @@ theorem two_mul_t2_add_three_ge_card (b : G) :
 theorem t2_ge (b : G) : t2 b ≥ (Fintype.card G - 3) / 2 := by
   have h := two_mul_t2_add_three_ge_card b; omega
 
+/-- Per-pencil `t₂` upper bound (holds for any group): `t₂(b) ≤ |G|/2`. -/
+theorem t2_le (b : G) : t2 b ≤ Fintype.card G / 2 := by
+  unfold t2
+  refine Nat.div_le_div_right (le_trans (Finset.card_filter_le _ _) ?_)
+  rw [Finset.card_univ]
+
 /-- **The Möbius pencil energy** `E₂(G) = Σ_b t₂(b)²` — the agreement-spectrum invariant that
 separates smooth multiplicative subgroups from random evaluation domains. -/
 def pencilEnergy : ℕ := ∑ b : G, (t2 b) ^ 2
@@ -171,6 +177,18 @@ theorem pencilEnergy_ge :
     _ ≤ ∑ b : G, (t2 b) ^ 2 :=
         Finset.sum_le_sum (fun b _ => Nat.pow_le_pow_left (t2_ge b) 2)
 
+/-- **The energy upper bound: `E₂(G) ≤ n·(n/2)²`.** With `pencilEnergy_ge` this two-sidedly
+pins `E₂(G) = Θ(n³)` for a smooth (cyclic) evaluation subgroup — the quantitative C1 separation
+(random domains sit at `Θ(n²)`). -/
+theorem pencilEnergy_le :
+    pencilEnergy (G := G) ≤ Fintype.card G * (Fintype.card G / 2) ^ 2 := by
+  unfold pencilEnergy
+  calc ∑ b : G, (t2 b) ^ 2
+      ≤ ∑ _b : G, (Fintype.card G / 2) ^ 2 :=
+        Finset.sum_le_sum (fun b _ => Nat.pow_le_pow_left (t2_le b) 2)
+    _ = Fintype.card G * (Fintype.card G / 2) ^ 2 := by
+        rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+
 end ProximityGap.MobiusPencil
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -179,3 +197,4 @@ end ProximityGap.MobiusPencil
 #print axioms ProximityGap.MobiusPencil.card_sqrtSet_le_two
 #print axioms ProximityGap.MobiusPencil.two_mul_t2_add_three_ge_card
 #print axioms ProximityGap.MobiusPencil.pencilEnergy_ge
+#print axioms ProximityGap.MobiusPencil.pencilEnergy_le
