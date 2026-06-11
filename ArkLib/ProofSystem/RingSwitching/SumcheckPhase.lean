@@ -209,10 +209,11 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
 omit [Fintype L] [Fintype K] [DecidableEq K] in
-/-- Local algebraic capstone residual for the profile-specialized structured sumcheck round.
-The previous proof body stopped at the honest-round algebra/run-shape transition. It is named as a
-`Prop` so downstream results must receive the missing algebra explicitly rather than importing a
-kernel axiom. -/
+/-- The profile-specialized structured sumcheck round completeness statement — **proven**:
+see `iteratedSumcheckRound_perfectCompleteness_residual_holds`
+(`SumcheckRoundCompleteness.lean`, from `NeverFail init` alone) and the unconditional
+per-round consumer there (issue #338 closeout). The `Prop` name is retained for downstream
+statement stability; the conditional wrapper below is a documented adapter. -/
 def iteratedSumcheckOracleReduction_perfectCompleteness_residual : Prop :=
   ∀ i : Fin ℓ',
     OracleReduction.perfectCompleteness

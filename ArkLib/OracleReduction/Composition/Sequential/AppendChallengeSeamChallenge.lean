@@ -274,7 +274,7 @@ reduction run is, as an `OptionT` value, the appended prover's run followed by t
 on the two transcript halves. Mirror of `append_run_natural_msg`'s refold with the prover-side
 factoring *omitted* (it is false at a challenge seam); the verifier-side split is the definitional
 `Verifier.append`. -/
-private theorem append_run_eq_seamChain
+theorem append_run_eq_seamChain
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
     (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
     (stmt : Stmt₁) (wit : Wit₁) :

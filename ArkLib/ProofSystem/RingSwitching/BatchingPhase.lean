@@ -544,10 +544,10 @@ noncomputable def batchingKnowledgeStateFunction :
 
 /-! ## Security Properties -/
 
-/-- Local algebraic capstone residual for batching completeness.
-The previous proof body reduced the result to the DP24 row-decomposition residual documented below.
-It is named as a `Prop` so downstream results must receive the missing algebra explicitly rather
-than importing a kernel axiom. -/
+/-- The batching completeness statement — **proven**: see
+`batchingReduction_perfectCompleteness_proved` below (from `NeverFail init`, `IsDomain L/K`;
+issue #338 closeout). The `Prop` name is retained for downstream statement stability; the
+conditional wrapper below is a documented adapter. -/
 def batchingReduction_perfectCompleteness_residual : Prop :=
   OracleReduction.perfectCompleteness
     (oracleReduction := batchingOracleReduction κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn))

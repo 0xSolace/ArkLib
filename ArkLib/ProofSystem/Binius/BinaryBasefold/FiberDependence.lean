@@ -22,9 +22,9 @@ The two structural bricks for the honest (per-fiber) disagreement-set layer:
   peeling the last fold (`iterated_fold_last`, whose `fold_legacy` butterfly reads only the two
   single-step fiber points) and threading the fiber composition.
 
-These discharge the witness-extraction half of `Prop4212Case1Residual` (the contrapositive of
-fiber dependence extracts, from a folded disagreement at `y`, a fiber point of `y` where the
-sources disagree).
+These discharge the witness-extraction half of the case-1 incremental argument: the
+contrapositive of fiber dependence extracts, from a folded disagreement at `y`, a fiber point of
+`y` where the sources disagree.
 
 No `sorry`; axiom audit at the bottom.
 -/

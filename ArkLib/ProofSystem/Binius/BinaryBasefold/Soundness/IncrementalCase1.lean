@@ -1,5 +1,5 @@
 /-
-Issue #317 — Prop4212Case1Residual content, proven against the honest per-fiber
+Issue #317 — Proposition 4.21.2 case-1 content, proven against the honest per-fiber
 disagreement surface (`fiberwiseDisagreementSetPerFiber`).
 
 Brick A: `qMap_total_fiber_succ_peel_first` — bottom-peel analogue of
@@ -475,8 +475,8 @@ lemma delta_subset_Dk_of_k_eq_zero (block_start_idx : Fin r)
 open Classical in
 set_option maxHeartbeats 4000000 in
 /-- **Proposition 4.21.2, Case 1 (FiberwiseClose), incremental bad-event bound.**
-This is the content of `Prop4212Case1Residual.holds`, proven against the honest
-per-fiber disagreement surface. -/
+This is the formerly isolated case-1 theorem, now proven against the honest per-fiber
+disagreement surface. -/
 theorem prop_4_21_2_case_1_residual_holds
     (block_start_idx : Fin r) {midIdx_i midIdx_i_succ destIdx : Fin r} (k : ℕ)
     (h_k_lt : k < ϑ)

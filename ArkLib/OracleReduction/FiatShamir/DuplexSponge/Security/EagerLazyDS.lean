@@ -212,6 +212,144 @@ lemma toPMF_two_sample {α : Type} (F : β → γ → α) :
 
 end TwoSample
 
+/-! ## The combined master induction -/
+
+section Master
+
+variable [SampleableType (StmtIn → Vector U SpongeSize.C)]
+  [SampleableType (Equiv.Perm (CanonicalSpongeState U))]
+  [Nonempty (StmtIn → Vector U SpongeSize.C)]
+  [Nonempty (Equiv.Perm (CanonicalSpongeState U))]
+  [Fintype (StmtIn → Vector U SpongeSize.C)]
+  [Fintype (Vector U SpongeSize.C)] [Nonempty (Vector U SpongeSize.C)]
+
+set_option maxHeartbeats 3200000 in
+/-- **The combined eager–lazy duplex-sponge bridge**: simulating against the combined lazy
+oracle (caching hash arm, memoizing bidirectional permutation arms) from duplicate-free
+caches has the same distribution as sampling one hash table and one permutation and
+answering eagerly through the joint cache overlay. -/
+theorem evalDist_simulateQ_lazyDSImpl_run'
+    {α : Type} (oa : OracleComp (duplexSpongeChallengeOracle StmtIn U) α)
+    (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache)
+    (cp : List (CanonicalSpongeState U × CanonicalSpongeState U))
+    (hkeys : (cp.map Prod.fst).Nodup) (hvals : (cp.map Prod.snd).Nodup) :
+    evalDist ((simulateQ lazyDSImpl oa).run' (ch, cp))
+      = evalDist (do
+          let g ← $ᵗ (StmtIn → Vector U SpongeSize.C)
+          let π ← $ᵗ (Equiv.Perm (CanonicalSpongeState U))
+          pure (evalWithAnswerFn (QueryImpl.ofFn (dsOverlayFn ch cp g π)) oa)
+          : ProbComp α) := by
+  classical
+  induction oa using OracleComp.inductionOn generalizing ch cp with
+  | pure a =>
+    have hlhs : (simulateQ lazyDSImpl (pure a : OracleComp _ α)).run' (ch, cp)
+        = (pure a : ProbComp α) := by
+      rw [simulateQ_pure]
+      change (fun x => x.1) <$> (pure (a, (ch, cp)) : ProbComp (α × _)) = pure a
+      rw [map_pure]
+    rw [hlhs]
+    simp only [evalWithAnswerFn_pure]
+    symm
+    refine evalDist_ext fun x => ?_
+    rw [probOutput_bind_eq_tsum, ENNReal.tsum_mul_right,
+      tsum_probOutput_eq_one' (mx := $ᵗ (StmtIn → Vector U SpongeSize.C)) (by simp),
+      one_mul, probOutput_bind_eq_tsum, ENNReal.tsum_mul_right,
+      tsum_probOutput_eq_one' (mx := $ᵗ (Equiv.Perm (CanonicalSpongeState U))) (by simp),
+      one_mul]
+  | query_bind t k ih =>
+    have hred : (simulateQ lazyDSImpl
+          (liftM ((duplexSpongeChallengeOracle StmtIn U).query t) >>= k)).run' (ch, cp)
+        = ((lazyDSImpl t).run (ch, cp)) >>= fun p =>
+            (simulateQ lazyDSImpl (k p.1)).run' p.2 := by
+      rw [simulateQ_bind, simulateQ_spec_query]
+      change Prod.fst <$> (((lazyDSImpl t).run (ch, cp)) >>= fun p =>
+        (simulateQ lazyDSImpl (k p.1)).run p.2) = _
+      rw [map_bind]
+      rfl
+    have heval : ∀ (f : (t : (duplexSpongeChallengeOracle StmtIn U).Domain) →
+          (duplexSpongeChallengeOracle StmtIn U).Range t),
+        evalWithAnswerFn (QueryImpl.ofFn f)
+            (liftM ((duplexSpongeChallengeOracle StmtIn U).query t) >>= k)
+          = evalWithAnswerFn (QueryImpl.ofFn f) (k (f t)) := by
+      intro f
+      rw [evalWithAnswerFn_bind]
+      rfl
+    rw [hred]
+    simp_rw [heval]
+    rcases t with q | sIn | sOut
+    · -- hash arm
+      have hexpose : (lazyDSImpl
+            ((.inl q : (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+          = (fun (p : Vector U SpongeSize.C × _) => (p.1, (p.2, cp))) <$>
+              (((StmtIn →ₒ Vector U SpongeSize.C).randomOracle q).run ch) := rfl
+      rcases hcq : ch q with _ | u
+      · -- hash miss
+        rw [hexpose, QueryImpl.withCaching_run_none _ hcq, Functor.map_map, bind_map_left]
+        have hfib : ∀ u : Vector U SpongeSize.C,
+            evalDist ((simulateQ lazyDSImpl (k u)).run' (ch.cacheQuery q u, cp))
+            = evalDist (do
+                let g ← $ᵗ (StmtIn → Vector U SpongeSize.C)
+                let π ← $ᵗ (Equiv.Perm (CanonicalSpongeState U))
+                pure (evalWithAnswerFn
+                  (QueryImpl.ofFn (dsOverlayFn ch cp (Function.update g q u) π))
+                  (k (Function.update g q u q))) : ProbComp α) := by
+          intro u
+          rw [ih u (ch.cacheQuery q u) cp hkeys hvals]
+          refine congrArg evalDist
+            (congrArg (fun F => ($ᵗ _) >>= F) (funext fun g => ?_))
+          refine congrArg (fun F => ($ᵗ _) >>= F) (funext fun π => ?_)
+          rw [dsOverlayFn_cacheQuery_of_none ch cp g π hcq u]
+          exact congrArg (fun z => (pure (evalWithAnswerFn
+            (QueryImpl.ofFn (dsOverlayFn ch cp (Function.update g q u) π)) (k z))
+              : ProbComp α)) (Function.update_self q u g).symm
+        rw [evalDist_bind]
+        rw [show (fun u => evalDist ((simulateQ lazyDSImpl (k u)).run'
+              (ch.cacheQuery q u, cp))) = (fun u => evalDist (do
+                let g ← $ᵗ (StmtIn → Vector U SpongeSize.C)
+                let π ← $ᵗ (Equiv.Perm (CanonicalSpongeState U))
+                pure (evalWithAnswerFn
+                  (QueryImpl.ofFn (dsOverlayFn ch cp (Function.update g q u) π))
+                  (k (Function.update g q u q))) : ProbComp α)) from funext hfib]
+        rw [← evalDist_bind]
+        rw [show (($ᵗ (Vector U SpongeSize.C)) >>= fun u => (do
+              let g ← $ᵗ (StmtIn → Vector U SpongeSize.C)
+              let π ← $ᵗ (Equiv.Perm (CanonicalSpongeState U))
+              pure (evalWithAnswerFn
+                (QueryImpl.ofFn (dsOverlayFn ch cp (Function.update g q u) π))
+                (k (Function.update g q u q))) : ProbComp α))
+            = ((do
+                let u ← $ᵗ (Vector U SpongeSize.C)
+                let g ← $ᵗ (StmtIn → Vector U SpongeSize.C)
+                pure (Function.update g q u)) >>= fun g' => (do
+                  let π ← $ᵗ (Equiv.Perm (CanonicalSpongeState U))
+                  pure (evalWithAnswerFn (QueryImpl.ofFn (dsOverlayFn ch cp g' π))
+                    (k (g' q))) : ProbComp α)) from by
+          simp only [bind_assoc, pure_bind]]
+        rw [evalDist_bind, evalDist_uniformSample_bind_update q, ← evalDist_bind]
+        refine congrArg evalDist
+          (congrArg (fun F => ($ᵗ _) >>= F) (funext fun g => ?_))
+        refine congrArg (fun F => ($ᵗ _) >>= F) (funext fun π => ?_)
+        have : OracleComp.tableExtending ch g q = g q := by
+          simp [OracleComp.tableExtending, hcq]
+        exact congrArg (fun z => (pure (evalWithAnswerFn
+          (QueryImpl.ofFn (dsOverlayFn ch cp g π)) (k z)) : ProbComp α)) this.symm
+      · -- hash hit
+        rw [hexpose, QueryImpl.withCaching_run_some _ hcq, map_pure, pure_bind]
+        rw [ih u ch cp hkeys hvals]
+        refine congrArg evalDist
+          (congrArg (fun F => ($ᵗ _) >>= F) (funext fun g => ?_))
+        refine congrArg (fun F => ($ᵗ _) >>= F) (funext fun π => ?_)
+        have : OracleComp.tableExtending ch g q = u := by
+          simp [OracleComp.tableExtending, hcq]
+        exact congrArg (fun z => (pure (evalWithAnswerFn
+          (QueryImpl.ofFn (dsOverlayFn ch cp g π)) (k z)) : ProbComp α)) this.symm
+    · -- forward permutation arm
+      sorry
+    · -- inverse permutation arm
+      sorry
+
+end Master
+
 end DuplexSpongeFS.EagerLazyDS
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms DuplexSpongeFS.EagerLazyDS.evalDist_uniformSample_swap

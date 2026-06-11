@@ -1638,19 +1638,28 @@ of the `i-th` oracle if any and enable it after the next V's challenge, i.e. one
 round later. This is for the purpose of reasoning its RBR KS properly.
 Formally, = (oracleIdx = stmtIdx)`.
 -/
-def masterKStateProp (stmtIdx : Fin (ℓ + 1))
+def masterKStateCore (stmtIdx : Fin (ℓ + 1))
     (oracleIdx : Fin (ℓ + 1))
     (h_le : oracleIdx.val ≤ stmtIdx.val) (stmt : Statement (L := L) Context stmtIdx)
     (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIdx)
-    (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (i := oracleIdx) j))
-    (localChecks : Prop := True) : Prop :=
+    (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (i := oracleIdx) j)) :
+    Prop :=
   let oracleWitnessConsistency: Prop := oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β
     stmtIdx oracleIdx h_le stmt wit oStmt
   let badEventExists := badEventExistsProp (ϑ := ϑ) 𝔽q β oracleIdx
     (challenges := olderStmtChallenges (ℓ := ℓ) (stmtIdx := stmtIdx) (oracleIdx := oracleIdx)
       h_le stmt.challenges)
     (oStmt := oStmt)
-  localChecks ∧ (badEventExists ∨ oracleWitnessConsistency)
+  badEventExists ∨ oracleWitnessConsistency
+
+def masterKStateProp (stmtIdx : Fin (ℓ + 1))
+    (oracleIdx : Fin (ℓ + 1))
+    (h_le : oracleIdx.val ≤ stmtIdx.val) (stmt : Statement (L := L) Context stmtIdx)
+    (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIdx)
+    (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (i := oracleIdx) j))
+    (localChecks : Prop) : Prop :=
+  localChecks ∧ masterKStateCore (mp := mp) (𝓑 := 𝓑) 𝔽q β
+    (stmtIdx := stmtIdx) (oracleIdx := oracleIdx) (h_le := h_le) stmt wit oStmt
 
 def roundRelationProp (i : Fin (ℓ + 1))
     (input : (Statement (L := L) Context i ×
@@ -1659,8 +1668,8 @@ def roundRelationProp (i : Fin (ℓ + 1))
   let stmt := input.1.1
   let oStmt := input.1.2
   let wit := input.2
-  masterKStateProp (mp := mp) (𝓑 := 𝓑) 𝔽q β
-    (stmtIdx := i) (oracleIdx := i) (h_le := le_refl i) stmt wit oStmt (localChecks := True)
+  masterKStateCore (mp := mp) (𝓑 := 𝓑) 𝔽q β
+    (stmtIdx := i) (oracleIdx := i) (h_le := le_refl i) stmt wit oStmt
 
 open Classical in
 /-- A modified version of roundRelationProp (i+1).

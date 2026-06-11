@@ -8,6 +8,7 @@ import ArkLib.Data.Misc.Basic
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Spec
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Relations
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.UDRCongruence
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.SuffixAlignCore
 
 /-!
 ## Binary Basefold Soundness Query Phase Preliminaries
@@ -115,6 +116,21 @@ lemma extractSuffixFromChallenge_congr_destIdx
     cast (by rw [h_idx_eq]) (extractSuffixFromChallenge 𝔽q β v destIdx' h_le') := by
   subst h_idx_eq
   rw [cast_eq]
+
+lemma extractSuffixFromChallenge_val
+    (v : sDomain 𝔽q β h_ℓ_add_R_rate ⟨0, by omega⟩)
+    (destIdx : Fin r) (h_destIdx_le : destIdx ≤ ℓ) :
+    (extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (v := v) (destIdx := destIdx) (h_destIdx_le := h_destIdx_le)).val =
+    (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate
+      (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := destIdx.val)
+      (h_bound := by
+        show 0 + destIdx.val ≤ ℓ
+        rw [Nat.zero_add]
+        exact h_destIdx_le)
+      (x := v)).val := by
+  unfold extractSuffixFromChallenge
+  exact val_of_cast_sDomain 𝔽q β _ _ _ _
 
 set_option maxHeartbeats 2000000 in
 omit [SampleableType L] h_β₀_eq_1 in
@@ -555,36 +571,8 @@ section QueryPhaseHelperLemmas
 
 open QueryPhase
 
-/-- **RESIDUAL (Binius #33, new `iteratedQuotientMap`/`qMap_total_fiber` API).**
-
-The challenge suffix at the block source index `j·ϑ` equals the fiber point at the
-`extractMiddleFinMask` index. Classically this reduces to a basis-coefficient alignment between
-`iteratedQuotientMap` and a single multi-step `qMap_total_fiber` (the former
-`iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask`). Under the current CompPoly API
-the iterated quotient map at base index `0` produces the index `0 + k`, which is not
-definitionally `k` (`Nat.add` recurses on its second argument); the requisite transport `cast`
-makes the dependent `sDomain` index unification diverge (`whnf`) and the coefficient computation
-has not yet been re-mechanized against it. Isolated here as an explicit residual hypothesis (repo
-convention of `FoldPreservesBBFCodeMembershipResidual`). Both downstream consumers
-(`logical_checkSingleRepetition_guard_eq`, `queryBlockSourceSuffix_maps_to_destSuffix`) route
-through this lemma. -/
-class PreviousSuffixFiberAlignmentResidual : Prop where
-  holds : ∀ (j : Fin (ℓ / ϑ)) (v : sDomain 𝔽q β h_ℓ_add_R_rate 0),
-    extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (v := v)
-      (destIdx := ⟨j.val * ϑ, lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (h := k_mul_ϑ_lt_ℓ (k := j))⟩)
-      (h_destIdx_le := Nat.le_of_lt (k_mul_ϑ_lt_ℓ (k := j))) =
-      getFiberPoint 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) j v
-        (extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (v := v)
-          (i := ⟨j.val * ϑ, k_mul_ϑ_lt_ℓ (k := j)⟩)
-          (steps := ϑ))
-
-variable [PreviousSuffixFiberAlignmentResidual 𝔽q β
-  (ℓ := ℓ) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-
 /-- The challenge suffix at block source `j·ϑ` equals the fiber point at the
-`extractMiddleFinMask` index, reduced to the explicit
-`PreviousSuffixFiberAlignmentResidual` hypothesis. -/
+`extractMiddleFinMask` index. -/
 lemma previousSuffix_eq_getFiberPoint_extractMiddleFinMask
     (j : Fin (ℓ / ϑ))
     (v : sDomain 𝔽q β h_ℓ_add_R_rate 0) :
@@ -596,8 +584,61 @@ lemma previousSuffix_eq_getFiberPoint_extractMiddleFinMask
       getFiberPoint 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) j v
         (extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (v := v)
           (i := ⟨j.val * ϑ, k_mul_ϑ_lt_ℓ (k := j)⟩)
-          (steps := ϑ)) :=
-  PreviousSuffixFiberAlignmentResidual.holds j v
+          (steps := ϑ)) := by
+  classical
+  rw [getFiberPoint_eq_qMap_total_fiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) j v]
+  apply Subtype.ext
+  let i : Fin ℓ := ⟨j.val * ϑ, k_mul_ϑ_lt_ℓ (k := j)⟩
+  let destIdx : Fin r := ⟨j.val * ϑ + ϑ, by
+    have h_le := k_succ_mul_ϑ_le_ℓ_₂ (k := j)
+    have h𝓡 := Nat.pos_of_neZero 𝓡
+    omega⟩
+  let y : sDomain 𝔽q β h_ℓ_add_R_rate destIdx :=
+    getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (k := j) (v := v)
+  have hy : y.val =
+      (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate
+        (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := i.val + ϑ)
+        (h_bound := by
+          show 0 + (i.val + ϑ) ≤ ℓ
+          have h_le := k_succ_mul_ϑ_le_ℓ_₂ (k := j)
+          simp [i]
+          exact h_le)
+        (x := v)).val := by
+    simp only [y, getChallengeSuffix, i]
+    exact extractSuffixFromChallenge_val 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) v destIdx
+      (by
+        change j.val * ϑ + ϑ ≤ ℓ
+        exact k_succ_mul_ϑ_le_ℓ_₂ (k := j))
+  have hcore :=
+    iteratedQuotientMap_val_eq_qMap_total_fiber_extractMiddleFinMask 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := ϑ)
+      (h_bound := by
+        change j.val * ϑ + ϑ ≤ ℓ
+        exact k_succ_mul_ϑ_le_ℓ_₂ (k := j))
+      (v := v) (y := y) hy
+  have hleft :
+      (extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (v := v)
+        (destIdx := ⟨j.val * ϑ, by
+          exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+            (h := k_mul_ϑ_lt_ℓ (k := j))⟩)
+        (h_destIdx_le := Nat.le_of_lt (k_mul_ϑ_lt_ℓ (k := j)))).val =
+      (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate
+        (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := i.val)
+        (h_bound := by
+          show 0 + i.val ≤ ℓ
+          simp [i]
+          exact Nat.le_of_lt (k_mul_ϑ_lt_ℓ (k := j)))
+        (x := v)).val := by
+    exact extractSuffixFromChallenge_val 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) v
+      ⟨j.val * ϑ, by
+        exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (h := k_mul_ϑ_lt_ℓ (k := j))⟩
+      (Nat.le_of_lt (k_mul_ϑ_lt_ℓ (k := j)))
+  exact hleft.trans hcore
 
 set_option maxHeartbeats 800000 in
 -- The dependent index alignment in `getNextOracle` can take substantial elaboration.

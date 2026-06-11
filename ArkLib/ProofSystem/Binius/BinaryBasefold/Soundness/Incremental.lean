@@ -10,6 +10,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.IncrementalCase1
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IncrementalHelpers
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.PreTensorDistance
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2FarLift
 import CompPoly.Fields.Binary.Tower.Prelude
 
 /-!
@@ -216,57 +217,6 @@ Applying the Union Bound over all `y ∈ Δ^{(i)} ⊆ S^{i+ϑ}` (noting that `|�
 
 This completes the proof for Case 1.
 -/
-/-- **Residual: Proposition 4.21.2, Case 1 (FiberwiseClose), incremental bad-event bound.**
-
-Under the block-level fiberwise-close branch, the fresh incremental bad event `¬E(i,k) ∧ E(i,k+1)`
-at step `k` has probability (over the fresh challenge `r_new`) at most `|S^{(destIdx)}| / |L|`.
-
-The argument is a per-quotient-point Schwartz–Zippel bound on the single-step fold difference
-(degree ≤ 1 in `r_new`, non-degenerate by the butterfly-matrix invertibility, exactly the
-`h_at_most_one_root` development) summed by a union bound over the disagreement set. Closing it
-against the *current* `fiberwiseDisagreementSet` surface — whose `steps ≠ 0` branch is the
-quotient-point-independent filter `univ.filter (∃ x, f x ≠ g x)` — requires reworking the
-disagreement-set witness extraction (the old `iteratedQuotientMap_succ_comp`/`_congr_k` bridge has
-no counterpart in the post-split quotient-map API). Exposed here as a typeclass hypothesis in the
-convention of `FoldPreservesBBFCodeMembershipResidual`. -/
-class Prop4212Case1Residual : Prop where
-  holds : ∀ (block_start_idx : Fin r) {midIdx_i midIdx_i_succ destIdx : Fin r} (k : ℕ) (h_k_lt : k < ϑ)
-    (h_midIdx_i : midIdx_i = block_start_idx + k)
-    (h_midIdx_i_succ : midIdx_i_succ = block_start_idx + k + 1)
-    (h_destIdx : destIdx = block_start_idx + ϑ) (h_destIdx_le : destIdx ≤ ℓ)
-    (f_block_start : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) block_start_idx)
-    (r_prefix : Fin k → L)
-    (_h_block_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := block_start_idx) (steps := ϑ) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
-      (f := f_block_start)),
-    Pr_{ let r_new ← $ᵖ L }[
-      ¬ incrementalFoldingBadEvent 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          (block_start_idx := block_start_idx) (midIdx := midIdx_i) (destIdx := destIdx) (k := k)
-          (h_k_le := Nat.le_of_lt h_k_lt) (h_midIdx := h_midIdx_i) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
-          (f_block_start := f_block_start) (r_challenges := r_prefix)
-      ∧
-      incrementalFoldingBadEvent 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (block_start_idx := block_start_idx) (midIdx := midIdx_i_succ) (destIdx := destIdx) (k := k + 1)
-        (h_k_le := Nat.succ_le_of_lt h_k_lt) (h_midIdx := h_midIdx_i_succ) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
-        (f_block_start := f_block_start)
-        (r_challenges := Fin.snoc r_prefix r_new)
-    ] ≤
-    (Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) / Fintype.card L)
-
-/-- **The Case-1 residual is discharged** (issue #317): the content is proven in
-`Soundness/IncrementalCase1.lean` (`prop_4_21_2_case_1_residual_holds` — per-quotient-point
-Schwartz–Zippel via the bottom fiber peel `qMap_total_fiber_succ_peel_first` + union bound). -/
-instance : Prop4212Case1Residual (r := r) (L := L) (𝔽q := 𝔽q) (β := β)
-    (ℓ := ℓ) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) where
-  holds := by
-    intro block_start_idx midIdx_i midIdx_i_succ destIdx k h_k_lt h_midIdx_i
-      h_midIdx_i_succ h_destIdx h_destIdx_le f_block_start r_prefix h_block_close
-    exact prop_4_21_2_case_1_residual_holds 𝔽q β block_start_idx k h_k_lt h_midIdx_i
-      h_midIdx_i_succ h_destIdx h_destIdx_le f_block_start r_prefix h_block_close
-
-variable [Prop4212Case1Residual (r := r) (L := L) (𝔽q := 𝔽q) (β := β)
-  (ℓ := ℓ) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-
 lemma prop_4_21_2_case_1_fiberwise_close_incremental
     (block_start_idx : Fin r) {midIdx_i midIdx_i_succ destIdx : Fin r} (k : ℕ) (h_k_lt : k < ϑ)
     (h_midIdx_i : midIdx_i = block_start_idx + k) (h_midIdx_i_succ : midIdx_i_succ = block_start_idx + k + 1)
@@ -290,7 +240,7 @@ lemma prop_4_21_2_case_1_fiberwise_close_incremental
         (r_challenges := Fin.snoc r_prefix r_new)
     ] ≤
     (domain_size / Fintype.card L) :=
-  Prop4212Case1Residual.holds (𝔽q := 𝔽q) (β := β) block_start_idx k h_k_lt
+  prop_4_21_2_case_1_residual_holds 𝔽q β block_start_idx k h_k_lt
     h_midIdx_i h_midIdx_i_succ h_destIdx h_destIdx_le f_block_start r_prefix h_block_close
 
 /- ORIGINAL CASE-1 PROOF BODY (Schwartz–Zippel + butterfly matrix), retained verbatim as a
@@ -1686,8 +1636,8 @@ lemma iterated_fold_eq_multilinearCombine_preTensorCombine
 /- COMMENTED OUT: `fiberwiseClose_fold_implies_affineLineEval_close`.
 This intermediate bridge does not elaborate against the current `fiberwiseClose` surface: its
 hypothesis `fiberwiseClose midIdx s (fold …)` requires `[NeZero s]`, but the `s = ϑ-(k+1)` step
-count is `0` at the final-step boundary (`k+1 = ϑ`). Its consumer, Case 2, is now provided by
-`Prop4212Case2Residual`. Retained as a comment for reference / future restoration:
+count is `0` at the final-step boundary (`k+1 = ϑ`). Case 2 now uses the split positive-step and
+final-step bridges below instead of this combined formulation. Retained as a comment for reference:
 
 /-- **Connecting fiberwiseClose of a folded function to affine line evaluation proximity.**
 Given `f_i : S^i → L` with preTensorCombine `U := preTensorCombine(i, s+1, destIdx, f_i)` of
@@ -1964,46 +1914,264 @@ lemma UDRClose_fold_implies_affineLineEval_close_zero
    (by `affineProximityGap_RS_interleaved_contrapositive`):
    `Pr_r[close] ≤ |S|/|L|`.
 -/
-/-- **Residual: Proposition 4.21.2, Case 2 (FiberwiseFar), incremental bad-event bound.**
-
-Under the block-level fiberwise-far branch, the fresh incremental bad event `¬E(i,k) ∧ E(i,k+1)`
-at step `k` has probability (over the fresh challenge `r_new`) at most `|S^{(destIdx)}| / |L|`.
-
-The argument builds `U := preTensorCombine(midIdx_i, ϑ-k, …, fold_k_f)`, uses far-ness
-(`lemma_4_21_interleaved_word_UDR_far`) and the even/odd split non-closeness
-(`not_jointProximityNat_of_not_jointProximityNat_evenOdd_split`), the fold↔affine-line bridge
-(`fold_preTensorCombine_eq_affineLineEvaluation_split`), the close→proximity lift (Lemma 4.22,
-`preTensorCombine_jointProximityNat_of_fiberwiseClose`), and the DG25 RS interleaved affine proximity gap
-(`affineProximityGap_RS_interleaved_contrapositive`). The remaining gap is the `s = 0` boundary of
-the close→affine-line bridge `fiberwiseClose_fold_implies_affineLineEval_close`, where the post-split
-`fiberwiseClose` `[NeZero steps]` requirement is incompatible with the `ϑ - (k+1) = 0` step count.
-Exposed here as a typeclass hypothesis in the convention of `FoldPreservesBBFCodeMembershipResidual`. -/
-class Prop4212Case2Residual : Prop where
-  holds : ∀ (block_start_idx : Fin r) {midIdx_i midIdx_i_succ destIdx : Fin r} (k : ℕ) (h_k_lt : k < ϑ)
-    (h_midIdx_i : midIdx_i = block_start_idx + k)
-    (h_midIdx_i_succ : midIdx_i_succ = block_start_idx + k + 1)
-    (h_destIdx : destIdx = block_start_idx + ϑ) (h_destIdx_le : destIdx ≤ ℓ)
-    (f_block_start : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) block_start_idx)
-    (r_prefix : Fin k → L)
-    (_h_block_far : ¬ fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := block_start_idx) (steps := ϑ) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
-      (f := f_block_start)),
+lemma case2_one_step_far_positive_probability
+    (i : Fin ℓ) (s : ℕ) [NeZero s]
+    {midIdx destIdx : Fin r}
+    (h_midIdx : midIdx.val = i.val + 1)
+    (h_destIdx : destIdx.val = i.val + (s + 1))
+    (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (h_far : ¬ fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := s + 1) (destIdx := destIdx)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)) :
     Pr_{ let r_new ← $ᵖ L }[
-      ¬ incrementalFoldingBadEvent 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          (block_start_idx := block_start_idx) (midIdx := midIdx_i) (destIdx := destIdx) (k := k)
-          (h_k_le := Nat.le_of_lt h_k_lt) (h_midIdx := h_midIdx_i) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
-          (f_block_start := f_block_start) (r_challenges := r_prefix)
-      ∧
-      incrementalFoldingBadEvent 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (block_start_idx := block_start_idx) (midIdx := midIdx_i_succ) (destIdx := destIdx) (k := k + 1)
-        (h_k_le := Nat.succ_le_of_lt h_k_lt) (h_midIdx := h_midIdx_i_succ) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
-        (f_block_start := f_block_start)
-        (r_challenges := Fin.snoc r_prefix r_new)
+      fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := midIdx) (steps := s) (destIdx := destIdx)
+        (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
+        (f := fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := ⟨i, by omega⟩) (destIdx := midIdx)
+          (h_destIdx := h_midIdx) (h_destIdx_le := by omega) f_i r_new)
     ] ≤
-    (Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) / Fintype.card L)
+    (Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) / Fintype.card L) := by
+  classical
+  set C_dest : Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L) :=
+    (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+      Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)) with hC_def
+  set e : ℕ := Code.uniqueDecodingRadius (C := C_dest) with he_def
+  set U := preTensorCombine_WordStack 𝔽q β i (s + 1)
+    (destIdx := destIdx) (h_destIdx := h_destIdx)
+    (h_destIdx_le := h_destIdx_le) f_i with hU_def
+  set U_even := (splitEvenOddRowWiseInterleavedWords (ϑ := s) U).1 with hU_even_def
+  set U_odd := (splitEvenOddRowWiseInterleavedWords (ϑ := s) U).2 with hU_odd_def
+  let hBridge := fun (j : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
+      (h_destIdx : destIdx.val = j.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+      (f_j : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨j, by omega⟩)
+      (r_chal : Fin steps → L) =>
+    iterated_fold_eq_multilinearCombine_preTensorCombine 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) j steps h_destIdx h_destIdx_le f_j r_chal
+  have h_joint_far :
+      ¬ jointProximityNat (C := C_dest) (u := U) e := by
+    intro hJP
+    apply h_far
+    have h_close := fiberwiseClose_of_jointProximityNat 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) hBridge i (s + 1)
+      h_destIdx h_destIdx_le f_i
+    simpa [C_dest, e, U, hC_def, he_def, hU_def] using h_close hJP
+  have h_pair_far :
+      ¬ jointProximityNat₂ (A := InterleavedSymbol L (Fin (2 ^ s)))
+        (C := (C_dest ^⋈ (Fin (2 ^ s))))
+        (u₀ := interleaveWordStack U_even) (u₁ := interleaveWordStack U_odd) (e := e) := by
+    exact not_jointProximityNat_of_not_jointProximityNat_evenOdd_split
+      (L := L) (C := C_dest) (U := U) (e := e)
+      (U_even := U_even) (U_odd := U_odd) rfl rfl h_joint_far
+  have h_affine_prob :
+      Pr_{ let r_new ← $ᵖ L }[
+        Δ₀(affineLineEvaluation (F := L)
+          (interleaveWordStack U_even) (interleaveWordStack U_odd) r_new,
+          (C_dest ^⋈ (Fin (2 ^ s)))) ≤ e
+      ] ≤
+      (Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) / Fintype.card L) := by
+    exact affineProximityGap_RS_interleaved_contrapositive 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (m := 2 ^ s) (hm := by
+        exact Nat.one_le_pow (n := s) (m := 2) (by norm_num)) (destIdx := destIdx)
+      h_destIdx_le (interleaveWordStack U_even) (interleaveWordStack U_odd)
+      e (by simp [e, C_dest]) h_pair_far
+  refine le_trans
+    (Pr_le_Pr_of_implies ($ᵖ L) _ _ ?_) h_affine_prob
+  intro r_new h_close
+  have h_eval_close := fiberwiseClose_fold_implies_affineLineEval_close_pos 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := i) (s := s) (midIdx := midIdx) (destIdx := destIdx)
+    (h_midIdx := h_midIdx) (h_destIdx := h_destIdx)
+    (h_destIdx_le := h_destIdx_le) (f_i := f_i) (r_new := r_new)
+    h_close
+  simpa [C_dest, e, U, U_even, U_odd, hC_def, he_def, hU_def, hU_even_def, hU_odd_def]
+    using h_eval_close
 
-variable [Prop4212Case2Residual (r := r) (L := L) (𝔽q := 𝔽q) (β := β)
-  (ℓ := ℓ) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+lemma case2_one_step_far_final_probability
+    (i : Fin ℓ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + 1)
+    (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (h_far : ¬ fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := 1) (destIdx := destIdx)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)) :
+    Pr_{ let r_new ← $ᵖ L }[
+      UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := destIdx) (h_i := h_destIdx_le)
+        (f := fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := ⟨i, by omega⟩) (destIdx := destIdx)
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) f_i r_new)
+    ] ≤
+    (Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) / Fintype.card L) := by
+  classical
+  set C_dest : Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L) :=
+    (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+      Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)) with hC_def
+  set e : ℕ := Code.uniqueDecodingRadius (C := C_dest) with he_def
+  set U := preTensorCombine_WordStack 𝔽q β i 1
+    (destIdx := destIdx) (h_destIdx := h_destIdx)
+    (h_destIdx_le := h_destIdx_le) f_i with hU_def
+  set U_even := (splitEvenOddRowWiseInterleavedWords (ϑ := 0) U).1 with hU_even_def
+  set U_odd := (splitEvenOddRowWiseInterleavedWords (ϑ := 0) U).2 with hU_odd_def
+  let hBridge := fun (j : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
+      (h_destIdx : destIdx.val = j.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+      (f_j : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨j, by omega⟩)
+      (r_chal : Fin steps → L) =>
+    iterated_fold_eq_multilinearCombine_preTensorCombine 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) j steps h_destIdx h_destIdx_le f_j r_chal
+  have h_joint_far :
+      ¬ jointProximityNat (C := C_dest) (u := U) e := by
+    intro hJP
+    apply h_far
+    have h_close := fiberwiseClose_of_jointProximityNat 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) hBridge i 1
+      h_destIdx h_destIdx_le f_i
+    simpa [C_dest, e, U, hC_def, he_def, hU_def] using h_close hJP
+  have h_pair_far :
+      ¬ jointProximityNat₂ (A := InterleavedSymbol L (Fin (2 ^ 0)))
+        (C := (C_dest ^⋈ (Fin (2 ^ 0))))
+        (u₀ := interleaveWordStack U_even) (u₁ := interleaveWordStack U_odd) (e := e) := by
+    exact not_jointProximityNat_of_not_jointProximityNat_evenOdd_split
+      (L := L) (C := C_dest) (U := U) (e := e)
+      (U_even := U_even) (U_odd := U_odd) rfl rfl h_joint_far
+  have h_affine_prob :
+      Pr_{ let r_new ← $ᵖ L }[
+        Δ₀(affineLineEvaluation (F := L)
+          (interleaveWordStack U_even) (interleaveWordStack U_odd) r_new,
+          (C_dest ^⋈ (Fin (2 ^ 0)))) ≤ e
+      ] ≤
+      (Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) / Fintype.card L) := by
+    exact affineProximityGap_RS_interleaved_contrapositive 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (m := 2 ^ 0) (hm := by norm_num) (destIdx := destIdx)
+      h_destIdx_le (interleaveWordStack U_even) (interleaveWordStack U_odd)
+      e (by simp [e, C_dest]) h_pair_far
+  refine le_trans
+    (Pr_le_Pr_of_implies ($ᵖ L) _ _ ?_) h_affine_prob
+  intro r_new h_close
+  have h_eval_close := UDRClose_fold_implies_affineLineEval_close_zero 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := i) (destIdx := destIdx)
+    (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+    (f_i := f_i) (r_new := r_new) h_close
+  simpa [C_dest, e, U, U_even, U_odd, hC_def, he_def, hU_def, hU_even_def, hU_odd_def]
+    using h_eval_close
+
+lemma case2_one_step_far_positive_probability_finr
+    (srcIdx : Fin r) (h_src_lt : srcIdx.val < ℓ) (s : ℕ) [NeZero s]
+    {midIdx destIdx : Fin r}
+    (h_midIdx : midIdx.val = srcIdx.val + 1)
+    (h_destIdx : destIdx.val = srcIdx.val + (s + 1))
+    (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) srcIdx)
+    (h_far : ¬ fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := srcIdx) (steps := s + 1) (destIdx := destIdx)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)) :
+    Pr_{ let r_new ← $ᵖ L }[
+      fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := midIdx) (steps := s) (destIdx := destIdx)
+        (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
+        (f := fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := srcIdx) (destIdx := midIdx)
+          (h_destIdx := h_midIdx) (h_destIdx_le := by omega) f_i r_new)
+    ] ≤
+    (Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) / Fintype.card L) := by
+  rcases srcIdx with ⟨srcVal, h_src_val_lt_r⟩
+  let i : Fin ℓ := ⟨srcVal, h_src_lt⟩
+  simpa [i] using
+    case2_one_step_far_positive_probability 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (s := s) (midIdx := midIdx) (destIdx := destIdx)
+      (h_midIdx := h_midIdx) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) (f_i := f_i) (h_far := h_far)
+
+lemma case2_one_step_far_final_probability_finr
+    (srcIdx : Fin r) (h_src_lt : srcIdx.val < ℓ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = srcIdx.val + 1)
+    (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) srcIdx)
+    (h_far : ¬ fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := srcIdx) (steps := 1) (destIdx := destIdx)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)) :
+    Pr_{ let r_new ← $ᵖ L }[
+      UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := destIdx) (h_i := h_destIdx_le)
+        (f := fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := srcIdx) (destIdx := destIdx)
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) f_i r_new)
+    ] ≤
+    (Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) / Fintype.card L) := by
+  rcases srcIdx with ⟨srcVal, h_src_val_lt_r⟩
+  let i : Fin ℓ := ⟨srcVal, h_src_lt⟩
+  simpa [i] using
+    case2_one_step_far_final_probability 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (destIdx := destIdx)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      (f_i := f_i) (h_far := h_far)
+
+lemma iterated_fold_snoc_eq_fold_prefix
+    (block_start_idx : Fin r) {midIdx_i midIdx_i_succ : Fin r} (k : ℕ)
+    (h_midIdx_i : midIdx_i.val = block_start_idx.val + k)
+    (h_midIdx_i_succ : midIdx_i_succ.val = block_start_idx.val + k + 1)
+    (h_mid_succ : midIdx_i_succ.val = midIdx_i.val + 1)
+    (h_midIdx_i_succ_le : midIdx_i_succ ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) block_start_idx)
+    (r_prefix : Fin k → L) (r_new : L) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (steps := k + 1) (destIdx := midIdx_i_succ)
+      (h_destIdx := h_midIdx_i_succ) (h_destIdx_le := h_midIdx_i_succ_le)
+      (f := f) (r_challenges := Fin.snoc r_prefix r_new) =
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := midIdx_i) (destIdx := midIdx_i_succ)
+      (h_destIdx := h_mid_succ) (h_destIdx_le := h_midIdx_i_succ_le)
+      (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := block_start_idx) (steps := k) (destIdx := midIdx_i)
+        (h_destIdx := h_midIdx_i) (h_destIdx_le := by omega)
+        (f := f) (r_challenges := r_prefix)) r_new := by
+  have h := iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := block_start_idx) (steps := k) (midIdx := midIdx_i) (destIdx := midIdx_i_succ)
+    (h_midIdx := h_midIdx_i) (h_destIdx := h_midIdx_i_succ)
+    (h_destIdx_le := h_midIdx_i_succ_le)
+    (f := f) (r_challenges := Fin.snoc r_prefix r_new)
+  simp only [Fin.init_snoc, Fin.snoc_last] at h
+  exact h
+
+lemma iterated_fold_snoc_cast_eq_fold_prefix
+    (block_start_idx : Fin r) {midIdx_i destIdx : Fin r} (k totalSteps : ℕ)
+    (h_total : k + 1 = totalSteps)
+    (h_midIdx_i : midIdx_i.val = block_start_idx.val + k)
+    (h_dest_total : destIdx.val = block_start_idx.val + totalSteps)
+    (h_dest_succ : destIdx.val = block_start_idx.val + k + 1)
+    (h_mid_succ : destIdx.val = midIdx_i.val + 1)
+    (h_dest_le : destIdx ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) block_start_idx)
+    (r_prefix : Fin k → L) (r_new : L) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (steps := totalSteps) (destIdx := destIdx)
+      (h_destIdx := h_dest_total) (h_destIdx_le := h_dest_le)
+      (f := f) (r_challenges := fun j => (Fin.snoc r_prefix r_new : Fin (k + 1) → L)
+        (Fin.cast h_total.symm j)) =
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := midIdx_i) (destIdx := destIdx)
+      (h_destIdx := h_mid_succ) (h_destIdx_le := h_dest_le)
+      (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := block_start_idx) (steps := k) (destIdx := midIdx_i)
+        (h_destIdx := h_midIdx_i) (h_destIdx_le := by omega)
+        (f := f) (r_challenges := r_prefix)) r_new := by
+  have hcongr := iterated_fold_congr_steps 𝔽q β (i := block_start_idx)
+    (destIdx := destIdx) (h := h_total) (hd₁ := h_dest_succ)
+    (hd₂ := h_dest_total) (h_le := h_dest_le) f (Fin.snoc r_prefix r_new)
+  rw [hcongr]
+  exact iterated_fold_snoc_eq_fold_prefix 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (block_start_idx := block_start_idx) (midIdx_i := midIdx_i)
+    (midIdx_i_succ := destIdx) (k := k)
+    (h_midIdx_i := h_midIdx_i) (h_midIdx_i_succ := h_dest_succ)
+    (h_mid_succ := h_mid_succ) (h_midIdx_i_succ_le := h_dest_le)
+    (f := f) (r_prefix := r_prefix) (r_new := r_new)
 
 lemma prop_4_21_2_case_2_fiberwise_far_incremental
     (block_start_idx : Fin r) {midIdx_i midIdx_i_succ destIdx : Fin r} (k : ℕ) (h_k_lt : k < ϑ)
@@ -2027,9 +2195,124 @@ lemma prop_4_21_2_case_2_fiberwise_far_incremental
         (f_block_start := f_block_start)
         (r_challenges := Fin.snoc r_prefix r_new)
     ] ≤
-    (domain_size / Fintype.card L) :=
-  Prop4212Case2Residual.holds (𝔽q := 𝔽q) (β := β) block_start_idx k h_k_lt
-    h_midIdx_i h_midIdx_i_succ h_destIdx h_destIdx_le f_block_start r_prefix h_block_far
+    (domain_size / Fintype.card L) := by
+  classical
+  have hk_mid : midIdx_i.val = block_start_idx.val + k := by omega
+  have hk_mid_le : midIdx_i.val ≤ ℓ := by omega
+  have hk_mid_lt : midIdx_i.val < ℓ := by omega
+  have h_ms : midIdx_i_succ.val = midIdx_i.val + 1 := by omega
+  have h_ms_le : midIdx_i_succ.val ≤ ℓ := by omega
+  have hDk_dest : destIdx.val = midIdx_i.val + (ϑ - k) := by omega
+  have hK1d : midIdx_i_succ.val = block_start_idx.val + (k + 1) := by omega
+  have hTHd : destIdx.val = block_start_idx.val + ϑ := by omega
+  set fold_k_f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) midIdx_i :=
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (steps := k) (destIdx := midIdx_i)
+      (h_destIdx := hk_mid) (h_destIdx_le := hk_mid_le)
+      (f := f_block_start) (r_challenges := r_prefix) with hfold_k_def
+  have h_rem_pos : 0 < ϑ - k := by omega
+  haveI : NeZero (ϑ - k) := ⟨Nat.ne_of_gt h_rem_pos⟩
+  by_cases hcur_far : ¬ fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := midIdx_i) (steps := ϑ - k) (destIdx := destIdx)
+      (h_destIdx := hDk_dest) (h_destIdx_le := h_destIdx_le) (f := fold_k_f)
+  · by_cases hk1ϑ : k + 1 = ϑ
+    · have hdest1 : destIdx.val = midIdx_i.val + 1 := by omega
+      have hfar1 : ¬ fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := midIdx_i) (steps := 1) (destIdx := destIdx)
+          (h_destIdx := hdest1) (h_destIdx_le := h_destIdx_le) (f := fold_k_f) := by
+        intro hclose
+        apply hcur_far
+        have hsteps : ϑ - k = 1 := by omega
+        simpa [hsteps] using hclose
+      have hprob := case2_one_step_far_final_probability_finr 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (srcIdx := midIdx_i) (h_src_lt := hk_mid_lt) (destIdx := destIdx)
+        (h_destIdx := hdest1) (h_destIdx_le := h_destIdx_le)
+        (f_i := fold_k_f) (h_far := hfar1)
+      refine le_trans
+        (Pr_le_Pr_of_implies ($ᵖ L) _ _ ?_) hprob
+      intro r_new h_event
+      have hE := h_event.2
+      unfold incrementalFoldingBadEvent at hE
+      rw [dif_neg (Nat.succ_ne_zero k), dif_pos hk1ϑ] at hE
+      unfold foldingBadEvent at hE
+      rw [dif_neg h_block_far] at hE
+      have hlast := iterated_fold_snoc_cast_eq_fold_prefix 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (block_start_idx := block_start_idx) (midIdx_i := midIdx_i)
+        (destIdx := destIdx) (k := k) (totalSteps := ϑ)
+        (h_total := hk1ϑ) (h_midIdx_i := hk_mid)
+        (h_dest_total := hTHd) (h_dest_succ := by omega)
+        (h_mid_succ := hdest1) (h_dest_le := h_destIdx_le)
+        (f := f_block_start) (r_prefix := r_prefix) (r_new := r_new)
+      rw [hlast] at hE
+      simpa [fold_k_f, hfold_k_def] using hE
+    · have hpos : 0 < ϑ - (k + 1) := by omega
+      haveI : NeZero (ϑ - (k + 1)) := ⟨Nat.ne_of_gt hpos⟩
+      have hdest_succ : destIdx.val = midIdx_i.val + ((ϑ - (k + 1)) + 1) := by omega
+      have hfar_pos : ¬ fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := midIdx_i) (steps := (ϑ - (k + 1)) + 1) (destIdx := destIdx)
+          (h_destIdx := hdest_succ) (h_destIdx_le := h_destIdx_le) (f := fold_k_f) := by
+        intro hclose
+        apply hcur_far
+        simpa [show (ϑ - (k + 1)) + 1 = ϑ - k by omega] using hclose
+      have hprob := case2_one_step_far_positive_probability_finr 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (srcIdx := midIdx_i) (h_src_lt := hk_mid_lt) (s := ϑ - (k + 1))
+        (midIdx := midIdx_i_succ) (destIdx := destIdx)
+        (h_midIdx := h_ms) (h_destIdx := hdest_succ)
+        (h_destIdx_le := h_destIdx_le)
+        (f_i := fold_k_f) (h_far := hfar_pos)
+      refine le_trans
+        (Pr_le_Pr_of_implies ($ᵖ L) _ _ ?_) hprob
+      intro r_new h_event
+      have hE := h_event.2
+      unfold incrementalFoldingBadEvent at hE
+      rw [dif_neg (Nat.succ_ne_zero k), dif_neg hk1ϑ, dif_neg h_block_far] at hE
+      have hlast := iterated_fold_snoc_eq_fold_prefix 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (block_start_idx := block_start_idx) (midIdx_i := midIdx_i)
+        (midIdx_i_succ := midIdx_i_succ) (k := k)
+        (h_midIdx_i := hk_mid) (h_midIdx_i_succ := hK1d)
+        (h_mid_succ := h_ms) (h_midIdx_i_succ_le := h_ms_le)
+        (f := f_block_start) (r_prefix := r_prefix) (r_new := r_new)
+      rw [hlast] at hE
+      simpa [fold_k_f, hfold_k_def] using hE
+  · have hcur_close := not_not.mp hcur_far
+    by_cases hk0 : k = 0
+    · subst k
+      have hmid0 : midIdx_i = block_start_idx := Fin.ext (by omega)
+      subst midIdx_i
+      have hclose_block : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := block_start_idx) (steps := ϑ) (destIdx := destIdx)
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+          (f := f_block_start) := by
+        have hfold0 : fold_k_f = f_block_start := by
+          funext y
+          simp [fold_k_f, hfold_k_def]
+          rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+            (i := block_start_idx) (destIdx := block_start_idx)
+            (h_destIdx := by omega) (h_destIdx_le := by omega)
+            (f := f_block_start)]
+          rfl
+        simpa [hfold0] using hcur_close
+      exact False.elim (h_block_far hclose_block)
+    · have hEk : incrementalFoldingBadEvent 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (block_start_idx := block_start_idx) (midIdx := midIdx_i) (destIdx := destIdx)
+          (k := k)
+          (h_k_le := Nat.le_of_lt h_k_lt) (h_midIdx := h_midIdx_i)
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+          (f_block_start := f_block_start) (r_challenges := r_prefix) := by
+        unfold incrementalFoldingBadEvent
+        rw [dif_neg hk0, dif_neg (show ¬ k = ϑ by omega), dif_neg h_block_far]
+        simpa [fold_k_f, hfold_k_def] using hcur_close
+      refine le_trans
+        (Pr_le_Pr_of_implies ($ᵖ L) _ (fun _ => False) ?_) ?_
+      · intro r_new h_event
+        exact h_event.1 hEk
+      · simp only [PMF.monad_pure_eq_pure, PMF.monad_bind_eq_bind, PMF.bind_const,
+          PMF.pure_apply, eq_iff_iff, iff_false, not_true_eq_false, ↓reduceIte,
+          _root_.zero_le]
 
 /-- **Proposition 4.21.2** (Incremental bad-event probability bound).
 This is the formalization-specific refinement of Proposition 4.21 for prefix-by-prefix folding
@@ -2068,12 +2351,10 @@ lemma prop_4_21_2_incremental_bad_event_probability
       (h_destIdx_le := h_destIdx_le) (f_block_start := f_block_start)
       (r_prefix := r_prefix) (h_block_far := h_block_close)
 
-#print axioms Prop4212Case1Residual
 #print axioms prop_4_21_2_case_1_fiberwise_close_incremental
 #print axioms fold_preTensorCombine_eq_affineLineEvaluation_split
 #print axioms fold_eq_multilinearCombine_preTensorCombine_step1
 #print axioms preTensorCombine_jointProximityNat_of_fiberwiseClose
-#print axioms Prop4212Case2Residual
 #print axioms prop_4_21_2_case_2_fiberwise_far_incremental
 #print axioms prop_4_21_2_incremental_bad_event_probability
 

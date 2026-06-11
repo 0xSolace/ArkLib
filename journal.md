@@ -69,20 +69,3 @@ campaign on this repository. Maintained alongside the work; newest entries last.
   activate the surface production's largeness conditions and close by the one-pair
   capture. Remaining: the dichotomy assembly, the residual-bundle input check, and the
   final statement.
-
-- Entry 4: consistency probe on the weld's three numeric conditions found the window
-  nearly empty as composed: the cover and threshold inequalities at a shared degree
-  parameter force the matching threshold to 1 and pin the close-count exactly (with a
-  divisibility constraint), while the smallness condition caps it by a constant. The
-  surface route as currently wired covers only a thin family of stacks. Re-planning:
-  examine the complement weld variant, or generalize the weld to decouple the two
-  degree parameters (the paper's threshold scales with the close-count). The probe ran
-  before the top assembly was built on the vacuous window — methodology item 3 doing
-  its job.
-
-- Entry 5: the thin window is fully diagnosed — only the full-coverage conversion
-  forces the degenerate parameter pinning; the underlying point-selection has an open
-  window in the complement form, with the threshold scaling correctly. Rerouting to
-  partial coverage: scalars matched at every selected point inherit the pencil; the
-  rest are counted against the per-point miss budget. The route is non-vacuous and the
-  three pieces (partial pencil identity, escapee count, count assembly) are enumerated.

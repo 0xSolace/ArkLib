@@ -103,11 +103,11 @@ lemma UDRClose_iff_dist_le_udr (i : Fin r) (h_i : i ≤ ℓ)
 
 /-- **Proposition 4.21, Case 2 — conditional assembly.**
 
-	Given (1) the fold/tensor bridge (proven in `Soundness/Incremental.lean` as
-	`iterated_fold_eq_multilinearCombine_preTensorCombine`) and (2) the Lemma 4.22 far-lift
-	(PreTensor lane), the fiberwise-far bound holds: the heavy probabilistic input is the
-	in-tree DG25 Corollary 3.7 with `ε = |S_next|`, consumed in contrapositive form. -/
-	lemma prop421Case2_probability_bound_of_bridges
+Given (1) the fold/tensor bridge (proven in `Soundness/Incremental.lean` as
+`iterated_fold_eq_multilinearCombine_preTensorCombine`) and (2) the Lemma 4.22 far-lift
+(PreTensor lane), the fiberwise-far bound holds: the heavy probabilistic input is the
+in-tree DG25 Corollary 3.7 with `ε = |S_next|`, consumed in contrapositive form. -/
+lemma prop421Case2_probability_bound_of_bridges
     (hBridge : ∀ (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
       (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
       (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)

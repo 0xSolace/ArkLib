@@ -1,5 +1,5 @@
 /-
-Core layer (issue #317 PreviousSuffixFiberAlignmentResidual), restructured:
+Core layer (issue #317 suffix/fiber alignment), restructured:
 value-level alignment between `iteratedQuotientMap` (current CompPoly API) and a single
 multi-step `qMap_total_fiber` at the `extractMiddleFinMask` fiber index, with the target
 point `y` held OPAQUE behind a val-equality hypothesis (dodges all dependent-index

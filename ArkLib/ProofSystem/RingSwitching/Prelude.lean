@@ -456,21 +456,26 @@ def witnessStructuralInvariant {i : Fin (ℓ' + 1)}
     (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmt.ctx)
     (i := i) (challenges := stmt.challenges)
 
+def masterKStateCore (aOStmtIn : AbstractOStmtIn L ℓ') (stmtIdx : Fin (ℓ' + 1))
+    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) stmtIdx)
+    (oStmt : ∀ j, aOStmtIn.OStmtIn j)
+    (wit : SumcheckWitness L ℓ' stmtIdx) : Prop :=
+  witnessStructuralInvariant κ L K P ℓ ℓ' h_l stmt wit
+  ∧ sumcheckConsistencyProp (boolDomain L _) stmt.sumcheck_target wit.H
+  ∧ aOStmtIn.initialCompatibility ⟨wit.t', oStmt⟩
+
 def masterKStateProp (aOStmtIn : AbstractOStmtIn L ℓ') (stmtIdx : Fin (ℓ' + 1))
     (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) stmtIdx)
     (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (wit : SumcheckWitness L ℓ' stmtIdx)
-    (localChecks : Prop := True) : Prop :=
-  localChecks
-  ∧ witnessStructuralInvariant κ L K P ℓ ℓ' h_l stmt wit
-  ∧ sumcheckConsistencyProp (boolDomain L _) stmt.sumcheck_target wit.H
-  ∧ aOStmtIn.initialCompatibility ⟨wit.t', oStmt⟩
+    (localChecks : Prop) : Prop :=
+  localChecks ∧ masterKStateCore κ L K P ℓ ℓ' h_l aOStmtIn stmtIdx stmt oStmt wit
 
 def sumcheckRoundRelationProp (aOStmtIn : AbstractOStmtIn L ℓ') (i : Fin (ℓ' + 1))
     (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) i)
     (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (wit : SumcheckWitness L ℓ' i) : Prop :=
-  masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn i stmt oStmt wit
+  masterKStateCore κ L K P ℓ ℓ' h_l aOStmtIn i stmt oStmt wit
 
 /-- Input relation for single round: proper sumcheck statement -/
 def sumcheckRoundRelation (aOStmtIn : AbstractOStmtIn L ℓ') (i : Fin (ℓ' + 1)) :

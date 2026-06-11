@@ -8,6 +8,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
 import ArkLib.ProofSystem.Binius.BinaryBasefold.FoldDetDischarge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Discharge
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Probability
 
 /-!
 ## Binary Basefold Soundness Proposition 4.21
@@ -54,42 +56,6 @@ variable [hdiv : Fact (ϑ ∣ ℓ)]
 
 open scoped NNReal ProbabilityTheory
 
-open Classical in
-/-- **Residual: Proposition 4.21, Case 1 (FiberwiseClose).**
-
-Under the fiberwise-close branch, every point in the original fiberwise disagreement set should
-survive folding except with probability at most `steps / |L|`, and the union bound gives
-`steps * |S_next| / |L|`.
-
-The old inline proof below relied on stale quotient-map witness extraction and the pre-bit-reversal
-matrix-form evaluator. The live statement uses the honest per-fiber disagreement surface from
-`foldingBadEvent`; exposing the branch as a typeclass obligation matches the residual style used
-by the adjacent Binius soundness files while preserving the DP24 case split. -/
-class Prop421Case1FiberwiseCloseResidual : Prop where
-  holds : ∀ (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
-    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-    (_h_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := h_destIdx)
-      (h_destIdx_le := h_destIdx_le) (f := f_i)),
-    let S_next := sDomain 𝔽q β h_ℓ_add_R_rate destIdx
-    let domain_size := Fintype.card S_next
-    Pr_{ let r_challenges ←$ᵖ (Fin steps → L) }[
-        let f_bar_i := UDRCodeword 𝔽q β (i := ⟨i, by omega⟩) (h_i := by
-          exact Nat.le_of_lt i.isLt) f_i
-          (UDRClose_of_fiberwiseClose 𝔽q β ⟨i, by omega⟩ steps h_destIdx h_destIdx_le f_i _h_close)
-        let folded_f_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩
-          steps h_destIdx h_destIdx_le f_i r_challenges
-        let folded_f_bar_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩
-          steps h_destIdx h_destIdx_le f_bar_i r_challenges
-        ¬ (fiberwiseDisagreementSetPerFiber 𝔽q β
-            (i := ⟨i, by omega⟩) steps h_destIdx h_destIdx_le f_i f_bar_i ⊆
-           disagreementSet 𝔽q β (i := destIdx) (destIdx := destIdx)
-             (h_destIdx := rfl) (f := folded_f_i) (g := folded_f_bar_i))
-    ] ≤ ((steps * domain_size) / Fintype.card L)
-
-variable [Prop421Case1FiberwiseCloseResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-
 /-- **Proposition 4.21 (Case 1)**:
 If f⁽ⁱ⁾ is fiber-wise close to the code, the probability of the bad event is bounded.
 The bad event here is: `Δ⁽ⁱ⁾(f⁽ⁱ⁾, f̄⁽ⁱ⁾) ⊄ Δ(fold(f⁽ⁱ⁾), fold(f̄⁽ⁱ⁾))`.
@@ -115,7 +81,7 @@ lemma prop_4_21_case_1_fiberwise_close (i : Fin ℓ) (steps : ℕ) [NeZero steps
            disagreementSet 𝔽q β (i := destIdx) (destIdx := destIdx)
              (h_destIdx := rfl) (f := folded_f_i) (g := folded_f_bar_i))
     ] ≤ ((steps * domain_size) / Fintype.card L) := by
-  exact Prop421Case1FiberwiseCloseResidual.holds (𝔽q := 𝔽q) (β := β)
+  exact prop421Case1_probability_bound 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     i steps h_destIdx h_destIdx_le f_i h_close
 /-
   let S_next := sDomain 𝔽q β h_ℓ_add_R_rate destIdx
@@ -425,34 +391,6 @@ lemma prop_4_21_case_1_fiberwise_close (i : Fin ℓ) (steps : ℕ) [NeZero steps
       conv_rhs => rw [mul_div_assoc]
 -/
 
-/-- **Residual: Proposition 4.21, Case 2 (FiberwiseFar).**
-
-Under the fiberwise-far branch, the random multilinear combination of the interleaved
-preTensorCombine stack should be close to the destination code with probability at most
-`steps * |S_next| / |L|`.
-
-The attempted direct proof below this point needs three port-debt bridges that are already exposed
-as residuals in the incremental development: the fiberwise-far-to-interleaved-distance bridge, the
-DG25 affine/interleaved proximity-gap specialization with the current `BBF_Code` wrapper, and the
-`iterated_fold`/`multilinearCombine` bridge for the post-bit-reversal matrix form. Keeping this as
-an explicit typeclass obligation makes the remaining proof debt visible to downstream users instead
-of failing in the build path. -/
-class Prop421Case2FiberwiseFarResidual : Prop where
-  holds : ∀ (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
-    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
-    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
-    (_h_far : ¬fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := h_destIdx)
-      (h_destIdx_le := h_destIdx_le) (f := f_i)),
-    let next_domain_size := Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx)
-    Pr_{ let r ←$ᵖ (Fin steps → L) }[
-      let f_next := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
-        h_destIdx h_destIdx_le f_i r
-      UDRClose 𝔽q β destIdx h_destIdx_le f_next
-    ] ≤ ((steps * next_domain_size) / Fintype.card L)
-
-variable [Prop421Case2FiberwiseFarResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
-
 lemma prop_4_21_case_2_fiberwise_far (i : Fin ℓ) (steps : ℕ) [NeZero steps]
     {destIdx : Fin r} (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
@@ -464,7 +402,7 @@ lemma prop_4_21_case_2_fiberwise_far (i : Fin ℓ) (steps : ℕ) [NeZero steps]
         h_destIdx h_destIdx_le f_i r
       UDRClose 𝔽q β destIdx h_destIdx_le f_next
     ] ≤ ((steps * next_domain_size) / Fintype.card L) := by
-  exact Prop421Case2FiberwiseFarResidual.holds (𝔽q := 𝔽q) (β := β)
+  exact prop421Case2_probability_bound 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     i steps h_destIdx h_destIdx_le f_i h_far
 
 /-!

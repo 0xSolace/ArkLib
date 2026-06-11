@@ -4,13 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case1Bridge
 import ArkLib.Data.Probability.TensorSchwartzZippel
 import ArkLib.Data.Probability.PrUnionBound
 
 /-!
-# Discharge of `Prop421Case1FiberwiseCloseResidual`
+# Proposition 4.21 Case 1 probability bound
 
 DP24 Proposition 4.21, Case 1 (fiberwise-close branch), proven: for every point `y` of the
 honest per-fiber disagreement set, the difference of the two iterated folds at `y` is the
@@ -159,16 +158,35 @@ lemma per_point_fold_collision_prob_le (i : Fin r) {destIdx : Fin r} (steps : �
   exact TensorSZ.tensorComb_vanish_prob_le L steps a ha
 
 /-!
-## The instance
+## The theorem
 -/
 
 open Classical in
-/-- **DP24 Proposition 4.21, Case 1 — proven.** Discharge of
-`Prop421Case1FiberwiseCloseResidual`: per-fiber Schwartz–Zippel + union bound. -/
-instance instProp421Case1FiberwiseCloseResidual :
-    Prop421Case1FiberwiseCloseResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) where
-  holds := by
-    intro i steps _ destIdx h_destIdx h_destIdx_le f_i h_close S_next domain_size
+/-- **DP24 Proposition 4.21, Case 1 — proven.**
+Per-fiber Schwartz–Zippel plus a union bound over the fiberwise disagreement set. -/
+lemma prop421Case1_probability_bound
+    (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (h_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := h_destIdx)
+      (h_destIdx_le := h_destIdx_le) (f := f_i)) :
+    let S_next := sDomain 𝔽q β h_ℓ_add_R_rate destIdx
+    let domain_size := Fintype.card S_next
+    Pr_{ let r_challenges ←$ᵖ (Fin steps → L) }[
+        let f_bar_i := UDRCodeword 𝔽q β (i := ⟨i, by omega⟩) (h_i := by
+          exact Nat.le_of_lt i.isLt) f_i
+          (UDRClose_of_fiberwiseClose 𝔽q β ⟨i, by omega⟩ steps h_destIdx h_destIdx_le f_i h_close)
+        let folded_f_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩
+          steps h_destIdx h_destIdx_le f_i r_challenges
+        let folded_f_bar_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩
+          steps h_destIdx h_destIdx_le f_bar_i r_challenges
+        ¬ (fiberwiseDisagreementSetPerFiber 𝔽q β
+            (i := ⟨i, by omega⟩) steps h_destIdx h_destIdx_le f_i f_bar_i ⊆
+           disagreementSet 𝔽q β (i := destIdx) (destIdx := destIdx)
+             (h_destIdx := rfl) (f := folded_f_i) (g := folded_f_bar_i))
+    ] ≤ ((steps * domain_size) / Fintype.card L) := by
+    intro S_next domain_size
     -- The closest-codeword comparison word and the (challenge-independent) disagreement set.
     have hU := UDRClose_of_fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       ⟨i, by omega⟩ steps h_destIdx h_destIdx_le f_i h_close
@@ -240,4 +258,4 @@ end Binius.BinaryBasefold
 #print axioms Binius.BinaryBasefold.challengeTensorProduct_get_eq_tensorWeight_eval
 #print axioms Binius.BinaryBasefold.dotProduct_challengeTensor_eq_tensorComb_eval
 #print axioms Binius.BinaryBasefold.per_point_fold_collision_prob_le
-#print axioms Binius.BinaryBasefold.instProp421Case1FiberwiseCloseResidual
+#print axioms Binius.BinaryBasefold.prop421Case1_probability_bound

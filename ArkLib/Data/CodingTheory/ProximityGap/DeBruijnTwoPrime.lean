@@ -441,8 +441,20 @@ theorem two_prime_deBruijn_double_slice {p q a b : ℕ} (hp : p.Prime) (hq : q.P
 /-- Satisfiability of the headline's hypothesis spine in a concrete field: the two
 primitive roots exist in `ℂ` and the headline theorem fires (instantiated at the
 empty vanishing sum) — no hypothesis hides an unsatisfiable assumption. -/
-example : True := by
+example :
+    let ζp : ℂ := Complex.exp (2 * Real.pi * Complex.I / 4)
+    let ζq : ℂ := Complex.exp (2 * Real.pi * Complex.I / 3)
+    ∀ s < 2 ^ 1, ∀ i < 2, ∀ i' < 2, ∀ t < 3 ^ 0, ∀ j < 3, ∀ j' < 3,
+      (if ζp ^ (i * 2 ^ 1 + s) * ζq ^ (j * 3 ^ 0 + t) ∈ (∅ : Finset ℂ) then
+          (1 : ℚ) else 0)
+        - (if ζp ^ (i' * 2 ^ 1 + s) * ζq ^ (j * 3 ^ 0 + t) ∈ (∅ : Finset ℂ) then
+          (1 : ℚ) else 0)
+      = (if ζp ^ (i * 2 ^ 1 + s) * ζq ^ (j' * 3 ^ 0 + t) ∈ (∅ : Finset ℂ) then
+          (1 : ℚ) else 0)
+        - (if ζp ^ (i' * 2 ^ 1 + s) * ζq ^ (j' * 3 ^ 0 + t) ∈ (∅ : Finset ℂ) then
+          (1 : ℚ) else 0) := by
   classical
+  dsimp
   have he4 : IsPrimitiveRoot (Complex.exp (2 * Real.pi * Complex.I / 4)) 4 := by
     have h := Complex.isPrimitiveRoot_exp 4 (by norm_num)
     norm_num at h
@@ -457,7 +469,7 @@ example : True := by
     norm_num [he3]
   have h := two_prime_deBruijn_double_slice Nat.prime_two Nat.prime_three (by norm_num)
     h4 h3 (S := (∅ : Finset ℂ)) (fun z hz => absurd hz (Finset.notMem_empty z)) (by simp)
-  trivial
+  exact h
 
 end TwoPrimeHeadline
 
