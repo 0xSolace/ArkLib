@@ -7152,3 +7152,32 @@ This is the asymptotic law item 11 asked for (char-0 face), the exact algebra it
 asked for (quartet-tower classification replaces the 1.8σ enrichment), and the tower
 closure item 14 asked for (the 4-adic recursion IS the closed form; layer 1 at
 `n = 2^20` is tower-computable by iterating it).
+
+## 2026-06-11 — Item 18, first datum: THE EXACT BAND-3 VALUE — B6 = 7 at RS[F₁₇,⟨2⟩,4]
+
+`probe_band3_exact_value.py` (exhaustive in syndrome space — every stack class, no
+weight restriction): the exact explosion-band value at the first beyond-ladder band
+(δ = 1/4, |T| ≥ 6, d = 5 < 7 = 3j−2 at j = 3):
+
+**The dichotomy that computes it.** Split by the u₁-coset minimum weight:
+* **min-wt ≥ 3:** a witness `A` (the explaining codeword's agreement set, size ≥ 6)
+  can never explain `u₁` (a word vanishing on `A` has weight ≤ 2 — not in the coset),
+  so **every explainable scalar is bad**: the count is exactly the line–W₂ incidence
+  in syndrome space. Exhaustive max: **7**, at direction `s₁ = [1,0,1,16]`.
+* **min-wt ≤ 2 (supp S₁):** wt≤2 coset representatives are UNIQUE (d = 5), and
+  `bad γ ⟺ rep exists ∧ (S₁ ⊄ supp(rep) ∨ s₀ ∉ synSet(supp(rep)))` — the unified
+  per-γ criterion (the `supp(rep) = S₁` scalars are saved by the joint explanation
+  unless `u₀` is inexplainable on the complement). Exhaustive max: **6** (the
+  widened-pin stack family is extremal in this class).
+* Naive syndrome incidence WITHOUT the joint correction reaches 17 (spike-pair
+  saturation) — the correction is exactly what kills it.
+
+**B6 = max(6, 7) = 7**, attained at `u₀ = (0,0,0,0,2,0,1,0)`, `u₁ = (0,0,0,0,1,0,1,16)`
+with bad scalars `γ ∈ {0,4,7,8,10,15,16}` (explicit 6-point witnesses + cubics
+extracted, Lean-ready). So `ε_mca(C84, 1/4) = 7/17` exactly — the first exact value
+in the explosion regime, strictly between the pencil supply (4) and the dead ladder
+prediction. Consequences: the pin window extends maximally to `ε* ∈ [2/17, 7/17)`
+(7th certificate needs the coset-min-wt-3 no-joint argument — 10-case interpolation
+check, queued); the explosion law's shape at this instance is
+**max(far-coset incidence, joint-corrected near-coset count)** — the far-coset side
+won, i.e. the binding object is line–W₂ incidence geometry, not cancellation.
