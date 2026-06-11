@@ -94,11 +94,44 @@ theorem leadingCoeff_dvd_evalX_hasseDerivY_top {x₀ : F} {R : F[X][X][Y]} {H : 
   exact Dvd.dvd.mul_left
     (BCIKS20AppendixA.ClaimA2.leadingCoeff_dvd_evalX_leadingCoeff hHyp) _
 
+/-! ## Item (c): the joint-monomial weight estimate -/
+
+open BCIKS20AppendixA in
+/-- **The joint-monomial `Λ` sup-estimate** (finding 7's B-bound shape): a `(T,Z)`-polynomial
+whose support is capped at `dT` and whose coefficients carry the total-degree shape
+`deg_Z (coeff j) ≤ DQ − j` has weight at most `DQ + dT·(D − d_H)`: per monomial,
+`j·(D+1−d_H) + (DQ − j) = DQ + j·(D−d_H)`, maximized at `j = dT`. -/
+theorem weight_Λ_le_of_shape {H : F[X][Y]} {f : F[X][Y]} {dT DQ D : ℕ}
+    (hD : Polynomial.Bivariate.natDegreeY H ≤ D)
+    (hsupp : ∀ j ∈ f.support, j ≤ dT)
+    (hshape : ∀ j ∈ f.support, (f.coeff j).natDegree ≤ DQ - j)
+    (hDQ : ∀ j ∈ f.support, j ≤ DQ) :
+    weight_Λ f H D
+      ≤ WithBot.some (DQ + dT * (D - Polynomial.Bivariate.natDegreeY H)) := by
+  unfold weight_Λ
+  refine Finset.sup_le ?_
+  intro j hj
+  have h1 := hsupp j hj
+  have h2 := hshape j hj
+  have h3 := hDQ j hj
+  refine WithBot.coe_le_coe.mpr ?_
+  set w : ℕ := D - Polynomial.Bivariate.natDegreeY H with hw
+  have hexp : D + 1 - Polynomial.Bivariate.natDegreeY H = w + 1 := by omega
+  rw [hexp]
+  calc j * (w + 1) + (f.coeff j).natDegree
+      ≤ j * (w + 1) + (DQ - j) := by omega
+    _ = j * w + j + (DQ - j) := by ring_nf
+    _ = DQ + j * w := by omega
+    _ ≤ DQ + dT * w := by
+        have := Nat.mul_le_mul_right w h1
+        omega
+
 /-! ## Source audit -/
 
 #print axioms hasseDerivY_coeff
 #print axioms hasseDerivY_coeff_natDegree_le
 #print axioms hasseDerivY_coeff_natDegree_le_of_total
 #print axioms leadingCoeff_dvd_evalX_hasseDerivY_top
+#print axioms weight_Λ_le_of_shape
 
 end BCIKS20.HenselNumerator
