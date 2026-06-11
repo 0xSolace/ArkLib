@@ -929,6 +929,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAUpperWitnessSunflower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAValueBracket
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWindowInteriorExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWindowInteriorFamily
+import ArkLib.Data.CodingTheory.ProximityGap.MCAWindowInteriorFamilyInstance
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWindowInteriorPin
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessCountEngine
 import ArkLib.Data.CodingTheory.ProximityGap.MCAWitnessSpread
