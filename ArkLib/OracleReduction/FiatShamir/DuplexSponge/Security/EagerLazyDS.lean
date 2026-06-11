@@ -93,4 +93,73 @@ noncomputable def lazyDSImpl :
     (sOut : CanonicalSpongeState U) :
     dsOverlayFn ch cp g π (.inr (.inr sOut)) = (permExtending cp π).symm sOut := rfl
 
+/-! ## Step facts for the master induction -/
+
+/-- Growing the hash cache at an uncached statement is the table update of the overlay
+(the permutation arms are untouched). -/
+lemma dsOverlayFn_cacheQuery_of_none
+    (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache)
+    (cp : List (CanonicalSpongeState U × CanonicalSpongeState U))
+    (g : StmtIn → Vector U SpongeSize.C) (π : Equiv.Perm (CanonicalSpongeState U))
+    {q : StmtIn} (hq : ch q = none) (u : Vector U SpongeSize.C) :
+    dsOverlayFn (ch.cacheQuery q u) cp g π
+      = dsOverlayFn ch cp (Function.update g q u) π := by
+  funext t
+  rcases t with s | sIn | sOut
+  · show OracleComp.tableExtending (ch.cacheQuery q u) g s
+      = OracleComp.tableExtending ch (Function.update g q u) s
+    rw [OracleComp.tableExtending_cacheQuery, OracleComp.tableExtending_update_of_none ch g hq]
+  · rfl
+  · rfl
+
+/-- The overlay's hash answer at the queried point recovers the cached/updated value. -/
+lemma tableExtending_cacheQuery_self
+    (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache)
+    (g : StmtIn → Vector U SpongeSize.C) (q : StmtIn) (u : Vector U SpongeSize.C) :
+    OracleComp.tableExtending (ch.cacheQuery q u) g q = u := by
+  simp [OracleComp.tableExtending, OracleSpec.QueryCache.cacheQuery]
+
+/-- Two uniform samples commute under any `ProbComp` continuation: both prefixes are
+lifted `PMF`s, so the `OptionT` layer collapses and `PMF.bind_comm` applies. -/
+lemma evalDist_uniformSample_swap {β γ : Type} [Fintype β] [Nonempty β] [SampleableType β]
+    [Fintype γ] [Nonempty γ] [SampleableType γ] {δ : Type}
+    (f : β → γ → ProbComp δ) :
+    evalDist (do let b ← $ᵗ β; let c ← $ᵗ γ; f b c)
+      = evalDist (do let c ← $ᵗ γ; let b ← $ᵗ β; f b c) := by
+  classical
+  rw [← SPMF.toPMF_inj]
+  rw [evalDist_bind, SPMF.toPMF_bind, evalDist_bind, SPMF.toPMF_bind]
+  rw [evalDist_uniformSample, evalDist_uniformSample, SPMF.liftM_eq_map, SPMF.liftM_eq_map,
+    SPMF.toPMF_mk, SPMF.toPMF_mk]
+  rw [show Option.elimM ((PMF.uniformOfFintype β).map some) (PMF.pure none)
+      (fun b => (evalDist ($ᵗ γ >>= fun c => f b c)).toPMF)
+    = (PMF.uniformOfFintype β).bind
+        (fun b => (evalDist ($ᵗ γ >>= fun c => f b c)).toPMF) from by
+    rw [Option.elimM, PMF.monad_bind_eq_bind, PMF.bind_map]
+    rfl]
+  rw [show Option.elimM ((PMF.uniformOfFintype γ).map some) (PMF.pure none)
+      (fun c => (evalDist ($ᵗ β >>= fun b => f b c)).toPMF)
+    = (PMF.uniformOfFintype γ).bind
+        (fun c => (evalDist ($ᵗ β >>= fun b => f b c)).toPMF) from by
+    rw [Option.elimM, PMF.monad_bind_eq_bind, PMF.bind_map]
+    rfl]
+  have hin : ∀ b, (evalDist ($ᵗ γ >>= fun c => f b c)).toPMF
+      = (PMF.uniformOfFintype γ).bind (fun c => (evalDist (f b c)).toPMF) := by
+    intro b
+    rw [evalDist_bind, SPMF.toPMF_bind, evalDist_uniformSample, SPMF.liftM_eq_map,
+      SPMF.toPMF_mk, Option.elimM, PMF.monad_bind_eq_bind, PMF.bind_map]
+    rfl
+  have hin' : ∀ c, (evalDist ($ᵗ β >>= fun b => f b c)).toPMF
+      = (PMF.uniformOfFintype β).bind (fun b => (evalDist (f b c)).toPMF) := by
+    intro c
+    rw [evalDist_bind, SPMF.toPMF_bind, evalDist_uniformSample, SPMF.liftM_eq_map,
+      SPMF.toPMF_mk, Option.elimM, PMF.monad_bind_eq_bind, PMF.bind_map]
+    rfl
+  simp only [hin, hin']
+  exact PMF.bind_comm _ _ _
+
 end DuplexSpongeFS.EagerLazyDS
+
+/-! ## Axiom audit — kernel-clean. -/
+#print axioms DuplexSpongeFS.EagerLazyDS.evalDist_uniformSample_swap
+#print axioms DuplexSpongeFS.EagerLazyDS.dsOverlayFn_cacheQuery_of_none
