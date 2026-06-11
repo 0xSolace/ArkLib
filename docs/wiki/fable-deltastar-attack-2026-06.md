@@ -298,4 +298,25 @@ formula + the count), giving the unconditional Sidon-domain family pin; and purs
 subset-sum spectrum (a multiplicative subgroup's additive subset-sum structure — a clean, studied
 object) as the route to the *smooth* `δ*`. This is the additive-combinatorial inverse-theorem bet
 made concrete and exact.
+## 11. RED-TEAM REFINEMENT: the subset-sum connection is BAD-side, not the open core
 
+Self-red-teaming §10: the `x^k/x^{k+1}` stack's bad count at the jump = `#distinct (k+1)-subset
+sums`, which for deployed `n` SATURATES near `p` (sums mod `p` fill the residues once
+`C(n,k+1) ≥ p`). A near-`p` bad count means `ε_mca ≈ 1` AT the jump — i.e. the connection feeds the
+**bad-above** bracket, which is ALREADY in-tree (`kkh26_epsMCA_lower_bound`). It does NOT touch the
+genuine open core, which is `InteriorCeiling` = the **good-BELOW** side (`ε_mca ≤ ε* = 2^-128` for
+all `δ` up to the near-capacity radius). The subset-sum result is a real, paperworthy structural
+characterization of the bad side; it is NOT a crack in the prize. Honest correction to "most
+promising crack" — it enriches the handled side, not the open one.
+
+## 12. PROBE: no smooth-vs-nonsmooth ε_mca separation at small scale (interior-ceiling shape)
+
+`scripts/probes/probe_interior_ceiling.py` (exact, witness-disciplined naive enumerator):
+`RS[F₁₃, ·, 2]`, `n=4`, smooth subgroup `{1,5,8,12}` vs non-smooth `{1,2,3,4}`:
+`ε_mca = 4/13` at BOTH `δ=1/4` and `δ=2/4`, for BOTH domains — identical. `4/13 = n/q`
+(the codimension-1 / UD-layer count), below the LYM ceiling `C(4,2)/q = 6/13` at capacity.
+Confirms: (a) at this scale the interior count is domain-BLIND (smooth = non-smooth), consistent
+with the saturated-band finding; (b) no spike below the jump (`InteriorCeiling` shape holds here,
+but vacuously — `n=4` has no genuine Johnson↔capacity interior). Inconclusive for the deployed
+regime (too small to exhibit a KKH26 jump); rules out a *cheap* small-scale separation or
+counterexample. The open core remains the beyond-Johnson explicit-RS list count — the 25-year wall.
