@@ -632,6 +632,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralGapCensusLaw
+import ArkLib.Data.CodingTheory.ProximityGap.HalfPairSliceExact
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDominationPin
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralPacketCombination
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralSpikeLowerBound
