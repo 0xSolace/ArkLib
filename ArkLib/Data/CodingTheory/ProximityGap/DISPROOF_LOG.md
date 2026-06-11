@@ -5305,3 +5305,69 @@ with the C(m₀, 4−|J|) kernel. Verified: analytic == measured in ALL 40 entri
 General-s form: C(m₀, s/4−|J|) — the incidence menu at every rung is now closed-form
 given the B-census, which O130's engine produces. Batch state: G1 ✓ A1 ✓ A2 ✓;
 G2+G3, G5, A3 pending the session-limit reset.
+
+### O133 — THE THIRD MOMENT IS DOMAIN-DEPENDENT: M3 of the agreement spectrum separates smooth subgroups from random domains at k=3, the pencil census is the separating invariant (normalizer spike law + a spectral gap), and k=2 is exactly rigid (moments lane, 2026-06-11)
+
+`scripts/probes/moments/` — pre-registered hypothesis ledger (HYPOTHESES-M3.md, written
+before any probe ran) → two independent engines → exact cross-validation → the
+separation experiment → RESULTS-M3.md. All exact integers, no sampling on any verdict.
+
+**The reduction (H4, now probe-proven):** `M3[j₁,j₂,j₃] = Σ_u a_{j₁}a_{j₂}a_{j₃} =
+q^k·Σ_{ordered pairs (c,c')} N(profile)` through the per-coordinate 5-type census
+(common zeros / c-only / c'-only / c=c'≠0 / split), with N a 3-variable coefficient
+extractor. Independent pairs organize by 2-dim subcodes = dual points φ ∈ PG(2,q);
+at k=3 the basis-map fibers are the orbits of the Möbius involution
+`φ₀xy − φ₁(x+y) + φ₂ = 0` on D (sizes ≤ 2), so each pencil carries (A, s, t₂) =
+(common zeros, support, #2-fibers); ordered bases ↔ (q−1)·(ordered distinct point
+triples) by PGL₂ sharp 3-transitivity. **M3 is exactly a function of the pencil
+(A,s,t₂)-histogram + the (MDS-pinned) weight distribution.** Engines cross-validated
+byte-exactly on 8 setups (k ∈ {2,3}; q ∈ {5,7,11,13}; subgroup and non-subgroup
+domains); internal gates include the ordered-pair partition of q^{2k}, MDS weights
+(closed form == enumeration), Σ_φ t₂ = C(n,2)(q−1) on EVERY domain (the H5 pinning:
+any M3 difference is t₂-variance, never mean), N(profile) vs brute word counts, the
+full ordered-pair profile histogram vs the class decomposition, a GL₂ brute check of
+the basis-counting lemma, M1/M2 closed-form marginals, S3 symmetry, total mass.
+
+**Verdicts (full tables in RESULTS-M3-RAW.md):**
+* **H2 — k=2 is exactly rigid:** subgroup vs random tensors EXACTLY equal (q=41, n=8).
+  Mechanism: pencil maps are injective, all fibers singletons, three special points,
+  sharp 3-transitivity — a clean Lean target.
+* **H1 — k=3 separates:** the subgroup sits outside the random cloud at every cell —
+  3.4× the cloud diameter at (41,8), 14.1× at (113,16), 10.8× at (257,16), ∞ at
+  (41,10) where three random 10-subsets had literally identical M3 (small-q histogram
+  concentration) yet the subgroup differs. Same sign everywhere (subgroup HIGHER),
+  argmax always (j₁,j₂,j₃) = (k−1,k−1,k−1).
+* **A5 — the spike law is the torus normalizer, exactly (n ≥ 10):** the subgroup's
+  big-spike pencils are EXACTLY {x ↦ c/x : c ∈ H} ∪ {x ↦ −x} (n+1 pencils,
+  t₂ ∈ {(n−2)/2, n/2} by the fixed-point count); set equality machine-verified at
+  (41,10), (113,16), (257,16); at n=8 the t₂=3 band also catches 8 non-normalizer
+  involutions (small-scale noise, gone by n=10).
+* **The spectral gap (unplanned find):** subgroup pencil spectra at n=16 have NO
+  pencil with t₂ ∈ {4,5,6} at BOTH q=113 and q=257 — noise band capped at 3, the
+  normalizer band isolated at {7,8}; random domains fill the gap with a decaying
+  tail. Conjecture (Weil on (1,1)-curves vs subgroup characters, the MSS CJM-2018
+  Cor 4.1 energy line): for q ≳ n², non-normalizer t₂ = O(n²/q + 1) — the gap is a
+  theorem in waiting.
+* **Affine/coset invariance (exact, lemma-grade):** D = gH has M3 IDENTICAL to H;
+  p ↦ p(ax+b) permutes the code, so ALL agreement moments are invariant under the
+  affine action on domains — "smooth coset" ≡ "smooth subgroup" to every M_r.
+* **A4 — fingerprint, partial:** AP domains separate at n=16 (3.7–3.9×, additive
+  pencils x+y=c as predicted) but not at (41,8); the multiplicative-but-not-subgroup
+  gpset does not separate at (41,8). Multiplicative > additive > none, at matched
+  parameters.
+* **A3 honesty:** relative deviations are tiny — 1.9e−11 (q=113), 5.6e−13 (q=257),
+  scaling ~q⁻⁴ at fixed n. M3 SEES the domain; whether anything at this magnitude
+  can move a 2⁻¹²⁸-resolution tail is the open quantification (expected: no).
+
+**Position:** complements O131 (their remark — pair content absent from a_j moments —
+is the fixed-word setting; over ALL received words the r-th moment decomposes over
+(r−1)-tuples of codewords, and r = 3 is where domain-dependence starts). M1/M2
+domain-independence is implicit in CS25/DG25/Gao–Li (lit-gated); the smooth-anomaly
+PHENOMENON is BKR-2010/BCHKS-§1.4.3-anticipated. New here: a finite computable
+statistic with the exact first level (k,r) = (3,3), its mechanism fully classified.
+
+**Named follow-ups:** the M2 Lean brick (statements already numeric-gated:
+`pairAgreementCount` + `sum_agreement_spectrum_sq` + the per-word bound; proofs in
+flight); the k=2 rigidity theorem; the affine-invariance lemma; the spectral-gap
+theorem; the (k,r) = (2,4) cross-ratio cell of the moduli law (next falsifier);
+the ΔM3 closed form written as mathematics.
