@@ -131,6 +131,72 @@ theorem exists_heavy_factor_cell_on_decoded_set {n k m L : ℕ} [NeZero n]
   exact exists_mcaDecodeCurve_of_close_of_not_jointAgreement domain u δ γ (P γ)
     (hP γ hγ).1 (hP γ hγ).2 hnja
 
+/-- **Decoded-set coordinate-upgrade capstone.**  This is the same weld as
+`strict_coeffPolys_of_given_family_coordinate_upgrade`, but with the decode witnesses
+constructed from the residual-facing data: degree/closeness of `P γ` on `G` plus the
+global `¬ jointAgreement` escape.  Thus a `CoordinateUpgrade` supplier on the selected
+heavy factor cell directly returns the Prop-5.5/share coefficient-polynomial witness. -/
+theorem strict_coeffPolys_of_decoded_set_coordinate_upgrade {n k m L : ℕ} [NeZero n]
+    (domain : Fin n ↪ F₀)
+    (u : WordStack F₀ (Fin L) (Fin n)) (δ : ℝ≥0) (T : ℕ)
+    (hk : 0 < k) (hL : 0 < L) (hLk : L - 1 ≤ k)
+    {Q : (RatFunc F₀)[X][Y]} {dd : F₀[X]} {Q₀ : (F₀[X])[X][Y]}
+    (hQ : GuruswamiSudan.Conditions k m (gs_degree_bound k n m)
+      (liftedDomain domain) (curveFold (fun j i => u j i)) Q)
+    (hrep : Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) =
+      Polynomial.C (Polynomial.C (algebraMap F₀[X] (RatFunc F₀) dd)) * Q)
+    (hQ₀0 : Q₀ ≠ 0)
+    (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hbadz : ∀ S : Finset F₀,
+      (∀ z ∈ S, Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0) →
+      S.card ≤ T)
+    (G : Finset F₀) (P : F₀ → F₀[X])
+    (hP : ∀ γ ∈ G, (P γ).natDegree < k ∧
+      δᵣ(∑ j : Fin L, (γ ^ (j : ℕ)) • u j, (P γ).eval ∘ domain) ≤ δ)
+    (hnja : ¬ jointAgreement
+      (C := (ReedSolomon.code domain k : Set (Fin n → F₀))) (δ := δ) (W := u))
+    (hbig : T < G.card)
+    (Tset : (F₀[X])[X][Y] → Finset (Fin n))
+    (hTcard : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      (Tset R).card = k)
+    (BR : (F₀[X])[X][Y] → ℕ)
+    (hRB : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      ∀ b a : ℕ, ((R.coeff b).coeff a).natDegree ≤ BR R)
+    (hbranchBig : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      ∀ E : Finset F₀, E ⊆ G →
+        (∀ γ ∈ E,
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 ∧
+            (Polynomial.X - Polynomial.C (P γ)) ∣
+              R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+        BR R + R.natDegree * (L - 1) < E.card)
+    (hEbig : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      ∀ E : Finset F₀, E ⊆ G →
+        (∀ γ ∈ E,
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 ∧
+            (Polynomial.X - Polynomial.C (P γ)) ∣
+              R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+        max (L - 1) k < E.card)
+    (hUpgrade : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      ∀ E : Finset F₀, E ⊆ G →
+        (∀ γ ∈ E,
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 ∧
+            (Polynomial.X - Polynomial.C (P γ)) ∣
+              R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+        CoordinateUpgrade domain u E P (Tset R)) :
+    ∃ G' : Finset F₀,
+      G' ⊆ G ∧
+      G.card ≤ T + (UniqueFactorizationMonoid.factors Q₀).toFinset.card * G'.card ∧
+      ∃ B : ℕ → F₀[X],
+        (∀ j, (B j).natDegree < k + 1) ∧
+        ∀ γ ∈ G', ∀ j, (P γ).coeff j = (B j).eval γ := by
+  refine strict_coeffPolys_of_given_family_coordinate_upgrade domain u δ T hk hL hLk hQ
+    hrep hQ₀0 hkn hm hδ1 hδJ hbadz G P ?_ hbig Tset hTcard BR hRB hbranchBig
+    hEbig hUpgrade
+  intro γ hγ
+  exact exists_mcaDecodeCurve_of_close_of_not_jointAgreement domain u δ γ (P γ)
+    (hP γ hγ).1 (hP γ hγ).2 hnja
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -140,3 +206,5 @@ open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
 #print axioms exists_mcaDecodeCurve_of_close_of_not_jointAgreement
 open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
 #print axioms exists_heavy_factor_cell_on_decoded_set
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
+#print axioms strict_coeffPolys_of_decoded_set_coordinate_upgrade
