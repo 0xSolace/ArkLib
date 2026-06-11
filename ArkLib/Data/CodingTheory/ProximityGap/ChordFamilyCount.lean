@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.LinearCombination
 
 /-!
-# The chord-family count, odd classes: `n(n−4)` parametrized solutions per class
+# The chord-family count: `n(n−4)` / `n(n−8)` parametrized solutions per class
 
 Campaign #357, the per-class counting corollary of the two-plus-antipodal chord law. The
 probe-pinned targets: each odd difference class carries exactly `n(n−4)/4` unordered
@@ -26,9 +28,12 @@ triple is parametrized by `(i, k)` (then `j := 2k − i − d`), and:
 
 Hence the parametrized solution set is, per odd class, a per-`i` exclusion of four
 distinct points: `chord_param_count_odd` — **exactly `n(n−4)` ordered `(i, k)` pairs**.
-The unordered family count per odd class is the 4-fold quotient `n(n−4)/4` (the `i ↔ j`
-swap and `k ↔ k+h`), matching the probe; the even-class analogue (four more exclusions,
-`n(n−8)`) and the cross-class summation to `n(n−4)²/8` are the named follow-up.
+On even classes the degeneracies are *solvable* (`double_eq_zero_iff`: the doubling
+kernel is `{0, 2^(m−1)}`), each contributing one antipodal pair of excluded completions:
+`chord_param_count_even` — **exactly `n(n−8)` pairs**. The unordered family counts are
+the 4-fold quotients `n(n−4)/4` and `n(n−8)/4` (the `i ↔ j` swap and `k ↔ k+h`),
+matching the probe at n = 8, 16, 32; the cross-class summation
+`(n/4)·n(n−4)/4 + (n/4−1)·n(n−8)/4 = n(n−4)²/8` is the remaining assembly step.
 
 All results are `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.sound]`).
 
@@ -246,10 +251,384 @@ theorem chord_param_count_odd (hm : 2 ≤ m) {d : ℕ} (hd : d % 2 = 1) :
   rw [Finset.sum_congr rfl fun i0 _ => hcount i0, Finset.sum_const, card_univ,
     ZMod.card, smul_eq_mul]
 
+/-! ## The even classes: eight exclusions, `n(n−8)`
+
+For even `d` the two degeneracy conditions are *solvable* — each contributes one
+antipodal pair of completions (`2k = 2i+d ⟺ k ∈ i+c+{0,h}`, `c = d/2`;
+`2k = 2i+d+h ⟺ k ∈ i+c+q+{0,h}`, `q = 2^(m−2)`) — so the per-base exclusion set grows
+to eight points and the count drops to `n(n−8)`, the probe-pinned even-class target. -/
+
+section Even
+
+/-- Cast is injective below `2^m`. -/
+theorem natCast_inj_lt {a b : ℕ} (ha : a < 2 ^ m) (hb : b < 2 ^ m)
+    (h : ((a : ℕ) : ZMod (2 ^ m)) = b) : a = b := by
+  haveI : NeZero (2 ^ m) := ⟨(Nat.two_pow_pos m).ne'⟩
+  have := congrArg ZMod.val h
+  rwa [ZMod.val_cast_of_lt ha, ZMod.val_cast_of_lt hb] at this
+
+/-- **The doubling kernel of `ZMod (2^m)` is `{0, 2^(m−1)}`.** -/
+theorem double_eq_zero_iff (hm : 1 ≤ m) (x : ZMod (2 ^ m)) :
+    2 * x = 0 ↔ x = 0 ∨ x = ((2 ^ (m - 1) : ℕ) : ZMod (2 ^ m)) := by
+  haveI : NeZero (2 ^ m) := ⟨(Nat.two_pow_pos m).ne'⟩
+  have hsplit : 2 ^ (m - 1) + 2 ^ (m - 1) = 2 ^ m := by
+    have h := pow_succ 2 (m - 1)
+    rw [Nat.sub_add_cancel hm] at h
+    omega
+  have hx : ((x.val : ℕ) : ZMod (2 ^ m)) = x := by
+    rw [ZMod.natCast_val, ZMod.cast_id]
+  constructor
+  · intro h0
+    have h2x : ((2 * x.val : ℕ) : ZMod (2 ^ m)) = 0 := by
+      push_cast
+      rw [hx]
+      exact h0
+    rw [ZMod.natCast_eq_zero_iff] at h2x
+    have hvlt : x.val < 2 ^ m := ZMod.val_lt x
+    obtain ⟨t, ht⟩ := h2x
+    rcases t with _ | _ | t
+    · left
+      have hv : x.val = 0 := by omega
+      rw [← hx, hv, Nat.cast_zero]
+    · right
+      have hv : x.val = 2 ^ (m - 1) := by omega
+      rw [← hx, hv]
+    · exfalso
+      have hge2 : 2 ^ m * 2 ≤ 2 * x.val := by
+        calc 2 ^ m * 2 ≤ 2 ^ m * (t + 1 + 1) := Nat.mul_le_mul_left _ (by omega)
+          _ = 2 * x.val := ht.symm
+      omega
+  · rintro (rfl | rfl)
+    · rw [mul_zero]
+    · rw [two_mul, ← Nat.cast_add, hsplit, ZMod.natCast_self]
+
+/-- The eight excluded completion points of an even-class chord base
+(`c = d/2`, `e = d/2 + 2^(m−2)`): the four chord exclusions plus the two degeneracy
+solution pairs. -/
+def exclusionsEven (m d : ℕ) (i : ZMod (2 ^ m)) : Finset (ZMod (2 ^ m)) :=
+  {i, i + ((2 ^ (m - 1) : ℕ) : ZMod (2 ^ m)), i + ((d : ℕ) : ZMod (2 ^ m)),
+    i + (((d : ℕ) : ZMod (2 ^ m)) + ((2 ^ (m - 1) : ℕ) : ZMod (2 ^ m))),
+    i + ((d / 2 : ℕ) : ZMod (2 ^ m)),
+    i + (((d / 2 : ℕ) : ZMod (2 ^ m)) + ((2 ^ (m - 1) : ℕ) : ZMod (2 ^ m))),
+    i + ((d / 2 + 2 ^ (m - 2) : ℕ) : ZMod (2 ^ m)),
+    i + (((d / 2 + 2 ^ (m - 2) : ℕ) : ZMod (2 ^ m))
+      + ((2 ^ (m - 1) : ℕ) : ZMod (2 ^ m)))}
+
+variable (hm : 2 ≤ m) {d : ℕ} (hd2 : d % 2 = 0) (hd0 : 0 < d) (hdn : d < 2 ^ m)
+  (hdh : d ≠ 2 ^ (m - 1))
+
+include hm hd2 hd0 hdn hdh in
+/-- For even non-antipodal `d` the eight excluded points are pairwise distinct. -/
+theorem card_exclusionsEven (i : ZMod (2 ^ m)) :
+    (exclusionsEven m d i).card = 8 := by
+  have h1 : 1 ≤ m := by omega
+  have hhh := half_add_half h1
+  have hsplitN : 2 ^ (m - 1) + 2 ^ (m - 1) = 2 ^ m := by
+    have h := pow_succ 2 (m - 1)
+    rw [Nat.sub_add_cancel h1] at h
+    omega
+  have hhlt : 2 ^ (m - 1) < 2 ^ m := Nat.pow_lt_pow_right one_lt_two (by omega)
+  have hqlt : 2 ^ (m - 2) < 2 ^ (m - 1) := Nat.pow_lt_pow_right one_lt_two (by omega)
+  have hq0 : 0 < 2 ^ (m - 2) := Nat.two_pow_pos _
+  have hq2 : 2 ^ (m - 2) + 2 ^ (m - 2) = 2 ^ (m - 1) := by
+    have h := pow_succ 2 (m - 2)
+    rw [show m - 2 + 1 = m - 1 from by omega] at h
+    omega
+  have hne : ∀ {a b : ℕ}, a < 2 ^ m → b < 2 ^ m → a ≠ b →
+      ((a : ℕ) : ZMod (2 ^ m)) ≠ ((b : ℕ) : ZMod (2 ^ m)) :=
+    fun ha hb hab h => hab (natCast_inj_lt ha hb h)
+  have hzero : (0 : ZMod (2 ^ m)) = ((0 : ℕ) : ZMod (2 ^ m)) := by norm_cast
+  set H : ZMod (2 ^ m) := ((2 ^ (m - 1) : ℕ) : ZMod (2 ^ m)) with hH
+  set D : ZMod (2 ^ m) := ((d : ℕ) : ZMod (2 ^ m)) with hD
+  set C : ZMod (2 ^ m) := ((d / 2 : ℕ) : ZMod (2 ^ m)) with hC
+  set E : ZMod (2 ^ m) := ((d / 2 + 2 ^ (m - 2) : ℕ) : ZMod (2 ^ m)) with hE
+  -- shift converter (H self-negative)
+  have hshift : ∀ a b : ZMod (2 ^ m), a + H = b → a = b + H := by
+    intro a b h
+    rw [← h, add_assoc, hhh, add_zero]
+  -- ℕ-size distinctness pool
+  have hH0 : H ≠ 0 := half_ne_zero h1
+  have hD0 : D ≠ 0 := by rw [hzero]; exact hne (by omega) (by omega) (by omega)
+  have hDH : D ≠ H := hne (by omega) (by omega) (by omega)
+  have hC0 : C ≠ 0 := by rw [hzero]; exact hne (by omega) (by omega) (by omega)
+  have hCH : C ≠ H := hne (by omega) (by omega) (by omega)
+  have hCD : C ≠ D := hne (by omega) (by omega) (by omega)
+  have hE0 : E ≠ 0 := by rw [hzero]; exact hne (by omega) (by omega) (by omega)
+  have hEH : E ≠ H := hne (by omega) (by omega) (by omega)
+  have hED : E ≠ D := hne (by omega) (by omega) (by omega)
+  have hEC : E ≠ C := hne (by omega) (by omega) (by omega)
+  -- D + H, with wraparound-safe reduced representative
+  have hDHred : ∃ r : ℕ, r < 2 ^ m ∧ D + H = ((r : ℕ) : ZMod (2 ^ m))
+      ∧ r ≠ 0 ∧ r ≠ 2 ^ (m - 1) ∧ r ≠ d ∧ r ≠ d / 2 ∧ r ≠ d / 2 + 2 ^ (m - 2) := by
+    haveI : NeZero (2 ^ m) := ⟨(Nat.two_pow_pos m).ne'⟩
+    rcases Nat.lt_or_ge (d + 2 ^ (m - 1)) (2 ^ m) with hlt | hge
+    · refine ⟨d + 2 ^ (m - 1), hlt, ?_, by omega, by omega, by omega, by omega, by omega⟩
+      rw [hD, hH, Nat.cast_add]
+    · refine ⟨d + 2 ^ (m - 1) - 2 ^ m, by omega, ?_, by omega, by omega, by omega,
+        by omega, by omega⟩
+      have hr : ((d + 2 ^ (m - 1) - 2 ^ m : ℕ) : ZMod (2 ^ m))
+          = ((d + 2 ^ (m - 1) - 2 ^ m + 2 ^ m : ℕ) : ZMod (2 ^ m)) := by
+        rw [Nat.cast_add, ZMod.natCast_self, add_zero]
+      rw [hD, hH, ← Nat.cast_add, hr]
+      congr 1
+      omega
+  obtain ⟨r, hrlt, hrEq, hr0, hrH, hrD, hrC, hrE⟩ := hDHred
+  have hDH0 : D + H ≠ 0 := by rw [hrEq, hzero]; exact hne hrlt (by omega) hr0
+  have hDHH : D + H ≠ H := by rw [hrEq]; exact hne hrlt (by omega) hrH
+  have hDHD : D + H ≠ D := by rw [hrEq]; exact hne hrlt (by omega) hrD
+  have hDHC : D + H ≠ C := by rw [hrEq]; exact hne hrlt (by omega) hrC
+  have hDHE : D + H ≠ E := by rw [hrEq]; exact hne hrlt (by omega) hrE
+  -- C + H and E + H pools (both < 2^m as naturals: c < h, e < h)
+  have hCHcast : C + H = ((d / 2 + 2 ^ (m - 1) : ℕ) : ZMod (2 ^ m)) := by
+    rw [hC, hH, Nat.cast_add]
+  have hCH0 : C + H ≠ 0 := by
+    rw [hCHcast, hzero]; exact hne (by omega) (by omega) (by omega)
+  have hCHH : C + H ≠ H := by rw [hCHcast]; exact hne (by omega) (by omega) (by omega)
+  have hCHD : C + H ≠ D := by rw [hCHcast]; exact hne (by omega) (by omega) (by omega)
+  have hCHC : C + H ≠ C := by rw [hCHcast]; exact hne (by omega) (by omega) (by omega)
+  -- E + H, with wraparound-safe reduced representative (wraps when d > 2^(m−1))
+  have hEHred : ∃ r' : ℕ, r' < 2 ^ m ∧ E + H = ((r' : ℕ) : ZMod (2 ^ m))
+      ∧ r' ≠ 0 ∧ r' ≠ 2 ^ (m - 1) ∧ r' ≠ d ∧ r' ≠ d / 2
+      ∧ r' ≠ d / 2 + 2 ^ (m - 2) := by
+    haveI : NeZero (2 ^ m) := ⟨(Nat.two_pow_pos m).ne'⟩
+    rcases Nat.lt_or_ge (d / 2 + 2 ^ (m - 2) + 2 ^ (m - 1)) (2 ^ m) with hlt | hge
+    · refine ⟨d / 2 + 2 ^ (m - 2) + 2 ^ (m - 1), hlt, ?_, by omega, by omega, by omega,
+        by omega, by omega⟩
+      rw [hE, hH, ← Nat.cast_add]
+    · refine ⟨d / 2 + 2 ^ (m - 2) + 2 ^ (m - 1) - 2 ^ m, by omega, ?_, by omega,
+        by omega, by omega, by omega, by omega⟩
+      have hr : ((d / 2 + 2 ^ (m - 2) + 2 ^ (m - 1) - 2 ^ m : ℕ) : ZMod (2 ^ m))
+          = ((d / 2 + 2 ^ (m - 2) + 2 ^ (m - 1) - 2 ^ m + 2 ^ m : ℕ)
+              : ZMod (2 ^ m)) := by
+        rw [Nat.cast_add, ZMod.natCast_self, add_zero]
+      rw [hE, hH, ← Nat.cast_add, hr]
+      congr 1
+      omega
+  obtain ⟨r', hrlt', hrEq', hr0', hrH', hrD', hrC', hrE'⟩ := hEHred
+  have hEH0 : E + H ≠ 0 := by rw [hrEq', hzero]; exact hne hrlt' (by omega) hr0'
+  have hEHH : E + H ≠ H := by rw [hrEq']; exact hne hrlt' (by omega) hrH'
+  have hEHD : E + H ≠ D := by rw [hrEq']; exact hne hrlt' (by omega) hrD'
+  have hEHC : E + H ≠ C := by rw [hrEq']; exact hne hrlt' (by omega) hrC'
+  have hEHE : E + H ≠ E := by rw [hrEq', hE]; exact hne hrlt' (by omega) hrE'
+  have hEHCH : E + H ≠ C + H := fun h => hEC (add_right_cancel h)
+  have hECH : E ≠ C + H := by rw [hCHcast, hE]; exact hne (by omega) (by omega) (by omega)
+  have hCHDH : C + H ≠ D + H := fun h => hCD (add_right_cancel h)
+  have hEHDH : E + H ≠ D + H := fun h => hED (add_right_cancel h)
+  have hCDH : C ≠ D + H := fun h => hDHC h.symm
+  have hEDH : E ≠ D + H := fun h => hDHE h.symm
+  have hCHE : C + H ≠ E := fun h => hECH h.symm
+  -- translate inequality
+  have haddne : ∀ t1 t2 : ZMod (2 ^ m), t1 ≠ t2 → i + t1 ≠ i + t2 :=
+    fun t1 t2 h hh => h (add_right_injective i hh)
+  -- the chain
+  unfold exclusionsEven
+  rw [← hH, ← hD, ← hC, ← hE]
+  rw [card_insert_of_notMem, card_insert_of_notMem, card_insert_of_notMem,
+    card_insert_of_notMem, card_insert_of_notMem, card_insert_of_notMem,
+    card_insert_of_notMem, card_singleton]
+  · -- i + E ∉ {i + (E + H)}
+    simp only [mem_singleton]
+    exact haddne E (E + H) (fun h => hEHE h.symm)
+  · -- i + (C + H) ∉ {i + E, i + (E + H)}
+    simp only [mem_insert, mem_singleton]
+    push Not
+    exact ⟨haddne (C + H) E hCHE, haddne (C + H) (E + H) (fun h => hEHCH h.symm)⟩
+  · -- i + C ∉ {i + (C + H), i + E, i + (E + H)}
+    simp only [mem_insert, mem_singleton]
+    push Not
+    exact ⟨haddne C (C + H) (fun h => hCHC h.symm), haddne C E (fun h => hEC h.symm),
+      haddne C (E + H) (fun h => hEHC h.symm)⟩
+  · -- i + (D + H) ∉ {i + C, i + (C + H), i + E, i + (E + H)}
+    simp only [mem_insert, mem_singleton]
+    push Not
+    exact ⟨haddne (D + H) C hDHC, haddne (D + H) (C + H) (fun h => hCHDH h.symm),
+      haddne (D + H) E hDHE, haddne (D + H) (E + H) (fun h => hEHDH h.symm)⟩
+  · -- i + D ∉ {i + (D + H), i + C, i + (C + H), i + E, i + (E + H)}
+    simp only [mem_insert, mem_singleton]
+    push Not
+    exact ⟨haddne D (D + H) (fun h => hDHD h.symm), haddne D C (fun h => hCD h.symm),
+      haddne D (C + H) (fun h => hCHD h.symm), haddne D E (fun h => hED h.symm),
+      haddne D (E + H) (fun h => hEHD h.symm)⟩
+  · -- i + H ∉ {i + D, i + (D + H), i + C, i + (C + H), i + E, i + (E + H)}
+    simp only [mem_insert, mem_singleton]
+    push Not
+    exact ⟨haddne H D (fun h => hDH h.symm), haddne H (D + H) (fun h => hDHH h.symm),
+      haddne H C (fun h => hCH h.symm), haddne H (C + H) (fun h => hCHH h.symm),
+      haddne H E (fun h => hEH h.symm), haddne H (E + H) (fun h => hEHH h.symm)⟩
+  · -- i ∉ the seven translates
+    simp only [mem_insert, mem_singleton]
+    push Not
+    exact ⟨fun h => hH0 (left_eq_add.mp h), fun h => hD0 (left_eq_add.mp h),
+      fun h => hDH0 (left_eq_add.mp h), fun h => hC0 (left_eq_add.mp h),
+      fun h => hCH0 (left_eq_add.mp h), fun h => hE0 (left_eq_add.mp h),
+      fun h => hEH0 (left_eq_add.mp h)⟩
+
+include hm hd2 hd0 hdn hdh in
+/-- **THE EVEN-CLASS CHORD COUNT.** For every even non-antipodal class `d` at scale
+`n = 2^m`: the parametrized chord-law solution set has **exactly `n(n−8)` elements** —
+the degeneracy conditions are solvable on even classes, each contributing one antipodal
+pair of excluded completions. The unordered family count per even class is `n(n−8)/4`,
+the probe-pinned target. -/
+theorem chord_param_count_even :
+    ((univ : Finset (ZMod (2 ^ m) × ZMod (2 ^ m))).filter (fun p =>
+        p.2 ∉ exclusions m d p.1
+        ∧ 2 * p.2 ≠ 2 * p.1 + (d : ZMod (2 ^ m))
+        ∧ 2 * p.2 ≠ 2 * p.1 + (d : ZMod (2 ^ m))
+            + ((2 ^ (m - 1) : ℕ) : ZMod (2 ^ m)))).card
+      = 2 ^ m * (2 ^ m - 8) := by
+  haveI : NeZero (2 ^ m) := ⟨(Nat.two_pow_pos m).ne'⟩
+  have h1 : 1 ≤ m := by omega
+  have hhh := half_add_half h1
+  have hsplitN : 2 ^ (m - 1) + 2 ^ (m - 1) = 2 ^ m := by
+    have h := pow_succ 2 (m - 1)
+    rw [Nat.sub_add_cancel h1] at h
+    omega
+  have hq2 : 2 ^ (m - 2) + 2 ^ (m - 2) = 2 ^ (m - 1) := by
+    have h := pow_succ 2 (m - 2)
+    rw [show m - 2 + 1 = m - 1 from by omega] at h
+    omega
+  set H : ZMod (2 ^ m) := ((2 ^ (m - 1) : ℕ) : ZMod (2 ^ m)) with hH
+  set D : ZMod (2 ^ m) := ((d : ℕ) : ZMod (2 ^ m)) with hD
+  set C : ZMod (2 ^ m) := ((d / 2 : ℕ) : ZMod (2 ^ m)) with hC
+  set E : ZMod (2 ^ m) := ((d / 2 + 2 ^ (m - 2) : ℕ) : ZMod (2 ^ m)) with hE
+  have hDC : D = C + C := by
+    rw [hD, hC, ← Nat.cast_add]
+    congr 1
+    omega
+  have hDHE : D + H = E + E := by
+    rw [hD, hH, hE, ← Nat.cast_add, ← Nat.cast_add]
+    congr 1
+    omega
+  -- degeneracy 1 ⟺ the C-pair
+  have hdeg1 : ∀ i k : ZMod (2 ^ m),
+      2 * k = 2 * i + D ↔ (k = i + C ∨ k = i + (C + H)) := by
+    intro i k
+    constructor
+    · intro h
+      have h0 : 2 * (k - (i + C)) = 0 := by
+        rw [hDC] at h
+        ring_nf
+        linear_combination h
+      rcases (double_eq_zero_iff h1 _).mp h0 with h2 | h2
+      · left
+        have := sub_eq_zero.mp h2
+        exact this
+      · right
+        rw [← hH] at h2
+        have : k = H + (i + C) := eq_add_of_sub_eq h2
+        rw [this]
+        ring
+    · rintro (rfl | rfl)
+      · rw [hDC]
+        ring
+      · rw [hDC]
+        linear_combination hhh
+  -- degeneracy 2 ⟺ the E-pair
+  have hdeg2 : ∀ i k : ZMod (2 ^ m),
+      2 * k = 2 * i + D + H ↔ (k = i + E ∨ k = i + (E + H)) := by
+    intro i k
+    constructor
+    · intro h
+      have h0 : 2 * (k - (i + E)) = 0 := by
+        have hh : 2 * k = 2 * i + (E + E) := by
+          rw [← hDHE]
+          linear_combination h
+        ring_nf
+        linear_combination hh
+      rcases (double_eq_zero_iff h1 _).mp h0 with h2 | h2
+      · left
+        exact sub_eq_zero.mp h2
+      · right
+        rw [← hH] at h2
+        have : k = H + (i + E) := eq_add_of_sub_eq h2
+        rw [this]
+        ring
+    · rintro (rfl | rfl)
+      · rw [show 2 * i + D + H = 2 * i + (D + H) from by ring, hDHE]
+        ring
+      · rw [show 2 * i + D + H = 2 * i + (D + H) from by ring, hDHE]
+        linear_combination hhh
+  -- the full condition ⟺ the eight-point exclusion
+  have hcond : ∀ p : ZMod (2 ^ m) × ZMod (2 ^ m),
+      (p.2 ∉ exclusions m d p.1
+        ∧ 2 * p.2 ≠ 2 * p.1 + D ∧ 2 * p.2 ≠ 2 * p.1 + D + H)
+      ↔ p.2 ∉ exclusionsEven m d p.1 := by
+    intro p
+    unfold exclusionsEven exclusions
+    rw [← hH, ← hD, ← hC, ← hE]
+    simp only [mem_insert, mem_singleton]
+    constructor
+    · rintro ⟨hA, h2, h3⟩
+      push Not at hA ⊢
+      have hnc := (hdeg1 p.1 p.2).not.mp h2
+      have hne' := (hdeg2 p.1 p.2).not.mp h3
+      push Not at hnc hne'
+      exact ⟨hA.1, hA.2.1, hA.2.2.1, hA.2.2.2, hnc.1, hnc.2, hne'.1, hne'.2⟩
+    · intro hAll
+      push Not at hAll
+      obtain ⟨g1, g2, g3, g4, g5, g6, g7, g8⟩ := hAll
+      refine ⟨?_, ?_, ?_⟩
+      · push Not
+        exact ⟨g1, g2, g3, g4⟩
+      · intro h
+        rcases (hdeg1 p.1 p.2).mp h with h' | h'
+        · exact g5 h'
+        · exact g6 h'
+      · intro h
+        rcases (hdeg2 p.1 p.2).mp h with h' | h'
+        · exact g7 h'
+        · exact g8 h'
+  have hfc : ((univ : Finset (ZMod (2 ^ m) × ZMod (2 ^ m))).filter (fun p =>
+        p.2 ∉ exclusions m d p.1
+        ∧ 2 * p.2 ≠ 2 * p.1 + D ∧ 2 * p.2 ≠ 2 * p.1 + D + H))
+      = (univ : Finset (ZMod (2 ^ m) × ZMod (2 ^ m))).filter
+          (fun p => p.2 ∉ exclusionsEven m d p.1) :=
+    Finset.filter_congr fun p _ => hcond p
+  rw [hfc]
+  rw [Finset.card_eq_sum_card_fiberwise
+    (f := Prod.fst) (t := (univ : Finset (ZMod (2 ^ m)))) (fun x _ => mem_univ _)]
+  have hfiber : ∀ i0 : ZMod (2 ^ m),
+      (((univ : Finset (ZMod (2 ^ m) × ZMod (2 ^ m))).filter
+          (fun p => p.2 ∉ exclusionsEven m d p.1)).filter (fun p => p.1 = i0)).card
+        = ((univ : Finset (ZMod (2 ^ m))).filter
+            (fun k => k ∉ exclusionsEven m d i0)).card := by
+    intro i0
+    apply Finset.card_nbij (fun p => p.2)
+    · intro p hp
+      simp only [Finset.coe_filter, Set.mem_setOf_eq, mem_filter, mem_univ,
+        true_and] at hp ⊢
+      rw [← hp.2]
+      exact hp.1
+    · intro p hp q hq hpq
+      simp only [Finset.coe_filter, Set.mem_setOf_eq, mem_filter, mem_univ,
+        true_and] at hp hq
+      exact Prod.ext (hp.2.trans hq.2.symm) hpq
+    · intro k hk
+      simp only [Finset.coe_filter, Set.mem_setOf_eq, mem_univ, true_and] at hk
+      exact ⟨(i0, k), by simp [hk], rfl⟩
+  rw [Finset.sum_congr rfl fun i0 _ => hfiber i0]
+  have hcount : ∀ i0 : ZMod (2 ^ m),
+      ((univ : Finset (ZMod (2 ^ m))).filter (fun k => k ∉ exclusionsEven m d i0)).card
+        = 2 ^ m - 8 := by
+    intro i0
+    have hsd : (univ : Finset (ZMod (2 ^ m))).filter (fun k => k ∉ exclusionsEven m d i0)
+        = univ \ exclusionsEven m d i0 := by
+      ext k
+      simp [mem_sdiff]
+    rw [hsd, card_sdiff, Finset.inter_univ, card_univ, ZMod.card,
+      card_exclusionsEven hm hd2 hd0 hdn hdh i0]
+  rw [Finset.sum_congr rfl fun i0 _ => hcount i0, Finset.sum_const, card_univ,
+    ZMod.card, smul_eq_mul]
+
+end Even
+
 /-! ## Source audit -/
 
 #print axioms oddCast_ne_double
 #print axioms card_exclusions
 #print axioms chord_param_count_odd
+#print axioms double_eq_zero_iff
+#print axioms card_exclusionsEven
+#print axioms chord_param_count_even
 
 end ArkLib.ProximityGap.ChordFamilyCount
