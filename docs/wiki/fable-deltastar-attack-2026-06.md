@@ -380,3 +380,56 @@ the correct clean reduction (the hook `JohnsonLineCloseBound` IS a literature th
 BCIKS20 "immediately" discharges it would be an overclaim. The actionable sub-bricks are now named:
 GAP 1 (joint-agreement → γ-count) and GAP 2 (RSCurveListSizeResidual). Regime (III) stays the
 genuine 25-year wall regardless.
+## 15. FRESH 9-HYPOTHESIS ROUND on regime (III) — the deployed open core (ranked, with status)
+
+Prior rounds targeted the whole window; this round targets ONLY regime (III) = `(Johnson, jump)`
+(the irreducible core after `RegimeIIBridge` shrank the obligation). Empirical input this round:
+`probe_above_johnson.py` (sampled, n=8,k=5,p=17, δ=2/8 above Johnson) — `ε_mca = 17/17 = 1` for BOTH
+smooth subgroup and random domains. **The SATURATION BARRIER:** small codes saturate (`ε_mca=1`)
+immediately above Johnson, while the deployed core lives at `ε*=2^-128` far below saturation, only
+at cryptographic `n`. So the meaningful above-Johnson sub-saturation band is COMPUTATIONALLY
+INACCESSIBLE at any enumerable scale — a concrete structural reason δ* resists computational pinning.
+
+### Reasonable (existing math, new angle)
+- **R1 — ceiling-tightness:** δ* = KKH26 jump `1−r/2^μ` exactly (good below = `InteriorCeiling`).
+  STATUS: this IS the reduced core (KKH26DeltaStarReduction + RegimeIIBridge). OPEN (= regime III).
+- **R2 — above-Johnson domain-blindness:** smooth ε_mca = generic ε_mca above Johnson.
+  STATUS: INCONCLUSIVE-by-saturation (probe shows both =1 at n=8; meaningful band inaccessible).
+  Documents the saturation wall; cannot be settled by enumeration.
+- **R3 — capacity-edge match:** δ* = `1−ρ−Θ(1/log n)` with the KKH26 η constant exact.
+  STATUS: consistent with the KKH26 ceiling form; OPEN, coupled to R1.
+
+### Novel (new math)
+- **N1 — multiplicative subset-PRODUCT spectrum:** the above-Johnson bad count is governed by the
+  domain's multiplicative `(k+1)`-subset-PRODUCT collision spectrum (the multiplicative analog of
+  the additive subset-SUM-at-jump mechanism §10, now for the γ-scaling action). NEW; untested;
+  promising as the multiplicative twin of the confirmed additive connection.
+- **N2 — folding transfer-operator fixed point:** since `2^μ | n`, the squaring fold `x↦x²` maps the
+  smooth domain to a half-size smooth domain; conjecture ε_mca obeys a self-similar recursion whose
+  fixed point pins δ*. NEW; refutation-risk: folding changes the rate ρ, so exact self-similarity is
+  unlikely — but an APPROXIMATE renormalization could still bracket δ*. Untested; hardest.
+- **N3 — pencil-energy governs VARIANCE not mean:** the landed Möbius `E₂=Θ(n³)` (MobiusPencilEnergy)
+  governs the bad-count VARIANCE across stacks (not the mean); δ* = radius where variance/mean ≈ 1
+  (the concentration threshold). NEW; builds directly on LANDED infra; second-moment testable.
+
+### Synthetic (interpolate project math)
+- **S1 — bracket squeeze:** if Johnson `δ_J=1−√ρ` coincides with the KKH26 jump `1−r/2^μ` for some
+  param family, the regime-II ceiling and the regime-III floor meet ⟹ δ* pinned. STATUS: **REFUTED
+  arithmetically** — KKH26 places the jump STRICTLY ABOVE Johnson by construction (the bad lines are
+  a beyond-Johnson phenomenon), so `1−r/2^μ > 1−√ρ` always; they never coincide. Squeeze impossible.
+- **S2 — next-layer subset sums:** ε_mca just below the jump = `#distinct (k+2)-subset sums / q` (the
+  §10 additive mechanism one antichain layer down); if `< ε*` the good-below holds at that layer.
+  NEW; directly testable by extending probe_jump_subsetsum.py; but inherits §13's bad-side caveat.
+- **S3 — interleave/tensor lift of the n=5 pin:** lift the exact toy pin via `epsMCA_interleaved_eq`.
+  STATUS: **REFUTED as a deployed route** — interleaving transfers brackets to INTERLEAVED RS at the
+  SAME base δ*; it does not increase the base code length n or move δ*, so it reaches interleaved-RS,
+  not larger smooth-RS in the deployed regime. Genuine bracket-transfer, wrong axis for the prize.
+
+### Ranking (easiest-to-settle × most-promising) and disposition
+1. S1 — trivial, **REFUTED** (arithmetic). 2. S3 — **REFUTED** (wrong scaling axis). 3. R2 —
+**INCONCLUSIVE-by-saturation** (documented wall). 4. N3 — testable on LANDED E₂ (top SURVIVING,
+second-moment probe). 5. S2 / N1 — testable subset-sum/product extensions (promising, §13-caveated).
+6. R1 / R3 — the open core (regime III, 25-yr wall). 7. N2 — hardest, renormalization speculation.
+**Top surviving actionable:** N3 (variance via Möbius E₂) and N1 (multiplicative product spectrum) —
+both build on landed infra and are probeable. 3 of 9 settled this round (2 refuted + 1 saturation-
+documented); core R1/R3 remains the wall; N1/N3/S2 carried forward. No fabrication.
