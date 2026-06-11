@@ -228,28 +228,6 @@ theorem append_completeness_msg
     (fun _ _ _ a s' _ hgood => appendStage2Bridge R₁ R₂ himplSP himplVB a s' hgood)
     (fun stmt wit _ => append_game_tot R₁ R₂ stmt wit)
 
-/-- **The named error-bearing append-completeness residual is a theorem (message seam).** The
-exact `Prop` `Reduction.reductionAppendCompletenessResidual R₁ R₂ h₁ h₂` (`Append.lean`),
-discharged by the keystone under the message-seam direction facts and the standard honest-`impl`
-side-condition triple — the `ε`-error sibling of
-`reductionAppendPerfectCompletenessResidual_of_message`. -/
-theorem reductionAppendCompletenessResidual_of_message
-    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
-    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
-    {e₁ e₂ : ℝ≥0}
-    (h₁ : R₁.completeness init impl rel₁ rel₂ e₁)
-    (h₂ : R₂.completeness init impl rel₂ rel₃ e₂)
-    (hn : 0 < n)
-    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
-    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
-    (himplSP : ∀ (t : oSpec.Domain) (s : σ) (x : oSpec.Range t × σ),
-      x ∈ support ((impl t).run s) → x.2 = s)
-    (himplNF : ∀ (t : oSpec.Domain) (s : σ), Pr[⊥ | (impl t).run s] = 0)
-    (himplVB : ∀ (t : oSpec.Domain) (s s' : σ),
-      evalDist ((impl t).run' s) = evalDist ((impl t).run' s')) :
-    reductionAppendCompletenessResidual R₁ R₂ h₁ h₂ :=
-  append_completeness_msg R₁ R₂ h₁ h₂ hn hDir hDir₂ himplSP himplNF himplVB
-
 end Reduction
 
 namespace OracleReduction
@@ -333,4 +311,3 @@ end OracleReduction
 #print axioms Reduction.append_completeness_msg
 #print axioms OracleReduction.append_completeness_msg
 #print axioms OracleReduction.appendCompletenessResidual_msg
-#print axioms Reduction.reductionAppendCompletenessResidual_of_message
