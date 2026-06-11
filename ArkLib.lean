@@ -43,6 +43,7 @@ import ArkLib.Data.CodingTheory.AGL24ConditionalAssembly
 import ArkLib.Data.CodingTheory.AGL24DeletionRobustness
 import ArkLib.Data.CodingTheory.AGL24DetDegree
 import ArkLib.Data.CodingTheory.AGL24DeterministicChain
+import ArkLib.Data.CodingTheory.AGL24EvalToSymbolic
 import ArkLib.Data.CodingTheory.AGL24FrontDoorBridge
 import ArkLib.Data.CodingTheory.AGL24KernelVector
 import ArkLib.Data.CodingTheory.AGL24ListDecodingBridge
@@ -1454,6 +1455,7 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Assembly
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Discharge
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2FarLift
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Prop421Case2Probability
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Proposition4_21
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhasePrelims
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.QueryPhaseSoundness
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.SuffixAlignCore
