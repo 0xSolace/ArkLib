@@ -980,7 +980,19 @@ phase-1 / phase-2 malicious provers so that `h₁`/`h₂` (the per-phase extract
 and the bad knowledge event `(stmtIn, witIn') ∉ relIn ∧ (stmtOut, witOut) ∈ relOut` must be
 union-bounded
 through the intermediate `(stmt₂, wit₂)` pair. The extractor query-log routing across the seam
-(`proveQueryLog.fst` / `verifyQueryLog`) is the additional new content over `append_soundness`. -/
+(`proveQueryLog.fst` / `verifyQueryLog`) is the additional new content over `append_soundness`.
+
+**Audit status (2026-06-10): PROVEN OBSTRUCTION at phase 1 — use the rbr route instead.** The
+straightline phase-1 decomposition is not merely unproven: the phase-1 bad event requires the
+extracted `wit₂ = E₂(phase-2 randomness)`, but a phase-1 malicious prover (over
+`oSpec + [pSpec₁.Challenge]ₒ`) has no oracle access to `pSpec₂`'s challenges, so the
+phase-1 component guarantee `h₁` cannot even be *stated* against the event that occurs in the
+appended run. This is an oracle-access obstruction, not a `σ`-threading one — it bites even for
+`Subsingleton σ`. The honest composition route for knowledge soundness is **round-by-round**:
+`appendRbrKnowledgeSoundnessResidual` is discharged
+(`AppendResidualDischarges.lean` for the `Subsingleton σ` regime;
+`AppendRbrKnowledgeStateCollapse.lean` for arbitrary `σ` at point-mass `init`). Do NOT add
+this residual as a hypothesis expecting a future direct discharge. -/
 def appendKnowledgeSoundnessResidual
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
