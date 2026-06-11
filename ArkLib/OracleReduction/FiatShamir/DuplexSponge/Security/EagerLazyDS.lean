@@ -77,6 +77,33 @@ noncomputable def lazyDSImpl :
           ((lazyPermImpl (.inr sOut :
             CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run s.2)
 
+/-! ### Public step exposures (the defeq `show` does not transport across files) -/
+
+lemma lazyDSImpl_run_hash (q : StmtIn)
+    (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache)
+    (cp : List (CanonicalSpongeState U × CanonicalSpongeState U)) :
+    (lazyDSImpl ((.inl q : (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+      = (fun (p : Vector U SpongeSize.C × _) => (p.1, (p.2, cp))) <$>
+          (((StmtIn →ₒ Vector U SpongeSize.C).randomOracle q).run ch) := rfl
+
+lemma lazyDSImpl_run_fwd (sIn : CanonicalSpongeState U)
+    (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache)
+    (cp : List (CanonicalSpongeState U × CanonicalSpongeState U)) :
+    (lazyDSImpl ((.inr (.inl sIn) :
+        (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+      = (fun (p : CanonicalSpongeState U × _) => (p.1, (ch, p.2))) <$>
+          ((lazyPermImpl (.inl sIn :
+            CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) := rfl
+
+lemma lazyDSImpl_run_inv (sOut : CanonicalSpongeState U)
+    (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache)
+    (cp : List (CanonicalSpongeState U × CanonicalSpongeState U)) :
+    (lazyDSImpl ((.inr (.inr sOut) :
+        (duplexSpongeChallengeOracle StmtIn U).Domain))).run (ch, cp)
+      = (fun (p : CanonicalSpongeState U × _) => (p.1, (ch, p.2))) <$>
+          ((lazyPermImpl (.inr sOut :
+            CanonicalSpongeState U ⊕ CanonicalSpongeState U)).run cp) := rfl
+
 @[simp] lemma dsOverlayFn_inl (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache)
     (cp : List (CanonicalSpongeState U × CanonicalSpongeState U))
     (g : StmtIn → Vector U SpongeSize.C) (π : Equiv.Perm (CanonicalSpongeState U))
