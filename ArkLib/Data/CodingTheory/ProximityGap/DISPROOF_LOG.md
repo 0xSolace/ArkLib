@@ -7118,3 +7118,20 @@ ambiguous lists at agreement `a = n − 2j + 2` — true but thin. Meaningful re
 statements (`L ≥ 1`) require band values `> 2j − 1`, i.e. the explosion regime
 (item 18), whose exact values are the open band question. Verdict: ⊖ — decided,
 gated on item 18; no theorem worth landing before the explosion law.
+
+## 2026-06-11 — Item 12 DECIDED: the a = 5 and a = 6 census closed forms
+
+Probe `probe_census_a5_a6.py` (exact ℤ[ζ_{2^m}] arithmetic via folding — no prime,
+no threshold caveat): the char-0 census `N_a(n)` of `a`-subsets of the `2^m`-th
+roots of unity with `e₂ = 0`:
+
+* **`N₅(n) = n(n−4)/4`** — verified 8/48/224 at n = 8/16/32 and the blind n = 64
+  forecast **960**. Every solution is `{±x, ±ix} ∪ {w}` (one quartet + one free
+  point): the 2-pair cross-terms vanish identically, `e₂ = −x² − y²`, forcing
+  `y = ±ix`; the would-be second family (one pair + `st+su+tu = x²` triple)
+  contributes ZERO solutions at every tested scale — the quartet ansatz is COMPLETE.
+* **`N₆(n) = 0`** at n = 8, 16, 32 — an exact instance of the landed parity law
+  (a ≡ 2 mod 4 ⟹ empty), now confirmed at the a = 6 rung directly.
+
+With the landed `N₄ = n(n−3)/4` this gives the first THREE rungs of the depth-1
+vanishing-locus classification in closed form: `n(n−3)/4 · n(n−4)/4 · 0`.
