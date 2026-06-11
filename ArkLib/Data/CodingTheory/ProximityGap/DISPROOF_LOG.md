@@ -6842,3 +6842,14 @@ MCA-invisible (the O147 coset-witness phenomenon at the staircase level).
 rows) — equivalently ε_mca ≤ max(staircase, boundary-incidence value, monomialEps).
 At production ε*·q ≈ 2¹²⁸ the boundary rows (mass ~n/q) never decide the census crossing,
 so the production conclusion of pin v3 is unaffected; the surface as stated is dead.
+
+### The coset-clique boundary law (#357) — the boundary arc closed as theorem
+
+`CosetCliqueBoundary.lean` (`clique_eps_ge`): ε_mca(RS[F,μ_n,k], (b−1)/n) ≥ n/|F| for every
+b | n, n−2b+2 ≤ k ≤ n−b (d ∈ [b+1, 2b−1]). Mechanism: twisted telescoping
+x^b·q = −c(x−x*)G + (x+γ), G = Σ c^v x^((N−1−v)b); explanation deg n−2b+1; witness =
+fiber complement + crossing; no-joint root counting. The ≥ half of O148 (bad ⊇ −μ_n);
+the "common 2-plane" of the boundary probes = the (G, xG) fraction plane. Probes:
+band-3 values n − [3∤n] at n = 6,8,10,12; band-4 = 12 = n at (13,μ₁₂,6). At 2-power n
+every 2-power band's boundary row carries n/q. Constraint for future sup-side work:
+any collapse-type theorem at d ≤ 2b−1 must exclude b | n smooth domains.
