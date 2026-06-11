@@ -6311,3 +6311,24 @@ interest is in-hypothesis there.
 the rigid relation (3 coset manipulations + weight bounds); the two counting cases
 (pigeonhole over `supp v`). All elementary Finset/weight arithmetic on top of the in-tree
 distance API; no new analytic input.
+
+### GeneralStaircaseConjecture (d ≥ 2b+1) REFUTED at b = 4 — THE 3b−2 LAW unifies everything (#357 round 4)
+
+Pre-registered decision experiment between f(b) = 3b−2 and 2b+1 (coinciding at b = 3): the
+TRIPLED-column [15,3,9] moment-curve code over F₁₁ (G columns = (1,t,t²) each repeated ×3,
+t ∈ {0..4}; min weight 9 verified) admits a 5-bad band-4 stack at d = 9 = 2b+1:
+γ = (0,1,2,3,4), e = (1,1,1,8,8,8,2,2,2,8,8,8,1,1,1), reconstructed u₀,u₁ verified honestly
+(5 bad scalars, witness card ≥ n−3). The syndrome-equality system (48 eqs on 15 unknowns)
+has admissible kernel — the moment-curve direction arrangement matches the Vandermonde
+relation-space arrangement, exactly as the doubled-column case at b = 3.
+
+**THE UNIFIED LAW (general linear codes):** band-b collapse to the spike value b/q holds
+iff d ≥ 3b−2; at d = 3b−3 the (b−1)-tupled-column codes explode. All data coheres:
+b=2: PROVEN at d ≥ 4 = 3·2−2 (MCABandTwoCollapse/Exact), explosion at d = 3 (the cocycle
+family = 1-tupled); b=3: PROVEN at d ≥ 7 = 3·3−2 (MCABandThreeAssembly/Exact), doubled
+(= 2-tupled) counterexample at d = 6; b=4: 3-tupled counterexample at d = 9, collapse
+conjectured at d ≥ 10. The triple-c*-support arithmetic (3(b−1) < d) explains the
+threshold; the landed b=3 deep-core proof generalizes along it. The m-tupled witnesses are
+maximally non-MDS (parallel matroid classes of size b−1) — the matroid-invariance lane
+(N4.1) is now the structural frontier: the RS/MDS threshold (d ≥ 2b conjectured, directed-
+search-supported) vs the general 3b−2 differ exactly by parallel-class capacity.
