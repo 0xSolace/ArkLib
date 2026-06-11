@@ -8,18 +8,18 @@ documented as open research with the paper trail.
 |---|---|---|---|---|
 | MCACapacityTrivial_keep | 0 | 0 | 0 | 1 |
 | MCAGSRefutationCore_keep | 0 | 0 | 0 | 1 |
-| ToMathlib | 0 | 0 | 0 | 98 |
+| ToMathlib | 0 | 0 | 0 | 99 |
 | ProofSystem/Fri | 0 | 0 | 0 | 4 |
 | ProofSystem/Logup | 0 | 0 | 0 | 50 |
 | ProofSystem/Whir | 0 | 0 | 0 | 25 |
-| ProofSystem/Stir | 0 | 0 | 0 | 7 |
+| ProofSystem/Stir | 0 | 0 | 0 | 8 |
 | ProofSystem/Spartan | 0 | 0 | 0 | 16 |
 | ProofSystem/Sumcheck | 0 | 0 | 0 | 2 |
 | ProofSystem/Binius | 0 | 0 | 0 | 3 |
 | Data/CodingTheory | 0 | 0 | 0 | 181 |
-| OracleReduction/Composition | 0 | 0 | 0 | 34 |
+| OracleReduction/Composition | 0 | 0 | 0 | 36 |
 | OracleReduction/FiatShamir | 0 | 0 | 0 | 48 |
-| **TOTAL** | **0** | **0** | **0** | **470** |
+| **TOTAL** | **0** | **0** | **0** | **474** |
 
 
 ## Data/CodingTheory
@@ -241,6 +241,8 @@ documented as open research with the paper trail.
 - `ArkLib/OracleReduction/Composition/Sequential/AppendPerfectCompletenessOracle.lean:122` theorem **appendToReductionResidual_iff_verifier**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendRbrKeystone.lean:282` def **appendRbrSoundnessPhase2Residual**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendRbrKnowledgeOracleLift.lean:94` theorem **appendRbrKnowledgeSoundnessResidual_msg_subsingleton**
+- `ArkLib/OracleReduction/Composition/Sequential/AppendRbrKnowledgeStateCollapse.lean:71` theorem **appendRbrKnowledgeSoundnessResidual_of_message_collapse**
+- `ArkLib/OracleReduction/Composition/Sequential/AppendRbrKnowledgeStateCollapse.lean:119` theorem **appendRbrSoundnessResidual_of_message_collapse**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendRbrKnowledgeStateFunction.lean:944` def **appendRbrKnowledgeSoundnessPerRoundResidual**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendRbrKnowledgeStateFunction.lean:1226` def **appendRbrKnowledgeSoundnessPhase2Residual**
 - `ArkLib/OracleReduction/Composition/Sequential/AppendRbrSoundnessOracleLift.lean:91` theorem **appendRbrSoundnessResidual_msg_subsingleton**
@@ -404,6 +406,7 @@ documented as open research with the paper trail.
 - `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:1031` theorem **strictCoeffPolysResidual_all_of_card_le_e7**
 - `ArkLib/ProofSystem/Stir/CheckingVerifier.lean:1053` theorem **strictCoeffPolysResidual_all_of_large**
 - `ArkLib/ProofSystem/Stir/MultiRoundAssembly.lean:224` def **stirMultiRoundRbrSoundnessResidual**
+- `ArkLib/ProofSystem/Stir/MultiRoundSpecT.lean:356` def **stirCheckingRbrSoundnessResidualT**
 - `ArkLib/ProofSystem/Stir/RepWire.lean:1417` def **stirCheckingRepRbrSoundnessResidual**
 - `ArkLib/ProofSystem/Stir/WindowCAFeed.lean:62` theorem **strictCoeffPolysResidual_all_of_window**
 
@@ -474,6 +477,7 @@ documented as open research with the paper trail.
 - `ArkLib/ToMathlib/FriComplete.lean:106` def **foldRoundPerfectCompletenessResidual**
 - `ArkLib/ToMathlib/FriComplete.lean:131` def **finalFoldRoundPerfectCompletenessResidual**
 - `ArkLib/ToMathlib/FriCompleteFinalRound.lean:125` theorem **finalFoldRoundPerfectCompletenessResidual_holds**
+- `ArkLib/ToMathlib/FriCompleteFoldPhase.lean:163` theorem **foldPhasePerfectCompletenessResidual_holds**
 - `ArkLib/ToMathlib/FriCompletePerRound.lean:137` theorem **foldRoundPerfectCompletenessResidual_holds**
 - `ArkLib/ToMathlib/GSGradedBundle.lean:283` structure **MonicHighYResidual**
 - `ArkLib/ToMathlib/GSLineInputSupply.lean:216` structure **PerZResidual**
