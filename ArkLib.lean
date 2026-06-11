@@ -249,6 +249,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.A8CosetStructure
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyCubeBound
+import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyMulHomogeneous
+import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyNormalizedBound
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyBridge
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyChar0
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyFermat
@@ -517,6 +519,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.CensusClassificationCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.CensusConditionalPin
+import ArkLib.Data.CodingTheory.ProximityGap.CensusDoubling
 import ArkLib.Data.CodingTheory.ProximityGap.CensusDoublingMap
 import ArkLib.Data.CodingTheory.ProximityGap.CensusExtremalFloor
 import ArkLib.Data.CodingTheory.ProximityGap.CensusLowerBound
@@ -582,6 +585,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConstantGapBelowCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactCrossoverF17
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarExactPinF5
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarSecondPinF17
+import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarSecondPinF17Widened
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarTableSmoothInstances
 import ArkLib.Data.CodingTheory.ProximityGap.DerandomizationFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.DescentKernelLemma
@@ -1139,6 +1143,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuadraticHalving
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuadraticSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuarticHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupRepCountFiniteFieldCounterexample
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupRepresentationRoots
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSpectrumNoImprovement
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSquaresHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetLoop49
