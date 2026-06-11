@@ -43,12 +43,17 @@ def strip_comments(lines):
         j = 0
         while j < len(line):
             if in_block:
-                end = line.find("-/", j)
-                if end == -1:
+                # Lean block comments NEST: count inner `/-` openers before the next `-/`.
+                nxt_open = line.find("/-", j)
+                nxt_close = line.find("-/", j)
+                if nxt_close == -1 and nxt_open == -1:
                     j = len(line)
+                elif nxt_open != -1 and (nxt_close == -1 or nxt_open < nxt_close):
+                    in_block += 1
+                    j = nxt_open + 2
                 else:
                     in_block -= 1
-                    j = end + 2
+                    j = nxt_close + 2
                 continue
             if line.startswith("/-", j):
                 in_block += 1
