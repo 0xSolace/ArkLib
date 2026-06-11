@@ -1,5 +1,23 @@
 # Pinning δ\* — Fable's attack dossier (issue #357)
 
+> **EXECUTIVE SUMMARY (state of the attack, 19 sessions).** GOAL: pin `δ*` = the MCA list-decoding
+> threshold for explicit smooth-domain RS in the window `(1−√ρ, 1−ρ−Θ(1/log n))` at `ε*=2^-128`.
+> STATUS: **OPEN — and not fabricated.** What is PROVEN & PUSHED (axiom-clean): the bracket-meet
+> engine + exact-pin combinators (`MCAExactPin`); two exact interior pins for toy codes
+> (`MCAWindowInteriorPin`, `…Family`); the deployed reduction `KKH26DeltaStarReduction` — prize ⟺ one
+> named obligation `InteriorCeiling`; `RegimeIIBridge` shrinking that obligation to regime III; the
+> additive (§10) + multiplicative (§16) subset-spectrum connections + landed brick
+> `SubsetProductSpectrum`. The open core (`InteriorCeiling` / regime III) = the **25-yr beyond-Johnson
+> explicit-RS list count at high rate**. THREE hypothesis rounds (27 hypotheses) all disposed. FIVE
+> standard toolkits proven/argued to saturate at Johnson: combinatorial (§17), Weil 1st-moment (§23,
+> machine-checked), moment/sum-product (§25), folding (§20), modern random-points capacity (§26). The
+> wall = **worst-case explicit anti-concentration**; the two "average" escapes (over Fourier
+> frequencies §24-25, over domain points §26) both provably beat Johnson but neither transfers to the
+> fixed adversarial instance — THE structural reason the prize is open. Solving needs a genuinely new
+> worst-case-explicit technique absent from the literature; it cannot be fabricated. Sections below are
+> the chronological record; §§17,20,23,25,26 are the no-go cartography, §§10,16 the connections.
+
+
 > Working research log. The honesty contract of #357 applies: open core stays a named
 > surface, every attempt lands in `DISPROOF_LOG.md` with a constraint lemma, probes precede
 > Lean. This file is the *intellectual* plan (the 9 hypotheses + 3 connections + ranking);
