@@ -42,19 +42,19 @@ open GuruswamiSudan.OverRatFunc
 open _root_.ProximityGap Code
 open scoped NNReal ENNReal
 
-variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
+variable {F₀ : Type} [DecidableEq F₀]
 
 /-- **A large witness set cannot support a joint codeword stack when `jointAgreement`
 fails**: a stack agreeing on `S` with `|S| ≥ (1−δ)·n` is a `jointAgreement` witness. -/
-theorem not_stackJointAgreesOn_of_not_jointAgreement {n : ℕ} [NeZero n] {κ : Type}
+theorem not_stackJointAgreesOn_of_not_jointAgreement {n : ℕ} {κ : Type}
     (C : Set (Fin n → F₀)) (δ : ℝ≥0) (u : κ → Fin n → F₀) (S : Finset (Fin n))
     (hcard : ((S.card : ℝ≥0)) ≥ (1 - δ) * Fintype.card (Fin n))
     (hnja : ¬ jointAgreement (C := C) (δ := δ) (W := u)) :
     ¬ _root_.ProximityGap.stackJointAgreesOn C S u := by
-  rintro ⟨v, hv, hag⟩
-  refine hnja ⟨S, hcard, v, fun j => ⟨hv j, ?_⟩⟩
-  intro x hx
-  exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hag x hx j⟩
+  exact _root_.ProximityGap.not_stackJointAgreesOn_of_not_jointAgreement
+    C δ u S hcard hnja
+
+variable [Field F₀] [Fintype F₀]
 
 /-- **The per-`γ` decode witness from the share residual's own decoded data.**  Given a
 polynomial of RS degree that is `δ`-close to the curve at `γ`, and `¬ jointAgreement`,
@@ -77,7 +77,8 @@ theorem exists_mcaDecodeCurve_of_close_of_not_jointAgreement {n L k : ℕ} [NeZe
   refine ⟨⟨S, P, ?_, hcard, ?_, ?_⟩, rfl⟩
   · -- the degree bound, `natDegree`-to-`degree`
     rcases eq_or_ne P 0 with rfl | hP0
-    · simpa [Polynomial.degree_zero] using WithBot.bot_lt_coe k
+    · change (⊥ : WithBot ℕ) < (k : WithBot ℕ)
+      exact WithBot.bot_lt_coe k
     · exact (Polynomial.natDegree_lt_iff_degree_lt hP0).mp hdeg
   · -- agreement on the witness set, pointwise
     intro i hi

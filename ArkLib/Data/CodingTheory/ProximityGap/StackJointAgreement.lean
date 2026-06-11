@@ -14,6 +14,8 @@ common core behind the curve MCA event (`MCACurveEvent.lean`) and the generator 
 
 * `stackJointAgreesOn` says every row of a stack agrees on `S` with some codeword of `C`.
 * `stackJointAgreesOn_iff_forall_row` splits stack agreement into independent row witnesses.
+* `jointAgreement_iff_exists_stackJointAgreesOn` identifies `jointAgreement` with the
+  existence of a large stack-agreement witness set.
 * `stackJointAgreesOn_two_iff` / `stackJointAgreesOn_pair_iff` recover the pair API used by
   the affine-line MCA event.
 
@@ -22,6 +24,8 @@ rows, while MCA badness is exactly the failure of this product condition on a la
 -/
 
 namespace ProximityGap
+
+open scoped NNReal
 
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
@@ -66,6 +70,38 @@ theorem not_stackJointAgreesOn_of_not_row {κ : Type} (C : Set (ι → A)) (S : 
   intro hstack
   exact hrow ((stackJointAgreesOn_iff_forall_row C S u).mp hstack j)
 
+/-! ### Bridge to `jointAgreement` -/
+
+/-- `jointAgreement` is exactly the existence of a large set on which the stack jointly
+agrees with codewords.  This pure combinatorial bridge connects the correlated-agreement
+API (`jointAgreement`) to the MCA bad-event no-stack clause (`¬ stackJointAgreesOn`). -/
+theorem jointAgreement_iff_exists_stackJointAgreesOn {ι₀ B κ : Type} [Fintype ι₀]
+    [DecidableEq B] (C : Set (ι₀ → B)) (δ : ℝ≥0) (u : κ → ι₀ → B) :
+    _root_.Code.jointAgreement (F := B) (κ := κ) (ι := ι₀) (C := C) (δ := δ)
+        (W := u) ↔
+      ∃ S : Finset ι₀,
+        (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι₀ ∧ stackJointAgreesOn C S u := by
+  constructor
+  · rintro ⟨S, hS, v, hv⟩
+    refine ⟨S, hS, ⟨v, fun j => (hv j).1, fun i hi j => ?_⟩⟩
+    exact (Finset.mem_filter.mp ((hv j).2 hi)).2
+  · rintro ⟨S, hS, ⟨v, hv_mem, hv_agree⟩⟩
+    refine ⟨S, hS, v, fun j => ⟨hv_mem j, ?_⟩⟩
+    intro i hi
+    exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hv_agree i hi j⟩
+
+/-- Contrapositive form of `jointAgreement_iff_exists_stackJointAgreesOn`: if
+`jointAgreement` fails globally, then no large candidate set can carry stack joint
+agreement. -/
+theorem not_stackJointAgreesOn_of_not_jointAgreement {ι₀ B κ : Type} [Fintype ι₀]
+    [DecidableEq B] (C : Set (ι₀ → B)) (δ : ℝ≥0) (u : κ → ι₀ → B) (S : Finset ι₀)
+    (hcard : (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι₀)
+    (hnja : ¬ _root_.Code.jointAgreement
+      (F := B) (κ := κ) (ι := ι₀) (C := C) (δ := δ) (W := u)) :
+    ¬ stackJointAgreesOn C S u := by
+  intro hstack
+  exact hnja ((jointAgreement_iff_exists_stackJointAgreesOn C δ u).mpr ⟨S, hcard, hstack⟩)
+
 /-! ### Pair compatibility -/
 
 /-- At `κ = Fin 2`, stack joint agreement is exactly `pairJointAgreesOn` on the two rows. -/
@@ -99,5 +135,7 @@ end ProximityGap
 #print axioms ProximityGap.stackJointAgreesOn
 #print axioms ProximityGap.stackJointAgreesOn_iff_forall_row
 #print axioms ProximityGap.not_stackJointAgreesOn_of_not_row
+#print axioms ProximityGap.jointAgreement_iff_exists_stackJointAgreesOn
+#print axioms ProximityGap.not_stackJointAgreesOn_of_not_jointAgreement
 #print axioms ProximityGap.stackJointAgreesOn_two_iff
 #print axioms ProximityGap.stackJointAgreesOn_pair_iff
