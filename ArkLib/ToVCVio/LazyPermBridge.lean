@@ -266,6 +266,105 @@ lemma onestep_fiber_iff (c : List (X × X)) (a b : X)
           · intro h
             exact hxw ((Equiv.symm_apply_eq τ).mpr h.symm).symm
 
+/-- The one-pair correction of an extension of `c` extends `c ⧺ [(a,b)]` (for `a` fresh and
+`b` unused): the correction disturbs only `a` and `π⁻¹ b`, neither of which is cached. -/
+lemma onestep_extends (c : List (X × X)) (a b : X)
+    (ha : a ∉ c.map Prod.fst) (hb : b ∉ c.map Prod.snd)
+    {π : Equiv.Perm X} (hπ : Extends π c) :
+    Extends ((Equiv.swap a (π.symm b)).trans π) (c.concat (a, b)) := by
+  rw [extends_concat_iff]
+  refine ⟨?_, onestep_apply_self a b π⟩
+  intro p hp
+  have hpa : p.1 ≠ a := fun h => ha (h ▸ List.mem_map.mpr ⟨p, hp, rfl⟩)
+  have hpb : π p.1 ≠ b := by
+    rw [hπ p hp]
+    exact fun h => hb (h ▸ List.mem_map.mpr ⟨p, hp, rfl⟩)
+  rw [onestep_apply_of_ne a b p.1 π hpa hpb]
+  exact hπ p hp
+
+set_option maxHeartbeats 800000 in
+/-- **The one-step pushforward**: a uniform extension of `c`, corrected at a fresh pair
+slot, is a uniform extension of the grown cache — uniformity survives because the fibers
+(`onestep_fiber_iff`) all have exactly one preimage per unused output. -/
+theorem map_onestep_uniform (c : List (X × X)) (a b : X)
+    (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
+    (ha : a ∉ c.map Prod.fst) (hb : b ∉ c.map Prod.snd)
+    (hne : (extendsFinset c).Nonempty) :
+    (PMF.uniformOfFinset (extendsFinset c) hne).map
+        (fun π => (Equiv.swap a (π.symm b)).trans π)
+      = PMF.uniformOfFinset (extendsFinset (c.concat (a, b)))
+          (extendsFinset_concat_nonempty c a b ha hb hne) := by
+  classical
+  letI : DecidableEq (Equiv.Perm X) := Classical.decEq _
+  ext τ
+  rw [PMF.map_apply, tsum_fintype]
+  by_cases hτ : Extends τ (c.concat (a, b))
+  · -- count the fiber: one preimage per unused output
+    have hsum : ∀ π : Equiv.Perm X,
+        (if τ = (Equiv.swap a (π.symm b)).trans π then
+          (PMF.uniformOfFinset (extendsFinset c) hne) π else 0)
+        = (if π ∈ (extendsFinset c).filter
+            (fun π => (Equiv.swap a (π.symm b)).trans π = τ) then
+              ((extendsFinset c).card : ℝ≥0∞)⁻¹ else 0) := by
+      intro π
+      by_cases hmem : Extends π c
+      · by_cases hstep : (Equiv.swap a (π.symm b)).trans π = τ
+        · rw [if_pos hstep.symm, if_pos (Finset.mem_filter.mpr
+              ⟨mem_extendsFinset.mpr hmem, hstep⟩),
+            PMF.uniformOfFinset_apply_of_mem (hs := hne) (mem_extendsFinset.mpr hmem)]
+        · rw [if_neg (fun h => hstep h.symm)]
+          split_ifs with h2
+          · exact absurd (Finset.mem_filter.mp h2).2 hstep
+          · rfl
+      · have h0 : (PMF.uniformOfFinset (extendsFinset c) hne) π = 0 :=
+          PMF.uniformOfFinset_apply_of_notMem (hs := hne)
+            (fun h => hmem (mem_extendsFinset.mp h))
+        split_ifs with h1 h2 h2
+        · exact absurd (mem_extendsFinset.mp (Finset.mem_filter.mp h2).1) hmem
+        · exact h0
+        · exact absurd (mem_extendsFinset.mp (Finset.mem_filter.mp h2).1) hmem
+        · rfl
+    refine (Finset.sum_congr rfl (fun π _ => hsum π)).trans ?_
+    rw [Finset.sum_ite_mem, Finset.univ_inter, Finset.sum_const, nsmul_eq_mul]
+    have hcard : ((extendsFinset c).filter
+        (fun π => (Equiv.swap a (π.symm b)).trans π = τ)).card
+        = (unusedFinset c).card := by
+      refine Eq.symm (Finset.card_bij (fun w _ => τ.trans (Equiv.swap b w)) ?_ ?_ ?_)
+      · intro w hw
+        have hfib := (onestep_fiber_iff c a b ha hb hτ (τ.trans (Equiv.swap b w))).mpr
+          ⟨w, mem_unusedFinset.mp hw, rfl⟩
+        exact Finset.mem_filter.mpr ⟨mem_extendsFinset.mpr hfib.1, hfib.2⟩
+      · intro w₁ hw₁ w₂ hw₂ heq
+        have := congrArg (fun e : Equiv.Perm X => e (τ.symm b)) heq
+        simpa [Equiv.trans_apply, Equiv.apply_symm_apply, Equiv.swap_apply_left]
+          using this
+      · intro π hπ
+        obtain ⟨hπc, hstep⟩ := Finset.mem_filter.mp hπ
+        obtain ⟨w, hw, rfl⟩ := (onestep_fiber_iff c a b ha hb hτ π).mp
+          ⟨mem_extendsFinset.mp hπc, hstep⟩
+        exact ⟨w, mem_unusedFinset.mpr hw, rfl⟩
+    rw [hcard, PMF.uniformOfFinset_apply_of_mem
+        (hs := extendsFinset_concat_nonempty c a b ha hb hne) (mem_extendsFinset.mpr hτ),
+      card_extendsFinset_eq_card_unused_mul c a b ha hb,
+      show (Finset.univ.filter (fun b : X => b ∉ c.map Prod.snd)) = unusedFinset c from rfl,
+      Nat.cast_mul,
+      ENNReal.mul_inv (Or.inr (ENNReal.natCast_ne_top _))
+        (Or.inl (ENNReal.natCast_ne_top _)),
+      ← mul_assoc, ENNReal.mul_inv_cancel ?hu (ENNReal.natCast_ne_top _), one_mul]
+    case hu =>
+      have := unusedFinset_nonempty c a hkeys hvals ha
+      exact_mod_cast Nat.cast_ne_zero.mpr (Finset.card_pos.mpr this).ne'
+  · -- off the grown extensions both sides vanish
+    rw [PMF.uniformOfFinset_apply_of_notMem
+      (hs := extendsFinset_concat_nonempty c a b ha hb hne)
+      (fun h => hτ (mem_extendsFinset.mp h))]
+    refine Finset.sum_eq_zero fun π _ => ?_
+    by_cases hstep : τ = (Equiv.swap a (π.symm b)).trans π
+    · rw [if_pos hstep]
+      refine PMF.uniformOfFinset_apply_of_notMem (hs := hne) (fun hmem => ?_)
+      exact hτ (hstep ▸ onestep_extends c a b ha hb (mem_extendsFinset.mp hmem))
+    · rw [if_neg hstep]
+
 /-! ## The master eager–lazy induction -/
 
 /-- The unused-values list enumerates the unused finset. -/
@@ -331,3 +430,4 @@ end LazyPermBridge
 #print axioms LazyPermBridge.evalDist_sampleUnused_run
 #print axioms LazyPermBridge.onestep_fiber_iff
 #print axioms LazyPermBridge.extends_permExtending
+#print axioms LazyPermBridge.map_onestep_uniform
