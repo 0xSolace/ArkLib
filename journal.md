@@ -76,3 +76,11 @@ campaign on this repository. Maintained alongside the work; newest entries last.
   is produced per heavy cell by the fiber-section globalizer, whose per-fiber input is
   the cell's own divisibility data. The corrected chain uses only landed pieces; next
   build is the per-cell surface application.
+
+- Entry 8: the sliced grand composition is instantiated at the concrete decoded GS
+  factor and landed — both separability lanes eliminated (reduced to per-place
+  leading-coefficient nonvanishing), the heavy agreement data constructed by the
+  coverage selection, the graded budget from the divisor-descent brick. The remaining
+  frontier is now an exact named list: the centre-curve supply for the integer
+  representative (the one open core), a total root section, the series-converter
+  identification, Schwartz–Zippel-counted centre goods, and the standard numerics.
