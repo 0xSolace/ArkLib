@@ -539,6 +539,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
 import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.GG25CurveDecodability
+import ArkLib.Data.CodingTheory.ProximityGap.GG25MarkedCurve
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Admissible
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Claim16Transport
 import ArkLib.Data.CodingTheory.ProximityGap.GK16DegreeBudget
@@ -1674,6 +1675,7 @@ import ArkLib.ProofSystem.ToyProblem.Spec.General
 import ArkLib.ProofSystem.ToyProblem.Spec.SimplifiedIOR
 import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.ChallengeCardPin
+import ArkLib.ProofSystem.Whir.CheckedObliviousness
 import ArkLib.ProofSystem.Whir.CheckedVerifier
 import ArkLib.ProofSystem.Whir.FoldRound
 import ArkLib.ProofSystem.Whir.Folding
@@ -1906,6 +1908,7 @@ import ArkLib.ToMathlib.KStateWeaken
 import ArkLib.ToMathlib.KeystoneAssembly
 import ArkLib.ToMathlib.KeystoneCapstone
 import ArkLib.ToMathlib.KeystoneStrictResidual
+import ArkLib.ToMathlib.KoalaBearAttackInstance
 import ArkLib.ToMathlib.KoalaBearCode
 import ArkLib.ToMathlib.KoalaBearField
 import ArkLib.ToMathlib.KoalaBearWinningSetProof
