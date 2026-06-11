@@ -415,6 +415,111 @@ theorem strict_coeffPolys_of_given_family_coordinate_upgrade {n k m L : ℕ} [Ne
       (fun t ht z hz => hagree t ht z hz)
   exact ⟨G', hG'sub, hcount, B, hBdeg, hBmatch⟩
 
+/-- **Given-family coordinate-upgrade extraction with the sharp fold-degree bound.**
+This is the `deg(B j) < L` variant of
+`strict_coeffPolys_of_given_family_coordinate_upgrade`.  It follows the same SK4 selected
+heavy cell, but invokes `strict_coeffPolys_of_cell_degree_lt_L`, so the coefficient
+polynomials are bounded by the fold length instead of the decoded RS degree. -/
+theorem strict_coeffPolys_of_given_family_coordinate_upgrade_degree_lt_L {n k m L : ℕ}
+    [NeZero n]
+    (domain : Fin n ↪ F₀)
+    (u : WordStack F₀ (Fin L) (Fin n)) (δ : ℝ≥0) (T : ℕ)
+    (hk : 0 < k) (hL : 0 < L)
+    {Q : (RatFunc F₀)[X][Y]} {dd : F₀[X]} {Q₀ : (F₀[X])[X][Y]}
+    (hQ : GuruswamiSudan.Conditions k m (gs_degree_bound k n m)
+      (liftedDomain domain) (curveFold (fun j i => u j i)) Q)
+    (hrep : Q₀.map (Polynomial.mapRingHom (algebraMap F₀[X] (RatFunc F₀))) =
+      Polynomial.C (Polynomial.C (algebraMap F₀[X] (RatFunc F₀) dd)) * Q)
+    (hQ₀0 : Q₀ ≠ 0)
+    (hkn : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hδ1 : δ ≤ 1) (hδJ : (δ : ℝ) < gs_johnson k n m)
+    (hbadz : ∀ S : Finset F₀,
+      (∀ z ∈ S, Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0) →
+      S.card ≤ T)
+    (G : Finset F₀) (P : F₀ → F₀[X])
+    (hPdec : ∀ γ ∈ G, ∃ d : McaDecodeCurve domain k δ u γ, d.P = P γ)
+    (hbig : T < G.card)
+    (Tset : (F₀[X])[X][Y] → Finset (Fin n))
+    (hTcard : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      (Tset R).card = k)
+    (BR : (F₀[X])[X][Y] → ℕ)
+    (hRB : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      ∀ b a : ℕ, ((R.coeff b).coeff a).natDegree ≤ BR R)
+    (hbranchBig : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      ∀ E : Finset F₀, E ⊆ G →
+        (∀ γ ∈ E,
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 ∧
+            (Polynomial.X - Polynomial.C (P γ)) ∣
+              R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+        BR R + R.natDegree * (L - 1) < E.card)
+    (hEbig : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      ∀ E : Finset F₀, E ⊆ G →
+        (∀ γ ∈ E,
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 ∧
+            (Polynomial.X - Polynomial.C (P γ)) ∣
+              R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+        max (L - 1) k < E.card)
+    (hUpgrade : ∀ R ∈ (UniqueFactorizationMonoid.factors Q₀).toFinset,
+      ∀ E : Finset F₀, E ⊆ G →
+        (∀ γ ∈ E,
+          Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) ≠ 0 ∧
+            (Polynomial.X - Polynomial.C (P γ)) ∣
+              R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) →
+        CoordinateUpgrade domain u E P (Tset R)) :
+    ∃ G' : Finset F₀,
+      G' ⊆ G ∧
+      G.card ≤ T + (UniqueFactorizationMonoid.factors Q₀).toFinset.card * G'.card ∧
+      ∃ B : ℕ → F₀[X],
+        (∀ j, (B j).natDegree < L) ∧
+        ∀ γ ∈ G', ∀ j, (P γ).coeff j = (B j).eval γ := by
+  classical
+  obtain ⟨R, hRmem, hRirr, G', hG'sub, hcount, hRdvd⟩ :=
+    exists_heavy_factor_cell_of_given_family domain u δ T hQ hrep hQ₀0 hkn hm hδ1 hδJ
+      hbadz G P hPdec hbig
+  have hdegP : ∀ γ ∈ G', (P γ).degree < (k : ℕ) := by
+    intro γ hγ
+    obtain ⟨d, hd⟩ := hPdec γ (hG'sub hγ)
+    rw [← hd]
+    exact d.hdeg
+  have hupg : CoordinateUpgrade domain u G' P (Tset R) :=
+    hUpgrade R hRmem G' hG'sub hRdvd
+  let w : F₀[X][Y] :=
+    branchOfCurveTuple (fun j : Fin L => lagrangeCurveTuple domain u (Tset R) j)
+  have hwdvd : (Polynomial.X - Polynomial.C w) ∣ R := by
+    simpa [w] using global_branch_of_coordinate_upgrade hk hL R (hRB R hRmem) G' P
+      (Tset R) (hTcard R hRmem) hdegP (fun γ hγ => (hRdvd γ hγ).2) hupg
+      (hbranchBig R hRmem G' hG'sub hRdvd)
+  have hB : ∀ i, (w.coeff i).natDegree ≤ L - 1 := by
+    intro i
+    have h := branchOfCurveTuple_coeff_natDegree_lt hL
+      (fun j : Fin L => lagrangeCurveTuple domain u (Tset R) j) i
+    simp [w] at h ⊢
+    omega
+  have hwdeg : w.natDegree < (Tset R).card := by
+    have ha : ∀ j : Fin L,
+        (lagrangeCurveTuple domain u (Tset R) j).natDegree < k := fun j =>
+      lagrangeCurveTuple_natDegree_lt hk domain u (hTcard R hRmem) j
+    have hpHat := branchOfCurveTuple_natDegree_lt hk ha
+    rw [hTcard R hRmem]
+    simpa [w] using hpHat
+  have hagree : ∀ t ∈ Tset R, ∀ z ∈ G',
+      (P z).eval (domain t) = (foldSectionAt u t).eval z := by
+    intro t ht z hz
+    rw [foldSectionAt_eval]
+    exact hupg z hz t ht
+  obtain ⟨B, hBdeg, hBmatch⟩ :=
+    BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_cell_degree_lt_L
+      (domain := domain) (u := u) hL hRirr hwdvd hB G' P
+      (fun γ hγ => (hRdvd γ hγ).2) (Tset R) hwdeg
+      (fun _t => G') (fun _t _ht => subset_rfl)
+      (fun _t _ht => by
+        have hcell := hEbig R hRmem G' hG'sub hRdvd
+        have hLcell : L - 1 < G'.card :=
+          lt_of_le_of_lt (Nat.le_max_left (L - 1) k) hcell
+        simpa [max_self] using hLcell)
+      (fun t ht z hz => hagree t ht z hz)
+  exact ⟨G', hG'sub, hcount, B, hBdeg, hBmatch⟩
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -428,3 +533,5 @@ open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
 #print axioms strict_coeffPolys_of_given_family_heavy_global_branch
 open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
 #print axioms strict_coeffPolys_of_given_family_coordinate_upgrade
+open CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame in
+#print axioms strict_coeffPolys_of_given_family_coordinate_upgrade_degree_lt_L

@@ -291,6 +291,35 @@ theorem strict_coeffPolys_of_cell {n L : ℕ} {domain : Fin n ↪ F₀}
   rw [decode_eq_surface_map hRirr hwdvd γ (P γ) (hdvdP γ hγ), Polynomial.coeff_map]
   rfl
 
+/-- **Sharper fold-degree form of SK1.**  The cell proof actually bounds the coefficient
+polynomials by the fold length: with the heavy-section cardinality measured against
+`L - 1`, the witnesses satisfy `deg(B j) < L`.  This is the form needed when the
+residual's coefficient-polynomial degree budget is the fold degree rather than the decoded
+RS degree. -/
+theorem strict_coeffPolys_of_cell_degree_lt_L {n L : ℕ} (hL : 0 < L)
+    {domain : Fin n ↪ F₀} {u : WordStack F₀ (Fin L) (Fin n)}
+    {R : (F₀[X])[X][Y]} (hRirr : Irreducible R)
+    {w : F₀[X][Y]} (hwdvd : (Polynomial.X - Polynomial.C w) ∣ R)
+    {Bw : ℕ}
+    (hB : ∀ i, (w.coeff i).natDegree ≤ Bw)
+    (E : Finset F₀) (P : F₀ → F₀[X])
+    (hdvdP : ∀ γ ∈ E, (Polynomial.X - Polynomial.C (P γ)) ∣
+      R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)))
+    (T : Finset (Fin n)) (hT : w.natDegree < T.card)
+    (S : Fin n → Finset F₀) (hSE : ∀ t ∈ T, S t ⊆ E)
+    (hcard : ∀ t ∈ T, max Bw (L - 1) < (S t).card)
+    (hagree : ∀ t ∈ T, ∀ z ∈ S t,
+      (P z).eval (domain t) = (foldSectionAt u t).eval z) :
+    ∃ B : ℕ → F₀[X],
+      (∀ j, (B j).natDegree < L) ∧
+      ∀ γ ∈ E, ∀ j, (P γ).coeff j = (B j).eval γ := by
+  obtain ⟨B, hBdeg, hBmatch⟩ :=
+    strict_coeffPolys_of_cell (domain := domain) (u := u) hRirr hwdvd
+      (k := L - 1) le_rfl hB E P hdvdP T hT S hSE hcard hagree
+  refine ⟨B, ?_, hBmatch⟩
+  intro j
+  simpa [Nat.sub_add_cancel (Nat.succ_le_of_lt hL)] using hBdeg j
+
 /-! ## SK2: the Prop-5.5-faithful subset form (pigeonhole over the cells) -/
 
 /-- **The heavy factor cell exists (pigeonhole)**: in any cell decomposition of the good
@@ -453,6 +482,7 @@ end BCIKS20.CurveCellStrictExtraction
 #print axioms BCIKS20.CurveCellStrictExtraction.foldSection_eq_of_heavy
 #print axioms BCIKS20.CurveCellStrictExtraction.surface_coeff_natDegree_le
 #print axioms BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_cell
+#print axioms BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_cell_degree_lt_L
 #print axioms BCIKS20.CurveCellStrictExtraction.exists_heavy_factor_cell
 #print axioms BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_heavy_cell
 #print axioms BCIKS20.CurveCellStrictExtraction.strict_coeffPolys_of_heavy_cell_of_global_branches
