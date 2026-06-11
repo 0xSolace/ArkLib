@@ -1150,6 +1150,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimePacketRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeRatClassification
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeWindowObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
+import ArkLib.Data.CodingTheory.ProximityGap.TowerMonotonicity
 import ArkLib.Data.CodingTheory.ProximityGap.TruncatedRecurrenceTransversality
 import ArkLib.Data.CodingTheory.ProximityGap.TwoGenPackingCapacity
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
