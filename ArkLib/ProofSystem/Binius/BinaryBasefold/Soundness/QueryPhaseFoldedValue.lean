@@ -64,7 +64,7 @@ lemma logical_computeFoldedValue_eq_iterated_fold
   simp only [logical_computeFoldedValue]
   rw [logical_queryFiberPoints_eq_fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     oStmt k v]
-  exact single_point_localized_fold_matrix_form_eq_iterated_fold 𝔽q β
+  convert single_point_localized_fold_matrix_form_eq_iterated_fold 𝔽q β
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := ⟨k.val * ϑ,
       lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (x := k.val * ϑ)
@@ -74,10 +74,9 @@ lemma logical_computeFoldedValue_eq_iterated_fold
     (f := oStmt ⟨k.val, by
       simp only [toOutCodewordsCount, Fin.val_last, lt_self_iff_false, ↓reduceIte, add_zero,
         Fin.is_lt]⟩)
-    (r_challenges :=
-      getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) (i := Fin.last ℓ)
+    (getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) (i := Fin.last ℓ)
         stmt.challenges (k := k.val * ϑ) (h := k_succ_mul_ϑ_le_ℓ_₂ (k := k)))
-    (y := getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (k := k) (v := v))
+    (getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (k := k) (v := v))
 
 end QueryPhase
 

@@ -21,8 +21,6 @@ minor's determinant has per-variable degree at most `(k−1)·fiber` summing to 
 (brick 16); Schwartz–Zippel prices the zero set under the uniform evaluation distribution.
 
 * `rank_deficit_subset_minor_zero` — the event inclusion;
-* `rimFailureProb_of_minor_zero_bound` — the generic monotonicity wrapper from a
-  minor-zero probability bound to the named residual;
 * `sum_degreeOf_minor_le` — the total per-variable degree budget `tk(k−1)`;
 * `rimFailureProb_of_symbolic` — **the discharge**.
 -/
@@ -62,20 +60,6 @@ theorem rank_deficit_subset_minor_zero {t k : ℕ} (e : ι → Finset (Fin (t + 
         ((((RIM F e).submatrix rows id).map (MvPolynomial.eval α)).mulVec v) := by
         rw [Matrix.mulVec_mulVec, Matrix.nonsing_inv_mul _ hunit, Matrix.one_mulVec]
   _ = 0 := by rw [hker_minor, Matrix.mulVec_zero]
-
-/-- A probability bound for the zero set of a chosen square RIM minor implies the named
-RIM full-rank failure residual at the same bound. This is the reusable monotonicity wrapper
-around `rank_deficit_subset_minor_zero`; the actual bound can come from Schwartz-Zippel or
-from a sharper certificate estimate. -/
-theorem rimFailureProb_of_minor_zero_bound (D : PMF (ι → F)) {t k : ℕ}
-    (e : ι → Finset (Fin (t + 1))) (rows : Fin t × Fin k → RIMRowIdx e)
-    (bound : ENNReal)
-    (hzero :
-      D.toOuterMeasure
-        {α | MvPolynomial.eval α (((RIM F e).submatrix rows id).det) = 0} ≤ bound) :
-    RIMFullRankFailureProbResidual (F := F) (k := k) D e bound := by
-  unfold RIMFullRankFailureProbResidual
-  exact le_trans (D.toOuterMeasure.mono (rank_deficit_subset_minor_zero e rows)) hzero
 
 /-- The total per-variable degree budget: the minor's determinant has
 `∑ᵢ degreeOf i ≤ tk(k−1)` (each of the `tk` rows feeds one fiber). -/
@@ -179,7 +163,7 @@ theorem rimFailureProb_of_symbolic {k : ℕ}
       = ((t * k * (k - 1) : ℕ) : ENNReal)
         * (((Fintype.card F) ^ (Fintype.card ι) : ℕ) : ENNReal)
         / ((Fintype.card F : ℕ) : ENNReal) from by
-    rw [div_eq_mul_inv, div_eq_mul_inv]
+    rw [_root_.div_eq_mul_inv, _root_.div_eq_mul_inv]
     ring]
   rw [ENNReal.le_div_iff_mul_le (Or.inl hD0) (Or.inl hDtop)]
   exact_mod_cast hnat
@@ -188,6 +172,5 @@ end AGL24
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms AGL24.rank_deficit_subset_minor_zero
-#print axioms AGL24.rimFailureProb_of_minor_zero_bound
 #print axioms AGL24.sum_degreeOf_minor_le
 #print axioms AGL24.rimFailureProb_of_symbolic

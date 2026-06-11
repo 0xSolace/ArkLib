@@ -1604,7 +1604,7 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
           -- ({ toStatement := stmtIn, final_constant := c }, oStmtIn)
         rw [h_oStmtOut_eq_oStmtIn] at h_relOut
         exact h_relOut
-    · simp only [Fin.isValue, h_V_check, ↓reduceIte, OptionT.run_failure, simulateQ_pure,
+    · simp only [Fin.isValue, ↓reduceIte, OptionT.run_failure, simulateQ_pure,
         Set.mem_iUnion, exists_prop, Prod.exists] at h_output_mem_V_run_support
       erw [simulateQ_bind] at h_output_mem_V_run_support
       simp only [simulateQ_pure, Fin.isValue, Function.comp_apply,

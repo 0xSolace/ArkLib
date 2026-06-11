@@ -254,7 +254,7 @@ def logical_computeFoldedValue
   let next_suffix_of_v : sDomain 𝔽q β h_ℓ_add_R_rate destIdx :=
     getChallengeSuffix (k := k) (v := v)
   let cur_challenge_batch : Fin ϑ → L := fun j =>
-    stmt.challenges ⟨i + j.val, by simp only [Fin.val_last]; omega⟩
+    foldOrderChallenges (ℓ := ℓ) (i := Fin.last ℓ) stmt.challenges ⟨i + j.val, by simp only [Fin.val_last]; omega⟩
   single_point_localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := ⟨i, by omega⟩) (steps := ϑ) (destIdx := destIdx) (h_destIdx := by dsimp only [destIdx])
     (h_destIdx_le := by omega) (r_challenges := cur_challenge_batch) (y := next_suffix_of_v)

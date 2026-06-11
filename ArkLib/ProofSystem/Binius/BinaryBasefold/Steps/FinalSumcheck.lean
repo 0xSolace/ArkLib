@@ -208,7 +208,7 @@ def finalSumcheckKnowledgeError (m : pSpecFinalSumcheckStep (L := L).ChallengeId
   match m with
   | ⟨0, h0⟩ => nomatch h0
 
-set_option maxHeartbeats 2000000 in
+set_option maxHeartbeats 8000000 in
 omit [SampleableType L] in
 lemma firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency
     (stmtOut : FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
@@ -289,6 +289,10 @@ lemma firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency
     · exact h_zeroIdxLast_eq.symm
     · exact (cast_heq _ _).trans (OracleStatement.oracle_heq_congr 𝔽q β
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (oStmtIn := oStmt)
+        (j := ⟨0, by
+          letI := instNeZeroNatToOutCodewordsCount ℓ ϑ (Fin.last ℓ)
+          exact Nat.pos_of_neZero _⟩)
+        (j' := jLast)
         (h_j := Fin.eq_of_val_eq
           (by simpa using (congrArg Fin.val h_jLast_eq_zero).symm)))
   · dsimp only [oracleFoldingConsistencyProp] at h_oracle_cons
@@ -359,6 +363,10 @@ lemma firstOracle_UDRClose_of_finalSumcheckStepOracleConsistency
     · exact h_zeroIdx0_eq.symm
     · exact (cast_heq _ _).trans (OracleStatement.oracle_heq_congr 𝔽q β
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (oStmtIn := oStmt)
+        (j := ⟨0, by
+          letI := instNeZeroNatToOutCodewordsCount ℓ ϑ (Fin.last ℓ)
+          exact Nat.pos_of_neZero _⟩)
+        (j' := ⟨↑j0, j0.isLt⟩)
         (h_j := Fin.eq_of_val_eq (by dsimp only [j0])))
 
 omit [SampleableType L] in
@@ -484,7 +492,7 @@ private def finalPrefixChallenges
     (stmtOut : FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
     (t : ℕ) (ht : t < toOutCodewordsCount ℓ ϑ (Fin.last ℓ)) :
     Fin (t * ϑ) → L := fun cId =>
-  stmtOut.challenges ⟨cId, by
+  foldOrderChallenges (ℓ := ℓ) (i := Fin.last ℓ) stmtOut.challenges ⟨cId, by
     exact lt_of_lt_of_le cId.isLt
       (oracle_index_le_ℓ (ℓ := ℓ) (ϑ := ϑ) (i := Fin.last ℓ) (j := ⟨t, ht⟩))⟩
 
@@ -492,7 +500,7 @@ private def finalBlockChallenges
     (stmtOut : FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
     (t : ℕ) (ht : t + 1 < toOutCodewordsCount ℓ ϑ (Fin.last ℓ)) :
     Fin ϑ → L := fun cId =>
-  stmtOut.challenges ⟨t * ϑ + cId, by
+  foldOrderChallenges (ℓ := ℓ) (i := Fin.last ℓ) stmtOut.challenges ⟨t * ϑ + cId, by
     have h_lt : t * ϑ + cId.val < t * ϑ + ϑ := by
       omega
     exact lt_of_lt_of_le h_lt
@@ -696,7 +704,7 @@ private theorem firstOracleDecoded_eq_f₀
   cases Subsingleton.elim h_close0 h_close_first
   exact h_dec0_eq_f0
 
-set_option maxHeartbeats 2000000 in
+set_option maxHeartbeats 8000000 in
 -- This zero-step oracle identification needs extra heartbeats for the dependent cast cleanup.
 omit [SampleableType L] in
 private theorem finalOracleRaw_zero_heq_getFirstOracle
@@ -725,6 +733,10 @@ private theorem finalOracleRaw_zero_heq_getFirstOracle
   dsimp only [getFirstOracle, finalOracleRaw]
   exact (OracleStatement.oracle_heq_congr 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (oStmtIn := oStmtOut)
+    (j := ⟨0, ht⟩)
+    (j' := ⟨0, by
+      letI := instNeZeroNatToOutCodewordsCount ℓ ϑ (Fin.last ℓ)
+      exact Nat.pos_of_neZero _⟩)
     (h_j := (Fin.eq_of_val_eq rfl :
       (⟨0, ht⟩ : Fin (toOutCodewordsCount ℓ ϑ (Fin.last ℓ))) = ⟨0, by
         letI := instNeZeroNatToOutCodewordsCount ℓ ϑ (Fin.last ℓ)

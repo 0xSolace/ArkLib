@@ -1316,8 +1316,11 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
               (i := Fin.last ℓ) (challenges := stmtIn.challenges) (oStmt := oStmtIn) ∧
             final_compliance) := by
       have h_not_and := h_not_consistent
-      simp only [not_and, finalSumcheckStepOracleConsistencyProp, Fin.val_last] at h_not_and ⊢
-      exact h_not_and
+      simp only [not_and, finalSumcheckStepOracleConsistencyProp, Fin.val_last] at h_not_and
+      intro h_pair
+      exact h_not_and h_pair.1 (by
+        dsimp only [final_compliance] at h_pair
+        simpa only [j_last, k, id_eq, Fin.val_last, getFoldingChallenges] using h_pair.2)
     by_cases h_final_ok : final_compliance
     · -- Final block compliant: then oracleFoldingConsistencyProp must fail.
       have h_oracle_bad :
@@ -1635,7 +1638,7 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
       let f_bar_next := UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         destIdx h_destIdx_le (f := f_next) (h_within_radius := h_next_close)
       ¬ pair_UDRClose 𝔽q β destIdx h_destIdx_le f_i_star_folded f_bar_next := by
-    exact
+    simpa only using
       lemma_4_24_dist_folded_ge_of_last_noncompliant (𝔽q := 𝔽q) (β := β)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i_star := i_star) (steps := ϑ)
         (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
@@ -1694,8 +1697,8 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
         extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (v := v) (destIdx := destIdx) (h_destIdx_le := h_destIdx_le) ∉ D
       ] := by
-    apply prob_mono
-    exact h_accept_subset
+    exact Pr_le_Pr_of_implies ($ᵖ (sDomain 𝔽q β h_ℓ_add_R_rate 0)) _ _
+      h_accept_subset
   -- Evaluate the suffix probability for the complement set.
   have h_prob_suffix_not :
       Pr_{ let v ←$ᵖ (sDomain 𝔽q β h_ℓ_add_R_rate 0) }[

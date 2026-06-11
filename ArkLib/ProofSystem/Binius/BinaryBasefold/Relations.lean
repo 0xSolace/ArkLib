@@ -750,14 +750,15 @@ def finalSumcheckStepOracleConsistencyProp {h_le : ϑ ≤ ℓ}
     rw [getLastOraclePositionIndex_last]
     rw [Nat.sub_mul, Nat.one_mul]
     rw [Nat.div_mul_cancel (hdiv.out)]
+  have h_k_add_ϑ : k + ϑ = ℓ := by
+    rw [h_k]
+    exact Nat.sub_add_cancel h_le
   let f_k : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       ⟨oraclePositionToDomainIndex ℓ ϑ j, by omega⟩ := by
     simpa [OracleStatement, oraclePositionToDomainIndex] using oStmtOut j
-  let challenges : Fin ϑ → L := fun cId => stmtOut.challenges ⟨k + cId, by
-      simp only [Fin.val_last, k, j]
-      rw [getLastOraclePositionIndex_last, Nat.sub_mul, Nat.one_mul, Nat.div_mul_cancel (hdiv.out)]
-      rw [Nat.sub_add_eq_sub_sub_rev (h1:=by omega) (h2:=by omega)]; omega
-    ⟩
+  let challenges : Fin ϑ → L :=
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ) (i := Fin.last ℓ)
+      stmtOut.challenges (k := k) (h := by simp only [h_k_add_ϑ, Fin.val_last, le_refl])
     let finalOracleFoldingConsistency: Prop := by
       exact isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨k, by omega⟩) (steps := ϑ) (destIdx := ⟨k + ϑ, by omega⟩) (by rfl) (by simp only; omega) (f_i := f_k)
         (f_i_plus_steps := fun x => stmtOut.final_constant) (challenges := challenges)

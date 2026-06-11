@@ -991,7 +991,7 @@ noncomputable def extractMLP (i : Fin ℓ) (f : (sDomain 𝔽q β h_ℓ_add_R_ra
         let t_multilinear_mv := MvPolynomial.MLE hypercube_evals
         exact some ⟨t_multilinear_mv, MLE_mem_restrictDegree hypercube_evals⟩
 
-def zeroLastWitness :
+def dummyLastWitness :
     Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) := {
   t := ⟨0, by apply zero_mem⟩,
   H := ⟨0, by apply zero_mem⟩,
@@ -1788,12 +1788,11 @@ def finalNonDoomedFoldingProp {h_le : ϑ ≤ ℓ}
     rw [Nat.sub_mul, Nat.one_mul]
     rw [Nat.div_mul_cancel (hdiv.out)]
   let f_k := oStmt j
-  let challenges : Fin ϑ → L := fun cId => stmt.challenges ⟨k + cId, by
-    simp only [Fin.val_last, k]
-    rw [mkLastOracleIndex_last, Nat.sub_mul, Nat.one_mul, Nat.div_mul_cancel (hdiv.out)]
-    rw [Nat.sub_add_eq_sub_sub_rev (h1:=by omega) (h2:=by omega)]; omega
-  ⟩
   have h_k_add_ϑ: k + ϑ = ℓ := by rw [h_k]; apply Nat.sub_add_cancel; omega
+  let challenges : Fin ϑ → L :=
+    getFoldingChallenges (r := r) (𝓡 := 𝓡) (ϑ := ϑ)
+      (i := Fin.last ℓ) stmt.challenges (k := k)
+      (h := by simp only [h_k_add_ϑ, Fin.val_last, le_refl])
   let finalOracleFoldingConsistency: Prop := by
     -- folding consistency between two adjacent oracles `j` & `j + ϑ`
     exact isCompliant (i := ⟨k, by rw [h_k]; omega⟩) (steps := ϑ)

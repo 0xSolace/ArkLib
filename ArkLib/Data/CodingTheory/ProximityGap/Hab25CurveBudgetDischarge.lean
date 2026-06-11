@@ -78,7 +78,7 @@ theorem exists_heavy_factor_cell_on_decoded_set_budgeted {n k m L : ℕ} [NeZero
               R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) := by
   classical
   -- leg 3: the interpolant with the explicit degenerate budget
-  obtain ⟨Q₀, hQ₀0, hcond, hbadz⟩ :=
+  obtain ⟨Q₀, hQ₀0, hcond, _hYdeg, hbadz⟩ :=
     gs_existence_curve_zDegree_badz (F := F₀) (n := n) (L := L) k m domain
       (fun j i => u j i) (by omega) (NeZero.ne n) hm
   -- the trivial integer representative: `dd = 1`

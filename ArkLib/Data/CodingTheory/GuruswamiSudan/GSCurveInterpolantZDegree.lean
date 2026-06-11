@@ -131,6 +131,7 @@ theorem gs_existence_curve_zDegree {n L : ℕ} (k m : ℕ) (ωs : Fin n ↪ F)
       Q₀ ≠ 0 ∧
       Conditions k m (gs_degree_bound k n m) (liftedDomain ωs) (curveFold u)
         (Q₀.map (Polynomial.mapRingHom (algebraMap F[X] K))) ∧
+      Q₀.natDegree ≤ gs_degree_bound k n m ∧
       ∀ b a : ℕ, ((Q₀.coeff b).coeff a).natDegree ≤
         (n * (constraintIndices m).card) * (gs_degree_bound k n m * (L - 1)) := by
   classical
@@ -222,7 +223,16 @@ theorem gs_existence_curve_zDegree {n L : ℕ} (k m : ℕ) (ωs : Fin n ↪ F)
         (fun p : weigthBoundIndices k D ↦ GuruswamiSudan.monomial (F := K) p.1.1 p.1.2)) :=
       linearIndependent_monomials.comp _ (fun p q h ↦ by aesop)
     exact this.comp (LinearEquiv.injective _)
-  refine ⟨Q₀, ?_, ?_, ?_⟩
+  have hYdeg : Q₀.natDegree ≤ D := by
+    rw [hQ₀]
+    refine Polynomial.natDegree_sum_le_of_forall_le _ _ ?_
+    intro p _
+    refine (Polynomial.natDegree_monomial_le _).trans ?_
+    have hp := p.2
+    simp only [weigthBoundIndices, mem_filter] at hp
+    have h1 : 1 ≤ k - 1 := by omega
+    nlinarith [hp.2, p.1.1.zero_le]
+  refine ⟨Q₀, ?_, ?_, hYdeg, ?_⟩
   · -- Q₀ ≠ 0 via coefficient extraction
     obtain ⟨p₀, hp₀⟩ := Function.ne_iff.mp hc'0
     intro habs
@@ -280,11 +290,12 @@ theorem gs_existence_curve_zDegree_card [Fintype F] {n L : ℕ} (k m : ℕ)
       Q₀ ≠ 0 ∧
       Conditions k m (gs_degree_bound k n m) (liftedDomain ωs) (curveFold u)
         (Q₀.map (Polynomial.mapRingHom (algebraMap F[X] K))) ∧
+      Q₀.natDegree ≤ gs_degree_bound k n m ∧
       (Finset.univ.filter (fun z : F =>
         Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0)).card ≤
         (n * (constraintIndices m).card) * (gs_degree_bound k n m * (L - 1)) := by
-  obtain ⟨Q₀, h0, hcond, hdeg⟩ := gs_existence_curve_zDegree k m ωs u hk hn hm
-  exact ⟨Q₀, h0, hcond, card_specialization_collapse_le h0 hdeg⟩
+  obtain ⟨Q₀, h0, hcond, hY, hdeg⟩ := gs_existence_curve_zDegree k m ωs u hk hn hm
+  exact ⟨Q₀, h0, hcond, hY, card_specialization_collapse_le h0 hdeg⟩
 
 /-- **The subset-form budget producer** (decidability-free packaging of
 `gs_existence_curve_zDegree_card`): any set of scalars collapsing the interpolant is
@@ -296,11 +307,12 @@ theorem gs_existence_curve_zDegree_badz [Fintype F] {n L : ℕ} (k m : ℕ)
       Q₀ ≠ 0 ∧
       Conditions k m (gs_degree_bound k n m) (liftedDomain ωs) (curveFold u)
         (Q₀.map (Polynomial.mapRingHom (algebraMap F[X] K))) ∧
+      Q₀.natDegree ≤ gs_degree_bound k n m ∧
       ∀ S : Finset F,
         (∀ z ∈ S, Q₀.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) = 0) →
         S.card ≤ (n * (constraintIndices m).card) * (gs_degree_bound k n m * (L - 1)) := by
-  obtain ⟨Q₀, h0, hcond, hcard⟩ := gs_existence_curve_zDegree_card k m ωs u hk hn hm
-  refine ⟨Q₀, h0, hcond, ?_⟩
+  obtain ⟨Q₀, h0, hcond, hY, hcard⟩ := gs_existence_curve_zDegree_card k m ωs u hk hn hm
+  refine ⟨Q₀, h0, hcond, hY, ?_⟩
   intro S hS
   refine le_trans (Finset.card_le_card ?_) hcard
   intro z hz

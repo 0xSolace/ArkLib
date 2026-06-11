@@ -144,7 +144,7 @@ private lemma iterated_fold_steps_eq_of_fiber_agree (i : Fin ℓ) :
 
 set_option maxHeartbeats 2000000 in
 -- The wrapper reconciles the concrete destination index with the nat-indexed fold recursion.
-private lemma iterated_fold_eq_of_fiberEvaluations_eq
+lemma iterated_fold_eq_of_fiberEvaluations_eq
     (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)

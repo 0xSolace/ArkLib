@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.PointwiseAgreementVandermonde
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.VandermondeAgreement
 
 /-!
 # Claim 5.10 per-point kill — ground-affine values of the genuine branch (#302 hlin, B1)
