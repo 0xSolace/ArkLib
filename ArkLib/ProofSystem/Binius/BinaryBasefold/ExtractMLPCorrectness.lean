@@ -10,9 +10,8 @@ import ArkLib.Data.CodingTheory.BerlekampWelch.BerlekampWelch
 /-!
 # Berlekamp–Welch extraction correctness at the base level (`i = 0`)
 
-This file proves the *true* content behind `ExtractMLPCorrectnessResidual`
-(`Relations.lean:239`) and documents, by a machine-checked obstruction, that the
-residual is **false as stated** for every `ℓ ≥ 2`.
+This file proves the corrected base-level extraction statement and documents the
+endianness mismatch that made the old unreversed formulation false for `ℓ ≥ 2`.
 
 ## The mismatch
 
@@ -125,11 +124,12 @@ end GenericHelpers
 section NovelRoundTrip
 
 variable {r : ℕ} [NeZero r]
-variable {L : Type} [Field L] [Fintype L] [DecidableEq L]
-variable (𝔽q : Type) [Field 𝔽q] [Fintype 𝔽q]
+variable {L : Type} [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
+variable (𝔽q : Type) [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
   [h_Fq_char_prime : Fact (Nat.Prime (ringChar 𝔽q))] [hF₂ : Fact (Fintype.card 𝔽q = 2)]
 variable [Algebra 𝔽q L]
 variable (β : Fin r → L) [hβ_lin_indep : Fact (LinearIndependent 𝔽q β)]
+  [h_β₀_eq_1 : Fact (β 0 = 1)]
 
 /-- Reconstructing a low-degree polynomial from its monomial→novel converted
 coefficients gives back the polynomial. -/
@@ -650,9 +650,8 @@ theorem firstOracleWitnessConsistency_revIndexMLP_of_extractMLP_eq_some
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) _ f tpoly hUDR hex
 
 /-- **The corrected two-sided characterization** of `extractMLP` at the base level.
-This is the true statement behind `ExtractMLPCorrectnessResidual`: relative to the
-declared residual, the output is the *variable-reversed* multilinear polynomial, and
-the forward direction additionally requires the `UDRClose` guard. -/
+The output is the *variable-reversed* multilinear polynomial, and the forward direction
+additionally requires the `UDRClose` guard. -/
 theorem extractMLP_zero_eq_some_revIndexMLP_iff
     (f : OracleFunction (𝔽q := 𝔽q) (β := β)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
@@ -692,10 +691,10 @@ theorem firstOracleWitnessConsistencyProp_unique'
   exact revIndexMLP_injective (Option.some.inj e₂)
 
 /-!
-The deleted `ExtractMLPCorrectnessResidual` class would force every multilinear
-polynomial to equal its variable-reversal.  The corrected theorem above is the
-replacement: extraction success identifies the reversed witness under the UDR
-guard, and the old residual statement should not be reintroduced.
+The deleted extraction hypothesis would force every multilinear polynomial to equal its
+variable-reversal. The corrected theorem above is the replacement: extraction success identifies
+the reversed witness under the UDR guard, and the old unreversed statement should not be
+reintroduced.
 -/
 
 end Main
