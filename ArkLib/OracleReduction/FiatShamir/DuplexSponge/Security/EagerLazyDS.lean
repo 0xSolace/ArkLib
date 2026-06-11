@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.ToVCVio.LazyPermBridge
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.KeyLemmaFoundations
+import ArkLib.Data.Probability.ProductMarginalBound
 
 /-!
 # The combined lazy duplex-sponge oracle (brick 4C-1)
@@ -991,6 +992,59 @@ noncomputable def badDS [Fintype StmtIn] (s : DSCache StmtIn U) : Prop :=
   ¬ (slotList s).Nodup ∨
     ∃ p₁ ∈ s.2, ∃ p₂ ∈ s.2, p₁.1 = p₂.2
 
+/-! ## The capacity-fiber count (4D work-order (iii) multiplier) -/
+
+open CanonicalSpongeState in
+/-- **Capacity-fiber cardinality**: each capacity segment has exactly `|U|^R` states above
+it — the multiplier converting slot counts into the per-step atoms' target sizes. -/
+theorem card_capacityFiber [Fintype U] [DecidableEq U] (c : Vector U SpongeSize.C) :
+    Fintype.card {x : CanonicalSpongeState U // x.capacitySegment = c}
+      = Fintype.card U ^ SpongeSize.R := by
+  have hRN : SpongeSize.R ≤ SpongeSize.N := le_of_lt SpongeSize.R_lt_N
+  have hsplit : {x : CanonicalSpongeState U // x.capacitySegment = c}
+      ≃ Vector U SpongeSize.R := {
+    toFun := fun x => (Vector.take x.1 SpongeSize.R).cast (by simp [hRN])
+    invFun := fun v => ⟨(v ++ c).cast (by simp [SpongeSize.C]; try omega), by
+      apply Vector.ext
+      intro i hi
+      show ((Vector.cast _ (v ++ c)).drop SpongeSize.R)[i] = c[i]
+      rw [Vector.getElem_drop, Vector.getElem_cast,
+        Vector.getElem_append_right (by
+          have hi' := hi
+          simp only [SpongeSize.C] at hi' ⊢
+          omega) (by omega)]
+      congr 1
+      omega⟩
+    left_inv := fun x => by
+      apply Subtype.ext
+      apply Vector.ext
+      intro i hi
+      simp only [Vector.getElem_cast]
+      rcases lt_or_ge i SpongeSize.R with hlt | hge
+      · rw [Vector.getElem_append_left (by simpa using hlt)]
+        simp only [Vector.getElem_cast, Vector.getElem_take]
+      · have hge2 : SpongeSize.R ≤ i := hge
+        rw [Vector.getElem_append_right (by
+            have hi' := hi
+            simp only [SpongeSize.C] at hi' ⊢
+            omega) (by simpa using hge2)]
+        have hdc : Vector.drop (x.1) SpongeSize.R = c := x.2
+        simp only [← hdc]
+        show ((↑x : Vector U SpongeSize.N).drop SpongeSize.R)[i - SpongeSize.R]'(by
+          have hi' := hi
+          simp only [SpongeSize.C] at hi' ⊢
+          omega) = (↑x : Vector U SpongeSize.N)[i]
+        rw [Vector.getElem_drop]
+        congr 1
+        omega
+    right_inv := fun v => by
+      apply Vector.ext
+      intro i hi
+      simp only [Vector.getElem_cast, Vector.getElem_take]
+      rw [Vector.getElem_append_left (by simpa using hi)]
+  }
+  rw [Fintype.card_congr hsplit, card_vector_pow]
+
 end Connectors
 
 end DuplexSpongeFS.EagerLazyDS
@@ -1003,3 +1057,4 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.probEvent_DDS_eq_lazyDSImpl
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImpl_cache_nodup
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImpl_step_size
+#print axioms DuplexSpongeFS.EagerLazyDS.card_capacityFiber
