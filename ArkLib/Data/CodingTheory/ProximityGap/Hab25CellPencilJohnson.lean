@@ -197,8 +197,143 @@ theorem cell_improvement_of_pinning_package [Fintype F₀] [DecidableEq F₀]
     exact affineCaptured_improve hd0 hd1 hcap
   · exact Or.inl (le_trans (by omega) hT)
 
+/-- **The section link, PROVEN**: cell divisibility + irreducibility + the surface
+divisibility force each decode to be the surface's Taylor section.  Irreducibility makes
+`R` an associate of `Y′ − C w`; the fiber is then a unit times `X − C w_γ`, monic-linear
+divisibility pins `P = w_γ`, and Taylor's formula (mapped along `eval γ`) writes `w_γ` as
+the range-`n` section sum. -/
+theorem section_link {R : (F₀[X])[X][Y]} {n : ℕ}
+    (hRirr : Irreducible R) {w : F₀[X][Y]} (hwdeg : w.natDegree < n)
+    (hwdvd : (Polynomial.X - Polynomial.C w) ∣ R)
+    (x₀ γ : F₀) (P : F₀[X])
+    (hdvdP : (Polynomial.X - Polynomial.C P) ∣
+      R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ))) :
+    P = ∑ t ∈ Finset.range n,
+      Polynomial.C (((Polynomial.taylor (Polynomial.C x₀) w).coeff t).eval γ)
+        * (Polynomial.X - Polynomial.C x₀) ^ t := by
+  classical
+  -- step 1: `R` is an associate of the surface factor
+  have hXw_nu : ¬ IsUnit (Polynomial.X - Polynomial.C w) := by
+    intro hu
+    have h1 := Polynomial.natDegree_eq_zero_of_isUnit hu
+    rw [Polynomial.natDegree_X_sub_C] at h1
+    exact one_ne_zero h1
+  obtain ⟨c, hc⟩ := hwdvd
+  have hcu : IsUnit c := (hRirr.isUnit_or_isUnit hc).resolve_left hXw_nu
+  -- step 2: the fiber splits as the linear section factor times a unit
+  set φ : (F₀[X])[X] →+* F₀[X] := Polynomial.mapRingHom (Polynomial.evalRingHom γ) with hφ
+  set wγ : F₀[X] := w.map (Polynomial.evalRingHom γ) with hwγ
+  have hfiber : R.map φ = (Polynomial.X - Polynomial.C wγ) * c.map φ := by
+    rw [hc, Polynomial.map_mul, Polynomial.map_sub, Polynomial.map_X, Polynomial.map_C]
+    rfl
+  have hcuγ : IsUnit (c.map φ) := hcu.map (Polynomial.mapRingHom φ)
+  -- step 3: strip the unit
+  have hdvd2 : (Polynomial.X - Polynomial.C P) ∣ (Polynomial.X - Polynomial.C wγ) := by
+    have h := hdvdP
+    rw [hfiber] at h
+    exact (IsUnit.dvd_mul_right hcuγ).mp h
+  -- step 4: monic-linear divisibility pins `P = w_γ`
+  have hPwγ : P = wγ := by
+    obtain ⟨q, hq⟩ := hdvd2
+    have hXw0 : (Polynomial.X - Polynomial.C wγ : F₀[X][Y]) ≠ 0 :=
+      Polynomial.X_sub_C_ne_zero wγ
+    have hq0 : q ≠ 0 := by
+      intro h0
+      rw [h0, mul_zero] at hq
+      exact hXw0 hq
+    have hdegq : q.natDegree = 0 := by
+      have hdegs := congrArg Polynomial.natDegree hq
+      rw [Polynomial.natDegree_mul (Polynomial.X_sub_C_ne_zero P) hq0,
+        Polynomial.natDegree_X_sub_C, Polynomial.natDegree_X_sub_C] at hdegs
+      omega
+    have ha1 : q.leadingCoeff = 1 := by
+      have hlc := congrArg Polynomial.leadingCoeff hq
+      rw [Polynomial.leadingCoeff_mul, Polynomial.leadingCoeff_X_sub_C,
+        Polynomial.leadingCoeff_X_sub_C, one_mul] at hlc
+      exact hlc.symm
+    have hq1 : q = 1 := by
+      have hC := Polynomial.eq_C_of_natDegree_eq_zero hdegq
+      rw [hC] at ha1 ⊢
+      rw [Polynomial.leadingCoeff_C] at ha1
+      rw [ha1, Polynomial.C_1]
+    rw [hq1, mul_one] at hq
+    have hCC : Polynomial.C wγ = Polynomial.C P := by
+      have h2 := sub_right_inj.mp hq
+      exact h2
+    exact (Polynomial.C_injective hCC).symm
+  -- step 5: Taylor's formula for `w_γ`, mapped along `eval γ`
+  rw [hPwγ, hwγ]
+  have htay := Polynomial.sum_taylor_eq w (Polynomial.C x₀)
+  rw [Polynomial.sum_def] at htay
+  have hmap := congrArg (Polynomial.mapRingHom (Polynomial.evalRingHom γ)) htay
+  simp only [map_sum] at hmap
+  simp only [Polynomial.coe_mapRingHom, Polynomial.map_mul, Polynomial.map_pow,
+    Polynomial.map_sub, Polynomial.map_X, Polynomial.map_C,
+    Polynomial.coe_evalRingHom, Polynomial.eval_C] at hmap
+  -- extend the support sum to the range-`n` sum
+  have hsupp : (Polynomial.taylor (Polynomial.C x₀) w).support ⊆ Finset.range n := by
+    intro i hi
+    rw [Finset.mem_range]
+    have h1 := Polynomial.le_natDegree_of_mem_supp i hi
+    rw [Polynomial.natDegree_taylor] at h1
+    omega
+  rw [← hmap]
+  refine Finset.sum_subset hsupp fun i _ hni => ?_
+  rw [Polynomial.notMem_support_iff.mp hni]
+  simp
+
+/-- **`himpr` from the package, section link DERIVED** — the cell-divisibility form: the
+funnel's per-cell input with `hsec` replaced by the cell's own divisibilities. -/
+theorem cell_improvement_of_pinning_package' [Fintype F₀] [DecidableEq F₀]
+    {n k : ℕ} (hn : 0 < n) [NeZero n] {domain : Fin n ↪ F₀} {δ : ℝ≥0}
+    {u : WordStack F₀ (Fin 2) (Fin n)}
+    {T : ℕ} (hT : 1 ≤ T) (hk : 0 < k)
+    (R : (F₀[X])[X][Y]) (hRirr : Irreducible R)
+    (E : Finset F₀) (P : F₀ → F₀[X])
+    (hdec : ∀ γ ∈ E, ∃ d : McaDecode domain k δ u γ, d.P = P γ)
+    (hdvdR : ∀ γ ∈ E, (Polynomial.X - Polynomial.C (P γ)) ∣
+      R.map (Polynomial.mapRingHom (Polynomial.evalRingHom γ)))
+    (x₀ : F₀) (hHyp : Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hmonic : H.Monic)
+    (htail : ∀ t, n ≤ t → αGenuine H x₀ R hHyp t = 0)
+    (e : Fin n → F₀) (he : Function.Injective e) (u₀ u₁ : Fin n → F₀)
+    {D : ℕ} (hD : D ≥ Bivariate.totalDegree H)
+    (matchingSet : Fin n → Finset F₀)
+    (root : (z : F₀) → rationalRoot (H_tilde' H) z)
+    {w : F₀[X][Y]} (hwdeg : w.natDegree < n)
+    (hwdvd : (Polynomial.X - Polynomial.C w) ∣ R)
+    (hbaseA : ∀ j, ∀ z ∈ matchingSet j, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    (hsepA : ∀ j, ∀ z ∈ matchingSet j,
+      ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z (root z)
+          (BCIKS20.Claim510AgreementSupply.pi_z_xi_ne_zero_of_monic hHyp
+            hmonic.leadingCoeff z (root z))))).Separable)
+    (hfold : ∀ j, ∀ z ∈ matchingSet j,
+      (w.eval (Polynomial.C (e j) + Polynomial.C x₀)).eval z = u₀ j + z * u₁ j)
+    {W : ℕ}
+    (hweight : ∀ j, weight_Λ_over_𝒪 (Fact.out (p := 0 < H.natDegree))
+        (Claim510Kill.killTarget H x₀ R hHyp n (e j) (u₀ j) (u₁ j)) D ≤ (W : WithBot ℕ))
+    (hcard : ∀ j, W * H.natDegree < (matchingSet j).card)
+    (S₀ : Finset F₀)
+    (hbase₀ : ∀ z ∈ S₀, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    (hsep₀ : ∀ z ∈ S₀,
+      ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z (root z)
+          (BCIKS20.Claim510AgreementSupply.pi_z_xi_ne_zero_of_monic hHyp
+            hmonic.leadingCoeff z (root z))))).Separable)
+    {Bw : ℕ} (hBw : ∀ t, ((Polynomial.taylor (Polynomial.C x₀) w).coeff t).natDegree ≤ Bw)
+    (hS₀ : max Bw 1 < S₀.card) :
+    E.card ≤ T ∨ ∃ d₀ d₁ : Fin n → F₀, ∀ z ∈ E,
+      ∃ x ∈ disagreeSet d₀ d₁, affineGap d₀ d₁ z x = 0 :=
+  cell_improvement_of_pinning_package hn hT hk R E P hdec x₀ hHyp hH hmonic htail
+    e he u₀ u₁ hD matchingSet root hwdeg hwdvd hbaseA hsepA hfold hweight hcard
+    S₀ hbase₀ hsep₀ hBw hS₀
+    (fun γ hγ => section_link hRirr hwdeg hwdvd x₀ γ (P γ) (hdvdR γ hγ))
+
 end BCIKS20.CellPencilJohnson
 
 /-! ## Axiom audit — all kernel-clean. -/
 #print axioms BCIKS20.CellPencilJohnson.pencil_of_pinning_and_section
 #print axioms BCIKS20.CellPencilJohnson.cell_improvement_of_pinning_package
+#print axioms BCIKS20.CellPencilJohnson.section_link
+#print axioms BCIKS20.CellPencilJohnson.cell_improvement_of_pinning_package' 
