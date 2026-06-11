@@ -112,6 +112,7 @@ private lemma optionT_support_seq_pure {ι' : Type} {spec : OracleSpec ι'} {α 
       Set.mem_singleton_iff] at hx
     exact Or.inr hx
 
+omit [SampleableType F] in
 /-- **The repaired query-round perfect completeness — a THEOREM** (issue #341).  The
 query-round oracle reduction is perfectly complete from the chain relation (base relation ∩
 checker acceptance) to the base relation.  The proof needs **no** analysis of the verifier's
@@ -139,22 +140,20 @@ theorem queryRound_perfectCompleteness_repaired
   rintro stmtIn oStmtIn witIn ⟨h_base, h_acc⟩
   -- the prover is a pure pass-through
   dsimp only [QueryRound.queryOracleReduction, QueryRound.queryProver]
-  simp only [Fin.isValue, bind_pure_comp, pure_bind, bind_map_left, liftM_bind, liftM_map,
-    Prod.mk.eta, bind_assoc, _root_.map_pure, liftComp_pure, liftM_pure]
+  simp only [Fin.isValue, bind_pure_comp, pure_bind, Prod.mk.eta, liftComp_pure, liftM_pure]
   rw [probEvent_eq_one_iff]
   constructor
   · -- SAFETY: the run never fails
     rw [probFailure_bind_eq_zero_iff]
     refine ⟨?_, fun chal _hchal => ?_⟩
-    · simp only [probFailure_map, OptionT.probFailure_liftM, OptionT.probFailure_lift,
-        _root_.probFailure_liftComp, HasEvalPMF.probFailure_eq_zero]
+    · simp only [OptionT.probFailure_liftM, HasEvalPMF.probFailure_eq_zero]
     · rw [probFailure_map]
       exact (h_acc (ProtocolSpec.FullTranscript.mk1 chal)).1
   · -- CORRECTNESS: every output in the support satisfies the event
     intro x hx
     simp only [support_bind, Set.mem_iUnion, exists_prop] at hx
     obtain ⟨chal, _hchal, hx⟩ := hx
-    simp only [support_map, _root_.support_liftComp, Set.mem_image] at hx
+    simp only [support_map, Set.mem_image] at hx
     obtain ⟨verOut, hverOut, hx⟩ := hx
     -- the verifier output is pinned by checker acceptance
     have hpin : verOut = (stmtIn, oStmtIn) := by
