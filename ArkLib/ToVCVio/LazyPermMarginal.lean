@@ -349,7 +349,7 @@ lemma map_symm_uniform_extends_swap (d : List (X × X))
         (fun h => hτ (mem_extendsFinset.mp h))]
 
 /-- `bind` only depends on the function over the support. -/
-private lemma bind_congr_support {α β : Type} (p : PMF α) (f g : α → PMF β)
+lemma bind_congr_support {α β : Type} (p : PMF α) (f g : α → PMF β)
     (h : ∀ a ∈ p.support, f a = g a) : p.bind f = p.bind g := by
   ext b
   rw [PMF.bind_apply, PMF.bind_apply]
