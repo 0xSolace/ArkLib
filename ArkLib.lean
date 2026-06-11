@@ -269,7 +269,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyResultantProduct
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySidonModNeg
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergySixDvd
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyThreeDvd
-import ArkLib.Data.CodingTheory.ProximityGap.AdjacentPairDepthOneClean
 import ArkLib.Data.CodingTheory.ProximityGap.AffineBlockKernels
 import ArkLib.Data.CodingTheory.ProximityGap.AgreementMomentOne
 import ArkLib.Data.CodingTheory.ProximityGap.AgreementMomentTwo
@@ -978,6 +977,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PackingClassCSP
 import ArkLib.Data.CodingTheory.ProximityGap.PackingSubdivision
 import ArkLib.Data.CodingTheory.ProximityGap.PackingTreeSufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.PadePartialFractionsKill
+import ArkLib.Data.CodingTheory.ProximityGap.TruncatedRecurrenceTransversality
 import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PencilNormalizerBand
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
