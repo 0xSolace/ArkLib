@@ -27,6 +27,7 @@ open scoped NNReal
 
 variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
 variable {ι₀ : Type} [Fintype ι₀] [Nonempty ι₀] [DecidableEq ι₀]
+variable {domain : ι₀ ↪ F₀}
 
 open Classical in
 /-- **Capture from any close affine decode.**  If `γ` is `mcaEvent`-bad and the affine
