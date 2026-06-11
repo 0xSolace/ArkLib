@@ -50,8 +50,8 @@ variable {n g k : ℕ}
 
 /-- The evaluation code has no nonzero codeword on `≤ m` points when `m + k ≤ n`
 (root counting). -/
-theorem evalCode_noWeightLE (dom : Fin n → F) (hinj : Function.Injective dom)
-    (hmk : (m : ℕ) + k ≤ n) (hk1 : 1 ≤ k) :
+theorem evalCode_noWeightLE {m : ℕ} (dom : Fin n → F) (hinj : Function.Injective dom)
+    (hmk : m + k ≤ n) (hk1 : 1 ≤ k) :
     MCAStaircaseMaster.NoWeightLE (evalCode dom k) m := by
   rintro w ⟨P, hPdeg, hPw⟩ ⟨T, hT, hvan⟩
   have hPz : P = 0 := by
