@@ -73,7 +73,6 @@ noncomputable def askInput (P : Params ιs F) (d : ℕ) (x : ιs 0) :
 
 /-- Payload length of the folded-oracle message slot `i` is the cardinality of the next
 paper evaluation domain. -/
-omit [Field F] [DecidableEq F] [SampleableType F] in
 lemma length_mainFoldedOracleMessageIdx (P : Params ιs F) (d : ℕ) (i : Fin M) :
     (whirPaperTranscriptVectorSpec P d).length (mainFoldedOracleMessageIdx P d i).1
       = Fintype.card (ιs i.succ) := by
@@ -444,6 +443,8 @@ theorem simulateQ_initialInputBindingCheckAt (P : Params ιs F) (d : ℕ)
         (initialInputBindingCheckAt P d S inputBridge foldBridge hNeg0 hFoldLe0 αs y)
       = (pure (initialInputBindingCheckAtAns P d S inputBridge foldBridge hNeg0 hFoldLe0
           αs y oStmt msgs) : OracleComp []ₒ Bool) := by
+  -- `indexPowT` powers embedded field values, so this domain `Pow` witness is never inspected.
+  letI : Pow (ιs 0) ℕ := ⟨fun x _ => x⟩
   letI : ∀ j : ℕ, Neg (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := hNeg0
   unfold initialInputBindingCheckAt initialInputBindingCheckAtAns askInitialInputFoldValue
   rw [simulateQ_bind]
