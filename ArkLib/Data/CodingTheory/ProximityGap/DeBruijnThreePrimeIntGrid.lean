@@ -3,7 +3,8 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.CRTPacketMinpoly
+import ArkLib.Data.CodingTheory.ProximityGap.CRTDoubleSlice
+import ArkLib.Data.CodingTheory.ProximityGap.CoprimePacketMinpoly
 import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnSquarefreePQ
 
 /-!
@@ -29,8 +30,8 @@ integrality gap, and the witness for the forward direction is explicit (no choic
 
 Mechanism — the two-prime grid argument ITERATED, one new engine:
 * `minpoly_adjoin_coprime_prime` — `Φ_p` stays irreducible over `ℚ(ζ_m)` for ANY
-  `m` coprime to `p` (the `CRTPacketMinpoly` totient-tower pinch, freed from prime
-  powers); at `m = q·r` this is the three-prime step.
+  `m` coprime to `p`; the shared `CoprimePacketMinpoly` totient-tower pinch is the
+  three-prime step.
 * `coeffs_eq_of_vanishing` — the rank-1 relation module: `CRTDoubleSlice`'s
   weight-general slice engine at packet width `1`.
 * the `i`-slices `∑_{j,k} W i j k·η^j·θ^k ∈ ℚ⟮η·θ⟯` are therefore ALL EQUAL
@@ -68,99 +69,21 @@ the witness tables match the ones below.
 
 namespace DeBruijnThreePrimeIntGrid
 
-open Polynomial Finset IntermediateField Module
-
-/-- Roots of unity are integral over any base field of the ambient field. -/
-private lemma isIntegral_of_pow_eq_one {F L : Type*} [Field F] [Field L] [Algebra F L]
-    {x : L} {m : ℕ} (hm : 0 < m) (hx : x ^ m = 1) : IsIntegral F x :=
-  ⟨X ^ m - 1, by simpa using monic_X_pow_sub_C (1 : F) hm.ne', by simp [hx]⟩
+open Polynomial Finset IntermediateField
 
 /-- **`Φ_p` is irreducible over ANY coprime cyclotomic extension** — the
-`CRTPacketMinpoly` totient-tower pinch with the prime-power hypothesis on the base
-removed: for `ω` a primitive `m`-th root, `ξ` a primitive `p`-th root, `p` prime,
-`p` coprime to `m` (char 0), the minimal polynomial of `ξ` over `ℚ⟮ω⟯` is the full
-packet `1 + X + ⋯ + X^{p−1}`.  At `m = q·r` this is the engine of the three-prime
-grid law. -/
+`CoprimePacketMinpoly` theorem with the coprimality orientation used by this
+three-prime grid file: for `ω` a primitive `m`-th root, `ξ` a primitive `p`-th
+root, `p` prime, `p` coprime to `m` (char 0), the minimal polynomial of `ξ` over
+`ℚ⟮ω⟯` is the full packet `1 + X + ⋯ + X^{p−1}`.  At `m = q·r` this is the
+engine of the three-prime grid law. -/
 theorem minpoly_adjoin_coprime_prime {L : Type*} [Field L] [CharZero L] {m p : ℕ}
     (hm : 0 < m) (hp : p.Prime) (hcop : Nat.Coprime p m)
     {ω ξ : L} (hω : IsPrimitiveRoot ω m) (hξ : IsPrimitiveRoot ξ p) :
     minpoly ℚ⟮ω⟯ ξ = ∑ t ∈ Finset.range p, (X : Polynomial ℚ⟮ω⟯) ^ t := by
-  classical
-  have hn : 0 < m * p := Nat.mul_pos hm hp.pos
-  have hco : Nat.Coprime m p := hcop.symm
-  -- integrality of the three roots involved
-  have hintω : IsIntegral ℚ ω := isIntegral_of_pow_eq_one hm hω.pow_eq_one
-  have hintξK : IsIntegral ℚ⟮ω⟯ ξ := isIntegral_of_pow_eq_one hp.pos hξ.pow_eq_one
-  -- `ω * ξ` is a primitive `(m * p)`-th root of unity (coprime orders multiply)
-  have h1 : orderOf ω = m := hω.eq_orderOf.symm
-  have h2 : orderOf ξ = p := hξ.eq_orderOf.symm
-  have horder : orderOf (ω * ξ) = m * p := by
-    rw [(Commute.all ω ξ).orderOf_mul_eq_mul_orderOf_of_coprime
-      (by rw [h1, h2]; exact hco), h1, h2]
-  have hζ : IsPrimitiveRoot (ω * ξ) (m * p) :=
-    horder ▸ IsPrimitiveRoot.orderOf (ω * ξ)
-  have hintζ : IsIntegral ℚ (ω * ξ) := isIntegral_of_pow_eq_one hn hζ.pow_eq_one
-  -- absolute degrees over ℚ, via unconditional rationals-cyclotomic irreducibility
-  have hrkK : finrank ℚ ℚ⟮ω⟯ = m.totient := by
-    rw [IntermediateField.adjoin.finrank hintω, ← cyclotomic_eq_minpoly_rat hω hm,
-      natDegree_cyclotomic]
-  have hrkZ : finrank ℚ ℚ⟮ω * ξ⟯ = (m * p).totient := by
-    rw [IntermediateField.adjoin.finrank hintζ, ← cyclotomic_eq_minpoly_rat hζ hn,
-      natDegree_cyclotomic]
-  -- finite dimensionality up the tower
-  haveI : FiniteDimensional ℚ ℚ⟮ω⟯ := IntermediateField.adjoin.finiteDimensional hintω
-  haveI : FiniteDimensional ℚ⟮ω⟯ ℚ⟮ω⟯⟮ξ⟯ :=
-    IntermediateField.adjoin.finiteDimensional hintξK
-  haveI : FiniteDimensional ℚ ℚ⟮ω⟯⟮ξ⟯ := Module.Finite.trans ℚ⟮ω⟯ ℚ⟮ω⟯⟮ξ⟯
-  -- `ω * ξ` lives in `ℚ⟮ω⟯⟮ξ⟯`
-  have hωE : ω ∈ ℚ⟮ω⟯⟮ξ⟯ := by
-    have h := ℚ⟮ω⟯⟮ξ⟯.algebraMap_mem ⟨ω, mem_adjoin_simple_self ℚ ω⟩
-    simpa using h
-  have hξE : ξ ∈ ℚ⟮ω⟯⟮ξ⟯ := mem_adjoin_simple_self ℚ⟮ω⟯ ξ
-  have hsub : ∀ {x : L}, x ∈ ℚ⟮ω * ξ⟯ → x ∈ ℚ⟮ω⟯⟮ξ⟯ := by
-    intro x hx
-    have hle : ℚ⟮ω * ξ⟯ ≤ (ℚ⟮ω⟯⟮ξ⟯).restrictScalars ℚ := by
-      rw [adjoin_le_iff]
-      intro y hy
-      rw [Set.mem_singleton_iff] at hy
-      subst hy
-      exact mul_mem hωE hξE
-    exact hle hx
-  -- ℚ-linear embedding `ℚ⟮ω * ξ⟯ ↪ ℚ⟮ω⟯⟮ξ⟯` gives the degree lower bound
-  let f : ℚ⟮ω * ξ⟯ →ₗ[ℚ] ℚ⟮ω⟯⟮ξ⟯ :=
-    { toFun := fun x => ⟨x.1, hsub x.2⟩
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl }
-  have hinj : Function.Injective f := fun x y hxy => by
-    have h1 := congrArg Subtype.val hxy
-    exact Subtype.ext h1
-  have hle : finrank ℚ ℚ⟮ω * ξ⟯ ≤ finrank ℚ ℚ⟮ω⟯⟮ξ⟯ :=
-    LinearMap.finrank_le_finrank_of_injective hinj
-  have htower : finrank ℚ ℚ⟮ω⟯ * finrank ℚ⟮ω⟯ ℚ⟮ω⟯⟮ξ⟯ = finrank ℚ ℚ⟮ω⟯⟮ξ⟯ :=
-    Module.finrank_mul_finrank ℚ ℚ⟮ω⟯ ℚ⟮ω⟯⟮ξ⟯
-  -- the totient tower bound: `φ(p) ≤ natDegree (minpoly ℚ⟮ω⟯ ξ)`
-  have hdeg_ge : p.totient ≤ (minpoly ℚ⟮ω⟯ ξ).natDegree := by
-    have hmul : m.totient * p.totient ≤ m.totient * finrank ℚ⟮ω⟯ ℚ⟮ω⟯⟮ξ⟯ := by
-      calc m.totient * p.totient
-          = (m * p).totient := (Nat.totient_mul hco).symm
-        _ = finrank ℚ ℚ⟮ω * ξ⟯ := hrkZ.symm
-        _ ≤ finrank ℚ ℚ⟮ω⟯⟮ξ⟯ := hle
-        _ = finrank ℚ ℚ⟮ω⟯ * finrank ℚ⟮ω⟯ ℚ⟮ω⟯⟮ξ⟯ := htower.symm
-        _ = m.totient * finrank ℚ⟮ω⟯ ℚ⟮ω⟯⟮ξ⟯ := by rw [hrkK]
-    have h2 : p.totient ≤ finrank ℚ⟮ω⟯ ℚ⟮ω⟯⟮ξ⟯ :=
-      Nat.le_of_mul_le_mul_left hmul (Nat.totient_pos.mpr hm)
-    rwa [IntermediateField.adjoin.finrank hintξK] at h2
-  -- divisibility: `minpoly ℚ⟮ω⟯ ξ ∣ Φ_p` over `ℚ⟮ω⟯`
-  have hdvd : minpoly ℚ⟮ω⟯ ξ ∣ cyclotomic p ℚ⟮ω⟯ := by
-    apply minpoly.dvd
-    rw [aeval_def, ← eval_map, map_cyclotomic]
-    exact hξ.isRoot_cyclotomic hp.pos
-  -- monic divisor of matching degree: the minimal polynomial IS the cyclotomic
-  have heq : cyclotomic p ℚ⟮ω⟯ = minpoly ℚ⟮ω⟯ ξ :=
-    Polynomial.eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic hintξK)
-      (cyclotomic.monic _ _) hdvd (by rwa [natDegree_cyclotomic])
-  haveI : Fact p.Prime := ⟨hp⟩
-  rw [← heq, cyclotomic_prime]
+  simpa using
+    (CoprimePacketMinpoly.minpoly_adjoin_coprime_prime_eq_geom
+      (L := L) hm hp hcop.symm hω hξ)
 
 /-- **The rank-1 relation module**: if `minpoly K ξ` is the full packet
 `1 + X + ⋯ + X^{p−1}`, every vanishing `K`-combination of `1, ξ, …, ξ^{p−1}` has
