@@ -1332,6 +1332,7 @@ import ArkLib.OracleReduction.Security.Implications
 import ArkLib.OracleReduction.Security.OracleDistribution
 import ArkLib.OracleReduction.Security.OracleZeroKnowledge
 import ArkLib.OracleReduction.Security.RbrKnowledgeConjoin
+import ArkLib.OracleReduction.Security.RbrKnowledgeFlip
 import ArkLib.OracleReduction.Security.RbrKnowledgeTruncate
 import ArkLib.OracleReduction.Security.Rewinding
 import ArkLib.OracleReduction.Security.RoundByRound
