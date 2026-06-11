@@ -147,6 +147,7 @@ end BCIKS20AppendixA
 
 /-! ## Axiom audit — every declaration must rest only on
 `[propext, Classical.choice, Quot.sound]`, with no `sorry`/`admit`/`axiom`/`native_decide`. -/
+#print axioms BCIKS20AppendixA.SliceSeparabilityBoundary.isUnit_sub_of_separable_mul_X_sub_C
 #print axioms BCIKS20AppendixA.SliceSeparabilityBoundary.separable_mul_X_sub_C_iff
 #print axioms BCIKS20AppendixA.SliceSeparabilityBoundary.isUnit_sub_of_separable_of_dvd
 #print axioms BCIKS20AppendixA.SliceSeparabilityBoundary.not_separable_section_pair

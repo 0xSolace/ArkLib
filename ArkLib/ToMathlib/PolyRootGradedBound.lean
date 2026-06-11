@@ -27,9 +27,11 @@ weight as Y") by two pieces of completely elementary algebra:
 
 * **The graded leading-term bound** (`natDegree_le_of_eval_monic_graded`, outer form;
   `coeff_natDegree_le_of_eval_monic_graded`, inner form): if `P` is monic in `T` of degree `d`
-  and its `T^c`-coefficient has degree `≤ s·(d−c)` (the balanced grading the Guruswami–Sudan
-  interpolant carries, slope `s` = the curve degree), then any polynomial root `g` has degree
-  `≤ s`.  Proof: if `deg g = m > s`, the coefficient of the sum `∑_c P_c·g^c = 0` in top degree
+  and its `T^c`-coefficient has degree `≤ s·(d−c)` (the balanced grading; NOTE — audit F-1:
+  no in-tree GS producer emits this monic+balanced pair yet: the flat/sloped producers give
+  flat or slope-1 budgets on a merely-nonzero interpolant, and monicization costs slope.
+  `SectionNewtonGradingSupply` records the open supply item), then any polynomial root `g`
+  has degree `≤ s`.  Proof: if `deg g = m > s`, the coefficient of the sum `∑_c P_c·g^c = 0` in top degree
   `m·d` is `lc(g)^d ≠ 0` — every non-monic term has degree
   `≤ s(d−c) + cm < m(d−c) + cm = md`.  This is the Newton-polygon slope-uniqueness argument in
   its most elementary form.
@@ -273,6 +275,8 @@ end ArkLib
 `[propext, Classical.choice, Quot.sound]`, with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.PolyRootGradedBound.natDegree_le_of_eval_monic_graded
 #print axioms ArkLib.PolyRootGradedBound.polySwap_coeff_coeff
+#print axioms ArkLib.PolyRootGradedBound.natDegree_polySwap_le
+#print axioms ArkLib.PolyRootGradedBound.coeff_natDegree_le_natDegree_polySwap
 #print axioms ArkLib.PolyRootGradedBound.coeff_natDegree_le_of_eval_monic_graded
 #print axioms ArkLib.PolyRootGradedBound.exists_map_eq_of_eval_monic_eq_zero
 #print axioms ArkLib.PolyRootGradedBound.exists_graded_preimage_of_eval_monic_eq_zero
