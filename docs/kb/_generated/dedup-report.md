@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 2252 files, 28890 declarations
+- `ArkLib` — 2256 files, 28948 declarations
 
-## Same short-name across multiple files (1227 groups)
+## Same short-name across multiple files (1242 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -2299,6 +2299,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ProximityGap.epsCA_le_one` [ArkLib/Data/CodingTheory/ProximityGap/Errors.lean:247](../../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean#L247) — The CA error is bounded by the total probability mass.
 - `theorem CodingTheory.Bridge.epsCA_le_one` [ArkLib/ToMathlib/BridgeListDecodingCA.lean:65](../../../ArkLib/ToMathlib/BridgeListDecodingCA.lean#L65) — **`ε_ca ≤ 1`.** The correlated-agreement error is a supremum of values each of which is either `0` o
 
+### `epsMCA_le_card_div_at_granularity` (2 declarations, 2 files)
+
+- `theorem ProximityGap.MCAAntichainEngine.epsMCA_le_card_div_at_granularity` [ArkLib/Data/CodingTheory/ProximityGap/MCAAntichainEngine.lean:179](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAAntichainEngine.lean#L179) — **The tight granularity cap:** `ε_mca(C, 1/n) ≤ n/q` for every linear code.
+- `theorem ProximityGap.MCAWitnessCountEngine.epsMCA_le_card_div_at_granularity` [ArkLib/Data/CodingTheory/ProximityGap/MCAWitnessCountEngine.lean:208](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAWitnessCountEngine.lean#L208) — **Sharper granularity cap:** the universal witness in the raw `n + 1` witness-family count does not
+
 ### `epsMCAgs_badList_eq_one` (2 declarations, 2 files)
 
 - `theorem ProximityGap.MCAGSPrizeRefutation.epsMCAgs_badList_eq_one` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean:82](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSRefutation.lean#L82) — **`epsMCAgs = 1` for the adversarial list family.** This is the refutation kernel: a non-faithful `L
@@ -4475,6 +4480,26 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem DuplexSpongeFS.EagerLazyDS.consistent_inv_hit_pair_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean:785](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Correspondence.lean#L785) — A consistent inverse hit puts the entry's exact pair in the cache.
 - `theorem DuplexSpongeFS.EagerLazyDS.consistent_inv_hit_pair_mem` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean:785](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Security/Lemma58Correspondence.lean#L785) — A consistent inverse hit puts the entry's exact pair in the cache.
 
+### `cutDeficiency` (2 declarations, 2 files)
+
+- `def AGL24.cutDeficiency` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:65](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L65) — The positive part of the missing head-border count for a Frank cut.
+- `def AGL24.cutDeficiency` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:61](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L61) — The positive part of the missing head-border count for a Frank cut.
+
+### `cutDeficiency_eq_zero_of_le` (2 declarations, 2 files)
+
+- `theorem AGL24.cutDeficiency_eq_zero_of_le` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:103](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L103) — (no docstring)
+- `theorem AGL24.cutDeficiency_eq_zero_of_le` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:87](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L87) — (no docstring)
+
+### `cutDeficiency_pos_iff` (2 declarations, 2 files)
+
+- `theorem AGL24.cutDeficiency_pos_iff` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:97](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L97) — (no docstring)
+- `theorem AGL24.cutDeficiency_pos_iff` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:81](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L81) — (no docstring)
+
+### `cutDeficiency_updateHead_lt` (2 declarations, 2 files)
+
+- `theorem AGL24.cutDeficiency_updateHead_lt` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:141](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L141) — (no docstring)
+- `theorem AGL24.cutDeficiency_updateHead_lt` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:146](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L146) — (no docstring)
+
 ### `decodeLT_ne_of_val_ne` (2 declarations, 2 files)
 
 - `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:87](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L87) — Distinct codewords decode to distinct polynomials: the decoded polynomial interpolates the codeword
@@ -4730,10 +4755,35 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.RadicalWire304.eval_natDegree_le_of_coeff_le` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:98](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L98) — The bivariate eval-degree bound (the fiber-level mirror of `SectionGlobalLift.eval_section_natDegree
 - `theorem ArkLib.RadicalWire304.eval_natDegree_le_of_coeff_le` [ArkLib/ToMathlib/RadicalAssembler.lean:117](../../../ArkLib/ToMathlib/RadicalAssembler.lean#L117) — The bivariate eval-degree bound (the fiber-level mirror of `SectionGlobalLift.eval_section_natDegree
 
+### `exists_border_head_outside_of_deficient_cut` (2 declarations, 2 files)
+
+- `theorem AGL24.exists_border_head_outside_of_deficient_cut` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:401](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L401) — A strictly deficient proper WPC cut has a crossing edge whose head lies outside the cut. This is the
+- `theorem AGL24.exists_border_head_outside_of_deficient_cut` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:177](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L177) — A strictly deficient proper WPC cut has a crossing edge whose head lies outside the cut. This is the
+
+### `exists_border_head_outside_of_positive_deficiency` (2 declarations, 2 files)
+
+- `theorem AGL24.exists_border_head_outside_of_positive_deficiency` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:418](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L418) — Positive `cutDeficiency` form of `exists_border_head_outside_of_deficient_cut`.
+- `theorem AGL24.exists_border_head_outside_of_positive_deficiency` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:197](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L197) — Positive `cutDeficiency` form of `exists_border_head_outside_of_deficient_cut`.
+
+### `exists_border_not_head_of_headBorder_lt_border` (2 declarations, 2 files)
+
+- `theorem AGL24.exists_border_not_head_of_headBorder_lt_border` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:386](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L386) — If the head-border count is strictly smaller than the full border count, some border edge has not ye
+- `theorem AGL24.exists_border_not_head_of_headBorder_lt_border` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:161](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L161) — If the head-border count is strictly smaller than the full border count, some border edge has not ye
+
 ### `exists_far_codeword_of_curveDecodable` (2 declarations, 2 files)
 
 - `theorem ProximityGap.exists_far_codeword_of_curveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/GG25NonCovering.lean:109](../../../ArkLib/Data/CodingTheory/ProximityGap/GG25NonCovering.lean#L109) — **[Jo26] Lemma 5.4 (curve decodability gives a non-covering condition).** A nonzero `(ℓ, δ, a, b)`-c
 - `theorem ProximityGap.exists_far_codeword_of_curveDecodable` [ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveNonCovering.lean:53](../../../ArkLib/Data/CodingTheory/ProximityGap/Jo26CurveNonCovering.lean#L53) — **[Jo26] Lemma 5.4 (curve decodability gives a non-covering condition).**  A nonzero `F`-submodule c
+
+### `exists_updateHead_decreases_cutDeficiency_of_border_head_outside` (2 declarations, 2 files)
+
+- `theorem AGL24.exists_updateHead_decreases_cutDeficiency_of_border_head_outside` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:428](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L428) — (no docstring)
+- `theorem AGL24.exists_updateHead_decreases_cutDeficiency_of_border_head_outside` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:207](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L207) — (no docstring)
+
+### `exists_updateHead_decreases_positive_deficiency_cut` (2 declarations, 2 files)
+
+- `theorem AGL24.exists_updateHead_decreases_positive_deficiency_cut` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:445](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L445) — Positive-deficiency local reorientation step for a single cut. This is only the F3 one-cut decrease
+- `theorem AGL24.exists_updateHead_decreases_positive_deficiency_cut` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:224](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L224) — Positive-deficiency local reorientation step for a single cut. This is only the one-cut decrease bri
 
 ### `famC` (2 declarations, 2 files)
 
@@ -5312,6 +5362,26 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem ArkLib.RootOn304.hcoeffPoly_witness_of_producersOn_radical_sep` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:635](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L635) — The `hRsep` drop-in form of the radical front door (exact hypothesis-list parity with `hcoeffPoly_wi
 - `theorem ArkLib.RootOn304.hcoeffPoly_witness_of_producersOn_radical_sep` [ArkLib/ToMathlib/RadicalAssembler.lean:654](../../../ArkLib/ToMathlib/RadicalAssembler.lean#L654) — The `hRsep` drop-in form of the radical front door (exact hypothesis-list parity with `hcoeffPoly_wi
 
+### `headBorderEdges` (2 declarations, 2 files)
+
+- `def AGL24.headBorderEdges` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:60](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L60) — The cut-crossing edges whose current orientation head lies in `T`.
+- `def AGL24.headBorderEdges` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:36](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L36) — The cut-crossing edges whose current orientation head lies in `T`.
+
+### `headBorderEdges_card_le_borderEdges_card` (2 declarations, 2 files)
+
+- `theorem AGL24.headBorderEdges_card_le_borderEdges_card` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:91](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L91) — (no docstring)
+- `theorem AGL24.headBorderEdges_card_le_borderEdges_card` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:75](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L75) — (no docstring)
+
+### `headBorderEdges_card_updateHead_eq_succ` (2 declarations, 2 files)
+
+- `theorem AGL24.headBorderEdges_card_updateHead_eq_succ` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:123](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L123) — (no docstring)
+- `theorem AGL24.headBorderEdges_card_updateHead_eq_succ` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:128](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L128) — (no docstring)
+
+### `headBorderEdges_subset_borderEdges` (2 declarations, 2 files)
+
+- `theorem AGL24.headBorderEdges_subset_borderEdges` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:82](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L82) — (no docstring)
+- `theorem AGL24.headBorderEdges_subset_borderEdges` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:66](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L66) — (no docstring)
+
 ### `head_some` (2 declarations, 2 files)
 
 - `lemma CheckClaim.head_some` [ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean:76](../../../ArkLib/ProofSystem/Spartan/FinalCheckTightComplete.lean#L76) — A simulated `some`-wrapped computation only outputs `some`.
@@ -5686,6 +5756,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_and_adjacent_brackets_of_with_spec` [ArkLib/Data/CodingTheory/ProximityGap/LineDecodingSpec.lean:1487](../../../ArkLib/Data/CodingTheory/ProximityGap/LineDecodingSpec.lean#L1487) — Add the immediate lower and adjacent upper lattice brackets to a concrete adjacent `mcaPrizeLatticeR
 - `theorem ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_and_adjacent_brackets_of_with_spec` [ArkLib/Data/CodingTheory/ProximityGap/MCAGSLatticeSpec.lean:882](../../../ArkLib/Data/CodingTheory/ProximityGap/MCAGSLatticeSpec.lean#L882) — Add the immediate lower and adjacent upper lattice brackets to a concrete adjacent `mcaPrizeLatticeR
+
+### `mem_headBorderEdges` (2 declarations, 2 files)
+
+- `theorem AGL24.mem_headBorderEdges` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:76](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L76) — (no docstring)
+- `theorem AGL24.mem_headBorderEdges` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:42](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L42) — (no docstring)
+
+### `mem_headBorderEdges_updateHead_iff` (2 declarations, 2 files)
+
+- `theorem AGL24.mem_headBorderEdges_updateHead_iff` [ArkLib/Data/CodingTheory/AGL24CutSupply.lean:110](../../../ArkLib/Data/CodingTheory/AGL24CutSupply.lean#L110) — (no docstring)
+- `theorem AGL24.mem_headBorderEdges_updateHead_iff` [ArkLib/Data/CodingTheory/AGL24Submodular.lean:115](../../../ArkLib/Data/CodingTheory/AGL24Submodular.lean#L115) — (no docstring)
 
 ### `mem_imp_sameClass_mem_removeRedundant` (2 declarations, 2 files)
 
@@ -6179,11 +6259,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.RadicalWire304.split_canonical_radical` [ArkLib/ToMathlib/MinimalSurfaceChain.lean:118](../../../ArkLib/ToMathlib/MinimalSurfaceChain.lean#L118) — **K4 split (the canonical radical split)**: at the bundle's own monic `H`, the RADICAL of the fiber
 - `theorem ArkLib.RadicalWire304.split_canonical_radical` [ArkLib/ToMathlib/RadicalAssembler.lean:137](../../../ArkLib/ToMathlib/RadicalAssembler.lean#L137) — **K4 split (the canonical radical split)**: at the bundle's own monic `H`, the RADICAL of the fiber
-
-### `stackJointAgreesOn` (2 declarations, 2 files)
-
-- `def ProximityGap.stackJointAgreesOn` [ArkLib/Data/CodingTheory/ProximityGap/GeneratorMCA.lean:74](../../../ArkLib/Data/CodingTheory/ProximityGap/GeneratorMCA.lean#L74) — The stack `f = (f₀, …, f_{ℓ−1})` **jointly agrees** with a tuple of codewords of `C` on every positi
-- `def ProximityGap.stackJointAgreesOn` [ArkLib/Data/CodingTheory/ProximityGap/MCACurveEvent.lean:54](../../../ArkLib/Data/CodingTheory/ProximityGap/MCACurveEvent.lean#L54) — **`L`-ary joint agreement on a set** (the `L`-row generalization of `pairJointAgreesOn`): there is a
 
 ### `step3` (2 declarations, 2 files)
 

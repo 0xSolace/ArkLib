@@ -14,6 +14,7 @@ A.3 — Frank's orientation theorem, the appendix's deep combinatorial input) in
 zero pattern. The counting layer above the orientation is elementary and is proven here:
 
 * `HeadOrientation` — an orientation assigns each hyperedge a head among its vertices;
+  `HeadOrientation.updateHead` changes one edge head while preserving membership;
   `inDegree` counts heads;
 * `HeadOrientation.updateHead` — a one-edge reheading primitive for the Frank
   reorientation campaign;
@@ -120,5 +121,6 @@ end AGL24
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms AGL24.HeadOrientation.updateHead
 #print axioms AGL24.HeadOrientation.sum_inDegree
+#print axioms AGL24.HeadOrientation.updateHead
 #print axioms AGL24.card_induced_le_card_heads
 #print axioms AGL24.card_induced_le_card_heads_sub
