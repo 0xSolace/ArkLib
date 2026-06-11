@@ -167,6 +167,78 @@ theorem fresh_at_firstOfClass_permInv
     simp only [List.getElem_take] at hjE
     exact hfc.1 (by show log[j]'hjlog = log[k]; rw [hjE, he])
 
+/-! ## Cache no-ops (step-1 work-order items (i)+(ii)) -/
+
+/-- A hash entry whose key is cached is a `stepCache` no-op. -/
+theorem stepCache_noop_hash {c : DSCache StmtIn U} {q : StmtIn}
+    (h : (c.1 q).isSome) (u : Vector U SpongeSize.C) :
+    stepCache c ⟨.inl q, u⟩ = c := by
+  show (match c.1 q with
+    | none => (c.1.cacheQuery q u, c.2)
+    | some _ => c) = c
+  rcases hq : c.1 q with _ | v
+  · rw [hq] at h; cases h
+  · rfl
+
+/-- A forward entry whose key is cached is a `stepCache` no-op. -/
+theorem stepCache_noop_perm {c : DSCache StmtIn U} {sIn : CanonicalSpongeState U}
+    (h : (c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.1 = sIn)).isSome) (b : CanonicalSpongeState U) :
+    stepCache c ⟨.inr (.inl sIn), b⟩ = c := by
+  show (match c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.1 = sIn) with
+    | none => (c.1, c.2.concat (sIn, b))
+    | some _ => c) = c
+  rcases hf : c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.1 = sIn) with _ | v
+  · rw [hf] at h; cases h
+  · rfl
+
+/-- An inverse entry whose key is cached is a `stepCache` no-op. -/
+theorem stepCache_noop_permInv {c : DSCache StmtIn U} {sOut : CanonicalSpongeState U}
+    (h : (c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.2 = sOut)).isSome) (a : CanonicalSpongeState U) :
+    stepCache c ⟨.inr (.inr sOut), a⟩ = c := by
+  show (match c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.2 = sOut) with
+    | none => (c.1, c.2.concat (a, sOut))
+    | some _ => c) = c
+  rcases hf : c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.2 = sOut) with _ | v
+  · rw [hf] at h; cases h
+  · rfl
+
+/-- After folding any entry, that entry's key is cached (fresh ⟹ created; hit ⟹ was there).
+The work-order item (i) core: processing an entry guarantees its key. -/
+theorem key_cached_after_step_hash (c : DSCache StmtIn U) (q : StmtIn)
+    (u : Vector U SpongeSize.C) :
+    ((stepCache c ⟨.inl q, u⟩).1 q).isSome := by
+  rcases hq : c.1 q with _ | v
+  · rw [stepCache_caches_fresh_hash c hq]; exact Option.isSome_some
+  · rw [stepCache_noop_hash (by rw [hq]; rfl) u, hq]; exact Option.isSome_some
+
+/-- After folding a forward entry, its forward key is cached. -/
+theorem key_cached_after_step_perm (c : DSCache StmtIn U)
+    (sIn b : CanonicalSpongeState U) :
+    ((stepCache c ⟨.inr (.inl sIn), b⟩).2.find?
+      (fun w : CanonicalSpongeState U × CanonicalSpongeState U => w.1 = sIn)).isSome := by
+  rcases hf : c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.1 = sIn) with _ | v
+  · have hmem := stepCache_caches_fresh_perm c (b := b) hf
+    exact List.find?_isSome.mpr ⟨(sIn, b), hmem, by simp⟩
+  · rw [stepCache_noop_perm (by rw [hf]; rfl) b, hf]; exact Option.isSome_some
+
+/-- After folding an inverse entry, its value key is cached. -/
+theorem key_cached_after_step_permInv (c : DSCache StmtIn U)
+    (sOut a : CanonicalSpongeState U) :
+    ((stepCache c ⟨.inr (.inr sOut), a⟩).2.find?
+      (fun w : CanonicalSpongeState U × CanonicalSpongeState U => w.2 = sOut)).isSome := by
+  rcases hf : c.2.find? (fun w : CanonicalSpongeState U × CanonicalSpongeState U =>
+      w.2 = sOut) with _ | v
+  · have hmem := stepCache_caches_fresh_permInv c (a := a) hf
+    exact List.find?_isSome.mpr ⟨(a, sOut), hmem, by simp⟩
+  · rw [stepCache_noop_permInv (by rw [hf]; rfl) a, hf]; exact Option.isSome_some
+
 end DuplexSpongeFS.EagerLazyDS
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -174,3 +246,9 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.fresh_at_firstOfClass_hash
 #print axioms DuplexSpongeFS.EagerLazyDS.fresh_at_firstOfClass_perm
 #print axioms DuplexSpongeFS.EagerLazyDS.fresh_at_firstOfClass_permInv
+#print axioms DuplexSpongeFS.EagerLazyDS.stepCache_noop_hash
+#print axioms DuplexSpongeFS.EagerLazyDS.stepCache_noop_perm
+#print axioms DuplexSpongeFS.EagerLazyDS.stepCache_noop_permInv
+#print axioms DuplexSpongeFS.EagerLazyDS.key_cached_after_step_hash
+#print axioms DuplexSpongeFS.EagerLazyDS.key_cached_after_step_perm
+#print axioms DuplexSpongeFS.EagerLazyDS.key_cached_after_step_permInv
