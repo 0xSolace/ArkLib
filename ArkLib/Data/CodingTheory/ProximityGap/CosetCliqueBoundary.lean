@@ -380,6 +380,24 @@ theorem clique_eps_ge [Nonempty (Fin n)] (hord : orderOf ζ = n) (hb2 : 2 ≤ b)
     have := clique_mcaEvent (k := k) ζ hord hb2 hbn hk_lo hk_hi hbn2 j
     simpa using this
 
+open Classical in
+/-- **The divisor-family δ\* cap.**  Whenever `ε* < n/|F|` (under-sized fields:
+`|F| < n·2¹²⁸` at the prize target), the boundary law caps the threshold at *every*
+divisor radius: `δ*(RS[F, μ_n, k], ε*) ≤ (b−1)/n` for each `b ∣ n` with
+`n − 2b + 2 ≤ k ≤ n − b`.  The binding cap is the smallest admissible divisor
+`b ≥ (n − k + 1)/2`; this extends `mcaDeltaStar_le_of_undersized_field` (the `b = n/2`
+half-pair radius) to the whole divisor family — at 2-power `n` the caps recur at every
+2-power band, which is where the prize's large-field hypothesis is consumed. -/
+theorem mcaDeltaStar_le_of_undersized_boundary [Nonempty (Fin n)]
+    (hord : orderOf ζ = n) (hb2 : 2 ≤ b)
+    (hbn : b ∣ n) (hk_lo : n - 2 * b + 2 ≤ k) (hk_hi : k ≤ n - b) (hbn2 : 2 * b < n)
+    {εstar : ℝ≥0∞} (hε : εstar < ((n : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)) :
+    MCAThresholdLedger.mcaDeltaStar (F := F) (A := F)
+      (evalCode (smoothDom ζ n) k : Set (Fin n → F)) εstar
+      ≤ ((b : ℝ≥0) - 1) / (n : ℝ≥0) :=
+  MCAThresholdLedger.mcaDeltaStar_le_of_bad _ _
+    (lt_of_lt_of_le hε (clique_eps_ge ζ hord hb2 hbn hk_lo hk_hi hbn2))
+
 end Boundary
 
 end ProximityGap.CosetCliqueBoundary
@@ -388,3 +406,4 @@ end ProximityGap.CosetCliqueBoundary
 #print axioms ProximityGap.CosetCliqueBoundary.clique_telescope
 #print axioms ProximityGap.CosetCliqueBoundary.clique_mcaEvent
 #print axioms ProximityGap.CosetCliqueBoundary.clique_eps_ge
+#print axioms ProximityGap.CosetCliqueBoundary.mcaDeltaStar_le_of_undersized_boundary
