@@ -224,6 +224,93 @@ theorem taylor_coeff_affine_of_heavy_agreement [Fintype F] [DecidableEq F]
     rw [Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le hwt (Nat.not_lt.mp ht))]
     simp
 
+/-- **The consumer pair (the `hdata` pinning leg, cell-wide)**: from the heavy-agreement
+package, the pair `(v₀, v₁)` with `natDegree < n` such that EVERY decode reading of the
+surface is `v₀ + γ·v₁` — for any cell whose decodes are the surface's Taylor sections
+(the S10/Claim-5.7 capture output shape). -/
+theorem exists_pinning_pair_of_heavy_agreement [Fintype F] [DecidableEq F]
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hmonic : H.Monic)
+    {n : ℕ} (hn : 0 < n)
+    (htail : ∀ t, n ≤ t → αGenuine H x₀ R hHyp t = 0)
+    (e : Fin n → F) (he : Function.Injective e) (u₀ u₁ : Fin n → F)
+    {D : ℕ} (hD : D ≥ Bivariate.totalDegree H)
+    (matchingSet : Fin n → Finset F)
+    (root : (z : F) → rationalRoot (H_tilde' H) z)
+    {w : F[X][Y]} (hdeg : w.natDegree < n)
+    (hdvd : (Polynomial.X - Polynomial.C w) ∣ R)
+    (hbaseA : ∀ j, ∀ z ∈ matchingSet j, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    (hsepA : ∀ j, ∀ z ∈ matchingSet j,
+      ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z (root z)
+          (BCIKS20.Claim510AgreementSupply.pi_z_xi_ne_zero_of_monic hHyp
+            hmonic.leadingCoeff z (root z))))).Separable)
+    (hfold : ∀ j, ∀ z ∈ matchingSet j,
+      (w.eval (Polynomial.C (e j) + Polynomial.C x₀)).eval z = u₀ j + z * u₁ j)
+    {W : ℕ}
+    (hweight : ∀ j, weight_Λ_over_𝒪 (Fact.out (p := 0 < H.natDegree))
+        (killTarget H x₀ R hHyp n (e j) (u₀ j) (u₁ j)) D ≤ (W : WithBot ℕ))
+    (hcard : ∀ j, W * H.natDegree < (matchingSet j).card)
+    (S₀ : Finset F)
+    (hbase₀ : ∀ z ∈ S₀, (w.eval (Polynomial.C x₀)).eval z = (root z).1)
+    (hsep₀ : ∀ z ∈ S₀,
+      ((R.map (coeffHom_loc x₀ hHyp)).map
+        (PowerSeries.map (π_hat_z hHyp z (root z)
+          (BCIKS20.Claim510AgreementSupply.pi_z_xi_ne_zero_of_monic hHyp
+            hmonic.leadingCoeff z (root z))))).Separable)
+    {Bw : ℕ} (hBw : ∀ t, ((Polynomial.taylor (Polynomial.C x₀) w).coeff t).natDegree ≤ Bw)
+    (hS₀ : max Bw 1 < S₀.card) :
+    ∃ v₀ v₁ : F[X], v₀.natDegree < n ∧ v₁.natDegree < n ∧
+      ∀ γ : F,
+        (∑ t ∈ Finset.range n,
+          Polynomial.C (((Polynomial.taylor (Polynomial.C x₀) w).coeff t).eval γ)
+            * (Polynomial.X - Polynomial.C x₀) ^ t)
+        = v₀ + Polynomial.C γ * v₁ := by
+  classical
+  obtain ⟨a, b, htail_ab, hcoeff⟩ := taylor_coeff_affine_of_heavy_agreement x₀ R hHyp
+    hH hmonic htail e he u₀ u₁ hD matchingSet root hdeg hdvd hbaseA hsepA hfold
+    hweight hcard S₀ hbase₀ hsep₀ hBw hS₀
+  refine ⟨∑ t ∈ Finset.range n,
+      Polynomial.C (a t) * (Polynomial.X - Polynomial.C x₀) ^ t,
+    ∑ t ∈ Finset.range n,
+      Polynomial.C (b t) * (Polynomial.X - Polynomial.C x₀) ^ t, ?_, ?_, ?_⟩
+  · -- degree of v₀
+    have hterm : ∀ t ∈ Finset.range n,
+        (Polynomial.C (a t) * (Polynomial.X - Polynomial.C x₀) ^ t).natDegree ≤ n - 1 := by
+      intro t ht
+      rw [Finset.mem_range] at ht
+      refine le_trans Polynomial.natDegree_mul_le ?_
+      have h2 : ((Polynomial.X - Polynomial.C x₀ : F[X]) ^ t).natDegree ≤ t := by
+        refine le_trans Polynomial.natDegree_pow_le ?_
+        rw [Polynomial.natDegree_X_sub_C]
+        omega
+      simp only [Polynomial.natDegree_C]
+      omega
+    have hle := Polynomial.natDegree_sum_le_of_forall_le _ _ hterm
+    omega
+  · -- degree of v₁
+    have hterm : ∀ t ∈ Finset.range n,
+        (Polynomial.C (b t) * (Polynomial.X - Polynomial.C x₀) ^ t).natDegree ≤ n - 1 := by
+      intro t ht
+      rw [Finset.mem_range] at ht
+      refine le_trans Polynomial.natDegree_mul_le ?_
+      have h2 : ((Polynomial.X - Polynomial.C x₀ : F[X]) ^ t).natDegree ≤ t := by
+        refine le_trans Polynomial.natDegree_pow_le ?_
+        rw [Polynomial.natDegree_X_sub_C]
+        omega
+      simp only [Polynomial.natDegree_C]
+      omega
+    have hle := Polynomial.natDegree_sum_le_of_forall_le _ _ hterm
+    omega
+  · intro γ
+    rw [Finset.mul_sum, ← Finset.sum_add_distrib]
+    refine Finset.sum_congr rfl fun t _ => ?_
+    rw [hcoeff t]
+    simp only [Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_C,
+      Polynomial.eval_X]
+    rw [map_add, add_mul, map_mul]
+    ring
+
 end BCIKS20.Claim510CellPinning
 
 /-! ## Axiom audit — all kernel-clean. -/
@@ -231,3 +318,4 @@ end BCIKS20.Claim510CellPinning
 #print axioms BCIKS20.Claim510CellPinning.embed_aPre_eq_alphaGenuine
 #print axioms BCIKS20.Claim510CellPinning.aPre_eq_groundAffine_of_paperZ
 #print axioms BCIKS20.Claim510CellPinning.taylor_coeff_affine_of_heavy_agreement
+#print axioms BCIKS20.Claim510CellPinning.exists_pinning_pair_of_heavy_agreement
