@@ -700,7 +700,7 @@ private lemma uniformOfFinset_congr {β : Type} [DecidableEq β] {s t : Finset �
   rfl
 
 /-- Reduce the overlay-evaluation program's `toPMF` to PMF maps. -/
-private lemma toPMF_overlay {α : Type} (c' : List (X × X)) (F : Equiv.Perm X → α) :
+lemma toPMF_overlay {α : Type} (c' : List (X × X)) (F : Equiv.Perm X → α) :
     (evalDist (do
       let π ← $ᵗ (Equiv.Perm X)
       pure (F (permExtending c' π)) : ProbComp α)).toPMF
@@ -717,7 +717,7 @@ private lemma toPMF_overlay {α : Type} (c' : List (X × X)) (F : Equiv.Perm X �
   rfl
 
 /-- The sample's `toPMF` over a cache's unused values. -/
-private lemma toPMF_sampleUnused (c : List (X × X)) (a : X)
+lemma toPMF_sampleUnused (c : List (X × X)) (a : X)
     (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
     (ha : a ∉ c.map Prod.fst) :
     (evalDist (sampleUnused (unusedValuesList c))).toPMF
@@ -734,7 +734,7 @@ private lemma toPMF_sampleUnused (c : List (X × X)) (a : X)
     (uniformOfFinset_congr (toFinset_unusedValuesList c) _ _)
 
 /-- The sample's `toPMF` over a cache's unused keys (the swapped cache's unused values). -/
-private lemma toPMF_sampleUnusedKeys (c : List (X × X)) (b : X)
+lemma toPMF_sampleUnusedKeys (c : List (X × X)) (b : X)
     (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
     (hb : b ∉ c.map Prod.snd) :
     (evalDist (sampleUnused (unusedKeysList c))).toPMF
