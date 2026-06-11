@@ -230,6 +230,12 @@ noncomputable def composedPIOPTightFull_Rc :
 
 /-! ### The seven-seam fold at the carried reductions -/
 
+variable (FC : OracleReduction.{0, 0} oSpec
+    (Statement.AfterSecondSumcheckWithTarget R pp)
+    (OracleStatement.AfterLinearCombination R pp) Unit
+    (Statement.AfterSecondSumcheckWithTarget R pp)
+    (OracleStatement.AfterLinearCombination R pp) Unit !p[])
+
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
   {relA : Set ((Statement R pp × ∀ i, OracleStatement R pp i) × Witness R pp)}
   {relB : Set ((Statement.AfterFirstMessage R pp ×
@@ -264,12 +270,12 @@ private theorem tightStep8
     (hInit : ∃ s, s ∈ support init)
     (h₇ : (secondSumcheckReductionWithTarget pp oSpec).verifier.rbrKnowledgeSoundness init impl
       relG relH err₇)
-    (h₈ : (finalCheckTightKS pp oSpec).verifier.rbrKnowledgeSoundness init impl relH relI err₈) :
+    (h₈ : FC.verifier.rbrKnowledgeSoundness init impl relH relI err₈) :
     ((secondSumcheckReductionWithTarget pp oSpec).append
-        (finalCheckTightKS pp oSpec)).verifier.rbrKnowledgeSoundness init impl relG relI
+        FC).verifier.rbrKnowledgeSoundness init impl relG relI
       (Sum.elim err₇ err₈ ∘ ChallengeIdx.sumEquiv.symm) :=
   OracleVerifier.append_rbrKnowledgeSoundness_failingDet_empty
-    (secondSumcheckReductionWithTarget pp oSpec).verifier (finalCheckTightKS pp oSpec).verifier
+    (secondSumcheckReductionWithTarget pp oSpec).verifier FC.verifier
     verify₇? hV₇ hInit ⟨()⟩ h₇ h₈
 
 private theorem tightStep7 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
@@ -288,14 +294,14 @@ private theorem tightStep7 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
     (h₆ : (prependRLCTargetWTKS pp oSpec).verifier.rbrKnowledgeSoundness init impl
       relF relG err₆)
     (hRest : ((secondSumcheckReductionWithTarget pp oSpec).append
-        (finalCheckTightKS pp oSpec)).verifier.rbrKnowledgeSoundness init impl relG relI errRest) :
+        FC).verifier.rbrKnowledgeSoundness init impl relG relI errRest) :
     ((prependRLCTargetWTKS pp oSpec).append ((secondSumcheckReductionWithTarget pp oSpec).append
-        (finalCheckTightKS pp oSpec))).verifier.rbrKnowledgeSoundness init impl relF relI
+        FC)).verifier.rbrKnowledgeSoundness init impl relF relI
       (Sum.elim err₆ errRest ∘ ChallengeIdx.sumEquiv.symm) := by
   have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos' hn
   exact OracleVerifier.append_rbrKnowledgeSoundness_subsingleton
     (prependRLCTargetWTKS pp oSpec).verifier
-    ((secondSumcheckReductionWithTarget pp oSpec).append (finalCheckTightKS pp oSpec)).verifier
+    ((secondSumcheckReductionWithTarget pp oSpec).append FC).verifier
     verify₆ hV₆ hInit hInitNF hNE ⟨()⟩ (by omega)
     (sfx5_dir_zero' pp hn (by omega)) (sfx6_dir_zero' pp hn (by omega)) h₆ hRest
 
@@ -316,18 +322,18 @@ private theorem tightStep6 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
       relE relF err₅)
     (hRest : ((prependRLCTargetWTKS pp oSpec).append
         ((secondSumcheckReductionWithTarget pp oSpec).append
-          (finalCheckTightKS pp oSpec))).verifier.rbrKnowledgeSoundness init impl
+          FC)).verifier.rbrKnowledgeSoundness init impl
       relF relI errRest) :
     ((linearCombinationWithTarget pp oSpec).append
         ((prependRLCTargetWTKS pp oSpec).append
           ((secondSumcheckReductionWithTarget pp oSpec).append
-            (finalCheckTightKS pp oSpec)))).verifier.rbrKnowledgeSoundness init impl relE relI
+            FC))).verifier.rbrKnowledgeSoundness init impl relE relI
       (Sum.elim err₅ errRest ∘ ChallengeIdx.sumEquiv.symm) := by
   have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos' hn
   exact OracleVerifier.append_rbrKnowledgeSoundness_subsingleton
     (linearCombinationWithTarget pp oSpec).verifier
     ((prependRLCTargetWTKS pp oSpec).append ((secondSumcheckReductionWithTarget pp oSpec).append
-      (finalCheckTightKS pp oSpec))).verifier
+      FC)).verifier
     verify₅ hV₅ hInit hInitNF hNE ⟨()⟩ (by omega)
     (sfx4_dir_seam' pp hn (by omega)) (sfx5_dir_zero' pp hn (by omega)) h₅ hRest
 
@@ -349,20 +355,20 @@ private theorem tightStep5 [Subsingleton σ] (hn : 0 < pp.ℓ_n)
     (hRest : ((linearCombinationWithTarget pp oSpec).append
         ((prependRLCTargetWTKS pp oSpec).append
           ((secondSumcheckReductionWithTarget pp oSpec).append
-            (finalCheckTightKS pp oSpec)))).verifier.rbrKnowledgeSoundness init impl
+            FC))).verifier.rbrKnowledgeSoundness init impl
       relE relI errRest) :
     ((sendEvalClaimWithTarget pp oSpec).append
         ((linearCombinationWithTarget pp oSpec).append
           ((prependRLCTargetWTKS pp oSpec).append
             ((secondSumcheckReductionWithTarget pp oSpec).append
-              (finalCheckTightKS pp oSpec))))).verifier.rbrKnowledgeSoundness init impl relD relI
+              FC)))).verifier.rbrKnowledgeSoundness init impl relD relI
       (Sum.elim err₄ errRest ∘ ChallengeIdx.sumEquiv.symm) := by
   have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_n => 2) := vsum_two_pos' hn
   exact OracleVerifier.append_rbrKnowledgeSoundness_subsingleton_challenge
     (sendEvalClaimWithTarget pp oSpec).verifier
     ((linearCombinationWithTarget pp oSpec).append
       ((prependRLCTargetWTKS pp oSpec).append ((secondSumcheckReductionWithTarget pp oSpec).append
-        (finalCheckTightKS pp oSpec)))).verifier
+        FC))).verifier
     verify₄ hV₄ hInit hInitNF hNE ⟨()⟩ (by omega)
     (sfx3_dir_seam' pp (by omega)) (sfx4_dir_zero' pp (by omega)) h₄ hRest
 
@@ -385,14 +391,14 @@ private theorem tightStep4 [Subsingleton σ]
         ((linearCombinationWithTarget pp oSpec).append
           ((prependRLCTargetWTKS pp oSpec).append
             ((secondSumcheckReductionWithTarget pp oSpec).append
-              (finalCheckTightKS pp oSpec))))).verifier.rbrKnowledgeSoundness init impl
+              FC)))).verifier.rbrKnowledgeSoundness init impl
       relD relI errRest) :
     ((firstSumcheckReductionWithTarget pp oSpec).append
         ((sendEvalClaimWithTarget pp oSpec).append
           ((linearCombinationWithTarget pp oSpec).append
             ((prependRLCTargetWTKS pp oSpec).append
               ((secondSumcheckReductionWithTarget pp oSpec).append
-                (finalCheckTightKS pp oSpec)))))).verifier.rbrKnowledgeSoundness init impl
+                FC))))).verifier.rbrKnowledgeSoundness init impl
       relC relI (Sum.elim err₃ errRest ∘ ChallengeIdx.sumEquiv.symm) := by
   exact OracleVerifier.append_rbrKnowledgeSoundness_failingDet_subsingleton
     (firstSumcheckReductionWithTarget pp oSpec).verifier
@@ -400,7 +406,7 @@ private theorem tightStep4 [Subsingleton σ]
       ((linearCombinationWithTarget pp oSpec).append
         ((prependRLCTargetWTKS pp oSpec).append
           ((secondSumcheckReductionWithTarget pp oSpec).append
-            (finalCheckTightKS pp oSpec))))).verifier
+            FC)))).verifier
     verify₃? hV₃ hInit hInitNF ⟨()⟩ (by omega)
     (sfx2_dir_seam' pp (by omega)) (sfx3_dir_zero' pp (by omega)) h₃ hRest
 
@@ -423,7 +429,7 @@ private theorem tightStep3 [Subsingleton σ] (hm : 0 < pp.ℓ_m)
           ((linearCombinationWithTarget pp oSpec).append
             ((prependRLCTargetWTKS pp oSpec).append
               ((secondSumcheckReductionWithTarget pp oSpec).append
-                (finalCheckTightKS pp oSpec)))))).verifier.rbrKnowledgeSoundness init impl
+                FC))))).verifier.rbrKnowledgeSoundness init impl
       relC relI errRest) :
     ((oracleReduction.firstChallenge R pp oSpec).append
         ((firstSumcheckReductionWithTarget pp oSpec).append
@@ -431,7 +437,7 @@ private theorem tightStep3 [Subsingleton σ] (hm : 0 < pp.ℓ_m)
             ((linearCombinationWithTarget pp oSpec).append
               ((prependRLCTargetWTKS pp oSpec).append
                 ((secondSumcheckReductionWithTarget pp oSpec).append
-                  (finalCheckTightKS pp oSpec))))))).verifier.rbrKnowledgeSoundness init impl
+                  FC)))))).verifier.rbrKnowledgeSoundness init impl
       relB relI (Sum.elim err₂ errRest ∘ ChallengeIdx.sumEquiv.symm) := by
   have hv : 0 < Fin.vsum (fun _ : Fin pp.ℓ_m => 2) := vsum_two_pos' hm
   exact OracleVerifier.append_rbrKnowledgeSoundness_subsingleton
@@ -441,10 +447,11 @@ private theorem tightStep3 [Subsingleton σ] (hm : 0 < pp.ℓ_m)
         ((linearCombinationWithTarget pp oSpec).append
           ((prependRLCTargetWTKS pp oSpec).append
             ((secondSumcheckReductionWithTarget pp oSpec).append
-              (finalCheckTightKS pp oSpec)))))).verifier
+              FC))))).verifier
     verify₂ hV₂ hInit hInitNF hNE ⟨()⟩ (by omega)
     (sfx1_dir_seam' pp hm (by omega)) (sfx2_dir_zero' pp hm (by omega)) h₂ hRest
 
+set_option maxHeartbeats 1000000 in
 /-- **The relation-generic eight-phase tight fold.** -/
 theorem composedPIOPTightFull_rbrKnowledgeSoundness_of_leaves [Subsingleton σ]
     (hm : 0 < pp.ℓ_m) (hn : 0 < pp.ℓ_n)
@@ -520,7 +527,7 @@ theorem composedPIOPTightFull_rbrKnowledgeSoundness_of_leaves [Subsingleton σ]
       relF relG err₆)
     (h₇ : (secondSumcheckReductionWithTarget pp oSpec).verifier.rbrKnowledgeSoundness init impl
       relG relH err₇)
-    (h₈ : (finalCheckTightKS pp oSpec).verifier.rbrKnowledgeSoundness init impl relH relI err₈)
+    (h₈ : FC.verifier.rbrKnowledgeSoundness init impl relH relI err₈)
     (hInit : ∃ s, s ∈ support init) (hInitNF : Pr[⊥ | init] = 0)
     (hNE_B : Nonempty (Statement.AfterFirstMessage R pp ×
       ∀ i, OracleStatement.AfterFirstMessage R pp i))
@@ -532,14 +539,21 @@ theorem composedPIOPTightFull_rbrKnowledgeSoundness_of_leaves [Subsingleton σ]
       ∀ i, OracleStatement.AfterLinearCombination R pp i))
     (hNE_G : Nonempty ((R × Statement.AfterLinearCombinationWithTarget R pp) ×
       ∀ i, OracleStatement.AfterLinearCombination R pp i)) :
-    (composedPIOPTightFull_Rc (R := R) pp oSpec).verifier.rbrKnowledgeSoundness init impl
+    ((oracleReduction.firstMessage R pp oSpec).append
+      ((oracleReduction.firstChallenge R pp oSpec).append
+        ((firstSumcheckReductionWithTarget pp oSpec).append
+          ((sendEvalClaimWithTarget pp oSpec).append
+            ((linearCombinationWithTarget pp oSpec).append
+              ((prependRLCTargetWTKS pp oSpec).append
+                ((secondSumcheckReductionWithTarget pp oSpec).append
+                  FC))))))).verifier.rbrKnowledgeSoundness init impl
       relA relI (composedRbrError pp err₁ err₂ err₃ err₄ err₅ err₆ err₇ err₈) := by
-  have hS8 := tightStep8 pp oSpec verify₇? hV₇ hInit h₇ h₈
-  have hS7 := tightStep7 pp oSpec hn verify₆ hV₆ hInit hInitNF hNE_G h₆ hS8
-  have hS6 := tightStep6 pp oSpec hn verify₅ hV₅ hInit hInitNF hNE_F h₅ hS7
-  have hS5 := tightStep5 pp oSpec hn verify₄ hV₄ hInit hInitNF hNE_E h₄ hS6
-  have hS4 := tightStep4 pp oSpec verify₃? hV₃ hInit hInitNF h₃ hS5
-  have hS3 := tightStep3 pp oSpec hm verify₂ hV₂ hInit hInitNF hNE_C h₂ hS4
+  have hS8 := tightStep8 pp oSpec FC verify₇? hV₇ hInit h₇ h₈
+  have hS7 := tightStep7 pp oSpec FC hn verify₆ hV₆ hInit hInitNF hNE_G h₆ hS8
+  have hS6 := tightStep6 pp oSpec FC hn verify₅ hV₅ hInit hInitNF hNE_F h₅ hS7
+  have hS5 := tightStep5 pp oSpec FC hn verify₄ hV₄ hInit hInitNF hNE_E h₄ hS6
+  have hS4 := tightStep4 pp oSpec FC verify₃? hV₃ hInit hInitNF h₃ hS5
+  have hS3 := tightStep3 pp oSpec FC hm verify₂ hV₂ hInit hInitNF hNE_C h₂ hS4
   exact OracleVerifier.append_rbrKnowledgeSoundness_subsingleton_challenge
     (oracleReduction.firstMessage R pp oSpec).verifier
     ((oracleReduction.firstChallenge R pp oSpec).append
@@ -548,7 +562,7 @@ theorem composedPIOPTightFull_rbrKnowledgeSoundness_of_leaves [Subsingleton σ]
           ((linearCombinationWithTarget pp oSpec).append
             ((prependRLCTargetWTKS pp oSpec).append
               ((secondSumcheckReductionWithTarget pp oSpec).append
-                (finalCheckTightKS pp oSpec))))))).verifier
+                FC)))))).verifier
     verify₁ hV₁ hInit hInitNF hNE_B ⟨()⟩ (by omega)
     (composedPSpec_dir_seam' pp (by omega)) (sfx1_dir_zero' pp (by omega)) h₁ hS3
 
@@ -602,7 +616,8 @@ theorem composedTightFull_rbrKnowledgeSoundness [Subsingleton σ]
       (fun _ => (pp.ℓ_m : ℝ≥0) / (Fintype.card R : ℝ≥0)) := by
     rw [firstSumcheckWithTargetRbrRelIn_eq_relIn]
     exact firstChallenge_rbrKnowledgeSoundness_schwartzZippel pp oSpec hm
-  exact composedPIOPTightFull_rbrKnowledgeSoundness_of_leaves.{0, 0, 0, 0} pp oSpec hm hn
+  exact composedPIOPTightFull_rbrKnowledgeSoundness_of_leaves.{0, 0, 0, 0} pp oSpec
+    (finalCheckTightKS pp oSpec) hm hn
     verify₁ hV₁
     (fun p tr => ((fun p (c : FirstChallenge R pp) => ((c, p.1), p.2)) p
       (tr.challenges ⟨0, rfl⟩)))
