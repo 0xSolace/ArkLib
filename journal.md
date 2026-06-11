@@ -69,3 +69,10 @@ campaign on this repository. Maintained alongside the work; newest entries last.
   activate the surface production's largeness conditions and close by the one-pair
   capture. Remaining: the dichotomy assembly, the residual-bundle input check, and the
   final statement.
+
+- Entry 6: the coverage scaling question dissolved on reading the deep engine's real
+  interface — it consumes per-node matching sets, never a common intersection, so the
+  union-bound cost that threatened the radius regime does not exist. The factor surface
+  is produced per heavy cell by the fiber-section globalizer, whose per-fiber input is
+  the cell's own divisibility data. The corrected chain uses only landed pieces; next
+  build is the per-cell surface application.
