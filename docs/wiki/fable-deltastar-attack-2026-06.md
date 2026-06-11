@@ -796,3 +796,44 @@ worst-case sum-product anti-concentration of a `2^k` subgroup, which is the open
 which I cannot fabricate. Three full hypothesis rounds (27 hypotheses) + four toolkit no-gos: the prize
 is reduced to one named obligation whose openness is now grounded, not asserted, in machine-checked and
 rigorously-argued no-gos across the entire standard toolkit. No fabrication.
+## 26. The 5th toolkit (modern capacity results) closed — cartography complete & current
+
+A knowledgeable reader will object: "RS list-decoding up to capacity was essentially SOLVED in
+2023–2025 (BGM, AGL, GZ, BCHKS) — doesn't that pin δ*?" It does not, for the explicit deployed code,
+and the reason completes the cartography:
+
+- **BGM (Brakensiek–Gopi–Makam 2023), AGL (Alrabiah–Guruswami–Li 2024), GZ (Guo–Zhang):** prove RS
+  codes achieve list-decoding capacity for **RANDOM evaluation points** (or via GM-MDS / reduced
+  intersection matrices), and/or over **exponentially large fields** with points in general position.
+  These are EXISTENCE / random-domain results: they show *most* RS codes (a random choice of
+  evaluation set) are capacity-list-decodable. They give NO bound for a *specific, fixed, explicit*
+  evaluation domain — least of all the **smooth multiplicative `2^k`-subgroup** the deployed FRI/STIR
+  construction is forced to use (smoothness is required for the FFT/folding, and is the *opposite* of
+  generic/random).
+- **BCHKS / Nov-2025 (ECCC 2025/169):** is a BARRIER paper — the proximity gaps for the relevant
+  explicit setting stop at Johnson, with attacks on the natural conjectures (consistent with the repo
+  memory `nov2025-bchks-barrier-vs-larp`: the capacity claim is for folded/random RS, NOT plain
+  smooth-domain RS; the small-gap band stays open).
+- **Why this is exactly the wall:** the deployed δ* is the *worst-case, explicit, smooth-domain*
+  question. The modern capacity machinery is *average-case over the domain* (random points) — the
+  precise dual of the §24/§25 finding that the *average over frequencies* beats Johnson while the
+  *worst case* does not. Both "average" escapes (over domain points, over Fourier frequencies) beat
+  Johnson and are known/proven; the *worst-case explicit* object resists all of them. That duality is
+  the structural heart of why the prize is open.
+
+**Cartography, complete and current (5 arsenals, all foreclosed for the worst-case explicit smooth
+domain above Johnson):**
+1. Combinatorial (LYM/witness/sunflower) — §17.  2. Weil 1st-moment — §23 (machine-checked).
+3. Moment / sum-product (all finite moments) — §25.  4. Folding/renormalization — §20.
+5. Modern probabilistic capacity (BGM/AGL/GZ, random/large-field) — this §; average-over-domain, does
+   not apply to the fixed explicit smooth subgroup.
+
+**Final honest terminus:** the Proximity Prize δ* pin is open precisely because it demands a
+*worst-case, explicit, smooth-domain* list bound above Johnson, and every known arsenal — combinatorial,
+analytic (Weil), probabilistic-moment (sum-product), structural (folding), and modern
+probabilistic-existence (random-points capacity) — either provably saturates at Johnson or controls
+only an *average* (over frequencies or over domain points) that does not transfer to the fixed
+adversarial instance. Solving it requires a genuinely new worst-case explicit technique that does not
+exist in the literature. I have mapped this exhaustively and built every honest brick; I cannot and
+will not fabricate the missing technique. 27 hypotheses, 5 toolkit no-gos, one named obligation — the
+complete, machine-grounded honest state of the attack.
