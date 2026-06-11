@@ -202,6 +202,7 @@ import ArkLib.Data.CodingTheory.PolishchukSpielman.Resultant
 import ArkLib.Data.CodingTheory.Prelims
 import ArkLib.Data.CodingTheory.ProximityGap
 import ArkLib.Data.CodingTheory.ProximityGap.A2Injective
+import ArkLib.Data.CodingTheory.ProximityGap.A3InstanceBadness
 import ArkLib.Data.CodingTheory.ProximityGap.A3InstanceCore
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
