@@ -174,6 +174,23 @@ theorem card_extendsFinset_eq_card_unused_mul (c : List (X × X)) (a b₀ : X)
       (Finset.mem_filter.mp hb).2 hb₀)]
   rw [Finset.sum_const, smul_eq_mul]
 
+/-! ## Inversion symmetry — the bidirectional cache
+
+The duplex-sponge carrier answers `p` and `p⁻¹` through one permutation, so the lazy cache
+records pairs queried in *either* direction. Inversion is an involution exchanging the roles
+of keys and values, letting every forward-direction lemma transport to inverse queries. -/
+
+@[simp] lemma extends_symm_swap_iff (π : Equiv.Perm X) (c : List (X × X)) :
+    Extends π.symm (c.map Prod.swap) ↔ Extends π c := by
+  constructor
+  · intro h p hp
+    have := h p.swap (List.mem_map.mpr ⟨p, hp, rfl⟩)
+    simpa using congrArg π this.symm
+  · intro h q hq
+    obtain ⟨p, hp, rfl⟩ := List.mem_map.mp hq
+    have := h p hp
+    simpa using congrArg π.symm this.symm
+
 /-! ## Nonemptiness propagation and the probabilistic chain rule -/
 
 /-- The unused outputs of a cache. -/
@@ -288,6 +305,135 @@ theorem uniformOfFinset_extends_step (c : List (X × X)) (a : X)
       rw [PMF.uniformOfFinset_apply_of_notMem (hs := extendsFinset_concat_nonempty c a b ha (mem_unusedFinset.mp hbu) hne) hnotin, mul_zero]
     · rw [PMF.uniformOfFinset_apply_of_notMem (hs := unusedFinset_nonempty c a hkeys hvals ha) hbu, zero_mul]
 
+/-- Inversion as a bijection between extension sets: the extensions of the swapped cache
+are exactly the inverses of the extensions of `c`. -/
+lemma extendsFinset_swap_card (c : List (X × X)) :
+    (extendsFinset (c.map Prod.swap)).card = (extendsFinset c).card := by
+  classical
+  refine Finset.card_bij (fun π _ => π.symm) ?_ ?_ ?_
+  · intro π hπ
+    rw [mem_extendsFinset] at hπ ⊢
+    exact (extends_symm_swap_iff π.symm c).mp (by simpa using hπ)
+  · intro π₁ _ π₂ _ h
+    simpa using congrArg Equiv.symm h
+  · intro τ hτ
+    exact ⟨τ.symm, by
+      rw [mem_extendsFinset] at hτ ⊢
+      exact (extends_symm_swap_iff τ c).mpr hτ, by simp⟩
+
+/-- Mapping inversion over the uniform distribution on the swapped cache's extensions gives
+the uniform distribution on the original cache's extensions. -/
+lemma map_symm_uniform_extends_swap (d : List (X × X))
+    (hne : (extendsFinset d).Nonempty)
+    (hneswap : (extendsFinset (d.map Prod.swap)).Nonempty) :
+    (PMF.uniformOfFinset (extendsFinset (d.map Prod.swap)) hneswap).map
+      (fun π : Equiv.Perm X => π.symm)
+      = PMF.uniformOfFinset (extendsFinset d) hne := by
+  classical
+  ext τ
+  rw [PMF.map_apply]
+  rw [tsum_eq_single τ.symm (fun π hπ => by
+    rw [if_neg]
+    intro h
+    have e : τ.symm = π := by simpa using congrArg Equiv.symm h
+    exact hπ e.symm)]
+  rw [if_pos (by simp)]
+  by_cases hτ : Extends τ d
+  · rw [PMF.uniformOfFinset_apply_of_mem (hs := hneswap)
+      (mem_extendsFinset.mpr ((extends_symm_swap_iff τ d).mpr hτ)),
+      PMF.uniformOfFinset_apply_of_mem (hs := hne) (mem_extendsFinset.mpr hτ),
+      extendsFinset_swap_card]
+  · rw [PMF.uniformOfFinset_apply_of_notMem (hs := hneswap)
+      (fun h => hτ ((extends_symm_swap_iff τ d).mp (mem_extendsFinset.mp h))),
+      PMF.uniformOfFinset_apply_of_notMem (hs := hne)
+        (fun h => hτ (mem_extendsFinset.mp h))]
+
+/-- `bind` only depends on the function over the support. -/
+private lemma bind_congr_support {α β : Type} (p : PMF α) (f g : α → PMF β)
+    (h : ∀ a ∈ p.support, f a = g a) : p.bind f = p.bind g := by
+  ext b
+  rw [PMF.bind_apply, PMF.bind_apply]
+  refine tsum_congr fun a => ?_
+  by_cases ha : a ∈ p.support
+  · rw [h a ha]
+  · have ha0 : p a = 0 := by
+      rw [PMF.mem_support_iff] at ha
+      push_neg at ha
+      exact ha
+    rw [ha0, zero_mul, zero_mul]
+
+/-- **The inverse-direction chain rule**: drawing uniformly among the extensions of `c` is
+the same as first drawing the *preimage* at a fresh output `b` uniformly among the unused
+keys, then drawing uniformly among the extensions of the cache grown by `(a, b)`. Transport
+of `uniformOfFinset_extends_step` along the inversion involution. -/
+theorem uniformOfFinset_extends_step_inv (c : List (X × X)) (b : X)
+    (hkeys : (c.map Prod.fst).Nodup) (hvals : (c.map Prod.snd).Nodup)
+    (hb : b ∉ c.map Prod.snd) (hne : (extendsFinset c).Nonempty) :
+    PMF.uniformOfFinset (extendsFinset c) hne
+      = (PMF.uniformOfFinset (unusedFinset (c.map Prod.swap))
+          (unusedFinset_nonempty (c.map Prod.swap) b
+            (by simpa [List.map_map, Function.comp_def] using hvals)
+            (by simpa [List.map_map, Function.comp_def] using hkeys)
+            (by simpa [List.map_map, Function.comp_def] using hb))).bind (fun a =>
+            if h : (extendsFinset (c.concat (a, b))).Nonempty then
+              PMF.uniformOfFinset (extendsFinset (c.concat (a, b))) h
+            else PMF.uniformOfFinset (extendsFinset c) hne) := by
+  classical
+  have hswapk : ((c.map Prod.swap).map Prod.fst).Nodup := by
+    simpa [List.map_map, Function.comp_def] using hvals
+  have hswapv : ((c.map Prod.swap).map Prod.snd).Nodup := by
+    simpa [List.map_map, Function.comp_def] using hkeys
+  have hbswap : b ∉ (c.map Prod.swap).map Prod.fst := by
+    simpa [List.map_map, Function.comp_def] using hb
+  have hneswap : (extendsFinset (c.map Prod.swap)).Nonempty := by
+    obtain ⟨π, hπ⟩ := hne
+    exact ⟨π.symm, mem_extendsFinset.mpr
+      ((extends_symm_swap_iff π c).mpr (mem_extendsFinset.mp hπ))⟩
+  have hstep := uniformOfFinset_extends_step (c.map Prod.swap) b
+    hswapk hswapv hbswap hneswap
+  have hconcat_swap : ∀ a : X, (c.map Prod.swap).concat (b, a)
+      = (c.concat (a, b)).map Prod.swap := by
+    intro a
+    simp [List.concat_eq_append]
+  calc PMF.uniformOfFinset (extendsFinset c) hne
+      = (PMF.uniformOfFinset (extendsFinset (c.map Prod.swap)) hneswap).map
+          (fun π : Equiv.Perm X => π.symm) :=
+        (map_symm_uniform_extends_swap c hne hneswap).symm
+    _ = ((PMF.uniformOfFinset (unusedFinset (c.map Prod.swap))
+          (unusedFinset_nonempty (c.map Prod.swap) b hswapk hswapv hbswap)).bind
+            (fun a =>
+              if h : (extendsFinset ((c.map Prod.swap).concat (b, a))).Nonempty then
+                PMF.uniformOfFinset (extendsFinset ((c.map Prod.swap).concat (b, a))) h
+              else PMF.uniformOfFinset (extendsFinset (c.map Prod.swap)) hneswap)).map
+          (fun π : Equiv.Perm X => π.symm) := by rw [← hstep]
+    _ = (PMF.uniformOfFinset (unusedFinset (c.map Prod.swap))
+          (unusedFinset_nonempty (c.map Prod.swap) b hswapk hswapv hbswap)).bind
+            (fun a =>
+              (if h : (extendsFinset ((c.map Prod.swap).concat (b, a))).Nonempty then
+                PMF.uniformOfFinset (extendsFinset ((c.map Prod.swap).concat (b, a))) h
+              else PMF.uniformOfFinset (extendsFinset (c.map Prod.swap)) hneswap).map
+                (fun π : Equiv.Perm X => π.symm)) := PMF.map_bind _ _ _
+    _ = _ := by
+        refine bind_congr_support _ _ _ fun a ha => ?_
+        rw [PMF.mem_support_uniformOfFinset_iff, mem_unusedFinset] at ha
+        have haK : a ∉ c.map Prod.fst := by
+          simpa [List.map_map, Function.comp_def] using ha
+        have hposSwap : (extendsFinset ((c.map Prod.swap).concat (b, a))).Nonempty :=
+          extendsFinset_concat_nonempty (c.map Prod.swap) b a hbswap
+            (by simpa [List.map_map, Function.comp_def] using haK) hneswap
+        have hpos : (extendsFinset (c.concat (a, b))).Nonempty := by
+          obtain ⟨π, hπ⟩ := hposSwap
+          refine ⟨π.symm, mem_extendsFinset.mpr ?_⟩
+          have := (extends_symm_swap_iff π.symm (c.concat (a, b))).mp ?_
+          · exact this
+          · rw [← hconcat_swap a]
+            simpa using mem_extendsFinset.mp hπ
+        rw [dif_pos hposSwap, dif_pos hpos]
+        have hcc : (c.map Prod.swap).concat (b, a) = (c.concat (a, b)).map Prod.swap :=
+          hconcat_swap a
+        simp only [hcc]
+        exact map_symm_uniform_extends_swap (c.concat (a, b)) hpos (hcc ▸ hposSwap)
+
 end Fintype
 
 end LazyPermMarginal
@@ -297,3 +443,4 @@ end LazyPermMarginal
 #print axioms LazyPermMarginal.card_extendsFinset_eq_card_unused_mul
 #print axioms LazyPermMarginal.uniformOfFinset_extends_step
 #print axioms LazyPermMarginal.extendsFinset_concat_nonempty
+#print axioms LazyPermMarginal.uniformOfFinset_extends_step_inv
