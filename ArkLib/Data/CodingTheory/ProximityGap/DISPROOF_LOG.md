@@ -6697,3 +6697,29 @@ the PROVEN Hasse Y-degree drop.** The computation (monic `H`: `degW = 0`,
 (E2) assemble the strong induction (the calculus lemmas `_sum_le`/`_mul`/`_pow` are
 proven; the cancellation is the arithmetic above); (E3) wiring.** Every constant is now
 pinned; the remaining work is transcription-grade.
+
+**O154 V1 dive, finding 4 (HONESTY CORRECTION) — E1-as-stated in finding 3 is NOT
+SUFFICIENT: under the in-tree Λ (sup of `deg_Y·(D+1−d_H) + deg_Z(coeff)`), the crude
+B-coefficient budget overshoots the cancellation headroom by `≈ D − d_R + m`.** The check:
+
+* `B_coeff_weight_le_hasse` (PROVEN) reduces `Λ(B)` to `Λ(hasseCoeffRepr𝒪 i1 (Σλ))`, whose
+  underlying polynomial is `evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)` with Y-degree ≤ `d_R − Σλ`
+  (PROVEN drop). The generic estimate `deg_Z(coeff_d) ≤ D_Q − d` gives
+  `Λ(B) ≤ D_Q + (d_R − m)·(B₀ − 1)`, and the finding-3 residual budget
+  (`Λ(B) + (m−1)·C₀ ≤ Lξ`, any IH constant `C₀`) then misses by `≈ D − d_R + m > 0`.
+* So EITHER (a) the in-tree Λ normalization differs from the paper's §A.4 weight (their
+  `Λ(Y) = 1` suggests their effective `D` is `d_H`-anchored where ours is
+  `totalDegree`-anchored — the ξ-bound and the B-bound may not be simultaneously tight in
+  one `D`), OR (b) the B-coefficient needs the sharper per-monomial estimate
+  (`deg_Z + deg_Y ≤ totalDeg` used jointly rather than the crude sup), OR (c) the
+  structured IH needs a `−l·(something)` X-degree credit term (the paper's
+  `Λ(β_t) ≤ 1 + (t+1)Λ(W) + e_t·Λ(ξ)` tracks X-content through `W` powers that monic
+  routing zeroes — the credit may be hiding in the monisization's `W^{d−1−i}` coefficient
+  twists, cf. `H_tilde'` coefficient structure in RationalFunctionsCore:2480).
+* **Next-session resolution order (BEFORE transcribing anything): (R1) extract the
+  paper's exact §A.4 weight definition and (5.13)/(5.14) constants (fulltext lines
+  3940–3970) and diff against in-tree `weight_Λ`; (R2) recompute the budget with the
+  joint per-monomial estimate; (R3) if (c), recompute `H_tilde'`-twisted coefficient
+  degrees.** Finding 3's exponent cancellation (exactly `2k`) is verified and stands;
+  only the B-budget bookkeeping is open. The proven artifacts
+  (`structured_weight_collapse_rebased`, the calculus, the drops) are unaffected.
