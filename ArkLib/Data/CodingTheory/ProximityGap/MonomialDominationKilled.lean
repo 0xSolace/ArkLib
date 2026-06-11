@@ -91,14 +91,13 @@ theorem noWeightLE_two : NoWeightLE (evalCode dom8 2) 2 := by
     refine hdne ?_
     have hsub : c₁ * dom8 i = c₁ * dom8 j := by
       have := hvi.trans hvj.symm
-      linarith [add_right_cancel this]
+      exact add_right_cancel this
     exact mul_left_cancel₀ hc1ne hsub
   have hc0 : c₀ = 0 := by
     rw [hc1, zero_mul, zero_add] at hvi
     exact hvi
   funext l
-  rw [heval l, hc1, hc0]
-  ring
+  simp [heval l, hc1, hc0]
 
 /-- **Band-2 spike floor at the instance:** `ε_mca(C, 1 − 7/8) ≥ 2/17`. -/
 theorem epsMCA_band2_ge :
@@ -186,13 +185,15 @@ theorem no_event_of_low_t {s : Fin 8} {t : Fin 8} (ht : (t : ℕ) ≤ 1) (lam : 
   · exact affine_mem _ _
   · exact affine_mem _ _
   · -- row 0 agreement: u = line − λ·v
+    show (c₁ - lam * vc₁) * dom8 l + (c₀ - lam * vc₀) = dom8 l ^ (s : ℕ)
     have h1 := hline l hl
     have h2 := hv l
-    have : (c₁ - lam * vc₁) * dom8 l + (c₀ - lam * vc₀)
+    have hsplit : (c₁ - lam * vc₁) * dom8 l + (c₀ - lam * vc₀)
         = (c₁ * dom8 l + c₀) - lam * (vc₁ * dom8 l + vc₀) := by ring
-    rw [this, ← h1, ← h2]
+    rw [hsplit, ← h1, ← h2]
     ring
-  · exact (hv l).symm
+  · show vc₁ * dom8 l + vc₀ = dom8 l ^ (t : ℕ)
+    exact (hv l).symm
 
 /-- **The high-`t` case: at most one bad scalar.** Two bad scalars subtract to an
 affine identity for `(λ − λ′)·x^t` on `≥ 6` points; the direct degree count kills
@@ -240,7 +241,9 @@ theorem at_most_one_of_high_t {s t : Fin 8} (ht : 2 ≤ (t : ℕ))
           coeff_add, coeff_C_mul, coeff_X, coeff_C]
         have h1 : ¬((t : ℕ) = 1) := by omega
         have h2 : ¬((t : ℕ) = 0) := by omega
-        simp [h1, h2]
+        have h1' : ¬((1 : ℕ) = (t : ℕ)) := by omega
+        have h2' : ¬((0 : ℕ) = (t : ℕ)) := by omega
+        simp [h1, h2, h1', h2']
       rw [h0, Polynomial.coeff_zero] at hcoeff
       exact hμ hcoeff.symm
     have hGdeg : G.natDegree < 6 := by
@@ -252,10 +255,8 @@ theorem at_most_one_of_high_t {s t : Fin 8} (ht : 2 ≤ (t : ℕ))
       have hd2 : (C (c₁ - d₁) * X + C (c₀ - d₀)).natDegree ≤ 1 := by
         refine le_trans (natDegree_add_le _ _) (max_le ?_ ?_)
         · refine le_trans natDegree_mul_le ?_
-          rw [natDegree_C, natDegree_X]
-          omega
-        · rw [natDegree_C]
-          omega
+          simp [natDegree_C, natDegree_X]
+        · simp [natDegree_C]
       have := natDegree_sub_le (C (lam - lam') * X ^ (t : ℕ))
         (C (c₁ - d₁) * X + C (c₀ - d₀))
       have htle : (t : ℕ) ≤ 3 := by omega
@@ -337,30 +338,35 @@ theorem monomial_band2_le :
   have hF : ((Fintype.card F17 : ℝ≥0) : ℝ≥0∞) = 17 := by
     rw [ZMod.card]; norm_cast
   rw [hF]
-  gcongr
   have hgrid : (1 - ((7 : ℕ) : ℝ≥0) / ((8 : ℕ) : ℝ≥0) : ℝ≥0)
       = 1 - ((7 : ℕ) : ℝ≥0) / (Fintype.card (Fin 8) : ℝ≥0) := by
     rw [Fintype.card_fin]
-  rcases Nat.lt_or_ge (t : ℕ) 2 with ht | ht
-  · -- t ≤ 1: the filter is empty
-    have hempty : Finset.univ.filter (fun lam : F17 =>
-        mcaEvent (F := F17) (A := F17) (evalCode dom8 2 : Set (Fin 8 → F17))
-          (1 - ((7 : ℕ) : ℝ≥0) / ((8 : ℕ) : ℝ≥0))
-          (fun i => dom8 i ^ (s : ℕ)) (fun i => dom8 i ^ (t : ℕ)) lam) = ∅ := by
-      refine Finset.filter_false_of_mem fun lam _ => ?_
-      intro hev
-      rw [hgrid] at hev
-      exact no_event_of_low_t (s := s) (by omega) lam hev
-    rw [hempty]
-    simp
-  · -- t ≥ 2: at most one element
-    rw [Finset.card_le_one]
-    intro lam hlam lam' hlam'
-    rw [Finset.mem_filter] at hlam hlam'
-    have h1 := hlam.2
-    have h2 := hlam'.2
-    rw [hgrid] at h1 h2
-    exact at_most_one_of_high_t ht h1 h2
+  have hcard : (Finset.univ.filter (fun lam : F17 =>
+      mcaEvent (F := F17) (A := F17) (evalCode dom8 2 : Set (Fin 8 → F17))
+        (1 - ((7 : ℕ) : ℝ≥0) / ((8 : ℕ) : ℝ≥0))
+        (fun i => dom8 i ^ (s : ℕ)) (fun i => dom8 i ^ (t : ℕ)) lam)).card ≤ 1 := by
+    rcases Nat.lt_or_ge (t : ℕ) 2 with ht | ht
+    · -- t ≤ 1: the filter is empty
+      have hempty : Finset.univ.filter (fun lam : F17 =>
+          mcaEvent (F := F17) (A := F17) (evalCode dom8 2 : Set (Fin 8 → F17))
+            (1 - ((7 : ℕ) : ℝ≥0) / ((8 : ℕ) : ℝ≥0))
+            (fun i => dom8 i ^ (s : ℕ)) (fun i => dom8 i ^ (t : ℕ)) lam) = ∅ := by
+        refine Finset.filter_false_of_mem fun lam _ => ?_
+        intro hev
+        rw [hgrid] at hev
+        exact no_event_of_low_t (s := s) (by omega) lam hev
+      rw [hempty]
+      simp
+    · -- t ≥ 2: at most one element
+      rw [Finset.card_le_one]
+      intro lam hlam lam' hlam'
+      rw [Finset.mem_filter] at hlam hlam'
+      have h1 := hlam.2
+      have h2 := hlam'.2
+      rw [hgrid] at h1 h2
+      exact at_most_one_of_high_t ht h1 h2
+  gcongr
+  exact_mod_cast hcard
 
 /-! ## The kill -/
 
@@ -374,7 +380,8 @@ theorem monomialDomination_killed (ac : ℕ) (hac : ac < 7) :
   have hchain : (2 : ℝ≥0∞) / 17 ≤ 1 / 17 :=
     le_trans epsMCA_band2_ge (le_trans h monomial_band2_le)
   have h12 : (1 : ℝ≥0∞) / 17 < 2 / 17 := by
-    rw [ENNReal.div_lt_div_iff (by norm_num) (by norm_num) (by norm_num) (by norm_num)]
+    rw [ENNReal.div_lt_iff (by norm_num) (by norm_num),
+      ENNReal.div_mul_cancel (by norm_num) (by norm_num)]
     norm_num
   exact absurd hchain (not_le.mpr h12)
 
