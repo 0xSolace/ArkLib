@@ -1799,6 +1799,7 @@ import ArkLib.ToMathlib.FractionFieldSeparable
 import ArkLib.ToMathlib.FriComplete
 import ArkLib.ToMathlib.FriCompleteCompose
 import ArkLib.ToMathlib.FriCompleteFinalRound
+import ArkLib.ToMathlib.FriCompleteFoldPhase
 import ArkLib.ToMathlib.FriCompletePerRound
 import ArkLib.ToMathlib.FriQueryRoundProb
 import ArkLib.ToMathlib.FrobeniusFactorHelpers
