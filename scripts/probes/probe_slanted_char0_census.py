@@ -187,3 +187,14 @@ for p in (17, 97, 113, 257, 337, 449, 577, 7681, 12289):
 # the degenerate fibers. The exactness converse = prove each matching's 6-equation
 # linear system forces its stratum's known form + handle the 3 collision profiles.
 # Scale-uniform: the case list does not grow with n.
+
+# C9 (appended): THE 14 SYSTEMS SOLVED — each matching's 6 equations collapse to
+# exactly 3 distinct congruences (antipodal redundancy halves them):
+#   M1 (vert):  a1-b1 = a2-b2 = a3-b3 = h  -> all pairs antipodal = vertical. QED-shape.
+#   M4 (horiz): a1+b1 = a2+b2 = a3+b3      -> equal products = horizontal. QED-shape.
+#   M2/M3/M5/M12 (family): ONE antipodal-pair equation (a2-b2=h / a3-b3=h / a1-b1=h)
+#     + two 4-term cross congruences whose sum is the chord congruence 2k = i+j+d.
+#   M6-M14 (second): NO antipodal pair; three 4-term congruences = the seed systems
+#     (e.g. M6: a1-a2-b2+b3 = a1+b2-a3-b3 = a1+b1-b2-b3 = h).
+# The exactness-converse Lean work is now fully specified: 14 lemmas "3 congruences
+# force the stratum form" + balanced-implies-matching pigeonhole + 3 collision profiles.
