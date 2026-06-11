@@ -1093,6 +1093,111 @@ theorem βHensel_weight_bound_anchored_loose_of_i1zero (x₀ : F) (R : F[X][X][Y
   unfold structuredBound at h
   exact h
 
+/-! ## D-monotonicity: converting the anchored bound to any larger weight parameter
+
+The anchored engine runs at the per-factor parameter `D₀ = d_H + degW`; downstream
+consumers fix a (possibly larger) global `D`. Raising the parameter costs at most
+`(d_H − 1)·(D − D₀)` on canonical representatives (T-degree ≤ d_H − 1), which the loose
+target absorbs with room to spare. -/
+
+/-- Raising the weight parameter from `D₀` to `D` costs at most `dT·(D − D₀)` for a
+polynomial supported in degrees `≤ dT`. -/
+theorem weight_Λ_mono_D {f H : F[X][Y]} {D₀ D dT : ℕ}
+    (hdeg : ∀ b ∈ f.support, b ≤ dT) :
+    weight_Λ f H D ≤ weight_Λ f H D₀ + WithBot.some (dT * (D - D₀)) := by
+  unfold weight_Λ
+  refine Finset.sup_le fun b hb => ?_
+  have h1 : WithBot.some (b * (D₀ + 1 - Bivariate.natDegreeY H) + (f.coeff b).natDegree)
+      ≤ f.support.sup (fun deg => WithBot.some
+          (deg * (D₀ + 1 - Bivariate.natDegreeY H) + (f.coeff deg).natDegree)) :=
+    Finset.le_sup (f := fun deg => WithBot.some
+      (deg * (D₀ + 1 - Bivariate.natDegreeY H) + (f.coeff deg).natDegree)) hb
+  have hb' := hdeg b hb
+  have h3 : b * (D + 1 - Bivariate.natDegreeY H)
+      ≤ b * (D₀ + 1 - Bivariate.natDegreeY H) + dT * (D - D₀) := by
+    have hstep : D + 1 - Bivariate.natDegreeY H
+        ≤ (D₀ + 1 - Bivariate.natDegreeY H) + (D - D₀) := by omega
+    calc b * (D + 1 - Bivariate.natDegreeY H)
+        ≤ b * ((D₀ + 1 - Bivariate.natDegreeY H) + (D - D₀)) :=
+          Nat.mul_le_mul_left b hstep
+      _ = b * (D₀ + 1 - Bivariate.natDegreeY H) + b * (D - D₀) := Nat.mul_add b _ _
+      _ ≤ b * (D₀ + 1 - Bivariate.natDegreeY H) + dT * (D - D₀) := by
+          have := Nat.mul_le_mul_right (D - D₀) hb'
+          omega
+  refine le_trans (WithBot.coe_le_coe.mpr
+    (show b * (D + 1 - Bivariate.natDegreeY H) + (f.coeff b).natDegree
+        ≤ (b * (D₀ + 1 - Bivariate.natDegreeY H) + (f.coeff b).natDegree)
+          + dT * (D - D₀) by omega)) ?_
+  rw [WithBot.coe_add]
+  exact add_le_add h1 le_rfl
+
+/-- The `𝒪`-weight is `D`-monotone up to `(d_H − 1)·(D − D₀)`: canonical representatives
+have T-degree `≤ d_H − 1`. -/
+theorem weight_Λ_over_𝒪_mono_D {H : F[X][Y]} (hH : 0 < H.natDegree) (a : 𝒪 H)
+    {D₀ D : ℕ} :
+    weight_Λ_over_𝒪 hH a D
+      ≤ weight_Λ_over_𝒪 hH a D₀ + WithBot.some ((H.natDegree - 1) * (D - D₀)) := by
+  unfold weight_Λ_over_𝒪
+  refine weight_Λ_mono_D ?_
+  intro b hb
+  have h1 := Polynomial.le_natDegree_of_mem_supp b hb
+  have hne : canonicalRepOf𝒪 hH a ≠ 0 := by
+    intro h0
+    rw [h0] at hb
+    simp at hb
+  have h2 : (canonicalRepOf𝒪 hH a).natDegree < (H_tilde' H).natDegree :=
+    Polynomial.natDegree_lt_natDegree hne (canonicalRepOf𝒪_degree_lt hH a)
+  have h3 := natDegree_H_tilde' hH
+  omega
+
+/-- **The anchored (P1) bound delivered at ANY consumer parameter `D ≥ D₀`** (conditional
+only on the `i1 = 0` cells at the anchor `D₀`): run the anchored engine at the per-factor
+`D₀ = d_H + degW`, convert upward by `D`-monotonicity, absorb the premium into the loose
+target. -/
+theorem βHensel_weight_bound_at_of_anchored (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D₀ D : ℕ}
+    (hD₀D : D₀ ≤ D)
+    (hDH : Bivariate.totalDegree H ≤ D₀)
+    (htight : D₀ ≤ H.natDegree + (H.leadingCoeff).natDegree)
+    (hWdeg : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D₀)
+    (hD_Rx0 : D₀ ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHdR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    {DR : ℕ}
+    (htotal : ∀ n i, ((R.coeff n).coeff i).natDegree ≤ DR - n - i)
+    (hvanish : ∀ n i, DR < n + i → ((R.coeff n).coeff i) = 0)
+    (hDRD : DR ≤ D₀) (hdRDR : Bivariate.natDegreeY R ≤ DR)
+    (hzero : ∀ (k : ℕ)
+      (hIH : ∀ l, l < k + 1 →
+        weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D₀
+          ≤ WithBot.some (structuredBound H R D₀ l))
+      (hi1 : 0 ∈ Finset.range (k + 2))
+      (lam : Nat.Partition (k + 1 - 0)) (hlam : (k + 1) ∉ lam.parts),
+        StructuredSuccTermBound x₀ R hHyp hH D₀ k hIH 0 hi1 lam hlam)
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
+  refine le_trans (weight_Λ_over_𝒪_mono_D hH _ (D₀ := D₀) (D := D)) ?_
+  have h := βHensel_weight_bound_anchored_loose_of_i1zero x₀ R hHyp hH hDH htight hWdeg
+    hD_Rx0 hdR2 hdHdR htotal hvanish hDRD hdRDR hzero t
+  refine le_trans (add_le_add h le_rfl) ?_
+  rw [← WithBot.coe_add]
+  refine WithBot.coe_le_coe.mpr ?_
+  have hdY : Bivariate.natDegreeY H = H.natDegree := rfl
+  have hsplit : (2 * t + 1) * Bivariate.natDegreeY R * D
+      = (2 * t + 1) * Bivariate.natDegreeY R * D₀
+        + (2 * t + 1) * Bivariate.natDegreeY R * (D - D₀) := by
+    rw [← Nat.mul_add]
+    congr 1
+    omega
+  have hcoef : (H.natDegree - 1) * (D - D₀)
+      ≤ (2 * t + 1) * Bivariate.natDegreeY R * (D - D₀) := by
+    refine Nat.mul_le_mul_right (D - D₀) ?_
+    calc H.natDegree - 1 ≤ Bivariate.natDegreeY R := by omega
+      _ ≤ (2 * t + 1) * Bivariate.natDegreeY R :=
+          Nat.le_mul_of_pos_left _ (by omega)
+  omega
+
 /-! ## The capstone composition: (P1) conditional only on the per-cell B-budgets -/
 
 /-- **The (P1) weight bound, conditional ONLY on the per-cell B-coefficient budgets.**
@@ -1148,6 +1253,9 @@ theorem βHensel_weight_bound_of_cell_budgets (x₀ : F) (R : F[X][X][Y])
 #print axioms anchoredSuccTerm_discharge
 #print axioms βHensel_weight_bound_anchored_of_i1zero
 #print axioms βHensel_weight_bound_anchored_loose_of_i1zero
+#print axioms weight_Λ_mono_D
+#print axioms weight_Λ_over_𝒪_mono_D
+#print axioms βHensel_weight_bound_at_of_anchored
 #print axioms structuredSuccTermBound_of_B_budget
 #print axioms nsmul_coe_withBot
 #print axioms structuredSuccTermBound_of_budgets
