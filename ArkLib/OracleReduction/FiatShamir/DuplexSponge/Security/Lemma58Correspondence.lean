@@ -385,6 +385,25 @@ theorem removeRedundantEntryDSPaper_pairwise_classDistinct
         (removeRedundantEntryDSPaper log).1[i] :=
   noRedundant_pairwise_classDistinct (removeRedundantEntryDSPaper log).2 i j hij
 
+/-! ## Slot-list membership of cached capacities -/
+
+/-- Both capacities of a cached permutation pair are slots. -/
+theorem mem_slotList_of_mem_perm (c : DSCache StmtIn U)
+    {p : CanonicalSpongeState U × CanonicalSpongeState U} (hp : p ∈ c.2) :
+    p.1.capacitySegment ∈ slotList c ∧ p.2.capacitySegment ∈ slotList c := by
+  classical
+  constructor <;>
+  · refine List.mem_append_right _ (List.mem_flatMap.mpr ⟨p, hp, ?_⟩)
+    simp
+
+/-- A capacity cached early stays a slot of every later fold cache. -/
+theorem mem_slotList_foldl_of_mem_perm (c : DSCache StmtIn U)
+    (L : List (DSEntry StmtIn U))
+    {p : CanonicalSpongeState U × CanonicalSpongeState U} (hp : p ∈ c.2) :
+    p.1.capacitySegment ∈ slotList (L.foldl stepCache c) ∧
+      p.2.capacitySegment ∈ slotList (L.foldl stepCache c) :=
+  mem_slotList_of_mem_perm _ ((foldl_stepCache_perm_sublist c L).subset hp)
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -444,6 +463,8 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.lazyDSImplFlagged_step_support
 #print axioms DuplexSpongeFS.EagerLazyDS.support_flagged_logged
 #print axioms DuplexSpongeFS.EagerLazyDS.redundantEntryDSPaper_iff_sameClass
+#print axioms DuplexSpongeFS.EagerLazyDS.mem_slotList_of_mem_perm
+#print axioms DuplexSpongeFS.EagerLazyDS.mem_slotList_foldl_of_mem_perm
 #print axioms DuplexSpongeFS.EagerLazyDS.stepCache_perm_sublist
 #print axioms DuplexSpongeFS.EagerLazyDS.stepCache_hash_mono
 #print axioms DuplexSpongeFS.EagerLazyDS.foldl_stepCache_perm_sublist
