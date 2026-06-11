@@ -71,10 +71,24 @@ direct lift").
   endpoints will self-unify (`rfl` proving `x = x` with the meta set to the LHS) and change
   nothing. Pin both sides with `show`-spelled forms before the tactic.
 
-## Known limits
+## The duplex-sponge wall (solved)
 
-The duplex-sponge analogues (`duplexSpongeFiatShamir{,Salted}_runCollapseResidual`) hit a
-*thicker* wall: the annotated DS path stacks one `simulateQ` per lift step, so single-query
-leaves are not per-branch defeq. Closing them needs a `simulateQ`-tower collapse
-(composition lemma for `simulateQ`-of-`simulateQ`) before the routing agreement computes;
-the technique above handles everything else in those proofs.
+The DS analogues initially resisted every step above. The resolution
+(`Security/LiftCoherence.lean`, `dsfs_hLHS`) exposed two further lessons:
+
+- **Spell the TRUE mid-spec.** The annotated two-step path's intermediate monad is the
+  assoc-*nested* sum (`oSpec + (dsCh + [Chal]ₒ)`), not `OptionT` over the base. With the
+  `instMonadLiftTOfMonadLift` annotation spelled against the real path (discover it with a
+  `pp.explicit` `#print` of a wrapper def), the induction's query case collapses to one
+  `simp only [liftM_bind]` — weeks of apparent tower-depth was a wrong annotation.
+- **Instance diamonds through structured oracles.** Query routes can resolve *through* an
+  oracle's internal domain sum (`duplexSpongeChallengeOracle`'s
+  `StmtIn ⊕ (SpongeState ⊕ SpongeState)`) rather than treating it atomically, producing
+  extensionally-equal-but-syntactically-foreign routes that no structural `@[simp]` routing
+  lemma matches. Close them by case analysis over the *internal* domain
+  (`rcases t₂ with s | (c | c) <;> rfl`).
+
+`OracleComp.simulateQ_simulateQ` (`ToVCVio/Simulation.lean`) collapses genuine
+`simulateQ` towers when they do appear. Pure-`rfl` run-characterizations of composite
+`OptionT` lifts (`optionT_liftM_run_add_left'`, `optionT_liftM_run_assoc_path'`) pin the
+`Eq.trans (b := …) ?_ (by rfl)` descent anchors.
