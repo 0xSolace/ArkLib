@@ -100,11 +100,21 @@ NOT derived; predicts r_max = 9 at s=128). So marginal(64) ≥ 2·387,631,404,40
    total is proven only for r ≤ 11; the r=5 turn-on proves strata do switch on, so
    "predicted 0" is genuine extrapolation. r=13 (~18 core-h) is feasible and recommended;
    closing the tail for good needs a structural exclusion theorem, not sweeps.
-2. **All counts are char-0** (ℤ[ζ_n]) statements. BabyBear sits below the effective-transfer
-   norm threshold at these m, so mod-p agreement rests on spot checks (45+ samples, 2 primes,
-   all passing), not on the E1 norm bound. The n=32-style exhaustive per-prime census is
-   infeasible at n=64 (C(64,33) ≈ 7×10¹⁷); the feasible falsifier is enumerating the 864,056
-   char-0 configs mod p with the norm-divisibility criterion.
+2. **All counts are char-0** (ℤ[ζ_n]) statements — and the per-prime falsifier (run
+   2026-06-11, `falsifier/`) **measured the transfer FAILING at n=64**: the consistency
+   equation is linear in the B-subset sum, so an exhaustive per-class meet-in-the-middle
+   scan of ALL pattern-(15,3) classes is feasible, and it found **+11 spurious mod-p
+   solutions at BabyBear (764,555 vs 764,544; 2 classes) and +54 at p₂ = 3·2³⁰+1
+   (764,598; 10 classes)** — every spurious config triple-checked as a genuine
+   agree-exactly-33 marginal codeword that is NOT char-0 balanced (p divides the norm of
+   a bad lattice vector α with L1 norm 14–18). Calibration: n=32 gives exactly 672 = 672
+   at both primes (zero spurious, matching the exhaustive O98 census); small-prime
+   controls (p=97 at n=32, p=193 at n=64) show massive spuriousness at the uniform
+   heuristic, as expected. So the n=64 forecast numbers are exact in char-0 and **per-prime
+   lower bounds with a measured tiny surplus** at the production primes; the surplus is
+   prime-specific, not structural. The r=5-stratum scan and the witness-layer surplus
+   question are in flight; odd r ≥ 7 patterns remain unscanned mod p (r = 1 is excluded
+   mod p by the same prime-independent ξ ∈ μ₆₄ argument as char-0).
 3. Census closed forms beyond the verified families are fits (m = 4, 8, 16), not proofs;
    ε₀ censuses are irregular through m = 4 — use the O(m³) per-s enumeration.
 4. The r=5 taxonomy (E5 + placement) is **charted, not derived**; taxonomy completeness for

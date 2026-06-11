@@ -5371,3 +5371,48 @@ statistic with the exact first level (k,r) = (3,3), its mechanism fully classifi
 flight); the k=2 rigidity theorem; the affine-invariance lemma; the spectral-gap
 theorem; the (k,r) = (2,4) cross-ratio cell of the moduli law (next falsifier);
 the ΔM3 closed form written as mathematics.
+
+### O134 — THE PER-PRIME FALSIFIER FINDS THE TRANSFER FAILING: +11/+54 spurious marginal codewords at BabyBear/p₂ at n=64 — the char-0 counts are exact, the per-prime lists carry a measured prime-specific surplus; PLUS the witness-layer count formalized in-tree (nubs, 2026-06-11)
+
+Two deliverables (full dossiers: `scripts/probes/genlaw/falsifier/RESULTS.md`, new module
+`WitnessLayerCount.lean`); both adversarially verified (independent verifier legs, 0.93).
+
+* **The falsifier.** O130 caveat 2 said the n=64 exhaustive per-prime census was infeasible
+  (C(64,33) ≈ 7×10¹⁷). It isn't: the consistency equation is LINEAR in the B-subset sum
+  (coeff(X^s) of e ⟹ Σ_{c∈B} ζ^{2c} = z* − e₂(x) − e₁(O_z)), so per (O,σ) class an exact
+  meet-in-the-middle subset-sum scan covers ALL classes — including char-0-infeasible ones.
+  Result at pattern (15,3), all 19,840 classes: **BabyBear mod-p count = 764,555 = char-0
+  764,544 + 11 spurious (2 classes); p₂ = 764,598 = +54 (10 classes)** — the O130
+  "predicted 0" mod-p transfer FAILS at both production primes. Every spurious config
+  reconstructed end-to-end: genuine monic deg-34 word, coeff(X^33)=0, coeff(X^32)=λ,
+  agreement EXACTLY 33, NOT char-0 balanced; mechanism = p | N(α) for bad lattice vectors
+  α of L1-norm 14–18 (at p₂, six of ten classes share one α). Calibration tower: n=16 and
+  n=32 exact (672 = 672 at both primes — matches the exhaustive O98 census, zero spurious);
+  reduction identity pinned vs raw polynomial arithmetic 720/720; per-class char-0 counts ==
+  audit_sweep64 DP at s=8/16/32; small-prime positive controls (p=97 n=32: +38,716;
+  p=193 n=64: +7.97×10⁹) land on the uniform heuristic to 0.01%. Verifier leg: line-by-line
+  code review + from-scratch dict-MITM reproduction of flagged classes + 56-class
+  independent recount — sound, no fatal/major. **Interpretation: the prize-relevant
+  per-prime bad-list sizes at n=64 are the char-0 counts plus a TINY measured prime-specific
+  surplus (1.4×10⁻⁵ relative at BabyBear) — the forecastability of the char-0 layer survives;
+  exact per-prime work must add the norm-divisibility correction.** r=5 stratum scan
+  (3,222,016 classes) in flight; odd r ≥ 7 unscanned mod p.
+* **`WitnessLayerCount.lean`** (7 theorems, axiom-clean `[propext, Classical.choice,
+  Quot.sound]`; `balanced_iff` leaner `[propext, Quot.sound]`): the witness-layer counting
+  law formalized — `balanced_card` (#{(2k+1)-subsets of range(2h) with S ⊎ {q+h} antipodally
+  balanced} = C(h−1,k), explicit `card_bij'`), composed with the in-tree criterion to
+  `witness_layer_card`/`witness_e1_card`: at scale s = 2^(m+2), #{(s/2+1)-element exponent
+  sets with Σ ζ^e = z*} = C(s/2−1, s/4) — O130's layer-dichotomy counting half, in-tree.
+  Kernel gates: s=8 full `decide` enumeration = 3 (C19's rung); 35/6435/C(31,16) instantiate.
+  Even-r death primitives included (`sum_ne_zero_of_support_lower_half`, geometric form
+  cross-referenced as the exponent-coordinate contrapositive of
+  `LamLeungUnconditionalGeneral.antipodal_unconditional`). HONEST SCOPE: counts solutions of
+  the balance equation; the reduction from RS agree-(s+2) list elements to the equation (the
+  e₂−e₁² algebra + agreement-cap + even-r elimination at codeword level) is the
+  not-yet-formalized analytic half — the named follow-up.
+
+**Where the open core moves:** per-prime exactness at n ≥ 64 is now an EMPIRICALLY
+CALIBRATED correction theory (char-0 count + p|N(α) surplus), not a conjecture; the surplus
+α-spectrum is the new finite object to classify. The witness count is formal; the analytic
+reduction and the marginal-layer (r ≥ 3) counting laws are the remaining formalization
+targets on this front.
