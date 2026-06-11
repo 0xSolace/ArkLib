@@ -36,18 +36,13 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
-/-- **Dual separation**: a nonzero vector of a finite (hence finite-dimensional) module admits
-a linear functional not vanishing on it (a coordinate of any basis). -/
+/-- **Dual separation**: a nonzero vector of a module over a field admits a linear functional
+not vanishing on it. Thin wrapper over Mathlib's `Module.Projective.exists_dual_ne_zero`
+(vector spaces are free, hence projective) — kept for the `A →ₗ[F] F` spelling the
+root-counting core consumes. -/
 theorem exists_dual_ne_zero {x : A} (hx : x ≠ 0) :
-    ∃ φ : A →ₗ[F] F, φ x ≠ 0 := by
-  classical
-  haveI : Module.Finite F A := Module.Finite.of_finite
-  let bb := Module.Basis.ofVectorSpace F A
-  have hrep : bb.repr x ≠ 0 := fun h => hx (by
-    have := congrArg bb.repr.symm (h : bb.repr x = 0)
-    simpa using this)
-  obtain ⟨i, hi⟩ := Finsupp.ne_iff.mp hrep
-  exact ⟨bb.coord i, by simpa [Module.Basis.coord_apply] using hi⟩
+    ∃ φ : A →ₗ[F] F, φ x ≠ 0 :=
+  Module.Projective.exists_dual_ne_zero F hx
 
 /-- **The vector-coefficient root-counting core**: if `α^{ℓ+1} • v = ∑ⱼ αʲ • c j` holds at
 more than `ℓ + 1` distinct field points, then `v = 0`. (Dual separation reduces to a scalar
