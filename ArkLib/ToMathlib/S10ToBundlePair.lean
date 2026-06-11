@@ -65,6 +65,33 @@ structure BranchSupply (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) (D k n : ℕ) :
       BetaToCurveCoeffPolys.αFromBeta x₀ R H hHyp
         (BetaRecGenuineBridge.BcoeffSigned H x₀ R) t = 0
 
+/-- **The `hξ`-free constructor**: `ξ ≠ 0` holds unconditionally
+(`XiCertReduction.xi_ne_zero`), so the supply package needs only the remaining fields. -/
+theorem BranchSupply.of_core {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]} {D k n : ℕ}
+    (hIrr : Irreducible H) (hpos : 0 < H.natDegree) (hmonic : H.Monic)
+    (hHyp : Hypotheses x₀ R H)
+    (hD : Bivariate.totalDegree H ≤ D)
+    (hd2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHD : H.natDegree ≤ D)
+    (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hRgrade : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hRdeg : 0 < R.natDegree)
+    (hcdeg : (Bivariate.evalX (Polynomial.C x₀) R).natDegree = R.natDegree)
+    (hbudget : letI := Fact.mk hIrr; letI := Fact.mk hpos;
+      clearedPairBudget (Bivariate.natDegreeY R) D H.natDegree 1 k * H.natDegree
+        + (XiAtIncidenceSupply.xiResultant hpos x₀ R hHyp).natDegree
+        + (Bivariate.evalX (Polynomial.C x₀) R).leadingCoeff.natDegree
+        < n)
+    (htailα : letI := Fact.mk hIrr; letI := Fact.mk hpos;
+      ∀ t, k ≤ t →
+        BetaToCurveCoeffPolys.αFromBeta x₀ R H hHyp
+          (BetaRecGenuineBridge.BcoeffSigned H x₀ R) t = 0) :
+    BranchSupply x₀ R H D k n := by
+  haveI : Fact (Irreducible H) := ⟨hIrr⟩
+  haveI : Fact (0 < H.natDegree) := ⟨hpos⟩
+  exact ⟨hIrr, hpos, hmonic, hHyp, hD, hd2, hdHD, hD_Rx0, hRgrade, hRdeg, hcdeg,
+    XiCertReduction.xi_ne_zero x₀ R hHyp, hbudget, htailα⟩
+
 /-- **The production chain, composed.**  S10-converse divisibilities on the good set route
 through the double pigeonhole to ONE representative/branch pair `(rep R', H)`, whose matching
 set feeds the single-counting front door; the bundle's terminal pair exists at that pair. -/
@@ -129,4 +156,5 @@ end S10ToBundlePair
 end ArkLib
 
 /-! ## Axiom audit -/
+#print axioms ArkLib.S10ToBundlePair.BranchSupply.of_core
 #print axioms ArkLib.S10ToBundlePair.exists_bundle_pair_of_S10_converse
