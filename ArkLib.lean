@@ -834,6 +834,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCABadScalarSpreadBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCABandTwoRS
+import ArkLib.Data.CodingTheory.ProximityGap.MCAHalfDistanceStaircase
 import ArkLib.Data.CodingTheory.ProximityGap.MCABracket
 import ArkLib.Data.CodingTheory.ProximityGap.MCAConjectureRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MCACurveEvent
