@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import Mathlib
+import ArkLib.Data.CodingTheory.ProximityGap.CoprimePacketMinpoly
 
 /-!
 # Hypothesis K5 (O124/O116 kernel) — MANN'S FIBER COLLAPSE AT A SPLIT PRIME
@@ -21,11 +21,8 @@ language (`[Field L] [CharZero L]`, `ℕ`-weights, `Finset.range` sums), with th
 convention `ζ_p := ζ^m`, `ζ_m := ζ^p` for `ζ` a primitive `n`-th root:
 
 * `minpoly_pow_eq_cyclotomic` — **the linear-disjointness brick**:
-  `minpoly ℚ⟮ζ^p⟯ (ζ^m) = cyclotomic p ℚ⟮ζ^p⟯`, by the tower count
-  `[ℚ(ζ_n) : ℚ] = φ(p)·φ(m) = [ℚ(ζ_m) : ℚ] · (p-1)` (totient multiplicativity at the
-  coprime split + `cyclotomic_eq_minpoly_rat` twice) against the divisibility
-  `minpoly ∣ Φ_p`.  No relative irreducibility of cyclotomic polynomials exists in
-  Mathlib; this derives the prime case from scratch.
+  `minpoly ℚ⟮ζ^p⟯ (ζ^m) = cyclotomic p ℚ⟮ζ^p⟯`, now a direct specialization of
+  `CoprimePacketMinpoly.minpoly_adjoin_coprime_eq_cyclotomic`.
 * `linearIndependent_zetaP_pow` — **the independence brick (K5's deliverable)**:
   `1, ζ_p, …, ζ_p^{p-2}` are linearly independent over `ℚ(ζ_m)`.
 * `relationCoeffs_eq` — **the forcing lemma**: any `ℚ(ζ_m)`-relation
@@ -47,15 +44,14 @@ convention `ζ_p := ζ^m`, `ζ_m := ζ^p` for `ζ` a primitive `n`-th root:
 
 ## Honest provenance
 
-First formalization of this structure step (checked: Mathlib has `cyclotomic`
-irreducibility only over `ℚ`/`ℤ`; no Conway–Jones/Mann theory).  `n` need NOT be
-squarefree here — only the split prime must be simple (`p ∤ m`), which is exactly
-the generality Mann's induction consumes.  Char-0 is load-bearing (over `𝔽_q` the
-degree count fails).  This is the coprime-tower analogue of the single-prime fiber
-collapse in `PrimePowerMultisetWindow` (where the tower is `X^p - ζ_{p^k}` instead
-of `Φ_p` and the forcing is shift-periodicity); combined with the in-tree
-`lam_leung_iff_minimal` peeling, it is the engine for the two-prime case of the
-O124 multiset window law and the ≥ 3-prime Lam–Leung weight bound.
+First formalization of this structure step (checked: Mathlib has no Conway–Jones/Mann
+theory).  `n` need NOT be squarefree here — only the split prime must be simple
+(`p ∤ m`), which is exactly the generality Mann's induction consumes.  Char-0 is
+load-bearing.  This is the coprime-tower analogue of the single-prime fiber collapse
+in `PrimePowerMultisetWindow` (where the tower is `X^p - ζ_{p^k}` instead of `Φ_p`
+and the forcing is shift-periodicity); combined with the in-tree
+`lam_leung_iff_minimal` peeling, it is the engine for the two-prime case of the O124
+multiset window law and the ≥ 3-prime Lam–Leung weight bound.
 -/
 
 namespace MannFiberCollapse
@@ -80,57 +76,12 @@ theorem finrank_adjoin_zetaP (hp : p.Prime) (hpm : ¬ p ∣ m)
   have hm : 0 < m := m_pos hpm
   have hn : 0 < p * m := Nat.mul_pos hp.pos hm
   have hζm : IsPrimitiveRoot (ζ ^ p) m := hζ.pow hn rfl
-  have hcop : Nat.Coprime p m := (Nat.Prime.coprime_iff_not_dvd hp).mpr hpm
-  have hζne : ζ ≠ 0 := hζ.ne_zero hn.ne'
-  -- the two absolute degrees
-  have hMfr : Module.finrank ℚ ℚ⟮ζ⟯ = (p * m).totient := by
-    rw [IntermediateField.adjoin.finrank ((hζ.isIntegral hn).tower_top),
-      ← cyclotomic_eq_minpoly_rat hζ hn, natDegree_cyclotomic]
-  have hKfr : Module.finrank ℚ ℚ⟮ζ ^ p⟯ = m.totient := by
-    rw [IntermediateField.adjoin.finrank ((hζm.isIntegral hm).tower_top),
-      ← cyclotomic_eq_minpoly_rat hζm hm, natDegree_cyclotomic]
-  -- the top of the tower is ℚ(ζ): ℚ(ζ^p)(ζ^m) = ℚ(ζ) (Bezout both ways)
-  have hunion : adjoin ℚ ({ζ ^ p} ∪ {ζ ^ m}) = ℚ⟮ζ⟯ := by
-    apply le_antisymm
-    · rw [adjoin_le_iff]
-      rintro x (hx | hx)
-      · rw [Set.mem_singleton_iff] at hx
-        exact hx ▸ pow_mem (mem_adjoin_simple_self ℚ ζ) p
-      · rw [Set.mem_singleton_iff] at hx
-        exact hx ▸ pow_mem (mem_adjoin_simple_self ℚ ζ) m
-    · rw [adjoin_le_iff, Set.singleton_subset_iff]
-      have h1 : ζ ^ p ∈ adjoin ℚ ({ζ ^ p} ∪ {ζ ^ m}) :=
-        subset_adjoin ℚ _ (Set.mem_union_left _ rfl)
-      have h2 : ζ ^ m ∈ adjoin ℚ ({ζ ^ p} ∪ {ζ ^ m}) :=
-        subset_adjoin ℚ _ (Set.mem_union_right _ rfl)
-      obtain ⟨u, v, huv⟩ : IsCoprime (p : ℤ) (m : ℤ) :=
-        Int.isCoprime_iff_gcd_eq_one.mpr (by
-          simpa [Int.gcd_natCast_natCast] using hcop)
-      have hkey : ζ = (ζ ^ p) ^ u * (ζ ^ m) ^ v := by
-        have h3 : ζ ^ (u * (p : ℤ) + v * (m : ℤ)) = ζ := by rw [huv, zpow_one]
-        calc ζ = ζ ^ (u * (p : ℤ) + v * (m : ℤ)) := h3.symm
-          _ = ζ ^ (u * (p : ℤ)) * ζ ^ (v * (m : ℤ)) := zpow_add₀ hζne _ _
-          _ = (ζ ^ p) ^ u * (ζ ^ m) ^ v := by
-              rw [mul_comm u (p : ℤ), mul_comm v (m : ℤ), zpow_mul, zpow_mul,
-                zpow_natCast, zpow_natCast]
-      have hmem : (ζ ^ p) ^ u * (ζ ^ m) ^ v ∈ adjoin ℚ ({ζ ^ p} ∪ {ζ ^ m}) :=
-        mul_mem (zpow_mem h1 u) (zpow_mem h2 v)
-      rwa [← hkey] at hmem
-  have hres : (ℚ⟮ζ ^ p⟯⟮ζ ^ m⟯.restrictScalars ℚ) = ℚ⟮ζ⟯ :=
-    (adjoin_adjoin_left ℚ {ζ ^ p} {ζ ^ m}).trans hunion
-  -- the tower multiplication, evaluated
-  have htower : Module.finrank ℚ ℚ⟮ζ ^ p⟯ * Module.finrank ℚ⟮ζ ^ p⟯ ℚ⟮ζ ^ p⟯⟮ζ ^ m⟯
-      = Module.finrank ℚ ℚ⟮ζ ^ p⟯⟮ζ ^ m⟯ :=
-    Module.finrank_mul_finrank ℚ ℚ⟮ζ ^ p⟯ ℚ⟮ζ ^ p⟯⟮ζ ^ m⟯
-  have hEfr : Module.finrank ℚ ℚ⟮ζ ^ p⟯⟮ζ ^ m⟯ = (p * m).totient := by
-    have h4 : Module.finrank ℚ (ℚ⟮ζ ^ p⟯⟮ζ ^ m⟯.restrictScalars ℚ)
-        = (p * m).totient := by rw [hres, hMfr]
-    exact h4
-  rw [hKfr, hEfr, Nat.totient_mul hcop, Nat.totient_prime hp] at htower
-  have hmpos : 0 < m.totient := Nat.totient_pos.mpr hm
-  have htower' : m.totient * Module.finrank ℚ⟮ζ ^ p⟯ ℚ⟮ζ ^ p⟯⟮ζ ^ m⟯
-      = m.totient * (p - 1) := by rw [htower]; ring
-  exact Nat.eq_of_mul_eq_mul_left hmpos htower'
+  have hζp : IsPrimitiveRoot (ζ ^ m) p := hζ.pow hn (mul_comm p m)
+  have hcop : Nat.Coprime m p := ((Nat.Prime.coprime_iff_not_dvd hp).mpr hpm).symm
+  have hint : IsIntegral ℚ⟮ζ ^ p⟯ (ζ ^ m) := (hζp.isIntegral hp.pos).tower_top
+  rw [IntermediateField.adjoin.finrank hint,
+    CoprimePacketMinpoly.minpoly_adjoin_coprime_eq_cyclotomic hm hp.pos hcop hζm hζp,
+    natDegree_cyclotomic, Nat.totient_prime hp]
 
 /-- **The linear-disjointness brick**: `Φ_p` remains the minimal polynomial of
 `ζ_p = ζ^m` over the coprime cyclotomic field `ℚ(ζ_m) = ℚ⟮ζ^p⟯`. -/
@@ -139,18 +90,10 @@ theorem minpoly_pow_eq_cyclotomic (hp : p.Prime) (hpm : ¬ p ∣ m)
     minpoly ℚ⟮ζ ^ p⟯ (ζ ^ m) = cyclotomic p ℚ⟮ζ ^ p⟯ := by
   have hm : 0 < m := m_pos hpm
   have hn : 0 < p * m := Nat.mul_pos hp.pos hm
+  have hζm : IsPrimitiveRoot (ζ ^ p) m := hζ.pow hn rfl
   have hζp : IsPrimitiveRoot (ζ ^ m) p := hζ.pow hn (mul_comm p m)
-  have hint : IsIntegral ℚ⟮ζ ^ p⟯ (ζ ^ m) := (hζp.isIntegral hp.pos).tower_top
-  have hdvd : minpoly ℚ⟮ζ ^ p⟯ (ζ ^ m) ∣ cyclotomic p ℚ⟮ζ ^ p⟯ := by
-    refine minpoly.dvd _ _ ?_
-    rw [aeval_def, ← eval_map, map_cyclotomic]
-    exact hζp.isRoot_cyclotomic hp.pos
-  have hdegm : (minpoly ℚ⟮ζ ^ p⟯ (ζ ^ m)).natDegree = p - 1 := by
-    rw [← IntermediateField.adjoin.finrank hint]
-    exact finrank_adjoin_zetaP hp hpm hζ
-  refine (Polynomial.eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic hint)
-    (cyclotomic.monic p _) hdvd ?_).symm
-  rw [hdegm, natDegree_cyclotomic, Nat.totient_prime hp]
+  have hcop : Nat.Coprime m p := ((Nat.Prime.coprime_iff_not_dvd hp).mpr hpm).symm
+  exact CoprimePacketMinpoly.minpoly_adjoin_coprime_eq_cyclotomic hm hp.pos hcop hζm hζp
 
 /-! ## The forcing lemma and the independence brick -/
 
