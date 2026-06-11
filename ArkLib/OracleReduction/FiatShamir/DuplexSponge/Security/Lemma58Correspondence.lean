@@ -1457,6 +1457,35 @@ theorem base_earlier_hash_slot
   exact mem_slotList_of_hash_cached _ (fresh_hash_inserts ((∅, []) : DSCache StmtIn U)
     (log.take (f j')) q' u' ((log.take (f j)).drop (f j' + 1)) hfresh)
 
+/-! ## The disjunct case-bash: each EPaper arm produces an anchored collision -/
+
+open DuplexSpongeFS.Paper in
+/-- **E_h arm.** A hash-capacity duplicate among dedup entries anchors the consistent log. -/
+theorem anchored_of_E_h
+    (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (hcons : ConsistentFrom ((∅, []) : DSCache StmtIn U) log)
+    (hEh : capacitySegmentDupHashPaper log) :
+    AnchoredFrom ((∅, []) : DSCache StmtIn U) log := by
+  obtain ⟨f, hf, hfo⟩ := removeRedundant_firstOcc log
+  obtain ⟨j, capSeg, stmt, hbj, j', hj'j, stmt', hdisj⟩ := hEh
+  have hcap : capSeg ∈ slotList ((log.take (f j)).foldl stepCache ((∅, []) : DSCache StmtIn U)) := by
+    rcases hdisj with hb' | ⟨sI1, sO1, hb', hc1⟩ | ⟨sO2, sI2, hb', hc2⟩
+      | ⟨sI3, sO3, hb', hc3⟩ | ⟨sO4, sI4, hb', hc4⟩
+    · exact base_earlier_hash_slot log hcons f hf hfo j j' hj'j j.isLt stmt' capSeg hb'
+    · rw [← hc1]
+      exact (mem_slotList_of_mem_perm _
+        (base_earlier_fwd_slots log hcons f hf hfo j j' hj'j j.isLt sI1 sO1 hb')).2
+    · rw [← hc2]
+      exact (mem_slotList_of_mem_perm _
+        (base_earlier_inv_slots log hcons f hf hfo j j' hj'j j.isLt sI2 sO2 hb')).1
+    · rw [← hc3]
+      exact (mem_slotList_of_mem_perm _
+        (base_earlier_fwd_slots log hcons f hf hfo j j' hj'j j.isLt sI3 sO3 hb')).1
+    · rw [← hc4]
+      exact (mem_slotList_of_mem_perm _
+        (base_earlier_inv_slots log hcons f hf hfo j j' hj'j j.isLt sI4 sO4 hb')).2
+  exact base_hash_anchored log hcons f hf hfo j j.isLt stmt capSeg hbj hcap
+
 /-! ## Assembly: the paper bound conditional on the dedup reduction -/
 
 open DuplexSpongeFS.Paper in
@@ -1560,6 +1589,7 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.fresh_hash_inserts
 #print axioms DuplexSpongeFS.EagerLazyDS.base_earlier_inv_slots
 #print axioms DuplexSpongeFS.EagerLazyDS.base_earlier_hash_slot
+#print axioms DuplexSpongeFS.EagerLazyDS.anchored_of_E_h
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_cons
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_fresh_cap_new
 #print axioms DuplexSpongeFS.EagerLazyDS.inv_fresh_cap_new
