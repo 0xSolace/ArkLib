@@ -7010,3 +7010,35 @@ i1 = 0 budget remains the one open node, now characterized to its root.** The au
 Net state: the per-term wall is a theorem for ALL cells except `i1 = 0`, whose resolution
 is one identity-comparison plus possibly one Λ-bound — with every surrounding object
 (embedding identities, rep computations, collapse variants) already proven.
+
+## 2026-06-11 — Item 22 (deviation-restricted LYM): the naive weld is asymptotically VACUOUS; the genuine sharpening is already landed (⊖ identification)
+
+**Claim examined** (26-thread item 22): contributing stacks are deviation stacks
+(`rows_close_of_two_bad` + `DeviationSupSplit`), so their witness antichains are
+constrained near codeword pairs — compose with the LYM ceiling for a sharpened
+window bound.
+
+**The naive composition, quantified.** After codeword translation the stack is
+`(ε₀, ε₁)` with `|supp(ε₀)| ≤ 3δn`, `|supp(ε₁)| ≤ 2δn`; set
+`D = supp(ε₀) ∪ supp(ε₁)`, `|D| ≤ 5δn`. Every bad-scalar witness `T` must HIT `D`:
+if `T ∩ D = ∅` then both rows vanish on `T` and the zero-codeword pair is a joint
+explanation, contradicting `mcaEvent`. So the witness family is an antichain of
+`≥ (1−δ)n`-sets each meeting `D`. **But this constraint is asymptotically free**: a
+set of size `≥ (1−δ)n` misses only `δn` points, and avoiding `D` requires
+`D ⊆ complement`, i.e. `|D| ≤ δn` — while `|D|` may be up to `5δn`. The fraction of
+`t`-sets avoiding a `5δn`-set is `C(n−5δn, t)/C(n,t) ≈ (1−5δ·(t/n))`-small but
+**bounded below by a constant** for fixed `δ`; the hit-restricted antichain maximum
+is `C(n,t) − C(n−|D|, t)`-shaped only for the trivial union bound and the genuine
+extremal hit-restricted antichain stays `Θ(C(n,t))`. No window-scale improvement.
+
+**Where the deviation structure genuinely bites — already landed.** The sharpening
+that works is not "witnesses hit `D`" but "explanations are FORCED on `T ∩ S*`":
+the deviation-kernel pinning (`Jo26DeviationKernels.mem_jointStackSubmodule_iff_deviation`,
+`obstruction_line_pinned_by_deviation`) bounds distinct obstruction lines by
+`#(row, position)` deviations — `l·n + 1` members, FIELD-INDEPENDENT — and the
+band-collapse engine (`UniversalStaircaseCollapse.badScalars_card_le`) bounds bad
+scalars by `j` on the ladder bands via pointwise pinning. Item 22's content is
+exactly these two landed mechanisms; the LYM side adds nothing they do not already
+capture. **Verdict: ⊖ — identification, no new theorem available along this line.**
+The open sup-extremality question remains with the explosion-regime count (item 18),
+where the kernel mechanism (not the antichain mechanism) is the binding constraint.
