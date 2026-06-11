@@ -255,7 +255,13 @@ lemma decodeMessagesPrefixStepPhiInv_pToV
             | none => none
             | some msg => some (MessagesUpTo.concat mb hdir msg) := by
   unfold decodeMessagesPrefixStepPhiInv
-  simp [hdir]
+  split
+  · rename_i heq
+    cases (Subsingleton.elim heq hdir)
+    simp
+  · rename_i heq
+    rw [hdir] at heq
+    simp at heq
 
 /-! ## H23-2 — the parser succeeds on codec-image inputs -/
 

@@ -243,12 +243,9 @@ theorem sum_normSq_eval_nthRoots {N : ℕ} (hN : 1 < N) {ζ : ℂ}
         push_cast
         rw [Finset.mul_sum]
         refine Finset.sum_congr rfl fun i _ => ?_
-        have h2 : (((f.coeff i).natAbs ^ 2 : ℕ) : ℤ) = (f.coeff i) ^ 2 := by
-          rw [Nat.cast_pow, Int.natCast_natAbs, sq_abs]
         have habs : ((f.coeff i).natAbs : ℂ) ^ 2 = (f.coeff i : ℂ) ^ 2 := by
-          have h3 := congrArg (fun z : ℤ => (z : ℂ)) h2
-          push_cast at h3
-          exact h3
+          push_cast [Int.cast_natAbs]
+          exact_mod_cast sq_abs (f.coeff i)
         rw [habs]
         ring
 
