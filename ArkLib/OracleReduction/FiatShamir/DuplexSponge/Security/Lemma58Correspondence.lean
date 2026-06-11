@@ -781,6 +781,38 @@ theorem fwd_hit_sameClass_mem (L : List (DSEntry StmtIn U)) (a b : CanonicalSpon
   · simp at hp
   · exact ⟨e', he', sameClass_of_entryKeys hf' hi'⟩
 
+/-- A consistent inverse hit puts the entry's exact pair in the cache. -/
+theorem consistent_inv_hit_pair_mem (c : DSCache StmtIn U) (a b : CanonicalSpongeState U)
+    (hcons : entryConsistent c (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U))
+    (hhit : hasInvKey c b) :
+    (a, b) ∈ c.2 := by
+  obtain ⟨w, hw, hwb⟩ := hhit
+  rcases hf : c.2.find? (fun w => w.2 = b) with _ | w₀
+  · exact absurd ((List.find?_eq_none).mp hf w hw) (by simp [hwb])
+  · have hmem₀ : w₀ ∈ c.2 := List.mem_of_find?_eq_some hf
+    have hkey₀ : w₀.2 = b := by simpa using List.find?_some hf
+    have ha : a = w₀.1 := hcons w₀ hf
+    have : (a, b) = w₀ := Prod.ext ha hkey₀.symm
+    rw [this]; exact hmem₀
+
+/-- **Piece (A2c), inverse arm**: in a fold from empty over `L`, a consistent inverse entry
+`⟨inr (inr b), a⟩` whose inverse key is already cached has an earlier same-class entry. -/
+theorem inv_hit_sameClass_mem (L : List (DSEntry StmtIn U)) (a b : CanonicalSpongeState U)
+    (hcons : entryConsistent (L.foldl stepCache ((∅, []) : DSCache StmtIn U))
+      (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U))
+    (hhit : hasInvKey (L.foldl stepCache ((∅, []) : DSCache StmtIn U)) b) :
+    ∃ e' ∈ L, sameClass (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U) e' := by
+  have hpair : (a, b) ∈ (L.foldl stepCache ((∅, []) : DSCache StmtIn U)).2 :=
+    consistent_inv_hit_pair_mem _ a b hcons hhit
+  rcases foldl_pair_provenance (∅, []) L hpair with hp | ⟨e', he', hf', hi'⟩
+  · simp at hp
+  · -- e' is same-class with the forward query ⟨inr inl a, b⟩, whose swap is our entry
+    have h1 : sameClass (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U) e' :=
+      sameClass_of_entryKeys hf' hi'
+    have h2 : sameClass (⟨.inr (.inr b), a⟩ : DSEntry StmtIn U)
+        (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U) := Or.inr rfl
+    exact ⟨e', he', sameClass_trans h2 h1⟩
+
 /-! ## Per-position extraction from the fold predicates -/
 
 /-- `ConsistentFrom` gives entry-consistency at every split point against the fold cache of
@@ -900,6 +932,8 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.foldl_pair_provenance
 #print axioms DuplexSpongeFS.EagerLazyDS.consistent_fwd_hit_pair_mem
 #print axioms DuplexSpongeFS.EagerLazyDS.fwd_hit_sameClass_mem
+#print axioms DuplexSpongeFS.EagerLazyDS.consistent_inv_hit_pair_mem
+#print axioms DuplexSpongeFS.EagerLazyDS.inv_hit_sameClass_mem
 #print axioms DuplexSpongeFS.EagerLazyDS.consistentFrom_split
 #print axioms DuplexSpongeFS.EagerLazyDS.not_anchoredFrom_split
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundant_orderEmbedding
