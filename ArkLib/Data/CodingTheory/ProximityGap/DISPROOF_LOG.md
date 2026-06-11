@@ -6919,3 +6919,30 @@ theorem's `hreduced`:
   the exponent bookkeeping may show the engine's `hreduced` is stronger than needed here.
   **Next session: decide R-a/R-b/R-c (read the paper's i1 = 0 term handling, fulltext
   3990–4080), then the B-budget brick closes and the chain wires.**
+
+**O154 V1 dive, finding 10 (R-b CONFIRMED from the paper, fulltext 4040–4055) — the
+i1 = 0 mechanism is the W-TWISTED CLEARING: the paper defines `B_{i1,λ} = A_{i1,λ} ·
+W^{d−δ−Σλ}` and at `i1 = 0` the α₀-leading coefficient `Σ_i R_{d,i}·x₀^i` IS the leading
+coefficient of `R_{x₀}`, hence W-divisible, so the cleared form takes ONE FEWER W
+(`δ_{i1,0} = 1`) and `Λ(B_{0,λ}) = (D−Σλ) + (d−1−Σλ)·Λ(W)` — exactly finding 8's improved
+bound. The in-tree `hasseCoeffRepr𝒪_cleared` (HenselNumerator:589) implements precisely
+this W-power twist ("each Y-power i of p rescaled by lc^{(natDegreeY p)−i}").** Remaining
+audit for the B-budget brick (the final to-do before wiring):
+
+* Determine which form the in-tree `B_coeff`/`βHensel_succ` recursion actually carries
+  (the untwisted `hasseCoeffRepr𝒪` vs the twisted `_cleared`) and whether the `deltaSave`
+  prefactor bookkeeping (the W^{i1+δ−1} in the term) aligns the in-tree convention with
+  the paper's δ-saving (the term structure suggests YES: at i1 = 0 the prefactor is W⁰ and
+  the saving must therefore live in the B-form);
+* If untwisted: prove the twisted-weight bridge
+  `Λ(mk p) ≤ (D_R−m) + (d_R−δ−m)·Λ(W)` via the W-divisibility of the top coefficient
+  (item (b)) + the per-monomial max analysis (the top monomial's Z-budget is
+  `D_R − d_R`, NOT the uniform `DQ` — the sharper per-monomial accounting may close
+  i1 = 0 without any twist, route R-c);
+* Then both engine budgets are supplied for every cell, `βHensel_weight_bound_structured`
+  fires, the collapse fires, the kill-chain fires, `JohnsonDischargeStatement` falls, and
+  `kkh26_deltaStar_pin_of_interior_ceiling` pins δ* exactly.
+
+Status at this checkpoint: ELEVEN axiom-clean endgame bricks; TEN findings; the per-term
+wall a theorem modulo budgets; i1 ≥ 1 budgets closed by computation; i1 = 0 reduced to
+one convention-audit + one bridge lemma with the paper's mechanism now extracted verbatim.
