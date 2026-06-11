@@ -205,6 +205,67 @@ lemma extends_permExtending (c : List (X × X)) (π : Equiv.Perm X)
       · exact ih _ ((List.nodup_cons.mp (by simpa using hkeys)).2)
           ((List.nodup_cons.mp (by simpa using hvals)).2) q hq
 
+/-! ## The one-step fiber lemma
+
+The fiber of the one-pair correction over an extension `τ` of `c ⧺ [(a,b)]`, within the
+extensions of `c`, is exactly `{(swap b w) ∘ τ : w unused}` — one preimage per unused
+output, which is why a uniform conditioned permutation stays uniform after the correction. -/
+
+/-- Fiber characterization of the one-pair correction. -/
+lemma onestep_fiber_iff (c : List (X × X)) (a b : X)
+    (ha : a ∉ c.map Prod.fst) (hb : b ∉ c.map Prod.snd)
+    {τ : Equiv.Perm X} (hτ : Extends τ (c.concat (a, b))) (π : Equiv.Perm X) :
+    (Extends π c ∧ (Equiv.swap a (π.symm b)).trans π = τ)
+      ↔ ∃ w, w ∉ c.map Prod.snd ∧ π = τ.trans (Equiv.swap b w) := by
+  obtain ⟨hτc, hτa⟩ := (extends_concat_iff τ c a b).mp hτ
+  constructor
+  · rintro ⟨hπc, hstep⟩
+    refine ⟨π a, fun hmem => extends_apply_ne_of_used hπc ha hmem rfl, ?_⟩
+    apply Equiv.ext
+    intro x
+    rw [Equiv.trans_apply]
+    have hτx : ∀ y, τ y = π ((Equiv.swap a (π.symm b)) y) := by
+      intro y
+      rw [← hstep, Equiv.trans_apply]
+    rcases eq_or_ne x a with rfl | hxa
+    · rw [hτa, Equiv.swap_apply_left]
+    · rcases eq_or_ne x (π.symm b) with rfl | hxb
+      · rw [Equiv.apply_symm_apply, hτx (π.symm b), Equiv.swap_apply_right,
+          Equiv.swap_apply_right]
+      · rw [hτx x, Equiv.swap_apply_of_ne_of_ne hxa hxb,
+          Equiv.swap_apply_of_ne_of_ne]
+        · intro h
+          apply hxb
+          rw [← h, Equiv.symm_apply_apply]
+        · exact fun h => hxa (π.injective h)
+  · rintro ⟨w, hw, rfl⟩
+    have hπa : (τ.trans (Equiv.swap b w)) a = w := by
+      rw [Equiv.trans_apply, hτa, Equiv.swap_apply_left]
+    constructor
+    · intro p hp
+      have hτp : τ p.1 = p.2 := hτc p hp
+      rw [Equiv.trans_apply, hτp, Equiv.swap_apply_of_ne_of_ne]
+      · exact fun h => hb (h ▸ List.mem_map.mpr ⟨p, hp, rfl⟩)
+      · exact fun h => hw (h ▸ List.mem_map.mpr ⟨p, hp, rfl⟩)
+    · -- the correction of `τ ∘ (swap b w)` recovers `τ`
+      have hsymmb : (τ.trans (Equiv.swap b w)).symm b = τ.symm w := by
+        rw [Equiv.symm_apply_eq, Equiv.trans_apply, Equiv.apply_symm_apply,
+          Equiv.swap_apply_right]
+      apply Equiv.ext
+      intro x
+      rw [Equiv.trans_apply, hsymmb]
+      rcases eq_or_ne x a with rfl | hxa
+      · rw [Equiv.swap_apply_left, Equiv.trans_apply, Equiv.apply_symm_apply,
+          Equiv.swap_apply_right, hτa]
+      · rcases eq_or_ne x (τ.symm w) with rfl | hxw
+        · rw [Equiv.swap_apply_right, hπa, Equiv.apply_symm_apply]
+        · rw [Equiv.swap_apply_of_ne_of_ne hxa hxw, Equiv.trans_apply,
+            Equiv.swap_apply_of_ne_of_ne]
+          · intro h
+            exact hxa (τ.injective (by rw [h, hτa]))
+          · intro h
+            exact hxw ((Equiv.symm_apply_eq τ).mpr h.symm).symm
+
 /-! ## The master eager–lazy induction -/
 
 /-- The unused-values list enumerates the unused finset. -/
@@ -268,3 +329,5 @@ end LazyPermBridge
 
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms LazyPermBridge.evalDist_sampleUnused_run
+#print axioms LazyPermBridge.onestep_fiber_iff
+#print axioms LazyPermBridge.extends_permExtending
