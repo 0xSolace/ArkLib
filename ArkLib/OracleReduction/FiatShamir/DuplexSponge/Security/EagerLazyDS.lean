@@ -158,8 +158,62 @@ lemma evalDist_uniformSample_swap {β γ : Type} [Fintype β] [Nonempty β] [Sam
   simp only [hin, hin']
   exact PMF.bind_comm _ _ _
 
-end DuplexSpongeFS.EagerLazyDS
 
+/-! ## The overlay, factored through its permutation slot -/
+
+/-- The joint overlay as a function of the (already overlaid) permutation: the shape the
+spectatored absorptions consume. -/
+def dsOverlayOf (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache)
+    (g : StmtIn → Vector U SpongeSize.C) (σ : Equiv.Perm (CanonicalSpongeState U)) :
+    (t : (duplexSpongeChallengeOracle StmtIn U).Domain) →
+      (duplexSpongeChallengeOracle StmtIn U).Range t :=
+  fun t => match t with
+  | .inl s => OracleComp.tableExtending ch g s
+  | .inr (.inl sIn) => σ sIn
+  | .inr (.inr sOut) => σ.symm sOut
+
+lemma dsOverlayFn_eq_overlayOf (ch : (StmtIn →ₒ Vector U SpongeSize.C).QueryCache)
+    (cp : List (CanonicalSpongeState U × CanonicalSpongeState U))
+    (g : StmtIn → Vector U SpongeSize.C) (π : Equiv.Perm (CanonicalSpongeState U)) :
+    dsOverlayFn ch cp g π = dsOverlayOf ch g (LazyPermBridge.permExtending cp π) := by
+  funext t
+  rcases t with s | sIn | sOut <;> rfl
+
+section TwoSample
+
+variable {β γ : Type} [Fintype β] [Nonempty β] [SampleableType β]
+  [Fintype γ] [Nonempty γ] [SampleableType γ]
+
+/-- `toPMF` of a two-sample-then-pure program, as nested PMF binds with the success tag
+outermost on the inner fibre. -/
+lemma toPMF_two_sample {α : Type} (F : β → γ → α) :
+    (evalDist (do
+      let b ← $ᵗ β
+      let c ← $ᵗ γ
+      pure (F b c) : ProbComp α)).toPMF
+      = (PMF.uniformOfFintype β).bind
+          (fun b => ((PMF.uniformOfFintype γ).map (F b)).map some) := by
+  classical
+  rw [evalDist_bind, SPMF.toPMF_bind, evalDist_uniformSample, SPMF.liftM_eq_map,
+    SPMF.toPMF_mk]
+  rw [show Option.elimM ((PMF.uniformOfFintype β).map some) (PMF.pure none)
+      (fun b => (evalDist ($ᵗ γ >>= fun c => pure (F b c) : ProbComp α)).toPMF)
+    = (PMF.uniformOfFintype β).bind
+        (fun b => (evalDist ($ᵗ γ >>= fun c => pure (F b c) : ProbComp α)).toPMF) from by
+    rw [Option.elimM, PMF.monad_bind_eq_bind, PMF.bind_map]
+    rfl]
+  refine congrArg _ (funext fun b => ?_)
+  have hprog : ($ᵗ γ >>= fun c => pure (F b c) : ProbComp α) = (F b) <$> ($ᵗ γ) := by
+    rw [map_eq_bind_pure_comp]
+    rfl
+  rw [hprog, evalDist_map, SPMF.toPMF_map, evalDist_uniformSample, SPMF.liftM_eq_map,
+    SPMF.toPMF_mk, PMF.monad_map_eq_map, PMF.map_comp, PMF.map_comp]
+  rfl
+
+end TwoSample
+
+end DuplexSpongeFS.EagerLazyDS
 /-! ## Axiom audit — kernel-clean. -/
 #print axioms DuplexSpongeFS.EagerLazyDS.evalDist_uniformSample_swap
 #print axioms DuplexSpongeFS.EagerLazyDS.dsOverlayFn_cacheQuery_of_none
+#print axioms DuplexSpongeFS.EagerLazyDS.toPMF_two_sample
