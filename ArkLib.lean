@@ -1294,6 +1294,7 @@ import ArkLib.OracleReduction.ProtocolSpec.Cast
 import ArkLib.OracleReduction.ProtocolSpec.SeqCompose
 import ArkLib.OracleReduction.ProtocolSpec.TranscriptRecompose
 import ArkLib.OracleReduction.RunUnroll
+import ArkLib.OracleReduction.StateCollapse
 import ArkLib.OracleReduction.Salt
 import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Security.CoordinateWiseSpecialSoundness
