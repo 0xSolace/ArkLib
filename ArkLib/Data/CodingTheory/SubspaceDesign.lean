@@ -101,12 +101,21 @@ constraint on `τ`, so the bound is vacuous for `r = 0` (where `A ≤ C` with
 `finrank A ≤ 0` forces `A = ⊥`, making the design inequality `0 ≤ 0 · τ(0)`
 trivially satisfied by any `τ(0)` including ones violating the lower bound).
 
+**Non-negative profile (`_hτ_nonneg`, 2026-06-10 re-review).** A design profile
+is a fraction of a dimension, so `τ ≥ 0` is implicit in the paper. It is
+load-bearing here: for the trivial code `C = ⊥` the `IsSubspaceDesign`
+inequalities are all `0 ≤ 0`, placing no constraint on `τ`, and a *negative*
+profile (e.g. `τ ≡ -1` at `n = 2`) falsified the unguarded bound
+(`-1 ≥ 0 - 1/2`). With `τ ≥ 0` the degenerate case is consistent
+(`τ r ≥ 0 ≥ 0 - 1/n`).
+
 Admitted as an external result. -/
 theorem subspaceDesign_tau_lower
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
     (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
-    (_h : IsSubspaceDesign s τ C) :
+    (_h : IsSubspaceDesign s τ C)
+    (_hτ_nonneg : ∀ r, 0 ≤ τ r) :
     ∀ r ∈ Finset.Icc 1 s,
       τ r ≥ (Module.finrank F C : ℝ) / (s * Fintype.card ι) - 1 / Fintype.card ι := by
   sorry -- ABF26-L2.17; external admit [GG25].

@@ -281,9 +281,14 @@ paper's content (none of them can be vacuously discharged):
 - *Rate band.* `ρ ≤ k/n ≤ ρ + 1/n` rather than the exact `k/n = ρ` (unsatisfiable
   for irrational `ρ`); the band admits exactly `k = ⌈ρ·n⌉`-style witnesses.
 - *Slack `Θ(1/log n)`.* Uniform constants `K₁, K₂` are fixed *before* the code family,
-  with `K₁/log₂ n ≤ slack ≤ K₂/log₂ n` per instance. The lower side is load-bearing:
-  without it, a witness with `slack = Θ(1/n)` sits inside the CA-breakdown band of
-  T4.17 [CS25] and trivialises the claim; the upper side keeps the advertised
+  with `K₁/log₂ n ≤ slack ≤ K₂/log₂ n` per instance. NB (2026-06-10 re-review): the
+  CS25 breakdown band of T4.17 itself extends to slack `≲ h_q(δ)/ln q = Θ(1/log n)`
+  for `|F| = poly(n)` (`.tex` ~1880), so even with the lower pin this statement is
+  in principle dischargeable from T4.17 alone (pick `K₁ = K₂` small) — it
+  *under-pins* the [KKH26] content. We keep the faithful Θ-form of the paper's
+  statement rather than over-constraining; the genuinely-KKH26 content (explicit
+  constants, smoothness) lives in the planned Appendix-C templates. The upper side
+  keeps the advertised
   "distance `Θ(1/log n)` from capacity" scale. Logs are base 2 (`Real.logb 2`),
   matching the paper's convention.
 - *Family, not a single code.* The paper's `∃ n` plus `Θ(1/log n)` is only meaningful

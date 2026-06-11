@@ -304,11 +304,18 @@ size `j`.
 
 **Encoding of the paper's parameters.** The paper's `|L| = j + 1` is the *block
 length* (size of the evaluation domain), encoded here as `Fintype.card ι = j + 1`.
-The rate `ρ ≈ (j-1)/(j+1)` pins the message length: with block length `j + 1` the
-natural dimension is `k = j - 1` (rate exactly `(j-1)/(j+1)`), so we fix
-`k := j - 1` rather than leaving `k` existential — an unconstrained `∃ k` would
-let degenerate dimensions (e.g. `k = j + 1`, i.e. `C = F^L`) satisfy the list-size
-conclusion trivially, losing the high-rate content.
+The dimension is pinned to `k := j` in ArkLib's `ReedSolomon.code domain k`
+(= polynomials of degree `< k`, dimension `k`) convention: JH01's "rate
+`≈ (j-1)/(j+1)`" refers to its own degree-`≤ k` convention (`k_JH = j - 1`,
+dimension `j`). The pin matters in *both* directions:
+* `k = j - 1` (dimension `j - 1`) is **unsatisfiable**: min distance
+  `n - k + 1 = 3` while radius `1/(j+1)` permits a single error, so two list
+  members would be within distance `2 < 3` — the list size is at most `1`,
+  never `> j` (2026-06-10 re-review finding).
+* an unconstrained `∃ k` would let degenerate dimensions (e.g. `k = j + 1`,
+  `C = F^L`) satisfy the conclusion trivially.
+With `k = j` the min distance is `2` and the `j + 1` drop-one-coordinate
+interpolants of `w` realise a list of size `j + 1 > j` — JH01's construction.
 
 Admitted as an external result. -/
 theorem rs_lambda_high_rate_jh01
@@ -323,7 +330,7 @@ theorem rs_lambda_high_rate_jh01
           {F : Type} [Field F] [Fintype F] [DecidableEq F],
           Fintype.card F = qs i → Fintype.card ι = j + 1 →
           ∃ (domain : ι ↪ F) (w : ι → F),
-            let C := ReedSolomon.code domain (j - 1)
+            let C := ReedSolomon.code domain j
             (j : ℕ∞) < (closeCodewordsRel ((C : Set (ι → F))) w (1 / (j + 1 : ℝ))).ncard := by
   sorry -- ABF26-T3.14; external admit [JH01 Thm 2].
 
@@ -341,12 +348,17 @@ Combined with `IsSubspaceDesign` (ABF26 D2.16) and `subspaceDesign_tau_lower`
 
 **Integer rounding of `τ(1/η)`.** The paper evaluates the profile `τ : ℕ → ℝ` at the
 *real* argument `1/η`, leaving the rounding implicit. We take the weakest faithful
-integer reading: the **radius** uses `τ(⌈1/η⌉)` (for the non-decreasing profiles of
-interest — e.g. T2.18's FRS profile — this gives the *smaller*, conservative radius)
-while the **list bound** uses `τ(⌊1/η⌋)` (the *larger*, conservative bound). Any
-real-interpolated reading of the paper's statement implies this one for non-decreasing
-`τ`, and the FRS corollary C3.5 (which is where the real-valued `1/η` actually
-matters) recovers the exact interpolated radius directly from the FRS profile.
+integer reading: the **radius** uses `τ(⌈1/η⌉)` (the *smaller*, conservative radius)
+while the **list bound** uses `τ(⌊1/η⌋)` (the *larger*, conservative bound). This
+mixed rounding is only sound for profiles that are non-decreasing on `{1, 2, …}` —
+without it a profile that *drops* between `⌊1/η⌋` and `⌈1/η⌉` falsifies the statement
+(2026-06-10 re-review counterexample: a rank-1 design with `τ = 1,1,0,…`) — so the
+monotonicity is now an explicit hypothesis `MonotoneOn τ (Set.Ici 1)` (true of every
+profile in scope, e.g. T2.18's FRS `τ(r) = sρ/(s-r+1)`; only `Ici 1` because T2.18's
+out-of-range convention `τ = 1` breaks monotonicity at `0`). `η ≤ 1` keeps both
+evaluation points in `Ici 1`. Any real-interpolated reading of the paper implies this
+form, and the FRS corollary C3.5 (where the real-valued `1/η` actually matters)
+recovers the exact interpolated radius directly from the FRS profile.
 
 Admitted as an external result. -/
 theorem subspaceDesign_list_decoding_cz25
@@ -354,7 +366,8 @@ theorem subspaceDesign_list_decoding_cz25
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
     (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
     (_h : IsSubspaceDesign s τ C)
-    (η : ℝ) (_hη_pos : 0 < η) :
+    (_hτ_mono : MonotoneOn τ (Set.Ici 1))
+    (η : ℝ) (_hη_pos : 0 < η) (_hη_le_one : η ≤ 1) :
     (Lambda ((C : Set (ι → Fin s → F)))
         (1 - τ (Nat.ceil (1 / η)) - η) : ENNReal) ≤
       ENNReal.ofReal ((1 - τ (Nat.floor (1 / η))) / η) := by

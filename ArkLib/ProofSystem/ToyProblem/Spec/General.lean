@@ -490,8 +490,11 @@ decomposition this term does not have, and a `Monad` base that `simOracle2`'s
 `QueryImpl.simulateQ_liftM_eq_of_query` match it. Needed upstream: a
 `simulateQ`-over-`simOracle2` query-routing lemma proved by induction on the
 computation using the per-query `SubSpec` embedding (companion to VCVio's
-`simulateQ_liftTarget`); with it, the residual `sorry` discharges to
-`accepts_of_inputRelation`. -/
+`simulateQ_liftTarget`; NB upstream's `simulateQ_optionT_bind`/`_lift` also fail
+to engage on this term — target-monad defeq mismatch `OracleComp []ₒ` vs
+`OptionT (OracleComp []ₒ)`); with it, the residual `sorry` discharges to
+`accepts_of_inputRelation` modulo the remaining `OptionT`/`guard`/`forIn`
+support bookkeeping. -/
 theorem oracleReduction_perfectCompleteness
     [SampleableType F] [SampleableType ι]
     {σ : Type} (init : ProbComp σ)

@@ -16,7 +16,8 @@ Agreement*, 2026).
 
 The existing `JohnsonBound.J q δ : ℝ` matches the paper's `J_q(δ)`. This file adds:
 
-- `JohnsonBound.Jqℓ q ℓ δ` — paper's `J_{q,ℓ}(δ)`, with the additional `ℓ/(ℓ-1)` factor
+- `JohnsonBound.Jqℓ q ℓ δ` — paper's `J_{q,ℓ}(δ)`, with the additional `(ℓ-1)/ℓ` factor
+  (NB: deviates from the `.tex`, which prints a wrong-direction `ℓ/(ℓ-1)` — see `Jqℓ`)
   inside the square root.
 - `JohnsonBound.Jcap δ` — paper's asymptotic Johnson bound `J(δ) := 1 - √(1 - δ)`.
 
@@ -51,15 +52,26 @@ namespace JohnsonBound
 
 open Real
 
-/-- **ABF26 Definition 3.1, `J_{q,ℓ}`.** Paper's q-ary ℓ-radius Johnson function:
+/-- **ABF26 Definition 3.1, `J_{q,ℓ}` (with a corrected list factor).** The q-ary
+ℓ-radius Johnson function:
 
-  `J_{q,ℓ}(δ) := (1 - 1/q) · (1 - √(1 - q/(q-1) · ℓ/(ℓ-1) · δ))`
+  `J_{q,ℓ}(δ) := (1 - 1/q) · (1 - √(1 - q/(q-1) · (ℓ-1)/ℓ · δ))`
+
+**Deviation from the canonical `.tex` (typo there, flagged upstream 2026-06-10).**
+The `.tex` (~line 1347) prints the list factor as `ℓ/(ℓ-1)`. That direction is
+wrong: a *smaller* list budget `ℓ` must give a *smaller* radius, but `ℓ/(ℓ-1)`
+is decreasing in `ℓ`, and with it Theorem 3.2 is falsified by a concrete
+counterexample — `C = (Fin 2)^(Fin 8)` (all of `𝔽₂⁸`, `δ_min = 1/8`), `ℓ = 2`:
+the printed radius is `≈ 0.146`, i.e. Hamming radius 1, where `Λ = 9 > 2`.
+The classical list-`ℓ` Johnson factor is `(ℓ-1)/ℓ` (= `1 - 1/ℓ`, cf. [GRS25]);
+both factors tend to `1`, so the paper's `J_q = lim_{ℓ→∞} J_{q,ℓ}` is
+unaffected.
 
 For `ℓ = 2` this is the binary Johnson radius; as `ℓ → ∞`, `Jqℓ q ℓ δ → J q δ`
 (the existing `JohnsonBound.J`). The `ℓ` parameter is the target list size. -/
 noncomputable def Jqℓ (q ℓ : ℚ) (δ : ℚ) : ℝ :=
   let frac : ℚ := q / (q - 1)
-  let lFac : ℚ := ℓ / (ℓ - 1)
+  let lFac : ℚ := (ℓ - 1) / ℓ
   ((1 - 1 / q) : ℚ) * (1 - √(1 - frac * lFac * δ))
 
 /-- **ABF26 Definition 3.1, `J`.** Paper's asymptotic Johnson bound:
@@ -107,33 +119,32 @@ field), matching the paper's `Σ`. The Johnson bound is a purely combinatorial f
 about Hamming distance — it does not need field structure.
 
 **Radicand guard (`_h_radicand`).** `Jqℓ` contains
-`√(1 - q/(q-1) · ℓ/(ℓ-1) · δ_min)`. Lean's `Real.sqrt` silently truncates negative
+`√(1 - q/(q-1) · (ℓ-1)/ℓ · δ_min)`. Lean's `Real.sqrt` silently truncates negative
 inputs to `0`, so without a guard the radius would silently inflate to
 `(1 - 1/q) · (1 - 0) = 1 - 1/q` whenever the radicand is negative — at which radius
 the list-size-`ℓ` claim is **false** (e.g. a high-distance code can have more than `ℓ`
 codewords within relative distance `1 - 1/q`). The hypothesis
-`q/(q-1) · ℓ/(ℓ-1) · δ_min ≤ 1` is exactly nonnegativity of the radicand, i.e. the
-regime where the paper's `J_{q,ℓ}` is a real (untruncated) Johnson radius. -/
+`q/(q-1) · (ℓ-1)/ℓ · δ_min ≤ 1` is exactly nonnegativity of the radicand, i.e. the
+regime where `J_{q,ℓ}` is a real (untruncated) Johnson radius. (With the corrected
+`(ℓ-1)/ℓ` factor — see `Jqℓ` — the guard is weaker than the printed one.) -/
 theorem johnson_bound_lambda_le_ell
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {α : Type} [Fintype α] [DecidableEq α]
     (C : Set (ι → α)) (ℓ : ℕ) (_hℓ_ge : 2 ≤ ℓ)
     (_h_radicand :
         ((Fintype.card α : ℚ) / ((Fintype.card α : ℚ) - 1))
-            * ((ℓ : ℚ) / ((ℓ : ℚ) - 1))
+            * (((ℓ : ℚ) - 1) / (ℓ : ℚ))
             * ((Code.minDist C : ℚ) / Fintype.card ι) ≤ 1) :
     let q : ℚ := Fintype.card α
     let δ_min : ℚ := Code.minDist C / Fintype.card ι
     Lambda C (Jqℓ q ℓ δ_min) ≤ (ℓ : ℕ∞) := by
-  sorry -- ABF26-T3.2; external admit. The earlier comment "port from
-        -- JohnsonBound.johnson_bound" understates the work: the existing
-        -- `johnson_bound` gives `B.card ≤ (frac·d/n) / Denom` where
-        -- `Denom = (1 - frac·e/n)² - (1 - frac·d/n)`. Plugging `e/n = Jqℓ q ℓ δ_min`,
-        -- the `(1 - frac·e/n)²` term simplifies to `1 - frac·(ℓ/(ℓ-1))·δ_min`, making
-        -- `Denom = frac·δ_min·(1 - ℓ/(ℓ-1)) < 0` for ℓ ≥ 2 — the existing bound's
-        -- precondition (`JohnsonConditionStrong`) is violated exactly at the
-        -- Jqℓ boundary. T3.2 needs the Guruswami-Sudan-style `J_{q,ℓ}`-specific
-        -- argument, not a direct port. Tracked as external admit.
+  sorry -- ABF26-T3.2; external admit (stated with the corrected `(ℓ-1)/ℓ` list
+        -- factor — the `.tex`'s `ℓ/(ℓ-1)` is a wrong-direction typo, see `Jqℓ`).
+        -- With the corrected factor the in-tree `johnson_bound`'s denominator
+        -- `Denom = (1 - frac·e/n)² - (1 - frac·d/n)` at `e/n = Jqℓ q ℓ δ_min`
+        -- simplifies to `frac·δ_min·(1 - (ℓ-1)/ℓ) = frac·δ_min/ℓ > 0`, so a direct
+        -- port may now be possible (the printed factor made it negative); kept as
+        -- an external admit pending that port.
 
 /-- **ABF26 Corollary 3.3.** MDS coarse Johnson corollary. For every MDS code `C` with
 rate `ρ := dim C / n` and `η > 0`:

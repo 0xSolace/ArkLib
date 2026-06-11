@@ -672,12 +672,20 @@ because it is true and machine-checked in-tree, but this equality is strictly st
 in both directions (no factor `t`, plus the `≥` direction) and resolves what was
 previously an open question in the survey.
 
+**Guards (2026-06-10 re-review).** `0 < t`: at `t = 0` the `Fin 0`-interleaved
+alphabet is a singleton, every stack vacuously agrees, and the LHS is provably
+`0` (the proven `epsMCA_interleaved_le` already gives `≤ 0·ε`) while the RHS can
+be positive — the unguarded equality was refutable. `δ ∈ (0, 1)`: the paper's
+Johnson functions/`ε` quantities are defined on `(0,1)` (`.tex` 1346) and [Jo26]
+does not cover the endpoints.
+
 Admitted as an external result.
 
 TODO(bib): `[Jo26]` (Sunghyeon Jo, *Interleaving Stability for Mutual Correlated
 Agreement and Curve Decodability*, ePrint 2026/891) has no entry in
 `blueprint/src/references.bib` yet; add it during the references.bib cleanup pass. -/
-theorem epsMCA_interleaved_eq (C : Submodule F (ι → A)) (t : ℕ) (δ : ℝ≥0) :
+theorem epsMCA_interleaved_eq (C : Submodule F (ι → A)) (t : ℕ) (δ : ℝ≥0)
+    (_ht : 0 < t) (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1) :
     epsMCA (F := F) (A := Fin t → A) ((C : Set (ι → A))^⋈ (Fin t)) δ =
     epsMCA (F := F) (A := A) (C : Set (ι → A)) δ := by
   sorry -- ABF26-L4.7 (equality form); external admit [Jo26].
