@@ -461,6 +461,31 @@ theorem hasInvKey_foldl_imp (c : DSCache StmtIn U) (L : List (DSEntry StmtIn U))
         · exact Or.inr ⟨e, List.mem_cons_self, h''⟩
       · exact Or.inr ⟨e', List.mem_cons_of_mem _ he', hk'⟩
 
+/-! ## Key pair pins the class -/
+
+/-- An entry whose inserted pair is `(a, b)` is class-equal to the forward entry
+`⟨inr (inl a), b⟩`: it is either that entry or its inverse swap. -/
+theorem sameClass_of_entryKeys
+    {e' : DSEntry StmtIn U} {a b : CanonicalSpongeState U}
+    (hf : entryFwdKey e' = some a) (hi : entryInvKey e' = some b) :
+    sameClass (⟨.inr (.inl a), b⟩ : DSEntry StmtIn U) e' := by
+  rcases e' with ⟨t, ans⟩
+  rcases t with q | a' | b'
+  · simp only [entryFwdKey] at hf; exact absurd hf (by simp)
+  · -- forward ⟨inr (inl a'), ans⟩: fwd-key a', inv-key ans
+    simp only [entryFwdKey] at hf
+    simp only [entryInvKey] at hi
+    rw [Option.some_inj] at hf hi
+    subst hf; subst hi
+    exact Or.inl rfl
+  · -- inverse ⟨inr (inr b'), ans⟩: fwd-key ans, inv-key b'
+    simp only [entryFwdKey] at hf
+    simp only [entryInvKey] at hi
+    rw [Option.some_inj] at hf hi
+    subst hf; subst hi
+    -- e' = ⟨inr (inr b), a⟩ = swapEntry ⟨inr (inl a), b⟩
+    exact Or.inr rfl
+
 /-! ## Dedup recursion infrastructure (sublist + membership transport) -/
 
 open DuplexSpongeFS.Paper in
@@ -601,6 +626,7 @@ end DuplexSpongeFS.EagerLazyDS
 #print axioms DuplexSpongeFS.EagerLazyDS.hasFwdKey_foldl_imp
 #print axioms DuplexSpongeFS.EagerLazyDS.hasInvKey_stepCache_imp
 #print axioms DuplexSpongeFS.EagerLazyDS.hasInvKey_foldl_imp
+#print axioms DuplexSpongeFS.EagerLazyDS.sameClass_of_entryKeys
 #print axioms DuplexSpongeFS.EagerLazyDS.removeRedundantEntryDSPaper_sublist
 #print axioms DuplexSpongeFS.EagerLazyDS.mem_of_mem_removeRedundantEntryDSPaper
 #print axioms DuplexSpongeFS.EagerLazyDS.probEvent_EPaper_toReal_le_lemma5_8Bound_of_reduction
