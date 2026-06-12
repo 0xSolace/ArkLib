@@ -13,6 +13,7 @@ codes ([ABF26] Definition 4.3), with matching machine-checked bounds.
 | Research map (papers + adjacent math + ranked attack vectors) | [`docs/kb/deltastar-research-map.md`](../kb/deltastar-research-map.md) |
 | Refuted approaches with constraint lemmas | [`ArkLib/Data/CodingTheory/ProximityGap/DISPROOF_LOG.md`](../../ArkLib/Data/CodingTheory/ProximityGap/DISPROOF_LOG.md) |
 | Probes (exact small-scale computation) | `scripts/probes/probe_*.py` |
+| **The paper** (the complete machine-checked theory, rounds 64–84) | [`docs/papers/mca-threshold-above-johnson.md`](../papers/mca-threshold-above-johnson.md) |
 | The nine-hypothesis methodology record | [`docs/wiki/deltastar-357-nine-hypotheses-2026-06-11.md`](deltastar-357-nine-hypotheses-2026-06-11.md) |
 
 ## The fast build path (mandatory)
