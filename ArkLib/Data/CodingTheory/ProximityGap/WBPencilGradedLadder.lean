@@ -486,10 +486,10 @@ theorem badScalars_card_le_of_graded (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤
       obtain ⟨T, hTsub, hTcard⟩ := Finset.exists_subset_card_eq hEcard
       -- the evaluated coincidence matrix has the nontrivial kernel
       have hAker : ∃ x : Fin c → F, x ≠ 0 ∧
-          (fun r s : Fin c =>
+          Matrix.mulVec (fun r s : Fin c =>
             (pencilGG dom k w ℓ₀ R₀ ℓ₁ R₁ J C₀ τ
               ((finsetEnum C₀ s : ↥C₀) : WCol n k w)
-              ((finsetEnum T (finCongr hTcard.symm r) : ↥T) : Fin n)).eval γ).mulVec
+              ((finsetEnum T (finCongr hTcard.symm r) : ↥T) : Fin n)).eval γ)
             x = 0 := by
         refine ⟨fun s => v (τ ((finsetEnum C₀ s : ↥C₀) : WCol n k w)), ?_, ?_⟩
         · obtain ⟨col, hcol, hvcol⟩ := hvnz
@@ -524,7 +524,6 @@ theorem badScalars_card_le_of_graded (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤
                   rw [show BGdet.eval γ * (v (Sum.inl t) * (dom i) ^ (t : ℕ))
                       = (BGdet.eval γ * v (Sum.inl t)) * (dom i) ^ (t : ℕ) by ring,
                     hspan (Sum.inl t), Finset.sum_mul]
-                  exact Finset.sum_congr rfl fun col _ => by ring
               _ = ∑ col ∈ C₀, ∑ t : Fin (w + 1), v (τ col)
                     * ((pencilSqG dom k w ℓ₀ R₀ ℓ₁ R₁ J C₀ τ).adjugate
                         (Sum.inl t) col).eval γ * (dom i) ^ (t : ℕ) :=
@@ -596,8 +595,8 @@ theorem badScalars_card_le_of_graded (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤
     _ ≤ (Bad₁ ∪ Bad₂).card + Bad₃.card := Finset.card_union_le _ _
     _ ≤ Bad₁.card + Bad₂.card + Bad₃.card :=
         Nat.add_le_add_right (Finset.card_union_le _ _) _
-    _ ≤ (w + 1) + (∑ j ∈ Finset.range C₀.card, n.choose (n - j))
-        + n.choose C₀.card * (C₀.card * (w + 1)) := by
+    _ ≤ (w + 1) + (∑ j ∈ Finset.range c, n.choose (n - j))
+        + n.choose c * (c * (w + 1)) := by
         have := hb1
         have := hb2
         have := hb3
