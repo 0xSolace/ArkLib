@@ -814,6 +814,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26StratifiedSpread
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26SumsOfRootsOfUnity
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ThornerZaman
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26WitnessSpread
+import ArkLib.Data.CodingTheory.ProximityGap.LadderSchurReduction
 import ArkLib.Data.CodingTheory.ProximityGap.LDAttainment
 import ArkLib.Data.CodingTheory.ProximityGap.LDEliasCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.LDFourRate
