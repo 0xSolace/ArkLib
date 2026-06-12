@@ -1,20 +1,22 @@
 # The window fiber-pencil programme (#371): the WB residual, brick by brick
 
-> Lane state as of 2026-06-12.  Goal: discharge `WindowRationalBounded`
-> (`WBPencilBelowUDR.lean`) — the single named residual of the below-UDR law —
-> by structural analysis of the doubly-rational bad-scalar supply, lifting the
-> unconditional production floor from `(1−ρ)/3` to the unique-decoding radius
-> `(1−ρ)/2`.  Everything here is k = 1 (the current battleground); the
-> machinery is k-generic at the identity level.
+> Lane state as of 2026-06-12.  `WindowRationalBounded`
+> (`WBPencilBelowUDR.lean`) is a refuted historical residual.  The repaired
+> below-UDR capstone is `WBPencilLinearBudget.lean`: discharge
+> `WindowRationalLinear` to get the sharp conditional mass `ε_mca ≤ n/q`.
+> WB-4 (`WBPencilWindowLaw.lean`) gives a structural weaker-residual route:
+> `WindowPencilAnchored` implies the production-safe polynomial mass
+> `((w+1)+n(w+1)+1)/q`.  Everything here is k = 1 (the current battleground);
+> the machinery is k-generic at the identity level.
 
 > **2026-06-12 correction.**  `WindowRationalBounded` is now refuted by the
 > normalizer-pair family: the high-rate first beyond-ladder slice has
-> `(n-2)/2` bad scalars, so the `w+3` constant budget is false.  The current
-> replacement is WB-4, `WBPencilWindowLaw.lean`: under the single structural
-> residual `WindowPencilAnchored`, it proves
-> `ε_mca ≤ ((w+1)+n(w+1)+1)/q`.  `WBPencilBelowUDR.lean` keeps the old theorem
-> as a historical false-residual consumer and adds a direct linear count
-> fallback, but the active target is anchored-pencil corank ≤ 1.
+> `(n-2)/2` bad scalars, so the `w+3` constant budget is false.  The sharp
+> repaired residual is `WindowRationalLinear` in `WBPencilLinearBudget.lean`
+> (bad count `≤ n`, consumer `ε_mca ≤ n/q`).  WB-4's
+> `WindowPencilAnchored` is the structural corank-1 route with the larger
+> polynomial budget.  `WBPencilBelowUDR.lean` only keeps the old theorem as a
+> historical false-residual consumer.
 
 ## The reduction chain (all axiom-clean, in-tree)
 
@@ -115,12 +117,14 @@ Successor generation (spawned by refutations, per discipline):
 2. Pole-recursion bricks (aligned case → punctured deficient instance).
 3. Higher slack: the chain theory at `deg g ≤ s` (multi-level CF; the
    `(X−t)`-cancellation telescopes), toward the parametric all-rows theorem.
-4. Assembly: replace the refuted `WindowRationalBounded` target with WB-4's
-   `WindowPencilAnchored` residual and consume `epsMCA_le_of_anchored` /
+4. Assembly: replace the refuted `WindowRationalBounded` target with
+   `WindowRationalLinear` from `WBPencilLinearBudget.lean` and consume
+   `epsMCA_le_below_udr_linear` / `le_mcaDeltaStar_below_udr_linear` there
+   for the sharp `n/q` budget.  The parallel structural route is WB-4's
+   `WindowPencilAnchored` residual and `epsMCA_le_of_anchored` /
    `le_mcaDeltaStar_of_anchored` from `WBPencilWindowLaw.lean`.  The old
    `epsMCA_le_below_udr` theorem remains only a conditional consumer of a false
-   historical residual; `epsMCA_le_below_udr_linear` is a direct count-residual
-   fallback, not the live blocker.
+   historical residual.
 
 ## The rung census campaign (2026-06-12 session): conjecture refuted, ceiling found
 
