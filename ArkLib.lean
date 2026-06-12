@@ -1111,6 +1111,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SingleClassWeight
 import ArkLib.Data.CodingTheory.ProximityGap.SlantedSupplyWideCircuits
+import ArkLib.Data.CodingTheory.ProximityGap.SlantedTransferThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLevelTwoCount
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusCount
 import ArkLib.Data.CodingTheory.ProximityGap.SliceLocusUnionBudget
