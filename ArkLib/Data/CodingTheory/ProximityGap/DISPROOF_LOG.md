@@ -7604,6 +7604,25 @@ coefficients; the column dichotomy — ≤ a−1 identically-zero columns else j
 `#bad ≤ n·deg P`; the missing piece is SLOPE COLLAPSE: `deg P ≤ 1` on the band, probe
 `_scratch_probe_slope_collapse.py`).
 
+**Generic-domain addendum (same day):** the band is also closed for EVERY injective
+evaluation domain (no smoothness) by a second independent mechanism — the γ-preserving
+puncture descent (`BelowUDRPuncture.lean`): a direction vanishing at a witness point
+`x₀` forces every explainer through `(x₀, u₀ x₀)` at every γ, and dividing the instance
+by `(X − x₀)` maps `(n, k, w) → (n−1, k−1, w)` at the same γ with `n − k` (hence the
+UDR slack σ = n−2w−k) invariant; induction on k bottoms at the k = 1 universal law.
+Result: `#bad·(n−2w−k) ≤ n^{k+1}` on ALL of `2w+k+1 ≤ n` — one statement, the whole
+below-UDR range, generic domain (`belowUDR_badScalars_card_mul_le`,
+`le_mcaDeltaStar_belowUDR`, `udrEdgeBand_closure_generic`; probe
+`probe_edgeband_puncture.py`, 633/633 descent checks).  Budget comparison stands: on
+smooth domains in the band the subset budget `C(n,k+1)/((k+1)p)` is sharper, and on
+`2w+2k ≤ n` the dichotomy budget is sharper — the descent adds generality (any domain),
+uniformity (one statement), and a reusable γ-preserving transfer mechanism (it is
+radius-agnostic: above UDR it descends every bad scalar whose witness meets the
+direction's zero set; the complementary stratum has witnesses concentrated on the
+support).  (Slope collapse was refuted the same day — see the entry above; the
+descent bound here is unaffected, and the surviving two-regime pencil law plus the
+moment-fiber question remain the named budget targets on smooth domains.)
+
 ## 2026-06-12 — SLOPE COLLAPSE REFUTED (directed t=2 construction); the surviving two-regime pencil law
 
 The slope-collapse conjecture (UDR-edge amendment above: every band bad-family's

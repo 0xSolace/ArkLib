@@ -438,6 +438,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BandFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIJointProximity
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIProof
+import ArkLib.Data.CodingTheory.ProximityGap.BelowUDRPuncture
 import ArkLib.Data.CodingTheory.ProximityGap.BestProvableBracket
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardLatticeSlice
