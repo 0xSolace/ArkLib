@@ -1107,6 +1107,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PackingEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.PackingSubdivision
 import ArkLib.Data.CodingTheory.ProximityGap.PackingTreeSufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.PadePartialFractionsKill
+import ArkLib.Data.CodingTheory.ProximityGap.PairCoherenceCount
 import ArkLib.Data.CodingTheory.ProximityGap.PairSumRigidityModP
 import ArkLib.Data.CodingTheory.ProximityGap.PairSumsWiring
 import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
