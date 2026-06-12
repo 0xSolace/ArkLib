@@ -1236,6 +1236,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.VerifiedBricks
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilAbsorption
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilBound
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilSubmatrix
+import ArkLib.Data.CodingTheory.ProximityGap.WBPencilSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedPrimePowerPacket
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.WideCircuitTrichotomy
