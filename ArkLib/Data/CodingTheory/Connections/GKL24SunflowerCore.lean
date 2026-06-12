@@ -57,7 +57,7 @@ set_option linter.unusedSectionVars false
 namespace ProximityGap
 
 open scoped NNReal
-open Finset
+open Finset Code
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
   {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -191,6 +191,36 @@ theorem ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn
   obtain ⟨v₀, hv₀, v₁, hv₁, hagree⟩ := hDjoint
   exact ⟨v₀, hv₀, v₁, hv₁, fun i hi => hagree i (hEq ▸ hSsub hi)⟩
 
+/-- **The strict witness-cover residual reduces to the non-strict (subset) cover.**  A provider for
+`GKL24MaxCorrStrictWitnessCoverResidual` (file `GKL24FirstMoment.lean`, previously with no
+reduction theorems): it suffices to supply, per stack, a close-codeword carrier `T` and, for each
+`w ∈ T`, a maximal correlated-agreement domain `D` merely **contained** in (not strictly expanded
+by) each bad line-agreement set `lineAgreeSet w γ`.  The strict expansion is then automatic
+(`ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn`), since `D` is a joint-agreement domain (part
+of `maxCorrAgreeDomain`) and each `γ`'s witness is non-joint.
+
+This removes the strictness obligation from the hard GKL24 input: only the *containment* of the
+maximal domain in every bad witness's agreement set remains. -/
+theorem GKL24MaxCorrStrictWitnessCoverResidual_of_subset_cover
+    (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
+    (hcover : ∀ u : WordStack F (Fin 2) ι,
+      ∃ T : Finset (ι → F),
+        (∀ w ∈ T, w ∈ (MC : Set (ι → F))) ∧
+        mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) ⊆
+          T.biUnion (fun w =>
+            mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w) ∧
+        (T.card : ℝ) ≤ B_T ∧
+        ∀ w ∈ T, ∃ D : Finset ι, maxCorrAgreeDomain MC p (u 0) (u 1) D ∧
+          ∀ γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
+            D ⊆ lineAgreeSet (u 0) (u 1) w γ) :
+    GKL24MaxCorrStrictWitnessCoverResidual MC δ p B_T := by
+  intro u
+  obtain ⟨T, hTsub, hcov, hcard, hT⟩ := hcover u
+  refine ⟨T, hTsub, hcov, hcard, fun w hw => ?_⟩
+  obtain ⟨D, hD, hDsub⟩ := hT w hw
+  exact ⟨D, hD, fun γ hγ =>
+    ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn hγ (hDsub γ hγ) hD.1.2⟩
+
 end ProximityGap
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -199,3 +229,4 @@ end ProximityGap
 #print axioms ProximityGap.corrAgreeDomain_inter_lineAgreeSet
 #print axioms ProximityGap.corrAgreeDomain_subset_lineAgreeSet_lineCombiner
 #print axioms ProximityGap.ssubset_lineAgreeSet_of_subset_of_pairJointAgreesOn
+#print axioms ProximityGap.GKL24MaxCorrStrictWitnessCoverResidual_of_subset_cover
