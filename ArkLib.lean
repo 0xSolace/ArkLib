@@ -1099,6 +1099,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PoleSpikeMatching
 import ArkLib.Data.CodingTheory.ProximityGap.PopularCodewords
 import ArkLib.Data.CodingTheory.ProximityGap.PrimePowerMultisetWindow
+import ArkLib.Data.CodingTheory.ProximityGap.ProductionBoundaryFailure
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionJohnsonBudget
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionRegimeBracket
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypotheses
