@@ -7432,6 +7432,28 @@ ArkLib.ProximityGap.Level1Rung.mcaDeltaStar_le_antipodal             -- δ* ≤ 
   is the successor question; any future "complete envelope" claim must subsume the
   pencil orbit.
 
+## 2026-06-12 — REFUTED: the rung census conjecture `bad ≤ 16 = n` (p=12289, n=16, k=3, agreement 7)
+
+The block-frame construction beats the antipodal pencil. Two disjoint 6-point
+agreement blocks `A₁, A₂` with `R₁ ≡ qᵢ`, `R₀ ≡ rᵢ` on `Aᵢ` (deg < 3, distinct)
+plus 4 steered free points realize **20 distinct bad scalars** — witnesses
+`Aᵢ ∪ {x}`, one scalar per off-point `γ = −(R₀(x)−rᵢ(x))/(R₁(x)−qᵢ(x))`,
+hitting the `maximal_frame_attached_card_le` cap `n − |A| = 10` on BOTH
+frames simultaneously (`RungMaximalFrame.lean` predicts the 20 exactly).
+
+* `probe_wb371_blockframe.py` / `probe_wb371_verify20.py`: the explicit stack
+  is double-verified (fast residue census + independent slow Lagrange-fit
+  checker; 25 non-bad controls clean). Deterministic seed 20260612.
+* At p=17 the same construction caps at 15 (< 17 available scalars) — the toy
+  scale structurally MASKS the configuration; earlier census probes (40
+  adversarial constructions/scale) never tried block designs.
+* Status of the round-7 obligation `SubCeilingInteriorCeiling ≤ 31`: ALIVE
+  (20 ≤ 31) but the margin is 11, not 15, and k-block webs (pairwise-≤2
+  overlapping 6-blocks) have 10k candidate scalars — the 3-/4-block
+  realizability question is now THE obligation-critical computation.
+* The conjecture `δ* truth = 16` at this rung and the issue-comment claim
+  "bad ≤ 16 HOLDS at both scales" (comment 4688420285) are WITHDRAWN.
+
 ### O156 — THE CONSTANT-6 LAW IS TWO-SIDED at n = 8..64, and the ≤-side target is a Beukers–Smyth sharpening: M(32) = M(64) = 6 rigorous via the invisibility trichotomy; the witness curve is conjugate-reciprocal exactly as BS's structure theorem demands (normalizer-gap lane, 2026-06-12; follow-up to O155)
 
 * **M(32) ≤ 6 and M(64) ≤ 6 RIGOROUS** (`probe_char0_rigor.py`, RESULTS-CHAR0-RIGOR.md):
