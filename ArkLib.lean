@@ -1264,6 +1264,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeSyndromeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.TwoPrimeWindowLaw
 import ArkLib.Data.CodingTheory.ProximityGap.TwoSidedBracketScale
 import ArkLib.Data.CodingTheory.ProximityGap.UDRBadCount
+import ArkLib.Data.CodingTheory.ProximityGap.UDREdgeClosure
 import ArkLib.Data.CodingTheory.ProximityGap.UniqueDecodingListBound
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalBelowUDR
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalGSArchitecture

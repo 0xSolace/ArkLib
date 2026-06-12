@@ -7590,3 +7590,16 @@ at EVERY radius — at the boundary slice this is ≈ C(n,k+1), matching the mea
 56 within the ordered-count factor.  The exact threshold value of ε_mca at the
 boundary slice is now bracketed `[C(n,k+1), n^{k+1}/(k+1)!]`-ish for the far class,
 with the far class provably extremal over the spectrum family.
+## 2026-06-12 — UDR-edge band amendment: RADIUS coverage closed by composition (the no-go stands for the dichotomy budget)
+
+The fifth no-go above is intrinsic to the universal DICHOTOMY's two branches, not to the
+radius band: the subset-ownership law (`march_badScalars_card_mul_le`, glueing constant)
+is radius-free, so the band `n ∈ [2w+k+1, 2w+2k)` moves at the subset budget
+`C(n,k+1)/((k+1)·p)` — `UDREdgeClosure.lean` (`udrEdgeBand_closure`,
+`le_mcaDeltaStar_subset_law_w`).  Below-UDR radius coverage is gapless at every rate.
+What remains open on the band is only the BUDGET gap: the dichotomy's
+`n^{k+1}/(n−2w−2k+1)^k` shape is unavailable there; recovering it needs the γ-line
+mechanism (explainers of bad scalars move polynomially `p_γ = P(γ)` with codeword
+coefficients; the column dichotomy — ≤ a−1 identically-zero columns else joint — gives
+`#bad ≤ n·deg P`; the missing piece is SLOPE COLLAPSE: `deg P ≤ 1` on the band, probe
+`_scratch_probe_slope_collapse.py`).
