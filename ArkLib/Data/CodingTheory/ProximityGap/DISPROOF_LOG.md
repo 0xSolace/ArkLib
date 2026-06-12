@@ -7466,3 +7466,43 @@ ArkLib.ProximityGap.Level1Rung.mcaDeltaStar_le_antipodal             -- δ* ≤ 
   census code path (mitigated by the symbolic identity checks, the n=8 exhaustive
   norm audit, and brute gates at q=41); an independent reimplementation would
   upgrade confidence — cheap follow-up for any seat.
+
+### O157 — THE SPANNING IDENTITY: rank-3 surface planes are AUTOMATICALLY conjugate-reciprocal (λ = ζ^{−Σ} explicit) — non-reciprocal planes carry ≤ 2 points; all 244 maximizer classes verified; the constant-6 law extends to n = 128 with a forward-predicted exact count law (normalizer-gap lane, 2026-06-12; follow-up to O155/O156)
+
+`scripts/probes/normalizer_gap/` (probe_reciprocal_param.py, probe_reciprocal_census.py,
+RESULTS-RECIPROCAL.md; commit 66b05bd71). Batch-2 falsifier round — all passed:
+
+* **The spanning identity** (machine-verified exhaustively at n=8, randomly to 256, mod-p in
+  every census run): rev(cross(P00, P(i₁,j₁), P(i₂,j₂))) = ζ^Σ·conj(cross), Σ = i₁+j₁+i₂+j₂.
+  Consequence: EVERY plane spanned by a rank-3 surface triple is conjugate-reciprocal with
+  the explicit unit λ = ζ^{−Σ} — and invertible non-normalizer NON-reciprocal planes carry
+  ≤ 2 surface points (rank-3 ⟹ reciprocal; rank-2 ⟹ coordinate line ⟹ singular). On this
+  surface that sharpens Beukers–Smyth's non-reciprocal 4V-cap to 2, and localizes the
+  ≤6-for-all-n question ENTIRELY inside the explicit λ-family (a half-dimension K-subspace,
+  rank-verified). Care taken: λλ̄ = 1 does NOT imply λ = ±ζ^t in general (machine
+  counterexample (3+4i)/5) — the ±ζ^t form holds for primitive integral normals
+  (content + Kronecker) and is explicit for spanned planes via the identity.
+* **BS-consistency falsifier passed at full strength**: all 34 (n=16) + 210 (n=32) count-6
+  maximizer classes reconstructed and re-proven char-0 count-6 in exact ℤ[x]/(x^{n/2}+1),
+  each fitting the UNIQUE predicted λ = ζ^{−Σ}. No anomaly.
+* **Constant-6 extends to n = 128**: M_p(128) = 6 at two split primes, zero planes above 6;
+  M(128) ≥ 6 and M(256) ≥ 6 proven char-0 (multi-prime certificate mode: heights ⟹
+  N² ≤ 432^m; ladder product exceeding it forces exact vanishing — every count-5/6 plane at
+  every n ∈ {8..128} carries an exact certificate, 0 failures). ≤6 at 128 remains two-prime
+  evidence (rigor ladder = 24 clean primes, ~3h, named follow-up; n=256 census needs ~35GB
+  disk — skipped honestly, ≥6 anchor stands).
+* **Exact count laws** (forward-predicted: the quadratic through n=16/32/64 predicted
+  count6(128) = 41292 BEFORE the run; both primes returned exactly that):
+  count6(n) = (n−4)(11n−76)/4 over n = 8..128 (12/300/1932/9420/41292, five-for-five) and
+  count5(n) = 10(n−6) (five-for-five). Closed-form DERIVATION from the λ-family = the named
+  next brick (these are the maximizer-population laws the ≤6 theorem must reproduce).
+* **First mod-p surplus of the program observed** (n=128: count-3/4 buckets differ across the
+  two primes; count-5/6 and the max bit-identical, all certified char-0) — the two-layer law
+  surfaces exactly where the certificates stop, never touching the headline.
+* **O156's engine-debt note DISCHARGED**: independent reimplementation of dedupe (streamed
+  gzip + external sort) and recount (fresh Möbius O(n)-per-plane counter), gate-reproduced
+  bit-identically at n=32/64 before n=128 was believed.
+
+Named next: the ≤6 theorem ON the λ-family (BS f†/seven-polynomial machinery, count laws as
+ground truth); the 24-prime M(128) ladder; count6/count5 closed-form derivation; the
+const6_witness Lean brick's ≤-side counterpart.
