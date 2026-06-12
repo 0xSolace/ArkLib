@@ -1255,3 +1255,35 @@ conceptual gain), and — via independent verification — corrects both the att
 my own §37 over-identification. The open core stands: the degree-t incomplete Weil-sum / KKH26-extremality
 matching, coupled to the 25-yr beyond-Johnson explicit-RS list-decoding wall. No solution; no fabrication;
 the adversarial harness + independent re-check did exactly their job (killed the imprecise claims).
+## 40. ROUND 2 (4 untried angles, adversarial): δ* OPEN — exact syndrome localization + BGK-unavailable correction
+
+Round-2 multi-agent attack (wf_15280d51-08c, 5 agents, adversarial-verified): **NO survivor, δ* OPEN.**
+All 4 untried angles (syndrome-lens, inverse-binding, sharp-literature, direct-construction) wall at the
+same incomplete subgroup Weil sum. Genuine advances (verified in-tree, anti-fake checked):
+
+**(1) Exact syndrome localization (the sharp deliverable).** Two sorry-free in-tree facts make the
+band-limited lens EXACT, not heuristic: `PartialDFTClosure.partial_dft_mu_p_closed` (spectrum on `pℤ`
+⟺ `μ_p` shift-invariance) and `MCASyndromeSup.epsMCA_eq_iSup_syndromePairs` (ε_mca factors EXACTLY, no
+slack, through the `|A|^{2(n-k)}` syndrome-pair space). Consequence: **the entire Johnson→KKH26-ceiling
+gap is EXACTLY the value of the incomplete subgroup Weil sum**, and the obstruction is localized onto
+the `μ_p`-closed / subgroup-additive (KKH26) configurations. Machine-checked narrowing of where the $1M
+lives.
+
+**(2) IMPORTANT CORRECTION — BGK is UNAVAILABLE in the deployed regime.** I had assumed BGK/Bourgain
+small-subgroup cancellation applies (n~p^{0.156}). FALSE: BGK requires `|H| ≥ p^δ` for a FIXED `δ>0`,
+but deployed `n=2^μ` with the cryptographic field forces `n = p^{o(1)}` (the subgroup is sub-polynomial
+in the field). So **even Bourgain gives NO cancellation** — the open core is harder than "Bourgain
+territory": it is the `n=p^{o(1)}` regime where no subgroup-character-sum cancellation is known at all.
+
+**(3) Obstruction is correctly typed as ALGEBRAIC-GEOMETRIC, not additive.** The binding constraint on
+the bad-list configuration is the Guruswami–Sudan interpolation CURVE (root-multiplicity), not an
+additive coset — so the additive structured-vs-generic dichotomy (inverse theorem) provably cannot
+close it. This re-types the attack: the right tool is the curve-side Stepanov/Hasse-multiplicity route,
+NOT additive combinatorics or BGK.
+
+**Round-3 target (correctly typed, verified substrate exists):** a curve-side Stepanov second-moment /
+root-multiplicity bound on `S_m(b)` over `μ_n`, pushing the in-tree Stepanov bricks
+(`StepanovHighMultVanisher.exists_highMult_vanisher`, `StepanovHasseInterface`, the
+`le_rootMultiplicity_iff_hasseDeriv` keystone) onto the syndrome-pair space `epsMCA_eq_iSup_syndromePairs`
+exposes. The one route where (a) the obstruction is correctly typed (AG), (b) verified substrate exists,
+(c) the no-gos (BGK regime, subspace-design folding) do not apply. δ* remains OPEN; no fabrication.
