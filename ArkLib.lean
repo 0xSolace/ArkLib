@@ -1482,6 +1482,7 @@ import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessMsgProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessOracleMsg
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessProof
 import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessSeamTransfer
+import ArkLib.OracleReduction.Composition.Sequential.AppendSoundnessTotal
 import ArkLib.OracleReduction.Composition.Sequential.AppendToVerifierKeystone
 import ArkLib.OracleReduction.Composition.Sequential.AppendVerifierFusion
 import ArkLib.OracleReduction.Composition.Sequential.AppendVerifierFusionCore
