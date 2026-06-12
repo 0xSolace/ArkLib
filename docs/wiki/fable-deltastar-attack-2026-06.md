@@ -1414,3 +1414,41 @@ mathematics (HBK/Stepanov), not the "25-year new-math wall" the prior sessions c
 CANDIDATE, not a proof: no in-tree artifact discharges, and the linchpin citation is unverified. Next:
 (1) rigorously verify Gap A (exact HBK/Shkredov statement + hypotheses); (2) if it holds, formalize the
 Stepanov brick (Gap B) → genuine pin. No fabrication; recorded as candidate per honesty discipline.
+
+---
+
+## §44 — Round 5 candidate REFUTED by an in-tree proven no-go (Gap C): HBK is real but does NOT pin δ*
+
+Red-teaming §43 before any pin claim. **Gap A is now CLOSED** (genuine, kept): the verification agent
+extracted the Heath-Brown–Konyagin primary PDF (Oxford ORA) verbatim —
+> **Lemma 1.** `μ_h = {x : x^h = 1}`, `A(h) = {(x₁,x₂,x₃,x₄)∈μ_h⁴ : x₁+x₂=x₃+x₄}`.
+> **Lemma 3.** For any `h < p^{2/3}` we have `#A(h) ≪ h^{5/2}`.
+i.e. `E_+(A) ≪ |A|^{5/2}` for every multiplicative subgroup with `|A| < p^{2/3}`, **no lower floor**,
+Stepanov method (Shkredov lineage improves to `|A|^{32/13+o(1)}`, same floor-free range). My prior
+no-go cartography (§16–26) DID misattribute: the floor-bearing object is the BGK *exponential-sum*
+bound, NOT the HBK *energy* bound. That correction stands and is valuable.
+
+**BUT the pin is REFUTED by Gap C — a proven in-tree no-go I had not connected.** The chain from the
+energy `E(G)` to the worst-case `δ*` quantity `epsMCA` does NOT exist as a proven lemma — the only file
+linking `epsMCA` to energy is `DISPROOF_LOG.md` (recorded dead ends). The precise obstruction is
+`JohnsonFourthMomentNoGo.lean`:
+- `squaredJohnson_le_fourthChain`: `(n·S₂)² ≤ n³·S₄` **ALWAYS** (two chained Cauchy–Schwarz steps).
+- `fourth_moment_cannot_beat_johnson_from_S4` (**proven no-go**): any `Q ≥ S₄` with `n³·Q < (n·S₂)²`
+  is contradictory — **no bound on `S₄` can push the list cap below the squared Johnson cap.**
+
+And `E(G) = Σ_b‖η_b‖⁴/q` IS the `S₄` 4th moment (session 21). So HBK's `E(G) ≪ |G|^{5/2}`, however
+true, feeds the only available moment chain, which **provably saturates at Johnson**. The round-5
+KNOWN-RESULT agent's pivotal claim — "`E(A)` is the worst-case quantity ⟹ bypasses the wall" — is FALSE:
+`E(A)=S₄` is the GLOBAL (average-scale) 4th moment; the no-go proves it cannot beat Johnson. Beating
+Johnson requires a **per-word quadruple-agreement bound below the Chebyshev floor `S₂²/n`** (the file's
+own statement of the open core), which the global energy bound does not supply. This is the
+average→worst-case wall, now in its sharpest in-tree-proven form.
+
+**NET (rounds 1–5):** δ* remains OPEN, confined to `(1−√ρ, 1−r/2^μ]`. Round 5's lasting contribution is
+a CORRECTION (the subgroup energy is bounded by a KNOWN floor-free theorem, HBK/Stepanov — the prior
+"Stepanov insufficient / BGK floor" framing was imprecise) AND a SHARPER statement of the true open
+core: it is NOT "bound the subgroup's additive energy" (done, known) but "bound the **worst-case
+per-received-word quadruple agreement below the Chebyshev floor `S₂²/n`**" for the explicit smooth code
+— a quantity the global energy provably cannot control (`fourth_moment_cannot_beat_johnson_from_S4`).
+The §43 candidate pin is RETRACTED. No fabrication; the red-team (checking the candidate against the
+tree's own proven no-go) did its job.
