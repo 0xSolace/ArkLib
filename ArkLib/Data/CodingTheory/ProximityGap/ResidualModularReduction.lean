@@ -40,6 +40,17 @@ open ProximityGap.SpikeFloor ProximityGap
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {n : ℕ} [NeZero n]
 
+/-- Full-domain Lagrange interpolant of an arbitrary word on an injective RS
+domain. -/
+noncomputable def wordInterpolant (dom : Fin n ↪ F) (u : Fin n → F) : F[X] :=
+  Lagrange.interpolate Finset.univ (fun i => dom i) u
+
+omit [Fintype F] [DecidableEq F] [NeZero n] in
+@[simp]
+theorem wordInterpolant_eval (dom : Fin n ↪ F) (u : Fin n → F) (i : Fin n) :
+    (wordInterpolant dom u).eval (dom i) = u i := by
+  exact Lagrange.eval_interpolate_at_node u dom.injective.injOn (Finset.mem_univ i)
+
 /-- **The master modular reduction**: the residual of any polynomial-valued
 column is the `X^k`-coefficient of its remainder mod the node polynomial, times
 the residual of the `k`-th power column (no injectivity needed). -/
@@ -208,10 +219,30 @@ theorem boundary_slice_badSet_modular (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ 
       rw [hm1, h, mul_zero] at hres1
       exact hres1 rfl
     rw [hm0, hm1, hφ]
-    show _ = -((Q₀ %ₘ ∏ i ∈ Finset.univ.image t, (X - C (dom i))).coeff k)
+    change _ = -((Q₀ %ₘ ∏ i ∈ Finset.univ.image t, (X - C (dom i))).coeff k)
       / (Q₁ %ₘ ∏ i ∈ Finset.univ.image t, (X - C (dom i))).coeff k
     rw [← hPmatch t htinj, neg_div, neg_div, mul_div_mul_right _ _ hr]
   rw [h1, injTuple_image_setFn_eq φ k]
+
+open Classical in
+/-- Cardinality form of `boundary_slice_badSet_modular`: the boundary-slice
+bad-scalar count is exactly the number of distinct modular Wronskian ratios over
+`(k+1)`-subsets. -/
+theorem boundary_slice_badSet_modular_card_eq (dom : Fin n ↪ F) {k : ℕ}
+    (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (Q₀ Q₁ : F[X])
+    (hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c (fun i => Q₁.eval (dom i))).card ≤ k) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => Q₀.eval (dom i)) (fun i => Q₁.eval (dom i)) γ)).card
+      = ((Finset.univ.powersetCard (k + 1)).image
+          (fun S : Finset (Fin n) =>
+            -((Q₀ %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k)
+              / (Q₁ %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k)).card := by
+  rw [boundary_slice_badSet_modular dom hk hlo hhi Q₀ Q₁ hμ]
 
 open Classical in
 /-- Coarse counting form of the modular census: every strongly-far polynomial
@@ -228,7 +259,7 @@ theorem boundary_slice_badSet_modular_card_le_choose (dom : Fin n ↪ F) {k : �
         ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
         (fun i => Q₀.eval (dom i)) (fun i => Q₁.eval (dom i)) γ)).card
       ≤ n.choose (k + 1) := by
-  rw [boundary_slice_badSet_modular dom hk hlo hhi Q₀ Q₁ hμ]
+  rw [boundary_slice_badSet_modular_card_eq dom hk hlo hhi Q₀ Q₁ hμ]
   calc
     ((Finset.univ.powersetCard (k + 1)).image
         (fun S : Finset (Fin n) =>
@@ -239,9 +270,94 @@ theorem boundary_slice_badSet_modular_card_le_choose (dom : Fin n ↪ F) {k : �
     _ = n.choose (k + 1) := by
           rw [Finset.card_powersetCard, Finset.card_univ, Fintype.card_fin]
 
+open Classical in
+/-- Word-level form of `boundary_slice_badSet_modular`.  Full-domain Lagrange
+interpolation transports the polynomial modular census to arbitrary rows on the
+domain, under the same strong-farness hypothesis for the direction row. -/
+theorem boundary_slice_badSet_modular_words (dom : Fin n ↪ F) {k : ℕ}
+    (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (u₀ u₁ : Fin n → F)
+    (hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c u₁).card ≤ k) :
+    Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        u₀ u₁ γ)
+      = (Finset.univ.powersetCard (k + 1)).image
+          (fun S : Finset (Fin n) =>
+            -(((wordInterpolant dom u₀) %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k)
+              / ((wordInterpolant dom u₁) %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k) := by
+  let Q₀ : F[X] := wordInterpolant dom u₀
+  let Q₁ : F[X] := wordInterpolant dom u₁
+  have hμQ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c (fun i => Q₁.eval (dom i))).card ≤ k := by
+    intro c hc
+    simpa [Q₁] using hμ c hc
+  have h := boundary_slice_badSet_modular dom hk hlo hhi Q₀ Q₁ hμQ
+  simpa [Q₀, Q₁] using h
+
+open Classical in
+/-- Cardinality form for arbitrary rows: at the boundary slice, every strongly-far
+direction word has bad-scalar count equal to the modular-ratio image size of the
+full-domain interpolants. -/
+theorem boundary_slice_badSet_modular_words_card_eq (dom : Fin n ↪ F)
+    {k : ℕ} (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (u₀ u₁ : Fin n → F)
+    (hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c u₁).card ≤ k) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        u₀ u₁ γ)).card
+      = ((Finset.univ.powersetCard (k + 1)).image
+          (fun S : Finset (Fin n) =>
+            -(((wordInterpolant dom u₀) %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k)
+              / ((wordInterpolant dom u₁) %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k)).card := by
+  let Q₀ : F[X] := wordInterpolant dom u₀
+  let Q₁ : F[X] := wordInterpolant dom u₁
+  have hμQ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c (fun i => Q₁.eval (dom i))).card ≤ k := by
+    intro c hc
+    simpa [Q₁] using hμ c hc
+  have h := boundary_slice_badSet_modular_card_eq dom hk hlo hhi Q₀ Q₁ hμQ
+  simpa [Q₀, Q₁] using h
+
+open Classical in
+/-- Coarse counting form for arbitrary rows: at the boundary slice, every
+strongly-far direction word has at most one bad scalar per `(k+1)`-subset before
+modular-ratio collisions of the interpolants. -/
+theorem boundary_slice_badSet_modular_words_card_le_choose (dom : Fin n ↪ F)
+    {k : ℕ} (hk : 1 ≤ k) {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (u₀ u₁ : Fin n → F)
+    (hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c u₁).card ≤ k) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        u₀ u₁ γ)).card
+      ≤ n.choose (k + 1) := by
+  rw [boundary_slice_badSet_modular_words_card_eq dom hk hlo hhi u₀ u₁ hμ]
+  calc
+    ((Finset.univ.powersetCard (k + 1)).image
+        (fun S : Finset (Fin n) =>
+          -(((wordInterpolant dom u₀) %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k)
+            / ((wordInterpolant dom u₁) %ₘ ∏ i ∈ S, (X - C (dom i))).coeff k)).card
+        ≤ (Finset.univ.powersetCard (k + 1) : Finset (Finset (Fin n))).card :=
+          Finset.card_image_le
+    _ = n.choose (k + 1) := by
+          rw [Finset.card_powersetCard, Finset.card_univ, Fintype.card_fin]
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.residual_eq_remainder_coeff
 #print axioms ProximityGap.Ownership.boundary_slice_badSet_modular
+#print axioms ProximityGap.Ownership.boundary_slice_badSet_modular_card_eq
 #print axioms ProximityGap.Ownership.boundary_slice_badSet_modular_card_le_choose
+#print axioms ProximityGap.Ownership.wordInterpolant_eval
+#print axioms ProximityGap.Ownership.boundary_slice_badSet_modular_words
+#print axioms ProximityGap.Ownership.boundary_slice_badSet_modular_words_card_eq
+#print axioms ProximityGap.Ownership.boundary_slice_badSet_modular_words_card_le_choose
