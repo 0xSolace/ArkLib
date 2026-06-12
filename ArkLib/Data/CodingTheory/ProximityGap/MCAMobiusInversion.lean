@@ -309,6 +309,40 @@ theorem twist_eigenMinus (dom : Fin n ↪ F) {k : ℕ} (hkodd : (k - 1) % 2 = 0)
   simp only [Pi.smul_apply, Pi.sub_apply, Pi.neg_apply, smul_eq_mul]
   ring
 
+/-! ## The polynomial-level involution (the palindrome subcode foundation) -/
+
+/-- **The reversal twist is an involution up to the sign**:
+`(P*)* = (−1)^{k−1}·P` for `deg P < k` — purely by coefficient comparison. -/
+theorem reversalTwist_reversalTwist (k : ℕ) (hk : 1 ≤ k) (P : F[X])
+    (hP : P.degree < k) :
+    reversalTwist k (reversalTwist k P) = ((-1 : F) ^ (k - 1)) • P := by
+  have hcoeff : ∀ (Q : F[X]) (j : ℕ), j < k → (reversalTwist k Q).coeff j
+      = (-1) ^ (k - 1 - j) * Q.coeff (k - 1 - j) := by
+    intro Q j hj
+    rw [reversalTwist, finset_sum_coeff]
+    rw [Finset.sum_eq_single (k - 1 - j)]
+    · rw [coeff_C_mul, coeff_X_pow, if_pos (by omega), mul_one]
+    · intro b hb hbne
+      have hbk := Finset.mem_range.mp hb
+      rw [coeff_C_mul, coeff_X_pow, if_neg (by omega), mul_zero]
+    · intro h
+      exact absurd (Finset.mem_range.mpr (by omega)) h
+  ext j
+  by_cases hj : j < k
+  · rw [hcoeff _ j hj, hcoeff P (k - 1 - j) (by omega)]
+    have hjj : k - 1 - (k - 1 - j) = j := by omega
+    rw [hjj, coeff_smul, smul_eq_mul, ← mul_assoc, ← pow_add]
+    congr 2
+    omega
+  · have h1 : (reversalTwist k (reversalTwist k P)).coeff j = 0 := by
+      refine coeff_eq_zero_of_degree_lt (lt_of_lt_of_le
+        (reversalTwist_degree_lt k hk _) ?_)
+      exact_mod_cast (by omega : k ≤ j)
+    have h2 : P.coeff j = 0 := by
+      refine coeff_eq_zero_of_degree_lt (lt_of_lt_of_le hP ?_)
+      exact_mod_cast (by omega : k ≤ j)
+    rw [h1, coeff_smul, h2, smul_zero]
+
 end ProximityGap.MCAMobius
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -322,3 +356,4 @@ end ProximityGap.MCAMobius
 #print axioms ProximityGap.MCAMobius.eigen_add
 #print axioms ProximityGap.MCAMobius.twist_eigenPlus
 #print axioms ProximityGap.MCAMobius.twist_eigenMinus
+#print axioms ProximityGap.MCAMobius.reversalTwist_reversalTwist
