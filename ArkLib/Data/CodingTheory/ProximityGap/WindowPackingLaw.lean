@@ -304,6 +304,25 @@ theorem window_packing_law (hk : 1 ≤ k) {j : ℕ} (hj : n + j = 3 * w + k - 1)
     _ = (Γ.biUnion Jset).card := hbiU.symm
     _ ≤ n.choose (j + 1) := hcap
 
+open Classical in
+/-- **The solved stratum** (`j = 0`, the first beyond-ladder slice `n = 3w+k−1`):
+`#bad · w ≤ n`.  The `μ_w`-coset family attains `n/w`
+(`probe_coset_family_jzero.py`: 3 = 3, 4 = 4, 4 = 4), so the bounds MEET. -/
+theorem window_jzero_solved (hk : 1 ≤ k) (hj : n = 3 * w + k - 1) (hwn : w ≤ n)
+    (hℓ₀d : ℓ₀.natDegree ≤ w) (hℓ₁d : ℓ₁.natDegree ≤ w)
+    (hR₀d : R₀.natDegree ≤ w + k - 1) (hR₁d : R₁.natDegree ≤ w + k - 1)
+    (hℓ₀v : ∀ i : Fin n, ℓ₀.eval (dom i) ≠ 0)
+    (hℓ₁v : ∀ i : Fin n, ℓ₁.eval (dom i) ≠ 0)
+    (hcop : IsCoprime ℓ₀ ℓ₁) (hgen₀ : ¬ ℓ₀ ∣ R₀) (hgen₁ : ¬ ℓ₁ ∣ R₁)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+      ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+      (fun i => R₀.eval (dom i) / ℓ₀.eval (dom i))
+      (fun i => R₁.eval (dom i) / ℓ₁.eval (dom i)) γ)).card * w ≤ n := by
+  have h := window_packing_law dom hk (j := 0) (by omega) (by omega) hwn
+    hℓ₀d hℓ₁d hR₀d hR₁d hℓ₀v hℓ₁v hcop hgen₀ hgen₁ hδn
+  simpa using h
+
 end Packing
 
 end ProximityGap.WBPencil
@@ -312,3 +331,4 @@ end ProximityGap.WBPencil
 #print axioms ProximityGap.WBPencil.shared_forces_eq_general
 #print axioms ProximityGap.WBPencil.window_explainer
 #print axioms ProximityGap.WBPencil.window_packing_law
+#print axioms ProximityGap.WBPencil.window_jzero_solved
