@@ -569,6 +569,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CosetAugmentation
 import ArkLib.Data.CodingTheory.ProximityGap.CosetCliqueBoundary
 import ArkLib.Data.CodingTheory.ProximityGap.CosetExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.CosetFamilyAttainment
+import ArkLib.Data.CodingTheory.ProximityGap.CosetPigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.CosetRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.CosetSplittingFloor
