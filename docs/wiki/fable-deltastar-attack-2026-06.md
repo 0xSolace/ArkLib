@@ -1223,3 +1223,35 @@ maximally pinned and generalized to degree-t. There is no escape: every route (c
 moment-threshold, character-sum) reduces to the incomplete polynomial Weil sum over μ_n, which is the
 genuine open mathematics. The framing is a real advance (the cleanest known statement of the open core +
 the unification); it is NOT a solution, and the incomplete-sum bound cannot be fabricated. No fabrication.
+## 39. MULTI-AGENT ATTACK (6 agents, adversarial-verified): δ* OPEN — no survivor; two honest corrections
+
+Ran a top-down 5-angle multi-agent attack on the δ* conjecture with mandatory adversarial verification
+(run wf_d5c245ce-166). **Adversarial verdict: NO survivor — δ* remains OPEN.** No angle produced a
+checkable pin; every result was OPEN or PARTIAL. Honest outcomes:
+
+**Durable gains (verified):**
+- **δ* sharpness SETTLED, "band" worry REFUTED** (machine-anchored, conf 0.88): `δ* = sSup{δ : ε_mca ≤ ε*}`
+  is a UNIQUE sharp point for every finite n, because `epsMCA_mono` (MCAThresholdLedger.lean:112-122) +
+  `mcaGoodRadii_bddAbove`. The difficulty is NOT that brackets fail to meet — they meet at a point. The
+  difficulty is purely the EFFECTIVE two-sided VALUE computation = the 25-yr wall.
+- **Open core re-confirmed = degree-t incomplete Weil sum** `S_m(b)=Σ_{x∈μ_n}ψ(m·P_b(x))`, deg P_b≤t,
+  over μ_n in n≪√q (§38). Known BGK `|S_m(b)|≤n^{1-η}` is non-binding where it applies (t=1) and
+  unavailable where it binds — the exact gap, Bourgain territory.
+
+**Two corrections caught by independent verification (anti-fake):**
+1. The attack's antipodal-extremal closed form `max_c L_2 = 2^{μ-1}` is WRONG. Independent exact probe
+   (`probe_antipodal_extremal.py`): the true value is `max_c L_2 = 2^{μ-2} = n/4` (k=2/size=4: n=8→2,
+   n=16→4, n=32→8), `max_c L_3 = 2^{μ-2}-1`. Off by a factor 2; the agent's constant fails re-check.
+2. More important: `max_c L_t` (the prescribed-top-t-symmetric-function count) is SMALL (`~n/4 = 2^{38}`
+   deployed) and DECREASING in t (more constraints) — so it NEVER reaches `ε*q = 2^{128}`. Therefore the
+   symmetric-function count `L_t(c)` is NOT the worst-case list size at the deep interior; the KKH26
+   near-capacity bad line uses a different (gap-polynomial / r-subset-sum) mechanism. **§37's "δ* =
+   deepest t with max_c L_t > ε*q" over-identified L_t with the list size** — the precise bridge from the
+   degree-drop subset count to the list size at radius 1-(k+t)/n is the missing link, and the worst-case
+   list is governed by the KKH26-type construction, not the symmetric-function count. CORRECTED.
+
+**Net:** the multi-agent adversarial attack honestly confirms δ* OPEN, settles its sharpness (a real
+conceptual gain), and — via independent verification — corrects both the attack's antipodal constant and
+my own §37 over-identification. The open core stands: the degree-t incomplete Weil-sum / KKH26-extremality
+matching, coupled to the 25-yr beyond-Johnson explicit-RS list-decoding wall. No solution; no fabrication;
+the adversarial harness + independent re-check did exactly their job (killed the imprecise claims).
