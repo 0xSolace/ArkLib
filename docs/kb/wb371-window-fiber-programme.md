@@ -15,8 +15,10 @@
 > repaired residual is `WindowRationalLinear` in `WBPencilLinearBudget.lean`
 > (bad count `≤ n`, consumer `ε_mca ≤ n/q`).  WB-4's
 > `WindowPencilAnchored` is the structural corank-1 route with the larger
-> polynomial budget.  `WBPencilBelowUDR.lean` only keeps the old theorem as a
-> historical false-residual consumer.
+> polynomial budget.  `WBPencilBelowUDR.lean` keeps the old theorem as a
+> historical false-residual consumer, plus a legacy direct-count fallback under
+> `_linear_fallback` names so `WBPencilLinearBudget.lean` owns the canonical
+> `*_linear` declarations.
 
 ## The reduction chain (all axiom-clean, in-tree)
 
