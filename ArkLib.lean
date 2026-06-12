@@ -1157,6 +1157,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RatSquarefreeClassification
 import ArkLib.Data.CodingTheory.ProximityGap.RatWeightedSquarefreeGrid
 import ArkLib.Data.CodingTheory.ProximityGap.RatesBracket
 import ArkLib.Data.CodingTheory.ProximityGap.RatioCensusIdentity
+import ArkLib.Data.CodingTheory.ProximityGap.RatioPigeonholeGoodSide
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonStirOutOfDom
