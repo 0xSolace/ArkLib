@@ -254,9 +254,34 @@ theorem boundary_slice_ladder_badSet_card_eq (dom : Fin n ↪ F) {k : ℕ} (hk :
           (fun S : Finset (Fin n) => ∑ i ∈ S, dom i)).card := by
           rw [hA, hσ]
 
+open Classical in
+/-- Coarse counting form of `boundary_slice_ladder_badSet_card_eq`: the ladder-stack
+bad-scalar count at the boundary slice is bounded by the number of `(k+1)`-subsets of
+the domain.  Exact-count arguments should use `boundary_slice_ladder_badSet_card_eq`;
+this corollary is the import-light generic ceiling. -/
+theorem boundary_slice_ladder_badSet_card_le_choose (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k)
+    {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c (fun i => (dom i) ^ k)).card ≤ k) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => (dom i) ^ (k + 1)) (fun i => (dom i) ^ k) γ)).card
+      ≤ n.choose (k + 1) := by
+  rw [boundary_slice_ladder_badSet_card_eq dom hk hlo hhi hμ]
+  calc
+    ((Finset.univ.powersetCard (k + 1)).image
+        (fun S : Finset (Fin n) => ∑ i ∈ S, dom i)).card
+        ≤ (Finset.univ.powersetCard (k + 1) : Finset (Finset (Fin n))).card :=
+          Finset.card_image_le
+    _ = n.choose (k + 1) := by
+          rw [Finset.card_powersetCard, Finset.card_univ, Fintype.card_fin]
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.residual_ladder_schur
 #print axioms ProximityGap.Ownership.boundary_slice_ladder_badSet_eq
 #print axioms ProximityGap.Ownership.boundary_slice_ladder_badSet_card_eq
+#print axioms ProximityGap.Ownership.boundary_slice_ladder_badSet_card_le_choose
