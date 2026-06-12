@@ -142,20 +142,60 @@ theorem generalK_epsMCA_le_universal (dom : Fin n ↪ F)
   exact_mod_cast hdiv
 
 open Classical in
+/-- **Rational-facing probability form**: the same all-rate below-UDR law with
+the natural-number floor in the numerator relaxed to the honest ENNReal ratio. -/
+theorem generalK_epsMCA_le_universal_ratio (dom : Fin n ↪ F)
+    {k w : ℕ} (hk : 1 ≤ k) (hn : 2 * w + 2 * k ≤ n)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w) :
+    epsMCA (F := F) (A := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+      ≤ ((n ^ (k + 1) : ℕ) : ℝ≥0∞)
+        / (((n - 2 * w - 2 * k + 1) ^ k : ℕ) : ℝ≥0∞)
+        / (Fintype.card F : ℝ≥0∞) := by
+  refine le_trans (generalK_epsMCA_le_universal dom hk hn hδn) ?_
+  refine ENNReal.div_le_div_right ?_ _
+  have hden_pos : 0 < (n - 2 * w - 2 * k + 1) ^ k := by positivity
+  have hden_ne : (((n - 2 * w - 2 * k + 1) ^ k : ℕ) : ℝ≥0) ≠ 0 := by
+    exact_mod_cast (ne_of_gt hden_pos)
+  calc
+    (((n ^ (k + 1) / (n - 2 * w - 2 * k + 1) ^ k : ℕ) : ℝ≥0∞))
+        = ((((n ^ (k + 1) / (n - 2 * w - 2 * k + 1) ^ k : ℕ) : ℝ≥0) : ℝ≥0∞)) := rfl
+    _ ≤ ((((n ^ (k + 1) : ℕ) : ℝ≥0)
+          / (((n - 2 * w - 2 * k + 1) ^ k : ℕ) : ℝ≥0) : ℝ≥0) : ℝ≥0∞) := by
+        exact_mod_cast (Nat.cast_div_le (α := ℝ≥0)
+          (m := n ^ (k + 1)) (n := (n - 2 * w - 2 * k + 1) ^ k))
+    _ = ((n ^ (k + 1) : ℕ) : ℝ≥0∞)
+        / (((n - 2 * w - 2 * k + 1) ^ k : ℕ) : ℝ≥0∞) := by
+        rw [ENNReal.coe_div hden_ne]
+        norm_num
+
+open Classical in
 /-- **The unconditional production floor**: `δ* ≥ δ` for every radius `δ ≤ w/n`
 with `2w + 2k ≤ n`, whenever the polynomial mass fits the budget — for low rates
 this floor `≈ 1/2 − ρ` strictly improves the ladder reach `(1−ρ)/3`, with NO
-named residual. -/
+named residual. The side condition `δ ≤ 1` follows from the same hypotheses. -/
 theorem le_mcaDeltaStar_universal (dom : Fin n ↪ F)
     {k w : ℕ} (hk : 1 ≤ k) (hn : 2 * w + 2 * k ≤ n)
-    {δ : ℝ≥0} (hδ1 : δ ≤ 1) (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
     {εstar : ℝ≥0∞}
-    (hbudget : ((n ^ (k + 1) / (n - 2 * w - 2 * k + 1) ^ k : ℕ) : ℝ≥0∞)
-      / (Fintype.card F : ℝ≥0∞) ≤ εstar) :
+    (hbudget :
+      ((n ^ (k + 1) : ℕ) : ℝ≥0∞)
+        / (((n - 2 * w - 2 * k + 1) ^ k : ℕ) : ℝ≥0∞)
+          / (Fintype.card F : ℝ≥0∞) ≤ εstar) :
     δ ≤ ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := F) (A := F)
-        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) εstar :=
-  ProximityGap.MCAThresholdLedger.le_mcaDeltaStar_of_good _ _ hδ1
-    (le_trans (generalK_epsMCA_le_universal dom hk hn hδn) hbudget)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) εstar := by
+  have hncard_pos : 0 < (Fintype.card (Fin n) : ℝ≥0) := by
+    exact_mod_cast Fintype.card_pos (α := Fin n)
+  have hwle : (w : ℝ≥0) ≤ (Fintype.card (Fin n) : ℝ≥0) := by
+    rw [Fintype.card_fin]
+    exact_mod_cast (by omega : w ≤ n)
+  have hδ1 : δ ≤ 1 := by
+    have hmul : δ * (Fintype.card (Fin n) : ℝ≥0)
+        ≤ 1 * (Fintype.card (Fin n) : ℝ≥0) := by
+      simpa [one_mul] using le_trans hδn hwle
+    exact le_of_mul_le_mul_right hmul hncard_pos
+  refine ProximityGap.MCAThresholdLedger.le_mcaDeltaStar_of_good _ _ hδ1 ?_
+  exact le_trans (generalK_epsMCA_le_universal_ratio dom hk hn hδn) hbudget
 
 open Classical in
 /-- **THE ABOVE-UDR LOCALIZATION** — the multiplicity theorem is radius-free, so it
@@ -202,5 +242,6 @@ end ProximityGap.Ownership
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.generalK_badScalars_card_mul_le_universal
 #print axioms ProximityGap.Ownership.generalK_epsMCA_le_universal
+#print axioms ProximityGap.Ownership.generalK_epsMCA_le_universal_ratio
 #print axioms ProximityGap.Ownership.le_mcaDeltaStar_universal
 #print axioms ProximityGap.Ownership.above_udr_near_code_of_large_badCount
