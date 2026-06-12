@@ -7260,3 +7260,25 @@ per-scale cap stays `≤ w+1`.  The attack on `WindowRationalBounded` is therefo
 classification of σ-invariant rational pairs over the involution quotient — a
 half-dimension problem where the census/quartet machinery applies — grounded in
 finite base cases (the n = 6 window base is exhaustively `≤ w+1`).
+
+## 2026-06-12 — REFUTED: the rung census conjecture `bad ≤ 16 = n` (p=12289, n=16, k=3, agreement 7)
+
+The block-frame construction beats the antipodal pencil. Two disjoint 6-point
+agreement blocks `A₁, A₂` with `R₁ ≡ qᵢ`, `R₀ ≡ rᵢ` on `Aᵢ` (deg < 3, distinct)
+plus 4 steered free points realize **20 distinct bad scalars** — witnesses
+`Aᵢ ∪ {x}`, one scalar per off-point `γ = −(R₀(x)−rᵢ(x))/(R₁(x)−qᵢ(x))`,
+hitting the `maximal_frame_attached_card_le` cap `n − |A| = 10` on BOTH
+frames simultaneously (`RungMaximalFrame.lean` predicts the 20 exactly).
+
+* `probe_wb371_blockframe.py` / `probe_wb371_verify20.py`: the explicit stack
+  is double-verified (fast residue census + independent slow Lagrange-fit
+  checker; 25 non-bad controls clean). Deterministic seed 20260612.
+* At p=17 the same construction caps at 15 (< 17 available scalars) — the toy
+  scale structurally MASKS the configuration; earlier census probes (40
+  adversarial constructions/scale) never tried block designs.
+* Status of the round-7 obligation `SubCeilingInteriorCeiling ≤ 31`: ALIVE
+  (20 ≤ 31) but the margin is 11, not 15, and k-block webs (pairwise-≤2
+  overlapping 6-blocks) have 10k candidate scalars — the 3-/4-block
+  realizability question is now THE obligation-critical computation.
+* The conjecture `δ* truth = 16` at this rung and the issue-comment claim
+  "bad ≤ 16 HOLDS at both scales" (comment 4688420285) are WITHDRAWN.
