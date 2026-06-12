@@ -174,6 +174,30 @@ theorem lowDegree_agreement_inter_le (dom : Fin n ↪ F) (R₁ : F[X])
     omega
   omega
 
+/-- **Zero-class uniqueness**: when the direction row has degree >= k, at most
+one scalar puts the pencil inside the code (`R₀ + γR₁` of degree `< k`). -/
+theorem poly_zero_class_unique (hR₁ : k ≤ R₁.natDegree)
+    {γ₁ γ₂ : F} {P₁ P₂ : F[X]}
+    (hdP₁ : P₁.natDegree < k) (hdP₂ : P₂.natDegree < k)
+    (h₁ : R₀ + C γ₁ * R₁ = P₁) (h₂ : R₀ + C γ₂ * R₁ = P₂) :
+    γ₁ = γ₂ := by
+  by_contra hne
+  have hkey : C (γ₁ - γ₂) * R₁ = P₁ - P₂ := by
+    rw [C_sub]
+    linear_combination h₁ - h₂
+  have hCne : (C (γ₁ - γ₂) : F[X]) ≠ 0 :=
+    C_ne_zero.mpr (sub_ne_zero.mpr hne)
+  have hR₁ne : R₁ ≠ 0 := by
+    intro h0
+    rw [h0, natDegree_zero] at hR₁
+    omega
+  have hdeg : (C (γ₁ - γ₂) * R₁).natDegree = R₁.natDegree := by
+    rw [Polynomial.natDegree_mul hCne hR₁ne, natDegree_C, zero_add]
+  have hsub : (P₁ - P₂).natDegree < k :=
+    lt_of_le_of_lt (natDegree_sub_le _ _) (max_lt hdP₁ hdP₂)
+  rw [hkey] at hdeg
+  omega
+
 end RungBricks
 
 end ProximityGap.WBPencil
@@ -182,3 +206,4 @@ end ProximityGap.WBPencil
 #print axioms ProximityGap.WBPencil.poly_witness_defect_dichotomy
 #print axioms ProximityGap.WBPencil.poly_cross_agreement
 #print axioms ProximityGap.WBPencil.lowDegree_agreement_inter_le
+#print axioms ProximityGap.WBPencil.poly_zero_class_unique
