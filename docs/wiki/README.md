@@ -12,6 +12,8 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
 - [`repo-map.md`](repo-map.md) - where to edit and how the main subtrees relate.
 - [`generated-files.md`](generated-files.md) - derived outputs and their sources of truth.
 - [`optiont-lift-coherence-walls.md`](optiont-lift-coherence-walls.md) - the per-branch-defeq
+- [`deltastar-programme.md`](deltastar-programme.md) - **the δ* programme hub**: where every
+  result, refutation, probe, and attack vector lives; the fast build path.
 - [`census-programme.md`](census-programme.md) - the #357 δ* census architecture: theorem stack, empirical layer, conditional answer, working rules.
   technique for instance-path walls in run-unrolling proofs.
 - [`blueprint-and-citations.md`](blueprint-and-citations.md) - blueprint workflow, paper

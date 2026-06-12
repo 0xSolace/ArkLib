@@ -1,9 +1,16 @@
-# Proximity Gap Grand Challenge — Agent Guide (issue #334)
+# The δ* Programme — Agent Guide (successor of issues #334 → #357)
 
 > This file is auto-loaded when you work under `ArkLib/Data/CodingTheory/ProximityGap/`.
-> It is the **single source of truth** for attacking the Proximity Prize formalization.
-> `AGENTS.md` in this directory is a verbatim copy. Read both `README` links at the end
-> only if you need deeper math context; everything operational is here.
+> It is the **single source of truth** for attacking the mutual-correlated-agreement
+> threshold (δ*) formalization. `AGENTS.md` in this directory is a verbatim copy.
+>
+> **Knowledge base (read before starting):**
+> - `docs/kb/deltastar-357-compiled-knowledge.md` — the full #357 campaign distilled
+>   by theme (every exact result, refutation, probe, and the open core).
+> - `docs/kb/deltastar-research-map.md` — paper inventory + adjacent-math survey +
+>   ranked attack vectors.
+> - `ArkLib/Data/CodingTheory/ProximityGap/DISPROOF_LOG.md` — every refuted approach
+>   with its constraint lemma. Check it before re-trying anything.
 
 ## 0. The 30-second orientation
 
@@ -12,8 +19,8 @@ You are formalizing residuals around the **Ethereum Proximity Prize** ([ABF26], 
 list-decoding threshold `δ*` for explicit smooth-domain Reed–Solomon codes in the window
 `(1−√ρ, 1−ρ−Θ(1/log n))` at `ε* = 2^-128` — is **genuine open research, blocked on the
 literature** (no known technique bridges Johnson→capacity for explicit fixed RS codes).
-**Do not fabricate a closure of the open core.** The honest, in-scope work is two classes
-(§3). Predecessor #232 is CLOSED; this is its successor.
+**Do not fabricate a closure of the open core.** Predecessors #232, #334, #357 are
+CLOSED (each distilled into the successor); see §3.5 for the current state.
 
 ## 1. ⚡ BUILD — read this FIRST or you will clog the machine
 
@@ -78,6 +85,36 @@ Rules that keep iteration fast and parallel-safe:
 **Best entry points for a fresh agent (concrete, unblocked):** B3 s=128 Thorner–Zaman
 formalization · B2 curve-decodability bricks · A5 equivariance pin · sharpening any A3/KKH26
 threshold constant. The δ* core and B4 are blocked — only touch them when new literature lands.
+
+## 3.5 The δ* state of knowledge (post-#357; the current frontier)
+
+**Exact, machine-checked, axiom-clean (`propext, Classical.choice, Quot.sound`):**
+
+| Result | File |
+|---|---|
+| δ* = j/n closed form on granularity bands (3(j−1)+k ≤ n), any smooth RS | `GranularityLadderRS.lean` |
+| First exact pin: δ*(RS[F₅,4,2], 2/5) = 1/4 | `DeltaStarExactPinF5.lean` |
+| Maximal second pin: δ* = 1/4 on ε* ∈ [2/17, 7/17) at RS[F₁₇,⟨2⟩,4] | `DeltaStarSecondPinF17{,Widened,Maximal}.lean` |
+| Five-window curve at n = 16 (rate 1/4) | `VVectorN16.lean` |
+| First exact explosion-band value: ε_mca(C84, 1/4) = 7/17 | probe + `FarCosetExplosion.lean` |
+| Far-coset law: mcaEvent ⟺ line-explainability; ε_mca ≥ incidence/q | `FarCosetExplosion.lean` |
+| Production bracket: δ* ≥ ladder reach uncond.; Johnson reach mod ONE residual, budget proven | `ProductionRegimeBracket.lean`, `ProductionJohnsonBudget.lean` |
+| Johnson lane = ONE named Prop (CellPackageSupply), consumer chain fully proven | `Hab25JohnsonPackageSupply.lean` |
+| Character-sum kernel closed at √q both sides (Parseval avg + completion worst case) | `SubgroupGaussSum{SecondMoment,WorstCase}.lean` |
+| Quartet-tower law (census 4-adic recursion); strata classifications + mod-p transfers | `QuartetTowerLaw.lean`, `SlantedTransferThreshold.lean` |
+| Tower monotonicity (ε_mca monotone up the 2-adic tower), crossing pin, Sperner ceiling | `TowerMonotonicity{,RS}.lean`, `CrossingPin.lean`, `SpernerCeiling.lean` |
+
+**The open core — four equivalent faces (pick your attack surface):**
+1. **CellPackageSupply** (`Hab25JohnsonPackageSupply.lean`): the BCIKS20 §5 per-cell
+   package production. Everything downstream to `JohnsonDischargeStatement` is proven.
+2. **The bad-side family**: a stack with > q·2⁻¹²⁸ bad scalars at some δ < 1 — every
+   landed family is O(n)/q (silent at production budget).
+3. **Sub-√q incomplete character sums** over smooth multiplicative subgroups
+   (per-frequency; the average is already √|G|).
+4. **Line–ball incidence** (`epsMCA_ge_far_incidence`): max incidence of an affine
+   line with far-coset direction against the weight-⌊δn⌋ syndrome ball in F_q^{n−k}.
+   The explosion-band dichotomy (far cosets: every explainable scalar is bad;
+   near cosets: unique-rep support correction) computes exact band values.
 
 ## 4. Substrate API — what's already proven, build on it (don't re-derive)
 
