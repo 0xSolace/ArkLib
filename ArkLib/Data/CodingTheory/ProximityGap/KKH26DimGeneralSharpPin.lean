@@ -313,6 +313,135 @@ theorem kkh26_dimGeneralSharp_deltaStar_pin
   exact kkh26_deltaStar_pin_of_interior_ceiling hμ hm rfl hg hp hr2 hr εstar hhi
     (interiorCeiling_dimGeneralSharp hm hr2 rfl hg εstar hlo)
 
+/-! ## The general sharp band law: `r² < 2^μ` (a `√2` improvement over `r(r−1) < 2^{μ−1}`) -/
+
+/-- Per-step inequality of the falling-product induction (copy of the general count's `desc_step`,
+which is `private` upstream). -/
+private lemma desc_step (h k : ℕ) :
+    (2 * h - k) * (4 * h - 2 * (k * (k + 1)))
+      ≤ (2 * h - 2 * k) * (4 * h - 2 * (k * (k - 1))) := by
+  rcases Nat.lt_or_ge (4 * h) (2 * (k * (k + 1))) with hlt | hge
+  · have hz : 4 * h - 2 * (k * (k + 1)) = 0 := by omega
+    rw [hz, Nat.mul_zero]
+    exact Nat.zero_le _
+  · rcases Nat.eq_zero_or_pos k with rfl | hk
+    · simp
+    · have hkk : k * (k + 1) ≤ 2 * h := by omega
+      have hk2 : 2 * k ≤ k * (k + 1) := by
+        calc 2 * k = k * 2 := by ring
+        _ ≤ k * (k + 1) := Nat.mul_le_mul_left k (by omega)
+      have hkh : 2 * k ≤ 2 * h := le_trans hk2 hkk
+      have hk1 : k * (k - 1) ≤ k * (k + 1) := Nat.mul_le_mul_left k (by omega)
+      have hkk1 : k * (k - 1) + 2 * k = k * (k + 1) := by
+        obtain ⟨k', rfl⟩ : ∃ k', k = k' + 1 := ⟨k - 1, by omega⟩
+        simp only [Nat.add_sub_cancel]
+        ring
+      zify [hkk, le_trans hk1 hkk, hkh, le_trans hkh (by omega : 2 * h ≤ 4 * h),
+        (by omega : k ≤ 2 * h), (by omega : 2 * (k * (k - 1)) ≤ 4 * h),
+        (by omega : 2 * (k * (k + 1)) ≤ 4 * h), (by omega : 1 ≤ k)]
+      nlinarith [sq_nonneg ((k : ℤ) - 1), (by exact_mod_cast hkk : ((k : ℤ)) * (k + 1) ≤ 2 * h),
+        (by exact_mod_cast hk : (1 : ℤ) ≤ k)]
+
+/-- Falling-product ratio bound (copy of the general count's `desc_ratio`). -/
+private lemma desc_ratio (h : ℕ) :
+    ∀ r : ℕ, (2 * h).descFactorial r * (4 * h - 2 * (r * (r - 1)))
+      ≤ 2 ^ r * h.descFactorial r * (4 * h)
+  | 0 => by simp
+  | (r + 1) => by
+    have IH := desc_ratio h r
+    have hstep := desc_step h r
+    rw [Nat.descFactorial_succ, Nat.descFactorial_succ, Nat.add_sub_cancel]
+    have hcomm : (r + 1) * r = r * (r + 1) := Nat.mul_comm _ _
+    rw [hcomm]
+    calc (2 * h - r) * (2 * h).descFactorial r * (4 * h - 2 * (r * (r + 1)))
+        = (2 * h).descFactorial r * ((2 * h - r) * (4 * h - 2 * (r * (r + 1)))) := by ring
+      _ ≤ (2 * h).descFactorial r * ((2 * h - 2 * r) * (4 * h - 2 * (r * (r - 1)))) :=
+          Nat.mul_le_mul_left _ hstep
+      _ = (2 * h - 2 * r) * ((2 * h).descFactorial r * (4 * h - 2 * (r * (r - 1)))) := by ring
+      _ ≤ (2 * h - 2 * r) * (2 ^ r * h.descFactorial r * (4 * h)) := Nat.mul_le_mul_left _ IH
+      _ = 2 ^ (r + 1) * ((h - r) * h.descFactorial r) * (4 * h) := by
+          rw [show 2 * h - 2 * r = 2 * (h - r) by omega]
+          ring
+
+/-- **Sharp falling-factorial band:** `r² < 2h` forces `(2h)^{(r)} < r·2^r·h^{(r)}` — the sharp wall
+arithmetic. The criterion `r² < 2h` is a `√2` relaxation of the factor-`2` count's `r(r−1) < h`,
+because the sharp divisor `r` (not `2`) absorbs the ratio `(4h)/(4h−2r(r−1)) < r ⟺ r² < 2h`. -/
+private lemma descFactorial_band_sharp {h r : ℕ} (hr2 : 2 ≤ r) (hsep : r * r < 2 * h) :
+    (2 * h).descFactorial r < r * (2 ^ r * h.descFactorial r) := by
+  have hrr : r * (r - 1) < r * r := mul_lt_mul_of_pos_left (by omega) (by omega)
+  have hsep2 : 2 * (r * (r - 1)) < 4 * h := by omega
+  have hrh : r ≤ h := by nlinarith [hsep, hr2]
+  have hdpos : 0 < h.descFactorial r := Nat.descFactorial_pos.mpr hrh
+  have hA := desc_ratio h r
+  -- the key ratio fact `4h < r·(4h − 2r(r−1))`, reducing to `2r² < 4h`
+  have hexp : 2 * r + 2 * (r * (r - 1)) = 2 * (r * r) := by
+    obtain ⟨r', rfl⟩ : ∃ r', r = r' + 1 := ⟨r - 1, by omega⟩
+    simp only [Nat.add_sub_cancel]; ring
+  have h2rX : 2 * r < 4 * h - 2 * (r * (r - 1)) := by omega
+  have hfac : 4 * h < r * (4 * h - 2 * (r * (r - 1))) := by
+    set X := 4 * h - 2 * (r * (r - 1)) with hXdef
+    have hXeq : 2 * (r * (r - 1)) + X = 4 * h := by omega
+    -- 4h = 2r(r−1) + X < r·X  ⟺  2r(r−1) < (r−1)·X, from X > 2r and r ≥ 2
+    have hlt : 2 * (r * (r - 1)) < (r - 1) * X := by
+      calc 2 * (r * (r - 1)) = (r - 1) * (2 * r) := by ring
+      _ < (r - 1) * X := mul_lt_mul_of_pos_left h2rX (by omega)
+    nlinarith [hXeq, hlt, hr2]
+  have hp2 : 0 < 2 ^ r * h.descFactorial r := Nat.mul_pos (pow_pos (by norm_num) r) hdpos
+  have hmid : 2 ^ r * h.descFactorial r * (4 * h)
+      < r * (2 ^ r * h.descFactorial r) * (4 * h - 2 * (r * (r - 1))) := by
+    calc 2 ^ r * h.descFactorial r * (4 * h)
+        < 2 ^ r * h.descFactorial r * (r * (4 * h - 2 * (r * (r - 1)))) :=
+          mul_lt_mul_of_pos_left hfac hp2
+      _ = r * (2 ^ r * h.descFactorial r) * (4 * h - 2 * (r * (r - 1))) := by ring
+  exact lt_of_mul_lt_mul_right (lt_of_le_of_lt hA hmid) (Nat.zero_le _)
+
+/-- **The sharp band law:** whenever `r² < 2^μ`, the sharp ownership bound `C(2^μ, r)/r` sits
+strictly below the KKH26 ceiling count `2^r·C(2^{μ−1}, r)`. The criterion `r² < 2^μ` is a `√2`
+improvement on the factor-`2` law `r(r−1) < 2^{μ−1}` — the unconditional pin family now reaches
+every `r < √n` in one statement. -/
+theorem dimGeneralSharp_band_nonempty {μ r : ℕ} (hr2 : 2 ≤ r) (hsep : r * r < 2 ^ μ) :
+    (2 ^ μ).choose r / r < 2 ^ r * (2 ^ (μ - 1)).choose r := by
+  have hμ1 : 1 ≤ μ := by
+    by_contra hcon
+    have : μ = 0 := by omega
+    rw [this] at hsep; simp at hsep; omega
+  have hpow : (2 : ℕ) ^ μ = 2 * 2 ^ (μ - 1) := by
+    conv_lhs => rw [show μ = (μ - 1) + 1 by omega]
+    rw [pow_succ]; ring
+  have hsep' : r * r < 2 * 2 ^ (μ - 1) := by rw [← hpow]; exact hsep
+  have hdesc := descFactorial_band_sharp hr2 hsep'
+  rw [Nat.descFactorial_eq_factorial_mul_choose, Nat.descFactorial_eq_factorial_mul_choose] at hdesc
+  have hch : (2 * 2 ^ (μ - 1)).choose r < r * (2 ^ r * (2 ^ (μ - 1)).choose r) := by
+    have hre : r * (2 ^ r * (r.factorial * (2 ^ (μ - 1)).choose r))
+        = r.factorial * (r * (2 ^ r * (2 ^ (μ - 1)).choose r)) := by ring
+    rw [hre] at hdesc
+    exact lt_of_mul_lt_mul_left hdesc (Nat.zero_le _)
+  rw [hpow]
+  refine (Nat.div_lt_iff_lt_mul (by omega : (0 : ℕ) < r)).mpr ?_
+  calc (2 * 2 ^ (μ - 1)).choose r < r * (2 ^ r * (2 ^ (μ - 1)).choose r) := hch
+  _ = 2 ^ r * (2 ^ (μ - 1)).choose r * r := by ring
+
+/-- **The canonical sharp pin** (`m = 1`): at `ε* = (C(n,r)/r)/p` the pin fires for every `r` with
+`r² < 2^μ` (and at boundary instances past it, by direct evaluation). -/
+theorem kkh26_dimGeneralSharp_deltaStar_pin_canonical
+    {p : ℕ} [Fact p.Prime] {μ r : ℕ} (hμ : 1 ≤ μ) (hr2 : 2 ≤ r)
+    {g : ZMod p} {n : ℕ} (hn : n = 2 ^ μ) [NeZero n] (hg : orderOf g = 2 ^ μ)
+    (hp : ((2 : ℕ) ^ μ) ^ 2 ^ (μ - 1) < p) (hr : r ≤ 2 ^ (μ - 1))
+    (hband : n.choose r / r < 2 ^ r * (2 ^ (μ - 1)).choose r) :
+    mcaDeltaStar (F := ZMod p) (A := ZMod p) (evalCode g n (r - 2))
+        (((n.choose r / r : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞))
+      = 1 - (r : ℝ≥0) / ((2 : ℝ≥0) ^ μ) := by
+  have hcode : (r - 2) * 1 = r - 2 := Nat.mul_one _
+  have hidx : (r - 2) * 1 + 2 = r := by omega
+  have hp0 : (p : ℝ≥0∞) ≠ 0 := Nat.cast_ne_zero.mpr (Fact.out : p.Prime).ne_zero
+  have hpt : (p : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top p
+  have h := kkh26_dimGeneralSharp_deltaStar_pin (μ := μ) (m := 1) (r := r) (n := n) hμ le_rfl hr2
+    (by rw [hn, mul_one]) (by rw [mul_one]; exact hg) hp hr
+    (((n.choose r / r : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞))
+    (le_of_eq (by rw [hidx]))
+    (ENNReal.div_lt_div_right hp0 hpt (by exact_mod_cast hband))
+  rwa [hcode] at h
+
 end ArkLib.ProximityGap.KKH26DimGeneralSharp
 
 /-! ## The concrete past-the-wall rung: `r = 5` at `μ = 4` (where factor-2 fails) -/
@@ -375,3 +504,5 @@ end ArkLib.ProximityGap.KKH26DimGeneralSharp
 #print axioms ArkLib.ProximityGap.KKH26DimGeneralSharp.fit_subsets_card_le_one
 #print axioms ArkLib.ProximityGap.KKH26DimGeneralSharp.dimGeneralSharp_badScalars_card_mul_succ_le
 #print axioms ArkLib.ProximityGap.KKH26DimGeneralSharp.dimGeneralSharp_epsMCA_le
+#print axioms ArkLib.ProximityGap.KKH26DimGeneralSharp.dimGeneralSharp_band_nonempty
+#print axioms ArkLib.ProximityGap.KKH26DimGeneralSharp.kkh26_dimGeneralSharp_deltaStar_pin_canonical
