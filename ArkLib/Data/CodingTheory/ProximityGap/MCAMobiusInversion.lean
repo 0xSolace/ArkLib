@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.GranularityLadderRS
+import ArkLib.Data.CodingTheory.ProximityGap.MCAEquivariance
 
 /-!
 # Möbius-inversion equivariance of the MCA event (#371, the σ-descent foundation)
@@ -189,6 +190,59 @@ theorem mcaEvent_rs_inversion (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k)
     (fun w hw => rsCode_twist_mem dom hk σ hdom0 hσ hw)
     (fun w hw => rsCode_twist_inv_mem dom hk σ hdom0 hσ hw)
 
+/-! ## The involution identity and the equivalence -/
+
+/-- The index permutation realizing the inversion is an involution. -/
+theorem sigma_sq (dom : Fin n ↪ F) (σ : Equiv.Perm (Fin n))
+    (hσ : ∀ i, dom (σ i) = -(dom i)⁻¹) (hdom0 : ∀ i, dom i ≠ 0) (i : Fin n) :
+    σ (σ i) = i := by
+  have h1 := hσ (σ i)
+  rw [hσ i, inv_neg, inv_inv, neg_neg] at h1
+  exact dom.injective h1
+
+/-- **The twist is an involution up to the sign `(−1)^{k−1}`**: `T² = (−1)^{k−1}·id`.
+For odd `k` it is a genuine involution and the stack space splits into
+`T`-eigencomponents — the formal frame for the σ-average analysis of the window. -/
+theorem twist_twist (dom : Fin n ↪ F) (k : ℕ) (σ : Equiv.Perm (Fin n))
+    (hdom0 : ∀ i, dom i ≠ 0) (hσ : ∀ i, dom (σ i) = -(dom i)⁻¹) (u : Fin n → F) :
+    twist σ (fun i => (dom i) ^ (k - 1)) (twist σ (fun i => (dom i) ^ (k - 1)) u)
+      = ((-1 : F) ^ (k - 1)) • u := by
+  funext i
+  show (dom i) ^ (k - 1) * ((dom (σ i)) ^ (k - 1) * u (σ (σ i))) = _
+  rw [sigma_sq dom σ hσ hdom0 i, hσ i]
+  rw [show (-(dom i)⁻¹ : F) = (-1) * (dom i)⁻¹ by ring, mul_pow]
+  have hd := hdom0 i
+  rw [Pi.smul_apply, smul_eq_mul, inv_pow]
+  have hcancel : (dom i) ^ (k - 1) * (((dom i) ^ (k - 1))⁻¹) = 1 :=
+    mul_inv_cancel₀ (pow_ne_zero _ hd)
+  calc (dom i) ^ (k-1) * ((-1 : F) ^ (k-1) * ((dom i) ^ (k-1))⁻¹ * u i)
+      = ((-1 : F) ^ (k-1)) * ((dom i) ^ (k-1) * ((dom i) ^ (k-1))⁻¹) * u i := by ring
+    _ = ((-1 : F) ^ (k-1)) * u i := by rw [hcancel, mul_one]
+
+open Classical in
+/-- **The equivalence form** of the inversion equivariance: the twisted action
+preserves the MCA event in BOTH directions (via `T² = (−1)^{k−1}·id` and
+whole-stack scaling invariance). -/
+theorem mcaEvent_rs_inversion_iff (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k)
+    (σ : Equiv.Perm (Fin n)) (hdom0 : ∀ i, dom i ≠ 0)
+    (hσ : ∀ i, dom (σ i) = -(dom i)⁻¹) (δ : ℝ≥0) (γ : F) (u₀ u₁ : Fin n → F) :
+    mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (twist σ (fun i => (dom i) ^ (k - 1)) u₀)
+        (twist σ (fun i => (dom i) ^ (k - 1)) u₁) γ ↔
+      mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ u₀ u₁ γ := by
+  constructor
+  · exact mcaEvent_rs_inversion dom hk σ hdom0 hσ δ γ u₀ u₁
+  · intro h
+    -- apply the forward direction to the twisted stack: T²u = (−1)^{k−1}•u
+    refine mcaEvent_rs_inversion dom hk σ hdom0 hσ δ γ
+      (twist σ _ u₀) (twist σ _ u₁) ?_
+    rw [twist_twist dom k σ hdom0 hσ, twist_twist dom k σ hdom0 hσ]
+    have hsign : ((-1 : F) ^ (k - 1)) ≠ 0 :=
+      pow_ne_zero _ (neg_ne_zero.mpr one_ne_zero)
+    exact (ProximityGap.MCAEquivariance.mcaEvent_smul_both (rsCode dom k) hsign γ).mpr h
+
 end ProximityGap.MCAMobius
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -197,3 +251,5 @@ end ProximityGap.MCAMobius
 #print axioms ProximityGap.MCAMobius.rsCode_twist_mem
 #print axioms ProximityGap.MCAMobius.rsCode_twist_inv_mem
 #print axioms ProximityGap.MCAMobius.mcaEvent_rs_inversion
+#print axioms ProximityGap.MCAMobius.twist_twist
+#print axioms ProximityGap.MCAMobius.mcaEvent_rs_inversion_iff
