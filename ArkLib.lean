@@ -436,6 +436,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BallVolume
 import ArkLib.Data.CodingTheory.ProximityGap.BandCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.BandExactness
 import ArkLib.Data.CodingTheory.ProximityGap.BandFloor
+import ArkLib.Data.CodingTheory.ProximityGap.BandPackingLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIJointProximity
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIProof
