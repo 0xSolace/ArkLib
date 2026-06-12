@@ -1601,3 +1601,39 @@ Crossing to constant rate requires a mechanism that is neither subset-ownership-
 nor averaging (analysis) — the precise, machine-verified statement of what a solution must supply, from
 both directions at once. No fabrication; δ* not pinned at deployed rate, but the open core is now
 two-sided-proven-bracketed and the low-dimension family is fully pinned.
+## §49 — Round 9: the non-counting (symmetry) lever CLOSED; deployed open core fully isolated to one inequality
+
+Run `wf_e4137c13-be8`, 3 routes (symmetrization / deep-hole literature / representation-theoretic torus-
+fixed-point), adversarially refereed against the actual tree. **No survivor pins deployed δ*; the one
+genuinely-untried lever (non-counting symmetry) is now closed**, with reasons verified in-source:
+
+1. **Symmetrization cannot upgrade invariance to extremality.** `I(g·L)=I(L)` (orbit-invariance of line-
+   ball incidence) is provable but INERT: `avg_g I(g·L) = I(L)` trivially, producing NO inequality. The
+   character line is a `G`-FIXED two-monomial configuration, unreachable by orbit-averaging a generic
+   line (averaging projects onto the trivial isotypic = constants, off the rank-2 monomial variety). The
+   only genuine monotonicity (more spread → fewer collisions) is Schur-CONCAVE — toward MINIMIZING
+   incidence, the wrong direction.
+2. **The in-tree `G`-symmetry shadow is DIVISIBILITY, not extremality.** `orderOf_dvd_badScalarSet_card_
+   of_eigenstack` (MCAEigenstackOrbitLaw.lean) gives `ord(α) ∣ |badScalarSet|` — quantization of ONE
+   eigen-line's count, no `≤`-across-all-lines content. Cannot evaluate the argmax over the Grassmannian.
+3. **No torus/Atiyah-Bott carrier** on the finite `Gr(2,n)/F_q` (no symplectic form / moment map); even
+   if symmetrization extremized, it would single out ALL `C(n,2)` character lines (max AND min/saddle),
+   not the one cyclotomic pair. That pair is special for an ARITHMETIC reason (`Φ_{2^μ}=x^h+1`
+   injectivity → spectrum `N(μ,r)`), not a fixed-point reason — the symmetry framing targets the wrong
+   structure.
+4. **The averaged shadow provably caps at Johnson** (`fourth_moment_cannot_beat_johnson_from_S4`) — direct
+   evidence AGAINST the Schur-convexity the lever would need.
+
+NOT a refutation of extremality either: no deep-hole word beating the character line is known (the RS
+deep-hole literature — Cheng–Murray, Li–Wan, Zhu–Wan — gives the character-line LOWER bound via subset
+sums and Johnson-vacuous proximity gaps, but NO all-lines upper bound), and its non-existence is unproven.
+
+**FULLY ISOLATED OPEN CORE (rounds 1–9).** The deployed pin `δ* = 1−r*/2^μ` is reduction-conditional on
+`InteriorCeiling` (`KKH26DeltaStarReduction.lean`, a named open `Prop`), which is EXACTLY: prove
+`badcount(L) ≤ N(μ,r)` for EVERY far affine line `L` at constant rate ρ — equivalently the worst-case
+far-line syndrome-ball list size `≤ N(μ,r)`. The character line gives the matching LOWER bound (proven
+`kkh26_epsMCA_lower_bound` = my spectrum `N(μ,r)`); the all-lines UPPER bound is the explicit beyond-
+Johnson list-size problem. Both proven barriers (counting vacuous at constant rate; averaging/symmetry
+caps at Johnson) and the now-closed symmetry lever confirm: this single inequality needs a per-line,
+non-counting, non-averaging argument — the precise, machine-verified residual $1M obligation. No
+fabrication; δ* pinned for `r ≲ √(n log n)`, deployed constant-rate is this one isolated inequality.
