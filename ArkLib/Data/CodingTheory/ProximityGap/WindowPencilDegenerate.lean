@@ -172,6 +172,115 @@ theorem recSquare_eval_kernel (j w : ℕ)
     = Polynomial.eval γ ((recMatrixPoly dom ℓ₀ ℓ₁ R₀ R₁ j w).submatrix τ id a b)
   rw [Matrix.submatrix_apply, id_eq, recMatrixPoly_eval]
 
+/-- The singly-updated square sub-pencil: row `c₀` replaced by the `cs`-indicator
+(the corank-one anchor, following the corank-two file's double-update pattern). -/
+noncomputable def recSquareU (j w : ℕ)
+    (τ : Fin (j + 1) ⊕ Fin (w + 1) → Fin (2 * w))
+    (c₀ cs : Fin (j + 1) ⊕ Fin (w + 1)) :
+    Matrix (Fin (j + 1) ⊕ Fin (w + 1)) (Fin (j + 1) ⊕ Fin (w + 1)) F[X] :=
+  (recSquarePoly dom ℓ₀ ℓ₁ R₀ R₁ j w τ).updateRow c₀ (Pi.single cs 1)
+
+open Classical in
+/-- **The corank-one span**: wherever the updated determinant survives, every
+kernel vector of the instantiated square is spanned by the single adjugate
+column — `det(γ)·v = v_{cs} · K(γ)`. -/
+theorem corank1_span (j w : ℕ)
+    {τ : Fin (j + 1) ⊕ Fin (w + 1) → Fin (2 * w)}
+    {c₀ cs : Fin (j + 1) ⊕ Fin (w + 1)} {γ : F}
+    {v : Fin (j + 1) ⊕ Fin (w + 1) → F}
+    (hv : ((recMatrix dom ℓ₀ ℓ₁ R₀ R₁ j w γ).submatrix τ id).mulVec v = 0)
+    (hdet : ((recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).det).eval γ ≠ 0) :
+    ∀ b, ((recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).det).eval γ * v b
+      = v cs * ((recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).adjugate b c₀).eval γ := by
+  classical
+  set B1 := recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs with hB1
+  set Bev := B1.map (Polynomial.eval γ) with hBev
+  have hadj : Bev.adjugate = (B1.adjugate).map (Polynomial.eval γ) := by
+    have h := RingHom.map_adjugate (Polynomial.evalRingHom γ) B1
+    rw [RingHom.mapMatrix_apply, RingHom.mapMatrix_apply] at h
+    rw [hBev]
+    exact h.symm
+  have hdetev : Bev.det = (B1.det).eval γ := by
+    rw [hBev, ← Polynomial.coe_evalRingHom, ← RingHom.mapMatrix_apply,
+      ← RingHom.map_det]
+  -- the evaluated updated matrix sends v to the c₀-indicator scaled by v cs
+  have hBv : ∀ a, Bev a ⬝ᵥ v = (if a = c₀ then v cs else 0) := by
+    intro a
+    by_cases ha : a = c₀
+    · subst ha
+      rw [if_pos rfl, dotProduct]
+      have hrow : ∀ b, Bev a b = (if b = cs then (1 : F) else 0) := by
+        intro b
+        rw [hBev, Matrix.map_apply, hB1, recSquareU, Matrix.updateRow_self]
+        by_cases hb : b = cs
+        · subst hb
+          rw [Pi.single_eq_same]
+          simp
+        · rw [Pi.single_eq_of_ne hb]
+          simp [hb]
+      calc ∑ b, Bev a b * v b
+          = ∑ b, (if b = cs then v b else 0) := by
+            refine Finset.sum_congr rfl fun b _ => ?_
+            rw [hrow b]
+            by_cases hb : b = cs <;> simp [hb]
+        _ = v cs := by
+            rw [Finset.sum_ite_eq' Finset.univ cs v, if_pos (Finset.mem_univ cs)]
+    · rw [if_neg ha, dotProduct]
+      have hrow : ∀ b, Bev a b
+          = (recMatrix dom ℓ₀ ℓ₁ R₀ R₁ j w γ).submatrix τ id a b := by
+        intro b
+        rw [hBev, Matrix.map_apply, hB1, recSquareU,
+          Matrix.updateRow_ne ha]
+        rw [recSquarePoly, Matrix.submatrix_apply, id_eq, recMatrixPoly_eval]
+        rfl
+      calc ∑ b, Bev a b * v b
+          = ∑ b, (recMatrix dom ℓ₀ ℓ₁ R₀ R₁ j w γ).submatrix τ id a b * v b :=
+            Finset.sum_congr rfl fun b _ => by rw [hrow b]
+        _ = ((recMatrix dom ℓ₀ ℓ₁ R₀ R₁ j w γ).submatrix τ id).mulVec v a := rfl
+        _ = 0 := by rw [hv]; rfl
+  -- the adjugate column satisfies Bev · K = det · e_{c₀}
+  have hBK : ∀ a, Bev a ⬝ᵥ (fun i => (B1.adjugate i c₀).eval γ)
+      = Bev.det * (1 : Matrix (Fin (j + 1) ⊕ Fin (w + 1))
+          (Fin (j + 1) ⊕ Fin (w + 1)) F) a c₀ := by
+    intro a
+    have hmul := congrFun (congrFun (Matrix.mul_adjugate Bev) a) c₀
+    rw [Matrix.smul_apply, smul_eq_mul] at hmul
+    rw [← hmul, Matrix.mul_apply]
+    simp only [dotProduct]
+    refine Finset.sum_congr rfl fun b _ => ?_
+    rw [hadj, Matrix.map_apply]
+  -- the difference vector dies
+  set u' : Fin (j + 1) ⊕ Fin (w + 1) → F := fun b =>
+    Bev.det * v b - v cs * (B1.adjugate b c₀).eval γ with hu'def
+  have hBu' : Bev.mulVec u' = 0 := by
+    funext a
+    show Bev a ⬝ᵥ u' = 0
+    have hsplit : Bev a ⬝ᵥ u' = Bev.det * (Bev a ⬝ᵥ v)
+        - v cs * (Bev a ⬝ᵥ (fun i => (B1.adjugate i c₀).eval γ)) := by
+      simp only [dotProduct, Finset.mul_sum, ← Finset.sum_sub_distrib]
+      refine Finset.sum_congr rfl fun b _ => ?_
+      rw [hu'def]
+      ring
+    rw [hsplit, hBv a, hBK a]
+    by_cases ha : a = c₀
+    · subst ha
+      rw [if_pos rfl, Matrix.one_apply_eq]
+      ring
+    · rw [if_neg ha, Matrix.one_apply_ne ha]
+      ring
+  have hu'0 : u' = 0 := by
+    by_contra hne
+    have hdet0 : Bev.det = 0 :=
+      (Matrix.exists_mulVec_eq_zero_iff).mp ⟨u', hne, hBu'⟩
+    rw [hdetev] at hdet0
+    exact hdet hdet0
+  intro b
+  have h := congrFun hu'0 b
+  rw [hu'def] at h
+  have h' : Bev.det * v b - v cs * (B1.adjugate b c₀).eval γ = 0 := h
+  rw [hdetev] at h'
+  linear_combination h'
+
 end Degenerate
 
 end ProximityGap.WBPencil
@@ -181,3 +290,4 @@ end ProximityGap.WBPencil
 #print axioms ProximityGap.WBPencil.recSolvable_fraction_unique
 #print axioms ProximityGap.WBPencil.recSquarePoly_mulVec_adjugate
 #print axioms ProximityGap.WBPencil.recSquare_eval_kernel
+#print axioms ProximityGap.WBPencil.corank1_span
