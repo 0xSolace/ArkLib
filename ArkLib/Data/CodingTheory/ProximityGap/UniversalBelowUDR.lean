@@ -141,8 +141,25 @@ theorem generalK_epsMCA_le_universal (dom : Fin n ↪ F)
     Nat.le_div_iff_mul_le hpos |>.mpr h
   exact_mod_cast hdiv
 
+open Classical in
+/-- **The unconditional production floor**: `δ* ≥ δ` for every radius `δ ≤ w/n`
+with `2w + 2k ≤ n`, whenever the polynomial mass fits the budget — for low rates
+this floor `≈ 1/2 − ρ` strictly improves the ladder reach `(1−ρ)/3`, with NO
+named residual. -/
+theorem le_mcaDeltaStar_universal (dom : Fin n ↪ F)
+    {k w : ℕ} (hk : 1 ≤ k) (hn : 2 * w + 2 * k ≤ n)
+    {δ : ℝ≥0} (hδ1 : δ ≤ 1) (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
+    {εstar : ℝ≥0∞}
+    (hbudget : ((n ^ (k + 1) / (n - 2 * w - 2 * k + 1) ^ k : ℕ) : ℝ≥0∞)
+      / (Fintype.card F : ℝ≥0∞) ≤ εstar) :
+    δ ≤ ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := F) (A := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) εstar :=
+  ProximityGap.MCAThresholdLedger.le_mcaDeltaStar_of_good _ _ hδ1
+    (le_trans (generalK_epsMCA_le_universal dom hk hn hδn) hbudget)
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.generalK_badScalars_card_mul_le_universal
 #print axioms ProximityGap.Ownership.generalK_epsMCA_le_universal
+#print axioms ProximityGap.Ownership.le_mcaDeltaStar_universal

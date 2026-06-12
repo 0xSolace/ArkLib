@@ -7506,3 +7506,17 @@ RESULTS-RECIPROCAL.md; commit 66b05bd71). Batch-2 falsifier round — all passed
 Named next: the ≤6 theorem ON the λ-family (BS f†/seven-polynomial machinery, count laws as
 ground truth); the 24-prime M(128) ladder; count6/count5 closed-form derivation; the
 const6_witness Lean brick's ≤-side counterpart.
+
+## 2026-06-12 — The UDR-edge gap of the universal dichotomy is INTRINSIC (analysis)
+
+The universal below-UDR law covers `2w + 2k ≤ n`; the band `n ∈ [2w+k+1, 2w+2k)`
+(width `k/n` in radius) is a genuine gap of the method, not bookkeeping: for a
+direction at distance `e ∈ (w, w+k]` from the code (max agreement
+`a ∈ [n−w−k, n−w)`), BOTH branches vanish — the multiplicity factor
+`n−w−k−μ = e−w−k ≤ 0`, and the sparse/packing popular count needs witness-minus-
+support `m = n−w−e ≥ k`, which fails exactly there (at `m < k` even a single
+codeword is not determined by the off-support agreement, so the popularity
+argument cannot start).  Closing the band needs a counting mechanism for
+explaining codewords pinned by FEWER than `k` points plus the γ-line structure —
+the same shape as the at-UDR boundary slice (`B6 = 7`) analysis.  Logged as the
+fifth documented no-go; the band is the precise below-UDR residue.
