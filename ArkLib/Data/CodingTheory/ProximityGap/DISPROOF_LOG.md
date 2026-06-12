@@ -7637,7 +7637,6 @@ scalar field): large nonaffine families need `|Γ| ≈ w` scalar sets that are
 moment-degenerate to depth `≈ w/2` with large fibers.  Conjectured cap (next probe):
 additive moment fibers at depth `t−2` collapse the supply below the affine cap for all
 `t ≥ 2` ⟹ `#bad ≤ w + O(1)` on the band.
-||||||| parent of 23f172e5a (autosync: ArkLib updates)
 ## 2026-06-12 — `WindowPencilAnchored` is NOT universal: class V (vanishing-denominator rows)
 
 The window pencil law (`WBPencilWindowLaw.lean`) counts ≤ `(w+1)+n(w+1)+1` bad
