@@ -630,6 +630,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FiniteFieldDisproofLoop53
 import ArkLib.Data.CodingTheory.ProximityGap.FiniteFieldLiftLoop51
 import ArkLib.Data.CodingTheory.ProximityGap.FisherJohnsonCrossover
 import ArkLib.Data.CodingTheory.ProximityGap.FisherPastJohnsonCap
+import ArkLib.Data.CodingTheory.ProximityGap.FitFamilyBound
 import ArkLib.Data.CodingTheory.ProximityGap.FoldPolynomialSlices
 import ArkLib.Data.CodingTheory.ProximityGap.FoldedSumThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
