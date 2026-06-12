@@ -1293,6 +1293,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WBPencilPolynomialRow
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilRationalReduction
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilSubmatrix
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilSymmetry
+import ArkLib.Data.CodingTheory.ProximityGap.WBPencilBoundarySlice
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilWindowCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilWindowLaw
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilWindowMatrix
