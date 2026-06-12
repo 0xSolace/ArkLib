@@ -23,14 +23,14 @@ reach `(1−ρ)/3` to the unique-decoding radius `(1−ρ)/2`.
 
 **Count-residual fallback.**  `WindowRationalLinearBounded` asks for the
 rational-window bad count to be at most `n`.  Together with the already-proven
-WB-far side (`≤ w+3`) this gives the conditional mass
+WB-far side (`≤ w+3`) this gives the legacy conditional mass
 
   `ε_mca(RS, δ) ≤ max n (w+3) / q`.
 
-The current live route is stronger and more structural: `WBPencilWindowLaw.lean`
-uses the anchor residual `WindowPencilAnchored` to prove the polynomial budget
-`((w+1) + n(w+1) + 1)/q`.  The linear wrapper here remains only a simple
-count-residual consumer if that stronger estimate is ever proved directly.
+The repaired capstone lives in `WBPencilLinearBudget.lean`, where
+`WindowRationalLinear` proves the sharper canonical `ε_mca ≤ n/q` theorem.  The
+linear wrapper here is kept only as a legacy direct-count consumer and therefore
+uses noncanonical `_linear_fallback` theorem names.
 -/
 
 open Finset
@@ -46,7 +46,8 @@ variable {n : ℕ} [NeZero n]
 open Classical in
 /-- **Historical residual, now refuted.**  This claims every doubly-WB-solvable
 stack has at most `w + 3` bad scalars.  The normalizer-pair family refutes this
-at high rate, so new consumers should use `WindowRationalLinearBounded` instead. -/
+at high rate, so new consumers should use `WindowRationalLinear` in
+`WBPencilLinearBudget.lean` instead. -/
 def WindowRationalBounded (dom : Fin n ↪ F) (k w : ℕ) (δ : ℝ≥0) : Prop :=
   ∀ u₀ u₁ : Fin n → F, WBSolvable dom k w u₀ → WBSolvable dom k w u₁ →
     (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
@@ -58,7 +59,9 @@ open Classical in
 every doubly-WB-solvable stack has linearly many bad scalars, bounded by `n`.
 The refuting normalizer-pair family has `(n - 2) / 2` bad scalars, so a constant
 bound is false but this linear target is still compatible with the evidence.
-The active WB-4 route instead uses `WindowPencilAnchored` in `WBPencilWindowLaw`. -/
+The canonical linear-budget capstone is `WindowRationalLinear` in
+`WBPencilLinearBudget.lean`; this legacy fallback deliberately has different
+theorem names to avoid exporting duplicate declarations. -/
 def WindowRationalLinearBounded (dom : Fin n ↪ F) (k w : ℕ) (δ : ℝ≥0) : Prop :=
   ∀ u₀ u₁ : Fin n → F, WBSolvable dom k w u₀ → WBSolvable dom k w u₁ →
     (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
@@ -115,9 +118,9 @@ open Classical in
 `WindowRationalBounded`.**  If the doubly-WB-solvable rational-window part has
 at most `n` bad scalars, then all stacks have bad count bounded by
 `max n (w+3)`, because the complementary WB-far branches are already proven to
-cost at most `w+3`.  This is a generic fallback; the current WB-4 consumer in
-`WBPencilWindowLaw` uses the weaker structural residual `WindowPencilAnchored`. -/
-theorem epsMCA_le_below_udr_linear (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤ k)
+cost at most `w+3`.  This is a generic fallback; the sharper canonical linear
+consumer is `epsMCA_le_below_udr_linear` in `WBPencilLinearBudget.lean`. -/
+theorem epsMCA_le_below_udr_linear_fallback (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤ k)
     (hwk : w + k ≤ n) {δ : ℝ≥0} (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
     (hwin : WindowRationalLinearBounded dom k w δ) :
     epsMCA (F := F) (A := F)
@@ -143,10 +146,12 @@ theorem epsMCA_le_below_udr_linear (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤ k
     exact_mod_cast le_trans (le_trans this (by omega)) (Nat.le_max_right n (w + 3))
 
 open Classical in
-/-- Threshold form of the count-residual fallback.  The current WB-4 replacement
-is `le_mcaDeltaStar_of_anchored` in `WBPencilWindowLaw`; this theorem records the
-simple consequence of a direct linear bad-count residual. -/
-theorem le_mcaDeltaStar_below_udr_linear (dom : Fin n ↪ F) {k w : ℕ} (hk : 1 ≤ k)
+/-- Threshold form of the count-residual fallback.  The canonical repaired
+threshold theorem is `le_mcaDeltaStar_below_udr_linear` in
+`WBPencilLinearBudget.lean`; this theorem records the older `max n (w+3)`
+fallback under a noncanonical name. -/
+theorem le_mcaDeltaStar_below_udr_linear_fallback (dom : Fin n ↪ F) {k w : ℕ}
+    (hk : 1 ≤ k)
     (hwk : w + k ≤ n) {δ : ℝ≥0} (hδ1 : δ ≤ 1)
     (hδn : δ * (Fintype.card (Fin n) : ℝ≥0) ≤ w)
     (hwin : WindowRationalLinearBounded dom k w δ)
@@ -156,12 +161,12 @@ theorem le_mcaDeltaStar_below_udr_linear (dom : Fin n ↪ F) {k w : ℕ} (hk : 1
     δ ≤ ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := F) (A := F)
         ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) εstar :=
   ProximityGap.MCAThresholdLedger.le_mcaDeltaStar_of_good _ _ hδ1
-    (le_trans (epsMCA_le_below_udr_linear dom hk hwk hδn hwin) hbudget)
+    (le_trans (epsMCA_le_below_udr_linear_fallback dom hk hwk hδn hwin) hbudget)
 
 end ProximityGap.WBPencil
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.WBPencil.epsMCA_le_below_udr
 #print axioms ProximityGap.WBPencil.le_mcaDeltaStar_below_udr
-#print axioms ProximityGap.WBPencil.epsMCA_le_below_udr_linear
-#print axioms ProximityGap.WBPencil.le_mcaDeltaStar_below_udr_linear
+#print axioms ProximityGap.WBPencil.epsMCA_le_below_udr_linear_fallback
+#print axioms ProximityGap.WBPencil.le_mcaDeltaStar_below_udr_linear_fallback
