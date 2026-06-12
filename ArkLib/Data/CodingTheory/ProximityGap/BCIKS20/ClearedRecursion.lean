@@ -270,6 +270,182 @@ theorem harith_anchored_zero {k m DR dR dH w D Lξ nB : ℕ}
         omega
     _ = 1 + (k + 2) * w + (2 * (k + 1) - 1) * Lξ := by rw [hxisplit]; ring
 
+/-! ## The anchored induction for the repaired recursion -/
+
+/-- The specialized Hasse polynomial vanishes once the order exceeds the `Y`-degree. -/
+theorem specializedHasse_eq_zero_of_natDegreeY_lt (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ)
+    {m : ℕ} (hm : Bivariate.natDegreeY R < m) :
+    Polynomial.Bivariate.evalX (Polynomial.C x₀)
+      (hasseDerivX i1 (hasseDerivY m R)) = 0 := by
+  rw [hasseDerivY_eq_zero_of_natDegreeY_lt R hm]
+  have hX : hasseDerivX i1 (0 : F[X][X][Y]) = 0 := by
+    rw [hasseDerivX]
+    exact Polynomial.sum_zero_index _
+  rw [hX, Polynomial.Bivariate.evalX_eq_map, Polynomial.map_zero]
+
+/-- The repaired cell coefficient vanishes at the zero cells (`Σλ > d_R`). -/
+theorem B_coeffC_eq_zero_of_natDegreeY_lt (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
+    (lam : Nat.Partition m) (hm : Bivariate.natDegreeY R < sigmaLambda lam) :
+    B_coeffC (H := H) x₀ R i1 lam = 0 := by
+  have hp0 := specializedHasse_eq_zero_of_natDegreeY_lt x₀ R i1 hm
+  have hcl : ∀ kk, hasseCoeffRepr𝒪_cleared H x₀ R i1 (sigmaLambda lam) kk = 0 := by
+    intro kk
+    refine Polynomial.ext fun b => ?_
+    rw [hasseCoeffRepr𝒪_cleared_coeff, hp0]
+    simp
+  rw [B_coeffC]
+  by_cases hi1 : i1 = 0
+  · subst hi1
+    rw [if_pos rfl, if_neg (by omega), hp0]
+    simp
+  · rw [if_neg hi1, hcl, map_zero]
+    exact smul_zero _
+
+/-- The `i1 = 0` cells have at least two parts (the single-part partition of `k+1` is the
+excluded indiscrete one). -/
+theorem two_le_sigmaLambda_of_i1_zero {k : ℕ} (lam : Nat.Partition (k + 1 - 0))
+    (hlam : (k + 1) ∉ lam.parts) : 2 ≤ sigmaLambda lam := by
+  rw [sigmaLambda]
+  by_contra hcon
+  push_neg at hcon
+  interval_cases h : Multiset.card lam.parts
+  · -- no parts: the sum cannot be k+1
+    have hsum := lam.parts_sum
+    rw [Multiset.card_eq_zero.mp h] at hsum
+    simp at hsum
+  · -- one part: it must be k+1, which is excluded
+    obtain ⟨a, ha⟩ := Multiset.card_eq_one.mp h
+    have hsum := lam.parts_sum
+    rw [ha] at hsum
+    simp at hsum
+    rw [ha, hsum] at hlam
+    exact hlam (by simpa using Multiset.mem_singleton_self (k + 1))
+
+/-- **The `m = d_R` saved budget** (the top cell of the `i1 = 0` column): there the
+repaired coefficient is just the exact quotient `c₀/W`, with
+`Λ ≤ (D_R − d_R) − degW` (the division saves a full `degW`). -/
+theorem B_coeffC_weight_le_anchored_zero_top
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hWne : H.leadingCoeff ≠ 0)
+    (x₀ : F) (R : F[X][X][Y]) {DR : ℕ}
+    (htotal : ∀ n i, ((R.coeff n).coeff i).natDegree ≤ DR - n - i)
+    {m : ℕ} (lam : Nat.Partition m)
+    (hdvd : H.leadingCoeff ∣
+      (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX 0 (hasseDerivY (sigmaLambda lam) R))).coeff
+        (Bivariate.natDegreeY R - sigmaLambda lam))
+    (htop : sigmaLambda lam = Bivariate.natDegreeY R) :
+    weight_Λ_over_𝒪 hH (B_coeffC (H := H) x₀ R 0 lam) D
+      ≤ WithBot.some ((DR - Bivariate.natDegreeY R) - (H.leadingCoeff).natDegree) := by
+  rw [B_coeffC, if_pos rfl, if_neg (by omega), zero_add]
+  refine le_trans (weight_Λ_over_𝒪_nsmul_le H hH hDH _ _) ?_
+  obtain ⟨c', hc'⟩ := hdvd
+  have hdivval : (Polynomial.Bivariate.evalX (Polynomial.C x₀)
+      (hasseDerivX 0 (hasseDerivY (sigmaLambda lam) R))).coeff
+        (Bivariate.natDegreeY R - sigmaLambda lam) / H.leadingCoeff = c' := by
+    rw [hc']
+    exact mul_div_cancel_left₀ c' hWne
+  rw [hdivval]
+  rcases eq_or_ne c' 0 with hc0 | hc0
+  · subst hc0
+    rw [map_zero, zero_mul, map_zero, weight_Λ_over_𝒪_zero]
+    exact bot_le
+  · refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH rfl) ?_
+    refine le_trans (weight_Λ_C_mul_X_pow_le c' _ D) ?_
+    refine WithBot.coe_le_coe.mpr ?_
+    have hshape := specializedHasse_coeff_natDegree_le_of_total (x₀ := x₀) htotal 0
+      (sigmaLambda lam) (Bivariate.natDegreeY R - sigmaLambda lam)
+    have hmul : ((H.leadingCoeff) * c').natDegree
+        = (H.leadingCoeff).natDegree + c'.natDegree :=
+      Polynomial.natDegree_mul hWne hc0
+    rw [hc', hmul] at hshape
+    have hb0 : Bivariate.natDegreeY R - sigmaLambda lam = 0 := by omega
+    rw [hb0]
+    simp only [Nat.zero_mul, Nat.zero_add]
+    omega
+
+/-- **The anchored closing arithmetic for the `i1 = 0` TOP cell (`m = d_R`)**: the
+exact-quotient budget closes the raw ledger. -/
+theorem harith_anchored_zero_top {k m DR dR dH w D Lξ nB : ℕ}
+    (hm2 : 2 ≤ m) (hms : m ≤ k + 1) (hmdR : m = dR)
+    (hdR2 : 2 ≤ dR) (hdH1 : 1 ≤ dH) (hdHdR : dH ≤ dR)
+    (hD : D = dH + w) (hDR : DR ≤ D)
+    (hnB : nB = (DR - dR) - w)
+    (hLξ : Lξ = (dR - 1) * (w + 1)) :
+    (0 + 1 - 1) * w + (2 * 0 + m - 2) * Lξ + nB
+      + (m + ((k + 1 - 0) + m) * w + (2 * (k + 1 - 0) - m) * Lξ)
+    ≤ 1 + (k + 2) * w + (2 * (k + 1) - 1) * Lξ := by
+  subst hmdR
+  have hxi : (2 * 0 + m - 2) * Lξ + (2 * (k + 1 - 0) - m) * Lξ = (2 * k) * Lξ := by
+    rw [← Nat.add_mul]
+    congr 1
+    omega
+  have hW : ((k + 1 - 0) + m) * w = (k + 2) * w + (m - 1) * w := by
+    rw [← Nat.add_mul]
+    congr 1
+    omega
+  have hxisplit : (2 * (k + 1) - 1) * Lξ = (2 * k) * Lξ + Lξ := by
+    have h21 : 2 * (k + 1) - 1 = 2 * k + 1 := by omega
+    rw [h21, Nat.add_mul, Nat.one_mul]
+  have hLexp : Lξ = (m - 1) * w + (m - 1) := by
+    rw [hLξ, Nat.mul_add, Nat.mul_one]
+  calc (0 + 1 - 1) * w + (2 * 0 + m - 2) * Lξ + nB
+        + (m + ((k + 1 - 0) + m) * w + (2 * (k + 1 - 0) - m) * Lξ)
+      = ((k + 1 - 0) + m) * w
+          + ((2 * 0 + m - 2) * Lξ + (2 * (k + 1 - 0) - m) * Lξ)
+          + (nB + m) := by ring
+    _ = (k + 2) * w + (m - 1) * w + (2 * k) * Lξ + (nB + m) := by
+        rw [hW, hxi]
+    _ ≤ 1 + (k + 2) * w + (2 * k) * Lξ + Lξ := by
+        have h1 : (m - 1) * w + (nB + m) ≤ 1 + Lξ := by
+          rw [hLexp, hnB]
+          omega
+        omega
+    _ = 1 + (k + 2) * w + (2 * (k + 1) - 1) * Lξ := by rw [hxisplit]; ring
+
+/-- **Generic structured partition-product bound** (any family `β`): the proven
+multiset telescoping, family-abstracted so it applies to `βHenselC`. -/
+theorem partitionProd_family_weight_le
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (k i1 : ℕ) (B0 wW xξ : ℕ)
+    (β : ℕ → 𝒪 H)
+    (hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (β l) D
+        ≤ WithBot.some (B0 + (l + 1) * wW + (2 * l - 1) * xξ))
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts) :
+    weight_Λ_over_𝒪 hH
+        (partitionProd lam (fun l => if _h : l < k + 1 then β l else 0)) D
+      ≤ WithBot.some
+          (sigmaLambda lam * B0 + ((k + 1 - i1) + sigmaLambda lam) * wW
+            + (2 * (k + 1 - i1) - sigmaLambda lam) * xξ) := by
+  classical
+  have hcongr : partitionProd lam (fun l => if _h : l < k + 1 then β l else 0)
+      = partitionProd lam (fun l => β l) :=
+    partitionProd_surviving_guard lam hlam (fun l => β l) 0
+  rw [hcongr]
+  refine le_trans (partitionProd_weight_le H hH hDH lam (fun l => β l)) ?_
+  have hkey : (lam.parts.map (fun l => weight_Λ_over_𝒪 hH (β l) D)).sum
+      ≤ WithBot.some
+          ((lam.parts.map (fun l => B0 + (l + 1) * wW + (2 * l - 1) * xξ)).sum) := by
+    have hmem : ∀ l ∈ lam.parts,
+        weight_Λ_over_𝒪 hH (β l) D
+          ≤ WithBot.some (B0 + (l + 1) * wW + (2 * l - 1) * xξ) :=
+      fun l hl => hIH l (surviving_parts_lt lam hlam hl)
+    revert hmem
+    generalize lam.parts = ms
+    intro hmem
+    induction ms using Multiset.induction_on with
+    | empty => simp
+    | cons a s ih =>
+        rw [Multiset.map_cons, Multiset.sum_cons, Multiset.map_cons, Multiset.sum_cons,
+          WithBot.coe_add]
+        refine add_le_add (hmem a (Multiset.mem_cons_self a s)) ?_
+        exact ih (fun l hl => hmem l (Multiset.mem_cons_of_mem hl))
+  refine le_trans hkey ?_
+  rw [sum_map_structured_general lam.parts B0 wW xξ (fun l hl => lam.parts_pos hl)]
+  rw [lam.parts_sum, sigmaLambda, show Multiset.card lam.parts = lam.parts.card from rfl]
+
 /-! ## Source audit -/
 
 #print axioms weight_Λ_C_mul_X_pow_le
@@ -278,5 +454,10 @@ theorem harith_anchored_zero {k m DR dR dH w D Lξ nB : ℕ}
 #print axioms βHenselC_zero
 #print axioms βHenselC_succ
 #print axioms harith_anchored_zero
+#print axioms B_coeffC_eq_zero_of_natDegreeY_lt
+#print axioms two_le_sigmaLambda_of_i1_zero
+#print axioms B_coeffC_weight_le_anchored_zero_top
+#print axioms harith_anchored_zero_top
+#print axioms partitionProd_family_weight_le
 
 end BCIKS20.HenselNumerator
