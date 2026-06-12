@@ -481,6 +481,23 @@ theorem march_band_nonempty {r μ : ℕ} (hr2 : 2 ≤ r) (hμ : 1 ≤ μ)
   calc (2 * 2 ^ (μ - 1)).choose r < r * (2 ^ r * (2 ^ (μ - 1)).choose r) := hlt
   _ = 2 ^ r * (2 ^ (μ - 1)).choose r * r := by ring
 
+/-- **Perfect-square boundary rungs.**  The widened criterion includes every
+`r = 2^a`, `μ = 2a` boundary point, e.g. `(r, μ) = (4, 4)`, `(8, 6)`,
+`(16, 8)`, where the older strict `r² < 2^μ` criterion misses equality. -/
+theorem march_band_nonempty_square_rung {a : ℕ} (ha : 1 ≤ a) :
+    (2 ^ (2 * a)).choose (2 ^ a) / (2 ^ a)
+      < 2 ^ (2 ^ a) * (2 ^ (2 * a - 1)).choose (2 ^ a) := by
+  refine march_band_nonempty (r := 2 ^ a) (μ := 2 * a) ?_ ?_ ?_
+  · have h : 2 ^ 1 ≤ 2 ^ a := Nat.pow_le_pow_right (by norm_num : 1 ≤ 2) ha
+    simpa using h
+  · omega
+  · have hsquare : 2 ^ a * 2 ^ a = 2 ^ (2 * a) := by
+      rw [← pow_add]
+      congr
+      omega
+    rw [hsquare]
+    exact Nat.le_add_right _ _
+
 /-! ## THE PIN: the ceiling march -/
 
 /-- **THE CEILING MARCH.**  For every `r ≥ 2` and the degree-`(r−2)` code (dimension
@@ -630,6 +647,7 @@ end ArkLib.ProximityGap.KKH26CeilingMarch
 #print axioms ArkLib.ProximityGap.KKH26CeilingMarch.march_epsMCA_le
 #print axioms ArkLib.ProximityGap.KKH26CeilingMarch.interiorCeiling_march
 #print axioms ArkLib.ProximityGap.KKH26CeilingMarch.march_band_nonempty
+#print axioms ArkLib.ProximityGap.KKH26CeilingMarch.march_band_nonempty_square_rung
 #print axioms ArkLib.ProximityGap.KKH26CeilingMarch.kkh26_march_deltaStar_pin
 #print axioms ArkLib.ProximityGap.KKH26CeilingMarch.kkh26_march_deltaStar_pin_canonical
 #print axioms ArkLib.ProximityGap.KKH26CeilingMarch.march_band_at_r5_mu4
