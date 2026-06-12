@@ -4,7 +4,7 @@ counts at genuinely sub-Johnson instances ((k+m+1)^2 <= n(k-1)) sit at ~6x the r
 mean C(n,t)/q^(m+1) (25-32 at the tuples below), two orders of magnitude below the
 proven capped-fiber bound (4368-8008). Conjecture-shaped target for the wall:
 B = polylog(n) * C(n,t)/q^(m+1). SAMPLED, not adversarial-exhaustive: structured
-words (near-code, divisor, character) are the open falsifiers."""
+words were tested same-day: near-code = C(n-e,t) but cap-EXCLUDED; the quadratic-character word x^((q-1)/2) IS capped (agreement exactly 2k+m+1) with supply 258/215 vs mean 4/8 — the polylog target is FALSIFIED; corrected target: supply bounded by largest-agreement-class structure C(n/2,t)-shape (see issue comment)."""
 import itertools, random, sys
 from math import comb
 if hasattr(sys.stdout,"reconfigure"): sys.stdout.reconfigure(encoding="utf-8")
