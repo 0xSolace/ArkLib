@@ -427,3 +427,145 @@ theorem two_mul_sum_card_le {α β : Type} [DecidableEq α] [DecidableEq β]
 end ArkLib.ProximityGap.PoissonCeilingFloor
 
 #print axioms ArkLib.ProximityGap.PoissonCeilingFloor.two_mul_sum_card_le
+
+namespace ArkLib.ProximityGap.PoissonCeilingFloor
+
+variable {p : ℕ} [Fact p.Prime] {g : ZMod p} {n : ℕ} [NeZero n]
+
+/-! ## Part B2b-i: the master union count over the `(W, U)`-space -/
+
+open Classical in
+/-- **The master count**: under `C + 1 ≤ q` (`C = C(n,d+2)`), the configurations
+`(W, U)` with some `(d+2)`-tuple `T` carrying an explanation of `W` and a
+non-explanation of `U` number at least `C·q^{2n−1}/2` (stated doubled, ℕ-clean). -/
+theorem card_union_ge (hg : orderOf g = n) {d : ℕ} (hdn : d + 2 ≤ n)
+    (hq : n.choose (d + 2) + 1 ≤ p) :
+    n.choose (d + 2) * p ^ (2 * n - 1)
+      ≤ 2 * ((Finset.powersetCard (d + 2) (Finset.univ : Finset (Fin n))).biUnion
+          (fun T => (Finset.univ.filter (fun W : Fin n → ZMod p => ExplainableOn g d W T))
+            ×ˢ (Finset.univ.filter (fun U : Fin n → ZMod p => ¬ ExplainableOn g d U T)))).card := by
+  classical
+  haveI : NeZero p := ⟨(Fact.out : p.Prime).ne_zero⟩
+  set 𝒯 := Finset.powersetCard (d + 2) (Finset.univ : Finset (Fin n)) with h𝒯
+  set A : Finset (Fin n) → Finset ((Fin n → ZMod p) × (Fin n → ZMod p)) :=
+    fun T => (Finset.univ.filter (fun W : Fin n → ZMod p => ExplainableOn g d W T))
+      ×ˢ (Finset.univ.filter (fun U : Fin n → ZMod p => ¬ ExplainableOn g d U T)) with hA
+  have hcard𝒯 : 𝒯.card = n.choose (d + 2) := by
+    rw [h𝒯, Finset.card_powersetCard, Finset.card_univ, Fintype.card_fin]
+  have hmemT : ∀ T ∈ 𝒯, T.card = d + 2 := fun T hT =>
+    (Finset.mem_powersetCard.mp hT).2
+  have hTne : ∀ T ∈ 𝒯, ∃ i₀, i₀ ∈ T := by
+    intro T hT
+    have := hmemT T hT
+    exact Finset.card_pos.mp (by omega)
+  -- the single count
+  have hsingle : ∀ T ∈ 𝒯, (A T).card = p ^ (n - 1) * (p ^ n - p ^ (n - 1)) := by
+    intro T hT
+    obtain ⟨i₀, hi₀⟩ := hTne T hT
+    rw [hA]
+    rw [Finset.card_product]
+    rw [card_explainable_words hg (hmemT T hT) hi₀,
+      card_not_explainable_words hg (hmemT T hT) hi₀]
+  -- the pair bound
+  have hpair : ∀ TT' ∈ 𝒯.offDiag, (A TT'.1 ∩ A TT'.2).card ≤ p ^ (n - 2) * p ^ n := by
+    intro TT' hTT'
+    obtain ⟨hT1, hT2, hne⟩ := Finset.mem_offDiag.mp hTT'
+    have hsub : A TT'.1 ∩ A TT'.2
+        ⊆ (Finset.univ.filter (fun W : Fin n → ZMod p =>
+            ExplainableOn g d W TT'.1 ∧ ExplainableOn g d W TT'.2)) ×ˢ Finset.univ := by
+      intro x hx
+      obtain ⟨hx1, hx2⟩ := Finset.mem_inter.mp hx
+      rw [hA] at hx1 hx2
+      obtain ⟨hW1, _⟩ := Finset.mem_product.mp hx1
+      obtain ⟨hW2, _⟩ := Finset.mem_product.mp hx2
+      refine Finset.mem_product.mpr ⟨?_, Finset.mem_univ _⟩
+      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _,
+        (Finset.mem_filter.mp hW1).2, (Finset.mem_filter.mp hW2).2⟩
+    calc (A TT'.1 ∩ A TT'.2).card
+        ≤ ((Finset.univ.filter (fun W : Fin n → ZMod p =>
+            ExplainableOn g d W TT'.1 ∧ ExplainableOn g d W TT'.2)) ×ˢ
+            (Finset.univ : Finset (Fin n → ZMod p))).card := Finset.card_le_card hsub
+    _ = p ^ (n - 2) * p ^ n := by
+        rw [Finset.card_product,
+          card_explainable_words_pair hg (hmemT _ hT1) (hmemT _ hT2) hne,
+          Finset.card_univ, Fintype.card_fun, ZMod.card, Fintype.card_fin]
+  -- Bonferroni
+  have hbonf := two_mul_sum_card_le 𝒯 A
+  have hsum1 : (∑ T ∈ 𝒯, (A T).card)
+      = n.choose (d + 2) * (p ^ (n - 1) * (p ^ n - p ^ (n - 1))) := by
+    rw [Finset.sum_congr rfl hsingle, Finset.sum_const, smul_eq_mul, hcard𝒯]
+  have hsum2 : (∑ TT' ∈ 𝒯.offDiag, (A TT'.1 ∩ A TT'.2).card)
+      ≤ (n.choose (d + 2) * n.choose (d + 2)) * (p ^ (n - 2) * p ^ n) := by
+    calc (∑ TT' ∈ 𝒯.offDiag, (A TT'.1 ∩ A TT'.2).card)
+        ≤ ∑ _TT' ∈ 𝒯.offDiag, p ^ (n - 2) * p ^ n := Finset.sum_le_sum hpair
+    _ = 𝒯.offDiag.card * (p ^ (n - 2) * p ^ n) := by
+        rw [Finset.sum_const, smul_eq_mul]
+    _ ≤ (n.choose (d + 2) * n.choose (d + 2)) * (p ^ (n - 2) * p ^ n) := by
+        refine Nat.mul_le_mul_right _ ?_
+        rw [Finset.offDiag_card, hcard𝒯]
+        omega
+  -- power algebra: everything reduces to the atom S = Q²p², Q = p^{n−2}
+  have hn2 : 2 ≤ n := by omega
+  set C := n.choose (d + 2) with hC
+  set Q := p ^ (n - 2) with hQ
+  have hppos : 1 ≤ p := (Fact.out : p.Prime).one_lt.le
+  set S := Q * Q * (p * p) with hS
+  have hX : p ^ (2 * n - 1) = S * p := by
+    rw [hS, hQ, show p * p = p ^ 2 from (sq p).symm, ← pow_add, ← pow_add, ← pow_succ]
+    congr 1
+    omega
+  have hY : Q * p ^ n = S := by
+    rw [hS, hQ, show p * p = p ^ 2 from (sq p).symm, ← pow_add, ← pow_add, ← pow_add]
+    congr 1
+    omega
+  have hsingle' : p ^ (n - 1) * (p ^ n - p ^ (n - 1)) = S * p - S := by
+    have h1 : p ^ (n - 1) * p ^ n = S * p := by
+      rw [hS, hQ, show p * p = p ^ 2 from (sq p).symm, ← pow_add, ← pow_add, ← pow_add,
+        ← pow_succ]
+      congr 1
+      omega
+    have h2 : p ^ (n - 1) * p ^ (n - 1) = S := by
+      rw [hS, hQ, show p * p = p ^ 2 from (sq p).symm, ← pow_add, ← pow_add, ← pow_add]
+      congr 1
+      omega
+    rw [Nat.mul_sub, h1, h2]
+  -- the factored comparison: (C² + C)·S ≤ C·S·p  from  C + 1 ≤ p
+  have hfac : C * C * S + C * S ≤ C * (S * p) := by
+    calc C * C * S + C * S = (C * (C + 1)) * S := by ring
+    _ ≤ (C * p) * S := Nat.mul_le_mul_right _ (Nat.mul_le_mul_left _ hq)
+    _ = C * (S * p) := by ring
+  have hbS : C * S ≤ C * (S * p) := by
+    calc C * S = C * (S * 1) := by rw [Nat.mul_one]
+    _ ≤ C * (S * p) := by
+        exact Nat.mul_le_mul_left _ (Nat.mul_le_mul_left _ hppos)
+  have hccS : C * S ≤ C * C * S := by
+    have hC1 : 1 ≤ C := by
+      have := Nat.choose_pos (n := n) (k := d + 2) hdn
+      omega
+    calc C * S = 1 * (C * S) := (Nat.one_mul _).symm
+    _ ≤ C * (C * S) := Nat.mul_le_mul_right _ hC1
+    _ = C * C * S := by ring
+  -- rewrite the three quantities in S-form
+  have hsum1' : 2 * (∑ T ∈ 𝒯, (A T).card) = 2 * (C * (S * p)) - 2 * (C * S) := by
+    rw [hsum1, hsingle']
+    rw [Nat.mul_sub, Nat.mul_sub]
+  have hsum2' : (∑ TT' ∈ 𝒯.offDiag, (A TT'.1 ∩ A TT'.2).card)
+      ≤ C * C * S - C * S := by
+    calc (∑ TT' ∈ 𝒯.offDiag, (A TT'.1 ∩ A TT'.2).card)
+        ≤ 𝒯.offDiag.card * (p ^ (n - 2) * p ^ n) := by
+          calc (∑ TT' ∈ 𝒯.offDiag, (A TT'.1 ∩ A TT'.2).card)
+              ≤ ∑ _TT' ∈ 𝒯.offDiag, p ^ (n - 2) * p ^ n := Finset.sum_le_sum hpair
+          _ = 𝒯.offDiag.card * (p ^ (n - 2) * p ^ n) := by
+              rw [Finset.sum_const, smul_eq_mul]
+    _ = (C * C - C) * (Q * p ^ n) := by
+        rw [Finset.offDiag_card, hcard𝒯, hQ]
+    _ = C * C * S - C * S := by
+        rw [hY, Nat.sub_mul]
+  -- assemble linearly
+  have hbonf' := two_mul_sum_card_le 𝒯 A
+  rw [hX]
+  omega
+
+end ArkLib.ProximityGap.PoissonCeilingFloor
+
+#print axioms ArkLib.ProximityGap.PoissonCeilingFloor.card_union_ge
