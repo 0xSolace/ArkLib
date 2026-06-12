@@ -221,8 +221,42 @@ theorem boundary_slice_ladder_badSet_eq (dom : Fin n ↪ F) {k : ℕ} (hk : 1 �
   refine Finset.image_congr fun S _ => ?_
   simp
 
+open Classical in
+/-- Cardinality form of `boundary_slice_ladder_badSet_eq`: at the boundary slice, the
+ladder-stack bad-scalar count is the number of distinct `(k+1)`-subset sums of the
+domain.  The negation in the set-level statement does not change cardinality. -/
+theorem boundary_slice_ladder_badSet_card_eq (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k)
+    {δ : ℝ≥0}
+    (hlo : (k : ℝ≥0) < (1 - δ) * (Fintype.card (Fin n) : ℝ≥0))
+    (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ (k + 1 : ℕ))
+    (hμ : ∀ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+      (agreeSet c (fun i => (dom i) ^ k)).card ≤ k) :
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => (dom i) ^ (k + 1)) (fun i => (dom i) ^ k) γ)).card
+      = ((Finset.univ.powersetCard (k + 1)).image
+          (fun S : Finset (Fin n) => ∑ i ∈ S, dom i)).card := by
+  classical
+  set A : Finset (Finset (Fin n)) := Finset.univ.powersetCard (k + 1) with hA
+  set σ : Finset (Fin n) → F := fun S => ∑ i ∈ S, dom i with hσ
+  calc
+    (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+        ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+        (fun i => (dom i) ^ (k + 1)) (fun i => (dom i) ^ k) γ)).card
+        = (A.image fun S => -σ S).card := by
+          rw [boundary_slice_ladder_badSet_eq dom hk hlo hhi hμ, hA, hσ]
+    _ = (A.image σ).card := by
+          rw [← Finset.card_image_of_injective (A.image σ) neg_injective]
+          congr 1
+          ext x
+          simp [hσ]
+    _ = ((Finset.univ.powersetCard (k + 1)).image
+          (fun S : Finset (Fin n) => ∑ i ∈ S, dom i)).card := by
+          rw [hA, hσ]
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.residual_ladder_schur
 #print axioms ProximityGap.Ownership.boundary_slice_ladder_badSet_eq
+#print axioms ProximityGap.Ownership.boundary_slice_ladder_badSet_card_eq

@@ -814,7 +814,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26StratifiedSpread
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26SumsOfRootsOfUnity
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ThornerZaman
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26WitnessSpread
-import ArkLib.Data.CodingTheory.ProximityGap.LadderSchurReduction
 import ArkLib.Data.CodingTheory.ProximityGap.LDAttainment
 import ArkLib.Data.CodingTheory.ProximityGap.LDEliasCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.LDFourRate
@@ -822,6 +821,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LDThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.LDThresholdElias
 import ArkLib.Data.CodingTheory.ProximityGap.LDThresholdHalfDist
 import ArkLib.Data.CodingTheory.ProximityGap.LDThresholdJohnsonSq
+import ArkLib.Data.CodingTheory.ProximityGap.LadderSchurReduction
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungAntipodalTightness
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungMultisetAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungSpanTwoPrime
