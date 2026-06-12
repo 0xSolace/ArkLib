@@ -775,6 +775,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.JohnsonTightnessRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.JohnsonTouchingCorner
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2FiberTightness
 import ArkLib.Data.CodingTheory.ProximityGap.JointT2Unconditional
+import ArkLib.Data.CodingTheory.ProximityGap.K1WindowUniversal
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26AsymptoticCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26BadLineConstruction
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26CensusExact
