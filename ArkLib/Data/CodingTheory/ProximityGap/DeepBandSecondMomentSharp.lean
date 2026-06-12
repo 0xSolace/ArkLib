@@ -33,6 +33,8 @@ Issue #389.
 open Finset Polynomial
 open scoped NNReal ENNReal
 
+set_option linter.style.longLine false
+
 namespace ProximityGap.PairRank
 
 open ProximityGap.SpikeFloor ProximityGap ProximityGap.Ownership
