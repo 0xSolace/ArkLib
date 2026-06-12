@@ -281,6 +281,78 @@ theorem corank1_span (j w : ℕ)
   rw [hdetev] at h'
   linear_combination h'
 
+/-- **The generic pencil-determinant degree bound**: any square matrix over the
+column sum-type whose `inl`-column entries are constants and `inr`-column entries
+have degree ≤ 1 has determinant degree ≤ `w + 1`. -/
+theorem det_natDegree_le_of_column_weights {j w : ℕ}
+    (M : Matrix (Fin (j + 1) ⊕ Fin (w + 1)) (Fin (j + 1) ⊕ Fin (w + 1)) F[X])
+    (hM : ∀ a b, (M a b).natDegree
+      ≤ Sum.elim (fun _ : Fin (j + 1) => 0) (fun _ : Fin (w + 1) => 1) b) :
+    M.det.natDegree ≤ w + 1 := by
+  classical
+  rw [Matrix.det_apply]
+  refine natDegree_sum_le_of_forall_le _ _ fun σ _ => ?_
+  have hprod' : (∏ b : Fin (j + 1) ⊕ Fin (w + 1), M (σ b) b).natDegree ≤ w + 1 := by
+    refine le_trans (natDegree_prod_le _ _) ?_
+    calc ∑ b : Fin (j + 1) ⊕ Fin (w + 1), (M (σ b) b).natDegree
+        ≤ ∑ b : Fin (j + 1) ⊕ Fin (w + 1),
+            Sum.elim (fun _ : Fin (j + 1) => 0) (fun _ : Fin (w + 1) => 1) b :=
+          Finset.sum_le_sum fun b _ => hM (σ b) b
+      _ = w + 1 := by
+          rw [Fintype.sum_sum_type]
+          simp
+  rcases Int.units_eq_one_or (Equiv.Perm.sign σ) with hsg | hsg
+  · rw [hsg, one_smul]
+    exact hprod'
+  · rw [hsg]
+    refine le_trans (le_of_eq ?_) hprod'
+    rw [Units.neg_smul, one_smul, natDegree_neg]
+
+/-- The entry-weight bound for the polynomial pencil. -/
+theorem recMatrixPoly_entry_natDegree (j w : ℕ) (r : Fin (2 * w))
+    (b : Fin (j + 1) ⊕ Fin (w + 1)) :
+    ((recMatrixPoly dom ℓ₀ ℓ₁ R₀ R₁ j w) r b).natDegree
+      ≤ Sum.elim (fun _ : Fin (j + 1) => 0) (fun _ : Fin (w + 1) => 1) b := by
+  rcases b with t | s
+  · simp only [recMatrixPoly, Sum.elim_inl, natDegree_C, le_refl]
+  · simp only [recMatrixPoly, Sum.elim_inr, natDegree_neg]
+    refine le_trans (natDegree_add_le _ _) (max_le ?_ ?_)
+    · rw [natDegree_C]
+      omega
+    · refine le_trans natDegree_mul_le ?_
+      rw [natDegree_X, natDegree_C]
+
+/-- **Adjugate entries of the updated square have degree ≤ w + 1**: each is the
+determinant of a doubly-updated pencil square whose entries keep the column
+weights. -/
+theorem recSquareU_adjugate_natDegree_le (j w : ℕ)
+    (τ : Fin (j + 1) ⊕ Fin (w + 1) → Fin (2 * w))
+    (c₀ cs b c : Fin (j + 1) ⊕ Fin (w + 1)) :
+    ((recSquareU dom ℓ₀ ℓ₁ R₀ R₁ j w τ c₀ cs).adjugate b c).natDegree ≤ w + 1 := by
+  rw [Matrix.adjugate_apply]
+  have hsingle : ∀ (b'' b₂ : Fin (j + 1) ⊕ Fin (w + 1)),
+      ((Pi.single b₂ 1 : (Fin (j + 1) ⊕ Fin (w + 1)) → F[X]) b'').natDegree = 0 := by
+    intro b'' b₂
+    by_cases h : b'' = b₂
+    · subst h
+      rw [Pi.single_eq_same]
+      exact natDegree_one
+    · rw [Pi.single_eq_of_ne h]
+      exact natDegree_zero
+  refine det_natDegree_le_of_column_weights _ fun a b' => ?_
+  by_cases hac : a = c
+  · subst hac
+    rw [Matrix.updateRow_self, hsingle]
+    exact Nat.zero_le _
+  · rw [Matrix.updateRow_ne hac, recSquareU]
+    by_cases hac₀ : a = c₀
+    · subst hac₀
+      rw [Matrix.updateRow_self, hsingle]
+      exact Nat.zero_le _
+    · rw [Matrix.updateRow_ne hac₀]
+      rw [recSquarePoly, Matrix.submatrix_apply, id_eq]
+      exact recMatrixPoly_entry_natDegree dom ℓ₀ ℓ₁ R₀ R₁ j w (τ a) b'
+
 end Degenerate
 
 end ProximityGap.WBPencil
@@ -291,3 +363,5 @@ end ProximityGap.WBPencil
 #print axioms ProximityGap.WBPencil.recSquarePoly_mulVec_adjugate
 #print axioms ProximityGap.WBPencil.recSquare_eval_kernel
 #print axioms ProximityGap.WBPencil.corank1_span
+#print axioms ProximityGap.WBPencil.det_natDegree_le_of_column_weights
+#print axioms ProximityGap.WBPencil.recSquareU_adjugate_natDegree_le
