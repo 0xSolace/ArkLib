@@ -1,4 +1,4 @@
-# The window fiber–pencil programme (#371): the WB residual, brick by brick
+# The window fiber-pencil programme (#371): the WB residual, brick by brick
 
 > Lane state as of 2026-06-12.  Goal: discharge `WindowRationalBounded`
 > (`WBPencilBelowUDR.lean`) — the single named residual of the below-UDR law —
@@ -6,6 +6,15 @@
 > unconditional production floor from `(1−ρ)/3` to the unique-decoding radius
 > `(1−ρ)/2`.  Everything here is k = 1 (the current battleground); the
 > machinery is k-generic at the identity level.
+
+> **2026-06-12 correction.**  `WindowRationalBounded` is now refuted by the
+> normalizer-pair family: the high-rate first beyond-ladder slice has
+> `(n-2)/2` bad scalars, so the `w+3` constant budget is false.  The current
+> replacement is WB-4, `WBPencilWindowLaw.lean`: under the single structural
+> residual `WindowPencilAnchored`, it proves
+> `ε_mca ≤ ((w+1)+n(w+1)+1)/q`.  `WBPencilBelowUDR.lean` keeps the old theorem
+> as a historical false-residual consumer and adds a direct linear count
+> fallback, but the active target is anchored-pencil corank ≤ 1.
 
 ## The reduction chain (all axiom-clean, in-tree)
 
@@ -43,8 +52,9 @@
 
 **Slack-1 census** (stratum G): bad ≤ 1 (cored family) + #exotics; exotics are
 pairwise ≤ 1-intersecting `w`-subsets, so pair-counting caps them at
-`C(n,2)/C(w,2)` — within the `w+3` budget for `w ≥ 6`.  Named residual: the
-small-`w` exotic sharpening (probe ceiling: 3).
+`C(n,2)/C(w,2)`.  This is still a structural bound, but the normalizer-pair
+refutation shows the old constant-budget assembly was too optimistic at high
+rate.  The corrected assembly asks for a linear-in-`n` cap.
 
 ## Strata map (first row; pole rows recurse)
 
@@ -105,6 +115,47 @@ Successor generation (spawned by refutations, per discipline):
 2. Pole-recursion bricks (aligned case → punctured deficient instance).
 3. Higher slack: the chain theory at `deg g ≤ s` (multi-level CF; the
    `(X−t)`-cancellation telescopes), toward the parametric all-rows theorem.
-4. Assembly: `WindowRationalBounded` ⟹ `epsMCA_le_below_udr` unconditional ⟹
-   `δ* ≥ (1−ρ)/2` at production shape; strip-row sup-side closure (the KB §5.7
-   "lower strip rows" open) via the same machinery.
+4. Assembly: replace the refuted `WindowRationalBounded` target with WB-4's
+   `WindowPencilAnchored` residual and consume `epsMCA_le_of_anchored` /
+   `le_mcaDeltaStar_of_anchored` from `WBPencilWindowLaw.lean`.  The old
+   `epsMCA_le_below_udr` theorem remains only a conditional consumer of a false
+   historical residual; `epsMCA_le_below_udr_linear` is a direct count-residual
+   fallback, not the live blocker.
+
+## The rung census campaign (2026-06-12 session): conjecture refuted, ceiling found
+
+**`bad ≤ 16 = n` is FALSE** at the rung instance (p=12289, n=16, k=3, s=7).
+Record progression: pencil 16 → 2-block frame design **20** → fiber-tuned
+(6,6,3) ladder **22**. Constructions and exact censuses in
+`scripts/probes/probe_wb371_blockframe{,4}.py`, `_hillclimb.py`,
+`_blockladder{,2}.py`; issue comments 4691612135, 4691666556.
+
+The three caps that match all probe data exactly:
+1. **Per-(maximal A, frame): n − |A|** — PROVEN (`RungMaximalFrame.lean`,
+   `maximal_frame_attached_card_le`; maximality closes the h-root escape).
+   Tight: pencil = 2 frames × 8 (|A|=8); 2-block = 2 × 10 (|A|=6).
+2. **Pencil-root cap**: a witness using > 2 collision points in one big
+   block forces the difference pencil to degenerate (deg ≤ 2 members have
+   ≤ 2 roots) — the q-collapse seen in the naive ladder.
+3. **All-equal-kernel cap**: ns fiber-tuned small scalars impose 4ns linear
+   equations on the 18 block coefficients; at ns = 3 only the 6-dim
+   all-equal kernel remains ⟹ ns ≤ 2. A 4th glued micro-block collapses
+   the census to 9 (gluing rigidity).
+
+Multi-block collapse: 3-block 16, 4-block 1, 5-block 0 (packing: three
+disjoint 6-sets need 18 > 16 points; gluing constraints crush the
+q-difference space — at 4 blocks it is 1-dim, all cross-ratios constant).
+
+**Empirical ceiling 22 ≤ 31: the obligation `SubCeilingInteriorCeiling ≤ 31`
+looks TRUE with margin.** Formal assembly skeleton: 1 (zero-class, proven)
++ Σ big classes (n−|Aᵢ|: per-class proven; ≤ 2 classes by packing)
++ ≤ 2 fiber-tuned extras (kernel-dim argument — TO FORMALIZE)
++ pool ≤ 2 (triple relation `RungTripleRelation.lean` — count TO FINISH).
+
+**Escape-scan addendum** (same session): structured (pairing, γ-triple)
+scans found 4420/30516 systems with rank < 12 (escape pairings have visible
+μ₁₆ reflection structure, e.g. block-2 pairs (6,11),(7,10),(8,9)), but ALL
+escape kernel directions carry `q₁ = q₂` identically — any kernel vector
+glues the big blocks and destroys the base 20. ns = 3 stays impossible with
+genuinely distinct blocks. **Ceiling 22 verified against: random search,
+hill-climb, multi-block, glued micro-blocks, structure-aware escapes.**
