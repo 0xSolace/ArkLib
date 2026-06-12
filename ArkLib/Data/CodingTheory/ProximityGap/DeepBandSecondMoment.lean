@@ -535,6 +535,138 @@ theorem deep_band_badSet_card_of_moments (dom : Fin n ↪ F) {k m : ℕ}
   · intro a _ b _ hab
     exact neg_injective hab
 
+/-! ## The deep-pair count and the numeric budget -/
+
+open Classical in
+/-- **The deep-pair count bound**: every deep pair `(T,T')` (overlap `> k`)
+has `T'` containing some `(k+1)`-subset of `T`, so
+`D ≤ P · C(k+m+1, k+1) · C(n−(k+1), m)`. -/
+theorem deepPairs_card_le (k m : ℕ) :
+    (((((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)) ×ˢ
+        (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)))).filter
+        (fun p => p.1 ≠ p.2 ∧ k < (p.1 ∩ p.2).card)).card)
+      ≤ ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card
+        * ((k + m + 1).choose (k + 1) * (n - (k + 1)).choose m) := by
+  classical
+  set Pm : Finset (Finset (Fin n)) :=
+    (Finset.univ : Finset (Fin n)).powersetCard (k + m + 1) with hPm
+  set deepS := (Pm ×ˢ Pm).filter (fun p => p.1 ≠ p.2 ∧ k < (p.1 ∩ p.2).card)
+    with hdeepS
+  -- supersets of a fixed (k+1)-set among the (k+m+1)-sets number ≤ C(n−(k+1), m)
+  have hsup : ∀ S : Finset (Fin n), S.card = k + 1 →
+      (Pm.filter (fun T' => S ⊆ T')).card ≤ (n - (k + 1)).choose m := by
+    intro S hScard
+    have hle : (Pm.filter (fun T' => S ⊆ T')).card
+        ≤ ((Finset.univ \ S).powersetCard m).card := by
+      refine Finset.card_le_card_of_injOn (fun T' => T' \ S) ?_ ?_
+      · intro T' hT'
+        obtain ⟨hT'm, hsub⟩ := Finset.mem_filter.mp hT'
+        refine Finset.mem_powersetCard.mpr ⟨?_, ?_⟩
+        · intro x hx
+          rw [Finset.mem_sdiff] at hx ⊢
+          exact ⟨Finset.mem_univ _, hx.2⟩
+        · rw [Finset.card_sdiff_of_subset hsub,
+            (Finset.mem_powersetCard.mp hT'm).2, hScard]
+          omega
+      · intro a ha b hb he
+        rw [Finset.mem_coe] at ha hb
+        have he' : a \ S = b \ S := he
+        have hsa : S ⊆ a := (Finset.mem_filter.mp ha).2
+        have hsb : S ⊆ b := (Finset.mem_filter.mp hb).2
+        calc a = (a \ S) ∪ S := (Finset.sdiff_union_of_subset hsa).symm
+          _ = (b \ S) ∪ S := by rw [he']
+          _ = b := Finset.sdiff_union_of_subset hsb
+    refine le_trans hle (le_of_eq ?_)
+    rw [Finset.card_powersetCard, Finset.card_sdiff_of_subset
+      (Finset.subset_univ _), Finset.card_univ, Fintype.card_fin, hScard]
+  -- fiber over the first component
+  have hfib : deepS.card = ∑ T ∈ Pm, (deepS.filter (fun p => p.1 = T)).card := by
+    refine Finset.card_eq_sum_card_fiberwise fun p hp => ?_
+    exact (Finset.mem_product.mp (Finset.filter_subset _ _ hp)).1
+  rw [hfib]
+  refine le_trans (Finset.sum_le_sum (fun T hT => ?_))
+    (by rw [Finset.sum_const, smul_eq_mul])
+  have hTcard : T.card = k + m + 1 := (Finset.mem_powersetCard.mp hT).2
+  -- per T: the partner map is injective on the fiber
+  have hpartner : (deepS.filter (fun p => p.1 = T)).card
+      = ((deepS.filter (fun p => p.1 = T)).image Prod.snd).card := by
+    rw [eq_comm]
+    refine Finset.card_image_of_injOn ?_
+    intro p hp p' hp' he
+    rw [Finset.mem_coe] at hp hp'
+    have h1 : p.1 = T := (Finset.mem_filter.mp hp).2
+    have h1' : p'.1 = T := (Finset.mem_filter.mp hp').2
+    exact Prod.ext_iff.mpr ⟨by rw [h1, h1'], he⟩
+  rw [hpartner]
+  -- the partners sit inside the biUnion over (k+1)-subsets of T
+  have hcover : (deepS.filter (fun p => p.1 = T)).image Prod.snd
+      ⊆ (T.powersetCard (k + 1)).biUnion
+        (fun S => Pm.filter (fun T' => S ⊆ T')) := by
+    intro T' hT'
+    obtain ⟨p, hp, rfl⟩ := Finset.mem_image.mp hT'
+    obtain ⟨hpd, hp1⟩ := Finset.mem_filter.mp hp
+    obtain ⟨hpm, -, hover⟩ := Finset.mem_filter.mp hpd
+    obtain ⟨S, hSsub, hScard⟩ := Finset.exists_subset_card_eq hover
+    refine Finset.mem_biUnion.mpr ⟨S, ?_, ?_⟩
+    · refine Finset.mem_powersetCard.mpr ⟨?_, hScard⟩
+      refine subset_trans hSsub ?_
+      rw [← hp1]
+      exact Finset.inter_subset_left
+    · refine Finset.mem_filter.mpr ⟨(Finset.mem_product.mp hpm).2, ?_⟩
+      exact subset_trans hSsub Finset.inter_subset_right
+  refine le_trans (Finset.card_le_card hcover) ?_
+  refine le_trans (Finset.card_biUnion_le) ?_
+  have hcard1 : (T.powersetCard (k + 1)).card = (k + m + 1).choose (k + 1) := by
+    rw [Finset.card_powersetCard, hTcard]
+  calc ∑ S ∈ T.powersetCard (k + 1), (Pm.filter (fun T' => S ⊆ T')).card
+      ≤ ∑ S ∈ T.powersetCard (k + 1), (n - (k + 1)).choose m :=
+        Finset.sum_le_sum fun S hS =>
+          hsup S (Finset.mem_powersetCard.mp hS).2
+    _ = (k + m + 1).choose (k + 1) * (n - (k + 1)).choose m := by
+        rw [Finset.sum_const, smul_eq_mul, hcard1]
+
+open Classical in
+/-- **The budget in pure numerics**: substituting the exact first moment
+(`sum_N1_eq`), the moment budget of `deep_band_badSet_card_of_moments` follows
+from the closed-form inequality
+
+  `P²·q^(M−(2m+1)) + (D + P)·q^(M−m) + V·q^M ≤ 2L·P·q^(M−m)`. -/
+theorem budget_of_numeric (dom : Fin n ↪ F) (k m : ℕ) {M : ℕ}
+    (hM : 2 * (k + m + 1) ≤ M) {L V : ℕ}
+    (hnum : ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card ^ 2
+          * (Fintype.card F) ^ (M - (2 * m + 1))
+        + (((((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)) ×ˢ
+            (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)))).filter
+            (fun p => p.1 ≠ p.2 ∧ k < (p.1 ∩ p.2).card)).card
+          + ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card)
+          * (Fintype.card F) ^ (M - m)
+        + V * (Fintype.card F) ^ M
+      ≤ 2 * L * (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card
+          * (Fintype.card F) ^ (M - m))) :
+    ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card ^ 2
+          * (Fintype.card F) ^ (M - (2 * m + 1))
+        + (((((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)) ×ˢ
+            (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)))).filter
+            (fun p => p.1 ≠ p.2 ∧ k < (p.1 ∩ p.2).card)).card
+          + ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).card)
+          * (Fintype.card F) ^ (M - m)
+        + V * (Fintype.card F) ^ M
+      ≤ 2 * L * (∑ c : Fin M → F,
+          (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter
+            (fun T => IsCoherent dom k m T (genPoly c))).card) := by
+  classical
+  refine le_trans hnum (Nat.mul_le_mul_left _ ?_)
+  -- S₁ = P·q^(M−m) exactly, from sum_N1_eq by cancellation
+  have h := sum_N1_eq dom k m (M := M) (by omega)
+  have hqm : (Fintype.card F) ^ M
+      = (Fintype.card F) ^ (M - m) * (Fintype.card F) ^ m := by
+    rw [← pow_add]
+    congr 1
+    omega
+  rw [hqm, ← mul_assoc] at h
+  have := Nat.eq_of_mul_eq_mul_right (pow_pos Fintype.card_pos m) h
+  omega
+
 end ProximityGap.PairRank
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -544,3 +676,5 @@ end ProximityGap.PairRank
 #print axioms ProximityGap.PairRank.value_count_quadratic
 #print axioms ProximityGap.PairRank.exists_generator_many_values
 #print axioms ProximityGap.PairRank.deep_band_badSet_card_of_moments
+#print axioms ProximityGap.PairRank.deepPairs_card_le
+#print axioms ProximityGap.PairRank.budget_of_numeric
