@@ -146,3 +146,100 @@ example {T₁ T₂ L : Type}
     (fun x c ↦ (x.1.1, c, x.2)) E (fun x ↦ h x.1.1 x.2)
 
 end ExecutableDocumentation
+
+/-! ## Knowledge-soundness game glue
+
+The plain (non-rbr) knowledge-soundness game (`Verifier.knowledgeSoundness`,
+`ArkLib/OracleReduction/Security/Basic.lean`) differs from the rbr games in two ways that
+make the master lemma above inapplicable:
+
+* the game is `Option`-valued (`OptionT.mk` of the simulated run — the reduction execution
+  may fail), and
+* for a verifier-first protocol the challenge is drawn *first*, with the adversarial tail
+  (the prover's remaining moves plus the pure verifier/extractor projections) *after* it
+  inside the same computation.
+
+The two lemmas below provide the corresponding mixture bound: `probEvent_bind_le_probEvent`
+is the generic "zero off the challenge event" monotonicity step (an upstream VCV-io
+candidate), and `ProtocolSpec.probEvent_optionT_simulateQ_addLift_getChallenge_bind_some_le`
+is the master bound for the challenge-first `OptionT` game shape, consuming a challenge-only
+probability bound `Pr[fun c ↦ ∃ t, E (f c t) | $ᵗ _] ≤ ε` (the `∃ t` ranges over *all*
+possible tail outputs, which is exactly the worst-case form the per-round paper bounds
+provide). Used by ABF26 Lemma 6.10 (`ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound`). -/
+
+/-- **Mixture monotonicity for `probEvent` over a bind.** If, for every support point `x` of
+`mx` outside the event `p`, the continuation satisfies the target event `q` with probability
+zero, then the probability of `q` after the bind is at most the probability of `p` under
+`mx`. (Generalizes `probEvent_bind_le_of_forall_le` from a constant bound to the indicator
+of a first-component event; upstream VCV-io candidate.) -/
+lemma probEvent_bind_le_probEvent {m : Type → Type} [Monad m]
+    [MonadLiftT m SPMF] [LawfulMonadLiftT m SPMF] [MonadLiftT m SetM] [EvalDistCompatible m]
+    {α β : Type} {mx : m α} {my : α → m β} {q : β → Prop} {p : α → Prop}
+    (h : ∀ x ∈ support mx, ¬ p x → Pr[ q | my x] = 0) :
+    Pr[ q | mx >>= my] ≤ Pr[ p | mx] := by
+  classical
+  rw [probEvent_bind_eq_tsum, probEvent_eq_tsum_indicator]
+  refine ENNReal.tsum_le_tsum fun x ↦ ?_
+  by_cases hp : p x
+  · refine le_trans (mul_le_mul' le_rfl probEvent_le_one) ?_
+    simp [hp]
+  · by_cases hx : x ∈ support mx
+    · simp [h x hx hp]
+    · simp [probOutput_eq_zero_of_not_mem_support hx]
+
+namespace ProtocolSpec
+
+variable {n : ℕ} {pSpec : ProtocolSpec n} [∀ j, SampleableType (pSpec.Challenge j)]
+  {ι : Type} {oSpec : OracleSpec ι} {σ : Type}
+
+/-- **Master mixture bound for the challenge-first knowledge-soundness game shape.** If the
+game's `Option`-valued computation `oa` is a fresh challenge draw followed by an arbitrary
+(adversarial) tail whose final value is `some (f c t)`, then the whole game probability —
+initial state sampled from `init`, simulation under `impl.addLift challengeQueryImpl`,
+`OptionT`-wrapped — is bounded by the challenge-only probability of `∃ t, E (f c t)` over a
+uniform challenge.
+
+`oa` is taken as an argument together with the equation `hoa` (rather than inlined in the
+conclusion) so that applying the lemma to a concrete game by `refine` assigns `oa` to the
+game's computation by *definitional* unification; the caller then proves `hoa` by genuine
+rewriting (log-discarding, prover-run unfolding) without having to respell the game term. -/
+theorem probEvent_optionT_simulateQ_addLift_getChallenge_bind_some_le
+    {T β : Type}
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (oa : OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option β)) (i : pSpec.ChallengeIdx)
+    (tail : pSpec.Challenge i → OracleComp (oSpec + [pSpec.Challenge]ₒ) T)
+    (f : pSpec.Challenge i → T → β) (E : β → Prop) {ε : ℝ≥0∞}
+    (hoa : oa = do
+      let c ← liftComp (pSpec.getChallenge i) (oSpec + [pSpec.Challenge]ₒ)
+      (fun t ↦ some (f c t)) <$> tail c)
+    (h : Pr[ fun c ↦ ∃ t, E (f c t) | $ᵗ (pSpec.Challenge i)] ≤ ε) :
+    Pr[ E | OptionT.mk (do
+      (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+        oa).run' (← init))] ≤ ε := by
+  subst hoa
+  -- Resolve the simulated challenge query into a top-level uniform draw, per initial state.
+  have hbody : ∀ s : σ,
+      (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+        (do
+          let c ← liftComp (pSpec.getChallenge i) (oSpec + [pSpec.Challenge]ₒ)
+          (fun t ↦ some (f c t)) <$> tail c)).run' s
+      = ($ᵗ (pSpec.Challenge i)) >>= fun c ↦
+          (fun t ↦ some (f c t)) <$>
+            ((simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+              (tail c)).run' s) := by
+    intro s
+    rw [simulateQ_bind, simulateQ_addLift_challengeQueryImpl_getChallenge,
+      StateT.run'_bind']
+    simp only [StateT.run_liftM, bind_assoc, pure_bind, simulateQ_map, StateT.run'_map']
+  rw [OptionT.mk_bind]
+  refine probEvent_bind_le_of_forall_le fun s _ ↦ ?_
+  rw [hbody s, OptionT.mk_bind]
+  refine le_trans (probEvent_bind_le_probEvent (p := fun c ↦ ∃ t, E (f c t)) ?_)
+    (le_trans (le_of_eq (OptionT.probEvent_liftM _ _)) h)
+  intro c _ hc
+  refine probEvent_eq_zero fun z hz hE ↦ hc ?_
+  rw [OptionT.mem_support_iff, OptionT.run_mk, support_map, Set.mem_image] at hz
+  obtain ⟨t, _, ht⟩ := hz
+  exact ⟨t, by rw [Option.some_inj] at ht; rw [ht]; exact hE⟩
+
+end ProtocolSpec

@@ -1271,16 +1271,21 @@ private def rbrWitMid : Fin 4 → Type
 omit [DecidableEq ι] [Fintype F] [DecidableEq F] in
 open Classical in
 /-- Round-0 extraction for L6.8: if *any* witness completes `stmtIn` in the
-relaxed output relation, return one by choice; otherwise a dummy. -/
-private noncomputable def extractZero (encode : (Fin k → F) → (ι → F)) (δ : ℝ≥0)
+relaxed output relation, return one by choice; otherwise a dummy.
+
+Public (not `private`) because L6.10 reuses it verbatim: the C6.9 input relation is
+the same `R̃²_{C,δ}` (`outputRelationFor`), so the L6.10 straightline extractor is this
+same classical choice (`SimplifiedIOR.simplifiedIOR_knowledgeSound`). -/
+noncomputable def extractZero (encode : (Fin k → F) → (ι → F)) (δ : ℝ≥0)
     (stmtIn : Statement (F := F) k × (∀ i, OracleStatement ι F i)) :
     Witness (F := F) k :=
   if h : ∃ M, (stmtIn, M) ∈ outputRelationFor k encode δ then h.choose
   else fun _ _ ↦ 0
 
 omit [DecidableEq ι] [DecidableEq F] in
-/-- If a relaxed-relation witness exists at all, `extractZero` returns one. -/
-private lemma extractZero_mem {encode : (Fin k → F) → (ι → F)} {δ : ℝ≥0}
+/-- If a relaxed-relation witness exists at all, `extractZero` returns one.
+(Shared by the L6.8 γ-round bound and the L6.10 game bound.) -/
+lemma extractZero_mem {encode : (Fin k → F) → (ι → F)} {δ : ℝ≥0}
     {stmtIn : Statement (F := F) k × (∀ i, OracleStatement ι F i)}
     (hw : ∃ M, (stmtIn, M) ∈ outputRelationFor k encode δ) :
     (stmtIn, extractZero k encode δ stmtIn) ∈ outputRelationFor k encode δ := by
@@ -1335,8 +1340,9 @@ private noncomputable def rbrKSF (encode : (Fin k → F) → (ι → F)) (δ : �
 
 omit [DecidableEq ι] [DecidableEq F] in
 /-- `epsMCA` is a supremum of probabilities, hence `≤ 1 < ⊤`. (Candidate for
-relocation to `ProximityGap/Errors.lean`.) -/
-private lemma epsMCA_ne_top [Nonempty ι] (C : Set (ι → F)) (δ : ℝ≥0) :
+relocation to `ProximityGap/Errors.lean`. Public because the L6.10 coercion
+endgame in `Spec/SimplifiedIOR.lean` reuses it.) -/
+lemma epsMCA_ne_top [Nonempty ι] (C : Set (ι → F)) (δ : ℝ≥0) :
     epsMCA (F := F) (A := F) C δ ≠ ⊤ :=
   ne_top_of_le_ne_top ENNReal.one_ne_top (iSup_le fun _ ↦ PMF.coe_le_one _ _)
 

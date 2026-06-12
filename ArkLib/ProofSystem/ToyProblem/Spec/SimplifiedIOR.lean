@@ -129,6 +129,10 @@ instance : ∀ j, OracleInterface ((pSpec (F := F)).Challenge j) :=
 instance [SampleableType F] : ∀ j, SampleableType ((pSpec (F := F)).Challenge j)
   | ⟨0, _⟩ => (inferInstance : SampleableType F)
 
+instance : ProtocolSpec.VerifierFirst (pSpec (F := F)) := ⟨rfl⟩
+
+instance : ProtocolSpec.VerifierOnly (pSpec (F := F)) := ⟨⟩
+
 /-- Honest prover for Construction 6.9. After receiving `γ`, sets the
 new witness `M_new := M₀ + γ·M₁` and outputs the reduced instance.
 
@@ -216,6 +220,106 @@ the `simOStmt` refactor. Downstream IRS instantiations
 (`ToyProblem/Impl/IRS.lean :: simplifiedReductionIRS`) consume the
 bundled `reduction` directly and are unaffected. -/
 
+/-! ### Lemma 6.10 assembly — γ-round bound and game-shape reduction.
+
+The L6.10 game is the single-round analogue of the L6.8 γ-round
+(`Spec/General.lean :: gamma_round_game_bound`): the extractor is the same
+classical choice `Spec.extractZero`, and the mathematical content is the same
+`ToyProblem.gamma_transition_prob_le`. What is new is the game-shape
+reduction: the plain knowledge-soundness game wraps the challenge draw inside
+`Reduction.runWithLog`, so we peel the logging (the extractor here ignores
+the query logs) and the always-accepting pure verifier to reach the
+challenge-first shape consumed by
+`ProtocolSpec.probEvent_optionT_simulateQ_addLift_getChallenge_bind_some_le`. -/
+
+omit [DecidableEq ι] in
+/-- The L6.10 γ-round bound ([ABF26] §6.4, via
+`ToyProblem.gamma_transition_prob_le`): if the choice extractor fails on
+`stmtIn` then no `R̃²` witness exists, and the probability over a uniform `γ`
+that the folded instance has an `R̃¹` witness is at most
+`ε_mca + |Λ(C^{≡2}, δ)| / |F|`. Stated in the reduced form of the L6.10 game
+event so the master lemma's challenge-only hypothesis can consume it. -/
+private lemma gamma_game_bound [SampleableType F] [Nonempty ι]
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) →ₗ[F] (ι → F))
+    (hinj : Function.Injective encode)
+    (hC : Set.range encode = C)
+    (hδ_pos : 0 < δ) (hδ_lt : δ < (minRelHammingDistCode C : ℝ≥0))
+    (stmtIn : Statement (F := F) k × (∀ i, OracleStatement ι F i)) :
+    Pr[fun γ : F ↦
+        (stmtIn, Spec.extractZero k (encode : (Fin k → F) → (ι → F)) δ stmtIn) ∉
+            Spec.outputRelationFor k (encode : (Fin k → F) → (ι → F)) δ ∧
+          ∃ m : Fin k → F,
+            (∑ j, m j * stmtIn.1.1 j = stmtIn.1.2.1 + γ * stmtIn.1.2.2) ∧
+            ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
+              ∀ j ∈ S, stmtIn.2 0 j + γ * stmtIn.2 1 j = encode m j
+      | $ᵗ F] ≤
+      (((epsMCA (F := F) (A := F) C δ).toNNReal +
+        ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+          / (Fintype.card F : ℝ≥0) : ℝ≥0) : ℝ≥0∞) := by
+  classical
+  rw [probEvent_uniformSample_eq_prob_uniformOfFintype]
+  by_cases hw : ∃ M,
+      (stmtIn, M) ∈ Spec.outputRelationFor k (encode : (Fin k → F) → (ι → F)) δ
+  · -- The choice extractor succeeds, so the event is empty.
+    refine le_trans (le_of_eq ?_) zero_le'
+    rw [prob_tsum_form_singleton]
+    have hnot : ∀ γ : F, ¬ (
+        (stmtIn, Spec.extractZero k (encode : (Fin k → F) → (ι → F)) δ stmtIn) ∉
+            Spec.outputRelationFor k (encode : (Fin k → F) → (ι → F)) δ ∧
+          ∃ m : Fin k → F,
+            (∑ j, m j * stmtIn.1.1 j = stmtIn.1.2.1 + γ * stmtIn.1.2.2) ∧
+            ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
+              ∀ j ∈ S, stmtIn.2 0 j + γ * stmtIn.2 1 j = encode m j) :=
+      fun _ h ↦ h.1 (Spec.extractZero_mem k hw)
+    simp [hnot]
+  · refine le_trans (Pr_le_Pr_of_implies _ _
+      (fun γ ↦ ∃ m : Fin k → F,
+        (∑ j, m j * stmtIn.1.1 j = stmtIn.1.2.1 + γ * stmtIn.1.2.2) ∧
+        ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
+          ∀ j ∈ S, stmtIn.2 0 j + γ * stmtIn.2 1 j = encode m j) ?_) ?_
+    · rintro γ ⟨-, hm⟩
+      exact hm
+    · have hNoWit : ¬ ∃ M : Fin 2 → (Fin k → F),
+          (∀ i : Fin 2, ∑ j, M i j * stmtIn.1.1 j = ![stmtIn.1.2.1, stmtIn.1.2.2] i) ∧
+          ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
+            ∀ i : Fin 2, ∀ j ∈ S, ![stmtIn.2 0, stmtIn.2 1] i j = encode (M i) j := by
+        rintro ⟨M, h1, S, h2, h3⟩
+        refine hw ⟨M, h1, S, h2, fun i j hj ↦ ?_⟩
+        fin_cases i
+        · simpa using h3 0 j hj
+        · simpa using h3 1 j hj
+      refine le_trans (gamma_transition_prob_le C δ encode hinj hC hδ_pos hδ_lt
+        stmtIn.1.1 stmtIn.1.2.1 stmtIn.1.2.2 (stmtIn.2 0) (stmtIn.2 1) hNoWit)
+        (le_of_eq ?_)
+      rw [ENNReal.coe_add, ENNReal.coe_toNNReal (Spec.epsMCA_ne_top C δ),
+        ENNReal.coe_div (Nat.cast_ne_zero.mpr Fintype.card_ne_zero),
+        ENNReal.coe_natCast, ENNReal.coe_natCast]
+
+/-- Logging a `pure` `OptionT` computation (the C6.9 verifier's always-accepting
+`verify`) produces the `some` output with an empty query log. Stated over the
+`OptionT`-coerced `pure` so it rewrites the L6.10 game term directly. -/
+private lemma run_simulateQ_loggingOracle_optionT_pure
+    {ιs : Type} {spec : OracleSpec ιs} {α : Type} (a : α) :
+    (simulateQ loggingOracle
+        ((pure a : OptionT (OracleComp spec) α) : OracleComp spec (Option α))).run
+      = (pure (some a, ∅) : OracleComp spec (Option α × QueryLog spec)) := by
+  rw [show ((pure a : OptionT (OracleComp spec) α) : OracleComp spec (Option α))
+      = (pure (some a) : OracleComp spec (Option α)) from rfl, simulateQ_pure]
+  rfl
+
+/-- Discard the prover's query log under a continuation that only uses the run
+result (the L6.10 extractor ignores the logs): mapping a `Prod.fst`-factoring
+function over a logged run is mapping it over the bare run. Map-shaped
+companion of `loggingOracle.run_simulateQ_bind_fst`; apply by `Eq.trans`
+(definitional unification — the factored spelling is not `rw`-matchable). -/
+private lemma map_fst_run_simulateQ_loggingOracle {ιs : Type} {spec : OracleSpec.{0, 0} ιs}
+    {α β : Type} (oa : OracleComp spec α) (h : α → β) :
+    (fun x ↦ h x.1) <$> (simulateQ loggingOracle oa).run = h <$> oa := by
+  refine Eq.trans
+    (Eq.symm (Functor.map_map Prod.fst h ((simulateQ loggingOracle oa).run))) ?_
+  rw [loggingOracle.fst_map_run_simulateQ]
+
 omit [DecidableEq ι] in
 /-- **Lemma 6.10 of [ABF26]** (knowledge soundness of Construction 6.9).
 
@@ -233,19 +337,29 @@ spot-check term because C6.9 has no spot-check round.
 The `(Lambda …).toNat` in the error term is faithful: `Lambda` is never
 `⊤` over a finite alphabet (`ListDecodable.Lambda_ne_top`).
 
-The proof is the "1-round version" of L6.8's KnowledgeStateFunction
-construction; same extractor strategy (erasure-decode against the
-agreement set). Tagged sorry. -/
+**Status: fully proven (sorry-free).** The proof is the "1-round version"
+of L6.8 ([ABF26] §6.4: "easy to see by adapting Lemma 6.8"): the
+straightline extractor is the same classical choice `Spec.extractZero`
+(always-`some` — under the post-PR-#569 game, extraction failure scores
+against the prover, so an always-`some` extractor is strictly stronger),
+and the γ-round mathematical content is the same
+`ToyProblem.gamma_transition_prob_le` (via `gamma_game_bound` above).
+The game-shape reduction peels the query logs
+(`map_fst_run_simulateQ_loggingOracle` — the extractor ignores them) and
+the always-accepting pure verifier
+(`run_simulateQ_loggingOracle_optionT_pure`), exposing the
+challenge-first shape consumed by the master mixture lemma
+`ProtocolSpec.probEvent_optionT_simulateQ_addLift_getChallenge_bind_some_le`. -/
 theorem simplifiedIOR_knowledgeSound
     [SampleableType F] [Nonempty ι]
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) →ₗ[F] (ι → F))
-    (_hinj : Function.Injective encode)
-    (_hC : Set.range encode = C)
-    (_hδ_pos : 0 < δ)
-    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
+    (hinj : Function.Injective encode)
+    (hC : Set.range encode = C)
+    (hδ_pos : 0 < δ)
+    (hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
       (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
         (WitOut := OutputWitness (F := F) k)
         init impl
@@ -254,16 +368,53 @@ theorem simplifiedIOR_knowledgeSound
         ((epsMCA (F := F) (A := F) C δ).toNNReal +
           ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
             / (Fintype.card F : ℝ≥0)) := by
-  -- ABF26-L6.10; paper-proof-owed [ABF26 Lemma 6.10, §6.4]. Paper's OWN result
-  -- (the "1-round version" of L6.8), not an external import. Knowledge error
-  -- `ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|` (no `(1-δ)^t` term: C6.9 has no spot-check
-  -- round). `δ < δ_min(C)` load-bearing as in L6.8.
-  -- The former vacuity gate has CLEARED (2026-06-11): PR #569
-  -- (`fix/knowledge-soundness-failing-extractor`) is merged and synced into this
-  -- branch — `Verifier.knowledgeSoundness` now scores extraction failure against
-  -- the prover. This sorry may now be closed on its mathematical merits
-  -- (paper §6.4; the single-round core of the L6.8/L6.6 argument).
-  sorry
+  classical
+  unfold Verifier.knowledgeSoundness
+  -- The straightline extractor: classical choice of any `R̃²` witness, from the
+  -- input statement alone (always-`some`; cf. `Spec.extractZero`).
+  refine ⟨fun stmtIn _ _ _ _ ↦
+    pure (Spec.extractZero k ((encode : (Fin k → F) → (ι → F))) δ stmtIn), ?_⟩
+  rintro ⟨stmt, oStmt⟩ witIn prover
+  refine ProtocolSpec.probEvent_optionT_simulateQ_addLift_getChallenge_bind_some_le
+    init impl _ ⟨0, rfl⟩
+    (fun γ ↦ (liftComp (prover.receiveChallenge ⟨0, rfl⟩
+        (prover.input ((stmt, oStmt), witIn))) ([]ₒ + [(pSpec (F := F)).Challenge]ₒ))
+      >>= fun fc ↦ prover.output (fc γ))
+    (fun (γ : F) t ↦ ((stmt, oStmt),
+      some (Spec.extractZero k ((encode : (Fin k → F) → (ι → F))) δ (stmt, oStmt)),
+      ((stmt.1, stmt.2.1 + γ * stmt.2.2),
+        (fun _ j ↦ oStmt 0 j + γ * oStmt 1 j : ∀ i, OutputOracleStatement ι F i)),
+      t.2))
+    _ ?_ ?_
+  · -- Game-shape reduction: peel the logs and the pure verifier.
+    simp only [Reduction.runWithLog, Verifier.run, verifier, Prover.runWithLog,
+      OptionT.run_pure, liftM_pure, pure_bind, bind_assoc]
+    simp only [run_simulateQ_loggingOracle_optionT_pure, liftM_pure, pure_bind,
+      Option.getM_some]
+    simp only [OptionT.liftM_def, bind_pure_comp]
+    simp only [OptionT.run_map, OptionT.run_lift, bind_pure_comp, Functor.map_map,
+      Option.map_some]
+    refine Eq.trans (map_fst_run_simulateQ_loggingOracle
+      (Prover.run (stmt, oStmt) witIn prover)
+      (fun y : (pSpec (F := F)).FullTranscript ×
+          ((OutputStatement (F := F) k × (∀ i, OutputOracleStatement ι F i)) ×
+            OutputWitness (F := F) k) ↦
+        let γ : F := y.1 ⟨0, Nat.one_pos⟩
+        some ((stmt, oStmt),
+          some (Spec.extractZero k ((encode : (Fin k → F) → (ι → F))) δ (stmt, oStmt)),
+          ((stmt.1, stmt.2.1 + γ * stmt.2.2),
+            fun _ j ↦ oStmt 0 j + γ * oStmt 1 j),
+          y.2.2))) ?_
+    rw [Prover.run_of_verifier_first]
+    simp only [map_eq_bind_pure_comp, bind_assoc, pure_bind]
+    rfl
+  · -- The challenge-only bound: weaken the game event to the γ-round event and
+    -- apply `gamma_game_bound`.
+    refine le_trans ?_
+      (gamma_game_bound k C δ encode hinj hC hδ_pos hδ_lt_min (stmt, oStmt))
+    refine probEvent_mono ?_
+    rintro c - ⟨t, h1, h2⟩
+    exact ⟨h1 _ rfl, t.2, h2⟩
 
 end Protocol
 
