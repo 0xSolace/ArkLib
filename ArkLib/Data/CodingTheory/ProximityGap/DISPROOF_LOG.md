@@ -7431,3 +7431,38 @@ ArkLib.ProximityGap.Level1Rung.mcaDeltaStar_le_antipodal             -- δ* ≤ 
   exact, `p ∈ {97, 12289}`). The refined envelope = staircase ⊔ pencil ladder (⊔ ...?)
   is the successor question; any future "complete envelope" claim must subsume the
   pencil orbit.
+
+### O156 — THE CONSTANT-6 LAW IS TWO-SIDED at n = 8..64, and the ≤-side target is a Beukers–Smyth sharpening: M(32) = M(64) = 6 rigorous via the invisibility trichotomy; the witness curve is conjugate-reciprocal exactly as BS's structure theorem demands (normalizer-gap lane, 2026-06-12; follow-up to O155)
+
+* **M(32) ≤ 6 and M(64) ≤ 6 RIGOROUS** (`probe_char0_rigor.py`, RESULTS-CHAR0-RIGOR.md):
+  a hypothetical 7-incidence char-0 plane fixes THREE nonzero case integers
+  (coordinate norms ≤ 3^{3m/2}, det norm ≤ 54^m — exact Hadamard; cruder L1 route
+  6^m/72^m carried independently); a clean census at split p > 2^28 misses the plane
+  only if p divides one of them (the invisibility trichotomy — audited against the
+  census skip-paths; note: the naive "p | content" exclusion is INVALID since
+  reduction is evaluation, not coefficientwise — replaced by the norm/divisibility
+  lemma); per-plane pigeonhole: 6 clean primes kill n=32, 11 (Hadamard) / 12 (L1)
+  kill n=64; ladders ran 8 and 12 primes, ALL max = 6, bit-identical histograms.
+  Combined with O155's char-0 anchor: **M(n) = 6, both directions, n ∈ {8,16,32,64}**
+  (program-assisted: exact arithmetic + symbolic self-checks; not yet Lean).
+* **The Laurent collapse** (from the ≥6 brick design): under ζ^m = −1 the witness
+  datum is m-INDEPENDENT — z·c = (ζ−1)², ζ²·d = −(ζ−1)²(ζ³+ζ²−1),
+  ζ²·a = −(ζ−1)²(ζ³−ζ−1), b = −(ζ−1)², ζ⁴(ad−bc) = (ζ−1)⁶(ζ+1)²(ζ²+ζ+1): ONE fixed
+  Möbius map realizes the 6 points at every 2-power level; incidences are ring
+  identities for ALL m ≥ 2. Lean brick (MobiusCoincidenceWitness.lean) in flight.
+* **The ≤6-for-all-n question is exactly a Beukers–Smyth sharpening** (lit-gated at
+  the source, Number Theory for the Millennium I 2002): BS bound = 22·V (V = 1 for
+  bidegree (1,1)); sharp constant OPEN even for BS (16 ≤ C ≤ 22); their §5.6 covers
+  only the symmetric rational family xy + λ(x+y) + 1 (max 4). CONSISTENCY FALSIFIER
+  PASSED: BS cap non-reciprocal curves at 4V — any curve beating 4 MUST be
+  conjugate-reciprocal (f ~ f̄(x⁻¹,y⁻¹)) with ℚ^ab coefficients; our witness curve
+  verified exactly that (inversion + conjugation returns it with unit factor 1/ζ).
+  So the open branch of the ≤6 theorem is ONLY the conjugate-reciprocal
+  abelian-coefficient (1,1)-family — explicitly parameterizable via the
+  reciprocity relations; census ground truth: count-6 maximizer classes are rich
+  (34 at n=16, 210 at n=32, all partial injections — finite-list classification
+  impossible, the uniform mechanism must be BS's f†/seven-polynomial machinery).
+* Census engine debt note: the count-6 classification + ladders share the one
+  census code path (mitigated by the symbolic identity checks, the n=8 exhaustive
+  norm audit, and brute gates at q=41); an independent reimplementation would
+  upgrade confidence — cheap follow-up for any seat.
