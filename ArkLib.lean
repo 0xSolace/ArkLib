@@ -304,6 +304,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedFaaDiBrunoProof
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedKill
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedLiftIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedRecursion
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearedWeld
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearingProduct
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.AgreementCount

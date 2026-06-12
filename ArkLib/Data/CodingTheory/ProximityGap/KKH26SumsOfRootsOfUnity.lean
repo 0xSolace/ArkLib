@@ -704,6 +704,32 @@ theorem not_dvd_collisionResultant_of_lt {p : ℕ} [Fact p.Prime] {m r : ℕ} (h
   have h2 := natAbs_collisionResultant_le hm hd₁ hd₂ hr
   omega
 
+/-- **Absolute-size handoff for the divisibility route.**  To discharge the named
+`collisionResultant` nondivisibility hypothesis it is enough to prove the relevant resultant
+has absolute value strictly below the prime.  This is the endpoint a sharper archimedean
+bound, such as a Mahler/Landau estimate, should feed. -/
+theorem not_dvd_collisionResultant_of_natAbs_lt {p : ℕ} {m r : ℕ} (hm : 1 ≤ m)
+    {d₁ d₂ : (_ : Finset ℕ) × Finset ℕ}
+    (hd₁ : d₁ ∈ sigData (2 ^ (m - 1)) r) (hd₂ : d₂ ∈ sigData (2 ^ (m - 1)) r)
+    (hne : d₁ ≠ d₂) (hlt : (collisionResultant m d₁ d₂).natAbs < p) :
+    ¬ (p : ℤ) ∣ collisionResultant m d₁ d₂ := by
+  intro hdvd
+  have hle : p ≤ (collisionResultant m d₁ d₂).natAbs :=
+    Nat.le_of_dvd (Int.natAbs_pos.mpr (collisionResultant_ne_zero hm hd₁ hd₂ hne))
+      (by simpa using Int.natAbs_dvd_natAbs.mpr hdvd)
+  omega
+
+/-- Family version of `not_dvd_collisionResultant_of_natAbs_lt`, matching the hypothesis
+shape consumed by `kkh26_lemma1_of_not_dvd`. -/
+theorem collisionResultant_not_dvd_of_forall_natAbs_lt {p : ℕ} {m r : ℕ} (hm : 1 ≤ m)
+    (hbound : ∀ d₁ ∈ sigData (2 ^ (m - 1)) r, ∀ d₂ ∈ sigData (2 ^ (m - 1)) r,
+      d₁ ≠ d₂ → (collisionResultant m d₁ d₂).natAbs < p) :
+    ∀ d₁ ∈ sigData (2 ^ (m - 1)) r, ∀ d₂ ∈ sigData (2 ^ (m - 1)) r,
+      d₁ ≠ d₂ → ¬ (p : ℤ) ∣ collisionResultant m d₁ d₂ := by
+  intro d₁ hd₁ d₂ hd₂ hne
+  exact not_dvd_collisionResultant_of_natAbs_lt hm hd₁ hd₂ hne
+    (hbound d₁ hd₁ d₂ hd₂ hne)
+
 /-- **Injectivity of signed sums, divisibility form** (issue #334).  If `p > 2^m` and `p`
 divides no collision resultant of distinct signed data, then distinct signed data give
 distinct values at the primitive root — the conclusion of `sVal_injOn` without the
@@ -792,5 +818,7 @@ end ArkLib.ProximityGap.KKH26
 #print axioms ArkLib.ProximityGap.KKH26.collisionResultant_ne_zero
 #print axioms ArkLib.ProximityGap.KKH26.natAbs_collisionResultant_le
 #print axioms ArkLib.ProximityGap.KKH26.not_dvd_collisionResultant_of_lt
+#print axioms ArkLib.ProximityGap.KKH26.not_dvd_collisionResultant_of_natAbs_lt
+#print axioms ArkLib.ProximityGap.KKH26.collisionResultant_not_dvd_of_forall_natAbs_lt
 #print axioms ArkLib.ProximityGap.KKH26.sVal_injOn_of_not_dvd
 #print axioms ArkLib.ProximityGap.KKH26.kkh26_lemma1_of_not_dvd

@@ -1231,6 +1231,32 @@ theorem deltaStar_pin_mu6_dim4_of_not_dvd
   refine tsub_eq_of_eq_add ?_
   norm_num
 
+/-- **Mahler/Landau handoff for the μ = 6 literal pin.**  If every relevant collision
+resultant has absolute value below the certified prime `P`, the named divisibility
+hypothesis of `deltaStar_pin_mu6_dim4_of_not_dvd` is discharged. -/
+theorem deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_lt
+    (hbound : ∀ d₁ ∈ sigData (2 ^ 5) 5, ∀ d₂ ∈ sigData (2 ^ 5) 5,
+      d₁ ≠ d₂ → (collisionResultant 6 d₁ d₂).natAbs < P) :
+    mcaDeltaStar (F := ZMod P) (A := ZMod P)
+        (evalCode
+          (343681710474810194684472438365758239853939287 : ZMod P) 64 3)
+        (1 / 2 ^ 128)
+      = 59 / 64 := by
+  exact deltaStar_pin_mu6_dim4_of_not_dvd
+    (collisionResultant_not_dvd_of_forall_natAbs_lt (p := P) (m := 6) (r := 5)
+      (by omega) hbound)
+
+/-- The Mahler/Landau target `2^143` is strictly below the certified prime `P`. -/
+theorem two_pow_143_lt_P : (2 : ℕ) ^ 143 < P := by
+  have hpow : (2 : ℕ) ^ 143 = 2 ^ 15 * 2 ^ 128 := by
+    rw [show 143 = 15 + 128 by norm_num, pow_add]
+  have hcoeff : (2 : ℕ) ^ 15 < 1526377 := by norm_num
+  have hscaled : (2 : ℕ) ^ 15 * 2 ^ 128 < 1526377 * 2 ^ 128 :=
+    Nat.mul_lt_mul_of_pos_right hcoeff (by positivity)
+  have hPm1 : P - 1 = 1526377 * 2 ^ 128 := by norm_num
+  rw [hpow]
+  omega
+
 end ArkLib.ProximityGap.Mu6ConditionalPin
 
 /-! ## Axiom audit — kernel-clean. -/
@@ -1240,3 +1266,6 @@ end ArkLib.ProximityGap.Mu6ConditionalPin
 #print axioms ArkLib.ProximityGap.Mu6ConditionalPin.prime_P
 #print axioms ArkLib.ProximityGap.Mu6ConditionalPin.orderOf_gP
 #print axioms ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4_of_not_dvd
+#print axioms ArkLib.ProximityGap.Mu6ConditionalPin.two_pow_143_lt_P
+#print axioms
+  ArkLib.ProximityGap.Mu6ConditionalPin.deltaStar_pin_mu6_dim4_of_collisionResultant_natAbs_lt
