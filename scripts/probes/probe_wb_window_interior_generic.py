@@ -40,3 +40,9 @@ for w in (5, 6, 8):
     run(97, 12, 4, w, 6)
 for w in (5, 6, 8):
     run(409, 12, 4, w, 4)
+
+# third q-point (run separately due to cost): (1201,12,4,6): stacks |BAD| = 0,2,2
+# scaling summary (q, mean bad): (97, 10.0) -> (409, 1.8) -> (1201, 1.3)
+# => interior generic count decays to a q-INDEPENDENT FLOOR ~1-2 (deterministic
+#    owned-set component) + O(1/q) tail: generic interior eps_mca ~ O(1)/q,
+#    production-silent; the window is adversary-controlled.
