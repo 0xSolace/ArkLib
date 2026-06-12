@@ -560,6 +560,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CollinearityMatchingFrame
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionRigidityThreeSwap
 import ArkLib.Data.CodingTheory.ProximityGap.CommonCenterJohnsonRefutation
+import ArkLib.Data.CodingTheory.ProximityGap.ComplementQuadric
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
