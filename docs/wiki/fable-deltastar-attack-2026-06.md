@@ -1490,3 +1490,40 @@ per-word quadruple core, adversarially refereed. **No survivor pins δ*.** Outco
 field-size necessity (§45.2). The open core is the per-received-word `S₄(w) < S₂(w)²/n` bound via RS
 rigidity + `μ_n` coset structure — the one route that escapes the global-`S₄` no-go and every literature
 technique surveyed. No fabrication; the field-size-necessity fact is the round's genuine new deliverable.
+
+---
+
+## §46 — Round 7 SELF-CORRECTION: the §45 inequality was mis-oriented (CS-false); open core re-localized to the KKH26 design-uniformity bound
+
+Run `wf_88d2fbe8-b47` (probe + analytic + dichotomy, adversarially refereed) **refuted my own §45
+statement** — a genuine red-team catch on my shorthand:
+
+- **`S₄(w) < S₂(w)²/n` is FALSE for EVERY word `w` at every radius.** It is just Cauchy–Schwarz /
+  power-mean on `a_i = m_i²`: `S₂² = (Σ m_i²)² ≤ n·Σ m_i⁴ = n·S₄`, i.e. `R(w) = n·S₄/S₂² ≥ 1`
+  identically, equality iff `m_i` is constant in `i`. Verified exhaustively (200k random profiles, 0
+  violations, exact floor `minR = 1.000000`; coset-uniform ⇒ `R=1`, clustered `[5,1,1,1] ⇒ R=3.2`) and
+  matched by the in-band probe (`R ∈ {1.000, 1.039, 1.019, …} ≥ 1` for `RS[μ_{8,16},k]/F17` at the
+  coset/KKH26 extremal word). So the 4th moment is **per-word Johnson-tight** — a clean negative result
+  that GENERALIZES `JohnsonFourthMomentNoGo` from global to per-word, and is itself Lean-able.
+
+**Corrected orientation.** The real moment-method bound is the LIST-SIZE form `|L| ≤ S₂²/S₄`: the list
+stays small when the per-coordinate match-counts `m_i` are **spread** (near-uniform), and is threatened
+only when they **cluster** on a coset (the KKH26 / binomial stack, where `S₄` spikes). My §45 "open core
+= `S₄(w) < S₂²/n`" was the wrong-direction reading of this and is RETRACTED.
+
+**Re-localized open core (the genuine remaining step).** The only proven super-`ε*` list (`kkh26_badline`)
+sits at `δ = 1 − r/s = capacity − Θ(1/log n)` — a thin sliver against CAPACITY, NOT at `Johnson+o(1)`;
+the constant-fraction interior band `(1−√ρ, 1−ρ)` is uncontrolled. The clean `R=1` (Johnson-saturating)
+word needs the FULL symmetric family of all `C(s,r)` r-subsets of `G` (constant `m_i`); but the proven
+KKH26 distinctness lemma (`kkh26_lemma1`) only supplies a **sign-biased, half-window-restricted SUBSET**
+of size `2^r·C(s/2,r)`, for which `m_i` is provably NOT constant. The one genuine open quantitative step:
+an **isoperimetric / combinatorial-design bound on `Var(m_i)`** — how non-uniformly the actual
+signed-half-subset KKH26 bad-`λ` family can cover `G` — showing the deviation cannot push `S₄` a constant
+factor below `S₂²/n` (only `o(1)`, consistent with the `1/log n` ceiling lift). Plus the worst-word
+optimization (does an adversarial `w` spread `m_i` to enlarge the list in the interior band?).
+
+**NET (rounds 1–7):** δ* OPEN, confined `(1−√ρ, 1−r/2^μ]` and provably `< capacity` (§45.2). Round 7's
+deliverable is a CORRECTION (the per-word 4th-moment functional is `≥`-trivial / Johnson-tight, my §45
+inequality retracted) and the sharpest-yet open core: a **design-uniformity (`Var(m_i)`) bound on the
+proven KKH26 signed-half-subset family**, controlling the list size `|L| ≤ S₂²/S₄` across the interior
+band. No fabrication; the red-team corrected my own framing.
