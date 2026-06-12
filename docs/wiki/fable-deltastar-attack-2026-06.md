@@ -1527,3 +1527,40 @@ deliverable is a CORRECTION (the per-word 4th-moment functional is `≥`-trivial
 inequality retracted) and the sharpest-yet open core: a **design-uniformity (`Var(m_i)`) bound on the
 proven KKH26 signed-half-subset family**, controlling the list size `|L| ≤ S₂²/S₄` across the interior
 band. No fabrication; the red-team corrected my own framing.
+
+---
+
+## §47 — NEW EXACT THEOREM (provable, verified): the subset-sum spectrum of a 2-power multiplicative subgroup
+
+Attacking the §46 re-localized core (the list size at the KKH26 ceiling radius = #distinct r-subset sums
+of the order-`2^μ` subgroup) head-on yielded a genuinely NEW, EXACT, and PROVABLE closed form — the very
+object sessions 8/16 left open ("how many distinct r-subset sums does a multiplicative subgroup have?").
+
+**Theorem (exact 2-power subset-sum spectrum).** Let `g` be a primitive `2^μ`-th root of unity in a
+field (char 0 or char `p` above the KKH26 threshold), `G = ⟨g⟩` of order `s = 2^μ`, `h = 2^{μ−1}`. The
+number of distinct sums `Σ_{x∈T} x` over `r`-subsets `T ⊆ G` is
+```
+   N(μ, r) = Σ_{a}  2^a · C(h, a),   over  a ≡ r (mod 2),  0 ≤ a ≤ min(r,h),  (r−a)/2 ≤ h−a.
+```
+
+**Proof.** `g^h = −1`, so the `2^μ` elements split into `h` antipodal classes `{g^i, g^{i+h}} =
+{g^i, −g^i}`. A subset `T` contributes to class `i` one of: `0` (neither/both), `+g^i` (just `g^i`), or
+`−g^i` (just `−g^i`); hence `Σ_{x∈T} x = Σ_{i<h} ε_i g^i` with `ε ∈ {−1,0,1}^h`. Since the minimal
+polynomial of `g` is the cyclotomic `Φ_{2^μ}(x) = x^h + 1` of degree `h`, the set `{1,g,…,g^{h−1}}` is
+ℚ-linearly independent, so `ε ↦ Σ ε_i g^i` is INJECTIVE on `{−1,0,1}^h`: distinct `ε` ⟹ distinct sums.
+An `ε` of weight `a` (the `±1` classes, one element each) is realized by an `r`-subset iff the remaining
+`r−a` elements form `(r−a)/2` antipodal "both"-pairs placed on zero-classes: needs `a ≡ r (mod 2)`,
+`a ≤ r`, and `(r−a)/2 ≤ h−a`. The number of weight-`a` vectors in `{−1,0,1}^h` is `2^a·C(h,a)`, each
+realizable under those constraints. Summing gives `N(μ,r)`. ∎
+
+**Verification:** exhaustive match at `μ=2,3,4` for all `r` (probe `probe_exact_spectrum_law.py`):
+`N(4,r) = 113,464,1233,2256,3025,3280,3281` for `r=2..8`, etc. — exact, 0 discrepancies.
+
+**Consequence for δ*.** This SHARPENS the in-tree `kkh26_epsMCA_lower_bound` (which keeps only the top
+term `2^r·C(h,r)`) to the EXACT bad-scalar count `ε_mca(C, 1−r/2^μ) ≥ N(μ,r)/p` (and `=` if these are
+all the bad scalars at that radius, given the prime threshold keeping integer-distinct sums distinct mod
+`p`). It is the exact UPPER-bracket (ceiling-side) value at every KKH26 radius — genuine new math,
+provable, formalizable. It does NOT by itself close the interior good-below band (the open core remains
+the interior list bound), but it removes all slack on the bad side and gives the exact δ*-ceiling mass
+function `N(μ,·)`. NOT a δ* pin; a real exact sharpening + a new published-grade theorem on the additive
+structure of 2-power subgroups. Lean brick next.
