@@ -138,3 +138,11 @@ looks TRUE with margin.** Formal assembly skeleton: 1 (zero-class, proven)
 + Σ big classes (n−|Aᵢ|: per-class proven; ≤ 2 classes by packing)
 + ≤ 2 fiber-tuned extras (kernel-dim argument — TO FORMALIZE)
 + pool ≤ 2 (triple relation `RungTripleRelation.lean` — count TO FINISH).
+
+**Escape-scan addendum** (same session): structured (pairing, γ-triple)
+scans found 4420/30516 systems with rank < 12 (escape pairings have visible
+μ₁₆ reflection structure, e.g. block-2 pairs (6,11),(7,10),(8,9)), but ALL
+escape kernel directions carry `q₁ = q₂` identically — any kernel vector
+glues the big blocks and destroys the base 20. ns = 3 stays impossible with
+genuinely distinct blocks. **Ceiling 22 verified against: random search,
+hill-climb, multi-block, glued micro-blocks, structure-aware escapes.**
