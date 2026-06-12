@@ -615,6 +615,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureClosedFormSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMomentInstance
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMomentInstanceSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandPairRank
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMoment
