@@ -1331,6 +1331,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WeightedThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.WideCircuitTrichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.WideRegimeDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap.WindowChainStructure
+import ArkLib.Data.CodingTheory.ProximityGap.WindowCrossWitness
 import ArkLib.Data.CodingTheory.ProximityGap.WindowExoticBound
 import ArkLib.Data.CodingTheory.ProximityGap.WindowFiberCount
 import ArkLib.Data.CodingTheory.ProximityGap.WindowFiberPencil
