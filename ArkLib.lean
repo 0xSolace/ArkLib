@@ -616,6 +616,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandPairRank
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.DeepQuotientTransfer
+import ArkLib.Data.CodingTheory.ProximityGap.DegeneracyLocusRank
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarAveragingBracket
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarCeilingTightTheory
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarConcretePinF17
