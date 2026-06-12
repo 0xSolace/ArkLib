@@ -2238,6 +2238,7 @@ import ArkLib.ToMathlib.DecodedCapstonesCorrected
 import ArkLib.ToMathlib.DecodedProximateRoot
 import ArkLib.ToMathlib.DecodedRootSupply
 import ArkLib.ToMathlib.DescentTrichotomy
+import ArkLib.ToMathlib.DesnanotJacobi
 import ArkLib.ToMathlib.DiscriminantBadSet
 import ArkLib.ToMathlib.DiscriminantSeparable
 import ArkLib.ToMathlib.DiscriminantSeparableConverse

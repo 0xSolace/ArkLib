@@ -175,7 +175,9 @@ theorem det_one_updateRow_updateRow {K : Type} [CommRing K] {c₁ c₂ : n}
     obtain ⟨c, hcne, hc1, hc2⟩ := hexists
     have hzero : E (σ c) c = 0 := by
       rw [hErow (σ c) c, if_neg hc2, if_neg hc1, Matrix.one_apply_ne hcne]
-    rw [Finset.prod_eq_zero (Finset.mem_univ c) hzero, smul_zero]
+    have hprod : (∏ i, E (σ i) i) = 0 :=
+      Finset.prod_eq_zero (Finset.mem_univ c) hzero
+    rw [hprod, smul_zero]
 
 /-- The Desnanot–Jacobi identity over a field, at invertible matrices: split the
 doubly-updated determinant through `U = E · M`. -/
@@ -251,11 +253,13 @@ theorem desnanot_jacobi {α : Type} [CommRing α] (B : Matrix n n α)
   let A' : Matrix n n R := mvPolynomialX n n ℤ
   -- the aeval transfer map
   let φ : R →ₐ[ℤ] α := MvPolynomial.aeval fun p : n × n => B p.1 p.2
-  have hsingle : ∀ (β γ : Type) (_ : CommRing β) (_ : CommRing γ) (f : β →+* γ)
-      (i : n), Pi.single i (1 : γ) = f ∘ Pi.single i (1 : β) := by
-    intro β γ _ _ f i
-    rw [← f.map_one]
-    exact Pi.single_op (fun _ => f) (fun _ => f.map_zero) i (1 : β)
+  have hsingleφ : ∀ i : n, (⇑φ ∘ Pi.single i (1 : R)) = Pi.single i (1 : α) := by
+    intro i
+    funext x
+    by_cases h : x = i
+    · subst h
+      simp
+    · simp [Pi.single_eq_of_ne h]
   suffices h : A'.adjugate i₁ c₁ * A'.adjugate i₂ c₂
       - A'.adjugate i₁ c₂ * A'.adjugate i₂ c₁
       = A'.det * ((A'.updateRow c₁ (Pi.single i₁ 1)).updateRow c₂
@@ -265,8 +269,7 @@ theorem desnanot_jacobi {α : Type} [CommRing α] (B : Matrix n n α)
     rw [map_sub, map_mul, map_mul, map_mul] at this
     have hadjφ : ∀ i j, φ (A'.adjugate i j) = B.adjugate i j := by
       intro i j
-      have := congrFun (congrFun (congrArg Matrix.adjugate hB) i) j
-      rw [← this, ← AlgHom.map_adjugate]
+      rw [show B = φ.mapMatrix A' from hB.symm, ← AlgHom.map_adjugate]
       rfl
     have hdetφ : φ A'.det = B.det := by
       rw [← hB, ← AlgHom.map_det]
@@ -274,14 +277,10 @@ theorem desnanot_jacobi {α : Type} [CommRing α] (B : Matrix n n α)
         (Pi.single i₂ 1)).det)
         = ((B.updateRow c₁ (Pi.single i₁ 1)).updateRow c₂
             (Pi.single i₂ 1)).det := by
-      rw [← AlgHom.map_det]
+      rw [AlgHom.map_det]
       congr 1
-      rw [RingHom.mapMatrix_apply]
-      rw [Matrix.map_updateRow, Matrix.map_updateRow]
-      rw [← hsingle R α _ _ (φ : R →+* α) i₁, ← hsingle R α _ _ (φ : R →+* α) i₂]
-      congr 1
-      rw [← RingHom.mapMatrix_apply]
-      exact congrArg (fun M : Matrix n n α => M) (hB ▸ rfl)
+      rw [AlgHom.mapMatrix_apply, Matrix.map_updateRow, Matrix.map_updateRow,
+        hsingleφ i₁, hsingleφ i₂, ← AlgHom.mapMatrix_apply, hB]
     rw [hadjφ, hadjφ, hadjφ, hadjφ, hdetφ, hupdφ] at this
     exact this
   -- prove the generic identity inside the fraction field
@@ -295,14 +294,21 @@ theorem desnanot_jacobi {α : Type} [CommRing α] (B : Matrix n n α)
     rfl
   have hψdet : ψ A'.det = (ψ.mapMatrix A').det := by
     rw [← RingHom.map_det]
+  have hsingleψ : ∀ i : n, (⇑ψ ∘ Pi.single i (1 : R)) = Pi.single i (1 : K) := by
+    intro i
+    funext x
+    by_cases h : x = i
+    · subst h
+      simp
+    · simp [Pi.single_eq_of_ne h]
   have hψupd : ψ (((A'.updateRow c₁ (Pi.single i₁ 1)).updateRow c₂
       (Pi.single i₂ 1)).det)
       = (((ψ.mapMatrix A').updateRow c₁ (Pi.single i₁ 1)).updateRow c₂
           (Pi.single i₂ 1)).det := by
-    rw [← RingHom.map_det]
+    rw [RingHom.map_det]
     congr 1
     rw [RingHom.mapMatrix_apply, Matrix.map_updateRow, Matrix.map_updateRow,
-      ← hsingle R K _ _ ψ i₁, ← hsingle R K _ _ ψ i₂, ← RingHom.mapMatrix_apply]
+      hsingleψ i₁, hsingleψ i₂, ← RingHom.mapMatrix_apply]
   rw [map_sub, map_mul, map_mul, map_mul, hψadj, hψadj, hψadj, hψadj, hψdet,
     hψupd]
   -- the mapped generic matrix is invertible over the fraction field
