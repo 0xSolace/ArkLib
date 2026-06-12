@@ -7260,3 +7260,21 @@ per-scale cap stays `≤ w+1`.  The attack on `WindowRationalBounded` is therefo
 classification of σ-invariant rational pairs over the involution quotient — a
 half-dimension problem where the census/quartet machinery applies — grounded in
 finite base cases (the n = 6 window base is exhaustively `≤ w+1`).
+
+## 2026-06-11 — The eigencomponent decomposition of badness is REFUTED
+
+`probe_eigen_coupling.py` at (13,6,1,2), k = 1 (plain involution, weight 1): among
+200 random stacks with ≥ 2 bad scalars, **28 (14%) have mixed bad count strictly
+exceeding ALL FOUR eigen-projected stacks** `(u₀^±, u₁^±)` — e.g. `b = 3` against
+eigenprofiles `(2,2,0,0)` and `(1,2,0,0)`.
+
+**Verdict**: the σ-average argument does NOT work pointwise — `mcaEvent` genuinely
+couples the T-eigencomponents (the witness set is shared across components; badness
+of the mixture is not controlled by badness of the parts).  The proven eigenframe
+(`eigen_add`, `twist_eigenPlus/Minus`) organizes the stack space, and the proven
+equivariance confines extremal ORBITS, but the window bound cannot be reduced to
+the invariant family by linear projection.  Remaining routes for
+`WindowRationalBounded`: the quotient census of T-invariant pairs (covers the
+observed extremals) PLUS a genuinely bivariate argument for mixed pairs — or a
+different mechanism entirely.  Logged as the third documented no-go of the window
+analysis (after degree-forcing and the naive GRS recursion).
