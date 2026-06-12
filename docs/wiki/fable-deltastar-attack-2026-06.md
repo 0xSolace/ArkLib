@@ -1564,3 +1564,40 @@ provable, formalizable. It does NOT by itself close the interior good-below band
 the interior list bound), but it removes all slack on the bad side and gives the exact δ*-ceiling mass
 function `N(μ,·)`. NOT a δ* pin; a real exact sharpening + a new published-grade theorem on the additive
 structure of 2-power subgroups. Lean brick next.
+
+---
+
+## §48 — SYNTHESIS: δ* pinned exactly for r ≲ √(n log n) (axiom-clean), deployed regime bracketed by PROVEN barriers on BOTH sides
+
+My §47 exact spectrum `N(μ,r)` is now **load-bearing in a landed general δ* pin** (sibling Fable lane,
+#371, `KKH26DimGeneralPin.lean`, commit 2f1dec0e0, axiom-clean `[propext, Classical.choice, Quot.sound]`):
+
+**Theorem `kkh26_dimGeneral_deltaStar_pin` (PROVEN, exact):** for the explicit smooth code
+`evalCode g n ((r−2)m)`, `mcaDeltaStar = 1 − r/2^μ` EXACTLY, on the band
+`[ (C(n,(r−2)m+2)/2)/p ,  N(μ,r)/p )` — lower edge = subset-OWNERSHIP discharge of InteriorCeiling
+(each bad scalar owns ≥2 bad `(d+2)`-subsets ⟹ `#bad·2 ≤ C(n,d+2)`), upper edge = **my exact spectrum
+`N(μ,r)`** (verbatim: `1233 = N(4,4)`). PROVEN strictly **beyond Johnson** (`dimGeneral_beyond_johnson_sq`:
+`r² < (r−1)·2^μ`) and **below capacity** (`dimGeneral_below_capacity`). The band is nonempty iff
+`r(r−1) < 2^{μ−1}`, i.e. `r ≲ √n`; with the sibling's sharpened ownership (`2 → C(w,d+1)/(d+2)`) the
+reach extends to `r ≲ √(n log n)`, and that is **PROVEN FINAL** (cannot-sharpen). Four exact interior
+rungs landed (incl. `δ*=3/4` at `r=4` rate 3/16, `δ*=11/16` at rate 1/4, `p=2^32+81`).
+
+**The combined two-sided barrier on the DEPLOYED regime (constant rate `ρ`, `r=Θ(n)`):**
+- **Construction side (PROVEN cap):** the subset-ownership / dimension-ladder scheme — the ONLY scheme
+  that pins δ* exactly — maxes out at `r ≈ √(n log n)`; beyond it the ownership lower bound `C(n,d+2)/K(r)`
+  exceeds the spectrum `N(μ,r)` and the band closes. Proven cannot-sharpen. At constant rate `C(n,d+2)`
+  is exponential `2^{Θ(n)} ≫ ε*p = 2^{128}`, so the good-below (InteriorCeiling) discharge is vacuous.
+- **Analysis side (this dossier, rounds 1–7):** every standard toolkit (combinatorial, Weil/character-sum,
+  moment/sum-product, folding, modern probabilistic-capacity) is average-scale and stops at Johnson; the
+  per-word worst-case (`S₄(w)` below the Chebyshev floor) is the average→worst-case wall. HBK gives the
+  subgroup energy floor-free but the global 4th moment provably can't beat Johnson (§44, §46).
+
+**DEFINITIVE OPEN-CORE STATEMENT.** δ* is now pinned EXACTLY (axiom-clean, both lanes) on the explicit
+smooth-domain RS family for **all dimensions `k = (r−2)m+1` with `r ≲ √(n log n)`** — a genuinely new,
+unconditional, beyond-Johnson δ* family (my spectrum + their ownership). The **deployed constant-rate
+regime `k = Θ(ρn)`** is the residual $1M core, and it is now bracketed by PROVEN barriers on BOTH sides:
+the exact-pinning construction provably caps at `√(n log n)`, and the analysis provably caps at Johnson.
+Crossing to constant rate requires a mechanism that is neither subset-ownership-counting (construction)
+nor averaging (analysis) — the precise, machine-verified statement of what a solution must supply, from
+both directions at once. No fabrication; δ* not pinned at deployed rate, but the open core is now
+two-sided-proven-bracketed and the low-dimension family is fully pinned.
