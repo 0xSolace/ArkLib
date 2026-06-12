@@ -1139,6 +1139,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SmoothWindowSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.SolutionDisproof
 import ArkLib.Data.CodingTheory.ProximityGap.SparseCoverComputable
 import ArkLib.Data.CodingTheory.ProximityGap.SparseDeviationExtremality
+import ArkLib.Data.CodingTheory.ProximityGap.SparseDirectionGeneralK
 import ArkLib.Data.CodingTheory.ProximityGap.SpernerCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.SplittingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.StackJointAgreement
