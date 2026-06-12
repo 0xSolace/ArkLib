@@ -243,6 +243,72 @@ theorem mcaEvent_rs_inversion_iff (dom : Fin n ↪ F) {k : ℕ} (hk : 1 ≤ k)
       pow_ne_zero _ (neg_ne_zero.mpr one_ne_zero)
     exact (ProximityGap.MCAEquivariance.mcaEvent_smul_both (rsCode dom k) hsign γ).mpr h
 
+/-! ## The eigendecomposition (odd k, char ≠ 2) -/
+
+/-- The T-eigencomponents of a word: `u± = (u ± Tu)/2`. -/
+noncomputable def eigenPlus (dom : Fin n ↪ F) (k : ℕ) (σ : Equiv.Perm (Fin n))
+    (u : Fin n → F) : Fin n → F :=
+  (2 : F)⁻¹ • (u + twist σ (fun i => (dom i) ^ (k - 1)) u)
+
+noncomputable def eigenMinus (dom : Fin n ↪ F) (k : ℕ) (σ : Equiv.Perm (Fin n))
+    (u : Fin n → F) : Fin n → F :=
+  (2 : F)⁻¹ • (u - twist σ (fun i => (dom i) ^ (k - 1)) u)
+
+/-- The decomposition: `u = u⁺ + u⁻`. -/
+theorem eigen_add (dom : Fin n ↪ F) (k : ℕ) (σ : Equiv.Perm (Fin n))
+    (h2 : (2 : F) ≠ 0) (u : Fin n → F) :
+    eigenPlus dom k σ u + eigenMinus dom k σ u = u := by
+  funext i
+  simp only [eigenPlus, eigenMinus, Pi.add_apply, Pi.smul_apply, Pi.sub_apply,
+    smul_eq_mul]
+  field_simp
+  ring
+
+/-- Twist is additive. -/
+theorem twist_add (σ : Equiv.Perm (Fin n)) (m : Fin n → F) (u v : Fin n → F) :
+    twist σ m (u + v) = twist σ m u + twist σ m v := by
+  funext i
+  simp only [twist, Pi.add_apply]
+  ring
+
+/-- Twist commutes with scalar multiplication. -/
+theorem twist_smul (σ : Equiv.Perm (Fin n)) (m : Fin n → F) (c : F) (u : Fin n → F) :
+    twist σ m (c • u) = c • twist σ m u := by
+  funext i
+  simp only [twist, Pi.smul_apply, smul_eq_mul]
+  ring
+
+/-- **The eigenproperty** (odd `k`): `T u⁺ = u⁺`. -/
+theorem twist_eigenPlus (dom : Fin n ↪ F) {k : ℕ} (hkodd : (k - 1) % 2 = 0)
+    (σ : Equiv.Perm (Fin n)) (hdom0 : ∀ i, dom i ≠ 0)
+    (hσ : ∀ i, dom (σ i) = -(dom i)⁻¹) (u : Fin n → F) :
+    twist σ (fun i => (dom i) ^ (k - 1)) (eigenPlus dom k σ u)
+      = eigenPlus dom k σ u := by
+  have hsign : ((-1 : F) ^ (k - 1)) = 1 :=
+    Even.neg_one_pow (Nat.even_iff.mpr hkodd)
+  rw [eigenPlus, twist_smul, twist_add, twist_twist dom k σ hdom0 hσ, hsign, one_smul,
+    add_comm]
+
+/-- **The eigenproperty** (odd `k`): `T u⁻ = −u⁻`. -/
+theorem twist_eigenMinus (dom : Fin n ↪ F) {k : ℕ} (hkodd : (k - 1) % 2 = 0)
+    (σ : Equiv.Perm (Fin n)) (hdom0 : ∀ i, dom i ≠ 0)
+    (hσ : ∀ i, dom (σ i) = -(dom i)⁻¹) (u : Fin n → F) :
+    twist σ (fun i => (dom i) ^ (k - 1)) (eigenMinus dom k σ u)
+      = -(eigenMinus dom k σ u) := by
+  have hsign : ((-1 : F) ^ (k - 1)) = 1 :=
+    Even.neg_one_pow (Nat.even_iff.mpr hkodd)
+  have hsub : ∀ u v : Fin n → F, twist σ (fun i => (dom i) ^ (k - 1)) (u - v)
+      = twist σ (fun i => (dom i) ^ (k - 1)) u
+        - twist σ (fun i => (dom i) ^ (k - 1)) v := by
+    intro u v
+    funext i
+    simp only [twist, Pi.sub_apply]
+    ring
+  rw [eigenMinus, twist_smul, hsub, twist_twist dom k σ hdom0 hσ, hsign, one_smul]
+  funext i
+  simp only [Pi.smul_apply, Pi.sub_apply, Pi.neg_apply, smul_eq_mul]
+  ring
+
 end ProximityGap.MCAMobius
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -253,3 +319,6 @@ end ProximityGap.MCAMobius
 #print axioms ProximityGap.MCAMobius.mcaEvent_rs_inversion
 #print axioms ProximityGap.MCAMobius.twist_twist
 #print axioms ProximityGap.MCAMobius.mcaEvent_rs_inversion_iff
+#print axioms ProximityGap.MCAMobius.eigen_add
+#print axioms ProximityGap.MCAMobius.twist_eigenPlus
+#print axioms ProximityGap.MCAMobius.twist_eigenMinus
