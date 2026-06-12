@@ -612,6 +612,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeBruijnWindowedLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Decision
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureClosedFormSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandFailureUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMomentInstance
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandMultiplicity
