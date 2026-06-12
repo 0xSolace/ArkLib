@@ -1665,3 +1665,34 @@ NOT a deployed-regime pin: it would raise the ε_mca LOWER bound at the ceiling,
 `δ* ≤ 11/16`, but leaves the good-below interior list bound at constant rate — the open `$1M` core —
 untouched. Honest lead: KKH26's construction has unexploited slack among character lines; the deployed
 pin is unaffected. No fabrication; far/no-joint verification is the open follow-up.
+
+---
+
+## §51 — SELF-CORRECTION: §50's incidence findings are line-EXPLAINABILITY, not MCA-bad; KKH26 may be extremal among FAR lines after all
+
+Followed up §50 by testing GENERIC (random) lines (probe `probe_generic_goodbelow.py`, n=16 rate 1/4,
+radius 11/16, w=k+1=5). Result: random lines give `4368 = C(16,5)` distinct explainable scalars — EVERY
+5-subset yields a distinct scalar, ZERO collisions — MORE than KKH26 (2256) AND the §50 worst-character
+line (3984). The absolute max explainability at the ceiling is `C(n,k+1)`, achieved by generic lines.
+
+**THE CORRECTION (decisive).** `4368` CANNOT be the MCA-bad count: the sibling's PROVEN ownership lemma
+(`dimGeneral_badScalars_card_mul_two_le`) says every MCA-bad scalar owns ≥2 bad `(k+1)`-subsets, so
+MCA-bad `≤ C(n,k+1)/2 = 2184`. A generic line's `4368` (one subset per scalar) blatantly violates this —
+so those scalars are NOT MCA-bad. Resolution: **generic lines are not FAR; the no-joint clause of
+`mcaEvent` fails (joint pairs of codewords agree), so line-EXPLAINABILITY ≫ MCA-badness for non-far
+lines.** Explainability = MCA-bad ONLY for far lines (`FarCosetExplosion`).
+
+**CONSEQUENCE for §50 (retract the "suboptimal" reading):** §50's worst character line (3984 > KKH26's
+2256) is almost certainly the SAME artifact — the high-frequency lines `[x^7,x^6]` etc. are likely NOT
+far, so their `3984` is explainability, NOT MCA-bad, and overcounts. **KKH26's `N(μ,r)` may well be
+extremal among genuinely FAR lines** (where explainability = MCA-bad), which is exactly consistent with
+the proven `δ*=1−r/2^μ` pin and the ownership bound `MCA-bad ≤ C(n,k+1)/2`. §50's "KKH26 is suboptimal"
+is RETRACTED as an MCA claim — it holds only for raw explainability, which is not the δ*-relevant
+quantity. The honest lesson (recurring): always separate line-explainability incidence from MCA-badness;
+the far/no-joint clause is load-bearing and non-far lines' incidence is not ε_mca.
+
+**NET (sessions through §51):** no change to the open core. δ* pinned `1−r/2^μ` for `r ≲ √(n log n)` (my
+spectrum `N(μ,r)`, the proven ownership `MCA-bad ≤ C(n,k+1)/2`, both lanes axiom-clean); deployed
+constant-rate open. The §50 "construction slack" lead is CLOSED (explainability artifact); KKH26 is
+consistent with extremal-among-far-lines. The δ*-relevant worst-FAR-line MCA-bad bound at constant rate
+remains the one open inequality. No fabrication; self-corrected via the in-tree ownership theorem.
