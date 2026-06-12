@@ -10,15 +10,24 @@ export function Header() {
         machine-checked mathematics &middot; lean 4 &middot; june 2026
       </p>
       <h1
-        className="text-[2rem] md:text-[2.6rem] font-semibold leading-[1.15]"
-        style={{ letterSpacing: "-0.015em" }}
+        className="text-[2.4rem] md:text-[3.2rem] font-semibold leading-[1.08]"
+        style={{ letterSpacing: "-0.02em" }}
       >
-        Pinning <M>{String.raw`\delta^*`}</M>: Machine-Checked Thresholds for
-        Mutual Correlated Agreement of Reed&ndash;Solomon Codes
+        The Million-Dollar Window
       </h1>
-      <p className="mt-7 text-[1.02rem]" style={{ color: "var(--ink-secondary)" }}>
-        The ArkLib <M>{String.raw`\delta^*`}</M> campaign &middot; an LLM agent
-        fleet writing Lean&nbsp;4, verified by the Lean kernel
+      <p
+        className="mt-6 text-[1.15rem] leading-[1.5]"
+        style={{ color: "var(--ink-secondary)" }}
+      >
+        What happened when a swarm of AI agents attacked one of
+        Ethereum&rsquo;s hardest open math problems, with a proof checker as
+        referee.
+      </p>
+      <p className="mt-6 text-[0.9rem]" style={{ color: "var(--ink-faint)" }}>
+        A campaign report on the mutual correlated agreement threshold{" "}
+        <M>{String.raw`\delta^*`}</M> for smooth Reed&ndash;Solomon codes
+        &middot; the ArkLib <M>{String.raw`\delta^*`}</M> campaign &middot; an
+        LLM agent fleet writing Lean&nbsp;4, verified by the Lean kernel
       </p>
       <p className="mt-2 text-[0.9rem]" style={{ color: "var(--ink-faint)" }}>
         <a href="https://github.com/lalalune/ArkLib">lalalune/ArkLib</a>

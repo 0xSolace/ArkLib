@@ -1,4 +1,5 @@
 import { Section, SubSection } from "../Section";
+import { Lede } from "../Lede";
 import { Eli5 } from "../degen/Eli5";
 import { WindowFigure } from "../figures/WindowFigure";
 import { Theorem } from "../Theorem";
@@ -9,6 +10,13 @@ import { Scribble } from "../Scribble";
 export function Problem() {
   return (
     <Section id="problem" num="1" title="The problem">
+      <Lede>
+        For twenty-five years, some of the best coding theorists alive have
+        pushed against the same wall. Below a certain radius, everything is
+        proven; above it, everything is refuted; in between lies a window
+        where nobody has ever computed a single exact value. The prize sits
+        inside the window.
+      </Lede>
       <p>
         Fix a Reed&ndash;Solomon code{" "}
         <M>{String.raw`C = \mathrm{RS}[\mathbb{F}_q, L, k]`}</M> whose evaluation

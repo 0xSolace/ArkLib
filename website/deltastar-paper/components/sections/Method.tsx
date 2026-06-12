@@ -1,4 +1,5 @@
 import { Section, SubSection } from "../Section";
+import { Lede } from "../Lede";
 import { Eli5 } from "../degen/Eli5";
 import { SwarmFigure } from "../figures/SwarmFigure";
 import { M } from "../Math";
@@ -6,6 +7,13 @@ import { M } from "../Math";
 export function Method() {
   return (
     <Section id="method" num="2" title="Method: an agent fleet under a kernel-enforced honesty contract">
+      <Lede>
+        Then the swarm arrived. Not one prover but a fleet of them, working in
+        public, around the clock, each claim submitted to a referee that
+        cannot be argued with, flattered, or fooled. The agents are allowed to
+        be wrong as often as they like; the kernel is never wrong about
+        whether they are.
+      </Lede>
       <p>
         The campaign is a sequence of GitHub issues (#232 &rarr; #334 &rarr; #357
         &rarr; #371) on the open ArkLib repository, each fully distilled into the

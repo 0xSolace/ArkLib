@@ -19,15 +19,21 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title:
-    "Pinning δ*: Machine-Checked Thresholds for Mutual Correlated Agreement",
+  title: "The Million-Dollar Window",
   description:
-    "An agent-fleet campaign in Lean 4 produced the first exact mutual correlated agreement thresholds for any code, a universal staircase law for smooth Reed-Solomon codes, and an honest, kernel-checked map of the open core of the Ethereum Foundation Proximity Prize problem.",
+    "What happened when a swarm of AI agents attacked one of Ethereum's hardest open math problems, with a proof checker as referee. A campaign report on the mutual correlated agreement threshold δ* for smooth Reed-Solomon codes: the first exact thresholds ever computed for any code, 28 machine-checked refutations, and an honest map of the $1M Proximity Prize window, which remains open.",
   openGraph: {
-    title: "Pinning δ*: Machine-Checked Thresholds for Mutual Correlated Agreement",
+    title: "The Million-Dollar Window",
     description:
-      "First exact MCA thresholds for any code, the universal staircase law, and an honest map of the open window — hundreds of axiom-clean Lean 4 theorems from an LLM agent fleet.",
+      "A swarm of AI agents attacked a 25-year-old math problem under a $1M Ethereum Foundation prize, with the Lean 4 kernel as referee. First exact thresholds ever computed for any code. 28 attack hypotheses refuted, each refutation a theorem. The window is still open. This page is the map.",
     type: "article",
+    siteName: "The δ* campaign",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "The Million-Dollar Window",
+    description:
+      "A swarm of AI agents attacked a 25-year-old math problem under a $1M Ethereum Foundation prize, with a proof checker as referee. The window is still open. This page is the map.",
   },
 };
 

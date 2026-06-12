@@ -1,4 +1,5 @@
 import { Section, SubSection } from "../Section";
+import { Lede } from "../Lede";
 import { Eli5 } from "../degen/Eli5";
 import { M, MD } from "../Math";
 import { Cite } from "../Cite";
@@ -45,6 +46,13 @@ const faces = [
 export function OpenCore() {
   return (
     <Section id="open-core" num="5" title="The open core, precisely">
+      <Lede>
+        And here is what still stands. After everything, the wall at the
+        center of the problem is intact, and the campaign can tell you its
+        exact shape: four faces, each a named statement in the tree, any one
+        of which would crack the window open. The million dollars is still on
+        the table.
+      </Lede>
       <p>
         We state plainly what is not known. The prize problem, pinning{" "}
         <M>{String.raw`\delta^*`}</M> at production rate inside the window

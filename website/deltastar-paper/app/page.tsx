@@ -1,5 +1,7 @@
 import { Header } from "@/components/sections/Header";
 import { Abstract } from "@/components/sections/Abstract";
+import { PrizeBox } from "@/components/sections/PrizeBox";
+import { Contributors } from "@/components/sections/Contributors";
 import { Problem } from "@/components/sections/Problem";
 import { Method } from "@/components/sections/Method";
 import { Results } from "@/components/sections/Results";
@@ -14,6 +16,7 @@ import { Eli5 } from "@/components/degen/Eli5";
 
 const toc = [
   { href: "#abstract", label: "Abstract" },
+  { href: "#prize", label: "The prize" },
   { href: "#problem", label: "1 \u2002The problem" },
   { href: "#method", label: "2 \u2002Method" },
   { href: "#results", label: "3 \u2002Results" },
@@ -21,6 +24,7 @@ const toc = [
   { href: "#open-core", label: "5 \u2002The open core" },
   { href: "#discussion", label: "6 \u2002Discussion" },
   { href: "#timeline", label: "Timeline" },
+  { href: "#contributors", label: "Contributors" },
   { href: "#references", label: "References" },
 ];
 
@@ -45,6 +49,7 @@ export default function Page() {
       <Header />
       <Eli5 k="abstract" />
       <Abstract />
+      <PrizeBox />
       <Eli5 k="problem" />
       <Problem />
       <Eli5 k="method" />
@@ -58,6 +63,7 @@ export default function Page() {
       <Eli5 k="discussion" />
       <Discussion />
       <Timeline />
+      <Contributors />
       <References />
 
       <footer className="prose-col mt-24 pt-8" style={{ borderTop: "1px solid var(--rule)" }}>

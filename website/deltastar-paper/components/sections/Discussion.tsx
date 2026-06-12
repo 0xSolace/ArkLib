@@ -1,10 +1,17 @@
 import { Section } from "../Section";
+import { Lede } from "../Lede";
 import { M } from "../Math";
 import { Scribble } from "../Scribble";
 
 export function Discussion() {
   return (
     <Section id="discussion" num="6" title="Discussion: kernel-checked grind is unfakeable">
+      <Lede>
+        What does it mean that any of this worked? Not that machines replaced
+        mathematicians, but that verification stopped being the bottleneck,
+        and the moment it did, mathematical progress started behaving like a
+        function of compute. That is the part that generalizes.
+      </Lede>
       <p>
         The headline of this report is not any single theorem. It is the shape
         of the ledger. In a matter of weeks, an agent fleet took a problem on

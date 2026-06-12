@@ -1,4 +1,5 @@
 import { Section, SubSection } from "../Section";
+import { Lede } from "../Lede";
 import { Theorem } from "../Theorem";
 import { M } from "../Math";
 import { Scribble } from "../Scribble";
@@ -17,6 +18,12 @@ function FileLink({ f }: { f: string }) {
 export function Refutations() {
   return (
     <Section id="refutations" num="4" title="Refutations as results">
+      <Lede>
+        This is the battlefield after the battle. Twenty-eight ideas walked
+        into the kernel and did not walk out, and every corpse is labeled with
+        a theorem explaining exactly how it died. In most fields failed ideas
+        vanish into folklore; here they are load-bearing.
+      </Lede>
       <p>
         Twenty-eight attack hypotheses were disposed of during the campaign.
         Under the honesty contract each disposal is a theorem: the dead idea is

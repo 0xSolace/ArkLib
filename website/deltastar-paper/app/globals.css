@@ -170,6 +170,115 @@ table.paper-table .num {
   font-variant-numeric: tabular-nums;
 }
 
+/* ------------------------------ narrative lede --------------------------- */
+
+.lede {
+  border-left: 3px solid var(--accent);
+  padding: 0.15rem 0 0.15rem 1.15rem;
+  margin: 0 0 1.6rem 0;
+}
+
+.lede p {
+  font-style: italic;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: var(--ink-secondary);
+}
+
+.lede p em,
+.lede p .katex {
+  font-style: normal;
+}
+
+/* ------------------------------- prize box ------------------------------- */
+
+.prize-box {
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--accent);
+  background: var(--paper-raised);
+  border-radius: 2px;
+  padding: 1.5rem 1.75rem 1.35rem;
+  box-shadow: 0 1px 2px rgba(33, 29, 24, 0.04);
+}
+
+.prize-box p + p {
+  margin-top: 0.85em;
+}
+
+.prize-box > p:not(.prize-label):not(.prize-amount) {
+  font-size: 0.95rem;
+  color: var(--ink-secondary);
+}
+
+.prize-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.prize-amount {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.9rem;
+}
+
+.prize-amount-sub {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin-top: 0.35rem;
+  color: var(--ink-faint);
+}
+
+.prize-status {
+  border-top: 1px dashed var(--rule-faint);
+  padding-top: 0.75rem;
+  margin-top: 1.1rem !important;
+  font-size: 0.88rem !important;
+}
+
+.prize-status strong {
+  color: var(--verified);
+}
+
+/* ----------------------------- contributors ------------------------------ */
+
+.contrib-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 1.4rem;
+}
+
+.contrib {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+}
+
+.contrib img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  background: var(--code-bg);
+}
+
+.contrib-name {
+  font-size: 0.78rem;
+  color: var(--ink-secondary);
+  transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.contrib:hover .contrib-name {
+  color: var(--accent);
+}
+
 /* ------------------------------ theorem box ------------------------------ */
 
 .thm {

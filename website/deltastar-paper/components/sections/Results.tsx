@@ -1,4 +1,5 @@
 import { Section, SubSection } from "../Section";
+import { Lede } from "../Lede";
 import { Eli5 } from "../degen/Eli5";
 import { StaircaseFigure } from "../figures/StaircaseFigure";
 import { Theorem } from "../Theorem";
@@ -85,6 +86,13 @@ export function Results() {
   return (
     <Section id="results" num="3" title="Results" wide>
       <div className="prose-col" style={{ marginInline: 0 }}>
+        <Lede>
+          Things started to fall. In a quarter century the literature had
+          never produced one exact value of the quantity the prize asks about;
+          within weeks the fleet had several, then an infinite family, then a
+          law governing all of them. Each one survives because a proof
+          checker, not a person, says so.
+        </Lede>
         <p>
           All results below are axiom-clean Lean theorems on{" "}
           <code className="inline">main</code>. We organize them as: the exact
