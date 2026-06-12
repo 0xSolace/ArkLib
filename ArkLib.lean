@@ -440,6 +440,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualAffineLineRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardStrictInteriorRefutation
+import ArkLib.Data.CodingTheory.ProximityGap.BoundaryDefectBound
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdLeaf
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySupExactness
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryThresholdFloorCell
