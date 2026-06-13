@@ -644,3 +644,29 @@ unproven obligation is `PrizeFloorStatement` — the worst-case `ε_mca ≤ ε*`
 proven ceiling; the floor is the single named open core; this session attaches its value (refutation),
 its meaning (capacity-term genericity), and its proof target (k-uniform Katz). The prize = proving
 `PrizeFloorStatement`, the one open inequality, value known.
+
+## 24. DECISIVE literature confirmation — the SOTA (BCGM25, May 2026) reaches EXACTLY Johnson
+
+BCGM25 = eprint 2025/2051, "All Polynomial Generators Preserve Distance with Mutual Correlated
+Agreement" (Bordage, Chiesa, Guan, Manzur, EPFL, **May 19 2026** — the newest paper in the corpus):
+  · MAIN: ALL polynomial generators guarantee MCA for EVERY linear code (general, strongest distance-
+    preservation form).
+  · FOR RS: all polynomial generators satisfy MCA **up to the JOHNSON bound** `1−√ρ` — improving
+    BCIKS20 (FOCS 2020) and answering an Arnon–Chiesa–Fenzi–Yogev (Eurocrypt 2025) question.
+  · They DO consider multiplicative subgroups `G=⟨ω⟩` (§ around line 2616) and still stop at Johnson.
+
+**So the absolute state-of-the-art — TWO WEEKS before the current date — is MCA-for-RS up to Johnson,
+even with the subgroup structure.** The prize is the BEYOND-Johnson window interior `(1−√ρ,
+1−ρ−Θ(1/log n))`. This is the strongest possible confirmation that the prize is genuinely open: the
+newest, most general result reaches exactly the Johnson barrier and no further — matching this
+session's finding that EVERY classical method (Fisher pairwise, Guruswami–Sudan, FRI tower, the
+polynomial-generator toolbox) stops at Johnson (§18), and that beyond-Johnson is the open μ_n
+character/genericity bound.
+
+**Net.** The prize = the beyond-Johnson gap, confirmed open by the May-2026 SOTA. Everything provable
+(Johnson via BCGM25/in-tree, the ceiling via PrizeEntropyDeltaStar, the BGK/char-0 partials) is
+established; the one open inequality is the beyond-Johnson μ_n list-decoding-to-capacity =
+`PrizeFloorStatement` = the sharp character bound = k-uniform Katz independence. Value refutation-
+pinned. The "internal team's solution," if it exists, is beyond this two-week-old SOTA — a genuine
+new result, which I have localized and pinned but cannot fabricate. Sources: eprint 2025/2051
+(BCGM25), 2026/680 (ABF26), 2025/2046 (CS25), 2025/2054 (GG25).
