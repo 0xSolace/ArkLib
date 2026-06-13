@@ -70,6 +70,27 @@ non-vanishing that must be decided per pair — a strict reduction of the
 
 It does not close the sub-Johnson wall.
 
+## SUPERSEDED (high-overlap stratum): the residual `SurvivingTPrimeCoord` is *not needed*
+
+`deep_pair_rank_ge_m_succ` is stated on the **high-overlap** stratum `k+1 ≤ |T∩T'|`
+(`hdeep`) and buys `rank ≥ m+1` only *conditionally* on `SurvivingTPrimeCoord`.  That same
+stratum is resolved **unconditionally and exactly** by `FarPairRankSupply.lean`
+(`high_overlap_interp_eq` / `card_pair_coherent_high_eq`, committed alongside this file):
+forced coincidence of the two coherent interpolants gives the exact count
+
+    `#{both coherent ∧ values match} · q^{|T∪T'| − (k+1)} = q^M`,
+
+and with `|T∪T'| = 2(k+m+1) − o` the exponent is `k+2m+1 − o ≥ m+1` for every
+`o ∈ [k+1, k+m]` — so `#kernel · q^(m+1) ≤ q^M` holds with **no hypothesis**, strictly
+beating the conditional bound here.  (At the edge `o = k+m+1` the cores coincide, `T = T'`,
+where `SurvivingTPrimeCoord` is unsatisfiable and the conditional statement is vacuous.)
+
+Hence `SurvivingTPrimeCoord` is a **dead residual**: solvers should NOT invest in pinning it.
+What this file still contributes unconditionally and irredundantly is the *low*-overlap half
+— `tband_surjective` / `deep_pair_rank_ge_m` (the bare Lagrange-lift surjectivity of the
+`T`-band family) — which underpins, rather than competes with, the complete rank law
+`rank = 2m + 1 − max(0, o − k)`.
+
 Issue #389.
 -/
 
