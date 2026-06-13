@@ -7839,6 +7839,83 @@ exact-solution target is the **two-phase law** `E_max(μ_n) = Θ_{k,m}(n + C(n,t
 — arithmetic/fibre families rule `q ≫ n`, generic density rules `n = Θ(q)`, and any
 positive proof must use BOTH the additive-unstructuredness of `μ_n` (Frobenius entry)
 AND the field-size hypothesis (this entry).
+## 2026-06-12 — the sub-Johnson supply curve IS small-set Szemerédi–Trotter (Fable; `GridSupplyRefutation.lean`)
+
+A reframing entry, complementary to the two-branch/Frobenius/subplane/monomial
+witnesses above.  All of those exhibit blowup; this one *names the curve* and points
+at a formalizable unconditional improvement.
+
+Observation: for `k = 2` an explainable `t`-core (`t = k+m+1 ≥ 3`) is exactly a
+`t`-subset of the word's graph `P = {(dom i, w i)} ⊂ 𝔽_q²` that is collinear, and (for
+`t ≥ 3`) it lies on a *unique* affine codeword.  Hence **explainable-core supply =
+`Σ_{lines ℓ} C(a_ℓ, t)` = the rich-line incidence count of the graph point set** —
+the Szemerédi–Trotter rich-line problem.  The capped residual restricts to `a_ℓ ≤ t+2`.
+
+Witness (`GridSupplyRefutation.lean`, axiom-clean, `n = 36`, `ZMod 41`, fixed band
+`(k,m) = (2,1)`, `t = 4`, cap `6`): the `6×6` sheared grid `(i,j) ↦ (i+7j, j)` (abscissae
+= base-7 digits ⟹ word graph; shears preserve lines).  `grid_word_cap` proves the cap
+*structurally* (no root budget: a non-constant line meets each constant row `≤ 1×`; six
+rows) ⟹ the word is in the `SubJohnsonSupplyResidual gridDom 2 1` class.  Yet
+`subJohnsonSupplyResidual_floor_grid`: every valid `B ≥ 234`, strictly above the
+partition target `90` and the (now-dead) mean-degree-law target `180`.  Asymptotically
+(`probe_grid_supply_refutation.py`) the family-capped mass is the ST extremal
+`Σ a_ℓ = Θ(n²/t²)`, violation `×11.2` at `n = 400` — and the construction is over ℤ,
+so it transfers to `𝔽_p` for every prime `p > 2N³` (subfield-free production primes
+included), the prime-field counterpart of the subplane mechanism.
+
+* **REFUTED**: "the mean-degree law `Σ a_ℓ ≤ 2n` holds on the residual's hypothesis
+  class at a fixed band" (the `n ≤ 20` census stopped below the ST onset `n ~ t³`).
+* **NOT refuted, and the corrected shape target**: for additive/`μ_n` domains the
+  rich-line count obeys the small-set finite-field ST conjecture
+  `L_{≥t} = O(n²/t³ + n/t)`.  Concrete **unconditional partial**: Stevens–de Zeeuw
+  (via Rudnev's point-plane bound) gives `I(P,L) ≲ |P|^{11/15}|L|^{11/15} + |P| + |L|`
+  in the production range `p ≫ poly(n)`, hence `L_{≥t} ≲ n^{11/4}/t^{15/4}` — which
+  **beats the packing bound `n²/t²` for every `t > n^{3/7}`**, i.e. on the band
+  `(n^{3/7}, √(2n))` strictly below Johnson `√(2n)`.  This is the first unconditional
+  strictly-sub-Johnson supply improvement; formalized as a named-residual import +
+  consumer chain in `STSupplyReduction.lean` (the heavy Rudnev bound is the import
+  surface; the reduction `RichLineBound → capped supply → bad-set count` is proven).
+
+## 2026-06-13 — THE UNIVERSAL MEAN-DEGREE LAW IS FALSE (two-branch parabola countermodel); the supply growth law is two-regime
+
+The conjectured universal form of the mean-degree law ("`Σ_c a_c ≤ 2n` over the
+capped large-agreement family of any word", probe census `717da6067` / the #389
+thread's "final measured form") is **REFUTED** in the open sub-Johnson range
+`t² < 2(k−1)n` (`TwoBranchSupplyCountermodel.lean`, axiom-clean):
+
+* **The countermodel family**: split `D = A ⊔ B`, set `w = x²` on `A`,
+  `x² + c` on `B`.  Every degree-`<2` polynomial agrees with each branch on
+  `≤ 2` points (root budget), so every codeword agreement is `≤ 4 ≤ 6 =
+  2k+m+1`: **agreement-capped unconditionally**.  The line through
+  `(x₁,x₁²), (x₂,x₂²)` meets branch `B` at the roots of
+  `z² − (x₁+x₂)z + (x₁x₂+c)`; when the discriminant `(x₁−x₂)² − 4c` is a
+  nonzero square with both roots in `B`, the line is 4-rich.  About `1/8` of
+  the `A`-pairs qualify: `Σ a_c ~ n²/16`, **quadratic**.
+* **Machine-checked instance** `(q,n) = (101, 80)`: interval domain
+  `{0..79}`, `A = {0..39}`, `c = 29`: `107` four-rich lines (census-exact:
+  these are ALL the `≥4`-rich lines; max agreement `4`), `Σ a_c = 428 > 160 =
+  2n`.  `universalMeanDegreeLaw_REFUTED`.
+* **Why the censuses missed it**: at `q = 31, n ≤ 24` the two-branch count
+  sits below `2n` — the crossover `n³ ≈ 64q²` is exactly where the growth
+  census stopped.  `probe_two_branch_subjohnson_supply.py`: 21/25 instances
+  violate (first at `p = n = 41`, exact counting); the linear-B form
+  (`≈ 3.625n`) falls from `p = 251` (957 cores vs 910).
+* **What survives**: `mean_degree_law_deep` and the crossing/CS route are
+  hypothesis-guarded (`t² ≥ ~2(k−1)n`) and unaffected — and now provably
+  SHARP: below the threshold the truth is a different growth law, not a
+  missing word-coupling refinement of the linear one.
+* **The corrected named target** (`CappedSupplyTwoRegimeLaw`, PRIME fields):
+  `S_max(capped) = Θ(n + C(n,k+m+1)/q^{m+1})` — partition floor + random
+  mean.  The two-branch family realizes the mean term constructively (and
+  `r`-branch words `x^k + c_j` extend this to every band `m` with
+  `r·k ≤ 2k+m+1`).  The general-field form is FALSE by subfield transport:
+  over `q = p²` with `D = F_p ⊂ F_{p²}` the same construction carries
+  `~ n²/64` cores while the mean term collapses to `O(1)` — char-2/extension
+  production settings need a no-large-subfield-structure hypothesis.
+  Consumer arithmetic: any `B = O(n + C(n,t)/q^{m+1})` still delivers
+  prize-grade bad-scalar counts through `deep_band_badSet_card_of_residual`
+  (`#badSet ≳ min(C(n,t)/(qᵐ·n), q/const)`) — the wall is recalibrated, not
+  destroyed.
 ## 2026-06-12 — "Linear/subexponential supply on smooth domains" is FALSE for DYADIC domains (multiplicative subspace polynomials)
 
 The rounds 78–84 census conjecture — capped supply `Σ_c C(a_c,t) = O(n)` (`B = O(n)`),
