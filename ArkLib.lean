@@ -2770,6 +2770,7 @@ import ArkLib.ToMathlib.MpFinSupply
 import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.MultiplicityDatum
 import ArkLib.ToMathlib.MvPolynomial.Equiv
+import ArkLib.ToMathlib.MvPolynomial.SchwartzZippelExists
 import ArkLib.ToMathlib.NearCertainBadLineProof
 import ArkLib.ToMathlib.NewtonTailEntry
 import ArkLib.ToMathlib.NewtonTailTransport
