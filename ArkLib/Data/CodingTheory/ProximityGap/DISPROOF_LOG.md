@@ -7948,3 +7948,39 @@ at the deep band. Any positive supply/MCA result there must restrict the domain 
 dyadic structure or accept exponential `B`. Refutation is machine-checked (not a wall — a
 proved negative). The campaign's recent linear claim should be re-scoped to random/generic
 domains; the prize's smooth-domain case is exponentially worse and this is the honest state.
+
+### O158 — THE PRODUCTION-RATE OBSTRUCTION: the multiplicative-subspace exponential supply is VACUOUS at fixed production ρ — it requires vanishing rate, exactly like DG25 (nubs incidence/census lane, 2026-06-13)
+
+Boundary map of `EsymmFiber.smooth_dyadic_supply_lower_bound` (the just-landed "smooth
+dyadic domains have exponential sub-Johnson supply") vs the prize's production parameters.
+Claimed #389 comment 4697214100; exact integer arithmetic, `scripts/probes/incidence/boundary/`.
+
+**The construction's firing condition (exact, from the Lean hypotheses):** a μ_d-coset
+union is an explainable t-core iff `d = 2^j | t`, `d ≥ m+2`, `t = k+m+1`; supply
+`C(n/d, t/d)`. Exponential supply requires `d = O(1)` (so `n/d → ∞`).
+
+**The obstruction (verified mu=5..14, all production rates):** at fixed production rate
+`ρ ∈ {1/2,1/4,1/8,1/16}` (so `k = ρ·2^μ` is a large power of 2), the best coset-union
+supply rate `log₂(supply)/n → 0` as the domain grows — **POLYNOMIAL, not exponential**
+(ρ=1/2: identically 0 at every μ; ρ=1/4,1/8,1/16: halving each μ-step). 2-adic mechanism:
+exponential needs constant `d=2^j ≥ m+2` dividing `k+m+1`; for `k=2^a` and constant `m`,
+`2^j | (2^a+m+1)` with `2^j ≥ m+2` forces `2^j | (m+1)` ∧ `2^j ≥ m+2` ⟹ `m+1 ≥ 2^j ≥ m+2`,
+impossible. The only firings have `d ∝ n` (giving `C(O(1),O(1))` = constant supply) or
+sit at the s=1,2 single/few-coset tips (linear supply, rate → 0).
+
+**Where the exponential bite actually lives:** non-production rates `ρ → 0` (fixed small
+absolute `k`, rate shrinking with n) — e.g. k=5,9,13 show genuine positive supply rate.
+**This is exactly the DG25 escape** (DISPROOF_LOG §3/Loop: DG25's super-poly capacity
+disproof needs vanishing rate `ρ ≈ e·n^{1/3}/n → 0`, not fixed ρ). The multiplicative-
+subspace construction is the explicit-smooth-domain shadow of DG25 and respects the SAME
+rate barrier — it does not cross into fixed-rate territory.
+
+**Consequence for #389 / the pin:** the EsymmFiber theorem is true and axiom-clean, but
+its defeat of subexponential `ExplainableCoreSupply` (and hence any threat to
+`CensusDomination` / the δ* pin) is confined to vanishing-rate regimes. **At the
+production rates the prize actually targets, this construction yields only polynomial
+supply — it does NOT break the pin there.** HONEST SCOPE: this maps ONE construction's
+support; it does NOT prove `CensusDomination` (other supply sources may exist, e.g. the
+Frobenius-subfield blowup O-entry, which is additive-structure-coupled and a separate
+question). It removes the multiplicative-subspace route as a production-rate obstruction
+and pins it to the same vanishing-rate barrier as the known capacity disproofs.
