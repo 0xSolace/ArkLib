@@ -535,6 +535,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringExistence
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringWitness
 import ArkLib.Data.CodingTheory.ProximityGap.CS25FourierIdentity
+import ArkLib.Data.CodingTheory.ProximityGap.CS25InnerExclusionMonotone
 import ArkLib.Data.CodingTheory.ProximityGap.CS25JointProxBound
 import ArkLib.Data.CodingTheory.ProximityGap.CS25NonDegeneratePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSConcreteCoveredFraction
@@ -1212,6 +1213,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MDSNearCountVolume
 import ArkLib.Data.CodingTheory.ProximityGap.MannFiberCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.ManyTermResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.MarkedCurveDecodableMonotone
+import ArkLib.Data.CodingTheory.ProximityGap.MarkedCurveDecodableVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.MasterLoop45
 import ArkLib.Data.CodingTheory.ProximityGap.MatchingDomainUniqueness
 import ArkLib.Data.CodingTheory.ProximityGap.MatchingForcingLemmas
