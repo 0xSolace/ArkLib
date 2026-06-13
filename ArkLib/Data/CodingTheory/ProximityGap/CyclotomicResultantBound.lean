@@ -31,7 +31,7 @@ small-subgroup regime.  Axiom-clean.
 -/
 
 
-open Polynomial
+open Polynomial Complex
 open scoped NNReal
 
 /-- Submultiplicativity of `nnnorm` over a multiset product in a normed ring. -/
@@ -276,3 +276,41 @@ theorem unitCircle_parallelogram {x y z w : ℂ} (hx : ‖x‖ = 1) (hy : ‖y�
   rcases mul_eq_zero.mp hquad with h | h
   · left; exact sub_eq_zero.mp h
   · right; exact sub_eq_zero.mp h
+
+/-- **No nontrivial parallelogram among roots of unity (the ℂ-Sidon).** For a primitive `n`-th
+root `ω` and exponents `a,b,c,d < n` with `{a,b} ≠ {c,d}` and `ω^a + ω^b ≠ 0`, the parallelogram
+sum does not vanish.  (Two applications of the unit-circle conjugation step pin `{ω^a,ω^b} =
+{ω^c,ω^d}`, hence `{a,b}={c,d}` by `injOn_pow` — contradiction.) -/
+theorem fourTerm_sidon {n : ℕ} (hn : 0 < n) {ω : ℂ} (hω : IsPrimitiveRoot ω n) {a b c d : ℕ}
+    (ha : a < n) (hb : b < n) (hc : c < n) (hd : d < n)
+    (hsum : ω ^ a + ω ^ b ≠ 0)
+    (hdist : ¬ ((a = c ∧ b = d) ∨ (a = d ∧ b = c))) :
+    ω ^ a + ω ^ b - ω ^ c - ω ^ d ≠ 0 := by
+  intro h
+  have hωnorm : ‖ω‖ = 1 := Complex.norm_eq_one_of_pow_eq_one hω.pow_eq_one hn.ne'
+  have hnorm : ∀ k : ℕ, ‖ω ^ k‖ = 1 := fun k => by rw [norm_pow, hωnorm, one_pow]
+  have heq : ω ^ a + ω ^ b = ω ^ c + ω ^ d := by linear_combination h
+  have hinj : ∀ {i j : ℕ}, i < n → j < n → ω ^ i = ω ^ j → i = j :=
+    fun hi hj hij => hω.injOn_pow (Finset.mem_coe.mpr (Finset.mem_range.mpr hi))
+      (Finset.mem_coe.mpr (Finset.mem_range.mpr hj)) hij
+  have h1 : ω ^ a = ω ^ c ∨ ω ^ a = ω ^ d :=
+    unitCircle_parallelogram (hnorm a) (hnorm b) (hnorm c) (hnorm d) heq hsum
+  have h2 : ω ^ b = ω ^ c ∨ ω ^ b = ω ^ d :=
+    unitCircle_parallelogram (hnorm b) (hnorm a) (hnorm c) (hnorm d)
+      (by rw [add_comm]; exact heq) (by rwa [add_comm])
+  apply hdist
+  rcases h1 with h1 | h1 <;> rcases h2 with h2 | h2
+  · -- a=c, b=c ⟹ heq forces c=d, so (a=c ∧ b=d)
+    have hac := hinj ha hc h1
+    have hbc := hinj hb hc h2
+    rw [hac, hbc] at heq
+    have hcd : c = d := hinj hc hd (by linear_combination heq)
+    exact Or.inl ⟨hac, by omega⟩
+  · exact Or.inl ⟨hinj ha hc h1, hinj hb hd h2⟩
+  · exact Or.inr ⟨hinj ha hd h1, hinj hb hc h2⟩
+  · -- a=d, b=d ⟹ heq forces d=c, so (a=c ∧ b=d)
+    have had := hinj ha hd h1
+    have hbd := hinj hb hd h2
+    rw [had, hbd] at heq
+    have hdc : d = c := hinj hd hc (by linear_combination heq)
+    exact Or.inl ⟨by omega, hbd⟩
