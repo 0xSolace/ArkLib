@@ -1032,3 +1032,37 @@ moment routes (char-p wall) from three directions; identified the live char-0 de
 and the h-ratio characterization; fixed the build co-import breakage. The prize is open at one named
 char-0 object — the resonant general-r aligning-spectrum / h-ratio count ≤ K — which the demand lane is
 actively attacking and the literature does not contain. I have advanced every facet without fabricating.
+
+## 37. MAJOR CORRECTION — Kambiré (2604.09724) gives the EXACT δ* (window edge), and my capacity-term δ* was WRONG
+
+Read the prize-central paper: **Kambiré, "Proximity Gaps Conjecture Fails Near Capacity over Prime
+Fields"** (arXiv:2604.09724, fleshing out Krachun–Kazanin). It is NATIVE to the prize regime (RS over
+`μ_{2^t}` / `μ_n` in prime fields) and PROVES the upper bracket constructively.
+
+**Theorem 1 (Kambiré), exact construction.** `n=sm`, `s=2^α`, `m=2^{2^α/K−α}`, `k=(r−2)m`,
+`ρ=(r−2)/s`, `r=ρs+2`. At `δ = 1 − r/s = (1−ρ) − 2/s`:
+  · The line `L = {X^{rm} + λ·X^{(r−1)m}}` has bad scalars `λ = ξ₁+⋯+ξ_r ∈ H^{(+r)}` (distinct r-fold
+    sumset of `H=μ_s`): `∏(X^m−ξⱼ) = X^{rm} − λX^{(r−1)m} + R`, `deg R ≤ (r−2)m = k`, vanishing on
+    `r` cosets `Hⱼ={a:a^m=ξⱼ}` (total size `rm = (1−δ)n`) ⟹ `Δ ≤ δ`.
+  · **bad count = `|H^{(+r)}| ≥ n^C`** (Linnik good prime `p≡1 mod n`, `p<n^A`, makes the sums distinct
+    mod p; bad-prime count via cyclotomic resultant `|Res(Φ_s,Q)| ≤ s^s`).
+  · No correlated agreement (X^{(r−1)m} would need `≤k` roots but `|D'|=rm>k`).
+  · Identity `K·log₂n = s` ⟹ `η = 2/s = 2/(K log₂n) = Θ(1/log n)`, `K=K(ρ,C)` a power of 2 ~
+    `L(ρ,C)=max(C/(ρ log(1/2ρ)), 9/(2 log 8))`.
+
+**THREE CORRECTIONS to my campaign (honest).**
+  1. **δ* is the WINDOW EDGE, not the capacity term.** Correct closed form:
+     **`δ* = 1 − ρ − 2/(K(ρ,C*)·log₂ n)`**, `C*` set by `n^{C*} = q·ε*` (bad count = budget). My §R.4
+     `prizeDeltaStar = 1−ρ−H(ρ)/log₂q` (capacity term) is WRONG — it is closer to capacity than the
+     Kambiré construction allows. The workbench's `prizeDeltaStar` overshoots.
+  2. **The bad count = the DISTINCT SUMSET `|H^{(+r)}|`** (= NubsCarson's #bad spectrum), NOT the
+     additive energy. Larger sumset ⟹ MORE bad scalars.
+  3. **My genericity reasoning was INVERTED.** `E₂=3n²−3n` (near-Sidon, large sumset) FUELS the Kambiré
+     disproof (more distinct sums → more near-codewords), it does NOT make μ_n "good." The dichotomy's
+     "generic ⟹ capacity" is refuted in this regime.
+
+**The corrected prize.** δ* = Kambiré window edge `1−ρ−2/(K log₂n)`. UPPER bracket PROVEN (Kambiré
+construction: sumset `≥ n^C`). LOWER bracket (the open prize) = the demand-side `#bad = |H^{(+r)}| ≤ K`
+for `δ < window edge` — proximity gaps HOLD below the construction's radius. So Kambiré + the demand
+lane are the two brackets of the SAME δ*, and the bad count is the distinct r-fold sumset of `μ_s`. This
+is the genuine corrected picture; my capacity-term δ* must be replaced by the window-edge form.
