@@ -587,3 +587,31 @@ So the prize, fully localized: `δ* = H_q⁻¹(1−ρ−log_q(1/ε*)/n)` (capaci
 off-diagonal Jacobi-moment cancellation `⟺ max|η_b| ≤ 2√(n ln p) ⟺ E_{log n}(μ_n)` clean. Value
 refutation-pinned; BGK-floored; literature-confirmed open. Sources: arXiv 0705.4573, 1401.4618,
 1712.00761 (BGK power-saving); Pólya–Vinogradov; Hasse–Davenport; Deligne/Katz equidistribution.
+
+## 22. The open kernel = UNIFORM-IN-k Gauss-sum independence (Katz machinery + the exact gap)
+
+Fully rigorous reduction of the gating inequality, with the relevant literature located.
+
+**Exact reduction.** `∑_c|T(c)|^{2k} = m·p·∑_s|W(s)|²` (off-trivial part), `W(s) = ∑_{(j)∈[1,m-1]^k:
+∑j≡s (m)} J_{(j)}`, where `J_{(j)} = ∏_i τ(ψ_{j_i})/τ(ψ^{∑j})` is the iterated Jacobi sum,
+`|J_{(j)}| = p^{(k-1)/2}` (Hasse–Davenport). The diagonal forces `∑_s|W(s)|² ≥ k!(m-1)^k p^{k-1}`;
+the bound `max|η_b| ≤ √(n ln p)` ⟺ **`W(s)` exhibits square-root cancellation**: `|W(s)| ≲
+√(m^{k-1})·p^{(k-1)/2}`, i.e. the `~m^{k-1}` Jacobi sums in `W(s)` behave as independent random phases.
+
+**The machinery (located).** This is exactly the regime of **equidistribution AND independence of
+Gauss sums** (Katz; arXiv 2207.12439, 1809.04286; Katz GKM 1988): for FIXED `k`, the angles of the
+`k` Gauss sums `τ(ψ_{j_i})` equidistribute independently on the torus (large monodromy), giving
+square-root cancellation in `W(s)` ⟹ `max|η_b| ≤ √n·p^{1/2k}` (a power-saving, BGK-level, PROVEN for
+fixed k).
+
+**The exact gap = uniformity in `k`.** For the SHARP `√(n ln p)` the optimal `k≈ln p` GROWS with `p`
+(needed to kill `p^{1/2k}→O(1)`). Katz's independence is fixed-`k`, `q→∞`; the `k`-UNIFORM version
+(`k` up to `~log q`) is the open frontier — it is exactly "uniform square-root cancellation in a
+sum of products of `log q` Gauss sums over a sum-constraint." Fixed-k Katz = power-saving (proven,
+= BGK floor); k-uniform Katz = sharp `√(n ln p)` = capacity δ* (open). The refutation (`G=O(1)` flat
+in `ln p`) is direct evidence the k-uniform version holds.
+
+**Net.** The prize's single open inequality is now pinned to a named gap in a named theory: the
+`k≈log q`-UNIFORM extension of Katz's equidistribution-and-independence of Gauss sums. Value
+refutation-certified, fixed-k case proven, uniformity open. Sources: arXiv 2207.12439, 1809.04286;
+Katz, "Gauss Sums, Kloosterman Sums, and Monodromy Groups" (Annals of Math Studies 116, 1988).
