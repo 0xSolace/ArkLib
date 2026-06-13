@@ -1336,6 +1336,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SplitPencilBound
 import ArkLib.Data.CodingTheory.ProximityGap.SplittingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.StackJointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.StaircaseBandTheorem
+import ArkLib.Data.CodingTheory.ProximityGap.StepanovAuxFramework
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovContradictionEngine
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovCountingLemma
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovFrobeniusReduction
