@@ -29,7 +29,8 @@ variable {F : Type*} [AddCommMonoid F] [DecidableEq F]
 /-- **Dissociation criterion.** If the `ℓ`-subset-sum map is injective on `ℓ`-subsets of `E`, then
 the distinct `ℓ`-fold sumset has size exactly `C(|E|, ℓ)`. -/
 theorem sumsetDistinct_card_of_injOn {E : Finset F} {ℓ : ℕ}
-    (h : Set.InjOn (fun S => ∑ x ∈ S, x) (↑(E.powersetCard ℓ) : Set (Finset F))) :
+    (h : Set.InjOn (fun S => ∑ x ∈ S, x)
+      (↑(E.powersetCard ℓ) : Set (Finset F))) :
     (sumsetDistinct E ℓ).card = (E.card).choose ℓ := by
   unfold sumsetDistinct
   rw [Finset.card_image_of_injOn h, Finset.card_powersetCard]
