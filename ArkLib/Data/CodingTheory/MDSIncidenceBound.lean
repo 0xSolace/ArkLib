@@ -32,7 +32,10 @@ unconditionally from the order-`d` MDS hypothesis, in full generality.  Speciali
 recovers `|Heavy| · k ≤ n` (the line bound, when all normals are nonzero); `d = 2` recovers the
 plane bound `|Heavy| · C(k,2) ≤ C(n,2)`.  The remaining open part of the prize core is producing
 the order-`d` MDS certificate itself for the *explicit* smooth Reed–Solomon evaluation points — the
-GM-MDS / higher-order-MDS question.  Axiom-clean.
+GM-MDS / higher-order-MDS question.  `vandermonde_incidence_card_le` discharges the order-`d` MDS
+hypothesis unconditionally for the degree-`<d` Reed–Solomon evaluation map at distinct points (the
+Vandermonde determinant), giving the list bound `|Heavy| · C(k,d) ≤ C(n,d)` outright there.
+Axiom-clean.
 -/
 
 open Finset Matrix
@@ -106,3 +109,27 @@ theorem mds_incidence_card_le {d : ℕ} (N : ι → (Fin d → F)) (c : ι → F
     intro p hp
     exact Nat.choose_le_choose d (hHeavy p hp)
   exact le_trans hlb hcard_le
+
+omit [DecidableEq ι] in
+/-- **The Vandermonde (degree-`<d` Reed–Solomon) incidence list bound, unconditional.**
+Instantiate `mds_incidence_card_le` with the degree filtration `N i = (1, xᵢ, …, xᵢ^{d-1})`: a
+heavy parameter is a degree-`<d` polynomial `p` (read off its coefficient vector) agreeing with
+`c` on `≥ k` of the distinct evaluation points `x i`.  The order-`d` MDS hypothesis is then the
+**Vandermonde determinant** `∏_{i<j} (x_{σ j} − x_{σ i}) ≠ 0`, automatic from distinctness — so for
+distinct points the list bound `|Heavy| · C(k,d) ≤ C(n,d)` holds with *no* extra hypothesis. This
+is the affinely-independent (primal-RS) corner of the prize core, recovered concretely. -/
+theorem vandermonde_incidence_card_le {d : ℕ} (x : ι → F) (hx : Function.Injective x)
+    (c : ι → F) {k : ℕ} (Heavy : Finset (Fin d → F))
+    (hHeavy : ∀ p ∈ Heavy,
+      k ≤ (univ.filter (fun i => (fun b : Fin d => x i ^ (b : ℕ)) ⬝ᵥ p = c i)).card) :
+    Heavy.card * k.choose d ≤ (Fintype.card ι).choose d := by
+  refine mds_incidence_card_le (fun i b => x i ^ (b : ℕ)) c (fun σ hσ => ?_) Heavy hHeavy
+  have hv : (Matrix.of (fun b => (fun a : Fin d => x (σ b) ^ (a : ℕ))) :
+      Matrix (Fin d) (Fin d) F) = Matrix.vandermonde (fun b => x (σ b)) := rfl
+  rw [hv, Matrix.det_vandermonde, Finset.prod_ne_zero_iff]
+  intro i _
+  rw [Finset.prod_ne_zero_iff]
+  intro j hj
+  rw [sub_ne_zero]
+  intro h
+  exact absurd (hσ (hx h)) (Finset.mem_Ioi.mp hj).ne'
