@@ -193,6 +193,34 @@ def SmallSubgroupGoodList {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι
     (InterleavedMCACollapse.interleavedList C u₀ u₁
       (2 * ⌈(1 - δgood) * (Fintype.card ι : ℝ≥0)⌉₊ - Fintype.card ι)).card ≤ L
 
+/-- The named small-subgroup good-list hypothesis is monotone in the advertised list
+budget.  This is the local packaging lemma for passing from a sharper producer bound to the
+budget consumed by the δ* sandwich. -/
+theorem SmallSubgroupGoodList.mono_L {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {C : Finset (ι → F)} {δgood : ℝ≥0} {L L' : ℕ}
+    (h : SmallSubgroupGoodList C δgood L) (hLL : L ≤ L') :
+    SmallSubgroupGoodList C δgood L' := by
+  intro u₀ u₁
+  exact le_trans (h u₀ u₁) hLL
+
+/-- A producer form for `SmallSubgroupGoodList` from the natural doubled-radius floor
+`⌈(1 - 2δ) n⌉₊`.  The in-tree floor bridge shows this floor is no larger than the O74
+collapse floor used by the MCA dictionary, so antitonicity of the interleaved list transfers
+the bound to the exact hypothesis expected by `smallSubgroup_deltaStar_pin`. -/
+theorem SmallSubgroupGoodList.of_doubledRadius_bound {ι : Type} [Fintype ι] [Nonempty ι]
+    [DecidableEq ι] {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {C : Finset (ι → F)} {δgood : ℝ≥0} {L : ℕ}
+    (hL : ∀ u₀ u₁ : ι → F,
+      (InterleavedMCACollapse.interleavedList C u₀ u₁
+        ⌈(1 - 2 * δgood) * (Fintype.card ι : ℝ≥0)⌉₊).card ≤ L) :
+    SmallSubgroupGoodList C δgood L := by
+  intro u₀ u₁
+  exact le_trans
+    (ProximityGap.interleavedList_card_anti C u₀ u₁
+      (ProximityGap.ceil_doubled_radius_le (Fintype.card ι) δgood))
+    (hL u₀ u₁)
+
 /-- **The complete small-subgroup δ\* pin.**  Combining:
 * the success (lower) side from the named list hypothesis `SmallSubgroupGoodList` together
   with the budget `(1 + (n − (2t − n))·L)/q ≤ ε*` (the LD⇒MCA dictionary
@@ -226,4 +254,6 @@ end ArkLib.ProximityGap.SmallSubgroupDeltaStarPin
 #print axioms ArkLib.ProximityGap.SmallSubgroupDeltaStarPin.cubicSupply_sq_le_sharp
 #print axioms ArkLib.ProximityGap.SmallSubgroupDeltaStarPin.cubic_explainable_core_sq_le_sharp
 #print axioms ArkLib.ProximityGap.SmallSubgroupDeltaStarPin.smallSubgroup_deltaStar_le
+#print axioms ArkLib.ProximityGap.SmallSubgroupDeltaStarPin.SmallSubgroupGoodList.mono_L
+#print axioms ArkLib.ProximityGap.SmallSubgroupDeltaStarPin.SmallSubgroupGoodList.of_doubledRadius_bound
 #print axioms ArkLib.ProximityGap.SmallSubgroupDeltaStarPin.smallSubgroup_deltaStar_pin
