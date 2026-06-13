@@ -1367,6 +1367,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftClosed
+import ArkLib.Data.CodingTheory.ProximityGap.SidonGVClosure
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftDevacuated
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegComplex
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
