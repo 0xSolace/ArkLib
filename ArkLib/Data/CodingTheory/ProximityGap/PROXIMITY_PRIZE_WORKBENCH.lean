@@ -11,6 +11,26 @@ import ArkLib.Data.CodingTheory.ProximityGap.OwnershipCensusSharpened
 import ArkLib.Data.CodingTheory.ProximityGap.GVHBKEnergyReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BoundarySupExactness
 import ArkLib.Data.CodingTheory.ProximityGap.FarCosetExplosion
+-- §2.3 live reduction dossier (#371 closed, #389 open):
+import ArkLib.Data.CodingTheory.ProximityGap.CensusDominationWeld
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26DeltaStarPinAllWitness
+import ArkLib.Data.CodingTheory.ProximityGap.PinBeyondJohnson
+import ArkLib.Data.CodingTheory.ProximityGap.PackingDeepBandMiss
+import ArkLib.Data.CodingTheory.ProximityGap.UniversalBelowUDR
+import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiberCodewordList
+import ArkLib.Data.CodingTheory.ProximityGap.MonomialSupplyChoose
+-- §2.5 live routes (LD⇒MCA frontier):
+import ArkLib.Data.CodingTheory.ProximityGap.GG25CurveDecodability
+import ArkLib.Data.CodingTheory.ProximityGap.GG25MarkedCurve
+import ArkLib.Data.CodingTheory.ProximityGap.CurveCloseSetTargetBound
+import ArkLib.Data.CodingTheory.ProximityGap.FoldedCurveCloseSetBound
+import ArkLib.Data.CodingTheory.ProximityGap.SeparationSurvivalCount
+import ArkLib.Data.CodingTheory.ProximityGap.SubspaceDesignLineDecodable
+-- §2.6 GM-MDS route:
+import ArkLib.Data.CodingTheory.GMMDS.LovettThm17Reduction
+import ArkLib.Data.CodingTheory.GMMDS.LovettLemma22
+import ArkLib.Data.CodingTheory.GMMDS.LovettSeparateStep
+import ArkLib.Data.CodingTheory.GMMDS.LovettDivisibility
 
 /-!
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -92,6 +112,35 @@ proof go. It must be **complete**: a single computable `δ*`-expression, proven,
   KK25 `…ofLowerCapacityBCHKS25KK25`, DG25 `…ofSamplingDG25`.
 
 ────────────────────────────────────────────────────────────────────────────────
+## §2.5  LIVE ATTACK ROUTES  (freshest in-progress machinery — the actual frontier)
+────────────────────────────────────────────────────────────────────────────────
+Three routes from the latest literature connect the LD challenge to the MCA challenge (solve
+one ⟹ solve both). Each is mostly built in-tree; its GAP is the one open piece to attack.
+
+**(R1) GG25 curve-decodability ⟹ MCA** (Guruswami–Gabizon, ePrint 2025/2054).
+  · `ProximityGap.CurveDecodable C ℓ δ a b` / `MarkedCurveDecodable` — a degree-`ℓ` curve
+    through `a` close points explains `≥ b` of them. (`GG25CurveDecodability`, `GG25MarkedCurve`.)
+  · `GG25Lemma32.disagree_spread_bound` (Lemma 3.2) + `GG25MCAFromCurveDecodability`
+    (`all_seeds_relClose`) — **curve-decodability ⟹ MCA (Thm 3.3), DONE** modulo the input.
+  · **GAP:** GG25 proves curve-decodability only for FRS / multiplicity / random RS (field
+    LINEAR in `n`), NOT explicit plain RS (the prize). Plain-RS curve-decodability is open.
+
+**(R2) CZ25 subspace-design list-recovery** (the GG25 §4.3 curve-decodability argument).
+  · `ProximityGap.exists_determining_tuple` — a tuple `v ⊆ T` whose coordinates **determine**
+    a dim-`≤ r` list span `H`, when design param `θ < θ' = 1−δ`. Axiom-clean (`SubspaceDesignLineDecodable`).
+  · `SeparationSurvivalCount.card_surv_ge` — combined separation + agreement count.
+  · **GAP:** needs the list-recovery input `CZ25CoordFiberCap` (the `δ`-close codewords span dim `≤ r`).
+
+**(R3) GM-MDS / Lovett higher-order MDS ⟸ δ*** (Lovett arXiv:1803.02523, AGL24).
+  · `ArkLib/Data/CodingTheory/GMMDS/Lovett*` (10+ files) — the chain `δ* ⟸ L(δ) ⟸ higher-order
+    MDS` reduces to the last residual `AGL24.GMMDSDualZeroPatternTheorem` (dual zero pattern).
+  · **GAP:** the dual-zero-pattern theorem.
+
+Each GAP is a candidate `YOUR CONJECTURE HERE`: a closed plain-RS curve-decodability bound (R1),
+a closed `CZ25CoordFiberCap` list-recovery dim bound (R2), or the dual-zero-pattern theorem (R3)
+— any one, proved in the prize regime without residual, closes the prize via its bridge.
+
+────────────────────────────────────────────────────────────────────────────────
 ## §3.  THE WALLS  (PROVEN dead ends — every accessible technique stops here)
 ────────────────────────────────────────────────────────────────────────────────
 **(W1) Per-witness counting is PROVEN EXHAUSTED.** `deviation_ownership_card` caps ownership
@@ -165,6 +214,10 @@ a solver relies on it. -/
 -- §2 paper-bound witness bridges
 #check @MCALowerWitness.ofJohnsonBCHKS25
 #check @MCAUpperWitness.ofRSBreakdownCS25
+-- §2.5 live LD⇒MCA routes (the frontier)
+#check @CurveDecodable
+#check @MarkedCurveDecodable
+#check @exists_determining_tuple
 
 /-! ## Sanity handles — the target objects are in scope and usable.
 
