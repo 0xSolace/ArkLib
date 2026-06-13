@@ -1470,6 +1470,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumWorstCase
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumWorstCaseFromMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupPowerHalvingGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuadraticHalving
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuadraticSecondMoment
