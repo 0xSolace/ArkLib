@@ -151,3 +151,38 @@ the random syndrome avoids the additive structure of `μ_n`; transferring it to 
 exactly the character-sum/line–ball incidence problem (face iv), where the additive-energy / Sidon
 structure of `μ_n` (this session's energy+antipodal work) is the controlling quantity. That is the
 single named open target — not an open-ended search.
+
+## 9. The syndrome-space lens (2025/1712) — confirms the prize core = μ_n additive energy
+
+Web + disk + in-tree assessment of **eprint 2025/1712 (Okamoto, "Syndrome-Space Lens")**, the
+exact face-(iv) framework:
+- **Setup (correct):** syndrome `s(z) = A + zB` is an affine line; CA ⟺ `s(z) ∈ Span(H_{T_z})`,
+  `|T_z| ≤ k = n−t`; classified by the **rank margin `Δ = t − d`**.
+- **Δ=0 (capacity) — VACUOUS (in-tree `CapacityVacuity.lean`):** at budget `k=m=n−d`, MDS makes
+  every word satisfy the CA premise. Correctly *explains* why up-to-capacity CA is false; does not
+  close the window.
+- **Δ≥2 "unconditional rigidity" (Thm 7.1/7.2) — reaches only `δ < (1−ρ)/3`**, BELOW unique
+  decoding `(1−ρ)/2`, far below Johnson `1−√ρ`. Near capacity the hypothesis `(r+1)k < m+1` is
+  unsatisfiable ⟹ vacuous. The window is handled only *conditionally* (§5.4–5.5 Hankel-pencil).
+
+So 2025/1712 does NOT close the prize either. Its conditional window regime is exactly where the
+**line–ball incidence reduces to the additive energy / BGK count of `μ_n`**: the in-tree kernel
+`bgkCount M` (`AdditiveEnergy{Parity,ThreeDvd,SixDvd,Fermat,Char0}.lean`) is structurally pinned
+(`2|M`, `3|M`, `6|M` away from `{3}∪`Fermat-bad, char-0 vanishing) but its **magnitude is the open
+BGK/Bourgain subgroup-additive-energy core** — genuinely open analytic number theory.
+
+## 10. FINAL EXHAUSTIVE CONCLUSION
+
+Every published route, surveyed via web + the on-disk corpus, reduces the plain-RS prize to the
+**same one object**: the worst-case `μ_n` syndrome line–ball incidence = the additive-energy /
+BGK magnitude of the multiplicative subgroup `μ_n` in the window. Concretely:
+- list-decoding route → explicit-RS beyond-Johnson list size (√-loss blocks the transfer);
+- subspace-design route → FRS-only (`s=1` has no design);
+- syndrome-space route (random / Okamoto Δ≥2) → random-only / below-UDR-only;
+- all three collapse, in the window, to the `μ_n` line–ball incidence = additive-energy magnitude.
+
+That magnitude (BGK/Bourgain) is the genuine open core. It is bracketed in-tree (Heath-Brown–Konyagin
+`E⁺(G) ≪ |G|^{5/2}` upper; structural divisibility constraints) but not pinned — and **pinning it is
+the prize**. No published work pins it; the directive's "internal team solution," if it exists, is a
+new additive-combinatorics bound on `μ_n` energy that is not in any of the surveyed papers. This is
+the exhaustively-confirmed single named target; the workbench §R points the next solver at it.
