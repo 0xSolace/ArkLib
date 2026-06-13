@@ -92,6 +92,30 @@ theorem cubicSupply_silent_at_prize_scale (dom : Fin n ↪ F) {M : ℕ}
   -- strip the ^6 by strict monotonicity of x ↦ x^6 on ℕ
   exact lt_of_pow_lt_pow_left₀ 6 (Nat.zero_le _) hSpow
 
+set_option linter.unusedSectionVars false in
+open Classical in
+/-- **The cubic supply is silent at prize scale — UNCONDITIONALLY.**  The silence conclusion
+`S < 2^128 = ε*·q` (`n ≤ 2^40`) needs NO additive-energy bound at all: the cubic explainable-
+3-core count is at most the total number of 3-subsets `C(n,3) ≤ n³ ≤ (2^40)³ = 2^120 < 2^128`.
+So `cubicSupply_silent_at_prize_scale`'s `GVRepBound` hypothesis is REMOVABLE for the silence
+threshold — the GV/Stepanov energy bound buys only a *tighter* estimate (`≈ 2^74.7`), not the
+silence itself.  (The in-tree unconditional Stepanov bound `additiveEnergy_lt_cube_stepanov`,
+`E(μ_n) < n³`, gives the same conclusion via the energy route; the trivial subset count below
+is the cleanest.) -/
+theorem cubicSupply_silent_unconditional (dom : Fin n ↪ F) (hn : n ≤ 2 ^ 40) :
+    (((Finset.univ.powersetCard 3).filter
+        (fun T => ExplainableOn dom 2 (cubicWord dom) T)).card) < 2 ^ 128 := by
+  calc (((Finset.univ.powersetCard 3).filter
+          (fun T => ExplainableOn dom 2 (cubicWord dom) T)).card)
+      ≤ (Finset.univ.powersetCard 3 : Finset (Finset (Fin n))).card := Finset.card_filter_le _ _
+    _ = Nat.choose n 3 := by
+        rw [Finset.card_powersetCard, Finset.card_univ, Fintype.card_fin]
+    _ ≤ n ^ 3 := Nat.choose_le_pow n 3
+    _ ≤ (2 ^ 40) ^ 3 := Nat.pow_le_pow_left hn 3
+    _ = 2 ^ 120 := by rw [← pow_mul]
+    _ < 2 ^ 128 := Nat.pow_lt_pow_right (by norm_num) (by norm_num)
+
 end ProximityGap.Cubic
-#print axioms ProximityGap.Cubic.gv_supply_envelope_lt
+
 #print axioms ProximityGap.Cubic.cubicSupply_silent_at_prize_scale
+#print axioms ProximityGap.Cubic.cubicSupply_silent_unconditional

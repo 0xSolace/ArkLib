@@ -8343,3 +8343,16 @@ proves the CONDITIONAL: given the cited bound, the energy route is provably belo
 prize scale. Strengthens the dossier — the "energy mechanism is silent" leg of the
 δ*-residual map is now checked, not prose. Found via Opus-4.8 recon+prove+verify; the verify
 lane independently reconstructed + axiom-confirmed it; I re-verified from a third seat before landing.
+
+### O169 — the cubic-supply silence is UNCONDITIONAL: O168's GV hypothesis is REMOVABLE for the threshold (nubs, 2026-06-13)
+
+Strengthening O168. `cubicSupply_silent_unconditional` (same file, axiom-clean, build green):
+the cubic explainable-3-core supply is `< 2^128 = ε*·q` at `n ≤ 2^40` with **NO additive-energy
+hypothesis** — it is `≤ C(n,3) ≤ n³ ≤ (2^40)³ = 2^120 < 2^128` by pure subset counting
+(`Finset.card_filter_le` + `Nat.choose_le_pow`). So O168's `GVRepBound` was UNNECESSARY for the
+silence threshold; the GV/Stepanov energy bound buys only the tighter estimate (≈2^74.7 vs 2^120),
+not the silence. (The in-tree unconditional order-2 Stepanov bound `additiveEnergy_lt_cube_stepanov`,
+E(μ_n) < n³, gives the same via the energy route; the subset count is the cleanest.) Net: the
+cubic/energy supply route is provably silent at prize scale UNCONDITIONALLY — one fewer residual
+on that leg of the δ*-map. Honest scope: this is the cubic (k=2) word's supply only — it does NOT
+touch the general deep-band CensusDomination (still the open core); it cleanly closes the cubic leg.
