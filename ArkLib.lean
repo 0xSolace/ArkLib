@@ -2168,9 +2168,11 @@ import ArkLib.ProofSystem.Sumcheck.Structured.Prismalinear
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 import ArkLib.ProofSystem.ToyProblem.Definitions
 import ArkLib.ProofSystem.ToyProblem.Impl.IRS
+import ArkLib.ProofSystem.ToyProblem.Leaderboard
 import ArkLib.ProofSystem.ToyProblem.Metrics
 import ArkLib.ProofSystem.ToyProblem.SoundnessBounds
 import ArkLib.ProofSystem.ToyProblem.Spec.General
+import ArkLib.ProofSystem.ToyProblem.Spec.KnowledgeSoundness
 import ArkLib.ProofSystem.ToyProblem.Spec.SimplifiedIOR
 import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.ChallengeCardPin
@@ -2578,6 +2580,7 @@ import ArkLib.ToVCVio.Oracle
 import ArkLib.ToVCVio.OracleComp.Coercions.SubSpec
 import ArkLib.ToVCVio.OracleComp.EvalDist
 import ArkLib.ToVCVio.OracleComp.RandomOracleEagerTableDep
+import ArkLib.ToVCVio.OracleComp.RbrGame
 import ArkLib.ToVCVio.OracleComp.SimSemantics.SimulateQ
 import ArkLib.ToVCVio.OracleComp.SimSemantics.SubsingletonState
 import ArkLib.ToVCVio.SPMFCoupling

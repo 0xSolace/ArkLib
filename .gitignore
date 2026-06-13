@@ -28,8 +28,6 @@
 
 /.claude/
 /.cursor/
-/.codex/
-/.review-scratch/
 /.venv/
 /.vscode/
 __pycache__/
