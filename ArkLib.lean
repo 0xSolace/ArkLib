@@ -224,7 +224,6 @@ import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEListBound
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEPotential
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNERealStep
 import ArkLib.Data.CodingTheory.ListDecoding.FirstMomentListBound
-import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.ListDecoding.JH02
@@ -248,6 +247,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyTranslate
 import ArkLib.Data.CodingTheory.ListDecoding.UniqueDecodingPairwise
 import ArkLib.Data.CodingTheory.ListSizeVolumeBound
 import ArkLib.Data.CodingTheory.MDSIncidenceBound
+import ArkLib.Data.CodingTheory.MDSIncidenceFrame
 import ArkLib.Data.CodingTheory.PlaneIncidenceBound
 import ArkLib.Data.CodingTheory.PlotkinBound
 import ArkLib.Data.CodingTheory.PlotkinBoundCard
@@ -713,6 +713,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.EnergyCharacterTransport
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyDilationReduction
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessCore
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyMinimalF73
+import ArkLib.Data.CodingTheory.ProximityGap.EnergyRelationAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.EntropyGateBinomial
 import ArkLib.Data.CodingTheory.ProximityGap.EntropyGateDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.EpsCAMono
@@ -762,6 +763,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgr
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EnergyAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.GG25CurveDecodability
@@ -1245,6 +1247,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityProducts
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.NewtonPowerSumWindow
+import ArkLib.Data.CodingTheory.ProximityGap.NoJohnsonSidonBound
 import ArkLib.Data.CodingTheory.ProximityGap.NodalSupplyGeneralK
 import ArkLib.Data.CodingTheory.ProximityGap.NodalSupplyWitness
 import ArkLib.Data.CodingTheory.ProximityGap.NormalRankSharpThreshold
@@ -1511,6 +1514,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyFermat65537
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyTowerF17
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupEnergyAntiConcGV
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupEnergyQuadraticFloor
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumAntiConc
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumAntiConcElementary
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumCosetInv
@@ -1568,6 +1572,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
 import ArkLib.Data.CodingTheory.ProximityGap.SumProductBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SumZeroSubsetsBound
 import ArkLib.Data.CodingTheory.ProximityGap.SumsetDistinctDissociation
+import ArkLib.Data.CodingTheory.ProximityGap.SupplyFoldInjection
 import ArkLib.Data.CodingTheory.ProximityGap.SupplyProfileDiagnostic
 import ArkLib.Data.CodingTheory.ProximityGap.SupplySizeProfile
 import ArkLib.Data.CodingTheory.ProximityGap.SurvivingTPrimeRetired
@@ -2594,7 +2599,6 @@ import ArkLib.ToMathlib.GGR11EraseDecodeTree
 import ArkLib.ToMathlib.GGR11Interleaved
 import ArkLib.ToMathlib.GGR11Reconnect
 import ArkLib.ToMathlib.GGR11TreeConstruction
-import ArkLib.ToMathlib.GHSZ02Cor20
 import ArkLib.ToMathlib.GK16BudgetCoeff
 import ArkLib.ToMathlib.GK16Claim16Core
 import ArkLib.ToMathlib.GK16Claim16Witness
