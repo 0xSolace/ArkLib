@@ -1463,6 +1463,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RatioCensusIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.RatioMultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.RatioPigeonholeGoodSide
 import ArkLib.Data.CodingTheory.ProximityGap.RatioValueMultiplicity
+import ArkLib.Data.CodingTheory.ProximityGap.RectNCore
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonStirOutOfDom
