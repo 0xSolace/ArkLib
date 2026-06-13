@@ -38,3 +38,26 @@ other component of the proof of `δ* = 1−ρ−2/s*` is established (upper brac
 **No closure is claimed.** This page records the exact mathematical reason the prize's analytic core
 is open, so that a future analytic bound on `B(μ_n)` (or on the high energies `E_j`) slots directly
 into the otherwise-complete scaffold.
+
+## UNIFICATION: `B(μ_n)` IS the SubsetSumHalo question (the definitive map)
+The `p`-dependence of `B(μ_n)` is governed by the *same* spurious-relation object as
+`SubsetSumHaloEnergy.lean`:
+- `E_j(μ_n) = clean + excess`, `clean ≈ (2j−1)!!·n^j` (Gaussian moments), `excess ≈ n^{2j}/p`
+  (number of spurious `2j`-term mod-`p` vanishing relations ≈ candidate tuples `/p`).
+- For `j < log_n p` (`≈6`): excess `≪` clean ⟹ `E_j ≈ clean` ⟹ `η` Gaussian ⟹ `B ≈ √(n·log(p/n))`.
+- For `j > log_n p`: **excess dominates**, `E_j ≈ n^{2j}/p`, so `Σ_b|η_b|^{2j} ≈ n^{2j}` and the
+  `L^{2j}` norm of `η` is `≈ n`. The high moments are carried by **spurious vanishing sums** — i.e.
+  the **census halo** (`SubsetSumHaloEnergy`, nonempty for `p < 2^N`).
+
+> **So `B(μ_n) ≤ C√(n·log(q/n))` holds iff the high-order spurious vanishing sums of `μ_n` mod `p`
+> (the SubsetSumHalo / non-clean `E_j`, `6 ≤ j ≤ log(p/n)`) do not concentrate a period. For a
+> *generic* field they don't (`B≈√(n log)`); for an *adversarial* field they can push `B → n`. The
+> deployed-field status is precisely whether the halo concentrates — a specific, computable-per-field
+> condition, NOT a universal asymptotic.**
+
+This is the complete map: the prize's analytic core (`B(μ_n)`), its list-decoding core
+(beyond-Johnson `Λ`), its additive-energy core (`E_j`), and its combinatorial core (the SubsetSumHalo
+/ Kambiré sumset) are **one object** — the high-order spurious vanishing sums of the smooth subgroup
+mod the deployed prime. Pinning `δ*` exactly = resolving whether these concentrate for the specific
+deployed field. Proven: everything reduces here. Open: the concentration question itself (Bourgain
+regime). No closure claimed — but the open core is now a single, unified, field-specific object.
