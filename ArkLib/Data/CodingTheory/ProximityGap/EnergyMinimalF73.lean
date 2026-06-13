@@ -46,5 +46,25 @@ theorem energy_mu8_F73 : additiveEnergy mu8 = 168 := by decide
 
 end ArkLib.ProximityGap.EnergyMinimalF73
 
+/-! ## The prime-dependence, machine-checked: the SAME order-8 subgroup is non-minimal
+over `F₁₇`.  Together with `energy_mu8_F73` this is an exact witness that finite-field
+energy minimality is prime-arithmetic, not a function of the subgroup order `n` alone. -/
+
+namespace ArkLib.ProximityGap.EnergyMinimalF17
+
+local instance : Fact (Nat.Prime 17) := ⟨by norm_num⟩
+
+/-- The order-8 multiplicative subgroup `μ_8 ⊂ F₁₇`. -/
+def mu8 : Finset (ZMod 17) := {1, 2, 4, 8, 9, 13, 15, 16}
+
+set_option maxHeartbeats 4000000 in
+/-- **`E(μ_8 ⊂ F₁₇) = 264 > 168`** — the order-8 subgroup of `F₁₇` is **not** energy-minimal
+(`264 ≠ 3·8² − 3·8`): it carries `F_p`-only additive coincidences absent over `ℂ`.  Same
+`n = 8` as `energy_mu8_F73`, opposite verdict — the threshold is prime-arithmetic. -/
+theorem energy_mu8_F17 : additiveEnergy mu8 = 264 := by decide
+
+end ArkLib.ProximityGap.EnergyMinimalF17
+
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.EnergyMinimalF73.energy_mu8_F73
+#print axioms ArkLib.ProximityGap.EnergyMinimalF17.energy_mu8_F17
