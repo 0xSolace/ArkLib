@@ -88,6 +88,21 @@ theorem reedSolomonCode_genpos_list_bound [DecidableEq K] {D : ι ↪ K} {k : �
       ← evalMapₗ_apply, hm i]
   exact reedSolomon_genpos_list_bound D.injective hk hL1 hLk hindep' hagree'
 
+/-- **High-agreement RS codewords are affinely dependent** (structural foundation of the
+full BGM bound).  Above the general-position capacity radius `L·n + (k−L) < (L+1)·a`, any
+`L+1` codewords of `ReedSolomon.code D k` each agreeing with `y` on `≥ a` coordinates are
+affinely dependent (their difference family is linearly dependent), so they lie in an
+affine flat of dimension `< L`. -/
+theorem reedSolomonCode_highAgreement_not_affineIndependent [DecidableEq K] {D : ι ↪ K}
+    {k : ℕ} (hk : 2 ≤ k) {L : ℕ} (hL1 : 1 ≤ L) (hLk : L < k) {y : ι → K}
+    (c : Fin (L + 1) → (ι → K)) (hc : ∀ i, c i ∈ ReedSolomon.code D k)
+    {a : ℕ} (hagree : ∀ i, a ≤ (Finset.univ.filter (fun l => c i l = y l)).card)
+    (hbig : L * Fintype.card ι + (k - L) < (L + 1) * a) :
+    ¬ LinearIndependent K (fun j : Fin L => c j.succ - c 0) := by
+  intro hindep
+  have := reedSolomonCode_genpos_list_bound hk hL1 hLk c hc hindep hagree
+  omega
+
 end ArkLib.HigherOrderMDS
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
