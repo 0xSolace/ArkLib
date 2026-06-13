@@ -1068,6 +1068,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingT421Faithful
 import ArkLib.Data.CodingTheory.ProximityGap.LineDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.LineFirstMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.LineHeavySetBound
+import ArkLib.Data.CodingTheory.ProximityGap.LineIncidenceSpectral
 import ArkLib.Data.CodingTheory.ProximityGap.LineListCodewordCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.LineListDimensionLift
 import ArkLib.Data.CodingTheory.ProximityGap.LineListJohnsonClosure
