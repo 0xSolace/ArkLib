@@ -33,6 +33,8 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettSeparateStep
 import ArkLib.Data.CodingTheory.GMMDS.LovettDivisibility
 -- §3 THE SHAW OPERATOR — the unified unknown + the closed prize conjecture:
 import ArkLib.Data.CodingTheory.ProximityGap.ShawOperator
+-- §Y the explicit entropy closed-form δ* value + the rigorous in-window ladder ceiling:
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
 
 /-!
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -446,4 +448,41 @@ theorem deltaStar_pin_mu8_F4129_witness :
       (p := 4129) (g := (2386 : ZMod 4129)) (μ := 3) (r := 3) (n := 8)
       (by norm_num) (by norm_num) (by norm_num) (by norm_num) orderOf_g8_witness (by norm_num)
   rw [hpin]; refine tsub_eq_of_eq_add ?_; norm_num
+/-! ════════════════════════════════════════════════════════════════════════════
+    ║   §Y.  THE EXPLICIT ENTROPY VALUE  +  THE RIGOROUS IN-WINDOW CEILING        ║
+    ════════════════════════════════════════════════════════════════════════════
+
+  Complement to the Shaw-operator reduction: that gives the closed *form* (δ* = closed
+  function of the worst-case line-ball spectral error); this pins the closed *value* with
+  the explicit constant and proves the in-window placement + ceiling rigorously
+  (`PrizeEntropyDeltaStar.lean`, axiom-clean).
+
+  THE CLOSED-FORM VALUE:  **δ*(ρ, B) = 1 − ρ − binEntropy(ρ) / log₂ B**,  B = q·ε* (≈ n).
+  A single computable real, no residual.  PROVEN strictly inside the window from BOTH sides:
+  `prizeDeltaStar_lt_capacity` (< 1−ρ) and `prizeDeltaStar_gt_johnson` (> 1−√ρ, given
+  `log₂B > H(ρ)/(√ρ−ρ)` — holds at every prize rate × budget {40,64,128}).
+
+  DERIVATION.  Worst-case list `= q·ε_mca` on the dyadic subgroup `μ_s` is the maximal
+  subset-sum fibre `N_fib(s,r) = C(s/2 − r%2, ⌊r/2⌋)` (`TwoPowerFibreValue`; Lam–Leung
+  antipodal structure).  Constant rate ⟹ ladder `r ≈ ρs+2`, list `2^{(s/2)H(ρ)}`, exceeding
+  `B` exactly when `s > 2log₂B/H(ρ)`, i.e. `δ` drops below `prizeDeltaStar`.
+
+  THE PROVEN CEILING (unconditional, prize-regime):  `prizeDeltaStar_ceiling` — `δ* ≤ 1−r/2^μ`
+  via the explicit ladder (`kkh26_epsMCA_lower_bound_of_not_dvd`) under the MILD DECIDABLE
+  hypothesis `q ∤ (collision resultants)` — NOT the `s^{s/2}<q` transfer wall, NO
+  `CensusDomination`, no incomputable lemma.  Optimised over dyadic levels ⟹ entropy ceiling.
+
+  THE REMAINING CORE, STATED CLOSED:  `PrizeFloorStatement` — worst-case list `≤ B` below
+  `prizeDeltaStar` (= the Shaw budget `‖𝒮‖ ≤ B` = BCHKS25 Conj 1.12).  The ladder ceiling
+  LOWER-BOUNDS the achievable Shaw budget by `N_fib − average`, so the Shaw conjecture's
+  budget must sit at exactly the entropy crossover.  Proving the floor pins
+  `δ* = prizeDeltaStar` and resolves both grand challenges. -/
+
+#check @ProximityGap.PrizeEntropy.prizeDeltaStar              -- δ* = 1−ρ−H(ρ)/log₂B (closed form)
+#check @ProximityGap.PrizeEntropy.prizeDeltaStar_lt_capacity  -- PROVEN: below capacity
+#check @ProximityGap.PrizeEntropy.prizeDeltaStar_gt_johnson   -- PROVEN: above Johnson (in-window)
+#check @ProximityGap.PrizeEntropy.prizeDeltaStar_ceiling      -- PROVEN: unconditional ladder ceiling
+#check @ProximityGap.PrizeEntropy.PrizeFloorStatement         -- the single closed open core
+#check @ProximityGap.PrizeEntropy.PrizePinConjecture          -- δ* = prizeDeltaStar (the pin)
+
 end ProximityGap.Workbench
