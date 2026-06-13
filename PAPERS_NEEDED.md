@@ -276,3 +276,10 @@ at `n~p^{1/4}` is OPEN; the best PUBLISHED bound is the BGK-family power-saving:
 (`n^{1−1/2880}`) confirms the prize's `n^{1/2}` cancellation is a recognized open problem with no
 current solution; every moment-method route is ruled out (`deltastar-moment-method-convergence-diagnosis`),
 and the only non-moment hope is a Stepanov/Burgess amplification that does not yet exist.
+
+## 2026-06-13 (c) — polynomial-method / subgroup-energy papers (the slice-rank lane check)
+- arXiv:1712.00410 — Murphy-Rudnev-Shkredov-Shteinikov, few-products-many-sums. RECORD subgroup energy E<~|A|^{2.45}; incidence+sum-product (NOT slice rank). The current wall.
+- arXiv:1102.1172 — Heath-Brown-Konyagin, additive shifts of multiplicative subgroups. Stepanov: E<<|A|^{5/2}, |A|<<p^{2/3}. The Stepanov ceiling.
+- arXiv:1905.07355 — Costa-Dalai, gap in slice rank of k-tensors. Slice rank fails for >=8-term systems; energy is in the weak regime.
+- arXiv:2304.13801 / 2309.09124 — Hanson-Petridis, additive decompositions / multiplicative structure of shifted subgroups. Most-adaptable Stepanov refinement; still cannot break the degree-vs-multiplicity balance.
+- Slice-rank survey (Surveys in Combinatorics 2024, Cambridge) — confirms slice rank is an avoidance-size method needing F_q^n; no subgroup-energy application exists.

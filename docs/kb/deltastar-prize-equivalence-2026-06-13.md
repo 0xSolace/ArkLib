@@ -132,3 +132,17 @@ moment hierarchy; it requires a fundamentally NON-moment argument (direct list-d
 which does not exist. Stop seeking a better E(mu_n) bound for the floor — provably hopeless. probe
 scripts/probes/probe_sqrt_loss_impossibility.py. The closed conjecture prizeDeltaStar stands (healthy);
 its proof is this recognized, now-sharply-characterized wall.
+
+## POLYNOMIAL-METHOD / SLICE-RANK LANE — CLOSED with a structural reason (another technique class off)
+Cross-domain check (Croot-Lev-Pach / Tao slice rank, the method that broke capsets): CATEGORICALLY
+INAPPLICABLE to E(mu_n). Two independent fatal mismatches: (1) slice rank bounds AVOIDANCE-SET SIZE,
+not SOLUTION COUNT (energy a+b=c+d is a count inside a fixed set); (2) it needs high-dim F_q^n product
+structure, but mu_n subset F_p is 1-DIMENSIONAL (roots of x^n-1, multiplicative not coord-additive);
+no lift preserves F_p-additive energy while supplying product structure. Confirmed by ZERO slice-rank
+results on prime-field subgroups in the entire 2017-2026 literature. The ONLY polynomial method that
+fits mu_n is STEPANOV — and it IS the incumbent wall: Heath-Brown-Konyagin E<<|A|^{5/2} via Stepanov;
+record E<~|A|^{2.45} (MRSS) came from adding INCIDENCE GEOMETRY not a better polynomial; the
+degree-vs-multiplicity balance provably caps it short of n^{2+o(1)} (gap factor 2^{14.4} at the prize).
+Rank 1-2/10. VALUABLE NO: the live frontier for the energy/list core is incidence geometry (Rudnev
+point-plane) + sum-product + beyond-Johnson RS list-decoding (the BCHKS line = the open problem
+itself), NOT the polynomial method. Eighth independent technique class confirmed insufficient.
