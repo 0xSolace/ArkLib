@@ -147,8 +147,54 @@ theorem improved_threshold_strict {m : ℕ} (hm : 1 ≤ m) :
   rw [ht, h4]
   exact Nat.pow_lt_pow_left (by norm_num) (by positivity)
 
+open ArkLib.ProximityGap.AdditiveEnergySidonModNeg Finset in
+/-- **The improved additive-energy pin.**  For `n = 2^m` and `p > 12^{n/4}` (`12^{φ(n)} < p²`), the
+additive energy of the `n`-th roots of unity in `F_p` is exactly `3n² − 3n` — the char-0 minimal
+value, now at the sharpened threshold (vs the committed `p > 2^n`). -/
+theorem rootsOfUnity_additiveEnergy_eq_improved {m : ℕ} (hm : 1 ≤ m) {p : ℕ} [Fact p.Prime]
+    [NeZero ((2 ^ m : ℕ) : ZMod p)] (hp : 12 ^ (2 ^ m).totient < p ^ 2)
+    {ω : ZMod p} (hω : IsPrimitiveRoot ω (2 ^ m)) :
+    additiveEnergy ((Finset.range (2 ^ m)).image (ω ^ ·)) = 3 * (2 ^ m) ^ 2 - 3 * 2 ^ m := by
+  set n := 2 ^ m with hn_def
+  have hn0 : n ≠ 0 := by positivity
+  have hn0' : 0 < n := Nat.pos_of_ne_zero hn0
+  have h12 : (12 : ℕ) ≤ 12 ^ n.totient := Nat.le_self_pow (Nat.totient_pos.mpr hn0').ne' 12
+  have hp2 : 2 < p := by
+    by_contra hc; push_neg at hc
+    have h2 : p ^ 2 ≤ 4 := by calc p ^ 2 ≤ 2 ^ 2 := Nat.pow_le_pow_left hc 2
+                                  _ = 4 := by norm_num
+    have h1 : (12 : ℕ) < p ^ 2 := lt_of_le_of_lt h12 hp
+    omega
+  haveI : NeZero p := ⟨by omega⟩
+  set G := (Finset.range n).image (ω ^ ·) with hG
+  have hω0 : ω ≠ 0 := by
+    intro h; have h1 := hω.pow_eq_one; rw [h, zero_pow hn0] at h1; exact zero_ne_one h1
+  have h2 : (2 : ZMod p) ≠ 0 := by
+    rw [show (2 : ZMod p) = ((2 : ℕ) : ZMod p) by norm_cast, Ne, CharP.cast_eq_zero_iff (ZMod p) p]
+    intro hd; have := Nat.le_of_dvd (by norm_num) hd; omega
+  have h0 : (0 : ZMod p) ∉ G := by
+    rw [hG]; intro hmem; simp only [Finset.mem_image, Finset.mem_range] at hmem
+    obtain ⟨t, _, ht⟩ := hmem; exact pow_ne_zero t hω0 ht
+  have hev : Even n := by rw [hn_def]; exact (Nat.even_pow.mpr ⟨even_two, by omega⟩)
+  have hhalf : ω ^ (n / 2) = -1 := primitiveRoot_pow_half (by rw [hn_def]; exact dvd_pow_self 2 (by omega)) hn0 hω
+  have hneg : ∀ x ∈ G, -x ∈ G := by
+    rw [hG]; intro x hx; simp only [Finset.mem_image, Finset.mem_range] at hx ⊢
+    obtain ⟨t, _, rfl⟩ := hx
+    refine ⟨(n / 2 + t) % n, Nat.mod_lt _ (by omega), ?_⟩
+    rw [(primitiveRoot_pow_eq_iff hn0 hω ((n / 2 + t) % n) (n / 2 + t)).mpr (Nat.mod_modEq _ _),
+      pow_add, hhalf]; ring
+  have hcard : G.card = n := by
+    rw [hG, Finset.card_image_of_injOn, Finset.card_range]
+    intro a ha b hb hab
+    simp only [Finset.coe_range, Set.mem_Iio] at ha hb
+    have h := (primitiveRoot_pow_eq_iff hn0 hω a b).mp hab
+    unfold Nat.ModEq at h; rwa [Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb] at h
+  have hS : SidonModNeg G := sidonModNeg_rootsOfUnity_improved hm hp hω
+  rw [additiveEnergy_eq_of_sidonModNeg h2 h0 hneg hS, hcard]
+
 end ArkLib.ProximityGap.AdditiveEnergyRepBound
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.sidonModNeg_rootsOfUnity_improved
 #print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.improved_threshold_strict
+#print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.rootsOfUnity_additiveEnergy_eq_improved
