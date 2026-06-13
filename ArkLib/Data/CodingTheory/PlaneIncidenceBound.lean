@@ -38,6 +38,7 @@ open Finset
 
 variable {ι F : Type*} [Fintype ι] [DecidableEq ι] [Field F] [DecidableEq F]
 
+omit [DecidableEq ι] in
 /-- **The plane incidence list bound (dim-2 beyond-Johnson, from order-2 MDS).**
 Parameterize a 2-dimensional affine family of codewords by `(s,t) ∈ F²`, position `i` agreeing
 when `u i · s + v i · t = c i` (here `u = g₁`, `v = g₂`, `c = y − f₀`).  If the column matrix
