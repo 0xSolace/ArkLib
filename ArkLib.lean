@@ -666,6 +666,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiber
 import ArkLib.Data.CodingTheory.ProximityGap.ExactCoherenceCount
 import ArkLib.Data.CodingTheory.ProximityGap.ExactnessWithoutCoverability
 import ArkLib.Data.CodingTheory.ProximityGap.ExcessCensusLaw
+import ArkLib.Data.CodingTheory.ProximityGap.ExplainableCoreExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.ExplainableCoreSupplyInstance
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
 import ArkLib.Data.CodingTheory.ProximityGap.FactorizableStacks
