@@ -131,8 +131,35 @@ theorem layered_indep {N : ℕ} (c : F) (hc : c ≠ 0) (t : ℕ) (ht : 1 ≤ t) 
     · obtain ⟨b', rfl⟩ := Nat.exists_eq_succ_of_ne_zero hbpos.ne'
       exact hrec b' (Finset.mem_range.mpr (by omega))
 
+/-- **SV11 Prop 3.2: the family `{X^{mᵢ}·(X−c)^{t·b₁}}` is linearly independent.** For exponents `mᵢ`
+distinct in `F` with `l ≤ t` of them, `c ≠ 0`, `t ≥ 1`, the polynomials `X^{mᵢ}(X−c)^{tb₁}`
+(`i < l`, `b₁ < B`) are linearly independent: a vanishing combination has all coefficients zero. This
+is the full independence of the `DB²` Stepanov generator family (`mᵢ = a+tb₀`, `l = DB`), assembled
+from the recursion `layered_indep` and the binomial-determinant base case `distinct_exp_dvd_eq_zero` —
+the remaining hard input to the sharp `O(t^{2/3})` split-case bound, now proven. -/
+theorem sv11_family_indep {l : ℕ} (c : F) (hc : c ≠ 0) (t : ℕ) (ht : 1 ≤ t) (hl : l ≤ t)
+    (m : Fin l → ℕ) (hinj : Function.Injective (fun i => (m i : F)))
+    {B : ℕ} (coef : Fin l → ℕ → F)
+    (hsum : ∑ b1 ∈ Finset.range B,
+        (X - C c) ^ (t * b1) * (∑ i, Polynomial.C (coef i b1) * X ^ (m i)) = 0) :
+    ∀ i, ∀ b1 ∈ Finset.range B, coef i b1 = 0 := by
+  have hP : ∀ b1, (X - C c) ^ t ∣ (∑ i, Polynomial.C (coef i b1) * X ^ (m i)) →
+      (∑ i, Polynomial.C (coef i b1) * X ^ (m i)) = 0 := by
+    intro b1 hdvd
+    have hdvdl : (X - C c) ^ l ∣ (∑ i, Polynomial.C (coef i b1) * X ^ (m i)) :=
+      dvd_trans (pow_dvd_pow _ hl) hdvd
+    have hc0 := distinct_exp_dvd_eq_zero c hc m hinj (fun i => coef i b1) hdvdl
+    simp only [hc0, map_zero, zero_mul, Finset.sum_const_zero]
+  have hlayered := layered_indep c hc t ht
+    (fun b1 => ∑ i, Polynomial.C (coef i b1) * X ^ (m i)) hP hsum
+  intro i b1 hb1
+  have hPb1 : (∑ j, Polynomial.C (coef j b1) * X ^ (m j)) = 0 := hlayered b1 hb1
+  exact distinct_exp_dvd_eq_zero c hc m hinj (fun j => coef j b1)
+    (by rw [hPb1]; exact dvd_zero _) i
+
 end ProximityGap.BinomialDet
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.BinomialDet.distinct_exp_dvd_eq_zero
 #print axioms ProximityGap.BinomialDet.layered_indep
+#print axioms ProximityGap.BinomialDet.sv11_family_indep
