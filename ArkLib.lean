@@ -678,6 +678,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeviationSupSplit
 import ArkLib.Data.CodingTheory.ProximityGap.DivisorListBound
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessCore
+import ArkLib.Data.CodingTheory.ProximityGap.EnergyMinimalF73
 import ArkLib.Data.CodingTheory.ProximityGap.EpsCAMono
 import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAInterleavedJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAInterleavedList
