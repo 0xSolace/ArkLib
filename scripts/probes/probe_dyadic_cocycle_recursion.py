@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-probe(#389): the 2-adic FFT-butterfly recursion for the dyadic subgroup character sum, and the
-transfer-cocycle / Lyapunov reframing of the open sup-norm core.
+probe(#389): the 2-adic FFT-butterfly recursion for the dyadic subgroup character sum, and an
+HONEST transfer-cocycle reframing of the open sup-norm core.
 
 Let S_k(t) = sum_{j=0}^{2^k-1} e_p(t * zeta^j),  zeta = primitive 2^k-th root of unity in F_p.
 This is the character sum whose SUP over t is the prize's open core (the L^infty Shaw error; the
@@ -13,21 +13,24 @@ VERIFIED IDENTITY (this probe, errors ~1e-15):
 because mu_{2^k} = mu_{2^{k-1}}  (union)  zeta_k * mu_{2^{k-1}}  (even/odd cosets, DISJOINT), so the
 L^2 cross-term Sum_t S_{k-1}(t) conj(S_{k-1}(t zeta_k)) = 0 exactly => Parseval avg|S| = sqrt(n).
 
-REFRAMING (the attack route): iterate the butterfly. Writing the pair V_{k}(t)=(S_k(t), S_k(t w))
-for a suitable rotation w, the recursion is a product of 2x2 TRANSFER MATRICES driven by the
-2-adic digits of the frequency. Hence
-    sup_t |S_k(t)|  ~  2^{ k * (Lyapunov exponent of the transfer cocycle) }.
-Square-root cancellation  <=>  Lyapunov exponent = (1/2) log 2  (the L^2 / Parseval value), i.e. the
-cocycle is "non-resonant" (no frequency aligns all k butterfly levels constructively). This is
-EXACTLY the renormalization framework for the VALUE DISTRIBUTION of incomplete theta/Gauss sums
-(Marklof; Demirci Akarsu-Marklof 2012, reading-list O4 arXiv:1207.1607; Cellarosi-Marklof). Their
-limit laws give the *distribution* of S_k(t)/sqrt(n); the prize needs the *sup* (a large-deviation /
-maximal-Lyapunov statement), which is the precise open gap.
+REFRAMING (an attack surface, NOT a closure): iterating the butterfly expresses the sup growth via a
+product of 2x2 transfer matrices, so sup_t|S_k(t)| ~ 2^{k*lambda} with lambda the top Lyapunov
+exponent of the transfer cocycle; square-root cancellation <=> lambda = (1/2)log2 (a "non-resonant"
+cocycle, the Parseval value).
 
-NOT a closure: the maximal Lyapunov exponent being (1/2)log2 (rather than larger on a sparse
-resonant set of t) is the square-root-cancellation conjecture restated, still open. This probe
-records the exact identity + the renormalization attack surface, connecting the open core to a
-developed analytic-number-theory machinery.
+  *** HONEST CAVEAT (corrects an earlier overstatement). *** This is NOT the Marklof / Cellarosi
+  continued-fraction renormalization of incomplete THETA/GAUSS sums. Those have a QUADRATIC phase
+  e(n^2 alpha + n beta); their renormalization is driven by the continued fraction of alpha. OUR sum
+  is GEOMETRIC in j -- the phase is t*zeta^j with zeta a root of unity, i.e. the dynamics is j -> j+1
+  = multiplication by zeta on Z/2^k, NOT a quadratic phase. So the theta-sum machinery does NOT
+  directly apply. The transfer-cocycle / Lyapunov picture is a legitimate (Furstenberg-type) FRAMING
+  of the SAME open question, but "lambda = (1/2)log2 for this multiplicative cocycle" is precisely the
+  square-root-cancellation conjecture for subgroup character sums restated -- still OPEN, with the
+  honest tools remaining BGK / sum-product / Stepanov (see deltastar-research-map.md (b)/(ii)).
+
+What is genuinely new/useful here: the EXACT butterfly identity (with the disjoint-coset L^2
+orthogonality) is a clean inductive handle a transfer/Lyapunov attack can start from; the
+theta-sum analogy is heuristic only, not a reduction.
 """
 import sympy, math
 import numpy as np
@@ -51,7 +54,8 @@ def main():
         even = {pow(zkm1, j, p) for j in range(n>>1)}
         odd = {(zk*pow(zkm1, j, p)) % p for j in range(n>>1)}
         print(f"  k={k} n={n}: max|err|={err:.1e}  even/odd-coset disjoint={len(even & odd)==0}")
-    print("=> exact identity; open core = transfer-cocycle Lyapunov exponent = (1/2)log2 (square-root cancellation).")
+    print("=> exact identity; open core = top Lyapunov exp of the (multiplicative, NOT theta) transfer")
+    print("   cocycle = (1/2)log2, i.e. square-root cancellation for subgroup char sums. STILL OPEN.")
 
 if __name__ == "__main__":
     main()
