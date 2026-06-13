@@ -25,6 +25,13 @@ interpolation normal `(X−a)(X−b) = X² − (a+b)X + ab`, i.e. to the point `
 sums make the three normals lie in a common plane (their `(sum, product)` points are collinear), so
 they are linearly dependent and the three pair-spans share the unexpected common vector
 `w = (0,1,10)` — even though generic position would force their intersection to be `{0}`.
+ 
+
+`reedSolomonFrame_not_isHigherMDS_three_of_sumZeroPairs` records the unconditional special case
+`σ = 0` (antipodal pairs `{x, −x}`): this is the `a+b=0` relation that Sidon/`SidonModNeg` does NOT
+forbid, so a negation-closed domain — `μ_n` for even `n` — fails order-3 higher MDS even in the
+small-subgroup (Sidon) regime; `antipodal_example_not_isHigherMDS_three` is the concrete witness
+`{±1,±2,±3}`.
 Axiom-clean.
 -/
 open Finset Module ArkLib.HigherOrderMDS
@@ -158,5 +165,37 @@ theorem reedSolomonFrame_not_isHigherMDS_three_of_commonPairSum {K : Type*} [Fie
       codim_frameSpan hmds (hc 1), codim_frameSpan hmds (hc 2), codim, hV, hcard 0, hcard 1,
       hcard 2] at hgen
     omega
+
+/-- **Antipodal (sum-zero) pairs force order-3 failure — unconditionally.**  Three pairwise disjoint
+2-element sets each summing to `0` (antipodal pairs `{x, −x}`) make the RS frame fail order-3 higher
+MDS.  This is the `σ = 0` case of `reedSolomonFrame_not_isHigherMDS_three_of_commonPairSum`, and it
+is exactly the `a+b=0` additive relation that the Sidon/`SidonModNeg` property *does not* forbid.
+Hence any negation-closed domain — in particular `μ_n` for even `n`, which always contains the
+antipodal pairs `{ζᵃ, −ζᵃ}` — fails order-3 higher MDS *even in the small-subgroup
+(Sidon) regime*. -/
+theorem reedSolomonFrame_not_isHigherMDS_three_of_sumZeroPairs {K : Type*} [Field K]
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {D : ι → K} (hD : Function.Injective D)
+    {J : Fin 3 → Finset ι} (hcard : ∀ i, (J i).card = 2)
+    (hdisj : ∀ i j, i ≠ j → Disjoint (J i) (J j)) (hzero : ∀ i, ∑ x ∈ J i, D x = 0) :
+    ¬ IsHigherMDS K 3 (reedSolomonFrame D 3) :=
+  reedSolomonFrame_not_isHigherMDS_three_of_commonPairSum hD hcard hdisj (σ := 0) hzero
+
+/-- The negation-closed domain `{±1, ±2, ±3}` — the antipodal structure of `μ_n`. -/
+def Danti : Fin 6 → ℚ := ![1, -1, 2, -2, 3, -3]
+
+/-- Its three antipodal pairs. -/
+def Janti : Fin 3 → Finset (Fin 6) := ![{0, 1}, {2, 3}, {4, 5}]
+
+theorem Danti_injective : Function.Injective Danti := by
+  intro i j h
+  fin_cases i <;> fin_cases j <;> first | rfl | (simp only [Danti] at h; norm_num at h)
+
+/-- A concrete negation-closed domain whose RS frame of dimension 3 fails order-3 higher MDS. -/
+theorem antipodal_example_not_isHigherMDS_three :
+    ¬ IsHigherMDS ℚ 3 (reedSolomonFrame Danti 3) := by
+  apply reedSolomonFrame_not_isHigherMDS_three_of_sumZeroPairs Danti_injective (J := Janti)
+  · intro i; fin_cases i <;> decide
+  · intro i j hij; fin_cases i <;> fin_cases j <;> simp_all [Janti]
+  · intro i; fin_cases i <;> simp [Janti, Danti]
 
 end ArkLib.HigherOrderMDS
