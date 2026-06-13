@@ -62,6 +62,46 @@ theorem coreVanish_injOn (dom : Fin n ↪ F) {T T' : Finset (Fin n)}
     rwa [dom.injective hj0]
   exact Finset.Subset.antisymm (hsub h) (hsub h.symm)
 
+/-- **The determinacy core, in its sharpest form**: if the vanishing polynomials of two
+cores differ in degree `< k`, then any common `k`-subset forces them equal.  (The whole
+content of the monomial/polynomial-word supply bound.) -/
+theorem coreVanish_eq_of_ksubset (dom : Fin n ↪ F) {k : ℕ}
+    {T T' S : Finset (Fin n)}
+    (hdiff : (coreVanish dom T - coreVanish dom T').degree < (k : WithBot ℕ))
+    (hScard : S.card = k) (hST : S ⊆ T) (hST' : S ⊆ T') :
+    T = T' := by
+  classical
+  set VS := coreVanish dom S with hVS
+  set VT := coreVanish dom T with hVT
+  set VT' := coreVanish dom T' with hVT'
+  have hVSmonic : VS.Monic := coreVanish_monic dom S
+  have hVSdeg : VS.degree = (k : WithBot ℕ) := by rw [hVS, coreVanish_degree, hScard]
+  have hdvdT : VS ∣ VT := coreVanish_dvd_of_subset dom hST
+  have hdvdT' : VS ∣ VT' := coreVanish_dvd_of_subset dom hST'
+  have hfac : VS * (VT /ₘ VS) = VT := by
+    have hmod : VT %ₘ VS = 0 := (Polynomial.modByMonic_eq_zero_iff_dvd hVSmonic).mpr hdvdT
+    have := Polynomial.modByMonic_add_div VT VS
+    rw [hmod, zero_add] at this; exact this
+  have hfac' : VS * (VT' /ₘ VS) = VT' := by
+    have hmod : VT' %ₘ VS = 0 := (Polynomial.modByMonic_eq_zero_iff_dvd hVSmonic).mpr hdvdT'
+    have := Polynomial.modByMonic_add_div VT' VS
+    rw [hmod, zero_add] at this; exact this
+  set Q := VT /ₘ VS
+  set Q' := VT' /ₘ VS
+  have hQ : Q = Q' := by
+    by_contra hne
+    have hQQ : Q - Q' ≠ 0 := sub_ne_zero.mpr hne
+    have hprod : VS * (Q - Q') = VT - VT' := by rw [mul_sub, hfac, hfac']
+    have hdeglow : (VS * (Q - Q')).degree < (k : WithBot ℕ) := by rw [hprod]; exact hdiff
+    rw [Polynomial.degree_mul, hVSdeg] at hdeglow
+    have hQdeg : (0 : WithBot ℕ) ≤ (Q - Q').degree :=
+      Polynomial.zero_le_degree_iff.mpr hQQ
+    have hle : (k : WithBot ℕ) ≤ (k : WithBot ℕ) + (Q - Q').degree :=
+      le_add_of_nonneg_right hQdeg
+    exact absurd (lt_of_le_of_lt hle hdeglow) (lt_irrefl _)
+  have hVeq : VT = VT' := by rw [← hfac, ← hfac', hQ]
+  exact coreVanish_injOn dom hVeq
+
 /-- **The determinacy core**: two explainable monomial cores sharing a `k`-subset coincide.
 The shared `k`-subset's vanishing polynomial divides both, and the quotients agree by a
 degree argument, so the full vanishing polynomials — hence the cores — coincide. -/
