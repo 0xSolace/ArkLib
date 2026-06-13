@@ -1447,6 +1447,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledThreshold
+import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegImproved
 import ArkLib.Data.CodingTheory.ProximityGap.SidonEnergyIff
 import ArkLib.Data.CodingTheory.ProximityGap.SidonGVClosure
 import ArkLib.Data.CodingTheory.ProximityGap.SidonGaussSum4thMoment
