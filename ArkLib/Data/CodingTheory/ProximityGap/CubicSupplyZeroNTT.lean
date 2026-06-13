@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.CubicOrchardIdentity
+import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # An EXACT in-window supply ZERO: the cubic word on the NTT domain `μ_16 ⊂ F₂₅₇` (#389)
@@ -45,7 +46,7 @@ namespace ProximityGap.PairRank
 
 open ProximityGap.SpikeFloor ProximityGap ProximityGap.Ownership Code
 
-local instance : Fact (Nat.Prime 257) := ⟨by decide⟩
+local instance : Fact (Nat.Prime 257) := ⟨by norm_num⟩
 
 /-- The 16 elements of the order-16 multiplicative subgroup `μ_16 ⊆ F₂₅₇^×`. -/
 def mu16vals : Fin 16 → ZMod 257 :=
@@ -65,12 +66,12 @@ theorem mu16_F257_zeroSum_triples_eq_zero :
         (fun T => ∑ i ∈ T, dom16 i = 0)).card = 0 := by
   decide
 
+open Classical in
 /-- **EXACT IN-WINDOW SUPPLY ZERO**: the cubic word `x³` on the NTT domain
 `μ_16 ⊂ F₂₅₇` has exactly `0` explainable `3`-cores — no `rsCode dom16 2` codeword agrees
 with it on `3` points.  Via the cubic orchard identity, this is the zero-sum-triple count,
 which is `0`.  A concrete δ* lower-bound data point: at radius `13/16` (one step below
 capacity), this word produces no bad scalars. -/
-open Classical in
 theorem cubicSupply_mu16_F257_eq_zero :
     ((Finset.univ : Finset (Fin 16 → ZMod 257)).filter (fun c =>
         c ∈ (rsCode dom16 2 : Submodule (ZMod 257) (Fin 16 → ZMod 257))
