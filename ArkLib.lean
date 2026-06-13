@@ -1288,6 +1288,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QRExponentialSum
 import ArkLib.Data.CodingTheory.ProximityGap.QRShiftPairCount
 import ArkLib.Data.CodingTheory.ProximityGap.QRZeroSumTripleScaling
 import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumMagnitude
+import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumNorm
 import ArkLib.Data.CodingTheory.ProximityGap.QuartetTowerLaw
 import ArkLib.Data.CodingTheory.ProximityGap.QuarticPowerSumFiber
 import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
