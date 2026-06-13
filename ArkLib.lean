@@ -1289,7 +1289,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonUniqueDecode
 import ArkLib.Data.CodingTheory.ProximityGap.RefutationProofs
 import ArkLib.Data.CodingTheory.ProximityGap.RegimeIIBridge
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCharZeroBound
-import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidon
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCharZeroEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetInvariance
@@ -1424,7 +1423,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumDensity
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMarkov
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMomentLadder
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumWorstCase
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupPowerHalvingGeneral
@@ -1493,6 +1494,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.TwoSidedBracketScale
 import ArkLib.Data.CodingTheory.ProximityGap.UDRBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.UDREdgeClosure
 import ArkLib.Data.CodingTheory.ProximityGap.UniqueDecodingListBound
+import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidon
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentLaw
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalBelowUDR

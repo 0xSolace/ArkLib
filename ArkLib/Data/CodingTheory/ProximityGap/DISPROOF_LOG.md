@@ -8196,3 +8196,21 @@ production-blocked), the supply-explosion landscape at production is: structured
 constructions vacuous, the e-symm map near-injective ⟹ no known route to super-polynomial
 supply — the CensusDomination premise, supported empirically; the proof is the fleet's
 Stepanov multiplicity bound.
+
+### O164 — max-list is field-independent ONLY in the Johnson regime; open regime is computationally inaccessible (Conjecture M, 2026-06-13)
+
+Conjecture M: the cyclic-symmetry of the smooth domain forces a clean field-independent closed form
+for the max single-word list, pinning δ*. Probe (`probe_maxlist_field_independence.py`, hill-climb
+max-list): `n=8,k=2,t=3 → maxlist = 7 = n−1` across SEVEN fields (p=17,41,73,89,97,113,137) —
+genuinely field-independent. BUT `t=3` is the Johnson regime (Johnson agreement √(n(k−1))=√8≈2.83),
+where the combinatorial Johnson bound IS known and field-independent — not new.
+
+**The open middle band is computationally inaccessible:** it needs k≥4 (room between capacity
+agreement k and Johnson √(n(k−1))), but a PROPER subgroup forces p≫n, so the p^k codeword matrix
+explodes (p=97,k=4 ⟹ 88M). Cannot probe exactly. And the in-tree `rootsOfUnity_dyadic_codeword_list_ge`
+(exponential, structure-dependent) plus the divisor-poverty probes show the open-regime list is
+field/subgroup-DEPENDENT — so field-independence (Conjecture M) fails exactly where it would matter.
+Conjecture M holds only where the answer is already the classical Johnson bound. Not a δ* pin.
+
+Campaign: E''(O160), J(O161), J'(O162), L(O163), M(O164) — 5 direct conjectures, all refuted or
+reduced to the open explicit-RS sub-Johnson list-decoding bound. No fabricated closure.
