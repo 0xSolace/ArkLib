@@ -28,6 +28,7 @@ Axiom-clean (`propext, Classical.choice, Quot.sound`); no `sorry`.
 -/
 
 open Finset Polynomial
+open scoped NNReal ENNReal
 
 namespace ProximityGap.Ownership
 
@@ -100,6 +101,26 @@ theorem explainableCoreSupply_aboveJohnson (dom : Fin n ↪ F) {k m : ℕ} (hk :
       ((n ^ 2 / ((k + m + 1) ^ 2 - n * (k - 1))) * (n.choose (k + m + 1))) :=
   explainableCoreSupply_of_listBound dom (subJohnsonListBound_aboveJohnson dom hk hJohnson)
 
+open Classical in
+/-- **END-TO-END above Johnson: the deep-band bad-scalar count is UNCONDITIONAL.**
+Composing `deep_band_badSet_card_of_supply` (the #389 multiplicity reduction) with
+the discharged above-Johnson supply: whenever `n·(k−1) < (k+m+1)²` and the band
+radius satisfies `(1−δ)·n ≤ k+m+1`, the witness mass `C(n,k+m+1)` is forced onto a
+bad-scalar count with the fully-explicit, no-open-hypothesis bound
+`B = (n²/((k+m+1)²−n(k−1)))·C(n,k+m+1)`. -/
+theorem deep_band_badSet_aboveJohnson (dom : Fin n ↪ F) {k m : ℕ} (hk : 1 ≤ k)
+    {δ : ℝ≥0} (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ ((k + m + 1 : ℕ) : ℝ≥0))
+    (hJohnson : n * (k - 1) < (k + m + 1) ^ 2) :
+    ∃ Q₀ : F[X],
+      n.choose (k + m + 1)
+        ≤ (Finset.univ.filter (fun γ : F => mcaEvent (F := F)
+            ((rsCode dom k : Submodule F (Fin n → F)) : Set (Fin n → F)) δ
+            (fun i => Q₀.eval (dom i)) (fun i => (dom i) ^ k) γ)).card
+          * (Fintype.card F) ^ m
+          * ((n ^ 2 / ((k + m + 1) ^ 2 - n * (k - 1))) * (n.choose (k + m + 1))) :=
+  deep_band_badSet_card_of_supply dom hk hhi
+    (explainableCoreSupply_aboveJohnson dom hk hJohnson)
+
 /-- **Non-vacuity, concrete parameters.**  At `k = 2, m = 2, n = 16` the band
 threshold `k+m+1 = 5` sits above the Johnson radius (`16·1 = 16 < 25 = 5²`), so the
 deep-band supply is fully proven for *any* domain with the concrete bound
@@ -117,4 +138,5 @@ end ProximityGap.Ownership
 #print axioms ProximityGap.Ownership.rsCode_pairwise_agree_le
 #print axioms ProximityGap.Ownership.subJohnsonListBound_aboveJohnson
 #print axioms ProximityGap.Ownership.explainableCoreSupply_aboveJohnson
+#print axioms ProximityGap.Ownership.deep_band_badSet_aboveJohnson
 #print axioms ProximityGap.Ownership.explainableCoreSupply_concrete_k2m2n16
