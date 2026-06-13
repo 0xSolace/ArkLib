@@ -57,3 +57,32 @@ open; this rules out a family and redirects to the non-moment Stepanov lane.
 Cross-refs: `deltastar-salem-zygmund-gausssum-chaining-2026-06-13.md`,
 `deltastar-cyclotomic-lattice-collision-core-2026-06-13.md`, `CleanRangeNorm.lean`,
 `SubsetSumHaloEnergy.lean`, `[[issue389-additive-energy-crux]]` (the Stepanov `hW` gap = the real lane).
+
+## CORRECTION (same session) — the in-tree Stepanov lane is ENERGY-targeted (√-lossy), not the prize lane
+
+Verified by grep: every in-tree Stepanov/SV11/Wronskian file concludes a bound on `additiveEnergy`
+/ `repCount` (`AdditiveEnergyRepBound.repCount`, `additiveEnergy_le_of_repBound`), and **none bounds
+the character sum `eta = η_b` directly** (the `eta` symbol appears in zero Stepanov files). So the
+"redirect to the Stepanov `hW` lane" above is over-optimistic and must be corrected:
+
+- The in-tree Stepanov programme bounds the **additive energy** `E = E_2` (4th moment). Energy → `B`
+  is **√-lossy** (`B⁴ ≤ p·E_2`; even optimal `E_2 = n²` gives `B ≤ (p n²)^{1/4} ≫ √n`, and energy →
+  list is `T² ≤ |G|·E` → `n^{3/2}` = sub-Johnson). The workbench §2 already flags this: "√-loss is
+  FATAL." So **even if the `hW` split-case gap closes, the energy-Stepanov lane cannot reach the
+  prize** — it gives a sub-Johnson list, not the capacity-window `δ*`.
+- The prize needs a **DIRECT** square-root bound on the character sum `B = max_b|η_b|` itself —
+  a Stepanov/Burgess-type bound on `Σ_{x∈μ_n} e_p(bx)`, NOT on its energy. **This is not in the
+  tree and is exactly the open subgroup-Burgess problem.**
+
+## The complete impossibility map (this is the honest terminal state of the technique survey)
+
+| technique class | in-tree status | why it fails the prize |
+|---|---|---|
+| Moment methods (norm, energy `E_r`, chaining-via-moments, Lamzouri CLT) | 4 routes built | all stall at `k < log_n p ≈ 8`; off-diagonal overtakes diagonal at `n^k>p` |
+| Energy methods (incl. in-tree Stepanov-energy, `hW` lane) | ~90% built | √-lossy: `E→B` and `E→list` lose a square root → sub-Johnson even at optimal `E=n²` |
+| Direct non-moment char-sum bound (subgroup-Burgess) | **absent** | the ONLY thing that could reach `B=n^{1/2+o(1)}`; **does not exist in current mathematics** |
+
+Every technique class that EXISTS (moment + energy) is provably incapable of the prize; the one class
+that WOULD work (direct subgroup-Burgess) does not exist. This is, rigorously and from the in-tree
+evidence, why the prize is open — not a gap in effort but the absence of a square-root non-moment
+subgroup character-sum method. No fabrication can bridge it; only genuinely new number theory.
