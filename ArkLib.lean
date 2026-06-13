@@ -1345,6 +1345,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuadraticHalving
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuadraticSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuarticHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupRepCountFiniteFieldCounterexample
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupRepCountGcdExact
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupRepresentationRoots
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSpectrumNoImprovement
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSquaresHalvingRecursion
