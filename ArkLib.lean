@@ -137,6 +137,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettToGZPDualBridgeReduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettUnion
 import ArkLib.Data.CodingTheory.GMMDS.LovettVStarReduce
 import ArkLib.Data.CodingTheory.GMMDS.LovettWitnessCounterexample
+import ArkLib.Data.CodingTheory.GMMDS.SchwartzZippelMinorSpecialization
 import ArkLib.Data.CodingTheory.GVCounting
 import ArkLib.Data.CodingTheory.GilbertVarshamov
 import ArkLib.Data.CodingTheory.GilbertVarshamovExistence
