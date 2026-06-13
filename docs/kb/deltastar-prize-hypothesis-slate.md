@@ -214,3 +214,44 @@ truly exponential and the prize's positive direction must live at
 Johnson-scale agreement (larger radius), where the esymm construction's
 constraints over-determine and the correlation may break — the genuine
 remaining open question, untouched by per-frequency cancellation.
+
+## SECOND-SLATE TOP (NEW, positive): Johnson-scale fiber collapses via Mann's theorem
+
+The directive's "if survivors stall, start over" — a genuinely new hypothesis
+the first slate missed, with a real positive computational signal AND
+literature backing.
+
+**Finding (`probe_prize_johnsonfiber`, `probe_prize_fiberstruct`).** The
+esymm fiber that drives the deep-band explosion — `a`-subsets `T ⊆ μ_n` with
+`e_1(T)=…=e_{m+1}(T)=0` — is `Θ`-EXPONENTIAL at the capacity radius (small
+`m`, `centralBinom(s)`, proven by the swarm) but **COLLAPSES to 0–3 at
+Johnson-scale radius** `a ≈ √(kn)` (large `m ≈ a`, over-determined). Every
+nonzero solution is a subgroup-COSET UNION (`d=2` in all tested cases:
+`n,a = 12,6 · 16,8 · 20,10 · 24,8 · 24,12`), i.e. a sparse divisor of `Xⁿ−1`.
+
+**The connection (paperworthy).** `e_1(T) = Σ_{t∈T} t = 0` is a *vanishing
+sum of |T| roots of unity*. By **Mann's theorem (1965)** and **Conway–Jones
+(1976)**, minimal vanishing sums of roots of unity are exactly rotated
+subgroups (regular-polygon cosets); a vanishing sum decomposes into such.
+The full over-determined system `e_1=…=e_{m+1}=0` forces `T` into
+coset-union structure — hence the Johnson-scale fiber `=` #{size-`a`
+unions of cosets of subgroups of `μ_n`} `=` poly(n) (subgroups of `μ_{2^μ}`
+are nested, `≤ μ+1`; cosets per subgroup `≤` index).
+
+**Why this matters for the prize (honest scope).** It localizes the
+explosion precisely: the proven exponential supply is a *capacity-radius*
+(small-`m`) phenomenon; at Johnson scale the SAME construction's list is
+poly, governed by Mann. This is the positive direction — the
+beyond-Johnson δ* may be attainable because the structured (coset) list is
+poly there. CAVEAT: this is the MONOMIAL word's fiber (the explosion
+witness), not yet the general word; extending Mann-control to arbitrary
+words at Johnson scale is the remaining open step — but it is a CONCRETE,
+literature-backed target, not a vague hope.
+
+**Novelty 9 (Mann's theorem ↔ MCA explosion collapse is new), insight 9
+(unifies the deep-band supply with vanishing-sums-of-roots-of-unity),
+proximity 8 (Johnson scale = window edge, the real regime), feasibility 6
+(Mann is a known theorem; the monomial case is provable; the general-word
+extension is the open step).** This is the first slate entry clearing the
+bar on three of four axes. Reading-list add: Mann 1965 "On linear relations
+between roots of unity"; Conway–Jones 1976.

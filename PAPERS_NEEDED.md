@@ -90,3 +90,9 @@ Papers to obtain (none currently on disk — `~/papers/arklib/` is empty):
 
 Also re-check in-tree: ECCC TR25-169 (barrier), ePrint 2026/861 (action-orbit),
 2026/858 (threshold-halving) — listed above, may bear on the dyadic explosion.
+
+## Prize positive-direction adds (2026-06-13, Johnson-scale fiber collapse)
+| # | Paper | Identifier | Why |
+|---|---|---|---|
+| P6 | Mann, *On linear relations between roots of unity* | Mathematika 12 (1965) 107–117 | minimal vanishing sums of roots of unity = rotated subgroups; governs the Johnson-scale esymm-fiber collapse |
+| P7 | Conway–Jones, *Trigonometric Diophantine equations* | Acta Arith. 30 (1976) 229–240 | structure of vanishing sums of roots of unity (the e_1=0 fiber) |
