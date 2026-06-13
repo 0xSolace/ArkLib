@@ -136,7 +136,7 @@ theorem reedSolomonFrame_not_isHigherMDS_three_of_commonPairSum {K : Type*} [Fie
       · simp [hwdef, hvdef, reedSolomonFrame]
       · simp [hwdef, hvdef, reedSolomonFrame]
       · simp only [hwdef, hvdef, reedSolomonFrame, Pi.smul_apply, Pi.sub_apply, smul_eq_mul]
-        show (D b - D a) * σ = D b ^ 2 - D a ^ 2
+        change (D b - D a) * σ = D b ^ 2 - D a ^ 2
         rw [← hsumab]; ring
     have hmem_diff : v b - v a ∈ frameSpan K v (J i) := Submodule.sub_mem _ hmem_b hmem_a
     have hwsmul : w = (D b - D a)⁻¹ • ((D b - D a) • w) := by
