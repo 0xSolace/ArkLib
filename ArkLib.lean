@@ -506,6 +506,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIJointProximity
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIProof
 import ArkLib.Data.CodingTheory.ProximityGap.BelowUDRPuncture
 import ArkLib.Data.CodingTheory.ProximityGap.BestProvableBracket
+import ArkLib.Data.CodingTheory.ProximityGap.BetaSetSize
+import ArkLib.Data.CodingTheory.ProximityGap.BetaSetYoungDiagram
 import ArkLib.Data.CodingTheory.ProximityGap.BinomialMatrixDet
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardLatticeSlice
@@ -1482,6 +1484,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.RigidityIterated2kLift
 import ArkLib.Data.CodingTheory.ProximityGap.RigiditySunflowerCore
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityTriplesSunflower
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityWindowHalving
+import ArkLib.Data.CodingTheory.ProximityGap.RimHookArea
+import ArkLib.Data.CodingTheory.ProximityGap.RimHookConfluence
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityAdditiveEnergyExact
 import ArkLib.Data.CodingTheory.ProximityGap.RootsOfUnityCyclicList
