@@ -8004,3 +8004,25 @@ capacity results) at the constraint level, exactly.
   spread must be < √ρ). The supply census (exponential, spread-thin — EsymmFiber) is
   prior evidence AGAINST co-location. Named successor: the toy-scale co-location probe
   on MCA-bad stacks under the squaring-tower ordering (decides the route fully).
+
+### O160 — THE DEEP-BAND UPPER-BOUND FAMILY IS STRUCTURALLY CAPPED at capacity−Θ(1/log n): it cannot pin δ*=Johnson at ANY supply quality (the q^(m+1) suppression, not supply size) — so the δ* wall needs a non-deep-band upper mechanism (δ* batch R3, #389, 2026-06-13)
+
+`scripts/probes/probe_ceiling_supply_sensitivity.py` + RESULTS-CEILING-SENSITIVITY.md.
+Systematic δ*-lower-bound hypothesis batch (BATCH-DELTASTAR-LOWERBOUND.md, private),
+top candidate R3 decided inline.
+
+* Deep-band ceiling: ε_mca ≥ P/(q^(m+1)·B), P=C(n,k+m+1), B = supply upper bound
+  (deep_band_badSet_card_of_supply + ε_mca ≥ badSet/q). Best case B=1.
+* **At the Johnson band m_J (agreement ≈ n√ρ): log2(P_J) − (m_J+1)·log2 q is hundreds–
+  thousands of bits below −128 at every prize rate, n∈[128,2048], q∈{n²,n³}** (e.g.
+  −4101 at ρ=1/4,n=1024,q=n²; −12211 at ρ=1/2,n=2048,q=n³). So the deep-band bad-count
+  lower bound at Johnson is ≪ ε*=2⁻¹²⁸ even with minimal supply.
+* **VERDICT: the deep-band route — the fleet's entire upper-bound machinery — CANNOT push
+  the δ* ceiling below capacity−Θ(1/log n) (= KKH26) toward Johnson, at ANY supply quality.**
+  Obstruction = the q^(m+1) witness-mass suppression, NOT the supply size. Kills batch R3
+  (improve supply) and R2 (moment-sharpen the same conversion) — both ride this conversion.
+* Consequence: pinning δ* requires a FUNDAMENTALLY different upper bound that does not pay
+  q^(m+1) — a direct beyond-Johnson bad-count argument. Exact structural reason the wall is
+  the 25-yr beyond-Johnson list-decoding problem, not a supply-quality gap. Surviving live
+  candidates: S2 (M3-moment→supply separation, inline), N1 (tower co-location, workflow);
+  N2 = the breakthrough. Next batch targets a non-deep-band upper mechanism or the floor.
