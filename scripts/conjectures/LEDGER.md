@@ -98,3 +98,22 @@ Bessel functions** — to my knowledge not in the literature in this exact form.
 recursion) + two coefficient laws (leading (2r−1)!!, sumset 1/k!).** All decidable, all wall-free,
 all reducible to the antipodal/no-relation structure — formalizable by the swarm. Deaths logged
 honestly; the engine refits dead guesses to survivors where the structure dictates.
+
+## Auto-generator batches (bulk survivors; laws stated once, covering many instances)
+
+- **λ-incidence law (NOVEL).** `#{(a,b)∈μ_n² : a+λb ∈ μ_n} = n` if `λ ≡ ±2 (mod p)`, else `0`
+  (verified λ = ±1..±12, n=4..64). "Doubling is the unique special weight": `a+2b∈μ_n` ⟺ the
+  4-term zero-sum `a+b+b+(−c)=0` antipodally pairs (forces `a=−b, c=b`, giving `n` solutions);
+  all other λ give odd or unpairable sums ⟹ 0. (19 instances.)
+- **3-term λ-law (NOVEL).** `#{(a,b,c)∈μ_n³ : a+b+λc = 0} = n` if `λ=2`, else `0` (same mechanism).
+- **Power-sum exclusion (NOVEL).** `#{(a,b)∈μ_n² : aⁱ+bⁱ ∈ μ_n} = 0` for all `i≥1` (since `aⁱ,bⁱ∈μ_n`
+  and no two roots sum to a root — Z_3=0). (5 instances.)
+- **Injective-form law (NOVEL).** `|{a+λb : a,b∈μ_n}| = n²` for `λ²≢1` (the form has no collisions);
+  contrast `|{a+b}| = n²/2+1`, `|{a−b}| = n²/2+1` (λ=±1, collisions from antipodal). (5 instances.)
+- `|{a²+b²}| = n²/8 + 1`, `|{a+b²}| = 3n²/8 + 1` (square-twisted sumsets). (2 NOVEL.)
+
+**Distinct novel structural laws so far: ~15** (Bessel even-moment ★, fold recursion, two
+coefficient laws, sumset-growth 1/k!, λ-incidence, 3-term λ, power-sum exclusion, injective-form,
+odd-vanishing, intersection census, no-relation threshold p~n^r, restricted-energy/sumset,
+midpoint-exclusion, square-twisted sumsets) — covering **~75 verified instances**. All decidable,
+wall-free, reducible to the antipodal / no-relation structure. Engine: `auto.py`, `auto2.py`.
