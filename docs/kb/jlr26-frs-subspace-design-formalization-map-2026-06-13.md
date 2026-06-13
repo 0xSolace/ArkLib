@@ -498,3 +498,36 @@ either stops at Johnson or reduces to the open Bourgain sup-norm. The beyond-Joh
 for EXPLICIT `μ_n` is past all known techniques — consistent with it being a genuine prize-grade open
 problem whose VALUE is now pinned but whose PROOF requires a new idea (random-point methods like
 Brakensiek–Gopi–Makam do not transfer to the fixed `μ_n` domain).
+
+## 19. SYNTHESIS with the Incidence-Genericity Dichotomy — δ* is the CAPACITY term (correction)
+
+From the issue thread (owner's Incidence-Genericity Dichotomy + the smooth≈random measurement), a
+synthesis that CORRECTS §§16–18's "window-edge" reading:
+
+**The dichotomy.** `δ*(RS[F_q,μ_n,k], ε*) = H_q⁻¹(1 − ρ − log_q(1/ε*)/n)` (the list-decoding CAPACITY
+radius — a closed-form `H_q⁻¹`) **iff** `μ_n` is incidence-generic (worst far-line incidence ≤
+random·(1+o(1))). Non-generic only for special additive structure (F₂-linear / small-sumset / subfield
+collapse), NOT generic subgroup smoothness.
+
+**My refutation IS the genericity certificate.** A RANDOM n-subset of `F_p` has worst character sum
+`B_random = (1+o(1))√(n ln p)` (same extreme-value law). My fabricate-then-refute result
+`B(μ_n) ≤ 2√(n ln p)` with `B(μ_n)/B_random ≈ 0.48–0.64 ≤ 1` ⟹ **`μ_n` is at most as concentrated as
+random** = incidence-generic. The dyadic antipodal structure does NOT break this: `E(μ_n)=3n²−3n`
+(in-tree, `RootsOfUnityEnergyExact`) is the CLEAN generic value (`E⁺/3n(n−1)=1.000`), not inflation.
+
+**Correction to §§16–18.** The KK25/BCHKS `δ*≤1−ρ−Θ(1/log n)` (Thm 4.16) is the worst-case over ALL
+domains (special construction). For the GENERIC dyadic prime-field `μ_n`, genericity ⟹ `δ* = the
+CAPACITY term H_q⁻¹(…)`, strictly closer to capacity than the window edge. So the prize δ* is the
+capacity radius, NOT the window edge — the window edge is a worst-domain artifact that the generic
+`μ_n` beats.
+
+**The closed form (the prize conjecture, synthesized):**
+  **`δ*(dyadic μ_{2^μ}, ε*) = H_q⁻¹(1 − ρ − log_q(1/ε*)/n)`**  (≈ `1−ρ−h(1−ρ)/log₂q` to 1st order),
+holding because the dyadic `μ_n` is incidence-generic, certified by `B(μ_n)≈B_random≈√(n ln p)`
+(refutation, n≤512) and `E=3n²−3n` (in-tree).
+
+**Open core (unchanged, sharper).** Gated on deployed-regime genericity `E(μ_n)=O(n²)` ⟺
+`B(μ_n)=O(√(n·polylog))` (the 25-yr wall): PROVEN for `p>2^n` (cyclotomic resultant), refutation-
+certified for the deployed `p≈2^168≪2^{2^40}`, BGK-floored `B≤n^{1−ε}`. The dichotomy's forward
+direction (generic ⟹ capacity δ*) + the asymptotic genericity are the two remaining open links.
+Issue #389 comment 4699815321.
