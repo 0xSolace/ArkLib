@@ -804,3 +804,88 @@ non-killed candidate routes are NON-moment: HOMDS/rim-hook `n`-core, and demand-
 Refs (wakesync): Kowalski 2401.04756, Shkredov 1712.00410, Schoen–Shkredov 1110.2986, HBK/BK, Green
 0904.2075. The prize-winning theorem (precisely stated): `E_{2r}(μ_N⊂F_p)` within a constant factor
 per moment of `(2r−1)!!N^r` up to `r~log(1/ε*)` for `N` a fixed power of `p` — beyond current sum-product.
+
+## 29. Cross-route analysis: the n-core (HOMDS) route ESCAPES the arithmetic wall — but has its own combinatorial obstruction
+
+Investigating the owner's "non-moment routes are the only survivors" — the HOMDS/n-core route, and how
+it relates to my arithmetic (char-p) wall.
+
+**The key positive fact (confirmed in-tree, unconditional).** The smooth-domain HOMDS certificate is the
+generalized Vandermonde `det(ζ^{e_j·i}) = ∏_{j<j'}(ζ^{e_{j'}}−ζ^{e_j})`
+(`RootsOfUnityVandermonde.genVandermonde_rootsOfUnity_det`), nonzero **iff `e_j` distinct mod n**
+(`..._det_ne_zero_iff`, proof uses only `ζ^a=ζ^{a%n}`). This holds over `F_p` **UNCONDITIONALLY** — NO
+`p|`-divisibility, NO char-p coincidence, NO sum-product. So the n-core route genuinely ESCAPES the
+arithmetic/equidistribution wall that caps every moment/character/energy route (§28). This is the real
+reason it survives the moment diagnosis.
+
+**But it has its OWN obstruction (combinatorial, not removable for free).** The same theorem says the
+certificate VANISHES for nonempty-n-core configs (`homds_det_eq_zero_iff_nCore_nonempty`). For the prize
+list-decoding (list `ℓ≥2`, degree `~ℓk = ℓρn > n` ⟹ exponents WRAP mod n), nonempty-n-core configs DO
+occur. So `RS[μ_n,k]` fails NAIVE HOMDS(ℓ): the smooth/FFT structure annihilates specific certificates.
+The open question is whether these vanishing configs are BINDING for list-decoding (fatal) or
+NON-binding (list-decoding survives on the generic empty-n-core configs).
+
+**The connection to my genericity (the routes are dual).** My measurement `μ_n ≈ random` (incidence-
+generic) PREDICTS the binding list-decoding configs generically have EMPTY n-core (else μ_n would
+list-decode worse than random). So: **incidence-genericity (my lane) ⟺ binding-config-empty-n-core
+(n-core lane)** — the same worst-case question in two languages (arithmetic vs combinatorial). The
+n-core route's advantage: its worst-case is COMBINATORIAL (which partitions have empty n-core, an abacus
+/ rim-hook question — potentially decidable/provable), NOT the open sum-product equidistribution.
+
+**Net (honest cross-route map).** TWO walls, two routes:
+  · moment/character/energy (mine, wakesync): char-p equidistribution, `r=Θ(n)`, beyond sum-product — KILLED.
+  · HOMDS/n-core: combinatorial (binding configs empty-n-core) — escapes arithmetic, OPEN but possibly
+    tractable by partition combinatorics (the abacus/rim-hook machinery, already largely in-tree).
+The prize closes if the n-core route proves the binding configs have empty n-core; my genericity
+measurement is evidence they do. The non-moment route is the live path; the geometric bridge (β-set ↔
+YoungDiagram, "bead-move = size-n border strip") is its remaining gap. This is the honest redirection.
+
+## 30. The n-core route's crux pinned: GM-MDS REACHABILITY of nonempty-n-core partitions
+
+Concrete n-core probe (`/tmp/ncore_probe.py`) of list-decoding-shaped partitions (`β_j=λ_j+(L−1−j)`,
+empty iff `β_j` distinct mod n, `AbacusNCore`):
+  · **`L > n`: pigeonhole FORCES nonempty n-core** (0% empty) ⟹ RS/μ_n is NOT HOMDS(L) for `L>n`. A
+    genuine hard cap: the smooth domain cannot be higher-order-MDS at order exceeding the domain size.
+  · **`L ≤ n`: empty-n-core is GENERIC** (97% at L=2 → 2% at L=8, n=8) — consistent with `μ_n≈random`.
+  · **BUT an adversary can FORCE nonempty n-core even at small L** (construct `λ` with `β_j` coinciding
+    mod n). So the worst-case partition is obstructed — IF it is reachable.
+
+**The precise open question (the n-core route's crux).** The GM-MDS theorem (Lovett / Yildiz–Hassibi,
+in-tree `LovettThm17Reduction`/`LovettLemma22`) says MDS(L) iff the Vandermonde is nonzero for the
+partitions arising from VALID support configurations — not all partitions. So the prize via this route
+is: **are all GM-MDS-valid partitions for `RS[μ_n,k]` at the prize parameters (`L~poly log n ≪ n`)
+empty-n-core?** The adversary's nonempty-n-core partitions may be GM-MDS-INVALID (unreachable). This is
+combinatorial (a support-condition vs n-core compatibility question), escapes the sum-product wall, and
+connects exactly to my genericity: `μ_n incidence-generic ⟺ all reachable list-decoding partitions are
+empty-n-core`.
+
+**Honest state of the live route.** Proven: HOMDS cert = clean Vandermonde, nonzero iff β_j distinct
+mod n (unconditional over F_p); `L>n` cap; `n≤32` closure (wakesync). Open: GM-MDS reachability — do
+the valid partitions stay empty-n-core at `L~poly log n`. This is the prize, in the form that escapes
+every arithmetic wall, and it is a partition-combinatorics question on the in-tree GM-MDS machinery —
+the live path, being worked by the rim-hook/abacus lane. My contribution: confirming the route escapes
+the wall, the pigeonhole cap, and the genericity⟺reachability dictionary. Probe /tmp/ncore_probe.py.
+
+## 31. Reconciling the two routes — the n-core obstruction is AT CAPACITY, not in the window
+
+Apparent conflict: the n-core route says μ_n FAILS MDS(L) for nonempty-n-core configs (obstruction);
+my genericity says μ_n ≈ random (no obstruction). RESOLVED by the radius dependence:
+
+**List size `L ~ 1/η` at radius `δ=1−ρ−η`.** The n-core PIGEONHOLE obstruction (forced nonempty,
+`L>n`) requires `1/η>n ⟺ η<1/n` — i.e. within `1/n` of capacity, BEYOND the granularity limit
+`1−ρ−1/n` and FAR beyond the window edge `η~1/log n ≫ 1/n`. So:
+  · **In the window (`η ≥ Θ(1/log n)`, the prize): `L~log n ≪ n`, NO pigeonhole, n-core generically
+    empty — genericity holds, `μ_n≈random`.** The prize δ* sits in the clean regime.
+  · The forced n-core obstruction is at `η<1/n` (≈capacity), strictly BEYOND δ*. NO conflict.
+
+So the two routes agree: μ_n behaves like random in the window (where the prize lives), and the n-core
+obstruction is a capacity-limit phenomenon outside the prize range. The HOMDS(L>n) failure (§30) is
+real but irrelevant — it is the statement "μ_n isn't MDS at order exceeding its size," which only bites
+at `η<1/n`, past the prize.
+
+**Refined open core (the genuine remaining question).** Within the window (`L≪n`, pigeonhole satisfied),
+the GENERIC reachable config is empty-n-core; the ADVERSARY can construct nonempty-n-core small-L
+partitions (§30). The prize is whether those adversarial partitions are GM-MDS-REACHABLE by an actual
+window-radius list-decoding instance. Generic⟹empty (μ_n≈random measured); adversarial reachability is
+the open combinatorial core — now correctly scoped to the window (not the capacity obstruction). This
+is the precise, correctly-scoped statement of the live route's open question. Probe /tmp/route_reconcile.py.
