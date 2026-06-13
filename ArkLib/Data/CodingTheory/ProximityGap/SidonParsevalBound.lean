@@ -107,6 +107,25 @@ theorem parseval_fourTerm {n : ℕ} (v : Fin 4 → ℂ) (hvn : ∀ a, v a ^ n = 
   rw [hsum_eq] at hcomplex
   exact_mod_cast hcomplex
 
+/-- **The four-term Parseval, specialized.**  For a primitive `n`-th root `ω` (`n ≠ 0`) whose powers
+`ω^i, ω^j, ω^k, ω^l` are pairwise distinct, `∑_{t<n} ‖ω^{ti}+ω^{tj}−ω^{tk}−ω^{tl}‖² = 4n`. -/
+theorem parseval_fourTerm_pow {n : ℕ} (hn : n ≠ 0) {ω : ℂ} (hω : IsPrimitiveRoot ω n) {i j k l : ℕ}
+    (hdist : Function.Injective (![ω ^ i, ω ^ j, ω ^ k, ω ^ l] : Fin 4 → ℂ)) :
+    ∑ t ∈ Finset.range n, ‖ω ^ (i * t) + ω ^ (j * t) - ω ^ (k * t) - ω ^ (l * t)‖ ^ 2 = 4 * n := by
+  have hωn : ω ^ n = 1 := hω.pow_eq_one
+  have hω1 : ‖ω‖ = 1 := Complex.norm_eq_one_of_pow_eq_one hωn hn
+  have heq : ∀ t : ℕ, ω ^ (i * t) + ω ^ (j * t) - ω ^ (k * t) - ω ^ (l * t)
+      = ∑ a : Fin 4,
+          (![1, 1, -1, -1] : Fin 4 → ℂ) a * (![ω ^ i, ω ^ j, ω ^ k, ω ^ l] : Fin 4 → ℂ) a ^ t := by
+    intro t; rw [Fin.sum_univ_four]; simp only [Matrix.cons_val_zero, Matrix.cons_val_one,
+      Matrix.head_cons, Matrix.cons_val_two, Matrix.cons_val_three, Matrix.tail_cons, pow_mul]; ring
+  simp_rw [heq]
+  refine parseval_fourTerm _ ?_ ?_ hdist _ ?_ ?_
+  · intro a; fin_cases a <;> simp <;> rw [pow_right_comm, hωn, one_pow]
+  · intro a; fin_cases a <;> simp [norm_pow, hω1]
+  · intro a; fin_cases a <;> norm_num
+  · intro a; fin_cases a <;> simp
+
 /-- **AM-GM product bound.**  If the arithmetic mean of nonnegative reals is `≤ B`
 (`∑ xᵢ ≤ k·B`, `k = |s|`), then `∏ xᵢ ≤ Bᵏ`.  This feeds the Parseval bound:
 `∏_{prim} ‖f(ζ)‖² ≤ 8^{φ(n)}` from `∑ ‖f(ζ)‖² ≤ 4n = φ(n)·8` (`n = 2^m`). -/
@@ -143,4 +162,5 @@ end ArkLib.ProximityGap.AdditiveEnergyRepBound
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.parseval_fourTerm
+#print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.parseval_fourTerm_pow
 #print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.prod_le_of_sum_le
