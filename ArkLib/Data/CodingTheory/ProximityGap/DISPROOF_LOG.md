@@ -8356,3 +8356,25 @@ E(μ_n) < n³, gives the same via the energy route; the subset count is the clea
 cubic/energy supply route is provably silent at prize scale UNCONDITIONALLY — one fewer residual
 on that leg of the δ*-map. Honest scope: this is the cubic (k=2) word's supply only — it does NOT
 touch the general deep-band CensusDomination (still the open core); it cleanly closes the cubic leg.
+
+### O170 — SELF-CORRECTION: O168/O169 cubic-supply silence is CORRECT but VACUOUS for the prize (cubic supply ≡ 0 on 2-power μ_n); the framing overclaimed (nubs, 2026-06-13)
+
+Honesty correction, triggered by the fleet's d7feabd7a guardrail + independent re-verification.
+O168/O169 prove the cubic (3-term zero-sum) explainable supply is < 2^128 at n ≤ 2^40. The
+THEOREMS ARE CORRECT and axiom-clean. BUT the cubic 3-term zero-sum supply is **IDENTICALLY 0
+for 2-power μ_n** (Mann: no 3-term vanishing sum of 2^m-th roots of unity, 3∤2^m) — independently
+re-confirmed even at the SPLIT production prime p=2013265921:
+`scripts/probes/incidence/landscape/cubic_vacuous_check.py` → mu_8/16/32 all give 3-term count
+= 0 (4-term count = 6/28/120 = C(n/2,2)). So O168/O169 bound a quantity that is already ZERO for
+the prize 2-power domains — they are **vacuous-for-prize**, and my framing "closes the cubic/energy
+supply leg of the δ*-map" OVERCLAIMED. RETRACTED.
+
+**What's actually operative:** the supply for 2-power μ_n runs through the 4-term/even zero-sum
+route (= additive energy E(μ_n)), NOT the cubic route. At production SPLIT primes the relevant
+energy is the OPEN GV/Stepanov quantity E(μ_n)=n^{2+o(1)} — its prize-scale silence is governed by
+that open bound (in-tree as the GVRepBound hypothesis), NOT closed by O168/O169. The exact value
+E=3n(n−1) is the INERT/char-0 case; production primes are split, where it is the open problem.
+
+NET (honest): O168/O169 stand as correct lemmas but contribute nothing to the prize 2-power supply
+question (they bound 0). The energy-supply leg for the prize is NOT closed — it remains the open
+GV/additive-energy bound. This entry corrects the record; no fabricated closure.
