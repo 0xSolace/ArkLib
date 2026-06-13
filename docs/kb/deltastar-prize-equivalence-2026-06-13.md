@@ -78,3 +78,20 @@ problem, with the smooth structure currently giving counterexamples not bounds. 
 technique (incidence/spectral, energy/character-sum, LO) discharges it. The genuinely-new input
 required: a direction-sensitive inverse-Littlewood–Offord / beyond-Johnson explicit-RS
 list-decoding theorem. DO NOT fabricate closure.
+
+## ADDENDUM — generic μ_n smoothness is NEUTRAL (smooth ≈ random), the adversary is near-code
+
+Decisive crux measurement (smooth vs random domain, matched params, max structured-adversary
+incidence at the window radius, exact):
+- n=12, k=3, agreement≥4: μ_n incidence 473 vs random 480 (ratio 0.99)
+- n=16, k=4, agreement≥6 (=Johnson): μ_n incidence 22 vs random 23 (ratio 0.96)
+
+**Generic μ_n smoothness is NEUTRAL** (ratio 0.96–0.99, marginally BELOW random). The
+structured adversary's power comes from being NEAR-CODE (domain-independent: a near-code u₁
+gives the same incidence over any domain), NOT from the domain's smoothness. This nuances the
+"smoothness gives counterexamples" reading: the BCHKS counterexamples require a SPECIAL
+structure (Thm 1.6 is F₂-linear; the prime-field limitations need a specific sumset-growth
+admissibility, Conj 1.12), NOT generic multiplicative-subgroup smoothness. So at near-Johnson
+radii a GENERIC μ_n is no worse than random — consistent with δ* being controlled, but the
+DEEP-window regime (where the special structures could bite) remains the open question. Neither
+closes nor refutes the prize; it localizes the danger to special structures + deep radii.
