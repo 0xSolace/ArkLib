@@ -172,12 +172,21 @@ theorem explainableCoreSupply_unconditional (dom : Fin n ↪ F) {k m : ℕ} (hk 
   explainableCoreSupply_of_listBound dom (subJohnsonListBound_unconditional dom hk)
 
 open Classical in
-/-- **END-TO-END above Johnson: the deep-band bad-scalar count is UNCONDITIONAL.**
-Composing `deep_band_badSet_card_of_supply` (the #389 multiplicity reduction) with
-the discharged above-Johnson supply: whenever `n·(k−1) < (k+m+1)²` and the band
-radius satisfies `(1−δ)·n ≤ k+m+1`, the witness mass `C(n,k+m+1)` is forced onto a
-bad-scalar count with the fully-explicit, no-open-hypothesis bound
-`B = (n²/((k+m+1)²−n(k−1)))·C(n,k+m+1)`. -/
+/-- **Above-Johnson composition into the multiplicity reduction (STRUCTURAL, vacuous
+as a failure count).**  Composing `deep_band_badSet_card_of_supply` with the
+discharged above-Johnson supply gives the no-open-hypothesis inequality
+`C(n,k+m+1) ≤ #badSet · q^m · B` with `B = (n²/((k+m+1)²−n(k−1)))·C(n,k+m+1)`.
+
+⚠ **Honesty caveat (do not read this as production failure).**  The chain yields a
+*non-vacuous* bad-scalar count only when `B < C(n,k+m+1)/q^m`.  The above-Johnson `B`
+here is `≥ C(n,k+m+1)`, so the resulting bound is `#badSet ≥ C(n,k+m+1)/(q^m·B) < 1`,
+i.e. `#badSet ≥ 0` — **trivially true, not a failure witness** (verified
+integer-exactly at `k=2,m=2,n=16,q=17`: `badSet ≥ 0.0001`).  Production failure needs
+a supply `B ≪ C(n,k+m+1)/q^m`, far below the witness mass; the deep-band lower bound
+`not_explainableCoreSupply_exponential` shows the supply is *exponentially large* for
+`μ_n`, so no such `B` exists at the deep-band radius.  This theorem is therefore a
+*type-correct structural composition*, retained for honesty about exactly what the
+supply route does and does not deliver — not a non-vacuous deep-band failure. -/
 theorem deep_band_badSet_aboveJohnson (dom : Fin n ↪ F) {k m : ℕ} (hk : 1 ≤ k)
     {δ : ℝ≥0} (hhi : (1 - δ) * (Fintype.card (Fin n) : ℝ≥0) ≤ ((k + m + 1 : ℕ) : ℝ≥0))
     (hJohnson : n * (k - 1) < (k + m + 1) ^ 2) :
