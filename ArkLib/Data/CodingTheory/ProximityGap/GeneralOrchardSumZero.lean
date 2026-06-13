@@ -93,7 +93,62 @@ theorem sum_eq_zero_of_agree (P : F[X]) {k : ℕ} (hk : 1 ≤ k) (hPdeg : P.degr
   rw [Finset.sum_eq_multiset_sum, Multiset.map_id']
   exact hrs
 
+/-- **The general orchard construction (backward).**  Every `k+1`-subset `T` of the field
+summing to zero is realized by a degree-`<k` polynomial agreeing with `x^{k+1}` on `T`:
+take `P := X^{k+1} − ∏_{a∈T}(X − a)`, whose top two coefficients vanish (`x^{k+1}` cancels,
+`x^k` is `nextCoeff ∏ = −∑ a = 0`). -/
+theorem exists_agree_of_sum_zero {k : ℕ} (T : Finset F) (hTcard : T.card = k + 1)
+    (hsum : ∑ a ∈ T, a = 0) :
+    ∃ P : F[X], P.degree < (k : ℕ) ∧ ∀ a ∈ T, P.eval a = a ^ (k + 1) := by
+  classical
+  set Q : F[X] := ∏ a ∈ T, (X - C a) with hQ
+  have hQmonic : Q.Monic := monic_prod_of_monic _ _ (fun a _ => monic_X_sub_C a)
+  have hQnat : Q.natDegree = k + 1 := by
+    rw [hQ, natDegree_prod_of_monic _ _ (fun a _ => monic_X_sub_C a)]
+    simp [natDegree_X_sub_C, hTcard]
+  have hQnext : Q.nextCoeff = 0 := by
+    rw [hQ, Monic.nextCoeff_prod _ _ (fun a _ => monic_X_sub_C a)]
+    simp only [nextCoeff_X_sub_C]
+    rw [Finset.sum_neg_distrib, hsum, neg_zero]
+  have hQcoeffk : Q.coeff k = 0 := by
+    have hnc := nextCoeff_of_natDegree_pos (p := Q) (by omega : 0 < Q.natDegree)
+    rw [hQnat, show k + 1 - 1 = k from rfl] at hnc
+    rw [← hnc, hQnext]
+  have hQlead : Q.coeff (k + 1) = 1 := by
+    have := hQmonic.coeff_natDegree; rwa [hQnat] at this
+  refine ⟨X ^ (k + 1) - Q, ?_, ?_⟩
+  · -- degree < k: coeff j = 0 for all j ≥ k
+    rw [degree_lt_iff_coeff_zero]
+    intro j hj
+    have hjk : k ≤ j := by exact_mod_cast hj
+    rw [coeff_sub, coeff_X_pow]
+    by_cases hjk1 : j = k + 1
+    · rw [if_pos hjk1, hjk1, hQlead]; ring
+    · rw [if_neg hjk1]
+      have hQj : Q.coeff j = 0 := by
+        rcases eq_or_lt_of_le hjk with hje | hjl
+        · rw [← hje, hQcoeffk]
+        · exact coeff_eq_zero_of_natDegree_lt (by rw [hQnat]; omega)
+      rw [hQj]; ring
+  · intro a ha
+    have hQa : Q.eval a = 0 := by
+      rw [hQ, eval_prod]
+      exact Finset.prod_eq_zero ha (by simp)
+    simp only [eval_sub, eval_pow, eval_X, hQa, sub_zero]
+
+/-- **The general orchard "iff".**  For a `k+1`-subset `T` (distinct field elements): some
+degree-`<k` polynomial agrees with `x^{k+1}` on all of `T` **iff** `∑_{a∈T} a = 0`. -/
+theorem agree_iff_sum_zero {k : ℕ} (hk : 1 ≤ k) (T : Finset F) (hTcard : T.card = k + 1) :
+    (∃ P : F[X], P.degree < (k : ℕ) ∧ ∀ a ∈ T, P.eval a = a ^ (k + 1))
+      ↔ ∑ a ∈ T, a = 0 := by
+  constructor
+  · rintro ⟨P, hPdeg, hP⟩
+    exact sum_eq_zero_of_agree P hk hPdeg T hTcard hP
+  · exact exists_agree_of_sum_zero T hTcard
+
 end ProximityGap.GeneralOrchard
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.GeneralOrchard.sum_eq_zero_of_agree
+#print axioms ProximityGap.GeneralOrchard.exists_agree_of_sum_zero
+#print axioms ProximityGap.GeneralOrchard.agree_iff_sum_zero
