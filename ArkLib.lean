@@ -686,6 +686,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandProductionGatedOnOpenCore
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandProductionSubJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandProductionSubJohnsonGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationDischarge
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEps
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEpsSharp
@@ -1337,6 +1338,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumMagnitude
 import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumNorm
 import ArkLib.Data.CodingTheory.ProximityGap.QuartetTowerLaw
 import ArkLib.Data.CodingTheory.ProximityGap.QuarticPowerSumFiber
+import ArkLib.Data.CodingTheory.ProximityGap.QuarticSupplyDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
 import ArkLib.Data.CodingTheory.ProximityGap.QuotientDeepCore
 import ArkLib.Data.CodingTheory.ProximityGap.RSAveragingDeltaStarUpper
