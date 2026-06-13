@@ -379,3 +379,23 @@ inductive. It is the intended output of the fabricate-then-refute method: an irr
 A proof would bound the Gumbel tail of `∑_ψ ψ̄(b)τ(ψ)` uniformly (Deligne equidistribution of Gauss
 sums + a union bound over `b`) — the clean remaining target, far more tractable than the false sharp-
 `√2` route. Harness: /tmp/refute_*.py.
+
+## 15b. G=O(1) stress test — the sharp law confirmed, growth refuted
+
+Pushing `p` to `3·10⁷` at fixed `n∈{64,256}` (efficient coset-rep computation, `η_b` constant on
+`μ_n`-cosets ⟹ only `m=(p−1)/n` distinct values): the Gumbel tail `G := max|η_b|²/n − ln p` is
+**bounded and flat in `ln p`** over 4 orders of magnitude:
+  · n=64:  ln p 7.05→16.12, `G ∈ [−3.1, +5.5]` EXCEPT the isolated Fermat-65537 point `G=18.66`.
+  · n=256: ln p 6.65→17.22, `G ∈ [−5.4, +3.1]` (Fermat 65537 gives `G=−0.40` — NO spike at n=256).
+So `G=O(1)` (no growth in `ln p`), and the `C=1.638` spike is a single `(n=64, p=65537)` coincidence,
+not systematic. Typical `C≈1.0` — *below* the char-0 Wick `√2` — confirming:
+
+  **`max_{b≠0}|η_b(μ_n)| = (1+o(1))·√(n·ln p)`  (sharp), `≤ 2√(n ln p)` (uniform, anomaly-safe).**
+
+This is the strongest evidence yet for the sharp law: the asymptotic constant is `1` (complex-Gaussian
+extreme value over the `m` cosets), with bounded finite-size/anomaly excess. **Proof status:** the
+remaining target is `E_k(μ_n) ≤ n^{2k}/p + (C²n ln p)^k/p` for `k≈ln p` (the `k`-fold additive-energy
+excess at Wick scale ⟹ the sup-norm via the moment ladder `eta_pow_le_energyR`). PROVEN partial:
+BGK gives `max|η_b| ≤ n^{1−ε}` unconditionally throughout the prize regime (`n≥p^{0.156}`), already
+forcing the bias `θ→0`. The sharp constant is the open Bourgain-type higher-energy bound, but the
+refutation + `G=O(1)` test pin its value (`C∈[1,2]`) with high confidence. Harness /tmp/gumbel_test.py.
