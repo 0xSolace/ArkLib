@@ -90,3 +90,29 @@ def orbit_structure(n=8, k=2, q=41):
             seen.add(cur)
     print(f"n={n} k={k} q={q}: e2=0 subsets: {len(z)} with e1=0 (excluded, mu_(n/2)-cosets), "
           f"{len(nz)} with e1!=0 forming {orbits} dilation orbit(s)")
+
+
+# ── Clean relation + HONEST regime caveat (added) ──
+# Since e_2 = (e_1^2 - p_2)/2 (p_2 = sum x^2), the constraint e_2(S)=0 is EXACTLY
+#     e_1(S)^2 = sum_{x in S} x^2,      i.e. the bad scalar gamma = -e_1 satisfies
+#     gamma^2 = sum_{x in S} x^2   (x^2 ranges over mu_{n/2}).
+# So bad scalars are square roots of subset-sums-of-squares. #bad = O(n) would follow from
+# #{ sum_{x in S} x^2 : valid S } = O(n).
+#
+# CAVEAT (do not over-read the fixed-small-m scaling): dir(k+1,k+2) at w=k+2 sits at
+# delta = 1 - (k+2)/n = (1-rho) - 2/n = NEAR CAPACITY (above the window-upper 1-rho-Theta(1/log n)),
+# NOT the window interior. The window interior (delta ~ 0.6 for rho=1/4) needs LARGER w (~0.4n),
+# where the incidence is much smaller (n=16,w=7,delta=0.562: incidence 0-4) -- there the degree
+# argument (X^b mod m_S = X^b when b<w) kills most directions. Fixed m=4 for large n is the
+# near-capacity (w=4) regime and is q-DEPENDENT (n=64: 192 at q=193 vs 640 at q=769 = partial
+# explosion), NOT representative of the window. The window-regime O(n) bound (verified only at
+# n=16) is the genuine open core and is computationally infeasible to enumerate for large n.
+def gamma_sq_relation_check(n=16, k=4, q=193):
+    dom = gen_mu(q, n)
+    for S in itertools.combinations(dom, k + 2):
+        e1, e2 = e1_e2(S, q)
+        if e2 == 0 and e1 != 0:
+            lhs = (e1 * e1) % q
+            rhs = sum(x * x % q for x in S) % q
+            assert lhs == rhs, (S, lhs, rhs)
+    print(f"n={n} k={k} q={q}: verified gamma^2 = sum x^2 for all valid S")
