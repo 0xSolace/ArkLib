@@ -505,6 +505,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BetaSetSize
 import ArkLib.Data.CodingTheory.ProximityGap.BetaSetYoungDiagram
 import ArkLib.Data.CodingTheory.ProximityGap.BinomialMatrixDet
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
+import ArkLib.Data.CodingTheory.ProximityGap.BorderStrip
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardLatticeSlice
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualAffineLineRefutation
