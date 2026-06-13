@@ -247,6 +247,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyTop
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyTranslate
 import ArkLib.Data.CodingTheory.ListDecoding.UniqueDecodingPairwise
 import ArkLib.Data.CodingTheory.ListSizeVolumeBound
+import ArkLib.Data.CodingTheory.MDSIncidenceBound
 import ArkLib.Data.CodingTheory.PlaneIncidenceBound
 import ArkLib.Data.CodingTheory.PlotkinBound
 import ArkLib.Data.CodingTheory.PlotkinBoundCard
@@ -708,6 +709,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DivisorListBound
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyCharacterTransport
+import ArkLib.Data.CodingTheory.ProximityGap.EnergyDilationReduction
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessCore
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyMinimalF73
 import ArkLib.Data.CodingTheory.ProximityGap.EntropyGateBinomial
@@ -1417,11 +1419,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.SidonGVClosure
 import ArkLib.Data.CodingTheory.ProximityGap.SidonGaussSum4thMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftClosed
-import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftDevacuated
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegComplex
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegEnergyEquality
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
+import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupGVBound
 import ArkLib.Data.CodingTheory.ProximityGap.SingleClassWeight
