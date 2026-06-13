@@ -102,6 +102,65 @@ theorem interp_Tp_vanishPoly_ne_zero (dom : Fin n ↪ F) (T T' : Finset (Fin n))
   rw [Lagrange.eval_interpolate_at_node _ hinj hpT'] at hval
   exact vanishPoly_eval_ne_zero dom T hpT hval
 
+/-- Abbreviation: the `T'`-interpolant of the moving direction `Z_T`. -/
+noncomputable def movingInterp (dom : Fin n ↪ F) (T T' : Finset (Fin n)) : F[X] :=
+  Lagrange.interpolate T' (⇑dom) (fun i => (vanishPoly dom T).eval (dom i))
+
+/-- **Degree upper bound**: `deg(I_{T'}) < |T'|` (it is an interpolant on `|T'|` nodes). -/
+theorem movingInterp_natDegree_lt (dom : Fin n ↪ F) (T T' : Finset (Fin n))
+    {p : Fin n} (hpT' : p ∈ T') (hpT : p ∉ T) :
+    (movingInterp dom T T').natDegree < T'.card := by
+  have hinj : Set.InjOn (⇑dom) T' := fun a _ b _ h => dom.injective h
+  have hne : movingInterp dom T T' ≠ 0 :=
+    interp_Tp_vanishPoly_ne_zero dom T T' hpT' hpT
+  rw [Polynomial.natDegree_lt_iff_degree_lt hne]
+  exact Lagrange.degree_interpolate_lt _ hinj
+
+/-- **Degree lower bound**: `|T ∩ T'| ≤ deg(I_{T'})` — the interpolant vanishes on the
+`|T∩T'|` distinct overlap nodes, so its degree is at least that many. -/
+theorem movingInterp_overlap_le_natDegree (dom : Fin n ↪ F) (T T' : Finset (Fin n))
+    {p : Fin n} (hpT' : p ∈ T') (hpT : p ∉ T) :
+    (T ∩ T').card ≤ (movingInterp dom T T').natDegree := by
+  have hne : movingInterp dom T T' ≠ 0 :=
+    interp_Tp_vanishPoly_ne_zero dom T T' hpT' hpT
+  -- the overlap nodes are distinct roots of `movingInterp`
+  have hsub : (T ∩ T').image (fun i => dom i) ⊆ (movingInterp dom T T').roots.toFinset := by
+    intro x hx
+    obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hne]
+    obtain ⟨hiT, hiT'⟩ := Finset.mem_inter.mp hi
+    exact interp_Tp_vanishPoly_eval_overlap dom T T' hiT' hiT
+  calc (T ∩ T').card
+      = ((T ∩ T').image (fun i => dom i)).card :=
+        (Finset.card_image_of_injective _ dom.injective).symm
+    _ ≤ (movingInterp dom T T').roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ (movingInterp dom T T').roots.card := Multiset.toFinset_card_le _
+    _ ≤ (movingInterp dom T T').natDegree := Polynomial.card_roots' _
+
+/-- **The surviving band coordinate (unconditional moving direction).**  On the deep
+stratum (`|T'| = k+m+1`, `k+1 ≤ |T∩T'|`, and a node `p ∈ T'∖T`), the moving direction
+`Z_T` has a `T'`-band coordinate `d : Fin m` with `coeff (k+1+d) (I_{T'}) ≠ 0`, while its
+entire `T`-band is zero (`interp_T_vanishPoly_eq_zero`).  Concretely `d = deg(I_{T'}) −
+(k+1)`, which lies in `[0, m−1]` because `deg(I_{T'}) ∈ [|T∩T'|, k+m] ⊆ [k+1, k+m]`, and
+the coefficient there is the (nonzero) leading coefficient. -/
+theorem exists_surviving_band_coord (dom : Fin n ↪ F) {k m : ℕ} (T T' : Finset (Fin n))
+    (hT' : T'.card = k + m + 1) (hdeep : k + 1 ≤ (T ∩ T').card)
+    {p : Fin n} (hpT' : p ∈ T') (hpT : p ∉ T) :
+    ∃ d : Fin m, (movingInterp dom T T').coeff (k + 1 + (d : ℕ)) ≠ 0 := by
+  have hne : movingInterp dom T T' ≠ 0 :=
+    interp_Tp_vanishPoly_ne_zero dom T T' hpT' hpT
+  set D := (movingInterp dom T T').natDegree with hD
+  have hDlt : D < T'.card := movingInterp_natDegree_lt dom T T' hpT' hpT
+  have hDge : (T ∩ T').card ≤ D := movingInterp_overlap_le_natDegree dom T T' hpT' hpT
+  -- D ∈ [k+1, k+m]
+  have hDlo : k + 1 ≤ D := le_trans hdeep hDge
+  have hDhi : D ≤ k + m := by rw [hT'] at hDlt; omega
+  refine ⟨⟨D - (k + 1), by omega⟩, ?_⟩
+  have hidx : k + 1 + (D - (k + 1)) = D := by omega
+  show (movingInterp dom T T').coeff (k + 1 + (D - (k + 1))) ≠ 0
+  rw [hidx, hD]
+  exact Polynomial.leadingCoeff_ne_zero.mpr hne
+
 end ProximityGap.DeepStratumMoving
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -111,3 +170,6 @@ end ProximityGap.DeepStratumMoving
 #print axioms ProximityGap.DeepStratumMoving.interp_T_vanishPoly_eq_zero
 #print axioms ProximityGap.DeepStratumMoving.interp_Tp_vanishPoly_eval_overlap
 #print axioms ProximityGap.DeepStratumMoving.interp_Tp_vanishPoly_ne_zero
+#print axioms ProximityGap.DeepStratumMoving.movingInterp_natDegree_lt
+#print axioms ProximityGap.DeepStratumMoving.movingInterp_overlap_le_natDegree
+#print axioms ProximityGap.DeepStratumMoving.exists_surviving_band_coord
