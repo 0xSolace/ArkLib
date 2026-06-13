@@ -431,6 +431,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.SlicedCompositionWip
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffLargeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysExceptional
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysShare
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysShareBaseCase
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffPolysShareOr
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StrictCoeffProducer
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.StructuredCollapseRebased
