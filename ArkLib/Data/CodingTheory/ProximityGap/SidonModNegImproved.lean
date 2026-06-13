@@ -134,7 +134,21 @@ theorem sidonModNeg_rootsOfUnity_improved {m : ℕ} (hm : 1 ≤ m) {p : ℕ} [Fa
       have h812 : (8 : ℕ) ^ n.totient ≤ 12 ^ n.totient := Nat.pow_le_pow_left (by norm_num) _
       omega
 
+/-- **The improved threshold strictly improves the committed one.**  For `n = 2^m`, the new
+resultant bound `12^{φ(n)}` is strictly below the committed `(2^n)² = 4^n`, so the Sidon threshold
+`p > 12^{n/4}` covers strictly more primes than `p > 2^n` (`12^{n/4} = 2^{0.896n} < 2^n`). -/
+theorem improved_threshold_strict {m : ℕ} (hm : 1 ≤ m) :
+    (12 : ℕ) ^ (2 ^ m).totient < 4 ^ (2 ^ m) := by
+  have ht : (2 ^ m).totient = 2 ^ (m - 1) := by
+    rw [Nat.totient_prime_pow Nat.prime_two (by omega)]; simp
+  have h4 : (4 : ℕ) ^ (2 ^ m) = 16 ^ (2 ^ (m - 1)) := by
+    rw [show (16 : ℕ) = 4 ^ 2 by norm_num, ← pow_mul,
+      show 2 * 2 ^ (m - 1) = 2 ^ m from by rw [← pow_succ']; congr 1; omega]
+  rw [ht, h4]
+  exact Nat.pow_lt_pow_left (by norm_num) (by positivity)
+
 end ArkLib.ProximityGap.AdditiveEnergyRepBound
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.sidonModNeg_rootsOfUnity_improved
+#print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.improved_threshold_strict
