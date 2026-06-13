@@ -592,6 +592,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CollisionRigidityThreeSwap
 import ArkLib.Data.CodingTheory.ProximityGap.CommonCenterJohnsonRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ComplementQuadric
 import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstance
+import ArkLib.Data.CodingTheory.ProximityGap.ConditionalSqrtCancellation
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
@@ -706,6 +707,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeviationSupSplit
 import ArkLib.Data.CodingTheory.ProximityGap.DivisorListBound
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
+import ArkLib.Data.CodingTheory.ProximityGap.EnergyCharacterTransport
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessCore
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyMinimalF73
 import ArkLib.Data.CodingTheory.ProximityGap.EntropyGateBinomial
@@ -796,6 +798,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GVTowerLevelDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
+import ArkLib.Data.CodingTheory.ProximityGap.GeneralEnergyBound
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralGapCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralKMultiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralPacketCombination
@@ -1292,6 +1295,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QRCubicExactValue
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicOrderedClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicSupplyLower
 import ArkLib.Data.CodingTheory.ProximityGap.QRDegenerateCount
+import ArkLib.Data.CodingTheory.ProximityGap.QREnergyCubicLower
 import ArkLib.Data.CodingTheory.ProximityGap.QRExponentialSum
 import ArkLib.Data.CodingTheory.ProximityGap.QRFrequencySumEval
 import ArkLib.Data.CodingTheory.ProximityGap.QRShiftPairCount
@@ -1641,6 +1645,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.WitnessLayerCount
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentBound
+import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodSidonBound
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianNonVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianStepanovBridge
