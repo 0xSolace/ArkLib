@@ -116,9 +116,22 @@ theorem separated_agree_subsingleton {H : Submodule F (ι → Fin s → F)} {S :
   rw [hSsep, Submodule.mem_bot, sub_eq_zero] at hdiff
   exact hdiff
 
+/-- **Few coordinates determine a low-dimensional subspace (capstone).** For `H ≤ (ι → Fin s → F)`
+with `finrank H ≤ r`, there is a set `S` of at most `r` coordinates such that, for *every* word `y`,
+at most one codeword of `H` agrees with `y` on `S`. Combining `exists_separating_coords` with
+`separated_agree_subsingleton`: this is the constructive list-recovery conclusion — once a
+list-decoder returns a low-dimensional span `H`, its members are pinned by `r` coordinates. -/
+theorem exists_coords_determine (r : ℕ) (H : Submodule F (ι → Fin s → F))
+    (hr : Module.finrank F H ≤ r) :
+    ∃ S : Finset ι, S.card ≤ r ∧
+      ∀ y : ι → Fin s → F, {c : ι → Fin s → F | c ∈ H ∧ ∀ i ∈ S, c i = y i}.Subsingleton := by
+  obtain ⟨S, hScard, hSsep⟩ := exists_separating_coords r H hr
+  exact ⟨S, hScard, fun y => separated_agree_subsingleton hSsep y⟩
+
 end ProximityGap
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProximityGap.exists_separating_coords
 #print axioms ProximityGap.exists_separating_restriction_injective
 #print axioms ProximityGap.separated_agree_subsingleton
+#print axioms ProximityGap.exists_coords_determine
