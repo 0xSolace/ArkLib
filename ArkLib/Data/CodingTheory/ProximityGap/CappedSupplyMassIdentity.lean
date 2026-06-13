@@ -243,6 +243,36 @@ theorem exists_word_cappedSupply_ge (dom : Fin n ↪ F) (k t cap : ℕ) :
   exact ⟨w, hw⟩
 
 open Classical in
+/-- **The Markov tail bound**: large-supply (adversarial) words are rare.  For any
+threshold `λ`, the number of words whose capped supply reaches `λ`, times `λ`, is at
+most the total mass `Σ_w S(w)`.
+
+  `#{w : λ ≤ S(w)} · λ ≤ #code · Σ_j C(n,j)(q−1)^{n−j}C(j,t)`.
+
+With `λ = M · (witness mass)` this says at most a `1/M` fraction of words carry supply
+`M×` the mean — the **average-case** statement.  The sub-Johnson wall is precisely that
+the *worst case* (`∃ w` with large supply) is not controlled by this: a vanishing
+fraction can still be nonempty.  This lemma isolates that gap formally. -/
+theorem cappedSupply_tail_card_mul_le (dom : Fin n ↪ F) (k t cap lam : ℕ) :
+    (Finset.univ.filter
+        (fun w : Fin n → F => lam ≤ cappedSupply dom k t cap w)).card * lam
+      ≤ (codeFinset dom k).card
+        * ∑ j ∈ Finset.range (n + 1),
+            (if t ≤ j ∧ j ≤ cap
+              then n.choose j * (Fintype.card F - 1) ^ (n - j) * j.choose t
+              else 0) := by
+  classical
+  rw [← cappedSupply_mass_identity dom k t cap]
+  set S : (Fin n → F) → ℕ := cappedSupply dom k t cap with hS
+  calc (Finset.univ.filter (fun w => lam ≤ S w)).card * lam
+      = ∑ _w ∈ Finset.univ.filter (fun w => lam ≤ S w), lam := by
+        rw [Finset.sum_const, smul_eq_mul]
+    _ ≤ ∑ w ∈ Finset.univ.filter (fun w => lam ≤ S w), S w :=
+        Finset.sum_le_sum fun w hw => (Finset.mem_filter.mp hw).2
+    _ ≤ ∑ w : Fin n → F, S w :=
+        Finset.sum_le_sum_of_subset (Finset.filter_subset _ _)
+
+open Classical in
 /-- **Capped supply is dominated by the explainable-core count**: unique explainers
 (`k ≤ t`) make the per-codeword core families disjoint, and every core of a family
 member is explainable. -/
@@ -480,5 +510,6 @@ end ProximityGap.PairRank
 #print axioms ProximityGap.PairRank.sum_g_agreeSet_card
 #print axioms ProximityGap.PairRank.cappedSupply_mass_identity
 #print axioms ProximityGap.PairRank.exists_word_cappedSupply_ge
+#print axioms ProximityGap.PairRank.cappedSupply_tail_card_mul_le
 #print axioms ProximityGap.PairRank.cappedSupply_le_explainable_card
 #print axioms ProximityGap.PairRank.explainableCoreSupply_floor
