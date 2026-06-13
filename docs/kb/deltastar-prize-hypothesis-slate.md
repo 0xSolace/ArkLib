@@ -181,3 +181,36 @@ reproduce the same three sinks (Johnson / incomplete-sum / exponential-supply);
 the honest blocker is a missing technique, not a missing hypothesis. The two
 real unlocks remain: fetch P1–P5 for new machinery, or a genuine breakthrough
 on the sub-√q incomplete character sum over μ_n (the common sink of R2/N1/S3).
+
+## Common-sink attack (R2/N1/S3): the subgroup-sum cancellation is the KNOWN √|G|, not a new lead
+
+Attacked the shared sink — the monomial subgroup Gauss sum
+`S(a,j) = |Σ_{x∈μ_n} e_p(a·xʲ)|` — directly (`probe_prize_subgroupsum`,
+`probe_prize_bgk_trend`, prize regime `p ~ nᵝ`).
+
+Finding: `S` is sub-√p (because the subgroup `n < √p`), and `|S|/n` decreases
+with `n` — but `|S|/√n ≈ 5.6` is **constant** across `n = 16..512`. So
+`|S| ~ √n`: SQUARE-ROOT-in-subgroup cancellation, `α ≈ 0.5` (the fitted 0.60
+is a small-n boundary effect).
+
+**This is exactly the in-tree √|G| Parseval / √q-kernel result, re-derived —
+NOT a new technique.** Per-frequency square-root cancellation is already
+known (`SubgroupGaussSum{SecondMoment,WorstCase}`). It does NOT defeat
+`not_explainableCoreSupply_exponential`, because that explosion is a
+**multi-frequency CORRELATION** phenomenon (the esymm-fiber / vanishing-window
+structure of the degree-`(k+m+1)` word forces `centralBinom(s)` cores to
+align across frequencies) — not a single large frequency. Per-frequency
+bounds, even sub-√p (BGK/Bourgain–Garaev), cannot help: the issue is
+correlation, not individual sum size.
+
+**Disposition update (honest correction of an earlier over-optimism):** the
+R2/N1/S3 common sink, examined, reproduces known machinery; the wall is
+specifically the multi-frequency correlation of the explosion construction.
+A real attack must bound the CORRELATED multi-frequency sum (the esymm-fiber
+count), which is the `centralBinom`-exact lower bound the swarm already
+proved — i.e. the explosion is genuinely there, not an artifact a better
+single-sum bound removes. This is strong evidence the deep-band list is
+truly exponential and the prize's positive direction must live at
+Johnson-scale agreement (larger radius), where the esymm construction's
+constraints over-determine and the correlation may break — the genuine
+remaining open question, untouched by per-frequency cancellation.
