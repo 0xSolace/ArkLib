@@ -17,3 +17,21 @@ Probe: `scripts/probes/probe_conj_perfect_Br.py`. Verified p=3,5,7,11; r=2..6 (i
   additive rigidity. Contrasts with composite `n` (relations from Φ_d, d|n) and 2-power `n` (antipodal
   B_2 failure, A1). This is the additive-rigidity root cause of why the prize's 2-power (NTT) domain is
   the hard case and odd-prime domains are generic. Count promoted: +1 (now 5 total).
+
+## Theme B — exact higher-energy closed forms for the 2-power (NTT) subgroup
+
+Probes: `scripts/probes/probe_conj_2power_energy.py`, `probe_conj_e4_2power.py`. Verified n=4..64.
+
+- **B3 (2-power Gaussian-energy closed forms — SURVIVOR, leading term PROVED).** For `n=2^k`:
+    `E_2(μ_n) = 3n²−3n`
+    `E_3(μ_n) = 15n³−45n²+40n`
+    `E_4(μ_n) = 105n⁴−630n³+1435n²−1155n`
+  Leading coefficient is `(2r−1)!!` (the GAUSSIAN moment): 3, 15, 105 for r=2,3,4. PROVED in leading
+  order by the Bessel reduction (`E_r^∞(μ_{2^μ}) ≤ (2r−1)!!nʳ`, wakesync `RungBesselEnergy.lean`);
+  the exact lower-order polynomials are NEW closed forms (verified, not previously pinned).
+  **The A5↔B3 dichotomy (the additive-rigidity spectrum):**
+    odd prime `μ_p`: `E_r ~ r!·nʳ`        (MINIMAL — perfect B_r, permutation-only)
+    2-power `μ_{2^k}`: `E_r ~ (2r−1)!!·nʳ` (MAXIMAL-Bessel — antipodal-inflated, Gaussian)
+  Since `(2r−1)!! ≥ r!` with equality only at r=1, the 2-power subgroup carries strictly more higher
+  energy at every order r≥2 — the quantitative root cause of why the prize's NTT (2-power) domain is
+  the additively hardest case and odd-prime domains are generic. Count promoted: +1 (now 6 total).
