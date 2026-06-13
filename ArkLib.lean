@@ -1273,6 +1273,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RefutationProofs
 import ArkLib.Data.CodingTheory.ProximityGap.RegimeIIBridge
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetInvariance
+import ArkLib.Data.CodingTheory.ProximityGap.RepCountCharZeroBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountDiagonalVanish
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountEnergyNfold
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusInvariance
