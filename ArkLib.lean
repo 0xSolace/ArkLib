@@ -1317,6 +1317,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSpectrumNoImprovement
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSquaresHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetThreePowUpper
+import ArkLib.Data.CodingTheory.ProximityGap.SubplaneSupplyFloor
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumCharacterSum
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumE2PairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumE2PowerSumReduction

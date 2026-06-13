@@ -7780,3 +7780,29 @@ where the only `𝔽_p`-lines have size `q ≫ n`.  Consequence for the programm
 sub-Johnson supply statement is irreducibly DOMAIN-coupled — any proof must use the
 absence of `𝔽_p`-affine structure in the evaluation domain (no-large-subfield /
 additive-unstructuredness of `μ_n`), not just `w ∉ C` and pairwise distance.
+
+#### Addendum (same day, second lane): COMPOSITE subfields obstruct too — at every band (`SubplaneSupplyFloor.lean`)
+
+The Frobenius-secant entry above leaves two gaps, both now closed
+(`SubplaneSupplyFloor.lean`, axiom-clean; probe `probe_subplane_supply.py`, exact at
+`F₉/K=F₃`, `F₂₇/K=F₃`, `F₁₆/K=F₄`):
+
+* **Any prime-power subfield `K`, `r = |K|` — not just the prime one.**  Shear
+  `AG(2, K)` into `F` by `(a,b) ↦ a + λb`, `λ ∉ K`: domain `n = r²` points, word
+  `w(a+λb) = b`.  The `r²+r` lines of the plane become honest degree-`<2` codewords
+  (`y = (sx+c)/(1+λs)`, `y = (x−a₀)/λ`) agreeing with `w` on exactly `r = √n` points
+  each, pairwise `≤ 1` (probe: agreement histogram is `{0,1,r}` ONLY).  In char 2 the
+  Frobenius mechanism is vacuous (`t = 2` fills no core) — here `K = 𝔽_{2^j}` bites at
+  every `j`: **binary-tower (char-2 production) fields carry the explosion whenever
+  the evaluation domain contains a sheared `K`-plane; only PRIME fields are immune to
+  the subfield mechanism.**
+* **Every band at once**: `subplane_supply_floor` — any `B` for
+  `ExplainableCoreSupply dom 2 m B` has `(r²+r)·C(r, 2+m+1) ≤ B`, for ALL `m` with
+  `2+m+1 ≤ r` simultaneously (`≈ n^{(m+3)/2}`, superpolynomial at every fixed band
+  depth) — vs the single tuned band `2+m+1 = p` of the secant floor.
+
+Unchanged verdict, sharpened scope: the sub-Johnson supply statement is irreducibly
+domain-coupled, the coupling needed is *absence of sheared-subfield-plane structure*,
+and the surviving positive targets are prime fields and (conjecturally) smooth `μ_n`
+domains — for binary-tower deployments the supply route is closed unconditionally at
+subfield-aligned domains.
