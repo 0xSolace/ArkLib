@@ -1280,6 +1280,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MonomialDominationBoundaryRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDominationKilled
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDominationPin
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialGammaFibration
+import ArkLib.Data.CodingTheory.ProximityGap.MonomialLineListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialLocusCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialSpectrumEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialStripExplosion
@@ -1486,6 +1487,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SeparationProbability
 import ArkLib.Data.CodingTheory.ProximityGap.SeparationSurvivalCount
 import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
+import ArkLib.Data.CodingTheory.ProximityGap.ShawOperator
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.SidonEnergyIff
