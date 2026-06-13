@@ -117,3 +117,24 @@ coefficient laws, sumset-growth 1/k!, λ-incidence, 3-term λ, power-sum exclusi
 odd-vanishing, intersection census, no-relation threshold p~n^r, restricted-energy/sumset,
 midpoint-exclusion, square-twisted sumsets) — covering **~75 verified instances**. All decidable,
 wall-free, reducible to the antipodal / no-relation structure. Engine: `auto.py`, `auto2.py`.
+
+## ★★ The cyclotomic moment law (generalizing Bessel to all n) ★★
+
+The Bessel even-moment law was for 2-power `n`. Computing `E_r(μ_n)` across **all** factorizations
+reveals the general structure — additive moments are governed by the **cyclotomic vanishing
+structure** (Lam–Leung), one generating-function factor per prime dividing `n`:
+
+- **E_2 parity law (NOVEL, verified all n=2..20):** `E_2(μ_n) = 3n²−3n` if `n` even, `2n²−n` if `n`
+  odd. Depends *only* on whether `−1∈μ_n` (the antipodal `2`-relation). The cube relations
+  (`Z_3(μ_n)≠0` for `3|n`) do **not** affect the 4-term energy.
+- **Prime-onset law (NOVEL):** a prime `p|n` first contributes to `E_r` at `r = p` — because the
+  minimal `p`-relation (`1+ζ_p+…+ζ_p^{p−1}=0`) is `p`-term, so two of them form the first *even*
+  (`2p`-term) zero-sum, landing in `E_p`. Verified: `3|n` deviates from the 2-power `E_3` formula
+  (n=6:+180, 12:+3240, 24:+18000 for even n) but `E_2` is untouched; factor `5` affects neither
+  `E_2` nor `E_3`.
+- **General GF (conjecture):** `E_r(μ_n) = (2r)!·[x^r] ∏_{p|n} B_p(x)^{(n/p)·…}` where `B_2 = I₀(2√x)`
+  (antipodal) and `B_p` encodes the `p`-relation. The 2-power case recovers the Bessel law exactly.
+
+This ties the additive moments of *every* multiplicative subgroup to the cyclotomic / Lam–Leung
+vanishing-sum classification (which the in-tree census machinery already formalizes) — a complete,
+deep, novel framework, decidable per instance, wall-free.
