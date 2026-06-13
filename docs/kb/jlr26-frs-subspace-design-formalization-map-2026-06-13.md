@@ -954,3 +954,28 @@ genuine structure for the PTE-energy object, but the prize-relevant `#bad` bound
 pencil→γ→subset dictionary (their lane). My contribution: evidence the demand's worst-case is
 tower/coset-structured (the 2-power lever is real), with an honest scope flag that I'm one projection
 away from their exact prize quantity. The general-r prize bound remains open on the demand lane.
+
+## 34. The exact #bad object + the bound MECHANISM (why K is the budget) — antipodal subset-sums
+
+Read the proven r=3 object (`DeepBandR3Bound.lean`, axiom-clean): **`deepBandBadCount = 2(n/4)²(n/4−1)+1`**
+(g=n/4; n=16→97, n=32→897, n=64→7681), bad scalar **`γ = −e₁(S) = −Σ_{s∈S}ζ`** (`badscalar_eq_neg_subset_sum`,
+Vieta), proven `≤ K = 2^r·C(n/2,r)` (`deepBandBadCount_le_budget`).
+
+**The bound mechanism, clarified.** `#bad(r) = #{distinct subset-sums −e₁(S)}` over aligning r-subsets S.
+The budget `K = 2^r·C(n/2,r)` is EXACTLY the count of antipodal-structured subset sums `Σ_{i}±ζ^{aᵢ}`
+(choose r of the n/2 antipodal classes, 2^r signs). So:
+
+  **`#bad(r) ≤ K  ⟺  the aligning subset-sums e₁(S) lie among the antipodal sums Σ±ζ^{aᵢ}.`**
+
+This is why the antipodal/2-power structure is THE lever (NubsCarson's named target, my §33 tower
+recursion): the bad scalars are subset sums, and the bound is that they don't exceed the antipodal
+subset-sum count. For r=3 this is PROVEN (the 2(n/4)²(n/4−1)+1 ≤ 2³C(n/2,3) arithmetic). For general r
+the aligning subsets for the RESONANT maximizer must be shown antipodal-bounded — the open step. My
+tower recursion (`#bad_S(r,μ_n)=#bad_{σ(S)}(r/2,μ_{n/2})` for antipodal S) is the structural tool; the
+gap is extending it to the resonant maximizer's subset sums.
+
+**Net (exact-object understanding).** The prize's demand form = `#{distinct aligning subset-sums} ≤
+#{antipodal subset-sums} = K`, general r. r=3 proven; the antipodal/tower structure is the lever; the
+resonant-maximizer extension is the open new math. This pins the bound mechanism precisely (subset-sum
+counting vs the antipodal budget) — the cleanest statement of the demand-side open core, connecting my
+tower recursion to the exact in-tree object. General-r remains open on the demand lane.
