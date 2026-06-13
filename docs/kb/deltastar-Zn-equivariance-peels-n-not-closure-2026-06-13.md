@@ -36,3 +36,17 @@ closed factor `n` but the **residual `#orbits` is the open problem `/n`**, not a
   piece (the `n` factor) — which sharpens the open core to **the orbit count**, a strictly smaller object.
 
 No closure claimed. This is the most structurally novel reduction of the session; the residual is honest.
+
+## UPDATE — the "generic prime pins #orbits" hope is REFUTED (probe_orbit_torsion_refute.py)
+Scanned p≡1 mod 16 up to 1217 at band δ=0.438 (n=16,k=8,a=9), correlating #orbits with the
+factorization of the cofactor (p−1)/16:
+- "Generic" primes (cofactor prime) give #orbits = **7 (p=113), 0 (p=593), 0 (p=977)** — ERRATIC,
+  no stable minimum. The largest list (112) is at p=113, a cofactor-PRIME (so "generic" by smoothness).
+- For most primes p≥449 the list at this band is **0** (MCA holds); nonzero only at special small p.
+
+So #orbits is NOT a closed generic value tied to field smoothness — it is exactly the
+**spurious-collision count**: 0 for generic fields, nonzero only at the special "collision" primes
+where the subgroup r-fold sumset degenerates mod p. That is the additive-energy/character-sum content
+divided by n. The smoothness hypothesis is false (variation is the full erratic collision structure,
+not small-torsion spikes). **The equivariance line is fully explored: partial closure (factor n) stands;
+#orbits is the hard residual, REFUTED as closable. No closure.**
