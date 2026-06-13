@@ -653,6 +653,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEps
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEpsSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentSharp
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSubsetSumSpectrum
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSupplyExponential
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSupplyGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSupplyTheorem
