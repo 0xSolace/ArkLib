@@ -76,6 +76,28 @@ theorem prizeDeltaStar_lt_capacity {ρ B : ℝ} (hρ0 : 0 < ρ) (hρ1 : ρ < 1) 
   have : 0 < Real.binEntropy ρ / Real.logb 2 B := div_pos hH hlog
   linarith
 
+/-- **The closed form is strictly ABOVE the Johnson radius** `1 − √ρ` (hence strictly inside
+the prize window `(1−√ρ, 1−ρ)` together with `prizeDeltaStar_lt_capacity`), exactly when the
+list budget is large enough: `log₂ B > H(ρ)/(√ρ − ρ)`.  At the prize rates and
+`log₂ B ∈ {40,64,128}` this holds with room to spare — so the entropy ceiling is a genuine
+*in-window* (beyond-Johnson) result, not a below-Johnson triviality. -/
+theorem prizeDeltaStar_gt_johnson {ρ B : ℝ} (hρ0 : 0 < ρ) (hρ1 : ρ < 1)
+    (hbudget : Real.binEntropy ρ / (Real.sqrt ρ - ρ) < Real.logb 2 B) :
+    1 - Real.sqrt ρ < prizeDeltaStar ρ B := by
+  have hsqrt : ρ < Real.sqrt ρ := by
+    have h1 : Real.sqrt ρ * Real.sqrt ρ = ρ := Real.mul_self_sqrt hρ0.le
+    nlinarith [Real.sqrt_nonneg ρ, Real.sqrt_pos.mpr hρ0]
+  have hden : 0 < Real.sqrt ρ - ρ := by linarith
+  have hH : 0 < Real.binEntropy ρ := Real.binEntropy_pos hρ0 hρ1
+  have hlog : 0 < Real.logb 2 B := lt_trans (div_pos hH hden) hbudget
+  -- from hbudget: H(ρ) < (√ρ − ρ)·logb, i.e. H(ρ)/logb < √ρ − ρ
+  have hkey : Real.binEntropy ρ / Real.logb 2 B < Real.sqrt ρ - ρ := by
+    rw [div_lt_iff₀ hlog]
+    rw [div_lt_iff₀ hden] at hbudget
+    linarith
+  unfold prizeDeltaStar
+  linarith
+
 /-- **THE PRIZE FLOOR STATEMENT** — the single open core, stated closed (no residual).
 For the explicit smooth-domain RS code at constant rate `ρ`, every received word's list at
 any radius strictly below `prizeDeltaStar ρ (q·ε*)` has at most `q·ε*` codewords — i.e. the
@@ -120,4 +142,5 @@ theorem prizeDeltaStar_ceiling {p n : ℕ} [Fact p.Prime] [NeZero n] {μ m r : �
 end ProximityGap.PrizeEntropy
 
 #print axioms ProximityGap.PrizeEntropy.prizeDeltaStar_lt_capacity
+#print axioms ProximityGap.PrizeEntropy.prizeDeltaStar_gt_johnson
 #print axioms ProximityGap.PrizeEntropy.prizeDeltaStar_ceiling
