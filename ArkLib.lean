@@ -1220,6 +1220,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QuartetTowerLaw
 import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
 import ArkLib.Data.CodingTheory.ProximityGap.QuotientDeepCore
 import ArkLib.Data.CodingTheory.ProximityGap.RSAveragingDeltaStarUpper
+import ArkLib.Data.CodingTheory.ProximityGap.RSDeltaStarLDGoodSide
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityGap.RSInterleavedLambdaSubJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.RSLambdaJohnson
