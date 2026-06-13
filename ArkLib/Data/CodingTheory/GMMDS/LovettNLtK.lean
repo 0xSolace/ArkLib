@@ -242,5 +242,45 @@ theorem lovettHolds_nLtK {V : Fin m → (Fin n → ℕ)} {k : ℕ} (hk : 1 ≤ k
   rw [linearIndependent_fractionField_iff]
   exact hgKindep
 
+/-! ## The unified primitive-case assembly (`n = k` ∨ `n < k`) -/
+
+/-- **The primitive-case assembly** (Lovett §2 final step).  From the structured witness
+`vᵢ₀ = (1,…,1,0)` (Lemma 2.5) and the `d`-induction hypothesis, the primitive system `V` is
+independent.  We always have `n ≤ k` (`witness_n_le_k`), and split:
+
+* `n = k`: the witness block has size `k − |vᵢ₀| = k − (n − 1) = 1`; close by one-vector
+  separation (`lovettHolds_of_witness_nEqK`).
+* `n < k`: the genuine Lovett Lemma 2.6 / final contradiction, proven directly
+  (`lovettHolds_nLtK`): raise the witness and transfer independence via the block-span identity. -/
+theorem lovettHolds_of_witness {m : ℕ} {V : Fin m → (Fin n → ℕ)} {k : ℕ} (hk : 1 ≤ k)
+    (hV : IsVStar V k) (hw : LovettWitness F V k)
+    (IHd : ∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
+      lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k) :
+    LovettHolds F V k := by
+  obtain ⟨hn, i₀, hone⟩ := hw
+  have hle : n ≤ k := witness_n_le_k hk hV hn hone
+  rcases lt_or_eq_of_le hle with hlt | heq
+  · exact lovettHolds_nLtK hk hV hn hone hlt IHd
+  · exact lovettHolds_of_witness_nEqK hk hV hn hone heq IHd
+
+/-- **The primitive step reduces to the witness residual** (Lemma 2.5 existence). -/
+theorem lovettPrimitiveStep_of_witnessExists (hw : LovettWitnessExists F) :
+    LovettPrimitiveStep F := by
+  intro n m V k hk hV hprim IHn IHd
+  exact lovettHolds_of_witness hk hV (hw V k hk hV hprim IHn IHd) IHd
+
+/-- **`LovettPrimitiveCase` (and full Theorem 1.7) reduce to the witness residual.** -/
+theorem lovettPrimitiveCase_of_witnessExists (hw : LovettWitnessExists F) {n : ℕ} :
+    LovettPrimitiveCase F n :=
+  lovettPrimitiveCase_of_primitiveStep (lovettPrimitiveStep_of_witnessExists hw)
+
+theorem lovettThm17_of_witnessExists (hw : LovettWitnessExists F) {n : ℕ} : LovettThm17 F n :=
+  lovettThm17_of_primitiveStep (lovettPrimitiveStep_of_witnessExists hw)
+
 end ArkLib.GMMDS
+
+-- Axiom audit
 #print axioms ArkLib.GMMDS.lovettHolds_nLtK
+#print axioms ArkLib.GMMDS.lovettHolds_of_witness
+#print axioms ArkLib.GMMDS.lovettPrimitiveStep_of_witnessExists
+#print axioms ArkLib.GMMDS.lovettThm17_of_witnessExists

@@ -40,12 +40,16 @@ def oneVec (n : ℕ) (hn : 1 ≤ n) : Fin n → ℕ :=
 theorem oneVec_last {n : ℕ} (hn : 1 ≤ n) : oneVec n hn (lastCoord n hn) = 0 := by
   simp [oneVec, lastCoord]
 
-/-- **The structured witness** (combined Lemmas 2.5 + 2.6).  In a *primitive* `V*(k)` system,
-some vector is *exactly* `(1,…,1,0)`.  Lemma 2.5 produces a `(1,…,1,0)` vector (of weight `n−1`),
-and Lemma 2.6 (`n = k`) makes its weight `k − 1`, so the corresponding block `P(k, {vᵢ₀})` has
-size `k − |vᵢ₀| = 1`.  This packages the entire combinatorial core of Lovett §2. -/
+/-- **The structured witness** (Lovett's Lemma 2.5).  In a *primitive* `V*(k)` system, some
+vector is *exactly* `(1,…,1,0)` of weight `n − 1`.
+
+This is **only** Lemma 2.5 — it does **not** demand `n = k`.  (The earlier definition bundled the
+conjunct `n = k`, which is Lemma 2.6's *conclusion under a dependent minimal counterexample* and is
+**false** as a standalone demand: the primitive `V*(3)` system `[(1,0),(0,2)]` with `n = 2 < 3 = k`
+has a `(1,…,1,0)` vector yet is genuinely independent — see `LovettWitnessCounterexample`.)  The
+`n = k` versus `n < k` split is handled downstream in `lovettHolds_of_witness`. -/
 def LovettWitness (F : Type*) [Field F] {n m : ℕ} (V : Fin m → (Fin n → ℕ)) (k : ℕ) : Prop :=
-  ∃ (hn : 1 ≤ n) (i₀ : Fin m), V i₀ = oneVec n hn ∧ n = k
+  ∃ (hn : 1 ≤ n) (i₀ : Fin m), V i₀ = oneVec n hn
 
 /-- **A reindexed subfamily of a `V*(k)` system is again `V*(k)`.**  If `σ : Fin m' → Fin m` is
 injective and `V` satisfies `V*(k)`, then `V ∘ σ` satisfies `V*(k)`.  (The MDS inequality (ii)
@@ -181,18 +185,18 @@ theorem sigmaSplitEquiv_isSome {m' : ℕ} (G : Fin (m' + 1) → ℕ) (i₀ : Fin
   · simpa using hq2
   · rfl
 
-/-- **The primitive-case assembly.**  From the structured witness (Lemmas 2.5 + 2.6) and the
+/-- **The primitive-case assembly, `n = k` branch** (Lovett's final contradiction).  From the
+structured witness `vᵢ₀ = (1,…,1,0)` *with* `n = k` (so `|vᵢ₀| = n − 1 = k − 1`) and the
 `d`-induction hypothesis, the primitive system `V` is independent: drop the witness block
 (a single polynomial, since `k − |vᵢ₀| = 1`), apply the IH to the remaining `V*(k)` subfamily,
 and re-attach via one-vector separation (`linearIndependent_separate_one`), since every other
 vector has a `1` in the last coordinate (`witness_others_last_pos`) while `vᵢ₀` does not. -/
-theorem lovettHolds_of_witness {m : ℕ} {V : Fin m → (Fin n → ℕ)} {k : ℕ} (hk : 1 ≤ k)
-    (hV : IsVStar V k) (hw : LovettWitness F V k)
+theorem lovettHolds_of_witness_nEqK {m : ℕ} {V : Fin m → (Fin n → ℕ)} {k : ℕ} (hk : 1 ≤ k)
+    (hV : IsVStar V k) (hn : 1 ≤ n) {i₀ : Fin m} (hone : V i₀ = oneVec n hn) (hnk : n = k)
     (IHd : ∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
       lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k) :
     LovettHolds F V k := by
   classical
-  obtain ⟨hn, i₀, hone, hnk⟩ := hw
   -- m ≥ 1, write m = m' + 1
   have hmpos : 1 ≤ m := Nat.one_le_iff_ne_zero.mpr (fun h => by subst h; exact i₀.elim0)
   obtain ⟨m', rfl⟩ : ∃ m', m = m' + 1 := ⟨m - 1, by omega⟩
@@ -295,20 +299,33 @@ def LovettWitnessExists (F : Type*) [Field F] : Prop :=
       lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k) →
     LovettWitness F V k
 
-/-- **The primitive step reduces to the witness residual.**  Given the witness exists, the
-primitive case is closed by `lovettHolds_of_witness`. -/
-theorem lovettPrimitiveStep_of_witnessExists (hw : LovettWitnessExists F) :
-    LovettPrimitiveStep F := by
-  intro n m V k hk hV hprim IHn IHd
-  exact lovettHolds_of_witness hk hV (hw V k hk hV hprim IHn IHd) IHd
-
-/-- **`LovettPrimitiveCase` (and full Theorem 1.7) reduce to the witness residual.** -/
-theorem lovettPrimitiveCase_of_witnessExists (hw : LovettWitnessExists F) {n : ℕ} :
-    LovettPrimitiveCase F n :=
-  lovettPrimitiveCase_of_primitiveStep (lovettPrimitiveStep_of_witnessExists hw)
-
-theorem lovettThm17_of_witnessExists (hw : LovettWitnessExists F) {n : ℕ} : LovettThm17 F n :=
-  lovettThm17_of_primitiveStep (lovettPrimitiveStep_of_witnessExists hw)
+/-- The `n ≤ k` constraint always available from a witness: `|vᵢ₀| = n − 1` and `|vᵢ₀| ≤ k − 1`
+(weight bound (i)) give `n − 1 ≤ k − 1`, hence `n ≤ k`.  So `lovettHolds_of_witness` need only
+split on `n = k` versus `n < k`. -/
+theorem witness_n_le_k {m : ℕ} {V : Fin m → (Fin n → ℕ)} {k : ℕ} (hk : 1 ≤ k)
+    (hV : IsVStar V k) (hn : 1 ≤ n) {i₀ : Fin m} (hone : V i₀ = oneVec n hn) : n ≤ k := by
+  classical
+  have hwt : vAbs (V i₀) = n - 1 := by
+    rw [hone]
+    have hwt' : vAbs (oneVec n hn) = n - 1 := by
+      classical
+      unfold vAbs oneVec
+      rw [Finset.sum_ite, Finset.sum_const, Finset.sum_const]
+      simp only [smul_eq_mul, mul_one, mul_zero, add_zero]
+      have hcard : (Finset.univ.filter (fun x : Fin n => (x : ℕ) < n - 1)).card = n - 1 := by
+        rw [show (n-1) = (Finset.range (n-1)).card from (Finset.card_range _).symm]
+        apply Finset.card_bij (fun (x : Fin n) _ => (x : ℕ))
+        · intro a ha
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and] at ha ⊢; simpa using ha
+        · intro a _ b _ h; exact Fin.val_injective h
+        · intro b hb
+          simp only [Finset.mem_range] at hb
+          refine ⟨⟨b, by omega⟩, ?_, rfl⟩
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and]; simpa using hb
+      rw [hcard]
+    exact hwt'
+  have := hV.weight_le i₀
+  omega
 
 end ArkLib.GMMDS
 
@@ -316,6 +333,5 @@ end ArkLib.GMMDS
 #print axioms ArkLib.GMMDS.isVStar_comp
 #print axioms ArkLib.GMMDS.witness_others_last_pos
 #print axioms ArkLib.GMMDS.lovettD_succAbove_lt
-#print axioms ArkLib.GMMDS.lovettHolds_of_witness
-#print axioms ArkLib.GMMDS.lovettPrimitiveStep_of_witnessExists
-#print axioms ArkLib.GMMDS.lovettThm17_of_witnessExists
+#print axioms ArkLib.GMMDS.lovettHolds_of_witness_nEqK
+#print axioms ArkLib.GMMDS.witness_n_le_k

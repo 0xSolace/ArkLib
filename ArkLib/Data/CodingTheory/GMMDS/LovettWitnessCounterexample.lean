@@ -7,14 +7,13 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettLemma2456
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma24
 
 /-!
-# Lovett's GM-MDS proof: `LovettWitnessExists` is a FALSE residual (#389)
+# Lovett's GM-MDS proof: the witness counterexample (REPAIR DONE) (#389)
 
 The in-tree residual `LovettWitnessExists` (`LovettLemma2456.lean`) packages the combinatorial
-core of Lovett's §2 (Lemmas 2.4–2.6, arXiv:1803.02523) as: *every primitive `V*(k)` system
-contains an index `i₀` with `V i₀ = (1,…,1,0)` **and** `n = k`*.
-
-**The `n = k` conjunct is not derivable** and makes `LovettWitnessExists` false.  This file
-exhibits a fully explicit counterexample:
+core of Lovett's §2 (Lemmas 2.4–2.6, arXiv:1803.02523).  An earlier version of `LovettWitness`
+demanded *every primitive `V*(k)` system contains an index `i₀` with `V i₀ = (1,…,1,0)` **and**
+`n = k`*.  **The `n = k` conjunct was not derivable** and made the residual false.  This file
+exhibits the explicit counterexample that diagnosed it:
 
 `n = 2`, `k = 3`, `m = 2`, `V = (v₀, v₁)` with `v₀ = (1,0)` and `v₁ = (0,2)`.
 
@@ -23,23 +22,20 @@ exhibits a fully explicit counterexample:
 * `cexV_not_reducible` — `V` is **not** reducible (no coordinate is `≥ 1` everywhere), so the
   minimal-counterexample master frame routes it to the *primitive* step, where the witness is
   demanded.
-* `cexV_no_witness` — `LovettWitness F V 3` is false (it would force `2 = 3`).
+* `cexV_n_ne_k` — here `n = 2 ≠ 3 = k`, so the old `n = k` demand was genuinely false.
 
-The deeper fact (verified externally, not formalised here) is that `P(3, V)` is *linearly
-independent* — its coefficient determinant over `F(a)` is `(a₁ − a₂)²`, the polynomials being
-`{x − a₁, (x − a₁)x, (x − a₂)²}`.  So this is **not** a counterexample to Theorem 1.7: it is a
-genuine independent primitive `V*(k)` system with `n < k`.  Lovett's Lemma 2.6 (`n = k`) only
-excludes `n < k` for a *dependent* minimal counterexample (it assumes `P(k,V)` dependent and
-substitutes `x = aₙ`); in the IH-packaging used by `lovettHolds_of_witness`, independence of
-`P(k,V)` is the *goal*, not a hypothesis, so `n < k` cannot be ruled out and the `n = k` clause
-fails.
+The deeper fact is that `P(3, V)` is *linearly independent* — its coefficient determinant over
+`F(a)` is `(a₁ − a₂)²`, the polynomials being `{x − a₁, (x − a₁)x, (x − a₂)²}`.  So this is **not**
+a counterexample to Theorem 1.7: it is a genuine independent primitive `V*(k)` system with `n < k`.
 
-**Repair (future work).**  Drop `n = k` from `LovettWitness`, keeping only Lemma 2.5
-(`∃ i₀, V i₀ = (1,…,1,0)`).  Then `lovettHolds_of_witness` must split on `n = k` vs `n < k`: the
-latter case is the genuine algebraic Lemma 2.6 / final contradiction proven as a *direct*
-independence statement (`P(k,V)` and the raised-vector family span the same space; the raised
-family has strictly smaller `d`, so the `d`-IH makes it independent; the separated factor
-`p = ∏_{j<n−1}(x − aⱼ)` closes it).  See the module docstring of `LovettLemma2456` and issue #389.
+**Repair (DONE).**  `LovettWitness` now drops `n = k`, keeping only Lemma 2.5
+(`∃ i₀, V i₀ = (1,…,1,0)`).  `lovettHolds_of_witness` (in `LovettNLtK.lean`) splits on `n = k`
+vs `n < k`: the `n = k` branch is the one-vector separation (`lovettHolds_of_witness_nEqK`); the
+`n < k` branch is the genuine algebraic Lemma 2.6 / final contradiction proven as a *direct*
+independence statement (`lovettHolds_nLtK`: raise `vᵢ₀`, transfer via the block-span identity, the
+`d`-IH, and the separated factor `p = ∏_{j<n−1}(x − aⱼ)`).  Accordingly this file now records
+`cexV_has_witness`: the *repaired* `LovettWitness` is **satisfiable** on this system (routed
+through the `n < k` branch), not a false demand.
 
 Issue #389.
 -/
@@ -131,28 +127,25 @@ theorem cexV_isVStar : IsVStar cexV 3 := by
     subst hl0
     fin_cases i <;> decide
 
-/-- **`LovettWitness F V 3` is false.**  It would require `n = k`, i.e. `2 = 3`. -/
-theorem cexV_no_witness (F : Type*) [Field F] : ¬ LovettWitness F cexV 3 := by
-  rintro ⟨hn, i₀, hone, hnk⟩
-  exact absurd hnk (by norm_num)
+/-- `cexV 0 = (1,0) = oneVec 2`. -/
+theorem cexV_zero_eq_oneVec : cexV 0 = oneVec 2 (by norm_num) := by
+  funext j; fin_cases j <;> rfl
 
-/-- **`LovettWitnessExists` is false.**  Instantiating at the counterexample system would force a
-witness with `n = k`, contradicting `cexV_no_witness`.  (The IH hypotheses of `LovettWitnessExists`
-are true — Theorem 1.7 holds — so they cannot rescue the statement.) -/
-theorem not_lovettWitnessExists_unconditional
-    (F : Type*) [Field F]
-    (IHn : ∀ {n' m' : ℕ} (V' : Fin m' → (Fin n' → ℕ)) (k' : ℕ),
-      n' < 2 → 1 ≤ k' → IsVStar V' k' → LovettHolds F V' k')
-    (IHd : ∀ {m' : ℕ} (V' : Fin m' → (Fin 2 → ℕ)),
-      lovettD V' 3 < lovettD cexV 3 → IsVStar V' 3 → LovettHolds F V' 3) :
-    ¬ LovettWitnessExists F := by
-  intro hw
-  exact cexV_no_witness F
-    (hw cexV 3 (by norm_num) cexV_isVStar cexV_primitive IHn IHd)
+/-- **The *repaired* `LovettWitness F V 3` holds.**  After dropping the false `n = k` conjunct,
+`LovettWitness` is exactly Lemma 2.5 (`∃ i₀, V i₀ = (1,…,1,0)`), and the counterexample system
+*does* contain such a vector (`v₀ = (1,0)`).  So the repaired residual is **satisfiable** here —
+confirming the repair routes this system through the genuine `n < k` branch
+(`ArkLib.GMMDS.lovettHolds_nLtK`) rather than a vacuous/false demand. -/
+theorem cexV_has_witness (F : Type*) [Field F] : LovettWitness F cexV 3 :=
+  ⟨by norm_num, 0, cexV_zero_eq_oneVec⟩
+
+/-- **The old `n = k` conjunct is genuinely false here.**  This is *why* the previous
+`LovettWitness` definition (which bundled `n = k`) was an unprovable, false residual: the
+counterexample has `n = 2 ≠ 3 = k`. -/
+theorem cexV_n_ne_k : (2 : ℕ) ≠ 3 := by norm_num
 
 end ArkLib.GMMDS
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.GMMDS.cexV_isVStar
-#print axioms ArkLib.GMMDS.cexV_no_witness
-#print axioms ArkLib.GMMDS.not_lovettWitnessExists_unconditional
+#print axioms ArkLib.GMMDS.cexV_has_witness

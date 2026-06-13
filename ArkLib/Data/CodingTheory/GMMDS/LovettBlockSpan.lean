@@ -38,13 +38,13 @@ variable {R : Type*} [CommRing R]
 /-! ## The univariate block-span identity -/
 
 /-- The "raised" block generator `w·(x−c)·xᵉ`. -/
-private noncomputable def rblk (w : R[X]) (c : R) (e : ℕ) : R[X] := w * (X - C c) * X ^ e
+noncomputable def rblk (w : R[X]) (c : R) (e : ℕ) : R[X] := w * (X - C c) * X ^ e
 
 /-- The "plain" block generator `w·xᵉ`. -/
-private noncomputable def pblk (w : R[X]) (e : ℕ) : R[X] := w * X ^ e
+noncomputable def pblk (w : R[X]) (e : ℕ) : R[X] := w * X ^ e
 
 /-- `w·(x−c)·xᵉ` lies in the span of the plain block `{w·xᵉ : e ≤ d}` whenever `e + 1 ≤ d`. -/
-private theorem rblk_mem_span_pblk (w : R[X]) (c : R) {d e : ℕ} (he : e + 1 ≤ d) :
+theorem rblk_mem_span_pblk (w : R[X]) (c : R) {d e : ℕ} (he : e + 1 ≤ d) :
     rblk w c e ∈ Submodule.span R (Set.range (fun i : Fin (d + 1) => pblk w (i : ℕ))) := by
   -- w·(x−c)·xᵉ = w·xᵉ⁺¹ − c·(w·xᵉ)
   have hexp : rblk w c e = pblk w (e + 1) - c • pblk w e := by
@@ -56,7 +56,7 @@ private theorem rblk_mem_span_pblk (w : R[X]) (c : R) {d e : ℕ} (he : e + 1 �
 
 /-- The plain block `{w·xᵉ : e ≤ d}` is contained in the span of the raised block together with
 `w` itself: `w·xᵉ` is built by the telescoping `w·xᵉ = w·(x−c)·xᵉ⁻¹ + c·w·xᵉ⁻¹`. -/
-private theorem pblk_mem_span_rblk (w : R[X]) (c : R) (d : ℕ) :
+theorem pblk_mem_span_rblk (w : R[X]) (c : R) (d : ℕ) :
     ∀ e ≤ d, pblk w e ∈
       Submodule.span R
         (insert w (Set.range (fun i : Fin d => rblk w c (i : ℕ)))) := by
