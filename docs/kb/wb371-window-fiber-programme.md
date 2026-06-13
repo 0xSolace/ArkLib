@@ -166,3 +166,32 @@ at t₀ = 7 covers all δ < 5/8), and the literal instance wiring
 4694739379. Open heart: the class-coexistence count (probe ceiling 22,
 margin 9; per-class and pencil-root caps proven, all-equal-kernel cap and
 pool ≤ 2 unproven).
+
+## Negative result: bookkeeping-only assembly routes are insufficient
+
+With the class keystone landed (`RungClassPartition.lean`), the gap is
+exactly `#solo + Σ_classes (n−|A_j|) ≤ 30`. Two natural counting-only
+routes FAIL — recorded so nobody re-walks them:
+
+1. **T-multiplicity (3-subset Fisher with class corrections)**:
+   `35·#Γ⁺ ≤ 560 + Σ_K E_K`, `E_K ≤ Σ C(w_i,3) − C(w_max,3)`. Leaks at
+   two `a = 8` classes with `w = 8` members (witnesses ⊇ A, size 9):
+   bound evaluates to 38 > 31 while the config shape is realizable (it is
+   the pencil with enlarged witnesses; truth there is 16). Big witnesses
+   make C(w,3) grow at off-cost 1 — the route cannot distinguish
+   configuration capacity from algebraic realizability.
+2. **Linear exchange (35·#solo + 15·Σc ≤ 560)**: per-member unique-T
+   count ≥ C(6,2) = 15 is tight at (w=6, off=1); the LP optimum allows
+   Σc = 37 > 30 at #solo = 0 (e.g. three glued size-6 classes), which
+   only the GLUING rigidity excludes.
+
+**Conclusion**: the class-coexistence proof must use the algebraic
+coupling — the per-class candidate map `γ_K(x) = −(R₀−r_K)(x)/(R₁−q_K)(x)`
+(every member's scalar is pinned at EVERY off-point: multi-point off-parts
+force ratio constancy), the cross-class collision pencil
+`Ψ_{12} = R₀·Δq − R₁·Δr + (r₁q₂−r₂q₁)` (deg ≤ deg R₀R₁ shape, rank-2 in
+(R₀,R₁)), and the gluing equation `q₂−q₁ = m_{A₁}h₁ − m_{A₂}h₂` whose
+3-class version exhibits the one-level-down recursion (Φᵢ = m_{A_i}h_i
+pairwise deg≤2-close ⟹ Φ has the same agreement structure as R₁, one
+level down). Empirical margin: ceiling 22 vs budget 31 — crude forms of
+these laws suffice.
