@@ -108,7 +108,76 @@ theorem badScalars_monomial_eq_degreeLTSucc (domain : ι ↪ F) (δ : ℝ≥0) (
         simp only [map_add, map_smul, Pi.add_apply, Pi.smul_apply]
       rw [hev, hq i hiS]
 
+/-- **Evaluation is injective on low-degree polynomials.** Over `≥ d` distinct points, the only
+degree-`<d` polynomial that evaluates to a fixed word is unique — a degree-`<d` difference vanishing
+at `d` points is `0`. (`Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero'`.) -/
+private theorem evalOnPoints_inj_of_degree_lt {d : ℕ} (domain : ι ↪ F)
+    (hd : d ≤ Fintype.card ι) {q q' : F[X]}
+    (hq : q.degree < (d : WithBot ℕ)) (hq' : q'.degree < (d : WithBot ℕ))
+    (h : ReedSolomon.evalOnPoints domain q = ReedSolomon.evalOnPoints domain q') : q = q' := by
+  rw [← sub_eq_zero]
+  have hdeg : (q - q').degree < (d : WithBot ℕ) :=
+    lt_of_le_of_lt (Polynomial.degree_sub_le _ _) (max_lt hq hq')
+  apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero' (q - q') (Finset.univ.map domain)
+  · intro x hx
+    simp only [Finset.mem_map, Finset.mem_univ, true_and] at hx
+    obtain ⟨i, rfl⟩ := hx
+    have hi := congrFun h i
+    simp only [ReedSolomon.evalOnPoints, LinearMap.coe_mk, AddHom.coe_mk] at hi
+    rw [Polynomial.eval_sub, hi, sub_self]
+  · rw [Finset.card_map, Finset.card_univ]
+    by_cases hz : q - q' = 0
+    · simp only [hz, Polynomial.natDegree_zero]; exact Fintype.card_pos
+    · calc (q - q').natDegree < d := (Polynomial.natDegree_lt_iff_degree_lt hz).mpr hdeg
+        _ ≤ Fintype.card ι := hd
+
+/-- **The MCA bad-count is bounded by the list-decoding list size of `RS[k+1]` (the literal
+inequality).** When `k+1 ≤ n` (so evaluation pins down the lifted polynomial), the number of bad
+scalars of the monomial line `(u₀, X^k)` for `RS[k]` at radius `δ` is at most the number of
+`RS[k+1]`-codewords that `(1−δ)n`-agree with `u₀` — i.e. the size of the radius-`δn` list of the
+`+1`-lifted code. The injection sends each bad `γ` to the lifted codeword, distinct because their
+`X^k`-coefficients `−γ` differ and evaluation is injective in degree `< k+1`. This is the operative
+form for the prize: any list lower bound on `RS[μ_n, k+1]` becomes a `δ*` upper bracket via
+`epsMCA_ge_far_incidence`, and any list upper bound becomes a `δ*` lower bracket. -/
+theorem badScalars_monomial_card_le_listSize (domain : ι ↪ F) (δ : ℝ≥0) (u₀ : ι → F) (k : ℕ)
+    (hk : k + 1 ≤ Fintype.card ι) :
+    let liftedList : Finset (ι → F) := by
+      classical
+      exact Finset.univ.filter (fun e : ι → F => e ∈ ReedSolomon.code domain (k + 1) ∧
+        ∃ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι ∧
+          ∀ i ∈ S, e i = u₀ i)
+    (explainableScalars (F := F) (↑(ReedSolomon.code domain k) : Set (ι → F)) δ u₀
+        (ReedSolomon.evalOnPoints domain (X ^ k))).card
+      ≤ liftedList.card := by
+  classical
+  dsimp only
+  have key : ∀ γ ∈ explainableScalars (F := F) (↑(ReedSolomon.code domain k) : Set (ι → F)) δ u₀
+        (ReedSolomon.evalOnPoints domain (X ^ k)),
+      ∃ q : F[X], q ∈ Polynomial.degreeLT F (k + 1) ∧ q.coeff k = -γ ∧
+        ∃ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι ∧
+          ∀ i ∈ S, ReedSolomon.evalOnPoints domain q i = u₀ i := by
+    intro γ hγ
+    obtain ⟨S, hS, q, hq, hc, ha⟩ := (badScalars_monomial_eq_degreeLTSucc domain δ u₀ k γ).mp hγ
+    exact ⟨q, hq, hc, S, hS, ha⟩
+  choose! qf hqmem hqcoeff Sf hScard hagree using key
+  refine Finset.card_le_card_of_injOn (fun γ => ReedSolomon.evalOnPoints domain (qf γ)) ?_ ?_
+  · intro γ hγ
+    rw [Finset.mem_coe]
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    constructor
+    · rw [ReedSolomon.code, Submodule.mem_map]
+      exact ⟨qf γ, hqmem γ hγ, rfl⟩
+    · exact ⟨Sf γ, hScard γ hγ, hagree γ hγ⟩
+  · intro γ hγ γ' hγ' heq
+    rw [Finset.mem_coe] at hγ hγ'
+    have hqq : qf γ = qf γ' :=
+      evalOnPoints_inj_of_degree_lt domain hk
+        (Polynomial.mem_degreeLT.mp (hqmem γ hγ)) (Polynomial.mem_degreeLT.mp (hqmem γ' hγ')) heq
+    have : -γ = -γ' := by rw [← hqcoeff γ hγ, ← hqcoeff γ' hγ', hqq]
+    simpa using this
+
 end ProximityGap.FarCosetExplosion
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProximityGap.FarCosetExplosion.badScalars_monomial_eq_degreeLTSucc
+#print axioms ProximityGap.FarCosetExplosion.badScalars_monomial_card_le_listSize
