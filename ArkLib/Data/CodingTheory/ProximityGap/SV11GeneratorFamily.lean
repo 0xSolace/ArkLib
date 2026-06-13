@@ -116,11 +116,35 @@ theorem sv11_combination_vanishes_of_rowsum_zero {D B : ℕ} (c : F) (t : ℕ)
     rw [eval_mul, eval_C, sv11Gen_eval_of_pow_eq_one c y a b h]
   rw [Finset.sum_congr rfl hb, ← Finset.sum_mul, hrow a, zero_mul]
 
+
+/-- **The derivative at a rep point (the tb-weighting).** At a rep point `(y−c)^t = 1`,
+`(y − c) · g_{a,b}'(y) = a·y^{a−1}·(y−c) + t·b·y^a`. The `t·b` term is how the `b`-index enters at
+the first-derivative level — the weighting that governs the higher-order (multiplicity) vanishing of
+the Stepanov auxiliary / Wronskian at rep points (so the value map is `b`-collapsed but the jet map
+acquires `b`-rank through these `tb` weights). -/
+theorem sv11Gen_deriv_eval_mul (c y : F) {t : ℕ} (a b : ℕ) (h : (y - c) ^ t = 1) :
+    (Polynomial.derivative (sv11Gen c t (a, b))).eval y * (y - c)
+      = (a : F) * y ^ (a - 1) * (y - c) + (t * b : ℕ) * y ^ a := by
+  have hpow : (y - c) ^ (t * b) = 1 := by rw [pow_mul, h, one_pow]
+  have hpm : ((t * b : ℕ) : F) * (y - c) ^ (t * b - 1) * (y - c) = ((t * b : ℕ) : F) := by
+    rcases Nat.eq_zero_or_pos (t * b) with htb | htb
+    · simp [htb]
+    · rw [mul_assoc, ← pow_succ, Nat.sub_add_cancel htb, hpow, mul_one]
+  unfold sv11Gen
+  rw [Polynomial.derivative_mul, Polynomial.derivative_X_pow, Polynomial.derivative_pow,
+      Polynomial.derivative_sub, Polynomial.derivative_X, Polynomial.derivative_C, sub_zero, mul_one]
+  simp only [eval_add, eval_mul, eval_C, eval_pow, eval_X, eval_sub]
+  rw [hpow, mul_one, add_mul,
+    show y ^ a * (((t * b : ℕ) : F) * (y - c) ^ (t * b - 1)) * (y - c)
+        = ((t * b : ℕ) : F) * (y - c) ^ (t * b - 1) * (y - c) * y ^ a by ring,
+    hpm]
+
 end ProximityGap.BinomialDet
 
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.BinomialDet.sv11Gen_eval_of_pow_eq_one
 #print axioms ProximityGap.BinomialDet.sv11_combination_vanishes_of_rowsum_zero
+#print axioms ProximityGap.BinomialDet.sv11Gen_deriv_eval_mul
 #print axioms ProximityGap.BinomialDet.add_mul_lt_injective
 #print axioms ProximityGap.BinomialDet.sv11_wronskianDet_ne_zero
