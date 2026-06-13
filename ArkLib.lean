@@ -132,6 +132,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25Opening
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeBranch
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeIdentity
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReduction
+import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReindex
 import ArkLib.Data.CodingTheory.GMMDS.LovettNLtK
 import ArkLib.Data.CodingTheory.GMMDS.LovettPairwise
 import ArkLib.Data.CodingTheory.GMMDS.LovettPolynomial
@@ -1328,6 +1329,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityProducts
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
+import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedPairingCount
 import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedWalkBound
 import ArkLib.Data.CodingTheory.ProximityGap.NewtonPowerSumWindow
 import ArkLib.Data.CodingTheory.ProximityGap.NoJohnsonSidonBound
