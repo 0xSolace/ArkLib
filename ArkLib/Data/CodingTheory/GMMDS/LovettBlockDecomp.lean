@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.GMMDS.LovettBlockDim
+import ArkLib.Data.CodingTheory.GMMDS.LovettMeetReplace
 import ArkLib.Data.CodingTheory.GMMDS.LovettCounting
 import ArkLib.Data.CodingTheory.GMMDS.LovettBaseCase
 import ArkLib.Data.CodingTheory.GMMDS.LovettFractionField
@@ -147,6 +148,122 @@ theorem iBlock_span_eq_meetBlock_K {V : Fin m → (Fin n → ℕ)} {k : ℕ} {I 
     rw [card_iBlock_eq_meet hI htight, Fintype.card_fin]
   exact ArkLib.GMMDS.span_eq_of_le_of_card_of_indep hle hcard hIblockK hMeetK
 
+/-! ## The Sum-indexed form of `P(k, V')` and the full span equality -/
+
+/-- The `ReplaceIdx`-indexed (un-reindexed) family `P(k, V')`: `pFam (replaceMeet p) e`. -/
+noncomputable def gSum (V : Fin m → (Fin n → ℕ)) (k : ℕ) (I : Finset (Fin m)) (hI : I.Nonempty) :
+    (Σ p : ReplaceIdx I, Fin (k - vAbs (replaceMeet V I hI p))) → (MvPolynomial (Fin n) F)[X] :=
+  fun p => pFam (F := F) (replaceMeet V I hI p.1) (p.2 : ℕ)
+
+/-- The `Φ`-range of `P(k, V')` equals the `Φ`-range of its `Sum`-indexed form `gSum`
+(reindexing the base by `replaceEquiv I`). -/
+theorem phiX_range_pFamUnion_replaceMeetFin {V : Fin m → (Fin n → ℕ)} {k : ℕ}
+    {I : Finset (Fin m)} (hI : I.Nonempty) :
+    Set.range (fun p => phiX F n (pFamUnion (F := F) (replaceMeetFin V I hI) k p))
+      = Set.range (fun p => phiX F n (gSum (F := F) V k I hI p)) := by
+  classical
+  -- the base reindex equiv on the sigma
+  let e : (Σ q : Fin ((m - I.card) + 1), Fin (k - vAbs (replaceMeetFin V I hI q)))
+      ≃ (Σ p : ReplaceIdx I, Fin (k - vAbs (replaceMeet V I hI p))) :=
+    Equiv.sigmaCongrLeft (β := fun p => Fin (k - vAbs (replaceMeet V I hI p))) (replaceEquiv I).symm
+  have hcomp : (fun p => phiX F n (pFamUnion (F := F) (replaceMeetFin V I hI) k p))
+      = (fun p => phiX F n (gSum (F := F) V k I hI p)) ∘ e := by
+    funext q
+    rfl
+  rw [hcomp, EquivLike.range_comp]
+
+/-- **The full span equality** (over `K = F(a)`): `P(k,V)` and `P(k,V')` span the same `K`-subspace.
+Decompose both into shared blocks (`i ∉ I`, pointwise identical) plus the `I`-block resp. the meet
+block, which span the same subspace (`iBlock_span_eq_meetBlock_K`). -/
+theorem pFamUnion_span_eq_replaceMeetFin_K {V : Fin m → (Fin n → ℕ)} {k : ℕ}
+    {I : Finset (Fin m)} (hI : I.Nonempty) (hV : IsVStar V k) (htight : tightConstraint V k I hI)
+    (hIblock : LinearIndependent (MvPolynomial (Fin n) F) (iBlock (F := F) V k I)) :
+    Submodule.span (FractionRing (MvPolynomial (Fin n) F))
+        (Set.range (fun p => phiX F n (pFamUnion (F := F) V k p)))
+      = Submodule.span (FractionRing (MvPolynomial (Fin n) F))
+          (Set.range (fun p => phiX F n (pFamUnion (F := F) (replaceMeetFin V I hI) k p))) := by
+  classical
+  set K := FractionRing (MvPolynomial (Fin n) F)
+  set g := fun p => phiX F n (pFamUnion (F := F) V k p) with hg
+  set g' := fun p => phiX F n (pFamUnion (F := F) (replaceMeetFin V I hI) k p) with hg'
+  -- the I-block / meet-block K-span equality
+  have hblock := iBlock_span_eq_meetBlock_K (F := F) hI hV htight hIblock
+  -- g'-range = gSum-range
+  have hg'range : Set.range g' = Set.range (fun p => phiX F n (gSum (F := F) V k I hI p)) :=
+    phiX_range_pFamUnion_replaceMeetFin hI
+  -- meet-block elements are V'-generators (via gSum, inl block)
+  have hmeet_sub_g' : Set.range (fun s => phiX F n (meetBlock (F := F) (vMeet V I hI) k s))
+      ⊆ Set.range g' := by
+    rw [hg'range]
+    rintro _ ⟨s, rfl⟩
+    -- meetBlock s = pFam vMeet s = gSum ⟨inl 0, s⟩
+    refine ⟨⟨Sum.inl 0, s⟩, ?_⟩
+    simp only [gSum, meetBlock, replaceMeet, Sum.elim_inl]
+  -- I-block elements are V-generators (i ∈ I)
+  have hiblock_sub_g : Set.range (fun p => phiX F n (iBlock (F := F) V k I p)) ⊆ Set.range g := by
+    rintro _ ⟨p, rfl⟩
+    exact ⟨⟨p.1.1, p.2⟩, rfl⟩
+  refine le_antisymm ?_ ?_
+  · -- span g ≤ span g'
+    rw [Submodule.span_le]
+    rintro _ ⟨⟨i, e⟩, rfl⟩
+    by_cases hi : i ∈ I
+    · -- I-block element: in span (Φ meet block) ⊆ span g'
+      have hmem : phiX F n (pFamUnion (F := F) V k ⟨i, e⟩)
+          ∈ Submodule.span K (Set.range
+              (fun s => phiX F n (meetBlock (F := F) (vMeet V I hI) k s))) := by
+        rw [← hblock]
+        exact Submodule.subset_span ⟨⟨⟨i, hi⟩, e⟩, rfl⟩
+      exact Submodule.span_mono hmeet_sub_g' hmem
+    · -- shared element (i ∉ I): a V'-generator
+      apply Submodule.subset_span
+      rw [hg'range]
+      refine ⟨⟨Sum.inr ⟨i, hi⟩, e⟩, ?_⟩
+      simp only [gSum, replaceMeet, Sum.elim_inr]
+      rfl
+  · -- span g' ≤ span g
+    rw [hg'range, Submodule.span_le]
+    rintro _ ⟨⟨p, e⟩, rfl⟩
+    cases p with
+    | inl a =>
+      -- meet-block element: in span (Φ I-block) ⊆ span g
+      have hmem : phiX F n (gSum (F := F) V k I hI ⟨Sum.inl a, e⟩)
+          ∈ Submodule.span K (Set.range
+              (fun s => phiX F n (meetBlock (F := F) (vMeet V I hI) k s))) := by
+        apply Submodule.subset_span
+        refine ⟨e, ?_⟩
+        simp only [gSum, meetBlock, replaceMeet, Sum.elim_inl]
+      rw [← hblock] at hmem
+      exact Submodule.span_mono hiblock_sub_g hmem
+    | inr i =>
+      -- surviving element (i ∉ I): a V-generator
+      apply Submodule.subset_span
+      refine ⟨⟨i.1, e⟩, ?_⟩
+      simp only [gSum, replaceMeet, Sum.elim_inr]
+      rfl
+
+/-- **Lemma 2.4 span-transfer residual, discharged.**  The corrected residual
+`Lemma24SpanTransferWithIBlock` (see [[LovettLemma24Finish]]) is provable: given the `I`-block
+independent (the `d`-IH input) and `P(k, V')` independent (the `m`-IH), `P(k, V)` is independent. -/
+theorem lemma24SpanTransferWithIBlock_holds :
+    Lemma24SpanTransferWithIBlock F := by
+  intro n m V k I hI hk hV htight hlo hhi hIblock hV'
+  -- transfer to the field
+  rw [LovettHolds, linearIndependent_fractionField_iff]
+  -- P(k,V') independent over K
+  rw [LovettHolds, linearIndependent_fractionField_iff] at hV'
+  -- equal cardinality of the index types
+  have hcard : Fintype.card (Σ i : Fin m, Fin (k - vAbs (V i)))
+      = Fintype.card (Σ q : Fin ((m - I.card) + 1),
+          Fin (k - vAbs (replaceMeetFin V I hI q))) := by
+    rw [card_pFamUnion_index, card_pFamUnion_index]
+    have := lovettD_replaceMeet hI htight
+    unfold lovettD at this
+    rw [this]
+  -- span equality over K
+  have hspan := pFamUnion_span_eq_replaceMeetFin_K (F := F) hI hV htight hIblock
+  exact linearIndependent_of_span_eq_card hspan hcard hV'
+
 end ArkLib.GMMDS
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -154,3 +271,6 @@ end ArkLib.GMMDS
 #print axioms ArkLib.GMMDS.card_iBlock_index
 #print axioms ArkLib.GMMDS.card_iBlock_eq_meet
 #print axioms ArkLib.GMMDS.iBlock_span_eq_meetBlock_K
+#print axioms ArkLib.GMMDS.phiX_range_pFamUnion_replaceMeetFin
+#print axioms ArkLib.GMMDS.pFamUnion_span_eq_replaceMeetFin_K
+#print axioms ArkLib.GMMDS.lemma24SpanTransferWithIBlock_holds
