@@ -17,11 +17,15 @@ of each other — then the `r`-fold additive energy is bounded by the multiset-m
 
 > `energyR_le_factorial` :  `E_r(G) ≤ r! · |G|^r`.
 
-Combined with the moment ladder (`∑_b ‖η_b‖^{2r} = q·E_r`) and the worst-period bound, this gives the
-square-root-cancellation bound on the worst period in the regime where the hypothesis holds — and the
-cyclotomic resultant lift (`|Res(Φ_n, manyTerm)| ≤ (2r)^{φ(n)}`) supplies exactly this hypothesis for
-`q > (2r)^{φ(n)}`. So this is the combinatorial half of proving the dyadic conjecture in the
-resultant-pinned regime. `r! ≤ (2r−1)!! = ` Gaussian moment, so the bound is sub-Gaussian.
+Combined with the moment ladder it gives a worst-period bound in any regime where the hypothesis holds.
+
+**SCOPE WARNING.** The hypothesis (full Sidon-to-`r`) is NOT satisfied by `μ_n`: `μ_n` is
+negation-closed, so `(a,−a)` and `(b,−b)` have equal sum `0` without being permutations — the
+hypothesis fails already at `r = 2` (`E₂(μ_n) = 3n²−3n > 2n²−n`). So this is a valid *general* lemma
+for genuinely Sidon-to-`r` sets, but does **not** apply to `μ_n`. The correct `μ_n` energy is the
+*negation-closed* walk count `E_r(μ_n) ≤ (2r−1)!!·n^r` (accounting for antipodal pairs), which is what
+the conjecture actually needs — this `r!·|G|^r` (full-Sidon) bound is strictly smaller and `μ_n` does
+not achieve it.
 
 Axiom-clean (`propext`, `Classical.choice`, `Quot.sound`); no `sorry`.
 -/

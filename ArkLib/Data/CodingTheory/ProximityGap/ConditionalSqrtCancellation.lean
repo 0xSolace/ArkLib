@@ -17,13 +17,16 @@ bound (`energyR_le_factorial`) gives, for EVERY `r`, the explicit worst-period b
 
 > `worst_period_le_factorial` :  `b ≠ 0  →  ‖η_b‖^{2r} ≤ q · r! · |G|^r`,
 
-valid whenever `G` has no nontrivial `r`-fold additive relation (`H`). Taking `2r`-th roots,
-`max_{b≠0} ‖η_b‖ ≤ (q · r! · |G|^r)^{1/2r}`, and optimizing `r ≈ log f` yields `‖η_b‖ ≲ √(|G| log f)`
-— **the square-root-cancellation bound of the dyadic conjecture, PROVEN under `H`.** The cyclotomic
-resultant lift (`|Res(Φ_n, manyTerm)| ≤ (2r)^{φ(n)}`, `ManyTermResultantBound`) supplies `H` for
-`q > (2r)^{φ(n)}`, so the conjecture holds unconditionally in that (polylog-`n`) regime. This reduces
-the open conjecture to the single hypothesis `H` (no `r`-fold relation), which is governed entirely by
-the explicit resultant bound — the cleanest provable form of the open math.
+valid whenever `G` is *Sidon to order r* (`H`: every pair of equal-sum `r`-tuples is a permutation).
+Taking `2r`-th roots gives the square-root-cancellation form `max_{b≠0} ‖η_b‖ ≤ (q · r! · |G|^r)^{1/2r}`.
+
+**SCOPE WARNING (important).** `H` is *full* Sidon-to-`r` and is NOT satisfied by `μ_n`: since `μ_n` is
+negation-closed, `(a, −a)` and `(b, −b)` have equal sum `0` without being permutations, so `H` fails
+already at `r = 2` (`E₂(μ_n) = 3n²−3n > 2n²−n`). Hence this is a valid *general* lemma for genuinely
+Sidon-to-`r` sets, but it does **not** apply to `μ_n` and does **not** prove the dyadic conjecture. The
+correct `μ_n` bound is the *negation-closed* walk count `E_r(μ_n) ≤ (2r−1)!!·n^r` (accounting for the
+antipodal relations); formalizing it ("K1") is the open step. The `r = 2` case `‖η_b‖⁴ ≤ 3qn²` IS valid
+for `μ_n` via `repCount ≤ 2` (Sidon *mod negation*) — see `WorstPeriodSidonBound`.
 
 Axiom-clean (`propext`, `Classical.choice`, `Quot.sound`); no `sorry`.
 -/
