@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.RingTheory.Polynomial.Resultant.Basic
+import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Normed.Ring.Lemmas
 
@@ -146,3 +148,53 @@ theorem natAbs_resultant_cyclotomic_le (n : ℕ) (g : ℤ[X])
     exact_mod_cast h1
   have : (R.natAbs : ℝ) ≤ ((4 ^ n.totient : ℕ) : ℝ) := by push_cast; exact hnormR
   exact_mod_cast this
+
+/-- **The `p ∣ Res` lift.** If `g : ℤ[X]` (with leading coefficient surviving mod `p`) has a
+primitive `n`-th root `ζ` of `ZMod p` as a root mod `p`, then `p ∣ Res(Φ_n, g)`: mod `p` the
+polynomials `Φ_n` and `g` share the root `ζ`, so are not coprime, so the resultant vanishes. -/
+theorem dvd_resultant_of_isPrimitiveRoot_isRoot {n : ℕ} (hn : 0 < n) {p : ℕ} [Fact p.Prime]
+    (g : ℤ[X]) (hgdeg : (g.map (Int.castRingHom (ZMod p))).natDegree = g.natDegree)
+    {ζ : ZMod p} (hζ : IsPrimitiveRoot ζ n)
+    (hgζ : (g.map (Int.castRingHom (ZMod p))).eval ζ = 0) :
+    (p : ℤ) ∣ resultant (cyclotomic n ℤ) g (cyclotomic n ℤ).natDegree g.natDegree := by
+  haveI : NeZero n := ⟨hn.ne'⟩
+  haveI : NeZero p := ⟨(Fact.out (p := p.Prime)).ne_zero⟩
+  haveI : NeZero ((n : ℕ) : ZMod p) := hζ.neZero'
+  set R : ℤ := resultant (cyclotomic n ℤ) g (cyclotomic n ℤ).natDegree g.natDegree with hR
+  have hcycζ : (cyclotomic n (ZMod p)).eval ζ = 0 := isRoot_cyclotomic_iff.mpr hζ
+  have hncop : ¬ IsCoprime (cyclotomic n (ZMod p)) (g.map (Int.castRingHom (ZMod p))) := by
+    rintro ⟨a, b, hab⟩
+    have h := congrArg (eval ζ) hab
+    rw [eval_add, eval_mul, eval_mul, hcycζ, hgζ, mul_zero, mul_zero, add_zero, eval_one] at h
+    exact one_ne_zero h.symm
+  have hdeg : (cyclotomic n ℤ).natDegree = (cyclotomic n (ZMod p)).natDegree := by
+    rw [natDegree_cyclotomic, natDegree_cyclotomic]
+  have hRzero : ((R : ℤ) : ZMod p) = 0 := by
+    have hmap : ((R : ℤ) : ZMod p)
+        = resultant (cyclotomic n (ZMod p)) (g.map (Int.castRingHom (ZMod p)))
+            (cyclotomic n ℤ).natDegree g.natDegree := by
+      rw [hR, ← map_cyclotomic_int n (ZMod p)]
+      exact (resultant_map_map (f := cyclotomic n ℤ) (g := g)
+        (m := (cyclotomic n ℤ).natDegree) (n := g.natDegree) (Int.castRingHom (ZMod p))).symm
+    rw [hmap, hdeg, ← hgdeg]
+    exact resultant_eq_zero_iff.mpr ⟨Or.inl (cyclotomic_ne_zero n (ZMod p)), hncop⟩
+  exact (ZMod.intCast_zmod_eq_zero_iff_dvd R p).mp hRzero
+
+/-- **The small-subgroup Sidon keystone, assembled.** A parallelogram mod `p` (a primitive `n`-th
+root `ζ` of `ZMod p` with `g(ζ) = 0`) forces `p ≤ 4^{φ(n)} = 2^n` — given the magnitude bound on
+`g` (`hgC`, automatic for a 4-term `±1` polynomial) and `Res ≠ 0` (`hResne`, the ℂ-Sidon property
+of `μ_n`).  Contrapositive: `p > 2^n ⟹` no nontrivial additive parallelogram in `μ_n ⊆ F_p`. -/
+theorem prime_le_of_cyclotomic_resultant {n : ℕ} (hn : 0 < n) {p : ℕ} [Fact p.Prime] (g : ℤ[X])
+    (hgC : ∀ ω : ℂ, ω ^ n = 1 → ‖(g.map (Int.castRingHom ℂ)).eval ω‖₊ ≤ 4)
+    (hgdeg : (g.map (Int.castRingHom (ZMod p))).natDegree = g.natDegree)
+    (hResne : resultant (cyclotomic n ℤ) g (cyclotomic n ℤ).natDegree g.natDegree ≠ 0)
+    {ζ : ZMod p} (hζ : IsPrimitiveRoot ζ n)
+    (hgζ : (g.map (Int.castRingHom (ZMod p))).eval ζ = 0) :
+    p ≤ 4 ^ n.totient := by
+  have hdvd := dvd_resultant_of_isPrimitiveRoot_isRoot hn g hgdeg hζ hgζ
+  have hbound := natAbs_resultant_cyclotomic_le n g hgC
+  set R : ℤ := resultant (cyclotomic n ℤ) g (cyclotomic n ℤ).natDegree g.natDegree with hRdef
+  have hpd : p ∣ R.natAbs := by simpa using Int.natAbs_dvd_natAbs.mpr hdvd
+  have hpos : 0 < R.natAbs := Int.natAbs_pos.mpr hResne
+  exact le_trans (Nat.le_of_dvd hpos hpd) hbound
+
