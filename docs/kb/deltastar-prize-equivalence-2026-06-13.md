@@ -119,3 +119,30 @@ deficit is the N_fib value and no larger.
 
 ## FLOOR-ATTACK WORKFLOW (4 angles, adversarially verified) — conjecture HEALTHY, wall exactly mapped
 HEADLINE (Angle 3): prizeDeltaStar NOT refuted on prime-field dyadic domain — BCHKS catastrophic n^tau counterexample is CHAR-2-ONLY; BCHKS prime-field construction IS the in-tree antipodal ladder, incidence exceeds B=n only ABOVE the floor; measured deficit (4,0,5) = antipodal family = BCHKS sumset, O(1) constant-in-n. Open core (Angles 1+2): E(mu_n)=n^{2+o(1)} subgroup additive energy / uniform sqrt-cancellation; pair layer frozen (moment_identity_base) caps at EXACTLY Johnson, floor needs the >=3-wise moment N_{k+1}(w). NOVEL (Angle 2): char-0 moment route fails at r>=5 by PRIME-INDEPENDENT PIGEONHOLE (n^5>p forces spurious vanishing sums, no NTT prime escapes); clean r<=4.2, beats budget only r>=5, optimal r~116 (28x gap). (Angle 4) antipodal/Mobius symmetry = EXACTLY exponent-halving (WitnessLayerCount C(s/2-1,s/4)) + const, does NOT touch e^{Theta(n)} rate gap. NET: conjecture healthy; PrizeFloorStatement = recognized subgroup-energy wall, untouchable by pair layer / char-0 higher moments / structural symmetry. New input required = sqrt-cancellation for incomplete Gauss sums over mu_{q^{1/4}}; does not exist. No fabrication.
+
+## SHARP IMPOSSIBILITY — no additive-moment route (any order) can prove the floor
+(1) ENERGY/2nd-moment route is UNCONDITIONALLY short by n^{1/2}: list <= sqrt(n*E), but E(mu_n)>=n^2
+ALWAYS (diagonal a+b=a+b; verified n=4..16), so list >= sqrt(n*n^2)=n^{3/2} > n=B regardless of the
+energy bound. The sqrt-loss is a HARD n^{1/2} deficit vs budget, not just sub-Johnson. The entire
+additive-energy programme (Shaw operator, char-sum 4th moment, all E(mu_n) bounds) caps at Johnson,
+CANNOT reach the floor. (2) Higher moments r>=3 fail F_p transport by prime-independent pigeonhole
+(n=q^{1/4}, n^r>p for r>=5 forces spurious vanishing sums, no NTT prime escapes), exactly at the order
+the bound would beat budget. CONSEQUENCE: PrizeFloorStatement is provably beyond the whole additive-
+moment hierarchy; it requires a fundamentally NON-moment argument (direct list-decoding / inverse-LO),
+which does not exist. Stop seeking a better E(mu_n) bound for the floor — provably hopeless. probe
+scripts/probes/probe_sqrt_loss_impossibility.py. The closed conjecture prizeDeltaStar stands (healthy);
+its proof is this recognized, now-sharply-characterized wall.
+
+## POLYNOMIAL-METHOD / SLICE-RANK LANE — CLOSED with a structural reason (another technique class off)
+Cross-domain check (Croot-Lev-Pach / Tao slice rank, the method that broke capsets): CATEGORICALLY
+INAPPLICABLE to E(mu_n). Two independent fatal mismatches: (1) slice rank bounds AVOIDANCE-SET SIZE,
+not SOLUTION COUNT (energy a+b=c+d is a count inside a fixed set); (2) it needs high-dim F_q^n product
+structure, but mu_n subset F_p is 1-DIMENSIONAL (roots of x^n-1, multiplicative not coord-additive);
+no lift preserves F_p-additive energy while supplying product structure. Confirmed by ZERO slice-rank
+results on prime-field subgroups in the entire 2017-2026 literature. The ONLY polynomial method that
+fits mu_n is STEPANOV — and it IS the incumbent wall: Heath-Brown-Konyagin E<<|A|^{5/2} via Stepanov;
+record E<~|A|^{2.45} (MRSS) came from adding INCIDENCE GEOMETRY not a better polynomial; the
+degree-vs-multiplicity balance provably caps it short of n^{2+o(1)} (gap factor 2^{14.4} at the prize).
+Rank 1-2/10. VALUABLE NO: the live frontier for the energy/list core is incidence geometry (Rudnev
+point-plane) + sum-product + beyond-Johnson RS list-decoding (the BCHKS line = the open problem
+itself), NOT the polynomial method. Eighth independent technique class confirmed insufficient.

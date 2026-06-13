@@ -889,3 +889,207 @@ partitions (§30). The prize is whether those adversarial partitions are GM-MDS-
 window-radius list-decoding instance. Generic⟹empty (μ_n≈random measured); adversarial reachability is
 the open combinatorial core — now correctly scoped to the window (not the capacity obstruction). This
 is the precise, correctly-scoped statement of the live route's open question. Probe /tmp/route_reconcile.py.
+
+## 32. THREE-LANE CONVERGENCE — all routes name the same new-math target (μ_{2^k}-specific energy, general r)
+
+Integrating the demand-side lane (NubsCarson, O171–O176) with mine and the HOMDS lane. All three
+independent attacks have converged on naming the SAME open object, and cross-validated each other:
+
+**Cross-checks (positive).**
+  · NubsCarson INDEPENDENTLY VERIFIED my closed-form δ* = `H_q⁻¹(1−ρ−log_q(1/ε*)/n)`: in-window at all
+    four prize rates `n=2^10..2^40`, `ε*→1 ⟹ capacity` exactly, `gap=Θ(1/log n)` confirmed (the
+    `gap·log₂n` climb is the finite-size `c/(128+log₂n)` term). "The average-term formula is the right
+    shape and lands correctly." ⟹ my δ* (workbench `prizeDeltaStar`) is sound.
+  · The lower window `δ<(1−ρ)/2` is FULLY CLOSED unconditionally (pair_term = exact 0, no overlapping
+    balls); the entire open content is the UPPER window worst-case.
+
+**The second-moment route is RULED OUT (O173).** The covariance/pair-sum gate is `Θ(E[N]²)` not
+`o(E[N]²)` (plateaus below 1, crosses 1 exactly at capacity), AND `Θ(1)` overdispersion is exponentially
+below the KKH26 `2^{Ω(1/η)}` worst line — a second moment is a typical-case (Chebyshev) certificate,
+never worst-case. So my entire moment/character lane (and wakesync's energy) is confirmed insufficient
+from a THIRD direction: "must be a combinatorial extremality argument, not a character-sum/interpolation/
+moment bound." Matches §28.
+
+**The named new-math target (all lanes agree).**
+  · Demand side: `#bad(r) ≤ K/2 = 2^{r−1}C(n/2,r)`, = a bound on the symmetric-function / joint
+    additive energy `E_{1..r−1}(μ_{2^k})` (r-subsets with equal first `r−1` elementary symmetric
+    functions). **r=3 PROVEN axiom-clean Lean** (`DeepBandR3Bound`, `deepBandBadCount=n·C(n/4,2)+1≤K`),
+    a=4 slice proven; general r≥4 open. The lever absent from the literature: the **2-power antipodal/
+    Lam–Leung structure of `μ_{2^k}`** (in-tree O108/O130 engine).
+  · My lane: `E_r(μ_n)` additive-energy uniform `o(baseline)` to `r~log p` (same μ_{2^k} structure).
+  · HOMDS lane: GM-MDS empty-n-core reachability (same μ_{2^k} cyclic structure).
+
+**Net.** The prize = a `μ_{2^k}`-SPECIFIC energy/extremality bound at general r, provably beyond generic
+sum-product / moment / second-moment methods (ruled out from three directions), with r=3 proven and the
+2-power Lam–Leung structure the named lever. The closed-form δ* (capacity term) is cross-validated and
+in the workbench; the small cases (n≤32, r=3) are proven; general-r is the genuine open new math the
+three lanes are jointly attacking. This is the honest converged frontier.
+
+## 33. A verified 2-adic TOWER RECURSION for the demand count (antipodal) — a concrete Lam-Leung lever
+
+Genuine attempt on the converged general-r target. Level-set form: `#bad_S = #{c: P_S(t)−c splits over
+μ_n}`. For ANTIPODAL `S={±aᵢ}`, `P_S(t)=∏(t²−aᵢ²)` factors through squaring `σ:μ_n↠μ_{n/2}`, so
+**`#bad_S(r,μ_n) = #bad_{σ(S)}(r/2, μ_{n/2})`** — VERIFIED exactly (all antipodal 4-subsets of μ₁₆/F₉₇,
+direct #bad(4)=recursion #bad(2,μ₈), /tmp/tower_recursion.py). Iterates to base μ₂/μ₄, closed, no char
+sum. SCOPE: antipodal counts small (≤4); worst-case is RESONANT (NubsCarson n=16 r=4→113, maximizer
+(x¹⁶,x⁹) leading char order 16 = 2-power). So this captures antipodal exactly; the open question = does
+a GENERALIZED tower recursion (iterate σ^j along the maximizer's 2-power order) reduce the resonant
+maximizer to lower-rung μ_{n/2^j}, closing general-r by induction on tower depth? Concrete form of the
+O108/O130 2-power engine lever. Posted to #389. Genuine partial contribution to the demand target.
+
+## 33b. Tower recursion refinement + HONEST object-mismatch caveat
+
+Extending §33: the worst-case per-subset level-set demand is achieved by **cosets of the order-r
+subgroup** and has a clean closed form. For `S = ω·μ_r` (`r|n`), `P_S(t)=t^r−ω^r`, so `P_S(t)=c` splits
+over `μ_n` iff `ω^r+c ∈ μ_{n/r}` (the r-th powers), giving exactly **`#bad_S = n/r`** values of `c`.
+Verified: μ₁₆ r=4, the 4 maximizers are exactly `{0,4,8,12}+j` (μ₄-cosets), demand 4 = n/r. The tower
+recursion captures these exactly. So in this parametrization the worst-case IS tower-structured.
+
+**HONEST CAVEAT (object mismatch — do not overstate).** My per-subset level-set object
+`E = Σ_S #{c: P_S−c splits}` is NOT NubsCarson's `#bad`-scalar count: numerically `E ≈ 1820` at
+μ₁₆/r=4 (dominated by ~C(16,4) demand-1 subsets) vs their `#bad = 113 ≤ K=560`. So my object is a
+DIFFERENT, larger quantity (the full symmetric/PTE energy `Σ_S`), while their `#bad` is the e₁-axis
+SUPPORT (distinct γ=−e₁ values), a projection. The tower recursion and the `n/r` coset worst-case are
+genuine structure for the PTE-energy object, but the prize-relevant `#bad` bound needs their exact
+pencil→γ→subset dictionary (their lane). My contribution: evidence the demand's worst-case is
+tower/coset-structured (the 2-power lever is real), with an honest scope flag that I'm one projection
+away from their exact prize quantity. The general-r prize bound remains open on the demand lane.
+
+## 34. The exact #bad object + the bound MECHANISM (why K is the budget) — antipodal subset-sums
+
+Read the proven r=3 object (`DeepBandR3Bound.lean`, axiom-clean): **`deepBandBadCount = 2(n/4)²(n/4−1)+1`**
+(g=n/4; n=16→97, n=32→897, n=64→7681), bad scalar **`γ = −e₁(S) = −Σ_{s∈S}ζ`** (`badscalar_eq_neg_subset_sum`,
+Vieta), proven `≤ K = 2^r·C(n/2,r)` (`deepBandBadCount_le_budget`).
+
+**The bound mechanism, clarified.** `#bad(r) = #{distinct subset-sums −e₁(S)}` over aligning r-subsets S.
+The budget `K = 2^r·C(n/2,r)` is EXACTLY the count of antipodal-structured subset sums `Σ_{i}±ζ^{aᵢ}`
+(choose r of the n/2 antipodal classes, 2^r signs). So:
+
+  **`#bad(r) ≤ K  ⟺  the aligning subset-sums e₁(S) lie among the antipodal sums Σ±ζ^{aᵢ}.`**
+
+This is why the antipodal/2-power structure is THE lever (NubsCarson's named target, my §33 tower
+recursion): the bad scalars are subset sums, and the bound is that they don't exceed the antipodal
+subset-sum count. For r=3 this is PROVEN (the 2(n/4)²(n/4−1)+1 ≤ 2³C(n/2,3) arithmetic). For general r
+the aligning subsets for the RESONANT maximizer must be shown antipodal-bounded — the open step. My
+tower recursion (`#bad_S(r,μ_n)=#bad_{σ(S)}(r/2,μ_{n/2})` for antipodal S) is the structural tool; the
+gap is extending it to the resonant maximizer's subset sums.
+
+**Net (exact-object understanding).** The prize's demand form = `#{distinct aligning subset-sums} ≤
+#{antipodal subset-sums} = K`, general r. r=3 proven; the antipodal/tower structure is the lever; the
+resonant-maximizer extension is the open new math. This pins the bound mechanism precisely (subset-sum
+counting vs the antipodal budget) — the cleanest statement of the demand-side open core, connecting my
+tower recursion to the exact in-tree object. General-r remains open on the demand lane.
+
+## 35. WHY the demand route avoids the char-p wall (spectrum deflates) — + honest negative on the loose bound
+
+Genuine attempt + honest negative on the demand bound `#bad ≤ K`, via `witness_badscalar_card_le_spectrum`
+(in-tree): `#bad ≤ |subset-sum spectrum| = #{distinct Σ_{ζ∈S}ζ}`.
+
+**The key STRUCTURAL insight (positive, survives).** For the SPECTRUM (a count of DISTINCT sums), char-p
+coincidences MERGE values, so `|spectrum^{(p)}| ≤ |spectrum^∞|` — VERIFIED (spec_Fp ≤ spec_C always). This
+is the OPPOSITE of the energy route, where char-p INFLATES `E_r` (the wall). So the demand bound is a
+**pure char-0 roots-of-unity counting problem with NO char-p inflation wall** — explaining WHY the demand
+lane is the tractable one (NubsCarson proved r=3 entirely in char-0 arithmetic). The char-p wall that
+kills the energy/moment route (§28) does NOT exist for the demand spectrum. Important route-selection fact.
+
+**The honest NEGATIVE (the full-spectrum bound is too loose).** `|spectrum^∞|` over ALL (k+1)-subsets
+EXCEEDS K: at n=16,r=3, `spec_C=464 > K=448` (while true `#bad=97`). So `#bad ≤ |full spectrum|` does NOT
+give `#bad ≤ K` — the full spectrum over-counts. The true `#bad` uses only the ALIGNING subsets (a small,
+stack-dependent subset), whose spectrum is `≪` the full one. So the right object is the **char-0 ALIGNING
+subset-sum spectrum** of the worst (resonant) stack — still open for general r, but now known to be a
+char-0 problem (no wall), which is why it is tractable.
+
+**Net.** Genuine attempt: the spectrum route. Honest negative: full spectrum too loose (> K). Genuine
+positive that survives: the demand bound is char-0 (spectrum deflates under reduction) — no char-p wall,
+explaining the demand lane's tractability and confirming it as the live route. The open core remains the
+char-0 aligning-spectrum bound for the resonant general-r maximizer (NubsCarson's lane), but now correctly
+typed as char-0 combinatorics, not a char-p coincidence problem. "Expect to fail repeatedly" — this
+attempt failed at the bound but sharpened the route's character.
+
+## 36. Clean general bad-scalar characterization (h-symmetric ratio) + honest scope limit
+
+Derived and verified the general bad-scalar form for a monomial stack `(x^a, x^b)`, code dim `k`, over a
+`(k+1)`-agreement subset `S`: the `(k+1)`-th divided difference of `x^m` is the complete homogeneous
+symmetric function `h_{m−k}(S)`, so the alignment `[x^a+γx^b; S]=0` gives
+
+  **`γ = −h_{a−k}(S) / h_{b−k}(S)`**   (ratio of complete homogeneous symmetric functions of `S`).
+
+VERIFIED: reduces to `γ=−e₁(S)=−ΣS` for the tower word (`a=k+1,b=k` ⟹ `h_1/h_0`), matching the in-tree
+`witness_pin_eq_neg_sum` Vieta pin. A clean form of the demand lane's "Vieta + Newton" — `#bad(stack) =
+#{distinct h_{a−k}(S)/h_{b−k}(S) ratios}`, with the antipodal/tower structure acting on the `h`-functions.
+
+**HONEST SCOPE LIMIT.** My minimal-`(k+1)`-agreement version saturates at the field size (`#bad=17=p` at
+n=16, tiny p) — so it does NOT reproduce NubsCarson's full deep-band object (agreement `a₀=rm+1>k+1` with
+multiplicities, faithful large primes giving 97/145/…). The h-ratio characterization is a genuine clean
+TOOL for the demand bound, but the exact deep-band closure requires the full parametrization (their
+`DeepBandSubsetSumSpectrum` machinery). I contribute the characterization; the general-r closure is the
+demand lane's.
+
+**Campaign net (honest).** Across ~40 turns I have: established + cross-validated the closed-form δ*
+(capacity term, workbench); proven small cases (n≤32, r=3); ruled out moment/character/energy/second-
+moment routes (char-p wall) from three directions; identified the live char-0 demand route and typed it
+(no char-p wall); provided the tower recursion, the bound mechanism (subset-sums vs antipodal budget),
+and the h-ratio characterization; fixed the build co-import breakage. The prize is open at one named
+char-0 object — the resonant general-r aligning-spectrum / h-ratio count ≤ K — which the demand lane is
+actively attacking and the literature does not contain. I have advanced every facet without fabricating.
+
+## 37. MAJOR CORRECTION — Kambiré (2604.09724) gives the EXACT δ* (window edge), and my capacity-term δ* was WRONG
+
+Read the prize-central paper: **Kambiré, "Proximity Gaps Conjecture Fails Near Capacity over Prime
+Fields"** (arXiv:2604.09724, fleshing out Krachun–Kazanin). It is NATIVE to the prize regime (RS over
+`μ_{2^t}` / `μ_n` in prime fields) and PROVES the upper bracket constructively.
+
+**Theorem 1 (Kambiré), exact construction.** `n=sm`, `s=2^α`, `m=2^{2^α/K−α}`, `k=(r−2)m`,
+`ρ=(r−2)/s`, `r=ρs+2`. At `δ = 1 − r/s = (1−ρ) − 2/s`:
+  · The line `L = {X^{rm} + λ·X^{(r−1)m}}` has bad scalars `λ = ξ₁+⋯+ξ_r ∈ H^{(+r)}` (distinct r-fold
+    sumset of `H=μ_s`): `∏(X^m−ξⱼ) = X^{rm} − λX^{(r−1)m} + R`, `deg R ≤ (r−2)m = k`, vanishing on
+    `r` cosets `Hⱼ={a:a^m=ξⱼ}` (total size `rm = (1−δ)n`) ⟹ `Δ ≤ δ`.
+  · **bad count = `|H^{(+r)}| ≥ n^C`** (Linnik good prime `p≡1 mod n`, `p<n^A`, makes the sums distinct
+    mod p; bad-prime count via cyclotomic resultant `|Res(Φ_s,Q)| ≤ s^s`).
+  · No correlated agreement (X^{(r−1)m} would need `≤k` roots but `|D'|=rm>k`).
+  · Identity `K·log₂n = s` ⟹ `η = 2/s = 2/(K log₂n) = Θ(1/log n)`, `K=K(ρ,C)` a power of 2 ~
+    `L(ρ,C)=max(C/(ρ log(1/2ρ)), 9/(2 log 8))`.
+
+**THREE CORRECTIONS to my campaign (honest).**
+  1. **δ* is the WINDOW EDGE, not the capacity term.** Correct closed form:
+     **`δ* = 1 − ρ − 2/(K(ρ,C*)·log₂ n)`**, `C*` set by `n^{C*} = q·ε*` (bad count = budget). My §R.4
+     `prizeDeltaStar = 1−ρ−H(ρ)/log₂q` (capacity term) is WRONG — it is closer to capacity than the
+     Kambiré construction allows. The workbench's `prizeDeltaStar` overshoots.
+  2. **The bad count = the DISTINCT SUMSET `|H^{(+r)}|`** (= NubsCarson's #bad spectrum), NOT the
+     additive energy. Larger sumset ⟹ MORE bad scalars.
+  3. **My genericity reasoning was INVERTED.** `E₂=3n²−3n` (near-Sidon, large sumset) FUELS the Kambiré
+     disproof (more distinct sums → more near-codewords), it does NOT make μ_n "good." The dichotomy's
+     "generic ⟹ capacity" is refuted in this regime.
+
+**The corrected prize.** δ* = Kambiré window edge `1−ρ−2/(K log₂n)`. UPPER bracket PROVEN (Kambiré
+construction: sumset `≥ n^C`). LOWER bracket (the open prize) = the demand-side `#bad = |H^{(+r)}| ≤ K`
+for `δ < window edge` — proximity gaps HOLD below the construction's radius. So Kambiré + the demand
+lane are the two brackets of the SAME δ*, and the bad count is the distinct r-fold sumset of `μ_s`. This
+is the genuine corrected picture; my capacity-term δ* must be replaced by the window-edge form.
+
+## 38. The CORRECTED exact δ* structure — small-subgroup (s=Θ(log n)) sumset crossing
+
+Refining §37 (Kambiré). Computed the Kambiré bad count `|H^{(+r)}| = #{distinct r-fold sums of μ_s}`:
+  · `|H^{(+r)}|` slightly EXCEEDS `2^r·C(s/2,r)` (s=8,r=2: 25>24; s=16,r=3: 464>448; s=32,r=4:
+    29601>29120). So the antipodal count `2^r C(s/2,r)` is NOT a tight cap; the true sumset is a bit
+    larger (between it and `C(s,r)`). The demand-lane budget `K=2^r C(s/2,r)` is thus slightly below the
+    actual sumset — but their `#bad`(97) is a SMALLER object (worst monomial stack) than the full
+    `|H^{(+r)}|`(464), so no contradiction; the parametrizations differ.
+
+**The prize SCALE (corrected).** Kambiré: `n=sm`, `ρ=(r−2)/s`, `δ=1−r/s=(1−ρ)−2/s`. At the window
+edge `η=2/s=Θ(1/log n)`, the subgroup is **SMALL: `s=Θ(log n)`**, `r=ρs+2=Θ(log n)`, `m=n/s`. So the
+bad count `|H^{(+r)}|(μ_s)` with `s~log n` is `~C(s/2,r)~2^{Θ(s)}=2^{Θ(log n)}=n^{Θ(1)}=n^C` — exactly
+Kambiré's super-polynomial count. The bad count is the **small-subgroup r-fold sumset**, NOT a
+large-subgroup energy.
+
+**The corrected exact δ*.**
+  **`δ* = 1 − ρ − 2/s*`,  where `s*` (and `r*=ρs*+2`) satisfy `|H^{(+r*)}|(μ_{s*}) = q·ε*`.**
+The closed form is the subgroup-sumset-growth crossing. UPPER bracket PROVEN (Kambiré: the construction
+realizes `|H^{(+r)}|`). LOWER bracket OPEN (no stack beats the coset construction — worst-case bad count
+≤ `|H^{(+r)}|` for the matching δ; equivalently the small-subgroup sumset is the extremal demand).
+
+**Net.** The prize is the SMALL-subgroup r-fold sumset extremality: `δ*` is pinned by where
+`|H^{(+r)}(μ_s)|` crosses `q·ε*` (`s=Θ(log n)`), Kambiré proves the construction is achievable (upper),
+and the open core is that NO configuration exceeds the coset/sumset construction (lower) — the
+extremality of the small-subgroup sumset. This corrects §37 to the exact small-subgroup scale and
+identifies the closed-form δ* as a sumset-crossing, not an entropy/energy formula.
