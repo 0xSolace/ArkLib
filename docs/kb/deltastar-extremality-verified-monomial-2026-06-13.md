@@ -103,3 +103,19 @@ far direction"** — equivalently the worst-case Gaussian-period bound `B(μ_n)=
 sibling Shaw-operator reduction). That is the genuinely hard, still-open piece (a Bourgain-regime
 incomplete-character-sum bound). So feasibility stays **8**: the combinatorial heart is nearly closed,
 but the analytic core (b) is open. No fabrication — (b) is not solved.
+
+## 9. "Monomials-worst" — falsifiable test SURVIVES within the monomial family
+Direct bad-scalar count over stacks at the construction band `(s,m,r)=(4,2,3)` (`n=8,k=3,δ=¼,A=6`):
+the construction monomial `(X^6,X^4)` (and mirror `(X^4,X^6)`) achieves the **max = 4 = C(s,r)**;
+**every other monomial pair `(X^a,X^b)` gives 0** bad scalars. So among the natural competitor family
+the sumset construction is the unique maximizer — the conjecture `δ*=1−ρ−2/s*` is **not refuted**.
+(Full generality — arbitrary non-monomial directions — remains the sibling's symmetrization +
+`B(μ_n)` bound, the open analytic core; general stacks are computationally out of reach at clean `p`.)
+
+**Cumulative evidence for the conjecture (all executed this session):**
+- Upper bracket `δ*≤1−ρ−2/s*`: **PROVEN** (Kambiré construction + the `∏(X^m−ξ_j)` identity).
+- Monomial-direction extremality: bad scalars = `H^{(+r)}`, count `C(s,r)`, **15/15 cases verified**,
+  forward half proven, converse = clean DFT-rigidity lemma.
+- Monomials-worst within the monomial family: **verified** (construction is the unique max).
+- Open: DFT-rigidity lemma (general); general-direction extremality = `B(μ_n)=Θ(√(n log(q/n)))`
+  (the genuine analytic blocker); list-smallness below `δ*`.
