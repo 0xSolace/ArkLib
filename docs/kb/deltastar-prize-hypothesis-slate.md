@@ -137,3 +137,47 @@ window-interior list size for explicit smooth dyadic RS) is the genuine
 cheap proxy either misses the regime or reduces to the open question. The
 realistic paths forward require either new literature technique (P1–P5, to
 fetch) or a genuine mathematical breakthrough — not more probing.
+
+## Brick-by-brick dispositions (each of the 9, individually)
+
+- **R1 cyclotomic-GS — REFUTED (analytic).** GS list radius = Johnson for any
+  multiplicity profile; the cyclotomic factorization of `X^n−1` leaves the
+  interpolation degree budget unchanged. Reduces to Johnson (forbidden).
+- **R2 spectral 2nd-moment — STALL.** Refines the *average* to √|G|; the
+  worst-case word concentrates and the completion step is exactly the
+  sub-√q incomplete-sum open face. Survives as open, no closure.
+- **R3 mult-CLP / slice-rank — REFUTED (analytic).** Slice-rank over `F_p[μ_n]`
+  with large `p` is `≤ n` (= dimension), giving only the trivial list bound.
+  Vacuous in the prize regime.
+- **N1 multiplicative-abc — STALL/OPEN (best hope).** The conjectured
+  `O(D+n/log n)` collision saving is the open list-decoding question at the
+  needed degree `Θ(n)` (`probe_prize_collision`: unmeasurable at small degree).
+  Not refuted; genuinely open; the one with a real chance.
+- **N2 inversion orbit-rank — REFUTED (analytic).** The `x↦−1/x` action
+  permutes the list; with ~n/2 orbits a list can be a union of full orbits,
+  rank full — no mechanism forces small rank, hence no size bound.
+- **N3 cyclotomic-Fourier entropy — REFUTED (countermodel).** The claimed
+  lower bound `log|list| ≤ H` is false: a coset-list is large (`|list|=m`)
+  yet Fourier-concentrated (`H` small). The functional measures spread, not
+  count.
+- **S1 Möbius × packing — REFUTED.** Halving the search space changes
+  constants, not the `√(n log n)` exponent; `PackingDeepBandMiss` shows the
+  crossover is information-theoretic (unconditional), not search-bounded.
+- **S2 tower-telescoped supply — STALL / likely-refuted.** `probe_prize_tower`
+  is inconclusive at accessible scale (window lists ~1–2 at low rate); the
+  coset-union step that the recursion telescopes is exactly the mechanism of
+  `not_explainableCoreSupply_exponential`, so it likely GROWS the list
+  (wrong direction) asymptotically. No clean shrink certificate.
+- **S3 attachment-gate = incomplete char sum — STALL.** Lands exactly on the
+  sub-√q incomplete-sum open face (worst-case completion gives √q; the window
+  needs better per frequency). Machinery in-tree; the bound is the wall.
+
+**Tally: 5 REFUTED (R1,R3,N2,N3,S1) · 4 STALL-at-wall (R2,N1,S2,S3).** Not all
+refuted, so per the directive the survivors stand — but all four survivors
+reduce to {sub-√q incomplete-sum open face} or {the proven exponential supply
+/ coset-union explosion}. There is no candidate to promote to toy-model→2^128
+testing, because none escapes the wall. Generating further slates would
+reproduce the same three sinks (Johnson / incomplete-sum / exponential-supply);
+the honest blocker is a missing technique, not a missing hypothesis. The two
+real unlocks remain: fetch P1–P5 for new machinery, or a genuine breakthrough
+on the sub-√q incomplete character sum over μ_n (the common sink of R2/N1/S3).
