@@ -2642,6 +2642,7 @@ import ArkLib.ToMathlib.UnifiedExtractionTarget
 import ArkLib.ToMathlib.UnifiedProducerWindowGlue
 import ArkLib.ToMathlib.UniformTranslationAverage
 import ArkLib.ToMathlib.WeightLambdaCalculus
+import ArkLib.ToMathlib.WeightLambdaMul
 import ArkLib.ToMathlib.WhirBricksConstruction
 import ArkLib.ToMathlib.WindowDualRS
 import ArkLib.ToMathlib.XDegreeBudgetProbe
