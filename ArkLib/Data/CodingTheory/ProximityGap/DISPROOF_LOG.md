@@ -8266,3 +8266,21 @@ genuine open core (explicit-RS beyond-Johnson list decoding); the upper bracket,
 bulk-parameter unconditional pin, and a concrete zero-hypothesis instance are already
 in-tree." That is a real, valuable, certified result. The three caveats are what keep it
 honest before Boneh/Vitalik. (Cosmetic: CensusDominationWeld.lean:81 unused binder hmu.)
+
+### O166 — DISCLOSURE O165-#3 CLOSED: beyond-Johnson placement is now a Lean theorem (no Real.sqrt gap) (nubs, 2026-06-13, goal priority 1)
+
+The audit (O165) flagged the "δ* = 1−r/2^μ lies beyond the Johnson radius 1−√ρ" placement
+as numeric-only (no Real.sqrt comparison in-tree). Now a theorem, axiom-clean:
+`PinBeyondJohnson.lean` (single-module build green).
+
+* `pin_beyond_johnson_iff` (μ,m,r; m≥1, r≥2): for the pin code (length 2^μ·m, dim (r−2)m+1,
+  rate ρ), `1 − r/2^μ > 1 − √ρ ↔ r²·m < 2^μ·((r−2)m+1)` — via `Real.lt_sqrt` the sqrt
+  comparison reduces EXACTLY to an elementary Nat inequality (no sqrt gap; the substitution
+  r = r'+2 eliminates all Nat-subtraction casts).
+* `pin_beyond_johnson_iff_m1` (the FRI/STIR dyadic n=2^μ case): `1 − r/2^μ > 1 − √ρ ↔
+  r² < 2^μ(r−1)`.
+
+HONEST SCOPE (faithful to O165-#3): it is an IFF — beyond-Johnson holds exactly under the
+stated inequality, true throughout the m=1 production regime, provably FALSE at m≥2 small r
+(μ=2,m=2,r=2: pin 1/2 < Johnson). So "beyond Johnson" is genuinely conditional, now exactly
+CHARACTERIZED rather than asserted. Goal disclosure-#3: CLOSED (landed Lean theorem).
