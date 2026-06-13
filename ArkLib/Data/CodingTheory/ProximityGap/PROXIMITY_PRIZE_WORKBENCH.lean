@@ -154,6 +154,21 @@ a closed `CZ25CoordFiberCap` list-recovery dim bound (R2), or the dual-zero-patt
   same-`a`/distinct-roots/2-relation all fail (5 angles). Multi-week, no separable entry brick.
 **(W4) Weil/√q wall.** `|η_b| ≪ √q` is vacuous for `|G|<√q`; coordinate-pigeonhole incidence
   surface refuted (target is the low-weight-error syndrome *variety*, not a coordinate ball).
+**(W5) The budget/supply route pins δ* but ONLY ABOVE the window — PROVEN.** The all-stack
+  `allWitnessDom_epsMCA_le` (`iSup` over *every* word stack — a *different* counting surface than
+  W1's per-witness one) composed with the KKH26 upper witness PINS `δ* = 1−r/2^μ`
+  UNCONDITIONALLY for the bulk/low-degree range, no `CensusDomination`
+  (`KKH26AllWitnessPin.kkh26_deltaStar_pin_allWitness`; the budget-below-supply arithmetic is
+  discharged outright for all `r ≤ √(2^μ)` by `choose_bulk`, giving the infinite family
+  `kkh26_deltaStar_pin_lowdegree`; concrete `δ*=3/4` at `kkh26_deltaStar_pin_allWitness`'s
+  `deltaStar_pin_concrete_F4129`; all axiom-clean). BUT this pins `δ*` at `ε* = supply/p`, and
+  `1−r/2^μ = 1−ρ−Θ(2^{−μ})` sits in the near-capacity strip `(1−ρ−Θ(1/log n), 1−ρ)` — STRICTLY
+  ABOVE the window-upper `1−ρ−Θ(1/log n)` for *every* `(μ,r)` (verified `in-win? = False`,
+  `scripts/probes/probe_deltastar_window_calibration.py`). So the budget/supply machinery, though
+  unconditional and general, structurally CANNOT reach the window interior: the prize `ε*=2^{−128}`
+  is a *different, smaller* point on the `δ*(ε*)` curve where the line–ball incidence must be
+  *sub-exponential* (= the open W4 incidence / incomplete-Gauss-sum problem). Do not expect a
+  sharper budget/supply count to win the prize — it provably pins the wrong point.
 
 ────────────────────────────────────────────────────────────────────────────────
 ## §4.  WHAT A WINNING CONJECTURE MUST DO  (the closure contract)
