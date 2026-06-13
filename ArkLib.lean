@@ -1424,6 +1424,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeIntClassification
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimePacketRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeRatClassification
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeWindowObstruction
+import ArkLib.Data.CodingTheory.ProximityGap.ThreeRootsSumZeroCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
 import ArkLib.Data.CodingTheory.ProximityGap.TowerMonotonicity
 import ArkLib.Data.CodingTheory.ProximityGap.TowerMonotonicityRS
