@@ -95,10 +95,32 @@ theorem sv11Gen_eval_of_pow_eq_one (c y : F) {t : ℕ} (a b : ℕ) (h : (y - c) 
   unfold sv11Gen
   rw [eval_mul, eval_pow, eval_X, eval_pow, eval_sub, eval_X, eval_C, pow_mul, h, one_pow, mul_one]
 
+
+/-- **Free order-1 vanishing from the b-collapse rank deficiency.** Any combination
+`Ψ = ∑_{a<D} ∑_{b<B} coef(a,b) · g_{a,b}` whose *row sums* vanish (`∑_b coef(a,b) = 0` ∀`a`)
+evaluates to `0` at every rep point `y` (`(y−c)^t = 1`) — independent of the number of rep points.
+So order-1 vanishing at *all* rep points costs only the `D` row-sum conditions (not `D·B` or one per
+point): the rank deficiency (value-map rank `≤ D`) the Stepanov high-order vanishing exploits. -/
+theorem sv11_combination_vanishes_of_rowsum_zero {D B : ℕ} (c : F) (t : ℕ)
+    (coef : ℕ → ℕ → F) (y : F) (h : (y - c) ^ t = 1)
+    (hrow : ∀ a, ∑ b ∈ Finset.range B, coef a b = 0) :
+    (∑ a ∈ Finset.range D, ∑ b ∈ Finset.range B,
+        Polynomial.C (coef a b) * sv11Gen c t (a, b)).eval y = 0 := by
+  rw [eval_finset_sum]
+  apply Finset.sum_eq_zero
+  intro a _
+  rw [eval_finset_sum]
+  have hb : ∀ b ∈ Finset.range B,
+      (Polynomial.C (coef a b) * sv11Gen c t (a, b)).eval y = coef a b * y ^ a := by
+    intro b _
+    rw [eval_mul, eval_C, sv11Gen_eval_of_pow_eq_one c y a b h]
+  rw [Finset.sum_congr rfl hb, ← Finset.sum_mul, hrow a, zero_mul]
+
 end ProximityGap.BinomialDet
 
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.BinomialDet.sv11Gen_eval_of_pow_eq_one
+#print axioms ProximityGap.BinomialDet.sv11_combination_vanishes_of_rowsum_zero
 #print axioms ProximityGap.BinomialDet.add_mul_lt_injective
 #print axioms ProximityGap.BinomialDet.sv11_wronskianDet_ne_zero
