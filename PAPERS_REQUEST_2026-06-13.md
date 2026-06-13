@@ -1,17 +1,14 @@
-# Papers to fetch manually — 2026-06-13  (STATUS: 11 of 12 DONE ✅)
+# Papers to fetch manually — 2026-06-13  (STATUS: 12 of 12 DONE ✅✅ — COMPLETE)
 
-You dropped the IACR-blocked + paywalled papers into `~/Desktop/newmath/`; they are now copied
-into `~/papers/arklib/` with proper names (98 PDFs total). **Only ONE item is still missing.**
+All requested IACR-blocked + paywalled papers are now in `~/papers/arklib/` with proper names
+(**100 PDFs total**). **Nothing outstanding.**
 
-## ⬜ STILL NEEDED (1)
+## ✅ ALL ITEMS FETCHED — the last two (paywalled Elsevier)
 
-| # | Paper | Identifier / DOI | URL | save as |
-|---|-------|------------------|-----|---------|
-| 5 | **Li–Wan** — *k-subset sum over finite fields of characteristic 2* (char-2-native `C(n,k)/q` + Weil error — the strongest char-2 ℓ-word supply lever for `CubicSupplyCountermodel`) | DOI **10.1016/j.ffa.2019.06.004** (Finite Fields Appl. 59 (2019), S1071579719300462) | https://doi.org/10.1016/j.ffa.2019.06.004 | `LiWan-char2-ksubsetsum.pdf` |
-
-(If the Elsevier DOI is paywalled, an arXiv preprint may exist under "Li Wan k-subset sum
-characteristic 2 finite fields" — otherwise this is low-priority; the char-2 lever is a
-nice-to-have, not on the critical path.)
+| # | paper | filed as |
+|---|---|---|
+| 5 | **Cho–Cho** — *k-subset sum problem over finite fields* (Finite Fields Appl. 59 (2019); the char-2 `C(n,k)/q`+Weil supply lever — findings page mis-attributed it to "Li–Wan") | `ChoCho-2019-ksubsetsum-finitefields.pdf` |
+| 7b | **Shkredov** — *small multiplicative subgroup is not a sumset* (Ostmann reducibility; Finite Fields Appl. 63 (2020), journal version of arXiv 1702.01197) | `Shkredov-2020-subgroup-not-sumset-Ostmann.pdf` |
 
 ## ✅ FETCHED & FILED (11)
 
