@@ -1219,6 +1219,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ProofLoop42
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
+import ArkLib.Data.CodingTheory.ProximityGap.QRCubicClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicExactList
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicExactValue
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicOrderedClosedForm
