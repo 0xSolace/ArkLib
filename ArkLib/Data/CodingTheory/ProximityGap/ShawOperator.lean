@@ -128,8 +128,38 @@ theorem incidence_le_average_add_shawBound (S : Finset V) (B : ℝ)
   rw [hz] at hre
   nlinarith
 
+/-- **Real lower-bound form of the Shaw certificate.**  The same norm certificate also
+gives the complementary "average minus Shaw budget" estimate:
+
+`|F| · (|S| - B) ≤ incidence · |V|`.
+
+Together with `incidence_le_average_add_shawBound`, this is the real two-sided incidence
+pin consumed by δ* bracketing arguments. -/
+theorem average_sub_shawBound_le_incidence (S : Finset V) (B : ℝ)
+    (h : MCAShawConjecture (F := F) S B) (s₀ s₁ : V) :
+    (Fintype.card F : ℝ) * ((S.card : ℝ) - B)
+      ≤ ((univ.filter (fun γ : F => s₀ + γ • s₁ ∈ S)).card : ℝ) * (Fintype.card V : ℝ) := by
+  let z : ℂ :=
+    ((univ.filter (fun γ : F => s₀ + γ • s₁ ∈ S)).card : ℂ) * (Fintype.card V : ℂ)
+      - (Fintype.card F : ℂ) * (S.card : ℂ)
+  have hdev : ‖z‖ ≤ (Fintype.card F : ℝ) * B := by
+    simpa [z] using incidence_pinned_of_shawBound (F := F) S B h s₀ s₁
+  have hneg : -z.re ≤ (Fintype.card F : ℝ) * B := by
+    have hre : (-z).re ≤ ‖-z‖ := Complex.re_le_norm (-z)
+    have hre' : -z.re ≤ ‖z‖ := by simpa using hre
+    exact le_trans hre' hdev
+  have hz :
+      z.re =
+        (((univ.filter (fun γ : F => s₀ + γ • s₁ ∈ S)).card : ℝ)
+          * (Fintype.card V : ℝ)
+          - (Fintype.card F : ℝ) * (S.card : ℝ)) := by
+    simp [z]
+  rw [hz] at hneg
+  nlinarith
+
 end ArkLib.ProximityGap.ShawOperator
 
 #print axioms ArkLib.ProximityGap.ShawOperator.incidence_eq_average_add_shaw
 #print axioms ArkLib.ProximityGap.ShawOperator.incidence_pinned_of_shawBound
 #print axioms ArkLib.ProximityGap.ShawOperator.incidence_le_average_add_shawBound
+#print axioms ArkLib.ProximityGap.ShawOperator.average_sub_shawBound_le_incidence
