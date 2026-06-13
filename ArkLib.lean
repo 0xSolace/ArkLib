@@ -1422,6 +1422,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupCharacterSumNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupEnergyAntiConcGV
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumAntiConc
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumAntiConcElementary
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumCosetInv
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumDensity
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
