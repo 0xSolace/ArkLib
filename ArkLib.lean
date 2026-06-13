@@ -672,6 +672,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DescentKernelLemma
 import ArkLib.Data.CodingTheory.ProximityGap.DeviationSupSplit
 import ArkLib.Data.CodingTheory.ProximityGap.DivisorListBound
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
+import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessCore
 import ArkLib.Data.CodingTheory.ProximityGap.EpsCAMono
 import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAInterleavedJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAInterleavedList
@@ -1534,6 +1535,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.WitnessLayerCount
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianGeneral
+import ArkLib.Data.CodingTheory.ProximityGap.WronskianNonVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianStepanovBridge
 import ArkLib.Data.CodingTheory.ProximityLeaves
 import ArkLib.Data.CodingTheory.ProximityLeaves2
