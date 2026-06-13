@@ -774,3 +774,33 @@ same Bourgain-type equidistribution of `μ_n`'s higher sumsets, now with:
   · OPEN: the uniform `C=O(1)` (≡ excess `O(baseline)`) at `n=2⁴⁰`, `r~log p`.
 The closed-form δ* (capacity term, `prizeDeltaStar`) + proven ceiling are in the workbench; this is the
 sharpest, two-lane-reconciled statement of the one remaining open inequality.
+
+## 28. The MOMENT-WALL DIAGNOSIS (from the parallel lanes) — my lane is diagnosed insufficient for the PROOF
+
+Two decisive updates from the issue thread that reframe the whole effort honestly:
+
+**(A) wakesync's exact closure threshold `r_max = ½·p^{2/n}`** (AM-GM on `Σ_j|σ_j(e)|²=rn`, norm `|N(e)|≥p`):
+the energy is EXACTLY clean (excess=0) for `r < r_max`. Regimes at the prize point (`p~2^128`, need r~128):
+  · **`n ≤ 32`: `r_max ≥ 128` ⟹ δ* CLOSES UNCONDITIONALLY** (clean to the full window, via Bessel+norm).
+  · `n=64,128,256`: `r_max=8,2,1` (partial). · **`n ≥ 512` (FRI/STARK): `r_max→0.5` = THE WALL.**
+So small domains are SOLVED; the prize is genuinely the large-n regime, entirely sum-product-governed.
+
+**(B) The owner's moment-wall diagnosis — the binding form is the list worst-case, needing `r=Θ(n)`.**
+List size `= avg + (|C|/|V|)·𝒮(u₀)`; the prize is `max_{u₀∈V} ‖𝒮(u₀)‖`. The moment method gives only
+`max_{u₀}‖𝒮‖ ≤ |V|^{1/2r}·E_r^{1/2r}`; the union factor `|V|^{1/2r}=q^{n/2r}` drops to `O(1)` ONLY at
+`r=Θ(n)`. But the diagonal/Wick term `E_r=(2r−1)!!n^r` survives only to `r≈log_n p` (off-diagonal
+char-p coincidences overtake at `n^r>p`). **Θ(n) vs O(log_n p) — incompatible.** So EVERY moment/
+energy/character/L²/L∞ route — mine, wakesync's, the four in the convergence diagnosis — is capped at
+`r≈log_n p` and CANNOT reach the list worst-case. The single-coset `max|η_b|` (my refutation, r~log p)
+is a NECESSARY condition; the list object (max over all `q^n` words `u₀`, r~Θ(n)) is strictly harder
+and is the actual prize.
+
+**Honest repositioning of my lane.** The refutation/character/dichotomy work delivers: (i) the VALUE
+(`C≤2`, `G=O(1)`, sharp law `√(n ln p)`), (ii) the genericity measurement (`μ_n≤random`, a necessary
+condition), (iii) the quantitative two-lane reconciliation (`excess/baseline=0.28 ⟺ C=1.633`), (iv)
+the closed-form δ* (capacity term) + proven ceiling in the workbench. But per the diagnosis it does NOT
+furnish the PROOF — that needs `r=Θ(n)` uniform cancellation invisible to every moment. **The only
+non-killed candidate routes are NON-moment: HOMDS/rim-hook `n`-core, and demand-side CensusDomination.**
+Refs (wakesync): Kowalski 2401.04756, Shkredov 1712.00410, Schoen–Shkredov 1110.2986, HBK/BK, Green
+0904.2075. The prize-winning theorem (precisely stated): `E_{2r}(μ_N⊂F_p)` within a constant factor
+per moment of `(2r−1)!!N^r` up to `r~log(1/ε*)` for `N` a fixed power of `p` — beyond current sum-product.
