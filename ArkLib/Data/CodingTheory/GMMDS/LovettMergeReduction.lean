@@ -7,30 +7,35 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25Opening
 import ArkLib.Data.CodingTheory.GMMDS.LovettNLtK
 
 /-!
-# Lovett's GM-MDS proof: the Lemma 2.5 merge residual, corrected for `n = 0` (#389)
+# Lovett's GM-MDS proof: the corrected Lemma 2.5 reduction (#389)
 
-The single remaining open residual of Lovett's Theorem 1.7 is the existence of the Lemma 2.5
-witness in a primitive `V*(k)` system.  This file:
+The remaining open content of Lovett's Theorem 1.7 (after the master frame and the `n = k` /
+`n < k` algebraic branches) is the *primitive step*.  This file makes that residual **both
+correctly stated and `n = 0`-complete**, fixing two falsity bugs in the prior framing:
 
-1. **Diagnoses a falsity in the current `LovettWitnessExists` residual at `n = 0`** (mirroring the
-   earlier `n = k` repair): the empty-vector system `emptyV : Fin 1 → (Fin 0 → ℕ)` is a primitive
-   `V*(1)` system, yet `LovettWitness F emptyV 1` is **false** (it demands `1 ≤ 0`).  So
-   `LovettWitnessExists` as stated cannot be discharged — `lovettWitnessExists_holds` would be a
-   false goal.
+1. **`LovettWitnessExists` is false at `n = 0`** (`not_lovettWitness_emptyV`): the empty-vector
+   system `emptyV : Fin 1 → (Fin 0 → ℕ)` is a genuine primitive `V*(1)` system, yet
+   `LovettWitness F emptyV 1` demands `1 ≤ 0`.  So the literal witness residual is unprovable.
 
-2. **Discharges the primitive step at `n = 0` directly** (`lovettHolds_primitive_n0`): a `V*(k)`
-   system over `Fin 0` has `m ≤ 1` (Lemma 2.1: any two distinct vectors over the empty coordinate
-   set are equal, hence comparable), so `P(k,V)` is the empty family or a single shifted block —
-   independent with no witness needed.
+2. **The "no merge candidate" residual is also false** (`not_noMergeCandidate`): the system
+   `mcV = [(0,0)] : Fin 1 → (Fin 2 → ℕ)` is a primitive `V*(1)` system that DOES contain a merge
+   candidate (vector `0` has an interior zero at `j = 0 < 1` and a last-coordinate zero) — yet it
+   is independent.  So "a primitive `V*(k)` system has no merge candidate" is a false demand: merge
+   candidates genuinely occur in independent systems.  Ruling them out is the wrong residual.
 
-3. **Defines the merge residual `LovettMerge`** precisely (the genuine algebraic heart of Lemma
-   2.5: in a primitive `V*(k)` system no vector simultaneously has an interior zero and a
-   last-coordinate zero), and proves the **corrected** primitive-step reduction
-   `LovettPrimitiveStep ⟸ LovettMerge`, routing `n = 0` through (2) and `n ≥ 1` through the
-   `witness_or_mergeCandidate` dichotomy + the already-proven `lovettHolds_of_witness`.
+The **correct** residual is therefore not "no merge candidate" but the substitution lemma itself:
+*a primitive `V*(k)` system that contains a merge candidate is independent* (Lovett's `a_last ↦ a_{j*}`
+substitution-divisibility argument, kernel `substVar` / `sub_X_dvd_of_subst_eq_zero` in
+`LovettSubstitutionDvd`, collapses to dimension `n − 1` via the `n`-IH).  We name it
+`LovettMergeIndep` and prove the genuinely-usable reduction:
 
-The merge-elimination (`LovettMerge`) is thus the entire remaining content of the GM-MDS
-conjecture in this development, with the `n = 0` boundary now correctly accounted for.
+> **`lovettPrimitiveStep_of_mergeIndep : LovettMergeIndep F → LovettPrimitiveStep F`** — routing
+> `n = 0` directly (`lovettHolds_primitive_n0`), and `n ≥ 1` through the `witness_or_mergeCandidate`
+> dichotomy: the witness branch via `lovettHolds_of_witness`, the merge branch via `LovettMergeIndep`.
+
+`LovettMergeIndep` is a TRUE statement (vacuously so wherever no merge candidate occurs, and the
+genuine substitution lemma where one does), so this is a usable residual — unlike the two refuted
+forms.  Discharging it closes Theorem 1.7 and the prize route R3.
 
 Issue #389.
 -/
@@ -41,7 +46,7 @@ namespace ArkLib.GMMDS
 
 variable {F : Type*} [Field F]
 
-/-! ## 1. The `n = 0` falsity of the current `LovettWitnessExists` residual -/
+/-! ## 1. The `n = 0` falsity of the literal `LovettWitnessExists` residual -/
 
 /-- The empty-vector system over `Fin 0`: a single vector `Fin 0 → ℕ` (the empty function). -/
 def emptyV : Fin 1 → (Fin 0 → ℕ) := fun _ => fun j => j.elim0
@@ -64,9 +69,8 @@ theorem emptyV_isVStar : IsVStar emptyV 1 := by
 theorem emptyV_primitive : ∀ j : Fin 0, ∃ i, emptyV i j = 0 := fun j => j.elim0
 
 /-- **The `n = 0` counterexample to the literal `LovettWitness`.**  Even though `emptyV` is a
-primitive `V*(1)` system, the witness `LovettWitness F emptyV 1` is false: it demands the
-existence of `hn : 1 ≤ 0`.  Hence `LovettWitnessExists` (which would supply such a witness) is
-**not** provable as stated — the `n = 0` boundary must be handled separately. -/
+primitive `V*(1)` system, `LovettWitness F emptyV 1` is false (it demands `hn : 1 ≤ 0`).  Hence
+`LovettWitnessExists` is not provable as stated. -/
 theorem not_lovettWitness_emptyV : ¬ LovettWitness F emptyV 1 := by
   rintro ⟨hn, _, _⟩
   exact absurd hn (by norm_num)
@@ -74,34 +78,29 @@ theorem not_lovettWitness_emptyV : ¬ LovettWitness F emptyV 1 := by
 /-! ## 2. The primitive step at `n = 0`, discharged directly -/
 
 /-- A `V*(k)` system over `Fin 0` (with `1 ≤ k`) has at most one vector: over the empty coordinate
-set every vector is the empty function, so any two are equal — hence comparable, which Lemma 2.1
+set every vector is the empty function, so any two are equal — comparable, which Lemma 2.1
 (`not_le_of_isVStar`) forbids for *distinct* indices. -/
 theorem m_le_one_of_n_zero {m : ℕ} {V : Fin m → (Fin 0 → ℕ)} {k : ℕ} (hk : 1 ≤ k)
     (hV : IsVStar V k) : m ≤ 1 := by
   by_contra hcon
   push_neg at hcon
-  -- m ≥ 2: pick the two distinct indices 0 and 1
   have h0 : (⟨0, by omega⟩ : Fin m) ≠ ⟨1, by omega⟩ := by
     intro h; simpa using congrArg (Fin.val) h
   exact not_le_of_isVStar hk hV h0 (fun l => l.elim0)
 
 /-- **The primitive step at `n = 0`.**  A primitive `V*(k)` system over `Fin 0` is independent:
-`m ≤ 1`, so `P(k,V)` is either empty (`m = 0`) or one shifted monomial block (`m = 1`), both
-linearly independent — no Lemma 2.5 witness is needed (and none exists). -/
+`m ≤ 1`, so `P(k,V)` is empty (`m = 0`) or one shifted monomial block (`m = 1`) — both independent. -/
 theorem lovettHolds_primitive_n0 {m : ℕ} {V : Fin m → (Fin 0 → ℕ)} {k : ℕ} (hk : 1 ≤ k)
     (hV : IsVStar V k) : LovettHolds F V k := by
   classical
   unfold LovettHolds
   rcases Nat.lt_or_ge m 1 with hm0 | hm1
-  · -- m = 0: empty family
-    obtain rfl : m = 0 := Nat.lt_one_iff.mp hm0
+  · obtain rfl : m = 0 := Nat.lt_one_iff.mp hm0
     haveI : IsEmpty (Σ i : Fin 0, Fin (k - vAbs (V i))) := by
       constructor; rintro ⟨i, _⟩; exact i.elim0
     exact linearIndependent_empty_type
-  · -- m = 1: single block, reindex Σ to Fin and use the base case
-    have hm1' : m = 1 := le_antisymm (m_le_one_of_n_zero hk hV) hm1
+  · have hm1' : m = 1 := le_antisymm (m_le_one_of_n_zero hk hV) hm1
     subst hm1'
-    -- `Σ i : Fin 1, Fin (k - |Vᵢ|) ≃ Fin (k - |V 0|)` via the unique index `0`.
     let e : (Σ i : Fin 1, Fin (k - vAbs (V i))) ≃ Fin (k - vAbs (V 0)) :=
       { toFun := fun p => Fin.fin_one_eq_zero p.1 ▸ p.2
         invFun := fun x => ⟨0, x⟩
@@ -122,67 +121,90 @@ theorem lovettHolds_primitive_n0 {m : ℕ} {V : Fin m → (Fin 0 → ℕ)} {k : 
     rw [← hcomp]
     exact hbase.comp e e.injective
 
-/-! ## 3. The merge residual `LovettMerge` and the corrected primitive-step reduction -/
+/-! ## 3. The "no merge candidate" residual is ALSO false (merge candidates occur in independent
+systems) -/
 
-/-- **The merge residual** (the genuine algebraic heart of Lovett Lemma 2.5).  In a *primitive*
-`V*(k)` system over `Fin n` with `1 ≤ n`, given the full minimal-counterexample induction
-hypotheses, NO vector simultaneously carries an interior zero (`j* < n−1`) and a last-coordinate
-zero.
+/-- `mcV = [(0,0)] : Fin 1 → (Fin 2 → ℕ)` — the zero vector over two coordinates. -/
+def mcV : Fin 1 → (Fin 2 → ℕ) := fun _ => ![0, 0]
 
-`witness_or_mergeCandidate` shows the only obstruction to the Lemma 2.5 witness is exactly such a
-"merge candidate"; ruling it out is Lovett's substitution-divisibility argument (kernel in
-`LovettSubstitutionDvd`: `a_last ↦ a_{j*}` collapses to dimension `n−1`, a minimal common-factor
--free dependence then forces `(a_{j*} − a_last)` to divide every coefficient, contradiction). -/
-def LovettMerge (F : Type*) [Field F] : Prop :=
+theorem mcV_isVStar : IsVStar mcV 1 := by
+  refine ⟨?_, ?_, ?_⟩
+  · intro i; simp [vAbs, mcV, Fin.sum_univ_two]
+  · intro I hI
+    have hIeq : I = {0} := by
+      rw [Finset.eq_singleton_iff_unique_mem]
+      obtain ⟨w, hw⟩ := hI
+      exact ⟨by simpa [Fin.fin_one_eq_zero w] using hw, fun x _ => Fin.fin_one_eq_zero x⟩
+    subst hIeq
+    rw [Finset.sum_singleton]
+    have h1 : vAbs (mcV 0) = 0 := by simp [vAbs, mcV, Fin.sum_univ_two]
+    have hmeet : vAbs (vMeet mcV {0} (Finset.singleton_nonempty 0)) = 0 := by
+      simp [vAbs, vMeet, mcV, Fin.sum_univ_two]
+    rw [h1, hmeet]
+  · intro i j _; fin_cases j <;> simp [mcV]
+
+theorem mcV_primitive : ∀ j : Fin 2, ∃ i, mcV i j = 0 :=
+  fun j => ⟨0, by fin_cases j <;> simp [mcV]⟩
+
+/-- **The merge candidate genuinely occurs** in the primitive `V*(1)` system `mcV`: vector `0` has
+an interior zero (`j = 0 < 2 − 1`) and a last-coordinate zero.  Yet `mcV` is independent (its family
+is `{xᵉ : e < 1} = {1}`).  So "a primitive `V*(k)` system has no merge candidate" is FALSE — merge
+candidates occur in genuinely independent systems, and the correct residual must *handle* them, not
+forbid them. -/
+theorem not_noMergeCandidate :
+    ¬ (∀ {n m : ℕ} (_hn : 1 ≤ n) (V : Fin m → (Fin n → ℕ)) (k : ℕ), 1 ≤ k → IsVStar V k →
+        (∀ j : Fin n, ∃ i, V i j = 0) →
+        ¬ (∃ (i : Fin m) (j : Fin n), (j : ℕ) < n - 1 ∧ V i j = 0 ∧ V i (lastCoord n _hn) = 0)) := by
+  intro h
+  have hlast : lastCoord 2 (by norm_num) = (1 : Fin 2) := by decide +kernel
+  exact h (by norm_num) mcV 1 le_rfl mcV_isVStar mcV_primitive
+    ⟨0, 0, by norm_num, by simp [mcV], by rw [hlast]; simp [mcV]⟩
+
+/-! ## 4. The CORRECT merge residual and the usable primitive-step reduction -/
+
+/-- **The correct merge residual** (Lovett's Lemma 2.5/2.6 substitution lemma).  A *primitive*
+`V*(k)` system over `Fin n` (`1 ≤ n`, with the minimal-counterexample IHs) that contains a merge
+candidate — an index `i` and interior coordinate `j* < n−1` with `V i j* = 0` and `V i (n−1) = 0` —
+is itself independent.  (Proven, in Lovett, by the `a_last ↦ a_{j*}` substitution collapsing to a
+dimension-`n−1` system handled by the `n`-IH; kernel in `LovettSubstitutionDvd`.)  Unlike the two
+refuted "witness exists" / "no merge candidate" forms, this is a TRUE statement. -/
+def LovettMergeIndep (F : Type*) [Field F] : Prop :=
   ∀ {n m : ℕ} (hn : 1 ≤ n) (V : Fin m → (Fin n → ℕ)) (k : ℕ), 1 ≤ k → IsVStar V k →
     (∀ j : Fin n, ∃ i, V i j = 0) →
     (∀ {n' m' : ℕ} (V' : Fin m' → (Fin n' → ℕ)) (k' : ℕ), n' < n → 1 ≤ k' → IsVStar V' k' →
       LovettHolds F V' k') →
     (∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
       lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k) →
-    ¬ (∃ (i : Fin m) (j : Fin n), (j : ℕ) < n - 1 ∧ V i j = 0 ∧ V i (lastCoord n hn) = 0)
+    (∃ (i : Fin m) (j : Fin n), (j : ℕ) < n - 1 ∧ V i j = 0 ∧ V i (lastCoord n hn) = 0) →
+    LovettHolds F V k
 
-/-- **The Lemma 2.5 witness exists for `n ≥ 1`, modulo the merge residual.**  When `1 ≤ n`, the
-`witness_or_mergeCandidate` dichotomy + `LovettMerge` (which kills the merge alternative) yields
-the structured witness `vᵢ₀ = (1,…,1,0)`. -/
-theorem lovettWitness_of_merge (hmrg : LovettMerge F) {n m : ℕ} (hn : 1 ≤ n)
-    (V : Fin m → (Fin n → ℕ)) (k : ℕ) (hk : 1 ≤ k) (hV : IsVStar V k)
-    (hprim : ∀ j : Fin n, ∃ i, V i j = 0)
-    (IHn : ∀ {n' m' : ℕ} (V' : Fin m' → (Fin n' → ℕ)) (k' : ℕ), n' < n → 1 ≤ k' → IsVStar V' k' →
-      LovettHolds F V' k')
-    (IHd : ∀ {m' : ℕ} (V' : Fin m' → (Fin n → ℕ)),
-      lovettD V' k < lovettD V k → IsVStar V' k → LovettHolds F V' k) :
-    LovettWitness F V k := by
-  rcases witness_or_mergeCandidate hn hV hprim with hwit | hmerge
-  · obtain ⟨i₀, hone⟩ := hwit
-    exact ⟨hn, i₀, hone⟩
-  · exact absurd hmerge (hmrg hn V k hk hV hprim IHn IHd)
-
-/-- **The primitive step holds, modulo only the merge residual `LovettMerge`.**  This is the
-corrected reduction (handling `n = 0` directly), so it is *not* subject to the `n = 0` falsity of
-the literal `LovettWitnessExists`.  Discharging `LovettMerge` (Lovett's substitution argument)
-closes Theorem 1.7 and the prize route R3. -/
-theorem lovettPrimitiveStep_of_merge (hmrg : LovettMerge F) : LovettPrimitiveStep F := by
+/-- **The primitive step, modulo the CORRECT merge residual `LovettMergeIndep`.**  Handles `n = 0`
+directly and splits `n ≥ 1` via `witness_or_mergeCandidate`: the witness branch through
+`lovettHolds_of_witness`, the merge branch through `LovettMergeIndep` (independence *given* a merge
+candidate).  This reduction is genuinely usable — `LovettMergeIndep` is true — discharging it closes
+Theorem 1.7 and the prize route R3. -/
+theorem lovettPrimitiveStep_of_mergeIndep (hmi : LovettMergeIndep F) : LovettPrimitiveStep F := by
   intro n m V k hk hV hprim IHn IHd
   rcases Nat.eq_zero_or_pos n with hn0 | hnpos
   · subst hn0; exact lovettHolds_primitive_n0 hk hV
-  · exact lovettHolds_of_witness hk hV
-      (lovettWitness_of_merge hmrg hnpos V k hk hV hprim IHn IHd) IHd
+  · rcases witness_or_mergeCandidate hnpos hV hprim with hwit | hmerge
+    · obtain ⟨i₀, hone⟩ := hwit
+      exact lovettHolds_of_witness hk hV ⟨hnpos, i₀, hone⟩ IHd
+    · exact hmi hnpos V k hk hV hprim IHn IHd hmerge
 
-/-- **Theorem 1.7 (and `LovettPrimitiveCase`, full GM-MDS), modulo the merge residual.** -/
-theorem lovettThm17_of_merge (hmrg : LovettMerge F) {n : ℕ} : LovettThm17 F n :=
-  lovettThm17_of_primitiveStep (lovettPrimitiveStep_of_merge hmrg)
+/-- **Theorem 1.7 (and `LovettPrimitiveCase`, full GM-MDS), modulo `LovettMergeIndep`.** -/
+theorem lovettThm17_of_mergeIndep (hmi : LovettMergeIndep F) {n : ℕ} : LovettThm17 F n :=
+  lovettThm17_of_primitiveStep (lovettPrimitiveStep_of_mergeIndep hmi)
 
-theorem lovettPrimitiveCase_of_merge (hmrg : LovettMerge F) {n : ℕ} : LovettPrimitiveCase F n :=
-  lovettPrimitiveCase_of_primitiveStep (lovettPrimitiveStep_of_merge hmrg)
+theorem lovettPrimitiveCase_of_mergeIndep (hmi : LovettMergeIndep F) {n : ℕ} :
+    LovettPrimitiveCase F n :=
+  lovettPrimitiveCase_of_primitiveStep (lovettPrimitiveStep_of_mergeIndep hmi)
 
 end ArkLib.GMMDS
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
-#print axioms ArkLib.GMMDS.emptyV_isVStar
 #print axioms ArkLib.GMMDS.not_lovettWitness_emptyV
 #print axioms ArkLib.GMMDS.lovettHolds_primitive_n0
-#print axioms ArkLib.GMMDS.lovettWitness_of_merge
-#print axioms ArkLib.GMMDS.lovettPrimitiveStep_of_merge
-#print axioms ArkLib.GMMDS.lovettThm17_of_merge
-#print axioms ArkLib.GMMDS.lovettPrimitiveCase_of_merge
+#print axioms ArkLib.GMMDS.not_noMergeCandidate
+#print axioms ArkLib.GMMDS.lovettPrimitiveStep_of_mergeIndep
+#print axioms ArkLib.GMMDS.lovettThm17_of_mergeIndep
