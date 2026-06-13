@@ -33,8 +33,10 @@ You are formalizing residuals around the **Ethereum Proximity Prize** ([ABF26], 
 list-decoding threshold `δ*` for explicit smooth-domain Reed–Solomon codes in the window
 `(1−√ρ, 1−ρ−Θ(1/log n))` at `ε* = 2^-128` — is **genuine open research, blocked on the
 literature** (no known technique bridges Johnson→capacity for explicit fixed RS codes).
-**Do not fabricate a closure of the open core.** Predecessors #232, #334, #357 are
-CLOSED (each distilled into the successor); see §3.5 for the current state.
+Propose bold closed-form `δ*` conjectures and attack the core freely — just **don't *claim* a
+closure is *proven* when its input is unresolved** (see the §6 contract: bold in exploration,
+strict only in proof-claims). Predecessors #232, #334, #357 are CLOSED (each distilled into the
+successor); see §3.5 for the current state.
 
 ## 1. ⚡ BUILD — read this FIRST or you will clog the machine
 
