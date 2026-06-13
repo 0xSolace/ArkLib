@@ -339,6 +339,20 @@ theorem mca_badscalar_general (Q0 Q1 : F[X]) (μ : Finset F) (k a : ℕ) (hka : 
     · intro ζ hζ; rw [eval_sub, hmdef] at *; rw [modByMonic_eval_eq Q0 S ζ hζ, sub_self]
     · intro ζ hζ; rw [eval_sub, hmdef] at *; rw [modByMonic_eval_eq Q1 S ζ hζ, sub_self]
 
+/-- **Sharp q-independent bad-scalar bound.** Only `k+1` agreement points are needed to pin the
+scalar (a degree-`<k` codeword agreeing on `k+1` points is unique), so the MCA bad-scalar count for
+the single-poly stack `Q₀ + γ·Xᵏ` is `≤ C(|μ|, k+1)`. For `μ = μ_n` (`n = 2^μ`, `k+1 = r`) this is
+`C(2^μ, r)`, **asymptotically equal to the KKH26 supply** `2^r·C(2^{μ-1}, r)`: the ratio
+`C(2^μ, r) / (2^r·C(2^{μ-1}, r)) = ∏_{i<r}(2 − i/2^{μ-1})·2^{-1}·… → 1` as `μ → ∞`. The remaining
+`(1+o(1))` factor is the coset-rigidity content (the pinning `(k+1)`-subsets are coset-structured,
+not arbitrary), the only residual to the exact `δ* = 1 − r/2^μ` pin. -/
+theorem mca_badscalar_sharp (Q0 : F[X]) (μ : Finset F) (k : ℕ) :
+    (Finset.univ.filter (fun γ : F =>
+        ∃ W : F[X], W.natDegree < k ∧
+          k + 1 ≤ (μ.filter (fun ζ => (Q0 + C γ * X ^ k - W).eval ζ = 0)).card)).card
+      ≤ (μ.powersetCard (k + 1)).card :=
+  mca_badscalar_card_le Q0 μ k (k + 1) (Nat.lt_succ_self k)
+
 end ArkLib.ProximityGap.SinglePencilQIndependence
 
 /-! ## Axiom audit -/
@@ -347,3 +361,4 @@ end ArkLib.ProximityGap.SinglePencilQIndependence
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_card_le
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.rootsOfUnity_mca_badscalar_card_le
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_general
+#print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_sharp
