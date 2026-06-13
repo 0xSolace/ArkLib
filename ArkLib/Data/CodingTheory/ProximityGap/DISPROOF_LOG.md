@@ -8486,7 +8486,7 @@ FULLY CLOSED (closed form, zero residual). The entire open content is the WORST-
 extremality of the antipodal subset-sum fibre (BCHKS25 Conj 1.12) — exactly lalalune's "must be a
 combinatorial extremality argument, not a character-sum/interpolation/moment bound." Probe:
 scripts/probes/probe_pairsum_gate.py.
-### O173 — the closed-form-FREE per-line structural route: d-ary split + 2^r sign-symmetry + single-line dominance all CONFIRMED, but the per-line injection into C(n/2,r)·2^r BREAKS for r≥4 (axis-support mismatch) — same open core as O172 (nubs, 2026-06-13)
+### O174 — the closed-form-FREE per-line structural route: d-ary split + 2^r sign-symmetry + single-line dominance all CONFIRMED, but the per-line injection into C(n/2,r)·2^r BREAKS for r≥4 (axis-support mismatch) — same open core as O172 (nubs, 2026-06-13)
 
 Asked whether each order-d character line has deep-band #bad ≤ its budget share (so
 max_d ≤ K = 2^r·C(n/2,r)) WITHOUT the O172 closed form. **Verdict: PARTIAL.** The per-line
