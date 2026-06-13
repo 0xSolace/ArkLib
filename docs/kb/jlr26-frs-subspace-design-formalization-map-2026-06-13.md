@@ -615,3 +615,32 @@ in `ln p`) is direct evidence the k-uniform version holds.
 `k≈log q`-UNIFORM extension of Katz's equidistribution-and-independence of Gauss sums. Value
 refutation-certified, fixed-k case proven, uniformity open. Sources: arXiv 2207.12439, 1809.04286;
 Katz, "Gauss Sums, Kloosterman Sums, and Monodromy Groups" (Annals of Math Studies 116, 1988).
+
+## 23. The closed-form conjecture IS already in the workbench — my session pins/localizes its floor
+
+`PrizeEntropyDeltaStar.lean` (imported by the workbench) already states the COMPLETE closed-form
+conjecture as closed Props with the ceiling proven:
+  · `prizeDeltaStar(ρ,B) = 1 − ρ − H(ρ)/log₂B`  — the closed δ* (= the capacity term §R.4; `H(ρ)=H(1−ρ)`
+    so identical to `1−ρ−h(1−ρ)/log₂q`).
+  · `prizeDeltaStar_lt_capacity`, `prizeDeltaStar_gt_johnson`, `prizeDeltaStar_ceiling` — ALL PROVEN
+    (axiom-clean): δ* is strictly inside the window `(1−√ρ, 1−ρ)`, and the ladder ceiling holds.
+  · `PrizeFloorStatement g k ε* := ∀ δ < prizeDeltaStar(ρ, qε*), epsMCA(evalCode g n k) δ ≤ ε*` — the
+    single open core, a CLOSED Prop (no residual sub-lemma inside).
+  · `PrizePinConjecture := mcaDeltaStar = prizeDeltaStar` — the full prize, gated only on the floor.
+
+**So the directive's "closed-form conjecture, no residual" is structurally met:** the conjecture is a
+closed Prop, the ceiling is proven, the floor is a clean Prop (not an incomputable object). The ONLY
+unproven obligation is `PrizeFloorStatement` — the worst-case `ε_mca ≤ ε*` below `prizeDeltaStar`.
+
+**This session pins exactly that floor:**
+  · VALUE: `PrizeFloorStatement` ⟸ `max_{b≠0}|∑_{x∈μ_n}e_p(bx)| ≤ 2√(n ln q)` (the floor's worst-case
+    list bound is the Shaw/character sup-norm), refutation-pinned `C∈[1,2]`, `G=O(1)` to n≤512 (§15).
+  · INTERPRETATION: via the Incidence-Genericity Dichotomy, the floor holds because dyadic `μ_n` is
+    incidence-generic (`B(μ_n)≤B_random`, `E=3n²−3n` clean) — so δ* is the capacity term (§R.4/§19).
+  · MACHINERY: the floor's proof = the `k≈log q`-uniform Katz independence of Gauss sums (§22), with
+    the fixed-k case proven (BGK floor `n^{1−ε}`) and char-0 case proven (`p>2^n`).
+
+**Net.** The closed-form conjecture (PrizePinConjecture, δ*=prizeDeltaStar) is in the workbench with
+proven ceiling; the floor is the single named open core; this session attaches its value (refutation),
+its meaning (capacity-term genericity), and its proof target (k-uniform Katz). The prize = proving
+`PrizeFloorStatement`, the one open inequality, value known.
