@@ -31,6 +31,8 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettThm17Reduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma22
 import ArkLib.Data.CodingTheory.GMMDS.LovettSeparateStep
 import ArkLib.Data.CodingTheory.GMMDS.LovettDivisibility
+-- §3 THE SHAW OPERATOR — the unified unknown + the closed prize conjecture:
+import ArkLib.Data.CodingTheory.ProximityGap.ShawOperator
 
 /-!
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -187,11 +189,14 @@ prize via the GG25 curve-decodability bridge (T3).
 -/
 
 set_option linter.unusedSectionVars false
+-- the prize objects (mcaDeltaStar, choose-budget) are heavy to elaborate; give a solver room:
+set_option maxHeartbeats 1000000
 
 namespace ProximityGap.Workbench
 
 open scoped NNReal ENNReal
 open ProximityGap ProximityGap.GrandChallenges
+open ArkLib.ProximityGap.KKH26  -- evalCode: the explicit smooth RS code object used by the §2.4 pins
 -- Substrate namespaces — every §2 lemma is now directly accessible by its short name:
 open ProximityGap.MCAThresholdLedger      -- mcaDeltaStar, le_mcaDeltaStar_of_good, mcaDeltaStar_le_of_bad
 open ProximityGap.FarCosetExplosion       -- epsMCA_ge_far_incidence (the law's engine)
@@ -269,5 +274,37 @@ noncomputable example {F : Type} [Field F] [Fintype F] [DecidableEq F] {n : ℕ}
       -- def prizeResolution … : GrandMCAResolution C epsStar := …   -- T2
 
     ════════════════════════════════════════════════════════════════════════════ -/
+
+/-! ════════════════════════════════════════════════════════════════════════════
+    ║   §3   THE SHAW OPERATOR — the closed Proximity-Prize conjecture           ║
+    ════════════════════════════════════════════════════════════════════════════
+
+    UNIFICATION (proven, axiom-clean, `ProximityGap.ShawOperator`).  Every reduction of the prize
+    δ* — the residual `(R) = worst − average`, the higher-order-MDS failure-correction `κ_d`, the
+    off-diagonal spectral error of the line–ball incidence operator, the worst-case incomplete
+    character sum `max|η_b|`, the higher additive energies `E_r` — is **one** quantity, the
+
+        **Shaw operator**   `𝒮(S; s₀, s₁) = Σ_{ψ≠0, ψ⊥s₁} Σ_{s∈S} ψ(s₀−s)`
+
+    (`ShawOperator.shawError`), the off-trivial spectral error of the line–ball incidence.
+
+    SOLVE FOR δ* (proven, axiom-clean).  `ShawOperator.incidence_eq_average_add_shaw`:
+
+        `#{γ : s₀+γ·s₁ ∈ S} · |V|  =  |F| · (|S| + 𝒮)`     — incidence = average + Shaw, EXACTLY.
+
+    Since `δ* = sup{δ : max-far-line-incidence(δ) ≤ q·ε*}` (`MCAThresholdLedger.mcaDeltaStar`), δ*
+    is a *closed function* of the worst-case Shaw operator.  `incidence_pinned_of_shawBound` turns a
+    Shaw budget into two-sided control of the incidence with **no open residual**.
+
+    THE CLOSED CONJECTURE (the single open input).  `ShawOperator.MCAShawConjecture S B`:
+
+        `∀ s₀ s₁,  ‖𝒮(S; s₀, s₁)‖ ≤ B`.
+
+    With the prize budget `B = q·ε*·|V|/|F| − |S|` on the explicit smooth-domain δ-ball this is
+    EXACTLY δ* reaching the prize window.  It is irreducible: NOT Johnson (the average term is
+    strictly capacity-side), NOT a Weil/Parseval bound (W4-weak on `s₁^⊥` for `n ≪ √q`).  This is a
+    closed bound on a single named operator — no residual, no incomputable lemma.  Proving it (the
+    cyclic block-diagonal `Z/n` per-frequency estimate of `FarLineIncidenceEquivariance`) is the
+    whole prize. -/
 
 end ProximityGap.Workbench
