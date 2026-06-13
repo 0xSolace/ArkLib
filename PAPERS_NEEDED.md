@@ -96,3 +96,10 @@ Also re-check in-tree: ECCC TR25-169 (barrier), ePrint 2026/861 (action-orbit),
 |---|---|---|---|
 | P6 | Mann, *On linear relations between roots of unity* | Mathematika 12 (1965) 107–117 | minimal vanishing sums of roots of unity = rotated subgroups; governs the Johnson-scale esymm-fiber collapse |
 | P7 | Conway–Jones, *Trigonometric Diophantine equations* | Acta Arith. 30 (1976) 229–240 | structure of vanishing sums of roots of unity (the e_1=0 fiber) |
+
+## Prize analytic-core adds (2026-06-13, the subgroup-Gauss-sum moment wall)
+| # | Paper | Identifier | Why |
+|---|---|---|---|
+| P8 | Katz, *Gauss Sums, Kloosterman Sums, and Monodromy Groups* | Annals of Math Studies 116 (1988) | Sato–Tate / equidistribution & moments of (subgroup) Gauss sums via sheaf monodromy — the deviation in clean-moments |
+| P9 | Shkredov, *On the additive energy of the multiplicative subgroup* (and sequels) | arXiv 1212.xxxx / Izv. Math | higher additive energy `E_r(μ_n)` bounds for multiplicative subgroups of `F_p` — the equivalent sum-product form of the wall |
+| P10 | Bourgain–Garaev, *Sum-product estimates and exponential sums over subgroups* | J. reine angew. Math (2014) | exponential sums / additive energy over subgroups in the `n ~ p^{1/β}` (constant-rate) regime |

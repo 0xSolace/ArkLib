@@ -86,3 +86,38 @@ the prime above `p` in `ℤ[ζ_n]`), now cleanly isolated from the
 (proven-sub-Gaussian) main term. Bounding small-`P`-points at constant rate is
 the remaining open input; it is a sharp, classical-flavored target (Minkowski
 is too lossy; the true count needs the arithmetic of `P`).
+
+## The coset symmetry → the wall is Sato–Tate / sum-product for subgroup Gauss sums
+
+A structural observation pinning the remaining input to two studied areas.
+`η_b = Σ_{x∈μ_n} e_p(bx)` satisfies `η_{bc} = η_b` for all `c ∈ μ_n` (reranging
+`μ_n`), so `η_b` is **constant on the `(p−1)/n` cosets of `μ_n`**. Hence
+
+  `E_r^{(p)} = (1/p)Σ_b |η_b|^{2r} = (n/p)·Σ_{C ∈ F_p*/μ_n} |η_C|^{2r}  +  n^{2r}/p`.
+
+The clean-moments hypothesis = the `(p−1)/n` subgroup-Gauss-sum values `|η_C|²`
+have their `r`-th moments matching the Gaussian/`χ²` baseline (mean `n`,
+`E[|η_C|^{2r}] ~ (2r−1)!!·n^r` — exactly my proven Bessel value) up to
+`r ~ log p`. This is precisely:
+- a **Sato–Tate / equidistribution** statement for the normalized subgroup
+  Gauss sums `η_C/√n` (Katz-style: the moments are controlled by the monodromy
+  of the associated Kloosterman/Gauss-sum sheaf); equivalently
+- a **higher additive-energy / sum-product** bound `E_r(μ_n) ≤ (1+o(1))·
+  Gaussian` for the multiplicative subgroup `μ_n ⊆ F_p` (BGK / Bourgain–Garaev
+  / Shkredov territory).
+
+So the FULL honest reduction of the prize (dyadic) is:
+1. **PROVEN (Bessel, `RungBesselEnergy.lean`):** the exact/`ℂ` main term and
+   the `χ²` mean — `E_r^∞ ≤ (2r−1)!!n^r`, the clean baseline as a theorem.
+2. **PROVEN sufficient (norm bound):** clean for `p > (2r)^{n/2}` (⟹ log-short
+   δ* closure, an infinite family).
+3. **OPEN, now identified:** the constant-rate deviation = the moment
+   equidistribution of the `(p−1)/n` subgroup Gauss sums `η_C` up to `r~log p`
+   = Sato–Tate (Katz monodromy) / higher sum-product energy of `μ_n`. This is
+   the single remaining input, in two classical forms, with a clear literature.
+
+The campaign's analytic line ends here cleanly: the prize core is the higher-
+moment equidistribution of subgroup Gauss sums, main term machine-checked, the
+deviation reduced to a named (sum-product / Sato–Tate) bound — the literature
+unlock (Katz; BGK; Shkredov; Bourgain–Garaev) is exactly what closes the
+constant-rate case.
