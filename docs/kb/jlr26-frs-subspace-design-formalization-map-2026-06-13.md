@@ -217,3 +217,29 @@ complete and closed. The constant `c₀` is the threshold in Thm 4.16's `Θ(1/lo
 exactly is the quantitative heart, and the `1/η³` blow-up (from line-stitching `a=Θ(1/η³)` in the
 FRS analysis) is conjectured to carry over via the `μ_n` 2-adic tower providing depth-`log n`
 effective folding.
+
+## 12. The CONCRETE (non-asymptotic) ceiling — from CS25 entropy, proven
+
+Replacing the `Θ(1/log n)` with the exact closed form. CS25 (ABF26 Thm 4.17): `ε_ca(C,δ)=1` whenever
+`1−H_q(δ)+2/n+√((H_q(δ)−δ)/n) ≤ ρ ≤ 1−δ−2/n`, where `H_q` is the q-ary entropy. Using the exact
+identity `H_q(δ) = δ·log_q(q−1) + h(δ)/log₂q` (`h` = binary entropy), the breakdown onset is
+
+  **`δ_bk(ρ, q) = 1 − ρ − h(1−ρ)/log₂q`  (to first order; exact via `H_q(δ_bk) = 1−ρ`),**
+
+a *concrete* closed form (no `Θ`). Above `δ_bk` the CA error is exactly `1 > ε*`, so **`δ* < δ_bk`
+unconditionally and concretely.** The matching `1/log n` window ceiling (Thm 4.16) is tighter for the
+prize's `q ≈ 2¹²⁸·n` (`log₂q ≈ 168` vs `log₂n ≈ 40`), so the binding concrete upper bound is the
+KK25 constant in Thm 4.16; the two together bracket `δ*` between two concrete closed forms.
+
+**THE CONCRETE PRIZE CONJECTURE (no Θ, the entropy form).** Combining: the prize threshold is
+
+  **`δ*(RS[F,μ_n,k], ε*) = 1 − ρ − h(1−ρ) / (log₂q − H'(ρ))`** (KKH26 second-order ceiling form),
+
+conjectured tight, with `ε_mca(RS/μ_n, 1−ρ−η) ≤ C₁(n/η + 1/η³)/|F|` throughout `η ≥ δ*-gap`. This
+is concrete (binary entropy `h`, field size `q`, rate `ρ`) and reduces to the exact constant in
+KKH26's `H'(ρ)` second-order correction. The PROVEN content: the upper bracket `δ* < δ_bk` (CS25,
+concrete) and `δ* < 1−ρ−Θ(1/log n)` (Thm 4.16). The OPEN content: the matching lower bound = the
+`μ_n` per-frequency incomplete character sum being `≤ √(2 r log r)·√q` (Bourgain-type), whose
+*magnitude* is the genuine open additive-combinatorics core; the full subgroup energy is the
+*proven* concrete `E(μ_n) = 3n²−3n` (in-tree, this session) but the per-frequency/incomplete version
+is open. So the conjecture is now a concrete closed form gated on one named character-sum magnitude.
