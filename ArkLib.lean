@@ -1404,6 +1404,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusBound
 import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusDyadicChain
 import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
+import ArkLib.Data.CodingTheory.ProximityGap.SidonEnergyIff
 import ArkLib.Data.CodingTheory.ProximityGap.SidonGVClosure
 import ArkLib.Data.CodingTheory.ProximityGap.SidonGaussSum4thMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftAssembly
