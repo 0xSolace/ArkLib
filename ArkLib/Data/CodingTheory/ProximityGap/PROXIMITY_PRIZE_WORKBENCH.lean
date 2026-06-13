@@ -401,4 +401,49 @@ noncomputable example {F : Type} [Field F] [Fintype F] [DecidableEq F] {n : ℕ}
     cyclic block-diagonal `Z/n` per-frequency estimate of `FarLineIncidenceEquivariance`) is the
     whole prize. -/
 
+
+/-! ### A concrete, unconditionally-proven witness of the δ* law
+
+`MCAShawConjecture` above is the open input *in the prize regime* (`n = 2³²`, cryptographic
+`ε*`). In the **provable supply regime** `r² ≤ 2^μ + 1` the *same* `δ* = 1 − r/2^μ` law closes
+with **no open residual** — a genuine *beyond-Johnson* exact pin. We record the smallest clean
+instance as a falsifiable, fully-proven anchor: it is the honest closed analogue of the
+conjecture (same law, same beyond-Johnson placement), differing only in needing *explicit* prime
+supply (provable here; asymptotically the open core in the `n = 2³²` prize regime). -/
+
+/-- `4129` is prime (instance for `Field (ZMod 4129)`). -/
+instance : Fact (Nat.Prime 4129) := ⟨by norm_num⟩
+
+/-- `g = 2386` has order exactly `8 = 2³` in `F_4129ˣ`, so `⟨g⟩ = μ_8`
+(`g^4 = −1 ≠ 1`, `g^8 = 1`, by `orderOf_eq_prime_pow`). -/
+theorem orderOf_g8_witness : orderOf (2386 : ZMod 4129) = 8 := by
+  haveI : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
+  have h4 : ¬ (2386 : ZMod 4129) ^ (2 ^ 2) = 1 := by decide
+  have h8 : (2386 : ZMod 4129) ^ (2 ^ 3) = 1 := by decide
+  simpa using orderOf_eq_prime_pow (x := (2386 : ZMod 4129)) h4 h8
+
+/-- **Closed witness of the δ* law (beyond Johnson, below capacity).**  For the explicit
+smooth-domain RS code `evalCode 2386 8 1` on `μ_8 = ⟨2386⟩ ⊆ F_4129ˣ` at
+`ε* = ⌊C(8,3)/3⌋/4129 = 18/4129`, the mutual-correlated-agreement threshold is **exactly**
+
+> `δ*(C, ε*) = 1 − 3/2³ = 5/8`,
+
+strictly above Johnson `1 − √ρ = 1/2` (`ρ = 1/4`) and strictly below capacity `1 − ρ = 3/4`.
+Proven unconditionally in the `r² ≤ 2^μ + 1` (`9 ≤ 9`) supply regime, where `4129 > 8⁴ = 4096`
+carries the `≡ 1 (mod 8)` prime supply the [KKH26] counting needs.  No residual, no `sorry` — the
+honest closed analogue of `MCAShawConjecture` for a concrete falsifiable instance. -/
+theorem deltaStar_pin_mu8_F4129_witness :
+    mcaDeltaStar (F := ZMod 4129) (A := ZMod 4129)
+        (evalCode (2386 : ZMod 4129) 8 (3 - 2))
+        ((((8).choose 3 / 3 : ℕ) : ℝ≥0∞) / (4129 : ℝ≥0∞))
+      = 5 / 8 := by
+  haveI : NeZero (8 : ℕ) := ⟨by norm_num⟩
+  have hpin : mcaDeltaStar (F := ZMod 4129) (A := ZMod 4129)
+      (evalCode (2386 : ZMod 4129) 8 (3 - 2))
+      ((((8).choose 3 / 3 : ℕ) : ℝ≥0∞) / (4129 : ℝ≥0∞))
+      = 1 - (3 : ℝ≥0) / ((2 : ℝ≥0) ^ 3) :=
+    kkh26_march_deltaStar_pin_canonical
+      (p := 4129) (g := (2386 : ZMod 4129)) (μ := 3) (r := 3) (n := 8)
+      (by norm_num) (by norm_num) (by norm_num) (by norm_num) orderOf_g8_witness (by norm_num)
+  rw [hpin]; refine tsub_eq_of_eq_add ?_; norm_num
 end ProximityGap.Workbench
