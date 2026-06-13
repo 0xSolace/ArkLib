@@ -224,7 +224,6 @@ import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEListBound
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEPotential
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNERealStep
 import ArkLib.Data.CodingTheory.ListDecoding.FirstMomentListBound
-import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.ListDecoding.JH02
@@ -1271,6 +1270,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PointwiseEnergyCeilingNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.PoissonCeilingFloor
 import ArkLib.Data.CodingTheory.ProximityGap.PoleSpikeMatching
+import ArkLib.Data.CodingTheory.ProximityGap.PolynomialFoldDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.PolywordSupplyGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.PopularCodewords
 import ArkLib.Data.CodingTheory.ProximityGap.PowerWordListBound
@@ -2584,7 +2584,6 @@ import ArkLib.ToMathlib.GGR11EraseDecodeTree
 import ArkLib.ToMathlib.GGR11Interleaved
 import ArkLib.ToMathlib.GGR11Reconnect
 import ArkLib.ToMathlib.GGR11TreeConstruction
-import ArkLib.ToMathlib.GHSZ02Cor20
 import ArkLib.ToMathlib.GK16BudgetCoeff
 import ArkLib.ToMathlib.GK16Claim16Core
 import ArkLib.ToMathlib.GK16Claim16Witness
