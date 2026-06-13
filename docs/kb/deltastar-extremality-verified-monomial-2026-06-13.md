@@ -119,3 +119,26 @@ the sumset construction is the unique maximizer — the conjecture `δ*=1−ρ�
 - Monomials-worst within the monomial family: **verified** (construction is the unique max).
 - Open: DFT-rigidity lemma (general); general-direction extremality = `B(μ_n)=Θ(√(n log(q/n)))`
   (the genuine analytic blocker); list-smallness below `δ*`.
+
+## 10. Large-`s` survival + power-sum reduction + a PROVEN sub-case
+**Critical large-`s` test (`r≥3`):** `(10,2,3),(12,2,3),(8,2,4),(10,2,4),(9,2,3)` — all **EXTREMAL**
+(#pattern = `C(s,r)`). **20/20 cases total**, `s≤12, m≤5, r≤4`. The conjecture is **not refuted at
+scale**; extra non-coset pattern-subsets do not appear even where the linear constraints are weakest.
+
+**Power-sum form (clean, via Newton):** the pattern `e_1..e_{m−1}=0, e_{m+1}..e_{2m−1}=0` is
+equivalent to
+> **`p_j(S) := Σ_{x∈S} x^j = 0` for `j ∈ {1,…,2m−1}\{m}`** (and `p_m = ±m·e_m`).
+Fiber form: with `R_ξ ⊆` the `m`-th roots of `ξ` (`|R_ξ|=d_ξ`, `Σd_ξ=rm`) and
+`w_ξ(c)=x_ξ^c·ĉ_ξ(c)` (`ĉ_ξ` = DFT of `R_ξ`'s index set), the conditions are, for each `c=1..m−1`:
+`Σ_ξ w_ξ(c) = 0` and `Σ_ξ ξ·w_ξ(c) = 0`. Coset-union ⟺ all `w_ξ(c)=0`. So the lemma = "**2 linear
+constraints + the `0/1`-rigidity of each `R_ξ` force `w_ξ(c)≡0`**" — a clean vanishing-sums-of-
+roots-of-unity rigidity statement.
+
+**PROVEN sub-case (`m=2, r=2`):** `e_1=e_3=0` on a `4`-set ⟹ `∏(X−x)=X^4+e_2X^2+e_4` is **even** ⟹
+roots closed under negation ⟹ `S` is a union of antipodal pairs = coset-union. So extremality is
+**unconditionally proven for `m=2,r=2`**. (For `r≥3` only the top odd coefficients vanish, so this
+exact argument doesn't extend — hence the lemma in general is still open, though verified to `s=12`.)
+
+**Net:** the monomial-extremality lemma is now (i) crisply stated as a roots-of-unity power-sum
+rigidity, (ii) **proven for `m=2,r=2`**, (iii) **verified in 20 cases** incl. large `s`. The general
+proof + the analytic `B(μ_n)` (general-direction) core remain the open pieces.
