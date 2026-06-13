@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiber
+import ArkLib.Data.CodingTheory.ProximityGap.CorePartitionLemma
 
 /-!
 # The explicit CODEWORD list-size lower bound for smooth dyadic Reed–Solomon (#389)
@@ -67,6 +68,59 @@ theorem agree_card_le (dom : Fin n ↪ F) {k m : ℕ} (W : Polynomial F)
     _ ≤ Multiset.card (P - W).roots := Multiset.toFinset_card_le _
     _ ≤ (P - W).natDegree := Polynomial.card_roots' _
     _ = t := hPWnat
+
+open scoped Classical in
+/-- **Exact list quotient for degree-`t` polynomial words (the exact sub-Johnson list-size
+solution).**  Since no degree-`<k` codeword agrees with `eval W` on more than `t = k+m+1` points,
+the agreement-`t` Reed–Solomon list is in **exact bijection** with the forced-polynomial degree
+fiber on `t`-subsets — `c ↦ its agreement set`.  Hence the list size is *exactly* the number of
+`t`-cores whose forced explainer has degree `< k`. -/
+theorem degree_t_list_eq_forcedPoly_degree (dom : Fin n ↪ F) {k m : ℕ} (W : Polynomial F)
+    (hWdeg : W.degree = ((k + m + 1 : ℕ) : WithBot ℕ)) :
+    ((Finset.univ : Finset (Fin n → F)).filter (fun c =>
+        c ∈ (rsCode dom k : Submodule F (Fin n → F))
+          ∧ k + m + 1 ≤ (Finset.univ.filter (fun i => c i = W.eval (dom i))).card)).card
+      =
+      (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter
+        (fun T => (forcedPoly dom k m W T).degree < (k : WithBot ℕ))).card := by
+  classical
+  refine Finset.card_bij
+    (fun c _ => Finset.univ.filter (fun i => c i = W.eval (dom i))) ?_ ?_ ?_
+  · intro c hc
+    obtain ⟨-, hcmem, hge⟩ := Finset.mem_filter.mp hc
+    have hle : (Finset.univ.filter (fun i => c i = W.eval (dom i))).card ≤ k + m + 1 :=
+      agree_card_le dom W hWdeg hcmem
+    have hcard : (Finset.univ.filter (fun i => c i = W.eval (dom i))).card = k + m + 1 :=
+      le_antisymm hle hge
+    refine Finset.mem_filter.mpr ⟨Finset.mem_powersetCard.mpr
+      ⟨Finset.subset_univ _, hcard⟩, ?_⟩
+    exact (explainable_iff_forcedPoly_degree dom W hWdeg hcard).mp
+      ⟨c, hcmem, fun i hi => (Finset.mem_filter.mp hi).2⟩
+  · intro c hc c' hc' heq
+    obtain ⟨-, hcmem, hge⟩ := Finset.mem_filter.mp hc
+    obtain ⟨-, hc'mem, -⟩ := Finset.mem_filter.mp hc'
+    refine ProximityGap.PairRank.explainable_core_explainer_unique (k := k) dom
+      (le_trans (by omega : k ≤ k + m + 1) hge) hcmem hc'mem
+      (fun i hi => (Finset.mem_filter.mp hi).2) ?_
+    intro i hi
+    have heq2 : Finset.univ.filter (fun i => c i = W.eval (dom i))
+        = Finset.univ.filter (fun i => c' i = W.eval (dom i)) := heq
+    rw [heq2] at hi
+    exact (Finset.mem_filter.mp hi).2
+  · intro T hT
+    obtain ⟨hTp, hdeg⟩ := Finset.mem_filter.mp hT
+    obtain ⟨-, hTcard⟩ := Finset.mem_powersetCard.mp hTp
+    obtain ⟨c, hcmem, hagree⟩ :=
+      (explainable_iff_forcedPoly_degree dom W hWdeg hTcard).mpr hdeg
+    have hTsub : T ⊆ Finset.univ.filter (fun i => c i = W.eval (dom i)) :=
+      fun i hi => Finset.mem_filter.mpr ⟨Finset.mem_univ _, hagree i hi⟩
+    have hge : k + m + 1 ≤ (Finset.univ.filter (fun i => c i = W.eval (dom i))).card := by
+      calc k + m + 1 = T.card := hTcard.symm
+        _ ≤ _ := Finset.card_le_card hTsub
+    refine ⟨c, Finset.mem_filter.mpr ⟨Finset.mem_univ _, hcmem, hge⟩, ?_⟩
+    have hle : (Finset.univ.filter (fun i => c i = W.eval (dom i))).card ≤ k + m + 1 :=
+      agree_card_le dom W hWdeg hcmem
+    exact (Finset.eq_of_subset_of_card_le hTsub (by rw [hTcard]; exact hle)).symm
 
 open scoped Classical in
 open Polynomial in
