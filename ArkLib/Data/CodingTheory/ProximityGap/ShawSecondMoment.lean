@@ -257,6 +257,30 @@ theorem exists_shawError_sq_ge [Nonempty V] (S : Finset V) (s₁ : V) :
   rw [shawError_second_moment, Finset.sum_const, nsmul_eq_mul, Finset.card_univ] at hlt
   exact lt_irrefl _ hlt
 
+/-- **Closed falsification criterion for the prize Shaw bound (the decidable side).** If the budget
+`B` undershoots the hyperplane L² mass — `B² < M`, `M = ∑_{ψ≠0,ψ⊥s₁}‖∑ψ(−s)‖²` — then the prize
+Shaw conjecture is FALSE: there is an *explicit* bad base point with `‖𝒮‖ > B`.
+
+This is the side of the prize the second moment genuinely decides: not "the bound holds" (which needs
+the uniform W4 cancellation, unreachable by any L² estimate — see `shawError_sq_le_second_moment` /
+`exists_shawError_sq_ge` for the `√|V|` gap), but "the bound *fails*" — an unconditional upper bound
+on `δ*`. As `M(δ)` grows with the ball radius, the least `δ` with `M(δ) > B(δ)²` is a
+machine-checkable ceiling on `δ*`, driven only by the proven `exists_shawError_sq_ge` (a genuine bad
+witness, not an average). Turning this into a *window-interior* `δ*` ceiling requires evaluating
+`M(δ)` via the ball's dual weight enumerator (Krawtchouk); that is the concrete open computation, not
+an open conjecture. -/
+theorem not_mcaShawConjecture_of_lt_secondMoment [Nonempty V] (S : Finset V) (s₁ : V) (B : ℝ)
+    (hB : B ^ 2 < ∑ ψ ∈ univ.filter (fun ψ : AddChar V ℂ =>
+            directionChar (F := F) ψ s₁ = 0 ∧ ψ ≠ 0),
+          ‖∑ s ∈ S, ψ (-s)‖ ^ 2) :
+    ¬ MCAShawConjecture (F := F) S B := by
+  intro h
+  obtain ⟨s₀, hs₀⟩ := exists_shawError_sq_ge (F := F) S s₁
+  have hb : ‖shawError (F := F) S s₀ s₁‖ ≤ B := h s₀ s₁
+  have hnn : (0 : ℝ) ≤ ‖shawError (F := F) S s₀ s₁‖ := norm_nonneg _
+  have hsq : ‖shawError (F := F) S s₀ s₁‖ ^ 2 ≤ B ^ 2 := by nlinarith
+  linarith
+
 end ArkLib.ProximityGap.ShawSecondMoment
 
 /-! ## Axiom audit -/
@@ -269,4 +293,5 @@ end ArkLib.ProximityGap.ShawSecondMoment
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.card_large_shawError_mul_sq_le_unconditional
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.shawError_sq_le_second_moment
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.exists_shawError_sq_ge
+#print axioms ArkLib.ProximityGap.ShawSecondMoment.not_mcaShawConjecture_of_lt_secondMoment
 #check @ArkLib.ProximityGap.ShawSecondMoment.parseval_indicator
