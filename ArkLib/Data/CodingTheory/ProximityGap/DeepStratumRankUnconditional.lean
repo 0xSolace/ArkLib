@@ -223,14 +223,14 @@ def SurvivingTPrimeCoord (dom : Fin n ↪ F) (k m : ℕ) (T T' : Finset (Fin n))
 
 open Classical in
 /-- The `(m+1)`-element family «`m` `T`-band ∧ one `T'`-coord `d`», on `Fin m ⊕ Unit`. -/
-noncomputable def survFamily (dom : Fin n ↪ F) (k : ℕ) (T T' : Finset (Fin n))
+noncomputable def survFamily (dom : Fin n ↪ F) (k : ℕ) {m : ℕ} (T T' : Finset (Fin n))
     (d : Fin m) {M : ℕ} : (Fin m ⊕ Unit) → (Fin M → F) → F :=
   fun j c =>
     match j with
     | Sum.inl j => (coreInterp dom T (genPoly c)).coeff (k + 1 + (j : ℕ))
     | Sum.inr _ => (coreInterp dom T' (genPoly c)).coeff (k + 1 + (d : ℕ))
 
-theorem survFamily_sub (dom : Fin n ↪ F) (k : ℕ) (T T' : Finset (Fin n))
+theorem survFamily_sub (dom : Fin n ↪ F) (k : ℕ) {m : ℕ} (T T' : Finset (Fin n))
     (d : Fin m) {M : ℕ} (j : Fin m ⊕ Unit) (x y : Fin M → F) :
     survFamily dom k T T' d j (x - y)
       = survFamily dom k T T' d j x - survFamily dom k T T' d j y := by
