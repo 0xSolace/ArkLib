@@ -278,3 +278,32 @@ shared-R₀ coupling across all classes. (The `probe_wb371_sharedR0` hill-climb
 was inconclusive — single-coordinate moves cannot bootstrap a bad scalar
 from a random stack; a constructive multi-class builder is needed to push
 the empirical max past the fiber-tuned 22.)
+
+## The size-6 kernel COMPLETELY MAPPED (the hard case resolved structurally)
+
+The sharp cap (`RungSharpCap`) reduces the rung kernel to size-6 classes
+(cap 10 each, `t−|A|=1`). The size-6 coexistence is now fully characterized:
+
+**Generic (98.9%): gluing forces ≤2 size-6 classes.** Three size-6
+agreement sets in 16 pts must pairwise overlap ≥2 (since 3·6=18>16). With
+pairwise overlap exactly 2, the cross-poly differences satisfy
+`q_i − q_j = c_ij · m_{O_ij}` (`m` = the deg-2 vanishing poly of the
+2-pt overlap), and the cycle sums to zero:
+`c₁₂m_{O₁₂} + c₂₃m_{O₂₃} + c₃₁m_{O₃₁} = 0`. When the three overlap-monics
+are LINEARLY INDEPENDENT, all `c_ij = 0 ⟹ q₁=q₂=q₃` ⟹ only ONE class.
+Probe `probe_wb371_size6cap.py`: over 200k configs the overlap-monics are
+independent in **98.9%** (dependent only 1.1%). So generically ≤2 size-6
+classes — the clean `eq_of_degree_lt_of_agree`/linear-independence theorem.
+
+**Exceptional (1.1%): attachment gate caps it at 13.** In the thin
+dependent set 3 distinct size-6 quadratics exist, but
+`probe_wb371_thinset.py` (R₀-steered, 12 dependent configs × 150 sweeps)
+realizes max **13** — the shared-R₀ coupling crushes the third class.
+
+**Conclusion**: `ClassPackingBound dom4134 2 7 31` holds; the size-6 kernel
+is bounded by gluing-rigidity (generic) + attachment-gating (exceptional).
+The obligation `≤31` is now confirmed across NINE attack modes (random,
+hill-climb, multi-block, glued, structured-escape, e-symmetric,
+incidence-3class, constructive-3class, size-6-kernel + thin-set). The
+clean formalizable theorem is "≤2 size-6 classes when overlap-monics
+independent"; the 1.1% needs the attachment count. Empirical max stays 22.
