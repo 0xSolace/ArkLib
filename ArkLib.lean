@@ -168,6 +168,7 @@ import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.HammingBallVolumeBasics
 import ArkLib.Data.CodingTheory.HammingBound
 import ArkLib.Data.CodingTheory.HammingBoundRate
+import ArkLib.Data.CodingTheory.HigherOrderMDS
 import ArkLib.Data.CodingTheory.InterleavedArityMono
 import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.InterleavedFinOneEq
