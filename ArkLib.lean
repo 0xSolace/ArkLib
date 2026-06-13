@@ -1344,6 +1344,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop35
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop36
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop37
 import ArkLib.Data.CodingTheory.ProximityGap.StructureLoop38
+import ArkLib.Data.CodingTheory.ProximityGap.StructuredLineCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.SubCeilingLadder
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonCorradiEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListBound
