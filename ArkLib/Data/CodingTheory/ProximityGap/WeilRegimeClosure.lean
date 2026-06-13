@@ -41,6 +41,28 @@ open ArkLib.ProximityGap.AdditiveEnergyRepBound
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
+/-- **Quadratic excess closes the representation wall.** If the additive-energy excess above the
+minimal SidonModNeg value is `≤ C·n²`, then the Garcia–Voloch representation bound holds at
+`M = O(√n)`. This is the direct consumer of the now-isolated open core
+`E_{F_p}(μ_n) ≤ C·n²`. -/
+theorem gvRepBound_of_energyExcess_quadratic {G : Finset F} {n C M : ℕ}
+    (hn : 1 ≤ n) (hGmem : ∀ z, z ∈ G ↔ z ^ n = 1) (hcard : G.card = n)
+    (h2 : (2 : F) ≠ 0) (h0 : (0 : F) ∉ G) (hneg : ∀ x ∈ G, -x ∈ G)
+    (hexc : energyExcess G ≤ C * n ^ 2)
+    (hM : (3 + C) * n ≤ M ^ 2) (hM3 : M ^ 3 ≤ 64 * n ^ 2) :
+    GVRepBound G M := by
+  have hkey : 3 * n ^ 2 + C * n ^ 2 ≤ n * M ^ 2 := by
+    have hh : (3 + C) * n ^ 2 ≤ n * M ^ 2 := by
+      calc (3 + C) * n ^ 2 = n * ((3 + C) * n) := by ring
+        _ ≤ n * M ^ 2 := Nat.mul_le_mul_left n hM
+    rw [show 3 * n ^ 2 + C * n ^ 2 = (3 + C) * n ^ 2 by ring]
+    exact hh
+  refine gvRepBound_of_excess_le hn hGmem hcard h2 h0 hneg ?_ ?_ ?_
+  · omega
+  · rw [hcard]
+    exact hM3
+  · omega
+
 /-- **The wall closes in the deployed regime.**  Given the standard Weil energy bound
 `p · energyExcess ≤ C·n⁴` and `n² ≤ p`, the Garcia–Voloch representation bound holds at
 `M = O(√n)`: every `c ≠ 0` has `r(c) ≤ M`, so the entire supply wall closes. -/
@@ -61,20 +83,11 @@ theorem wall_closes_in_weil_regime {G : Finset F} {n C M : ℕ}
       calc n ^ 2 * energyExcess G ≤ C * n ^ 4 := h1
         _ = n ^ 2 * (C * n ^ 2) := by ring
     exact Nat.le_of_mul_le_mul_left h2' hnpos
-  -- Step 2: arithmetic facts the omega calls need.
-  have hkey : 3 * n ^ 2 + C * n ^ 2 ≤ n * M ^ 2 := by
-    have hh : (3 + C) * n ^ 2 ≤ n * M ^ 2 := by
-      calc (3 + C) * n ^ 2 = n * ((3 + C) * n) := by ring
-        _ ≤ n * M ^ 2 := Nat.mul_le_mul_left n hM
-    rw [show 3 * n ^ 2 + C * n ^ 2 = (3 + C) * n ^ 2 by ring]; exact hh
-  have hn2 : 3 * n ≤ 3 * n ^ 2 := by nlinarith [hn]
-  -- Step 3: feed it to `gvRepBound_of_excess_le`.
-  refine gvRepBound_of_excess_le hn hGmem hcard h2 h0 hneg ?_ ?_ ?_
-  · omega
-  · rw [hcard]; exact hM3
-  · omega
+  -- Step 2: feed the quadratic-excess consumer.
+  exact gvRepBound_of_energyExcess_quadratic hn hGmem hcard h2 h0 hneg hexc hM hM3
 
 end ArkLib.ProximityGap.AdditiveEnergySidonModNeg
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
+#print axioms ArkLib.ProximityGap.AdditiveEnergySidonModNeg.gvRepBound_of_energyExcess_quadratic
 #print axioms ArkLib.ProximityGap.AdditiveEnergySidonModNeg.wall_closes_in_weil_regime
