@@ -41,6 +41,7 @@ open Complex
 namespace ProximityGap.SidonModNegComplex
 
 open ArkLib.ProximityGap.AdditiveEnergySidonModNeg
+open ArkLib.ProximityGap.AdditiveEnergyRepBound (additiveEnergy)
 
 /-- **Vieta pairing**: equal sum and equal product force the unordered pair to match. -/
 theorem same_sum_prod {F : Type*} [Field F] {a b c d : F}
@@ -93,8 +94,21 @@ theorem sidonModNeg_of_unitNorm {G : Finset ℂ} (hG : ∀ x ∈ G, ‖x‖ = 1)
   fun a ha b hb c hc d hd hsum =>
     unit_sidonModNeg (hG a ha) (hG b hb) (hG c hc) (hG d hd) hsum
 
+/-- **The char-0 minimal additive energy, explicit**: a negation-closed finite set of unit
+complex numbers (e.g. `μ_n ⊂ ℂ` for even `n`) has additive energy exactly `3n²−3n` — the
+minimal (Sidon-like) value, with no height threshold. -/
+theorem additiveEnergy_unitNorm {G : Finset ℂ}
+    (hG : ∀ x ∈ G, ‖x‖ = 1) (hneg : ∀ x ∈ G, -x ∈ G) :
+    additiveEnergy G = 3 * G.card ^ 2 - 3 * G.card := by
+  refine additiveEnergy_eq_of_sidonModNeg (two_ne_zero) ?_ hneg
+    (sidonModNeg_of_unitNorm hG)
+  intro h0
+  have := hG 0 h0
+  simp at this
+
 end ProximityGap.SidonModNegComplex
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.SidonModNegComplex.unit_sidonModNeg
 #print axioms ProximityGap.SidonModNegComplex.sidonModNeg_of_unitNorm
+#print axioms ProximityGap.SidonModNegComplex.additiveEnergy_unitNorm
