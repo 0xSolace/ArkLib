@@ -27,16 +27,6 @@ namespace ArkLib.ProximityGap.QRExpSum
 
 variable {p : ℕ} [Fact p.Prime]
 
-/-- `chiC` is a quadratic character. -/
-theorem chiC_isQuadratic : (chiC (p := p)).IsQuadratic :=
-  (quadraticChar_isQuadratic (ZMod p)).comp _
-
-/-- For `p ≠ 2`, `chiC` is nontrivial. -/
-theorem chiC_ne_one (hp2 : p ≠ 2) : (chiC (p := p)) ≠ 1 := by
-  have hrc : ringChar (ZMod p) ≠ 2 := by rw [ZMod.ringChar_zmod_n]; exact hp2
-  exact (MulChar.ringHomComp_ne_one_iff (RingHom.injective_int (Int.castRingHom ℂ))).mpr
-    (quadraticChar_ne_one hrc)
-
 /-- The norm of `chiC` at `-1` is `1` (it is `±1`). -/
 theorem norm_chiC_neg_one : ‖chiC (p := p) (-1)‖ = 1 := by
   have hne : (-1 : ZMod p) ≠ 0 := neg_ne_zero.mpr one_ne_zero
@@ -45,8 +35,9 @@ theorem norm_chiC_neg_one : ‖chiC (p := p) (-1)‖ = 1 := by
 /-- **Quadratic Gauss-sum norm.** `‖gaussSum chiC ψ‖² = p` for `p ≠ 2`. -/
 theorem gaussSum_normSq {ψ : AddChar (ZMod p) ℂ} (hψ : ψ.IsPrimitive) (hp2 : p ≠ 2) :
     ‖gaussSum chiC ψ‖ ^ 2 = (p : ℝ) := by
+  have h2lt : 2 < p := (Fact.out (p := p.Prime)).two_le.lt_of_ne (Ne.symm hp2)
   have hsq : gaussSum (chiC (p := p)) ψ ^ 2 = chiC (-1) * (Fintype.card (ZMod p) : ℂ) :=
-    gaussSum_sq (chiC_ne_one hp2) chiC_isQuadratic hψ
+    gaussSum_sq (chiC_ne_one h2lt) chiC_isQuadratic hψ
   have hcard : Fintype.card (ZMod p) = p := ZMod.card p
   have key : ‖gaussSum chiC ψ‖ ^ 2 = ‖gaussSum chiC ψ ^ 2‖ := by
     rw [pow_two, ← norm_mul, ← pow_two]

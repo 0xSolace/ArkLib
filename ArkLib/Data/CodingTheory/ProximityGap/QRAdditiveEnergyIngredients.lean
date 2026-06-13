@@ -44,8 +44,9 @@ theorem norm_sq_term {ψ : AddChar (ZMod p) ℂ} (hψ : ψ.IsPrimitive) (hp2 : p
 /-- **Nontrivial character sum.** `∑_{b≠0} χ(b) = 0`. -/
 theorem sum_chiC_erase_zero (hp2 : p ≠ 2) :
     ∑ b ∈ Finset.univ.erase (0 : ZMod p), chiC (p := p) b = 0 := by
+  have h2lt : 2 < p := (Fact.out (p := p.Prime)).two_le.lt_of_ne (Ne.symm hp2)
   rw [Finset.sum_erase Finset.univ chiC_zero]
-  exact MulChar.sum_eq_zero_of_ne_one (chiC_ne_one hp2)
+  exact MulChar.sum_eq_zero_of_ne_one (chiC_ne_one h2lt)
 
 end ArkLib.ProximityGap.QRExpSum
 

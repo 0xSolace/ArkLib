@@ -27,8 +27,9 @@ variable {p : ℕ} [Fact p.Prime]
 /-- **`(Re τ)²` value.** `(Re τ)² = (p + (χ(−1)).re·p)/2`. -/
 theorem tau_re_sq {ψ : AddChar (ZMod p) ℂ} (hψ : ψ.IsPrimitive) (hp2 : p ≠ 2) :
     (gaussSum chiC ψ).re ^ 2 = ((p : ℝ) + (chiC (p := p) (-1)).re * (p : ℝ)) / 2 := by
+  have h2lt : 2 < p := (Fact.out (p := p.Prime)).two_le.lt_of_ne (Ne.symm hp2)
   have hsq : gaussSum (chiC (p := p)) ψ ^ 2 = chiC (p := p) (-1) * (Fintype.card (ZMod p) : ℂ) :=
-    gaussSum_sq (chiC_ne_one hp2) chiC_isQuadratic hψ
+    gaussSum_sq (chiC_ne_one h2lt) chiC_isQuadratic hψ
   have hcard : Fintype.card (ZMod p) = p := ZMod.card p
   have hre : (gaussSum chiC ψ).re ^ 2 - (gaussSum chiC ψ).im ^ 2 = (chiC (p := p) (-1)).re * (p : ℝ) := by
     have h := congrArg Complex.re hsq
