@@ -138,9 +138,34 @@ one ⟹ solve both). Each is mostly built in-tree; its GAP is the one open piece
     MDS` reduces to the last residual `AGL24.GMMDSDualZeroPatternTheorem` (dual zero pattern).
   · **GAP:** the dual-zero-pattern theorem.
 
+**(R4) The SYMMETRIC-FUNCTION / coset-rigidity route — the direct far-line incidence, reduced.**
+  The far-line incidence is `Z/n`-dilation-invariant, so the extremal directions are monomials
+  `X^a` (`FarLineIncidenceEquivariance`); the subgroup directions `X^{n/2}` are CORRELATED and
+  discarded (`MonomialSubgroupCorrelated.lean`: `X^{n/2}=±1` on `μ_n`; jointly close on `μ_{n/2}`).
+  For a NON-correlated direction `(X^a, X^b)`, working `mod m_S = ∏_{x∈S}(X−x)` (`S` the agreement
+  set, `|S| = w = (1−δ)n`) the residues `X^{w−1+j} mod m_S` have complete-homogeneous-symmetric
+  coefficients, so the bad scalar is a fixed symmetric function `γ = σ(e_•(S))` under vanishing
+  of further symmetric functions of `S`. CLEANEST case `dir(k+1,k+2)`, `w=k+2` (PROVEN reduction,
+  `probe_symmetric_function_reduction.py`, verified vs exact list-decode):
+    `B = { −e_1(S) : S ⊆ μ_n, |S| = k+2, e_2(S) = 0 }`.
+  · **MEASURED (the prize-regime facts):** the worst non-correlated incidence is **q-INDEPENDENT**
+    and **`O(n)`** (`dir(5,7)`: `64,72,40,40` over `q=97..353`; `dir(5,6)→n`), crossing the prize
+    level `q·ε* = n` strictly **inside the window** `(1−√ρ, 1−ρ)` (between `δ=0.562` and `0.625`
+    at `n=16,ρ=1/4`). The bad set is a union of `μ_{n'}` cosets (`n'=n/gcd(b−a,n)`).
+  · **GAP (the conjecture to prove — beats W4):** the symmetric-function value set
+    `{ σ(S) : S ⊆ μ_n, |S|=w, vanishing-symmetric constraints }` has **`O(1)` `μ_n`-cosets**, i.e.
+    worst non-correlated incidence `≤ C·n`. This is a CONCRETE, **q-independent** cyclotomic
+    symmetric-function statement — it does NOT route through the incomplete-Gauss-sum-over-`F_q`
+    wall (W4); the `q`-independence (proven by `mca_badscalar_general`, `#bad ≤ C(n,w)`) makes the
+    whole quantity finite combinatorial. Proving the `O(n)` coset bound + the incidence/`δ*`
+    calibration (worst incidence `= n` at `δ = δ*`) closes the MCA prize directly. The dilation
+    `γ_S ↦ g^{b−a}γ_S` forces the coset structure; the open content is the *rigidity* (why all
+    consistent `S` collapse to `O(1)` cosets).
+
 Each GAP is a candidate `YOUR CONJECTURE HERE`: a closed plain-RS curve-decodability bound (R1),
-a closed `CZ25CoordFiberCap` list-recovery dim bound (R2), or the dual-zero-pattern theorem (R3)
-— any one, proved in the prize regime without residual, closes the prize via its bridge.
+a closed `CZ25CoordFiberCap` list-recovery dim bound (R2), the dual-zero-pattern theorem (R3),
+or the `O(n)` symmetric-function coset-rigidity bound (R4) — any one, proved in the prize regime
+without residual, closes the prize via its bridge.
 
 ────────────────────────────────────────────────────────────────────────────────
 ## §3.  THE WALLS  (PROVEN dead ends — every accessible technique stops here)
