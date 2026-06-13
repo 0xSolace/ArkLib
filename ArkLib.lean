@@ -258,6 +258,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyCubeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGcdDegreeBound
+import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGroupRepBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyMathlibBridge
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyMulHomogeneous
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyNormalizedBound
