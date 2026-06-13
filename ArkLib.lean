@@ -126,6 +126,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettLemma22
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma24
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma2456
 import ArkLib.Data.CodingTheory.GMMDS.LovettPolynomial
+import ArkLib.Data.CodingTheory.GMMDS.LovettPairwise
 import ArkLib.Data.CodingTheory.GMMDS.LovettPrimitiveDischarge
 import ArkLib.Data.CodingTheory.GMMDS.LovettPrimitiveDistinctDegree
 import ArkLib.Data.CodingTheory.GMMDS.LovettReducibleDischarge
