@@ -637,6 +637,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyExact
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplySilentPrizeScale
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyZeroF73
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyZeroNTT
+import ArkLib.Data.CodingTheory.ProximityGap.CurveAgreementThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBadCount
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBound
@@ -1449,16 +1450,16 @@ import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledThreshold
-import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegImproved
 import ArkLib.Data.CodingTheory.ProximityGap.SidonEnergyIff
 import ArkLib.Data.CodingTheory.ProximityGap.SidonGVClosure
 import ArkLib.Data.CodingTheory.ProximityGap.SidonGaussSum4thMoment
+import ArkLib.Data.CodingTheory.ProximityGap.SidonInjTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftDevacuated
-import ArkLib.Data.CodingTheory.ProximityGap.SidonInjTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegComplex
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegEnergyEquality
+import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegImproved
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalGeneral
