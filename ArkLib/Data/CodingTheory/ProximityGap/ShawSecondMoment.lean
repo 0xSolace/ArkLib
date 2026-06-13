@@ -116,9 +116,37 @@ theorem shawError_second_moment (S : Finset V) (s₁ : V) :
   simp only [Complex.normSq_eq_norm_sq, hbdef] at h
   exact h
 
+/-- **Chebyshev count bound for the Shaw operator** (quantitative companion of
+`shawError_second_moment`). The number of base points `s₀` at which the Shaw operator reaches a
+threshold `t ≥ 0` is controlled by the second moment:
+`#{s₀ : t ≤ ‖𝒮(S;s₀,s₁)‖} · t² ≤ |V| · ∑_{ψ≠0, ψ⊥s₁} ‖∑_{s∈S} ψ(−s)‖²`.
+
+So all but a `(ℓ²-mass)/t²`-fraction of base points satisfy any threshold the average side meets:
+large Shaw error is *rare*. This makes the L²/average side of the prize bound quantitative — the
+remaining open content is only the existence of the *worst* base point, not the typical one. -/
+theorem card_large_shawError_mul_sq_le (S : Finset V) (s₁ : V) {t : ℝ} (ht : 0 ≤ t) :
+    ((univ.filter (fun s₀ : V => t ≤ ‖shawError (F := F) S s₀ s₁‖)).card : ℝ) * t ^ 2
+      ≤ (Fintype.card V : ℝ)
+        * ∑ ψ ∈ univ.filter (fun ψ : AddChar V ℂ =>
+              directionChar (F := F) ψ s₁ = 0 ∧ ψ ≠ 0),
+            ‖∑ s ∈ S, ψ (-s)‖ ^ 2 := by
+  classical
+  rw [← shawError_second_moment]
+  set bad := univ.filter (fun s₀ : V => t ≤ ‖shawError (F := F) S s₀ s₁‖) with hbad
+  calc ((bad.card : ℝ)) * t ^ 2
+      = ∑ _s₀ ∈ bad, t ^ 2 := by rw [Finset.sum_const, nsmul_eq_mul]
+    _ ≤ ∑ s₀ ∈ bad, ‖shawError (F := F) S s₀ s₁‖ ^ 2 := by
+        refine Finset.sum_le_sum (fun s₀ hs₀ => ?_)
+        have hts : t ≤ ‖shawError (F := F) S s₀ s₁‖ := (Finset.mem_filter.mp hs₀).2
+        gcongr
+    _ ≤ ∑ s₀ : V, ‖shawError (F := F) S s₀ s₁‖ ^ 2 :=
+        Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
+          (fun s₀ _ _ => by positivity)
+
 end ArkLib.ProximityGap.ShawSecondMoment
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.addChar_conj
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.char_orthogonality
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.shawError_second_moment
+#print axioms ArkLib.ProximityGap.ShawSecondMoment.card_large_shawError_mul_sq_le
