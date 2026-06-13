@@ -1216,6 +1216,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PencilDegreeGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.PencilNormalizerBand
 import ArkLib.Data.CodingTheory.ProximityGap.PencilSplitCount
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
+import ArkLib.Data.CodingTheory.ProximityGap.PointwiseEnergyCeilingNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.PoissonCeilingFloor
 import ArkLib.Data.CodingTheory.ProximityGap.PoleSpikeMatching
 import ArkLib.Data.CodingTheory.ProximityGap.PolywordSupplyGeneral

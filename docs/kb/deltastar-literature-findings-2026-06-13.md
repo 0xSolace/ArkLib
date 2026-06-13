@@ -48,9 +48,27 @@ conditional.**
 - HBK `5/2` ⇒ zero-sum-triples **`≪ |G|^{7/4}`** ( `n^{1.75}` ),
 - Shkredov `22/9` ⇒ **`≪ |G|^{31/18} ≈ |G|^{1.722}`**,
 
-both **unconditionally below the in-tree `n^{11/6} ≈ n^{1.833}`**. This is a real, landable advance:
-restate `SmoothCubicSupplyBound` / `GVHBKEnergyReduction` against `E⁺(G) ≪ |G|^{5/2}` and drop the
-`GVRepBound` hypothesis. **Caveat (must add as a side condition):** the prime-field energy bounds
+both **unconditionally below the in-tree `n^{11/6} ≈ n^{1.833}`**.
+
+> **⚠ CORRECTION (2026-06-13, post-write).** The parenthetical above — "*sum the `4|G|^{2/3}`
+> shifted-intersection bound over all shifts → `5/2`, no cube-root loss*" — is **mathematically
+> invalid**, and there is **no quick "restate and drop `GVRepBound`" advance here.** Summing the
+> *pointwise* cap gives `E = ∑ r(t)² ≤ (max_{t≠0} r(t))·∑ r(t) ≤ 4|G|^{2/3}·|G|² = 4|G|^{8/3}` —
+> i.e. exactly the `8/3` the tree already has, not `5/2`. By convexity, for a fixed total mass
+> with a per-shift cap the sum of squares is *maximised* by saturating the cap, so the pointwise
+> hypothesis is provably consistent with `≈ |G|^{8/3}` energy. This is now machine-checked:
+> **`PointwiseEnergyCeilingNoGo.lean` (`pointwise_method_bound_tight`)** exhibits a feasible
+> profile with `M·S − M² ≤ ∑ r² ≤ M·S` (`S = |G|²`, `M = 4|G|^{2/3}`), so the pointwise route
+> **cannot reach `5/2`** (`5/2 < 8/3`). The genuine `E⁺(G) ≪ |G|^{5/2}` is a *true* theorem (HB-K)
+> but a **deep second-moment / sum-product result**, already handled honestly in-tree as a **named
+> literature residual** — `HBKEnergySupplyBound.lean` (`HBKEnergyBound`, not reproved) with the
+> elementary downstream reduction, and `AddEnergyMulHomogeneous.lean`'s honest first step
+> (`E ≪ |G|^{5/2} ⟸ N ≪ |G|^{3/2}`). Treat §0.A as **already discharged where true, and a
+> non-starter where it claimed a free win.** (`GVRepBoundFromEnergy.lean` states the residual
+> has "no elementary proof".) The Cauchy–Schwarz zero-sum-triple consequences below inherit
+> from the *true* `5/2` residual, not from any pointwise restatement.
+
+**Caveat (must add as a side condition):** the prime-field energy bounds
 need `G` to *avoid proper subfields* (`|G ∩ F_{p^d}|` small). For a 2-power-order `μ_n` over
 `F_q = F_{2^m}` this is the one place smoothness *bites against us* — `n = 2^μ` is exactly the order
 most prone to aligning with an intermediate subfield `F_{2^d}` (`d | m`), where `E⁺` is maximal.
