@@ -91,3 +91,29 @@ chaining (sub-Gaussian suprema, Lemma-8.17-type γ₂ bound); 2207.12439 Gauss-s
 1207.1607 value distribution of incomplete Gauss sums; 2602.01781 distribution of additive energy.
 Cross-refs: `WorstPeriodRootBound.lean`, `ShawFlatnessRefuted.lean`,
 `deltastar-cyclotomic-lattice-collision-core-2026-06-13.md`, workbench §R.3.
+
+## SELF-REFUTATION (2026-06-13, same session) — the chaining feasibility boost is FALSE; residual sharpened
+
+Per "refute your own conjecture": I claimed generic chaining beats the moment wall because it needs
+only increment geometry. **Refuted by computing the metric.** By Parseval over `c`, the L² increment
+is `d̄(c,c')² = (p/m²)·Σ_{j=1}^{m−1} 4sin²(πj(c−c')/m)`. Since `Σ_j sin²(πjδ/m) = (m−1)/2 −
+(1/2)Σ_j cos(2πjδ/m) = (m−1)/2 + 1/2 ≈ m/2` for EVERY `δ ≢ 0 (mod m)`, the metric is
+**FLAT: `d̄(c,c') ≈ √(2n)` for all distinct pairs.** (The naive small-`δ` Lipschitz estimate
+`|1−e(−jδ/m)|≈2πjδ/m` is invalid because `j` runs to `m`, so `jδ` wraps mod `m`.)
+
+For a flat metric on `m` equidistant points, `γ₂ ≈ √(2n)·√(log m)` and **chaining = the union bound**
+— there is no multi-scale geometry to exploit. So the route does NOT reduce to "increments only"; it
+needs the **per-period sub-Gaussian tail** `P_c(|η_c| ≥ t) ≤ 2exp(−t²/(2C n))`, equivalently the
+single-period MGF — which encodes the same even moments `E_r` as the original wall. **Feasibility was
+over-credited; revise 6 → 4** (same order as the raw-moment route, no genuine reduction).
+
+**What genuinely survives (the sharpened residual).** The reframing still converts the open core into a
+*classical, named* object with a mature literature: the residual is exactly the **sub-Gaussian tail of
+the value distribution of the Gaussian period** `η_c` over uniform `c` (a sum `(1/m)Σ_j τ(χ_j)e(−jc/m)`
+sampled at a random point) — precisely the **incomplete-Gauss-sum / Gaussian-period value distribution**
+studied by Demirci Akarsu–Marklof (arXiv 1207.1607, a proven limit law) and Duke–Garcia (house/value
+distribution). The open part is that this limit-law tail is **sub-Gaussian with proxy `O(n)` uniformly
+at thin `n≈p^{0.12}`** — a concrete value-distribution-tail statement, not an opaque high-moment bound.
+Net: the value-distribution literature (1207.1607 limit law, Duke–Garcia) is the right toolkit, but the
+uniform sub-Gaussian tail in the prize regime remains open. Honest scores: novelty 8 / insight 8 /
+proximity 9 / **feasibility 4**. Still the cleanest classical *form* of the residual; not a closure.
