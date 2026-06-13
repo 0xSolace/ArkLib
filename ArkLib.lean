@@ -730,6 +730,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandPairRank
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandProductionGatedOnOpenCore
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandProductionSubJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandProductionSubJohnsonGeneral
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandR3Bound
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationMajority
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationSharp

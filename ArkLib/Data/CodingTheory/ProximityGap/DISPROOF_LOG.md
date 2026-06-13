@@ -8486,3 +8486,46 @@ FULLY CLOSED (closed form, zero residual). The entire open content is the WORST-
 extremality of the antipodal subset-sum fibre (BCHKS25 Conj 1.12) — exactly lalalune's "must be a
 combinatorial extremality argument, not a character-sum/interpolation/moment bound." Probe:
 scripts/probes/probe_pairsum_gate.py.
+### O173 — the closed-form-FREE per-line structural route: d-ary split + 2^r sign-symmetry + single-line dominance all CONFIRMED, but the per-line injection into C(n/2,r)·2^r BREAKS for r≥4 (axis-support mismatch) — same open core as O172 (nubs, 2026-06-13)
+
+Asked whether each order-d character line has deep-band #bad ≤ its budget share (so
+max_d ≤ K = 2^r·C(n/2,r)) WITHOUT the O172 closed form. **Verdict: PARTIAL.** The per-line
+framing is correct and dominance HOLDS, but the structural per-line UPPER BOUND does not — it is
+a count-coincidence, not an injection. All probes reproduce the O172 worst-stack #bad n=16
+r=3..8 = 97,145,89,113,225,104 digit-for-digit (OwnershipBound.residual modular-det ground
+truth, BabyBear p=2013265921); K=448,1120,1792,1792,1024,256; margins 2.46×–20.1×.
+
+* **d-ary split generalizes in FORM [confirmed].** High-freq line u₀=χ_d(i)=x_i^{n/d}, u₁=u₀/x_i:
+  aligned-S(γ) ⟺ the a₀=r+1 points lie on one deg-<(r−1) curve; clearing 1/x_i gives
+  P(x_i)−ωʲ(x_i+γ)=0, P free deg≤r−1; χ_d constant per residue class mod d so S splits into d
+  classes, class j = roots of Q_j=P−ωʲ(x+γ), deg≤r−1. The Q_j form a PENCIL
+  Q_j−Q_{j'}=−(ωʲ−ω^{j'})(x+γ) — the d-cyclic product condition generalizing the r=3 antipodal
+  pair-product (d=2: x_a x_b + x_c x_d = 0). Aligned sets DO split into χ-class distributions
+  (r=3 order-2: {(2,2):96,(4,):140}; r=8 order-16: all-1s).
+* **OBSTRUCTION #1 (per-class size).** Naive "class size ≤ deg Q_j = r−1" FAILS on degenerate
+  classes: r=3 (4,)-distribution (140 sets, size 4 > r−1=2) = the B=0 collinear-degenerate family
+  that ALL collapse to the single γ=0 (the "+1" in n·C(n/4,2)+1). Harmless to the count, breaks
+  the clean structural statement.
+* **OBSTRUCTION #2 (the real one — axis-support mismatch).** A per-line injection
+  {bad γ}→{r-subset of n/2 antipodal axes}×{2^r signs}=K requires aligned sets to touch exactly
+  r axes. Measured axis-support: r=3 {2:12,3:128,4:96} (up to r+1, too many to fit r-subsets);
+  r=8 {5:80,6:192} (5–6 axes, fewer than n/2=8 needed for C(8,8)=1). So C(n/2,r) has NO geometric
+  realization on the bad set — K bounds #bad NUMERICALLY but not via injection for r≥4.
+* **The 2^r factor IS structural [confirmed].** At the tightest band r=8 (margin 2.46×):
+  #bad=104=2×52, bad-γ set CLOSED under negation γ↔−γ; 2^r=256=K (C(8,8)=1). 2^r = the
+  free-negation sign symmetry of the antipodal-balance engine (matches RESULTS-GENERAL-LAW).
+* **NON-OBSTRUCTION: single-line dominance HOLDS.** Obligation = worst witness PAIR = one line,
+  so max-over-lines is correct. Even unioning a whole degree-window (not required) stays far below
+  K: r=3 union over all (x⁸,x^f)=113≪448; r=4 union over (x⁸,*)+(x⁴,*)+(x¹²,*)+(x⁷,*)=337≪1120.
+  No harmful cross-line interference at any tested band.
+* **Normalization note (NOT an O172 error).** residual-ratio γ ≠ −e₁(S) per-set (0/96 equal at
+  r=3) but |{γ}|=|{−e₁}|=96=n·C(n/4,2); CF.md's "γ=−e₁" is the in-tree witness_pin convention,
+  count-equivalent, so the proven r=3 closed form stands.
+
+**Where it lands:** the per-line bad set is the JOINT (e₁..e_{r−1})-level-set whose cardinality
+is exactly the open analytic core O172/ExcessCensusLaw names; the d-cyclic pencil constrains but
+does not cap it at C(n/2,r)·2^r. The gap is PURELY the per-line count bound for r≥4 — identical
+to O172's open core, so a closed-form-free per-line structural proof is NOT available. Probes:
+/tmp/fanoutC/{dary_split_theory,axis_injection,r8_tight_analysis,crossline_check,crossline_r4,
+perline_budget}.py. Reading list for the analytic core: PAPERS_NEEDED.md §"ExcessCensusLaw
+analytic core".

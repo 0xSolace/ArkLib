@@ -33,8 +33,13 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettSeparateStep
 import ArkLib.Data.CodingTheory.GMMDS.LovettDivisibility
 -- §3 THE SHAW OPERATOR — the unified unknown + the closed prize conjecture:
 import ArkLib.Data.CodingTheory.ProximityGap.ShawOperator
+<<<<<<< HEAD
 -- §Y the explicit entropy closed-form δ* value + the rigorous in-window ladder ceiling:
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
+=======
+-- §D THE DEMAND-SIDE LANE (#389) — the CensusDomination #bad-scalar count, r=3 closed (O172):
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandR3Bound
+>>>>>>> 1f2337fda (feat(#389): r=3 deep-band bound LANDED as axiom-clean Lean (DeepBandR3Bound) + workbench demand-side lane + O173 structural-route negative)
 
 /-!
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -464,6 +469,7 @@ noncomputable example {F : Type} [Field F] [Fintype F] [DecidableEq F] {n : ℕ}
     cyclic block-diagonal `Z/n` per-frequency estimate of `FarLineIncidenceEquivariance`) is the
     whole prize. -/
 
+<<<<<<< HEAD
 
 /-! ### A concrete, unconditionally-proven witness of the δ* law
 
@@ -545,5 +551,111 @@ theorem deltaStar_pin_mu8_F4129_witness :
 #check @ProximityGap.PrizeEntropy.prizeDeltaStar_ceiling      -- PROVEN: unconditional ladder ceiling
 #check @ProximityGap.PrizeEntropy.PrizeFloorStatement         -- the single closed open core
 #check @ProximityGap.PrizeEntropy.PrizePinConjecture          -- δ* = prizeDeltaStar (the pin)
+=======
+/-! ════════════════════════════════════════════════════════════════════════════
+    ║   §D   THE DEMAND-SIDE LANE (#389) — CensusDomination #bad-scalar count    ║
+    ════════════════════════════════════════════════════════════════════════════
+
+    A SECOND, COMPLEMENTARY attack surface (parallel to the Shaw operator §3): instead of the
+    spectral error of the line–ball incidence operator, count the **deep-band bad scalars
+    directly** and dominate them by the supply budget. The established reduction (#389 dossiers
+    `scripts/probes/genlaw/o165_census_demand/`, `o172_qthreshold/`):
+
+      **CensusDomination** : the prize reduces to the deep-band #bad-scalar count being
+      `≤ K = 2^r · C(n/2, r)`  (pinned `k_c = (r−2)m+1, a₀ = rm+1, deficit 2, m = 1`).
+
+    Here `#bad` is the number of DISTINCT bad scalars `γ` of the deep-band witness pencil
+    `X^{k+1} + γ·X^k` over the smooth domain `μ_n` — the demand side of the line–ball incidence.
+    It is `q`-INDEPENDENT and finite-combinatorial: O172 proves the production `q` is the WORST
+    case (a saturating envelope, char-0 supremum), so the char-0 count transfers to production.
+
+    ──────────────────────────────────────────────────────────────────────────────
+    §D.1  THE r = 3 BRICK — CLOSED, all n, axiom-clean (`DeepBandR3Bound`, O172).
+    ──────────────────────────────────────────────────────────────────────────────
+    Parametrising `n = 4g` (`n/4 = g`, `h = n/2 = 2g`):
+      · `deepBandBadCount g = n·C(n/4, 2) + 1 = 2g²(g−1)+1`  (`deepBandBadCount_eq_choose`).
+      · `deepBandBudget g  = 2^3·C(2g, 3) = K|_{r=3}`.
+      · `deepBandBadCount g ≤ deepBandBudget g` for `g ≥ 2`  (`deepBandBadCount_le_budget`) —
+        the r = 3 CensusDomination obligation, PROVEN for ALL n divisible by 4 (`n ≥ 8`).
+      · the exact margin identity `12·(K − #bad) = (2g−2)(2g)(13·2g−16) − 12`, i.e.
+        `K − #bad = (h−2)·h·(13h−16)/12 − 1 > 0`  (`twelve_mul_budget_sub_count`).
+      · the mechanism is the in-tree Vieta pin `γ = −∑_{ζ∈S} ζ`
+        (`badscalar_eq_neg_subset_sum`, = `SinglePencilSharper.witness_pin_eq_neg_sum`); the
+        count `deepBandBadCount` is the cardinality the in-tree spectrum bound
+        `witness_badscalar_card_le_spectrum` is upper-bounded by.
+
+    The geometric-count↔closed-form bridge is `R3CensusCountValue` ([COMPUTED] — config count
+    `n·C(n/4,2)` field-independent + the proven `pair_sums_ne_modp` distinctness); the obligation
+    holds conditional on it (`r3_censusDomination_of_countValue`) AND the closed-form arithmetic
+    is unconditional. -/
+
+open ArkLib.ProximityGap.DeepBandR3
+
+-- SMOKE TEST — the r = 3 demand-side brick resolves here:
+#check @deepBandBadCount             -- #bad(r=3) = n·C(n/4,2)+1
+#check @deepBandBudget               -- K|_{r=3} = 2^3·C(n/2,3)
+#check @deepBandBadCount_eq_choose   -- the O172 closed form
+#check @deepBandBadCount_le_budget   -- #bad ≤ K, all n (the r=3 obligation, PROVEN)
+#check @twelve_mul_budget_sub_count  -- the exact K−#bad margin identity
+#check @badscalar_eq_neg_subset_sum  -- γ = −∑ζ (the in-tree Vieta pin, re-exported)
+#check @r3_censusDomination_of_countValue  -- the full obligation conditional on the COMPUTED count
+
+/-- The r = 3 deep-band CensusDomination bound is in scope and usable (sanity handle). -/
+example (g : ℕ) (hg : 2 ≤ g) : deepBandBadCount g ≤ deepBandBudget g :=
+  deepBandBadCount_le_budget g hg
+
+/-! ════════════════════════════════════════════════════════════════════════════
+    ║              ▼▼▼   DEMAND-SIDE GENERAL-r CONJECTURE HERE   ▼▼▼             ║
+    ════════════════════════════════════════════════════════════════════════════
+
+    The r = 3 brick is CLOSED (§D.1). The OPEN demand-side core is the general-`r` deep-band
+    #bad-scalar bound. State and prove `deepBandBadCount_r r n ≤ K(r,n) = 2^r·C(n/2, r)`.
+
+    WHAT IS KNOWN (calibrate against this — do NOT contradict it):
+    · r = 3 is closed all-n (the brick above): `#bad(3) = n·C(n/4,2)+1`, divisor family `x^{n/2}`.
+    · The worst-case monomial family is DIVISOR-DEPENDENT: `x^{n/2}` saturates at r = 3; at r = 4
+      that line degenerates (#bad = 1) and the `x^{n/4}` family takes over. So a SINGLE closed
+      form across r is unlikely — expect a max-over-divisors / per-band statement.
+    · #bad is NON-MONOTONE in r (n = 16 faithful: r = 3..8 → 97,145,89,113,225,104 vs
+      K = 448,1120,1792,1792,1024,256), but `≤ K` with margin 2.46×–20.1× (n=16), 5.0× (n=32, r=3),
+      33× (n=32, r=4). General-`r ≤ K` is MEASURED only — this is the open analytic core.
+    · The literal alignable-SETS form is FALSE (O171 lossy overcount: #align ≫ K). The correct
+      object is the #bad-SCALAR count (distinct `γ`), via the Vieta pin + distinctness.
+    · The count is `q`-independent; production `q` is the worst case (O172 saturating envelope).
+
+    THE SHAPE OF A WINNING DEMAND-SIDE CONJECTURE (drop it in, wire it to the budget):
+
+      -- The general-r deep-band distinct-bad-scalar count (smooth μ_n).  [to be DEFINED — the
+      -- subset-sum spectrum cardinality of the pinned witness; cf. witness_badscalar_card_le_spectrum]
+      -- def deepBandBadCount_r (r n : ℕ) : ℕ := …
+
+      -- The budget at general r.  K = 2^r · C(n/2, r).
+      def deepBandBudget_r (r n : ℕ) : ℕ := 2 ^ r * (n / 2).choose r
+
+      -- ▼ THE CONJECTURE ▼  (prove this — it closes the demand-side route to δ*):
+      -- theorem deepBand_censusDomination (r n : ℕ) (hn : …) (hr : …) :
+      --     deepBandBadCount_r r n ≤ deepBandBudget_r r n := …
+
+    The r = 3 brick (`deepBandBadCount_le_budget`) is the proven instance `r = 3` of exactly this
+    statement (with `deepBandBudget_r 3 (4*g) = deepBandBudget g`). Reuse its method: pin the bad
+    scalar to a subset-sum spectrum value (`witness_pin_eq_neg_sum`), bound the spectrum
+    cardinality, then discharge the resulting `Nat`/poly inequality against `2^r·C(n/2,r)`.
+
+    Once proved, wire to the CensusDomination reduction → `mcaDeltaStar` → `mcaConjecture` (T1) /
+    `GrandMCAResolution` (T2) / the LD prize (T3), exactly as §4's closure contract requires.
+    ════════════════════════════════════════════════════════════════════════════ -/
+
+/-- The general-`r` budget `K = 2^r · C(n/2, r)`, ready for the conjecture above to consume.
+At `r = 3, n = 4g` this is `deepBandBudget g` (the proven r = 3 brick's budget). -/
+def deepBandBudget_r (r n : ℕ) : ℕ := 2 ^ r * (n / 2).choose r
+
+/-- The r = 3 budget specialises the general budget: `deepBandBudget_r 3 (4g) = deepBandBudget g`.
+This wires the proven r = 3 brick into the general-`r` conjecture slot. -/
+theorem deepBandBudget_r_three (g : ℕ) :
+    deepBandBudget_r 3 (4 * g) = deepBandBudget g := by
+  unfold deepBandBudget_r deepBandBudget
+  congr 2
+  omega
+>>>>>>> 1f2337fda (feat(#389): r=3 deep-band bound LANDED as axiom-clean Lean (DeepBandR3Bound) + workbench demand-side lane + O173 structural-route negative)
 
 end ProximityGap.Workbench
