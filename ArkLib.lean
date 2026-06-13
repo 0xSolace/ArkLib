@@ -992,6 +992,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26StratifiedSpread
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26SumsOfRootsOfUnity
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ThornerZaman
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ThornerZamanConstructor
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26ConcreteCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26TightCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26WitnessSpread
 import ArkLib.Data.CodingTheory.ProximityGap.LDAttainment
