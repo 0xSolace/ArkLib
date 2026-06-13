@@ -102,6 +102,76 @@ theorem explainableCoreSupply_aboveJohnson (dom : Fin n ↪ F) {k m : ℕ} (hk :
   explainableCoreSupply_of_listBound dom (subJohnsonListBound_aboveJohnson dom hk hJohnson)
 
 open Classical in
+/-- **Unconditional subset-counting discharge (valid BELOW Johnson).**  Each
+`k`-subset of the domain is owned by at most one codeword (the unique degree-`<k`
+interpolant of `w` on those `k` nodes, `explainer_unique`), so summing `C(|agree|, k)`
+over the list and counting `k`-subsets gives `|list|·C(k+m+1,k) ≤ C(n,k)` for *every*
+band radius.  Hence `SubJohnsonListBound` holds unconditionally with
+`L = C(n,k)/C(k+m+1,k)`, `A = n` — no Johnson hypothesis.  This `L` is polynomial for
+fixed `k` but *exponential at constant rate* (`k = Θ(n)`), which pinpoints the genuine
+open core: not the existence of a list bound (one always exists), but whether it can
+be made **subexponential at constant rate**. -/
+theorem subJohnsonListBound_unconditional (dom : Fin n ↪ F) {k m : ℕ} (hk : 1 ≤ k) :
+    SubJohnsonListBound dom k m (n.choose k / (k + m + 1).choose k) n := by
+  intro w
+  refine ⟨?_, ?_⟩
+  · set S := bigAgreeCodewords dom k m w with hS
+    set P := S.sigma (fun c => (listAgreeSet c w).powersetCard k) with hP
+    -- |P| ≤ C(n,k): the second projection `(c,U) ↦ U` is injective (U owns ≤ 1 codeword)
+    have hPle : P.card ≤ n.choose k := by
+      have hmap : ∀ x ∈ P, x.2 ∈ (Finset.univ : Finset (Fin n)).powersetCard k := by
+        rintro ⟨c, U⟩ hx
+        rw [hP, Finset.mem_sigma] at hx
+        rw [Finset.mem_powersetCard] at hx ⊢
+        exact ⟨Finset.subset_univ _, hx.2.2⟩
+      have hinj : Set.InjOn (fun x : (_ : Fin n → F) × Finset (Fin n) => x.2) P := by
+        rintro ⟨c, U⟩ hx ⟨c', U'⟩ hy hUU
+        simp only at hUU; subst hUU
+        rw [Finset.mem_coe, hP, Finset.mem_sigma] at hx hy
+        obtain ⟨hc, hU⟩ := hx
+        obtain ⟨hc', hU'⟩ := hy
+        rw [Finset.mem_powersetCard] at hU hU'
+        rw [hS, bigAgreeCodewords, Finset.mem_filter] at hc hc'
+        have hcag : ∀ i ∈ U, c i = w i := fun i hi => by
+          have := hU.1 hi; rw [listAgreeSet, Finset.mem_filter] at this; exact this.2
+        have hc'ag : ∀ i ∈ U, c' i = w i := fun i hi => by
+          have := hU'.1 hi; rw [listAgreeSet, Finset.mem_filter] at this; exact this.2
+        have hcc : c = c' :=
+          explainer_unique dom hk (le_of_eq hU.2.symm) hc.2.1 hc'.2.1 hcag hc'ag
+        subst hcc; rfl
+      calc P.card ≤ ((Finset.univ : Finset (Fin n)).powersetCard k).card :=
+            Finset.card_le_card_of_injOn _ hmap hinj
+        _ = n.choose k := by
+            rw [Finset.card_powersetCard, Finset.card_univ, Fintype.card_fin]
+    -- |P| = Σ_c C(|agree c|, k) ≥ |S|·C(k+m+1,k)
+    have hge : S.card * (k + m + 1).choose k ≤ P.card := by
+      rw [hP, Finset.card_sigma]
+      calc S.card * (k + m + 1).choose k
+          = ∑ _c ∈ S, (k + m + 1).choose k := by rw [Finset.sum_const, smul_eq_mul]
+        _ ≤ ∑ c ∈ S, ((listAgreeSet c w).powersetCard k).card := by
+            refine Finset.sum_le_sum (fun c hc => ?_)
+            rw [Finset.card_powersetCard]
+            refine Nat.choose_le_choose k ?_
+            rw [hS, bigAgreeCodewords, Finset.mem_filter] at hc
+            exact hc.2.2
+    rw [Nat.le_div_iff_mul_le (Nat.choose_pos (by omega))]
+    exact le_trans hge hPle
+  · intro c _
+    rw [listAgreeSet]
+    refine le_trans (Finset.card_filter_le _ _) ?_
+    simp [Finset.card_univ]
+
+open Classical in
+/-- **Unconditional supply, every band.**  Composing the subset-counting discharge
+with `explainableCoreSupply_of_listBound`: for *every* band radius the deep-band
+supply holds with `B = (C(n,k)/C(k+m+1,k))·C(n,k+m+1)` — exponential at constant rate,
+but with no hypothesis at all. -/
+theorem explainableCoreSupply_unconditional (dom : Fin n ↪ F) {k m : ℕ} (hk : 1 ≤ k) :
+    ExplainableCoreSupply dom k m
+      ((n.choose k / (k + m + 1).choose k) * (n.choose (k + m + 1))) :=
+  explainableCoreSupply_of_listBound dom (subJohnsonListBound_unconditional dom hk)
+
+open Classical in
 /-- **END-TO-END above Johnson: the deep-band bad-scalar count is UNCONDITIONAL.**
 Composing `deep_band_badSet_card_of_supply` (the #389 multiplicity reduction) with
 the discharged above-Johnson supply: whenever `n·(k−1) < (k+m+1)²` and the band
@@ -138,5 +208,7 @@ end ProximityGap.Ownership
 #print axioms ProximityGap.Ownership.rsCode_pairwise_agree_le
 #print axioms ProximityGap.Ownership.subJohnsonListBound_aboveJohnson
 #print axioms ProximityGap.Ownership.explainableCoreSupply_aboveJohnson
+#print axioms ProximityGap.Ownership.subJohnsonListBound_unconditional
+#print axioms ProximityGap.Ownership.explainableCoreSupply_unconditional
 #print axioms ProximityGap.Ownership.deep_band_badSet_aboveJohnson
 #print axioms ProximityGap.Ownership.explainableCoreSupply_concrete_k2m2n16
