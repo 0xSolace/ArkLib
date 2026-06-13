@@ -84,4 +84,20 @@ theorem tzPrimeSupply_64_two : TZPrimeSupply 64 (2 : ℝ) 8 := by
       = ({4289, 4481, 4673, 4801, 4993, 5441, 5569, 5953} : Finset ℕ).card := by decide
     _ ≤ (tzWindow 64 (2 : ℝ)).card := Finset.card_le_card hsub
 
+/-- **Concrete discharge for `n = 8, β = 3`** — in the faithful unconditional regime `β > 12/5`
+of [TZ24].  The window `[512, 1024]` contains the eight primes `521, 569, 577, 593, 601, 617, 641,
+673`, all `≡ 1 (mod 8)`. -/
+theorem tzPrimeSupply_8_three : TZPrimeSupply 8 (3 : ℝ) 8 := by
+  refine ⟨?_⟩
+  have hpow : ((8 : ℕ) : ℝ) ^ (3 : ℝ) = 512 := by
+    rw [show (3 : ℝ) = ((3 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]; norm_num
+  have hsub : ({521, 569, 577, 593, 601, 617, 641, 673} : Finset ℕ) ⊆ tzWindow 8 (3 : ℝ) := by
+    intro p hp
+    rw [mem_tzWindow]
+    fin_cases hp <;>
+      exact ⟨by norm_num, by decide, by rw [hpow]; norm_num, by rw [hpow]; norm_num⟩
+  calc (8 : ℕ)
+      = ({521, 569, 577, 593, 601, 617, 641, 673} : Finset ℕ).card := by decide
+    _ ≤ (tzWindow 8 (3 : ℝ)).card := Finset.card_le_card hsub
+
 end ArkLib.ProximityGap.KKH26
