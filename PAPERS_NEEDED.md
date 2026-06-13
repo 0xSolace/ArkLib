@@ -152,3 +152,22 @@ absent) and pin the explicit-vs-generic gap. None on disk; URLs for fetch.
 evaluation points GENERIC (random / general position); the prize's smooth μ_n domain is maximally
 structured (a subgroup), which is precisely why no published result reaches capacity for it. The
 fleet's GM-MDS lane (Theorem 1.7 → one coordinate-merge residual) is the in-tree attack on this route.
+
+## δ* halo-residual — the "house of Gaussian periods" thread (2026-06-13, distinct community)
+
+The residual `max_c|η_c|` is exactly the **house (max conjugate modulus) of a Gaussian period**.
+A SEPARATE research community (Duke–Garcia–et al., supercharacter theory + explicit norms/moments,
+Hasse–Weil) studies precisely this object — distinct toolset from the Katz/Bourgain analytic thread
+above. Verified via web search (Jun 2026); none on disk.
+
+| # | paper | id | why it bears on the residual |
+|---|---|---|---|
+| G1 | **The Norm of Gaussian Periods** | arXiv **1611.07287** | Asymptotics of the logarithmic absolute NORM `Π_c η_c` (improves trivial bound) — the geometric-mean companion to the house `max_c|η_c|`; lower-bounds the house via `house ≥ |norm|^{1/m}`. |
+| G2 | **Moments of Gaussian Periods and Modified Fermat Curves** | arXiv **2112.13886** | Computes the 4th absolute moment of Gaussian periods via **Hasse–Weil on Fermat curves** — EXACTLY the `E_2=3n²−3n` energy floor the in-tree `ShawFlatnessRefuted`/`SidonModNeg` use, from the curve side; the higher-moment generalisation is the prize's open `E_r`. Ties to the in-tree Hasse-multiplicity curve programme. |
+| G3 | **The graphic nature of Gaussian periods** (Duke–Garcia–Lutz) | arXiv **1212.6825** | Foundational supercharacter framework + empirical house/value-distribution structure of `{η_c}`; the structural lens on why generic `μ_n` looks random (the genericity certificate). |
+
+**Honest scope:** the Duke–Garcia norm/moment results are sharp for `n` a FIXED prime as `p→∞`
+(opposite of the prize's growing dyadic `n=2^k`), so the same uniformity gap remains — but the
+supercharacter + Hasse–Weil moment machinery is a genuinely different, formalizable handle on `E_r`
+than the analytic Katz thread, and G2's curve method already underlies the in-tree 4th-moment floor.
+The prize stays open; this widens the toolset on the named residual.
