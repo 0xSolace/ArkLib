@@ -173,6 +173,7 @@ import ArkLib.Data.CodingTheory.HigherOrderMDSFrame
 import ArkLib.Data.CodingTheory.HigherOrderMDSList
 import ArkLib.Data.CodingTheory.HigherOrderMDSListGenPos
 import ArkLib.Data.CodingTheory.HigherOrderMDSReedSolomon
+import ArkLib.Data.CodingTheory.HigherOrderMDSReedSolomonCode
 import ArkLib.Data.CodingTheory.InterleavedArityMono
 import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.InterleavedFinOneEq
