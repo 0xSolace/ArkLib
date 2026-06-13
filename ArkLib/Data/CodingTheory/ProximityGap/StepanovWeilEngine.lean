@@ -91,8 +91,28 @@ theorem weil_form_card_le
   rw [Nat.le_div_iff_mul_le hMpos]
   omega
 
+/-- **Degree bound for the Weil-form auxiliary.** With `X`-blocks of `A₀, A₁` of degree `< q`,
+`deg R ≤ max(q·deg_Y A₀ + (q−1),  ((q−1)/2)·deg g + q·deg_Y A₁ + (q−1))`. This is the `D` that the
+counting half consumes; choosing `deg_Y Aᵢ` and the block bound to balance against the dimension
+count is the (elementary) `√q` optimization that completes the full Weil bound. -/
+theorem natDegree_weil_form_le
+    (g : F[X]) (A0 A1 : Polynomial (Polynomial F))
+    (h0 : ∀ j, (A0.coeff j).natDegree < Fintype.card F)
+    (h1 : ∀ j, (A1.coeff j).natDegree < Fintype.card F) :
+    (subq (Fintype.card F) A0
+        + (g ^ ((Fintype.card F - 1) / 2)) * subq (Fintype.card F) A1).natDegree
+      ≤ max (Fintype.card F * A0.natDegree + (Fintype.card F - 1))
+          (((Fintype.card F - 1) / 2) * g.natDegree
+            + (Fintype.card F * A1.natDegree + (Fintype.card F - 1))) := by
+  refine le_trans (Polynomial.natDegree_add_le _ _) (max_le_max ?_ ?_)
+  · exact natDegree_subq_le _ A0 h0
+  · refine le_trans Polynomial.natDegree_mul_le ?_
+    rw [Polynomial.natDegree_pow]
+    exact Nat.add_le_add_left (natDegree_subq_le _ A1 h1) _
+
 end ArkLib.ProximityGap.StepanovWeilEngine
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.StepanovWeilEngine.weil_form_card_lt
 #print axioms ArkLib.ProximityGap.StepanovWeilEngine.weil_form_card_le
+#print axioms ArkLib.ProximityGap.StepanovWeilEngine.natDegree_weil_form_le
