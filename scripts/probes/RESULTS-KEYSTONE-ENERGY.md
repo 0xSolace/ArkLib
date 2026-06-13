@@ -33,3 +33,21 @@ Honest caveat: all sampled (n ≤ 32, specific primes); HBK worst case is E ≪ 
 `E ≤ Cn²` is not proven unconditional — but no blow-up appears even at the extreme bad prime,
 so the worst case (if realized) needs a genuinely adversarial subgroup not seen here. The
 Stepanov route the fleet is formalizing is exactly the unconditional proof of this bound.
+
+## CORRECTION (probe_energy_worstcase_regime.py) — supersedes the "robust at every prime" claim
+A worst-case scan over ALL small primes p≡1 mod n exposed an error in §3 above. The bound
+E ≤ Cn² with small C is NOT robust across all p: at small p (μ_n near the whole field) the
+energy blows up — E/n² = 15.1 at (n=16, p=17, where μ_16 = F_17^×), 11.2 at (n=32, p=97),
+reaching ~3.8·n^2.5 (the HBK regime). My earlier "E ≤ 4n² everywhere" was a sampling
+artifact (only p ≳ n² tested). RECONCILED picture:
+- **The BOUND E ≤ Cn² (small C) has a genuine POWER threshold p ≳ n^2.5** (HBK/Stepanov) —
+  so the swarm's "sharp threshold" framing is CORRECT for the bound (my "divisibility not
+  power" applies only to the finer EXACT value = 3n(n−1)).
+- **The EXACT value 3n(n−1)** additionally needs the divisibility/coprimality condition
+  (bad primes ≤ 4^φ(n)), on top of p ≳ n^2.5.
+- **PRODUCTION IS CLEAN.** prize needs q ≥ 2^128 (ε*=2^-128); n ≤ 2^40 ⟹ n^2.5 ≤ 2^100 ≪
+  2^128 ≤ q. So production sits far in the clean p ≫ n^2.5 regime: E = 3n(n−1), bound holds
+  with C=3 (confirmed at p~n^3.5 for n=8,16,32). The keystone holds at prize parameters.
+NET: the transfer threshold is real and necessary (power, ~n^2.5), production satisfies it,
+the keystone is sound for the prize. Formalize the bound with the p ≳ n^2.5 (HBK-Stepanov)
+hypothesis; the exact-value divisibility subtlety is only needed if one wants 3n(n−1) on the nose.
