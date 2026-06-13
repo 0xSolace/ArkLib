@@ -1291,6 +1291,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountStepanovOrderTwo
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusInvariance
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountShiftedPower
+import ArkLib.Data.CodingTheory.ProximityGap.RepCountSidonBound
 import ArkLib.Data.CodingTheory.ProximityGap.ResidualModularReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Resolution
 import ArkLib.Data.CodingTheory.ProximityGap.ResolutionWitness
