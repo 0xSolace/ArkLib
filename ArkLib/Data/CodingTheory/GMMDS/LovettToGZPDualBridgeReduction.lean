@@ -184,9 +184,73 @@ theorem gzpToLovettSystem_of_witness {k : ℕ}
   intro t e δ hgzp
   exact hwit e δ hgzp
 
+/-! ## Step 1 is *unsatisfiable as currently encoded* — a row-count mismatch
+
+The combinatorial discharge of `GZPToLovettSystem` is **blocked by a genuine encoding
+mismatch**, not by missing proof effort.  `GZPLovettCorrespondence` pins the row count of the
+`V*(k)` system to `m = Fintype.card (GZPCopyIdx δ) = ∑ⱼ δⱼ` (one row per *copied* vertex).  But
+`IsVStar V k` forces `m ≤ k`: applying clause (ii) at `I = univ` gives
+`(card univ ≤) ∑_{i} (k − |vᵢ|) + |⋀| ≤ k`, and each summand is `≥ 1` because `|vᵢ| ≤ k − 1`
+(clause (i)) — so the number of rows is at most `k`.
+
+Yet `GZPCondition e δ k` does **not** bound `∑ⱼ δⱼ ≤ k`; taking `κ = δ` only yields
+`∑ⱼ δⱼ ≤ Fintype.card ι − k` (the *length* bound).  In the generic GM-MDS regime
+`∑ⱼ δⱼ > k` (e.g. several roots each copied `k` times), so **no** `V*(k)` system of the pinned
+size exists, and `GZPToLovettSystem` is *false* there.
+
+The two facts below record this precisely and axiom-cleanly.  The fix is to repair the
+encoding: Lovett's `V*(k)` system has *one row per dual-generator polynomial of the chosen
+`k × k` minor* (a `k`-sized index), **not** one per copied vertex `∑ⱼ δⱼ`.  The
+`GZPLovettCorrespondence` dimension pin `m = card (GZPCopyIdx δ)` conflates the dual-row count
+(which step 2 produces) with the `V*(k)` system size, and should be relaxed to `m ≤ k`
+(or pinned to `k`). This is filed rather than forced. -/
+
+/-- **The `V*(k)` row-count ceiling.**  Every `V*(k)` system has at most `k` rows: clause (ii)
+at `I = univ` plus clause (i) (`|vᵢ| ≤ k − 1`, hence `1 ≤ k − |vᵢ|`) gives
+`m = card univ ≤ ∑ᵢ (k − |vᵢ|) ≤ k`.  Requires `1 ≤ k` (so that `k − |vᵢ| ≥ 1`). -/
+theorem isVStar_card_le {m n : ℕ} {V : Fin m → (Fin n → ℕ)} {k : ℕ} (hk : 1 ≤ k)
+    (hV : IsVStar V k) : m ≤ k := by
+  classical
+  rcases Nat.eq_zero_or_pos m with hm | hm
+  · omega
+  · have huniv : (Finset.univ : Finset (Fin m)).Nonempty :=
+      Finset.univ_nonempty_iff.mpr (Fin.pos_iff_nonempty.mp hm)
+    have hmds := hV.mds Finset.univ huniv
+    -- each summand `k - |vᵢ| ≥ 1`, so `m = card univ ≤ ∑ (k - |vᵢ|)`.
+    have hge1 : ∀ i ∈ (Finset.univ : Finset (Fin m)), 1 ≤ k - vAbs (V i) := by
+      intro i _
+      have := hV.weight_le i
+      omega
+    have hsum : (Finset.univ : Finset (Fin m)).card
+        ≤ ∑ i, (k - vAbs (V i)) := by
+      calc (Finset.univ : Finset (Fin m)).card
+          = ∑ _i ∈ (Finset.univ : Finset (Fin m)), 1 := by
+            rw [Finset.sum_const, smul_eq_mul, mul_one]
+        _ ≤ ∑ i, (k - vAbs (V i)) := Finset.sum_le_sum hge1
+    simp only [Finset.card_univ, Fintype.card_fin] at hsum
+    omega
+
+omit [DecidableEq ι] [Nonempty ι] in
+/-- **The mismatch, made formal.**  Suppose, for a fixed GZP `(e, δ)` satisfying
+`GZPCondition e δ k` with `1 ≤ k`, that the pinned row count exceeds `k`
+(`k < Fintype.card (GZPCopyIdx δ) = ∑ⱼ δⱼ`).  Then **no** witness for that GZP can satisfy
+`GZPLovettCorrespondence`: any such witness would force its row count to be both
+`= card (GZPCopyIdx δ) > k` (the pin) and `≤ k` (the `V*(k)` ceiling).  Hence `GZPToLovettSystem`
+is refuted by any GZP with `∑ⱼ δⱼ > k`. -/
+theorem not_gzpLovettCorrespondence_of_card_gt
+    {t : ℕ} {e : ι → Finset (Fin (t + 1))} {δ : Fin (t + 1) → ℕ} {k : ℕ}
+    (hk : 1 ≤ k) (hgt : k < Fintype.card (AGL24.GZPCopyIdx δ)) :
+    ¬ ∃ (n m : ℕ) (V : Fin m → (Fin n → ℕ)), GZPLovettCorrespondence e δ n m V k := by
+  rintro ⟨n, m, V, _hn, hm, _hsupp, _hk, hVstar⟩
+  have hle : m ≤ k := isVStar_card_le hk hVstar
+  rw [hm] at hle
+  omega
+
 end ArkLib.GMMDS
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
+#print axioms ArkLib.GMMDS.isVStar_card_le
+#print axioms ArkLib.GMMDS.not_gzpLovettCorrespondence_of_card_gt
 #print axioms ArkLib.GMMDS.lovettSystemToDualSpan_of_goal
 #print axioms ArkLib.GMMDS.gzpToLovettSystem_of_witness
 #print axioms ArkLib.GMMDS.lovettToGZPDualBridge_of_steps
