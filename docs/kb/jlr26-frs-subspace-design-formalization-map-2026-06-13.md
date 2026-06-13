@@ -726,3 +726,26 @@ The worst-case over primes is the sporadic bad primes, whose excess is `o(Wick)`
 hold for `n=2⁴⁰` (vs n=8 tested), and does the worst-case bad-prime excess stay `o(Wick)` at `r~log p`?
 My refutation (`G=O(1)`, n≤512) + this exact excess (generically 0, sporadically negligible) are strong
 joint evidence YES. The prize is now: "the β≥4 excess-vanishing is n-uniform." Probe /tmp/excess_*.py.
+
+## 26b. CORRECTION to §26 — the excess is o(Wick), NOT exactly 0, in the window for n≥16
+
+§26 claimed "excess generically EXACTLY 0 for β≥4." That was partly an **n=8 small-prime artifact**:
+the norm bound (excess=0 for `r < p^{2/n}/2`) is strong at small n (`p^{2/n}=n^{2β/n}=8` at n=8,β=4) but
+VANISHES at large n (`n^{2β/n}→1`). Exact recheck at **n=16, β=4**:
+  · r=4: 4/5 primes clean (one Fermat 65537 bad, 6.5e-4·Wick).
+  · r=5: **0/5 clean** — excess nonzero for ALL primes, but `~1–3·10⁻³·Wick`.
+  · r=6: **0/5 clean** — excess `~1–8·10⁻³·Wick`.
+
+So the excess is **`o(Wick)` but NONZERO** in the window for `n≥16` — not exactly 0. The correct
+statement: the mod-p excess is present (`P` does have short sum-of-roots at constant rate) but SMALL,
+inflating `max|η_b|` from the clean `√2` toward a bounded constant (refutation: `C≤2`, `√e` at spikes).
+The excess/Wick grows slowly with r (n=16: 0 → 0.002 → 0.005 at r=4,5,6); whether it stays `o(1)` at
+`r~log p` is the question, and the refutation `G=O(1)` (which captures the actual sup over all r) is the
+better evidence that it does (`C≤2` uniform).
+
+**Honest net.** The prize is NOT "excess exactly 0" (false for n≥16). It is "excess = `o(Wick)`
+uniformly to `r~log p`" — equivalently `C` bounded — which keeps `max|η_b| ≤ 2√(n ln p)` and `δ* =`
+capacity term (with constant `≤2` rather than the clean `√2`). The excess is real but negligible at the
+deployed scale; the uniform `o(Wick)` bound is the open core (= the refutation `C≤2`, = wakesync's
+small-P-points = the k-uniform Katz wall). My §26 "exactly 0" overstated it; this corrects to the true,
+still-positive, statement. Probe /tmp/threshold_n16.py.
