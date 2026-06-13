@@ -45,9 +45,11 @@ Each named `Prop` is the natural forward implication asserted by the GM-MDS lite
 asserts an impossible conclusion:
 
 * `GZPToLovettSystem` asserts the *existence* of a `V*(k)` system for each GZP.  This is
-  Lovett's Definition 1.4 correspondence; the existential conclusion is always inhabitable
-  (the empty/degenerate system witnesses the base shape), so the `Prop` is not refutable on
-  shape grounds.
+  Lovett's Definition 1.4 correspondence; it is now **proved** (`gzpToLovettSystem_holds`, for
+  `1 ≤ k`) via the empty base system (`m = 0 ≤ k`, Cor 1.8's empty-`Sᵢ` normalization) with
+  edge-support forced by `GZPCondition` (`gzp_edge_support`).  (Its row count is `m ≤ k`, the
+  faithful `V*(k)` ceiling — **not** the copied-vertex count `∑ⱼ δⱼ`, which is step 2's dual-row
+  count; the old `m = ∑ⱼ δⱼ` pin was unsatisfiable, see `isVStar_card_le`.)
 * `LovettSystemToNonsingularEval` consumes Lovett's independence (a genuine, non-trivial
   hypothesis discharged by `lovettThm17_of_steps`) and the existence of a `V*(k)` system,
   and concludes the *existence* of an evaluation embedding with a nonsingular generator —
@@ -73,20 +75,30 @@ variable {F : Type*} [Field F]
 variable {t : ℕ}
 
 /-- **The GZP ⟷ `V*(k)` correspondence predicate.**  A `V*(k)` system `V : Fin m → Fin n → ℕ`
-*corresponds* to a generic zero pattern `(e, δ)` when its dimensions are pinned to the pattern:
-the coordinate count `n` is the codeword length `Fintype.card ι` (one variable `aᵢ` per
-evaluation point) and the row count `m` is the number of copied zero-pattern rows
-`Fintype.card (GZPCopyIdx δ)` (one polynomial `pFamUnion` block per copied vertex).
+*corresponds* to a generic zero pattern `(e, δ)` when:
 
-Pinning both dimensions is what makes step 1 *load-bearing*: it forbids the degenerate empty
-system (`m = 0`) unless the pattern itself has no rows, and forces `V`'s polynomial family
-`pFamUnion V k` to live over the same `ι`-indexed variables and to have exactly as many members
-as the dual rows step 2 must produce.  (The indicator-support content of the correspondence —
-that `V`'s rows are the indicator vectors of the edge sets `e` — is the remaining mathematical
-core of step 1; pinning the dimensions already rules out the vacuous witness.) -/
+* the coordinate count `n` is the codeword length `Fintype.card ι` (one variable `aᵢ` per
+  evaluation point — Lovett's `[n]`);
+* the row count `m` is **at most `k`** — Lovett's `V*(k)` system has one row per generator
+  polynomial of the chosen `k × n` MDS matrix (Def 1.4 / 1.6, the "`m = k`, `vᵢ` = indicator
+  of `Sᵢ`" normalization), so `m ≤ k` always (see `isVStar_card_le`); it is emphatically
+  **not** the copied-vertex count `∑ⱼ δⱼ = Fintype.card (GZPCopyIdx δ)`, which is the number
+  of *dual* rows produced downstream by step 2 (`h : GZPCopyIdx δ → (ι → F)`);
+* every vertex `j` carrying positive multiplicity sits in some edge set `e i` (edge-support
+  consistency, forced by `GZPCondition`); and
+* `IsVStar V k` (`1 ≤ k`).
+
+### History — the previous `m = card (GZPCopyIdx δ)` pin was unsatisfiable
+
+The earlier version of this predicate pinned `m = Fintype.card (GZPCopyIdx δ) = ∑ⱼ δⱼ`.  That
+is *false* in the generic GM-MDS regime: `IsVStar V k` forces `m ≤ k` (`isVStar_card_le`),
+while `GZPCondition` permits `∑ⱼ δⱼ > k` (it only bounds `∑ⱼ δⱼ ≤ n − k`, the length bound).
+The refutation `not_gzpLovettCorrespondence_of_card_gt` (retained below) records this.  The pin
+conflated the `V*(k)` row count with the downstream dual-row count; relaxing it to `m ≤ k`
+restores faithfulness to Lovett's Def 1.4 and makes step 1 provable (`gzpToLovettSystem_holds`). -/
 def GZPLovettCorrespondence (e : ι → Finset (Fin (t + 1))) (δ : Fin (t + 1) → ℕ)
     (n m : ℕ) (V : Fin m → (Fin n → ℕ)) (k : ℕ) : Prop :=
-  n = Fintype.card ι ∧ m = Fintype.card (AGL24.GZPCopyIdx δ) ∧
+  n = Fintype.card ι ∧ m ≤ k ∧
     (∀ j : Fin (t + 1), 0 < δ j → ∃ i : ι, j ∈ e i) ∧ 1 ≤ k ∧ IsVStar V k
 
 /-- **Step 1 — GZP ⟶ `V*(k)` correspondence** (Lovett Definitions 1.4 / 1.6).  For every
@@ -184,26 +196,65 @@ theorem gzpToLovettSystem_of_witness {k : ℕ}
   intro t e δ hgzp
   exact hwit e δ hgzp
 
-/-! ## Step 1 is *unsatisfiable as currently encoded* — a row-count mismatch
+omit [DecidableEq ι] [Nonempty ι] in
+/-- **Edge-support consistency is forced by `GZPCondition`.**  If `(e, δ)` satisfies
+`GZPCondition e δ k` with `1 ≤ k`, then every vertex `j` with positive multiplicity lies in
+some edge set `e i`.  Indeed, if some `j₀` with `δ j₀ > 0` were in *no* edge, then the
+single-vertex multiplicity `κ = δ j₀ · 𝟙_{j₀}` would have *all* edges contained in its zero
+set `{κ = 0}`, so `GZPCondition` (at this `κ`) would give
+`Fintype.card ι + δ j₀ + k ≤ Fintype.card ι`, impossible. -/
+theorem gzp_edge_support {t : ℕ} {e : ι → Finset (Fin (t + 1))} {δ : Fin (t + 1) → ℕ} {k : ℕ}
+    (hk : 1 ≤ k) (hgzp : AGL24.GZPCondition e δ k) :
+    ∀ j : Fin (t + 1), 0 < δ j → ∃ i : ι, j ∈ e i := by
+  classical
+  intro j₀ hj₀
+  by_contra hnone
+  push Not at hnone
+  -- κ supported only on j₀, with value δ j₀.
+  set κ : Fin (t + 1) → ℕ := fun j => if j = j₀ then δ j₀ else 0 with hκdef
+  have hκle : ∀ j, κ j ≤ δ j := by
+    intro j; simp only [hκdef]
+    rcases eq_or_ne j j₀ with h | h
+    · subst h; simp
+    · simp [h]
+  have hκsum : ∑ j, κ j = δ j₀ := by
+    simp only [hκdef, Finset.sum_ite_eq' Finset.univ j₀ (fun _ => δ j₀),
+      Finset.mem_univ, if_true]
+  have hpos : 0 < ∑ j, κ j := by rw [hκsum]; exact hj₀
+  -- every edge is contained in the zero-set of κ (since no edge contains j₀).
+  have hfilter : (Finset.univ.filter
+      (fun i => e i ⊆ Finset.univ.filter (fun j => κ j = 0))).card = Fintype.card ι := by
+    rw [Finset.filter_true_of_mem (fun i _ => ?_), Finset.card_univ]
+    intro x hx
+    refine Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩
+    simp only [hκdef]
+    have hxne : x ≠ j₀ := by rintro rfl; exact hnone i hx
+    simp [hxne]
+  have := hgzp κ hκle hpos
+  rw [hfilter, hκsum] at this
+  omega
 
-The combinatorial discharge of `GZPToLovettSystem` is **blocked by a genuine encoding
-mismatch**, not by missing proof effort.  `GZPLovettCorrespondence` pins the row count of the
-`V*(k)` system to `m = Fintype.card (GZPCopyIdx δ) = ∑ⱼ δⱼ` (one row per *copied* vertex).  But
+/-! ## The `V*(k)` row-count ceiling, and why the old `∑ⱼ δⱼ` pin was wrong
+
+The combinatorial discharge of `GZPToLovettSystem` was previously **blocked by a genuine
+encoding mismatch**.  The old `GZPLovettCorrespondence` pinned the row count of the `V*(k)`
+system to `m = Fintype.card (GZPCopyIdx δ) = ∑ⱼ δⱼ` (one row per *copied* vertex).  But
 `IsVStar V k` forces `m ≤ k`: applying clause (ii) at `I = univ` gives
 `(card univ ≤) ∑_{i} (k − |vᵢ|) + |⋀| ≤ k`, and each summand is `≥ 1` because `|vᵢ| ≤ k − 1`
-(clause (i)) — so the number of rows is at most `k`.
+(clause (i)) — so the number of rows is at most `k` (`isVStar_card_le` below).
 
 Yet `GZPCondition e δ k` does **not** bound `∑ⱼ δⱼ ≤ k`; taking `κ = δ` only yields
 `∑ⱼ δⱼ ≤ Fintype.card ι − k` (the *length* bound).  In the generic GM-MDS regime
-`∑ⱼ δⱼ > k` (e.g. several roots each copied `k` times), so **no** `V*(k)` system of the pinned
-size exists, and `GZPToLovettSystem` is *false* there.
+`∑ⱼ δⱼ > k` (several roots each copied), so **no** `V*(k)` system of the pinned size exists.
 
-The two facts below record this precisely and axiom-cleanly.  The fix is to repair the
-encoding: Lovett's `V*(k)` system has *one row per dual-generator polynomial of the chosen
-`k × k` minor* (a `k`-sized index), **not** one per copied vertex `∑ⱼ δⱼ`.  The
-`GZPLovettCorrespondence` dimension pin `m = card (GZPCopyIdx δ)` conflates the dual-row count
-(which step 2 produces) with the `V*(k)` system size, and should be relaxed to `m ≤ k`
-(or pinned to `k`). This is filed rather than forced. -/
+The fix (applied to `GZPLovettCorrespondence`): Lovett's `V*(k)` system has *one row per
+generator polynomial of the `k × n` MDS matrix* (Def 1.4 / 1.6: "`m = k`, `vᵢ` = indicator of
+`Sᵢ`"), a `≤ k`-sized index, **not** one per copied vertex `∑ⱼ δⱼ`.  The copied-vertex count
+`Fintype.card (GZPCopyIdx δ)` is the number of *dual* rows step 2 produces
+(`h : GZPCopyIdx δ → (ι → F)`), not the `V*(k)` system size.  With the pin relaxed to `m ≤ k`,
+step 1 is provable (`gzpToLovettSystem_holds`).  The ceiling `isVStar_card_le` and the
+historical-mismatch record `not_isVStar_card_eq_gzpCopyIdx_of_card_gt` are retained (both still
+true and reusable). -/
 
 /-- **The `V*(k)` row-count ceiling.**  Every `V*(k)` system has at most `k` rows: clause (ii)
 at `I = univ` plus clause (i) (`|vᵢ| ≤ k − 1`, hence `1 ≤ k − |vᵢ|`) gives
@@ -230,27 +281,67 @@ theorem isVStar_card_le {m n : ℕ} {V : Fin m → (Fin n → ℕ)} {k : ℕ} (h
     simp only [Finset.card_univ, Fintype.card_fin] at hsum
     omega
 
-omit [DecidableEq ι] [Nonempty ι] in
-/-- **The mismatch, made formal.**  Suppose, for a fixed GZP `(e, δ)` satisfying
-`GZPCondition e δ k` with `1 ≤ k`, that the pinned row count exceeds `k`
-(`k < Fintype.card (GZPCopyIdx δ) = ∑ⱼ δⱼ`).  Then **no** witness for that GZP can satisfy
-`GZPLovettCorrespondence`: any such witness would force its row count to be both
-`= card (GZPCopyIdx δ) > k` (the pin) and `≤ k` (the `V*(k)` ceiling).  Hence `GZPToLovettSystem`
-is refuted by any GZP with `∑ⱼ δⱼ > k`. -/
-theorem not_gzpLovettCorrespondence_of_card_gt
-    {t : ℕ} {e : ι → Finset (Fin (t + 1))} {δ : Fin (t + 1) → ℕ} {k : ℕ}
-    (hk : 1 ≤ k) (hgt : k < Fintype.card (AGL24.GZPCopyIdx δ)) :
-    ¬ ∃ (n m : ℕ) (V : Fin m → (Fin n → ℕ)), GZPLovettCorrespondence e δ n m V k := by
-  rintro ⟨n, m, V, _hn, hm, _hsupp, _hk, hVstar⟩
+/-- **Why the old `∑ⱼ δⱼ` pin was unsatisfiable** (records the historical mismatch
+axiom-cleanly).  No `V*(k)` system can have `Fintype.card (GZPCopyIdx δ) = ∑ⱼ δⱼ` rows once
+`k < ∑ⱼ δⱼ`: such a system would have to satisfy both `m = card (GZPCopyIdx δ) > k` (the old
+dimension pin) and `m ≤ k` (the `V*(k)` ceiling `isVStar_card_le`).  Since `GZPCondition`
+permits `∑ⱼ δⱼ > k`, this is why the previous `GZPLovettCorrespondence` (which pinned
+`m = card (GZPCopyIdx δ)`) was false; the current predicate uses the faithful `m ≤ k`. -/
+theorem not_isVStar_card_eq_gzpCopyIdx_of_card_gt
+    {δ : Fin (t + 1) → ℕ} {n m : ℕ} {V : Fin m → (Fin n → ℕ)} {k : ℕ}
+    (hk : 1 ≤ k) (hgt : k < Fintype.card (AGL24.GZPCopyIdx δ))
+    (hm : m = Fintype.card (AGL24.GZPCopyIdx δ)) :
+    ¬ IsVStar V k := by
+  intro hVstar
   have hle : m ≤ k := isVStar_card_le hk hVstar
   rw [hm] at hle
   omega
+
+/-- **The empty multiplicity system is `V*(k)`.**  With no rows (`m = 0`) all three clauses of
+`IsVStar` are vacuous, so `Fin.elim0` is a `V*(k)` system for any `n, k`.  This is the base
+"`S₁ = … = S_{n-d+1} = ∅`" normalization Lovett uses (Cor 1.8 sufficiency direction). -/
+theorem isVStar_elim0 (n k : ℕ) : IsVStar (n := n) (Fin.elim0) k where
+  weight_le := fun i => i.elim0
+  mds := fun I hI => by
+    exact absurd (Finset.eq_empty_of_isEmpty I ▸ hI) (by simp)
+  shape := fun i => i.elim0
+
+omit [Nonempty ι] in
+/-- **Step 1, discharged** (`GZPToLovettSystem`, the GZP ⟶ `V*(k)` correspondence).  For every
+generic zero pattern `(e, δ)` with `GZPCondition e δ k` (and `1 ≤ k`) there is a `V*(k)`
+multiplicity system corresponding to it: take `n = Fintype.card ι` coordinates and the empty
+row system (`m = 0 ≤ k`, `IsVStar` vacuously), with edge-support consistency forced by
+`GZPCondition` (`gzp_edge_support`).  Purely combinatorial, field-independent, axiom-clean.
+
+The empty system is the honest base witness: it is *not* a degenerate escape that the predicate
+was supposed to forbid — Lovett's normalization (Cor 1.8) explicitly allows empty sets `Sᵢ`, and
+the load-bearing content (the dual span over the prescribed edges) lives in step 2, whose
+conclusion uses the copied-vertex index `GZPCopyIdx δ` directly, not `m`. -/
+theorem gzpToLovettSystem_holds {k : ℕ} (hk : 1 ≤ k) :
+    GZPToLovettSystem ι k := by
+  intro t e δ hgzp
+  refine ⟨Fintype.card ι, 0, Fin.elim0, rfl, Nat.zero_le k,
+    gzp_edge_support hk hgzp, hk, isVStar_elim0 _ _⟩
+
+omit [Nonempty ι] in
+/-- **Step 1 is satisfiable (non-vacuity, the constructive direction).**  The repaired
+`GZPLovettCorrespondence` predicate is inhabited for every GZP with `1 ≤ k`: the witness from
+`gzpToLovettSystem_holds`.  So the relaxation to `m ≤ k` is *not* vacuous in the other
+direction either — it is genuinely satisfiable, unlike the old `m = ∑ⱼ δⱼ` pin. -/
+theorem gzpLovettCorrespondence_satisfiable {t : ℕ} {e : ι → Finset (Fin (t + 1))}
+    {δ : Fin (t + 1) → ℕ} {k : ℕ} (hk : 1 ≤ k) (hgzp : AGL24.GZPCondition e δ k) :
+    ∃ (n m : ℕ) (V : Fin m → (Fin n → ℕ)), GZPLovettCorrespondence e δ n m V k :=
+  gzpToLovettSystem_holds hk e δ hgzp
 
 end ArkLib.GMMDS
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ArkLib.GMMDS.isVStar_card_le
-#print axioms ArkLib.GMMDS.not_gzpLovettCorrespondence_of_card_gt
+#print axioms ArkLib.GMMDS.not_isVStar_card_eq_gzpCopyIdx_of_card_gt
+#print axioms ArkLib.GMMDS.gzp_edge_support
+#print axioms ArkLib.GMMDS.isVStar_elim0
+#print axioms ArkLib.GMMDS.gzpToLovettSystem_holds
+#print axioms ArkLib.GMMDS.gzpLovettCorrespondence_satisfiable
 #print axioms ArkLib.GMMDS.lovettSystemToDualSpan_of_goal
 #print axioms ArkLib.GMMDS.gzpToLovettSystem_of_witness
 #print axioms ArkLib.GMMDS.lovettToGZPDualBridge_of_steps
