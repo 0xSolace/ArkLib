@@ -485,6 +485,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardStrictInteriorRefutatio
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryDefectBound
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryExactEpsF13
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryExactEpsF19
+import ArkLib.Data.CodingTheory.ProximityGap.BoundaryExactEpsF31
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryGenericFarExact
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryLatticeThresholdLeaf
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryListJohnson
