@@ -1295,6 +1295,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PolywordSupplyGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.PopularCodewords
 import ArkLib.Data.CodingTheory.ProximityGap.PowerWordListBound
 import ArkLib.Data.CodingTheory.ProximityGap.PrimePowerMultisetWindow
+import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorCovering
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionBoundaryFailure
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionJohnsonBudget
@@ -1439,6 +1440,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusDyadicChainCorollaries
 import ArkLib.Data.CodingTheory.ProximityGap.SeparatingCoordinates
 import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
+import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledBound
+import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.SidonEnergyIff
 import ArkLib.Data.CodingTheory.ProximityGap.SidonGVClosure
 import ArkLib.Data.CodingTheory.ProximityGap.SidonGaussSum4thMoment
@@ -1452,8 +1455,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalNthRoots
 import ArkLib.Data.CodingTheory.ProximityGap.SidonResultantImproved
-import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledBound
-import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupGVBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonThresholdImproved
