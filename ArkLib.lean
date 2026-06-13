@@ -1146,6 +1146,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MonomialLocusCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialSpectrumEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialStripExplosion
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialSupplyWitness
+import ArkLib.Data.CodingTheory.ProximityGap.MonomialZeroSumIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6ConditionalPin
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6DeepRung
 import ArkLib.Data.CodingTheory.ProximityGap.Mu6LiteralBands
