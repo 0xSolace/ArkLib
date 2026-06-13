@@ -47,3 +47,42 @@ relations = coset structures) reduced mod p — connecting back to the
 sparse-divisor/coset bricks. The reduction turns the analytic core into:
 Bessel main term (PROVEN sub-Gaussian) + mod-p coset-coincidence excess
 (the remaining open input, now isolated and structured).
+
+## The mod-p excess is governed by the prime P — PROVEN clean threshold p > (2r)^{n/2}
+
+Measured (`probe_prize_excess.py`, n=8): `E_r^{(p)} − E_r^∞` vanishes once `p`
+exceeds an `r`-dependent threshold (r=2: clean p≥73; r=3: by p≥193; r=4: still
++ at 241), and when positive it pushes `E_r^{(p)}` ABOVE Gaussian (breaks
+cleanliness). Mechanism + PROOF:
+
+Via the reduction `φ: ℤ[ζ_n] → F_p` (`ζ_n ↦ g`, `g` a primitive n-th root,
+`n|p−1`), `Σg^{aᵢ} = Σg^{bⱼ}` in `F_p` iff `e := Σ(ζ^{aᵢ}−ζ^{bⱼ}) ∈ ker φ = P`
+(the prime above `p`, norm `p^f ≥ p`). So
+`E_r^{(p)} = E_r^∞ + #{e ∈ P∖{0}}`. Each `e` is a sum of `2r` roots of unity:
+`|σ(e)| ≤ 2r` for all embeddings `σ`, so `1 ≤ |Norm(e)| ≤ (2r)^{φ(n)} =
+(2r)^{n/2}`; and `e ∈ P ⟹ p | Norm(e)`. Therefore:
+
+  **`p > (2r)^{n/2}  ⟹  no excess  ⟹  E_r^{(p)}(μ_n) = E_r^∞(μ_n) ≤ (2r−1)!!·n^r`.**
+
+(Sufficient, not tight — n=8,r=2 is clean already at p=73 < 4⁴=256, the
+specific sums avoiding P-points below the Minkowski bound.)
+
+## Consequence: a PROVEN conditional δ* closure + the exact wall
+Combining with the swarm's Markov bridge (clean to `r_max ⟹ B ≤
+√(p^{1/r_max}(2r_max/e)n)`), the closure needs clean up to `r_max ~ log p`,
+i.e. `p > (2 log p)^{n/2}`, i.e.
+
+  **`n = O(log p / log log p)  ⟹  E_r(μ_n) clean to r~log p  ⟹  δ* closes`**
+  (PROVEN: Bessel sub-Gaussian `E_r^∞ ≤ Gaussian` + norm-bound no-excess).
+
+This is a genuine proven δ*-closure for the **logarithmically-short** regime
+(an infinite family), via Bessel + geometry of numbers — NO conjectural input.
+It also pinpoints EXACTLY why the prize (constant rate, `n ~ p^{1/β}`) is open:
+there the norm bound `(2r)^{n/2} ≫ p` already at `r=2`, so the prime `P`
+acquires small points (`e ∈ P∖{0}` with `≤ 2r` terms) and the excess is
+genuinely present. The wall is precisely **small points of `P` in the
+`2r`-root-of-unity box** — a concrete lattice/ideal question (the geometry of
+the prime above `p` in `ℤ[ζ_n]`), now cleanly isolated from the
+(proven-sub-Gaussian) main term. Bounding small-`P`-points at constant rate is
+the remaining open input; it is a sharp, classical-flavored target (Minkowski
+is too lossy; the true count needs the arithmetic of `P`).
