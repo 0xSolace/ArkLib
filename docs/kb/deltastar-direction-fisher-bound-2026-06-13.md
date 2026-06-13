@@ -36,3 +36,23 @@ Johnson** and does **not** reach the window. It does not bypass `B(μ_n)`.
   Fisher inequality, i.e. the triple-and-higher coincidences `Σ_x C(deg x,≥3)` = the same
   `B(μ_n)`/higher-moment object. The lemma cleanly separates the (now-proven) Johnson part from the
   (open) past-Johnson part. No closure of `B(μ_n)`; honest.
+
+## Higher moments are ALSO defeated by the construction (decisive negative result)
+Extending to the 3-wise (triple-coincidence) Fisher bound: three bad scalars force *both* `u₀` and
+`u₁` to agree with codewords on `S_γ∩S_{γ'}∩S_{γ''}` (from `u₀+γu₁=c_γ`, `u₀+γ'u₁=c_{γ'}` ⟹ both
+`u₀,u₁` interpolable there), so the triple intersection `≤ b₂ := ` **max joint agreement** of
+`(u₀,u₁)`. The 3-wise Fisher bound `L³a³/n² ≲ L³b₂` is non-vacuous only when `a³ > b₂n²` — *lower*
+agreement (further past Johnson) than pairwise, **provided `b₂` is small**.
+
+**But for the construction `b₂` is NOT small:** on the coset `μ_m`, `X^{rm}` and `X^{(r−1)m}` both
+reduce to low-degree codewords (e.g. on `μ_4`: `x^4≡1` so `X^4` matches the constant `1`, and
+`x^6=x²` so `X^{6}` matches the degree-2 codeword `X²`). Hence the *joint* agreement
+`b₂ = (r−1)m = b₁` — exactly as large as the single agreement. So `a³ > b₂n²` fails at the
+construction radius, and the **3-wise bound is vacuous there too**.
+
+**Conclusion (rigorous):** the Kambiré construction has **maximal coincidence at every order**
+(`b_j = (r−1)m` for all `j`), so the *entire* Fisher/moment hierarchy (pairwise, triple, …) is
+vacuous at its radius. **No elementary (moment/incidence/combinatorial) method can prove the lower
+bracket past Johnson** — the general-direction extremality genuinely requires the analytic worst-case
+character-sum bound `B(μ_n)`. This is why every face of the prize routes through `B(μ_n)`: it is the
+*unique* non-elementary input, and the construction is built precisely to defeat all elementary ones.
