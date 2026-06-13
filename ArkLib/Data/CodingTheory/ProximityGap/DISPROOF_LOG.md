@@ -8162,3 +8162,37 @@ threshold non-universal), J (O161, coset not extremal sub-Johnson), J' (O162, ex
 =energy core), L (O163, H-MAX is combinatorial densest-cluster not the fibre). + swarm's 6 E≤Cn²
 bypasses. Every direct route to a residual-free δ* terminates at the explicit-smooth-RS
 sub-Johnson list-decoding bound = a recognized open problem. No fabricated closure.
+
+### O164 — H-MAX deep-band fiber is O(1) at production primes (the e-symm map is near-injective/Sidon); a small-prime SATURATION GUARDRAIL (nubs, 2026-06-13)
+
+Census of the max e-symm fiber at the deep band (offset m=1, the open #389 region), with a
+methodology correction that matters for the whole campaign.
+
+**The guardrail (a trap others can hit):** counting the supply fiber
+#{t-subsets of μ_n : e₁..e_{m+1} = target} mod a SMALL prime is meaningless when
+p^{m+1} ≪ C(n,t): the targets saturate and every bucket holds ~C(n,t)/p^{m+1} subsets by
+PIGEONHOLE, not by genuine fiber structure. Concretely at n=32, m=1, p=97: C(32,18) ≈ 5×10⁸
+subsets into p² = 9409 targets ⟹ "max fiber" 51,160 ≈ the pigeonhole average, fully
+saturated (#targets hit = 9409 = p², all of them). This is a small-prime artifact, NOT
+supply — the same char-0→mod-p failure mode O134 flagged, in its most extreme form.
+
+**The faithful result (production-scale prime p = 2013265921):** at n=16, m=1, both
+production rates, the e-symm targets are NOT saturated (C(16,10) = 8008 ≪ p²), and the
+TRUE max fiber over ALL targets is **3** (brute-materialized: 7864 distinct targets for
+8008 subsets — the map is near-injective). The structured zero-target (e₁=e₂=0) fiber is
+**0**. So the deep-band supply is **O(1)**, not exponential: the p=97 numbers were pure
+saturation.  (matching-trick fiber
+counter, validated against brute force).
+
+**Alignment + consequence:** max fiber O(1) ⟺ the e-symm map on t-subsets of μ_n is
+near-injective — exactly the fleet's  (O160) and 
+(E = 3n²−3n) framing; this is the empirical confirmation of that analytic attack. So
+**H-MAX (no exponential deep-band supply at production) holds empirically**, and the
+asymptotic closure is precisely the Stepanov/Sidon/additive-energy bound the fleet is
+building. HONEST SCOPE: n=16 faithful + n≤16 exhaustive; the n≥32 asymptotic is the
+analytic (Stepanov) bound, not brute-measured (production-prime materialization is
+memory-prohibitive). Combined with O158/O159 (both structured explosion mechanisms
+production-blocked), the supply-explosion landscape at production is: structured
+constructions vacuous, the e-symm map near-injective ⟹ no known route to super-polynomial
+supply — the CensusDomination premise, supported empirically; the proof is the fleet's
+Stepanov multiplicity bound.
