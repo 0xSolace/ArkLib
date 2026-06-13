@@ -133,22 +133,22 @@ small ν). Context: the additive-energy clean-threshold is exponential (`p > 2�
 refuted — the true core is this L²→L^∞ (moment-vs-max) gap. See `docs/kb/deltastar-research-map.md`
 §(b)/(ii) and `ShawOperator.lean` / `PROXIMITY_PRIZE_WORKBENCH.lean` §3.
 
-## δ* halo-residual reading list — 2026-06-13 (the Gauss-sum joint-independence form)
+## δ* OPEN-CORE reading list addendum — 2026-06-13b (generic→explicit list-decoding capacity)
 
-After the session reduction `prize ⟺ max_c |η_c|=O(√(n ln q))` with the Gauss-sum decomposition
-`η_c = −1/m + (1/m)Σ_{χ≠χ_0} χ̄(g^c)τ(χ)` (`m=(p−1)/n` cosets, `|τ(χ)|=√p`), the open inequality
-is EXACTLY: the large-value/joint-equidistribution of the `m−1` Gauss-sum angles `{arg τ(χ)}`
-controls `max_c` of these linear combinations. These target that object directly (verified via web
-search, June 2026; none on disk).
+The prize's list-decoding face reduces to: does the EXPLICIT smooth/subgroup (NTT) domain inherit
+list-decoding capacity that GENERIC (random) RS evaluation points provably achieve (BGM23, via
+higher-order MDS / GM-MDS / reduced-intersection-matrices — the fleet's active GM-MDS lane,
+`higher-order-mds-formalization-blueprint.md`, `LovettThm17Reduction.lean`)? The structured domain is
+exactly the non-generic case the BGM machinery does NOT cover. These 3 are NEW to the catalog (verified
+absent) and pin the explicit-vs-generic gap. None on disk; URLs for fetch.
 
-| # | paper | id / venue | why it attacks the crisp residual |
-|---|---|---|---|
-| H1 | **Equidistribution and independence of Gauss sums** | arXiv **2207.12439**, Adv. Math. 2024 (S0001870824002779) | Proves INDEPENDENT joint equidistribution of Gauss sums attached to `n` monomials in `r` multiplicative characters — precisely the joint-independence of `{τ(χ)}` the period-sum `max_c` bound needs. The key technique handle. |
-| H2 | **The distribution of large values of mixed character sums** | arXiv **2603.12159** (2026) | Upper+lower bounds on the distribution of the MAX of mixed character sums, double-exponential (Gumbel-type) tail, even/odd-order dichotomy — directly the large-value tail of `η_c`, matching the §R.3 measured Gumbel `max|η|²≈n(ln p+G)`. |
-| H3 | **Equidistribution of exponential sums indexed by a subgroup of fixed cardinality** | Math. Proc. Cambridge Phil. Soc. 2024 | Exactly the subgroup-indexed exponential-sum object `Σ_{x∈H}ψ(bx)`; "no bias for large enough subgroups, equidistribution w.r.t. the same measure" — the distributional input for the generic-genericity certificate. |
-| H4 | **Equidistribution of Gauss sums and Kloosterman sums** (Katz monodromy) | Math. Z. (Springer 10.1007/s00209-004-0696-2); Katz GKM | The monodromy/Deligne foundation under H1–H3; gives the measure but NOT the joint-max uniformity over `m≈p/n` combinations at thin `n≈p^{0.12}` — locates the precise gap. |
+| # | paper | id / venue | URL | why it bears on the open core |
+|---|---|---|---|---|
+| C1 | Berman–Shany–Tamo, **Explicit Subcodes of Reed–Solomon Codes that Efficiently Achieve List Decoding Capacity** (IEEE-IT 2025) | arXiv **2401.15034** | https://arxiv.org/abs/2401.15034 | EXPLICIT, no-randomness capacity via **orbits of two affine transformations with coprime orders** + tensor/cyclic-shift, length=field size, non-prime fields OK. Closest analogue to a structured-domain capacity result; its orbit/cyclic technique is a candidate for the smooth-subgroup μ_n case (though it is a folded subcode, not plain RS on μ_n — the gap). |
+| C2 | **Randomly Punctured Reed–Solomon Codes Achieve List-Decoding Capacity over Linear-Sized Fields** (STOC 2024) | DOI **10.1145/3618260.3649634** (arXiv 2304.01403/2304.09445 versions on disk) | https://dl.acm.org/doi/10.1145/3618260.3649634 | The field-size-optimal BGM successor: capacity over `O(n)` fields. The prize regime has `q≈n·2^128 ≫ n`, so field size is NOT the obstruction — isolating that the obstruction is purely the *structured* (non-random) evaluation set. |
+| C3 | **Near-Optimal List-Recovery of Linear Code Families** | arXiv **2502.13877** (2025) | https://arxiv.org/abs/2502.13877 | List-RECOVERY (the LD grand-challenge's multi-list generalization, the form correlated agreement feeds into); near-optimal bounds for linear-code families — check whether its machinery applies to the RS/subgroup case past Johnson. |
 
-**Honest scope:** H1's independence is for a FIXED number `n` of monomials as `p→∞`; the prize needs
-it UNIFORMLY over `m−1≈p/n` characters simultaneously (the max), at thin subgroup `n≈p^{0.12}` — the
-quantitative uniformity that remains the Bourgain–Shkredov/Katz wall. These narrow the residual to a
-*known active research front* (2024–2026), not a closure. The prize stays open.
+**Honest scope:** leads on the generic→explicit gap, NOT a closure. BGM-style results need the
+evaluation points GENERIC (random / general position); the prize's smooth μ_n domain is maximally
+structured (a subgroup), which is precisely why no published result reaches capacity for it. The
+fleet's GM-MDS lane (Theorem 1.7 → one coordinate-merge residual) is the in-tree attack on this route.
