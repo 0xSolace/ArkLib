@@ -280,7 +280,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyNormalizedBound
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyBridge
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyChar0
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyCharacterization
-import ArkLib.Data.CodingTheory.ProximityGap.SidonRepCountCharacterization
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyFermat
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyFullGroupClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyKernel
@@ -690,8 +689,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandProductionGatedOnOpenCore
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandProductionSubJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandProductionSubJohnsonGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationDischarge
-import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationMajority
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSaturationSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEps
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEpsSharp
@@ -762,6 +761,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FisherJohnsonCrossover
 import ArkLib.Data.CodingTheory.ProximityGap.FisherPastJohnsonCap
 import ArkLib.Data.CodingTheory.ProximityGap.FitFamilyBound
 import ArkLib.Data.CodingTheory.ProximityGap.FoldPolynomialSlices
+import ArkLib.Data.CodingTheory.ProximityGap.FoldedCurveCloseSetBound
 import ArkLib.Data.CodingTheory.ProximityGap.FoldedSumThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
 import ArkLib.Data.CodingTheory.ProximityGap.Folding.Multilinear
@@ -1472,6 +1472,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalNthRoots
+import ArkLib.Data.CodingTheory.ProximityGap.SidonRepCountCharacterization
 import ArkLib.Data.CodingTheory.ProximityGap.SidonResultantImproved
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupGVBound
