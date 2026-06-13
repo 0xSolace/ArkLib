@@ -73,9 +73,53 @@ theorem sv11Gen_hasseDeriv_eval_mul (c y : F) {t : ℕ} (a b i : ℕ) (h : (y - 
             * ((y - c) ^ (t * b - p.2) * (y - c) ^ i) := by ring
       _ = _ := by rw [hpw]
 
+/-- **The generalized free order-`M` vanishing (the rank-deficiency theorem).** If for every `a` and
+every `k < M` the generalized moment `∑_b coef(a,b)·C(tb,k) = 0`, then for every `i < M` the `i`-th
+Hasse derivative of `Ψ = ∑ coef·g_{a,b}` vanishes at every rep point `y` (`(y−c)^t = 1`, `y ≠ c`).
+Hence `Ψ` vanishes to order `≥ M` at every rep point. This is the exact statement of the
+`b`-rank-`≤ M` jet deficiency: order-`M` vanishing at the whole rep set costs only the `M·D` moment
+conditions. Generalizes the order-0/1/2 ladder bricks to all orders. -/
+theorem sv11_combination_hasseDeriv_eval_zero {D B M : ℕ} (c y : F) (t : ℕ) (coef : ℕ → ℕ → F)
+    (h : (y - c) ^ t = 1) (hcy : y ≠ c)
+    (hmom : ∀ a, ∀ k, k < M → ∑ b ∈ Finset.range B, coef a b * ((t * b).choose k : F) = 0)
+    {i : ℕ} (hi : i < M) :
+    (hasseDeriv i (∑ a ∈ Finset.range D, ∑ b ∈ Finset.range B,
+        Polynomial.C (coef a b) * sv11Gen c t (a, b))).eval y = 0 := by
+  have hne : (y - c) ^ i ≠ 0 := pow_ne_zero i (sub_ne_zero.mpr hcy)
+  refine (mul_eq_zero.mp ?_).resolve_right hne
+  -- linearity: push hasseDeriv i + eval through the double sum
+  have hlin : (hasseDeriv i (∑ a ∈ Finset.range D, ∑ b ∈ Finset.range B,
+        Polynomial.C (coef a b) * sv11Gen c t (a, b))).eval y
+      = ∑ a ∈ Finset.range D, ∑ b ∈ Finset.range B,
+          coef a b * (hasseDeriv i (sv11Gen c t (a, b))).eval y := by
+    rw [map_sum, eval_finset_sum]
+    refine Finset.sum_congr rfl (fun a _ => ?_)
+    rw [map_sum, eval_finset_sum]
+    refine Finset.sum_congr rfl (fun b _ => ?_)
+    rw [← smul_eq_C_mul, map_smul, smul_eq_C_mul, eval_C_mul]
+  rw [hlin, Finset.sum_mul]
+  refine Finset.sum_eq_zero (fun a _ => ?_)
+  rw [Finset.sum_mul]
+  -- per-b: rewrite via the jet formula, then sum_comm + moment
+  have hb : ∀ b ∈ Finset.range B,
+      coef a b * (hasseDeriv i (sv11Gen c t (a, b))).eval y * (y - c) ^ i
+        = ∑ p ∈ Finset.antidiagonal i,
+            ((a.choose p.1 : F) * y ^ (a - p.1) * (y - c) ^ p.1)
+              * (coef a b * ((t * b).choose p.2 : F)) := by
+    intro b _
+    rw [mul_assoc, sv11Gen_hasseDeriv_eval_mul c y a b i h, Finset.mul_sum]
+    refine Finset.sum_congr rfl (fun p _ => ?_)
+    ring
+  rw [Finset.sum_congr rfl hb, Finset.sum_comm]
+  refine Finset.sum_eq_zero (fun p hp => ?_)
+  rw [← Finset.mul_sum]
+  have hp2 : p.2 < M := lt_of_le_of_lt (by rw [Finset.mem_antidiagonal] at hp; omega) hi
+  rw [hmom a p.2 hp2, mul_zero]
+
 end ProximityGap.BinomialDet
 
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.BinomialDet.hasseDeriv_X_sub_C_pow_eval
 #print axioms ProximityGap.BinomialDet.sv11Gen_hasseDeriv_eval_mul
+#print axioms ProximityGap.BinomialDet.sv11_combination_hasseDeriv_eval_zero
