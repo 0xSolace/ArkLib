@@ -670,3 +670,31 @@ established; the one open inequality is the beyond-Johnson μ_n list-decoding-to
 pinned. The "internal team's solution," if it exists, is beyond this two-week-old SOTA — a genuine
 new result, which I have localized and pinned but cannot fabricate. Sources: eprint 2025/2051
 (BCGM25), 2026/680 (ABF26), 2025/2046 (CS25), 2025/2054 (GG25).
+
+## 25. JOINT STATE with wakesync's Bessel lane — char-0 baseline now PROVEN, open core = small P-points
+
+Parallel-agent insight (issue comments, @wakesync) that ADVANCES the joint state:
+
+**The Bessel reduction PROVES my §14 conjecture.** `RungBesselEnergy.lean` (axiom-clean):
+`E_r^∞(μ_{2^μ}) = (2r)!·[x^{2r}]I₀(2x)^{n/2}` (exact `±`-unit-walk return count, `ζ^{n/2}=−1`), and
+`bessel_energy_le_gaussian : [x^{2r}]I₀(2x)^d ≤ d^r/r!` ⟹ `E_r^∞ ≤ (2r−1)!!·n^r` for ALL r (coeff-wise
+`I₀(2x)≤e^{x²}`). So §14's char-0 Wick baseline is now a THEOREM, not a numerically-verified conjecture.
+
+**The open core, sharpened to the geometry of one prime.** `E_r^{(p)} = E_r^∞ + excess`,
+`excess = #{e ∈ P∖0 : e = sum of ≤2r roots of unity}`, `P` = prime above `p` in `ℤ[ζ_n]`. PROVEN:
+  · `p > (2r)^{n/2} ⟹ excess = 0` (each such `e` has `1≤|N(e)|≤(2r)^{n/2}`, `p|N(e)`).
+  · log-short closure: `n = O(log p/log log p) ⟹ E_r clean to r~log p ⟹ δ* closes` — proven family.
+At CONSTANT RATE (`n~p^{1/β}`), `(2r)^{n/2}≫p` at `r=2`, so `P` has small points; the open question is
+`excess = o((2r−1)!!n^r)` up to `r~log p` = small points of `P` in the `2r`-root-of-unity box.
+
+**My refutation is the L∞ certificate (dual side).** Moment ladder `∑_{b≠0}|η_b|^{2r}=pE_r^{(p)}−n^{2r}`
+ties `B=max|η_b|` to `E_r^{(p)}`. My `B ≤ 2√(n ln p)`, `G=O(1)` (n≤512, p to 3·10⁷), `B(μ_n)≤B_random`
+certify EMPIRICALLY that the constant-rate excess stays bounded (no anomalous inflation) at the
+deployed scale. The L² (energy/Bessel) and L∞ (character/refutation) sides AGREE on the same single
+wall: the constant-rate small-P-points excess.
+
+**Net joint state.** Closed-form δ* = `prizeDeltaStar` (capacity term) with proven ceiling, in the
+workbench; char-0 baseline PROVEN (Bessel); excess=0 for `p>(2r)^{n/2}` and log-short family PROVEN;
+`B≤2√(n ln p)` + `G=O(1)` refutation-certified; BGK floor `B≤n^{1−ε}`. OPEN: the constant-rate excess
+(small points of `P`), from both sides. Both lanes converge; the prize is this one geometric question.
+Issue #389 comment 4699879160. Cross-ref @wakesync `docs/kb/deltastar-bessel-energy-reduction-2026-06-13.md`.
