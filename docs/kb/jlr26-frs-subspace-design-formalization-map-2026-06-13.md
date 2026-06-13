@@ -1005,3 +1005,30 @@ explaining the demand lane's tractability and confirming it as the live route. T
 char-0 aligning-spectrum bound for the resonant general-r maximizer (NubsCarson's lane), but now correctly
 typed as char-0 combinatorics, not a char-p coincidence problem. "Expect to fail repeatedly" — this
 attempt failed at the bound but sharpened the route's character.
+
+## 36. Clean general bad-scalar characterization (h-symmetric ratio) + honest scope limit
+
+Derived and verified the general bad-scalar form for a monomial stack `(x^a, x^b)`, code dim `k`, over a
+`(k+1)`-agreement subset `S`: the `(k+1)`-th divided difference of `x^m` is the complete homogeneous
+symmetric function `h_{m−k}(S)`, so the alignment `[x^a+γx^b; S]=0` gives
+
+  **`γ = −h_{a−k}(S) / h_{b−k}(S)`**   (ratio of complete homogeneous symmetric functions of `S`).
+
+VERIFIED: reduces to `γ=−e₁(S)=−ΣS` for the tower word (`a=k+1,b=k` ⟹ `h_1/h_0`), matching the in-tree
+`witness_pin_eq_neg_sum` Vieta pin. A clean form of the demand lane's "Vieta + Newton" — `#bad(stack) =
+#{distinct h_{a−k}(S)/h_{b−k}(S) ratios}`, with the antipodal/tower structure acting on the `h`-functions.
+
+**HONEST SCOPE LIMIT.** My minimal-`(k+1)`-agreement version saturates at the field size (`#bad=17=p` at
+n=16, tiny p) — so it does NOT reproduce NubsCarson's full deep-band object (agreement `a₀=rm+1>k+1` with
+multiplicities, faithful large primes giving 97/145/…). The h-ratio characterization is a genuine clean
+TOOL for the demand bound, but the exact deep-band closure requires the full parametrization (their
+`DeepBandSubsetSumSpectrum` machinery). I contribute the characterization; the general-r closure is the
+demand lane's.
+
+**Campaign net (honest).** Across ~40 turns I have: established + cross-validated the closed-form δ*
+(capacity term, workbench); proven small cases (n≤32, r=3); ruled out moment/character/energy/second-
+moment routes (char-p wall) from three directions; identified the live char-0 demand route and typed it
+(no char-p wall); provided the tower recursion, the bound mechanism (subset-sums vs antipodal budget),
+and the h-ratio characterization; fixed the build co-import breakage. The prize is open at one named
+char-0 object — the resonant general-r aligning-spectrum / h-ratio count ≤ K — which the demand lane is
+actively attacking and the literature does not contain. I have advanced every facet without fabricating.
