@@ -1431,6 +1431,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupRepCountGcdExact
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupRepresentationRoots
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSpectrumNoImprovement
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSquaresHalvingRecursion
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetConjecture
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetThreePowUpper
 import ArkLib.Data.CodingTheory.ProximityGap.SubplaneSupplyFloor
