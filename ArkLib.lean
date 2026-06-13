@@ -129,6 +129,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettReduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettSeparateStep
 import ArkLib.Data.CodingTheory.GMMDS.LovettSeparation
 import ArkLib.Data.CodingTheory.GMMDS.LovettThm17Reduction
+import ArkLib.Data.CodingTheory.GMMDS.LovettToGMMDSBridge
 import ArkLib.Data.CodingTheory.GMMDS.LovettUnion
 import ArkLib.Data.CodingTheory.GMMDS.LovettVStarReduce
 import ArkLib.Data.CodingTheory.GVCounting
