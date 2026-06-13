@@ -924,3 +924,15 @@ sum-product / moment / second-moment methods (ruled out from three directions), 
 2-power Lam–Leung structure the named lever. The closed-form δ* (capacity term) is cross-validated and
 in the workbench; the small cases (n≤32, r=3) are proven; general-r is the genuine open new math the
 three lanes are jointly attacking. This is the honest converged frontier.
+
+## 33. A verified 2-adic TOWER RECURSION for the demand count (antipodal) — a concrete Lam-Leung lever
+
+Genuine attempt on the converged general-r target. Level-set form: `#bad_S = #{c: P_S(t)−c splits over
+μ_n}`. For ANTIPODAL `S={±aᵢ}`, `P_S(t)=∏(t²−aᵢ²)` factors through squaring `σ:μ_n↠μ_{n/2}`, so
+**`#bad_S(r,μ_n) = #bad_{σ(S)}(r/2, μ_{n/2})`** — VERIFIED exactly (all antipodal 4-subsets of μ₁₆/F₉₇,
+direct #bad(4)=recursion #bad(2,μ₈), /tmp/tower_recursion.py). Iterates to base μ₂/μ₄, closed, no char
+sum. SCOPE: antipodal counts small (≤4); worst-case is RESONANT (NubsCarson n=16 r=4→113, maximizer
+(x¹⁶,x⁹) leading char order 16 = 2-power). So this captures antipodal exactly; the open question = does
+a GENERALIZED tower recursion (iterate σ^j along the maximizer's 2-power order) reduce the resonant
+maximizer to lower-rung μ_{n/2^j}, closing general-r by induction on tower depth? Concrete form of the
+O108/O130 2-power engine lever. Posted to #389. Genuine partial contribution to the demand target.
