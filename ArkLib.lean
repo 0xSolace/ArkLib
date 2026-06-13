@@ -769,6 +769,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FarPairRankSupply
 import ArkLib.Data.CodingTheory.ProximityGap.FarWordSupplyCounting
 import ArkLib.Data.CodingTheory.ProximityGap.Fermat257EnergyCrossover
 import ArkLib.Data.CodingTheory.ProximityGap.FiberEnergyListBound
+import ArkLib.Data.CodingTheory.ProximityGap.FieldSizeThresholdReduction
 import ArkLib.Data.CodingTheory.ProximityGap.FiniteFieldDisproofLoop53
 import ArkLib.Data.CodingTheory.ProximityGap.FiniteFieldLiftLoop51
 import ArkLib.Data.CodingTheory.ProximityGap.FisherJohnsonCrossover
@@ -1333,7 +1334,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorCovering
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionBoundaryFailure
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionJohnsonBudget
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionRegimeBracket
-import ArkLib.Data.CodingTheory.ProximityGap.QuadZeroSumEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypotheses
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesA
 import ArkLib.Data.CodingTheory.ProximityGap.PromotedHypothesesB
@@ -1359,6 +1359,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QRExponentialSum
 import ArkLib.Data.CodingTheory.ProximityGap.QRFrequencySumEval
 import ArkLib.Data.CodingTheory.ProximityGap.QRShiftPairCount
 import ArkLib.Data.CodingTheory.ProximityGap.QRZeroSumTripleScaling
+import ArkLib.Data.CodingTheory.ProximityGap.QuadZeroSumEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumMagnitude
 import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumNorm
 import ArkLib.Data.CodingTheory.ProximityGap.QuartetTowerLaw

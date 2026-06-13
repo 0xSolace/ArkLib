@@ -91,3 +91,11 @@ roots-of-unity/Littlewood-Offord sources from the 2026-06-13 findings sweep). **
   Mohnblatt–Wagner; 2025/1993 — GMW (Lean4 FRI); 2025/2197 — Fenzi–Sanso.
 - Paywalled (Elsevier): Li–Wan char-2 k-subset-sum (S1071579719300462); "subgroup is not a
   sumset" (S1071579720300149).
+
+## 2026-06-13 — δ* prize-regime scan (new papers)
+- arXiv:2603.03841 — Kumar–Ron-Zewi survey (2026). GM-MDS/higher-order-MDS = GENERICITY; cannot certify a fixed multiplicative subgroup (Open Problem 1). Open-access.
+- arXiv:2408.10977 — Kong–Tamo, point-variety incidence (spectral). Candidate new counting surface; variety-form (monomial graph) ≠ low-weight ball, not drop-in. Open-access. PRIORITY.
+- arXiv:2510.13777 — Brakensiek–Chen–Dhar–Zhang, random→explicit via subspace designs (STOC'26). Folded/subspace-design only, not plain subgroup RS. Open-access.
+- ePrint 2025/870 — Gao–Cai, list-decodability⇒proximity gaps (Johnson-√-bounded). IACR.
+- ePrint 2026/891 — Interleaving stability for MCA (exact at seed-set ≤ q). IACR.
+- arXiv:2003.06165 — di Benedetto et al., char sum n^{1−31/2880} for n>p^{1/4} (only large-regime survivor; too weak for energy). Open-access.
