@@ -1289,6 +1289,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QRCubicOrderedClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.QRCubicSupplyLower
 import ArkLib.Data.CodingTheory.ProximityGap.QRDegenerateCount
 import ArkLib.Data.CodingTheory.ProximityGap.QRExponentialSum
+import ArkLib.Data.CodingTheory.ProximityGap.QRFrequencySumEval
 import ArkLib.Data.CodingTheory.ProximityGap.QRShiftPairCount
 import ArkLib.Data.CodingTheory.ProximityGap.QRZeroSumTripleScaling
 import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumMagnitude
