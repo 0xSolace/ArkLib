@@ -1422,6 +1422,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumFourthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumWorstCase
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupPowerHalvingGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupQuadraticHalving
@@ -1433,6 +1434,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupRepresentationRoots
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSpectrumNoImprovement
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSquaresHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetConjecture
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetFactorWitness
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetThreePowUpper
 import ArkLib.Data.CodingTheory.ProximityGap.SubplaneSupplyFloor
