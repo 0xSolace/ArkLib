@@ -7806,3 +7806,36 @@ domain-coupled, the coupling needed is *absence of sheared-subfield-plane struct
 and the surviving positive targets are prime fields and (conjecturally) smooth `μ_n`
 domains — for binary-tower deployments the supply route is closed unconditionally at
 subfield-aligned domains.
+
+## 2026-06-12 — μ_n-immunity is q-CONDITIONAL: prime-field, multiplicative-subgroup linear supply REFUTED at `n = Θ(q)` (the generic-density phase)
+
+Claim refuted: "`SubJohnsonSupplyResidual dom k m B` holds with `B = O(n)` (or any
+`B = o(C(n,t)/q^{m+1})`, `t = k+m+1`) for multiplicative subgroups `μ_n ⊂ 𝔽_q`,
+`q` prime" — the surviving hope of the Frobenius entry above ("the production setting
+`μ_n ⊂ 𝔽_q` with `q` prime") and the convergence comments' "μ_n tracks the random set
+`~O(n)`".  Both were measured at `q ≫ n` only.
+
+Witness (`MonomialSupplyWitness.lean` + the pair-hash probe): `w = x^t`, `t = k+m+1`.
+Capped for free (`monomial_word_agreement_le`: agreements `≤ t ≤ 2k+m+1`); a `t`-set
+`T` is an explainable core iff the remainder window of `x^t mod ∏_{i∈T}(X−x_i)`
+vanishes (`explainableOn_of_remainder_degree_lt` — the remainder IS the codeword;
+`monomial_supply_ge`).  The window is codimension `m+1`: density `C(n,t)/q^{m+1}`.
+Exact counts at `(k,m) = (2,1)`, `t = 4`, cap `4 ≤ 6`:
+
+* full units of `𝔽₁₂₇` (`n = 126`): **630 = 5.0·n** cores (agreement profile
+  `{1:5418, 2:3969, 3:42, 4:630}` — cap verified);
+* full units of `𝔽₂₅₇` (`n = 256`): **2,624 = 10.25·n**;
+* **`μ₄₀₉₆ ⊂ 𝔽₁₂₂₈₉` — THE standard 2-smooth NTT domain: 103,424 = 25.25·n**,
+  33% ABOVE the generic `C(n,4)/q² ≈ 77,546` — subgroup vanishing-sum arithmetic
+  ENHANCES the density; the opposite of immunity;
+* full units of `𝔽₃₁` (the census scale): 30 = 1.0·n — invisible; the measured
+  "linear growth law" (30/46/67/86 at `q = 31`) was a scale artifact.
+
+Consequences: (i) the unconditional pair-count ceiling `B = C(n,k)` is asymptotically
+TIGHT at `n ~ q` (within the `t!`-constant) — at fixed rate and `n = Θ(q)` the supply
+question is closed at `Θ(n^k)`; (ii) the open charter is now `q`-conditional:
+`q^{m+1} ≳ n^{t−1}/t!` (production `q ≥ 2^128` is safely inside); (iii) the corrected
+exact-solution target is the **two-phase law** `E_max(μ_n) = Θ_{k,m}(n + C(n,t)/q^{m+1})`
+— arithmetic/fibre families rule `q ≫ n`, generic density rules `n = Θ(q)`, and any
+positive proof must use BOTH the additive-unstructuredness of `μ_n` (Frobenius entry)
+AND the field-size hypothesis (this entry).
