@@ -1524,6 +1524,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumE2PairingInflate
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumE2PowerSumReduction
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumEsymmVanishing
+import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumHaloEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumLowerLoop50
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumNegSymmConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumOmegaConcentration
