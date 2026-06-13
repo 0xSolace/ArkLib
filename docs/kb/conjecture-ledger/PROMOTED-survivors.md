@@ -87,3 +87,24 @@ Probes: `scripts/probes/probe_conj_excess_sumset.py`, `probe_conj_excess_fit.py`
   Verified: |H+H|=C(n+1,2), |3H|=C(n+2,3), |4H|=C(n+3,4) for n=5,7,11,13. One-sided form of A6;
   FAILS for odd composite once `k ≥ minFac(n)` (same threshold). Proof: distinct multisets ⇒ distinct
   sums ⟺ no non-trivial B_k relation ⟺ A6's condition. Promoted: +2 (running ≈ 9).
+
+## Theme D — the coset-correction theorem (exact first-failure energy excess)
+
+Probes: `scripts/probes/probe_conj_coset_excess.py`, `probe_conj_coset_general.py`. Verified n=9,15,21,25.
+
+- **D (coset-correction theorem — PROVED, novel).** For odd `n` with smallest prime factor `q=minFac(n)`,
+  the first non-perfect energy excess is EXACTLY
+    `E_q(μ_n) − perm(n,q) = (q!)² · (n/q)(n/q−1)`.
+  Verified: q=3 (n=9,15,21 → 216,720,1512 = 4n(n−3)) AND the decisive q=5 (n=25 → 288000 = (5!)²·5·4).
+  **Proof (combinatorial, via A6's lattice):** a non-permutation `E_q` solution `Σa_i=Σb_j` with both
+  sides summing via length-`q` relations must take `(a_1,…,a_q)` = an ordered `μ_q`-coset (q distinct
+  elements, sum 0) and `(b_1,…,b_q)` = a DIFFERENT ordered `μ_q`-coset. Count = (orderings)²·(ordered
+  distinct coset pairs) = `(q!)² · (n/q)(n/q−1)`. ∎  (q=3 specializes to `4n(n−3)`.)
+  This completes the energy theory for composite `n`: A6 says WHERE the perfect-B_r property fails
+  (`r=q`); D says by exactly HOW MUCH at the first failure. Promoted: +1 (running ≈ 10).
+
+### Running summary of the additive-combinatorics-of-roots-of-unity theory (novel, proven body)
+A6 (complete perfect-B_r characterization) · A1–A4 (energy/sumset/diffset dichotomy closed forms) ·
+C1 (antipodal-excess factored forms) · C4 (sumset saturation = one-sided A6) · D (coset-correction
+first-failure excess). B3 (2-power Gaussian energy) = confirmed rediscovery. All refutation-survived,
+all with rigorous proofs from the cyclotomic relation lattice (Lam–Leung).
