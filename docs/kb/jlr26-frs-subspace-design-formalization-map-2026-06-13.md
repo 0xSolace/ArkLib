@@ -314,3 +314,26 @@ regime is unreachable since `2^n = 2^{2^40}`). The anomaly count `= #{small inte
 **Net.** The char-0 main term is closed-form and gives the EXACT prize constant √2; the open content
 is reduced to one inequality (`Anomaly_𝔭 = o(Wick)`), the sharpest possible localization. This is the
 honest frontier: constant pinned, kernel named at the integer-relation-counting level, no fabrication.
+
+## 14b. PRECISION CORRECTION to §14 (the bound is on the EXCESS, not E_r)
+
+§14 wrote `E_r^{(p)} ≈ (2r−1)!!·n^r`; that is imprecise. In the prize regime the **equidistribution
+baseline dominates**: `E_r(μ_n) ≈ n^{2r}/q` (numerically `ln(n^{2r}/q) − ln(Wick) ≈ +2000…+3900` for
+`log₂q ∈ {128,200,256}`, `r=ln q`). The moment ladder forces `E_r ≥ n^{2r}/q` (since
+`∑_{b≠0}‖η_b‖^{2r} = q·E_r − n^{2r} ≥ 0`), and equidistribution makes it ≈ equality. So the Wick term
+is NOT `E_r`; it is the conjectured value of the **excess over baseline**
+
+  **`Excess(r) := E_r(μ_n) − n^{2r}/q = (1/q)·∑_{b≠0}‖η_b‖^{2r}`.**
+
+The landed `eta_pow_le_energyR` bound `max_{b≠0}‖η_b‖^{2r} ≤ q·E_r − n^{2r} = q·Excess(r)` is EXACT.
+The prize bound `max‖η_b‖ ≤ √(2n ln q)` is therefore precisely
+
+  **CONJECTURE (prize): `Excess(r) ≤ (2r−1)!!·n^r·(1+o(1))` for `r ≈ ln q`.**
+
+The `e^{−r}` gap between `(2r−1)!!n^r` and the target `(2n ln q)^r` (`Wick = √2·e^{−r}·target`) is
+exactly absorbed by `q^{1/2r} = √e` at the critical `r = ln q`, so the constant is `√2` as stated.
+The char-0 exact-equality solutions contribute `(2r−1)!!n^r` to `E_r` and are the natural candidate
+value of `Excess` — the conjecture says the char-p anomalies do not inflate the excess beyond this
+Wick scale. Everything else in §14 stands: constant `√2` pinned, open core = `Excess(ln q) ≤ Wick`,
+i.e. the nontrivial-energy peak does not exceed `√(2n ln q)`. The R3/R4 numerics (NO_COUNTEREXAMPLE)
+test exactly this excess/peak. Honest status unchanged: one named open inequality, no fabrication.
