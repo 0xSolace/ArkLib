@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.FarCosetExplosion
 import ArkLib.Data.CodingTheory.ProximityGap.LineBallIntersection
 import Mathlib.LinearAlgebra.Lagrange
+import Mathlib.Algebra.Polynomial.Roots
 
 /-!
 # The ratio census at the GRS dual syndromes (#371, vector 1 — face 4 composed)
@@ -19,13 +20,13 @@ Probe: `scripts/probes/probe_ratio_census.py`.
 **What is new here.**
 
 1. **The pencil census collapse** (`pencil_lineBall_card_le_one`): completing the
-   `not_hammingNorm_le_of_degreeBound_pencil_lt_threshold` obstruction — above the degree
-   threshold the ENTIRE line–ball scalar set has at most ONE member (the degenerate pencil
-   scalar, unique by `degenerate_gamma_unique`).  Honest scope: for the WB-2
-   doubly-rational family (degrees `≤ k + 2w − 1`, full support) the threshold clears the
-   degree exactly when `n ≥ k + 3w` — the granularity-ladder regime, REPRODUCED not
-   improved; in the window `(n−k)/3 ≤ w < (n−k)/2` this is silent and `SplitLocusBound`
-   (named Prop, probe evidence only) is the open core in census form.
+   pencil obstruction — above the degree threshold the ENTIRE line–ball scalar set
+   has at most ONE member (the degenerate pencil scalar, unique by
+   `degenerate_gamma_unique`).  Honest scope: for the WB-2 doubly-rational family
+   (degrees `≤ k + 2w − 1`, full support) the threshold clears the degree exactly when
+   `n ≥ k + 3w` — the granularity-ladder regime, REPRODUCED not improved; in the window
+   `(n−k)/3 ≤ w < (n−k)/2` this is silent and `SplitLocusBound` (named Prop, probe
+   evidence only) is the open core in census form.
 
 2. **The subset-ownership census** (`explainable_card_mul_le_census`,
    `badScalars_card_mul_le_choose`): the `KKH26DimOnePin` pair-ownership incidence count
@@ -70,6 +71,183 @@ namespace ProximityGap.RatioCensusIdentity
 
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
+/-! ## Part 0: ratio-census fibres (inlined line-ball substrate)
+
+These mirror the historical `LineBallIntersection.lean` ratio-census layer; they are
+kept local so this file is self-contained against the substrate churn. -/
+
+section RatioCensus
+
+variable {ι : Type} [Fintype ι] [DecidableEq ι]
+
+/-- The scalar that makes the affine line coordinate `u₀ i + γ * u₁ i` vanish, when
+`u₁ i ≠ 0`. -/
+def lineZeroRoot (u₀ u₁ : ι → F) (i : ι) : F :=
+  -u₀ i / u₁ i
+
+/-- Coordinates whose moving part is nonzero and whose zero-root is exactly `γ`. -/
+def lineRatioHits (u₀ u₁ : ι → F) (γ : F) : Finset ι :=
+  univ.filter (fun i => u₁ i ≠ 0 ∧ lineZeroRoot u₀ u₁ i = γ)
+
+/-- Zero-slope coordinates that are nonzero for every scalar on the line. -/
+def lineStaticNonzero (u₀ u₁ : ι → F) : Finset ι :=
+  univ.filter (fun i => u₁ i = 0 ∧ u₀ i ≠ 0)
+
+/-- On a nonzero-slope coordinate, the affine line vanishes exactly at the ratio-census root. -/
+theorem line_coord_zero_iff_lineZeroRoot {u₀ u₁ : ι → F} {γ : F} {i : ι}
+    (hi : u₁ i ≠ 0) :
+    (u₀ + γ • u₁) i = 0 ↔ lineZeroRoot u₀ u₁ i = γ := by
+  simp only [lineZeroRoot, Pi.add_apply, Pi.smul_apply, smul_eq_mul]
+  rw [div_eq_iff hi]
+  constructor
+  · intro h
+    have h' : u₀ i = -(γ * u₁ i) := eq_neg_of_add_eq_zero_left h
+    rw [h']; ring
+  · intro h
+    rw [← h]; ring
+
+/-- **Ratio-census identity, additive form.** -/
+theorem hammingNorm_line_add_lineRatioHits_card (u₀ u₁ : ι → F) (γ : F) :
+    hammingNorm (u₀ + γ • u₁) + (lineRatioHits u₀ u₁ γ).card
+      = (univ.filter (fun i => u₁ i ≠ 0)).card + (lineStaticNonzero u₀ u₁).card := by
+  classical
+  set N : Finset ι := univ.filter (fun i => (u₀ + γ • u₁) i ≠ 0) with hN
+  set W : Finset ι := univ.filter (fun i => u₁ i ≠ 0) with hW
+  set H : Finset ι := lineRatioHits u₀ u₁ γ with hH
+  set Z : Finset ι := lineStaticNonzero u₀ u₁ with hZ
+  have hZeq : N.filter (fun i => u₁ i = 0) = Z := by
+    ext i
+    simp only [hN, hZ, lineStaticNonzero, Finset.mem_filter, Finset.mem_univ, true_and]
+    constructor
+    · rintro ⟨hn, h0⟩
+      exact ⟨h0, by simpa [Pi.add_apply, Pi.smul_apply, smul_eq_mul, h0] using hn⟩
+    · rintro ⟨h0, hu₀⟩
+      exact ⟨by simpa [Pi.add_apply, Pi.smul_apply, smul_eq_mul, h0] using hu₀, h0⟩
+  have hNeq : N.filter (fun i => ¬ u₁ i = 0)
+      = W.filter (fun i => ¬ lineZeroRoot u₀ u₁ i = γ) := by
+    ext i
+    simp only [hN, hW, Finset.mem_filter, Finset.mem_univ, true_and]
+    constructor
+    · rintro ⟨hn, hi⟩
+      refine ⟨hi, ?_⟩
+      intro hroot
+      exact hn ((line_coord_zero_iff_lineZeroRoot (u₀ := u₀) (u₁ := u₁)
+        (γ := γ) (i := i) hi).mpr hroot)
+    · rintro ⟨hi, hroot⟩
+      refine ⟨?_, hi⟩
+      intro hzero
+      exact hroot ((line_coord_zero_iff_lineZeroRoot (u₀ := u₀) (u₁ := u₁)
+        (γ := γ) (i := i) hi).mp hzero)
+  have hHeq : H = W.filter (fun i => lineZeroRoot u₀ u₁ i = γ) := by
+    ext i
+    simp only [hH, hW, lineRatioHits, Finset.mem_filter, Finset.mem_univ, true_and]
+  have hNsplit :
+      Z.card + (W.filter (fun i => ¬ lineZeroRoot u₀ u₁ i = γ)).card = N.card := by
+    simpa [hZeq, hNeq] using
+      (Finset.card_filter_add_card_filter_not (s := N) (p := fun i => u₁ i = 0))
+  have hWsplit :
+      H.card + (W.filter (fun i => ¬ lineZeroRoot u₀ u₁ i = γ)).card = W.card := by
+    simpa [hHeq] using
+      (Finset.card_filter_add_card_filter_not (s := W)
+        (p := fun i => lineZeroRoot u₀ u₁ i = γ))
+  have hnorm : hammingNorm (u₀ + γ • u₁) = N.card := by
+    simp [hammingNorm, hN]
+  calc
+    hammingNorm (u₀ + γ • u₁) + H.card
+        = N.card + H.card := by rw [hnorm]
+    _ = W.card + Z.card := by omega
+
+/-- The ratio-census fibres have total mass exactly `|supp u₁|`. -/
+theorem sum_lineRatioHits_card_eq_support (u₀ u₁ : ι → F) :
+    ∑ γ : F, (lineRatioHits u₀ u₁ γ).card
+      = (univ.filter (fun i => u₁ i ≠ 0)).card := by
+  classical
+  set W : Finset ι := univ.filter (fun i => u₁ i ≠ 0) with hW
+  have hfiber : ∀ γ : F,
+      lineRatioHits u₀ u₁ γ = W.filter (fun i => lineZeroRoot u₀ u₁ i = γ) := by
+    intro γ
+    ext i
+    simp only [lineRatioHits, hW, Finset.mem_filter, Finset.mem_univ, true_and]
+  calc
+    ∑ γ : F, (lineRatioHits u₀ u₁ γ).card
+        = ∑ γ : F, (W.filter (fun i => lineZeroRoot u₀ u₁ i = γ)).card := by
+          refine Finset.sum_congr rfl ?_
+          intro γ _
+          rw [hfiber γ]
+    _ = W.card := by
+          rw [← Finset.card_eq_sum_card_fiberwise
+            (fun i _ => Finset.mem_univ (lineZeroRoot u₀ u₁ i))]
+
+/-- Heavy ratio fibres are few.  This is the direct Markov/counting form of the ratio census. -/
+theorem lineRatioHeavy_card_mul_le_support (u₀ u₁ : ι → F) (A : ℕ) :
+    (univ.filter (fun γ : F => A ≤ (lineRatioHits u₀ u₁ γ).card)).card * A
+      ≤ (univ.filter (fun i => u₁ i ≠ 0)).card := by
+  classical
+  set G : Finset F := univ.filter (fun γ : F => A ≤ (lineRatioHits u₀ u₁ γ).card) with hG
+  calc
+    G.card * A = ∑ _γ ∈ G, A := by rw [Finset.sum_const, smul_eq_mul]
+    _ ≤ ∑ γ ∈ G, (lineRatioHits u₀ u₁ γ).card := by
+          refine Finset.sum_le_sum ?_
+          intro γ hγ
+          rw [hG, Finset.mem_filter] at hγ
+          exact hγ.2
+    _ ≤ ∑ γ : F, (lineRatioHits u₀ u₁ γ).card :=
+          Finset.sum_le_sum_of_subset (Finset.subset_univ G)
+    _ = (univ.filter (fun i => u₁ i ≠ 0)).card := sum_lineRatioHits_card_eq_support u₀ u₁
+
+/-- **Polynomial ratio-level bound.** The ratio fibre at `γ` injects into the root set of the
+nonzero pencil polynomial `P₀ + γ P₁`. -/
+theorem lineRatioHits_card_le_natDegree_pencil
+    (domain : ι ↪ F) (P₀ P₁ : F[X]) (γ : F)
+    (hp : P₀ + C γ * P₁ ≠ 0) :
+    (lineRatioHits (fun i => P₀.eval (domain i)) (fun i => P₁.eval (domain i)) γ).card
+      ≤ (P₀ + C γ * P₁).natDegree := by
+  classical
+  let p : F[X] := P₀ + C γ * P₁
+  let u₀ : ι → F := fun i => P₀.eval (domain i)
+  let u₁ : ι → F := fun i => P₁.eval (domain i)
+  set H : Finset ι := lineRatioHits u₀ u₁ γ with hH
+  have hsub : H.image domain ⊆ p.roots.toFinset := by
+    intro x hx
+    rw [Finset.mem_image] at hx
+    obtain ⟨i, hiH, rfl⟩ := hx
+    have hiH' : i ∈ lineRatioHits u₀ u₁ γ := by simpa [hH] using hiH
+    rw [lineRatioHits, Finset.mem_filter] at hiH'
+    have hzero : (u₀ + γ • u₁) i = 0 :=
+      (line_coord_zero_iff_lineZeroRoot (u₀ := u₀) (u₁ := u₁)
+        (γ := γ) (i := i) hiH'.2.1).mpr hiH'.2.2
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hp, Polynomial.IsRoot.def]
+    simpa [p, u₀, u₁, Pi.add_apply, Pi.smul_apply, smul_eq_mul,
+      Polynomial.eval_add, Polynomial.eval_mul] using hzero
+  change H.card ≤ p.natDegree
+  calc
+    H.card = (H.image domain).card := by
+      rw [Finset.card_image_of_injective _ (fun _ _ h => domain.injective h)]
+    _ ≤ p.roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ Multiset.card p.roots := Multiset.toFinset_card_le _
+    _ ≤ p.natDegree := Polynomial.card_roots' p
+
+/-- Nondegenerate polynomial ratio fibres are bounded by the larger row degree. -/
+theorem lineRatioHits_card_le_max_natDegree_pencil
+    (domain : ι ↪ F) (P₀ P₁ : F[X]) (γ : F)
+    (hp : P₀ + C γ * P₁ ≠ 0) :
+    (lineRatioHits (fun i => P₀.eval (domain i)) (fun i => P₁.eval (domain i)) γ).card
+      ≤ max P₀.natDegree P₁.natDegree := by
+  refine (lineRatioHits_card_le_natDegree_pencil domain P₀ P₁ γ hp).trans ?_
+  exact Polynomial.natDegree_add_le_of_le (le_refl P₀.natDegree)
+    (Polynomial.natDegree_C_mul_le γ P₁)
+
+/-- Caller-facing degree-budget form of `lineRatioHits_card_le_max_natDegree_pencil`. -/
+theorem lineRatioHits_card_le_degreeBound_pencil
+    (domain : ι ↪ F) (P₀ P₁ : F[X]) (γ : F) {D : ℕ}
+    (hP₀ : P₀.natDegree ≤ D) (hP₁ : P₁.natDegree ≤ D)
+    (hp : P₀ + C γ * P₁ ≠ 0) :
+    (lineRatioHits (fun i => P₀.eval (domain i)) (fun i => P₁.eval (domain i)) γ).card
+      ≤ D :=
+  (lineRatioHits_card_le_max_natDegree_pencil domain P₀ P₁ γ hp).trans (max_le hP₀ hP₁)
+
+end RatioCensus
+
 /-! ## Part 1: the pencil census collapse (the ladder-reproduction theorem) -/
 
 section Pencil
@@ -106,8 +284,15 @@ theorem pencil_lineBall_card_le_one
         P₀ + C γ * P₁ = 0 := by
     intro γ hγ
     by_contra hne
-    exact not_hammingNorm_le_of_degreeBound_pencil_lt_threshold
-      domain P₀ P₁ γ hP₀d hP₁d hne hD hγ
+    -- the pencil is nondegenerate, so its ratio fibre is degree-bounded
+    have hhits :
+        (lineRatioHits (fun i => P₀.eval (domain i))
+          (fun i => P₁.eval (domain i)) γ).card ≤ D :=
+      lineRatioHits_card_le_degreeBound_pencil domain P₀ P₁ γ hP₀d hP₁d hne
+    -- the ratio-census identity ties weight, fibre, support, and static together
+    have hid := hammingNorm_line_add_lineRatioHits_card
+      (fun i => P₀.eval (domain i)) (fun i => P₁.eval (domain i)) γ
+    omega
   intro γ₁ h₁ γ₂ h₂
   exact degenerate_gamma_unique P₀ P₁ hP₁
     (hdeg γ₁ (Finset.mem_filter.mp h₁).2) (hdeg γ₂ (Finset.mem_filter.mp h₂).2)

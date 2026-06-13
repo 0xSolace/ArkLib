@@ -1073,6 +1073,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Level1RungPin
 import ArkLib.Data.CodingTheory.ProximityGap.LineAgreementCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineBallIntersection
 import ArkLib.Data.CodingTheory.ProximityGap.LineClosePairsLinear
+import ArkLib.Data.CodingTheory.ProximityGap.LineCodewordIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.LineCorePartition
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding2
@@ -1092,7 +1093,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingT421Faithful
 import ArkLib.Data.CodingTheory.ProximityGap.LineDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.LineFirstMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.LineHeavySetBound
-import ArkLib.Data.CodingTheory.ProximityGap.LineCodewordIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.LineIncidenceSpectral
 import ArkLib.Data.CodingTheory.ProximityGap.LineListCodewordCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.LineListDimensionLift
@@ -1292,6 +1292,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionSpectral
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionSubgroupData
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionTower
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionWeilConditional
+import ArkLib.Data.CodingTheory.ProximityGap.MomentLogConvex
 import ArkLib.Data.CodingTheory.ProximityGap.MomentSupplyIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDivisorWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDomainRootSpectrum
