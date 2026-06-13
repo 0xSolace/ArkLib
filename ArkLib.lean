@@ -1464,6 +1464,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SeparatingCoordinates
 import ArkLib.Data.CodingTheory.ProximityGap.SeparatingCoordsAvoiding
 import ArkLib.Data.CodingTheory.ProximityGap.SeparatingCoordsCount
 import ArkLib.Data.CodingTheory.ProximityGap.SeparationProbability
+import ArkLib.Data.CodingTheory.ProximityGap.SeparationSurvivalCount
 import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledBound
