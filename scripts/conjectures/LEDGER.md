@@ -33,3 +33,31 @@ past-Johnson barrier — the swarm can prove or disprove each in Lean. Each is a
 ## Structural pattern (open meta-conjecture)
 `E_r(μ_n) = (2r−1)!!·n^r − (2r−1)!!·C(r,2)·n^{r−1} + … ` — a degree-`r` integer polynomial whose
 top two coefficients are pinned by C9, C14; the full coefficient sequence is the next target.
+
+## Batch 4–5 additions (all survived, fit-then-confirmed)
+
+| id | statement | verified at | novelty |
+|----|-----------|-------------|---------|
+| C8  | `E_4(μ_n) = 105n⁴ − 630n³ + 1435n² − 1155n` | n=2..32 | NOVEL |
+| C9b | `E_5` leading `945`, subleading `−9450` (confirms C9,C14 at r=5) | r=5 | NOVEL |
+| K2  | `|2μ_n| = n²/2 + 1` | n=4..64 | NOVEL |
+| K3  | `|3μ_n| = n³/6 + 4n/3` | n=4..64 | NOVEL |
+| K4  | `|4μ_n| = n⁴/24 + 5n²/6 + 1` | n=4..128 | NOVEL |
+| R1  | `|{a+b : a≠b ∈ μ_n}| = n²/2 − n + 1` | n=2..64 | NOVEL |
+| M1  | `#{(a,b)∈μ_n²: ab+1∈μ_n} = n·#{c∈μ_n: c+1∈μ_n}` | n=4..32 | NOVEL |
+| C16 | `#{c∈μ_n : c+1∈μ_n} = 0` (no two roots differ by 1; cor. of Z_3=0) | n=2..32 | NOVEL |
+| C17 | `|μ_n ∩ (μ_n − 2a)| = 1` for a∈μ_n (only c=−a) | n=4..32 | NOVEL |
+
+## Two clean GENERAL conjectures (the headline structure)
+
+- **Even-moment law.** `E_r(μ_n)` is a degree-`r` integer polynomial with leading coeff
+  `(2r−1)!!` and subleading `−(2r−1)!!·C(r,2)`:
+  `E_2=3n²−3n`, `E_3=15n³−45n²+40n`, `E_4=105n⁴−630n³+1435n²−1155n`, `E_5: 945n⁵−9450n⁴+…`.
+  (Interpretation: the `2r`-fold additive moment of a Sidon-mod-negation set = the antipodal
+  perfect-matching count `(2r−1)!!·n^r` minus coincidence corrections.)
+- **Sumset-growth law.** `|kμ_n|` is a degree-`k` polynomial with leading coeff `1/k!`:
+  `|μ_n|=n`, `|2μ_n|=n²/2+1`, `|3μ_n|=n³/6+4n/3`, `|4μ_n|=n⁴/24+5n²/6+1`.
+  (The `k`-fold sumset of a Sidon-mod-neg set realizes `~C(n,k)` distinct sums.)
+
+Both are decidable, provable (via the antipodal/no-relation structure + inclusion–exclusion),
+and do NOT touch the past-Johnson barrier — pure structural combinatorics the swarm can formalize.
