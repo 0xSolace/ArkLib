@@ -616,6 +616,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CosetWordCap
 import ArkLib.Data.CodingTheory.ProximityGap.CountingGapConjecture
 import ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
+import ArkLib.Data.CodingTheory.ProximityGap.CoveringTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.CrossingCountBound
 import ArkLib.Data.CodingTheory.ProximityGap.CrossingCountGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.CrossingPin
