@@ -473,9 +473,177 @@ theorem monomial_list_card_ge {μ m r : ℕ} (hμ : 1 ≤ μ) (hm : 1 ≤ m) (hr
     simp only [dif_pos hD₁, dif_pos hD₂] at heq
     exact hinj D₁ hD₁ D₂ hD₂ heq
 
+/-! ## The generic equal-sum-family achievability lemma (all `r`, via any family) -/
+
+open Classical in
+/-- **Generic achievability.**  Any family `Fam` of distinct `r`-subsets of `G = ⟨g^m⟩`,
+all with the SAME sum `σ`, yields `|Fam|` distinct codewords of `rsCode (domEmb hg)
+((r−2)m+1)` agreeing on `≥ rm` points with the word `w(x) = x^{rm} − σ·x^{(r−1)m}`.
+(The map `T ↦ q_T` is injective by the union-fibre degree contradiction; no index
+structure needed since the `T`'s are already distinct.)  This is the construction-free
+core: feed it the antipodal family (`σ = 0`, even `r`) or the singleton-plus-pairs family
+(`σ = 1`, odd `r`) to get the closed-form bounds. -/
+theorem equalSum_family_list_card_ge {μ m r : ℕ} (hμ : 1 ≤ μ) (hm : 1 ≤ m)
+    (hr2 : 2 ≤ r) (hr : r ≤ 2 ^ (μ - 1)) {g : ZMod p} (hg : orderOf g = 2 ^ μ * m)
+    (σ : ZMod p) (Fam : Finset (Finset (ZMod p)))
+    (hFamG : ∀ T ∈ Fam, T ⊆ (range (2 ^ μ)).image (fun j => (g ^ m) ^ j))
+    (hFamcard : ∀ T ∈ Fam, T.card = r) (hFamsum : ∀ T ∈ Fam, ∑ x ∈ T, x = σ) :
+    Fam.card ≤ (Finset.univ.filter (fun c : Fin (2 ^ μ * m) → ZMod p =>
+      c ∈ rsCode (domEmb hg) ((r - 2) * m + 1) ∧ r * m ≤ (Finset.univ.filter
+        (fun i => c i = (g ^ (i : ℕ)) ^ (r * m)
+          - σ * (g ^ (i : ℕ)) ^ ((r - 1) * m))).card)).card := by
+  classical
+  have hs1 : (1 : ℕ) ≤ 2 ^ μ := Nat.one_le_two_pow
+  have hrm1 : (r - 2) * m < r * m := Nat.mul_lt_mul_of_pos_right (by omega) (by omega)
+  have hrn : r ≤ 2 ^ μ := le_trans hr (Nat.pow_le_pow_right (by norm_num) (by omega))
+  have hrmn : (r - 2) * m < 2 ^ μ * m := Nat.mul_lt_mul_of_pos_right (by omega) (by omega)
+  set w : Fin (2 ^ μ * m) → ZMod p :=
+    fun i => (g ^ (i : ℕ)) ^ (r * m) - σ * (g ^ (i : ℕ)) ^ ((r - 1) * m) with hwdef
+  -- the badline codeword polynomial for each member T
+  have hbl : ∀ T ∈ Fam, ∃ q : (ZMod p)[X], q.natDegree ≤ (r - 2) * m ∧
+      ∀ x : ZMod p, x ^ m ∈ T →
+        x ^ (r * m) - σ * x ^ ((r - 1) * m) = q.eval x := by
+    intro T hT
+    obtain ⟨q, hqdeg, hqagree⟩ :=
+      badline_pointwise_agreement hm T (by rw [hFamcard T hT]; exact hr2)
+    rw [hFamcard T hT] at hqdeg hqagree
+    refine ⟨q, hqdeg, fun x hx => ?_⟩
+    have := hqagree x hx
+    rw [hFamsum T hT] at this
+    rw [← this]; ring
+  choose qpoly hqdeg hqagree using hbl
+  set cw : (T : Finset (ZMod p)) → T ∈ Fam → (Fin (2 ^ μ * m) → ZMod p) :=
+    fun T hT i => (qpoly T hT).eval (g ^ (i : ℕ)) with hcwdef
+  -- membership in rsCode
+  have hcw_mem : ∀ T (hT : T ∈ Fam), cw T hT ∈ rsCode (domEmb hg) ((r - 2) * m + 1) := by
+    intro T hT
+    refine ⟨qpoly T hT, ?_, by funext i; rfl⟩
+    exact lt_of_le_of_lt Polynomial.degree_le_natDegree
+      (by exact_mod_cast Nat.lt_succ_of_le (hqdeg T hT))
+  -- agreement lower bound
+  have hcw_agree : ∀ T (hT : T ∈ Fam),
+      r * m ≤ (Finset.univ.filter (fun i => cw T hT i = w i)).card := by
+    intro T hT
+    have hsub : (Finset.univ.filter
+          (fun i : Fin (2 ^ μ * m) => (g ^ (i : ℕ)) ^ m ∈ T))
+        ⊆ Finset.univ.filter (fun i => cw T hT i = w i) := by
+      intro i hi
+      rw [Finset.mem_filter] at hi ⊢
+      refine ⟨Finset.mem_univ i, ?_⟩
+      rw [hcwdef, hwdef]
+      exact (hqagree T hT (g ^ (i : ℕ)) hi.2).symm
+    have hfib : (Finset.univ.filter
+        (fun i : Fin (2 ^ μ * m) => (g ^ (i : ℕ)) ^ m ∈ T)).card = m * r := by
+      have := index_fiber_count (s := 2 ^ μ) (m := m) hm hs1 hg T (hFamG T hT)
+      rw [this, hFamcard T hT]
+    calc r * m = m * r := by ring
+      _ = _ := hfib.symm
+      _ ≤ _ := Finset.card_le_card hsub
+  set L := Finset.univ.filter (fun c : Fin (2 ^ μ * m) → ZMod p =>
+    c ∈ rsCode (domEmb hg) ((r - 2) * m + 1) ∧
+      r * m ≤ (Finset.univ.filter (fun i => c i = w i)).card) with hLdef
+  have hmaps : ∀ T (hT : T ∈ Fam), cw T hT ∈ L :=
+    fun T hT => Finset.mem_filter.mpr
+      ⟨Finset.mem_univ _, hcw_mem T hT, hcw_agree T hT⟩
+  -- injectivity T ↦ q_T (the union-fibre degree contradiction)
+  have hinj : ∀ T₁ (hT₁ : T₁ ∈ Fam) T₂ (hT₂ : T₂ ∈ Fam),
+      cw T₁ hT₁ = cw T₂ hT₂ → T₁ = T₂ := by
+    intro T₁ hT₁ T₂ hT₂ hcweq
+    have hpoly : qpoly T₁ hT₁ = qpoly T₂ hT₂ := by
+      have hsubz : qpoly T₁ hT₁ - qpoly T₂ hT₂ = 0 := by
+        refine Polynomial.eq_zero_of_degree_lt_of_eval_finset_eq_zero
+          (s := Finset.univ.image (domEmb hg)) ?_ ?_
+        · rw [Finset.card_image_of_injective _ (domEmb hg).injective,
+            Finset.card_univ, Fintype.card_fin]
+          refine lt_of_le_of_lt (Polynomial.degree_sub_le _ _) ?_
+          rw [max_lt_iff]
+          refine ⟨lt_of_le_of_lt Polynomial.degree_le_natDegree ?_,
+                  lt_of_le_of_lt Polynomial.degree_le_natDegree ?_⟩ <;>
+            exact_mod_cast lt_of_le_of_lt (hqdeg _ _) hrmn
+        · intro x hx
+          obtain ⟨i, _, rfl⟩ := Finset.mem_image.mp hx
+          have hi := congrFun hcweq i
+          simp only [hcwdef] at hi
+          rw [Polynomial.eval_sub, sub_eq_zero]
+          exact hi
+      exact sub_eq_zero.mp hsubz
+    by_contra hTne
+    have hSunsub : T₁ ∪ T₂ ⊆ (range (2 ^ μ)).image (fun j => (g ^ m) ^ j) :=
+      Finset.union_subset (hFamG T₁ hT₁) (hFamG T₂ hT₂)
+    have hSuncard : r + 1 ≤ (T₁ ∪ T₂).card := by
+      have hsub2 : ¬ T₂ ⊆ T₁ := fun hsub => hTne (Finset.eq_of_subset_of_card_le hsub
+        (by rw [hFamcard T₁ hT₁, hFamcard T₂ hT₂])).symm
+      obtain ⟨b, hbB, hbA⟩ := Finset.not_subset.mp hsub2
+      have hss : T₁ ⊂ T₁ ∪ T₂ := (Finset.ssubset_iff_of_subset Finset.subset_union_left).mpr
+        ⟨b, Finset.mem_union_right _ hbB, hbA⟩
+      have := Finset.card_lt_card hss
+      rw [hFamcard T₁ hT₁] at this; omega
+    set U := (Finset.univ.filter
+      (fun i : Fin (2 ^ μ * m) => (g ^ (i : ℕ)) ^ m ∈ T₁ ∪ T₂)).image (domEmb hg) with hUdef
+    have hUcard : U.card = m * (T₁ ∪ T₂).card := by
+      rw [hUdef, Finset.card_image_of_injective _ (domEmb hg).injective]
+      exact index_fiber_count (s := 2 ^ μ) (m := m) hm hs1 hg _ hSunsub
+    set W : (ZMod p)[X] := X ^ (r * m) - Polynomial.C σ * X ^ ((r - 1) * m) with hWpdef
+    have hWcoeff : W.coeff (r * m) = 1 := by
+      have hne : (r * m) ≠ (r - 1) * m := by
+        have : (r - 1) * m < r * m :=
+          Nat.mul_lt_mul_of_pos_right (by omega : r - 1 < r) (by omega : 0 < m)
+        omega
+      rw [hWpdef, Polynomial.coeff_sub, Polynomial.coeff_X_pow, if_pos rfl,
+        Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_neg hne, mul_zero, sub_zero]
+    have hWne : W - qpoly T₁ hT₁ ≠ 0 := by
+      intro h0
+      have hc : (W - qpoly T₁ hT₁).coeff (r * m) = 0 := by rw [h0]; simp
+      rw [Polynomial.coeff_sub, hWcoeff,
+        Polynomial.coeff_eq_zero_of_natDegree_lt
+          (lt_of_le_of_lt (hqdeg T₁ hT₁) hrm1)] at hc
+      simp at hc
+    have hdeg : (W - qpoly T₁ hT₁).degree ≤ (r * m : ℕ) := by
+      refine le_trans (Polynomial.degree_sub_le _ _) ?_
+      rw [max_le_iff]
+      refine ⟨?_, le_trans Polynomial.degree_le_natDegree
+        (by exact_mod_cast le_trans (hqdeg T₁ hT₁) (le_of_lt hrm1))⟩
+      rw [hWpdef]
+      refine le_trans (Polynomial.degree_sub_le _ _) ?_
+      rw [max_le_iff]
+      refine ⟨le_of_eq (Polynomial.degree_X_pow _), ?_⟩
+      refine le_trans (Polynomial.degree_C_mul_X_pow_le _ _) ?_
+      exact_mod_cast Nat.mul_le_mul_right m (by omega : r - 1 ≤ r)
+    have hUgt : r * m < U.card := by
+      rw [hUcard]
+      have h1 : m * (r + 1) ≤ m * (T₁ ∪ T₂).card := Nat.mul_le_mul_left m hSuncard
+      have h2 : m * (r + 1) = r * m + m := by ring
+      omega
+    have hvanish : ∀ x ∈ U, (W - qpoly T₁ hT₁).eval x = 0 := by
+      intro x hx
+      rw [hUdef] at hx
+      obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
+      have hmem := (Finset.mem_filter.mp hi).2
+      show (W - qpoly T₁ hT₁).eval (g ^ (i : ℕ)) = 0
+      rw [Polynomial.eval_sub, sub_eq_zero, hWpdef, Polynomial.eval_sub,
+        Polynomial.eval_pow, Polynomial.eval_X, Polynomial.eval_mul, Polynomial.eval_C,
+        Polynomial.eval_pow, Polynomial.eval_X]
+      rw [Finset.mem_union] at hmem
+      rcases hmem with h | h
+      · exact hqagree T₁ hT₁ (g ^ (i : ℕ)) h
+      · rw [hpoly]; exact hqagree T₂ hT₂ (g ^ (i : ℕ)) h
+    exact hWne (Polynomial.eq_zero_of_degree_lt_of_eval_finset_eq_zero (s := U)
+      (lt_of_le_of_lt hdeg (by exact_mod_cast hUgt)) hvanish)
+  -- assemble
+  refine Finset.card_le_card_of_injOn (fun T => if hT : T ∈ Fam then cw T hT else w) ?_ ?_
+  · intro T hT
+    rw [Finset.mem_coe] at hT
+    simp only [dif_pos hT]
+    exact Finset.mem_coe.mpr (hmaps T hT)
+  · intro T₁ hT₁ T₂ hT₂ heq
+    rw [Finset.mem_coe] at hT₁ hT₂
+    simp only [dif_pos hT₁, dif_pos hT₂] at heq
+    exact hinj T₁ hT₁ T₂ hT₂ heq
+
 end ArkLib.ProximityGap.KKH26
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.KKH26.antiSet_card
 #print axioms ArkLib.ProximityGap.KKH26.index_fiber_count
 #print axioms ArkLib.ProximityGap.KKH26.monomial_list_card_ge
+#print axioms ArkLib.ProximityGap.KKH26.equalSum_family_list_card_ge
