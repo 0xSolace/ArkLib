@@ -40,6 +40,23 @@ theorem linearIndependent_of_span_eq {g g' : ι → V}
   rw [hfr]
   exact h'.le
 
+/-- **Basis-counting transfer, distinct index types.**  If `g' : ι' → V` is independent, `g`
+and `g'` have the **same span**, and their index types have **equal cardinality**, then `g` is
+independent.  (The dimension of the common span equals `|ι'|` by independence of `g'`, hence
+equals `|ι|`, which forces `g` independent.) -/
+theorem linearIndependent_of_span_eq_card {ι' : Type*} [Fintype ι']
+    {g : ι → V} {g' : ι' → V}
+    (hspan : Submodule.span K (Set.range g) = Submodule.span K (Set.range g'))
+    (hcard : Fintype.card ι = Fintype.card ι')
+    (hg' : LinearIndependent K g') : LinearIndependent K g := by
+  rw [linearIndependent_iff_card_eq_finrank_span]
+  have h' : Fintype.card ι' = (Set.range g').finrank K :=
+    linearIndependent_iff_card_eq_finrank_span.mp hg'
+  have hfr : (Set.range g).finrank K = (Set.range g').finrank K := by
+    unfold Set.finrank; rw [hspan]
+  rw [hfr, ← h', hcard]
+
 end ArkLib.GMMDS
 
 #print axioms ArkLib.GMMDS.linearIndependent_of_span_eq
+#print axioms ArkLib.GMMDS.linearIndependent_of_span_eq_card
