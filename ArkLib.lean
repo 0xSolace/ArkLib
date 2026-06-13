@@ -1291,6 +1291,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MonomialLineListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialLocusCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialSpectrumEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialStripExplosion
+import ArkLib.Data.CodingTheory.ProximityGap.MonomialSubgroupCorrelated
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialSupplyChoose
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialSupplyWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialZeroSumIdentity
