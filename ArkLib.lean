@@ -611,8 +611,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRBound
 import ArkLib.Data.CodingTheory.ProximityGap.CurveUDRCoefficients
 import ArkLib.Data.CodingTheory.ProximityGap.CyclotomicResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.CyclotomicSidonLift
-import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftAssembly
-import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftClosed
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Contrapositive
@@ -1351,6 +1349,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
 import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
+import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftAssembly
+import ArkLib.Data.CodingTheory.ProximityGap.SidonLiftClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegComplex
 import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegValidationFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.SingleClassWeight

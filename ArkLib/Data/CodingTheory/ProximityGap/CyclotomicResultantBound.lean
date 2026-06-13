@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+import Mathlib.RingTheory.Polynomial.Resultant.Basic
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Normed.Ring.Lemmas
 
@@ -29,6 +30,7 @@ small-subgroup regime.  Axiom-clean.
 
 
 open Polynomial
+open scoped NNReal
 
 /-- Submultiplicativity of `nnnorm` over a multiset product in a normed ring. -/
 theorem nnnorm_multiset_prod_le_ring {α : Type*} [NormedCommRing α] [NormOneClass α]
@@ -105,3 +107,42 @@ theorem nnnorm_prod_eval_cyclotomic_roots_fourTerm_le (n i j k l : ℕ) (hn : n 
 /-! ## Axiom audit -/
 #print axioms fourTerm_eval_nnnorm_le_four
 #print axioms nnnorm_prod_eval_cyclotomic_roots_fourTerm_le
+
+/-- **The integer cyclotomic-resultant magnitude bound.** If `g : ℤ[X]` evaluates with norm `≤ 4`
+at every `n`-th root of unity in `ℂ`, then the integer resultant `Res(Φ_n, g)` satisfies
+`|Res| ≤ 4^{φ(n)} = 2^n` (for `n = 2^m`).  The archimedean half of the small-subgroup Sidon
+keystone, now over `ℤ`. -/
+theorem natAbs_resultant_cyclotomic_le (n : ℕ) (g : ℤ[X])
+    (hg : ∀ ω : ℂ, ω ^ n = 1 → ‖(g.map (Int.castRingHom ℂ)).eval ω‖₊ ≤ 4) :
+    (resultant (cyclotomic n ℤ) g (cyclotomic n ℤ).natDegree g.natDegree).natAbs
+      ≤ 4 ^ n.totient := by
+  set R : ℤ := resultant (cyclotomic n ℤ) g (cyclotomic n ℤ).natDegree g.natDegree with hR
+  have hdeg : (cyclotomic n ℤ).natDegree = (cyclotomic n ℂ).natDegree := by
+    rw [natDegree_cyclotomic, natDegree_cyclotomic]
+  -- map the resultant to ℂ and identify it with the product of evaluations
+  have hmapC : ((R : ℤ) : ℂ)
+      = resultant (cyclotomic n ℂ) (g.map (Int.castRingHom ℂ))
+          (cyclotomic n ℤ).natDegree g.natDegree := by
+    rw [hR, ← map_cyclotomic_int n ℂ]
+    exact (resultant_map_map (f := cyclotomic n ℤ) (g := g) (m := (cyclotomic n ℤ).natDegree)
+      (n := g.natDegree) (Int.castRingHom ℂ)).symm
+  have hprodC : ((R : ℤ) : ℂ)
+      = ((cyclotomic n ℂ).roots.map (g.map (Int.castRingHom ℂ)).eval).prod := by
+    rw [hmapC, hdeg,
+      resultant_eq_prod_eval (cyclotomic n ℂ) _ g.natDegree (natDegree_map_le)
+        (IsAlgClosed.splits _),
+      (cyclotomic.monic n ℂ).leadingCoeff, one_pow, one_mul]
+  -- take norms: |R| = ‖(R:ℂ)‖ ≤ 4^φ(n)
+  have hnormR : (R.natAbs : ℝ) ≤ (4 : ℝ) ^ n.totient := by
+    have h1 : ‖((R : ℤ) : ℂ)‖ ≤ (4 : ℝ) ^ n.totient := by
+      rw [hprodC]
+      have hb := nnnorm_prod_eval_cyclotomic_roots_le n (g.map (Int.castRingHom ℂ)) hg
+      calc ‖((cyclotomic n ℂ).roots.map (g.map (Int.castRingHom ℂ)).eval).prod‖
+          = ((‖((cyclotomic n ℂ).roots.map (g.map (Int.castRingHom ℂ)).eval).prod‖₊ : ℝ≥0) : ℝ) :=
+            rfl
+        _ ≤ (((4 : ℝ≥0) ^ n.totient : ℝ≥0) : ℝ) := by exact_mod_cast hb
+        _ = (4 : ℝ) ^ n.totient := by push_cast; ring
+    rw [Complex.norm_intCast, ← Int.cast_abs, Int.abs_eq_natAbs] at h1
+    exact_mod_cast h1
+  have : (R.natAbs : ℝ) ≤ ((4 ^ n.totient : ℕ) : ℝ) := by push_cast; exact hnormR
+  exact_mod_cast this
