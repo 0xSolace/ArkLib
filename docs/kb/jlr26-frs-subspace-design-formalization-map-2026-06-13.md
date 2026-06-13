@@ -889,3 +889,38 @@ partitions (§30). The prize is whether those adversarial partitions are GM-MDS-
 window-radius list-decoding instance. Generic⟹empty (μ_n≈random measured); adversarial reachability is
 the open combinatorial core — now correctly scoped to the window (not the capacity obstruction). This
 is the precise, correctly-scoped statement of the live route's open question. Probe /tmp/route_reconcile.py.
+
+## 32. THREE-LANE CONVERGENCE — all routes name the same new-math target (μ_{2^k}-specific energy, general r)
+
+Integrating the demand-side lane (NubsCarson, O171–O176) with mine and the HOMDS lane. All three
+independent attacks have converged on naming the SAME open object, and cross-validated each other:
+
+**Cross-checks (positive).**
+  · NubsCarson INDEPENDENTLY VERIFIED my closed-form δ* = `H_q⁻¹(1−ρ−log_q(1/ε*)/n)`: in-window at all
+    four prize rates `n=2^10..2^40`, `ε*→1 ⟹ capacity` exactly, `gap=Θ(1/log n)` confirmed (the
+    `gap·log₂n` climb is the finite-size `c/(128+log₂n)` term). "The average-term formula is the right
+    shape and lands correctly." ⟹ my δ* (workbench `prizeDeltaStar`) is sound.
+  · The lower window `δ<(1−ρ)/2` is FULLY CLOSED unconditionally (pair_term = exact 0, no overlapping
+    balls); the entire open content is the UPPER window worst-case.
+
+**The second-moment route is RULED OUT (O173).** The covariance/pair-sum gate is `Θ(E[N]²)` not
+`o(E[N]²)` (plateaus below 1, crosses 1 exactly at capacity), AND `Θ(1)` overdispersion is exponentially
+below the KKH26 `2^{Ω(1/η)}` worst line — a second moment is a typical-case (Chebyshev) certificate,
+never worst-case. So my entire moment/character lane (and wakesync's energy) is confirmed insufficient
+from a THIRD direction: "must be a combinatorial extremality argument, not a character-sum/interpolation/
+moment bound." Matches §28.
+
+**The named new-math target (all lanes agree).**
+  · Demand side: `#bad(r) ≤ K/2 = 2^{r−1}C(n/2,r)`, = a bound on the symmetric-function / joint
+    additive energy `E_{1..r−1}(μ_{2^k})` (r-subsets with equal first `r−1` elementary symmetric
+    functions). **r=3 PROVEN axiom-clean Lean** (`DeepBandR3Bound`, `deepBandBadCount=n·C(n/4,2)+1≤K`),
+    a=4 slice proven; general r≥4 open. The lever absent from the literature: the **2-power antipodal/
+    Lam–Leung structure of `μ_{2^k}`** (in-tree O108/O130 engine).
+  · My lane: `E_r(μ_n)` additive-energy uniform `o(baseline)` to `r~log p` (same μ_{2^k} structure).
+  · HOMDS lane: GM-MDS empty-n-core reachability (same μ_{2^k} cyclic structure).
+
+**Net.** The prize = a `μ_{2^k}`-SPECIFIC energy/extremality bound at general r, provably beyond generic
+sum-product / moment / second-moment methods (ruled out from three directions), with r=3 proven and the
+2-power Lam–Leung structure the named lever. The closed-form δ* (capacity term) is cross-validated and
+in the workbench; the small cases (n≤32, r=3) are proven; general-r is the genuine open new math the
+three lanes are jointly attacking. This is the honest converged frontier.
