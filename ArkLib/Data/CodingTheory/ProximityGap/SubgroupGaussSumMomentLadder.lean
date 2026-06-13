@@ -58,7 +58,6 @@ theorem eta_pow_eq (ψ : AddChar F ℂ) (G : Finset F) (b : F) (r : ℕ) :
   rw [prod_addChar ψ Finset.univ (fun i => b * x i), Finset.mul_sum]
 
 /-- The conjugate `r`-th power: `conj(η_b^r) = ∑_{z : Fin r → G} ψ(-(b · ∑ᵢ zᵢ))`. -/
-omit [Fintype F] in
 theorem conj_eta_pow_eq (ψ : AddChar F ℂ) (G : Finset F) (b : F) (r : ℕ) :
     (starRingEnd ℂ) ((eta ψ G b) ^ r)
       = ∑ z ∈ Fintype.piFinset (fun _ : Fin r => G), ψ (-(b * ∑ i, z i)) := by
