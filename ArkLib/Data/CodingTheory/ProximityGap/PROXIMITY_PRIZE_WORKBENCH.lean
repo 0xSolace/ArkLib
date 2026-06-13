@@ -52,6 +52,17 @@ Johnson — so a winning conjecture must use a smooth-domain feature that
 DEFEATS the multiplicative-subspace explosion, not a generic counting bound
 (which is provably exponential here).
 
+>> EMPIRICAL LOCALIZATION (probe_prize_constrate, ρ=1/2, n=8,k=4): the list
+EXPLODES at the capacity radius a=k (list 70) but is SMALL one step into the
+window (a=k+1: 3; a=Johnson: 1). So the explosion is a capacity-radius
+(deep-band) phenomenon — matching `not_explainableCoreSupply_exponential` —
+and the WINDOW INTERIOR (capacity < a < Johnson) is small at minimal scale.
+The prize is exactly the GROWTH RATE of the window-interior list as n→∞
+(poly/subexp ⇒ winnable; super-poly ⇒ beyond-Johnson dead). Brute force caps
+at n=8; k=2 incidence (probe_prize_richlines) confirms Johnson-regime
+smallness but only at vanishing rate. The constant-rate window-interior
+asymptotic is the wall.
+
 `PrizeListBound dom k a L` below is the closed target: at Johnson-scale
 agreement `a`, every word has at most `L` agreeing degree-`< k` codewords,
 with `L` small enough (`L·q^{?} < q·ε*`-admissible) to pin δ* strictly
