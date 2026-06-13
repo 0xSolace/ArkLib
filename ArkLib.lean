@@ -1517,6 +1517,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SharpThresholdDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.ShawFlatnessRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.ShawOperator
 import ArkLib.Data.CodingTheory.ProximityGap.ShawOperatorDual
+import ArkLib.Data.CodingTheory.ProximityGap.ShawSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.ShellFourierKrawtchouk
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledThreshold
