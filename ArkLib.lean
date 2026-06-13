@@ -762,6 +762,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GVHBKEnergyReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GVObjectTowerDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.GVRepBoundFermat257
 import ArkLib.Data.CodingTheory.ProximityGap.GVRepBoundFromEnergy
+import ArkLib.Data.CodingTheory.ProximityGap.GVTowerLevelDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
