@@ -143,6 +143,79 @@ theorem card_large_shawError_mul_sq_le (S : Finset V) (s₁ : V) {t : ℝ} (ht :
         Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
           (fun s₀ _ _ => by positivity)
 
+section Plancherel
+variable {V : Type*} [AddCommGroup V] [Fintype V] [DecidableEq V]
+
+/-- **Plancherel / Parseval for the ball indicator.** `∑_{all ψ} ‖∑_{s∈S} ψ(−s)‖² = |V|·|S|` —
+the total ℓ² character mass of the indicator of `S` equals `|V|·|S|`, by the dual orthogonality
+`∑_ψ ψ(x) = |V|·[x=0]` (`AddChar.sum_apply_eq_ite`).  Unconditional; the ceiling against which the
+hyperplane-restricted second moment is measured. -/
+theorem parseval_indicator (S : Finset V) :
+    ∑ ψ : AddChar V ℂ, ‖∑ s ∈ S, ψ (-s)‖ ^ 2 = (Fintype.card V : ℝ) * S.card := by
+  classical
+  set b : AddChar V ℂ → ℂ := fun ψ => ∑ s ∈ S, ψ (-s) with hbdef
+  have keyC : (∑ ψ : AddChar V ℂ, b ψ * (starRingEnd ℂ) (b ψ))
+      = (Fintype.card V : ℂ) * S.card := by
+    calc ∑ ψ : AddChar V ℂ, b ψ * (starRingEnd ℂ) (b ψ)
+        = ∑ ψ : AddChar V ℂ, ∑ s ∈ S, ∑ t ∈ S, ψ (t - s) := by
+          refine Finset.sum_congr rfl (fun ψ _ => ?_)
+          rw [hbdef]; dsimp only
+          rw [map_sum, Finset.sum_mul_sum]
+          refine Finset.sum_congr rfl (fun s _ => Finset.sum_congr rfl (fun t _ => ?_))
+          rw [addChar_conj, neg_neg, ← AddChar.map_add_eq_mul,
+            show -s + t = t - s from by abel]
+      _ = ∑ s ∈ S, ∑ t ∈ S, ∑ ψ : AddChar V ℂ, ψ (t - s) := by
+          rw [Finset.sum_comm]
+          refine Finset.sum_congr rfl (fun s _ => ?_)
+          rw [Finset.sum_comm]
+      _ = ∑ s ∈ S, ∑ t ∈ S, (if t - s = 0 then (Fintype.card V : ℂ) else 0) := by
+          simp_rw [AddChar.sum_apply_eq_ite]
+      _ = ∑ s ∈ S, ∑ t ∈ S, (if t = s then (Fintype.card V : ℂ) else 0) := by
+          simp_rw [sub_eq_zero]
+      _ = ∑ _s ∈ S, (Fintype.card V : ℂ) := by
+          refine Finset.sum_congr rfl (fun s hs => ?_)
+          rw [Finset.sum_ite_eq' S s (fun _ => (Fintype.card V : ℂ)), if_pos hs]
+      _ = (Fintype.card V : ℂ) * S.card := by
+          rw [Finset.sum_const, nsmul_eq_mul]; ring
+  have h := keyC
+  simp only [Complex.mul_conj] at h
+  norm_cast at h
+  simp only [Complex.normSq_eq_norm_sq, hbdef] at h
+  rw [Nat.cast_mul] at h
+  exact h
+
+end Plancherel
+
+/-- **Unconditional L² ceiling on the Shaw second moment.** Restricting Parseval to the hyperplane
+`ψ ⊥ s₁` and dropping the trivial character only decreases the mass, so
+`∑_{s₀} ‖𝒮(S;s₀,s₁)‖² ≤ |V|²·|S|` with no hypotheses. (The prize needs the much sharper
+hyperplane-restricted value; this is the honest crude L² ceiling, via `parseval_indicator`.) -/
+theorem shawError_second_moment_le (S : Finset V) (s₁ : V) :
+    ∑ s₀ : V, ‖shawError (F := F) S s₀ s₁‖ ^ 2 ≤ (Fintype.card V : ℝ) ^ 2 * S.card := by
+  classical
+  rw [shawError_second_moment]
+  have hsub :
+      (∑ ψ ∈ univ.filter (fun ψ : AddChar V ℂ => directionChar (F := F) ψ s₁ = 0 ∧ ψ ≠ 0),
+          ‖∑ s ∈ S, ψ (-s)‖ ^ 2)
+        ≤ ∑ ψ : AddChar V ℂ, ‖∑ s ∈ S, ψ (-s)‖ ^ 2 :=
+    Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _) (fun ψ _ _ => by positivity)
+  calc (Fintype.card V : ℝ)
+          * ∑ ψ ∈ univ.filter (fun ψ : AddChar V ℂ => directionChar (F := F) ψ s₁ = 0 ∧ ψ ≠ 0),
+              ‖∑ s ∈ S, ψ (-s)‖ ^ 2
+      ≤ (Fintype.card V : ℝ) * ∑ ψ : AddChar V ℂ, ‖∑ s ∈ S, ψ (-s)‖ ^ 2 :=
+        mul_le_mul_of_nonneg_left hsub (by positivity)
+    _ = (Fintype.card V : ℝ) * ((Fintype.card V : ℝ) * S.card) := by rw [parseval_indicator]
+    _ = (Fintype.card V : ℝ) ^ 2 * S.card := by ring
+
+/-- **Unconditional Chebyshev count bound.** Combining `card_large_shawError_mul_sq_le` with the
+crude L² ceiling: `#{s₀ : t ≤ ‖𝒮(S;s₀,s₁)‖} · t² ≤ |V|²·|S|` for any `t ≥ 0`, no hypotheses. -/
+theorem card_large_shawError_mul_sq_le_unconditional (S : Finset V) (s₁ : V) {t : ℝ} (ht : 0 ≤ t) :
+    ((univ.filter (fun s₀ : V => t ≤ ‖shawError (F := F) S s₀ s₁‖)).card : ℝ) * t ^ 2
+      ≤ (Fintype.card V : ℝ) ^ 2 * S.card := by
+  refine le_trans ?_ (shawError_second_moment_le (F := F) S s₁)
+  rw [shawError_second_moment]
+  exact card_large_shawError_mul_sq_le (F := F) S s₁ ht
+
 end ArkLib.ProximityGap.ShawSecondMoment
 
 /-! ## Axiom audit -/
@@ -150,3 +223,7 @@ end ArkLib.ProximityGap.ShawSecondMoment
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.char_orthogonality
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.shawError_second_moment
 #print axioms ArkLib.ProximityGap.ShawSecondMoment.card_large_shawError_mul_sq_le
+#print axioms ArkLib.ProximityGap.ShawSecondMoment.parseval_indicator
+#print axioms ArkLib.ProximityGap.ShawSecondMoment.shawError_second_moment_le
+#print axioms ArkLib.ProximityGap.ShawSecondMoment.card_large_shawError_mul_sq_le_unconditional
+#check @ArkLib.ProximityGap.ShawSecondMoment.parseval_indicator
