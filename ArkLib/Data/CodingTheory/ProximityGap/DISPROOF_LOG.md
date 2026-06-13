@@ -7985,44 +7985,30 @@ Frobenius-subfield blowup O-entry, which is additive-structure-coupled and a sep
 question). It removes the multiplicative-subspace route as a production-rate obstruction
 and pins it to the same vanishing-rate barrier as the known capacity disproofs.
 
-### O159 — NAIVE FOLD-TRANSPORT REFUTED at every prize rate: the unfolding loss L = s ≥ 2 exceeds the breakeven L*(ρ) = 1+√ρ; the route survives only under a (1−√ρ) tower-co-location condition (δ* lower-bound side, #389, 2026-06-13)
+## 2026-06-13 — THE SUPPLY-SIDE PACKING BOUND IS WORST-CASE VACUOUS; the line-partition is the algebraic fix (Fable)
 
-`scripts/probes/probe_fold_transport_feasibility.py` + RESULTS-FOLD-TRANSPORT.md.
-The all-rates bracket (probe_deltastar_bracket_allrates.py) reduced pinning δ* to the
-lower-bound side; this decides research-map vector 5 (fold-transport of explicit
-capacity results) at the constraint level, exactly.
+Distinct from the failure-side packing entries above (those bound bad-scalar *counts* from
+below): this is about the **supply** (`ExplainableCoreSupply`, the #389 positive direction),
+which counts explainable `(k+m+1)`-cores of a word `w` from above.
 
-* Folded smooth-RS (arity s) preserves rate ρ, list-decodes to folded-symbol-error
-  fraction 1−ρ−ε (GW/CZ25); a plain δ-fraction maps to folded fraction up to min(δs,1)
-  (adversary spreads). Beyond-Johnson plain radius needs effective loss L < L*(ρ) =
-  (1−ρ)/(1−√ρ) = **1+√ρ** (exact: 1−ρ = (1−√ρ)(1+√ρ)).
-* **Naive worst-case L = s ≥ 2 > 1+√ρ = L*(ρ) ∀ρ ≤ 1/2 ⟹ naive fold-transport beats
-  Johnson at NO prize rate** (1+√ρ ∈ {1.707, 1.5, 1.354, 1.25} for ρ ∈ {1/2,1/4,1/8,1/16}).
-  Exact refutation of the naive route — the research-map hand-wave made precise.
-* SURVIVING CONDITION: the smooth tower must force MCA-bad error supports to co-locate
-  within tower blocks to fraction ≥ 1−√ρ (= the Johnson radius; at s=2 the fresh-block
-  spread must be < √ρ). The supply census (exponential, spread-thin — EsymmFiber) is
-  prior evidence AGAINST co-location. Named successor: the toy-scale co-location probe
-  on MCA-bad stacks under the squaring-tower ordering (decides the route fully).
+**The exact identity** (`ExplainableCoreExactCount.lean`, axiom-clean):
+`#cores(w) = Σ_c C(|agreeSet c w|, k+m+1)` — each core lies in exactly one codeword's
+agreement set (`k+m+1 > k−1` ⟹ uniqueness via `rsCode_pairwise_agreeSet_card_le`). So the
+supply IS the agreement-size profile `(a_c)`.
 
-### O160 — THE DEEP-BAND UPPER-BOUND FAMILY IS STRUCTURALLY CAPPED at capacity−Θ(1/log n): it cannot pin δ*=Johnson at ANY supply quality (the q^(m+1) suppression, not supply size) — so the δ* wall needs a non-deep-band upper mechanism (δ* batch R3, #389, 2026-06-13)
+**The refutation.** Combined with the `k`-subset packing `Σ_c C(a_c,k) ≤ C(n,k)` and the fact
+that `C(a,k+m+1)/C(a,k)` is increasing in `a`, the extremal profile is a SINGLE codeword with
+`a_c ≈ n`, giving `#cores ≈ C(n,k+m+1)` = the trivial bound (`probe_supply_extremal.py`:
+single/trivial = 1.0000 at every production scale n=16…256). **So no purely combinatorial /
+packing / Johnson-first-moment argument can give a sub-trivial per-word supply** — a word
+near a single codeword saturates it. Any supply proof MUST use the algebraic structure of
+which words arise as bad-scalar lines.
 
-`scripts/probes/probe_ceiling_supply_sensitivity.py` + RESULTS-CEILING-SENSITIVITY.md.
-Systematic δ*-lower-bound hypothesis batch (BATCH-DELTASTAR-LOWERBOUND.md, private),
-top candidate R3 decided inline.
-
-* Deep-band ceiling: ε_mca ≥ P/(q^(m+1)·B), P=C(n,k+m+1), B = supply upper bound
-  (deep_band_badSet_card_of_supply + ε_mca ≥ badSet/q). Best case B=1.
-* **At the Johnson band m_J (agreement ≈ n√ρ): log2(P_J) − (m_J+1)·log2 q is hundreds–
-  thousands of bits below −128 at every prize rate, n∈[128,2048], q∈{n²,n³}** (e.g.
-  −4101 at ρ=1/4,n=1024,q=n²; −12211 at ρ=1/2,n=2048,q=n³). So the deep-band bad-count
-  lower bound at Johnson is ≪ ε*=2⁻¹²⁸ even with minimal supply.
-* **VERDICT: the deep-band route — the fleet's entire upper-bound machinery — CANNOT push
-  the δ* ceiling below capacity−Θ(1/log n) (= KKH26) toward Johnson, at ANY supply quality.**
-  Obstruction = the q^(m+1) witness-mass suppression, NOT the supply size. Kills batch R3
-  (improve supply) and R2 (moment-sharpen the same conversion) — both ride this conversion.
-* Consequence: pinning δ* requires a FUNDAMENTALLY different upper bound that does not pay
-  q^(m+1) — a direct beyond-Johnson bad-count argument. Exact structural reason the wall is
-  the 25-yr beyond-Johnson list-decoding problem, not a supply-quality gap. Surviving live
-  candidates: S2 (M3-moment→supply separation, inline), N1 (tower co-location, workflow);
-  N2 = the breakthrough. Next batch targets a non-deep-band upper mechanism or the floor.
+**The line-partition fix** (`LineCorePartition.lean`, axiom-clean): for the bad-scalar line
+`w_γ = u₀ + γ·u₁` with `u₁ = xᵏ` far from the code (agreement `< k+m+1`),
+`line_core_unique_scalar` shows each core is explainable for ≤ 1 scalar (secant-slope
+codeword would agree with `u₁` on `k+m+1` points), so `line_total_cores_le`:
+`Σ_γ #cores(w_γ) ≤ C(n,k+m+1)`. This is the line-level (aggregate) supply — the algebraic
+constraint the refutation proved is required. NOT a full closure: it bounds the line aggregate,
+not the per-scalar worst case; the per-scalar gap remains the open wall, but it is now precisely
+localized to "is the worst-case-γ core count `≪` the line average `C(n,a)/q`?"
