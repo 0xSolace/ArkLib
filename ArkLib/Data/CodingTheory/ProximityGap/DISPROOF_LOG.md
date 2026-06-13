@@ -8284,3 +8284,39 @@ HONEST SCOPE (faithful to O165-#3): it is an IFF — beyond-Johnson holds exactl
 stated inequality, true throughout the m=1 production regime, provably FALSE at m≥2 small r
 (μ=2,m=2,r=2: pin 1/2 < Johnson). So "beyond Johnson" is genuinely conditional, now exactly
 CHARACTERIZED rather than asserted. Goal disclosure-#3: CLOSED (landed Lean theorem).
+
+### O167 — DISCLOSURE O165-#1 CLOSED: the unconditional/residual boundary is EXACTLY r ≈ √(2^μ), via a landed axiom-clean theorem (nubs, 2026-06-13, goal priority 1 — all 3 disclosures now resolved)
+
+Disclosure #1 (the audit's "one Prop is the residual ONLY for deep-band/large-r; the bulk
+range is already unconditional") is now precisely CHARACTERIZED by an in-tree theorem I
+independently verified axiom-clean:
+
+* `kkh26_deltaStar_pin_lowdegree` (KKH26DeltaStarPinAllWitness.lean:181, axiom-clean
+  [propext,Classical.choice,Quot.sound], module build green 8371 jobs): for EVERY μ≥1,
+  prime p above the KKH26 threshold with an order-2^μ element, and EVERY degree r in
+  `2 ≤ r ≤ 2^{μ-1}` with `r² ≤ 2^μ+1`, the pin `mcaDeltaStar(evalCode g 2^μ (r−2)) = 1−r/2^μ`
+  holds with **NO CensusDomination and NO binomial hypothesis** — the budget-below-supply
+  inequality `C(2^μ,r)/r < 2^r·C(2^{μ-1},r)` is discharged outright by `choose_bulk`
+  (axiom-clean). An INFINITE unconditional family.
+
+**THE EXACT BOUNDARY (the disclosure's precise content):**
+- **Unconditional region (no open Prop):** `r ≤ √(2^μ)` (i.e. `r² ≤ 2^μ+1`) — δ* pinned
+  outright, landed theorem above. Includes the concrete zero-hypothesis
+  `deltaStar_pin_concrete_F4129` (δ*=3/4 over ZMod 4129).
+- **CensusDomination-load-bearing region:** `√(2^μ) < r ≤ 2^{μ-1}` (deep band toward
+  capacity). The PRODUCTION prize rates live here: ρ=1/2 ⟹ r≈2^{μ-1} ≫ √(2^μ) for μ≥4.
+- The boundary `r ≈ √(2^μ) = √n` (at m=1) COINCIDES with `packing_covers_sqrt` (the
+  elementary route reaches exactly ~√n) and `packing_exceeds_budget_deep_band` (fails at
+  r=n/2) — three independent in-tree objects agree on the same √n boundary.
+
+HONEST FRAMING (the disclosure's whole point): there is an infinite family of
+δ*-pins with NO open math — but it is the LOW-DEGREE (small-r) family, NOT the production
+prize rates. "The bulk range is unconditional" is true and now exactly bounded; "the prize
+itself is unconditional" is FALSE (production r is deep in the CensusDomination region).
+
+**GOAL STATUS — all three O165 disclosures now resolved:** #1 CLOSED (this, landed
+theorem + exact boundary); #2 documented-as-blocked (CensusDomination = the Stepanov/
+additive-energy / explicit-RS sub-Johnson 25-year open problem); #3 CLOSED (O166
+`PinBeyondJohnson.lean`, landed theorem). Reduction re-audits clean (O165); dossier
+current (#371). The residual is now EXACTLY the named classical open problem — nothing
+further to honestly add without solving it.
