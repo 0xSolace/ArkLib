@@ -58,3 +58,15 @@ Probe: `scripts/probes/probe_conj_Br_characterization.py`. Verified 20/20 cases,
   Subsumes A5 (prime case) and A1-even (the `r=1`-only / antipodal case). The cleanest statement of
   WHY 2-power (NTT) is hardest (fails B_2, maximal energy) and odd-prime is most rigid (perfect all r).
   Count: A6 promoted (subsumes A5); running total of distinct promoted survivors ≈ 7 (A1,A2,A3,A4,A6,B3).
+
+## NOVELTY corrections (honesty pass)
+- **B3 is a REDISCOVERY, not novel.** The exact dyadic `E_3 = 15n³−45n²+40n` and the `(2r−1)!!` leading
+  energy bound were already found in a prior #389 campaign (`NegationClosedPairingCount.lean`
+  `pairings_card_eq_doubleFactorial` + `zeroSumCount_le_doubleFactorial`, the antipodal-pairing K1 core).
+  B3 independently CONFIRMS them (good cross-check) but is not original. Kept in the ledger as confirmed.
+- **A6 is the novel headline this session.** Prior work bounded the DYADIC energy; the COMPLETE
+  perfect-`B_r` characterization across all `n` (odd-composite threshold `r<minFac(n)`, the μ_25
+  fails-at-B_5 case, exact equality with the permutation count) is the new content. A1–A4 (sumset/diff
+  dichotomies) are corollaries of the same Lam–Leung lattice; novel as explicit closed forms.
+- Method note: check the in-tree `NegationClosedPairingCount`/E_r work + the conjecture-campaign memory
+  for prior art BEFORE promoting, to avoid re-deriving known results.
