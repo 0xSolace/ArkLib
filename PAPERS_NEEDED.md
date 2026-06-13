@@ -104,3 +104,27 @@ roots-of-unity/Littlewood-Offord sources from the 2026-06-13 findings sweep). **
 - ePrint 2025/169 — Ben-Sasson–Carmon–Haböck–Kopparty–Saraf, "On Proximity Gaps for Reed-Solomon Codes". Thm 1.9: proximity-gap/line-ball incidence beyond Johnson <=> list-decoding beyond Johnson (list <= q). DISPROVES the n^gamma-bounded proximity-gap conjecture and (with CS) the CA/MCA-up-to-capacity conjectures. Negative constructions use the smooth-domain structure. THE paper. (math.toronto.edu/swastik/rs-proximity-gaps-2025.pdf)
 - ePrint 2025/2046 — Crites–Stewart, "On Reed-Solomon Proximity Gaps Conjectures". Corrected delta* = list-decoding-capacity boundary H_q^{-1}(1-rho), NOT rate 1-rho. IACR.
 - arXiv:2312.12962 — Tamo, "Points-Polynomials Incidence Theorem w/ Application to RS". The incidence method's RS ceiling = Johnson (Thm 5.1), domain-agnostic. Open-access.
+
+## δ* OPEN-CORE reading list — 2026-06-13 (the L²→L^∞ sup-norm gap)
+
+Added by the δ* lane. The prize reduces (fleet's `MCAShawConjecture` = small-subgroup additive
+energy = beyond-Johnson RS list decoding) to **square-root cancellation for character sums over the
+small multiplicative subgroup `μ_{2^k}` (`n ≈ p^{1/5}`)** — specifically the **sup** (L^∞) of the
+incomplete sum `S(t)=Σ_{a∈μ_n} e_p(ta)`, which the moment-vs-max gap makes up to `√n` larger than the
+provable L²/L⁴ (=additive-energy) average. These 5 (all NEW to the catalog, verified absent) target
+that exact gap from adjacent domains. None is on disk; URLs given for fetch.
+
+| # | paper | id / venue | URL | why it attacks the open core |
+|---|---|---|---|---|
+| O1 | Brakensiek–Chen–Dhar–Zhang, **Unique Decoding of Reed–Solomon and Related Codes for Semi-Adversarial Errors** (ICALP 2026) | arXiv **2504.10399** | https://arxiv.org/abs/2504.10399 | The *semi-adversarial* model interpolates random↔worst-case — the formal analogue of the **moment-vs-max** (avg-vs-sup) gap that IS our open core; matches info-theoretic limits in the hybrid regime, isolating the fully-adversarial tail as the residual obstruction. |
+| O2 | Gorodetsky–Kovaleva, **Equidistribution of high traces of random matrices over finite fields and cancellation in character sums of high conductor** (2023/24) | arXiv **2307.01344** | https://arxiv.org/abs/2307.01344 | Proves cancellation in character sums of **high conductor** beyond Montgomery–Vaughan range (function-field side); a candidate *technique* for the per-frequency √-cancellation our sup-norm bound needs. |
+| O3 | Shkredov, **On common energies and sumsets** (J. Combin. Theory Ser. A, 2025, in press) | DOI **S0097316525000214** | https://www.sciencedirect.com/science/article/abs/pii/S0097316525000214 | Newest Shkredov: a *polynomial criterion* for small doubling via **common energy of subsets** — directly bears on WHEN `μ_n` has anomalous additive energy (the GAP/sumset worst case = the bad-prime spread we measured). |
+| O4 | Demirci Akarsu–Marklof, **The value distribution of incomplete Gauss sums** (2012) | arXiv **1207.1607** | https://arxiv.org/abs/1207.1607 | A limit law for the **value distribution** of incomplete Gauss sums — the direct study of the L^∞ tail / large-value statistics of exactly the sum class `S(t)`; gives the conjectured `√(n log)` sup-norm its distributional shape. |
+| O5 | **Multiplicative character sums over two classes of subsets of quadratic extensions of finite fields** (Finite Fields Appl., Dec 2025) | DOI **S1071579725001972** | https://www.sciencedirect.com/science/article/abs/pii/S1071579725001972 | Freshest (Dec-2025) explicit character-sum bounds over structured subsets of finite-field extensions; check whether its method gives better-than-BGK savings for the smooth (2-power) subgroup structure. |
+
+**Honest scope:** these are LEADS on the open core, not a closure. The prize remains open: no known
+technique gives √-cancellation for `μ_n` at `n ≈ p^{1/5}` (BGK gives only `n^{1−ν}`, astronomically
+small ν). Context: the additive-energy clean-threshold is exponential (`p > 2ⁿ`), so the prize regime
+(`p ≈ n⁵`) is not settled by the energy route; and the naive "Shaw flatness" sup-norm constant `√2` is
+refuted — the true core is this L²→L^∞ (moment-vs-max) gap. See `docs/kb/deltastar-research-map.md`
+§(b)/(ii) and `ShawOperator.lean` / `PROXIMITY_PRIZE_WORKBENCH.lean` §3.
