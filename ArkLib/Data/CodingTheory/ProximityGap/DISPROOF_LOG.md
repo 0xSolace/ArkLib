@@ -7742,3 +7742,41 @@ Side observation (probe T1): at `t = d+3` cells, e.g. `(97,16,4), t=7`, sub-opti
 `(s₁,z)` stacks pick up large SMALL-FIELD surpluses (`34` observed vs `14` designed;
 expected-count heuristic `C(10,5)·C(6,2)/97 ≈ 39`) — the same codim-0 coincidence
 species as the censused mod-17 extras; vanishes for `p ≫ poly(n)`.
+
+### The any-domain sub-Johnson supply laws — REFUTED by the Frobenius secant family (Fable, 2026-06-13)
+
+Context: the crossing/Cauchy–Schwarz campaign proved the mean-degree law `Σ|A| ≤ 2n`
+for pairwise-`≤1` families down to the Johnson agreement `t² ≥ 2n`, and noted that
+below it set systems blow up (projective planes), so "any proof must couple the word."
+This entry sharpens the wall: **coupling the word is not enough — the blowup is
+realized by genuine RS agreement families** (`FrobeniusSubfieldBlowup.lean`, 8 theorems,
+axiom-clean; probe `probe_frobenius_blowup.py`, exact at `(p,e) = (3,2),(3,3),(5,2)`).
+
+Mechanism (JH01/BSKR06 in the #389 charter objects): char `p`, `k = 2`, the Frobenius
+word `w(z) = z^p` over any `𝔽_p`-affine-closed domain (e.g. all of `𝔽_{p^e}`, `n = p^e`).
+Freshman's dream: the affine codeword `z₀^p + u^{p−1}(z−z₀)` agrees with `w` on the
+ENTIRE affine line `z₀ + 𝔽_p u` — every secant of the Frobenius graph is `p`-rich.
+At level `t = p` (sub-Johnson: `t² = n^{2/e} ≤ n`):
+
+* **"`Σ|A| ≤ 2n` (or any `C·n`) below Johnson for RS agreement families" — REFUTED.**
+  The family is pairwise-`≤1`, every member exactly `p = t` points
+  (`frobenius_explainable_inter_le_one`), and the mass SATURATES the universal pair
+  bound exactly: `Σ|A| = n(n−1)/(p−1)` (`frobenius_mass_floor`,
+  `frobenius_mass_gt_two_n`).  At `e = 2` this is `≈ n^{3/2}` at `t² = n` — failure
+  one notch below the Johnson threshold `2n`, matching the projective-plane envelope
+  (the family IS the affine plane `AG(2,p)`, sheared into a function graph).
+* **"the capped optimum / explainable-core supply is linear in `n` at fixed `(k,m)`"
+  (the growth-law census conjecture, measured at prime `q`) — REFUTED in any-domain
+  form.**  At fixed `(k, m) = (2, p−3)`: explainable-`p`-core count
+  `= n(n−1)/(p(p−1)) = Θ(n²)` (`frobenius_supply_floor`); against the named Prop:
+  any `B` for `ExplainableCoreSupply dom 2 (p−3) B` has `n(n−1) ≤ p(p−1)·B`
+  (`frobenius_charter_floor`).  The prime-`q` census probes were structurally blind
+  to this: the mechanism needs a proper subfield.
+
+What is NOT refuted: `ExplainableCoreSupply` with `B` subexponential in the witness
+mass (the Frobenius supply is only quadratic — the self-cap `deg(X^p − aX − b) = p`
+bounds every agreement at `p`); and the production setting `μ_n ⊂ 𝔽_q` with `q` prime,
+where the only `𝔽_p`-lines have size `q ≫ n`.  Consequence for the programme: the
+sub-Johnson supply statement is irreducibly DOMAIN-coupled — any proof must use the
+absence of `𝔽_p`-affine structure in the evaluation domain (no-large-subfield /
+additive-unstructuredness of `μ_n`), not just `w ∉ C` and pairwise distance.
