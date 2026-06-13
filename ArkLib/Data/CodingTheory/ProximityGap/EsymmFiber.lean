@@ -313,7 +313,7 @@ theorem rootsOfUnity_dyadic_supply {ζ : F} (hζ : IsPrimitiveRoot ζ n)
   -- index bound: j + r·l < n for j < r, l < d
   have hlt : ∀ (j : Fin r) (l : ℕ), l < d → (j : ℕ) + r * l < n := by
     intro j l hl
-    have h1 : r * (l + 1) ≤ r * d := mul_le_mul_left' (by omega) r
+    have h1 : r * (l + 1) ≤ r * d := Nat.mul_le_mul le_rfl (by omega)
     have h2 : r * (l + 1) = r * l + r := by ring
     have hj : (j : ℕ) < r := j.isLt
     rw [hnr, Nat.mul_comm d r]; omega
@@ -386,6 +386,24 @@ theorem not_explainableCoreSupply_rootsOfUnity {ζ : F} (hζ : IsPrimitiveRoot �
     ext T
     simp only [ProximityGap.Ownership.ExplainableOn, Finset.mem_filter]
   omega
+
+open scoped Classical in
+open Polynomial in
+/-- **Explicit exponential lower bound for `μ_n` (#389).**  Taking the central split
+`r = 2s` (so `n = d·2s`), the explainable-core count exceeds `4^s / s`: the supply is
+genuinely exponential in `s = (k+m+1)/d`.  For `n = 2^μ`, constant rate and constant `m`
+(`d = O(1)`), `s = Θ(n)`, so this is `2^{Θ(n)}`. -/
+theorem rootsOfUnity_dyadic_supply_exp {ζ : F} (hζ : IsPrimitiveRoot ζ n)
+    {k m d s : ℕ} (hk : 1 ≤ k) (hd : m + 2 ≤ d) (hs4 : 4 ≤ s) (hnr : n = d * (2 * s))
+    (wt : F) (hwt : wt ≠ 0) (lowPart : Polynomial F) (hlow : lowPart.degree < (k : WithBot ℕ))
+    (hsd : s * d = k + m + 1) :
+    4 ^ s < s * (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter
+        (fun T => ∃ c ∈ (rsCode (domRU hζ) k : Submodule F (Fin n → F)),
+            ∀ i ∈ T, c i = (C wt * X ^ (k + m + 1) + lowPart).eval (domRU hζ i))).card := by
+  have hge := rootsOfUnity_dyadic_supply hζ hk hd hnr wt hwt lowPart hlow hsd
+  calc 4 ^ s < s * Nat.centralBinom s := Nat.four_pow_lt_mul_centralBinom s hs4
+    _ = s * (2 * s).choose s := by rw [Nat.centralBinom]
+    _ ≤ s * _ := Nat.mul_le_mul le_rfl hge
 
 end ProximityGap.EsymmFiber
 
