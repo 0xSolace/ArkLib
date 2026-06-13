@@ -925,6 +925,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LamLeungMultisetAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungSpanTwoPrime
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungSquarefreeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungTwoPow
+import ArkLib.Data.CodingTheory.ProximityGap.LamLeungTwoPower
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalQ
 import ArkLib.Data.CodingTheory.ProximityGap.Lattice
@@ -1277,9 +1278,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.RepCountCharZeroBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCharZeroEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountCosetInvariance
-import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountDiagonalVanish
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountEnergyNfold
+import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusBound
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountFrobeniusInvariance
 import ArkLib.Data.CodingTheory.ProximityGap.RepCountShiftedPower
 import ArkLib.Data.CodingTheory.ProximityGap.ResidualModularReduction

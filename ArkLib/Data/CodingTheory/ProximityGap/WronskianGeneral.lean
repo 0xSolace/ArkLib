@@ -123,4 +123,55 @@ theorem natDegree_wronskianDet_le (f : Fin l → R[X]) :
     rw [← hcombined]
     exact le_trans (Polynomial.natDegree_prod_le _ _) (Finset.sum_le_sum (fun i _ => hterm i))
 
+/-- Differentiating `i` times drops the order of vanishing at `α` by at most `i`:
+`(X − α)^k ∣ f ⟹ (X − α)^(k − i) ∣ derivative^[i] f`. -/
+theorem pow_sub_dvd_iterate_derivative {α : R} {k : ℕ} {f : R[X]}
+    (h : (X - C α) ^ k ∣ f) : ∀ i, (X - C α) ^ (k - i) ∣ (Polynomial.derivative^[i]) f := by
+  intro i
+  induction i with
+  | zero => simpa using h
+  | succ i ih =>
+    rw [Function.iterate_succ_apply']
+    by_cases hki : k ≤ i
+    · rw [Nat.sub_eq_zero_of_le (le_trans hki (Nat.le_succ i)), pow_zero]; exact one_dvd _
+    · rw [not_le] at hki
+      obtain ⟨g, hg⟩ := ih
+      rw [hg, derivative_mul, derivative_pow, derivative_sub, derivative_X, derivative_C,
+        sub_zero, mul_one]
+      have hpow : k - i = (k - (i + 1)) + 1 := by omega
+      rw [hpow]
+      refine dvd_add ?_ ?_
+      · exact Dvd.dvd.mul_right (Dvd.dvd.mul_left (pow_dvd_pow _ (by omega)) _) _
+      · exact Dvd.dvd.mul_right (pow_dvd_pow _ (by omega)) _
+
+/-- **The Wronskian divisibility**: if every `f j` is divisible by `(X − α)^k` (and `l ≤ k+1`,
+so the `l` derivative-rows don't exhaust the order), the Wronskian is divisible by
+`(X − α)^(l·k − C(l,2))`.  With `natDegree_wronskianDet_le` this is the two-sided
+degree/order squeeze driving the Stepanov linear-independence contradiction (the genuine
+`n ∣ p−1` split-case wall). -/
+theorem pow_dvd_wronskianDet {α : R} {k : ℕ} {f : Fin l → R[X]}
+    (hk : l ≤ k + 1) (hdvd : ∀ j, (X - C α) ^ k ∣ f j) :
+    (X - C α) ^ (l * k - l.choose 2) ∣ wronskianDet f := by
+  classical
+  rw [wronskianDet, Matrix.det_apply]
+  refine Finset.dvd_sum (fun σ _ => ?_)
+  have hexp : l * k - l.choose 2 = ∑ i : Fin l, (k - (σ i : ℕ)) := by
+    have hle : ∀ i : Fin l, (σ i : ℕ) ≤ k := fun i => Nat.lt_succ_iff.mp (lt_of_lt_of_le (σ i).isLt hk)
+    have hsum : ∑ i : Fin l, (k - (σ i : ℕ)) + l.choose 2 = l * k := by
+      rw [← sum_perm_eq_choose_two σ, ← Finset.sum_add_distrib,
+        Finset.sum_congr rfl (fun i _ => Nat.sub_add_cancel (hle i)), Finset.sum_const,
+        Finset.card_univ, Fintype.card_fin, smul_eq_mul, mul_comm]
+    omega
+  have hprod : (X - C α) ^ (l * k - l.choose 2) ∣ ∏ i : Fin l, wronskianMatrix f (σ i) i := by
+    rw [hexp]
+    calc (X - C α) ^ (∑ i : Fin l, (k - (σ i : ℕ)))
+        = ∏ i : Fin l, (X - C α) ^ (k - (σ i : ℕ)) :=
+          (Finset.prod_pow_eq_pow_sum Finset.univ (fun i => k - (σ i : ℕ)) (X - C α)).symm
+      _ ∣ ∏ i : Fin l, wronskianMatrix f (σ i) i :=
+          Finset.prod_dvd_prod_of_dvd _ _ (fun i _ => by
+            rw [wronskianMatrix_apply]; exact pow_sub_dvd_iterate_derivative (hdvd i) (σ i))
+  rcases Int.units_eq_one_or (Equiv.Perm.sign σ) with sg | sg
+  · rw [sg, one_smul]; exact hprod
+  · rw [sg, Units.neg_smul, one_smul]; exact dvd_neg.mpr hprod
+
 end ArkLib.ProximityGap.Wronskian
