@@ -51,3 +51,21 @@ This is the cleanest, most concrete, most attackable form (a Gaussian-moment sta
 additive energies of a multiplicative subgroup), it is empirically supported, and it is the **only**
 input the otherwise-complete proof needs. A correct proof of it closes both grand challenges via the
 scaffold in §B. No fabrication: this statement is open, and is stated as the explicit residual.
+
+## F. Literature confirmation of the open status (2026-06-13)
+Traced `B(μ_n)` to its deepest form via Gauss-sum decomposition:
+`η_b = (1/f)[−1 + Σ_{j=1}^{f−1} χ^{−j}(b)·g(χ^j)]`, `f=(p−1)/n`, `|g(χ^j)|=√p`. So
+`B(μ_n) ≤ C√(n·log(p/n))` ⟺ **no conspiracy among the Gauss sums `g(χ^j)`** ⟺ a sup-norm bound on
+**Gaussian periods** in the growing-`n` regime.
+- **Habegger, "The Norm of Gaussian Periods" (arXiv 1611.07287):** proves the *average*
+  `(1/(p−1))Σ_t log|Σ_{g∈G}ζ^{tg}|` converges to a Mahler measure, for **fixed** odd prime order
+  `f=#G`, `p→∞` — via Bombieri–Masser–Zannier unlikely intersections, Pila–Wilkie, Baker's theory.
+  This is the AVERAGE log-norm for a FIXED small subgroup, NOT the sup-norm, NOT growing `n`.
+- **Net:** even the *average* Gaussian-period norm required deep Diophantine machinery (2016); the
+  **sup-norm `B(μ_n)` in the prize's growing-`n` regime is open beyond the published literature.** No
+  acquired paper (incl. 1401.4618 "elementary character sums over subgroups", which only gives the
+  trivial `<√p`) supplies the `√(n·log(p/n))` sup-norm.
+
+This definitively confirms: the single open input of the prize is a recognized-hard, currently-open
+problem on the sup-norm / moment distribution of Gaussian periods for subgroups of growing order
+`n=2^μ ≪ √p`. The proven scaffold (§B) is complete; this one analytic bound is the entire residual.
