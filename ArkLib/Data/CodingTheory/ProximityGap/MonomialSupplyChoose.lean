@@ -227,4 +227,67 @@ theorem monomial_supply_choose_le (dom : Fin n ↪ F) {k m : ℕ} :
           exact ⟨Finset.subset_univ _, (Finset.mem_powersetCard.mp hp.2).2⟩) hinj
     _ = n.choose k := by rw [Finset.card_powersetCard, Finset.card_univ, Fintype.card_fin]
 
+open Classical in
+/-- **The general polynomial-word supply bound**: for ANY word that is the evaluation of a
+degree-EXACTLY-`(k+m+1)` polynomial `W` — in particular the monomial `X^t`, the ladder word
+`X^t + λ·X^{t−2}`, or any single fixed polynomial — the explainable-core count satisfies
+`#cores · C(k+m+1, k) ≤ C(n, k)`, UNCONDITIONALLY, any domain, every band.
+
+This subsumes `monomial_supply_choose_le` and, crucially, gives the **ladder words an
+unconditional polynomial supply bound** with no resultant/Mann threshold — the forced top
+part of `V_T` is fixed by `W`, so any two explainable cores' vanishing polynomials differ in
+degree `< k`, and `coreVanish_eq_of_ksubset` applies. -/
+theorem polyEval_supply_choose_le (dom : Fin n ↪ F) {k m : ℕ} (W : Polynomial F)
+    (hWdeg : W.degree = ((k + m + 1 : ℕ) : WithBot ℕ)) :
+    (((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter
+        (fun T => ∃ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+          ∀ i ∈ T, c i = W.eval (dom i))).card
+      * (k + m + 1).choose k
+      ≤ n.choose k := by
+  have hWne : W ≠ 0 := by
+    rw [Ne, ← Polynomial.degree_eq_bot, hWdeg]; exact WithBot.coe_ne_bot
+  have hWt : W.coeff (k + m + 1) ≠ 0 := by
+    rw [← natDegree_eq_of_degree_eq_some hWdeg]; exact leadingCoeff_ne_zero.mpr hWne
+  set cores := ((Finset.univ : Finset (Fin n)).powersetCard (k + m + 1)).filter
+      (fun T => ∃ c ∈ (rsCode dom k : Submodule F (Fin n → F)),
+        ∀ i ∈ T, c i = W.eval (dom i)) with hcores
+  set B := cores.sigma (fun T => T.powersetCard k) with hB
+  have hBcard : B.card = cores.card * (k + m + 1).choose k := by
+    rw [hB, Finset.card_sigma]
+    rw [Finset.sum_congr rfl (fun T hT => ?_)]
+    · rw [Finset.sum_const, smul_eq_mul]
+    · rw [Finset.card_powersetCard,
+        (Finset.mem_powersetCard.mp (Finset.mem_filter.mp hT).1).2]
+  rw [← hBcard]
+  have hinj : Set.InjOn (fun p : Σ _ : Finset (Fin n), Finset (Fin n) => p.2) (B : Set _) := by
+    intro p hp q hq hpq
+    simp only [hB, Finset.coe_sigma, Set.mem_sigma_iff, Finset.mem_coe, hcores,
+      Finset.mem_filter, Finset.mem_powersetCard] at hp hq
+    obtain ⟨⟨⟨_, hpTcard⟩, hpexp⟩, hpSsub, hpScard⟩ := hp
+    obtain ⟨⟨⟨_, hqTcard⟩, hqexp⟩, hqSsub, hqScard⟩ := hq
+    -- forced-poly degree form for both cores
+    have hfpP := (explainable_iff_forcedPoly_degree dom W hWdeg hpTcard).mp hpexp
+    have hfpQ := (explainable_iff_forcedPoly_degree dom W hWdeg hqTcard).mp hqexp
+    -- the vanishing polynomials differ in degree < k
+    have hdiff : (coreVanish dom p.1 - coreVanish dom q.1).degree < (k : WithBot ℕ) := by
+      have hkey : C (W.coeff (k + m + 1)) * (coreVanish dom p.1 - coreVanish dom q.1)
+          = forcedPoly dom k m W q.1 - forcedPoly dom k m W p.1 := by
+        simp only [forcedPoly]; ring
+      have hdegRHS : (forcedPoly dom k m W q.1 - forcedPoly dom k m W p.1).degree
+          < (k : WithBot ℕ) :=
+        lt_of_le_of_lt (Polynomial.degree_sub_le _ _) (max_lt hfpQ hfpP)
+      have hd : (C (W.coeff (k + m + 1)) * (coreVanish dom p.1 - coreVanish dom q.1)).degree
+          < (k : WithBot ℕ) := by rw [hkey]; exact hdegRHS
+      rwa [Polynomial.degree_mul, Polynomial.degree_C hWt, zero_add] at hd
+    have hT : p.1 = q.1 :=
+      coreVanish_eq_of_ksubset dom hdiff hpScard hpSsub (by rw [show p.2 = q.2 from hpq]; exact hqSsub)
+    exact Sigma.ext hT (heq_of_eq (show p.2 = q.2 from hpq))
+  calc B.card
+      ≤ ((Finset.univ : Finset (Fin n)).powersetCard k).card :=
+        Finset.card_le_card_of_injOn _ (fun p hp => by
+          simp only [Finset.mem_coe, hB, Finset.mem_sigma, hcores, Finset.mem_filter] at hp
+          rw [Finset.mem_coe, Finset.mem_powersetCard]
+          exact ⟨Finset.subset_univ _, (Finset.mem_powersetCard.mp hp.2).2⟩) hinj
+    _ = n.choose k := by rw [Finset.card_powersetCard, Finset.card_univ, Fintype.card_fin]
+
 end ProximityGap.EsymmFiber
