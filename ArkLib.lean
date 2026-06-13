@@ -129,6 +129,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettLemma24
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma2456
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25Opening
+import ArkLib.Data.CodingTheory.GMMDS.LovettMergeIdentity
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettNLtK
 import ArkLib.Data.CodingTheory.GMMDS.LovettPairwise
@@ -329,6 +330,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AllRatesJohnsonInstances
 import ArkLib.Data.CodingTheory.ProximityGap.AllWitnessFloorGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.AllWitnessOwnershipFloor
 import ArkLib.Data.CodingTheory.ProximityGap.AttackLoop46
+import ArkLib.Data.CodingTheory.ProximityGap.AutocorrelationMax
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingFiberConservation
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingListLowerBoundRS
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingReachNoGo
@@ -624,6 +626,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ChordConverseWrapper
 import ArkLib.Data.CodingTheory.ProximityGap.ChordFamilyCount
 import ArkLib.Data.CodingTheory.ProximityGap.ClassChartBounds
 import ArkLib.Data.CodingTheory.ProximityGap.ClassSupplyFloor
+import ArkLib.Data.CodingTheory.ProximityGap.CleanRangeNorm
 import ArkLib.Data.CodingTheory.ProximityGap.CodewordHeavyScalar
 import ArkLib.Data.CodingTheory.ProximityGap.Collapse
 import ArkLib.Data.CodingTheory.ProximityGap.CollinearityCensusTransfer
@@ -1298,6 +1301,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionSubgroupData
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionTower
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionWeilConditional
 import ArkLib.Data.CodingTheory.ProximityGap.MomentLogConvex
+import ArkLib.Data.CodingTheory.ProximityGap.MomentSupNormBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MomentSupplyIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDivisorWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDomainRootSpectrum
@@ -1785,6 +1789,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WitnessLayerCount
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentRatioLower
+import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodSidonBound
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianNonVanishing
