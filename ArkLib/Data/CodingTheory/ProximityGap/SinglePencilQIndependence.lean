@@ -52,6 +52,7 @@ All results `sorry`-free and axiom-clean (`[propext, Classical.choice, Quot.soun
 -/
 
 open Polynomial
+open scoped Classical
 
 namespace ArkLib.ProximityGap.SinglePencilQIndependence
 
@@ -146,8 +147,101 @@ theorem rootsOfUnity_pencil_aclose_card_le (Q0 : F[X]) (μ : Finset F) (k a : �
   rw [eval_pow, eval_X]
   exact pow_ne_zero k (fun h => hμ0 (h ▸ hζ))
 
+private theorem prodXsubC_natDegree (S : Finset F) :
+    (∏ ζ ∈ S, (X - C ζ)).natDegree = S.card := by
+  rw [Polynomial.natDegree_prod _ _ (fun ζ _ => X_sub_C_ne_zero ζ),
+    Finset.sum_congr rfl (fun ζ _ => Polynomial.natDegree_X_sub_C ζ),
+    Finset.sum_const, smul_eq_mul, mul_one]
+
+/-- **The MCA bad-scalar count for a single-poly stack is q-independent.**
+The number of scalars `γ` for which `Q₀ + γ·Xᵏ` agrees with SOME polynomial of degree `< k`
+(a codeword) on at least `a` points of a finite set `μ` (`0 ∉ μ`, `k < a`) is at most `C(|μ|, a)`
+— independent of `|F|`. The codeword freedom is absorbed: each bad `γ` is pinned by an `a`-subset
+`S` of agreement points, since `∏_S(X−ζ)` divides both corrected pencils, and the difference has
+degree `≤ k < a = deg ∏_S`, forcing it to vanish and the `Xᵏ`-coefficients (the scalars) to match. -/
+theorem mca_badscalar_card_le (Q0 : F[X]) (μ : Finset F) (k a : ℕ) (hka : k < a) :
+    (Finset.univ.filter (fun γ : F =>
+        ∃ W : F[X], W.natDegree < k ∧
+          a ≤ (μ.filter (fun ζ => (Q0 + C γ * X ^ k - W).eval ζ = 0)).card)).card
+      ≤ (μ.powersetCard a).card := by
+  classical
+  set bad := Finset.univ.filter (fun γ : F =>
+      ∃ W : F[X], W.natDegree < k ∧
+        a ≤ (μ.filter (fun ζ => (Q0 + C γ * X ^ k - W).eval ζ = 0)).card) with hbad
+  -- for each bad γ, choose a witness (W, then an a-subset of agreement points)
+  have hwit : ∀ γ ∈ bad, ∃ W : F[X], ∃ S : Finset F, S ⊆ μ ∧ S.card = a ∧ W.natDegree < k ∧
+      ∀ ζ ∈ S, (Q0 + C γ * X ^ k - W).eval ζ = 0 := by
+    intro γ hγ
+    obtain ⟨W, hWdeg, hcard⟩ := (Finset.mem_filter.mp hγ).2
+    obtain ⟨S, hSsub, hScard⟩ := Finset.exists_subset_card_eq hcard
+    exact ⟨W, S, hSsub.trans (Finset.filter_subset _ _), hScard, hWdeg,
+      fun ζ hζ => (Finset.mem_filter.mp (hSsub hζ)).2⟩
+  choose Wpick Spick hSsub hScard hWdeg hSvanish using hwit
+  apply Finset.card_le_card_of_injOn (fun γ => if h : γ ∈ bad then Spick γ h else ∅)
+  · intro γ hγ
+    have hfeq : (if h : γ ∈ bad then Spick γ h else ∅) = Spick γ hγ := dif_pos hγ
+    show (if h : γ ∈ bad then Spick γ h else ∅) ∈ μ.powersetCard a
+    rw [hfeq]
+    exact Finset.mem_powersetCard.mpr ⟨hSsub γ hγ, hScard γ hγ⟩
+  · intro γ hγ γ' hγ' heq
+    have hγb := Finset.mem_coe.mp hγ
+    have hγb' := Finset.mem_coe.mp hγ'
+    simp only [dif_pos hγb, dif_pos hγb'] at heq
+    -- both products divide their corrected pencils
+    have hd1 : (∏ ζ ∈ Spick γ hγb, (X - C ζ)) ∣ (Q0 + C γ * X ^ k - Wpick γ hγb) :=
+      prodXsubC_dvd_of_roots _ _ (hSvanish γ hγb)
+    have hd2 : (∏ ζ ∈ Spick γ hγb, (X - C ζ)) ∣ (Q0 + C γ' * X ^ k - Wpick γ' hγb') := by
+      rw [heq]
+      exact prodXsubC_dvd_of_roots _ _ (hSvanish γ' hγb')
+    have hdsub : (∏ ζ ∈ Spick γ hγb, (X - C ζ))
+        ∣ (C (γ - γ') * X ^ k - (Wpick γ hγb - Wpick γ' hγb')) := by
+      have := dvd_sub hd1 hd2
+      have heqd : (Q0 + C γ * X ^ k - Wpick γ hγb) - (Q0 + C γ' * X ^ k - Wpick γ' hγb')
+          = C (γ - γ') * X ^ k - (Wpick γ hγb - Wpick γ' hγb') := by
+        rw [map_sub]; ring
+      rwa [heqd] at this
+    -- the difference has degree ≤ k < a, so it vanishes
+    set P := C (γ - γ') * X ^ k - (Wpick γ hγb - Wpick γ' hγb') with hP
+    have hPdeg : P.natDegree ≤ k := by
+      refine le_trans (Polynomial.natDegree_sub_le _ _) ?_
+      rw [Nat.max_le]
+      refine ⟨le_trans (Polynomial.natDegree_C_mul_le _ _) ?_, ?_⟩
+      · rw [Polynomial.natDegree_X_pow]
+      · refine le_trans (Polynomial.natDegree_sub_le _ _) ?_
+        rw [Nat.max_le]; exact ⟨le_of_lt (hWdeg γ hγb), le_of_lt (hWdeg γ' hγb')⟩
+    have hP0 : P = 0 := by
+      by_contra hPne
+      have hdeg_le := Polynomial.natDegree_le_of_dvd hdsub hPne
+      rw [prodXsubC_natDegree] at hdeg_le
+      rw [hScard γ hγb] at hdeg_le
+      omega
+    -- compare Xᵏ coefficients ⟹ γ = γ'
+    have hcoeff : (γ - γ') = (Wpick γ hγb - Wpick γ' hγb').coeff k := by
+      have h : P.coeff k = (0 : F[X]).coeff k := congrArg (fun q => Polynomial.coeff q k) hP0
+      rw [hP, Polynomial.coeff_sub, Polynomial.coeff_C_mul, Polynomial.coeff_X_pow,
+        if_pos rfl, mul_one, Polynomial.coeff_zero] at h
+      exact sub_eq_zero.mp h
+    have hWk : (Wpick γ hγb - Wpick γ' hγb').coeff k = 0 := by
+      rw [Polynomial.coeff_sub, Polynomial.coeff_eq_zero_of_natDegree_lt (hWdeg γ hγb),
+        Polynomial.coeff_eq_zero_of_natDegree_lt (hWdeg γ' hγb'), sub_zero]
+    rw [hWk] at hcoeff
+    exact sub_eq_zero.mp hcoeff
+
+/-- **Roots-of-unity MCA specialization.** Over `μ_n = {ζ : ζⁿ = 1}` (size `n`, `0 ∉ μ_n`), the
+number of scalars `γ` for which `Q₀ + γ·Xᵏ` agrees with *some* degree-`<k` codeword on at least `a`
+points of `μ_n` (`k < a`) is `≤ C(n, a)` — independent of `|F|`. This directly upper-bounds the MCA
+bad-scalar count `#{γ : mcaEvent}` for a single-polynomial stack on the smooth domain. -/
+theorem rootsOfUnity_mca_badscalar_card_le (Q0 : F[X]) (μ : Finset F) (k a : ℕ) (hka : k < a) :
+    (Finset.univ.filter (fun γ : F =>
+        ∃ W : F[X], W.natDegree < k ∧
+          a ≤ (μ.filter (fun ζ => (Q0 + C γ * X ^ k - W).eval ζ = 0)).card)).card
+      ≤ (μ.powersetCard a).card :=
+  mca_badscalar_card_le Q0 μ k a hka
+
 end ArkLib.ProximityGap.SinglePencilQIndependence
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.single_pencil_aclose_card_le
 #print axioms ArkLib.ProximityGap.SinglePencilQIndependence.rootsOfUnity_pencil_aclose_card_le
+#print axioms ArkLib.ProximityGap.SinglePencilQIndependence.mca_badscalar_card_le
+#print axioms ArkLib.ProximityGap.SinglePencilQIndependence.rootsOfUnity_mca_badscalar_card_le
