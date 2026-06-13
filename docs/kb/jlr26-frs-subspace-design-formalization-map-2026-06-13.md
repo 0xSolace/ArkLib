@@ -979,3 +979,29 @@ gap is extending it to the resonant maximizer's subset sums.
 resonant-maximizer extension is the open new math. This pins the bound mechanism precisely (subset-sum
 counting vs the antipodal budget) — the cleanest statement of the demand-side open core, connecting my
 tower recursion to the exact in-tree object. General-r remains open on the demand lane.
+
+## 35. WHY the demand route avoids the char-p wall (spectrum deflates) — + honest negative on the loose bound
+
+Genuine attempt + honest negative on the demand bound `#bad ≤ K`, via `witness_badscalar_card_le_spectrum`
+(in-tree): `#bad ≤ |subset-sum spectrum| = #{distinct Σ_{ζ∈S}ζ}`.
+
+**The key STRUCTURAL insight (positive, survives).** For the SPECTRUM (a count of DISTINCT sums), char-p
+coincidences MERGE values, so `|spectrum^{(p)}| ≤ |spectrum^∞|` — VERIFIED (spec_Fp ≤ spec_C always). This
+is the OPPOSITE of the energy route, where char-p INFLATES `E_r` (the wall). So the demand bound is a
+**pure char-0 roots-of-unity counting problem with NO char-p inflation wall** — explaining WHY the demand
+lane is the tractable one (NubsCarson proved r=3 entirely in char-0 arithmetic). The char-p wall that
+kills the energy/moment route (§28) does NOT exist for the demand spectrum. Important route-selection fact.
+
+**The honest NEGATIVE (the full-spectrum bound is too loose).** `|spectrum^∞|` over ALL (k+1)-subsets
+EXCEEDS K: at n=16,r=3, `spec_C=464 > K=448` (while true `#bad=97`). So `#bad ≤ |full spectrum|` does NOT
+give `#bad ≤ K` — the full spectrum over-counts. The true `#bad` uses only the ALIGNING subsets (a small,
+stack-dependent subset), whose spectrum is `≪` the full one. So the right object is the **char-0 ALIGNING
+subset-sum spectrum** of the worst (resonant) stack — still open for general r, but now known to be a
+char-0 problem (no wall), which is why it is tractable.
+
+**Net.** Genuine attempt: the spectrum route. Honest negative: full spectrum too loose (> K). Genuine
+positive that survives: the demand bound is char-0 (spectrum deflates under reduction) — no char-p wall,
+explaining the demand lane's tractability and confirming it as the live route. The open core remains the
+char-0 aligning-spectrum bound for the resonant general-r maximizer (NubsCarson's lane), but now correctly
+typed as char-0 combinatorics, not a char-p coincidence problem. "Expect to fail repeatedly" — this
+attempt failed at the bound but sharpened the route's character.
