@@ -70,3 +70,20 @@ Probe: `scripts/probes/probe_conj_Br_characterization.py`. Verified 20/20 cases,
   dichotomies) are corollaries of the same Lam–Leung lattice; novel as explicit closed forms.
 - Method note: check the in-tree `NegationClosedPairingCount`/E_r work + the conjecture-campaign memory
   for prior art BEFORE promoting, to avoid re-deriving known results.
+
+## Theme C — antipodal excess & sumset saturation
+
+Probes: `scripts/probes/probe_conj_excess_sumset.py`, `probe_conj_excess_fit.py`. n=4..64 / odd p≤13.
+
+- **C1 (antipodal excess factored closed forms — SURVIVOR).** The excess of the 2-power energy over
+  the permutation (perfect-B_r) count, `E_r(μ_{2^k}) − perm(n,r)`, factors as:
+    r=2: `n(n−2)`   ·   r=3: `9·n(n−2)²`   ·   r=4: `3·n(n−2)(27n²−132n+187)`
+  All verified exactly on 5 points; all divisible by `n(n−2)`; leading coeff `(2r−1)!!−r!` (1,9,81).
+  Derivable from B3 (known) + the perm count, so MODERATELY novel — but the explicit factorization and
+  the uniform `n(n−2)` divisibility (the "antipodal-pair × non-antipodal" structure) is a clean new form.
+- **C4 (k-fold sumset saturation — SURVIVOR, companion to A6).** For odd prime `p` and `k` with the
+  perfect-`B_k` property (A6), the k-fold sumset saturates to the multiset maximum:
+    `|k·μ_p| = C(n+k−1, k)`   (every size-k multiset of μ_p has a DISTINCT sum).
+  Verified: |H+H|=C(n+1,2), |3H|=C(n+2,3), |4H|=C(n+3,4) for n=5,7,11,13. One-sided form of A6;
+  FAILS for odd composite once `k ≥ minFac(n)` (same threshold). Proof: distinct multisets ⇒ distinct
+  sums ⟺ no non-trivial B_k relation ⟺ A6's condition. Promoted: +2 (running ≈ 9).
