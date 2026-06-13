@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.FarCosetExplosion
+import ArkLib.Data.CodingTheory.ProximityGap.MCAEquivariance
 
 /-!
 # Automorphism-equivariance of the far-line MCA incidence (issue #389)
@@ -129,9 +130,58 @@ theorem explainableScalars_card_comp_aut (C : Set (ι → A)) (δ : ℝ≥0) (u�
       = (explainableScalars (F := F) C δ u₀ u₁).card := by
   rw [explainableScalars_comp_aut C δ u₀ u₁ σ hC]
 
+/-! ## Reed-Solomon multiplicative rotations -/
+
+/-- **RS-domain rotation instance of far-line incidence equivariance.** If a coordinate
+permutation `σ` scales the evaluation domain by `g`, `domain (σ i) = g * domain i`, then the
+Reed-Solomon code `ReedSolomon.code domain k` is fixed by precomposition with `σ`. Consequently
+the far-line bad-scalar set itself is invariant:
+
+`explainableScalars RS δ (u₀ ∘ σ) (u₁ ∘ σ) = explainableScalars RS δ u₀ u₁`.
+
+This is the generic smooth-domain rotation bridge needed by the #389 cyclic/Fourier attack: for
+`μ_n`, choosing `σ` to be multiplication by a subgroup generator gives the `Z/n` symmetry of the
+line-incidence operator. -/
+theorem explainableScalars_rs_rotate (domain : ι ↪ F) (k : ℕ) (σ : Equiv.Perm ι) (g : F)
+    (hg0 : g ≠ 0) (hg : ∀ i, domain (σ i) = g * domain i)
+    (δ : ℝ≥0) (u₀ u₁ : ι → F) :
+    explainableScalars (F := F) (ReedSolomon.code domain k : Set (ι → F)) δ
+        (u₀ ∘ ⇑σ) (u₁ ∘ ⇑σ)
+      = explainableScalars (F := F) (ReedSolomon.code domain k : Set (ι → F)) δ u₀ u₁ := by
+  have hginv : ∀ i, domain (σ⁻¹ i) = g⁻¹ * domain i := by
+    intro i
+    have h := hg (σ⁻¹ i)
+    simp only [Equiv.Perm.inv_def, Equiv.apply_symm_apply] at h ⊢
+    rw [h, ← mul_assoc, inv_mul_cancel₀ hg0, one_mul]
+  refine explainableScalars_comp_aut (F := F)
+    (ReedSolomon.code domain k : Set (ι → F)) δ u₀ u₁ σ ?_
+  intro w
+  constructor
+  · intro hw
+    exact ProximityGap.MCAEquivariance.comp_perm_mem_code σ g hg hw
+  · intro hw
+    have hback :=
+      ProximityGap.MCAEquivariance.comp_perm_mem_code σ⁻¹ g⁻¹ hginv (w := w ∘ ⇑σ) hw
+    have hwid : (w ∘ ⇑σ) ∘ ⇑(Equiv.symm σ) = w := by
+      funext i
+      simp [Function.comp]
+    simpa [hwid] using hback
+
+/-- Cardinality form of `explainableScalars_rs_rotate`: RS multiplicative domain rotations preserve
+the far-line incidence count. -/
+theorem explainableScalars_card_rs_rotate (domain : ι ↪ F) (k : ℕ) (σ : Equiv.Perm ι) (g : F)
+    (hg0 : g ≠ 0) (hg : ∀ i, domain (σ i) = g * domain i)
+    (δ : ℝ≥0) (u₀ u₁ : ι → F) :
+    (explainableScalars (F := F) (ReedSolomon.code domain k : Set (ι → F)) δ
+        (u₀ ∘ ⇑σ) (u₁ ∘ ⇑σ)).card
+      = (explainableScalars (F := F) (ReedSolomon.code domain k : Set (ι → F)) δ u₀ u₁).card := by
+  rw [explainableScalars_rs_rotate domain k σ g hg0 hg δ u₀ u₁]
+
 end ProximityGap.FarCosetExplosion
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
 #print axioms ProximityGap.FarCosetExplosion.explainableScalars_subset_of_aut
 #print axioms ProximityGap.FarCosetExplosion.explainableScalars_comp_aut
 #print axioms ProximityGap.FarCosetExplosion.explainableScalars_card_comp_aut
+#print axioms ProximityGap.FarCosetExplosion.explainableScalars_rs_rotate
+#print axioms ProximityGap.FarCosetExplosion.explainableScalars_card_rs_rotate
