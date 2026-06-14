@@ -9310,3 +9310,44 @@ NET (honest outcome = machine-checked refutation + precise localization):
  • The open core is NOT a density bound — it is exactly the n>=128 crossover C(n) vs p, i.e. the same
    wall (BCHKS 1.12 / BGK / Paley). Probe committed; no Lean brick (the statement is a refutation +
    numeric localization, not a clean axiom-clean Prop beyond the already-landed n/2-1 norm LB).
+
+## Cyclic-sieving / n-core list-growth route — NO super-poly boost, NO refutation (2026-06-14)
+
+**Attempt.** The cyclic-sieving / Schur-at-roots-of-unity lever (memory
+`issue389-schur-roots-of-unity-lever`): the smooth-domain `μ_n` GM-MDS / HOMDS list certificate for
+a degree-pattern `λ` is `det(ζ^{β_j i})`, `β_j = λ_j+(n−1−j)`; it VANISHES iff two `β_j` collide
+mod `n` (abacus `n`-core NONEMPTY) — exactly the in-tree axiom-clean
+`HOMDSSmoothObstruction.homds_det_ne_zero_iff_nCoreEmpty`. Each vanishing certificate is an extra
+linear dependence = a candidate spurious list codeword. OPEN QUESTION the lever poses: does
+cyclic-sieving / hook-content vanishing boost the smooth-`μ_n` coset list ABOVE the trivial
+single-coset `O(1/ρ)` to SUPER-POLY (⟹ floor FALSE for plain RS) or stay poly?
+
+**Machine-checked finding (PRIZE regime: proper subgroup `μ_{2^μ}`, multi-prime; probe
+`scripts/probes/probe_cyclicsieving_listgrowth.py`, full `C(n,k)` exact enumeration as ground
+truth).** The route does **NOT** boost the list and does **NOT** refute the floor:
+
+* **(A) The "super-poly" is a SUPPORT/dependence over-count, not codewords.** An intermediate
+  enumeration that multiplied a per-coset kernel dimension by `C(#cosets, #needed)` (counting
+  coset-UNION supports) grows super-poly — but a single coset support of `m=k+1` columns has NO
+  `β`-collision mod `n` in the list window `a>k` (count `0`). The explosion lived entirely in the
+  binomial coset-union factor, i.e. it is exactly the **proven** core-vs-list factor
+  `#cores ≤ L·C(A,k+m+1)` (`SubJohnsonListSupply.explainableCoreSupply_of_listBound`,
+  `ExplainableCoreExactCount.explainable_cores_eq_sum_agreement`, both axiom-clean in-tree). The
+  `n`-core enumeration counts the `C(A,·)` SUPPORTS, NOT the list `L`. (Same "cores exp, list poly"
+  catch as `probe_prize_coreVSlist`.)
+* **(B) EXACT worst-case CODEWORD list (full `C(n,k)`) in the strict interior window is
+  `O(1/ρ)`, `p`-independent.** `ρ=1/2`, agreement `a≥k+2`: list `∈ {0,1,3}` across `n=8,12,16` and
+  multiple primes — a handful, no growth.
+* **(C) DECISIVE: the only large list is the GENERIC `a=k+1` MDS boundary spike, identical for
+  smooth and random domains.** At `a=k+1`, SMOOTH `μ_n` list vs a RANDOM (non-smooth) evaluation
+  domain of the same size: `n=8` 3 vs 2, `n=12` 11 vs 12, `n=16` **70 vs 70**. The spike decays to
+  `O(1/ρ)` within 1–2 steps as `a` rises off `k+1` (it is `outside` the prize's strict-interior
+  window). The smooth/cyclic-sieving structure provides **no** advantage over a random domain.
+
+**Status.** Neither closure nor refutation: a **precise reduction to the named open core**. The
+cyclic-sieving lever does not independently bound or blow up the list; it reduces to the same
+generic-MDS worst-case list bound `L` of `SubJohnsonListBound dom k m L A`
+(`SubJohnsonListSupply.lean`, the recognized explicit-RS-beyond-Johnson open problem = BGK / Paley
+/ BCHKS Conj 1.12), with smooth `μ_n` behaving like a random domain on the list axis. Do not
+re-attempt "n-core / hook-content vanishing super-poly-boosts the smooth list": the boost is the
+`C(A,·)` support factor, already proven worst-case vacuous, not the list `L`.
