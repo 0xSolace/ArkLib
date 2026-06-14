@@ -9685,3 +9685,45 @@ which IS the wall. Named axiom-clean in CrossCellShkredovBound.lean as CrossCell
 exact decomposition 2*N0(H,r)+crossCell = N0(G,r) and the consumer N0_gap_of_absoluteBound. The
 genuinely-new input the body asks for must come from the arithmetic of the q-reduction (spurious mod-p
 collisions), not from sum-product/BSG. Probe: scripts/probes/probe_wfLF_crosscell_shkredov.py.
+
+================================================================================
+2026-06-14  wf-LD  REFUTED: the cross-parity leak does NOT lower-bound the EVEN-sublattice ideal-SVP
+--------------------------------------------------------------------------------
+LANE F11 (cyclotomic ideal-lattice / split-prime SVP). SWING: r*(n,p)=(1/2)*lambda_1^{L1,even}(P|p),
+the even-sublattice shortest vector of the fully-split prime ideal in Z[zeta_n]. Pan-Xu (EUROCRYPT'21)
+give poly ideal-SVP only for NON-split q; the prize q is FULLY SPLIT (the named open gap). HOPE: the
+structured cross-parity leak A == -g*B (mod q) (96-100% of defects) forces lambda_1^{L1,even} ABOVE the
+random-lattice Gaussian heuristic, pinning r* below the window.
+
+VERDICT: FALSE. Two machine-checked facts.
+
+(1) The cross-parity law is SHARPER than billed (probe_407_laneF_crossparity_leak.py, n=16/p=17,
+    n=32/p=97): g0 = -A/B = 1 for 100% of defects under EVERY splitting -> the law is exactly A = -B
+    (even-index half-sum = - odd-index half-sum), a coupling constraint between the two parity halves.
+
+(2) The even-sublattice SVP does NOT grow (scripts/probes/probe_wfLD_evenlattice_svp.py, EXACT genuine
+    L1 girth via coefficient enumeration in the power basis Z^{d}, d=phi(n)=n/2; zeta^j -> g^j mod p,
+    split primes p == 1 mod n):
+        n=16:  lambda_1^L1 FULL=3..5  EVEN=5..7  EVEN/FULL=1.25..1.75
+        n=32:  lambda_1^L1 FULL=3..4  EVEN=3..5  EVEN/FULL=1.00..1.33
+        n=64:  lambda_1^L1 FULL=3..4  EVEN=3..4  EVEN/FULL=1.00 (uniform over p=193..2113)
+    Both FULL and EVEN girths track the COUNTING girth ~ log_n p / the Gaussian heuristic for an index-p
+    sublattice; NEITHER grows like a power of n. The even-sublattice gain factor DECAYS to 1 as n grows
+    -- the WRONG direction for closure. So r* = (1/2)*lambda_1^{L1,even} ~ 2 at n=64, far below the
+    prize window. The SVP handle, even restricted to the structured even sublattice, lands back on the
+    same counting girth as the generic route (IdealSVPGirthVerdict.lean / O39).
+
+WHY (the precise mechanism, PROVEN axiom-clean in _wfLD_crossparity_evensvp.lean):
+    A = -B is a constraint on the COUPLING of the two halves, not a lower bound on either half alone.
+    A pure-even short relation has odd part B=0, hence A = -B = 0 satisfies the identity VACUOUSLY --
+    yet A is a nonzero even-support combination summing to 0, i.e. a genuine short even-sublattice
+    vector. The identity cannot exclude pure-even short vectors, and the probe confirms they exist at
+    the counting girth. Theorems: crossParity_of_vanish (A+B=0 => A=-B, unconditional),
+    pureEven_witness_satisfies_crossParity_vacuously, crossParity_does_not_lowerBound_even (the no-go).
+    Axiom audit [propext, Classical.choice, Quot.sound], 0 sorryAx, real lake build green (3297 jobs).
+
+This SHARPENS IdealSVPGirthVerdict.lean (#92/LEVER 3): that brick refuted the GENERIC SVP route (wrong
+direction/norm/count); this brick additionally refutes the one STRUCTURED upgrade (cross-parity even
+sublattice) -- the Pan-Xu split-prime gap is not closed by the cross-parity handle. Ring-LWE/ideal-SVP
+territory is fully exhausted for #407. Probes: probe_wfLD_evenlattice_svp.py,
+probe_407_laneF_crossparity_leak.py.
