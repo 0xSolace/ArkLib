@@ -918,7 +918,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadScalarCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicLatticeWrapOnset
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechFiberNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicCocycleLargeDeviation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicDeviationDecayEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicJacobiCocycleNonContraction
@@ -933,6 +935,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IsoSparsityMasonStothers
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IsolatedCountKelley
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._KelleyOwenDilationPencil
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MetaTheoremSecondOrderFloor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentLadderAntitone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentLadderExceedsPrize
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentMethodNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialLineSpectrumNoEscape
@@ -1096,6 +1099,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HasseWeilBoundInstances
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWronskianMonomial
 import ArkLib.Data.CodingTheory.ProximityGap.HasseWronskianPoly
 import ArkLib.Data.CodingTheory.ProximityGap.HeightGateAMGM
+import ArkLib.Data.CodingTheory.ProximityGap.HeightGateBindingDepthVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.HeightGateNormBound
 import ArkLib.Data.CodingTheory.ProximityGap.HeightGateThresholdAnalysis
 import ArkLib.Data.CodingTheory.ProximityGap.HenselNumeratorWeightWitness
