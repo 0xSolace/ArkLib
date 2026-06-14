@@ -474,3 +474,32 @@ the open brick"). This is the fleet-wide frontier, not an artifact of one route.
 literature-grounded additive-combinatorics conjecture that no current technique proves. That conjecture
 IS the prize's irreducible core. Not claimed proven; it is the complete and minimal open statement, with
 everything else reduced to proven math.
+
+## UPDATE 2026-06-13 (late) — SHARPENING the "bad primes exist" wall: the δ*-relevant quantity is D=2^k
+
+The cross-lane "wall" above (`P_max` exponential ⟹ prize `p≪2^n` ⟹ bad primes exist ⟹ core open) is
+stated for the additive-**energy** `P_max`. But δ\* depends ONLY on the **distinct-`e_m` (bad-scalar)
+count**, NOT on the energy — and that quantity is strictly more robust. This session's measurements:
+
+- **No `e_m`-inflation anywhere tested.** `probe_407_halfsum_wide_refute.py`: `n=16`, **3227 primes
+  `≡1 mod 16` up to 300000** (`r=3`; +1391 at `r=4`, +752 at `r=5`) — distinct-`e_m` count is EXACTLY
+  `|Σ|` (40/41/40), zero violations. `probe_407_odd_badprime_hunt.py`: factoring `Φ_16 mod p` over all
+  extension fields, **NO odd bad prime in [3,120)**. So for the δ\*-relevant count, `D` is empirically a
+  **pure power of 2** (only char-2 degenerates, via `t^n−1=(t−1)^n`) — and the prize prime `q≡1 mod n` is
+  ODD ⟹ `q∤D`. The energy `P_max` wall does NOT transfer to the bad-scalar count: char-p spurious configs
+  appear (config count inflates 70→102, 560→656) but every spurious `e_m` lands back in `Σ`.
+
+This relocates the open core precisely: NOT "bad primes exist for the count" (none seen to 300k), but the
+**Half-Sum Lemma** — the rigidity that *makes* `D=2^k` true. Two reformulations of it (new this session):
+  · **Complement half-sum:** `e₂(U) = ½ ∑_{w∈ μ_{n/2}∖U²} w` (half the sum of squares MISSING from `U²`).
+  · **Fourier-flat:** `\hat{1_U}(1)=\hat{1_U}(3)=0` + antipodal-free ⟹ `−½\hat{1_U}(2) ∈ Σ_{|U|/2}`.
+And the reason it is genuinely NEW math: Lam–Leung's char-0 proof is the **ℤ-basis** argument
+(`{1,ζ,…,ζ^{2^{μ-1}−1}}` a ℤ-basis, `ζ^{2^{μ-1}}=−1`), which PROVABLY collapses mod `p` (there `ζ∈F_p`,
+the basis is 1-dim) — so no transfer; a positive-characteristic proof is required.
+
+**Reading list (verified this session).** JACKPOT engine: Lam–Leung *Vanishing Sums of m-th Roots of Unity
+in Finite Fields* (arXiv:`math/9605216`, JNT 65 1997). Also: Lam–Leung J.Algebra 224 (2000); Kambiré
+arXiv:`2604.09724`; Arnon–Boneh–Fenzi ePrint `2026/680`; Steinberger arXiv:`2008.11268`; Poonen–Rubinstein
+arXiv:`math/9508209`; Conway–Jones (1976); Chi Hoi Yip arXiv:`2309.10950`; "small mult. subgroup not a
+sumset" FFA 63 (2020); Tao arXiv:`math/0308286` + arXiv:`2310.09992`; Cilleruelo–Garaev arXiv:`1711.05335`
+(Stepanov-method counting without Weil). Probes: `probe_407_{halfsum_wide_refute,primitive_structure}.py`.
