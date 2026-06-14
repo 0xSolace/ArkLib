@@ -852,6 +852,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgr
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicCocycleLargeDeviation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChaining
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChainingSubmaxRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RungListBridge
