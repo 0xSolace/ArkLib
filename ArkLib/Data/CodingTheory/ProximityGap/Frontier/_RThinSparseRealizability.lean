@@ -117,8 +117,8 @@ theorem ragged_excess_realizable {a b k : ℕ} {γ : F} {c : F[X]} {S : Finset F
 /-- **Char-`p` R-thin from char-0 R-thin.** Any char-0 bound on the *distinct bad-scalar count*
 transfers verbatim to char-`p`, by the landed merge-only monotonicity
 (`_RingHomBadScalarMono.badScalar_charP_card_le_budget`): reduction `ℤ[ζ_n] → 𝔽_q` only merges
-char-0 bad scalars, never creates them. So the R-thin lever only needs to be proved in characteristic
-`0` (where the vanishing-sums / sparse structure is rigid). -/
+char-0 bad scalars, never creates them. So the R-thin lever only needs to be proved in
+characteristic `0` (where the vanishing-sums / sparse structure is rigid). -/
 theorem rThin_charP_of_charZero {ι K S : Type*} [DecidableEq K] [DecidableEq S]
     (T : Finset ι) (elig : ι → Prop) [DecidablePred elig]
     (charZero : ι → K) (charP : ι → S) (red : K → S) {B : ℕ}

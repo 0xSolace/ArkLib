@@ -910,6 +910,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalEvenOddDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadScalarCertificate
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicLatticeWrapOnset
@@ -928,6 +929,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MetaTheoremSecondOrderFlo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentMethodNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialLineSpectrumNoEscape
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PerCosetDichotomy
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinSparseRealizability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinSqrtNKRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RaggedRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RingHomBadScalarMono
