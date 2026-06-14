@@ -9131,3 +9131,28 @@ sup-norm M(n)=max_b|eta_b|:
 - **p-adic/Stickelberger:** Gauss-sum p-adic valuation = digit-sum (Gross-Koblitz, exact/proven). But
   corr(|eta_i|, 2-adic-val(i)) = 0.019 ~ 0 — the p-adic structure gives ZERO handle on archimedean size.
   REFUTED.
+
+## 2026-06-14 — Okamoto "Syndrome-Space Lens" (eprint 2025/1712) READ IN FULL: does NOT solve the prize
+
+User supplied the PDF (~/Desktop/newmath/syndrome_space_lens.pdf); read in full. Careful & correct,
+NOT flawed, but NOT a plain-RS unconditional window-interior pin of δ*. Resolves the prior
+"suspect-pending-verification" flag.
+
+Param dict (Okamoto→ours): d=dim(=our k=ρn), m=n−d parity checks, t=agreement=(1−δ)n, k=n−t=δn error
+budget, ∆:=t−d=(1−δ−ρ)n rank margin, m−k=∆.
+
+TRICHOTOMY: ∆=0 (capacity) VACUOUS / no rigidity w/o structure (Thm 5.1/5.2 = capacity impossible,
+consistent); ∆=1 knife-edge conditional; ∆≥2 "unconditional rigidity" ONLY under (r+1)k<m+1, r≥2
+(Thm 7.1 = r-th vanishing-differences / divided-diff / GG25-Hankel route + double-counting Thm 7.2).
+
+DECISIVE: (r+1)k<m+1 ⟺ ∆ > m·r/(r+1); minimal r=2 ⟹ ∆ > 2m/3 ⟺ δ < (1−ρ)/3 = BELOW Johnson. The
+prize window (δ∈(1−√ρ, 1−ρ−Θ(1/log n))) has ∆ ≤ √ρ(1−√ρ)n < 2m/3 throughout (e.g. ρ=1/4: 0.25n<0.5n),
+so Thm 7.1/7.2 and the soundness law Pr[FA]≤q^{−∆s} DO NOT APPLY in the window. Unconditional plain-RS
+content stops at δ<(1−ρ)/3 (= the granularity-ladder reach + the divided-diff route already known
+vacuous above Johnson). Window interior: the paper's OWN text requires "additional protocol-level
+structure (independent two-fold MCA checks, DEEP/STIR out-of-domain sampling, global error locator)" =
+folded/structured, NOT plain RS (consistent w/ BCDZ25 folded-is-solved). "Bypasses list-decoding" =
+bypasses the DECODER not the combinatorial LIST SIZE (the grand challenge). Abstract's "complete
+resolution up to capacity" = a trichotomy CLASSIFICATION, not a window-interior plain-RS pin. CONSISTENT
+with capacity-impossible + the open BGK/√n wall. Prize remains OPEN. (Full assessment: #407 comment
+4701138629.)
