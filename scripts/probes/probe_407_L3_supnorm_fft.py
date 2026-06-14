@@ -25,9 +25,12 @@ Per directive (a): is C bounded as mu grows, or does it creep up?  Adversarial f
 the FFT IS the exhaustive search -- the reported M is the TRUE global max over all b,
 so any growth is REAL (not a sampling lower bound).
 """
-import math
+import math, sys
 import numpy as np
 from sympy import isprime, primitive_root
+
+def _p(*a):
+    print(*a); sys.stdout.flush()
 
 def find_prime_near(n, beta):
     """smallest prime p ≡ 1 mod n with p >= n^beta."""
@@ -75,24 +78,24 @@ def measure_fft(p, n):
     }
 
 def run(beta, mu_lo=6, mu_hi=15, pcap=600_000_000):
-    print(f"\n===== beta = {beta}  (prize-scale constant index, FFT exhaustive) =====")
-    print(f"{'mu':>3} {'n':>7} {'p':>14} {'beta':>6} {'M(n)':>10} {'base':>9} "
-          f"{'C=M/base':>9} {'Cg=C/sq2':>9} {'mean':>7} {'p99':>7} {'p999':>7} "
-          f"{'p9999':>8} {'#>base':>8} {'argmax_b':>10}")
+    _p(f"BETA {beta}  (prize-scale constant index, FFT exhaustive)")
+    _p(f"{'mu':>3} {'n':>7} {'p':>14} {'beta':>6} {'M(n)':>10} {'base':>9} "
+       f"{'C=M/base':>9} {'Cg=C/sq2':>9} {'mean':>7} {'p99':>7} {'p999':>7} "
+       f"{'p9999':>8} {'#>base':>8} {'argmax_b':>10}")
     rows = []
     for mu in range(mu_lo, mu_hi + 1):
         n = 1 << mu
         p = find_prime_near(n, beta)
         if p > pcap:
-            print(f"{mu:>3} {n:>7} {p:>14}  -- skip (p>{pcap:,})")
+            _p(f"{mu:>3} {n:>7} {p:>14}  -- skip (p>{pcap:,})")
             continue
         beta_eff = math.log(p) / math.log(n)
         r = measure_fft(p, n)
         C = r["M"] / r["base"]
         Cg = C / math.sqrt(2)
-        print(f"{mu:>3} {n:>7} {p:>14} {beta_eff:>6.3f} {r['M']:>10.2f} {r['base']:>9.2f} "
-              f"{C:>9.4f} {Cg:>9.4f} {r['mean']:>7.2f} {r['p99']:>7.2f} {r['p999']:>7.2f} "
-              f"{r['p9999']:>8.2f} {r['nbig']:>8d} {r['argmax']:>10d}")
+        _p(f"ROW b{beta} {mu:>3} {n:>7} {p:>14} {beta_eff:>6.3f} {r['M']:>10.2f} {r['base']:>9.2f} "
+           f"{C:>9.4f} {Cg:>9.4f} {r['mean']:>7.2f} {r['p99']:>7.2f} {r['p999']:>7.2f} "
+           f"{r['p9999']:>8.2f} {r['nbig']:>8d} {r['argmax']:>10d}")
         rows.append((mu, n, p, beta_eff, r["M"], r["base"], C))
     return rows
 
@@ -100,15 +103,15 @@ if __name__ == "__main__":
     # KB validation point: n=64, p=16778497 (claimed R = M/base = 1.051)
     p64, n64 = 16778497, 64
     r64 = measure_fft(p64, n64)
-    print("=== KB validation: n=64, p=16778497 (claimed C=M/base=1.051) ===")
-    print(f"M={r64['M']:.3f} base={r64['base']:.3f} "
-          f"C=M/base={r64['M']/r64['base']:.4f} "
-          f"Cg=C/sqrt(2)={r64['M']/r64['base']/math.sqrt(2):.4f} "
-          f"argmax_b={r64['argmax']}")
+    _p("KBVAL n=64 p=16778497 (claimed C=1.051): "
+       f"M={r64['M']:.3f} base={r64['base']:.3f} "
+       f"C={r64['M']/r64['base']:.4f} Cg={r64['M']/r64['base']/math.sqrt(2):.4f} "
+       f"argmax_b={r64['argmax']}")
 
     # beta=4 (H ~ p^{1/4}, the di Benedetto Thm 3.1 boundary) up to as high as feasible.
-    run(beta=4.0, mu_lo=6, mu_hi=15, pcap=600_000_000)
+    run(beta=4.0, mu_lo=6, mu_hi=14, pcap=600_000_000)
     # beta=5 (H ~ p^{1/5} < p^{1/4} -- BELOW di Benedetto Thm 3.1 validity).
-    run(beta=5.0, mu_lo=6, mu_hi=12, pcap=600_000_000)
+    run(beta=5.0, mu_lo=6, mu_hi=11, pcap=600_000_000)
     # beta=4.5 middle of the prize range.
-    run(beta=4.5, mu_lo=6, mu_hi=13, pcap=600_000_000)
+    run(beta=4.5, mu_lo=6, mu_hi=12, pcap=600_000_000)
+    _p("DONE")
