@@ -9225,3 +9225,45 @@ are NOT q-independent = exactly the BGK / additive-energy sup-norm wall already 
 cross-parity decomposes cleanly into an elementary first moment (this brick) + the open BGK core
 (L∞/L²). The Pan–Xu cross-parity split does NOT escape the floor; it relocates the open content to
 the per-frequency worst case, with the aggregate now provably anti-aligned. NOT closure.
+
+## 2026-06-14 — GM-MDS cone (#346/#354/#389): the AGL24 Theorem A.2 target `GMMDSDualZeroPatternTheorem` is FALSE as stated (13th machine-checked catch)
+
+Attack `gmmds_a2`: prove `AGL24.GMMDSDualZeroPatternTheorem` — the named GM-MDS import of
+`symbolicFullRank_of_classical_imports` (`AGL24GrandAssembly.lean:65`, consumed via
+`gmmDsResidual_of_dualZeroPatternTheorem`). FINDING: the *target boundary itself* is over-stated
+and refutable, the same dimensional obstruction that already refuted the connector residual
+`DualRowsFromNonsingularEval` (12th catch, `LovettDualRowsDischarge.lean`) hoisted one level up.
+
+REFUTATION (axiom-clean, `AGL24.not_gmmDsDualZeroPatternTheorem`, concrete `..._fin2` over
+`ι=Fin 2, F=ZMod 2, k=1`): the target quantifies over **every** `δ` with `GZPCondition e δ k`,
+demanding edge-supported dual rows `h : GZPCopyIdx δ → (ι→F)` whose span is the **entire**
+Reed–Solomon dual (finrank `card ι − k`). But `GZPCopyIdx δ = Σⱼ Fin(δ j)` has cardinality
+`∑ⱼ δⱼ`, and `GZPCondition` is satisfied **vacuously by `δ≡0`** (no `κ≤0` has positive total),
+giving an EMPTY index, span `⊥` — yet the RS dual is nonzero whenever `k < card ι`. So
+`⊥ = (RS dual)` is impossible. Instantiated at `t=0` (the `0×0` minor side condition is automatic).
+
+REPAIR (faithful, non-vacuous, SUFFICIENT for the assembly), in
+`ArkLib/Data/CodingTheory/AGL24DualZeroPatternPinned.lean`:
+* `GMMDSDualZeroPatternTheoremPinned` — restrict to `δ` carrying the genuine GM-MDS dimension
+  count `∑ⱼ δⱼ = card ι − k` (the count the unpinned target silently dropped).
+* `gzp_of_orientation_delta_sum` (axiom-clean) — the `δ` that `gzp_of_orientation` ACTUALLY
+  produces (`δⱼ = indeg j` off the root, `δᵣ = indeg r − k`) sums to `(∑ⱼ indeg j) − k =
+  card ι − k`, i.e. **satisfies the pin**. Since the assembly only ever feeds GM-MDS the
+  orientation-derived `δ`, the pinned form is all it needs.
+* `symbolicFullRank_of_classical_imports_pinned` (axiom-clean) — the campaign capstone
+  RE-ROUTED: Frank's orientation + the *pinned* target discharge the symbolic Theorem 2.11
+  interface, identical conclusion, dimensionally faithful import.
+* Non-vacuity certificates: `pinned_hypothesis_inhabited` (a GZP satisfying both `GZPCondition`
+  and the pin exists for every orientation with `k ≤ indeg r`) and `pinned_dimension_consistent`
+  (under the pin `card (GZPCopyIdx δ) = finrank(RS dual)` exactly — a spanning family is
+  feasible; re-exports the in-tree `gzpCopyIdx_card_eq_dual_finrank`).
+
+NOTE: the pinned target itself is NOT proven here (and `DualRowsFromNonsingularEvalPinned`, the
+repaired connector residual, remains the genuine open GM-MDS kernel construction: build the
+`∑δ = card ι − k` edge-supported dual vectors from the evaluated RIM kernel and apply
+`LinearIndependent.span_eq_top_of_card_eq_finrank`). What this catch delivers is: (i) the named
+target as stated is unprovable (false), so any "proof" of it would be vacuous/laundered; (ii) the
+precise faithful re-statement; (iii) the verification that the re-statement fully suffices for the
+assembly, with the pin shown to hold at every consumed `δ`. The Lovett algebraic core
+(`lovettThm17_unconditional`) is proven; the remaining genuine GM-MDS content is exactly the
+pinned dual-row span construction.
