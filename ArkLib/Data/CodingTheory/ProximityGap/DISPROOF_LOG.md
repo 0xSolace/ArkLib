@@ -24,6 +24,43 @@ Loops 27 through 38 are present as self-contained arithmetic bricks in the curre
 (`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
 axiom-clean, indexed in `ArkLib.lean`).
 
+## 2026-06-14 (#407 laneB): Action-Orbit per-line bound is MONOMIAL-EXCLUSIVE — general-f gap-localized
+**Lane B = R4 Action-Orbit general-`f` (gcd-irreducible / primitive direction).** Question: does the
+`n·#orbits` per-line bad-scalar bound (`ActionOrbitFRI.badSet_orbit_closed`, for the two-monomial
+pencil `z^a+α z^b`) generalize to a GENERAL direction `f` (an arbitrary polynomial / non-monomial)?
+
+**Machine-checked answer: NO — and the obstruction is exact.** New axiom-clean file
+`ActionOrbitGeneralF.lean` (6 thms, `[propext, Classical.choice, Quot.sound]`, real `lake build`):
+- `agreement_dilation_general` (POSITIVE): for *any* base `g₀` and *any* direction `f`, the line-level
+  dilation invariance `#{x∈D : g₀+γf=h} = #{y∈D : (g₀∘μ·)+γ(f∘μ·)=(h∘μ·)}` holds with NO eigenvector
+  hypothesis — the dilated *direction* is `f∘(μ·)`. This is the only structure that survives for
+  general `f` (= the across-line equivariance, same content as `FarLineIncidenceEquivariance.
+  explainableScalars_comp_aut`).
+- `dilation_eigen_coeff` + `eigen_forces_monomial` (the PIN): `f∘(C μ·X)=C c·f` forces `μ^j=c` on the
+  ENTIRE support of `f`; when `orderOf μ > deg f` (prize regime `deg f < n` on `μ_n`) the powers
+  `μ^j` are distinct, so the support is a singleton — `f` is a MONOMIAL. The per-line `γ`-orbit
+  closure exists **iff** the direction is a dilation eigenvector **iff** `f` is a monomial.
+
+**Probe (prize regime, proper `μ_8⊂F_401`, full `F_p` sweep, exact deg<k agreement)** —
+`scripts/probes/probe_407_actionorbit_generalf_{perline,linelevel}.py`:
+- MONOMIAL `f=x^k` (control): bad set is exactly ONE dilation orbit, `|bad|=n=8`, `#orb=1`, `n·K=8`
+  (mechanism works).
+- GENERAL `f=x^k+x^{k+1}` (primitive, `gcd(1,8)=1`): in the **window interior** (above Johnson),
+  `|bad|≈40–56` and **NO nontrivial dilation closure** of the bad-`γ` set at all — per-line orbit
+  mechanism completely fails.
+- GENERAL `f=x^k+3x^{k+2}` (`gcd(2,8)=2`): closure only at the coarse `w^{n/2}` subgroup with
+  `#orb≈27`, `n·K≈216–224` ≫ `|bad|≈54` — orbit count GROSSLY over-counts (≈4×), useless as a bound.
+- Line-level equivariance `|bad(f)|=|bad(f∘D_μ)|` VERIFIED for all directions incl. general `f`
+  (8↔8, 47↔47, 54↔54) — confirms `agreement_dilation_general` numerically.
+
+**Gap-localization (outcome c).** The action-orbit *count* lever is intrinsically restricted to the
+monomial (eigendirection) strata; it gives NO `O(1)`/`n·#orbits` bound for primitive directions.
+Lane B therefore reduces to the **across-line incidence** — exactly Chai-Fan's Q1 (Conj 4.12 NT
+non-vanishing) / Q2 (Conj 7.1 sparse dominance) = the BGK / Paley wall, NOT an orbit count. This is
+why "the forward lift cannot see primitive directions" (no `d>1` fold exists for gcd-irreducible `f`):
+there is no per-line orbit to lift. The monomial-exclusivity is now a theorem, not a heuristic.
+Consistent with the KB warning ("orbit *count* = BGK at window interior, refuted as O(1) at n=8").
+
 ## #357 R2 refutation — KKH26 one-fold strict shrink fails at even cofactor (2026-06-11)
 
 **Attempt.** Use binary/Fri fold transport to make the KKH26 near-capacity ceiling strictly
