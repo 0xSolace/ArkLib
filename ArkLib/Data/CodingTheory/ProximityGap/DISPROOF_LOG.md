@@ -9005,3 +9005,27 @@ Correct salvage: require either characteristic zero / `(2 : F) ≠ 0`, or direct
 `∀ x ∈ S, -x ≠ x`.  This is already consistent with the existing tower-slice files that explicitly
 carry `char ≠ 2` or char-zero hypotheses.  Do not use the char-free forward even-product lemma in the
 prime-field dyadic lane unless the fixed-point-free hypothesis is present.
+
+## 2026-06-14 (wakesync/#407): VERIFIED closed form for |H^{(+r)}(mu_{2^mu})| + sharp s=64 clean/BGK boundary
+GENUINE NEW (verified, provable):
+  |H^{(+r)}(mu_{2^mu})| = #{d in Z^{s/2} : |d|_1 <= r, |d|_1 = r mod 2}   (integer pts in L1 ball, dim s/2).
+Proof: {1,zeta,...,zeta^{s/2-1}} is a Z-basis of Z[zeta_{2^mu}] (only relations = negation pairs
+zeta^j+zeta^{j+s/2}=0), so Sum m_j zeta^j collapses to d_j=m_j-m_{j+s/2}; distinct sums <-> distinct d
+with |d|_1<=r, parity r. VERIFIED brute=formula for s=4,8,16 all r (probe_l1_closedform_count.py).
+By Lam-Leung [LL96fin] the char-p count = this char-0 count for 2r<q (no char-p inflation at small weight)
+=> CLOSED FORM evaluable at ANY scale incl prize n=2^30 (breaks the n>=32 enumeration wall).
+
+PRIZE PARAMS (n=2^30, q=n*2^128, budget=q*eps*=n): smallest r* with L1count(s/2,r*)>=n, then
+Lam-Leung norm bound (2r*)^{phi(s)}<q (phi(2^mu)=s/2) HOLDS for s<=64, FAILS for s>=128:
+  s=32 r*=11 (22)^16 log2=71<158 YES | s=64 r*=8 16^32 log2=128<158 YES | s=128 r*=6 12^64 log2=229>158 NO.
+=> subgroups up to s=64 are char-p CLEAN with NO BGK; only s>=128 needs the Paley wall.
+STRIKING (unproven) alignment: heuristic worst-case s* ~ 2 log2 n = 60 sits right at the s=64 clean
+boundary. IF worst active subgroup at delta* is <=64 => prize closes clean via Lam-Leung, no BGK.
+
+HONEST BLOCKER (why this is NOT closure): the (s,r,delta) calibration linking |H^{(+r)}(mu_s)| to the
+actual bad-SCALAR count at radius delta FAILS the probe monotonicity: probe count DECREASES with
+agreement tau, but |H^{(+r)}| with r=tau-k INCREASES. So "bad-count = |H^{(+r)}|" is NOT a clean
+equality; the worst-s<=64 claim rests on a 1-anchor heuristic (s*=8@n=16, 2^{s/2}=n), NOT established.
+=> cannot prove worst active s<=64 => cannot conclude clean-vs-BGK for the prize. The calibration is the
+concrete remaining gap. SOLID: closed form + s=64 boundary. OPEN: the calibration (which s is worst at
+delta*). Genuine bricks, not closure. Probe committed.
