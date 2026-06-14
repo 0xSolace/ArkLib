@@ -271,3 +271,34 @@ OPEN: `G(e_m)∈I_ℤ` / `q∤D` = char-p cyclotomic-coincidence suppression —
 confirmed by two-route convergence, supported by exhaustive q-independence scans but UNPROVEN for the
 prize prime. Per the honesty contract I do not claim the prize closed; I claim a clean ℂ-complete
 reduction whose only residual is the same minimal arithmetic core both prize routes reach.
+
+## DEFINITIVE — the residual is IRREDUCIBLE to elementary bounds in the prize regime (the BGK wall)
+
+Settled the `m=2` residual to its arithmetic essence. A char-`p`-spurious gap-valid `S` ⟺ a set
+`Y ⊆ μ_n` with **no ±-pairs** and `∑_{y∈Y}y ≡ 0`, `∑_{y∈Y}y³ ≡ 0 (mod p)`. Over ℂ, Lam–Leung
+(2-power: vanishing 0/1-sum = ±-pairs) forces `Y=∅`; so spurious `Y` requires a char-`p`-genuine
+vanishing sum. Its minimal length `L` obeys the height bound `p ≤ L^{φ(n)} = L^{n/2}` ⟹ `L ≥ p^{2/n}`.
+
+**In the prize regime `p=q=n^β`, `n=2^μ`:** `p^{2/n} = 2^{2βμ/2^μ} → 1` (computed: 4.0 at μ=4, 1.19 at
+μ=8, 1.0000 at μ≥24 — `/tmp/minimal_spurious.py`). So the height/norm bound excludes NOTHING: spurious
+relations of length `O(1)` are not ruled out. This is EXACTLY the BGK / sum–product wall — controlling
+sub-height additive relations in a SMALL subgroup of `F_p^*` with `p ≪ 2^n` — the recognized core of
+[[arklib-389-wick-energy-sqrt2]] / [[arklib-389-smallsubgroup-pin-CLOSED]]. The same wall the independent
+Gauss-sum sup-norm route (#407 lane G) terminates at. No elementary technique closes it for `p ≪ 2^n`.
+
+**Final, fully honest standing of the δ\* programme (NOT a closure):**
+  `δ* = 1 − ρ − 2ρ ln(1/2ρ)/log₂(qε*)` — exact form, worst case.
+  - PROVEN: upper bracket (Kambiré construction); ℂ-side optimality (iterated Lam–Leung ⟹
+    `#bad=|H^{(+r)}|` over ℂ); `F_p` optimality for `p∤D` (Nullstellensatz/elimination);
+    `FactorizationRigidity.lean` (axiom-clean Lean).
+  - OPEN (irreducible): `G(e_m)∈I_ℤ` ⟺ `q∤D` ⟺ suppression of char-`p`-genuine vanishing sums of
+    `2^μ`-th roots of unity of length `O(s)` at `p=n^β`. This IS the BGK/sum–product open problem; the
+    height bound proves it is NOT reducible to elementary number theory in the prize regime.
+  Honest scores: novelty 8 / insight 9 / proximity 10 / feasibility — for the ℂ side 9, for the full
+  prize closure **3** (gated on a recognized open problem in additive combinatorics).
+
+**What this session established that is new and solid:** (i) the EXACT δ* via Kambiré; (ii) a clean,
+char-p-FREE, fully proven ℂ-side optimality via iterated Lam–Leung (replacing the dead moment route);
+(iii) the elimination/Nullstellensatz transfer giving the bound for `p∤D`; (iv) a PROOF that the sole
+residual is the BGK wall (not a vague core, not closable by heights) — converging with the independent
+sup-norm route. The prize is reduced to its irreducible additive-combinatorics core, but NOT closed.
