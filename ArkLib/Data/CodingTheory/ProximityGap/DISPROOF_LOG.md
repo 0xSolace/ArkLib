@@ -8868,3 +8868,25 @@ structure and the SIMULTANEOUS gap window (not one power sum) — and no such ce
 missing certificate is exactly the Gauss-period sup-norm / char-p Lam–Leung coset-saturation open core
 (Paley Graph Conjecture territory; SOTA Di Benedetto `n^{1−31/2880}`). The dodge therefore DEFERS to the
 open math; it is not a closed route. (Same wall, restated with a quantitative denominator bound.)
+
+## Dual-assault refutations (2026-06-13, 11-expert adversarial workflow, #407)
+
+These M(n)/floor proof routes are REFUTED with machine-checkable evidence (probes in scripts/probes/, /tmp):
+- **Stepanov auxiliary polynomial**: heavy set K(c)=#{b≠0:|η_b|>c√n}=Θ(p) uniformly in β (η_b/√n→N(0,1),
+  measured K/p≈0.044 at c=2 matching Pr|Z|>2=0.0455, all β); auxiliary on heavy set needs deg≥K=Θ(p) ⟹
+  Stepanov multiplicity m<p/K=O(1) ⟹ collapses to m=1 moment. + Frobenius effective-degree cap <p (in-tree).
+- **Amplification / shifted moments**: D_r(h)=Σ_b η_b^r η̄_{b+h}^r = p·Σ_t N_r(t)²e_q(−ht), N_r≥0 ⟹
+  max_h|D_r(h)|=D_r(0)=p·E_r (positive-definite, argmax h=0 verified n∈{8,16,32}). No amplifier beats flat energy.
+- **2-adic dyadic descent** M(n)²≤2M(n/2)²: self-referential — M(n)²≤2max_b(|A|²+|B|²)=M(n)²+M_χ(n)²,
+  M_χ=quadratic-twisted level-n sup-norm SAME size (M_χ/M~1). cos(A,B)=1 is trivial realness, not alignment.
+  Strict form FALSE at finite n (ratio 1.89,1.76,1.58 > √2); true law M(n)²≤(2+Θ(1/log n))M(n/2)².
+- **Average + concentration (floor)**: MDS average E_line[I]≈C(n,k+m)q^{1-m}=q^{-Θ(n/log n)} at the WINDOW
+  INTERIOR (≈2^{-1e7} at μ=30, NOT ≈n); floor is EXTREME-VALUE, worst/avg gap q^{Θ(n/log n)} unbridgeable.
+- **B4 interleaved LD⇒MCA**: circular — Λ(C^{≡m})≤(b+r choose r)Λ(C)^r (GGR11 r=4-5) is a monotone
+  amplification of the single-code list; forcing ≤n needs Λ(C)≤O(1)=the prize. Λ(C)≤Λ(C^{≡m}) exact.
+- **K=O(1) sheaf conductor**: FALSE in the rank reading — conductor=dim H¹_c~n^{2r-1}, Swan=0 (all tame);
+  Weil-II lossy by √rank=n^{r-1/2}. The cancellation is in the WEIGHTS, not the conductor (= BGK, open).
+- **Large-sieve / effective Deligne in-regime**: dimension-obstructed — effective only when f≤√q ⟺ n≳√p;
+  prize n≪√p is over-dimensioned by √p/n. (Σ_b|η_b|^{2r}=q·E_r exact, zero slack.)
+- **2-power exact Sidon ⟹ BGK gain**: ZERO — μ_n jointly Sidon with every dilate (E^+(μ_n,ξμ_n)=n² diag-only),
+  best possible additive input, yet BSG losses are seed-energy-independent (regime-driven κ=log n/log p).
