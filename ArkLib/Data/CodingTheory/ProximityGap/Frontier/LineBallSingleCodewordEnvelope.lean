@@ -92,7 +92,7 @@ This is the genuine deep-band extra-point mechanism: each *moving* agreement coo
 moving coordinates gives `#bad · (a − b) ≤ |μ|`.  Linear in `n`, independent of `|F|` — no
 coset-rigidity, no character sum, just the degree-1 curve list bound. -/
 theorem line_ball_single_codeword_card_mul_le
-    [Finite F] [DecidableEq F]
+    [Fintype F] [DecidableEq F]
     (Q0 Q1 W : F[X]) (μ : Finset F) {a b : ℕ}
     (hb : (μ.filter (fun ζ => Q1.eval ζ = 0 ∧ Q0.eval ζ = W.eval ζ)).card = b)
     (hab : b < a) :
@@ -154,18 +154,18 @@ theorem line_ball_single_codeword_card_mul_le
   -- apply the curve list bound at D = 1.
   have hmain := curve_agreement_card_le (ι := ↥μ) (F := F) P hdeg hbsub hab
   rw [Fintype.card_coe] at hmain
-  refine le_trans (Nat.mul_le_mul_right _ ?_) (le_trans hmain (by rw [one_mul]))
   have heqHeavy : (univ.filter (fun γ : F =>
         a ≤ (univ.filter (fun i : ↥μ => (P i).eval γ = 0)).card))
       = (univ.filter (fun γ : F =>
         a ≤ (μ.filter (fun ζ => (Q0 + Polynomial.C γ * Q1 - W).eval ζ = 0)).card)) :=
     Finset.filter_congr (fun γ _ => by rw [hcount γ])
-  rw [heqHeavy]
+  rw [← heqHeavy]
+  exact le_trans hmain (by rw [one_mul])
 
 /-- **Explicit O(n) form.** `#bad ≤ |μ| / (a − b)` — the per-codeword line-ball incidence is
 linear in `n = |μ|` and independent of `|F|`. -/
 theorem line_ball_single_codeword_card_le
-    [Finite F] [DecidableEq F]
+    [Fintype F] [DecidableEq F]
     (Q0 Q1 W : F[X]) (μ : Finset F) {a b : ℕ}
     (hb : (μ.filter (fun ζ => Q1.eval ζ = 0 ∧ Q0.eval ζ = W.eval ζ)).card = b)
     (hab : b < a) :
@@ -182,7 +182,7 @@ constant-slot count `b = 0`, so the per-codeword line-ball incidence is the clea
 incidence the deep-band δ\* attack needs, proven by the degree-1 / disjoint-fibre mechanism
 (no `±` coset rigidity). -/
 theorem deep_band_line_ball_card_le
-    [Finite F] [DecidableEq F]
+    [Fintype F] [DecidableEq F]
     (Q0 W : F[X]) (μ : Finset F) (k a : ℕ) (_hk : 1 ≤ k) (ha : 1 ≤ a) (hμ0 : (0 : F) ∉ μ) :
     (univ.filter (fun γ : F =>
         a ≤ (μ.filter (fun ζ => (Q0 + Polynomial.C γ * X ^ k - W).eval ζ = 0)).card)).card

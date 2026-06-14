@@ -8984,23 +8984,24 @@ NET: genuine falsifiable evidence — δ*=1−ρ−Θ(1/log n) location CORROBOR
 DOWNGRADED from "most promising closure" to "rate-sensitive, ρ=1/4 unresolved". Honest refutation
 pressure (code-and-refute working as intended). NOT closure. probe committed.
 
-## 2026-06-14 (wakesync/#407): crossing-law tightness REFUTED; s* is q-INDEPENDENT (honest self-correction)
-Followed up the spurious-only scan with a q-sweep (probe_crossing_law_tightness.py: fix n, vary q via
-beta=3..6, report worst spurious subgroup s* at the threshold edge = last τ with bad-count>baseline n).
-RESULT (n=8 and n=16, both rates):
-  beta:  3      4       5        6         q: 521 / 4129 / 32801 / 262153 (n=8);  4129 / 65537 / 1048609 (n=16)
-  s* at threshold edge = **8 for ALL of them** (q-INDEPENDENT). s-values present @edge: {2,4,8} or {4,8}.
-CONSEQUENCES:
-1. CROSSING LAW s*^{s*/2}≈q  =  REFUTED. The 8^4=4096≈q=4129 match at (n=16,β=3) was a COINCIDENCE; s*
-   does NOT track q. My prior-commit "tightness the synthesis predicts" claim is WITHDRAWN.
-2. ROBUST & USEFUL: s* is q-INDEPENDENT — the worst spurious subgroup size depends on n alone, not q.
-   This is the right structural fact: IF s*(n) grows slowly (polylog n), then q=n^β eventually exceeds
-   s*^{s*/2} ⟹ spurious configs clean ⟹ prize. The growth s*(n) is the open question.
-3. SMALL-SUBGROUP SYNTHESIS (clean form s*~log n/log log n ≈ 2–3): NOT SUPPORTED. s*=8 is not small, and
-   did NOT shrink n=8→16 (stayed 8). n≤16 too small to read the true growth; needs n=32,64 (orbit-rep
-   speedup required — full C(n,τ) enum infeasible).
-4. δ* LOCATION: still robustly corroborated (bad-count→trivial O(n) baseline at δ≈1−ρ−Θ(1/log n)), all q.
-NET (honest): two of my speculations died this session under their own falsifiable tests (uniform-small-s,
-then the tightness law). Survivors: δ* location = 1−ρ−Θ(1/log n) [solid], s* q-independence [solid, useful].
-The prize-closing question is now sharp & concrete: **how fast does s*(n) grow?** (polylog ⟹ clean ⟹ prize;
-poly ⟹ Paley wall stays). Probes committed. NOT closure.
+## 2026-06-14 (#407): char-free antipodal even-product law REFUTED in characteristic 2
+Attempted to use the forward product law
+
+`S = -S`, `0 ∉ S` ⟹ `∏_{x∈S}(X-x)` has zero odd coefficients
+
+as a char-free engine for the half-tower recursion.  The product-transform identity is sound, but
+the advertised parity step is false without excluding self-antipodal nonzero elements.
+
+Counterexample: in any field of characteristic `2`, every element satisfies `-x = x`.  Pick any
+nonzero `a` and take `S = {a}`.  Then `S.image (fun x => -x) = S` and `0 ∉ S`, but
+`|S| = 1` and
+
+`∏_{x∈S}(X-x) = X-a`,
+
+whose coefficient of `X^1` is `1`, not `0`.  Thus zero-free negation-closure alone does not make
+negation a fixed-point-free involution in characteristic `2`.
+
+Correct salvage: require either characteristic zero / `(2 : F) ≠ 0`, or directly assume
+`∀ x ∈ S, -x ≠ x`.  This is already consistent with the existing tower-slice files that explicitly
+carry `char ≠ 2` or char-zero hypotheses.  Do not use the char-free forward even-product lemma in the
+prime-field dyadic lane unless the fixed-point-free hypothesis is present.

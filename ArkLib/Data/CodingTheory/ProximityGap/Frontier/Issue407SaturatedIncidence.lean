@@ -195,6 +195,46 @@ theorem readout_mem_constrainedReadoutImage {α β : Type*}
 def EnvelopeThrough (H : ReadoutProfileFamily) (J : IncidenceProfile) (W : ℕ) : Prop :=
   ∀ j w, w ≤ W → H j w ≤ J w
 
+/--
+Finite version of the latest #407 complete-homogeneous profile
+
+`J(w) = max_{j≥1} #{ h_{j+1}(T) : |T| = w, h_j(T)=0 }`.
+
+The parameter `JBound` records a finite direction/readout search window.  Thus
+`finiteReadoutEnvelope H JBound w` is the maximum of `H j w` over `1 ≤ j ≤ JBound`.
+This names the exact finite object used by the current probes without claiming a closed form for
+the unbounded worst-direction profile.
+-/
+noncomputable def finiteReadoutEnvelope (H : ReadoutProfileFamily) (JBound : ℕ) :
+    IncidenceProfile :=
+  fun w => (range JBound).sup fun j => H (j + 1) w
+
+/-- Every included positive readout index is bounded by the finite readout envelope. -/
+theorem readout_le_finiteReadoutEnvelope {H : ReadoutProfileFamily} {JBound j w : ℕ}
+    (hj : j < JBound) :
+    H (j + 1) w ≤ finiteReadoutEnvelope H JBound w := by
+  unfold finiteReadoutEnvelope
+  exact Finset.le_sup (s := range JBound) (f := fun t => H (t + 1) w) (by simp [hj])
+
+/-- Bounded-envelope form for a finite complete-homogeneous readout search window. -/
+def BoundedEnvelopeThrough
+    (H : ReadoutProfileFamily) (J : IncidenceProfile) (JBound W : ℕ) : Prop :=
+  ∀ j w, j < JBound → w ≤ W → H (j + 1) w ≤ J w
+
+/-- The finite readout envelope envelopes its own bounded readout family. -/
+theorem finiteReadoutEnvelope_boundedEnvelopeThrough
+    (H : ReadoutProfileFamily) (JBound W : ℕ) :
+    BoundedEnvelopeThrough H (finiteReadoutEnvelope H JBound) JBound W := by
+  intro j w hj _hw
+  exact readout_le_finiteReadoutEnvelope hj
+
+/-- A good finite-envelope certificate certifies every included complete-homogeneous readout. -/
+theorem readout_good_of_finiteEnvelope_good {H : ReadoutProfileFamily} {B JBound j w : ℕ}
+    (hj : j < JBound)
+    (hgood : GoodAgreement (finiteReadoutEnvelope H JBound) B w) :
+    GoodAgreement (H (j + 1)) B w :=
+  (readout_le_finiteReadoutEnvelope (H := H) (w := w) hj).trans hgood
+
 /-- A pointwise profile comparison through a finite agreement window. -/
 def ProfileLeThrough (A B : IncidenceProfile) (W : ℕ) : Prop :=
   ∀ w, w ≤ W → A w ≤ B w
@@ -320,6 +360,9 @@ end ProximityGap.Frontier.Issue407
 #print axioms ProximityGap.Frontier.Issue407.actualThreshold_of_saturatedThreshold
 #print axioms ProximityGap.Frontier.Issue407.actualRadiusThreshold_of_saturatedRadiusThreshold
 #print axioms ProximityGap.Frontier.Issue407.readout_mem_constrainedReadoutImage
+#print axioms ProximityGap.Frontier.Issue407.readout_le_finiteReadoutEnvelope
+#print axioms ProximityGap.Frontier.Issue407.finiteReadoutEnvelope_boundedEnvelopeThrough
+#print axioms ProximityGap.Frontier.Issue407.readout_good_of_finiteEnvelope_good
 #print axioms ProximityGap.Frontier.Issue407.readout_good_of_envelope_good
 #print axioms ProximityGap.Frontier.Issue407.not_saturatedThrough_of_profile_undercount
 #print axioms ProximityGap.Frontier.Issue407.spectrum_threshold_bounded_by_completeHomEnvelope
