@@ -1514,3 +1514,38 @@ uniform across primes; residual uncertainty = the reconstructed-not-quoted Q1 st
 `scripts/probes/probe_407_close_actionorbit_VERDICT.py` (self-contained census),
 `probe_407_close_actionorbit_q1_dichotomy.py`, `probe_407_actionorbit_q1_starD_charp.py`,
 `probe_407_actionorbit_K_growth_law.py` (K explosion).
+
+## ⛔ RETRACTION 2026-06-14 — the pigeonhole "floor closure" does NOT close the prize (existence-semantics verifier, confirmed by in-tree code)
+
+**RETRACTING** the earlier sections "RESOLVED — existence-semantics" and "the floor closes by pigeonhole,
+bypassing BGK". They rest on a NON-SEQUITUR that an adversarial verifier caught and the in-tree
+formalization confirms.
+
+**The prize is UNIVERSAL-over-the-field, not existential.** Verified directly:
+- `mcaConjecture` (GrandChallenges.lean:650): `∃ c₁ c₂ c₃ : ℝ, ∀ {FC}[Field FC][Fintype FC] …, ε_mca ≤
+  (1/|FC|)·n^{c₁}/(ρ^{c₂}η^{c₃})` — the constants are bound **before** the `∀` over the field, so they
+  CANNOT absorb `q=|FC|`. Same shape in `epsMCAgsPrizeUniversalConjecture` and BCHKS Conj 1.2.
+- `MCAGSFieldUniversal.lean` states it outright: **"the fixed-field uniform GS prize is a THEOREM; the open
+  prize is field-universal"**, and "the constants quantify before the field, so they cannot absorb q=|F|;
+  along q→∞ the bound →0 and the inflation fails." The fixed-field surface
+  (`epsMCAgs_prizeBound_conjecture_holds`) is ALREADY PROVEN axiom-clean in-tree.
+
+**The fatal asymmetry (why "ceiling existential ⟹ floor existential" is FALSE):** Kambiré chooses `q`
+because he is *refuting* `∀q P(q)`, and `¬∀q P(q) ≡ ∃q ¬P(q)` — a chosen bad `q` is a valid refutation
+(∃ is correct). The prize FLOOR is part of *establishing* the conjecture and demands the bound for ALL
+`q≡1 mod n`; the pigeonhole produces `∃q good (= q∤D)`, which is the NEGATION of the needed `∀q`. Choosing
+a convenient prime is legitimate for refutation (Kambiré) and ILLEGITIMATE for proving the universal bound.
+
+**Consequence:** the pigeonhole gives a chosen-prime/fixed-field δ* pin — which is REAL, BGK-free math, but
+is the surface **already proven in-tree**, NOT the open prize. **The prize's genuine open content IS the
+uniform-over-q bound = the incomplete-Gauss-sum sup-norm `M(n)≤C√(n log p)` = the BGK/Paley wall.** The
+"bypass" bypassed the PRIZE (retreated to density-1), not the WALL. R1 (refuted) and the D-height residual
+are real but MOOT for closure — they would only matter if the existence-form floor were a valid closure,
+which it is not.
+
+**Honest session ledger (what survives):** (a) energy = 2k-th moment of the sup-norm `A_k=(1/p)Σ_{b≠0}|η_b|^{2k}`
+— exact identity, STANDS. (b) R1 monomial-extremality — REFUTED (antipodal-symmetry mechanism, verifier-confirmed),
+STANDS. (c) existence-semantics — CORRECTLY understood now as NOT a closure (prize is universal). (d) NO prize
+closure; the BGK wall is the genuine open core, unmoved. The pigeonhole/count lane is BGK-free but pins only
+the already-proven fixed-field surface. Session takeaway: a promising-looking closure, correctly demolished
+by adversarial verification + reading the in-tree quantifiers.
