@@ -164,6 +164,53 @@ theorem constant_excess_power_blowup {M : ℕ → ℝ} {δ : ℝ}
 unbounded by any polylog).  Recorded to make the separation from the polylog envelope explicit. -/
 theorem blowup_base_gt_one {δ : ℝ} (hδ : 0 < δ) : 1 < 1 + δ / 2 := by linarith
 
+/-!
+## The character-sum realization: the exact FFT butterfly identity
+
+This connects the abstract envelope sequence `M` above to the real object
+`period ψ H b = Σ_{x∈H} ψ(b·x)` (`ψ` an additive character, `H = μ_{2^k}`).  The dyadic
+butterfly identity below is the EXACT recursion whose squared form gives `M(i+1)² ≤ (2+δ)·M(i)²`;
+it is fully proven here, and it makes precise that the *only* open quantity is the cross term
+`2 Re(period Hk1 b · conj(period Hk1 (b·ζ)))` (the alignment excess `δ`).
+-/
+
+section Butterfly
+
+variable {F : Type*} [Field F] [DecidableEq F]
+
+/-- The subgroup character sum (Gaussian period) at frequency `b`: `∑_{x∈H} ψ(b·x)`. -/
+noncomputable def period (ψ : F → ℂ) (H : Finset F) (b : F) : ℂ := ∑ x ∈ H, ψ (b * x)
+
+/-- **The dyadic FFT butterfly identity (exact, proven).**  If the level-`k` subgroup `Hk` splits
+as the disjoint union of the level-`(k−1)` subgroup `Hk1` and its `ζ`-coset (`ζ ≠ 0`), then the
+period at `b` is the sum of two level-`(k−1)` periods, at `b` and at `b·ζ`.  Squaring and taking
+`max_{b≠0}` gives `M(k)² = ... ≤ (2 + δ)·M(k−1)²` with `δ` the cross-correlation term — exactly
+the `DyadicDeviationDecay` input. -/
+theorem period_butterfly (ψ : F → ℂ) (Hk1 Hk : Finset F) (ζ b : F) (hζ : ζ ≠ 0)
+    (hsplit : Hk = Hk1 ∪ Hk1.image (fun x => ζ * x))
+    (hdisj : Disjoint Hk1 (Hk1.image (fun x => ζ * x))) :
+    period ψ Hk b = period ψ Hk1 b + period ψ Hk1 (b * ζ) := by
+  unfold period
+  rw [hsplit, Finset.sum_union hdisj]
+  congr 1
+  rw [Finset.sum_image (by intro a _ c _ h; exact mul_left_cancel₀ hζ h)]
+  apply Finset.sum_congr rfl
+  intro x _
+  congr 1
+  ring
+
+/-- **Triangle consequence.**  The butterfly gives the trivial per-level doubling `|period Hk b| ≤
+|period Hk1 b| + |period Hk1 (b·ζ)|`; the genuine content (and the open input) is that the two
+children do not *align* — the cross term must be `≤ δ·M(k−1)²` with `δ → 0`, not the trivial `2`. -/
+theorem abs_period_butterfly_le (ψ : F → ℂ) (Hk1 Hk : Finset F) (ζ b : F) (hζ : ζ ≠ 0)
+    (hsplit : Hk = Hk1 ∪ Hk1.image (fun x => ζ * x))
+    (hdisj : Disjoint Hk1 (Hk1.image (fun x => ζ * x))) :
+    ‖period ψ Hk b‖ ≤ ‖period ψ Hk1 b‖ + ‖period ψ Hk1 (b * ζ)‖ := by
+  rw [period_butterfly ψ Hk1 Hk ζ b hζ hsplit hdisj]
+  exact norm_add_le _ _
+
+end Butterfly
+
 end ProximityGap.Frontier.DyadicDeviationDecay
 
 #print axioms ProximityGap.Frontier.DyadicDeviationDecay.sq_level_le_prod
@@ -171,3 +218,5 @@ end ProximityGap.Frontier.DyadicDeviationDecay
 #print axioms ProximityGap.Frontier.DyadicDeviationDecay.sq_level_le_pow_mul_exp_harmonic
 #print axioms ProximityGap.Frontier.DyadicDeviationDecay.constant_excess_sq_ge
 #print axioms ProximityGap.Frontier.DyadicDeviationDecay.constant_excess_power_blowup
+#print axioms ProximityGap.Frontier.DyadicDeviationDecay.period_butterfly
+#print axioms ProximityGap.Frontier.DyadicDeviationDecay.abs_period_butterfly_le
