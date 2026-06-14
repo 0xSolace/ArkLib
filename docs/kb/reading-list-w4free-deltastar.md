@@ -238,7 +238,41 @@ set of a monomial line vs a single deg-`<k` codeword. Claim was: every "genuinel
   Johnson and the constant must come from the realizability/Hankel (single-deg-`<k`) constraint the
   count-level theory discards (consistent with the issue's "realizability is the live lever").
 
-### Probes (char-0 exact + sampled): `/tmp/rthin_*.py`, `/tmp/isolated_*.py`, `/tmp/nindep_check.py`
+### SHARP isolated constant for OUR Newton polytope `{0..k−1, a, b}` (2026-06-14, EXACT)
+The task was to specialise the Beukers–Smyth *sharp* isolated bound to our actual support and read
+off the constant — is it `≤ 2k`, `≤ budget ~ n`, or over budget? **Resolved EXACTLY.**
+
+- **Dimensional caveat (load-bearing, must be stated).** Beukers–Smyth `22V(f)` / `4V` / `11(deg f)²`
+  is a **TWO-variable** plane-curve theorem; `V` is the **AREA** of a 2-D Newton polytope. Our object
+  `P(x)=x^a+γx^b−c(x)` is **ONE-variable** — its Newton polytope is a segment of **area 0**, so the
+  `22V` bound is *vacuous/inapplicable* as stated (consistent with `Xⁿ−1` having all `n` roots
+  cyclotomic). The Aliev–Smyth restatement (Lemma 2.2: "curve `C` has `≤ 22 vol₂(g)` ISOLATED torsion
+  points", and `≤ 11(deg f)²` for `f∈ℂ[X,Y]`) confirms `22V` counts the **isolated** part — but only
+  in **2 variables**. The 1-variable isolated count is governed by **degree / term-count**, not area.
+- **EXACT worst-case isolated count = `k+1`** (NOT `~2k−1`, NOT Evertse `k^{3k²}`). Full exact sweep
+  over all realizable `S` (integer `ℤ[ζ_n]` arithmetic, `ζ^{n/2}=−1`, exact zero test;
+  `/tmp/probe_iso4.py`, `/tmp/probe_final.py`) gives the extremal witness = the **consecutive run**
+  `S = {ζ⁰,ζ¹,…,ζ^k}` (`k+1` points): `Q_S=∏(X−ζ^j)` has dense support `{0,1,…,k+1}` (degree `a=k+1`,
+  `b=k`, codeword part `{0..k−1}`), so it IS realizable as the `(k+2)`-sparse line, and the run shares
+  no nontrivial `μ_d`-coset ⟹ **all `k+1` points are isolated**. Verified `n=8,16,32,64,128`,
+  `k=2..5`: isolated `= k+1` whenever `k+1 < n/2` (above that the antipodal coset starts folding the
+  run into the core, *lowering* the isolated count). **n-INDEPENDENT, value `k+1`.**
+- **Is it sub-budget?** YES, trivially: `k+1 = ρn+1 ≤ n ≈ ε*q = budget` at every prize rate
+  (`ρ∈{1/2,1/4,1/8,1/16}`) and every `n` (`/tmp/analysis_newton.py`). So the **per-direction isolated
+  excess is sub-budget by a clean elementary bound `k+1`, no Evertse, no `22V`, no BGK.**
+- **WHY this does NOT close R-thin / δ\* (the decisive scope gap).** The `k+1` bound is the isolated
+  size of `S` for **ONE fixed `(a,b,γ,c)`**. The δ\* budget `ε*q≈n` bounds a **DIFFERENT** object:
+  the number of **bad scalars `γ`** for a fixed direction (= the far-line *incidence* / interleaved
+  list size; in-tree `epsMCA_ge_far_incidence`, `MCAWitnessSpread`). Via the in-tree Vieta pin
+  (`γ=−Σ_{ζ∈S}ζ`) the bad-`γ` set equals the **distinct `r`-fold subset-sum** `|S^{(+r)}|` of the
+  isolated/coset roots at `r≈log q` — and bounding THAT by `≈n` is **exactly BCHKS Conjecture 1.12
+  (plain RS, s=1)**, the recognized-open subgroup-sumset conjecture (`SubgroupSumsetConjecture.lean`).
+  So the Beukers–Smyth split feeds the *structure* (coset-core carries δ\*, isolated part is `O(k)`,
+  sub-budget) but the **prize-tight constant lives one level up**, in how isolated points combine into
+  the bad-scalar sumset — which Beukers–Smyth/Schlickewei–Evertse do **not** control (they bound the
+  agreement SET, not the sumset of its roots over varying directions). **No closure; clean reduction.**
+
+### Probes (char-0 exact + sampled): `/tmp/probe_iso{2,3,4}.py`, `/tmp/probe_final.py`, `/tmp/analysis_newton.py`; older `/tmp/rthin_*.py`, `/tmp/isolated_*.py`
 Honest net: the sparse-poly route is the RIGHT framing (the ragged/coset dichotomy IS Beukers–Smyth
 isolated/torsion-coset; the n-independence IS Schlickewei–Evertse) and improves the demand-side
 characterization from `√(nk)` to a term-count-bounded n-independent ragged count — but supplies no
