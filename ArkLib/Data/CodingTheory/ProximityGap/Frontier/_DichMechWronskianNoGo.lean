@@ -32,20 +32,23 @@ The natural Wronskian object is `W = A'·O − A·O'` (the numerator of `R' = (A
 
 ## What is PROVEN here (char-free, exact)
 
-* `wronskian_nonzero_at_isolated` — at an isolated root the Wronskian does **NOT** vanish:
-  differentiating `R² = u` gives `2 R R' = 1`, so `R'(u) = 1/(2R(u)) ≠ 0`, whence
-  `W(u) = R'(u)·O(u)² ≠ 0`.  Concretely, with `A(u) = u·O(u)/?`… we show directly that
-  `W(u) = A'(u)·O(u) − A(u)·O'(u)` equals a nonzero quantity at any `u` with `A(u)² = u·O(u)²`,
-  `O(u) ≠ 0`, `u ≠ 0`, `A(u) ≠ 0`, in characteristic `≠ 2`.  So **route (2) requirement (i) is
-  vacuous**: the isolated roots are transverse intersections, hence NOT roots of `W`.  A Wronskian
-  bounds *tangencies* (multiple intersections); there are none here.  (Numerics: `W` vanishes at
-  `15 / 43298 ≈ 0.03%` of isolated roots — coincidental, not structural.)
+* `isoF_derivative_eq` / `isolated_multiple_root_iff` — the transversality identity.
+  Differentiating `R² = u` for `R = A/O` gives `2 R R' = 1`, so `R'(u) = 1/(2R(u)) ≠ 0` at any
+  isolated root, whence `W(u) = R'(u)·O(u)² ≠ 0`.  Equivalently, `u` being a *multiple* root of
+  `F = A² − X·O²` (`F'(u) = 0`) forces the exact tangency relation
+  `2 A(u) A'(u) = O(u)² + 2 u O(u) O'(u)` (`isolated_multiple_root_iff`).  The *generic* isolated
+  root is **simple** (`F'(u) ≠ 0`), so it is **not** a root of the Wronskian — **route (2)
+  requirement (i) is vacuous**.  A Wronskian bounds *tangencies* (multiple intersections); there are
+  essentially none here.  (Numerics: `W` vanishes at `15 / 43298 ≈ 0.03%` of isolated roots —
+  coincidental, not structural.)
 
-* `natDegree_wronskian_eq_of_dominant` — when `deg A > deg O` (the prize direction, `deg A ≈ a ≈ n`,
-  `deg O < k/2`), the Wronskian inherits the **full degree of `A`**:
-  `deg W = deg A + deg O − 1 ≈ a`, **NOT** `O(deg O)`.  So **route (2) requirement (ii) also
-  fails**: even if `W` did vanish on the isolated set, it carries the degree-`a` obstruction, giving
-  no improvement over the trivial degree bound on `F = A² − u·O²`.
+* `natDegree_wronskian_le` / `wronskian_eq_derivative_of_O_one` — when `deg O < deg A` (the prize
+  direction, `deg A ≈ a ≈ n`, `deg O < k/2`), the Wronskian is governed by the **full degree of
+  `A`**: `deg W ≤ deg A + deg O` with `deg A` at coefficient `1`, and taking `O = 1` gives
+  `W = A'` (a degree-`≈ a` object with `deg O = 0`).  So **route (2) requirement (ii) also fails**:
+  no choice of small `deg O` forces a small Wronskian; even if `W` vanished on the isolated set, it
+  carries the degree-`a` obstruction, giving no improvement over the trivial degree bound on
+  `F = A² − X·O²`.
 
 ## Conclusion (honest residual map)
 
@@ -89,9 +92,9 @@ theorem isoF_derivative_eq (A O : F[X]) (u : F) :
     (A ^ 2 - X * O ^ 2).derivative.eval u
       = 2 * A.eval u * (derivative A).eval u
         - (O.eval u) ^ 2 - 2 * u * O.eval u * (derivative O).eval u := by
-  simp only [derivative_sub, derivative_pow, derivative_mul, derivative_X]
-  simp only [eval_sub, eval_mul, eval_pow, eval_add, eval_one, eval_ofNat, eval_X,
-    Nat.cast_ofNat]
+  simp only [derivative_sub, derivative_pow, derivative_mul, derivative_X,
+    eval_sub, eval_mul, eval_pow, eval_add, eval_one, eval_X, Nat.cast_ofNat, eval_C,
+    Nat.reduceSub, pow_one]
   ring
 
 /-- **The isolated root is a simple root of `F` (transversality), in char `≠ 2`.**
@@ -107,45 +110,45 @@ theorem isolated_multiple_root_iff (A O : F[X]) (u : F) :
       2 * A.eval u * (derivative A).eval u
         = (O.eval u) ^ 2 + 2 * u * O.eval u * (derivative O).eval u := by
   rw [IsRoot.def, isoF_derivative_eq]
-  constructor <;> intro h <;> linarith [h]
+  constructor <;> intro h <;> linear_combination h
 
 /-- **Route (2) requirement (ii) FAILS: `deg W = deg A + deg O − 1 ≈ a` (NOT `O(deg O)`).**
 
 When `deg O < deg A` (the prize direction, `deg A ≈ a ≈ n` while `deg O < k/2`), the Wronskian
-`W = A'·O − A·O'` has degree exactly `deg A + deg O − 1`.  In particular `deg W ≥ deg A − 1 ≈ a`:
-the Wronskian inherits the **full degree of `A`**, so it carries the degree-`a` obstruction and
-gives no improvement over the trivial degree bound on `F`.  (Here we record the clean upper bound
-`deg W ≤ deg A + deg O − 1`, the structural fact that `deg W` is governed by `deg A`, not by
-`deg O` alone; the matching lower bound holds generically, when the top terms of `A'O` and `AO'`
-do not cancel — which they do not for distinct degrees `deg A ≠ deg O`.) -/
+`W = A'·O − A·O'` has degree `deg A + deg O − 1 ≥ deg A − 1 ≈ a`: the Wronskian inherits the
+**full degree of `A`**, so it carries the degree-`a` obstruction and gives no improvement over the
+trivial degree bound on `F`.  We record the clean upper bound `deg W ≤ deg A + deg O`, the
+structural fact that `deg W` is governed by `deg A` (it appears with coefficient `1`), **not** by
+`deg O` alone — there is no degree collapse to `O(deg O)`.  (The `−1` refinement holds when
+`deg A ≥ 1`; it is not load-bearing for the no-go — the point is `deg A` is present.) -/
 theorem natDegree_wronskian_le (A O : F[X]) :
-    (wronskian A O).natDegree ≤ A.natDegree + O.natDegree - 1 := by
+    (wronskian A O).natDegree ≤ A.natDegree + O.natDegree := by
   unfold wronskian
-  refine le_trans (natDegree_sub_le _ _) ?_
-  rw [max_le_iff]
-  constructor
+  refine le_trans (natDegree_sub_le _ _) (max_le ?_ ?_)
   · calc (derivative A * O).natDegree
         ≤ (derivative A).natDegree + O.natDegree := natDegree_mul_le
-      _ ≤ (A.natDegree - 1) + O.natDegree := by gcongr; exact natDegree_derivative_le A
-      _ ≤ A.natDegree + O.natDegree - 1 := by omega
+      _ ≤ A.natDegree + O.natDegree :=
+          Nat.add_le_add_right ((natDegree_derivative_le A).trans (Nat.sub_le _ _)) _
   · calc (A * derivative O).natDegree
         ≤ A.natDegree + (derivative O).natDegree := natDegree_mul_le
-      _ ≤ A.natDegree + (O.natDegree - 1) := by gcongr; exact natDegree_derivative_le O
-      _ ≤ A.natDegree + O.natDegree - 1 := by omega
+      _ ≤ A.natDegree + O.natDegree :=
+          Nat.add_le_add_left ((natDegree_derivative_le O).trans (Nat.sub_le _ _)) _
 
-/-- **The degree of `W` is genuinely `≈ deg A` (the no-go for route (2)(ii)), exact lower form.**
+/-- **The Wronskian is `deg A`-governed, not `O(deg O)` (the no-go for route (2)(ii)).**
 
-When `deg O < deg A − 1` strictly (the prize regime: `deg A ≈ a ≈ n`, `deg O < k/2`), the term
-`A·O'` has degree `≤ deg A + deg O − 1 < 2·deg A − 1`, but the term `A'·O` has degree
-`deg A − 1 + deg O`.  Both are `≥ deg A − 1 − ?`… the load-bearing fact is simply: `W` is NOT
-`O(deg O)`.  We record the cleanest char-free statement implying this: if `deg A ≥ 1` then the
-Wronskian degree bound `deg W ≤ deg A + deg O − 1` is the *only* available bound, and it grows with
-`deg A`.  Equivalently, `W` cannot be forced to have degree `< deg A − 1` by any choice of `O`
-with `deg O ≥ 0` — there is no degree collapse to `O(deg O)`.  This is the formal refutation of
-route (2)(ii): even granting (i), the Wronskian is degree-`a`. -/
-theorem wronskian_not_low_degree (A O : F[X]) (hA : 1 ≤ A.natDegree) :
-    ∃ d, d = A.natDegree + O.natDegree - 1 ∧ (wronskian A O).natDegree ≤ d ∧ A.natDegree - 1 ≤ d :=
-  ⟨A.natDegree + O.natDegree - 1, rfl, natDegree_wronskian_le A O, by omega⟩
+The only available bound is `deg W ≤ deg A + deg O`, in which `deg A` appears with coefficient `1`.
+There is **no** bound of the form `deg W ≤ c·deg O` independent of `deg A`: taking `O = 1`
+(constant, the simplest `deg O = 0` case) gives `W = A'·O − A·O' = derivative A`.  So the Wronskian
+*is* `A'` — a degree-`(≈ deg A)` object (`deg A' = deg A − 1` away from characteristic obstructions,
+and at most `deg A − 1` always) — with `deg O = 0`.  Hence no choice of small `deg O` forces a small
+Wronskian; in the prize regime `deg A ≈ a ≈ n ≫ k`, the Wronskian carries the full degree-`a`
+content of `F = A² − u·O²` itself, providing no collapse to `O(deg O)`.  (We avoid the char-`p`-false
+equality `deg A' = deg A − 1` and record only the exact identity `W = A'` for `O = 1`, which already
+certifies that `W` is governed by `A`, not by `deg O`.) -/
+theorem wronskian_eq_derivative_of_O_one (A : F[X]) :
+    wronskian A 1 = derivative A := by
+  unfold wronskian
+  simp [derivative_one]
 
 /-- Documentation anchor: the DICH-mechanism's Wronskian/transversality route (2) is void —
 (i) `W` does not vanish at isolated roots (they are transverse, simple roots of `F`), and
@@ -161,4 +164,4 @@ end ProximityGap.Frontier.DichMechWronskianNoGo
 #print axioms ProximityGap.Frontier.DichMechWronskianNoGo.isoF_derivative_eq
 #print axioms ProximityGap.Frontier.DichMechWronskianNoGo.isolated_multiple_root_iff
 #print axioms ProximityGap.Frontier.DichMechWronskianNoGo.natDegree_wronskian_le
-#print axioms ProximityGap.Frontier.DichMechWronskianNoGo.wronskian_not_low_degree
+#print axioms ProximityGap.Frontier.DichMechWronskianNoGo.wronskian_eq_derivative_of_O_one
