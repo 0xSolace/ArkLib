@@ -257,13 +257,17 @@ theorem l1On_e2Fold_le_raw (k : ℕ) (U : Finset ℕ) :
       ≤ ∑ j ∈ range 8, ((e2Rel U).coeff (t + j * h)).natAbs := by
     intro t ht
     rw [e2Fold_coeff, if_pos (Finset.mem_range.mp ht)]
+    show (foldCol k (e2Rel U) t).natAbs ≤ _
     unfold foldCol
-    refine le_trans (Finset.natAbs_sum_le _ _) ?_
+    rw [← hh]
+    refine le_trans (Int.natAbs_sum_le _ _) ?_
     refine Finset.sum_le_sum fun j _ => ?_
     rw [Int.natAbs_mul]
-    rcases Nat.even_or_odd j with hj | hj
-    · rw [Nat.even_iff.mp hj]; simp
-    · rw [Nat.odd_iff.mp hj]; simp
+    have hunit : (if j % 2 = 0 then (1 : ℤ) else -1).natAbs = 1 := by
+      rcases Nat.even_or_odd j with hj | hj
+      · rw [Nat.even_iff.mp hj]; rfl
+      · rw [Nat.odd_iff.mp hj]; rfl
+    rw [hunit, one_mul]
   calc ∑ t ∈ range h, ((e2Fold k U).coeff t).natAbs
       ≤ ∑ t ∈ range h, ∑ j ∈ range 8, ((e2Rel U).coeff (t + j * h)).natAbs :=
         Finset.sum_le_sum hcol
@@ -273,12 +277,29 @@ theorem l1On_e2Fold_le_raw (k : ℕ) (U : Finset ℕ) :
           ((e2Rel U).coeff e).natAbs := by
         rw [Finset.sum_image]
         intro p hp q hq hpq
-        simp only [Finset.mem_product, Finset.mem_range] at hp hq
+        simp only [Finset.coe_product, Set.mem_prod, Finset.coe_range, Set.mem_Iio] at hp hq
+        simp only at hpq
         have hp1 := hp.1; have hq1 := hq.1
-        ext
-        · omega
-        · have : p.2 * h = q.2 * h := by omega
-          exact Nat.eq_of_mul_eq_mul_right (Nat.two_pow_pos (k - 1)) this
+        -- from p.1 + p.2*h = q.1 + q.2*h with p.1,q.1 < h: equal quotients and remainders
+        have hp1' : p.1 < h := hp1
+        have hq1' : q.1 < h := hq1
+        have hj : p.2 = q.2 := by
+          by_contra hne
+          rcases Nat.lt_or_ge p.2 q.2 with hlt | hge
+          · have : p.1 + p.2 * h < q.2 * h := by
+              have : (p.2 + 1) * h ≤ q.2 * h := Nat.mul_le_mul_right h hlt
+              have hexp : (p.2 + 1) * h = p.2 * h + h := by ring
+              omega
+            omega
+          · have hgt : q.2 < p.2 := lt_of_le_of_ne hge (fun h => hne h.symm)
+            have : q.1 + q.2 * h < p.2 * h := by
+              have : (q.2 + 1) * h ≤ p.2 * h := Nat.mul_le_mul_right h hgt
+              have hexp : (q.2 + 1) * h = q.2 * h + h := by ring
+              omega
+            omega
+        have hi : p.1 = q.1 := by
+          rw [hj] at hpq; omega
+        exact Prod.ext hi hj
     _ ≤ ∑ e ∈ range (8 * h), ((e2Rel U).coeff e).natAbs := by
         refine Finset.sum_le_sum_of_subset ?_
         intro e he
@@ -287,5 +308,102 @@ theorem l1On_e2Fold_le_raw (k : ℕ) (U : Finset ℕ) :
         refine Finset.mem_range.mpr ?_
         have : p.2 * h ≤ 7 * h := Nat.mul_le_mul_right h (by omega)
         omega
+
+/-- The two summands of the raw relation, named for the `ℓ¹` bound. -/
+private noncomputable def sqPart (U : Finset ℕ) : Polynomial ℤ := (∑ i ∈ U, X ^ i) ^ 2
+private noncomputable def powPart (U : Finset ℕ) : Polynomial ℤ := ∑ i ∈ U, X ^ (2 * i)
+
+/-- Every coefficient of `(∑_{i∈U} X^i)²` is a nonnegative integer (it is a sum of products of
+`0/1` coefficients). -/
+private theorem sqPart_coeff_nonneg (U : Finset ℕ) (e : ℕ) : 0 ≤ (sqPart U).coeff e := by
+  unfold sqPart
+  rw [sq, Polynomial.coeff_mul]
+  refine Finset.sum_nonneg fun p _ => ?_
+  refine mul_nonneg ?_ ?_ <;>
+  · rw [Polynomial.finset_sum_coeff]
+    refine Finset.sum_nonneg fun i _ => ?_
+    rw [Polynomial.coeff_X_pow]; split <;> norm_num
+
+/-- Every coefficient of `∑_{i∈U} X^{2i}` is a nonnegative integer. -/
+private theorem powPart_coeff_nonneg (U : Finset ℕ) (e : ℕ) : 0 ≤ (powPart U).coeff e := by
+  unfold powPart
+  rw [Polynomial.finset_sum_coeff]
+  refine Finset.sum_nonneg fun i _ => ?_
+  rw [Polynomial.coeff_X_pow]; split <;> norm_num
+
+/-- The sum of all coefficients (eval at `1`) of `(∑_{i∈U} X^i)²` is `(card U)²`. -/
+private theorem sqPart_eval_one (U : Finset ℕ) : (sqPart U).eval 1 = (U.card : ℤ) ^ 2 := by
+  unfold sqPart
+  rw [Polynomial.eval_pow, Polynomial.eval_finset_sum]
+  simp [Polynomial.eval_pow, Polynomial.eval_X]
+
+/-- The sum of all coefficients (eval at `1`) of `∑_{i∈U} X^{2i}` is `card U`. -/
+private theorem powPart_eval_one (U : Finset ℕ) : (powPart U).eval 1 = (U.card : ℤ) := by
+  unfold powPart
+  rw [Polynomial.eval_finset_sum]
+  simp [Polynomial.eval_pow, Polynomial.eval_X]
+
+/-- For a polynomial with nonnegative integer coefficients, any partial coefficient sum over a
+finset is at most its value at `1` (the total coefficient sum). -/
+private theorem partial_coeff_sum_le_eval_one {P : Polynomial ℤ}
+    (hP : ∀ e, 0 ≤ P.coeff e) (s : Finset ℕ) :
+    ∑ e ∈ s, P.coeff e ≤ P.eval 1 := by
+  have heval : P.eval 1 = ∑ e ∈ range (P.natDegree + 1), P.coeff e := by
+    rw [Polynomial.eval_eq_sum_range]
+    refine Finset.sum_congr rfl fun e _ => by rw [one_pow, mul_one]
+  rw [heval]
+  -- restrict s to where coeffs are possibly nonzero
+  calc ∑ e ∈ s, P.coeff e
+      = ∑ e ∈ s ∩ range (P.natDegree + 1), P.coeff e := by
+        rw [← Finset.sum_filter_add_sum_filter_not s (· ∈ range (P.natDegree + 1))]
+        have hzero : ∑ e ∈ s.filter (fun e => e ∉ range (P.natDegree + 1)), P.coeff e = 0 := by
+          refine Finset.sum_eq_zero fun e he => ?_
+          simp only [Finset.mem_filter, Finset.mem_range, not_lt] at he
+          exact Polynomial.coeff_eq_zero_of_natDegree_lt (by omega)
+        rw [hzero, add_zero]
+        congr 1
+        ext e; simp [Finset.mem_filter, Finset.mem_inter]
+    _ ≤ ∑ e ∈ range (P.natDegree + 1), P.coeff e :=
+        Finset.sum_le_sum_of_subset_of_nonneg Finset.inter_subset_right
+          (fun e _ _ => hP e)
+
+/-- **The raw `ℓ¹` bound.** The total `ℓ¹` mass of the `e₂`-relation over the degree window is at
+most `(card U)² + card U`: the square part contributes `(card U)²` (sum of its nonnegative
+coefficients = value at `1`), the power-sum part `card U`. -/
+theorem l1On_e2Fold_le (k : ℕ) (U : Finset ℕ) :
+    l1On (2 ^ (k - 1)) (e2Fold k U) ≤ U.card ^ 2 + U.card := by
+  refine le_trans (l1On_e2Fold_le_raw k U) ?_
+  have hsplit : ∀ e, ((e2Rel U).coeff e).natAbs ≤ (sqPart U).coeff e + (powPart U).coeff e := by
+    intro e
+    have he : (e2Rel U).coeff e = (sqPart U).coeff e - (powPart U).coeff e := by
+      unfold e2Rel sqPart powPart; rw [Polynomial.coeff_sub]
+    rw [he]
+    have h1 := sqPart_coeff_nonneg U e
+    have h2 := powPart_coeff_nonneg U e
+    have : ((sqPart U).coeff e - (powPart U).coeff e).natAbs
+        ≤ (sqPart U).coeff e + (powPart U).coeff e := by
+      rcases le_total ((powPart U).coeff e) ((sqPart U).coeff e) with hle | hle
+      · rw [Int.natAbs_of_nonneg (by omega)]; omega
+      · rw [show (sqPart U).coeff e - (powPart U).coeff e
+              = -((powPart U).coeff e - (sqPart U).coeff e) by ring,
+            Int.natAbs_neg, Int.natAbs_of_nonneg (by omega)]; omega
+    exact_mod_cast this
+  -- pass to ℤ and use the eval-at-1 totals
+  have hcast : ((∑ e ∈ range (8 * 2 ^ (k - 1)), ((e2Rel U).coeff e).natAbs : ℕ) : ℤ)
+      ≤ (U.card : ℤ) ^ 2 + U.card := by
+    rw [Nat.cast_sum]
+    calc ∑ e ∈ range (8 * 2 ^ (k - 1)), (((e2Rel U).coeff e).natAbs : ℤ)
+        ≤ ∑ e ∈ range (8 * 2 ^ (k - 1)),
+            ((sqPart U).coeff e + (powPart U).coeff e) := by
+          refine Finset.sum_le_sum fun e _ => ?_
+          exact_mod_cast hsplit e
+      _ = (∑ e ∈ range (8 * 2 ^ (k - 1)), (sqPart U).coeff e)
+          + ∑ e ∈ range (8 * 2 ^ (k - 1)), (powPart U).coeff e := by
+          rw [Finset.sum_add_distrib]
+      _ ≤ (sqPart U).eval 1 + (powPart U).eval 1 :=
+          add_le_add (partial_coeff_sum_le_eval_one (sqPart_coeff_nonneg U) _)
+            (partial_coeff_sum_le_eval_one (powPart_coeff_nonneg U) _)
+      _ = (U.card : ℤ) ^ 2 + U.card := by rw [sqPart_eval_one, powPart_eval_one]
+  exact_mod_cast hcast
 
 end ArkLib.ProximityGap.E2VanishRigidityModP
