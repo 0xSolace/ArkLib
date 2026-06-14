@@ -9119,3 +9119,37 @@ slice), unlike `GWDirectionFinrankLe`.
 `GWAffineFiberCharge` (BRICK-L), i.e. the per-coordinate `card(fiber) ≤ finrank(span of fiber diffs)`
 cap — the `q^{dim}` vs `dim+1` obstruction documented at `CZ25SpanDimension.lean:292–302`. Not a
 closure: a leg-statement was corrected, not the kernel solved.
+
+## 2026-06-14 (laneF/#407): REFUTED — the R4 lane-F "cross-parity leak" A ≡ -g·B is VACUOUS (= e₁=0 in disguise)
+Lane F (Pan–Xu split / cross-parity) conjectured the ONE structured feature of the spurious-config
+(e₁=Σu=0, e₃=Σu³=0, antipodal-free U⊆μ_n) locus is a cross-parity relation A ≡ -g·B holding for
+96–100% of defects, A,B the two HALVES of U under some splitting, g a fixed ring element — a hoped-for
+independent handle on the open dyadic Gaussian-period sup-norm wall (DyadicDeviationDecay/BGK).
+
+GROUND TRUTH (triple cross-checked: probe_407_laneF_crossparity_leak.py + probe_407_laneF_leak_nontrivial.py
++ independent full-C(64,6) re-enumeration; canonical n=64,p=2113 = 64 spurious configs, plus n=16/p=17 (16),
+n=32/p=97 (96)):
+  • LITERAL claim (complementary split, A,B halves of the SAME config): g = -A/B = 1 for 100% of defects
+    under EVERY splitting (parity-of-index, low/high, first/second-half), at all three (n,p) incl n=64.
+    But this is VACUOUS: A+B = Σ_U u = 0 by the DEFINITION of a spurious config (e₁=0), so A=-B trivially
+    with g=1. The "96–100% leak" IS the relation e₁=0, restated. Zero structural content.
+  • NONTRIVIAL variants (a FIXED g linking DIFFERENT objects/power-levels) all FAIL:
+       –(Σ_A u³)/(Σ_A u) over the even-index half: 32 distinct ratios over 64 defects at n=64 (top 3%);
+       48/96 at n=32; 8/16 at n=16. NO fixed g.
+       e₂/(even-index Σu²): looked binary at n=16 (2 vals) and n=64 (2 vals @50%) but DISSOLVES at n=32
+       (6 distinct values) — the "binary structure" is a size-6-only small-case artifact, not an identity.
+
+FORMALIZED (axiom-clean, lake env lean, all #print axioms = [propext, Classical.choice, Quot.sound]):
+  ArkLib/Data/CodingTheory/ProximityGap/CrossParitySplitVacuity.lean
+   – crossParity_holds_g_one: for ANY split U=A⊔B with Σ_U f=0, Σ_A f = -(1·Σ_B f) UNCONDITIONALLY.
+   – crossParity_unique_g: over a field, if Σ_B f≠0 the solving g is unique = -(Σ_A f)/(Σ_B f).
+   – crossParity_solving_g_eq_one_iff: that unique g equals 1 IFF Σ_U f = 0. So g=1 ⟺ e₁=0 EXACTLY —
+     the leak is logically equivalent to the defining relation, carrying no information beyond it.
+   – crossParity_vacuous: package (relation holds with g=1, and g=1 is forced by/equivalent to e₁=0).
+
+CONSEQUENCE (gap localization): lane F supplies NO independent structural constraint and NO new handle
+on the dyadic cross term δ. The complementary-split cross-parity is a tautology on the spurious locus;
+the cross-power/e₂ variants have g varying over Θ(#defects) values. The only genuine structural object
+of the dyadic tower remains the butterfly cross-correlation 2 Re(period·conj(period')) — already the
+NAMED open core ProximityGap.Frontier.DyadicDeviationDecay (period_butterfly, f52018869) = the BGK
+incomplete-character-sum sup-norm wall. NOT closure; a clean refute-and-localize. Brick + this entry committed.
