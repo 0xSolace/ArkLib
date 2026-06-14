@@ -103,7 +103,7 @@ theorem coset_agreement_dichotomy (Q : F[X]) {d : ℕ} (hdeg : Q.natDegree < d)
 agreement points is at most `d - 1`.  (The form consumed by the global R-THIN count: a *partial*
 coset — neither empty nor full — contributes at most `d-1`, but in fact `≤ Q.natDegree`, the
 sparse refinement.) -/
-theorem coset_partial_le (Q : F[X]) {d : ℕ} (hd : 0 < d) (hdeg : Q.natDegree < d)
+theorem coset_partial_le (Q : F[X]) {d : ℕ} (hdeg : Q.natDegree < d)
     (T : Finset F) (hT : T.card = d)
     (hpartial : (T.filter (fun x => Q.eval x = 0)).card ≠ d) :
     (T.filter (fun x => Q.eval x = 0)).card ≤ Q.natDegree := by

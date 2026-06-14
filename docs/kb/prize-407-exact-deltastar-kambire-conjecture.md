@@ -1266,3 +1266,46 @@ determined by its lowest (orbit-incidence) mode alone, so no moment/PSD/spectral
 additive `Θ(s)` gap at the prize direction. Closing R-thin requires a **realizability argument** (the
 deg-`<k` rank constraint on `c`), which is a different lever than the moment ladder. No closure claimed.
 Probe: `scripts/probes/probe_407_rthin_circulant_route.py`.
+
+## UPDATE 2026-06-14 (per-coset route) — per-coset DICHOTOMY proven axiom-clean; R-thin closure confirmed realizability-gated (converges with circulant route)
+
+Attacked R-thin via the per-coset / degree-counting route (alternative to moments). Two concrete
+deliverables + one methodological correction; net verdict CONVERGES with the circulant route above
+(R-thin true with margin; binding lever = single-`c` deg-`<k` REALIZABILITY, not per-coset/moments).
+
+### (1) METHODOLOGICAL CORRECTION — R-thin must be tested on MAXIMAL agreement sets with `γ≠0`
+Earlier exploratory probes that "violated R-thin" (e.g. ragged `|S|=6 > √(nk)=5.66` at `n=16,k=2`)
+were ARTIFACTS of (a) enumerating arbitrary point-subsets instead of the genuine object — the
+*maximal* agreement set `S={x∈μ_n : c(x)=wγ(x)}` of an actual codeword — and (b) the degenerate
+`γ=0` (line collapses to the bare monomial `x^a`, on `μ_n` equal to `x^{a mod n}`, a codeword when
+`a mod n < k`). Restricting to maximal agreement sets with `γ≠0`: **R-thin HOLDS with margin in EVERY
+exhaustive case** (`n=16`, ALL `p^k` codewords, `p=17`): `max |S|²/(nk) = 0.766` (worst at `k=4,d=4`:
+`|S|=7 < √(nk)=8`), never reaching 1; sampled `n=32` gives ratios `0.27–0.53` (margin GROWS with `n`).
+Probes: `/tmp/rthin_exhaustive_max.py`, `/tmp/rthin_globalineq2.py`, `/tmp/rthin_maximal.py`,
+`/tmp/rthin_n32.py`.
+
+### (2) PROVEN, axiom-clean Lean — the per-coset agreement dichotomy
+`Frontier/_PerCosetDichotomy.lean` (real `lake build` green, 3297 jobs, `[propext,Classical.choice,
+Quot.sound]`). On each `μ_d`-coset (a `d`-point set `T`), the agreement of a codeword with the
+`μ_d`-quasi-homogeneous pencil is governed by ONE polynomial `Q` of degree `<d` (the `μ_d`-fold of
+`c−wγ`), so:
+- `coset_agreement_dichotomy` — agreement on the coset is **either full (`=d`) or thin (`<d`)** — there
+  is no "almost-full" intermediate. (Pure `Polynomial.card_roots'`: `#roots ≤ natDegree < d`.)
+- `coset_partial_le` — a *partial* coset contributes `≤ Q.natDegree` agreement points.
+This formalizes the codeword-side of the MDS twist dichotomy (`MonomialPencilQuasiHomog`) as a clean
+root-count, char-free. **Verified: zero per-coset violations** over all `p^k` codewords `n=16` + sampled
+`n=32` (`rthin_exhaustive_max.py`, `rthin_n32.py`).
+
+### (3) HONEST verdict — the per-coset route is LOOSE at the prize direction (same as circulant)
+The per-coset dichotomy gives `|S| ≤ Σ_z (m_z−1)` (sum over partial cosets, `m_z` = #active
+frequencies of `c` on coset `z`, `+1` for the pencil's single frequency, `m_z ≤ min(k,d)+1`). At the
+worst ragged `S` this is LOOSE: `n=16,k=4,d=4` has actual `|S|=7` but `Σ(m_z−1)=12`; in the prize
+direction `d≈n/44`, `Σ(m_z−1)≈(n/d)·min(k,d)≫√(nk)`. So the per-coset/entropy/degree-counting route
+recovers the all-or-thin STRUCTURE (proven) but **NOT the tight `√(nk)` radius**. The reason is exactly
+the one the circulant route found independently: `m_z` is ~uniform across cosets (every `C_r(z)≠0`
+generically), and what actually keeps `|S|` small is the GLOBAL constraint that all cosets' `Q_z` come
+from a *single* deg-`<k` `c` — i.e. **the deg-`<k` REALIZABILITY of `c`, a rank condition the
+per-coset count (like the moment circulant) discards.** Two independent routes (moments/circulant +
+per-coset/entropy) now agree: R-thin's `√(nk)` closure is realizability-gated, not moment/per-coset
+reachable. The proven per-coset dichotomy is the reusable structural brick; the open step is the
+single-`c` rank argument. No closure claimed. New file: `Frontier/_PerCosetDichotomy.lean`.
