@@ -8630,3 +8630,272 @@ E_{1,2} over μ_{2^k} in the prize regime. The literature does not supply it; th
 antipodal/Lam–Leung structure of μ_{2^k} (the in-tree O108/O130 engine) is the most promising
 lever the general additive-combinatorics literature cannot use. That is the named new-math
 target for the demand side. Dossiers: scripts/probes/genlaw/o174_general_r/{,analytic/}.
+
+### O177 — THE r=4 RUNG PROVEN (axiom-clean Lean, #bad₄ ≤ K AND ≤ K/2 all n=2^k) extends the demand frontier r=3→r=4; equivariance orbit-reduction proven; and the open core is now ANCHORED to the quadratic Vinogradov / PTE framework (Mansfield–Mudgal 2024) — correcting O176, with a concrete forward lead (nubs, demand seat, 2026-06-14)
+
+Three results this cycle (new-math fan-out B1/B2 + a deep literature sweep), all adversarially
+verified (0.9, zero fatal); the r=4 Lean brick re-verified by me independently (EXIT 0, axiom-clean).
+
+* **r=4 RUNG PROVEN [Lean axiom-clean, DeepBandR4Bound.lean].** On the order-2 character line
+  (the r=4 maximizer, full mono sweep), the deep-band #bad-scalar count has the closed form
+  `#bad₄(n) = g⁴ − 2g³ + 4g + 1` (g=n/4) `= 1 + n·deepBandBadCount(n/8)` — a clean **2-adic
+  descent to the proven r=3 form** (the ev1/ev4 parity classes biject, even-sublattice→μ_{n/2},
+  onto the r=3 maximizer). `deepBandBadCount4_le_budget` (#bad₄ ≤ K, g≥2) AND
+  `deepBandBadCount4_two_mul_le_budget` (#bad₄ ≤ **K/2**, g≥3 = whole prize domain) are
+  Lean-machine-checked polynomial facts (re-verified [propext,Classical.choice,Quot.sound]).
+  Exactness #bad=formula is [COMPUTED] (descent bijection, kernel n=16=145/32=3105/64=57409);
+  the ≤K and ≤K/2 BOUNDS are [PROVEN] — same standard as the landed r=3 brick. **The parity-split
+  STOPS at r=4**: the r=5 maximizer is the full-order line (not order-2), so this lever cannot
+  pin r≥5. HONESTY CATCH: a prior-session DeepBandR4Bound.lean carried `sorryAx` + 3 failing
+  tactic blocks — caught, all three fixed, re-verified genuinely axiom-clean before landing.
+* **Equivariance orbit-reduction [PROVEN structural law, B2].** `#bad = d·orbits + [0∈bad]`,
+  `d = n/gcd(n,e−f)`, orbit invariant `γ^d` (γ = −e₁, Vieta-pinned); the bad set is μ_d-invariant
+  and negation-closed (0 violations, n=16 r=3..8 / n=32 / n=64). For n=2^k, negation g^{n/2} is
+  already a power of the rotation (antipodal-subsumption), so Lam–Leung gives no extra global
+  collapse — it must act on the orbit-reps. REFUTED the clean uniform bounds orbits ≤ C(n/2,2)
+  and C(n/2,r−1) (both asymptotically false). So uniform #bad ≤ K for r≥4 reduces to the
+  **orbit-rep census** = the joint (e₁,e₂) deficit-2 level-set mod rotation.
+* **The open core ANCHORED + O176 CORRECTED [literature sweep].** The deep-band (Σx, Σx²)
+  joint constraint is *literally* a degree-2 Prouhet–Tarry–Escott / **k=2 quadratic Vinogradov
+  mean value system**; the collision count Σ N₂² = the summed joint energy. **Mansfield–Mudgal,
+  "A Quadratic Vinogradov MVT in Finite Fields" (arXiv:2310.02950, QJM 2024)** bounds it:
+  `J_s(A) ≪ |A|^{2s−2−1/9}` for arbitrary `A ⊆ F_p`, `s≥3` — covering our whole range. This
+  **CORRECTS O176's claim that "the joint higher-order energy is itself open"**: the *summed*
+  energy IS bounded in the literature. BUT it still does not pay the prize — three verified gaps:
+  (1) WRONG DIRECTION (decisive): it upper-bounds the *energy*; Cauchy–Schwarz then gives a
+  *lower* bound on the support, while #bad is a support *upper* bound; (2) WRONG FUNCTIONAL:
+  J_s = Σ N₂² (full collision count), not its e₁-axis projection (#bad); (3) FIELD: stated over
+  F_p (Rudnev–Wheeler / Stevens–de Zeeuw incidence engine), F_q transfer carries an unproven
+  no-large-subfield condition. **FORWARD LEAD (concrete, literature-grounded):** extract a
+  *per-fiber* `N₂(c1,c2)` bound from Mansfield–Mudgal's incidence machinery (rather than the
+  summed J_s) → converts the energy bound into the support bound `#bad ≤ K`. No paper does this
+  for μ_n; that is the precise new-math step.
+
+**Where it lands:** demand-side proven frontier is now **r=3 AND r=4** (both #bad ≤ K/2,
+axiom-clean Lean); a=4 slice proven. General-r (r≥5) reduces-to-open, but the open object is now
+sharply named (orbit-rep census = per-fiber quadratic-Vinogradov count over μ_{2^k}) WITH a
+literature anchor (Mansfield–Mudgal) and a concrete forward attack (per-fiber incidence
+extraction). Dossiers: scripts/probes/genlaw/o174_general_r/{,analytic/,research/}; bricks
+DeepBandR3Bound.lean, DeepBandR4Bound.lean.
+
+## (#407, conjecture campaign) GV rep bound r(c)≤2 WORST-CASE at prize scale — REFUTED
+Bold conjecture: `max_{c≠0} r(c) ≤ 2` for ALL primes p~n^β (β=4–5), dyadic μ_n — would close the GV face.
+REFUTED: the rep-bound bad primes (where r(c)>2) are IDENTICAL to the energy P_max bad primes
+(8→41, 16→337, 32→194977 in a truncated sweep; the EXACT P_max ~ n^{4.87} is EXPONENTIAL, per
+`probe_energy_pmax_growth.py`), which lie INSIDE the prize regime p~n^{4–5}. So `r(c)≤2` holds only
+GENERICALLY (G2, 80 random primes/n) — worst-case `r(c)>2` at bad primes ⟹ the García–Voloch rep-bound
+face is OPEN at prize scale. Clean by-product (kept): **rep-bound P_max = energy P_max** (the triple-
+intersection obstruction `p|Res(x^n−1,(c−x)^n−1)` is the same cyclotomic-norm divisibility as the
+4-term additive-energy coincidence). Probe: `scripts/probes/probe_gv_repbound_pmax.py`.
+Lesson re-confirmed: sweep to the EXACT P_max (cyclotomic norm), not a truncated prime range.
+
+## (#407) The clean 2-adic descent `M(n) ≤ √2·M(n/2)` (fleet 00:16 reframing) — REFUTED as a uniform inequality
+`M(n)=max_b|S_b(μ_n)|`, the L^∞ sup-norm. The fleet reframed the open core as the descent
+`M(n)≤√2·M(n/2)` (telescopes to √n). Measured ratio `M(n)/M(n/2)` over a fixed prime, FFT-exact:
+n=8,16,32 → 1.99,1.88,1.51 (VIOLATE, boundary); n=64..1024 → 1.36,1.44,1.45,1.31,1.31. The ratio
+oscillates AROUND √2≈1.414 and EXCEEDS it at n=128 (1.4374) and n=256 (1.4496). So the CLEAN uniform
+`≤√2` descent is FALSE — the per-step cancellation has upward fluctuations and does not telescope to a
+clean √n bound. The descent holds only in GEOMETRIC-MEAN / asymptotic sense (consistent with M~√(n log p),
+ratio→√2). The open gap is exactly whether the descent-fluctuations (the transfer-cocycle Lyapunov
+exponent, cf `probe_dyadic_cocycle_recursion.py`) average to ≤(1/2)log2 with no worst-case upward bias —
+the same moment-vs-max / sqrt-cancellation core, NOT closed by the descent reframing.
+Probe: `scripts/probes/probe_descent_inequality.py`.
+
+## (#407) Sharpening: the descent open core = a phase-alignment large-deviation, NOT a uniform descent
+Following the refutation of the clean `M(n)≤√2 M(n/2)` descent (above): at the worst b, `S_b(μ_n)=A+B`,
+`A=η_b(μ_{n/2})`, `B=η_{bζ}(μ_{n/2})` (fleet `GaussPeriodTower.lean`). The per-level ratio
+`r=|A+B|/max(|A|,|B|) ∈ [√2, 2]`: `=√2` iff `A⊥B`, `=2` iff phase-ALIGNED (`cos=1`). So
+`M(n)=∏_{j=1}^{k} r_j` and (since measured `M(n)~√(n log p)`) `Σ_j log(r_j/√2) ≈ ½ log log p` — MOST
+levels are ≈√2 with small upward fluctuations. **The open core is therefore a WORST-CASE-PATH
+(large-deviation) bound on the phase-alignment cocycle**, NOT a uniform per-step inequality: δ* closes
+iff no frequency b has a persistently-aligned path down the 2-adic tower (which would give M(n)~n).
+Empirically M~√(n log p)≪n ⟹ no fully-aligned path exists (prize morally true), but PROVING the
+worst-path accumulation ≤ √(log p) is the recognized-open sup-norm/Lyapunov large-deviation problem.
+This bounds what `GaussPeriodTower` (exact recursion) can yield: the recursion is exact, the closure
+needs the cocycle large-deviation, which is the open analytic input. Probe: `probe_descent_inequality.py`.
+
+---
+## 2026-06-13 #407 — COSET-SATURATION refuted (the "all valid S are coset-unions" form)
+Refuted: "monomial-line bad-scalar agreement set S (|S|=rm, gap e_i(S)=0 ∀i∈{1..2m-1}\{m}) is always
+a union of r cosets of μ_m." Countermodel (/tmp/pure_claim.py, full enum): n=24,m=2,r=4,p=73 has
+NON-coset valid S = (0,1,2,3,7,20,21,22). SURVIVES: bad COUNT still = distinct r-fold sumset in all 6
+instances incl this one (non-coset S give e_m values already realized by coset S; no new bad scalars).
+So exact δ* NOT refuted, only the coset MECHANISM. Corrected linchpin (Newton, provable):
+e_m(S)=(±1/m)∑_ξ c_ξ·ξ, c_ξ=#{x∈S:x^m=ξ}∈{0..m}, ∑c_ξ=rm; the true claim is e_m-IMAGE of gap-variety
+= distinct sumset (concrete finite combinatorics on c_ξ under e_{m+1}..e_{2m-1}=0, char-p-free).
+Lesson: count can be robust even when structure (coset rigidity) is refutable — verify the count.
+
+---
+## 2026-06-13 #407 — DEEP-MOMENT VALIDITY refuted (provably false in the prize regime)
+Refuted the §3 "single open input": that `E_r(μ_n)` stays near its char-0 Bessel value for `r ≍ log q`,
+which would let the moment arrow `B ≤ (q·E_r − n^{2r})^{1/2r}` yield the floor `√(n log q)`.
+
+DISPROOF (rigorous + numeric, `/tmp/char0_floor.py`, `forced_anomaly.py`; Bessel law verified exact
+r=2..7, computed for any n via `E_r^{char0}=Σ_k C(n/2,k)g_{r,k}`):
+1. The char-0 moment bound `(q E_r^{char0} − n^{2r})^{1/2r}/floor` EXPLODES with n: 1.15, 1.96, 3.73,
+   10.9, 19.8, 68.7, 246, 1724, 6420 for n=2^4..2^30 (β=4). It does NOT → 1. The "yields the floor at
+   r≍log q" claim holds ONLY at small n (n=16: optimal r=11≈log q, 1.15×floor) — a small-n artifact.
+2. WHY: `E_r^{char0} ~ (2r)!·C(n/2,r) ~ n^r`, but the trivial `b=0` term is `n^{2r}/q = n^{2r−β}`. For
+   `r>β`, `n^r < n^{2r−β}`, so `q·E_r^{char0} < n^{2r}`. Crossover `r*` → β+1 as n→∞ (β=3→4, 4→5, 5→6,
+   6→7). So char-0 energy is EXHAUSTED by the diagonal at depth ≈β+1, far below floor depth ~log q.
+3. FOURIER POSITIVITY forces the anomaly: `Σ_{b≠0}|η_b|^{2r} = q E_r^{Fp} − n^{2r} ≥ 0` (η_0=n) and
+   `E^{char0} ≤ E^{Fp}` (ℂ-collisions ⊆ 𝔽_p-collisions), so for r>r*: `q(E^{Fp}−E^{char0}) ≥ n^{2r} −
+   q E^{char0} > 0`. Deep-moment validity (E^{Fp}≈E^{char0}) is thus IMPOSSIBLE past r≈β+1 — it
+   contradicts positivity. Not merely unproven: structurally false.
+Prize regime (n=2^32, β=4): char-0 caps at r*≈5 ≪ log q≈89; bound ~10^4×floor. So the moment route
+(char-0 OR char-p) provably cannot reach the floor. The only provable moment-side fragment is the norm
+bound `A_r=0 for (2r)^{n/2}<p` (formalized, `RootSumNormBound.lean`), securing depth r≈2 only.
+CONSEQUENCE: stop pursuing deep-moment validity; the prize is purely the L^∞/BGK Gauss-phase sup-norm
+(= the phase-cocycle worst-path large-deviation in the entry above). Probes: char0_floor.py, forced_anomaly.py.
+
+## 2026-06-14 (wakesync/#407): three poly-orbit-count CLOSURE ideas REFUTED
+Context: orbit-count crossing law `δ*=sup{δ:∀pencil N_pencil(δ)≤gcd(b−a,n)}`; need N≤poly(n) closed.
+N = #achievable agreement sets A (size≥(1−δ)n) mod ω-rotation. Each A ↔ UNIQUE sparse pencil
+P=x^b+αx^a−g (proven injective: P−P' deg≤a<|A|⟹=0). Verified n=8 pencil(6,7),agr≥5: 40 bad α,
+40 distinct A (bijective ✓), 5 rotation-orbits (N=5 = #distinct cyclic gap-patterns of A).
+- **(C1) Dyadic-coset closure** (A = union of μ_n-subgroup cosets ⟹ poly-many): **REFUTED** — the
+  size-5 achievable A in μ_8 are NOT coset unions (e.g. {0,1,2,3,7}, {1,3,4,6,7}); odd size alone
+  rules out unions of even-size dyadic cosets. The achievable A are generic-looking gap-patterns.
+- **(C2) DFT-uncertainty closure** (sparse-DFT ⟹ sparse-time ⟹ bounded agreement): **REFUTED for
+  the window** — v=e_b+αe_a has DFT-support {0..k−1,a,b} of size k+2≈ρn (a CONSTANT FRACTION, not
+  sparse), so the uncertainty bound time-weight≥n/(k+2)=O(1) is trivial. Dyadic n (non-prime) has a
+  WEAK uncertainty principle (subgroup sparse-sparse vectors), which is exactly why the window is hard.
+- **(C3) Mann-direct closure** (sparse P ⟹ few roots-of-unity ⟹ few A): **REFUTED** — sparse polys
+  CAN have many roots of unity (x^n−1 is 2-sparse with n roots); Mann limits the STRUCTURE of single
+  vanishing sums, not |A|, and the per-point relations (one (k+2)-term vanishing sum per ζ^i∈A) are
+  independent, so Mann does not bound the count of achievable A.
+VERDICT: N = #achievable cyclic gap-patterns; bounded above by all patterns (exponential); whether
+ACHIEVABLE is poly = the beyond-Johnson list size viewed through the orbit action = the recognized
+open core (issue #407 contract). Genuine partial: orbit-count law + A↔P injectivity are clean/proven.
+
+---
+## 2026-06-13 #407 — LocalAlignedChildSubmaximality (the SINGLE open Lean input of the live phase-chaining route) is REFUTED worst-case
+
+**Target.** `Frontier/_DyadicPhaseChaining.lean:309` `LocalAlignedChildSubmaximality (M) (N) := ∀ i<N, ∃ x y, M(i+1)=x+y ∧ x²+y² ≤ M(i)²`. The conditional chain `squareDescentLaw_of_localAlignedChildSubmaximality → level_le_of_squareDescentLaw` derives the prize floor `B ≤ √(n·drift)` from it. Intended instantiation `M(i)=|S_{b*}(μ_{2^i})|`, split into the dyadic half-cosets `μ_{2^{i+1}}=μ_{2^i} ⊔ ζμ_{2^i}`, children `A=S_{b*}(μ_{2^i})`, `B=S_{b*ζ}(μ_{2^i})`.
+
+**Two independent refutations (FFT-exact, 4 large primes, proper subgroups, n up to 4096):**
+
+1. **Half-coset interpretation** (the intended `x=|A|, y=|B|`): the binding inequality `|A|²+|B|² ≤ M(i)²` FAILS worst-case at EVERY level and EVERY tested prime. Worst ratio `R=(|A|²+|B|²)/M(i)²` reaches `≈1.995` at the first level and stays `>1` throughout (n=2048→4096 at p=4005889: R=1.2456; submax@b*=1.2456). At the level-(i+1) maximizer b* the phase alignment is EXACT — `cos(A,B)=1.0000` to 4 dp across all rows/primes (the empirical anchor is REAL) — but that is precisely what breaks submaximality: aligned + comparable-magnitude children give `|A|²+|B|² → 2·M(i)²`.
+
+2. **Literal Lean def, ANY real split** (the def only needs *some* x,y): min of `x²+y²` s.t. `x+y=s` is `s²/2`, so a valid split EXISTS iff `M(i+1)²/2 ≤ M(i)²`, i.e. the def is **logically equivalent** to the uniform descent `M(i+1) ≤ √2·M(i)`. That descent is FALSE worst-case (re-confirmed independently, sharper than the earlier M-ratio entry): violations persist at large n — p=2021377 n=1024→2048 ratio 1.4743; p=4005889 n=2048→4096 ratio 1.5618. Not a boundary artifact.
+
+**Conclusion.** The live L^∞/phase-chaining route's single open input is FALSE as a per-level worst-case inequality. The phase alignment `cos=1.0000` is an exact algebraic identity (confirmed), but it is the OBSTRUCTION to submaximality, not the lever. Consistent with #7.2 (no per-step/L² inequality reaches the floor) and the prior `M(n)≤√2·M(n/2)` refutation: the residual is genuinely a **worst-case-PATH (Lyapunov / large-deviation) bound on the phase-alignment cocycle** `∏ r_j`, `r_j∈[√2,2]` — NOT any single-level submaximality. The `_DyadicPhaseChaining.lean` consumer chain stays valid as stated (it is conditional); its hypothesis is just not instantiable at the real Gauss-period level.
+
+Probe: `scripts/probes/probe_local_aligned_child_submaximality.py` (self-contained, no sympy). Machine-checked countermodel: `Frontier/_DyadicPhaseChainingSubmaxRefuted.lean` (the def↔√2-descent equivalence `localAlignedChildSubmaximality_iff_sqrt2_descent` + the concrete violation `not_localAlignedChildSubmaximality_submaxCounterexample`; axiom-clean `[propext, Classical.choice, Quot.sound]`).
+
+## 2026-06-14 (wakesync/#407): N-scaling test — CONSISTENT with sharp-threshold conjecture (not refuted) + rigidity scope correction
+N-scaling (orbit reps, worst far pencil, agr=k+1): n=8→N=5, n=12→N=435. NOT a refutation:
+agr=k+1 puts δ=1−(k+1)/n just ABOVE the conjectured δ*=1−ρ−H(ρ)/(β log₂n) (n=12: δ*≈0.407,
+agr=7 gives δ=0.417>δ*). So N exploding there = the expected SHARP proximity-gap threshold
+(N small below δ*, Θ(q) above). At the actual threshold I=budget≈n, N=I/S=gcd=O(1) automatically.
+Numerics bracket δ* between agr=8(δ=0.333) and agr=7(δ=0.417), consistent with conjectured 0.407.
+1/n granularity too coarse to pin δ* sharply at n≤12. So: conjectured δ* SUPPORTED, threshold
+LOCATION (= beyond-Johnson list onset) = the open core. NOT closed.
+RIGIDITY SCOPE CORRECTION (honest): pencil_unique_of_large_agreement needs |A|>b, but the window
+has |A|=(1−δ)n≤b (since deg P=b≥|A| to have |A| roots). So the landed rigidity lemma applies to the
+DEGENERATE near-full-agreement regime, NOT the prize window. The empirical n=8 bijection (40 bad α ↔
+40 distinct A at |A|=5<b=7) is a generic-distinctness phenomenon, not covered by the lemma. The lemma
+is correct math but its window-relevance was overstated; the window injectivity is separate/open.
+
+## 2026-06-13 (#407): cocycle worst-case-PATH probe — route SURVIVES (no sustained near-2 path) but "GM = exactly √2" sub-conjecture REFUTED
+
+**Object.** The alignment cocycle `r_i = M(i+1)/M(i)`, `M(i)=max_{b≠0}|S_b(μ_{2^i})|`, telescoping
+`M(K)=M(2)·∏_{i=2}^{K-1} r_i`. The refuted uniform-step input demanded `r_i ≤ √2` at every `i`; the
+re-localized open core (issue #407 §3) is a worst-case-PATH bound: does the *product* (geometric mean)
+stay near √2, or does some frequency sustain `r_i ≈ 2` down the whole tower (⟹ `M(K)≈2^K=n`, floor refuted)?
+
+**Probe** `scripts/probes/probe_cocycle_worst_path.py` (FFT-exact, 5 large primes p∈[1.5M,8M], proper
+subgroups μ_{2^μ}⊊F_p*, n up to 4096). Measures the REALIZED sup-norm cocycle `r_i=M_max(i+1)/M_max(i)`:
+
+| prime | p | GM(cocycle) | max single step | M/√(n·log(q/n)) |
+|---|---|---|---|---|
+| A | 2021377 | 1.5154 | 1.9934 | 1.4188 |
+| C | 1502209 | 1.5384 | 1.9935 | 1.4527 |
+| D | 4005889 | 1.5045 | 1.9956 | 1.4151 |
+| E | 8040449 | 1.5043 | 1.9975 | 1.3467 |
+
+**Findings (all FFT-exact, no sampling):**
+1. **Route SURVIVES.** No sustained near-2 path: the realized geometric mean is `≈ 1.50–1.54 < 2`.
+   The naive per-frequency "fixed-b path GM" and "envelope-of-ratios GM" both blow up (6–10⁵), but
+   those are *near-zero-denominator artifacts* (`min_b|S_b(μ_4)|≈0` at low levels), NOT the controlling
+   cocycle. The controlling object is the realized sup-norm cocycle, whose GM is bounded below 2.
+2. **Floor holds numerically.** `M/√(n·log(q/n)) ∈ [1.34, 1.45]` — bounded, constant, the BGK/MRSS
+   envelope. And `(GM/√2)^{K-2} ≈ 0.7·√(log(q/n))` across all primes: the excess of GM over √2 supplies
+   *exactly* the polylog factor. This pins the right SHAPE: `G = √2·(1+Θ(1/μ))`, drift product = polylog.
+3. **"GM = exactly √2" REFUTED.** GM ≈ 1.51 > √2 = 1.414 at every prime — a uniform `r_i≤√2` (and even a
+   `√2`-geometric-mean) bound is impossible; the correct statement carries the `(1+Θ(1/μ))` drift.
+
+**Conclusion.** The cocycle large-deviation route is the right open core and is NOT refuted by the data:
+no persistently-aligned path exists, individual steps approach but never exceed 2, and the geometric mean
+sits at `√2·(1+o(1))` reproducing the floor. The genuine open input is therefore the **geometric-mean
+(Lyapunov) bound** `(∏r_i)^{1/L} ≤ √2·(1+Θ(1/μ))`, i.e. `CocycleGeometricMeanLaw` — formalized as a
+closed deterministic consumer in `Frontier/_DyadicCocycleLargeDeviation.lean` (axiom-clean;
+`floor_of_cocycleGeometricMeanLaw` chains it to the floor, `not_cocycleProductBudget_of_level_gt` is the
+refutation hook should a future probe find a sustained near-2 path). This remains the BGK/MRSS
+incomplete-character-sum 25-yr-open problem; the consumer is closed, the analytic input is not.
+
+## REFUTED (2026-06-13, #407): the Nullstellensatz/PNT "good-prime dodge" of the char-p transfer
+
+**The idea (bold, looked like it might CLOSE the prize).** The char-0 optimality is axiom-clean Lean:
+every gap-vanishing config `S⊆μ_{2^μ}` over a char-0 field is a coset-union (`LamLeungTwoPow.full_tower`),
+so `e_m(S)` lies in the `r`-fold sumset `H^{(+r)}` = roots of a fixed integer polynomial `F` of
+`deg F = |H^{(+r)}|`. Over ℚ̄, `F(e_m)` vanishes on the gap-variety `V(I)`, so `F(e_m)∈√I` (Hilbert
+Nullstellensatz). Clearing denominators in the certificate gives `D·F(e_m)^t ∈ I_ℤ` for some `D∈ℤ`.
+Then for ANY prime `q ∤ D`: every gap-valid `S` over `F_q` has `F(e_m(S))≡0`, so `#bad ≤ deg F =
+|H^{(+r)}|` — the optimality upper bound, UNCONDITIONALLY, with NO char-p Lam–Leung. And a "good" prime
+`q ∤ D`, `q ≡ 1 (mod n)`, `q = Θ(n^β)` should EXIST: `D` has `≤ log₂ D` prime factors, and Thorner–Zaman
+PNT-in-AP gives `≫ n^{β}/φ(n)` primes `≡1 (mod n)` in `[n^β, 2n^β]`. Pick one coprime to `D`. Closed —
+inputs are KNOWN proven math (effective Nullstellensatz + PNT-in-AP). δ* pinned in the prize regime.
+
+**Why it FAILS (quantitative kill).** `D` is DOUBLY exponential, vastly larger than the prize prime:
+- The gap ideal `I` lives in `N` variables — either `N≈|S|≈ρn≈2^28` (point coords) or `N≈2m−1≈n`
+  (elementary-symmetric coords); both are `Θ(n)`, NOT `O(polylog n)`. The generators (power sums `p_j`,
+  `j<2m`) have degree `d≈n`.
+- Effective arithmetic Nullstellensatz (Krick–Pardo–Sombra, sharp): `log|D| ≲ d^{N+1}·(h+…)`. Here
+  `d^N ≈ (2^30)^{2^28} = 2^{30·2^28} ≈ 2^{8×10^9}`. So `log₂ D ≈ 2^{8×10^9}` and
+  `#{prime factors of D} ≤ log₂ D ≈ 2^{8×10^9}`.
+- Candidate primes `≡1 (mod n)` in `[n^β,2n^β]` number only `≈ n^β/φ(n) ≈ 2^{30β−29} ≈ 2^{91}` (`β=4`).
+- `2^{8×10^9} ≫ 2^{91}`: the bad primes (factors of `D`) GENERICALLY include every candidate — the prize
+  prime cannot be dodged. The pigeonhole runs the WRONG way.
+- Same kill for the single-power-sum NORM-bound lift: `Σ_{x∈S}x≡0 (mod q)` lifts to ℂ only if
+  `q ∤ N(Σx)`, and `|N(Σx)| ≤ |S|^{φ(2^μ)} = |S|^{2^{29}}`, so the lift needs `q > |S|^{2^{29}} ≈
+  2^{1.5×10^{10}}` — unreachable (prize `q≈2^{120}`).
+
+**Conclusion (sharpens the open core).** NO generic-elimination / norm route yields a `poly(n)`-height
+transfer; every one has a denominator `exp(2^{Θ(μ)})` that the prize prime `q=n^β` cannot exceed. Closing
+the prize regime requires a STRUCTURAL certificate — `poly(n)`-height, exploiting the 2-adic cyclotomic
+structure and the SIMULTANEOUS gap window (not one power sum) — and no such certificate is known. That
+missing certificate is exactly the Gauss-period sup-norm / char-p Lam–Leung coset-saturation open core
+(Paley Graph Conjecture territory; SOTA Di Benedetto `n^{1−31/2880}`). The dodge therefore DEFERS to the
+open math; it is not a closed route. (Same wall, restated with a quantitative denominator bound.)
+
+## Dual-assault refutations (2026-06-13, 11-expert adversarial workflow, #407)
+
+These M(n)/floor proof routes are REFUTED with machine-checkable evidence (probes in scripts/probes/, /tmp):
+- **Stepanov auxiliary polynomial**: heavy set K(c)=#{b≠0:|η_b|>c√n}=Θ(p) uniformly in β (η_b/√n→N(0,1),
+  measured K/p≈0.044 at c=2 matching Pr|Z|>2=0.0455, all β); auxiliary on heavy set needs deg≥K=Θ(p) ⟹
+  Stepanov multiplicity m<p/K=O(1) ⟹ collapses to m=1 moment. + Frobenius effective-degree cap <p (in-tree).
+- **Amplification / shifted moments**: D_r(h)=Σ_b η_b^r η̄_{b+h}^r = p·Σ_t N_r(t)²e_q(−ht), N_r≥0 ⟹
+  max_h|D_r(h)|=D_r(0)=p·E_r (positive-definite, argmax h=0 verified n∈{8,16,32}). No amplifier beats flat energy.
+- **2-adic dyadic descent** M(n)²≤2M(n/2)²: self-referential — M(n)²≤2max_b(|A|²+|B|²)=M(n)²+M_χ(n)²,
+  M_χ=quadratic-twisted level-n sup-norm SAME size (M_χ/M~1). cos(A,B)=1 is trivial realness, not alignment.
+  Strict form FALSE at finite n (ratio 1.89,1.76,1.58 > √2); true law M(n)²≤(2+Θ(1/log n))M(n/2)².
+- **Average + concentration (floor)**: MDS average E_line[I]≈C(n,k+m)q^{1-m}=q^{-Θ(n/log n)} at the WINDOW
+  INTERIOR (≈2^{-1e7} at μ=30, NOT ≈n); floor is EXTREME-VALUE, worst/avg gap q^{Θ(n/log n)} unbridgeable.
+- **B4 interleaved LD⇒MCA**: circular — Λ(C^{≡m})≤(b+r choose r)Λ(C)^r (GGR11 r=4-5) is a monotone
+  amplification of the single-code list; forcing ≤n needs Λ(C)≤O(1)=the prize. Λ(C)≤Λ(C^{≡m}) exact.
+- **K=O(1) sheaf conductor**: FALSE in the rank reading — conductor=dim H¹_c~n^{2r-1}, Swan=0 (all tame);
+  Weil-II lossy by √rank=n^{r-1/2}. The cancellation is in the WEIGHTS, not the conductor (= BGK, open).
+- **Large-sieve / effective Deligne in-regime**: dimension-obstructed — effective only when f≤√q ⟺ n≳√p;
+  prize n≪√p is over-dimensioned by √p/n. (Σ_b|η_b|^{2r}=q·E_r exact, zero slack.)
+- **2-power exact Sidon ⟹ BGK gain**: ZERO — μ_n jointly Sidon with every dilate (E^+(μ_n,ξμ_n)=n² diag-only),
+  best possible additive input, yet BSG losses are seed-energy-independent (regime-driven κ=log n/log p).
+
+## 2026-06-14 (wakesync/#407): Kambiré/factorization-rigidity route investigated — reduces to the SAME char-p tail-e_i wall; + K=O(1) correction
+Investigated the Kambiré exact-δ* conjecture: δ*=1−ρ−2ρln(1/2ρ)/log₂(qε*), optimality reduced via Factorization
+Rigidity (∏(X−z) m-sparse ⟺ S=μ_m-coset-union, char-p-SAFE/proven) to R1 (monomial extremality)+R2 (Kambiré stack
+maximizes |H^{(+r)}|). The swarm's tail-symmetric-function analysis (b8088a3e) shows R1/R2 for r≥3 (prize r≈11) hit
+the CHAR-P WALL: forcing tail e_i (2m≤i≤rm, m∤i) to vanish needs P|X^n−1 = Lam–Leung over ℂ, open over F_q. So the
+Kambiré route ALSO ⟹ open core (BCHKS 1.12 / Paley graph, open Mar-2026 arXiv 2603.29571). My empirical R1 test
+(mu_16,k=2) saturated above δ*, inconclusive. CORRECTION (per swarm ba96383b): earlier "K=O(1)/K≈1.28" was a crude
+misreading; conductor is rank-driven n^{2r-1}, real core=BGK eigenvalue cancellation, dimension-obstructed (n≪√p).

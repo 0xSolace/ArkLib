@@ -309,3 +309,94 @@ while certifying no-alignment of `m≈2^128` phases needs **`≤1/m`** quality. 
 positive): `R(n,m) := M/√(n·ln m)` is FLAT ≈ 1.1–1.5 across `n:16→2048` and index `m:13→8206`
 (thinning to `n=p^{1/2.63}`) — so the `log(p/n)` factor in `δ*=1−ρ−H(ρ)/(β log₂n)` is the EXACT
 normalization, worst-case constant `C≈1.5`, not merely an upper bound.
+
+## 2026-06-13 (d) — 5 new papers on the EXACT prize core (incomplete additive char sum over μ_n)
+
+The #407 core localizes to `M(n) = max_{b≠0} |Σ_{x∈μ_n} e_p(bx)| ≤ n^{1/2+o(1)}` at `n ~ p^{1/4}`
+(the additive character over a small multiplicative subgroup — the Gauss-sum-like object, distinct
+from the multiplicative-char sums already cataloged). SOTA = BGK power-saving `n^{1-1/2880}`
+(Di Benedetto et al, 2003.06165). 5 leads, 2 downloaded to `~/papers/arklib/`:
+
+| # | paper | id / source | status | bearing on the core |
+|---|---|---|---|---|
+| E1 | **Exponential sums over small subgroups, revisited** (2024) | arXiv **2401.04756** | DOWNLOADED | THE exact object — revisits BGK-type bounds for `Σ e_p(bx)`, `x∈μ_n` small; the current best-technique reference for the prize core. |
+| E2 | **Bounds on exponential sums over small multiplicative subgroups** (Bourgain–Chang) | arXiv **0705.4573** | needs DL | the original small-subgroup additive-character cancellation; foundation for the `n^{1/2}` target and where the power-saving started. |
+| E3 | **Multiplicative Energy of Shifted Subgroups and Bounds on Exponential Sums with Trinomials** | Canad. J. Math (Cambridge) | needs DL | shifted-subgroup energy + **trinomial** exp sums — the trinomial is precisely the monomial-far-line direction `X^b+γX^a`; the energy route in the live regime. |
+| E4 | **Multiplicative character sums over subsets of quadratic extensions** (2025) | arXiv **2502.14436** | DOWNLOADED | recent char-sum machinery over structured subsets of `F_{p^2}` — technique transfer to the subgroup case. |
+| E5 | **Shparlinski — Open Problems on Exponential and Character Sums** | web.maths.unsw.edu.au/~igorshparlinski/CharSumProjects.pdf | reference | the canonical open-problem list; confirms the prize core is recognized-open and names the adjacent attackable sub-problems (Burgess/Stepanov amplification — the only non-moment hope). |
+
+**Honest scope (unchanged):** none of these is a `n^{1/2}` √-cancellation breakthrough; the published
+SOTA `n^{1-1/2880}` and Shparlinski's problem list both confirm the prize core is a recognized open
+problem in analytic number theory. Moment methods are exhausted (energy ≤ `n^{2+o(1)}`, the 7/3
+barrier). E1+E3 are the most relevant — the revisited-small-subgroup technique and the trinomial
+(= monomial-line) energy bound, in the live `n~p^{1/4}` regime.
+## Proximity-prize reduced-form: the EXACT Gauss-sum-sup-norm / resonance face (added 2026-06-13b)
+
+The δ* conjecture `max_b|η_b(μ_n)| ≤ √2·√(n log(q/n))` reduces to **resonance-freeness of the Gauss-sum
+phases {τ(χ)}** (no `b` aligns Ω(f) of them) = the large-values/sup-norm problem for `∑_χ χ̄(b)τ(χ)`.
+Targeted research (this session) — this input is NEITHER proven NOR resonance-refutable:
+
+8.  arXiv:1604.01007 "On period polynomials of degree 2^m for finite fields" — the DYADIC period
+    polynomials; explicit factorizations for `p≡3,5 (mod 8)`, but NOT root-magnitude (sup-norm) bounds
+    in the `n~q^{1/4}` regime. Closest structural match; check if its 2-adic factorization constrains
+    the max real period.
+9.  Bondarenko–Seip, "The resonance method for large character sums", Mathematika — resonance LOWER
+    bounds `√N·exp(c√(log N/log log N))` for multiplicative character sums over intervals. Refutation
+    direction. Does NOT transfer to `∑_χ χ̄(b)τ(χ)` (rigid orthogonal dual-group sum, not a
+    multiplicative interval sum; combination law contractive) — consistent with measured `C→√2`, no
+    resonance blow-up. So the conjecture is NOT resonance-refutable.
+10. arXiv:1712.00761 "Improved bounds on Gauss sums in arbitrary finite fields" — upper bounds for
+    `∑χ(x^n)` up to order `q^{1/2+1/68}`; power-saving, not the sup-norm √-cancellation.
+11. arXiv:1207.1607 Demirci Akarsu–Marklof "The value distribution of incomplete Gauss sums" — limit
+    law for QUADRATIC incomplete Gauss sums (interval-restricted); different object (quadratic phase),
+    but the "incomplete sum has richer value distribution than the complete √q-normalized one" theme is
+    the same flavor as the subgroup sup-norm.
+12. arXiv:2406.01519 (2024) — flagged by search under resonance/large-character-sums; obtain & check.
+
+VERDICT (this session): the prize's open input (Gauss-sum resonance-freeness / sup-norm `≤√(n log)`) is
+at the genuine research frontier — no proven bound reaches it, and resonance does not refute it. Cannot
+be closed by citation; not fabricated.
+
+## 2026-06-14 (#407): literature sweep — SOTA on both prize faces, confirms the gap is the open core
+The prize δ* = where the worst far-line list crosses budget n. Two equivalent faces, both with SOTA
+FAR from the prize target — confirming the core is open (the gap itself):
+| # | Paper | Identifier | Bearing |
+|---|---|---|---|
+| L1 | Di Benedetto–Garaev–García–González-Sánchez–Shparlinski–Trujillo, *New estimates for exp sums over mult subgroups* | arXiv 2003.06165 | **SOTA char-sum face**: `max_a|Σ_{x∈H}e_p(ax)| ≤ |H|^{1−31/2880+o(1)}` for `|H|>p^{1/4}` — improves BGK, but is `n^{1−o(1)}`, FAR from prize `√(n log(q/n))=n^{1/2+o(1)}`. The gap IS the open core. |
+| L2 | Shangguan–Tamo, *Combinatorial list-decoding of RS beyond the Johnson radius* | arXiv 1911.01502 | beyond-Johnson list size, but GENERIC/intersection-based, not dyadic μ_n worst case |
+| L3 | Goldberg–Shangguan–Tamo (Ferber–Kwan–Sauermann line), *List-decodability with large radius for RS* | arXiv 2012.10584 | RS list-decodable to `1−ε`, rate `Ω(ε)` — but RANDOM/punctured eval points, `q≥n^{1+δ}`, NOT structured dyadic |
+| L4 | *List-decoding & list-recovery of RS beyond Johnson for any rate* | arXiv 2105.14754 | any-rate beyond-Johnson, again generic eval sets, not the prize's fixed μ_n |
+| L5 | *Weil sums over small subgroups* | arXiv 2211.07739 | Weil-type bounds for subgroup sums; complements the char-sum face |
+VERDICT: the SOTA char-sum bound (Di Benedetto `n^{1−31/2880}`) and the beyond-Johnson RS list bounds
+(random points) both MISS the dyadic prize regime by a polynomial factor. The prize = closing exactly
+that gap = the recognized open grand list-decoding / Gauss-sum-sup-norm challenge. No 2024–2026 paper
+closes the structured dyadic case. Confirms (literature-grounded) the open core every campaign framing
+converges to.
+
+## 2026-06-13 (#407): second sweep — the Paley-spectrum + char-p Lam–Leung faces (the char-p transfer wall)
+The char-0 optimality is now axiom-clean Lean (`full_tower` etc.); the SOLE residual is the **char-p
+transfer** (does a short gap-vanishing config of `2^μ`-th roots over `F_q` lift to a char-0 coset-union).
+This sweep maps the two literatures that bound that exact object. NONE reach the prize scale.
+| # | Paper | Identifier | Bearing |
+|---|---|---|---|
+| P1 | Podestá–Videla, *The nature of the spectrum of generalized Paley graphs and weak Waring numbers* | arXiv 2604.06513 (Apr 2026) | freshest; spectrum of `Cay(F_q,μ_k)` = Gaussian periods = the `η_b`. **STRUCTURAL ONLY** (when real/integral, period ≥3) — confirms NO new eigenvalue-MAGNITUDE bound exists for thin subgroups. |
+| P2 | Podestá–Videla, *Spectral properties of generalized Paley graphs* | arXiv 2310.15378 | explicit Gauss-period spectra for index `k≤4`, `k=5` — the eigenvalues ARE the open-core periods; no thin-`n~q^{1/4}` magnitude bound. |
+| P3 | Lam–Leung, *On vanishing sums of roots of unity* (+ char-p `W_p(m)` extension, arXiv math/9605216) | — | the char-p transfer = `W_p(2^μ)=ℕp+2ℕ`: gives weight-PARITY of a vanishing sum (`w<p ⟹ w even`) but NOT coset structure; the only general lift = norm bound `w^{φ(m)}<p`, unreachable at prize scale. |
+| P4 | *Note on vanishing power sums of roots of unity* | arXiv 1503.07281 | simultaneous power-sum vanishing structure (our gap window is many `p_j=0` at once — the one place a poly-height argument could live). |
+| P5 | Alsetri, *Burgess-type character sum estimates over generalized arithmetic progressions of rank 2* | arXiv 2509.07765 (BLMS 2026) | closest recent TECHNIQUE (mult-energy + Bohr-set/geometry-of-numbers à la Konyagin) but rank-2 GAP ≠ mult subgroup; does not transfer to `μ_n`. |
+| P6 | Kambiré, *Proximity Gaps Conjecture Fails Near Capacity over Prime Fields* | arXiv 2604.09724 / eprint 2026/782 | the construction paper itself (the δ* lower bracket = monomial line `X^{rm}+λX^{(r−1)m}`, `λ∈H^{(+r)}`). |
+VERDICT: the two literatures that bound the char-p transfer object (Paley spectrum = Gauss periods;
+char-p Lam–Leung weight sets) are STRUCTURAL — neither gives a magnitude/lift bound reaching the prize
+`q=n^β` for `n~q^{1/4}`. Confirms the residual is the recognized open core, not a literature lookup.
+
+## 2026-06-13 (#407): CURRENT open-problem status of the reduced core (Paley graph conjecture)
+The prize floor = BCHKS Conj 1.12 = Paley-graph-conjecture territory. Most up-to-date literature status:
+| # | Paper | Identifier | Bearing |
+|---|---|---|---|
+| Q1 | *Randomstrasse101: Open Problems of 2025* | arXiv 2603.29571 (31 Mar 2026) | **DECISIVE**: curated random-structures open-problem list, dated 3 months ago, STILL lists the Paley-graph clique number `ω(G_p)=O(polylog p)?` as OPEN. The reduced core is open in the current literature, full stop. |
+| Q2 | Hanson–Petridis, *clique number of the Paley graph* (via Stepanov/polynomial method) | — | best PROVEN upper bound `ω(G_p) ≤ (1+o(1))√(p/2)` — the `√p` barrier, FAR from `polylog`/`√(n log q)`. The bound the prize needs to beat is exactly here, and it hasn't moved. |
+VERDICT (current as of Jun 2026): the object the prize floor reduces to is on the March-2026 official
+open-problems list. There is no known-math closure. A prize solution "reducing to proven math" must
+supply a NEW sub-`√p` thin-subgroup character-sum / Paley bound that the 2026 open-problems list says
+does not yet exist. (The "Paley graph conjecture on double character sums implies many character-sum
+estimates" — it is the governing open conjecture, not a side lemma.)

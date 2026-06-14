@@ -161,3 +161,32 @@ Probe: `scripts/probes/probe_conj_norm_moments.py`.
   `{Σa=Σb}` (E_r) onto `{Σ(2r terms)=0}` (Z_{2r}). Verified n=4,6,8,12,16, r=2,3. (So all even-n higher
   zero-sums reduce to the energies of A1/B3/D — closing the even branch of the zero-sum theorem E.)
   Promoted: +2 (running ≈ 17). Novelty flags: H = clean but classical-quadrature; E5 = negation corollary.
+
+## Theme G (cont., #407) — GV rep bound r(c)≤2 holds GENERICALLY at prize scale (NOT a closure)
+
+Probes: `scripts/probes/probe_gv_prizescale.py`, `probe_gv_badprime_sweep.py`.
+- **G2 (SURVIVOR, prize-scale; explicitly NOT a closure).** For dyadic `μ_n` and prime `p~n^β` (β=4,5):
+  `max_{c≠0} r(c) = 2` where `r(c)=#{a∈μ_n : c−a∈μ_n}` — the García–Voloch rep bound holds with constant
+  2 at prize scale. Verified ALL of 80 primes/n for n=8,16,32,64 (zero bad primes), and β=4,5,8 agree.
+  This matches G (two-circles ≤2 over ℂ) and shows it is robust generically down to small p.
+  **HONEST non-closure (logged):** (i) GENERIC not worst-case — 80 random primes can't exclude sparse
+  bad primes `p|Res(x^n−1,(c−x)^n−1)` (the triple-intersection residual; same P_max structure as energy);
+  (ii) even `r(c)≤2` only gives `list ≲ n^{3/2}` via the √-lossy energy route (E→list loses √) = SUB-Johnson,
+  NOT the capacity window — the prize needs the L²→L^∞ Shaw sup-norm, which r(c)≤2 does not supply.
+  So G2 is a clean prize-RELEVANT fact, but the δ*-closure gap (worst-case + √-loss) is intact. Running ≈ 18.
+
+## Theme I (#407) — the phase-alignment count conjecture (sharpest form of the δ* open core)
+
+Probe: `scripts/probes/probe_phase_alignment_count.py`.
+- **I1 (SURVIVOR, sharp; explicitly NOT a closure — it IS the open core, optimally localized).**
+  For dyadic `μ_n` (n=2^k) and the worst frequency `b` (max `|S_b(μ_n)|`), the 2-adic descent
+  `S_b(μ_{2^j}) = S_b(μ_{2^{j-1}}) + S_{bζ}(μ_{2^{j-1}})` has per-level ratio `r_j∈[√2,2]` (=2 iff the
+  two coset periods phase-ALIGN). **Conjecture: the worst `b` aligns at only `O(log log p)` levels** ⟹
+  `M(n)=max_b|S_b| ≈ √(n·log p)` (square-root cancellation), pinning δ* at the average/capacity term.
+  **Refutation-survived:** measured aligned-level count = 4,3,3 for tower depth 6,8,10 at p~2^22
+  (`log log p≈2.7`) — BOUNDED, not growing with depth; `M≈√(n log p)` (45 vs 44, 93 vs 89, 152 vs 178).
+  **Honest status:** this is the OPEN core in its sharpest, most concrete, falsifiable form — a bound on
+  the phase-alignment cocycle (no frequency aligns at >O(log log p) tower levels). PROVING it is the
+  recognized-open subgroup sup-norm / Burgess large-deviation problem; the numerics strongly support it
+  (prize morally true) but it is not yet proven, so NOT a δ*-closure. It bounds exactly what the fleet's
+  exact `GaussPeriodTower.lean` recursion needs as its one open analytic input. Running ≈ 19.
