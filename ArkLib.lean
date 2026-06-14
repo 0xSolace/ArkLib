@@ -49,6 +49,7 @@ import ArkLib.Data.CodingTheory.AGL24DeterministicChain
 import ArkLib.Data.CodingTheory.AGL24DualSpan
 import ArkLib.Data.CodingTheory.AGL24EvalToSymbolic
 import ArkLib.Data.CodingTheory.AGL24ExtensionLift
+import ArkLib.Data.CodingTheory.AGL24FrankDescent
 import ArkLib.Data.CodingTheory.AGL24FrankInterface
 import ArkLib.Data.CodingTheory.AGL24FrontDoorBridge
 import ArkLib.Data.CodingTheory.AGL24GMMDSInterface
