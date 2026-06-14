@@ -53,7 +53,7 @@ open Finset Polynomial
 
 namespace ProximityGap.Frontier.LineBallEnvelope
 
-variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+variable {F : Type*} [Field F]
 
 /-- The affine-in-`γ` per-coordinate polynomial of the line `Q₀ + γ·Q₁` against a fixed
 codeword `W`, evaluated at the domain point `ζ`: `P_ζ(γ) = Q₁(ζ)·γ + (Q₀(ζ) − W(ζ))`.
@@ -92,15 +92,16 @@ This is the genuine deep-band extra-point mechanism: each *moving* agreement coo
 moving coordinates gives `#bad · (a − b) ≤ |μ|`.  Linear in `n`, independent of `|F|` — no
 coset-rigidity, no character sum, just the degree-1 curve list bound. -/
 theorem line_ball_single_codeword_card_mul_le
+    [Finite F] [DecidableEq F]
     (Q0 Q1 W : F[X]) (μ : Finset F) {a b : ℕ}
     (hb : (μ.filter (fun ζ => Q1.eval ζ = 0 ∧ Q0.eval ζ = W.eval ζ)).card = b)
     (hab : b < a) :
-    (μ.filter (fun γ : F =>
+    (univ.filter (fun γ : F =>
         a ≤ (μ.filter (fun ζ => (Q0 + Polynomial.C γ * Q1 - W).eval ζ = 0)).card)).card
         * (a - b)
       ≤ μ.card := by
   classical
-  -- We instantiate `curve_agreement_card_le` over the index type `ι := ↥μ` (the subtype),
+  -- Instantiate `curve_agreement_card_le` over the index type `ι := ↥μ` (the subtype),
   -- with the affine-in-`γ` family `P i := coordPoly Q0 Q1 W i.1`.
   let P : (↥μ) → Polynomial F := fun i => coordPoly Q0 Q1 W i.1
   have hdeg : ∀ i, (P i).natDegree ≤ 1 := fun i => coordPoly_natDegree_le Q0 Q1 W i.1
@@ -109,71 +110,66 @@ theorem line_ball_single_codeword_card_mul_le
     intro i
     constructor
     · intro h0
-      have hc1 : (coordPoly Q0 Q1 W i.1).coeff 1 = 0 := by rw [show P i = _ from rfl] at h0; rw [h0]; simp
-      have hc0 : (coordPoly Q0 Q1 W i.1).coeff 0 = 0 := by rw [show P i = _ from rfl] at h0; rw [h0]; simp
-      unfold coordPoly at hc1 hc0
-      rw [Polynomial.coeff_add, Polynomial.coeff_C_mul, Polynomial.coeff_X_one, mul_one,
-        Polynomial.coeff_C, if_neg (by norm_num : (1 : ℕ) ≠ 0), add_zero] at hc1
-      rw [Polynomial.coeff_add, Polynomial.coeff_C_mul, Polynomial.coeff_X_zero, mul_zero,
-        zero_add, Polynomial.coeff_C_zero] at hc0
+      have h0' : coordPoly Q0 Q1 W i.1 = 0 := h0
+      have hc1 : Q1.eval i.1 = 0 := by
+        simpa [coordPoly] using congrArg (fun P : F[X] => P.coeff 1) h0'
+      have hc0 : Q0.eval i.1 - W.eval i.1 = 0 := by
+        simpa [coordPoly] using congrArg (fun P : F[X] => P.coeff 0) h0'
       exact ⟨hc1, sub_eq_zero.mp hc0⟩
     · rintro ⟨hQ1, hQ0⟩
-      show coordPoly Q0 Q1 W i.1 = 0
-      unfold coordPoly
-      rw [hQ1, hQ0, sub_self, map_zero, map_zero, mul_zero, zero_add, add_zero]
+      have : coordPoly Q0 Q1 W i.1 = 0 := by
+        unfold coordPoly; rw [hQ1, hQ0, sub_self]; simp
+      exact this
   -- (2) vanishing of `P i` at `γ` ↔ line-agreement with `W` at `i.1`.
   have hev : ∀ (γ : F) (i : ↥μ),
       (P i).eval γ = 0 ↔ (Q0 + Polynomial.C γ * Q1 - W).eval i.1 = 0 := by
-    intro γ i; show (coordPoly Q0 Q1 W i.1).eval γ = 0 ↔ _; rw [coordPoly_eval]
+    intro γ i
+    have : (P i).eval γ = (coordPoly Q0 Q1 W i.1).eval γ := rfl
+    rw [this, coordPoly_eval]
   -- subtype filter → base filter, for any predicate on the underlying value.
-  have htrans : ∀ q : F → Prop, ∀ _ : DecidablePred q,
+  have htrans : ∀ (q : F → Prop) [DecidablePred q],
       (univ.filter (fun i : ↥μ => q i.1)).card = (μ.filter q).card := by
     intro q _
-    rw [← Finset.card_subtype q μ]
-    apply Finset.card_nbij (fun (i : ↥μ) => (i.1 : F))
+    apply Finset.card_bij (fun (i : ↥μ) _ => (i.1 : F))
     · intro i hi
       rw [Finset.mem_filter] at hi
-      exact Finset.mem_subtype.mpr hi.2
+      exact Finset.mem_filter.mpr ⟨i.2, hi.2⟩
     · intro i _ j _ h; exact Subtype.ext h
     · intro x hx
-      rw [Finset.mem_subtype] at hx
-      exact ⟨⟨x, by simpa using (Finset.mem_subtype.mp (by rwa [Finset.mem_subtype]))⟩,
-        by rw [Finset.mem_coe, Finset.mem_filter]; exact ⟨Finset.mem_univ _, hx⟩, rfl⟩
+      exact ⟨⟨x, (Finset.mem_filter.mp hx).1⟩,
+        by simp [(Finset.mem_filter.mp hx).2], rfl⟩
   have hbsub : (univ.filter (fun i : ↥μ => P i = 0)).card = b := by
-    rw [← hb]
-    rw [show (univ.filter (fun i : ↥μ => P i = 0))
-          = (univ.filter (fun i : ↥μ => (Q1.eval i.1 = 0 ∧ Q0.eval i.1 = W.eval i.1))) by
-        apply Finset.filter_congr; intro i _; simp only [eq_iff_iff]; exact hzero_iff i]
-    exact htrans (fun ζ => Q1.eval ζ = 0 ∧ Q0.eval ζ = W.eval ζ) _
+    have heq : (univ.filter (fun i : ↥μ => P i = 0))
+        = (univ.filter (fun i : ↥μ => (Q1.eval i.1 = 0 ∧ Q0.eval i.1 = W.eval i.1))) :=
+      Finset.filter_congr (fun i _ => hzero_iff i)
+    rw [heq, htrans (fun ζ => Q1.eval ζ = 0 ∧ Q0.eval ζ = W.eval ζ), hb]
   have hcount : ∀ γ : F,
       (univ.filter (fun i : ↥μ => (P i).eval γ = 0)).card
         = (μ.filter (fun ζ => (Q0 + Polynomial.C γ * Q1 - W).eval ζ = 0)).card := by
     intro γ
-    rw [show (univ.filter (fun i : ↥μ => (P i).eval γ = 0))
-          = (univ.filter (fun i : ↥μ => (Q0 + Polynomial.C γ * Q1 - W).eval i.1 = 0)) by
-        apply Finset.filter_congr; intro i _; simp only [eq_iff_iff]; exact hev γ i]
-    exact htrans (fun ζ => (Q0 + Polynomial.C γ * Q1 - W).eval ζ = 0) _
+    have heq : (univ.filter (fun i : ↥μ => (P i).eval γ = 0))
+        = (univ.filter (fun i : ↥μ => (Q0 + Polynomial.C γ * Q1 - W).eval i.1 = 0)) :=
+      Finset.filter_congr (fun i _ => hev γ i)
+    rw [heq, htrans (fun ζ => (Q0 + Polynomial.C γ * Q1 - W).eval ζ = 0)]
   -- apply the curve list bound at D = 1.
   have hmain := curve_agreement_card_le (ι := ↥μ) (F := F) P hdeg hbsub hab
   rw [Fintype.card_coe] at hmain
   refine le_trans (Nat.mul_le_mul_right _ ?_) (le_trans hmain (by rw [one_mul]))
-  rw [show (univ.filter (fun γ : F =>
+  have heqHeavy : (univ.filter (fun γ : F =>
         a ≤ (univ.filter (fun i : ↥μ => (P i).eval γ = 0)).card))
       = (univ.filter (fun γ : F =>
-        a ≤ (μ.filter (fun ζ => (Q0 + Polynomial.C γ * Q1 - W).eval ζ = 0)).card)) by
-    apply Finset.filter_congr; intro γ _; rw [hcount γ]]
-  apply Finset.card_le_card
-  intro γ hγ
-  rw [Finset.mem_filter] at hγ ⊢
-  exact ⟨Finset.mem_univ γ, hγ.2⟩
+        a ≤ (μ.filter (fun ζ => (Q0 + Polynomial.C γ * Q1 - W).eval ζ = 0)).card)) :=
+    Finset.filter_congr (fun γ _ => by rw [hcount γ])
+  rw [heqHeavy]
 
 /-- **Explicit O(n) form.** `#bad ≤ |μ| / (a − b)` — the per-codeword line-ball incidence is
 linear in `n = |μ|` and independent of `|F|`. -/
 theorem line_ball_single_codeword_card_le
+    [Finite F] [DecidableEq F]
     (Q0 Q1 W : F[X]) (μ : Finset F) {a b : ℕ}
     (hb : (μ.filter (fun ζ => Q1.eval ζ = 0 ∧ Q0.eval ζ = W.eval ζ)).card = b)
     (hab : b < a) :
-    (μ.filter (fun γ : F =>
+    (univ.filter (fun γ : F =>
         a ≤ (μ.filter (fun ζ => (Q0 + Polynomial.C γ * Q1 - W).eval ζ = 0)).card)).card
       ≤ μ.card / (a - b) := by
   rw [Nat.le_div_iff_mul_le (by omega)]
@@ -186,21 +182,19 @@ constant-slot count `b = 0`, so the per-codeword line-ball incidence is the clea
 incidence the deep-band δ\* attack needs, proven by the degree-1 / disjoint-fibre mechanism
 (no `±` coset rigidity). -/
 theorem deep_band_line_ball_card_le
-    (Q0 W : F[X]) (μ : Finset F) (k a : ℕ) (hk : 1 ≤ k) (ha : 1 ≤ a) (hμ0 : (0 : F) ∉ μ) :
-    (μ.filter (fun γ : F =>
+    [Finite F] [DecidableEq F]
+    (Q0 W : F[X]) (μ : Finset F) (k a : ℕ) (_hk : 1 ≤ k) (ha : 1 ≤ a) (hμ0 : (0 : F) ∉ μ) :
+    (univ.filter (fun γ : F =>
         a ≤ (μ.filter (fun ζ => (Q0 + Polynomial.C γ * X ^ k - W).eval ζ = 0)).card)).card
       ≤ μ.card / a := by
   classical
   have hb : (μ.filter (fun ζ => (X ^ k : F[X]).eval ζ = 0 ∧ Q0.eval ζ = W.eval ζ)).card = 0 := by
     rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff]
     intro ζ hζ
-    push_neg
-    intro hev
-    -- `(X^k).eval ζ = ζ^k ≠ 0` since `ζ ≠ 0` (as `0 ∉ μ`).
-    exfalso
+    rintro ⟨hev, -⟩
     rw [eval_pow, eval_X] at hev
     exact pow_ne_zero k (fun h => hμ0 (h ▸ hζ)) hev
-  have h := line_ball_single_codeword_card_le Q0 (X ^ k) W μ hb (by omega)
+  have h := line_ball_single_codeword_card_le Q0 (X ^ k) W μ hb (Nat.succ_le_iff.mp ha)
   simpa using h
 
 end ProximityGap.Frontier.LineBallEnvelope

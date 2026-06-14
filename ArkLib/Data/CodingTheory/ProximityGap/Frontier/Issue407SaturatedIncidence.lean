@@ -230,6 +230,65 @@ theorem spectrum_threshold_bounded_by_completeHomEnvelope
   intro w hw hlt
   exact ⟨hEJ w hw, hthrJ.2.2 w hw hlt⟩
 
+/-! ## Bad-reduction / eliminant-denominator faithfulness -/
+
+/--
+Profile-level bad reduction predicate.  For a fixed field characteristic/prime and fixed
+direction data, `BadReduction w` means the deployed characteristic-`p` incidence profile may
+fail to equal the characteristic-zero complete-homogeneous profile at agreement level `w`.
+
+The latest #407 addendum localizes the char-p residual exactly to this predicate: the prize prime
+would need to divide the relevant eliminant denominator/discriminant for the worst band.
+-/
+abbrev BadReductionProfile := ℕ → Prop
+
+/-- Characteristic-`p` profile `Ip` is faithful to characteristic-zero profile `I0` at all
+non-bad-reduction levels through the finite window `W`. -/
+def FaithfulOutsideBadReduction
+    (Ip I0 : IncidenceProfile) (BadReduction : BadReductionProfile) (W : ℕ) : Prop :=
+  ∀ w, w ≤ W → ¬ BadReduction w → Ip w = I0 w
+
+/-- No bad reduction occurs through a finite agreement window. -/
+def NoBadReductionThrough (BadReduction : BadReductionProfile) (W : ℕ) : Prop :=
+  ∀ w, w ≤ W → ¬ BadReduction w
+
+/-- No bad reduction through `W` upgrades conditional faithfulness to saturation through `W`. -/
+theorem saturatedThrough_of_faithfulOutsideBadReduction
+    {Ip I0 : IncidenceProfile} {BadReduction : BadReductionProfile} {W : ℕ}
+    (hfaith : FaithfulOutsideBadReduction Ip I0 BadReduction W)
+    (hno : NoBadReductionThrough BadReduction W) :
+    SaturatedThrough Ip I0 W := by
+  intro w hw
+  exact hfaith w hw (hno w hw)
+
+/--
+If no bad reduction occurs through the relevant window, a characteristic-zero saturated threshold
+certificate is also a deployed characteristic-`p` threshold certificate.  This is the formal
+consumer of the newest #407 localization: after the eliminant denominator is shown prime-to the
+prize field, no additional char-p excess remains in the finite profile calculation.
+-/
+theorem deployedThreshold_of_charZeroThreshold_noBadReduction
+    {Ip I0 : IncidenceProfile} {BadReduction : BadReductionProfile} {B W wStar : ℕ}
+    (hfaith : FaithfulOutsideBadReduction Ip I0 BadReduction W)
+    (hno : NoBadReductionThrough BadReduction W)
+    (hthr : IsSaturatedThreshold I0 B W wStar) :
+    wStar ≤ W ∧ Ip wStar ≤ B ∧ ∀ w, w ≤ W → wStar < w → B < Ip w :=
+  actualThreshold_of_saturatedThreshold
+    (saturatedThrough_of_faithfulOutsideBadReduction hfaith hno) hthr
+
+/--
+Pointwise refutation hook for the bad-reduction-free claim.  If deployed and characteristic-zero
+profiles differ at an in-window level where faithfulness is known outside bad reduction, then that
+level must be bad reduction.
+-/
+theorem badReduction_of_profile_ne
+    {Ip I0 : IncidenceProfile} {BadReduction : BadReductionProfile} {W w : ℕ}
+    (hfaith : FaithfulOutsideBadReduction Ip I0 BadReduction W)
+    (hw : w ≤ W) (hne : Ip w ≠ I0 w) :
+    BadReduction w := by
+  by_contra hnot
+  exact hne (hfaith w hw hnot)
+
 /-- The scorecard used for the current #407 survivor.  A score below `9` is a
 machine-readable warning that the item is not a claimed closure of the prize. -/
 structure ConjectureScore where
@@ -264,4 +323,7 @@ end ProximityGap.Frontier.Issue407
 #print axioms ProximityGap.Frontier.Issue407.readout_good_of_envelope_good
 #print axioms ProximityGap.Frontier.Issue407.not_saturatedThrough_of_profile_undercount
 #print axioms ProximityGap.Frontier.Issue407.spectrum_threshold_bounded_by_completeHomEnvelope
+#print axioms ProximityGap.Frontier.Issue407.saturatedThrough_of_faithfulOutsideBadReduction
+#print axioms ProximityGap.Frontier.Issue407.deployedThreshold_of_charZeroThreshold_noBadReduction
+#print axioms ProximityGap.Frontier.Issue407.badReduction_of_profile_ne
 #print axioms ProximityGap.Frontier.Issue407.saturatedIncidenceScore_not_closure
