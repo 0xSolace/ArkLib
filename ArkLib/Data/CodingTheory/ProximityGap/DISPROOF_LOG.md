@@ -9050,3 +9050,35 @@ WHAT DIED: my hope that the closed form computes the prize bad count and lets s*
 in closed form. The bad-count object is MORE RESTRICTIVE than |H^{(+r)}| (s=16 dies where |H| is large).
 Its true closed form is unknown; the n-scaling of the spurious-survival depth (k+2 at n=16) is still
 walled at n=16. Code-and-refute: the turn's headline thread self-refuted. NOT closure. Probe committed.
+
+## R2 / GW kernel mis-wiring catch — `GWDirectionFinrankLe` is false for genuine codes (2026-06-14)
+
+**Attempt audited.** The CZ25/Guruswami–Wang `|L|>1` capacity kernel reduction
+(`GWKernelReduction.lean:cz25CoordFiberCap_of_interp_and_multiplicity`) discharges
+`CZ25CoordFiberCap` from `{BRICK-I, BRICK-V}` plus two "orchestrator-wired" brick conclusions
+`{BRICK-W = GWDirectionFinrankLe, BRICK-L = GWAffineFiberCharge}`. The headline docstring claims
+`hW : GWDirectionFinrankLe s C` is "the conclusion of BRICK-W (proven in lane `GWBrickW`)".
+
+**Disproof (machine-checked, `GWDirectionScopedWiring.lean`).**
+`GWDirectionFinrankLe s C := ∀ A ≤ C, finrank A ≤ s − 1` instantiated at `A := C` gives
+`finrank C ≤ s − 1` (`gwDirectionFinrankLe_forces_small`). On the whole code space `C := ⊤`,
+`finrank ⊤ = |ι|·s`, so for `s ≥ 2` it exceeds `s − 1` and the Prop is **false**
+(`gwDirectionFinrankLe_refuted`, axiom-clean). Hence `hW` holds *only* for codes of dimension
+`≤ s − 1` — never for a capacity-regime folded-RS code (`dim C = k ≫ s`). The proven BRICK-W lane
+(`GWAffinePinning.gw_solutionSet_finrank_le`) bounds the finrank of the *single* GW solution
+submodule `W₀ = gwHomogSolution A γ k`, **not** of every `A ≤ C`; the named Prop over-states the
+scope and is not its conclusion. The conditional headline is `sorry`-free but consumable only with
+an unsatisfiable premise.
+
+**Repair landed (axiom-clean).** Drop the universal `hW`; carry the genuine BRICK-W bound
+`finrank A ≤ s − 1` *with* the BRICK-V output `A` via `GWAgreeForcesDirectionScoped` (the shape the
+proven lane actually delivers). `cz25CoordFiberCap_of_interp_and_multiplicity_scoped` re-derives the
+identical `CZ25CoordFiberCap` from `{BRICK-I, BRICK-V-scoped, BRICK-L}` + `0 ≤ τ(r₀)`, reusing the
+arithmetic collapse verbatim. The scoped Prop is satisfiable
+(`gwAgreeForcesDirectionScoped_holds_of_close_list_singleton`, take `A := ⊥` on the sub-Johnson
+slice), unlike `GWDirectionFinrankLe`.
+
+**Remaining open core (untouched).** The genuinely-deep `|L|>1` content is the affine-flat charge
+`GWAffineFiberCharge` (BRICK-L), i.e. the per-coordinate `card(fiber) ≤ finrank(span of fiber diffs)`
+cap — the `q^{dim}` vs `dim+1` obstruction documented at `CZ25SpanDimension.lean:292–302`. Not a
+closure: a leg-statement was corrected, not the kernel solved.
