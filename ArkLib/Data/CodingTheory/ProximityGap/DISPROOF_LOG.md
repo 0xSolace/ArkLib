@@ -9664,17 +9664,20 @@ After all aggregate routes were eliminated, a 12-angle army attacked the ONLY li
 per-frequency bound `M(n)=max_b|η_b| ≤ n^{1/2+o(1)}`. No exponent improvement (that gap IS the Paley Graph
 Conjecture), but a precise, corrected regime map:
 
-**CORRECTION to prior belief (`issue407-sota-exponent-localization`): the sum-product ITERATION is non-trivial
-at n~p^{1/4}** (the prior flat "di Benedetto vanishes at p^{1/4}" was too pessimistic). Two careful distinctions
-(two army runs, reconciled honestly):
+**RETRACTION + corrected map (`issue407-sota-exponent-localization`).** An earlier edit of THIS entry claimed
+the best single-frequency bound at β=4 is `n^{0.968}` (di Benedetto JNT 2020 Thm 3.3). **That was a
+MISATTRIBUTION, now retracted (deepened D1/D2, verbatim from the PDF arXiv:2003.06165):** Thm 3.3's
+`N^{2−31/960}` bounds a DOUBLE interval×subgroup sum `S_a(N,H)=Σ_x Σ_y e_p(axy)`, NOT the single-frequency
+Gauss period `M(n)=max_b|η_b|`. The honest single-frequency map at the prize:
 - **Single-polynomial Stepanov is VACUOUS at the prize:** `M ~ n^{(β+1)/4} = n^{5/4}` at β=4 (worse than
   trivial), nontrivial only for β<3 (the `x^n−1=0` budget caps the auxiliary at `s<n`, contradicted when
   H~p^{3/4}≫n). Confirms the §3 HBK "vacuous below q^{1/3}" face exactly.
-- **The sum-product ITERATION (BGK / di Benedetto / Kowalski) IS non-trivial at β=4:** di Benedetto JNT 2020
-  Thm 3.3 gives ~**n^{1−31/960}=n^{0.968}** at H~p^{1/4} (Thm 3.1's strict range p^{1/2}>H>p^{1/4} makes β=4 a
-  boundary endpoint; the safest survivor strictly at the boundary is Bourgain–Garaev n^{1−175/9437184}≈n^{0.99998}).
-  Best rigorous in-regime bound is between **n^{0.968} and ~n^{0.99}** by boundary handling — a tiny fixed
-  power-saving constant in every reading, nowhere near n^{1/2}. Vacuity cliff: Thm 3.1 dies at β=4.775.
+- **Best RIGOROUS single-frequency exponent for `M(n)`:** di Benedetto Thm 3.1 `n^{1−31/2880}=n^{0.989}` holds
+  only for **β<4 strictly** (range p^{1/2}>H>p^{1/4}). **At the exact prize point β=4 it is a boundary endpoint**
+  where only the Bourgain–Garaev limiting iteration survives: `M ≤ n^{1−175/9437184} = n^{0.99998}` (nontrivial
+  but a saving of ~1.85e−5). For β>4: only ineffective BGK `n^{1−o(1)}`. So the prior pessimistic
+  "di Benedetto power-saving essentially vanishes at p^{1/4}" was **closer to right** than the `n^{0.968}`
+  overcorrection — at β=4 the rigorous saving is ~`10^{-5}`, not `0.03`. Vacuity cliff for the β<4 bound: β=4.775.
 
 **The prize point β=1/4 (n=p^{1/4}) is EXACTLY the Burgess barrier (D4, four independent confirmations).**
 Burgess 2r-th moment gives α(r)−1/4 = 1/(4r²)>0 for all finite r ⟹ trivial exactly at θ=1/4; nontrivial only
@@ -9698,3 +9701,379 @@ below every rigorous bound. So `α>1/2` is ruled out; the conjecture/target is r
 barrier). Best proven n^{0.968}; needs n^{0.5}; gap = the fixed sum-product constant → 1/2 = Paley Graph
 Conjecture. Aggregate routes (energy D2, slice-rank D7, decoupling D8) all trivial-n / reduce-to-wall.
 Probes: probe_407_direct_bgk_*.py (army-landed). Do not re-run D1–D12; the map is complete.
+
+### D13 (2026-06-14, independent push): larger-n calibration + exact rigor ledger CONFIRMED
+
+Independent re-derivation (probes `d13_direct_bgk_push.py`, `d13b_largeN_push.py`, `d13c_exact_worstfreq.py`)
+corroborates the D1–D12 map and EXTENDS the numerics to n=256 at the true prize point (p~n^4, m up to
+14.2M cosets, never full group):
+
+* **RIGOR LEDGER recomputed from first principles at β=4** (every step explicit, exact `Fraction`):
+  di Benedetto Thm 3.1 = n^{0.989236} (= 1−31/2880, nontrivial since β=4 < 191/40=4.775);
+  **di Benedetto Thm 3.3 = n^{0.967708} (= 1−31/960) — the PROVABLE MIN in-regime**, confirms n^{0.968};
+  Kowalski 2024 = n^{0.999653}; Burgess best-r (incomplete-sum form 1−1/r+β(r+1)/(4r²)) = **n^{1.00016}>1
+  TRIVIAL at β=4** (best r=79), while β=2 → 0.875, β=3 → 0.979 (both nontrivial). This pins the **Burgess
+  barrier at EXACTLY β=4**: the moment method is vacuous precisely at the prize point and nontrivial just
+  below it. Single-poly Stepanov n^{1.25}, energy → n^{1.0}, both trivial (confirmed).
+* **TRUE M-exponent keeps falling with n** (decreasing toward 1/2, far below every proven bound):
+  measured mean M-exponent 0.968 (n=8) → 0.942 (16) → 0.891 (32) → 0.855 (64) → 0.833 (128) →
+  **0.790 (n=256)**. Local/sampled doubling exponent log₂(M(2n)/M(n)) drops 0.86 → 0.69 → 0.68 → 0.48
+  (crosses below 1/2 at n=128→256); the sampled max is a lower bound so the trend is conservative,
+  consistent with α_∞ = 1/2. **Target M=n^{1/2+o(1)} re-confirmed correct at larger n.**
+* **NO REFUTATION, sharper floor constant.** Exact (full-coset-enumeration, no sampling) M(128) at the
+  second prize prime gives **M/√(2n log m) = 0.9887 < 1** — the closest-to-ceiling value yet, refining the
+  campaign's "c→√2 from below": the worst frequency sits at ~0.989·√2·√(n log m), strictly under the
+  conjectured floor, with the gap to √2 shrinking in n. No b with |η_b| > √2·√(n log m) exists across
+  all (n,p) tested up to n=256. The conjecture/target stands; only the proof is open.
+
+NET unchanged: best proven n^{0.968} (Burgess vacuous at β=4, only sum-product survives), needs n^{0.5},
+the half-power gap IS the Paley Graph Conjecture for a thin n=p^{1/4} subgroup. The D13 push tightens the
+calibration (n=256, exact M/floor=0.989) but finds no new lever and no refutation — the cap is structural.
+
+### D14 (2026-06-14, PDF-verbatim correction): the "n^{0.968} provable-min" is a MISATTRIBUTION
+
+The D13 ledger line above ("di Benedetto Thm 3.3 = n^{0.967708} — the PROVABLE MIN in-regime, confirms
+n^{0.968}") is **WRONG for the single-frequency Gauss period M(n)** and is corrected here against the
+**verbatim** theorem statements of di Benedetto–Garaev–García–González-Sánchez–Shparlinski–Trujillo, JNT
+2020 (arXiv:2003.06165), extracted directly from the PDF (`~/papers/arklib/.../arxiv-2003.06165-…pdf`,
+via `pdftotext`; matches probe `d13_perfreq_pushbig_and_boundary.py` part E2):
+
+* **Theorem 3.1 (verbatim):** "Let H be a multiplicative subgroup of 𝔽*_p of order H with **p^{1/2} > H >
+  p^{1/4}**. Then max_{(a,p)=1}|S_a(H)| ≲ H^{2689/2880} p^{1/72}. In particular, when **H > p^{1/4}**,
+  Theorem 3.1 gives max|S_a(H)| ≲ H^{1−31/2880}." → the n^{0.989236} headline is for the SINGLE-frequency
+  subgroup sum and holds for **H > p^{1/4} (β < 4)**; both range inequalities are strict.
+* **Theorem 3.3 (verbatim):** bounds **S_a(N,H) = Σ_{x∈N} Σ_{y∈H} e_p(a·x·y)** — a DOUBLE
+  interval×subgroup sum (N = an interval of N consecutive integers), NOT M(n). Its "N^{2−31/960}" headline
+  is for N,H = p^{1/4+o(1)}. **31/960 is the saving for the interval-subgroup PRODUCT sum, not for
+  max_a|S_a(H)| (= our Gauss period).** Attributing n^{0.968} to M(n) conflates two different objects.
+* **Boundary β = 4 exactly (H ∼ p^{1/4}):** outside Thm 3.1's strict range. The paper's own intro (eq 1.2)
+  cites Bourgain–Garaev for the limiting case: max|S_a(H)| ≤ H^{1−175/9437184+o(1)} (saving 1.85×10⁻⁵ ⇒
+  **n^{0.99998}**). The text states di Benedetto "replaces 175/9437184 with 31/2880" in (1.2), so under the
+  `≲` convention (which absorbs p^{o(1)} = H^{o(1)}) the n^{0.989} survives at the boundary; the strictly-
+  in-range proven value needs β < 4 and the citable endpoint value is Bourgain–Garaev's n^{0.99998}.
+* **Strictly thin prize β > 4 (n < p^{1/4}):** BELOW Theorem 3.1's range entirely; no di Benedetto bound,
+  only ineffective BGK n^{1−o(1)} (o(1) unquantified, → 0 as the subgroup thins).
+
+**CORRECTED single-frequency cap (M(n), prize regime n ≤ p^{1/4}):**
+  β slightly < 4 (n = p^{1/4+ε}): **n^{0.989236}** (di Benedetto Thm 3.1, genuinely in-range);
+  β = 4 exactly (n = p^{1/4}):    **n^{0.989}** via `≲`, or **n^{0.99998}** Bourgain–Garaev strictly;
+  β > 4 (n < p^{1/4}):            **n^{1−o(1)}** BGK, ineffective.
+The honest best PROVEN single-frequency exponent in-regime is **n^{0.989}** (NOT n^{0.968}); the lower
+n^{0.968} number is a different (double-sum) theorem. Single-poly Stepanov n^{(β+1)/4}=n^{1.25} and energy
+n^{1.0} remain trivial (independently re-confirmed). Everything is still a tiny fixed power-saving constant,
+nowhere near n^{1/2}; the gap = the Paley Graph Conjecture for a thin β=4 subgroup at the Burgess barrier.
+Result type: **maps-the-cap** (corrects the constant in the cap; no exponent improvement, no refutation).
+
+### D14 (2026-06-14, independent push): BOUNDARY-ENDPOINT correction + structured-prime constant
+
+Probe `d5_regime_push.py`. Two genuinely new, honestly-labelled results; rest re-confirms D1–D13.
+
+* **RIGOR CORRECTION — di Benedetto Thm 3.1 does NOT cover n=p^{1/4} exactly; β=4 is the EXCLUDED
+  endpoint.** Resolves the internal inconsistency between `d1b_dibenedetto_regime_map.py` /D13
+  ("β=4 comfortably INSIDE, n^{0.989}") and `SubgroupGaussSumDilationRecursion.lean:43` ("β>4 sits
+  outside every explicit theorem"). The verbatim range is the OPEN interval `p^{1/2} > H > p^{1/4}`;
+  with H=n and β=log_n p this is `2 < β < 4` (n STRICTLY thicker than p^{1/4}). So **β=4 (n=p^{1/4})
+  is the closed endpoint excluded by the strict `H > p^{1/4}`**; n^{0.989236}=n^{1-31/2880} is only the
+  LIMIT as β↑4 (rigorous for every β<4, i.e. n above p^{1/4}). At n=p^{1/4} exactly the only covering
+  bound is Bourgain–Garaev n^{1-175/9437184}=n^{0.99998} (saving 1.85e-5). For β>4 (n strictly thinner
+  than p^{1/4}) NO explicit theorem is nontrivial (Thm 3.1 dies at β=4.775 but is uncovered already at
+  β>4). **Honest in-regime rigorous bracket: M(p^{1/4}) ≤ n^{0.989} (open side, any n>p^{1/4}) ↔
+  n^{0.99998} (endpoint n=p^{1/4}); both ≫ n^{0.5}, the 0.011-vs-2e-5 distinction is immaterial to
+  the 0.489 gap.** Net SOTA at the prize is the di Benedetto LIMIT n^{0.989}, approached from β<4,
+  never attained AT β=4 by an explicit theorem — confirms `…DilationRecursion.lean:43`, refines D13.
+* **STRUCTURED-PRIME constant overshoot (exact, 12 primes at n=64).** Exact full-coset M for 12
+  consecutive prize primes p~64^4: M/√(2n ln m) ∈ [0.86, 1.05]; the TWO primes with c>1 (i.e. M
+  slightly above the conjectured √2 floor) are exactly the two with the highest 2-adic valuation
+  v₂(p−1)∈{8,9,10} of the 12. So the √2 constant ceiling is **regime-gated FALSE at 2-power-structured
+  primes** (matching `issue407-thinness-essential-regime-gated`), overshoot ≤5%, while the EXPONENT
+  α=log_n M ∈ [0.851,0.899] stays < 1 at every prime — M=n^{1/2+o(1)} intact, only the clean c=√2 is
+  not a uniform ceiling. NO refutation (no α>1, no |η_b|>1.05·√(2n ln m)).
+* **EXACT calibration extended (n=16..128 full enumeration, no sampling):** α = 0.941, 0.902, 0.866,
+  0.830 (matches D13 0.942/0.891/0.855/0.833); exact c=M/√(n ln m) ∈ [1.18,1.30] bounded. n=256,512
+  rows SAMPLED = conservative lower bounds (sampling deflates the max; their α≈0.72–0.75 and the
+  spurious n=128→256 doubling dip 0.16 are sampling artifacts, NOT real drops — do not over-read).
+
+NET: SOTA at the prize point is the di Benedetto n^{0.989} LIMIT (β↑4), with the endpoint n=p^{1/4}
+itself covered only by Bourgain–Garaev n^{0.99998}; literature re-checked 2026-06 (arXiv:2003.06165
+still SOTA, NO 2024–26 improvement indexed). Gap to n^{0.5} = the open Paley Graph Conjecture. Cap
+structural; no new lever, no refutation.
+
+### D9 (2026-06-14): KARATSUBA short-character-sum method — maps the cap with the EXACT obstruction
+
+Probe `d9_karatsuba_short_charsum.py`. Karatsuba's method (raise `|S|` to the 2k-th power via
+coset-stability `|S|≤(1/n)Σ_{t∈μ_n}|Σ_x e_p(btx)|`, expand into a 2k-fold additive-energy count,
+then BSG/sum-product expand) belongs to and is capped by the SAME Bourgain–Garaev–di Benedetto
+lineage as D1/D13. No exponent improvement. Two clean, decision-grade additions:
+
+* **RECONCILES the di Benedetto applicability dispute precisely (closed vs open regime).** Both
+  prior readings are correct for what they describe. di Benedetto Thm 3.1's exponent
+  `E(β)=2689/2880+β/72` is on the OPEN interval `p^{1/4}<H<p^{1/2}`. For ANY fixed `β<4` (H a
+  hair ABOVE `p^{1/4}`) it gives a fixed saving up to `31/2880` (`E→0.98924` as `β→4⁻`); that
+  `0.98924` is the SUPREMUM as `H↓p^{1/4}`, **not attained at the boundary**. AT the exact prize
+  equality `n=p^{1/4}` (`β=4` on the nose — which the prize must cover UNIFORMLY for all such
+  configs) the sum-product headroom is exhausted and one falls back to Bourgain–Garaev's
+  LIMITING saving `175/9437184 = 1.854e−5`, i.e. **certified `M ≤ n^{0.9999815}` uniformly over
+  the CLOSED prize regime** (`9437184 = 9·2^20`; Karatsuba's δ²-saving law gives the same value
+  at δ=1/4). So: open-interior guarantee `n^{0.98924}` (β strictly <4), closed-regime uniform
+  guarantee `n^{0.99998}` (β=4 included). The prize needs the closed regime ⟹ the honest
+  rigorous in-regime number at the exact boundary is `1.85e−5`, not `31/2880`.
+* **MEASURES the exact obstruction: the BSG saving's trilinear input is p-INDEPENDENT and has
+  ZERO equidistribution headroom at δ=1/4.** The power saving needs the 3-fold input of `μ_n` to
+  spread (max_c r₃(c) near the equidistribution value `n³/p`). Measured exactly across multiple
+  large structured primes per n (prize regime): `E₂(μ_n)/n²` and **`max_c r₃(c)/n` are EXACTLY
+  p-independent** (identical to ≥3 decimals across all primes at fixed n, both →3 as n grows; so
+  `max_c r₃(c) ≈ 3n`). Equidistribution at δ=1/4 would require `max_c r₃ ~ n³/p = O(1)`; the
+  measured `3n` sits a factor `n²=p^{1/2}` ABOVE it — **maximally far**. The `+ε` in the required
+  range `t>p^{1/4+ε}` IS exactly this trilinear headroom, and it vanishes at the boundary, forcing
+  the saving from `31/2880` down to the limiting `175/9437184`. The δ² (not δ) scaling is the two
+  Cauchy–Schwarz steps in the BSG amplification, each spreading only √-much.
+* **Ground-truth local M-exponent (worst over a few large primes/n): 0.95→0.91→0.90→0.84 for
+  μ=4..7**, local doubling slope dropping toward ½ (consistent with D13's α_∞=½ and the truth
+  `M=Θ(√(n log m))`); the method cannot certify it.
+
+NET (D9): adds the precise closed-vs-open reconciliation (uniform certified `n^{0.99998}` at the
+exact boundary the prize must cover) and the exact p-independent trilinear obstruction
+(`max_c r₃/n = 3`, headroom 0 at δ=1/4). No exponent gain, no refutation — confirms the cap is
+structural and pins WHY with the explicit constant. `result_type = maps-the-cap`.
+
+---
+
+## D14 — ROUTE B (tail-restricted moment): the anomaly IS the spike, tail-restriction is a no-op (REFUTED)
+
+**Claim tested:** the deep-moment anomaly (Σ_t|η_t|^{2r} explodes vs Gaussian at high-2-adicity
+primes) is a BULK effect, so a TAIL-restricted moment Σ_{|η_t|≥rms}|η_t|^{2r} would stay random-like
+to depth r~log d and yield M ≤ √(2n log d) directly (reaching n^{1/2}).
+
+**Verdict: REFUTED. Tail-restriction removes nothing because there is no bulk to remove.**
+
+1. **Full vs tail moment are numerically IDENTICAL.** For every r up to and past r~log d, the ratio
+   `(Σ_t|η_t|^{2r})/Gauss` equals `(Σ_{|η|≥rms}|η_t|^{2r})/GaussTail` to `|diff| ≤ 6e−4` at all
+   tested large-d prize-geometry primes (p=268369921 n=64 d=4.19M; p=7340033 n=256 d=28672;
+   p=5767169 n=256 d=22528). When the full moment is anomalous the tail moment is anomalous by the
+   SAME factor.
+
+2. **The anomaly lives in the EXTREME tail, not the bulk** (this corrects the earlier "BULK effect"
+   framing). Band-decomposition of the r=8 moment at Fermat F4 (p=65537,n=64): 99.4% of the
+   anomalous mass comes from the 3 periods in the [4,6)·rms band — i.e. the periods that produce M
+   itself. At high r, `M^{2r}/Σ|η|^{2r} → 1` (0.99+). The deep moment and the M-spike are the SAME
+   object; "restricting to the tail" keeps exactly the terms causing the anomaly.
+
+3. **The apparent sub-Gaussian violation at Fermat F4 n=64 is a finite-size (small-d) artifact, NOT
+   structure.** At p=65537,n=64 (d=1024): M/√(2n log d)=1.465, tail count ratio N(λrms)/[d e^{−λ²/2}]
+   blows up (8.7 at λ=4, single-outlier 262 at λ=5). But growing d at the SAME 2-adic structure
+   (p=268369921=4095·2^16+1, n=64, d=4.19M): M/√(2n log d) drops to **0.881<1** and the λ=5 tail
+   ratio drops to **0.00**. The session's reported "sub-Gaussian STABLE ≈0.5×Gaussian at d=28672,
+   v2=20" is CORRECT; the n=64 Fermat violation was a d=1024 small-sample spike (N=1 vs pred 0.004).
+
+4. **Consequence for the three sub-routes proposed:** (i) tail-restricted moment — refuted, identical
+   to full (item 1). (ii) bulk-suppressing weight w(η) — any w that keeps the tail keeps the anomaly,
+   any w that kills the tail kills M itself; no separation exists. (iii) L¹-norm route
+   Σ|η_t|=O(√(d n log d)) — would need exactly the same sub-Gaussian tail control that the moment
+   provides, with no extra leverage (it is a lower-r aggregate of the same tail).
+
+**NET (D14):** Route B does not bypass the anomaly and does not reach n^{1/2}. The sub-Gaussian
+upper tail (and hence M ≤ √(2n log d) by EVT) holds numerically at large d uniformly across high-
+2-adicity primes — but proving it is the SAME open problem as the deep-moment/cumulant bound at
+structured primes (the tail and the deep moment are one object). No new exponent; the established
+4th-moment bound M ≤ n^{5/8}=p^{5/12} (conditional on the open r=2 energy bound) remains the best
+unconditional-route target. `result_type = obstruction-located` (tail = spike, no bulk to excise).
+
+---
+
+## D15 (2026-06-14, independent verbatim re-audit + SOTA-framing correction)
+
+Re-attacked the ONLY live route (direct per-frequency `M(n)=max_{b≠0}|η_b| ≤ n^{1/2+o(1)}`) with a
+fresh verbatim PDF audit of the SOTA literature and extended numerics. Confirms D9/D13/D14; adds one
+genuinely new correction to the *prompt's own SOTA framing* and one sharper numeric.
+
+* **CONFIRMED (independent verbatim, `pdftotext` of arXiv:2003.06165):** Thm 3.1 range is the OPEN
+  interval `p^{1/2} > H > p^{1/4}` (both strict); its `H^{1-31/2880}` is the single-frequency Gauss
+  period `S_a(H)=η_b`. Thm 3.3's `N^{2-31/960}` is the DOUBLE interval×subgroup sum `S_a(N,H)=Σ_{x∈N}Σ_{y∈H}`,
+  a different object — the `n^{0.968}` attribution to `M(n)` is a misattribution (matches D14). Best
+  honest in-regime single-frequency cap: `n^{0.989236}` (β↑4 limit, Thm 3.1), `n^{0.99998}` Bourgain–
+  Garaev strictly at `n=p^{1/4}`, ineffective `n^{1-o(1)}` (BGK) for `n<p^{1/4}` (β>4).
+
+* **NEW correction — the prompt's "Kowalski 2024 n^{1-1/2880}" is a CONFLATION.** Kowalski arXiv:2401.04756
+  ("Exponential sums over small subgroups, revisited", Jan 2024) is **EXPOSITORY** — an account of the
+  Bourgain–Glibichuk–Konyagin theorem (`|S_a(H)| ≤ H·p^{-δ}` for `H>p^ε`, with `δ=δ(ε)>0` **ineffective**
+  and `→0` as the subgroup thins). It is **NOT** a new explicit `n^{1-1/2880}` bound; the `1/2880`
+  (and `31/2880`) belong to di Benedetto et al. (JNT 2020). So there is NO 2024 explicit improvement over
+  di Benedetto at the prize point; the SOTA single-frequency exponent in-regime remains di Benedetto's
+  `n^{0.989}` (open side) / Bourgain–Garaev `n^{0.99998}` (boundary). **No method rigorously beats
+  `n^{0.989}` for `M(n)` in the prize regime** (and at the exact boundary `n=p^{1/4}` nothing beats
+  `n^{0.99998}`); `n^{0.989}` does not even strictly hold AT `β=4`.
+
+* **NUMERIC (collinearity-break, `d14_break_collinearity_fixedn.py`).** Fixed-n vary-p fits
+  `M = c(n)·(ln m)^{t(n)}` isolate the polylog exponent at fixed n (breaking the prize-regime `ln m≈3 ln n`
+  collinearity): `t(n)` RISES `0.09→0.36→0.46→0.42` (n=8,16,32,64) toward ~½, NOT the global-fit 0.75.
+  The cross-n intercept extraction `c(n)~n^α` is UNSTABLE (α=0.32, R²=0.78) precisely because `t(n)` is
+  itself n-dependent — this instability IS the identifiability obstruction made concrete (the 3-param
+  joint fit is degenerate along the `(α,t)` ridge in prize-regime data). Robust signals unchanged:
+  `M/√(2n ln m) = c` rising `0.753→0.819→0.881→0.924` (n=8..64, toward the BGK constant from below),
+  `M ≈ 1.3·√(n log m)`. Both consistent with `M=n^{1/2+o(1)}`; neither pins the exponent below the BGK
+  target by finite numerics — that residual super-polylog `o(1)` IS the open Paley-graph gap.
+
+**NET (D15):** no exponent improvement (the gap to ½ is the Paley Graph Conjecture for a thin `β=4`
+subgroup at the Burgess barrier). One framing correction landed: Kowalski 2024 is expository, not an
+explicit improvement; SOTA single-frequency cap is di Benedetto `n^{0.989}` (open) / Bourgain–Garaev
+`n^{0.99998}` (the exact prize boundary). `result_type = maps-the-cap`.
+
+## 2026-06-14 (#407 method-sweep): Bloom-Sisask quantitative Roth / Sanders Bogolyubov-Ruzsa — DEAD, exactly why
+
+METHOD. The SOTA additive-combinatorics quantitative Roth/Bogolyubov technology (Bloom-Sisask
+`n/exp(c(log n)^{1/?})` Roth; Sanders Bogolyubov-Ruzsa; Chang's lemma; Plünnecke-Ruzsa; BSG) applied to
+the additive structure of `μ_n ⊂ F_p` (additive group), against the three live faces R1 (`|μ_n^{(+r)}|`),
+R3 (DFT sup-norm `max_b|η_b|`), and the additive energy `E(μ_n)`. 0 in-tree files prior; the cone's
+"spectrum" probes are about the Paley/Gauss-sum spectrum, a different object.
+
+PROBES: /tmp/bsr_regime.py, /tmp/bsr_subsetsum.py, /tmp/bsr_spectrum.py, /tmp/spectrum_empirical.py,
+/tmp/bsr_constraints.py (exact subgroup spectra computed for (p,n) up to (65537,128)).
+
+FOUR INDEPENDENT KILLS, all in-regime (rechecked, not dismissed out-of-regime):
+- **(1) WRONG DIRECTION.** The prize wants UPPER bounds on SMALL objects (sumset small ≤ n, max|η_b|
+  small ≤ C√(n log m), energy small ~ n²). Roth/Bogolyubov machinery is *triggered by LARGE energy /
+  SMALL doubling* and *produces* structure from it (BSG: large energy ⟹ structured subset; Bogolyubov:
+  2A−2A ⊇ large Bohr set). `μ_n` thin is the SMALL-energy (`E~3n²−3n` Sidon, proven for n<log p),
+  LARGE-doubling (`|A+A|~n²`, `K~n`) regime — the machinery's hypotheses are on the opposite side. The
+  Cauchy-Schwarz LOWER bound `E≥|A|⁴/|A+A|~n²` is the floor and is already known; BSG adds nothing below
+  it.
+- **(2) DENSITY VACUITY.** Every Roth/B-S/BR bound enters the ambient `F_p` through the additive density
+  `α=n/p=2^-128`. The Bloom-Sisask no-3AP density ceiling is `~1/(ln p)^{1.04}≈2^-7.5`; `α=2^-128` is
+  `~2^120` BELOW it. `μ_n` is far too sparse to trigger any Roth conclusion. Plünnecke-Ruzsa `|rA|≤K^r|A|`
+  with `K~n` gives `|μ_n^{(+r)}|≤2^3191 ≫ p` = worse than the trivial `≤p`. Sanders BR with doubling
+  `K~n=2^30` yields a Bohr set of rank `O(K polylog)=exp-large`, density `exp(−log⁴K)=0` = vacuous.
+- **(3) CHANG GAP = √n (the sharp obstruction on R3).** Chang's lemma / Bloom-Sisask spectral boosting
+  bound the SIZE and DIMENSION of the large spectrum `Δ_ρ={b:|η_b|≥ρ·|A|}`, NOT the single MAX. Parseval
+  `∑_b|η_b|²=p·n` ⟹ RMS`=√n`; the conjecture needs `sup≤√n·√(log m)` (only `√(log m)` above RMS). To
+  bound the max Chang must push `ρ→1` (`|η_b|~n=|A|`, the L¹-trivial value); there it gives `|Δ_1|≤ln(1/α)
+  ≈89` — a FINITE set of ≤89 frequencies is *allowed* to have `|η_b|~n`. Chang/B-S NEVER rule out one
+  `√n`-larger spike. Off by a full `√n` factor — the same `L∞/L²` wall already named at faces 3↔4
+  (BGK/Paley sub-Gaussianity). EMPIRICALLY the rho~1 spectrum (`|η_b|≥0.9n`) is EMPTY in every case
+  (p,n)≤(65537,128) and `max|η_b|` tracks `√(n log p)` (conjecture holds) — but that is a *char-sum/BGK*
+  fact, not a Chang fact; Chang's provable bound stays at `n`.
+- **(4) EXCLUDED BY PROVEN CONSTRAINT C1 (thickness-monotone).** Density-increment / doubling methods
+  improve monotonically as the set gets denser or has smaller doubling — thickness-monotone by
+  construction. The program PROVED the conjecture is thinness-ESSENTIAL (FALSE for thick β∈[2.3,3.2] at
+  Fermat, TRUE for thin β≥4), so ANY thickness-monotone method is excluded — exactly as di Benedetto /
+  generic sum-product were. Additionally Chang's proof is an `L^{2k}`-moment (Rudin) argument and
+  Bloom-Sisask uses Croot-Sisask almost-periodicity (high moments), so its core inherits the proven
+  Fermat moment-explosion failure (`E_r^p` crosses Wick at r=5) — also barred by C2/C3.
+
+NEEDS-EXTERNAL-INPUT (the single fact that would resurrect it): a Bloom-Sisask-style result that bounds
+the L∞ / single-max of the spectrum (not its count/dimension) for a thin MULTIPLICATIVELY-structured set,
+i.e. a `√n`-improvement of Chang at `ρ~1` exploiting that `Δ_ρ` is a union of `b·μ_n` cosets. No such
+result exists; it would BE the Paley Graph / BGK sub-Gaussianity bound — the open core itself.
+
+VERDICT: dead-precise-why. NOT thinness-applicable (thickness-monotone, density-vacuous, wrong direction,
+Chang off by √n). Records the method as swept. `result_type = dead-direction+density+chang-sqrtn-gap`.
+
+## SWEEP (#407, 2026-06-14): Shkredov higher-energy SOTA → exact crossCell residual — DEAD, exact gap
+
+CONTEXT: complements prior lane wf-LF (commit eef47ce41, CrossCellShkredovBound.lean) which refuted the
+DIAGONAL form `crossCell ≤ ε·(2N0(H,r))` and noted H=μ_{n/2} is Sidon-like (E_3(H)/|H|^3→1, no additive
+structure for BSG to feed on). THIS entry adds the quantitative EXPONENT analysis of the MOMENT-method
+face (M-bound), which that file did not have.
+
+METHOD: feed best-known Shkredov-school higher additive-energy bounds E_k(G) for multiplicative
+subgroups G ⊂ F_p through the EXACT dyadic split `N0(G,r)=2·N0(H,r)+crossCell` (H=μ_{n/2}), where
+`crossCell(G,2k)=E_k(G)−2·E_k(H)` (CumulantDyadicDescent.lean; cumulant `Σ_{b≠0}|η_b|^{2r}=q·E_r−n^{2r}`).
+RECHECKED IN-REGIME (thin prize point n=2^30 < p^{1/4}, q≈2^158, ε*=2^-128).
+
+SOTA confirmed from literature (MRSS 2019 arXiv:1712.00410; Shkredov surveys):
+- E_2(G) ≤ |G|^{49/20}=|G|^{2.45} (best PROVEN; 7/3≈2.333 = conjectured barrier; sum-product conj = |G|^2).
+- E_3(G) ≤ |G|^3 log|G|.
+- E_k(G) ≤ |G|^{2k-2} log|G| (general k≥2; trivial+log, saves one factor of n over trivial n^{2k-1}).
+- ALL valid in the regime |G| ≤ p^{2/3}, SATISFIED in the thin prize regime — so NOT a regime-vacuity kill.
+
+THREE INDEPENDENT KILLS (all rechecked in-regime, probes /tmp/shkredov_*.py, /tmp/*crosscell*.py,
+/tmp/which_regime.py, /tmp/faceA_exact.py, /tmp/exact_gap.py):
+
+- **(1) EXACT GAP = (r−2) factors of n; Shkredov saves only 1 of the (r−1) needed.** In-tree trivial
+  bound (MaximalEnergyUniformBound.N0_le_card_pow) is E_r ≤ n^{2r-1}; the Wick target the prize needs is
+  E_r ~ (2r-1)!!·n^r (saves r−1 factors of n); Shkredov gives E_r ≤ n^{2r-2}log n (saves EXACTLY 1 factor
+  of n). At the moment optimum r* ≈ log_n q ≈ 79 ("r ~ log q"), Shkredov deficit is (r*−2)=77 factors of
+  n. M-bound M=(q·E_r)^{1/2r} → n (TRIVIAL full-period), NOT √n: log₂M = 30 + 49/r → 30 = log₂n. Best
+  Shkredov M over all r is 2^30.65 (11.9 bits above target 2^18.74); best Wick M is 2^18.93 (0.20 bits, at
+  r=79). Full √q-to-Wick chasm plus (r−2) extra factors of n.
+
+- **(2) WRONG REGIME OF DESIGN — bounds LOOSE (above the TRUE value) precisely in the thin prize regime.**
+  Empirically (exact N0(G,2k), thin q≫n^4, /tmp/which_regime.py): E_k(G)/Wick → 1 from below (E_2:
+  0.75→0.94, E_3: 0.42→0.82, n:4→16), E_k/trivial → 0. Thin-regime subgroup energy IS Gaussian/Wick
+  (~n^k), BELOW every Shkredov bound. Shkredov's improving exponents (49/20, 5/8-regime) are SHARP at
+  |G|~p^{2/3} (THICK), incidence/sum-product based ⟹ THICKNESS-MONOTONE = the EXCLUDED class (conjecture
+  proven thinness-ESSENTIAL). The thin-uniform Shkredov bound is the trivial n^{2k-2}. Either way the
+  bound lies strictly ABOVE the true Wick energy — can only PROVE a weaker statement than the truth.
+
+- **(3) IS A MOMENT, STRUCTURE-BLIND ⟹ DEAD at Fermat by the proven non-moment requirement.** E_k(G) IS a
+  2k-th moment; feeding through M^{2r}≤q·E_r IS the moment method, already proven to CAP (CumulantFermat-
+  Obstruction: Fermat p=65537,n=64, certificate 38.27 < true M=43.63). Shkredov subgroup-energy bounds are
+  char-uniform (identical at Fermat 2^16+1 and generic p of same size) and ≥ Wick ⟹ NO extra info where
+  the residual bites (structured primes where E_r^p EXCEEDS Wick). Fails constraints (3) NON-MOMENT and
+  (2) Fermat-uniformity.
+
+NOTE (the one competitive sub-case, still dies): E_3 Shkredov (n^3 log n) is within O(log n) of Wick
+(15 n^3) — the only order where SOTA ≈ Wick. But a single LOW order r=3 cannot reach M~√n:
+M≤(q·n^3 log n)^{1/6}=2^42.1 (23 bits over target). Moment method needs SMALL E_r at LARGE r≈log q;
+Shkredov DEGRADES to trivial n^{2r-2} exactly as r grows — useful only where the method does not need it.
+
+NEEDS-EXTERNAL-INPUT (single fact that would resurrect): a higher-energy bound E_r(μ_n) ≤ C^r·n^r (Wick
+exponent, saving ALL r−1 factors) UNIFORMLY up to r≈log q AND over Fermat primes = the char-p Lam–Leung
+transfer / BCHKS Conj 1.12 / Paley sub-Gaussianity = the open core itself. No Shkredov-school bound
+approaches the Wick exponent for r≥3; the school's ceiling is the 7/3 barrier at r=2 only.
+
+VERDICT: dead-precise-why. Best achievable exponent: E_r ≤ n^{2r-2}log n ⟹ M ≤ ~n (trivial). Exact gap:
+(r−2) factors of n at the optimal order r≈log_n q≈79 (M-bound overshoots target by 11.9 log₂ bits at best,
+vs Wick's 0.20). `result_type = dead-wrong-exponent+thickness-monotone+is-a-moment`.
+
+---
+
+## PFR / Marton CONTRAPOSITIVE on crossCell (R2) — DEAD, three obstructions + measured premise-failure (2026-06-14)
+
+(Companion to the Chang-spectrum entry; that sweeps the SPECTRUM deployment, this sweeps the DIRECT
+contrapositive on the additive energy / crossCell residual the prompt proposed.)
+
+**Proposed route:** apply proven Polynomial-Freiman-Ruzsa / Marton (GGMT 2023) in CONTRAPOSITIVE — if
+crossCell (R2) / additive energy E(μ_n) were large, PFR forces μ_n near a coset of an additive subgroup;
+μ_n is MULTIPLICATIVE (sum–product) ⟹ contradiction ⟹ crossCell small. Probes `/tmp/pfr_probe2.py`,
+`/tmp/pfr_analysis.py`, `/tmp/pfr_contrapositive.py`, `/tmp/pfr_thinness.py` (prize-shaped p≈n⁴, μ=3..7).
+
+**Measured profile of μ_n — PFR's ONLY input (the premise it needs SMALL):**
+| n | p | \|A+A\| | K_dbl=\|A+A\|/n | E(A) | E/n² | K_E=n³/E |
+|---|---|---|---|---|---|---|
+| 8 | 4129 | 33 | 4.12 | 168 | 2.63 | 3.05 |
+| 16 | 65537 (=F4) | 129 | 8.06 | 720 | 2.81 | 5.69 |
+| 32 | 1048609 | 513 | 16.03 | 2976 | 2.91 | 11.01 |
+| 64 | 16777601 | 2049 | 32.02 | 12096 | 2.95 | 21.67 |
+| 128 | 268437889 | 8193 | 64.01 | 48768 | 2.98 | 43.00 |
+
+`|A+A| ≈ n²/2` (near-SIDON, doubling K≈n/2 = MAXIMAL); `E≈3n²` (Sidon floor, energy-doubling K_E≈n/3 =
+MAXIMAL). μ_n is additively as UN-structured as possible.
+
+**OBSTRUCTION 1 — PFR's premise is FALSE for μ_n (wrong dichotomy branch).** PFR is non-trivial only for
+SMALL doubling (K=n^{o(1)}); its conclusion "A ⊆ K^C cosets of |H|≤|A|" is vacuous once K^C≥|A|. Here
+K≈n/2 ⟹ K^C≫n at every measured row (`K_dbl^9≥n` AND `K_E^9≥n` both TRUE for all n). The dichotomy is
+{small additive doubling ⟹ PFR} XOR {small mult structure}; μ_n is on branch 2 (`muN_doubling_eq_one`,
+σ_m=1). The contrapositive's middle link ("E large") describes a regime μ_n is never in — its energy is
+already at the FLOOR 3n². No slack.
+
+**OBSTRUCTION 2 — wrong tensor order + the proven √-cap.** crossCell/R2 live at r≈log q≈128; PFR/energy
+are r=2. Even the sharp r=2 E=3n² feeds only the moment route M^{2r}≤q·E_r, capped (re-verified) at
+M≤√(2n ln q)=n^{0.6296} (n=2³⁰) vs needed n^{0.5}; residual √(2 ln q)=14.8 is a √log not a power. PFR
+cannot remove a √log: it sits one tensor order below the loss, on an energy that is already minimal.
+
+**OBSTRUCTION 3 — PFR is THICKNESS-MONOTONE (disqualified).** Measured E/|A|² vs β=log_n p at n=16:
+β=2.00→3.56, 2.54→2.81, 3.00→2.81, 3.50→2.81, 4.00→2.81 (incl. p=65537=F4, where BCHKS 1.12 is FALSE for
+thick subgroups). PFR's input is scale-free in p — IDENTICAL at structured vs generic primes. But the
+conjecture is FALSE for β∈(2.3,3.2) at structured primes, TRUE for β≥4: a thickness-blind method "proves"
+it uniformly ⟹ contradiction. PFR's bound is VACUOUS at thin β or FALSE at thick β. Violates the proven
+THINNESS-ESSENTIAL constraint.
+
+**NEEDS-EXTERNAL-INPUT:** a structure theorem whose INPUT is the MULTIPLICATIVE profile (σ_m[A]=1), not
+additive doubling — converting "perfect mult + maximal additive doubling" into M=O(√n) at β=4 uniformly
+over structured primes. That IS the Paley Graph Conjecture / BCHKS 1.12 (the open core). PFR is the
+additive half of a dichotomy whose multiplicative half is exactly the missing input.
+
+VERDICT: dead-precise-why. Premise (small additive doubling) measured FALSE (K≈n/2); conclusion vacuous
+(K^C≥n); thickness-monotone; the only live deployment is the already-capped Bourgain–Garaev sum–product
+engine (M≤n^{0.99998} at β=4). Exact gap: M-exponent 0.99998 vs needed 0.5. `result_type =
+dead-wrong-branch+wrong-order+thickness-monotone+collapses-to-mapped-sumproduct-wall`.
