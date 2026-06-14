@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.Polynomial.Eval.Defs
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Algebra.Ring.Parity
 
 /-!
 # The char-free even/odd antipodal closure (#407)
@@ -35,6 +37,65 @@ open Polynomial
 namespace ArkLib.ProximityGap.EvenOddAntipodal
 
 variable {F : Type*} [Field F] [DecidableEq F]
+
+/-- A polynomial has no odd-degree part. -/
+def OddCoeffZero (P : F[X]) : Prop :=
+  ∀ i : ℕ, Odd i → P.coeff i = 0
+
+/-- A polynomial with zero odd coefficients is even as a function. -/
+theorem eval_neg_eq_eval_of_oddCoeffZero {P : F[X]}
+    (hOddCoeff : OddCoeffZero P) (z : F) :
+    P.eval (-z) = P.eval z := by
+  classical
+  rw [Polynomial.eval_eq_sum_range, Polynomial.eval_eq_sum_range]
+  refine Finset.sum_congr rfl ?_
+  intro i _hi
+  by_cases hiOdd : Odd i
+  · simp [hOddCoeff i hiOdd]
+  · have hiEven : Even i := Nat.not_odd_iff_even.mp hiOdd
+    rw [hiEven.neg_pow z]
+
+/--
+Evaluation-even form of the char-free closure.  This is the direct consumer of the
+coefficient-level odd-part statement, independent of polynomial composition syntax.
+-/
+theorem image_neg_eq_of_prod_eval_even (S : Finset F)
+    (h : ∀ z : F,
+      (∏ x ∈ S, (X - C x)).eval (-z) = (∏ x ∈ S, (X - C x)).eval z) :
+    S.image (fun x => -x) = S := by
+  classical
+  set P := ∏ x ∈ S, (X - C x) with hPdef
+  have hclosed : ∀ x ∈ S, -x ∈ S := by
+    intro x hx
+    have hx0 : P.eval x = 0 := by
+      rw [hPdef, eval_prod]
+      exact Finset.prod_eq_zero hx (by simp)
+    have hnegroot : P.eval (-x) = 0 := by
+      rw [hPdef] at h
+      rw [h x, hx0]
+    rw [hPdef, eval_prod, Finset.prod_eq_zero_iff] at hnegroot
+    obtain ⟨y, hy, hzero⟩ := hnegroot
+    simp only [eval_sub, eval_X, eval_C] at hzero
+    rw [sub_eq_zero.mp hzero]
+    exact hy
+  have hsub : S.image (fun x => -x) ⊆ S := by
+    intro y hy
+    rw [Finset.mem_image] at hy
+    obtain ⟨x, hx, rfl⟩ := hy
+    exact hclosed x hx
+  have hcard : (S.image (fun x => -x)).card = S.card :=
+    Finset.card_image_of_injective S neg_injective
+  exact Finset.eq_of_subset_of_card_le hsub (le_of_eq hcard.symm)
+
+/--
+Coefficient-level version: if `∏_{x∈S}(X-C x)` has zero odd coefficients, then `S = -S`.
+The Vieta/symmetric-function layer should prove this hypothesis from odd elementary-symmetric
+vanishing; this theorem is the characteristic-free endpoint.
+-/
+theorem image_neg_eq_of_prod_oddCoeffZero (S : Finset F)
+    (hOddCoeff : OddCoeffZero (∏ x ∈ S, (X - C x))) :
+    S.image (fun x => -x) = S :=
+  image_neg_eq_of_prod_eval_even S (eval_neg_eq_eval_of_oddCoeffZero hOddCoeff)
 
 /-- **The char-free even/odd antipodal closure.**  For a finite set `S` of any field, if the
 polynomial `∏_{x∈S}(X − x)` is invariant under `X ↦ −X` — equivalently, all *odd* elementary
@@ -72,4 +133,7 @@ theorem image_neg_eq_of_prod_comp_neg (S : Finset F)
 end ArkLib.ProximityGap.EvenOddAntipodal
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only.
+#print axioms ArkLib.ProximityGap.EvenOddAntipodal.eval_neg_eq_eval_of_oddCoeffZero
+#print axioms ArkLib.ProximityGap.EvenOddAntipodal.image_neg_eq_of_prod_eval_even
+#print axioms ArkLib.ProximityGap.EvenOddAntipodal.image_neg_eq_of_prod_oddCoeffZero
 #print axioms ArkLib.ProximityGap.EvenOddAntipodal.image_neg_eq_of_prod_comp_neg
