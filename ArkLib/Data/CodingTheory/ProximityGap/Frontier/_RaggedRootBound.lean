@@ -104,7 +104,7 @@ theorem coset_core_dvd {g : ℕ} (Q : R[X])
           Polynomial.leadingCoeff_ne_zero.mpr hQ0
         exact hlead (hsupp Q.natDegree (by simpa [Nat.zero_dvd] using hne))
       simp [hndeg]
-  · obtain ⟨Rp, hRp, hdeg⟩ := ragged_reduction (Nat.pos_iff.mp hgpos).ne' Q hsupp
+  · obtain ⟨Rp, hRp, hdeg⟩ := ragged_reduction hgpos.ne' Q hsupp
     exact ⟨Rp.natDegree, hdeg⟩
 
 /-! ## The contracted polynomial is fully ragged (granularity 1)
@@ -164,7 +164,7 @@ theorem rootProd_natDegree_eq (S : Finset F) :
     (∏ x ∈ S, (X - C x)).natDegree = S.card := by
   classical
   rw [natDegree_prod _ _ (fun x _ => X_sub_C_ne_zero x)]
-  simp [natDegree_X_sub_C]
+  simp
 
 /-- **The ragged-excess bound (consumer form).** Let `S` be the agreement set of a sparse
 `P ≠ 0` (every `x ∈ S` is a root of `P`), with a `μ_g`-coset core accounting for `c` of the
