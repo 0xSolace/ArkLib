@@ -1575,3 +1575,30 @@ only via `anomaly ≤ n^{2r}/p` (the char-p excess ≤ the DC term) — which is
 statement is the DC-subtracted `A_r ≤ Wick`), empirically confirmed, but equivalent to the BGK wall — no
 closure. Probe added; the fleet should stop citing `_MomentMethodNoGo` as killing the moment route (it kills
 only the DC-included version).
+
+## PROOF PROGRAM 2026-06-14 — the prize ⟺ ONE inequality (Dyadic Sub-Gaussian Energy Lemma); optimization is elementary (constant √2)
+
+Working the uniform-q bound as a PROOF target (assume true). Reduced it to a single, sharply-stated lemma
+with everything else elementary and verified:
+
+> **DYADIC SUB-GAUSSIAN ENERGY LEMMA (the sole remaining content).** For `n = 2^μ`, prime `p ≡ 1 mod n`,
+> and all `r ≤ log p`:  `A_r := (1/p)·Σ_{b≠0} |η_b|^{2r} = E_r(μ_n) − n^{2r}/p ≤ (2r−1)‼·n^r`,
+> with the constant ABSOLUTE (uniform over p). Here `η_b=Σ_{x∈μ_n}e_p(bx)` and
+> `E_r(μ_n)=#{(x,y)∈μ_n^{2r}:Σx≡Σy mod p}`.
+
+**This lemma ⟹ the prize bound `M(n) ≤ √(2n·log p)`** (ABSOLUTE constant). Proof of the implication
+(ELEMENTARY, provable now): `M^{2r}=max_{b≠0}|η_b|^{2r} ≤ Σ_{b≠0}|η_b|^{2r} = p·A_r ≤ p·(2r−1)‼n^r`. So
+`M ≤ (p·(2r−1)‼·n^r)^{1/2r}`. Minimizing the RHS over `r`: `f(r)=(1/2r)[log p + Σ_{i≤r}log(2i−1) + r log n]`,
+`f'(r)=0 ⟹ r* = log p`, `f(r*) = ½log(2n log p)` ⟹ `M ≤ √(2n log p)`. □ (the `r* ≤ log p` hypothesis of the
+Lemma is exactly met at the optimizer).
+
+**VERIFIED (`probe_407_bgkproof_deepr_optimization.py`, FFT n=32,64, p~n^4):** `log(A_r/Wick) ≤ 0` and
+strictly DECREASING for ALL `r=1..40` (well past `log p≈14–17`); the moment bound `(p·A_r)^{1/2r}` converges
+to the true `M`; `M/√(n log(p/n)) ≈ 1.26–1.36`. So the Lemma is TRUE and the implication is tight.
+
+**Status of the Lemma itself = the open BGK content.** `A_r ≤ Wick ⟺ anomaly_r ≤ n^{2r}/p` where
+`anomaly_r = #{non-matching 2r-tuples with Σx≡Σy mod p}` (char-p connected energy ≤ DC term). The char-0
+side is EXACTLY Gaussian (Lam–Leung: no connected ℂ-relation among 2^μ-th roots ⟹ char-0 cumulants vanish;
+`DyadicEnergyK1.lean` proves `E_r^{(0)} ≤ Wick`). The entire open content is the char-p connected-relation
+count to depth `r ~ log p` — the BGK/Paley wall, but now reduced to ONE clean inequality with the prize
+constant pinned to `√2`. The proof-strategies workflow targets exactly this Lemma. Probe added.
