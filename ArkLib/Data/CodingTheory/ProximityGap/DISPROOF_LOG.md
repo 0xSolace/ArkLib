@@ -9593,3 +9593,76 @@ antipodal-config bad-prime bound p≤(2k)^{2k/r} + single-vs-simultaneous dichot
 δ*" CORRECTED — it's the antipodal config, wrong trend vs Θ(1/log n). The far-line config sets δ* and is the
 Paley wall. δ* exact-worst-case = Paley sharp constant, OPEN. Genuine yield = bricks (1),(2) + the sharp
 reduction prize⟺Paley + two honest self-corrections. NOT a closure.
+
+## 2026-06-14 (#407 c4700736246 review): all seven open directions attacked; same-radius LD⇒MCA shortcut Lean-refuted
+
+Reviewed the linked #407 direction map plus later corrections through c4703070507, then split the open
+directions across agents. Verdicts:
+
+* constant-index Gauss periods: the prize-shaped surviving conjecture is **value distribution/MGF
+  sub-Gaussianity** of the `m` coset periods; fixed-index DFT/energy bridges are useful consumers, but
+  moment/min-distance routes are dead and Katz/Rojas-León effectiveness is vacuous in thin prize rows.
+* action-orbit/Chai-Fan: orbit closure is real for monomial/eigen directions, but dense/general inputs are
+  blocked by `eigen_forces_monomial`; naive constant orbit count is probe-refuted.
+* half-sum/lacunary: small fixed-`n` identities are real, but sparse-candidate-prime folklore is false and
+  the asymptotic lane re-enters char-`p` transfer/BGK.
+* GLT/Fermat fixed-`r`: r=2 is useful calibration; r=3 already looks surface-weight, and any fixed `r`
+  leaves the `q^(1/r)` extraction factor.
+* Katz/Rojas-León: existing conductor/effective-equidistribution window needs `n ≳ √q`, outside prize
+  production rows such as `q ≈ n·2^128`, `n=2^30`.
+* cross-parity/ideal-lattice: the literal split leak is a tautology; the aggregate identity is first-moment
+  only and local sup-norm remains the BGK/Paley wall.
+* e₂=0/cyclotomic face: formal algebra and dilation reduction are solid, but #400's `O(n)` hope is refuted
+  (`#bad = n*K` with super-linear `K` in probes), and the cyclotomic height threshold is exponential. This
+  lane is δ*-connected only conditionally through saturated incidence / `q`-stability; as a raw invariant it
+  does not independently reach the prize regime.
+
+**Lean brick landed.** `InterleavedListMCACollapse.SameRadiusCounterexample.same_radius_interleaved_collapse_refuted`
+formalizes the documented `F₃`, length-4 counterexample:
+`#mcaBadSet = 3`, same-floor interleaved list `#Λ₂(3)=0`, hence the tempting same-radius bound
+`#bad ≤ 1+(n-t)#Λ₂(t)` is false. The existing doubled-radius theorem is therefore not an artifact; the
+loss to `2t-n` is forced by a concrete finite code. Axiom audit is standard `[propext, Classical.choice,
+Quot.sound]`. This kills another LD⇒MCA shortcut, but does not touch the true prize wall.
+
+---
+
+## REGIME MAP 2026-06-14: direct per-frequency BGK exponent at the prize point β=4 (12-angle army)
+
+After all aggregate routes were eliminated, a 12-angle army attacked the ONLY live route — the direct
+per-frequency bound `M(n)=max_b|η_b| ≤ n^{1/2+o(1)}`. No exponent improvement (that gap IS the Paley Graph
+Conjecture), but a precise, corrected regime map:
+
+**CORRECTION to prior belief (`issue407-sota-exponent-localization`): the sum-product ITERATION is non-trivial
+at n~p^{1/4}** (the prior flat "di Benedetto vanishes at p^{1/4}" was too pessimistic). Two careful distinctions
+(two army runs, reconciled honestly):
+- **Single-polynomial Stepanov is VACUOUS at the prize:** `M ~ n^{(β+1)/4} = n^{5/4}` at β=4 (worse than
+  trivial), nontrivial only for β<3 (the `x^n−1=0` budget caps the auxiliary at `s<n`, contradicted when
+  H~p^{3/4}≫n). Confirms the §3 HBK "vacuous below q^{1/3}" face exactly.
+- **The sum-product ITERATION (BGK / di Benedetto / Kowalski) IS non-trivial at β=4:** di Benedetto JNT 2020
+  Thm 3.3 gives ~**n^{1−31/960}=n^{0.968}** at H~p^{1/4} (Thm 3.1's strict range p^{1/2}>H>p^{1/4} makes β=4 a
+  boundary endpoint; the safest survivor strictly at the boundary is Bourgain–Garaev n^{1−175/9437184}≈n^{0.99998}).
+  Best rigorous in-regime bound is between **n^{0.968} and ~n^{0.99}** by boundary handling — a tiny fixed
+  power-saving constant in every reading, nowhere near n^{1/2}. Vacuity cliff: Thm 3.1 dies at β=4.775.
+
+**The prize point β=1/4 (n=p^{1/4}) is EXACTLY the Burgess barrier (D4, four independent confirmations).**
+Burgess 2r-th moment gives α(r)−1/4 = 1/(4r²)>0 for all finite r ⟹ trivial exactly at θ=1/4; nontrivial only
+for θ>1/4 (e.g. n=p^{1/2} → n^{0.8125} Konyagin). So the prize sits at the hardest possible Burgess point.
+
+**NEW structural fact (D3): the dyadic tower is MAXIMALLY ANTI-CANCELLING at the worst frequency.** Since n is
+even, −1 = h^{n/2} ∈ μ_n, so **η_b is REAL for every b** (verified |Im|~1e-15). In the tower split
+`η_b(μ_{2n}) = η_b(μ_n) + η_{bθ}(μ_n)`, the worst-b maximizer ALWAYS selects same-sign children
+(`cos(eE,eT)=+1.0000`, 0/100 top maximizers cancel), so `M(2n)=|eE|+|eT|` — the cross term is `+M²/2`, the
+OPPOSITE of cancellation. The per-level ratio `R=M(2n)/M(n) > √2` in 100% of 40 primes (min 1.442). So the
+tower-cancellation route to `M(2^μ) ≤ √n·poly` is REFUTED worst-case; the only rigorous per-level bound is the
+trivial triangle `R≤2`. The √-cancellation lives entirely in the sub-maximality of the larger child
+(frac→0.74–0.83), which IS the BGK sup-norm bound itself (circular).
+
+**Numeric calibration (D10): `M(n) = n^{1/2+o(1)}` CONFIRMED — the target is correct.** Best model
+`M = 0.69·√n·(ln m)^{0.75}`, R²=0.994; local doubling exponent decreases 0.94→0.58 (μ=4..9), extrapolates to
+α_∞ = 0.45±0.03 (consistent with 1/2). No worst-b counterexample exists (D11): all `M ≈ 1.3·√(n log m)`, well
+below every rigorous bound. So `α>1/2` is ruled out; the conjecture/target is right, just unproven.
+
+**NET: the prize point is the hardest spot of the hardest open problem** (thin-subgroup BGK at the Burgess
+barrier). Best proven n^{0.968}; needs n^{0.5}; gap = the fixed sum-product constant → 1/2 = Paley Graph
+Conjecture. Aggregate routes (energy D2, slice-rank D7, decoupling D8) all trivial-n / reduce-to-wall.
+Probes: probe_407_direct_bgk_*.py (army-landed). Do not re-run D1–D12; the map is complete.
