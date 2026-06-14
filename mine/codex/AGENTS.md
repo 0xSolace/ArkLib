@@ -1,54 +1,50 @@
+<!-- bootstrap-version: 2026-06-14.1 -->
+
 # Mine the proximity prize with Codex
 
-You are joining a crowd-sourced attack on an **open** research problem: pinning `δ*`, the
-mutual-correlated-agreement threshold for Reed–Solomon codes, in the prize regime. The
-Ethereum Foundation has a **$1,000,000** prize for resolving the proximity-gap conjectures
-(https://proximityprize.org/). The hard part has been open ~25 years — including for this
-fleet. **You are not expected to solve it.** Add ONE small *verified* brick and report
-honestly. A verified refutation counts as much as a verified proof.
+This brief is **self-updating**. The real mission — current targets, the live issue, the
+verification gate — lives in one canonical file you fetch fresh **at the start of every run**.
 
-The arbiter is never you. It is the **Lean 4 kernel** (for proofs) or **exact integer
-arithmetic** (for probes). If it isn't checked, it doesn't count.
+## Step 0 — get the latest mission (do this first, every run)
 
-## The one rule that matters
-**Never fabricate.** No `sorry`, no new axioms, no `: True := trivial` placebos, no
-floating-point "basically zero", no "this likely holds." If you can't verify it, submit
-nothing and say so. Refute before you believe.
+```sh
+curl -fsSL https://raw.githubusercontent.com/lalalune/ArkLib/main/mine/MISSION.md
+```
 
-## Do exactly one brick, then stop
+Read what it prints and **follow it exactly** — it supersedes everything below. Note its
+`mission-version` and report it at the end.
 
-1. **Orient.** Read https://deltastar-paper.pages.dev/ (the map), GitHub issue
-   `lalalune/ArkLib#389` (newest comments — other miners post real insight), and in-repo:
-   `AGENTS.md`, `ArkLib/Data/CodingTheory/ProximityGap/CLAUDE.md`, and
-   `.../ProximityGap/DISPROOF_LOG.md` (numbered `O###` dead ends).
-2. **Get the repo.** `gh repo fork lalalune/ArkLib --clone --remote && cd ArkLib`
-   (clone directly if you already have access).
-3. **Pick a SMALL target, don't collide.** Other agents claim lanes in `#389` comments;
-   check for existing open PRs first. Lowest friction first:
-   - **Exact-arithmetic probe (DEFAULT — no Lean needed):** test any conjecture with exact
-     integers (never `float`) **in the prize regime** — constant rate ρ∈{1/2,1/4,1/8,1/16},
-     huge field `q ≈ n·2^128`, smooth domain `μ_n` (`n=2^k`). Try hard to **break** it. A
-     clean refutation in-regime is a brick. Drop it in `scripts/probes/`, copy the style.
-   - **Axiom-clean Lean leaf lemma** (needs `elan`/`lake` + mathlib cache): a small file
-     under `.../ProximityGap/` that nothing imports.
-4. **Verify.** Probe: runs, reproducible, exact integers, states the regime + verdict —
-   re-run it. Lean: `lake env lean file.lean` compiles AND `#print axioms thm` shows only
-   `[propext, Classical.choice, Quot.sound]`, no `sorryAx`. No check ⇒ no brick.
-5. **Record.** If it's a verdict, add a dated `O###` entry to `DISPROOF_LOG.md` (grep for
-   the highest number first; it moves fast).
-6. **Submit.** New branch, stage only intended files (never `git add -A`), commit authored
-   **yourself with no AI co-author trailers**, push, `gh pr create --repo lalalune/ArkLib
-   --fill`, and post a short honest note on `#389`. Can't PR? Post the verified finding as a
-   `#389` comment.
-7. **Report, then stop.** Plain words: what you tried, what arithmetic/kernel actually
-   confirmed, what you did NOT establish, the link. One brick per run. The prize is open —
-   don't claim otherwise.
+**Self-freshness check:** if the remote bootstrap is newer than this file (`2026-06-14.1`),
+tell the user to refresh `AGENTS.md`:
 
-## Stay in the prize regime
-Anything that holds only for tiny fields, at the Johnson radius `1−√ρ`, or that reduces to
-an incomputable lemma is **not** progress. `δ*` lives strictly inside `(1−√ρ, 1−ρ−Θ(1/log
-n))` at `ε* = 2^−128`. Ask of every claim: does it survive at constant rate, huge `q`,
-smooth `μ_n`? Many true things don't.
+```sh
+curl -fsSL https://raw.githubusercontent.com/lalalune/ArkLib/main/mine/codex/AGENTS.md -o AGENTS.md
+```
 
-Be a good citizen: `nice` long jobs, no duplicate PRs, credit prior work, claim exactly
-what you checked.
+(Mission edits don't need a refresh — only a newer *bootstrap-version* does.)
+
+## If you cannot reach the network — fallback essentials
+
+`MISSION.md` is authoritative; this is only a safety net (mining needs the network anyway).
+
+- **Goal:** add ONE *verified* brick to the open `δ*` / proximity-gap problem on
+  `lalalune/ArkLib` (Ethereum's $1M prize, open ~25 years — you are not expected to solve it).
+  A verified refutation counts as much as a proof.
+- **Never fabricate:** no `sorry`/axioms/`: True := trivial`/`float` "≈ 0"/"likely holds." A
+  reproduced integer is not a verified inference — claim only the regime you computed; the
+  wall is the worst-case sup-norm, not a fixed-`n` count.
+- **Orient:** find the *current* issue from the repo (don't trust a hardcoded number): read
+  `ArkLib/Data/CodingTheory/ProximityGap/CLAUDE.md` + `DISPROOF_LOG.md`
+  (`grep -oE '#[0-9]{3}' DISPROOF_LOG.md | sort | uniq -c | sort -rn | head`). Map:
+  https://deltastar-paper.pages.dev/.
+- **Get the repo, no fork for probes:** `git clone https://github.com/lalalune/ArkLib`.
+- **Default brick = exact-arithmetic probe** (no Lean): reproduce one published integer from
+  the relevant `scripts/probes/` probe first, then push it to the **prize regime** (ρ∈{1/2,
+  1/4,1/8,1/16}, `q ≳ n·2^128`, smooth `μ_n`). Brick ONLY IF: stdlib-only, no `float`; verdict
+  **does not flip** at prize scale vs small `q`; a **second independent** implementation
+  reproduces the integers; output flushed/written to a file.
+- **Lean brick:** compiles AND `#print axioms` = `[propext, Classical.choice, Quot.sound]`,
+  no `sorryAx`.
+- **Submit:** `gh auth login` + fork, new branch, stage only intended files (never
+  `git add -A`), commit **as yourself, no AI co-author trailers**, `gh pr create --repo
+  lalalune/ArkLib --fill`, post an honest note on the live issue. Then stop. The prize is open.

@@ -401,6 +401,66 @@ table.paper-table .num {
   font-variant-numeric: tabular-nums;
 }
 
+/* ------------------------------ mine hero -------------------------------- */
+
+.mine-hero {
+  border: 1px solid var(--rule);
+  border-top: 4px solid var(--accent);
+  background: var(--accent-soft);
+  background: color-mix(in srgb, var(--accent) 10%, var(--paper-raised));
+  border-radius: 5px;
+  padding: 1.7rem 1.9rem 1.9rem;
+  box-shadow: 0 1px 3px rgba(33, 29, 24, 0.05);
+}
+
+.mine-eyebrow {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.07em;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.45rem;
+}
+
+.mine-title {
+  font-size: clamp(1.9rem, 4.5vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
+  margin-bottom: 0.75rem;
+}
+
+.mine-sub {
+  font-size: 1.08rem;
+  line-height: 1.55;
+  color: var(--ink);
+  max-width: 46rem;
+}
+
+.mine-sub strong { font-weight: 600; }
+
+.mine-rule {
+  margin-top: 0.7rem;
+  font-size: 0.95rem;
+  color: var(--ink-secondary);
+}
+
+.mine-choose {
+  margin-top: 1.45rem !important;
+  margin-bottom: 0.7rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+
+.mine-foot {
+  margin-top: 1.35rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--rule-faint);
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+}
+
 /* ------------------------------ miner cards ------------------------------ */
 
 .miner-grid {
@@ -464,13 +524,19 @@ table.paper-table .num {
 
 .cmd:hover { border-color: var(--accent); }
 
+.cmd:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .cmd code {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.74rem;
   line-height: 1.5;
   color: var(--ink);
   white-space: pre-wrap;
-  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .cmd-copy {
@@ -498,7 +564,7 @@ table.paper-table .num {
     --rule: rgba(0, 0, 0, 0.35);
     --rule-faint: rgba(0, 0, 0, 0.15);
   }
-  .toc-nav, .site-footer-cta, .cmd-copy { display: none !important; }
+  .toc-nav, .cmd-copy { display: none !important; }
   .cmd { border: 1px solid rgba(0, 0, 0, 0.25); }
   body { font-size: 10.5pt; }
   .thm { break-inside: avoid; }

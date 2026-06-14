@@ -32,8 +32,8 @@ export function Header() {
       <p className="mt-2 text-[0.9rem]" style={{ color: "var(--ink-faint)" }}>
         <a href="https://github.com/lalalune/ArkLib">lalalune/ArkLib</a>
         {" "}&middot;{" "}
-        <a href="https://github.com/lalalune/ArkLib/issues/371">
-          campaign log: issues #232 &rarr; #334 &rarr; #357 &rarr; #371
+        <a href="https://github.com/lalalune/ArkLib/issues/407">
+          campaign log: issues #232 &rarr; #334 &rarr; #357 &rarr; #371 &rarr; #389 &rarr; #407
         </a>
       </p>
       <div

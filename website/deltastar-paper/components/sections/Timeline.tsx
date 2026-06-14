@@ -38,8 +38,8 @@ const items: { label: string; text: string; muted?: boolean }[] = [
     text: "The ownership bound contains both lanes as instances. The k = 1 window closes unconditionally by direction class: polynomial (zero), rational (multiplicity theorem), sparse (popularity).",
   },
   {
-    label: "Today",
-    text: "The frontier is formalized; the open core is three named Props and four equivalent faces. The window at production rate is open.",
+    label: "Issue #407 · today",
+    text: "The frontier is formalized; the open core is three named Props and four equivalent faces, now tracked at issue #407 (pin δ* directly). The window at production rate is open.",
   },
 ];
 

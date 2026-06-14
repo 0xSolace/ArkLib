@@ -16,6 +16,7 @@ import { EliPopup } from "@/components/degen/EliPopup";
 import { Eli5 } from "@/components/degen/Eli5";
 
 const toc = [
+  { href: "#contribute", label: "Mine it yourself" },
   { href: "#abstract", label: "Abstract" },
   { href: "#prize", label: "The prize" },
   { href: "#problem", label: "1 \u2002The problem" },
@@ -24,7 +25,6 @@ const toc = [
   { href: "#refutations", label: "4 \u2002Refutations" },
   { href: "#open-core", label: "5 \u2002The open core" },
   { href: "#discussion", label: "6 \u2002Discussion" },
-  { href: "#contribute", label: "Mine it yourself" },
   { href: "#timeline", label: "Timeline" },
   { href: "#contributors", label: "Contributors" },
   { href: "#references", label: "References" },
@@ -49,6 +49,7 @@ export default function Page() {
       </nav>
 
       <Header />
+      <Contribute />
       <Eli5 k="abstract" />
       <Abstract />
       <PrizeBox />
@@ -64,7 +65,6 @@ export default function Page() {
       <OpenCore />
       <Eli5 k="discussion" />
       <Discussion />
-      <Contribute />
       <Timeline />
       <Contributors />
       <References />

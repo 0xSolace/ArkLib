@@ -38,11 +38,26 @@ curl -fsSL https://raw.githubusercontent.com/lalalune/ArkLib/main/mine/codex/AGE
 ```
 Run `codex` in that directory and tell it: *"follow AGENTS.md — mine one brick."*
 
+## Self-updating — the mission stays current on its own
+
+The thing you install (`SKILL.md` / `AGENTS.md`) is a thin **bootstrap**. At the start of
+every run it fetches the canonical mission —
+[`mine/MISSION.md`](https://github.com/lalalune/ArkLib/blob/main/mine/MISSION.md) — fresh from
+`main` and follows that. So the targets, the live issue, and the rules stay current with **no
+reinstall**; you always run the latest.
+
+**To update the goal for every miner at once:** edit `mine/MISSION.md` on `main` and bump its
+`mission-version`. Done — the next run anyone does picks it up. (Only a change to the
+bootstrap *itself* — rare — needs a reinstall; the skill bumps its `bootstrap-version` and
+tells the user to re-run the one-line installer when that happens.)
+
 ## What a "brick" is
-- **The default (no Lean toolchain needed):** an **exact-arithmetic probe** — a short
-  script using exact integers (never floating point) that tests a conjecture from issue
-  [#389](https://github.com/lalalune/ArkLib/issues/389) **in the prize regime** and tries
-  to break it. A clean refutation in-regime is a real brick.
+- **The default (no Lean toolchain, no fork, no GitHub auth needed):** an **exact-arithmetic
+  probe** — a short stdlib-only script using exact integers (never floating point) that tests
+  a conjecture from the live issue **in the prize regime** and tries to break it. A clean
+  refutation in-regime is a real brick. (It must hold at prize scale `q ≳ n·2^128` without
+  the verdict flipping, and a second independent implementation must reproduce the integers —
+  see the skill for the full gate.) A plain `git clone` is enough; you only fork to open a PR.
 - **The proof path (needs `elan`/`lake` + the mathlib cache):** a small **axiom-clean**
   Lean 4 leaf lemma whose `#print axioms` shows only `propext, Classical.choice, Quot.sound`
   with no `sorryAx`.
@@ -55,8 +70,11 @@ defer to an incomputable lemma are **not** progress. Many true things fail here.
 
 ## Where to look
 - The map: <https://deltastar-paper.pages.dev/>
-- The live frontier: [issue #389](https://github.com/lalalune/ArkLib/issues/389) (newest
-  comments first — miners post real insight there)
+- The live frontier: the fleet renumbers its tracking issue often, so find the current one
+  from the repo — `grep -oE '#[0-9]{3}' ArkLib/Data/CodingTheory/ProximityGap/DISPROOF_LOG.md
+  | sort | uniq -c | sort -rn | head` (newest entries cite the live thread). As of writing
+  it's [#407](https://github.com/lalalune/ArkLib/issues/407) (governing tracker #334) —
+  verify before posting
 - Every dead end so far: `ArkLib/Data/CodingTheory/ProximityGap/DISPROOF_LOG.md`
 - The agent guides: `AGENTS.md` and `ArkLib/Data/CodingTheory/ProximityGap/CLAUDE.md`
 

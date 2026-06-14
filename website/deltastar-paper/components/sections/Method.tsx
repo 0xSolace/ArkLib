@@ -16,7 +16,7 @@ export function Method() {
       </Lede>
       <p>
         The campaign is a sequence of GitHub issues (#232 &rarr; #334 &rarr; #357
-        &rarr; #371) on the open ArkLib repository, each fully distilled into the
+        &rarr; #371 &rarr; #389 &rarr; #407) on the open ArkLib repository, each fully distilled into the
         tree before its successor opens. The workers are LLM agents; the referee
         is the Lean&nbsp;4 kernel. The contract has three clauses.
       </p>
