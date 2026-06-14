@@ -9593,3 +9593,38 @@ antipodal-config bad-prime bound p≤(2k)^{2k/r} + single-vs-simultaneous dichot
 δ*" CORRECTED — it's the antipodal config, wrong trend vs Θ(1/log n). The far-line config sets δ* and is the
 Paley wall. δ* exact-worst-case = Paley sharp constant, OPEN. Genuine yield = bricks (1),(2) + the sharp
 reduction prize⟺Paley + two honest self-corrections. NOT a closure.
+
+## 2026-06-14 (verify/#407): ring-hom monotonicity is TRUE but about the WRONG object — line incidence (the deployed δ*) EXCEEDS char-0 at thin primes
+Independent verify-or-refute of the 08:41 "Cyclic-sieving attack" claim:
+N(char-p) ≤ N(char-0) for the divided-difference bad-SCALAR count N = #{distinct γ_T = −DD_T(x^a)/DD_T(x^b) :
+T eligible}, claimed scale-independently via the ring hom ℤ[ζ_n]→𝔽_q (merge-only + eligibility-shrink-only).
+Built BOTH objects from scratch (probe_407_mono_objecta_vs_objectb.py, probe_407_saturation_gap.py): (a) the
+divided-difference count N, exact char-0 in ℤ[ζ_n] (ζ^{n/2}=−1) and mod-q; (b) the LINE-INCIDENCE count
+I(a,b,w)=#{distinct γ : closest-codeword agreement ≥ w}, the object the governing law I(δ)=max#{α:line δ-close}
+actually uses. μ_n proper subgroup, p≡1 mod n, n=8,16, thin (p<n³) and faithful (p>n⁴) primes.
+
+VERDICT (two parts, both reproducible):
+(1) Monotonicity is TRUE for object (a) N — 0 violations across all directions/primes — but NEAR-VACUOUS:
+    N(char-p) ≤ p, so at thin primes the count cannot exceed the (large) char-0 N, and at faithful primes
+    N(char-p)=N(char-0). At the documented EXCESS prime q=8161 (n=16, dir(4,7); h_3(ζ^T)≡0 on 16 subsets),
+    16 subsets become INELIGIBLE (denominator vanishes mod q), so N drops 3376→2704 ≤ char-0. Monotone — by
+    deletion, exactly as claimed.
+(2) The DEPLOYED δ* object is line incidence I, and there char-p EXCEEDS char-0 at thin primes. Witness
+    (n=16, k=4, dir(6,7), faithful char-0 has I=0 at bands w=6,7):
+        p=113: I(w=6)=10   p=17: I(w=6)=6, I(w=7)=1   p=257: I(w=6)=4   — all char-p > char-0 = 0.
+    Reproduces the sibling μ_16 line-incidence finding (char-p > char-0 at thin primes) independently.
+
+MECHANISM (the gap, confirmed): the SAME event — a divided-difference denominator DD_T(x^b)=h_{b−k}(ζ^T)
+that is nonzero over ℂ but ≡0 mod q (an excess prime) — DELETES the finite scalar γ_T from N (so N can only
+drop, monotone) while by the Schur-bridge dichotomy it SATURATES the monomial line (bad for EVERY α) and
+pushes I UP. (a) and (b) move in OPPOSITE directions on the same event. Schur-dichotomy saturating-subset
+count, n=16 k=4 b=7: char-0 = 0, q=8161 = 16, q=4129 = 0 (probe_407_saturation_gap.py). Sub-claim H1
+("a char-0-zero denominator can't become nonzero mod p / eligibility shrinks harmlessly") is FALSE as a
+statement about δ*: the denominator vanishing is not harmless, it saturates the line.
+
+NOT a refutation of the monotonicity itself (it holds for N). It REFUTES the RELEVANCE of the monotonicity to
+the prize: the ring-hom argument controls the finite-scalar count N, but the δ* governing law uses line
+incidence I, on which char-p > char-0 at thin primes. The monotonicity does NOT transfer to the deployed
+object. Consistent with this thread's own 21:32 "Prong A" self-refutation (denominator vanishing = saturation,
+not deletion) — independently reconfirmed here with both objects implemented side by side. Probes:
+scripts/probes/probe_407_mono_objecta_vs_objectb.py, probe_407_saturation_gap.py, probe_407_ringhom_mono_two_objects.py.
