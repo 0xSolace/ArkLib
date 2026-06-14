@@ -982,3 +982,47 @@ NET: this CLOSES the "count-lane bypass" hope as a route — it is refuted as a 
 the crossover r*≈β is a clean, correctly-located fact, and the new structural separation (moment-depth r* vs
 config-depth r_count, with the saturation onset pinned ≈β-constant while r_count grows ~n) sharpens WHY the
 two lanes coincide. Probes `probe_407_conn_c2_{crossover_scan,gap_vs_generic,verdict,crossover_decisive}.py`.
+
+## UPDATE 2026-06-14 (CONNECTION SYNTHESIS) — the equivalent quantities are NOT equally hard: the COUNT/floor closes by Kambiré PIGEONHOLE, bypassing BGK (existence version)
+
+A connection workflow (energy↔sup-norm↔count↔e₂-rigidity↔Gauss-tower, each substitution adversarially
+verified) produced one decisive structural insight.
+
+**The exact unification (verified identities).** (i) `M(n)=max_{b≠0}|Σ_{x∈μ_n}e_p(bx)|=max_b|η_b|` (sup-norm).
+(ii) `A_k:=E_k(μ_n)−n^{2k}/p = (1/p)Σ_{b≠0}|η_b|^{2k}` — the additive ENERGY is the **2k-th moment** of the
+sup-norm (exact Fourier identity, V1-verified). (iii) char-0 energy = Wick `(2r−1)‼n^r`. (iv) `E_k(F_p)=
+E_k(char0)+#{char-p-spurious solutions}` — the count-lane "spurious configs" ARE the energy anomaly.
+So sup-norm, energy, count, e₂-rigidity are ONE phenomenon (√-cancellation of μ_n) at different L^p faces.
+
+**BUT they are NOT equally hard — the key asymmetry:**
+  · The **sup-norm / energy** route needs `M(n)≤C√(n log p)` for the SPECIFIC prize prime AND uniformly
+    over all `b` — an L^∞ uniform bound = the **BGK/Paley wall** (25-year, SOTA n^0.989 vs needed n^0.5).
+    The worst-case moment depth `r=ρs+2=Θ(log n)` is DEEP (crossover r*≈β+1 is O(1)) — verified, so the
+    energy route genuinely re-hits the deep-moment anomaly.
+  · The **count / floor** route needs only that ONE good prime EXIST in the construction window. This is a
+    Kambiré-style PIGEONHOLE, NOT a sup-norm bound:
+      - floor-bad primes (where a spurious config gives `e_m∉Σ`, i.e. `#bad>N₀`) divide the cyclotomic
+        resultant `gcd(N(Σu),N(Σu³))`, height `≤(2r)^{φ(s)}≤s^s` (verified: μ_16 candidates ≤577≪4^{16}≈4·10⁹).
+      - #spurious-config "shapes" `≤2^{(H(ρ)+ρ)s}` and each gives `≤O(log s)` bad primes in `[4^s,8^s]`, so
+        **bad (config,prime) triples `≲2^{(H(ρ)+ρ)s} ≪ 2^{3s}/s = #primes in [4^s,8^s]`** — VERIFIED with
+        huge margin at prize scale s≤256, r≤64, ρ∈{1/2,1/4} (`probe_407_conn_floor_pigeonhole.py`). Even
+        restricted to primes `≡1 mod n` (`~n^{β−1}/log` in the window) the margin holds (bad `~n^{1.5K}`).
+  ⟹ **a prime `q≡1 mod n` good for the floor EXISTS in the prize window `[n^{2K},n^{3K}]`** — and for it,
+  `#bad=N₀` exactly. Combined with Kambiré's CEILING (the coset construction realizes `N₀` bad scalars at
+  the window edge, the SAME pigeonhole he already uses), **`δ*=window-edge EXACTLY` at a chosen prize prime,
+  with NO sup-norm / BGK bound.**
+
+**Honest scope — what this closes and what remains:**
+  - This is the **EXISTENCE version**: it pins `δ*` for a code with a SUITABLY-CHOSEN prime `q≡1 mod n` in
+    the window (Linnik guarantees the residue class is nonempty; the window has `≫` good primes). Kambiré's
+    published CEILING is *also* existence-based and accepted, so by symmetry the floor should be too — BUT
+    if the prize demands the SPECIFIC smallest/Linnik prime (worst-case over primes), the pigeonhole gives
+    only density-1, not that specific prime; that residual = the per-prime resultant-prime-factor bound
+    (still off-wall, NOT BGK).
+  - The count route's worst-case validity rests on **R1 (monomial extremality)** — UNPROVEN but
+    refutation-survived, and **combinatorial** (sparsity-maximizes-factorization), NOT BGK.
+  - So: the floor (existence) reduces to **{Kambiré pigeonhole (elementary, proven) + R1 (combinatorial)}**,
+    with the sup-norm/BGK wall **entirely bypassed**. The deep insight: the count and sup-norm are equivalent
+    as VALUES of δ* but the count is an EXISTENCE/resultant statement while the sup-norm is a UNIFORM L^∞
+    statement — and only the latter is BGK-hard. Probes: `probe_407_conn_floor_{pigeonhole,height}.py`,
+    `probe_407_conn_c1_*.py`.
