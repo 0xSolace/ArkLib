@@ -916,3 +916,22 @@ same CRUDE exponential threshold as `e2_extra_solution_threshold` (n^{n/2}); nei
 **Net: the open core is unchanged** — prove bad primes ≤ **poly(n)** (measured ≈n³) vs the proven crude
 `2^n`/`n^{n/2}`. This sharpening is the genuine unproven step; no closure. Honest correction of an
 over-optimistic thread.
+
+## UPDATE 2026-06-14 (ultracode, two structural facts sharpening the lanes)
+
+**(L1/count) The bad primes are MINIMAL non-lifting relations, and "modulus ≤ weight" is REFUTED.**
+At n=32, p=97 there is a spurious config exps=(0,1,4,13,18,19) that is a MINIMAL vanishing sum (NO proper
+vanishing subsum) of weight 6 — yet ℓ=97 ≫ 6 (`probe_407_minimal_subsum.py`). So no naive Mann/DZ
+"ℓ≤weight" bound holds. It is genuinely non-lifting because the root order Q=32=2^5 violates Mann's char-0
+squarefree bound (2^5 ∤ ∏_{p≤6}p = 30). Empirical growth law of the MAX bad prime: 17, 97, ≥2113 for
+Q=16,32,64 — all `< Q²` (256, 1024, 4096). Conjectured bound **max bad prime ≲ Q² ≪ q** = the count-lane
+closure (testing n=128, Q²=16384). The exact Dvornicich–Zannier inequality (Archiv Math 79, 2002) is the
+needed engine and is NOT "ℓ≤weight".
+
+**(L2/constant-index energy) A_k IS the 2k-th moment of the sup-norm — not genuinely off-wall.**
+The anomalous energy `A_k := E_k(μ_n) − n^{2k}/p = (1/p)·Σ_{b≠0}|μ̂_n(b)|^{2k}` where `μ̂_n(b)=Σ_{x∈μ_n}e_p(bx)`
+(exact Fourier identity, b=0 term = n^{2k}/p). So bounding `A_k ≤ C^k·k!·n^k` is precisely a sub-Gaussian
+`2k`-th-moment bound on the incomplete sum, and `max_b|μ̂_n(b)| = M(n)` is the L^∞ face of the SAME object.
+Hence L2 is the sup-norm via moments — which is WHY its naive (relation-counting) form caps at Johnson.
+A genuine closure needs a STRUCTURAL `A_k` bound (not the moment hierarchy); the "un-refuted path" label is
+about the structural version only. Probes: `probe_407_{minimal_subsum,n128_maxbad}.py`.
