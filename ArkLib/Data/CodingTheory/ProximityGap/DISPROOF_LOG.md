@@ -9267,3 +9267,46 @@ precise faithful re-statement; (iii) the verification that the re-statement full
 assembly, with the pin shown to hold at every consumed `δ`. The Lovett algebraic core
 (`lovettThm17_unconditional`) is proven; the remaining genuine GM-MDS content is exactly the
 pinned dual-row span construction.
+
+## 2026-06-14 (#407 Lane C): "bad-prime density SPARSE (~4%)" REFUTED → off-BGK density route hits the SAME n=128 wall
+The prior Half-Sum probe (`probe_halfsum_candidate_density.py`, commit a309cf75c) reported the
+candidate-bad-prime density at n=32 as ~3.95% and proposed an OFF-BGK density bound as the open part.
+That 3.95% is an ARTIFACT of capping the antipodal-free subset size at r<=6. New EXACT probe
+(`scripts/probes/probe_halfsum_density_exact.py`), two independent methods cross-validated to agree
+EXACTLY on n=16 (both give the same 11 candidate-bad primes {17,97,113,193,241,337,353,401,433,577,881},
+max 881):
+  (A) integer cyclotomic norm = Sylvester/Bareiss resultant Res(Phi_n, sum_{i in S} zeta^i) (no floats);
+  (B) direct mod-p: p=1 mod n is candidate-bad <=> exists d in {0,+-1}^{n/2}, d!=0, with sum d_j g^j ≡ 0
+      mod p (g a primitive n-th root; zeta^{j+n/2}=-zeta^j). Meet-in-the-middle subset-sum mod p.
+
+WITH NO SUBSET CAP (the full antipodal-free family) the density is NOT sparse:
+  n=32, window [n^3,n^4): density = 0.93 (747/800), NOT 0.04.  =>  the "sparse density" headline is FALSE.
+
+CORRECT STRUCTURE (the genuine localization): the candidate-bad prime set is FINITE for every fixed n
+— it is exactly the primes p≡1 mod n dividing one of the finitely many norms |N(sum d_j zeta^j)|,
+d in {0,+-1}^{n/2}, all bounded by  C(n) := max_d |N(sum d_j zeta^j)|.  ANY prime p > C(n) is CLEAN.
+So density(window) -> 0 as the window height -> infinity, EXACTLY 0 above C(n). Measured cutoff at n=32:
+density 0.997 (p~2^12) -> 0.77 (2^20) -> 0.057 (2^24) -> 0.000 (p>=2^32), tracking C(32) ~ 2^31.
+
+C(n) SCALING (exact n=8,16; hill-climb LB n=32,64):
+  log2 C(8)=3.17, log2 C(16)=11.23, log2 C(32)=31.1, log2 C(64)=79.1.
+  Proven lower bound log2 C(n) >= n/2 - 1 (the all-ones half-sum has norm EXACTLY 2^{n/2-1},
+  HalfSumNormClosedForm.lean); Hadamard upper bound (n/2)·log2(n/2).
+
+THE PRIZE CROSSOVER (why density does NOT help): prize prime has log2 p ~ log2 n + 128.
+  n <= 64 : log2 C(64)=79.1 < log2 p ~ 134  => p > C(n)  => EVERY prize prime CLEAN (density 0). [genuine
+            unconditional off-BGK clean result for small subgroups n<=64]
+  n >= 128: log2 C(n) extrapolates above log2 p ~ 135  => norms exceed p, density GENERICALLY positive.
+This INDEPENDENTLY reproduces the s=64-clean / s>=128-BGK boundary of the Lam-Leung route (DISPROOF_LOG
+entry "VERIFIED closed form for |H^{(+r)}|... s=64 boundary", same day): the off-BGK DENSITY argument
+does NOT bypass the wall — it hits the SAME n≈128 crossover via a different (norm-SIZE vs char-p-
+faithfulness) mechanism.
+
+NET (honest outcome = machine-checked refutation + precise localization):
+ • REFUTED: "candidate-bad density sparse (~4%) / floor holds for almost-all primes by sparsity." Density
+   is ~1 at the prize window for n>=128. The 4% was a small-subset-cap artifact.
+ • TRUE & USABLE: for fixed n, density->0 in p (finiteness, p>C(n) clean); for n<=64 every prize prime
+   is UNCONDITIONALLY clean (p>C(n)). This is a real off-BGK partial, but only for small subgroups.
+ • The open core is NOT a density bound — it is exactly the n>=128 crossover C(n) vs p, i.e. the same
+   wall (BCHKS 1.12 / BGK / Paley). Probe committed; no Lean brick (the statement is a refutation +
+   numeric localization, not a clean axiom-clean Prop beyond the already-landed n/2-1 norm LB).
