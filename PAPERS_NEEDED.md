@@ -329,3 +329,19 @@ Targeted research (this session) — this input is NEITHER proven NOR resonance-
 VERDICT (this session): the prize's open input (Gauss-sum resonance-freeness / sup-norm `≤√(n log)`) is
 at the genuine research frontier — no proven bound reaches it, and resonance does not refute it. Cannot
 be closed by citation; not fabricated.
+
+## 2026-06-14 (#407): literature sweep — SOTA on both prize faces, confirms the gap is the open core
+The prize δ* = where the worst far-line list crosses budget n. Two equivalent faces, both with SOTA
+FAR from the prize target — confirming the core is open (the gap itself):
+| # | Paper | Identifier | Bearing |
+|---|---|---|---|
+| L1 | Di Benedetto–Garaev–García–González-Sánchez–Shparlinski–Trujillo, *New estimates for exp sums over mult subgroups* | arXiv 2003.06165 | **SOTA char-sum face**: `max_a|Σ_{x∈H}e_p(ax)| ≤ |H|^{1−31/2880+o(1)}` for `|H|>p^{1/4}` — improves BGK, but is `n^{1−o(1)}`, FAR from prize `√(n log(q/n))=n^{1/2+o(1)}`. The gap IS the open core. |
+| L2 | Shangguan–Tamo, *Combinatorial list-decoding of RS beyond the Johnson radius* | arXiv 1911.01502 | beyond-Johnson list size, but GENERIC/intersection-based, not dyadic μ_n worst case |
+| L3 | Goldberg–Shangguan–Tamo (Ferber–Kwan–Sauermann line), *List-decodability with large radius for RS* | arXiv 2012.10584 | RS list-decodable to `1−ε`, rate `Ω(ε)` — but RANDOM/punctured eval points, `q≥n^{1+δ}`, NOT structured dyadic |
+| L4 | *List-decoding & list-recovery of RS beyond Johnson for any rate* | arXiv 2105.14754 | any-rate beyond-Johnson, again generic eval sets, not the prize's fixed μ_n |
+| L5 | *Weil sums over small subgroups* | arXiv 2211.07739 | Weil-type bounds for subgroup sums; complements the char-sum face |
+VERDICT: the SOTA char-sum bound (Di Benedetto `n^{1−31/2880}`) and the beyond-Johnson RS list bounds
+(random points) both MISS the dyadic prize regime by a polynomial factor. The prize = closing exactly
+that gap = the recognized open grand list-decoding / Gauss-sum-sup-norm challenge. No 2024–2026 paper
+closes the structured dyadic case. Confirms (literature-grounded) the open core every campaign framing
+converges to.
