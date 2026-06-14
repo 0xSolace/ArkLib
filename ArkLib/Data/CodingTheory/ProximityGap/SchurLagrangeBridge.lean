@@ -133,6 +133,112 @@ theorem dividedDifferencePow_card_eq_sum (hvs : Set.InjOn v s) (hs : s.Nonempty)
       have h := prod_X_sub_C_coeff_card_pred s v (Finset.card_pos.mpr hs); simpa using h]
   ring
 
+/-- **The general Schur recurrence (the `e ↔ h` / Newton engine of the bridge).**
+The divided differences of the monomials `x^b` over a fixed node set `s` (`N := #s`) obey the
+linear recurrence whose characteristic polynomial is `P = ∏_{i∈s}(X − v i)`: for every `b ≥ N`,
+
+  `[s] x^b  =  − Σ_{m < N} P.coeff m · [s] x^{b − N + m}`.
+
+Since `P.coeff m = (−1)^{N−m} e_{N−m}(v_s)`, this is exactly the elementary↔complete-homogeneous
+relation `Σ_{j=0}^{N} (−1)^j e_j(v_s) · h_{d−j}(v_s) = 0`. Together with the anchors
+(`dividedDifferencePow_eq_zero_of_lt` = `h_{<0}=0`, `dividedDifferencePow_eq_one` = `h_0=1`) it
+pins **every** Schur value `h_{b−N+1}(v_s)`, character-sum-free — the engine driving the
+two-monomial bad-α criterion `h_{b−k}(v_S) = 0`. The proof is purely the root identity
+`(v i)^N = −Σ_{m<N} P.coeff m (v i)^m` (from `P(v i) = 0`, `P` monic of degree `N`), summed
+against the divided-difference weights. -/
+theorem dividedDifferencePow_recurrence (b : ℕ) (hb : #s ≤ b) :
+    dividedDifferencePow s v b
+      = - ∑ m ∈ range #s, (∏ i ∈ s, (X - C (v i))).coeff m
+            * dividedDifferencePow s v (b - #s + m) := by
+  classical
+  set P : F[X] := ∏ i ∈ s, (X - C (v i)) with hP
+  have hPmonic : P.Monic := monic_prod_of_monic _ _ fun i _ => monic_X_sub_C _
+  have hPdeg : P.natDegree = #s := by
+    rw [hP, natDegree_prod_of_monic _ _ fun i _ => monic_X_sub_C _]; simp
+  have hcoeff_top : P.coeff (#s) = 1 := by rw [← hPdeg]; exact hPmonic.coeff_natDegree
+  -- root identity: `(v i)^#s = − Σ_{m<#s} P.coeff m · (v i)^m` for every node.
+  have hroot : ∀ i ∈ s, (v i) ^ #s = - ∑ m ∈ range #s, P.coeff m * (v i) ^ m := by
+    intro i hi
+    have hz : P.eval (v i) = 0 := by
+      rw [hP, eval_prod]; exact Finset.prod_eq_zero hi (by simp)
+    have hsum : P.eval (v i)
+        = (∑ m ∈ range #s, P.coeff m * (v i) ^ m) + (v i) ^ #s := by
+      rw [eval_eq_sum_range, hPdeg, Finset.sum_range_succ, hcoeff_top, one_mul]
+    rw [hz] at hsum
+    exact eq_neg_of_add_eq_zero_right hsum.symm
+  -- per-node expansion of `(v i)^b`, then weight by `w i` and sum.
+  have lhs_eq : ∀ i ∈ s,
+      (v i) ^ b * (∏ j ∈ s.erase i, (v i - v j))⁻¹
+        = - ∑ m ∈ range #s,
+            P.coeff m * ((v i) ^ (b - #s + m) * (∏ j ∈ s.erase i, (v i - v j))⁻¹) := by
+    intro i hi
+    have hexp : (v i) ^ b = - ∑ m ∈ range #s, P.coeff m * (v i) ^ (b - #s + m) := by
+      have h1 : (v i) ^ b = (v i) ^ (b - #s) * (v i) ^ (#s) := by
+        rw [← pow_add, Nat.sub_add_cancel hb]
+      rw [h1, hroot i hi, mul_neg, Finset.mul_sum]
+      congr 1
+      exact Finset.sum_congr rfl fun m _ => by ring
+    rw [hexp, neg_mul, Finset.sum_mul]
+    congr 1
+    exact Finset.sum_congr rfl fun m _ => by ring
+  calc dividedDifferencePow s v b
+      = ∑ i ∈ s, - ∑ m ∈ range #s,
+          P.coeff m * ((v i) ^ (b - #s + m) * (∏ j ∈ s.erase i, (v i - v j))⁻¹) := by
+        rw [dividedDifferencePow]; exact Finset.sum_congr rfl lhs_eq
+    _ = - ∑ i ∈ s, ∑ m ∈ range #s,
+          P.coeff m * ((v i) ^ (b - #s + m) * (∏ j ∈ s.erase i, (v i - v j))⁻¹) := by
+        rw [Finset.sum_neg_distrib]
+    _ = - ∑ m ∈ range #s, ∑ i ∈ s,
+          P.coeff m * ((v i) ^ (b - #s + m) * (∏ j ∈ s.erase i, (v i - v j))⁻¹) := by
+        rw [Finset.sum_comm]
+    _ = - ∑ m ∈ range #s, P.coeff m * dividedDifferencePow s v (b - #s + m) := by
+        congr 1
+        refine Finset.sum_congr rfl fun m _ => ?_
+        rw [dividedDifferencePow, Finset.mul_sum]
+
+
+/-- **Bridge anchor, `b = #s + 1`: the second Schur value `h_2(v_s) = e_1² − e_2`.** A direct
+corollary of `dividedDifferencePow_recurrence` + the three anchors: in the recurrence for
+`b = #s+1` only the top two summands survive (`[s]x^{1+m} = 0` for `1+m < #s−1`), leaving
+`[s]x^{#s+1} = −(P.coeff (#s−2) · h_0 + P.coeff (#s−1) · h_1)` with `h_0 = 1`, `h_1 = Σ v_i`,
+`P.coeff (#s−1) = −Σ v_i`. Here `e_2 = P.coeff (#s−2)` (Vieta). This extends the Schur ledger
+to the fourth value `h_2`, character-sum-free. -/
+theorem dividedDifferencePow_card_add_one (hvs : Set.InjOn v s) (hs : 2 ≤ #s) :
+    dividedDifferencePow s v (#s + 1)
+      = (∑ i ∈ s, v i) ^ 2 - (∏ i ∈ s, (X - C (v i))).coeff (#s - 2) := by
+  classical
+  have hsne : s.Nonempty := Finset.card_pos.mp (by omega)
+  set P : F[X] := ∏ i ∈ s, (X - C (v i)) with hP
+  rw [dividedDifferencePow_recurrence (#s + 1) (by omega)]
+  rw [← hP]
+  -- the dd-index `(#s+1) - #s + m` is `1 + m`
+  have hidx : ∀ m, (#s + 1) - #s + m = 1 + m := fun m => by omega
+  simp only [hidx]
+  -- peel the top two terms of `range #s = range ((#s-2)+1+1)`
+  have hrw : (#s : ℕ) = (#s - 2) + 1 + 1 := by omega
+  conv_lhs => rw [hrw]
+  rw [Finset.sum_range_succ, Finset.sum_range_succ]
+  -- the low block vanishes: for m < #s-2, `[s]x^{1+m} = 0`
+  have hlow : ∀ m ∈ Finset.range (#s - 2),
+      P.coeff m * dividedDifferencePow s v (1 + m) = 0 := by
+    intro m hm
+    have : dividedDifferencePow s v (1 + m) = 0 := by
+      apply dividedDifferencePow_eq_zero_of_lt hvs
+      have := Finset.mem_range.mp hm; omega
+    rw [this, mul_zero]
+  rw [Finset.sum_eq_zero hlow, zero_add]
+  -- evaluate the two surviving anchors
+  have h1 : (1 : ℕ) + (#s - 2) = #s - 1 := by omega
+  have h2 : (1 : ℕ) + (#s - 2 + 1) = #s := by omega
+  rw [h1, h2, dividedDifferencePow_eq_one hvs hsne,
+      dividedDifferencePow_card_eq_sum hvs hsne, mul_one]
+  -- `(#s-2)+1 = #s-1`, and `P.coeff (#s-1) = -Σ v_i`
+  have hcard_pred : P.coeff (#s - 1) = - ∑ i ∈ s, v i := by
+    have h := prod_X_sub_C_coeff_card_pred s v (Finset.card_pos.mpr hsne); simpa using h
+  have hcc : (#s - 2 + 1) = #s - 1 := by omega
+  rw [hcc, hcard_pred]
+  ring
+
 end ProximityGap.SchurLagrange
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -141,3 +247,5 @@ end ProximityGap.SchurLagrange
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_eq_zero_of_lt
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_eq_one
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_card_eq_sum
+#print axioms ProximityGap.SchurLagrange.dividedDifferencePow_recurrence
+#print axioms ProximityGap.SchurLagrange.dividedDifferencePow_card_add_one

@@ -829,3 +829,45 @@ the prize regime IFF coset-saturation holds for `q ≫ N₀` — a config-existe
 empirically true (spurious vanish far below the prize scale) and structurally tied to a Johnson-type bound.
 The open problem is sharper and more tractable than before: prove the bad-reduction primes of the gap
 variety are all `≲ N₀` (≪ the prize prime). PROVEN n=8,16; the prize-regime claim reduces to this bound.
+
+## UPDATE 2026-06-13 (count heuristic REFUTED; spurious are structurally suppressed, not random)
+
+Tested whether spurious configs follow the random heuristic `#spurious ≈ #configs/p²` (which, if true,
+would give a clean ε\*-based closure: at δ\*, `N₀≈ε*q` ⟹ `#configs≈N₀²` ⟹ `#spurious≈ε*²≪1`).
+**The heuristic OVER-predicts badly** (`probe_407_spurious_count_heuristic.py`):
+  · n=16 size6: actual spurious 16 at p=17, then **0 at p=97** (heuristic 0.19) and ALL larger p.
+  · n=32 size6: actual 96 at p=97, then **0 at p=193** (heuristic predicts **13.76**!), 0 at p=257 (7.76),
+    p=449 (2.54), p=673 (1.13) — actual is 0 everywhere the heuristic still predicts many.
+So spurious configs vanish FAR faster than a random density — there is strong STRUCTURAL CANCELLATION:
+the joint condition `∑u≡0 ∧ ∑u³≡0` is not two independent ~1/p events; configs with `∑u≡0` are
+anti-correlated with `∑u³≡0` except at special small primes. Spurious existence is governed by specific
+char-p algebraic coincidences (e.g. `1+η⁵=−2η⁶ mod 17`), NOT by counting.
+
+**Consequence (honest):** the clean ε\*-counting closure does NOT work (its premise, the random count, is
+false). The fast structural vanishing STRENGTHENS the empirical claim "no spurious in the prize regime"
+(spurious die out even faster than the ε\* margin would need), but it removes the easy proof: closing the
+prize still requires characterizing WHICH small primes are bad and proving the largest is `< q`. The bad
+primes are empirically tied to the smallest few primes `≡1 mod n` and a handful of special primes
+(n=16:{17}, n=32:{97}, n=64:~{2113}), all `≪` any prize prime — but this is an arithmetic
+coincidence-counting problem, not a density bound. Core remains open; the saturation-artifact and
+fast-vanishing findings are robust and prize-relevant.
+
+## UPDATE 2026-06-13 (exact bad-prime sets) — bad primes are sparse and all < N₀; cleanest open form
+
+Exact bad-prime sets (where ANY spurious antipodal-free config with `∑u=∑u³=0` exists):
+  · **n=16** (sizes 4,6,8, scan<8000): bad = **{17}** only — the smallest prime ≡1 mod 16.
+  · **n=32** (sizes 4,6, scan<3000): bad = **{97}** only — the smallest prime ≡1 mod 32.
+  · **n=64** (size 6, MITM-exhaustive): bad = **{193,257,449,577,641,769,1409,2113,…}** — multiple small
+    primes WITH GAPS (1153,1217,1601,2689,2753 are clean), all `< N₀=4512`, and ZERO for `p>~10000`.
+So the "{smallest prime}" pattern at n=16,32 was a small-n coincidence; in general the bad set is a
+**sparse set of small primes, all `≲ N₀`**, with the gaps reflecting the char-p structural cancellation
+(`probe_407_{exact_badset,n64_badset}.py`).
+
+**Cleanest open form of the prize.** Everything else proven/reduced, `δ* =` window-edge holds in the prize
+regime IFF: **no spurious gap-valid config exists for `p > N₀ = |H^{(+r)}|`** (coset-saturation in the
+non-saturated regime). Evidence: bad primes empirically all `< N₀` (n=16,32,64), spurious vanish above
+`~N₀`. Since at the δ\* threshold `N₀ ≈ ε*·q = q·2^{-128} ≪ q`, the prize prime `q ≫ N₀ >` all bad primes
+⟹ clean ⟹ `δ*` exact. The PROOF is open: the first-moment count `#configs/p²` over-predicts (refuted),
+so a proof needs the second-moment / structural cancellation that makes spurious vanish sharply at `~N₀`.
+This is a config-existence / good-reduction statement (bad-reduction primes of the gap variety all `≲ N₀`),
+strictly cleaner than the e₂-value "Half-Sum Lemma". PROVEN n=8,16; reduces the prize to this single bound.

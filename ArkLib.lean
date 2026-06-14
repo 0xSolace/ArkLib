@@ -136,6 +136,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25
 import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25Opening
 import ArkLib.Data.CodingTheory.GMMDS.LovettMeetReplace
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeBranch
+import ArkLib.Data.CodingTheory.GMMDS.LovettMergeDescent
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeIdentity
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeIndepProof
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeMeet
@@ -148,6 +149,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettPairwise
 import ArkLib.Data.CodingTheory.GMMDS.LovettPolynomial
 import ArkLib.Data.CodingTheory.GMMDS.LovettPrimitiveDischarge
 import ArkLib.Data.CodingTheory.GMMDS.LovettPrimitiveDistinctDegree
+import ArkLib.Data.CodingTheory.GMMDS.LovettRIMKernelTrivial
 import ArkLib.Data.CodingTheory.GMMDS.LovettRaise
 import ArkLib.Data.CodingTheory.GMMDS.LovettReducibleDischarge
 import ArkLib.Data.CodingTheory.GMMDS.LovettReduction
@@ -668,6 +670,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
 import ArkLib.Data.CodingTheory.ProximityGap.ConstantIndexGaussSumBound
+import ArkLib.Data.CodingTheory.ProximityGap.ConstantIndexSubGaussianPeriod
 import ArkLib.Data.CodingTheory.ProximityGap.CoprimePacketMinpoly
 import ArkLib.Data.CodingTheory.ProximityGap.CorePartitionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.CosetAugmentation
@@ -679,6 +682,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.CosetRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.CosetSplittingFloor
 import ArkLib.Data.CodingTheory.ProximityGap.CosetStrip
+import ArkLib.Data.CodingTheory.ProximityGap.CosetUnionExact
 import ArkLib.Data.CodingTheory.ProximityGap.CosetUnionGrowth
 import ArkLib.Data.CodingTheory.ProximityGap.CosetUnionSuperAdditive
 import ArkLib.Data.CodingTheory.ProximityGap.CosetVanishingDichotomy
@@ -795,6 +799,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DyadicEnergyK1
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicOddMomentVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.E2VanishEnergy
+import ArkLib.Data.CodingTheory.ProximityGap.E2VanishRigidityModP
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyDilationReduction
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessCore
@@ -843,6 +848,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FoldingTransferNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusImmunityMuN
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSubfieldBlowup
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSupplyExact
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BesselDeviationLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePinN12
@@ -860,6 +866,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicCocycleLargeDeviation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChaining
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChainingSubmaxRefuted
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2NegationStructure
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2VanishWidthFourLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentMethodNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RungListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
@@ -906,7 +914,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.GWFoldedDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBound
+import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBoundSlack
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodTower
+import ArkLib.Data.CodingTheory.ProximityGap.GaussianEnergyFromPairing
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralEnergyBound
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralGapCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralKMultiplicity
@@ -987,6 +997,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25WindowCount
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25WitnessMassWiring
 import ArkLib.Data.CodingTheory.ProximityGap.HalfJohnsonDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.HalfPairSliceExact
+import ArkLib.Data.CodingTheory.ProximityGap.HalfSumNormClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.HaloFreeThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.HalvingWindowExit
 import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
@@ -1523,6 +1534,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RepCountStepanovOrderTwo
 import ArkLib.Data.CodingTheory.ProximityGap.ResidualModularReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Resolution
 import ArkLib.Data.CodingTheory.ProximityGap.ResolutionWitness
+import ArkLib.Data.CodingTheory.ProximityGap.ResonanceFreeBridge
 import ArkLib.Data.CodingTheory.ProximityGap.ResultantLiftLoop52
 import ArkLib.Data.CodingTheory.ProximityGap.ReverseDictionary
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityBaseCasePairs
@@ -1584,6 +1596,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ScaleBracketFull
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleJohnsonInstance
 import ArkLib.Data.CodingTheory.ProximityGap.ScaleThresholdBracket
 import ArkLib.Data.CodingTheory.ProximityGap.ScalingZeroSumReduction
+import ArkLib.Data.CodingTheory.ProximityGap.SchurLagrangeBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SecondLayerConverseCore
 import ArkLib.Data.CodingTheory.ProximityGap.SecondLayerSeedFamily
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentReductionLimit
