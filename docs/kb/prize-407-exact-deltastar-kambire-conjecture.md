@@ -474,3 +474,67 @@ the open brick"). This is the fleet-wide frontier, not an artifact of one route.
 literature-grounded additive-combinatorics conjecture that no current technique proves. That conjecture
 IS the prize's irreducible core. Not claimed proven; it is the complete and minimal open statement, with
 everything else reduced to proven math.
+
+## UPDATE 2026-06-13 (late) — SHARPENING the "bad primes exist" wall: the δ*-relevant quantity is D=2^k
+
+The cross-lane "wall" above (`P_max` exponential ⟹ prize `p≪2^n` ⟹ bad primes exist ⟹ core open) is
+stated for the additive-**energy** `P_max`. But δ\* depends ONLY on the **distinct-`e_m` (bad-scalar)
+count**, NOT on the energy — and that quantity is strictly more robust. This session's measurements:
+
+- **No `e_m`-inflation anywhere tested.** `probe_407_halfsum_wide_refute.py`: `n=16`, **3227 primes
+  `≡1 mod 16` up to 300000** (`r=3`; +1391 at `r=4`, +752 at `r=5`) — distinct-`e_m` count is EXACTLY
+  `|Σ|` (40/41/40), zero violations. `probe_407_odd_badprime_hunt.py`: factoring `Φ_16 mod p` over all
+  extension fields, **NO odd bad prime in [3,120)**. So for the δ\*-relevant count, `D` is empirically a
+  **pure power of 2** (only char-2 degenerates, via `t^n−1=(t−1)^n`) — and the prize prime `q≡1 mod n` is
+  ODD ⟹ `q∤D`. The energy `P_max` wall does NOT transfer to the bad-scalar count: char-p spurious configs
+  appear (config count inflates 70→102, 560→656) but every spurious `e_m` lands back in `Σ`.
+
+This relocates the open core precisely: NOT "bad primes exist for the count" (none seen to 300k), but the
+**Half-Sum Lemma** — the rigidity that *makes* `D=2^k` true. Two reformulations of it (new this session):
+  · **Complement half-sum:** `e₂(U) = ½ ∑_{w∈ μ_{n/2}∖U²} w` (half the sum of squares MISSING from `U²`).
+  · **Fourier-flat:** `\hat{1_U}(1)=\hat{1_U}(3)=0` + antipodal-free ⟹ `−½\hat{1_U}(2) ∈ Σ_{|U|/2}`.
+And the reason it is genuinely NEW math: Lam–Leung's char-0 proof is the **ℤ-basis** argument
+(`{1,ζ,…,ζ^{2^{μ-1}−1}}` a ℤ-basis, `ζ^{2^{μ-1}}=−1`), which PROVABLY collapses mod `p` (there `ζ∈F_p`,
+the basis is 1-dim) — so no transfer; a positive-characteristic proof is required.
+
+**Reading list (verified this session).** JACKPOT engine: Lam–Leung *Vanishing Sums of m-th Roots of Unity
+in Finite Fields* (arXiv:`math/9605216`, JNT 65 1997). Also: Lam–Leung J.Algebra 224 (2000); Kambiré
+arXiv:`2604.09724`; Arnon–Boneh–Fenzi ePrint `2026/680`; Steinberger arXiv:`2008.11268`; Poonen–Rubinstein
+arXiv:`math/9508209`; Conway–Jones (1976); Chi Hoi Yip arXiv:`2309.10950`; "small mult. subgroup not a
+sumset" FFA 63 (2020); Tao arXiv:`math/0308286` + arXiv:`2310.09992`; Cilleruelo–Garaev arXiv:`1711.05335`
+(Stepanov-method counting without Weil). Probes: `probe_407_{halfsum_wide_refute,primitive_structure}.py`.
+
+## UPDATE 2026-06-13 (proof) — Half-Sum Lemma PROVEN EXACTLY for n=8 and n=16 (a finite candidate-prime method)
+
+A genuine **proof** (not verification) of the optimality lower bracket for the first two dyadic levels,
+via a complete finite computation. The key is that the odd bad primes form a **finite, exactly-computable
+candidate set**:
+
+**Completeness lemma.** A prime `p ≡ 1 (mod n)` is "bad" (some gap-valid `S` over `F_p` has `e₂(S) ∉ Σ`)
+ONLY IF `p | N_{ℚ(ζ_n)/ℚ}(∑_{u∈U} u)` for some antipodal-free `U ⊆ μ_n`. *Proof:* a genuine coset-union
+`S` (primitive part empty) always has `e₂(S) = −∑_{D2}w ∈ Σ`, so a bad `S` has a NONEMPTY primitive part
+`U` (antipodal-free, `e₁(U)=e₃(U)=0`); primitivity over `F_p` means the degree-1 prime `𝔭∣p` divides
+`α:=∑_{u∈U}u` (i.e. `α ≡ 0` mod 𝔭), hence `p ∣ N(α)`. ∎ So the **candidate odd bad primes are exactly the
+odd prime factors `≡1 mod n` of `{N(∑u) : U antipodal-free}`** — a finite set (each `|N(∑u)| ≤ |U|^{φ(n)}`).
+
+**n=8 — PROVEN, no primitive U at all.** For every antipodal-free `U ⊆ μ_8` (the 16 sign-patterns
+`±1±ζ±ζ²±ζ³`), `N(∑u) = N(∑u³) = 8 = 2³` EXACTLY (e.g. `N(1+ζ+ζ²+ζ³)=N(−2/(ζ−1))=16/2=8`). So no odd
+prime divides `∑u`; **no primitive U exists over any odd field**, every gap-valid config is a genuine
+coset-union, and the optimality/Half-Sum Lemma holds UNCONDITIONALLY. `D = 2³`, a pure power of 2.
+(`probe_407_halfsum_proof_n8.py`.)
+
+**n=16 — PROVEN at every prize-relevant prime.** Enumerating ALL antipodal-free `U ⊆ μ_16` (sizes 4,6,8),
+the candidate odd primes `≡1 mod 16` dividing some `N(∑u)` are EXACTLY `{17, 97, 113, 193, 353, 577}`
+(finite & complete). Checking ALL gap-valid configs at ALL `r=2..8` over each of these 6 primes:
+**every `e₂ ∈ Σ`, zero violations**. Hence `n=16` has **NO odd bad prime `≡1 mod 16`** ⟹ the optimality
+`#bad ≤ |H^{(+r)}|` holds at every prize-relevant prime ⟹ **δ\* is pinned EXACTLY for RS over `μ_16`**
+(upper bracket = Kambiré). `D`'s odd part `= 1`. (`probe_407_halfsum_{candidates,proof}_n16.py`.)
+
+**What this changes.** The Half-Sum Lemma is no longer only "verified to 300k primes" — it is **PROVEN
+for each fixed `n`** by a finite, exact algorithm (finite candidate set from norm factorization + exhaustive
+check). `n=8, 16` are done; the algorithm proves any specific `n`. The ONLY obstruction to the asymptotic
+prize (`n = 2^30`) is that its candidate set cannot be enumerated by brute force — NOT any uncertainty
+about the lemma. So the open problem is now precisely: a **uniform-in-n** proof of the completeness-lemma's
+"all candidates clean", i.e. that `e₂(U) ∈ Σ` for every primitive `U` (the general Half-Sum Lemma). This
+is the genuine remaining math; everything else (per-n) is now a closed finite computation. Probes:
+`probe_407_halfsum_{proof_n8,candidates_n16,proof_n16}.py`.
