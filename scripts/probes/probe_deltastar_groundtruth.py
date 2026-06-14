@@ -107,3 +107,6 @@ if __name__=="__main__":
         for t in range(n,0,-1):
             delta=1-t/n
             print(f"   t={t}      delta={delta:.3f}        {best[t]}/{p} = {best[t]/p:.3f}")
+
+# BandExactness oracle-validation: in-band |mcaBad|(j)=j+1 confirmed on F5/F7 instances;
+# spikes outside 3j<n-k+1. Production delta* lives in the census/spike band (list-decoding regime).
