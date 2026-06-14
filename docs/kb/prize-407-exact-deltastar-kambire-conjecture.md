@@ -1473,3 +1473,44 @@ LEADING-order δ*=window-edge survives (the floor bounds the general pencil = O(
 scales with m~n/log n, the count route is genuinely broken. **This single question — overcount-factor vs
 cofactor-period m, at large n — is now the deciding item for whether the count/floor route closes δ* to
 leading order.** Off-wall (combinatorial), needs a larger-n (or structural) computation. Probes added.
+
+## REFUTATION 2026-06-14 — Action-Orbit (Chai-Fan 2026/861) Q1 self-similarity (*)_d FAILS char-p at d>=32; the lane collapses to BGK at the open boundary (does NOT bypass it)
+
+Attack on the OPEN ITEM (Action-Orbit non-BGK lane, Q1 = "norm non-vanishing, d>=16 OPEN; d in {4,8}
+settled"). **PROVENANCE WARNING (load-bearing): the actual paper eprint 2026/861 is Cloudflare-blocked**
+— `~/papers/arklib/2026_861.pdf` and `/tmp/2026_861.pdf` are BOTH "Just a moment..." HTML, NOT the PDF.
+WebFetch returns 403. So Q1's precise form (Conj 4.12 / `Norm_{K_d/Q}(F_d)`) is RECONSTRUCTED from
+`ActionOrbitFRI.lean` + KB + issue comments, NOT quoted. Operative reconstructed Q1 (route i), the
+self-similarity hypothesis: on the orbit-PRIMITIVE gap stratum `V_d^prim` (antipodal-free `Y⊆μ_d`,
+`p_1(Y)=0`), `(*)_d : p_1=0 ⟹ p_a=0` for every odd `a`. `K=O(1)` soundness holds iff `(*)_d` holds for
+all dyadic `d=2^j`; `(*)_d` fail char-p == norm vanishes mod p == spurious primitive point == K inflates.
+
+**THE DECISIVE COMPUTATION (all EXACT exhaustive MITM, antipodal-free verified; prize band p≈d^4, p=1 mod d):**
+- `badSet_orbit_closed` (`ActionOrbitFRI.lean`) is correct + axiom-clean; genuine-RS check (n=8) confirms
+  the bad set IS a union of `⟨w^{b-a}⟩`-orbits of size `S=n/gcd(b-a,n)`, so **K = |bad|/S EXACTLY** —
+  orbit compression buys a factor `S` and NO MORE.
+- **K=1 ESCAPE ⟺ V_d^prim empty.** Genuine-RS structured `(3k/2,2k)` bad-ρ = `{ρ^8=16}` (one orbit, K=1)
+  EXACTLY at d=2,3 (n=16,24, locator method) — the `(*)_d`-clean regime. So the K=1 escape is BECAUSE
+  V^prim is empty, NOT a realizability artifact.
+- **`(*)_d` char-p census:** d=8: V^prim empty (0 pts). d=16: V^prim empty in the prize band (0 pts, p~16^4..16^6).
+  **d=32: 192/192 primitive points VIOLATE** (p_1=0, p_3≠0), all 4 prize-scale primes; **d=64: 100/100 violate**
+  (sampled). So the norm VANISHES mod every tested prize-scale prime for **d≥32**.
+- **The onset is a height/L_min threshold in (d,p) = the BGK object.** d=16 is NOT unconditionally clean:
+  at p=337 (≈16^2.1) V_16^prim has 16 points, **all 16 violate `(*)_16`** (e.g. 7-element Y). d=16's prize
+  band p~16^4 just sits ABOVE the d=16 spurious-onset (last nonempty at p=113≈16^1.71); d=32's onset reaches
+  INTO its prize band p~32^4. As `d=2^μ` grows (prize regime), the threshold only worsens — all d≥32 fail.
+- K-growth (|Σ_r| value-spectrum proxy): K explodes ×19.5 (ρ=1/4) / ×34 (ρ=1/2) per n-doubling at fixed depth.
+
+**VERDICT (answer to the OPEN ITEM): Q1 is SETTLED at d≤16 only because V_d^prim is empty in the narrow
+prize band (so `(*)_d` is VACUOUS, not proven); it is REFUTED at d≥32 — the norm VANISHES mod p at prize
+scale, spurious primitive points exist, `(*)_d` self-similarity FAILS.** Therefore **Action-Orbit does NOT
+give O(1)/|F| on plain RS over μ_n in the window interior at the prize regime** (`n=2^μ ⟹ d=2^μ≥2^30≫32`):
+it delivers K=1 ONLY while V_d^prim is empty (d≤16), and inflates once the char-p spurious primitive stratum
+opens (d≥32). That stratum = short antipodal-free vanishing `2^μ`-th-root sums mod a poly-norm split prime
+= **EXACTLY the BGK/sum-product wall** (Lam-Leung controls it char-0; BGK only reaches `n^{1-1/2880}`). The
+lane COLLAPSES to BGK precisely at the open boundary; it does not bypass it. The orbit MECHANISM is real and
+axiom-clean — but the O(1) BOUND it is supposed to carry is false beyond d=16. Refutation conf 0.85 (exact,
+uniform across primes; residual uncertainty = the reconstructed-not-quoted Q1 statement). Probes:
+`scripts/probes/probe_407_close_actionorbit_VERDICT.py` (self-contained census),
+`probe_407_close_actionorbit_q1_dichotomy.py`, `probe_407_actionorbit_q1_starD_charp.py`,
+`probe_407_actionorbit_K_growth_law.py` (K explosion).
