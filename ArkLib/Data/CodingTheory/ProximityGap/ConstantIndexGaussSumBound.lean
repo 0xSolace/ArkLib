@@ -115,6 +115,90 @@ theorem eta_constIndex_decomp (χ : MulChar F ℂ) (ψ : AddChar F ℂ) (b : F) 
     _ = (orderOf χ : ℂ) * ∑ a ∈ Gchi χ, ψ (b * a) := by rw [Finset.mul_sum]
     _ = (orderOf χ : ℂ) * eta ψ (Gchi χ) b := by rw [eta]
 
+/-- The principal (`j=0`) term: `gaussSum(1, ψ') = −1` for any nontrivial `ψ'`. -/
+theorem gaussSum_one_eq_neg_one {ψ' : AddChar F ℂ} (hψ' : ψ' ≠ 1) :
+    gaussSum (1 : MulChar F ℂ) ψ' = -1 := by
+  rw [gaussSum]
+  have h1 : ∀ a : F, (1 : MulChar F ℂ) a * ψ' a = ψ' a - (if a = 0 then ψ' a else 0) := by
+    intro a
+    rcases eq_or_ne a 0 with rfl | ha
+    · rw [MulChar.map_nonunit (1 : MulChar F ℂ) not_isUnit_zero, zero_mul, if_pos rfl]; ring
+    · rw [MulChar.one_apply ha.isUnit, one_mul, if_neg ha]; ring
+  rw [Finset.sum_congr rfl (fun a _ => h1 a), Finset.sum_sub_distrib,
+    Finset.sum_ite_eq' Finset.univ 0 (fun a => ψ' a), if_pos (Finset.mem_univ 0),
+    AddChar.sum_eq_zero_of_ne_one hψ', AddChar.map_zero_eq_one, zero_sub]
+
+/-- `mulShift ψ b` is primitive when `ψ` is primitive and `b ≠ 0`. -/
+theorem mulShift_isPrimitive {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) {b : F} (hb : b ≠ 0) :
+    (AddChar.mulShift ψ b).IsPrimitive := by
+  intro c hc
+  rw [AddChar.mulShift_mulShift]
+  exact hψ (mul_ne_zero hb hc)
+
+/-- Each twisted Gauss sum `gaussSum(χ^j, ψ_b)` with `0 < j < m` has magnitude `√q`. -/
+theorem norm_gaussSum_pow_eq {χ : MulChar F ℂ} {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    {b : F} (hb : b ≠ 0) {j : ℕ} (hj0 : j ≠ 0) (hjm : j < orderOf χ) :
+    ‖gaussSum (χ ^ j) (AddChar.mulShift ψ b)‖ = Real.sqrt (Fintype.card F : ℝ) :=
+  norm_gaussSum_eq_sqrt (pow_ne_one_of_lt_orderOf hj0 hjm) (mulShift_isPrimitive hψ hb)
+
+/-- **The constant-index √-cancellation bound.**  For the index-`m` subgroup `G_χ` (`m = orderOf χ ≥ 2`)
+and any frequency `b ≠ 0`, the period satisfies
+  `‖η_b(G_χ)‖ ≤ ((m−1)·√q + 1)/m`.
+Since `|G_χ| = (q−1)/m`, this is `‖η_b‖ ≲ √m·√n` — genuine square-root cancellation for every
+CONSTANT index `m`, PROVEN via the classical Gauss sums (no wall).  Generalizes the index-2
+`eta_QR_norm_le`. -/
+theorem eta_constIndex_norm_le {χ : MulChar F ℂ} {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    {b : F} (hb : b ≠ 0) (hm : 2 ≤ orderOf χ) :
+    ‖eta ψ (Gchi χ) b‖
+      ≤ ((orderOf χ - 1 : ℝ) * Real.sqrt (Fintype.card F : ℝ) + 1) / (orderOf χ : ℝ) := by
+  have hmpos : (0 : ℝ) < (orderOf χ : ℝ) := by exact_mod_cast (by omega : 0 < orderOf χ)
+  have h0mem : (0 : ℕ) ∈ Finset.range (orderOf χ) := Finset.mem_range.mpr (by omega)
+  have hψb1 : AddChar.mulShift ψ b ≠ 1 := hψ hb
+  -- bound the sum of the m twisted Gauss sums
+  have hsum_le : ‖∑ j ∈ Finset.range (orderOf χ), gaussSum (χ ^ j) (AddChar.mulShift ψ b)‖
+      ≤ 1 + (orderOf χ - 1 : ℝ) * Real.sqrt (Fintype.card F : ℝ) := by
+    rw [← Finset.add_sum_erase _ _ h0mem]
+    refine le_trans (norm_add_le _ _) ?_
+    have hterm0 : ‖gaussSum (χ ^ 0) (AddChar.mulShift ψ b)‖ = 1 := by
+      rw [pow_zero, gaussSum_one_eq_neg_one hψb1, norm_neg, norm_one]
+    have hbound : ∀ j ∈ (Finset.range (orderOf χ)).erase 0,
+        ‖gaussSum (χ ^ j) (AddChar.mulShift ψ b)‖ = Real.sqrt (Fintype.card F : ℝ) := by
+      intro j hj
+      rw [Finset.mem_erase, Finset.mem_range] at hj
+      exact norm_gaussSum_pow_eq hψ hb hj.1 hj.2
+    have hcard : ((Finset.range (orderOf χ)).erase 0).card = orderOf χ - 1 := by
+      rw [Finset.card_erase_of_mem h0mem, Finset.card_range]
+    have heq : ∑ j ∈ (Finset.range (orderOf χ)).erase 0,
+        ‖gaussSum (χ ^ j) (AddChar.mulShift ψ b)‖
+        = (orderOf χ - 1 : ℝ) * Real.sqrt (Fintype.card F : ℝ) := by
+      rw [Finset.sum_congr rfl hbound, Finset.sum_const, nsmul_eq_mul, hcard,
+        Nat.cast_sub (by omega : 1 ≤ orderOf χ), Nat.cast_one]
+    have htail := le_trans (norm_sum_le ((Finset.range (orderOf χ)).erase 0)
+      (fun j => gaussSum (χ ^ j) (AddChar.mulShift ψ b))) (le_of_eq heq)
+    rw [hterm0]
+    linarith [htail]
+  -- m * ‖eta‖ = ‖m * eta‖ = ‖sum‖ ≤ 1 + (m-1)√q
+  have hkey : (orderOf χ : ℝ) * ‖eta ψ (Gchi χ) b‖
+      ≤ 1 + (orderOf χ - 1 : ℝ) * Real.sqrt (Fintype.card F : ℝ) := by
+    have hnorm : (orderOf χ : ℝ) * ‖eta ψ (Gchi χ) b‖
+        = ‖∑ j ∈ Finset.range (orderOf χ), gaussSum (χ ^ j) (AddChar.mulShift ψ b)‖ := by
+      rw [← eta_constIndex_decomp χ ψ b, norm_mul, Complex.norm_natCast]
+    rw [hnorm]; exact hsum_le
+  rw [le_div_iff₀ hmpos]
+  nlinarith [hkey]
+
+/-- **The named open per-frequency core, discharged for every constant-index subgroup.**
+`WorstCaseIncompleteSumBound ψ (G_χ) (((m−1)√q + 1)/m)²` holds unconditionally (`m = orderOf χ ≥ 2`),
+via the classical Gauss sums. -/
+theorem worstCaseIncompleteSumBound_constIndex {χ : MulChar F ℂ} {ψ : AddChar F ℂ}
+    (hψ : ψ.IsPrimitive) (hm : 2 ≤ orderOf χ) :
+    ArkLib.ProximityGap.InteriorWorstCaseIncompleteSum.WorstCaseIncompleteSumBound ψ (Gchi χ)
+      ((((orderOf χ - 1 : ℝ) * Real.sqrt (Fintype.card F : ℝ) + 1) / (orderOf χ : ℝ)) ^ 2) := by
+  intro b hb
+  have hle := eta_constIndex_norm_le hψ hb hm
+  have hnn : (0 : ℝ) ≤ ‖eta ψ (Gchi χ) b‖ := norm_nonneg _
+  gcongr
+
 end ArkLib.ProximityGap.ConstantIndexGaussSum
 
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.norm_mulChar_unit
@@ -122,3 +206,5 @@ end ArkLib.ProximityGap.ConstantIndexGaussSum
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.norm_gaussSum_eq_sqrt
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.mulChar_pow_sum_all
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.eta_constIndex_decomp
+#print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.eta_constIndex_norm_le
+#print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.worstCaseIncompleteSumBound_constIndex
