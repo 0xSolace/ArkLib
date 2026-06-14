@@ -148,6 +148,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettPairwise
 import ArkLib.Data.CodingTheory.GMMDS.LovettPolynomial
 import ArkLib.Data.CodingTheory.GMMDS.LovettPrimitiveDischarge
 import ArkLib.Data.CodingTheory.GMMDS.LovettPrimitiveDistinctDegree
+import ArkLib.Data.CodingTheory.GMMDS.LovettRIMKernelTrivial
 import ArkLib.Data.CodingTheory.GMMDS.LovettRaise
 import ArkLib.Data.CodingTheory.GMMDS.LovettReducibleDischarge
 import ArkLib.Data.CodingTheory.GMMDS.LovettReduction
@@ -668,6 +669,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
 import ArkLib.Data.CodingTheory.ProximityGap.ConstantIndexGaussSumBound
+import ArkLib.Data.CodingTheory.ProximityGap.ConstantIndexSubGaussianPeriod
 import ArkLib.Data.CodingTheory.ProximityGap.CoprimePacketMinpoly
 import ArkLib.Data.CodingTheory.ProximityGap.CorePartitionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.CosetAugmentation
@@ -1529,6 +1531,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RepCountStepanovOrderTwo
 import ArkLib.Data.CodingTheory.ProximityGap.ResidualModularReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Resolution
 import ArkLib.Data.CodingTheory.ProximityGap.ResolutionWitness
+import ArkLib.Data.CodingTheory.ProximityGap.ResonanceFreeBridge
 import ArkLib.Data.CodingTheory.ProximityGap.ResultantLiftLoop52
 import ArkLib.Data.CodingTheory.ProximityGap.ReverseDictionary
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityBaseCasePairs
