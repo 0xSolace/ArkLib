@@ -1680,3 +1680,44 @@ of δ* measured at small q (q=97..353) is the low-regime/correlated artifact; th
 window, r~log q) is governed by the non-correlated anomaly = BGK. This is the sharpest available
 proof that the user's target — a closed combinatorial δ* reducing to proven math — is, in the
 interior, equivalent to BGK; no q-independent combinatorial conjecture can bypass it.
+
+## DYADIC-BGK ATTACK CAMPAIGN (a→b→c) — all walls, with two clean NEW reductions
+
+Ran the dyadic-specific BGK attack (workflow + main-loop takeover after rate limits). Verdict: the
+prize is irreducibly BGK; no dyadic-specific advance past di Benedetto n^{0.989}; budget gives no slack.
+
+**Phase A — five dyadic-specific handles, ALL WALL:**
+- **A1 tower moment recursion** (η_b^{(μ)}=η_b^{(μ-1)}+η_{bω}^{(μ-1)}): REFUTED. The ω-shifted
+  cross-moments DOMINATE the diagonal (cross/diag = 1.3,5.3,18 at r=2,3,4 n=8; probe
+  /tmp/probe_tower_crossmoment.py). No decorrelation ⟹ no induction. E_r stays below Wick (room
+  exists) but the recursion re-expresses, doesn't reduce, the cross-coset energy.
+- **A2 2-adic anomaly count**: WALL. The target Anom_r(p)≤n^{2r}/p is MEASURED TRUE (ratio∈[0.32,0.95]→1
+  as r grows) but unproven = BGK restated. (Its "yields n^1" was a degenerate q=17=n+1 full-group artifact.)
+- **A3 Stickelberger/Gauss-sum phases**: REFUTED. The normalized Gauss-sum phases u_χ=g(χ)/√q behave
+  like RANDOM (Psup/random-DFT-sup = 1.04..1.27, i.e. NO cancellation beyond random); reaches only the
+  Wick HEURISTIC √(cn log q), not a proof. Stickelberger pins valuations, not the sup-norm.
+- **A4 literature**: OPEN. No paper closes thin-subgroup (n=q^{1/4}) sup-norm cancellation; best is
+  di Benedetto n^{0.989} (n>q^{1/4} only). Gauss-period work (Duke–Garcia–Lutz 1212.6825) is
+  distribution, not sup-norm. Reading list below.
+- **A5 parallelogram invariant**: same object as A1 (no global invariant found; cross-moments dominate).
+
+**Phase B — MCA→BGK slack, NO SLACK (clean new arithmetic):**
+- **B3 budget cancellation (NEW, decisive):** mcaConjectureBound = (1/q)·n^{c₁}/(ρ^{c₂}(1−ρ−δ)^{c₃}).
+  Prize q=n·2¹²⁸, ε*=2⁻¹²⁸ ⟹ `bound ≤ ε* ⟺ n^{c₁−1}/(ρ^{c₂}(1−ρ−δ)^{c₃}) ≤ 1` — **the 2¹²⁸ CANCELS
+  EXACTLY**. The fixed budget is a red herring; gives ZERO slack. At window edge 1−ρ−δ~1/log n this
+  needs c₁≤1, reached only by BGK M=√(n log n) (in-tree: M²≤Cn log n ⟹ window Θ(1/log n)). So a weaker
+  (di Benedetto) M does NOT reach the prize window — δ* lands polynomially further from capacity.
+- **B1 structured-b**: the genuine (non-correlated) far directions ARE adversarial (cyclotomic dichotomy
+  this session) ⟹ worst-case M needed. **B2 list-decoding**: n-core charging gives only Johnson
+  (InterleavedListMDSBound); moments collapse W-b→W-a. Both wall.
+
+**Reading list (5 papers, A4):**
+1. Duke–Garcia–Lutz, "The graphic nature of Gaussian periods", arXiv:1212.6825 (period distribution).
+2. di Benedetto–Garaev–García–González-Sánchez–Shparlinski–Trujillo, arXiv:2003.06165 (n^{0.989} record).
+3. "An elementary approach to character sums over multiplicative subgroups", arXiv:1401.4618.
+4. Cellarosi–Marklof, "Value distribution of incomplete Gauss sums", arXiv:1207.1607.
+5. Randomstrasse101 "Open Problems of 2025", arXiv:2603.29571 (Paley-graph / sup-norm status).
+
+**Net:** prize ⟺ BGK/Paley √-cancellation for n=q^{1/4} dyadic subgroups, UNCONDITIONALLY (budget cancels,
+no q-independent bypass [cyclotomic dichotomy], no dyadic-tower reduction, phases are random). This is
+the sharpest available delimitation of the open core.
