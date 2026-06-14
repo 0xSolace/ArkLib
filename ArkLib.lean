@@ -925,6 +925,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GVRepBoundFromEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.GVTowerLevelDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWDirectionScopedWiring
+import ArkLib.Data.CodingTheory.ProximityGap.GWFiberChargeRepair
 import ArkLib.Data.CodingTheory.ProximityGap.GWFoldedDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
