@@ -1057,3 +1057,33 @@ Kambiré's ceiling does) vs demand the worst-case prime? If the latter, (b) give
 specific-prime residual remains (still off-wall: prime-factor bound on D). (2) R1 (monomial extremality,
 combinatorial, refutation-survived) — makes `#bad=#distinct e_m` the true worst case. (3) formalize that the
 count-lane D's height bound is the e₂-rigidity species (very likely; same fold/resultant machinery).
+
+## RESOLVED 2026-06-14 — the EXISTENCE-SEMANTICS is settled by Kambiré's own Theorem 1 (the floor pigeonhole is the SAME structure)
+
+Read Kambiré arXiv:2604.09724 directly (PDF extracted: `scripts/probes/kambire_2604.09724_extracted.txt`).
+**Theorem 1 is EXISTENTIAL and CHOOSES the prime:**
+> "For every C>0 and ρ∈(0,½), there exist infinitely many block lengths n, dimensions k, such that with
+> `δ = (1−k/n) − Ω(1/log n)`: • **There exists a prime p < n^A with p ≡ 1 (mod n)** ... Let ω be a primitive
+> n-th root, D=⟨ω⟩, C=RS[F_p,D,k]. Then **there exist f,g** with `#{z∈F_p: Δ(f+zg,C)≤δ} ≥ n^C`."
+
+Key structural facts (matching the floor pigeonhole EXACTLY):
+- His **window is `[4^s, 8^s]`** (`s=2^α`); he counts `T := #{p∈[4^s,8^s] prime : p≡1 mod n}` via the
+  **quantitative Linnik theorem** and picks a GOOD prime — explicitly avoiding "collision primes" (line 367:
+  "if this value vanishes in F_p ... the prime allows for different sums to collide"). This is the CEILING.
+- Theorem 1 gives ONLY the ceiling (`#bad ≥ n^C`, i.e. δ*≥edge). It says NOTHING about the floor.
+
+**Consequence — the existence-form floor closure is GENUINE prize progress (not a weakening):**
+the prize is existential and the construction CHOOSES `p` in `[4^s,8^s]` via Linnik. My floor pigeonhole
+adds the FLOOR (`#bad ≤ N₀`, δ*≤edge) by choosing `p∤D` (D = the single obstruction integer over ALL
+configs/lines, `#factors(D) ≤ log D = O(n log n) ≪ T`). It is the SAME window, SAME Linnik count, SAME
+"avoid the bad primes" mechanism Kambiré already uses (and the prize community accepts) for the ceiling.
+So: pick `p∈[4^s,8^s]`, `p≡1 mod n`, good for BOTH (collision-free [ceiling] AND `∤D` [floor]); such `p`
+exists (both bad sets `≪ T`). For it, `#bad = N₀` exactly ⟹ **δ* = window-edge EXACTLY**, EXISTENTIAL form,
+**no BGK**.
+
+**The remaining open set is now MINIMAL and entirely OFF-WALL:**
+  (1) **R1** (monomial extremality) — makes `#bad = #distinct e_m` the worst case over lines. Combinatorial.
+  (2) **D-height bound** — the count-lane obstruction `D` (of `{e_1=e_3=0, F(e_m)≠0}`) has height `2^{O(n log n)}`,
+      hence `#factors(D)=O(n log n)`. Same fold/resultant species as the PROVEN `e2_extra_solution_threshold`.
+Both are combinatorial/algebraic, NEITHER is the BGK sup-norm wall. The existence-semantics — the piece I
+flagged as load-bearing — is RESOLVED in favor of the closure by Kambiré's own framing.
