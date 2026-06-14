@@ -8677,3 +8677,14 @@ sharply named (orbit-rep census = per-fiber quadratic-Vinogradov count over μ_{
 literature anchor (Mansfield–Mudgal) and a concrete forward attack (per-fiber incidence
 extraction). Dossiers: scripts/probes/genlaw/o174_general_r/{,analytic/,research/}; bricks
 DeepBandR3Bound.lean, DeepBandR4Bound.lean.
+
+## (#407, conjecture campaign) GV rep bound r(c)≤2 WORST-CASE at prize scale — REFUTED
+Bold conjecture: `max_{c≠0} r(c) ≤ 2` for ALL primes p~n^β (β=4–5), dyadic μ_n — would close the GV face.
+REFUTED: the rep-bound bad primes (where r(c)>2) are IDENTICAL to the energy P_max bad primes
+(8→41, 16→337, 32→194977 in a truncated sweep; the EXACT P_max ~ n^{4.87} is EXPONENTIAL, per
+`probe_energy_pmax_growth.py`), which lie INSIDE the prize regime p~n^{4–5}. So `r(c)≤2` holds only
+GENERICALLY (G2, 80 random primes/n) — worst-case `r(c)>2` at bad primes ⟹ the García–Voloch rep-bound
+face is OPEN at prize scale. Clean by-product (kept): **rep-bound P_max = energy P_max** (the triple-
+intersection obstruction `p|Res(x^n−1,(c−x)^n−1)` is the same cyclotomic-norm divisibility as the
+4-term additive-energy coincidence). Probe: `scripts/probes/probe_gv_repbound_pmax.py`.
+Lesson re-confirmed: sweep to the EXACT P_max (cyclotomic norm), not a truncated prime range.
