@@ -519,6 +519,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIJointProximity
 import ArkLib.Data.CodingTheory.ProximityGap.BatchedFRIProof
 import ArkLib.Data.CodingTheory.ProximityGap.BelowUDRPuncture
+import ArkLib.Data.CodingTheory.ProximityGap.BesselCentralBinomConstantTerm
 import ArkLib.Data.CodingTheory.ProximityGap.BestProvableBracket
 import ArkLib.Data.CodingTheory.ProximityGap.BetaSetSize
 import ArkLib.Data.CodingTheory.ProximityGap.BetaSetYoungDiagram
