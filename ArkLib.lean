@@ -311,6 +311,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AHIV22
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.AbacusNCore
 import ArkLib.Data.CodingTheory.ProximityGap.AbacusReduction
+import ArkLib.Data.CodingTheory.ProximityGap.ActionOrbitFRI
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyCubeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGcdDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGroupRepBound
