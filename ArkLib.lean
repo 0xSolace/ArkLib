@@ -1013,6 +1013,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25WitnessMassWiring
 import ArkLib.Data.CodingTheory.ProximityGap.HalfJohnsonDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.HalfPairSliceExact
 import ArkLib.Data.CodingTheory.ProximityGap.HalfSumNormClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.HalfSumRunNormUniform
 import ArkLib.Data.CodingTheory.ProximityGap.HaloFreeThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.HalvingWindowExit
 import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
