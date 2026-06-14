@@ -62,8 +62,34 @@ theorem norm_gaussSum_eq_sqrt {χ : MulChar F ℂ} (hχ : χ ≠ 1) {ψ : AddCha
     exact_mod_cast h1
   rw [← hsq, Real.sqrt_sq (norm_nonneg _)]
 
+/-- **Character orthogonality / indicator decomposition.** For a multiplicative character `χ` of
+order `m = orderOf χ`, the subgroup-indicator of `G_χ = {a : χ a = 1}` is the average of the powers
+of `χ`:  `∑_{j<m} (χ^j) a = m·[χ a = 1]`.  (Geometric series in `χ a`, using `χ^m = 1`.) -/
+theorem mulChar_pow_sum_all (χ : MulChar F ℂ) (a : F) :
+    ∑ j ∈ Finset.range (orderOf χ), (χ ^ j) a = if χ a = 1 then (orderOf χ : ℂ) else 0 := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · have h0 : ∀ j ∈ Finset.range (orderOf χ), (χ ^ j) (0 : F) = 0 :=
+      fun j _ => MulChar.map_nonunit (χ ^ j) not_isUnit_zero
+    rw [Finset.sum_congr rfl h0, Finset.sum_const_zero, if_neg]
+    rw [MulChar.map_nonunit χ not_isUnit_zero]; exact zero_ne_one
+  · have hunit : IsUnit a := ha.isUnit
+    have hval : ∀ j, (χ ^ j) a = (χ a) ^ j := by
+      intro j
+      have h := MulChar.pow_apply_coe χ j hunit.unit
+      rwa [IsUnit.unit_spec] at h
+    rw [Finset.sum_congr rfl (fun j _ => hval j)]
+    by_cases h : χ a = 1
+    · rw [if_pos h, h]; simp
+    · rw [if_neg h, geom_sum_eq h]
+      have hm : (χ a) ^ (orderOf χ) = 1 := by
+        have hp := MulChar.pow_apply_coe χ (orderOf χ) hunit.unit
+        rw [IsUnit.unit_spec] at hp
+        rw [← hp, pow_orderOf_eq_one χ, MulChar.one_apply hunit]
+      rw [hm, sub_self, zero_div]
+
 end ArkLib.ProximityGap.ConstantIndexGaussSum
 
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.norm_mulChar_unit
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.conj_gaussSum
 #print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.norm_gaussSum_eq_sqrt
+#print axioms ArkLib.ProximityGap.ConstantIndexGaussSum.mulChar_pow_sum_all
