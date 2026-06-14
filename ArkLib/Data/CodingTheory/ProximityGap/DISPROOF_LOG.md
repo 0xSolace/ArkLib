@@ -8983,3 +8983,24 @@ RESULTS (n=8,16; ρ∈{1/4,1/2}):
 NET: genuine falsifiable evidence — δ*=1−ρ−Θ(1/log n) location CORROBORATED; small-subgroup synthesis
 DOWNGRADED from "most promising closure" to "rate-sensitive, ρ=1/4 unresolved". Honest refutation
 pressure (code-and-refute working as intended). NOT closure. probe committed.
+
+## 2026-06-14 (wakesync/#407): crossing-law tightness REFUTED; s* is q-INDEPENDENT (honest self-correction)
+Followed up the spurious-only scan with a q-sweep (probe_crossing_law_tightness.py: fix n, vary q via
+beta=3..6, report worst spurious subgroup s* at the threshold edge = last τ with bad-count>baseline n).
+RESULT (n=8 and n=16, both rates):
+  beta:  3      4       5        6         q: 521 / 4129 / 32801 / 262153 (n=8);  4129 / 65537 / 1048609 (n=16)
+  s* at threshold edge = **8 for ALL of them** (q-INDEPENDENT). s-values present @edge: {2,4,8} or {4,8}.
+CONSEQUENCES:
+1. CROSSING LAW s*^{s*/2}≈q  =  REFUTED. The 8^4=4096≈q=4129 match at (n=16,β=3) was a COINCIDENCE; s*
+   does NOT track q. My prior-commit "tightness the synthesis predicts" claim is WITHDRAWN.
+2. ROBUST & USEFUL: s* is q-INDEPENDENT — the worst spurious subgroup size depends on n alone, not q.
+   This is the right structural fact: IF s*(n) grows slowly (polylog n), then q=n^β eventually exceeds
+   s*^{s*/2} ⟹ spurious configs clean ⟹ prize. The growth s*(n) is the open question.
+3. SMALL-SUBGROUP SYNTHESIS (clean form s*~log n/log log n ≈ 2–3): NOT SUPPORTED. s*=8 is not small, and
+   did NOT shrink n=8→16 (stayed 8). n≤16 too small to read the true growth; needs n=32,64 (orbit-rep
+   speedup required — full C(n,τ) enum infeasible).
+4. δ* LOCATION: still robustly corroborated (bad-count→trivial O(n) baseline at δ≈1−ρ−Θ(1/log n)), all q.
+NET (honest): two of my speculations died this session under their own falsifiable tests (uniform-small-s,
+then the tightness law). Survivors: δ* location = 1−ρ−Θ(1/log n) [solid], s* q-independence [solid, useful].
+The prize-closing question is now sharp & concrete: **how fast does s*(n) grow?** (polylog ⟹ clean ⟹ prize;
+poly ⟹ Paley wall stays). Probes committed. NOT closure.
