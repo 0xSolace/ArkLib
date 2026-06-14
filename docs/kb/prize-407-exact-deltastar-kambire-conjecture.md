@@ -118,3 +118,33 @@ via R1's reduction to monomials) and reduces to the MDS distance of `c` vs its `
 — MDS-dichotomy skeleton proven, one thin-bound step open. (3) R1 monomial extremality — verified. (4)
 R2 Kambiré sumset-max — Kambiré optimization. The δ\* open core (line-list upper bound) is reduced to
 ONE sharp counting bound on `c`-vs-twist agreement — combinatorial, char-p-free. Feasibility 8.5.
+
+## UPDATE — coset-saturation RESTORED in the non-saturated (prize) regime; refutation was a small-p artifact
+
+The §-above "coset-saturation refuted" (non-coset valid S at n=24,m=2,r=4,p=73) was a **saturation
+artifact**. Re-test with LARGE primes (`/tmp/saturation_caveat.py`, p≈4001): across n=16,18,20, m=2,
+r=4,5,6, **noncoset=0 in EVERY non-saturated instance**, and `#bad = |distinct sumset|` EXACTLY. The
+non-coset solutions exist only when the r-fold sumset SATURATES the field (`|sumset|≈p`, small p) —
+there they are spurious char-p coincidences AND the sumset = whole field so they add nothing.
+
+**Why this matters: the prize regime is firmly NON-saturated.** At the window edge `|H^{(+r)}| ≈ q·ε* =
+q·2^-128 ≪ q`. So the subgroup sumset is a tiny fraction of the field — exactly the non-saturated
+regime where coset-saturation HOLDS. The directive's warning against the degenerate full-group/saturated
+case is precisely what distinguishes the artifact (saturated, irrelevant) from the prize (non-saturated).
+
+**The sharpened, honest optimality chain:**
+  1. Bad scalar ⟺ S ⊆ μ_n, |S|=rm, `e_i(S)=0 ∀i∈{1,…,2m−1}\{m}`, γ=±e_m(S). [proven, Vieta]
+  2. Newton (e_1..e_{m−1}=0): `p_1=…=p_{m−1}=0`, `p_m=±m·e_m`; with the rest, `p_j=0 ∀j∈{1,…,2m−1}\{m}`.
+     ⟹ `e_m(S) = (±1/m)∑_{ζ∈μ_s} c_ζ·ζ`, `c_ζ=#{x∈S:x^m=ζ}∈{0,…,m}`, `∑c_ζ=rm`. [proven]
+  3. **Coset-saturation (non-saturated regime):** a size-`rm` subset of μ_n with `p_j=0` for
+     `j∈{1,…,2m−1}\{m}` is a union of `r` cosets of μ_m ⟹ `c_ζ∈{0,m}` ⟹ `e_m=±∑_{j}ξ_j` (distinct
+     r-fold sumset). VERIFIED for all non-saturated instances (p≈4001); the lone open lemma.
+  4. ⟹ `#bad = |H^{(+r)}(μ_s)|` EXACTLY ⟹ `δ* = 1−ρ−2ρ ln(1/2ρ)/log₂(qε*)` pinned, worst case included.
+
+**The remaining open lemma (now sharp, char-p-FREE, concrete).** A 0/1-set spectral rigidity:
+`S⊆ℤ/n`, `|S|=rm`, `\hat{1_S}(j)=0` for `j∈{1,…,2m−1}\{m}` ⟹ `1_S` is `mℤ/n`-periodic (μ_m-coset-union),
+for `p` large (`p ∤` a bounded resultant — the prize `q=n^β` is far above threshold). This is a
+finite Turán/uncertainty-type 0/1 rigidity (the linear Fourier constraint alone is insufficient; the
+0/1+size structure is the content) — VERIFIED, provable, NOT the Weil/incomplete-Gauss-sum wall.
+Proof routes: (a) over ℂ via the unit-circle moment problem `∏_{x∈S}(1−xt)≡1+ct^m (mod t^{2m})`,
+|x|=1 ⟹ ∈ℂ[t^m]; (b) char-p transfer p>threshold. Feasibility 8.5. This is THE thing to prove to close.
