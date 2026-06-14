@@ -43,6 +43,8 @@ pin the (harder) MCA `δ*`. Nothing here closes the prize core; it isolates whic
 harder. Issue #407.
 -/
 
+set_option linter.unusedSectionVars false
+
 open Finset
 
 namespace ProximityGap.LDLeMCANoGo
@@ -167,7 +169,7 @@ minima of the two good-agreement sets. -/
 theorem mca_min_goodA_ge_ld_min_goodA
     (C : Finset (Fin n → F)) (f g : Fin n → F) (B : ℕ) (As : Finset ℕ)
     {aLD aMCA : ℕ}
-    (hLD : aLD ∈ As.filter (fun a => (singleWordList C f a).card ≤ B))
+    (_hLD : aLD ∈ As.filter (fun a => (singleWordList C f a).card ≤ B))
     (hLDmin : ∀ a ∈ As.filter (fun a => (singleWordList C f a).card ≤ B), aLD ≤ a)
     (hMCA : aMCA ∈ As.filter (fun a => (pencilIncidence C f g a).card ≤ B)) :
     aLD ≤ aMCA :=
