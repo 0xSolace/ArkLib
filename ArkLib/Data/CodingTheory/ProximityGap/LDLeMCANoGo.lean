@@ -44,6 +44,8 @@ harder. Issue #407.
 -/
 
 set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
 
 open Finset
 

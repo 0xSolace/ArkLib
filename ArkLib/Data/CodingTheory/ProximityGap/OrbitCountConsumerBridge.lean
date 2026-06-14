@@ -119,8 +119,8 @@ theorem mca_prize_of_orbit_partition_poly
 /-! ### Step 4 — the coprime-direction STRENGTHENING of the crossing law
 
 The prize's extremal monomial direction has `gcd(b−a, n) = 1` (a primitive pencil): then the orbit
-size is the *full* domain `S = n` and the supply identity is `S·1 = n`.  The crossing law degenerates
-to: the per-pencil budget test `I_pencil ≤ n` holds *iff there is a single orbit* `N ≤ 1`.  So δ*
+size is the *full* domain `S = n` and the supply identity is `S·1 = n`.  The crossing law then
+degenerates to: the budget test `I_pencil ≤ n` holds *iff there is a single orbit* `N ≤ 1`.  So δ*
 for that pencil is **exactly where the bad-α orbit count drops to one orbit**. -/
 
 /-- **Coprime crossing law (`d = 1`).**  When `gcd(b−a,n) = 1`, the orbit size is `S = n` and
