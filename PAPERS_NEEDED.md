@@ -440,3 +440,10 @@ antipodal reduction (this session) restates it as: count short bounded-coeff pol
 - **F5** Alon–Bourgain "Additive Patterns in Multiplicative Subgroups"
   (web.math.princeton.edu/~nalon/PDFS/multip3.pdf) — additive structure forced/forbidden in
   subgroups; directly bounds short additive relations = my short-poly count. DOWNLOAD.
+
+## #407 char-p transfer / trinomial-energy sweep (2026-06-14, wakesync)
+- [LL96fin] Lam, Leung — Vanishing Sums of m-th Roots of Unity in Finite Fields (arXiv math/9605216; J. Algebra). EXACT char-p transfer citation: W_p(2^μ) ⊇ ℕp+2ℕ ⟹ new relation needs weight≥p ⟹ norm exponent φ(n)=n/2 wall. PRIORITY.
+- [MSS18] Macourt, Shkredov, Shparlinski — Multiplicative Energy of Shifted Subgroups & Bounds on Exponential Sums with Trinomials in Finite Fields (Canad. J. Math. 70(6), 2018). Trinomial incidence = far-line object; candidate q-uniform energy route. PRIORITY.
+- [Bur-GAP25] Burgess-type character sum estimates over generalized arithmetic progressions of rank 2 (arXiv 2509.07765, Sep 2025). {0..k-1,a,b} = rank-2 GAP; candidate direct I(δ) bound.
+- [BG-small24] Exponential sums over small subgroups, revisited (arXiv 2401.04756, 2024). Best explicit small-subgroup BGK exponents.
+- [Shp-open] Shparlinski — Open Problems on Exponential and Character Sums (web.maths.unsw.edu.au/~igorshparlinski/CharSumProjects.pdf). Confirms explicit BGK is OPEN.
