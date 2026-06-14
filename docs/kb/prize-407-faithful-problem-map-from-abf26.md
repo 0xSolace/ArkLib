@@ -63,3 +63,28 @@ additive conspiracy of `μ_n` = BGK/Paley. No combinatorial/`q`-independent bypa
 no budget slack (cancels), LD-route blocked by √-loss. Closure requires new analytic NT on
 `max_b|η_b|` for `n=q^{1/4}` dyadic subgroups, OR a genuinely new direct-MCA argument that the random/
 folded/subspace-design proofs (which the structure defeats) do not provide.
+
+## DERANDOMIZATION VERDICT (the authors' §7 direction, attacked) — fails structurally; excess = n-core conspiracy
+
+AGL24 (arXiv 2304.09445) mechanism (read directly): a bad list-decoding config ⟺ a **weakly-
+partition-connected agreement hypergraph** realized by actual codewords; random RS avoids these via
+**GM-MDS genericity** of the evaluation points (Brakensiek–Gopi–Makam, via a hypergraph orientation +
+GM-MDS theorem). Random L is generic ⟹ list-decodable to capacity.
+
+**Smooth μ_n is NOT GM-MDS-generic.** The certificate is the cyclotomic `det(ζ^{β_j·i})=∏(ζ^{β_j}−ζ^{β_i})`
+(in-tree `genVandermonde_rootsOfUnity_det`), which VANISHES on n-core-nonempty shapes (β's collide mod n,
+`homds_det_eq_zero_iff_nCore_nonempty`). So μ_n REALIZES weakly-partition-connected agreement hypergraphs
+that random points avoid — derandomization fails at exactly the n-core shapes.
+
+**Computed (probe /tmp/probe_derand2.py, n=16 k=3):** μ_n worst-list STRICTLY EXCEEDS random-L worst-list
+across the window: a=4 (δ=.75) μ_n=46 vs rand=22; a=6,7 μ_n=2 vs rand=0. The excess is q-independent
+(q=97:46, q=113:48) ⟹ the failure is **combinatorial (n-core conspiracy)**, not the small q-dependent
+anomaly. So smooth RS is provably WORSE than random RS for list-decoding, for a concrete structural reason.
+
+**Verdict:** derandomization (the prize's most-cited route) FAILS structurally. δ* is pinned by the
+SIZE of the n-core conspiracy (combinatorial floor) + the char-p anomaly (BGK ceiling). Whether the
+combinatorial floor alone is super-poly past Johnson (→ δ* CLOSED combinatorially, the one bypass) or
+stays poly (→ δ* needs BGK) is the remaining question — at n=16 the excess is modest (≤2×), but
+Thm 4.16 (KK25) PROVES some smooth code has super-poly excess near capacity. Determining the EXACT
+combinatorial floor of the n-core conspiracy count vs δ is the concrete open target (q-independent,
+computable in principle) — the one place a closed combinatorial δ* could still live.
