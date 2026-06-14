@@ -1219,3 +1219,50 @@ question — and the conclusion is the OPPOSITE of the "RESOLVED" section. Quote
   resolved AGAINST the closure. Probes: `probe_407_close_existence_semantics.py`; sources:
   `/tmp/kambire.txt` (arXiv:2604.09724), `/tmp/bchks.txt` (BCHKS Conj 1.2),
   `MCAGSFieldUniversal.lean` + `GrandChallenges.lean` (in-tree quantifiers).
+
+## UPDATE 2026-06-14 — R-THIN via the twist-orbit CIRCULANT / higher-moment route: REDUCES (mult→additive Θ(s)), does NOT close; the spectrum is provably vacuous beyond its lowest mode
+
+Direct attack on the char-free R-thin residual (the orbit-Johnson constant-factor gap at intermediate
+`d`, flagged in the 2026-06-14 THIN-BOUND section as needing "the global single-`c` consistency across
+the `n/d` cosets that pairwise-MDS does not use"). Route = the higher-moment argument on the `L=d` twist
+codewords `c_ω=ω^{−a}c(ω·)` sharing ONE `c`. Probe: `scripts/probes/probe_407_rthin_circulant_route.py`
+(self-contained, runs clean; identity check + scipy LP + n=64 truth sample).
+
+**The structure (all exact).** For ragged `S` (trivial equivariance `H`), the `A_ω = ω^{−1}S` are
+rotates of one set; the pairwise-agreement matrix `M_{s,t}=|A_{ω^s}∩A_{ω^t}|` is **exactly a CIRCULANT**
+(verified, fraction 1.000) whose first row is the autocorrelation `v_t=|S∩ω^t S|`: `v_0=|S|`, `v_t≤k−1`
+(MDS, `t≠0`). Eigenvalues `λ_j=Σ_t v_t ζ_d^{jt} = |proj|² ≥ 0` (PSD, automatic from autocorrelation).
+
+**(1) KEY IDENTITY (exact, verified on concrete ragged `S`):**
+  `Σ_{t=0}^{d−1} v_t = Σ_{orbits O} |S∩O|²`  (orbit incidence; each `M`-row sums to the mu_d-orbit
+  self-incidence of `S`). With `v_t≤k−1` and Cauchy–Schwarz over the `n/d` orbits this gives the
+  **AUTOCORRELATION BOUND** `|S| ≤ n/(2d) + √((n/2d)² + n(d−1)(k−1)/d)`. This **BEATS list-Johnson**:
+  the gap to `√(nk)` drops from MULTIPLICATIVE (×1.04–1.5 at the prize direction) to **ADDITIVE Θ(s)**,
+  `s=n/d`. It CLOSES `|S|≤√(nk)` for large `d` (`d≳√(nk)`, small `s`), exactly the regime the in-tree
+  note already covers.
+
+**(2) THE SPECTRUM IS PROVABLY VACUOUS beyond the lowest mode (the decisive obstruction).** An LP over
+  `v` (maximize `|S|` s.t. `0≤v_t≤k−1`, ALL eigenvalues `λ_j≥0`, orbit-incidence `λ_0≥` balanced-min)
+  gives `LP(full-PSD + orbit) == LP(orbit-only)` at EVERY prize direction (s=8/16/44/64, n=256/1024).
+  The higher modes `j≠0` constrain only the SHAPE of `v`, never `|S|`; only `λ_0=Σ_t v_t` (the orbit
+  incidence) binds. **So 3rd/4th/higher moments and the PSD constraint ADD NOTHING** — the route caps at
+  the orbit-incidence lowest-mode bound. This kills the "higher-moment / circulant-spectrum closes it"
+  hope outright. (PSD-only without orbit is vacuous, `=n`.)
+
+**(3) The residual gap is a CONSTANT `≈s/2 ≈10`, independent of `n`,** at `d=n/44` (n=2^10…2^30 all give
+  gap ≈10). Char-FREE / combinatorial (NOT the BGK sup-norm wall) — but the circulant relaxation cannot
+  remove it.
+
+**(4) The relaxation is LOOSE — the true obstruction is REALIZABILITY, not moments.** Sampled true max
+  ragged `|S|` (n=64, k=16) is `≤18` at every `d`, vs `√(nk)=32` and the relaxation bound 39/35/33/32. So
+  `|S|≤√(nk)` is TRUE with large margin; the measured off-diagonals (e.g. `v=[5,1,0,1]`) sit FAR below the
+  MDS bound `k−1=3`. The binding constraint is that `S` is the agreement set of a **single deg<k
+  polynomial** `c` — a rank/realizability condition the circulant-of-agreement-COUNTS throws away.
+
+**NET (honest).** The higher-moment/circulant route is a genuine REDUCTION of R-thin (multiplicative →
+additive Θ(s) gap, char-free, on existing `MonomialPencilQuasiHomog`+`JohnsonListBound` substrate) but
+**NOT a closure**. New negative knowledge, machine-tested: the single-`c` circulant spectrum is
+determined by its lowest (orbit-incidence) mode alone, so no moment/PSD/spectral sharpening can close the
+additive `Θ(s)` gap at the prize direction. Closing R-thin requires a **realizability argument** (the
+deg-`<k` rank constraint on `c`), which is a different lever than the moment ladder. No closure claimed.
+Probe: `scripts/probes/probe_407_rthin_circulant_route.py`.
