@@ -25,3 +25,11 @@ Reduces optimality to a roots-on-μ_n structure theorem (cyclotomic/MDS rigidity
 ## Refutation plan
 Compute #codewords within δn of {X^a+λX^b} over all monomial stacks at beyond-Johnson δ; check the
 Kambiré coset stack is the MAX. Beats it → refuted (δ* smaller); none → push factorization-rigidity proof.
+
+## UPDATE — FACTORIZATION RIGIDITY LEMMA (verified, PROVABLE), reduces the optimality
+Lemma: for S ⊆ μ_n, ∏_{z∈S}(X−z) is m-sparse ⟺ S is a union of cosets of μ_m. VERIFIED 0/39202
+(μ_16, m∈{2,4}). PROOF: (⟸) coset product = X^m−w; (⟹) m-sparse = Q(X^m), roots' m-th-root cosets.
+Reduces optimality: Kambiré stack (a=rm,b=(r−1)m) ⟹ quotient m-sparse ⟹ S coset-union ⟹ γ∈H^{(+r)},
+bad count = |H^{(+r)}| exactly. Optimality residuals: (R1) monomial extremality, (R2) Kambiré maximizes
+the sumset over (a,b). Both reduce to known combinatorial/MDS/sumset-growth math, not open hard math.
+Feasibility 6→8. The factorization rigidity is the novel reusable machinery; candidate for Lean.
