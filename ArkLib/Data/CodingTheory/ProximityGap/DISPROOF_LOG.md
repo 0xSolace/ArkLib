@@ -9529,3 +9529,16 @@ moment/energy/min-distance/second-order routes are now all rigorously eliminated
 in-tree `GaussianEnergyBound` hypothesis (`E_r ≤ (2r−1)!!n^r` at `r≍log m`) is **FALSE at some prize-regime
 primes** — do not attempt to prove it; it is refuted. Witnesses + theorem: `probe_407_excess_witness_verify.py`,
 `probe_407_excess_lll_*.py`, `probe_407_G1_galois_norm_power_spread.py`.
+
+## 2026-06-14 (wakesync/#407): WORKFLOW confirms r-dependent threshold T(τ)=(2k)^{2k/(τ−k)} + window-top floppy
+Verification workflow (wf_46a17807, 8 finders + adversarial) corroborated the crossover law:
+- n=8 dyadic: I(δ) STABLE above threshold both passes (τ=3→304, τ=4→64; 30 + 20 above-threshold primes). ✓
+- n=12 NON-DYADIC control: I wildly unstable (swings 3 ↔ ~5000) ⟹ rigidity is dyadic-specific. ✓
+- **n=16 τ=5 (r=1)**: ADVERSARIAL pass (primes to 60000) found I FLOPPY = 12 DISTINCT values
+  [125900,126192,126208,...,129088] — because the TRUE threshold is (2k)^{2k/r}=(2k)^8=16.7M ≫ 60000.
+- n=16 τ=6 (r=2): true threshold (2k)^{2k/2}=(2k)^4=4096; I→1040 stable above (direct run). ✓
+DIRECT DEMONSTRATION: threshold = (2k)^{2k/(τ−k)} (NOT a flat (2k)^4 — the script's hard-coded label was
+wrong; the raw per-prime I-values are what matter). Smaller r=τ−k (window TOP, larger δ) ⟹ LARGER threshold
+⟹ floppy up to huge q. This is exactly why the prize's binding window-top radius (η*=Θ(1/log n), r*=η*n)
+is dirty: T*=(2k)^{2ρ/η*}=n^{Θ(log n)} ≫ q. Confirms the crossover law clean⟺η*>2ρ/β and the WALL at prize
+scale. The earlier τ=6 stabilization was a shallower-radius (larger-r, smaller-threshold) artifact. NOT closure.
