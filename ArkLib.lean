@@ -136,6 +136,7 @@ import ArkLib.Data.CodingTheory.GMMDS.LovettLemma25Opening
 import ArkLib.Data.CodingTheory.GMMDS.LovettMeetReplace
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeBranch
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeIdentity
+import ArkLib.Data.CodingTheory.GMMDS.LovettMergeIndepProof
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeMeet
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReduction
 import ArkLib.Data.CodingTheory.GMMDS.LovettMergeReindex
