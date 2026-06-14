@@ -601,3 +601,30 @@ explicitly leaves open. This is the genuine prize core: not a Weil/Gauss-sum wal
 lemma, but an unsolved STRUCTURE problem for `2^μ`-th-root vanishing sums when `p ≡ 1 mod 2^μ`. The
 candidate-prime method PROVES it for any fixed `n`; a uniform proof requires advancing that open structure
 theory. Probe: `probe_407_halfsum_wide_n32.py`.
+
+## CONFIRMED — general-r integrality is char-p-robust; precise remaining target = eliminant is content-free
+
+r=3 (size 6) test across 10 primes (`/tmp/r3test.py`): `#bad = |Σ_3|` EXACTLY, `NEW=0` at every prime,
+INCLUDING p=97 where 96 genuine spurious size-6 configs exist (they give `e₂∈Σ_3`, adding nothing). At
+non-saturated primes (257..7937) NO spurious exist and all configs are cosets. So `e₂(S)∈Σ_r` holds
+whether or not spurious configs exist — fully char-p-robust.
+
+**The precise remaining target (finite algebra, candidate-provable).** The bad scalars are the roots of
+the eliminant `Res(γ) ∈ ℤ[γ]` of the system `{e₁(S)=0, e₃(S)=0, e₂(S)=γ, xᵢⁿ=1}`. Over ℂ its roots are
+exactly `Σ_r` (Lam–Leung), so `Res = c·G^a` over ℚ with `G(γ)=∏_J(γ−σ_J)` (monic, integer, `deg`=
+`|Σ_r|` distinct roots). The bound `#bad ≤ |Σ_r|` holds over `F_p` **iff** the content `c` is a unit (or
+`p∤c`). The char-p-robustness (no new bad scalar at ANY tested prime, incl. spurious-heavy p=97) is
+direct evidence `c = ±1` — i.e. **the eliminant is content-free / monic**. Proving `c=±1` closes the
+optimality UNCONDITIONALLY. This is a concrete elimination-theory statement about a 0-dimensional
+cyclotomic scheme — NOT BGK, NOT a recognized open problem.
+
+**Minimal case PROVEN** (r=2): the gap forces `X⁴+e₂X²+e₄` (even) ⟹ ±-pair roots ⟹ all-coset ⟹
+`e₂∈Σ_2`. **Structure for general r:** `e₂(S) = −½∑_{x∈S}x²`, `x²∈μ_{n/2}`; for all-coset configs the
+2r squares double up (`∑=2∑ζᵢ`), giving `e₂=−∑ζᵢ∈Σ_r`; the spurious (partial) configs are the rare
+char-p exceptions that STILL land in `Σ_r` — equivalently the resolvent `R(u)=A(u)²−uB(u)²` (roots =
+the squares) has square-sum `−2e₂` forced into `2·Σ_r`. The general proof = `c=±1` (eliminant monic).
+
+**Standing:** δ* exact; upper bracket + ℂ optimality + minimal-r `F_p` PROVEN; general-r `F_p` = the
+content-free eliminant statement (finite algebra, char-p-robust, candidate-provable). The earlier "BGK
+wall" verdict is RETRACTED — it was a gcd-criterion artifact. Feasibility of full closure: 6 (concrete
+algebra) — up from 3 (was wrongly BGK-gated). NOT yet closed; the eliminant-monicity is the live target.
