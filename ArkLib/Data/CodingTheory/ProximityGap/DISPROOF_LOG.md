@@ -8747,3 +8747,23 @@ Prize regime (n=2^32, β=4): char-0 caps at r*≈5 ≪ log q≈89; bound ~10^4×
 bound `A_r=0 for (2r)^{n/2}<p` (formalized, `RootSumNormBound.lean`), securing depth r≈2 only.
 CONSEQUENCE: stop pursuing deep-moment validity; the prize is purely the L^∞/BGK Gauss-phase sup-norm
 (= the phase-cocycle worst-path large-deviation in the entry above). Probes: char0_floor.py, forced_anomaly.py.
+
+## 2026-06-14 (wakesync/#407): three poly-orbit-count CLOSURE ideas REFUTED
+Context: orbit-count crossing law `δ*=sup{δ:∀pencil N_pencil(δ)≤gcd(b−a,n)}`; need N≤poly(n) closed.
+N = #achievable agreement sets A (size≥(1−δ)n) mod ω-rotation. Each A ↔ UNIQUE sparse pencil
+P=x^b+αx^a−g (proven injective: P−P' deg≤a<|A|⟹=0). Verified n=8 pencil(6,7),agr≥5: 40 bad α,
+40 distinct A (bijective ✓), 5 rotation-orbits (N=5 = #distinct cyclic gap-patterns of A).
+- **(C1) Dyadic-coset closure** (A = union of μ_n-subgroup cosets ⟹ poly-many): **REFUTED** — the
+  size-5 achievable A in μ_8 are NOT coset unions (e.g. {0,1,2,3,7}, {1,3,4,6,7}); odd size alone
+  rules out unions of even-size dyadic cosets. The achievable A are generic-looking gap-patterns.
+- **(C2) DFT-uncertainty closure** (sparse-DFT ⟹ sparse-time ⟹ bounded agreement): **REFUTED for
+  the window** — v=e_b+αe_a has DFT-support {0..k−1,a,b} of size k+2≈ρn (a CONSTANT FRACTION, not
+  sparse), so the uncertainty bound time-weight≥n/(k+2)=O(1) is trivial. Dyadic n (non-prime) has a
+  WEAK uncertainty principle (subgroup sparse-sparse vectors), which is exactly why the window is hard.
+- **(C3) Mann-direct closure** (sparse P ⟹ few roots-of-unity ⟹ few A): **REFUTED** — sparse polys
+  CAN have many roots of unity (x^n−1 is 2-sparse with n roots); Mann limits the STRUCTURE of single
+  vanishing sums, not |A|, and the per-point relations (one (k+2)-term vanishing sum per ζ^i∈A) are
+  independent, so Mann does not bound the count of achievable A.
+VERDICT: N = #achievable cyclic gap-patterns; bounded above by all patterns (exponential); whether
+ACHIEVABLE is poly = the beyond-Johnson list size viewed through the orbit action = the recognized
+open core (issue #407 contract). Genuine partial: orbit-count law + A↔P injectivity are clean/proven.
