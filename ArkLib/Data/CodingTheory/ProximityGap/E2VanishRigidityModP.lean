@@ -167,17 +167,17 @@ theorem foldCol_eval {L : Type*} [Field L] {h : ℕ} (hh : 0 < h) {ζ : L}
       omega
     · intro e he
       simp only [Finset.mem_range] at he
-      show e % h + e / h * h = e
+      change e % h + e / h * h = e
       rw [Nat.mod_add_div']
     · intro p hp
       simp only [Finset.mem_product, Finset.mem_range] at hp
       obtain ⟨h1, _⟩ := hp
-      show ((p.1 + p.2 * h) % h, (p.1 + p.2 * h) / h) = p
+      change ((p.1 + p.2 * h) % h, (p.1 + p.2 * h) / h) = p
       rw [Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt h1,
         Nat.add_mul_div_right _ _ hh, Nat.div_eq_of_lt h1, Nat.zero_add]
     · intro e he
       simp only [Finset.mem_range] at he
-      show ((R.coeff e : ℤ) : L) * ζ ^ e
+      change ((R.coeff e : ℤ) : L) * ζ ^ e
         = ((R.coeff (e % h + e / h * h) : ℤ) : L) * ζ ^ (e % h + e / h * h)
       rw [Nat.mod_add_div']
   rw [hbij]
@@ -360,9 +360,7 @@ private theorem partial_coeff_sum_le_eval_one {P : Polynomial ℤ}
           refine Finset.sum_eq_zero fun e he => ?_
           simp only [Finset.mem_filter, Finset.mem_range, not_lt] at he
           exact Polynomial.coeff_eq_zero_of_natDegree_lt (by omega)
-        rw [hzero, add_zero]
-        congr 1
-        ext e; simp [Finset.mem_filter, Finset.mem_inter]
+        rw [hzero, add_zero, Finset.filter_mem_eq_inter]
     _ ≤ ∑ e ∈ range (P.natDegree + 1), P.coeff e :=
         Finset.sum_le_sum_of_subset_of_nonneg Finset.inter_subset_right
           (fun e _ _ => hP e)
@@ -406,4 +404,63 @@ theorem l1On_e2Fold_le (k : ℕ) (U : Finset ℕ) :
       _ = (U.card : ℤ) ^ 2 + U.card := by rw [sqPart_eval_one, powPart_eval_one]
   exact_mod_cast hcast
 
+/-! ## The rigidity transfer -/
+
+/-- **The headline rigidity transfer.** Over `F_p` with a primitive `2^k`-th root `g`
+(`k ≥ 1`), if the folded `e₂`-relation of an exponent set `U ⊆ range(2^k)` is **nonzero in
+characteristic `0`** (i.e. `e₂(S) ≠ 0` over `ℂ`, captured by `e2Fold k U ≠ 0`) and `p` lies above
+the explicit threshold `((card U)² + card U)^{2^{k−1}}`, then the `e₂ = 0` condition
+`(∑_{i∈U} g^i)² = ∑_{i∈U} g^{2i}` **fails** over `F_p`: no extra mod-`p` `e₂ = 0` solution. -/
+theorem e2_zero_rigidity_modp {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : 1 ≤ k)
+    {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ k)) {U : Finset ℕ}
+    (hU : ∀ i ∈ U, i < 2 ^ k) (hne0 : e2Fold k U ≠ 0)
+    (hp : (U.card ^ 2 + U.card) ^ 2 ^ (k - 1) < p) :
+    (∑ i ∈ U, g ^ i) ^ 2 ≠ ∑ i ∈ U, g ^ (2 * i) := by
+  intro hzero
+  -- `g` is a root of the folded relation mod `p`
+  have hroot : ((e2Fold k U).map (Int.castRingHom (ZMod p))).IsRoot g := by
+    unfold Polynomial.IsRoot
+    rw [e2Fold_eval hk hg hU, hzero, sub_self]
+  -- the threshold gate against `l1On`
+  have hl1 : l1On (2 ^ (k - 1)) (e2Fold k U) ^ 2 ^ (k - 1) < p := by
+    refine lt_of_le_of_lt ?_ hp
+    exact Nat.pow_le_pow_left (l1On_e2Fold_le k U) _
+  exact not_isRoot_of_l1On_pow_lt hk hg hne0 (e2Fold_natDegree_lt k U) hl1 hroot
+
+/-- **The char-`0` nonvanishing input.** If `e₂(S) ≠ 0` over `ℂ` for `S = {ζ^i : i ∈ U}` at a
+primitive complex `2^k`-th root, then the folded `e₂`-relation is a nonzero integer polynomial.
+(Its complex evaluation is `e₂(S)·2`-up-to-sign nonzero; a zero polynomial would force it `0`.) -/
+theorem e2Fold_ne_zero {k : ℕ} (hk : 1 ≤ k) {U : Finset ℕ} (hU : ∀ i ∈ U, i < 2 ^ k)
+    {ζ : ℂ} (hζ : IsPrimitiveRoot ζ (2 ^ k))
+    (hC : (∑ i ∈ U, ζ ^ i) ^ 2 ≠ ∑ i ∈ U, ζ ^ (2 * i)) :
+    e2Fold k U ≠ 0 := by
+  intro h0
+  apply hC
+  have := e2Fold_eval hk hζ hU
+  rw [h0] at this
+  simp only [Polynomial.map_zero, Polynomial.eval_zero] at this
+  linear_combination -this
+
+/-- **Census form (contrapositive).** A subset `U ⊆ range(2^k)` whose `e₂ = 0` condition holds
+over `F_p` but **not** over `ℂ` (a *new* mod-`p` solution) forces `p` below the explicit
+threshold: `p ≤ ((card U)² + card U)^{2^{k−1}}`. Equivalently, above that threshold the `e₂ = 0`
+subsets over `F_p` are exactly the char-`0` ones — the extremal-radius count is the (absolute,
+`q`-independent) char-`0` count. -/
+theorem e2_extra_solution_threshold {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : 1 ≤ k)
+    {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ k)) {U : Finset ℕ}
+    (hU : ∀ i ∈ U, i < 2 ^ k)
+    {ζ : ℂ} (hζ : IsPrimitiveRoot ζ (2 ^ k))
+    (hCnz : (∑ i ∈ U, ζ ^ i) ^ 2 ≠ ∑ i ∈ U, ζ ^ (2 * i))
+    (hFp : (∑ i ∈ U, g ^ i) ^ 2 = ∑ i ∈ U, g ^ (2 * i)) :
+    p ≤ (U.card ^ 2 + U.card) ^ 2 ^ (k - 1) := by
+  by_contra hgt
+  rw [not_le] at hgt
+  exact e2_zero_rigidity_modp hk hg hU (e2Fold_ne_zero hk hU hζ hCnz) hgt hFp
+
 end ArkLib.ProximityGap.E2VanishRigidityModP
+
+#print axioms ArkLib.ProximityGap.E2VanishRigidityModP.e2Fold_eval
+#print axioms ArkLib.ProximityGap.E2VanishRigidityModP.l1On_e2Fold_le
+#print axioms ArkLib.ProximityGap.E2VanishRigidityModP.e2_zero_rigidity_modp
+#print axioms ArkLib.ProximityGap.E2VanishRigidityModP.e2Fold_ne_zero
+#print axioms ArkLib.ProximityGap.E2VanishRigidityModP.e2_extra_solution_threshold
