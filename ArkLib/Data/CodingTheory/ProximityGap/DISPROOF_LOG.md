@@ -9575,3 +9575,21 @@ the Paley sharp constant = OPEN. CONCLUSION (whole session): δ* exact-worst-cas
 genuinely open; every closure route this session reduces to it or was refuted. The campaign's genuine yield
 is the SHARP LOCALIZATION: prize ⟺ Paley sharp constant, with the clean/dirty crossover law clean⟺η*>2ρ/β
 pinning exactly why (ρ=1/2 dirty at the binding radius for all n past ~2^8).
+
+## 2026-06-14 (wakesync/#407): CORRECTION-2 — my crossover law η*=2ρ/β is for the ANTIPODAL config, NOT δ*
+Self-audit of the "crossover law clean⟺η*>2ρ/β" I committed earlier this turn. It is derived from the
+ANTIPODAL/simultaneous-config bad-prime bound T=(2k)^{2k/r}. But it gives η*_cross = 2ρ log n/log q, which is
+CONSTANT (q=n^β: η*=2ρ/β) or INCREASING in n (q=n·2^128: η*=2ρ log n/(log n+128), dη*/dlog n>0). The
+CONJECTURED prize δ*=1−ρ−Θ(1/log n) has η* DECREASING in n. OPPOSITE TRENDS ⟹ the antipodal-config crossover
+does NOT govern δ*. (Also: the verification workflow already showed the far-line I(δ) is FLOPPIER than the
+antipodal config — bad primes exceed (2k)^4 — so the antipodal (2k)^{2k/r} threshold under-estimates the
+far-line config's bad primes.) ⟹ the δ*-SETTING object is the FAR-LINE incidence config, whose bad-prime
+structure I have NOT characterized — and characterizing it (does the far-line incidence over μ_n cancel /
+have bounded bad-prime spikes at the Θ(1/log n) radius) IS the Paley/BGK character-sum wall. So my crossover
+law, while a correct statement about the antipodal config, is NOT a δ* pin and must not be read as one.
+HONEST NET (whole arc, twice-corrected): (1) sharpened Q1 char-0 inequality [unrefuted brick]; (2) proven
+antipodal-config bad-prime bound p≤(2k)^{2k/r} + single-vs-simultaneous dichotomy [unrefuted brick];
+(3) "I(δ) stable above (2k)^4 ⟹ closure" REFUTED by adversarial workflow; (4) "crossover law η*=2ρ/β pins
+δ*" CORRECTED — it's the antipodal config, wrong trend vs Θ(1/log n). The far-line config sets δ* and is the
+Paley wall. δ* exact-worst-case = Paley sharp constant, OPEN. Genuine yield = bricks (1),(2) + the sharp
+reduction prize⟺Paley + two honest self-corrections. NOT a closure.
