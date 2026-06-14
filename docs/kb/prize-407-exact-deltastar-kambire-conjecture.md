@@ -1026,3 +1026,34 @@ So sup-norm, energy, count, e₂-rigidity are ONE phenomenon (√-cancellation o
     as VALUES of δ* but the count is an EXISTENCE/resultant statement while the sup-norm is a UNIFORM L^∞
     statement — and only the latter is BGK-hard. Probes: `probe_407_conn_floor_{pigeonhole,height}.py`,
     `probe_407_conn_c1_*.py`.
+
+## CORRECTION+UPGRADE 2026-06-14 — the floor pigeonhole is via #bad-primes ≤ log D (PROVABLE), not config-count
+
+The previous section's "config-count" phrasing was imprecise (floor configs in μ_n number exp(n), so a
+sum-over-configs bound fails). The CORRECT and STRONGER argument:
+  · ALL floor-bad primes divide a SINGLE integer `D` (the Nullstellensatz/elimination obstruction of
+    `{e_1=e_3=0, F(e_m)≠0}`), whose height is `≤ (n²+n)^{n/2}` — the SAME species as the PROVEN
+    `e2_extra_solution_threshold` (E2VanishRigidityModP.lean).
+  · Therefore `#{distinct floor-bad primes} ≤ log₂ D ≤ (n/2)·log₂(n²+n) = O(n·log n)` — a COUNT bound,
+    independent of the exponential config count.
+  · The Kambiré window `[n^{2K},n^{3K}]` contains `~ n^{β−1}/log` primes `≡1 mod n` (Dirichlet),
+    `≫ n·log n` (verified: at n=2^30, #bad `≲2^35` vs window primes `~2^142`;
+    `probe_407_conn_floor_pigeonhole_corrected.py`).
+  ⟹ a prime `q≡1 mod n` that is FLOOR-GOOD (`∤D`) EXISTS in the prize window — PROVABLY (the bad-prime
+  count bound is of the proven e₂-rigidity species). For it `#bad=N₀`; with Kambiré's ceiling, `δ*=window
+  edge` exactly.
+
+**The crisp deep insight (the answer to "connect the quantities"):** the q∤D residual has TWO versions.
+  (a) "the SPECIFIC prize prime `q∤D`" — HARD (q could be one of the `O(n log n)` bad primes), equivalent
+      to the uniform sup-norm bound = **BGK wall**.
+  (b) "SOME good prime exists in the window" — EASY: `#bad primes ≤ log D = O(n log n) ≪ #window primes`,
+      a pure counting bound from the resultant HEIGHT (proven species), **no sup-norm, no BGK**.
+  The sup-norm/energy route forces (a) (it's an L^∞ uniform statement). The COUNT/floor route only needs
+  (b) (existence — the construction picks `q`, exactly as Kambiré's CEILING does). **So the prize floor,
+  in its existence/construction form, closes by an elementary counting bound and BYPASSES BGK entirely.**
+
+**Honest residuals (NOT BGK):** (1) existence-semantics — does the prize accept a chosen good `q` (as
+Kambiré's ceiling does) vs demand the worst-case prime? If the latter, (b) gives only density-1, and the
+specific-prime residual remains (still off-wall: prime-factor bound on D). (2) R1 (monomial extremality,
+combinatorial, refutation-survived) — makes `#bad=#distinct e_m` the true worst case. (3) formalize that the
+count-lane D's height bound is the e₂-rigidity species (very likely; same fold/resultant machinery).
