@@ -321,6 +321,92 @@ theorem rootPow_sum_isIntegral {n : ℕ} (hn : 0 < n) {ζ : L} (hζ : ζ ^ n = 1
   exact rootOfUnity_isIntegral hn hpow
 
 
+/-- **The norm of a ℤ-sum of roots of unity is an algebraic integer.** Completing the
+candidate-bad-prime foundation of the Half-Sum ledger (#407): the algebraic norm
+`N_{K/L'}(∑_{a∈S} ζ^a)` of any subset sum of powers of an `n`-th root of unity `ζ` is integral
+over `ℤ`. Indeed, `∑_{a∈S} ζ^a` is integral over `ℤ` (`rootPow_sum_isIntegral`), and the
+algebraic norm of an integral element is integral, being a product of Galois conjugates each
+integral over `ℤ`. Specialized to `K = ℚ` this places the norm in `ℤ`, so a bad prime can
+divide it. -/
+theorem norm_rootPow_sum_isIntegral [IsScalarTower ℤ K L]
+    {n : ℕ} (hn : 0 < n) {ζ : L} (hζ : ζ ^ n = 1) (S : Finset ℕ) :
+    IsIntegral ℤ (Algebra.norm K (∑ a ∈ S, ζ ^ a)) :=
+  Algebra.isIntegral_norm K (rootPow_sum_isIntegral hn hζ S)
+
+
+/-- **Antipodal-free sets are at most half the group.**
+An antipodal-free subset `A` of the residues `range (2^(m+1))` — one that never contains both
+`a` and its antipode `g a = (a + 2^m) % 2^(m+1)` — has at most `2^m` elements, i.e. at most half
+of the `2^(m+1)` residues.
+
+The fixed-point-free involution `g` pairs the `2^(m+1)` residues into `2^m` antipodal pairs;
+an antipodal-free set picks at most one element from each pair. We realize the quotient by `g`
+as the map `a ↦ a % 2^m`, which is constant on antipodal pairs and (because `A` is
+antipodal-free) injective on `A`, into `range (2^m)`. Hence `card A ≤ card (range (2^m)) = 2^m`.
+
+This is the base-case combinatorics of the Half-Sum ledger (#407, non-BGK, thread T5): the
+candidate antipodal-free bad sets are at most half the group. Pure `ℕ`/`Finset`, no field. -/
+theorem antipodal_free_card_le {m : ℕ} (A : Finset ℕ)
+    (hAsub : A ⊆ Finset.range (2 ^ (m + 1)))
+    (hfree : ∀ a ∈ A, (a + 2 ^ m) % 2 ^ (m + 1) ∉ A) :
+    A.card ≤ 2 ^ m := by
+  have hpow : (2 : ℕ) ^ (m + 1) = 2 ^ m + 2 ^ m := by ring
+  -- For `2^m ≤ x < 2^(m+1)`, `x % 2^m = x - 2^m`.
+  have hmodsub : ∀ x : ℕ, 2 ^ m ≤ x → x < 2 ^ (m + 1) → x % 2 ^ m = x - 2 ^ m := by
+    intro x hxlo hxhi
+    rw [Nat.mod_eq_sub_mod hxlo, Nat.mod_eq_of_lt]
+    rw [hpow] at hxhi; omega
+  -- The map `a ↦ a % 2^m` is injective on `A`.
+  have hInj : Set.InjOn (fun a => a % 2 ^ m) (A : Set ℕ) := by
+    intro a ha a' ha' heq
+    simp only at heq
+    -- `a, a' < 2^(m+1)`
+    have haR : a < 2 ^ (m + 1) := Finset.mem_range.mp (hAsub ha)
+    have ha'R : a' < 2 ^ (m + 1) := Finset.mem_range.mp (hAsub ha')
+    -- Suppose `a ≠ a'`; derive a contradiction with antipodal-freeness.
+    by_contra hne
+    -- WLOG analysis via the relation between `a` and `a'` modulo `2^m`.
+    -- Since `a % 2^m = a' % 2^m` and both are `< 2^(m+1)`, the pair `{a, a'}` is `{x, x+2^m}`.
+    -- Show `a' = (a + 2^m) % 2^(m+1)`, contradicting `hfree a ha`.
+    -- a < 2^m or a ≥ 2^m
+    rcases lt_or_ge a (2 ^ m) with haL | haH
+    · -- a < 2^m so a % 2^m = a
+      have hae : a % 2 ^ m = a := Nat.mod_eq_of_lt haL
+      -- then a' % 2^m = a; and a' < 2^(m+1)
+      rcases lt_or_ge a' (2 ^ m) with ha'L | ha'H
+      · have ha'e : a' % 2 ^ m = a' := Nat.mod_eq_of_lt ha'L
+        rw [hae, ha'e] at heq
+        exact hne heq
+      · -- a' ≥ 2^m, a' < 2^(m+1) ⇒ a' % 2^m = a' - 2^m
+        have ha'e : a' % 2 ^ m = a' - 2 ^ m := hmodsub a' ha'H ha'R
+        rw [hae, ha'e] at heq
+        -- a = a' - 2^m, so a' = a + 2^m, and (a + 2^m) % 2^(m+1) = a + 2^m (since a+2^m < 2^(m+1))
+        have hval : (a + 2 ^ m) % 2 ^ (m + 1) = a + 2 ^ m := by
+          apply Nat.mod_eq_of_lt; rw [hpow]; omega
+        have heq2 : (a + 2 ^ m) % 2 ^ (m + 1) = a' := by rw [hval]; omega
+        exact hfree a ha (heq2 ▸ ha')
+    · -- a ≥ 2^m, a < 2^(m+1) ⇒ a % 2^m = a - 2^m
+      have hae : a % 2 ^ m = a - 2 ^ m := hmodsub a haH haR
+      rcases lt_or_ge a' (2 ^ m) with ha'L | ha'H
+      · have ha'e : a' % 2 ^ m = a' := Nat.mod_eq_of_lt ha'L
+        rw [hae, ha'e] at heq
+        -- a - 2^m = a', so a = a' + 2^m, antipode of a' is a' + 2^m = a
+        have hval : (a' + 2 ^ m) % 2 ^ (m + 1) = a' + 2 ^ m := by
+          apply Nat.mod_eq_of_lt; rw [hpow]; omega
+        have heq2 : (a' + 2 ^ m) % 2 ^ (m + 1) = a := by rw [hval]; omega
+        exact hfree a' ha' (heq2 ▸ ha)
+      · have ha'e : a' % 2 ^ m = a' - 2 ^ m := hmodsub a' ha'H ha'R
+        rw [hae, ha'e] at heq
+        exact hne (by omega)
+  -- Now `card A ≤ card (range (2^m))` via injection.
+  have hmaps : ∀ a ∈ A, (fun a => a % 2 ^ m) a ∈ Finset.range (2 ^ m) := by
+    intro a _
+    simp only [Finset.mem_range]
+    exact Nat.mod_lt a (Nat.two_pow_pos m)
+  have := Finset.card_le_card_of_injOn (fun a => a % 2 ^ m) hmaps hInj
+  simpa [Finset.card_range] using this
+
+
 end ArkLib.ProximityGap.HalfSumNorm
 #print axioms ArkLib.ProximityGap.HalfSumNorm.norm_halfSum_eq
 #print axioms ArkLib.ProximityGap.HalfSumNorm.norm_rotated_halfSum_eq
@@ -331,3 +417,5 @@ end ArkLib.ProximityGap.HalfSumNorm
 #print axioms ArkLib.ProximityGap.HalfSumNorm.norm_halfSum_pow_eq
 #print axioms ArkLib.ProximityGap.HalfSumNorm.rootOfUnity_isIntegral
 #print axioms ArkLib.ProximityGap.HalfSumNorm.rootPow_sum_isIntegral
+#print axioms ArkLib.ProximityGap.HalfSumNorm.norm_rootPow_sum_isIntegral
+#print axioms ArkLib.ProximityGap.HalfSumNorm.antipodal_free_card_le

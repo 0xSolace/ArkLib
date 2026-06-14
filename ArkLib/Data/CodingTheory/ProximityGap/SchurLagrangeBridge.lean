@@ -403,6 +403,35 @@ theorem dividedDifferencePow_eq_schurH (hvs : Set.InjOn v s) (hs : s.Nonempty) (
       rw [ih (b - #s + m) hlt2]
 
 
+/-- **`schurH` is invariant under relabeling the node set by an equivalence.**
+The complete-homogeneous surrogate `schurH` is a symmetric function of the node values: reindexing
+the nodes of `s'` by an `Equiv` `e : ι' ≃ ι` (transporting values to `v ∘ e`) leaves it unchanged.
+Proof: chain `dividedDifferencePow_eq_schurH` backward (needs `Set.InjOn v ↑(s'.map e)` and
+`(s'.map e).Nonempty`, both derived from the hypotheses on `s'` plus `e.injective`), then
+`dividedDifferencePow_reindex` (unconditional), then `dividedDifferencePow_eq_schurH` forward. -/
+theorem schurH_reindex {ι ι' : Type*} [DecidableEq ι] [DecidableEq ι'] (e : ι' ≃ ι)
+    (s' : Finset ι') (v : ι → F) (hvs : Set.InjOn (v ∘ e) s') (hs : s'.Nonempty) (b : ℕ) :
+    schurH (s'.map e.toEmbedding) v b = schurH s' (v ∘ e) b := by
+  -- Nonemptiness of the mapped set.
+  have hsmap : (s'.map e.toEmbedding).Nonempty := hs.map
+  -- Injectivity of `v` on the image `↑(s'.map e.toEmbedding)`.
+  have hvmap : Set.InjOn v ↑(s'.map e.toEmbedding) := by
+    intro x hx y hy hxy
+    simp only [Finset.coe_map, Set.mem_image, Finset.mem_coe,
+      Equiv.coe_toEmbedding] at hx hy
+    obtain ⟨i, hi, rfl⟩ := hx
+    obtain ⟨j, hj, rfl⟩ := hy
+    -- `v (e i) = v (e j)` means `(v ∘ e) i = (v ∘ e) j`, so by `hvs`, `i = j`.
+    have : (v ∘ e) i = (v ∘ e) j := hxy
+    rw [hvs hi hj this]
+  -- Backward bridge on the mapped set.
+  rw [← dividedDifferencePow_eq_schurH hvmap hsmap b]
+  -- Reindex the divided difference.
+  rw [dividedDifferencePow_reindex e s' b]
+  -- Forward bridge on `s'` with transported values.
+  rw [dividedDifferencePow_eq_schurH hvs hs b]
+
+
 end ProximityGap.SchurLagrange
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -417,3 +446,4 @@ end ProximityGap.SchurLagrange
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_card_add_three
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_reindex
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_eq_schurH
+#print axioms ProximityGap.SchurLagrange.schurH_reindex
