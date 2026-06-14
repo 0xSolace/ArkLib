@@ -851,3 +851,23 @@ primes are empirically tied to the smallest few primes `≡1 mod n` and a handfu
 (n=16:{17}, n=32:{97}, n=64:~{2113}), all `≪` any prize prime — but this is an arithmetic
 coincidence-counting problem, not a density bound. Core remains open; the saturation-artifact and
 fast-vanishing findings are robust and prize-relevant.
+
+## UPDATE 2026-06-13 (exact bad-prime sets) — bad primes are sparse and all < N₀; cleanest open form
+
+Exact bad-prime sets (where ANY spurious antipodal-free config with `∑u=∑u³=0` exists):
+  · **n=16** (sizes 4,6,8, scan<8000): bad = **{17}** only — the smallest prime ≡1 mod 16.
+  · **n=32** (sizes 4,6, scan<3000): bad = **{97}** only — the smallest prime ≡1 mod 32.
+  · **n=64** (size 6, MITM-exhaustive): bad = **{193,257,449,577,641,769,1409,2113,…}** — multiple small
+    primes WITH GAPS (1153,1217,1601,2689,2753 are clean), all `< N₀=4512`, and ZERO for `p>~10000`.
+So the "{smallest prime}" pattern at n=16,32 was a small-n coincidence; in general the bad set is a
+**sparse set of small primes, all `≲ N₀`**, with the gaps reflecting the char-p structural cancellation
+(`probe_407_{exact_badset,n64_badset}.py`).
+
+**Cleanest open form of the prize.** Everything else proven/reduced, `δ* =` window-edge holds in the prize
+regime IFF: **no spurious gap-valid config exists for `p > N₀ = |H^{(+r)}|`** (coset-saturation in the
+non-saturated regime). Evidence: bad primes empirically all `< N₀` (n=16,32,64), spurious vanish above
+`~N₀`. Since at the δ\* threshold `N₀ ≈ ε*·q = q·2^{-128} ≪ q`, the prize prime `q ≫ N₀ >` all bad primes
+⟹ clean ⟹ `δ*` exact. The PROOF is open: the first-moment count `#configs/p²` over-predicts (refuted),
+so a proof needs the second-moment / structural cancellation that makes spurious vanish sharply at `~N₀`.
+This is a config-existence / good-reduction statement (bad-reduction primes of the gap variety all `≲ N₀`),
+strictly cleaner than the e₂-value "Half-Sum Lemma". PROVEN n=8,16; reduces the prize to this single bound.
