@@ -9351,3 +9351,38 @@ generic-MDS worst-case list bound `L` of `SubJohnsonListBound dom k m L A`
 / BCHKS Conj 1.12), with smooth `μ_n` behaving like a random domain on the list axis. Do not
 re-attempt "n-core / hook-content vanishing super-poly-boosts the smooth list": the boost is the
 `C(A,·)` support factor, already proven worst-case vacuous, not the list `L`.
+
+## 2026-06-14 (#407 laneB / Chai-Fan Q2): orbit-COMPRESSION ratio quantifies the sparsity-exclusivity — multi-prime CORROBORATION + 3-monomial algebraic root
+**CONTEXT / overlap (honest).** The "Action-Orbit per-line bound is MONOMIAL-EXCLUSIVE" entry above
+(`ActionOrbitGeneralF.lean`, same day) already PROVED the core: per-line `γ`-orbit closure exists iff
+the direction `f` is a monomial (the dilation-eigenvector pin), and probed (n=8, single prime) that
+general `f` has no closure. THIS entry CORROBORATES and QUANTIFIES that result from a complementary
+angle — the MCA correlated-agreement object itself, multi-prime — and lands the algebraic root in Lean.
+It is a refinement, NOT an independent discovery; the monomial-exclusivity headline belongs to the
+entry above.
+
+**New angle: the affine line `u+αv` of TWO arbitrary words** (= the exact `V_δ` / `ε_mca` object of
+`BridgeLoop43`, not a single-direction `g₀+γf` line). On the proper subgroup `μ_16 ⊂ F_p*` for
+p ∈ {40961, 65537, 786433} (multi-prime, far directions, interior δ at t=k+1), exact bad set
+`{α : u+αv is t-close to RS_k}` via the linear-in-α divided-difference syndrome (`-A/B` per
+(k+1)-subset, exact), and the COMPRESSION RATIO `r = |bad|/N` (N = orbit count under `α↦α·w`).
+`scripts/probes/probe_407_laneB_q2_compression_ratio.py`:
+* SPARSE far pencil `(a,b)`: `r = S = n/gcd(b−a,n)` **EXACTLY** ({16,8,4}), orbit-CLOSED, and the
+  orbit count `N` is **p-INDEPENDENT** (≈250 @ k=4 across all three primes) — `N` small + `q`-uniform.
+* DENSE line (random / superposition of many far monomials): orbit-closed in **0/40 trials, every
+  config**; `r → 1` as p grows (`1.98→1.57→1.04` @ k=4) — NO compression, `N ≈ |bad|` grows with `q`.
+The p-INDEPENDENCE of sparse N vs the `q`-GROWTH of dense N is the quantitative statement of why
+`ε_mca = N·S/q²` is `O(1)/|F|` only for sparse: the orbit compression is the entire lever and it is
+sparsity-exclusive. (NB: the bad-COUNT |bad| ≈ #subsets for any line at t=k+1 — a union artifact; only
+the ORBIT count N is meaningful. Compare N, never |bad|.)
+
+**Algebraic root in Lean (axiom-clean, real `lake build` 3297 jobs).**
+`Frontier/LaneB_Q2_SparsityExclusive.lean`:
+- `pencil_subst_two`: dilation rescales the pencil into ANOTHER pencil, single coeff shift `α↦α μ^{b−a}`.
+- `triexp_subst` + `triexp_no_single_orbit`: a 3-monomial's two free coeffs rescale by DIFFERENT
+  factors `μ^{b−a} ≠ μ^{c−a}` (witnessed `2≠4` over ZMod 17) ⟹ no single cyclic action closes the bad
+  set — the exact algebraic reason dense bad sets are not orbit-closed.
+- `badCount_eq_orbitSize_mul_orbitCount`: orbit-closure ⟹ `|B|=S·N` (the compression); its hypotheses
+  fail for dense lines.
+Reduces to the SAME open core as the entry above: Lane B = across-line incidence = Q1/Q2 = BGK/Paley.
+Outcome: precise-reduction-to-named-core (corroboration). NOT closure. Lean + probe committed.
