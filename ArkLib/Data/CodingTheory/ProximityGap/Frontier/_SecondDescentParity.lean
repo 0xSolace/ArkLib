@@ -104,8 +104,8 @@ theorem secondDescentSplit_neg (Ae Ao Oe Oo : F[X]) (u : F) :
     let EVEN := Ae ^ 2 + X * Ao ^ 2 - 2 * (X * (Oe * Oo))
     let ODD := 2 * (Ae * Ao) - Oe ^ 2 - X * Oo ^ 2
     (A ^ 2 - X * O ^ 2).eval (-u) = EVEN.eval (u ^ 2) - u * ODD.eval (u ^ 2) := by
-  simp only [eval_sub, eval_add, eval_mul, eval_pow, eval_comp, eval_X, eval_ofNat, neg_pow,
-    neg_mul, mul_neg]
+  have hsq : (-u) ^ 2 = u ^ 2 := by ring
+  simp only [eval_sub, eval_add, eval_mul, eval_pow, eval_comp, eval_X, eval_ofNat, hsq]
   ring
 
 /-! ## The head-parity dichotomy -/
