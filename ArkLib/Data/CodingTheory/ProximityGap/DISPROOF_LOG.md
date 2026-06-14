@@ -8959,3 +8959,27 @@ maximizes the bad count over all monomial stacks (X^a,X^b)". Everything else is 
 the count lane shows it is the ONLY thing left. More tractable target than general BGK (a combinatorial
 optimality over monomial stacks, worst-case a small μ_{s*}). NOT closure — R1/R2 open — but the cleanest
 reduction yet: prize ⟺ R1/R2.
+
+## 2026-06-14 (wakesync/#407): FALSIFIABLE R1/R2 + small-subgroup test — corroboration AND refutation-pressure
+Ran probe_r1r2_maximizer.py: enumerate ALL monomial stacks (x^a,x^b) on a PROPER subgroup μ_n⊂F_q
+(q~n^{3..4} prime), compute EXACT bad-scalar count at each window radius τ via the agreement-set/
+interpolant-coefficient incidence (alpha bad ⟺ ∃|S|=τ with interp of x^a+αx^b on S of deg<k; the
+top τ−k coeffs are affine in α → solve). Read worst-stack by the CORRECT invariant s=n/gcd(b−a,n)
+(NOT the crude n%(b−a) coset-flag, which wrongly conflates b−a=1 and b−a=9 — both s=16).
+
+RESULTS (n=8,16; ρ∈{1/4,1/2}):
+• δ* LOCATION CORROBORATED (both rates): the max bad-count collapses from EXPLOSION (10^2–10^3) to the
+  trivial O(n) single-orbit baseline right at **δ ≈ 1−ρ−Θ(1/log n)** — matches the conjectured pin.
+  n=16,ρ=1/2: count 3904(τ9)→40(τ10)→4(τ11). n=16,ρ=1/4: 2688(τ5)→88(τ6)→16(τ7)=n baseline.
+• small-subgroup synthesis = RATE-SENSITIVE (refutation pressure on the UNIFORM claim):
+  ρ=1/2: worst-stack s SHRINKS cleanly 16→8→4 as δ→threshold ✓ (supports synthesis).
+  ρ=1/4: worst-stack s does NOT shrink — stays ~16 (full) at the budget-crossing ✗.
+  ⟹ "worst-case is UNIFORMLY a small subgroup μ_{s*}" is NOT corroborated at n=16 for ρ=1/4. Could be
+  a small-n artifact (s*~log n/log log n≈2 unresolvable at n=16) or genuine rate-dependence. Either way
+  the earlier promotion of the synthesis as a uniformly-clean closure route was TOO STRONG — DOWNGRADED.
+• R1/R2 (maximizer is orbit-structured): the maximizer's count is governed by s=n/gcd(b−a,n) [robust],
+  but the precise Kambiré-stack-is-worst claim was tested only via a crude proxy (n%(b−a)); the exact
+  Kambiré-construction test is still owed. NOT a clean confirmation, just consistent.
+NET: genuine falsifiable evidence — δ*=1−ρ−Θ(1/log n) location CORROBORATED; small-subgroup synthesis
+DOWNGRADED from "most promising closure" to "rate-sensitive, ρ=1/4 unresolved". Honest refutation
+pressure (code-and-refute working as intended). NOT closure. probe committed.
