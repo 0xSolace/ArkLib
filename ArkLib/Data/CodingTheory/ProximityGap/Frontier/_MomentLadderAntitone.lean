@@ -35,7 +35,7 @@ theorem sum_rpow_le_rpow_sum {ι : Type*} (s : Finset ι) (f : ι → ℝ≥0) {
     ∑ i ∈ s, (f i) ^ p ≤ (∑ i ∈ s, f i) ^ p := by
   classical
   induction s using Finset.induction with
-  | empty => simp [NNReal.zero_rpow (by linarith : p ≠ 0)]
+  | empty => simp [NNReal.zero_rpow (ne_of_gt (show (0:ℝ) < p by linarith))]
   | @insert a s ha ih =>
     rw [Finset.sum_insert ha, Finset.sum_insert ha]
     calc (f a) ^ p + ∑ i ∈ s, (f i) ^ p
@@ -49,6 +49,7 @@ theorem ladder_antitone {ι : Type*} [Fintype ι] (a : ι → ℝ≥0) {r : ℕ}
     (∑ i, (a i) ^ (2 * (r + 1))) ^ ((1 : ℝ) / (2 * (r + 1)))
       ≤ (∑ i, (a i) ^ (2 * r)) ^ ((1 : ℝ) / (2 * r)) := by
   have hr0 : (0 : ℝ) < r := by exact_mod_cast hr
+  have hr1 : (r : ℝ) + 1 ≠ 0 := by positivity
   set p : ℝ := ((r : ℝ) + 1) / r with hpdef
   have hp1 : 1 ≤ p := by rw [hpdef, le_div_iff₀ hr0]; linarith
   -- superadditivity applied to `b i = a i ^ (2r)` at exponent `p = (r+1)/r`
@@ -60,29 +61,15 @@ theorem ladder_antitone {ι : Type*} [Fintype ι] (a : ι → ℝ≥0) {r : ℕ}
     rw [← NNReal.rpow_natCast (a i) (2 * r), ← NNReal.rpow_natCast (a i) (2 * (r + 1)),
       ← NNReal.rpow_mul]
     congr 1
-    rw [hpdef]
-    field_simp
-    ring
+    rw [hpdef]; push_cast; field_simp [hr0.ne', hr1]
   simp_rw [hterm] at hkey
-  -- raise both sides to `1/(2(r+1))`, then simplify the iterated exponent on the RHS
+  -- raise both sides to `1/(2(r+1))`, then collapse the iterated exponent on the RHS
   have hmono := NNReal.rpow_le_rpow hkey (by positivity : (0:ℝ) ≤ (1 : ℝ) / (2 * (r + 1)))
-  rw [← NNReal.rpow_natCast (∑ i, a i ^ (2 * (r + 1))) , ← NNReal.rpow_mul] at hmono
-  -- LHS exponent: `(2(r+1)) * (1/(2(r+1))) = 1`
-  have hL : ((2 * (r + 1) : ℕ) : ℝ) * ((1 : ℝ) / (2 * (r + 1))) = 1 := by
-    have : ((2 * (r + 1) : ℕ) : ℝ) = 2 * ((r : ℝ) + 1) := by push_cast; ring
-    rw [this]; field_simp
-  rw [hL, NNReal.rpow_one] at hmono
-  -- RHS: `((∑ a^{2r})^p)^{1/(2(r+1))} = (∑ a^{2r})^{1/(2r)}`
-  rw [← NNReal.rpow_natCast (∑ i, a i ^ (2 * r)), ← NNReal.rpow_mul, ← NNReal.rpow_mul] at hmono
-  have hR : ((2 * r : ℕ) : ℝ) * (p * ((1 : ℝ) / (2 * (r + 1))))
-      = ((2 * r : ℕ) : ℝ) * ((1 : ℝ) / (2 * r)) := by
-    have hcast : ((2 * r : ℕ) : ℝ) = 2 * (r : ℝ) := by push_cast; ring
-    rw [hpdef, hcast]; field_simp; ring
+  rw [← NNReal.rpow_mul] at hmono
+  have hR : p * ((1 : ℝ) / (2 * (r + 1))) = (1 : ℝ) / (2 * r) := by
+    rw [hpdef]; push_cast; field_simp [hr0.ne', hr1]
   rw [hR] at hmono
-  -- both sides now match the goal
-  rw [← NNReal.rpow_natCast (∑ i, a i ^ (2 * r))] at *
-  convert hmono using 2
-  push_cast; ring
+  exact hmono
 
 end ProximityGap.Frontier.MomentLadderAntitone
 
