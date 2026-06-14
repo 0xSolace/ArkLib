@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.BadPrimeNormBound
 
 set_option linter.style.longLine false
+set_option linter.unusedSectionVars false
 
 /-!
 # The rigidity reduction: char-`p` far-line incidence = char-`0` incidence at prize scale (#407)
