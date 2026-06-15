@@ -978,6 +978,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.R2UnfoldedDesignFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RawMGFSaddleVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RealizerL2NotSup
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ResolveFieldIndependent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SalemZygmundMomentAssemblyA3
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SchurMinorStaircase
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SliceRankDiagonalVacuous
@@ -988,6 +989,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgr
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.TwoDAnnihilatorLineParseval
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyCapacitySidePrime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerExtremal
