@@ -2086,6 +2086,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumRawMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMoment
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSpectralSpread
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumTowerL2
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumTowerLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumWorstCase
