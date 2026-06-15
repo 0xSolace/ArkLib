@@ -225,4 +225,43 @@ theorem sign_balance_zero {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finse
     exact Finset.sum_congr rfl (fun b _ => (hreal b).symm)
   exact_mod_cast hcast
 
+/-- The dilated second moment is invariant: `∑_b ‖η_{ζb}(G)‖² = ∑_b ‖η_b(G)‖² = q·|G|`, by the
+bijection `b ↦ ζb` (`ζ ≠ 0`). -/
+theorem dilated_secondMoment {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) {ζ : F}
+    (hζ : ζ ≠ 0) :
+    ∑ b : F, ‖eta ψ G (ζ * b)‖ ^ 2 = (Fintype.card F : ℝ) * G.card := by
+  have hbij : ∑ b : F, ‖eta ψ G (ζ * b)‖ ^ 2 = ∑ c : F, ‖eta ψ G c‖ ^ 2 := by
+    apply Finset.sum_nbij' (fun b => ζ * b) (fun c => ζ⁻¹ * c)
+    · intro b _; exact Finset.mem_univ _
+    · intro c _; exact Finset.mem_univ _
+    · intro b _; field_simp
+    · intro c _; field_simp
+    · intro b _; rfl
+  rw [hbij, subgroup_gaussSum_secondMoment hψ G]
+
+/-- **The total doubling-mass budget (Cauchy-Schwarz).** For a negation-closed `G` with nonzero
+dilation, the total absolute cross-mass is bounded by the second moment:
+`∑_b ‖η_b(G)‖·‖η_{ζb}(G)‖ ≤ q·|G|`. With the sign-balance law (which makes the signed cross sum to
+`0`, so the `+`-mass equals the `−`-mass `= T`), this caps the doubling mass `T ≤ ½·q·|G|`. The
+trivial `2`-scaling at a level can only be carried by a bounded total mass of frequencies, not by
+all of them — quantifying the cocycle collapse. (Probe: realized `≈ 0.81·q·|G|`, and the all-`+`
+descent set halves per level.) -/
+theorem total_doublingMass_le {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) {ζ : F}
+    (hζ : ζ ≠ 0) :
+    ∑ b : F, ‖eta ψ G b‖ * ‖eta ψ G (ζ * b)‖ ≤ (Fintype.card F : ℝ) * G.card := by
+  have hsq :
+      (∑ b : F, ‖eta ψ G b‖ * ‖eta ψ G (ζ * b)‖) ^ 2
+        ≤ (∑ b : F, ‖eta ψ G b‖ ^ 2) * ∑ b : F, ‖eta ψ G (ζ * b)‖ ^ 2 :=
+    Finset.sum_mul_sq_le_sq_mul_sq Finset.univ (fun b => ‖eta ψ G b‖) (fun b => ‖eta ψ G (ζ * b)‖)
+  rw [subgroup_gaussSum_secondMoment hψ G, dilated_secondMoment hψ G hζ] at hsq
+  have hrhs : (Fintype.card F : ℝ) * G.card * ((Fintype.card F : ℝ) * G.card)
+      = ((Fintype.card F : ℝ) * G.card) ^ 2 := by ring
+  rw [hrhs] at hsq
+  set S := ∑ b : F, ‖eta ψ G b‖ * ‖eta ψ G (ζ * b)‖ with hS
+  set C := (Fintype.card F : ℝ) * G.card with hC
+  have hnn : 0 ≤ S := Finset.sum_nonneg (fun b _ => mul_nonneg (norm_nonneg _) (norm_nonneg _))
+  have hrhsnn : 0 ≤ C := mul_nonneg (by positivity) (by positivity)
+  -- from S^2 ≤ C^2, S ≥ 0, C ≥ 0 conclude S ≤ C
+  nlinarith [hsq, hnn, hrhsnn, mul_nonneg hnn hrhsnn]
+
 end ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
