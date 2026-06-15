@@ -10716,3 +10716,35 @@ second-order/meta-theorem wall at the MGF level, now QUANTIFIED as the √(β/(�
 `scripts/probes/probe_407_cosh_bessel_saddle_scaling.py` (wide geometric-grid saddle, large-z I₀
 asymptotic, exact-FFT char-p cross-check, rule-3 thinness gate, analytic confirmation). Axiom-clean
 (Python-only, no Lean changed). Co-authored wakesync.
+
+---
+
+## [C09] Jacobi-Sum Diagonal Energy Closure for the 6th Moment (r=3 single-rung) — REFUTED (false claim) / reduces-to-trivial
+
+**Conjecture.** Express E_3(μ_n) via Jacobi sums (|J|=√p) + order-8 cyclotomic numbers, claim
+E_3(μ_{2^μ}) ≤ 15n³ exactly in char p above the order-8 Jacobi-degeneracy resultant, and thereby
+"pin the r=3 rung of M(μ_n) ≤ √(2n log p)."
+
+**VERDICT: the load-bearing claim is FALSE.** There is no "r=3 rung of √(2n log p)". The moment chain
+(`GaussPeriodMomentBound.worstCaseIncompleteSumBound_of_energyBound`) gives, from a single rung r,
+`M_r = (q·(2r-1)‼·n^r)^{1/2r}`. The formula √(2n log p) is the value AFTER minimizing over r at the
+optimum r* ≈ ln q. A single fixed rung r=3 gives `M_3 = (q·15·n³)^{1/6}`, dominated by `q^{1/6}`.
+
+**Quantitative kill (probe `scripts/probes/probe_c09_r3_rung_useless.py`, commit 0ba4197bb):**
+prize regime n=2^30, q=n^β:
+- β=4 (q=2^120): r=3 gives M_3 = 2^{5.65}·n ≈ **50·n** — WORSE than the trivial bound M ≤ n.
+- β=5 (q=2^150): r=3 gives M_3 = 2^{10.65}·n ≈ **1608·n** — far worse than trivial.
+- M_r first beats trivial (M<n) only at r=5 (β=4) / r=10 (β=5); reaches the √(2n log p)≈12.9√n
+  target only at r* ≈ ln q ≈ 83 (β=4) / 104 (β=5).
+- Algebraic: r=3 beats trivial iff q < n³/15, i.e. β < 3 — OUTSIDE the prize band (β≥4). So in the
+  prize regime r=3 NEVER beats trivial, let alone reaches Johnson or capacity.
+
+**Even granting E_3 ≤ 15n³ in char p, r=3 pins NOTHING past Johnson** — it sits on the trivial/negative
+side. And the E_3 ≤ 15n³ char-p step is itself the SAME open residual `RepThree` char-p transfer
+(`GaussianEnergyThreeRepThree.lean` reduces `GaussianEnergyBound G 3` to the order-6 antipodal-pairing
+residual; the Jacobi/cyclotomic-number reframing is a different bookkeeping of that same char-0→char-p
+crossing, still open at prize scale). So the conjecture is doubly non-closing: (1) its arithmetic
+("r=3 rung of √(2n log p)") is FALSE, and (2) its only nontrivial content (E_3 char-p) is the named
+open residual, not new proven math.
+
+Probe: `scripts/probes/probe_c09_r3_rung_useless.py` (commit 0ba4197bb). Python-only; no Lean changed.
