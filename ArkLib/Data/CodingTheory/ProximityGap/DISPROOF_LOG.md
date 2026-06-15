@@ -11242,3 +11242,54 @@ with the mandatory A_r form, sec.2). rule-3: the violation is thickness-MONOTONE
 thicker-relative subgroup, better as p grows) and p-budget-driven, NOT a thin-vs-thick CORE signal -- so
 this is purely a statement-shape correction, not a CORE lever. Python+numpy EXACT, multi-prime,
 proper subgroup => axiom-clean trivially (no Lean proof changed; docstring corrected separately).
+
+--------------------------------------------------------------------------------
+2026-06-15 (opus-4-8 subagent, AUDIT-GUARD+CORE lane) — the E_3 (6th-moment) route is
+NOT thin-essential: its finite-n spikes are pure E_2 (2nd-order additive-energy)
+artifacts. Extends the §3 meta-theorem "no third route" to an explicit r=3 measurement.
+--------------------------------------------------------------------------------
+CONTEXT. The §0/§7-lane-2 hope is that the thin Sidon DEPTH advantage (W_r=0 to depth ℓ)
+converts to a higher-moment saving on μ_n. The cheapest test of "does depth help at r=3":
+is the 6th moment E_3(μ_n) = #{(a₁..a₃,b₁..b₃)∈μ_n^6 : Σa=Σb mod p} cleanly below the
+random/Wick value 15·n³, p-independently, in the thin regime — and is any sub-Wick saving a
+GENUINE thin signal or just an inherited 2nd-order (E_2) effect?
+
+PROBE (exact, multi-prime, PROPER μ_n m=(p−1)/n>1, p≡1 mod n, q≫n³ i.e. p>n³, NEVER n=q−1):
+  probe_407_e3_thin_sidon.py / probe_407_e3_e2_anomaly_correlation.py / probe_407_e3_spike_diagnose.py.
+Exact N₀-counts via Counter over μ_n^r; E_r = Σ_t N(t)².
+
+RESULT 1 — baseline E_3/Wick is p-INDEPENDENT and DROPS toward 1 as n grows (advantage shrinks):
+  n=8:  E_3/15n³ = 0.667 (flat across p=521,569,577)
+  n=16: 0.823 (flat across p=4129,4177,4241)
+  n=32: ~0.91 baseline (flat across most thin primes)
+  => the sub-Wick "saving" is real but its FRACTION → 1 with n (0.667→0.823→0.91); it does NOT
+     compound into a power saving. Consistent with the §7-lane-2 finding that depth-growth is
+     necessary-not-sufficient and the thin/random sup-norm ratio is a FLAT ~0.92 constant.
+
+RESULT 2 — the route has STRUCTURED-PRIME SPIKES that break any pointwise A_r ≤ Wick at finite n:
+  at n=32, p=32993 (=2⁵·1031+1, m=1031), E_3/Wick = 1.706 > 1 while every neighbouring thin prime
+  is ~0.91. DC-subtraction does NOT explain it (E_3−n⁶/p still 1.640·Wick; DC≈32545 is negligible
+  at q≈n³). So the per-instance A_3 = E_3−DC ≤ Wick is POINTWISE-FALSE at finite n — exactly
+  mirroring the crossCell pointwise refutation (this log, earlier 2026-06-15 entry). Same wall shape:
+  finite-n excess > Wick when q is not yet ≫ the random budget.
+
+RESULT 3 (DECISIVE, rule-3) — the E_3 spike is DRIVEN ENTIRELY by the E_2 (2nd-order) anomaly:
+  at the spike prime, E_2/2n² = 1.828 vs the FLAT baseline 1.453 at EVERY non-spike prime
+  (all non-spike primes share IDENTICAL E_2=2976); E_3 spikes in lockstep (1.706 vs ~0.9). The
+  driver is a cluster of 64 off-zero 3-term additive resonances (N₂(t)>2, up to 5) in μ_32 at
+  p=32993 — a per-prime additive accident, NOT a thinness mechanism.
+
+CONSTRAINT LEMMA (extends §3 meta-theorem to r=3, explicitly measured):
+  E_3(μ_n) carries NO independent thin-CORE information beyond E_2: its sub-Wick baseline shrinks
+  toward random with n (no compounding), and its only deviations (finite-n spikes that violate
+  A_3 ≤ Wick) are slaved to the E_2 additive-energy anomaly. The 6th-moment route is therefore the
+  SAME route-eliminated second-order signal of the meta-theorem, propagating self-similarly into
+  depth 3 — it is thickness-/structure-generic, not thin-essential. Any CORE proof must be
+  thinness-essential (rule-3); a depth-3 moment bound is not, so this lane is dead as a CORE lever.
+  (Re-confirms: the genuine open object is the ASYMPTOTIC char-p A_r ≤ Wick at depth r≈ln q≈89,
+  q~n·2¹²⁸, which provably cannot be reached by finite-n moment data — §2/§3.)
+
+SCOPE (rule-6, honest): NOT a CORE closure. A reproducible probe + constraint lemma closing the
+"does depth-3 moment help?" sub-question NEGATIVELY (it doesn't; the route is 2nd-order-slaved and
+thickness-generic). Python+numpy EXACT, multi-prime, proper subgroup => axiom-clean trivially (no
+Lean proof added/changed). Do NOT pursue an "E_3 thin Sidon moment bound" CORE lane.
