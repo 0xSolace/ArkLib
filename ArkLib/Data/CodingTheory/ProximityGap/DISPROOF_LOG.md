@@ -10795,3 +10795,50 @@ crossing, still open at prize scale). So the conjecture is doubly non-closing: (
 open residual, not new proven math.
 
 Probe: `scripts/probes/probe_c09_r3_rung_useless.py` (commit 0ba4197bb). Python-only; no Lean changed.
+
+---
+
+## [C23] GM-MDS Dual-Zero-Pattern Certificate for μ_n — SECRETLY-OPEN (existence-vs-fixed horn)
+
+**Date:** 2026-06-14. **Verdict:** `secretly-open` (the step that would carry it past Johnson is
+the open one; for the GM-MDS certificate over fixed μ_n it is provably FALSE — the certificate
+vanishes). **Probe:** `scripts/probes/probe_c23_gmmds_fixed_vs_generic.py`, commit `ce07c4033`.
+
+**The claim.** Encode the L+1 candidate codewords as a GM-MDS dual zero-pattern Z; it satisfies the
+Brakensiek–Gopi–Makam |Z_S| ≤ (k−1)|S| solvability criterion (because the far-line agreement set is
+μ_gcd-coset-closed, orbit-count law L3), so Lovett Thm 1.7 gives realizability at field size ≤ (k−1)!
+< q, capping the list at k−1 and pinning δ* = capacity − Θ(1/log n).
+
+**The defect (existence-vs-fixed).** In-tree `LovettThm17 F n` is a *generic/symbolic* statement:
+the union polynomial family `pFamUnion(V,k)` is `LinearIndependent` over `MvPolynomial (Fin n) F` —
+i.e. the symbolic generalized-Vandermonde determinant (a polynomial in the *eval points*) is not the
+zero polynomial, so the pattern is realizable for SOME (generic) choice of points, and field size
+≤ (k−1)! is the number of points the construction is *free to pick*. The prize FIXES the eval set to
+μ_n (a proper subgroup). The relevant certificate is then that symbolic det *evaluated* at the fixed
+x_i ∈ μ_n. C23 conflates "realizable for some eval set" with "realizable for the prescribed μ_n".
+
+**The wall (already in-tree).** At the fixed smooth domain μ_n the certificate `det(ζ^{β_j·i})` is
+nonzero **iff** the abacus n-core of the shape is empty (`HOMDSSmoothObstruction.homds_det_ne_zero_iff_nCoreEmpty`),
+and for the past-Johnson extremal shape (a rectangle a^h, h = L < n codewords) that holds **iff n | a**
+(`RectNCore.rectBeta_nCoreEmpty_iff`). Generic list widths (n ∤ a) → NONEMPTY core → the fixed-μ_n
+certificate VANISHES. The cyclic symmetry x^n=1 that makes the domain "smooth" is exactly what
+annihilates the GM-MDS certificate in the capacity regime.
+
+**Probe evidence (proper μ_n, p prime ≈ 64·n³ ≫ n³, n < p−1, NEVER n = p−1).** For n ∈ {16,32,64},
+k = n/2, every list height h ∈ {2,4,k}, every past-Johnson width a (Johnson agreement and Johnson+1):
+- GM-MDS criterion: granted True. Symbolic det at GENERIC random huge-prime points: nonzero (Lovett
+  applies, generic realizable).
+- **The SAME det evaluated at the fixed μ_n over F_p: ZERO** for every n ∤ a (the past-Johnson regime).
+  It is nonzero only at the n | a "lucky" widths, which are not the adversarial list shapes.
+The in-tree dichotomy `nCoreEmpty(a^h) ⇔ n|a ⇔ μ_n-det ≠ 0` reproduced over fixed μ_n with 0 mismatches.
+
+**Why not `reduces-to-johnson`.** C23's conclusion (list ≤ k−1, δ* past Johnson) would indeed be past
+Johnson IF the fixed-μ_n certificate were nonzero. It is not — GM-MDS provides no closed argument that
+reaches past Johnson here. **Why not a hidden open Lovett lemma.** `lovettThm17_unconditional` and
+`lovettPrimitiveCase_unconditional` are proven sorry-free in tree, so the GM-MDS engine itself is
+closed; the conjecture's "LovettPrimitiveCase reduced-not-closed" is outdated. The genuinely missing
+step is fixed-μ_n nonvanishing in the past-Johnson regime — the open structured/p-dependent bound —
+and for the GM-MDS certificate it is provably FALSE. So GM-MDS cannot be the off-BGK lever; matches
+the route-elimination meta-theorem (closed/cyclotomic objects cap at Johnson).
+
+Probe: `scripts/probes/probe_c23_gmmds_fixed_vs_generic.py` (commit `ce07c4033`). Python-only; no Lean changed.
