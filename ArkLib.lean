@@ -943,6 +943,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingDecayCrossingDep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeltaStarEqEdge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeltaStarRungGranularity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DividedDifferenceDeflation
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DyadicGeomeanPrizeVsSqrtN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePinN12
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EvenDirectionDescent
