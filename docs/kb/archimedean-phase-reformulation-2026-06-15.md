@@ -51,3 +51,30 @@ The deepest genuine finding from the 8-angle archimedean attack (phase-additive-
   A(h) beyond oddness (the angle the throttle cut). This is the most promising opening of the session: a
   real reduction (complex→real flatness via proven oddness) + a concrete residual (phase autocorrelation
   Sidon bound) that is NOT obviously the dead moment/EVT wall.
+
+## QUANTITATIVE VERDICT (probe complete, n=8,16): oddness REAL, but residual is diffuse = wall
+| metric | n=8 | n=16 | reading |
+|---|---|---|---|
+| oddness err / max Im F | 0.0000 / 0.000 | 0.0000 / 0.000 | DFT REAL, exact (θ_{−k}=−θ_k proven) |
+| maxF/√m ARITHMETIC | 2.72 | 3.16 | flat (sub √(2 log m)=3.5,4.1) |
+| maxF/√m random-odd | 3.28 | 3.83 | arith BEATS random-odd by ~15–20% |
+| F[2β]~F[β] corr (HD doubling) | 0.023 | 0.054 | **≈0 — NO doubling self-similarity** |
+| k→k+m/2 symmetry corr | 0.019 | 0.004 | **≈0 — NO second reflection** |
+| max autocorr \|A(h)\| / √(2m log m) | 0.58 | 0.86 | sub-target but ratio GROWING |
+
+**Honest verdict.** The archimedean-phase approach produced exactly ONE genuine, proven, non-circular,
+thin-essential constraint: **oddness θ_{−k}=−θ_k (χ_k(−1)=+1 for n=2^μ) ⟹ DFT real**, halving complex
+flatness to real flatness. This is novel (the first absolute-phase constraint, distinct from HD-difference
+& Stickelberger-valuation). BUT the extra flatness beyond oddness (arith beats random-odd) is **diffuse**:
+NO exploitable algebraic symmetry — the only exact further relation, Hasse-Davenport (χ→χ²), does NOT
+structure the DFT (F[2β]~F[β] corr ≈0), and there is no second reflection. So the post-oddness residual =
+"the arithmetic phases equidistribute slightly faster than random-odd" = the equidistribution RATE =
+VACUOUS at fixed q = the wall (Katz, effective form). The autocorrelation \|A(h)\| ratio grows (0.58→0.86)
+so it is not clearly Sidon-with-good-constant either.
+
+**Net for the prize:** a real partial reduction (oddness, recordable, thin-essential) + a sharper
+reformulation (real-DFT flatness of the root-number phase sequence) — but NOT a break. The residual is
+the same effective-equidistribution wall in cleaner clothes. The archimedean phase IS arithmetic (root
+number / Weil index / Γ-period) and oddness extracts the ONE algebraic constraint available; the rest is
+diffuse equidistribution, confirming the §8 verdict that a genuinely NEW effective-equidistribution input
+is required. Honest dead-ledger refinement, with one genuine new brick (oddness ⟹ real DFT).

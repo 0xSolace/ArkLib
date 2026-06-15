@@ -296,35 +296,3 @@ archimedean phase** of thin-subgroup Gauss sums, which no current method supplie
   got closest (discrepancy, Banaszczyk transference) each reduce the prize to a single clean
   absolute-phase balance claim `κ_b ≤ 2 ln N` and supply the correct constant — but not the
   arithmetic.
-
-## ADDENDUM — the most-promising lead (deterministic discrepancy) PROBED and KILLED (circular)
-Ran the assault's flagged non-circular lead (Koksma/Ostrowski discrepancy of the subgroup orbit). Result
-(n=8..64, exact): M/(n·D*_worst) ≈ 2.3–2.9 ROUGHLY CONSTANT ⟹ the star-discrepancy D* and the exp-sum M
-TRACK each other ⟹ bounding D* IS bounding M = CIRCULAR-to-M, no independent lever. The continued-fraction
-partial-quotient sum Σa_i of the multiplier ζ/p is ERRATIC and UNCORRELATED with M (22, 1088, 69, 158 at
-n=8,16,32,64 — the n=16 value 1088 is a coincidental large partial quotient; M is smooth 7.6→38.5), so the
-multiplier's CF carries NO usable signal — precisely because ζ^j is a GEOMETRIC (multiplicative) progression
-not an arithmetic one jα, so the three-distance/Ostrowski structure that makes discrepancy tractable is
-ABSENT (confirms the dossier "Korobov needs the full period" / "g^exp destroys exponent self-similarity").
-⟹ the discrepancy reframing is exact (M ~ n D*) but DEAD (circular). Dead-ledger entry. Probe: this session.
-
-## The two NEW theorem-grade kills from the assault (dead-ledger additions)
-- **Dynamical/transfer-operator class is CIRCULAR via cocycle closure `L_b^n = I`** (forced by `h^n=1`,
-  h=ζ the multiplier): the entire dynamical-systems / transfer-operator / dynamical-zeta /
-  thermodynamic-formalism family re-encodes the period spectrum ⟹ circular-to-M. New, not previously in §8.
-- **NO totally-positive / sign-regular representation of the period operator exists** (period operators show
-  31–44% negative 2×2 minors): the discrete-log node map i↦g^i is maximally NON-monotone (pseudorandom),
-  and TP kernels require monotone-structured nodes. STRUCTURAL: "the same oscillation that produces
-  √-cancellation is what destroys total positivity — they are the same phenomenon."
-
-## The deepest structural insight (the "why" + the sharpened necessary condition)
-- **`p/m = n` (exact) ⟹ the target √(2n log m) IS the free-phase extreme-value value.** This is why every
-  probabilistic / modulus-only / energy dressing lands on √(2n log m) heuristically yet none PROVES it — they
-  all compute the free-phase EVT value, which (true 5σ tail measured 2.9–3.8× heavier than Gaussian) is NOT
-  even a rigorous upper bound (the worst case slightly exceeds it; matches the exact n=64 R=1.0514).
-- **SHARPENED NECESSARY CONDITION — property (d):** a winning mechanism must read the ABSOLUTE ARCHIMEDEAN
-  PHASES `{arg η_b}` ARITHMETICALLY — not moduli/energy/phase-differences (collapse to free-phase EVT
-  because p/m=n), not by re-encoding the spectrum (circular-to-M). The known algebraic relations do NOT do
-  this: Hasse-Davenport pins phase-DIFFERENCES, Stickelberger pins p-adic VALUATION — NOTHING known pins the
-  absolute archimedean phase of a Gauss sum. THIS is the precise missing input the prize requires (a new
-  sum-product / effective-equidistribution / monodromy theorem on absolute Gauss-sum phases).
