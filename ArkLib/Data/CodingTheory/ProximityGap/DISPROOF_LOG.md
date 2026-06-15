@@ -12947,3 +12947,42 @@ of large frequencies but never the single max (the same L∞/L² √n gap alread
 IN-TREE: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_A9KelleyMekaPFRNoGo.lean` (axiom-clean:
 propext, Classical.choice, Quot.sound) — `km_vacuous_below_ceiling`, `km_trigger_dead_prizescale`,
 `energy_floor`, `moment_route_ge_card`. `result_type = reduces-to-wall(energy/moment)+km-density-vacuous+pfr-wrong-coset-type`.
+
+---
+
+## A5-TERWILLIGER (route 85): operator norm of the Krawtchouk-weighted subcode sum (#444) — REDUCES-TO-WALL
+
+**Date:** 2026-06-15. **Driver:** Opus 4.8. **Angle:** relocate the δ* cancellation locus to the
+*Terwilliger (subconstituent) algebra* `T(0)` of the Hamming scheme `H(N,p)`. The reduced far-line
+sum `𝒮(u₀) = Σ_{ξ∈D} K_w(wt ξ) e_p(ξ·u₀)`, `D = C⊥∩u₁⊥`, is a `T`-module object. **New lemma sought:**
+`D` sits in a *low-dimensional* `T`-module, so the operator norm of the `K_w`-weighted action bounds
+`|𝒮| ≤ C√(n log)` — a bound that lives in the operator (not on the domain `μ_n`).
+
+**TWO structural facts kill it (both probed, proper `μ_n`, `n=2^μ`, `n|p−1`, `p` PRIME, `p>n^3`, never `n=p−1`):**
+
+1. **The weight statistic is degenerate (MDS concentration), `probe_a5_terwilliger_collapse.py`.** For
+   smooth-domain RS the dual `C⊥` is MDS: a degree-`<d⊥` polynomial almost never vanishes on a domain
+   point, so the weight distribution of `D` is concentrated at `wt = N` (measured frac `0.994 → 0.999 → 1.0`
+   for `n=4,8,16,32`; weight-distribution entropy `→ 0`). So `K_w(wt ξ)` is the **constant** `K_w(N)` on
+   `(1−o(1))` of `D`. The grading is "low-dim" only in the trivial MDS sense already exploited by MacWilliams;
+   the Terwilliger module gives no NEW low-dimensionality.
+
+2. **The `K_w`-weighting is diagonal in the character basis with KRAWTCHOUK eigenvalues (Delsarte/MacWilliams),
+   `probe_a5_terwilliger_exact` / `/tmp/eig.py`.** The Bose–Mesner element `W = Σ_i K_w(i) Aᵢ` has
+   transform-domain eigenvalues `λ_j = Σ_i K_w(i) Kᵢ(j) = p^N·[j=w]` (verified exactly at `n=4,p=73`:
+   `λ_j = 0` for `j≠2`, `λ_2 = 28398241 = 73^4·…`, the Krawtchouk **orthogonality** relation). Restricted to
+   the subconstituent module supported on `μ_n`, the per-frequency value of `W` is the **incomplete Gauss
+   period** `η_b = Σ_{y∈μ_n} e_p(by)`. Hence the Terwilliger operator norm is `max_{b≠0}|η_b| = M(μ_n)` — the
+   BGK/Paley wall. The wall scaling itself reconfirmed: `M/√(n log(p/n)) ∈ [0.90,1.18]`, `M/√n` grows `1.98→3.53`.
+
+**NET:** the "low-dimensional Terwilliger module" controls only the *number of irreducible summands*, never the
+*per-summand operator norm*, which after the (verified-exact) Delsarte diagonalization is the incomplete Gauss
+period over `μ_n`. Route 85 **REDUCES TO THE WALL** — it does NOT relocate the cancellation locus. This is exactly
+the catalogue's route-88 verdict ("association-scheme eigenvalue = Krawtchouk = the same") made explicit for the
+*subcode* sum. Does NOT touch Johnson; falls on the **Cayley-gap/Paley wall horn** (`= W4`).
+
+**IN-TREE (axiom-clean: propext, Classical.choice, Quot.sound):**
+`ArkLib/Data/CodingTheory/ProximityGap/Frontier/_a5_terwilliger_collapse.lean` — `terwilliger_reduces_to_wall`
+(`TerwilligerDiagonalizes ⟹ (operator bound ⟺ wall bound)`), `terwilliger_no_independent_gain`.
+Probes: `scripts/probes/probe_a5_terwilliger{,_collapse,_norm,_decomp,_exact}.py`.
+`result_type = reduces-to-wall(Delsarte-diagonalization = Krawtchouk eigenvalue = incomplete-Gauss-period = W4)`.
