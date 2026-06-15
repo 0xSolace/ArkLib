@@ -1,5 +1,84 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — CONJECTURE C47 "Cocycle Phase-Alignment Multi-Level for the Gauss-Sum Arguments" SECRETLY-OPEN / REDUCES-TO-JOHNSON (probe_conjecture_refute_C47_cocycle_phase.py, commit abec15e6e)
+
+Conjecture C47 (issue #444, gauss-period-exact, feasibility 2): a multi-level cocycle/coboundary
+decomposition of the Gauss-sum ARGUMENTS `arg τ(χ_j)` across the dyadic Hasse–Davenport tower forces
+PHASE NON-ALIGNMENT, bounding the period sup-norm `M(μ_n) = max_{b≠0}|Σ_{x∈μ_n} e_p(bx)|` by
+`√(n log p)` PAST Johnson; it "attacks the archimedean phase distribution directly." REDUCES-TO:
+cocycle/coboundary phase decomposition + Hasse–Davenport tower + in-tree antipodal structure.
+
+**Verdict: secretly-open** (the only past-Johnson lever is the open archimedean argument
+distribution), **degenerating to reduces-to-johnson** (the cocycle/coboundary algebra is exact but
+pins only the symmetric/L² = geometric-mean = Johnson `√n` scale). C47 is the ADDITIVE/argument-side
+twin of C27 (multiplicative HD/Jacobi telescope, refuted above) and C28 (Gross–Koblitz period);
+all three are governed by the same in-tree no-go bricks `_DyadicJacobiCocycleNonContraction.lean`
+(unimodular cocycle ⟹ no cancellation), `_GrossKoblitzPhaseNoGo.lean` (the `Γ_p` unit part / any
+reflection relation transmits at most a discrete sign, pinning a phase only at index 2), and
+`_PhaseAlignmentReality.lean` (the only "alignment" the dyadic structure forces is reality of `η_b`,
+which holds for ALL `b` in thick AND thin regimes — not thinness-essential). Probe over PROPER `μ_n`
+(`n=2^μ`), `p` PRIME, `p>n³`, NEVER `n=p−1`, with EXACT Gauss sums for the cocycle test.
+
+**Horn 1 — the cocycle "decomposition" is EXACTLY the Jacobi relation taking arguments; it holds
+trivially and is vacuous (existence ≠ bound).** The named object is precise: taking arguments in the
+Jacobi relation `τ(χ_j)τ(χ_k) = J(χ_j,χ_k)·τ(χ_{j+k})` gives, with `a_j := arg τ(χ_j)`,
+`c_{j,k} := arg J(χ_j,χ_k)`, the identity `a_j + a_k − a_{j+k} = c_{j,k}` (mod 2π) — i.e. the
+argument family `(a_j)` is a 1-cochain on the cyclic dual `ℤ/m` (`m=(p−1)/n`) whose coboundary
+`δa` equals the Jacobi-argument 2-cochain `c`. The probe verifies this **EXACTLY**: `cocycle_err =
+0.00e+00` at `μ=2` (`p=73,m=18`) and `μ=3` (`p=521,m=65`). So the "multi-level cocycle/coboundary
+decomposition" is just the Jacobi relation and always exists. It is a tautology, not a bound. (This
+is the in-tree `_DyadicJacobiCocycleNonContraction` fact: the cocycle factor `c_{j,k}=J_{j,k}/√p` is
+**unimodular** `|c|=1`, so it imposes NO magnitude constraint beyond unit modulus and is consistent
+with a fully-aligned `‖P‖=m` saturating configuration — `exists_unimodular_cocycle_saturating_triangle`.)
+
+**Horn 2 — DECISIVE: the residual phase is SPREAD, not LINEAR. C47 needs "non-alignment ⟹ a single
+spike"; the data gives the opposite — full equidistribution = the random √(n log p) value.** C47's
+hope is that `c=arg J` being a coboundary on cyclic `ℤ/m` makes `arg τ(χ_j) =` (linear in `j`) +
+(coboundary), a RIGID phase law whose DFT is one spike (height `m` at one frequency, near-zero
+elsewhere ⟹ sup-cancellation past Johnson). The probe measures the DFT of the unit-phase family
+`e^{i a_j}` directly (= the period itself): the off-spike-to-spike ratio is `dft_spread = 0.7735`
+(`μ=2`) and `0.9507` (`μ=3`) — the phases are spread across essentially ALL frequencies, NOT a single
+linear spike. The χ² uniformity statistic (`0.22 < 9.49` crit; `16.48 < 24.0` crit) confirms the
+`arg τ` family is equidistributed on the circle. So the cocycle/coboundary solve recovers the
+EQUIDISTRIBUTED argument distribution, whose sup over `b` is the random extreme-value `√(n log p)` —
+which is the OPEN bound itself, not a proof of it. (This matches Heath-Brown–Patterson cubic/Kummer
+Gauss-sum argument equidistribution and the in-tree `_GrossKoblitzPhaseNoGo` finding that for `m≥3`
+the phase is "the wild Kummer quantity, not a residue formula" and equidistributes.)
+
+**Horn 3 — the cocycle transfers NO cancellation: the floor sits at/above the random-phase value.**
+The reconstructed sup `M=house` tracks `√(n log p)` to within 7%: `M/√(n log p) ∈ [0.93, 0.99]` over
+12 prize-thin primes (`p/n³∈[1.00,1.16]`), with one row at `1.301` (n=32, p=32993) where the REAL
+floor EXCEEDS the random value (100th percentile of the null). A coboundary is a per-frequency phase
+shift; phase shifts cannot lower an L^∞ sup. The cocycle is consistent with zero cancellation
+(`flat_target_below_cocycle_saturation`): the only bound the unimodular cocycle forces is the trivial
+triangle bound `≤ m`, and the flat target `√(n log p) ≪ m` is strictly stronger and NOT implied.
+
+**Why secretly-open (the hidden open step).** Solving the coboundary equation `δa = arg J` for the
+1-cochain `a` does NOT pin `a`: the solution is unique only up to a HOMOMORPHISM `ℤ/m → ℝ/2πℤ` (the
+linear phase `λj` = the cohomology/homomorphism freedom). That freedom — the genuine archimedean
+argument of `τ` modulo the magnitude — IS the open object: its distribution is the Kummer/cubic-and-up
+Gauss-sum argument equidistribution, and the sup over `b` of the resulting period is the BGK/Paley
+sup-norm `M(μ_n) ≤ C√(n log(p/n))`, the recognized ~25-year-open analytic-NT core. The cocycle fixes
+the SYMMETRIC part (`a_j + a_k` data ↔ the magnitude `|τ|=√q` ↔ the norm `N=∏η_c` ↔ the L²
+geometric-mean `≈√n` = the JOHNSON scale, exactly C27's P1) and leaves the antisymmetric/homomorphism
+phase (the conjugate spread = the `√(log p)` prize factor) UNDETERMINED.
+
+**Why not refuted-false:** the cocycle identity is genuinely true (it is the Jacobi relation), and the
+true `M(μ_n) ≈ √(n log p)` IS the conjectured bound — C47 states the right value but the MECHANISM
+(cocycle algebra) cannot prove it; it is exact-but-empty for the sup. Hence secretly-open, not false.
+
+**Why not survives:** the past-Johnson content is entirely in the homomorphism-freedom/argument
+distribution, which is the open BGK core under the route-elimination meta-theorem (no closed/
+p-independent/cocycle object reaches past Johnson; the cocycle is p-independent algebra and caps at
+the symmetric/L²/Johnson scale).
+
+**Mechanism class.** Archimedean-argument sibling of the C27 multiplicative-telescope horn: a product
+(C27) computes a symmetric function (norm) blind to which conjugate is largest; a cocycle/coboundary
+(C47) computes the symmetric argument relations blind to the homomorphism phase = which frequency
+aligns. Both reach the `√n` geometric-mean/Johnson scale; both leave the archimedean conjugate-spread
+`√(log p)` = BGK open. Probe: `scripts/probes/probe_conjecture_refute_C47_cocycle_phase.py`, commit
+`abec15e6e36a47da95a4125863bd5c14f6def9ac`. In-tree no-go bricks (axiom-clean): `_DyadicJacobiCocycleNonContraction.lean`, `_GrossKoblitzPhaseNoGo.lean`, `_PhaseAlignmentReality.lean`. Confidence high.
+
 ## 2026-06-15 — CONJECTURE C40 "BCH/RS Weight-Distribution List Bound via MacWilliams Duality" REDUCES-TO-JOHNSON (probe_c40_macwilliams_bch_weightdist.py)
 
 Conjecture C40 (issue #444, gmmds-homds, feasibility 2): the dual (BCH) weight distribution of
