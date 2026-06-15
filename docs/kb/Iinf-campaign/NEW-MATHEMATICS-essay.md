@@ -305,6 +305,28 @@ functions small-norm by an *arithmetic* (not analytic) mechanism. The cleanest, 
 lead the campaign has reached. Decisive next computation: `|N(e_{t₀})|` for deep configs at `n=32,64`
 (finite, no character sum). Novelty 8, proximity 9, feasibility 6.
 
+### 7c. REFUTED — I ran the decisive computation; the lead dies at scale (honest)
+Constructed the binding configs at `n=32,64,128,256` (subgroup `μ_{ρn}` + window-edge perturbation) and
+computed the bad-scalar norm. Result: adding perturbation collapses the deep vanishing to `t=1`, so the
+bad scalar is `e₁ = Σ_{perturbation}ζ^i` — a sum of `P = ⌈n/\log_2 n⌉` roots (the window-edge backoff).
+Its norm **grows**:
+
+| n | `P=⌈n/log₂n⌉` | `log₂|N(e₁)|` | `< p=2^128`? |
+|---|---|---|---|
+| 32 | 7 | 19.8 | yes |
+| 64 | 11 | 52.8 | yes |
+| 128 | 19 | 113.7 | yes (barely) |
+| 256 | 32 | 280.6 | **NO** |
+
+`|N| ≈ P^{φ(n)/2}` crosses `p` at **n≈128–256** — the *same crossover* as house and AM-GM. **So the
+unit-residual conjecture is FALSE at prize scale:** the n=16 "unit" was a small-n artifact (there the
+window-edge perturbation is sub-one-cell, so the configs are near-perfect subgroups with unit residuals;
+at larger n the `Θ(n/\log n)` perturbation grows and the residual norm grows with it). The deep-vanishing
+*arithmetic* small-norm mechanism is real but is overwhelmed by the growing perturbation excess — which is
+exactly the `Θ(n/\log n)` window backoff. **The lead reduces to the same wall, re-expressed.** This is the
+fixed-point theorem manifesting once more: the unit-residual was another face of the same object. Honest
+outcome: proposed, tested, refuted — the prize is not closed by this route either.
+
 ---
 
 ## 8. Honest coda
