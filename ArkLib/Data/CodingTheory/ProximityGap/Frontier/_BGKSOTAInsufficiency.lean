@@ -9,6 +9,8 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 set_option autoImplicit false
 set_option linter.style.longLine false
 set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+set_option linter.unusedDecidableInType false
 
 /-!
 # The BGK / di Benedetto SOTA character-sum bound is INSUFFICIENT for the #407 prize
@@ -143,7 +145,7 @@ theorem bgk_value_exceeds_prizeTarget_eventually
     rw [Real.sqrt_mul hnpos.le]; ring
   have hrpow : n ^ (1 - δ) = n ^ (1 / 2 - δ) * Real.sqrt n := by
     rw [Real.sqrt_eq_rpow, ← Real.rpow_add hnpos]
-    norm_num
+    congr 1; ring
   have hRHS : C * n ^ (1 - δ) = (C * n ^ (1 / 2 - δ)) * Real.sqrt n := by
     rw [hrpow]; ring
   rw [hLHS, hRHS]
@@ -260,3 +262,10 @@ theorem prize_requires_exponent_beyond_sota :
     hC hC' hL (by unfold diBenedettoDelta; norm_num)
 
 end ProximityGap.Frontier.BGKSOTAInsufficiency
+
+-- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no `sorryAx`).
+#print axioms ProximityGap.Frontier.BGKSOTAInsufficiency.diBenedetto_lt_prize
+#print axioms ProximityGap.Frontier.BGKSOTAInsufficiency.bgk_value_exceeds_prizeTarget_eventually
+#print axioms ProximityGap.Frontier.BGKSOTAInsufficiency.bgkValue_exceeds_prizeFloorTarget
+#print axioms ProximityGap.Frontier.BGKSOTAInsufficiency.bgk_tight_refutes_prizeFloor
+#print axioms ProximityGap.Frontier.BGKSOTAInsufficiency.prize_requires_exponent_beyond_sota
