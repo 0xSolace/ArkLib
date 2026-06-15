@@ -13745,3 +13745,33 @@ SURVIVES: none. (VMVT/D6-10 = char-0 Lam-Leung moment route, whose char-p transf
 IS the known open crux — not an independent analytic-NT win.)
 
 — wf-D6
+
+---
+
+## Lane D9 — Logic, computation & exotic (#444)
+
+REFUTED (numeric pre-screens, exact char sums via prize_workspace.py; code /tmp/d9_*.py):
+
+- **Communication-complexity / sign-rank / discrepancy of char matrix A[b,x]=e_p(bx)** [Φ?]:
+  discrepancy/CC is a LOWER-bound tool. The only CC-accessible UPPER objects are Frobenius-per-row
+  =√n EXACTLY (phase-blind Johnson floor, measured) or spectral≈√p (vacuous, m/√q regime). M sits
+  strictly between (M/Frob = 2.06→2.50→2.99→5.45 for n=8..64) — unreachable by any CC upper bound.
+
+- **Model theory: VC-dim/distality + Zarankiewicz on sector family {x:Re(e_p(bx))≥0}** [Φ]:
+  measured VC-dim of the half-plane family on μ_n GROWS (≥4,≥6,≥6,≥6 for n=8,16,32,64) ⇒ NOT
+  distal / not VC-density-1 ⇒ no Szemerédi–Trotter incidence gain. Sauer–Shelah bounds only the
+  COUNT of distinct sectors (≤p, trivial); the SIGNED cancellation needs phase the set-system
+  discards. Sector-imbalance < M (weaker phase-blind proxy).
+
+- **Interval-arithmetic / self-similar 2-power descent (μ_n ⊃ μ_{n/2} index-2)** [π]: per-doubling
+  ratio M(μ_n)/M(μ_{n/2}) = 1.413, 1.450, 1.731 for n=16,32,64 — ≥√2 and GROWING. No deterministic
+  contraction <√2 per doubling. Independently reconfirms walled "phase-tower geomean>√2".
+
+INTRACTABLE / vacuous: descriptive set theory & topos/sheaf & HoTT = formalisms not techniques (no
+quantitative cancellation input); FRI-reflexive = circular; worst-to-average self-reduction forces
+M→Parseval-average=√n (Johnson); quantum stabilizer-extent surrogate = U^2 Gowers = E_2 (Johnson);
+Kolmogorov-incompressibility (=N12) vacuous because worst b is short-describable.
+
+SURVIVES: none.
+
+— wf-D9
