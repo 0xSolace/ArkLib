@@ -1,5 +1,66 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — CONJECTURE C48 "Effective Sauermann-Wigderson Polynomial-Method Rank Bound for the Agreement System" REDUCES-TO-JOHNSON (probe_c48_sauermann_wigderson_rank.py)
+
+Conjecture C48 (issue #444, algebraic-geometry, feasibility 2): claim the Sauermann–Wigderson
+polynomial-method rank bound, applied to the simultaneous far-line agreement system over `F_p`,
+gives a list bound below budget `n` past Johnson, exploiting the bounded degree of the agreement
+variety and the proven rigidity transfer (in-tree `RigidityReductionPrizeScale`). "A modern
+polynomial-method lever distinct from CLP." REDUCES-TO: Sauermann–Wigderson polynomial-method rank
+bounds + in-tree `RigidityReductionPrizeScale` + bounded-degree agreement variety.
+
+**Verdict: reduces-to-johnson** (with a dimensional category error in even importing the SW
+formula). Probe `scripts/probes/probe_c48_sauermann_wigderson_rank.py`. Probed over proper `μ_n`,
+`p` prime `p≈n^4` (`p≫n³`, never `n=p−1`), `n∈{16,32,64}` and the prize-band cap arithmetic out to
+`n=1024`. Three horns, each independently fatal.
+
+**What Sauermann–Wigderson actually is (arXiv:2010.00077, JLMS 2022).** For fixed `k≥2` and `n`
+large, the *minimum possible degree* of a polynomial `P∈ℝ[x_1,…,x_n]` with `P(0)≠0` vanishing to
+multiplicity `≥k` at every point of the **Boolean hypercube** `{0,1}^n \ {0}` equals `n+2k-3`
+(`k=1` is Alon–Füredi: degree `n`). It is an **extremal degree LOWER bound** on multiplicity-`k`
+vanishing over the **`n`-dimensional Boolean grid** `{0,1}^n`, over `ℝ` (char 0). It is *not* a
+list-size / incidence upper bound and *not* an algebraic-variety rank statement.
+
+**(H1) Dimensional category error (the C39 H2 mechanism again).** SW lives in `{0,1}^n`, an
+`n`-fold product; its content `n+2k-3` is a phenomenon of the GROWING number of grid coordinates
+(`n→∞`). The prize agreement "variety" `B = {α∈F_p : x^a+αx^b is δ-close to RS[k]}` is a
+**1-parameter family in a cyclic group** — the eval domain `μ_n` is a single-coordinate point set
+on a line (dimension 1), with NO `n`-fold Boolean product to host the SW formula. This is exactly
+the category error already recorded for C39 ("cap-bound-in-`F_q^N` vs cap-bound-in-`ℤ/p`"): the
+polynomial-method dimensional saving lives in the ambient product dimension and is vacuous in a
+1-dimensional cyclic ambient. Importing `n+2k-3` here is meaningless.
+
+**(H2) Wrong direction / wrong quantity; it only re-derives the `k−1` ceiling.** SW is a degree
+LOWER bound ("to vanish to order `k` off the origin you NEED degree `≥n+2k-3`"). To convert a
+vanishing-degree fact into a list-SIZE UPPER bound you run it through Alon–Füredi /
+Schwartz–Zippel / Vandermonde dimension counting. Probed on explicit `RS[F_p,μ_n,k]`
+(`n∈{16,32}`, `k∈{n/8,n/4}`, 780 polynomial pairs each): the maximum pairwise agreement of
+distinct deg-`<k` codewords on `μ_n` is `≤ k−1` in EVERY case (measured `maxAgree=0` for random
+pairs; the structural ceiling is `k−1`). That ceiling is *exactly* the in-tree Vandermonde rank
+obstruction `rank_collapse_on_kset` / `poly_method_subset_incidence_bound` (`ListIncidencePolyMethod.lean`)
+and the multiplicity double-count `card_le_choose_div_choose_of_pairwise_inter` (`FisherPastJohnsonCap.lean`).
+SW's multiplicity refinement RE-DERIVES, it does not lower, `agree(c,c')≤k−1`.
+
+**(H3) The optimal poly-method cap is field-blind and super-polynomial past Johnson; rigidity
+transfer does not help.** The in-tree axiom-clean cap `|L|·C(a,k) ≤ C(n,k)` IS the best output of
+any polynomial method that uses only the `k−1` agreement ceiling (it is precisely the
+Sauermann–Wigderson-style multiplicity double count). Probed at prize-band rates `ρ∈{1/4,1/8}`
+just past the Johnson agreement radius `a≈⌈√(nk)⌉+1`: the cap `C(n,k)/C(a,k)` is `432` at `n=32`,
+`4.0·10²³` at `n=256`, `3.7·10⁹⁵` at `n=1024` — astronomically above budget `n` at every interior
+point. By `abstract_incidence_bound` the cap is FIELD-BLIND (identical for a generic injective
+domain), so it cannot exploit `μ_n`'s multiplicative smoothness. And `RigidityReductionPrizeScale`
+only makes `δ*` **char-INDEPENDENT** (`I_p = I_0`, char-`p` incidence equals char-`0` incidence at
+prize scale) — it does NOT shrink the char-`0` cap. So feeding SW the proven rigidity transfer
+buys nothing past Johnson: SW + rigidity still lands exactly on the field-blind `k−1` Johnson wall.
+
+**Conclusion.** C48 is the Sauermann–Wigderson sibling of C39 (CLP/EG). SW is a Boolean-hypercube
+minimum-degree theorem with no cyclic analogue (H1), it produces a degree lower bound that only
+re-derives the proven Vandermonde `k−1` ceiling (H2), and the resulting cap is the in-tree
+field-blind super-polynomial incidence bound that is the converged Johnson wall (H3). The
+past-Johnson lever is the open BGK / smooth-domain incidence (multiplicity) count, which SW does
+not supply. The "bounded degree of the agreement variety" is real but is precisely what gives the
+`k−1` ceiling and nothing past it. Reduces-to-johnson; confidence high.
+
 ## 2026-06-15 — CONJECTURE C46 "Mahler-Measure / Lehmer Structure-Aware Norm on the Period Polynomial" SECRETLY-OPEN (probe_conjecture_refute_c46.py, commit ad99a21774)
 
 Conjecture C46 (issue #444, gauss-period-exact, feasibility 2): a "structure-aware Mahler measure"
