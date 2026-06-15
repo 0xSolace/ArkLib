@@ -1,5 +1,73 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — CONJECTURE C41 "Guruswami-Sudan / Johnson is Tight for Explicit μ_n + potential-function Θ(1/log n) strip" REDUCES-TO-JOHNSON (degenerates to secretly-open on the past-Johnson lever)
+
+Conjecture C41 (issue #444, gmmds-homds, feasibility 2): the GS list-decoding analysis combined
+with proven MDS structure (`reedSolomonFrame_isMDS`) bounds the worst-case list at Johnson, and a
+"refined potential-function argument" extends the bound a Θ(1/log n) strip PAST Johnson for explicit
+μ_n. REDUCES-TO: Guruswami-Sudan + Johnson bound + `reedSolomonFrame_isMDS` + potential-function
+refinement.
+
+**Verdict: reduces-to-johnson** (the GS/MDS half is closed and TRUE but caps exactly at Johnson),
+**degenerating to secretly-open** on the only past-Johnson lever (the unspecified
+"potential-function refinement" IS the open BGK/line-ball core renamed). No probe needed — the
+refutation is a logical reduction to ALREADY-FORMALIZED in-tree no-go theorems.
+
+**Horn 1 — the GS half is machine-checked to cap at Johnson (CLOSED but Johnson-only).** ArkLib
+already contains the EXACT two-sided characterization of the Guruswami-Sudan certificate system:
+- `GSJohnson.gs_johnson_wall` (`GSJohnsonWall.lean:241`): GS feasibility forces `n(k−1) < t²`, i.e.
+  the certified agreement threshold `t > √(n(k−1))` = the Johnson radius, **for EVERY multiplicity m
+  and EVERY weighted degree D**. No GS parameter choice certifies agreement at or below Johnson.
+- `GSExactWall.exact_wall` (`GSExactCountWall.lean:139`): even the EXACT lattice-point monomial count
+  (the sharpest possible "refined" interpolation-space dimension — precisely what a "refined GS
+  analysis" would use) keeps the same `√(c·n)` wall: it reaches `t=60` vs Johnson's `50` at the
+  witnessed instance, still STRICTLY above Johnson (`wall_consistency`, line 202), never below.
+- `ArkLib.CodingTheory.GSReachesJohnson.t_close_to_johnson` (`GSReachesJohnson.lean`): the matching
+  "reaches" direction — GS IS feasible at `t ≤ √(c·n(1+1/m)) + 2`, converging to Johnson FROM ABOVE
+  as `m→∞`. So GS is `√(c·n) < t_GS(m) ≤ √(c·n(1+1/m))+2`: the machine is *CHARACTERIZED*, not merely
+  bounded. The file's own docstring states it verbatim: "any certificate past Johnson for the prize
+  must be a genuinely different system." `reedSolomonFrame_isMDS` enters only via the pairwise-agreement
+  ≤ n−d input to the second-moment Johnson list bound (`JohnsonList.johnson_list_bound`,
+  `JohnsonListBound.lean:38`) — which is the canonical Johnson-capped object (`L·(a²−nb) ≤ n²`). MDS
+  sharpens the constant `b=n−d`, not the EXPONENT; it gives Johnson, not past-Johnson.
+
+⟹ The "GS + Johnson bound + MDS" component pins δ* at exactly `1−√ρ` (Johnson), not past it. This is
+the standard list-decoding analysis, and it is closed — but it is the boundary, not the interior.
+
+**Horn 2 — the only past-Johnson lever is the open core under a new name (SECRETLY-OPEN).** The
+entire past-Johnson content of C41 is the single phrase "a refined potential-function argument
+extends the bound a Θ(1/log n) strip past Johnson." This object:
+- Does NOT exist in-tree. `grep -rn "potential" ArkLib/Data/CodingTheory/ProximityGap/*.lean`
+  returns ZERO potential-function GS machinery; the only hit (`KKH26DimGeneralSharpPin.lean:28`)
+  explicitly flags the `r ≲ √(n·ln n)` asymptotic potential of the sharp count as "a heuristic
+  estimate, *not*" a proof. There is no `reducesTo` named brick C41 can cite.
+- Is exactly the open object. The Θ(1/log n) strip past Johnson is the window interior
+  `(1−√ρ, 1−ρ−Θ(1/log n))` — the literal prize. Extending the worst-case far-line list bound from
+  Johnson into that strip is the statement "the RS[k+1] candidate list concentrates to its first
+  moment" (`MonomialLineListBridge.lean:37-38`, `LineListBound.lean:28-29`), which the route-elimination
+  meta-theorem (L8) and the in-tree characterization both certify requires the **open p-dependent BGK
+  sup-norm moment** `M(μ_n) ≤ C√(n log(p/n))`. A "potential function" that yields a Θ(1/log n) strip
+  is just the open BGK moment renamed — same wall as C32 (BSG-antipodal "sharpening" = the original
+  open BGK bound under a new name) and C21 (the genpos lever is vacuous on the affinely-DEPENDENT
+  worst-case far-line list, which IS the open BGK/line-ball core).
+
+**Why not refuted-false:** the GS/MDS/Johnson half is genuinely true and formalized; C41 is not a
+false claim, it is a TRUE-but-Johnson-only claim with an unsubstantiated past-Johnson rider. The
+rider is not refuted (it is the open prize), it is simply not closed — so the honest horn is
+reduces-to-johnson (closed core reaches only Johnson) with the past-Johnson lever secretly-open.
+This is the single most common horn (matches C21's "secretly-open masquerading as closed via the
+beyond-Johnson lever being vacuous/open on the worst-case object").
+
+**Mechanism class.** Same family as every GS/algebraic-certificate attempt: the GS parameter
+optimization has a HARD `√((k−1)n)` barrier proven in-tree at every multiplicity and even at the
+exact-count refinement (`gs_johnson_wall`, `exact_wall`, `GSReachesJohnson`); the "potential-function
+refinement" is the unproven past-Johnson lever = the open BGK line-ball core. No probe required — the
+no-go is already machine-checked and axiom-clean (`#print axioms GSJohnson.gs_johnson_wall`,
+`GSExactWall.exact_wall`, `GSReachesJohnson.t_close_to_johnson` all `[propext, Classical.choice,
+Quot.sound]`).
+
+---
+
 ## 2026-06-15 — CONJECTURE C39 "Tao-Croot-Lev-Pach for the Bad-Scalar Set as a Cap Configuration in ℤ/p" REFUTED-FALSE / REDUCES-TO-JOHNSON (probe_c39_clp_cap_badset.py, commit c3b9cd438)
 
 Conjecture C39 (issue #444, additive-combinatorics, feasibility 2): claim the bad-scalar set
