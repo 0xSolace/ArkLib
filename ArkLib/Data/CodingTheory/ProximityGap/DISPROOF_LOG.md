@@ -10537,3 +10537,40 @@ MORE low-height relations than a generic set (anti-rule-3). Confirms decisively:
 bounded-relation count is a thinness discriminator in the prize regime ⟹ the bounded-cyclotomic-independence
 lever is rule-3-incompatible at large n by both invariants. (n=16: zero sign-relations for thin AND thick,
 consistent with C\*>1 there.) Strengthens the mapped wall; no new receipt (same object as push 1fa2d5e58).
+
+## EvenDirectionIncidenceCollapse (reverse 2-adic descent leg) is FALSE — 2026-06-15
+
+**Object.** `EvenDirectionDescent.lean` proves the FORWARD leg of the 2-adic even-direction far-line
+incidence descent unconditionally: `I_{n/2}` injects into `I_n(even direction x^{2a'})`
+(`explainableScalars_sq_pullback_subset`). The clean prize-useful identity `I_n(even) = I_{n/2}` needs
+the REVERSE containment `I_n(even) ⊆ I_{n/2}`, named as the open Prop `EvenDirectionIncidenceCollapse`
+(consumed only as a hypothesis in `explainableScalars_sq_pullback_eq_of_collapse`). The file's honest
+caveat: the `RS[μ_n,2k]` codeword explaining a full even-direction line need not be the even pullback of
+an `RS[μ_{n/2},k]` codeword — its ODD part can carry agreement on a non-fibre-symmetric witness set.
+
+**REFUTATION (exact, `scripts/probes/probe_407_even_direction_collapse.py`).** n=16, k=2, binding band
+(half threshold s'=3, full threshold s=6 = 2s' per the fibre-doubling budget), far even line
+`(x^{2k}, x^{2(k+1)})` on μ_16 vs `RS[μ_16,4]` against the descended `(x^k, x^{k+1})` on μ_8 vs `RS[μ_8,2]`:
+
+| p   | \|I_n(even)\| | \|I_{n/2}\| | fwd (half⊆full) | rev (full⊆half) | EQ |
+|-----|---------------|-------------|------------------|------------------|----|
+| 97  | 56            | 40          | TRUE             | **FALSE**        | no |
+| 113 | 40            | 40          | TRUE             | TRUE             | yes|
+
+At p=97 there are **16 scalars bad for the full even direction on μ_16 but NOT bad on μ_8**.
+INDEPENDENTLY VERIFIED (exact max-agreement, `verify`): γ ∈ {14,17,21,23} each have full-domain
+max-agreement = **6** (≥ 6 ⟹ bad against deg<4) while the squaring-descent half-line has max-agreement
+only **2** (< 3 ⟹ NOT bad against deg<2). So the agreement-6 on μ_16 is realized by an `RS[μ_16,4]`
+codeword whose odd part supplies ≥4 of the 6 agreement points on a non-fibre-symmetric set that does not
+descend — exactly the named caveat, now with explicit witnesses.
+
+**CONSTRAINT LEMMA / VERDICT.** `EvenDirectionIncidenceCollapse` is FALSE in general (prime-dependent:
+fails at p=97, holds at p=113 for the same n,k,band). Therefore the clean 2-adic even–odd identity
+`I_n(even) = I_{n/2}` does NOT hold, and the squaring descent is genuinely **one-sided** (forward lift
+only). Any descent/Stepanov argument that consumes the reverse collapse as a step is blocked: the
+even-direction incidence on μ_n strictly EXCEEDS `I_{n/2}` at the binding band (odd-part agreement is
+non-descending). The forward leg `I_n(even) ≥ I_{n/2}` is the wrong direction for the prize upper bound,
+and the reverse leg that would fix it is now refuted. Mapped wall (rule-4 WIN), not a closure; no Lean
+change (the open Prop stands correctly named — this records that it is FALSE, so it cannot be discharged).
+Probe-first, exact, dual-checked. Does NOT refute the prize (the forward brick is sound; the reverse
+identity it leaves open is simply false, which is itself the obstruction).
