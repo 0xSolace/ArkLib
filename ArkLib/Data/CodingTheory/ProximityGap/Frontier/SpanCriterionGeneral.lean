@@ -198,6 +198,36 @@ theorem generalSpan_literal_agreement_le {n k a b : ℕ} (hba : b < a) (han : a 
     exact zero_ne_one hxn
   exact ProximityGap.Frontier.ContiguousBandBenign.literalArc_agreement_le hne hsupp hS0
 
+/-- **General cyclic-arc span bound (ARBITRARY word, wrap allowed).** For *any* polynomial `f`
+(any sparsity), if a monomial shift `Xᵗ` reduces it on `μ_n` to a fixed nonzero polynomial `g` of
+degree `≤ m` (i.e. `xᵗ·f.eval x = g.eval x` for all `x` with `xⁿ=1`), then `f` agrees with `0`
+(equivalently, the underlying received word with its codeword, when `f` is their difference) on at
+most `m` points of `μ_n`. This is the fully general span criterion: it does NOT require `f` to be
+2-sparse — the cyclic arc may wrap through `0`, and the shift `t` rotates the whole support into a
+literal window `{0..m}`. Subsumes `literalArc_agreement_le` (`t=0`) and every 2-sparse case above.
+Probe `probe_span_tsparse.py`: validated for t-sparse words `t∈{2,3,4}`, n∈{8,16,32} (1080 words,
+span bound never violated). -/
+theorem generalSpan_arbitrary_agreement_le {n t m : ℕ} (hn : 1 ≤ n) {f g : F[X]}
+    (hg : g ≠ 0) (hdeg : g.natDegree ≤ m) {S : Finset F} (hS : ∀ x ∈ S, x ^ n = 1)
+    (hshift : ∀ x ∈ S, x ^ t * f.eval x = g.eval x) :
+    (S.filter (fun x => f.IsRoot x)).card ≤ m := by
+  refine card_roots_le_of_monomialShift hg hdeg ?_ hshift
+  intro x hx hx0
+  have hxn : x ^ n = 1 := hS x hx
+  rw [hx0, zero_pow (by omega : n ≠ 0)] at hxn
+  exact zero_ne_one hxn
+
+/-- **General literal-window span bound for an ARBITRARY word** (no wrap). For any nonzero `f` whose
+frequency support lies in the literal window `Icc 0 A` (e.g. a `t`-sparse word `Σ γᵢ Xᵃⁱ` minus a
+`deg < k` codeword with all exponents `≤ A`), agreement on `μ_n` is `≤ A`. The general (any-sparsity)
+form of `generalSpan_literal_agreement_le`, keyed on the **top frequency** `A = literal span`. Probe
+`probe_span_tsparse.py`: never violated over 1080 t-sparse words. -/
+theorem generalSpan_literalTop_agreement_le {A : ℕ} {f : F[X]} (hf : f ≠ 0)
+    (hsupp : f.support ⊆ Finset.Icc 0 A) {S : Finset F} (hS0 : ∀ x ∈ S, x ≠ 0) :
+    (S.filter (fun x => f.IsRoot x)).card ≤ A := by
+  have hsupp' : f.support ⊆ Finset.Icc 0 (0 + A) := by simpa using hsupp
+  exact ProximityGap.Frontier.ContiguousBandBenign.literalArc_agreement_le hf hsupp' hS0
+
 end ProximityGap.Frontier.SpanCriterionGeneral
 
 /-! ## Axiom audit -/
@@ -206,3 +236,5 @@ end ProximityGap.Frontier.SpanCriterionGeneral
 #print axioms ProximityGap.Frontier.SpanCriterionGeneral.generalSpan_topGap_agreement_le
 #print axioms ProximityGap.Frontier.SpanCriterionGeneral.generalSpan_consecutiveTop_agreement_le
 #print axioms ProximityGap.Frontier.SpanCriterionGeneral.generalSpan_literal_agreement_le
+#print axioms ProximityGap.Frontier.SpanCriterionGeneral.generalSpan_arbitrary_agreement_le
+#print axioms ProximityGap.Frontier.SpanCriterionGeneral.generalSpan_literalTop_agreement_le
