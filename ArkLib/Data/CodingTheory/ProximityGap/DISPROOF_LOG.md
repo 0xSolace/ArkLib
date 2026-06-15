@@ -10222,3 +10222,43 @@ conclusion fails as an N0 bound). Genuinely new INPUT not provided; precise stru
 BGK re-label. NEXT LEVER for any future rank attempt: must bound an OFF-diagonal (r-1)-dim variety
 count, which no diagonal/partition rank delivers -- would need a fundamentally non-rank polynomial
 identity (e.g. a Combinatorial Nullstellensatz coefficient extraction on the relation, untried).
+
+### P7 [2026-06-14] Explicit mu_n higher-order-MDS / BGM relaxation — corank is Theta(a), NOT O(1)
+
+**Lane:** P7-bgm-rmds-explicit (relaxed HOMDS / Brakensiek-Gopi-Makam / Roth route for the
+explicit prize subgroup mu_{2^mu} at constant rate).  **Verdict: route CONFIRMED CLOSED for
+explicit mu_n; the rMDS_d-with-d=O(1) crack hypothesis is REFUTED.**
+
+The lever was: strict HOMDS needs exponential field (Brakensiek-Dhar-Gopi), but the RELAXED
+rMDS_d(ell) only needs corank <= d for the SPECIFIC mu_n window configs.  If d were O(1) and
+char-faithful at thick p, the list would stay generic-MDS (= O(1/rho), below capacity) and the
+prize would crack.  Three machine-checked exact measurements (probes
+probe_407_P7_homds_{orderL_corank,growth_law,admissibility}.py; thick primes p = 1 mod n,
+log_n p in [2.5,3.5], p >> n^2, the char-0-faithful prize direction; NEVER the n=p-1 full-group
+trap):
+
+1. **char-FAITHFUL (closed form, 2400/2400 exact):** the order-ell generalized-Vandermonde
+   intersection corank on a sub-subgroup-coset agreement set A = mu_a (a = 2^j | n) satisfies
+   `corank_Fp(mu_a; E) = a - #distinct(e mod a)` at thick p, matching the char-0
+   Schur/AbacusNCore hook-content prediction EXACTLY.  The rank-drop locus is NOT a char-p
+   artifact (answers P7(b)).  Generic points have corank 0 on the same windows (drop is purely
+   the multiplicative x^n=1 structure).
+
+2. **growth law (answers P7(a)):** the genuine mu_n-specific structural excess corank GROWS
+   `~ Theta(a)` at the window-interior agreement a = n/2.  Ratio L_max/(a-1) -> 1/2:
+   0.667, 0.571, 0.533, 0.516, 0.508, 0.504 for n = 8,16,32,64,128,256.  d is LINEAR in the
+   agreement size, NOT O(1) and NOT O(log n).
+
+3. **list/capacity + quasipoly (answers P7(c)):** restriction rank V(mu_a; deg<k) = min(a,k)
+   (236/236), so a single agreement gives a unique codeword and the HOMDS list excess is
+   intrinsically the order-ell multi-set corank.  Since d = Theta(a) = Theta(n), the order
+   needed to be MDS(ell) (no corank) is ell ~ corank ~ Theta(n), giving required field
+   `n^{Theta(n)} = 2^{Theta(n log n)} >> prize`.  HOMDS does NOT relax to the prize field at
+   the window order.
+
+result_type = explicit-mu_n-HOMDS-corank-is-linear-in-agreement (char-faithful structural drop
+of full Theta(a) scale, no O(1) relaxation).  The algebraic higher-order-MDS gap of mu_{2^mu}
+EQUALS the analytic BGK wall, CONFIRMED on the explicit subgroup (not just asserted).  No crack.
+NEXT LEVER for any future HOMDS attempt: would need agreement sets that are NOT sub-subgroup
+cosets yet still beyond Johnson -- but the corank closed form shows the drop is exactly the
+mu_a-residue collision, so any structured (orbit/coset) window inherits Theta(a) corank.
