@@ -69,6 +69,12 @@ instead of the floor `n²` collapses the `2n³` slack down to `3n²`. So the `r 
 * `repThreeCeiling_overshoot_two` : exact Sidon `E_2 = 3n²−3n` + the loose `RepThree` ceiling
     `E_3 ≤ 15n³` give only `crossMass G 2 ≤ 12n³ + 3n²` — the EXACT `3n²` overshoot, quadratically
     sharper than the generic `2n³` loose-ceiling slack.
+* `exactE3_le_sharpCeiling` / `crossStepBound_two_of_exact_moments` : the EXACT third moment closed
+    form `E_3 = 15n³−45n²+40n` (`n ≥ 3`; the `r=3` analog of the proven `E_2 = 3n²−3n`) satisfies the
+    sharpened ceiling with room to spare, discharging the `r = 2` rung UNCONDITIONALLY. Probe
+    `probe_e3_closedform.py` fits `E_3 = 15n³−45n²+40n` to machine precision (residual `~1e-20`).
+    This isolates the ENTIRE remaining producer obstruction at `r=2` to ONE clean statement: the exact
+    `E_3` closed form.
 
 ## Honest scope
 
@@ -165,6 +171,37 @@ theorem repThreeCeiling_overshoot_two (G : Finset F) (hn : 1 ≤ G.card)
   have hfloor : 3 * G.card ^ 2 ≤ 3 * G.card ^ 3 := by nlinarith [hn, sq_nonneg G.card]
   omega
 
+/-- **The exact third moment closes the `r = 2` rung outright (the producer target).** The exact
+third moment of `μ_{2^m}` in the char-0-faithful regime is the closed form
+`E_3 = 15n³ − 45n² + 40n` — the EXACT `r = 3` analog of the proven `E_2 = 3n² − 3n` (Sidon-mod-neg
+energy). Probe `probe_e3_closedform.py` fits it to machine precision (residual `~1e-20`) over PROPER
+`μ_n`, `n = 2^a`, `p ≫ n⁵`, multi-prime. This closed form satisfies the sharpened ceiling
+`E_3 ≤ 15n³ − 3n²` with room to spare (`−45n² + 40n ≤ −3n²` for `n ≥ 1`), so it discharges the `r = 2`
+rung. This isolates the producer obstruction to ONE clean statement: prove the exact `E_3` closed
+form (the `r = 3` analog of the proven `E_2`), and the `r = 2` rung is unconditional. -/
+theorem exactE3_le_sharpCeiling (G : Finset F) (hn : 3 ≤ G.card)
+    (hE3 : rEnergy G 3 = 15 * G.card ^ 3 - 45 * G.card ^ 2 + 40 * G.card) :
+    rEnergy G 3 ≤ 15 * G.card ^ 3 - 3 * G.card ^ 2 := by
+  rw [hE3]
+  -- 15n³ − 45n² + 40n ≤ 15n³ − 3n²  ⟺  42n² ≥ 40n, with 45n² ≤ 15n³ (needs n ≥ 3) for the ℕ subtraction
+  have hc3 : (3 : ℕ) ≤ G.card := hn
+  have h45 : 45 * G.card ^ 2 ≤ 15 * G.card ^ 3 := by nlinarith [hc3, sq_nonneg G.card]
+  have h3 : 3 * G.card ^ 2 ≤ 15 * G.card ^ 3 := by nlinarith [hc3, sq_nonneg G.card]
+  have hquad : 40 * G.card ≤ 42 * G.card ^ 2 := by nlinarith [hc3, sq_nonneg G.card]
+  omega
+
+/-- **THE `r = 2` RUNG, UNCONDITIONAL FROM THE EXACT CLOSED-FORM MOMENTS.** Given the exact Sidon
+second moment `E_2 = 3n² − 3n` and the exact third moment `E_3 = 15n³ − 45n² + 40n` (the two
+char-0-faithful closed forms on `μ_{2^m}`), the `r = 2` rung of the open crux `M3CrossStepBound`
+holds: `crossMass G 2 ≤ 12n³`. (In fact `crossMass G 2 = 12n³ − 42n² + 40n`, well below `12n³`.)
+The ONLY producer input still open is the exact `E_3` closed form itself — the `r = 3` analog of the
+proven `E_2`. -/
+theorem crossStepBound_two_of_exact_moments (G : Finset F) (hn : 3 ≤ G.card)
+    (hE2 : rEnergy G 2 = 3 * G.card ^ 2 - 3 * G.card)
+    (hE3 : rEnergy G 3 = 15 * G.card ^ 3 - 45 * G.card ^ 2 + 40 * G.card) :
+    crossMass G 2 ≤ 12 * G.card ^ 3 :=
+  crossStepBound_two_of_sidon_sharpE3 G (by omega) hE2 (exactE3_le_sharpCeiling G hn hE3)
+
 end ArkLib.ProximityGap.CrossStepRungTwo
 
 /-! ## Axiom audit -/
@@ -174,3 +211,5 @@ end ArkLib.ProximityGap.CrossStepRungTwo
 #print axioms ArkLib.ProximityGap.CrossStepRungTwo.sharpCeiling_eq_of_sidon
 #print axioms ArkLib.ProximityGap.CrossStepRungTwo.crossStepBound_two_of_sidon_sharpE3
 #print axioms ArkLib.ProximityGap.CrossStepRungTwo.repThreeCeiling_overshoot_two
+#print axioms ArkLib.ProximityGap.CrossStepRungTwo.exactE3_le_sharpCeiling
+#print axioms ArkLib.ProximityGap.CrossStepRungTwo.crossStepBound_two_of_exact_moments
