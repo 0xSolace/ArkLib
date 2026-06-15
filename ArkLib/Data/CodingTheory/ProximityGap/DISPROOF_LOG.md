@@ -1,5 +1,65 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — CONJECTURE C14 "Kloosterman-Sheaf Purity on the Antipodal-Paired Dyadic Period (Katz Kl_{n/2}, Sp/SL)" REFUTED-FALSE (probe_c14_kloosterman_purity.py)
+
+Conjecture C14 (issue #444, algebraic-geometry, feasibility 2): Mann's antipodal decomposition
+`η_b = 2 Σ cos(2π b x / p)` is a real cosine sum; claim it is the Frobenius trace of a
+hyper-Kloosterman sheaf `Kl_{n/2}` with monodromy `Sp/SL`, so Deligne purity gives
+`|η_b| ≤ 2√(n−1)` — stronger than the prize target, pinning `δ*` past Johnson. REDUCES-TO:
+Katz GKM Ch. 11 (Kl_m monodromy Sp_m/SL_m) + Deligne Weil II + Mann/Conway–Jones antipodal
+(in-tree) + in-tree `AntipodalEvenOddDescent`.
+
+Verdict: **refuted-false** — an explicit, reproducible counterexample at EVERY prize `n`. Probe
+`scripts/probes/probe_c14_kloosterman_purity.py`, commit `1af1e83a64ee408ac16368ff4e33fded4492c952`.
+All rows measured prize-faithfully: PROPER `μ_n` (`n = 2^μ`), `p` PRIME, `n | p−1`, `p ≫ n³`,
+`m = (p−1)/n ≫ 1`, NEVER `n = p−1`.
+
+| n | p | p/n³ | m=(p−1)/n | M=max\|η_b\| | C14 bound 2√(n−1) | M/bound |
+|---|---|------|-----------|-------------|-------------------|---------|
+| 8   | 4129     | 8.1  | 516    | 7.558  | 5.292  | 1.43× |
+| 16  | 65537    | 16.0 | 4096   | 13.838 | 7.746  | 1.79× |
+| 32  | 1048609  | 32.0 | 32769  | 22.983 | 11.136 | 2.06× |
+| 64  | 16777601 | 64.0 | 262150 | 38.529 | 15.875 | 2.43× |
+| 128 | 14605697 | 7.0  | 114107 | 49.461 | 22.539 | 2.19× |
+
+Cleanest witness: `n=16, p=65537` (Fermat prime, proper `μ_16`, `m=4096`): `max|η_b| = 13.84`
+(real, `Im = −2.2e−15`, so Mann's antipodal decomposition is CORRECT) at `b*=16`, versus the C14
+bound `2√15 = 7.75` — a **1.79× violation**. The Mann/Conway–Jones real-valuedness premise holds;
+the Kloosterman-purity *inference* from it is false.
+
+HORN — OBJECT MISMATCH (the wrong sheaf; `η_b` is NOT a hyper-Kloosterman trace).
+- The hyper-Kloosterman sum is `Kl_m(a;p) = Σ_{x_1···x_m = a, x_i ∈ F_p^*} e_p(x_1+···+x_m)`. It is
+  the trace of the Kloosterman sheaf `Kl_m`, **rank `m`**, pure of weight `m−1`, monodromy `Sp_m`
+  (m even)/`SL_m` (m odd). Deligne purity gives `|Kl_m| ≤ m · p^{(m−1)/2}` — a **p-DEPENDENT** bound.
+  For `m=2` (classical, Sp_2) that is `2√p`, NOT `2√(n−1)`. There is no instantiation of Kloosterman
+  purity that yields a `p-independent` edge `2√(n−1)`: the `√` in Deligne purity is `√p`, the field
+  size, not `√(rank)` or `√(# terms)`.
+- `η_b = Σ_{y∈μ_n} ψ(by)` is a **cyclotomic Gauss period** (a partial additive-character sum over a
+  *multiplicative subgroup*), a fundamentally different object. Its correct sheaf-theoretic home is the
+  Kummer/hypergeometric Gauss-sum FAMILY whose geometric monodromy is **`GL(1)^f`** (Rojas-León
+  arXiv:2207.12439, Katz [Kat88]; in-tree `KatzEffectiveGaussSum.lean`, `MonodromyConductorScaffold.lean`,
+  `docs/kb/deltastar-407-katz-monodromy-research-2026-06-13.md`), giving an **asymptotically-independent
+  GAUSSIAN (UNBOUNDED) law** — `M(n) ≈ √(n log(p/n))` with NO hard `√`-edge. The conjecture's premise
+  that there is a single Sp/SL Kloosterman sheaf with a bounded edge contradicts the established
+  GL(1)^f monodromy of the actual family.
+
+HORN — THE MEASURED LAW HAS NO EDGE. `M/√n` GROWS monotonically `2.67 → 3.46 → 4.06 → 4.82` (n=8→64),
+the signature of a `√log`-type Gaussian large deviation (Kluyver/random-walk; in-tree
+`deltastar-407-new-ideas-katz-monodromy-framing-2026-06-13.md` line 9–11), NOT a fixed semicircle/
+Sato–Tate edge `2√n` (which would force `M/√n → 2`). A bounded-`2√(n−1)` edge is empirically absent.
+
+Even granting (counterfactually) the bound, `2√(n−1) = Θ(√n)` would sit at the additive-energy/Johnson
+scale `√S` (meta-theorem L8: 2nd-order/√S objects cap at Johnson) — so on its own arithmetic it could
+not pin `δ*` PAST Johnson regardless; the route-elimination meta-theorem already excludes any closed
+`p-independent √n` edge from reaching past Johnson. But that is moot: the bound is simply FALSE.
+
+**Probe committed:** `scripts/probes/probe_c14_kloosterman_purity.py` (self-contained, sympy GF(p);
+coset-reduced exact sup-norm sweep). Commit `1af1e83a64ee408ac16368ff4e33fded4492c952`. Sibling to the
+C29 Kowalski–Sawin Kloosterman-path entry below (same object-mismatch family: the prize period is a
+multiplicative-subgroup Gauss period, not any Kloosterman-sheaf object).
+
+---
+
 ## 2026-06-15 — CONJECTURE C29 "Kowalski–Sawin Kloosterman-Path Functional CLT Sup-Bound" SECRETLY-OPEN / REDUCES-TO-JOHNSON (probe_c29_kowalski_sawin_path_clt.py)
 
 Conjecture C29 (issue #444, algebraic-geometry, feasibility 2): apply the Kowalski–Sawin
