@@ -946,6 +946,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LargeSieveParsevalCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LineBallSingleCodewordEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NAShaoFloorBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NvIReconcile
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OddExcessLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetIncidenceUnionCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrelation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
@@ -1021,6 +1022,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2ND_theta_fixedpoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2NG_partition_rank_vacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2NH_overdet_single_gamma
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf3D4_monomial_worst_orbit
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf3D5_lamleung_orbit_backbone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB2_Q1Direct_d16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB_Q1RouteICharPGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLD_crossparity_evensvp
