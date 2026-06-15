@@ -27,6 +27,44 @@ DECISIVE OBSTRUCTION (two independent, both measured at p~n^4 ≫ n^3, n=2^μ, N
   (best PROVEN n^{1−o(1)} BGK; di Benedetto n^{0.989} only n>p^{1/4}, outside the prize).
 Probe: scripts/probes/probe_c26_stickelberger_house.py, commit 16a4ab116. Same wall as A3/Galois.
 
+## 2026-06-15 — CONJECTURE C27 "Hasse–Davenport Dyadic-Lifting Telescope" REDUCES-TO-JOHNSON / SECRETLY-OPEN (probe_c27_hassedavenport_telescope.py)
+
+Conjecture C27 (issue #444, gauss-period-exact): the 2-power Gauss-sum tower `μ_2⊂⋯⊂μ_{2^μ}`
+linked by Hasse–Davenport lifting telescopes the period sup-norm `M(μ_n)` into a PRODUCT of
+Jacobi sums (each `|J|=√p`), the `2^μ` levels contributing `√(log p)`, giving
+`M(μ_n)≤√(n log p)` PAST Johnson via a purely MULTIPLICATIVE recursion (claimed non-analytic,
+hence outside the moment-wall impossibility map). Reduces-to: HD product/lifting (exact) +
+`τ(χ)τ(χ')=J(χ,χ')τ(χχ')`, `|J|=√p` (proven). Verdict: **reduces-to-johnson (= secretly-open)**.
+
+This is the MULTIPLICATIVE-telescope twin of C26 (Stickelberger, above) and was already
+promoted-then-refuted as **C9** by the algebraic-route loop
+(`docs/kb/deltastar-conjecture-loop-algebraic-route-2026-06-13.md`, lines 80–89). Same fatal
+fact: `M(H)=max_{a≠0}|η_a|=HOUSE(η)` (max conjugate modulus), and any product/telescope (HD,
+Jacobi, norm) computes only a SYMMETRIC function of the `m=(p−1)/n` conjugates `{η_c}` —
+chiefly the NORM `N=∏_c η_c`. A product is structurally BLIND to which conjugate is largest. By
+AM–GM the norm gives only `|N|^{1/m}≈√n` = the geometric mean = the L²-average = the JOHNSON
+scale, i.e. a LOWER bound `M(H)≥√n`, useless as the claimed `√(n log p)` UPPER bound. The
+`√(log p)` prize factor IS the conjugate spread = the archimedean argument distribution
+`{arg τ(χ_j)}` = the BGK/Paley open core, which no multiplicative recursion supplies.
+
+DECISIVE PROBE (all distinct conjugate periods, proper `μ_n`, `n=2^μ`, μ=3..6, `p` prime,
+`p>n³`, NEVER `n=p−1`, 5 primes/n):
+- **P1 geometric mean = √n (Johnson scale):** `gm/√n ≈ 0.50–0.59` uniformly for all n — the norm
+  (everything a telescope yields) sits at the √n L²-average.
+- **P2 prize factor = conjugate spread, invisible to products:** `house/gm` GROWS 4.2→5.3→6.3→7.5
+  (n=8→16→32→64), tracking `√(log(p/n))`. The √(log p) gap is real and the product misses it.
+- **P3 DECISIVE — norm does NOT determine house:** at FIXED n, `gm_spread ≤ 0.22` across primes
+  while `house_spread = 0.34, 0.70, 6.78, 7.24` (n=8,16,32,64). Two fields with essentially equal
+  `|N|` have `M(H)` differing by 6–7. A product/telescope CANNOT pin the sup.
+
+So the HD/Jacobi telescope is exact and proven but reaches only the √n geometric-mean = Johnson
+scale (reduces-to-johnson); the past-Johnson upper bound `√(n log p)` (the TRUE value) needs the
+archimedean conjugate-spread = BGK sup-norm open core (secretly-open). "Non-analytic ⟹ off the
+moment wall" is correct but irrelevant: the bound never leaves the L²/Johnson scale — it lands on
+a DIFFERENT wall (the house-vs-norm archimedean gap). NOT refuted-false (the true M(μ_n)≈√(n log p));
+the MECHANISM cannot prove it. Probe: scripts/probes/probe_c27_hassedavenport_telescope.py,
+commit PROBECOMMIT. Same wall as C26/C9/A3 (the house≠norm archimedean gap).
+
 Goal: keep trying to **disprove** the ABF26 Grand-Challenge-1 conjecture, then
 **disprove the disproof**. Record every attempt so we don't repeat ourselves and
 so we zero in. Keep lemmas that *constrain* even if they don't fully disprove.
