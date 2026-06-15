@@ -106,6 +106,53 @@ theorem consecutiveTop_agreement_le {n k : ℕ} (hn : 2 ≤ n) {γ : F} {c : F[X
   rw [Polynomial.IsRoot.def] at hxr ⊢
   rw [← hmod, hxr, mul_zero]
 
+/-- **Top-gap span bound (generalizes `consecutiveTop`).** The word `X^{n−1} + γ·X^{n−j}`
+(`2 ≤ j ≤ n`, `k ≥ 1`) agrees with any degree-`<k` codeword on at most `k + j − 1` points of `μ_n`.
+The "reach" past capacity is governed by the gap `j` between the two frequencies: reaching the floor
+edge (agreement `k + Θ(n/log n)`) requires `j = Ω(n/log n)` — i.e. the two frequencies must be far
+apart, a genuinely **spread/lacunary** word, where this elementary degree bound is vacuous and the
+true bound is the BGK / `Z_{2^μ}` uncertainty wall. So the provable/open boundary is exactly the
+support span. Witness `g = X^{j−1} + Cγ − X^j·c` (degree `≤ k+j−1`, `coeff (j−1) = 1`). -/
+theorem topGap_agreement_le {n k j : ℕ} (hj : 2 ≤ j) (hjn : j ≤ n) (hk : 1 ≤ k) {γ : F} {c : F[X]}
+    (hc : c.natDegree < k) {S : Finset F} (hS : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => (agreementPoly (n - 1) (n - j) γ c).IsRoot x)).card ≤ k + j - 1 := by
+  set g : F[X] := X ^ (j - 1) + C γ - X ^ j * c with hg_def
+  have hg : g ≠ 0 := by
+    have hco : g.coeff (j - 1) = 1 := by
+      have h1 : ((X : F[X]) ^ j * c).coeff (j - 1) = 0 := by
+        rw [mul_comm, Polynomial.coeff_mul_X_pow']
+        have : ¬ j ≤ j - 1 := by omega
+        simp [this]
+      have h2 : ((X : F[X]) ^ (j - 1)).coeff (j - 1) = 1 := by rw [Polynomial.coeff_X_pow]; simp
+      have h3 : (C γ : F[X]).coeff (j - 1) = 0 := by
+        rw [Polynomial.coeff_C]; have : j - 1 ≠ 0 := by omega
+        simp [this]
+      rw [hg_def, Polynomial.coeff_sub, Polynomial.coeff_add, h1, h2, h3]; ring
+    intro h0; rw [h0, Polynomial.coeff_zero] at hco; exact one_ne_zero hco.symm
+  have hdeg : g.natDegree ≤ k + j - 1 := by
+    have hXj1 : ((X : F[X]) ^ (j - 1)).natDegree ≤ k + j - 1 := by
+      rw [Polynomial.natDegree_X_pow]; omega
+    have hXjc : ((X : F[X]) ^ j * c).natDegree ≤ k + j - 1 := by
+      refine le_trans Polynomial.natDegree_mul_le ?_
+      rw [Polynomial.natDegree_X_pow]; omega
+    have hC : (C γ : F[X]).natDegree ≤ k + j - 1 := by rw [Polynomial.natDegree_C]; omega
+    rw [hg_def]
+    refine le_trans (Polynomial.natDegree_sub_le _ _) (max_le ?_ hXjc)
+    exact le_trans (Polynomial.natDegree_add_le _ _) (max_le hXj1 hC)
+  refine card_roots_le_of_imp hg hdeg ?_
+  intro x hx hxr
+  have hx1 : x ^ n = 1 := hS x hx
+  have e1 : x ^ j * x ^ (n - 1) = x ^ (j - 1) := by
+    rw [← pow_add, show j + (n - 1) = n + (j - 1) from by omega, pow_add, hx1, one_mul]
+  have e2 : x ^ j * x ^ (n - j) = 1 := by
+    rw [← pow_add, show j + (n - j) = n from by omega, hx1]
+  have hmod : x ^ j * (agreementPoly (n - 1) (n - j) γ c).eval x = g.eval x := by
+    simp only [agreementPoly, hg_def, Polynomial.eval_sub, Polynomial.eval_add,
+      Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_X, Polynomial.eval_C]
+    linear_combination e1 + γ * e2
+  rw [Polynomial.IsRoot.def] at hxr ⊢
+  rw [← hmod, hxr, mul_zero]
+
 /-- **Literal-arc benignity (no wrap).** If the agreement polynomial's support lies in a literal
 range `Icc s (s+m)`, it has at most `m` nonzero roots — so at most `m` agreement points on `μ_n`
 (all nonzero). Covers e.g. `X^k + γ·X^{k+1}` (support `{0,…,k+1}`, `m = k+1`). Via `X^s ∣ f`, the
@@ -142,4 +189,5 @@ end ProximityGap.Frontier.ContiguousBandBenign
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.ContiguousBandBenign.card_roots_le_of_imp
 #print axioms ProximityGap.Frontier.ContiguousBandBenign.consecutiveTop_agreement_le
+#print axioms ProximityGap.Frontier.ContiguousBandBenign.topGap_agreement_le
 #print axioms ProximityGap.Frontier.ContiguousBandBenign.literalArc_agreement_le

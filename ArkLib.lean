@@ -934,14 +934,17 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFSaddleAssembled
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CountLaneNotSecondOrder
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossCellCircleMethodSplit
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungOne
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCSubtractedCoshMGF
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCWickMGFFromTermwise
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingCrossingDepthGrowsInN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingCrossingDepthRateConstant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingDecayCrossingDepth
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeltaStarEqEdge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeltaStarRungGranularity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DividedDifferenceDeflation
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DyadicGeomeanPrizeVsSqrtN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePinN12
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EvenDirectionDescent
@@ -973,6 +976,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrelation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PeriodOrbitQuotientReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PinnedScalarMultDivision
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PrizeFloorFromCrossStep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Q1ArisingFamilyDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.R2UnfoldedDesignFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioLevelSet
@@ -989,6 +993,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgr
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.TwistedLineCollisionParseval
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.TwoDAnnihilatorLineParseval
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyCapacitySidePrime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerBounds
