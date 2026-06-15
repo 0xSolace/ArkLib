@@ -13835,3 +13835,10 @@ drifting toward GUE (0.603), NOT Poisson (0.386) — local-scale GUE repulsion c
 but only as white-noise/RMT extreme-value heuristic = the FHK route already refuted-as-rigorous;
 no deterministic char-p phase injected. Probes: scripts/probes/probe_d8_physics_walls.py,
 probe_d8_loggas_sff.py, probe_d8_leeyang_diffraction.py. Signed wf-D8.
+
+================================================================================
+## 2026-06-15 — HARD-VERIFICATION refutes both 100-avenue "new survivors" (D5-3, D8-3)
+Orchestrator re-ran the two flagged survivors at PRIZE SCALE (Rust, scripts/probes/rust/verify_survivors_d5d8.rs). BOTH collapse:
+- **D5-3 "extreme bad set = O(1) cosets" — REFUTED (small-m artifact).** #{b : |η_b| ≥ 0.8·M} over the m=(p−1)/n cosets, n=64, m swept 85→4.7e6: 1,16,11,56,92,**228** — grows ~m^0.19 (white-noise order statistic), NOT O(1). The lane's "1–4" was because it only tested m≤1024 (m^0.19≈3.6 there). At prize m=2^128 the near-max coset count is ~2^24, not O(1). The "O(1) bad cosets" sufficient lemma is FALSE at prize scale. (Same failure mode as the M4 shallow-depth over-claim.)
+- **D8-3 "GUE level repulsion ⟨r⟩→0.575" — REFUTED (mis-measurement).** Nearest-neighbor spacing ratio of {|η_b|}, independently measured: ⟨r⟩ = 0.368/0.383/0.384 (n=64), 0.389 (n=128), 0.386 (n=256) — exactly Poisson (0.386), NOT GUE (0.603). The period spectrum is Poisson/white-noise (confirms the covariance finding); no level repulsion. No RMT-repulsion handle exists.
+Net: NO genuine new survivor from the 100-avenue sweep. The sole live target remains the char-p deep-moment crux (M1 count-route / M3 cross-step, axiom-clean reductions), with no coset-container or RMT shortcut.
