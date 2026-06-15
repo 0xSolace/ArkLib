@@ -2994,3 +2994,27 @@ generic 2-power-subgroup cyclotomic-antipodal count. This RESOLVES the sibling's
 in the REFUTATION direction (in-window but thin-blind => Johnson-region/thickness-generic, consistent with
 wf-D2 delta*->Johnson and #bad=n^2/4-n super-budget). CORE not closed, not faked. Pure-Python exact, no
 Lean => axiom-clean trivially. probe_407_shallow_resonance_thickness_rule3.py.
+
+================================================================================
+2026-06-15 FINER rule-3 on the shallow resonance: the orbit-rep STRUCTURE is
+ALSO thickness-blind (rule-3 FAIL is TOTAL, count AND structure) (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+Follow-up to push 563fc7f85 (K(n,4)=n/4-1 thickness-invariant). Loophole closed: could two same-COUNT
+families differ in WHICH e1-values appear (a thin-only algebraic signature in the orbit reps)? Tracked,
+per (n,beta,prime): #reps in mu_n, and the multiplicative quotient-orders of e1-rep^n normalized by
+m=(p-1)/n. probe_407_resonance_e1set_structure_rule3.py. proper subgroup, 2 primes/beta, never n=q-1.
+
+RESULT (exact, n=16,32 x beta=2.3,3.0 [thick prize-FALSE] + 4,5 [thin prize]):
+1. in_mu_n = 0 in EVERY case (thick AND thin): the resonance e1-representatives are NEVER in the subgroup
+   mu_n itself -- uniform across all beta. No thin-only "reps land in subgroup" signature.
+2. the normalized coset-order pattern (norm/m) spans the SAME small-fraction family {1, 1/2, 1/3, 1/4, 1/9,
+   ...} for thick and thin; the variation present tracks the DIVISOR STRUCTURE of m=(p-1)/n (prime-
+   arithmetic-dependent: e.g. beta=2.3 p=577 -> {0.25,0.5}; beta=4 p=65537 -> {0.25}; beta=5 p=1048721 ->
+   {1.0}), NOT the thin-vs-thick axis. The per-prime factorization of m, orthogonal to thickness, is the
+   only thing that moves.
+
+VERDICT (rule-3, no overclaim): the shallow e2=0 resonance is thickness-blind in BOTH count (n/4-1) and
+orbit-rep structure. The rule-3 FAIL is TOTAL -- there is no residual thin signal hiding in the e1-value
+structure. Confirms + completes 563fc7f85: the shallow resonance is a generic 2-power-subgroup cyclotomic
+object, not a thin-essential prize lever, at the count AND the structural level. CORE not closed, not faked.
+Pure-Python exact, no Lean => axiom-clean trivially. probe_407_resonance_e1set_structure_rule3.py.
