@@ -988,6 +988,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgr
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.TwoDAnnihilatorLineParseval
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyCapacitySidePrime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerExtremal
