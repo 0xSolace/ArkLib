@@ -202,3 +202,23 @@ target. So the heuristic gives the precise bound (validating the conjecture). BU
 character sums = BGK. **CONCLUSION: Anomaly Suppression ⟺ μ_n-sum equidistribution mod 𝔭 = BGK**, with the
 uniform-density heuristic giving the precise target n^{2r}/q. This is the cleanest statement of why the
 prize = BGK at the anomaly level: it is the equidistribution of dyadic-subgroup sums mod the prize prime.
+
+## Second conjecture batch C11–C20 (diverse domains), ranked by feasibility
+- **C14 Stein's-method CLT** [feas 6, novel 8]: the period η_b=Σ_{x∈μ_n}e_p(bx) is a sum of n weakly-dep
+  unimodular terms; a quantitative Berry-Esseen (Stein) bound ⟹ sub-Gaussian tail ⟹ M≤√(2n log q). Dep
+  structure = additive energy = BGK, but the CLT framing is genuinely new. ATTACK: fit period histogram
+  to complex-Gaussian + measure Berry-Esseen rate.
+- **C12 Beurling-Selberg majorant** [feas 5]: majorize 1_{μ_n} by an extremal fn with band-limited
+  Fourier support ⟹ char-sum bound. Classical for complete sums (Weil √p); thin-subgroup = open.
+- **C15 Hoffman/interlacing** [feas 5]: M(n)=2nd eigenvalue of Paley graph Cay(F_p,μ_n); Hoffman ratio /
+  eigenvalue interlacing. Gives independence#, not M directly.
+- **C16 Fourier uncertainty** [feas 4]: μ_n concentrated (n elts) ⟹ η_b can't concentrate; L^∞ bound = M = BGK.
+- **C19 Weil/metaplectic** [feas 4]: dyadic Gauss sum via Weil representation; quadratic part exact √p,
+  higher 2-power = open.
+- **C11 period-poly trace form** [feas 4]: Galois trace of the degree-m period poly; house = M = circular.
+- **C13 Plünnecke-Ruzsa** [feas 3]: additive energy of μ_n via doubling; multiplicative subgroup doubling = BGK.
+- **C17 subspace theorem** [feas 3]: Schmidt subspace for the period; gives finiteness not the bound.
+- **C18 2-adic Newton polygon** [feas 3]: valuation of period poly coeffs; the p-adic (not 2-adic) part is BGK.
+- **C20 ergodic equidistribution** [feas 3]: {bω^j} equidistribution = the char sum = BGK.
+NOTE (structural cap predicts): all reduce to BGK (the global cancellation); C14 (Stein CLT) is the most
+novel framing. The period → complex-Gaussian is the content (measured c→1/2); proving it uniformly = BGK.
