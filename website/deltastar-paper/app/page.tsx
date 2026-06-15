@@ -12,7 +12,7 @@ import { Timeline } from "@/components/sections/Timeline";
 import { References } from "@/components/sections/References";
 
 const toc = [
-  { href: "#contribute", label: "Mine it yourself" },
+  { href: "#contribute", label: "Contribute" },
   { href: "#abstract", label: "Abstract" },
   { href: "#problem", label: "1 \u2002The threshold and the window" },
   { href: "#method", label: "2 \u2002Methodology" },
