@@ -11956,3 +11956,42 @@ thin prize subgroup — exactly as `deltastar-407-reading-list-gaussperiods.md` 
 note ("Weil/sqrt(q): vacuous for n<sqrt(q)") already record.
 
 **Probe committed:** `scripts/probes/probe_c36_hbk_stepanov_boundary.py`.
+
+## 2026-06-15 (#444 C28): Gross-Koblitz p-adic Gamma evaluation of the period argument — SECRETLY-OPEN
+
+**Conjecture C28 (gauss-period-exact):** "Use Gross-Koblitz `tau(chi) = -pi^{s(chi)} prod Gamma_p(<..>)`
+to evaluate the period `eta_c` exactly as an algebraic integer and claim the explicit p-adic Gamma
+factors pin the complex arguments `arg tau(chi_j)` tightly enough to force `max_c|eta_c| <= C sqrt(n log p)`
+past Johnson. This is an exact evaluation, not an estimate." Reduces-to: Gross-Koblitz + Stickelberger
++ in-tree period decomposition.
+
+**Verdict: secretly-open.** Gross-Koblitz is a **p-adic** identity. It pins (i) the p-adic valuation
+`v_p(tau(chi)) = s(chi)/(p-1)` (= Stickelberger), and (ii) the p-adic UNIT of `tau(chi)` via Morita's
+`Gamma_p`. The complex (archimedean) MAGNITUDE `|tau(chi)| = sqrt(q)` is the char-independent Weil/Gauss
+fact, already known and already used in-tree. The floor is `eta_b = (1/f) sum_j conj(chi^j(b)) tau(chi^j)`,
+each `|tau| = sqrt(q)`, so `max_b|eta_b|` is the **sup over b of a DFT of f Gauss-sum vectors** — a function
+of the **joint ARCHIMEDEAN PHASE** `{arg tau(chi^j)}_j` and the maximal coherence over the p frequencies b.
+GK says nothing direct about the archimedean argument `arg tau(chi)` in C; that is precisely the OPEN
+BGK joint-phase non-conspiracy. So pinning the floor from GK requires the open lemma — not closed.
+
+**Probe (`scripts/probes/probe_conjecture_refute_C28_grosskoblitz_period.py`, commit `6b3ae67e0`):**
+proper `mu_n` (n=8,16,32, 2-power), p prime, `p >> n^3` (margin 2x-20x), never `n=p-1`. Verified the
+Gauss-period decomposition reproduces `eta_b` exactly (recon err ~1e-11), then compared the actual floor
+`B = max_b|eta_b|` against a random-archimedean-phase null (replace each `arg tau(chi^j)` by a uniform
+random phase, keep `|tau|=sqrt(q)`, same DFT sup). If GK forced sub-random coherence, B would sit
+SYSTEMATICALLY BELOW the null (`gap_sigma >> 0`). Result: `gap_sigma <= 0` in 8/10 cases, percentile of B
+in the null 0.46-1.00; B sits AT or ABOVE the random-phase mean (n=16,32 small-margin cases B notably
+above). GK phases are statistically indistinguishable from random for the DFT sup — they add NO archimedean
+rigidity. Consistent with `deltastar-407-route3-gauss-phase-pseudorandomness-2026-06-13.md` (floor IS the
+random-phase value; the residual core is Gauss-sum joint phase non-conspiracy = BGK) and the
+open-avenue inventory (Stickelberger/Hasse-Davenport "orthogonal" to the sup-norm handle).
+
+| n | p | p/n^3 | B/sqrt(n) | null_mean/sqrt(n)~ | pctile | gap_sigma |
+|---|---|---|---|---|---|---|
+| 8 | 1553 | 3.03 | 2.539 | 2.39 | 0.77 | -0.64 |
+| 8 | 10289 | 20.10 | 2.728 | 2.78 | 0.47 | 0.20 |
+| 16 | 12401 | 3.03 | 3.130 | 2.68 | 0.96 | -2.05 |
+| 32 | 65537 | 2.00 | 4.457 | 2.85 | 1.00 | -7.82 |
+
+**Net:** C28 is NOT a closure. The "exact evaluation" is genuine but lands in the WRONG metric (p-adic),
+leaving the archimedean sup-of-DFT — the BGK joint-phase wall — fully open. Falls on the secretly-open horn.
