@@ -2013,6 +2013,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SpectrumCosetLevelBound
 import ArkLib.Data.CodingTheory.ProximityGap.SpernerCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.SplitPencilBound
 import ArkLib.Data.CodingTheory.ProximityGap.SplittingLadder
+import ArkLib.Data.CodingTheory.ProximityGap.SpurSplitPrizeRegime
 import ArkLib.Data.CodingTheory.ProximityGap.SpurWeightThreeCollision
 import ArkLib.Data.CodingTheory.ProximityGap.SqrtFreeRSBridge
 import ArkLib.Data.CodingTheory.ProximityGap.StackJointAgreement
