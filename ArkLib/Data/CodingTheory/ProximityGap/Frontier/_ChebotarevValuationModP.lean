@@ -60,8 +60,8 @@ mechanism has three parts:
   lowest-order Taylor coefficient = the generalized-Vandermonde alternant. With
   `alternantModP := (alternant ri ci : ZMod p)`.
 
-* **`detPoly_aeval_eq_alternant_smul`** *(conditional on the order bound `LowerTaylorVanishes`)* : the
-  factorization `D = (ζ − 1)^{binom(n,2)} · aeval (ζ−1) h` with `h.coeff 0 = alternant ri ci`.
+* **`detPoly_factor`** *(conditional on the order bound `LowerTaylorVanishes`)* : the factorization
+  `D = (ζ − 1)^{binom(n,2)} · aeval (ζ−1) h` with `h.coeff 0 = alternant ri ci`.
 
 * **`chebotarev_of_alternant`** : the **all-`n` REDUCTION**
   `GeneralizedVandermondeNonzeroModP p n → SubOneValuationFinite p → LowerTaylorVanishes p →
@@ -319,3 +319,9 @@ theorem chebotarev_all_of_alternant
   exact chebotarev_of_alternant (hCrux n) hVal (hLow n) ri ci hri hci
 
 end ProximityGap.Frontier.ChebotarevValuationModP
+
+/-! ## Axiom audit -/
+#print axioms ProximityGap.Frontier.ChebotarevValuationModP.detPoly_aeval_via_taylor
+#print axioms ProximityGap.Frontier.ChebotarevValuationModP.detPoly_factor
+#print axioms ProximityGap.Frontier.ChebotarevValuationModP.chebotarev_of_alternant
+#print axioms ProximityGap.Frontier.ChebotarevValuationModP.chebotarev_all_of_alternant
