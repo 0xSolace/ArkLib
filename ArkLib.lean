@@ -1820,6 +1820,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QuotientDeepCore
 import ArkLib.Data.CodingTheory.ProximityGap.R4FiveSetSingleCoset
 import ArkLib.Data.CodingTheory.ProximityGap.R4LaneDCosetPoint
 import ArkLib.Data.CodingTheory.ProximityGap.REnergyMaxFiberBound
+import ArkLib.Data.CodingTheory.ProximityGap.REnergyTwoExact
 import ArkLib.Data.CodingTheory.ProximityGap.RSAveragingDeltaStarUpper
 import ArkLib.Data.CodingTheory.ProximityGap.RSDeltaStarLDGoodSide
 import ArkLib.Data.CodingTheory.ProximityGap.RSDeltaStarLargeField
