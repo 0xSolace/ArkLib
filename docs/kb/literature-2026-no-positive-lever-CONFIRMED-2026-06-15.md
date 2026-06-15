@@ -36,3 +36,16 @@ necessary condition (b-sensitive + deterministic-archimedean + genuinely L∞) s
 any future positive result must satisfy.
 
 Sources: eprint.iacr.org/2026/782, arxiv.org/abs/2604.09724, eprint.iacr.org/2025/2110 (Haböck MCA note).
+
+## ADDENDUM: M(n) is NOT single-arc subgroup discrepancy — it is the full Fourier L∞ (sharper necessary condition)
+Tested the constructive reading of the necessary condition: is M(n) the L∞ discrepancy of b·μ_n in a
+single short arc (the Burgess / subgroup-in-interval object)? NUMERIC (n=16,32,64, β=4, worst b exact):
+the correlation corr(|η_b|, max single-arc concentration) DECREASES with n (0.52 → 0.24 → 0.16), and the
+worst-b for |η_b| is NOT the most arc-concentrated b (conc@argM falls to 5 vs maxconc 12 at n=64). So
+**M(n) is NOT reducible to single-interval subgroup discrepancy** — even Burgess-type interval results do
+not directly give it. The worst-b alignment is a GLOBAL multi-scale phase-coherence (consistent with the
+cube-Fourier "energy spreads to middle Walsh weights = random-like" finding): M(n) is the genuine FULL
+FOURIER L∞ sup-norm of the subgroup-indicator's transform, strictly harder than any single-scale count.
+This SHARPENS the necessary condition's third clause: "genuinely L∞" = full-Fourier-L∞ (sup over all
+frequencies' coherent contribution), not single-arc. Every single-scale tool (intervals, energy, moments)
+is therefore structurally insufficient — confirming why the wall is irreducible to the standard toolkit.
