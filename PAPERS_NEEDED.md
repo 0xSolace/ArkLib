@@ -537,3 +537,12 @@ the COUNTING (#non-antipodal S with `p|N` at the binding band) = the BGK √-can
 | ML5 | **Distribution of mixed character sums and extremal problems for Littlewood polynomials** | arXiv **2510.06161** (2025) | ties Littlewood-extremal problems to character sums — the bridge between the Mahler lens and the BGK character-sum lens (same wall, two communities). |
 
 **Honest net:** the Mahler/Littlewood lens is a genuine NEW equivalent framing (different community, ML5 even bridges to character sums), and it DECIDES the §5.0 norm-bound sub-question NEGATIVELY: flat polynomials obstruct any `|N|<p` upper bound, so the wall is the counting/√-cancellation, not a loose house bound.
+
+## 2026-06-14 — δ* as a lacunary-polynomial root count (analytic handoff)
+The far-line list-decoding radius s*(n,k) = max #(μ_n-roots) of a (k+2)-term lacunary polynomial with support
+{a,b}∪{0..k-1}. Johnson-vs-floor = can such a polynomial have k+Θ(n/log n) roots in μ_n. Citable theory:
+- Bombieri–Zannier, algebraic/torsion points on subvarieties of G_m^n.
+- Filaseta–Lenstra; Lenstra, sparse/cyclotomic factors of x^n−1 and of lacunary polynomials.
+- Conway–Jones, "Trigonometric Diophantine equations"; Mann, "On linear relations between roots of unity".
+Connect to GG25 curve-decodability (list-size for 2-sparse-spectrum RS words). See
+docs/kb/deltastar-as-lacunary-polynomial-root-count.md.
