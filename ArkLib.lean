@@ -1609,6 +1609,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MDSMaxAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.MDSNearCountVolume
 import ArkLib.Data.CodingTheory.ProximityGap.MannFiberCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.ManyTermResultantBound
+import ArkLib.Data.CodingTheory.ProximityGap.ManyTermResultantSharp
 import ArkLib.Data.CodingTheory.ProximityGap.MarkedCurveDecodableMonotone
 import ArkLib.Data.CodingTheory.ProximityGap.MarkedCurveDecodableVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.MasterLoop45
