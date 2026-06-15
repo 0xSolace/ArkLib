@@ -1820,6 +1820,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QuotientDeepCore
 import ArkLib.Data.CodingTheory.ProximityGap.R4FiveSetSingleCoset
 import ArkLib.Data.CodingTheory.ProximityGap.R4LaneDCosetPoint
 import ArkLib.Data.CodingTheory.ProximityGap.REnergyMaxFiberBound
+import ArkLib.Data.CodingTheory.ProximityGap.REnergyTwoExact
 import ArkLib.Data.CodingTheory.ProximityGap.RSAveragingDeltaStarUpper
 import ArkLib.Data.CodingTheory.ProximityGap.RSDeltaStarLDGoodSide
 import ArkLib.Data.CodingTheory.ProximityGap.RSDeltaStarLargeField
@@ -2044,6 +2045,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.StepanovPointCountEngine
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovUnconditionalEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovVanisherExistence
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovWeilEngine
+import ArkLib.Data.CodingTheory.ProximityGap.StepanovWeilSqrtCorollary
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovWeilSubstrate
 import ArkLib.Data.CodingTheory.ProximityGap.StripEdgeDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.StripSupExactness
