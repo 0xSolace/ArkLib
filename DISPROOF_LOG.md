@@ -2,6 +2,38 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## ★ REDUCTION-MISMATCH — the lacunary-root reduction (63aa3b4ab) + DFT-uncertainty insight (6507e61aa) compute the WRONG δ*: max-single-witness root count (trivial n/2 binomial factor) ≠ the in-tree list-budget δ* (2026-06-15)
+
+Lens: the two freshest analytic handoffs reframe the prize s* as "max # of μ_n-roots of a (k+2)-term lacunary
+far-line polynomial P=x^a+γx^b−c (deg c<k)". Adversarial audit (rule 6): this object is NOT the in-tree
+list-budget s* the engine computes.
+
+EXACT FACTS (verified):
+1. Engine source (`scripts/rust-pg/src/main.rs`): `incidence(a,b;s)=local.len()` = **# distinct γ** with x^a+γx^b
+   agreeing with a deg<k codeword on a size-s subset; `s*=min{s : max_dir incidence(s) ≤ budget=n}` (a γ-COUNT /
+   list-size threshold). This is the prize δ* (p-independent, GPU-confirmed).
+2. The max-SINGLE-witness root count is ≈ n/2, governed by the binomial cyclotomic factor x^{n/2}+1. The witness
+   **P=(x−1)(x^{n/2}+1)=x^{n/2+1}−x^{n/2}+x−1** (line x^{n/2+1}+(−1)x^{n/2}; codeword 1−x deg1<k=2) has EXACTLY
+   **n/2+1 roots** in the thin 2-power subgroup μ_n ⊊ F_p^* — verified exactly over the PRIZE domain (proper
+   subgroup, order n verified, h^{n/2}≠1, prize-band p~n^4, never n=q−1):
+   n=8/p=7937→5, n=16/p=65537→9, n=32/p=1048609→17, n=64/p=16777729→33  (= n/2+1, δ*_maxroot=½−1/n).
+   This is **k-INDEPENDENT** (the k=2 witness already gives n/2+1). At n=8 a full γ-sweep confirms n/2+1 is the
+   GLOBAL max single-witness agreement (not exceeded). At n=16,k=4 a 4-sparse witness x^10−x^8+x^2−1 (=(x−1)(x+1)(x^8+1))
+   gives 10 roots — directly contradicting the KB table's stated "n=16,k=4 s*=7".
+
+WALL / constraint lemma: "max μ_n-root-count of a (k+2)-sparse far-line polynomial" = n/2+O(1) (k-independent at
+k=2, growing with k via deeper sparse cyclotomic factors), δ*_maxroot→½ — BELOW Johnson at small n, DIVERGING from
+Johnson as n grows. The in-tree list-budget s* sits at Johnson. **They differ by Θ(n).** Therefore the lacunary-root
+/ DFT-uncertainty reduction does NOT compute the prize δ*; it computes a trivially-small quantity dominated by the
+maximally-composite divisor structure of n=2^μ. The Mann/Conway–Jones/Bombieri–Zannier handoff is real ONLY for
+the single-witness object (solved there: n/2). For the prize, the right classical object is **list-size/multiplicity
+of (k+2)-sparse polynomials at Johnson radius**, not max-root-count. Consistency check: for n PRIME, x^n−1=(x−1)Φ_n
+with Φ_n DENSE ⟹ no sparse high-deg factor ⟹ single-witness roots cap at k+O(1) (matches KB "prime⟹capacity"),
+so the prime-vs-smooth dichotomy is real for the single-witness object — the error is equating it with the prize δ*.
+
+Probe: `scripts/probes/probe_407_lacunary_cyclotomic_mechanism.py` (exact char-0) + inline exact-F_p (4 prize-band
+primes). Pushed 71722be4f. NOT a closure — removes a false analytic lead + re-localizes the open core.
+
 ## ILO / anti-concentration is NOT the lever — thin μ_n is anti-concentrated WORSE than random (larger sup-norm, larger small-ball); reconciles the thin depth-advantage with the large thin sup-norm (2026-06-15)
 
 Lens: inverse-Littlewood-Offord (Tao–Vu / Nguyen–Vu). M(n)=max_{b≠0}|η_b|, η_b=Σ_{x∈μ_n} e_p(bx), is
