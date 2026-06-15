@@ -973,6 +973,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.KKH26ConcreteCeilingN8
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LaneB_Q2_SparsityExclusive
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LargeSieveParsevalCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LineBallSingleCodewordEnvelope
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ListAtBinomialExtremalTwo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NAShaoFloorBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NearRamanujanFromDCSaddle
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NearRamanujanFromSaddle
