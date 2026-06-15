@@ -13800,3 +13800,38 @@ white-noise-distributed with a constant fraction in every magnitude band.
 C26-Stickelberger, C46-Mahler: D7 objects pin valuation/unit/symmetric-orbit or conjugate-mean data;
 none sees the single-conjugate archimedean sup, which is a constant-density bulk phase phenomenon.
 Probe: scripts/probes/probe_d7_height.py. Signed wf-D7.
+
+---
+
+## D8 (geometry/dynamics/physics): heat-trace, Lee-Yang, quasicrystal-diffraction — REFUTED
+
+Lane D8 (#444). Faithful regime p prime, p≡1 mod n, μ_n proper 2-power subgroup, p~n^4, p>n³;
+probes at n=16/32/64. Three physics functionals proposed to bound M=max_{b≠0}|η_b| beyond Johnson.
+
+**D8-1 Heat trace / spectral-zeta Θ(t)=Σ_b e^{−t η_b²}.** Best log-sum-exp bound on max(η²):
+```
+  n= 16  max eta^2=  191.5  heat-bound=  208.3  ratio=1.088  mean*log(p)=  177.4
+  n= 32  max eta^2=  528.2  heat-bound=  588.0  ratio=1.113  mean*log(p)=  443.6
+  n= 64  max eta^2= 1484.5  heat-bound= 1681.3  ratio=1.133  mean*log(p)= 1064.7
+```
+The bound = max·(1+ε) with ε GROWING in n; it requires already knowing max, and mean·log(p)
+(2nd-moment ceiling) tracks max within a constant. No max-control independent of the 2nd moment.
+**Verdict = REFUTED (collapses to Johnson/2nd-moment).** Kills 444-N3.
+
+**D8-4 Lee-Yang zeros** of Z(z)=∏_b(1−z η_b²): zeros z=1/η_b² are real-positive (η_b²≥0), no
+Lee-Yang circle, ferromagnetic LY theorem inapplicable. **Verdict = REFUTED (vacuous, no curve).**
+
+**D8-5 Quasicrystal/model-set diffraction, "Bragg height ≤ C·n".** FALSE:
+```
+  n= 16  max(eta^2)/n = 11.97   log(p/n)= 8.32
+  n= 32  max(eta^2)/n = 16.51   log(p/n)=10.40
+  n= 64  max(eta^2)/n = 23.19   log(p/n)=12.48
+```
+Bragg peak grows ~log(p/n), NOT bounded by Cn. **Verdict = REFUTED (countermodel).** Kills 444-E13.
+
+**Side measurement (not a refutation):** level-spacing ratio of {η_b²} is ⟨r⟩=0.460→0.527→0.575,
+drifting toward GUE (0.603), NOT Poisson (0.386) — local-scale GUE repulsion contradicts the global
+"white-noise" label. The log-gas edge √(2 ln m)·√n reproduces the target √(n log(p/n)) (ratio→0.96)
+but only as white-noise/RMT extreme-value heuristic = the FHK route already refuted-as-rigorous;
+no deterministic char-p phase injected. Probes: scripts/probes/probe_d8_physics_walls.py,
+probe_d8_loggas_sff.py, probe_d8_leeyang_diffraction.py. Signed wf-D8.
