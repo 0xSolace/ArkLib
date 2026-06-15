@@ -1,5 +1,44 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — CONJECTURE C46 "Mahler-Measure / Lehmer Structure-Aware Norm on the Period Polynomial" SECRETLY-OPEN (probe_conjecture_refute_c46.py, commit ad99a21774)
+
+Conjecture C46 (issue #444, gauss-period-exact, feasibility 2): a "structure-aware Mahler measure"
+of the period polynomial `Ψ_p(T)=∏_{cosets}(T−η_c)` (weighting by the antipodal cyclotomic
+structure) gives a SHARPER house bound than Cauchy, reaching `house=M(μ_n) ≤ √(2n log p)` PAST
+Johnson via the proven Myerson coefficient structure + in-tree antipodal pair `z+(−z)=0`.
+REDUCES-TO: Mahler measure / Lehmer house inequality + Myerson coefficients + antipodal structure.
+**Verdict: secretly-open** — it hides the open BGK/Paley sup-norm. The fourth distinct probe to
+hit the **house≠symmetric-functional archimedean gap** (same wall as C08-Myerson, C26-Stickelberger,
+C27-HasseDavenport, C9). Already pre-flagged as a wall-risk in `docs/kb/deltastar-100-attacks/README.md`
+lines 281/529-533 ("Mahler-measure 'house' framing is elegant but the m periods are NOT equimodular
+... real content = |conjugate| equidistribution = the Sato-Tate/Paley wall; reduces to the open core").
+
+LOAD-BEARING FACT (in-tree): `house(η)=max_c|η_c|=max_{a≠0}|Σ_{x∈μ_n}e_p(ax)|=M(μ_n)` = THE OPEN
+OBJECT (single-conjugate L∞). Mahler measure `Mah(Ψ)=∏_{|η_c|>1}|η_c|` is a SYMMETRIC PRODUCT over
+the `m=(p−1)/n` conjugates. The ONLY honest Mahler/Lehmer house inequalities are (a) `house ≤ Mah(Ψ)`
+(trivial, = product, exponentially-in-m too weak) and (b) `house ≥ Mah^{1/#big}` (geometric mean of
+the big roots, a LOWER bound). C46 needs a sharp UPPER bound = the wrong direction for a product.
+
+DECISIVE PROBE (proper μ_n, n=2^μ μ=3..5, p prime, p~n⁴≫n³, NEVER n=p−1, 4 primes/n):
+- **T1 target shape REAL:** house=M(μ_n)=7.56, 13.84, 22.98 (n=8,16,32) ≈ √(n log p) below trivial n.
+- **T2/T5 Mahler is exponentially-in-m too weak as an upper bound:** `log10(Mah)=158, 1710, 17683`
+  (grows LINEARLY in m=516, 4096, 32769) → `log10(Mah/house)=157, 1708, 17682`. "house ≤ Mah(Ψ)" is
+  astronomically weaker than the target `√(2n log p)=11.5, 18.8, 29.8`. The Myerson/Cauchy coefficient
+  route is the SAME symmetric functions, already shown 10²–10³ too weak in C08 (rerun confirmed).
+- **T3 antipodal weighting halves the exponent AT MOST:** η_{−c}=conj(η_c) (−1∈μ_n) gives equal-
+  modulus pairs, so a fully antipodal-aware Mahler is `Mah^{1/2}` = a product over m/2 roots, still
+  `log10≈79, 855, 8841` ≫ target. Collapsing product→max is NOT what the antipodal relation does.
+- **T4 DECISIVE — Mahler does NOT determine house:** at FIXED n, house spread = 0.10, 0.64, 1.14 is
+  DECOUPLED from log10(Mah) spread = 2.65, 3.60, 91.55. A symmetric product cannot pin the single
+  largest conjugate. `Mah^{1/#big}=2.6, 3.3, 4.2 ≈ √n` (the geometric mean) = the L²/JOHNSON scale.
+
+The `√(log p)` prize factor IS the conjugate-argument SPREAD `{arg η_c}` = the open BGK/Paley sup-
+norm (best PROVEN `n^{1−o(1)}` BGK ineffective; di Benedetto `n^{0.989}` only `n>p^{1/4}`, outside the
+prize). The in-tree `L2MahlerNormBound.lean` already proves the strongest unconditional Mahler/AM-GM
+norm bound, and its `l2_dominates_house` theorem makes the direction explicit: L²/Mahler is a LOWER
+bound on the house. No coefficient weighting converts the symmetric product into the L∞ house.
+Probe: scripts/probes/probe_conjecture_refute_c46.py, commit ad99a21774. Same wall as C08/C26/C27/C9.
+
 ## 2026-06-15 — CONJECTURE C47 "Cocycle Phase-Alignment Multi-Level for the Gauss-Sum Arguments" SECRETLY-OPEN / REDUCES-TO-JOHNSON (probe_conjecture_refute_C47_cocycle_phase.py, commit abec15e6e)
 
 Conjecture C47 (issue #444, gauss-period-exact, feasibility 2): a multi-level cocycle/coboundary
