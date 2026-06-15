@@ -12892,3 +12892,58 @@ mod-p wraparound artifact) — that part is a genuine clean sub-finding — but 
 Probes: `scripts/probes/probe_a10_entropy_compression.py`, `probe_a10_entropy_pscaling.py`,
 `probe_a10_list_vs_entropy.py`, `probe_a10_ndist_scaling.py`, `probe_a10_mann_identification.py`
 (commit cf51879f7 on branch main).
+
+---
+
+## A9 [Kelley-Meka 2023 / PFR] on the bad-γ + vanishing-subset locus — REDUCES-TO-WALL (energy/moment), two named obstructions (2026-06-15)
+
+ANGLE (manifesto §IV.9, #444): relocate the cancellation locus to *post-2023 structure theory* —
+the now-PROVEN Polynomial-Freiman-Ruzsa theorem (GGMT 2023) + Kelley-Meka exp-improved Roth (2023).
+NEW LEMMA attempted: the bad-γ locus (a "3-term-progression-like / vanishing-subset" additive
+object) is forced by KM/PFR into ≤ n cosets of a bounded-index subgroup PAST Johnson, giving
+M(μ_n) ≤ C√(n log). Distinct from the prior PFR-contrapositive-on-crossCell entry (that fed PFR
+the *energy* of μ_n; this feeds it the *bad-γ set* and the *vanishing-subset locus* directly, which
+is what the open-avenue inventory B2 actually asks).
+
+PROBES (proper μ_n: p prime, n=2^μ, n|p-1, p≫n^3, never n=p-1; commit eead0a0b3 on main):
+`scripts/probes/probe_a9_vanishing_subset_km.py`, `probe_a9_badgamma_pfr_fast.py`,
+`probe_a9_kelleymeka_pfr_badgamma.py`.
+
+TWO INDEPENDENT KILLS:
+
+- **(A) Kelley-Meka is the WRONG theorem (3AP-free + density-vacuity).** KM is one-directional: a
+  3AP-FREE set of density α has α ≤ exp(−c(log p)^{1/12}) ≈ 1/(log p)^{1.04}. It constrains
+  3AP-free sets only *from being large*. Exact facts: μ_n IS additively 3AP-free (#3AP=0 for
+  n=8,16,32,64) but its density α=n/p is catastrophically BELOW the KM ceiling — at the prize scale
+  (n=2^30, p≈2^158) the KM ceiling is 2^-7.05 while α=2^-128, **121 bits below**. So KM's implication
+  is vacuously satisfied; its contrapositive (density>ceiling → ∃3AP, the only form that lower-bounds
+  a relation count) never fires. This is the post-2023 upgrade of the already-logged Bloom-Sisask /
+  Chang density-vacuity kill: KM improves the *exponent of the ceiling*, but at α=2^-128 the route
+  never reached the ceiling to begin with. (And for the bad-γ SET specifically: it is 3AP-RICH for
+  n≥16, #3AP=32 at n=16, 81344 at n=32 — KM does not even apply there.)
+
+- **(B) the locus is already at the Wick FLOOR (no sub-Wick room for ANY structure theorem).** The
+  only quantity a structure theorem could improve is the additive energy E_r(μ_n), through the moment
+  bound M ≤ (p·E_r)^{1/2r}. Exact energy is at the Wick floor: E_r/((2r-1)‼·n^r) → 1 from BELOW
+  (E_2/Wick = 0.875, 0.938, 0.969, 0.984 for n=8,16,32,64; monotone-to-1 at r=3,4 too). The char-0
+  Wick value IS the true energy; PFR/KM can only *upper*-bound E_r, and no upper bound below the
+  truth exists. So the moment route delivers the same M ≍ √(n log q) Paley/BGK wall, never past it.
+
+- **(C) PFR is structurally vacuous + wrong coset type on the bad-γ set.** Measured doubling of the
+  band-1 bad-γ set: K=|B+B|/|B| = 2.25, 7.04, 24.01, 173.75 for n=4,8,16,32 (≈ n/2-and-growing,
+  maximal). PFR's cover needs K^C ≥ |B| cosets at every row = VACUOUS (no compression). Moreover the
+  bad-γ set is ALREADY a union of *multiplicative* μ_d-cosets (orbits = 1,3,7,141 for n=4,8,16,32;
+  proven group-like by the dilation/scaling identity, deltastar-407-elekes-szabo-grouplike) — the
+  WRONG coset type for PFR (which produces additive subgroup cosets). PFR's conclusion is both
+  redundant (the coset structure is a theorem) and of the wrong kind.
+
+NET: A9 falls on the **energy/moment horn** (manifesto "PROVEN DEAD: all moment/energy"). It does
+NOT reduce to Johnson per se — the bad-γ *count* question is the open Dvornicich-Zannier / N0-poly
+statement — but the SUP-NORM route via energy lands squarely on the energy wall, and the additive
+structure theory is in the wrong universe (additive vs multiplicative; density 2^121 below the KM
+window; energy already minimal). The KM/Chang spectral-boosting lineage bounds the *count/dimension*
+of large frequencies but never the single max (the same L∞/L² √n gap already named at faces 3↔4).
+
+IN-TREE: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_A9KelleyMekaPFRNoGo.lean` (axiom-clean:
+propext, Classical.choice, Quot.sound) — `km_vacuous_below_ceiling`, `km_trigger_dead_prizescale`,
+`energy_floor`, `moment_route_ge_card`. `result_type = reduces-to-wall(energy/moment)+km-density-vacuous+pfr-wrong-coset-type`.
