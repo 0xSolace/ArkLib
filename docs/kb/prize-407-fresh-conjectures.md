@@ -192,3 +192,13 @@ exactly ⟹ A_r = E_r^{(0)} − n^{2r}/q ≤ Wick (since E_r^{(0)}≤Wick, Lam-L
 Anom=0. Anomaly Suppression holds with FULL margin (not just ≤ target) at accessible n. OPEN ASYMPTOTIC:
 for large n, bad primes (≤(2r)^{n/2}) CAN reach the prize regime [n^4, (2r)^{n/2}] at r~log q; whether the
 worst prize prime stays good (or Anom≤n^{2r}/q) there = the BGK content. /tmp/probe_anom_scaling.py.
+
+## DIRECT ATTACK on Anomaly Suppression — reduces EXACTLY to D-equidistribution mod 𝔭 = BGK
+`Anom_r = Σ_{D≠0} r(D)·1_{𝔭|D}`, D = Σx−Σy (sum of 2r dyadic roots), r(D)=#tuples giving D. The norm-p
+ideal 𝔭 has "density" 1/p in ℤ[ζ_n]/𝔭 ≅ F_p. **IF D equidistributes mod 𝔭** (over the n^{2r}−E_r^{(0)}
+non-matching tuples), then `Anom_r ≈ (n^{2r}−E_r^{(0)})/p ≤ n^{2r}/p` — EXACTLY the Anomaly-Suppression
+target. So the heuristic gives the precise bound (validating the conjecture). BUT `D mod 𝔭 = Σω^{a_i} −
+Σω^{b_j}` over μ_n ⊂ F_p ⟹ D-equidistribution ⟺ the subgroup-sums equidistribute mod p ⟺ small incomplete
+character sums = BGK. **CONCLUSION: Anomaly Suppression ⟺ μ_n-sum equidistribution mod 𝔭 = BGK**, with the
+uniform-density heuristic giving the precise target n^{2r}/q. This is the cleanest statement of why the
+prize = BGK at the anomaly level: it is the equidistribution of dyadic-subgroup sums mod the prize prime.
