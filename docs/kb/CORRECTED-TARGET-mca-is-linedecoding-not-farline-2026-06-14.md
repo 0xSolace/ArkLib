@@ -54,3 +54,25 @@ relation ideal is fully classified — no open math), IF the rigidity⟹collinea
 
 In-tree to build on: GG25SpreadBound.lean (Lemma 3.2), curve-decodability defs, LamLeungMultisetAntipodal,
 _AntipodalEvenOddDescent.lean. Paper: ~/papers/arklib/eprint-2026-680-ABF26.pdf (text /tmp/abf26.txt).
+
+## ADDENDUM: §5 gives the UNIFICATION (one conjecture, both challenges) — smooth removes the √-loss
+ABF26 §5 (LD <-> CA/MCA connections):
+- **Thm 5.1 [GCXK25].** |Λ(C,δ)| ≤ L ⟹ ε_mca(C, 1−√(1−δ+η)) ≤ O(L²·n/(η|F|)). So LIST DECODING ⟹
+  MCA — but at a √-DEGRADED radius (capacity-LD δ≈1−ρ ⟹ MCA only at 1−√ρ = JOHNSON). This √-loss IS
+  the Johnson signature that has walled the whole session.
+- **Removing the √-loss is FALSE in general** [Thm 5.4, BGKS20]: RS[F,F,|F|/8] (char 2, full-domain) is
+  list-decodable but ε_ca ≥ 1−1/|F| at 1−ρ^{1/3}=0.5. BUT this counterexample is FULL-DOMAIN (L=F). The
+  paper explicitly says: "for codes where the gap between |F| and |L| is large (the SNARK use-case),
+  one could still hope for [LD ⟹ CA tightly]." THAT IS THE PRIZE REGIME (|F|~n·2^128 ≫ n=|L|).
+- Thm 5.2/5.3: CA ⟹ list decoding (the converse necessity).
+
+⟹ TWO routes to the prize, both via the smooth μ_n structure:
+- **(A) Direct line-decoding** (Thm 4.21): explicit smooth RS is (1−ρ−c/log n, n, n+1) line-decodable.
+  Lever: antipodal rigidity forces collinearity. [this doc's main conjecture]
+- **(B) §5 unification**: for SMOOTH domain (|F|≫n), LD at δ ⟹ MCA at δ WITHOUT √-loss (the open
+  special case §5 poses, FALSE only for full-domain). Then a near-capacity LD bound for smooth RS gives
+  BOTH challenges. Lever: smooth/antipodal structure kills the √-loss that full-domain suffers.
+Both isolate the SAME thing: the smooth μ_n structure must break the √-loss / force collinearity. The
+antipodal/Lam-Leung rigidity (closed, fully classified) is the candidate that does it. Line-decoding is
+strictly stronger than MCA and bounds the close-codeword list structure, so a single line-decoding
+theorem for explicit smooth RS could close BOTH grand challenges simultaneously (the goal's requirement).
