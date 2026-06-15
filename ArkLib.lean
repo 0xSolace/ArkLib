@@ -965,6 +965,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyCapacitySidePrime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerExtremal
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerJohnsonRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalEvenOddDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
@@ -1022,6 +1023,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseRootCheck
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerSpikeBetaGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VietaScopeGapNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ZModDFTParseval
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2NA_restriction_moment_collapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2ND_theta_fixedpoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2NG_partition_rank_vacuous
