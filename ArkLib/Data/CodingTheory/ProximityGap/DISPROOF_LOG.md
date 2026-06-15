@@ -1,5 +1,40 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — CONJECTURE C24 "Relaxed-rMDS additive-inflation" REDUCES-TO-JOHNSON (probe_c24_relaxed_rmds_additive.py)
+
+Conjecture C24 (issue #444, gmmds-homds): use BGM's relaxed `MDS(L+1) ⟹ list ≤ L` and claim the
+in-tree corank deficiency `Θ(a)` only ADDITIVELY inflates the list (`L_relaxed = L_generic + Θ(a)`),
+with `Θ(a²)` slack `<` budget at prize scale, pinning `δ* ≥ 1−ρ−c'/log n` past Johnson.
+Verdict: **reduces-to-johnson** (with a secretly-open undertone). Two independent defects, both
+measured prize-faithfully (PROPER μ_n, p PRIME, p ≈ 8n³ ≫ n³, n < p−1). Probe
+`scripts/probes/probe_c24_relaxed_rmds_additive.py`, commit `9daa05149`. Sibling to C23/C43/C44.
+
+DEFECT 1 — "additive inflation" MIS-READS BGM's relaxed theorem (the fatal semantics error).
+BGM's relaxed bound is `list ≤ (relaxation order) − 1`: the list size IS the order at which the code
+is still MDS, minus one. The CORANK is precisely the deficiency in the order at which MDS HOLDS —
+`MDS(ℓ)` holds ⟺ every order-≤ℓ generalized-Vandermonde minor is full rank ⟺ corank 0 at all
+orders ≤ ℓ. A corank-`d` deficiency at order `a` means `MDS(a)` FAILS, so the smallest `L` for which
+the relaxed hypothesis `MDS(L+1)` holds forces `L+1 ≥ a`, giving `list ≤ a−1 = Θ(a) = Θ(n)`. The
+corank does NOT add on top of a generic `O(1/η)` list; it SETS the relaxation order, collapsing the
+bound to the TRIVIAL `Θ(n)` counting list (= the whole far-coset orbit; orbit-count L3: `I ≤ n`).
+`L_relaxed = L_generic + Θ(a)` is a category error.
+
+DEFECT 2 — the corank IS `Θ(a) = Θ(n)`, confirmed exactly (so even C24's own premise gives `Θ(n)`).
+The in-tree law `corank_Fp(μ_a;E) = a − #distinct(e mod a)` reproduced **5400/5400 EXACT, char-faithful**
+over proper μ_n at p ≈ 8n³. On the binding interior coset `a = n/2` the max list-relevant corank is
+`d = n/4 = Θ(n)` (measured: 2, 4, 8, 16 for n = 8, 16, 32, 64). So the relaxation order needed is
+`Θ(n)` ⟹ `list ≤ Θ(n)`. `Θ(a²) ~ n²` "slack" is moot: the OBJECT being bounded is already `Θ(n)`
+= the whole orbit = the trivial counting bound = the open BGK/counting regime, NOT a poly,
+below-orbit, between-Johnson-and-capacity pin.
+
+NET. The only regime where relaxed-MDS yields a USEFUL (poly, sub-orbit) list is order ≤ the generic
+MDS order = Johnson. Past Johnson the structural corank of μ_n is `Θ(a)` (the antipodal/HOMDS horn of
+the route-elimination meta-theorem), so the honest relaxed-MDS bound is the trivial `Θ(n)`. Beating it
+needs the open p-dependent count of the actual far-coset list (= the BGK/Paley wall). C24 relocates,
+does not remove, the wall. DO NOT re-claim "relaxed rMDS_d additively inflates the μ_n list by `Θ(a)`
+with `Θ(a²)` slack ⟹ δ* past Johnson" — the corank sets the order, not the slack, and the bound is
+trivial. Same wall as P7 (DISPROOF_LOG line ~99), C23, C43, C44.
+
 ## 2026-06-15 — CONJECTURE C26 "Stickelberger-House" SECRETLY-OPEN (probe_c26_stickelberger_house.py)
 
 Conjecture C26 (issue #444): the dyadic Gauss-period house (= max archimedean conjugate
