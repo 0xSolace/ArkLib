@@ -1947,6 +1947,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ShawOperator
 import ArkLib.Data.CodingTheory.ProximityGap.ShawOperatorDual
 import ArkLib.Data.CodingTheory.ProximityGap.ShawSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.ShellFourierKrawtchouk
+import ArkLib.Data.CodingTheory.ProximityGap.ShortRelationNormBase
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonDoubledThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.SidonEnergyIff
