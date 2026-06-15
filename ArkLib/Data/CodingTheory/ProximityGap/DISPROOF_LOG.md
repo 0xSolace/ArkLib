@@ -13570,3 +13570,100 @@ trivial Stepanov degree bound, already in StepanovStructuredVacuous).
 Probe committed: scripts/probes/probe_i015_multivar_dyadic_stepanov.py (proper mu_n, n=2^mu | p-1,
 p prime, p>>n^3, minimal-2-adic m ODD NON-Fermat, NEVER n=p-1; mu=2..10; exact mod-p rank + curve
 pullback bookkeeping).
+
+================================================================================
+wf-D2 (#444 lane D2, arithmetic geometry / cohomology): per-coset cohomological
+trace bound is VACUOUS in the prize regime n < sqrt(p).
+
+CLAIM REFUTED: "package eta_b = tr(Frob_b | M) for the Mellin/hypergeometric sheaf
+M = j_! delta_{mu_n} *_! L_psi on G_m (Katz, Convolution & Equidistribution), then
+Deligne/Weil-II gives |eta_b| <= rank(M) * sqrt(q) deterministically per coset b."
+
+COUNTERMODEL (probe_d2_ag_cohomology.py, block D2-a, exact M(n) by brute |sum e_p(bx)|):
+  n=8  p=521   M=6.562   sqrt(p)=22.8   M/sqrt(p)=0.2875
+  n=16 p=1153  M=9.980   sqrt(p)=34.0   M/sqrt(p)=0.2939
+  n=32 p=2081  M=13.795  sqrt(p)=45.6   M/sqrt(p)=0.3024
+The true wall M(n) ~ sqrt(n log p) sits at ~0.29*sqrt(p) and is ALREADY BELOW one
+unit of sqrt(p). Any sheaf of rank r>=1 gives the bound r*sqrt(p) >= sqrt(p) >> M(n):
+the per-coset Weil bound OVERSHOOTS the truth by >3x even at rank 1, and grows with q
+(while M grows only like sqrt(log p)). This is the documented n < sqrt(p) vacuity of
+Weil/Deligne applied per-coset -- the SAME wall that kills Weil/sqrt-q, recast in the
+sheaf-trace language. The sheaf rank/conductor enters as a MULTIPLIER on the vacuous
+sqrt(q), never as a divisor; AG purity controls the AVERAGE over cosets (horizontal
+equidistribution), not the single-prize-prime SUP.
+
+The only non-vacuous AG content is the DEEP-MOMENT E_r at depth r~ln q (block D2-b:
+E_r^Fp / Wick = 1.0, 0.875, 0.667 for r=1,2,3 at n=8 -- below Wick at small q; the
+forced char-p anomaly only appears at the prize prime at depth ln q), which is exactly
+the recognized open BGK crux, NOT closed by any cohomological repackaging.
+
+2-adic Newton-slope of the wall (block D2-c): v_2(m) = 0,3,0 across n=8,16,32 -- not
+rigid, no sub-Johnson 2-adic signal.
+
+MECHANISM CLASS: phase-blind / regime-vacuous. Cohomological purity is a |.|^2 statement
+about Frobenius eigenvalues on each stalk (caps at sqrt of fiber dimension * sqrt q) =
+the 2nd-moment / Johnson wall of the conservation law. Sheaf-theoretic packaging cannot
+inject phase that the trace function does not already carry.
+
+Probe: scripts/probes/probe_d2_ag_cohomology.py  -- signed wf-D2.
+
+================================================================================
+wf-D3 — Harmonic analysis & time-frequency (#444). Three NEW time-frequency
+mechanisms REFUTED by direct measurement of the period spectrum {|eta_b|}.
+
+REFUTED — Cotlar-Stein almost-orthogonality on the 2-adic VALUATION partition
+(distinct from the already-refuted C26 block partition). Decompose the Cayley
+operator by v_2(b); the almost-orthogonality sum AO = sum_j max_{v2(b)=j}|eta_b|
+GROWS relative to M: AO/M = 5.3, 7.6, 9.0, 11.0, 14.0, 15.2 across n=8..256.
+The valuation classes REINFORCE (same signature as C26's Gram 2.0-2.2), so
+almost-orthogonality fails to localize the sup. Phase-blind, caps at Johnson.
+
+REFUTED — Beurling-Selberg / large-sieve extremal majorant (idea L9.6/L12.5,
+never executed). The exact large-sieve constant for equispaced roots is Delta=p,
+so the only certified ceiling is sqrt(sum|eta_b|^2)=sqrt(n(p-1))~sqrt(p),
+vacuous (ratio to M = 4.8 .. 78, growing). Pins only the sqrt(2m ln m)
+random-phase upper envelope; the matching lower bound is the forbidden W4
+incomplete-Gauss-sum wall (non-contractive Jacobi cocycle |J|=sqrt q).
+
+REFUTED — Bochner-Riesz / Cesaro-Riesz spectral smoothing AND wavelet/Gabor/
+frame sparsity. (a) Fejer-smoothed sup / M DROPS 0.36 -> 0.06 as n grows:
+band-smoothing destroys the peak, so it lower-bounds and cannot upper-bound M.
+(b) The near-peak set #{b : |eta_b| >= M/2} is a POSITIVE FRACTION of p
+(0.02..0.44; up to 5120 frequencies at n=256), and the top-sqrt(p) frequencies
+hold a vanishing mass fraction (0.35 -> 0.04). The spectrum is white-noise /
+spread, NOT sparse and NOT band-localized.
+
+MECHANISM CLASS: phase-blind, denied by white-noise spectrum. Every
+time-frequency tool exploits sparsity, band-localization, or
+almost-orthogonality; the measured period spectrum has none, so all collapse to
+the L2/Johnson floor. The only phase-aware exit (Hausdorff-Young / L^q deep-
+moment, min_r C_r^{1/2r} tracks M with O(1) constant) merely RE-DERIVES the
+known char-p deep-moment crux E_r<=(2r-1)!! n^r at depth r~ln q -- not a new
+harmonic-analysis route.
+
+Probes: scripts/probes/probe_d3_timefreq.py,
+        scripts/probes/probe_d3_cotlar_sparsity.py  -- signed wf-D3.
+
+## wf-D4 (#444): probabilistic concentration routes for the BGK floor — refutations
+
+EXACT FFT spectra, cross-validated by brute char-sum. Target M(n)≤C√(n log(p/n)).
+
+- **Azuma/martingale on coset filtration (A1) REFUTED.** Bounded-difference |incr|=1 gives only
+  M≤2√(n ln m); VIOLATED at n=64, p=65537=2^16+1 (M=43.633 at b=64, worst ratio 1.036), and is
+  phase-blind (= Johnson ceiling) regardless. Brute-force-verified anomaly: M/√n=5.454.
+- **Gaussian-EVT / two-moment de-Finetti free step (A4 of CRACK 7) REFUTED.** M≤√(2·Var·ln(p−1))
+  is VIOLATED at n=64,p=65537 (sub-Gaussian flag=0). Two moments do NOT bound the max; the gap is
+  the deep-r~log m tail. The exchangeable substrate (#407) is correct; the EVT consumption is not free.
+- **Hypercontractivity / log-Sobolev (A5) REFUTED.** Real spectrum is SUPER-Gaussian at resonant
+  primes (kurtosis up to 4.775, 6th/Gauss up to 3.9 at n=64,p=65537), not sub-Gaussian; Bonami-Beckner
+  gives no edge — the 4th/6th-moment excess IS the obstruction.
+- **Path-signature / rough-path shuffle-norm (E10/A6) REFUTED (vacuous).** Depth-1 signature endpoint
+  equals η_b, so ‖sig‖≥|η_b|=M everywhere — an upper bound by something ≥ the target; no cancellation.
+- **Deterministic Cramér large-deviation rate (A2) REFUTED.** Worst-coset empirical CGF is not
+  sub-Gaussian with the variance constant (False at p=257,2689,7681); Cramér delivers only the variance
+  rate = Johnson.
+
+Common cause: the period spectrum carries a positive heavy tail (super-Gaussian, kurt>3) at the
+multiplicatively resonant primes; every domain-2nd-moment concentration device misses it. Only the
+char-p deep-moment transfer at r~log q (Lam-Leung char-0 proven; char-p open) is non-phase-blind.
+— wf-D4
