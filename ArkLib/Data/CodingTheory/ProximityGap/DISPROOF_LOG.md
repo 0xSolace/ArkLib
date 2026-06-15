@@ -12621,3 +12621,42 @@ NET: 6/6 confirmed, 0 flips. Consistent with the route-elimination meta-theorem 
 closed/p-independent object (coset-core, sparse-root, HOMDS corank, Galois resultant, two-layer
 boundary, saturation offset) caps at Johnson or is an open named Prop; past-Johnson needs the open
 BGK sup-norm wall. Probes: probe_444_batchverify_c16_c18.py, probe_444_batchverify_c25_resultant_galois.py.
+
+---
+
+## A3-newton-polygon-2adic (#444) = REFUTED (vacuous relocation to the 2-adic place)
+
+**Angle.** Manifesto relocation (B)/angle 3 (truly novel, never-attacked): the pencil
+`f_gamma(X)=X^a+gamma X^b-h(X)` (deg h<k) vanishing on a w-subset of `mu_n` (n=2^mu). Claim: the
+**2-adic Newton polygon** of `f_gamma` counts `mu_n` roots-of-unity by 2-adic valuation, giving a
+count SHARPER than Mann/antipodal PAST the Johnson boundary, exploiting that `mu_n` is 2-power so its
+hardest structure is 2-adic not archimedean.
+
+**Verdict = REFUTED.** Probe `scripts/probes/probe_a3_newton_polygon_2adic.py` runs the angle to
+ground in its three inequivalent formulations; each falls on a different horn, all from the same
+structural fact:
+
+1. **NP of `f` in `X` (roots = the agreement points): VACUOUS.** Over `Q(zeta_n)`, `n=2^mu`, the
+   prime 2 is totally ramified `(2)=(lambda)^{phi(n)}`, `lambda=1-zeta_n`, `v(lambda)=1`, `v(2)=n/2`.
+   **Every `mu_n` root is a 2-adic UNIT** (`v_lambda(zeta)=0`). So the NP segment carrying the unit
+   roots is FLAT (slope 0), length = total root count = the Mann count itself. The NP carries NO
+   information beyond Mann — it does not even reach Johnson, it is vacuous one step earlier.
+2. **`v_lambda` of the lacunary generalized Vandermonde minor: NON-DISCRIMINATING.** `v_lambda(det)`
+   is a sum of POSITIVE pairwise-difference valuations for ANY distinct rows (extremal-antipodal=50,
+   random=25 at n=16; 178 vs 125 at n=32), growing `~w^2*O(1)` UNIFORMLY. It cannot single out the
+   Johnson-extremal config, so it cannot forbid extra roots past Johnson.
+3. **2-adic valuation of the Gaussian period `eta_b` vs the archimedean wall `M`: DECOUPLED.** The
+   wall `M=max_b|eta_b|` is an ARCHIMEDEAN sup. 2 is UNRAMIFIED in `Q(zeta_p)` (p odd); the 2-adic
+   size of a period is a Frobenius-at-2 datum, decoupled from `|.|_inf`. The period polynomial has
+   degree `m=(p-1)/n`, so the 2-adic place is 1 of `~m` places — a product-formula/height bound
+   through it contributes `O(1)`, NOT `sqrt(n log)`. Prize-faithful checks (p prime, p=1 mod n,
+   p>>n^3, `mu_n` PROPER): M/sqrt(n log(p/n)) = 1.07 (n=8), 1.16 (n=16), 1.18 (n=32) — bounded,
+   archimedean, untouched by 2-adic data.
+
+**Why it falls (the manifesto's own conservation law, sharpened).** The relocation (B) hoped the
+2-power structure makes the hardest part 2-adic. But the wall is an ARCHIMEDEAN magnitude of a sum
+whose summands are 2-adic UNITS. The 2-adic completion sees no size separation among units; it is
+*blind* to the archimedean sup-norm. Mann (the archimedean shadow) at least pins the Johnson
+boundary; the 2-adic NP carries strictly LESS — it is vacuous. NOT a reduction to the BGK wall and
+NOT a reduction to Johnson: it is a vacuous relocation that never reaches either. Probe:
+`scripts/probes/probe_a3_newton_polygon_2adic.py` (committed).
