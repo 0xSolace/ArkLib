@@ -2,7 +2,7 @@ import { MiningRig } from "@/components/MiningRig";
 import { M } from "@/components/Math";
 
 const DELTASTAR = "https://deltastar.computer";
-const CONTACT = "mailto:shadow@shad0w.xyz?subject=Truth%20Mining";
+const CONTACT = "https://github.com/lalalune/ArkLib";
 
 export default function Page() {
   return (
@@ -216,7 +216,7 @@ export default function Page() {
           <p className="mono text-[0.86rem] mt-8" style={{ color: "var(--ink-2)" }}>
             build · commission · get in touch ·{" "}
             <a className="link" href={CONTACT}>
-              shadow@shad0w.xyz
+              github.com/lalalune/ArkLib
             </a>
           </p>
         </div>
