@@ -1964,3 +1964,54 @@ HONEST SCOPE: exact small-n (8 exhaustive-over-lines, 16 worst-family+random), m
 non-Fermat, p-independent. K at n=16 is a max over a worst-line family + random (not fully exhaustive),
 but every DEAD row is a rigorous lower-bound overflow. Python-only, no Lean changed => axiom-clean trivially.
 probe_407_census_supply_budget_feasibility.py + probe_407_census_supply_budget_exhaustive.py.
+
+================================================================================
+2026-06-15 The LAST NON-MOMENT route (per-frequency worst-coset tower descent) is
+DEAD: the worst-coset transfer ratio rho* is THICKNESS-INVARIANT and the two half-
+coset periods are ALWAYS sign-aligned (no signed cancellation) (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (the surviving residual, c.1263 verdict): "the surviving hope is NOT a moment/cancellation argument
+(both parities adverse) -- it must be a PER-FREQUENCY / STRUCTURAL estimate that does NOT pass through the
+period MOMENTS." Every prior per-freq probe was the sup constant R stratified by v2(INDEX) (supnorm_2adic)
+or the half-coset alignment over ALL b (c.287, thickness-monotone). UNPROBED: a per-frequency MULTIPLICATIVE
+DESCENT of the WORST-COSET period eta_{b*}(mu_n) onto level n/2 -- a non-moment tower recursion that, if
+contractive + thin-essential, gives M(n) <= rho* M(n/2) -> sqrt-growth by induction (a non-moment proof shape).
+
+OBJECT (exact, PROPER mu_n, m=(p-1)/n>1, NEVER n=q-1): real periods eta_b = sum_{x in mu_n} cos(2pi b x/p)
+(mu_n neg-closed => real). mu_n = mu_{n/2} u h*mu_{n/2} EXACT per-freq split: eta_b(mu_n) = A + B,
+A=eta_b(mu_{n/2}), B=eta_b(h*mu_{n/2}). Worst coset b* = argmax over coset reps (period depends only on
+b*mu_n). Measured rho*(n) = |eta_{b*}(mu_n)| / max_b|eta_b(mu_{n/2})| and the half-split sign align=sgn(A*B)
+at b*. Multi-prime incl. non-Fermat. Thick control: composite non-2-power n + its index-2 subgroup.
+Probe scripts/probes/probe_407_worstcoset_perfreq_descent.py.
+
+RESULT 1 -- align = +1.000 at the worst coset EVERYWHERE (thin n=16..128 AND thick n=12..40, all betas,
+incl. non-Fermat): at b* the two half-coset periods A,B ALWAYS have the SAME sign (reinforce, NO signed
+cancellation). Independently reproduces the c.287 alignment wall AT THE WORST COSET specifically -- the
+worst frequency is exactly where the halves phase-add, so there is NO per-frequency signed contraction to
+exploit. (The "tower self-similarity / phase alignment" candidate mechanism from the brief is dead at b*.)
+
+RESULT 2 -- rho* < 2 (sub-doubling) but THICKNESS-INVARIANT (the decisive rule-3 test): rho* decays slowly
+with n (sqrt-cancellation-consistent) but thin and thick lie on ONE rho*(n) curve, interleaved by n NOT by
+thickness (beta=4.0):
+  n=16 THIN 1.762 | n=24 thick 1.735 | n=32 THIN 1.584 | n=40 thick 1.432 | n=48 thick 1.411 |
+  n=64 THIN 1.559 | n=80 thick 1.304 | n=96 thick 1.432 | n=128 THIN 1.271
+The 2-power (thin) rows do NOT contract more than the non-2-power (thick) rows at comparable n; rho* is a
+function of n alone (generic sqrt-decay), NOT 2-power-essential.
+
+VERDICT (rule-4 mapped wall; rule-3 FAIL => the route is dead for the THIN-essential prize; rule-6 honest):
+1. The per-frequency worst-coset tower descent is THICKNESS-INVARIANT (rho* same thin/thick at matched n)
+   AND non-cancelling (align=+1 at b*). By rule-3 (CORE is FALSE in the thick window, so any thickness-
+   monotone mechanism is wrong) this descent CANNOT prove CORE: it would prove the (false) thick bound too.
+2. This closes the LAST named non-moment route. The board's residual after the even-moment (INFLATED) and
+   odd-moment (RIGID, anti-cancelling) walls was "a per-frequency structural estimate off the moments";
+   the natural such object -- a worst-coset multiplicative descent -- is now mapped as thickness-invariant
+   + non-cancelling. The worst frequency is precisely where the 2-adic coset halves REINFORCE; the thin
+   advantage (deeper Sidon depth) does NOT manifest as per-frequency worst-coset contraction.
+3. CONVERGENT with the whole board: per-line incidence -> Johnson, per-census -> Johnson/super-budget,
+   even moments inflated, odd moments rigid, per-frequency descent thickness-invariant. The open prize
+   content lives ONLY in the COLLECTIVE BGK aggregate cancellation among ALL frequencies simultaneously
+   (L7 WorstCaseIncidenceBounded), which no single per-object / per-frequency / per-parity face captures.
+HONEST SCOPE: rho* at large n (m>20000) uses a uniform coset-rep SAMPLE (so M is a lower bound on the true
+worst coset => rho* is a lower bound; a higher true rho* only STRENGTHENS the sub-doubling-but-invariant
+reading, never creates a thin advantage). Multi-prime incl. non-Fermat, p-stable. align is exact (full b*).
+CORE not closed, not faked. Python-only, no Lean => axiom-clean trivially. probe_407_worstcoset_perfreq_descent.py.
