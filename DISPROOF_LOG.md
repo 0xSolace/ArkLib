@@ -1389,3 +1389,47 @@ curve is computable p-FREE, no √-cancellation needed to EVALUATE it); the "sma
 half is refuted. New open object: the r-PROFILE I(n,r) (δ* = largest r with I(n,r)<=n) — a finite
 exact p-free computation, not a char-sum bound.
 Python-only numerics => axiom-clean trivially. — wf-D1
+
+================================================================================
+2026-06-15 LD-radius plateau thinness gate (#444): the per-direction n-plateau
+quantization is thinness-essential but ANTI-HELPFUL for the floor (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: the list-decoding reframing (KB deltastar-perdirection-decomposition-listdecoding.md +
+orchestrator redirect c.4704732... "the floor = mu_n list-decodes past Johnson"). Reframes
+delta* = 1 - s*/n where s*(D,k) = max over far monomial lines x^a+gamma*x^b of the largest
+agreement with RS[D,k] using <= budget=n scalars (the far-line LD radius). The per-direction
+incidence I_dir(a,b;s) is a clean step function whose PLATEAU value = exactly n ("divisibility
+quantization", n | #bad, attributed to mu_n being a subgroup). UNTESTED: is the plateau / the
+resulting s* THINNESS-ESSENTIAL (rule-3), or domain-invariant?
+
+METHOD: exact engine incidence (Python, cross-validated EXACTLY vs in-tree wf-D1 reference
+n=16,k=4 dir(10,4) s=6 => I=89). PROPER subgroup mu_n=<h>, |mu_n|=n verified, h^{n/2}!=1, prize
+band p~n^beta (beta=4 AND 5), p==1 mod n, index m>=2, NEVER n=q-1. RANDOM control = n distinct
+nonzero non-subgroup elements at the SAME prime (the exact rule-3 contrast). 21 random draws +
+3-prime q-invariance sweep. probe_407_ld_plateau_thinness{,_robust}.py.
+
+RESULT (refutation-grade, rule-6 hardened):
+1. SMOOTH s* is perfectly q-INVARIANT: s*=5 across {4129,4153,4177} (beta4) AND {32801,32833,
+   32969} (beta5) for both n=8,k=2 and n=8,k=2-beta5. Genuine p-independent structural invariant.
+2. The "=n plateau" QUANTIZATION is genuinely THINNESS-ESSENTIAL: 0/21 random draws ever produce
+   a clean max_dir-incidence = n plateau; the subgroup ALWAYS does (the n|#bad cyclic-orbit
+   divisibility). So rule-3: the plateau IS subgroup-specific. CONFIRMED.
+3. BUT the plateau is ANTI-HELPFUL / NEUTRAL for the floor — it pins s* AT-OR-ABOVE the random
+   LD radius, NEVER below it:
+   - n=8,k=2 (beta4 AND beta5): smooth s*=5 is ABOVE all 21 random draws (random s*=4, dist all 4).
+     delta*_smooth=0.375 < delta*_random=0.5. The subgroup plateau HOLDS the LD radius UP at the
+     budget boundary (s=5 where maxI=8=n=budget) => one step LARGER than random. mu_n is CLOSER to
+     the adversary, not further.
+   - n=8,k=3: smooth s*=5 sits INSIDE random [5,5] (degenerate equal).
+
+VERDICT (rule-4 mapped wall): the LD-reframing's central object — the per-direction n-plateau
+"divisibility quantization" the KB attributes to mu_n being a subgroup — is real & subgroup-specific,
+but it is a RED HERRING for proving s* small (delta* large): it makes the subgroup far-line LD radius
+EQUAL-OR-LARGER than a random domain's, the WRONG direction for the prize floor. The smoothness of
+mu_n does NOT suppress the far-line LD radius below random; if anything the cyclic-orbit quantization
+pins it slightly higher. So a CORE proof routed through "mu_n list-decodes BETTER (smaller LD radius)
+than random" is FALSE at probed sizes — the plateau thinness-essentiality is present but points the
+wrong way. CORE not closed, not faked. Consistent with the orchestrator redirect (floor = LD past
+Johnson is TRUE empirically i.e. mu_n ~ random) — and SHARPENS it: mu_n is not BETTER than random at
+the far-line LD radius, it is at-or-slightly-worse, so the floor cannot come from a thinness ADVANTAGE
+in this object. Python-only exact => axiom-clean trivially.
