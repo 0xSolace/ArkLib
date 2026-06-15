@@ -41,3 +41,32 @@ low-feasibility, both requiring genuinely new mathematics, consistent with the r
 
 Sources: arXiv:2307.01344 (Gorodetsky–Kovaleva), arXiv:2112.05441 (Untrau), Beukers–Smyth 2002 / Aliev–Smyth
 arXiv:0704.1747, arXiv:1409.3564 (Lindenstrauss–Varjú), arXiv:2401.04756 (BGK expository), Kelley–Meka 2023.
+
+## Survivor deep-dive (the 2 least-dead leads) — both FUNDAMENTAL barriers (proven)
+
+**Survivor 2 — exchangeable-white-noise → MAX route: RIGOROUSLY KILLED.** A moment/L^{2r}-union bound
+`Pr[max_b|η_b|≥T] ≤ m·E[η^{2r}]/T^{2r}` with the sharp Wick moment reaches `max ≤ c√(n log m)` IFF `c>√2`
+at `r* = (c²/2) log m` — derived exactly (Stirling on `(2r−1)!!`; the log log m terms cancel, so it is exact
+not slack; confirmed at 5 prize-faithful points). ⟹ the route PROVABLY needs `r≈log m` moments — exactly the
+deep range it was meant to bypass; the proven low moments (r=2 Sidon, r=3) are provably insufficient. The
+covariance/exchangeability structure buys nothing around the deep moments.
+
+**Survivor 1 — function-field / Weil: FUNDAMENTAL (the symmetry-minimal insight, concretely).**
+- Transfer barrier: Parseval pins `avg_b|η_b|²=n` (L² floor; verified 3.98/8.00/16.00) vs target L∞ peak
+  `n·log m`, ratio `√(log m)` GROWING — no family-average gives the worst case. G-K depth-o(n²) is an average
+  over all of `M_{n,q}`, non-transferable to a single sum.
+- Weil-on-the-curve barrier (made exact via Rojas-León Cor 5.3): `p≡1 mod n` ⟹ `μ_n` splits completely ⟹ the
+  base `{x:xⁿ=1}` is 0-DIMENSIONAL (n distinct F_p-points) ⟹ the curve `y^d=1+x` over `xⁿ=1` is a union of
+  0-dim fibers ⟹ NO `H¹` to extract a √-bound. Escape needs a nontrivial extension `F_{p_0^r}`, r≥2 (prize p
+  prime → r=1 → zero gain). Trivial Frobenius ⟹ no cohomology ⟹ Weil bounds nothing.
+
+## FINAL MAP: everything → BCHKS Conjecture 1.12, with three proven no-escape reasons
+Every angle (8 creative + 4 survivor sub-attacks) reduces to ONE residual: the char-p deep-moment energy
+bound `E_r(μ_n, F_p) ≤ (2r−1)‼·nʳ` at `r ≈ log m` for 2-power FFT primes `p≡1 mod n` (= BCHKS Conj 1.12).
+No escape, for three sharp PROVEN reasons:
+ (1) SYMMETRY-MINIMAL: `p≡1 mod n` ⟹ trivial Frobenius ⟹ Galois/Zilber-Pink/FF-symmetry tools dissolve.
+ (2) 0-DIMENSIONAL BASE: same splitting ⟹ no cohomology for Weil/Deligne to bound.
+ (3) NO LOW-MOMENT SHORTCUT: any union bound provably needs `r ≈ log m` moments (deep range).
+This is the cleanest characterization of the prize's hardness the campaign has: it is not "a hard char sum,"
+it is BCHKS-1.12 in the one regime engineered (by FFT-friendliness) to remove every symmetry/cohomology/
+shortcut lever — leaving only the direct deep-moment estimate, which is the recognized 25-yr-open core.
