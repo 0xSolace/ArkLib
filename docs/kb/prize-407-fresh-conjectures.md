@@ -74,3 +74,22 @@ IF the per-level deficit ratio≤~0.7 is provable — but does NOT reach prize �
 ~0.7, plateaus). HONEST: C1 = a potential new ELEMENTARY SOTA (n^{0.75}) via the dyadic tower, NOT a
 prize solution. The gap from 0.75 to 0.5 is the residual √-cancellation (the levels don't all deficit to
 0.5). Value: first dyadic-specific method beating the analytic SOTA; the deficit-proof is the open brick.
+
+## C2 confirmed + C1↔C2 CONNECTION (the "0.7 constant")
+Period histogram tail #{b≠0:|η_b|²/n>t}/q decays sub-exponentially: rate c≈0.66–0.70 (large t),
+mean=1.000 (Parseval). Union bound `M²/n = log(q)/c` predicts M EXACTLY (n=64: 16.6/0.7=23.7 vs
+measured 23.2; n=16,32 likewise). So C2 = the prize bound in DISTRIBUTIONAL form: periods sub-exponential
+(|η_b|²~Exp-like, rate ~0.7), M from union bound = √(n log q/c). Proving C2 = BGK (Gauss-period
+equidistribution with uniform-in-n tail; known fixed-n Katz, open uniform).
+**KEY CONNECTION: C2's tail rate (~0.7) = C1's per-level deficit ratio (~0.7)** — the SAME constant
+governs both (the dyadic period distribution's fundamental rate). rate=0.5 ⟹ √n (prize); measured 0.7
+⟹ n^{0.74}. So C1 (tower) and C2 (tail) are two faces of one quantity: the deviation of the dyadic
+period rate from the Gaussian ideal 0.5. The prize ⟺ proving this rate ≤ 0.5+o(1) uniformly in n = BGK.
+Probes /tmp/probe_c2_tail.py, /tmp/probe_c1_*.py.
+
+## C3 — concentration-from-Parseval: status
+M concentrates over primes (worst/median→1, measured). C3 (Var_p[M]=o(n) provable from 4th-moment
+q-stability) is the provability of that concentration. The 4th moment Σ_b|η_b|^4=q·E_2, and E_2=3n²−3n
+clean at prize primes (proven p>2^n) ⟹ E_2 q-stable in the clean regime. Efron-Stein / bounded-difference
+on M from E_2-stability is a concrete (non-BGK) target for the CONCENTRATION (not the absolute bound).
+Feasibility 6; would prove worst≈typical, reducing the prize to the TYPICAL M (still √n-scaling = BGK).
