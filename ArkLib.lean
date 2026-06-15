@@ -741,6 +741,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyZeroF73
 import ArkLib.Data.CodingTheory.ProximityGap.CubicSupplyZeroNTT
 import ArkLib.Data.CodingTheory.ProximityGap.CumulantDyadicConvolution
 import ArkLib.Data.CodingTheory.ProximityGap.CumulantDyadicDescent
+import ArkLib.Data.CodingTheory.ProximityGap.CumulantDyadicSplitExact
 import ArkLib.Data.CodingTheory.ProximityGap.CumulantFermatObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.CumulantGaussPeriodBound
 import ArkLib.Data.CodingTheory.ProximityGap.CumulantOrderThreshold
