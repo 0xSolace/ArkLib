@@ -356,6 +356,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AgreementMomentTwo
 import ArkLib.Data.CodingTheory.ProximityGap.AllRatesJohnsonInstances
 import ArkLib.Data.CodingTheory.ProximityGap.AllWitnessFloorGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.AllWitnessOwnershipFloor
+import ArkLib.Data.CodingTheory.ProximityGap.AntipodalBalanceBounded
 import ArkLib.Data.CodingTheory.ProximityGap.AttackLoop46
 import ArkLib.Data.CodingTheory.ProximityGap.AutocorrelationMax
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingFiberConservation
@@ -954,7 +955,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadScalarCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BetaGatedRatioGate
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BridgeBounded
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub
