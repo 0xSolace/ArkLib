@@ -67,3 +67,18 @@ theorem, exhaustive ledger) are the honest state; the floor itself requires a ne
 effective-equidistribution / deterministic-L∞ idea that does not currently exist.
 
 This document is the session capstone. It claims NO closure of CORE.
+
+## ADDENDUM — generic-chaining packaging (another fresh route, same wall)
+Treat b ↦ η_b as a DETERMINISTIC process on F_p with canonical metric d(b,b')² = 2(n − Re η_{b−b'}).
+Dudley / Talagrand generic chaining gives the sup bound M(n) = sup_b |η_b| ≤ C·∫√(log N(ε)) dε, which
+evaluates to **C·√(n·log m) = CORE** PROVIDED the η-process has **sub-Gaussian increments** over the
+d-metric nets (the √log gain is the chaining discount on N(ε) net points). This is a genuinely fresh
+framing (generic chaining / majorizing measures applied to the Gauss-period process) and it pins the
+exact missing input: the prize ⟺ "the increments η_b − η_{b'} are sub-Gaussian over the canonical
+metric." But the √log discount is intrinsically PROBABILISTIC — for a deterministic process it requires
+PROVING sub-Gaussian increment tails, which via van-der-Corput differencing (d² uses Re η_{b−b'}) is the
+autocorrelation / sub-Gaussian-periods statement = CORE/BGK. So chaining reduces to the wall too — but it
+is the cleanest statement of the precise probabilistic input the deterministic problem lacks (failure
+mode (ii), "absent randomness", made exact: the missing thing is sub-Gaussian increment concentration).
+Ledger entry: "generic chaining → CORE ⟺ sub-Gaussian η-increments; deterministic ⟹ needs the
+probabilistic input the subgroup doesn't supply unconditionally."
