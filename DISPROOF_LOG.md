@@ -2087,3 +2087,51 @@ excess value. Joins the board meta-pattern (every per-direction object is thickn
 tracking; only the aggregate BGK moment is open). RULE-6: does NOT close CORE, does NOT refute the in-
 tree oddExcess_card or the named Prop (the collapse genuinely fails; E IS the obstruction) -- it maps
 that the obstruction's VALUE is thin-independent. Python-only exact => axiom-clean trivially.
+
+================================================================================
+2026-06-15 POSITIVE FEASIBILITY: the CANONICAL open core B=max_stack #bad IS within
+the eps* budget at EVERY r (ratio 0.04-0.41) -- the census route's infeasibility is
+PURELY the #bad<=#alignable loss; target #bad DIRECTLY (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (the decisive follow-up to the census-infeasibility brick 5ac9fe4bc): I showed the census
+surrogate K=#alignable EXCEEDS the weld budget 2^r*C(2^{mu-1},r) at the shallow/deepest bands (census
+route DEAD). But the CANONICAL open core (OpenCoreConditionalPin.lean) is WorstCaseIncidenceBounded C
+delta B = (forall stacks, #bad-gamma <= B), and the census bounds B only via the LOSSY #bad<=#alignable
+(c.1007: up to 112x slack). UNMEASURED until now: is the TRUE core object B = max_stack #DISTINCT-bad-gamma
+itself within budget, even where the surrogate K is not?
+
+OBJECT (exact mod-p, PROPER mu_n m>1 never n=q-1, prize primes incl. non-Fermat; #bad = #distinct pinned
+ratios -e0(T)/e1(T) over alignable a-sets, the genuine OpenCoreConditionalPin object NOT the alignable-set
+count). m=1 prize shape k=r-1, binding band a_bind=r+1. Adversary = exhaustive char-lines (n=8) / strong
+worst-line family (n=16). Probe probe_407_truecore_B_vs_budget.py (+ /tmp/truecore16.py focused n=16 run).
+
+RESULT (B vs budget 2^r*C(2^{mu-1},r), p-INDEPENDENT across Fermat p=65537 AND non-Fermat p=262193):
+  n=8  (exhaustive over ALL lines): r=2 B=5<=24, r=3 B=9<=32. FEASIBLE (ratio 0.21, 0.28).
+  n=16: r=2 B=24<=112 (0.21) | r=3 24<=448 (0.05) | r=4 40<=1120 (0.04) | r=5 73<=1792 (0.04) |
+        r=6 113<=1792 (0.06) | r=7 41<=1024 (0.04) | r=8 104<=256 (0.41). FEASIBLE at EVERY r.
+  IDENTICAL at beta=4.0 and beta=4.5 (non-Fermat) => B is p-independent (char-0 structural).
+CONTRAST with the census K (push 5ac9fe4bc): at the SAME r=2,3,4,8 where K>budget (1.4-2.6x DEAD),
+the TRUE core B is 0.04-0.41x budget -- comfortably FEASIBLE. The gap K/B at the binding band is the
+c.1007 lossiness (#alignable overcounts #bad by collapsing many a-subsets of ONE far-line locus onto one
+gamma): at the hifreq line up to 112 alignable sets pin ONE bad gamma.
+
+VERDICT (positive direction-setting, rule-6 honest -- NOT a CORE closure):
+1. The deployed eps* budget 2^r*C(2^{mu-1},r) is NUMERICALLY SUFFICIENT for the CANONICAL open core
+   WorstCaseIncidenceBounded at the binding window band, at EVERY proximity parameter r, with a WIDE
+   margin (ratio <=0.41, mostly <=0.06). The pin's budget is NOT the obstruction; the open work is a
+   PROOF that #bad <= 2^r*C(...), and the target is plausible (the realized worst-stack #bad sits far
+   below it).
+2. SHARPENS c.1007 quantitatively: the census route should be ABANDONED in favor of bounding #bad DIRECTLY
+   (the lossy #bad<=#alignable step is the SOLE reason the census surrogate overflows). This converts
+   c.1007's qualitative "target #bad directly" into a measured feasibility: #bad/budget <= 0.41 forall r.
+3. HONEST: this is a NECESSARY-condition check (B fits the budget), NOT a proof that B<=budget holds at
+   ALL n / the prize regime -- the SUP over stacks at n=16 uses a strong worst-line family + random (n=8
+   exhaustive). A larger true B at unscanned stacks would only RAISE B; but the >2x headroom (ratio <=0.41)
+   at the binding bands gives margin. The asymptotic #bad-vs-budget growth law (does ratio stay <1 as
+   n->inf, the floor-vs-Johnson question, c.348 undecidable below n=256) is UNCHANGED -- this is a
+   finite-n feasibility result, not the asymptotic bound. CORE not closed.
+4. CONVERGENT: explains why per-line #bad COLLAPSES to O(1) at hifreq (95e633cb0) yet the route can still
+   work -- the collapse is exactly what keeps B far below budget; the census surrogate's inflation was a
+   red herring. The real open object is well-posed and budget-feasible; the prize is the PROOF, at the
+   collective BGK depth, that this finite-n feasibility persists asymptotically.
+Python-only, no Lean => axiom-clean trivially. probe_407_truecore_B_vs_budget.py.
