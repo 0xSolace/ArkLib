@@ -13431,3 +13431,39 @@ for the RANDOMIZED frame, isolating the open piece to a bounded deterministic-vs
 constant transfer — a much smaller and more concrete target than the raw BGK sup bound.
 Probes: `scripts/probes/probe_i031_*.py` (6 files, all proper regime p prime, n=2^μ, n|p−1,
 p≫n³, proper 2-power subgroup, never n=p−1).
+
+## I012 REFUTED — subgroup-trilinear (Beukers-Smyth cyclotomic incidence) kills no p^{1/4} (2026-06-15)
+
+**Idea (I012, effective-sumproduct).** Replace the p^{1/4} in the Petridis-Shparlinski trilinear
+bound (di Benedetto Lemma 4.1, |Σ_{x∈X,y∈Y,z∈Z} α_xβ_yγ_z e_p(axyz)| ≪ p^{1/4}|X|^{3/4}|Y|^{3/4}|Z|^{7/8})
+by an in-regime n^c, c<1/4, on the premise that "the three variable sets are sub-tori of one 2-power
+tower" so collinear/coplanar triples are Beukers-Smyth cyclotomic torsion-coset points (Θ(n), not the
+generic Θ(n²)). This would make di Benedetto nontrivial inside n<p^{1/4} (the prize regime) for the
+first time, giving the NEW LEMMA |Σ_{x,y,z∈μ_n}e_p(axyz)| ≤ C n^{2+1/4−η}.
+
+**Verdict: REFUTED on BOTH readings** (probe_i012_subgroup_trilinear.py; proper μ_n: n=2^μ | p−1,
+p PRIME ~ n^4 ≫ n^3, m=(p−1)/n ≠ 1, NEVER n=p−1; n∈{8,16,32}).
+
+**(A) Direct reading — apply trilinear to the subgroup itself, X=Y=Z=μ_n — is CIRCULAR [PROVEN id].**
+μ_n is multiplicatively closed, so xyz ranges over μ_n with CONSTANT multiplicity #{(x,y,z):xyz=w}=n².
+Hence the EXACT identity (verified numerically True at a=a_max,1,3 for every n):
+    T(a) := Σ_{x,y,z∈μ_n} e_p(axyz) = n² · η_a,     η_a = Σ_{w∈μ_n} e_p(aw).
+The product map collapses; product-energy E_prod(μ_n³)=#{x₁y₁z₁=x₂y₂z₂}=n·(n²)²=n^5 EXACTLY (measured:
+n=8→32768=8^5, n=16→1048576=16^5) — fully degenerate, NOT Θ(n) "isolated", maximally coset-concentrated.
+So bounding |T|≤n^{2+1/4−η} is LITERALLY EQUIVALENT to |η_a|≤n^{1/4−η} — STRONGER than the prize target
+n^{1/2}. The "new lemma" assumes (more than) its own conclusion. And it is FALSE as stated: measured
+M=max|η| = 7.56 / 13.30 / 22.98 (n=8/16/32) ≫ n^{1/4} = 1.68 / 2.00 / 2.38, so |T|=n²M EXCEEDS n^{2+1/4}.
+
+**(B) di-Benedetto reading — the premise "sets are sub-tori" is FACTUALLY WRONG [MEASURED].** In the
+actual proof of di Benedetto Thm 3.1, Lemma 4.1 is fed X={x₁+x₂+x₃}, Y={y₁+y₂+y₃} (ADDITIVE sumsets of
+subgroup triples) and Z={z₁−z₂} (a DIFFERENCE set) — additive combinations, NOT multiplicative sub-tori.
+Measured fraction lying in the torus μ_n: sum3 = 8.3% (n=8) / 2.3% (n=16); diff2 = 0% / 0%. These sets
+are SPREAD off the torus → they carry NO Beukers-Smyth torsion-coset structure, so the cyclotomic-coset
+incidence improvement cannot be applied to them. The p^{1/4} in Lemma 4.1 is moreover a FIELD-SIZE term
+(the mn/p ↔ (mn)^{2/3} crossover in the Rudnev point-plane bound), not a generic-collinear-triple count;
+replacing "Θ(n²) collinear triples" by "Θ(n) cyclotomic triples" mis-locates where the p^{1/4} lives.
+
+**Root cause.** The only multiplicative-closure structure of μ_n makes the trilinear product map collapse
+(degenerate, energy n^5), which is the OPPOSITE of the "few isolated incidences" the idea hoped for; and
+the genuine di Benedetto trilinear input acts on additive (off-torus) sets where no cyclotomic structure
+survives. Either way there is no n^c (c<1/4) handle. No gain toward M(μ_n) ≤ C√(n log(p/n)). CORE OPEN.
