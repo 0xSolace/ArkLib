@@ -13667,3 +13667,81 @@ Common cause: the period spectrum carries a positive heavy tail (super-Gaussian,
 multiplicatively resonant primes; every domain-2nd-moment concentration device misses it. Only the
 char-p deep-moment transfer at r~log q (Lam-Leung char-0 proven; char-p open) is non-phase-blind.
 — wf-D4
+
+---
+
+## wf-D5 (combinatorics, non-energy) — M-wall refutations (#444), 2026-06-15
+
+IDEA SET: prove M(n) ≤ C√(n log(p/n)) via combinatorial (non-2nd-moment) counts on μ_n / its
+coset quotient. Probes: scripts/probes/prize_workspace.py (Workspace.M, .Er, .subset_sum_card).
+
+REFUTED:
+- **Multiplicative B_h[g] / higher-Sidon** [H]: μ_n is NOT additively B_h — E_r EXCEEDS the
+  B_h-ideal r!n^r at every measured (n,r) (E_r/Bh = 1.4→43 at n=16→64, r=2→4), and exceeds Wick
+  at small p (n^{2r}/p diagonal). No subexponential-moment gain. At large p, E_r→Wick (Lam-Leung
+  floor, phase-blind).
+- **Plünnecke–Ruzsa sumset growth** [H]: μ_n has MAXIMAL doubling K=|2S|/n ≈ n/2 (|2S|≈C(n,2)+n,
+  i.e. additively Sidon), so Plünnecke yields only M ≤ √n·√K = O(n) trivial. Additive-Sidon-ness
+  = the L²/Wick floor, nothing sharper.
+- **Sum-product / Elekes–Szemerédi–Trotter incidence** [Φ]: a multiplicative SUBGROUP has product
+  set = itself (|S·S| = n EXACTLY, measured n∈{16,32,64}). The multiplicative side never expands ⇒
+  sum-product/incidence has zero traction (this is why BGK amplifies by translates). Vacuous by
+  structure.
+- **Difference family / Singer / perfect-difference-set** [Φ]: μ_n IS a Sidon (perfect-difference)
+  set additively (from |2S|≈C(n,2)), but Sidon flatness is L²-only — L∞ (=M) is NOT controlled by
+  the Sidon property (random Sidon set has M~√(n log p)). Same root cause as the I027 merit-factor
+  refutation above.
+- **Croot-Lev-Pach / partition-rank** [H]: cumulant tensor constraint Σx=Σy mod p is degree p−1
+  (full), so CLP rank cap ≈ p = vacuous. (Slice-rank/CLP already on the walled list.)
+- **Entropy-compression / Moser-Tardos** [H]: needs free randomness; μ_n is FIXED (deterministic),
+  no probability space to compress; averaging over b collapses to the 2nd moment.
+- **Hypergraph regularity / removal** [H]: the additive-quadruple count IS E_2 (phase-blind);
+  deeper r-tuple regularity = E_r = the moment route (walled).
+- **Bukh sums-of-dilates (2-adic)** [π]: dilate sumsets saturate at the Sidon ceiling (|2S| full);
+  the 2-power squaring tower = the walled "2-adic interpolation / phase-tower contraction" (REFUTED).
+- **Valuated/tropical matroid** [π]: over the prime field F_p all nonzero values have 2-adic
+  valuation 0 (the 2-adics act on EXPONENTS m=2^128, not values inside F_p) ⇒ valuated matroid
+  trivial. Matroid already REFUTED phase-blind.
+- **Combinatorial Nullstellensatz / Alon polynomial method** [P]: bad-set = sublevel set of a
+  degree-~n trig polynomial ⇒ CN gives ≤ n zeros = vacuous (no degree gap).
+
+SURVIVES (pre-screen, as a REDUCTION not a proof):
+- **Bad-COSET container count** [Φ]: |η_b| is constant on cosets of μ_n in F_p* ⇒ the bad set
+  {b:|η_b|>T} is a union of cosets over F_p*/μ_n (count = #bad-cosets · n, measured exactly:
+  560=35·16, 128=2·64...). The extreme bad set (≥0.9·M) is a BOUNDED union: #bad cosets = 1–4
+  for m up to 1024, and M/√(n log(p/n)) stays ~1.2–1.6 generically (2.07 at the Fermat prime
+  p=65537=F_16). This is genuinely combinatorial / non-2nd-moment. CAVEAT: a rigorous cap on
+  #bad cosets is provably equivalent to the char-p deep-moment crux (container/balanced-
+  supersaturation on the coset hypergraph needs E_r at depth r~ln q as input). Reduction lane,
+  not a closed proof.
+
+— wf-D5
+
+---
+## wf-D6 — Analytic number theory (beyond BGK/Weil): van der Corput & bilinear regress to n^{3/4}
+
+REFUTED (numeric countermodels, prize_workspace.py FFT-exact; code /tmp/wf_D6_probe*.py):
+
+- **van der Corput A-process / Weyl differencing on μ_n** [Φ]: differenced sum is
+  **S_d(b)=η_{b(h^d−1)}** — ANOTHER subgroup char sum (h^k ranges over μ_n) ⇒ self-referential.
+  Measured avg_d|S_d| ≈ √n/1.2 (n=256: 13.8 vs √n=16, below √n) BUT vdC bound
+  M²≤n+2Σ(1−d/n)|S_d| ≈ n+n·√n ⇒ **M≤O(n^{3/4})**; overshoot bound/M² grows 1.2x(n=16)→
+  4.5x(n=32)→15.8x(n=128). The n-fold shift sum is the loss; cannot bootstrap below diagonal.
+
+- **Balanced bilinear / Vaughan–Vinogradov split μ_n=μ_{√n}·(√n cosets)** [Φ]: Cauchy-Schwarz
+  pulls out factor n1=√n times off-diagonal ~n ⇒ M²≤n^{3/2}, M≤n^{3/4}. Measured overshoot
+  3.4x(n=64)→**10.9x(n=256), GROWING** — multiplicative self-similarity correlates the two
+  factors, killing independence. (Unbalanced n2=2 split = 2-adic tower in disguise, already
+  REFUTED geomean>√2.)
+
+- **Halász/pretentious via order-n Gauss-sum decomposition** [Φ]: η_b=(1/n)Σ_j G(χ^j,b) with
+  every **|G(χ^j,b)|=√p EXACTLY** (verified). Triangle ⇒ M≤√p; prize √p~n²≫√n VACUOUS. The
+  inter-Gauss-sum cancellation is exactly BGK's content.
+
+- **Shifted convolution = difference count**: Σ_b|η_b|²e_p(hb)=p·r(h) phase-blind ⇒ only L2
+  (=n), L∞/L2 gap M²/n invisible. Conservation law.
+
+SURVIVES: none. (VMVT/D6-10 = char-0 Lam-Leung moment route, whose char-p transfer at r~ln q
+IS the known open crux — not an independent analytic-NT win.)
+
+— wf-D6
