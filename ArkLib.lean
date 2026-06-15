@@ -983,6 +983,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BetaGatedRatioGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BindingRadiusAffineFiber
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroWickEnergy
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevReductionModP
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicConcentration
