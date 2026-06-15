@@ -344,9 +344,9 @@ theorem generalizedVandermondeNonzeroModP_four (hp7 : 7 ≤ p) :
       rcases (Nat.Prime.dvd_mul hpp).mp hdvd with h1 | h5
       · rcases (Nat.Prime.dvd_mul hpp).mp h1 with h2 | h3
         · have := hpp.dvd_of_dvd_pow h2
-          have := (Nat.prime_dvd_prime_iff_eq hpp (by norm_num)).mp this; omega
-        · have := (Nat.prime_dvd_prime_iff_eq hpp (by norm_num)).mp h3; omega
-      · have := (Nat.prime_dvd_prime_iff_eq hpp (by norm_num)).mp h5; omega
+          have := (Nat.prime_dvd_prime_iff_eq hpp (by decide)).mp this; omega
+        · have := (Nat.prime_dvd_prime_iff_eq hpp (by decide)).mp h3; omega
+      · have := (Nat.prime_dvd_prime_iff_eq hpp (by decide)).mp h5; omega
     simpa using this
   -- assume the alternant vanishes; then `0 = 720·alternantModP = 60·V_r·V_c`, but the RHS ≠ 0.
   intro hzero
