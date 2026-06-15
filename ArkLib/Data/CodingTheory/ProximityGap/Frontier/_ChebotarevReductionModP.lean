@@ -63,14 +63,29 @@ combinatorial core of Chebotarev's theorem (genuinely *false* for composite `p`)
 
 * **`MinorTaylorMultiplicityLt p`** : `∀` valid injective `ri ci`, `¬ (X − 1)^{p−1} ∣ detPolyModP`
   (equivalently `rootMultiplicity 1 detPolyModP < p − 1`, see `minorTaylorMultiplicityLt_iff`).
-  This is the generalized-Vandermonde-nonzero-mod-`p` heart of Chebotarev's theorem. We do NOT prove
-  it in general (it is the deep combinatorial core, and is *false* for composite `p`). The `n = 0`
-  and `n = 1` instances ARE discharged as sanity checks (`minorTaylorMultiplicityLt_zero`,
-  `minorTaylorMultiplicityLt_one`).
+  The `n = 0` and `n = 1` instances ARE discharged as sanity checks (`minorTaylorMultiplicityLt_zero`,
+  `minorTaylorMultiplicityLt_one`); the `n = 2` instance is proven in the sibling file.
 
-So this file REDUCES general Chebotarev to one concrete named crux about a Vandermonde-type
-determinant mod `p`, with the entire cyclotomic-divisibility framework PROVEN — mirroring how
-`tao_of_chebotarev` reduced Tao to Chebotarev.
+> ## ⚠️ CORRECTION (the `∀ n` crux as stated here is REFUTED — read before using the reduction)
+>
+> A later exact census (sibling `_ChebotarevVandermondeCrux.lean`,
+> `scripts/probes/probe_407_chebotarev_multiplicity.py`) established that the worst-case
+> `rootMultiplicity 1 (detPolyModP ri ci)` is **exactly `binom(n,2) = n(n−1)/2`** (the alternant /
+> `(1−ζ)`-adic valuation), and `detPolyModP ≠ 0` always. Hence the universally-quantified
+> `MinorTaylorMultiplicityLt p` (over **all** `n`) is **FALSE for every prime `p`**: it fails at any
+> `n ≤ p` with `binom(n,2) ≥ p − 1` (e.g. `p = 5, n = 4`), where `(X−1)^{p−1} ∣ detPolyModP` genuinely
+> holds. Consequently `chebotarev_of_multiplicityBound` / `tao_of_multiplicityBound` below are valid
+> Lean implications but have an **unsatisfiable hypothesis — they are VACUOUS as reductions** and must
+> NOT be read as "general Chebotarev reduces to one crux". The `(X−1)^{p−1}`-divisibility mechanism
+> only proves Chebotarev in the **small regime `binom(n,2) < p − 1`** (`n ≲ √(2p)`); large `n` needs
+> the *finiteness* of the alternant valuation, not `(X−1)^{p−1}` divisibility. The corrected n-wise,
+> small-regime framing — `GeneralizedVandermondeMultiplicityLe p n` (the genuine residual:
+> `detPolyModP ≠ 0 ∧ rootMultiplicity 1 ≤ binom(n,2)`), `smallRegime_crux_of_multiplicityBound`, and
+> the PROVEN `n = 2` instance `minorTaylorMultiplicityLt_two` — lives in `_ChebotarevVandermondeCrux.lean`.
+
+So this file's PROVEN content is the cyclotomic-divisibility framework (`cyclotomic_p_mod_p`, the
+eval-of-det bridge, `cyclotomic_dvd_of_aeval_eq_zero`); the `chebotarev_of_multiplicityBound` reduction
+is correct-but-vacuous as stated, and the genuine (small-regime, n-wise) reduction is in the sibling.
 
 ## Honesty contract (per #407)
 
@@ -199,7 +214,13 @@ mod `p`.
 This is the deep combinatorial heart of **Chebotarev's theorem** (the only place primality of `p` is
 genuinely used — it is *false* for composite `p`). Per the #407 honesty contract it is a named `Prop`
 (carries no axioms); we never prove the general case nor `sorry` it. The `n = 0` and `n = 1` cases
-ARE discharged below (`minorTaylorMultiplicityLt_zero`, `minorTaylorMultiplicityLt_one`). -/
+ARE discharged below (`minorTaylorMultiplicityLt_zero`, `minorTaylorMultiplicityLt_one`).
+
+⚠️ REFUTED AS STATED (`∀ n`): the worst-case `rootMultiplicity 1 detPolyModP = binom(n,2)` exactly, so
+this `∀ n` `Prop` is FALSE for every prime (fails at `binom(n,2) ≥ p−1`, e.g. `p=5,n=4`). The
+reductions below are therefore valid-but-VACUOUS; the corrected small-regime (`binom(n,2) < p−1`),
+n-wise framing + the proven `n=2` case are in `_ChebotarevVandermondeCrux.lean`. See the module
+docstring's ⚠️ CORRECTION block. -/
 def MinorTaylorMultiplicityLt (p : ℕ) [Fact p.Prime] : Prop :=
   ∀ (n : ℕ) (ri ci : Fin n → ZMod p), Function.Injective ri → Function.Injective ci →
     ¬ ((X - 1) ^ (p - 1) ∣ detPolyModP ri ci)
