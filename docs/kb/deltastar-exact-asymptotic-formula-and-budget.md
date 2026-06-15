@@ -50,3 +50,24 @@ but the floor-tracking is NOT automatic — with the literal budget=n it gives �
 the correct super-linear budget `ε*·q`, and matching it to the incidence decay is the genuine remaining problem.
 The engine + the exact δ*=½+(1/(2ρ)−1)/n formula are solid; the floor claim is downgraded to "depends on the
 budget normalization, precisely stated above."
+
+## The decay law I(s) (full curves, validated)
+
+The over-determined incidence `I(s)` (max over far directions) decays GRADUALLY from `~n³` (s=k+2) to a small
+plateau, crossing budget=n at `s* ≈ n/2`:
+
+```
+n=24,k=2:  s= 4   5   6   7   8   9  10  11  12  13
+           I=361  71  40  24  18  15  15   5   5   5      (budget 24 crossed at s*=7)
+n=24,k=3:  s= 5   6   7   8   9  10  11  12  13
+           I=143 133  37  37  16  19  12  12   9          (budget 24 crossed at s*=9)
+```
+
+- `I(k+2) ~ cubic ~ n³` (top of the curve), decays to a constant plateau `~2k+1 = O(ρn)` near `s~n/2`.
+- **The budget slides s\* through this decay region:** `δ* = 1−ρ` (floor/capacity) needs `s*~k+2` ⟹ budget
+  `~ I(k+2) ~ n³`; `δ* → ½` needs `s*~n/2` ⟹ budget `~ n`.
+
+So the **floor `δ*=1−ρ−Θ(1/log n)` corresponds to the prize budget `ε*·q ~ n^{3−ε}`**. The precise open
+question is now purely: *what is `ε*·q` in the asymptotic prize regime, and does it cross `I(s)` at `s*−k ~
+Θ(n/log n)`?* With `ε*=2^{-128}` fixed and `q` the field size, this is a normalization/parameterization
+question about the prize — fully combinatorial, no char-p, no BGK.
